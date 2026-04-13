@@ -12,32 +12,35 @@ let recordingSchema = z.object({
   playbackUri: z.string().optional().describe('URI to play back the recording in the browser')
 });
 
-export let listRecordingsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Recordings',
-    key: 'list_recordings',
-    description: `List recording resources from a conference record. Returns recording metadata including state, timestamps, and Google Drive file references. Recordings are saved as MP4 files in the organizer's Drive.`,
-    instructions: [
-      'Recordings are usually available shortly after a conference ends.',
-      'Use the driveFileId with the Google Drive API to download the actual file.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listRecordingsTool = SlateTool.create(spec, {
+  name: 'List Recordings',
+  key: 'list_recordings',
+  description: `List recording resources from a conference record. Returns recording metadata including state, timestamps, and Google Drive file references. Recordings are saved as MP4 files in the organizer's Drive.`,
+  instructions: [
+    'Recordings are usually available shortly after a conference ends.',
+    'Use the driveFileId with the Google Drive API to download the actual file.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name (e.g., "conferenceRecords/abc123")'),
-    pageSize: z.number().optional().describe('Maximum number of recordings to return'),
-    pageToken: z.string().optional().describe('Page token for pagination')
-  }))
-  .output(z.object({
-    recordings: z.array(recordingSchema),
-    nextPageToken: z.string().optional().describe('Token for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conferenceRecordName: z
+        .string()
+        .describe('Conference record resource name (e.g., "conferenceRecords/abc123")'),
+      pageSize: z.number().optional().describe('Maximum number of recordings to return'),
+      pageToken: z.string().optional().describe('Page token for pagination')
+    })
+  )
+  .output(
+    z.object({
+      recordings: z.array(recordingSchema),
+      nextPageToken: z.string().optional().describe('Token for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
 
     let result = await client.listRecordings(
@@ -62,25 +65,29 @@ export let listRecordingsTool = SlateTool.create(
       },
       message: `Found **${recordings.length}** recording(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let getRecordingTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Recording',
-    key: 'get_recording',
-    description: `Retrieve metadata for a specific recording, including its state and Google Drive file location.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getRecordingTool = SlateTool.create(spec, {
+  name: 'Get Recording',
+  key: 'get_recording',
+  description: `Retrieve metadata for a specific recording, including its state and Google Drive file location.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    recordingName: z.string().describe('Recording resource name (e.g., "conferenceRecords/abc123/recordings/def456")')
-  }))
+})
+  .input(
+    z.object({
+      recordingName: z
+        .string()
+        .describe(
+          'Recording resource name (e.g., "conferenceRecords/abc123/recordings/def456")'
+        )
+    })
+  )
   .output(recordingSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
     let r = await client.getRecording(ctx.input.recordingName);
 
@@ -95,4 +102,5 @@ export let getRecordingTool = SlateTool.create(
       },
       message: `Retrieved recording **${r.name}** (state: ${r.state}).`
     };
-  }).build();
+  })
+  .build();

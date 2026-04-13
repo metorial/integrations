@@ -3,37 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProjectTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve detailed information about a Railway project including its services and environments.`,
-    tags: {
-      readOnly: true
-    }
+export let getProjectTool = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve detailed information about a Railway project including its services and environments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project to retrieve')
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Unique project identifier'),
-    name: z.string().describe('Project name'),
-    description: z.string().nullable().describe('Project description'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    services: z.array(z.object({
-      serviceId: z.string(),
-      name: z.string(),
-      icon: z.string().nullable()
-    })),
-    environments: z.array(z.object({
-      environmentId: z.string(),
-      name: z.string()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Unique project identifier'),
+      name: z.string().describe('Project name'),
+      description: z.string().nullable().describe('Project description'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      services: z.array(
+        z.object({
+          serviceId: z.string(),
+          name: z.string(),
+          icon: z.string().nullable()
+        })
+      ),
+      environments: z.array(
+        z.object({
+          environmentId: z.string(),
+          name: z.string()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let project = await client.getProject(ctx.input.projectId);
 

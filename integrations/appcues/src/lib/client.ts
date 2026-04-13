@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://api.appcues.com',
-  eu: 'https://api.eu.appcues.com',
+  eu: 'https://api.eu.appcues.com'
 };
 
 export class AppcuesClient {
@@ -15,9 +15,9 @@ export class AppcuesClient {
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Basic ${opts.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${opts.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -228,16 +228,19 @@ export class AppcuesClient {
     return res.data;
   }
 
-  async trackUserEvent(userId: string, event: {
-    name: string;
-    timestamp: string;
-    attributes?: Record<string, any>;
-    groupId?: string;
-    context?: Record<string, any>;
-  }): Promise<any> {
+  async trackUserEvent(
+    userId: string,
+    event: {
+      name: string;
+      timestamp: string;
+      attributes?: Record<string, any>;
+      groupId?: string;
+      context?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       name: event.name,
-      timestamp: event.timestamp,
+      timestamp: event.timestamp
     };
     if (event.attributes) body.attributes = event.attributes;
     if (event.groupId) body.group_id = event.groupId;
@@ -259,7 +262,9 @@ export class AppcuesClient {
   }
 
   async associateUsersToGroup(groupId: string, userIds: string[]): Promise<any> {
-    let res = await this.http.patch(this.path(`/groups/${groupId}/users`), { user_ids: userIds });
+    let res = await this.http.patch(this.path(`/groups/${groupId}/users`), {
+      user_ids: userIds
+    });
     return res.data;
   }
 
@@ -282,7 +287,10 @@ export class AppcuesClient {
     return res.data;
   }
 
-  async updateSegment(segmentId: string, data: { name?: string; description?: string }): Promise<any> {
+  async updateSegment(
+    segmentId: string,
+    data: { name?: string; description?: string }
+  ): Promise<any> {
     let res = await this.http.patch(this.path(`/segments/${segmentId}`), data);
     return res.data;
   }
@@ -293,25 +301,35 @@ export class AppcuesClient {
   }
 
   async addUsersToSegment(segmentId: string, userIds: string[]): Promise<any> {
-    let res = await this.http.post(this.path(`/segments/${segmentId}/add_user_ids`), { user_ids: userIds });
+    let res = await this.http.post(this.path(`/segments/${segmentId}/add_user_ids`), {
+      user_ids: userIds
+    });
     return res.data;
   }
 
   async removeUsersFromSegment(segmentId: string, userIds: string[]): Promise<any> {
-    let res = await this.http.post(this.path(`/segments/${segmentId}/remove_user_ids`), { user_ids: userIds });
+    let res = await this.http.post(this.path(`/segments/${segmentId}/remove_user_ids`), {
+      user_ids: userIds
+    });
     return res.data;
   }
 
-  async exportSegmentMembership(segmentId: string, opts?: {
-    propertyNames?: string[];
-    format?: string;
-    email?: string;
-  }): Promise<any> {
+  async exportSegmentMembership(
+    segmentId: string,
+    opts?: {
+      propertyNames?: string[];
+      format?: string;
+      email?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (opts?.propertyNames) body.property_names = opts.propertyNames;
     if (opts?.format) body.format = opts.format;
     if (opts?.email) body.email = opts.email;
-    let res = await this.http.post(this.path(`/segments/${segmentId}/segment_membership_export`), body);
+    let res = await this.http.post(
+      this.path(`/segments/${segmentId}/segment_membership_export`),
+      body
+    );
     return res.data;
   }
 
@@ -354,7 +372,7 @@ export class AppcuesClient {
     let body: Record<string, any> = {
       format: opts.format,
       conditions: opts.conditions,
-      start_time: opts.startTime,
+      start_time: opts.startTime
     };
     if (opts.endTime) body.end_time = opts.endTime;
     if (opts.timeZone) body.time_zone = opts.timeZone;
@@ -395,7 +413,9 @@ export class AppcuesClient {
   }
 
   async updateSdkKeyTagField(keyId: string, tagField: string): Promise<any> {
-    let res = await this.http.patch(this.path(`/sdk_keys/${keyId}/tag_field`), { tag_field: tagField });
+    let res = await this.http.patch(this.path(`/sdk_keys/${keyId}/tag_field`), {
+      tag_field: tagField
+    });
     return res.data;
   }
 

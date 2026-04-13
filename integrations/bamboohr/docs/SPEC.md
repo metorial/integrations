@@ -15,6 +15,7 @@ BambooHR supports two authentication methods. All API requests are made to `http
 BambooHR uses Basic Authentication where the API key serves as the username and any arbitrary string (e.g., `x`) is used as the password. To generate an API key, users should log in and click their name in the lower left-hand corner of any page to access the user context menu, where an "API Keys" option will appear if they have sufficient permissions. The API key inherits the permission set of the user who created it — if a user doesn't have access to certain fields, the API key won't have access either.
 
 Example:
+
 ```
 curl -u "{API_KEY}:x" "https://{companyDomain}.bamboohr.com/api/v1/employees/directory"
 ```

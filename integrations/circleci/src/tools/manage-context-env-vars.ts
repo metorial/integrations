@@ -3,39 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContextEnvVars = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Context Environment Variables',
-    key: 'manage_context_env_vars',
-    description: `List, set, or delete environment variables within a CircleCI context. Context env vars are shared across all projects that use the context.`,
-    tags: {
-      readOnly: false
-    }
+export let manageContextEnvVars = SlateTool.create(spec, {
+  name: 'Manage Context Environment Variables',
+  key: 'manage_context_env_vars',
+  description: `List, set, or delete environment variables within a CircleCI context. Context env vars are shared across all projects that use the context.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    contextId: z.string().describe('The UUID of the context'),
-    action: z.enum(['list', 'set', 'delete']).describe('Action to perform'),
-    name: z.string().optional().describe('Name of the environment variable (required for set/delete)'),
-    value: z.string().optional().describe('Value of the environment variable (required for set)')
-  }))
-  .output(z.object({
-    envVars: z.array(z.object({
-      variable: z.string(),
-      contextId: z.string(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })).optional(),
-    updated: z.object({
-      variable: z.string(),
-      contextId: z.string(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    }).optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contextId: z.string().describe('The UUID of the context'),
+      action: z.enum(['list', 'set', 'delete']).describe('Action to perform'),
+      name: z
+        .string()
+        .optional()
+        .describe('Name of the environment variable (required for set/delete)'),
+      value: z
+        .string()
+        .optional()
+        .describe('Value of the environment variable (required for set)')
+    })
+  )
+  .output(
+    z.object({
+      envVars: z
+        .array(
+          z.object({
+            variable: z.string(),
+            contextId: z.string(),
+            createdAt: z.string().optional(),
+            updatedAt: z.string().optional()
+          })
+        )
+        .optional(),
+      updated: z
+        .object({
+          variable: z.string(),
+          contextId: z.string(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+        .optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -54,9 +67,15 @@ export let manageContextEnvVars = SlateTool.create(
 
     if (ctx.input.action === 'set') {
       if (!ctx.input.name || !ctx.input.value) {
-        throw new Error('Both name and value are required to set a context environment variable.');
+        throw new Error(
+          'Both name and value are required to set a context environment variable.'
+        );
       }
-      let result = await client.setContextEnvVar(ctx.input.contextId, ctx.input.name, ctx.input.value);
+      let result = await client.setContextEnvVar(
+        ctx.input.contextId,
+        ctx.input.name,
+        ctx.input.value
+      );
       return {
         output: {
           updated: {

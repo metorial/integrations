@@ -43,7 +43,7 @@ export class Client {
   constructor(config: { token: string; baseUrl: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: `${config.baseUrl.replace(/\/+$/, '')}/api/b2`,
+      baseURL: `${config.baseUrl.replace(/\/+$/, '')}/api/b2`
     });
   }
 
@@ -56,7 +56,7 @@ export class Client {
       group_id: params.groupId,
       recipient_user_ids: params.recipientUserIds,
       recipient_emails: params.recipientEmails,
-      recipient_audience: params.recipientAudience,
+      recipient_audience: params.recipientAudience
     });
     return response.data;
   }
@@ -65,15 +65,15 @@ export class Client {
     let response = await this.axios.get('/discussions', {
       params: {
         api_key: this.token,
-        id: idOrKey,
-      },
+        id: idOrKey
+      }
     });
     return response.data;
   }
 
   async listDiscussions(params?: { groupId?: number; since?: string }) {
     let queryParams: Record<string, string | number> = {
-      api_key: this.token,
+      api_key: this.token
     };
     if (params?.groupId) {
       queryParams['group_id'] = params.groupId;
@@ -82,7 +82,7 @@ export class Client {
       queryParams['since'] = params.since;
     }
     let response = await this.axios.get('/discussions', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -105,7 +105,7 @@ export class Client {
       recipient_user_ids: params.recipientUserIds,
       recipient_emails: params.recipientEmails,
       recipient_audience: params.recipientAudience,
-      notify_recipients: params.notifyRecipients,
+      notify_recipients: params.notifyRecipients
     });
     return response.data;
   }
@@ -114,15 +114,15 @@ export class Client {
     let response = await this.axios.get('/polls', {
       params: {
         api_key: this.token,
-        id: idOrKey,
-      },
+        id: idOrKey
+      }
     });
     return response.data;
   }
 
   async listPolls(params?: { groupId?: number; discussionId?: number; since?: string }) {
     let queryParams: Record<string, string | number> = {
-      api_key: this.token,
+      api_key: this.token
     };
     if (params?.groupId) {
       queryParams['group_id'] = params.groupId;
@@ -134,7 +134,7 @@ export class Client {
       queryParams['since'] = params.since;
     }
     let response = await this.axios.get('/polls', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -144,7 +144,7 @@ export class Client {
       api_key: this.token,
       group_id: params.groupId,
       emails: params.emails,
-      remove_absent: params.removeAbsent ? 1 : 0,
+      remove_absent: params.removeAbsent ? 1 : 0
     });
     return response.data;
   }
@@ -153,8 +153,8 @@ export class Client {
     let response = await this.axios.get('/memberships', {
       params: {
         api_key: this.token,
-        group_id: groupId,
-      },
+        group_id: groupId
+      }
     });
     return response.data;
   }

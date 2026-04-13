@@ -20,6 +20,7 @@ Rentman uses **API token** (Bearer token) authentication. To use the Rentman API
 Include the token as a Bearer token in the `Authorization` header of each request. The base URL is `https://api.rentman.net`.
 
 Example:
+
 ```
 Authorization: Bearer <your-api-token>
 ```
@@ -29,27 +30,35 @@ The access to each API call is determined by the role of the user who generated 
 ## Features
 
 ### Project Management
+
 Create and manage rental projects, including subprojects within a project. The API allows sending project requests to Rentman from any source. Integrate your tools to send project details to your Rentman workspace and transform these into projects. When sending project information to Rentman, it shows up as a request. Projects can contain subprojects, equipment groups, crew assignments, vehicle assignments, and cost items. Project statuses and types are configurable.
 
 ### Contact & CRM Management
+
 Manage contacts and contact persons. You can add or update a contact in Rentman every time you create a new one in your CRM system — or the other way around. Contacts can have linked images and contact persons.
 
 ### Equipment & Inventory
+
 Manage your equipment database including items, kits, cases, and set contents. Track equipment availability, serial numbers, stock locations, and stock movements. Equipment can be organized into folders. Repairs and inspections can be tracked for individual serial numbers.
 
 ### Crew Management
+
 Manage crew members, their availability, rates, and rate factors. Assign crew to projects via project crew assignments. Track time registrations and time registration activities for crew members.
 
 ### Financial Documents
+
 Manage quotes, contracts, and invoices. Transfer data from projects, invoices, and contacts into another software system. Invoices include line items and support payment tracking fields such as payment dates and payment reminders. Ledger accounts are available for financial categorization.
 
 ### Subrentals
+
 Manage subrental jobs when you need to rent equipment from external suppliers to fill shortages. Subrentals include their own equipment groups and equipment line items.
 
 ### Scheduling & Transport
+
 Plan vehicles for projects via project vehicle assignments. Manage appointments and appointment crew assignments.
 
 ### File Management
+
 Files can be organised into folders, similar to a file system or Google Drive–style structure. Files can be attached to various item types such as projects or equipment items.
 
 ## Events
@@ -73,6 +82,7 @@ Webhooks fire for **create**, **update**, and **delete** event types across the 
 Each webhook payload includes the account name, the user who triggered the change, the event type (create/update/delete), the item type, item IDs with API references, and parent references where applicable.
 
 **Considerations:**
+
 - The order of webhook deliveries might not always reflect the exact sequence of events as they occurred in Rentman.
 - In rare cases, multiple webhooks may be delivered for the same event.
 - Webhooks cannot be filtered by item type — all events for all item types are sent to the configured URL.

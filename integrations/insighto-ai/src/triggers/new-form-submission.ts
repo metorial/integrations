@@ -3,38 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFormSubmission = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Form Submission',
-    key: 'new_form_submission',
-    description: 'Triggers when a new form is captured during an AI agent interaction. Polls for new captured form responses across all forms.',
-  }
-)
-  .input(z.object({
-    capturedFormId: z.string(),
-    formId: z.string(),
-    formName: z.string().optional(),
-    submittedData: z.record(z.string(), z.unknown()).optional(),
-    contactId: z.string().optional(),
-    conversationId: z.string().optional(),
-    createdAt: z.string().optional(),
-  }))
-  .output(z.object({
-    capturedFormId: z.string(),
-    formId: z.string(),
-    formName: z.string().optional(),
-    submittedData: z.record(z.string(), z.unknown()).optional(),
-    contactId: z.string().optional(),
-    conversationId: z.string().optional(),
-    createdAt: z.string().optional(),
-  }))
+export let newFormSubmission = SlateTrigger.create(spec, {
+  name: 'New Form Submission',
+  key: 'new_form_submission',
+  description:
+    'Triggers when a new form is captured during an AI agent interaction. Polls for new captured form responses across all forms.'
+})
+  .input(
+    z.object({
+      capturedFormId: z.string(),
+      formId: z.string(),
+      formName: z.string().optional(),
+      submittedData: z.record(z.string(), z.unknown()).optional(),
+      contactId: z.string().optional(),
+      conversationId: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      capturedFormId: z.string(),
+      formId: z.string(),
+      formName: z.string().optional(),
+      submittedData: z.record(z.string(), z.unknown()).optional(),
+      contactId: z.string().optional(),
+      conversationId: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let formsResult = await client.listForms({ page: 1, size: 100 });
@@ -56,10 +58,11 @@ export let newFormSubmission = SlateTrigger.create(
                 capturedFormId: submission.id,
                 formId: form.id,
                 formName: form.name,
-                submittedData: submission.data || submission.captured_data || submission.fields,
+                submittedData:
+                  submission.data || submission.captured_data || submission.fields,
                 contactId: submission.contact_id,
                 conversationId: submission.conversation_id,
-                createdAt: submission.created_at,
+                createdAt: submission.created_at
               });
             }
           }
@@ -68,20 +71,20 @@ export let newFormSubmission = SlateTrigger.create(
         }
       }
 
-      let newKnownIds = [
-        ...allNewSubmissions.map((s) => s.capturedFormId),
-        ...knownIds,
-      ].slice(0, 500);
+      let newKnownIds = [...allNewSubmissions.map(s => s.capturedFormId), ...knownIds].slice(
+        0,
+        500
+      );
 
       return {
         inputs: allNewSubmissions,
         updatedState: {
-          knownIds: newKnownIds,
-        },
+          knownIds: newKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'form.submitted',
         id: ctx.input.capturedFormId,
@@ -92,9 +95,9 @@ export let newFormSubmission = SlateTrigger.create(
           submittedData: ctx.input.submittedData,
           contactId: ctx.input.contactId,
           conversationId: ctx.input.conversationId,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

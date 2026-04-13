@@ -3,25 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let rateChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Rate Changes',
-    key: 'rate_changes',
-    description: 'Triggers when rates/pricing changes for a property, including nightly rates, seasonal rates, and discount changes.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('The webhook action type'),
-    propertyId: z.number().describe('The affected property ID'),
-    roomTypeIds: z.array(z.number()).describe('Affected room type IDs'),
-  }))
-  .output(z.object({
-    propertyId: z.number().describe('ID of the affected property'),
-    roomTypeIds: z.array(z.number()).describe('IDs of affected room types'),
-  }))
+export let rateChanges = SlateTrigger.create(spec, {
+  name: 'Rate Changes',
+  key: 'rate_changes',
+  description:
+    'Triggers when rates/pricing changes for a property, including nightly rates, seasonal rates, and discount changes.'
+})
+  .input(
+    z.object({
+      action: z.string().describe('The webhook action type'),
+      propertyId: z.number().describe('The affected property ID'),
+      roomTypeIds: z.array(z.number()).describe('Affected room type IDs')
+    })
+  )
+  .output(
+    z.object({
+      propertyId: z.number().describe('ID of the affected property'),
+      roomTypeIds: z.array(z.number()).describe('IDs of affected room types')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let result = await client.subscribeWebhook('rate_change', ctx.input.webhookBaseUrl);
@@ -29,12 +31,12 @@ export let rateChanges = SlateTrigger.create(
       return {
         registrationDetails: {
           webhookId: String(result.id ?? result.webhook_id ?? result),
-          secret: result.secret ?? result.signing_secret ?? '',
-        },
+          secret: result.secret ?? result.signing_secret ?? ''
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookId: string };
 
@@ -45,28 +47,29 @@ export let rateChanges = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       return {
         inputs: [
           {
             action: (data.action as string) ?? 'rate_change',
             propertyId: Number(data.property_id ?? 0),
-            roomTypeIds: (data.room_type_ids as number[]) ?? [],
-          },
-        ],
+            roomTypeIds: (data.room_type_ids as number[]) ?? []
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'rate.changed',
         id: `rate-${ctx.input.propertyId}-${Date.now()}`,
         output: {
           propertyId: ctx.input.propertyId,
-          roomTypeIds: ctx.input.roomTypeIds,
-        },
+          roomTypeIds: ctx.input.roomTypeIds
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

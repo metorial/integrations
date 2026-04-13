@@ -3,49 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let trainingCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Training Completed',
-    key: 'training_completed',
-    description: 'Triggers when training jobs reach a terminal state (succeeded, failed, or canceled).'
-  }
-)
-  .input(z.object({
-    trainingId: z.string().describe('Training ID'),
-    status: z.string().describe('Terminal status of the training'),
-    model: z.string().optional().describe('Base model identifier'),
-    version: z.string().optional().describe('Base model version'),
-    input: z.any().optional().describe('Training input'),
-    output: z.any().optional().describe('Training output (version and weights info)'),
-    error: z.string().optional().nullable().describe('Error message if failed'),
-    logs: z.string().optional().describe('Training log output'),
-    metrics: z.record(z.string(), z.any()).optional().describe('Training metrics'),
-    createdAt: z.string().describe('Creation timestamp'),
-    startedAt: z.string().optional().nullable().describe('Start timestamp'),
-    completedAt: z.string().optional().nullable().describe('Completion timestamp')
-  }))
-  .output(z.object({
-    trainingId: z.string().describe('Training ID'),
-    model: z.string().optional().describe('Base model identifier'),
-    version: z.string().optional().describe('Base model version ID'),
-    status: z.string().describe('Terminal status: succeeded, failed, or canceled'),
-    input: z.any().optional().describe('Training input parameters'),
-    output: z.any().optional().describe('Training output (new version info and weights URL)'),
-    error: z.string().optional().nullable().describe('Error message if training failed'),
-    logs: z.string().optional().describe('Training log output'),
-    predictTime: z.number().optional().describe('Prediction time in seconds'),
-    totalTime: z.number().optional().describe('Total training time in seconds'),
-    createdAt: z.string().describe('When the training was created'),
-    startedAt: z.string().optional().nullable().describe('When the training started'),
-    completedAt: z.string().optional().nullable().describe('When the training completed')
-  }))
+export let trainingCompleted = SlateTrigger.create(spec, {
+  name: 'Training Completed',
+  key: 'training_completed',
+  description:
+    'Triggers when training jobs reach a terminal state (succeeded, failed, or canceled).'
+})
+  .input(
+    z.object({
+      trainingId: z.string().describe('Training ID'),
+      status: z.string().describe('Terminal status of the training'),
+      model: z.string().optional().describe('Base model identifier'),
+      version: z.string().optional().describe('Base model version'),
+      input: z.any().optional().describe('Training input'),
+      output: z.any().optional().describe('Training output (version and weights info)'),
+      error: z.string().optional().nullable().describe('Error message if failed'),
+      logs: z.string().optional().describe('Training log output'),
+      metrics: z.record(z.string(), z.any()).optional().describe('Training metrics'),
+      createdAt: z.string().describe('Creation timestamp'),
+      startedAt: z.string().optional().nullable().describe('Start timestamp'),
+      completedAt: z.string().optional().nullable().describe('Completion timestamp')
+    })
+  )
+  .output(
+    z.object({
+      trainingId: z.string().describe('Training ID'),
+      model: z.string().optional().describe('Base model identifier'),
+      version: z.string().optional().describe('Base model version ID'),
+      status: z.string().describe('Terminal status: succeeded, failed, or canceled'),
+      input: z.any().optional().describe('Training input parameters'),
+      output: z
+        .any()
+        .optional()
+        .describe('Training output (new version info and weights URL)'),
+      error: z.string().optional().nullable().describe('Error message if training failed'),
+      logs: z.string().optional().describe('Training log output'),
+      predictTime: z.number().optional().describe('Prediction time in seconds'),
+      totalTime: z.number().optional().describe('Total training time in seconds'),
+      createdAt: z.string().describe('When the training was created'),
+      startedAt: z.string().optional().nullable().describe('When the training started'),
+      completedAt: z.string().optional().nullable().describe('When the training completed')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let result = await client.listTrainings();
 
@@ -88,7 +93,7 @@ export let trainingCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `training.${ctx.input.status}`,
         id: ctx.input.trainingId,
@@ -109,4 +114,5 @@ export let trainingCompleted = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

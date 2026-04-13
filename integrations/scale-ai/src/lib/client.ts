@@ -11,8 +11,8 @@ export class Client {
       baseURL: BASE_URL,
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
@@ -29,13 +29,14 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       name: params.name,
-      type: params.type,
+      type: params.type
     };
     if (params.rapid !== undefined) body.rapid = params.rapid;
     if (params.studio !== undefined) body.studio = params.studio;
     if (params.params !== undefined) body.params = params.params;
     if (params.pipeline !== undefined) body.pipeline = params.pipeline;
-    if (params.consensusAttempts !== undefined) body.consensus_attempts = params.consensusAttempts;
+    if (params.consensusAttempts !== undefined)
+      body.consensus_attempts = params.consensusAttempts;
 
     let res = await this.axios.post('/projects', body);
     return res.data;
@@ -54,20 +55,32 @@ export class Client {
     return res.data;
   }
 
-  async updateProjectParams(projectName: string, params: {
-    patch?: boolean;
-    instruction?: string;
-    [key: string]: any;
-  }) {
-    let res = await this.axios.post(`/projects/${encodeURIComponent(projectName)}/setParams`, params);
+  async updateProjectParams(
+    projectName: string,
+    params: {
+      patch?: boolean;
+      instruction?: string;
+      [key: string]: any;
+    }
+  ) {
+    let res = await this.axios.post(
+      `/projects/${encodeURIComponent(projectName)}/setParams`,
+      params
+    );
     return res.data;
   }
 
-  async setProjectOntology(projectName: string, params: {
-    name: string;
-    ontology: any[];
-  }) {
-    let res = await this.axios.post(`/projects/${encodeURIComponent(projectName)}/setOntology`, params);
+  async setProjectOntology(
+    projectName: string,
+    params: {
+      name: string;
+      ontology: any[];
+    }
+  ) {
+    let res = await this.axios.post(
+      `/projects/${encodeURIComponent(projectName)}/setOntology`,
+      params
+    );
     return res.data;
   }
 
@@ -111,14 +124,16 @@ export class Client {
     if (params?.batch) query.batch = params.batch;
     if (params?.uniqueId) query.unique_id = params.uniqueId;
     if (params?.tags) query.tags = params.tags;
-    if (params?.customerReviewStatus) query.customer_review_status = params.customerReviewStatus;
+    if (params?.customerReviewStatus)
+      query.customer_review_status = params.customerReviewStatus;
     if (params?.completedAfter) query.completed_after = params.completedAfter;
     if (params?.completedBefore) query.completed_before = params.completedBefore;
     if (params?.createdAfter) query.created_after = params.createdAfter;
     if (params?.createdBefore) query.created_before = params.createdBefore;
     if (params?.updatedAfter) query.updated_after = params.updatedAfter;
     if (params?.updatedBefore) query.updated_before = params.updatedBefore;
-    if (params?.includeAttachmentUrl !== undefined) query.include_attachment_url = params.includeAttachmentUrl;
+    if (params?.includeAttachmentUrl !== undefined)
+      query.include_attachment_url = params.includeAttachmentUrl;
     if (params?.limitedResponse !== undefined) query.limited_response = params.limitedResponse;
 
     let res = await this.axios.get('/tasks', { params: query });
@@ -129,12 +144,17 @@ export class Client {
     let query: Record<string, any> = {};
     if (clearUniqueId !== undefined) query.clear_unique_id = clearUniqueId;
 
-    let res = await this.axios.post(`/task/${encodeURIComponent(taskId)}/cancel`, null, { params: query });
+    let res = await this.axios.post(`/task/${encodeURIComponent(taskId)}/cancel`, null, {
+      params: query
+    });
     return res.data;
   }
 
   async setTaskMetadata(taskId: string, metadata: Record<string, any>) {
-    let res = await this.axios.post(`/task/${encodeURIComponent(taskId)}/setMetadata`, metadata);
+    let res = await this.axios.post(
+      `/task/${encodeURIComponent(taskId)}/setMetadata`,
+      metadata
+    );
     return res.data;
   }
 
@@ -149,7 +169,9 @@ export class Client {
   }
 
   async deleteTaskTags(taskId: string, tags: string[]) {
-    let res = await this.axios.delete(`/task/${encodeURIComponent(taskId)}/tags`, { data: { tags } });
+    let res = await this.axios.delete(`/task/${encodeURIComponent(taskId)}/tags`, {
+      data: { tags }
+    });
     return res.data;
   }
 
@@ -169,10 +191,11 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       project: params.project,
-      name: params.name,
+      name: params.name
     };
     if (params.callback !== undefined) body.callback = params.callback;
-    if (params.calibrationBatch !== undefined) body.calibration_batch = params.calibrationBatch;
+    if (params.calibrationBatch !== undefined)
+      body.calibration_batch = params.calibrationBatch;
     if (params.selfLabelBatch !== undefined) body.self_label_batch = params.selfLabelBatch;
 
     let res = await this.axios.post('/batches', body);
@@ -217,7 +240,9 @@ export class Client {
   }
 
   async prioritizeBatch(batchName: string, priority: number) {
-    let res = await this.axios.post(`/batches/${encodeURIComponent(batchName)}/prioritize`, { priority });
+    let res = await this.axios.post(`/batches/${encodeURIComponent(batchName)}/prioritize`, {
+      priority
+    });
     return res.data;
   }
 
@@ -231,7 +256,7 @@ export class Client {
   async inviteTeammates(emails: string[], teamRole: string) {
     let res = await this.axios.post('/teams/invite', {
       emails,
-      team_role: teamRole,
+      team_role: teamRole
     });
     return res.data;
   }
@@ -239,19 +264,16 @@ export class Client {
   async setTeammateRole(emails: string[], teamRole: string) {
     let res = await this.axios.post('/teams/set_role', {
       emails,
-      team_role: teamRole,
+      team_role: teamRole
     });
     return res.data;
   }
 
   // ─── Files ──────────────────────────────────────────────────
 
-  async importFile(params: {
-    fileUrl: string;
-    projectName?: string;
-  }) {
+  async importFile(params: { fileUrl: string; projectName?: string }) {
     let body: Record<string, any> = {
-      file_url: params.fileUrl,
+      file_url: params.fileUrl
     };
     if (params.projectName) body.project_name = params.projectName;
 
@@ -259,13 +281,9 @@ export class Client {
     return res.data;
   }
 
-  async listFiles(params: {
-    project: string;
-    metadata?: string;
-    cursor?: string;
-  }) {
+  async listFiles(params: { project: string; metadata?: string; cursor?: string }) {
     let query: Record<string, any> = {
-      project: params.project,
+      project: params.project
     };
     if (params.metadata) query.metadata = params.metadata;
     if (params.cursor) query.cursor = params.cursor;

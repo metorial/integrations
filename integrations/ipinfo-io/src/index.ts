@@ -1,13 +1,27 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { lookupIp, lookupIpLite, lookupAsn, getAbuseContact, getIpRanges, getHostedDomains, batchLookup } from './tools';
+import {
+  lookupIp,
+  lookupIpLite,
+  lookupAsn,
+  getAbuseContact,
+  getIpRanges,
+  getHostedDomains,
+  batchLookup
+} from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
 
 export let provider = Slate.create({
   spec,
-  tools: [lookupIp, lookupIpLite, lookupAsn, getAbuseContact, getIpRanges, getHostedDomains, batchLookup],
-  triggers: [
-    inboundWebhook,
-  ]
+  tools: [
+    lookupIp,
+    lookupIpLite,
+    lookupAsn,
+    getAbuseContact,
+    getIpRanges,
+    getHostedDomains,
+    batchLookup
+  ],
+  triggers: [inboundWebhook]
 });

@@ -23,20 +23,24 @@ Bot users are a separate type of user dedicated to automation, and are authentic
 Within Discord, there are multiple types of OAuth2 authentication. Discord supports the authorization code grant, the implicit grant, client credentials, and some modified special-for-Discord flows for Bots and Webhooks. Discord also supports the Proof Key for Code Exchange (PKCE) extension to the OAuth2 authorization code flow, which allows users to authenticate without sharing your client secret.
 
 **Credentials required:**
+
 - `client_id` and `client_secret` obtained from the OAuth2 page in the Discord Developer Portal.
 - A registered `redirect_uri`.
 
 **Key endpoints:**
+
 - Authorization URL: `https://discord.com/oauth2/authorize`
 - Token URL: `https://discord.com/api/oauth2/token`
 - Token Revocation URL: `https://discord.com/api/oauth2/token/revoke`
 
 **Grant types:**
+
 - **Authorization Code Grant** — Standard flow: redirect users to authorize, receive a `code`, exchange it for an `access_token` and `refresh_token`. Access tokens expire (default ~604800 seconds) and can be refreshed.
 - **Implicit Grant** — Returns an access token directly in the URI fragment. No refresh token is provided.
 - **Client Credentials Grant** — For server-to-server use; provides a bearer token for the bot owner. Limited scopes (especially for team-owned apps: `identify` and `applications.commands.update` only).
 
 **Common OAuth2 scopes:**
+
 - `identify` — Access basic user info (no email).
 - `email` — Access user's email address.
 - `guilds` — List the user's guilds.
@@ -55,57 +59,75 @@ Some scopes (e.g., `rpc.*`, `dm_channels.read`, `voice`) require explicit approv
 ## Features
 
 ### Guild (Server) Management
+
 Create, read, update, and delete guilds. Manage guild settings including verification levels, notification defaults, system channels, and features. Retrieve guild previews, bans, and prune counts.
 
 ### Channel Management
+
 Create and manage text, voice, announcement, stage, and forum channels within guilds. Manage channel permissions (overwrites), positions, and settings. Supports threads (creation, archiving, joining, member management).
 
 ### Messaging
+
 Send, edit, delete, and fetch messages in channels. Supports rich content including embeds, attachments, file uploads, components (buttons, select menus), and polls. Pin and unpin messages. Bulk delete messages. Crosspost messages in announcement channels.
 
 ### Application Commands & Interactions
+
 Register and manage slash commands, user commands, and message commands at global or guild scope. Receive and respond to interactions including commands, autocomplete, button clicks, select menu selections, and modal submissions. Interactions can be received via the Gateway or via an HTTP endpoint (Interaction Endpoint URL).
 
 ### Webhooks (Incoming)
+
 Webhooks are a low-effort way to post messages to channels in Discord. They do not require a bot user or authentication to use. Create, manage, and execute webhooks to post messages (with embeds, files, and components) into channels. Each webhook has a unique URL with an embedded token. Supports thread targeting for forum channels. Native compatibility with GitHub and Slack payload formats.
 
 ### User & Member Management
+
 Fetch user profiles, modify guild members (nickname, roles, mute, deafen), kick or ban members, and manage member roles. Add users to guilds via OAuth2 (`guilds.join` scope). Fetch user connections to third-party services.
 
 ### Role Management
+
 Create, edit, delete, and reorder roles within a guild. Assign and remove roles from members. Configure role permissions.
 
 ### Emoji & Sticker Management
+
 Create, modify, and delete custom emojis and stickers in a guild. Fetch available sticker packs.
 
 ### Scheduled Events
+
 Create and manage guild scheduled events for voice, stage, or external locations. Manage event status (scheduled, active, completed, canceled) and retrieve interested users.
 
 ### Auto Moderation
+
 Create and manage auto moderation rules to automatically flag or take action on content based on keyword filters, spam detection, or mention thresholds. Actions include blocking messages, sending alerts, and timeouts.
 
 ### Audit Log
+
 Retrieve audit log entries for a guild to track administrative actions such as role changes, channel modifications, bans, and more.
 
 ### Voice
+
 Retrieve voice regions and current voice states. Modify a user's voice state (e.g., suppress in stage channels).
 
 ### Invites
+
 Create, retrieve, and delete invites for channels or guilds. View invite metadata such as usage counts.
 
 ### Rich Presence
+
 Update a bot's or user's activity/presence status to display what they are currently doing (e.g., playing a game, streaming).
 
 ### Monetization
+
 Manage SKUs, entitlements, and subscriptions for app monetization. Create test entitlements, list user entitlements, and handle in-app purchases.
 
 ### Soundboard
+
 Fetch and manage soundboard sounds for guilds. Access default soundboard sounds.
 
 ### Lobbies
+
 Create and manage multiplayer game lobbies through the API. Send messages within lobbies for in-game communication.
 
 ### Application Role Connections
+
 Define and update metadata for role connections, allowing linked roles to be assigned to users based on external application data.
 
 ## Events

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   runReport,
@@ -14,12 +13,9 @@ import {
   manageCustomMetrics,
   manageKeyEvents,
   manageAudiences,
-  auditDataAccess,
+  auditDataAccess
 } from './tools';
-import {
-  propertyChange,
-  inboundWebhook,
-} from './triggers';
+import { propertyChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,10 +32,7 @@ export let provider = Slate.create({
     manageCustomMetrics,
     manageKeyEvents,
     manageAudiences,
-    auditDataAccess,
+    auditDataAccess
   ],
-  triggers: [
-    inboundWebhook,
-    propertyChange,
-  ],
+  triggers: [inboundWebhook, propertyChange]
 });

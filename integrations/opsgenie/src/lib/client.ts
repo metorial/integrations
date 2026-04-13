@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://api.opsgenie.com',
-  eu: 'https://api.eu.opsgenie.com',
+  eu: 'https://api.eu.opsgenie.com'
 };
 
 export class OpsGenieClient {
@@ -13,9 +13,9 @@ export class OpsGenieClient {
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `GenieKey ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `GenieKey ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -42,20 +42,22 @@ export class OpsGenieClient {
 
   async getAlert(identifier: string, identifierType: string = 'id') {
     let response = await this.http.get(`/v2/alerts/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data.data;
   }
 
-  async listAlerts(params: {
-    query?: string;
-    offset?: number;
-    limit?: number;
-    sort?: string;
-    order?: string;
-    searchIdentifier?: string;
-    searchIdentifierType?: string;
-  } = {}) {
+  async listAlerts(
+    params: {
+      query?: string;
+      offset?: number;
+      limit?: number;
+      sort?: string;
+      order?: string;
+      searchIdentifier?: string;
+      searchIdentifierType?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/v2/alerts', { params });
     return response.data;
   }
@@ -65,167 +67,278 @@ export class OpsGenieClient {
     return response.data.data;
   }
 
-  async closeAlert(identifier: string, identifierType: string = 'id', data: {
-    user?: string;
-    source?: string;
-    note?: string;
-  } = {}) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/close`, data, {
-      params: { identifierType },
-    });
+  async closeAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      user?: string;
+      source?: string;
+      note?: string;
+    } = {}
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/close`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async acknowledgeAlert(identifier: string, identifierType: string = 'id', data: {
-    user?: string;
-    source?: string;
-    note?: string;
-  } = {}) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/acknowledge`, data, {
-      params: { identifierType },
-    });
+  async acknowledgeAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      user?: string;
+      source?: string;
+      note?: string;
+    } = {}
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/acknowledge`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async unacknowledgeAlert(identifier: string, identifierType: string = 'id', data: {
-    user?: string;
-    source?: string;
-    note?: string;
-  } = {}) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/unacknowledge`, data, {
-      params: { identifierType },
-    });
+  async unacknowledgeAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      user?: string;
+      source?: string;
+      note?: string;
+    } = {}
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/unacknowledge`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async deleteAlert(identifier: string, identifierType: string = 'id', params: {
-    user?: string;
-    source?: string;
-  } = {}) {
+  async deleteAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    params: {
+      user?: string;
+      source?: string;
+    } = {}
+  ) {
     let response = await this.http.delete(`/v2/alerts/${encodeURIComponent(identifier)}`, {
-      params: { identifierType, ...params },
+      params: { identifierType, ...params }
     });
     return response.data;
   }
 
-  async snoozeAlert(identifier: string, identifierType: string = 'id', data: {
-    endTime: string;
-    user?: string;
-    source?: string;
-    note?: string;
-  }) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/snooze`, data, {
-      params: { identifierType },
-    });
+  async snoozeAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      endTime: string;
+      user?: string;
+      source?: string;
+      note?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/snooze`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async addNoteToAlert(identifier: string, identifierType: string = 'id', data: {
-    note: string;
-    user?: string;
-    source?: string;
-  }) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/notes`, data, {
-      params: { identifierType },
-    });
+  async addNoteToAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      note: string;
+      user?: string;
+      source?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/notes`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async listAlertNotes(identifier: string, identifierType: string = 'id', params: {
-    offset?: number;
-    limit?: number;
-    order?: string;
-    direction?: string;
-  } = {}) {
+  async listAlertNotes(
+    identifier: string,
+    identifierType: string = 'id',
+    params: {
+      offset?: number;
+      limit?: number;
+      order?: string;
+      direction?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/v2/alerts/${encodeURIComponent(identifier)}/notes`, {
-      params: { identifierType, ...params },
+      params: { identifierType, ...params }
     });
     return response.data;
   }
 
-  async addTagsToAlert(identifier: string, identifierType: string = 'id', data: {
-    tags: string[];
-    user?: string;
-    source?: string;
-    note?: string;
-  }) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/tags`, data, {
-      params: { identifierType },
-    });
+  async addTagsToAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      tags: string[];
+      user?: string;
+      source?: string;
+      note?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/tags`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async removeTagsFromAlert(identifier: string, identifierType: string = 'id', params: {
-    tags: string;
-    user?: string;
-    source?: string;
-  }) {
-    let response = await this.http.delete(`/v2/alerts/${encodeURIComponent(identifier)}/tags`, {
-      params: { identifierType, ...params },
-    });
+  async removeTagsFromAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    params: {
+      tags: string;
+      user?: string;
+      source?: string;
+    }
+  ) {
+    let response = await this.http.delete(
+      `/v2/alerts/${encodeURIComponent(identifier)}/tags`,
+      {
+        params: { identifierType, ...params }
+      }
+    );
     return response.data;
   }
 
-  async updateAlertPriority(identifier: string, identifierType: string = 'id', data: {
-    priority: string;
-  }) {
-    let response = await this.http.put(`/v2/alerts/${encodeURIComponent(identifier)}/priority`, data, {
-      params: { identifierType },
-    });
+  async updateAlertPriority(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      priority: string;
+    }
+  ) {
+    let response = await this.http.put(
+      `/v2/alerts/${encodeURIComponent(identifier)}/priority`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async updateAlertMessage(identifier: string, identifierType: string = 'id', data: {
-    message: string;
-  }) {
-    let response = await this.http.put(`/v2/alerts/${encodeURIComponent(identifier)}/message`, data, {
-      params: { identifierType },
-    });
+  async updateAlertMessage(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      message: string;
+    }
+  ) {
+    let response = await this.http.put(
+      `/v2/alerts/${encodeURIComponent(identifier)}/message`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async updateAlertDescription(identifier: string, identifierType: string = 'id', data: {
-    description: string;
-  }) {
-    let response = await this.http.put(`/v2/alerts/${encodeURIComponent(identifier)}/description`, data, {
-      params: { identifierType },
-    });
+  async updateAlertDescription(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      description: string;
+    }
+  ) {
+    let response = await this.http.put(
+      `/v2/alerts/${encodeURIComponent(identifier)}/description`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async assignAlert(identifier: string, identifierType: string = 'id', data: {
-    owner: { id?: string; username?: string };
-    user?: string;
-    source?: string;
-    note?: string;
-  }) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/assign`, data, {
-      params: { identifierType },
-    });
+  async assignAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      owner: { id?: string; username?: string };
+      user?: string;
+      source?: string;
+      note?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/assign`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async escalateAlert(identifier: string, identifierType: string = 'id', data: {
-    escalation: { id?: string; name?: string };
-    user?: string;
-    source?: string;
-    note?: string;
-  }) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/escalate`, data, {
-      params: { identifierType },
-    });
+  async escalateAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      escalation: { id?: string; name?: string };
+      user?: string;
+      source?: string;
+      note?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/escalate`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async addResponderToAlert(identifier: string, identifierType: string = 'id', data: {
-    responder: { type: string; id?: string; username?: string; name?: string };
-    user?: string;
-    source?: string;
-    note?: string;
-  }) {
-    let response = await this.http.post(`/v2/alerts/${encodeURIComponent(identifier)}/responders`, data, {
-      params: { identifierType },
-    });
+  async addResponderToAlert(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      responder: { type: string; id?: string; username?: string; name?: string };
+      user?: string;
+      source?: string;
+      note?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/alerts/${encodeURIComponent(identifier)}/responders`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
@@ -234,14 +347,18 @@ export class OpsGenieClient {
     return response.data.data;
   }
 
-  async listAlertLogs(identifier: string, identifierType: string = 'id', params: {
-    offset?: string;
-    limit?: number;
-    order?: string;
-    direction?: string;
-  } = {}) {
+  async listAlertLogs(
+    identifier: string,
+    identifierType: string = 'id',
+    params: {
+      offset?: string;
+      limit?: number;
+      order?: string;
+      direction?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/v2/alerts/${encodeURIComponent(identifier)}/logs`, {
-      params: { identifierType, ...params },
+      params: { identifierType, ...params }
     });
     return response.data;
   }
@@ -266,53 +383,79 @@ export class OpsGenieClient {
 
   async getIncident(identifier: string, identifierType: string = 'id') {
     let response = await this.http.get(`/v1/incidents/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data.data;
   }
 
-  async listIncidents(params: {
-    query?: string;
-    offset?: number;
-    limit?: number;
-    sort?: string;
-    order?: string;
-  } = {}) {
+  async listIncidents(
+    params: {
+      query?: string;
+      offset?: number;
+      limit?: number;
+      sort?: string;
+      order?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/v1/incidents', { params });
     return response.data;
   }
 
-  async closeIncident(identifier: string, identifierType: string = 'id', data: {
-    note?: string;
-  } = {}) {
-    let response = await this.http.post(`/v1/incidents/${encodeURIComponent(identifier)}/close`, data, {
-      params: { identifierType },
-    });
+  async closeIncident(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      note?: string;
+    } = {}
+  ) {
+    let response = await this.http.post(
+      `/v1/incidents/${encodeURIComponent(identifier)}/close`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
-  async resolveIncident(identifier: string, identifierType: string = 'id', data: {
-    note?: string;
-  } = {}) {
-    let response = await this.http.post(`/v1/incidents/${encodeURIComponent(identifier)}/resolve`, data, {
-      params: { identifierType },
-    });
+  async resolveIncident(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      note?: string;
+    } = {}
+  ) {
+    let response = await this.http.post(
+      `/v1/incidents/${encodeURIComponent(identifier)}/resolve`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
   async deleteIncident(identifier: string, identifierType: string = 'id') {
     let response = await this.http.delete(`/v1/incidents/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data;
   }
 
-  async addNoteToIncident(identifier: string, identifierType: string = 'id', data: {
-    note: string;
-  }) {
-    let response = await this.http.post(`/v1/incidents/${encodeURIComponent(identifier)}/notes`, data, {
-      params: { identifierType },
-    });
+  async addNoteToIncident(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      note: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/v1/incidents/${encodeURIComponent(identifier)}/notes`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
@@ -340,7 +483,7 @@ export class OpsGenieClient {
 
   async getSchedule(identifier: string, identifierType: string = 'id') {
     let response = await this.http.get(`/v2/schedules/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data.data;
   }
@@ -350,13 +493,82 @@ export class OpsGenieClient {
     return response.data.data;
   }
 
-  async updateSchedule(identifier: string, identifierType: string = 'id', data: {
-    name?: string;
-    description?: string;
-    timezone?: string;
-    enabled?: boolean;
-    ownerTeam?: { id?: string; name?: string };
-    rotations?: Array<{
+  async updateSchedule(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      name?: string;
+      description?: string;
+      timezone?: string;
+      enabled?: boolean;
+      ownerTeam?: { id?: string; name?: string };
+      rotations?: Array<{
+        name?: string;
+        startDate: string;
+        endDate?: string;
+        type: string;
+        length?: number;
+        participants: Array<{ type: string; id?: string; username?: string }>;
+        timeRestriction?: any;
+      }>;
+    }
+  ) {
+    let response = await this.http.patch(
+      `/v2/schedules/${encodeURIComponent(identifier)}`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
+    return response.data.data;
+  }
+
+  async deleteSchedule(identifier: string, identifierType: string = 'id') {
+    let response = await this.http.delete(`/v2/schedules/${encodeURIComponent(identifier)}`, {
+      params: { identifierType }
+    });
+    return response.data;
+  }
+
+  async getOnCalls(
+    scheduleIdentifier: string,
+    params: {
+      scheduleIdentifierType?: string;
+      flat?: boolean;
+      date?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(
+      `/v2/schedules/${encodeURIComponent(scheduleIdentifier)}/on-calls`,
+      {
+        params
+      }
+    );
+    return response.data.data;
+  }
+
+  async getNextOnCalls(
+    scheduleIdentifier: string,
+    params: {
+      scheduleIdentifierType?: string;
+      flat?: boolean;
+      date?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(
+      `/v2/schedules/${encodeURIComponent(scheduleIdentifier)}/next-on-calls`,
+      {
+        params
+      }
+    );
+    return response.data.data;
+  }
+
+  // ─── Schedule Rotations ─────────────────────────────────────
+
+  async createRotation(
+    scheduleId: string,
+    data: {
       name?: string;
       startDate: string;
       endDate?: string;
@@ -364,78 +576,46 @@ export class OpsGenieClient {
       length?: number;
       participants: Array<{ type: string; id?: string; username?: string }>;
       timeRestriction?: any;
-    }>;
-  }) {
-    let response = await this.http.patch(`/v2/schedules/${encodeURIComponent(identifier)}`, data, {
-      params: { identifierType },
-    });
-    return response.data.data;
-  }
-
-  async deleteSchedule(identifier: string, identifierType: string = 'id') {
-    let response = await this.http.delete(`/v2/schedules/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
-    });
-    return response.data;
-  }
-
-  async getOnCalls(scheduleIdentifier: string, params: {
-    scheduleIdentifierType?: string;
-    flat?: boolean;
-    date?: string;
-  } = {}) {
-    let response = await this.http.get(`/v2/schedules/${encodeURIComponent(scheduleIdentifier)}/on-calls`, {
-      params,
-    });
-    return response.data.data;
-  }
-
-  async getNextOnCalls(scheduleIdentifier: string, params: {
-    scheduleIdentifierType?: string;
-    flat?: boolean;
-    date?: string;
-  } = {}) {
-    let response = await this.http.get(`/v2/schedules/${encodeURIComponent(scheduleIdentifier)}/next-on-calls`, {
-      params,
-    });
-    return response.data.data;
-  }
-
-  // ─── Schedule Rotations ─────────────────────────────────────
-
-  async createRotation(scheduleId: string, data: {
-    name?: string;
-    startDate: string;
-    endDate?: string;
-    type: string;
-    length?: number;
-    participants: Array<{ type: string; id?: string; username?: string }>;
-    timeRestriction?: any;
-  }) {
-    let response = await this.http.post(`/v2/schedules/${encodeURIComponent(scheduleId)}/rotations`, data);
+    }
+  ) {
+    let response = await this.http.post(
+      `/v2/schedules/${encodeURIComponent(scheduleId)}/rotations`,
+      data
+    );
     return response.data.data;
   }
 
   async listRotations(scheduleId: string) {
-    let response = await this.http.get(`/v2/schedules/${encodeURIComponent(scheduleId)}/rotations`);
+    let response = await this.http.get(
+      `/v2/schedules/${encodeURIComponent(scheduleId)}/rotations`
+    );
     return response.data.data;
   }
 
-  async updateRotation(scheduleId: string, rotationId: string, data: {
-    name?: string;
-    startDate?: string;
-    endDate?: string;
-    type?: string;
-    length?: number;
-    participants?: Array<{ type: string; id?: string; username?: string }>;
-    timeRestriction?: any;
-  }) {
-    let response = await this.http.patch(`/v2/schedules/${encodeURIComponent(scheduleId)}/rotations/${encodeURIComponent(rotationId)}`, data);
+  async updateRotation(
+    scheduleId: string,
+    rotationId: string,
+    data: {
+      name?: string;
+      startDate?: string;
+      endDate?: string;
+      type?: string;
+      length?: number;
+      participants?: Array<{ type: string; id?: string; username?: string }>;
+      timeRestriction?: any;
+    }
+  ) {
+    let response = await this.http.patch(
+      `/v2/schedules/${encodeURIComponent(scheduleId)}/rotations/${encodeURIComponent(rotationId)}`,
+      data
+    );
     return response.data.data;
   }
 
   async deleteRotation(scheduleId: string, rotationId: string) {
-    let response = await this.http.delete(`/v2/schedules/${encodeURIComponent(scheduleId)}/rotations/${encodeURIComponent(rotationId)}`);
+    let response = await this.http.delete(
+      `/v2/schedules/${encodeURIComponent(scheduleId)}/rotations/${encodeURIComponent(rotationId)}`
+    );
     return response.data;
   }
 
@@ -464,7 +644,7 @@ export class OpsGenieClient {
 
   async getEscalation(identifier: string, identifierType: string = 'id') {
     let response = await this.http.get(`/v2/escalations/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data.data;
   }
@@ -474,33 +654,44 @@ export class OpsGenieClient {
     return response.data.data;
   }
 
-  async updateEscalation(identifier: string, identifierType: string = 'id', data: {
-    name?: string;
-    description?: string;
-    rules?: Array<{
-      condition: string;
-      notifyType: string;
-      delay: { timeAmount: number; timeUnit: string };
-      recipient: { type: string; id?: string; username?: string; name?: string };
-    }>;
-    ownerTeam?: { id?: string; name?: string };
-    repeat?: {
-      waitInterval?: number;
-      count?: number;
-      resetRecipientStates?: boolean;
-      closeAlertAfterAll?: boolean;
-    };
-  }) {
-    let response = await this.http.patch(`/v2/escalations/${encodeURIComponent(identifier)}`, data, {
-      params: { identifierType },
-    });
+  async updateEscalation(
+    identifier: string,
+    identifierType: string = 'id',
+    data: {
+      name?: string;
+      description?: string;
+      rules?: Array<{
+        condition: string;
+        notifyType: string;
+        delay: { timeAmount: number; timeUnit: string };
+        recipient: { type: string; id?: string; username?: string; name?: string };
+      }>;
+      ownerTeam?: { id?: string; name?: string };
+      repeat?: {
+        waitInterval?: number;
+        count?: number;
+        resetRecipientStates?: boolean;
+        closeAlertAfterAll?: boolean;
+      };
+    }
+  ) {
+    let response = await this.http.patch(
+      `/v2/escalations/${encodeURIComponent(identifier)}`,
+      data,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data.data;
   }
 
   async deleteEscalation(identifier: string, identifierType: string = 'id') {
-    let response = await this.http.delete(`/v2/escalations/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
-    });
+    let response = await this.http.delete(
+      `/v2/escalations/${encodeURIComponent(identifier)}`,
+      {
+        params: { identifierType }
+      }
+    );
     return response.data;
   }
 
@@ -520,7 +711,7 @@ export class OpsGenieClient {
 
   async getTeam(identifier: string, identifierType: string = 'id') {
     let response = await this.http.get(`/v2/teams/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data.data;
   }
@@ -530,21 +721,24 @@ export class OpsGenieClient {
     return response.data.data;
   }
 
-  async updateTeam(teamId: string, data: {
-    name?: string;
-    description?: string;
-    members?: Array<{
-      user: { id?: string; username?: string };
-      role?: string;
-    }>;
-  }) {
+  async updateTeam(
+    teamId: string,
+    data: {
+      name?: string;
+      description?: string;
+      members?: Array<{
+        user: { id?: string; username?: string };
+        role?: string;
+      }>;
+    }
+  ) {
     let response = await this.http.patch(`/v2/teams/${encodeURIComponent(teamId)}`, data);
     return response.data.data;
   }
 
   async deleteTeam(identifier: string, identifierType: string = 'id') {
     let response = await this.http.delete(`/v2/teams/${encodeURIComponent(identifier)}`, {
-      params: { identifierType },
+      params: { identifierType }
     });
     return response.data;
   }
@@ -556,7 +750,13 @@ export class OpsGenieClient {
     fullName: string;
     role: { name: string };
     skypeUsername?: string;
-    userAddress?: { country?: string; state?: string; city?: string; line?: string; zipCode?: string };
+    userAddress?: {
+      country?: string;
+      state?: string;
+      city?: string;
+      line?: string;
+      zipCode?: string;
+    };
     tags?: string[];
     details?: Record<string, string[]>;
     timezone?: string;
@@ -569,33 +769,44 @@ export class OpsGenieClient {
 
   async getUser(identifier: string, expand?: string) {
     let response = await this.http.get(`/v2/users/${encodeURIComponent(identifier)}`, {
-      params: expand ? { expand } : {},
+      params: expand ? { expand } : {}
     });
     return response.data.data;
   }
 
-  async listUsers(params: {
-    limit?: number;
-    offset?: number;
-    sort?: string;
-    order?: string;
-    query?: string;
-  } = {}) {
+  async listUsers(
+    params: {
+      limit?: number;
+      offset?: number;
+      sort?: string;
+      order?: string;
+      query?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/v2/users', { params });
     return response.data;
   }
 
-  async updateUser(identifier: string, data: {
-    username?: string;
-    fullName?: string;
-    role?: { name: string };
-    skypeUsername?: string;
-    userAddress?: { country?: string; state?: string; city?: string; line?: string; zipCode?: string };
-    tags?: string[];
-    details?: Record<string, string[]>;
-    timezone?: string;
-    locale?: string;
-  }) {
+  async updateUser(
+    identifier: string,
+    data: {
+      username?: string;
+      fullName?: string;
+      role?: { name: string };
+      skypeUsername?: string;
+      userAddress?: {
+        country?: string;
+        state?: string;
+        city?: string;
+        line?: string;
+        zipCode?: string;
+      };
+      tags?: string[];
+      details?: Record<string, string[]>;
+      timezone?: string;
+      locale?: string;
+    }
+  ) {
     let response = await this.http.patch(`/v2/users/${encodeURIComponent(identifier)}`, data);
     return response.data.data;
   }
@@ -611,12 +822,16 @@ export class OpsGenieClient {
   }
 
   async listUserSchedules(identifier: string) {
-    let response = await this.http.get(`/v2/users/${encodeURIComponent(identifier)}/schedules`);
+    let response = await this.http.get(
+      `/v2/users/${encodeURIComponent(identifier)}/schedules`
+    );
     return response.data.data;
   }
 
   async listUserEscalations(identifier: string) {
-    let response = await this.http.get(`/v2/users/${encodeURIComponent(identifier)}/escalations`);
+    let response = await this.http.get(
+      `/v2/users/${encodeURIComponent(identifier)}/escalations`
+    );
     return response.data.data;
   }
 
@@ -637,23 +852,31 @@ export class OpsGenieClient {
     return response.data.data;
   }
 
-  async listServices(params: {
-    query?: string;
-    limit?: number;
-    offset?: number;
-    sort?: string;
-    order?: string;
-  } = {}) {
+  async listServices(
+    params: {
+      query?: string;
+      limit?: number;
+      offset?: number;
+      sort?: string;
+      order?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/v1/services', { params });
     return response.data;
   }
 
-  async updateService(serviceId: string, data: {
-    name: string;
-    description?: string;
-    tags?: string[];
-  }) {
-    let response = await this.http.patch(`/v1/services/${encodeURIComponent(serviceId)}`, data);
+  async updateService(
+    serviceId: string,
+    data: {
+      name: string;
+      description?: string;
+      tags?: string[];
+    }
+  ) {
+    let response = await this.http.patch(
+      `/v1/services/${encodeURIComponent(serviceId)}`,
+      data
+    );
     return response.data.data;
   }
 

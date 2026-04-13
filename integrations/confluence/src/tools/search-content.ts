@@ -15,26 +15,35 @@ export let searchContent = SlateTool.create(spec, {
 - \`creator=currentUser() AND lastModified > now("-7d")\` — your recent content`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    cql: z.string().describe('Confluence Query Language query string'),
-    limit: z.number().optional().default(25).describe('Maximum number of results (max 200)'),
-    start: z.number().optional().describe('Offset for pagination'),
-    includeArchivedSpaces: z.boolean().optional().describe('Include results from archived spaces')
-  }))
-  .output(z.object({
-    results: z.array(z.object({
-      contentId: z.string().optional(),
-      contentType: z.string().optional(),
-      title: z.string().optional(),
-      spaceKey: z.string().optional(),
-      spaceName: z.string().optional(),
-      excerpt: z.string().optional(),
-      webUrl: z.string().optional()
-    })),
-    totalSize: z.number().optional(),
-    hasMore: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      cql: z.string().describe('Confluence Query Language query string'),
+      limit: z.number().optional().default(25).describe('Maximum number of results (max 200)'),
+      start: z.number().optional().describe('Offset for pagination'),
+      includeArchivedSpaces: z
+        .boolean()
+        .optional()
+        .describe('Include results from archived spaces')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(
+        z.object({
+          contentId: z.string().optional(),
+          contentType: z.string().optional(),
+          title: z.string().optional(),
+          spaceKey: z.string().optional(),
+          spaceName: z.string().optional(),
+          excerpt: z.string().optional(),
+          webUrl: z.string().optional()
+        })
+      ),
+      totalSize: z.number().optional(),
+      hasMore: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.search({
       cql: ctx.input.cql,

@@ -2,39 +2,48 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Access Key',
     key: 'api_access_key',
     inputSchema: z.object({
-      apiAccessKey: z.string().describe('Your Eversign API Access Key. Found in the Developer section of your account settings.'),
+      apiAccessKey: z
+        .string()
+        .describe(
+          'Your Eversign API Access Key. Found in the Developer section of your account settings.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiAccessKey,
-        },
+          token: ctx.input.apiAccessKey
+        }
       };
     },
-    getProfile: async (ctx: { output: { token: string }; input: { apiAccessKey: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { apiAccessKey: string };
+    }) => {
       let axios = createAxios({
-        baseURL: 'https://api.eversign.com',
+        baseURL: 'https://api.eversign.com'
       });
       let response = await axios.get('/business', {
-        params: { access_key: ctx.output.token },
+        params: { access_key: ctx.output.token }
       });
       let businesses = response.data as Array<{ business_id: number; business_name: string }>;
       let primary = businesses[0];
       return {
         profile: {
           id: primary ? String(primary.business_id) : undefined,
-          name: primary ? primary.business_name : undefined,
-        },
+          name: primary ? primary.business_name : undefined
+        }
       };
-    },
+    }
   })
   .addOauth({
     type: 'auth.oauth',
@@ -43,17 +52,18 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Full Access',
-        description: 'Full access to create, manage, and sign documents on behalf of the user.',
-        scope: 'full_access',
-      },
+        description:
+          'Full access to create, manage, and sign documents on behalf of the user.',
+        scope: 'full_access'
+      }
     ],
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let url = `https://app.eversign.com/oauth/authorize?client_id=${encodeURIComponent(ctx.clientId)}&state=${encodeURIComponent(ctx.state)}`;
       return { url };
     },
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios({
-        baseURL: 'https://app.eversign.com',
+        baseURL: 'https://app.eversign.com'
       });
 
       let formData = new URLSearchParams();
@@ -64,34 +74,34 @@ export let auth = SlateAuth.create()
 
       let response = await axios.post('/oauth/token', formData.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data as { access_token: string };
 
       return {
         output: {
-          token: data.access_token,
-        },
+          token: data.access_token
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
       let axios = createAxios({
-        baseURL: 'https://api.eversign.com',
+        baseURL: 'https://api.eversign.com'
       });
       let response = await axios.get('/business', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
       let businesses = response.data as Array<{ business_id: number; business_name: string }>;
       let primary = businesses[0];
       return {
         profile: {
           id: primary ? String(primary.business_id) : undefined,
-          name: primary ? primary.business_name : undefined,
-        },
+          name: primary ? primary.business_name : undefined
+        }
       };
-    },
+    }
   });

@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    username: z.string(),
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      username: z.string(),
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -17,7 +19,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Jenkins API token (found at $JENKINS_URL/me/configure)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           username: ctx.input.username,
@@ -26,7 +28,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { username: string; token: string }; input: { username: string; token: string } }) => {
+    getProfile: async (ctx: {
+      output: { username: string; token: string };
+      input: { username: string; token: string };
+    }) => {
       return {
         profile: {
           id: ctx.output.username,

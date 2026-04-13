@@ -3,48 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newEmail = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Email',
-    key: 'new_email',
-    description: 'Triggers when a new email is received in a Zoho Mail account. Polls for new messages in a specified folder or across all folders.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Message ID'),
-    subject: z.string().optional().describe('Email subject'),
-    sender: z.string().optional().describe('Sender display name'),
-    fromAddress: z.string().optional().describe('Sender email address'),
-    toAddress: z.string().optional().describe('Recipient email address'),
-    summary: z.string().optional().describe('Email preview text'),
-    folderId: z.string().optional().describe('Folder ID'),
-    receivedTime: z.string().optional().describe('Received timestamp'),
-    hasAttachment: z.boolean().optional().describe('Has attachments'),
-    threadId: z.string().optional().describe('Thread ID'),
-    flagid: z.string().optional().describe('Flag ID'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Message ID'),
-    subject: z.string().optional().describe('Email subject'),
-    sender: z.string().optional().describe('Sender display name'),
-    fromAddress: z.string().optional().describe('Sender email address'),
-    toAddress: z.string().optional().describe('Recipient email address'),
-    summary: z.string().optional().describe('Email preview text'),
-    folderId: z.string().optional().describe('Folder ID'),
-    receivedTime: z.string().optional().describe('Received timestamp'),
-    hasAttachment: z.boolean().optional().describe('Has attachments'),
-    threadId: z.string().optional().describe('Thread ID'),
-  }))
+export let newEmail = SlateTrigger.create(spec, {
+  name: 'New Email',
+  key: 'new_email',
+  description:
+    'Triggers when a new email is received in a Zoho Mail account. Polls for new messages in a specified folder or across all folders.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Message ID'),
+      subject: z.string().optional().describe('Email subject'),
+      sender: z.string().optional().describe('Sender display name'),
+      fromAddress: z.string().optional().describe('Sender email address'),
+      toAddress: z.string().optional().describe('Recipient email address'),
+      summary: z.string().optional().describe('Email preview text'),
+      folderId: z.string().optional().describe('Folder ID'),
+      receivedTime: z.string().optional().describe('Received timestamp'),
+      hasAttachment: z.boolean().optional().describe('Has attachments'),
+      threadId: z.string().optional().describe('Thread ID'),
+      flagid: z.string().optional().describe('Flag ID')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Message ID'),
+      subject: z.string().optional().describe('Email subject'),
+      sender: z.string().optional().describe('Sender display name'),
+      fromAddress: z.string().optional().describe('Sender email address'),
+      toAddress: z.string().optional().describe('Recipient email address'),
+      summary: z.string().optional().describe('Email preview text'),
+      folderId: z.string().optional().describe('Folder ID'),
+      receivedTime: z.string().optional().describe('Received timestamp'),
+      hasAttachment: z.boolean().optional().describe('Has attachments'),
+      threadId: z.string().optional().describe('Thread ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        domain: ctx.config.dataCenterDomain,
+        domain: ctx.config.dataCenterDomain
       });
 
       let state = ctx.input.state || {};
@@ -61,7 +63,7 @@ export let newEmail = SlateTrigger.create(
       let messages = await client.searchMessages(accountId, {
         searchKey: 'newMails',
         limit: 50,
-        includeto: true,
+        includeto: true
       });
 
       if (!messages || messages.length === 0) {
@@ -96,19 +98,19 @@ export let newEmail = SlateTrigger.create(
         receivedTime: m.receivedTime ? String(m.receivedTime) : undefined,
         hasAttachment: m.hasAttachment === '1' || m.hasAttachment === true,
         threadId: m.threadId ? String(m.threadId) : undefined,
-        flagid: m.flagid ? String(m.flagid) : undefined,
+        flagid: m.flagid ? String(m.flagid) : undefined
       }));
 
       return {
         inputs,
         updatedState: {
           ...state,
-          lastReceivedTime: newestTime,
-        },
+          lastReceivedTime: newestTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'email.received',
         id: ctx.input.messageId,
@@ -122,9 +124,9 @@ export let newEmail = SlateTrigger.create(
           folderId: ctx.input.folderId,
           receivedTime: ctx.input.receivedTime,
           hasAttachment: ctx.input.hasAttachment,
-          threadId: ctx.input.threadId,
-        },
+          threadId: ctx.input.threadId
+        }
       };
-    },
+    }
   })
   .build();

@@ -3,47 +3,52 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
 
-export let ticketEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Ticket Events',
-    key: 'ticket_events',
-    description: 'Triggers when ticket activity occurs, including ticket creation, comment additions, status changes, assignment changes, and other ticket modifications.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of ticket event'),
-    eventId: z.string().describe('Unique event identifier'),
-    ticketId: z.string().describe('The ticket ID'),
-    subject: z.string().nullable().describe('The ticket subject'),
-    status: z.string().nullable().describe('The ticket status'),
-    priority: z.string().nullable().describe('The ticket priority'),
-    requesterId: z.string().nullable().describe('The requester user ID'),
-    assigneeId: z.string().nullable().describe('The assigned agent user ID'),
-    groupId: z.string().nullable().describe('The assigned group ID'),
-    tags: z.array(z.string()).describe('Tags on the ticket'),
-    via: z.string().nullable().describe('How the event was triggered (e.g., web, api, email)'),
-    updatedAt: z.string().nullable().describe('When the ticket was last updated'),
-  }))
-  .output(z.object({
-    ticketId: z.string().describe('The ticket ID'),
-    ticketUrl: z.string().describe('The URL of the ticket'),
-    subject: z.string().nullable().describe('The ticket subject'),
-    status: z.string().nullable().describe('The ticket status'),
-    priority: z.string().nullable().describe('The ticket priority'),
-    requesterId: z.string().nullable().describe('The requester user ID'),
-    assigneeId: z.string().nullable().describe('The assigned agent user ID'),
-    groupId: z.string().nullable().describe('The assigned group ID'),
-    tags: z.array(z.string()).describe('Tags on the ticket'),
-    via: z.string().nullable().describe('How the event was triggered'),
-    updatedAt: z.string().nullable().describe('When the ticket was last updated'),
-  }))
+export let ticketEvents = SlateTrigger.create(spec, {
+  name: 'Ticket Events',
+  key: 'ticket_events',
+  description:
+    'Triggers when ticket activity occurs, including ticket creation, comment additions, status changes, assignment changes, and other ticket modifications.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of ticket event'),
+      eventId: z.string().describe('Unique event identifier'),
+      ticketId: z.string().describe('The ticket ID'),
+      subject: z.string().nullable().describe('The ticket subject'),
+      status: z.string().nullable().describe('The ticket status'),
+      priority: z.string().nullable().describe('The ticket priority'),
+      requesterId: z.string().nullable().describe('The requester user ID'),
+      assigneeId: z.string().nullable().describe('The assigned agent user ID'),
+      groupId: z.string().nullable().describe('The assigned group ID'),
+      tags: z.array(z.string()).describe('Tags on the ticket'),
+      via: z
+        .string()
+        .nullable()
+        .describe('How the event was triggered (e.g., web, api, email)'),
+      updatedAt: z.string().nullable().describe('When the ticket was last updated')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.string().describe('The ticket ID'),
+      ticketUrl: z.string().describe('The URL of the ticket'),
+      subject: z.string().nullable().describe('The ticket subject'),
+      status: z.string().nullable().describe('The ticket status'),
+      priority: z.string().nullable().describe('The ticket priority'),
+      requesterId: z.string().nullable().describe('The requester user ID'),
+      assigneeId: z.string().nullable().describe('The assigned agent user ID'),
+      groupId: z.string().nullable().describe('The assigned group ID'),
+      tags: z.array(z.string()).describe('Tags on the ticket'),
+      via: z.string().nullable().describe('How the event was triggered'),
+      updatedAt: z.string().nullable().describe('When the ticket was last updated')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let webhook = await client.createWebhook({
@@ -60,28 +65,28 @@ export let ticketEvents = SlateTrigger.create(
           'zen:event-type:ticket.GroupChanged',
           'zen:event-type:ticket.PriorityChanged',
           'zen:event-type:ticket.SubjectChanged',
-          'zen:event-type:ticket.TagsChanged',
-        ],
+          'zen:event-type:ticket.TagsChanged'
+        ]
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let eventType = 'ticket.updated';
@@ -110,13 +115,13 @@ export let ticketEvents = SlateTrigger.create(
             groupId: ticket.group_id ? String(ticket.group_id) : null,
             tags: ticket.tags || [],
             via: ticket.via?.channel || null,
-            updatedAt: ticket.updated_at || null,
-          },
-        ],
+            updatedAt: ticket.updated_at || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType.toLowerCase().replace(/\s+/g, '_');
       if (!eventType.startsWith('ticket.')) {
         eventType = `ticket.${eventType}`;
@@ -136,9 +141,9 @@ export let ticketEvents = SlateTrigger.create(
           groupId: ctx.input.groupId,
           tags: ctx.input.tags,
           via: ctx.input.via,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

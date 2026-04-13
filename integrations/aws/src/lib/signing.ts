@@ -60,7 +60,7 @@ let getSigningKey = async (
   secretKey: string,
   dateStamp: string,
   region: string,
-  service: string,
+  service: string
 ): Promise<ArrayBuffer> => {
   let kDate = await hmacSha256('AWS4' + secretKey, dateStamp);
   let kRegion = await hmacSha256(kDate, region);
@@ -78,7 +78,16 @@ let uriEncodeComponent = (str: string): string => {
 };
 
 export let signRequest = async (params: SignRequestParams): Promise<SignedRequest> => {
-  let { method, url, headers = {}, params: queryParams = {}, body = '', credentials, region, service } = params;
+  let {
+    method,
+    url,
+    headers = {},
+    params: queryParams = {},
+    body = '',
+    credentials,
+    region,
+    service
+  } = params;
 
   let parsedUrl = new URL(url);
   let host = parsedUrl.host;
@@ -91,7 +100,7 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedReques
   let allHeaders: Record<string, string> = {
     ...headers,
     host: host,
-    'x-amz-date': amzDate,
+    'x-amz-date': amzDate
   };
 
   if (credentials.sessionToken) {
@@ -99,13 +108,14 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedReques
   }
 
   let signedHeaderKeys = Object.keys(allHeaders)
-    .map((k) => k.toLowerCase())
+    .map(k => k.toLowerCase())
     .sort();
   let signedHeaders = signedHeaderKeys.join(';');
 
   let canonicalHeaders = signedHeaderKeys
-    .map((key) => {
-      let val = allHeaders[key] ?? allHeaders[key.charAt(0).toUpperCase() + key.slice(1)] ?? '';
+    .map(key => {
+      let val =
+        allHeaders[key] ?? allHeaders[key.charAt(0).toUpperCase() + key.slice(1)] ?? '';
       for (let [k, v] of Object.entries(allHeaders)) {
         if (k.toLowerCase() === key) {
           val = v;
@@ -118,7 +128,7 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedReques
 
   let sortedParams = Object.keys(queryParams).sort();
   let canonicalQueryString = sortedParams
-    .map((key) => `${uriEncodeComponent(key)}=${uriEncodeComponent(queryParams[key]!)}`)
+    .map(key => `${uriEncodeComponent(key)}=${uriEncodeComponent(queryParams[key]!)}`)
     .join('&');
 
   let payloadHash = await sha256(body);
@@ -129,20 +139,22 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedReques
     canonicalQueryString,
     canonicalHeaders,
     signedHeaders,
-    payloadHash,
+    payloadHash
   ].join('\n');
 
   let credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
   let canonicalRequestHash = await sha256(canonicalRequest);
 
-  let stringToSign = [
-    'AWS4-HMAC-SHA256',
-    amzDate,
-    credentialScope,
-    canonicalRequestHash,
-  ].join('\n');
+  let stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join(
+    '\n'
+  );
 
-  let signingKey = await getSigningKey(credentials.secretAccessKey, dateStamp, region, service);
+  let signingKey = await getSigningKey(
+    credentials.secretAccessKey,
+    dateStamp,
+    region,
+    service
+  );
   let signatureBuffer = await hmacSha256(signingKey, stringToSign);
   let signature = toHex(signatureBuffer);
 
@@ -153,6 +165,6 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedReques
 
   return {
     headers: resultHeaders,
-    params: queryParams,
+    params: queryParams
   };
 };

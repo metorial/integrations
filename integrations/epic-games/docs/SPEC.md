@@ -49,51 +49,67 @@ EOS has two distinct authentication interfaces:
 ## Features
 
 ### Player Authentication & Account Management
+
 Authenticate players via Epic Games accounts or external identity providers (Steam, PlayStation, Xbox, Nintendo, Apple, Google, etc.). Enables cross-platform play by allowing players from different storefronts to play together using a combined identity.
 
 ### Friends & Social
+
 Retrieve players' friends and block lists, providing flexibility to deliver connected social experiences across devices and platforms. Includes presence information (online status, current activity).
 
 ### Achievements
+
 Access data about player achievements, unlock them for a player, get data on a player's progression for an achievement, and send notifications to players when they unlock an achievement. Achievements are defined and managed in the Developer Portal.
 
 ### Leaderboards
+
 Define leaderboards for your game, choose the stats to include, how you rank players, and the lifespan of the leaderboards. Leaderboard definitions are configured in the Developer Portal.
 
 ### Stats
+
 Record and query player statistics (e.g., kills, wins, scores). Stats feed into leaderboards and achievements. Stats can be defined per-product and ingested via API.
 
 ### Player Data Storage
+
 Store data for your game that is accessible to any player on any device where they can log in. Useful for cloud saves and cross-platform game progression.
 
 ### Title Storage
+
 Store game-level data (not player-specific) that can be read by game clients. Useful for configuration files, patch notes, or dynamic content that doesn't require a game update.
 
 ### Lobbies & Sessions
+
 Create and manage game lobbies through the Lobbies interface or your own trusted server application. Supports attributes, member management, and search/filtering for matchmaking.
 
 ### Matchmaking
+
 Manage game sessions and match players together. Supports creating, finding, and joining sessions with configurable attributes and filters.
 
 ### Sanctions
+
 Define and manage player sanctions (bans/suspensions) for your game. View the details of all sanctions placed on a player. Sanctions can be queried and managed both via the Developer Portal and through Web APIs.
 
 ### Player Reports
+
 Allow players to report other players for misconduct. Reports can be submitted and queried to feed into moderation workflows.
 
 ### Anti-Cheat
+
 Integrate Easy Anti-Cheat into your game to detect and prevent cheating. Managed via the Developer Portal with client-side and server-side components.
 
 ### Voice
+
 Integrate voice chat into your game using the Voice Interface. Supports lobby-based voice rooms with trusted server token generation.
 
 ### Ecommerce / Ownership Verification
+
 Access ownership information via RESTful endpoints. EOS has endpoints for direct online ownership verification, creating and validating ownership tokens, and entitlements services for enumerating and consuming entitlement records. Used to verify that a player owns a specific game or DLC.
 
 ### Metrics & Analytics
+
 Set up the Game Analytics dashboard in the Developer Portal and track worldwide game activity, player retention, and online player counts.
 
 ### Kids Web Services (KWS)
+
 KWS provides parent-verification and consent tools that simplify global youth management and reduce developer overhead. Designed for games and apps that serve minors.
 
 ## Events

@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://www.alphavantage.co',
+  baseURL: 'https://www.alphavantage.co'
 });
 
 export class Client {
-  constructor(
-    private token: string,
-  ) {}
+  constructor(private token: string) {}
 
-  private async query(params: Record<string, string | number | boolean | undefined>): Promise<any> {
+  private async query(
+    params: Record<string, string | number | boolean | undefined>
+  ): Promise<any> {
     let cleanParams: Record<string, string> = { apikey: this.token };
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null) {
@@ -50,57 +50,51 @@ export class Client {
       adjusted: params.adjusted,
       extended_hours: params.extendedHours,
       month: params.month,
-      outputsize: params.outputSize,
+      outputsize: params.outputSize
     });
   }
 
-  async timeSeriesDaily(params: {
-    symbol: string;
-    outputSize?: string;
-  }) {
+  async timeSeriesDaily(params: { symbol: string; outputSize?: string }) {
     return this.query({
       function: 'TIME_SERIES_DAILY',
       symbol: params.symbol,
-      outputsize: params.outputSize,
+      outputsize: params.outputSize
     });
   }
 
-  async timeSeriesDailyAdjusted(params: {
-    symbol: string;
-    outputSize?: string;
-  }) {
+  async timeSeriesDailyAdjusted(params: { symbol: string; outputSize?: string }) {
     return this.query({
       function: 'TIME_SERIES_DAILY_ADJUSTED',
       symbol: params.symbol,
-      outputsize: params.outputSize,
+      outputsize: params.outputSize
     });
   }
 
   async timeSeriesWeekly(params: { symbol: string }) {
     return this.query({
       function: 'TIME_SERIES_WEEKLY',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async timeSeriesWeeklyAdjusted(params: { symbol: string }) {
     return this.query({
       function: 'TIME_SERIES_WEEKLY_ADJUSTED',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async timeSeriesMonthly(params: { symbol: string }) {
     return this.query({
       function: 'TIME_SERIES_MONTHLY',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async timeSeriesMonthlyAdjusted(params: { symbol: string }) {
     return this.query({
       function: 'TIME_SERIES_MONTHLY_ADJUSTED',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
@@ -109,20 +103,20 @@ export class Client {
   async globalQuote(params: { symbol: string }) {
     return this.query({
       function: 'GLOBAL_QUOTE',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async symbolSearch(params: { keywords: string }) {
     return this.query({
       function: 'SYMBOL_SEARCH',
-      keywords: params.keywords,
+      keywords: params.keywords
     });
   }
 
   async marketStatus() {
     return this.query({
-      function: 'MARKET_STATUS',
+      function: 'MARKET_STATUS'
     });
   }
 
@@ -131,49 +125,49 @@ export class Client {
   async companyOverview(params: { symbol: string }) {
     return this.query({
       function: 'OVERVIEW',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async incomeStatement(params: { symbol: string }) {
     return this.query({
       function: 'INCOME_STATEMENT',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async balanceSheet(params: { symbol: string }) {
     return this.query({
       function: 'BALANCE_SHEET',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async cashFlow(params: { symbol: string }) {
     return this.query({
       function: 'CASH_FLOW',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async earnings(params: { symbol: string }) {
     return this.query({
       function: 'EARNINGS',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async dividends(params: { symbol: string }) {
     return this.query({
       function: 'DIVIDENDS',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
   async splits(params: { symbol: string }) {
     return this.query({
       function: 'SPLITS',
-      symbol: params.symbol,
+      symbol: params.symbol
     });
   }
 
@@ -188,18 +182,15 @@ export class Client {
       function: 'REALTIME_OPTIONS',
       symbol: params.symbol,
       require_greeks: params.requireGreeks,
-      contract: params.contract,
+      contract: params.contract
     });
   }
 
-  async historicalOptions(params: {
-    symbol: string;
-    date?: string;
-  }) {
+  async historicalOptions(params: { symbol: string; date?: string }) {
     return this.query({
       function: 'HISTORICAL_OPTIONS',
       symbol: params.symbol,
-      date: params.date,
+      date: params.date
     });
   }
 
@@ -220,37 +211,31 @@ export class Client {
       time_from: params.timeFrom,
       time_to: params.timeTo,
       sort: params.sort,
-      limit: params.limit,
+      limit: params.limit
     });
   }
 
   async topGainersLosers() {
     return this.query({
-      function: 'TOP_GAINERS_LOSERS',
+      function: 'TOP_GAINERS_LOSERS'
     });
   }
 
-  async earningsCallTranscript(params: {
-    symbol: string;
-    quarter: string;
-  }) {
+  async earningsCallTranscript(params: { symbol: string; quarter: string }) {
     return this.query({
       function: 'EARNINGS_CALL_TRANSCRIPT',
       symbol: params.symbol,
-      quarter: params.quarter,
+      quarter: params.quarter
     });
   }
 
   // ─── Forex ───
 
-  async currencyExchangeRate(params: {
-    fromCurrency: string;
-    toCurrency: string;
-  }) {
+  async currencyExchangeRate(params: { fromCurrency: string; toCurrency: string }) {
     return this.query({
       function: 'CURRENCY_EXCHANGE_RATE',
       from_currency: params.fromCurrency,
-      to_currency: params.toCurrency,
+      to_currency: params.toCurrency
     });
   }
 
@@ -265,89 +250,67 @@ export class Client {
       from_symbol: params.fromSymbol,
       to_symbol: params.toSymbol,
       interval: params.interval,
-      outputsize: params.outputSize,
+      outputsize: params.outputSize
     });
   }
 
-  async fxDaily(params: {
-    fromSymbol: string;
-    toSymbol: string;
-    outputSize?: string;
-  }) {
+  async fxDaily(params: { fromSymbol: string; toSymbol: string; outputSize?: string }) {
     return this.query({
       function: 'FX_DAILY',
       from_symbol: params.fromSymbol,
       to_symbol: params.toSymbol,
-      outputsize: params.outputSize,
+      outputsize: params.outputSize
     });
   }
 
-  async fxWeekly(params: {
-    fromSymbol: string;
-    toSymbol: string;
-  }) {
+  async fxWeekly(params: { fromSymbol: string; toSymbol: string }) {
     return this.query({
       function: 'FX_WEEKLY',
       from_symbol: params.fromSymbol,
-      to_symbol: params.toSymbol,
+      to_symbol: params.toSymbol
     });
   }
 
-  async fxMonthly(params: {
-    fromSymbol: string;
-    toSymbol: string;
-  }) {
+  async fxMonthly(params: { fromSymbol: string; toSymbol: string }) {
     return this.query({
       function: 'FX_MONTHLY',
       from_symbol: params.fromSymbol,
-      to_symbol: params.toSymbol,
+      to_symbol: params.toSymbol
     });
   }
 
   // ─── Crypto ───
 
-  async cryptoDaily(params: {
-    symbol: string;
-    market: string;
-  }) {
+  async cryptoDaily(params: { symbol: string; market: string }) {
     return this.query({
       function: 'DIGITAL_CURRENCY_DAILY',
       symbol: params.symbol,
-      market: params.market,
+      market: params.market
     });
   }
 
-  async cryptoWeekly(params: {
-    symbol: string;
-    market: string;
-  }) {
+  async cryptoWeekly(params: { symbol: string; market: string }) {
     return this.query({
       function: 'DIGITAL_CURRENCY_WEEKLY',
       symbol: params.symbol,
-      market: params.market,
+      market: params.market
     });
   }
 
-  async cryptoMonthly(params: {
-    symbol: string;
-    market: string;
-  }) {
+  async cryptoMonthly(params: { symbol: string; market: string }) {
     return this.query({
       function: 'DIGITAL_CURRENCY_MONTHLY',
       symbol: params.symbol,
-      market: params.market,
+      market: params.market
     });
   }
 
   // ─── Commodities ───
 
-  async commodity(params: {
-    commodityFunction: string;
-    interval?: string;
-  }) {
+  async commodity(params: { commodityFunction: string; interval?: string }) {
     return this.query({
       function: params.commodityFunction,
-      interval: params.interval,
+      interval: params.interval
     });
   }
 
@@ -361,7 +324,7 @@ export class Client {
     return this.query({
       function: params.indicatorFunction,
       interval: params.interval,
-      maturity: params.maturity,
+      maturity: params.maturity
     });
   }
 
@@ -403,7 +366,7 @@ export class Client {
       signalmatype: params.signalMaType,
       nbdevup: params.nbdevup,
       nbdevdn: params.nbdevdn,
-      matype: params.maType,
+      matype: params.maType
     });
   }
 }

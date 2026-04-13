@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteRows = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Rows',
-    key: 'delete_rows',
-    description: `Delete one or more rows from a Baserow table by their row IDs. Supports both single and batch deletion.`,
-    tags: {
-      destructive: true
-    }
+export let deleteRows = SlateTool.create(spec, {
+  name: 'Delete Rows',
+  key: 'delete_rows',
+  description: `Delete one or more rows from a Baserow table by their row IDs. Supports both single and batch deletion.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    tableId: z.number().describe('The ID of the table to delete rows from'),
-    rowIds: z.array(z.number()).min(1).describe('Array of row IDs to delete')
-  }))
-  .output(z.object({
-    deletedRowIds: z.array(z.number()).describe('Array of row IDs that were deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tableId: z.number().describe('The ID of the table to delete rows from'),
+      rowIds: z.array(z.number()).min(1).describe('Array of row IDs to delete')
+    })
+  )
+  .output(
+    z.object({
+      deletedRowIds: z.array(z.number()).describe('Array of row IDs that were deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType,

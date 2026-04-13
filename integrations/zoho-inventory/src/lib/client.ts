@@ -11,11 +11,11 @@ export class ZohoInventoryClient {
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Zoho-oauthtoken ${config.token}`,
+        Authorization: `Zoho-oauthtoken ${config.token}`
       },
       params: {
-        organization_id: config.organizationId,
-      },
+        organization_id: config.organizationId
+      }
     });
   }
 
@@ -28,14 +28,16 @@ export class ZohoInventoryClient {
 
   // ─── Items ────────────────────────────────────────────────────
 
-  async listItems(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-    search_text?: string;
-    filter_by?: string;
-  } = {}) {
+  async listItems(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+      search_text?: string;
+      filter_by?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/items', { params });
     return response.data;
   }
@@ -126,12 +128,14 @@ export class ZohoInventoryClient {
 
   // ─── Inventory Adjustments ────────────────────────────────────
 
-  async listInventoryAdjustments(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-  } = {}) {
+  async listInventoryAdjustments(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/inventoryadjustments', { params });
     return response.data;
   }
@@ -185,15 +189,17 @@ export class ZohoInventoryClient {
 
   // ─── Contacts ─────────────────────────────────────────────────
 
-  async listContacts(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-    search_text?: string;
-    filter_by?: string;
-    contact_type?: string;
-  } = {}) {
+  async listContacts(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+      search_text?: string;
+      filter_by?: string;
+      contact_type?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/contacts', { params });
     return response.data;
   }
@@ -240,27 +246,38 @@ export class ZohoInventoryClient {
     return response.data;
   }
 
-  async updateContactPerson(contactId: string, contactPersonId: string, data: Record<string, any>) {
-    let response = await this.http.put(`/contacts/${contactId}/contactpersons/${contactPersonId}`, data);
+  async updateContactPerson(
+    contactId: string,
+    contactPersonId: string,
+    data: Record<string, any>
+  ) {
+    let response = await this.http.put(
+      `/contacts/${contactId}/contactpersons/${contactPersonId}`,
+      data
+    );
     return response.data;
   }
 
   async deleteContactPerson(contactId: string, contactPersonId: string) {
-    let response = await this.http.delete(`/contacts/${contactId}/contactpersons/${contactPersonId}`);
+    let response = await this.http.delete(
+      `/contacts/${contactId}/contactpersons/${contactPersonId}`
+    );
     return response.data;
   }
 
   // ─── Sales Orders ─────────────────────────────────────────────
 
-  async listSalesOrders(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-    search_text?: string;
-    filter_by?: string;
-    customer_id?: string;
-  } = {}) {
+  async listSalesOrders(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+      search_text?: string;
+      filter_by?: string;
+      customer_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/salesorders', { params });
     return response.data;
   }
@@ -297,11 +314,13 @@ export class ZohoInventoryClient {
 
   // ─── Packages ─────────────────────────────────────────────────
 
-  async listPackages(params: {
-    page?: number;
-    per_page?: number;
-    salesorder_id?: string;
-  } = {}) {
+  async listPackages(
+    params: {
+      page?: number;
+      per_page?: number;
+      salesorder_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/packages', { params });
     return response.data;
   }
@@ -314,7 +333,7 @@ export class ZohoInventoryClient {
   async createPackage(salesOrderId: string, data: Record<string, any>) {
     let response = await this.http.post(`/packages`, {
       ...data,
-      salesorder_id: salesOrderId,
+      salesorder_id: salesOrderId
     });
     return response.data;
   }
@@ -326,11 +345,13 @@ export class ZohoInventoryClient {
 
   // ─── Shipment Orders ──────────────────────────────────────────
 
-  async listShipmentOrders(params: {
-    page?: number;
-    per_page?: number;
-    salesorder_id?: string;
-  } = {}) {
+  async listShipmentOrders(
+    params: {
+      page?: number;
+      per_page?: number;
+      salesorder_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/shipmentorders', { params });
     return response.data;
   }
@@ -357,15 +378,17 @@ export class ZohoInventoryClient {
 
   // ─── Invoices ─────────────────────────────────────────────────
 
-  async listInvoices(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-    search_text?: string;
-    filter_by?: string;
-    customer_id?: string;
-  } = {}) {
+  async listInvoices(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+      search_text?: string;
+      filter_by?: string;
+      customer_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/invoices', { params });
     return response.data;
   }
@@ -407,14 +430,16 @@ export class ZohoInventoryClient {
 
   // ─── Customer Payments ────────────────────────────────────────
 
-  async listCustomerPayments(params: {
-    page?: number;
-    per_page?: number;
-    customer_id?: string;
-    filter_by?: string;
-    sort_column?: string;
-    sort_order?: string;
-  } = {}) {
+  async listCustomerPayments(
+    params: {
+      page?: number;
+      per_page?: number;
+      customer_id?: string;
+      filter_by?: string;
+      sort_column?: string;
+      sort_order?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/customerpayments', { params });
     return response.data;
   }
@@ -463,14 +488,16 @@ export class ZohoInventoryClient {
 
   // ─── Credit Notes ─────────────────────────────────────────────
 
-  async listCreditNotes(params: {
-    page?: number;
-    per_page?: number;
-    customer_id?: string;
-    filter_by?: string;
-    sort_column?: string;
-    sort_order?: string;
-  } = {}) {
+  async listCreditNotes(
+    params: {
+      page?: number;
+      per_page?: number;
+      customer_id?: string;
+      filter_by?: string;
+      sort_column?: string;
+      sort_order?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/creditnotes', { params });
     return response.data;
   }
@@ -495,22 +522,27 @@ export class ZohoInventoryClient {
     return response.data;
   }
 
-  async applyCreditToInvoice(creditNoteId: string, data: { invoices: Array<{ invoice_id: string; amount_applied: number }> }) {
+  async applyCreditToInvoice(
+    creditNoteId: string,
+    data: { invoices: Array<{ invoice_id: string; amount_applied: number }> }
+  ) {
     let response = await this.http.post(`/creditnotes/${creditNoteId}/invoices`, data);
     return response.data;
   }
 
   // ─── Purchase Orders ──────────────────────────────────────────
 
-  async listPurchaseOrders(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-    search_text?: string;
-    filter_by?: string;
-    vendor_id?: string;
-  } = {}) {
+  async listPurchaseOrders(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+      search_text?: string;
+      filter_by?: string;
+      vendor_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/purchaseorders', { params });
     return response.data;
   }
@@ -547,11 +579,13 @@ export class ZohoInventoryClient {
 
   // ─── Purchase Receives ────────────────────────────────────────
 
-  async listPurchaseReceives(params: {
-    page?: number;
-    per_page?: number;
-    purchaseorder_id?: string;
-  } = {}) {
+  async listPurchaseReceives(
+    params: {
+      page?: number;
+      per_page?: number;
+      purchaseorder_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/purchasereceives', { params });
     return response.data;
   }
@@ -573,15 +607,17 @@ export class ZohoInventoryClient {
 
   // ─── Bills ────────────────────────────────────────────────────
 
-  async listBills(params: {
-    page?: number;
-    per_page?: number;
-    sort_column?: string;
-    sort_order?: string;
-    search_text?: string;
-    filter_by?: string;
-    vendor_id?: string;
-  } = {}) {
+  async listBills(
+    params: {
+      page?: number;
+      per_page?: number;
+      sort_column?: string;
+      sort_order?: string;
+      search_text?: string;
+      filter_by?: string;
+      vendor_id?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/bills', { params });
     return response.data;
   }
@@ -618,7 +654,9 @@ export class ZohoInventoryClient {
 
   // ─── Vendor Credits ───────────────────────────────────────────
 
-  async listVendorCredits(params: { page?: number; per_page?: number; vendor_id?: string } = {}) {
+  async listVendorCredits(
+    params: { page?: number; per_page?: number; vendor_id?: string } = {}
+  ) {
     let response = await this.http.get('/vendorcredits', { params });
     return response.data;
   }

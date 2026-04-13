@@ -3,44 +3,45 @@ import { BookingmoodClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Updates an existing contact's personal details, address, or metadata.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Updates an existing contact's personal details, address, or metadata.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('UUID of the contact to update'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    companyName: z.string().optional().describe('Company name'),
-    street: z.string().optional().describe('Street address'),
-    street2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State'),
-    province: z.string().optional().describe('Province'),
-    zip: z.string().optional().describe('Postal code'),
-    country: z.string().optional().describe('Country'),
-    countryCode: z.string().optional().describe('Country code'),
-    language: z.string().optional().describe('Preferred language'),
-    notes: z.string().optional().describe('Internal notes'),
-    meta: z.array(z.any()).optional().describe('Custom key-value metadata'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('UUID of the updated contact'),
-    name: z.string().nullable().describe('Full name'),
-    email: z.string().nullable().describe('Email address'),
-    updatedAt: z.string().describe('Last update timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('UUID of the contact to update'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      companyName: z.string().optional().describe('Company name'),
+      street: z.string().optional().describe('Street address'),
+      street2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State'),
+      province: z.string().optional().describe('Province'),
+      zip: z.string().optional().describe('Postal code'),
+      country: z.string().optional().describe('Country'),
+      countryCode: z.string().optional().describe('Country code'),
+      language: z.string().optional().describe('Preferred language'),
+      notes: z.string().optional().describe('Internal notes'),
+      meta: z.array(z.any()).optional().describe('Custom key-value metadata')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('UUID of the updated contact'),
+      name: z.string().nullable().describe('Full name'),
+      email: z.string().nullable().describe('Email address'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BookingmoodClient(ctx.auth.token);
 
     let data: Record<string, any> = {};
@@ -68,9 +69,9 @@ export let updateContact = SlateTool.create(
         contactId: result.id,
         name: result.name ?? null,
         email: result.email ?? null,
-        updatedAt: result.updated_at,
+        updatedAt: result.updated_at
       },
-      message: `Contact **${result.name || result.email || result.id}** updated successfully.`,
+      message: `Contact **${result.name || result.email || result.id}** updated successfully.`
     };
   })
   .build();

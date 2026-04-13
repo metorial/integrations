@@ -3,44 +3,73 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProjects = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Projects',
-    key: 'manage_projects',
-    description: `Manage Render projects and environments. Supports **list**, **get**, **create**, **update**, and **delete** for projects. Also supports **list_environments** and **create_environment** within a project.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'list_environments', 'create_environment']).describe('Action to perform'),
-    projectId: z.string().optional().describe('Project ID (required for get/update/delete/list_environments/create_environment)'),
-    ownerId: z.string().optional().describe('Workspace ID (for list/create)'),
-    name: z.string().optional().describe('Project or environment name (for create/update)'),
-    description: z.string().optional().describe('Project description (for create/update)'),
-    environmentId: z.string().optional().describe('Environment ID'),
-    limit: z.number().optional().describe('Max results for list'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-  }))
-  .output(z.object({
-    projects: z.array(z.object({
-      projectId: z.string().describe('Project ID'),
-      name: z.string().describe('Project name'),
-      ownerId: z.string().optional().describe('Workspace ID'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of projects'),
-    project: z.object({
-      projectId: z.string().describe('Project ID'),
-      name: z.string().optional().describe('Project name'),
-      ownerId: z.string().optional().describe('Workspace ID'),
-    }).optional().describe('Project details'),
-    environments: z.array(z.object({
-      environmentId: z.string().describe('Environment ID'),
-      name: z.string().describe('Environment name'),
-      projectId: z.string().optional().describe('Parent project ID'),
-    })).optional().describe('List of environments'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageProjects = SlateTool.create(spec, {
+  name: 'Manage Projects',
+  key: 'manage_projects',
+  description: `Manage Render projects and environments. Supports **list**, **get**, **create**, **update**, and **delete** for projects. Also supports **list_environments** and **create_environment** within a project.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'list',
+          'get',
+          'create',
+          'update',
+          'delete',
+          'list_environments',
+          'create_environment'
+        ])
+        .describe('Action to perform'),
+      projectId: z
+        .string()
+        .optional()
+        .describe(
+          'Project ID (required for get/update/delete/list_environments/create_environment)'
+        ),
+      ownerId: z.string().optional().describe('Workspace ID (for list/create)'),
+      name: z.string().optional().describe('Project or environment name (for create/update)'),
+      description: z.string().optional().describe('Project description (for create/update)'),
+      environmentId: z.string().optional().describe('Environment ID'),
+      limit: z.number().optional().describe('Max results for list'),
+      cursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      projects: z
+        .array(
+          z.object({
+            projectId: z.string().describe('Project ID'),
+            name: z.string().describe('Project name'),
+            ownerId: z.string().optional().describe('Workspace ID'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of projects'),
+      project: z
+        .object({
+          projectId: z.string().describe('Project ID'),
+          name: z.string().optional().describe('Project name'),
+          ownerId: z.string().optional().describe('Workspace ID')
+        })
+        .optional()
+        .describe('Project details'),
+      environments: z
+        .array(
+          z.object({
+            environmentId: z.string().describe('Environment ID'),
+            name: z.string().describe('Environment name'),
+            projectId: z.string().optional().describe('Parent project ID')
+          })
+        )
+        .optional()
+        .describe('List of environments'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RenderClient(ctx.auth.token);
     let { action, projectId } = ctx.input;
 
@@ -56,7 +85,7 @@ export let manageProjects = SlateTool.create(
       });
       return {
         output: { projects, success: true },
-        message: `Found **${projects.length}** project(s).${projects.map(p => `\n- **${p.name}** (\`${p.projectId}\`)`).join('')}`,
+        message: `Found **${projects.length}** project(s).${projects.map(p => `\n- **${p.name}** (\`${p.projectId}\`)`).join('')}`
       };
     }
 
@@ -67,8 +96,11 @@ export let manageProjects = SlateTool.create(
       if (ctx.input.description) body.description = ctx.input.description;
       let p = await client.createProject(body);
       return {
-        output: { project: { projectId: p.id, name: p.name, ownerId: p.ownerId }, success: true },
-        message: `Created project **${p.name}** (\`${p.id}\`).`,
+        output: {
+          project: { projectId: p.id, name: p.name, ownerId: p.ownerId },
+          success: true
+        },
+        message: `Created project **${p.name}** (\`${p.id}\`).`
       };
     }
 
@@ -77,8 +109,11 @@ export let manageProjects = SlateTool.create(
     if (action === 'get') {
       let p = await client.getProject(projectId);
       return {
-        output: { project: { projectId: p.id, name: p.name, ownerId: p.ownerId }, success: true },
-        message: `Project **${p.name}** (\`${p.id}\`).`,
+        output: {
+          project: { projectId: p.id, name: p.name, ownerId: p.ownerId },
+          success: true
+        },
+        message: `Project **${p.name}** (\`${p.id}\`).`
       };
     }
 
@@ -89,7 +124,7 @@ export let manageProjects = SlateTool.create(
       let p = await client.updateProject(projectId, body);
       return {
         output: { project: { projectId: p.id, name: p.name }, success: true },
-        message: `Updated project **${p.name}**.`,
+        message: `Updated project **${p.name}**.`
       };
     }
 
@@ -97,7 +132,7 @@ export let manageProjects = SlateTool.create(
       await client.deleteProject(projectId);
       return {
         output: { success: true },
-        message: `Deleted project \`${projectId}\`.`,
+        message: `Deleted project \`${projectId}\`.`
       };
     }
 
@@ -112,7 +147,7 @@ export let manageProjects = SlateTool.create(
       });
       return {
         output: { environments, success: true },
-        message: `Found **${environments.length}** environment(s) in project \`${projectId}\`.`,
+        message: `Found **${environments.length}** environment(s) in project \`${projectId}\`.`
       };
     }
 
@@ -122,11 +157,12 @@ export let manageProjects = SlateTool.create(
       return {
         output: {
           environments: [{ environmentId: e.id, name: e.name, projectId: e.projectId }],
-          success: true,
+          success: true
         },
-        message: `Created environment **${e.name}** in project \`${projectId}\`.`,
+        message: `Created environment **${e.name}** in project \`${projectId}\`.`
       };
     }
 
     return { output: { success: false }, message: 'Unknown action.' };
-  }).build();
+  })
+  .build();

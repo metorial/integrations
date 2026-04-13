@@ -149,14 +149,14 @@ export class Client {
       baseURL: 'https://gtmetrix.com/api/2.0',
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
   async startTest(params: StartTestParams): Promise<TestData> {
     let attributes: Record<string, unknown> = {
-      url: params.url,
+      url: params.url
     };
 
     if (params.location) attributes.location = params.location;
@@ -177,18 +177,23 @@ export class Client {
     if (params.browserWidth !== undefined) attributes.browser_width = params.browserWidth;
     if (params.browserHeight !== undefined) attributes.browser_height = params.browserHeight;
     if (params.browserDppx !== undefined) attributes.browser_dppx = params.browserDppx;
-    if (params.browserRotate !== undefined) attributes.browser_rotate = params.browserRotate ? 1 : 0;
+    if (params.browserRotate !== undefined)
+      attributes.browser_rotate = params.browserRotate ? 1 : 0;
 
-    let response = await this.axios.post('/tests', {
-      data: {
-        type: 'test',
-        attributes,
+    let response = await this.axios.post(
+      '/tests',
+      {
+        data: {
+          type: 'test',
+          attributes
+        }
       },
-    }, {
-      headers: {
-        'Content-Type': 'application/vnd.api+json',
-      },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/vnd.api+json'
+        }
+      }
+    );
 
     let data = response.data.data;
     let meta = response.data.meta;
@@ -201,14 +206,14 @@ export class Client {
       browser: data.attributes.browser,
       created: data.attributes.created,
       creditsLeft: meta?.credits_left,
-      creditsUsed: meta?.credits_used,
+      creditsUsed: meta?.credits_used
     };
   }
 
   async getTest(testId: string): Promise<TestData> {
     let response = await this.axios.get(`/tests/${testId}`, {
       maxRedirects: 0,
-      validateStatus: (status: number) => status === 200 || status === 303,
+      validateStatus: (status: number) => status === 200 || status === 303
     });
 
     let data = response.data.data;
@@ -225,11 +230,15 @@ export class Client {
       created: data.attributes.created,
       started: data.attributes.started,
       finished: data.attributes.finished,
-      error: data.attributes.error,
+      error: data.attributes.error
     };
   }
 
-  async pollTestUntilComplete(testId: string, maxAttempts: number = 60, intervalMs: number = 3000): Promise<TestData> {
+  async pollTestUntilComplete(
+    testId: string,
+    maxAttempts: number = 60,
+    intervalMs: number = 3000
+  ): Promise<TestData> {
     for (let i = 0; i < maxAttempts; i++) {
       let test = await this.getTest(testId);
 
@@ -240,7 +249,9 @@ export class Client {
       await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
 
-    throw new Error(`Test ${testId} did not complete within ${maxAttempts * intervalMs / 1000} seconds`);
+    throw new Error(
+      `Test ${testId} did not complete within ${(maxAttempts * intervalMs) / 1000} seconds`
+    );
   }
 
   async getReport(reportId: string): Promise<ReportData> {
@@ -296,9 +307,9 @@ export class Client {
         lighthouse: links.lighthouse,
         pagespeed: links.pagespeed,
         yslow: links.yslow,
-        optimizedImages: links.optimized_images,
+        optimizedImages: links.optimized_images
       },
-      reportUrl: links.report_url,
+      reportUrl: links.report_url
     };
   }
 
@@ -309,8 +320,8 @@ export class Client {
   async retestReport(reportId: string): Promise<TestData> {
     let response = await this.axios.post(`/reports/${reportId}/retest`, undefined, {
       headers: {
-        'Content-Type': 'application/vnd.api+json',
-      },
+        'Content-Type': 'application/vnd.api+json'
+      }
     });
 
     let data = response.data.data;
@@ -324,7 +335,7 @@ export class Client {
       browser: data.attributes.browser,
       created: data.attributes.created,
       creditsLeft: meta?.credits_left,
-      creditsUsed: meta?.credits_used,
+      creditsUsed: meta?.credits_used
     };
   }
 
@@ -355,7 +366,7 @@ export class Client {
       items: pages,
       currentPage: response.data.meta?.curr_page || 1,
       nextPage: response.data.links?.next,
-      prevPage: response.data.links?.prev,
+      prevPage: response.data.links?.prev
     };
   }
 
@@ -371,8 +382,8 @@ export class Client {
   async retestPage(pageId: string): Promise<TestData> {
     let response = await this.axios.post(`/pages/${pageId}/retest`, undefined, {
       headers: {
-        'Content-Type': 'application/vnd.api+json',
-      },
+        'Content-Type': 'application/vnd.api+json'
+      }
     });
 
     let data = response.data.data;
@@ -386,7 +397,7 @@ export class Client {
       browser: data.attributes.browser,
       created: data.attributes.created,
       creditsLeft: meta?.credits_left,
-      creditsUsed: meta?.credits_used,
+      creditsUsed: meta?.credits_used
     };
   }
 
@@ -443,17 +454,20 @@ export class Client {
         lighthouse: links.lighthouse,
         pagespeed: links.pagespeed,
         yslow: links.yslow,
-        optimizedImages: links.optimized_images,
+        optimizedImages: links.optimized_images
       },
-      reportUrl: links.report_url,
+      reportUrl: links.report_url
     };
   }
 
-  async listPageReports(pageId: string, params?: {
-    pageSize?: number;
-    pageNumber?: number;
-    sort?: string;
-  }): Promise<PaginatedResult<ReportData>> {
+  async listPageReports(
+    pageId: string,
+    params?: {
+      pageSize?: number;
+      pageNumber?: number;
+      sort?: string;
+    }
+  ): Promise<PaginatedResult<ReportData>> {
     let queryParams: Record<string, string | number> = {};
 
     if (params?.pageSize) queryParams['page[size]'] = params.pageSize;
@@ -468,7 +482,7 @@ export class Client {
       items: reports,
       currentPage: response.data.meta?.curr_page || 1,
       nextPage: response.data.links?.next,
-      prevPage: response.data.links?.prev,
+      prevPage: response.data.links?.prev
     };
   }
 
@@ -482,7 +496,7 @@ export class Client {
       isDefault: item.attributes.default,
       accountHasAccess: item.attributes.account_has_access,
       browsers: item.attributes.browsers || [],
-      ips: item.attributes.ips || [],
+      ips: item.attributes.ips || []
     }));
   }
 
@@ -505,8 +519,8 @@ export class Client {
         throttle: item.attributes.throttle,
         userAgent: item.attributes.user_agent,
         video: item.attributes.video,
-        lighthouse: item.attributes.lighthouse,
-      },
+        lighthouse: item.attributes.lighthouse
+      }
     }));
   }
 
@@ -523,7 +537,7 @@ export class Client {
       accountType: attrs.account_type,
       proAnalysisOptionsAccess: attrs.account_pro_analysis_options_access,
       proLocationsAccess: attrs.account_pro_locations_access,
-      whitelabelPdfAccess: attrs.account_whitelabel_pdf_access,
+      whitelabelPdfAccess: attrs.account_whitelabel_pdf_access
     };
   }
 
@@ -537,7 +551,7 @@ export class Client {
       latestReportTime: item.attributes.latest_report_time,
       latestReportId: item.attributes.latest_report,
       reportCount: item.attributes.report_count,
-      monitored: item.attributes.monitored,
+      monitored: item.attributes.monitored
     };
   }
 
@@ -592,9 +606,9 @@ export class Client {
         lighthouse: links.lighthouse,
         pagespeed: links.pagespeed,
         yslow: links.yslow,
-        optimizedImages: links.optimized_images,
+        optimizedImages: links.optimized_images
       },
-      reportUrl: links.report_url,
+      reportUrl: links.report_url
     };
   }
 }

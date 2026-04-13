@@ -3,35 +3,36 @@ import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let enrichCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Enrich Company',
-    key: 'enrich_company',
-    description: `Search among 60 million companies and retrieve enriched company data by domain name. Returns business details including description, employee count, industry, location, and more.`,
-    tags: {
-      readOnly: true
-    }
+export let enrichCompany = SlateTool.create(spec, {
+  name: 'Enrich Company',
+  key: 'enrich_company',
+  description: `Search among 60 million companies and retrieve enriched company data by domain name. Returns business details including description, employee count, industry, location, and more.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().describe('Company domain name to look up (e.g., "gucci.com")')
-  }))
-  .output(z.object({
-    companyName: z.string().optional(),
-    domain: z.string().optional(),
-    description: z.string().optional(),
-    industry: z.string().optional(),
-    employeeCount: z.number().optional(),
-    staffRange: z.string().optional(),
-    founded: z.string().optional(),
-    headquarters: z.any().optional(),
-    website: z.string().optional(),
-    logoUrl: z.string().optional(),
-    specialities: z.array(z.string()).optional(),
-    raw: z.any().describe('Full raw response from the API')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z.string().describe('Company domain name to look up (e.g., "gucci.com")')
+    })
+  )
+  .output(
+    z.object({
+      companyName: z.string().optional(),
+      domain: z.string().optional(),
+      description: z.string().optional(),
+      industry: z.string().optional(),
+      employeeCount: z.number().optional(),
+      staffRange: z.string().optional(),
+      founded: z.string().optional(),
+      headquarters: z.any().optional(),
+      website: z.string().optional(),
+      logoUrl: z.string().optional(),
+      specialities: z.array(z.string()).optional(),
+      raw: z.any().describe('Full raw response from the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.getCompanyInfo({ query: ctx.input.domain });
 

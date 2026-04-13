@@ -8,25 +8,24 @@ let paymentMethodSchema = z.object({
   type: z.string().optional().describe('Payment method type (e.g., credit-card, marketplace)'),
   creditCardEndsWith: z.string().optional().describe('Last digits of credit card'),
   expirationMonth: z.number().optional().describe('Card expiration month'),
-  expirationYear: z.number().optional().describe('Card expiration year'),
+  expirationYear: z.number().optional().describe('Card expiration year')
 });
 
-export let listPaymentMethods = SlateTool.create(
-  spec,
-  {
-    name: 'List Payment Methods',
-    key: 'list_payment_methods',
-    description: `List all payment methods associated with the Redis Cloud account. Returns payment method IDs needed for creating or updating subscriptions.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPaymentMethods = SlateTool.create(spec, {
+  name: 'List Payment Methods',
+  key: 'list_payment_methods',
+  description: `List all payment methods associated with the Redis Cloud account. Returns payment method IDs needed for creating or updating subscriptions.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    paymentMethods: z.array(paymentMethodSchema).describe('List of payment methods'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      paymentMethods: z.array(paymentMethodSchema).describe('List of payment methods')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedisCloudClient(ctx.auth);
     let data = await client.listPaymentMethods();
     let rawMethods = data?.paymentMethods || data || [];
@@ -37,11 +36,12 @@ export let listPaymentMethods = SlateTool.create(
       type: m.type,
       creditCardEndsWith: m.creditCardEndsWith,
       expirationMonth: m.expirationMonth,
-      expirationYear: m.expirationYear,
+      expirationYear: m.expirationYear
     }));
 
     return {
       output: { paymentMethods },
-      message: `Found **${paymentMethods.length}** payment method(s).`,
+      message: `Found **${paymentMethods.length}** payment method(s).`
     };
-  }).build();
+  })
+  .build();

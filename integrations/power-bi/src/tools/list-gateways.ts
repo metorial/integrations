@@ -19,52 +19,60 @@ let gatewaySchema = z.object({
   datasources: z.array(datasourceSchema).optional().describe('Data sources on this gateway')
 });
 
-export let listGateways = SlateTool.create(
-  spec,
-  {
-    name: 'List Gateways',
-    key: 'list_gateways',
-    description: `List on-premises data gateways and optionally include their data sources. View gateway configurations and connected data sources.`,
-    tags: {
-      readOnly: true
-    }
+export let listGateways = SlateTool.create(spec, {
+  name: 'List Gateways',
+  key: 'list_gateways',
+  description: `List on-premises data gateways and optionally include their data sources. View gateway configurations and connected data sources.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeDatasources: z.boolean().optional().describe('Include data sources for each gateway')
-  }))
-  .output(z.object({
-    gateways: z.array(gatewaySchema).describe('List of gateways')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeDatasources: z
+        .boolean()
+        .optional()
+        .describe('Include data sources for each gateway')
+    })
+  )
+  .output(
+    z.object({
+      gateways: z.array(gatewaySchema).describe('List of gateways')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let gateways = await client.listGateways();
 
-    let mapped = await Promise.all(gateways.map(async (g: any) => {
-      let gateway: any = {
-        gatewayId: g.id,
-        name: g.name,
-        type: g.type,
-        publicKey: g.publicKey
-      };
+    let mapped = await Promise.all(
+      gateways.map(async (g: any) => {
+        let gateway: any = {
+          gatewayId: g.id,
+          name: g.name,
+          type: g.type,
+          publicKey: g.publicKey
+        };
 
-      if (ctx.input.includeDatasources) {
-        try {
-          let sources = await client.getGatewayDatasources(g.id);
-          gateway.datasources = sources.map((s: any) => ({
-            datasourceId: s.id,
-            datasourceType: s.datasourceType,
-            datasourceName: s.datasourceName,
-            connectionDetails: s.connectionDetails ? JSON.stringify(s.connectionDetails) : undefined,
-            gatewayId: s.gatewayId
-          }));
-        } catch {
-          gateway.datasources = [];
+        if (ctx.input.includeDatasources) {
+          try {
+            let sources = await client.getGatewayDatasources(g.id);
+            gateway.datasources = sources.map((s: any) => ({
+              datasourceId: s.id,
+              datasourceType: s.datasourceType,
+              datasourceName: s.datasourceName,
+              connectionDetails: s.connectionDetails
+                ? JSON.stringify(s.connectionDetails)
+                : undefined,
+              gatewayId: s.gatewayId
+            }));
+          } catch {
+            gateway.datasources = [];
+          }
         }
-      }
 
-      return gateway;
-    }));
+        return gateway;
+      })
+    );
 
     return {
       output: { gateways: mapped },

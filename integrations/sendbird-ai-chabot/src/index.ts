@@ -9,12 +9,9 @@ import {
   sendBotMessage,
   generateAiReply,
   manageBotChannels,
-  manageTypingIndicator,
+  manageTypingIndicator
 } from './tools';
-import {
-  messageEvents,
-  channelEvents,
-} from './triggers';
+import { messageEvents, channelEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -27,10 +24,7 @@ export let provider = Slate.create({
     sendBotMessage,
     generateAiReply,
     manageBotChannels,
-    manageTypingIndicator,
+    manageTypingIndicator
   ],
-  triggers: [
-    messageEvents,
-    channelEvents,
-  ],
+  triggers: [messageEvents, channelEvents]
 });

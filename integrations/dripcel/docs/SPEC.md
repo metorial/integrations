@@ -25,42 +25,55 @@ The base URL for all API requests is `https://api.dripcel.com`.
 ## Features
 
 ### Contact Management
+
 Manage your contact database programmatically. You can look up individual contacts by cell number, search contacts using filters (cell numbers, tags, date ranges), upload new contacts (up to 100,000 per request for create-only, or 20,000 for upsert), bulk update contacts by adding/removing tags or deduplication IDs, delete contacts, and manage opt-outs from specific or all campaigns. Contacts support custom fields (e.g., `c1`, `c2`) and can be tagged for segmentation. You can optionally trigger an SMS send immediately upon uploading contacts.
 
 ### SMS Sending
+
 Send individual SMS messages to contacts. Each send requires content, a cell number, country code, and a delivery method (`reverse`, `standard`, or `transactional`). Messages can include template variables for personalized content when sending to existing contacts. A test mode is available via send options. Each send returns a unique `customerId` for tracking delivery status.
 
 ### Bulk Email Sending
+
 Send bulk emails to multiple recipients using pre-defined email templates. You specify a sender address, a template ID, and a list of destination email addresses. Emails can be scheduled for future delivery. Non-contact addresses can optionally be filtered out, which is required when using templates with custom fields.
 
 ### Email Templates
+
 List all email templates stored in your Dripcel account. Templates are referenced by ID when sending bulk emails.
 
 ### Campaign Management
+
 View all campaigns or retrieve details of a specific campaign. Campaigns are central to organizing sends, tracking performance, and associating contacts.
 
 ### Delivery Tracking
+
 Query delivery statuses for sent messages. Deliveries can be looked up by contact cell number or by the unique `customerId` returned from a send operation. At least one of these parameters must be provided.
 
 ### Send Logs
+
 View metadata about past sends, including the campaign, template used, trigger type, delivery start time, and destination count. Send logs can be searched by campaign ID and delivery date range.
 
 ### Replies
+
 Search and view replies received from contacts. Replies are classified by kind: `optIn`, `optOut`, or `unknown`. You can search replies by campaign, contact number, reply content, date range, and classification type.
 
 ### Sales Tracking
+
 Upload sale conversions to Dripcel, either in bulk via POST or as individual postbacks via GET. Each sale is associated with a campaign and a contact cell number. Sales can include a value and a date; duplicates (same cell, campaign, and date) are rejected. Sales data feeds into Dripcel's financial reporting and dashboard.
 
 ### Tags
+
 View, retrieve, and delete tags used for contact segmentation. Tags can be assigned to contacts and campaigns. Deleting a tag removes it from all associated contacts and campaigns.
 
 ### Compliance Checking
+
 Verify whether a list of cell numbers is compliant with a campaign's targeting criteria before sending. This is a paid endpoint that checks contacts against campaign rules and global opt-outs, returning a per-number `can_send` status.
 
 ### Exchange Transactions
+
 Manage transactions on the Dripcel campaign exchange as a buyer. You can accept or reject pending transactions and search transactions by ID, status (`pending`, `completed`, `rejected`), offer ID, or creation date.
 
 ### Credit Balance
+
 Check your organisation's current credit balance.
 
 ## Events

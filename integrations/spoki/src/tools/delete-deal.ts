@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Deal',
-    key: 'delete_deal',
-    description: `Deletes a deal from Spoki. Permanently removes the sales opportunity from the pipeline.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteDeal = SlateTool.create(spec, {
+  name: 'Delete Deal',
+  key: 'delete_deal',
+  description: `Deletes a deal from Spoki. Permanently removes the sales opportunity from the pipeline.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    dealId: z.string().describe('ID of the deal to delete'),
-  }))
-  .output(z.object({
-    dealId: z.string().describe('ID of the deleted deal'),
-    success: z.boolean().describe('Whether the deletion succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.string().describe('ID of the deal to delete')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.string().describe('ID of the deleted deal'),
+      success: z.boolean().describe('Whether the deletion succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     ctx.info(`Deleting deal ${ctx.input.dealId}`);
@@ -31,9 +32,9 @@ export let deleteDeal = SlateTool.create(
     return {
       output: {
         dealId: ctx.input.dealId,
-        success: true,
+        success: true
       },
-      message: `Deleted deal **${ctx.input.dealId}**`,
+      message: `Deleted deal **${ctx.input.dealId}**`
     };
   })
   .build();

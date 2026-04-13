@@ -18,8 +18,8 @@ export class SanityClient {
     return createAxios({
       baseURL: `https://${this.config.projectId}.api.sanity.io/v${this.config.apiVersion}`,
       headers: {
-        Authorization: `Bearer ${this.config.token}`,
-      },
+        Authorization: `Bearer ${this.config.token}`
+      }
     });
   }
 
@@ -27,30 +27,38 @@ export class SanityClient {
     return createAxios({
       baseURL: `https://api.sanity.io/v${this.config.apiVersion}`,
       headers: {
-        Authorization: `Bearer ${this.config.token}`,
-      },
+        Authorization: `Bearer ${this.config.token}`
+      }
     });
   }
 
   // ── GROQ Query ──
 
-  async query(groqQuery: string, params?: Record<string, any>, options?: {
-    perspective?: string;
-    useCdn?: boolean;
-  }) {
+  async query(
+    groqQuery: string,
+    params?: Record<string, any>,
+    options?: {
+      perspective?: string;
+      useCdn?: boolean;
+    }
+  ) {
     let ax = options?.useCdn
       ? createAxios({
           baseURL: `https://${this.config.projectId}.apicdn.sanity.io/v${this.config.apiVersion}`,
-          headers: { Authorization: `Bearer ${this.config.token}` },
+          headers: { Authorization: `Bearer ${this.config.token}` }
         })
       : this.dataAxios;
 
-    let response = await ax.post(`/data/query/${this.config.dataset}`, {
-      query: groqQuery,
-      params: params || {},
-    }, {
-      params: options?.perspective ? { perspective: options.perspective } : undefined,
-    });
+    let response = await ax.post(
+      `/data/query/${this.config.dataset}`,
+      {
+        query: groqQuery,
+        params: params || {}
+      },
+      {
+        params: options?.perspective ? { perspective: options.perspective } : undefined
+      }
+    );
 
     return response.data;
   }
@@ -68,14 +76,17 @@ export class SanityClient {
     return response.data;
   }
 
-  async mutate(mutations: any[], options?: {
-    returnIds?: boolean;
-    returnDocuments?: boolean;
-    visibility?: 'sync' | 'async' | 'deferred';
-    dryRun?: boolean;
-    autoGenerateArrayKeys?: boolean;
-    transactionId?: string;
-  }) {
+  async mutate(
+    mutations: any[],
+    options?: {
+      returnIds?: boolean;
+      returnDocuments?: boolean;
+      visibility?: 'sync' | 'async' | 'deferred';
+      dryRun?: boolean;
+      autoGenerateArrayKeys?: boolean;
+      transactionId?: string;
+    }
+  ) {
     let response = await this.dataAxios.post(
       `/data/mutate/${this.config.dataset}`,
       { mutations },
@@ -86,22 +97,25 @@ export class SanityClient {
           visibility: options?.visibility,
           dryRun: options?.dryRun,
           autoGenerateArrayKeys: options?.autoGenerateArrayKeys,
-          transactionId: options?.transactionId,
-        },
-      },
+          transactionId: options?.transactionId
+        }
+      }
     );
     return response.data;
   }
 
   // ── Document History ──
 
-  async getDocumentRevision(documentId: string, options: {
-    revision?: string;
-    time?: string;
-  }) {
+  async getDocumentRevision(
+    documentId: string,
+    options: {
+      revision?: string;
+      time?: string;
+    }
+  ) {
     let response = await this.dataAxios.get(
       `/data/history/${this.config.dataset}/documents/${documentId}`,
-      { params: options },
+      { params: options }
     );
     return response.data;
   }
@@ -115,9 +129,9 @@ export class SanityClient {
       {
         params: filename ? { filename } : undefined,
         headers: {
-          'Content-Type': contentType || 'application/octet-stream',
-        },
-      },
+          'Content-Type': contentType || 'application/octet-stream'
+        }
+      }
     );
     return response.data;
   }
@@ -129,9 +143,9 @@ export class SanityClient {
       {
         params: filename ? { filename } : undefined,
         headers: {
-          'Content-Type': contentType || 'application/octet-stream',
-        },
-      },
+          'Content-Type': contentType || 'application/octet-stream'
+        }
+      }
     );
     return response.data;
   }
@@ -160,14 +174,14 @@ export class SanityClient {
   async createDataset(name: string, aclMode?: 'public' | 'private' | 'custom') {
     let response = await this.managementAxios.put(
       `/projects/${this.config.projectId}/datasets/${name}`,
-      aclMode ? { aclMode } : undefined,
+      aclMode ? { aclMode } : undefined
     );
     return response.data;
   }
 
   async deleteDataset(name: string) {
     let response = await this.managementAxios.delete(
-      `/projects/${this.config.projectId}/datasets/${name}`,
+      `/projects/${this.config.projectId}/datasets/${name}`
     );
     return response.data;
   }
@@ -175,9 +189,7 @@ export class SanityClient {
   // ── Webhooks ──
 
   async listWebhooks() {
-    let response = await this.dataAxios.get(
-      `/hooks/projects/${this.config.projectId}`,
-    );
+    let response = await this.dataAxios.get(`/hooks/projects/${this.config.projectId}`);
     return response.data;
   }
 
@@ -199,26 +211,23 @@ export class SanityClient {
     secret?: string;
     isDisabledByUser?: boolean;
   }) {
-    let response = await this.dataAxios.post(
-      `/hooks/projects/${this.config.projectId}`,
-      {
-        type: webhook.type || 'document',
-        ...webhook,
-      },
-    );
+    let response = await this.dataAxios.post(`/hooks/projects/${this.config.projectId}`, {
+      type: webhook.type || 'document',
+      ...webhook
+    });
     return response.data;
   }
 
   async deleteWebhook(webhookId: string) {
     let response = await this.dataAxios.delete(
-      `/hooks/projects/${this.config.projectId}/${webhookId}`,
+      `/hooks/projects/${this.config.projectId}/${webhookId}`
     );
     return response.data;
   }
 
   async getWebhook(webhookId: string) {
     let response = await this.dataAxios.get(
-      `/hooks/projects/${this.config.projectId}/${webhookId}`,
+      `/hooks/projects/${this.config.projectId}/${webhookId}`
     );
     return response.data;
   }

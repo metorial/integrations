@@ -56,13 +56,23 @@ export class MonitoringClient {
     return response.data;
   }
 
-  async getWorkerHashrate(workerName: string, params?: { tz?: string }): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/stats/${this.accessKey}/${workerName}/hashrate`, { params });
+  async getWorkerHashrate(
+    workerName: string,
+    params?: { tz?: string }
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.get(`/stats/${this.accessKey}/${workerName}/hashrate`, {
+      params
+    });
     return response.data;
   }
 
-  async getWorkerStatistics(workerName: string, params?: { tz?: string }): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/stats/${this.accessKey}/${workerName}/statistics`, { params });
+  async getWorkerStatistics(
+    workerName: string,
+    params?: { tz?: string }
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.get(`/stats/${this.accessKey}/${workerName}/statistics`, {
+      params
+    });
     return response.data;
   }
 
@@ -71,8 +81,13 @@ export class MonitoringClient {
     return response.data;
   }
 
-  async getGroupStatistics(groupName: string, params?: { tz?: string }): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/stats/${this.accessKey}/group/${groupName}`, { params });
+  async getGroupStatistics(
+    groupName: string,
+    params?: { tz?: string }
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.get(`/stats/${this.accessKey}/group/${groupName}`, {
+      params
+    });
     return response.data;
   }
 
@@ -99,7 +114,7 @@ export class ManagementClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -174,17 +189,29 @@ export class ManagementClient {
   }
 
   // ClockTune endpoints
-  async getClockTuneProfiles(params?: { user?: number; id?: number; name?: string }): Promise<any> {
+  async getClockTuneProfiles(params?: {
+    user?: number;
+    id?: number;
+    name?: string;
+  }): Promise<any> {
     let response = await this.axios.get('/clocktune', { params });
     return response.data;
   }
 
-  async createClockTuneProfile(data: { name: string; values: string; user?: number }): Promise<any> {
+  async createClockTuneProfile(data: {
+    name: string;
+    values: string;
+    user?: number;
+  }): Promise<any> {
     let response = await this.axios.post('/clocktune', data);
     return response.data;
   }
 
-  async updateClockTuneProfile(data: { id: number; values: string; name?: string }): Promise<any> {
+  async updateClockTuneProfile(data: {
+    id: number;
+    values: string;
+    name?: string;
+  }): Promise<any> {
     let response = await this.axios.patch('/clocktune', data);
     return response.data;
   }

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let restApi = createAxios({
-  baseURL: 'https://api.enigma.com',
+  baseURL: 'https://api.enigma.com'
 });
 
 export interface MatchBusinessInput {
@@ -96,7 +96,7 @@ export class Client {
   private headers() {
     return {
       'x-api-key': this.token,
-      'content-type': 'application/json',
+      'content-type': 'application/json'
     };
   }
 
@@ -111,26 +111,27 @@ export class Client {
         ...(input.address.streetAddress2 && { street_address2: input.address.streetAddress2 }),
         ...(input.address.city && { city: input.address.city }),
         ...(input.address.state && { state: input.address.state }),
-        ...(input.address.postalCode && { postal_code: input.address.postalCode }),
+        ...(input.address.postalCode && { postal_code: input.address.postalCode })
       };
     }
     if (input.person) {
       body.person = {
         ...(input.person.firstName && { first_name: input.person.firstName }),
-        ...(input.person.lastName && { last_name: input.person.lastName }),
+        ...(input.person.lastName && { last_name: input.person.lastName })
       };
     }
 
     let params: Record<string, string> = {};
     if (options.entityType) params.business_entity_type = options.entityType;
-    if (options.matchThreshold !== undefined) params.match_threshold = String(options.matchThreshold);
+    if (options.matchThreshold !== undefined)
+      params.match_threshold = String(options.matchThreshold);
     if (options.topN !== undefined) params.top_n = String(options.topN);
     if (options.showNonMatches) params.show_non_matches = '1';
     if (options.prioritization) params.prioritization = options.prioritization;
 
     let response = await restApi.post('/businesses/match', body, {
       headers: this.headers(),
-      params,
+      params
     });
 
     return response.data;
@@ -147,7 +148,7 @@ export class Client {
 
     let response = await restApi.get(`/businesses/${enigmaId}`, {
       headers: this.headers(),
-      params,
+      params
     });
 
     return response.data;
@@ -165,33 +166,34 @@ export class Client {
         ...(input.address.streetAddress2 && { street_address2: input.address.streetAddress2 }),
         ...(input.address.city && { city: input.address.city }),
         ...(input.address.state && { state: input.address.state }),
-        ...(input.address.postalCode && { postal_code: input.address.postalCode }),
+        ...(input.address.postalCode && { postal_code: input.address.postalCode })
       };
     }
     if (input.person) {
       body.person = {
         ...(input.person.firstName && { first_name: input.person.firstName }),
         ...(input.person.lastName && { last_name: input.person.lastName }),
-        ...(input.person.ssn && { ssn: input.person.ssn }),
+        ...(input.person.ssn && { ssn: input.person.ssn })
       };
     }
     if (input.personsToScreen && input.personsToScreen.length > 0) {
-      body.persons_to_screen = input.personsToScreen.map((p) => ({
+      body.persons_to_screen = input.personsToScreen.map(p => ({
         ...(p.firstName && { first_name: p.firstName }),
         ...(p.lastName && { last_name: p.lastName }),
-        ...(p.dob && { dob: p.dob }),
+        ...(p.dob && { dob: p.dob })
       }));
     }
 
     let params: Record<string, string> = {};
     if (options.package) params.package = options.package;
     if (options.attrs && options.attrs.length > 0) params.attrs = options.attrs.join(',');
-    if (options.matchThreshold !== undefined) params.match_threshold = String(options.matchThreshold);
+    if (options.matchThreshold !== undefined)
+      params.match_threshold = String(options.matchThreshold);
     if (options.topN !== undefined) params.top_n = String(options.topN);
 
     let response = await restApi.post('/v1/kyb/', body, {
       headers: this.headers(),
-      params,
+      params
     });
 
     return response.data;
@@ -199,7 +201,7 @@ export class Client {
 
   async verifyBusinessAdvanced(input: KybAdvancedInput, options: KybOptions = {}) {
     let body: Record<string, unknown> = {
-      data: {} as Record<string, unknown>,
+      data: {} as Record<string, unknown>
     };
 
     let data = body.data as Record<string, unknown>;
@@ -208,38 +210,41 @@ export class Client {
     if (input.websites && input.websites.length > 0) data.websites = input.websites;
     if (input.tins && input.tins.length > 0) data.tins = input.tins;
     if (input.addresses && input.addresses.length > 0) {
-      data.addresses = input.addresses.map((a) => ({
+      data.addresses = input.addresses.map(a => ({
         ...(a.streetAddress1 && { street_address1: a.streetAddress1 }),
         ...(a.streetAddress2 && { street_address2: a.streetAddress2 }),
         ...(a.city && { city: a.city }),
         ...(a.state && { state: a.state }),
-        ...(a.postalCode && { postal_code: a.postalCode }),
+        ...(a.postalCode && { postal_code: a.postalCode })
       }));
     }
     if (input.person) {
-      data.persons = [{
-        ...(input.person.firstName && { first_name: input.person.firstName }),
-        ...(input.person.lastName && { last_name: input.person.lastName }),
-        ...(input.person.ssn && { ssn: input.person.ssn }),
-      }];
+      data.persons = [
+        {
+          ...(input.person.firstName && { first_name: input.person.firstName }),
+          ...(input.person.lastName && { last_name: input.person.lastName }),
+          ...(input.person.ssn && { ssn: input.person.ssn })
+        }
+      ];
     }
     if (input.personsToScreen && input.personsToScreen.length > 0) {
-      data.persons_to_screen = input.personsToScreen.map((p) => ({
+      data.persons_to_screen = input.personsToScreen.map(p => ({
         ...(p.firstName && { first_name: p.firstName }),
         ...(p.lastName && { last_name: p.lastName }),
-        ...(p.dob && { dob: p.dob }),
+        ...(p.dob && { dob: p.dob })
       }));
     }
 
     let params: Record<string, string> = {};
     if (options.package) params.package = options.package;
     if (options.attrs && options.attrs.length > 0) params.attrs = options.attrs.join(',');
-    if (options.matchThreshold !== undefined) params.match_threshold = String(options.matchThreshold);
+    if (options.matchThreshold !== undefined)
+      params.match_threshold = String(options.matchThreshold);
     if (options.topN !== undefined) params.top_n = String(options.topN);
 
     let response = await restApi.post('/v1/kyb/', body, {
       headers: this.headers(),
-      params,
+      params
     });
 
     return response.data;
@@ -250,7 +255,7 @@ export class Client {
     if (variables) body.variables = variables;
 
     let response = await restApi.post('/graphql', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;

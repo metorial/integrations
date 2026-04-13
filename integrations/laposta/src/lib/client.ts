@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.laposta.org/v2',
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
@@ -56,7 +56,7 @@ export class Client {
 
   async getMember(memberId: string, listId: string) {
     let response = await this.axios.get(`/member/${memberId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as MemberResponse;
   }
@@ -67,7 +67,7 @@ export class Client {
       email: params.email,
       ip: params.ip,
       source_url: params.sourceUrl,
-      options: params.options,
+      options: params.options
     });
     if (params.customFields) {
       for (let [key, value] of Object.entries(params.customFields)) {
@@ -82,7 +82,7 @@ export class Client {
     let formData = this.encodeParams({
       list_id: params.listId,
       email: params.email,
-      state: params.state,
+      state: params.state
     });
     if (params.customFields) {
       for (let [key, value] of Object.entries(params.customFields)) {
@@ -95,14 +95,14 @@ export class Client {
 
   async deleteMember(memberId: string, listId: string) {
     let response = await this.axios.delete(`/member/${memberId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as MemberResponse;
   }
 
   async bulkSyncMembers(listId: string, params: BulkSyncParams) {
     let response = await this.axios.post(`/list/${listId}/members`, params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data.data as BulkSyncResponse;
   }
@@ -111,14 +111,14 @@ export class Client {
 
   async getFields(listId: string) {
     let response = await this.axios.get('/field', {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as FieldResponse[];
   }
 
   async getField(fieldId: string, listId: string) {
     let response = await this.axios.get(`/field/${fieldId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as FieldResponse;
   }
@@ -132,7 +132,7 @@ export class Client {
       datatype_display: params.datatypeDisplay,
       required: params.required,
       in_form: params.inForm,
-      in_list: params.inList,
+      in_list: params.inList
     });
     if (params.options) {
       for (let i = 0; i < params.options.length; i++) {
@@ -152,7 +152,7 @@ export class Client {
       defaultvalue: params.defaultvalue,
       required: params.required,
       in_form: params.inForm,
-      in_list: params.inList,
+      in_list: params.inList
     });
     if (params.optionsFull) {
       for (let [key, value] of Object.entries(params.optionsFull)) {
@@ -165,7 +165,7 @@ export class Client {
 
   async deleteField(fieldId: string, listId: string) {
     let response = await this.axios.delete(`/field/${fieldId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as FieldResponse;
   }
@@ -174,39 +174,45 @@ export class Client {
 
   async getSegments(listId: string) {
     let response = await this.axios.get('/segment', {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as SegmentResponse[];
   }
 
   async getSegment(segmentId: string, listId: string) {
     let response = await this.axios.get(`/segment/${segmentId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as SegmentResponse;
   }
 
   async createSegment(params: CreateSegmentParams) {
-    let response = await this.axios.post('/segment', this.encodeParams({
-      list_id: params.listId,
-      name: params.name,
-      definition: params.definition,
-    }));
+    let response = await this.axios.post(
+      '/segment',
+      this.encodeParams({
+        list_id: params.listId,
+        name: params.name,
+        definition: params.definition
+      })
+    );
     return response.data.data as SegmentResponse;
   }
 
   async updateSegment(segmentId: string, params: UpdateSegmentParams) {
-    let response = await this.axios.post(`/segment/${segmentId}`, this.encodeParams({
-      list_id: params.listId,
-      name: params.name,
-      definition: params.definition,
-    }));
+    let response = await this.axios.post(
+      `/segment/${segmentId}`,
+      this.encodeParams({
+        list_id: params.listId,
+        name: params.name,
+        definition: params.definition
+      })
+    );
     return response.data.data as SegmentResponse;
   }
 
   async deleteSegment(segmentId: string, listId: string) {
     let response = await this.axios.delete(`/segment/${segmentId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as SegmentResponse;
   }
@@ -230,7 +236,7 @@ export class Client {
       subject: params.subject,
       'from[name]': params.fromName,
       'from[email]': params.fromEmail,
-      reply_to: params.replyTo,
+      reply_to: params.replyTo
     });
     if (params.listIds) {
       for (let i = 0; i < params.listIds.length; i++) {
@@ -253,7 +259,7 @@ export class Client {
       subject: params.subject,
       'from[name]': params.fromName,
       'from[email]': params.fromEmail,
-      reply_to: params.replyTo,
+      reply_to: params.replyTo
     });
     if (params.listIds) {
       for (let i = 0; i < params.listIds.length; i++) {
@@ -286,8 +292,8 @@ export class Client {
       this.encodeParams({
         html: params.html,
         import_url: params.importUrl,
-        inline_css: params.inlineCss,
-      }),
+        inline_css: params.inlineCss
+      })
     );
     return response.data.data as CampaignContentResponse;
   }
@@ -300,7 +306,7 @@ export class Client {
   async scheduleCampaign(campaignId: string, deliveryRequested: string) {
     let response = await this.axios.post(
       `/campaign/${campaignId}/action/schedule`,
-      this.encodeParams({ delivery_requested: deliveryRequested }),
+      this.encodeParams({ delivery_requested: deliveryRequested })
     );
     return response.data.data as CampaignResponse;
   }
@@ -308,7 +314,7 @@ export class Client {
   async sendTestEmail(campaignId: string, email: string) {
     let response = await this.axios.post(
       `/campaign/${campaignId}/action/testmail`,
-      this.encodeParams({ email }),
+      this.encodeParams({ email })
     );
     return response.data.data as CampaignResponse;
   }
@@ -329,41 +335,47 @@ export class Client {
 
   async getWebhooks(listId: string) {
     let response = await this.axios.get('/webhook', {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as WebhookResponse[];
   }
 
   async getWebhook(webhookId: string, listId: string) {
     let response = await this.axios.get(`/webhook/${webhookId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as WebhookResponse;
   }
 
   async createWebhook(params: CreateWebhookParams) {
-    let response = await this.axios.post('/webhook', this.encodeParams({
-      list_id: params.listId,
-      event: params.event,
-      url: params.url,
-      blocked: params.blocked,
-    }));
+    let response = await this.axios.post(
+      '/webhook',
+      this.encodeParams({
+        list_id: params.listId,
+        event: params.event,
+        url: params.url,
+        blocked: params.blocked
+      })
+    );
     return response.data.data as WebhookResponse;
   }
 
   async updateWebhook(webhookId: string, params: UpdateWebhookParams) {
-    let response = await this.axios.post(`/webhook/${webhookId}`, this.encodeParams({
-      list_id: params.listId,
-      event: params.event,
-      url: params.url,
-      blocked: params.blocked,
-    }));
+    let response = await this.axios.post(
+      `/webhook/${webhookId}`,
+      this.encodeParams({
+        list_id: params.listId,
+        event: params.event,
+        url: params.url,
+        blocked: params.blocked
+      })
+    );
     return response.data.data as WebhookResponse;
   }
 
   async deleteWebhook(webhookId: string, listId: string) {
     let response = await this.axios.delete(`/webhook/${webhookId}`, {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data.data as WebhookResponse;
   }

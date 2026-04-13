@@ -21,6 +21,7 @@ The base API URL is `https://api.craftmypdf.com/v1/`. Regional API endpoints are
 ### PDF Generation
 
 Generate PDF documents by combining a pre-defined template with JSON data. PDFs are generated from templates and JSON data. Key options include:
+
 - Specifying a template ID and providing JSON data to populate it.
 - Choosing export type: `json` (returns a URL to the generated PDF on a CDN) or `file` (returns binary data directly).
 - Setting an expiration time for generated PDFs (1 minute to 24 hours).
@@ -50,6 +51,7 @@ Add a text watermark to an existing PDF. Configurable options include font size,
 ### Template Management
 
 Manage PDF templates programmatically:
+
 - **List templates**: Retrieve all available PDF templates.
 - **Create template**: Create a new template by cloning an existing one.
 - **Update template**: Update a template's name or sample JSON data.
@@ -59,6 +61,7 @@ Manage PDF templates programmatically:
 ### Editor Sessions (White-label Embedding)
 
 Create an iframe page using the REST API to create an editor session—a unique URL for embedding the PDF template editor in an iframe. Configurable options include:
+
 - Permissions: save, generate PDF, view settings, preview, edit JSON.
 - Session expiration (default 24 hours).
 - JSON editor mode (editor vs. viewer).
@@ -80,6 +83,7 @@ CraftMyPDF supports asynchronous PDF generation with webhooks. When using asynch
 ### Asynchronous PDF Generation Completion
 
 When a PDF is generated asynchronously, CraftMyPDF sends a callback to a user-specified webhook URL upon completion.
+
 - The webhook receives the transaction reference, file URL, and status.
 - The webhook URL is provided as a parameter when initiating the asynchronous PDF generation request.
 - Additional data can be appended to the webhook URL as query string parameters (e.g., email address for downstream processing).

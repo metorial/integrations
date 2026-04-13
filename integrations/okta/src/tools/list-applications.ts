@@ -8,44 +8,50 @@ let appSchema = z.object({
   name: z.string().describe('Application technical name'),
   label: z.string().describe('Application display label'),
   status: z.string().describe('Application status (ACTIVE, INACTIVE)'),
-  signOnMode: z.string().describe('Sign-on mode (SAML_2_0, OPENID_CONNECT, BROWSER_PLUGIN, etc.)'),
+  signOnMode: z
+    .string()
+    .describe('Sign-on mode (SAML_2_0, OPENID_CONNECT, BROWSER_PLUGIN, etc.)'),
   created: z.string(),
-  lastUpdated: z.string(),
+  lastUpdated: z.string()
 });
 
-export let listApplicationsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Applications',
-    key: 'list_applications',
-    description: `Search and list applications registered in your Okta organization. Supports keyword search and filter expressions.`,
-    tags: {
-      readOnly: true,
-    },
+export let listApplicationsTool = SlateTool.create(spec, {
+  name: 'List Applications',
+  key: 'list_applications',
+  description: `Search and list applications registered in your Okta organization. Supports keyword search and filter expressions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search apps by label (starts-with matching)'),
-    filter: z.string().optional().describe('Okta filter expression, e.g. status eq "ACTIVE"'),
-    limit: z.number().optional().describe('Maximum number of apps to return'),
-    after: z.string().optional().describe('Pagination cursor'),
-  }))
-  .output(z.object({
-    applications: z.array(appSchema),
-    nextCursor: z.string().optional(),
-    hasMore: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search apps by label (starts-with matching)'),
+      filter: z
+        .string()
+        .optional()
+        .describe('Okta filter expression, e.g. status eq "ACTIVE"'),
+      limit: z.number().optional().describe('Maximum number of apps to return'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      applications: z.array(appSchema),
+      nextCursor: z.string().optional(),
+      hasMore: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OktaClient({
       domain: ctx.config.domain,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let result = await client.listApplications({
       query: ctx.input.query,
       filter: ctx.input.filter,
       limit: ctx.input.limit,
-      after: ctx.input.after,
+      after: ctx.input.after
     });
 
     let applications = result.items.map(app => ({
@@ -55,7 +61,7 @@ export let listApplicationsTool = SlateTool.create(
       status: app.status,
       signOnMode: app.signOnMode,
       created: app.created,
-      lastUpdated: app.lastUpdated,
+      lastUpdated: app.lastUpdated
     }));
 
     let nextCursor: string | undefined;
@@ -68,8 +74,9 @@ export let listApplicationsTool = SlateTool.create(
       output: {
         applications,
         nextCursor,
-        hasMore: !!result.nextUrl,
+        hasMore: !!result.nextUrl
       },
-      message: `Found **${applications.length}** application(s)${result.nextUrl ? ' (more available)' : ''}.`,
+      message: `Found **${applications.length}** application(s)${result.nextUrl ? ' (more available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

@@ -10,40 +10,44 @@ let agreementEntrySchema = z.object({
   quantity: z.number().describe('Quantity'),
   unit: z.string().optional().describe('Unit of measure'),
   unitNetPrice: z.number().describe('Net price per unit'),
-  vatPercent: z.number().optional().describe('VAT percentage'),
+  vatPercent: z.number().optional().describe('VAT percentage')
 });
 
-export let createAgreement = SlateTool.create(
-  spec,
-  {
-    name: 'Create Agreement',
-    key: 'create_agreement',
-    description: `Create a new agreement (contract) document in Firmao. Agreements support line items, customer linkage, pricing, and status tracking.`,
-  }
-)
-  .input(z.object({
-    number: z.string().describe('Unique agreement number'),
-    mode: z.enum(['SALE', 'PURCHASE']).describe('Sale or purchase mode'),
-    customerId: z.number().optional().describe('Customer ID'),
-    currency: z.string().optional().describe('Currency code'),
-    offerStatus: z.enum(['NEW', 'SENT', 'DURING_NEGOTIATIONS', 'ACCEPTED', 'REJECTED', 'EXECUTED']).optional().describe('Agreement status'),
-    entries: z.array(agreementEntrySchema).optional().describe('Line items'),
-    paymentType: z.string().optional().describe('Payment type (CASH, TRANSFER)'),
-    nipNumber: z.string().optional().describe('Customer NIP number'),
-  }))
-  .output(z.object({
-    agreementId: z.number().describe('ID of the created agreement'),
-    number: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createAgreement = SlateTool.create(spec, {
+  name: 'Create Agreement',
+  key: 'create_agreement',
+  description: `Create a new agreement (contract) document in Firmao. Agreements support line items, customer linkage, pricing, and status tracking.`
+})
+  .input(
+    z.object({
+      number: z.string().describe('Unique agreement number'),
+      mode: z.enum(['SALE', 'PURCHASE']).describe('Sale or purchase mode'),
+      customerId: z.number().optional().describe('Customer ID'),
+      currency: z.string().optional().describe('Currency code'),
+      offerStatus: z
+        .enum(['NEW', 'SENT', 'DURING_NEGOTIATIONS', 'ACCEPTED', 'REJECTED', 'EXECUTED'])
+        .optional()
+        .describe('Agreement status'),
+      entries: z.array(agreementEntrySchema).optional().describe('Line items'),
+      paymentType: z.string().optional().describe('Payment type (CASH, TRANSFER)'),
+      nipNumber: z.string().optional().describe('Customer NIP number')
+    })
+  )
+  .output(
+    z.object({
+      agreementId: z.number().describe('ID of the created agreement'),
+      number: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FirmaoClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let body: Record<string, any> = {
       number: ctx.input.number,
-      mode: ctx.input.mode,
+      mode: ctx.input.mode
     };
 
     if (ctx.input.customerId !== undefined) body.customer = ctx.input.customerId;
@@ -59,7 +63,7 @@ export let createAgreement = SlateTool.create(
         quantity: e.quantity,
         unit: e.unit,
         unitNettoPrice: e.unitNetPrice,
-        vatPercent: e.vatPercent,
+        vatPercent: e.vatPercent
       }));
     }
 
@@ -69,9 +73,9 @@ export let createAgreement = SlateTool.create(
     return {
       output: {
         agreementId: createdId,
-        number: ctx.input.number,
+        number: ctx.input.number
       },
-      message: `Created agreement **${ctx.input.number}** (ID: ${createdId}).`,
+      message: `Created agreement **${ctx.input.number}** (ID: ${createdId}).`
     };
   })
   .build();

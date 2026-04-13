@@ -3,30 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let matchScore = SlateTool.create(
-  spec,
-  {
-    name: 'Match Score',
-    key: 'match_score',
-    description: `Compare two values and receive a match score (0–100) indicating the likelihood they refer to the same entity. Supports **organization names** and **individual full names**.
+export let matchScore = SlateTool.create(spec, {
+  name: 'Match Score',
+  key: 'match_score',
+  description: `Compare two values and receive a match score (0–100) indicating the likelihood they refer to the same entity. Supports **organization names** and **individual full names**.
 
 A score of 100 indicates the highest possible match; lower scores indicate less similarity.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    category: z.enum(['organization', 'full_name']).describe('The type of data to compare'),
-    value1: z.string().describe('First value to compare'),
-    value2: z.string().describe('Second value to compare'),
-  }))
-  .output(z.object({
-    score: z.string().describe('Match score from 0–100'),
-    code: z.string().describe('API response status code'),
-    remainingCredits: z.number().describe('Remaining API credits'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      category: z.enum(['organization', 'full_name']).describe('The type of data to compare'),
+      value1: z.string().describe('First value to compare'),
+      value2: z.string().describe('Second value to compare')
+    })
+  )
+  .output(
+    z.object({
+      score: z.string().describe('Match score from 0–100'),
+      code: z.string().describe('API response status code'),
+      remainingCredits: z.number().describe('Remaining API credits')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result: { Score: string; Code: string; Credits: number };
 
@@ -40,9 +41,9 @@ A score of 100 indicates the highest possible match; lower scores indicate less 
       output: {
         score: result.Score,
         code: result.Code,
-        remainingCredits: result.Credits,
+        remainingCredits: result.Credits
       },
-      message: `Match score between "${ctx.input.value1}" and "${ctx.input.value2}": **${result.Score}/100**`,
+      message: `Match score between "${ctx.input.value1}" and "${ctx.input.value2}": **${result.Score}/100**`
     };
   })
   .build();

@@ -3,42 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Events',
-    key: 'campaign_events',
-    description: 'Triggers when campaign-related events occur, including new campaign created and new bounces after sending a campaign.',
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('The webhook topic that fired'),
-    webhookId: z.string().describe('Webhook event ID'),
-    campaignTitle: z.string().optional().describe('Title of the affected campaign'),
-    eventData: z.record(z.string(), z.unknown()).optional().describe('Full event data from the webhook payload'),
-    timestamp: z.string().describe('Timestamp of the event'),
-  }))
-  .output(z.object({
-    campaignTitle: z.string().optional().describe('Title of the affected campaign'),
-    topic: z.string().describe('Webhook topic that triggered the event'),
-    eventTimestamp: z.string().describe('When the event occurred'),
-  }))
+export let campaignEvents = SlateTrigger.create(spec, {
+  name: 'Campaign Events',
+  key: 'campaign_events',
+  description:
+    'Triggers when campaign-related events occur, including new campaign created and new bounces after sending a campaign.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('The webhook topic that fired'),
+      webhookId: z.string().describe('Webhook event ID'),
+      campaignTitle: z.string().optional().describe('Title of the affected campaign'),
+      eventData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Full event data from the webhook payload'),
+      timestamp: z.string().describe('Timestamp of the event')
+    })
+  )
+  .output(
+    z.object({
+      campaignTitle: z.string().optional().describe('Title of the affected campaign'),
+      topic: z.string().describe('Webhook topic that triggered the event'),
+      eventTimestamp: z.string().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let webhookIds: string[] = [];
 
-      let topics = [
-        'campaigns/new',
-        'campaigns/bounces',
-      ];
+      let topics = ['campaigns/new', 'campaigns/bounces'];
 
       for (let topic of topics) {
         try {
           let result = await client.createWebhook({
             url: ctx.input.webhookBaseUrl,
-            topic,
+            topic
           });
           webhookIds.push(result.data.id);
         } catch (err) {
@@ -47,15 +49,15 @@ export let campaignEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
+      for (let webhookId of details.webhookIds || []) {
         try {
           await client.deleteWebhook(webhookId);
         } catch (err) {
@@ -64,8 +66,8 @@ export let campaignEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, unknown>;
 
       let topic = (body.topic as string) || 'unknown';
       let eventId = String(body.id || `${Date.now()}`);
@@ -79,13 +81,13 @@ export let campaignEvents = SlateTrigger.create(
             webhookId: eventId,
             campaignTitle: title,
             eventData: body,
-            timestamp,
-          },
-        ],
+            timestamp
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = 'campaign.event';
 
       if (ctx.input.topic === 'campaigns/new') {
@@ -100,9 +102,9 @@ export let campaignEvents = SlateTrigger.create(
         output: {
           campaignTitle: ctx.input.campaignTitle,
           topic: ctx.input.topic,
-          eventTimestamp: ctx.input.timestamp,
-        },
+          eventTimestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

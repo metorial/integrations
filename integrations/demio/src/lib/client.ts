@@ -9,8 +9,8 @@ export class DemioClient {
       headers: {
         'Api-Key': credentials.token,
         'Api-Secret': credentials.apiSecret,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

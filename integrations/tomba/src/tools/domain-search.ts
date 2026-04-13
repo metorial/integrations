@@ -16,40 +16,58 @@ let emailSchema = z.object({
   twitter: z.string().nullable().optional().describe('Twitter handle'),
   linkedin: z.string().nullable().optional().describe('LinkedIn profile URL'),
   score: z.number().nullable().optional().describe('Confidence score (0-100)'),
-  type: z.string().nullable().optional().describe('Email type (personal/generic)'),
+  type: z.string().nullable().optional().describe('Email type (personal/generic)')
 });
 
-export let domainSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Domain Search',
-    key: 'domain_search',
-    description: `Search for professional email addresses associated with a domain or company. Returns organization data along with the email addresses found and information about the people who own those addresses. Can filter by department or country.`,
-    tags: {
-      readOnly: true,
-    },
+export let domainSearch = SlateTool.create(spec, {
+  name: 'Domain Search',
+  key: 'domain_search',
+  description: `Search for professional email addresses associated with a domain or company. Returns organization data along with the email addresses found and information about the people who own those addresses. Can filter by department or country.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().optional().describe('Domain name to search (e.g. "stripe.com"). Preferred over company name for better results.'),
-    company: z.string().optional().describe('Company name to search. Domain is preferred if available.'),
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    limit: z.number().optional().describe('Max number of email addresses to return per page'),
-    country: z.string().optional().describe('Two-letter country code to filter results (e.g. "US")'),
-    department: z.string().optional().describe('Filter by department (e.g. "engineering", "finance", "hr")'),
-  }))
-  .output(z.object({
-    organizationName: z.string().nullable().optional().describe('Organization name'),
-    organizationDomain: z.string().nullable().optional().describe('Organization domain'),
-    emails: z.array(emailSchema).describe('List of email addresses found'),
-    totalEmails: z.number().optional().describe('Total number of emails found'),
-    country: z.string().nullable().optional().describe('Country of the organization'),
-    lastUpdated: z.string().nullable().optional().describe('Last time the data was updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z
+        .string()
+        .optional()
+        .describe(
+          'Domain name to search (e.g. "stripe.com"). Preferred over company name for better results.'
+        ),
+      company: z
+        .string()
+        .optional()
+        .describe('Company name to search. Domain is preferred if available.'),
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Max number of email addresses to return per page'),
+      country: z
+        .string()
+        .optional()
+        .describe('Two-letter country code to filter results (e.g. "US")'),
+      department: z
+        .string()
+        .optional()
+        .describe('Filter by department (e.g. "engineering", "finance", "hr")')
+    })
+  )
+  .output(
+    z.object({
+      organizationName: z.string().nullable().optional().describe('Organization name'),
+      organizationDomain: z.string().nullable().optional().describe('Organization domain'),
+      emails: z.array(emailSchema).describe('List of email addresses found'),
+      totalEmails: z.number().optional().describe('Total number of emails found'),
+      country: z.string().nullable().optional().describe('Country of the organization'),
+      lastUpdated: z.string().nullable().optional().describe('Last time the data was updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.domainSearch({
@@ -58,7 +76,7 @@ export let domainSearch = SlateTool.create(
       page: ctx.input.page,
       limit: ctx.input.limit,
       country: ctx.input.country,
-      department: ctx.input.department,
+      department: ctx.input.department
     });
 
     let data = result.data || {};
@@ -75,7 +93,7 @@ export let domainSearch = SlateTool.create(
       twitter: e.twitter,
       linkedin: e.linkedin,
       score: e.score,
-      type: e.type,
+      type: e.type
     }));
 
     return {
@@ -85,8 +103,9 @@ export let domainSearch = SlateTool.create(
         emails,
         totalEmails: data.total || emails.length,
         country: data.country,
-        lastUpdated: data.last_updated,
+        lastUpdated: data.last_updated
       },
-      message: `Found **${emails.length}** email addresses for **${ctx.input.domain || ctx.input.company}**.`,
+      message: `Found **${emails.length}** email addresses for **${ctx.input.domain || ctx.input.company}**.`
     };
-  }).build();
+  })
+  .build();

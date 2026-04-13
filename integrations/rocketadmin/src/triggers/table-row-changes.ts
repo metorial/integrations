@@ -3,43 +3,63 @@ import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let tableRowChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Table Row Changes',
-    key: 'table_row_changes',
-    description: 'Triggers when rows are created, updated, or deleted in a database table. Polls the connection audit logs for new activity.',
-  },
-)
-  .input(z.object({
-    logId: z.string().describe('Unique identifier for the log entry'),
-    operationType: z.string().describe('Type of operation performed (e.g., addRowInTable, updateRowInTable, deleteRowInTable)'),
-    tableName: z.string().describe('Name of the affected table'),
-    connectionId: z.string().describe('ID of the connection'),
-    createdAt: z.string().describe('Timestamp when the change occurred'),
-    oldData: z.record(z.string(), z.unknown()).optional().describe('Row data before the change'),
-    newData: z.record(z.string(), z.unknown()).optional().describe('Row data after the change'),
-    userId: z.string().optional().describe('ID of the user who made the change'),
-  }))
-  .output(z.object({
-    logId: z.string().describe('Unique identifier for the log entry'),
-    tableName: z.string().describe('Name of the affected table'),
-    connectionId: z.string().describe('ID of the connection'),
-    operationType: z.string().describe('Type of operation: addRowInTable, updateRowInTable, deleteRowInTable'),
-    createdAt: z.string().describe('Timestamp of the change'),
-    oldData: z.record(z.string(), z.unknown()).optional().describe('Row data before the change'),
-    newData: z.record(z.string(), z.unknown()).optional().describe('Row data after the change'),
-    userId: z.string().optional().describe('ID of the user who made the change'),
-  }))
+export let tableRowChanges = SlateTrigger.create(spec, {
+  name: 'Table Row Changes',
+  key: 'table_row_changes',
+  description:
+    'Triggers when rows are created, updated, or deleted in a database table. Polls the connection audit logs for new activity.'
+})
+  .input(
+    z.object({
+      logId: z.string().describe('Unique identifier for the log entry'),
+      operationType: z
+        .string()
+        .describe(
+          'Type of operation performed (e.g., addRowInTable, updateRowInTable, deleteRowInTable)'
+        ),
+      tableName: z.string().describe('Name of the affected table'),
+      connectionId: z.string().describe('ID of the connection'),
+      createdAt: z.string().describe('Timestamp when the change occurred'),
+      oldData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Row data before the change'),
+      newData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Row data after the change'),
+      userId: z.string().optional().describe('ID of the user who made the change')
+    })
+  )
+  .output(
+    z.object({
+      logId: z.string().describe('Unique identifier for the log entry'),
+      tableName: z.string().describe('Name of the affected table'),
+      connectionId: z.string().describe('ID of the connection'),
+      operationType: z
+        .string()
+        .describe('Type of operation: addRowInTable, updateRowInTable, deleteRowInTable'),
+      createdAt: z.string().describe('Timestamp of the change'),
+      oldData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Row data before the change'),
+      newData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Row data after the change'),
+      userId: z.string().optional().describe('ID of the user who made the change')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new RocketadminClient({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -61,7 +81,7 @@ export let tableRowChanges = SlateTrigger.create(
 
       let result = await client.getConnectionLogs(connectionId, {
         dateFrom: lastPolledAt,
-        perPage: 100,
+        perPage: 100
       });
 
       let logs: Array<Record<string, unknown>> = [];
@@ -72,7 +92,7 @@ export let tableRowChanges = SlateTrigger.create(
       }
 
       let rowOperations = ['addRowInTable', 'updateRowInTable', 'deleteRowInTable'];
-      let relevantLogs = logs.filter((log) => {
+      let relevantLogs = logs.filter(log => {
         let opType = String(log.operationType || log.operation_type || '');
         return rowOperations.includes(opType);
       });
@@ -88,7 +108,7 @@ export let tableRowChanges = SlateTrigger.create(
         }
       }
 
-      let inputs = relevantLogs.map((log) => ({
+      let inputs = relevantLogs.map(log => ({
         logId: String(log.id || log.logId || ''),
         operationType: String(log.operationType || log.operation_type || ''),
         tableName: String(log.tableName || log.table_name || ''),
@@ -96,26 +116,27 @@ export let tableRowChanges = SlateTrigger.create(
         createdAt: String(log.createdAt || log.created_at || ''),
         oldData: (log.old_data || log.oldData) as Record<string, unknown> | undefined,
         newData: (log.new_data || log.newData) as Record<string, unknown> | undefined,
-        userId: log.userId ? String(log.userId) : (log.user_id ? String(log.user_id) : undefined),
+        userId: log.userId ? String(log.userId) : log.user_id ? String(log.user_id) : undefined
       }));
 
       return {
         inputs,
         updatedState: {
           lastPolledAt: newLastPolledAt || new Date().toISOString(),
-          connectionId,
-        },
+          connectionId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let operationMap: Record<string, string> = {
-        'addRowInTable': 'row.created',
-        'updateRowInTable': 'row.updated',
-        'deleteRowInTable': 'row.deleted',
+        addRowInTable: 'row.created',
+        updateRowInTable: 'row.updated',
+        deleteRowInTable: 'row.deleted'
       };
 
-      let eventType = operationMap[ctx.input.operationType] || `row.${ctx.input.operationType}`;
+      let eventType =
+        operationMap[ctx.input.operationType] || `row.${ctx.input.operationType}`;
 
       return {
         type: eventType,
@@ -128,8 +149,9 @@ export let tableRowChanges = SlateTrigger.create(
           createdAt: ctx.input.createdAt,
           oldData: ctx.input.oldData,
           newData: ctx.input.newData,
-          userId: ctx.input.userId,
-        },
+          userId: ctx.input.userId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

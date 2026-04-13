@@ -1,6 +1,11 @@
 import { type AuthType, createServiceClient } from './client';
 
-export let listOperations = async (auth: AuthType, folderId: string, pageSize?: number, pageToken?: string) => {
+export let listOperations = async (
+  auth: AuthType,
+  folderId: string,
+  pageSize?: number,
+  pageToken?: string
+) => {
   let client = createServiceClient('https://operation.api.cloud.yandex.net', auth);
   let params: Record<string, string | number> = { folderId };
   if (pageSize) params.pageSize = pageSize;

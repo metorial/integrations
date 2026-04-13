@@ -29,7 +29,7 @@ import {
   manageAddresses,
   manageHistoricEvents,
   linkContacts,
-  getStats,
+  getStats
 } from './tools';
 import {
   personEvents,
@@ -37,7 +37,7 @@ import {
   dealEvents,
   taskEvents,
   noteEvents,
-  projectEvents,
+  projectEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -71,14 +71,7 @@ export let provider = Slate.create({
     manageAddresses,
     manageHistoricEvents,
     linkContacts,
-    getStats,
+    getStats
   ],
-  triggers: [
-    personEvents,
-    companyEvents,
-    dealEvents,
-    taskEvents,
-    noteEvents,
-    projectEvents,
-  ],
+  triggers: [personEvents, companyEvents, dealEvents, taskEvents, noteEvents, projectEvents]
 });

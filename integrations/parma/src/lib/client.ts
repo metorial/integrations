@@ -7,10 +7,10 @@ export class ParmaClient {
     this.http = createAxios({
       baseURL: 'https://app.parma.ai/api/v1',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -23,13 +23,15 @@ export class ParmaClient {
 
   // ─── Relationships ──────────────────────────────────────────────
 
-  async listRelationships(params: {
-    page?: number;
-    perPage?: number;
-    query?: string;
-    sort?: string;
-    order?: string;
-  } = {}) {
+  async listRelationships(
+    params: {
+      page?: number;
+      perPage?: number;
+      query?: string;
+      sort?: string;
+      order?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, any> = {};
     if (params.page !== undefined) queryParams.page = params.page;
     if (params.perPage !== undefined) queryParams.per_page = params.perPage;
@@ -58,10 +60,13 @@ export class ParmaClient {
     return response.data;
   }
 
-  async searchRelationships(query: string, params: {
-    page?: number;
-    perPage?: number;
-  } = {}) {
+  async searchRelationships(
+    query: string,
+    params: {
+      page?: number;
+      perPage?: number;
+    } = {}
+  ) {
     let queryParams: Record<string, any> = { q: query };
     if (params.page !== undefined) queryParams.page = params.page;
     if (params.perPage !== undefined) queryParams.per_page = params.perPage;
@@ -72,22 +77,30 @@ export class ParmaClient {
 
   // ─── Notes ──────────────────────────────────────────────────────
 
-  async createNote(relationshipId: string, data: {
-    content: string;
-  }) {
+  async createNote(
+    relationshipId: string,
+    data: {
+      content: string;
+    }
+  ) {
     let response = await this.http.post(`/relationships/${relationshipId}/notes`, data);
     return response.data;
   }
 
-  async listNotes(relationshipId: string, params: {
-    page?: number;
-    perPage?: number;
-  } = {}) {
+  async listNotes(
+    relationshipId: string,
+    params: {
+      page?: number;
+      perPage?: number;
+    } = {}
+  ) {
     let queryParams: Record<string, any> = {};
     if (params.page !== undefined) queryParams.page = params.page;
     if (params.perPage !== undefined) queryParams.per_page = params.perPage;
 
-    let response = await this.http.get(`/relationships/${relationshipId}/notes`, { params: queryParams });
+    let response = await this.http.get(`/relationships/${relationshipId}/notes`, {
+      params: queryParams
+    });
     return response.data;
   }
 }

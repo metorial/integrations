@@ -18,7 +18,7 @@ export class KibanaClient {
     this.axios = createAxios({
       baseURL: baseUrl,
       headers: {
-        'Authorization': config.token,
+        Authorization: config.token,
         'Content-Type': 'application/json',
         'kbn-xsrf': 'true'
       }
@@ -53,20 +53,28 @@ export class KibanaClient {
     if (params.sortField) query.sort_field = params.sortField;
     if (params.sortOrder) query.sort_order = params.sortOrder;
 
-    let response = await this.axios.get(this.getApiPath('/api/saved_objects/_find'), { params: query });
+    let response = await this.axios.get(this.getApiPath('/api/saved_objects/_find'), {
+      params: query
+    });
     return response.data;
   }
 
   async getSavedObject(type: string, objectId: string): Promise<any> {
-    let response = await this.axios.get(this.getApiPath(`/api/saved_objects/${type}/${objectId}`));
+    let response = await this.axios.get(
+      this.getApiPath(`/api/saved_objects/${type}/${objectId}`)
+    );
     return response.data;
   }
 
-  async createSavedObject(type: string, attributes: Record<string, any>, options?: {
-    objectId?: string;
-    references?: Array<{ id: string; name: string; type: string }>;
-    overwrite?: boolean;
-  }): Promise<any> {
+  async createSavedObject(
+    type: string,
+    attributes: Record<string, any>,
+    options?: {
+      objectId?: string;
+      references?: Array<{ id: string; name: string; type: string }>;
+      overwrite?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { attributes };
     if (options?.references) body.references = options.references;
     if (options?.overwrite !== undefined) body.overwrite = options.overwrite;
@@ -79,20 +87,30 @@ export class KibanaClient {
     return response.data;
   }
 
-  async updateSavedObject(type: string, objectId: string, attributes: Record<string, any>, options?: {
-    references?: Array<{ id: string; name: string; type: string }>;
-  }): Promise<any> {
+  async updateSavedObject(
+    type: string,
+    objectId: string,
+    attributes: Record<string, any>,
+    options?: {
+      references?: Array<{ id: string; name: string; type: string }>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { attributes };
     if (options?.references) body.references = options.references;
 
-    let response = await this.axios.put(this.getApiPath(`/api/saved_objects/${type}/${objectId}`), body);
+    let response = await this.axios.put(
+      this.getApiPath(`/api/saved_objects/${type}/${objectId}`),
+      body
+    );
     return response.data;
   }
 
   async deleteSavedObject(type: string, objectId: string, force?: boolean): Promise<void> {
     let query: Record<string, any> = {};
     if (force) query.force = true;
-    await this.axios.delete(this.getApiPath(`/api/saved_objects/${type}/${objectId}`), { params: query });
+    await this.axios.delete(this.getApiPath(`/api/saved_objects/${type}/${objectId}`), {
+      params: query
+    });
   }
 
   async exportSavedObjects(params: {
@@ -104,8 +122,10 @@ export class KibanaClient {
     let body: Record<string, any> = {};
     if (params.types) body.type = params.types;
     if (params.objects) body.objects = params.objects;
-    if (params.includeReferencesDeep !== undefined) body.includeReferencesDeep = params.includeReferencesDeep;
-    if (params.excludeExportDetails !== undefined) body.excludeExportDetails = params.excludeExportDetails;
+    if (params.includeReferencesDeep !== undefined)
+      body.includeReferencesDeep = params.includeReferencesDeep;
+    if (params.excludeExportDetails !== undefined)
+      body.excludeExportDetails = params.excludeExportDetails;
 
     let response = await this.axios.post(this.getApiPath('/api/saved_objects/_export'), body, {
       responseType: 'text'
@@ -121,7 +141,9 @@ export class KibanaClient {
   }
 
   async getDataView(dataViewId: string): Promise<any> {
-    let response = await this.axios.get(this.getApiPath(`/api/data_views/data_view/${dataViewId}`));
+    let response = await this.axios.get(
+      this.getApiPath(`/api/data_views/data_view/${dataViewId}`)
+    );
     return response.data;
   }
 
@@ -140,17 +162,23 @@ export class KibanaClient {
     return response.data;
   }
 
-  async updateDataView(dataViewId: string, params: {
-    title?: string;
-    name?: string;
-    timeFieldName?: string;
-    sourceFilters?: Array<{ value: string }>;
-    fieldFormats?: Record<string, any>;
-    runtimeFieldMap?: Record<string, any>;
-  }): Promise<any> {
-    let response = await this.axios.post(this.getApiPath(`/api/data_views/data_view/${dataViewId}`), {
-      data_view: params
-    });
+  async updateDataView(
+    dataViewId: string,
+    params: {
+      title?: string;
+      name?: string;
+      timeFieldName?: string;
+      sourceFilters?: Array<{ value: string }>;
+      fieldFormats?: Record<string, any>;
+      runtimeFieldMap?: Record<string, any>;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.getApiPath(`/api/data_views/data_view/${dataViewId}`),
+      {
+        data_view: params
+      }
+    );
     return response.data;
   }
 
@@ -182,13 +210,16 @@ export class KibanaClient {
     return response.data;
   }
 
-  async updateSpace(spaceId: string, params: {
-    name?: string;
-    description?: string;
-    color?: string;
-    initials?: string;
-    disabledFeatures?: string[];
-  }): Promise<any> {
+  async updateSpace(
+    spaceId: string,
+    params: {
+      name?: string;
+      description?: string;
+      color?: string;
+      initials?: string;
+      disabledFeatures?: string[];
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/api/spaces/space/${spaceId}`, {
       id: spaceId,
       ...params
@@ -221,7 +252,9 @@ export class KibanaClient {
     if (params?.sortOrder) query.sort_order = params.sortOrder;
     if (params?.filter) query.filter = params.filter;
 
-    let response = await this.axios.get(this.getApiPath('/api/alerting/rules/_find'), { params: query });
+    let response = await this.axios.get(this.getApiPath('/api/alerting/rules/_find'), {
+      params: query
+    });
     return response.data;
   }
 
@@ -268,24 +301,27 @@ export class KibanaClient {
     return response.data;
   }
 
-  async updateRule(ruleId: string, params: {
-    name?: string;
-    schedule?: { interval: string };
-    params?: Record<string, any>;
-    actions?: Array<{
-      group: string;
-      id: string;
-      params: Record<string, any>;
-      frequency?: {
-        summary: boolean;
-        notify_when: string;
-        throttle?: string | null;
-      };
-    }>;
-    tags?: string[];
-    throttle?: string | null;
-    notify_when?: string;
-  }): Promise<any> {
+  async updateRule(
+    ruleId: string,
+    params: {
+      name?: string;
+      schedule?: { interval: string };
+      params?: Record<string, any>;
+      actions?: Array<{
+        group: string;
+        id: string;
+        params: Record<string, any>;
+        frequency?: {
+          summary: boolean;
+          notify_when: string;
+          throttle?: string | null;
+        };
+      }>;
+      tags?: string[];
+      throttle?: string | null;
+      notify_when?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.schedule) body.schedule = params.schedule;
@@ -327,7 +363,9 @@ export class KibanaClient {
   }
 
   async getConnector(connectorId: string): Promise<any> {
-    let response = await this.axios.get(this.getApiPath(`/api/actions/connector/${connectorId}`));
+    let response = await this.axios.get(
+      this.getApiPath(`/api/actions/connector/${connectorId}`)
+    );
     return response.data;
   }
 
@@ -346,12 +384,18 @@ export class KibanaClient {
     return response.data;
   }
 
-  async updateConnector(connectorId: string, params: {
-    name?: string;
-    config?: Record<string, any>;
-    secrets?: Record<string, any>;
-  }): Promise<any> {
-    let response = await this.axios.put(this.getApiPath(`/api/actions/connector/${connectorId}`), params);
+  async updateConnector(
+    connectorId: string,
+    params: {
+      name?: string;
+      config?: Record<string, any>;
+      secrets?: Record<string, any>;
+    }
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.getApiPath(`/api/actions/connector/${connectorId}`),
+      params
+    );
     return response.data;
   }
 
@@ -359,10 +403,16 @@ export class KibanaClient {
     await this.axios.delete(this.getApiPath(`/api/actions/connector/${connectorId}`));
   }
 
-  async executeConnector(connectorId: string, connectorParams: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(this.getApiPath(`/api/actions/connector/${connectorId}/_execute`), {
-      params: connectorParams
-    });
+  async executeConnector(
+    connectorId: string,
+    connectorParams: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.getApiPath(`/api/actions/connector/${connectorId}/_execute`),
+      {
+        params: connectorParams
+      }
+    );
     return response.data;
   }
 
@@ -392,7 +442,9 @@ export class KibanaClient {
     if (params?.sortOrder) query.sortOrder = params.sortOrder;
     if (params?.tags) query.tags = params.tags;
 
-    let response = await this.axios.get(this.getApiPath('/api/cases/_find'), { params: query });
+    let response = await this.axios.get(this.getApiPath('/api/cases/_find'), {
+      params: query
+    });
     return response.data;
   }
 
@@ -400,7 +452,9 @@ export class KibanaClient {
     let query: Record<string, any> = {};
     if (includeComments) query.includeComments = true;
 
-    let response = await this.axios.get(this.getApiPath(`/api/cases/${caseId}`), { params: query });
+    let response = await this.axios.get(this.getApiPath(`/api/cases/${caseId}`), {
+      params: query
+    });
     return response.data;
   }
 
@@ -432,26 +486,32 @@ export class KibanaClient {
     return response.data;
   }
 
-  async updateCase(caseId: string, version: string, params: {
-    title?: string;
-    description?: string;
-    tags?: string[];
-    status?: string;
-    severity?: string;
-    connector?: {
-      id: string;
-      name: string;
-      type: string;
-      fields: Record<string, any> | null;
-    };
-    settings?: { syncAlerts: boolean };
-  }): Promise<any> {
+  async updateCase(
+    caseId: string,
+    version: string,
+    params: {
+      title?: string;
+      description?: string;
+      tags?: string[];
+      status?: string;
+      severity?: string;
+      connector?: {
+        id: string;
+        name: string;
+        type: string;
+        fields: Record<string, any> | null;
+      };
+      settings?: { syncAlerts: boolean };
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(this.getApiPath('/api/cases'), {
-      cases: [{
-        id: caseId,
-        version,
-        ...params
-      }]
+      cases: [
+        {
+          id: caseId,
+          version,
+          ...params
+        }
+      ]
     });
     return response.data;
   }
@@ -462,14 +522,20 @@ export class KibanaClient {
     });
   }
 
-  async addCaseComment(caseId: string, params: {
-    type: string;
-    comment?: string;
-    alertId?: string;
-    index?: string;
-    owner: string;
-  }): Promise<any> {
-    let response = await this.axios.post(this.getApiPath(`/api/cases/${caseId}/comments`), params);
+  async addCaseComment(
+    caseId: string,
+    params: {
+      type: string;
+      comment?: string;
+      alertId?: string;
+      index?: string;
+      owner: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.getApiPath(`/api/cases/${caseId}/comments`),
+      params
+    );
     return response.data;
   }
 
@@ -490,7 +556,9 @@ export class KibanaClient {
     if (params?.sortDirection) query.sortDirection = params.sortDirection;
     if (params?.kqlQuery) query.kqlQuery = params.kqlQuery;
 
-    let response = await this.axios.get(this.getApiPath('/api/observability/slos'), { params: query });
+    let response = await this.axios.get(this.getApiPath('/api/observability/slos'), {
+      params: query
+    });
     return response.data;
   }
 
@@ -515,7 +583,10 @@ export class KibanaClient {
   }
 
   async updateSLO(sloId: string, params: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(this.getApiPath(`/api/observability/slos/${sloId}`), params);
+    let response = await this.axios.put(
+      this.getApiPath(`/api/observability/slos/${sloId}`),
+      params
+    );
     return response.data;
   }
 
@@ -536,12 +607,16 @@ export class KibanaClient {
     };
     if (params?.kuery) query.kuery = params.kuery;
 
-    let response = await this.axios.get(this.getApiPath('/api/fleet/agent_policies'), { params: query });
+    let response = await this.axios.get(this.getApiPath('/api/fleet/agent_policies'), {
+      params: query
+    });
     return response.data;
   }
 
   async getAgentPolicy(policyId: string): Promise<any> {
-    let response = await this.axios.get(this.getApiPath(`/api/fleet/agent_policies/${policyId}`));
+    let response = await this.axios.get(
+      this.getApiPath(`/api/fleet/agent_policies/${policyId}`)
+    );
     return response.data;
   }
 
@@ -556,7 +631,10 @@ export class KibanaClient {
   }
 
   async updateAgentPolicy(policyId: string, params: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(this.getApiPath(`/api/fleet/agent_policies/${policyId}`), params);
+    let response = await this.axios.put(
+      this.getApiPath(`/api/fleet/agent_policies/${policyId}`),
+      params
+    );
     return response.data;
   }
 
@@ -584,7 +662,9 @@ export class KibanaClient {
     if (params?.kuery) query.kuery = params.kuery;
     if (params?.showInactive) query.showInactive = true;
 
-    let response = await this.axios.get(this.getApiPath('/api/fleet/agents'), { params: query });
+    let response = await this.axios.get(this.getApiPath('/api/fleet/agents'), {
+      params: query
+    });
     return response.data;
   }
 
@@ -600,21 +680,24 @@ export class KibanaClient {
     return response.data;
   }
 
-  async createOrUpdateRole(roleName: string, params: {
-    elasticsearch?: {
-      cluster?: string[];
-      indices?: Array<{
-        names: string[];
-        privileges: string[];
+  async createOrUpdateRole(
+    roleName: string,
+    params: {
+      elasticsearch?: {
+        cluster?: string[];
+        indices?: Array<{
+          names: string[];
+          privileges: string[];
+        }>;
+        run_as?: string[];
+      };
+      kibana?: Array<{
+        base?: string[];
+        feature?: Record<string, string[]>;
+        spaces: string[];
       }>;
-      run_as?: string[];
-    };
-    kibana?: Array<{
-      base?: string[];
-      feature?: Record<string, string[]>;
-      spaces: string[];
-    }>;
-  }): Promise<void> {
+    }
+  ): Promise<void> {
     await this.axios.put(`/api/security/role/${encodeURIComponent(roleName)}`, params);
   }
 

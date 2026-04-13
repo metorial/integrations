@@ -8,8 +8,8 @@ export class TelnyxClient {
       baseURL: 'https://api.telnyx.com/v2',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,7 +28,7 @@ export class TelnyxClient {
   }) {
     let body: Record<string, unknown> = {
       from: params.from,
-      to: params.to,
+      to: params.to
     };
     if (params.text) body.text = params.text;
     if (params.mediaUrls) body.media_urls = params.mediaUrls;
@@ -47,10 +47,7 @@ export class TelnyxClient {
     return response.data?.data;
   }
 
-  async listMessages(params?: {
-    pageNumber?: number;
-    pageSize?: number;
-  }) {
+  async listMessages(params?: { pageNumber?: number; pageSize?: number }) {
     let query: Record<string, string> = {};
     if (params?.pageNumber) query['page[number]'] = String(params.pageNumber);
     if (params?.pageSize) query['page[size]'] = String(params.pageSize);
@@ -92,17 +89,21 @@ export class TelnyxClient {
     return response.data?.data;
   }
 
-  async updateMessagingProfile(profileId: string, params: {
-    name?: string;
-    webhookUrl?: string;
-    webhookFailoverUrl?: string;
-    webhookApiVersion?: string;
-    enabled?: boolean;
-  }) {
+  async updateMessagingProfile(
+    profileId: string,
+    params: {
+      name?: string;
+      webhookUrl?: string;
+      webhookFailoverUrl?: string;
+      webhookApiVersion?: string;
+      enabled?: boolean;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.name) body.name = params.name;
     if (params.webhookUrl !== undefined) body.webhook_url = params.webhookUrl;
-    if (params.webhookFailoverUrl !== undefined) body.webhook_failover_url = params.webhookFailoverUrl;
+    if (params.webhookFailoverUrl !== undefined)
+      body.webhook_failover_url = params.webhookFailoverUrl;
     if (params.webhookApiVersion) body.webhook_api_version = params.webhookApiVersion;
     if (params.enabled !== undefined) body.enabled = params.enabled;
 
@@ -128,7 +129,7 @@ export class TelnyxClient {
     limit?: number;
   }) {
     let query: Record<string, string> = {
-      'filter[country_code]': params.countryCode,
+      'filter[country_code]': params.countryCode
     };
     if (params.phoneNumberType) query['filter[phone_number_type]'] = params.phoneNumberType;
     if (params.features) query['filter[features]'] = params.features.join(',');
@@ -166,12 +167,15 @@ export class TelnyxClient {
     return response.data?.data;
   }
 
-  async updatePhoneNumber(phoneNumberId: string, params: {
-    tags?: string[];
-    connectionId?: string;
-    billingGroupId?: string;
-    externalPin?: string;
-  }) {
+  async updatePhoneNumber(
+    phoneNumberId: string,
+    params: {
+      tags?: string[];
+      connectionId?: string;
+      billingGroupId?: string;
+      externalPin?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.tags) body.tags = params.tags;
     if (params.connectionId) body.connection_id = params.connectionId;
@@ -188,7 +192,7 @@ export class TelnyxClient {
 
   async orderPhoneNumbers(phoneNumbers: string[]) {
     let body = {
-      phone_numbers: phoneNumbers.map(pn => ({ phone_number: pn })),
+      phone_numbers: phoneNumbers.map(pn => ({ phone_number: pn }))
     };
     let response = await this.http.post('/number_orders', body);
     return response.data?.data;
@@ -223,7 +227,7 @@ export class TelnyxClient {
     let body: Record<string, unknown> = {
       to: params.to,
       from: params.from,
-      connection_id: params.connectionId,
+      connection_id: params.connectionId
     };
     if (params.fromDisplayName) body.from_display_name = params.fromDisplayName;
     if (params.webhookUrl) body.webhook_url = params.webhookUrl;
@@ -236,7 +240,10 @@ export class TelnyxClient {
   }
 
   async callAction(callControlId: string, action: string, params?: Record<string, unknown>) {
-    let response = await this.http.post(`/calls/${callControlId}/actions/${action}`, params ?? {});
+    let response = await this.http.post(
+      `/calls/${callControlId}/actions/${action}`,
+      params ?? {}
+    );
     return response.data?.data;
   }
 
@@ -263,9 +270,10 @@ export class TelnyxClient {
   }) {
     let body: Record<string, unknown> = {
       application_name: params.applicationName,
-      webhook_event_url: params.webhookEventUrl,
+      webhook_event_url: params.webhookEventUrl
     };
-    if (params.webhookEventFailoverUrl) body.webhook_event_failover_url = params.webhookEventFailoverUrl;
+    if (params.webhookEventFailoverUrl)
+      body.webhook_event_failover_url = params.webhookEventFailoverUrl;
     if (params.active !== undefined) body.active = params.active;
     if (params.anchorSiteOverride) body.anchor_site_override = params.anchorSiteOverride;
     if (params.dtmfType) body.dtmf_type = params.dtmfType;
@@ -276,16 +284,20 @@ export class TelnyxClient {
     return response.data?.data;
   }
 
-  async updateCallControlApplication(applicationId: string, params: {
-    applicationName?: string;
-    webhookEventUrl?: string;
-    webhookEventFailoverUrl?: string;
-    active?: boolean;
-  }) {
+  async updateCallControlApplication(
+    applicationId: string,
+    params: {
+      applicationName?: string;
+      webhookEventUrl?: string;
+      webhookEventFailoverUrl?: string;
+      active?: boolean;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.applicationName) body.application_name = params.applicationName;
     if (params.webhookEventUrl) body.webhook_event_url = params.webhookEventUrl;
-    if (params.webhookEventFailoverUrl !== undefined) body.webhook_event_failover_url = params.webhookEventFailoverUrl;
+    if (params.webhookEventFailoverUrl !== undefined)
+      body.webhook_event_failover_url = params.webhookEventFailoverUrl;
     if (params.active !== undefined) body.active = params.active;
 
     let response = await this.http.patch(`/call_control_applications/${applicationId}`, body);
@@ -307,7 +319,7 @@ export class TelnyxClient {
   }) {
     let body: Record<string, unknown> = {
       phone_number: params.phoneNumber,
-      verify_profile_id: params.verifyProfileId,
+      verify_profile_id: params.verifyProfileId
     };
     if (params.customCode) body.custom_code = params.customCode;
     if (params.timeoutSecs) body.timeout_secs = params.timeoutSecs;
@@ -353,16 +365,20 @@ export class TelnyxClient {
     return response.data?.data;
   }
 
-  async updateVerifyProfile(profileId: string, params: {
-    name?: string;
-    webhookUrl?: string;
-    webhookFailoverUrl?: string;
-    defaultTimeoutSecs?: number;
-  }) {
+  async updateVerifyProfile(
+    profileId: string,
+    params: {
+      name?: string;
+      webhookUrl?: string;
+      webhookFailoverUrl?: string;
+      defaultTimeoutSecs?: number;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.name) body.name = params.name;
     if (params.webhookUrl !== undefined) body.webhook_url = params.webhookUrl;
-    if (params.webhookFailoverUrl !== undefined) body.webhook_failover_url = params.webhookFailoverUrl;
+    if (params.webhookFailoverUrl !== undefined)
+      body.webhook_failover_url = params.webhookFailoverUrl;
     if (params.defaultTimeoutSecs) body.default_timeout_secs = params.defaultTimeoutSecs;
 
     let response = await this.http.patch(`/verify_profiles/${profileId}`, body);
@@ -379,7 +395,9 @@ export class TelnyxClient {
     let query: Record<string, string> = {};
     if (type) query.type = type;
 
-    let response = await this.http.get(`/number_lookup/${encodeURIComponent(phoneNumber)}`, { params: query });
+    let response = await this.http.get(`/number_lookup/${encodeURIComponent(phoneNumber)}`, {
+      params: query
+    });
     return response.data?.data;
   }
 
@@ -399,7 +417,7 @@ export class TelnyxClient {
     let body: Record<string, unknown> = {
       connection_id: params.connectionId,
       to: params.to,
-      from: params.from,
+      from: params.from
     };
     if (params.mediaUrl) body.media_url = params.mediaUrl;
     if (params.mediaName) body.media_name = params.mediaName;
@@ -454,10 +472,13 @@ export class TelnyxClient {
     return response.data?.data;
   }
 
-  async updateSimCard(simCardId: string, params: {
-    simCardGroupId?: string;
-    tags?: string[];
-  }) {
+  async updateSimCard(
+    simCardId: string,
+    params: {
+      simCardGroupId?: string;
+      tags?: string[];
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.simCardGroupId) body.sim_card_group_id = params.simCardGroupId;
     if (params.tags) body.tags = params.tags;

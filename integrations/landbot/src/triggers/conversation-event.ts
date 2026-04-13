@@ -2,53 +2,69 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let senderSchema = z.object({
-  senderId: z.string().optional().describe('ID of the sender'),
-  senderName: z.string().optional().describe('Name of the sender'),
-  senderType: z.enum(['customer', 'bot', 'agent']).optional().describe('Type of the sender')
-}).describe('Information about who sent the message');
+let senderSchema = z
+  .object({
+    senderId: z.string().optional().describe('ID of the sender'),
+    senderName: z.string().optional().describe('Name of the sender'),
+    senderType: z.enum(['customer', 'bot', 'agent']).optional().describe('Type of the sender')
+  })
+  .describe('Information about who sent the message');
 
-let customerSchema = z.object({
-  customerId: z.string().optional().describe('ID of the customer'),
-  customerName: z.string().optional().describe('Name of the customer')
-}).describe('Information about the customer in the conversation');
+let customerSchema = z
+  .object({
+    customerId: z.string().optional().describe('ID of the customer'),
+    customerName: z.string().optional().describe('Name of the customer')
+  })
+  .describe('Information about the customer in the conversation');
 
-let channelSchema = z.object({
-  channelId: z.string().optional().describe('ID of the channel'),
-  channelName: z.string().optional().describe('Name of the channel')
-}).describe('Information about the channel');
+let channelSchema = z
+  .object({
+    channelId: z.string().optional().describe('ID of the channel'),
+    channelName: z.string().optional().describe('Name of the channel')
+  })
+  .describe('Information about the channel');
 
-export let conversationEventTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conversation Event',
-    key: 'conversation_event',
-    description: 'Triggered when messages are exchanged or bot events occur in a Landbot conversation. Covers message types (text, button, dialog, image, iframe) and bot events (assign, unassign). Configure a MessageHook in your Landbot bot settings pointing to the provided webhook URL.'
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Unique identifier for this message/event'),
-    messageType: z.string().describe('Type of message or event (text, button, dialog, image, iframe, event)'),
-    eventAction: z.string().optional().describe('For event type: the action (assign, unassign)'),
-    content: z.any().describe('Message content or event data'),
-    timestamp: z.string().optional().describe('Timestamp of the message'),
-    sender: senderSchema.optional(),
-    customer: customerSchema.optional(),
-    channel: channelSchema.optional(),
-    raw: z.any().optional().describe('Raw message data from the webhook')
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Unique identifier for this message/event'),
-    messageType: z.string().describe('Type of message or event'),
-    eventAction: z.string().optional().describe('For event type: the action (assign, unassign)'),
-    content: z.any().describe('Message content or event payload'),
-    timestamp: z.string().optional().describe('Timestamp of the message'),
-    sender: senderSchema.optional(),
-    customer: customerSchema.optional(),
-    channel: channelSchema.optional()
-  }))
+export let conversationEventTrigger = SlateTrigger.create(spec, {
+  name: 'Conversation Event',
+  key: 'conversation_event',
+  description:
+    'Triggered when messages are exchanged or bot events occur in a Landbot conversation. Covers message types (text, button, dialog, image, iframe) and bot events (assign, unassign). Configure a MessageHook in your Landbot bot settings pointing to the provided webhook URL.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Unique identifier for this message/event'),
+      messageType: z
+        .string()
+        .describe('Type of message or event (text, button, dialog, image, iframe, event)'),
+      eventAction: z
+        .string()
+        .optional()
+        .describe('For event type: the action (assign, unassign)'),
+      content: z.any().describe('Message content or event data'),
+      timestamp: z.string().optional().describe('Timestamp of the message'),
+      sender: senderSchema.optional(),
+      customer: customerSchema.optional(),
+      channel: channelSchema.optional(),
+      raw: z.any().optional().describe('Raw message data from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Unique identifier for this message/event'),
+      messageType: z.string().describe('Type of message or event'),
+      eventAction: z
+        .string()
+        .optional()
+        .describe('For event type: the action (assign, unassign)'),
+      content: z.any().describe('Message content or event payload'),
+      timestamp: z.string().optional().describe('Timestamp of the message'),
+      sender: senderSchema.optional(),
+      customer: customerSchema.optional(),
+      channel: channelSchema.optional()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -56,7 +72,7 @@ export let conversationEventTrigger = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let messages: any[] = body?.messages ?? (body?.body?.messages ?? []);
+      let messages: any[] = body?.messages ?? body?.body?.messages ?? [];
 
       if (!Array.isArray(messages) || messages.length === 0) {
         // If the payload itself is a single message object
@@ -78,9 +94,7 @@ export let conversationEventTrigger = SlateTrigger.create(
           eventAction = msg.data.action;
         }
 
-        let messageId = msg._raw?.id
-          ?? msg.id
-          ?? `${msg.timestamp ?? Date.now()}-${index}`;
+        let messageId = msg._raw?.id ?? msg.id ?? `${msg.timestamp ?? Date.now()}-${index}`;
 
         return {
           messageId: String(messageId),
@@ -108,7 +122,7 @@ export let conversationEventTrigger = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType: string;
 
       if (ctx.input.messageType === 'event' && ctx.input.eventAction) {

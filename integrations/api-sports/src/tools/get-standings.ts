@@ -18,42 +18,56 @@ let standingEntrySchema = z.object({
   lose: z.number().nullable().describe('Games lost'),
   goalsFor: z.number().nullable().describe('Goals scored'),
   goalsAgainst: z.number().nullable().describe('Goals conceded'),
-  description: z.string().nullable().describe('Qualification/relegation status'),
+  description: z.string().nullable().describe('Qualification/relegation status')
 });
 
-export let getStandingsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Standings',
-    key: 'get_standings',
-    description: `Retrieve league standings and tables for a given competition and season. Returns the full ranking with team statistics including points, wins, draws, losses, goals, form, and group information where applicable.`,
-    tags: {
-      readOnly: true,
-    },
+export let getStandingsTool = SlateTool.create(spec, {
+  name: 'Get Standings',
+  key: 'get_standings',
+  description: `Retrieve league standings and tables for a given competition and season. Returns the full ranking with team statistics including points, wins, draws, losses, goals, form, and group information where applicable.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sport: z.enum([
-      'football', 'basketball', 'baseball', 'hockey', 'rugby',
-      'handball', 'volleyball', 'afl', 'nba', 'nfl', 'formula-1', 'mma'
-    ]).optional().describe('Sport to query. Defaults to the configured sport.'),
-    league: z.number().describe('League ID'),
-    season: z.number().describe('Season year'),
-    team: z.number().optional().describe('Filter by specific team ID'),
-  }))
-  .output(z.object({
-    standings: z.array(standingEntrySchema),
-    leagueName: z.string().nullable().describe('League name'),
-    count: z.number().describe('Number of entries'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sport: z
+        .enum([
+          'football',
+          'basketball',
+          'baseball',
+          'hockey',
+          'rugby',
+          'handball',
+          'volleyball',
+          'afl',
+          'nba',
+          'nfl',
+          'formula-1',
+          'mma'
+        ])
+        .optional()
+        .describe('Sport to query. Defaults to the configured sport.'),
+      league: z.number().describe('League ID'),
+      season: z.number().describe('Season year'),
+      team: z.number().optional().describe('Filter by specific team ID')
+    })
+  )
+  .output(
+    z.object({
+      standings: z.array(standingEntrySchema),
+      leagueName: z.string().nullable().describe('League name'),
+      count: z.number().describe('Number of entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let sport = ctx.input.sport ?? ctx.config.sport;
     let client = new Client({ token: ctx.auth.token, sport });
 
     let data = await client.getStandings({
       league: ctx.input.league,
       season: ctx.input.season,
-      team: ctx.input.team,
+      team: ctx.input.team
     });
 
     let leagueName: string | null = null;
@@ -81,7 +95,7 @@ export let getStandingsTool = SlateTool.create(
               lose: entry.all?.lose ?? entry.games?.lose?.total ?? null,
               goalsFor: entry.all?.goals?.for ?? null,
               goalsAgainst: entry.all?.goals?.against ?? null,
-              description: entry.description ?? null,
+              description: entry.description ?? null
             });
           }
         }
@@ -92,8 +106,9 @@ export let getStandingsTool = SlateTool.create(
       output: {
         standings: entries,
         leagueName,
-        count: entries.length,
+        count: entries.length
       },
-      message: `Retrieved standings for **${leagueName ?? 'league'}** (${ctx.input.season}) with **${entries.length}** entries.`,
+      message: `Retrieved standings for **${leagueName ?? 'league'}** (${ctx.input.season}) with **${entries.length}** entries.`
     };
-  }).build();
+  })
+  .build();

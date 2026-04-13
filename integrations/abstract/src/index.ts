@@ -13,7 +13,7 @@ import {
   validateVat,
   validateIban,
   processImage,
-  generateAvatar,
+  generateAvatar
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     validateVat,
     validateIban,
     processImage,
-    generateAvatar,
+    generateAvatar
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

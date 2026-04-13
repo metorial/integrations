@@ -13,6 +13,7 @@ The API uses API key-based authentication. You can retrieve your API key by visi
 The API key is passed as a query parameter named `secret` on every request. The base URL for API requests is `https://apps.emaillistverify.com/api`.
 
 **Example:**
+
 ```
 GET https://apps.emaillistverify.com/api/verifyEmail?secret=YOUR_API_KEY&[email protected]
 ```

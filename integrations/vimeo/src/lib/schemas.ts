@@ -12,18 +12,24 @@ export let videoSchema = z.object({
   createdTime: z.string().describe('When the video was created'),
   modifiedTime: z.string().describe('When the video was last modified'),
   status: z.string().describe('Video status (e.g. available, uploading, transcoding)'),
-  privacy: z.object({
-    view: z.string().optional().describe('Who can view the video'),
-    embed: z.string().optional().describe('Where the video can be embedded'),
-    download: z.boolean().optional().describe('Whether the video can be downloaded'),
-    comments: z.string().optional().describe('Who can comment on the video')
-  }).optional().describe('Privacy settings of the video'),
+  privacy: z
+    .object({
+      view: z.string().optional().describe('Who can view the video'),
+      embed: z.string().optional().describe('Where the video can be embedded'),
+      download: z.boolean().optional().describe('Whether the video can be downloaded'),
+      comments: z.string().optional().describe('Who can comment on the video')
+    })
+    .optional()
+    .describe('Privacy settings of the video'),
   tags: z.array(z.string()).optional().describe('Tags associated with the video'),
   embedHtml: z.string().nullable().optional().describe('HTML embed code for the video'),
   pictures: z.string().nullable().optional().describe('URL of the video thumbnail'),
-  stats: z.object({
-    plays: z.number().nullable().optional().describe('Number of plays')
-  }).optional().describe('Video playback statistics')
+  stats: z
+    .object({
+      plays: z.number().nullable().optional().describe('Number of plays')
+    })
+    .optional()
+    .describe('Video playback statistics')
 });
 
 export let userSchema = z.object({
@@ -97,12 +103,14 @@ export let mapVideo = (v: any) => ({
   createdTime: v.created_time ?? '',
   modifiedTime: v.modified_time ?? '',
   status: v.status ?? v.transcode?.status ?? 'unknown',
-  privacy: v.privacy ? {
-    view: v.privacy.view,
-    embed: v.privacy.embed,
-    download: v.privacy.download,
-    comments: v.privacy.comments
-  } : undefined,
+  privacy: v.privacy
+    ? {
+        view: v.privacy.view,
+        embed: v.privacy.embed,
+        download: v.privacy.download,
+        comments: v.privacy.comments
+      }
+    : undefined,
   tags: v.tags?.map((t: any) => t.canonical ?? t.name ?? t.tag) ?? [],
   embedHtml: v.embed?.html ?? null,
   pictures: v.pictures?.sizes?.[v.pictures.sizes.length - 1]?.link ?? null,

@@ -3,39 +3,51 @@ import { ControlPlaneClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageRetlSync = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Reverse ETL Sync',
-    key: 'manage_retl_sync',
-    description: `Trigger, stop, or check the status of a Reverse ETL sync. Reverse ETL routes customer data from your data warehouse to downstream destinations.
+export let manageRetlSync = SlateTool.create(spec, {
+  name: 'Manage Reverse ETL Sync',
+  key: 'manage_retl_sync',
+  description: `Trigger, stop, or check the status of a Reverse ETL sync. Reverse ETL routes customer data from your data warehouse to downstream destinations.
 Use this to programmatically orchestrate syncs, check sync progress, or halt running syncs.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['start', 'stop', 'status', 'list']).describe('Action to perform on the sync'),
-    connectionId: z.string().describe('Reverse ETL connection ID'),
-    syncType: z.enum(['incremental', 'full']).optional().describe('Sync type (required for start action)'),
-    syncId: z.string().optional().describe('Sync ID (required for status action)'),
-    status: z.string().optional().describe('Filter syncs by status (for list action)'),
-    limit: z.number().optional().describe('Max syncs to return (for list action)'),
-    offset: z.number().optional().describe('Number of syncs to skip (for list action)'),
-  }))
-  .output(z.object({
-    syncId: z.string().optional().describe('ID of the sync'),
-    syncStatus: z.string().optional().describe('Current status of the sync'),
-    syncs: z.array(z.record(z.string(), z.any())).optional().describe('List of syncs (for list action)'),
-    metrics: z.record(z.string(), z.any()).optional().describe('Sync metrics (for status action)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['start', 'stop', 'status', 'list'])
+        .describe('Action to perform on the sync'),
+      connectionId: z.string().describe('Reverse ETL connection ID'),
+      syncType: z
+        .enum(['incremental', 'full'])
+        .optional()
+        .describe('Sync type (required for start action)'),
+      syncId: z.string().optional().describe('Sync ID (required for status action)'),
+      status: z.string().optional().describe('Filter syncs by status (for list action)'),
+      limit: z.number().optional().describe('Max syncs to return (for list action)'),
+      offset: z.number().optional().describe('Number of syncs to skip (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      syncId: z.string().optional().describe('ID of the sync'),
+      syncStatus: z.string().optional().describe('Current status of the sync'),
+      syncs: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of syncs (for list action)'),
+      metrics: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Sync metrics (for status action)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ControlPlaneClient({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let { action, connectionId, syncType, syncId } = ctx.input;
@@ -49,9 +61,9 @@ Use this to programmatically orchestrate syncs, check sync progress, or halt run
         output: {
           syncId: sync.id,
           syncStatus: sync.status,
-          success: true,
+          success: true
         },
-        message: `Started **${type}** Reverse ETL sync for connection \`${connectionId}\`${sync.id ? ` (sync: \`${sync.id}\`)` : ''}.`,
+        message: `Started **${type}** Reverse ETL sync for connection \`${connectionId}\`${sync.id ? ` (sync: \`${sync.id}\`)` : ''}.`
       };
     }
 
@@ -60,7 +72,7 @@ Use this to programmatically orchestrate syncs, check sync progress, or halt run
 
       return {
         output: { success: true },
-        message: `Stopped running sync for connection \`${connectionId}\`.`,
+        message: `Stopped running sync for connection \`${connectionId}\`.`
       };
     }
 
@@ -75,9 +87,9 @@ Use this to programmatically orchestrate syncs, check sync progress, or halt run
           syncId: sync.id || syncId,
           syncStatus: sync.status,
           metrics: sync.metrics,
-          success: true,
+          success: true
         },
-        message: `Sync \`${syncId}\` status: **${sync.status}**${sync.metrics ? ` — ${JSON.stringify(sync.metrics)}` : ''}.`,
+        message: `Sync \`${syncId}\` status: **${sync.status}**${sync.metrics ? ` — ${JSON.stringify(sync.metrics)}` : ''}.`
       };
     }
 
@@ -85,16 +97,16 @@ Use this to programmatically orchestrate syncs, check sync progress, or halt run
       let result = await client.listRetlSyncs(connectionId, {
         status: ctx.input.status,
         limit: ctx.input.limit,
-        offset: ctx.input.offset,
+        offset: ctx.input.offset
       });
       let list = result.syncs || result;
 
       return {
         output: {
           syncs: Array.isArray(list) ? list : [],
-          success: true,
+          success: true
         },
-        message: `Found **${Array.isArray(list) ? list.length : 0}** sync(s) for connection \`${connectionId}\`.`,
+        message: `Found **${Array.isArray(list) ? list.length : 0}** sync(s) for connection \`${connectionId}\`.`
       };
     }
 

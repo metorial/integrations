@@ -17,7 +17,7 @@ let prospectInputSchema = z.object({
   repliedCount: z.number().optional().nullable().describe('Number of replies'),
   lastSentAt: z.string().optional().nullable().describe('Last sent timestamp'),
   ownerId: z.string().optional().nullable().describe('Owner user ID'),
-  isNew: z.boolean().describe('Whether this is a newly discovered prospect'),
+  isNew: z.boolean().describe('Whether this is a newly discovered prospect')
 });
 
 let prospectOutputSchema = z.object({
@@ -33,28 +33,27 @@ let prospectOutputSchema = z.object({
   sentCount: z.number().optional().nullable().describe('Number of emails sent'),
   repliedCount: z.number().optional().nullable().describe('Number of replies'),
   lastSentAt: z.string().optional().nullable().describe('Last sent timestamp'),
-  ownerId: z.string().optional().nullable().describe('Owner user ID'),
+  ownerId: z.string().optional().nullable().describe('Owner user ID')
 });
 
-export let prospectChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Prospect Changes',
-    key: 'prospect_changes',
-    description: 'Triggers when a prospect (lead) is created or updated. Detects new prospects and changes to existing prospect data, status, or engagement metrics.',
-  }
-)
+export let prospectChanges = SlateTrigger.create(spec, {
+  name: 'Prospect Changes',
+  key: 'prospect_changes',
+  description:
+    'Triggers when a prospect (lead) is created or updated. Detects new prospects and changes to existing prospect data, status, or engagement metrics.'
+})
   .input(prospectInputSchema)
   .output(prospectOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
-      let knownLeads: Record<string, string> = (ctx.state?.knownLeads as Record<string, string>) || {};
+      let knownLeads: Record<string, string> =
+        (ctx.state?.knownLeads as Record<string, string>) || {};
       let inputs: z.infer<typeof prospectInputSchema>[] = [];
 
       let page = 0;
@@ -74,7 +73,7 @@ export let prospectChanges = SlateTrigger.create(
             sent_count: lead.sent_count,
             replied_count: lead.replied_count,
             last_sent_at: lead.last_sent_at,
-            data: lead.data,
+            data: lead.data
           });
 
           let isNew = !knownLeads[leadId];
@@ -95,7 +94,7 @@ export let prospectChanges = SlateTrigger.create(
               repliedCount: lead.replied_count,
               lastSentAt: lead.last_sent_at,
               ownerId: lead.owner_id,
-              isNew,
+              isNew
             });
           }
 
@@ -109,12 +108,12 @@ export let prospectChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownLeads,
-        },
+          knownLeads
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNew ? 'prospect.created' : 'prospect.updated';
 
       return {
@@ -133,8 +132,9 @@ export let prospectChanges = SlateTrigger.create(
           sentCount: ctx.input.sentCount,
           repliedCount: ctx.input.repliedCount,
           lastSentAt: ctx.input.lastSentAt,
-          ownerId: ctx.input.ownerId,
-        },
+          ownerId: ctx.input.ownerId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

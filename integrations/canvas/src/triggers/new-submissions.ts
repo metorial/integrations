@@ -3,57 +3,64 @@ import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newSubmissionsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Submissions',
-    key: 'new_submissions',
-    description: 'Detects new or updated submissions for assignments in a specific course. Triggers when students submit work or when submissions are graded.',
-  }
-)
-  .input(z.object({
-    submissionId: z.string().describe('Submission ID'),
-    assignmentId: z.string().describe('Assignment ID'),
-    userId: z.string().describe('Submitting user ID'),
-    submittedAt: z.string().optional().nullable().describe('Submission timestamp'),
-    gradedAt: z.string().optional().nullable().describe('Grading timestamp'),
-    workflowState: z.string().describe('Submission state'),
-    changeType: z.enum(['submitted', 'graded', 'updated']).describe('Type of change detected'),
-  }))
-  .output(z.object({
-    submissionId: z.string().describe('Submission ID'),
-    assignmentId: z.string().describe('Assignment ID'),
-    assignmentName: z.string().optional().describe('Assignment name'),
-    userId: z.string().describe('Student user ID'),
-    userName: z.string().optional().nullable().describe('Student name'),
-    submittedAt: z.string().optional().nullable().describe('Submission timestamp'),
-    grade: z.string().optional().nullable().describe('Assigned grade'),
-    score: z.number().optional().nullable().describe('Numeric score'),
-    late: z.boolean().optional().describe('Whether submitted late'),
-    missing: z.boolean().optional().describe('Whether missing'),
-    workflowState: z.string().optional().describe('Submission workflow state'),
-    submissionType: z.string().optional().nullable().describe('Type of submission'),
-    attempt: z.number().optional().nullable().describe('Attempt number'),
-  }))
+export let newSubmissionsTrigger = SlateTrigger.create(spec, {
+  name: 'New Submissions',
+  key: 'new_submissions',
+  description:
+    'Detects new or updated submissions for assignments in a specific course. Triggers when students submit work or when submissions are graded.'
+})
+  .input(
+    z.object({
+      submissionId: z.string().describe('Submission ID'),
+      assignmentId: z.string().describe('Assignment ID'),
+      userId: z.string().describe('Submitting user ID'),
+      submittedAt: z.string().optional().nullable().describe('Submission timestamp'),
+      gradedAt: z.string().optional().nullable().describe('Grading timestamp'),
+      workflowState: z.string().describe('Submission state'),
+      changeType: z
+        .enum(['submitted', 'graded', 'updated'])
+        .describe('Type of change detected')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.string().describe('Submission ID'),
+      assignmentId: z.string().describe('Assignment ID'),
+      assignmentName: z.string().optional().describe('Assignment name'),
+      userId: z.string().describe('Student user ID'),
+      userName: z.string().optional().nullable().describe('Student name'),
+      submittedAt: z.string().optional().nullable().describe('Submission timestamp'),
+      grade: z.string().optional().nullable().describe('Assigned grade'),
+      score: z.number().optional().nullable().describe('Numeric score'),
+      late: z.boolean().optional().describe('Whether submitted late'),
+      missing: z.boolean().optional().describe('Whether missing'),
+      workflowState: z.string().optional().describe('Submission workflow state'),
+      submissionType: z.string().optional().nullable().describe('Type of submission'),
+      attempt: z.number().optional().nullable().describe('Attempt number')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CanvasClient({
         token: ctx.auth.token,
-        canvasDomain: ctx.auth.canvasDomain,
+        canvasDomain: ctx.auth.canvasDomain
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
-      let knownSubmissionStates = (ctx.state?.knownSubmissionStates || {}) as Record<string, string>;
+      let knownSubmissionStates = (ctx.state?.knownSubmissionStates || {}) as Record<
+        string,
+        string
+      >;
       let courseId = ctx.state?.courseId as string | undefined;
 
       // Get courses the user teaches
       let courses = await client.listCourses({
         enrollmentType: 'teacher',
-        enrollmentState: 'active',
+        enrollmentState: 'active'
       });
 
       let inputs: Array<{
@@ -75,9 +82,13 @@ export let newSubmissionsTrigger = SlateTrigger.create(
         let assignments = await client.listAssignments(String(course.id), { perPage: 20 });
 
         for (let assignment of assignments.slice(0, 10)) {
-          let submissions = await client.listSubmissions(String(course.id), String(assignment.id), {
-            include: ['user'],
-          });
+          let submissions = await client.listSubmissions(
+            String(course.id),
+            String(assignment.id),
+            {
+              include: ['user']
+            }
+          );
 
           for (let sub of submissions) {
             if (sub.workflow_state === 'unsubmitted' && !sub.grade) continue;
@@ -94,7 +105,10 @@ export let newSubmissionsTrigger = SlateTrigger.create(
             let changeType: 'submitted' | 'graded' | 'updated' = 'updated';
             if (!previousState && sub.submitted_at) {
               changeType = 'submitted';
-            } else if (sub.graded_at && (!previousState || !previousState.includes(sub.graded_at))) {
+            } else if (
+              sub.graded_at &&
+              (!previousState || !previousState.includes(sub.graded_at))
+            ) {
               changeType = 'graded';
             }
 
@@ -105,7 +119,7 @@ export let newSubmissionsTrigger = SlateTrigger.create(
               submittedAt: sub.submitted_at,
               gradedAt: sub.graded_at,
               workflowState: sub.workflow_state,
-              changeType,
+              changeType
             });
           }
         }
@@ -116,24 +130,26 @@ export let newSubmissionsTrigger = SlateTrigger.create(
         updatedState: {
           lastPollTime: new Date().toISOString(),
           knownSubmissionStates: newKnownStates,
-          courseId,
-        },
+          courseId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new CanvasClient({
         token: ctx.auth.token,
-        canvasDomain: ctx.auth.canvasDomain,
+        canvasDomain: ctx.auth.canvasDomain
       });
 
       // Fetch the full submission with user details
-      let submission = await client.getSubmission(
-        '', // not needed with full submission id
-        ctx.input.assignmentId,
-        ctx.input.userId,
-        ['user']
-      ).catch(() => null);
+      let submission = await client
+        .getSubmission(
+          '', // not needed with full submission id
+          ctx.input.assignmentId,
+          ctx.input.userId,
+          ['user']
+        )
+        .catch(() => null);
 
       return {
         type: `submission.${ctx.input.changeType}`,
@@ -151,9 +167,9 @@ export let newSubmissionsTrigger = SlateTrigger.create(
           missing: submission?.missing,
           workflowState: ctx.input.workflowState,
           submissionType: submission?.submission_type,
-          attempt: submission?.attempt,
-        },
+          attempt: submission?.attempt
+        }
       };
-    },
+    }
   })
   .build();

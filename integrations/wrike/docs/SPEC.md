@@ -15,15 +15,18 @@ Wrike supports two authentication methods:
 This is the recommended method for production applications, especially those used by multiple users.
 
 **Setup:**
+
 - Register an application in the Wrike App Console (under Apps & Integrations → API tab) to obtain a **Client ID** and **Client Secret**.
 - Configure one or more **Redirect URIs** (must use HTTPS; `https://localhost` is allowed for development).
 
 **Flow:**
 
 1. **Authorization Request:** Redirect users to:
+
    ```
    https://login.wrike.com/oauth2/authorize/v4?client_id=<client_id>&response_type=code
    ```
+
    Optional parameters: `redirect_uri`, `state`, `scope`.
 
 2. **Authorization Code:** After user consent, Wrike redirects back with an authorization `code` (valid for 10 minutes).
@@ -47,60 +50,79 @@ A non-expiring token that can be generated from the Wrike App Console for a regi
 ## Features
 
 ### Task Management
+
 Create, read, update, and delete tasks within folders or projects. Supports setting titles, descriptions, importance, status, dates (start, due, duration), assignees (responsibles), custom fields, and parent folders/projects. Task field history can also be queried. Bulk updates are supported for multiple tasks at once.
 
 ### Folder & Project Management
+
 Manage folders and projects, which form the hierarchical organizational structure in Wrike. Projects are folders with additional properties: owners, start/end dates, and status. Supports creating, copying (including async copy), modifying, and deleting folders/projects. The full folder tree can be retrieved for navigation.
 
 ### Spaces
+
 Manage spaces, which are top-level organizational containers in Wrike. Spaces can be queried and used as scoping targets for other operations like webhooks.
 
 ### Comments
+
 Add, read, and delete comments on tasks, folders, and projects.
 
 ### Attachments
+
 Upload, download, and manage file attachments on tasks, folders, and projects.
 
 ### Time Tracking
+
 Log time entries (timelogs) against tasks. Manage timelog categories and timelog lock periods. Query and manage timesheets, timesheet rows, and timesheet submission rules.
 
 ### Custom Fields
+
 Create, read, and modify custom fields at the account or space level. Custom fields can be applied to tasks, folders, and projects to capture additional structured data.
 
 ### Custom Item Types
+
 Define and manage custom item types (CITs) to create specialized work item categories beyond standard tasks and projects.
 
 ### Workflows
+
 Create and modify workflows that define the set of statuses available for tasks and projects. Each workflow contains custom statuses with configurable properties.
 
 ### Users & Contacts
+
 Query user and contact information within the account. Manage invitations to invite new users. Manage user types and groups for organizing users.
 
 ### Approvals
+
 Manage approval processes on tasks, folders, and projects. Supports tracking approval status and individual approver decisions.
 
 ### Dependencies
+
 Create and manage task dependencies (predecessor/successor relationships) for timeline/Gantt chart views.
 
 ### Blueprints
+
 Use task blueprints and folder blueprints as templates for creating standardized work items.
 
 ### Work Schedules
+
 Manage work schedules and work schedule exceptions to define working days and hours. User-level schedule exceptions are also supported.
 
 ### Bookings & Resource Management
+
 Manage bookings for resource allocation. Supports hourly rates and job roles for resource planning and cost tracking.
 
 ### Account Administration
+
 Query and modify account-level settings. Manage access roles and user types to control permissions.
 
 ### Audit Log
+
 Access audit log data for security information and event management (SIEM) integration.
 
 ### Data Export (BI Export)
+
 Export account data in a relational table format for import into third-party analytics tools (e.g., Tableau, Power BI).
 
 ### EDiscovery
+
 Access eDiscovery functionality for compliance and legal purposes.
 
 ## Events
@@ -112,7 +134,9 @@ When creating a webhook, you can optionally specify which event types to subscri
 Webhooks support payload signing with a shared secret for authenticity verification. Webhooks are automatically suspended if the endpoint becomes unreachable after retries.
 
 ### Task Events
+
 Notifications about task lifecycle and property changes:
+
 - **TaskCreated** — New task created (can filter for recurrent vs. non-recurrent).
 - **TaskDeleted** — Task deleted.
 - **TaskTitleChanged** — Task title updated (includes old/new values).
@@ -126,7 +150,9 @@ Notifications about task lifecycle and property changes:
 - **TaskCustomFieldChanged** — Custom field value changed on a task (can filter to specific custom fields via parameterized events).
 
 ### Folder & Project Events
+
 Notifications about folder and project lifecycle and property changes:
+
 - **FolderCreated / FolderDeleted** — Folder, project, or space created or deleted.
 - **FolderTitleChanged** — Title changed (includes old/new values).
 - **FolderDescriptionChanged** — Description changed.
@@ -140,19 +166,24 @@ Notifications about folder and project lifecycle and property changes:
 - **ProjectStatusChanged** — Project status changed.
 
 ### Approval Events
+
 Notifications about approval workflow changes:
+
 - **TaskApprovalStatusChanged / FolderApprovalStatusChanged** — Approval status changed.
 - **TaskApprovalDecisionChanged / FolderApprovalDecisionChanged** — Approver decision made.
 - **TaskApprovalDecisionReset / FolderApprovalDecisionReset** — Approval decision reset (e.g., after file re-upload).
 
 ### Attachment & Comment Events (on Tasks)
+
 - **AttachmentAdded / AttachmentDeleted** — Attachment added or removed from a task.
 - **CommentAdded / CommentDeleted** — Comment added or removed on a task.
 
 ### Time Tracking Events
+
 - **TimelogChanged** — Time log entry added, updated, or removed.
 
 ### Other Events
+
 - **WorkItemTypeChanged** — A work item's Custom Item Type changed (e.g., plain task converted to a CIT).
 - **CreateFromBlueprintCompleted** — Creation from a blueprint template completed.
 - **ImportFromFileCompleted** — Import from an Excel or MS Project file completed.

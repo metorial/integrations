@@ -65,14 +65,14 @@ export class Client {
   constructor(config: { token: string }) {
     this.accessKey = config.token;
     this.axios = createAxios({
-      baseURL: 'https://api.apiflash.com/v1/urltoimage',
+      baseURL: 'https://api.apiflash.com/v1/urltoimage'
     });
   }
 
   private buildQueryParams(params: ScreenshotParams): Record<string, string> {
     let query: Record<string, string> = {
       access_key: this.accessKey,
-      url: params.url,
+      url: params.url
     };
 
     if (params.format !== undefined) query.format = params.format;
@@ -85,9 +85,11 @@ export class Client {
     if (params.waitFor !== undefined) query.wait_for = params.waitFor;
     if (params.waitUntil !== undefined) query.wait_until = params.waitUntil;
     if (params.element !== undefined) query.element = params.element;
-    if (params.elementOverlap !== undefined) query.element_overlap = String(params.elementOverlap);
+    if (params.elementOverlap !== undefined)
+      query.element_overlap = String(params.elementOverlap);
     if (params.crop !== undefined) query.crop = params.crop;
-    if (params.thumbnailWidth !== undefined) query.thumbnail_width = String(params.thumbnailWidth);
+    if (params.thumbnailWidth !== undefined)
+      query.thumbnail_width = String(params.thumbnailWidth);
     if (params.scaleFactor !== undefined) query.scale_factor = String(params.scaleFactor);
     if (params.transparent !== undefined) query.transparent = String(params.transparent);
     if (params.css !== undefined) query.css = params.css;
@@ -105,7 +107,8 @@ export class Client {
     if (params.failOnStatus !== undefined) query.fail_on_status = params.failOnStatus;
     if (params.noAds !== undefined) query.no_ads = String(params.noAds);
     if (params.noTracking !== undefined) query.no_tracking = String(params.noTracking);
-    if (params.noCookieBanners !== undefined) query.no_cookie_banners = String(params.noCookieBanners);
+    if (params.noCookieBanners !== undefined)
+      query.no_cookie_banners = String(params.noCookieBanners);
     if (params.ttl !== undefined) query.ttl = String(params.ttl);
     if (params.fresh !== undefined) query.fresh = String(params.fresh);
     if (params.responseType !== undefined) query.response_type = params.responseType;
@@ -126,22 +129,22 @@ export class Client {
     query.response_type = 'json';
 
     let response = await this.axios.get('', {
-      params: query,
+      params: query
     });
 
     let data = response.data as Record<string, unknown>;
     return {
       url: data.url as string,
       extractedHtml: data.extracted_html as string | undefined,
-      extractedText: data.extracted_text as string | undefined,
+      extractedText: data.extracted_text as string | undefined
     };
   }
 
   async getQuota(): Promise<QuotaResponse> {
     let response = await this.axios.get('/quota', {
       params: {
-        access_key: this.accessKey,
-      },
+        access_key: this.accessKey
+      }
     });
 
     return response.data as QuotaResponse;
@@ -154,14 +157,14 @@ export class Client {
     query.extract_text = String(params.extractText ?? true);
 
     let response = await this.axios.get('', {
-      params: query,
+      params: query
     });
 
     let data = response.data as Record<string, unknown>;
     return {
       url: data.url as string,
       extractedHtml: data.extracted_html as string | undefined,
-      extractedText: data.extracted_text as string | undefined,
+      extractedText: data.extracted_text as string | undefined
     };
   }
 }

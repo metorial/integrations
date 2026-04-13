@@ -17,7 +17,7 @@ import {
   manageTemplate,
   manageSnippet,
   createCall,
-  listUsers,
+  listUsers
 } from './tools';
 import {
   prospectEvents,
@@ -27,7 +27,7 @@ import {
   sequenceStateEvents,
   taskEvents,
   opportunityEvents,
-  callEvents,
+  callEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -49,7 +49,7 @@ export let provider = Slate.create({
     manageTemplate,
     manageSnippet,
     createCall,
-    listUsers,
+    listUsers
   ],
   triggers: [
     prospectEvents,
@@ -59,6 +59,6 @@ export let provider = Slate.create({
     sequenceStateEvents,
     taskEvents,
     opportunityEvents,
-    callEvents,
-  ],
+    callEvents
+  ]
 });

@@ -3,29 +3,48 @@ import { PlaygroundClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteAvatars = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Avatars',
-    key: 'delete_avatars',
-    description: `Bulk delete avatars and/or avatar video inferences. Deleting an avatar also deletes all associated video inferences. Provide avatar IDs, inference IDs, or both to delete.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteAvatars = SlateTool.create(spec, {
+  name: 'Delete Avatars',
+  key: 'delete_avatars',
+  description: `Bulk delete avatars and/or avatar video inferences. Deleting an avatar also deletes all associated video inferences. Provide avatar IDs, inference IDs, or both to delete.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    avatarIds: z.array(z.string()).optional().describe('List of avatar IDs to delete'),
-    inferenceIds: z.array(z.string()).optional().describe('List of avatar inference IDs to delete'),
-  }))
-  .output(z.object({
-    deletedAvatarsCount: z.number().optional().describe('Number of avatars successfully deleted'),
-    failedAvatarsCount: z.number().optional().describe('Number of avatar deletions that failed'),
-    associatedInferencesDeletedCount: z.number().optional().describe('Number of associated inferences deleted'),
-    deletedInferencesCount: z.number().optional().describe('Number of inferences successfully deleted'),
-    failedInferencesCount: z.number().optional().describe('Number of inference deletions that failed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      avatarIds: z.array(z.string()).optional().describe('List of avatar IDs to delete'),
+      inferenceIds: z
+        .array(z.string())
+        .optional()
+        .describe('List of avatar inference IDs to delete')
+    })
+  )
+  .output(
+    z.object({
+      deletedAvatarsCount: z
+        .number()
+        .optional()
+        .describe('Number of avatars successfully deleted'),
+      failedAvatarsCount: z
+        .number()
+        .optional()
+        .describe('Number of avatar deletions that failed'),
+      associatedInferencesDeletedCount: z
+        .number()
+        .optional()
+        .describe('Number of associated inferences deleted'),
+      deletedInferencesCount: z
+        .number()
+        .optional()
+        .describe('Number of inferences successfully deleted'),
+      failedInferencesCount: z
+        .number()
+        .optional()
+        .describe('Number of inference deletions that failed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlaygroundClient(ctx.auth.token);
     let messages: string[] = [];
     let output: Record<string, number> = {};
@@ -47,7 +66,8 @@ export let deleteAvatars = SlateTool.create(
 
     return {
       output: output as any,
-      message: messages.length > 0 ? messages.join('. ') + '.' : 'No items specified for deletion.',
+      message:
+        messages.length > 0 ? messages.join('. ') + '.' : 'No items specified for deletion.'
     };
   })
   .build();

@@ -3,52 +3,74 @@ import { SlidesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let editText = SlateTool.create(
-  spec,
-  {
-    name: 'Edit Text',
-    key: 'edit_text',
-    description: `Insert, delete, or style text within a specific text box or shape element on a slide. Use this for targeted edits to individual page elements. For bulk placeholder replacement across the entire presentation, use the **Replace Text** tool instead.`,
-    instructions: [
-      'You need the objectId of the specific text box or shape element (not the slide ID). Use Get Presentation to find element IDs.',
-      'When inserting text, specify the insertionIndex (0-based character position). Use 0 to insert at the beginning.',
-      'When deleting text, specify startIndex and endIndex for the character range to remove.',
-      'Text styling is applied to a range via startIndex/endIndex and supports font, size, color, bold, italic, underline, and links.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let editText = SlateTool.create(spec, {
+  name: 'Edit Text',
+  key: 'edit_text',
+  description: `Insert, delete, or style text within a specific text box or shape element on a slide. Use this for targeted edits to individual page elements. For bulk placeholder replacement across the entire presentation, use the **Replace Text** tool instead.`,
+  instructions: [
+    'You need the objectId of the specific text box or shape element (not the slide ID). Use Get Presentation to find element IDs.',
+    'When inserting text, specify the insertionIndex (0-based character position). Use 0 to insert at the beginning.',
+    'When deleting text, specify startIndex and endIndex for the character range to remove.',
+    'Text styling is applied to a range via startIndex/endIndex and supports font, size, color, bold, italic, underline, and links.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    presentationId: z.string().describe('ID of the presentation'),
-    elementObjectId: z.string().describe('Object ID of the text box or shape element to edit'),
-    action: z.enum(['insert', 'delete', 'style', 'bullets']).describe('Text action to perform'),
+})
+  .input(
+    z.object({
+      presentationId: z.string().describe('ID of the presentation'),
+      elementObjectId: z
+        .string()
+        .describe('Object ID of the text box or shape element to edit'),
+      action: z
+        .enum(['insert', 'delete', 'style', 'bullets'])
+        .describe('Text action to perform'),
 
-    text: z.string().optional().describe('Text to insert (for insert action)'),
-    insertionIndex: z.number().optional().describe('Character index at which to insert text (for insert action, 0-based)'),
+      text: z.string().optional().describe('Text to insert (for insert action)'),
+      insertionIndex: z
+        .number()
+        .optional()
+        .describe('Character index at which to insert text (for insert action, 0-based)'),
 
-    startIndex: z.number().optional().describe('Start of the character range (for delete and style actions)'),
-    endIndex: z.number().optional().describe('End of the character range (for delete and style actions)'),
+      startIndex: z
+        .number()
+        .optional()
+        .describe('Start of the character range (for delete and style actions)'),
+      endIndex: z
+        .number()
+        .optional()
+        .describe('End of the character range (for delete and style actions)'),
 
-    bold: z.boolean().optional().describe('Set bold (for style action)'),
-    italic: z.boolean().optional().describe('Set italic (for style action)'),
-    underline: z.boolean().optional().describe('Set underline (for style action)'),
-    fontFamily: z.string().optional().describe('Font family name (for style action)'),
-    fontSize: z.number().optional().describe('Font size in points (for style action)'),
-    foregroundColorHex: z.string().optional().describe('Text color as hex, e.g. "#FF0000" (for style action)'),
-    linkUrl: z.string().optional().describe('URL to link the text to (for style action)'),
+      bold: z.boolean().optional().describe('Set bold (for style action)'),
+      italic: z.boolean().optional().describe('Set italic (for style action)'),
+      underline: z.boolean().optional().describe('Set underline (for style action)'),
+      fontFamily: z.string().optional().describe('Font family name (for style action)'),
+      fontSize: z.number().optional().describe('Font size in points (for style action)'),
+      foregroundColorHex: z
+        .string()
+        .optional()
+        .describe('Text color as hex, e.g. "#FF0000" (for style action)'),
+      linkUrl: z.string().optional().describe('URL to link the text to (for style action)'),
 
-    bulletPreset: z.string().optional().describe('Bullet preset, e.g. BULLET_DISC_CIRCLE_SQUARE, NUMBERED_DIGIT_ALPHA_ROMAN (for bullets action)')
-  }))
-  .output(z.object({
-    presentationId: z.string().describe('ID of the presentation'),
-    elementObjectId: z.string().describe('Object ID of the modified element'),
-    action: z.string().describe('Action that was performed'),
-    replies: z.array(z.any()).optional().describe('Raw API replies')
-  }))
-  .handleInvocation(async (ctx) => {
+      bulletPreset: z
+        .string()
+        .optional()
+        .describe(
+          'Bullet preset, e.g. BULLET_DISC_CIRCLE_SQUARE, NUMBERED_DIGIT_ALPHA_ROMAN (for bullets action)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      presentationId: z.string().describe('ID of the presentation'),
+      elementObjectId: z.string().describe('Object ID of the modified element'),
+      action: z.string().describe('Action that was performed'),
+      replies: z.array(z.any()).optional().describe('Raw API replies')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlidesClient(ctx.auth.token);
     let { presentationId, elementObjectId, action } = ctx.input;
     let result: any;
@@ -58,14 +80,24 @@ export let editText = SlateTool.create(
         if (ctx.input.text === undefined) {
           throw new Error('text is required for insert action');
         }
-        result = await client.insertText(presentationId, elementObjectId, ctx.input.text, ctx.input.insertionIndex);
+        result = await client.insertText(
+          presentationId,
+          elementObjectId,
+          ctx.input.text,
+          ctx.input.insertionIndex
+        );
         break;
       }
       case 'delete': {
         if (ctx.input.startIndex === undefined || ctx.input.endIndex === undefined) {
           throw new Error('startIndex and endIndex are required for delete action');
         }
-        result = await client.deleteText(presentationId, elementObjectId, ctx.input.startIndex, ctx.input.endIndex);
+        result = await client.deleteText(
+          presentationId,
+          elementObjectId,
+          ctx.input.startIndex,
+          ctx.input.endIndex
+        );
         break;
       }
       case 'style': {
@@ -121,7 +153,11 @@ export let editText = SlateTool.create(
           presentationId,
           elementObjectId,
           style,
-          { type: 'FIXED_RANGE', startIndex: ctx.input.startIndex, endIndex: ctx.input.endIndex },
+          {
+            type: 'FIXED_RANGE',
+            startIndex: ctx.input.startIndex,
+            endIndex: ctx.input.endIndex
+          },
           fields.join(',')
         );
         break;
@@ -133,7 +169,11 @@ export let editText = SlateTool.create(
         result = await client.createParagraphBullets(
           presentationId,
           elementObjectId,
-          { type: 'FIXED_RANGE', startIndex: ctx.input.startIndex, endIndex: ctx.input.endIndex },
+          {
+            type: 'FIXED_RANGE',
+            startIndex: ctx.input.startIndex,
+            endIndex: ctx.input.endIndex
+          },
           ctx.input.bulletPreset || 'BULLET_DISC_CIRCLE_SQUARE'
         );
         break;

@@ -15,6 +15,7 @@ SearchApi uses **API key** authentication. Use it as a query parameter (`https:/
 ## Features
 
 ### Multi-Engine Web Search
+
 Perform real-time searches across many search engines by specifying the `engine` parameter. The Google Search API provides data including organic search results, paid search results, knowledge graph entries, local map listings, featured snippets, and related search queries. Supported engines include Google (standard and light), Bing, Baidu, Yahoo, Yandex, DuckDuckGo, and Naver. Results are returned as structured JSON with organic results, ads, knowledge graphs, "People Also Ask" sections, and more.
 
 - **Localization**: Searches can be localized by geographic location, language (`hl`), country (`gl`), and search domain. You can track keywords for specific locations, devices, and languages.
@@ -22,7 +23,9 @@ Perform real-time searches across many search engines by specifying the `engine`
 - **SafeSearch**: Configurable content filtering (active, blur, off).
 
 ### Google Vertical Search Engines
+
 SearchApi supports specialized Google verticals including:
+
 - **Google Images, Videos, Shorts** — media search results
 - **Google News** — real-time news scraping with historical article search using time range filters, access to top stories and headlines.
 - **Google Shopping** — product listings, offers, reviews, and product details
@@ -37,7 +40,9 @@ SearchApi supports specialized Google verticals including:
 - **Google Ads Transparency** — track ads, see where they appear, and learn more about advertisers.
 
 ### Non-Google Search Engines and Platforms
+
 SearchApi also supports scraping results from platforms beyond traditional search engines:
+
 - **YouTube Search** — video search results
 - **Amazon, Walmart, Shein, eBay Search** — e-commerce product listings
 - **Apple App Store, Google Play** — app store search results
@@ -46,18 +51,23 @@ SearchApi also supports scraping results from platforms beyond traditional searc
 - **Social profiles**: TikTok Profile, Instagram Profile, Facebook Business Page
 
 ### Google Rank Tracking
+
 A dedicated engine for SEO rank tracking, supporting up to 100 results per query for monitoring keyword positions over time.
 
 ### Geo-Targeting with Locations API
+
 Retrieves the top 10 largest locations matching a given term, returning canonical names that can be used as the `location` parameter in search queries. Returns metadata including coordinates, country codes, and population reach.
 
 ### Search History
+
 Retrieves past searches from your account history, with pagination via `next_page_token`. Each entry includes the engine used, parameters, status, and links to the cached HTML/JSON responses.
 
 ### Account Information
+
 Provides general account usage data including total searches performed this month, maximum allowable searches per month, and remaining search credits.
 
 ### Zero Retention Mode
+
 Setting `zero_retention` to true disables all logging and persistent storage. No request parameters, HTML, or JSON responses are stored or logged, suitable for high-compliance use cases. This is an Enterprise-only feature.
 
 ## Events

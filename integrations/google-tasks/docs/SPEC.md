@@ -9,25 +9,28 @@ Google Tasks is a task management service by Google that allows users to create 
 Google Tasks API uses **OAuth 2.0** exclusively for authentication, as it accesses user-specific data.
 
 **Setup Requirements:**
+
 - You need to create one or more OAuth 2.0 Client IDs in the Google Cloud Console. A client ID is used to identify a single app to Google's OAuth servers. If your app runs on multiple platforms, you must create a separate client ID for each platform.
 - Enable the Google Tasks API in your Google Cloud project.
 - Configure an OAuth consent screen.
 
 **OAuth 2.0 Endpoints:**
+
 - Authorization endpoint: `https://accounts.google.com/o/oauth2/auth`
 - Token endpoint: `https://oauth2.googleapis.com/token`
 
 **Required Credentials:**
+
 - Client ID
 - Client Secret
 - Redirect URI
 
 **Scopes:**
 
-| Scope | Description |
-|-------|-------------|
-| `https://www.googleapis.com/auth/tasks` | Create, edit, organize, and delete all your tasks. |
-| `https://www.googleapis.com/auth/tasks.readonly` | View your tasks. |
+| Scope                                            | Description                                        |
+| ------------------------------------------------ | -------------------------------------------------- |
+| `https://www.googleapis.com/auth/tasks`          | Create, edit, organize, and delete all your tasks. |
+| `https://www.googleapis.com/auth/tasks.readonly` | View your tasks.                                   |
 
 Use `access_type=offline` when generating the authorization URL to receive a refresh token for long-lived access.
 
@@ -40,12 +43,14 @@ Create, read, update, and delete task lists for the authenticated user. Each use
 ### Task Management
 
 Create, read, update, and delete individual tasks within a task list. Tasks support the following properties:
+
 - Title and notes (description)
 - Due date (date only, time portion is discarded)
 - Completion status and completion date
 - Deleted status
 
 **Limitations:**
+
 - A user can have up to 20,000 non-hidden tasks per list and up to 100,000 tasks in total.
 - Tasks assigned from Docs or Chat Spaces cannot be inserted from the Tasks API; they can only be created by assigning them from Docs or Chat Spaces.
 - Tasks created or assigned from Google Docs are not available via the API. This is a known limitation.

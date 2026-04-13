@@ -12,41 +12,59 @@ let organicResultSchema = z.object({
   snippetMatched: z.array(z.string()).optional()
 });
 
-export let googleSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Google Search',
-    key: 'google_search',
-    description: `Search Google and retrieve structured results including organic results, knowledge graph, related searches, and pagination info. Supports multiple search types: web, news, images, and videos.`,
-    instructions: [
-      'Use the "tbs" parameter for time-based filtering, e.g., "qdr:d" for past day, "qdr:w" for past week.',
-      'Set "gl" for country code (e.g., "us", "fr") and "hl" for language code (e.g., "en", "fr") to localize results.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let googleSearch = SlateTool.create(spec, {
+  name: 'Google Search',
+  key: 'google_search',
+  description: `Search Google and retrieve structured results including organic results, knowledge graph, related searches, and pagination info. Supports multiple search types: web, news, images, and videos.`,
+  instructions: [
+    'Use the "tbs" parameter for time-based filtering, e.g., "qdr:d" for past day, "qdr:w" for past week.',
+    'Set "gl" for country code (e.g., "us", "fr") and "hl" for language code (e.g., "en", "fr") to localize results.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    searchType: z.enum(['web', 'news', 'images', 'videos']).default('web').describe('Type of Google search to perform'),
-    location: z.string().optional().describe('Geographic location for localized results'),
-    countryCode: z.string().optional().describe('Two-letter country code (e.g., "us", "fr")'),
-    languageCode: z.string().optional().describe('Two-letter language code (e.g., "en", "fr")'),
-    tbs: z.string().optional().describe('Time-based search filter (e.g., "qdr:d" for past day, "qdr:w" for past week)'),
-    page: z.number().optional().describe('Page number for pagination'),
-    resultsPerPage: z.number().optional().describe('Number of results per page (default 10)')
-  }))
-  .output(z.object({
-    organicResults: z.array(z.any()).optional().describe('Organic search results'),
-    knowledgeGraph: z.any().optional().describe('Knowledge graph panel (web search)'),
-    relatedSearches: z.array(z.any()).optional().describe('Related search suggestions'),
-    searchInformation: z.any().optional().describe('Search metadata like total results and time taken'),
-    pagination: z.any().optional().describe('Pagination information'),
-    images: z.array(z.any()).optional().describe('Image results (images search type)'),
-    suggestions: z.array(z.any()).optional().describe('Search suggestions')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      searchType: z
+        .enum(['web', 'news', 'images', 'videos'])
+        .default('web')
+        .describe('Type of Google search to perform'),
+      location: z.string().optional().describe('Geographic location for localized results'),
+      countryCode: z
+        .string()
+        .optional()
+        .describe('Two-letter country code (e.g., "us", "fr")'),
+      languageCode: z
+        .string()
+        .optional()
+        .describe('Two-letter language code (e.g., "en", "fr")'),
+      tbs: z
+        .string()
+        .optional()
+        .describe(
+          'Time-based search filter (e.g., "qdr:d" for past day, "qdr:w" for past week)'
+        ),
+      page: z.number().optional().describe('Page number for pagination'),
+      resultsPerPage: z.number().optional().describe('Number of results per page (default 10)')
+    })
+  )
+  .output(
+    z.object({
+      organicResults: z.array(z.any()).optional().describe('Organic search results'),
+      knowledgeGraph: z.any().optional().describe('Knowledge graph panel (web search)'),
+      relatedSearches: z.array(z.any()).optional().describe('Related search suggestions'),
+      searchInformation: z
+        .any()
+        .optional()
+        .describe('Search metadata like total results and time taken'),
+      pagination: z.any().optional().describe('Pagination information'),
+      images: z.array(z.any()).optional().describe('Image results (images search type)'),
+      suggestions: z.array(z.any()).optional().describe('Search suggestions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result: any;
 

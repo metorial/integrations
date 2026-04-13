@@ -5,29 +5,25 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.abuseipdb.com/api/v2',
+      baseURL: 'https://api.abuseipdb.com/api/v2'
     });
   }
 
   private get headers() {
     return {
       Key: this.config.token,
-      Accept: 'application/json',
+      Accept: 'application/json'
     };
   }
 
-  async checkIp(params: {
-    ipAddress: string;
-    maxAgeInDays?: number;
-    verbose?: boolean;
-  }) {
+  async checkIp(params: { ipAddress: string; maxAgeInDays?: number; verbose?: boolean }) {
     let response = await this.axios.get('/check', {
       headers: this.headers,
       params: {
         ipAddress: params.ipAddress,
         maxAgeInDays: params.maxAgeInDays ?? 30,
-        verbose: params.verbose ? '' : undefined,
-      },
+        verbose: params.verbose ? '' : undefined
+      }
     });
     return response.data;
   }
@@ -44,22 +40,19 @@ export class Client {
         ipAddress: params.ipAddress,
         maxAgeInDays: params.maxAgeInDays ?? 30,
         page: params.page ?? 1,
-        perPage: params.perPage ?? 25,
-      },
+        perPage: params.perPage ?? 25
+      }
     });
     return response.data;
   }
 
-  async checkBlock(params: {
-    network: string;
-    maxAgeInDays?: number;
-  }) {
+  async checkBlock(params: { network: string; maxAgeInDays?: number }) {
     let response = await this.axios.get('/check-block', {
       headers: this.headers,
       params: {
         network: params.network,
-        maxAgeInDays: params.maxAgeInDays ?? 30,
-      },
+        maxAgeInDays: params.maxAgeInDays ?? 30
+      }
     });
     return response.data;
   }
@@ -73,21 +66,19 @@ export class Client {
     let response = await this.axios.post('/report', null, {
       headers: {
         ...this.headers,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       params: {
         ip: params.ip,
         categories: params.categories,
         comment: params.comment,
-        timestamp: params.timestamp,
-      },
+        timestamp: params.timestamp
+      }
     });
     return response.data;
   }
 
-  async bulkReport(params: {
-    csvContent: string;
-  }) {
+  async bulkReport(params: { csvContent: string }) {
     let boundary = '----SlatesBoundary' + Date.now().toString(36);
     let body = [
       `--${boundary}`,
@@ -95,14 +86,14 @@ export class Client {
       'Content-Type: text/csv',
       '',
       params.csvContent,
-      `--${boundary}--`,
+      `--${boundary}--`
     ].join('\r\n');
 
     let response = await this.axios.post('/bulk-report', body, {
       headers: {
         ...this.headers,
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
     return response.data;
   }
@@ -117,7 +108,7 @@ export class Client {
     let queryParams: Record<string, string | number | undefined> = {
       confidenceMinimum: params.confidenceMinimum ?? 100,
       limit: params.limit,
-      ipVersion: params.ipVersion,
+      ipVersion: params.ipVersion
     };
 
     if (params.onlyCountries) {
@@ -129,19 +120,17 @@ export class Client {
 
     let response = await this.axios.get('/blacklist', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async clearAddress(params: {
-    ipAddress: string;
-  }) {
+  async clearAddress(params: { ipAddress: string }) {
     let response = await this.axios.delete('/clear-address', {
       headers: this.headers,
       params: {
-        ipAddress: params.ipAddress,
-      },
+        ipAddress: params.ipAddress
+      }
     });
     return response.data;
   }

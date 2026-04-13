@@ -17,37 +17,41 @@ let bankDetailSchema = z.object({
   nameShort: z.string().nullable().describe('Short bank name'),
   bankType: z.string().nullable().describe('Type: BANK, NKO, BANK_BRANCH, NKO_BRANCH, CBR'),
   status: z.string().nullable().describe('Status: ACTIVE, LIQUIDATING, LIQUIDATED'),
-  address: z.string().nullable().describe('Bank address'),
+  address: z.string().nullable().describe('Bank address')
 });
 
-export let lookupBank = SlateTool.create(
-  spec,
-  {
-    name: 'Lookup Bank',
-    key: 'lookup_bank',
-    description: `Looks up a bank by BIK, SWIFT code, INN, INN+KPP (for branches), or Bank of Russia registration number.
+export let lookupBank = SlateTool.create(spec, {
+  name: 'Lookup Bank',
+  key: 'lookup_bank',
+  description: `Looks up a bank by BIK, SWIFT code, INN, INN+KPP (for branches), or Bank of Russia registration number.
 Returns full bank details including correspondent account, address, and status. Use this for precise lookups when you have a specific identifier.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('BIK, SWIFT code, INN, INN+KPP, or registration number'),
-    kpp: z.string().optional().describe('KPP to find a specific branch when searching by INN'),
-  }))
-  .output(z.object({
-    banks: z.array(bankDetailSchema).describe('List of matched banks'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('BIK, SWIFT code, INN, INN+KPP, or registration number'),
+      kpp: z
+        .string()
+        .optional()
+        .describe('KPP to find a specific branch when searching by INN')
+    })
+  )
+  .output(
+    z.object({
+      banks: z.array(bankDetailSchema).describe('List of matched banks')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SuggestionsClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let data = await client.findById('bank', {
       query: ctx.input.query,
-      kpp: ctx.input.kpp,
+      kpp: ctx.input.kpp
     });
 
     let banks = (data.suggestions || []).map((s: any) => ({
@@ -64,13 +68,15 @@ Returns full bank details including correspondent account, address, and status. 
       nameShort: s.data?.name?.short ?? null,
       bankType: s.data?.opf?.type ?? null,
       status: s.data?.state?.status ?? null,
-      address: s.data?.address?.value ?? null,
+      address: s.data?.address?.value ?? null
     }));
 
     return {
       output: { banks },
-      message: banks.length > 0
-        ? `Found **${banks.length}** bank(s) for "${ctx.input.query}": ${banks.map((b: any) => b.value).join(', ')}`
-        : `No banks found for "${ctx.input.query}".`,
+      message:
+        banks.length > 0
+          ? `Found **${banks.length}** bank(s) for "${ctx.input.query}": ${banks.map((b: any) => b.value).join(', ')}`
+          : `No banks found for "${ctx.input.query}".`
     };
-  }).build();
+  })
+  .build();

@@ -2,52 +2,80 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recruitingEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Recruiting Event',
-    key: 'recruiting_event',
-    description: 'Triggered by recruiting events including job requisition updates, offer approvals, and job application updates. Configure in SuccessFactors Integration Center using Intelligent Services as the trigger type with REST/JSON destination.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of recruiting event (e.g., "requisition_updated", "offer_approved", "application_updated")'),
-    eventId: z.string().describe('Unique identifier for the event'),
-    rawPayload: z.record(z.string(), z.unknown()).describe('Full event payload from SuccessFactors'),
-  }))
-  .output(z.object({
-    requisitionId: z.string().optional().describe('Job requisition ID if applicable'),
-    applicationId: z.string().optional().describe('Job application ID if applicable'),
-    candidateId: z.string().optional().describe('Candidate ID if applicable'),
-    jobTitle: z.string().optional().describe('Job title if available'),
-    status: z.string().optional().describe('Current status of the recruiting entity'),
-    applicantName: z.string().optional().describe('Applicant name if available'),
-  }))
+export let recruitingEvent = SlateTrigger.create(spec, {
+  name: 'Recruiting Event',
+  key: 'recruiting_event',
+  description:
+    'Triggered by recruiting events including job requisition updates, offer approvals, and job application updates. Configure in SuccessFactors Integration Center using Intelligent Services as the trigger type with REST/JSON destination.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The type of recruiting event (e.g., "requisition_updated", "offer_approved", "application_updated")'
+        ),
+      eventId: z.string().describe('Unique identifier for the event'),
+      rawPayload: z
+        .record(z.string(), z.unknown())
+        .describe('Full event payload from SuccessFactors')
+    })
+  )
+  .output(
+    z.object({
+      requisitionId: z.string().optional().describe('Job requisition ID if applicable'),
+      applicationId: z.string().optional().describe('Job application ID if applicable'),
+      candidateId: z.string().optional().describe('Candidate ID if applicable'),
+      jobTitle: z.string().optional().describe('Job title if available'),
+      status: z.string().optional().describe('Current status of the recruiting entity'),
+      applicantName: z.string().optional().describe('Applicant name if available')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       let eventType = resolveRecruitingEventType(data);
-      let eventId = extractField(data, ['eventId', 'event_id', 'externalEventId']) || `${eventType}_${Date.now()}`;
+      let eventId =
+        extractField(data, ['eventId', 'event_id', 'externalEventId']) ||
+        `${eventType}_${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId: String(eventId),
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: String(eventId),
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { rawPayload } = ctx.input;
 
-      let requisitionId = extractField(rawPayload, ['jobReqId', 'requisitionId', 'requisition_id']);
-      let applicationId = extractField(rawPayload, ['applicationId', 'application_id', 'jobApplicationId']);
+      let requisitionId = extractField(rawPayload, [
+        'jobReqId',
+        'requisitionId',
+        'requisition_id'
+      ]);
+      let applicationId = extractField(rawPayload, [
+        'applicationId',
+        'application_id',
+        'jobApplicationId'
+      ]);
       let candidateId = extractField(rawPayload, ['candidateId', 'candidate_id']);
       let jobTitle = extractField(rawPayload, ['jobTitle', 'title', 'positionTitle']);
-      let status = extractField(rawPayload, ['status', 'applicationStatus', 'requisitionStatus']);
-      let applicantName = extractField(rawPayload, ['candidateName', 'applicantName', 'fullName']);
+      let status = extractField(rawPayload, [
+        'status',
+        'applicationStatus',
+        'requisitionStatus'
+      ]);
+      let applicantName = extractField(rawPayload, [
+        'candidateName',
+        'applicantName',
+        'fullName'
+      ]);
 
       return {
         type: `recruiting.${ctx.input.eventType}`,
@@ -58,11 +86,12 @@ export let recruitingEvent = SlateTrigger.create(
           candidateId: candidateId !== undefined ? String(candidateId) : undefined,
           jobTitle: typeof jobTitle === 'string' ? jobTitle : undefined,
           status: typeof status === 'string' ? status : undefined,
-          applicantName: typeof applicantName === 'string' ? applicantName : undefined,
-        },
+          applicantName: typeof applicantName === 'string' ? applicantName : undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();
 
 let resolveRecruitingEventType = (data: Record<string, unknown>): string => {
   let eventType = extractField(data, ['eventType', 'event_type', 'eventName', 'type']);

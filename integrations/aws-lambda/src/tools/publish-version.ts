@@ -3,38 +3,50 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let publishVersion = SlateTool.create(
-  spec,
-  {
-    name: 'Publish Version',
-    key: 'publish_version',
-    description: `Publish an immutable version from the current \`$LATEST\` code and configuration. Optionally list all published versions of a function by setting **listOnly** to true.`,
-    instructions: [
-      'Use codeSha256 to ensure you are publishing the expected code revision.',
-      'Published versions are immutable and can be referenced by aliases.'
-    ]
-  }
-)
-  .input(z.object({
-    functionName: z.string().describe('Function name or ARN'),
-    listOnly: z.boolean().optional().describe('Set to true to only list versions without publishing'),
-    description: z.string().optional().describe('Version description'),
-    codeSha256: z.string().optional().describe('Expected SHA256 hash of the code to publish (validation)')
-  }))
-  .output(z.object({
-    version: z.string().optional().describe('Published version number'),
-    functionArn: z.string().optional().describe('Version-specific ARN'),
-    description: z.string().optional().describe('Version description'),
-    codeSha256: z.string().optional().describe('SHA256 of the published code'),
-    versions: z.array(z.object({
-      version: z.string().optional(),
-      functionArn: z.string().optional(),
-      description: z.string().optional(),
-      lastModified: z.string().optional(),
-      runtime: z.string().optional()
-    })).optional().describe('List of versions (when listOnly is true)')
-  }))
-  .handleInvocation(async (ctx) => {
+export let publishVersion = SlateTool.create(spec, {
+  name: 'Publish Version',
+  key: 'publish_version',
+  description: `Publish an immutable version from the current \`$LATEST\` code and configuration. Optionally list all published versions of a function by setting **listOnly** to true.`,
+  instructions: [
+    'Use codeSha256 to ensure you are publishing the expected code revision.',
+    'Published versions are immutable and can be referenced by aliases.'
+  ]
+})
+  .input(
+    z.object({
+      functionName: z.string().describe('Function name or ARN'),
+      listOnly: z
+        .boolean()
+        .optional()
+        .describe('Set to true to only list versions without publishing'),
+      description: z.string().optional().describe('Version description'),
+      codeSha256: z
+        .string()
+        .optional()
+        .describe('Expected SHA256 hash of the code to publish (validation)')
+    })
+  )
+  .output(
+    z.object({
+      version: z.string().optional().describe('Published version number'),
+      functionArn: z.string().optional().describe('Version-specific ARN'),
+      description: z.string().optional().describe('Version description'),
+      codeSha256: z.string().optional().describe('SHA256 of the published code'),
+      versions: z
+        .array(
+          z.object({
+            version: z.string().optional(),
+            functionArn: z.string().optional(),
+            description: z.string().optional(),
+            lastModified: z.string().optional(),
+            runtime: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of versions (when listOnly is true)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
 
     if (ctx.input.listOnly) {

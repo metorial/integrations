@@ -21,36 +21,44 @@ let adSquadOutputSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let manageAdSquad = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Ad Squad',
-    key: 'manage_ad_squad',
-    description: `Create or update a Snapchat ad squad (ad set) under a campaign. Ad squads define targeting, budget, bid, and schedule for a group of ads. To create, provide a **campaignId** and ad squad properties. To update, also provide an **adSquadId**.`,
-    instructions: [
-      'Budget and bid values are in micro-currency (1 USD = 1,000,000 micro-currency).',
-      'Valid statuses: ACTIVE, PAUSED.',
-      'For creation, campaignId, name, type, and billing_event are typically required.'
-    ]
-  }
-)
-  .input(z.object({
-    campaignId: z.string().describe('Campaign ID this ad squad belongs to'),
-    adSquadId: z.string().optional().describe('Ad squad ID to update (omit to create a new ad squad)'),
-    name: z.string().optional().describe('Ad squad name'),
-    status: z.enum(['ACTIVE', 'PAUSED']).optional().describe('Ad squad status'),
-    type: z.string().optional().describe('Ad squad type (e.g., SNAP_ADS)'),
-    billingEvent: z.string().optional().describe('Billing event (e.g., IMPRESSION, SWIPE)'),
-    bidMicro: z.number().optional().describe('Bid amount in micro-currency'),
-    dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
-    lifetimeBudgetMicro: z.number().optional().describe('Lifetime budget in micro-currency'),
-    startTime: z.string().optional().describe('Start time in ISO 8601 format'),
-    endTime: z.string().optional().describe('End time in ISO 8601 format'),
-    optimizationGoal: z.string().optional().describe('Optimization goal (e.g., IMPRESSIONS, SWIPES, APP_INSTALLS, CONVERSIONS)'),
-    targeting: z.any().optional().describe('Targeting spec object with demographics, geos, interests, devices, etc.')
-  }))
+export let manageAdSquad = SlateTool.create(spec, {
+  name: 'Manage Ad Squad',
+  key: 'manage_ad_squad',
+  description: `Create or update a Snapchat ad squad (ad set) under a campaign. Ad squads define targeting, budget, bid, and schedule for a group of ads. To create, provide a **campaignId** and ad squad properties. To update, also provide an **adSquadId**.`,
+  instructions: [
+    'Budget and bid values are in micro-currency (1 USD = 1,000,000 micro-currency).',
+    'Valid statuses: ACTIVE, PAUSED.',
+    'For creation, campaignId, name, type, and billing_event are typically required.'
+  ]
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('Campaign ID this ad squad belongs to'),
+      adSquadId: z
+        .string()
+        .optional()
+        .describe('Ad squad ID to update (omit to create a new ad squad)'),
+      name: z.string().optional().describe('Ad squad name'),
+      status: z.enum(['ACTIVE', 'PAUSED']).optional().describe('Ad squad status'),
+      type: z.string().optional().describe('Ad squad type (e.g., SNAP_ADS)'),
+      billingEvent: z.string().optional().describe('Billing event (e.g., IMPRESSION, SWIPE)'),
+      bidMicro: z.number().optional().describe('Bid amount in micro-currency'),
+      dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
+      lifetimeBudgetMicro: z.number().optional().describe('Lifetime budget in micro-currency'),
+      startTime: z.string().optional().describe('Start time in ISO 8601 format'),
+      endTime: z.string().optional().describe('End time in ISO 8601 format'),
+      optimizationGoal: z
+        .string()
+        .optional()
+        .describe('Optimization goal (e.g., IMPRESSIONS, SWIPES, APP_INSTALLS, CONVERSIONS)'),
+      targeting: z
+        .any()
+        .optional()
+        .describe('Targeting spec object with demographics, geos, interests, devices, etc.')
+    })
+  )
   .output(adSquadOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let { campaignId, adSquadId, ...fields } = ctx.input;
 
@@ -61,8 +69,10 @@ export let manageAdSquad = SlateTool.create(
     if (fields.type) adSquadData.type = fields.type;
     if (fields.billingEvent) adSquadData.billing_event = fields.billingEvent;
     if (fields.bidMicro !== undefined) adSquadData.bid_micro = fields.bidMicro;
-    if (fields.dailyBudgetMicro !== undefined) adSquadData.daily_budget_micro = fields.dailyBudgetMicro;
-    if (fields.lifetimeBudgetMicro !== undefined) adSquadData.lifetime_budget_micro = fields.lifetimeBudgetMicro;
+    if (fields.dailyBudgetMicro !== undefined)
+      adSquadData.daily_budget_micro = fields.dailyBudgetMicro;
+    if (fields.lifetimeBudgetMicro !== undefined)
+      adSquadData.lifetime_budget_micro = fields.lifetimeBudgetMicro;
     if (fields.startTime) adSquadData.start_time = fields.startTime;
     if (fields.endTime) adSquadData.end_time = fields.endTime;
     if (fields.optimizationGoal) adSquadData.optimization_goal = fields.optimizationGoal;

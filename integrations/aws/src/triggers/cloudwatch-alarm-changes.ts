@@ -14,7 +14,7 @@ let alarmInputSchema = z.object({
   metricName: z.string().optional().describe('Metric name'),
   namespace: z.string().optional().describe('Metric namespace'),
   threshold: z.number().optional().describe('Alarm threshold'),
-  comparisonOperator: z.string().optional().describe('Comparison operator'),
+  comparisonOperator: z.string().optional().describe('Comparison operator')
 });
 
 let alarmOutputSchema = z.object({
@@ -27,30 +27,32 @@ let alarmOutputSchema = z.object({
   metricName: z.string().optional().describe('Metric name'),
   namespace: z.string().optional().describe('Metric namespace'),
   threshold: z.number().optional().describe('Alarm threshold'),
-  comparisonOperator: z.string().optional().describe('Comparison operator'),
+  comparisonOperator: z.string().optional().describe('Comparison operator')
 });
 
 export let cloudwatchAlarmChangesTrigger = SlateTrigger.create(spec, {
   name: 'CloudWatch Alarm Changes',
   key: 'cloudwatch_alarm_changes',
-  description: 'Polls for CloudWatch alarm state changes. Detects when alarms transition between OK, ALARM, and INSUFFICIENT_DATA states.',
+  description:
+    'Polls for CloudWatch alarm state changes. Detects when alarms transition between OK, ALARM, and INSUFFICIENT_DATA states.'
 })
   .input(alarmInputSchema)
   .output(alarmOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = clientFromContext(ctx);
-      let previousAlarmStates: Record<string, string> = (ctx.state as Record<string, string>) ?? {};
+      let previousAlarmStates: Record<string, string> =
+        (ctx.state as Record<string, string>) ?? {};
 
       let response = await client.queryApi({
         service: 'monitoring',
         action: 'DescribeAlarms',
         version: '2010-08-01',
-        params: { MaxRecords: '100' },
+        params: { MaxRecords: '100' }
       });
 
       let xml = typeof response === 'string' ? response : String(response);
@@ -85,7 +87,7 @@ export let cloudwatchAlarmChangesTrigger = SlateTrigger.create(spec, {
             metricName: extractXmlValue(block, 'MetricName'),
             namespace: extractXmlValue(block, 'Namespace'),
             threshold: thresholdStr ? parseFloat(thresholdStr) : undefined,
-            comparisonOperator: extractXmlValue(block, 'ComparisonOperator'),
+            comparisonOperator: extractXmlValue(block, 'ComparisonOperator')
           });
         }
       }
@@ -108,24 +110,25 @@ export let cloudwatchAlarmChangesTrigger = SlateTrigger.create(spec, {
             metricName: alarm.metricName,
             namespace: alarm.namespace,
             threshold: alarm.threshold,
-            comparisonOperator: alarm.comparisonOperator,
+            comparisonOperator: alarm.comparisonOperator
           });
         }
       }
 
       return {
         inputs,
-        updatedState: newStates,
+        updatedState: newStates
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let alarm = ctx.input;
-      let eventType = alarm.stateValue === 'ALARM'
-        ? 'alarm.triggered'
-        : alarm.stateValue === 'OK'
-          ? 'alarm.resolved'
-          : 'alarm.insufficient_data';
+      let eventType =
+        alarm.stateValue === 'ALARM'
+          ? 'alarm.triggered'
+          : alarm.stateValue === 'OK'
+            ? 'alarm.resolved'
+            : 'alarm.insufficient_data';
 
       return {
         type: eventType,
@@ -140,8 +143,9 @@ export let cloudwatchAlarmChangesTrigger = SlateTrigger.create(spec, {
           metricName: alarm.metricName,
           namespace: alarm.namespace,
           threshold: alarm.threshold,
-          comparisonOperator: alarm.comparisonOperator,
-        },
+          comparisonOperator: alarm.comparisonOperator
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

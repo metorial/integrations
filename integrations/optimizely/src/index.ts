@@ -12,13 +12,13 @@ import {
   manageMailing,
   manageRecipientList,
   manageCustomer,
-  sendOdpEvent,
+  sendOdpEvent
 } from './tools';
 import {
   cmpWebhook,
   campaignEmailWebhook,
   experimentationWebhook,
-  graphWebhook,
+  graphWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -35,12 +35,7 @@ export let provider = Slate.create({
     manageMailing,
     manageRecipientList,
     manageCustomer,
-    sendOdpEvent,
+    sendOdpEvent
   ],
-  triggers: [
-    cmpWebhook,
-    campaignEmailWebhook,
-    experimentationWebhook,
-    graphWebhook,
-  ],
+  triggers: [cmpWebhook, campaignEmailWebhook, experimentationWebhook, graphWebhook]
 });

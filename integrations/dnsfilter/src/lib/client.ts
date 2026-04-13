@@ -9,9 +9,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Token ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -79,8 +79,13 @@ export class Client {
     return res.data?.data ?? res.data;
   }
 
-  async updateScheduledPolicy(scheduledPolicyId: string, params: Record<string, any>): Promise<any> {
-    let res = await this.axios.patch(`/scheduled_policies/${scheduledPolicyId}`, { data: params });
+  async updateScheduledPolicy(
+    scheduledPolicyId: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let res = await this.axios.patch(`/scheduled_policies/${scheduledPolicyId}`, {
+      data: params
+    });
     return res.data?.data ?? res.data;
   }
 
@@ -221,13 +226,24 @@ export class Client {
     return res.data?.data ?? res.data;
   }
 
-  async addOrganizationUser(organizationId: string, params: Record<string, any>): Promise<any> {
-    let res = await this.axios.post(`/organizations/${organizationId}/users`, { data: params });
+  async addOrganizationUser(
+    organizationId: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let res = await this.axios.post(`/organizations/${organizationId}/users`, {
+      data: params
+    });
     return res.data?.data ?? res.data;
   }
 
-  async updateOrganizationUser(organizationId: string, userId: string, params: Record<string, any>): Promise<any> {
-    let res = await this.axios.patch(`/organizations/${organizationId}/users/${userId}`, { data: params });
+  async updateOrganizationUser(
+    organizationId: string,
+    userId: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let res = await this.axios.patch(`/organizations/${organizationId}/users/${userId}`, {
+      data: params
+    });
     return res.data?.data ?? res.data;
   }
 
@@ -304,7 +320,9 @@ export class Client {
   }
 
   async bulkLookupDomains(fqdns: string[]): Promise<any> {
-    let res = await this.axios.get('/domains/bulk_lookup', { params: { fqdns: fqdns.join(',') } });
+    let res = await this.axios.get('/domains/bulk_lookup', {
+      params: { fqdns: fqdns.join(',') }
+    });
     return res.data?.data ?? res.data;
   }
 
@@ -371,7 +389,9 @@ export class Client {
   // ── Invoices & Billing ──
 
   async listInvoices(organizationId: string): Promise<any[]> {
-    let res = await this.axios.get('/invoices', { params: { organization_id: organizationId } });
+    let res = await this.axios.get('/invoices', {
+      params: { organization_id: organizationId }
+    });
     return res.data?.data ?? res.data ?? [];
   }
 
@@ -386,7 +406,9 @@ export class Client {
   }
 
   async getBilling(organizationId: string): Promise<any> {
-    let res = await this.axios.get('/billing', { params: { organization_id: organizationId } });
+    let res = await this.axios.get('/billing', {
+      params: { organization_id: organizationId }
+    });
     return res.data?.data ?? res.data;
   }
 
@@ -402,8 +424,14 @@ export class Client {
     return res.data?.data ?? res.data;
   }
 
-  async updateNetworkSubnet(networkId: string, subnetId: string, params: Record<string, any>): Promise<any> {
-    let res = await this.axios.patch(`/networks/${networkId}/subnets/${subnetId}`, { data: params });
+  async updateNetworkSubnet(
+    networkId: string,
+    subnetId: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let res = await this.axios.patch(`/networks/${networkId}/subnets/${subnetId}`, {
+      data: params
+    });
     return res.data?.data ?? res.data;
   }
 
@@ -418,8 +446,14 @@ export class Client {
     return res.data?.data ?? res.data ?? [];
   }
 
-  async updateNetworkLanIp(networkId: string, lanIpId: string, params: Record<string, any>): Promise<any> {
-    let res = await this.axios.patch(`/networks/${networkId}/lan_ips/${lanIpId}`, { data: params });
+  async updateNetworkLanIp(
+    networkId: string,
+    lanIpId: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let res = await this.axios.patch(`/networks/${networkId}/lan_ips/${lanIpId}`, {
+      data: params
+    });
     return res.data?.data ?? res.data;
   }
 }

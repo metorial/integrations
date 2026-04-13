@@ -6,14 +6,17 @@ let api = createAxios({
 
 let JSON_API_HEADERS = {
   'Content-Type': 'application/vnd.api+json',
-  'Accept': 'application/vnd.api+json',
+  Accept: 'application/vnd.api+json'
 };
 
 export interface JsonApiResource {
   id: string;
   type: string;
   attributes: Record<string, any>;
-  relationships?: Record<string, { data: { id: string; type: string } | { id: string; type: string }[] | null }>;
+  relationships?: Record<
+    string,
+    { data: { id: string; type: string } | { id: string; type: string }[] | null }
+  >;
   links?: Record<string, string>;
 }
 
@@ -41,20 +44,27 @@ export class Client {
   private headers() {
     return {
       ...JSON_API_HEADERS,
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
   // --- Generic CRUD ---
 
-  async getResource(resourceType: string, resourceId: string, queryParams?: Record<string, string>): Promise<JsonApiResource> {
+  async getResource(
+    resourceType: string,
+    resourceId: string,
+    queryParams?: Record<string, string>
+  ): Promise<JsonApiResource> {
     let params = new URLSearchParams(queryParams);
     let url = `/${resourceType}/${resourceId}${params.toString() ? '?' + params.toString() : ''}`;
     let response = await api.get(url, { headers: this.headers() });
     return response.data.data;
   }
 
-  async listResources(resourceType: string, params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listResources(
+    resourceType: string,
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     let query = new URLSearchParams(params);
     let url = `/${resourceType}${query.toString() ? '?' + query.toString() : ''}`;
     let response = await api.get(url, { headers: this.headers() });
@@ -65,15 +75,19 @@ export class Client {
       records,
       hasMore: !!body.links?.next,
       nextPageUrl: (body.links?.next as string) ?? null,
-      totalCount: body.meta?.count ?? null,
+      totalCount: body.meta?.count ?? null
     };
   }
 
-  async createResource(resourceType: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createResource(
+    resourceType: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     let payload: any = {
       data: {
         type: resourceType,
-        attributes,
+        attributes
       }
     };
     if (relationships) {
@@ -83,18 +97,25 @@ export class Client {
     return response.data.data;
   }
 
-  async updateResource(resourceType: string, resourceId: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async updateResource(
+    resourceType: string,
+    resourceId: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     let payload: any = {
       data: {
         type: resourceType,
         id: resourceId,
-        attributes,
+        attributes
       }
     };
     if (relationships) {
       payload.data.relationships = relationships;
     }
-    let response = await api.patch(`/${resourceType}/${resourceId}`, payload, { headers: this.headers() });
+    let response = await api.patch(`/${resourceType}/${resourceId}`, payload, {
+      headers: this.headers()
+    });
     return response.data.data;
   }
 
@@ -104,7 +125,9 @@ export class Client {
 
   // --- Prospects ---
 
-  async listProspects(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listProspects(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('prospects', params);
   }
 
@@ -112,11 +135,18 @@ export class Client {
     return this.getResource('prospects', prospectId);
   }
 
-  async createProspect(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createProspect(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('prospects', attributes, relationships);
   }
 
-  async updateProspect(prospectId: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async updateProspect(
+    prospectId: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('prospects', prospectId, attributes, relationships);
   }
 
@@ -126,7 +156,9 @@ export class Client {
 
   // --- Accounts ---
 
-  async listAccounts(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listAccounts(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('accounts', params);
   }
 
@@ -134,11 +166,18 @@ export class Client {
     return this.getResource('accounts', accountId);
   }
 
-  async createAccount(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createAccount(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('accounts', attributes, relationships);
   }
 
-  async updateAccount(accountId: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async updateAccount(
+    accountId: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('accounts', accountId, attributes, relationships);
   }
 
@@ -148,7 +187,9 @@ export class Client {
 
   // --- Sequences ---
 
-  async listSequences(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listSequences(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('sequences', params);
   }
 
@@ -156,17 +197,26 @@ export class Client {
     return this.getResource('sequences', sequenceId);
   }
 
-  async createSequence(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createSequence(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('sequences', attributes, relationships);
   }
 
-  async updateSequence(sequenceId: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async updateSequence(
+    sequenceId: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('sequences', sequenceId, attributes, relationships);
   }
 
   // --- Sequence States ---
 
-  async listSequenceStates(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listSequenceStates(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('sequenceStates', params);
   }
 
@@ -174,17 +224,25 @@ export class Client {
     return this.getResource('sequenceStates', sequenceStateId);
   }
 
-  async createSequenceState(attributes: Record<string, any>, relationships: Record<string, any>): Promise<JsonApiResource> {
+  async createSequenceState(
+    attributes: Record<string, any>,
+    relationships: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('sequenceStates', attributes, relationships);
   }
 
-  async updateSequenceState(sequenceStateId: string, attributes: Record<string, any>): Promise<JsonApiResource> {
+  async updateSequenceState(
+    sequenceStateId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('sequenceStates', sequenceStateId, attributes);
   }
 
   // --- Sequence Steps ---
 
-  async listSequenceSteps(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listSequenceSteps(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('sequenceSteps', params);
   }
 
@@ -194,7 +252,9 @@ export class Client {
 
   // --- Mailings ---
 
-  async listMailings(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listMailings(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('mailings', params);
   }
 
@@ -218,7 +278,9 @@ export class Client {
 
   // --- Opportunities ---
 
-  async listOpportunities(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listOpportunities(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('opportunities', params);
   }
 
@@ -226,17 +288,26 @@ export class Client {
     return this.getResource('opportunities', opportunityId);
   }
 
-  async createOpportunity(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createOpportunity(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('opportunities', attributes, relationships);
   }
 
-  async updateOpportunity(opportunityId: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async updateOpportunity(
+    opportunityId: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('opportunities', opportunityId, attributes, relationships);
   }
 
   // --- Templates ---
 
-  async listTemplates(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listTemplates(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('templates', params);
   }
 
@@ -244,17 +315,25 @@ export class Client {
     return this.getResource('templates', templateId);
   }
 
-  async createTemplate(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createTemplate(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('templates', attributes, relationships);
   }
 
-  async updateTemplate(templateId: string, attributes: Record<string, any>): Promise<JsonApiResource> {
+  async updateTemplate(
+    templateId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('templates', templateId, attributes);
   }
 
   // --- Snippets ---
 
-  async listSnippets(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listSnippets(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('snippets', params);
   }
 
@@ -262,11 +341,17 @@ export class Client {
     return this.getResource('snippets', snippetId);
   }
 
-  async createSnippet(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createSnippet(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('snippets', attributes, relationships);
   }
 
-  async updateSnippet(snippetId: string, attributes: Record<string, any>): Promise<JsonApiResource> {
+  async updateSnippet(
+    snippetId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.updateResource('snippets', snippetId, attributes);
   }
 
@@ -280,7 +365,10 @@ export class Client {
     return this.getResource('calls', callId);
   }
 
-  async createCall(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiResource> {
+  async createCall(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiResource> {
     return this.createResource('calls', attributes, relationships);
   }
 
@@ -304,31 +392,41 @@ export class Client {
     return this.deleteResource('webhooks', webhookId);
   }
 
-  async listWebhooks(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listWebhooks(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('webhooks', params);
   }
 
   // --- Call Dispositions ---
 
-  async listCallDispositions(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listCallDispositions(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('callDispositions', params);
   }
 
   // --- Call Purposes ---
 
-  async listCallPurposes(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listCallPurposes(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('callPurposes', params);
   }
 
   // --- Stages ---
 
-  async listStages(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listStages(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('stages', params);
   }
 
   // --- Mailboxes ---
 
-  async listMailboxes(params?: Record<string, string>): Promise<PaginatedResult<JsonApiResource>> {
+  async listMailboxes(
+    params?: Record<string, string>
+  ): Promise<PaginatedResult<JsonApiResource>> {
     return this.listResources('mailboxes', params);
   }
 }

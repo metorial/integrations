@@ -12,22 +12,21 @@ let capacitySchema = z.object({
   admins: z.array(z.string()).optional().describe('Capacity administrators')
 });
 
-export let listCapacities = SlateTool.create(
-  spec,
-  {
-    name: 'List Capacities',
-    key: 'list_capacities',
-    description: `List available Power BI Premium and Embedded capacities. View capacity names, SKUs, states, regions, and admin assignments.`,
-    tags: {
-      readOnly: true
-    }
+export let listCapacities = SlateTool.create(spec, {
+  name: 'List Capacities',
+  key: 'list_capacities',
+  description: `List available Power BI Premium and Embedded capacities. View capacity names, SKUs, states, regions, and admin assignments.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    capacities: z.array(capacitySchema).describe('List of available capacities')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      capacities: z.array(capacitySchema).describe('List of available capacities')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let capacities = await client.listCapacities();
 

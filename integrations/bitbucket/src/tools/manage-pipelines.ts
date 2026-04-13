@@ -3,74 +3,96 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePipelinesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Pipelines',
-    key: 'manage_pipelines',
-    description: `List, get, trigger, or stop Bitbucket Pipelines.
+export let managePipelinesTool = SlateTool.create(spec, {
+  name: 'Manage Pipelines',
+  key: 'manage_pipelines',
+  description: `List, get, trigger, or stop Bitbucket Pipelines.
 - **list**: View recent pipelines and their statuses.
 - **get**: Get details of a specific pipeline including steps.
 - **trigger**: Start a new pipeline on a branch, tag, or custom pattern.
-- **stop**: Stop a running pipeline.`,
-  }
-)
-  .input(z.object({
-    repoSlug: z.string().describe('Repository slug'),
-    action: z.enum(['list', 'get', 'trigger', 'stop']).describe('Action to perform'),
-    pipelineUuid: z.string().optional().describe('Pipeline UUID (required for get/stop)'),
-    branch: z.string().optional().describe('Branch to trigger pipeline on (for trigger action)'),
-    tag: z.string().optional().describe('Tag to trigger pipeline on (for trigger action)'),
-    customPattern: z.string().optional().describe('Custom pipeline pattern name (for trigger action)'),
-    variables: z.array(z.object({
-      key: z.string(),
-      value: z.string(),
-      secured: z.boolean().optional(),
-    })).optional().describe('Pipeline variables to set when triggering'),
-    sort: z.string().optional().describe('Sort field for listing (e.g. "-created_on")'),
-    page: z.number().optional().describe('Page number for listing'),
-    pageLen: z.number().optional().describe('Results per page for listing'),
-  }))
-  .output(z.object({
-    pipelines: z.array(z.object({
-      pipelineUuid: z.string(),
-      buildNumber: z.number().optional(),
-      state: z.string().optional(),
-      result: z.string().optional(),
-      branch: z.string().optional(),
-      createdOn: z.string().optional(),
-      completedOn: z.string().optional(),
-      durationInSeconds: z.number().optional(),
-      htmlUrl: z.string().optional(),
-    })).optional(),
-    pipeline: z.object({
-      pipelineUuid: z.string(),
-      buildNumber: z.number().optional(),
-      state: z.string().optional(),
-      result: z.string().optional(),
-      branch: z.string().optional(),
-      createdOn: z.string().optional(),
-      completedOn: z.string().optional(),
-      htmlUrl: z.string().optional(),
-      steps: z.array(z.object({
-        stepUuid: z.string(),
-        name: z.string().optional(),
-        state: z.string().optional(),
-        result: z.string().optional(),
-        durationInSeconds: z.number().optional(),
-      })).optional(),
-    }).optional(),
-    stopped: z.boolean().optional(),
-    hasNextPage: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+- **stop**: Stop a running pipeline.`
+})
+  .input(
+    z.object({
+      repoSlug: z.string().describe('Repository slug'),
+      action: z.enum(['list', 'get', 'trigger', 'stop']).describe('Action to perform'),
+      pipelineUuid: z.string().optional().describe('Pipeline UUID (required for get/stop)'),
+      branch: z
+        .string()
+        .optional()
+        .describe('Branch to trigger pipeline on (for trigger action)'),
+      tag: z.string().optional().describe('Tag to trigger pipeline on (for trigger action)'),
+      customPattern: z
+        .string()
+        .optional()
+        .describe('Custom pipeline pattern name (for trigger action)'),
+      variables: z
+        .array(
+          z.object({
+            key: z.string(),
+            value: z.string(),
+            secured: z.boolean().optional()
+          })
+        )
+        .optional()
+        .describe('Pipeline variables to set when triggering'),
+      sort: z.string().optional().describe('Sort field for listing (e.g. "-created_on")'),
+      page: z.number().optional().describe('Page number for listing'),
+      pageLen: z.number().optional().describe('Results per page for listing')
+    })
+  )
+  .output(
+    z.object({
+      pipelines: z
+        .array(
+          z.object({
+            pipelineUuid: z.string(),
+            buildNumber: z.number().optional(),
+            state: z.string().optional(),
+            result: z.string().optional(),
+            branch: z.string().optional(),
+            createdOn: z.string().optional(),
+            completedOn: z.string().optional(),
+            durationInSeconds: z.number().optional(),
+            htmlUrl: z.string().optional()
+          })
+        )
+        .optional(),
+      pipeline: z
+        .object({
+          pipelineUuid: z.string(),
+          buildNumber: z.number().optional(),
+          state: z.string().optional(),
+          result: z.string().optional(),
+          branch: z.string().optional(),
+          createdOn: z.string().optional(),
+          completedOn: z.string().optional(),
+          htmlUrl: z.string().optional(),
+          steps: z
+            .array(
+              z.object({
+                stepUuid: z.string(),
+                name: z.string().optional(),
+                state: z.string().optional(),
+                result: z.string().optional(),
+                durationInSeconds: z.number().optional()
+              })
+            )
+            .optional()
+        })
+        .optional(),
+      stopped: z.boolean().optional(),
+      hasNextPage: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
     if (ctx.input.action === 'list') {
       let result = await client.listPipelines(ctx.input.repoSlug, {
         sort: ctx.input.sort,
         page: ctx.input.page,
-        pageLen: ctx.input.pageLen,
+        pageLen: ctx.input.pageLen
       });
 
       let pipelines = (result.values || []).map((p: any) => ({
@@ -82,12 +104,12 @@ export let managePipelinesTool = SlateTool.create(
         createdOn: p.created_on,
         completedOn: p.completed_on || undefined,
         durationInSeconds: p.duration_in_seconds || undefined,
-        htmlUrl: p.links?.html?.href || undefined,
+        htmlUrl: p.links?.html?.href || undefined
       }));
 
       return {
         output: { pipelines, hasNextPage: !!result.next },
-        message: `Found **${pipelines.length}** pipelines.`,
+        message: `Found **${pipelines.length}** pipelines.`
       };
     }
 
@@ -96,13 +118,16 @@ export let managePipelinesTool = SlateTool.create(
 
       let p = await client.getPipeline(ctx.input.repoSlug, ctx.input.pipelineUuid);
 
-      let stepsResult = await client.listPipelineSteps(ctx.input.repoSlug, ctx.input.pipelineUuid);
+      let stepsResult = await client.listPipelineSteps(
+        ctx.input.repoSlug,
+        ctx.input.pipelineUuid
+      );
       let steps = (stepsResult.values || []).map((s: any) => ({
         stepUuid: s.uuid,
         name: s.name || undefined,
         state: s.state?.name || undefined,
         result: s.state?.result?.name || undefined,
-        durationInSeconds: s.duration_in_seconds || undefined,
+        durationInSeconds: s.duration_in_seconds || undefined
       }));
 
       return {
@@ -116,10 +141,10 @@ export let managePipelinesTool = SlateTool.create(
             createdOn: p.created_on,
             completedOn: p.completed_on || undefined,
             htmlUrl: p.links?.html?.href || undefined,
-            steps,
-          },
+            steps
+          }
         },
-        message: `Pipeline **#${p.build_number}** — state: **${p.state?.name}**, ${steps.length} steps.`,
+        message: `Pipeline **#${p.build_number}** — state: **${p.state?.name}**, ${steps.length} steps.`
       };
     }
 
@@ -147,7 +172,7 @@ export let managePipelinesTool = SlateTool.create(
         body.variables = ctx.input.variables.map(v => ({
           key: v.key,
           value: v.value,
-          secured: v.secured || false,
+          secured: v.secured || false
         }));
       }
 
@@ -163,10 +188,10 @@ export let managePipelinesTool = SlateTool.create(
             branch: p.target?.ref_name || undefined,
             createdOn: p.created_on,
             completedOn: undefined,
-            htmlUrl: p.links?.html?.href || undefined,
-          },
+            htmlUrl: p.links?.html?.href || undefined
+          }
         },
-        message: `Triggered pipeline **#${p.build_number}**.`,
+        message: `Triggered pipeline **#${p.build_number}**.`
       };
     }
 
@@ -177,6 +202,7 @@ export let managePipelinesTool = SlateTool.create(
 
     return {
       output: { stopped: true },
-      message: `Stopped pipeline **${ctx.input.pipelineUuid}**.`,
+      message: `Stopped pipeline **${ctx.input.pipelineUuid}**.`
     };
-  }).build();
+  })
+  .build();

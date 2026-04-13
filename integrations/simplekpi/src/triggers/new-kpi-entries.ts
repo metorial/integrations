@@ -3,42 +3,44 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newKpiEntries = SlateTrigger.create(
-  spec,
-  {
-    name: 'New KPI Entries',
-    key: 'new_kpi_entries',
-    description: 'Triggers when new KPI data entries are created or updated. Polls for recent entries and detects new or changed records.',
-  }
-)
-  .input(z.object({
-    entryId: z.number().describe('Entry identifier'),
-    userId: z.number().describe('User who recorded the entry'),
-    kpiId: z.number().describe('KPI the entry is for'),
-    entryDate: z.string().describe('Date of the entry'),
-    actual: z.number().nullable().describe('Actual value'),
-    target: z.number().nullable().describe('Target value'),
-    notes: z.string().nullable().describe('Entry notes'),
-    createdAt: z.string().nullable().describe('Creation timestamp (UTC)'),
-    updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
-  }))
-  .output(z.object({
-    entryId: z.number().describe('Entry identifier'),
-    userId: z.number().describe('User who recorded the entry'),
-    kpiId: z.number().describe('KPI the entry is for'),
-    entryDate: z.string().describe('Date of the entry'),
-    actual: z.number().nullable().describe('Actual value'),
-    target: z.number().nullable().describe('Target value'),
-    notes: z.string().nullable().describe('Entry notes'),
-    createdAt: z.string().nullable().describe('Creation timestamp (UTC)'),
-    updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
-  }))
+export let newKpiEntries = SlateTrigger.create(spec, {
+  name: 'New KPI Entries',
+  key: 'new_kpi_entries',
+  description:
+    'Triggers when new KPI data entries are created or updated. Polls for recent entries and detects new or changed records.'
+})
+  .input(
+    z.object({
+      entryId: z.number().describe('Entry identifier'),
+      userId: z.number().describe('User who recorded the entry'),
+      kpiId: z.number().describe('KPI the entry is for'),
+      entryDate: z.string().describe('Date of the entry'),
+      actual: z.number().nullable().describe('Actual value'),
+      target: z.number().nullable().describe('Target value'),
+      notes: z.string().nullable().describe('Entry notes'),
+      createdAt: z.string().nullable().describe('Creation timestamp (UTC)'),
+      updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
+    })
+  )
+  .output(
+    z.object({
+      entryId: z.number().describe('Entry identifier'),
+      userId: z.number().describe('User who recorded the entry'),
+      kpiId: z.number().describe('KPI the entry is for'),
+      entryDate: z.string().describe('Date of the entry'),
+      actual: z.number().nullable().describe('Actual value'),
+      target: z.number().nullable().describe('Target value'),
+      notes: z.string().nullable().describe('Entry notes'),
+      createdAt: z.string().nullable().describe('Creation timestamp (UTC)'),
+      updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
 
       let lastSeenId = (ctx.state as any)?.lastSeenId as number | undefined;
@@ -105,8 +107,11 @@ export let newKpiEntries = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
-      let isUpdate = ctx.input.updatedAt && ctx.input.createdAt && ctx.input.updatedAt !== ctx.input.createdAt;
+    handleEvent: async ctx => {
+      let isUpdate =
+        ctx.input.updatedAt &&
+        ctx.input.createdAt &&
+        ctx.input.updatedAt !== ctx.input.createdAt;
       let eventType = isUpdate ? 'kpi_entry.updated' : 'kpi_entry.created';
 
       return {
@@ -125,4 +130,5 @@ export let newKpiEntries = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

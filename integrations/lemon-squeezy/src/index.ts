@@ -14,13 +14,13 @@ import {
   listDiscountsTool,
   listCustomersTool,
   manageLicenseKeyTool,
-  listLicenseKeysTool,
+  listLicenseKeysTool
 } from './tools';
 import {
   orderEventsTrigger,
   subscriptionEventsTrigger,
   subscriptionPaymentEventsTrigger,
-  licenseKeyEventsTrigger,
+  licenseKeyEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -39,12 +39,12 @@ export let provider = Slate.create({
     listDiscountsTool,
     listCustomersTool,
     manageLicenseKeyTool,
-    listLicenseKeysTool,
+    listLicenseKeysTool
   ],
   triggers: [
     orderEventsTrigger,
     subscriptionEventsTrigger,
     subscriptionPaymentEventsTrigger,
-    licenseKeyEventsTrigger,
-  ],
+    licenseKeyEventsTrigger
+  ]
 });

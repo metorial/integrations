@@ -27,37 +27,63 @@ let bingShoppingAdSchema = z.object({
   image: z.string().optional().describe('Product image URL')
 });
 
-export let bingSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Bing Web Search',
-    key: 'bing_search',
-    description: `Search Bing and retrieve structured web results as JSON. Returns organic results, ads, and shopping ads with titles, links, and descriptions. Useful as an alternative to Google search for comparison or when Bing-specific results are needed.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let bingSearch = SlateTool.create(spec, {
+  name: 'Bing Web Search',
+  key: 'bing_search',
+  description: `Search Bing and retrieve structured web results as JSON. Returns organic results, ads, and shopping ads with titles, links, and descriptions. Useful as an alternative to Google search for comparison or when Bing-specific results are needed.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    num: z.number().optional().describe('Number of results to return'),
-    start: z.number().optional().describe('Start offset for pagination'),
-    language: z.string().optional().describe('Search language filter (e.g., lang_en, lang_es)'),
-    interfaceLanguage: z.string().optional().describe('Interface language code (e.g., en, es)'),
-    proxyLocation: z.enum([
-      'US', 'EU', 'CA', 'GB', 'FR', 'DE', 'SE', 'IE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'
-    ]).optional().describe('Geographic location for geo-targeted results, overrides default'),
-    deviceType: z.enum(['desktop', 'mobile']).optional().describe('Device type for results, overrides default')
-  }))
-  .output(z.object({
-    results: z.array(bingResultSchema).describe('Organic search results'),
-    ads: z.array(bingAdSchema).optional().describe('Text advertisements'),
-    adsCount: z.number().optional().describe('Total number of ads'),
-    shoppingAds: z.array(bingShoppingAdSchema).optional().describe('Shopping/product ads'),
-    location: z.any().optional().describe('Geographic location data')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      num: z.number().optional().describe('Number of results to return'),
+      start: z.number().optional().describe('Start offset for pagination'),
+      language: z
+        .string()
+        .optional()
+        .describe('Search language filter (e.g., lang_en, lang_es)'),
+      interfaceLanguage: z
+        .string()
+        .optional()
+        .describe('Interface language code (e.g., en, es)'),
+      proxyLocation: z
+        .enum([
+          'US',
+          'EU',
+          'CA',
+          'GB',
+          'FR',
+          'DE',
+          'SE',
+          'IE',
+          'IN',
+          'JP',
+          'KR',
+          'SG',
+          'AU',
+          'BR'
+        ])
+        .optional()
+        .describe('Geographic location for geo-targeted results, overrides default'),
+      deviceType: z
+        .enum(['desktop', 'mobile'])
+        .optional()
+        .describe('Device type for results, overrides default')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(bingResultSchema).describe('Organic search results'),
+      ads: z.array(bingAdSchema).optional().describe('Text advertisements'),
+      adsCount: z.number().optional().describe('Total number of ads'),
+      shoppingAds: z.array(bingShoppingAdSchema).optional().describe('Shopping/product ads'),
+      location: z.any().optional().describe('Geographic location data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       proxyLocation: ctx.config.proxyLocation,

@@ -68,7 +68,9 @@ export class MagneticClient {
   }
 
   async getGrouping(groupingId: string): Promise<any> {
-    let response = await tasksApi.get('/grouping', { params: this.params({ id: groupingId }) });
+    let response = await tasksApi.get('/grouping', {
+      params: this.params({ id: groupingId })
+    });
     return response.data;
   }
 

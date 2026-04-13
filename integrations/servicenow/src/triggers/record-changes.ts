@@ -3,42 +3,47 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Polls for new or updated records in a specified ServiceNow table. Detects record creation and modification based on sys_updated_on timestamps.',
-  }
-)
-  .input(z.object({
-    recordId: z.string().describe('sys_id of the changed record'),
-    tableName: z.string().describe('Table the record belongs to'),
-    updatedOn: z.string().describe('Timestamp when the record was last updated'),
-    createdOn: z.string().describe('Timestamp when the record was created'),
-    isNew: z.boolean().describe('Whether this is a newly created record'),
-    record: z.record(z.string(), z.any()).describe('Full record data'),
-  }))
-  .output(z.object({
-    recordId: z.string().describe('sys_id of the changed record'),
-    tableName: z.string().describe('Table the record belongs to'),
-    number: z.string().optional().describe('Record number (e.g. INC0010001)'),
-    shortDescription: z.string().optional().describe('Short description or name of the record'),
-    state: z.string().optional().describe('Current state of the record'),
-    priority: z.string().optional().describe('Priority of the record'),
-    assignedTo: z.string().optional().describe('Assigned user'),
-    assignmentGroup: z.string().optional().describe('Assignment group'),
-    updatedBy: z.string().optional().describe('User who last updated the record'),
-    updatedOn: z.string().optional().describe('Timestamp when the record was last updated'),
-    createdOn: z.string().optional().describe('Timestamp when the record was created'),
-    record: z.record(z.string(), z.any()).describe('Full record data'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Polls for new or updated records in a specified ServiceNow table. Detects record creation and modification based on sys_updated_on timestamps.'
+})
+  .input(
+    z.object({
+      recordId: z.string().describe('sys_id of the changed record'),
+      tableName: z.string().describe('Table the record belongs to'),
+      updatedOn: z.string().describe('Timestamp when the record was last updated'),
+      createdOn: z.string().describe('Timestamp when the record was created'),
+      isNew: z.boolean().describe('Whether this is a newly created record'),
+      record: z.record(z.string(), z.any()).describe('Full record data')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('sys_id of the changed record'),
+      tableName: z.string().describe('Table the record belongs to'),
+      number: z.string().optional().describe('Record number (e.g. INC0010001)'),
+      shortDescription: z
+        .string()
+        .optional()
+        .describe('Short description or name of the record'),
+      state: z.string().optional().describe('Current state of the record'),
+      priority: z.string().optional().describe('Priority of the record'),
+      assignedTo: z.string().optional().describe('Assigned user'),
+      assignmentGroup: z.string().optional().describe('Assignment group'),
+      updatedBy: z.string().optional().describe('User who last updated the record'),
+      updatedOn: z.string().optional().describe('Timestamp when the record was last updated'),
+      createdOn: z.string().optional().describe('Timestamp when the record was created'),
+      record: z.record(z.string(), z.any()).describe('Full record data')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.auth, ctx.config);
 
       let state = ctx.input.state as Record<string, any> | undefined;
@@ -64,10 +69,10 @@ export let recordChanges = SlateTrigger.create(
         limit: 100,
         orderBy: 'sys_updated_on',
         orderDirection: 'desc',
-        displayValue: 'all',
+        displayValue: 'all'
       });
 
-      let inputs = result.records.map((record) => {
+      let inputs = result.records.map(record => {
         let r = record as any;
         let createdOn = r.sys_created_on?.display_value || r.sys_created_on || '';
         let updatedOn = r.sys_updated_on?.display_value || r.sys_updated_on || '';
@@ -79,7 +84,7 @@ export let recordChanges = SlateTrigger.create(
           updatedOn,
           createdOn,
           isNew,
-          record,
+          record
         };
       });
 
@@ -88,12 +93,12 @@ export let recordChanges = SlateTrigger.create(
         updatedState: {
           lastPollTime: now,
           tableName,
-          query: state?.query,
-        },
+          query: state?.query
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let r = ctx.input.record as any;
       let eventType = ctx.input.isNew ? 'created' : 'updated';
 
@@ -112,9 +117,9 @@ export let recordChanges = SlateTrigger.create(
           updatedBy: r.sys_updated_by?.display_value || r.sys_updated_by,
           updatedOn: ctx.input.updatedOn,
           createdOn: ctx.input.createdOn,
-          record: ctx.input.record,
-        },
+          record: ctx.input.record
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createRecord,
@@ -10,11 +9,9 @@ import {
   deleteRecord,
   bulkCreateRecords,
   triggerWorkflow,
-  getApiSpec,
+  getApiSpec
 } from './tools';
-import { recordChanges,
-  inboundWebhook,
-} from './triggers';
+import { recordChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -27,10 +24,7 @@ export let provider = Slate.create({
     deleteRecord,
     bulkCreateRecords,
     triggerWorkflow,
-    getApiSpec,
+    getApiSpec
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanges,
-  ],
+  triggers: [inboundWebhook, recordChanges]
 });

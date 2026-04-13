@@ -3,33 +3,34 @@ import { FreeAgentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateExpense = SlateTool.create(
-  spec,
-  {
-    name: 'Update Expense',
-    key: 'update_expense',
-    description: `Update an existing expense in FreeAgent. Only the provided fields will be changed.`,
-    tags: {
-      destructive: false,
-    },
+export let updateExpense = SlateTool.create(spec, {
+  name: 'Update Expense',
+  key: 'update_expense',
+  description: `Update an existing expense in FreeAgent. Only the provided fields will be changed.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    expenseId: z.string().describe('The FreeAgent expense ID to update'),
-    category: z.string().optional().describe('Category URL or nominal code'),
-    datedOn: z.string().optional().describe('Expense date in YYYY-MM-DD format'),
-    grossValue: z.string().optional().describe('Gross value'),
-    description: z.string().optional().describe('Description'),
-    currency: z.string().optional().describe('Currency code'),
-    salesTaxRate: z.string().optional().describe('Sales tax rate percentage'),
-  }))
-  .output(z.object({
-    expense: z.record(z.string(), z.any()).describe('The updated expense record'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      expenseId: z.string().describe('The FreeAgent expense ID to update'),
+      category: z.string().optional().describe('Category URL or nominal code'),
+      datedOn: z.string().optional().describe('Expense date in YYYY-MM-DD format'),
+      grossValue: z.string().optional().describe('Gross value'),
+      description: z.string().optional().describe('Description'),
+      currency: z.string().optional().describe('Currency code'),
+      salesTaxRate: z.string().optional().describe('Sales tax rate percentage')
+    })
+  )
+  .output(
+    z.object({
+      expense: z.record(z.string(), z.any()).describe('The updated expense record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreeAgentClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let expenseData: Record<string, any> = {};
@@ -44,7 +45,7 @@ export let updateExpense = SlateTool.create(
 
     return {
       output: { expense: expense || {} },
-      message: `Updated expense **${ctx.input.expenseId}**`,
+      message: `Updated expense **${ctx.input.expenseId}**`
     };
   })
   .build();

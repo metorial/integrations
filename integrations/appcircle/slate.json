@@ -2,10 +2,7 @@
   "name": "@metorial/appcircle",
   "version": "0.1.1",
   "description": "Automate mobile CI/CD workflows for iOS and Android apps. Manage build profiles, trigger and cancel builds, retrieve build logs, and download artifacts. Configure workflows and signing identities including iOS certificates, provisioning profiles, and Android keystores. Distribute builds to testers via distribution profiles and test groups. Publish apps to App Store, Google Play, Huawei AppGallery, Microsoft Intune, and TestFlight with customizable publish flows. Manage an Enterprise App Store for in-house distribution. Configure environment variable groups for build workflows. Manage organizations, team members, roles, and sub-organizations. Receive webhook notifications for build, signing identity, distribution, publish, and enterprise store events.",
-  "categories": [
-    "apis-and-http-requests",
-    "task-and-project-management"
-  ],
+  "categories": ["apis-and-http-requests", "task-and-project-management"],
   "skills": [
     "trigger and manage builds",
     "download build artifacts",

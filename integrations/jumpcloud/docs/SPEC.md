@@ -22,6 +22,7 @@ All endpoints support authentication via API key. The API key is passed via the 
 - For multi-tenant (MSP) organizations, include the `x-org-id` header to specify the target organization.
 
 **Example:**
+
 ```
 GET https://console.jumpcloud.com/api/systemusers
 x-api-key: jca_your_api_key_here
@@ -46,44 +47,57 @@ Some systems endpoints (in both API v1 and v2) also support System Context Autho
 ## Features
 
 ### User Management
+
 Create, read, update, and delete user accounts in the JumpCloud directory. JumpCloud manages user accounts and a myriad of related employee data such as address, phone information, and more. Supports activating, suspending, and managing user passwords. Users can have custom attributes assigned.
 
 ### Group Management
+
 Manage user groups and system (device) groups. User groups control access to devices, SSO applications, RADIUS networks, and directories like Google Workspace, Microsoft 365, and LDAP. Groups are the primary mechanism for binding users to resources.
 
 ### System (Device) Management
+
 Computers or servers running Mac, Windows, and Linux can be managed through JumpCloud. Admins can provision users to devices, deploy policies to devices, and execute commands on devices.
 
 ### Graph Associations (Resource Binding)
+
 Manage the relationships between directory objects. Any modification to the connections (associations) between resources in JumpCloud, such as users to groups, or policies to devices, are recorded under the association_change event. Allows binding users/user groups to applications, systems, RADIUS servers, LDAP directories, and more.
 
 ### Remote Commands
+
 Define and trigger commands (scripts) to run on managed systems. Commands can be executed on demand, on schedule, or via webhook trigger. Supports Windows and Linux/Mac shell commands.
 
 ### Policy Management
+
 The group model of managing Policies and systems allows configuring device security policies (e.g., disk encryption, password complexity, screen lock) and deploying them to device groups.
 
 ### SSO Application Management
+
 Manage SSO application connectors (SAML 2.0 and OIDC) that allow users to authenticate into third-party web applications using their JumpCloud credentials.
 
 ### SCIM Identity Management (User Provisioning)
+
 Identity Management Connectors manage application user accounts through the SCIM protocol. These integrations allow you to automate and centralize user and group management through the full lifecycle. After you integrate an application with JumpCloud, you can provision, update, and deprovision users.
 
 ### RADIUS Server Management
+
 Create and manage RADIUS server configurations for WiFi and VPN authentication. Associate user groups with RADIUS servers to control network access.
 
 ### Directory Integrations
+
 Manage integrations with external directories such as Google Workspace, Microsoft 365, Active Directory, and LDAP. Supports bi-directional user syncing.
 
 ### Directory Insights (Event Logging)
+
 Directory Insights is JumpCloud's event logging and compliance feature. It provides audit trails leading up to critical events. You can use the RESTful API to access event logs, see activity happening in your directory, and monitor user authentications to the User Portal, SAML SSO applications, RADIUS, and LDAP.
 
 - Event categories include: RADIUS events, Systems events (user authentications to devices, agent events, password changes, FDE), LDAP events (bind and search), MDM events, MSP events, SSO events (connector changes, user authentications), and Password Manager events.
 
 ### System Insights
+
 Query telemetry data from managed devices (installed software, hardware details, OS configuration, browser plugins, etc.) for compliance and inventory purposes.
 
 ### Organization and Admin Management
+
 Manage organization settings and administrator accounts, including role-based access control with roles such as Administrator, Manager, Help Desk, Command Runner, Read Only, and Billing.
 
 ## Events
@@ -91,6 +105,7 @@ Manage organization settings and administrator accounts, including role-based ac
 JumpCloud supports webhook-based event notifications through its **Webhook Notification Channels** feature.
 
 ### How It Works
+
 Webhooks are automated messages sent from applications when an event occurs. When a specific event happens—like a new user being created, a password reset, or a suspicious login attempt—JumpCloud can automatically send a notification to an external application or service. You can set up webhook notification channels to get alerts delivered to specified URLs.
 
 Webhook channels are created in the Admin Portal under Settings > Notification Channels. After creating a channel, you must create an Insights Rule and add the webhook channel within the rule to generate alert notifications. Rules define which events and conditions trigger the webhook.
@@ -118,6 +133,7 @@ SSO authentication events, RADIUS authentication events, LDAP bind events, and s
 For Access Requests, you do not need to create a separate rule to set up webhooks. Simply create a webhook channel, then navigate to Access Requests to select the specific events for which you wish to receive notifications via webhooks.
 
 ### Configuration Options
+
 - Events can be filtered using attribute-based filter expressions (e.g., by geo-location, user agent, auth method).
 - Rules support configurable priority levels (Low, Medium, High, Critical).
 - Rules can apply to Devices (end-user device events) or Directory (JumpCloud Directory events).

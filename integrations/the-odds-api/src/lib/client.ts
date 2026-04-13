@@ -6,11 +6,11 @@ import type {
   EventWithScores,
   EventMarkets,
   Participant,
-  HistoricalResponse,
+  HistoricalResponse
 } from './types';
 
 let api = createAxios({
-  baseURL: 'https://api.the-odds-api.com',
+  baseURL: 'https://api.the-odds-api.com'
 });
 
 export interface OddsParams {
@@ -103,7 +103,9 @@ export class Client {
     this.token = config.token;
   }
 
-  private buildParams(params: Record<string, string | number | boolean | undefined>): Record<string, string | number | boolean> {
+  private buildParams(
+    params: Record<string, string | number | boolean | undefined>
+  ): Record<string, string | number | boolean> {
     let result: Record<string, string | number | boolean> = { apiKey: this.token };
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null) {
@@ -115,7 +117,7 @@ export class Client {
 
   async getSports(all?: boolean): Promise<Sport[]> {
     let response = await api.get('/v4/sports', {
-      params: this.buildParams({ all: all ? 'true' : undefined }),
+      params: this.buildParams({ all: all ? 'true' : undefined })
     });
     return response.data;
   }
@@ -134,8 +136,8 @@ export class Client {
         includeLinks: params.includeLinks,
         includeSids: params.includeSids,
         includeBetLimits: params.includeBetLimits,
-        includeRotationNumbers: params.includeRotationNumbers,
-      }),
+        includeRotationNumbers: params.includeRotationNumbers
+      })
     });
     return response.data;
   }
@@ -145,8 +147,8 @@ export class Client {
       params: this.buildParams({
         daysFrom: params.daysFrom,
         dateFormat: params.dateFormat,
-        eventIds: params.eventIds,
-      }),
+        eventIds: params.eventIds
+      })
     });
     return response.data;
   }
@@ -157,8 +159,8 @@ export class Client {
         dateFormat: params.dateFormat,
         eventIds: params.eventIds,
         commenceTimeFrom: params.commenceTimeFrom,
-        commenceTimeTo: params.commenceTimeTo,
-      }),
+        commenceTimeTo: params.commenceTimeTo
+      })
     });
     return response.data;
   }
@@ -173,31 +175,36 @@ export class Client {
         bookmakers: params.bookmakers,
         includeLinks: params.includeLinks,
         includeSids: params.includeSids,
-        includeBetLimits: params.includeBetLimits,
-      }),
+        includeBetLimits: params.includeBetLimits
+      })
     });
     return response.data;
   }
 
   async getEventMarkets(params: EventMarketsParams): Promise<EventMarkets> {
-    let response = await api.get(`/v4/sports/${params.sport}/events/${params.eventId}/markets`, {
-      params: this.buildParams({
-        regions: params.regions,
-        bookmakers: params.bookmakers,
-        dateFormat: params.dateFormat,
-      }),
-    });
+    let response = await api.get(
+      `/v4/sports/${params.sport}/events/${params.eventId}/markets`,
+      {
+        params: this.buildParams({
+          regions: params.regions,
+          bookmakers: params.bookmakers,
+          dateFormat: params.dateFormat
+        })
+      }
+    );
     return response.data;
   }
 
   async getParticipants(sport: string): Promise<Participant[]> {
     let response = await api.get(`/v4/sports/${sport}/participants`, {
-      params: this.buildParams({}),
+      params: this.buildParams({})
     });
     return response.data;
   }
 
-  async getHistoricalOdds(params: HistoricalOddsParams): Promise<HistoricalResponse<EventWithOdds[]>> {
+  async getHistoricalOdds(
+    params: HistoricalOddsParams
+  ): Promise<HistoricalResponse<EventWithOdds[]>> {
     let response = await api.get(`/v4/historical/sports/${params.sport}/odds`, {
       params: this.buildParams({
         regions: params.regions,
@@ -206,36 +213,43 @@ export class Client {
         oddsFormat: params.oddsFormat,
         dateFormat: params.dateFormat,
         eventIds: params.eventIds,
-        bookmakers: params.bookmakers,
-      }),
+        bookmakers: params.bookmakers
+      })
     });
     return response.data;
   }
 
-  async getHistoricalEvents(params: HistoricalEventsParams): Promise<HistoricalResponse<Event[]>> {
+  async getHistoricalEvents(
+    params: HistoricalEventsParams
+  ): Promise<HistoricalResponse<Event[]>> {
     let response = await api.get(`/v4/historical/sports/${params.sport}/events`, {
       params: this.buildParams({
         date: params.date,
         dateFormat: params.dateFormat,
         eventIds: params.eventIds,
         commenceTimeFrom: params.commenceTimeFrom,
-        commenceTimeTo: params.commenceTimeTo,
-      }),
+        commenceTimeTo: params.commenceTimeTo
+      })
     });
     return response.data;
   }
 
-  async getHistoricalEventOdds(params: HistoricalEventOddsParams): Promise<HistoricalResponse<EventWithOdds>> {
-    let response = await api.get(`/v4/historical/sports/${params.sport}/events/${params.eventId}/odds`, {
-      params: this.buildParams({
-        regions: params.regions,
-        markets: params.markets,
-        date: params.date,
-        oddsFormat: params.oddsFormat,
-        dateFormat: params.dateFormat,
-        bookmakers: params.bookmakers,
-      }),
-    });
+  async getHistoricalEventOdds(
+    params: HistoricalEventOddsParams
+  ): Promise<HistoricalResponse<EventWithOdds>> {
+    let response = await api.get(
+      `/v4/historical/sports/${params.sport}/events/${params.eventId}/odds`,
+      {
+        params: this.buildParams({
+          regions: params.regions,
+          markets: params.markets,
+          date: params.date,
+          oddsFormat: params.oddsFormat,
+          dateFormat: params.dateFormat,
+          bookmakers: params.bookmakers
+        })
+      }
+    );
     return response.data;
   }
 }

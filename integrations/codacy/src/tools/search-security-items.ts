@@ -3,49 +3,89 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchSecurityItems = SlateTool.create(
-  spec,
-  {
-    name: 'Search Security Items',
-    key: 'search_security_items',
-    description: `Search and filter security findings (SRM items) across your organization. Includes SAST issues, secrets detection, dependency vulnerabilities, IaC scanning, DAST findings, and more. Filter by priority, status, scan type, repository, and category.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    repositories: z.array(z.string()).optional().describe('Filter by repository names.'),
-    priorities: z.array(z.enum(['Critical', 'High', 'Medium', 'Low'])).optional().describe('Filter by priority levels.'),
-    statuses: z.array(z.enum(['Overdue', 'OnTrack', 'DueSoon', 'ClosedOnTime', 'ClosedLate', 'Ignored'])).optional().describe('Filter by item statuses.'),
-    scanTypes: z.array(z.enum(['SAST', 'SCA', 'ContainerSCA', 'Secrets', 'IaC', 'CICD', 'License', 'PenTesting', 'DAST', 'CSPM'])).optional().describe('Filter by scan types.'),
-    categories: z.array(z.string()).optional().describe('Filter by security categories (e.g. Cryptography).'),
-    searchText: z.string().optional().describe('Free text search within security items.'),
-    dastTargetUrls: z.array(z.string()).optional().describe('Filter by DAST target URLs.'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response.'),
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of items to return (1-100).'),
-  }))
-  .output(z.object({
-    securityItems: z.array(z.object({
-      srmItemId: z.string().describe('Unique SRM item identifier.'),
-      title: z.string().optional().describe('Security item title.'),
-      priority: z.string().optional().describe('Priority level (Critical, High, Medium, Low).'),
-      status: z.string().optional().describe('Current status.'),
-      scanType: z.string().optional().describe('Type of scan that found the issue.'),
-      repository: z.string().optional().describe('Repository name.'),
-      securityCategory: z.string().optional().describe('Security category.'),
-      openedAt: z.string().optional().describe('Date when the item was opened.'),
-      dueAt: z.string().optional().describe('Due date for remediation.'),
-      cvssScore: z.number().optional().describe('CVSS score.'),
-      cwe: z.string().optional().describe('CWE identifier.'),
-      cve: z.string().optional().describe('CVE identifier.'),
-      htmlUrl: z.string().optional().describe('URL to view the item in Codacy.'),
-    })).describe('List of security items.'),
-    cursor: z.string().optional().describe('Pagination cursor for the next page.'),
-    total: z.number().optional().describe('Total number of matching items.'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchSecurityItems = SlateTool.create(spec, {
+  name: 'Search Security Items',
+  key: 'search_security_items',
+  description: `Search and filter security findings (SRM items) across your organization. Includes SAST issues, secrets detection, dependency vulnerabilities, IaC scanning, DAST findings, and more. Filter by priority, status, scan type, repository, and category.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      repositories: z.array(z.string()).optional().describe('Filter by repository names.'),
+      priorities: z
+        .array(z.enum(['Critical', 'High', 'Medium', 'Low']))
+        .optional()
+        .describe('Filter by priority levels.'),
+      statuses: z
+        .array(
+          z.enum(['Overdue', 'OnTrack', 'DueSoon', 'ClosedOnTime', 'ClosedLate', 'Ignored'])
+        )
+        .optional()
+        .describe('Filter by item statuses.'),
+      scanTypes: z
+        .array(
+          z.enum([
+            'SAST',
+            'SCA',
+            'ContainerSCA',
+            'Secrets',
+            'IaC',
+            'CICD',
+            'License',
+            'PenTesting',
+            'DAST',
+            'CSPM'
+          ])
+        )
+        .optional()
+        .describe('Filter by scan types.'),
+      categories: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by security categories (e.g. Cryptography).'),
+      searchText: z.string().optional().describe('Free text search within security items.'),
+      dastTargetUrls: z.array(z.string()).optional().describe('Filter by DAST target URLs.'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response.'),
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of items to return (1-100).')
+    })
+  )
+  .output(
+    z.object({
+      securityItems: z
+        .array(
+          z.object({
+            srmItemId: z.string().describe('Unique SRM item identifier.'),
+            title: z.string().optional().describe('Security item title.'),
+            priority: z
+              .string()
+              .optional()
+              .describe('Priority level (Critical, High, Medium, Low).'),
+            status: z.string().optional().describe('Current status.'),
+            scanType: z.string().optional().describe('Type of scan that found the issue.'),
+            repository: z.string().optional().describe('Repository name.'),
+            securityCategory: z.string().optional().describe('Security category.'),
+            openedAt: z.string().optional().describe('Date when the item was opened.'),
+            dueAt: z.string().optional().describe('Due date for remediation.'),
+            cvssScore: z.number().optional().describe('CVSS score.'),
+            cwe: z.string().optional().describe('CWE identifier.'),
+            cve: z.string().optional().describe('CVE identifier.'),
+            htmlUrl: z.string().optional().describe('URL to view the item in Codacy.')
+          })
+        )
+        .describe('List of security items.'),
+      cursor: z.string().optional().describe('Pagination cursor for the next page.'),
+      total: z.number().optional().describe('Total number of matching items.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let body: any = {};
@@ -59,7 +99,7 @@ export let searchSecurityItems = SlateTool.create(
 
     let response = await client.searchSecurityItems(body, {
       cursor: ctx.input.cursor,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
     let securityItems = (response.data ?? []).map((item: any) => ({
@@ -75,16 +115,16 @@ export let searchSecurityItems = SlateTool.create(
       cvssScore: item.cvssScore ?? undefined,
       cwe: item.cwe ?? undefined,
       cve: item.cve ?? undefined,
-      htmlUrl: item.htmlUrl ?? undefined,
+      htmlUrl: item.htmlUrl ?? undefined
     }));
 
     return {
       output: {
         securityItems,
         cursor: response.pagination?.cursor,
-        total: response.pagination?.total,
+        total: response.pagination?.total
       },
-      message: `Found **${securityItems.length}** security item(s).${response.pagination?.total ? ` Total: ${response.pagination.total}.` : ''}`,
+      message: `Found **${securityItems.length}** security item(s).${response.pagination?.total ? ` Total: ${response.pagination.total}.` : ''}`
     };
   })
   .build();

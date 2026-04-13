@@ -3,66 +3,74 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let smsEventTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'SMS Event',
-    key: 'sms_event',
-    description: 'Triggered when SMS messages are sent or received. Requires the **message_content_export** scope to include message content. Can be scoped to a specific user, department, office, or call center.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    direction: z.string().describe('SMS direction (inbound or outbound)'),
-    fromNumber: z.string().optional(),
-    toNumber: z.string().optional(),
-    text: z.string().optional().describe('Message text (requires message_content_export scope)'),
-    userId: z.string().optional().describe('User ID associated with the SMS'),
-    contactName: z.string().optional(),
-    timestamp: z.string().optional(),
-    rawPayload: z.any().optional(),
-  }))
-  .output(z.object({
-    smsId: z.string().describe('SMS event identifier'),
-    direction: z.string().describe('SMS direction (inbound or outbound)'),
-    fromNumber: z.string().optional(),
-    toNumber: z.string().optional(),
-    text: z.string().optional(),
-    userId: z.string().optional(),
-    contactName: z.string().optional(),
-    timestamp: z.string().optional(),
-  }))
+export let smsEventTrigger = SlateTrigger.create(spec, {
+  name: 'SMS Event',
+  key: 'sms_event',
+  description:
+    'Triggered when SMS messages are sent or received. Requires the **message_content_export** scope to include message content. Can be scoped to a specific user, department, office, or call center.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      direction: z.string().describe('SMS direction (inbound or outbound)'),
+      fromNumber: z.string().optional(),
+      toNumber: z.string().optional(),
+      text: z
+        .string()
+        .optional()
+        .describe('Message text (requires message_content_export scope)'),
+      userId: z.string().optional().describe('User ID associated with the SMS'),
+      contactName: z.string().optional(),
+      timestamp: z.string().optional(),
+      rawPayload: z.any().optional()
+    })
+  )
+  .output(
+    z.object({
+      smsId: z.string().describe('SMS event identifier'),
+      direction: z.string().describe('SMS direction (inbound or outbound)'),
+      fromNumber: z.string().optional(),
+      toNumber: z.string().optional(),
+      text: z.string().optional(),
+      userId: z.string().optional(),
+      contactName: z.string().optional(),
+      timestamp: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new DialpadClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let webhook = await client.createWebhook({
-        hook_url: ctx.input.webhookBaseUrl,
+        hook_url: ctx.input.webhookBaseUrl
       });
 
       let subscription = await client.createSmsEventSubscription({
         webhook_id: webhook.id,
-        sms_direction: 'all',
+        sms_direction: 'all'
       });
 
       return {
         registrationDetails: {
           webhookId: String(webhook.id),
-          subscriptionId: String(subscription.id),
-        },
+          subscriptionId: String(subscription.id)
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new DialpadClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
-      let details = ctx.input.registrationDetails as { webhookId: string; subscriptionId: string };
+      let details = ctx.input.registrationDetails as {
+        webhookId: string;
+        subscriptionId: string;
+      };
 
       if (details.subscriptionId) {
         try {
@@ -81,8 +89,8 @@ export let smsEventTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let events = Array.isArray(data) ? data : [data];
 
@@ -99,14 +107,14 @@ export let smsEventTrigger = SlateTrigger.create(
           userId: event.user_id ? String(event.user_id) : undefined,
           contactName: event.contact_name || event.contact?.name,
           timestamp: event.date || event.timestamp,
-          rawPayload: event,
+          rawPayload: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `sms.${ctx.input.direction}`,
         id: ctx.input.eventId,
@@ -118,9 +126,9 @@ export let smsEventTrigger = SlateTrigger.create(
           text: ctx.input.text,
           userId: ctx.input.userId,
           contactName: ctx.input.contactName,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

@@ -7,49 +7,61 @@ let scheduleGroupSchema = z.object({
   scheduleGroupId: z.string().describe('Group identifier'),
   status: z.string().optional().describe('Group status'),
   publishOn: z.string().nullable().optional().describe('Scheduled publish time'),
-  schedules: z.array(z.object({
-    scheduleId: z.string().describe('Schedule identifier'),
-    channelId: z.string().optional().describe('Target channel ID'),
-    content: z.string().nullable().optional().describe('Post text content'),
-    status: z.string().optional().describe('Schedule status')
-  })).optional().describe('Schedules in the group')
+  schedules: z
+    .array(
+      z.object({
+        scheduleId: z.string().describe('Schedule identifier'),
+        channelId: z.string().optional().describe('Target channel ID'),
+        content: z.string().nullable().optional().describe('Post text content'),
+        status: z.string().optional().describe('Schedule status')
+      })
+    )
+    .optional()
+    .describe('Schedules in the group')
 });
 
-export let listScheduleGroups = SlateTool.create(
-  spec,
-  {
-    name: 'List Schedule Groups',
-    key: 'list_schedule_groups',
-    description: `Retrieve schedule groups for a team with filtering and pagination. Filter by channel, status, social network, media type, and date range.`,
-    instructions: [
-      'Status codes: 0 = Draft, 1 = Scheduled, 3 = Published, 4 = Failed.',
-      'Social network values: threads, youtube, instagram, tiktok, tiktok_business, twitter, pinterest, facebook, linkedin, mastodon, bluesky.',
-      'Media type: 0 = Image, 1 = Video.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listScheduleGroups = SlateTool.create(spec, {
+  name: 'List Schedule Groups',
+  key: 'list_schedule_groups',
+  description: `Retrieve schedule groups for a team with filtering and pagination. Filter by channel, status, social network, media type, and date range.`,
+  instructions: [
+    'Status codes: 0 = Draft, 1 = Scheduled, 3 = Published, 4 = Failed.',
+    'Social network values: threads, youtube, instagram, tiktok, tiktok_business, twitter, pinterest, facebook, linkedin, mastodon, bluesky.',
+    'Media type: 0 = Image, 1 = Video.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('ID of the team'),
-    groupIds: z.array(z.string()).optional().describe('Filter by specific group IDs'),
-    channelIds: z.array(z.string()).optional().describe('Filter by channel IDs'),
-    statusCodes: z.array(z.number()).optional().describe('Filter by status (0=Draft, 1=Scheduled, 3=Published, 4=Failed)'),
-    socialNetworks: z.array(z.string()).optional().describe('Filter by social network type'),
-    mediaTypes: z.array(z.number()).optional().describe('Filter by media type (0=Image, 1=Video)'),
-    since: z.string().optional().describe('Start of date range filter (ISO 8601)'),
-    until: z.string().optional().describe('End of date range filter (ISO 8601)'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    pageSize: z.number().optional().describe('Results per page')
-  }))
-  .output(z.object({
-    groups: z.array(scheduleGroupSchema).describe('Schedule groups'),
-    nextCursor: z.string().nullable().optional().describe('Cursor for next page'),
-    totalCount: z.number().optional().describe('Total number of groups')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('ID of the team'),
+      groupIds: z.array(z.string()).optional().describe('Filter by specific group IDs'),
+      channelIds: z.array(z.string()).optional().describe('Filter by channel IDs'),
+      statusCodes: z
+        .array(z.number())
+        .optional()
+        .describe('Filter by status (0=Draft, 1=Scheduled, 3=Published, 4=Failed)'),
+      socialNetworks: z.array(z.string()).optional().describe('Filter by social network type'),
+      mediaTypes: z
+        .array(z.number())
+        .optional()
+        .describe('Filter by media type (0=Image, 1=Video)'),
+      since: z.string().optional().describe('Start of date range filter (ISO 8601)'),
+      until: z.string().optional().describe('End of date range filter (ISO 8601)'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      pageSize: z.number().optional().describe('Results per page')
+    })
+  )
+  .output(
+    z.object({
+      groups: z.array(scheduleGroupSchema).describe('Schedule groups'),
+      nextCursor: z.string().nullable().optional().describe('Cursor for next page'),
+      totalCount: z.number().optional().describe('Total number of groups')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let options: any = {};
@@ -79,7 +91,7 @@ export let listScheduleGroups = SlateTool.create(
     );
 
     let data = result.data || result;
-    let items = Array.isArray(data) ? data : (data.items || data.scheduleGroups || []);
+    let items = Array.isArray(data) ? data : data.items || data.scheduleGroups || [];
     let groups = items.map((g: any) => ({
       scheduleGroupId: g.id,
       status: g.status,

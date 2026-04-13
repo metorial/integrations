@@ -16,6 +16,7 @@ Needle uses API key authentication. An API key can be obtained from the [Setting
 - **Key management:** If compromised, the key can be revoked and regenerated from the settings page.
 
 Example header:
+
 ```
 x-api-key: your-api-key-here
 ```

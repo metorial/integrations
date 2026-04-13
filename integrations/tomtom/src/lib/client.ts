@@ -213,20 +213,26 @@ export class TomTomClient {
     departAt?: string;
     avoid?: string[];
   }) {
-    let response = await this.axios.post('/routing/matrix/2', {
-      origins: params.origins.map(o => ({ point: { latitude: o.lat, longitude: o.lon } })),
-      destinations: params.destinations.map(d => ({ point: { latitude: d.lat, longitude: d.lon } })),
-      options: {
-        routeType: params.routeType,
-        traffic: params.traffic,
-        travelMode: params.travelMode,
-        departAt: params.departAt,
-        avoid: params.avoid
+    let response = await this.axios.post(
+      '/routing/matrix/2',
+      {
+        origins: params.origins.map(o => ({ point: { latitude: o.lat, longitude: o.lon } })),
+        destinations: params.destinations.map(d => ({
+          point: { latitude: d.lat, longitude: d.lon }
+        })),
+        options: {
+          routeType: params.routeType,
+          traffic: params.traffic,
+          travelMode: params.travelMode,
+          departAt: params.departAt,
+          avoid: params.avoid
+        }
+      },
+      {
+        params: { key: this.apiKey },
+        headers: { 'Content-Type': 'application/json' }
       }
-    }, {
-      params: { key: this.apiKey },
-      headers: { 'Content-Type': 'application/json' }
-    });
+    );
     return response.data;
   }
 
@@ -245,7 +251,9 @@ export class TomTomClient {
     let body: any = {
       waypoints: params.waypoints.map(w => ({
         point: { latitude: w.lat, longitude: w.lon },
-        ...(w.serviceTimeInSeconds !== undefined ? { serviceTimeInSeconds: w.serviceTimeInSeconds } : {})
+        ...(w.serviceTimeInSeconds !== undefined
+          ? { serviceTimeInSeconds: w.serviceTimeInSeconds }
+          : {})
       })),
       options: {
         travelMode: params.travelMode || 'car',
@@ -254,7 +262,9 @@ export class TomTomClient {
         outputExtensions: ['travelTimes', 'routeLengths'],
         waypointConstraints: {
           ...(params.originIndex !== undefined ? { originIndex: params.originIndex } : {}),
-          ...(params.destinationIndex !== undefined ? { destinationIndex: params.destinationIndex } : {})
+          ...(params.destinationIndex !== undefined
+            ? { destinationIndex: params.destinationIndex }
+            : {})
         }
       }
     };
@@ -276,15 +286,18 @@ export class TomTomClient {
     thickness?: number;
     openLr?: boolean;
   }) {
-    let response = await this.axios.get('/traffic/services/4/flowSegmentData/absolute/' + params.zoom + '/json', {
-      params: {
-        key: this.apiKey,
-        point: `${params.lat},${params.lon}`,
-        unit: params.unit,
-        thickness: params.thickness,
-        openLr: params.openLr
+    let response = await this.axios.get(
+      '/traffic/services/4/flowSegmentData/absolute/' + params.zoom + '/json',
+      {
+        params: {
+          key: this.apiKey,
+          point: `${params.lat},${params.lon}`,
+          unit: params.unit,
+          thickness: params.thickness,
+          openLr: params.openLr
+        }
       }
-    });
+    );
     return response.data;
   }
 
@@ -300,7 +313,8 @@ export class TomTomClient {
       params: {
         key: this.apiKey,
         bbox: bbox,
-        fields: '{incidents{type,geometry{type,coordinates},properties{id,iconCategory,magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,length,delay,roadNumbers,aci{probabilityOfOccurrence,numberOfReports,lastReportTime}}}}',
+        fields:
+          '{incidents{type,geometry{type,coordinates},properties{id,iconCategory,magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,length,delay,roadNumbers,aci{probabilityOfOccurrence,numberOfReports,lastReportTime}}}}',
         language: params.language,
         categoryFilter: params.categoryFilter,
         timeValidityFilter: params.timeValidityFilter
@@ -373,7 +387,11 @@ export class TomTomClient {
       };
     } else if (params.type === 'polygon') {
       let coords = params.coordinates?.map(c => [c.lon, c.lat]) || [];
-      if (coords.length > 0 && (coords[0]![0] !== coords[coords.length - 1]![0] || coords[0]![1] !== coords[coords.length - 1]![1])) {
+      if (
+        coords.length > 0 &&
+        (coords[0]![0] !== coords[coords.length - 1]![0] ||
+          coords[0]![1] !== coords[coords.length - 1]![1])
+      ) {
         coords.push(coords[0]!);
       }
       geometry = {
@@ -425,22 +443,28 @@ export class TomTomClient {
   }
 
   async getFence(params: { projectId: string; fenceId: string }) {
-    let response = await this.axios.get(`/geofencing/1/projects/${params.projectId}/fence/${params.fenceId}`, {
-      params: {
-        key: this.apiKey,
-        adminKey: this.adminKey
+    let response = await this.axios.get(
+      `/geofencing/1/projects/${params.projectId}/fence/${params.fenceId}`,
+      {
+        params: {
+          key: this.apiKey,
+          adminKey: this.adminKey
+        }
       }
-    });
+    );
     return response.data;
   }
 
   async deleteFence(params: { projectId: string; fenceId: string }) {
-    let response = await this.axios.delete(`/geofencing/1/projects/${params.projectId}/fence/${params.fenceId}`, {
-      params: {
-        key: this.apiKey,
-        adminKey: this.adminKey
+    let response = await this.axios.delete(
+      `/geofencing/1/projects/${params.projectId}/fence/${params.fenceId}`,
+      {
+        params: {
+          key: this.apiKey,
+          adminKey: this.adminKey
+        }
       }
-    });
+    );
     return response.data;
   }
 
@@ -484,15 +508,19 @@ export class TomTomClient {
   // ─── Location History ─────────────────────────────────────────────
 
   async createObject(params: { objectName: string }) {
-    let response = await this.axios.post('/locationHistory/1/objects/object', {
-      name: params.objectName
-    }, {
-      params: {
-        key: this.apiKey,
-        adminKey: this.adminKey
+    let response = await this.axios.post(
+      '/locationHistory/1/objects/object',
+      {
+        name: params.objectName
       },
-      headers: { 'Content-Type': 'application/json' }
-    });
+      {
+        params: {
+          key: this.apiKey,
+          adminKey: this.adminKey
+        },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -506,19 +534,18 @@ export class TomTomClient {
     return response.data;
   }
 
-  async getObjectLocationHistory(params: {
-    objectId: string;
-    from?: string;
-    to?: string;
-  }) {
-    let response = await this.axios.get(`/locationHistory/1/objects/${params.objectId}/positions`, {
-      params: {
-        key: this.apiKey,
-        adminKey: this.adminKey,
-        from: params.from,
-        to: params.to
+  async getObjectLocationHistory(params: { objectId: string; from?: string; to?: string }) {
+    let response = await this.axios.get(
+      `/locationHistory/1/objects/${params.objectId}/positions`,
+      {
+        params: {
+          key: this.apiKey,
+          adminKey: this.adminKey,
+          from: params.from,
+          to: params.to
+        }
       }
-    });
+    );
     return response.data;
   }
 
@@ -597,16 +624,20 @@ export class TomTomClient {
       }
     }
 
-    let response = await this.axios.post('/notifications/1/groups/group', {
-      name: params.name,
-      contacts
-    }, {
-      params: {
-        key: this.apiKey,
-        adminKey: this.adminKey
+    let response = await this.axios.post(
+      '/notifications/1/groups/group',
+      {
+        name: params.name,
+        contacts
       },
-      headers: { 'Content-Type': 'application/json' }
-    });
+      {
+        params: {
+          key: this.apiKey,
+          adminKey: this.adminKey
+        },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 

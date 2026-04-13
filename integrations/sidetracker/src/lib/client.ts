@@ -15,15 +15,18 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://app.sidetracker.io/api/',
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Lists ──────────────────────────────────────────────────
 
-  async getLists(page?: number, pageSize?: number): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getLists(
+    page?: number,
+    pageSize?: number
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let params: Record<string, unknown> = {};
     if (page) params.page = page;
     if (pageSize) params.page_size = pageSize;
@@ -46,7 +49,7 @@ export class Client {
       name: params.name,
       description: params.description,
       preset: params.preset,
-      columns: params.columns,
+      columns: params.columns
     });
     return response.data;
   }
@@ -57,7 +60,11 @@ export class Client {
 
   // ─── List Rows ──────────────────────────────────────────────
 
-  async getListRows(uniqueId: string, page?: number, pageSize?: number): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getListRows(
+    uniqueId: string,
+    page?: number,
+    pageSize?: number
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let params: Record<string, unknown> = { unique_id: uniqueId };
     if (page) params.page = page;
     if (pageSize) params.page_size = pageSize;
@@ -70,12 +77,19 @@ export class Client {
     return response.data;
   }
 
-  async addListRow(uniqueId: string, rowData: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async addListRow(
+    uniqueId: string,
+    rowData: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`lists/${uniqueId}/add/row`, rowData);
     return response.data;
   }
 
-  async updateListRow(uniqueId: string, rowId: string, rowData: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateListRow(
+    uniqueId: string,
+    rowId: string,
+    rowData: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(`lists/${uniqueId}/update/row/${rowId}`, rowData);
     return response.data;
   }
@@ -90,7 +104,11 @@ export class Client {
 
   // ─── Sessions ───────────────────────────────────────────────
 
-  async getSessions(domainId: string, page?: number, pageSize?: number): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getSessions(
+    domainId: string,
+    page?: number,
+    pageSize?: number
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let params: Record<string, unknown> = {};
     if (page) params.page = page;
     if (pageSize) params.page_size = pageSize;
@@ -103,7 +121,10 @@ export class Client {
     return response.data;
   }
 
-  async updateSession(sessionId: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateSession(
+    sessionId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(`tracking/session/${sessionId}/update`, data);
     return response.data;
   }
@@ -114,7 +135,11 @@ export class Client {
 
   // ─── Session Visits ─────────────────────────────────────────
 
-  async getSessionVisits(sessionId: string, page?: number, pageSize?: number): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getSessionVisits(
+    sessionId: string,
+    page?: number,
+    pageSize?: number
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let params: Record<string, unknown> = {};
     if (page) params.page = page;
     if (pageSize) params.page_size = pageSize;
@@ -139,7 +164,9 @@ export class Client {
   }
 
   async addSessionNote(sessionId: string, content: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`tracking/session/${sessionId}/note/add`, { content });
+    let response = await this.axios.post(`tracking/session/${sessionId}/note/add`, {
+      content
+    });
     return response.data;
   }
 
@@ -157,40 +184,50 @@ export class Client {
   async addRevenue(sessionId: string, amount: number): Promise<Record<string, unknown>> {
     let response = await this.axios.put('zapier/add_revenue', {
       session_id: sessionId,
-      amount,
+      amount
     });
     return response.data;
   }
 
-  async updateSalesStatus(sessionId: string, salesStatus: string): Promise<Record<string, unknown>> {
+  async updateSalesStatus(
+    sessionId: string,
+    salesStatus: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put('zapier/update_sales_status', {
       session_id: sessionId,
-      sales_status: salesStatus,
+      sales_status: salesStatus
     });
     return response.data;
   }
 
   // ─── Triggers ───────────────────────────────────────────────
 
-  async executeTrigger(sessionId: string, triggerId: string): Promise<Record<string, unknown>> {
+  async executeTrigger(
+    sessionId: string,
+    triggerId: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`triggers/${sessionId}/execute/${triggerId}`);
     return response.data;
   }
 
   // ─── Webhooks ───────────────────────────────────────────────
 
-  async subscribeWebhook(webhookUrl: string, listId: string, eventType: string): Promise<Record<string, unknown>> {
+  async subscribeWebhook(
+    webhookUrl: string,
+    listId: string,
+    eventType: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('zapier/subscribe_webhook', {
       target_url: webhookUrl,
       unique_id: listId,
-      event: eventType,
+      event: eventType
     });
     return response.data;
   }
 
   async unsubscribeWebhook(webhookUrl: string): Promise<void> {
     await this.axios.post('zapier/unsubscribe_webhook', {
-      target_url: webhookUrl,
+      target_url: webhookUrl
     });
   }
 }

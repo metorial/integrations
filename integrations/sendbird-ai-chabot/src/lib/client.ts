@@ -56,8 +56,8 @@ export class Client {
       baseURL: `https://api-${params.applicationId}.sendbird.com/v3`,
       headers: {
         'Api-Token': params.token,
-        'Content-Type': 'application/json; charset=utf8',
-      },
+        'Content-Type': 'application/json; charset=utf8'
+      }
     });
   }
 
@@ -66,16 +66,18 @@ export class Client {
   async createBot(params: CreateBotParams) {
     let body: Record<string, unknown> = {
       bot_userid: params.botUserId,
-      bot_nickname: params.botNickname,
+      bot_nickname: params.botNickname
     };
 
     if (params.botProfileUrl !== undefined) body.bot_profile_url = params.botProfileUrl;
     if (params.botCallbackUrl !== undefined) body.bot_callback_url = params.botCallbackUrl;
     if (params.botType !== undefined) body.bot_type = params.botType;
     if (params.isPrivacyMode !== undefined) body.is_privacy_mode = params.isPrivacyMode;
-    if (params.enableMarkAsRead !== undefined) body.enable_mark_as_read = params.enableMarkAsRead;
+    if (params.enableMarkAsRead !== undefined)
+      body.enable_mark_as_read = params.enableMarkAsRead;
     if (params.showMember !== undefined) body.show_member = params.showMember;
-    if (params.channelInvitationPreference !== undefined) body.channel_invitation_preference = params.channelInvitationPreference;
+    if (params.channelInvitationPreference !== undefined)
+      body.channel_invitation_preference = params.channelInvitationPreference;
 
     if (params.ai) {
       body.ai = this.serializeAiConfig(params.ai);
@@ -107,9 +109,11 @@ export class Client {
     if (params.botCallbackUrl !== undefined) body.bot_callback_url = params.botCallbackUrl;
     if (params.botType !== undefined) body.bot_type = params.botType;
     if (params.isPrivacyMode !== undefined) body.is_privacy_mode = params.isPrivacyMode;
-    if (params.enableMarkAsRead !== undefined) body.enable_mark_as_read = params.enableMarkAsRead;
+    if (params.enableMarkAsRead !== undefined)
+      body.enable_mark_as_read = params.enableMarkAsRead;
     if (params.showMember !== undefined) body.show_member = params.showMember;
-    if (params.channelInvitationPreference !== undefined) body.channel_invitation_preference = params.channelInvitationPreference;
+    if (params.channelInvitationPreference !== undefined)
+      body.channel_invitation_preference = params.channelInvitationPreference;
 
     if (params.ai) {
       body.ai = this.serializeAiConfig(params.ai);
@@ -128,7 +132,7 @@ export class Client {
 
   async joinChannels(botUserId: string, channelUrls: string[]) {
     let response = await this.http.post(`/bots/${encodeURIComponent(botUserId)}/channels`, {
-      channel_urls: channelUrls,
+      channel_urls: channelUrls
     });
     return response.data;
   }
@@ -147,10 +151,15 @@ export class Client {
 
   // --- Messaging ---
 
-  async sendBotMessage(botUserId: string, channelUrl: string, message: string, customType?: string) {
+  async sendBotMessage(
+    botUserId: string,
+    channelUrl: string,
+    message: string,
+    customType?: string
+  ) {
     let body: Record<string, unknown> = {
       message,
-      channel_url: channelUrl,
+      channel_url: channelUrl
     };
 
     if (customType !== undefined) body.custom_type = customType;
@@ -159,30 +168,43 @@ export class Client {
     return response.data;
   }
 
-  async generateAiReply(botUserId: string, messages: ConversationMessage[], useStreaming?: boolean) {
+  async generateAiReply(
+    botUserId: string,
+    messages: ConversationMessage[],
+    useStreaming?: boolean
+  ) {
     let body: Record<string, unknown> = {
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      messages: messages.map(m => ({ role: m.role, content: m.content }))
     };
 
     if (useStreaming !== undefined) body.use_streaming_response = useStreaming;
 
-    let response = await this.http.post(`/bots/${encodeURIComponent(botUserId)}/ai_chatbot_replies`, body);
+    let response = await this.http.post(
+      `/bots/${encodeURIComponent(botUserId)}/ai_chatbot_replies`,
+      body
+    );
     return response.data;
   }
 
   // --- Typing Indicators ---
 
   async startTypingIndicator(channelUrl: string, userIds: string[]) {
-    let response = await this.http.post(`/group_channels/${encodeURIComponent(channelUrl)}/typing`, {
-      user_ids: userIds,
-    });
+    let response = await this.http.post(
+      `/group_channels/${encodeURIComponent(channelUrl)}/typing`,
+      {
+        user_ids: userIds
+      }
+    );
     return response.data;
   }
 
   async stopTypingIndicator(channelUrl: string, userIds: string[]) {
-    let response = await this.http.delete(`/group_channels/${encodeURIComponent(channelUrl)}/typing`, {
-      data: { user_ids: userIds },
-    });
+    let response = await this.http.delete(
+      `/group_channels/${encodeURIComponent(channelUrl)}/typing`,
+      {
+        data: { user_ids: userIds }
+      }
+    );
     return response.data;
   }
 
@@ -197,10 +219,11 @@ export class Client {
     let body: Record<string, unknown> = {
       enabled: config.enabled,
       url: config.url,
-      enabled_events: config.enabledEvents,
+      enabled_events: config.enabledEvents
     };
 
-    if (config.includeMembersInPayload !== undefined) body.include_members = config.includeMembersInPayload;
+    if (config.includeMembersInPayload !== undefined)
+      body.include_members = config.includeMembersInPayload;
 
     let response = await this.http.put('/applications/settings/webhook', body);
     return response.data;

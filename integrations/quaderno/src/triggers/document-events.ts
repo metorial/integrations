@@ -11,7 +11,10 @@ let documentEventInputSchema = z.object({
 
 let documentEventOutputSchema = z.object({
   documentId: z.string().optional().describe('Document ID'),
-  documentType: z.string().optional().describe('Document type (invoice, credit, expense, estimate, receipt)'),
+  documentType: z
+    .string()
+    .optional()
+    .describe('Document type (invoice, credit, expense, estimate, receipt)'),
   number: z.string().optional().describe('Document number'),
   contactId: z.string().optional().describe('Contact ID'),
   contactName: z.string().optional().describe('Contact name'),
@@ -34,18 +37,16 @@ let ALL_DOCUMENT_EVENTS = [
   'receipt.updated'
 ];
 
-export let documentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Events',
-    key: 'document_events',
-    description: 'Triggered when invoices, credit notes, expenses, or receipts are created, updated, or deleted in Quaderno.'
-  }
-)
+export let documentEvents = SlateTrigger.create(spec, {
+  name: 'Document Events',
+  key: 'document_events',
+  description:
+    'Triggered when invoices, credit notes, expenses, or receipts are created, updated, or deleted in Quaderno.'
+})
   .input(documentEventInputSchema)
   .output(documentEventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let webhook = await client.createWebhook({
@@ -60,14 +61,14 @@ export let documentEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventType = body.event_type || body.type || '';
       let data = body.data || body;
@@ -85,7 +86,7 @@ export let documentEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.documentData;
 
       let eventParts = ctx.input.eventType.split('.');
@@ -108,4 +109,5 @@ export let documentEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

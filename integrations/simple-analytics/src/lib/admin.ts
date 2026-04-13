@@ -16,7 +16,7 @@ export interface AddWebsiteParams {
 export let addWebsite = async (config: ClientConfig, params: AddWebsiteParams) => {
   let client = buildAdminClient(config);
   let body: Record<string, unknown> = {
-    hostname: params.hostname,
+    hostname: params.hostname
   };
   if (params.timezone) body['timezone'] = params.timezone;
   if (params.isPublic !== undefined) body['public'] = params.isPublic;

@@ -11,35 +11,37 @@ let bucketOutputSchema = z.object({
   retentionSeconds: z.number().optional().describe('Retention period in seconds'),
   type: z.string().optional().describe('Bucket type'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last update timestamp'),
+  updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let bucketChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Bucket Changes',
-    key: 'bucket_changes',
-    description: 'Polls for changes to buckets in the organization. Detects when buckets are created, updated, or deleted.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    bucketId: z.string().describe('Bucket ID'),
-    name: z.string().describe('Bucket name'),
-    description: z.string().optional().describe('Bucket description'),
-    orgId: z.string().optional().describe('Organization ID'),
-    retentionSeconds: z.number().optional().describe('Retention period in seconds'),
-    type: z.string().optional().describe('Bucket type'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let bucketChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Bucket Changes',
+  key: 'bucket_changes',
+  description:
+    'Polls for changes to buckets in the organization. Detects when buckets are created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      bucketId: z.string().describe('Bucket ID'),
+      name: z.string().describe('Bucket name'),
+      description: z.string().optional().describe('Bucket description'),
+      orgId: z.string().optional().describe('Organization ID'),
+      retentionSeconds: z.number().optional().describe('Retention period in seconds'),
+      type: z.string().optional().describe('Bucket type'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .output(bucketOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let result = await client.listBuckets({ limit: 100 });
       let currentBuckets = (result.buckets || []) as any[];
@@ -61,7 +63,7 @@ export let bucketChangesTrigger = SlateTrigger.create(
           retentionSeconds,
           type: bucket.type,
           createdAt: bucket.createdAt,
-          updatedAt: bucket.updatedAt,
+          updatedAt: bucket.updatedAt
         };
 
         if (!isFirstPoll) {
@@ -69,12 +71,12 @@ export let bucketChangesTrigger = SlateTrigger.create(
           if (!previous) {
             inputs.push({
               changeType: 'created' as const,
-              ...currentBucketMap[bucket.id],
+              ...currentBucketMap[bucket.id]
             });
           } else if (previous.updatedAt !== bucket.updatedAt) {
             inputs.push({
               changeType: 'updated' as const,
-              ...currentBucketMap[bucket.id],
+              ...currentBucketMap[bucket.id]
             });
           }
         }
@@ -85,7 +87,7 @@ export let bucketChangesTrigger = SlateTrigger.create(
           if (!currentBucketMap[bucketId]) {
             inputs.push({
               changeType: 'deleted' as const,
-              ...prevBucket,
+              ...prevBucket
             });
           }
         }
@@ -94,12 +96,12 @@ export let bucketChangesTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          bucketMap: currentBucketMap,
-        },
+          bucketMap: currentBucketMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `bucket.${ctx.input.changeType}`,
         id: `${ctx.input.bucketId}-${ctx.input.changeType}-${ctx.input.updatedAt || Date.now()}`,
@@ -111,9 +113,9 @@ export let bucketChangesTrigger = SlateTrigger.create(
           retentionSeconds: ctx.input.retentionSeconds,
           type: ctx.input.type,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

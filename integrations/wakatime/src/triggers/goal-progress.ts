@@ -3,38 +3,45 @@ import { WakaTimeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let goalProgressTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Goal Progress',
-    key: 'goal_progress',
-    description: 'Polls for changes in coding goal status. Triggers when a goal\'s status changes (e.g., from pending to success or fail), enabling notifications and automations based on goal achievement.'
-  }
-)
-  .input(z.object({
-    goalId: z.string().describe('Goal ID'),
-    title: z.string().describe('Goal title'),
-    currentStatus: z.string().describe('Current goal status'),
-    previousStatus: z.string().optional().describe('Previous goal status'),
-    statusPercent: z.number().optional().describe('Progress percentage'),
-    targetSeconds: z.number().describe('Target seconds'),
-    frequency: z.string().optional().describe('Goal frequency')
-  }))
-  .output(z.object({
-    goalId: z.string().describe('Unique goal ID'),
-    title: z.string().describe('Goal title'),
-    currentStatus: z.string().describe('Current goal status (success, fail, pending, ignored)'),
-    previousStatus: z.string().optional().describe('Previous goal status before this change'),
-    statusPercent: z.number().optional().describe('Current progress as a percentage'),
-    targetSeconds: z.number().describe('Target number of seconds'),
-    frequency: z.string().optional().describe('Goal frequency (daily, weekly)')
-  }))
+export let goalProgressTrigger = SlateTrigger.create(spec, {
+  name: 'Goal Progress',
+  key: 'goal_progress',
+  description:
+    "Polls for changes in coding goal status. Triggers when a goal's status changes (e.g., from pending to success or fail), enabling notifications and automations based on goal achievement."
+})
+  .input(
+    z.object({
+      goalId: z.string().describe('Goal ID'),
+      title: z.string().describe('Goal title'),
+      currentStatus: z.string().describe('Current goal status'),
+      previousStatus: z.string().optional().describe('Previous goal status'),
+      statusPercent: z.number().optional().describe('Progress percentage'),
+      targetSeconds: z.number().describe('Target seconds'),
+      frequency: z.string().optional().describe('Goal frequency')
+    })
+  )
+  .output(
+    z.object({
+      goalId: z.string().describe('Unique goal ID'),
+      title: z.string().describe('Goal title'),
+      currentStatus: z
+        .string()
+        .describe('Current goal status (success, fail, pending, ignored)'),
+      previousStatus: z
+        .string()
+        .optional()
+        .describe('Previous goal status before this change'),
+      statusPercent: z.number().optional().describe('Current progress as a percentage'),
+      targetSeconds: z.number().describe('Target number of seconds'),
+      frequency: z.string().optional().describe('Goal frequency (daily, weekly)')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new WakaTimeClient({ token: ctx.auth.token });
 
       let goals = await client.getGoals();
@@ -53,7 +60,7 @@ export let goalProgressTrigger = SlateTrigger.create(
 
       let newStatuses: Record<string, string> = {};
 
-      for (let goal of (goals || [])) {
+      for (let goal of goals || []) {
         let goalId = goal.id ?? '';
         let currentStatus = goal.status ?? 'pending';
         newStatuses[goalId] = currentStatus;
@@ -82,7 +89,7 @@ export let goalProgressTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `goal.${ctx.input.currentStatus}`,
         id: `${ctx.input.goalId}-${ctx.input.currentStatus}-${Date.now()}`,

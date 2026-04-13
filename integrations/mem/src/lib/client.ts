@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.mem.ai/v2',
+  baseURL: 'https://api.mem.ai/v2'
 });
 
 // --- Interfaces ---
@@ -69,8 +69,8 @@ export class MemClient {
 
   constructor(config: { token: string }) {
     this.headers = {
-      'Authorization': `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.token}`,
+      'Content-Type': 'application/json'
     };
   }
 
@@ -84,20 +84,24 @@ export class MemClient {
     createdAt?: string | null;
     updatedAt?: string | null;
   }): Promise<MemNoteResponse> {
-    let response = await http.post('/notes', {
-      content: params.content,
-      id: params.noteId ?? null,
-      collection_ids: params.collectionIds ?? null,
-      collection_titles: params.collectionTitles ?? null,
-      created_at: params.createdAt ?? null,
-      updated_at: params.updatedAt ?? null,
-    }, { headers: this.headers });
+    let response = await http.post(
+      '/notes',
+      {
+        content: params.content,
+        id: params.noteId ?? null,
+        collection_ids: params.collectionIds ?? null,
+        collection_titles: params.collectionTitles ?? null,
+        created_at: params.createdAt ?? null,
+        updated_at: params.updatedAt ?? null
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async getNote(noteId: string): Promise<MemNoteResponse> {
     let response = await http.get(`/notes/${noteId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -127,7 +131,7 @@ export class MemClient {
 
     let response = await http.get('/notes', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -144,7 +148,8 @@ export class MemClient {
     let body: Record<string, unknown> = {};
 
     if (params.query) body.query = params.query;
-    if (params.filterByCollectionIds) body.filter_by_collection_ids = params.filterByCollectionIds;
+    if (params.filterByCollectionIds)
+      body.filter_by_collection_ids = params.filterByCollectionIds;
     if (params.filterByContainsOpenTasks) body.filter_by_contains_open_tasks = true;
     if (params.filterByContainsTasks) body.filter_by_contains_tasks = true;
     if (params.filterByContainsImages) body.filter_by_contains_images = true;
@@ -152,14 +157,14 @@ export class MemClient {
     if (params.includeNoteContent) body.config = { include_note_content: true };
 
     let response = await http.post('/notes/search', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteNote(noteId: string): Promise<MemRequestIdResponse> {
     let response = await http.delete(`/notes/${noteId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -173,19 +178,23 @@ export class MemClient {
     createdAt?: string | null;
     updatedAt?: string | null;
   }): Promise<MemCollectionResponse> {
-    let response = await http.post('/collections', {
-      title: params.title,
-      id: params.collectionId ?? null,
-      description: params.description ?? null,
-      created_at: params.createdAt ?? null,
-      updated_at: params.updatedAt ?? null,
-    }, { headers: this.headers });
+    let response = await http.post(
+      '/collections',
+      {
+        title: params.title,
+        id: params.collectionId ?? null,
+        description: params.description ?? null,
+        created_at: params.createdAt ?? null,
+        updated_at: params.updatedAt ?? null
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async getCollection(collectionId: string): Promise<MemCollectionResponse> {
     let response = await http.get(`/collections/${collectionId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -203,7 +212,7 @@ export class MemClient {
 
     let response = await http.get('/collections', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -216,14 +225,14 @@ export class MemClient {
     if (params.query) body.query = params.query;
 
     let response = await http.post('/collections/search', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteCollection(collectionId: string): Promise<MemRequestIdResponse> {
     let response = await http.delete(`/collections/${collectionId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -236,12 +245,16 @@ export class MemClient {
     context?: string | null;
     timestamp?: string | null;
   }): Promise<MemRequestIdResponse> {
-    let response = await http.post('/mem-it', {
-      input: params.input,
-      instructions: params.instructions ?? null,
-      context: params.context ?? null,
-      timestamp: params.timestamp ?? null,
-    }, { headers: this.headers });
+    let response = await http.post(
+      '/mem-it',
+      {
+        input: params.input,
+        instructions: params.instructions ?? null,
+        context: params.context ?? null,
+        timestamp: params.timestamp ?? null
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 }

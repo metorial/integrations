@@ -3,91 +3,102 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPortfolios = SlateTool.create(
-  spec,
-  {
-    name: 'List Portfolios',
-    key: 'list_portfolios',
-    description: `List portfolios in a workspace owned by a specific user. Portfolios are collections of projects used for tracking at a higher level.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPortfolios = SlateTool.create(spec, {
+  name: 'List Portfolios',
+  key: 'list_portfolios',
+  description: `List portfolios in a workspace owned by a specific user. Portfolios are collections of projects used for tracking at a higher level.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().describe('Workspace GID'),
-    ownerId: z.string().describe('Owner user GID or "me"'),
-    limit: z.number().optional().describe('Maximum number of portfolios to return'),
-  }))
-  .output(z.object({
-    portfolios: z.array(z.object({
-      portfolioId: z.string(),
-      name: z.string(),
-      color: z.string().nullable().optional(),
-      createdAt: z.string().optional(),
-      dueOn: z.string().nullable().optional(),
-      startOn: z.string().nullable().optional(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z.string().describe('Workspace GID'),
+      ownerId: z.string().describe('Owner user GID or "me"'),
+      limit: z.number().optional().describe('Maximum number of portfolios to return')
+    })
+  )
+  .output(
+    z.object({
+      portfolios: z.array(
+        z.object({
+          portfolioId: z.string(),
+          name: z.string(),
+          color: z.string().nullable().optional(),
+          createdAt: z.string().optional(),
+          dueOn: z.string().nullable().optional(),
+          startOn: z.string().nullable().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let result = await client.listPortfolios(ctx.input.workspaceId, ctx.input.ownerId, { limit: ctx.input.limit });
+    let result = await client.listPortfolios(ctx.input.workspaceId, ctx.input.ownerId, {
+      limit: ctx.input.limit
+    });
     let portfolios = (result.data || []).map((p: any) => ({
       portfolioId: p.gid,
       name: p.name,
       color: p.color,
       createdAt: p.created_at,
       dueOn: p.due_on,
-      startOn: p.start_on,
+      startOn: p.start_on
     }));
 
     return {
       output: { portfolios },
-      message: `Found **${portfolios.length}** portfolio(s).`,
+      message: `Found **${portfolios.length}** portfolio(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let getPortfolio = SlateTool.create(
-  spec,
-  {
-    name: 'Get Portfolio',
-    key: 'get_portfolio',
-    description: `Get full details for a portfolio including its items, members, and custom fields.`,
-    tags: {
-      readOnly: true,
-    },
+export let getPortfolio = SlateTool.create(spec, {
+  name: 'Get Portfolio',
+  key: 'get_portfolio',
+  description: `Get full details for a portfolio including its items, members, and custom fields.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    portfolioId: z.string().describe('Portfolio GID'),
-  }))
-  .output(z.object({
-    portfolioId: z.string(),
-    name: z.string(),
-    color: z.string().nullable().optional(),
-    createdAt: z.string().optional(),
-    dueOn: z.string().nullable().optional(),
-    startOn: z.string().nullable().optional(),
-    owner: z.any().optional(),
-    members: z.array(z.any()).optional(),
-    customFields: z.array(z.any()).optional(),
-    items: z.array(z.object({
-      itemId: z.string(),
+})
+  .input(
+    z.object({
+      portfolioId: z.string().describe('Portfolio GID')
+    })
+  )
+  .output(
+    z.object({
+      portfolioId: z.string(),
       name: z.string(),
-      resourceType: z.string().optional(),
-    })).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+      color: z.string().nullable().optional(),
+      createdAt: z.string().optional(),
+      dueOn: z.string().nullable().optional(),
+      startOn: z.string().nullable().optional(),
+      owner: z.any().optional(),
+      members: z.array(z.any()).optional(),
+      customFields: z.array(z.any()).optional(),
+      items: z
+        .array(
+          z.object({
+            itemId: z.string(),
+            name: z.string(),
+            resourceType: z.string().optional()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let [portfolio, itemsResult] = await Promise.all([
       client.getPortfolio(ctx.input.portfolioId),
-      client.listPortfolioItems(ctx.input.portfolioId),
+      client.listPortfolioItems(ctx.input.portfolioId)
     ]);
 
     let items = (itemsResult.data || []).map((i: any) => ({
       itemId: i.gid,
       name: i.name,
-      resourceType: i.resource_type,
+      resourceType: i.resource_type
     }));
 
     return {
@@ -101,32 +112,40 @@ export let getPortfolio = SlateTool.create(
         owner: portfolio.owner,
         members: portfolio.members,
         customFields: portfolio.custom_fields,
-        items,
+        items
       },
-      message: `Retrieved portfolio **${portfolio.name}** with **${items.length}** item(s).`,
+      message: `Retrieved portfolio **${portfolio.name}** with **${items.length}** item(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let createPortfolio = SlateTool.create(
-  spec,
-  {
-    name: 'Create Portfolio',
-    key: 'create_portfolio',
-    description: `Create a new portfolio in a workspace. Optionally add projects to it.`,
-  }
-)
-  .input(z.object({
-    workspaceId: z.string().describe('Workspace GID'),
-    name: z.string().describe('Portfolio name'),
-    color: z.string().optional().describe('Portfolio color'),
-    isPublic: z.boolean().optional().describe('Whether the portfolio is visible to the workspace'),
-    projectIds: z.array(z.string()).optional().describe('Project GIDs to add to the portfolio'),
-  }))
-  .output(z.object({
-    portfolioId: z.string(),
-    name: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createPortfolio = SlateTool.create(spec, {
+  name: 'Create Portfolio',
+  key: 'create_portfolio',
+  description: `Create a new portfolio in a workspace. Optionally add projects to it.`
+})
+  .input(
+    z.object({
+      workspaceId: z.string().describe('Workspace GID'),
+      name: z.string().describe('Portfolio name'),
+      color: z.string().optional().describe('Portfolio color'),
+      isPublic: z
+        .boolean()
+        .optional()
+        .describe('Whether the portfolio is visible to the workspace'),
+      projectIds: z
+        .array(z.string())
+        .optional()
+        .describe('Project GIDs to add to the portfolio')
+    })
+  )
+  .output(
+    z.object({
+      portfolioId: z.string(),
+      name: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = { name: ctx.input.name };
@@ -136,39 +155,43 @@ export let createPortfolio = SlateTool.create(
     let portfolio = await client.createPortfolio(ctx.input.workspaceId, data);
 
     if (ctx.input.projectIds?.length) {
-      await Promise.all(ctx.input.projectIds.map((pid) => client.addItemToPortfolio(portfolio.gid, pid)));
+      await Promise.all(
+        ctx.input.projectIds.map(pid => client.addItemToPortfolio(portfolio.gid, pid))
+      );
     }
 
     return {
       output: {
         portfolioId: portfolio.gid,
-        name: portfolio.name,
+        name: portfolio.name
       },
-      message: `Created portfolio **${portfolio.name}** (${portfolio.gid}).`,
+      message: `Created portfolio **${portfolio.name}** (${portfolio.gid}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updatePortfolio = SlateTool.create(
-  spec,
-  {
-    name: 'Update Portfolio',
-    key: 'update_portfolio',
-    description: `Update a portfolio's properties and manage its project items. Supports adding and removing projects from the portfolio.`,
-  }
-)
-  .input(z.object({
-    portfolioId: z.string().describe('Portfolio GID'),
-    name: z.string().optional().describe('New portfolio name'),
-    color: z.string().optional().describe('New portfolio color'),
-    isPublic: z.boolean().optional().describe('Whether the portfolio is visible'),
-    addProjectIds: z.array(z.string()).optional().describe('Project GIDs to add'),
-    removeProjectIds: z.array(z.string()).optional().describe('Project GIDs to remove'),
-  }))
-  .output(z.object({
-    portfolioId: z.string(),
-    name: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updatePortfolio = SlateTool.create(spec, {
+  name: 'Update Portfolio',
+  key: 'update_portfolio',
+  description: `Update a portfolio's properties and manage its project items. Supports adding and removing projects from the portfolio.`
+})
+  .input(
+    z.object({
+      portfolioId: z.string().describe('Portfolio GID'),
+      name: z.string().optional().describe('New portfolio name'),
+      color: z.string().optional().describe('New portfolio color'),
+      isPublic: z.boolean().optional().describe('Whether the portfolio is visible'),
+      addProjectIds: z.array(z.string()).optional().describe('Project GIDs to add'),
+      removeProjectIds: z.array(z.string()).optional().describe('Project GIDs to remove')
+    })
+  )
+  .output(
+    z.object({
+      portfolioId: z.string(),
+      name: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = {};
@@ -194,8 +217,9 @@ export let updatePortfolio = SlateTool.create(
     return {
       output: {
         portfolioId: portfolio.gid,
-        name: portfolio.name,
+        name: portfolio.name
       },
-      message: `Updated portfolio **${portfolio.name}** (${portfolio.gid}).`,
+      message: `Updated portfolio **${portfolio.name}** (${portfolio.gid}).`
     };
-  }).build();
+  })
+  .build();

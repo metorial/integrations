@@ -3,40 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let leadFormSubmissions = SlateTrigger.create(
-  spec,
-  {
-    name: 'Lead Form Submissions',
-    key: 'lead_form_submissions',
-    description: 'Triggers when new lead form submissions are received on LinkedIn Lead Gen Forms. Polls for new submissions periodically.',
-  }
-)
-  .input(z.object({
-    responseId: z.string().describe('ID of the lead form response'),
-    leadFormUrn: z.string().describe('URN of the lead form'),
-    submittedAt: z.number().describe('Submission timestamp in epoch milliseconds'),
-    answers: z.array(z.object({
-      questionId: z.string().optional(),
-      answer: z.string().optional(),
-    })).optional().describe('Submitted answers'),
-    associatedEntity: z.string().optional().describe('Associated campaign or creative URN'),
-  }))
-  .output(z.object({
-    responseId: z.string().describe('ID of the lead form response'),
-    leadFormUrn: z.string().describe('URN of the lead form'),
-    submittedAt: z.number().describe('Submission timestamp in epoch milliseconds'),
-    answers: z.array(z.object({
-      questionId: z.string().optional().describe('Question identifier'),
-      answer: z.string().optional().describe('User\'s answer'),
-    })).optional().describe('Submitted answers'),
-    associatedEntity: z.string().optional().describe('Associated campaign or creative URN'),
-  }))
+export let leadFormSubmissions = SlateTrigger.create(spec, {
+  name: 'Lead Form Submissions',
+  key: 'lead_form_submissions',
+  description:
+    'Triggers when new lead form submissions are received on LinkedIn Lead Gen Forms. Polls for new submissions periodically.'
+})
+  .input(
+    z.object({
+      responseId: z.string().describe('ID of the lead form response'),
+      leadFormUrn: z.string().describe('URN of the lead form'),
+      submittedAt: z.number().describe('Submission timestamp in epoch milliseconds'),
+      answers: z
+        .array(
+          z.object({
+            questionId: z.string().optional(),
+            answer: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Submitted answers'),
+      associatedEntity: z.string().optional().describe('Associated campaign or creative URN')
+    })
+  )
+  .output(
+    z.object({
+      responseId: z.string().describe('ID of the lead form response'),
+      leadFormUrn: z.string().describe('URN of the lead form'),
+      submittedAt: z.number().describe('Submission timestamp in epoch milliseconds'),
+      answers: z
+        .array(
+          z.object({
+            questionId: z.string().optional().describe('Question identifier'),
+            answer: z.string().optional().describe("User's answer")
+          })
+        )
+        .optional()
+        .describe('Submitted answers'),
+      associatedEntity: z.string().optional().describe('Associated campaign or creative URN')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let state = ctx.state as { lastPolledAt?: number; accountId?: string } | null;
@@ -49,7 +61,7 @@ export let leadFormSubmissions = SlateTrigger.create(
         // On first poll, return empty - the trigger needs to be configured with state containing accountId
         return {
           inputs: [],
-          updatedState: { lastPolledAt: now, accountId: '' },
+          updatedState: { lastPolledAt: now, accountId: '' }
         };
       }
 
@@ -57,30 +69,30 @@ export let leadFormSubmissions = SlateTrigger.create(
         accountId,
         startTime: lastPolledAt,
         endTime: now,
-        pageSize: 100,
+        pageSize: 100
       });
 
-      let inputs = result.elements.map((response) => ({
+      let inputs = result.elements.map(response => ({
         responseId: response.id,
         leadFormUrn: response.leadForm,
         submittedAt: response.submittedAt,
-        answers: response.formResponse?.answers?.map((a) => ({
+        answers: response.formResponse?.answers?.map(a => ({
           questionId: a.questionId,
-          answer: a.answerDetails?.textQuestionAnswer?.answer,
+          answer: a.answerDetails?.textQuestionAnswer?.answer
         })),
-        associatedEntity: response.associatedEntity,
+        associatedEntity: response.associatedEntity
       }));
 
       return {
         inputs,
         updatedState: {
           lastPolledAt: now,
-          accountId,
-        },
+          accountId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'lead_form_response.created',
         id: ctx.input.responseId,
@@ -89,9 +101,9 @@ export let leadFormSubmissions = SlateTrigger.create(
           leadFormUrn: ctx.input.leadFormUrn,
           submittedAt: ctx.input.submittedAt,
           answers: ctx.input.answers,
-          associatedEntity: ctx.input.associatedEntity,
-        },
+          associatedEntity: ctx.input.associatedEntity
+        }
       };
-    },
+    }
   })
   .build();

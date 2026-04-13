@@ -3,57 +3,87 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageInstructions = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Instructions',
-    key: 'manage_instructions',
-    description: `Create, list, update, or delete entity extraction instructions. Instructions define natural language prompts that Ragie automatically applies to documents to extract structured entities.
+export let manageInstructions = SlateTool.create(spec, {
+  name: 'Manage Instructions',
+  key: 'manage_instructions',
+  description: `Create, list, update, or delete entity extraction instructions. Instructions define natural language prompts that Ragie automatically applies to documents to extract structured entities.
 Once created, an instruction is applied to all new and updated documents.`,
-    instructions: [
-      'Use action "list" to see all existing instructions.',
-      'Use action "create" with a prompt describing what to extract. Optionally include an entitySchema (JSON Schema) for structured output.',
-      'Use action "update" to modify an existing instruction.',
-      'Use action "delete" to remove an instruction.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Use action "list" to see all existing instructions.',
+    'Use action "create" with a prompt describing what to extract. Optionally include an entitySchema (JSON Schema) for structured output.',
+    'Use action "update" to modify an existing instruction.',
+    'Use action "delete" to remove an instruction.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    instructionId: z.string().optional().describe('Instruction ID (required for update and delete)'),
-    name: z.string().optional().describe('Name for the instruction (for create/update)'),
-    prompt: z.string().optional().describe('Natural language extraction prompt (required for create)'),
-    entitySchema: z.record(z.string(), z.any()).optional().describe('JSON Schema defining the structure of extracted entities'),
-    scope: z.enum(['chunk', 'document']).optional().describe('Extraction scope: "chunk" for granular, "document" for document-level'),
-    filter: z.record(z.string(), z.any()).optional().describe('Metadata filter to scope which documents the instruction applies to'),
-  }))
-  .output(z.object({
-    instructions: z.array(z.object({
-      instructionId: z.string().describe('Instruction ID'),
-      name: z.string().describe('Instruction name'),
-      prompt: z.string().describe('Extraction prompt'),
-      entitySchema: z.record(z.string(), z.any()).nullable().describe('Entity JSON Schema'),
-      createdAt: z.string().describe('ISO 8601 creation timestamp'),
-      updatedAt: z.string().describe('ISO 8601 last update timestamp'),
-    })).optional().describe('List of instructions (for list action)'),
-    instruction: z.object({
-      instructionId: z.string().describe('Instruction ID'),
-      name: z.string().describe('Instruction name'),
-      prompt: z.string().describe('Extraction prompt'),
-      entitySchema: z.record(z.string(), z.any()).nullable().describe('Entity JSON Schema'),
-      createdAt: z.string().describe('ISO 8601 creation timestamp'),
-      updatedAt: z.string().describe('ISO 8601 last update timestamp'),
-    }).optional().describe('Created or updated instruction'),
-    deleted: z.boolean().optional().describe('Whether the instruction was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      instructionId: z
+        .string()
+        .optional()
+        .describe('Instruction ID (required for update and delete)'),
+      name: z.string().optional().describe('Name for the instruction (for create/update)'),
+      prompt: z
+        .string()
+        .optional()
+        .describe('Natural language extraction prompt (required for create)'),
+      entitySchema: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('JSON Schema defining the structure of extracted entities'),
+      scope: z
+        .enum(['chunk', 'document'])
+        .optional()
+        .describe('Extraction scope: "chunk" for granular, "document" for document-level'),
+      filter: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Metadata filter to scope which documents the instruction applies to')
+    })
+  )
+  .output(
+    z.object({
+      instructions: z
+        .array(
+          z.object({
+            instructionId: z.string().describe('Instruction ID'),
+            name: z.string().describe('Instruction name'),
+            prompt: z.string().describe('Extraction prompt'),
+            entitySchema: z
+              .record(z.string(), z.any())
+              .nullable()
+              .describe('Entity JSON Schema'),
+            createdAt: z.string().describe('ISO 8601 creation timestamp'),
+            updatedAt: z.string().describe('ISO 8601 last update timestamp')
+          })
+        )
+        .optional()
+        .describe('List of instructions (for list action)'),
+      instruction: z
+        .object({
+          instructionId: z.string().describe('Instruction ID'),
+          name: z.string().describe('Instruction name'),
+          prompt: z.string().describe('Extraction prompt'),
+          entitySchema: z
+            .record(z.string(), z.any())
+            .nullable()
+            .describe('Entity JSON Schema'),
+          createdAt: z.string().describe('ISO 8601 creation timestamp'),
+          updatedAt: z.string().describe('ISO 8601 last update timestamp')
+        })
+        .optional()
+        .describe('Created or updated instruction'),
+      deleted: z.boolean().optional().describe('Whether the instruction was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      partition: ctx.config.partition,
+      partition: ctx.config.partition
     });
 
     let mapInstruction = (i: any) => ({
@@ -62,7 +92,7 @@ Once created, an instruction is applied to all new and updated documents.`,
       prompt: i.prompt,
       entitySchema: i.entitySchema,
       createdAt: i.createdAt,
-      updatedAt: i.updatedAt,
+      updatedAt: i.updatedAt
     });
 
     switch (ctx.input.action) {
@@ -70,9 +100,9 @@ Once created, an instruction is applied to all new and updated documents.`,
         let instructions = await client.listInstructions();
         return {
           output: {
-            instructions: instructions.map(mapInstruction),
+            instructions: instructions.map(mapInstruction)
           },
-          message: `Found **${instructions.length}** instructions.`,
+          message: `Found **${instructions.length}** instructions.`
         };
       }
 
@@ -85,13 +115,13 @@ Once created, an instruction is applied to all new and updated documents.`,
           prompt: ctx.input.prompt,
           entitySchema: ctx.input.entitySchema,
           scope: ctx.input.scope,
-          filter: ctx.input.filter,
+          filter: ctx.input.filter
         });
         return {
           output: {
-            instruction: mapInstruction(created),
+            instruction: mapInstruction(created)
           },
-          message: `Instruction **${created.name}** created. ID: \`${created.id}\``,
+          message: `Instruction **${created.name}** created. ID: \`${created.id}\``
         };
       }
 
@@ -104,13 +134,13 @@ Once created, an instruction is applied to all new and updated documents.`,
           prompt: ctx.input.prompt,
           entitySchema: ctx.input.entitySchema,
           scope: ctx.input.scope,
-          filter: ctx.input.filter,
+          filter: ctx.input.filter
         });
         return {
           output: {
-            instruction: mapInstruction(updated),
+            instruction: mapInstruction(updated)
           },
-          message: `Instruction \`${ctx.input.instructionId}\` updated.`,
+          message: `Instruction \`${ctx.input.instructionId}\` updated.`
         };
       }
 
@@ -121,10 +151,11 @@ Once created, an instruction is applied to all new and updated documents.`,
         await client.deleteInstruction(ctx.input.instructionId);
         return {
           output: {
-            deleted: true,
+            deleted: true
           },
-          message: `Instruction \`${ctx.input.instructionId}\` deleted.`,
+          message: `Instruction \`${ctx.input.instructionId}\` deleted.`
         };
       }
     }
-  }).build();
+  })
+  .build();

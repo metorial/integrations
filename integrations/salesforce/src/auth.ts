@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    instanceUrl: z.string(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      instanceUrl: z.string(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -67,11 +69,17 @@ export let auth = SlateAuth.create()
     ],
 
     inputSchema: z.object({
-      environment: z.enum(['production', 'sandbox', 'custom']).default('production').describe('Salesforce environment type'),
-      customDomain: z.string().optional().describe('Custom domain (e.g., yourorg.my) when using a custom environment')
+      environment: z
+        .enum(['production', 'sandbox', 'custom'])
+        .default('production')
+        .describe('Salesforce environment type'),
+      customDomain: z
+        .string()
+        .optional()
+        .describe('Custom domain (e.g., yourorg.my) when using a custom environment')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
       let params = new URLSearchParams({
         response_type: 'code',
@@ -87,19 +95,23 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
       let http = createAxios({ baseURL: baseUrl });
 
-      let response = await http.post('/services/oauth2/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
+      let response = await http.post(
+        '/services/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
 
@@ -108,13 +120,15 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           instanceUrl: data.instance_url,
-          expiresAt: data.issued_at ? new Date(parseInt(data.issued_at) + 7200 * 1000).toISOString() : undefined
+          expiresAt: data.issued_at
+            ? new Date(parseInt(data.issued_at) + 7200 * 1000).toISOString()
+            : undefined
         },
         input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -122,14 +136,18 @@ export let auth = SlateAuth.create()
       let baseUrl = getLoginUrl(ctx.input.environment, ctx.input.customDomain);
       let http = createAxios({ baseURL: baseUrl });
 
-      let response = await http.post('/services/oauth2/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
+      let response = await http.post(
+        '/services/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
 
@@ -138,7 +156,9 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: ctx.output.refreshToken,
           instanceUrl: data.instance_url || ctx.output.instanceUrl,
-          expiresAt: data.issued_at ? new Date(parseInt(data.issued_at) + 7200 * 1000).toISOString() : undefined
+          expiresAt: data.issued_at
+            ? new Date(parseInt(data.issued_at) + 7200 * 1000).toISOString()
+            : undefined
         },
         input: ctx.input
       };

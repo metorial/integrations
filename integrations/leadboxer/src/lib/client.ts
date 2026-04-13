@@ -42,16 +42,16 @@ export class LeadBoxerClient {
     this.dataApi = createAxios({
       baseURL: 'https://data.leadboxer.com',
       headers: {
-        'x-api-key': config.token,
-      },
+        'x-api-key': config.token
+      }
     });
 
     this.legacyApi = createAxios({
-      baseURL: 'https://kibana.leadboxer.com',
+      baseURL: 'https://kibana.leadboxer.com'
     });
 
     this.trackingApi = createAxios({
-      baseURL: 'https://log.leadboxer.com',
+      baseURL: 'https://log.leadboxer.com'
     });
   }
 
@@ -60,7 +60,7 @@ export class LeadBoxerClient {
       apiKey: this.config.token,
       site: this.config.datasetId,
       dataType: 'json',
-      noShortenEmail: 'true',
+      noShortenEmail: 'true'
     };
 
     if (filters.search) params['search'] = filters.search;
@@ -78,7 +78,7 @@ export class LeadBoxerClient {
   async getLeadDetail(leadId: string): Promise<any> {
     let params: Record<string, string> = {
       leadId,
-      site: this.config.datasetId,
+      site: this.config.datasetId
     };
 
     let response = await this.legacyApi.get('/api/views/lead_detail', { params });
@@ -87,14 +87,14 @@ export class LeadBoxerClient {
 
   async getLeadSessions(leadId: string): Promise<any> {
     let response = await this.dataApi.get(`/v1/leads/${encodeURIComponent(leadId)}/sessions`, {
-      params: { site: this.config.datasetId },
+      params: { site: this.config.datasetId }
     });
     return response.data;
   }
 
   async getLeadEvents(leadId: string): Promise<any> {
     let response = await this.dataApi.get(`/v1/leads/${encodeURIComponent(leadId)}/events`, {
-      params: { site: this.config.datasetId },
+      params: { site: this.config.datasetId }
     });
     return response.data;
   }
@@ -103,8 +103,8 @@ export class LeadBoxerClient {
     let response = await this.dataApi.get('/api/ip-lookup', {
       params: {
         ip: ipAddress,
-        apiKey: this.config.token,
-      },
+        apiKey: this.config.token
+      }
     });
     return response.data;
   }
@@ -112,8 +112,8 @@ export class LeadBoxerClient {
   async lookupDomain(domain: string): Promise<any> {
     let response = await this.dataApi.get('/v1/domain-lookup', {
       params: {
-        domain,
-      },
+        domain
+      }
     });
     return response.data;
   }
@@ -122,7 +122,7 @@ export class LeadBoxerClient {
     let queryParams: Record<string, string> = {
       si: this.config.datasetId,
       ti: params.title,
-      json: 'true',
+      json: 'true'
     };
 
     if (params.email) queryParams['email'] = params.email;
@@ -147,13 +147,13 @@ export class LeadBoxerClient {
   async updateLeadTags(params: TagUpdateParams): Promise<any> {
     let queryParams: Record<string, string> = {
       userId: params.leadboxerUserId,
-      leadTags: params.tags,
+      leadTags: params.tags
     };
 
     if (params.action) queryParams['action'] = params.action;
 
     let response = await this.legacyApi.get('/api/management/update_lead_tags', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }

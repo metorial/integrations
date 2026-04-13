@@ -42,33 +42,43 @@ Refresh tokens can be exchanged for access tokens at: `https://www.googleapis.co
 ## Features
 
 ### Campaign Management
+
 Create, update, pause, and remove advertising campaigns across multiple campaign types including Search, Display, Video, Shopping, Performance Max, and App campaigns. Configure campaign-level settings such as budgets, start/end dates, geographic targeting, language targeting, and ad scheduling.
 
 ### Ad Group and Ad Management
+
 Automatically generate keywords, ad text, landing pages, and custom reports. Create and manage ad groups within campaigns, and configure ads of various formats including text ads, responsive ads, image ads, and video ads. Update ad copy in real-time based on business data.
 
 ### Keyword Management
+
 Add, update, and remove keywords within ad groups. Configure match types (broad, phrase, exact) and set keyword-level bids. Manage negative keywords at both campaign and ad group levels.
 
 ### Bidding Strategy Management
+
 The Google Ads API offers a range of customizable bidding strategies that allow you to automate your bidding process and achieve your campaign goals. Available strategies include Manual CPC, Manual CPM, Enhanced CPC, Maximize Conversions, Maximize Conversion Value, Target CPA, Target ROAS, and more.
 
 ### Keyword Planning
+
 Keyword Planning is a process for getting keyword metrics and forecasts as well as searching for new keywords to add to campaigns. The functionality is similar to the Keyword Planner tool in the Google Ads UI. Historical metrics provide data on how keywords have previously performed on Google Search. Forecast metrics provide a more exact estimate of future campaign performance.
 
 ### Audience Targeting
+
 The API provides tools to implement sophisticated targeting strategies. One method is "Audience segments", also known as user lists, which are groups of people with specific interests, intents, or demographic information. Supports CRM-based user lists, rule-based user lists, remarketing lists, and similar audiences. Also supports geo-targeting and location-based targeting.
 
 ### Conversion Tracking and Management
+
 The Google Ads API allows for programmatic management of the entire conversion management workflow, covering creating, importing, adjusting, monitoring, and grouping conversion actions. Import offline conversions to measure real-world transactions such as qualified leads over the phone or in-office payments. Enhanced conversions for web can improve the accuracy of your conversion measurement by supplementing existing conversion data with hashed first-party customer data in a privacy-safe way.
 
 ### Reporting and Analytics
+
 Report on conversions by retrieving data about specific conversion actions or retrieving conversion metrics for other resources like campaigns, ad groups, and ads. Use Google Ads Query Language (GAQL) to build custom queries across all resource types. Compile your Google Ads data to use with other systems like inventories, generate regular reports, and make campaign adjustments in bulk.
 
 ### Account Management
+
 Using a manager account, you can control client accounts and run operations without logging into each account separately. List accessible customer accounts, manage account hierarchies, and handle multi-account operations.
 
 ### Reach and Frequency Forecasting
+
 Plan video and display campaigns by generating reach and frequency forecasts. Developer tokens must be allowlisted specifically for the ReachPlanService, even if approved for other Google Ads API services.
 
 ## Events
@@ -78,6 +88,7 @@ Webhook is not supported in the Google Ads API for general account or campaign c
 However, Google Ads does support one specific webhook mechanism:
 
 ### Lead Form Webhook
+
 POST requests to the webhook are sent in JSON format, adhering to a specific schema for user lead data. The JSON payload includes fields for lead identification, user-submitted data, form and campaign details, and verification keys. User-submitted data is contained within `user_column_data`, using `column_id` and `string_value` to represent the data type and its value.
 
 - Configured per lead form extension within Google Ads campaigns.

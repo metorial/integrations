@@ -9,8 +9,8 @@ export class V0Client {
       baseURL: 'https://api.v0.dev/v1',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -39,12 +39,15 @@ export class V0Client {
     return response.data;
   }
 
-  async updateProject(projectId: string, params: {
-    name?: string;
-    description?: string;
-    instructions?: string;
-    privacy?: 'private' | 'team';
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    params: {
+      name?: string;
+      description?: string;
+      instructions?: string;
+      privacy?: 'private' | 'team';
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/projects/${projectId}`, params);
     return response.data;
   }
@@ -65,24 +68,30 @@ export class V0Client {
     return response.data;
   }
 
-  async createEnvVars(projectId: string, params: {
-    environmentVariables: Array<{ key: string; value: string }>;
-    upsert?: boolean;
-  }): Promise<any> {
+  async createEnvVars(
+    projectId: string,
+    params: {
+      environmentVariables: Array<{ key: string; value: string }>;
+      upsert?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/projects/${projectId}/env-vars`, params);
     return response.data;
   }
 
-  async updateEnvVars(projectId: string, params: {
-    environmentVariables: Array<{ id: string; value: string }>;
-  }): Promise<any> {
+  async updateEnvVars(
+    projectId: string,
+    params: {
+      environmentVariables: Array<{ id: string; value: string }>;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/projects/${projectId}/env-vars`, params);
     return response.data;
   }
 
   async deleteEnvVars(projectId: string, environmentVariableIds: string[]): Promise<any> {
     let response = await this.axios.post(`/projects/${projectId}/env-vars/delete`, {
-      environmentVariableIds,
+      environmentVariableIds
     });
     return response.data;
   }
@@ -148,12 +157,15 @@ export class V0Client {
     return response.data;
   }
 
-  async sendMessage(chatId: string, params: {
-    message: string;
-    system?: string;
-    responseMode?: 'sync' | 'async';
-    attachments?: Array<{ url: string }>;
-  }): Promise<any> {
+  async sendMessage(
+    chatId: string,
+    params: {
+      message: string;
+      system?: string;
+      responseMode?: 'sync' | 'async';
+      attachments?: Array<{ url: string }>;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/chats/${chatId}/messages`, params);
     return response.data;
   }

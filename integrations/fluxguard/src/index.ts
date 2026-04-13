@@ -12,11 +12,9 @@ import {
   createWebhook,
   deleteWebhook,
   getWebhookSample,
-  getAccount,
+  getAccount
 } from './tools';
-import {
-  pageChangeTrigger,
-} from './triggers';
+import { pageChangeTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,9 +30,7 @@ export let provider = Slate.create({
     createWebhook,
     deleteWebhook,
     getWebhookSample,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    pageChangeTrigger,
-  ],
+  triggers: [pageChangeTrigger]
 });

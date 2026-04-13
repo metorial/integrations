@@ -3,41 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let postEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Post Events',
-    key: 'post_events',
-    description: 'Triggered when a blog post is published, updated, or deleted in the publication.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['post_published', 'post_updated', 'post_deleted']).describe('Type of post event'),
-    eventId: z.string().describe('Unique event identifier for deduplication'),
-    publicationId: z.string().describe('Publication ID'),
-    postId: z.string().describe('Post ID'),
-  }))
-  .output(z.object({
-    postId: z.string().describe('ID of the affected post'),
-    publicationId: z.string().describe('ID of the publication'),
-    title: z.string().nullable().optional().describe('Post title (not available for deleted posts)'),
-    slug: z.string().nullable().optional().describe('Post URL slug'),
-    url: z.string().nullable().optional().describe('Full post URL'),
-    brief: z.string().nullable().optional().describe('Post excerpt'),
-    publishedAt: z.string().nullable().optional().describe('Publish timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last updated timestamp'),
-    contentMarkdown: z.string().nullable().optional().describe('Full post content in Markdown'),
-    authorUsername: z.string().nullable().optional().describe('Author username'),
-    authorName: z.string().nullable().optional().describe('Author display name'),
-    tags: z.array(z.object({
-      tagId: z.string(),
-      name: z.string(),
-      slug: z.string(),
-    })).optional().describe('Post tags'),
-  }))
+export let postEvents = SlateTrigger.create(spec, {
+  name: 'Post Events',
+  key: 'post_events',
+  description:
+    'Triggered when a blog post is published, updated, or deleted in the publication.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['post_published', 'post_updated', 'post_deleted'])
+        .describe('Type of post event'),
+      eventId: z.string().describe('Unique event identifier for deduplication'),
+      publicationId: z.string().describe('Publication ID'),
+      postId: z.string().describe('Post ID')
+    })
+  )
+  .output(
+    z.object({
+      postId: z.string().describe('ID of the affected post'),
+      publicationId: z.string().describe('ID of the publication'),
+      title: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Post title (not available for deleted posts)'),
+      slug: z.string().nullable().optional().describe('Post URL slug'),
+      url: z.string().nullable().optional().describe('Full post URL'),
+      brief: z.string().nullable().optional().describe('Post excerpt'),
+      publishedAt: z.string().nullable().optional().describe('Publish timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last updated timestamp'),
+      contentMarkdown: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Full post content in Markdown'),
+      authorUsername: z.string().nullable().optional().describe('Author username'),
+      authorName: z.string().nullable().optional().describe('Author display name'),
+      tags: z
+        .array(
+          z.object({
+            tagId: z.string(),
+            name: z.string(),
+            slug: z.string()
+          })
+        )
+        .optional()
+        .describe('Post tags')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventType = body?.data?.eventType;
       let postId = body?.data?.post?.id;
@@ -54,19 +71,21 @@ export let postEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          eventId: eventId || `${eventType}_${postId}_${Date.now()}`,
-          publicationId,
-          postId,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: eventId || `${eventType}_${postId}_${Date.now()}`,
+            publicationId,
+            postId
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let output: any = {
         postId: ctx.input.postId,
-        publicationId: ctx.input.publicationId,
+        publicationId: ctx.input.publicationId
       };
 
       // For non-delete events, fetch full post details
@@ -74,7 +93,7 @@ export let postEvents = SlateTrigger.create(
         try {
           let client = new Client({
             token: ctx.auth.token,
-            publicationHost: ctx.config.publicationHost,
+            publicationHost: ctx.config.publicationHost
           });
 
           let post = await client.getPost(ctx.input.postId);
@@ -91,7 +110,7 @@ export let postEvents = SlateTrigger.create(
             output.tags = (post.tags || []).map((t: any) => ({
               tagId: t.id,
               name: t.name,
-              slug: t.slug,
+              slug: t.slug
             }));
           }
         } catch (e) {
@@ -102,7 +121,8 @@ export let postEvents = SlateTrigger.create(
       return {
         type: `post.${ctx.input.eventType.replace('post_', '')}`,
         id: ctx.input.eventId,
-        output,
+        output
       };
-    },
-  }).build();
+    }
+  })
+  .build();

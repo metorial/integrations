@@ -81,16 +81,22 @@ export interface BufferInteraction {
 }
 
 export interface BufferConfiguration {
-  services: Record<string, {
-    types: Record<string, {
-      character_limit: number;
-      schedule_limit: number;
-      icons: Record<string, string>;
+  services: Record<
+    string,
+    {
+      types: Record<
+        string,
+        {
+          character_limit: number;
+          schedule_limit: number;
+          icons: Record<string, string>;
+          urls: Record<string, string>;
+        }
+      >;
       urls: Record<string, string>;
-    }>;
-    urls: Record<string, string>;
-    icons: Record<string, string>;
-  }>;
+      icons: Record<string, string>;
+    }
+  >;
 }
 
 export interface CreateUpdateParams {
@@ -167,7 +173,10 @@ export class Client {
     return response.data;
   }
 
-  async setProfileSchedules(profileId: string, schedules: ScheduleEntry[]): Promise<{ success: boolean }> {
+  async setProfileSchedules(
+    profileId: string,
+    schedules: ScheduleEntry[]
+  ): Promise<{ success: boolean }> {
     let params: Record<string, string> = {};
     schedules.forEach((schedule, i) => {
       schedule.days.forEach((day, j) => {
@@ -178,7 +187,10 @@ export class Client {
       });
     });
 
-    let response = await this.http.post(`/profiles/${profileId}/schedules/update.json`, params);
+    let response = await this.http.post(
+      `/profiles/${profileId}/schedules/update.json`,
+      params
+    );
     return response.data;
   }
 
@@ -189,12 +201,15 @@ export class Client {
     return response.data;
   }
 
-  async getPendingUpdates(profileId: string, options?: {
-    page?: number;
-    count?: number;
-    since?: string;
-    utc?: boolean;
-  }): Promise<{ total: number; updates: BufferUpdate[] }> {
+  async getPendingUpdates(
+    profileId: string,
+    options?: {
+      page?: number;
+      count?: number;
+      since?: string;
+      utc?: boolean;
+    }
+  ): Promise<{ total: number; updates: BufferUpdate[] }> {
     let response = await this.http.get(`/profiles/${profileId}/updates/pending.json`, {
       params: {
         ...(options?.page !== undefined && { page: options.page }),
@@ -206,13 +221,16 @@ export class Client {
     return response.data;
   }
 
-  async getSentUpdates(profileId: string, options?: {
-    page?: number;
-    count?: number;
-    since?: string;
-    utc?: boolean;
-    filter?: string;
-  }): Promise<{ total: number; updates: BufferUpdate[] }> {
+  async getSentUpdates(
+    profileId: string,
+    options?: {
+      page?: number;
+      count?: number;
+      since?: string;
+      utc?: boolean;
+      filter?: string;
+    }
+  ): Promise<{ total: number; updates: BufferUpdate[] }> {
     let response = await this.http.get(`/profiles/${profileId}/updates/sent.json`, {
       params: {
         ...(options?.page !== undefined && { page: options.page }),
@@ -225,7 +243,14 @@ export class Client {
     return response.data;
   }
 
-  async createUpdate(params: CreateUpdateParams): Promise<{ success: boolean; updates: BufferUpdate[]; buffer_count: number; buffer_percentage: number }> {
+  async createUpdate(
+    params: CreateUpdateParams
+  ): Promise<{
+    success: boolean;
+    updates: BufferUpdate[];
+    buffer_count: number;
+    buffer_percentage: number;
+  }> {
     let body: Record<string, any> = {
       text: params.text,
       profile_ids: params.profileIds
@@ -250,7 +275,10 @@ export class Client {
     return response.data;
   }
 
-  async editUpdate(updateId: string, params: EditUpdateParams): Promise<{ success: boolean; update: BufferUpdate }> {
+  async editUpdate(
+    updateId: string,
+    params: EditUpdateParams
+  ): Promise<{ success: boolean; update: BufferUpdate }> {
     let body: Record<string, any> = {};
 
     if (params.text !== undefined) body.text = params.text;
@@ -281,15 +309,21 @@ export class Client {
     return response.data;
   }
 
-  async moveUpdateToTop(updateId: string): Promise<{ success: boolean; update: BufferUpdate }> {
+  async moveUpdateToTop(
+    updateId: string
+  ): Promise<{ success: boolean; update: BufferUpdate }> {
     let response = await this.http.post(`/updates/${updateId}/move_to_top.json`);
     return response.data;
   }
 
-  async reorderUpdates(profileId: string, order: string[], options?: {
-    offset?: number;
-    utc?: boolean;
-  }): Promise<{ success: boolean; updates: BufferUpdate[] }> {
+  async reorderUpdates(
+    profileId: string,
+    order: string[],
+    options?: {
+      offset?: number;
+      utc?: boolean;
+    }
+  ): Promise<{ success: boolean; updates: BufferUpdate[] }> {
     let body: Record<string, any> = {};
     order.forEach((id, i) => {
       body[`order[${i}]`] = id;
@@ -301,17 +335,23 @@ export class Client {
     return response.data;
   }
 
-  async shuffleUpdates(profileId: string): Promise<{ success: boolean; updates: BufferUpdate[] }> {
+  async shuffleUpdates(
+    profileId: string
+  ): Promise<{ success: boolean; updates: BufferUpdate[] }> {
     let response = await this.http.post(`/profiles/${profileId}/updates/shuffle.json`);
     return response.data;
   }
 
   // ---- Interactions ----
 
-  async getInteractions(updateId: string, event: string, options?: {
-    page?: number;
-    count?: number;
-  }): Promise<{ total: number; interactions: BufferInteraction[] }> {
+  async getInteractions(
+    updateId: string,
+    event: string,
+    options?: {
+      page?: number;
+      count?: number;
+    }
+  ): Promise<{ total: number; interactions: BufferInteraction[] }> {
     let response = await this.http.get(`/updates/${updateId}/interactions.json`, {
       params: {
         event,

@@ -21,37 +21,44 @@ Authorization: Bearer YOUR_GOODY_API_KEY
 
 There are two separate environments, each requiring its own account and API key:
 
-| Environment | Base URL |
-|---|---|
-| Production | `https://api.ongoody.com` |
-| Sandbox | `https://api.sandbox.ongoody.com` |
+| Environment | Base URL                          |
+| ----------- | --------------------------------- |
+| Production  | `https://api.ongoody.com`         |
+| Sandbox     | `https://api.sandbox.ongoody.com` |
 
 To verify authentication, call `GET /v1/me`. The Automation API returns the user's email; the Commerce API returns a `public_app_id`.
 
 ## Features
 
 ### Product Catalog Access
+
 Browse Goody's curated catalog of physical products from brands like Brooklinen, Apple, Bose, and more. Products include full imagery, descriptions, and pricing. Greeting cards with occasion tags are also available for selection.
 
 ### Gift Sending (Address-Free)
+
 Create orders as gifts without knowing the recipient's shipping address. A gift link is generated that the recipient uses to view the gift, optionally swap it for another product of equal value, choose personalized options (color, size), and enter their own address. Notifications can be sent via email or SMS, or you can retrieve the link and deliver it yourself.
 
 - **Send methods**: `email_and_link` (Goody sends email/SMS notification), `link_multiple_custom_list` (link only, no notification sent by Goody).
 - Gift swapping can be disabled per order.
 
 ### Direct Ship to Address
+
 Ship products directly to a known mailing address. Goody handles fulfillment and logistics. This send method (`direct_send`) is limited to approved partners.
 
 ### Order Batch Management
+
 Create orders for one or many recipients at once via order batches. Orders can be scheduled for future delivery. You can retrieve order batch status, list individual orders within a batch, and calculate pricing for a batch before committing.
 
 ### Order Lifecycle Tracking
+
 Track orders through their full lifecycle: created → notified → opened → accepted → pending payment → paid → shipped → delivered. Orders can also be canceled. Refund status is tracked as well.
 
 ### Payment Management
+
 List and manage payment methods on the account. The Commerce API supports multiple payment models: the partner collects payment, the partner passes credit card details for Goody to process, or Goody captures payment via an embedded Stripe payment form.
 
 ### Workspace Management
+
 List all workspaces associated with the account, useful for organizations with multiple teams or departments.
 
 ## Events
@@ -59,10 +66,12 @@ List all workspaces associated with the account, useful for organizations with m
 Goody supports **webhooks** for real-time notifications on order and order batch events. Webhooks are delivered via the Svix platform and can be verified using Svix signature verification libraries. You can subscribe to all events or filter to specific event types.
 
 ### Order Batch Events
+
 - **Order batch created**: Fired when a new order batch is created. The batch may still be processing or scheduled for future sending.
 - **Order batch completed**: Fired when all orders in a batch have been fully created.
 
 ### Order Events
+
 - **Order created**: Fired when an individual order is created and ready to be opened.
 - **Gift opened**: Fired when the recipient opens the gift link.
 - **Gift accepted**: Fired when the recipient accepts the gift (selects product, enters address).

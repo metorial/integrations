@@ -3,37 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createLead = SlateTool.create(
-  spec,
-  {
-    name: 'Create Lead',
-    key: 'create_lead',
-    description: `Create a new lead (contact) in GetProspect. At minimum, provide an email or a name. Returns the newly created lead record.`,
-    tags: {
-      destructive: false,
-    },
+export let createLead = SlateTool.create(spec, {
+  name: 'Create Lead',
+  key: 'create_lead',
+  description: `Create a new lead (contact) in GetProspect. At minimum, provide an email or a name. Returns the newly created lead record.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Email address of the lead'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    companyName: z.string().optional().describe('Company name'),
-    companyUrl: z.string().optional().describe('Company website URL'),
-    title: z.string().optional().describe('Job title'),
-    phone: z.string().optional().describe('Phone number'),
-    linkedin: z.string().optional().describe('LinkedIn profile URL'),
-    twitter: z.string().optional().describe('Twitter handle'),
-    notes: z.string().optional().describe('Notes about the lead'),
-  }))
-  .output(z.object({
-    leadId: z.string().optional().describe('ID of the newly created lead'),
-    email: z.string().optional().describe('Email address'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    companyName: z.string().optional().describe('Company name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Email address of the lead'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      companyName: z.string().optional().describe('Company name'),
+      companyUrl: z.string().optional().describe('Company website URL'),
+      title: z.string().optional().describe('Job title'),
+      phone: z.string().optional().describe('Phone number'),
+      linkedin: z.string().optional().describe('LinkedIn profile URL'),
+      twitter: z.string().optional().describe('Twitter handle'),
+      notes: z.string().optional().describe('Notes about the lead')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().optional().describe('ID of the newly created lead'),
+      email: z.string().optional().describe('Email address'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      companyName: z.string().optional().describe('Company name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.createLead({
@@ -46,7 +47,7 @@ export let createLead = SlateTool.create(
       phone: ctx.input.phone,
       linkedin: ctx.input.linkedin,
       twitter: ctx.input.twitter,
-      notes: ctx.input.notes,
+      notes: ctx.input.notes
     });
 
     return {
@@ -55,9 +56,9 @@ export let createLead = SlateTool.create(
         email: result.email ?? ctx.input.email,
         firstName: result.first_name ?? ctx.input.firstName,
         lastName: result.last_name ?? ctx.input.lastName,
-        companyName: result.company_name ?? ctx.input.companyName,
+        companyName: result.company_name ?? ctx.input.companyName
       },
-      message: `Created lead **${ctx.input.firstName ?? ''} ${ctx.input.lastName ?? ''}** (${ctx.input.email ?? 'no email'}).`,
+      message: `Created lead **${ctx.input.firstName ?? ''} ${ctx.input.lastName ?? ''}** (${ctx.input.email ?? 'no email'}).`
     };
   })
   .build();

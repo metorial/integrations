@@ -14,6 +14,7 @@ Nutshell uses **HTTP Basic Authentication** for its API.
 - **Password**: An API key generated from your Nutshell account.
 
 **Generating an API Key:**
+
 1. Log in to your Nutshell account.
 2. Click on your Avatar icon in the lower-left corner.
 3. Click on "Company settings."
@@ -21,6 +22,7 @@ Nutshell uses **HTTP Basic Authentication** for its API.
 5. Click "(+) Add API key..." and choose the appropriate permission type.
 
 **API Key Permission Types:**
+
 - **API + user impersonation**: Full API access, required for integrations like Zapier that act on behalf of users.
 - **Web-only**: Limited access for creating basic HTML form submissions only (can add contacts, accounts, or leads but cannot retrieve, edit, or delete data).
 
@@ -33,39 +35,51 @@ Nutshell also offers a newer REST API (available on the Enterprise plan) that us
 ## Features
 
 ### Contact (People) Management
+
 Create, retrieve, update, and search for contacts (people). Contacts can be associated with leads and accounts. Supports custom fields and tagging.
 
 ### Account (Company) Management
+
 Create, retrieve, update, and search for company accounts. Accounts can be linked to contacts, leads, and industries.
 
 ### Lead Management
+
 Create, retrieve, update, and search for leads (sales opportunities). Leads can be moved between stages and pipelines, assigned to users or teams, and marked with outcomes (won, lost). Leads support associations with contacts, accounts, products, competitors, and sources. You can specify product quantities and pricing on leads.
 
 ### Activity Logging
+
 Create, retrieve, and edit activities. Activities can be associated with leads and participants, enabling tracking of interactions such as calls, meetings, and emails.
 
 ### Task Management
+
 Create and manage tasks to track follow-ups and action items within the CRM.
 
 ### Notes and Files
+
 Add notes to various entities (leads, contacts, accounts). Upload and download files associated with entities.
 
 ### Products and Competitors
+
 Retrieve and manage product information and competitor data. Both can be associated with leads to track what's being sold and who the competition is.
 
 ### Pipeline and Stage Management
+
 Retrieve information about stagesets (pipelines) and milestones (stages). Move leads between stages and pipelines to reflect progress in the sales process.
 
 ### Users and Teams
+
 Retrieve user and team information. Assign leads to specific users or teams for ownership and collaboration.
 
 ### Tags, Sources, Markets, and Industries
+
 Manage metadata entities such as tags, lead sources, markets, and industries that can be associated with leads or accounts for organization and reporting.
 
 ### Custom Fields
+
 Retrieve custom field definitions and add custom field data to entities, enabling flexible data modeling beyond the standard fields.
 
 ### Timeline Access
+
 Access and filter entity timelines to review the history of interactions and changes on records.
 
 ## Events
@@ -73,7 +87,9 @@ Access and filter entity timelines to review the history of interactions and cha
 Nutshell supports **webhooks** that send HTTP POST notifications to a specified URL when certain events occur.
 
 ### Entity Change Events
+
 You can subscribe to webhooks for changes (creation, updates) to the following entity types:
+
 - **Leads** — Triggered when leads are created or modified (e.g., stage changes, outcome updates).
 - **Contacts** — Triggered when contact records are created or updated.
 - **Accounts** — Triggered when company account records are created or updated.

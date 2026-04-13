@@ -26,7 +26,5 @@ export let provider = Slate.create({
     createWebhookSubscription,
     deleteWebhookSubscription
   ],
-  triggers: [
-    recordEvent
-  ]
+  triggers: [recordEvent]
 });

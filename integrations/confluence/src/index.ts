@@ -77,12 +77,5 @@ export let provider = Slate.create({
     setPageProperty,
     deletePageProperty
   ],
-  triggers: [
-    pageEvents,
-    blogEvents,
-    commentEvents,
-    spaceEvents,
-    attachmentEvents,
-    labelEvents
-  ]
+  triggers: [pageEvents, blogEvents, commentEvents, spaceEvents, attachmentEvents, labelEvents]
 });

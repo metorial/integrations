@@ -4,25 +4,27 @@ import { driveItemOutputSchema, mapDriveItem } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let driveItemChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'File Changes',
-    key: 'file_changes',
-    description: 'Receive notifications when files (including PowerPoint presentations) are created, updated, or deleted within a subscribed folder in OneDrive or SharePoint.',
-  }
-)
-  .input(z.object({
-    resourceId: z.string().describe('ID of the changed resource'),
-    subscriptionId: z.string().describe('ID of the subscription that triggered this notification'),
-    changeType: z.string().describe('Type of change detected'),
-    tenantId: z.string().optional().describe('Azure AD tenant ID from the notification'),
-    clientState: z.string().optional().describe('Client state value for verification'),
-    changedItem: z.any().optional().describe('Drive item data if available from delta query'),
-  }))
+export let driveItemChanges = SlateTrigger.create(spec, {
+  name: 'File Changes',
+  key: 'file_changes',
+  description:
+    'Receive notifications when files (including PowerPoint presentations) are created, updated, or deleted within a subscribed folder in OneDrive or SharePoint.'
+})
+  .input(
+    z.object({
+      resourceId: z.string().describe('ID of the changed resource'),
+      subscriptionId: z
+        .string()
+        .describe('ID of the subscription that triggered this notification'),
+      changeType: z.string().describe('Type of change detected'),
+      tenantId: z.string().optional().describe('Azure AD tenant ID from the notification'),
+      clientState: z.string().optional().describe('Client state value for verification'),
+      changedItem: z.any().optional().describe('Drive item data if available from delta query')
+    })
+  )
   .output(driveItemOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GraphClient(ctx.auth.token);
 
       // Default to monitoring the user's OneDrive root
@@ -39,7 +41,7 @@ export let driveItemChanges = SlateTrigger.create(
         changeType: 'updated',
         notificationUrl: ctx.input.webhookBaseUrl,
         expirationDateTime: expiration,
-        clientState,
+        clientState
       });
 
       return {
@@ -47,12 +49,12 @@ export let driveItemChanges = SlateTrigger.create(
           subscriptionId: subscription.id,
           resource: subscription.resource,
           expirationDateTime: subscription.expirationDateTime,
-          clientState,
-        },
+          clientState
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GraphClient(ctx.auth.token);
       let details = ctx.input.registrationDetails as { subscriptionId: string };
 
@@ -61,7 +63,7 @@ export let driveItemChanges = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let url = ctx.request.url;
 
       // Handle Microsoft Graph validation request
@@ -72,7 +74,7 @@ export let driveItemChanges = SlateTrigger.create(
         if (validationToken) {
           // Return empty inputs - this is just a validation handshake
           return {
-            inputs: [],
+            inputs: []
           };
         }
       }
@@ -93,13 +95,13 @@ export let driveItemChanges = SlateTrigger.create(
         subscriptionId: notification.subscriptionId || '',
         changeType: notification.changeType || 'updated',
         tenantId: notification.tenantId,
-        clientState: notification.clientState,
+        clientState: notification.clientState
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new GraphClient(ctx.auth.token);
 
       // Fetch the current state of the changed item
@@ -127,8 +129,8 @@ export let driveItemChanges = SlateTrigger.create(
           output: {
             itemId: ctx.input.resourceId,
             name: 'Unknown',
-            isFolder: false,
-          },
+            isFolder: false
+          }
         };
       }
 
@@ -137,7 +139,8 @@ export let driveItemChanges = SlateTrigger.create(
       return {
         type: `drive_item.${ctx.input.changeType}`,
         id: `${ctx.input.subscriptionId}_${output.itemId}_${item.lastModifiedDateTime || Date.now()}`,
-        output,
+        output
       };
-    },
-  }).build();
+    }
+  })
+  .build();

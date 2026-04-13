@@ -3,37 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createShortLink = SlateTool.create(
-  spec,
-  {
-    name: 'Create Personalised Short Link',
-    key: 'create_short_link',
-    description: `Create a personalized short URL that embeds a dynamic image preview. When the link is shared on platforms like LinkedIn, Slack, or email clients, recipients see a personalized image thumbnail with their name, company, or other details. The link redirects to the destination URL while passing personalization through.`,
-    instructions: [
-      'The imageTemplateHash can be obtained from the List Image Templates tool.',
-      'All personalization fields are optional — only provide the ones relevant to your use case.',
-    ],
-  }
-)
-  .input(z.object({
-    imageTemplateHash: z.string().describe('Hash identifier of the image template to personalize'),
-    destinationUrl: z.string().describe('The URL the short link redirects to'),
-    pageTitle: z.string().describe('Title shown in Open Graph previews when the link is shared'),
-    pageDescription: z.string().describe('Description shown in Open Graph previews when the link is shared'),
-    firstName: z.string().optional().describe('Recipient first name for personalization'),
-    lastName: z.string().optional().describe('Recipient last name for personalization'),
-    email: z.string().optional().describe('Recipient email for personalization'),
-    phone: z.string().optional().describe('Recipient phone number for personalization'),
-    jobTitle: z.string().optional().describe('Recipient job title for personalization'),
-    profileUrl: z.string().optional().describe('URL of the recipient profile image for personalization'),
-    businessName: z.string().optional().describe('Company name for personalization'),
-    website: z.string().optional().describe('Company website for logo resolution'),
-    logo: z.string().optional().describe('Company logo image URL for personalization'),
-  }))
-  .output(z.object({
-    shortLink: z.string().describe('The generated personalized short URL'),
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+export let createShortLink = SlateTool.create(spec, {
+  name: 'Create Personalised Short Link',
+  key: 'create_short_link',
+  description: `Create a personalized short URL that embeds a dynamic image preview. When the link is shared on platforms like LinkedIn, Slack, or email clients, recipients see a personalized image thumbnail with their name, company, or other details. The link redirects to the destination URL while passing personalization through.`,
+  instructions: [
+    'The imageTemplateHash can be obtained from the List Image Templates tool.',
+    'All personalization fields are optional — only provide the ones relevant to your use case.'
+  ]
+})
+  .input(
+    z.object({
+      imageTemplateHash: z
+        .string()
+        .describe('Hash identifier of the image template to personalize'),
+      destinationUrl: z.string().describe('The URL the short link redirects to'),
+      pageTitle: z
+        .string()
+        .describe('Title shown in Open Graph previews when the link is shared'),
+      pageDescription: z
+        .string()
+        .describe('Description shown in Open Graph previews when the link is shared'),
+      firstName: z.string().optional().describe('Recipient first name for personalization'),
+      lastName: z.string().optional().describe('Recipient last name for personalization'),
+      email: z.string().optional().describe('Recipient email for personalization'),
+      phone: z.string().optional().describe('Recipient phone number for personalization'),
+      jobTitle: z.string().optional().describe('Recipient job title for personalization'),
+      profileUrl: z
+        .string()
+        .optional()
+        .describe('URL of the recipient profile image for personalization'),
+      businessName: z.string().optional().describe('Company name for personalization'),
+      website: z.string().optional().describe('Company website for logo resolution'),
+      logo: z.string().optional().describe('Company logo image URL for personalization')
+    })
+  )
+  .output(
+    z
+      .object({
+        shortLink: z.string().describe('The generated personalized short URL')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let queryParams: Record<string, string> = {};
@@ -52,17 +64,22 @@ export let createShortLink = SlateTool.create(
       url: ctx.input.destinationUrl,
       title: ctx.input.pageTitle,
       desc: ctx.input.pageDescription,
-      query_params: Object.keys(queryParams).length > 0 ? queryParams : undefined,
+      query_params: Object.keys(queryParams).length > 0 ? queryParams : undefined
     });
 
-    let link = result?.link || result?.short_link || result?.url || result?.data?.link || result?.data?.short_link;
+    let link =
+      result?.link ||
+      result?.short_link ||
+      result?.url ||
+      result?.data?.link ||
+      result?.data?.short_link;
 
     return {
       output: {
         shortLink: link,
-        ...result,
+        ...result
       },
-      message: `Created personalised short link: **${link}**`,
+      message: `Created personalised short link: **${link}**`
     };
   })
   .build();

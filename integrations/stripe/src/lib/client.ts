@@ -12,7 +12,7 @@ export class StripeClient {
   constructor(private config: StripeClientConfig) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded'
     };
 
     if (config.stripeAccountId) {
@@ -21,7 +21,7 @@ export class StripeClient {
 
     this.axios = createAxios({
       baseURL: 'https://api.stripe.com/v1',
-      headers,
+      headers
     });
   }
 
@@ -39,7 +39,9 @@ export class StripeClient {
           if (typeof value[i] === 'object') {
             parts.push(this.encodeParams(value[i], `${fullKey}[${i}]`));
           } else {
-            parts.push(`${encodeURIComponent(`${fullKey}[${i}]`)}=${encodeURIComponent(value[i])}`);
+            parts.push(
+              `${encodeURIComponent(`${fullKey}[${i}]`)}=${encodeURIComponent(value[i])}`
+            );
           }
         }
       } else {
@@ -142,7 +144,9 @@ export class StripeClient {
   }
 
   async pauseSubscription(subscriptionId: string) {
-    return this.post(`/subscriptions/${subscriptionId}`, { pause_collection: { behavior: 'mark_uncollectible' } });
+    return this.post(`/subscriptions/${subscriptionId}`, {
+      pause_collection: { behavior: 'mark_uncollectible' }
+    });
   }
 
   async resumeSubscription(subscriptionId: string) {

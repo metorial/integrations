@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 let customParamSchema = z.object({
   name: z.string().describe('Parameter name.'),
-  value: z.string().describe('Parameter value.'),
+  value: z.string().describe('Parameter value.')
 });
 
 let contactOutputSchema = z.object({
@@ -22,7 +22,7 @@ let contactOutputSchema = z.object({
   teams: z.array(z.string()).optional().describe('Assigned team names.'),
   segments: z.array(z.string()).optional().describe('Associated segments.'),
   customParams: z.array(customParamSchema).optional().describe('Custom parameters.'),
-  channelType: z.string().optional().describe('Channel type.'),
+  channelType: z.string().optional().describe('Channel type.')
 });
 
 let mapContact = (c: any) => ({
@@ -39,39 +39,54 @@ let mapContact = (c: any) => ({
   teams: c.teams,
   segments: c.segments,
   customParams: c.custom_params,
-  channelType: c.channel_type,
+  channelType: c.channel_type
 });
 
-export let manageContact = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact',
-    key: 'manage_contact',
-    description: `Create a new contact, update an existing contact's custom attributes, or retrieve contact details.
+export let manageContact = SlateTool.create(spec, {
+  name: 'Manage Contact',
+  key: 'manage_contact',
+  description: `Create a new contact, update an existing contact's custom attributes, or retrieve contact details.
 Use action "create" to add a new contact, "update" to modify custom parameters, or "get" to fetch contact details.`,
-    instructions: [
-      'For "create": provide whatsappNumber and contactName. Optionally include customParams.',
-      'For "update": provide target (phone number or contact ID) and customParams to update.',
-      'For "get": provide target (phone number or contact ID) to retrieve details.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'For "create": provide whatsappNumber and contactName. Optionally include customParams.',
+    'For "update": provide target (phone number or contact ID) and customParams to update.',
+    'For "get": provide target (phone number or contact ID) to retrieve details.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get']).describe('The action to perform on the contact.'),
-    target: z.string().optional().describe('Phone number (with country code), contact ID, or Channel:PhoneNumber. Required for "get" and "update".'),
-    whatsappNumber: z.string().optional().describe('WhatsApp number with country code. Required for "create".'),
-    contactName: z.string().optional().describe('Name of the contact. Required for "create".'),
-    customParams: z.array(customParamSchema).optional().describe('Custom parameter key-value pairs to set on the contact.'),
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'get'])
+        .describe('The action to perform on the contact.'),
+      target: z
+        .string()
+        .optional()
+        .describe(
+          'Phone number (with country code), contact ID, or Channel:PhoneNumber. Required for "get" and "update".'
+        ),
+      whatsappNumber: z
+        .string()
+        .optional()
+        .describe('WhatsApp number with country code. Required for "create".'),
+      contactName: z
+        .string()
+        .optional()
+        .describe('Name of the contact. Required for "create".'),
+      customParams: z
+        .array(customParamSchema)
+        .optional()
+        .describe('Custom parameter key-value pairs to set on the contact.')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      apiEndpoint: ctx.config.apiEndpoint,
+      apiEndpoint: ctx.config.apiEndpoint
     });
 
     let { action, target, whatsappNumber, contactName, customParams } = ctx.input;
@@ -83,11 +98,11 @@ Use action "create" to add a new contact, "update" to modify custom parameters, 
       let result = await client.createContact({
         whatsappNumber,
         name: contactName,
-        customParams,
+        customParams
       });
       return {
         output: mapContact(result),
-        message: `Contact **${contactName}** (${whatsappNumber}) created.`,
+        message: `Contact **${contactName}** (${whatsappNumber}) created.`
       };
     }
 
@@ -95,13 +110,11 @@ Use action "create" to add a new contact, "update" to modify custom parameters, 
       if (!target) {
         throw new Error('target is required for updating a contact.');
       }
-      let result = await client.updateContacts([
-        { target, customParams },
-      ]);
+      let result = await client.updateContacts([{ target, customParams }]);
       let updatedContact = result?.contact_list?.[0];
       return {
         output: updatedContact ? mapContact(updatedContact) : { contactId: target },
-        message: `Contact **${target}** updated.`,
+        message: `Contact **${target}** updated.`
       };
     }
 
@@ -112,7 +125,7 @@ Use action "create" to add a new contact, "update" to modify custom parameters, 
       let result = await client.getContact(target);
       return {
         output: mapContact(result),
-        message: `Retrieved contact details for **${target}**.`,
+        message: `Retrieved contact details for **${target}**.`
       };
     }
 

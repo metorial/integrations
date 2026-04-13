@@ -16,32 +16,38 @@ let articleEventTypes = [
   'KBRootCategory_Delete',
   'KBSection_Add',
   'KBSection_Update',
-  'KBSection_Delete',
+  'KBSection_Delete'
 ] as const;
 
-export let articleEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Knowledge Base Events',
-    key: 'article_events',
-    description: 'Triggered when knowledge base articles, translations, categories, or sections are created, updated, deleted, or receive feedback.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of KB event'),
-    resourceId: z.string().describe('ID of the affected resource (article, category, or section)'),
-    payload: z.any().describe('Full event payload from Zoho Desk'),
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('ID of the affected resource'),
-    resourceType: z.string().describe('Type of resource (article, translation, category, section, feedback)'),
-    title: z.string().optional().describe('Article or category title/name'),
-    status: z.string().optional().describe('Status of the resource'),
-    categoryId: z.string().optional().describe('Category ID (for articles)'),
-    previousState: z.any().optional().describe('Previous state (for update events)'),
-  }))
+export let articleEvents = SlateTrigger.create(spec, {
+  name: 'Knowledge Base Events',
+  key: 'article_events',
+  description:
+    'Triggered when knowledge base articles, translations, categories, or sections are created, updated, deleted, or receive feedback.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of KB event'),
+      resourceId: z
+        .string()
+        .describe('ID of the affected resource (article, category, or section)'),
+      payload: z.any().describe('Full event payload from Zoho Desk')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('ID of the affected resource'),
+      resourceType: z
+        .string()
+        .describe('Type of resource (article, translation, category, section, feedback)'),
+      title: z.string().optional().describe('Article or category title/name'),
+      status: z.string().optional().describe('Status of the resource'),
+      categoryId: z.string().optional().describe('Category ID (for articles)'),
+      previousState: z.any().optional().describe('Previous state (for update events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhookIds: string[] = [];
 
@@ -51,7 +57,7 @@ export let articleEvents = SlateTrigger.create(
             name: `Slates - ${eventType}`,
             url: ctx.input.webhookBaseUrl,
             eventType,
-            isActive: true,
+            isActive: true
           };
 
           if (eventType.includes('_Update')) {
@@ -68,32 +74,39 @@ export let articleEvents = SlateTrigger.create(
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
-        try { await client.deleteWebhook(webhookId); } catch { /* ignore */ }
+      for (let webhookId of details.webhookIds || []) {
+        try {
+          await client.deleteWebhook(webhookId);
+        } catch {
+          /* ignore */
+        }
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as Record<string, any>;
 
       let eventType = data.eventType || data.event_type || 'unknown';
       let resource = data.payload || data;
-      let resourceId = resource.id || resource.articleId || resource.categoryId || resource.sectionId || '';
+      let resourceId =
+        resource.id || resource.articleId || resource.categoryId || resource.sectionId || '';
 
       return {
-        inputs: [{
-          eventType,
-          resourceId: String(resourceId),
-          payload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            resourceId: String(resourceId),
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, resourceId, payload } = ctx.input;
       let resource = payload?.payload || payload || {};
 
@@ -103,9 +116,7 @@ export let articleEvents = SlateTrigger.create(
       else if (eventType.startsWith('KBRootCategory')) resourceType = 'category';
       else if (eventType.startsWith('KBSection')) resourceType = 'section';
 
-      let normalizedType = eventType
-        .replace(/_/g, '.')
-        .toLowerCase();
+      let normalizedType = eventType.replace(/_/g, '.').toLowerCase();
 
       return {
         type: normalizedType,
@@ -116,9 +127,9 @@ export let articleEvents = SlateTrigger.create(
           title: resource.title || resource.name,
           status: resource.status,
           categoryId: resource.categoryId,
-          previousState: resource.prevState || payload?.prevState,
-        },
+          previousState: resource.prevState || payload?.prevState
+        }
       };
-    },
+    }
   })
   .build();

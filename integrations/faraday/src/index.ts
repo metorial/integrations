@@ -32,7 +32,7 @@ import {
   listStreams,
   getStream,
   getAccount,
-  getDependencyGraph,
+  getDependencyGraph
 } from './tools';
 import { resourceEvent } from './triggers';
 
@@ -70,9 +70,7 @@ export let provider = Slate.create({
     listStreams,
     getStream,
     getAccount,
-    getDependencyGraph,
+    getDependencyGraph
   ],
-  triggers: [
-    resourceEvent,
-  ],
+  triggers: [resourceEvent]
 });

@@ -3,34 +3,40 @@ import { KadoaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let kadoaEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Kadoa Events',
-    key: 'kadoa_events',
-    description: 'Receive webhook events from Kadoa including workflow completions, data changes, failures, and monitoring alerts.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type (e.g., workflow_finished, workflow_failed, workflow_data_change)'),
-    eventId: z.string().describe('Unique event identifier'),
-    workflowId: z.string().optional().describe('Associated workflow ID'),
-    workflowName: z.string().optional().describe('Associated workflow name'),
-    payload: z.any().describe('Full event payload from Kadoa'),
-  }))
-  .output(z.object({
-    workflowId: z.string().optional().describe('Workflow ID'),
-    workflowName: z.string().optional().describe('Workflow name'),
-    runId: z.string().optional().describe('Workflow run ID'),
-    records: z.number().optional().describe('Number of records extracted'),
-    status: z.string().optional().describe('Run status'),
-    url: z.string().optional().describe('Source URL'),
-    changesCount: z.number().optional().describe('Number of data changes detected'),
-    errorMessage: z.string().optional().describe('Error message if the workflow failed'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-  }))
+export let kadoaEvents = SlateTrigger.create(spec, {
+  name: 'Kadoa Events',
+  key: 'kadoa_events',
+  description:
+    'Receive webhook events from Kadoa including workflow completions, data changes, failures, and monitoring alerts.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Event type (e.g., workflow_finished, workflow_failed, workflow_data_change)'
+        ),
+      eventId: z.string().describe('Unique event identifier'),
+      workflowId: z.string().optional().describe('Associated workflow ID'),
+      workflowName: z.string().optional().describe('Associated workflow name'),
+      payload: z.any().describe('Full event payload from Kadoa')
+    })
+  )
+  .output(
+    z.object({
+      workflowId: z.string().optional().describe('Workflow ID'),
+      workflowName: z.string().optional().describe('Workflow name'),
+      runId: z.string().optional().describe('Workflow run ID'),
+      records: z.number().optional().describe('Number of records extracted'),
+      status: z.string().optional().describe('Run status'),
+      url: z.string().optional().describe('Source URL'),
+      changesCount: z.number().optional().describe('Number of data changes detected'),
+      errorMessage: z.string().optional().describe('Error message if the workflow failed'),
+      timestamp: z.string().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new KadoaClient({ token: ctx.auth.token });
 
       let result = await client.subscribeWebhook({
@@ -43,18 +49,18 @@ export let kadoaEvents = SlateTrigger.create(
           'workflow_data_change',
           'workflow_sample_finished',
           'workflow_export_completed',
-          'workflow_validation_anomaly_change',
-        ],
+          'workflow_validation_anomaly_change'
+        ]
       });
 
       return {
         registrationDetails: {
-          subscriptionId: result.id || result.subscriptionId,
-        },
+          subscriptionId: result.id || result.subscriptionId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new KadoaClient({ token: ctx.auth.token });
 
       let subscriptionId = ctx.input.registrationDetails?.subscriptionId;
@@ -69,7 +75,7 @@ export let kadoaEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -86,26 +92,31 @@ export let kadoaEvents = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let eventId = data.id || data.eventId || `${eventType}_${data.workflowId || ''}_${data.timestamp || Date.now()}`;
+      let eventId =
+        data.id ||
+        data.eventId ||
+        `${eventType}_${data.workflowId || ''}_${data.timestamp || Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId: String(eventId),
-          workflowId: data.workflowId,
-          workflowName: data.workflowName,
-          payload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: String(eventId),
+            workflowId: data.workflowId,
+            workflowName: data.workflowName,
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, payload } = ctx.input;
 
       let output: Record<string, any> = {
         workflowId: payload.workflowId,
         workflowName: payload.workflowName,
-        timestamp: payload.timestamp || payload.createdAt,
+        timestamp: payload.timestamp || payload.createdAt
       };
 
       if (eventType === 'workflow_finished' || eventType === 'workflow_sample_finished') {
@@ -147,7 +158,8 @@ export let kadoaEvents = SlateTrigger.create(
       return {
         type: eventType.replace(/_/g, '.'),
         id: ctx.input.eventId,
-        output,
+        output
       };
-    },
-  }).build();
+    }
+  })
+  .build();

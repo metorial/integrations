@@ -4,47 +4,60 @@ import { createClient, RESOURCE_STATUS } from '../lib/helpers';
 import { z } from 'zod';
 
 let resourceTypeEnum = z.enum([
-  'source', 'dataset', 'model', 'ensemble', 'deepnet',
-  'logisticregression', 'linearregression',
-  'evaluation', 'cluster', 'anomaly', 'association',
-  'topicmodel', 'timeseries', 'pca', 'fusion', 'optiml',
-  'script', 'execution'
+  'source',
+  'dataset',
+  'model',
+  'ensemble',
+  'deepnet',
+  'logisticregression',
+  'linearregression',
+  'evaluation',
+  'cluster',
+  'anomaly',
+  'association',
+  'topicmodel',
+  'timeseries',
+  'pca',
+  'fusion',
+  'optiml',
+  'script',
+  'execution'
 ]);
 
-let DEFAULT_RESOURCE_TYPES = [
-  'dataset', 'model', 'ensemble', 'deepnet', 'evaluation'
-];
+let DEFAULT_RESOURCE_TYPES = ['dataset', 'model', 'ensemble', 'deepnet', 'evaluation'];
 
-export let resourceCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Resource Completed',
-    key: 'resource_completed',
-    description: 'Triggers when a BigML resource finishes processing (reaches FINISHED status). Polls for recently completed datasets, models, ensembles, deepnets, and evaluations.'
-  }
-)
-  .input(z.object({
-    resourceType: resourceTypeEnum.describe('Type of the completed resource'),
-    resourceId: z.string().describe('Full resource ID'),
-    name: z.string().optional().describe('Name of the resource'),
-    created: z.string().describe('Creation timestamp'),
-    updated: z.string().describe('Last updated timestamp'),
-    tags: z.array(z.string()).optional().describe('Resource tags')
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('Full BigML resource ID'),
-    resourceType: z.string().describe('Type of resource'),
-    name: z.string().optional().describe('Name of the resource'),
-    created: z.string().describe('Creation timestamp'),
-    completedAt: z.string().describe('Timestamp when the resource finished processing'),
-    tags: z.array(z.string()).optional().describe('Resource tags')
-  }))
+export let resourceCompleted = SlateTrigger.create(spec, {
+  name: 'Resource Completed',
+  key: 'resource_completed',
+  description:
+    'Triggers when a BigML resource finishes processing (reaches FINISHED status). Polls for recently completed datasets, models, ensembles, deepnets, and evaluations.'
+})
+  .input(
+    z.object({
+      resourceType: resourceTypeEnum.describe('Type of the completed resource'),
+      resourceId: z.string().describe('Full resource ID'),
+      name: z.string().optional().describe('Name of the resource'),
+      created: z.string().describe('Creation timestamp'),
+      updated: z.string().describe('Last updated timestamp'),
+      tags: z.array(z.string()).optional().describe('Resource tags')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('Full BigML resource ID'),
+      resourceType: z.string().describe('Type of resource'),
+      name: z.string().optional().describe('Name of the resource'),
+      created: z.string().describe('Creation timestamp'),
+      completedAt: z.string().describe('Timestamp when the resource finished processing'),
+      tags: z.array(z.string()).optional().describe('Resource tags')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let lastChecked = ctx.state?.lastChecked as string | undefined;
@@ -98,7 +111,7 @@ export let resourceCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `${ctx.input.resourceType}.completed`,
         id: `${ctx.input.resourceId}:completed`,
@@ -112,4 +125,5 @@ export let resourceCompleted = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

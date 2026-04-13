@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listKpis,
@@ -37,9 +36,7 @@ import {
   createKpiUnit,
   deleteKpiUnit
 } from './tools';
-import { newKpiEntries,
-  inboundWebhook,
-} from './triggers';
+import { newKpiEntries, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -79,8 +76,5 @@ export let provider = Slate.create({
     createKpiUnit,
     deleteKpiUnit
   ],
-  triggers: [
-    inboundWebhook,
-    newKpiEntries
-  ]
+  triggers: [inboundWebhook, newKpiEntries]
 });

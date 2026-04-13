@@ -80,7 +80,5 @@ export let provider = Slate.create({
     getAccountFields,
     getAccountMetadata
   ],
-  triggers: [
-    employeeChanged
-  ]
+  triggers: [employeeChanged]
 });

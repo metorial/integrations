@@ -2,58 +2,85 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let timeOffEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Time Off Event',
-    key: 'time_off_event',
-    description: 'Triggered when employee time-off or absence requests are submitted or changed. Configure in SuccessFactors Integration Center using Intelligent Services as the trigger type with REST/JSON destination.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of time-off event (e.g., "submitted", "approved", "rejected", "cancelled")'),
-    eventId: z.string().describe('Unique identifier for the event'),
-    userId: z.string().describe('The employee user ID who requested time off'),
-    rawPayload: z.record(z.string(), z.unknown()).describe('Full event payload from SuccessFactors'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('The employee user ID'),
-    employeeName: z.string().optional().describe('Employee name if available'),
-    timeType: z.string().optional().describe('Type of time off (e.g., vacation, sick leave)'),
-    startDate: z.string().optional().describe('Start date of the time-off period'),
-    endDate: z.string().optional().describe('End date of the time-off period'),
-    quantityInDays: z.number().optional().describe('Number of days requested'),
-    approvalStatus: z.string().optional().describe('Current approval status'),
-  }))
+export let timeOffEvent = SlateTrigger.create(spec, {
+  name: 'Time Off Event',
+  key: 'time_off_event',
+  description:
+    'Triggered when employee time-off or absence requests are submitted or changed. Configure in SuccessFactors Integration Center using Intelligent Services as the trigger type with REST/JSON destination.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The type of time-off event (e.g., "submitted", "approved", "rejected", "cancelled")'
+        ),
+      eventId: z.string().describe('Unique identifier for the event'),
+      userId: z.string().describe('The employee user ID who requested time off'),
+      rawPayload: z
+        .record(z.string(), z.unknown())
+        .describe('Full event payload from SuccessFactors')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('The employee user ID'),
+      employeeName: z.string().optional().describe('Employee name if available'),
+      timeType: z
+        .string()
+        .optional()
+        .describe('Type of time off (e.g., vacation, sick leave)'),
+      startDate: z.string().optional().describe('Start date of the time-off period'),
+      endDate: z.string().optional().describe('End date of the time-off period'),
+      quantityInDays: z.number().optional().describe('Number of days requested'),
+      approvalStatus: z.string().optional().describe('Current approval status')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       let eventType = resolveTimeOffEventType(data);
-      let userId = extractStringField(data, ['userId', 'user_id', 'personIdExternal']) || 'unknown';
-      let eventId = extractStringField(data, ['eventId', 'event_id', 'externalEventId']) || `timeoff_${userId}_${Date.now()}`;
+      let userId =
+        extractStringField(data, ['userId', 'user_id', 'personIdExternal']) || 'unknown';
+      let eventId =
+        extractStringField(data, ['eventId', 'event_id', 'externalEventId']) ||
+        `timeoff_${userId}_${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          userId,
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            userId,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { rawPayload } = ctx.input;
 
-      let employeeName = extractStringField(rawPayload, ['defaultFullName', 'fullName', 'employeeName']);
+      let employeeName = extractStringField(rawPayload, [
+        'defaultFullName',
+        'fullName',
+        'employeeName'
+      ]);
       let timeType = extractStringField(rawPayload, ['timeType', 'time_type', 'absenceType']);
       let startDate = extractStringField(rawPayload, ['startDate', 'start_date']);
       let endDate = extractStringField(rawPayload, ['endDate', 'end_date']);
-      let approvalStatus = extractStringField(rawPayload, ['approvalStatus', 'approval_status', 'status']);
+      let approvalStatus = extractStringField(rawPayload, [
+        'approvalStatus',
+        'approval_status',
+        'status'
+      ]);
 
       let quantityInDays: number | undefined;
-      let daysValue = rawPayload['quantityInDays'] ?? rawPayload['quantity_in_days'] ?? rawPayload['duration'];
+      let daysValue =
+        rawPayload['quantityInDays'] ??
+        rawPayload['quantity_in_days'] ??
+        rawPayload['duration'];
       if (typeof daysValue === 'number') {
         quantityInDays = daysValue;
       } else if (typeof daysValue === 'string') {
@@ -71,11 +98,12 @@ export let timeOffEvent = SlateTrigger.create(
           startDate,
           endDate,
           quantityInDays,
-          approvalStatus,
-        },
+          approvalStatus
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();
 
 let resolveTimeOffEventType = (data: Record<string, unknown>): string => {
   let eventType = extractStringField(data, ['eventType', 'event_type', 'eventName', 'type']);
@@ -92,7 +120,10 @@ let resolveTimeOffEventType = (data: Record<string, unknown>): string => {
   return 'changed';
 };
 
-let extractStringField = (data: Record<string, unknown>, keys: string[]): string | undefined => {
+let extractStringField = (
+  data: Record<string, unknown>,
+  keys: string[]
+): string | undefined => {
   for (let key of keys) {
     let value = data[key];
     if (typeof value === 'string' && value.length > 0) return value;

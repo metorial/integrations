@@ -52,48 +52,63 @@ Basic authentication uses an API token generated from a user's Atlassian Account
 ## Features
 
 ### Issue Management
+
 Create, read, update, and delete issues across projects. Supports setting all standard and custom fields (summary, description, assignee, priority, labels, components, etc.), transitioning issues through workflow statuses, and bulk operations for creating/updating multiple issues at once. Issues can have sub-tasks and be linked to other issues.
 
 ### Issue Search (JQL)
+
 Search for issues using Jira Query Language (JQL), a powerful query syntax that supports filtering by any field, combining conditions with AND/OR, ordering, and more. Returns full issue details or specific fields.
 
 ### Projects
+
 Create and manage projects, including project settings, components, and versions/releases. Supports different project types (software, service management, business). Projects can be archived, trashed, and restored.
 
 ### Boards and Sprints (Agile)
+
 Manage Scrum and Kanban boards. Create, start, close, and delete sprints. Move issues to/from sprints and the backlog. Configure board filters and columns. Available through the Jira Software REST API.
 
 ### Worklogs and Time Tracking
+
 Log time spent on issues, update and delete work logs. Supports time tracking configuration and estimation fields.
 
 ### Comments and Attachments
+
 Add, update, and delete comments on issues. Upload and manage file attachments. Comments support Atlassian Document Format (ADF) in API v3, or plain text in API v2.
 
 ### Users and Groups
+
 Query user information, search for users, and manage group memberships. User permissions are governed by Jira's permission schemes.
 
 ### Workflows
+
 Read workflow configurations and statuses. Transition issues between statuses. Workflow schemes control which workflows apply to which project/issue type combinations.
 
 ### Permissions and Security
+
 Query effective permissions for users, manage permission schemes, and issue security levels. The API respects all Jira permission checks.
 
 ### Filters and Dashboards
+
 Create, read, update, and delete saved JQL filters. Manage filter sharing and favorites. Manage dashboards and dashboard gadgets.
 
 ### Versions (Releases)
+
 Create, update, move, merge, release, and unrelease project versions. Useful for release management workflows.
 
 ### Issue Links
+
 Create and manage links between issues (e.g., "blocks", "is duplicated by"). Supports both intra-project and cross-project links.
 
 ### Notifications
+
 Manage notification schemes that control when and how users are notified about issue changes.
 
 ### Custom Fields
+
 Read custom field definitions and configurations. Custom fields are referenced by their ID (e.g., `customfield_10001`).
 
 ### Epics
+
 Manage epics via the Jira Software API, including moving issues to/from epics and ranking.
 
 ## Events
@@ -103,43 +118,57 @@ Jira supports webhooks — user-defined callbacks over HTTPS that notify your ap
 Webhooks can be registered via the Jira Administration UI, the REST API, or within an Atlassian Connect/Forge app descriptor. Webhooks can be filtered with JQL queries to only fire for a specific set of issues. Webhook delivery is best effort and not guaranteed.
 
 ### Issue Events
+
 Fires when an issue is created, updated, or deleted (`jira:issue_created`, `jira:issue_updated`, `jira:issue_deleted`). Supports JQL filtering. Updated events include a changelog showing which fields changed.
 
 ### Comment Events
+
 Fires when a comment is created, updated, or deleted (`comment_created`, `comment_updated`, `comment_deleted`). Supports JQL filtering.
 
 ### Attachment Events
+
 Fires when an attachment is created or deleted (`attachment_created`, `attachment_deleted`). Supports JQL filtering.
 
 ### Worklog Events
+
 Fires when a worklog entry is created, updated, or deleted (`worklog_created`, `worklog_updated`, `worklog_deleted`). Supports JQL filtering.
 
 ### Issue Link Events
+
 Fires when an issue link is created or deleted (`issuelink_created`, `issuelink_deleted`).
 
 ### Issue Property Events
+
 Fires when an issue property is set or deleted (`issue_property_set`, `issue_property_deleted`). Supports JQL filtering.
 
 ### Issue Type Events
+
 Fires when an issue type is created, updated, or deleted (`issuetype_created`, `issuetype_updated`, `issuetype_deleted`).
 
 ### Project Events
+
 Fires on project lifecycle changes: created, updated, deleted, moved to trash, restored from trash, archived, restored from archive.
 
 ### Version (Release) Events
+
 Fires when a project version is created, updated, moved, released, unreleased, deleted, or merged. Sprint and project version events do not support JQL, field, or property filtering.
 
 ### Sprint Events
+
 Fires when a sprint is created, updated, started, closed, or deleted (`sprint_created`, `sprint_updated`, `sprint_started`, `sprint_closed`, `sprint_deleted`). Does not support JQL filtering.
 
 ### Board Events
+
 Fires when a board is created, updated, deleted, or has its configuration changed (`board_created`, `board_updated`, `board_deleted`, `board_configuration_changed`).
 
 ### User Events
+
 Fires when a user is created, updated, or deleted (`user_created`, `user_updated`, `user_deleted`).
 
 ### Filter Events
+
 Fires when a saved filter is created, updated, or deleted (`filter_created`, `filter_updated`, `filter_deleted`).
 
 ### Configuration Events
+
 Fires when Jira system configuration options change, such as voting, watching, subtasks, issue links, or time tracking settings.

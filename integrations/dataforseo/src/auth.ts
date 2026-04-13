@@ -2,9 +2,11 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -13,16 +15,19 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       login: z.string().describe('Your DataForSEO API login (same as your account email)'),
-      password: z.string().describe('Your DataForSEO API password (found in Dashboard > API Access section, different from your account password)'),
+      password: z
+        .string()
+        .describe(
+          'Your DataForSEO API password (found in Dashboard > API Access section, different from your account password)'
+        )
     }),
 
-    getOutput: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+    getOutput: async ctx => {
       let encoded = Buffer.from(`${ctx.input.login}:${ctx.input.password}`).toString('base64');
       return {
         output: {
-          token: encoded,
-        },
+          token: encoded
+        }
       };
-    },
+    }
   });

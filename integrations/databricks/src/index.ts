@@ -20,12 +20,9 @@ import {
   queryServingEndpoint,
   managePipeline,
   listPipelines,
-  manageDbfs,
+  manageDbfs
 } from './tools';
-import {
-  modelRegistryTrigger,
-  jobRunsTrigger,
-} from './triggers';
+import { modelRegistryTrigger, jobRunsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,10 +46,7 @@ export let provider = Slate.create({
     queryServingEndpoint,
     managePipeline,
     listPipelines,
-    manageDbfs,
+    manageDbfs
   ],
-  triggers: [
-    modelRegistryTrigger,
-    jobRunsTrigger,
-  ],
+  triggers: [modelRegistryTrigger, jobRunsTrigger]
 });

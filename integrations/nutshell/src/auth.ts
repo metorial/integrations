@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    username: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      username: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key',
@@ -13,33 +15,40 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       username: z.string().describe('Your Nutshell user email address'),
-      token: z.string().describe('Your Nutshell API key (generated from Setup > API Keys)'),
+      token: z.string().describe('Your Nutshell API key (generated from Setup > API Keys)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
-          username: ctx.input.username,
-        },
+          username: ctx.input.username
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; username: string }; input: { username: string; token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; username: string };
+      input: { username: string; token: string };
+    }) => {
       let axios = createAxios({
-        baseURL: 'https://app.nutshell.com/api/v1/json',
+        baseURL: 'https://app.nutshell.com/api/v1/json'
       });
 
-      let response = await axios.post('', {
-        id: 'auth-profile',
-        method: 'findUsers',
-        params: {},
-      }, {
-        auth: {
-          username: ctx.output.username,
-          password: ctx.output.token,
+      let response = await axios.post(
+        '',
+        {
+          id: 'auth-profile',
+          method: 'findUsers',
+          params: {}
         },
-      });
+        {
+          auth: {
+            username: ctx.output.username,
+            password: ctx.output.token
+          }
+        }
+      );
 
       let users = response.data?.result ?? [];
       let currentUser = users.find((u: any) => {
@@ -55,15 +64,15 @@ export let auth = SlateAuth.create()
           profile: {
             id: String(currentUser.id),
             email: ctx.output.username,
-            name: currentUser.name,
-          },
+            name: currentUser.name
+          }
         };
       }
 
       return {
         profile: {
-          email: ctx.output.username,
-        },
+          email: ctx.output.username
+        }
       };
-    },
+    }
   });

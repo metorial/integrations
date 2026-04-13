@@ -34,8 +34,8 @@ export class CodacyClient {
       baseURL: config.baseUrl,
       headers: {
         'api-token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -61,23 +61,36 @@ export class CodacyClient {
 
   // ─── Repositories ──────────────────────────────────────────────
 
-  async listOrganizationRepositories(params?: PaginationParams & { search?: string }): Promise<PaginatedResponse<any>> {
+  async listOrganizationRepositories(
+    params?: PaginationParams & { search?: string }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get(`${this.orgPath()}/repositories`, { params });
     return response.data;
   }
 
-  async listRepositoriesWithAnalysis(params?: PaginationParams & { search?: string; sort?: string }): Promise<PaginatedResponse<any>> {
+  async listRepositoriesWithAnalysis(
+    params?: PaginationParams & { search?: string; sort?: string }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get(`${this.analysisOrgPath()}/repositories`, { params });
     return response.data;
   }
 
-  async searchRepositoriesWithAnalysis(body: any, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.post(`/search/analysis/organizations/${this.provider}/${this.organization}/repositories`, body, { params });
+  async searchRepositoriesWithAnalysis(
+    body: any,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.post(
+      `/search/analysis/organizations/${this.provider}/${this.organization}/repositories`,
+      body,
+      { params }
+    );
     return response.data;
   }
 
   async getRepositoryWithAnalysis(repositoryName: string): Promise<any> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}`);
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}`
+    );
     return response.data;
   }
 
@@ -87,13 +100,19 @@ export class CodacyClient {
   }
 
   async getAnalysisProgress(repositoryName: string): Promise<any> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/analysis-progress`);
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/analysis-progress`
+    );
     return response.data;
   }
 
   // ─── Issues ─────────────────────────────────────────────────────
 
-  async searchRepositoryIssues(repositoryName: string, body: any, params?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async searchRepositoryIssues(
+    repositoryName: string,
+    body: any,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.axios.post(
       `${this.analysisOrgPath()}/repositories/${repositoryName}/issues/search`,
       body,
@@ -103,65 +122,121 @@ export class CodacyClient {
   }
 
   async getIssue(repositoryName: string, issueId: string): Promise<any> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/issues/${issueId}`);
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/issues/${issueId}`
+    );
     return response.data;
   }
 
   async issuesOverview(repositoryName: string, body: any): Promise<any> {
-    let response = await this.axios.post(`${this.analysisOrgPath()}/repositories/${repositoryName}/issues/overview`, body);
+    let response = await this.axios.post(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/issues/overview`,
+      body
+    );
     return response.data;
   }
 
   // ─── Pull Requests ──────────────────────────────────────────────
 
-  async listRepositoryPullRequests(repositoryName: string, params?: PaginationParams & { search?: string }): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests`, { params });
+  async listRepositoryPullRequests(
+    repositoryName: string,
+    params?: PaginationParams & { search?: string }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests`,
+      { params }
+    );
     return response.data;
   }
 
-  async getPullRequestWithAnalysis(repositoryName: string, pullRequestNumber: number): Promise<any> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}`);
+  async getPullRequestWithAnalysis(
+    repositoryName: string,
+    pullRequestNumber: number
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}`
+    );
     return response.data;
   }
 
-  async listPullRequestIssues(repositoryName: string, pullRequestNumber: number, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}/issues`, { params });
+  async listPullRequestIssues(
+    repositoryName: string,
+    pullRequestNumber: number,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}/issues`,
+      { params }
+    );
     return response.data;
   }
 
-  async listPullRequestFiles(repositoryName: string, pullRequestNumber: number, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}/files`, { params });
+  async listPullRequestFiles(
+    repositoryName: string,
+    pullRequestNumber: number,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}/files`,
+      { params }
+    );
     return response.data;
   }
 
   // ─── Commits ────────────────────────────────────────────────────
 
-  async listRepositoryCommits(repositoryName: string, params?: PaginationParams & { branchName?: string }): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/commits`, { params });
+  async listRepositoryCommits(
+    repositoryName: string,
+    params?: PaginationParams & { branchName?: string }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/commits`,
+      { params }
+    );
     return response.data;
   }
 
   async getCommitWithAnalysis(repositoryName: string, commitUuid: string): Promise<any> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/commits/${commitUuid}`);
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/commits/${commitUuid}`
+    );
     return response.data;
   }
 
   // ─── Coverage ───────────────────────────────────────────────────
 
-  async getRepositoryPullRequestCoverage(repositoryName: string, pullRequestNumber: number): Promise<any> {
-    let response = await this.axios.get(`/coverage/organizations/${this.provider}/${this.organization}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}`);
+  async getRepositoryPullRequestCoverage(
+    repositoryName: string,
+    pullRequestNumber: number
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/coverage/organizations/${this.provider}/${this.organization}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}`
+    );
     return response.data;
   }
 
-  async getRepositoryPullRequestFilesCoverage(repositoryName: string, pullRequestNumber: number, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`/coverage/organizations/${this.provider}/${this.organization}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}/files`, { params });
+  async getRepositoryPullRequestFilesCoverage(
+    repositoryName: string,
+    pullRequestNumber: number,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `/coverage/organizations/${this.provider}/${this.organization}/repositories/${repositoryName}/pull-requests/${pullRequestNumber}/files`,
+      { params }
+    );
     return response.data;
   }
 
   // ─── Files ──────────────────────────────────────────────────────
 
-  async listFiles(repositoryName: string, params?: PaginationParams & { branchName?: string; search?: string; sort?: string }): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/files`, { params });
+  async listFiles(
+    repositoryName: string,
+    params?: PaginationParams & { branchName?: string; search?: string; sort?: string }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/files`,
+      { params }
+    );
     return response.data;
   }
 
@@ -173,17 +248,33 @@ export class CodacyClient {
   }
 
   async listRepositoryTools(repositoryName: string): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/tools`);
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/tools`
+    );
     return response.data;
   }
 
-  async configureAnalysisTool(repositoryName: string, toolUuid: string, body: any): Promise<any> {
-    let response = await this.axios.patch(`${this.analysisOrgPath()}/repositories/${repositoryName}/tools/${toolUuid}`, body);
+  async configureAnalysisTool(
+    repositoryName: string,
+    toolUuid: string,
+    body: any
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/tools/${toolUuid}`,
+      body
+    );
     return response.data;
   }
 
-  async listRepositoryToolPatterns(repositoryName: string, toolUuid: string, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/tools/${toolUuid}/patterns`, { params });
+  async listRepositoryToolPatterns(
+    repositoryName: string,
+    toolUuid: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/tools/${toolUuid}/patterns`,
+      { params }
+    );
     return response.data;
   }
 
@@ -195,7 +286,9 @@ export class CodacyClient {
   }
 
   async getCodingStandard(codingStandardId: string): Promise<any> {
-    let response = await this.axios.get(`${this.orgPath()}/coding-standards/${codingStandardId}`);
+    let response = await this.axios.get(
+      `${this.orgPath()}/coding-standards/${codingStandardId}`
+    );
     return response.data;
   }
 
@@ -209,12 +302,16 @@ export class CodacyClient {
   }
 
   async promoteCodingStandard(codingStandardId: string): Promise<any> {
-    let response = await this.axios.post(`${this.orgPath()}/coding-standards/${codingStandardId}/promote`);
+    let response = await this.axios.post(
+      `${this.orgPath()}/coding-standards/${codingStandardId}/promote`
+    );
     return response.data;
   }
 
   async setDefaultCodingStandard(codingStandardId: string): Promise<any> {
-    let response = await this.axios.post(`${this.orgPath()}/coding-standards/${codingStandardId}/setDefault`);
+    let response = await this.axios.post(
+      `${this.orgPath()}/coding-standards/${codingStandardId}/setDefault`
+    );
     return response.data;
   }
 
@@ -236,7 +333,10 @@ export class CodacyClient {
   }
 
   async updateGatePolicy(gatePolicyId: string, body: any): Promise<any> {
-    let response = await this.axios.patch(`${this.orgPath()}/gate-policies/${gatePolicyId}`, body);
+    let response = await this.axios.patch(
+      `${this.orgPath()}/gate-policies/${gatePolicyId}`,
+      body
+    );
     return response.data;
   }
 
@@ -246,8 +346,13 @@ export class CodacyClient {
 
   // ─── Security / SRM ────────────────────────────────────────────
 
-  async searchSecurityItems(body: any, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.post(`${this.orgPath()}/security/items/search`, body, { params });
+  async searchSecurityItems(
+    body: any,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.post(`${this.orgPath()}/security/items/search`, body, {
+      params
+    });
     return response.data;
   }
 
@@ -257,12 +362,17 @@ export class CodacyClient {
   }
 
   async ignoreSecurityItem(srmItemId: string, body?: { reason?: string }): Promise<any> {
-    let response = await this.axios.post(`${this.orgPath()}/security/items/${srmItemId}/ignore`, body ?? {});
+    let response = await this.axios.post(
+      `${this.orgPath()}/security/items/${srmItemId}/ignore`,
+      body ?? {}
+    );
     return response.data;
   }
 
   async unignoreSecurityItem(srmItemId: string): Promise<any> {
-    let response = await this.axios.post(`${this.orgPath()}/security/items/${srmItemId}/unignore`);
+    let response = await this.axios.post(
+      `${this.orgPath()}/security/items/${srmItemId}/unignore`
+    );
     return response.data;
   }
 
@@ -273,7 +383,12 @@ export class CodacyClient {
     return response.data;
   }
 
-  async createDastTarget(body: { url: string; targetType: string; apiDefinitionUrl?: string; apiAuthHeaders?: Record<string, string> }): Promise<any> {
+  async createDastTarget(body: {
+    url: string;
+    targetType: string;
+    apiDefinitionUrl?: string;
+    apiAuthHeaders?: Record<string, string>;
+  }): Promise<any> {
     let response = await this.axios.post(`${this.orgPath()}/dast/targets`, body);
     return response.data;
   }
@@ -283,25 +398,39 @@ export class CodacyClient {
   }
 
   async analyzeDastTarget(dastTargetId: number): Promise<any> {
-    let response = await this.axios.post(`${this.orgPath()}/dast/targets/${dastTargetId}/analyze`);
+    let response = await this.axios.post(
+      `${this.orgPath()}/dast/targets/${dastTargetId}/analyze`
+    );
     return response.data;
   }
 
   // ─── SBOM ──────────────────────────────────────────────────────
 
-  async searchSbomDependencies(body: any, params?: PaginationParams & { sortColumn?: string; columnOrder?: string }): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.post(`${this.orgPath()}/sbom/dependencies/search`, body, { params });
+  async searchSbomDependencies(
+    body: any,
+    params?: PaginationParams & { sortColumn?: string; columnOrder?: string }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.post(`${this.orgPath()}/sbom/dependencies/search`, body, {
+      params
+    });
     return response.data;
   }
 
-  async searchSbomRepositories(body: any, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.post(`${this.orgPath()}/sbom/repositories/search`, body, { params });
+  async searchSbomRepositories(
+    body: any,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.post(`${this.orgPath()}/sbom/repositories/search`, body, {
+      params
+    });
     return response.data;
   }
 
   // ─── People ────────────────────────────────────────────────────
 
-  async listPeople(params?: PaginationParams & { search?: string }): Promise<PaginatedResponse<any>> {
+  async listPeople(
+    params?: PaginationParams & { search?: string }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get(`${this.orgPath()}/people`, { params });
     return response.data;
   }
@@ -309,23 +438,35 @@ export class CodacyClient {
   // ─── Tokens ────────────────────────────────────────────────────
 
   async listRepositoryTokens(repositoryName: string): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.orgPath()}/repositories/${repositoryName}/tokens`);
+    let response = await this.axios.get(
+      `${this.orgPath()}/repositories/${repositoryName}/tokens`
+    );
     return response.data;
   }
 
   async createRepositoryToken(repositoryName: string): Promise<any> {
-    let response = await this.axios.post(`${this.orgPath()}/repositories/${repositoryName}/tokens`);
+    let response = await this.axios.post(
+      `${this.orgPath()}/repositories/${repositoryName}/tokens`
+    );
     return response.data;
   }
 
   async deleteRepositoryToken(repositoryName: string, tokenId: string): Promise<void> {
-    await this.axios.delete(`${this.orgPath()}/repositories/${repositoryName}/tokens/${tokenId}`);
+    await this.axios.delete(
+      `${this.orgPath()}/repositories/${repositoryName}/tokens/${tokenId}`
+    );
   }
 
   // ─── Branches ──────────────────────────────────────────────────
 
-  async listBranches(repositoryName: string, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let response = await this.axios.get(`${this.analysisOrgPath()}/repositories/${repositoryName}/branches`, { params });
+  async listBranches(
+    repositoryName: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.axios.get(
+      `${this.analysisOrgPath()}/repositories/${repositoryName}/branches`,
+      { params }
+    );
     return response.data;
   }
 }

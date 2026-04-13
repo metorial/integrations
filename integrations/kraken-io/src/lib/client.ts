@@ -9,11 +9,11 @@ import type {
   KrakenResizeOptions,
   KrakenResizeSetItem,
   KrakenConvertOptions,
-  KrakenS3Store,
+  KrakenS3Store
 } from './types';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.kraken.io',
+  baseURL: 'https://api.kraken.io'
 });
 
 export interface ClientConfig {
@@ -29,7 +29,7 @@ export class Client {
   constructor(config: ClientConfig) {
     this.auth = {
       api_key: config.apiKey,
-      api_secret: config.apiSecret,
+      api_secret: config.apiSecret
     };
     this.sandbox = config.sandbox ?? false;
   }
@@ -57,9 +57,10 @@ export class Client {
       ...(options.samplingScheme && { sampling_scheme: options.samplingScheme }),
       ...(options.resize && { resize: options.resize }),
       ...(options.convert && { convert: options.convert }),
-      ...(options.preserveMeta && options.preserveMeta.length > 0 && { preserve_meta: options.preserveMeta }),
+      ...(options.preserveMeta &&
+        options.preserveMeta.length > 0 && { preserve_meta: options.preserveMeta }),
       ...(options.autoOrient !== undefined && { auto_orient: options.autoOrient }),
-      ...(options.s3Store && { s3_store: options.s3Store }),
+      ...(options.s3Store && { s3_store: options.s3Store })
     };
 
     let response = await apiAxios.post('/v1/url', body);
@@ -89,9 +90,10 @@ export class Client {
       ...(options.samplingScheme && { sampling_scheme: options.samplingScheme }),
       resize: options.sizes,
       ...(options.convert && { convert: options.convert }),
-      ...(options.preserveMeta && options.preserveMeta.length > 0 && { preserve_meta: options.preserveMeta }),
+      ...(options.preserveMeta &&
+        options.preserveMeta.length > 0 && { preserve_meta: options.preserveMeta }),
       ...(options.autoOrient !== undefined && { auto_orient: options.autoOrient }),
-      ...(options.s3Store && { s3_store: options.s3Store }),
+      ...(options.s3Store && { s3_store: options.s3Store })
     };
 
     let response = await apiAxios.post('/v1/url', body);
@@ -100,7 +102,7 @@ export class Client {
 
   async getUserStatus(): Promise<KrakenUserStatusResponse> {
     let response = await apiAxios.post('/user_status', {
-      auth: this.auth,
+      auth: this.auth
     });
     return response.data as KrakenUserStatusResponse;
   }

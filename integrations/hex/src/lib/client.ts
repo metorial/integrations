@@ -125,32 +125,34 @@ export class Client {
     this.axios = createAxios({
       baseURL: `${config.baseUrl}/api/v1`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- Projects ----
 
-  async listProjects(params?: PaginationParams & {
-    includeArchived?: boolean;
-    includeComponents?: boolean;
-    includeTrashed?: boolean;
-    includeSharing?: boolean;
-    statuses?: string[];
-    categories?: string[];
-    creatorEmail?: string;
-    ownerEmail?: string;
-    collectionId?: string;
-  }): Promise<PaginatedResponse<HexProject>> {
+  async listProjects(
+    params?: PaginationParams & {
+      includeArchived?: boolean;
+      includeComponents?: boolean;
+      includeTrashed?: boolean;
+      includeSharing?: boolean;
+      statuses?: string[];
+      categories?: string[];
+      creatorEmail?: string;
+      ownerEmail?: string;
+      collectionId?: string;
+    }
+  ): Promise<PaginatedResponse<HexProject>> {
     let response = await this.axios.get('/projects', { params });
     return response.data;
   }
 
   async getProject(projectId: string, includeSharing?: boolean): Promise<HexProject> {
     let response = await this.axios.get(`/projects/${projectId}`, {
-      params: includeSharing ? { includeSharing: true } : undefined,
+      params: includeSharing ? { includeSharing: true } : undefined
     });
     return response.data;
   }
@@ -172,11 +174,14 @@ export class Client {
     return response.data;
   }
 
-  async getProjectRuns(projectId: string, params?: {
-    limit?: number;
-    offset?: number;
-    statusFilter?: string;
-  }): Promise<HexRun[]> {
+  async getProjectRuns(
+    projectId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+      statusFilter?: string;
+    }
+  ): Promise<HexRun[]> {
     let response = await this.axios.get(`/projects/${projectId}/runs`, { params });
     return response.data;
   }
@@ -192,39 +197,64 @@ export class Client {
 
   // ---- Project Sharing ----
 
-  async editProjectSharingUsers(projectId: string, sharing: {
-    upsert?: { users: Array<{ userId: string; accessLevel: string }> };
-  }): Promise<HexProject> {
+  async editProjectSharingUsers(
+    projectId: string,
+    sharing: {
+      upsert?: { users: Array<{ userId: string; accessLevel: string }> };
+    }
+  ): Promise<HexProject> {
     let response = await this.axios.patch(`/projects/${projectId}/sharing/users`, { sharing });
     return response.data;
   }
 
-  async editProjectSharingGroups(projectId: string, sharing: {
-    upsert?: { groups: Array<{ groupId: string; accessLevel: string }> };
-  }): Promise<HexProject> {
-    let response = await this.axios.patch(`/projects/${projectId}/sharing/groups`, { sharing });
+  async editProjectSharingGroups(
+    projectId: string,
+    sharing: {
+      upsert?: { groups: Array<{ groupId: string; accessLevel: string }> };
+    }
+  ): Promise<HexProject> {
+    let response = await this.axios.patch(`/projects/${projectId}/sharing/groups`, {
+      sharing
+    });
     return response.data;
   }
 
-  async editProjectSharingCollections(projectId: string, sharing: {
-    upsert?: { collections: Array<{ collectionId: string; accessLevel: string }> };
-  }): Promise<HexProject> {
-    let response = await this.axios.patch(`/projects/${projectId}/sharing/collections`, { sharing });
+  async editProjectSharingCollections(
+    projectId: string,
+    sharing: {
+      upsert?: { collections: Array<{ collectionId: string; accessLevel: string }> };
+    }
+  ): Promise<HexProject> {
+    let response = await this.axios.patch(`/projects/${projectId}/sharing/collections`, {
+      sharing
+    });
     return response.data;
   }
 
-  async editProjectSharingWorkspaceAndPublic(projectId: string, sharing: {
-    workspace?: string;
-    publicWeb?: string;
-  }): Promise<HexProject> {
-    let response = await this.axios.patch(`/projects/${projectId}/sharing/workspaceAndPublic`, { sharing });
+  async editProjectSharingWorkspaceAndPublic(
+    projectId: string,
+    sharing: {
+      workspace?: string;
+      publicWeb?: string;
+    }
+  ): Promise<HexProject> {
+    let response = await this.axios.patch(
+      `/projects/${projectId}/sharing/workspaceAndPublic`,
+      { sharing }
+    );
     return response.data;
   }
 
   // ---- Embedded Analytics ----
 
-  async createPresignedUrl(projectId: string, params?: EmbeddingParams): Promise<{ url: string }> {
-    let response = await this.axios.post(`/embedding/createPresignedUrl/${projectId}`, params ?? {});
+  async createPresignedUrl(
+    projectId: string,
+    params?: EmbeddingParams
+  ): Promise<{ url: string }> {
+    let response = await this.axios.post(
+      `/embedding/createPresignedUrl/${projectId}`,
+      params ?? {}
+    );
     return response.data;
   }
 
@@ -260,11 +290,14 @@ export class Client {
     return response.data;
   }
 
-  async editGroup(groupId: string, params: {
-    name?: string;
-    addUserIds?: string[];
-    removeUserIds?: string[];
-  }): Promise<HexGroup> {
+  async editGroup(
+    groupId: string,
+    params: {
+      name?: string;
+      addUserIds?: string[];
+      removeUserIds?: string[];
+    }
+  ): Promise<HexGroup> {
     let body: any = {};
     if (params.name) body.name = params.name;
     if (params.addUserIds || params.removeUserIds) {
@@ -301,17 +334,22 @@ export class Client {
     return response.data;
   }
 
-  async editCollection(collectionId: string, params: {
-    name?: string;
-    description?: string;
-  }): Promise<HexCollection> {
+  async editCollection(
+    collectionId: string,
+    params: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<HexCollection> {
     let response = await this.axios.patch(`/collections/${collectionId}`, params);
     return response.data;
   }
 
   // ---- Data Connections ----
 
-  async listDataConnections(params?: PaginationParams): Promise<PaginatedResponse<HexDataConnection>> {
+  async listDataConnections(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<HexDataConnection>> {
     let response = await this.axios.get('/data-connections', { params });
     return response.data;
   }
@@ -337,18 +375,30 @@ export class Client {
     return response.data;
   }
 
-  async editDataConnection(dataConnectionId: string, params: Record<string, any>): Promise<HexDataConnection> {
+  async editDataConnection(
+    dataConnectionId: string,
+    params: Record<string, any>
+  ): Promise<HexDataConnection> {
     let response = await this.axios.patch(`/data-connections/${dataConnectionId}`, params);
     return response.data;
   }
 
   // ---- Observability ----
 
-  async getQueriedTables(projectId: string, params?: {
-    limit?: number;
-    after?: string;
-    before?: string;
-  }): Promise<PaginatedResponse<{ dataConnectionId: string; dataConnectionName: string; tableName: string }>> {
+  async getQueriedTables(
+    projectId: string,
+    params?: {
+      limit?: number;
+      after?: string;
+      before?: string;
+    }
+  ): Promise<
+    PaginatedResponse<{
+      dataConnectionId: string;
+      dataConnectionName: string;
+      tableName: string;
+    }>
+  > {
     let response = await this.axios.get(`/projects/${projectId}/queriedTables`, { params });
     return response.data;
   }

@@ -3,49 +3,58 @@ import { AshbyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCandidateTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Candidate',
-    key: 'get_candidate',
-    description: `Retrieves detailed information about a candidate. Can look up by ID or search by email/name. When searching by email or name, returns the first matching candidate.`,
-    instructions: [
-      'Provide at least one of candidateId, email, or name to look up a candidate.',
-      'When candidateId is provided, it takes priority and fetches the candidate directly.',
-      'When email or name is provided, a search is performed and the first match is returned.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getCandidateTool = SlateTool.create(spec, {
+  name: 'Get Candidate',
+  key: 'get_candidate',
+  description: `Retrieves detailed information about a candidate. Can look up by ID or search by email/name. When searching by email or name, returns the first matching candidate.`,
+  instructions: [
+    'Provide at least one of candidateId, email, or name to look up a candidate.',
+    'When candidateId is provided, it takes priority and fetches the candidate directly.',
+    'When email or name is provided, a search is performed and the first match is returned.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    candidateId: z.string().optional().describe('Unique ID of the candidate to retrieve'),
-    email: z.string().optional().describe('Email address to search for'),
-    name: z.string().optional().describe('Name to search for')
-  }))
-  .output(z.object({
-    candidateId: z.string().describe('Unique ID of the candidate'),
-    name: z.string().describe('Full name of the candidate'),
-    primaryEmail: z.string().optional().describe('Primary email address'),
-    primaryPhone: z.string().optional().describe('Primary phone number'),
-    tags: z.array(z.object({
-      tagId: z.string().describe('Unique ID of the tag'),
-      title: z.string().describe('Title of the tag')
-    })).describe('Tags associated with the candidate'),
-    emails: z.array(z.string()).describe('All email addresses for the candidate'),
-    phoneNumbers: z.array(z.string()).describe('All phone numbers for the candidate'),
-    socialProfiles: z.array(z.string()).describe('Social profile URLs for the candidate'),
-    locations: z.array(z.string()).describe('Location names for the candidate'),
-    customFields: z.array(z.object({
-      fieldId: z.string().describe('Unique ID of the custom field'),
-      title: z.string().describe('Display name of the custom field'),
-      value: z.any().describe('Value of the custom field')
-    })).describe('Custom field values set on the candidate'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      candidateId: z.string().optional().describe('Unique ID of the candidate to retrieve'),
+      email: z.string().optional().describe('Email address to search for'),
+      name: z.string().optional().describe('Name to search for')
+    })
+  )
+  .output(
+    z.object({
+      candidateId: z.string().describe('Unique ID of the candidate'),
+      name: z.string().describe('Full name of the candidate'),
+      primaryEmail: z.string().optional().describe('Primary email address'),
+      primaryPhone: z.string().optional().describe('Primary phone number'),
+      tags: z
+        .array(
+          z.object({
+            tagId: z.string().describe('Unique ID of the tag'),
+            title: z.string().describe('Title of the tag')
+          })
+        )
+        .describe('Tags associated with the candidate'),
+      emails: z.array(z.string()).describe('All email addresses for the candidate'),
+      phoneNumbers: z.array(z.string()).describe('All phone numbers for the candidate'),
+      socialProfiles: z.array(z.string()).describe('Social profile URLs for the candidate'),
+      locations: z.array(z.string()).describe('Location names for the candidate'),
+      customFields: z
+        .array(
+          z.object({
+            fieldId: z.string().describe('Unique ID of the custom field'),
+            title: z.string().describe('Display name of the custom field'),
+            value: z.any().describe('Value of the custom field')
+          })
+        )
+        .describe('Custom field values set on the candidate'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AshbyClient({ token: ctx.auth.token });
 
     if (!ctx.input.candidateId && !ctx.input.email && !ctx.input.name) {
@@ -98,4 +107,5 @@ export let getCandidateTool = SlateTool.create(
       output,
       message: `Retrieved candidate **${output.name}**${output.primaryEmail ? ` (${output.primaryEmail})` : ''}`
     };
-  }).build();
+  })
+  .build();

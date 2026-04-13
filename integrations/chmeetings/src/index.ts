@@ -23,12 +23,9 @@ import {
   createContribution,
   deleteContribution,
   listCampaigns,
-  listPledges,
+  listPledges
 } from './tools';
-import {
-  peopleEvents,
-  contributionEvents,
-} from './triggers';
+import { peopleEvents, contributionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,10 +52,7 @@ export let provider = Slate.create({
     createContribution,
     deleteContribution,
     listCampaigns,
-    listPledges,
+    listPledges
   ],
-  triggers: [
-    peopleEvents,
-    contributionEvents,
-  ],
+  triggers: [peopleEvents, contributionEvents]
 });

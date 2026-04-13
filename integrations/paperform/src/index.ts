@@ -27,12 +27,9 @@ import {
   movePapersignDocument,
   cancelPapersignDocument,
   listPapersignFolders,
-  createPapersignFolder,
+  createPapersignFolder
 } from './tools';
-import {
-  formSubmissionTrigger,
-  papersignEventTrigger,
-} from './triggers';
+import { formSubmissionTrigger, papersignEventTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -63,10 +60,7 @@ export let provider = Slate.create({
     movePapersignDocument,
     cancelPapersignDocument,
     listPapersignFolders,
-    createPapersignFolder,
+    createPapersignFolder
   ],
-  triggers: [
-    formSubmissionTrigger,
-    papersignEventTrigger,
-  ],
+  triggers: [formSubmissionTrigger, papersignEventTrigger]
 });

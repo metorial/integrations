@@ -29,8 +29,8 @@ export class VbmlClient {
     this.http = createAxios({
       baseURL: 'https://vbml.vestaboard.com',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

@@ -3,67 +3,99 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getConversation = SlateTool.create(
-  spec,
-  {
-    name: 'Get Conversation',
-    key: 'get_conversation',
-    description: `Retrieve a single conversation by its ID, including messages, comments, and posts within it.
+export let getConversation = SlateTool.create(spec, {
+  name: 'Get Conversation',
+  key: 'get_conversation',
+  description: `Retrieve a single conversation by its ID, including messages, comments, and posts within it.
 Returns full conversation details plus optionally the latest messages, comments, or posts.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    conversationId: z.string().describe('The conversation ID to retrieve'),
-    includeMessages: z.boolean().optional().describe('Also fetch the latest messages in this conversation'),
-    includeComments: z.boolean().optional().describe('Also fetch the latest comments in this conversation'),
-    includePosts: z.boolean().optional().describe('Also fetch the latest posts in this conversation'),
-  }))
-  .output(z.object({
-    conversationId: z.string().describe('Conversation ID'),
-    subject: z.string().optional().describe('Conversation subject'),
-    assignees: z.array(z.object({
-      userId: z.string(),
-      name: z.string().optional(),
-    })).optional(),
-    teamId: z.string().optional(),
-    organizationId: z.string().optional(),
-    sharedLabelIds: z.array(z.string()).optional(),
-    messagesCount: z.number().optional(),
-    lastActivityAt: z.number().optional(),
-    webUrl: z.string().optional(),
-    appUrl: z.string().optional(),
-    messages: z.array(z.object({
-      messageId: z.string(),
-      subject: z.string().optional(),
-      preview: z.string().optional(),
-      body: z.string().optional(),
-      fromField: z.object({
-        address: z.string().optional(),
-        name: z.string().optional(),
-      }).optional(),
-      toFields: z.array(z.object({
-        address: z.string().optional(),
-        name: z.string().optional(),
-      })).optional(),
-      deliveredAt: z.number().optional(),
-    })).optional(),
-    comments: z.array(z.object({
-      commentId: z.string(),
-      body: z.string().optional(),
-      authorName: z.string().optional(),
-      createdAt: z.number().optional(),
-    })).optional(),
-    posts: z.array(z.object({
-      postId: z.string(),
-      markdown: z.string().optional(),
-      text: z.string().optional(),
-      createdAt: z.number().optional(),
-    })).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conversationId: z.string().describe('The conversation ID to retrieve'),
+      includeMessages: z
+        .boolean()
+        .optional()
+        .describe('Also fetch the latest messages in this conversation'),
+      includeComments: z
+        .boolean()
+        .optional()
+        .describe('Also fetch the latest comments in this conversation'),
+      includePosts: z
+        .boolean()
+        .optional()
+        .describe('Also fetch the latest posts in this conversation')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string().describe('Conversation ID'),
+      subject: z.string().optional().describe('Conversation subject'),
+      assignees: z
+        .array(
+          z.object({
+            userId: z.string(),
+            name: z.string().optional()
+          })
+        )
+        .optional(),
+      teamId: z.string().optional(),
+      organizationId: z.string().optional(),
+      sharedLabelIds: z.array(z.string()).optional(),
+      messagesCount: z.number().optional(),
+      lastActivityAt: z.number().optional(),
+      webUrl: z.string().optional(),
+      appUrl: z.string().optional(),
+      messages: z
+        .array(
+          z.object({
+            messageId: z.string(),
+            subject: z.string().optional(),
+            preview: z.string().optional(),
+            body: z.string().optional(),
+            fromField: z
+              .object({
+                address: z.string().optional(),
+                name: z.string().optional()
+              })
+              .optional(),
+            toFields: z
+              .array(
+                z.object({
+                  address: z.string().optional(),
+                  name: z.string().optional()
+                })
+              )
+              .optional(),
+            deliveredAt: z.number().optional()
+          })
+        )
+        .optional(),
+      comments: z
+        .array(
+          z.object({
+            commentId: z.string(),
+            body: z.string().optional(),
+            authorName: z.string().optional(),
+            createdAt: z.number().optional()
+          })
+        )
+        .optional(),
+      posts: z
+        .array(
+          z.object({
+            postId: z.string(),
+            markdown: z.string().optional(),
+            text: z.string().optional(),
+            createdAt: z.number().optional()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let data = await client.getConversation(ctx.input.conversationId);
     let c = data.conversations || data;
@@ -78,7 +110,7 @@ Returns full conversation details plus optionally the latest messages, comments,
       messagesCount: c.messages_count,
       lastActivityAt: c.last_activity_at,
       webUrl: c.web_url,
-      appUrl: c.app_url,
+      appUrl: c.app_url
     };
 
     if (ctx.input.includeMessages) {
@@ -88,9 +120,11 @@ Returns full conversation details plus optionally the latest messages, comments,
         subject: m.subject,
         preview: m.preview,
         body: m.body,
-        fromField: m.from_field ? { address: m.from_field.address, name: m.from_field.name } : undefined,
+        fromField: m.from_field
+          ? { address: m.from_field.address, name: m.from_field.name }
+          : undefined,
         toFields: m.to_fields?.map((f: any) => ({ address: f.address, name: f.name })),
-        deliveredAt: m.delivered_at,
+        deliveredAt: m.delivered_at
       }));
     }
 
@@ -100,7 +134,7 @@ Returns full conversation details plus optionally the latest messages, comments,
         commentId: cm.id,
         body: cm.body,
         authorName: cm.author?.name,
-        createdAt: cm.created_at,
+        createdAt: cm.created_at
       }));
     }
 
@@ -110,13 +144,13 @@ Returns full conversation details plus optionally the latest messages, comments,
         postId: p.id,
         markdown: p.markdown,
         text: p.text,
-        createdAt: p.created_at,
+        createdAt: p.created_at
       }));
     }
 
     return {
       output: result,
-      message: `Retrieved conversation **${result.subject || result.conversationId}**.`,
+      message: `Retrieved conversation **${result.subject || result.conversationId}**.`
     };
   })
   .build();

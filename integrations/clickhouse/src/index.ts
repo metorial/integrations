@@ -44,7 +44,7 @@ import {
   deleteAlert,
   getQueryEndpoint,
   upsertQueryEndpoint,
-  deleteQueryEndpoint,
+  deleteQueryEndpoint
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -95,9 +95,7 @@ export let provider = Slate.create({
     deleteAlert,
     getQueryEndpoint,
     upsertQueryEndpoint,
-    deleteQueryEndpoint,
+    deleteQueryEndpoint
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

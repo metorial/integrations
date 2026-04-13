@@ -3,44 +3,77 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContainerRegistry = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Container Registry',
-    key: 'manage_container_registry',
-    description: `View your container registry, list repositories and tags, or trigger garbage collection. DigitalOcean provides a private container registry for storing Docker images.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['get_registry', 'list_repositories', 'list_tags', 'delete_tag', 'garbage_collect']).describe('Action to perform'),
-    registryName: z.string().optional().describe('Registry name (required for list_repositories, list_tags, delete_tag, garbage_collect)'),
-    repositoryName: z.string().optional().describe('Repository name (required for list_tags, delete_tag)'),
-    tag: z.string().optional().describe('Tag name (required for delete_tag)')
-  }))
-  .output(z.object({
-    registry: z.object({
-      name: z.string().describe('Registry name'),
-      region: z.string().optional().describe('Region'),
-      storageUsageBytes: z.number().optional().describe('Storage used in bytes'),
-      createdAt: z.string().describe('Creation timestamp')
-    }).optional().describe('Registry details'),
-    repositories: z.array(z.object({
-      name: z.string().describe('Repository name'),
-      tagCount: z.number().describe('Number of tags'),
-      latestTag: z.string().optional().describe('Most recent tag')
-    })).optional().describe('List of repositories'),
-    tags: z.array(z.object({
-      tag: z.string().describe('Tag name'),
-      compressedSize: z.number().optional().describe('Compressed size in bytes'),
-      updatedAt: z.string().optional().describe('Last update timestamp')
-    })).optional().describe('List of tags'),
-    deleted: z.boolean().optional().describe('Whether the tag was deleted'),
-    garbageCollection: z.object({
-      uuid: z.string().describe('Garbage collection ID'),
-      status: z.string().describe('Status')
-    }).optional().describe('Garbage collection details')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageContainerRegistry = SlateTool.create(spec, {
+  name: 'Manage Container Registry',
+  key: 'manage_container_registry',
+  description: `View your container registry, list repositories and tags, or trigger garbage collection. DigitalOcean provides a private container registry for storing Docker images.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'get_registry',
+          'list_repositories',
+          'list_tags',
+          'delete_tag',
+          'garbage_collect'
+        ])
+        .describe('Action to perform'),
+      registryName: z
+        .string()
+        .optional()
+        .describe(
+          'Registry name (required for list_repositories, list_tags, delete_tag, garbage_collect)'
+        ),
+      repositoryName: z
+        .string()
+        .optional()
+        .describe('Repository name (required for list_tags, delete_tag)'),
+      tag: z.string().optional().describe('Tag name (required for delete_tag)')
+    })
+  )
+  .output(
+    z.object({
+      registry: z
+        .object({
+          name: z.string().describe('Registry name'),
+          region: z.string().optional().describe('Region'),
+          storageUsageBytes: z.number().optional().describe('Storage used in bytes'),
+          createdAt: z.string().describe('Creation timestamp')
+        })
+        .optional()
+        .describe('Registry details'),
+      repositories: z
+        .array(
+          z.object({
+            name: z.string().describe('Repository name'),
+            tagCount: z.number().describe('Number of tags'),
+            latestTag: z.string().optional().describe('Most recent tag')
+          })
+        )
+        .optional()
+        .describe('List of repositories'),
+      tags: z
+        .array(
+          z.object({
+            tag: z.string().describe('Tag name'),
+            compressedSize: z.number().optional().describe('Compressed size in bytes'),
+            updatedAt: z.string().optional().describe('Last update timestamp')
+          })
+        )
+        .optional()
+        .describe('List of tags'),
+      deleted: z.boolean().optional().describe('Whether the tag was deleted'),
+      garbageCollection: z
+        .object({
+          uuid: z.string().describe('Garbage collection ID'),
+          status: z.string().describe('Status')
+        })
+        .optional()
+        .describe('Garbage collection details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'get_registry') {
@@ -77,7 +110,10 @@ export let manageContainerRegistry = SlateTool.create(
       if (!ctx.input.registryName || !ctx.input.repositoryName) {
         throw new Error('registryName and repositoryName are required');
       }
-      let tags = await client.listRegistryRepositoryTags(ctx.input.registryName, ctx.input.repositoryName);
+      let tags = await client.listRegistryRepositoryTags(
+        ctx.input.registryName,
+        ctx.input.repositoryName
+      );
       return {
         output: {
           tags: tags.map((t: any) => ({
@@ -94,7 +130,11 @@ export let manageContainerRegistry = SlateTool.create(
       if (!ctx.input.registryName || !ctx.input.repositoryName || !ctx.input.tag) {
         throw new Error('registryName, repositoryName, and tag are required');
       }
-      await client.deleteRegistryRepositoryTag(ctx.input.registryName, ctx.input.repositoryName, ctx.input.tag);
+      await client.deleteRegistryRepositoryTag(
+        ctx.input.registryName,
+        ctx.input.repositoryName,
+        ctx.input.tag
+      );
       return {
         output: { deleted: true },
         message: `Deleted tag **${ctx.input.tag}** from **${ctx.input.repositoryName}**.`

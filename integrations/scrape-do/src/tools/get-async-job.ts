@@ -3,37 +3,54 @@ import { ScrapeDoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAsyncJob = SlateTool.create(
-  spec,
-  {
-    name: 'Get Async Job',
-    key: 'get_async_job',
-    description: `Check the status of an async scraping job and optionally retrieve task results. Returns job status, task statuses, and scraped content for completed tasks. Can also list all recent jobs or cancel a running job.`,
-    instructions: [
-      'Provide a jobId to get the status of a specific job.',
-      'Provide both jobId and taskId to get the result of a specific task within a job.',
-      'Set action to "list" to see all recent jobs.',
-      'Set action to "cancel" to cancel a running job.',
-    ],
-    tags: {
-      readOnly: false,
-    },
+export let getAsyncJob = SlateTool.create(spec, {
+  name: 'Get Async Job',
+  key: 'get_async_job',
+  description: `Check the status of an async scraping job and optionally retrieve task results. Returns job status, task statuses, and scraped content for completed tasks. Can also list all recent jobs or cancel a running job.`,
+  instructions: [
+    'Provide a jobId to get the status of a specific job.',
+    'Provide both jobId and taskId to get the result of a specific task within a job.',
+    'Set action to "list" to see all recent jobs.',
+    'Set action to "cancel" to cancel a running job.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['status', 'result', 'list', 'cancel']).describe('Action to perform: "status" to check job progress, "result" to get a task result, "list" to list all jobs, "cancel" to cancel a job'),
-    jobId: z.string().optional().describe('Job ID (required for status, result, and cancel actions)'),
-    taskId: z.string().optional().describe('Task ID within the job (required for result action)'),
-    page: z.number().optional().describe('Page number for listing jobs (default: 1)'),
-    pageSize: z.number().optional().describe('Number of jobs per page (default: 10, max: 100)'),
-  }))
-  .output(z.object({
-    jobStatus: z.any().optional().describe('Job status details including tasks and their statuses'),
-    taskResult: z.any().optional().describe('Task result with scraped content and metadata'),
-    jobs: z.any().optional().describe('List of jobs (for list action)'),
-    cancelResult: z.any().optional().describe('Cancellation result (for cancel action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['status', 'result', 'list', 'cancel'])
+        .describe(
+          'Action to perform: "status" to check job progress, "result" to get a task result, "list" to list all jobs, "cancel" to cancel a job'
+        ),
+      jobId: z
+        .string()
+        .optional()
+        .describe('Job ID (required for status, result, and cancel actions)'),
+      taskId: z
+        .string()
+        .optional()
+        .describe('Task ID within the job (required for result action)'),
+      page: z.number().optional().describe('Page number for listing jobs (default: 1)'),
+      pageSize: z
+        .number()
+        .optional()
+        .describe('Number of jobs per page (default: 10, max: 100)')
+    })
+  )
+  .output(
+    z.object({
+      jobStatus: z
+        .any()
+        .optional()
+        .describe('Job status details including tasks and their statuses'),
+      taskResult: z.any().optional().describe('Task result with scraped content and metadata'),
+      jobs: z.any().optional().describe('List of jobs (for list action)'),
+      cancelResult: z.any().optional().describe('Cancellation result (for cancel action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ScrapeDoClient(ctx.auth.token);
     let input = ctx.input;
 
@@ -45,9 +62,9 @@ export let getAsyncJob = SlateTool.create(
           jobStatus: status,
           taskResult: null,
           jobs: null,
-          cancelResult: null,
+          cancelResult: null
         },
-        message: `Job **${input.jobId}** status: **${status.Status}** — ${status.Tasks?.length || 0} task(s).`,
+        message: `Job **${input.jobId}** status: **${status.Status}** — ${status.Tasks?.length || 0} task(s).`
       };
     }
 
@@ -60,9 +77,9 @@ export let getAsyncJob = SlateTool.create(
           jobStatus: null,
           taskResult: result,
           jobs: null,
-          cancelResult: null,
+          cancelResult: null
         },
-        message: `Task **${input.taskId}** — status: **${result.Status}**, URL: ${result.URL}, HTTP ${result.StatusCode}.`,
+        message: `Task **${input.taskId}** — status: **${result.Status}**, URL: ${result.URL}, HTTP ${result.StatusCode}.`
       };
     }
 
@@ -73,9 +90,9 @@ export let getAsyncJob = SlateTool.create(
           jobStatus: null,
           taskResult: null,
           jobs,
-          cancelResult: null,
+          cancelResult: null
         },
-        message: `Retrieved list of async jobs.`,
+        message: `Retrieved list of async jobs.`
       };
     }
 
@@ -87,9 +104,9 @@ export let getAsyncJob = SlateTool.create(
           jobStatus: null,
           taskResult: null,
           jobs: null,
-          cancelResult: result,
+          cancelResult: result
         },
-        message: `Cancelled job **${input.jobId}**.`,
+        message: `Cancelled job **${input.jobId}**.`
       };
     }
 

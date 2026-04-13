@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Telnyx API Key (Bearer token). Found in Mission Control Portal under Auth > Auth V2.'),
+      token: z
+        .string()
+        .describe(
+          'Your Telnyx API Key (Bearer token). Found in Mission Control Portal under Auth > Auth V2.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.telnyx.com/v2',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/balance');
@@ -37,8 +43,8 @@ export let auth = SlateAuth.create()
         profile: {
           name: balance?.record_type ?? 'Telnyx Account',
           balance: balance?.balance,
-          currency: balance?.currency,
-        },
+          currency: balance?.currency
+        }
       };
-    },
+    }
   });

@@ -3,33 +3,45 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Events',
-    key: 'record_events',
-    description: `Triggers when records are created, updated, or deleted in EspoCRM. Supports all entity types including Contact, Account, Lead, Opportunity, Case, Meeting, Call, Task, and custom entities. Automatically registers webhooks with EspoCRM.`,
-  }
-)
-  .input(z.object({
-    entityType: z.string().describe('Entity type that triggered the event'),
-    eventAction: z.string().describe('Event action (create, update, delete)'),
-    recordId: z.string().describe('ID of the affected record'),
-    recordAttributes: z.record(z.string(), z.any()).describe('Record attributes included in the event'),
-  }))
-  .output(z.object({
-    entityType: z.string().describe('Entity type that triggered the event'),
-    eventAction: z.string().describe('Event action (create, update, delete)'),
-    recordId: z.string().describe('ID of the affected record'),
-    recordAttributes: z.record(z.string(), z.any()).describe('Record attributes from the event'),
-  }))
+export let recordEvents = SlateTrigger.create(spec, {
+  name: 'Record Events',
+  key: 'record_events',
+  description: `Triggers when records are created, updated, or deleted in EspoCRM. Supports all entity types including Contact, Account, Lead, Opportunity, Case, Meeting, Call, Task, and custom entities. Automatically registers webhooks with EspoCRM.`
+})
+  .input(
+    z.object({
+      entityType: z.string().describe('Entity type that triggered the event'),
+      eventAction: z.string().describe('Event action (create, update, delete)'),
+      recordId: z.string().describe('ID of the affected record'),
+      recordAttributes: z
+        .record(z.string(), z.any())
+        .describe('Record attributes included in the event')
+    })
+  )
+  .output(
+    z.object({
+      entityType: z.string().describe('Entity type that triggered the event'),
+      eventAction: z.string().describe('Event action (create, update, delete)'),
+      recordId: z.string().describe('ID of the affected record'),
+      recordAttributes: z
+        .record(z.string(), z.any())
+        .describe('Record attributes from the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let entityTypes = [
-        'Contact', 'Account', 'Lead', 'Opportunity', 'Case',
-        'Meeting', 'Call', 'Task', 'Email',
+        'Contact',
+        'Account',
+        'Lead',
+        'Opportunity',
+        'Case',
+        'Meeting',
+        'Call',
+        'Task',
+        'Email'
       ];
       let actions = ['create', 'update', 'delete'];
 
@@ -49,13 +61,15 @@ export let recordEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
-      let webhookIds = (ctx.input.registrationDetails as { webhookIds: Record<string, string> }).webhookIds;
+      let webhookIds = (
+        ctx.input.registrationDetails as { webhookIds: Record<string, string> }
+      ).webhookIds;
 
       for (let webhookId of Object.values(webhookIds)) {
         try {
@@ -66,8 +80,8 @@ export let recordEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, any>;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/').filter(Boolean);
 
@@ -83,13 +97,13 @@ export let recordEvents = SlateTrigger.create(
             entityType,
             eventAction,
             recordId,
-            recordAttributes: body,
-          },
-        ],
+            recordAttributes: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `${ctx.input.entityType.toLowerCase()}.${ctx.input.eventAction}`,
         id: `${ctx.input.entityType}-${ctx.input.recordId}-${ctx.input.eventAction}-${Date.now()}`,
@@ -97,8 +111,9 @@ export let recordEvents = SlateTrigger.create(
           entityType: ctx.input.entityType,
           eventAction: ctx.input.eventAction,
           recordId: ctx.input.recordId,
-          recordAttributes: ctx.input.recordAttributes,
-        },
+          recordAttributes: ctx.input.recordAttributes
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

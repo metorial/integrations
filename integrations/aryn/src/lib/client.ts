@@ -8,14 +8,19 @@ export class Client {
     this.axios = createAxios({
       baseURL: this.config.baseUrl,
       headers: {
-        Authorization: `Bearer ${this.config.token}`,
-      },
+        Authorization: `Bearer ${this.config.token}`
+      }
     });
   }
 
   // ── DocSet Operations ──
 
-  async createDocset(params: { name: string; properties?: Record<string, any>; schema?: SchemaInput; prompts?: Record<string, string> }): Promise<DocSetMetadata> {
+  async createDocset(params: {
+    name: string;
+    properties?: Record<string, any>;
+    schema?: SchemaInput;
+    prompts?: Record<string, string>;
+  }): Promise<DocSetMetadata> {
     let res = await this.axios.post<DocSetMetadata>('/v1/storage/docsets', params);
     return res.data;
   }
@@ -25,19 +30,33 @@ export class Client {
     return res.data;
   }
 
-  async listDocsets(params?: { pageSize?: number; pageToken?: string; nameEq?: string }): Promise<DocSetMetadata[]> {
+  async listDocsets(params?: {
+    pageSize?: number;
+    pageToken?: string;
+    nameEq?: string;
+  }): Promise<DocSetMetadata[]> {
     let res = await this.axios.get<DocSetMetadata[]>('/v1/storage/docsets', {
       params: {
         page_size: params?.pageSize,
         page_token: params?.pageToken,
-        name_eq: params?.nameEq,
-      },
+        name_eq: params?.nameEq
+      }
     });
     return res.data;
   }
 
-  async updateDocset(docsetId: string, params: { name?: string; properties?: Record<string, any>; prompts?: Record<string, string> }): Promise<DocSetMetadata> {
-    let res = await this.axios.patch<DocSetMetadata>(`/v1/storage/docsets/${docsetId}`, params);
+  async updateDocset(
+    docsetId: string,
+    params: {
+      name?: string;
+      properties?: Record<string, any>;
+      prompts?: Record<string, string>;
+    }
+  ): Promise<DocSetMetadata> {
+    let res = await this.axios.patch<DocSetMetadata>(
+      `/v1/storage/docsets/${docsetId}`,
+      params
+    );
     return res.data;
   }
 
@@ -54,26 +73,36 @@ export class Client {
     formData.append('file', blob, fileName);
 
     let res = await this.axios.post(`/v1/storage/docsets/${docsetId}/docs`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return res.data;
   }
 
-  async listDocuments(docsetId: string, params?: { pageSize?: number; pageToken?: string }): Promise<DocumentListResponse> {
-    let res = await this.axios.get<DocumentListResponse>(`/v1/storage/docsets/${docsetId}/docs`, {
-      params: {
-        page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
-    });
+  async listDocuments(
+    docsetId: string,
+    params?: { pageSize?: number; pageToken?: string }
+  ): Promise<DocumentListResponse> {
+    let res = await this.axios.get<DocumentListResponse>(
+      `/v1/storage/docsets/${docsetId}/docs`,
+      {
+        params: {
+          page_size: params?.pageSize,
+          page_token: params?.pageToken
+        }
+      }
+    );
     return res.data;
   }
 
-  async getDocument(docsetId: string, docId: string, params?: { includeElements?: boolean }): Promise<any> {
+  async getDocument(
+    docsetId: string,
+    docId: string,
+    params?: { includeElements?: boolean }
+  ): Promise<any> {
     let res = await this.axios.get(`/v1/storage/docsets/${docsetId}/docs/${docId}`, {
       params: {
-        include_elements: params?.includeElements,
-      },
+        include_elements: params?.includeElements
+      }
     });
     return res.data;
   }
@@ -83,14 +112,25 @@ export class Client {
     return res.data;
   }
 
-  async updateDocumentProperties(docsetId: string, docId: string, operations: PropertyPatchOperation[]): Promise<any> {
-    let res = await this.axios.patch(`/v1/storage/docsets/${docsetId}/docs/${docId}/properties`, operations);
+  async updateDocumentProperties(
+    docsetId: string,
+    docId: string,
+    operations: PropertyPatchOperation[]
+  ): Promise<any> {
+    let res = await this.axios.patch(
+      `/v1/storage/docsets/${docsetId}/docs/${docId}/properties`,
+      operations
+    );
     return res.data;
   }
 
   // ── Partition (Parse) ──
 
-  async partitionDocument(file: Uint8Array, fileName: string, options?: PartitionOptions): Promise<any> {
+  async partitionDocument(
+    file: Uint8Array,
+    fileName: string,
+    options?: PartitionOptions
+  ): Promise<any> {
     let formData = new FormData();
     let blob = new Blob([file]);
     formData.append('file', blob, fileName);
@@ -101,7 +141,7 @@ export class Client {
 
     let res = await this.axios.post('/v1/document/partition', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 300000, // 5 minutes for large docs
+      timeout: 300000 // 5 minutes for large docs
     });
     return res.data;
   }
@@ -116,7 +156,7 @@ export class Client {
 
     let res = await this.axios.post('/v1/document/partition', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 300000,
+      timeout: 300000
     });
     return res.data;
   }
@@ -124,18 +164,22 @@ export class Client {
   // ── Search ──
 
   async search(docsetId: string, params: SearchParams): Promise<SearchResponse> {
-    let res = await this.axios.post<SearchResponse>(`/v1/query/search/${docsetId}`, {
-      query: params.query,
-      query_type: params.queryType,
-      properties_filter: params.propertiesFilter,
-      return_type: params.returnType,
-      include_fields: params.includeFields,
-    }, {
-      params: {
-        page_size: params.pageSize,
-        page_token: params.pageToken,
+    let res = await this.axios.post<SearchResponse>(
+      `/v1/query/search/${docsetId}`,
+      {
+        query: params.query,
+        query_type: params.queryType,
+        properties_filter: params.propertiesFilter,
+        return_type: params.returnType,
+        include_fields: params.includeFields
       },
-    });
+      {
+        params: {
+          page_size: params.pageSize,
+          page_token: params.pageToken
+        }
+      }
+    );
     return res.data;
   }
 
@@ -148,7 +192,7 @@ export class Client {
       plan: params.plan,
       stream: false,
       summarize_result: params.summarizeResult ?? false,
-      rag_mode: params.ragMode ?? false,
+      rag_mode: params.ragMode ?? false
     });
     return res.data;
   }
@@ -156,7 +200,7 @@ export class Client {
   async generatePlan(params: { docsetId: string; query: string }): Promise<any> {
     let res = await this.axios.post('/v1/query/plan', {
       docset_id: params.docsetId,
-      query: params.query,
+      query: params.query
     });
     return res.data;
   }
@@ -165,15 +209,19 @@ export class Client {
 
   async extractProperties(docsetId: string, schema: SchemaInput): Promise<any> {
     let res = await this.axios.post('/v1/jobs/extract-properties', schema, {
-      params: { docset_id: docsetId },
+      params: { docset_id: docsetId }
     });
     return res.data;
   }
 
   async deleteProperties(docsetId: string, names: string[]): Promise<any> {
-    let res = await this.axios.post('/v1/jobs/delete-properties', { names }, {
-      params: { docset_id: docsetId },
-    });
+    let res = await this.axios.post(
+      '/v1/jobs/delete-properties',
+      { names },
+      {
+        params: { docset_id: docsetId }
+      }
+    );
     return res.data;
   }
 

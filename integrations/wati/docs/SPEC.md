@@ -15,16 +15,19 @@ To authenticate:
 1. Log in to your WATI account, navigate to API Docs in the top menu, and copy the API Endpoint URL and Bearer Token from the page.
 
 Two values are required:
+
 - **API Endpoint URL**: A tenant-specific base URL in the format `https://live-server-XXXXX.wati.io`. Each Wati account has a unique endpoint.
 - **Bearer Token (Access Token)**: Passed in the `Authorization` header as `Bearer <token>`.
 
 Example request:
+
 ```
 GET https://live-server-XXXXX.wati.io/api/v1/getContacts
 Authorization: Bearer <your-token>
 ```
 
 Important considerations:
+
 - Changing your Wati account password will invalidate your current Bearer Authentication Token.
 - The Rotate Token API is used to refresh authentication tokens to maintain secure API access.
 - Each token is unique to an account.

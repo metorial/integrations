@@ -21,29 +21,30 @@ let recordingSchema = z.object({
   status: z.string().optional().describe('Recording status')
 });
 
-export let listRecordings = SlateTool.create(
-  spec,
-  {
-    name: 'List Recordings',
-    key: 'list_recordings',
-    description: `List meeting recordings. Filter by meeting ID, date range, host email, or site URL. Returns recording metadata including playback and download URLs.`,
-    tags: {
-      readOnly: true
-    }
+export let listRecordings = SlateTool.create(spec, {
+  name: 'List Recordings',
+  key: 'list_recordings',
+  description: `List meeting recordings. Filter by meeting ID, date range, host email, or site URL. Returns recording metadata including playback and download URLs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    meetingId: z.string().optional().describe('Filter by meeting ID'),
-    from: z.string().optional().describe('Start of date range (ISO 8601)'),
-    to: z.string().optional().describe('End of date range (ISO 8601)'),
-    hostEmail: z.string().optional().describe('Filter by host email (admin use)'),
-    siteUrl: z.string().optional().describe('Filter by Webex site URL'),
-    max: z.number().optional().describe('Maximum number of results (default 10)')
-  }))
-  .output(z.object({
-    recordings: z.array(recordingSchema).describe('List of recordings')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      meetingId: z.string().optional().describe('Filter by meeting ID'),
+      from: z.string().optional().describe('Start of date range (ISO 8601)'),
+      to: z.string().optional().describe('End of date range (ISO 8601)'),
+      hostEmail: z.string().optional().describe('Filter by host email (admin use)'),
+      siteUrl: z.string().optional().describe('Filter by Webex site URL'),
+      max: z.number().optional().describe('Maximum number of results (default 10)')
+    })
+  )
+  .output(
+    z.object({
+      recordings: z.array(recordingSchema).describe('List of recordings')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.listRecordings({
@@ -81,23 +82,22 @@ export let listRecordings = SlateTool.create(
   })
   .build();
 
-export let getRecording = SlateTool.create(
-  spec,
-  {
-    name: 'Get Recording Details',
-    key: 'get_recording',
-    description: `Retrieve full details of a specific recording including playback URL, download URL, size, and duration.`,
-    tags: {
-      readOnly: true
-    }
+export let getRecording = SlateTool.create(spec, {
+  name: 'Get Recording Details',
+  key: 'get_recording',
+  description: `Retrieve full details of a specific recording including playback URL, download URL, size, and duration.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    recordingId: z.string().describe('ID of the recording to retrieve'),
-    hostEmail: z.string().optional().describe('Host email (admin use)')
-  }))
+})
+  .input(
+    z.object({
+      recordingId: z.string().describe('ID of the recording to retrieve'),
+      hostEmail: z.string().optional().describe('Host email (admin use)')
+    })
+  )
   .output(recordingSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.getRecording(ctx.input.recordingId, {

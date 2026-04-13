@@ -15,6 +15,7 @@ API key authentication is the simplest form of authentication and is commonly us
 When connecting to a Weaviate Cloud cluster, you need an API key and the REST endpoint URL for authentication. If you don't have an existing API key, you'll need to create one. You can choose the role for the API key, selecting an existing role like admin or viewer, or creating a new role with specific permissions.
 
 Required credentials:
+
 - **API Key**: Obtained from the Weaviate Cloud console or configured on a self-hosted instance.
 - **Instance URL**: The REST endpoint URL of the Weaviate cluster.
 
@@ -23,6 +24,7 @@ Required credentials:
 OIDC authentication requires Weaviate to validate tokens issued by an identity provider. The identity provider authenticates the user and issues tokens, which are then validated by Weaviate. Any OpenID Connect-compatible token issuer that implements OpenID Connect Discovery is compatible with Weaviate.
 
 Supported OIDC flows:
+
 - **Client Credentials Flow**: For machine-to-machine authorization (authorizes an app, not a user). Validated with Okta and Azure as identity providers.
 - **Resource Owner Password Flow**: Uses username and password to obtain tokens.
 - **Bearer Token**: Allows using a pre-existing access token. If a refresh token is provided, the client will automatically refresh the access token when it expires. If no refresh token is provided, authentication will expire once the access token expires.

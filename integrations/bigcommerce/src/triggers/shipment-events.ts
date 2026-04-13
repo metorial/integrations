@@ -3,38 +3,39 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { Client } from '../lib/client';
 
-export let shipmentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Shipment Events',
-    key: 'shipment_events',
-    description: 'Triggers when shipments are created, updated, or deleted for orders.',
-  }
-)
-  .input(z.object({
-    scope: z.string().describe('The webhook scope (e.g., store/shipment/created)'),
-    shipmentId: z.number().describe('The shipment ID from the webhook payload'),
-    orderId: z.number().optional().describe('The associated order ID'),
-    webhookEventHash: z.string().describe('Unique hash for the webhook event'),
-  }))
-  .output(z.object({
-    shipmentId: z.number().describe('The shipment ID'),
-    orderId: z.number().optional().describe('The associated order ID'),
-    trackingNumber: z.string().optional().describe('Tracking number'),
-    shippingMethod: z.string().optional().describe('Shipping method'),
-    shippingProvider: z.string().optional().describe('Shipping provider'),
-  }))
+export let shipmentEvents = SlateTrigger.create(spec, {
+  name: 'Shipment Events',
+  key: 'shipment_events',
+  description: 'Triggers when shipments are created, updated, or deleted for orders.'
+})
+  .input(
+    z.object({
+      scope: z.string().describe('The webhook scope (e.g., store/shipment/created)'),
+      shipmentId: z.number().describe('The shipment ID from the webhook payload'),
+      orderId: z.number().optional().describe('The associated order ID'),
+      webhookEventHash: z.string().describe('Unique hash for the webhook event')
+    })
+  )
+  .output(
+    z.object({
+      shipmentId: z.number().describe('The shipment ID'),
+      orderId: z.number().optional().describe('The associated order ID'),
+      trackingNumber: z.string().optional().describe('Tracking number'),
+      shippingMethod: z.string().optional().describe('Shipping method'),
+      shippingProvider: z.string().optional().describe('Shipping provider')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let scopes = [
         'store/shipment/created',
         'store/shipment/updated',
-        'store/shipment/deleted',
+        'store/shipment/deleted'
       ];
 
       let webhookIds: number[] = [];
@@ -42,20 +43,20 @@ export let shipmentEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           scope,
           destination: ctx.input.webhookBaseUrl,
-          is_active: true,
+          is_active: true
         });
         webhookIds.push(result.data.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let { webhookIds } = ctx.input.registrationDetails as { webhookIds: number[] };
@@ -68,25 +69,27 @@ export let shipmentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let scope = body.scope as string;
       let shipmentId = body.data?.id as number;
       let orderId = body.data?.orderId as number | undefined;
-      let hash = body.hash as string || `${scope}-${shipmentId}-${Date.now()}`;
+      let hash = (body.hash as string) || `${scope}-${shipmentId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          scope,
-          shipmentId,
-          orderId,
-          webhookEventHash: hash,
-        }],
+        inputs: [
+          {
+            scope,
+            shipmentId,
+            orderId,
+            webhookEventHash: hash
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let scopeParts = ctx.input.scope.replace('store/shipment/', '');
       let eventType = `shipment.${scopeParts}`;
 
@@ -95,9 +98,9 @@ export let shipmentEvents = SlateTrigger.create(
         id: ctx.input.webhookEventHash,
         output: {
           shipmentId: ctx.input.shipmentId,
-          orderId: ctx.input.orderId,
-        },
+          orderId: ctx.input.orderId
+        }
       };
-    },
+    }
   })
   .build();

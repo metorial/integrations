@@ -8,7 +8,7 @@ let addressSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   zip: z.string().optional(),
-  country: z.string().optional(),
+  country: z.string().optional()
 });
 
 let contactPersonSchema = z.object({
@@ -17,7 +17,7 @@ let contactPersonSchema = z.object({
   lastName: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
-  isPrimaryContact: z.boolean().optional(),
+  isPrimaryContact: z.boolean().optional()
 });
 
 let mapAddress = (addr: any) => {
@@ -27,7 +27,7 @@ let mapAddress = (addr: any) => {
     city: addr.city || undefined,
     state: addr.state || undefined,
     zip: addr.zip || undefined,
-    country: addr.country || undefined,
+    country: addr.country || undefined
   };
 };
 
@@ -37,46 +37,47 @@ let mapContactPerson = (person: any) => ({
   lastName: person.last_name,
   email: person.email,
   phone: person.phone,
-  isPrimaryContact: person.is_primary_contact,
+  isPrimaryContact: person.is_primary_contact
 });
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve full details of a specific customer or vendor by their contact ID, including addresses, contact persons, and payment terms.`,
-    tags: {
-      readOnly: true,
-    },
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve full details of a specific customer or vendor by their contact ID, including addresses, contact persons, and payment terms.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to retrieve'),
-  }))
-  .output(z.object({
-    contactId: z.string(),
-    contactName: z.string(),
-    companyName: z.string().optional(),
-    contactType: z.string().optional(),
-    status: z.string().optional(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    website: z.string().optional(),
-    billingAddress: addressSchema.optional(),
-    shippingAddress: addressSchema.optional(),
-    contactPersons: z.array(contactPersonSchema).optional(),
-    paymentTerms: z.number().optional(),
-    paymentTermsLabel: z.string().optional(),
-    currencyCode: z.string().optional(),
-    outstandingReceivableAmount: z.number().optional(),
-    outstandingPayableAmount: z.number().optional(),
-    unusedCreditsReceivableAmount: z.number().optional(),
-    notes: z.string().optional(),
-    createdTime: z.string().optional(),
-    lastModifiedTime: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string(),
+      contactName: z.string(),
+      companyName: z.string().optional(),
+      contactType: z.string().optional(),
+      status: z.string().optional(),
+      email: z.string().optional(),
+      phone: z.string().optional(),
+      website: z.string().optional(),
+      billingAddress: addressSchema.optional(),
+      shippingAddress: addressSchema.optional(),
+      contactPersons: z.array(contactPersonSchema).optional(),
+      paymentTerms: z.number().optional(),
+      paymentTermsLabel: z.string().optional(),
+      currencyCode: z.string().optional(),
+      outstandingReceivableAmount: z.number().optional(),
+      outstandingPayableAmount: z.number().optional(),
+      unusedCreditsReceivableAmount: z.number().optional(),
+      notes: z.string().optional(),
+      createdTime: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let data = await client.getContact(ctx.input.contactId);
     let c = data.contact;
@@ -101,11 +102,12 @@ export let getContact = SlateTool.create(
       unusedCreditsReceivableAmount: c.unused_credits_receivable_amount ?? undefined,
       notes: c.notes || undefined,
       createdTime: c.created_time || undefined,
-      lastModifiedTime: c.last_modified_time || undefined,
+      lastModifiedTime: c.last_modified_time || undefined
     };
 
     return {
       output: contact,
-      message: `Retrieved contact **${contact.contactName}** (${contact.contactType}).`,
+      message: `Retrieved contact **${contact.contactName}** (${contact.contactType}).`
     };
-  }).build();
+  })
+  .build();

@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.ramp.com/developer/v1',
-  sandbox: 'https://demo-api.ramp.com/developer/v1',
+  sandbox: 'https://demo-api.ramp.com/developer/v1'
 };
 
 export interface PaginationParams {
@@ -26,9 +26,9 @@ export class Client {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -112,17 +112,20 @@ export class Client {
       location_id: data.locationId,
       direct_manager_id: data.directManagerId,
       is_manager: data.isManager,
-      idempotency_key: data.idempotencyKey,
+      idempotency_key: data.idempotencyKey
     });
     return response.data;
   }
 
-  async updateUser(userId: string, data: {
-    departmentId?: string;
-    locationId?: string;
-    directManagerId?: string;
-    role?: string;
-  }): Promise<any> {
+  async updateUser(
+    userId: string,
+    data: {
+      departmentId?: string;
+      locationId?: string;
+      directManagerId?: string;
+      role?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.departmentId !== undefined) body.department_id = data.departmentId;
     if (data.locationId !== undefined) body.location_id = data.locationId;
@@ -166,15 +169,19 @@ export class Client {
     return response.data;
   }
 
-  async updateCard(cardId: string, data: {
-    displayName?: string;
-    userId?: string;
-    spendingRestrictions?: Record<string, any>;
-  }): Promise<any> {
+  async updateCard(
+    cardId: string,
+    data: {
+      displayName?: string;
+      userId?: string;
+      spendingRestrictions?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.displayName !== undefined) body.display_name = data.displayName;
     if (data.userId !== undefined) body.user_id = data.userId;
-    if (data.spendingRestrictions !== undefined) body.spending_restrictions = data.spendingRestrictions;
+    if (data.spendingRestrictions !== undefined)
+      body.spending_restrictions = data.spendingRestrictions;
 
     let response = await this.axios.patch(`/cards/${cardId}`, body);
     return response.data;
@@ -190,7 +197,7 @@ export class Client {
     let body: Record<string, any> = {
       display_name: data.displayName,
       user_id: data.userId,
-      idempotency_key: data.idempotencyKey,
+      idempotency_key: data.idempotencyKey
     };
     if (data.spendProgramId) body.spend_program_id = data.spendProgramId;
     if (data.spendingRestrictions) body.spending_restrictions = data.spendingRestrictions;
@@ -211,7 +218,7 @@ export class Client {
       display_name: data.displayName,
       user_id: data.userId,
       fulfillment: data.fulfillment,
-      idempotency_key: data.idempotencyKey,
+      idempotency_key: data.idempotencyKey
     };
     if (data.spendProgramId) body.spend_program_id = data.spendProgramId;
     if (data.spendingRestrictions) body.spending_restrictions = data.spendingRestrictions;
@@ -222,21 +229,21 @@ export class Client {
 
   async suspendCard(cardId: string, idempotencyKey: string): Promise<any> {
     let response = await this.axios.post(`/cards/${cardId}/deferred/suspension`, {
-      idempotency_key: idempotencyKey,
+      idempotency_key: idempotencyKey
     });
     return response.data;
   }
 
   async unsuspendCard(cardId: string, idempotencyKey: string): Promise<any> {
     let response = await this.axios.post(`/cards/${cardId}/deferred/unsuspension`, {
-      idempotency_key: idempotencyKey,
+      idempotency_key: idempotencyKey
     });
     return response.data;
   }
 
   async terminateCard(cardId: string, idempotencyKey: string): Promise<any> {
     let response = await this.axios.post(`/cards/${cardId}/deferred/termination`, {
-      idempotency_key: idempotencyKey,
+      idempotency_key: idempotencyKey
     });
     return response.data;
   }
@@ -348,16 +355,17 @@ export class Client {
     return response.data;
   }
 
-  async createDepartment(data: {
-    name: string;
-  }): Promise<any> {
+  async createDepartment(data: { name: string }): Promise<any> {
     let response = await this.axios.post('/departments', data);
     return response.data;
   }
 
-  async updateDepartment(departmentId: string, data: {
-    name?: string;
-  }): Promise<any> {
+  async updateDepartment(
+    departmentId: string,
+    data: {
+      name?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/departments/${departmentId}`, data);
     return response.data;
   }
@@ -447,7 +455,7 @@ export class Client {
 
   async terminateLimit(limitId: string, idempotencyKey: string): Promise<any> {
     let response = await this.axios.post(`/limits/${limitId}/deferred/termination`, {
-      idempotency_key: idempotencyKey,
+      idempotency_key: idempotencyKey
     });
     return response.data;
   }
@@ -578,13 +586,10 @@ export class Client {
     return response.data;
   }
 
-  async createWebhook(data: {
-    url: string;
-    eventTypes: string[];
-  }): Promise<any> {
+  async createWebhook(data: { url: string; eventTypes: string[] }): Promise<any> {
     let response = await this.axios.post('/webhooks', {
       url: data.url,
-      event_types: data.eventTypes,
+      event_types: data.eventTypes
     });
     return response.data;
   }
@@ -601,7 +606,7 @@ export class Client {
   }): Promise<any> {
     let response = await this.axios.post('/accounting/syncs', {
       idempotency_key: data.idempotencyKey,
-      sync_results: data.syncResults,
+      sync_results: data.syncResults
     });
     return response.data;
   }

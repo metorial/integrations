@@ -12,32 +12,33 @@ let deploymentSchema = z.object({
   deployer: z.string().optional().describe('Deployer identity'),
   startTime: z.string().optional().describe('Deployment start time (ISO 8601)'),
   endTime: z.string().optional().describe('Deployment end time (ISO 8601)'),
-  active: z.boolean().optional().describe('Whether this is the active deployment'),
+  active: z.boolean().optional().describe('Whether this is the active deployment')
 });
 
-export let listDeployments = SlateTool.create(
-  spec,
-  {
-    name: 'List Deployments',
-    key: 'list_deployments',
-    description: `List deployment history for an Azure Function App. Returns information about each deployment including author, status, timestamps, and whether it is the currently active deployment.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDeployments = SlateTool.create(spec, {
+  name: 'List Deployments',
+  key: 'list_deployments',
+  description: `List deployment history for an Azure Function App. Returns information about each deployment including author, status, timestamps, and whether it is the currently active deployment.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    appName: z.string().describe('Name of the function app'),
-  }))
-  .output(z.object({
-    deployments: z.array(deploymentSchema).describe('List of deployments'),
-    count: z.number().describe('Total number of deployments'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      appName: z.string().describe('Name of the function app')
+    })
+  )
+  .output(
+    z.object({
+      deployments: z.array(deploymentSchema).describe('List of deployments'),
+      count: z.number().describe('Total number of deployments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ArmClient({
       token: ctx.auth.token,
       subscriptionId: ctx.config.subscriptionId,
-      resourceGroupName: ctx.config.resourceGroupName,
+      resourceGroupName: ctx.config.resourceGroupName
     });
 
     ctx.info('Listing deployments for: ' + ctx.input.appName);
@@ -53,14 +54,15 @@ export let listDeployments = SlateTool.create(
       deployer: d.properties?.deployer,
       startTime: d.properties?.start_time,
       endTime: d.properties?.end_time,
-      active: d.properties?.active,
+      active: d.properties?.active
     }));
 
     return {
       output: {
         deployments: mapped,
-        count: mapped.length,
+        count: mapped.length
       },
-      message: `Found **${mapped.length}** deployment(s) for **${ctx.input.appName}**.${mapped.length > 0 ? '\n\nMost recent: ' + (mapped[0]?.message || mapped[0]?.deploymentId || 'N/A') : ''}`,
+      message: `Found **${mapped.length}** deployment(s) for **${ctx.input.appName}**.${mapped.length > 0 ? '\n\nMost recent: ' + (mapped[0]?.message || mapped[0]?.deploymentId || 'N/A') : ''}`
     };
-  }).build();
+  })
+  .build();

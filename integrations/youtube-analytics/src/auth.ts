@@ -2,19 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let googleOAuthAxios = createAxios({
-  baseURL: 'https://oauth2.googleapis.com',
+  baseURL: 'https://oauth2.googleapis.com'
 });
 
 let youtubeDataAxios = createAxios({
-  baseURL: 'https://www.googleapis.com/youtube/v3',
+  baseURL: 'https://www.googleapis.com/youtube/v3'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Google OAuth',
@@ -24,31 +26,32 @@ export let auth = SlateAuth.create()
       {
         title: 'Analytics Read-Only',
         description: 'View YouTube Analytics reports for your YouTube content',
-        scope: 'https://www.googleapis.com/auth/yt-analytics.readonly',
+        scope: 'https://www.googleapis.com/auth/yt-analytics.readonly'
       },
       {
         title: 'Analytics Monetary',
-        description: 'View monetary and non-monetary YouTube Analytics reports for your YouTube content',
-        scope: 'https://www.googleapis.com/auth/yt-analytics-monetary.readonly',
+        description:
+          'View monetary and non-monetary YouTube Analytics reports for your YouTube content',
+        scope: 'https://www.googleapis.com/auth/yt-analytics-monetary.readonly'
       },
       {
         title: 'YouTube Manage',
         description: 'Manage your YouTube account (required for group management)',
-        scope: 'https://www.googleapis.com/auth/youtube',
+        scope: 'https://www.googleapis.com/auth/youtube'
       },
       {
         title: 'YouTube Read-Only',
         description: 'View your YouTube account (required for reports.query)',
-        scope: 'https://www.googleapis.com/auth/youtube.readonly',
+        scope: 'https://www.googleapis.com/auth/youtube.readonly'
       },
       {
         title: 'YouTube Partner',
         description: 'View and manage your assets and associated content on YouTube',
-        scope: 'https://www.googleapis.com/auth/youtubepartner',
-      },
+        scope: 'https://www.googleapis.com/auth/youtubepartner'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -56,26 +59,30 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         scope: ctx.scopes.join(' '),
         access_type: 'offline',
-        prompt: 'consent',
+        prompt: 'consent'
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await googleOAuthAxios.post('/token', new URLSearchParams({
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+    handleCallback: async ctx => {
+      let response = await googleOAuthAxios.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -86,26 +93,30 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await googleOAuthAxios.post('/token', new URLSearchParams({
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await googleOAuthAxios.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -116,27 +127,31 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: Record<string, never>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: Record<string, never>;
+      scopes: string[];
+    }) => {
       let response = await youtubeDataAxios.get('/channels', {
         params: {
           part: 'snippet,statistics',
-          mine: true,
+          mine: true
         },
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let channel = response.data.items?.[0];
 
       if (!channel) {
         return {
-          profile: {},
+          profile: {}
         };
       }
 
@@ -144,8 +159,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: channel.id,
           name: channel.snippet?.title,
-          imageUrl: channel.snippet?.thumbnails?.default?.url,
-        },
+          imageUrl: channel.snippet?.thumbnails?.default?.url
+        }
       };
-    },
+    }
   });

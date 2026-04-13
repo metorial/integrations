@@ -3,44 +3,50 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { letterStatusEnum, postageServiceEnum, envelopeEnum } from '../lib/schemas';
 
-export let letterUpdated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Letter Updated',
-    key: 'letter_updated',
-    description: 'Triggered when a letter\'s status changes - specifically when a letter is printed, dispatched, delivered, or returned.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of event'),
-    letterId: z.string().describe('The letter ID'),
-    printJobId: z.string().describe('The parent print job ID'),
-    status: z.string().describe('The letter status'),
-    postageService: z.string().optional().describe('The postage service'),
-    envelope: z.string().optional().describe('The envelope type'),
-    reference: z.string().optional().nullable().describe('Print job reference'),
-    shippedDate: z.number().optional().nullable().describe('UNIX timestamp when shipped'),
-    testmode: z.boolean().optional().describe('Whether this is a test mode letter'),
-    returned: z.object({
-      date: z.number().optional().describe('UNIX timestamp of return'),
-      reason: z.string().optional().describe('Reason for return'),
-    }).optional().nullable().describe('Return information'),
-  }))
-  .output(z.object({
-    letterId: z.string().describe('The letter ID'),
-    printJobId: z.string().describe('The parent print job ID'),
-    status: letterStatusEnum.describe('Current letter status'),
-    postageService: postageServiceEnum.optional().describe('Postage service used'),
-    envelope: envelopeEnum.optional().describe('Envelope or postcard size'),
-    reference: z.string().optional().nullable().describe('Print job reference'),
-    shippedDate: z.number().optional().nullable().describe('UNIX timestamp when shipped'),
-    testmode: z.boolean().optional().describe('Whether this is a test mode letter'),
-    returnDate: z.number().optional().nullable().describe('UNIX timestamp of return'),
-    returnReason: z.string().optional().nullable().describe('Reason for return'),
-  }))
+export let letterUpdated = SlateTrigger.create(spec, {
+  name: 'Letter Updated',
+  key: 'letter_updated',
+  description:
+    "Triggered when a letter's status changes - specifically when a letter is printed, dispatched, delivered, or returned."
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of event'),
+      letterId: z.string().describe('The letter ID'),
+      printJobId: z.string().describe('The parent print job ID'),
+      status: z.string().describe('The letter status'),
+      postageService: z.string().optional().describe('The postage service'),
+      envelope: z.string().optional().describe('The envelope type'),
+      reference: z.string().optional().nullable().describe('Print job reference'),
+      shippedDate: z.number().optional().nullable().describe('UNIX timestamp when shipped'),
+      testmode: z.boolean().optional().describe('Whether this is a test mode letter'),
+      returned: z
+        .object({
+          date: z.number().optional().describe('UNIX timestamp of return'),
+          reason: z.string().optional().describe('Reason for return')
+        })
+        .optional()
+        .nullable()
+        .describe('Return information')
+    })
+  )
+  .output(
+    z.object({
+      letterId: z.string().describe('The letter ID'),
+      printJobId: z.string().describe('The parent print job ID'),
+      status: letterStatusEnum.describe('Current letter status'),
+      postageService: postageServiceEnum.optional().describe('Postage service used'),
+      envelope: envelopeEnum.optional().describe('Envelope or postcard size'),
+      reference: z.string().optional().nullable().describe('Print job reference'),
+      shippedDate: z.number().optional().nullable().describe('UNIX timestamp when shipped'),
+      testmode: z.boolean().optional().describe('Whether this is a test mode letter'),
+      returnDate: z.number().optional().nullable().describe('UNIX timestamp of return'),
+      returnReason: z.string().optional().nullable().describe('Reason for return')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
@@ -54,13 +60,13 @@ export let letterUpdated = SlateTrigger.create(
             reference: data.reference ?? null,
             shippedDate: data.shipped_date ?? null,
             testmode: data.testmode,
-            returned: data.returned ?? null,
-          },
-        ],
+            returned: data.returned ?? null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `letter.${ctx.input.status}`,
         id: `${ctx.input.letterId}_${ctx.input.status}`,
@@ -74,9 +80,9 @@ export let letterUpdated = SlateTrigger.create(
           shippedDate: ctx.input.shippedDate,
           testmode: ctx.input.testmode,
           returnDate: ctx.input.returned?.date ?? null,
-          returnReason: ctx.input.returned?.reason ?? null,
-        },
+          returnReason: ctx.input.returned?.reason ?? null
+        }
       };
-    },
+    }
   })
   .build();

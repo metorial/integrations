@@ -3,36 +3,37 @@ import { Client, ListParams } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newCommentTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Comment',
-    key: 'new_comment',
-    description: 'Triggers when a new comment is added to a task in Nozbe Teams.'
-  }
-)
-  .input(z.object({
-    commentId: z.string().describe('Comment ID'),
-    body: z.string().describe('Comment body in Markdown'),
-    taskId: z.string().describe('Task ID the comment belongs to'),
-    authorId: z.string().describe('Author user ID'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    isPinned: z.boolean().optional().describe('Whether the comment is pinned')
-  }))
-  .output(z.object({
-    commentId: z.string().describe('Comment ID'),
-    body: z.string().describe('Comment body in Markdown'),
-    taskId: z.string().describe('Task ID'),
-    authorId: z.string().describe('Author user ID'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    isPinned: z.boolean().optional().describe('Whether the comment is pinned')
-  }))
+export let newCommentTrigger = SlateTrigger.create(spec, {
+  name: 'New Comment',
+  key: 'new_comment',
+  description: 'Triggers when a new comment is added to a task in Nozbe Teams.'
+})
+  .input(
+    z.object({
+      commentId: z.string().describe('Comment ID'),
+      body: z.string().describe('Comment body in Markdown'),
+      taskId: z.string().describe('Task ID the comment belongs to'),
+      authorId: z.string().describe('Author user ID'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      isPinned: z.boolean().optional().describe('Whether the comment is pinned')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('Comment ID'),
+      body: z.string().describe('Comment body in Markdown'),
+      taskId: z.string().describe('Task ID'),
+      authorId: z.string().describe('Author user ID'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      isPinned: z.boolean().optional().describe('Whether the comment is pinned')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let params: ListParams = {
@@ -67,7 +68,7 @@ export let newCommentTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'comment.created',
         id: ctx.input.commentId,
@@ -81,4 +82,5 @@ export let newCommentTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

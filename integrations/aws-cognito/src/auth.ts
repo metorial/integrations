@@ -2,11 +2,13 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    accessKeyId: z.string(),
-    secretAccessKey: z.string(),
-    sessionToken: z.string().optional()
-  }))
+  .output(
+    z.object({
+      accessKeyId: z.string(),
+      secretAccessKey: z.string(),
+      sessionToken: z.string().optional()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'AWS IAM Credentials',
@@ -14,9 +16,12 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       accessKeyId: z.string().describe('AWS Access Key ID'),
       secretAccessKey: z.string().describe('AWS Secret Access Key'),
-      sessionToken: z.string().optional().describe('AWS Session Token (required for temporary credentials from STS)')
+      sessionToken: z
+        .string()
+        .optional()
+        .describe('AWS Session Token (required for temporary credentials from STS)')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           accessKeyId: ctx.input.accessKeyId,

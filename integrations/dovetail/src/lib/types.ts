@@ -152,8 +152,22 @@ export interface SearchResults {
   tags: DovetailTag[];
   notes: DovetailNote[];
   insights: DovetailInsight[];
-  channels: { id: string; result_type: string; author_id: string | null; title: string; created_at: string; updated_at: string }[];
-  themes: { id: string; result_type: string; title: string; summary: string; created_at: string; updated_at: string }[];
+  channels: {
+    id: string;
+    result_type: string;
+    author_id: string | null;
+    title: string;
+    created_at: string;
+    updated_at: string;
+  }[];
+  themes: {
+    id: string;
+    result_type: string;
+    title: string;
+    summary: string;
+    created_at: string;
+    updated_at: string;
+  }[];
   offset: number;
   limit: number;
 }

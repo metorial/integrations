@@ -38,32 +38,34 @@ Sign all authenticated requests by adding the Authorization header, `Authorizati
 
 **Scopes:** Scopes are organized by data group, each with read and write variants:
 
-| Group | Read Scope | Write Scope |
-|-------|-----------|-------------|
-| Activity | `activity_read` | `activity_write` |
-| Productivity | `productivity_read` | `productivity_write` |
-| Mood | `mood_read` | `mood_write` |
-| Sleep | `sleep_read` | `sleep_write` |
-| Workouts | `workouts_read` | `workouts_write` |
-| Events | `events_read` | `events_write` |
-| Finance | `finance_read` | `finance_write` |
-| Food & Drink | `food_read` | `food_write` |
-| Health & Body | `health_read` | `health_write` |
-| Location | `location_read` | `location_write` |
-| Media | `media_read` | `media_write` |
-| Social | `social_read` | `social_write` |
-| Weather | `weather_read` | `weather_write` |
-| Symptoms | `symptoms_read` | `symptoms_write` |
-| Medication | `medication_read` | `medication_write` |
-| Custom Tags | `custom_read` | `custom_write` |
-| Manual | `manual_read` | `manual_write` |
+| Group         | Read Scope          | Write Scope          |
+| ------------- | ------------------- | -------------------- |
+| Activity      | `activity_read`     | `activity_write`     |
+| Productivity  | `productivity_read` | `productivity_write` |
+| Mood          | `mood_read`         | `mood_write`         |
+| Sleep         | `sleep_read`        | `sleep_write`        |
+| Workouts      | `workouts_read`     | `workouts_write`     |
+| Events        | `events_read`       | `events_write`       |
+| Finance       | `finance_read`      | `finance_write`      |
+| Food & Drink  | `food_read`         | `food_write`         |
+| Health & Body | `health_read`       | `health_write`       |
+| Location      | `location_read`     | `location_write`     |
+| Media         | `media_read`        | `media_write`        |
+| Social        | `social_read`       | `social_write`       |
+| Weather       | `weather_read`      | `weather_write`      |
+| Symptoms      | `symptoms_read`     | `symptoms_write`     |
+| Medication    | `medication_read`   | `medication_write`   |
+| Custom Tags   | `custom_read`       | `custom_write`       |
+| Manual        | `manual_read`       | `manual_write`       |
 
 ## Features
 
 ### User Profile
+
 Retrieve the authenticated user's personal details including username, timezone, and unit preferences (imperial/metric).
 
 ### Attribute Management
+
 Attributes are the core data points in Exist. An attribute can only be owned by one service at a time, and only the owning service can write data for it. The API allows you to:
 
 - **Read attributes and their values:** Retrieve all attributes or specific ones, with current and historical daily values. Attributes belong to groups (activity, sleep, mood, productivity, etc.) and hold typed values (integer, float, string).
@@ -73,12 +75,15 @@ Attributes are the core data points in Exist. An attribute can only be owned by 
 - **Increment values:** Instead of sending a total, you can send incremental values to the increment endpoint, useful for event-driven tracking where Exist tallies the total.
 
 ### Correlations
+
 Correlations describe a relationship between two different attributes and how they go together. An example might be "You have a better day when you walk more." Correlations get generated weekly based on up to a year of past data. You can retrieve all correlations or look up a specific pair of attributes. Results include correlation strength, confidence (p-value/stars), and human-readable descriptions.
 
 ### Insights
+
 Insights are interesting events found within the user's data, generated automatically if the user's data fits an insight type's criteria. Typically these include day-level events (e.g., yesterday was the highest steps value in X days) and week/month-level summaries.
 
 ### Averages
+
 Retrieve the most recent average values for each attribute, one set per week. Can also be used to retrieve historical averages. Averages include an overall value and per-day-of-week breakdowns (Monday through Sunday).
 
 ## Events

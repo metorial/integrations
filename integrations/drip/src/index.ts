@@ -18,11 +18,9 @@ import {
   listConversions,
   listCustomFields,
   listForms,
-  listAccounts,
+  listAccounts
 } from './tools';
-import {
-  subscriberActivity,
-} from './triggers';
+import { subscriberActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -44,9 +42,7 @@ export let provider = Slate.create({
     listConversions,
     listCustomFields,
     listForms,
-    listAccounts,
+    listAccounts
   ],
-  triggers: [
-    subscriberActivity,
-  ],
+  triggers: [subscriberActivity]
 });

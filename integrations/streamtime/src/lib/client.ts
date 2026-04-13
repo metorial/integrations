@@ -7,10 +7,10 @@ export class StreamtimeClient {
     this.axios = createAxios({
       baseURL: 'https://api.streamtime.net/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -319,7 +319,9 @@ export class StreamtimeClient {
   }
 
   async listExpensePurchaseOrderLineItems(loggedExpenseId: number): Promise<any[]> {
-    let response = await this.axios.get(`/logged_expenses/${loggedExpenseId}/purchase_order_line_items`);
+    let response = await this.axios.get(
+      `/logged_expenses/${loggedExpenseId}/purchase_order_line_items`
+    );
     return response.data;
   }
 

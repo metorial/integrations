@@ -33,12 +33,9 @@ import {
   startTimer,
   stopTimer,
   getWorkspaces,
-  getWorkspaceMembers,
+  getWorkspaceMembers
 } from './tools';
-import {
-  taskEvents,
-  workspaceEvents,
-} from './triggers';
+import { taskEvents, workspaceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -75,10 +72,7 @@ export let provider = Slate.create({
     startTimer,
     stopTimer,
     getWorkspaces,
-    getWorkspaceMembers,
+    getWorkspaceMembers
   ],
-  triggers: [
-    taskEvents,
-    workspaceEvents,
-  ],
+  triggers: [taskEvents, workspaceEvents]
 });

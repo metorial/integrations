@@ -10,16 +10,17 @@ export class Client {
   private http: AxiosInstance;
 
   constructor(private config: ClientConfig) {
-    let baseURL = config.environment === 'sandbox'
-      ? 'https://api.sandbox.lever.co/v1'
-      : 'https://api.lever.co/v1';
+    let baseURL =
+      config.environment === 'sandbox'
+        ? 'https://api.sandbox.lever.co/v1'
+        : 'https://api.lever.co/v1';
 
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -46,7 +47,9 @@ export class Client {
   }
 
   async updateOpportunityStage(opportunityId: string, stageId: string): Promise<any> {
-    let response = await this.http.put(`/opportunities/${opportunityId}/stage`, { stage: stageId });
+    let response = await this.http.put(`/opportunities/${opportunityId}/stage`, {
+      stage: stageId
+    });
     return response.data;
   }
 
@@ -70,7 +73,9 @@ export class Client {
   }
 
   async removeOpportunityTags(opportunityId: string, tags: string[]): Promise<any> {
-    let response = await this.http.post(`/opportunities/${opportunityId}/removeTags`, { tags });
+    let response = await this.http.post(`/opportunities/${opportunityId}/removeTags`, {
+      tags
+    });
     return response.data;
   }
 
@@ -80,17 +85,23 @@ export class Client {
   }
 
   async removeOpportunityLinks(opportunityId: string, links: string[]): Promise<any> {
-    let response = await this.http.post(`/opportunities/${opportunityId}/removeLinks`, { links });
+    let response = await this.http.post(`/opportunities/${opportunityId}/removeLinks`, {
+      links
+    });
     return response.data;
   }
 
   async addOpportunitySources(opportunityId: string, sources: string[]): Promise<any> {
-    let response = await this.http.post(`/opportunities/${opportunityId}/addSources`, { sources });
+    let response = await this.http.post(`/opportunities/${opportunityId}/addSources`, {
+      sources
+    });
     return response.data;
   }
 
   async removeOpportunitySources(opportunityId: string, sources: string[]): Promise<any> {
-    let response = await this.http.post(`/opportunities/${opportunityId}/removeSources`, { sources });
+    let response = await this.http.post(`/opportunities/${opportunityId}/removeSources`, {
+      sources
+    });
     return response.data;
   }
 
@@ -157,8 +168,15 @@ export class Client {
     return response.data;
   }
 
-  async createInterview(opportunityId: string, panelId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.http.post(`/opportunities/${opportunityId}/panels/${panelId}/interviews`, data);
+  async createInterview(
+    opportunityId: string,
+    panelId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/opportunities/${opportunityId}/panels/${panelId}/interviews`,
+      data
+    );
     return response.data;
   }
 

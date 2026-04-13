@@ -15,31 +15,27 @@ export class DocumintClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'api_key': token,
-        'Content-Type': 'application/json',
-      },
+        api_key: token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async listTemplates(page?: number): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/templates', {
-      params: page != null ? { page } : undefined,
+      params: page != null ? { page } : undefined
     });
     return response.data;
   }
 
   async createDocument(options: DocumentMergeOptions): Promise<Record<string, unknown>> {
     let { templateId, variables, preview } = options;
-    let response = await this.axios.post(
-      `/templates/${templateId}/content`,
-      variables,
-      {
-        params: {
-          active: true,
-          ...(preview != null ? { preview } : {}),
-        },
-      },
-    );
+    let response = await this.axios.post(`/templates/${templateId}/content`, variables, {
+      params: {
+        active: true,
+        ...(preview != null ? { preview } : {})
+      }
+    });
     return response.data;
   }
 }

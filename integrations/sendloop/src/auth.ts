@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Sendloop API key')
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Sendloop API key')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -14,7 +16,7 @@ export let auth = SlateAuth.create()
       apiKey: z.string().describe('Your Sendloop API key from Settings > API Settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey

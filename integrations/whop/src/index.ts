@@ -14,14 +14,9 @@ import {
   managePromoCode,
   listMembers,
   getUser,
-  listInvoices,
+  listInvoices
 } from './tools';
-import {
-  paymentEvents,
-  membershipEvents,
-  setupIntentEvents,
-  entryEvents,
-} from './triggers';
+import { paymentEvents, membershipEvents, setupIntentEvents, entryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,12 +34,7 @@ export let provider = Slate.create({
     managePromoCode,
     listMembers,
     getUser,
-    listInvoices,
+    listInvoices
   ],
-  triggers: [
-    paymentEvents,
-    membershipEvents,
-    setupIntentEvents,
-    entryEvents,
-  ],
+  triggers: [paymentEvents, membershipEvents, setupIntentEvents, entryEvents]
 });

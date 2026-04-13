@@ -3,44 +3,69 @@ import { MakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageScenario = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Scenario',
-    key: 'manage_scenario',
-    description: `Get details, update, activate, deactivate, run, clone, or delete an automation scenario. Supports one-off execution, cloning to another team, and retrieving blueprint or usage information.`,
-    instructions: [
-      'Provide a scenarioId and an action to perform.',
-      'Use "get" to fetch details, "activate"/"deactivate" to toggle status, "run" for on-demand execution, "clone" to copy to another team, or "delete" to remove.',
-      'For "update", supply the fields you want to change (name, scheduling, folderId).',
-    ],
-  }
-)
-  .input(z.object({
-    scenarioId: z.number().describe('ID of the scenario to manage'),
-    action: z.enum(['get', 'update', 'activate', 'deactivate', 'run', 'clone', 'delete', 'get_blueprint', 'get_usage']).describe('Action to perform on the scenario'),
-    name: z.string().optional().describe('New name (for update action)'),
-    scheduling: z.record(z.string(), z.any()).optional().describe('Scheduling configuration (for update action)'),
-    folderId: z.number().optional().describe('Folder ID to move scenario into (for update action)'),
-    targetTeamId: z.number().optional().describe('Target team ID (required for clone action)'),
-    cloneName: z.string().optional().describe('Name for the cloned scenario'),
-  }))
-  .output(z.object({
-    scenarioId: z.number().optional().describe('Scenario ID'),
-    name: z.string().optional().describe('Scenario name'),
-    teamId: z.number().optional().describe('Team ID'),
-    isActive: z.boolean().optional().describe('Whether the scenario is active'),
-    createdAt: z.string().optional().describe('Creation time'),
-    updatedAt: z.string().optional().describe('Last update time'),
-    blueprint: z.any().optional().describe('Scenario blueprint JSON (for get_blueprint action)'),
-    usage: z.any().optional().describe('Scenario usage data (for get_usage action)'),
-    executionId: z.string().optional().describe('Execution ID (for run action)'),
-    deleted: z.boolean().optional().describe('Whether the scenario was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageScenario = SlateTool.create(spec, {
+  name: 'Manage Scenario',
+  key: 'manage_scenario',
+  description: `Get details, update, activate, deactivate, run, clone, or delete an automation scenario. Supports one-off execution, cloning to another team, and retrieving blueprint or usage information.`,
+  instructions: [
+    'Provide a scenarioId and an action to perform.',
+    'Use "get" to fetch details, "activate"/"deactivate" to toggle status, "run" for on-demand execution, "clone" to copy to another team, or "delete" to remove.',
+    'For "update", supply the fields you want to change (name, scheduling, folderId).'
+  ]
+})
+  .input(
+    z.object({
+      scenarioId: z.number().describe('ID of the scenario to manage'),
+      action: z
+        .enum([
+          'get',
+          'update',
+          'activate',
+          'deactivate',
+          'run',
+          'clone',
+          'delete',
+          'get_blueprint',
+          'get_usage'
+        ])
+        .describe('Action to perform on the scenario'),
+      name: z.string().optional().describe('New name (for update action)'),
+      scheduling: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Scheduling configuration (for update action)'),
+      folderId: z
+        .number()
+        .optional()
+        .describe('Folder ID to move scenario into (for update action)'),
+      targetTeamId: z
+        .number()
+        .optional()
+        .describe('Target team ID (required for clone action)'),
+      cloneName: z.string().optional().describe('Name for the cloned scenario')
+    })
+  )
+  .output(
+    z.object({
+      scenarioId: z.number().optional().describe('Scenario ID'),
+      name: z.string().optional().describe('Scenario name'),
+      teamId: z.number().optional().describe('Team ID'),
+      isActive: z.boolean().optional().describe('Whether the scenario is active'),
+      createdAt: z.string().optional().describe('Creation time'),
+      updatedAt: z.string().optional().describe('Last update time'),
+      blueprint: z
+        .any()
+        .optional()
+        .describe('Scenario blueprint JSON (for get_blueprint action)'),
+      usage: z.any().optional().describe('Scenario usage data (for get_usage action)'),
+      executionId: z.string().optional().describe('Execution ID (for run action)'),
+      deleted: z.boolean().optional().describe('Whether the scenario was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MakeClient({
       token: ctx.auth.token,
-      zoneUrl: ctx.config.zoneUrl,
+      zoneUrl: ctx.config.zoneUrl
     });
 
     let { scenarioId, action } = ctx.input;
@@ -55,9 +80,9 @@ export let manageScenario = SlateTool.create(
           teamId: s.teamId,
           isActive: s.islinked ?? s.isActive,
           createdAt: s.created,
-          updatedAt: s.updated,
+          updatedAt: s.updated
         },
-        message: `Scenario **${s.name}** (ID: ${s.id}) — ${s.islinked || s.isActive ? 'Active' : 'Inactive'}.`,
+        message: `Scenario **${s.name}** (ID: ${s.id}) — ${s.islinked || s.isActive ? 'Active' : 'Inactive'}.`
       };
     }
 
@@ -75,9 +100,9 @@ export let manageScenario = SlateTool.create(
           name: s.name,
           teamId: s.teamId,
           isActive: s.islinked ?? s.isActive,
-          updatedAt: s.updated,
+          updatedAt: s.updated
         },
-        message: `Scenario **${s.name}** updated successfully.`,
+        message: `Scenario **${s.name}** updated successfully.`
       };
     }
 
@@ -88,9 +113,9 @@ export let manageScenario = SlateTool.create(
         output: {
           scenarioId: s.id ?? scenarioId,
           name: s.name,
-          isActive: true,
+          isActive: true
         },
-        message: `Scenario ${scenarioId} **activated**.`,
+        message: `Scenario ${scenarioId} **activated**.`
       };
     }
 
@@ -101,9 +126,9 @@ export let manageScenario = SlateTool.create(
         output: {
           scenarioId: s.id ?? scenarioId,
           name: s.name,
-          isActive: false,
+          isActive: false
         },
-        message: `Scenario ${scenarioId} **deactivated**.`,
+        message: `Scenario ${scenarioId} **deactivated**.`
       };
     }
 
@@ -112,9 +137,9 @@ export let manageScenario = SlateTool.create(
       return {
         output: {
           scenarioId,
-          executionId: result.executionId ?? String(result.id ?? ''),
+          executionId: result.executionId ?? String(result.id ?? '')
         },
-        message: `Scenario ${scenarioId} executed. Execution ID: ${result.executionId ?? result.id ?? 'N/A'}.`,
+        message: `Scenario ${scenarioId} executed. Execution ID: ${result.executionId ?? result.id ?? 'N/A'}.`
       };
     }
 
@@ -124,16 +149,16 @@ export let manageScenario = SlateTool.create(
       }
       let result = await client.cloneScenario(scenarioId, {
         targetTeamId: ctx.input.targetTeamId,
-        name: ctx.input.cloneName,
+        name: ctx.input.cloneName
       });
       let s = result.scenario ?? result;
       return {
         output: {
           scenarioId: s.id,
           name: s.name,
-          teamId: s.teamId,
+          teamId: s.teamId
         },
-        message: `Scenario cloned as **${s.name}** (ID: ${s.id}) to team ${ctx.input.targetTeamId}.`,
+        message: `Scenario cloned as **${s.name}** (ID: ${s.id}) to team ${ctx.input.targetTeamId}.`
       };
     }
 
@@ -142,9 +167,9 @@ export let manageScenario = SlateTool.create(
       return {
         output: {
           scenarioId,
-          blueprint: result.response?.blueprint ?? result.blueprint ?? result,
+          blueprint: result.response?.blueprint ?? result.blueprint ?? result
         },
-        message: `Retrieved blueprint for scenario ${scenarioId}.`,
+        message: `Retrieved blueprint for scenario ${scenarioId}.`
       };
     }
 
@@ -153,9 +178,9 @@ export let manageScenario = SlateTool.create(
       return {
         output: {
           scenarioId,
-          usage: result,
+          usage: result
         },
-        message: `Retrieved usage statistics for scenario ${scenarioId}.`,
+        message: `Retrieved usage statistics for scenario ${scenarioId}.`
       };
     }
 
@@ -164,9 +189,9 @@ export let manageScenario = SlateTool.create(
       return {
         output: {
           scenarioId,
-          deleted: true,
+          deleted: true
         },
-        message: `Scenario ${scenarioId} **deleted**.`,
+        message: `Scenario ${scenarioId} **deleted**.`
       };
     }
 

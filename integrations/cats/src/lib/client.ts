@@ -9,9 +9,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -19,7 +19,7 @@ export class Client {
 
   async listCandidates(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/candidates', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -31,7 +31,7 @@ export class Client {
 
   async createCandidate(data: Record<string, any>, checkDuplicate?: boolean) {
     let response = await this.axios.post('/candidates', data, {
-      params: checkDuplicate ? { check_duplicate: true } : undefined,
+      params: checkDuplicate ? { check_duplicate: true } : undefined
     });
     return response.data;
   }
@@ -47,14 +47,17 @@ export class Client {
 
   async searchCandidates(query: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/candidates/search', {
-      params: { query, page: params?.page, per_page: params?.perPage },
+      params: { query, page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async filterCandidates(filters: Record<string, any>, params?: { page?: number; perPage?: number }) {
+  async filterCandidates(
+    filters: Record<string, any>,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.post('/candidates/search', filters, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -90,13 +93,19 @@ export class Client {
   }
 
   async updateCandidateCustomField(candidateId: string, fieldId: string, value: any) {
-    let response = await this.axios.put(`/candidates/${candidateId}/custom_fields/${fieldId}`, { value });
+    let response = await this.axios.put(
+      `/candidates/${candidateId}/custom_fields/${fieldId}`,
+      { value }
+    );
     return response.data;
   }
 
-  async getCandidateActivities(candidateId: string, params?: { page?: number; perPage?: number }) {
+  async getCandidateActivities(
+    candidateId: string,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.get(`/candidates/${candidateId}/activities`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -110,7 +119,7 @@ export class Client {
 
   async listJobs(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/jobs', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -136,21 +145,24 @@ export class Client {
 
   async searchJobs(query: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/jobs/search', {
-      params: { query, page: params?.page, per_page: params?.perPage },
+      params: { query, page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async filterJobs(filters: Record<string, any>, params?: { page?: number; perPage?: number }) {
+  async filterJobs(
+    filters: Record<string, any>,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.post('/jobs/search', filters, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   async getJobPipelines(jobId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get(`/jobs/${jobId}/pipelines`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -184,7 +196,7 @@ export class Client {
 
   async listCompanies(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/companies', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -210,14 +222,17 @@ export class Client {
 
   async searchCompanies(query: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/companies/search', {
-      params: { query, page: params?.page, per_page: params?.perPage },
+      params: { query, page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async filterCompanies(filters: Record<string, any>, params?: { page?: number; perPage?: number }) {
+  async filterCompanies(
+    filters: Record<string, any>,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.post('/companies/search', filters, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -241,7 +256,7 @@ export class Client {
 
   async listContacts(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/contacts', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -267,21 +282,24 @@ export class Client {
 
   async searchContacts(query: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/contacts/search', {
-      params: { query, page: params?.page, per_page: params?.perPage },
+      params: { query, page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async filterContacts(filters: Record<string, any>, params?: { page?: number; perPage?: number }) {
+  async filterContacts(
+    filters: Record<string, any>,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.post('/contacts/search', filters, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   async getContactActivities(contactId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get(`/contacts/${contactId}/activities`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -305,7 +323,7 @@ export class Client {
 
   async listPipelines(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/pipelines', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -334,9 +352,12 @@ export class Client {
     return response.data;
   }
 
-  async filterPipelines(filters: Record<string, any>, params?: { page?: number; perPage?: number }) {
+  async filterPipelines(
+    filters: Record<string, any>,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.post('/pipelines/search', filters, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -350,7 +371,7 @@ export class Client {
 
   async listActivities(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/activities', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -371,7 +392,7 @@ export class Client {
 
   async searchActivities(query: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/activities/search', {
-      params: { query, page: params?.page, per_page: params?.perPage },
+      params: { query, page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -380,7 +401,7 @@ export class Client {
 
   async listTasks(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/tasks', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -408,7 +429,7 @@ export class Client {
 
   async listWebhooks(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/webhooks', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -429,14 +450,19 @@ export class Client {
 
   // ─── Events ────────────────────────────────────────────────
 
-  async listEvents(params?: { startingAfterId?: string; startingAfterTimestamp?: string; page?: number; perPage?: number }) {
+  async listEvents(params?: {
+    startingAfterId?: string;
+    startingAfterTimestamp?: string;
+    page?: number;
+    perPage?: number;
+  }) {
     let response = await this.axios.get('/events', {
       params: {
         starting_after_id: params?.startingAfterId,
         starting_after_timestamp: params?.startingAfterTimestamp,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -445,7 +471,7 @@ export class Client {
 
   async listUsers(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/users', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -459,7 +485,7 @@ export class Client {
 
   async listTags(params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get('/tags', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -473,9 +499,13 @@ export class Client {
 
   // ─── Lists ─────────────────────────────────────────────────
 
-  async getListItems(resourceType: string, listId: string, params?: { page?: number; perPage?: number }) {
+  async getListItems(
+    resourceType: string,
+    listId: string,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.axios.get(`/${resourceType}/lists/${listId}/items`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -487,7 +517,7 @@ export class Client {
 
   async getLists(resourceType: string, params?: { page?: number; perPage?: number }) {
     let response = await this.axios.get(`/${resourceType}/lists`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }

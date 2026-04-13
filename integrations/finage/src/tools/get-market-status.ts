@@ -3,22 +3,23 @@ import { FinageClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMarketStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Market Status',
-    key: 'get_market_status',
-    description: `Check the current status of major financial markets including NYSE, NASDAQ, OTC, Forex, and Crypto. Shows whether each market is open, closed, or in extended hours.`,
-    tags: {
-      readOnly: true,
-    },
+export let getMarketStatus = SlateTool.create(spec, {
+  name: 'Get Market Status',
+  key: 'get_market_status',
+  description: `Check the current status of major financial markets including NYSE, NASDAQ, OTC, Forex, and Crypto. Shows whether each market is open, closed, or in extended hours.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    markets: z.record(z.string(), z.string()).describe('Map of market name to status (e.g. "open", "closed", "extended-hours")'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      markets: z
+        .record(z.string(), z.string())
+        .describe('Map of market name to status (e.g. "open", "closed", "extended-hours")')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FinageClient({ token: ctx.auth.token });
 
     let data = await client.getMarketStatus();
@@ -34,14 +35,15 @@ export let getMarketStatus = SlateTool.create(
       }
     }
 
-    let openMarkets = Object.entries(markets).filter(([, v]) => v === 'open').map(([k]) => k);
-    let statusSummary = openMarkets.length > 0
-      ? `Open: ${openMarkets.join(', ')}`
-      : 'All markets closed';
+    let openMarkets = Object.entries(markets)
+      .filter(([, v]) => v === 'open')
+      .map(([k]) => k);
+    let statusSummary =
+      openMarkets.length > 0 ? `Open: ${openMarkets.join(', ')}` : 'All markets closed';
 
     return {
       output: { markets },
-      message: `${statusSummary}`,
+      message: `${statusSummary}`
     };
   })
   .build();

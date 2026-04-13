@@ -3,41 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDeals = SlateTool.create(
-  spec,
-  {
-    name: 'List Deals',
-    key: 'list_deals',
-    description: `List all deals (opportunities) in your Apollo account. Returns deal details including name, amount, stage, owner, and associated account.`,
-    tags: {
-      readOnly: true
-    }
+export let listDeals = SlateTool.create(spec, {
+  name: 'List Deals',
+  key: 'list_deals',
+  description: `List all deals (opportunities) in your Apollo account. Returns deal details including name, amount, stage, owner, and associated account.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 25)')
-  }))
-  .output(z.object({
-    deals: z.array(z.object({
-      dealId: z.string().optional(),
-      name: z.string().optional(),
-      amount: z.number().optional(),
-      closedDate: z.string().optional(),
-      ownerId: z.string().optional(),
-      accountId: z.string().optional(),
-      dealStageId: z.string().optional(),
-      stageName: z.string().optional(),
-      status: z.string().optional(),
-      source: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })),
-    totalEntries: z.number().optional(),
-    currentPage: z.number().optional(),
-    totalPages: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 25)')
+    })
+  )
+  .output(
+    z.object({
+      deals: z.array(
+        z.object({
+          dealId: z.string().optional(),
+          name: z.string().optional(),
+          amount: z.number().optional(),
+          closedDate: z.string().optional(),
+          ownerId: z.string().optional(),
+          accountId: z.string().optional(),
+          dealStageId: z.string().optional(),
+          stageName: z.string().optional(),
+          status: z.string().optional(),
+          source: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+      ),
+      totalEntries: z.number().optional(),
+      currentPage: z.number().optional(),
+      totalPages: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listDeals({
@@ -72,35 +75,36 @@ export let listDeals = SlateTool.create(
   })
   .build();
 
-export let getDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Get Deal',
-    key: 'get_deal',
-    description: `Retrieve full details of a specific deal by its ID, including monetary value, stage, owner, and associated account information.`,
-    tags: {
-      readOnly: true
-    }
+export let getDeal = SlateTool.create(spec, {
+  name: 'Get Deal',
+  key: 'get_deal',
+  description: `Retrieve full details of a specific deal by its ID, including monetary value, stage, owner, and associated account information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    dealId: z.string().describe('The Apollo deal/opportunity ID')
-  }))
-  .output(z.object({
-    dealId: z.string().optional(),
-    name: z.string().optional(),
-    amount: z.number().optional(),
-    closedDate: z.string().optional(),
-    ownerId: z.string().optional(),
-    accountId: z.string().optional(),
-    dealStageId: z.string().optional(),
-    stageName: z.string().optional(),
-    status: z.string().optional(),
-    source: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.string().describe('The Apollo deal/opportunity ID')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.string().optional(),
+      name: z.string().optional(),
+      amount: z.number().optional(),
+      closedDate: z.string().optional(),
+      ownerId: z.string().optional(),
+      accountId: z.string().optional(),
+      dealStageId: z.string().optional(),
+      stageName: z.string().optional(),
+      status: z.string().optional(),
+      source: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.viewDeal(ctx.input.dealId);
@@ -126,35 +130,39 @@ export let getDeal = SlateTool.create(
   })
   .build();
 
-export let createDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Create Deal',
-    key: 'create_deal',
-    description: `Create a new deal (opportunity) in Apollo to track account activity including monetary values, deal owners, and stages.`,
-    tags: {
-      destructive: false
-    }
+export let createDeal = SlateTool.create(spec, {
+  name: 'Create Deal',
+  key: 'create_deal',
+  description: `Create a new deal (opportunity) in Apollo to track account activity including monetary values, deal owners, and stages.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Name of the deal'),
-    amount: z.number().optional().describe('Monetary value of the deal'),
-    closedDate: z.string().optional().describe('Expected close date (ISO 8601 format)'),
-    ownerId: z.string().optional().describe('Apollo user ID of the deal owner'),
-    accountId: z.string().optional().describe('Apollo account ID associated with this deal'),
-    dealStageId: z.string().optional().describe('Deal stage ID (use List Deal Stages to find available IDs)'),
-    source: z.string().optional().describe('Source of the deal')
-  }))
-  .output(z.object({
-    dealId: z.string().optional(),
-    name: z.string().optional(),
-    amount: z.number().optional(),
-    closedDate: z.string().optional(),
-    dealStageId: z.string().optional(),
-    createdAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Name of the deal'),
+      amount: z.number().optional().describe('Monetary value of the deal'),
+      closedDate: z.string().optional().describe('Expected close date (ISO 8601 format)'),
+      ownerId: z.string().optional().describe('Apollo user ID of the deal owner'),
+      accountId: z.string().optional().describe('Apollo account ID associated with this deal'),
+      dealStageId: z
+        .string()
+        .optional()
+        .describe('Deal stage ID (use List Deal Stages to find available IDs)'),
+      source: z.string().optional().describe('Source of the deal')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.string().optional(),
+      name: z.string().optional(),
+      amount: z.number().optional(),
+      closedDate: z.string().optional(),
+      dealStageId: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.createDeal({
@@ -182,38 +190,39 @@ export let createDeal = SlateTool.create(
   })
   .build();
 
-export let updateDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Update Deal',
-    key: 'update_deal',
-    description: `Update an existing deal in Apollo. Provide the deal ID and any fields you want to change. Only the provided fields will be updated.`,
-    tags: {
-      destructive: false
-    }
+export let updateDeal = SlateTool.create(spec, {
+  name: 'Update Deal',
+  key: 'update_deal',
+  description: `Update an existing deal in Apollo. Provide the deal ID and any fields you want to change. Only the provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    dealId: z.string().describe('The Apollo deal/opportunity ID to update'),
-    name: z.string().optional().describe('Updated deal name'),
-    amount: z.number().optional().describe('Updated monetary value'),
-    closedDate: z.string().optional().describe('Updated expected close date (ISO 8601)'),
-    ownerId: z.string().optional().describe('Updated deal owner user ID'),
-    accountId: z.string().optional().describe('Updated associated account ID'),
-    dealStageId: z.string().optional().describe('Updated deal stage ID'),
-    source: z.string().optional().describe('Updated deal source'),
-    status: z.string().optional().describe('Updated deal status')
-  }))
-  .output(z.object({
-    dealId: z.string().optional(),
-    name: z.string().optional(),
-    amount: z.number().optional(),
-    closedDate: z.string().optional(),
-    dealStageId: z.string().optional(),
-    status: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.string().describe('The Apollo deal/opportunity ID to update'),
+      name: z.string().optional().describe('Updated deal name'),
+      amount: z.number().optional().describe('Updated monetary value'),
+      closedDate: z.string().optional().describe('Updated expected close date (ISO 8601)'),
+      ownerId: z.string().optional().describe('Updated deal owner user ID'),
+      accountId: z.string().optional().describe('Updated associated account ID'),
+      dealStageId: z.string().optional().describe('Updated deal stage ID'),
+      source: z.string().optional().describe('Updated deal source'),
+      status: z.string().optional().describe('Updated deal status')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.string().optional(),
+      name: z.string().optional(),
+      amount: z.number().optional(),
+      closedDate: z.string().optional(),
+      dealStageId: z.string().optional(),
+      status: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.updateDeal(ctx.input.dealId, {

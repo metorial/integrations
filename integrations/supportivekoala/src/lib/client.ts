@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.supportivekoala.com/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

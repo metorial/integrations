@@ -46,7 +46,7 @@ export class Client {
 
   async uploadImage(params: UploadImageParams): Promise<ImageData> {
     let httpClient = createAxios({
-      baseURL: 'https://api.imgbb.com/1',
+      baseURL: 'https://api.imgbb.com/1'
     });
 
     let formData = new FormData();
@@ -62,8 +62,8 @@ export class Client {
 
     let response = await httpClient.post<ImgBBResponse>('/upload', formData, {
       params: {
-        key: this.token,
-      },
+        key: this.token
+      }
     });
 
     return response.data.data;

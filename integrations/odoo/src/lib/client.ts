@@ -23,8 +23,8 @@ export class OdooClient {
     this.axios = createAxios({
       baseURL: baseUrl,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     this.database = config.database;
     this.uid = config.uid;
@@ -44,8 +44,8 @@ export class OdooClient {
       params: {
         service,
         method,
-        args,
-      },
+        args
+      }
     });
 
     let data = response.data;
@@ -125,10 +125,7 @@ export class OdooClient {
     return (result as Record<string, unknown>[]) || [];
   }
 
-  async create(
-    model: string,
-    values: Record<string, unknown>
-  ): Promise<number> {
+  async create(model: string, values: Record<string, unknown>): Promise<number> {
     let result = await this.executeKw(model, 'create', [values]);
     return result as number;
   }

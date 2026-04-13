@@ -33,16 +33,17 @@ export class Client {
 
   // ---- Pipelines ----
 
-  async triggerPipeline(projectSlug: string, params: {
-    branch?: string;
-    tag?: string;
-    parameters?: Record<string, any>;
-  }) {
-    let response = await httpClient.post(
-      `/project/${projectSlug}/pipeline`,
-      params,
-      { headers: this.headers }
-    );
+  async triggerPipeline(
+    projectSlug: string,
+    params: {
+      branch?: string;
+      tag?: string;
+      parameters?: Record<string, any>;
+    }
+  ) {
+    let response = await httpClient.post(`/project/${projectSlug}/pipeline`, params, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -52,7 +53,9 @@ export class Client {
   }
 
   async getPipelineConfig(pipelineId: string) {
-    let response = await httpClient.get(`/pipeline/${pipelineId}/config`, { headers: this.headers });
+    let response = await httpClient.get(`/pipeline/${pipelineId}/config`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -66,10 +69,13 @@ export class Client {
     return response.data;
   }
 
-  async getProjectPipelines(projectSlug: string, opts?: {
-    branch?: string;
-    pageToken?: string;
-  }) {
+  async getProjectPipelines(
+    projectSlug: string,
+    opts?: {
+      branch?: string;
+      pageToken?: string;
+    }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.branch) params.branch = opts.branch;
     if (opts?.pageToken) params['page-token'] = opts.pageToken;
@@ -80,11 +86,14 @@ export class Client {
     return response.data;
   }
 
-  async continuePipeline(pipelineId: string, body: {
-    configuration: string;
-    continuationKey: string;
-    parameters?: Record<string, any>;
-  }) {
+  async continuePipeline(
+    pipelineId: string,
+    body: {
+      configuration: string;
+      continuationKey: string;
+      parameters?: Record<string, any>;
+    }
+  ) {
     let response = await httpClient.post(
       `/pipeline/${pipelineId}/continue`,
       {
@@ -123,20 +132,21 @@ export class Client {
     return response.data;
   }
 
-  async rerunWorkflow(workflowId: string, opts?: {
-    fromFailed?: boolean;
-    jobs?: string[];
-    sparseTree?: boolean;
-  }) {
+  async rerunWorkflow(
+    workflowId: string,
+    opts?: {
+      fromFailed?: boolean;
+      jobs?: string[];
+      sparseTree?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (opts?.fromFailed !== undefined) body.from_failed = opts.fromFailed;
     if (opts?.jobs) body.jobs = opts.jobs;
     if (opts?.sparseTree !== undefined) body.sparse_tree = opts.sparseTree;
-    let response = await httpClient.post(
-      `/workflow/${workflowId}/rerun`,
-      body,
-      { headers: this.headers }
-    );
+    let response = await httpClient.post(`/workflow/${workflowId}/rerun`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -152,10 +162,9 @@ export class Client {
   // ---- Jobs ----
 
   async getJobDetails(projectSlug: string, jobNumber: number) {
-    let response = await httpClient.get(
-      `/project/${projectSlug}/job/${jobNumber}`,
-      { headers: this.headers }
-    );
+    let response = await httpClient.get(`/project/${projectSlug}/job/${jobNumber}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -171,20 +180,20 @@ export class Client {
   async getJobArtifacts(projectSlug: string, jobNumber: number, pageToken?: string) {
     let params: Record<string, string> = {};
     if (pageToken) params['page-token'] = pageToken;
-    let response = await httpClient.get(
-      `/project/${projectSlug}/job/${jobNumber}/artifacts`,
-      { headers: this.headers, params }
-    );
+    let response = await httpClient.get(`/project/${projectSlug}/job/${jobNumber}/artifacts`, {
+      headers: this.headers,
+      params
+    });
     return response.data;
   }
 
   async getJobTestMetadata(projectSlug: string, jobNumber: number, pageToken?: string) {
     let params: Record<string, string> = {};
     if (pageToken) params['page-token'] = pageToken;
-    let response = await httpClient.get(
-      `/project/${projectSlug}/job/${jobNumber}/tests`,
-      { headers: this.headers, params }
-    );
+    let response = await httpClient.get(`/project/${projectSlug}/job/${jobNumber}/tests`, {
+      headers: this.headers,
+      params
+    });
     return response.data;
   }
 
@@ -196,16 +205,16 @@ export class Client {
   }
 
   async getProjectSettings(projectSlug: string) {
-    let response = await httpClient.get(`/project/${projectSlug}/settings`, { headers: this.headers });
+    let response = await httpClient.get(`/project/${projectSlug}/settings`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async updateProjectSettings(projectSlug: string, settings: Record<string, any>) {
-    let response = await httpClient.patch(
-      `/project/${projectSlug}/settings`,
-      settings,
-      { headers: this.headers }
-    );
+    let response = await httpClient.patch(`/project/${projectSlug}/settings`, settings, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -231,18 +240,16 @@ export class Client {
   }
 
   async deleteProjectEnvVar(projectSlug: string, name: string) {
-    let response = await httpClient.delete(
-      `/project/${projectSlug}/envvar/${name}`,
-      { headers: this.headers }
-    );
+    let response = await httpClient.delete(`/project/${projectSlug}/envvar/${name}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getProjectEnvVar(projectSlug: string, name: string) {
-    let response = await httpClient.get(
-      `/project/${projectSlug}/envvar/${name}`,
-      { headers: this.headers }
-    );
+    let response = await httpClient.get(`/project/${projectSlug}/envvar/${name}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -277,7 +284,11 @@ export class Client {
 
   // ---- Contexts ----
 
-  async listContexts(ownerId: string, ownerType: 'account' | 'organization', pageToken?: string) {
+  async listContexts(
+    ownerId: string,
+    ownerType: 'account' | 'organization',
+    pageToken?: string
+  ) {
     let params: Record<string, string> = {
       'owner-id': ownerId,
       'owner-type': ownerType
@@ -338,11 +349,14 @@ export class Client {
 
   // ---- Insights ----
 
-  async getProjectWorkflowMetrics(projectSlug: string, opts?: {
-    branch?: string;
-    pageToken?: string;
-    reportingWindow?: string;
-  }) {
+  async getProjectWorkflowMetrics(
+    projectSlug: string,
+    opts?: {
+      branch?: string;
+      pageToken?: string;
+      reportingWindow?: string;
+    }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.branch) params.branch = opts.branch;
     if (opts?.pageToken) params['page-token'] = opts.pageToken;
@@ -354,27 +368,35 @@ export class Client {
     return response.data;
   }
 
-  async getWorkflowRuns(projectSlug: string, workflowName: string, opts?: {
-    branch?: string;
-    pageToken?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getWorkflowRuns(
+    projectSlug: string,
+    workflowName: string,
+    opts?: {
+      branch?: string;
+      pageToken?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.branch) params.branch = opts.branch;
     if (opts?.pageToken) params['page-token'] = opts.pageToken;
     if (opts?.startDate) params['start-date'] = opts.startDate;
     if (opts?.endDate) params['end-date'] = opts.endDate;
-    let response = await httpClient.get(
-      `/insights/${projectSlug}/workflows/${workflowName}`,
-      { headers: this.headers, params }
-    );
+    let response = await httpClient.get(`/insights/${projectSlug}/workflows/${workflowName}`, {
+      headers: this.headers,
+      params
+    });
     return response.data;
   }
 
-  async getWorkflowSummary(projectSlug: string, workflowName: string, opts?: {
-    branch?: string;
-  }) {
+  async getWorkflowSummary(
+    projectSlug: string,
+    workflowName: string,
+    opts?: {
+      branch?: string;
+    }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.branch) params.branch = opts.branch;
     let response = await httpClient.get(
@@ -384,11 +406,15 @@ export class Client {
     return response.data;
   }
 
-  async getWorkflowJobMetrics(projectSlug: string, workflowName: string, opts?: {
-    branch?: string;
-    pageToken?: string;
-    reportingWindow?: string;
-  }) {
+  async getWorkflowJobMetrics(
+    projectSlug: string,
+    workflowName: string,
+    opts?: {
+      branch?: string;
+      pageToken?: string;
+      reportingWindow?: string;
+    }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.branch) params.branch = opts.branch;
     if (opts?.pageToken) params['page-token'] = opts.pageToken;
@@ -401,18 +427,16 @@ export class Client {
   }
 
   async getFlakyTests(projectSlug: string) {
-    let response = await httpClient.get(
-      `/insights/${projectSlug}/flaky-tests`,
-      { headers: this.headers }
-    );
+    let response = await httpClient.get(`/insights/${projectSlug}/flaky-tests`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getProjectBranches(projectSlug: string) {
-    let response = await httpClient.get(
-      `/insights/${projectSlug}/branches`,
-      { headers: this.headers }
-    );
+    let response = await httpClient.get(`/insights/${projectSlug}/branches`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -428,19 +452,22 @@ export class Client {
     return response.data;
   }
 
-  async createSchedule(projectSlug: string, schedule: {
-    name: string;
-    description?: string;
-    attributionActor: 'current' | 'system';
-    parameters: Record<string, any>;
-    timetable: {
-      perHour: number;
-      hoursOfDay: number[];
-      daysOfWeek?: string[];
-      daysOfMonth?: number[];
-      months?: string[];
-    };
-  }) {
+  async createSchedule(
+    projectSlug: string,
+    schedule: {
+      name: string;
+      description?: string;
+      attributionActor: 'current' | 'system';
+      parameters: Record<string, any>;
+      timetable: {
+        perHour: number;
+        hoursOfDay: number[];
+        daysOfWeek?: string[];
+        daysOfMonth?: number[];
+        months?: string[];
+      };
+    }
+  ) {
     let response = await httpClient.post(
       `/project/${projectSlug}/schedule`,
       {
@@ -466,19 +493,22 @@ export class Client {
     return response.data;
   }
 
-  async updateSchedule(scheduleId: string, updates: {
-    name?: string;
-    description?: string;
-    attributionActor?: 'current' | 'system';
-    parameters?: Record<string, any>;
-    timetable?: {
-      perHour: number;
-      hoursOfDay: number[];
-      daysOfWeek?: string[];
-      daysOfMonth?: number[];
-      months?: string[];
-    };
-  }) {
+  async updateSchedule(
+    scheduleId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      attributionActor?: 'current' | 'system';
+      parameters?: Record<string, any>;
+      timetable?: {
+        perHour: number;
+        hoursOfDay: number[];
+        daysOfWeek?: string[];
+        daysOfMonth?: number[];
+        months?: string[];
+      };
+    }
+  ) {
     let body: Record<string, any> = {};
     if (updates.name) body.name = updates.name;
     if (updates.description !== undefined) body.description = updates.description;
@@ -493,16 +523,16 @@ export class Client {
         months: updates.timetable.months
       };
     }
-    let response = await httpClient.patch(
-      `/schedule/${scheduleId}`,
-      body,
-      { headers: this.headers }
-    );
+    let response = await httpClient.patch(`/schedule/${scheduleId}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deleteSchedule(scheduleId: string) {
-    let response = await httpClient.delete(`/schedule/${scheduleId}`, { headers: this.headers });
+    let response = await httpClient.delete(`/schedule/${scheduleId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -546,20 +576,25 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, updates: {
-    name?: string;
-    url?: string;
-    events?: string[];
-    signingSecret?: string;
-    verifyTls?: boolean;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    updates: {
+      name?: string;
+      url?: string;
+      events?: string[];
+      signingSecret?: string;
+      verifyTls?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (updates.name !== undefined) body.name = updates.name;
     if (updates.url !== undefined) body.url = updates.url;
     if (updates.events !== undefined) body.events = updates.events;
     if (updates.signingSecret !== undefined) body['signing-secret'] = updates.signingSecret;
     if (updates.verifyTls !== undefined) body['verify-tls'] = updates.verifyTls;
-    let response = await httpClient.put(`/webhook/${webhookId}`, body, { headers: this.headers });
+    let response = await httpClient.put(`/webhook/${webhookId}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 

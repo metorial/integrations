@@ -15,12 +15,14 @@ Squarespace supports two authentication methods:
 Depending on your development needs, you can use a generated API key or start the OAuth process with Squarespace to become a registered OAuth client.
 
 To generate an API key:
+
 - With Squarespace's Commerce Advanced plan, you can develop a custom application for a Squarespace merchant site.
 - Log in to a Squarespace site. In the left nav, click Settings; scroll down and click Advanced. Click Developer API Keys. Click the GENERATE KEY button. In the dialog, add a key name under "KEY NAME", and select one or more Commerce APIs under "PERMISSIONS" and permission level.
 - For security reasons, this is the only time the API key is visible. API keys will never expire as long as the merchant site remains active.
 - Requests only have access to data for the website that owns the API key or OAuth access token.
 
 API keys are passed as Bearer tokens in the `Authorization` header:
+
 ```
 Authorization: Bearer YOUR_SECRET_API_KEY
 ```
@@ -34,11 +36,13 @@ A Squarespace merchant site can use both API keys and OAuth for data access, but
 **Registration:** Before a client can make Squarespace API calls, the client must be registered with Squarespace as an OAuth client. Submit the following information via this form. Required information includes: client name, icon image, redirect URI(s), initiate URL, and links to terms and privacy policy. Squarespace responds with a `client_id` and `client_secret`.
 
 **Authorization endpoint:**
+
 ```
 GET https://login.squarespace.com/api/1/login/oauth/provider/authorize
 ```
 
 Required query parameters:
+
 - `client_id` — Provided by Squarespace during registration
 - `redirect_uri` — Must match a registered redirect URI
 - `scope` — Comma-separated list of permission scopes
@@ -56,6 +60,7 @@ Required query parameters:
 | `website.products.read` | View product information |
 
 **Token endpoint:**
+
 ```
 POST https://login.squarespace.com/api/1/login/oauth/provider/tokens
 ```

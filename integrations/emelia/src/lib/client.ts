@@ -7,9 +7,9 @@ export class EmeliaClient {
     this.axios = createAxios({
       baseURL: 'https://api.emelia.io',
       headers: {
-        'Authorization': this.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -109,7 +109,10 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async updateCampaignProviderSettings(campaignId: string, providers: Record<string, unknown>) {
+  async updateCampaignProviderSettings(
+    campaignId: string,
+    providers: Record<string, unknown>
+  ) {
     let res = await this.axios.put(`/campaign/${campaignId}/providers`, providers);
     return res.data;
   }
@@ -132,7 +135,7 @@ export class EmeliaClient {
   async replyToEmeliaReply(data: { campaignId: string; contactId: string; body: string }) {
     let res = await this.axios.post(`/campaign/${data.campaignId}/reply`, {
       contactId: data.contactId,
-      body: data.body,
+      body: data.body
     });
     return res.data;
   }
@@ -217,12 +220,18 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async updateLinkedInCampaignGlobalSettings(campaignId: string, settings: Record<string, unknown>) {
+  async updateLinkedInCampaignGlobalSettings(
+    campaignId: string,
+    settings: Record<string, unknown>
+  ) {
     let res = await this.axios.put(`/linkedin/campaign/${campaignId}/settings`, settings);
     return res.data;
   }
 
-  async updateLinkedInCampaignSteps(campaignId: string, steps: Array<Record<string, unknown>>) {
+  async updateLinkedInCampaignSteps(
+    campaignId: string,
+    steps: Array<Record<string, unknown>>
+  ) {
     let res = await this.axios.put(`/linkedin/campaign/${campaignId}/steps`, { steps });
     return res.data;
   }
@@ -242,8 +251,14 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async setLinkedInContactCustomField(contactId: string, data: { field: string; value: string }) {
-    let res = await this.axios.put(`/linkedin/campaign/contact/${contactId}/custom-field`, data);
+  async setLinkedInContactCustomField(
+    contactId: string,
+    data: { field: string; value: string }
+  ) {
+    let res = await this.axios.put(
+      `/linkedin/campaign/contact/${contactId}/custom-field`,
+      data
+    );
     return res.data;
   }
 
@@ -301,8 +316,14 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async setAdvancedContactCustomField(contactId: string, data: { field: string; value: string }) {
-    let res = await this.axios.put(`/advanced/campaign/contact/${contactId}/custom-field`, data);
+  async setAdvancedContactCustomField(
+    contactId: string,
+    data: { field: string; value: string }
+  ) {
+    let res = await this.axios.put(
+      `/advanced/campaign/contact/${contactId}/custom-field`,
+      data
+    );
     return res.data;
   }
 
@@ -399,11 +420,7 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async createWebhook(data: {
-    campaignId: string;
-    url: string;
-    event: string;
-  }) {
+  async createWebhook(data: { campaignId: string; url: string; event: string }) {
     let res = await this.axios.post('/webhooks', data);
     return res.data;
   }
@@ -425,11 +442,7 @@ export class EmeliaClient {
     return res.data;
   }
 
-  async createLinkedInScraper(data: {
-    name: string;
-    url: string;
-    linkedInAuthId?: string;
-  }) {
+  async createLinkedInScraper(data: { name: string; url: string; linkedInAuthId?: string }) {
     let res = await this.axios.post('/linkedin-scrappers', data);
     return res.data;
   }

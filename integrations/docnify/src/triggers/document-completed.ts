@@ -3,40 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let documentCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Document Completed',
-    key: 'new_document_completed',
-    description: 'Triggers when a document is fully completed — meaning all assigned recipients have signed. Polls for documents where every recipient has a signedAt timestamp.'
-  }
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the completed document'),
-    documentName: z.string().describe('Name of the completed document'),
-    status: z.string().describe('Status of the document'),
-    completedAt: z.string().describe('Timestamp of the last signature that completed the document'),
-    recipientCount: z.number().describe('Total number of recipients who signed')
-  }))
-  .output(z.object({
-    documentId: z.string().describe('ID of the completed document'),
-    documentName: z.string().describe('Name of the completed document'),
-    status: z.string().describe('Status of the document'),
-    completedAt: z.string().describe('Timestamp of the last signature that completed the document'),
-    recipientCount: z.number().describe('Total number of recipients who signed')
-  }))
+export let documentCompleted = SlateTrigger.create(spec, {
+  name: 'New Document Completed',
+  key: 'new_document_completed',
+  description:
+    'Triggers when a document is fully completed — meaning all assigned recipients have signed. Polls for documents where every recipient has a signedAt timestamp.'
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the completed document'),
+      documentName: z.string().describe('Name of the completed document'),
+      status: z.string().describe('Status of the document'),
+      completedAt: z
+        .string()
+        .describe('Timestamp of the last signature that completed the document'),
+      recipientCount: z.number().describe('Total number of recipients who signed')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('ID of the completed document'),
+      documentName: z.string().describe('Name of the completed document'),
+      status: z.string().describe('Status of the document'),
+      completedAt: z
+        .string()
+        .describe('Timestamp of the last signature that completed the document'),
+      recipientCount: z.number().describe('Total number of recipients who signed')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         instanceUrl: ctx.auth.instanceUrl
       });
 
-      let lastPolledAt = ctx.state?.lastPolledAt as string | null ?? null;
+      let lastPolledAt = (ctx.state?.lastPolledAt as string | null) ?? null;
       let knownCompletedIds = (ctx.state?.knownCompletedIds as string[] | null) ?? [];
       let documents = await client.listDocumentsSince(lastPolledAt);
 
@@ -60,13 +66,13 @@ export let documentCompleted = SlateTrigger.create(
           continue;
         }
 
-        let allSigned = recipients.every((r) => r.signedAt);
+        let allSigned = recipients.every(r => r.signedAt);
         if (!allSigned) {
           continue;
         }
 
         let lastSignedAt = recipients.reduce(
-          (max, r) => (r.signedAt && r.signedAt > max) ? r.signedAt : max,
+          (max, r) => (r.signedAt && r.signedAt > max ? r.signedAt : max),
           recipients[0]!.signedAt || doc.updatedAt
         );
 
@@ -81,9 +87,13 @@ export let documentCompleted = SlateTrigger.create(
         newKnownCompletedIds.push(doc.id);
       }
 
-      let latestUpdate = documents.length > 0
-        ? documents.reduce((max, doc) => doc.updatedAt > max ? doc.updatedAt : max, documents[0]!.updatedAt)
-        : lastPolledAt;
+      let latestUpdate =
+        documents.length > 0
+          ? documents.reduce(
+              (max, doc) => (doc.updatedAt > max ? doc.updatedAt : max),
+              documents[0]!.updatedAt
+            )
+          : lastPolledAt;
 
       return {
         inputs,
@@ -94,7 +104,7 @@ export let documentCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'document.completed',
         id: `document_completed_${ctx.input.documentId}`,

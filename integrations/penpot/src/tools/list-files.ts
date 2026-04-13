@@ -9,30 +9,41 @@ let fileSchema = z.object({
   projectId: z.string().optional().describe('ID of the project this file belongs to'),
   createdAt: z.string().optional().describe('When the file was created'),
   modifiedAt: z.string().optional().describe('When the file was last modified'),
-  isShared: z.boolean().optional().describe('Whether the file is a shared library'),
+  isShared: z.boolean().optional().describe('Whether the file is a shared library')
 });
 
-export let listFilesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Files',
-    key: 'list_files',
-    description: `List design files by project, recent files by team, shared library files, or search files by name. Use **source** to choose the listing mode.`,
-    tags: {
-      readOnly: true,
-    },
+export let listFilesTool = SlateTool.create(spec, {
+  name: 'List Files',
+  key: 'list_files',
+  description: `List design files by project, recent files by team, shared library files, or search files by name. Use **source** to choose the listing mode.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    source: z.enum(['project', 'recent', 'shared', 'search']).describe('How to list files: "project" lists files in a project, "recent" lists recently accessed files in a team, "shared" lists shared libraries in a team, "search" searches files by name in a team'),
-    projectId: z.string().optional().describe('Project ID (required for "project" source)'),
-    teamId: z.string().optional().describe('Team ID (required for "recent", "shared", "search" sources)'),
-    searchTerm: z.string().optional().describe('Search query (optional, for "search" source)'),
-  }))
-  .output(z.object({
-    files: z.array(fileSchema).describe('List of files'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      source: z
+        .enum(['project', 'recent', 'shared', 'search'])
+        .describe(
+          'How to list files: "project" lists files in a project, "recent" lists recently accessed files in a team, "shared" lists shared libraries in a team, "search" searches files by name in a team'
+        ),
+      projectId: z.string().optional().describe('Project ID (required for "project" source)'),
+      teamId: z
+        .string()
+        .optional()
+        .describe('Team ID (required for "recent", "shared", "search" sources)'),
+      searchTerm: z
+        .string()
+        .optional()
+        .describe('Search query (optional, for "search" source)')
+    })
+  )
+  .output(
+    z.object({
+      files: z.array(fileSchema).describe('List of files')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
     let { source, projectId, teamId, searchTerm } = ctx.input;
     let rawFiles: any[];
@@ -66,11 +77,12 @@ export let listFilesTool = SlateTool.create(
       projectId: f['project-id'] ?? f.projectId,
       createdAt: f['created-at'] ?? f.createdAt,
       modifiedAt: f['modified-at'] ?? f.modifiedAt,
-      isShared: f['is-shared'] ?? f.isShared,
+      isShared: f['is-shared'] ?? f.isShared
     }));
 
     return {
       output: { files },
-      message: `Found **${files.length}** file(s).`,
+      message: `Found **${files.length}** file(s).`
     };
-  }).build();
+  })
+  .build();

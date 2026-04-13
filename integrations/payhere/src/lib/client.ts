@@ -264,17 +264,21 @@ let mapPayment = (raw: any): Payment => ({
 let mapPaymentDetail = (raw: any): PaymentDetail => ({
   ...mapPayment(raw),
   customer: raw.customer ? mapCustomer(raw.customer) : null,
-  subscription: raw.subscription ? {
-    subscriptionId: raw.subscription.id,
-    status: raw.subscription.status,
-    billingInterval: raw.subscription.billing_interval
-  } : null,
-  plan: raw.item ? {
-    planId: raw.item.id,
-    name: raw.item.name,
-    price: raw.item.price,
-    currency: raw.item.currency
-  } : null
+  subscription: raw.subscription
+    ? {
+        subscriptionId: raw.subscription.id,
+        status: raw.subscription.status,
+        billingInterval: raw.subscription.billing_interval
+      }
+    : null,
+  plan: raw.item
+    ? {
+        planId: raw.item.id,
+        name: raw.item.name,
+        price: raw.item.price,
+        currency: raw.item.currency
+      }
+    : null
 });
 
 let mapCustomer = (raw: any): Customer => ({
@@ -300,12 +304,14 @@ let mapSubscription = (raw: any): Subscription => ({
   createdAt: raw.created_at,
   updatedAt: raw.updated_at,
   customer: raw.customer ? mapCustomer(raw.customer) : null,
-  plan: raw.plan ? {
-    planId: raw.plan.id,
-    name: raw.plan.name,
-    price: raw.plan.price,
-    currency: raw.plan.currency
-  } : null
+  plan: raw.plan
+    ? {
+        planId: raw.plan.id,
+        name: raw.plan.name,
+        price: raw.plan.price,
+        currency: raw.plan.currency
+      }
+    : null
 });
 
 let mapCompany = (raw: any): Company => ({
@@ -362,7 +368,7 @@ let toSnakeCase = (params: Record<string, any>): Record<string, any> => {
   let result: Record<string, any> = {};
   for (let [key, value] of Object.entries(params)) {
     if (value === undefined) continue;
-    let snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    let snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
     result[snakeKey] = value;
   }
   return result;
@@ -383,7 +389,9 @@ export class PayhereClient {
   }
 
   // Plans
-  async listPlans(params?: PaginationParams): Promise<{ plans: Plan[]; meta: PaginationMeta }> {
+  async listPlans(
+    params?: PaginationParams
+  ): Promise<{ plans: Plan[]; meta: PaginationMeta }> {
     let response = await apiClient.get('/plans', {
       headers: this.headers,
       params: params ? { page: params.page, per_page: params.perPage } : undefined
@@ -438,7 +446,9 @@ export class PayhereClient {
   }
 
   // Payments
-  async listPayments(params?: PaginationParams): Promise<{ payments: Payment[]; meta: PaginationMeta }> {
+  async listPayments(
+    params?: PaginationParams
+  ): Promise<{ payments: Payment[]; meta: PaginationMeta }> {
     let response = await apiClient.get('/payments', {
       headers: this.headers,
       params: params ? { page: params.page, per_page: params.perPage } : undefined
@@ -457,7 +467,9 @@ export class PayhereClient {
   }
 
   // Customers
-  async listCustomers(params?: PaginationParams): Promise<{ customers: Customer[]; meta: PaginationMeta }> {
+  async listCustomers(
+    params?: PaginationParams
+  ): Promise<{ customers: Customer[]; meta: PaginationMeta }> {
     let response = await apiClient.get('/customers', {
       headers: this.headers,
       params: params ? { page: params.page, per_page: params.perPage } : undefined
@@ -476,7 +488,9 @@ export class PayhereClient {
   }
 
   // Subscriptions
-  async listSubscriptions(params?: PaginationParams): Promise<{ subscriptions: Subscription[]; meta: PaginationMeta }> {
+  async listSubscriptions(
+    params?: PaginationParams
+  ): Promise<{ subscriptions: Subscription[]; meta: PaginationMeta }> {
     let response = await apiClient.get('/subscriptions', {
       headers: this.headers,
       params: params ? { page: params.page, per_page: params.perPage } : undefined
@@ -562,7 +576,13 @@ export class PayhereClient {
   }
 
   // User
-  async getUser(): Promise<{ userId: number; displayName: string; email: string; createdAt: string; updatedAt: string }> {
+  async getUser(): Promise<{
+    userId: number;
+    displayName: string;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+  }> {
     let response = await apiClient.get('/user', {
       headers: this.headers
     });

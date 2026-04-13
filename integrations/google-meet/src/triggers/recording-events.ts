@@ -3,47 +3,47 @@ import { MeetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordingEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Recording Events',
-    key: 'recording_events',
-    description: 'Triggers when a recording file is generated for a conference. Polls conference records for new recordings with FILE_GENERATED state.'
-  }
-)
-  .input(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name'),
-    recordingName: z.string().describe('Recording resource name'),
-    state: z.string().describe('Recording state'),
-    startTime: z.string().optional().describe('When the recording started'),
-    endTime: z.string().optional().describe('When the recording ended'),
-    driveFileId: z.string().optional().describe('Google Drive file ID'),
-    playbackUri: z.string().optional().describe('Playback URI')
-  }))
-  .output(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name'),
-    recordingName: z.string().describe('Recording resource name'),
-    state: z.string().describe('Recording state'),
-    startTime: z.string().optional().describe('When the recording started'),
-    endTime: z.string().optional().describe('When the recording ended'),
-    driveFileId: z.string().optional().describe('Google Drive file ID for the MP4'),
-    playbackUri: z.string().optional().describe('URI to play back the recording')
-  }))
+export let recordingEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Recording Events',
+  key: 'recording_events',
+  description:
+    'Triggers when a recording file is generated for a conference. Polls conference records for new recordings with FILE_GENERATED state.'
+})
+  .input(
+    z.object({
+      conferenceRecordName: z.string().describe('Conference record resource name'),
+      recordingName: z.string().describe('Recording resource name'),
+      state: z.string().describe('Recording state'),
+      startTime: z.string().optional().describe('When the recording started'),
+      endTime: z.string().optional().describe('When the recording ended'),
+      driveFileId: z.string().optional().describe('Google Drive file ID'),
+      playbackUri: z.string().optional().describe('Playback URI')
+    })
+  )
+  .output(
+    z.object({
+      conferenceRecordName: z.string().describe('Conference record resource name'),
+      recordingName: z.string().describe('Recording resource name'),
+      state: z.string().describe('Recording state'),
+      startTime: z.string().optional().describe('When the recording started'),
+      endTime: z.string().optional().describe('When the recording ended'),
+      driveFileId: z.string().optional().describe('Google Drive file ID for the MP4'),
+      playbackUri: z.string().optional().describe('URI to play back the recording')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MeetClient({ token: ctx.auth.token });
 
       let knownRecordings = (ctx.state?.knownRecordings as string[] | undefined) || [];
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
 
       // Get recent conference records
-      let filter = lastPollTime
-        ? `end_time>="${lastPollTime}"`
-        : undefined;
+      let filter = lastPollTime ? `end_time>="${lastPollTime}"` : undefined;
 
       let records = await client.listConferenceRecords(filter, 20);
       let inputs: Array<{
@@ -93,7 +93,7 @@ export let recordingEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'recording.file_generated',
         id: ctx.input.recordingName,
@@ -108,4 +108,5 @@ export let recordingEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

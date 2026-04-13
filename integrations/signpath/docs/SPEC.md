@@ -21,6 +21,7 @@ SignPath uses bearer authentication. You need to provide these values for every 
 - You can add an API token to your own user account for personal API access.
 
 **Required inputs for authentication:**
+
 - `API_TOKEN`: A bearer token generated per user or CI user account.
 - `ORGANIZATION_ID`: Your SignPath organization identifier, included in all API URL paths.
 

@@ -3,43 +3,45 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { KlaviyoClient } from '../lib/client';
 
-export let newProfiles = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Profiles',
-    key: 'new_profiles',
-    description: '[Polling fallback] Polls for newly created customer profiles in Klaviyo. Detects when new contacts are added to the account.',
-  }
-)
-  .input(z.object({
-    profileId: z.string().describe('Profile ID'),
-    email: z.string().optional().describe('Email address'),
-    phoneNumber: z.string().optional().describe('Phone number'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    created: z.string().optional().describe('Profile creation timestamp'),
-  }))
-  .output(z.object({
-    profileId: z.string().describe('Profile ID'),
-    email: z.string().optional().describe('Email address'),
-    phoneNumber: z.string().optional().describe('Phone number'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    organization: z.string().optional().describe('Organization'),
-    title: z.string().optional().describe('Job title'),
-    location: z.any().optional().describe('Location data'),
-    properties: z.record(z.string(), z.any()).optional().describe('Custom properties'),
-    created: z.string().optional().describe('Profile creation timestamp'),
-  }))
+export let newProfiles = SlateTrigger.create(spec, {
+  name: 'New Profiles',
+  key: 'new_profiles',
+  description:
+    '[Polling fallback] Polls for newly created customer profiles in Klaviyo. Detects when new contacts are added to the account.'
+})
+  .input(
+    z.object({
+      profileId: z.string().describe('Profile ID'),
+      email: z.string().optional().describe('Email address'),
+      phoneNumber: z.string().optional().describe('Phone number'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      created: z.string().optional().describe('Profile creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      profileId: z.string().describe('Profile ID'),
+      email: z.string().optional().describe('Email address'),
+      phoneNumber: z.string().optional().describe('Phone number'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      organization: z.string().optional().describe('Organization'),
+      title: z.string().optional().describe('Job title'),
+      location: z.any().optional().describe('Location data'),
+      properties: z.record(z.string(), z.any()).optional().describe('Custom properties'),
+      created: z.string().optional().describe('Profile creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new KlaviyoClient({
         token: ctx.auth.token,
-        revision: ctx.config.revision,
+        revision: ctx.config.revision
       });
 
       let state = ctx.state as { lastTimestamp?: string; lastSeenIds?: string[] } | undefined;
@@ -54,7 +56,7 @@ export let newProfiles = SlateTrigger.create(
       let result = await client.getProfiles({
         filter,
         sort: '-created',
-        pageSize: 50,
+        pageSize: 50
       });
 
       let newProfiles = result.data.filter(p => !lastSeenIds.includes(p.id ?? ''));
@@ -65,12 +67,13 @@ export let newProfiles = SlateTrigger.create(
         phoneNumber: p.attributes?.phone_number ?? undefined,
         firstName: p.attributes?.first_name ?? undefined,
         lastName: p.attributes?.last_name ?? undefined,
-        created: p.attributes?.created ?? undefined,
+        created: p.attributes?.created ?? undefined
       }));
 
-      let updatedTimestamp = newProfiles.length > 0
-        ? (newProfiles[0]?.attributes?.created ?? lastTimestamp)
-        : lastTimestamp;
+      let updatedTimestamp =
+        newProfiles.length > 0
+          ? (newProfiles[0]?.attributes?.created ?? lastTimestamp)
+          : lastTimestamp;
 
       let updatedSeenIds = newProfiles.map(p => p.id ?? '').slice(0, 100);
 
@@ -78,15 +81,15 @@ export let newProfiles = SlateTrigger.create(
         inputs,
         updatedState: {
           lastTimestamp: updatedTimestamp ?? new Date().toISOString(),
-          lastSeenIds: updatedSeenIds,
-        },
+          lastSeenIds: updatedSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new KlaviyoClient({
         token: ctx.auth.token,
-        revision: ctx.config.revision,
+        revision: ctx.config.revision
       });
 
       // Fetch full profile data for enriched output
@@ -111,8 +114,9 @@ export let newProfiles = SlateTrigger.create(
           title: profile?.attributes?.title ?? undefined,
           location: profile?.attributes?.location ?? undefined,
           properties: profile?.attributes?.properties ?? undefined,
-          created: profile?.attributes?.created ?? ctx.input.created,
-        },
+          created: profile?.attributes?.created ?? ctx.input.created
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

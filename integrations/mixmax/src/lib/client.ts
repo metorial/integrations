@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.mixmax.com/v1',
       headers: {
         'X-API-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,18 +25,27 @@ export class Client {
     return response.data;
   }
 
-  async getSequenceRecipients(sequenceId: string, params?: { limit?: number; offset?: number }) {
+  async getSequenceRecipients(
+    sequenceId: string,
+    params?: { limit?: number; offset?: number }
+  ) {
     let response = await this.http.get(`/sequences/${sequenceId}/recipients`, { params });
     return response.data;
   }
 
-  async addRecipientsToSequence(sequenceId: string, recipients: Array<{ email: string; variables?: Record<string, string> }>) {
+  async addRecipientsToSequence(
+    sequenceId: string,
+    recipients: Array<{ email: string; variables?: Record<string, string> }>
+  ) {
     let response = await this.http.post(`/sequences/${sequenceId}/recipients`, recipients);
     return response.data;
   }
 
   async cancelSequence(sequenceId: string, recipientEmail?: string) {
-    let response = await this.http.post(`/sequences/${sequenceId}/cancel`, recipientEmail ? { email: recipientEmail } : {});
+    let response = await this.http.post(
+      `/sequences/${sequenceId}/cancel`,
+      recipientEmail ? { email: recipientEmail } : {}
+    );
     return response.data;
   }
 
@@ -135,12 +144,15 @@ export class Client {
     return response.data;
   }
 
-  async sendSnippet(snippetId: string, sendData: {
-    to: Array<{ email: string; name?: string }>;
-    cc?: Array<{ email: string; name?: string }>;
-    bcc?: Array<{ email: string; name?: string }>;
-    variables?: Record<string, string>;
-  }) {
+  async sendSnippet(
+    snippetId: string,
+    sendData: {
+      to: Array<{ email: string; name?: string }>;
+      cc?: Array<{ email: string; name?: string }>;
+      bcc?: Array<{ email: string; name?: string }>;
+      variables?: Record<string, string>;
+    }
+  ) {
     let response = await this.http.post(`/snippets/${snippetId}/send`, sendData);
     return response.data;
   }
@@ -592,7 +604,11 @@ export class Client {
     return response.data;
   }
 
-  async updateSalesforceRecord(objectType: string, recordId: string, data: Record<string, any>) {
+  async updateSalesforceRecord(
+    objectType: string,
+    recordId: string,
+    data: Record<string, any>
+  ) {
     let response = await this.http.patch(`/salesforce/${objectType}/${recordId}`, data);
     return response.data;
   }

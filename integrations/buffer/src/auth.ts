@@ -6,9 +6,11 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -23,7 +25,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -35,7 +37,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await apiAxios.post('/oauth2/token.json', {
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,

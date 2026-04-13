@@ -182,12 +182,16 @@ let objectToXml = (tag: string, value: any): string => {
     return `<${xmlTag}>${escapeXml(value)}</${xmlTag}>`;
   }
   if (Array.isArray(value)) {
-    let items = value.map(item => {
-      if (typeof item === 'object' && item !== null) {
-        return `<item>${Object.entries(item).map(([k, v]) => objectToXml(k, v)).join('')}</item>`;
-      }
-      return `<item>${escapeXml(String(item))}</item>`;
-    }).join('');
+    let items = value
+      .map(item => {
+        if (typeof item === 'object' && item !== null) {
+          return `<item>${Object.entries(item)
+            .map(([k, v]) => objectToXml(k, v))
+            .join('')}</item>`;
+        }
+        return `<item>${escapeXml(String(item))}</item>`;
+      })
+      .join('');
     return `<${xmlTag} type="array">${items}</${xmlTag}>`;
   }
   if (typeof value === 'object') {

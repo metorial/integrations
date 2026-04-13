@@ -22,17 +22,20 @@ InVision never offered a general-purpose public REST API for managing prototypes
 **Note: All features below are defunct as of December 31, 2024.**
 
 ### Design Tokens & Icons API (DSM)
+
 - Allowed programmatic retrieval of design tokens (colors, typography, spacing, etc.) and icons from an InVision DSM design system.
 - Could be used with tools like Style Dictionary to generate style files for different platforms.
 - Was read-only; tokens and icons were managed through the DSM interface, not via the API.
 - Required specifying a design system version to access version-specific token data.
 
 ### SCIM User Provisioning
+
 - Supported SCIM-based user provisioning for Enterprise accounts, enabling automated user lifecycle management through identity providers.
 - Integrated with identity providers like Okta for automated user creation, updates, and deactivation.
 - Only available on Enterprise plans.
 
 ### Freehand (Acquired by Miro)
+
 - InVision's visual collaboration product, Freehand, was acquired by Miro in the fall of 2023.
 - Freehand functionality has been migrated to Miro's platform.
 

@@ -9,8 +9,8 @@ export class OmnisendClient {
       baseURL: 'https://api.omnisend.com/v5',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-KEY': token,
-      },
+        'X-API-KEY': token
+      }
     });
   }
 
@@ -94,10 +94,7 @@ export class OmnisendClient {
 
   // ── Product Categories ──
 
-  async listCategories(params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any> {
+  async listCategories(params?: { offset?: number; limit?: number }): Promise<any> {
     let queryParams: Record<string, string | number> = {};
     if (params?.offset !== undefined) queryParams.offset = params.offset;
     if (params?.limit) queryParams.limit = params.limit;
@@ -132,9 +129,7 @@ export class OmnisendClient {
 
   // ── Campaigns ──
 
-  async listCampaigns(params?: {
-    updatedAtFrom?: string;
-  }): Promise<any> {
+  async listCampaigns(params?: { updatedAtFrom?: string }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.updatedAtFrom) queryParams.updatedAtFrom = params.updatedAtFrom;
 
@@ -158,11 +153,7 @@ export class OmnisendClient {
 
   // ── Batches ──
 
-  async createBatch(batch: {
-    method: string;
-    endpoint: string;
-    items: any[];
-  }): Promise<any> {
+  async createBatch(batch: { method: string; endpoint: string; items: any[] }): Promise<any> {
     let response = await this.http.post('/batches', batch);
     return response.data;
   }

@@ -3,48 +3,55 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLicenses = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Licenses',
-    key: 'manage_licenses',
-    description: `Assign, get, or revoke Google Workspace product licenses for users. Supports managing licenses for products like Google Workspace Business, Enterprise, and other Google products.`,
-    instructions: [
-      'Common product IDs: "Google-Apps" (Workspace), "101031" (Drive storage), "101037" (Vault).',
-      'SKU IDs vary by product tier: e.g. "Google-Apps-For-Business", "Google-Apps-Unlimited", "1010310004" (20GB Drive).'
-    ],
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageLicenses = SlateTool.create(spec, {
+  name: 'Manage Licenses',
+  key: 'manage_licenses',
+  description: `Assign, get, or revoke Google Workspace product licenses for users. Supports managing licenses for products like Google Workspace Business, Enterprise, and other Google products.`,
+  instructions: [
+    'Common product IDs: "Google-Apps" (Workspace), "101031" (Drive storage), "101037" (Vault).',
+    'SKU IDs vary by product tier: e.g. "Google-Apps-For-Business", "Google-Apps-Unlimited", "1010310004" (20GB Drive).'
+  ],
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'assign', 'revoke']).describe('Action to perform'),
-    productId: z.string().describe('Product ID (e.g. "Google-Apps")'),
-    skuId: z.string().optional().describe('SKU ID (required for get, assign, revoke)'),
-    userId: z.string().optional().describe('User email (required for get, assign, revoke)'),
-    maxResults: z.number().optional(),
-    pageToken: z.string().optional()
-  }))
-  .output(z.object({
-    licenses: z.array(z.object({
-      productId: z.string().optional(),
-      skuId: z.string().optional(),
-      skuName: z.string().optional(),
-      userId: z.string().optional()
-    })).optional(),
-    license: z.object({
-      productId: z.string().optional(),
-      skuId: z.string().optional(),
-      skuName: z.string().optional(),
-      userId: z.string().optional()
-    }).optional(),
-    revoked: z.boolean().optional(),
-    nextPageToken: z.string().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'assign', 'revoke']).describe('Action to perform'),
+      productId: z.string().describe('Product ID (e.g. "Google-Apps")'),
+      skuId: z.string().optional().describe('SKU ID (required for get, assign, revoke)'),
+      userId: z.string().optional().describe('User email (required for get, assign, revoke)'),
+      maxResults: z.number().optional(),
+      pageToken: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      licenses: z
+        .array(
+          z.object({
+            productId: z.string().optional(),
+            skuId: z.string().optional(),
+            skuName: z.string().optional(),
+            userId: z.string().optional()
+          })
+        )
+        .optional(),
+      license: z
+        .object({
+          productId: z.string().optional(),
+          skuId: z.string().optional(),
+          skuName: z.string().optional(),
+          userId: z.string().optional()
+        })
+        .optional(),
+      revoked: z.boolean().optional(),
+      nextPageToken: z.string().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -77,7 +84,11 @@ export let manageLicenses = SlateTool.create(
     }
 
     if (ctx.input.action === 'get') {
-      let l = await client.getLicenseAssignment(ctx.input.productId, ctx.input.skuId, ctx.input.userId);
+      let l = await client.getLicenseAssignment(
+        ctx.input.productId,
+        ctx.input.skuId,
+        ctx.input.userId
+      );
       return {
         output: {
           license: {
@@ -93,7 +104,11 @@ export let manageLicenses = SlateTool.create(
     }
 
     if (ctx.input.action === 'assign') {
-      let l = await client.assignLicense(ctx.input.productId, ctx.input.skuId, ctx.input.userId);
+      let l = await client.assignLicense(
+        ctx.input.productId,
+        ctx.input.skuId,
+        ctx.input.userId
+      );
       return {
         output: {
           license: {

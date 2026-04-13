@@ -3,30 +3,29 @@ import { RedditAdsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccountInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account_info',
-    description: `Retrieve details about the configured Reddit Ads account, including account name, status, currency, and available funding instruments. Useful for verifying account configuration and checking billing setup.`,
-    tags: {
-      readOnly: true,
-    },
+export let getAccountInfo = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account_info',
+  description: `Retrieve details about the configured Reddit Ads account, including account name, status, currency, and available funding instruments. Useful for verifying account configuration and checking billing setup.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accountId: z.string().optional(),
-    name: z.string().optional(),
-    status: z.string().optional(),
-    currency: z.string().optional(),
-    fundingInstruments: z.array(z.any()).optional(),
-    raw: z.any().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountId: z.string().optional(),
+      name: z.string().optional(),
+      status: z.string().optional(),
+      currency: z.string().optional(),
+      fundingInstruments: z.array(z.any()).optional(),
+      raw: z.any().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedditAdsClient({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     let account = await client.getAccount();
@@ -45,9 +44,9 @@ export let getAccountInfo = SlateTool.create(
         status: account.status,
         currency: account.currency,
         fundingInstruments,
-        raw: account,
+        raw: account
       },
-      message: `Account **${account.name || ctx.config.accountId}** — Status: **${account.status || 'unknown'}**, Currency: **${account.currency || 'unknown'}**.`,
+      message: `Account **${account.name || ctx.config.accountId}** — Status: **${account.status || 'unknown'}**, Currency: **${account.currency || 'unknown'}**.`
     };
   })
   .build();

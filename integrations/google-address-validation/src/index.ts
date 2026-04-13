@@ -7,7 +7,5 @@ import { inboundWebhook } from './triggers/inbound-webhook';
 export let provider = Slate.create({
   spec,
   tools: [validateAddress, provideValidationFeedback],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

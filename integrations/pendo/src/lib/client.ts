@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://app.pendo.io/api/v1',
-  eu: 'https://app.eu.pendo.io/api/v1',
+  eu: 'https://app.eu.pendo.io/api/v1'
 };
 
 export class PendoClient {
@@ -15,8 +15,8 @@ export class PendoClient {
       baseURL,
       headers: {
         'x-pendo-integration-key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,10 +35,9 @@ export class PendoClient {
   }
 
   async updateVisitorMetadata(visitorId: string, metadata: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(
-      `/metadata/visitor/custom/value?create=true`,
-      { [visitorId]: { metadata: { custom: metadata } } }
-    );
+    let response = await this.axios.post(`/metadata/visitor/custom/value?create=true`, {
+      [visitorId]: { metadata: { custom: metadata } }
+    });
     return response.data;
   }
 
@@ -62,10 +61,9 @@ export class PendoClient {
   }
 
   async updateAccountMetadata(accountId: string, metadata: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(
-      `/metadata/account/custom/value?create=true`,
-      { [accountId]: { metadata: { custom: metadata } } }
-    );
+    let response = await this.axios.post(`/metadata/account/custom/value?create=true`, {
+      [accountId]: { metadata: { custom: metadata } }
+    });
     return response.data;
   }
 
@@ -144,7 +142,9 @@ export class PendoClient {
   // --- Reports ---
 
   async getReport(reportId: string, format: 'json' | 'csv' = 'json'): Promise<any> {
-    let response = await this.axios.get(`/report/${encodeURIComponent(reportId)}/results.${format}`);
+    let response = await this.axios.get(
+      `/report/${encodeURIComponent(reportId)}/results.${format}`
+    );
     return response.data;
   }
 
@@ -160,8 +160,8 @@ export class PendoClient {
       response: { mimeType: 'application/json' },
       request: {
         requestId: requestId || 'slate-aggregation',
-        pipeline,
-      },
+        pipeline
+      }
     };
     let response = await this.axios.post('/aggregation', body);
     return response.data;

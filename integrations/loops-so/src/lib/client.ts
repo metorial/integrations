@@ -85,7 +85,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://app.loops.so/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -117,7 +117,10 @@ export class Client {
     return response.data;
   }
 
-  async deleteContact(params: { email?: string; userId?: string }): Promise<{ success: boolean; message: string }> {
+  async deleteContact(params: {
+    email?: string;
+    userId?: string;
+  }): Promise<{ success: boolean; message: string }> {
     let response = await this.axios.post('/contacts/delete', params);
     return response.data;
   }
@@ -144,10 +147,12 @@ export class Client {
     return response.data;
   }
 
-  async sendTransactionalEmail(params: SendTransactionalParams): Promise<{ success: boolean }> {
+  async sendTransactionalEmail(
+    params: SendTransactionalParams
+  ): Promise<{ success: boolean }> {
     let apiParams = {
       ...params,
-      attachments: params.attachments?.map((a) => ({
+      attachments: params.attachments?.map(a => ({
         filename: a.filename,
         contentType: a.contentType,
         data: a.content
@@ -157,7 +162,10 @@ export class Client {
     return response.data;
   }
 
-  async listTransactionalEmails(params?: { perPage?: number; cursor?: string }): Promise<TransactionalEmailListResponse> {
+  async listTransactionalEmails(params?: {
+    perPage?: number;
+    cursor?: string;
+  }): Promise<TransactionalEmailListResponse> {
     let response = await this.axios.get('/transactional', { params });
     let raw = response.data;
     return {

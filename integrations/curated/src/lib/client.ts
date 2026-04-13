@@ -8,10 +8,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.curated.co/api/v3',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Token token="${config.token}"`,
-      },
+        Authorization: `Token token="${config.token}"`
+      }
     });
   }
 
@@ -24,31 +24,41 @@ export class Client {
 
   // Issues
 
-  async listIssues(publicationId: string, params?: {
-    page?: number;
-    perPage?: number;
-    state?: 'published' | 'draft';
-    stats?: boolean;
-  }): Promise<IssueListResponse> {
+  async listIssues(
+    publicationId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      state?: 'published' | 'draft';
+      stats?: boolean;
+    }
+  ): Promise<IssueListResponse> {
     let response = await this.axios.get(`/publications/${publicationId}/issues`, {
       params: {
         page: params?.page,
         per_page: params?.perPage,
         state: params?.state,
-        stats: params?.stats,
-      },
+        stats: params?.stats
+      }
     });
     return response.data;
   }
 
-  async getIssue(publicationId: string, issueNumber: string, params?: {
-    stats?: boolean;
-  }): Promise<IssueDetail> {
-    let response = await this.axios.get(`/publications/${publicationId}/issues/${issueNumber}`, {
-      params: {
-        stats: params?.stats,
-      },
-    });
+  async getIssue(
+    publicationId: string,
+    issueNumber: string,
+    params?: {
+      stats?: boolean;
+    }
+  ): Promise<IssueDetail> {
+    let response = await this.axios.get(
+      `/publications/${publicationId}/issues/${issueNumber}`,
+      {
+        params: {
+          stats: params?.stats
+        }
+      }
+    );
     return response.data;
   }
 
@@ -73,41 +83,52 @@ export class Client {
     return response.data;
   }
 
-  async createLink(publicationId: string, params: {
-    url: string;
-    title?: string;
-    description?: string;
-    image?: string;
-    category?: string;
-  }): Promise<Link> {
+  async createLink(
+    publicationId: string,
+    params: {
+      url: string;
+      title?: string;
+      description?: string;
+      image?: string;
+      category?: string;
+    }
+  ): Promise<Link> {
     let response = await this.axios.post(`/publications/${publicationId}/links`, null, {
       params: {
         url: params.url,
         title: params.title,
         description: params.description,
         image: params.image,
-        category: params.category,
-      },
+        category: params.category
+      }
     });
     return response.data;
   }
 
-  async updateLink(publicationId: string, linkId: string, params: {
-    url?: string;
-    title?: string;
-    description?: string;
-    category?: string;
-    issueId?: string;
-  }): Promise<Link> {
-    let response = await this.axios.put(`/publications/${publicationId}/links/${linkId}`, null, {
-      params: {
-        url: params.url,
-        title: params.title,
-        description: params.description,
-        category: params.category,
-        issue_id: params.issueId,
-      },
-    });
+  async updateLink(
+    publicationId: string,
+    linkId: string,
+    params: {
+      url?: string;
+      title?: string;
+      description?: string;
+      category?: string;
+      issueId?: string;
+    }
+  ): Promise<Link> {
+    let response = await this.axios.put(
+      `/publications/${publicationId}/links/${linkId}`,
+      null,
+      {
+        params: {
+          url: params.url,
+          title: params.title,
+          description: params.description,
+          category: params.category,
+          issue_id: params.issueId
+        }
+      }
+    );
     return response.data;
   }
 
@@ -117,54 +138,71 @@ export class Client {
 
   // Subscribers
 
-  async listSubscribers(publicationId: string, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<SubscriberListResponse> {
+  async listSubscribers(
+    publicationId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<SubscriberListResponse> {
     let response = await this.axios.get(`/publications/${publicationId}/email_subscribers`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
 
   async getSubscriber(publicationId: string, subscriberId: string): Promise<Subscriber> {
-    let response = await this.axios.get(`/publications/${publicationId}/email_subscribers/${subscriberId}`);
+    let response = await this.axios.get(
+      `/publications/${publicationId}/email_subscribers/${subscriberId}`
+    );
     return response.data;
   }
 
-  async subscribe(publicationId: string, params: {
-    email: string;
-    sync?: boolean;
-  }): Promise<SubscribeResponse> {
+  async subscribe(
+    publicationId: string,
+    params: {
+      email: string;
+      sync?: boolean;
+    }
+  ): Promise<SubscribeResponse> {
     let response = await this.axios.post(`/publications/${publicationId}/email_subscribers`, {
       email: params.email,
-      sync: params.sync,
+      sync: params.sync
     });
     return response.data;
   }
 
-  async listUnsubscribers(publicationId: string, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<UnsubscriberListResponse> {
+  async listUnsubscribers(
+    publicationId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<UnsubscriberListResponse> {
     let response = await this.axios.get(`/publications/${publicationId}/email_unsubscribers`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
 
-  async unsubscribe(publicationId: string, params: {
-    email: string;
-  }): Promise<SubscribeResponse> {
-    let response = await this.axios.post(`/publications/${publicationId}/email_unsubscribers`, {
-      email: params.email,
-    });
+  async unsubscribe(
+    publicationId: string,
+    params: {
+      email: string;
+    }
+  ): Promise<SubscribeResponse> {
+    let response = await this.axios.post(
+      `/publications/${publicationId}/email_unsubscribers`,
+      {
+        email: params.email
+      }
+    );
     return response.data;
   }
 

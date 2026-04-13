@@ -19,7 +19,7 @@ import {
   deleteVectorStore,
   createBatch,
   getBatch,
-  cancelBatch,
+  cancelBatch
 } from './tools';
 import { openaiEvents } from './triggers';
 
@@ -44,9 +44,7 @@ export let provider = Slate.create({
     deleteVectorStore,
     createBatch,
     getBatch,
-    cancelBatch,
+    cancelBatch
   ],
-  triggers: [
-    openaiEvents,
-  ],
+  triggers: [openaiEvents]
 });

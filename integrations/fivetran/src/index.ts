@@ -42,7 +42,7 @@ import {
   listWebhooks,
   createWebhook,
   updateWebhook,
-  deleteWebhook,
+  deleteWebhook
 } from './tools';
 import { fivetranEvents } from './triggers';
 
@@ -90,9 +90,7 @@ export let provider = Slate.create({
     listWebhooks,
     createWebhook,
     updateWebhook,
-    deleteWebhook,
+    deleteWebhook
   ],
-  triggers: [
-    fivetranEvents,
-  ],
+  triggers: [fivetranEvents]
 });

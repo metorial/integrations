@@ -1,5 +1,11 @@
 import { createAxios } from 'slates';
-import type { LineItem, OrderPlacedParams, CheckoutStartedParams, OrderFulfilledParams, CustomEventParams } from './client';
+import type {
+  LineItem,
+  OrderPlacedParams,
+  CheckoutStartedParams,
+  OrderFulfilledParams,
+  CustomEventParams
+} from './client';
 
 export class SendlaneEcommerceClient {
   private axios: ReturnType<typeof createAxios>;
@@ -8,10 +14,10 @@ export class SendlaneEcommerceClient {
     this.axios = createAxios({
       baseURL: 'https://api.sendlane.com/v2',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -22,7 +28,7 @@ export class SendlaneEcommerceClient {
       event_id: params.eventId,
       email: params.email,
       total: params.total,
-      line_items: params.lineItems.map((item) => this.formatLineItem(item)),
+      line_items: params.lineItems.map(item => this.formatLineItem(item))
     };
 
     if (params.orderId !== undefined) body.order_id = params.orderId;
@@ -46,7 +52,7 @@ export class SendlaneEcommerceClient {
       email: params.email,
       checkout_id: params.checkoutId,
       total: params.total,
-      line_items: params.lineItems.map((item) => this.formatLineItem(item)),
+      line_items: params.lineItems.map(item => this.formatLineItem(item))
     };
 
     if (params.status) body.status = params.status;
@@ -64,7 +70,7 @@ export class SendlaneEcommerceClient {
       event: 'order_fulfilled',
       token: params.token,
       event_id: params.eventId,
-      email: params.email,
+      email: params.email
     };
 
     if (params.orderId !== undefined) body.order_id = params.orderId;
@@ -78,7 +84,7 @@ export class SendlaneEcommerceClient {
     let body: Record<string, any> = {
       event: params.eventName,
       token: params.token,
-      email: params.email,
+      email: params.email
     };
 
     if (params.eventId) body.event_id = params.eventId;
@@ -95,7 +101,7 @@ export class SendlaneEcommerceClient {
       product_name: item.product_name,
       quantity: item.quantity,
       item_price: item.item_price,
-      total: item.total,
+      total: item.total
     };
 
     if (item.sku) formatted.sku = item.sku;

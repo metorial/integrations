@@ -3,32 +3,46 @@ import { ControlPlaneClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let testEventDelivery = SlateTool.create(
-  spec,
-  {
-    name: 'Test Event Delivery',
-    key: 'test_event_delivery',
-    description: `Test event transformation and delivery for a given source or source-destination setup without using the Live Events tab. Verifies that events are correctly transformed and delivered through the pipeline.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let testEventDelivery = SlateTool.create(spec, {
+  name: 'Test Event Delivery',
+  key: 'test_event_delivery',
+  description: `Test event transformation and delivery for a given source or source-destination setup without using the Live Events tab. Verifies that events are correctly transformed and delivered through the pipeline.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    testType: z.enum(['destination', 'source']).describe('Whether to test a specific destination or entire source pipeline'),
-    sourceId: z.string().describe('Source ID to test'),
-    destinationId: z.string().optional().describe('Destination ID to test (required for destination test type)'),
-    stage: z.string().optional().describe('Pipeline stage to test (e.g., user_transformation, dest_transformation, router)'),
-    event: z.record(z.string(), z.any()).optional().describe('Custom test event payload to use'),
-  }))
-  .output(z.object({
-    testResults: z.record(z.string(), z.any()).describe('Test results from RudderStack'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      testType: z
+        .enum(['destination', 'source'])
+        .describe('Whether to test a specific destination or entire source pipeline'),
+      sourceId: z.string().describe('Source ID to test'),
+      destinationId: z
+        .string()
+        .optional()
+        .describe('Destination ID to test (required for destination test type)'),
+      stage: z
+        .string()
+        .optional()
+        .describe(
+          'Pipeline stage to test (e.g., user_transformation, dest_transformation, router)'
+        ),
+      event: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom test event payload to use')
+    })
+  )
+  .output(
+    z.object({
+      testResults: z.record(z.string(), z.any()).describe('Test results from RudderStack')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ControlPlaneClient({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let { testType, sourceId, destinationId, stage, event } = ctx.input;
@@ -44,7 +58,7 @@ export let testEventDelivery = SlateTool.create(
 
     return {
       output: { testResults: result },
-      message: `Completed **${testType}** test for source \`${sourceId}\`${destinationId ? ` → destination \`${destinationId}\`` : ''}.`,
+      message: `Completed **${testType}** test for source \`${sourceId}\`${destinationId ? ` → destination \`${destinationId}\`` : ''}.`
     };
   })
   .build();

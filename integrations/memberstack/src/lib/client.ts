@@ -1,13 +1,14 @@
 import { createAxios } from 'slates';
 import type { Member } from './types';
 
-let createApi = (token: string) => createAxios({
-  baseURL: 'https://admin.memberstack.com',
-  headers: {
-    'X-API-KEY': token,
-    'Content-Type': 'application/json',
-  },
-});
+let createApi = (token: string) =>
+  createAxios({
+    baseURL: 'https://admin.memberstack.com',
+    headers: {
+      'X-API-KEY': token,
+      'Content-Type': 'application/json'
+    }
+  });
 
 let normalizeMember = (raw: any): Member => ({
   memberId: raw.id,
@@ -29,8 +30,8 @@ let normalizeMember = (raw: any): Member => ({
     planId: pc.planId,
     planName: pc.planName,
     type: pc.type,
-    payment: pc.payment ?? null,
-  })),
+    payment: pc.payment ?? null
+  }))
 });
 
 export interface ListMembersParams {
@@ -92,7 +93,7 @@ export class Client {
       totalCount: data.totalCount,
       endCursor: data.endCursor ?? null,
       hasMore: data.hasMore ?? false,
-      members: (data.data ?? []).map(normalizeMember),
+      members: (data.data ?? []).map(normalizeMember)
     };
   }
 
@@ -115,7 +116,10 @@ export class Client {
     return normalizeMember(response.data.data);
   }
 
-  async deleteMember(memberId: string, params: DeleteMemberParams = {}): Promise<{ memberId: string }> {
+  async deleteMember(
+    memberId: string,
+    params: DeleteMemberParams = {}
+  ): Promise<{ memberId: string }> {
     let api = createApi(this.token);
     let response = await api.delete(`/members/${memberId}`, { data: params });
     return { memberId: response.data.data?.id ?? memberId };
@@ -150,7 +154,7 @@ export class Client {
       issuedAt: data.iat,
       expiresAt: data.exp,
       audience: data.aud,
-      issuer: data.iss,
+      issuer: data.iss
     };
   }
 }

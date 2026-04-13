@@ -3,43 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchDeals = SlateTool.create(
-  spec,
-  {
-    name: 'Search Deals',
-    key: 'search_deals',
-    description: `Lists and filters deals across pipelines. Supports filtering by pipeline, stage, status, owner, and contact. Use for browsing deals or finding specific ones.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let searchDeals = SlateTool.create(spec, {
+  name: 'Search Deals',
+  key: 'search_deals',
+  description: `Lists and filters deals across pipelines. Supports filtering by pipeline, stage, status, owner, and contact. Use for browsing deals or finding specific ones.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Search term for deal title'),
-    pipelineId: z.string().optional().describe('Filter by pipeline ID'),
-    stageId: z.string().optional().describe('Filter by stage ID'),
-    status: z.number().optional().describe('Filter by status: 0=open, 1=won, 2=lost'),
-    ownerId: z.string().optional().describe('Filter by deal owner user ID'),
-    contactId: z.string().optional().describe('Filter by primary contact ID'),
-    limit: z.number().optional().describe('Maximum number of deals to return (default 20)'),
-    offset: z.number().optional().describe('Number of deals to skip for pagination')
-  }))
-  .output(z.object({
-    deals: z.array(z.object({
-      dealId: z.string(),
-      title: z.string().optional(),
-      value: z.string().optional(),
-      currency: z.string().optional(),
-      pipelineId: z.string().optional(),
-      stageId: z.string().optional(),
-      status: z.string().optional(),
-      contactId: z.string().optional(),
-      createdAt: z.string().optional()
-    })),
-    totalCount: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Search term for deal title'),
+      pipelineId: z.string().optional().describe('Filter by pipeline ID'),
+      stageId: z.string().optional().describe('Filter by stage ID'),
+      status: z.number().optional().describe('Filter by status: 0=open, 1=won, 2=lost'),
+      ownerId: z.string().optional().describe('Filter by deal owner user ID'),
+      contactId: z.string().optional().describe('Filter by primary contact ID'),
+      limit: z.number().optional().describe('Maximum number of deals to return (default 20)'),
+      offset: z.number().optional().describe('Number of deals to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      deals: z.array(
+        z.object({
+          dealId: z.string(),
+          title: z.string().optional(),
+          value: z.string().optional(),
+          currency: z.string().optional(),
+          pipelineId: z.string().optional(),
+          stageId: z.string().optional(),
+          status: z.string().optional(),
+          contactId: z.string().optional(),
+          createdAt: z.string().optional()
+        })
+      ),
+      totalCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -75,4 +78,5 @@ export let searchDeals = SlateTool.create(
       output: { deals, totalCount },
       message: `Found **${deals.length}** deals${totalCount !== undefined ? ` (out of ${totalCount} total)` : ''}.`
     };
-  }).build();
+  })
+  .build();

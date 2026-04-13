@@ -1,8 +1,8 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { SlateTrigger } from 'slates';
+import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
-import { z } from 'zod';
 
 function verifyAsanaSignature(
   secret: string,
@@ -11,9 +11,7 @@ function verifyAsanaSignature(
 ): boolean {
   if (!signatureHeader || !secret) return true;
   let expectedHex = createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex');
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
   let a = Buffer.from(expectedHex, 'utf8');
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
   let b = Buffer.from(signatureHeader.trim(), 'utf8');
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
@@ -79,7 +77,9 @@ export let taskChangesWebhook = SlateTrigger.create(spec, {
 
     autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let registrationDetails = (ctx.input as any).registrationDetails as { webhookGid?: string } | undefined;
+      let registrationDetails = (ctx.input as any).registrationDetails as
+        | { webhookGid?: string }
+        | undefined;
       if (!registrationDetails?.webhookGid) return;
       await client.deleteWebhook(registrationDetails.webhookGid);
     },
@@ -98,7 +98,9 @@ export let taskChangesWebhook = SlateTrigger.create(spec, {
 
       let rawBody = await ctx.request.text();
       let sig = ctx.request.headers.get('x-hook-signature');
-      let registrationDetails = (ctx.input as any).registrationDetails as { hookSecret?: string } | undefined;
+      let registrationDetails = (ctx.input as any).registrationDetails as
+        | { hookSecret?: string }
+        | undefined;
       let storedSecret = registrationDetails?.hookSecret;
       if (storedSecret && !verifyAsanaSignature(storedSecret, rawBody, sig)) {
         return {

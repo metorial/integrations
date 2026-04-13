@@ -14,7 +14,7 @@ export class Client {
     this.companyDomain = config.companyDomain;
 
     let headers: Record<string, string> = {
-      'Accept': 'application/json'
+      Accept: 'application/json'
     };
 
     // For API key auth, use Basic Auth header (key:x base64 encoded)
@@ -58,7 +58,12 @@ export class Client {
 
   // ─── Custom Report ───
 
-  async getCustomReport(format: string, fields: string[], title?: string, filterLastChanged?: string): Promise<any> {
+  async getCustomReport(
+    format: string,
+    fields: string[],
+    title?: string,
+    filterLastChanged?: string
+  ): Promise<any> {
     let body: any = {
       title: title || 'Custom Report',
       fields
@@ -66,11 +71,18 @@ export class Client {
     if (filterLastChanged) {
       body.filters = { lastChanged: { includeNull: 'no', value: filterLastChanged } };
     }
-    let response = await this.http.post(`/reports/custom?format=${format}&onlyCurrent=true`, body);
+    let response = await this.http.post(
+      `/reports/custom?format=${format}&onlyCurrent=true`,
+      body
+    );
     return response.data;
   }
 
-  async getCompanyReport(reportId: string, format: string, filterLastChanged?: string): Promise<any> {
+  async getCompanyReport(
+    reportId: string,
+    format: string,
+    filterLastChanged?: string
+  ): Promise<any> {
     let params: Record<string, string> = { format };
     if (filterLastChanged) {
       params['fd'] = filterLastChanged;
@@ -86,13 +98,25 @@ export class Client {
     return response.data;
   }
 
-  async addTableRow(employeeId: string, tableName: string, data: Record<string, any>): Promise<any> {
+  async addTableRow(
+    employeeId: string,
+    tableName: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.http.post(`/employees/${employeeId}/tables/${tableName}`, data);
     return response.data;
   }
 
-  async updateTableRow(employeeId: string, tableName: string, rowId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.http.post(`/employees/${employeeId}/tables/${tableName}/${rowId}`, data);
+  async updateTableRow(
+    employeeId: string,
+    tableName: string,
+    rowId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/employees/${employeeId}/tables/${tableName}/${rowId}`,
+      data
+    );
     return response.data;
   }
 
@@ -114,21 +138,28 @@ export class Client {
     return response.data;
   }
 
-  async createTimeOffRequest(employeeId: string, data: {
-    status: string;
-    start: string;
-    end: string;
-    timeOffTypeId: string;
-    amount: number;
-    notes?: Record<string, string>;
-    dates?: Record<string, number>;
-    previousRequest?: string;
-  }): Promise<any> {
+  async createTimeOffRequest(
+    employeeId: string,
+    data: {
+      status: string;
+      start: string;
+      end: string;
+      timeOffTypeId: string;
+      amount: number;
+      notes?: Record<string, string>;
+      dates?: Record<string, number>;
+      previousRequest?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/employees/${employeeId}/time_off/request/`, data);
     return response.data;
   }
 
-  async updateTimeOffRequestStatus(requestId: string, status: string, note?: string): Promise<void> {
+  async updateTimeOffRequestStatus(
+    requestId: string,
+    status: string,
+    note?: string
+  ): Promise<void> {
     let body: any = { status };
     if (note) {
       body.note = note;
@@ -152,7 +183,9 @@ export class Client {
   async getTimeOffBalances(employeeId: string, end?: string): Promise<any> {
     let params: Record<string, string> = {};
     if (end) params['end'] = end;
-    let response = await this.http.get(`/employees/${employeeId}/time_off/calculator/`, { params });
+    let response = await this.http.get(`/employees/${employeeId}/time_off/calculator/`, {
+      params
+    });
     return response.data;
   }
 
@@ -163,22 +196,34 @@ export class Client {
 
   // ─── Time Tracking ───
 
-  async clockIn(employeeId: string, data: {
-    start: string;
-    timezone?: string;
-    note?: string;
-    projectId?: string;
-    taskId?: string;
-  }): Promise<any> {
-    let response = await this.http.post(`/employees/${employeeId}/time_tracking/clock_in`, data);
+  async clockIn(
+    employeeId: string,
+    data: {
+      start: string;
+      timezone?: string;
+      note?: string;
+      projectId?: string;
+      taskId?: string;
+    }
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/employees/${employeeId}/time_tracking/clock_in`,
+      data
+    );
     return response.data;
   }
 
-  async clockOut(employeeId: string, data?: {
-    timezone?: string;
-    note?: string;
-  }): Promise<any> {
-    let response = await this.http.post(`/employees/${employeeId}/time_tracking/clock_out`, data || {});
+  async clockOut(
+    employeeId: string,
+    data?: {
+      timezone?: string;
+      note?: string;
+    }
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/employees/${employeeId}/time_tracking/clock_out`,
+      data || {}
+    );
     return response.data;
   }
 
@@ -191,19 +236,27 @@ export class Client {
     return response.data;
   }
 
-  async addTimesheetEntry(employeeId: string, data: {
-    date: string;
-    hours: number;
-    note?: string;
-    projectId?: string;
-    taskId?: string;
-  }): Promise<any> {
-    let response = await this.http.post(`/employees/${employeeId}/time_tracking/timesheet_entries`, data);
+  async addTimesheetEntry(
+    employeeId: string,
+    data: {
+      date: string;
+      hours: number;
+      note?: string;
+      projectId?: string;
+      taskId?: string;
+    }
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/employees/${employeeId}/time_tracking/timesheet_entries`,
+      data
+    );
     return response.data;
   }
 
   async deleteTimesheetEntry(employeeId: string, entryId: string): Promise<void> {
-    await this.http.delete(`/employees/${employeeId}/time_tracking/timesheet_entries/${entryId}`);
+    await this.http.delete(
+      `/employees/${employeeId}/time_tracking/timesheet_entries/${entryId}`
+    );
   }
 
   async getClockEntries(params: {
@@ -220,25 +273,37 @@ export class Client {
   async getGoals(employeeId: string, filter?: string): Promise<any> {
     let params: Record<string, string> = {};
     if (filter) params['filter'] = filter;
-    let response = await this.http.get(`/v1/performance/employees/${employeeId}/goals`, { params });
+    let response = await this.http.get(`/v1/performance/employees/${employeeId}/goals`, {
+      params
+    });
     return response.data;
   }
 
-  async createGoal(employeeId: string, data: {
-    title: string;
-    description?: string;
-    percentComplete?: number;
-    alignsWithOptionId?: string;
-    sharedWithEmployeeIds?: string[];
-    dueDate?: string;
-    milestonesEnabled?: boolean;
-  }): Promise<any> {
+  async createGoal(
+    employeeId: string,
+    data: {
+      title: string;
+      description?: string;
+      percentComplete?: number;
+      alignsWithOptionId?: string;
+      sharedWithEmployeeIds?: string[];
+      dueDate?: string;
+      milestonesEnabled?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/v1/performance/employees/${employeeId}/goals`, data);
     return response.data;
   }
 
-  async updateGoal(employeeId: string, goalId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.http.put(`/v1/performance/employees/${employeeId}/goals/${goalId}`, data);
+  async updateGoal(
+    employeeId: string,
+    goalId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.put(
+      `/v1/performance/employees/${employeeId}/goals/${goalId}`,
+      data
+    );
     return response.data;
   }
 
@@ -247,22 +312,33 @@ export class Client {
   }
 
   async addGoalComment(employeeId: string, goalId: string, text: string): Promise<any> {
-    let response = await this.http.post(`/v1/performance/employees/${employeeId}/goals/${goalId}/comments`, { text });
+    let response = await this.http.post(
+      `/v1/performance/employees/${employeeId}/goals/${goalId}/comments`,
+      { text }
+    );
     return response.data;
   }
 
   async closeGoal(employeeId: string, goalId: string): Promise<any> {
-    let response = await this.http.post(`/v1/performance/employees/${employeeId}/goals/${goalId}/close`, {});
+    let response = await this.http.post(
+      `/v1/performance/employees/${employeeId}/goals/${goalId}/close`,
+      {}
+    );
     return response.data;
   }
 
   async reopenGoal(employeeId: string, goalId: string): Promise<any> {
-    let response = await this.http.post(`/v1/performance/employees/${employeeId}/goals/${goalId}/reopen`, {});
+    let response = await this.http.post(
+      `/v1/performance/employees/${employeeId}/goals/${goalId}/reopen`,
+      {}
+    );
     return response.data;
   }
 
   async getGoalStatusCounts(employeeId: string): Promise<any> {
-    let response = await this.http.get(`/v1/performance/employees/${employeeId}/goals/aggregate`);
+    let response = await this.http.get(
+      `/v1/performance/employees/${employeeId}/goals/aggregate`
+    );
     return response.data;
   }
 
@@ -292,22 +368,28 @@ export class Client {
     return response.data;
   }
 
-  async getTrainingRecordsForEmployee(employeeId: string, trainingTypeId?: string): Promise<any> {
+  async getTrainingRecordsForEmployee(
+    employeeId: string,
+    trainingTypeId?: string
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (trainingTypeId) params['trainingTypeId'] = trainingTypeId;
     let response = await this.http.get(`/training/record/employee/${employeeId}`, { params });
     return response.data;
   }
 
-  async addTrainingRecord(employeeId: string, data: {
-    completed: string;
-    cost?: { currency: string; cost: number };
-    instructor?: string;
-    hours?: number;
-    credits?: number;
-    notes?: string;
-    trainingTypeId: string;
-  }): Promise<any> {
+  async addTrainingRecord(
+    employeeId: string,
+    data: {
+      completed: string;
+      cost?: { currency: string; cost: number };
+      instructor?: string;
+      hours?: number;
+      credits?: number;
+      notes?: string;
+      trainingTypeId: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/training/record/employee/${employeeId}`, data);
     return response.data;
   }
@@ -350,7 +432,13 @@ export class Client {
     return response.data;
   }
 
-  async uploadEmployeeFile(employeeId: string, categoryId: string, fileName: string, fileContent: string, shareWithEmployee?: boolean): Promise<any> {
+  async uploadEmployeeFile(
+    employeeId: string,
+    categoryId: string,
+    fileName: string,
+    fileContent: string,
+    shareWithEmployee?: boolean
+  ): Promise<any> {
     let boundary = '----SlatesBoundary' + Date.now();
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="category"\r\n\r\n${categoryId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="fileName"\r\n\r\n${fileName}\r\n--${boundary}\r\nContent-Disposition: form-data; name="share"\r\n\r\n${shareWithEmployee ? 'yes' : 'no'}\r\n--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${fileContent}\r\n--${boundary}--`;
 
@@ -362,7 +450,12 @@ export class Client {
     return response.data;
   }
 
-  async uploadCompanyFile(categoryId: string, fileName: string, fileContent: string, shareWithEmployees?: boolean): Promise<any> {
+  async uploadCompanyFile(
+    categoryId: string,
+    fileName: string,
+    fileContent: string,
+    shareWithEmployees?: boolean
+  ): Promise<any> {
     let boundary = '----SlatesBoundary' + Date.now();
     let body = `--${boundary}\r\nContent-Disposition: form-data; name="category"\r\n\r\n${categoryId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="fileName"\r\n\r\n${fileName}\r\n--${boundary}\r\nContent-Disposition: form-data; name="share"\r\n\r\n${shareWithEmployees ? 'yes' : 'no'}\r\n--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${fileContent}\r\n--${boundary}--`;
 
@@ -450,10 +543,13 @@ export class Client {
   }
 
   async addApplicationComment(applicationId: string, comment: string): Promise<any> {
-    let response = await this.http.post(`/applicant_tracking/applications/${applicationId}/comments`, {
-      type: 'comment',
-      comment
-    });
+    let response = await this.http.post(
+      `/applicant_tracking/applications/${applicationId}/comments`,
+      {
+        type: 'comment',
+        comment
+      }
+    );
     return response.data;
   }
 

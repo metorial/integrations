@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   unlockWebPage,
@@ -13,12 +12,9 @@ import {
   getAccountInfo,
   listZones,
   getZoneDetails,
-  manageZone,
+  manageZone
 } from './tools';
-import {
-  scrapingJobCompleted,
-  inboundWebhook,
-} from './triggers';
+import { scrapingJobCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -34,10 +30,7 @@ export let provider = Slate.create({
     getAccountInfo,
     listZones,
     getZoneDetails,
-    manageZone,
+    manageZone
   ],
-  triggers: [
-    inboundWebhook,
-    scrapingJobCompleted,
-  ],
+  triggers: [inboundWebhook, scrapingJobCompleted]
 });

@@ -2,26 +2,40 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    apiServerUrl: z.string(),
-    companyId: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      apiServerUrl: z.string(),
+      companyId: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'OAuth 2.0 SAML Bearer Assertion',
     key: 'oauth_saml_bearer',
 
     inputSchema: z.object({
-      apiServerUrl: z.string().describe('The base URL of your SAP SuccessFactors API instance (e.g., https://apisalesdemo4.successfactors.com)'),
+      apiServerUrl: z
+        .string()
+        .describe(
+          'The base URL of your SAP SuccessFactors API instance (e.g., https://apisalesdemo4.successfactors.com)'
+        ),
       companyId: z.string().describe('Your SAP SuccessFactors company ID'),
-      apiKey: z.string().describe('The API key (client_id) generated during OAuth client application registration'),
+      apiKey: z
+        .string()
+        .describe(
+          'The API key (client_id) generated during OAuth client application registration'
+        ),
       userId: z.string().describe('The SAP SuccessFactors user ID to authenticate as'),
-      privateKey: z.string().describe('PEM-encoded private key used to sign the SAML assertion'),
-      x509Certificate: z.string().describe('PEM-encoded X.509 certificate corresponding to the private key'),
+      privateKey: z
+        .string()
+        .describe('PEM-encoded private key used to sign the SAML assertion'),
+      x509Certificate: z
+        .string()
+        .describe('PEM-encoded X.509 certificate corresponding to the private key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let { apiServerUrl, companyId, apiKey, userId, privateKey, x509Certificate } = ctx.input;
 
       let baseUrl = apiServerUrl.replace(/\/+$/, '');
@@ -31,11 +45,11 @@ export let auth = SlateAuth.create()
         apiServerUrl: baseUrl,
         companyId,
         privateKey,
-        x509Certificate,
+        x509Certificate
       });
 
       let client = createAxios({
-        baseURL: baseUrl,
+        baseURL: baseUrl
       });
 
       let params = new URLSearchParams();
@@ -46,18 +60,18 @@ export let auth = SlateAuth.create()
 
       let response = await client.post('/oauth/token', params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       return {
         output: {
           token: response.data.access_token,
           apiServerUrl: baseUrl,
-          companyId,
-        },
+          companyId
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -66,19 +80,23 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('A pre-obtained OAuth Bearer access token'),
-      apiServerUrl: z.string().describe('The base URL of your SAP SuccessFactors API instance (e.g., https://apisalesdemo4.successfactors.com)'),
-      companyId: z.string().describe('Your SAP SuccessFactors company ID'),
+      apiServerUrl: z
+        .string()
+        .describe(
+          'The base URL of your SAP SuccessFactors API instance (e.g., https://apisalesdemo4.successfactors.com)'
+        ),
+      companyId: z.string().describe('Your SAP SuccessFactors company ID')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
           apiServerUrl: ctx.input.apiServerUrl.replace(/\/+$/, ''),
-          companyId: ctx.input.companyId,
-        },
+          companyId: ctx.input.companyId
+        }
       };
-    },
+    }
   });
 
 let buildSamlAssertion = (params: {
@@ -101,7 +119,8 @@ let buildSamlAssertion = (params: {
     .replace(/-----END CERTIFICATE-----/g, '')
     .replace(/\s+/g, '');
 
-  let assertion = `<saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="${assertionId}" IssueInstant="${issueInstant}" Version="2.0">` +
+  let assertion =
+    `<saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="${assertionId}" IssueInstant="${issueInstant}" Version="2.0">` +
     `<saml2:Issuer>www.successfactors.com</saml2:Issuer>` +
     `<saml2:Subject>` +
     `<saml2:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">${params.userId}</saml2:NameID>` +
@@ -141,7 +160,6 @@ let buildSamlAssertion = (params: {
     `</ds:Signature>` +
     `</saml2:Assertion>`;
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
   return Buffer.from(assertion).toString('base64');
 };
 

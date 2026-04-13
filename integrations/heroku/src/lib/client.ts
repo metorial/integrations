@@ -18,12 +18,12 @@ import type {
 } from './types';
 
 let HEROKU_HEADERS = {
-  'Accept': 'application/vnd.heroku+json; version=3',
+  Accept: 'application/vnd.heroku+json; version=3',
   'Content-Type': 'application/json'
 };
 
 let HEROKU_WEBHOOK_HEADERS = {
-  'Accept': 'application/vnd.heroku+json; version=3.webhooks',
+  Accept: 'application/vnd.heroku+json; version=3.webhooks',
   'Content-Type': 'application/json'
 };
 
@@ -209,7 +209,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.heroku.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         ...HEROKU_HEADERS
       }
     });
@@ -248,11 +248,14 @@ export class Client {
     return mapApp(response.data);
   }
 
-  async updateApp(appIdOrName: string, params: {
-    name?: string;
-    maintenance?: boolean;
-    buildStack?: string;
-  }): Promise<HerokuApp> {
+  async updateApp(
+    appIdOrName: string,
+    params: {
+      name?: string;
+      maintenance?: boolean;
+      buildStack?: string;
+    }
+  ): Promise<HerokuApp> {
     let body: any = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.maintenance !== undefined) body.maintenance = params.maintenance;
@@ -274,18 +277,23 @@ export class Client {
   }
 
   async getDyno(appIdOrName: string, dynoIdOrName: string): Promise<HerokuDyno> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/dynos/${encodeURIComponent(dynoIdOrName)}`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/dynos/${encodeURIComponent(dynoIdOrName)}`
+    );
     return mapDyno(response.data);
   }
 
-  async runDyno(appIdOrName: string, params: {
-    command: string;
-    size?: string;
-    type?: string;
-    env?: Record<string, string>;
-    attach?: boolean;
-    timeToLive?: number;
-  }): Promise<HerokuDyno> {
+  async runDyno(
+    appIdOrName: string,
+    params: {
+      command: string;
+      size?: string;
+      type?: string;
+      env?: Record<string, string>;
+      attach?: boolean;
+      timeToLive?: number;
+    }
+  ): Promise<HerokuDyno> {
     let body: any = { command: params.command };
     if (params.size) body.size = params.size;
     if (params.type) body.type = params.type;
@@ -293,12 +301,17 @@ export class Client {
     if (params.attach !== undefined) body.attach = params.attach;
     if (params.timeToLive !== undefined) body.time_to_live = params.timeToLive;
 
-    let response = await this.axios.post(`/apps/${encodeURIComponent(appIdOrName)}/dynos`, body);
+    let response = await this.axios.post(
+      `/apps/${encodeURIComponent(appIdOrName)}/dynos`,
+      body
+    );
     return mapDyno(response.data);
   }
 
   async restartDyno(appIdOrName: string, dynoIdOrName: string): Promise<void> {
-    await this.axios.delete(`/apps/${encodeURIComponent(appIdOrName)}/dynos/${encodeURIComponent(dynoIdOrName)}`);
+    await this.axios.delete(
+      `/apps/${encodeURIComponent(appIdOrName)}/dynos/${encodeURIComponent(dynoIdOrName)}`
+    );
   }
 
   async restartAllDynos(appIdOrName: string): Promise<void> {
@@ -312,10 +325,14 @@ export class Client {
     return (response.data as any[]).map(mapFormation);
   }
 
-  async updateFormation(appIdOrName: string, processType: string, params: {
-    quantity?: number;
-    size?: string;
-  }): Promise<HerokuFormation> {
+  async updateFormation(
+    appIdOrName: string,
+    processType: string,
+    params: {
+      quantity?: number;
+      size?: string;
+    }
+  ): Promise<HerokuFormation> {
     let body: any = {};
     if (params.quantity !== undefined) body.quantity = params.quantity;
     if (params.size !== undefined) body.size = params.size;
@@ -327,11 +344,14 @@ export class Client {
     return mapFormation(response.data);
   }
 
-  async batchUpdateFormation(appIdOrName: string, updates: Array<{
-    type: string;
-    quantity?: number;
-    size?: string;
-  }>): Promise<HerokuFormation[]> {
+  async batchUpdateFormation(
+    appIdOrName: string,
+    updates: Array<{
+      type: string;
+      quantity?: number;
+      size?: string;
+    }>
+  ): Promise<HerokuFormation[]> {
     let body = {
       updates: updates.map(u => {
         let entry: any = { type: u.type };
@@ -351,9 +371,7 @@ export class Client {
   // ============ Add-ons ============
 
   async listAddons(appIdOrName?: string): Promise<HerokuAddon[]> {
-    let url = appIdOrName
-      ? `/apps/${encodeURIComponent(appIdOrName)}/addons`
-      : '/addons';
+    let url = appIdOrName ? `/apps/${encodeURIComponent(appIdOrName)}/addons` : '/addons';
     let response = await this.axios.get(url);
     return (response.data as any[]).map(mapAddon);
   }
@@ -363,12 +381,15 @@ export class Client {
     return mapAddon(response.data);
   }
 
-  async createAddon(appIdOrName: string, params: {
-    plan: string;
-    name?: string;
-    config?: Record<string, string>;
-    attachment?: { name?: string };
-  }): Promise<HerokuAddon> {
+  async createAddon(
+    appIdOrName: string,
+    params: {
+      plan: string;
+      name?: string;
+      config?: Record<string, string>;
+      attachment?: { name?: string };
+    }
+  ): Promise<HerokuAddon> {
     let body: any = { plan: params.plan };
     if (params.name) body.name = params.name;
     if (params.config) body.config = params.config;
@@ -381,15 +402,21 @@ export class Client {
     return mapAddon(response.data);
   }
 
-  async updateAddon(addonIdOrName: string, params: {
-    plan?: string;
-    name?: string;
-  }): Promise<HerokuAddon> {
+  async updateAddon(
+    addonIdOrName: string,
+    params: {
+      plan?: string;
+      name?: string;
+    }
+  ): Promise<HerokuAddon> {
     let body: any = {};
     if (params.plan) body.plan = params.plan;
     if (params.name) body.name = params.name;
 
-    let response = await this.axios.patch(`/addons/${encodeURIComponent(addonIdOrName)}`, body);
+    let response = await this.axios.patch(
+      `/addons/${encodeURIComponent(addonIdOrName)}`,
+      body
+    );
     return mapAddon(response.data);
   }
 
@@ -402,7 +429,9 @@ export class Client {
   // ============ Add-on Attachments ============
 
   async listAddonAttachments(appIdOrName: string): Promise<HerokuAddonAttachment[]> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/addon-attachments`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/addon-attachments`
+    );
     return (response.data as any[]).map(mapAddonAttachment);
   }
 
@@ -430,11 +459,16 @@ export class Client {
   // ============ Config Vars ============
 
   async getConfigVars(appIdOrName: string): Promise<Record<string, string>> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/config-vars`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/config-vars`
+    );
     return response.data;
   }
 
-  async updateConfigVars(appIdOrName: string, vars: Record<string, string | null>): Promise<Record<string, string>> {
+  async updateConfigVars(
+    appIdOrName: string,
+    vars: Record<string, string | null>
+  ): Promise<Record<string, string>> {
     let response = await this.axios.patch(
       `/apps/${encodeURIComponent(appIdOrName)}/config-vars`,
       vars
@@ -450,15 +484,20 @@ export class Client {
   }
 
   async getBuild(appIdOrName: string, buildId: string): Promise<HerokuBuild> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/builds/${encodeURIComponent(buildId)}`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/builds/${encodeURIComponent(buildId)}`
+    );
     return mapBuild(response.data);
   }
 
-  async createBuild(appIdOrName: string, params: {
-    sourceUrl: string;
-    sourceVersion?: string;
-    checksum?: string;
-  }): Promise<HerokuBuild> {
+  async createBuild(
+    appIdOrName: string,
+    params: {
+      sourceUrl: string;
+      sourceVersion?: string;
+      checksum?: string;
+    }
+  ): Promise<HerokuBuild> {
     let body: any = {
       source_blob: {
         url: params.sourceUrl
@@ -482,15 +521,16 @@ export class Client {
   }
 
   async getRelease(appIdOrName: string, releaseIdOrVersion: string): Promise<HerokuRelease> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/releases/${encodeURIComponent(releaseIdOrVersion)}`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/releases/${encodeURIComponent(releaseIdOrVersion)}`
+    );
     return mapRelease(response.data);
   }
 
   async rollback(appIdOrName: string, releaseId: string): Promise<HerokuRelease> {
-    let response = await this.axios.post(
-      `/apps/${encodeURIComponent(appIdOrName)}/releases`,
-      { slug: releaseId }
-    );
+    let response = await this.axios.post(`/apps/${encodeURIComponent(appIdOrName)}/releases`, {
+      slug: releaseId
+    });
     return mapRelease(response.data);
   }
 
@@ -502,13 +542,19 @@ export class Client {
   }
 
   async getDomain(appIdOrName: string, domainIdOrHostname: string): Promise<HerokuDomain> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/domains/${encodeURIComponent(domainIdOrHostname)}`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/domains/${encodeURIComponent(domainIdOrHostname)}`
+    );
     return mapDomain(response.data);
   }
 
-  async addDomain(appIdOrName: string, hostname: string, params?: {
-    sniEndpoint?: string;
-  }): Promise<HerokuDomain> {
+  async addDomain(
+    appIdOrName: string,
+    hostname: string,
+    params?: {
+      sniEndpoint?: string;
+    }
+  ): Promise<HerokuDomain> {
     let body: any = { hostname };
     if (params?.sniEndpoint) body.sni_endpoint = params.sniEndpoint;
 
@@ -520,20 +566,27 @@ export class Client {
   }
 
   async removeDomain(appIdOrName: string, domainIdOrHostname: string): Promise<void> {
-    await this.axios.delete(`/apps/${encodeURIComponent(appIdOrName)}/domains/${encodeURIComponent(domainIdOrHostname)}`);
+    await this.axios.delete(
+      `/apps/${encodeURIComponent(appIdOrName)}/domains/${encodeURIComponent(domainIdOrHostname)}`
+    );
   }
 
   // ============ Collaborators ============
 
   async listCollaborators(appIdOrName: string): Promise<HerokuCollaborator[]> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/collaborators`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/collaborators`
+    );
     return (response.data as any[]).map(mapCollaborator);
   }
 
-  async addCollaborator(appIdOrName: string, params: {
-    userEmail: string;
-    silent?: boolean;
-  }): Promise<HerokuCollaborator> {
+  async addCollaborator(
+    appIdOrName: string,
+    params: {
+      userEmail: string;
+      silent?: boolean;
+    }
+  ): Promise<HerokuCollaborator> {
     let body: any = { user: params.userEmail };
     if (params.silent !== undefined) body.silent = params.silent;
 
@@ -576,10 +629,16 @@ export class Client {
     return mapPipeline(response.data);
   }
 
-  async updatePipeline(pipelineId: string, params: {
-    name?: string;
-  }): Promise<HerokuPipeline> {
-    let response = await this.axios.patch(`/pipelines/${encodeURIComponent(pipelineId)}`, params);
+  async updatePipeline(
+    pipelineId: string,
+    params: {
+      name?: string;
+    }
+  ): Promise<HerokuPipeline> {
+    let response = await this.axios.patch(
+      `/pipelines/${encodeURIComponent(pipelineId)}`,
+      params
+    );
     return mapPipeline(response.data);
   }
 
@@ -588,7 +647,9 @@ export class Client {
   }
 
   async listPipelineCouplings(pipelineId: string): Promise<HerokuPipelineCoupling[]> {
-    let response = await this.axios.get(`/pipelines/${encodeURIComponent(pipelineId)}/pipeline-couplings`);
+    let response = await this.axios.get(
+      `/pipelines/${encodeURIComponent(pipelineId)}/pipeline-couplings`
+    );
     return (response.data as any[]).map(mapPipelineCoupling);
   }
 
@@ -635,14 +696,19 @@ export class Client {
   // ============ SNI Endpoints ============
 
   async listSniEndpoints(appIdOrName: string): Promise<HerokuSniEndpoint[]> {
-    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/sni-endpoints`);
+    let response = await this.axios.get(
+      `/apps/${encodeURIComponent(appIdOrName)}/sni-endpoints`
+    );
     return (response.data as any[]).map(mapSniEndpoint);
   }
 
-  async createSniEndpoint(appIdOrName: string, params: {
-    certificateChain: string;
-    privateKey: string;
-  }): Promise<HerokuSniEndpoint> {
+  async createSniEndpoint(
+    appIdOrName: string,
+    params: {
+      certificateChain: string;
+      privateKey: string;
+    }
+  ): Promise<HerokuSniEndpoint> {
     let response = await this.axios.post(
       `/apps/${encodeURIComponent(appIdOrName)}/sni-endpoints`,
       {
@@ -653,10 +719,14 @@ export class Client {
     return mapSniEndpoint(response.data);
   }
 
-  async updateSniEndpoint(appIdOrName: string, endpointId: string, params: {
-    certificateChain: string;
-    privateKey: string;
-  }): Promise<HerokuSniEndpoint> {
+  async updateSniEndpoint(
+    appIdOrName: string,
+    endpointId: string,
+    params: {
+      certificateChain: string;
+      privateKey: string;
+    }
+  ): Promise<HerokuSniEndpoint> {
     let response = await this.axios.patch(
       `/apps/${encodeURIComponent(appIdOrName)}/sni-endpoints/${encodeURIComponent(endpointId)}`,
       {
@@ -676,20 +746,22 @@ export class Client {
   // ============ Webhooks ============
 
   async listWebhooks(appIdOrName: string): Promise<HerokuWebhook[]> {
-    let response = await this.axios.get(
-      `/apps/${encodeURIComponent(appIdOrName)}/webhooks`,
-      { headers: HEROKU_WEBHOOK_HEADERS }
-    );
+    let response = await this.axios.get(`/apps/${encodeURIComponent(appIdOrName)}/webhooks`, {
+      headers: HEROKU_WEBHOOK_HEADERS
+    });
     return (response.data as any[]).map(mapWebhook);
   }
 
-  async createWebhook(appIdOrName: string, params: {
-    include: string[];
-    level: string;
-    url: string;
-    secret?: string;
-    authorization?: string;
-  }): Promise<HerokuWebhook> {
+  async createWebhook(
+    appIdOrName: string,
+    params: {
+      include: string[];
+      level: string;
+      url: string;
+      secret?: string;
+      authorization?: string;
+    }
+  ): Promise<HerokuWebhook> {
     let body: any = {
       include: params.include,
       level: params.level,

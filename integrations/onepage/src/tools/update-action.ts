@@ -4,32 +4,37 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { actionSchema } from '../lib/schemas';
 
-export let updateAction = SlateTool.create(
-  spec,
-  {
-    name: 'Update Action',
-    key: 'update_action',
-    description: `Update an existing action, or mark it as complete/incomplete. Use this to change the action text, due date, status, or completion state.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateAction = SlateTool.create(spec, {
+  name: 'Update Action',
+  key: 'update_action',
+  description: `Update an existing action, or mark it as complete/incomplete. Use this to change the action text, due date, status, or completion state.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    actionId: z.string().describe('ID of the action to update'),
-    text: z.string().optional().describe('Updated action description'),
-    assigneeId: z.string().optional().describe('ID of the user to assign this action to'),
-    date: z.string().optional().describe('Due date (YYYY-MM-DD)'),
-    exactTime: z.number().optional().describe('Exact due time as Unix timestamp'),
-    status: z.enum(['asap', 'date', 'waiting', 'queued']).optional().describe('Action priority status'),
-    done: z.boolean().optional().describe('Set to true to complete or false to reopen the action'),
-  }))
+})
+  .input(
+    z.object({
+      actionId: z.string().describe('ID of the action to update'),
+      text: z.string().optional().describe('Updated action description'),
+      assigneeId: z.string().optional().describe('ID of the user to assign this action to'),
+      date: z.string().optional().describe('Due date (YYYY-MM-DD)'),
+      exactTime: z.number().optional().describe('Exact due time as Unix timestamp'),
+      status: z
+        .enum(['asap', 'date', 'waiting', 'queued'])
+        .optional()
+        .describe('Action priority status'),
+      done: z
+        .boolean()
+        .optional()
+        .describe('Set to true to complete or false to reopen the action')
+    })
+  )
   .output(actionSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       userId: ctx.auth.userId,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let { actionId, done, ...updateData } = ctx.input;
@@ -45,11 +50,12 @@ export let updateAction = SlateTool.create(
 
     return {
       output: action,
-      message: done === true
-        ? `Completed action **"${action.text}"** (${action.actionId}).`
-        : done === false
-          ? `Reopened action **"${action.text}"** (${action.actionId}).`
-          : `Updated action **"${action.text}"** (${action.actionId}).`,
+      message:
+        done === true
+          ? `Completed action **"${action.text}"** (${action.actionId}).`
+          : done === false
+            ? `Reopened action **"${action.text}"** (${action.actionId}).`
+            : `Updated action **"${action.text}"** (${action.actionId}).`
     };
   })
   .build();

@@ -13,25 +13,44 @@ export let sendRcsMessage = SlateTool.create(spec, {
 Requires an RCS bot ID configured in your Zixflow settings.`,
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    to: z.string().describe('Recipient phone number in international format'),
-    botId: z.string().describe('RCS bot ID from your Zixflow settings'),
-    mode: z.enum(['template', 'direct']).describe('Message mode: "template" or "direct"'),
-    templateName: z.string().optional().describe('Template name (required for template mode)'),
-    variables: z.record(z.string(), z.any()).optional().describe('Template variables as key-value pairs'),
-    messageType: z.enum(['text', 'image', 'video', 'document', 'audio']).optional().describe('Direct message type (required for direct mode)'),
-    text: z.string().optional().describe('Text message content (max 4096 chars, for direct/text mode)'),
-    mediaUrl: z.string().optional().describe('URL of the media file (for image, video, document, audio)'),
-    linkWithRecord: z.boolean().optional().describe('Associate message with a CRM record'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the message was sent successfully'),
-    responseMessage: z.string().describe('Response message from the API'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      to: z.string().describe('Recipient phone number in international format'),
+      botId: z.string().describe('RCS bot ID from your Zixflow settings'),
+      mode: z.enum(['template', 'direct']).describe('Message mode: "template" or "direct"'),
+      templateName: z
+        .string()
+        .optional()
+        .describe('Template name (required for template mode)'),
+      variables: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Template variables as key-value pairs'),
+      messageType: z
+        .enum(['text', 'image', 'video', 'document', 'audio'])
+        .optional()
+        .describe('Direct message type (required for direct mode)'),
+      text: z
+        .string()
+        .optional()
+        .describe('Text message content (max 4096 chars, for direct/text mode)'),
+      mediaUrl: z
+        .string()
+        .optional()
+        .describe('URL of the media file (for image, video, document, audio)'),
+      linkWithRecord: z.boolean().optional().describe('Associate message with a CRM record')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the message was sent successfully'),
+      responseMessage: z.string().describe('Response message from the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZixflowClient({ token: ctx.auth.token });
     let result: any;
 
@@ -41,7 +60,7 @@ Requires an RCS bot ID configured in your Zixflow settings.`,
         botId: ctx.input.botId,
         templateName: ctx.input.templateName!,
         variables: ctx.input.variables,
-        linkWithRecord: ctx.input.linkWithRecord,
+        linkWithRecord: ctx.input.linkWithRecord
       });
     } else {
       let messageType = ctx.input.messageType!;
@@ -58,16 +77,18 @@ Requires an RCS bot ID configured in your Zixflow settings.`,
         botId: ctx.input.botId,
         type: messageType,
         content,
-        linkWithRecord: ctx.input.linkWithRecord,
+        linkWithRecord: ctx.input.linkWithRecord
       });
     }
 
     return {
       output: {
         success: result.status === true,
-        responseMessage: result.message ?? 'Unknown response',
+        responseMessage: result.message ?? 'Unknown response'
       },
-      message: result.status ? `RCS ${ctx.input.mode} message sent to ${ctx.input.to}.` : `Failed to send RCS message: ${result.message}`,
+      message: result.status
+        ? `RCS ${ctx.input.mode} message sent to ${ctx.input.to}.`
+        : `Failed to send RCS message: ${result.message}`
     };
   })
   .build();

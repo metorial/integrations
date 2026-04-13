@@ -3,26 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteClassificationTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Classification',
-    key: 'delete_classification',
-    description: `Delete a document classification and all its associated data.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteClassificationTool = SlateTool.create(spec, {
+  name: 'Delete Classification',
+  key: 'delete_classification',
+  description: `Delete a document classification and all its associated data.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    classificationId: z.string().describe('Unique identifier of the classification to delete'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Deletion status'),
-    deletedAt: z.number().describe('Timestamp of deletion'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      classificationId: z
+        .string()
+        .describe('Unique identifier of the classification to delete')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Deletion status'),
+      deletedAt: z.number().describe('Timestamp of deletion')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let result = await client.deleteClassification(ctx.input.classificationId);
@@ -30,9 +33,9 @@ export let deleteClassificationTool = SlateTool.create(
     return {
       output: {
         status: result.status,
-        deletedAt: result.deletedAt,
+        deletedAt: result.deletedAt
       },
-      message: `Deleted classification \`${ctx.input.classificationId}\`.`,
+      message: `Deleted classification \`${ctx.input.classificationId}\`.`
     };
   })
   .build();

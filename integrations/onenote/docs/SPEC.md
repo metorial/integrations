@@ -9,29 +9,32 @@ Microsoft OneNote is a digital note-taking application that is part of the Micro
 OneNote is accessed through the Microsoft Graph API and uses **OAuth 2.0** for authentication.
 
 **Registration:**
+
 - Register your application in the Microsoft Entra ID (Azure AD) portal to obtain a **Client ID** and **Client Secret**.
 - Configure a **Redirect URI** for the OAuth flow.
 - For multi-tenant apps, the app can be configured to accept sign-ins from external Azure tenants.
 
 **Endpoints:**
+
 - Authorization: `https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize`
 - Token: `https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token`
 - The `{tenant}` value can be `common` (both personal and organizational accounts), `organizations`, `consumers`, or a specific tenant ID/domain.
 
 **Authentication type:**
+
 - The Microsoft Graph OneNote API will no longer support app-only authentication effective March 31, 2025. It is recommended to use delegated authentication. This means a signed-in user context is required.
 
 **Scopes (Permissions):**
 
 The following delegated permission scopes are relevant for OneNote:
 
-| Scope | Description |
-|---|---|
-| `Notes.Read` | Read-only access to all OneNote notebooks owned by or shared with the authenticated user. |
-| `Notes.ReadWrite` | Modification of existing OneNote content. This scope implicitly includes all capabilities of Notes.Read. |
-| `Notes.Create` | Allows creation of new OneNote entities. This is separate from modification permissions. |
-| `Notes.Read.All` | Read all OneNote notebooks the signed-in user has access to in the organization. |
-| `Notes.ReadWrite.All` | Read, share, and modify OneNote notebooks that the signed-in user has access to in the organization. |
+| Scope                 | Description                                                                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Notes.Read`          | Read-only access to all OneNote notebooks owned by or shared with the authenticated user.                |
+| `Notes.ReadWrite`     | Modification of existing OneNote content. This scope implicitly includes all capabilities of Notes.Read. |
+| `Notes.Create`        | Allows creation of new OneNote entities. This is separate from modification permissions.                 |
+| `Notes.Read.All`      | Read all OneNote notebooks the signed-in user has access to in the organization.                         |
+| `Notes.ReadWrite.All` | Read, share, and modify OneNote notebooks that the signed-in user has access to in the organization.     |
 
 Additionally, request `offline_access` to obtain a refresh token for persistent access.
 
@@ -48,6 +51,7 @@ Organize notebooks with sections and section groups. Sections can be created, li
 ### Page Creation and Content Management
 
 Create a OneNote page by sending a POST request to a pages endpoint, then send the HTML that defines the page in the message body. Pages support rich content including:
+
 - HTML, embedded images (sourced locally or at a public URL), video, audio, email messages, and other common file types.
 - OneNote can render webpages and PDF files as snapshots. Microsoft Graph supports a set of standard HTML and CSS for page layout.
 - Multipart requests for embedding binary images and files alongside HTML content.

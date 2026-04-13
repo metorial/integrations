@@ -3,39 +3,58 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let addContribution = SlateTool.create(
-  spec,
-  {
-    name: 'Add Contribution',
-    key: 'add_contribution',
-    description: `Record a financial contribution (donation/gift). Supports specifying the donor, amount, fund allocations (including split-fund gifts), payment method, batch grouping, and a unique external ID for donor matching.`,
-    instructions: [
-      'Fund names are auto-created if they don\'t already exist.',
-      'Contributions with the same group identifier are placed into the same batch.',
-      'The uid field links subsequent gifts to the same donor profile automatically.',
-    ],
-  }
-)
-  .input(z.object({
-    date: z.string().describe('Date of the contribution (YYYY-MM-DD format)'),
-    donorFirstName: z.string().optional().describe('Donor first name'),
-    donorLastName: z.string().optional().describe('Donor last name'),
-    donorEmail: z.string().optional().describe('Donor email address'),
-    uid: z.string().optional().describe('Unique external ID for the donor (for automatic donor matching across gifts)'),
-    processor: z.string().optional().describe('Name of the payment processor'),
-    method: z.string().optional().describe('Payment method (e.g., "Credit Card", "Cash", "Check"). Auto-created if new.'),
-    amount: z.string().optional().describe('Total contribution amount'),
-    funds: z.array(z.object({
-      name: z.string().describe('Fund name'),
-      amount: z.string().describe('Amount allocated to this fund'),
-    })).optional().describe('Fund allocations for split-fund gifts'),
-    group: z.string().optional().describe('Group identifier for batching contributions together'),
-    batchName: z.string().optional().describe('Descriptive name for the batch'),
-  }))
-  .output(z.object({
-    contribution: z.any().describe('The created contribution record'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let addContribution = SlateTool.create(spec, {
+  name: 'Add Contribution',
+  key: 'add_contribution',
+  description: `Record a financial contribution (donation/gift). Supports specifying the donor, amount, fund allocations (including split-fund gifts), payment method, batch grouping, and a unique external ID for donor matching.`,
+  instructions: [
+    "Fund names are auto-created if they don't already exist.",
+    'Contributions with the same group identifier are placed into the same batch.',
+    'The uid field links subsequent gifts to the same donor profile automatically.'
+  ]
+})
+  .input(
+    z.object({
+      date: z.string().describe('Date of the contribution (YYYY-MM-DD format)'),
+      donorFirstName: z.string().optional().describe('Donor first name'),
+      donorLastName: z.string().optional().describe('Donor last name'),
+      donorEmail: z.string().optional().describe('Donor email address'),
+      uid: z
+        .string()
+        .optional()
+        .describe(
+          'Unique external ID for the donor (for automatic donor matching across gifts)'
+        ),
+      processor: z.string().optional().describe('Name of the payment processor'),
+      method: z
+        .string()
+        .optional()
+        .describe(
+          'Payment method (e.g., "Credit Card", "Cash", "Check"). Auto-created if new.'
+        ),
+      amount: z.string().optional().describe('Total contribution amount'),
+      funds: z
+        .array(
+          z.object({
+            name: z.string().describe('Fund name'),
+            amount: z.string().describe('Amount allocated to this fund')
+          })
+        )
+        .optional()
+        .describe('Fund allocations for split-fund gifts'),
+      group: z
+        .string()
+        .optional()
+        .describe('Group identifier for batching contributions together'),
+      batchName: z.string().optional().describe('Descriptive name for the batch')
+    })
+  )
+  .output(
+    z.object({
+      contribution: z.any().describe('The created contribution record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let personJson: string | undefined;
@@ -61,11 +80,12 @@ export let addContribution = SlateTool.create(
       amount: ctx.input.amount,
       fundsJson,
       group: ctx.input.group,
-      batchName: ctx.input.batchName,
+      batchName: ctx.input.batchName
     });
 
     return {
       output: { contribution: result },
-      message: `Added contribution of ${ctx.input.amount || 'unspecified amount'} on ${ctx.input.date}.`,
+      message: `Added contribution of ${ctx.input.amount || 'unspecified amount'} on ${ctx.input.date}.`
     };
-  }).build();
+  })
+  .build();

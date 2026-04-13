@@ -9,11 +9,13 @@ Amazon Simple Notification Service (SNS) is a fully managed pub/sub messaging se
 AWS SNS uses the standard AWS authentication model. All API requests must be authenticated using **AWS Signature Version 4 (SigV4)**.
 
 **Required credentials:**
+
 - **AWS Access Key ID** – Identifies the IAM user or role making the request.
 - **Secret Access Key** – Used to derive the signing key for request signatures.
 - **AWS Region** – The region where your SNS resources are located (e.g., `us-east-1`). The API endpoint follows the pattern `sns.<region>.amazonaws.com`.
 
 **Optional credentials:**
+
 - **Session Token** (`X-Amz-Security-Token`) – Required when using temporary security credentials obtained via AWS STS (e.g., when assuming an IAM role).
 
 For programmatic access, AWS provides an SDK and CLI to cryptographically sign requests. If you use the AWS SDKs or AWS CLI to send your requests, you don't need to manually sign requests because these tools authenticate your requests by using access keys that you provide.

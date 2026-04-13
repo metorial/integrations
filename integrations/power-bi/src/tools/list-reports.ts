@@ -12,24 +12,30 @@ let reportSchema = z.object({
   reportType: z.string().optional().describe('Type of report')
 });
 
-export let listReports = SlateTool.create(
-  spec,
-  {
-    name: 'List Reports',
-    key: 'list_reports',
-    description: `List all Power BI reports. Optionally filter by workspace. Returns report names, IDs, dataset bindings, and URLs.`,
-    tags: {
-      readOnly: true
-    }
+export let listReports = SlateTool.create(spec, {
+  name: 'List Reports',
+  key: 'list_reports',
+  description: `List all Power BI reports. Optionally filter by workspace. Returns report names, IDs, dataset bindings, and URLs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID to filter reports. If omitted, lists reports from "My Workspace".')
-  }))
-  .output(z.object({
-    reports: z.array(reportSchema).describe('List of reports')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe(
+          'Workspace ID to filter reports. If omitted, lists reports from "My Workspace".'
+        )
+    })
+  )
+  .output(
+    z.object({
+      reports: z.array(reportSchema).describe('List of reports')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let reports = await client.listReports(ctx.input.workspaceId);
 

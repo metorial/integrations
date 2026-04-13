@@ -3,31 +3,37 @@ import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDependencies = SlateTool.create(
-  spec,
-  {
-    name: 'List Dependencies',
-    key: 'list_dependencies',
-    description: `List task dependencies (predecessor/successor relationships). Can list dependencies for a specific task or by dependency IDs.`,
-    tags: {
-      readOnly: true
-    }
+export let listDependencies = SlateTool.create(spec, {
+  name: 'List Dependencies',
+  key: 'list_dependencies',
+  description: `List task dependencies (predecessor/successor relationships). Can list dependencies for a specific task or by dependency IDs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    taskId: z.string().optional().describe('Task ID to list dependencies for'),
-    dependencyIds: z.array(z.string()).optional().describe('Specific dependency IDs to retrieve')
-  }))
-  .output(z.object({
-    dependencies: z.array(z.object({
-      dependencyId: z.string(),
-      predecessorId: z.string(),
-      successorId: z.string(),
-      relationType: z.string()
-    })),
-    count: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskId: z.string().optional().describe('Task ID to list dependencies for'),
+      dependencyIds: z
+        .array(z.string())
+        .optional()
+        .describe('Specific dependency IDs to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      dependencies: z.array(
+        z.object({
+          dependencyId: z.string(),
+          predecessorId: z.string(),
+          successorId: z.string(),
+          relationType: z.string()
+        })
+      ),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WrikeClient({
       token: ctx.auth.token,
       host: ctx.auth.host
@@ -49,31 +55,37 @@ export let listDependencies = SlateTool.create(
       output: { dependencies, count: dependencies.length },
       message: `Found **${dependencies.length}** dependency(ies).`
     };
-  }).build();
+  })
+  .build();
 
-export let createDependency = SlateTool.create(
-  spec,
-  {
-    name: 'Create Dependency',
-    key: 'create_dependency',
-    description: `Create a task dependency (predecessor/successor relationship) between two tasks. Used for Gantt chart views and timeline planning.`,
-    tags: {
-      destructive: false
-    }
+export let createDependency = SlateTool.create(spec, {
+  name: 'Create Dependency',
+  key: 'create_dependency',
+  description: `Create a task dependency (predecessor/successor relationship) between two tasks. Used for Gantt chart views and timeline planning.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    taskId: z.string().describe('Successor task ID (the task that depends on the predecessor)'),
-    predecessorId: z.string().describe('Predecessor task ID'),
-    relationType: z.string().describe('Relation type: FinishToStart, StartToStart, FinishToFinish, StartToFinish')
-  }))
-  .output(z.object({
-    dependencyId: z.string(),
-    predecessorId: z.string(),
-    successorId: z.string(),
-    relationType: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskId: z
+        .string()
+        .describe('Successor task ID (the task that depends on the predecessor)'),
+      predecessorId: z.string().describe('Predecessor task ID'),
+      relationType: z
+        .string()
+        .describe('Relation type: FinishToStart, StartToStart, FinishToFinish, StartToFinish')
+    })
+  )
+  .output(
+    z.object({
+      dependencyId: z.string(),
+      predecessorId: z.string(),
+      successorId: z.string(),
+      relationType: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WrikeClient({
       token: ctx.auth.token,
       host: ctx.auth.host
@@ -93,26 +105,28 @@ export let createDependency = SlateTool.create(
       },
       message: `Created ${dep.relationType} dependency from task ${dep.predecessorId} to ${dep.successorId}.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteDependency = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Dependency',
-    key: 'delete_dependency',
-    description: `Delete a task dependency relationship.`,
-    tags: {
-      destructive: true
-    }
+export let deleteDependency = SlateTool.create(spec, {
+  name: 'Delete Dependency',
+  key: 'delete_dependency',
+  description: `Delete a task dependency relationship.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    dependencyId: z.string().describe('ID of the dependency to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dependencyId: z.string().describe('ID of the dependency to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WrikeClient({
       token: ctx.auth.token,
       host: ctx.auth.host
@@ -124,4 +138,5 @@ export let deleteDependency = SlateTool.create(
       output: { deleted: true },
       message: `Deleted dependency ${ctx.input.dependencyId}.`
     };
-  }).build();
+  })
+  .build();

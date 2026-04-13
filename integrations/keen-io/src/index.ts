@@ -10,7 +10,7 @@ import {
   manageCachedDatasets,
   inspectSchema,
   deleteEvents,
-  getProjectInfo,
+  getProjectInfo
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -27,9 +27,7 @@ export let provider = Slate.create({
     manageCachedDatasets,
     inspectSchema,
     deleteEvents,
-    getProjectInfo,
+    getProjectInfo
   ] as any,
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

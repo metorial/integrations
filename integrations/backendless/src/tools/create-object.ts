@@ -3,29 +3,44 @@ import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createObject = SlateTool.create(
-  spec,
-  {
-    name: 'Create Object',
-    key: 'create_object',
-    description: `Creates one or more new objects in a Backendless database table. Supports single object creation and bulk creation of up to 100 objects at once. New tables and columns are created dynamically if they don't already exist.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createObject = SlateTool.create(spec, {
+  name: 'Create Object',
+  key: 'create_object',
+  description: `Creates one or more new objects in a Backendless database table. Supports single object creation and bulk creation of up to 100 objects at once. New tables and columns are created dynamically if they don't already exist.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    tableName: z.string().describe('Name of the database table to create the object(s) in'),
-    record: z.record(z.string(), z.unknown()).optional().describe('A single object to create, with property names as keys'),
-    records: z.array(z.record(z.string(), z.unknown())).optional().describe('An array of objects to create in bulk (max 100). Use this instead of record for batch creation.')
-  }))
-  .output(z.object({
-    createdObject: z.record(z.string(), z.unknown()).optional().describe('The created object with its assigned objectId (single creation)'),
-    createdObjectIds: z.array(z.string()).optional().describe('Array of objectIds for bulk-created objects'),
-    count: z.number().describe('Number of objects created')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tableName: z.string().describe('Name of the database table to create the object(s) in'),
+      record: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('A single object to create, with property names as keys'),
+      records: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe(
+          'An array of objects to create in bulk (max 100). Use this instead of record for batch creation.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      createdObject: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('The created object with its assigned objectId (single creation)'),
+      createdObjectIds: z
+        .array(z.string())
+        .optional()
+        .describe('Array of objectIds for bulk-created objects'),
+      count: z.number().describe('Number of objects created')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BackendlessClient({
       applicationId: ctx.auth.applicationId,
       token: ctx.auth.token,
@@ -57,6 +72,8 @@ export let createObject = SlateTool.create(
 
     return {
       output: { count: 0 },
-      message: 'No record or records provided. Please specify either `record` for single creation or `records` for bulk creation.'
+      message:
+        'No record or records provided. Please specify either `record` for single creation or `records` for bulk creation.'
     };
-  }).build();
+  })
+  .build();

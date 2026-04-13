@@ -1,18 +1,18 @@
 import { createAxios } from 'slates';
 import type {
+  ChangeListResponse,
+  CommentListResponse,
+  DriveChange,
+  DriveComment,
   DriveFile,
   DrivePermission,
-  DriveComment,
   DriveReply,
   DriveRevision,
-  SharedDrive,
   FileListResponse,
-  ChangeListResponse,
   PermissionListResponse,
-  CommentListResponse,
   RevisionListResponse,
-  SharedDriveListResponse,
-  DriveChange
+  SharedDrive,
+  SharedDriveListResponse
 } from './types';
 
 let FILE_FIELDS =
@@ -372,7 +372,6 @@ export class GoogleDriveClient {
       }
       throw e;
     }
-    // @ts-ignore Buffer exists at runtime; Function Bay ncc compile lacks Node globals in TS scope
     let buf = Buffer.from(response.data as ArrayBuffer);
     let ct = response.headers['content-type'];
     let mimeType = Array.isArray(ct) ? ct[0] : ct;
@@ -413,7 +412,6 @@ export class GoogleDriveClient {
       }
       throw e;
     }
-    // @ts-ignore Buffer exists at runtime; Function Bay ncc compile lacks Node globals in TS scope
     let buf = Buffer.from(response.data as ArrayBuffer);
     if (buf.length > MAX_DRIVE_DOWNLOAD_BYTES) {
       throw new Error(

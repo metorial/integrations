@@ -3,31 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getReview = SlateTool.create(
-  spec,
-  {
-    name: 'Get Review',
-    key: 'get_review',
-    description: `Retrieve a review by its review ID or by querying a specific property.
+export let getReview = SlateTool.create(spec, {
+  name: 'Get Review',
+  key: 'get_review',
+  description: `Retrieve a review by its review ID or by querying a specific property.
 Returns the review content, ratings, reviewer info, and associated member data.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    reviewId: z.string().optional().describe('The review ID to look up directly.'),
-    property: z.string().optional().describe('The column/field name to search by (e.g., "review_id", "user_id"). Used when reviewId is not provided.'),
-    propertyValue: z.string().optional().describe('The value to match for the given property.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    review: z.any().describe('The review record(s) returned.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      reviewId: z.string().optional().describe('The review ID to look up directly.'),
+      property: z
+        .string()
+        .optional()
+        .describe(
+          'The column/field name to search by (e.g., "review_id", "user_id"). Used when reviewId is not provided.'
+        ),
+      propertyValue: z
+        .string()
+        .optional()
+        .describe('The value to match for the given property.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      review: z.any().describe('The review record(s) returned.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let result;
@@ -42,8 +51,9 @@ Returns the review content, ratings, reviewer info, and associated member data.`
     return {
       output: {
         status: result.status,
-        review: result.message,
+        review: result.message
       },
-      message: `Retrieved review data successfully.`,
+      message: `Retrieved review data successfully.`
     };
-  }).build();
+  })
+  .build();

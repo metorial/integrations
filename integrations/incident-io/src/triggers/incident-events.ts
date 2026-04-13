@@ -3,42 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let incidentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incident Events',
-    key: 'incident_events',
-    description: 'Triggered when incidents are created, updated, or have their status changed. Covers both public and private incidents.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type'),
-    webhookId: z.string().describe('Unique ID for this webhook delivery'),
-    incidentId: z.string().describe('ID of the incident'),
-    isPrivate: z.boolean().describe('Whether this is a private incident'),
-    incident: z.any().optional().describe('Full incident payload (null for private incidents)'),
-  }))
-  .output(z.object({
-    incidentId: z.string(),
-    reference: z.string().optional(),
-    name: z.string().optional(),
-    summary: z.string().optional(),
-    visibility: z.string().optional(),
-    mode: z.string().optional(),
-    severity: z.any().optional(),
-    status: z.any().optional(),
-    incidentType: z.any().optional(),
-    permalink: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
+export let incidentEvents = SlateTrigger.create(spec, {
+  name: 'Incident Events',
+  key: 'incident_events',
+  description:
+    'Triggered when incidents are created, updated, or have their status changed. Covers both public and private incidents.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The webhook event type'),
+      webhookId: z.string().describe('Unique ID for this webhook delivery'),
+      incidentId: z.string().describe('ID of the incident'),
+      isPrivate: z.boolean().describe('Whether this is a private incident'),
+      incident: z
+        .any()
+        .optional()
+        .describe('Full incident payload (null for private incidents)')
+    })
+  )
+  .output(
+    z.object({
+      incidentId: z.string(),
+      reference: z.string().optional(),
+      name: z.string().optional(),
+      summary: z.string().optional(),
+      visibility: z.string().optional(),
+      mode: z.string().optional(),
+      severity: z.any().optional(),
+      status: z.any().optional(),
+      incidentType: z.any().optional(),
+      permalink: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
-      let eventType = body.event_type as string || '';
+      let eventType = (body.event_type as string) || '';
 
-      let isIncidentEvent = eventType.includes('incident_created') ||
+      let isIncidentEvent =
+        eventType.includes('incident_created') ||
         eventType.includes('incident_updated') ||
         eventType.includes('incident_status_updated');
 
@@ -48,24 +54,24 @@ export let incidentEvents = SlateTrigger.create(
 
       let isPrivate = eventType.startsWith('private_incident.');
 
-      let incidentData = isPrivate
-        ? body.private_incident
-        : body.public_incident;
+      let incidentData = isPrivate ? body.private_incident : body.public_incident;
 
       let incidentId = incidentData?.id || '';
 
       return {
-        inputs: [{
-          eventType,
-          webhookId: body.id || crypto.randomUUID(),
-          incidentId,
-          isPrivate,
-          incident: isPrivate ? undefined : incidentData,
-        }],
+        inputs: [
+          {
+            eventType,
+            webhookId: body.id || crypto.randomUUID(),
+            incidentId,
+            isPrivate,
+            incident: isPrivate ? undefined : incidentData
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       let inc = input.incident;
 
@@ -102,8 +108,9 @@ export let incidentEvents = SlateTrigger.create(
           incidentType: inc?.incident_type || undefined,
           permalink: inc?.permalink || undefined,
           createdAt: inc?.created_at || undefined,
-          updatedAt: inc?.updated_at || undefined,
-        },
+          updatedAt: inc?.updated_at || undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

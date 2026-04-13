@@ -15,22 +15,21 @@ let modelSchema = z.object({
   createdAt: z.number().optional().describe('Creation timestamp')
 });
 
-export let listModelsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Models',
-    key: 'list_models',
-    description: `List all available Mistral AI models including both Mistral-provided and user fine-tuned models. Returns model details such as capabilities, context length, and aliases.`,
-    tags: {
-      readOnly: true
-    }
+export let listModelsTool = SlateTool.create(spec, {
+  name: 'List Models',
+  key: 'list_models',
+  description: `List all available Mistral AI models including both Mistral-provided and user fine-tuned models. Returns model details such as capabilities, context length, and aliases.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    models: z.array(modelSchema).describe('Available models')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      models: z.array(modelSchema).describe('Available models')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MistralClient(ctx.auth.token);
 
     let result = await client.listModels();

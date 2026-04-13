@@ -3,31 +3,37 @@ import { MetabaseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDashboards = SlateTool.create(
-  spec,
-  {
-    name: 'List Dashboards',
-    key: 'list_dashboards',
-    description: `List dashboards in Metabase with optional filtering.
+export let listDashboards = SlateTool.create(spec, {
+  name: 'List Dashboards',
+  key: 'list_dashboards',
+  description: `List dashboards in Metabase with optional filtering.
 Returns all dashboards, your dashboards, favorites, or archived dashboards.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    filter: z.enum(['all', 'mine', 'fav', 'archived']).optional().describe('Filter to apply when listing dashboards')
-  }))
-  .output(z.object({
-    dashboards: z.array(z.object({
-      dashboardId: z.number().describe('ID of the dashboard'),
-      name: z.string().describe('Name of the dashboard'),
-      description: z.string().nullable().describe('Description'),
-      collectionId: z.number().nullable().describe('Collection ID'),
-      creatorId: z.number().optional().describe('Creator user ID')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      filter: z
+        .enum(['all', 'mine', 'fav', 'archived'])
+        .optional()
+        .describe('Filter to apply when listing dashboards')
+    })
+  )
+  .output(
+    z.object({
+      dashboards: z.array(
+        z.object({
+          dashboardId: z.number().describe('ID of the dashboard'),
+          name: z.string().describe('Name of the dashboard'),
+          description: z.string().nullable().describe('Description'),
+          collectionId: z.number().nullable().describe('Collection ID'),
+          creatorId: z.number().optional().describe('Creator user ID')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetabaseClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl

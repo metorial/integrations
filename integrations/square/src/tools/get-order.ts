@@ -3,39 +3,46 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let getOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Get Order',
-    key: 'get_order',
-    description: `Retrieve full details of a specific order by its ID. Returns line items, taxes, discounts, fulfillments, tenders, and all order metadata.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    orderId: z.string().describe('The ID of the order to retrieve'),
-  }))
-  .output(z.object({
-    orderId: z.string().optional(),
-    locationId: z.string().optional(),
-    customerId: z.string().optional(),
-    referenceId: z.string().optional(),
-    state: z.string().optional(),
-    lineItems: z.array(z.record(z.string(), z.any())).optional(),
-    taxes: z.array(z.record(z.string(), z.any())).optional(),
-    discounts: z.array(z.record(z.string(), z.any())).optional(),
-    fulfillments: z.array(z.record(z.string(), z.any())).optional(),
-    tenders: z.array(z.record(z.string(), z.any())).optional(),
-    totalMoney: z.object({ amount: z.number().optional(), currency: z.string().optional() }).optional(),
-    totalTaxMoney: z.object({ amount: z.number().optional(), currency: z.string().optional() }).optional(),
-    totalDiscountMoney: z.object({ amount: z.number().optional(), currency: z.string().optional() }).optional(),
-    netAmounts: z.record(z.string(), z.any()).optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    closedAt: z.string().optional(),
-    version: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getOrder = SlateTool.create(spec, {
+  name: 'Get Order',
+  key: 'get_order',
+  description: `Retrieve full details of a specific order by its ID. Returns line items, taxes, discounts, fulfillments, tenders, and all order metadata.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      orderId: z.string().describe('The ID of the order to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string().optional(),
+      locationId: z.string().optional(),
+      customerId: z.string().optional(),
+      referenceId: z.string().optional(),
+      state: z.string().optional(),
+      lineItems: z.array(z.record(z.string(), z.any())).optional(),
+      taxes: z.array(z.record(z.string(), z.any())).optional(),
+      discounts: z.array(z.record(z.string(), z.any())).optional(),
+      fulfillments: z.array(z.record(z.string(), z.any())).optional(),
+      tenders: z.array(z.record(z.string(), z.any())).optional(),
+      totalMoney: z
+        .object({ amount: z.number().optional(), currency: z.string().optional() })
+        .optional(),
+      totalTaxMoney: z
+        .object({ amount: z.number().optional(), currency: z.string().optional() })
+        .optional(),
+      totalDiscountMoney: z
+        .object({ amount: z.number().optional(), currency: z.string().optional() })
+        .optional(),
+      netAmounts: z.record(z.string(), z.any()).optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      closedAt: z.string().optional(),
+      version: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let o = await client.getOrder(ctx.input.orderId);
 
@@ -58,9 +65,9 @@ export let getOrder = SlateTool.create(
         createdAt: o.created_at,
         updatedAt: o.updated_at,
         closedAt: o.closed_at,
-        version: o.version,
+        version: o.version
       },
-      message: `Order **${o.id}** — State: **${o.state}**, Location: ${o.location_id}`,
+      message: `Order **${o.id}** — State: **${o.state}**, Location: ${o.location_id}`
     };
   })
   .build();

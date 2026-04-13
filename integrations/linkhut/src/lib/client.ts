@@ -57,15 +57,13 @@ export interface TagSuggestions {
 export class Client {
   private axios;
 
-  constructor(
-    private config: { token: string }
-  ) {
+  constructor(private config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.ln.ht/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -77,7 +75,7 @@ export class Client {
   async addBookmark(params: AddBookmarkParams): Promise<{ resultCode: string }> {
     let queryParams: Record<string, string> = {
       url: params.url,
-      description: params.description,
+      description: params.description
     };
     if (params.extended) queryParams.extended = params.extended;
     if (params.tags) queryParams.tags = params.tags;
@@ -95,7 +93,9 @@ export class Client {
     return { resultCode: response.data.result_code };
   }
 
-  async getBookmarks(params: GetBookmarksParams = {}): Promise<{ date: string; user: string; posts: Bookmark[] }> {
+  async getBookmarks(
+    params: GetBookmarksParams = {}
+  ): Promise<{ date: string; user: string; posts: Bookmark[] }> {
     let queryParams: Record<string, string> = {};
     if (params.tag) queryParams.tag = params.tag;
     if (params.dt) queryParams.dt = params.dt;
@@ -107,11 +107,13 @@ export class Client {
     return {
       date: response.data.date,
       user: response.data.user,
-      posts: (response.data.posts || []).map(mapPost),
+      posts: (response.data.posts || []).map(mapPost)
     };
   }
 
-  async getRecentBookmarks(params: RecentBookmarksParams = {}): Promise<{ date: string; user: string; posts: Bookmark[] }> {
+  async getRecentBookmarks(
+    params: RecentBookmarksParams = {}
+  ): Promise<{ date: string; user: string; posts: Bookmark[] }> {
     let queryParams: Record<string, string | number> = {};
     if (params.tag) queryParams.tag = params.tag;
     if (params.count !== undefined) queryParams.count = params.count;
@@ -120,7 +122,7 @@ export class Client {
     return {
       date: response.data.date,
       user: response.data.user,
-      posts: (response.data.posts || []).map(mapPost),
+      posts: (response.data.posts || []).map(mapPost)
     };
   }
 
@@ -134,7 +136,7 @@ export class Client {
     if (params.meta) queryParams.meta = params.meta;
 
     let response = await this.axios.get('/posts/all', { params: queryParams });
-    let posts = Array.isArray(response.data) ? response.data : (response.data.posts || []);
+    let posts = Array.isArray(response.data) ? response.data : response.data.posts || [];
     return posts.map(mapPost);
   }
 
@@ -156,7 +158,8 @@ export class Client {
     if (Array.isArray(data)) {
       for (let item of data) {
         if (item.popular) popular = Array.isArray(item.popular) ? item.popular : [];
-        if (item.recommended) recommended = Array.isArray(item.recommended) ? item.recommended : [];
+        if (item.recommended)
+          recommended = Array.isArray(item.recommended) ? item.recommended : [];
       }
     } else {
       popular = data.popular || [];
@@ -177,7 +180,9 @@ export class Client {
   }
 
   async renameTag(oldTag: string, newTag: string): Promise<{ resultCode: string }> {
-    let response = await this.axios.get('/tags/rename', { params: { old: oldTag, new: newTag } });
+    let response = await this.axios.get('/tags/rename', {
+      params: { old: oldTag, new: newTag }
+    });
     return { resultCode: response.data.result_code || response.data.result };
   }
 }
@@ -191,5 +196,5 @@ let mapPost = (post: any): Bookmark => ({
   time: post.time || '',
   shared: post.shared || 'yes',
   toread: post.toread || 'no',
-  meta: post.meta,
+  meta: post.meta
 });

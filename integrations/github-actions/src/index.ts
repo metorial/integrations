@@ -14,13 +14,13 @@ import {
   manageVariables,
   manageCaches,
   manageRunners,
-  managePermissions,
+  managePermissions
 } from './tools';
 import {
   workflowRunTrigger,
   workflowJobTrigger,
   checkRunTrigger,
-  deploymentStatusTrigger,
+  deploymentStatusTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -39,12 +39,7 @@ export let provider = Slate.create({
     manageVariables,
     manageCaches,
     manageRunners,
-    managePermissions,
+    managePermissions
   ],
-  triggers: [
-    workflowRunTrigger,
-    workflowJobTrigger,
-    checkRunTrigger,
-    deploymentStatusTrigger,
-  ],
+  triggers: [workflowRunTrigger, workflowJobTrigger, checkRunTrigger, deploymentStatusTrigger]
 });

@@ -19,7 +19,7 @@ import {
   updateLeadList,
   deleteLeadList,
   getAccount,
-  getUsage,
+  getUsage
 } from './tools';
 import { leadSaved } from './triggers';
 
@@ -44,9 +44,7 @@ export let provider = Slate.create({
     updateLeadList,
     deleteLeadList,
     getAccount,
-    getUsage,
+    getUsage
   ],
-  triggers: [
-    leadSaved,
-  ],
+  triggers: [leadSaved]
 });

@@ -5,7 +5,7 @@ import {
   slatesRequestsByMethod,
   slatesResponsesByMethod
 } from '@slates/proto';
-import { randomUUID } from 'node:crypto';
+import { randomUUID } from 'crypto';
 import z from 'zod';
 import { SlateProtocolError } from './error';
 import { SlatesClientState, SlatesProtocolClientOptions } from './types';

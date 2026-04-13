@@ -3,63 +3,81 @@ import { OpenWeatherClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getHistoricalWeather = SlateTool.create(
-  spec,
-  {
-    name: 'Get Historical Weather',
-    key: 'get_historical_weather',
-    description: `Retrieve historical weather data for a specific location and date. Supports two modes: **timemachine** returns hourly data for a specific Unix timestamp, and **day summary** returns aggregated data for a specific calendar date. Covers 47+ years of data starting from January 1, 1979. Requires One Call API 3.0 subscription.`,
-    instructions: [
-      'Use mode "timemachine" with a Unix timestamp to get hourly data for that moment',
-      'Use mode "day_summary" with a date in YYYY-MM-DD format to get daily aggregated data'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getHistoricalWeather = SlateTool.create(spec, {
+  name: 'Get Historical Weather',
+  key: 'get_historical_weather',
+  description: `Retrieve historical weather data for a specific location and date. Supports two modes: **timemachine** returns hourly data for a specific Unix timestamp, and **day summary** returns aggregated data for a specific calendar date. Covers 47+ years of data starting from January 1, 1979. Requires One Call API 3.0 subscription.`,
+  instructions: [
+    'Use mode "timemachine" with a Unix timestamp to get hourly data for that moment',
+    'Use mode "day_summary" with a date in YYYY-MM-DD format to get daily aggregated data'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    latitude: z.number().min(-90).max(90).describe('Latitude of the location'),
-    longitude: z.number().min(-180).max(180).describe('Longitude of the location'),
-    mode: z.enum(['timemachine', 'day_summary']).describe('Type of historical query'),
-    unixTimestamp: z.number().optional().describe('Unix timestamp (UTC) for timemachine mode'),
-    date: z.string().optional().describe('Date in YYYY-MM-DD format for day_summary mode')
-  }))
-  .output(z.object({
-    latitude: z.number().describe('Latitude'),
-    longitude: z.number().describe('Longitude'),
-    timezone: z.string().optional().describe('Timezone name'),
-    timezoneOffset: z.number().optional().describe('Shift in seconds from UTC'),
-    hourlyData: z.array(z.object({
-      timestamp: z.string().describe('Time (ISO 8601)'),
-      temperature: z.number().describe('Temperature'),
-      feelsLike: z.number().describe('Perceived temperature'),
-      pressure: z.number().describe('Atmospheric pressure in hPa'),
-      humidity: z.number().describe('Humidity percentage'),
-      dewPoint: z.number().optional().describe('Dew point'),
-      cloudiness: z.number().optional().describe('Cloudiness percentage'),
-      windSpeed: z.number().optional().describe('Wind speed'),
-      windDirection: z.number().optional().describe('Wind direction in degrees'),
-      visibility: z.number().optional().describe('Visibility in meters'),
-      conditionGroup: z.string().optional().describe('Weather condition group'),
-      conditionDescription: z.string().optional().describe('Weather condition description')
-    })).optional().describe('Hourly data (timemachine mode)'),
-    daySummary: z.object({
-      date: z.string().describe('Date (YYYY-MM-DD)'),
-      temperatureMin: z.number().optional().describe('Minimum temperature'),
-      temperatureMax: z.number().optional().describe('Maximum temperature'),
-      temperatureMorning: z.number().optional().describe('Morning temperature'),
-      temperatureAfternoon: z.number().optional().describe('Afternoon temperature'),
-      temperatureEvening: z.number().optional().describe('Evening temperature'),
-      temperatureNight: z.number().optional().describe('Night temperature'),
-      pressure: z.number().optional().describe('Atmospheric pressure in hPa'),
-      humidity: z.number().optional().describe('Humidity percentage'),
-      windSpeed: z.number().optional().describe('Max wind speed'),
-      precipitationTotal: z.number().optional().describe('Total precipitation in mm'),
-      cloudCoverageAfternoon: z.number().optional().describe('Afternoon cloud coverage percentage')
-    }).optional().describe('Daily aggregated data (day_summary mode)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      latitude: z.number().min(-90).max(90).describe('Latitude of the location'),
+      longitude: z.number().min(-180).max(180).describe('Longitude of the location'),
+      mode: z.enum(['timemachine', 'day_summary']).describe('Type of historical query'),
+      unixTimestamp: z
+        .number()
+        .optional()
+        .describe('Unix timestamp (UTC) for timemachine mode'),
+      date: z.string().optional().describe('Date in YYYY-MM-DD format for day_summary mode')
+    })
+  )
+  .output(
+    z.object({
+      latitude: z.number().describe('Latitude'),
+      longitude: z.number().describe('Longitude'),
+      timezone: z.string().optional().describe('Timezone name'),
+      timezoneOffset: z.number().optional().describe('Shift in seconds from UTC'),
+      hourlyData: z
+        .array(
+          z.object({
+            timestamp: z.string().describe('Time (ISO 8601)'),
+            temperature: z.number().describe('Temperature'),
+            feelsLike: z.number().describe('Perceived temperature'),
+            pressure: z.number().describe('Atmospheric pressure in hPa'),
+            humidity: z.number().describe('Humidity percentage'),
+            dewPoint: z.number().optional().describe('Dew point'),
+            cloudiness: z.number().optional().describe('Cloudiness percentage'),
+            windSpeed: z.number().optional().describe('Wind speed'),
+            windDirection: z.number().optional().describe('Wind direction in degrees'),
+            visibility: z.number().optional().describe('Visibility in meters'),
+            conditionGroup: z.string().optional().describe('Weather condition group'),
+            conditionDescription: z
+              .string()
+              .optional()
+              .describe('Weather condition description')
+          })
+        )
+        .optional()
+        .describe('Hourly data (timemachine mode)'),
+      daySummary: z
+        .object({
+          date: z.string().describe('Date (YYYY-MM-DD)'),
+          temperatureMin: z.number().optional().describe('Minimum temperature'),
+          temperatureMax: z.number().optional().describe('Maximum temperature'),
+          temperatureMorning: z.number().optional().describe('Morning temperature'),
+          temperatureAfternoon: z.number().optional().describe('Afternoon temperature'),
+          temperatureEvening: z.number().optional().describe('Evening temperature'),
+          temperatureNight: z.number().optional().describe('Night temperature'),
+          pressure: z.number().optional().describe('Atmospheric pressure in hPa'),
+          humidity: z.number().optional().describe('Humidity percentage'),
+          windSpeed: z.number().optional().describe('Max wind speed'),
+          precipitationTotal: z.number().optional().describe('Total precipitation in mm'),
+          cloudCoverageAfternoon: z
+            .number()
+            .optional()
+            .describe('Afternoon cloud coverage percentage')
+        })
+        .optional()
+        .describe('Daily aggregated data (day_summary mode)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OpenWeatherClient({
       apiKey: ctx.auth.token,
       units: ctx.config.units,
@@ -70,7 +88,11 @@ export let getHistoricalWeather = SlateTool.create(
       if (!ctx.input.unixTimestamp) {
         throw new Error('unixTimestamp is required for timemachine mode.');
       }
-      let data = await client.getOneCallTimemachine(ctx.input.latitude, ctx.input.longitude, ctx.input.unixTimestamp);
+      let data = await client.getOneCallTimemachine(
+        ctx.input.latitude,
+        ctx.input.longitude,
+        ctx.input.unixTimestamp
+      );
 
       let hourlyData = (data.data || []).map((h: any) => ({
         timestamp: new Date(h.dt * 1000).toISOString(),
@@ -102,7 +124,11 @@ export let getHistoricalWeather = SlateTool.create(
       if (!ctx.input.date) {
         throw new Error('date is required for day_summary mode (YYYY-MM-DD).');
       }
-      let data = await client.getOneCallDaySummary(ctx.input.latitude, ctx.input.longitude, ctx.input.date);
+      let data = await client.getOneCallDaySummary(
+        ctx.input.latitude,
+        ctx.input.longitude,
+        ctx.input.date
+      );
 
       let daySummary = {
         date: data.date || ctx.input.date,

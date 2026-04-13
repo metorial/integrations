@@ -22,55 +22,61 @@ let contactFieldsSchema = z.object({
   labelIds: z.array(z.string()).optional().describe('Label IDs to apply')
 });
 
-export let searchContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Contacts',
-    key: 'search_contacts',
-    description: `Search for contacts that have been added to your Apollo account. Contacts are people explicitly added to your database (not the broader Apollo search database). Returns enriched contact data including emails and phone numbers.`,
-    constraints: [
-      'Maximum 50,000 results (100 per page, up to 500 pages)',
-      'Only returns contacts in your team\'s database — use Search People for the broader Apollo database'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let searchContacts = SlateTool.create(spec, {
+  name: 'Search Contacts',
+  key: 'search_contacts',
+  description: `Search for contacts that have been added to your Apollo account. Contacts are people explicitly added to your database (not the broader Apollo search database). Returns enriched contact data including emails and phone numbers.`,
+  constraints: [
+    'Maximum 50,000 results (100 per page, up to 500 pages)',
+    "Only returns contacts in your team's database — use Search People for the broader Apollo database"
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    keywords: z.string().optional().describe('Keywords to search contacts'),
-    contactStageIds: z.array(z.string()).optional().describe('Filter by contact stage IDs'),
-    sortByField: z.string().optional().describe('Field to sort results by'),
-    sortAscending: z.boolean().optional().describe('Sort in ascending order (default: false)'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 25, max: 100)')
-  }))
-  .output(z.object({
-    contacts: z.array(z.object({
-      contactId: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      name: z.string().optional(),
-      email: z.string().optional(),
-      emailStatus: z.string().optional(),
-      title: z.string().optional(),
-      phone: z.string().optional(),
-      organizationName: z.string().optional(),
-      accountId: z.string().optional(),
-      ownerId: z.string().optional(),
-      contactStageId: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      country: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })),
-    totalEntries: z.number().optional(),
-    currentPage: z.number().optional(),
-    totalPages: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      keywords: z.string().optional().describe('Keywords to search contacts'),
+      contactStageIds: z.array(z.string()).optional().describe('Filter by contact stage IDs'),
+      sortByField: z.string().optional().describe('Field to sort results by'),
+      sortAscending: z
+        .boolean()
+        .optional()
+        .describe('Sort in ascending order (default: false)'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 25, max: 100)')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(
+        z.object({
+          contactId: z.string().optional(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          name: z.string().optional(),
+          email: z.string().optional(),
+          emailStatus: z.string().optional(),
+          title: z.string().optional(),
+          phone: z.string().optional(),
+          organizationName: z.string().optional(),
+          accountId: z.string().optional(),
+          ownerId: z.string().optional(),
+          contactStageId: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          country: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+      ),
+      totalEntries: z.number().optional(),
+      currentPage: z.number().optional(),
+      totalPages: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchContacts({
@@ -115,33 +121,37 @@ export let searchContacts = SlateTool.create(
   })
   .build();
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact in your Apollo account. Contacts are people that your team explicitly adds to the database. Once created, their enriched data is permanently accessible without consuming additional credits.`,
-    instructions: [
-      'Set runDedupe to true to prevent creating duplicate contacts with matching name, email, or other details.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact in your Apollo account. Contacts are people that your team explicitly adds to the database. Once created, their enriched data is permanently accessible without consuming additional credits.`,
+  instructions: [
+    'Set runDedupe to true to prevent creating duplicate contacts with matching name, email, or other details.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(contactFieldsSchema.extend({
-    runDedupe: z.boolean().optional().describe('Enable deduplication to prevent duplicates (default: false)')
-  }))
-  .output(z.object({
-    contactId: z.string().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    email: z.string().optional(),
-    title: z.string().optional(),
-    organizationName: z.string().optional(),
-    createdAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    contactFieldsSchema.extend({
+      runDedupe: z
+        .boolean()
+        .optional()
+        .describe('Enable deduplication to prevent duplicates (default: false)')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      email: z.string().optional(),
+      title: z.string().optional(),
+      organizationName: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.createContact({
@@ -180,30 +190,33 @@ export let createContact = SlateTool.create(
   })
   .build();
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact in your Apollo account. Provide the contact ID and any fields you want to change. Only the provided fields will be updated.`,
-    tags: {
-      destructive: false
-    }
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact in your Apollo account. Provide the contact ID and any fields you want to change. Only the provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('The Apollo contact ID to update')
-  }).merge(contactFieldsSchema))
-  .output(z.object({
-    contactId: z.string().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    email: z.string().optional(),
-    title: z.string().optional(),
-    organizationName: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z
+      .object({
+        contactId: z.string().describe('The Apollo contact ID to update')
+      })
+      .merge(contactFieldsSchema)
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      email: z.string().optional(),
+      title: z.string().optional(),
+      organizationName: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.updateContact(ctx.input.contactId, {

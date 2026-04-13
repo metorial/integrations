@@ -3,35 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPipelines = SlateTool.create(
-  spec,
-  {
-    name: 'List Pipelines',
-    key: 'list_pipelines',
-    description: `List recent pipelines for a project. Optionally filter by branch. Returns pipeline IDs, statuses, and trigger information.`,
-    tags: {
-      readOnly: true
-    }
+export let listPipelines = SlateTool.create(spec, {
+  name: 'List Pipelines',
+  key: 'list_pipelines',
+  description: `List recent pipelines for a project. Optionally filter by branch. Returns pipeline IDs, statuses, and trigger information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectSlug: z.string().describe('Project slug in the format vcs-slug/org-name/repo-name'),
-    branch: z.string().optional().describe('Filter pipelines by branch name'),
-    pageToken: z.string().optional().describe('Pagination token for fetching the next page')
-  }))
-  .output(z.object({
-    pipelines: z.array(z.object({
-      pipelineId: z.string(),
-      pipelineNumber: z.number(),
-      state: z.string(),
-      createdAt: z.string(),
-      triggerType: z.string().optional(),
-      branch: z.string().optional(),
-      tag: z.string().optional()
-    })),
-    nextPageToken: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectSlug: z
+        .string()
+        .describe('Project slug in the format vcs-slug/org-name/repo-name'),
+      branch: z.string().optional().describe('Filter pipelines by branch name'),
+      pageToken: z.string().optional().describe('Pagination token for fetching the next page')
+    })
+  )
+  .output(
+    z.object({
+      pipelines: z.array(
+        z.object({
+          pipelineId: z.string(),
+          pipelineNumber: z.number(),
+          state: z.string(),
+          createdAt: z.string(),
+          triggerType: z.string().optional(),
+          branch: z.string().optional(),
+          tag: z.string().optional()
+        })
+      ),
+      nextPageToken: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getProjectPipelines(ctx.input.projectSlug, {

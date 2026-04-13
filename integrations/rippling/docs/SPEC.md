@@ -13,6 +13,7 @@ Rippling supports two authentication methods:
 All API requests require authorization using an API token. API tokens can be generated in the API Tokens app. These tokens use the permissions of the owner, so treat them as if you would a password. Tokens expire after 30 days of inactivity.
 
 Tokens are passed as a Bearer token in the Authorization header:
+
 ```
 Authorization: Bearer <API_TOKEN>
 ```
@@ -41,27 +42,35 @@ Rippling also supports **OpenID Connect (OIDC)** for SSO use cases on top of OAu
 ## Features
 
 ### Employee Management
+
 Retrieve a list of active employees with details such as unique role ID, user ID, name, employment type, title, gender, department, work location, role state, and more. You can also retrieve both active and terminated employees. Supports filtering employees by provisioning rules and access settings configured by the company admin.
 
 ### Company Information
+
 Retrieve the current company's details including its ID, address, work locations, primary email, phone number, and name, with nested address and work location details.
 
 ### Organizational Data
+
 Groups represent subsets of employees across departments or teams; employees can be in multiple groups. You can create groups associated with third-party applications, specifying a name, unique spoke ID, and an array of user IDs. Teams and locations can also be retrieved.
 
 ### User Provisioning & Deprovisioning (User Management)
+
 User Management allows customers to automate creating, updating, and deleting users in third-party software when an action is taken in Rippling. The account provisioning setting allows customers to configure rules for which employees should automatically receive access, using groupings such as "all full-time employees in the sales department" or "all employees on the product team located in New York".
 
 ### ATS Candidate Onboarding
+
 Push a candidate from an applicant tracking system directly into the Rippling onboarding flow. The request includes candidate details such as name, email, job title, phone number, and other employment-related information.
 
 ### Leave Request Management
+
 Approve or decline pending leave requests. The request requires the leave request ID and an action parameter (approve or decline), and returns detailed information about the leave request including employee role, status, dates, and paid leave status.
 
 ### SAML SSO Metadata
+
 Retrieve SAML IDP metadata for app integrations that have SAML enabled. The metadata is unique per customer app installation and changes with each new installation.
 
 ### Custom Fields & Field Expansion
+
 Field expansion allows retrieval of related data inline — instead of making multiple API calls, you can expand specific referenced fields in a single request.
 
 ## Events
@@ -69,9 +78,11 @@ Field expansion allows retrieval of related data inline — instead of making mu
 Rippling supports webhooks for partner applications (App Shop integrations).
 
 ### Employee Lifecycle Events
+
 Customer-configured account provisioning and provision time settings determine which and when employee webhook events are emitted to the webhook URL configured in the app listing. The API supports webhooks allowing real-time notifications for specific events, such as employee onboarding or offboarding.
 
 The webhook event types include user management actions:
+
 - `EXTERNAL_ACCOUNT_CREATE`, `EXTERNAL_ACCOUNT_INVITE`, `EXTERNAL_ACCOUNT_DELETE`, `EXTERNAL_ACCOUNT_SUSPEND`, `EXTERNAL_ACCOUNT_PASSWORD_RESET`, and others related to external account management.
 
 These events are triggered based on the provisioning rules and timing settings configured by the Rippling company admin (e.g., on offer letter signing, on start date, or immediately upon hiring).

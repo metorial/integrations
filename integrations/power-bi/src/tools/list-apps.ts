@@ -11,22 +11,21 @@ let appSchema = z.object({
   lastUpdate: z.string().optional().describe('Last update timestamp')
 });
 
-export let listApps = SlateTool.create(
-  spec,
-  {
-    name: 'List Apps',
-    key: 'list_apps',
-    description: `List published Power BI apps accessible to the authenticated user. Apps are read-only collections of dashboards and reports shared with an audience.`,
-    tags: {
-      readOnly: true
-    }
+export let listApps = SlateTool.create(spec, {
+  name: 'List Apps',
+  key: 'list_apps',
+  description: `List published Power BI apps accessible to the authenticated user. Apps are read-only collections of dashboards and reports shared with an audience.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    apps: z.array(appSchema).describe('List of published apps')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      apps: z.array(appSchema).describe('List of published apps')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let apps = await client.listApps();
 

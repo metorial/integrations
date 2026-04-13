@@ -15,45 +15,44 @@ let paymentEventSchema = z.object({
   invoiceNumber: z.string().optional().describe('Related invoice number'),
   accountCode: z.string().optional().describe('Account code'),
   bankAmount: z.number().optional().describe('Bank amount'),
-  updatedDate: z.string().optional().describe('Last updated timestamp'),
+  updatedDate: z.string().optional().describe('Last updated timestamp')
 });
 
-export let paymentChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Payment Changes',
-    key: 'payment_changes',
-    description: 'Triggers when payments are created, updated, or reconciled in Xero.',
-  }
-)
-  .input(z.object({
-    paymentId: z.string().describe('Xero payment ID'),
-    date: z.string().optional(),
-    amount: z.number().optional(),
-    reference: z.string().optional(),
-    status: z.string().optional(),
-    paymentType: z.string().optional(),
-    isReconciled: z.boolean().optional(),
-    invoiceId: z.string().optional(),
-    invoiceNumber: z.string().optional(),
-    accountCode: z.string().optional(),
-    bankAmount: z.number().optional(),
-    updatedDate: z.string().optional(),
-  }))
+export let paymentChanges = SlateTrigger.create(spec, {
+  name: 'Payment Changes',
+  key: 'payment_changes',
+  description: 'Triggers when payments are created, updated, or reconciled in Xero.'
+})
+  .input(
+    z.object({
+      paymentId: z.string().describe('Xero payment ID'),
+      date: z.string().optional(),
+      amount: z.number().optional(),
+      reference: z.string().optional(),
+      status: z.string().optional(),
+      paymentType: z.string().optional(),
+      isReconciled: z.boolean().optional(),
+      invoiceId: z.string().optional(),
+      invoiceNumber: z.string().optional(),
+      accountCode: z.string().optional(),
+      bankAmount: z.number().optional(),
+      updatedDate: z.string().optional()
+    })
+  )
   .output(paymentEventSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClientFromContext(ctx);
 
       let lastModified = (ctx.state as any)?.lastModified as string | undefined;
 
       let result = await client.getPayments({
         modifiedAfter: lastModified,
-        order: 'UpdatedDateUTC ASC',
+        order: 'UpdatedDateUTC ASC'
       });
 
       let payments = result.Payments || [];
@@ -79,15 +78,15 @@ export let paymentChanges = SlateTrigger.create(
           invoiceNumber: p.Invoice?.InvoiceNumber,
           accountCode: p.Account?.Code,
           bankAmount: p.BankAmount,
-          updatedDate: p.UpdatedDateUTC,
+          updatedDate: p.UpdatedDateUTC
         })),
         updatedState: {
-          lastModified: newLastModified,
-        },
+          lastModified: newLastModified
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'payment.updated',
         id: `${ctx.input.paymentId}-${ctx.input.updatedDate || Date.now()}`,
@@ -103,9 +102,9 @@ export let paymentChanges = SlateTrigger.create(
           invoiceNumber: ctx.input.invoiceNumber,
           accountCode: ctx.input.accountCode,
           bankAmount: ctx.input.bankAmount,
-          updatedDate: ctx.input.updatedDate,
-        },
+          updatedDate: ctx.input.updatedDate
+        }
       };
-    },
+    }
   })
   .build();

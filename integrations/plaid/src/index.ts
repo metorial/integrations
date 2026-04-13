@@ -22,14 +22,14 @@ import {
   evaluateSignalTool,
   enrichTransactionsTool,
   createAssetReportTool,
-  getAssetReportTool,
+  getAssetReportTool
 } from './tools';
 import {
   itemWebhookTrigger,
   transactionsWebhookTrigger,
   transferWebhookTrigger,
   holdingsWebhookTrigger,
-  assetsWebhookTrigger,
+  assetsWebhookTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -56,13 +56,13 @@ export let provider = Slate.create({
     evaluateSignalTool,
     enrichTransactionsTool,
     createAssetReportTool,
-    getAssetReportTool,
+    getAssetReportTool
   ],
   triggers: [
     itemWebhookTrigger,
     transactionsWebhookTrigger,
     transferWebhookTrigger,
     holdingsWebhookTrigger,
-    assetsWebhookTrigger,
-  ],
+    assetsWebhookTrigger
+  ]
 });

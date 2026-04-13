@@ -3,39 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listExecutions = SlateTool.create(
-  spec,
-  {
-    name: 'List Executions',
-    key: 'list_executions',
-    description: `List workflow executions with optional filtering by workflow, status, and project. Returns execution metadata including status, start/end times, and workflow info.`,
-    tags: {
-      readOnly: true
-    }
+export let listExecutions = SlateTool.create(spec, {
+  name: 'List Executions',
+  key: 'list_executions',
+  description: `List workflow executions with optional filtering by workflow, status, and project. Returns execution metadata including status, start/end times, and workflow info.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workflowId: z.string().optional().describe('Filter executions by workflow ID'),
-    status: z.enum(['canceled', 'error', 'running', 'success', 'waiting']).optional().describe('Filter by execution status'),
-    projectId: z.string().optional().describe('Filter by project ID'),
-    includeData: z.boolean().optional().describe('Include full execution data in the response'),
-    limit: z.number().optional().describe('Maximum number of executions to return'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response')
-  }))
-  .output(z.object({
-    executions: z.array(z.object({
-      executionId: z.string().describe('Execution ID'),
-      workflowId: z.string().optional().describe('ID of the executed workflow'),
-      status: z.string().describe('Execution status'),
-      startedAt: z.string().optional().describe('Execution start timestamp'),
-      stoppedAt: z.string().optional().describe('Execution end timestamp'),
-      finished: z.boolean().optional().describe('Whether the execution finished'),
-      mode: z.string().optional().describe('Execution mode (manual, trigger, etc.)'),
-      retryOf: z.string().optional().describe('ID of the original execution if this is a retry')
-    })),
-    nextCursor: z.string().optional().describe('Cursor for the next page of results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workflowId: z.string().optional().describe('Filter executions by workflow ID'),
+      status: z
+        .enum(['canceled', 'error', 'running', 'success', 'waiting'])
+        .optional()
+        .describe('Filter by execution status'),
+      projectId: z.string().optional().describe('Filter by project ID'),
+      includeData: z
+        .boolean()
+        .optional()
+        .describe('Include full execution data in the response'),
+      limit: z.number().optional().describe('Maximum number of executions to return'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response')
+    })
+  )
+  .output(
+    z.object({
+      executions: z.array(
+        z.object({
+          executionId: z.string().describe('Execution ID'),
+          workflowId: z.string().optional().describe('ID of the executed workflow'),
+          status: z.string().describe('Execution status'),
+          startedAt: z.string().optional().describe('Execution start timestamp'),
+          stoppedAt: z.string().optional().describe('Execution end timestamp'),
+          finished: z.boolean().optional().describe('Whether the execution finished'),
+          mode: z.string().optional().describe('Execution mode (manual, trigger, etc.)'),
+          retryOf: z
+            .string()
+            .optional()
+            .describe('ID of the original execution if this is a retry')
+        })
+      ),
+      nextCursor: z.string().optional().describe('Cursor for the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
       token: ctx.auth.token

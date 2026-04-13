@@ -3,25 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContactList = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact List',
-    key: 'manage_contact_list',
-    description: `Create, update, or delete a contact list. When creating, provide a name and optional description. When updating, provide the list ID and the fields to change.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    listId: z.string().optional().describe('ID of the list (required for update and delete)'),
-    name: z.string().optional().describe('List name (required for create)'),
-    description: z.string().optional().describe('List description'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    listId: z.string().optional().describe('ID of the created or updated list'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageContactList = SlateTool.create(spec, {
+  name: 'Manage Contact List',
+  key: 'manage_contact_list',
+  description: `Create, update, or delete a contact list. When creating, provide a name and optional description. When updating, provide the list ID and the fields to change.`
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      listId: z
+        .string()
+        .optional()
+        .describe('ID of the list (required for update and delete)'),
+      name: z.string().optional().describe('List name (required for create)'),
+      description: z.string().optional().describe('List description')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      listId: z.string().optional().describe('ID of the created or updated list')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, listId } = ctx.input;
     let success = false;
@@ -67,7 +71,7 @@ export let manageContactList = SlateTool.create(
 
     return {
       output: { success, listId: resultListId },
-      message,
+      message
     };
   })
   .build();

@@ -17,7 +17,7 @@ import {
   deleteActionClass,
   listAttributeClasses,
   createAttributeClass,
-  deleteAttributeClass,
+  deleteAttributeClass
 } from './tools';
 import { responseEvent } from './triggers';
 
@@ -40,9 +40,7 @@ export let provider = Slate.create({
     deleteActionClass,
     listAttributeClasses,
     createAttributeClass,
-    deleteAttributeClass,
+    deleteAttributeClass
   ],
-  triggers: [
-    responseEvent,
-  ],
+  triggers: [responseEvent]
 });

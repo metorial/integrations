@@ -3,47 +3,56 @@ import { TranscribeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transcriptionJobStateChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transcription Job State Change',
-    key: 'transcription_job_state_change',
-    description: 'Triggers when a transcription job changes to a terminal state (COMPLETED or FAILED). Polls for recently completed or failed jobs across standard, call analytics, and medical transcription job types.',
-  }
-)
-  .input(z.object({
-    jobType: z.enum(['standard', 'call_analytics', 'medical']).describe('Type of transcription job'),
-    jobName: z.string().describe('Name of the transcription job'),
-    jobStatus: z.enum(['COMPLETED', 'FAILED']).describe('Terminal status of the job'),
-    completionTime: z.number().optional().describe('Unix timestamp when the job completed'),
-    failureReason: z.string().optional().describe('Reason for failure if status is FAILED'),
-    languageCode: z.string().optional().describe('Language code of the transcription'),
-    transcriptFileUri: z.string().optional().describe('S3 URI of the transcript output'),
-    mediaFileUri: z.string().optional().describe('S3 URI of the input media file'),
-  }))
-  .output(z.object({
-    jobType: z.enum(['standard', 'call_analytics', 'medical']).describe('Type of transcription job'),
-    jobName: z.string().describe('Name of the transcription job'),
-    jobStatus: z.enum(['COMPLETED', 'FAILED']).describe('Terminal status of the job'),
-    completionTime: z.number().optional().describe('Unix timestamp when the job reached terminal state'),
-    failureReason: z.string().optional().describe('Reason for failure if status is FAILED'),
-    languageCode: z.string().optional().describe('Language code of the transcription'),
-    transcriptFileUri: z.string().optional().describe('S3 URI of the transcript output'),
-    mediaFileUri: z.string().optional().describe('S3 URI of the input media file'),
-  }))
+export let transcriptionJobStateChange = SlateTrigger.create(spec, {
+  name: 'Transcription Job State Change',
+  key: 'transcription_job_state_change',
+  description:
+    'Triggers when a transcription job changes to a terminal state (COMPLETED or FAILED). Polls for recently completed or failed jobs across standard, call analytics, and medical transcription job types.'
+})
+  .input(
+    z.object({
+      jobType: z
+        .enum(['standard', 'call_analytics', 'medical'])
+        .describe('Type of transcription job'),
+      jobName: z.string().describe('Name of the transcription job'),
+      jobStatus: z.enum(['COMPLETED', 'FAILED']).describe('Terminal status of the job'),
+      completionTime: z.number().optional().describe('Unix timestamp when the job completed'),
+      failureReason: z.string().optional().describe('Reason for failure if status is FAILED'),
+      languageCode: z.string().optional().describe('Language code of the transcription'),
+      transcriptFileUri: z.string().optional().describe('S3 URI of the transcript output'),
+      mediaFileUri: z.string().optional().describe('S3 URI of the input media file')
+    })
+  )
+  .output(
+    z.object({
+      jobType: z
+        .enum(['standard', 'call_analytics', 'medical'])
+        .describe('Type of transcription job'),
+      jobName: z.string().describe('Name of the transcription job'),
+      jobStatus: z.enum(['COMPLETED', 'FAILED']).describe('Terminal status of the job'),
+      completionTime: z
+        .number()
+        .optional()
+        .describe('Unix timestamp when the job reached terminal state'),
+      failureReason: z.string().optional().describe('Reason for failure if status is FAILED'),
+      languageCode: z.string().optional().describe('Language code of the transcription'),
+      transcriptFileUri: z.string().optional().describe('S3 URI of the transcript output'),
+      mediaFileUri: z.string().optional().describe('S3 URI of the input media file')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TranscribeClient({
         credentials: {
           accessKeyId: ctx.auth.accessKeyId,
           secretAccessKey: ctx.auth.secretAccessKey,
-          sessionToken: ctx.auth.sessionToken,
+          sessionToken: ctx.auth.sessionToken
         },
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let lastPollTime: number = ctx.state?.lastPollTime || 0;
@@ -79,7 +88,7 @@ export let transcriptionJobStateChange = SlateTrigger.create(
                 failureReason: s.FailureReason,
                 languageCode: s.LanguageCode,
                 mediaFileUri: undefined,
-                transcriptFileUri: undefined,
+                transcriptFileUri: undefined
               });
               newSeenJobNames.push(jobKey);
               if (completionTime > maxCompletionTime) maxCompletionTime = completionTime;
@@ -107,7 +116,7 @@ export let transcriptionJobStateChange = SlateTrigger.create(
                 failureReason: s.FailureReason,
                 languageCode: s.LanguageCode,
                 mediaFileUri: undefined,
-                transcriptFileUri: undefined,
+                transcriptFileUri: undefined
               });
               newSeenJobNames.push(jobKey);
               if (completionTime > maxCompletionTime) maxCompletionTime = completionTime;
@@ -135,7 +144,7 @@ export let transcriptionJobStateChange = SlateTrigger.create(
                 failureReason: s.FailureReason,
                 languageCode: s.LanguageCode,
                 mediaFileUri: undefined,
-                transcriptFileUri: undefined,
+                transcriptFileUri: undefined
               });
               newSeenJobNames.push(jobKey);
               if (completionTime > maxCompletionTime) maxCompletionTime = completionTime;
@@ -155,12 +164,12 @@ export let transcriptionJobStateChange = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: maxCompletionTime || lastPollTime,
-          seenJobNames: newSeenJobNames,
-        },
+          seenJobNames: newSeenJobNames
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       // For standard jobs that completed, fetch full details to get transcript URI
       let transcriptFileUri = ctx.input.transcriptFileUri;
       let mediaFileUri = ctx.input.mediaFileUri;
@@ -171,9 +180,9 @@ export let transcriptionJobStateChange = SlateTrigger.create(
             credentials: {
               accessKeyId: ctx.auth.accessKeyId,
               secretAccessKey: ctx.auth.secretAccessKey,
-              sessionToken: ctx.auth.sessionToken,
+              sessionToken: ctx.auth.sessionToken
             },
-            region: ctx.config.region,
+            region: ctx.config.region
           });
 
           if (ctx.input.jobType === 'standard') {
@@ -208,8 +217,8 @@ export let transcriptionJobStateChange = SlateTrigger.create(
           failureReason: ctx.input.failureReason,
           languageCode: ctx.input.languageCode,
           transcriptFileUri,
-          mediaFileUri,
-        },
+          mediaFileUri
+        }
       };
-    },
+    }
   });

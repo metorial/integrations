@@ -2,19 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your Loops API key. Generate one from Settings → API in your Loops dashboard.')
+      apiKey: z
+        .string()
+        .describe(
+          'Your Loops API key. Generate one from Settings → API in your Loops dashboard.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey
@@ -26,7 +32,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://app.loops.so/api/v1',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 

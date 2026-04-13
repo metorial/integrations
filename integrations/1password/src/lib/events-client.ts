@@ -4,7 +4,7 @@ let EVENTS_API_BASE_URLS: Record<string, string> = {
   us: 'https://events.1password.com',
   ca: 'https://events.1password.ca',
   eu: 'https://events.1password.eu',
-  enterprise: 'https://events.ent.1password.com',
+  enterprise: 'https://events.ent.1password.com'
 };
 
 export let getEventsBaseUrl = (region: string): string => {
@@ -134,9 +134,9 @@ export class EventsClient {
     this.http = createAxios({
       baseURL: baseUrl + '/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -146,13 +146,17 @@ export class EventsClient {
     return res.data;
   }
 
-  async getItemUsageEvents(params: EventsCursorRequest): Promise<EventsResponse<ItemUsageEvent>> {
+  async getItemUsageEvents(
+    params: EventsCursorRequest
+  ): Promise<EventsResponse<ItemUsageEvent>> {
     let body = this.buildRequestBody(params);
     let res = await this.http.post('/itemusages', body);
     return res.data;
   }
 
-  async getSignInAttemptEvents(params: EventsCursorRequest): Promise<EventsResponse<SignInAttemptEvent>> {
+  async getSignInAttemptEvents(
+    params: EventsCursorRequest
+  ): Promise<EventsResponse<SignInAttemptEvent>> {
     let body = this.buildRequestBody(params);
     let res = await this.http.post('/signinattempts', body);
     return res.data;

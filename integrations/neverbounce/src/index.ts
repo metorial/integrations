@@ -8,7 +8,7 @@ import {
   searchJobsTool,
   manageJobTool,
   getAccountInfoTool,
-  confirmPoeTool,
+  confirmPoeTool
 } from './tools';
 import { jobStatusChangedTrigger } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     searchJobsTool,
     manageJobTool,
     getAccountInfoTool,
-    confirmPoeTool,
+    confirmPoeTool
   ],
-  triggers: [
-    jobStatusChangedTrigger,
-  ],
+  triggers: [jobStatusChangedTrigger]
 });

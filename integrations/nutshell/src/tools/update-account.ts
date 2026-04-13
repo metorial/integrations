@@ -3,46 +3,58 @@ import { NutshellClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Update Account',
-    key: 'update_account',
-    description: `Update an existing account (company) in Nutshell CRM. Provide the account ID and the fields to update. The current revision is fetched automatically for concurrency control.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateAccount = SlateTool.create(spec, {
+  name: 'Update Account',
+  key: 'update_account',
+  description: `Update an existing account (company) in Nutshell CRM. Provide the account ID and the fields to update. The current revision is fetched automatically for concurrency control.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    accountId: z.number().describe('ID of the account to update'),
-    rev: z.string().optional().describe('Revision identifier. If not provided, fetched automatically. Use "REV_IGNORE" to bypass.'),
-    name: z.string().optional().describe('Updated company name'),
-    urls: z.array(z.string()).optional().describe('Updated website URLs'),
-    phones: z.array(z.string()).optional().describe('Updated phone numbers'),
-    address: z.object({
-      address1: z.string().optional(),
-      address2: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postalCode: z.string().optional(),
-      country: z.string().optional(),
-    }).optional().describe('Updated mailing address'),
-    industryId: z.number().optional().describe('Updated industry ID'),
-    description: z.string().optional().describe('Updated description'),
-    ownerUserId: z.number().optional().describe('Updated owner user ID'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values to set. Set a value to null to remove it.'),
-  }))
-  .output(z.object({
-    accountId: z.number().describe('ID of the updated account'),
-    rev: z.string().describe('New revision identifier'),
-    name: z.string().describe('Name of the updated account'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z.number().describe('ID of the account to update'),
+      rev: z
+        .string()
+        .optional()
+        .describe(
+          'Revision identifier. If not provided, fetched automatically. Use "REV_IGNORE" to bypass.'
+        ),
+      name: z.string().optional().describe('Updated company name'),
+      urls: z.array(z.string()).optional().describe('Updated website URLs'),
+      phones: z.array(z.string()).optional().describe('Updated phone numbers'),
+      address: z
+        .object({
+          address1: z.string().optional(),
+          address2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postalCode: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional()
+        .describe('Updated mailing address'),
+      industryId: z.number().optional().describe('Updated industry ID'),
+      description: z.string().optional().describe('Updated description'),
+      ownerUserId: z.number().optional().describe('Updated owner user ID'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values to set. Set a value to null to remove it.')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.number().describe('ID of the updated account'),
+      rev: z.string().describe('New revision identifier'),
+      name: z.string().describe('Name of the updated account')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NutshellClient({
       username: ctx.auth.username,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let rev = ctx.input.rev;
@@ -58,8 +70,10 @@ export let updateAccount = SlateTool.create(
     if (ctx.input.address !== undefined) accountData.address = ctx.input.address;
     if (ctx.input.industryId !== undefined) accountData.industryId = ctx.input.industryId;
     if (ctx.input.description !== undefined) accountData.description = ctx.input.description;
-    if (ctx.input.ownerUserId !== undefined) accountData.owner = { entityType: 'Users', id: ctx.input.ownerUserId };
-    if (ctx.input.customFields !== undefined) accountData.customFields = ctx.input.customFields;
+    if (ctx.input.ownerUserId !== undefined)
+      accountData.owner = { entityType: 'Users', id: ctx.input.ownerUserId };
+    if (ctx.input.customFields !== undefined)
+      accountData.customFields = ctx.input.customFields;
 
     let result = await client.editAccount(ctx.input.accountId, rev, accountData);
 
@@ -67,9 +81,9 @@ export let updateAccount = SlateTool.create(
       output: {
         accountId: result.id,
         rev: String(result.rev),
-        name: result.name,
+        name: result.name
       },
-      message: `Updated account **${result.name}** (ID: ${result.id}).`,
+      message: `Updated account **${result.name}** (ID: ${result.id}).`
     };
   })
   .build();

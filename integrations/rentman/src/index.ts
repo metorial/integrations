@@ -32,7 +32,7 @@ import {
   listStockMovements,
   listCosts,
   updateCost,
-  deleteCost,
+  deleteCost
 } from './tools';
 import { rentmanEvent } from './triggers';
 
@@ -70,9 +70,7 @@ export let provider = Slate.create({
     listStockMovements,
     listCosts,
     updateCost,
-    deleteCost,
+    deleteCost
   ],
-  triggers: [
-    rentmanEvent,
-  ],
+  triggers: [rentmanEvent]
 });

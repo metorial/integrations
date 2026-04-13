@@ -3,43 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTasks = SlateTool.create(
-  spec,
-  {
-    name: 'List Tasks',
-    key: 'list_tasks',
-    description: `Search and list tasks in JobNimbus. Supports filtering by completion status, associated contact/job, and more. Returns paginated results.`,
-    tags: {
-      readOnly: true
-    }
+export let listTasks = SlateTool.create(spec, {
+  name: 'List Tasks',
+  key: 'list_tasks',
+  description: `Search and list tasks in JobNimbus. Supports filtering by completion status, associated contact/job, and more. Returns paginated results.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    parentRecordId: z.string().optional().describe('Filter tasks by the parent contact or job ID'),
-    isCompleted: z.boolean().optional().describe('Filter by completion status (true for completed, false for open)'),
-    from: z.number().optional().describe('Pagination offset (0-based). Defaults to 0.'),
-    size: z.number().optional().describe('Number of results per page. Defaults to 25. Max 200.')
-  }))
-  .output(z.object({
-    totalCount: z.number().describe('Total number of matching tasks'),
-    tasks: z.array(z.object({
-      taskId: z.string().describe('Unique JobNimbus ID of the task'),
-      title: z.string().optional().describe('Task title'),
-      description: z.string().optional().describe('Task description'),
-      number: z.string().optional().describe('Task number'),
-      priority: z.string().optional().describe('Task priority'),
-      isCompleted: z.boolean().optional().describe('Whether the task is completed'),
-      parentRecordId: z.string().optional().describe('Parent contact/job ID'),
-      owners: z.array(z.string()).optional().describe('Assignee IDs'),
-      tags: z.array(z.string()).optional().describe('Tags'),
-      dateStart: z.number().optional().describe('Unix timestamp of start date'),
-      dateEnd: z.number().optional().describe('Unix timestamp of due date'),
-      dateCreated: z.number().optional().describe('Unix timestamp of creation'),
-      dateUpdated: z.number().optional().describe('Unix timestamp of last update'),
-      createdByName: z.string().optional().describe('Name of the creator')
-    })).describe('List of tasks')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      parentRecordId: z
+        .string()
+        .optional()
+        .describe('Filter tasks by the parent contact or job ID'),
+      isCompleted: z
+        .boolean()
+        .optional()
+        .describe('Filter by completion status (true for completed, false for open)'),
+      from: z.number().optional().describe('Pagination offset (0-based). Defaults to 0.'),
+      size: z
+        .number()
+        .optional()
+        .describe('Number of results per page. Defaults to 25. Max 200.')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().describe('Total number of matching tasks'),
+      tasks: z
+        .array(
+          z.object({
+            taskId: z.string().describe('Unique JobNimbus ID of the task'),
+            title: z.string().optional().describe('Task title'),
+            description: z.string().optional().describe('Task description'),
+            number: z.string().optional().describe('Task number'),
+            priority: z.string().optional().describe('Task priority'),
+            isCompleted: z.boolean().optional().describe('Whether the task is completed'),
+            parentRecordId: z.string().optional().describe('Parent contact/job ID'),
+            owners: z.array(z.string()).optional().describe('Assignee IDs'),
+            tags: z.array(z.string()).optional().describe('Tags'),
+            dateStart: z.number().optional().describe('Unix timestamp of start date'),
+            dateEnd: z.number().optional().describe('Unix timestamp of due date'),
+            dateCreated: z.number().optional().describe('Unix timestamp of creation'),
+            dateUpdated: z.number().optional().describe('Unix timestamp of last update'),
+            createdByName: z.string().optional().describe('Name of the creator')
+          })
+        )
+        .describe('List of tasks')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let mustClauses: any[] = [];
@@ -83,4 +97,5 @@ export let listTasks = SlateTool.create(
       },
       message: `Found **${result.count || 0}** tasks. Returned ${tasks.length} results.`
     };
-  }).build();
+  })
+  .build();

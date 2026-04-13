@@ -33,6 +33,7 @@ Create, retrieve, update, clone, merge, and archive reusable document templates.
 ### Submission Management
 
 Create signature requests (submissions) based on templates and send them to one or more submitters (signers). Submissions can be initiated by referencing an existing template or by providing a one-off PDF, DOCX, or HTML document inline. Key options include:
+
 - **Signing order**: Preserved (sequential) or random (parallel).
 - **Notification**: Signature requests sent via email or SMS; email sending can be disabled per submission or per submitter.
 - **Pre-filling fields**: Default values can be set for fields, optionally marked as read-only.
@@ -66,6 +67,7 @@ DocuSeal supports webhooks for real-time event notifications. Webhook URLs are c
 ### Form Events
 
 Events related to individual submitter (signer) activity on a signing form:
+
 - **form.viewed**: Triggered when a submitter first opens the signing form.
 - **form.started**: Triggered when a submitter begins filling out the form.
 - **form.completed**: Triggered when a submitter successfully completes and signs the form. Includes filled field values, signed document URLs, and audit log URL.
@@ -76,6 +78,7 @@ The payload includes submitter details (email, name, role, external ID, IP, user
 ### Submission Events
 
 Events related to the overall submission lifecycle (across all signing parties):
+
 - **submission.created**: Triggered when a new submission is created.
 - **submission.completed**: Triggered when all signing parties have completed the submission.
 - **submission.expired**: Triggered when a submission expires.
@@ -86,6 +89,7 @@ The payload includes full submission details with all submitters, their statuses
 ### Template Events
 
 Events related to template lifecycle changes:
+
 - **template.created**: Triggered when a new template is created.
 - **template.updated**: Triggered when a template is modified.
 

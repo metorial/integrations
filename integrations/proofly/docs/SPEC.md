@@ -24,6 +24,7 @@ Proofly uses API key authentication. Pass the API key as a header `X-Api-Key` wi
 - If authentication fails, the API returns `ok: false` with an error message such as "Authentication failed: give me a X-Api-Key header."
 
 **Example request:**
+
 ```
 GET https://proofly.io/api/user
 Headers:
@@ -33,20 +34,25 @@ Headers:
 ## Features
 
 ### User Account Information
+
 Retrieve general account information including user name, email, login history, registration date, and impression statistics (both for the current period and total).
 
 ### Activity Logs
+
 Access a chronological log of account activities such as successful logins and registrations, including timestamps and IP addresses.
 
 ### Campaign Management
+
 - List all campaigns in the account, including campaign ID, name, associated domain, and enabled status.
 - Retrieve all notifications within a specific campaign, including notification type (e.g., `LATEST_CONVERSION`), display settings, trigger rules, and performance statistics (impressions, hovers, clicks, leads).
 - Toggle a campaign's active/inactive status using the campaign ID.
 
 ### Notification Data Retrieval
+
 Retrieve leads, conversions, and collected data from an individual notification, including data type, submitted input (e.g., email), visitor IP, page URL, and geolocation (city, country).
 
 ### External Conversions
+
 Add external leads, conversions, or sales to a Proofly notification, allowing data from third-party systems to be reflected in social proof widgets.
 
 ## Events
@@ -54,5 +60,6 @@ Add external leads, conversions, or sales to a Proofly notification, allowing da
 Proofly supports webhooks to send real-time lead data to any external system or receive incoming data to trigger custom workflows.
 
 ### Lead Collection
+
 - Triggers when a new lead is collected through a Proofly notification widget (e.g., an email collector form).
 - Lead data includes the submitted input, visitor IP, source URL, and geolocation.

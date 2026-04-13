@@ -8,8 +8,8 @@ export class ToneDenClient {
       baseURL: 'https://www.toneden.io/api/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -32,7 +32,10 @@ export class ToneDenClient {
 
   // ─── Ad Campaigns ───────────────────────────────────────
 
-  async listCampaigns(userId: number | string, params?: { status?: string; offset?: number; limit?: number }) {
+  async listCampaigns(
+    userId: number | string,
+    params?: { status?: string; offset?: number; limit?: number }
+  ) {
     let response = await this.axios.get(`/users/${userId}/advertising/campaigns`, { params });
     return response.data.campaigns;
   }
@@ -63,13 +66,18 @@ export class ToneDenClient {
   }
 
   async getCampaignCreativeInsights(campaignId: number) {
-    let response = await this.axios.get(`/advertising/campaigns/${campaignId}/creativeInsights`);
+    let response = await this.axios.get(
+      `/advertising/campaigns/${campaignId}/creativeInsights`
+    );
     return response.data.ads;
   }
 
   // ─── Links (FanLinks) ──────────────────────────────────
 
-  async listLinks(userId: number | string, params?: { targetType?: string; offset?: number; limit?: number }) {
+  async listLinks(
+    userId: number | string,
+    params?: { targetType?: string; offset?: number; limit?: number }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.targetType) queryParams.target_type = params.targetType;
     if (params?.offset !== undefined) queryParams.offset = params.offset;
@@ -115,25 +123,31 @@ export class ToneDenClient {
     return response.data;
   }
 
-  async getLinkInsights(linkId: number, params?: {
-    metric?: string;
-    startDate?: string;
-    endDate?: string;
-    aggregateInterval?: string;
-    aggregateGeo?: string;
-    aggregateByReferrer?: boolean;
-    aggregateByService?: boolean;
-    forDistinctFans?: boolean;
-  }) {
+  async getLinkInsights(
+    linkId: number,
+    params?: {
+      metric?: string;
+      startDate?: string;
+      endDate?: string;
+      aggregateInterval?: string;
+      aggregateGeo?: string;
+      aggregateByReferrer?: boolean;
+      aggregateByService?: boolean;
+      forDistinctFans?: boolean;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.metric) queryParams.metric = params.metric;
     if (params?.startDate) queryParams.start_date = params.startDate;
     if (params?.endDate) queryParams.end_date = params.endDate;
     if (params?.aggregateInterval) queryParams.aggregate_interval = params.aggregateInterval;
     if (params?.aggregateGeo) queryParams.aggregate_geo = params.aggregateGeo;
-    if (params?.aggregateByReferrer !== undefined) queryParams.aggregate_by_referrer = params.aggregateByReferrer;
-    if (params?.aggregateByService !== undefined) queryParams.aggregate_by_service = params.aggregateByService;
-    if (params?.forDistinctFans !== undefined) queryParams.for_distinct_fans = params.forDistinctFans;
+    if (params?.aggregateByReferrer !== undefined)
+      queryParams.aggregate_by_referrer = params.aggregateByReferrer;
+    if (params?.aggregateByService !== undefined)
+      queryParams.aggregate_by_service = params.aggregateByService;
+    if (params?.forDistinctFans !== undefined)
+      queryParams.for_distinct_fans = params.forDistinctFans;
     let response = await this.axios.get(`/links/${linkId}/insights`, { params: queryParams });
     return response.data.insights;
   }
@@ -145,11 +159,16 @@ export class ToneDenClient {
 
   // ─── Attachments (Social Unlocks & Contests) ──────────
 
-  async listAttachments(userId: number | string, params: { type: string; offset?: number; limit?: number }) {
+  async listAttachments(
+    userId: number | string,
+    params: { type: string; offset?: number; limit?: number }
+  ) {
     let queryParams: Record<string, any> = { type: params.type };
     if (params.offset !== undefined) queryParams.offset = params.offset;
     if (params.limit !== undefined) queryParams.limit = params.limit;
-    let response = await this.axios.get(`/users/${userId}/attachments`, { params: queryParams });
+    let response = await this.axios.get(`/users/${userId}/attachments`, {
+      params: queryParams
+    });
     return response.data.attachments;
   }
 
@@ -173,11 +192,16 @@ export class ToneDenClient {
     return response.data;
   }
 
-  async getAttachmentEntries(attachmentId: number, params?: { aggregateInterval?: string; startDate?: string }) {
+  async getAttachmentEntries(
+    attachmentId: number,
+    params?: { aggregateInterval?: string; startDate?: string }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.aggregateInterval) queryParams.aggregate_interval = params.aggregateInterval;
     if (params?.startDate) queryParams.start_date = params.startDate;
-    let response = await this.axios.get(`/attachments/${attachmentId}/entries`, { params: queryParams });
+    let response = await this.axios.get(`/attachments/${attachmentId}/entries`, {
+      params: queryParams
+    });
     return response.data.unlocks;
   }
 
@@ -186,11 +210,16 @@ export class ToneDenClient {
     return response.data.unlocks;
   }
 
-  async getAttachmentUnlocks(attachmentId: number, params?: { aggregateInterval?: string; startDate?: string }) {
+  async getAttachmentUnlocks(
+    attachmentId: number,
+    params?: { aggregateInterval?: string; startDate?: string }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.aggregateInterval) queryParams.aggregate_interval = params.aggregateInterval;
     if (params?.startDate) queryParams.start_date = params.startDate;
-    let response = await this.axios.get(`/attachments/${attachmentId}/unlocks`, { params: queryParams });
+    let response = await this.axios.get(`/attachments/${attachmentId}/unlocks`, {
+      params: queryParams
+    });
     return response.data.unlocks;
   }
 
@@ -238,7 +267,10 @@ export class ToneDenClient {
     return response.data.list;
   }
 
-  async updateUserListContacts(listId: number, data: { add?: Record<string, any>[]; remove?: Record<string, any>[] }) {
+  async updateUserListContacts(
+    listId: number,
+    data: { add?: Record<string, any>[]; remove?: Record<string, any>[] }
+  ) {
     let response = await this.axios.post(`/advertising/userLists/${listId}/contacts`, data);
     return response.data;
   }
@@ -246,7 +278,9 @@ export class ToneDenClient {
   // ─── Offline Conversions ───────────────────────────────
 
   async uploadOfflineConversions(userId: number | string, conversions: Record<string, any>[]) {
-    let response = await this.axios.post(`/users/${userId}/advertising/offlineConversions`, { conversions });
+    let response = await this.axios.post(`/users/${userId}/advertising/offlineConversions`, {
+      conversions
+    });
     return response.data;
   }
 }

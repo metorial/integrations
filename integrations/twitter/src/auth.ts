@@ -6,11 +6,13 @@ let twitterApi = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -19,21 +21,49 @@ export let auth = SlateAuth.create()
     scopes: [
       { title: 'Read Posts', description: 'Read posts and timelines', scope: 'tweet.read' },
       { title: 'Write Posts', description: 'Create and delete posts', scope: 'tweet.write' },
-      { title: 'Moderate Posts', description: 'Hide and unhide replies', scope: 'tweet.moderate.write' },
-      { title: 'Read Users', description: 'Read user profile information', scope: 'users.read' },
+      {
+        title: 'Moderate Posts',
+        description: 'Hide and unhide replies',
+        scope: 'tweet.moderate.write'
+      },
+      {
+        title: 'Read Users',
+        description: 'Read user profile information',
+        scope: 'users.read'
+      },
       { title: 'Read Email', description: 'Read user email address', scope: 'users.email' },
-      { title: 'Read Follows', description: 'Read follow relationships', scope: 'follows.read' },
-      { title: 'Write Follows', description: 'Follow and unfollow users', scope: 'follows.write' },
+      {
+        title: 'Read Follows',
+        description: 'Read follow relationships',
+        scope: 'follows.read'
+      },
+      {
+        title: 'Write Follows',
+        description: 'Follow and unfollow users',
+        scope: 'follows.write'
+      },
       { title: 'Read Likes', description: 'Read liked posts', scope: 'like.read' },
       { title: 'Write Likes', description: 'Like and unlike posts', scope: 'like.write' },
       { title: 'Read DMs', description: 'Read direct messages', scope: 'dm.read' },
       { title: 'Write DMs', description: 'Send direct messages', scope: 'dm.write' },
       { title: 'Read Lists', description: 'Read lists', scope: 'list.read' },
       { title: 'Write Lists', description: 'Create and manage lists', scope: 'list.write' },
-      { title: 'Upload Media', description: 'Upload images, videos, and GIFs', scope: 'media.write' },
-      { title: 'Offline Access', description: 'Obtain a refresh token for long-lived access', scope: 'offline.access' },
+      {
+        title: 'Upload Media',
+        description: 'Upload images, videos, and GIFs',
+        scope: 'media.write'
+      },
+      {
+        title: 'Offline Access',
+        description: 'Obtain a refresh token for long-lived access',
+        scope: 'offline.access'
+      },
       { title: 'Read Spaces', description: 'Read Spaces information', scope: 'space.read' },
-      { title: 'Read Bookmarks', description: 'Read bookmarked posts', scope: 'bookmark.read' },
+      {
+        title: 'Read Bookmarks',
+        description: 'Read bookmarked posts',
+        scope: 'bookmark.read'
+      },
       { title: 'Write Bookmarks', description: 'Manage bookmarks', scope: 'bookmark.write' },
       { title: 'Read Blocks', description: 'Read blocked users', scope: 'block.read' },
       { title: 'Write Blocks', description: 'Block and unblock users', scope: 'block.write' },
@@ -81,17 +111,21 @@ export let auth = SlateAuth.create()
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
       let codeVerifier = ctx.callbackState?.codeVerifier || '';
 
-      let response = await twitterApi.post('/2/oauth2/token', new URLSearchParams({
-        code: ctx.code,
-        grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri,
-        code_verifier: codeVerifier
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`
+      let response = await twitterApi.post(
+        '/2/oauth2/token',
+        new URLSearchParams({
+          code: ctx.code,
+          grant_type: 'authorization_code',
+          redirect_uri: ctx.redirectUri,
+          code_verifier: codeVerifier
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -115,20 +149,26 @@ export let auth = SlateAuth.create()
       scopes: string[];
     }) => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available. Include the offline.access scope to obtain a refresh token.');
+        throw new Error(
+          'No refresh token available. Include the offline.access scope to obtain a refresh token.'
+        );
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await twitterApi.post('/2/oauth2/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`
+      let response = await twitterApi.post(
+        '/2/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -151,7 +191,7 @@ export let auth = SlateAuth.create()
     }) => {
       let response = await twitterApi.get('/2/users/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         },
         params: {
           'user.fields': 'id,name,username,profile_image_url,description'
@@ -195,7 +235,7 @@ export let auth = SlateAuth.create()
       try {
         let response = await twitterApi.get('/2/users/me', {
           headers: {
-            'Authorization': `Bearer ${ctx.output.token}`
+            Authorization: `Bearer ${ctx.output.token}`
           },
           params: {
             'user.fields': 'id,name,username,profile_image_url'

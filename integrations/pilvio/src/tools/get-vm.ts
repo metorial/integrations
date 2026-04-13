@@ -7,7 +7,7 @@ let diskSchema = z.object({
   diskUuid: z.string().describe('Disk unique identifier'),
   name: z.string().optional().describe('Disk device name'),
   sizeGb: z.number().optional().describe('Disk size in GB'),
-  primary: z.boolean().optional().describe('Whether this is the primary/boot disk'),
+  primary: z.boolean().optional().describe('Whether this is the primary/boot disk')
 });
 
 let vmDetailSchema = z.object({
@@ -25,28 +25,27 @@ let vmDetailSchema = z.object({
   description: z.string().optional().describe('VM description'),
   disks: z.array(diskSchema).optional().describe('Attached disks'),
   networkUuid: z.string().optional().describe('Network UUID'),
-  poolUuid: z.string().optional().describe('Resource pool UUID'),
+  poolUuid: z.string().optional().describe('Resource pool UUID')
 });
 
-export let getVm = SlateTool.create(
-  spec,
-  {
-    name: 'Get Virtual Machine',
-    key: 'get_vm',
-    description: `Retrieve detailed information about a specific virtual machine, including its resource allocation, networking, attached disks, and status.`,
-    tags: {
-      readOnly: true,
-    },
+export let getVm = SlateTool.create(spec, {
+  name: 'Get Virtual Machine',
+  key: 'get_vm',
+  description: `Retrieve detailed information about a specific virtual machine, including its resource allocation, networking, attached disks, and status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    vmUuid: z.string().describe('UUID of the virtual machine'),
-  }))
+})
+  .input(
+    z.object({
+      vmUuid: z.string().describe('UUID of the virtual machine')
+    })
+  )
   .output(vmDetailSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new PilvioClient({
       token: ctx.auth.token,
-      locationSlug: ctx.config.locationSlug,
+      locationSlug: ctx.config.locationSlug
     });
 
     let vm = await client.getVm(ctx.input.vmUuid);
@@ -55,7 +54,7 @@ export let getVm = SlateTool.create(
       diskUuid: d.uuid,
       name: d.name,
       sizeGb: d.size_gb,
-      primary: d.primary,
+      primary: d.primary
     }));
 
     return {
@@ -74,9 +73,9 @@ export let getVm = SlateTool.create(
         description: vm.description,
         disks,
         networkUuid: vm.network_uuid,
-        poolUuid: vm.designated_pool_uuid,
+        poolUuid: vm.designated_pool_uuid
       },
-      message: `VM **${vm.name}** (${vm.uuid}) is **${vm.status}** with ${vm.vcpu} vCPU(s), ${vm.ram} MB RAM.`,
+      message: `VM **${vm.name}** (${vm.uuid}) is **${vm.status}** with ${vm.vcpu} vCPU(s), ${vm.ram} MB RAM.`
     };
   })
   .build();

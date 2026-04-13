@@ -8,7 +8,7 @@ export let photoSrcSchema = z.object({
   small: z.string().describe('The image scaled so its new height is 130px'),
   portrait: z.string().describe('The image cropped to W 800px X H 1200px'),
   landscape: z.string().describe('The image cropped to W 1200px X H 627px'),
-  tiny: z.string().describe('The image cropped to W 280px X H 200px'),
+  tiny: z.string().describe('The image cropped to W 280px X H 200px')
 });
 
 export let photoSchema = z.object({
@@ -17,12 +17,12 @@ export let photoSchema = z.object({
   height: z.number().describe('The real height of the photo in pixels'),
   url: z.string().describe('The Pexels URL where the photo is located'),
   photographer: z.string().describe('The name of the photographer'),
-  photographerUrl: z.string().describe('The URL of the photographer\'s Pexels profile'),
+  photographerUrl: z.string().describe("The URL of the photographer's Pexels profile"),
   photographerId: z.number().describe('The ID of the photographer'),
   avgColor: z.string().describe('The average color of the photo (hex)'),
   src: photoSrcSchema.describe('URLs for different image sizes'),
   alt: z.string().describe('Alt text description of the photo'),
-  liked: z.boolean().optional().describe('Whether the user has liked the photo'),
+  liked: z.boolean().optional().describe('Whether the user has liked the photo')
 });
 
 export let videoFileSchema = z.object({
@@ -32,19 +32,19 @@ export let videoFileSchema = z.object({
   width: z.number().describe('The width in pixels'),
   height: z.number().describe('The height in pixels'),
   fps: z.number().optional().describe('Frames per second'),
-  link: z.string().describe('Direct URL to the video file'),
+  link: z.string().describe('Direct URL to the video file')
 });
 
 export let videoPictureSchema = z.object({
   pictureId: z.number().describe('The ID of the preview picture'),
   picture: z.string().describe('URL to the preview image'),
-  nr: z.number().describe('The index number of the picture'),
+  nr: z.number().describe('The index number of the picture')
 });
 
 export let videoUserSchema = z.object({
   userId: z.number().describe('The ID of the videographer'),
   name: z.string().describe('The name of the videographer'),
-  url: z.string().describe('The URL of the videographer\'s Pexels profile'),
+  url: z.string().describe("The URL of the videographer's Pexels profile")
 });
 
 export let videoSchema = z.object({
@@ -56,7 +56,7 @@ export let videoSchema = z.object({
   duration: z.number().describe('The duration of the video in seconds'),
   user: videoUserSchema.describe('The videographer who shot the video'),
   videoFiles: z.array(videoFileSchema).describe('Available video file versions'),
-  videoPictures: z.array(videoPictureSchema).describe('Preview pictures for the video'),
+  videoPictures: z.array(videoPictureSchema).describe('Preview pictures for the video')
 });
 
 export let collectionSchema = z.object({
@@ -66,7 +66,7 @@ export let collectionSchema = z.object({
   isPrivate: z.boolean().describe('Whether the collection is private'),
   mediaCount: z.number().describe('Total number of media in the collection'),
   photosCount: z.number().describe('Total number of photos in the collection'),
-  videosCount: z.number().describe('Total number of videos in the collection'),
+  videosCount: z.number().describe('Total number of videos in the collection')
 });
 
 export let paginationSchema = z.object({
@@ -74,5 +74,5 @@ export let paginationSchema = z.object({
   perPage: z.number().describe('Number of results per page'),
   totalResults: z.number().describe('Total number of results'),
   nextPage: z.string().optional().describe('URL for the next page of results'),
-  prevPage: z.string().optional().describe('URL for the previous page of results'),
+  prevPage: z.string().optional().describe('URL for the previous page of results')
 });

@@ -15,6 +15,7 @@ The Prisma Management API supports two authentication methods. All authenticated
 Service tokens are the simplest way to authenticate. They're ideal for scripts, CI/CD pipelines, and backend services. Service tokens do not have an expiration date. While this provides convenience for long-running integrations, it also means these tokens require careful security management.
 
 To create a service token:
+
 1. Log in to the Prisma Console.
 2. Navigate to the Integrations tab.
 3. Generate a service token and store it securely.
@@ -26,18 +27,22 @@ Usage: Include the token as `Authorization: Bearer <service-token>` in all API r
 OAuth 2.0 is required for applications that act on behalf of users. The API uses OAuth 2.0 with PKCE for secure authentication. The OAuth implementation supports Proof Key for Code Exchange (PKCE) using the S256 code challenge method: public clients (no client secret) require PKCE as mandatory, while confidential clients (with client secret) can optionally use PKCE.
 
 **OAuth Endpoints:**
+
 - Authorization URL: `https://auth.prisma.io/authorize`
 - Token URL: `https://auth.prisma.io/token`
 - Discovery endpoint: available for automatic client configuration
 
 **Available Scopes:**
+
 - `workspace:admin` — Full access to the user's workspace
 - `offline_access` — Enables refresh tokens for long-lived sessions
 
 **Setup:**
+
 1. Click the Integrations tab in the Prisma Console. Under Published Applications, click New Application. Enter a Name, Description, and Redirect URI (the URL where users will be redirected after authorization). Click Continue, then copy and store your Client ID and Client Secret to a secure location.
 
 **Token Lifetimes:**
+
 - Access tokens expire after 3600 seconds (1 hour).
 - Refresh tokens use single-use rotation with replay attack detection. When you exchange a refresh token for a new access token, you'll receive a new refresh token in the response. The old refresh token is immediately invalidated.
 

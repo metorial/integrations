@@ -30,14 +30,13 @@ export class Client {
   private axios;
 
   constructor(private config: { token: string }) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let encoded = Buffer.from(`${config.token}:`).toString('base64');
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Basic ${encoded}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${encoded}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -58,7 +57,7 @@ export class Client {
     description?: string;
   }) {
     let body: Record<string, any> = {
-      address_line1: params.addressLine1,
+      address_line1: params.addressLine1
     };
     if (params.name) body.name = params.name;
     if (params.company) body.company = params.company;
@@ -110,7 +109,7 @@ export class Client {
     let body: Record<string, any> = {
       to: params.to,
       front: params.front,
-      back: params.back,
+      back: params.back
     };
     if (params.from) body.from = params.from;
     if (params.size) body.size = params.size;
@@ -168,7 +167,7 @@ export class Client {
       to: params.to,
       from: params.from,
       file: params.file,
-      color: params.color,
+      color: params.color
     };
     if (params.description) body.description = params.description;
     if (params.metadata) body.metadata = params.metadata;
@@ -224,7 +223,7 @@ export class Client {
     let body: Record<string, any> = {
       to: params.to,
       inside: params.inside,
-      outside: params.outside,
+      outside: params.outside
     };
     if (params.from) body.from = params.from;
     if (params.size) body.size = params.size;
@@ -280,7 +279,7 @@ export class Client {
       to: params.to,
       from: params.from,
       bank_account: params.bankAccountId,
-      amount: params.amount,
+      amount: params.amount
     };
     if (params.memo) body.memo = params.memo;
     if (params.checkNumber) body.check_number = params.checkNumber;
@@ -323,7 +322,7 @@ export class Client {
     engine?: string;
   }) {
     let body: Record<string, any> = {
-      html: params.html,
+      html: params.html
     };
     if (params.description) body.description = params.description;
     if (params.metadata) body.metadata = params.metadata;
@@ -342,10 +341,13 @@ export class Client {
     return res.data;
   }
 
-  async updateTemplate(templateId: string, params: {
-    description?: string;
-    publishedVersion?: string;
-  }) {
+  async updateTemplate(
+    templateId: string,
+    params: {
+      description?: string;
+      publishedVersion?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.description) body.description = params.description;
     if (params.publishedVersion) body.published_version = params.publishedVersion;
@@ -358,13 +360,16 @@ export class Client {
     return res.data;
   }
 
-  async createTemplateVersion(templateId: string, params: {
-    html: string;
-    description?: string;
-    engine?: string;
-  }) {
+  async createTemplateVersion(
+    templateId: string,
+    params: {
+      html: string;
+      description?: string;
+      engine?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      html: params.html,
+      html: params.html
     };
     if (params.description) body.description = params.description;
     if (params.engine) body.engine = params.engine;
@@ -378,14 +383,20 @@ export class Client {
   }
 
   async listTemplateVersions(templateId: string, params?: LobListParams) {
-    let res = await this.axios.get(`/templates/${templateId}/versions`, { params: this.buildListParams(params) });
+    let res = await this.axios.get(`/templates/${templateId}/versions`, {
+      params: this.buildListParams(params)
+    });
     return res.data;
   }
 
-  async updateTemplateVersion(templateId: string, versionId: string, params: {
-    description?: string;
-    engine?: string;
-  }) {
+  async updateTemplateVersion(
+    templateId: string,
+    versionId: string,
+    params: {
+      description?: string;
+      engine?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.description) body.description = params.description;
     if (params.engine) body.engine = params.engine;
@@ -412,7 +423,7 @@ export class Client {
       routing_number: params.routingNumber,
       account_number: params.accountNumber,
       account_type: params.accountType,
-      signatory: params.signatory,
+      signatory: params.signatory
     };
     if (params.description) body.description = params.description;
     if (params.metadata) body.metadata = params.metadata;
@@ -422,7 +433,7 @@ export class Client {
 
   async verifyBankAccount(bankAccountId: string, amounts: [number, number]) {
     let res = await this.axios.post(`/bank_accounts/${bankAccountId}/verify`, {
-      amounts,
+      amounts
     });
     return res.data;
   }
@@ -467,25 +478,27 @@ export class Client {
     return res.data;
   }
 
-  async bulkVerifyUSAddresses(addresses: Array<{
-    primaryLine?: string;
-    secondaryLine?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-    recipient?: string;
-    urbanization?: string;
-  }>) {
+  async bulkVerifyUSAddresses(
+    addresses: Array<{
+      primaryLine?: string;
+      secondaryLine?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      recipient?: string;
+      urbanization?: string;
+    }>
+  ) {
     let body = {
-      addresses: addresses.map((a) => ({
+      addresses: addresses.map(a => ({
         primary_line: a.primaryLine,
         secondary_line: a.secondaryLine,
         city: a.city,
         state: a.state,
         zip_code: a.zipCode,
         recipient: a.recipient,
-        urbanization: a.urbanization,
-      })),
+        urbanization: a.urbanization
+      }))
     };
     let res = await this.axios.post('/bulk/us_verifications', body);
     return res.data;
@@ -499,7 +512,7 @@ export class Client {
     geoIpSort?: boolean;
   }) {
     let body: Record<string, any> = {
-      address_prefix: params.addressPrefix,
+      address_prefix: params.addressPrefix
     };
     if (params.city) body.city = params.city;
     if (params.state) body.state = params.state;
@@ -509,20 +522,15 @@ export class Client {
     return res.data;
   }
 
-  async reverseGeocodeLookup(params: {
-    latitude: number;
-    longitude: number;
-  }) {
+  async reverseGeocodeLookup(params: { latitude: number; longitude: number }) {
     let res = await this.axios.post('/us_reverse_geocode_lookups', {
       latitude: params.latitude,
-      longitude: params.longitude,
+      longitude: params.longitude
     });
     return res.data;
   }
 
-  async zipCodeLookup(params: {
-    zipCode: string;
-  }) {
+  async zipCodeLookup(params: { zipCode: string }) {
     let res = await this.axios.get(`/us_zip_lookups/${params.zipCode}`);
     return res.data;
   }
@@ -540,7 +548,7 @@ export class Client {
     address?: string;
   }) {
     let body: Record<string, any> = {
-      country: params.country,
+      country: params.country
     };
     if (params.primaryLine) body.primary_line = params.primaryLine;
     if (params.secondaryLine) body.secondary_line = params.secondaryLine;
@@ -562,7 +570,7 @@ export class Client {
     useType?: string;
   }) {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
     if (params.description) body.description = params.description;
     if (params.scheduleSendDate) body.schedule_send_date = params.scheduleSendDate;
@@ -581,11 +589,14 @@ export class Client {
     return res.data;
   }
 
-  async updateCampaign(campaignId: string, params: {
-    name?: string;
-    description?: string;
-    scheduleSendDate?: string;
-  }) {
+  async updateCampaign(
+    campaignId: string,
+    params: {
+      name?: string;
+      description?: string;
+      scheduleSendDate?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.name) body.name = params.name;
     if (params.description) body.description = params.description;
@@ -613,7 +624,10 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       url: params.url,
-      event_types: params.eventTypes.map((e) => ({ id: e.id, enabled_for_test: e.enabledForTest })),
+      event_types: params.eventTypes.map(e => ({
+        id: e.id,
+        enabled_for_test: e.enabledForTest
+      }))
     };
     if (params.description) body.description = params.description;
     let res = await this.axios.post('/webhooks', body);
@@ -630,12 +644,19 @@ export class Client {
     return res.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    eventTypes?: Array<{ id: string; enabledForTest?: boolean }>;
-    description?: string;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      eventTypes?: Array<{ id: string; enabledForTest?: boolean }>;
+      description?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
-    if (params.eventTypes) body.event_types = params.eventTypes.map((e) => ({ id: e.id, enabled_for_test: e.enabledForTest }));
+    if (params.eventTypes)
+      body.event_types = params.eventTypes.map(e => ({
+        id: e.id,
+        enabled_for_test: e.enabledForTest
+      }));
     if (params.description) body.description = params.description;
     let res = await this.axios.patch(`/webhooks/${webhookId}`, body);
     return res.data;
@@ -648,12 +669,9 @@ export class Client {
 
   // ==================== Billing Groups ====================
 
-  async createBillingGroup(params: {
-    name: string;
-    description?: string;
-  }) {
+  async createBillingGroup(params: { name: string; description?: string }) {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
     if (params.description) body.description = params.description;
     let res = await this.axios.post('/billing_groups', body);
@@ -666,14 +684,19 @@ export class Client {
   }
 
   async listBillingGroups(params?: LobListParams) {
-    let res = await this.axios.get('/billing_groups', { params: this.buildListParams(params) });
+    let res = await this.axios.get('/billing_groups', {
+      params: this.buildListParams(params)
+    });
     return res.data;
   }
 
-  async updateBillingGroup(billingGroupId: string, params: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateBillingGroup(
+    billingGroupId: string,
+    params: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.name) body.name = params.name;
     if (params.description) body.description = params.description;

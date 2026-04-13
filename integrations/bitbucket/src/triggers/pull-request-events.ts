@@ -16,68 +16,70 @@ let prEventTypes = [
   'pullrequest:comment_updated',
   'pullrequest:comment_deleted',
   'pullrequest:comment_resolved',
-  'pullrequest:comment_reopened',
+  'pullrequest:comment_reopened'
 ] as const;
 
-export let pullRequestEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Pull Request Events',
-    key: 'pull_request_events',
-    description: 'Triggers on pull request activity including creation, updates, approvals, merges, declines, change requests, and comments.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Bitbucket event type identifier'),
-    eventKey: z.string().describe('Unique event key for deduplication'),
-    pullRequest: z.any().describe('Pull request data from the webhook payload'),
-    repository: z.any().describe('Repository data from the webhook payload'),
-    actor: z.any().optional().describe('Actor who triggered the event'),
-    comment: z.any().optional().describe('Comment data (for comment events)'),
-    approval: z.any().optional().describe('Approval data (for approval events)'),
-  }))
-  .output(z.object({
-    pullRequestId: z.number(),
-    title: z.string(),
-    state: z.string().optional(),
-    repoSlug: z.string(),
-    repoFullName: z.string(),
-    sourceBranch: z.string().optional(),
-    destinationBranch: z.string().optional(),
-    authorDisplayName: z.string().optional(),
-    actorDisplayName: z.string().optional(),
-    actorUuid: z.string().optional(),
-    htmlUrl: z.string().optional(),
-    // Comment-specific
-    commentId: z.number().optional(),
-    commentContent: z.string().optional(),
-    // Approval-specific
-    approverDisplayName: z.string().optional(),
-  }))
+export let pullRequestEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Pull Request Events',
+  key: 'pull_request_events',
+  description:
+    'Triggers on pull request activity including creation, updates, approvals, merges, declines, change requests, and comments.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Bitbucket event type identifier'),
+      eventKey: z.string().describe('Unique event key for deduplication'),
+      pullRequest: z.any().describe('Pull request data from the webhook payload'),
+      repository: z.any().describe('Repository data from the webhook payload'),
+      actor: z.any().optional().describe('Actor who triggered the event'),
+      comment: z.any().optional().describe('Comment data (for comment events)'),
+      approval: z.any().optional().describe('Approval data (for approval events)')
+    })
+  )
+  .output(
+    z.object({
+      pullRequestId: z.number(),
+      title: z.string(),
+      state: z.string().optional(),
+      repoSlug: z.string(),
+      repoFullName: z.string(),
+      sourceBranch: z.string().optional(),
+      destinationBranch: z.string().optional(),
+      authorDisplayName: z.string().optional(),
+      actorDisplayName: z.string().optional(),
+      actorUuid: z.string().optional(),
+      htmlUrl: z.string().optional(),
+      // Comment-specific
+      commentId: z.number().optional(),
+      commentContent: z.string().optional(),
+      // Approval-specific
+      approverDisplayName: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
       let webhook = await client.createWorkspaceWebhook({
         description: 'Slates - Pull Request Events',
         url: ctx.input.webhookBaseUrl,
         active: true,
-        events: [...prEventTypes],
+        events: [...prEventTypes]
       });
 
       return {
         registrationDetails: {
-          webhookUuid: webhook.uuid,
-        },
+          webhookUuid: webhook.uuid
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
       await client.deleteWorkspaceWebhook(ctx.input.registrationDetails.webhookUuid);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
       let eventHeader = ctx.request.headers.get('x-event-key') || '';
       let hookUuid = ctx.request.headers.get('x-hook-uuid') || '';
@@ -85,19 +87,21 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
       let eventKey = `${hookUuid}-${eventHeader}-${data.pullrequest?.id || ''}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType: eventHeader,
-          eventKey,
-          pullRequest: data.pullrequest,
-          repository: data.repository,
-          actor: data.actor,
-          comment: data.comment,
-          approval: data.approval,
-        }],
+        inputs: [
+          {
+            eventType: eventHeader,
+            eventKey,
+            pullRequest: data.pullrequest,
+            repository: data.repository,
+            actor: data.actor,
+            comment: data.comment,
+            approval: data.approval
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, pullRequest, repository, actor, comment, approval } = ctx.input;
 
       let output: Record<string, any> = {
@@ -111,7 +115,7 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
         authorDisplayName: pullRequest?.author?.display_name || undefined,
         actorDisplayName: actor?.display_name || undefined,
         actorUuid: actor?.uuid || undefined,
-        htmlUrl: pullRequest?.links?.html?.href || undefined,
+        htmlUrl: pullRequest?.links?.html?.href || undefined
       };
 
       if (comment) {
@@ -120,7 +124,8 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
       }
 
       if (approval) {
-        output.approverDisplayName = approval.user?.display_name || actor?.display_name || undefined;
+        output.approverDisplayName =
+          approval.user?.display_name || actor?.display_name || undefined;
       }
 
       let typeMap: Record<string, string> = {
@@ -136,13 +141,14 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
         'pullrequest:comment_updated': 'pull_request.comment_updated',
         'pullrequest:comment_deleted': 'pull_request.comment_deleted',
         'pullrequest:comment_resolved': 'pull_request.comment_resolved',
-        'pullrequest:comment_reopened': 'pull_request.comment_reopened',
+        'pullrequest:comment_reopened': 'pull_request.comment_reopened'
       };
 
       return {
         type: typeMap[eventType] || eventType,
         id: ctx.input.eventKey,
-        output: output as any,
+        output: output as any
       };
-    },
-  }).build();
+    }
+  })
+  .build();

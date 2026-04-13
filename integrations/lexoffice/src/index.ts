@@ -15,14 +15,14 @@ import {
   manageVoucher,
   listVouchers,
   getPayment,
-  getProfile,
+  getProfile
 } from './tools';
 import {
   contactEvents,
   invoiceEvents,
   articleEvents,
   voucherEvents,
-  paymentEvents,
+  paymentEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -42,13 +42,7 @@ export let provider = Slate.create({
     manageVoucher,
     listVouchers,
     getPayment,
-    getProfile,
+    getProfile
   ],
-  triggers: [
-    contactEvents,
-    invoiceEvents,
-    articleEvents,
-    voucherEvents,
-    paymentEvents,
-  ],
+  triggers: [contactEvents, invoiceEvents, articleEvents, voucherEvents, paymentEvents]
 });

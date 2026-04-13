@@ -60,7 +60,8 @@ export let mapTeam = (data: any) => ({
   organizationAccess: {
     managePolicies: data.attributes?.['organization-access']?.['manage-policies'] ?? false,
     manageWorkspaces: data.attributes?.['organization-access']?.['manage-workspaces'] ?? false,
-    manageVcsSettings: data.attributes?.['organization-access']?.['manage-vcs-settings'] ?? false,
+    manageVcsSettings:
+      data.attributes?.['organization-access']?.['manage-vcs-settings'] ?? false,
     manageProviders: data.attributes?.['organization-access']?.['manage-providers'] ?? false,
     manageModules: data.attributes?.['organization-access']?.['manage-modules'] ?? false,
     manageRuns: data.attributes?.['organization-access']?.['manage-runs'] ?? false,

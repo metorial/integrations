@@ -13,6 +13,7 @@ NetSuite supports two primary authentication methods for API access:
 TBA is based on OAuth 1.0. Ultimately, you need to generate a request header that includes a signature created using tokens retrieved from the NetSuite dashboard and the OAuth 1.0 standard.
 
 **Required credentials:**
+
 - **Account ID** (also called "realm"): Your NetSuite account identifier, found in the URL (e.g., `https://<ACCOUNT_ID>.app.netsuite.com`). The realm is the NetSuite account ID. If using a sandbox account, the ID includes a hyphen (e.g., `9876543-sb1`), which must be transformed by replacing hyphens with underscores and capitalizing letters (e.g., `9876543_SB1`).
 - **Consumer Key** and **Consumer Secret**: Generated when creating an Integration Record in NetSuite (Setup > Integration > Manage Integrations).
 - **Token ID** and **Token Secret**: Generated when creating an Access Token in NetSuite.
@@ -24,6 +25,7 @@ Each API request must include an OAuth 1.0 Authorization header with a computed 
 **Base URL format:** `https://<account_id>.suitetalk.api.netsuite.com/services/rest/`
 
 **Setup steps:**
+
 1. Enable Token-Based Authentication under Setup > Company > Enable Features > SuiteCloud.
 2. Create an Integration Record (Setup > Integration > Manage Integrations > New) with the TOKEN-BASED AUTHENTICATION option checked.
 3. Create an Access Token for a user and role.
@@ -47,6 +49,7 @@ To use REST web services with OAuth 2.0, you must create an application using an
 The client credentials flow is a machine-to-machine authentication method and does not require user manual interaction. This flow uses a JWT assertion signed with a certificate. You must generate a key pair, upload the public certificate to NetSuite, and use the private key to sign JWT tokens with the `rest_webservices` scope.
 
 **Setup steps (for either OAuth 2.0 flow):**
+
 1. Enable OAuth 2.0 and REST Web Services under Setup > Company > Enable Features > SuiteCloud.
 2. Create an Integration Record with the appropriate OAuth 2.0 grant type enabled.
 3. Note the Client ID and Client Secret (shown only once on save).

@@ -9,8 +9,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -23,7 +23,7 @@ export class Client {
   }) {
     let body: Record<string, unknown> = {
       api_key: this.token,
-      url: params.urls,
+      url: params.urls
     };
 
     if (params.skus && params.skus.length > 0) {
@@ -45,14 +45,14 @@ export class Client {
 
   async getAudiofileDetails(audiofileId: number) {
     let response = await this.axios.get(`/audiofile/${audiofileId}`, {
-      params: { api_key: this.token },
+      params: { api_key: this.token }
     });
     return response.data;
   }
 
   async getTranscript(audiofileId: number, format: 'txt' | 'doc' | 'rtf' | 'html') {
     let response = await this.axios.get(`/audiofile/${audiofileId}/transcript.${format}`, {
-      params: { api_key: this.token },
+      params: { api_key: this.token }
     });
     return response.data;
   }
@@ -60,7 +60,7 @@ export class Client {
   async upgradeAudiofile(audiofileId: number, skus: string[], test?: boolean) {
     let body: Record<string, unknown> = {
       api_key: this.token,
-      sku: skus,
+      sku: skus
     };
     if (test) {
       body.test = '1';
@@ -72,7 +72,7 @@ export class Client {
 
   async refundAudiofile(audiofileId: number, test?: boolean) {
     let body: Record<string, unknown> = {
-      api_key: this.token,
+      api_key: this.token
     };
     if (test) {
       body.test = '1';
@@ -84,21 +84,21 @@ export class Client {
 
   async getInvoice(invoiceId: string) {
     let response = await this.axios.get(`/invoice/${invoiceId}`, {
-      params: { api_key: this.token },
+      params: { api_key: this.token }
     });
     return response.data;
   }
 
   async getPrepayBalance() {
     let response = await this.axios.get('/prepay_balance', {
-      params: { api_key: this.token },
+      params: { api_key: this.token }
     });
     return response.data;
   }
 
   async getWebhook() {
     let response = await this.axios.get('/webhook', {
-      params: { api_key: this.token },
+      params: { api_key: this.token }
     });
     return response.data;
   }
@@ -106,14 +106,14 @@ export class Client {
   async registerWebhook(webhookUrl: string) {
     let response = await this.axios.post('/webhook', {
       api_key: this.token,
-      webhook: webhookUrl,
+      webhook: webhookUrl
     });
     return response.data;
   }
 
   async testWebhook(eventType: string) {
     let response = await this.axios.post(`/webhook/test/${eventType}`, {
-      api_key: this.token,
+      api_key: this.token
     });
     return response.data;
   }

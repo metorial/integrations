@@ -11,35 +11,52 @@ let moverItemSchema = z.object({
   close: z.number().optional().describe('Current/last price'),
   volume: z.number().optional().describe('Trading volume'),
   averageVolume: z.number().optional().describe('50-day average volume'),
-  previousClose: z.number().optional().describe('Prior session closing price'),
+  previousClose: z.number().optional().describe('Prior session closing price')
 });
 
-export let getMarketMoversTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Market Movers',
-    key: 'get_market_movers',
-    description: `Identify the top gaining, losing, and most active securities across exchanges. Supports filtering by market session (regular, pre-market, after-market) and screener criteria.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getMarketMoversTool = SlateTool.create(spec, {
+  name: 'Get Market Movers',
+  key: 'get_market_movers',
+  description: `Identify the top gaining, losing, and most active securities across exchanges. Supports filtering by market session (regular, pre-market, after-market) and screener criteria.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    session: z.enum(['REGULAR', 'PRE_MARKET', 'AFTER_MARKET']).optional().default('REGULAR').describe('Market session to report for'),
-    maxResults: z.number().optional().default(10).describe('Max number of gainers/losers to return (max 1000)'),
-    from: z.string().optional().describe('Start period (YYYY-MM-DD, timestamp, or relative like "1D", "-1W", "YTD")'),
-    to: z.string().optional().describe('End period (YYYY-MM-DD or timestamp)'),
-    screenerQuery: z.string().optional().describe('Filter conditions separated by semicolons (e.g. "marketcap_gt_1b;close_gt_5")'),
-  }))
-  .output(z.object({
-    gainers: z.array(moverItemSchema).describe('Top gaining securities'),
-    losers: z.array(moverItemSchema).describe('Top losing securities'),
-    fromDate: z.string().optional().describe('Period start'),
-    toDate: z.string().optional().describe('Period end'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      session: z
+        .enum(['REGULAR', 'PRE_MARKET', 'AFTER_MARKET'])
+        .optional()
+        .default('REGULAR')
+        .describe('Market session to report for'),
+      maxResults: z
+        .number()
+        .optional()
+        .default(10)
+        .describe('Max number of gainers/losers to return (max 1000)'),
+      from: z
+        .string()
+        .optional()
+        .describe('Start period (YYYY-MM-DD, timestamp, or relative like "1D", "-1W", "YTD")'),
+      to: z.string().optional().describe('End period (YYYY-MM-DD or timestamp)'),
+      screenerQuery: z
+        .string()
+        .optional()
+        .describe(
+          'Filter conditions separated by semicolons (e.g. "marketcap_gt_1b;close_gt_5")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      gainers: z.array(moverItemSchema).describe('Top gaining securities'),
+      losers: z.array(moverItemSchema).describe('Top losing securities'),
+      fromDate: z.string().optional().describe('Period start'),
+      toDate: z.string().optional().describe('Period end')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BenzingaClient({ token: ctx.auth.token });
 
     let data = await client.getMovers({
@@ -47,7 +64,7 @@ export let getMarketMoversTool = SlateTool.create(
       maxResults: ctx.input.maxResults,
       from: ctx.input.from,
       to: ctx.input.to,
-      screenerQuery: ctx.input.screenerQuery,
+      screenerQuery: ctx.input.screenerQuery
     });
 
     let result = data?.result || data || {};
@@ -59,7 +76,7 @@ export let getMarketMoversTool = SlateTool.create(
       close: g.close,
       volume: g.volume,
       averageVolume: g.averageVolume,
-      previousClose: g.previousClose,
+      previousClose: g.previousClose
     }));
     let losers = (result.losers || []).map((l: any) => ({
       symbol: l.symbol,
@@ -69,7 +86,7 @@ export let getMarketMoversTool = SlateTool.create(
       close: l.close,
       volume: l.volume,
       averageVolume: l.averageVolume,
-      previousClose: l.previousClose,
+      previousClose: l.previousClose
     }));
 
     return {
@@ -77,8 +94,9 @@ export let getMarketMoversTool = SlateTool.create(
         gainers,
         losers,
         fromDate: result.fromDate,
-        toDate: result.toDate,
+        toDate: result.toDate
       },
-      message: `Found **${gainers.length}** gainer(s) and **${losers.length}** loser(s) for ${ctx.input.session || 'REGULAR'} session.`,
+      message: `Found **${gainers.length}** gainer(s) and **${losers.length}** loser(s) for ${ctx.input.session || 'REGULAR'} session.`
     };
-  }).build();
+  })
+  .build();

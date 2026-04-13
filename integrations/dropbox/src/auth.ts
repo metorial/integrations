@@ -6,34 +6,80 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
 
     scopes: [
-      { title: 'Account Info', description: 'Read account information', scope: 'account_info.read' },
-      { title: 'Files Metadata Read', description: 'Read file and folder metadata', scope: 'files.metadata.read' },
-      { title: 'Files Metadata Write', description: 'Write file and folder metadata', scope: 'files.metadata.write' },
-      { title: 'Files Content Read', description: 'Read file content', scope: 'files.content.read' },
-      { title: 'Files Content Write', description: 'Write file content', scope: 'files.content.write' },
-      { title: 'Sharing Read', description: 'Read sharing settings and shared content', scope: 'sharing.read' },
-      { title: 'Sharing Write', description: 'Manage sharing settings and shared content', scope: 'sharing.write' },
-      { title: 'File Requests Read', description: 'Read file requests', scope: 'file_requests.read' },
-      { title: 'File Requests Write', description: 'Manage file requests', scope: 'file_requests.write' },
+      {
+        title: 'Account Info',
+        description: 'Read account information',
+        scope: 'account_info.read'
+      },
+      {
+        title: 'Files Metadata Read',
+        description: 'Read file and folder metadata',
+        scope: 'files.metadata.read'
+      },
+      {
+        title: 'Files Metadata Write',
+        description: 'Write file and folder metadata',
+        scope: 'files.metadata.write'
+      },
+      {
+        title: 'Files Content Read',
+        description: 'Read file content',
+        scope: 'files.content.read'
+      },
+      {
+        title: 'Files Content Write',
+        description: 'Write file content',
+        scope: 'files.content.write'
+      },
+      {
+        title: 'Sharing Read',
+        description: 'Read sharing settings and shared content',
+        scope: 'sharing.read'
+      },
+      {
+        title: 'Sharing Write',
+        description: 'Manage sharing settings and shared content',
+        scope: 'sharing.write'
+      },
+      {
+        title: 'File Requests Read',
+        description: 'Read file requests',
+        scope: 'file_requests.read'
+      },
+      {
+        title: 'File Requests Write',
+        description: 'Manage file requests',
+        scope: 'file_requests.write'
+      },
       { title: 'Contacts Read', description: 'Read contacts', scope: 'contacts.read' },
       { title: 'Contacts Write', description: 'Manage contacts', scope: 'contacts.write' },
       { title: 'OpenID', description: 'OpenID Connect authentication', scope: 'openid' },
-      { title: 'Email', description: 'Access email address via OpenID Connect', scope: 'email' },
-      { title: 'Profile', description: 'Access profile information via OpenID Connect', scope: 'profile' }
+      {
+        title: 'Email',
+        description: 'Access email address via OpenID Connect',
+        scope: 'email'
+      },
+      {
+        title: 'Profile',
+        description: 'Access profile information via OpenID Connect',
+        scope: 'profile'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -51,7 +97,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let params = new URLSearchParams({
         code: ctx.code,
         grant_type: 'authorization_code',
@@ -80,7 +126,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -112,16 +158,16 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
-      let response = await apiAxios.post(
-        '/2/users/get_current_account',
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${ctx.output.token}`
-          }
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
+      let response = await apiAxios.post('/2/users/get_current_account', null, {
+        headers: {
+          Authorization: `Bearer ${ctx.output.token}`
         }
-      );
+      });
 
       let account = response.data;
 

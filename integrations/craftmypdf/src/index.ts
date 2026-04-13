@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   generatePdf,
@@ -17,11 +16,9 @@ import {
   deleteTemplate,
   createEditorSession,
   getAccountInfo,
-  listTransactions,
+  listTransactions
 } from './tools';
-import { pdfGenerationCompleted,
-  inboundWebhook,
-} from './triggers';
+import { pdfGenerationCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,10 +38,7 @@ export let provider = Slate.create({
     deleteTemplate,
     createEditorSession,
     getAccountInfo,
-    listTransactions,
+    listTransactions
   ],
-  triggers: [
-    inboundWebhook,
-    pdfGenerationCompleted,
-  ],
+  triggers: [inboundWebhook, pdfGenerationCompleted]
 });

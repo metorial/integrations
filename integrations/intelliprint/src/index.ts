@@ -18,12 +18,9 @@ import {
   getRecipient,
   listRecipients,
   updateRecipient,
-  deleteRecipient,
+  deleteRecipient
 } from './tools';
-import {
-  letterUpdated,
-  mailingListAddressesValidated,
-} from './triggers';
+import { letterUpdated, mailingListAddressesValidated } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,10 +42,7 @@ export let provider = Slate.create({
     getRecipient,
     listRecipients,
     updateRecipient,
-    deleteRecipient,
+    deleteRecipient
   ],
-  triggers: [
-    letterUpdated,
-    mailingListAddressesValidated,
-  ],
+  triggers: [letterUpdated, mailingListAddressesValidated]
 });

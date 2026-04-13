@@ -33,18 +33,12 @@ export let listSubmissionsTool = SlateTool.create(spec, {
         .string()
         .optional()
         .describe('Field to sort by (e.g., "created_at", "updated_at")'),
-      sortDirection: z
-        .enum(['ASC', 'DESC'])
-        .optional()
-        .describe('Sort direction'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
       limit: z
         .number()
         .optional()
         .describe('Max number of submissions to return (default 20, max 1000)'),
-      offset: z
-        .number()
-        .optional()
-        .describe('Number of submissions to skip for pagination')
+      offset: z.number().optional().describe('Number of submissions to skip for pagination')
     })
   )
   .output(
@@ -57,12 +51,14 @@ export let listSubmissionsTool = SlateTool.create(spec, {
           updatedAt: z.string().describe('Last update date'),
           status: z.string().describe('Submission status (ACTIVE, DELETED, etc.)'),
           ip: z.string().optional().describe('IP address of the submitter'),
-          answers: z.record(z.string(), z.any()).describe('Map of question IDs to answer objects')
+          answers: z
+            .record(z.string(), z.any())
+            .describe('Map of question IDs to answer objects')
         })
       )
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

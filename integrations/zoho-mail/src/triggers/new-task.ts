@@ -3,41 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newTask = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Task',
-    key: 'new_task',
-    description: 'Triggers when a new personal task is created in Zoho Mail. Polls for recently created tasks.',
-  }
-)
-  .input(z.object({
-    taskId: z.string().describe('Task ID'),
-    title: z.string().optional().describe('Task title'),
-    description: z.string().optional().describe('Task description'),
-    priority: z.string().optional().describe('Task priority'),
-    status: z.string().optional().describe('Task status'),
-    dueDate: z.string().optional().describe('Due date'),
-    createdTime: z.string().optional().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    taskId: z.string().describe('Task ID'),
-    title: z.string().optional().describe('Task title'),
-    description: z.string().optional().describe('Task description'),
-    priority: z.string().optional().describe('Task priority'),
-    status: z.string().optional().describe('Task status'),
-    dueDate: z.string().optional().describe('Due date'),
-    createdTime: z.string().optional().describe('Creation timestamp'),
-  }))
+export let newTask = SlateTrigger.create(spec, {
+  name: 'New Task',
+  key: 'new_task',
+  description:
+    'Triggers when a new personal task is created in Zoho Mail. Polls for recently created tasks.'
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      title: z.string().optional().describe('Task title'),
+      description: z.string().optional().describe('Task description'),
+      priority: z.string().optional().describe('Task priority'),
+      status: z.string().optional().describe('Task status'),
+      dueDate: z.string().optional().describe('Due date'),
+      createdTime: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      title: z.string().optional().describe('Task title'),
+      description: z.string().optional().describe('Task description'),
+      priority: z.string().optional().describe('Task priority'),
+      status: z.string().optional().describe('Task status'),
+      dueDate: z.string().optional().describe('Due date'),
+      createdTime: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        domain: ctx.config.dataCenterDomain,
+        domain: ctx.config.dataCenterDomain
       });
 
       let state = ctx.input.state || {};
@@ -66,19 +68,19 @@ export let newTask = SlateTrigger.create(
         priority: t.priority,
         status: t.status || t.taskStatus,
         dueDate: t.dueDate,
-        createdTime: t.createdTime ? String(t.createdTime) : undefined,
+        createdTime: t.createdTime ? String(t.createdTime) : undefined
       }));
 
       return {
         inputs,
         updatedState: {
           ...state,
-          knownTaskIds: updatedKnownIds,
-        },
+          knownTaskIds: updatedKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'task.created',
         id: ctx.input.taskId,
@@ -89,9 +91,9 @@ export let newTask = SlateTrigger.create(
           priority: ctx.input.priority,
           status: ctx.input.status,
           dueDate: ctx.input.dueDate,
-          createdTime: ctx.input.createdTime,
-        },
+          createdTime: ctx.input.createdTime
+        }
       };
-    },
+    }
   })
   .build();

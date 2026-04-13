@@ -25,14 +25,9 @@ import {
   getStoreSettings,
   updateStoreSetting,
   managePaymentGateways,
-  getSystemStatus,
+  getSystemStatus
 } from './tools';
-import {
-  orderEvents,
-  productEvents,
-  customerEvents,
-  couponEvents,
-} from './triggers';
+import { orderEvents, productEvents, customerEvents, couponEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -61,12 +56,7 @@ export let provider = Slate.create({
     getStoreSettings,
     updateStoreSetting,
     managePaymentGateways,
-    getSystemStatus,
+    getSystemStatus
   ],
-  triggers: [
-    orderEvents,
-    productEvents,
-    customerEvents,
-    couponEvents,
-  ],
+  triggers: [orderEvents, productEvents, customerEvents, couponEvents]
 });

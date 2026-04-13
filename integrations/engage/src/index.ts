@@ -12,7 +12,7 @@ import {
   manageSubscription,
   sendEmail,
   sendSms,
-  manageAccount,
+  manageAccount
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     manageSubscription,
     sendEmail,
     sendSms,
-    manageAccount,
+    manageAccount
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

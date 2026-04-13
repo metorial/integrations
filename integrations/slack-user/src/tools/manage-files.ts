@@ -13,48 +13,61 @@ let fileSchema = z.object({
   userId: z.string().optional().describe('User ID of the uploader'),
   permalink: z.string().optional().describe('Permalink to the file'),
   urlPrivate: z.string().optional().describe('Private download URL'),
-  created: z.number().optional().describe('Unix timestamp when the file was created'),
+  created: z.number().optional().describe('Unix timestamp when the file was created')
 });
 
-export let manageFiles = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Files',
-    key: 'manage_files',
-    description: `Upload, list, get info about, or delete files in Slack. Upload text content as a file snippet, retrieve file metadata, or list files shared in a channel or by a user.`,
-    instructions: [
-      'To **upload**, provide content and optionally a filename, filetype, title, and channelIds to share to.',
-      'To **list**, optionally filter by channelId or userId.',
-      'To **get** file info, provide the fileId.',
-      'To **delete**, provide the fileId.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageFiles = SlateTool.create(spec, {
+  name: 'Manage Files',
+  key: 'manage_files',
+  description: `Upload, list, get info about, or delete files in Slack. Upload text content as a file snippet, retrieve file metadata, or list files shared in a channel or by a user.`,
+  instructions: [
+    'To **upload**, provide content and optionally a filename, filetype, title, and channelIds to share to.',
+    'To **list**, optionally filter by channelId or userId.',
+    'To **get** file info, provide the fileId.',
+    'To **delete**, provide the fileId.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['upload', 'list', 'get', 'delete']).describe('File management action'),
-    fileId: z.string().optional().describe('File ID (for get/delete actions)'),
-    content: z.string().optional().describe('Text content to upload as a file (for upload action)'),
-    filename: z.string().optional().describe('Filename for the uploaded file'),
-    filetype: z.string().optional().describe('File type (e.g. "txt", "py", "json")'),
-    title: z.string().optional().describe('Title for the uploaded file'),
-    channelIds: z.string().optional().describe('Comma-separated channel IDs to share the file to'),
-    initialComment: z.string().optional().describe('Comment to add when sharing the file'),
-    threadTs: z.string().optional().describe('Thread timestamp to share the file in a thread'),
-    filterChannelId: z.string().optional().describe('Filter files by channel (for list action)'),
-    filterUserId: z.string().optional().describe('Filter files by user (for list action)'),
-    count: z.number().optional().describe('Number of files to return (for list action)'),
-    page: z.number().optional().describe('Page number (for list action)'),
-  }))
-  .output(z.object({
-    file: fileSchema.optional().describe('File details (for upload/get actions)'),
-    files: z.array(fileSchema).optional().describe('List of files (for list action)'),
-    deleted: z.boolean().optional().describe('Whether the file was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['upload', 'list', 'get', 'delete']).describe('File management action'),
+      fileId: z.string().optional().describe('File ID (for get/delete actions)'),
+      content: z
+        .string()
+        .optional()
+        .describe('Text content to upload as a file (for upload action)'),
+      filename: z.string().optional().describe('Filename for the uploaded file'),
+      filetype: z.string().optional().describe('File type (e.g. "txt", "py", "json")'),
+      title: z.string().optional().describe('Title for the uploaded file'),
+      channelIds: z
+        .string()
+        .optional()
+        .describe('Comma-separated channel IDs to share the file to'),
+      initialComment: z.string().optional().describe('Comment to add when sharing the file'),
+      threadTs: z
+        .string()
+        .optional()
+        .describe('Thread timestamp to share the file in a thread'),
+      filterChannelId: z
+        .string()
+        .optional()
+        .describe('Filter files by channel (for list action)'),
+      filterUserId: z.string().optional().describe('Filter files by user (for list action)'),
+      count: z.number().optional().describe('Number of files to return (for list action)'),
+      page: z.number().optional().describe('Page number (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      file: fileSchema.optional().describe('File details (for upload/get actions)'),
+      files: z.array(fileSchema).optional().describe('List of files (for list action)'),
+      deleted: z.boolean().optional().describe('Whether the file was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -68,7 +81,7 @@ export let manageFiles = SlateTool.create(
       userId: f.user,
       permalink: f.permalink,
       urlPrivate: f.url_private,
-      created: f.created || f.timestamp,
+      created: f.created || f.timestamp
     });
 
     if (action === 'upload') {
@@ -80,11 +93,11 @@ export let manageFiles = SlateTool.create(
         title: ctx.input.title,
         channels: ctx.input.channelIds,
         initialComment: ctx.input.initialComment,
-        threadTs: ctx.input.threadTs,
+        threadTs: ctx.input.threadTs
       });
       return {
         output: { file: mapFile(file) },
-        message: `Uploaded file **${file.name || file.title || file.id}**.`,
+        message: `Uploaded file **${file.name || file.title || file.id}**.`
       };
     }
 
@@ -93,7 +106,7 @@ export let manageFiles = SlateTool.create(
       let file = await client.getFileInfo(ctx.input.fileId);
       return {
         output: { file: mapFile(file) },
-        message: `Retrieved file info for **${file.name || file.title || file.id}**.`,
+        message: `Retrieved file info for **${file.name || file.title || file.id}**.`
       };
     }
 
@@ -102,7 +115,7 @@ export let manageFiles = SlateTool.create(
       await client.deleteFile(ctx.input.fileId);
       return {
         output: { deleted: true },
-        message: `Deleted file \`${ctx.input.fileId}\`.`,
+        message: `Deleted file \`${ctx.input.fileId}\`.`
       };
     }
 
@@ -111,11 +124,11 @@ export let manageFiles = SlateTool.create(
       channel: ctx.input.filterChannelId,
       user: ctx.input.filterUserId,
       count: ctx.input.count,
-      page: ctx.input.page,
+      page: ctx.input.page
     });
     return {
       output: { files: result.files.map(mapFile) },
-      message: `Listed ${result.files.length} file(s).`,
+      message: `Listed ${result.files.length} file(s).`
     };
   })
   .build();

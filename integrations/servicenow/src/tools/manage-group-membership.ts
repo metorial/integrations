@@ -3,26 +3,43 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroupMembership = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group Membership',
-    key: 'manage_group_membership',
-    description: `Add or remove users from ServiceNow groups. List current group members, add a user to a group, or remove a user from a group.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'remove']).describe('Action to perform: list group members, add a user, or remove a user'),
-    groupId: z.string().describe('sys_id of the group'),
-    userId: z.string().optional().describe('sys_id of the user (required for add/remove actions)'),
-    membershipId: z.string().optional().describe('sys_id of the group membership record (required for remove action if userId not provided)'),
-  }))
-  .output(z.object({
-    members: z.array(z.record(z.string(), z.any())).optional().describe('List of group members (for list action)'),
-    record: z.record(z.string(), z.any()).optional().describe('The created or deleted membership record'),
-    success: z.boolean().describe('Whether the action was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageGroupMembership = SlateTool.create(spec, {
+  name: 'Manage Group Membership',
+  key: 'manage_group_membership',
+  description: `Add or remove users from ServiceNow groups. List current group members, add a user to a group, or remove a user from a group.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'add', 'remove'])
+        .describe('Action to perform: list group members, add a user, or remove a user'),
+      groupId: z.string().describe('sys_id of the group'),
+      userId: z
+        .string()
+        .optional()
+        .describe('sys_id of the user (required for add/remove actions)'),
+      membershipId: z
+        .string()
+        .optional()
+        .describe(
+          'sys_id of the group membership record (required for remove action if userId not provided)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      members: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of group members (for list action)'),
+      record: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('The created or deleted membership record'),
+      success: z.boolean().describe('Whether the action was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
 
     if (ctx.input.action === 'list') {
@@ -30,9 +47,9 @@ export let manageGroupMembership = SlateTool.create(
       return {
         output: {
           members,
-          success: true,
+          success: true
         },
-        message: `Found **${members.length}** members in the group.`,
+        message: `Found **${members.length}** members in the group.`
       };
     }
 
@@ -44,9 +61,9 @@ export let manageGroupMembership = SlateTool.create(
       return {
         output: {
           record,
-          success: true,
+          success: true
         },
-        message: `Added user to the group.`,
+        message: `Added user to the group.`
       };
     }
 
@@ -55,8 +72,8 @@ export let manageGroupMembership = SlateTool.create(
 
       if (!membershipToRemove && ctx.input.userId) {
         let members = await client.getGroupMembers(ctx.input.groupId);
-        let match = members.find((m: any) =>
-          m.user?.value === ctx.input.userId || m.user === ctx.input.userId
+        let match = members.find(
+          (m: any) => m.user?.value === ctx.input.userId || m.user === ctx.input.userId
         );
         if (!match) {
           throw new Error('User not found in the group');
@@ -71,9 +88,9 @@ export let manageGroupMembership = SlateTool.create(
       await client.removeGroupMember(membershipToRemove);
       return {
         output: {
-          success: true,
+          success: true
         },
-        message: `Removed user from the group.`,
+        message: `Removed user from the group.`
       };
     }
 

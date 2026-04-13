@@ -16,36 +16,37 @@ let contactSummarySchema = z.object({
   tags: z.array(z.string()).describe('Contact tags'),
   archivedAt: z.string().nullable().describe('When archived, if applicable'),
   createdAt: z.string().nullable().describe('When the contact was created'),
-  updatedAt: z.string().nullable().describe('When the contact was last updated'),
+  updatedAt: z.string().nullable().describe('When the contact was last updated')
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Retrieve a paginated list of donor/supporter contacts with their basic profile information and contribution statistics.`,
-    tags: {
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Retrieve a paginated list of donor/supporter contacts with their basic profile information and contribution statistics.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    scope: z.string().optional().describe('Scope filter'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactSummarySchema).describe('List of contacts'),
-    totalCount: z.number().describe('Total number of contacts'),
-    currentPage: z.number().describe('Current page number'),
-    lastPage: z.number().describe('Last page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      scope: z.string().optional().describe('Scope filter')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSummarySchema).describe('List of contacts'),
+      totalCount: z.number().describe('Total number of contacts'),
+      currentPage: z.number().describe('Current page number'),
+      lastPage: z.number().describe('Last page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listContacts({
       page: ctx.input.page,
-      scope: ctx.input.scope,
+      scope: ctx.input.scope
     });
 
     let contacts = result.data.map((c: any) => ({
@@ -61,7 +62,7 @@ export let listContacts = SlateTool.create(
       tags: c.tags ?? [],
       archivedAt: c.archived_at ?? null,
       createdAt: c.created_at ?? null,
-      updatedAt: c.updated_at ?? null,
+      updatedAt: c.updated_at ?? null
     }));
 
     return {
@@ -69,9 +70,9 @@ export let listContacts = SlateTool.create(
         contacts,
         totalCount: result.meta.total,
         currentPage: result.meta.current_page,
-        lastPage: result.meta.last_page,
+        lastPage: result.meta.last_page
       },
-      message: `Found **${result.meta.total}** contacts (page ${result.meta.current_page} of ${result.meta.last_page}).`,
+      message: `Found **${result.meta.total}** contacts (page ${result.meta.current_page} of ${result.meta.last_page}).`
     };
   })
   .build();

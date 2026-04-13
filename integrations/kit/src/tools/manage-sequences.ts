@@ -3,35 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSequences = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Sequences',
-    key: 'manage_sequences',
-    description: `List email sequences (drip campaigns) and add subscribers to sequences. Subscribers can be identified by ID or email address.`
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add_subscriber']).describe('The operation to perform'),
-    sequenceId: z.number().optional().describe('Sequence ID (required for add_subscriber)'),
-    subscriberId: z.number().optional().describe('Subscriber ID to add (for add_subscriber)'),
-    emailAddress: z.string().optional().describe('Subscriber email to add (for add_subscriber)')
-  }))
-  .output(z.object({
-    sequences: z.array(z.object({
-      sequenceId: z.number().describe('Unique sequence ID'),
-      name: z.string().describe('Sequence name'),
-      hold: z.boolean().describe('Whether the sequence is on hold'),
-      repeat: z.boolean().describe('Whether the sequence repeats'),
-      createdAt: z.string().describe('When the sequence was created')
-    })).optional().describe('List of sequences'),
-    subscriber: z.object({
-      subscriberId: z.number().describe('Subscriber ID'),
-      emailAddress: z.string().describe('Subscriber email'),
-      state: z.string().describe('Subscriber state')
-    }).optional().describe('Subscriber added to sequence')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSequences = SlateTool.create(spec, {
+  name: 'Manage Sequences',
+  key: 'manage_sequences',
+  description: `List email sequences (drip campaigns) and add subscribers to sequences. Subscribers can be identified by ID or email address.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'add_subscriber']).describe('The operation to perform'),
+      sequenceId: z.number().optional().describe('Sequence ID (required for add_subscriber)'),
+      subscriberId: z
+        .number()
+        .optional()
+        .describe('Subscriber ID to add (for add_subscriber)'),
+      emailAddress: z
+        .string()
+        .optional()
+        .describe('Subscriber email to add (for add_subscriber)')
+    })
+  )
+  .output(
+    z.object({
+      sequences: z
+        .array(
+          z.object({
+            sequenceId: z.number().describe('Unique sequence ID'),
+            name: z.string().describe('Sequence name'),
+            hold: z.boolean().describe('Whether the sequence is on hold'),
+            repeat: z.boolean().describe('Whether the sequence repeats'),
+            createdAt: z.string().describe('When the sequence was created')
+          })
+        )
+        .optional()
+        .describe('List of sequences'),
+      subscriber: z
+        .object({
+          subscriberId: z.number().describe('Subscriber ID'),
+          emailAddress: z.string().describe('Subscriber email'),
+          state: z.string().describe('Subscriber state')
+        })
+        .optional()
+        .describe('Subscriber added to sequence')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -57,9 +72,15 @@ export let manageSequences = SlateTool.create(
 
       let data;
       if (ctx.input.subscriberId) {
-        data = await client.addSubscriberToSequence(ctx.input.sequenceId, ctx.input.subscriberId);
+        data = await client.addSubscriberToSequence(
+          ctx.input.sequenceId,
+          ctx.input.subscriberId
+        );
       } else {
-        data = await client.addSubscriberToSequenceByEmail(ctx.input.sequenceId, ctx.input.emailAddress!);
+        data = await client.addSubscriberToSequenceByEmail(
+          ctx.input.sequenceId,
+          ctx.input.emailAddress!
+        );
       }
 
       let s = data.subscriber;
@@ -76,4 +97,5 @@ export let manageSequences = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

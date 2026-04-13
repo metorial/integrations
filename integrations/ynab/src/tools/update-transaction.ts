@@ -3,42 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTransaction = SlateTool.create(
-  spec,
-  {
-    name: 'Update Transaction',
-    key: 'update_transaction',
-    description: `Update an existing transaction by its ID. All fields are optional except transactionId — only provide the fields you want to change. For split transactions, provide the full set of subtransactions.`,
-    tags: {
-      destructive: false,
-    },
+export let updateTransaction = SlateTool.create(spec, {
+  name: 'Update Transaction',
+  key: 'update_transaction',
+  description: `Update an existing transaction by its ID. All fields are optional except transactionId — only provide the fields you want to change. For split transactions, provide the full set of subtransactions.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.'),
-    transactionId: z.string().describe('ID of the transaction to update'),
-    accountId: z.string().optional().describe('Updated account ID'),
-    date: z.string().optional().describe('Updated date (YYYY-MM-DD)'),
-    amount: z.number().optional().describe('Updated amount in milliunits'),
-    payeeId: z.string().nullable().optional().describe('Updated payee ID'),
-    payeeName: z.string().nullable().optional().describe('Updated payee name'),
-    categoryId: z.string().nullable().optional().describe('Updated category ID'),
-    memo: z.string().nullable().optional().describe('Updated memo'),
-    cleared: z.enum(['cleared', 'uncleared', 'reconciled']).optional().describe('Updated cleared status'),
-    approved: z.boolean().optional().describe('Updated approval status'),
-    flagColor: z.enum(['red', 'orange', 'yellow', 'green', 'blue', 'purple']).nullable().optional().describe('Updated flag color'),
-  }))
-  .output(z.object({
-    transactionId: z.string().describe('Updated transaction ID'),
-    date: z.string().describe('Transaction date'),
-    amount: z.number().describe('Amount in milliunits'),
-    accountId: z.string().describe('Account ID'),
-    payeeName: z.string().nullable().optional().describe('Payee name'),
-    categoryName: z.string().nullable().optional().describe('Category name'),
-    cleared: z.string().describe('Cleared status'),
-    approved: z.boolean().describe('Approval status'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      budgetId: z
+        .string()
+        .optional()
+        .describe('Budget ID. Defaults to the configured budget.'),
+      transactionId: z.string().describe('ID of the transaction to update'),
+      accountId: z.string().optional().describe('Updated account ID'),
+      date: z.string().optional().describe('Updated date (YYYY-MM-DD)'),
+      amount: z.number().optional().describe('Updated amount in milliunits'),
+      payeeId: z.string().nullable().optional().describe('Updated payee ID'),
+      payeeName: z.string().nullable().optional().describe('Updated payee name'),
+      categoryId: z.string().nullable().optional().describe('Updated category ID'),
+      memo: z.string().nullable().optional().describe('Updated memo'),
+      cleared: z
+        .enum(['cleared', 'uncleared', 'reconciled'])
+        .optional()
+        .describe('Updated cleared status'),
+      approved: z.boolean().optional().describe('Updated approval status'),
+      flagColor: z
+        .enum(['red', 'orange', 'yellow', 'green', 'blue', 'purple'])
+        .nullable()
+        .optional()
+        .describe('Updated flag color')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().describe('Updated transaction ID'),
+      date: z.string().describe('Transaction date'),
+      amount: z.number().describe('Amount in milliunits'),
+      accountId: z.string().describe('Account ID'),
+      payeeName: z.string().nullable().optional().describe('Payee name'),
+      categoryName: z.string().nullable().optional().describe('Category name'),
+      cleared: z.string().describe('Cleared status'),
+      approved: z.boolean().describe('Approval status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let budgetId = ctx.input.budgetId ?? ctx.config.budgetId;
 
@@ -65,9 +76,9 @@ export let updateTransaction = SlateTool.create(
         payeeName: t.payee_name,
         categoryName: t.category_name,
         cleared: t.cleared,
-        approved: t.approved,
+        approved: t.approved
       },
-      message: `Updated transaction **${t.id}** on ${t.date}`,
+      message: `Updated transaction **${t.id}** on ${t.date}`
     };
   })
   .build();

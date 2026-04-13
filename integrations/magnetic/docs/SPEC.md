@@ -22,27 +22,35 @@ Magnetic uses **API token** authentication. Each user account has a unique API t
 ## Features
 
 ### Contact & Company Management
+
 Create, find, and manage contacts and their associated companies. Contacts can include details such as name, email, phone numbers, physical/postal addresses, position, tags, and external references. When creating a contact, Magnetic first looks for an existing contact and appends data if found, otherwise creates a new contact and company.
 
 ### Opportunity/Job Management
+
 Create opportunities or jobs within the CRM pipeline. Opportunities can be configured with an owner, contact, company, description, amount, due date, tags, access settings, and external references. Comments can also be added to existing opportunities/jobs.
 
 ### Task Management
+
 Create and find tasks by name or description. Tasks can be assigned to owners, linked to opportunities/jobs, and configured with status, priority, due date, start date, time estimate, billable flag, tags, and watchers. Comments can be added to existing tasks.
 
 ### Time Tracking
+
 Log time on existing tasks by referencing the task code or description and specifying the time logged. This supports tracking billable hours against projects.
 
 ### User Management
+
 Retrieve the list of users in your Magnetic account via the API.
 
 ### Financial Data (via integrations)
+
 Export and import customers, suppliers, tax invoices, and purchase orders. You can sync invoices, expenses, and client payments from accounting tools like Sage and Xero with Magnetic.
 
 ### Notifications
+
 Retrieve notifications from Magnetic, with the option to include all notifications or only new ones.
 
 ### Contact Records
+
 Create records (activity logs) on existing contacts, specifying the message, comment type, email, phone, and follow-up date.
 
 ## Events

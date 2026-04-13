@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getAirQuality,
@@ -19,13 +18,9 @@ import {
   getWaterVapor,
   getNdvi,
   getElevation,
-  geocode,
+  geocode
 } from './tools';
-import {
-  airQualityChange,
-  naturalDisasterAlert,
-  inboundWebhook,
-} from './triggers';
+import { airQualityChange, naturalDisasterAlert, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,11 +42,7 @@ export let provider = Slate.create({
     getWaterVapor,
     getNdvi,
     getElevation,
-    geocode,
+    geocode
   ],
-  triggers: [
-    inboundWebhook,
-    airQualityChange,
-    naturalDisasterAlert,
-  ],
+  triggers: [inboundWebhook, airQualityChange, naturalDisasterAlert]
 });

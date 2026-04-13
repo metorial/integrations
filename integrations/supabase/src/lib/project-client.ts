@@ -9,22 +9,25 @@ export class ProjectClient {
     this.http = createAxios({
       baseURL: `https://${projectRef}.supabase.co`,
       headers: {
-        'apikey': apiKey,
-        'Authorization': `Bearer ${apiKey}`,
-      },
+        apikey: apiKey,
+        Authorization: `Bearer ${apiKey}`
+      }
     });
   }
 
   // ─── REST API (PostgREST) ─────────────────────────────────
 
-  async selectRows(table: string, params: {
-    select?: string;
-    filters?: Record<string, string>;
-    order?: string;
-    limit?: number;
-    offset?: number;
-    schema?: string;
-  } = {}) {
+  async selectRows(
+    table: string,
+    params: {
+      select?: string;
+      filters?: Record<string, string>;
+      order?: string;
+      limit?: number;
+      offset?: number;
+      schema?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.select) queryParams['select'] = params.select;
     if (params.order) queryParams['order'] = params.order;
@@ -44,21 +47,25 @@ export class ProjectClient {
 
     let response = await this.http.get(`/rest/v1/${table}`, {
       params: queryParams,
-      headers,
+      headers
     });
     return response.data;
   }
 
-  async insertRows(table: string, rows: Record<string, any> | Record<string, any>[], params: {
-    onConflict?: string;
-    returning?: string;
-    schema?: string;
-  } = {}) {
+  async insertRows(
+    table: string,
+    rows: Record<string, any> | Record<string, any>[],
+    params: {
+      onConflict?: string;
+      returning?: string;
+      schema?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.onConflict) queryParams['on_conflict'] = params.onConflict;
 
     let headers: Record<string, string> = {
-      'Prefer': params.returning === 'minimal' ? 'return=minimal' : 'return=representation',
+      Prefer: params.returning === 'minimal' ? 'return=minimal' : 'return=representation'
     };
     if (params.schema) {
       headers['Content-Profile'] = params.schema;
@@ -66,19 +73,24 @@ export class ProjectClient {
 
     let response = await this.http.post(`/rest/v1/${table}`, rows, {
       params: queryParams,
-      headers,
+      headers
     });
     return response.data;
   }
 
-  async updateRows(table: string, updates: Record<string, any>, filters: Record<string, string>, params: {
-    returning?: string;
-    schema?: string;
-  } = {}) {
+  async updateRows(
+    table: string,
+    updates: Record<string, any>,
+    filters: Record<string, string>,
+    params: {
+      returning?: string;
+      schema?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = { ...filters };
 
     let headers: Record<string, string> = {
-      'Prefer': params.returning === 'minimal' ? 'return=minimal' : 'return=representation',
+      Prefer: params.returning === 'minimal' ? 'return=minimal' : 'return=representation'
     };
     if (params.schema) {
       headers['Content-Profile'] = params.schema;
@@ -86,19 +98,23 @@ export class ProjectClient {
 
     let response = await this.http.patch(`/rest/v1/${table}`, updates, {
       params: queryParams,
-      headers,
+      headers
     });
     return response.data;
   }
 
-  async deleteRows(table: string, filters: Record<string, string>, params: {
-    returning?: string;
-    schema?: string;
-  } = {}) {
+  async deleteRows(
+    table: string,
+    filters: Record<string, string>,
+    params: {
+      returning?: string;
+      schema?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = { ...filters };
 
     let headers: Record<string, string> = {
-      'Prefer': params.returning === 'minimal' ? 'return=minimal' : 'return=representation',
+      Prefer: params.returning === 'minimal' ? 'return=minimal' : 'return=representation'
     };
     if (params.schema) {
       headers['Content-Profile'] = params.schema;
@@ -106,21 +122,25 @@ export class ProjectClient {
 
     let response = await this.http.delete(`/rest/v1/${table}`, {
       params: queryParams,
-      headers,
+      headers
     });
     return response.data;
   }
 
-  async upsertRows(table: string, rows: Record<string, any> | Record<string, any>[], params: {
-    onConflict?: string;
-    returning?: string;
-    schema?: string;
-  } = {}) {
+  async upsertRows(
+    table: string,
+    rows: Record<string, any> | Record<string, any>[],
+    params: {
+      onConflict?: string;
+      returning?: string;
+      schema?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.onConflict) queryParams['on_conflict'] = params.onConflict;
 
     let headers: Record<string, string> = {
-      'Prefer': `return=representation,resolution=merge-duplicates`,
+      Prefer: `return=representation,resolution=merge-duplicates`
     };
     if (params.returning === 'minimal') {
       headers['Prefer'] = 'return=minimal,resolution=merge-duplicates';
@@ -131,36 +151,42 @@ export class ProjectClient {
 
     let response = await this.http.post(`/rest/v1/${table}`, rows, {
       params: queryParams,
-      headers,
+      headers
     });
     return response.data;
   }
 
-  async rpc(functionName: string, args: Record<string, any> = {}, params: {
-    schema?: string;
-  } = {}) {
+  async rpc(
+    functionName: string,
+    args: Record<string, any> = {},
+    params: {
+      schema?: string;
+    } = {}
+  ) {
     let headers: Record<string, string> = {};
     if (params.schema) {
       headers['Content-Profile'] = params.schema;
     }
 
     let response = await this.http.post(`/rest/v1/rpc/${functionName}`, args, {
-      headers,
+      headers
     });
     return response.data;
   }
 
   // ─── Auth ─────────────────────────────────────────────────
 
-  async listAuthUsers(params: {
-    page?: number;
-    perPage?: number;
-  } = {}) {
+  async listAuthUsers(
+    params: {
+      page?: number;
+      perPage?: number;
+    } = {}
+  ) {
     let response = await this.http.get('/auth/v1/admin/users', {
       params: {
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
@@ -184,20 +210,23 @@ export class ProjectClient {
       password: data.password,
       email_confirm: data.emailConfirm,
       phone_confirm: data.phoneConfirm,
-      user_metadata: data.userMetadata,
+      user_metadata: data.userMetadata
     });
     return response.data;
   }
 
-  async updateAuthUser(userId: string, data: {
-    email?: string;
-    phone?: string;
-    password?: string;
-    emailConfirm?: boolean;
-    phoneConfirm?: boolean;
-    userMetadata?: Record<string, any>;
-    banned?: boolean;
-  }) {
+  async updateAuthUser(
+    userId: string,
+    data: {
+      email?: string;
+      phone?: string;
+      password?: string;
+      emailConfirm?: boolean;
+      phoneConfirm?: boolean;
+      userMetadata?: Record<string, any>;
+      banned?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.email !== undefined) body.email = data.email;
     if (data.phone !== undefined) body.phone = data.phone;
@@ -218,24 +247,27 @@ export class ProjectClient {
 
   // ─── Storage Objects ──────────────────────────────────────
 
-  async listStorageObjects(bucketId: string, params: {
-    prefix?: string;
-    limit?: number;
-    offset?: number;
-    sortBy?: { column: string; order: string };
-  } = {}) {
+  async listStorageObjects(
+    bucketId: string,
+    params: {
+      prefix?: string;
+      limit?: number;
+      offset?: number;
+      sortBy?: { column: string; order: string };
+    } = {}
+  ) {
     let response = await this.http.post(`/storage/v1/object/list/${bucketId}`, {
       prefix: params.prefix ?? '',
       limit: params.limit ?? 100,
       offset: params.offset ?? 0,
-      sortBy: params.sortBy ?? { column: 'name', order: 'asc' },
+      sortBy: params.sortBy ?? { column: 'name', order: 'asc' }
     });
     return response.data;
   }
 
   async deleteStorageObjects(bucketId: string, paths: string[]) {
     let response = await this.http.delete(`/storage/v1/object/${bucketId}`, {
-      data: { prefixes: paths },
+      data: { prefixes: paths }
     });
     return response.data;
   }
@@ -244,7 +276,7 @@ export class ProjectClient {
     let response = await this.http.post('/storage/v1/object/move', {
       bucketId,
       sourceKey,
-      destinationKey,
+      destinationKey
     });
     return response.data;
   }
@@ -253,7 +285,7 @@ export class ProjectClient {
     let response = await this.http.post('/storage/v1/object/copy', {
       bucketId,
       sourceKey,
-      destinationKey,
+      destinationKey
     });
     return response.data;
   }
@@ -264,7 +296,7 @@ export class ProjectClient {
 
   async createSignedUrl(bucketId: string, path: string, expiresIn: number) {
     let response = await this.http.post(`/storage/v1/object/sign/${bucketId}/${path}`, {
-      expiresIn,
+      expiresIn
     });
     return response.data;
   }

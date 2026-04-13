@@ -2,9 +2,11 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -12,14 +14,18 @@ export let auth = SlateAuth.create()
     key: 'verification_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Verification token from your Ko-fi webhooks settings page (ko-fi.com/manage/webhooks)'),
+      token: z
+        .string()
+        .describe(
+          'Verification token from your Ko-fi webhooks settings page (ko-fi.com/manage/webhooks)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   });

@@ -18,14 +18,9 @@ import {
   sendPushNotification,
   manageBundle,
   getPassStatistics,
-  manageAppScan,
+  manageAppScan
 } from './tools';
-import {
-  passEvents,
-  templateEvents,
-  scanEvents,
-  messageEvents,
-} from './triggers';
+import { passEvents, templateEvents, scanEvents, messageEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,12 +42,7 @@ export let provider = Slate.create({
     sendPushNotification,
     manageBundle,
     getPassStatistics,
-    manageAppScan,
+    manageAppScan
   ],
-  triggers: [
-    passEvents,
-    templateEvents,
-    scanEvents,
-    messageEvents,
-  ],
+  triggers: [passEvents, templateEvents, scanEvents, messageEvents]
 });

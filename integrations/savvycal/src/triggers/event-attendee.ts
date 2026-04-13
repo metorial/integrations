@@ -16,26 +16,26 @@ let attendeeEventOutputSchema = z.object({
   attendeeTimeZone: z.string().optional().describe('Attendee time zone'),
   attendeePhoneNumber: z.string().nullable().optional().describe('Attendee phone number'),
   isGroupSession: z.boolean().optional().describe('Whether the event is a group session'),
-  metadata: z.record(z.string(), z.any()).optional().describe('Custom metadata'),
+  metadata: z.record(z.string(), z.any()).optional().describe('Custom metadata')
 });
 
-export let eventAttendeeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Attendee Changes',
-    key: 'event_attendee',
-    description: 'Triggers when an attendee is added, cancels, or reschedules their participation in a SavvyCal event.',
-  }
-)
-  .input(z.object({
-    webhookEventType: z.string().describe('Webhook event type'),
-    webhookEventId: z.string().describe('Webhook payload ID'),
-    occurredAt: z.string().describe('When the event occurred'),
-    eventPayload: z.any().describe('Raw event payload')
-  }))
+export let eventAttendeeTrigger = SlateTrigger.create(spec, {
+  name: 'Event Attendee Changes',
+  key: 'event_attendee',
+  description:
+    'Triggers when an attendee is added, cancels, or reschedules their participation in a SavvyCal event.'
+})
+  .input(
+    z.object({
+      webhookEventType: z.string().describe('Webhook event type'),
+      webhookEventId: z.string().describe('Webhook payload ID'),
+      occurredAt: z.string().describe('When the event occurred'),
+      eventPayload: z.any().describe('Raw event payload')
+    })
+  )
   .output(attendeeEventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let webhook = await client.createWebhook({ url: ctx.input.webhookBaseUrl });
 
@@ -47,13 +47,13 @@ export let eventAttendeeTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let attendeeTypes = [
         'event.attendee.added',
@@ -66,16 +66,18 @@ export let eventAttendeeTrigger = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          webhookEventType: data.type,
-          webhookEventId: data.id,
-          occurredAt: data.occurred_at,
-          eventPayload: data.payload
-        }]
+        inputs: [
+          {
+            webhookEventType: data.type,
+            webhookEventId: data.id,
+            occurredAt: data.occurred_at,
+            eventPayload: data.payload
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let e = ctx.input.eventPayload;
 
       // The payload may contain event-level info plus the specific attendee
@@ -98,7 +100,7 @@ export let eventAttendeeTrigger = SlateTrigger.create(
           attendeeTimeZone: attendee.time_zone,
           attendeePhoneNumber: attendee.phone_number,
           isGroupSession: e.is_group_session,
-          metadata: e.metadata,
+          metadata: e.metadata
         }
       };
     }

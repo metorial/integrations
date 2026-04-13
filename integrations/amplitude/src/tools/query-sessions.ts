@@ -3,27 +3,32 @@ import { AmplitudeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let querySessionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Query Sessions',
-    key: 'query_sessions',
-    description: `Retrieve session metrics including session length distribution and average sessions per user over a date range. Useful for understanding user engagement depth and session patterns.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let querySessionsTool = SlateTool.create(spec, {
+  name: 'Query Sessions',
+  key: 'query_sessions',
+  description: `Retrieve session metrics including session length distribution and average sessions per user over a date range. Useful for understanding user engagement depth and session patterns.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    metric: z.enum(['length_distribution', 'average_per_user']).describe('"length_distribution" returns session length histogram, "average_per_user" returns average number of sessions per user.'),
-    start: z.string().describe('Start date in YYYYMMDD format.'),
-    end: z.string().describe('End date in YYYYMMDD format.')
-  }))
-  .output(z.object({
-    sessionData: z.any().describe('Session metric data from Amplitude.')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      metric: z
+        .enum(['length_distribution', 'average_per_user'])
+        .describe(
+          '"length_distribution" returns session length histogram, "average_per_user" returns average number of sessions per user.'
+        ),
+      start: z.string().describe('Start date in YYYYMMDD format.'),
+      end: z.string().describe('End date in YYYYMMDD format.')
+    })
+  )
+  .output(
+    z.object({
+      sessionData: z.any().describe('Session metric data from Amplitude.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AmplitudeClient({
       apiKey: ctx.auth.apiKey,
       secretKey: ctx.auth.secretKey,

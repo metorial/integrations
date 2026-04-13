@@ -3,38 +3,40 @@ import { LastPassClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let accountEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Events',
-    key: 'account_events',
-    description: 'Polls for new audit events in the LastPass Enterprise account, including login attempts, password changes, shared folder activity, and administrative actions.',
-  }
-)
-  .input(z.object({
-    timestamp: z.string().describe('Timestamp of the event'),
-    username: z.string().describe('Email address of the user who triggered the event'),
-    ipAddress: z.string().describe('IP address from which the event originated'),
-    action: z.string().describe('Type of action performed'),
-    eventData: z.string().describe('Additional data associated with the event'),
-    eventId: z.string().describe('Unique identifier for deduplication'),
-  }))
-  .output(z.object({
-    username: z.string().describe('Email address of the user who triggered the event'),
-    ipAddress: z.string().describe('IP address from which the event originated'),
-    action: z.string().describe('Type of action performed'),
-    eventData: z.string().describe('Additional data associated with the event'),
-    timestamp: z.string().describe('Timestamp of the event'),
-  }))
+export let accountEvents = SlateTrigger.create(spec, {
+  name: 'Account Events',
+  key: 'account_events',
+  description:
+    'Polls for new audit events in the LastPass Enterprise account, including login attempts, password changes, shared folder activity, and administrative actions.'
+})
+  .input(
+    z.object({
+      timestamp: z.string().describe('Timestamp of the event'),
+      username: z.string().describe('Email address of the user who triggered the event'),
+      ipAddress: z.string().describe('IP address from which the event originated'),
+      action: z.string().describe('Type of action performed'),
+      eventData: z.string().describe('Additional data associated with the event'),
+      eventId: z.string().describe('Unique identifier for deduplication')
+    })
+  )
+  .output(
+    z.object({
+      username: z.string().describe('Email address of the user who triggered the event'),
+      ipAddress: z.string().describe('IP address from which the event originated'),
+      action: z.string().describe('Type of action performed'),
+      eventData: z.string().describe('Additional data associated with the event'),
+      timestamp: z.string().describe('Timestamp of the event')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new LastPassClient({
         companyId: ctx.auth.companyId,
-        provisioningHash: ctx.auth.provisioningHash,
+        provisioningHash: ctx.auth.provisioningHash
       });
 
       let now = new Date();
@@ -53,7 +55,7 @@ export let accountEvents = SlateTrigger.create(
 
       let events = await client.getEventReport({
         from: fromDate,
-        to: toDate,
+        to: toDate
       });
 
       let inputs = events.map(e => {
@@ -64,19 +66,19 @@ export let accountEvents = SlateTrigger.create(
           ipAddress: e.IP_Address || '',
           action: e.Action || '',
           eventData: e.Data || '',
-          eventId,
+          eventId
         };
       });
 
       return {
         inputs,
         updatedState: {
-          lastPollTime: toDate,
-        },
+          lastPollTime: toDate
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let actionType = normalizeActionType(ctx.input.action);
 
       return {
@@ -87,10 +89,10 @@ export let accountEvents = SlateTrigger.create(
           ipAddress: ctx.input.ipAddress,
           action: ctx.input.action,
           eventData: ctx.input.eventData,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();
 

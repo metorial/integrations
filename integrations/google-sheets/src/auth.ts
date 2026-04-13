@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,41 +18,42 @@ export let auth = SlateAuth.create()
       {
         title: 'Spreadsheets (Full)',
         description: 'Full read/write access to all spreadsheets',
-        scope: 'https://www.googleapis.com/auth/spreadsheets',
+        scope: 'https://www.googleapis.com/auth/spreadsheets'
       },
       {
         title: 'Spreadsheets (Read)',
         description: 'Read-only access to all spreadsheets',
-        scope: 'https://www.googleapis.com/auth/spreadsheets.readonly',
+        scope: 'https://www.googleapis.com/auth/spreadsheets.readonly'
       },
       {
         title: 'Drive (Full)',
-        description: 'Full access to Google Drive, needed for creating/deleting spreadsheets and push notifications',
-        scope: 'https://www.googleapis.com/auth/drive',
+        description:
+          'Full access to Google Drive, needed for creating/deleting spreadsheets and push notifications',
+        scope: 'https://www.googleapis.com/auth/drive'
       },
       {
         title: 'Drive (Read)',
         description: 'Read-only access to Google Drive files',
-        scope: 'https://www.googleapis.com/auth/drive.readonly',
+        scope: 'https://www.googleapis.com/auth/drive.readonly'
       },
       {
         title: 'Drive (App Files)',
         description: 'Access only to files created or opened by the app',
-        scope: 'https://www.googleapis.com/auth/drive.file',
+        scope: 'https://www.googleapis.com/auth/drive.file'
       },
       {
         title: 'User Profile',
         description: 'View basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile',
+        scope: 'https://www.googleapis.com/auth/userinfo.profile'
       },
       {
         title: 'User Email',
         description: 'View email address',
-        scope: 'https://www.googleapis.com/auth/userinfo.email',
-      },
+        scope: 'https://www.googleapis.com/auth/userinfo.email'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -58,15 +61,15 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         scope: ctx.scopes.join(' '),
         access_type: 'offline',
-        prompt: 'consent',
+        prompt: 'consent'
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/auth?${params.toString()}`,
+        url: `https://accounts.google.com/o/oauth2/auth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post(
@@ -76,12 +79,12 @@ export let auth = SlateAuth.create()
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code',
+          grant_type: 'authorization_code'
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -95,12 +98,12 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -113,12 +116,12 @@ export let auth = SlateAuth.create()
           refresh_token: ctx.output.refreshToken,
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          grant_type: 'refresh_token',
+          grant_type: 'refresh_token'
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -132,22 +135,19 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let axios = createAxios();
 
-      let response = await axios.get(
-        'https://www.googleapis.com/oauth2/v2/userinfo',
-        {
-          headers: {
-            Authorization: `Bearer ${ctx.output.token}`,
-          },
+      let response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: {
+          Authorization: `Bearer ${ctx.output.token}`
         }
-      );
+      });
 
       let data = response.data;
 
@@ -156,10 +156,10 @@ export let auth = SlateAuth.create()
           id: data.id,
           email: data.email,
           name: data.name,
-          imageUrl: data.picture,
-        },
+          imageUrl: data.picture
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -167,16 +167,16 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Google API Key for read-only access to public spreadsheets'),
+      token: z.string().describe('Google API Key for read-only access to public spreadsheets')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   })
   .addServiceAccountAuth({
     type: 'auth.service_account',
@@ -184,10 +184,10 @@ export let auth = SlateAuth.create()
     key: 'service_account',
 
     inputSchema: z.object({
-      serviceAccountJson: z.string().describe('Service account JSON key file contents'),
+      serviceAccountJson: z.string().describe('Service account JSON key file contents')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let serviceAccount = JSON.parse(ctx.input.serviceAccountJson);
 
       let header = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
@@ -198,10 +198,11 @@ export let auth = SlateAuth.create()
       let now = Math.floor(Date.now() / 1000);
       let claimSet = {
         iss: serviceAccount.client_email,
-        scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive',
+        scope:
+          'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive',
         aud: 'https://oauth2.googleapis.com/token',
         exp: now + 3600,
-        iat: now,
+        iat: now
       };
 
       let claim = btoa(JSON.stringify(claimSet))
@@ -255,12 +256,12 @@ export let auth = SlateAuth.create()
         'https://oauth2.googleapis.com/token',
         new URLSearchParams({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: jwt,
+          assertion: jwt
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -273,8 +274,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -284,8 +285,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: serviceAccount.client_id,
           email: serviceAccount.client_email,
-          name: serviceAccount.project_id,
-        },
+          name: serviceAccount.project_id
+        }
       };
-    },
+    }
   });

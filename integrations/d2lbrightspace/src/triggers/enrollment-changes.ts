@@ -3,37 +3,42 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let enrollmentChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Enrollment Changes',
-    key: 'enrollment_changes',
-    description: 'Triggers when users are enrolled in or unenrolled from a specific course/org unit. Polls the enrollment list and detects additions and removals.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['enrolled', 'unenrolled']).describe('Type of enrollment change'),
-    userId: z.string().describe('User ID affected'),
-    orgUnitId: z.string().describe('Org unit ID'),
-    roleId: z.string().optional().describe('Role ID'),
-    roleName: z.string().optional().describe('Role name'),
-    userName: z.string().optional().describe('User display name'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('User ID affected'),
-    orgUnitId: z.string().describe('Org unit ID'),
-    roleId: z.string().optional().describe('Role ID'),
-    roleName: z.string().optional().describe('Role name'),
-    userName: z.string().optional().describe('User display name'),
-  }))
+export let enrollmentChanges = SlateTrigger.create(spec, {
+  name: 'Enrollment Changes',
+  key: 'enrollment_changes',
+  description:
+    'Triggers when users are enrolled in or unenrolled from a specific course/org unit. Polls the enrollment list and detects additions and removals.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['enrolled', 'unenrolled']).describe('Type of enrollment change'),
+      userId: z.string().describe('User ID affected'),
+      orgUnitId: z.string().describe('Org unit ID'),
+      roleId: z.string().optional().describe('Role ID'),
+      roleName: z.string().optional().describe('Role name'),
+      userName: z.string().optional().describe('User display name')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('User ID affected'),
+      orgUnitId: z.string().describe('Org unit ID'),
+      roleId: z.string().optional().describe('Role ID'),
+      roleName: z.string().optional().describe('Role name'),
+      userName: z.string().optional().describe('User display name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
-      let state = ctx.state as { knownEnrollments?: Record<string, string>; orgUnitId?: string } | null;
+      let state = ctx.state as {
+        knownEnrollments?: Record<string, string>;
+        orgUnitId?: string;
+      } | null;
 
       // We poll all enrollments of the current user's enrollments to detect changes
       let result = await client.getMyEnrollments({ canAccess: 'true' });
@@ -58,7 +63,7 @@ export let enrollmentChanges = SlateTrigger.create(
             eventType: 'enrolled' as const,
             userId: 'current',
             orgUnitId,
-            userName: currentEnrollments[orgUnitId],
+            userName: currentEnrollments[orgUnitId]
           });
         }
       }
@@ -71,7 +76,7 @@ export let enrollmentChanges = SlateTrigger.create(
               eventType: 'unenrolled' as const,
               userId: 'current',
               orgUnitId,
-              userName: previousEnrollments[orgUnitId],
+              userName: previousEnrollments[orgUnitId]
             });
           }
         }
@@ -80,12 +85,12 @@ export let enrollmentChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownEnrollments: currentEnrollments,
-        },
+          knownEnrollments: currentEnrollments
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `enrollment.${ctx.input.eventType}`,
         id: `enrollment-${ctx.input.orgUnitId}-${ctx.input.userId}-${ctx.input.eventType}-${Date.now()}`,
@@ -94,9 +99,9 @@ export let enrollmentChanges = SlateTrigger.create(
           orgUnitId: ctx.input.orgUnitId,
           roleId: ctx.input.roleId,
           roleName: ctx.input.roleName,
-          userName: ctx.input.userName,
-        },
+          userName: ctx.input.userName
+        }
       };
-    },
+    }
   })
   .build();

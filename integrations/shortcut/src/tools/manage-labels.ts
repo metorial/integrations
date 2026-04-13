@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLabels = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Labels',
-    key: 'manage_labels',
-    description: `Create, update, or delete labels. Labels are used to organize and filter stories and epics.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageLabels = SlateTool.create(spec, {
+  name: 'Manage Labels',
+  key: 'manage_labels',
+  description: `Create, update, or delete labels. Labels are used to organize and filter stories and epics.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    labelId: z.number().optional().describe('Label ID (required for update and delete)'),
-    name: z.string().optional().describe('Label name (required for create)'),
-    description: z.string().optional().describe('Label description'),
-    color: z.string().optional().describe('Label color as hex code (e.g., "#ff0000")'),
-  }))
-  .output(z.object({
-    labelId: z.number().nullable().describe('ID of the created/updated label'),
-    name: z.string().nullable().describe('Label name'),
-    color: z.string().nullable().describe('Label color'),
-    deleted: z.boolean().optional().describe('Whether the label was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      labelId: z.number().optional().describe('Label ID (required for update and delete)'),
+      name: z.string().optional().describe('Label name (required for create)'),
+      description: z.string().optional().describe('Label description'),
+      color: z.string().optional().describe('Label color as hex code (e.g., "#ff0000")')
+    })
+  )
+  .output(
+    z.object({
+      labelId: z.number().nullable().describe('ID of the created/updated label'),
+      name: z.string().nullable().describe('Label name'),
+      color: z.string().nullable().describe('Label color'),
+      deleted: z.boolean().optional().describe('Whether the label was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
@@ -43,9 +44,9 @@ export let manageLabels = SlateTool.create(
         output: {
           labelId: label.id,
           name: label.name,
-          color: label.color ?? null,
+          color: label.color ?? null
         },
-        message: `Created label **${label.name}** (ID: ${label.id})`,
+        message: `Created label **${label.name}** (ID: ${label.id})`
       };
     }
 
@@ -62,9 +63,9 @@ export let manageLabels = SlateTool.create(
         output: {
           labelId: label.id,
           name: label.name,
-          color: label.color ?? null,
+          color: label.color ?? null
         },
-        message: `Updated label **${label.name}** (ID: ${label.id})`,
+        message: `Updated label **${label.name}** (ID: ${label.id})`
       };
     }
 
@@ -77,9 +78,9 @@ export let manageLabels = SlateTool.create(
         labelId: null,
         name: null,
         color: null,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted label with ID ${ctx.input.labelId}`,
+      message: `Deleted label with ID ${ctx.input.labelId}`
     };
   })
   .build();

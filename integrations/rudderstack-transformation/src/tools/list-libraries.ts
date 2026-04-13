@@ -11,33 +11,32 @@ let librarySchema = z.object({
   description: z.string().nullable().describe('Description of the library'),
   language: z.string().describe('Programming language used'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listLibraries = SlateTool.create(
-  spec,
-  {
-    name: 'List Libraries',
-    key: 'list_libraries',
-    description: `List all reusable code libraries in the workspace. Returns each library's metadata including name, importName, language, and timestamps. Does not include the full code — use **Get Library** to retrieve the code for a specific library.`,
-    tags: {
-      readOnly: true,
-      destructive: false,
-    },
+export let listLibraries = SlateTool.create(spec, {
+  name: 'List Libraries',
+  key: 'list_libraries',
+  description: `List all reusable code libraries in the workspace. Returns each library's metadata including name, importName, language, and timestamps. Does not include the full code — use **Get Library** to retrieve the code for a specific library.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    libraries: z.array(librarySchema).describe('List of libraries in the workspace'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      libraries: z.array(librarySchema).describe('List of libraries in the workspace')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let result = await client.listLibraries();
-    let libraries = (result.libraries ?? result ?? []);
+    let libraries = result.libraries ?? result ?? [];
     let items = (Array.isArray(libraries) ? libraries : []).map((l: any) => ({
       libraryId: l.id,
       versionId: l.versionId,
@@ -46,12 +45,12 @@ export let listLibraries = SlateTool.create(
       description: l.description ?? null,
       language: l.language,
       createdAt: l.createdAt,
-      updatedAt: l.updatedAt,
+      updatedAt: l.updatedAt
     }));
 
     return {
       output: { libraries: items },
-      message: `Found **${items.length}** library/libraries.`,
+      message: `Found **${items.length}** library/libraries.`
     };
   })
   .build();

@@ -15,42 +15,41 @@ let assetOutputSchema = z.object({
   focus: z.string().optional().describe('Focal point coordinates'),
   isPrivate: z.boolean().optional().describe('Whether the asset is private'),
   assetFolderId: z.number().optional().describe('Folder ID'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let manageAsset = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Asset',
-    key: 'manage_asset',
-    description: `Update metadata or delete media assets. Use this to change alt text, title, copyright, focal point, folder assignment, or privacy settings of existing assets, or to delete them.`,
-    instructions: [
-      'To **update** an asset, set action to "update" and provide the assetId plus fields to change.',
-      'To **delete** an asset, set action to "delete" and provide the assetId.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageAsset = SlateTool.create(spec, {
+  name: 'Manage Asset',
+  key: 'manage_asset',
+  description: `Update metadata or delete media assets. Use this to change alt text, title, copyright, focal point, folder assignment, or privacy settings of existing assets, or to delete them.`,
+  instructions: [
+    'To **update** an asset, set action to "update" and provide the assetId plus fields to change.',
+    'To **delete** an asset, set action to "delete" and provide the assetId.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['update', 'delete']).describe('The asset management action to perform'),
-    assetId: z.string().describe('Asset ID'),
-    name: z.string().optional().describe('Display name for the asset'),
-    alt: z.string().optional().describe('Alt text for accessibility'),
-    title: z.string().optional().describe('Title of the asset'),
-    copyright: z.string().optional().describe('Copyright information'),
-    focus: z.string().optional().describe('Focal point coordinates (e.g. "200x300")'),
-    assetFolderId: z.number().optional().describe('Move asset to this folder ID'),
-    isPrivate: z.boolean().optional().describe('Whether the asset should be private'),
-  }))
+})
+  .input(
+    z.object({
+      action: z.enum(['update', 'delete']).describe('The asset management action to perform'),
+      assetId: z.string().describe('Asset ID'),
+      name: z.string().optional().describe('Display name for the asset'),
+      alt: z.string().optional().describe('Alt text for accessibility'),
+      title: z.string().optional().describe('Title of the asset'),
+      copyright: z.string().optional().describe('Copyright information'),
+      focus: z.string().optional().describe('Focal point coordinates (e.g. "200x300")'),
+      assetFolderId: z.number().optional().describe('Move asset to this folder ID'),
+      isPrivate: z.boolean().optional().describe('Whether the asset should be private')
+    })
+  )
   .output(assetOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new StoryblokClient({
       token: ctx.auth.token,
       region: ctx.config.region,
-      spaceId: ctx.config.spaceId,
+      spaceId: ctx.config.spaceId
     });
 
     let { action, assetId } = ctx.input;
@@ -59,7 +58,7 @@ export let manageAsset = SlateTool.create(
       await client.deleteAsset(assetId);
       return {
         output: { assetId: parseInt(assetId, 10) },
-        message: `Deleted asset \`${assetId}\`.`,
+        message: `Deleted asset \`${assetId}\`.`
       };
     }
 
@@ -71,7 +70,7 @@ export let manageAsset = SlateTool.create(
       copyright: ctx.input.copyright,
       focus: ctx.input.focus,
       assetFolderId: ctx.input.assetFolderId,
-      isPrivate: ctx.input.isPrivate,
+      isPrivate: ctx.input.isPrivate
     });
 
     return {
@@ -87,9 +86,9 @@ export let manageAsset = SlateTool.create(
         focus: asset.focus,
         isPrivate: asset.is_private,
         assetFolderId: asset.asset_folder_id,
-        createdAt: asset.created_at,
+        createdAt: asset.created_at
       },
-      message: `Updated asset **${asset.name || asset.filename}** (\`${asset.id}\`).`,
+      message: `Updated asset **${asset.name || asset.filename}** (\`${asset.id}\`).`
     };
   })
   .build();

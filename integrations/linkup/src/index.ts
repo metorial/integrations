@@ -7,7 +7,5 @@ import { inboundWebhook } from './triggers/inbound-webhook';
 export let provider = Slate.create({
   spec,
   tools: [webSearch, fetchWebpage, checkCreditBalance],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

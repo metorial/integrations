@@ -15,46 +15,68 @@ let updateSchema = z.object({
   day: z.string().describe('Day the update is scheduled for'),
   dueTime: z.string().describe('Time the update is due'),
   serviceUpdateId: z.string().describe('ID of the update on the social network'),
-  statistics: z.record(z.string(), z.number()).describe('Engagement statistics (reach, clicks, retweets, favorites, mentions)'),
-  media: z.object({
-    link: z.string().optional(),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    picture: z.string().optional(),
-    photo: z.string().optional(),
-    thumbnail: z.string().optional()
-  }).optional().describe('Attached media')
+  statistics: z
+    .record(z.string(), z.number())
+    .describe('Engagement statistics (reach, clicks, retweets, favorites, mentions)'),
+  media: z
+    .object({
+      link: z.string().optional(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      picture: z.string().optional(),
+      photo: z.string().optional(),
+      thumbnail: z.string().optional()
+    })
+    .optional()
+    .describe('Attached media')
 });
 
-export let getUpdatesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Updates',
-    key: 'get_updates',
-    description: `Retrieve updates (posts) for a social media profile. Supports fetching pending (queued) updates, sent updates, or a single update by ID. Sent updates include engagement statistics.`,
-    instructions: [
-      'Set `status` to "pending" to get queued updates or "sent" to get published updates.',
-      'Use `updateId` to retrieve a single specific update regardless of status.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getUpdatesTool = SlateTool.create(spec, {
+  name: 'Get Updates',
+  key: 'get_updates',
+  description: `Retrieve updates (posts) for a social media profile. Supports fetching pending (queued) updates, sent updates, or a single update by ID. Sent updates include engagement statistics.`,
+  instructions: [
+    'Set `status` to "pending" to get queued updates or "sent" to get published updates.',
+    'Use `updateId` to retrieve a single specific update regardless of status.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    profileId: z.string().optional().describe('Profile ID to retrieve updates for. Required when fetching pending or sent updates.'),
-    updateId: z.string().optional().describe('Specific update ID to retrieve. When provided, profileId and status are ignored.'),
-    status: z.enum(['pending', 'sent']).default('pending').describe('Which updates to retrieve: pending (queued) or sent (published)'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    count: z.number().optional().describe('Number of updates to return per page'),
-    since: z.string().optional().describe('Unix timestamp or ISO date to filter updates since this time'),
-    utc: z.boolean().optional().describe('Set to true to return times in UTC')
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of updates matching the query'),
-    updates: z.array(updateSchema).describe('List of updates')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      profileId: z
+        .string()
+        .optional()
+        .describe(
+          'Profile ID to retrieve updates for. Required when fetching pending or sent updates.'
+        ),
+      updateId: z
+        .string()
+        .optional()
+        .describe(
+          'Specific update ID to retrieve. When provided, profileId and status are ignored.'
+        ),
+      status: z
+        .enum(['pending', 'sent'])
+        .default('pending')
+        .describe('Which updates to retrieve: pending (queued) or sent (published)'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      count: z.number().optional().describe('Number of updates to return per page'),
+      since: z
+        .string()
+        .optional()
+        .describe('Unix timestamp or ISO date to filter updates since this time'),
+      utc: z.boolean().optional().describe('Set to true to return times in UTC')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of updates matching the query'),
+      updates: z.array(updateSchema).describe('List of updates')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.updateId) {
@@ -99,7 +121,7 @@ export let getUpdatesTool = SlateTool.create(
       result = await client.getPendingUpdates(ctx.input.profileId, options);
     }
 
-    let updates = (result.updates || []).map((u) => ({
+    let updates = (result.updates || []).map(u => ({
       updateId: u.id,
       text: u.text,
       status: u.status,

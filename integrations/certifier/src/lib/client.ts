@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.certifier.io/v1',
+  baseURL: 'https://api.certifier.io/v1'
 });
 
 export interface Recipient {
@@ -112,9 +112,9 @@ export class Client {
 
   constructor(private params: { token: string }) {
     this.headers = {
-      'Authorization': `Bearer ${params.token}`,
+      Authorization: `Bearer ${params.token}`,
       'Certifier-Version': '2022-10-26',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -126,7 +126,9 @@ export class Client {
   }
 
   async createIssueSendCredential(params: CreateCredentialParams): Promise<Credential> {
-    let response = await api.post('/credentials/create-issue-send', params, { headers: this.headers });
+    let response = await api.post('/credentials/create-issue-send', params, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -135,7 +137,10 @@ export class Client {
     return response.data;
   }
 
-  async listCredentials(limit?: number, cursor?: string): Promise<PaginatedResponse<Credential>> {
+  async listCredentials(
+    limit?: number,
+    cursor?: string
+  ): Promise<PaginatedResponse<Credential>> {
     let params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (cursor) params.cursor = cursor;
@@ -143,8 +148,13 @@ export class Client {
     return response.data;
   }
 
-  async updateCredential(credentialId: string, params: UpdateCredentialParams): Promise<Credential> {
-    let response = await api.patch(`/credentials/${credentialId}`, params, { headers: this.headers });
+  async updateCredential(
+    credentialId: string,
+    params: UpdateCredentialParams
+  ): Promise<Credential> {
+    let response = await api.patch(`/credentials/${credentialId}`, params, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -153,16 +163,26 @@ export class Client {
   }
 
   async issueCredential(credentialId: string): Promise<Credential> {
-    let response = await api.post(`/credentials/${credentialId}/issue`, {}, { headers: this.headers });
+    let response = await api.post(
+      `/credentials/${credentialId}/issue`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async sendCredential(credentialId: string): Promise<Credential> {
-    let response = await api.post(`/credentials/${credentialId}/send`, { deliveryMethod: 'email' }, { headers: this.headers });
+    let response = await api.post(
+      `/credentials/${credentialId}/send`,
+      { deliveryMethod: 'email' },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
-  async searchCredentials(params: SearchCredentialsParams): Promise<PaginatedResponse<Credential>> {
+  async searchCredentials(
+    params: SearchCredentialsParams
+  ): Promise<PaginatedResponse<Credential>> {
     let response = await api.post('/credentials/search', params, { headers: this.headers });
     return response.data;
   }
@@ -217,11 +237,18 @@ export class Client {
     await api.post('/credential-interactions', params, { headers: this.headers });
   }
 
-  async listInteractions(credentialId: string, limit?: number, cursor?: string): Promise<PaginatedResponse<CredentialInteraction>> {
+  async listInteractions(
+    credentialId: string,
+    limit?: number,
+    cursor?: string
+  ): Promise<PaginatedResponse<CredentialInteraction>> {
     let params: Record<string, any> = { credentialId };
     if (limit) params.limit = limit;
     if (cursor) params.cursor = cursor;
-    let response = await api.get('/credential-interactions', { headers: this.headers, params });
+    let response = await api.get('/credential-interactions', {
+      headers: this.headers,
+      params
+    });
     return response.data;
   }
 }

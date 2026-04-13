@@ -49,9 +49,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.tokenmetrics.com/v2',
       headers: {
-        'accept': 'application/json',
-        'x-api-key': config.token,
-      },
+        accept: 'application/json',
+        'x-api-key': config.token
+      }
     });
   }
 
@@ -68,15 +68,15 @@ export class Client {
         volume: params.volume,
         fdv: params.fdv,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
 
   async getTopMarketCapTokens(topK: number): Promise<any> {
     let response = await this.axios.get('/top-market-cap-tokens', {
-      params: { top_k: topK },
+      params: { top_k: topK }
     });
     return response.data;
   }
@@ -85,8 +85,8 @@ export class Client {
     let response = await this.axios.get('/price', {
       params: {
         token_id: params.tokenId,
-        symbol: params.symbol,
-      },
+        symbol: params.symbol
+      }
     });
     return response.data;
   }
@@ -106,8 +106,8 @@ export class Client {
         startDate: params.startDate,
         endDate: params.endDate,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -127,8 +127,8 @@ export class Client {
         startDate: params.startDate,
         endDate: params.endDate,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -146,8 +146,8 @@ export class Client {
         volume: params.volume,
         fdv: params.fdv,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -165,8 +165,8 @@ export class Client {
         volume: params.volume,
         fdv: params.fdv,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -175,8 +175,8 @@ export class Client {
     let response = await this.axios.get('/technology-grade', {
       params: {
         token_id: params.tokenId,
-        symbol: params.symbol,
-      },
+        symbol: params.symbol
+      }
     });
     return response.data;
   }
@@ -185,8 +185,8 @@ export class Client {
     let response = await this.axios.get('/fundamental-grade', {
       params: {
         token_id: params.tokenId,
-        symbol: params.symbol,
-      },
+        symbol: params.symbol
+      }
     });
     return response.data;
   }
@@ -205,8 +205,8 @@ export class Client {
         fdv: params.fdv,
         signal: params.signal,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -225,8 +225,8 @@ export class Client {
         fdv: params.fdv,
         signal: params.signal,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -237,8 +237,8 @@ export class Client {
         startDate: params.startDate,
         endDate: params.endDate,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -247,8 +247,8 @@ export class Client {
     let response = await this.axios.get('/sentiments', {
       params: {
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -264,8 +264,8 @@ export class Client {
         token_id: params.tokenId,
         symbol: params.symbol,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -281,8 +281,8 @@ export class Client {
         token_id: params.tokenId,
         symbol: params.symbol,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -298,8 +298,8 @@ export class Client {
         volume: params.volume,
         fdv: params.fdv,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -315,8 +315,8 @@ export class Client {
         token_id: params.tokenId,
         symbol: params.symbol,
         limit: params.limit ?? 20,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -332,8 +332,8 @@ export class Client {
         token_id: params.tokenId,
         symbol: params.symbol,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -349,8 +349,8 @@ export class Client {
         token_id: params.tokenId,
         symbol: params.symbol,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -359,8 +359,8 @@ export class Client {
     let response = await this.axios.get('/crypto-investors', {
       params: {
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
@@ -370,15 +370,15 @@ export class Client {
       params: {
         indices_type: params.indicesType,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
 
   async getIndicesHoldings(indexId: number): Promise<any> {
     let response = await this.axios.get('/indices-holdings', {
-      params: { id: indexId },
+      params: { id: indexId }
     });
     return response.data;
   }
@@ -396,18 +396,22 @@ export class Client {
         startDate: params.startDate,
         endDate: params.endDate,
         limit: params.limit ?? 50,
-        page: params.page ?? 1,
-      },
+        page: params.page ?? 1
+      }
     });
     return response.data;
   }
 
   async askAiAgent(messages: Array<{ user: string }>): Promise<any> {
-    let response = await this.axios.post('/tmai', {
-      messages,
-    }, {
-      headers: { 'content-type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      '/tmai',
+      {
+        messages
+      },
+      {
+        headers: { 'content-type': 'application/json' }
+      }
+    );
     return response.data;
   }
 }

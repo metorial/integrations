@@ -64,10 +64,7 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async detectTechnology(params: {
-    url: string;
-    mode?: 'simple' | 'expert';
-  }): Promise<any> {
+  async detectTechnology(params: { url: string; mode?: 'simple' | 'expert' }): Promise<any> {
     let response = await this.axios.get('/api/v2/website/technology', {
       params: {
         query: params.url,
@@ -77,10 +74,7 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async extractContactInfo(params: {
-    url: string;
-    countryCode?: string;
-  }): Promise<any> {
+  async extractContactInfo(params: { url: string; countryCode?: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/website/email_phone_extractor', {
       params: {
         query: params.url,
@@ -90,9 +84,7 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async screenshotWebsite(params: {
-    url: string;
-  }): Promise<any> {
+  async screenshotWebsite(params: { url: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/website/screenshot', {
       params: { query: params.url }
     });
@@ -101,9 +93,7 @@ export class PiloterrClient {
 
   // === Company ===
 
-  async getCompanyInfo(params: {
-    query: string;
-  }): Promise<any> {
+  async getCompanyInfo(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/company', {
       params: { query: params.query }
     });
@@ -112,10 +102,7 @@ export class PiloterrClient {
 
   // === LinkedIn ===
 
-  async getLinkedInCompany(params: {
-    query?: string;
-    domain?: string;
-  }): Promise<any> {
+  async getLinkedInCompany(params: { query?: string; domain?: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/linkedin/company/info', {
       params: {
         query: params.query,
@@ -125,18 +112,14 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async getLinkedInProfile(params: {
-    query: string;
-  }): Promise<any> {
+  async getLinkedInProfile(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/linkedin/profile/info', {
       params: { query: params.query }
     });
     return response.data;
   }
 
-  async getLinkedInJob(params: {
-    query: string;
-  }): Promise<any> {
+  async getLinkedInJob(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/linkedin/job/info', {
       params: { query: params.query }
     });
@@ -195,18 +178,14 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async getLinkedInPost(params: {
-    query: string;
-  }): Promise<any> {
+  async getLinkedInPost(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/linkedin/post/info', {
       params: { query: params.query }
     });
     return response.data;
   }
 
-  async getLinkedInProduct(params: {
-    query: string;
-  }): Promise<any> {
+  async getLinkedInProduct(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/linkedin/product/info', {
       params: { query: params.query }
     });
@@ -323,10 +302,7 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async braveSearch(params: {
-    query: string;
-    page?: number;
-  }): Promise<any> {
+  async braveSearch(params: { query: string; page?: number }): Promise<any> {
     let response = await this.axios.post('/api/v2/brave/search', {
       query: params.query,
       page: params.page
@@ -336,18 +312,14 @@ export class PiloterrClient {
 
   // === Email ===
 
-  async verifyEmail(params: {
-    email: string;
-  }): Promise<any> {
+  async verifyEmail(params: { email: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/email/verify', {
       params: { query: params.email }
     });
     return response.data;
   }
 
-  async analyzeEmailDomain(params: {
-    domain: string;
-  }): Promise<any> {
+  async analyzeEmailDomain(params: { domain: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/email/analyzes', {
       params: { query: params.domain }
     });
@@ -371,27 +343,21 @@ export class PiloterrClient {
 
   // === Domain ===
 
-  async domainWhois(params: {
-    domain: string;
-  }): Promise<any> {
+  async domainWhois(params: { domain: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/domain/whois', {
       params: { query: params.domain }
     });
     return response.data;
   }
 
-  async domainMalicious(params: {
-    query: string;
-  }): Promise<any> {
+  async domainMalicious(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/domain/malicious', {
       params: { query: params.query }
     });
     return response.data;
   }
 
-  async domainDnsbl(params: {
-    query: string;
-  }): Promise<any> {
+  async domainDnsbl(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/domain/dnsbl', {
       params: { query: params.query }
     });
@@ -400,11 +366,7 @@ export class PiloterrClient {
 
   // === Amazon ===
 
-  async searchAmazon(params: {
-    query: string;
-    domain?: string;
-    page?: number;
-  }): Promise<any> {
+  async searchAmazon(params: { query: string; domain?: string; page?: number }): Promise<any> {
     let response = await this.axios.post('/api/v2/amazon/search', {
       query: params.query,
       domain: params.domain,
@@ -413,10 +375,7 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async getAmazonProduct(params: {
-    asin: string;
-    domain?: string;
-  }): Promise<any> {
+  async getAmazonProduct(params: { asin: string; domain?: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/amazon/product/product', {
       params: {
         query: params.asin,
@@ -443,9 +402,7 @@ export class PiloterrClient {
 
   // === Shopify ===
 
-  async getShopifyProduct(params: {
-    url: string;
-  }): Promise<any> {
+  async getShopifyProduct(params: { url: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/shopify/product', {
       params: { query: params.url }
     });
@@ -454,9 +411,7 @@ export class PiloterrClient {
 
   // === Walmart ===
 
-  async getWalmartProduct(params: {
-    url: string;
-  }): Promise<any> {
+  async getWalmartProduct(params: { url: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/walmart/product', {
       params: { query: params.url }
     });
@@ -465,18 +420,14 @@ export class PiloterrClient {
 
   // === Best Buy ===
 
-  async getBestbuyProduct(params: {
-    url: string;
-  }): Promise<any> {
+  async getBestbuyProduct(params: { url: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/bestbuy/product', {
       params: { query: params.url }
     });
     return response.data;
   }
 
-  async searchBestbuy(params: {
-    query: string;
-  }): Promise<any> {
+  async searchBestbuy(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/bestbuy/search', {
       params: { query: params.query }
     });
@@ -485,10 +436,7 @@ export class PiloterrClient {
 
   // === Crunchbase ===
 
-  async getCrunchbaseCompany(params: {
-    query?: string;
-    domain?: string;
-  }): Promise<any> {
+  async getCrunchbaseCompany(params: { query?: string; domain?: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/crunchbase/company/info', {
       params: {
         query: params.query,
@@ -498,18 +446,14 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async searchCrunchbase(params: {
-    query: string;
-  }): Promise<any> {
+  async searchCrunchbase(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/crunchbase/search', {
       params: { query: params.query }
     });
     return response.data;
   }
 
-  async getCrunchbasePerson(params: {
-    query: string;
-  }): Promise<any> {
+  async getCrunchbasePerson(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/crunchbase/people/info', {
       params: { query: params.query }
     });
@@ -533,18 +477,14 @@ export class PiloterrClient {
     return response.data;
   }
 
-  async getCrunchbaseFundingRound(params: {
-    query: string;
-  }): Promise<any> {
+  async getCrunchbaseFundingRound(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/crunchbase/funding_round', {
       params: { query: params.query }
     });
     return response.data;
   }
 
-  async getCrunchbaseEvent(params: {
-    query: string;
-  }): Promise<any> {
+  async getCrunchbaseEvent(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/crunchbase/event', {
       params: { query: params.query }
     });
@@ -553,18 +493,14 @@ export class PiloterrClient {
 
   // === Instagram ===
 
-  async getInstagramUser(params: {
-    query: string;
-  }): Promise<any> {
+  async getInstagramUser(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/instagram/user/info', {
       params: { query: params.query }
     });
     return response.data;
   }
 
-  async getInstagramPost(params: {
-    query: string;
-  }): Promise<any> {
+  async getInstagramPost(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/instagram/post/info', {
       params: { query: params.query }
     });
@@ -573,9 +509,7 @@ export class PiloterrClient {
 
   // === GitHub ===
 
-  async getGithubUser(params: {
-    query: string;
-  }): Promise<any> {
+  async getGithubUser(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/github/user/info', {
       params: { query: params.query }
     });
@@ -584,9 +518,7 @@ export class PiloterrClient {
 
   // === Trustpilot ===
 
-  async getTrustpilotCompany(params: {
-    query: string;
-  }): Promise<any> {
+  async getTrustpilotCompany(params: { query: string }): Promise<any> {
     let response = await this.axios.get('/api/v2/trustpilot/company/info', {
       params: { query: params.query }
     });

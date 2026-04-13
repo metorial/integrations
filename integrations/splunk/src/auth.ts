@@ -2,19 +2,24 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Splunk session key or authentication token'),
-    hecToken: z.string().optional().describe('HTTP Event Collector token for data ingestion')
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Splunk session key or authentication token'),
+      hecToken: z.string().optional().describe('HTTP Event Collector token for data ingestion')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Splunk Auth Token',
     key: 'splunk_token',
     inputSchema: z.object({
       token: z.string().describe('Splunk authentication token (JWT) or session key'),
-      hecToken: z.string().optional().describe('HTTP Event Collector token for data ingestion (optional)')
+      hecToken: z
+        .string()
+        .optional()
+        .describe('HTTP Event Collector token for data ingestion (optional)')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -22,12 +27,15 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    getProfile: async (ctx: { output: { token: string; hecToken?: string }; input: { token: string; hecToken?: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; hecToken?: string };
+      input: { token: string; hecToken?: string };
+    }) => {
       let axiosInstance = createAxios({});
       try {
         let response = await axiosInstance.get('/services/authentication/current-context', {
           headers: {
-            'Authorization': `Splunk ${ctx.output.token}`,
+            Authorization: `Splunk ${ctx.output.token}`,
             'Content-Type': 'application/json'
           },
           params: { output_mode: 'json' }
@@ -55,16 +63,32 @@ export let auth = SlateAuth.create()
       scheme: z.enum(['https', 'http']).default('https').describe('Connection scheme'),
       username: z.string().describe('Splunk username'),
       password: z.string().describe('Splunk password'),
-      hecToken: z.string().optional().describe('HTTP Event Collector token for data ingestion (optional)')
+      hecToken: z
+        .string()
+        .optional()
+        .describe('HTTP Event Collector token for data ingestion (optional)')
     }),
-    getOutput: async (ctx: { input: { scheme: string; host: string; managementPort: string; username: string; password: string; hecToken?: string } }) => {
+    getOutput: async (ctx: {
+      input: {
+        scheme: string;
+        host: string;
+        managementPort: string;
+        username: string;
+        password: string;
+        hecToken?: string;
+      };
+    }) => {
       let baseURL = `${ctx.input.scheme}://${ctx.input.host}:${ctx.input.managementPort}`;
       let axiosInstance = createAxios({ baseURL });
-      let response = await axiosInstance.post('/services/auth/login', `username=${encodeURIComponent(ctx.input.username)}&password=${encodeURIComponent(ctx.input.password)}&output_mode=json`, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await axiosInstance.post(
+        '/services/auth/login',
+        `username=${encodeURIComponent(ctx.input.username)}&password=${encodeURIComponent(ctx.input.password)}&output_mode=json`,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
       let sessionKey = response.data?.sessionKey;
       if (!sessionKey) {
         throw new Error('Failed to obtain session key from Splunk');

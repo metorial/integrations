@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.tidy.com/api/v1',
+  baseURL: 'https://api.tidy.com/api/v1'
 });
 
 export class Client {
@@ -14,7 +14,7 @@ export class Client {
   private get headers() {
     return {
       Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -43,7 +43,7 @@ export class Client {
     let body: Record<string, any> = {
       address: params.address,
       postal_code: params.postalCode,
-      city: params.city,
+      city: params.city
     };
     if (params.unit !== undefined) body.unit = params.unit;
     if (params.countryCode !== undefined) body.country_code = params.countryCode;
@@ -71,16 +71,19 @@ export class Client {
     return res.data;
   }
 
-  async updateAddress(addressId: string, params: {
-    addressName?: string;
-    accessNotes?: string;
-    closingNotes?: string;
-    paidParking?: boolean;
-    parkingSpot?: string;
-    parkingPayWith?: string;
-    maxParkingCost?: number;
-    parkingNotes?: string;
-  }): Promise<any> {
+  async updateAddress(
+    addressId: string,
+    params: {
+      addressName?: string;
+      accessNotes?: string;
+      closingNotes?: string;
+      paidParking?: boolean;
+      parkingSpot?: string;
+      parkingPayWith?: string;
+      maxParkingCost?: number;
+      parkingNotes?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.addressName !== undefined) body.address_name = params.addressName;
 
@@ -132,10 +135,11 @@ export class Client {
       address_id: params.addressId,
       service_type_key: params.serviceTypeKey,
       start_no_earlier_than: params.startNoEarlierThan,
-      end_no_later_than: params.endNoLaterThan,
+      end_no_later_than: params.endNoLaterThan
     };
     if (params.toDoListId !== undefined) body.to_do_list_id = params.toDoListId;
-    if (params.preferredStartDatetime !== undefined) body.preferred_start_datetime = params.preferredStartDatetime;
+    if (params.preferredStartDatetime !== undefined)
+      body.preferred_start_datetime = params.preferredStartDatetime;
 
     let res = await http.post('/jobs', body, { headers: this.headers });
     return res.data;
@@ -146,14 +150,18 @@ export class Client {
     return res.data;
   }
 
-  async updateJob(jobId: string, params: {
-    toDoListId?: string;
-    startNoEarlierThan?: string;
-    endNoLaterThan?: string;
-  }): Promise<any> {
+  async updateJob(
+    jobId: string,
+    params: {
+      toDoListId?: string;
+      startNoEarlierThan?: string;
+      endNoLaterThan?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.toDoListId !== undefined) body.to_do_list_id = params.toDoListId;
-    if (params.startNoEarlierThan !== undefined) body.start_no_earlier_than = params.startNoEarlierThan;
+    if (params.startNoEarlierThan !== undefined)
+      body.start_no_earlier_than = params.startNoEarlierThan;
     if (params.endNoLaterThan !== undefined) body.end_no_later_than = params.endNoLaterThan;
 
     let res = await http.put(`/jobs/${jobId}`, body, { headers: this.headers });
@@ -165,19 +173,23 @@ export class Client {
     return res.data;
   }
 
-  async rescheduleJob(jobId: string, params: {
-    serviceTypeKey: string;
-    startNoEarlierThan: string;
-    endNoLaterThan: string;
-    preferredStartDatetime?: string;
-    toDoListId?: string;
-  }): Promise<any> {
+  async rescheduleJob(
+    jobId: string,
+    params: {
+      serviceTypeKey: string;
+      startNoEarlierThan: string;
+      endNoLaterThan: string;
+      preferredStartDatetime?: string;
+      toDoListId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       service_type_key: params.serviceTypeKey,
       start_no_earlier_than: params.startNoEarlierThan,
-      end_no_later_than: params.endNoLaterThan,
+      end_no_later_than: params.endNoLaterThan
     };
-    if (params.preferredStartDatetime !== undefined) body.preferred_start_datetime = params.preferredStartDatetime;
+    if (params.preferredStartDatetime !== undefined)
+      body.preferred_start_datetime = params.preferredStartDatetime;
     if (params.toDoListId !== undefined) body.to_do_list_id = params.toDoListId;
 
     let res = await http.post(`/jobs/${jobId}/reschedule`, body, { headers: this.headers });
@@ -194,8 +206,8 @@ export class Client {
       headers: this.headers,
       params: {
         service_type_key: params.serviceTypeKey,
-        address_id: params.addressId,
-      },
+        address_id: params.addressId
+      }
     });
     return res.data;
   }
@@ -210,7 +222,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       name: params.name,
-      email: params.email,
+      email: params.email
     };
     if (params.phone !== undefined) body.phone = params.phone;
     if (params.serviceTypes !== undefined) body.service_types = params.serviceTypes;
@@ -248,12 +260,12 @@ export class Client {
       address_id: params.addressId,
       check_in: {
         date: params.checkInDate,
-        ...(params.checkInTime !== undefined ? { time: params.checkInTime } : {}),
+        ...(params.checkInTime !== undefined ? { time: params.checkInTime } : {})
       },
       check_out: {
         date: params.checkOutDate,
-        ...(params.checkOutTime !== undefined ? { time: params.checkOutTime } : {}),
-      },
+        ...(params.checkOutTime !== undefined ? { time: params.checkOutTime } : {})
+      }
     };
 
     let res = await http.post('/guest-reservations', body, { headers: this.headers });
@@ -261,7 +273,9 @@ export class Client {
   }
 
   async getGuestReservation(reservationId: string): Promise<any> {
-    let res = await http.get(`/guest-reservations/${reservationId}`, { headers: this.headers });
+    let res = await http.get(`/guest-reservations/${reservationId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -271,10 +285,7 @@ export class Client {
 
   // ── Issues ─────────────────────────────────────────────
 
-  async listIssues(params?: {
-    addressId?: string;
-    status?: string;
-  }): Promise<any> {
+  async listIssues(params?: { addressId?: string; status?: string }): Promise<any> {
     let query: Record<string, string> = {};
     if (params?.addressId) query.address_id = params.addressId;
     if (params?.status) query.status = params.status;
@@ -290,7 +301,7 @@ export class Client {
     let body = {
       address_id: params.addressId,
       description: params.description,
-      type: params.type,
+      type: params.type
     };
     let res = await http.post('/issues', body, { headers: this.headers });
     return res.data;

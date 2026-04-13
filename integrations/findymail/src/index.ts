@@ -9,7 +9,7 @@ import {
   searchEmployees,
   intellimatchSearch,
   getContactLists,
-  getCredits,
+  getCredits
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     searchEmployees,
     intellimatchSearch,
     getContactLists,
-    getCredits,
+    getCredits
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

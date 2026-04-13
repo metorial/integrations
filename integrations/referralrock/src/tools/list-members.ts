@@ -24,37 +24,47 @@ let memberSchema = z.object({
   emailShares: z.number().optional().describe('Email share count'),
   socialShares: z.number().optional().describe('Social share count'),
   views: z.number().optional().describe('View count'),
-  createDt: z.string().optional().describe('Creation date'),
+  createDt: z.string().optional().describe('Creation date')
 });
 
-export let listMembers = SlateTool.create(
-  spec,
-  {
-    name: 'List Members',
-    key: 'list_members',
-    description: `List and search members (advocates) in referral programs. Filter by program, date range, or search term (email, external ID, or referral code). Supports pagination and sorting.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    programId: z.string().optional().describe('Filter by program ID, name, or title'),
-    query: z.string().optional().describe('Search by email, internal ID, external ID, or referral code'),
-    showDisabled: z.boolean().optional().describe('Include disabled members'),
-    sort: z.enum(['Create_Dt_Desc', 'Create_Dt_Asc']).optional().describe('Sort order'),
-    dateFrom: z.string().optional().describe('Show members created after this date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('Show members created before this date (YYYY-MM-DD)'),
-    offset: z.number().optional().describe('Starting index for pagination (0-based)'),
-    count: z.number().optional().describe('Maximum number of members to return'),
-  }))
-  .output(z.object({
-    members: z.array(memberSchema).describe('List of members'),
-    total: z.number().optional().describe('Total number of members matching filters'),
-    offset: z.number().optional().describe('Current pagination offset'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listMembers = SlateTool.create(spec, {
+  name: 'List Members',
+  key: 'list_members',
+  description: `List and search members (advocates) in referral programs. Filter by program, date range, or search term (email, external ID, or referral code). Supports pagination and sorting.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      programId: z.string().optional().describe('Filter by program ID, name, or title'),
+      query: z
+        .string()
+        .optional()
+        .describe('Search by email, internal ID, external ID, or referral code'),
+      showDisabled: z.boolean().optional().describe('Include disabled members'),
+      sort: z.enum(['Create_Dt_Desc', 'Create_Dt_Asc']).optional().describe('Sort order'),
+      dateFrom: z
+        .string()
+        .optional()
+        .describe('Show members created after this date (YYYY-MM-DD)'),
+      dateTo: z
+        .string()
+        .optional()
+        .describe('Show members created before this date (YYYY-MM-DD)'),
+      offset: z.number().optional().describe('Starting index for pagination (0-based)'),
+      count: z.number().optional().describe('Maximum number of members to return')
+    })
+  )
+  .output(
+    z.object({
+      members: z.array(memberSchema).describe('List of members'),
+      total: z.number().optional().describe('Total number of members matching filters'),
+      offset: z.number().optional().describe('Current pagination offset')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ReferralRockClient({ token: ctx.auth.token });
 
     let result = await client.listMembers({
@@ -65,10 +75,10 @@ export let listMembers = SlateTool.create(
       dateFrom: ctx.input.dateFrom,
       dateTo: ctx.input.dateTo,
       offset: ctx.input.offset,
-      count: ctx.input.count,
+      count: ctx.input.count
     });
 
-    let members = (result.members as Array<Record<string, unknown>> || []).map((m) => ({
+    let members = ((result.members as Array<Record<string, unknown>>) || []).map(m => ({
       memberId: m.id as string,
       displayName: m.displayName as string | undefined,
       firstName: m.firstName as string | undefined,
@@ -89,16 +99,16 @@ export let listMembers = SlateTool.create(
       emailShares: m.emailShares as number | undefined,
       socialShares: m.socialShares as number | undefined,
       views: m.views as number | undefined,
-      createDt: m.createDt as string | undefined,
+      createDt: m.createDt as string | undefined
     }));
 
     return {
       output: {
         members,
         total: result.total as number | undefined,
-        offset: result.offset as number | undefined,
+        offset: result.offset as number | undefined
       },
-      message: `Retrieved **${members.length}** member(s)${result.total ? ` out of ${result.total} total` : ''}.`,
+      message: `Retrieved **${members.length}** member(s)${result.total ? ` out of ${result.total} total` : ''}.`
     };
   })
   .build();

@@ -5,44 +5,53 @@ import { z } from 'zod';
 
 let EVENT_TYPES = ['account_created', 'account_updated', 'account_deleted'] as const;
 
-export let accountEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Events',
-    key: 'account_events',
-    description: 'Triggers when an account (company) is created, updated, or deleted in SalesLoft.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(EVENT_TYPES).describe('Type of account event'),
-    eventId: z.string().describe('Unique event identifier'),
-    account: z.any().describe('Account data from webhook payload')
-  }))
-  .output(z.object({
-    accountId: z.number().describe('SalesLoft account ID'),
-    name: z.string().nullable().optional().describe('Account name'),
-    domain: z.string().nullable().optional().describe('Domain'),
-    website: z.string().nullable().optional().describe('Website URL'),
-    phone: z.string().nullable().optional().describe('Phone number'),
-    industry: z.string().nullable().optional().describe('Industry'),
-    city: z.string().nullable().optional().describe('City'),
-    state: z.string().nullable().optional().describe('State'),
-    country: z.string().nullable().optional().describe('Country'),
-    size: z.string().nullable().optional().describe('Company size'),
-    doNotContact: z.boolean().nullable().optional().describe('Do-not-contact flag'),
-    ownerId: z.number().nullable().optional().describe('Owner user ID'),
-    customFields: z.record(z.string(), z.any()).nullable().optional().describe('Custom fields'),
-    tags: z.array(z.string()).nullable().optional().describe('Tags'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp')
-  }))
+export let accountEvents = SlateTrigger.create(spec, {
+  name: 'Account Events',
+  key: 'account_events',
+  description:
+    'Triggers when an account (company) is created, updated, or deleted in SalesLoft.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(EVENT_TYPES).describe('Type of account event'),
+      eventId: z.string().describe('Unique event identifier'),
+      account: z.any().describe('Account data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.number().describe('SalesLoft account ID'),
+      name: z.string().nullable().optional().describe('Account name'),
+      domain: z.string().nullable().optional().describe('Domain'),
+      website: z.string().nullable().optional().describe('Website URL'),
+      phone: z.string().nullable().optional().describe('Phone number'),
+      industry: z.string().nullable().optional().describe('Industry'),
+      city: z.string().nullable().optional().describe('City'),
+      state: z.string().nullable().optional().describe('State'),
+      country: z.string().nullable().optional().describe('Country'),
+      size: z.string().nullable().optional().describe('Company size'),
+      doNotContact: z.boolean().nullable().optional().describe('Do-not-contact flag'),
+      ownerId: z.number().nullable().optional().describe('Owner user ID'),
+      customFields: z
+        .record(z.string(), z.any())
+        .nullable()
+        .optional()
+        .describe('Custom fields'),
+      tags: z.array(z.string()).nullable().optional().describe('Tags'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ subscriptionId: number; eventType: string }> = [];
 
       for (let eventType of EVENT_TYPES) {
-        let subscription = await client.createWebhookSubscription(ctx.input.webhookBaseUrl, eventType);
+        let subscription = await client.createWebhookSubscription(
+          ctx.input.webhookBaseUrl,
+          eventType
+        );
         registrations.push({
           subscriptionId: subscription.id,
           eventType
@@ -54,9 +63,11 @@ export let accountEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registrations: Array<{ subscriptionId: number }> };
+      let details = ctx.input.registrationDetails as {
+        registrations: Array<{ subscriptionId: number }>;
+      };
 
       for (let reg of details.registrations) {
         try {
@@ -67,20 +78,22 @@ export let accountEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventType = ctx.request.headers.get('x-salesloft-event') || 'account_updated';
 
       return {
-        inputs: [{
-          eventType: eventType as typeof EVENT_TYPES[number],
-          eventId: `${eventType}_${body?.id || Date.now()}`,
-          account: body
-        }]
+        inputs: [
+          {
+            eventType: eventType as (typeof EVENT_TYPES)[number],
+            eventId: `${eventType}_${body?.id || Date.now()}`,
+            account: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.account;
 
       return {
@@ -106,4 +119,5 @@ export let accountEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

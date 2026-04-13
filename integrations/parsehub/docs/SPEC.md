@@ -15,6 +15,7 @@ Each request must include your API Key for authentication. ParseHub uses a singl
 - **Base URL:** `https://www.parsehub.com/api/v2/`
 
 Example:
+
 ```
 GET https://www.parsehub.com/api/v2/projects?api_key={YOUR_API_KEY}
 ```

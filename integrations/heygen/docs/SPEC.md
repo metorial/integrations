@@ -13,6 +13,7 @@ HeyGen supports two authentication methods:
 Authenticate by passing your API key via the `X-Api-Key` header. Requires a HeyGen API key generated from Settings → API in your dashboard.
 
 Example:
+
 ```
 X-Api-Key: your-api-key
 ```
@@ -26,11 +27,13 @@ HeyGen supports OAuth 2.0 with the Authorization Code Flow and PKCE (Proof Key f
 Before you can implement OAuth, you need to submit an Integration Intake form to HeyGen. Upon approval, you'll receive your Client ID and have your Redirect URI approved.
 
 **Endpoints:**
+
 - Authorization URL: `https://app.heygen.com/oauth/authorize`
 - Token endpoint: `https://api2.heygen.com/v1/oauth/token`
 - Refresh token endpoint: `https://api2.heygen.com/v1/oauth/refresh_token`
 
 **Authorization URL parameters:**
+
 - `client_id` – Your Client ID
 - `state` – A unique random string for CSRF protection
 - `redirect_uri` – Your approved redirect URI (URL-encoded)
@@ -39,6 +42,7 @@ Before you can implement OAuth, you need to submit an Integration Intake form to
 - `response_type` – Set to `code`
 
 **Token exchange parameters:**
+
 - `code` – The authorization code received
 - `client_id` – Your Client ID
 - `grant_type` – `authorization_code`

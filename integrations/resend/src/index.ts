@@ -34,13 +34,9 @@ import {
   listApiKeys,
   deleteApiKey,
   listReceivedEmails,
-  getReceivedEmail,
+  getReceivedEmail
 } from './tools';
-import {
-  emailEvents,
-  contactEvents,
-  domainEvents,
-} from './triggers';
+import { emailEvents, contactEvents, domainEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -78,11 +74,7 @@ export let provider = Slate.create({
     listApiKeys,
     deleteApiKey,
     listReceivedEmails,
-    getReceivedEmail,
+    getReceivedEmail
   ],
-  triggers: [
-    emailEvents,
-    contactEvents,
-    domainEvents,
-  ],
+  triggers: [emailEvents, contactEvents, domainEvents]
 });

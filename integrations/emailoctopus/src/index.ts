@@ -18,7 +18,7 @@ import {
   listCampaigns,
   getCampaign,
   getCampaignReport,
-  triggerAutomation,
+  triggerAutomation
 } from './tools';
 import { contactEvent } from './triggers';
 
@@ -42,9 +42,7 @@ export let provider = Slate.create({
     listCampaigns,
     getCampaign,
     getCampaignReport,
-    triggerAutomation,
+    triggerAutomation
   ],
-  triggers: [
-    contactEvent,
-  ],
+  triggers: [contactEvent]
 });

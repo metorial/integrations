@@ -2,42 +2,65 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Completed',
-    key: 'task_completed',
-    description: 'Triggers when a robot task finishes, either successfully or with an error. Includes the extracted data, status, and metadata.',
-  }
-)
-  .input(z.object({
-    event: z.string().describe('The event type that fired'),
-    taskId: z.string().describe('ID of the completed task'),
-    robotId: z.string().describe('ID of the robot that ran the task'),
-    status: z.string().describe('Task status (e.g., "successful", "failed")'),
-    capturedTexts: z.record(z.string(), z.any()).optional().describe('Extracted text data'),
-    capturedScreenshots: z.record(z.string(), z.any()).optional().describe('Captured screenshots'),
-    finishedAt: z.number().optional().describe('Unix timestamp when the task finished'),
-    runByTaskMonitorId: z.string().optional().describe('Monitor ID if triggered by monitoring'),
-    runByAPI: z.boolean().optional().describe('Whether the task was triggered via API'),
-    userFriendlyError: z.string().optional().describe('Error message if task failed'),
-    inputParameters: z.record(z.string(), z.any()).optional().describe('Input parameters used for the task'),
-  }))
-  .output(z.object({
-    taskId: z.string().describe('ID of the completed task'),
-    robotId: z.string().describe('ID of the robot that ran the task'),
-    status: z.string().describe('Task status'),
-    capturedTexts: z.record(z.string(), z.any()).optional().describe('Extracted text data as key-value pairs'),
-    capturedScreenshots: z.record(z.string(), z.any()).optional().describe('Captured screenshots'),
-    finishedAt: z.number().optional().describe('Unix timestamp when the task finished'),
-    runByTaskMonitorId: z.string().optional().describe('Monitor ID if triggered by monitoring'),
-    runByAPI: z.boolean().optional().describe('Whether the task was triggered via API'),
-    userFriendlyError: z.string().optional().describe('Error message if task failed'),
-    inputParameters: z.record(z.string(), z.any()).optional().describe('Input parameters used for the task'),
-  }))
+export let taskCompleted = SlateTrigger.create(spec, {
+  name: 'Task Completed',
+  key: 'task_completed',
+  description:
+    'Triggers when a robot task finishes, either successfully or with an error. Includes the extracted data, status, and metadata.'
+})
+  .input(
+    z.object({
+      event: z.string().describe('The event type that fired'),
+      taskId: z.string().describe('ID of the completed task'),
+      robotId: z.string().describe('ID of the robot that ran the task'),
+      status: z.string().describe('Task status (e.g., "successful", "failed")'),
+      capturedTexts: z.record(z.string(), z.any()).optional().describe('Extracted text data'),
+      capturedScreenshots: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Captured screenshots'),
+      finishedAt: z.number().optional().describe('Unix timestamp when the task finished'),
+      runByTaskMonitorId: z
+        .string()
+        .optional()
+        .describe('Monitor ID if triggered by monitoring'),
+      runByAPI: z.boolean().optional().describe('Whether the task was triggered via API'),
+      userFriendlyError: z.string().optional().describe('Error message if task failed'),
+      inputParameters: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Input parameters used for the task')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('ID of the completed task'),
+      robotId: z.string().describe('ID of the robot that ran the task'),
+      status: z.string().describe('Task status'),
+      capturedTexts: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Extracted text data as key-value pairs'),
+      capturedScreenshots: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Captured screenshots'),
+      finishedAt: z.number().optional().describe('Unix timestamp when the task finished'),
+      runByTaskMonitorId: z
+        .string()
+        .optional()
+        .describe('Monitor ID if triggered by monitoring'),
+      runByAPI: z.boolean().optional().describe('Whether the task was triggered via API'),
+      userFriendlyError: z.string().optional().describe('Error message if task failed'),
+      inputParameters: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Input parameters used for the task')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let task = data.task ?? {};
 
@@ -54,13 +77,13 @@ export let taskCompleted = SlateTrigger.create(
             runByTaskMonitorId: task.runByTaskMonitorId,
             runByAPI: task.runByAPI,
             userFriendlyError: task.userFriendlyError,
-            inputParameters: task.inputParameters,
-          },
-        ],
+            inputParameters: task.inputParameters
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.event;
       let type = 'task.finished';
       if (eventType === 'taskFinishedSuccessfully') {
@@ -82,9 +105,9 @@ export let taskCompleted = SlateTrigger.create(
           runByTaskMonitorId: ctx.input.runByTaskMonitorId,
           runByAPI: ctx.input.runByAPI,
           userFriendlyError: ctx.input.userFriendlyError,
-          inputParameters: ctx.input.inputParameters,
-        },
+          inputParameters: ctx.input.inputParameters
+        }
       };
-    },
+    }
   })
   .build();

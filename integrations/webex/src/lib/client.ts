@@ -35,10 +35,7 @@ export class WebexClient {
     return response.data;
   }
 
-  async listDirectMessages(params: {
-    personId?: string;
-    personEmail?: string;
-  }) {
+  async listDirectMessages(params: { personId?: string; personEmail?: string }) {
     let response = await api.get('/messages/direct', {
       headers: this.headers(),
       params
@@ -69,11 +66,14 @@ export class WebexClient {
     return response.data;
   }
 
-  async updateMessage(messageId: string, body: {
-    roomId: string;
-    text?: string;
-    markdown?: string;
-  }) {
+  async updateMessage(
+    messageId: string,
+    body: {
+      roomId: string;
+      text?: string;
+      markdown?: string;
+    }
+  ) {
     let response = await api.put(`/messages/${messageId}`, body, {
       headers: this.headers()
     });
@@ -88,12 +88,7 @@ export class WebexClient {
 
   // ---- Rooms / Spaces ----
 
-  async listRooms(params?: {
-    teamId?: string;
-    type?: string;
-    sortBy?: string;
-    max?: number;
-  }) {
+  async listRooms(params?: { teamId?: string; type?: string; sortBy?: string; max?: number }) {
     let response = await api.get('/rooms', {
       headers: this.headers(),
       params
@@ -123,16 +118,19 @@ export class WebexClient {
     return response.data;
   }
 
-  async updateRoom(roomId: string, body: {
-    title?: string;
-    classificationId?: string;
-    teamId?: string;
-    isLocked?: boolean;
-    isPublic?: boolean;
-    description?: string;
-    isAnnouncementOnly?: boolean;
-    isReadOnly?: boolean;
-  }) {
+  async updateRoom(
+    roomId: string,
+    body: {
+      title?: string;
+      classificationId?: string;
+      teamId?: string;
+      isLocked?: boolean;
+      isPublic?: boolean;
+      description?: string;
+      isAnnouncementOnly?: boolean;
+      isReadOnly?: boolean;
+    }
+  ) {
     let response = await api.put(`/rooms/${roomId}`, body, {
       headers: this.headers()
     });
@@ -179,10 +177,13 @@ export class WebexClient {
     return response.data;
   }
 
-  async updateMembership(membershipId: string, body: {
-    isModerator?: boolean;
-    isRoomHidden?: boolean;
-  }) {
+  async updateMembership(
+    membershipId: string,
+    body: {
+      isModerator?: boolean;
+      isRoomHidden?: boolean;
+    }
+  ) {
     let response = await api.put(`/memberships/${membershipId}`, body, {
       headers: this.headers()
     });
@@ -272,10 +273,13 @@ export class WebexClient {
     return response.data;
   }
 
-  async getMeeting(meetingId: string, params?: {
-    current?: boolean;
-    hostEmail?: string;
-  }) {
+  async getMeeting(
+    meetingId: string,
+    params?: {
+      current?: boolean;
+      hostEmail?: string;
+    }
+  ) {
     let response = await api.get(`/meetings/${meetingId}`, {
       headers: this.headers(),
       params
@@ -283,28 +287,34 @@ export class WebexClient {
     return response.data;
   }
 
-  async updateMeeting(meetingId: string, body: {
-    title?: string;
-    agenda?: string;
-    password?: string;
-    start?: string;
-    end?: string;
-    timezone?: string;
-    recurrence?: string;
-    enabledAutoRecordMeeting?: boolean;
-    allowAnyUserToBeCoHost?: boolean;
-    sendEmail?: boolean;
-  }) {
+  async updateMeeting(
+    meetingId: string,
+    body: {
+      title?: string;
+      agenda?: string;
+      password?: string;
+      start?: string;
+      end?: string;
+      timezone?: string;
+      recurrence?: string;
+      enabledAutoRecordMeeting?: boolean;
+      allowAnyUserToBeCoHost?: boolean;
+      sendEmail?: boolean;
+    }
+  ) {
     let response = await api.patch(`/meetings/${meetingId}`, body, {
       headers: this.headers()
     });
     return response.data;
   }
 
-  async deleteMeeting(meetingId: string, params?: {
-    hostEmail?: string;
-    sendEmail?: boolean;
-  }) {
+  async deleteMeeting(
+    meetingId: string,
+    params?: {
+      hostEmail?: string;
+      sendEmail?: boolean;
+    }
+  ) {
     await api.delete(`/meetings/${meetingId}`, {
       headers: this.headers(),
       params
@@ -328,9 +338,12 @@ export class WebexClient {
     return response.data;
   }
 
-  async getRecording(recordingId: string, params?: {
-    hostEmail?: string;
-  }) {
+  async getRecording(
+    recordingId: string,
+    params?: {
+      hostEmail?: string;
+    }
+  ) {
     let response = await api.get(`/recordings/${recordingId}`, {
       headers: this.headers(),
       params
@@ -338,9 +351,12 @@ export class WebexClient {
     return response.data;
   }
 
-  async deleteRecording(recordingId: string, params?: {
-    hostEmail?: string;
-  }) {
+  async deleteRecording(
+    recordingId: string,
+    params?: {
+      hostEmail?: string;
+    }
+  ) {
     await api.delete(`/recordings/${recordingId}`, {
       headers: this.headers(),
       params
@@ -349,9 +365,7 @@ export class WebexClient {
 
   // ---- Teams ----
 
-  async listTeams(params?: {
-    max?: number;
-  }) {
+  async listTeams(params?: { max?: number }) {
     let response = await api.get('/teams', {
       headers: this.headers(),
       params
@@ -388,10 +402,7 @@ export class WebexClient {
 
   // ---- Webhooks ----
 
-  async listWebhooks(params?: {
-    max?: number;
-    ownedBy?: string;
-  }) {
+  async listWebhooks(params?: { max?: number; ownedBy?: string }) {
     let response = await api.get('/webhooks', {
       headers: this.headers(),
       params
@@ -421,13 +432,16 @@ export class WebexClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, body: {
-    name?: string;
-    targetUrl?: string;
-    secret?: string;
-    status?: string;
-    ownedBy?: string;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    body: {
+      name?: string;
+      targetUrl?: string;
+      secret?: string;
+      status?: string;
+      ownedBy?: string;
+    }
+  ) {
     let response = await api.put(`/webhooks/${webhookId}`, body, {
       headers: this.headers()
     });

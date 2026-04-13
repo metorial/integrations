@@ -7,7 +7,7 @@ let columnValueSchema = z.object({
   columnId: z.string().describe('Column ID'),
   type: z.string().describe('Column type'),
   text: z.string().nullable().describe('Human-readable text value'),
-  value: z.string().nullable().describe('Raw JSON value'),
+  value: z.string().nullable().describe('Raw JSON value')
 });
 
 let itemSchema = z.object({
@@ -19,32 +19,39 @@ let itemSchema = z.object({
   groupId: z.string().nullable().describe('Group ID the item belongs to'),
   groupTitle: z.string().nullable().describe('Group title'),
   columnValues: z.array(columnValueSchema).describe('Column values for the item'),
-  subitemIds: z.array(z.string()).describe('IDs of sub-items'),
+  subitemIds: z.array(z.string()).describe('IDs of sub-items')
 });
 
-export let listItemsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Items',
-    key: 'list_items',
-    description: `Retrieve items from a board or by item IDs. When fetching by board, supports pagination via cursor and filtering by group. Returns item data including column values and sub-item references.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    boardId: z.string().optional().describe('Board ID to list items from'),
-    itemIds: z.array(z.string()).optional().describe('Specific item IDs to retrieve (up to 100)'),
-    groupId: z.string().optional().describe('Filter items by group ID (requires boardId)'),
-    limit: z.number().optional().describe('Maximum number of items to return (default: 500)'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-  }))
-  .output(z.object({
-    items: z.array(itemSchema).describe('List of items'),
-    cursor: z.string().nullable().describe('Cursor for next page, null if no more pages'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listItemsTool = SlateTool.create(spec, {
+  name: 'List Items',
+  key: 'list_items',
+  description: `Retrieve items from a board or by item IDs. When fetching by board, supports pagination via cursor and filtering by group. Returns item data including column values and sub-item references.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      boardId: z.string().optional().describe('Board ID to list items from'),
+      itemIds: z
+        .array(z.string())
+        .optional()
+        .describe('Specific item IDs to retrieve (up to 100)'),
+      groupId: z.string().optional().describe('Filter items by group ID (requires boardId)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of items to return (default: 500)'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response')
+    })
+  )
+  .output(
+    z.object({
+      items: z.array(itemSchema).describe('List of items'),
+      cursor: z.string().nullable().describe('Cursor for next page, null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MondayClient({ token: ctx.auth.token });
     let items: any[] = [];
     let cursor: string | null = null;
@@ -55,7 +62,7 @@ export let listItemsTool = SlateTool.create(
       let result = await client.getBoardItems(ctx.input.boardId, {
         limit: ctx.input.limit,
         cursor: ctx.input.cursor,
-        groupId: ctx.input.groupId,
+        groupId: ctx.input.groupId
       });
       items = result.items;
       cursor = result.cursor;
@@ -75,13 +82,14 @@ export let listItemsTool = SlateTool.create(
         columnId: cv.id,
         type: cv.type,
         text: cv.text || null,
-        value: cv.value || null,
+        value: cv.value || null
       })),
-      subitemIds: (item.subitems || []).map((si: any) => String(si.id)),
+      subitemIds: (item.subitems || []).map((si: any) => String(si.id))
     }));
 
     return {
       output: { items: mapped, cursor },
-      message: `Retrieved **${mapped.length}** item(s).${cursor ? ' More items available via cursor.' : ''}`,
+      message: `Retrieved **${mapped.length}** item(s).${cursor ? ' More items available via cursor.' : ''}`
     };
-  }).build();
+  })
+  .build();

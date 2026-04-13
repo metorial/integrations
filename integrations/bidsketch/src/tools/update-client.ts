@@ -3,48 +3,52 @@ import { BidsketchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateClient = SlateTool.create(
-  spec,
-  {
-    name: 'Update Client',
-    key: 'update_client',
-    description: `Update an existing client's information. Only the fields provided will be updated; all others remain unchanged.`,
-    tags: {
-      destructive: false
-    }
+export let updateClient = SlateTool.create(spec, {
+  name: 'Update Client',
+  key: 'update_client',
+  description: `Update an existing client's information. Only the fields provided will be updated; all others remain unchanged.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    clientId: z.number().describe('ID of the client to update'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    email: z.string().optional().describe('Updated email address'),
-    phone: z.string().optional().describe('Updated phone number'),
-    website: z.string().optional().describe('Updated website URL'),
-    address: z.string().optional().describe('Updated street address'),
-    address2: z.string().optional().describe('Updated address line 2'),
-    city: z.string().optional().describe('Updated city'),
-    state: z.string().optional().describe('Updated state/province'),
-    postalZip: z.string().optional().describe('Updated postal/ZIP code'),
-    locale: z.string().optional().describe('Updated country/locale'),
-    notes: z.string().optional().describe('Updated private notes'),
-    otherContact: z.object({
-      firstName: z.string().describe('Secondary contact first name'),
-      lastName: z.string().describe('Secondary contact last name'),
-      email: z.string().describe('Secondary contact email'),
-      phone: z.string().optional().describe('Secondary contact phone')
-    }).optional().describe('Updated secondary contact person')
-  }))
-  .output(z.object({
-    clientId: z.number().describe('Client ID'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    email: z.string().describe('Email address'),
-    url: z.string().describe('API URL'),
-    appUrl: z.string().describe('Bidsketch app URL'),
-    updatedAt: z.string().describe('Last update timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clientId: z.number().describe('ID of the client to update'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      email: z.string().optional().describe('Updated email address'),
+      phone: z.string().optional().describe('Updated phone number'),
+      website: z.string().optional().describe('Updated website URL'),
+      address: z.string().optional().describe('Updated street address'),
+      address2: z.string().optional().describe('Updated address line 2'),
+      city: z.string().optional().describe('Updated city'),
+      state: z.string().optional().describe('Updated state/province'),
+      postalZip: z.string().optional().describe('Updated postal/ZIP code'),
+      locale: z.string().optional().describe('Updated country/locale'),
+      notes: z.string().optional().describe('Updated private notes'),
+      otherContact: z
+        .object({
+          firstName: z.string().describe('Secondary contact first name'),
+          lastName: z.string().describe('Secondary contact last name'),
+          email: z.string().describe('Secondary contact email'),
+          phone: z.string().optional().describe('Secondary contact phone')
+        })
+        .optional()
+        .describe('Updated secondary contact person')
+    })
+  )
+  .output(
+    z.object({
+      clientId: z.number().describe('Client ID'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      email: z.string().describe('Email address'),
+      url: z.string().describe('API URL'),
+      appUrl: z.string().describe('Bidsketch app URL'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let body: Record<string, unknown> = {};

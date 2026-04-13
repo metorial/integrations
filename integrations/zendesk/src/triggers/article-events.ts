@@ -3,38 +3,40 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
 
-export let articleEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Article Events',
-    key: 'article_events',
-    description: 'Triggers when Help Center article activity occurs, including article publication, unpublication, and subscription creation.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of article event'),
-    eventId: z.string().describe('Unique event identifier'),
-    articleId: z.string().describe('The article ID'),
-    title: z.string().nullable().describe('The article title'),
-    locale: z.string().nullable().describe('The article locale'),
-    sectionId: z.string().nullable().describe('The section ID'),
-    authorId: z.string().nullable().describe('The author user ID'),
-    updatedAt: z.string().nullable().describe('When the article was last updated'),
-  }))
-  .output(z.object({
-    articleId: z.string().describe('The article ID'),
-    title: z.string().nullable().describe('The article title'),
-    locale: z.string().nullable().describe('The article locale'),
-    sectionId: z.string().nullable().describe('The section ID'),
-    authorId: z.string().nullable().describe('The author user ID'),
-    updatedAt: z.string().nullable().describe('When the article was last updated'),
-  }))
+export let articleEvents = SlateTrigger.create(spec, {
+  name: 'Article Events',
+  key: 'article_events',
+  description:
+    'Triggers when Help Center article activity occurs, including article publication, unpublication, and subscription creation.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of article event'),
+      eventId: z.string().describe('Unique event identifier'),
+      articleId: z.string().describe('The article ID'),
+      title: z.string().nullable().describe('The article title'),
+      locale: z.string().nullable().describe('The article locale'),
+      sectionId: z.string().nullable().describe('The section ID'),
+      authorId: z.string().nullable().describe('The author user ID'),
+      updatedAt: z.string().nullable().describe('When the article was last updated')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.string().describe('The article ID'),
+      title: z.string().nullable().describe('The article title'),
+      locale: z.string().nullable().describe('The article locale'),
+      sectionId: z.string().nullable().describe('The section ID'),
+      authorId: z.string().nullable().describe('The author user ID'),
+      updatedAt: z.string().nullable().describe('When the article was last updated')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let webhook = await client.createWebhook({
@@ -46,28 +48,28 @@ export let articleEvents = SlateTrigger.create(
         subscriptions: [
           'zen:event-type:article.published',
           'zen:event-type:article.unpublished',
-          'zen:event-type:article.SubscriptionCreated',
-        ],
+          'zen:event-type:article.SubscriptionCreated'
+        ]
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let eventType = 'article.updated';
@@ -92,13 +94,13 @@ export let articleEvents = SlateTrigger.create(
             locale: article.locale || null,
             sectionId: article.section_id ? String(article.section_id) : null,
             authorId: article.author_id ? String(article.author_id) : null,
-            updatedAt: article.updated_at || null,
-          },
-        ],
+            updatedAt: article.updated_at || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType.toLowerCase().replace(/\s+/g, '_');
       if (!eventType.startsWith('article.')) {
         eventType = `article.${eventType}`;
@@ -113,9 +115,9 @@ export let articleEvents = SlateTrigger.create(
           locale: ctx.input.locale,
           sectionId: ctx.input.sectionId,
           authorId: ctx.input.authorId,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

@@ -37,6 +37,7 @@ Record custom events into event collections via the API. Events are arbitrary JS
 Run a wide range of analytical queries on your event data. The API supports aggregations including minimum, maximum, average, sum, and standard deviation for numeric values. Also supports count, count unique, select unique, percentile, median, and extraction queries. Funnel analysis includes advanced features like inverse steps ("did not do"), optional steps, and returning actor IDs for any step in the sequence.
 
 Key query parameters include:
+
 - **Timeframe**: Specify absolute or relative periods of time over which to run analyses.
 - **Interval**: Return results within a given interval of time, such as minutely, daily, or monthly.
 - **Groups**: Sub-divide analysis results categorically, based on values for a given property.
@@ -53,6 +54,7 @@ Pre-computed, indexed query results that can be retrieved with sub-second respon
 ### Data Enrichment (Add-Ons)
 
 A data enrichment is a powerful add-on to enrich the data you're already streaming to Keen. Available enrichments include:
+
 - **IP to Geo Parser**: Parse an IP address into geographic information. **User Agent Parser**: Parse a user agent string into device, browser, and OS information. **URL Parser**: Parse a well-formed URL into queryable pieces. **Referrer Parser**: Parse a well-formed referrer URL into its source information.
 - **Datetime Parser**: Parse timestamps into components like day of the week, hour, etc.
 
@@ -76,4 +78,4 @@ Inspect schema information for a single event collection or all event collection
 
 ## Events
 
-The provider does not support outbound webhooks or event subscriptions. Keen.io is designed to *receive* event data (via its Stream API or inbound webhooks), not to push notifications when something changes. It offers an API URL that can be used as an endpoint for any service that produces webhooks for inbound data collection, but there is no mechanism for subscribing to changes or events within Keen.io itself.
+The provider does not support outbound webhooks or event subscriptions. Keen.io is designed to _receive_ event data (via its Stream API or inbound webhooks), not to push notifications when something changes. It offers an API URL that can be used as an endpoint for any service that produces webhooks for inbound data collection, but there is no mechanism for subscribing to changes or events within Keen.io itself.

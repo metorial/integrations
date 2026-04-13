@@ -10,14 +10,14 @@ export class Client {
 
   constructor(private config: ClientConfig) {
     this.axios = createAxios({
-      baseURL: 'https://api.giftup.app',
+      baseURL: 'https://api.giftup.app'
     });
   }
 
   private getHeaders() {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${this.config.token}`,
-      Accept: 'application/json',
+      Accept: 'application/json'
     };
     if (this.config.testMode) {
       headers['x-giftup-testmode'] = 'true';
@@ -28,14 +28,14 @@ export class Client {
   private getJsonHeaders() {
     return {
       ...this.getHeaders(),
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   private getPatchHeaders() {
     return {
       ...this.getHeaders(),
-      'Content-Type': 'application/json-patch+json',
+      'Content-Type': 'application/json-patch+json'
     };
   }
 
@@ -48,48 +48,54 @@ export class Client {
 
   // ==================== Gift Cards ====================
 
-  async listGiftCards(params: {
-    status?: string;
-    createdOnOrAfter?: string;
-    updatedOnOrAfter?: string;
-    orderId?: string;
-    sku?: string;
-    recipientEmail?: string;
-    purchaserEmail?: string;
-    paymentTransactionId?: string;
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listGiftCards(
+    params: {
+      status?: string;
+      createdOnOrAfter?: string;
+      updatedOnOrAfter?: string;
+      orderId?: string;
+      sku?: string;
+      recipientEmail?: string;
+      purchaserEmail?: string;
+      paymentTransactionId?: string;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/gift-cards', {
       headers: this.getHeaders(),
-      params,
+      params
     });
     return response.data;
   }
 
   async getGiftCard(code: string) {
     let response = await this.axios.get(`/gift-cards/${encodeURIComponent(code)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
-  async updateGiftCard(code: string, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(
-      `/gift-cards/${encodeURIComponent(code)}`,
-      patches,
-      { headers: this.getPatchHeaders() }
-    );
+  async updateGiftCard(
+    code: string,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
+    let response = await this.axios.patch(`/gift-cards/${encodeURIComponent(code)}`, patches, {
+      headers: this.getPatchHeaders()
+    });
     return response.data;
   }
 
-  async redeemGiftCard(code: string, body: {
-    amount?: number;
-    units?: number;
-    reason?: string;
-    locationId?: string;
-    metadata?: Record<string, string>;
-  }) {
+  async redeemGiftCard(
+    code: string,
+    body: {
+      amount?: number;
+      units?: number;
+      reason?: string;
+      locationId?: string;
+      metadata?: Record<string, string>;
+    }
+  ) {
     let response = await this.axios.post(
       `/gift-cards/${encodeURIComponent(code)}/redeem`,
       body,
@@ -98,11 +104,14 @@ export class Client {
     return response.data;
   }
 
-  async redeemGiftCardInFull(code: string, body: {
-    reason?: string;
-    locationId?: string;
-    metadata?: Record<string, string>;
-  } = {}) {
+  async redeemGiftCardInFull(
+    code: string,
+    body: {
+      reason?: string;
+      locationId?: string;
+      metadata?: Record<string, string>;
+    } = {}
+  ) {
     let response = await this.axios.post(
       `/gift-cards/${encodeURIComponent(code)}/redeem-in-full`,
       body,
@@ -111,11 +120,14 @@ export class Client {
     return response.data;
   }
 
-  async undoRedemption(code: string, body: {
-    transactionId: string;
-    reason?: string;
-    metadata?: Record<string, string>;
-  }) {
+  async undoRedemption(
+    code: string,
+    body: {
+      transactionId: string;
+      reason?: string;
+      metadata?: Record<string, string>;
+    }
+  ) {
     let response = await this.axios.post(
       `/gift-cards/${encodeURIComponent(code)}/undo-redemption`,
       body,
@@ -124,13 +136,16 @@ export class Client {
     return response.data;
   }
 
-  async topUpGiftCard(code: string, body: {
-    amount?: number;
-    units?: number;
-    reason?: string;
-    locationId?: string;
-    metadata?: Record<string, string>;
-  }) {
+  async topUpGiftCard(
+    code: string,
+    body: {
+      amount?: number;
+      units?: number;
+      reason?: string;
+      locationId?: string;
+      metadata?: Record<string, string>;
+    }
+  ) {
     let response = await this.axios.post(
       `/gift-cards/${encodeURIComponent(code)}/top-up`,
       body,
@@ -139,11 +154,14 @@ export class Client {
     return response.data;
   }
 
-  async voidGiftCard(code: string, body: {
-    reason?: string;
-    locationId?: string;
-    metadata?: Record<string, string>;
-  } = {}) {
+  async voidGiftCard(
+    code: string,
+    body: {
+      reason?: string;
+      locationId?: string;
+      metadata?: Record<string, string>;
+    } = {}
+  ) {
     let response = await this.axios.post(
       `/gift-cards/${encodeURIComponent(code)}/void`,
       body,
@@ -152,11 +170,14 @@ export class Client {
     return response.data;
   }
 
-  async reactivateGiftCard(code: string, body: {
-    reason?: string;
-    locationId?: string;
-    metadata?: Record<string, string>;
-  } = {}) {
+  async reactivateGiftCard(
+    code: string,
+    body: {
+      reason?: string;
+      locationId?: string;
+      metadata?: Record<string, string>;
+    } = {}
+  ) {
     let response = await this.axios.post(
       `/gift-cards/${encodeURIComponent(code)}/reactivate`,
       body,
@@ -172,11 +193,9 @@ export class Client {
     locationId?: string;
     metadata?: Record<string, string>;
   }) {
-    let response = await this.axios.post(
-      '/gift-cards/transfer-balances',
-      body,
-      { headers: this.getJsonHeaders() }
-    );
+    let response = await this.axios.post('/gift-cards/transfer-balances', body, {
+      headers: this.getJsonHeaders()
+    });
     return response.data;
   }
 
@@ -247,24 +266,25 @@ export class Client {
     metadata?: Record<string, string>;
   }) {
     let response = await this.axios.post('/orders', body, {
-      headers: this.getJsonHeaders(),
+      headers: this.getJsonHeaders()
     });
     return response.data;
   }
 
   async getOrder(orderId: string) {
     let response = await this.axios.get(`/orders/${encodeURIComponent(orderId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
-  async updateOrder(orderId: string, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(
-      `/orders/${encodeURIComponent(orderId)}`,
-      patches,
-      { headers: this.getPatchHeaders() }
-    );
+  async updateOrder(
+    orderId: string,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
+    let response = await this.axios.patch(`/orders/${encodeURIComponent(orderId)}`, patches, {
+      headers: this.getPatchHeaders()
+    });
     return response.data;
   }
 
@@ -291,14 +311,14 @@ export class Client {
   async listItems(params: { groupId?: string } = {}) {
     let response = await this.axios.get('/items', {
       headers: this.getHeaders(),
-      params,
+      params
     });
     return response.data;
   }
 
   async getItem(itemId: string) {
     let response = await this.axios.get(`/items/${encodeURIComponent(itemId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -333,23 +353,21 @@ export class Client {
     sku?: string;
   }) {
     let response = await this.axios.post('/items', body, {
-      headers: this.getJsonHeaders(),
+      headers: this.getJsonHeaders()
     });
     return response.data;
   }
 
   async updateItem(itemId: string, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(
-      `/items/${encodeURIComponent(itemId)}`,
-      patches,
-      { headers: this.getPatchHeaders() }
-    );
+    let response = await this.axios.patch(`/items/${encodeURIComponent(itemId)}`, patches, {
+      headers: this.getPatchHeaders()
+    });
     return response.data;
   }
 
   async deleteItem(itemId: string) {
     let response = await this.axios.delete(`/items/${encodeURIComponent(itemId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -358,14 +376,14 @@ export class Client {
 
   async listGroups() {
     let response = await this.axios.get('/groups', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async getGroup(groupId: string) {
     let response = await this.axios.get(`/groups/${encodeURIComponent(groupId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -377,23 +395,24 @@ export class Client {
     autoExpand?: boolean;
   }) {
     let response = await this.axios.post('/groups', body, {
-      headers: this.getJsonHeaders(),
+      headers: this.getJsonHeaders()
     });
     return response.data;
   }
 
-  async updateGroup(groupId: string, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(
-      `/groups/${encodeURIComponent(groupId)}`,
-      patches,
-      { headers: this.getPatchHeaders() }
-    );
+  async updateGroup(
+    groupId: string,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
+    let response = await this.axios.patch(`/groups/${encodeURIComponent(groupId)}`, patches, {
+      headers: this.getPatchHeaders()
+    });
     return response.data;
   }
 
   async deleteGroup(groupId: string) {
     let response = await this.axios.delete(`/groups/${encodeURIComponent(groupId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -402,33 +421,38 @@ export class Client {
 
   async listLocations() {
     let response = await this.axios.get('/locations', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   // ==================== Reports ====================
 
-  async listTransactions(params: {
-    createdOnOrAfter?: string;
-    updatedOnOrAfter?: string;
-    giftCardCode?: string;
-    eventType?: string;
-    locationId?: string;
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listTransactions(
+    params: {
+      createdOnOrAfter?: string;
+      updatedOnOrAfter?: string;
+      giftCardCode?: string;
+      eventType?: string;
+      locationId?: string;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/reports/transactions', {
       headers: this.getHeaders(),
-      params,
+      params
     });
     return response.data;
   }
 
   async getTransaction(transactionId: string) {
-    let response = await this.axios.get(`/reports/transactions/${encodeURIComponent(transactionId)}`, {
-      headers: this.getHeaders(),
-    });
+    let response = await this.axios.get(
+      `/reports/transactions/${encodeURIComponent(transactionId)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -436,14 +460,14 @@ export class Client {
 
   async listUsers() {
     let response = await this.axios.get('/users', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async getUser(userId: string) {
     let response = await this.axios.get(`/users/${encodeURIComponent(userId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -457,23 +481,21 @@ export class Client {
     showOnRedeemApp?: boolean;
   }) {
     let response = await this.axios.post('/users/invite', body, {
-      headers: this.getJsonHeaders(),
+      headers: this.getJsonHeaders()
     });
     return response.data;
   }
 
   async updateUser(userId: string, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(
-      `/users/${encodeURIComponent(userId)}`,
-      patches,
-      { headers: this.getPatchHeaders() }
-    );
+    let response = await this.axios.patch(`/users/${encodeURIComponent(userId)}`, patches, {
+      headers: this.getPatchHeaders()
+    });
     return response.data;
   }
 
   async deleteUser(userId: string) {
     let response = await this.axios.delete(`/users/${encodeURIComponent(userId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -482,14 +504,14 @@ export class Client {
 
   async listWebhooks() {
     let response = await this.axios.get('/webhooks', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async getWebhook(webhookId: string) {
     let response = await this.axios.get(`/webhooks/${encodeURIComponent(webhookId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -501,14 +523,14 @@ export class Client {
     testMode?: boolean;
   }) {
     let response = await this.axios.post('/webhooks', body, {
-      headers: this.getJsonHeaders(),
+      headers: this.getJsonHeaders()
     });
     return response.data;
   }
 
   async deleteWebhook(webhookId: string) {
     let response = await this.axios.delete(`/webhooks/${encodeURIComponent(webhookId)}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -517,49 +539,49 @@ export class Client {
 
   async getCheckoutSettings() {
     let response = await this.axios.get('/settings/checkout', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async updateCheckoutSettings(patches: Array<{ op: string; path: string; value: any }>) {
     let response = await this.axios.patch('/settings/checkout', patches, {
-      headers: this.getPatchHeaders(),
+      headers: this.getPatchHeaders()
     });
     return response.data;
   }
 
   async getEmailSettings() {
     let response = await this.axios.get('/settings/email', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async updateEmailSettings(patches: Array<{ op: string; path: string; value: any }>) {
     let response = await this.axios.patch('/settings/email', patches, {
-      headers: this.getPatchHeaders(),
+      headers: this.getPatchHeaders()
     });
     return response.data;
   }
 
   async getGiftCardSettings() {
     let response = await this.axios.get('/settings/gift-card', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async updateGiftCardSettings(patches: Array<{ op: string; path: string; value: any }>) {
     let response = await this.axios.patch('/settings/gift-card', patches, {
-      headers: this.getPatchHeaders(),
+      headers: this.getPatchHeaders()
     });
     return response.data;
   }
 
   async getShippingSettings() {
     let response = await this.axios.get('/settings/shipping', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }

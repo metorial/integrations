@@ -24,7 +24,7 @@ export class Client {
 
   constructor(private token: string) {
     this.axios = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
@@ -38,24 +38,26 @@ export class Client {
     return result;
   }
 
-  async getContracts(params: {
-    awardId?: string;
-    awardeeKey?: number;
-    awardeeKeyParent?: number;
-    awardeeUei?: string;
-    awardeeUeiParent?: string;
-    awardingAgencyKey?: number;
-    fundingAgencyKey?: number;
-    lastModifiedDate?: string;
-    naicsCode?: string;
-    pscCode?: string;
-    searchId?: string;
-    parentAwardId?: string;
-    vehicleKey?: number;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getContracts(
+    params: {
+      awardId?: string;
+      awardeeKey?: number;
+      awardeeKeyParent?: number;
+      awardeeUei?: string;
+      awardeeUeiParent?: string;
+      awardingAgencyKey?: number;
+      fundingAgencyKey?: number;
+      lastModifiedDate?: string;
+      naicsCode?: string;
+      pscCode?: string;
+      searchId?: string;
+      parentAwardId?: string;
+      vehicleKey?: number;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/contract/', {
       params: this.buildParams({
         award_id: params.awardId,
@@ -73,26 +75,28 @@ export class Client {
         vehicle_key: params.vehicleKey,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getGrants(params: {
-    awardeeKey?: number;
-    awardeeKeyParent?: number;
-    awardeeUei?: string;
-    awardeeUeiParent?: string;
-    awardingAgencyKey?: number;
-    fundingAgencyKey?: number;
-    lastModifiedDate?: string;
-    cfdaProgramNumber?: string;
-    searchId?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getGrants(
+    params: {
+      awardeeKey?: number;
+      awardeeKeyParent?: number;
+      awardeeUei?: string;
+      awardeeUeiParent?: string;
+      awardingAgencyKey?: number;
+      fundingAgencyKey?: number;
+      lastModifiedDate?: string;
+      cfdaProgramNumber?: string;
+      searchId?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/grant/', {
       params: this.buildParams({
         awardee_key: params.awardeeKey,
@@ -106,29 +110,31 @@ export class Client {
         search_id: params.searchId,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getIdvAwards(params: {
-    awardId?: string;
-    awardeeKey?: number;
-    awardeeKeyParent?: number;
-    awardeeUei?: string;
-    awardeeUeiParent?: string;
-    awardingAgencyKey?: number;
-    fundingAgencyKey?: number;
-    lastModifiedDate?: string;
-    naicsCode?: string;
-    pscCode?: string;
-    parentAwardId?: string;
-    vehicleKey?: number;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getIdvAwards(
+    params: {
+      awardId?: string;
+      awardeeKey?: number;
+      awardeeKeyParent?: number;
+      awardeeUei?: string;
+      awardeeUeiParent?: string;
+      awardingAgencyKey?: number;
+      fundingAgencyKey?: number;
+      lastModifiedDate?: string;
+      naicsCode?: string;
+      pscCode?: string;
+      parentAwardId?: string;
+      vehicleKey?: number;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/idv/', {
       params: this.buildParams({
         award_id: params.awardId,
@@ -145,24 +151,26 @@ export class Client {
         vehicle_key: params.vehicleKey,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getSubcontracts(params: {
-    awardeeKey?: number;
-    awardeeKeyParent?: number;
-    awardeeUei?: string;
-    awardeeUeiParent?: string;
-    awardingAgencyKey?: number;
-    fundingAgencyKey?: number;
-    lastModifiedDate?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getSubcontracts(
+    params: {
+      awardeeKey?: number;
+      awardeeKeyParent?: number;
+      awardeeUei?: string;
+      awardeeUeiParent?: string;
+      awardingAgencyKey?: number;
+      fundingAgencyKey?: number;
+      lastModifiedDate?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/subcontract/', {
       params: this.buildParams({
         awardee_key: params.awardeeKey,
@@ -174,24 +182,26 @@ export class Client {
         last_modified_date: params.lastModifiedDate,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getSubgrants(params: {
-    awardeeKey?: number;
-    awardeeKeyParent?: number;
-    awardeeUei?: string;
-    awardeeUeiParent?: string;
-    awardingAgencyKey?: number;
-    fundingAgencyKey?: number;
-    lastModifiedDate?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getSubgrants(
+    params: {
+      awardeeKey?: number;
+      awardeeKeyParent?: number;
+      awardeeUei?: string;
+      awardeeUeiParent?: string;
+      awardingAgencyKey?: number;
+      fundingAgencyKey?: number;
+      lastModifiedDate?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/subgrant/', {
       params: this.buildParams({
         awardee_key: params.awardeeKey,
@@ -203,25 +213,27 @@ export class Client {
         last_modified_date: params.lastModifiedDate,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getOpportunities(params: {
-    oppKey?: string;
-    versionKey?: string;
-    sourceId?: string;
-    sourceType?: string;
-    agencyKey?: number;
-    capturedDate?: string;
-    postedDate?: string;
-    searchId?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getOpportunities(
+    params: {
+      oppKey?: string;
+      versionKey?: string;
+      sourceId?: string;
+      sourceType?: string;
+      agencyKey?: number;
+      capturedDate?: string;
+      postedDate?: string;
+      searchId?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/opportunity/', {
       params: this.buildParams({
         opp_key: params.oppKey,
@@ -234,22 +246,24 @@ export class Client {
         search_id: params.searchId,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getAwardees(params: {
-    awardeeKeyParent?: number;
-    cageCode?: string;
-    uei?: string;
-    primaryNaics?: string;
-    registrationLastUpdateDate?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getAwardees(
+    params: {
+      awardeeKeyParent?: number;
+      cageCode?: string;
+      uei?: string;
+      primaryNaics?: string;
+      registrationLastUpdateDate?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/awardee/', {
       params: this.buildParams({
         awardee_key_parent: params.awardeeKeyParent,
@@ -259,20 +273,22 @@ export class Client {
         registration_last_update_date: params.registrationLastUpdateDate,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getAwardeeMentorProtege(params: {
-    awardeeKeyMentor?: number;
-    awardeeKeyMentorParent?: number;
-    awardeeKeyProtege?: number;
-    awardeeKeyProtegeParent?: number;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getAwardeeMentorProtege(
+    params: {
+      awardeeKeyMentor?: number;
+      awardeeKeyMentorParent?: number;
+      awardeeKeyProtege?: number;
+      awardeeKeyProtegeParent?: number;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/awardee-mp/', {
       params: this.buildParams({
         awardee_key_mentor: params.awardeeKeyMentor,
@@ -280,20 +296,22 @@ export class Client {
         awardee_key_protege: params.awardeeKeyProtege,
         awardee_key_protege_parent: params.awardeeKeyProtegeParent,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getAwardeePartnerships(params: {
-    awardeeKeyPrime?: number;
-    awardeeKeyPrimeParent?: number;
-    awardeeKeySub?: number;
-    awardeeKeySubParent?: number;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getAwardeePartnerships(
+    params: {
+      awardeeKeyPrime?: number;
+      awardeeKeyPrimeParent?: number;
+      awardeeKeySub?: number;
+      awardeeKeySubParent?: number;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/awardee-partnership/', {
       params: this.buildParams({
         awardee_key_prime: params.awardeeKeyPrime,
@@ -301,25 +319,27 @@ export class Client {
         awardee_key_sub: params.awardeeKeySub,
         awardee_key_sub_parent: params.awardeeKeySubParent,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getPeople(params: {
-    contactEmail?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getPeople(
+    params: {
+      contactEmail?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/people/', {
       params: this.buildParams({
         contact_email: params.contactEmail,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
@@ -335,101 +355,113 @@ export class Client {
         related_key: params.relatedKey,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getAgencies(params: {
-    agencyKey?: number;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getAgencies(
+    params: {
+      agencyKey?: number;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/agency/', {
       params: this.buildParams({
         agency_key: params.agencyKey,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getVehicles(params: {
-    vehicleKey?: number;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getVehicles(
+    params: {
+      vehicleKey?: number;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/vehicle/', {
       params: this.buildParams({
         vehicle_key: params.vehicleKey,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getNaicsCodes(params: {
-    naicsCode?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getNaicsCodes(
+    params: {
+      naicsCode?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/naics/', {
       params: this.buildParams({
         naics_code: params.naicsCode,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getPscCodes(params: {
-    pscCode?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getPscCodes(
+    params: {
+      pscCode?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/psc/', {
       params: this.buildParams({
         psc_code: params.pscCode,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getGrantPrograms(params: {
-    agencyKey?: number;
-    cfdaProgramNumber?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getGrantPrograms(
+    params: {
+      agencyKey?: number;
+      cfdaProgramNumber?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/grant-program/', {
       params: this.buildParams({
         agency_key: params.agencyKey,
         cfda_program_number: params.cfdaProgramNumber,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getNsnData(params: {
-    cageCode?: string;
-    nsn?: string;
-    partNumber?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getNsnData(
+    params: {
+      cageCode?: string;
+      nsn?: string;
+      partNumber?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/nsn/', {
       params: this.buildParams({
         cage_code: params.cageCode,
@@ -437,21 +469,23 @@ export class Client {
         part_number: params.partNumber,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
 
-  async getSlContracts(params: {
-    capturedDate?: string;
-    startDate?: string;
-    endDate?: string;
-    searchId?: string;
-    ordering?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  } = {}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async getSlContracts(
+    params: {
+      capturedDate?: string;
+      startDate?: string;
+      endDate?: string;
+      searchId?: string;
+      ordering?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/api-external/sl-contract/', {
       params: this.buildParams({
         captured_date: params.capturedDate,
@@ -460,8 +494,8 @@ export class Client {
         search_id: params.searchId,
         ordering: params.ordering,
         page_number: params.pageNumber,
-        page_size: params.pageSize,
-      }),
+        page_size: params.pageSize
+      })
     });
     return response.data;
   }
@@ -475,8 +509,8 @@ export class Client {
         headers: {
           'X-API-KEY': this.token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+          Accept: 'application/json'
+        }
       }
     );
     return response.data;
@@ -490,8 +524,8 @@ export class Client {
         headers: {
           'X-API-KEY': this.token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+          Accept: 'application/json'
+        }
       }
     );
     return response.data;
@@ -505,8 +539,8 @@ export class Client {
         headers: {
           'X-API-KEY': this.token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+          Accept: 'application/json'
+        }
       }
     );
   }
@@ -516,8 +550,8 @@ export class Client {
       headers: {
         'X-API-KEY': this.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }

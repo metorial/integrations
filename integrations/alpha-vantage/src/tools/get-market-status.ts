@@ -10,25 +10,24 @@ let marketStatusSchema = z.object({
   localOpen: z.string().describe('Local market opening time'),
   localClose: z.string().describe('Local market closing time'),
   currentStatus: z.string().describe('Current open/closed status'),
-  notes: z.string().describe('Additional notes about the market'),
+  notes: z.string().describe('Additional notes about the market')
 });
 
-export let getMarketStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Market Status',
-    key: 'get_market_status',
-    description: `Check the current open/closed status of major stock markets globally. Returns trading hours, region, and primary exchanges for each market.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getMarketStatus = SlateTool.create(spec, {
+  name: 'Get Market Status',
+  key: 'get_market_status',
+  description: `Check the current open/closed status of major stock markets globally. Returns trading hours, region, and primary exchanges for each market.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    markets: z.array(marketStatusSchema).describe('Status of global markets'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      markets: z.array(marketStatusSchema).describe('Status of global markets')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let data = await client.marketStatus();
     let rawMarkets: any[] = data['markets'] || [];
@@ -40,12 +39,12 @@ export let getMarketStatus = SlateTool.create(
       localOpen: m['local_open'] || '',
       localClose: m['local_close'] || '',
       currentStatus: m['current_status'] || '',
-      notes: m['notes'] || '',
+      notes: m['notes'] || ''
     }));
 
     return {
       output: { markets },
-      message: `Retrieved status for ${markets.length} global market(s).`,
+      message: `Retrieved status for ${markets.length} global market(s).`
     };
   })
   .build();

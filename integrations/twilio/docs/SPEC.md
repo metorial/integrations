@@ -29,46 +29,61 @@ Twilio API credentials are a Region-specific resource. If your Account uses Twil
 ## Features
 
 ### Programmable Messaging
+
 Send and receive SMS, MMS, and WhatsApp messages, track delivery status, and manage message media and history.
+
 - Supports SMS, MMS, WhatsApp, and RCS channels.
 - Schedule SMS, MMS, or WhatsApp messages to be sent at a future date and time with a single API call.
 - Messaging Services allow grouping senders and managing compliance settings at scale.
 - Messages can include media attachments.
 
 ### Programmable Voice
+
 Twilio's Voice API helps you to make, receive, and monitor calls around the world. Using this REST API, you can make outbound phone calls, modify calls in progress, and query metadata about calls you've created. More advanced call features like programmatic call control, creating conference calls and call queues, call recordings, and conversational IVRs are available.
+
 - You can also use the API to route voice calls with global reach to phones, browsers, SIP domains, and mobile applications.
 - Call flow is controlled via TwiML (Twilio Markup Language), an XML-based instruction set.
 
 ### Conversations
+
 The Conversations API allows you to create conversational (back-and-forth) messaging across multiple channels: Chat, WhatsApp, and SMS.
+
 - Add or remove participants and assign roles via the API.
 - Maintain conversation history for ongoing context with every interaction.
 - Define conversations as active, inactive, or closed—and set conversation expiration time.
 - Supports media sharing across channels.
 
 ### Verify
+
 Twilio Verify API is a fully managed authentication service that lets you add multichannel verification methods (like one-time passcodes, Passkeys, or Silent Network Authentication) to your app or website without building your own infrastructure.
+
 - OTP delivery via SMS, WhatsApp, voice, and email, all managed through a single API.
 - Supports TOTP (time-based one-time passwords) and push authentication.
 - Built-in fraud prevention with Fraud Guard.
 
 ### Lookup
+
 Twilio Lookup provides real-time phone number intelligence to help businesses verify users and prevent fraud by ensuring accurate information about phone number type, carrier, country, if the phone number is active or reachable, phone number ownership, and more.
+
 - The Basic Lookup request is a free feature that returns the provided phone number in E.164 and national formats and performs basic phone number validation.
 - Additional paid data packages include line type intelligence, caller name, SIM swap detection, identity match, and reassigned number detection.
 
 ### Phone Number Management
+
 Manage toll-free, A2P 10DLC, short codes, and Alphanumeric Sender IDs to deliver your communications.
+
 - Search for and purchase phone numbers.
 - Configure voice and messaging URLs for owned numbers.
 
 ### Studio
+
 The Studio REST API lets you trigger flows programmatically and also retrieve information about your flows and executions.
+
 - Studio is a visual, drag-and-drop builder for communication workflows.
 - Flows can be triggered via the API or by incoming calls/messages.
 
 ### Account Management
+
 - Manage subaccounts for organizational separation.
 - Create and manage API keys.
 - View usage records and billing information.

@@ -179,7 +179,8 @@ export class GoogleCalendarClient {
   ): Promise<CalendarEvent> {
     let params: Record<string, string | number> = {};
     if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
-    if (options?.conferenceDataVersion !== undefined) params['conferenceDataVersion'] = options.conferenceDataVersion;
+    if (options?.conferenceDataVersion !== undefined)
+      params['conferenceDataVersion'] = options.conferenceDataVersion;
 
     let response = await this.api.post(
       `/calendars/${encodeURIComponent(calendarId)}/events`,
@@ -197,7 +198,8 @@ export class GoogleCalendarClient {
   ): Promise<CalendarEvent> {
     let params: Record<string, string | number> = {};
     if (options?.sendUpdates) params['sendUpdates'] = options.sendUpdates;
-    if (options?.conferenceDataVersion !== undefined) params['conferenceDataVersion'] = options.conferenceDataVersion;
+    if (options?.conferenceDataVersion !== undefined)
+      params['conferenceDataVersion'] = options.conferenceDataVersion;
 
     let response = await this.api.patch(
       `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
@@ -263,13 +265,21 @@ export class GoogleCalendarClient {
     return response.data;
   }
 
-  async createCalendar(calendar: { summary: string; description?: string; location?: string; timeZone?: string }): Promise<Calendar> {
+  async createCalendar(calendar: {
+    summary: string;
+    description?: string;
+    location?: string;
+    timeZone?: string;
+  }): Promise<Calendar> {
     let response = await this.api.post('/calendars', calendar);
     return response.data;
   }
 
   async updateCalendar(calendarId: string, calendar: Partial<Calendar>): Promise<Calendar> {
-    let response = await this.api.patch(`/calendars/${encodeURIComponent(calendarId)}`, calendar);
+    let response = await this.api.patch(
+      `/calendars/${encodeURIComponent(calendarId)}`,
+      calendar
+    );
     return response.data;
   }
 
@@ -295,16 +305,21 @@ export class GoogleCalendarClient {
   }
 
   async getCalendarListEntry(calendarId: string): Promise<CalendarListEntry> {
-    let response = await this.api.get(`/users/me/calendarList/${encodeURIComponent(calendarId)}`);
+    let response = await this.api.get(
+      `/users/me/calendarList/${encodeURIComponent(calendarId)}`
+    );
     return response.data;
   }
 
-  async addCalendarToList(calendarId: string, options?: {
-    colorId?: string;
-    hidden?: boolean;
-    selected?: boolean;
-    summaryOverride?: string;
-  }): Promise<CalendarListEntry> {
+  async addCalendarToList(
+    calendarId: string,
+    options?: {
+      colorId?: string;
+      hidden?: boolean;
+      selected?: boolean;
+      summaryOverride?: string;
+    }
+  ): Promise<CalendarListEntry> {
     let response = await this.api.post('/users/me/calendarList', {
       id: calendarId,
       ...options
@@ -312,8 +327,14 @@ export class GoogleCalendarClient {
     return response.data;
   }
 
-  async updateCalendarListEntry(calendarId: string, updates: Partial<CalendarListEntry>): Promise<CalendarListEntry> {
-    let response = await this.api.patch(`/users/me/calendarList/${encodeURIComponent(calendarId)}`, updates);
+  async updateCalendarListEntry(
+    calendarId: string,
+    updates: Partial<CalendarListEntry>
+  ): Promise<CalendarListEntry> {
+    let response = await this.api.patch(
+      `/users/me/calendarList/${encodeURIComponent(calendarId)}`,
+      updates
+    );
     return response.data;
   }
 
@@ -328,12 +349,22 @@ export class GoogleCalendarClient {
     return response.data;
   }
 
-  async insertAcl(calendarId: string, rule: { scope: { type: string; value?: string }; role: string }): Promise<AclRule> {
-    let response = await this.api.post(`/calendars/${encodeURIComponent(calendarId)}/acl`, rule);
+  async insertAcl(
+    calendarId: string,
+    rule: { scope: { type: string; value?: string }; role: string }
+  ): Promise<AclRule> {
+    let response = await this.api.post(
+      `/calendars/${encodeURIComponent(calendarId)}/acl`,
+      rule
+    );
     return response.data;
   }
 
-  async updateAcl(calendarId: string, ruleId: string, rule: { role: string }): Promise<AclRule> {
+  async updateAcl(
+    calendarId: string,
+    ruleId: string,
+    rule: { role: string }
+  ): Promise<AclRule> {
     let response = await this.api.patch(
       `/calendars/${encodeURIComponent(calendarId)}/acl/${encodeURIComponent(ruleId)}`,
       rule
@@ -342,7 +373,9 @@ export class GoogleCalendarClient {
   }
 
   async deleteAcl(calendarId: string, ruleId: string): Promise<void> {
-    await this.api.delete(`/calendars/${encodeURIComponent(calendarId)}/acl/${encodeURIComponent(ruleId)}`);
+    await this.api.delete(
+      `/calendars/${encodeURIComponent(calendarId)}/acl/${encodeURIComponent(ruleId)}`
+    );
   }
 
   // Free/Busy
@@ -351,10 +384,13 @@ export class GoogleCalendarClient {
     kind: string;
     timeMin: string;
     timeMax: string;
-    calendars: Record<string, {
-      busy: Array<{ start: string; end: string }>;
-      errors?: Array<{ domain: string; reason: string }>;
-    }>;
+    calendars: Record<
+      string,
+      {
+        busy: Array<{ start: string; end: string }>;
+        errors?: Array<{ domain: string; reason: string }>;
+      }
+    >;
     groups?: Record<string, { calendars: string[]; errors?: any[] }>;
   }> {
     let response = await this.api.post('/freeBusy', request);

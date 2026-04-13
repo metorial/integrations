@@ -3,42 +3,44 @@ import { AuthClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Account Changes',
-    key: 'user_changes',
-    description: 'Monitors Firebase Authentication for new user accounts and detects when users are created or removed by comparing user lists between polls.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'deleted']).describe('Type of user change detected'),
-    userId: z.string().describe('Firebase user ID'),
-    email: z.string().optional().describe('User email address'),
-    displayName: z.string().optional().describe('User display name'),
-    phoneNumber: z.string().optional().describe('User phone number'),
-    createdAt: z.string().optional().describe('Account creation timestamp'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('Firebase user ID'),
-    email: z.string().optional().describe('User email address'),
-    displayName: z.string().optional().describe('User display name'),
-    phoneNumber: z.string().optional().describe('User phone number'),
-    createdAt: z.string().optional().describe('Account creation timestamp'),
-  }))
+export let userChanges = SlateTrigger.create(spec, {
+  name: 'User Account Changes',
+  key: 'user_changes',
+  description:
+    'Monitors Firebase Authentication for new user accounts and detects when users are created or removed by comparing user lists between polls.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'deleted']).describe('Type of user change detected'),
+      userId: z.string().describe('Firebase user ID'),
+      email: z.string().optional().describe('User email address'),
+      displayName: z.string().optional().describe('User display name'),
+      phoneNumber: z.string().optional().describe('User phone number'),
+      createdAt: z.string().optional().describe('Account creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('Firebase user ID'),
+      email: z.string().optional().describe('User email address'),
+      displayName: z.string().optional().describe('User display name'),
+      phoneNumber: z.string().optional().describe('User phone number'),
+      createdAt: z.string().optional().describe('Account creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let state = ctx.state || {};
       let knownUserIds: string[] = state.knownUserIds || [];
       let isFirstPoll = state.isFirstPoll !== false;
 
       let client = new AuthClient({
         token: ctx.auth.token,
-        projectId: ctx.config.projectId,
+        projectId: ctx.config.projectId
       });
 
       let allUserIds: string[] = [];
@@ -48,7 +50,7 @@ export let userChanges = SlateTrigger.create(
       do {
         let result = await client.listUsers({
           maxResults: 1000,
-          nextPageToken: pageToken,
+          nextPageToken: pageToken
         });
 
         for (let user of result.users) {
@@ -81,7 +83,7 @@ export let userChanges = SlateTrigger.create(
               email: user?.email,
               displayName: user?.displayName,
               phoneNumber: user?.phoneNumber,
-              createdAt: user?.createdAt,
+              createdAt: user?.createdAt
             });
           }
         }
@@ -90,7 +92,7 @@ export let userChanges = SlateTrigger.create(
           if (!currentSet.has(userId)) {
             inputs.push({
               changeType: 'deleted',
-              userId,
+              userId
             });
           }
         }
@@ -100,12 +102,12 @@ export let userChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           knownUserIds: allUserIds,
-          isFirstPoll: false,
-        },
+          isFirstPoll: false
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `user.${ctx.input.changeType}`,
         id: `${ctx.input.userId}-${ctx.input.changeType}-${Date.now()}`,
@@ -114,9 +116,9 @@ export let userChanges = SlateTrigger.create(
           email: ctx.input.email,
           displayName: ctx.input.displayName,
           phoneNumber: ctx.input.phoneNumber,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

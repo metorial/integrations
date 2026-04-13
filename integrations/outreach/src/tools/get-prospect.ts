@@ -4,41 +4,42 @@ import { flattenResource } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProspect = SlateTool.create(
-  spec,
-  {
-    name: 'Get Prospect',
-    key: 'get_prospect',
-    description: `Retrieve a single prospect by ID from Outreach. Returns full contact information, engagement stats, and custom fields.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProspect = SlateTool.create(spec, {
+  name: 'Get Prospect',
+  key: 'get_prospect',
+  description: `Retrieve a single prospect by ID from Outreach. Returns full contact information, engagement stats, and custom fields.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    prospectId: z.string().describe('ID of the prospect to retrieve'),
-  }))
-  .output(z.object({
-    prospectId: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    email: z.string().optional(),
-    title: z.string().optional(),
-    company: z.string().optional(),
-    phone: z.string().optional(),
-    linkedInUrl: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    accountId: z.string().optional(),
-    ownerId: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    engagedAt: z.string().optional(),
-    openCount: z.number().optional(),
-    replyCount: z.number().optional(),
-    clickCount: z.number().optional(),
-    customFields: z.record(z.string(), z.any()).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      prospectId: z.string().describe('ID of the prospect to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      prospectId: z.string(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      email: z.string().optional(),
+      title: z.string().optional(),
+      company: z.string().optional(),
+      phone: z.string().optional(),
+      linkedInUrl: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+      accountId: z.string().optional(),
+      ownerId: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      engagedAt: z.string().optional(),
+      openCount: z.number().optional(),
+      replyCount: z.number().optional(),
+      clickCount: z.number().optional(),
+      customFields: z.record(z.string(), z.any()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let resource = await client.getProspect(ctx.input.prospectId);
     let flat = flattenResource(resource);
@@ -69,9 +70,9 @@ export let getProspect = SlateTool.create(
         openCount: flat.openCount,
         replyCount: flat.replyCount,
         clickCount: flat.clickCount,
-        customFields: Object.keys(customFields).length > 0 ? customFields : undefined,
+        customFields: Object.keys(customFields).length > 0 ? customFields : undefined
       },
-      message: `Retrieved prospect **${flat.firstName ?? ''} ${flat.lastName ?? ''}** (${flat.id}).`,
+      message: `Retrieved prospect **${flat.firstName ?? ''} ${flat.lastName ?? ''}** (${flat.id}).`
     };
   })
   .build();

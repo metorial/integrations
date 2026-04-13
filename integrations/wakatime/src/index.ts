@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getCodingSummaries,
@@ -21,11 +20,7 @@ import {
   getMachines,
   manageDataExports
 } from './tools';
-import {
-  codingActivityTrigger,
-  goalProgressTrigger,
-  inboundWebhook,
-} from './triggers';
+import { codingActivityTrigger, goalProgressTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,9 +44,5 @@ export let provider = Slate.create({
     getMachines,
     manageDataExports
   ],
-  triggers: [
-    inboundWebhook,
-    codingActivityTrigger,
-    goalProgressTrigger
-  ]
+  triggers: [inboundWebhook, codingActivityTrigger, goalProgressTrigger]
 });

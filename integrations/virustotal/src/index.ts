@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   scanFile,
@@ -17,9 +16,7 @@ import {
   manageLivehuntRuleset,
   manageRetrohunt
 } from './tools';
-import { iocStream,
-  inboundWebhook,
-} from './triggers';
+import { iocStream, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,8 +36,5 @@ export let provider = Slate.create({
     manageLivehuntRuleset,
     manageRetrohunt
   ],
-  triggers: [
-    inboundWebhook,
-    iocStream
-  ]
+  triggers: [inboundWebhook, iocStream]
 });

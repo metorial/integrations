@@ -23,7 +23,7 @@ let eventInputSchema = z.object({
   notes: z.string().nullable().optional().describe('Event notes'),
   errorDescription: z.string().nullable().optional().describe('Error description'),
   riskScore: z.number().nullable().optional().describe('Risk score'),
-  accountId: z.number().nullable().optional().describe('Account ID'),
+  accountId: z.number().nullable().optional().describe('Account ID')
 });
 
 let eventTypeMap: Record<number, string> = {
@@ -50,53 +50,53 @@ let eventTypeMap: Record<number, string> = {
   52: 'provisioning.updated',
   53: 'provisioning.deleted',
   54: 'provisioning.deactivated',
-  55: 'provisioning.reactivated',
+  55: 'provisioning.reactivated'
 };
 
 let resolveEventType = (eventTypeId: number): string => {
   return eventTypeMap[eventTypeId] || `event.type_${eventTypeId}`;
 };
 
-export let accountEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Events',
-    key: 'account_events',
-    description: '[Polling fallback] Polls for new events on your OneLogin account including authentication, user lifecycle, app access, MFA, admin actions, and provisioning events.',
-  }
-)
+export let accountEvents = SlateTrigger.create(spec, {
+  name: 'Account Events',
+  key: 'account_events',
+  description:
+    '[Polling fallback] Polls for new events on your OneLogin account including authentication, user lifecycle, app access, MFA, admin actions, and provisioning events.'
+})
   .input(eventInputSchema)
-  .output(z.object({
-    eventId: z.number().describe('Event ID'),
-    eventTypeId: z.number().describe('Event type ID'),
-    eventTypeName: z.string().nullable().optional().describe('Event type name'),
-    createdAt: z.string().nullable().optional().describe('ISO8601 timestamp'),
-    userId: z.number().nullable().optional().describe('Target user ID'),
-    userName: z.string().nullable().optional().describe('Target user name'),
-    actorUserId: z.number().nullable().optional().describe('Actor user ID'),
-    actorUserName: z.string().nullable().optional().describe('Actor user name'),
-    appId: z.number().nullable().optional().describe('Related app ID'),
-    appName: z.string().nullable().optional().describe('Related app name'),
-    ipaddr: z.string().nullable().optional().describe('IP address'),
-    roleId: z.number().nullable().optional().describe('Related role ID'),
-    roleName: z.string().nullable().optional().describe('Related role name'),
-    groupId: z.number().nullable().optional().describe('Related group ID'),
-    groupName: z.string().nullable().optional().describe('Related group name'),
-    customMessage: z.string().nullable().optional().describe('Custom event message'),
-    notes: z.string().nullable().optional().describe('Event notes'),
-    errorDescription: z.string().nullable().optional().describe('Error description'),
-    riskScore: z.number().nullable().optional().describe('Risk score'),
-    accountId: z.number().nullable().optional().describe('Account ID'),
-  }))
+  .output(
+    z.object({
+      eventId: z.number().describe('Event ID'),
+      eventTypeId: z.number().describe('Event type ID'),
+      eventTypeName: z.string().nullable().optional().describe('Event type name'),
+      createdAt: z.string().nullable().optional().describe('ISO8601 timestamp'),
+      userId: z.number().nullable().optional().describe('Target user ID'),
+      userName: z.string().nullable().optional().describe('Target user name'),
+      actorUserId: z.number().nullable().optional().describe('Actor user ID'),
+      actorUserName: z.string().nullable().optional().describe('Actor user name'),
+      appId: z.number().nullable().optional().describe('Related app ID'),
+      appName: z.string().nullable().optional().describe('Related app name'),
+      ipaddr: z.string().nullable().optional().describe('IP address'),
+      roleId: z.number().nullable().optional().describe('Related role ID'),
+      roleName: z.string().nullable().optional().describe('Related role name'),
+      groupId: z.number().nullable().optional().describe('Related group ID'),
+      groupName: z.string().nullable().optional().describe('Related group name'),
+      customMessage: z.string().nullable().optional().describe('Custom event message'),
+      notes: z.string().nullable().optional().describe('Event notes'),
+      errorDescription: z.string().nullable().optional().describe('Error description'),
+      riskScore: z.number().nullable().optional().describe('Risk score'),
+      accountId: z.number().nullable().optional().describe('Account ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new OneLoginClient({
         token: ctx.auth.token,
-        subdomain: ctx.config.subdomain,
+        subdomain: ctx.config.subdomain
       });
 
       let params: Record<string, string | number | undefined> = {};
@@ -149,16 +149,16 @@ export let accountEvents = SlateTrigger.create(
           notes: e.notes,
           errorDescription: e.error_description,
           riskScore: e.risk_score,
-          accountId: e.account_id,
+          accountId: e.account_id
         })),
         updatedState: {
           lastEventId: newLastEventId,
-          lastPolledAt: newLastPolledAt,
-        },
+          lastPolledAt: newLastPolledAt
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventTypeName || resolveEventType(ctx.input.eventTypeId),
         id: String(ctx.input.eventId),
@@ -182,8 +182,8 @@ export let accountEvents = SlateTrigger.create(
           notes: ctx.input.notes,
           errorDescription: ctx.input.errorDescription,
           riskScore: ctx.input.riskScore,
-          accountId: ctx.input.accountId,
-        },
+          accountId: ctx.input.accountId
+        }
       };
-    },
+    }
   });

@@ -3,64 +3,83 @@ import { CertCentralClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let contactSchema = z.object({
-  firstName: z.string().describe('Contact first name'),
-  lastName: z.string().describe('Contact last name'),
-  email: z.string().optional().describe('Contact email'),
-  jobTitle: z.string().optional().describe('Contact job title'),
-  telephone: z.string().optional().describe('Contact phone number'),
-}).optional();
+let contactSchema = z
+  .object({
+    firstName: z.string().describe('Contact first name'),
+    lastName: z.string().describe('Contact last name'),
+    email: z.string().optional().describe('Contact email'),
+    jobTitle: z.string().optional().describe('Contact job title'),
+    telephone: z.string().optional().describe('Contact phone number')
+  })
+  .optional();
 
-export let manageOrganization = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Organization',
-    key: 'manage_organization',
-    description: `Create, update, or retrieve an organization in DigiCert CertCentral. Organizations must be created and validated before ordering OV or EV certificates. Also supports submitting an organization for validation.`,
-    instructions: [
-      'To create, set action to "create" and provide required organization details (name, address, phone, country).',
-      'To update, set action to "update" with the organization ID and fields to change.',
-      'To retrieve, set action to "get" with the organization ID.',
-      'To submit for validation, set action to "submit_for_validation" with the organization ID and validation types.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageOrganization = SlateTool.create(spec, {
+  name: 'Manage Organization',
+  key: 'manage_organization',
+  description: `Create, update, or retrieve an organization in DigiCert CertCentral. Organizations must be created and validated before ordering OV or EV certificates. Also supports submitting an organization for validation.`,
+  instructions: [
+    'To create, set action to "create" and provide required organization details (name, address, phone, country).',
+    'To update, set action to "update" with the organization ID and fields to change.',
+    'To retrieve, set action to "get" with the organization ID.',
+    'To submit for validation, set action to "submit_for_validation" with the organization ID and validation types.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'submit_for_validation']).describe('Operation to perform'),
-    organizationId: z.string().optional().describe('Organization ID (required for get, update, submit_for_validation)'),
-    name: z.string().optional().describe('Legal organization name'),
-    assumedName: z.string().optional().describe('DBA or assumed name'),
-    address: z.string().optional().describe('Street address'),
-    address2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State or province'),
-    zip: z.string().optional().describe('Postal/ZIP code'),
-    country: z.string().optional().describe('ISO 3166-1 alpha-2 country code'),
-    telephone: z.string().optional().describe('Organization phone number'),
-    organizationContact: contactSchema.describe('Primary organization contact'),
-    validationTypes: z.array(z.enum(['ov', 'ev', 'cs', 'ev_cs'])).optional().describe('Validation types to submit for'),
-    includeValidation: z.boolean().optional().describe('Include validation status when getting details'),
-  }))
-  .output(z.object({
-    organizationId: z.number().describe('Organization ID'),
-    name: z.string().optional().describe('Organization name'),
-    status: z.string().optional().describe('Organization status'),
-    isActive: z.boolean().optional().describe('Whether active'),
-    validations: z.array(z.object({
-      type: z.string(),
-      status: z.string(),
-      validatedUntil: z.string().optional(),
-    })).optional().describe('Validation status'),
-    actionPerformed: z.string().describe('Description of the action performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'get', 'submit_for_validation'])
+        .describe('Operation to perform'),
+      organizationId: z
+        .string()
+        .optional()
+        .describe('Organization ID (required for get, update, submit_for_validation)'),
+      name: z.string().optional().describe('Legal organization name'),
+      assumedName: z.string().optional().describe('DBA or assumed name'),
+      address: z.string().optional().describe('Street address'),
+      address2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State or province'),
+      zip: z.string().optional().describe('Postal/ZIP code'),
+      country: z.string().optional().describe('ISO 3166-1 alpha-2 country code'),
+      telephone: z.string().optional().describe('Organization phone number'),
+      organizationContact: contactSchema.describe('Primary organization contact'),
+      validationTypes: z
+        .array(z.enum(['ov', 'ev', 'cs', 'ev_cs']))
+        .optional()
+        .describe('Validation types to submit for'),
+      includeValidation: z
+        .boolean()
+        .optional()
+        .describe('Include validation status when getting details')
+    })
+  )
+  .output(
+    z.object({
+      organizationId: z.number().describe('Organization ID'),
+      name: z.string().optional().describe('Organization name'),
+      status: z.string().optional().describe('Organization status'),
+      isActive: z.boolean().optional().describe('Whether active'),
+      validations: z
+        .array(
+          z.object({
+            type: z.string(),
+            status: z.string(),
+            validatedUntil: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Validation status'),
+      actionPerformed: z.string().describe('Description of the action performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CertCentralClient({
       token: ctx.auth.token,
-      platform: ctx.config.platform,
+      platform: ctx.config.platform
     });
 
     let { action } = ctx.input;
@@ -82,7 +101,7 @@ export let manageOrganization = SlateTool.create(
           last_name: ctx.input.organizationContact.lastName,
           email: ctx.input.organizationContact.email,
           job_title: ctx.input.organizationContact.jobTitle,
-          telephone: ctx.input.organizationContact.telephone,
+          telephone: ctx.input.organizationContact.telephone
         };
       }
       return body;
@@ -100,9 +119,9 @@ export let manageOrganization = SlateTool.create(
         output: {
           organizationId: result.id,
           name: ctx.input.name,
-          actionPerformed: 'created',
+          actionPerformed: 'created'
         },
-        message: `Organization **${ctx.input.name}** created (ID: ${result.id}).`,
+        message: `Organization **${ctx.input.name}** created (ID: ${result.id}).`
       };
     }
 
@@ -118,15 +137,15 @@ export let manageOrganization = SlateTool.create(
         output: {
           organizationId: Number(ctx.input.organizationId),
           name: ctx.input.name,
-          actionPerformed: 'updated',
+          actionPerformed: 'updated'
         },
-        message: `Organization **${ctx.input.organizationId}** updated.`,
+        message: `Organization **${ctx.input.organizationId}** updated.`
       };
     }
 
     if (action === 'get') {
       let org = await client.getOrganization(ctx.input.organizationId, {
-        include_validation: ctx.input.includeValidation,
+        include_validation: ctx.input.includeValidation
       });
 
       return {
@@ -138,11 +157,11 @@ export let manageOrganization = SlateTool.create(
           validations: org.validations?.map((v: any) => ({
             type: v.type,
             status: v.status,
-            validatedUntil: v.validated_until,
+            validatedUntil: v.validated_until
           })),
-          actionPerformed: 'retrieved',
+          actionPerformed: 'retrieved'
         },
-        message: `Organization **${org.name}** (ID: ${org.id}) — status: ${org.status || 'N/A'}`,
+        message: `Organization **${org.name}** (ID: ${org.id}) — status: ${org.status || 'N/A'}`
       };
     }
 
@@ -153,17 +172,18 @@ export let manageOrganization = SlateTool.create(
 
       ctx.progress('Submitting organization for validation...');
       await client.submitOrganizationForValidation(ctx.input.organizationId, {
-        validations: ctx.input.validationTypes.map(t => ({ type: t })),
+        validations: ctx.input.validationTypes.map(t => ({ type: t }))
       });
 
       return {
         output: {
           organizationId: Number(ctx.input.organizationId),
-          actionPerformed: 'submitted_for_validation',
+          actionPerformed: 'submitted_for_validation'
         },
-        message: `Organization **${ctx.input.organizationId}** submitted for **${ctx.input.validationTypes.join(', ')}** validation.`,
+        message: `Organization **${ctx.input.organizationId}** submitted for **${ctx.input.validationTypes.join(', ')}** validation.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

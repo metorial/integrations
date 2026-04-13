@@ -11,22 +11,21 @@ let categorySchema = z.object({
   updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
 });
 
-export let listCategories = SlateTool.create(
-  spec,
-  {
-    name: 'List KPI Categories',
-    key: 'list_categories',
-    description: `Retrieve all KPI categories. Categories are used to organize KPIs into logical groups.`,
-    tags: {
-      readOnly: true
-    }
+export let listCategories = SlateTool.create(spec, {
+  name: 'List KPI Categories',
+  key: 'list_categories',
+  description: `Retrieve all KPI categories. Categories are used to organize KPIs into logical groups.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    categories: z.array(categorySchema).describe('List of all KPI categories')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      categories: z.array(categorySchema).describe('List of all KPI categories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let categories = await client.listKpiCategories();
 
@@ -42,25 +41,27 @@ export let listCategories = SlateTool.create(
       output: { categories: mapped },
       message: `Retrieved **${mapped.length}** KPI categories.`
     };
-  }).build();
+  })
+  .build();
 
-export let createCategory = SlateTool.create(
-  spec,
-  {
-    name: 'Create KPI Category',
-    key: 'create_category',
-    description: `Create a new KPI category for organizing KPIs.`
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Category name (max 50 characters)'),
-    sortOrder: z.number().describe('Display order')
-  }))
-  .output(z.object({
-    categoryId: z.number().describe('ID of the newly created category'),
-    name: z.string().describe('Name of the created category')
-  }))
-  .handleInvocation(async (ctx) => {
+export let createCategory = SlateTool.create(spec, {
+  name: 'Create KPI Category',
+  key: 'create_category',
+  description: `Create a new KPI category for organizing KPIs.`
+})
+  .input(
+    z.object({
+      name: z.string().describe('Category name (max 50 characters)'),
+      sortOrder: z.number().describe('Display order')
+    })
+  )
+  .output(
+    z.object({
+      categoryId: z.number().describe('ID of the newly created category'),
+      name: z.string().describe('Name of the created category')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let result = await client.createKpiCategory({
       name: ctx.input.name,
@@ -71,26 +72,28 @@ export let createCategory = SlateTool.create(
       output: { categoryId: result.id, name: result.name },
       message: `Created category **${result.name}** (ID: ${result.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateCategory = SlateTool.create(
-  spec,
-  {
-    name: 'Update KPI Category',
-    key: 'update_category',
-    description: `Update an existing KPI category's name or sort order.`
-  }
-)
-  .input(z.object({
-    categoryId: z.number().describe('ID of the category to update'),
-    name: z.string().optional().describe('New category name'),
-    sortOrder: z.number().optional().describe('New display order')
-  }))
-  .output(z.object({
-    categoryId: z.number().describe('ID of the updated category'),
-    name: z.string().describe('Name of the updated category')
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateCategory = SlateTool.create(spec, {
+  name: 'Update KPI Category',
+  key: 'update_category',
+  description: `Update an existing KPI category's name or sort order.`
+})
+  .input(
+    z.object({
+      categoryId: z.number().describe('ID of the category to update'),
+      name: z.string().optional().describe('New category name'),
+      sortOrder: z.number().optional().describe('New display order')
+    })
+  )
+  .output(
+    z.object({
+      categoryId: z.number().describe('ID of the updated category'),
+      name: z.string().describe('Name of the updated category')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let data: Record<string, unknown> = {};
     if (ctx.input.name !== undefined) data.name = ctx.input.name;
@@ -102,26 +105,28 @@ export let updateCategory = SlateTool.create(
       output: { categoryId: result.id, name: result.name },
       message: `Updated category **${result.name}** (ID: ${result.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteCategory = SlateTool.create(
-  spec,
-  {
-    name: 'Delete KPI Category',
-    key: 'delete_category',
-    description: `Permanently delete a KPI category.`,
-    tags: {
-      destructive: true
-    }
+export let deleteCategory = SlateTool.create(spec, {
+  name: 'Delete KPI Category',
+  key: 'delete_category',
+  description: `Permanently delete a KPI category.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    categoryId: z.number().describe('ID of the category to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      categoryId: z.number().describe('ID of the category to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     await client.deleteKpiCategory(ctx.input.categoryId);
 
@@ -129,4 +134,5 @@ export let deleteCategory = SlateTool.create(
       output: { success: true },
       message: `Deleted category with ID **${ctx.input.categoryId}**.`
     };
-  }).build();
+  })
+  .build();

@@ -9,7 +9,7 @@ import type {
   PdfCoClassifierResponse,
   PdfCoDocumentParserResponse,
   PdfCoJobCheckResponse,
-  PdfCoUploadResponse,
+  PdfCoUploadResponse
 } from './types';
 
 export class Client {
@@ -20,15 +20,26 @@ export class Client {
       baseURL: 'https://api.pdf.co/v1',
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── PDF Conversion (From PDF) ──────────────────────────────────
 
   async convertPdfTo(
-    format: 'csv' | 'json' | 'text' | 'xls' | 'xlsx' | 'xml' | 'html' | 'jpg' | 'png' | 'webp' | 'tiff',
+    format:
+      | 'csv'
+      | 'json'
+      | 'text'
+      | 'xls'
+      | 'xlsx'
+      | 'xml'
+      | 'html'
+      | 'jpg'
+      | 'png'
+      | 'webp'
+      | 'tiff',
     params: {
       url: string;
       pages?: string;
@@ -53,7 +64,7 @@ export class Client {
       jpg: 'jpg',
       png: 'png',
       webp: 'webp',
-      tiff: 'tiff',
+      tiff: 'tiff'
     };
 
     let endpoint = `/pdf/convert/to/${formatMap[format]}`;
@@ -102,20 +113,14 @@ export class Client {
     return response.data;
   }
 
-  async convertImageToPdf(params: {
-    url: string;
-    name?: string;
-  }): Promise<PdfCoFileResponse> {
+  async convertImageToPdf(params: { url: string; name?: string }): Promise<PdfCoFileResponse> {
     let response = await this.http.post('/pdf/convert/from/image', params);
     return response.data;
   }
 
   // ── PDF Merge & Split ──────────────────────────────────────────
 
-  async mergePdfs(params: {
-    url: string;
-    name?: string;
-  }): Promise<PdfCoFileResponse> {
+  async mergePdfs(params: { url: string; name?: string }): Promise<PdfCoFileResponse> {
     let response = await this.http.post('/pdf/merge', params);
     return response.data;
   }
@@ -256,10 +261,7 @@ export class Client {
     return response.data;
   }
 
-  async getPdfInfo(params: {
-    url: string;
-    password?: string;
-  }): Promise<PdfCoInfoResponse> {
+  async getPdfInfo(params: { url: string; password?: string }): Promise<PdfCoInfoResponse> {
     let response = await this.http.post('/pdf/info', params);
     return response.data;
   }
@@ -290,13 +292,10 @@ export class Client {
 
   // ── Data Extraction ────────────────────────────────────────────
 
-  async parseInvoice(params: {
-    url: string;
-    inline?: boolean;
-  }): Promise<PdfCoInlineResponse> {
+  async parseInvoice(params: { url: string; inline?: boolean }): Promise<PdfCoInlineResponse> {
     let response = await this.http.post('/pdf/ai-invoice-parser', {
       ...params,
-      inline: true,
+      inline: true
     });
     return response.data;
   }
@@ -309,7 +308,7 @@ export class Client {
   }): Promise<PdfCoDocumentParserResponse> {
     let response = await this.http.post('/pdf/documentparser', {
       ...params,
-      inline: true,
+      inline: true
     });
     return response.data;
   }
@@ -323,7 +322,7 @@ export class Client {
   }): Promise<PdfCoClassifierResponse> {
     let response = await this.http.post('/pdf/classifier', {
       ...params,
-      inline: true,
+      inline: true
     });
     return response.data;
   }
@@ -343,7 +342,7 @@ export class Client {
     contentType?: string;
   }): Promise<PdfCoUploadResponse> {
     let response = await this.http.get('/file/upload/get-presigned-url', {
-      params,
+      params
     });
     return response.data;
   }

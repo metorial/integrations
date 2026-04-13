@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let fcmAxios = createAxios({
-  baseURL: 'https://fcm.googleapis.com/v1',
+  baseURL: 'https://fcm.googleapis.com/v1'
 });
 
 export interface FcmNotification {
@@ -60,40 +60,51 @@ export class MessagingClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
   async sendMessage(message: FcmMessage): Promise<{ messageId: string }> {
-    let response = await fcmAxios.post(`/projects/${this.projectId}/messages:send`, {
-      message,
-    }, {
-      headers: this.headers,
-    });
+    let response = await fcmAxios.post(
+      `/projects/${this.projectId}/messages:send`,
+      {
+        message
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return {
-      messageId: response.data.name,
+      messageId: response.data.name
     };
   }
 
-  async subscribeToTopic(tokens: string[], topic: string): Promise<{
+  async subscribeToTopic(
+    tokens: string[],
+    topic: string
+  ): Promise<{
     successCount: number;
     failureCount: number;
     errors: Array<{ index: number; reason: string }>;
   }> {
     let iidAxios = createAxios({
-      baseURL: 'https://iid.googleapis.com',
+      baseURL: 'https://iid.googleapis.com'
     });
 
-    let response = await iidAxios.post(`/iid/v1:batchAdd`, {
-      to: `/topics/${topic}`,
-      registration_tokens: tokens,
-    }, {
-      headers: {
-        ...this.headers,
-        'access_token_auth': 'true',
+    let response = await iidAxios.post(
+      `/iid/v1:batchAdd`,
+      {
+        to: `/topics/${topic}`,
+        registration_tokens: tokens
       },
-    });
+      {
+        headers: {
+          ...this.headers,
+          access_token_auth: 'true'
+        }
+      }
+    );
 
     let results = response.data.results || [];
     let errors: Array<{ index: number; reason: string }> = [];
@@ -112,24 +123,31 @@ export class MessagingClient {
     return { successCount, failureCount, errors };
   }
 
-  async unsubscribeFromTopic(tokens: string[], topic: string): Promise<{
+  async unsubscribeFromTopic(
+    tokens: string[],
+    topic: string
+  ): Promise<{
     successCount: number;
     failureCount: number;
     errors: Array<{ index: number; reason: string }>;
   }> {
     let iidAxios = createAxios({
-      baseURL: 'https://iid.googleapis.com',
+      baseURL: 'https://iid.googleapis.com'
     });
 
-    let response = await iidAxios.post(`/iid/v1:batchRemove`, {
-      to: `/topics/${topic}`,
-      registration_tokens: tokens,
-    }, {
-      headers: {
-        ...this.headers,
-        'access_token_auth': 'true',
+    let response = await iidAxios.post(
+      `/iid/v1:batchRemove`,
+      {
+        to: `/topics/${topic}`,
+        registration_tokens: tokens
       },
-    });
+      {
+        headers: {
+          ...this.headers,
+          access_token_auth: 'true'
+        }
+      }
+    );
 
     let results = response.data.results || [];
     let errors: Array<{ index: number; reason: string }> = [];

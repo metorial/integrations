@@ -26,12 +26,9 @@ import {
   createProject,
   updateProject,
   listProjects,
-  deleteProject,
+  deleteProject
 } from './tools';
-import {
-  emailStatusTrigger,
-  spamBlockTrigger,
-} from './triggers';
+import { emailStatusTrigger, spamBlockTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -61,10 +58,7 @@ export let provider = Slate.create({
     createProject,
     updateProject,
     listProjects,
-    deleteProject,
+    deleteProject
   ],
-  triggers: [
-    emailStatusTrigger,
-    spamBlockTrigger,
-  ],
+  triggers: [emailStatusTrigger, spamBlockTrigger]
 });

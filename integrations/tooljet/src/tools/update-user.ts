@@ -3,31 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUser = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update an existing user's details such as name, email, password, or status. Identify the user by UUID or email address.`,
-    tags: {
-      destructive: false,
-    },
+export let updateUser = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update an existing user's details such as name, email, password, or status. Identify the user by UUID or email address.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    identifier: z.string().describe('User UUID or email address to identify the user to update'),
-    name: z.string().optional().describe('New name for the user'),
-    email: z.string().optional().describe('New email address for the user'),
-    password: z.string().optional().describe('New password for the user (5-100 characters)'),
-    status: z.enum(['active', 'archived']).optional().describe('New status for the user'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      identifier: z
+        .string()
+        .describe('User UUID or email address to identify the user to update'),
+      name: z.string().optional().describe('New name for the user'),
+      email: z.string().optional().describe('New email address for the user'),
+      password: z.string().optional().describe('New password for the user (5-100 characters)'),
+      status: z.enum(['active', 'archived']).optional().describe('New status for the user')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let body: Record<string, string> = {};
@@ -41,7 +44,7 @@ export let updateUser = SlateTool.create(
     let changes = Object.keys(body).join(', ');
     return {
       output: { success: true },
-      message: `Updated user **${ctx.input.identifier}**: changed ${changes}.`,
+      message: `Updated user **${ctx.input.identifier}**: changed ${changes}.`
     };
   })
   .build();

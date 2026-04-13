@@ -127,9 +127,13 @@ export class Client {
     return response.data;
   }
 
-  async updateAgreementState(agreementId: string, state: string, params?: {
-    cancellationInfo?: { comment?: string; notifyOthers?: boolean };
-  }): Promise<void> {
+  async updateAgreementState(
+    agreementId: string,
+    state: string,
+    params?: {
+      cancellationInfo?: { comment?: string; notifyOthers?: boolean };
+    }
+  ): Promise<void> {
     let body: any = { state };
     if (params?.cancellationInfo) {
       body.agreementCancellationInfo = params.cancellationInfo;
@@ -148,9 +152,12 @@ export class Client {
   }
 
   async downloadAgreementDocument(agreementId: string, documentId: string): Promise<any> {
-    let response = await this.ax.get(`/api/rest/v6/agreements/${agreementId}/documents/${documentId}`, {
-      responseType: 'arraybuffer'
-    });
+    let response = await this.ax.get(
+      `/api/rest/v6/agreements/${agreementId}/documents/${documentId}`,
+      {
+        responseType: 'arraybuffer'
+      }
+    );
     return response.data;
   }
 
@@ -183,10 +190,12 @@ export class Client {
     let body: any = {
       agreementId: params.agreementId
     };
-    if (params.recipientParticipantIds) body.recipientParticipantIds = params.recipientParticipantIds;
+    if (params.recipientParticipantIds)
+      body.recipientParticipantIds = params.recipientParticipantIds;
     if (params.comment) body.comment = params.comment;
     if (params.frequency) body.frequency = params.frequency;
-    if (params.firstReminderDelay !== undefined) body.firstReminderDelay = params.firstReminderDelay;
+    if (params.firstReminderDelay !== undefined)
+      body.firstReminderDelay = params.firstReminderDelay;
 
     let response = await this.ax.post('/api/rest/v6/reminders', body);
     return response.data;
@@ -215,8 +224,10 @@ export class Client {
       fileInfos: params.fileInfos,
       state: params.state || 'ACTIVE'
     };
-    if (params.participantSetsInfo) body.widgetParticipantSetInfo = { participantSetInfos: params.participantSetsInfo };
-    if (params.additionalParticipantSetsInfo) body.additionalParticipantSetsInfo = params.additionalParticipantSetsInfo;
+    if (params.participantSetsInfo)
+      body.widgetParticipantSetInfo = { participantSetInfos: params.participantSetsInfo };
+    if (params.additionalParticipantSetsInfo)
+      body.additionalParticipantSetsInfo = params.additionalParticipantSetsInfo;
 
     let response = await this.ax.post('/api/rest/v6/widgets', body);
     return response.data;
@@ -366,7 +377,8 @@ export class Client {
     };
     if (params.resourceType) body.resourceType = params.resourceType;
     if (params.resourceId) body.resourceId = params.resourceId;
-    if (params.webhookConditionalParams) body.webhookConditionalParams = params.webhookConditionalParams;
+    if (params.webhookConditionalParams)
+      body.webhookConditionalParams = params.webhookConditionalParams;
 
     let response = await this.ax.post('/api/rest/v6/webhooks', body);
     return { webhookId: response.data.id };

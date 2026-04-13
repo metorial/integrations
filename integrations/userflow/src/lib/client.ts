@@ -13,7 +13,7 @@ import type {
   UserflowDeleteResponse,
   UserflowAccount,
   UserflowMember,
-  UserflowInvite,
+  UserflowInvite
 } from './types';
 
 export interface ClientConfig {
@@ -28,10 +28,10 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.userflow.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Userflow-Version': config.apiVersion || '2020-01-03',
-      },
+        'Userflow-Version': config.apiVersion || '2020-01-03'
+      }
     });
   }
 
@@ -51,7 +51,8 @@ export class Client {
     if (params.attributes) body.attributes = params.attributes;
     if (params.groups) body.groups = params.groups;
     if (params.memberships) body.memberships = params.memberships;
-    if (params.pruneMemberships !== undefined) body.prune_memberships = params.pruneMemberships;
+    if (params.pruneMemberships !== undefined)
+      body.prune_memberships = params.pruneMemberships;
 
     let response = await this.http.post('/users', body);
     return response.data;
@@ -136,9 +137,12 @@ export class Client {
     return response.data;
   }
 
-  async removeGroupMembership(userId: string, groupId: string): Promise<UserflowDeleteResponse> {
+  async removeGroupMembership(
+    userId: string,
+    groupId: string
+  ): Promise<UserflowDeleteResponse> {
     let response = await this.http.delete('/group_memberships', {
-      params: { user_id: userId, group_id: groupId },
+      params: { user_id: userId, group_id: groupId }
     });
     return response.data;
   }
@@ -235,7 +239,7 @@ export class Client {
   }): Promise<UserflowWebhookSubscription> {
     let body: Record<string, unknown> = {
       url: params.url,
-      topics: params.topics,
+      topics: params.topics
     };
     if (params.apiVersion) body.api_version = params.apiVersion;
     let response = await this.http.post('/webhook_subscriptions', body);
@@ -277,10 +281,13 @@ export class Client {
     return response.data;
   }
 
-  async listMembers(accountId: string, params?: {
-    limit?: number;
-    startingAfter?: string;
-  }): Promise<UserflowListResponse<UserflowMember>> {
+  async listMembers(
+    accountId: string,
+    params?: {
+      limit?: number;
+      startingAfter?: string;
+    }
+  ): Promise<UserflowListResponse<UserflowMember>> {
     let query: Record<string, unknown> = {};
     if (params?.limit) query.limit = params.limit;
     if (params?.startingAfter) query.starting_after = params.startingAfter;
@@ -293,10 +300,13 @@ export class Client {
     return response.data;
   }
 
-  async createInvite(accountId: string, params: {
-    email: string;
-    permissions?: Array<{ action: string; subject: string; subject_id: string }>;
-  }): Promise<UserflowInvite> {
+  async createInvite(
+    accountId: string,
+    params: {
+      email: string;
+      permissions?: Array<{ action: string; subject: string; subject_id: string }>;
+    }
+  ): Promise<UserflowInvite> {
     let response = await this.http.post(`/accounts/${accountId}/invites`, params);
     return response.data;
   }

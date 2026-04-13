@@ -160,22 +160,23 @@ export class Client {
     this.http = createAxios({
       baseURL: clientConfig.baseUrl,
       headers: {
-        'Authorization': `Bearer ${clientConfig.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${clientConfig.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async chatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     let body: Record<string, unknown> = {
       model: request.model,
-      messages: request.messages,
+      messages: request.messages
     };
 
     if (request.temperature !== undefined) body.temperature = request.temperature;
     if (request.maxTokens !== undefined) body.max_tokens = request.maxTokens;
     if (request.topP !== undefined) body.top_p = request.topP;
-    if (request.frequencyPenalty !== undefined) body.frequency_penalty = request.frequencyPenalty;
+    if (request.frequencyPenalty !== undefined)
+      body.frequency_penalty = request.frequencyPenalty;
     if (request.presencePenalty !== undefined) body.presence_penalty = request.presencePenalty;
     if (request.stop !== undefined) body.stop = request.stop;
     if (request.stream !== undefined) body.stream = request.stream;
@@ -190,7 +191,7 @@ export class Client {
   async generateImage(request: ImageGenerationRequest): Promise<ImageGenerationResponse> {
     let body: Record<string, unknown> = {
       model: request.model,
-      prompt: request.prompt,
+      prompt: request.prompt
     };
 
     if (request.negativePrompt !== undefined) body.negative_prompt = request.negativePrompt;
@@ -209,7 +210,7 @@ export class Client {
   async createEmbedding(request: EmbeddingRequest): Promise<EmbeddingResponse> {
     let body: Record<string, unknown> = {
       model: request.model,
-      input: request.input,
+      input: request.input
     };
 
     if (request.encodingFormat !== undefined) body.encoding_format = request.encodingFormat;
@@ -222,7 +223,7 @@ export class Client {
   async textToSpeech(request: TtsRequest): Promise<TtsResponse> {
     let body: Record<string, unknown> = {
       model: request.model,
-      text: request.text,
+      text: request.text
     };
 
     if (request.voice !== undefined) body.voice = request.voice;
@@ -235,7 +236,7 @@ export class Client {
 
   async createSpeechToText(request: SttCreateRequest): Promise<SttCreateResponse> {
     let body: Record<string, unknown> = {
-      model: request.model,
+      model: request.model
     };
 
     if (request.url !== undefined) body.url = request.url;
@@ -249,10 +250,13 @@ export class Client {
     return response.data;
   }
 
-  async moderateContent(model: string, messages: ChatMessage[]): Promise<ChatCompletionResponse> {
+  async moderateContent(
+    model: string,
+    messages: ChatMessage[]
+  ): Promise<ChatCompletionResponse> {
     let body = {
       model,
-      messages,
+      messages
     };
 
     let response = await this.http.post('/chat/completions', body);
@@ -262,10 +266,11 @@ export class Client {
   async generateVideo(request: VideoGenerationRequest): Promise<VideoGenerationResponse> {
     let body: Record<string, unknown> = {
       model: request.model,
-      prompt: request.prompt,
+      prompt: request.prompt
     };
 
-    if (request.firstFrameImage !== undefined) body.first_frame_image = request.firstFrameImage;
+    if (request.firstFrameImage !== undefined)
+      body.first_frame_image = request.firstFrameImage;
 
     let response = await this.http.post('/v2/generate/video/minimax/generation', body);
     return response.data;
@@ -273,12 +278,14 @@ export class Client {
 
   async getVideoResult(generationId: string): Promise<VideoResultResponse> {
     let response = await this.http.get('/v2/generate/video/minimax/generation', {
-      params: { generation_id: generationId },
+      params: { generation_id: generationId }
     });
     return response.data;
   }
 
-  async listModels(): Promise<{ data: Array<{ id: string; object: string; owned_by?: string }> }> {
+  async listModels(): Promise<{
+    data: Array<{ id: string; object: string; owned_by?: string }>;
+  }> {
     let response = await this.http.get('/v1/models');
     return response.data;
   }

@@ -3,53 +3,66 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 
-export let createUpdateProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Create or Update Profile',
-    key: 'create_update_profile',
-    description: `Create a new customer profile or update an existing one in Klaviyo.
+export let createUpdateProfile = SlateTool.create(spec, {
+  name: 'Create or Update Profile',
+  key: 'create_update_profile',
+  description: `Create a new customer profile or update an existing one in Klaviyo.
 When a profileId is provided, the existing profile will be updated. Otherwise a new profile is created.
 Supports setting email, phone, name, location, and custom properties.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    profileId: z.string().optional().describe('Existing profile ID to update. Omit to create a new profile.'),
-    email: z.string().optional().describe('Email address'),
-    phoneNumber: z.string().optional().describe('Phone number in E.164 format (e.g., +15551234567)'),
-    externalId: z.string().optional().describe('External identifier from another system'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    organization: z.string().optional().describe('Organization name'),
-    title: z.string().optional().describe('Job title'),
-    image: z.string().optional().describe('URL to profile image'),
-    location: z.object({
-      address1: z.string().optional(),
-      address2: z.string().optional(),
-      city: z.string().optional(),
-      region: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-      latitude: z.number().optional(),
-      longitude: z.number().optional(),
-      timezone: z.string().optional(),
-    }).optional().describe('Location data'),
-    properties: z.record(z.string(), z.any()).optional().describe('Custom properties to set on the profile'),
-  }))
-  .output(z.object({
-    profileId: z.string().describe('Profile ID'),
-    email: z.string().optional().describe('Email address'),
-    phoneNumber: z.string().optional().describe('Phone number'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    created: z.string().optional().describe('Profile creation timestamp'),
-    updated: z.string().optional().describe('Profile last updated timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      profileId: z
+        .string()
+        .optional()
+        .describe('Existing profile ID to update. Omit to create a new profile.'),
+      email: z.string().optional().describe('Email address'),
+      phoneNumber: z
+        .string()
+        .optional()
+        .describe('Phone number in E.164 format (e.g., +15551234567)'),
+      externalId: z.string().optional().describe('External identifier from another system'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      organization: z.string().optional().describe('Organization name'),
+      title: z.string().optional().describe('Job title'),
+      image: z.string().optional().describe('URL to profile image'),
+      location: z
+        .object({
+          address1: z.string().optional(),
+          address2: z.string().optional(),
+          city: z.string().optional(),
+          region: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional(),
+          latitude: z.number().optional(),
+          longitude: z.number().optional(),
+          timezone: z.string().optional()
+        })
+        .optional()
+        .describe('Location data'),
+      properties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom properties to set on the profile')
+    })
+  )
+  .output(
+    z.object({
+      profileId: z.string().describe('Profile ID'),
+      email: z.string().optional().describe('Email address'),
+      phoneNumber: z.string().optional().describe('Phone number'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      created: z.string().optional().describe('Profile creation timestamp'),
+      updated: z.string().optional().describe('Profile last updated timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let attributes: Record<string, any> = {};
@@ -83,10 +96,11 @@ Supports setting email, phone, name, location, and custom properties.`,
         firstName: profile?.attributes?.first_name ?? undefined,
         lastName: profile?.attributes?.last_name ?? undefined,
         created: profile?.attributes?.created ?? undefined,
-        updated: profile?.attributes?.updated ?? undefined,
+        updated: profile?.attributes?.updated ?? undefined
       },
       message: isUpdate
         ? `Updated profile **${profile?.id}**`
-        : `Created profile **${profile?.id}**${profile?.attributes?.email ? ` (${profile.attributes.email})` : ''}`,
+        : `Created profile **${profile?.id}**${profile?.attributes?.email ? ` (${profile.attributes.email})` : ''}`
     };
-  }).build();
+  })
+  .build();

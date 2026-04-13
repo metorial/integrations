@@ -35,26 +35,25 @@ let mapCycleToOutput = (cycle: any) => ({
   updatedAt: cycle.updatedAt
 });
 
-export let createCycleTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Cycle',
-    key: 'create_cycle',
-    description: `Creates a new cycle (sprint) for a team in Linear. Cycles are time-boxed iterations that contain a set of issues.`,
-    tags: {
-      readOnly: false
-    }
+export let createCycleTool = SlateTool.create(spec, {
+  name: 'Create Cycle',
+  key: 'create_cycle',
+  description: `Creates a new cycle (sprint) for a team in Linear. Cycles are time-boxed iterations that contain a set of issues.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('Team ID to create the cycle for'),
-    name: z.string().optional().describe('Cycle name'),
-    description: z.string().optional().describe('Cycle description'),
-    startsAt: z.string().describe('Start date (ISO 8601)'),
-    endsAt: z.string().describe('End date (ISO 8601)')
-  }))
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('Team ID to create the cycle for'),
+      name: z.string().optional().describe('Cycle name'),
+      description: z.string().optional().describe('Cycle description'),
+      startsAt: z.string().describe('Start date (ISO 8601)'),
+      endsAt: z.string().describe('End date (ISO 8601)')
+    })
+  )
   .output(cycleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {
@@ -76,28 +75,28 @@ export let createCycleTool = SlateTool.create(
       output: mapCycleToOutput(result.cycle),
       message: `Created cycle **${result.cycle.name || `#${result.cycle.number}`}**`
     };
-  }).build();
+  })
+  .build();
 
-export let updateCycleTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Cycle',
-    key: 'update_cycle',
-    description: `Updates an existing cycle in Linear. Supports changing name, description, and dates.`,
-    tags: {
-      readOnly: false
-    }
+export let updateCycleTool = SlateTool.create(spec, {
+  name: 'Update Cycle',
+  key: 'update_cycle',
+  description: `Updates an existing cycle in Linear. Supports changing name, description, and dates.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    cycleId: z.string().describe('Cycle ID'),
-    name: z.string().optional().describe('New cycle name'),
-    description: z.string().optional().describe('New description'),
-    startsAt: z.string().optional().describe('New start date (ISO 8601)'),
-    endsAt: z.string().optional().describe('New end date (ISO 8601)')
-  }))
+})
+  .input(
+    z.object({
+      cycleId: z.string().describe('Cycle ID'),
+      name: z.string().optional().describe('New cycle name'),
+      description: z.string().optional().describe('New description'),
+      startsAt: z.string().optional().describe('New start date (ISO 8601)'),
+      endsAt: z.string().optional().describe('New end date (ISO 8601)')
+    })
+  )
   .output(cycleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {};
@@ -116,30 +115,32 @@ export let updateCycleTool = SlateTool.create(
       output: mapCycleToOutput(result.cycle),
       message: `Updated cycle **${result.cycle.name || `#${result.cycle.number}`}**`
     };
-  }).build();
+  })
+  .build();
 
-export let listCyclesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Cycles',
-    key: 'list_cycles',
-    description: `Lists cycles (sprints) in Linear, optionally filtered by team.`,
-    tags: {
-      readOnly: true
-    }
+export let listCyclesTool = SlateTool.create(spec, {
+  name: 'List Cycles',
+  key: 'list_cycles',
+  description: `Lists cycles (sprints) in Linear, optionally filtered by team.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().optional().describe('Filter by team ID'),
-    first: z.number().optional().describe('Number of cycles to return (default: 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    cycles: z.array(cycleOutputSchema),
-    hasNextPage: z.boolean(),
-    nextCursor: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().optional().describe('Filter by team ID'),
+      first: z.number().optional().describe('Number of cycles to return (default: 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      cycles: z.array(cycleOutputSchema),
+      hasNextPage: z.boolean(),
+      nextCursor: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.listCycles({
       teamId: ctx.input.teamId,
@@ -157,4 +158,5 @@ export let listCyclesTool = SlateTool.create(
       },
       message: `Found **${cycles.length}** cycles`
     };
-  }).build();
+  })
+  .build();

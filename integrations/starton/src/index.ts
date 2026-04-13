@@ -10,7 +10,7 @@ import {
   manageWallets,
   manageWatchers,
   getTransactions,
-  listTemplates,
+  listTemplates
 } from './tools';
 import { blockchainEvent } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     manageWallets,
     manageWatchers,
     getTransactions,
-    listTemplates,
+    listTemplates
   ],
-  triggers: [
-    blockchainEvent,
-  ],
+  triggers: [blockchainEvent]
 });

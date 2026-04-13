@@ -80,14 +80,14 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'SGAI-APIKEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async smartScraper(params: SmartScraperParams) {
     let body: Record<string, unknown> = {
-      user_prompt: params.userPrompt,
+      user_prompt: params.userPrompt
     };
 
     if (params.websiteUrl) body.website_url = params.websiteUrl;
@@ -106,7 +106,7 @@ export class Client {
 
   async searchScraper(params: SearchScraperParams) {
     let body: Record<string, unknown> = {
-      user_prompt: params.userPrompt,
+      user_prompt: params.userPrompt
     };
 
     if (params.numResults !== undefined) body.num_results = params.numResults;
@@ -121,7 +121,7 @@ export class Client {
 
   async crawl(params: CrawlParams) {
     let body: Record<string, unknown> = {
-      url: params.url,
+      url: params.url
     };
 
     if (params.prompt) body.prompt = params.prompt;
@@ -148,7 +148,7 @@ export class Client {
 
   async markdownify(params: MarkdownifyParams) {
     let body: Record<string, unknown> = {
-      website_url: params.websiteUrl,
+      website_url: params.websiteUrl
     };
 
     if (params.stealth !== undefined) body.stealth = params.stealth;
@@ -161,7 +161,7 @@ export class Client {
 
   async scrape(params: ScrapeParams) {
     let body: Record<string, unknown> = {
-      website_url: params.websiteUrl,
+      website_url: params.websiteUrl
     };
 
     if (params.branding !== undefined) body.branding = params.branding;
@@ -175,7 +175,7 @@ export class Client {
 
   async sitemap(params: SitemapParams) {
     let body: Record<string, unknown> = {
-      website_url: params.websiteUrl,
+      website_url: params.websiteUrl
     };
 
     if (params.stealth !== undefined) body.stealth = params.stealth;
@@ -187,7 +187,7 @@ export class Client {
   async agenticScraper(params: AgenticScraperParams) {
     let body: Record<string, unknown> = {
       url: params.url,
-      steps: params.steps,
+      steps: params.steps
     };
 
     if (params.useSession !== undefined) body.use_session = params.useSession;

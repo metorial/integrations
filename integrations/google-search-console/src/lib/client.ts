@@ -249,20 +249,17 @@ export class SearchConsoleClient {
     let encodedSiteUrl = encodeURIComponent(siteUrl);
     let encodedFeedpath = encodeURIComponent(feedpath);
 
-    await this.webmastersApi.delete(
-      `/sites/${encodedSiteUrl}/sitemaps/${encodedFeedpath}`,
-      { headers: this.authHeaders }
-    );
+    await this.webmastersApi.delete(`/sites/${encodedSiteUrl}/sitemaps/${encodedFeedpath}`, {
+      headers: this.authHeaders
+    });
   }
 
   // URL Inspection
 
   async inspectUrl(request: UrlInspectionRequest): Promise<UrlInspectionResult> {
-    let response = await this.searchConsoleApi.post(
-      '/urlInspection/index:inspect',
-      request,
-      { headers: this.authHeaders }
-    );
+    let response = await this.searchConsoleApi.post('/urlInspection/index:inspect', request, {
+      headers: this.authHeaders
+    });
 
     return response.data.inspectionResult;
   }
@@ -278,16 +275,15 @@ export class MobileFriendlyTestClient {
     });
   }
 
-  async runTest(request: MobileFriendlyTestRequest, token: string): Promise<MobileFriendlyTestResponse> {
-    let response = await this.api.post(
-      '/urlTestingTools/mobileFriendlyTest:run',
-      request,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async runTest(
+    request: MobileFriendlyTestRequest,
+    token: string
+  ): Promise<MobileFriendlyTestResponse> {
+    let response = await this.api.post('/urlTestingTools/mobileFriendlyTest:run', request, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    );
+    });
 
     return response.data;
   }

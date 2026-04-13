@@ -1,13 +1,11 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://gateway.datagma.net',
+  baseURL: 'https://gateway.datagma.net'
 });
 
 export class Client {
-  constructor(
-    private apiId: string,
-  ) {}
+  constructor(private apiId: string) {}
 
   private params(extra: Record<string, string | number | boolean | undefined> = {}) {
     let params: Record<string, string | number | boolean> = { apiId: this.apiId };
@@ -46,8 +44,8 @@ export class Client {
         companyFrench: options.companyFrench,
         personFull: options.personFull,
         phoneFull: options.phoneFull,
-        deepTraffic: options.deepTraffic,
-      }),
+        deepTraffic: options.deepTraffic
+      })
     });
     return response.data;
   }
@@ -65,8 +63,8 @@ export class Client {
         company: options.company,
         findEmailV2Step: options.findEmailV2Step,
         findEmailV2Country: options.findEmailV2Country,
-        linkedInSlug: options.linkedInSlug,
-      }),
+        linkedInSlug: options.linkedInSlug
+      })
     });
     return response.data;
   }
@@ -82,32 +80,27 @@ export class Client {
         email: options.email,
         username: options.username,
         minimumMatch: options.minimumMatch,
-        whatsapp_check: options.whatsappCheck,
-      }),
+        whatsapp_check: options.whatsappCheck
+      })
     });
     return response.data;
   }
 
-  async reversePhoneLookup(options: {
-    number: string;
-    code?: string;
-  }) {
+  async reversePhoneLookup(options: { number: string; code?: string }) {
     let response = await http.get('/api/ingress/v1/reverse_phone_lookup', {
       params: this.params({
         number: options.number,
-        code: options.code,
-      }),
+        code: options.code
+      })
     });
     return response.data;
   }
 
-  async reverseEmailLookup(options: {
-    email: string;
-  }) {
+  async reverseEmailLookup(options: { email: string }) {
     let response = await http.get('/api/ingress/v1/reverse_email', {
       params: this.params({
-        email: options.email,
-      }),
+        email: options.email
+      })
     });
     return response.data;
   }
@@ -125,8 +118,8 @@ export class Client {
         lastName: options.lastName,
         fullName: options.fullName,
         companyName: options.companyName,
-        jobTitle: options.jobTitle,
-      }),
+        jobTitle: options.jobTitle
+      })
     });
     return response.data;
   }
@@ -146,39 +139,34 @@ export class Client {
         domain: options.domain,
         currentCompanies: options.currentCompanies,
         countries: options.countries,
-        fuzzy: options.fuzzy,
-      }),
+        fuzzy: options.fuzzy
+      })
     });
     return response.data;
   }
 
-  async getTwitterByUsername(options: {
-    username?: string;
-    linkedin?: string;
-  }) {
+  async getTwitterByUsername(options: { username?: string; linkedin?: string }) {
     let response = await http.get('/api/ingress/v1/twitter/by_username', {
       params: this.params({
         username: options.username,
-        linkedin: options.linkedin,
-      }),
+        linkedin: options.linkedin
+      })
     });
     return response.data;
   }
 
-  async getTwitterByEmail(options: {
-    email: string;
-  }) {
+  async getTwitterByEmail(options: { email: string }) {
     let response = await http.get('/api/ingress/v1/twitter/by_email', {
       params: this.params({
-        email: options.email,
-      }),
+        email: options.email
+      })
     });
     return response.data;
   }
 
   async getCreditBalance() {
     let response = await http.get('/api/ingress/v1/mine', {
-      params: this.params(),
+      params: this.params()
     });
     return response.data;
   }

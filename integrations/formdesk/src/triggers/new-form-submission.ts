@@ -3,36 +3,38 @@ import { FormdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFormSubmission = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Form Submission',
-    key: 'new_form_submission',
-    description: 'Triggers when a new form submission (result) is created or completed in Formdesk. Polls for new results since the last check and returns the full submission data.',
-  }
-)
-  .input(z.object({
-    resultId: z.string().describe('The unique ID of the result entry'),
-    formName: z.string().describe('The form name this result belongs to'),
-    fields: z.record(z.string(), z.any()).describe('All submitted field data'),
-    systemFields: z.record(z.string(), z.any()).optional().describe('System metadata fields'),
-  }))
-  .output(z.object({
-    resultId: z.string().describe('The unique ID of the result entry'),
-    formName: z.string().describe('The form name this result belongs to'),
-    fields: z.record(z.string(), z.any()).describe('All submitted field data'),
-    systemFields: z.record(z.string(), z.any()).optional().describe('System metadata fields'),
-  }))
+export let newFormSubmission = SlateTrigger.create(spec, {
+  name: 'New Form Submission',
+  key: 'new_form_submission',
+  description:
+    'Triggers when a new form submission (result) is created or completed in Formdesk. Polls for new results since the last check and returns the full submission data.'
+})
+  .input(
+    z.object({
+      resultId: z.string().describe('The unique ID of the result entry'),
+      formName: z.string().describe('The form name this result belongs to'),
+      fields: z.record(z.string(), z.any()).describe('All submitted field data'),
+      systemFields: z.record(z.string(), z.any()).optional().describe('System metadata fields')
+    })
+  )
+  .output(
+    z.object({
+      resultId: z.string().describe('The unique ID of the result entry'),
+      formName: z.string().describe('The form name this result belongs to'),
+      fields: z.record(z.string(), z.any()).describe('All submitted field data'),
+      systemFields: z.record(z.string(), z.any()).optional().describe('System metadata fields')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FormdeskClient({
         token: ctx.auth.token,
         host: ctx.auth.host,
-        domain: ctx.auth.domain,
+        domain: ctx.auth.domain
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -56,7 +58,7 @@ export let newFormSubmission = SlateTrigger.create(
       for (let formName of formNames) {
         try {
           let params: any = {
-            formName,
+            formName
           };
 
           if (lastPollTime) {
@@ -81,7 +83,18 @@ export let newFormSubmission = SlateTrigger.create(
 
               if (result && typeof result === 'object') {
                 for (let [key, value] of Object.entries(result)) {
-                  if (key.startsWith('_') || ['id', 'status', 'created', 'changed', 'completed', 'visitor', 'ip'].includes(key)) {
+                  if (
+                    key.startsWith('_') ||
+                    [
+                      'id',
+                      'status',
+                      'created',
+                      'changed',
+                      'completed',
+                      'visitor',
+                      'ip'
+                    ].includes(key)
+                  ) {
                     systemFields[key] = value;
                   } else {
                     fields[key] = value;
@@ -90,7 +103,10 @@ export let newFormSubmission = SlateTrigger.create(
               }
 
               // Track the newest timestamp
-              let completedAt = systemFields['completed'] || systemFields['created'] || systemFields['changed'];
+              let completedAt =
+                systemFields['completed'] ||
+                systemFields['created'] ||
+                systemFields['changed'];
               if (completedAt && (!newestTimestamp || completedAt > newestTimestamp)) {
                 newestTimestamp = completedAt;
               }
@@ -99,7 +115,7 @@ export let newFormSubmission = SlateTrigger.create(
                 resultId,
                 formName,
                 fields,
-                systemFields: Object.keys(systemFields).length > 0 ? systemFields : undefined,
+                systemFields: Object.keys(systemFields).length > 0 ? systemFields : undefined
               });
             } catch {
               // Skip individual results that fail to fetch
@@ -114,12 +130,12 @@ export let newFormSubmission = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: newestTimestamp || new Date().toISOString(),
-          formNames,
-        },
+          formNames
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'form_submission.created',
         id: ctx.input.resultId,
@@ -127,9 +143,9 @@ export let newFormSubmission = SlateTrigger.create(
           resultId: ctx.input.resultId,
           formName: ctx.input.formName,
           fields: ctx.input.fields,
-          systemFields: ctx.input.systemFields,
-        },
+          systemFields: ctx.input.systemFields
+        }
       };
-    },
+    }
   })
   .build();

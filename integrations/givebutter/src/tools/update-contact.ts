@@ -3,39 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact's profile information. Only provided fields will be updated. Can also archive or restore contacts.`,
-    tags: {
-      destructive: false,
-    },
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact's profile information. Only provided fields will be updated. Can also archive or restore contacts.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the contact to update'),
-    firstName: z.string().optional().describe('New first name'),
-    middleName: z.string().optional().describe('New middle name'),
-    lastName: z.string().optional().describe('New last name'),
-    dob: z.string().optional().describe('New date of birth (ISO 8601)'),
-    company: z.string().optional().describe('New company name'),
-    title: z.string().optional().describe('New title/position'),
-    twitterUrl: z.string().optional().describe('New Twitter URL'),
-    linkedinUrl: z.string().optional().describe('New LinkedIn URL'),
-    facebookUrl: z.string().optional().describe('New Facebook URL'),
-    archive: z.boolean().optional().describe('Set to true to archive the contact, false to restore'),
-  }))
-  .output(z.object({
-    contactId: z.number().describe('ID of the updated contact'),
-    firstName: z.string().nullable().describe('First name'),
-    lastName: z.string().nullable().describe('Last name'),
-    primaryEmail: z.string().nullable().describe('Primary email'),
-    archivedAt: z.string().nullable().describe('When archived'),
-    updatedAt: z.string().nullable().describe('When last updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the contact to update'),
+      firstName: z.string().optional().describe('New first name'),
+      middleName: z.string().optional().describe('New middle name'),
+      lastName: z.string().optional().describe('New last name'),
+      dob: z.string().optional().describe('New date of birth (ISO 8601)'),
+      company: z.string().optional().describe('New company name'),
+      title: z.string().optional().describe('New title/position'),
+      twitterUrl: z.string().optional().describe('New Twitter URL'),
+      linkedinUrl: z.string().optional().describe('New LinkedIn URL'),
+      facebookUrl: z.string().optional().describe('New Facebook URL'),
+      archive: z
+        .boolean()
+        .optional()
+        .describe('Set to true to archive the contact, false to restore')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('ID of the updated contact'),
+      firstName: z.string().nullable().describe('First name'),
+      lastName: z.string().nullable().describe('Last name'),
+      primaryEmail: z.string().nullable().describe('Primary email'),
+      archivedAt: z.string().nullable().describe('When archived'),
+      updatedAt: z.string().nullable().describe('When last updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.archive === true) {
@@ -47,9 +51,9 @@ export let updateContact = SlateTool.create(
           lastName: null,
           primaryEmail: null,
           archivedAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         },
-        message: `Archived contact **${ctx.input.contactId}**.`,
+        message: `Archived contact **${ctx.input.contactId}**.`
       };
     }
 
@@ -62,9 +66,9 @@ export let updateContact = SlateTool.create(
           lastName: c.last_name ?? null,
           primaryEmail: c.primary_email ?? null,
           archivedAt: c.archived_at ?? null,
-          updatedAt: c.updated_at ?? null,
+          updatedAt: c.updated_at ?? null
         },
-        message: `Restored contact **${[c.first_name, c.last_name].filter(Boolean).join(' ') || c.id}**.`,
+        message: `Restored contact **${[c.first_name, c.last_name].filter(Boolean).join(' ') || c.id}**.`
       };
     }
 
@@ -88,9 +92,9 @@ export let updateContact = SlateTool.create(
         lastName: c.last_name ?? null,
         primaryEmail: c.primary_email ?? null,
         archivedAt: c.archived_at ?? null,
-        updatedAt: c.updated_at ?? null,
+        updatedAt: c.updated_at ?? null
       },
-      message: `Updated contact **${[c.first_name, c.last_name].filter(Boolean).join(' ') || c.id}**.`,
+      message: `Updated contact **${[c.first_name, c.last_name].filter(Boolean).join(' ') || c.id}**.`
     };
   })
   .build();

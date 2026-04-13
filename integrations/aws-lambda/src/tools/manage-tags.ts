@@ -3,29 +3,39 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `List, add, or remove tags on a Lambda function. Tags are key-value pairs used for organization, cost allocation, and access control. Provide the full function ARN for tag operations.`,
-    instructions: [
-      'Use **action** "list" to view tags, "add" to set tags, or "remove" to delete tag keys.',
-      'The resourceArn must be the full function ARN (e.g., arn:aws:lambda:us-east-1:123456789012:function:my-func).'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'remove']).describe('Operation to perform'),
-    resourceArn: z.string().describe('Full ARN of the Lambda resource'),
-    tags: z.record(z.string(), z.string()).optional().describe('Tags to add as key-value pairs (for add action)'),
-    tagKeys: z.array(z.string()).optional().describe('Tag keys to remove (for remove action)')
-  }))
-  .output(z.object({
-    tags: z.record(z.string(), z.string()).optional().describe('Current tags on the resource'),
-    updated: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `List, add, or remove tags on a Lambda function. Tags are key-value pairs used for organization, cost allocation, and access control. Provide the full function ARN for tag operations.`,
+  instructions: [
+    'Use **action** "list" to view tags, "add" to set tags, or "remove" to delete tag keys.',
+    'The resourceArn must be the full function ARN (e.g., arn:aws:lambda:us-east-1:123456789012:function:my-func).'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'add', 'remove']).describe('Operation to perform'),
+      resourceArn: z.string().describe('Full ARN of the Lambda resource'),
+      tags: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Tags to add as key-value pairs (for add action)'),
+      tagKeys: z
+        .array(z.string())
+        .optional()
+        .describe('Tag keys to remove (for remove action)')
+    })
+  )
+  .output(
+    z.object({
+      tags: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Current tags on the resource'),
+      updated: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action, resourceArn } = ctx.input;
 

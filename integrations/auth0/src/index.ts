@@ -15,7 +15,7 @@ import {
   getLogsTool,
   manageResourceServersTool,
   manageActionsTool,
-  manageClientGrantsTool,
+  manageClientGrantsTool
 } from './tools';
 import { logEventsTrigger } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     getLogsTool,
     manageResourceServersTool,
     manageActionsTool,
-    manageClientGrantsTool,
+    manageClientGrantsTool
   ],
-  triggers: [
-    logEventsTrigger,
-  ],
+  triggers: [logEventsTrigger]
 });

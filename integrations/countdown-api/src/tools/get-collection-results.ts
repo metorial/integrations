@@ -3,30 +3,44 @@ import { CountdownClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCollectionResults = SlateTool.create(
-  spec,
-  {
-    name: 'Get Collection Results',
-    key: 'get_collection_results',
-    description: `Retrieve result sets for a collection, or get a specific result set with download links. Result sets contain the output of completed collection runs and are available for download for 14 days in JSON, JSON Lines, or CSV formats.`,
-    instructions: [
-      'Provide just `collectionId` to list all result sets for a collection.',
-      'Provide both `collectionId` and `resultSetId` to get a specific result set with download links.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getCollectionResults = SlateTool.create(spec, {
+  name: 'Get Collection Results',
+  key: 'get_collection_results',
+  description: `Retrieve result sets for a collection, or get a specific result set with download links. Result sets contain the output of completed collection runs and are available for download for 14 days in JSON, JSON Lines, or CSV formats.`,
+  instructions: [
+    'Provide just `collectionId` to list all result sets for a collection.',
+    'Provide both `collectionId` and `resultSetId` to get a specific result set with download links.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    collectionId: z.string().describe('The collection ID to retrieve results for.'),
-    resultSetId: z.number().optional().describe('Specific result set ID. If omitted, lists all result sets for the collection.'),
-  }))
-  .output(z.object({
-    resultSets: z.array(z.any()).optional().describe('Array of result set objects (when listing).'),
-    resultSet: z.any().optional().describe('Single result set object with download links (when getting a specific result set).'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      collectionId: z.string().describe('The collection ID to retrieve results for.'),
+      resultSetId: z
+        .number()
+        .optional()
+        .describe(
+          'Specific result set ID. If omitted, lists all result sets for the collection.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      resultSets: z
+        .array(z.any())
+        .optional()
+        .describe('Array of result set objects (when listing).'),
+      resultSet: z
+        .any()
+        .optional()
+        .describe(
+          'Single result set object with download links (when getting a specific result set).'
+        )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CountdownClient({ token: ctx.auth.token });
 
     if (ctx.input.resultSetId !== undefined) {
@@ -35,9 +49,9 @@ export let getCollectionResults = SlateTool.create(
 
       return {
         output: {
-          resultSet,
+          resultSet
         },
-        message: `Retrieved result set **#${ctx.input.resultSetId}** for collection **${ctx.input.collectionId}**.${resultSet.requests_completed ? ` Completed: ${resultSet.requests_completed} requests.` : ''}`,
+        message: `Retrieved result set **#${ctx.input.resultSetId}** for collection **${ctx.input.collectionId}**.${resultSet.requests_completed ? ` Completed: ${resultSet.requests_completed} requests.` : ''}`
       };
     } else {
       let result = await client.listResultSets(ctx.input.collectionId);
@@ -45,9 +59,10 @@ export let getCollectionResults = SlateTool.create(
 
       return {
         output: {
-          resultSets,
+          resultSets
         },
-        message: `Found **${resultSets.length}** result sets for collection **${ctx.input.collectionId}**.`,
+        message: `Found **${resultSets.length}** result sets for collection **${ctx.input.collectionId}**.`
       };
     }
-  }).build();
+  })
+  .build();

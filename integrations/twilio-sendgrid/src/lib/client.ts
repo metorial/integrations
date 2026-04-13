@@ -5,16 +5,17 @@ export class Client {
   private http: AxiosInstance;
 
   constructor(config: { token: string; region?: string }) {
-    let baseURL = config.region === 'eu'
-      ? 'https://api.eu.sendgrid.com/v3'
-      : 'https://api.sendgrid.com/v3';
+    let baseURL =
+      config.region === 'eu'
+        ? 'https://api.eu.sendgrid.com/v3'
+        : 'https://api.sendgrid.com/v3';
 
     this.http = createAxios({
       baseURL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -51,25 +52,31 @@ export class Client {
     trackingSettings?: {
       clickTracking?: { enable?: boolean; enableText?: boolean };
       openTracking?: { enable?: boolean; substitutionTag?: string };
-      subscriptionTracking?: { enable?: boolean; text?: string; html?: string; substitutionTag?: string };
+      subscriptionTracking?: {
+        enable?: boolean;
+        text?: string;
+        html?: string;
+        substitutionTag?: string;
+      };
     };
   }) {
     let body: Record<string, any> = {
       personalizations: params.personalizations,
       from: params.from,
-      subject: params.subject,
+      subject: params.subject
     };
 
     if (params.replyTo) body.reply_to = params.replyTo;
     if (params.content) body.content = params.content;
     if (params.templateId) body.template_id = params.templateId;
-    if (params.attachments) body.attachments = params.attachments.map(a => ({
-      content: a.content,
-      type: a.type,
-      filename: a.filename,
-      disposition: a.disposition,
-      content_id: a.contentId,
-    }));
+    if (params.attachments)
+      body.attachments = params.attachments.map(a => ({
+        content: a.content,
+        type: a.type,
+        filename: a.filename,
+        disposition: a.disposition,
+        content_id: a.contentId
+      }));
     if (params.categories) body.categories = params.categories;
     if (params.customArgs) body.custom_args = params.customArgs;
     if (params.sendAt) body.send_at = params.sendAt;
@@ -86,13 +93,13 @@ export class Client {
       if (params.trackingSettings.clickTracking) {
         body.tracking_settings.click_tracking = {
           enable: params.trackingSettings.clickTracking.enable,
-          enable_text: params.trackingSettings.clickTracking.enableText,
+          enable_text: params.trackingSettings.clickTracking.enableText
         };
       }
       if (params.trackingSettings.openTracking) {
         body.tracking_settings.open_tracking = {
           enable: params.trackingSettings.openTracking.enable,
-          substitution_tag: params.trackingSettings.openTracking.substitutionTag,
+          substitution_tag: params.trackingSettings.openTracking.substitutionTag
         };
       }
       if (params.trackingSettings.subscriptionTracking) {
@@ -100,7 +107,7 @@ export class Client {
           enable: params.trackingSettings.subscriptionTracking.enable,
           text: params.trackingSettings.subscriptionTracking.text,
           html: params.trackingSettings.subscriptionTracking.html,
-          substitution_tag: params.trackingSettings.subscriptionTracking.substitutionTag,
+          substitution_tag: params.trackingSettings.subscriptionTracking.substitutionTag
         };
       }
     }
@@ -117,17 +124,23 @@ export class Client {
     });
 
     let response = await this.http.post('/mail/send', body);
-    return { statusCode: response.status, messageId: response.headers?.['x-message-id'] || null };
+    return {
+      statusCode: response.status,
+      messageId: response.headers?.['x-message-id'] || null
+    };
   }
 
   // ---- Contacts ----
 
-  async addOrUpdateContacts(contacts: Array<{
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    customFields?: Record<string, any>;
-  }>, listIds?: string[]) {
+  async addOrUpdateContacts(
+    contacts: Array<{
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      customFields?: Record<string, any>;
+    }>,
+    listIds?: string[]
+  ) {
     let body: Record<string, any> = {
       contacts: contacts.map(c => {
         let contact: Record<string, any> = { email: c.email };
@@ -135,7 +148,7 @@ export class Client {
         if (c.lastName) contact.last_name = c.lastName;
         if (c.customFields) contact.custom_fields = c.customFields;
         return contact;
-      }),
+      })
     };
     if (listIds && listIds.length > 0) body.list_ids = listIds;
 
@@ -156,12 +169,12 @@ export class Client {
   async deleteContacts(contactIds: string[], deleteAllContacts?: boolean) {
     if (deleteAllContacts) {
       let response = await this.http.delete('/marketing/contacts', {
-        params: { delete_all_contacts: 'true' },
+        params: { delete_all_contacts: 'true' }
       });
       return response.data;
     }
     let response = await this.http.delete('/marketing/contacts', {
-      params: { ids: contactIds.join(',') },
+      params: { ids: contactIds.join(',') }
     });
     return response.data;
   }
@@ -175,7 +188,7 @@ export class Client {
 
   async getLists(pageSize?: number, pageToken?: string) {
     let response = await this.http.get('/marketing/lists', {
-      params: { page_size: pageSize, page_token: pageToken },
+      params: { page_size: pageSize, page_token: pageToken }
     });
     return response.data;
   }
@@ -197,21 +210,21 @@ export class Client {
 
   async deleteList(listId: string, deleteContacts?: boolean) {
     let response = await this.http.delete(`/marketing/lists/${listId}`, {
-      params: { delete_contacts: deleteContacts ? 'true' : 'false' },
+      params: { delete_contacts: deleteContacts ? 'true' : 'false' }
     });
     return response.data;
   }
 
   async addContactsToList(listId: string, contactIds: string[]) {
     let response = await this.http.put(`/marketing/lists/${listId}/contacts`, {
-      contact_ids: contactIds,
+      contact_ids: contactIds
     });
     return response.data;
   }
 
   async removeContactsFromList(listId: string, contactIds: string[]) {
     let response = await this.http.delete(`/marketing/lists/${listId}/contacts`, {
-      params: { contact_ids: contactIds.join(',') },
+      params: { contact_ids: contactIds.join(',') }
     });
     return response.data;
   }
@@ -220,7 +233,7 @@ export class Client {
 
   async getTemplates(generations?: string, pageSize?: number) {
     let response = await this.http.get('/templates', {
-      params: { generations, page_size: pageSize },
+      params: { generations, page_size: pageSize }
     });
     return response.data;
   }
@@ -228,7 +241,7 @@ export class Client {
   async createTemplate(name: string, generation?: string) {
     let response = await this.http.post('/templates', {
       name,
-      generation: generation || 'dynamic',
+      generation: generation || 'dynamic'
     });
     return response.data;
   }
@@ -247,14 +260,17 @@ export class Client {
     await this.http.delete(`/templates/${templateId}`);
   }
 
-  async createTemplateVersion(templateId: string, version: {
-    name: string;
-    subject?: string;
-    htmlContent?: string;
-    plainContent?: string;
-    active?: number;
-    testData?: string;
-  }) {
+  async createTemplateVersion(
+    templateId: string,
+    version: {
+      name: string;
+      subject?: string;
+      htmlContent?: string;
+      plainContent?: string;
+      active?: number;
+      testData?: string;
+    }
+  ) {
     let body: Record<string, any> = { name: version.name };
     if (version.subject) body.subject = version.subject;
     if (version.htmlContent) body.html_content = version.htmlContent;
@@ -273,16 +289,21 @@ export class Client {
     return response.data;
   }
 
-  async getGlobalSuppressions(startTime?: number, endTime?: number, limit?: number, offset?: number) {
+  async getGlobalSuppressions(
+    startTime?: number,
+    endTime?: number,
+    limit?: number,
+    offset?: number
+  ) {
     let response = await this.http.get('/suppression/unsubscribes', {
-      params: { start_time: startTime, end_time: endTime, limit, offset },
+      params: { start_time: startTime, end_time: endTime, limit, offset }
     });
     return response.data;
   }
 
   async addGlobalSuppression(emails: string[]) {
     let response = await this.http.post('/asm/suppressions/global', {
-      recipient_emails: emails,
+      recipient_emails: emails
     });
     return response.data;
   }
@@ -298,7 +319,7 @@ export class Client {
 
   async addGroupSuppression(groupId: number, emails: string[]) {
     let response = await this.http.post(`/asm/groups/${groupId}/suppressions`, {
-      recipient_emails: emails,
+      recipient_emails: emails
     });
     return response.data;
   }
@@ -309,28 +330,33 @@ export class Client {
 
   async getBounces(startTime?: number, endTime?: number, limit?: number, offset?: number) {
     let response = await this.http.get('/suppression/bounces', {
-      params: { start_time: startTime, end_time: endTime, limit, offset },
+      params: { start_time: startTime, end_time: endTime, limit, offset }
     });
     return response.data;
   }
 
   async getBlocks(startTime?: number, endTime?: number, limit?: number, offset?: number) {
     let response = await this.http.get('/suppression/blocks', {
-      params: { start_time: startTime, end_time: endTime, limit, offset },
+      params: { start_time: startTime, end_time: endTime, limit, offset }
     });
     return response.data;
   }
 
   async getSpamReports(startTime?: number, endTime?: number, limit?: number, offset?: number) {
     let response = await this.http.get('/suppression/spam_reports', {
-      params: { start_time: startTime, end_time: endTime, limit, offset },
+      params: { start_time: startTime, end_time: endTime, limit, offset }
     });
     return response.data;
   }
 
-  async getInvalidEmails(startTime?: number, endTime?: number, limit?: number, offset?: number) {
+  async getInvalidEmails(
+    startTime?: number,
+    endTime?: number,
+    limit?: number,
+    offset?: number
+  ) {
     let response = await this.http.get('/suppression/invalid_emails', {
-      params: { start_time: startTime, end_time: endTime, limit, offset },
+      params: { start_time: startTime, end_time: endTime, limit, offset }
     });
     return response.data;
   }
@@ -339,19 +365,24 @@ export class Client {
 
   async getGlobalStats(startDate: string, endDate?: string, aggregatedBy?: string) {
     let response = await this.http.get('/stats', {
-      params: { start_date: startDate, end_date: endDate, aggregated_by: aggregatedBy },
+      params: { start_date: startDate, end_date: endDate, aggregated_by: aggregatedBy }
     });
     return response.data;
   }
 
-  async getCategoryStats(categories: string[], startDate: string, endDate?: string, aggregatedBy?: string) {
+  async getCategoryStats(
+    categories: string[],
+    startDate: string,
+    endDate?: string,
+    aggregatedBy?: string
+  ) {
     let response = await this.http.get('/categories/stats', {
       params: {
         categories: categories.join(','),
         start_date: startDate,
         end_date: endDate,
-        aggregated_by: aggregatedBy,
-      },
+        aggregated_by: aggregatedBy
+      }
     });
     return response.data;
   }
@@ -369,7 +400,7 @@ export class Client {
 
   async getAuthenticatedDomains(limit?: number, offset?: number) {
     let response = await this.http.get('/whitelabel/domains', {
-      params: { limit, offset },
+      params: { limit, offset }
     });
     return response.data;
   }
@@ -389,7 +420,7 @@ export class Client {
 
   async getBrandedLinks(limit?: number, offset?: number) {
     let response = await this.http.get('/whitelabel/links', {
-      params: { limit, offset },
+      params: { limit, offset }
     });
     return response.data;
   }
@@ -418,11 +449,13 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       enabled: settings.enabled,
-      url: settings.url,
+      url: settings.url
     };
-    if (settings.groupResubscribe !== undefined) body.group_resubscribe = settings.groupResubscribe;
+    if (settings.groupResubscribe !== undefined)
+      body.group_resubscribe = settings.groupResubscribe;
     if (settings.delivered !== undefined) body.delivered = settings.delivered;
-    if (settings.groupUnsubscribe !== undefined) body.group_unsubscribe = settings.groupUnsubscribe;
+    if (settings.groupUnsubscribe !== undefined)
+      body.group_unsubscribe = settings.groupUnsubscribe;
     if (settings.spamReport !== undefined) body.spam_report = settings.spamReport;
     if (settings.bounce !== undefined) body.bounce = settings.bounce;
     if (settings.deferred !== undefined) body.deferred = settings.deferred;

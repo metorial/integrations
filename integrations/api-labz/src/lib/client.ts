@@ -13,13 +13,16 @@ export class Client {
     return createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  async callModule(moduleId: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async callModule(
+    moduleId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let http = this.getAxios();
     let response = await http.post(`/module/${moduleId}`, data);
     return response.data as Record<string, unknown>;
@@ -31,7 +34,7 @@ export class Client {
   }): Promise<Record<string, unknown>> {
     return this.callModule('business-analyst', {
       instructions: params.instructions,
-      data: params.rawData,
+      data: params.rawData
     });
   }
 
@@ -41,7 +44,7 @@ export class Client {
   }): Promise<Record<string, unknown>> {
     return this.callModule('id-parser', {
       file_format: params.fileFormat,
-      base64: params.base64String,
+      base64: params.base64String
     });
   }
 
@@ -53,7 +56,7 @@ export class Client {
     outputFormat?: string;
   }): Promise<Record<string, unknown>> {
     let payload: Record<string, unknown> = {
-      instructions: params.instructions,
+      instructions: params.instructions
     };
     if (params.fileUrl) payload.file_url = params.fileUrl;
     if (params.base64String) payload.base64 = params.base64String;
@@ -69,7 +72,7 @@ export class Client {
     schema: string;
   }): Promise<Record<string, unknown>> {
     let payload: Record<string, unknown> = {
-      schema: params.schema,
+      schema: params.schema
     };
     if (params.base64String) payload.base64 = params.base64String;
     if (params.fileUrl) payload.file_url = params.fileUrl;
@@ -83,7 +86,7 @@ export class Client {
     schema: string;
   }): Promise<Record<string, unknown>> {
     let payload: Record<string, unknown> = {
-      schema: params.schema,
+      schema: params.schema
     };
     if (params.base64String) payload.base64 = params.base64String;
     if (params.fileUrl) payload.file_url = params.fileUrl;
@@ -91,11 +94,9 @@ export class Client {
     return this.callModule('image-to-json', payload);
   }
 
-  async trackExpense(params: {
-    expense: string;
-  }): Promise<Record<string, unknown>> {
+  async trackExpense(params: { expense: string }): Promise<Record<string, unknown>> {
     return this.callModule('expense-tracker', {
-      record_expense: params.expense,
+      record_expense: params.expense
     });
   }
 
@@ -103,39 +104,31 @@ export class Client {
     productDescription: string;
   }): Promise<Record<string, unknown>> {
     return this.callModule('social-media-marketing', {
-      about_product: params.productDescription,
+      about_product: params.productDescription
     });
   }
 
-  async textToFlowDiagram(params: {
-    instructions: string;
-  }): Promise<Record<string, unknown>> {
+  async textToFlowDiagram(params: { instructions: string }): Promise<Record<string, unknown>> {
     return this.callModule('flow-diagram-generator', {
-      instructions: params.instructions,
+      instructions: params.instructions
     });
   }
 
-  async textToImage(params: {
-    prompt: string;
-  }): Promise<Record<string, unknown>> {
+  async textToImage(params: { prompt: string }): Promise<Record<string, unknown>> {
     return this.callModule('text-to-image', {
-      prompt: params.prompt,
+      prompt: params.prompt
     });
   }
 
-  async deepResearch(params: {
-    query: string;
-  }): Promise<Record<string, unknown>> {
+  async deepResearch(params: { query: string }): Promise<Record<string, unknown>> {
     return this.callModule('deep-research', {
-      query: params.query,
+      query: params.query
     });
   }
 
-  async aiSearch(params: {
-    query: string;
-  }): Promise<Record<string, unknown>> {
+  async aiSearch(params: { query: string }): Promise<Record<string, unknown>> {
     return this.callModule('617', {
-      query: params.query,
+      query: params.query
     });
   }
 }

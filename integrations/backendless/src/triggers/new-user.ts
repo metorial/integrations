@@ -3,31 +3,35 @@ import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newUser = SlateTrigger.create(
-  spec,
-  {
-    name: 'New User Registered',
-    key: 'new_user',
-    description: 'Triggers when a new user is registered in the Backendless Users table. Polls for recently created user accounts.'
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('The objectId of the new user'),
-    user: z.record(z.string(), z.unknown()).describe('The full user record')
-  }))
-  .output(z.object({
-    userId: z.string().describe('The objectId of the new user'),
-    email: z.string().optional().describe('Email address of the new user'),
-    userName: z.string().optional().describe('Name of the new user'),
-    createdAt: z.string().optional().describe('ISO timestamp when the user was registered'),
-    user: z.record(z.string(), z.unknown()).describe('The complete user record including all properties')
-  }))
+export let newUser = SlateTrigger.create(spec, {
+  name: 'New User Registered',
+  key: 'new_user',
+  description:
+    'Triggers when a new user is registered in the Backendless Users table. Polls for recently created user accounts.'
+})
+  .input(
+    z.object({
+      userId: z.string().describe('The objectId of the new user'),
+      user: z.record(z.string(), z.unknown()).describe('The full user record')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('The objectId of the new user'),
+      email: z.string().optional().describe('Email address of the new user'),
+      userName: z.string().optional().describe('Name of the new user'),
+      createdAt: z.string().optional().describe('ISO timestamp when the user was registered'),
+      user: z
+        .record(z.string(), z.unknown())
+        .describe('The complete user record including all properties')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BackendlessClient({
         applicationId: ctx.auth.applicationId,
         token: ctx.auth.token,
@@ -73,7 +77,7 @@ export let newUser = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let created = ctx.input.user.created as number | undefined;
 
       return {
@@ -88,4 +92,5 @@ export let newUser = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

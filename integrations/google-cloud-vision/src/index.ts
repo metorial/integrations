@@ -11,7 +11,7 @@ import {
   detectSafeSearch,
   detectImageProperties,
   getCropHints,
-  detectWeb,
+  detectWeb
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     detectSafeSearch,
     detectImageProperties,
     getCropHints,
-    detectWeb,
+    detectWeb
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

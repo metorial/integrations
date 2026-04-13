@@ -45,9 +45,9 @@ export class Client {
       baseURL: config.baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...(config.token ? { 'X-RosetteAPI-Key': config.token } : {}),
-      },
+        Accept: 'application/json',
+        ...(config.token ? { 'X-RosetteAPI-Key': config.token } : {})
+      }
     });
   }
 
@@ -56,25 +56,33 @@ export class Client {
   async detectLanguage(content: string, options?: Record<string, unknown>) {
     let response = await this.axios.post('/language', {
       content,
-      ...options,
+      ...options
     });
     return response.data;
   }
 
-  async extractEntities(content: string, language?: string, options?: Record<string, unknown>) {
+  async extractEntities(
+    content: string,
+    language?: string,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/entities', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
 
-  async analyzeSentiment(content: string, language?: string, options?: Record<string, unknown>) {
+  async analyzeSentiment(
+    content: string,
+    language?: string,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/sentiment', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -83,7 +91,7 @@ export class Client {
     let response = await this.axios.post('/categories', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -92,16 +100,20 @@ export class Client {
     let response = await this.axios.post('/topics', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
 
-  async extractRelationships(content: string, language?: string, options?: Record<string, unknown>) {
+  async extractRelationships(
+    content: string,
+    language?: string,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/relationships', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -110,18 +122,22 @@ export class Client {
     let response = await this.axios.post('/events', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
 
   // -- Name endpoints --
 
-  async nameSimilarity(name1: NameObject, name2: NameObject, options?: Record<string, unknown>) {
+  async nameSimilarity(
+    name1: NameObject,
+    name2: NameObject,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/name-similarity', {
       name1,
       name2,
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -141,23 +157,33 @@ export class Client {
     return response.data;
   }
 
-  async nameDeduplication(names: NameObject[], threshold: number, options?: Record<string, unknown>) {
+  async nameDeduplication(
+    names: NameObject[],
+    threshold: number,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/name-deduplication', {
       names,
       threshold,
-      ...options,
+      ...options
     });
     return response.data;
   }
 
   // -- Linguistic endpoints --
 
-  async morphology(content: string, morphologyType: string, language?: string, options?: Record<string, unknown>) {
-    let endpoint = morphologyType === 'complete' ? '/morphology/complete' : `/morphology/${morphologyType}`;
+  async morphology(
+    content: string,
+    morphologyType: string,
+    language?: string,
+    options?: Record<string, unknown>
+  ) {
+    let endpoint =
+      morphologyType === 'complete' ? '/morphology/complete' : `/morphology/${morphologyType}`;
     let response = await this.axios.post(endpoint, {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -166,25 +192,33 @@ export class Client {
     let response = await this.axios.post('/tokens', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
 
-  async detectSentences(content: string, language?: string, options?: Record<string, unknown>) {
+  async detectSentences(
+    content: string,
+    language?: string,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/sentences', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
 
-  async syntaxDependencies(content: string, language?: string, options?: Record<string, unknown>) {
+  async syntaxDependencies(
+    content: string,
+    language?: string,
+    options?: Record<string, unknown>
+  ) {
     let response = await this.axios.post('/syntax/dependencies', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -193,7 +227,7 @@ export class Client {
     let response = await this.axios.post('/transliteration', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -202,7 +236,7 @@ export class Client {
     let response = await this.axios.post('/semantics/vector', {
       content,
       ...(language ? { language } : {}),
-      ...options,
+      ...options
     });
     return response.data;
   }
@@ -217,7 +251,7 @@ export class Client {
     let response = await this.axios.post('/address-similarity', {
       address1,
       address2,
-      ...options,
+      ...options
     });
     return response.data;
   }

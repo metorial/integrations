@@ -3,33 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve a single contact by UUID or email address. Also returns the contact's credit balance, prepaid balance, tier, and identifiers in a single call.`,
-    tags: {
-      readOnly: true,
-    },
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve a single contact by UUID or email address. Also returns the contact's credit balance, prepaid balance, tier, and identifiers in a single call.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactUuid: z.string().optional().describe('UUID of the contact to retrieve'),
-    email: z.string().optional().describe('Email address to look up the contact'),
-  }))
-  .output(z.object({
-    contactUuid: z.string().describe('UUID of the contact'),
-    email: z.string().optional().describe('Email address'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    creditBalance: z.number().optional().describe('Current credit balance'),
-    prepaidBalanceInCents: z.number().optional().describe('Prepaid balance in cents'),
-    tierName: z.string().optional().describe('Current tier name'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-    attributes: z.record(z.string(), z.any()).optional().describe('All contact attributes'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactUuid: z.string().optional().describe('UUID of the contact to retrieve'),
+      email: z.string().optional().describe('Email address to look up the contact')
+    })
+  )
+  .output(
+    z.object({
+      contactUuid: z.string().describe('UUID of the contact'),
+      email: z.string().optional().describe('Email address'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      creditBalance: z.number().optional().describe('Current credit balance'),
+      prepaidBalanceInCents: z.number().optional().describe('Prepaid balance in cents'),
+      tierName: z.string().optional().describe('Current tier name'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
+      attributes: z.record(z.string(), z.any()).optional().describe('All contact attributes')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (!ctx.input.contactUuid && !ctx.input.email) {
@@ -53,17 +54,24 @@ export let getContact = SlateTool.create(
     try {
       let creditResult = await client.getContactCreditBalance(uuid);
       creditBalance = creditResult.data?.balance ?? creditResult.balance;
-    } catch { /* balance may not be available */ }
+    } catch {
+      /* balance may not be available */
+    }
 
     try {
       let prepaidResult = await client.getContactPrepaidBalance(uuid);
-      prepaidBalanceInCents = prepaidResult.data?.balance_in_cents ?? prepaidResult.balance_in_cents;
-    } catch { /* prepaid may not be available */ }
+      prepaidBalanceInCents =
+        prepaidResult.data?.balance_in_cents ?? prepaidResult.balance_in_cents;
+    } catch {
+      /* prepaid may not be available */
+    }
 
     try {
       let tierResult = await client.getContactTier(uuid);
       tierName = tierResult.data?.name ?? tierResult.name;
-    } catch { /* tier may not be available */ }
+    } catch {
+      /* tier may not be available */
+    }
 
     return {
       output: {
@@ -75,9 +83,9 @@ export let getContact = SlateTool.create(
         prepaidBalanceInCents,
         tierName,
         createdAt: contact.created_at,
-        attributes: contact.attributes || contact,
+        attributes: contact.attributes || contact
       },
-      message: `Retrieved contact **${contact.email || uuid}**${creditBalance !== undefined ? ` with ${creditBalance} credits` : ''}.`,
+      message: `Retrieved contact **${contact.email || uuid}**${creditBalance !== undefined ? ` with ${creditBalance} credits` : ''}.`
     };
   })
   .build();

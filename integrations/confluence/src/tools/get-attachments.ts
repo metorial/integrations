@@ -9,24 +9,34 @@ export let getAttachments = SlateTool.create(spec, {
   description: `List file attachments on a Confluence page. Returns attachment metadata including file name, media type, and size.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    pageId: z.string().describe('The page ID to list attachments for'),
-    limit: z.number().optional().default(25).describe('Maximum number of attachments to return'),
-    cursor: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    attachments: z.array(z.object({
-      attachmentId: z.string(),
-      fileName: z.string(),
-      status: z.string(),
-      mediaType: z.string().optional(),
-      fileSize: z.number().optional(),
-      versionNumber: z.number().optional(),
-      downloadLink: z.string().optional()
-    })),
-    nextCursor: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageId: z.string().describe('The page ID to list attachments for'),
+      limit: z
+        .number()
+        .optional()
+        .default(25)
+        .describe('Maximum number of attachments to return'),
+      cursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      attachments: z.array(
+        z.object({
+          attachmentId: z.string(),
+          fileName: z.string(),
+          status: z.string(),
+          mediaType: z.string().optional(),
+          fileSize: z.number().optional(),
+          versionNumber: z.number().optional(),
+          downloadLink: z.string().optional()
+        })
+      ),
+      nextCursor: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getPageAttachments(ctx.input.pageId, {
       limit: ctx.input.limit,

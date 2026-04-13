@@ -92,4 +92,4 @@ Subscribe to changes on a drive root folder or subfolder to be notified when any
 - **Change types supported**: `updated` only for drive root items.
 - **Notification delivery**: Webhooks (HTTPS endpoint), Azure Event Hubs, or Azure Event Grid.
 - Subscriptions must be periodically renewed before expiry.
-- Notifications indicate *that* a file changed, but do not include details about *what* changed within the workbook. Use the Delta Query API to determine which specific files were modified.
+- Notifications indicate _that_ a file changed, but do not include details about _what_ changed within the workbook. Use the Delta Query API to determine which specific files were modified.

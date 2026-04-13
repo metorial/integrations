@@ -12,57 +12,62 @@ let offerSchema = z.object({
   currency: z.string(),
   faceValue: z.number().nullable(),
   totalPrice: z.number().nullable(),
-  fees: z.array(z.object({
-    label: z.string(),
-    type: z.string(),
-    value: z.string(),
-  })),
+  fees: z.array(
+    z.object({
+      label: z.string(),
+      type: z.string(),
+      value: z.string()
+    })
+  ),
   limit: z.object({
     min: z.number().nullable(),
-    max: z.number().nullable(),
+    max: z.number().nullable()
   }),
-  protected: z.boolean(),
+  protected: z.boolean()
 });
 
 let areaSchema = z.object({
   areaId: z.string(),
   name: z.string(),
   rank: z.number().nullable(),
-  offers: z.array(z.string()).describe('List of offer IDs available in this area'),
+  offers: z.array(z.string()).describe('List of offer IDs available in this area')
 });
 
-export let getEventOffersTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event Offers',
-    key: 'get_event_offers',
-    description: `Retrieve ticket offers and pricing for a specific event. Returns available ticket types, price levels, face values, fees, purchase limits, and seating areas. Use this to understand ticket availability and pricing before purchase.`,
-    tags: {
-      readOnly: true,
-    },
+export let getEventOffersTool = SlateTool.create(spec, {
+  name: 'Get Event Offers',
+  key: 'get_event_offers',
+  description: `Retrieve ticket offers and pricing for a specific event. Returns available ticket types, price levels, face values, fees, purchase limits, and seating areas. Use this to understand ticket availability and pricing before purchase.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('Ticketmaster event ID'),
-  }))
-  .output(z.object({
-    eventId: z.string(),
-    offers: z.array(offerSchema),
-    areas: z.array(areaSchema),
-    limits: z.object({
-      min: z.number().nullable(),
-      max: z.number().nullable(),
-    }),
-    prices: z.array(z.object({
-      type: z.string(),
-      currency: z.string(),
-      min: z.number().nullable(),
-      max: z.number().nullable(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Ticketmaster event ID')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string(),
+      offers: z.array(offerSchema),
+      areas: z.array(areaSchema),
+      limits: z.object({
+        min: z.number().nullable(),
+        max: z.number().nullable()
+      }),
+      prices: z.array(
+        z.object({
+          type: z.string(),
+          currency: z.string(),
+          min: z.number().nullable(),
+          max: z.number().nullable()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CommerceClient({
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let response = await client.getEventOffers(ctx.input.eventId);
@@ -80,13 +85,13 @@ export let getEventOffersTool = SlateTool.create(
       fees: (o.charges || o.fees || []).map((f: any) => ({
         label: f.reason || f.label || f.type || '',
         type: f.type || '',
-        value: String(f.amount ?? f.value ?? ''),
+        value: String(f.amount ?? f.value ?? '')
       })),
       limit: {
         min: o.limit?.min ?? o.limits?.min ?? null,
-        max: o.limit?.max ?? o.limits?.max ?? null,
+        max: o.limit?.max ?? o.limits?.max ?? null
       },
-      protected: o.protected || false,
+      protected: o.protected || false
     }));
 
     let rawAreas = response?.areas || [];
@@ -94,13 +99,13 @@ export let getEventOffersTool = SlateTool.create(
       areaId: a.id || a.areaId || '',
       name: a.name || '',
       rank: a.rank ?? null,
-      offers: (a.offers || []).map((o: any) => typeof o === 'string' ? o : (o.id || '')),
+      offers: (a.offers || []).map((o: any) => (typeof o === 'string' ? o : o.id || ''))
     }));
 
     let rawLimits = response?.limits || {};
     let limits = {
       min: rawLimits.min ?? null,
-      max: rawLimits.max ?? null,
+      max: rawLimits.max ?? null
     };
 
     let rawPrices = response?.prices?.priceRange || response?.priceRanges || [];
@@ -108,11 +113,12 @@ export let getEventOffersTool = SlateTool.create(
       type: p.type || '',
       currency: p.currency || '',
       min: p.min ?? null,
-      max: p.max ?? null,
+      max: p.max ?? null
     }));
 
     return {
       output: { eventId: ctx.input.eventId, offers, areas, limits, prices },
-      message: `Found **${offers.length}** offers across **${areas.length}** areas for event ${ctx.input.eventId}.`,
+      message: `Found **${offers.length}** offers across **${areas.length}** areas for event ${ctx.input.eventId}.`
     };
-  }).build();
+  })
+  .build();

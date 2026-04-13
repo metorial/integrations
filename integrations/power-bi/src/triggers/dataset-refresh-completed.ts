@@ -3,39 +3,41 @@ import { PowerBIClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let datasetRefreshCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Dataset Refresh Completed',
-    key: 'dataset_refresh_completed',
-    description: 'Triggers when a dataset refresh completes (successfully or with failure). Polls refresh history for monitored datasets.'
-  }
-)
-  .input(z.object({
-    datasetId: z.string().describe('ID of the dataset'),
-    datasetName: z.string().optional().describe('Name of the dataset'),
-    requestId: z.string().describe('Unique refresh request ID'),
-    refreshType: z.string().optional().describe('Type of refresh'),
-    startTime: z.string().optional().describe('When the refresh started'),
-    endTime: z.string().optional().describe('When the refresh completed'),
-    status: z.string().describe('Refresh status (Completed, Failed, Disabled, etc.)'),
-    serviceExceptionJson: z.string().optional().describe('Error details if refresh failed')
-  }))
-  .output(z.object({
-    datasetId: z.string().describe('ID of the refreshed dataset'),
-    datasetName: z.string().optional().describe('Name of the refreshed dataset'),
-    refreshType: z.string().optional().describe('Type of refresh'),
-    startTime: z.string().optional().describe('When the refresh started'),
-    endTime: z.string().optional().describe('When the refresh completed'),
-    status: z.string().describe('Refresh status'),
-    serviceExceptionJson: z.string().optional().describe('Error details if refresh failed')
-  }))
+export let datasetRefreshCompleted = SlateTrigger.create(spec, {
+  name: 'Dataset Refresh Completed',
+  key: 'dataset_refresh_completed',
+  description:
+    'Triggers when a dataset refresh completes (successfully or with failure). Polls refresh history for monitored datasets.'
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('ID of the dataset'),
+      datasetName: z.string().optional().describe('Name of the dataset'),
+      requestId: z.string().describe('Unique refresh request ID'),
+      refreshType: z.string().optional().describe('Type of refresh'),
+      startTime: z.string().optional().describe('When the refresh started'),
+      endTime: z.string().optional().describe('When the refresh completed'),
+      status: z.string().describe('Refresh status (Completed, Failed, Disabled, etc.)'),
+      serviceExceptionJson: z.string().optional().describe('Error details if refresh failed')
+    })
+  )
+  .output(
+    z.object({
+      datasetId: z.string().describe('ID of the refreshed dataset'),
+      datasetName: z.string().optional().describe('Name of the refreshed dataset'),
+      refreshType: z.string().optional().describe('Type of refresh'),
+      startTime: z.string().optional().describe('When the refresh started'),
+      endTime: z.string().optional().describe('When the refresh completed'),
+      status: z.string().describe('Refresh status'),
+      serviceExceptionJson: z.string().optional().describe('Error details if refresh failed')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new PowerBIClient({ token: ctx.auth.token });
       let state = ctx.state || {};
       let seenRequestIds: string[] = state.seenRequestIds || [];
@@ -53,7 +55,9 @@ export let datasetRefreshCompleted = SlateTrigger.create(
                   datasetIds.push(`${ws.id}:${ds.id}:${ds.name || ''}`);
                 }
               }
-            } catch { /* skip inaccessible workspaces */ }
+            } catch {
+              /* skip inaccessible workspaces */
+            }
           }
           // Also check "My Workspace"
           try {
@@ -63,13 +67,18 @@ export let datasetRefreshCompleted = SlateTrigger.create(
                 datasetIds.push(`:${ds.id}:${ds.name || ''}`);
               }
             }
-          } catch { /* skip */ }
-        } catch { /* skip */ }
+          } catch {
+            /* skip */
+          }
+        } catch {
+          /* skip */
+        }
       }
 
       let inputs: any[] = [];
 
-      for (let entry of datasetIds.slice(0, 20)) { // Limit to 20 datasets to avoid rate limits
+      for (let entry of datasetIds.slice(0, 20)) {
+        // Limit to 20 datasets to avoid rate limits
         let parts = entry.split(':');
         let workspaceId = parts[0];
         let datasetId = parts[1] || '';
@@ -77,7 +86,11 @@ export let datasetRefreshCompleted = SlateTrigger.create(
         try {
           let history = await client.getRefreshHistory(datasetId, workspaceId || undefined, 5);
           for (let refresh of history) {
-            if (refresh.requestId && !seenRequestIds.includes(refresh.requestId) && refresh.endTime) {
+            if (
+              refresh.requestId &&
+              !seenRequestIds.includes(refresh.requestId) &&
+              refresh.endTime
+            ) {
               inputs.push({
                 datasetId,
                 datasetName: datasetName || undefined,
@@ -91,7 +104,9 @@ export let datasetRefreshCompleted = SlateTrigger.create(
               seenRequestIds.push(refresh.requestId);
             }
           }
-        } catch { /* skip inaccessible datasets */ }
+        } catch {
+          /* skip inaccessible datasets */
+        }
       }
 
       // Keep only the last 500 seen request IDs to prevent unbounded growth
@@ -108,7 +123,7 @@ export let datasetRefreshCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusSuffix = ctx.input.status === 'Completed' ? 'succeeded' : 'failed';
       return {
         type: `dataset_refresh.${statusSuffix}`,

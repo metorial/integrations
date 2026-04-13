@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,67 +18,68 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Identity',
         description: "View a user's name, avatar, and company information.",
-        scope: 'identity:read',
+        scope: 'identity:read'
       },
       {
         title: 'Read Murals',
         description: 'Retrieve information about murals from a room and/or workspace.',
-        scope: 'murals:read',
+        scope: 'murals:read'
       },
       {
         title: 'Write Murals',
         description: 'Create murals, manage settings and widgets.',
-        scope: 'murals:write',
+        scope: 'murals:write'
       },
       {
         title: 'Read Rooms',
         description: "Retrieve information about a workspace's rooms and room settings.",
-        scope: 'rooms:read',
+        scope: 'rooms:read'
       },
       {
         title: 'Write Rooms',
         description: 'Create, update, and delete rooms and their properties.',
-        scope: 'rooms:write',
+        scope: 'rooms:write'
       },
       {
         title: 'Read Users',
         description: 'Retrieve information about users and their permission levels.',
-        scope: 'users:read',
+        scope: 'users:read'
       },
       {
         title: 'Read Workspaces',
         description: 'Retrieve information about workspaces, settings, and properties.',
-        scope: 'workspaces:read',
+        scope: 'workspaces:read'
       },
       {
         title: 'Read Templates',
-        description: "Retrieve a workspace's custom template names, descriptions, and categories.",
-        scope: 'templates:read',
+        description:
+          "Retrieve a workspace's custom template names, descriptions, and categories.",
+        scope: 'templates:read'
       },
       {
         title: 'Write Templates',
         description: 'Create a template from a mural or delete templates.',
-        scope: 'templates:write',
-      },
+        scope: 'templates:write'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         scope: ctx.scopes.join(' '),
         state: ctx.state,
-        response_type: 'code',
+        response_type: 'code'
       });
 
       return {
-        url: `https://app.mural.co/api/public/v1/authorization/oauth2/?${params.toString()}`,
+        url: `https://app.mural.co/api/public/v1/authorization/oauth2/?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios({
-        baseURL: 'https://app.mural.co/api/public/v1',
+        baseURL: 'https://app.mural.co/api/public/v1'
       });
 
       let response = await axios.post('/authorization/oauth2/token', {
@@ -84,7 +87,7 @@ export let auth = SlateAuth.create()
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       let data = response.data;
@@ -97,21 +100,21 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let axios = createAxios({
-        baseURL: 'https://app.mural.co/api/public/v1',
+        baseURL: 'https://app.mural.co/api/public/v1'
       });
 
       let response = await axios.post('/authorization/oauth2/token', {
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       let data = response.data;
@@ -124,8 +127,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -133,8 +136,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://app.mural.co/api/public/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/users/me');
@@ -145,10 +148,10 @@ export let auth = SlateAuth.create()
           id: user.id,
           email: user.email,
           name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-          imageUrl: user.avatar,
-        },
+          imageUrl: user.avatar
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -156,14 +159,16 @@ export let auth = SlateAuth.create()
     key: 'enterprise_api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Enterprise API key from Mural dashboard (Manage company > API keys)'),
+      apiKey: z
+        .string()
+        .describe('Enterprise API key from Mural dashboard (Manage company > API keys)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
-    },
+    }
   });

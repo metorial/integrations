@@ -2,9 +2,7 @@
   "name": "@metorial/redis",
   "version": "0.1.1",
   "description": "Manage Redis Cloud database subscriptions and infrastructure programmatically. Create, update, delete, and list subscriptions across AWS, Google Cloud, and Azure. Manage databases with configurable persistence, replication, modules, and sizing. Back up databases to cloud storage and import data from S3, FTP, or other Redis instances. Control access with ACL rules and roles, manage users and cloud provider accounts, track asynchronous tasks, audit API activity via system logs, and estimate subscription costs with dry-run operations.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "manage database subscriptions",
     "create and configure databases",

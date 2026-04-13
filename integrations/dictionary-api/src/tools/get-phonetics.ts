@@ -9,32 +9,40 @@ let phoneticEntrySchema = z.object({
   sourceUrl: z.string().optional().describe('Source URL for this phonetic entry')
 });
 
-export let getPhonetics = SlateTool.create(
-  spec,
-  {
-    name: 'Get Phonetics',
-    key: 'get_phonetics',
-    description: `Retrieve phonetic transcriptions and audio pronunciation URLs for a word. Returns IPA text representations and links to audio files where available. Useful for language learning and pronunciation reference.`,
-    constraints: [
-      'Not all words or languages have audio pronunciation available.',
-      'Phonetic text may not be available for every entry.'
-    ],
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let getPhonetics = SlateTool.create(spec, {
+  name: 'Get Phonetics',
+  key: 'get_phonetics',
+  description: `Retrieve phonetic transcriptions and audio pronunciation URLs for a word. Returns IPA text representations and links to audio files where available. Useful for language learning and pronunciation reference.`,
+  constraints: [
+    'Not all words or languages have audio pronunciation available.',
+    'Phonetic text may not be available for every entry.'
+  ],
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    word: z.string().describe('The word to get phonetics for'),
-    languageCode: z.string().optional().describe('Language code override (e.g., "en", "fr", "es"). Uses the configured default if not specified.')
-  }))
-  .output(z.object({
-    word: z.string().describe('The looked-up word'),
-    primaryPhonetic: z.string().optional().describe('Primary phonetic transcription'),
-    phonetics: z.array(phoneticEntrySchema).describe('All available phonetic entries with transcriptions and audio URLs')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      word: z.string().describe('The word to get phonetics for'),
+      languageCode: z
+        .string()
+        .optional()
+        .describe(
+          'Language code override (e.g., "en", "fr", "es"). Uses the configured default if not specified.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      word: z.string().describe('The looked-up word'),
+      primaryPhonetic: z.string().optional().describe('Primary phonetic transcription'),
+      phonetics: z
+        .array(phoneticEntrySchema)
+        .describe('All available phonetic entries with transcriptions and audio URLs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DictionaryClient({
       languageCode: ctx.config.languageCode
     });

@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let expenseEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Expense Events',
-    key: 'expense_events',
-    description: 'Triggers when a project expense is created, updated, or deleted.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type: create, update, or delete'),
-    expenseId: z.number().describe('Expense ID'),
-    timestamp: z.string().describe('Event timestamp'),
-    userId: z.number().optional().describe('User ID that triggered the event'),
-    payload: z.any().describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    expenseId: z.number().describe('Expense ID'),
-    title: z.string().optional().describe('Expense title'),
-    date: z.string().optional().describe('Expense date'),
-    netTotal: z.number().optional().describe('Net total'),
-    billable: z.boolean().optional().describe('Whether the expense is billable'),
-    projectId: z.number().optional().describe('Associated project ID'),
-    projectName: z.string().optional().describe('Associated project name')
-  }))
+export let expenseEvents = SlateTrigger.create(spec, {
+  name: 'Expense Events',
+  key: 'expense_events',
+  description: 'Triggers when a project expense is created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type: create, update, or delete'),
+      expenseId: z.number().describe('Expense ID'),
+      timestamp: z.string().describe('Event timestamp'),
+      userId: z.number().optional().describe('User ID that triggered the event'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      expenseId: z.number().describe('Expense ID'),
+      title: z.string().optional().describe('Expense title'),
+      date: z.string().optional().describe('Expense date'),
+      netTotal: z.number().optional().describe('Net total'),
+      billable: z.boolean().optional().describe('Whether the expense is billable'),
+      projectId: z.number().optional().describe('Associated project ID'),
+      projectName: z.string().optional().describe('Associated project name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
       let events = ['create', 'update', 'delete'];
@@ -46,9 +47,11 @@ export let expenseEvents = SlateTrigger.create(
       return { registrationDetails: { webhooks: registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: number }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: number }>;
+      };
 
       for (let reg of details.webhooks) {
         try {
@@ -59,24 +62,26 @@ export let expenseEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let event = ctx.request.headers.get('X-Moco-Event') || 'update';
       let timestamp = ctx.request.headers.get('X-Moco-Timestamp') || new Date().toISOString();
       let userId = ctx.request.headers.get('X-Moco-User-Id');
 
       return {
-        inputs: [{
-          eventType: event,
-          expenseId: body.id,
-          timestamp,
-          userId: userId ? Number(userId) : undefined,
-          payload: body
-        }]
+        inputs: [
+          {
+            eventType: event,
+            expenseId: body.id,
+            timestamp,
+            userId: userId ? Number(userId) : undefined,
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload;
 
       return {
@@ -93,4 +98,5 @@ export let expenseEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

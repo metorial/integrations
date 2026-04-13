@@ -6,11 +6,13 @@ let httpClient = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Login with Railway',
@@ -64,7 +66,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -82,19 +84,23 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await httpClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await httpClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -110,22 +116,26 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await httpClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await httpClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -141,10 +151,14 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: Record<string, never>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: Record<string, never>;
+      scopes: string[];
+    }) => {
       let response = await httpClient.get('/oauth/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -169,7 +183,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Railway API token (Account or Workspace token)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -178,14 +192,18 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      let response = await httpClient.post('/graphql/v2', {
-        query: `query { me { id name email } }`
-      }, {
-        headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json'
+      let response = await httpClient.post(
+        '/graphql/v2',
+        {
+          query: `query { me { id name email } }`
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${ctx.output.token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       let me = response.data?.data?.me;
 

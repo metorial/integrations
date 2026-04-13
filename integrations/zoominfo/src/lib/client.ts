@@ -12,22 +12,28 @@ export class Client {
   constructor(config: ZoomInfoClientConfig) {
     this.apiVersion = config.apiVersion;
 
-    let baseURL = config.apiVersion === 'new'
-      ? 'https://api.zoominfo.com/gtm'
-      : 'https://api.zoominfo.com';
+    let baseURL =
+      config.apiVersion === 'new'
+        ? 'https://api.zoominfo.com/gtm'
+        : 'https://api.zoominfo.com';
 
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Contact Search ──
 
-  async searchContacts(params: Record<string, any>, page?: number, pageSize?: number, sort?: string): Promise<any> {
+  async searchContacts(
+    params: Record<string, any>,
+    page?: number,
+    pageSize?: number,
+    sort?: string
+  ): Promise<any> {
     if (this.apiVersion === 'new') {
       let queryParams = new URLSearchParams();
       if (page) queryParams.set('page[number]', String(page));
@@ -40,15 +46,15 @@ export class Client {
       let response = await this.http.post(url, {
         data: {
           type: 'ContactSearch',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/search/contact', {
         ...params,
         rpp: pageSize || 25,
-        page: page || 1,
+        page: page || 1
       });
       return response.data;
     }
@@ -56,7 +62,12 @@ export class Client {
 
   // ── Company Search ──
 
-  async searchCompanies(params: Record<string, any>, page?: number, pageSize?: number, sort?: string): Promise<any> {
+  async searchCompanies(
+    params: Record<string, any>,
+    page?: number,
+    pageSize?: number,
+    sort?: string
+  ): Promise<any> {
     if (this.apiVersion === 'new') {
       let queryParams = new URLSearchParams();
       if (page) queryParams.set('page[number]', String(page));
@@ -69,15 +80,15 @@ export class Client {
       let response = await this.http.post(url, {
         data: {
           type: 'CompanySearch',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/search/company', {
         ...params,
         rpp: pageSize || 25,
-        page: page || 1,
+        page: page || 1
       });
       return response.data;
     }
@@ -92,15 +103,15 @@ export class Client {
           type: 'ContactEnrich',
           attributes: {
             ...params,
-            ...(outputFields ? { outputFields } : {}),
-          },
-        },
+            ...(outputFields ? { outputFields } : {})
+          }
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/enrich/contact', {
         ...params,
-        ...(outputFields ? { outputFields } : {}),
+        ...(outputFields ? { outputFields } : {})
       });
       return response.data;
     }
@@ -115,15 +126,15 @@ export class Client {
           type: 'CompanyEnrich',
           attributes: {
             ...params,
-            ...(outputFields ? { outputFields } : {}),
-          },
-        },
+            ...(outputFields ? { outputFields } : {})
+          }
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/enrich/company', {
         ...params,
-        ...(outputFields ? { outputFields } : {}),
+        ...(outputFields ? { outputFields } : {})
       });
       return response.data;
     }
@@ -131,7 +142,11 @@ export class Client {
 
   // ── Intent Search ──
 
-  async searchIntent(params: Record<string, any>, page?: number, pageSize?: number): Promise<any> {
+  async searchIntent(
+    params: Record<string, any>,
+    page?: number,
+    pageSize?: number
+  ): Promise<any> {
     if (this.apiVersion === 'new') {
       let queryParams = new URLSearchParams();
       if (page) queryParams.set('page[number]', String(page));
@@ -143,15 +158,15 @@ export class Client {
       let response = await this.http.post(url, {
         data: {
           type: 'IntentSearch',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/search/intent', {
         ...params,
         rpp: pageSize || 25,
-        page: page || 1,
+        page: page || 1
       });
       return response.data;
     }
@@ -164,8 +179,8 @@ export class Client {
       let response = await this.http.post('/data/v1/intent/enrich', {
         data: {
           type: 'IntentEnrich',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
@@ -176,7 +191,11 @@ export class Client {
 
   // ── Scoops Search ──
 
-  async searchScoops(params: Record<string, any>, page?: number, pageSize?: number): Promise<any> {
+  async searchScoops(
+    params: Record<string, any>,
+    page?: number,
+    pageSize?: number
+  ): Promise<any> {
     if (this.apiVersion === 'new') {
       let queryParams = new URLSearchParams();
       if (page) queryParams.set('page[number]', String(page));
@@ -188,15 +207,15 @@ export class Client {
       let response = await this.http.post(url, {
         data: {
           type: 'ScoopSearch',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/search/scoop', {
         ...params,
         rpp: pageSize || 25,
-        page: page || 1,
+        page: page || 1
       });
       return response.data;
     }
@@ -209,8 +228,8 @@ export class Client {
       let response = await this.http.post('/data/v1/scoops/enrich', {
         data: {
           type: 'ScoopEnrich',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
@@ -221,7 +240,11 @@ export class Client {
 
   // ── News Search ──
 
-  async searchNews(params: Record<string, any>, page?: number, pageSize?: number): Promise<any> {
+  async searchNews(
+    params: Record<string, any>,
+    page?: number,
+    pageSize?: number
+  ): Promise<any> {
     if (this.apiVersion === 'new') {
       let queryParams = new URLSearchParams();
       if (page) queryParams.set('page[number]', String(page));
@@ -233,15 +256,15 @@ export class Client {
       let response = await this.http.post(url, {
         data: {
           type: 'NewsSearch',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/search/news', {
         ...params,
         rpp: pageSize || 25,
-        page: page || 1,
+        page: page || 1
       });
       return response.data;
     }
@@ -254,8 +277,8 @@ export class Client {
       let response = await this.http.post('/data/v1/news/enrich', {
         data: {
           type: 'NewsEnrich',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
@@ -272,14 +295,14 @@ export class Client {
         data: {
           type: 'WebSightsEnrich',
           attributes: {
-            ipAddresses,
-          },
-        },
+            ipAddresses
+          }
+        }
       });
       return response.data;
     } else {
       let response = await this.http.post('/lookup/websights', {
-        ipAddresses,
+        ipAddresses
       });
       return response.data;
     }
@@ -292,8 +315,8 @@ export class Client {
       let response = await this.http.post('/data/v1/companies/corporatehierarchy/enrich', {
         data: {
           type: 'CorporateHierarchyEnrich',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
@@ -309,8 +332,8 @@ export class Client {
       let response = await this.http.post('/data/v1/technologies/enrich', {
         data: {
           type: 'TechnologyEnrich',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
@@ -326,8 +349,8 @@ export class Client {
       let response = await this.http.post('/data/v1/compliance/search', {
         data: {
           type: 'ComplianceSearch',
-          attributes: params,
-        },
+          attributes: params
+        }
       });
       return response.data;
     } else {
@@ -353,12 +376,12 @@ export class Client {
   async lookupFields(endpoint: string): Promise<any> {
     if (this.apiVersion === 'new') {
       let response = await this.http.get('/data/v1/lookup', {
-        params: { endpoint },
+        params: { endpoint }
       });
       return response.data;
     } else {
       let response = await this.http.post('/lookup/inputfields', {
-        endpoint,
+        endpoint
       });
       return response.data;
     }

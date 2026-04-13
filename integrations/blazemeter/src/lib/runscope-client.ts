@@ -8,8 +8,8 @@ export class RunscopeClient {
       baseURL: 'https://api.runscope.com',
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -53,20 +53,27 @@ export class RunscopeClient {
     return response.data?.data;
   }
 
-  async createTest(bucketKey: string, params: {
-    name: string;
-    description?: string;
-    steps?: any[];
-  }): Promise<any> {
+  async createTest(
+    bucketKey: string,
+    params: {
+      name: string;
+      description?: string;
+      steps?: any[];
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/buckets/${bucketKey}/tests`, params);
     return response.data?.data;
   }
 
-  async updateTest(bucketKey: string, testId: string, params: {
-    name?: string;
-    description?: string;
-    steps?: any[];
-  }): Promise<any> {
+  async updateTest(
+    bucketKey: string,
+    testId: string,
+    params: {
+      name?: string;
+      description?: string;
+      steps?: any[];
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/buckets/${bucketKey}/tests/${testId}`, params);
     return response.data?.data;
   }
@@ -80,20 +87,32 @@ export class RunscopeClient {
   async runTest(bucketKey: string, testId: string, environmentId?: string): Promise<any> {
     let body: Record<string, any> = {};
     if (environmentId) body.environment_id = environmentId;
-    let response = await this.axios.post(`/buckets/${bucketKey}/tests/${testId}/trigger`, body);
+    let response = await this.axios.post(
+      `/buckets/${bucketKey}/tests/${testId}/trigger`,
+      body
+    );
     return response.data?.data;
   }
 
-  async listTestRuns(bucketKey: string, testId: string, count?: number, offset?: number): Promise<any[]> {
+  async listTestRuns(
+    bucketKey: string,
+    testId: string,
+    count?: number,
+    offset?: number
+  ): Promise<any[]> {
     let params: Record<string, any> = {};
     if (count) params.count = count;
     if (offset) params.offset = offset;
-    let response = await this.axios.get(`/buckets/${bucketKey}/tests/${testId}/results`, { params });
+    let response = await this.axios.get(`/buckets/${bucketKey}/tests/${testId}/results`, {
+      params
+    });
     return response.data?.data || [];
   }
 
   async getTestRun(bucketKey: string, testId: string, testRunId: string): Promise<any> {
-    let response = await this.axios.get(`/buckets/${bucketKey}/tests/${testId}/results/${testRunId}`);
+    let response = await this.axios.get(
+      `/buckets/${bucketKey}/tests/${testId}/results/${testRunId}`
+    );
     return response.data?.data;
   }
 
@@ -104,28 +123,40 @@ export class RunscopeClient {
     return response.data?.data || [];
   }
 
-  async createEnvironment(bucketKey: string, testId: string, params: {
-    name: string;
-    initialVariables?: Record<string, string>;
-    regions?: string[];
-    webhooks?: string[];
-    remoteAgents?: any[];
-  }): Promise<any> {
+  async createEnvironment(
+    bucketKey: string,
+    testId: string,
+    params: {
+      name: string;
+      initialVariables?: Record<string, string>;
+      regions?: string[];
+      webhooks?: string[];
+      remoteAgents?: any[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { name: params.name };
     if (params.initialVariables) body.initial_variables = params.initialVariables;
     if (params.regions) body.regions = params.regions;
     if (params.webhooks) body.webhooks = params.webhooks;
     if (params.remoteAgents) body.remote_agents = params.remoteAgents;
-    let response = await this.axios.post(`/buckets/${bucketKey}/tests/${testId}/environments`, body);
+    let response = await this.axios.post(
+      `/buckets/${bucketKey}/tests/${testId}/environments`,
+      body
+    );
     return response.data?.data;
   }
 
-  async updateEnvironment(bucketKey: string, testId: string, environmentId: string, params: {
-    name?: string;
-    initialVariables?: Record<string, string>;
-    regions?: string[];
-    webhooks?: string[];
-  }): Promise<any> {
+  async updateEnvironment(
+    bucketKey: string,
+    testId: string,
+    environmentId: string,
+    params: {
+      name?: string;
+      initialVariables?: Record<string, string>;
+      regions?: string[];
+      webhooks?: string[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name) body.name = params.name;
     if (params.initialVariables) body.initial_variables = params.initialVariables;
@@ -152,17 +183,24 @@ export class RunscopeClient {
     return response.data?.data || [];
   }
 
-  async createSchedule(bucketKey: string, testId: string, params: {
-    environmentId: string;
-    interval: string;
-    note?: string;
-  }): Promise<any> {
+  async createSchedule(
+    bucketKey: string,
+    testId: string,
+    params: {
+      environmentId: string;
+      interval: string;
+      note?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       environment_id: params.environmentId,
-      interval: params.interval,
+      interval: params.interval
     };
     if (params.note) body.note = params.note;
-    let response = await this.axios.post(`/buckets/${bucketKey}/tests/${testId}/schedules`, body);
+    let response = await this.axios.post(
+      `/buckets/${bucketKey}/tests/${testId}/schedules`,
+      body
+    );
     return response.data?.data;
   }
 

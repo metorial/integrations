@@ -7,53 +7,55 @@ let eventTargetSchema = z.object({
   targetId: z.string(),
   targetType: z.string(),
   displayName: z.string().optional(),
-  alternateId: z.string().optional(),
+  alternateId: z.string().optional()
 });
 
-export let eventHookTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Hook',
-    key: 'event_hook',
-    description: 'Receives Okta event hook notifications for user lifecycle, authentication, group, application, policy, and security events. Supports auto-registration of webhooks with Okta.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event UUID'),
-    eventType: z.string().describe('Okta event type identifier'),
-    published: z.string().describe('ISO 8601 timestamp'),
-    severity: z.string().describe('Event severity'),
-    displayMessage: z.string().describe('Human-readable description'),
-    actorId: z.string(),
-    actorType: z.string(),
-    actorDisplayName: z.string().optional(),
-    actorAlternateId: z.string().optional(),
-    outcomeResult: z.string(),
-    outcomeReason: z.string().optional(),
-    targets: z.array(eventTargetSchema).optional(),
-    rawEvent: z.record(z.string(), z.any()).describe('Full raw event payload from Okta'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique event UUID'),
-    eventType: z.string().describe('Okta event type, e.g. user.session.start'),
-    published: z.string().describe('When the event occurred'),
-    severity: z.string(),
-    displayMessage: z.string(),
-    actorId: z.string(),
-    actorType: z.string(),
-    actorDisplayName: z.string().optional(),
-    actorAlternateId: z.string().optional(),
-    outcomeResult: z.string(),
-    outcomeReason: z.string().optional(),
-    targets: z.array(eventTargetSchema).optional(),
-    primaryTargetId: z.string().optional().describe('ID of the first target resource'),
-    primaryTargetType: z.string().optional().describe('Type of the first target resource'),
-  }))
+export let eventHookTrigger = SlateTrigger.create(spec, {
+  name: 'Event Hook',
+  key: 'event_hook',
+  description:
+    'Receives Okta event hook notifications for user lifecycle, authentication, group, application, policy, and security events. Supports auto-registration of webhooks with Okta.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event UUID'),
+      eventType: z.string().describe('Okta event type identifier'),
+      published: z.string().describe('ISO 8601 timestamp'),
+      severity: z.string().describe('Event severity'),
+      displayMessage: z.string().describe('Human-readable description'),
+      actorId: z.string(),
+      actorType: z.string(),
+      actorDisplayName: z.string().optional(),
+      actorAlternateId: z.string().optional(),
+      outcomeResult: z.string(),
+      outcomeReason: z.string().optional(),
+      targets: z.array(eventTargetSchema).optional(),
+      rawEvent: z.record(z.string(), z.any()).describe('Full raw event payload from Okta')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique event UUID'),
+      eventType: z.string().describe('Okta event type, e.g. user.session.start'),
+      published: z.string().describe('When the event occurred'),
+      severity: z.string(),
+      displayMessage: z.string(),
+      actorId: z.string(),
+      actorType: z.string(),
+      actorDisplayName: z.string().optional(),
+      actorAlternateId: z.string().optional(),
+      outcomeResult: z.string(),
+      outcomeReason: z.string().optional(),
+      targets: z.array(eventTargetSchema).optional(),
+      primaryTargetId: z.string().optional().describe('ID of the first target resource'),
+      primaryTargetType: z.string().optional().describe('Type of the first target resource')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new OktaClient({
         domain: ctx.config.domain,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       // Register an event hook with Okta for common event types
@@ -83,13 +85,13 @@ export let eventHookTrigger = SlateTrigger.create(
         'policy.lifecycle.update',
         'policy.lifecycle.create',
         'policy.lifecycle.delete',
-        'security.threat.detected',
+        'security.threat.detected'
       ];
 
       let hook = await client.createEventHook({
         name: `Slates Event Hook`,
         url: ctx.input.webhookBaseUrl,
-        eventTypes,
+        eventTypes
       });
 
       // Verify the event hook so Okta can start sending events
@@ -101,15 +103,15 @@ export let eventHookTrigger = SlateTrigger.create(
 
       return {
         registrationDetails: {
-          eventHookId: hook.id,
-        },
+          eventHookId: hook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new OktaClient({
         domain: ctx.config.domain,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let hookId = ctx.input.registrationDetails?.eventHookId;
@@ -123,7 +125,7 @@ export let eventHookTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let request = ctx.request;
 
       // Handle Okta verification challenge (one-time GET request)
@@ -137,8 +139,8 @@ export let eventHookTrigger = SlateTrigger.create(
             inputs: [],
             updatedState: {
               verified: true,
-              verificationChallenge: challenge,
-            },
+              verificationChallenge: challenge
+            }
           };
         }
         return { inputs: [] };
@@ -171,15 +173,15 @@ export let eventHookTrigger = SlateTrigger.create(
           targetId: t.id || '',
           targetType: t.type || '',
           displayName: t.displayName,
-          alternateId: t.alternateId,
+          alternateId: t.alternateId
         })),
-        rawEvent: event,
+        rawEvent: event
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType } = ctx.input;
 
       // Map Okta event types to simplified categories
@@ -204,8 +206,9 @@ export let eventHookTrigger = SlateTrigger.create(
           outcomeReason: ctx.input.outcomeReason,
           targets: ctx.input.targets,
           primaryTargetId: primaryTarget?.targetId,
-          primaryTargetType: primaryTarget?.targetType,
-        },
+          primaryTargetType: primaryTarget?.targetType
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

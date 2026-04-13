@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0 (Partner API)',
@@ -14,23 +16,22 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://app.lexoffice.de/oauth2/authorize?${params.toString()}`,
+        url: `https://app.lexoffice.de/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
       let response = await http.post(
@@ -38,14 +39,14 @@ export let auth = SlateAuth.create()
         new URLSearchParams({
           grant_type: 'authorization_code',
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: ctx.redirectUri
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
+            Authorization: `Basic ${credentials}`,
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json',
-          },
+            Accept: 'application/json'
+          }
         }
       );
 
@@ -59,33 +60,32 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let http = createAxios();
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
       let response = await http.post(
         'https://app.lexoffice.de/oauth2/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken,
+          refresh_token: ctx.output.refreshToken
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
+            Authorization: `Basic ${credentials}`,
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json',
-          },
+            Accept: 'application/json'
+          }
         }
       );
 
@@ -99,21 +99,21 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let http = createAxios({
-        baseURL: 'https://api.lexware.io/v1',
+        baseURL: 'https://api.lexware.io/v1'
       });
 
       let response = await http.get('/profile', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/json'
+        }
       });
 
       let profile = response.data;
@@ -121,10 +121,10 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: profile.organizationId,
-          name: profile.companyName ?? profile.businessName,
-        },
+          name: profile.companyName ?? profile.businessName
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -132,27 +132,31 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your Lexoffice API key generated from https://app.lexware.de/addons/public-api'),
+      apiKey: z
+        .string()
+        .describe(
+          'Your Lexoffice API key generated from https://app.lexware.de/addons/public-api'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let http = createAxios({
-        baseURL: 'https://api.lexware.io/v1',
+        baseURL: 'https://api.lexware.io/v1'
       });
 
       let response = await http.get('/profile', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/json'
+        }
       });
 
       let profile = response.data;
@@ -160,8 +164,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: profile.organizationId,
-          name: profile.companyName ?? profile.businessName,
-        },
+          name: profile.companyName ?? profile.businessName
+        }
       };
-    },
+    }
   });

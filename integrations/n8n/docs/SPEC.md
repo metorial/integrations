@@ -28,6 +28,7 @@ X-N8N-API-KEY: <your-api-key>
 ```
 
 **Base URL:**
+
 - Self-hosted: `<N8N_HOST>:<N8N_PORT>/<N8N_PATH>/api/v1/`
 - n8n Cloud: `<your-instance>.app.n8n.cloud/api/v1/`
 

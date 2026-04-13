@@ -73,8 +73,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.currencybeacon.com/v1',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -92,13 +92,13 @@ export class Client {
     return {
       date: data.response.date,
       base: data.response.base,
-      rates: data.response.rates,
+      rates: data.response.rates
     };
   }
 
   async getHistoricalRates(params: HistoricalRatesParams): Promise<HistoricalRatesResponse> {
     let queryParams: Record<string, string> = {
-      date: params.date,
+      date: params.date
     };
     if (params.base) {
       queryParams.base = params.base;
@@ -112,7 +112,7 @@ export class Client {
     return {
       date: data.response.date,
       base: data.response.base,
-      rates: data.response.rates,
+      rates: data.response.rates
     };
   }
 
@@ -120,7 +120,7 @@ export class Client {
     let queryParams: Record<string, string> = {
       from: params.from,
       to: params.to,
-      amount: String(params.amount),
+      amount: String(params.amount)
     };
     if (params.date) {
       queryParams.date = params.date;
@@ -134,14 +134,14 @@ export class Client {
       from: data.response.from,
       to: data.response.to,
       amount: data.response.amount,
-      value: data.response.value,
+      value: data.response.value
     };
   }
 
   async getTimeSeries(params: TimeSeriesParams): Promise<TimeSeriesResponse> {
     let queryParams: Record<string, string> = {
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.base) {
       queryParams.base = params.base;
@@ -156,7 +156,7 @@ export class Client {
       base: data.response.base,
       startDate: data.response.start_date,
       endDate: data.response.end_date,
-      rates: data.response.rates,
+      rates: data.response.rates
     };
   }
 
@@ -174,7 +174,7 @@ export class Client {
       symbol: c.symbol,
       symbolFirst: c.symbol_first,
       decimalMark: c.decimal_mark,
-      thousandsSeparator: c.thousands_separator,
+      thousandsSeparator: c.thousands_separator
     }));
 
     return currencies;

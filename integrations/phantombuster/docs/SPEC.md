@@ -14,6 +14,7 @@ Navigate to your workspace settings, then under the Technical section, select AP
 **Base URL:** `https://api.phantombuster.com/api/v2/` (v2 is the current version; v1 is also available at `https://phantombuster.com/api/v1/`).
 
 **Example request:**
+
 ```
 GET /api/v2/agents/fetch?id=YOUR_PHANTOM_ID
 Host: api.phantombuster.com

@@ -14,39 +14,46 @@ let accountOutputSchema = z.object({
   active: z.boolean().nullable().optional().describe('Whether account is active'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  rawData: z.any().optional().describe('Complete raw account data'),
+  rawData: z.any().optional().describe('Complete raw account data')
 });
 
-export let searchAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Accounts',
-    key: 'search_accounts',
-    description: `Search and list accounts in Coupa. Filter by code, name, active status, or account segments. Accounts represent your financial chart of accounts structure.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchAccounts = SlateTool.create(spec, {
+  name: 'Search Accounts',
+  key: 'search_accounts',
+  description: `Search and list accounts in Coupa. Filter by code, name, active status, or account segments. Accounts represent your financial chart of accounts structure.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    code: z.string().optional().describe('Filter by account code'),
-    name: z.string().optional().describe('Filter by account name'),
-    active: z.boolean().optional().describe('Filter by active status'),
-    updatedAfter: z.string().optional().describe('Filter accounts updated after this date (ISO 8601)'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional Coupa query filters'),
-    orderBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    accounts: z.array(accountOutputSchema).describe('List of matching accounts'),
-    count: z.number().describe('Number of accounts returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      code: z.string().optional().describe('Filter by account code'),
+      name: z.string().optional().describe('Filter by account name'),
+      active: z.boolean().optional().describe('Filter by active status'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter accounts updated after this date (ISO 8601)'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional Coupa query filters'),
+      orderBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z.array(accountOutputSchema).describe('List of matching accounts'),
+      count: z.number().describe('Number of accounts returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let filters: Record<string, string> = {};
@@ -65,7 +72,7 @@ export let searchAccounts = SlateTool.create(
       orderBy: ctx.input.orderBy,
       dir: ctx.input.sortDirection,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let accounts = (Array.isArray(results) ? results : []).map((a: any) => ({
@@ -79,50 +86,49 @@ export let searchAccounts = SlateTool.create(
       active: a.active ?? null,
       createdAt: a['created-at'] ?? a.created_at ?? null,
       updatedAt: a['updated-at'] ?? a.updated_at ?? null,
-      rawData: a,
+      rawData: a
     }));
 
     return {
       output: {
         accounts,
-        count: accounts.length,
+        count: accounts.length
       },
-      message: `Found **${accounts.length}** account(s).`,
+      message: `Found **${accounts.length}** account(s).`
     };
   })
   .build();
 
-export let createAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Create Account',
-    key: 'create_account',
-    description: `Create a new account in Coupa to represent an item in your chart of accounts.`,
-    tags: {
-      destructive: false,
-    },
+export let createAccount = SlateTool.create(spec, {
+  name: 'Create Account',
+  key: 'create_account',
+  description: `Create a new account in Coupa to represent an item in your chart of accounts.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    code: z.string().describe('Account code'),
-    name: z.string().describe('Account name'),
-    segmentOne: z.string().optional().describe('Segment 1 value'),
-    segmentTwo: z.string().optional().describe('Segment 2 value'),
-    segmentThree: z.string().optional().describe('Segment 3 value'),
-    accountType: z.object({ name: z.string() }).optional().describe('Account type'),
-    active: z.boolean().optional().describe('Whether account is active'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-  }))
+})
+  .input(
+    z.object({
+      code: z.string().describe('Account code'),
+      name: z.string().describe('Account name'),
+      segmentOne: z.string().optional().describe('Segment 1 value'),
+      segmentTwo: z.string().optional().describe('Segment 2 value'),
+      segmentThree: z.string().optional().describe('Segment 3 value'),
+      accountType: z.object({ name: z.string() }).optional().describe('Account type'),
+      active: z.boolean().optional().describe('Whether account is active'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Custom field values')
+    })
+  )
   .output(accountOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let payload: any = {
       code: ctx.input.code,
-      name: ctx.input.name,
+      name: ctx.input.name
     };
 
     if (ctx.input.segmentOne) payload['segment-1'] = ctx.input.segmentOne;
@@ -151,9 +157,9 @@ export let createAccount = SlateTool.create(
         active: result.active ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `Created account **${result.code ?? result.id}** — ${result.name}.`,
+      message: `Created account **${result.code ?? result.id}** — ${result.name}.`
     };
   })
   .build();

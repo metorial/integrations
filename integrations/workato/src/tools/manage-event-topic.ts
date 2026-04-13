@@ -3,53 +3,83 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEventTopicTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Event Topic',
-    key: 'manage_event_topic',
-    description: `Create, update, list, or delete event stream topics. Topics are channels for pub/sub messaging between recipes and external systems. Also supports publishing and consuming messages.`,
-    tags: {
-      destructive: true,
-    },
+export let manageEventTopicTool = SlateTool.create(spec, {
+  name: 'Manage Event Topic',
+  key: 'manage_event_topic',
+  description: `Create, update, list, or delete event stream topics. Topics are channels for pub/sub messaging between recipes and external systems. Also supports publishing and consuming messages.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'get', 'update', 'delete', 'publish', 'consume'])
-      .describe('Action to perform'),
-    topicId: z.string().optional().describe('Topic ID (required for get/update/delete/publish/consume)'),
-    name: z.string().optional().describe('Topic name (for list filter or create/update)'),
-    description: z.string().optional().describe('Topic description (for create/update)'),
-    retentionSeconds: z.number().optional().describe('Message retention period in seconds (default 604800 = 7 days)'),
-    schema: z.array(z.record(z.string(), z.unknown())).optional().describe('Topic message schema (for create)'),
-    message: z.record(z.string(), z.unknown()).optional().describe('Message payload to publish'),
-    afterMessageId: z.string().optional().describe('Consume messages after this message ID'),
-    sinceTime: z.string().optional().describe('Consume messages since this ISO 8601 timestamp'),
-    batchSize: z.number().optional().describe('Number of messages to consume (max 50)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    topics: z.array(z.object({
-      topicId: z.number().describe('Topic ID'),
-      name: z.string().describe('Topic name'),
-      description: z.string().nullable().describe('Topic description'),
-      retention: z.number().nullable().describe('Retention period in seconds'),
-      createdAt: z.string().describe('Creation timestamp'),
-    })).optional().describe('List of topics'),
-    topic: z.object({
-      topicId: z.number().describe('Topic ID'),
-      name: z.string().describe('Topic name'),
-      description: z.string().nullable().describe('Topic description'),
-      retention: z.number().nullable().describe('Retention period in seconds'),
-    }).optional().describe('Single topic details'),
-    messageId: z.string().optional().describe('Published message ID'),
-    messages: z.array(z.object({
-      messageId: z.string().describe('Message ID'),
-      time: z.string().describe('Message timestamp'),
-      content: z.record(z.string(), z.unknown()).describe('Message payload'),
-    })).optional().describe('Consumed messages'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'get', 'update', 'delete', 'publish', 'consume'])
+        .describe('Action to perform'),
+      topicId: z
+        .string()
+        .optional()
+        .describe('Topic ID (required for get/update/delete/publish/consume)'),
+      name: z.string().optional().describe('Topic name (for list filter or create/update)'),
+      description: z.string().optional().describe('Topic description (for create/update)'),
+      retentionSeconds: z
+        .number()
+        .optional()
+        .describe('Message retention period in seconds (default 604800 = 7 days)'),
+      schema: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Topic message schema (for create)'),
+      message: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Message payload to publish'),
+      afterMessageId: z.string().optional().describe('Consume messages after this message ID'),
+      sinceTime: z
+        .string()
+        .optional()
+        .describe('Consume messages since this ISO 8601 timestamp'),
+      batchSize: z.number().optional().describe('Number of messages to consume (max 50)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      topics: z
+        .array(
+          z.object({
+            topicId: z.number().describe('Topic ID'),
+            name: z.string().describe('Topic name'),
+            description: z.string().nullable().describe('Topic description'),
+            retention: z.number().nullable().describe('Retention period in seconds'),
+            createdAt: z.string().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of topics'),
+      topic: z
+        .object({
+          topicId: z.number().describe('Topic ID'),
+          name: z.string().describe('Topic name'),
+          description: z.string().nullable().describe('Topic description'),
+          retention: z.number().nullable().describe('Retention period in seconds')
+        })
+        .optional()
+        .describe('Single topic details'),
+      messageId: z.string().optional().describe('Published message ID'),
+      messages: z
+        .array(
+          z.object({
+            messageId: z.string().describe('Message ID'),
+            time: z.string().describe('Message timestamp'),
+            content: z.record(z.string(), z.unknown()).describe('Message payload')
+          })
+        )
+        .optional()
+        .describe('Consumed messages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action, topicId, name, description, retentionSeconds, schema } = ctx.input;
 
@@ -61,11 +91,11 @@ export let manageEventTopicTool = SlateTool.create(
         name: t.name,
         description: t.description ?? null,
         retention: t.retention ?? null,
-        createdAt: t.created_at,
+        createdAt: t.created_at
       }));
       return {
         output: { success: true, topics },
-        message: `Found **${topics.length}** event topics.`,
+        message: `Found **${topics.length}** event topics.`
       };
     }
 
@@ -75,7 +105,7 @@ export let manageEventTopicTool = SlateTool.create(
         name,
         description,
         retention: retentionSeconds,
-        schema,
+        schema
       });
       let created = result.data ?? result;
       return {
@@ -85,10 +115,10 @@ export let manageEventTopicTool = SlateTool.create(
             topicId: created.id,
             name: created.name,
             description: created.description ?? null,
-            retention: created.retention ?? null,
-          },
+            retention: created.retention ?? null
+          }
         },
-        message: `Created topic **${name}** with ID ${created.id}.`,
+        message: `Created topic **${name}** with ID ${created.id}.`
       };
     }
 
@@ -104,10 +134,10 @@ export let manageEventTopicTool = SlateTool.create(
             topicId: t.id,
             name: t.name,
             description: t.description ?? null,
-            retention: t.retention ?? null,
-          },
+            retention: t.retention ?? null
+          }
         },
-        message: `Topic **${t.name}** (ID: ${t.id}).`,
+        message: `Topic **${t.name}** (ID: ${t.id}).`
       };
     }
 
@@ -115,11 +145,11 @@ export let manageEventTopicTool = SlateTool.create(
       await client.updateTopic(topicId, {
         name,
         description,
-        retention: retentionSeconds,
+        retention: retentionSeconds
       });
       return {
         output: { success: true },
-        message: `Updated topic **${topicId}**.`,
+        message: `Updated topic **${topicId}**.`
       };
     }
 
@@ -127,7 +157,7 @@ export let manageEventTopicTool = SlateTool.create(
       await client.deleteTopic(topicId);
       return {
         output: { success: true },
-        message: `Deleted topic **${topicId}**.`,
+        message: `Deleted topic **${topicId}**.`
       };
     }
 
@@ -136,7 +166,7 @@ export let manageEventTopicTool = SlateTool.create(
       let result = await client.publishMessage(topicId, ctx.input.message);
       return {
         output: { success: true, messageId: result.message_id },
-        message: `Published message to topic ${topicId}. Message ID: **${result.message_id}**.`,
+        message: `Published message to topic ${topicId}. Message ID: **${result.message_id}**.`
       };
     }
 
@@ -144,16 +174,16 @@ export let manageEventTopicTool = SlateTool.create(
       let result = await client.consumeMessages(topicId, {
         afterMessageId: ctx.input.afterMessageId,
         sinceTime: ctx.input.sinceTime,
-        batchSize: ctx.input.batchSize,
+        batchSize: ctx.input.batchSize
       });
       let messages = (result.messages ?? []).map((m: any) => ({
         messageId: m.message_id,
         time: m.time,
-        content: m.payload ?? m,
+        content: m.payload ?? m
       }));
       return {
         output: { success: true, messages },
-        message: `Consumed **${messages.length}** messages from topic ${topicId}.`,
+        message: `Consumed **${messages.length}** messages from topic ${topicId}.`
       };
     }
 

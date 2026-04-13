@@ -1,19 +1,19 @@
 import { createAxios } from 'slates';
 
 let snapshotAxios = createAxios({
-  baseURL: 'https://api.platerecognizer.com/v1',
+  baseURL: 'https://api.platerecognizer.com/v1'
 });
 
 let blurAxios = createAxios({
-  baseURL: 'https://blur.platerecognizer.com/v1',
+  baseURL: 'https://blur.platerecognizer.com/v1'
 });
 
 let usdotAxios = createAxios({
-  baseURL: 'https://usdot-api.parkpow.com/api/v1',
+  baseURL: 'https://usdot-api.parkpow.com/api/v1'
 });
 
 let containerAxios = createAxios({
-  baseURL: 'https://container-api.parkpow.com/api/v1',
+  baseURL: 'https://container-api.parkpow.com/api/v1'
 });
 
 export interface PlateReaderOptions {
@@ -90,7 +90,7 @@ export class Client {
     }
 
     let response = await snapshotAxios.post('/plate-reader/', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -124,7 +124,7 @@ export class Client {
     }
 
     let response = await blurAxios.post('/blur', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -148,7 +148,7 @@ export class Client {
     }
 
     let response = await snapshotAxios.post('/vin/reader/', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -172,7 +172,7 @@ export class Client {
     }
 
     let response = await snapshotAxios.post('/trailerid/reader/', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -196,7 +196,7 @@ export class Client {
     }
 
     let response = await usdotAxios.post('/predict/', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -220,7 +220,7 @@ export class Client {
     }
 
     let response = await containerAxios.post('/predict/', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -244,7 +244,7 @@ export class Client {
     }
 
     let response = await snapshotAxios.post('/boatid/reader/', formData, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return response.data;
@@ -252,21 +252,21 @@ export class Client {
 
   async getSnapshotStatistics() {
     let response = await snapshotAxios.get('/statistics/', {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
     return response.data;
   }
 
   async getVinStatistics() {
     let response = await snapshotAxios.get('/vin/statistics/', {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
     return response.data;
   }
 
   async getTrailerStatistics() {
     let response = await snapshotAxios.get('/trailerid/statistics/', {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
     return response.data;
   }

@@ -7,7 +7,9 @@ let getGraphqlUrl = (region: Region): string =>
   region === 'eu' ? 'https://api.eu.newrelic.com/graphql' : 'https://api.newrelic.com/graphql';
 
 let getMetricIngestUrl = (region: Region): string =>
-  region === 'eu' ? 'https://metric-api.eu.newrelic.com/metric/v1' : 'https://metric-api.newrelic.com/metric/v1';
+  region === 'eu'
+    ? 'https://metric-api.eu.newrelic.com/metric/v1'
+    : 'https://metric-api.newrelic.com/metric/v1';
 
 let getEventIngestUrl = (region: Region, accountId: string): string =>
   region === 'eu'
@@ -15,10 +17,14 @@ let getEventIngestUrl = (region: Region, accountId: string): string =>
     : `https://insights-collector.nr-data.net/v1/accounts/${accountId}/events`;
 
 let getLogIngestUrl = (region: Region): string =>
-  region === 'eu' ? 'https://log-api.eu.newrelic.com/log/v1' : 'https://log-api.newrelic.com/log/v1';
+  region === 'eu'
+    ? 'https://log-api.eu.newrelic.com/log/v1'
+    : 'https://log-api.newrelic.com/log/v1';
 
 let getTraceIngestUrl = (region: Region): string =>
-  region === 'eu' ? 'https://trace-api.eu.newrelic.com/trace/v1' : 'https://trace-api.newrelic.com/trace/v1';
+  region === 'eu'
+    ? 'https://trace-api.eu.newrelic.com/trace/v1'
+    : 'https://trace-api.newrelic.com/trace/v1';
 
 export interface ClientConfig {
   token: string;
@@ -37,19 +43,21 @@ export class NerdGraphClient {
       baseURL: getGraphqlUrl(config.region),
       headers: {
         'API-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async query(graphqlQuery: string, variables?: Record<string, any>): Promise<any> {
     let response = await this.http.post('', {
       query: graphqlQuery,
-      variables: variables || {},
+      variables: variables || {}
     });
 
     if (response.data?.errors?.length) {
-      throw new Error(`NerdGraph error: ${response.data.errors.map((e: any) => e.message).join(', ')}`);
+      throw new Error(
+        `NerdGraph error: ${response.data.errors.map((e: any) => e.message).join(', ')}`
+      );
     }
 
     return response.data?.data;
@@ -77,10 +85,7 @@ export class NerdGraphClient {
     return data?.actor?.account?.nrql;
   }
 
-  async searchEntities(params: {
-    query?: string;
-    cursor?: string;
-  }): Promise<any> {
+  async searchEntities(params: { query?: string; cursor?: string }): Promise<any> {
     let data = await this.query(
       `query($query: String, $cursor: String) {
         actor {
@@ -142,7 +147,10 @@ export class NerdGraphClient {
     return data?.actor?.entity;
   }
 
-  async addEntityTags(entityGuid: string, tags: Array<{ key: string; values: string[] }>): Promise<any> {
+  async addEntityTags(
+    entityGuid: string,
+    tags: Array<{ key: string; values: string[] }>
+  ): Promise<any> {
     let data = await this.query(
       `mutation($guid: EntityGuid!, $tags: [TaggingTagInput!]!) {
         taggingAddTagsToEntity(guid: $guid, tags: $tags) {
@@ -171,12 +179,17 @@ export class NerdGraphClient {
 
     let result = data?.taggingDeleteTagFromEntity;
     if (result?.errors?.length) {
-      throw new Error(`Tag deletion error: ${result.errors.map((e: any) => e.message).join(', ')}`);
+      throw new Error(
+        `Tag deletion error: ${result.errors.map((e: any) => e.message).join(', ')}`
+      );
     }
     return result;
   }
 
-  async replaceEntityTags(entityGuid: string, tags: Array<{ key: string; values: string[] }>): Promise<any> {
+  async replaceEntityTags(
+    entityGuid: string,
+    tags: Array<{ key: string; values: string[] }>
+  ): Promise<any> {
     let data = await this.query(
       `mutation($guid: EntityGuid!, $tags: [TaggingTagInput!]!) {
         taggingReplaceTagsOnEntity(guid: $guid, tags: $tags) {
@@ -188,22 +201,47 @@ export class NerdGraphClient {
 
     let result = data?.taggingReplaceTagsOnEntity;
     if (result?.errors?.length) {
-      throw new Error(`Tag replace error: ${result.errors.map((e: any) => e.message).join(', ')}`);
+      throw new Error(
+        `Tag replace error: ${result.errors.map((e: any) => e.message).join(', ')}`
+      );
     }
     return result;
   }
 
-  async createNrqlAlertCondition(policyId: string, params: {
-    name: string;
-    nrql: string;
-    enabled?: boolean;
-    type: 'STATIC' | 'BASELINE';
-    critical?: { threshold: number; thresholdDuration: number; operator: string; thresholdOccurrences: string };
-    warning?: { threshold: number; thresholdDuration: number; operator: string; thresholdOccurrences: string };
-    signal?: { aggregationDelay?: number; aggregationMethod?: string; aggregationWindow?: number; fillOption?: string; fillValue?: number };
-    expiration?: { closeViolationsOnExpiration?: boolean; expirationDuration?: number; openViolationOnExpiration?: boolean };
-    description?: string;
-  }): Promise<any> {
+  async createNrqlAlertCondition(
+    policyId: string,
+    params: {
+      name: string;
+      nrql: string;
+      enabled?: boolean;
+      type: 'STATIC' | 'BASELINE';
+      critical?: {
+        threshold: number;
+        thresholdDuration: number;
+        operator: string;
+        thresholdOccurrences: string;
+      };
+      warning?: {
+        threshold: number;
+        thresholdDuration: number;
+        operator: string;
+        thresholdOccurrences: string;
+      };
+      signal?: {
+        aggregationDelay?: number;
+        aggregationMethod?: string;
+        aggregationWindow?: number;
+        fillOption?: string;
+        fillValue?: number;
+      };
+      expiration?: {
+        closeViolationsOnExpiration?: boolean;
+        expirationDuration?: number;
+        openViolationOnExpiration?: boolean;
+      };
+      description?: string;
+    }
+  ): Promise<any> {
     let terms: any[] = [];
     if (params.critical) {
       terms.push({ ...params.critical, priority: 'CRITICAL' });
@@ -217,21 +255,26 @@ export class NerdGraphClient {
       enabled: params.enabled !== false,
       nrql: { query: params.nrql },
       terms,
-      signal: params.signal || { aggregationWindow: 60, aggregationMethod: 'EVENT_FLOW', aggregationDelay: 120 },
-      description: params.description || '',
+      signal: params.signal || {
+        aggregationWindow: 60,
+        aggregationMethod: 'EVENT_FLOW',
+        aggregationDelay: 120
+      },
+      description: params.description || ''
     };
 
     if (params.expiration) {
       conditionInput.expiration = params.expiration;
     }
 
-    let mutation = params.type === 'STATIC'
-      ? `mutation($accountId: Int!, $policyId: ID!, $condition: AlertsNrqlConditionStaticInput!) {
+    let mutation =
+      params.type === 'STATIC'
+        ? `mutation($accountId: Int!, $policyId: ID!, $condition: AlertsNrqlConditionStaticInput!) {
           alertsNrqlConditionStaticCreate(accountId: $accountId, policyId: $policyId, condition: $condition) {
             id name enabled nrql { query } terms { threshold thresholdDuration operator priority thresholdOccurrences } policyId description
           }
         }`
-      : `mutation($accountId: Int!, $policyId: ID!, $condition: AlertsNrqlConditionBaselineInput!) {
+        : `mutation($accountId: Int!, $policyId: ID!, $condition: AlertsNrqlConditionBaselineInput!) {
           alertsNrqlConditionBaselineCreate(accountId: $accountId, policyId: $policyId, condition: $condition) {
             id name enabled nrql { query } terms { threshold thresholdDuration operator priority thresholdOccurrences } policyId description
           }
@@ -240,7 +283,7 @@ export class NerdGraphClient {
     let data = await this.query(mutation, {
       accountId: parseInt(this.accountId),
       policyId,
-      condition: conditionInput,
+      condition: conditionInput
     });
 
     return params.type === 'STATIC'
@@ -248,15 +291,28 @@ export class NerdGraphClient {
       : data?.alertsNrqlConditionBaselineCreate;
   }
 
-  async updateNrqlAlertCondition(conditionId: string, params: {
-    name?: string;
-    nrql?: string;
-    enabled?: boolean;
-    type: 'STATIC' | 'BASELINE';
-    critical?: { threshold: number; thresholdDuration: number; operator: string; thresholdOccurrences: string };
-    warning?: { threshold: number; thresholdDuration: number; operator: string; thresholdOccurrences: string };
-    description?: string;
-  }): Promise<any> {
+  async updateNrqlAlertCondition(
+    conditionId: string,
+    params: {
+      name?: string;
+      nrql?: string;
+      enabled?: boolean;
+      type: 'STATIC' | 'BASELINE';
+      critical?: {
+        threshold: number;
+        thresholdDuration: number;
+        operator: string;
+        thresholdOccurrences: string;
+      };
+      warning?: {
+        threshold: number;
+        thresholdDuration: number;
+        operator: string;
+        thresholdOccurrences: string;
+      };
+      description?: string;
+    }
+  ): Promise<any> {
     let conditionInput: any = {};
     if (params.name !== undefined) conditionInput.name = params.name;
     if (params.nrql !== undefined) conditionInput.nrql = { query: params.nrql };
@@ -268,13 +324,14 @@ export class NerdGraphClient {
     if (params.warning) terms.push({ ...params.warning, priority: 'WARNING' });
     if (terms.length > 0) conditionInput.terms = terms;
 
-    let mutation = params.type === 'STATIC'
-      ? `mutation($accountId: Int!, $id: ID!, $condition: AlertsNrqlConditionStaticInput!) {
+    let mutation =
+      params.type === 'STATIC'
+        ? `mutation($accountId: Int!, $id: ID!, $condition: AlertsNrqlConditionStaticInput!) {
           alertsNrqlConditionStaticUpdate(accountId: $accountId, id: $id, condition: $condition) {
             id name enabled nrql { query } terms { threshold thresholdDuration operator priority thresholdOccurrences } policyId description
           }
         }`
-      : `mutation($accountId: Int!, $id: ID!, $condition: AlertsNrqlConditionBaselineInput!) {
+        : `mutation($accountId: Int!, $id: ID!, $condition: AlertsNrqlConditionBaselineInput!) {
           alertsNrqlConditionBaselineUpdate(accountId: $accountId, id: $id, condition: $condition) {
             id name enabled nrql { query } terms { threshold thresholdDuration operator priority thresholdOccurrences } policyId description
           }
@@ -283,7 +340,7 @@ export class NerdGraphClient {
     let data = await this.query(mutation, {
       accountId: parseInt(this.accountId),
       id: conditionId,
-      condition: conditionInput,
+      condition: conditionInput
     });
 
     return params.type === 'STATIC'
@@ -323,16 +380,16 @@ export class NerdGraphClient {
       name: params.name,
       description: params.description || '',
       permissions: params.permissions || 'PUBLIC_READ_WRITE',
-      pages: params.pages.map((page) => ({
+      pages: params.pages.map(page => ({
         name: page.name,
         description: page.description || '',
-        widgets: page.widgets.map((widget) => ({
+        widgets: page.widgets.map(widget => ({
           title: widget.title,
           visualization: { id: widget.visualization },
           rawConfiguration: widget.rawConfiguration,
-          layout: widget.layout,
-        })),
-      })),
+          layout: widget.layout
+        }))
+      }))
     };
 
     let data = await this.query(
@@ -350,40 +407,45 @@ export class NerdGraphClient {
 
     let result = data?.dashboardCreate;
     if (result?.errors?.length) {
-      throw new Error(`Dashboard create error: ${result.errors.map((e: any) => e.description).join(', ')}`);
+      throw new Error(
+        `Dashboard create error: ${result.errors.map((e: any) => e.description).join(', ')}`
+      );
     }
     return result?.entityResult;
   }
 
-  async updateDashboard(dashboardGuid: string, params: {
-    name?: string;
-    description?: string;
-    permissions?: string;
-    pages?: Array<{
-      name: string;
+  async updateDashboard(
+    dashboardGuid: string,
+    params: {
+      name?: string;
       description?: string;
-      widgets: Array<{
-        title: string;
-        visualization: string;
-        rawConfiguration: any;
-        layout?: { column: number; row: number; width: number; height: number };
+      permissions?: string;
+      pages?: Array<{
+        name: string;
+        description?: string;
+        widgets: Array<{
+          title: string;
+          visualization: string;
+          rawConfiguration: any;
+          layout?: { column: number; row: number; width: number; height: number };
+        }>;
       }>;
-    }>;
-  }): Promise<any> {
+    }
+  ): Promise<any> {
     let dashboardInput: any = {};
     if (params.name !== undefined) dashboardInput.name = params.name;
     if (params.description !== undefined) dashboardInput.description = params.description;
     if (params.permissions !== undefined) dashboardInput.permissions = params.permissions;
     if (params.pages !== undefined) {
-      dashboardInput.pages = params.pages.map((page) => ({
+      dashboardInput.pages = params.pages.map(page => ({
         name: page.name,
         description: page.description || '',
-        widgets: page.widgets.map((widget) => ({
+        widgets: page.widgets.map(widget => ({
           title: widget.title,
           visualization: { id: widget.visualization },
           rawConfiguration: widget.rawConfiguration,
-          layout: widget.layout,
-        })),
+          layout: widget.layout
+        }))
       }));
     }
 
@@ -402,7 +464,9 @@ export class NerdGraphClient {
 
     let result = data?.dashboardUpdate;
     if (result?.errors?.length) {
-      throw new Error(`Dashboard update error: ${result.errors.map((e: any) => e.description).join(', ')}`);
+      throw new Error(
+        `Dashboard update error: ${result.errors.map((e: any) => e.description).join(', ')}`
+      );
     }
     return result?.entityResult;
   }
@@ -420,7 +484,9 @@ export class NerdGraphClient {
 
     let result = data?.dashboardDelete;
     if (result?.errors?.length) {
-      throw new Error(`Dashboard delete error: ${result.errors.map((e: any) => e.description).join(', ')}`);
+      throw new Error(
+        `Dashboard delete error: ${result.errors.map((e: any) => e.description).join(', ')}`
+      );
     }
     return result;
   }
@@ -477,24 +543,28 @@ export class NerdGraphClient {
             uri: params.uri,
             period: params.period,
             status: params.status,
-            locations: params.locations,
-          },
+            locations: params.locations
+          }
         }
       );
       let result = data?.syntheticsCreateSimpleBrowserMonitor;
       if (result?.errors?.length) {
-        throw new Error(`Synthetics error: ${result.errors.map((e: any) => e.description).join(', ')}`);
+        throw new Error(
+          `Synthetics error: ${result.errors.map((e: any) => e.description).join(', ')}`
+        );
       }
       return result?.monitor;
     }
 
     if (monitorType === 'SCRIPT_BROWSER' || monitorType === 'SCRIPT_API') {
-      let mutationName = monitorType === 'SCRIPT_BROWSER'
-        ? 'syntheticsCreateScriptBrowserMonitor'
-        : 'syntheticsCreateScriptApiMonitor';
-      let inputType = monitorType === 'SCRIPT_BROWSER'
-        ? 'SyntheticsCreateScriptBrowserMonitorInput'
-        : 'SyntheticsCreateScriptApiMonitorInput';
+      let mutationName =
+        monitorType === 'SCRIPT_BROWSER'
+          ? 'syntheticsCreateScriptBrowserMonitor'
+          : 'syntheticsCreateScriptApiMonitor';
+      let inputType =
+        monitorType === 'SCRIPT_BROWSER'
+          ? 'SyntheticsCreateScriptBrowserMonitorInput'
+          : 'SyntheticsCreateScriptApiMonitorInput';
 
       let data = await this.query(
         `mutation($accountId: Int!, $monitor: ${inputType}!) {
@@ -511,13 +581,15 @@ export class NerdGraphClient {
             status: params.status,
             locations: params.locations,
             script: params.script,
-            ...(params.uri ? { uri: params.uri } : {}),
-          },
+            ...(params.uri ? { uri: params.uri } : {})
+          }
         }
       );
       let result = data?.[mutationName];
       if (result?.errors?.length) {
-        throw new Error(`Synthetics error: ${result.errors.map((e: any) => e.description).join(', ')}`);
+        throw new Error(
+          `Synthetics error: ${result.errors.map((e: any) => e.description).join(', ')}`
+        );
       }
       return result?.monitor;
     }
@@ -537,13 +609,15 @@ export class NerdGraphClient {
           uri: params.uri,
           period: params.period,
           status: params.status,
-          locations: params.locations,
-        },
+          locations: params.locations
+        }
       }
     );
     let result = data?.syntheticsCreateSimpleMonitor;
     if (result?.errors?.length) {
-      throw new Error(`Synthetics error: ${result.errors.map((e: any) => e.description).join(', ')}`);
+      throw new Error(
+        `Synthetics error: ${result.errors.map((e: any) => e.description).join(', ')}`
+      );
     }
     return result?.monitor;
   }
@@ -575,7 +649,7 @@ export class NerdGraphClient {
   }): Promise<any> {
     let deploymentInput: any = {
       entityGuid: params.entityGuid,
-      version: params.version || '',
+      version: params.version || ''
     };
     if (params.changelog) deploymentInput.changelog = params.changelog;
     if (params.commit) deploymentInput.commit = params.commit;
@@ -636,7 +710,7 @@ export class NerdGraphClient {
       {
         accountId: parseInt(this.accountId),
         cursor: params?.cursor,
-        filter: Object.keys(filterInput).length > 0 ? filterInput : undefined,
+        filter: Object.keys(filterInput).length > 0 ? filterInput : undefined
       }
     );
 
@@ -655,30 +729,34 @@ export class IngestClient {
     this.licenseKey = config.licenseKey;
   }
 
-  async ingestMetrics(metrics: Array<{
-    name: string;
-    type: string;
-    value: number;
-    timestamp?: number;
-    attributes?: Record<string, any>;
-  }>): Promise<any> {
+  async ingestMetrics(
+    metrics: Array<{
+      name: string;
+      type: string;
+      value: number;
+      timestamp?: number;
+      attributes?: Record<string, any>;
+    }>
+  ): Promise<any> {
     let http = createAxios({
       baseURL: getMetricIngestUrl(this.region),
       headers: {
         'Api-Key': this.licenseKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
-    let payload = [{
-      metrics: metrics.map((m) => ({
-        name: m.name,
-        type: m.type,
-        value: m.value,
-        timestamp: m.timestamp || Math.floor(Date.now() / 1000),
-        attributes: m.attributes || {},
-      })),
-    }];
+    let payload = [
+      {
+        metrics: metrics.map(m => ({
+          name: m.name,
+          type: m.type,
+          value: m.value,
+          timestamp: m.timestamp || Math.floor(Date.now() / 1000),
+          attributes: m.attributes || {}
+        }))
+      }
+    ];
 
     let response = await http.post('', payload);
     return response.data;
@@ -689,73 +767,81 @@ export class IngestClient {
       baseURL: getEventIngestUrl(this.region, this.accountId),
       headers: {
         'Api-Key': this.licenseKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     let response = await http.post('', events);
     return response.data;
   }
 
-  async ingestLogs(logs: Array<{
-    message: string;
-    timestamp?: number;
-    attributes?: Record<string, any>;
-  }>): Promise<any> {
+  async ingestLogs(
+    logs: Array<{
+      message: string;
+      timestamp?: number;
+      attributes?: Record<string, any>;
+    }>
+  ): Promise<any> {
     let http = createAxios({
       baseURL: getLogIngestUrl(this.region),
       headers: {
         'Api-Key': this.licenseKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
-    let payload = [{
-      logs: logs.map((l) => ({
-        message: l.message,
-        timestamp: l.timestamp || Date.now(),
-        attributes: l.attributes || {},
-      })),
-    }];
+    let payload = [
+      {
+        logs: logs.map(l => ({
+          message: l.message,
+          timestamp: l.timestamp || Date.now(),
+          attributes: l.attributes || {}
+        }))
+      }
+    ];
 
     let response = await http.post('', payload);
     return response.data;
   }
 
-  async ingestTraces(spans: Array<{
-    traceId: string;
-    spanId: string;
-    parentId?: string;
-    serviceName: string;
-    name: string;
-    durationMs: number;
-    timestamp?: number;
-    attributes?: Record<string, any>;
-  }>): Promise<any> {
+  async ingestTraces(
+    spans: Array<{
+      traceId: string;
+      spanId: string;
+      parentId?: string;
+      serviceName: string;
+      name: string;
+      durationMs: number;
+      timestamp?: number;
+      attributes?: Record<string, any>;
+    }>
+  ): Promise<any> {
     let http = createAxios({
       baseURL: getTraceIngestUrl(this.region),
       headers: {
         'Api-Key': this.licenseKey,
         'Content-Type': 'application/json',
         'Data-Format': 'newrelic',
-        'Data-Format-Version': '1',
-      },
+        'Data-Format-Version': '1'
+      }
     });
 
-    let payload = [{
-      spans: spans.map((s) => ({
-        'trace.id': s.traceId,
-        id: s.spanId,
-        attributes: {
-          'parent.id': s.parentId,
-          'service.name': s.serviceName,
-          name: s.name,
-          'duration.ms': s.durationMs,
-          timestamp: s.timestamp || Date.now(),
-          ...(s.attributes || {}),
-        },
-      })),
-    }];
+    let payload = [
+      {
+        spans: spans.map(s => ({
+          'trace.id': s.traceId,
+          id: s.spanId,
+          attributes: {
+            'parent.id': s.parentId,
+            'service.name': s.serviceName,
+            name: s.name,
+            'duration.ms': s.durationMs,
+            timestamp: s.timestamp || Date.now(),
+            ...(s.attributes || {})
+          }
+        }))
+      }
+    ];
 
     let response = await http.post('', payload);
     return response.data;

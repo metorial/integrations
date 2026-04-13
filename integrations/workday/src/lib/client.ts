@@ -90,10 +90,10 @@ export class WorkdayClient {
     this.ax = createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -129,7 +129,7 @@ export class WorkdayClient {
 
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
@@ -147,12 +147,15 @@ export class WorkdayClient {
 
   // --- Time Off ---
 
-  async getWorkerTimeOffEntries(workerId: string, params?: {
-    limit?: number;
-    offset?: number;
-    fromDate?: string;
-    toDate?: string;
-  }): Promise<PaginatedResponse<TimeOffEntry>> {
+  async getWorkerTimeOffEntries(
+    workerId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+      fromDate?: string;
+      toDate?: string;
+    }
+  ): Promise<PaginatedResponse<TimeOffEntry>> {
     let limit = params?.limit ?? 20;
     let offset = params?.offset ?? 0;
     let path = this.restPath(`workers/${workerId}/requestedTimeOffEntries`, limit, offset);
@@ -166,16 +169,19 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
-  async requestTimeOff(workerId: string, payload: {
-    date: string;
-    dailyQuantity: number;
-    timeOffType: { id: string };
-    comment?: string;
-  }): Promise<any> {
+  async requestTimeOff(
+    workerId: string,
+    payload: {
+      date: string;
+      dailyQuantity: number;
+      timeOffType: { id: string };
+      comment?: string;
+    }
+  ): Promise<any> {
     let path = this.restPath(`workers/${workerId}/requestedTimeOffEntries`);
     let response = await this.ax.post(path, payload);
     return response.data;
@@ -183,12 +189,15 @@ export class WorkdayClient {
 
   // --- Time Tracking ---
 
-  async getWorkerTimeBlocks(workerId: string, params?: {
-    fromDate?: string;
-    toDate?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async getWorkerTimeBlocks(
+    workerId: string,
+    params?: {
+      fromDate?: string;
+      toDate?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let limit = params?.limit ?? 20;
     let offset = params?.offset ?? 0;
     let path = this.servicePath('timeTracking', 'v5', `workers/${workerId}/timeBlocks`);
@@ -203,16 +212,19 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
   // --- Inbox Tasks ---
 
-  async getInboxTasks(workerId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<InboxTask>> {
+  async getInboxTasks(
+    workerId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<InboxTask>> {
     let limit = params?.limit ?? 20;
     let offset = params?.offset ?? 0;
     let path = this.restPath(`workers/${workerId}/inboxTasks`, limit, offset);
@@ -220,11 +232,15 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
-  async approveInboxTask(workerId: string, inboxTaskId: string, comment?: string): Promise<any> {
+  async approveInboxTask(
+    workerId: string,
+    inboxTaskId: string,
+    comment?: string
+  ): Promise<any> {
     let path = this.restPath(`workers/${workerId}/inboxTasks/${inboxTaskId}/approve`);
     let payload: Record<string, any> = {};
     if (comment) payload.comment = comment;
@@ -242,10 +258,13 @@ export class WorkdayClient {
 
   // --- WQL ---
 
-  async executeWql(query: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<WqlResult> {
+  async executeWql(
+    query: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<WqlResult> {
     let path = `/ccx/api/wql/v1/${this.tenant}/data`;
     let queryParams: string[] = [];
     if (params?.limit) queryParams.push(`limit=${params.limit}`);
@@ -256,16 +275,20 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total,
+      total: body.total
     };
   }
 
   // --- RaaS (Report as a Service) ---
 
-  async getCustomReport(reportOwner: string, reportName: string, params?: {
-    format?: 'json' | 'csv';
-    prompts?: Record<string, string>;
-  }): Promise<any> {
+  async getCustomReport(
+    reportOwner: string,
+    reportName: string,
+    params?: {
+      format?: 'json' | 'csv';
+      prompts?: Record<string, string>;
+    }
+  ): Promise<any> {
     let format = params?.format ?? 'json';
     let path = `/ccx/service/customreport2/${this.tenant}/${reportOwner}/${reportName}?format=${format}`;
     if (params?.prompts) {
@@ -290,7 +313,7 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
@@ -300,10 +323,13 @@ export class WorkdayClient {
     return response.data as SupervisoryOrganization;
   }
 
-  async getOrganizationWorkers(orgId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<WorkerSummary>> {
+  async getOrganizationWorkers(
+    orgId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<WorkerSummary>> {
     let limit = params?.limit ?? 20;
     let offset = params?.offset ?? 0;
     let path = this.restPath(`supervisoryOrganizations/${orgId}/workers`, limit, offset);
@@ -311,16 +337,19 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
   // --- Custom Objects ---
 
-  async listCustomObjects(customObjectName: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listCustomObjects(
+    customObjectName: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let limit = params?.limit ?? 20;
     let offset = params?.offset ?? 0;
     let path = this.restPath(`customObjects/${customObjectName}`, limit, offset);
@@ -328,7 +357,7 @@ export class WorkdayClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      total: body.total ?? 0,
+      total: body.total ?? 0
     };
   }
 
@@ -338,13 +367,20 @@ export class WorkdayClient {
     return response.data;
   }
 
-  async createCustomObject(customObjectName: string, payload: Record<string, any>): Promise<any> {
+  async createCustomObject(
+    customObjectName: string,
+    payload: Record<string, any>
+  ): Promise<any> {
     let path = this.restPath(`customObjects/${customObjectName}`);
     let response = await this.ax.post(path, payload);
     return response.data;
   }
 
-  async updateCustomObject(customObjectName: string, objectId: string, payload: Record<string, any>): Promise<any> {
+  async updateCustomObject(
+    customObjectName: string,
+    objectId: string,
+    payload: Record<string, any>
+  ): Promise<any> {
     let path = this.restPath(`customObjects/${customObjectName}/${objectId}`);
     let response = await this.ax.patch(path, payload);
     return response.data;

@@ -3,39 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageIntegration = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Integrations',
-    key: 'manage_integration',
-    description: `List, create, or delete third-party integrations configured on your Anchor Browser account (e.g. 1Password service accounts).`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete']).describe('Operation to perform'),
-    integrationId: z.string().optional().describe('Integration ID (required for delete)'),
-    name: z.string().optional().describe('Integration name (required for create)'),
-    integrationType: z.string().optional().describe('Integration type, e.g. "1PASSWORD" (required for create)'),
-    credentials: z.record(z.string(), z.unknown()).optional().describe('Integration credentials (required for create)'),
-  }))
-  .output(z.object({
-    integration: z.object({
-      integrationId: z.string(),
-      name: z.string(),
-      integrationType: z.string(),
-      path: z.string().optional(),
-      createdAt: z.string().optional(),
-    }).optional(),
-    integrations: z.array(z.object({
-      integrationId: z.string(),
-      name: z.string(),
-      integrationType: z.string(),
-      path: z.string().optional(),
-      createdAt: z.string().optional(),
-    })).optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageIntegration = SlateTool.create(spec, {
+  name: 'Manage Integrations',
+  key: 'manage_integration',
+  description: `List, create, or delete third-party integrations configured on your Anchor Browser account (e.g. 1Password service accounts).`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'delete']).describe('Operation to perform'),
+      integrationId: z.string().optional().describe('Integration ID (required for delete)'),
+      name: z.string().optional().describe('Integration name (required for create)'),
+      integrationType: z
+        .string()
+        .optional()
+        .describe('Integration type, e.g. "1PASSWORD" (required for create)'),
+      credentials: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Integration credentials (required for create)')
+    })
+  )
+  .output(
+    z.object({
+      integration: z
+        .object({
+          integrationId: z.string(),
+          name: z.string(),
+          integrationType: z.string(),
+          path: z.string().optional(),
+          createdAt: z.string().optional()
+        })
+        .optional(),
+      integrations: z
+        .array(
+          z.object({
+            integrationId: z.string(),
+            name: z.string(),
+            integrationType: z.string(),
+            path: z.string().optional(),
+            createdAt: z.string().optional()
+          })
+        )
+        .optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
 
@@ -43,15 +56,15 @@ export let manageIntegration = SlateTool.create(
       let result = await client.listIntegrations();
       return {
         output: {
-          integrations: (result.integrations ?? []).map((i) => ({
+          integrations: (result.integrations ?? []).map(i => ({
             integrationId: i.id,
             name: i.name,
             integrationType: i.type,
             path: i.path,
-            createdAt: i.createdAt,
-          })),
+            createdAt: i.createdAt
+          }))
         },
-        message: `Found **${(result.integrations ?? []).length}** integrations.`,
+        message: `Found **${(result.integrations ?? []).length}** integrations.`
       };
     }
 
@@ -62,7 +75,7 @@ export let manageIntegration = SlateTool.create(
       let result = await client.createIntegration({
         name: input.name,
         type: input.integrationType,
-        credentials: input.credentials,
+        credentials: input.credentials
       });
       let integration = result.integration;
       return {
@@ -72,10 +85,10 @@ export let manageIntegration = SlateTool.create(
             name: integration.name,
             integrationType: integration.type,
             path: integration.path,
-            createdAt: integration.createdAt,
-          },
+            createdAt: integration.createdAt
+          }
         },
-        message: `Integration **${integration.name}** created.`,
+        message: `Integration **${integration.name}** created.`
       };
     }
 
@@ -84,9 +97,10 @@ export let manageIntegration = SlateTool.create(
       await client.deleteIntegration(input.integrationId);
       return {
         output: { deleted: true },
-        message: `Integration **${input.integrationId}** deleted.`,
+        message: `Integration **${input.integrationId}** deleted.`
       };
     }
 
     throw new Error(`Unknown action: ${input.action}`);
-  }).build();
+  })
+  .build();

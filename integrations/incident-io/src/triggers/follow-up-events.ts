@@ -3,38 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let followUpEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Follow-Up Events',
-    key: 'follow_up_events',
-    description: 'Triggered when follow-ups (actions) are created or updated on incidents. Covers both public and private incident follow-ups.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type'),
-    webhookId: z.string().describe('Unique ID for this webhook delivery'),
-    followUpId: z.string().describe('ID of the follow-up'),
-    isPrivate: z.boolean().describe('Whether this follow-up belongs to a private incident'),
-    followUp: z.any().optional().describe('Full follow-up payload'),
-  }))
-  .output(z.object({
-    followUpId: z.string(),
-    title: z.string().optional(),
-    status: z.string().optional(),
-    priority: z.any().optional(),
-    incidentId: z.string().optional(),
-    assignee: z.any().optional(),
-    completedAt: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
+export let followUpEvents = SlateTrigger.create(spec, {
+  name: 'Follow-Up Events',
+  key: 'follow_up_events',
+  description:
+    'Triggered when follow-ups (actions) are created or updated on incidents. Covers both public and private incident follow-ups.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The webhook event type'),
+      webhookId: z.string().describe('Unique ID for this webhook delivery'),
+      followUpId: z.string().describe('ID of the follow-up'),
+      isPrivate: z.boolean().describe('Whether this follow-up belongs to a private incident'),
+      followUp: z.any().optional().describe('Full follow-up payload')
+    })
+  )
+  .output(
+    z.object({
+      followUpId: z.string(),
+      title: z.string().optional(),
+      status: z.string().optional(),
+      priority: z.any().optional(),
+      incidentId: z.string().optional(),
+      assignee: z.any().optional(),
+      completedAt: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
-      let eventType = body.event_type as string || '';
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
+      let eventType = (body.event_type as string) || '';
 
-      let isFollowUpEvent = eventType.includes('follow_up_created') ||
+      let isFollowUpEvent =
+        eventType.includes('follow_up_created') ||
         eventType.includes('follow_up_updated') ||
         eventType.includes('action_created') ||
         eventType.includes('action_updated');
@@ -50,17 +53,19 @@ export let followUpEvents = SlateTrigger.create(
       let followUpId = followUpData?.id || '';
 
       return {
-        inputs: [{
-          eventType,
-          webhookId: body.id || crypto.randomUUID(),
-          followUpId,
-          isPrivate,
-          followUp: isPrivate ? undefined : followUpData,
-        }],
+        inputs: [
+          {
+            eventType,
+            webhookId: body.id || crypto.randomUUID(),
+            followUpId,
+            isPrivate,
+            followUp: isPrivate ? undefined : followUpData
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       let fu = input.followUp;
 
@@ -91,8 +96,9 @@ export let followUpEvents = SlateTrigger.create(
           assignee: fu?.assignee || undefined,
           completedAt: fu?.completed_at || undefined,
           createdAt: fu?.created_at || undefined,
-          updatedAt: fu?.updated_at || undefined,
-        },
+          updatedAt: fu?.updated_at || undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

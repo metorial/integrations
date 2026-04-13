@@ -9,34 +9,50 @@ export let crmGetModules = SlateTool.create(spec, {
   key: 'crm_get_modules',
   description: `List all available modules in Zoho CRM along with their metadata. Returns module API names, labels, capabilities (creatable, viewable, editable, deletable), and status. Also supports listing CRM users.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    includeUsers: z.boolean().optional().describe('Also fetch and include CRM user list'),
-    userType: z.string().optional().describe('Filter users by type (e.g., "AllUsers", "ActiveUsers", "AdminUsers")'),
-  }))
-  .output(z.object({
-    modules: z.array(z.object({
-      moduleId: z.string().optional(),
-      apiName: z.string(),
-      pluralLabel: z.string().optional(),
-      singularLabel: z.string().optional(),
-      creatable: z.boolean().optional(),
-      viewable: z.boolean().optional(),
-      editable: z.boolean().optional(),
-      deletable: z.boolean().optional(),
-      apiSupported: z.boolean().optional(),
-    })).describe('Available CRM modules'),
-    users: z.array(z.object({
-      userId: z.string().optional(),
-      fullName: z.string().optional(),
-      email: z.string().optional(),
-      role: z.string().optional(),
-      status: z.string().optional(),
-    })).optional().describe('CRM users (if includeUsers is true)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      includeUsers: z.boolean().optional().describe('Also fetch and include CRM user list'),
+      userType: z
+        .string()
+        .optional()
+        .describe('Filter users by type (e.g., "AllUsers", "ActiveUsers", "AdminUsers")')
+    })
+  )
+  .output(
+    z.object({
+      modules: z
+        .array(
+          z.object({
+            moduleId: z.string().optional(),
+            apiName: z.string(),
+            pluralLabel: z.string().optional(),
+            singularLabel: z.string().optional(),
+            creatable: z.boolean().optional(),
+            viewable: z.boolean().optional(),
+            editable: z.boolean().optional(),
+            deletable: z.boolean().optional(),
+            apiSupported: z.boolean().optional()
+          })
+        )
+        .describe('Available CRM modules'),
+      users: z
+        .array(
+          z.object({
+            userId: z.string().optional(),
+            fullName: z.string().optional(),
+            email: z.string().optional(),
+            role: z.string().optional(),
+            status: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('CRM users (if includeUsers is true)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
     let client = new ZohoCrmClient({ token: ctx.auth.token, datacenter: dc });
 
@@ -50,7 +66,7 @@ export let crmGetModules = SlateTool.create(spec, {
       viewable: m.viewable,
       editable: m.editable,
       deletable: m.deletable,
-      apiSupported: m.api_supported,
+      apiSupported: m.api_supported
     }));
 
     let users: any[] | undefined;
@@ -61,12 +77,13 @@ export let crmGetModules = SlateTool.create(spec, {
         fullName: u.full_name,
         email: u.email,
         role: u.role?.name,
-        status: u.status,
+        status: u.status
       }));
     }
 
     return {
       output: { modules, users },
-      message: `Found **${modules.length}** CRM modules${users ? ` and **${users.length}** users` : ''}.`,
+      message: `Found **${modules.length}** CRM modules${users ? ` and **${users.length}** users` : ''}.`
     };
-  }).build();
+  })
+  .build();

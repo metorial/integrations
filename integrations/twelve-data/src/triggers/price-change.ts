@@ -3,50 +3,58 @@ import { TwelveDataClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let priceChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Price Change',
-    key: 'price_change',
-    description: 'Polls for price changes on specified financial instruments and emits events with the latest quote data including price, change, and volume.',
-  }
-)
-  .input(z.object({
-    symbol: z.string().describe('Ticker symbol'),
-    datetime: z.string().describe('Timestamp of the quote'),
-    price: z.string().describe('Current price'),
-    change: z.string().optional().describe('Price change since previous close'),
-    percentChange: z.string().optional().describe('Percentage change since previous close'),
-    previousClose: z.string().optional().describe('Previous closing price'),
-    open: z.string().optional().describe('Opening price'),
-    high: z.string().optional().describe('Daily high'),
-    low: z.string().optional().describe('Daily low'),
-    volume: z.string().optional().describe('Trading volume'),
-    isMarketOpen: z.boolean().optional().describe('Whether the market is open'),
-  }))
-  .output(z.object({
-    symbol: z.string().describe('Ticker symbol'),
-    price: z.string().describe('Current price'),
-    change: z.string().optional().describe('Price change since previous close'),
-    percentChange: z.string().optional().describe('Percentage change since previous close'),
-    previousClose: z.string().optional().describe('Previous closing price'),
-    open: z.string().optional().describe('Opening price'),
-    high: z.string().optional().describe('Daily high'),
-    low: z.string().optional().describe('Daily low'),
-    volume: z.string().optional().describe('Trading volume'),
-    datetime: z.string().describe('Quote timestamp'),
-    isMarketOpen: z.boolean().optional().describe('Whether the market is open'),
-  }))
+export let priceChange = SlateTrigger.create(spec, {
+  name: 'Price Change',
+  key: 'price_change',
+  description:
+    'Polls for price changes on specified financial instruments and emits events with the latest quote data including price, change, and volume.'
+})
+  .input(
+    z.object({
+      symbol: z.string().describe('Ticker symbol'),
+      datetime: z.string().describe('Timestamp of the quote'),
+      price: z.string().describe('Current price'),
+      change: z.string().optional().describe('Price change since previous close'),
+      percentChange: z.string().optional().describe('Percentage change since previous close'),
+      previousClose: z.string().optional().describe('Previous closing price'),
+      open: z.string().optional().describe('Opening price'),
+      high: z.string().optional().describe('Daily high'),
+      low: z.string().optional().describe('Daily low'),
+      volume: z.string().optional().describe('Trading volume'),
+      isMarketOpen: z.boolean().optional().describe('Whether the market is open')
+    })
+  )
+  .output(
+    z.object({
+      symbol: z.string().describe('Ticker symbol'),
+      price: z.string().describe('Current price'),
+      change: z.string().optional().describe('Price change since previous close'),
+      percentChange: z.string().optional().describe('Percentage change since previous close'),
+      previousClose: z.string().optional().describe('Previous closing price'),
+      open: z.string().optional().describe('Opening price'),
+      high: z.string().optional().describe('Daily high'),
+      low: z.string().optional().describe('Daily low'),
+      volume: z.string().optional().describe('Trading volume'),
+      datetime: z.string().describe('Quote timestamp'),
+      isMarketOpen: z.boolean().optional().describe('Whether the market is open')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TwelveDataClient(ctx.auth.token);
 
-      let state = ctx.state as { lastPrices?: Record<string, string>; symbols?: string } | null;
+      let state = ctx.state as {
+        lastPrices?: Record<string, string>;
+        symbols?: string;
+      } | null;
       let symbolsStr = state?.symbols || 'AAPL';
-      let symbolsList = symbolsStr.split(',').map((s: string) => s.trim()).filter(Boolean);
+      let symbolsList = symbolsStr
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean);
       let lastPrices: Record<string, string> = state?.lastPrices || {};
 
       let inputs: Array<{
@@ -86,7 +94,7 @@ export let priceChange = SlateTrigger.create(
               high: quote.high,
               low: quote.low,
               volume: quote.volume,
-              isMarketOpen: quote.is_market_open,
+              isMarketOpen: quote.is_market_open
             });
           } else {
             updatedPrices[symbol] = currentPrice || previousPrice || '';
@@ -100,11 +108,11 @@ export let priceChange = SlateTrigger.create(
         inputs,
         updatedState: {
           symbols: symbolsStr,
-          lastPrices: updatedPrices,
-        },
+          lastPrices: updatedPrices
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'price.changed',
         id: `${ctx.input.symbol}-${ctx.input.datetime}-${ctx.input.price}`,
@@ -119,9 +127,9 @@ export let priceChange = SlateTrigger.create(
           low: ctx.input.low,
           volume: ctx.input.volume,
           datetime: ctx.input.datetime,
-          isMarketOpen: ctx.input.isMarketOpen,
-        },
+          isMarketOpen: ctx.input.isMarketOpen
+        }
       };
-    },
+    }
   })
   .build();

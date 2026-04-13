@@ -15,6 +15,7 @@ Zylvie uses **Bearer token authentication** via API keys.
 - Base URL: `https://api.zylvie.com`
 
 **Example:**
+
 ```
 Authorization: Bearer e97f0aafe4884bc380c81fdb2347dc55
 ```

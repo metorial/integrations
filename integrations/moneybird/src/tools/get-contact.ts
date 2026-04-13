@@ -27,36 +27,39 @@ let contactDetailSchema = z.object({
   archived: z.boolean().describe('Whether the contact is archived'),
   createdAt: z.string().nullable().describe('Creation timestamp'),
   updatedAt: z.string().nullable().describe('Last update timestamp'),
-  contactPeople: z.array(z.object({
-    contactPersonId: z.string(),
-    firstName: z.string().nullable(),
-    lastName: z.string().nullable(),
-    email: z.string().nullable(),
-    phone: z.string().nullable(),
-    department: z.string().nullable(),
-  })).describe('Contact persons'),
+  contactPeople: z
+    .array(
+      z.object({
+        contactPersonId: z.string(),
+        firstName: z.string().nullable(),
+        lastName: z.string().nullable(),
+        email: z.string().nullable(),
+        phone: z.string().nullable(),
+        department: z.string().nullable()
+      })
+    )
+    .describe('Contact persons')
 });
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve full details of a contact by its Moneybird ID or customer ID. Returns comprehensive contact information including addresses, tax details, SEPA settings, and associated contact persons.`,
-    tags: {
-      readOnly: true,
-    },
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve full details of a contact by its Moneybird ID or customer ID. Returns comprehensive contact information including addresses, tax details, SEPA settings, and associated contact persons.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactId: z.string().optional().describe('Moneybird internal contact ID'),
-    customerId: z.string().optional().describe('Customer ID (the human-readable identifier)'),
-  }))
+})
+  .input(
+    z.object({
+      contactId: z.string().optional().describe('Moneybird internal contact ID'),
+      customerId: z.string().optional().describe('Customer ID (the human-readable identifier)')
+    })
+  )
   .output(contactDetailSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MoneybirdClient({
       token: ctx.auth.token,
-      administrationId: ctx.config.administrationId,
+      administrationId: ctx.config.administrationId
     });
 
     let contact: any;
@@ -85,8 +88,12 @@ export let getContact = SlateTool.create(
       taxNumber: contact.tax_number || null,
       chamberOfCommerce: contact.chamber_of_commerce || null,
       deliveryMethod: contact.delivery_method || null,
-      invoiceWorkflowId: contact.invoice_workflow_id ? String(contact.invoice_workflow_id) : null,
-      estimateWorkflowId: contact.estimate_workflow_id ? String(contact.estimate_workflow_id) : null,
+      invoiceWorkflowId: contact.invoice_workflow_id
+        ? String(contact.invoice_workflow_id)
+        : null,
+      estimateWorkflowId: contact.estimate_workflow_id
+        ? String(contact.estimate_workflow_id)
+        : null,
       sepaActive: contact.sepa_active || false,
       sepaIban: contact.sepa_iban || null,
       archived: contact.archived || false,
@@ -98,13 +105,16 @@ export let getContact = SlateTool.create(
         lastName: cp.lastname || null,
         email: cp.email || null,
         phone: cp.phone || null,
-        department: cp.department || null,
-      })),
+        department: cp.department || null
+      }))
     };
 
-    let name = result.companyName || `${result.firstName || ''} ${result.lastName || ''}`.trim() || 'Unknown';
+    let name =
+      result.companyName ||
+      `${result.firstName || ''} ${result.lastName || ''}`.trim() ||
+      'Unknown';
     return {
       output: result,
-      message: `Retrieved contact **${name}** (ID: ${result.contactId}).`,
+      message: `Retrieved contact **${name}** (ID: ${result.contactId}).`
     };
   });

@@ -19,35 +19,59 @@ let postOutputSchema = z.object({
   type: z.string().describe('Content type')
 });
 
-export let createPostTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Post',
-    key: 'create_post',
-    description: `Create a new blog post on the WordPress site. Supports setting title, content, excerpt, status (draft/publish/pending/private), scheduling via date, post format, categories, tags, featured image, and comment settings.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createPostTool = SlateTool.create(spec, {
+  name: 'Create Post',
+  key: 'create_post',
+  description: `Create a new blog post on the WordPress site. Supports setting title, content, excerpt, status (draft/publish/pending/private), scheduling via date, post format, categories, tags, featured image, and comment settings.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    title: z.string().describe('Post title'),
-    content: z.string().optional().describe('Post content (HTML)'),
-    excerpt: z.string().optional().describe('Short excerpt or summary'),
-    status: z.enum(['draft', 'publish', 'pending', 'private', 'future']).optional().describe('Post status. Defaults to "draft"'),
-    format: z.string().optional().describe('Post format (standard, aside, gallery, image, link, quote, status, video, audio, chat)'),
-    categories: z.array(z.string()).optional().describe('Category names (WP.com) or category IDs (self-hosted)'),
-    tags: z.array(z.string()).optional().describe('Tag names (WP.com) or tag IDs (self-hosted)'),
-    featuredImageId: z.string().optional().describe('Media ID to use as featured image'),
-    date: z.string().optional().describe('Publication date in ISO 8601 format. Use a future date to schedule the post'),
-    slug: z.string().optional().describe('Custom URL slug for the post'),
-    password: z.string().optional().describe('Password to protect the post'),
-    commentStatus: z.enum(['open', 'closed']).optional().describe('Whether comments are open or closed'),
-    pingStatus: z.enum(['open', 'closed']).optional().describe('Whether pingbacks/trackbacks are open or closed')
-  }))
+})
+  .input(
+    z.object({
+      title: z.string().describe('Post title'),
+      content: z.string().optional().describe('Post content (HTML)'),
+      excerpt: z.string().optional().describe('Short excerpt or summary'),
+      status: z
+        .enum(['draft', 'publish', 'pending', 'private', 'future'])
+        .optional()
+        .describe('Post status. Defaults to "draft"'),
+      format: z
+        .string()
+        .optional()
+        .describe(
+          'Post format (standard, aside, gallery, image, link, quote, status, video, audio, chat)'
+        ),
+      categories: z
+        .array(z.string())
+        .optional()
+        .describe('Category names (WP.com) or category IDs (self-hosted)'),
+      tags: z
+        .array(z.string())
+        .optional()
+        .describe('Tag names (WP.com) or tag IDs (self-hosted)'),
+      featuredImageId: z.string().optional().describe('Media ID to use as featured image'),
+      date: z
+        .string()
+        .optional()
+        .describe(
+          'Publication date in ISO 8601 format. Use a future date to schedule the post'
+        ),
+      slug: z.string().optional().describe('Custom URL slug for the post'),
+      password: z.string().optional().describe('Password to protect the post'),
+      commentStatus: z
+        .enum(['open', 'closed'])
+        .optional()
+        .describe('Whether comments are open or closed'),
+      pingStatus: z
+        .enum(['open', 'closed'])
+        .optional()
+        .describe('Whether pingbacks/trackbacks are open or closed')
+    })
+  )
   .output(postOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let post = await client.createPost(ctx.input);
     let result = extractPostSummary(post, ctx.config.apiType);
@@ -58,36 +82,50 @@ export let createPostTool = SlateTool.create(
   })
   .build();
 
-export let updatePostTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Post',
-    key: 'update_post',
-    description: `Update an existing blog post. Can modify the title, content, excerpt, status, categories, tags, featured image, slug, and other settings. Only provided fields are updated.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updatePostTool = SlateTool.create(spec, {
+  name: 'Update Post',
+  key: 'update_post',
+  description: `Update an existing blog post. Can modify the title, content, excerpt, status, categories, tags, featured image, slug, and other settings. Only provided fields are updated.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    postId: z.string().describe('ID of the post to update'),
-    title: z.string().optional().describe('New post title'),
-    content: z.string().optional().describe('New post content (HTML)'),
-    excerpt: z.string().optional().describe('New excerpt or summary'),
-    status: z.enum(['draft', 'publish', 'pending', 'private', 'future']).optional().describe('New post status'),
-    format: z.string().optional().describe('New post format'),
-    categories: z.array(z.string()).optional().describe('Category names (WP.com) or category IDs (self-hosted)'),
-    tags: z.array(z.string()).optional().describe('Tag names (WP.com) or tag IDs (self-hosted)'),
-    featuredImageId: z.string().optional().describe('Media ID for the featured image'),
-    date: z.string().optional().describe('New publication date in ISO 8601 format'),
-    slug: z.string().optional().describe('New URL slug'),
-    password: z.string().optional().describe('Post password'),
-    commentStatus: z.enum(['open', 'closed']).optional().describe('Whether comments are open or closed'),
-    pingStatus: z.enum(['open', 'closed']).optional().describe('Whether pingbacks/trackbacks are open or closed')
-  }))
+})
+  .input(
+    z.object({
+      postId: z.string().describe('ID of the post to update'),
+      title: z.string().optional().describe('New post title'),
+      content: z.string().optional().describe('New post content (HTML)'),
+      excerpt: z.string().optional().describe('New excerpt or summary'),
+      status: z
+        .enum(['draft', 'publish', 'pending', 'private', 'future'])
+        .optional()
+        .describe('New post status'),
+      format: z.string().optional().describe('New post format'),
+      categories: z
+        .array(z.string())
+        .optional()
+        .describe('Category names (WP.com) or category IDs (self-hosted)'),
+      tags: z
+        .array(z.string())
+        .optional()
+        .describe('Tag names (WP.com) or tag IDs (self-hosted)'),
+      featuredImageId: z.string().optional().describe('Media ID for the featured image'),
+      date: z.string().optional().describe('New publication date in ISO 8601 format'),
+      slug: z.string().optional().describe('New URL slug'),
+      password: z.string().optional().describe('Post password'),
+      commentStatus: z
+        .enum(['open', 'closed'])
+        .optional()
+        .describe('Whether comments are open or closed'),
+      pingStatus: z
+        .enum(['open', 'closed'])
+        .optional()
+        .describe('Whether pingbacks/trackbacks are open or closed')
+    })
+  )
   .output(postOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let { postId, ...updateData } = ctx.input;
     let client = createClient(ctx.config, ctx.auth);
     let post = await client.updatePost(postId, updateData);
@@ -99,26 +137,27 @@ export let updatePostTool = SlateTool.create(
   })
   .build();
 
-export let deletePostTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Post',
-    key: 'delete_post',
-    description: `Permanently delete a blog post by its ID. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deletePostTool = SlateTool.create(spec, {
+  name: 'Delete Post',
+  key: 'delete_post',
+  description: `Permanently delete a blog post by its ID. This action cannot be undone.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    postId: z.string().describe('ID of the post to delete')
-  }))
-  .output(z.object({
-    postId: z.string().describe('ID of the deleted post'),
-    deleted: z.boolean().describe('Whether the post was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      postId: z.string().describe('ID of the post to delete')
+    })
+  )
+  .output(
+    z.object({
+      postId: z.string().describe('ID of the deleted post'),
+      deleted: z.boolean().describe('Whether the post was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     await client.deletePost(ctx.input.postId);
     return {

@@ -3,36 +3,40 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Events',
-    key: 'task_events',
-    description: 'Triggered when tasks are added, updated, deleted, or change status in a Crowdin project.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The event type (task.added, task.statusChanged, task.deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    taskId: z.string().optional().describe('Task ID'),
-    taskTitle: z.string().optional().describe('Task title'),
-    taskStatus: z.string().optional().describe('Task status'),
-    taskType: z.string().optional().describe('Task type'),
-    languageId: z.string().optional().describe('Target language'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    taskId: z.string().optional().describe('Task ID'),
-    taskTitle: z.string().optional().describe('Task title'),
-    taskStatus: z.string().optional().describe('Task status'),
-    taskType: z.string().optional().describe('Task type'),
-    languageId: z.string().optional().describe('Target language'),
-  }))
+export let taskEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Task Events',
+  key: 'task_events',
+  description:
+    'Triggered when tasks are added, updated, deleted, or change status in a Crowdin project.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The event type (task.added, task.statusChanged, task.deleted)'),
+      eventId: z.string().describe('Unique event identifier'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      taskId: z.string().optional().describe('Task ID'),
+      taskTitle: z.string().optional().describe('Task title'),
+      taskStatus: z.string().optional().describe('Task status'),
+      taskType: z.string().optional().describe('Task type'),
+      languageId: z.string().optional().describe('Target language')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      taskId: z.string().optional().describe('Task ID'),
+      taskTitle: z.string().optional().describe('Task title'),
+      taskStatus: z.string().optional().describe('Task status'),
+      taskType: z.string().optional().describe('Task type'),
+      languageId: z.string().optional().describe('Target language')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let projects = await client.listProjects({ limit: 500 });
@@ -47,7 +51,7 @@ export let taskEventsTrigger = SlateTrigger.create(
             events: ['task.added', 'task.statusChanged', 'task.deleted'],
             requestType: 'POST',
             contentType: 'application/json',
-            isActive: true,
+            isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
         } catch (e) {
@@ -58,7 +62,7 @@ export let taskEventsTrigger = SlateTrigger.create(
       return { registrationDetails: { registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let registrations = ctx.input.registrationDetails?.registrations || [];
 
@@ -71,8 +75,8 @@ export let taskEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = data.events ? data.events : [data];
 
       let inputs = events
@@ -91,14 +95,14 @@ export let taskEventsTrigger = SlateTrigger.create(
             taskTitle: evt.task?.title || undefined,
             taskStatus: evt.task?.status || evt.status || undefined,
             taskType: evt.task?.type !== undefined ? String(evt.task.type) : undefined,
-            languageId: evt.task?.languageId || evt.language || undefined,
+            languageId: evt.task?.languageId || evt.language || undefined
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -109,9 +113,9 @@ export let taskEventsTrigger = SlateTrigger.create(
           taskTitle: ctx.input.taskTitle,
           taskStatus: ctx.input.taskStatus,
           taskType: ctx.input.taskType,
-          languageId: ctx.input.languageId,
-        },
+          languageId: ctx.input.languageId
+        }
       };
-    },
+    }
   })
   .build();

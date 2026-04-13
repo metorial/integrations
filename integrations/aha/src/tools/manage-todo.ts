@@ -10,46 +10,53 @@ let todoOutputSchema = z.object({
   dueDate: z.string().optional().describe('Due date'),
   completed: z.boolean().optional().describe('Whether the to-do is completed'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last update timestamp'),
+  updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let manageTodo = SlateTool.create(
-  spec,
-  {
-    name: 'Manage To-Do',
-    key: 'manage_todo',
-    description: `Create, update, list, or delete to-dos on Aha! records. To-dos can be associated with features, releases, requirements, epics, and ideas. They support assignees, due dates, and completion status.`,
-    instructions: [
-      'To **create** a to-do, set action to "create" and provide recordType, recordId, and name.',
-      'To **list** to-dos, set action to "list" and provide recordType and recordId.',
-      'To **update** a to-do, set action to "update" and provide todoId plus the fields to change.',
-      'To **delete** a to-do, set action to "delete" and provide todoId.',
-      'Valid **recordType** values: features, releases, requirements, epics, ideas.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageTodo = SlateTool.create(spec, {
+  name: 'Manage To-Do',
+  key: 'manage_todo',
+  description: `Create, update, list, or delete to-dos on Aha! records. To-dos can be associated with features, releases, requirements, epics, and ideas. They support assignees, due dates, and completion status.`,
+  instructions: [
+    'To **create** a to-do, set action to "create" and provide recordType, recordId, and name.',
+    'To **list** to-dos, set action to "list" and provide recordType and recordId.',
+    'To **update** a to-do, set action to "update" and provide todoId plus the fields to change.',
+    'To **delete** a to-do, set action to "delete" and provide todoId.',
+    'Valid **recordType** values: features, releases, requirements, epics, ideas.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'update', 'delete']).describe('Action to perform'),
-    recordType: z.enum(['features', 'releases', 'requirements', 'epics', 'ideas']).optional().describe('Type of parent record (required for create/list)'),
-    recordId: z.string().optional().describe('Parent record ID or reference number (required for create/list)'),
-    todoId: z.string().optional().describe('To-do ID (required for update/delete)'),
-    name: z.string().optional().describe('To-do name (required for create)'),
-    body: z.string().optional().describe('To-do body/description'),
-    dueDate: z.string().optional().describe('Due date (YYYY-MM-DD)'),
-    completed: z.boolean().optional().describe('Mark as completed (for update)'),
-    assigneeIds: z.array(z.string()).optional().describe('User IDs to assign (for create)'),
-    page: z.number().optional().describe('Page number for listing'),
-    perPage: z.number().optional().describe('Records per page for listing'),
-  }))
-  .output(z.object({
-    todo: todoOutputSchema.optional().describe('Single to-do (for create/update)'),
-    todos: z.array(todoOutputSchema).optional().describe('List of to-dos (for list action)'),
-    totalRecords: z.number().optional().describe('Total to-dos (for list action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'list', 'update', 'delete']).describe('Action to perform'),
+      recordType: z
+        .enum(['features', 'releases', 'requirements', 'epics', 'ideas'])
+        .optional()
+        .describe('Type of parent record (required for create/list)'),
+      recordId: z
+        .string()
+        .optional()
+        .describe('Parent record ID or reference number (required for create/list)'),
+      todoId: z.string().optional().describe('To-do ID (required for update/delete)'),
+      name: z.string().optional().describe('To-do name (required for create)'),
+      body: z.string().optional().describe('To-do body/description'),
+      dueDate: z.string().optional().describe('Due date (YYYY-MM-DD)'),
+      completed: z.boolean().optional().describe('Mark as completed (for update)'),
+      assigneeIds: z.array(z.string()).optional().describe('User IDs to assign (for create)'),
+      page: z.number().optional().describe('Page number for listing'),
+      perPage: z.number().optional().describe('Records per page for listing')
+    })
+  )
+  .output(
+    z.object({
+      todo: todoOutputSchema.optional().describe('Single to-do (for create/update)'),
+      todos: z.array(todoOutputSchema).optional().describe('List of to-dos (for list action)'),
+      totalRecords: z.number().optional().describe('Total to-dos (for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AhaClient(ctx.config.subdomain, ctx.auth.token);
     let { action } = ctx.input;
 
@@ -60,7 +67,7 @@ export let manageTodo = SlateTool.create(
 
       let result = await client.listTodos(ctx.input.recordType, ctx.input.recordId, {
         page: ctx.input.page,
-        perPage: ctx.input.perPage,
+        perPage: ctx.input.perPage
       });
 
       let todos = result.todos.map(t => ({
@@ -70,15 +77,15 @@ export let manageTodo = SlateTool.create(
         dueDate: t.due_date,
         completed: t.completed,
         createdAt: t.created_at,
-        updatedAt: t.updated_at,
+        updatedAt: t.updated_at
       }));
 
       return {
         output: {
           todos,
-          totalRecords: result.pagination.total_records,
+          totalRecords: result.pagination.total_records
         },
-        message: `Found **${result.pagination.total_records}** to-dos on ${ctx.input.recordType}/${ctx.input.recordId}.`,
+        message: `Found **${result.pagination.total_records}** to-dos on ${ctx.input.recordType}/${ctx.input.recordId}.`
       };
     }
 
@@ -92,7 +99,7 @@ export let manageTodo = SlateTool.create(
         name: ctx.input.name,
         body: ctx.input.body,
         dueDate: ctx.input.dueDate,
-        assignees: ctx.input.assigneeIds,
+        assignees: ctx.input.assigneeIds
       });
 
       return {
@@ -104,10 +111,10 @@ export let manageTodo = SlateTool.create(
             dueDate: todo.due_date,
             completed: todo.completed,
             createdAt: todo.created_at,
-            updatedAt: todo.updated_at,
-          },
+            updatedAt: todo.updated_at
+          }
         },
-        message: `Created to-do "${ctx.input.name}" on ${ctx.input.recordType}/${ctx.input.recordId}.`,
+        message: `Created to-do "${ctx.input.name}" on ${ctx.input.recordType}/${ctx.input.recordId}.`
       };
     }
 
@@ -118,7 +125,7 @@ export let manageTodo = SlateTool.create(
         name: ctx.input.name,
         body: ctx.input.body,
         dueDate: ctx.input.dueDate,
-        completed: ctx.input.completed,
+        completed: ctx.input.completed
       });
 
       return {
@@ -130,10 +137,10 @@ export let manageTodo = SlateTool.create(
             dueDate: todo.due_date,
             completed: todo.completed,
             createdAt: todo.created_at,
-            updatedAt: todo.updated_at,
-          },
+            updatedAt: todo.updated_at
+          }
         },
-        message: `Updated to-do \`${ctx.input.todoId}\`${ctx.input.completed ? ' (marked complete)' : ''}.`,
+        message: `Updated to-do \`${ctx.input.todoId}\`${ctx.input.completed ? ' (marked complete)' : ''}.`
       };
     }
 
@@ -142,7 +149,7 @@ export let manageTodo = SlateTool.create(
     await client.deleteTodo(ctx.input.todoId);
     return {
       output: {},
-      message: `Deleted to-do \`${ctx.input.todoId}\`.`,
+      message: `Deleted to-do \`${ctx.input.todoId}\`.`
     };
   })
   .build();

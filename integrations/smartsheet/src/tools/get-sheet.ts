@@ -30,35 +30,45 @@ let columnSchema = z.object({
   width: z.number().optional().describe('Column width in pixels')
 });
 
-export let getSheet = SlateTool.create(
-  spec,
-  {
-    name: 'Get Sheet',
-    key: 'get_sheet',
-    description: `Retrieve a sheet's full data including columns, rows, and cell values. Optionally filter by specific columns or rows. Use this to read sheet structure and data.`,
-    tags: {
-      readOnly: true
-    }
+export let getSheet = SlateTool.create(spec, {
+  name: 'Get Sheet',
+  key: 'get_sheet',
+  description: `Retrieve a sheet's full data including columns, rows, and cell values. Optionally filter by specific columns or rows. Use this to read sheet structure and data.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sheetId: z.string().describe('ID of the sheet to retrieve'),
-    columnIds: z.array(z.string()).optional().describe('Only include these column IDs in the response'),
-    rowIds: z.array(z.string()).optional().describe('Only include these row IDs in the response'),
-    rowNumbers: z.array(z.number()).optional().describe('Only include these row numbers in the response'),
-    page: z.number().optional().describe('Page number for row pagination'),
-    pageSize: z.number().optional().describe('Number of rows per page')
-  }))
-  .output(z.object({
-    sheetId: z.number().describe('Sheet ID'),
-    name: z.string().describe('Sheet name'),
-    accessLevel: z.string().optional().describe('Access level'),
-    permalink: z.string().optional().describe('URL to the sheet'),
-    columns: z.array(columnSchema).describe('Sheet columns'),
-    rows: z.array(rowSchema).describe('Sheet rows with cell data'),
-    totalRowCount: z.number().optional().describe('Total number of rows in the sheet')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sheetId: z.string().describe('ID of the sheet to retrieve'),
+      columnIds: z
+        .array(z.string())
+        .optional()
+        .describe('Only include these column IDs in the response'),
+      rowIds: z
+        .array(z.string())
+        .optional()
+        .describe('Only include these row IDs in the response'),
+      rowNumbers: z
+        .array(z.number())
+        .optional()
+        .describe('Only include these row numbers in the response'),
+      page: z.number().optional().describe('Page number for row pagination'),
+      pageSize: z.number().optional().describe('Number of rows per page')
+    })
+  )
+  .output(
+    z.object({
+      sheetId: z.number().describe('Sheet ID'),
+      name: z.string().describe('Sheet name'),
+      accessLevel: z.string().optional().describe('Access level'),
+      permalink: z.string().optional().describe('URL to the sheet'),
+      columns: z.array(columnSchema).describe('Sheet columns'),
+      rows: z.array(rowSchema).describe('Sheet rows with cell data'),
+      totalRowCount: z.number().optional().describe('Total number of rows in the sheet')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SmartsheetClient({ token: ctx.auth.token });
 
     let params: any = {};

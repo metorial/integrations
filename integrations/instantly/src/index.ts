@@ -23,12 +23,9 @@ import {
   manageCustomTags,
   manageLeadLabels,
   manageLeadLists,
-  manageAccountCampaignMappings,
+  manageAccountCampaignMappings
 } from './tools';
-import {
-  campaignEvents,
-  leadStatusEvents,
-} from './triggers';
+import { campaignEvents, leadStatusEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,10 +52,7 @@ export let provider = Slate.create({
     manageCustomTags,
     manageLeadLabels,
     manageLeadLists,
-    manageAccountCampaignMappings,
+    manageAccountCampaignMappings
   ],
-  triggers: [
-    campaignEvents,
-    leadStatusEvents,
-  ],
+  triggers: [campaignEvents, leadStatusEvents]
 });

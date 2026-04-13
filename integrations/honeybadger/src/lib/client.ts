@@ -8,12 +8,12 @@ export class HoneybadgerClient {
       baseURL: 'https://app.honeybadger.io/v2',
       auth: {
         username: config.token,
-        password: '',
+        password: ''
       },
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -21,7 +21,7 @@ export class HoneybadgerClient {
 
   async listProjects(params?: { accountId?: string }) {
     let response = await this.http.get('/projects', {
-      params: { account_id: params?.accountId },
+      params: { account_id: params?.accountId }
     });
     return response.data;
   }
@@ -31,38 +31,48 @@ export class HoneybadgerClient {
     return response.data;
   }
 
-  async createProject(accountId: string, project: {
-    name: string;
-    language?: string;
-    resolveErrorsOnDeploy?: boolean;
-    disablePublicLinks?: boolean;
-  }) {
-    let response = await this.http.post(`/projects`, {
-      project: {
-        name: project.name,
-        language: project.language,
-        resolve_errors_on_deploy: project.resolveErrorsOnDeploy,
-        disable_public_links: project.disablePublicLinks,
+  async createProject(
+    accountId: string,
+    project: {
+      name: string;
+      language?: string;
+      resolveErrorsOnDeploy?: boolean;
+      disablePublicLinks?: boolean;
+    }
+  ) {
+    let response = await this.http.post(
+      `/projects`,
+      {
+        project: {
+          name: project.name,
+          language: project.language,
+          resolve_errors_on_deploy: project.resolveErrorsOnDeploy,
+          disable_public_links: project.disablePublicLinks
+        }
       },
-    }, {
-      params: { account_id: accountId },
-    });
+      {
+        params: { account_id: accountId }
+      }
+    );
     return response.data;
   }
 
-  async updateProject(projectId: string, project: {
-    name?: string;
-    language?: string;
-    resolveErrorsOnDeploy?: boolean;
-    disablePublicLinks?: boolean;
-  }) {
+  async updateProject(
+    projectId: string,
+    project: {
+      name?: string;
+      language?: string;
+      resolveErrorsOnDeploy?: boolean;
+      disablePublicLinks?: boolean;
+    }
+  ) {
     await this.http.put(`/projects/${projectId}`, {
       project: {
         name: project.name,
         language: project.language,
         resolve_errors_on_deploy: project.resolveErrorsOnDeploy,
-        disable_public_links: project.disablePublicLinks,
-      },
+        disable_public_links: project.disablePublicLinks
+      }
     });
   }
 
@@ -72,14 +82,17 @@ export class HoneybadgerClient {
 
   // ==================== Faults (Errors) ====================
 
-  async listFaults(projectId: string, params?: {
-    q?: string;
-    createdAfter?: number;
-    occurredAfter?: number;
-    occurredBefore?: number;
-    limit?: number;
-    order?: string;
-  }) {
+  async listFaults(
+    projectId: string,
+    params?: {
+      q?: string;
+      createdAfter?: number;
+      occurredAfter?: number;
+      occurredBefore?: number;
+      limit?: number;
+      order?: string;
+    }
+  ) {
     let response = await this.http.get(`/projects/${projectId}/faults`, {
       params: {
         q: params?.q,
@@ -87,8 +100,8 @@ export class HoneybadgerClient {
         occurred_after: params?.occurredAfter,
         occurred_before: params?.occurredBefore,
         limit: params?.limit,
-        order: params?.order,
-      },
+        order: params?.order
+      }
     });
     return response.data;
   }
@@ -98,17 +111,21 @@ export class HoneybadgerClient {
     return response.data;
   }
 
-  async updateFault(projectId: string, faultId: string, fault: {
-    resolved?: boolean;
-    ignored?: boolean;
-    assigneeId?: number;
-  }) {
+  async updateFault(
+    projectId: string,
+    faultId: string,
+    fault: {
+      resolved?: boolean;
+      ignored?: boolean;
+      assigneeId?: number;
+    }
+  ) {
     await this.http.put(`/projects/${projectId}/faults/${faultId}`, {
       fault: {
         resolved: fault.resolved,
         ignored: fault.ignored,
-        assignee_id: fault.assigneeId,
-      },
+        assignee_id: fault.assigneeId
+      }
     });
   }
 
@@ -118,12 +135,16 @@ export class HoneybadgerClient {
 
   async bulkResolveFaults(projectId: string, query?: string) {
     let response = await this.http.post(`/projects/${projectId}/faults/resolve`, null, {
-      params: { q: query },
+      params: { q: query }
     });
     return response.data;
   }
 
-  async pauseFault(projectId: string, faultId: string, pause: { time?: string; count?: number }) {
+  async pauseFault(
+    projectId: string,
+    faultId: string,
+    pause: { time?: string; count?: number }
+  ) {
     await this.http.post(`/projects/${projectId}/faults/${faultId}/pause`, pause);
   }
 
@@ -133,17 +154,21 @@ export class HoneybadgerClient {
 
   // ==================== Notices ====================
 
-  async listNotices(projectId: string, faultId: string, params?: {
-    createdAfter?: number;
-    createdBefore?: number;
-    limit?: number;
-  }) {
+  async listNotices(
+    projectId: string,
+    faultId: string,
+    params?: {
+      createdAfter?: number;
+      createdBefore?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.http.get(`/projects/${projectId}/faults/${faultId}/notices`, {
       params: {
         created_after: params?.createdAfter,
         created_before: params?.createdBefore,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
     return response.data;
   }
@@ -157,7 +182,7 @@ export class HoneybadgerClient {
 
   async createComment(projectId: string, faultId: string, body: string) {
     let response = await this.http.post(`/projects/${projectId}/faults/${faultId}/comments`, {
-      comment: { body },
+      comment: { body }
     });
     return response.data;
   }
@@ -178,16 +203,19 @@ export class HoneybadgerClient {
     return response.data;
   }
 
-  async createSite(projectId: string, site: {
-    name: string;
-    url: string;
-    frequency?: number;
-    matchType?: string;
-    match?: string;
-    requestMethod?: string;
-    validateSsl?: boolean;
-    active?: boolean;
-  }) {
+  async createSite(
+    projectId: string,
+    site: {
+      name: string;
+      url: string;
+      frequency?: number;
+      matchType?: string;
+      match?: string;
+      requestMethod?: string;
+      validateSsl?: boolean;
+      active?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectId}/sites`, {
       site: {
         name: site.name,
@@ -197,22 +225,26 @@ export class HoneybadgerClient {
         match: site.match,
         request_method: site.requestMethod,
         validate_ssl: site.validateSsl,
-        active: site.active,
-      },
+        active: site.active
+      }
     });
     return response.data;
   }
 
-  async updateSite(projectId: string, siteId: string, site: {
-    name?: string;
-    url?: string;
-    frequency?: number;
-    matchType?: string;
-    match?: string;
-    requestMethod?: string;
-    validateSsl?: boolean;
-    active?: boolean;
-  }) {
+  async updateSite(
+    projectId: string,
+    siteId: string,
+    site: {
+      name?: string;
+      url?: string;
+      frequency?: number;
+      matchType?: string;
+      match?: string;
+      requestMethod?: string;
+      validateSsl?: boolean;
+      active?: boolean;
+    }
+  ) {
     await this.http.put(`/projects/${projectId}/sites/${siteId}`, {
       site: {
         name: site.name,
@@ -222,8 +254,8 @@ export class HoneybadgerClient {
         match: site.match,
         request_method: site.requestMethod,
         validate_ssl: site.validateSsl,
-        active: site.active,
-      },
+        active: site.active
+      }
     });
   }
 
@@ -231,17 +263,21 @@ export class HoneybadgerClient {
     await this.http.delete(`/projects/${projectId}/sites/${siteId}`);
   }
 
-  async listOutages(projectId: string, siteId: string, params?: {
-    createdAfter?: number;
-    createdBefore?: number;
-    limit?: number;
-  }) {
+  async listOutages(
+    projectId: string,
+    siteId: string,
+    params?: {
+      createdAfter?: number;
+      createdBefore?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.http.get(`/projects/${projectId}/sites/${siteId}/outages`, {
       params: {
         created_after: params?.createdAfter,
         created_before: params?.createdBefore,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
     return response.data;
   }
@@ -258,15 +294,18 @@ export class HoneybadgerClient {
     return response.data;
   }
 
-  async createCheckIn(projectId: string, checkIn: {
-    name: string;
-    slug?: string;
-    scheduleType: string;
-    reportPeriod?: string;
-    gracePeriod?: string;
-    cronSchedule?: string;
-    cronTimezone?: string;
-  }) {
+  async createCheckIn(
+    projectId: string,
+    checkIn: {
+      name: string;
+      slug?: string;
+      scheduleType: string;
+      reportPeriod?: string;
+      gracePeriod?: string;
+      cronSchedule?: string;
+      cronTimezone?: string;
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectId}/check_ins`, {
       check_in: {
         name: checkIn.name,
@@ -275,27 +314,31 @@ export class HoneybadgerClient {
         report_period: checkIn.reportPeriod,
         grace_period: checkIn.gracePeriod,
         cron_schedule: checkIn.cronSchedule,
-        cron_timezone: checkIn.cronTimezone,
-      },
+        cron_timezone: checkIn.cronTimezone
+      }
     });
     return response.data;
   }
 
-  async updateCheckIn(projectId: string, checkInId: string, checkIn: {
-    name?: string;
-    reportPeriod?: string;
-    gracePeriod?: string;
-    cronSchedule?: string;
-    cronTimezone?: string;
-  }) {
+  async updateCheckIn(
+    projectId: string,
+    checkInId: string,
+    checkIn: {
+      name?: string;
+      reportPeriod?: string;
+      gracePeriod?: string;
+      cronSchedule?: string;
+      cronTimezone?: string;
+    }
+  ) {
     await this.http.put(`/projects/${projectId}/check_ins/${checkInId}`, {
       check_in: {
         name: checkIn.name,
         report_period: checkIn.reportPeriod,
         grace_period: checkIn.gracePeriod,
         cron_schedule: checkIn.cronSchedule,
-        cron_timezone: checkIn.cronTimezone,
-      },
+        cron_timezone: checkIn.cronTimezone
+      }
     });
   }
 
@@ -305,21 +348,24 @@ export class HoneybadgerClient {
 
   // ==================== Deployments ====================
 
-  async listDeploys(projectId: string, params?: {
-    environment?: string;
-    localUsername?: string;
-    createdAfter?: number;
-    createdBefore?: number;
-    limit?: number;
-  }) {
+  async listDeploys(
+    projectId: string,
+    params?: {
+      environment?: string;
+      localUsername?: string;
+      createdAfter?: number;
+      createdBefore?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.http.get(`/projects/${projectId}/deploys`, {
       params: {
         environment: params?.environment,
         local_username: params?.localUsername,
         created_after: params?.createdAfter,
         created_before: params?.createdBefore,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
     return response.data;
   }
@@ -337,7 +383,7 @@ export class HoneybadgerClient {
 
   async listTeams(params?: { accountId?: string }) {
     let response = await this.http.get('/teams', {
-      params: { account_id: params?.accountId },
+      params: { account_id: params?.accountId }
     });
     return response.data;
   }
@@ -348,17 +394,21 @@ export class HoneybadgerClient {
   }
 
   async createTeam(accountId: string, name: string) {
-    let response = await this.http.post('/teams', {
-      team: { name },
-    }, {
-      params: { account_id: accountId },
-    });
+    let response = await this.http.post(
+      '/teams',
+      {
+        team: { name }
+      },
+      {
+        params: { account_id: accountId }
+      }
+    );
     return response.data;
   }
 
   async updateTeam(teamId: string, name: string) {
     await this.http.put(`/teams/${teamId}`, {
-      team: { name },
+      team: { name }
     });
   }
 
@@ -375,17 +425,20 @@ export class HoneybadgerClient {
     await this.http.delete(`/teams/${teamId}/team_members/${memberId}`);
   }
 
-  async createTeamInvitation(teamId: string, invitation: {
-    email: string;
-    admin?: boolean;
-    message?: string;
-  }) {
+  async createTeamInvitation(
+    teamId: string,
+    invitation: {
+      email: string;
+      admin?: boolean;
+      message?: string;
+    }
+  ) {
     let response = await this.http.post(`/teams/${teamId}/team_invitations`, {
       team_invitation: {
         email: invitation.email,
         admin: invitation.admin,
-        message: invitation.message,
-      },
+        message: invitation.message
+      }
     });
     return response.data;
   }
@@ -401,28 +454,35 @@ export class HoneybadgerClient {
     return response.data;
   }
 
-  async createEnvironment(projectId: string, environment: {
-    name: string;
-    notifications?: boolean;
-  }) {
+  async createEnvironment(
+    projectId: string,
+    environment: {
+      name: string;
+      notifications?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectId}/environments`, {
       environment: {
         name: environment.name,
-        notifications: environment.notifications,
-      },
+        notifications: environment.notifications
+      }
     });
     return response.data;
   }
 
-  async updateEnvironment(projectId: string, environmentId: string, environment: {
-    name?: string;
-    notifications?: boolean;
-  }) {
+  async updateEnvironment(
+    projectId: string,
+    environmentId: string,
+    environment: {
+      name?: string;
+      notifications?: boolean;
+    }
+  ) {
     await this.http.put(`/projects/${projectId}/environments/${environmentId}`, {
       environment: {
         name: environment.name,
-        notifications: environment.notifications,
-      },
+        notifications: environment.notifications
+      }
     });
   }
 
@@ -432,14 +492,18 @@ export class HoneybadgerClient {
 
   // ==================== Insights ====================
 
-  async queryInsights(projectId: string, query: string, params?: {
-    ts?: string;
-    timezone?: string;
-  }) {
+  async queryInsights(
+    projectId: string,
+    query: string,
+    params?: {
+      ts?: string;
+      timezone?: string;
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectId}/insights/queries`, {
       query,
       ts: params?.ts,
-      timezone: params?.timezone,
+      timezone: params?.timezone
     });
     return response.data;
   }
@@ -456,28 +520,35 @@ export class HoneybadgerClient {
     return response.data;
   }
 
-  async createStatusPage(accountId: string, statusPage: {
-    name: string;
-    domain?: string;
-  }) {
+  async createStatusPage(
+    accountId: string,
+    statusPage: {
+      name: string;
+      domain?: string;
+    }
+  ) {
     let response = await this.http.post(`/accounts/${accountId}/status_pages`, {
       status_page: {
         name: statusPage.name,
-        domain: statusPage.domain,
-      },
+        domain: statusPage.domain
+      }
     });
     return response.data;
   }
 
-  async updateStatusPage(accountId: string, statusPageId: string, statusPage: {
-    name?: string;
-    domain?: string;
-  }) {
+  async updateStatusPage(
+    accountId: string,
+    statusPageId: string,
+    statusPage: {
+      name?: string;
+      domain?: string;
+    }
+  ) {
     await this.http.put(`/accounts/${accountId}/status_pages/${statusPageId}`, {
       status_page: {
         name: statusPage.name,
-        domain: statusPage.domain,
-      },
+        domain: statusPage.domain
+      }
     });
   }
 

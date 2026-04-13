@@ -7,19 +7,24 @@ export class Client {
     this.http = createAxios({
       baseURL: params.baseUrl,
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // === SMS / MMS ===
 
-  async sendSms(from: string, to: string[], text: string, attachments?: { fileName: string; contentType: string; content: string }[]) {
+  async sendSms(
+    from: string,
+    to: string[],
+    text: string,
+    attachments?: { fileName: string; contentType: string; content: string }[]
+  ) {
     let body: any = {
       from: { phoneNumber: from },
       to: to.map(num => ({ phoneNumber: num })),
-      text,
+      text
     };
 
     let response = await this.http.post('/restapi/v1.0/account/~/extension/~/sms', body);
@@ -30,7 +35,7 @@ export class Client {
     let body = {
       from: from,
       text: text,
-      messages: to.map(num => ({ to: [num] })),
+      messages: to.map(num => ({ to: [num] }))
     };
 
     let response = await this.http.post('/restapi/v1.0/account/~/a2p-sms/batch', body);
@@ -44,38 +49,46 @@ export class Client {
 
   // === Fax ===
 
-  async sendFax(to: string[], faxResolution?: string, coverPageText?: string, attachmentContentType?: string, attachmentBase64?: string) {
+  async sendFax(
+    to: string[],
+    faxResolution?: string,
+    coverPageText?: string,
+    attachmentContentType?: string,
+    attachmentBase64?: string
+  ) {
     let boundary = '---RingCentralFaxBoundary' + Date.now();
     let parts: string[] = [];
 
     let jsonBody: any = {
-      to: to.map(num => ({ phoneNumber: num })),
+      to: to.map(num => ({ phoneNumber: num }))
     };
     if (faxResolution) jsonBody.faxResolution = faxResolution;
     if (coverPageText) jsonBody.coverPageText = coverPageText;
 
     parts.push(
-      `--${boundary}\r\n` +
-      `Content-Type: application/json\r\n\r\n` +
-      JSON.stringify(jsonBody)
+      `--${boundary}\r\n` + `Content-Type: application/json\r\n\r\n` + JSON.stringify(jsonBody)
     );
 
     if (attachmentBase64 && attachmentContentType) {
       parts.push(
         `--${boundary}\r\n` +
-        `Content-Type: ${attachmentContentType}\r\n` +
-        `Content-Transfer-Encoding: base64\r\n\r\n` +
-        attachmentBase64
+          `Content-Type: ${attachmentContentType}\r\n` +
+          `Content-Transfer-Encoding: base64\r\n\r\n` +
+          attachmentBase64
       );
     }
 
     parts.push(`--${boundary}--`);
 
-    let response = await this.http.post('/restapi/v1.0/account/~/extension/~/fax', parts.join('\r\n'), {
-      headers: {
-        'Content-Type': `multipart/mixed; boundary=${boundary}`,
-      },
-    });
+    let response = await this.http.post(
+      '/restapi/v1.0/account/~/extension/~/fax',
+      parts.join('\r\n'),
+      {
+        headers: {
+          'Content-Type': `multipart/mixed; boundary=${boundary}`
+        }
+      }
+    );
     return response.data;
   }
 
@@ -84,7 +97,7 @@ export class Client {
   async makeRingOutCall(from: string, to: string, callerId?: string, playPrompt?: boolean) {
     let body: any = {
       from: { phoneNumber: from },
-      to: { phoneNumber: to },
+      to: { phoneNumber: to }
     };
     if (callerId) body.callerId = { phoneNumber: callerId };
     if (playPrompt !== undefined) body.playPrompt = playPrompt;
@@ -94,7 +107,9 @@ export class Client {
   }
 
   async getRingOutStatus(ringOutId: string) {
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/~/ring-out/${ringOutId}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/~/ring-out/${ringOutId}`
+    );
     return response.data;
   }
 
@@ -105,7 +120,9 @@ export class Client {
   // === Call Control ===
 
   async getActiveCalls(extensionId: string = '~') {
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/${extensionId}/active-calls`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/${extensionId}/active-calls`
+    );
     return response.data;
   }
 
@@ -237,12 +254,17 @@ export class Client {
   }
 
   async getMeeting(meetingId: string) {
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/~/meeting/${meetingId}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/~/meeting/${meetingId}`
+    );
     return response.data;
   }
 
   async updateMeeting(meetingId: string, params: any) {
-    let response = await this.http.put(`/restapi/v1.0/account/~/extension/~/meeting/${meetingId}`, params);
+    let response = await this.http.put(
+      `/restapi/v1.0/account/~/extension/~/meeting/${meetingId}`,
+      params
+    );
     return response.data;
   }
 
@@ -275,23 +297,32 @@ export class Client {
     if (params?.perPage) query.set('perPage', String(params.perPage));
     if (params?.page) query.set('page', String(params.page));
 
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/${extensionId}/message-store?${query.toString()}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/${extensionId}/message-store?${query.toString()}`
+    );
     return response.data;
   }
 
   async getMessage(messageId: string, extensionId: string = '~') {
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/${extensionId}/message-store/${messageId}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/${extensionId}/message-store/${messageId}`
+    );
     return response.data;
   }
 
   async deleteMessage(messageId: string, extensionId: string = '~') {
-    await this.http.delete(`/restapi/v1.0/account/~/extension/${extensionId}/message-store/${messageId}`);
+    await this.http.delete(
+      `/restapi/v1.0/account/~/extension/${extensionId}/message-store/${messageId}`
+    );
   }
 
   async updateMessage(messageId: string, readStatus: string, extensionId: string = '~') {
-    let response = await this.http.put(`/restapi/v1.0/account/~/extension/${extensionId}/message-store/${messageId}`, {
-      readStatus,
-    });
+    let response = await this.http.put(
+      `/restapi/v1.0/account/~/extension/${extensionId}/message-store/${messageId}`,
+      {
+        readStatus
+      }
+    );
     return response.data;
   }
 
@@ -302,38 +333,58 @@ export class Client {
     return response.data;
   }
 
-  async listExtensions(params?: { type?: string; status?: string; perPage?: number; page?: number }) {
+  async listExtensions(params?: {
+    type?: string;
+    status?: string;
+    perPage?: number;
+    page?: number;
+  }) {
     let query = new URLSearchParams();
     if (params?.type) query.set('type', params.type);
     if (params?.status) query.set('status', params.status);
     if (params?.perPage) query.set('perPage', String(params.perPage));
     if (params?.page) query.set('page', String(params.page));
 
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension?${query.toString()}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension?${query.toString()}`
+    );
     return response.data;
   }
 
   async updateExtension(extensionId: string, params: any) {
-    let response = await this.http.put(`/restapi/v1.0/account/~/extension/${extensionId}`, params);
+    let response = await this.http.put(
+      `/restapi/v1.0/account/~/extension/${extensionId}`,
+      params
+    );
     return response.data;
   }
 
   // === Presence ===
 
   async getPresence(extensionId: string = '~') {
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/${extensionId}/presence`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/${extensionId}/presence`
+    );
     return response.data;
   }
 
-  async updatePresence(extensionId: string, params: { dndStatus?: string; userStatus?: string }) {
-    let response = await this.http.put(`/restapi/v1.0/account/~/extension/${extensionId}/presence`, params);
+  async updatePresence(
+    extensionId: string,
+    params: { dndStatus?: string; userStatus?: string }
+  ) {
+    let response = await this.http.put(
+      `/restapi/v1.0/account/~/extension/${extensionId}/presence`,
+      params
+    );
     return response.data;
   }
 
   // === Phone Numbers ===
 
   async listPhoneNumbers(extensionId: string = '~') {
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/${extensionId}/phone-number`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/${extensionId}/phone-number`
+    );
     return response.data;
   }
 
@@ -344,33 +395,47 @@ export class Client {
     if (params?.perPage) query.set('perPage', String(params.perPage));
     if (params?.page) query.set('page', String(params.page));
 
-    let response = await this.http.get(`/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact?${query.toString()}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact?${query.toString()}`
+    );
     return response.data;
   }
 
   async createContact(extensionId: string = '~', contact: any) {
-    let response = await this.http.post(`/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact`, contact);
+    let response = await this.http.post(
+      `/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact`,
+      contact
+    );
     return response.data;
   }
 
   async updateContact(contactId: string, contact: any, extensionId: string = '~') {
-    let response = await this.http.put(`/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact/${contactId}`, contact);
+    let response = await this.http.put(
+      `/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact/${contactId}`,
+      contact
+    );
     return response.data;
   }
 
   async deleteContact(contactId: string, extensionId: string = '~') {
-    await this.http.delete(`/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact/${contactId}`);
+    await this.http.delete(
+      `/restapi/v1.0/account/~/extension/${extensionId}/address-book/contact/${contactId}`
+    );
   }
 
   // === Subscriptions (for webhooks) ===
 
-  async createSubscription(eventFilters: string[], deliveryAddress: string, expiresIn?: number) {
+  async createSubscription(
+    eventFilters: string[],
+    deliveryAddress: string,
+    expiresIn?: number
+  ) {
     let body: any = {
       eventFilters,
       deliveryMode: {
         transportType: 'WebHook',
-        address: deliveryAddress,
-      },
+        address: deliveryAddress
+      }
     };
     if (expiresIn) body.expiresIn = expiresIn;
 
@@ -390,7 +455,10 @@ export class Client {
   async renewSubscription(subscriptionId: string, expiresIn?: number) {
     let body: any = {};
     if (expiresIn) body.expiresIn = expiresIn;
-    let response = await this.http.post(`/restapi/v1.0/subscription/${subscriptionId}/renew`, body);
+    let response = await this.http.post(
+      `/restapi/v1.0/subscription/${subscriptionId}/renew`,
+      body
+    );
     return response.data;
   }
 
@@ -409,7 +477,9 @@ export class Client {
     if (params?.perPage) query.set('perPage', String(params.perPage));
     if (params?.page) query.set('page', String(params.page));
 
-    let response = await this.http.get(`/restapi/v1.0/account/~/directory/entries?${query.toString()}`);
+    let response = await this.http.get(
+      `/restapi/v1.0/account/~/directory/entries?${query.toString()}`
+    );
     return response.data;
   }
 }

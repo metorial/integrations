@@ -2,19 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let googleAxios = createAxios({
-  baseURL: 'https://oauth2.googleapis.com',
+  baseURL: 'https://oauth2.googleapis.com'
 });
 
 let profileAxios = createAxios({
-  baseURL: 'https://www.googleapis.com',
+  baseURL: 'https://www.googleapis.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Google OAuth',
@@ -24,36 +26,38 @@ export let auth = SlateAuth.create()
       {
         title: 'Read-Only',
         description: 'Read threads, messages, drafts, and mailbox metadata—no modifications.',
-        scope: 'https://www.googleapis.com/auth/gmail.readonly',
+        scope: 'https://www.googleapis.com/auth/gmail.readonly'
       },
       {
         title: 'Compose',
         description: 'Create, read, update, and delete drafts; send messages and drafts.',
-        scope: 'https://www.googleapis.com/auth/gmail.compose',
+        scope: 'https://www.googleapis.com/auth/gmail.compose'
       },
       {
         title: 'Modify',
-        description: 'Change labels, archive, trash, and restore threads (no permanent delete bypassing Trash unless combined with full mail scope).',
-        scope: 'https://www.googleapis.com/auth/gmail.modify',
+        description:
+          'Change labels, archive, trash, and restore threads (no permanent delete bypassing Trash unless combined with full mail scope).',
+        scope: 'https://www.googleapis.com/auth/gmail.modify'
       },
       {
         title: 'Full Access',
-        description: 'Full Gmail access including permanent deletion of threads when using the delete triage action.',
-        scope: 'https://mail.google.com/',
+        description:
+          'Full Gmail access including permanent deletion of threads when using the delete triage action.',
+        scope: 'https://mail.google.com/'
       },
       {
         title: 'User Email',
         description: 'View your email address for connection profile.',
-        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        scope: 'https://www.googleapis.com/auth/userinfo.email'
       },
       {
         title: 'User Profile',
         description: 'View your name and profile picture.',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile',
-      },
+        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -61,26 +65,30 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         scope: ctx.scopes.join(' '),
         access_type: 'offline',
-        prompt: 'consent',
+        prompt: 'consent'
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await googleAxios.post('/token', new URLSearchParams({
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+    handleCallback: async ctx => {
+      let response = await googleAxios.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -91,26 +99,30 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await googleAxios.post('/token', new URLSearchParams({
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await googleAxios.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -121,16 +133,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await profileAxios.get('/oauth2/v2/userinfo', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -140,8 +156,8 @@ export let auth = SlateAuth.create()
           id: data.id,
           email: data.email,
           name: data.name,
-          imageUrl: data.picture,
-        },
+          imageUrl: data.picture
+        }
       };
-    },
+    }
   });

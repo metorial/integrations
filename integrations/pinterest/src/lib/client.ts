@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let httpClient = createAxios({
-  baseURL: 'https://api.pinterest.com/v5',
+  baseURL: 'https://api.pinterest.com/v5'
 });
 
 export interface PaginatedResponse<T> {
@@ -79,7 +79,7 @@ export class Client {
 
   private headers() {
     return {
-      'Authorization': `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
@@ -113,8 +113,8 @@ export class Client {
     let body: Record<string, any> = {
       board_id: params.boardId,
       media_source: {
-        source_type: params.mediaSource.sourceType,
-      },
+        source_type: params.mediaSource.sourceType
+      }
     };
 
     if (params.boardSectionId) body.board_section_id = params.boardSectionId;
@@ -128,21 +128,23 @@ export class Client {
     if (params.mediaSource.url) ms.url = params.mediaSource.url;
     if (params.mediaSource.contentType) ms.content_type = params.mediaSource.contentType;
     if (params.mediaSource.mediaId) ms.media_id = params.mediaSource.mediaId;
-    if (params.mediaSource.coverImageUrl) ms.cover_image_url = params.mediaSource.coverImageUrl;
-    if (params.mediaSource.coverImageContentType) ms.cover_image_content_type = params.mediaSource.coverImageContentType;
+    if (params.mediaSource.coverImageUrl)
+      ms.cover_image_url = params.mediaSource.coverImageUrl;
+    if (params.mediaSource.coverImageContentType)
+      ms.cover_image_content_type = params.mediaSource.coverImageContentType;
     if (params.mediaSource.items) {
-      ms.items = params.mediaSource.items.map((item) => ({
+      ms.items = params.mediaSource.items.map(item => ({
         title: item.title,
         description: item.description,
         link: item.link,
         source_type: item.sourceType,
         url: item.url,
-        content_type: item.contentType,
+        content_type: item.contentType
       }));
     }
 
     let response = await httpClient.post('/pins', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
@@ -154,7 +156,7 @@ export class Client {
 
     let response = await httpClient.get(`/pins/${pinId}`, {
       headers: this.headers(),
-      params,
+      params
     });
 
     return response.data;
@@ -172,27 +174,31 @@ export class Client {
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.pinFilter) queryParams.pin_filter = params.pinFilter;
-    if (params?.includeProtectedPins !== undefined) queryParams.include_protected_pins = params.includeProtectedPins;
+    if (params?.includeProtectedPins !== undefined)
+      queryParams.include_protected_pins = params.includeProtectedPins;
     if (params?.pinType) queryParams.pin_type = params.pinType;
     if (params?.adAccountId) queryParams.ad_account_id = params.adAccountId;
 
     let response = await httpClient.get('/pins', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data as PaginatedResponse<PinData>;
   }
 
-  async updatePin(pinId: string, params: {
-    boardId?: string;
-    boardSectionId?: string;
-    title?: string;
-    description?: string;
-    link?: string;
-    altText?: string;
-    note?: string;
-  }) {
+  async updatePin(
+    pinId: string,
+    params: {
+      boardId?: string;
+      boardSectionId?: string;
+      title?: string;
+      description?: string;
+      link?: string;
+      altText?: string;
+      note?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.boardId) body.board_id = params.boardId;
     if (params.boardSectionId) body.board_section_id = params.boardSectionId;
@@ -203,7 +209,7 @@ export class Client {
     if (params.note !== undefined) body.note = params.note;
 
     let response = await httpClient.patch(`/pins/${pinId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
@@ -211,35 +217,38 @@ export class Client {
 
   async deletePin(pinId: string) {
     await httpClient.delete(`/pins/${pinId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async savePin(pinId: string, boardId: string, boardSectionId?: string) {
     let body: Record<string, any> = {
-      board_id: boardId,
+      board_id: boardId
     };
     if (boardSectionId) body.board_section_id = boardSectionId;
 
     let response = await httpClient.post(`/pins/${pinId}/save`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
   }
 
-  async getPinAnalytics(pinId: string, params: {
-    startDate: string;
-    endDate: string;
-    metricTypes: string[];
-    appTypes?: string;
-    splitField?: string;
-    adAccountId?: string;
-  }) {
+  async getPinAnalytics(
+    pinId: string,
+    params: {
+      startDate: string;
+      endDate: string;
+      metricTypes: string[];
+      appTypes?: string;
+      splitField?: string;
+      adAccountId?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {
       start_date: params.startDate,
       end_date: params.endDate,
-      metric_types: params.metricTypes.join(','),
+      metric_types: params.metricTypes.join(',')
     };
     if (params.appTypes) queryParams.app_types = params.appTypes;
     if (params.splitField) queryParams.split_field = params.splitField;
@@ -247,7 +256,7 @@ export class Client {
 
     let response = await httpClient.get(`/pins/${pinId}/analytics`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -255,19 +264,15 @@ export class Client {
 
   // ── Boards ──
 
-  async createBoard(params: {
-    name: string;
-    description?: string;
-    privacy?: string;
-  }) {
+  async createBoard(params: { name: string; description?: string; privacy?: string }) {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
     if (params.description) body.description = params.description;
     if (params.privacy) body.privacy = params.privacy;
 
     let response = await httpClient.post('/boards', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
@@ -275,17 +280,13 @@ export class Client {
 
   async getBoard(boardId: string) {
     let response = await httpClient.get(`/boards/${boardId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
   }
 
-  async listBoards(params?: {
-    bookmark?: string;
-    pageSize?: number;
-    privacy?: string;
-  }) {
+  async listBoards(params?: { bookmark?: string; pageSize?: number; privacy?: string }) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
@@ -293,24 +294,27 @@ export class Client {
 
     let response = await httpClient.get('/boards', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data as PaginatedResponse<BoardData>;
   }
 
-  async updateBoard(boardId: string, params: {
-    name?: string;
-    description?: string;
-    privacy?: string;
-  }) {
+  async updateBoard(
+    boardId: string,
+    params: {
+      name?: string;
+      description?: string;
+      privacy?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.description !== undefined) body.description = params.description;
     if (params.privacy !== undefined) body.privacy = params.privacy;
 
     let response = await httpClient.patch(`/boards/${boardId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
@@ -318,21 +322,24 @@ export class Client {
 
   async deleteBoard(boardId: string) {
     await httpClient.delete(`/boards/${boardId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
-  async listBoardPins(boardId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-  }) {
+  async listBoardPins(
+    boardId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
 
     let response = await httpClient.get(`/boards/${boardId}/pins`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data as PaginatedResponse<PinData>;
@@ -341,54 +348,69 @@ export class Client {
   // ── Board Sections ──
 
   async createBoardSection(boardId: string, name: string) {
-    let response = await httpClient.post(`/boards/${boardId}/sections`, { name }, {
-      headers: this.headers(),
-    });
+    let response = await httpClient.post(
+      `/boards/${boardId}/sections`,
+      { name },
+      {
+        headers: this.headers()
+      }
+    );
 
     return response.data;
   }
 
-  async listBoardSections(boardId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-  }) {
+  async listBoardSections(
+    boardId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
 
     let response = await httpClient.get(`/boards/${boardId}/sections`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data as PaginatedResponse<BoardSectionData>;
   }
 
   async updateBoardSection(boardId: string, sectionId: string, name: string) {
-    let response = await httpClient.patch(`/boards/${boardId}/sections/${sectionId}`, { name }, {
-      headers: this.headers(),
-    });
+    let response = await httpClient.patch(
+      `/boards/${boardId}/sections/${sectionId}`,
+      { name },
+      {
+        headers: this.headers()
+      }
+    );
 
     return response.data;
   }
 
   async deleteBoardSection(boardId: string, sectionId: string) {
     await httpClient.delete(`/boards/${boardId}/sections/${sectionId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
-  async listBoardSectionPins(boardId: string, sectionId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-  }) {
+  async listBoardSectionPins(
+    boardId: string,
+    sectionId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
 
     let response = await httpClient.get(`/boards/${boardId}/sections/${sectionId}/pins`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data as PaginatedResponse<PinData>;
@@ -398,7 +420,7 @@ export class Client {
 
   async getUserAccount() {
     let response = await httpClient.get('/user_account', {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
@@ -418,9 +440,10 @@ export class Client {
     let queryParams: Record<string, any> = {
       start_date: params.startDate,
       end_date: params.endDate,
-      metric_types: params.metricTypes.join(','),
+      metric_types: params.metricTypes.join(',')
     };
-    if (params.fromClaimedContent) queryParams.from_claimed_content = params.fromClaimedContent;
+    if (params.fromClaimedContent)
+      queryParams.from_claimed_content = params.fromClaimedContent;
     if (params.pinFormat) queryParams.pin_format = params.pinFormat;
     if (params.appTypes) queryParams.app_types = params.appTypes;
     if (params.contentType) queryParams.content_type = params.contentType;
@@ -429,7 +452,7 @@ export class Client {
 
     let response = await httpClient.get('/user_account/analytics', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -445,11 +468,12 @@ export class Client {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
-    if (params?.includeSharedAccounts !== undefined) queryParams.include_shared_accounts = params.includeSharedAccounts;
+    if (params?.includeSharedAccounts !== undefined)
+      queryParams.include_shared_accounts = params.includeSharedAccounts;
 
     let response = await httpClient.get('/ad_accounts', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data as PaginatedResponse<AdAccountData>;
@@ -457,36 +481,41 @@ export class Client {
 
   async getAdAccount(adAccountId: string) {
     let response = await httpClient.get(`/ad_accounts/${adAccountId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
   }
 
-  async getAdAccountAnalytics(adAccountId: string, params: {
-    startDate: string;
-    endDate: string;
-    columns: string[];
-    granularity: string;
-    clickWindowDays?: number;
-    engagementWindowDays?: number;
-    viewWindowDays?: number;
-    conversionReportTime?: string;
-  }) {
+  async getAdAccountAnalytics(
+    adAccountId: string,
+    params: {
+      startDate: string;
+      endDate: string;
+      columns: string[];
+      granularity: string;
+      clickWindowDays?: number;
+      engagementWindowDays?: number;
+      viewWindowDays?: number;
+      conversionReportTime?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {
       start_date: params.startDate,
       end_date: params.endDate,
       columns: params.columns.join(','),
-      granularity: params.granularity,
+      granularity: params.granularity
     };
     if (params.clickWindowDays) queryParams.click_window_days = params.clickWindowDays;
-    if (params.engagementWindowDays) queryParams.engagement_window_days = params.engagementWindowDays;
+    if (params.engagementWindowDays)
+      queryParams.engagement_window_days = params.engagementWindowDays;
     if (params.viewWindowDays) queryParams.view_window_days = params.viewWindowDays;
-    if (params.conversionReportTime) queryParams.conversion_report_time = params.conversionReportTime;
+    if (params.conversionReportTime)
+      queryParams.conversion_report_time = params.conversionReportTime;
 
     let response = await httpClient.get(`/ad_accounts/${adAccountId}/analytics`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -494,46 +523,53 @@ export class Client {
 
   // ── Campaigns ──
 
-  async listCampaigns(adAccountId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-    campaignIds?: string[];
-    entityStatuses?: string[];
-    orderBy?: string;
-  }) {
+  async listCampaigns(
+    adAccountId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+      campaignIds?: string[];
+      entityStatuses?: string[];
+      orderBy?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.campaignIds?.length) queryParams.campaign_ids = params.campaignIds.join(',');
-    if (params?.entityStatuses?.length) queryParams.entity_statuses = params.entityStatuses.join(',');
+    if (params?.entityStatuses?.length)
+      queryParams.entity_statuses = params.entityStatuses.join(',');
     if (params?.orderBy) queryParams.order = params.orderBy;
 
     let response = await httpClient.get(`/ad_accounts/${adAccountId}/campaigns`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async getCampaignAnalytics(adAccountId: string, params: {
-    campaignIds: string[];
-    startDate: string;
-    endDate: string;
-    columns: string[];
-    granularity: string;
-  }) {
+  async getCampaignAnalytics(
+    adAccountId: string,
+    params: {
+      campaignIds: string[];
+      startDate: string;
+      endDate: string;
+      columns: string[];
+      granularity: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {
       campaign_ids: params.campaignIds.join(','),
       start_date: params.startDate,
       end_date: params.endDate,
       columns: params.columns.join(','),
-      granularity: params.granularity,
+      granularity: params.granularity
     };
 
     let response = await httpClient.get(`/ad_accounts/${adAccountId}/campaigns/analytics`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -541,25 +577,29 @@ export class Client {
 
   // ── Ad Groups ──
 
-  async listAdGroups(adAccountId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-    campaignIds?: string[];
-    adGroupIds?: string[];
-    entityStatuses?: string[];
-    orderBy?: string;
-  }) {
+  async listAdGroups(
+    adAccountId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+      campaignIds?: string[];
+      adGroupIds?: string[];
+      entityStatuses?: string[];
+      orderBy?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.campaignIds?.length) queryParams.campaign_ids = params.campaignIds.join(',');
     if (params?.adGroupIds?.length) queryParams.ad_group_ids = params.adGroupIds.join(',');
-    if (params?.entityStatuses?.length) queryParams.entity_statuses = params.entityStatuses.join(',');
+    if (params?.entityStatuses?.length)
+      queryParams.entity_statuses = params.entityStatuses.join(',');
     if (params?.orderBy) queryParams.order = params.orderBy;
 
     let response = await httpClient.get(`/ad_accounts/${adAccountId}/ad_groups`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -567,27 +607,31 @@ export class Client {
 
   // ── Ads ──
 
-  async listAds(adAccountId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-    campaignIds?: string[];
-    adGroupIds?: string[];
-    adIds?: string[];
-    entityStatuses?: string[];
-    orderBy?: string;
-  }) {
+  async listAds(
+    adAccountId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+      campaignIds?: string[];
+      adGroupIds?: string[];
+      adIds?: string[];
+      entityStatuses?: string[];
+      orderBy?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.campaignIds?.length) queryParams.campaign_ids = params.campaignIds.join(',');
     if (params?.adGroupIds?.length) queryParams.ad_group_ids = params.adGroupIds.join(',');
     if (params?.adIds?.length) queryParams.ad_ids = params.adIds.join(',');
-    if (params?.entityStatuses?.length) queryParams.entity_statuses = params.entityStatuses.join(',');
+    if (params?.entityStatuses?.length)
+      queryParams.entity_statuses = params.entityStatuses.join(',');
     if (params?.orderBy) queryParams.order = params.orderBy;
 
     let response = await httpClient.get(`/ad_accounts/${adAccountId}/ads`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -595,27 +639,30 @@ export class Client {
 
   // ── Conversions ──
 
-  async sendConversionEvents(adAccountId: string, params: {
-    events: Array<{
-      eventName: string;
-      actionSource: string;
-      eventTime: number;
-      eventId: string;
-      eventSourceUrl?: string;
-      partnerName?: string;
-      userData: Record<string, any>;
-      customData?: Record<string, any>;
-      appId?: string;
-      appName?: string;
-      appVersion?: string;
-      deviceBrand?: string;
-      deviceModel?: string;
-      osVersion?: string;
-      language?: string;
-    }>;
-  }) {
+  async sendConversionEvents(
+    adAccountId: string,
+    params: {
+      events: Array<{
+        eventName: string;
+        actionSource: string;
+        eventTime: number;
+        eventId: string;
+        eventSourceUrl?: string;
+        partnerName?: string;
+        userData: Record<string, any>;
+        customData?: Record<string, any>;
+        appId?: string;
+        appName?: string;
+        appVersion?: string;
+        deviceBrand?: string;
+        deviceModel?: string;
+        osVersion?: string;
+        language?: string;
+      }>;
+    }
+  ) {
     let body = {
-      data: params.events.map((event) => ({
+      data: params.events.map(event => ({
         event_name: event.eventName,
         action_source: event.actionSource,
         event_time: event.eventTime,
@@ -630,12 +677,12 @@ export class Client {
         device_brand: event.deviceBrand,
         device_model: event.deviceModel,
         os_version: event.osVersion,
-        language: event.language,
-      })),
+        language: event.language
+      }))
     };
 
     let response = await httpClient.post(`/ad_accounts/${adAccountId}/events`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
@@ -643,17 +690,14 @@ export class Client {
 
   // ── Catalogs ──
 
-  async listCatalogs(params?: {
-    bookmark?: string;
-    pageSize?: number;
-  }) {
+  async listCatalogs(params?: { bookmark?: string; pageSize?: number }) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
 
     let response = await httpClient.get('/catalogs', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -671,7 +715,7 @@ export class Client {
 
     let response = await httpClient.get('/catalogs/feeds', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -679,17 +723,13 @@ export class Client {
 
   async getCatalogFeed(feedId: string) {
     let response = await httpClient.get(`/catalogs/feeds/${feedId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;
   }
 
-  async listCatalogItems(params: {
-    feedId: string;
-    bookmark?: string;
-    pageSize?: number;
-  }) {
+  async listCatalogItems(params: { feedId: string; bookmark?: string; pageSize?: number }) {
     let queryParams: Record<string, any> = {};
     queryParams.feed_id = params.feedId;
     if (params.bookmark) queryParams.bookmark = params.bookmark;
@@ -697,7 +737,7 @@ export class Client {
 
     let response = await httpClient.get('/catalogs/items', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -717,7 +757,7 @@ export class Client {
 
     let response = await httpClient.get('/catalogs/product_groups', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -736,17 +776,18 @@ export class Client {
   }) {
     let queryParams: Record<string, any> = {
       region: params.region,
-      trend_type: params.trendType,
+      trend_type: params.trendType
     };
     if (params.interests?.length) queryParams.interests = params.interests.join(',');
     if (params.genders?.length) queryParams.genders = params.genders.join(',');
     if (params.ages?.length) queryParams.ages = params.ages.join(',');
-    if (params.normalizeAgainstGroup !== undefined) queryParams.normalize_against_group = params.normalizeAgainstGroup;
+    if (params.normalizeAgainstGroup !== undefined)
+      queryParams.normalize_against_group = params.normalizeAgainstGroup;
     if (params.limit) queryParams.limit = params.limit;
 
     let response = await httpClient.get('/trends/results', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -761,7 +802,7 @@ export class Client {
     adAccountId?: string;
   }) {
     let queryParams: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
     if (params.bookmark) queryParams.bookmark = params.bookmark;
     if (params.pageSize) queryParams.page_size = params.pageSize;
@@ -769,26 +810,22 @@ export class Client {
 
     let response = await httpClient.get('/search/pins', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async searchBoards(params: {
-    query: string;
-    bookmark?: string;
-    pageSize?: number;
-  }) {
+  async searchBoards(params: { query: string; bookmark?: string; pageSize?: number }) {
     let queryParams: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
     if (params.bookmark) queryParams.bookmark = params.bookmark;
     if (params.pageSize) queryParams.page_size = params.pageSize;
 
     let response = await httpClient.get('/search/boards', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -796,41 +833,48 @@ export class Client {
 
   // ── Audiences ──
 
-  async listAudiences(adAccountId: string, params?: {
-    bookmark?: string;
-    pageSize?: number;
-    orderBy?: string;
-    entityStatuses?: string[];
-  }) {
+  async listAudiences(
+    adAccountId: string,
+    params?: {
+      bookmark?: string;
+      pageSize?: number;
+      orderBy?: string;
+      entityStatuses?: string[];
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.bookmark) queryParams.bookmark = params.bookmark;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.orderBy) queryParams.order = params.orderBy;
-    if (params?.entityStatuses?.length) queryParams.entity_statuses = params.entityStatuses.join(',');
+    if (params?.entityStatuses?.length)
+      queryParams.entity_statuses = params.entityStatuses.join(',');
 
     let response = await httpClient.get(`/ad_accounts/${adAccountId}/audiences`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async createAudience(adAccountId: string, params: {
-    name: string;
-    rule: Record<string, any>;
-    description?: string;
-    audienceType: string;
-  }) {
+  async createAudience(
+    adAccountId: string,
+    params: {
+      name: string;
+      rule: Record<string, any>;
+      description?: string;
+      audienceType: string;
+    }
+  ) {
     let body: Record<string, any> = {
       name: params.name,
       rule: params.rule,
-      audience_type: params.audienceType,
+      audience_type: params.audienceType
     };
     if (params.description) body.description = params.description;
 
     let response = await httpClient.post(`/ad_accounts/${adAccountId}/audiences`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     return response.data;

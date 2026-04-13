@@ -8,7 +8,7 @@ import type {
   OktaEventHook,
   OktaPolicy,
   OktaFactor,
-  PaginatedResponse,
+  PaginatedResponse
 } from './types';
 
 export class OktaClient {
@@ -22,8 +22,8 @@ export class OktaClient {
       headers: {
         Authorization: `SSWS ${params.token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -82,10 +82,13 @@ export class OktaClient {
     return response.data;
   }
 
-  async updateUser(userId: string, params: {
-    profile?: Record<string, any>;
-    credentials?: Record<string, any>;
-  }): Promise<OktaUser> {
+  async updateUser(
+    userId: string,
+    params: {
+      profile?: Record<string, any>;
+      credentials?: Record<string, any>;
+    }
+  ): Promise<OktaUser> {
     let body: Record<string, any> = {};
     if (params.profile) body.profile = params.profile;
     if (params.credentials) body.credentials = params.credentials;
@@ -100,7 +103,11 @@ export class OktaClient {
     await this.http.delete(`/users/${encodeURIComponent(userId)}`, { params });
   }
 
-  async performUserLifecycle(userId: string, action: string, sendEmail?: boolean): Promise<any> {
+  async performUserLifecycle(
+    userId: string,
+    action: string,
+    sendEmail?: boolean
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (sendEmail !== undefined) params.sendEmail = String(sendEmail);
     let response = await this.http.post(
@@ -151,13 +158,16 @@ export class OktaClient {
     let response = await this.http.post('/groups', {
       profile: {
         name: params.name,
-        description: params.description,
-      },
+        description: params.description
+      }
     });
     return response.data;
   }
 
-  async updateGroup(groupId: string, params: { name?: string; description?: string }): Promise<OktaGroup> {
+  async updateGroup(
+    groupId: string,
+    params: { name?: string; description?: string }
+  ): Promise<OktaGroup> {
     let profile: Record<string, any> = {};
     if (params.name !== undefined) profile.name = params.name;
     if (params.description !== undefined) profile.description = params.description;
@@ -170,25 +180,34 @@ export class OktaClient {
     await this.http.delete(`/groups/${encodeURIComponent(groupId)}`);
   }
 
-  async listGroupMembers(groupId: string, params?: {
-    limit?: number;
-    after?: string;
-  }): Promise<PaginatedResponse<OktaUser>> {
+  async listGroupMembers(
+    groupId: string,
+    params?: {
+      limit?: number;
+      after?: string;
+    }
+  ): Promise<PaginatedResponse<OktaUser>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.after) queryParams.after = params.after;
 
-    let response = await this.http.get(`/groups/${encodeURIComponent(groupId)}/users`, { params: queryParams });
+    let response = await this.http.get(`/groups/${encodeURIComponent(groupId)}/users`, {
+      params: queryParams
+    });
     let nextUrl = this.parseNextLink(response.headers?.link);
     return { items: response.data, nextUrl };
   }
 
   async addUserToGroup(groupId: string, userId: string): Promise<void> {
-    await this.http.put(`/groups/${encodeURIComponent(groupId)}/users/${encodeURIComponent(userId)}`);
+    await this.http.put(
+      `/groups/${encodeURIComponent(groupId)}/users/${encodeURIComponent(userId)}`
+    );
   }
 
   async removeUserFromGroup(groupId: string, userId: string): Promise<void> {
-    await this.http.delete(`/groups/${encodeURIComponent(groupId)}/users/${encodeURIComponent(userId)}`);
+    await this.http.delete(
+      `/groups/${encodeURIComponent(groupId)}/users/${encodeURIComponent(userId)}`
+    );
   }
 
   // --- Applications ---
@@ -215,15 +234,18 @@ export class OktaClient {
     return response.data;
   }
 
-  async assignUserToApplication(appId: string, params: {
-    userId: string;
-    scope?: string;
-    credentials?: Record<string, any>;
-    profile?: Record<string, any>;
-  }): Promise<any> {
+  async assignUserToApplication(
+    appId: string,
+    params: {
+      userId: string;
+      scope?: string;
+      credentials?: Record<string, any>;
+      profile?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       id: params.userId,
-      scope: params.scope || 'USER',
+      scope: params.scope || 'USER'
     };
     if (params.credentials) body.credentials = params.credentials;
     if (params.profile) body.profile = params.profile;
@@ -233,43 +255,64 @@ export class OktaClient {
   }
 
   async removeUserFromApplication(appId: string, userId: string): Promise<void> {
-    await this.http.delete(`/apps/${encodeURIComponent(appId)}/users/${encodeURIComponent(userId)}`);
+    await this.http.delete(
+      `/apps/${encodeURIComponent(appId)}/users/${encodeURIComponent(userId)}`
+    );
   }
 
-  async assignGroupToApplication(appId: string, groupId: string, profile?: Record<string, any>): Promise<any> {
+  async assignGroupToApplication(
+    appId: string,
+    groupId: string,
+    profile?: Record<string, any>
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (profile) body.profile = profile;
 
-    let response = await this.http.put(`/apps/${encodeURIComponent(appId)}/groups/${encodeURIComponent(groupId)}`, body);
+    let response = await this.http.put(
+      `/apps/${encodeURIComponent(appId)}/groups/${encodeURIComponent(groupId)}`,
+      body
+    );
     return response.data;
   }
 
   async removeGroupFromApplication(appId: string, groupId: string): Promise<void> {
-    await this.http.delete(`/apps/${encodeURIComponent(appId)}/groups/${encodeURIComponent(groupId)}`);
+    await this.http.delete(
+      `/apps/${encodeURIComponent(appId)}/groups/${encodeURIComponent(groupId)}`
+    );
   }
 
-  async listApplicationUsers(appId: string, params?: {
-    limit?: number;
-    after?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listApplicationUsers(
+    appId: string,
+    params?: {
+      limit?: number;
+      after?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.after) queryParams.after = params.after;
 
-    let response = await this.http.get(`/apps/${encodeURIComponent(appId)}/users`, { params: queryParams });
+    let response = await this.http.get(`/apps/${encodeURIComponent(appId)}/users`, {
+      params: queryParams
+    });
     let nextUrl = this.parseNextLink(response.headers?.link);
     return { items: response.data, nextUrl };
   }
 
-  async listApplicationGroups(appId: string, params?: {
-    limit?: number;
-    after?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listApplicationGroups(
+    appId: string,
+    params?: {
+      limit?: number;
+      after?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.after) queryParams.after = params.after;
 
-    let response = await this.http.get(`/apps/${encodeURIComponent(appId)}/groups`, { params: queryParams });
+    let response = await this.http.get(`/apps/${encodeURIComponent(appId)}/groups`, {
+      params: queryParams
+    });
     let nextUrl = this.parseNextLink(response.headers?.link);
     return { items: response.data, nextUrl };
   }
@@ -322,15 +365,15 @@ export class OktaClient {
       version: '1.0.0',
       config: {
         uri: params.url,
-        headers: [],
-      },
+        headers: []
+      }
     };
 
     if (params.authorizationHeaderValue) {
       channel.config.authScheme = {
         type: 'HEADER',
         key: 'Authorization',
-        value: params.authorizationHeaderValue,
+        value: params.authorizationHeaderValue
       };
     }
 
@@ -338,19 +381,22 @@ export class OktaClient {
       name: params.name,
       events: {
         type: 'EVENT_TYPE',
-        items: params.eventTypes,
+        items: params.eventTypes
       },
-      channel,
+      channel
     });
     return response.data;
   }
 
-  async updateEventHook(eventHookId: string, params: {
-    name?: string;
-    url?: string;
-    eventTypes?: string[];
-    authorizationHeaderValue?: string;
-  }): Promise<OktaEventHook> {
+  async updateEventHook(
+    eventHookId: string,
+    params: {
+      name?: string;
+      url?: string;
+      eventTypes?: string[];
+      authorizationHeaderValue?: string;
+    }
+  ): Promise<OktaEventHook> {
     let existing = await this.getEventHook(eventHookId);
 
     let channel = existing.channel;
@@ -361,7 +407,7 @@ export class OktaClient {
       channel.config.authScheme = {
         type: 'HEADER',
         key: 'Authorization',
-        value: params.authorizationHeaderValue,
+        value: params.authorizationHeaderValue
       };
     }
 
@@ -369,9 +415,9 @@ export class OktaClient {
       name: params.name || existing.name,
       events: {
         type: 'EVENT_TYPE',
-        items: params.eventTypes || existing.events.items,
+        items: params.eventTypes || existing.events.items
       },
-      channel,
+      channel
     };
 
     let response = await this.http.put(`/eventHooks/${encodeURIComponent(eventHookId)}`, body);
@@ -383,17 +429,23 @@ export class OktaClient {
   }
 
   async activateEventHook(eventHookId: string): Promise<OktaEventHook> {
-    let response = await this.http.post(`/eventHooks/${encodeURIComponent(eventHookId)}/lifecycle/activate`);
+    let response = await this.http.post(
+      `/eventHooks/${encodeURIComponent(eventHookId)}/lifecycle/activate`
+    );
     return response.data;
   }
 
   async deactivateEventHook(eventHookId: string): Promise<OktaEventHook> {
-    let response = await this.http.post(`/eventHooks/${encodeURIComponent(eventHookId)}/lifecycle/deactivate`);
+    let response = await this.http.post(
+      `/eventHooks/${encodeURIComponent(eventHookId)}/lifecycle/deactivate`
+    );
     return response.data;
   }
 
   async verifyEventHook(eventHookId: string): Promise<OktaEventHook> {
-    let response = await this.http.post(`/eventHooks/${encodeURIComponent(eventHookId)}/lifecycle/verify`);
+    let response = await this.http.post(
+      `/eventHooks/${encodeURIComponent(eventHookId)}/lifecycle/verify`
+    );
     return response.data;
   }
 
@@ -416,12 +468,18 @@ export class OktaClient {
     return response.data;
   }
 
-  async enrollFactor(userId: string, params: {
-    factorType: string;
-    provider: string;
-    profile?: Record<string, any>;
-  }): Promise<OktaFactor> {
-    let response = await this.http.post(`/users/${encodeURIComponent(userId)}/factors`, params);
+  async enrollFactor(
+    userId: string,
+    params: {
+      factorType: string;
+      provider: string;
+      profile?: Record<string, any>;
+    }
+  ): Promise<OktaFactor> {
+    let response = await this.http.post(
+      `/users/${encodeURIComponent(userId)}/factors`,
+      params
+    );
     return response.data;
   }
 

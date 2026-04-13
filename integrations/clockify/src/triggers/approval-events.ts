@@ -3,38 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let approvalEventTypes = [
-  'NEW_APPROVAL_REQUEST',
-  'APPROVAL_REQUEST_STATUS_UPDATED'
-] as const;
+let approvalEventTypes = ['NEW_APPROVAL_REQUEST', 'APPROVAL_REQUEST_STATUS_UPDATED'] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'NEW_APPROVAL_REQUEST': 'approval.created',
-  'APPROVAL_REQUEST_STATUS_UPDATED': 'approval.status_updated'
+  NEW_APPROVAL_REQUEST: 'approval.created',
+  APPROVAL_REQUEST_STATUS_UPDATED: 'approval.status_updated'
 };
 
-export let approvalEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Approval Events',
-    key: 'approval_events',
-    description: 'Triggered when approval requests are created or their status changes.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    approval: z.any().describe('Approval request data from webhook payload')
-  }))
-  .output(z.object({
-    approvalRequestId: z.string(),
-    userId: z.string().optional(),
-    status: z.string().optional(),
-    periodStart: z.string().optional(),
-    periodEnd: z.string().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let approvalEvents = SlateTrigger.create(spec, {
+  name: 'Approval Events',
+  key: 'approval_events',
+  description: 'Triggered when approval requests are created or their status changes.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      approval: z.any().describe('Approval request data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      approvalRequestId: z.string(),
+      userId: z.string().optional(),
+      status: z.string().optional(),
+      periodStart: z.string().optional(),
+      periodEnd: z.string().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -56,7 +54,7 @@ export let approvalEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -73,21 +71,24 @@ export let approvalEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          approval: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            approval: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let approval = ctx.input.approval;
       let approvalId = approval.id || approval.approvalRequestId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `approval.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `approval.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

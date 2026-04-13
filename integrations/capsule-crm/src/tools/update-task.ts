@@ -3,29 +3,30 @@ import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTask = SlateTool.create(
-  spec,
-  {
-    name: 'Update Task',
-    key: 'update_task',
-    description: `Update an existing task in Capsule CRM. Modify its description, details, due date, status, and assignment.`,
-  }
-)
-  .input(z.object({
-    taskId: z.number().describe('ID of the task to update'),
-    description: z.string().optional().describe('Updated description'),
-    detail: z.string().optional().describe('Updated details'),
-    dueOn: z.string().optional().describe('Updated due date (YYYY-MM-DD)'),
-    dueTime: z.string().optional().describe('Updated due time (HH:MM:SS)'),
-    status: z.enum(['open', 'completed']).optional().describe('Updated status'),
-    ownerId: z.number().optional().describe('New owner user ID'),
-  }))
-  .output(z.object({
-    taskId: z.number().describe('ID of the updated task'),
-    description: z.string().optional().describe('Task description'),
-    updatedAt: z.string().optional().describe('Update timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateTask = SlateTool.create(spec, {
+  name: 'Update Task',
+  key: 'update_task',
+  description: `Update an existing task in Capsule CRM. Modify its description, details, due date, status, and assignment.`
+})
+  .input(
+    z.object({
+      taskId: z.number().describe('ID of the task to update'),
+      description: z.string().optional().describe('Updated description'),
+      detail: z.string().optional().describe('Updated details'),
+      dueOn: z.string().optional().describe('Updated due date (YYYY-MM-DD)'),
+      dueTime: z.string().optional().describe('Updated due time (HH:MM:SS)'),
+      status: z.enum(['open', 'completed']).optional().describe('Updated status'),
+      ownerId: z.number().optional().describe('New owner user ID')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number().describe('ID of the updated task'),
+      description: z.string().optional().describe('Task description'),
+      updatedAt: z.string().optional().describe('Update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
     let task: Record<string, any> = {};
@@ -43,8 +44,9 @@ export let updateTask = SlateTool.create(
       output: {
         taskId: result.id,
         description: result.description,
-        updatedAt: result.updatedAt,
+        updatedAt: result.updatedAt
       },
-      message: `Updated task **"${result.description ?? '#' + result.id}"**.`,
+      message: `Updated task **"${result.description ?? '#' + result.id}"**.`
     };
-  }).build();
+  })
+  .build();

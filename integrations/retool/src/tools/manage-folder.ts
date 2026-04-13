@@ -3,31 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Folder',
-    key: 'manage_folder',
-    description: `Create, update, or delete a folder in the Retool organization. Folders organize apps and resources into a hierarchy.`,
-    instructions: [
-      'Use action "create" to create a new folder, "update" to rename or move it, or "delete" to remove it.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
-    folderId: z.string().optional().describe('Folder ID (required for update and delete)'),
-    folderName: z.string().optional().describe('Name of the folder (required for create, optional for update)'),
-    parentFolderId: z.string().nullable().optional().describe('Parent folder ID (null for top-level). Used with create or update.'),
-    folderType: z.enum(['app', 'resource']).optional().describe('Type of folder (only for create)'),
-  }))
-  .output(z.object({
-    folderId: z.string(),
-    folderName: z.string().optional(),
-    action: z.string(),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageFolder = SlateTool.create(spec, {
+  name: 'Manage Folder',
+  key: 'manage_folder',
+  description: `Create, update, or delete a folder in the Retool organization. Folders organize apps and resources into a hierarchy.`,
+  instructions: [
+    'Use action "create" to create a new folder, "update" to rename or move it, or "delete" to remove it.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
+      folderId: z.string().optional().describe('Folder ID (required for update and delete)'),
+      folderName: z
+        .string()
+        .optional()
+        .describe('Name of the folder (required for create, optional for update)'),
+      parentFolderId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Parent folder ID (null for top-level). Used with create or update.'),
+      folderType: z
+        .enum(['app', 'resource'])
+        .optional()
+        .describe('Type of folder (only for create)')
+    })
+  )
+  .output(
+    z.object({
+      folderId: z.string(),
+      folderName: z.string().optional(),
+      action: z.string(),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
     if (ctx.input.action === 'create') {
@@ -37,7 +48,7 @@ export let manageFolder = SlateTool.create(
       let result = await client.createFolder({
         name: ctx.input.folderName,
         parentFolderId: ctx.input.parentFolderId,
-        folderType: ctx.input.folderType,
+        folderType: ctx.input.folderType
       });
       let f = result.data;
       return {
@@ -45,9 +56,9 @@ export let manageFolder = SlateTool.create(
           folderId: f.id,
           folderName: f.name,
           action: 'create',
-          success: true,
+          success: true
         },
-        message: `Created folder **${f.name}** with ID \`${f.id}\`.`,
+        message: `Created folder **${f.name}** with ID \`${f.id}\`.`
       };
     }
 
@@ -57,7 +68,7 @@ export let manageFolder = SlateTool.create(
       }
       let result = await client.updateFolder(ctx.input.folderId, {
         name: ctx.input.folderName,
-        parentFolderId: ctx.input.parentFolderId,
+        parentFolderId: ctx.input.parentFolderId
       });
       let f = result.data;
       return {
@@ -65,9 +76,9 @@ export let manageFolder = SlateTool.create(
           folderId: f.id,
           folderName: f.name,
           action: 'update',
-          success: true,
+          success: true
         },
-        message: `Updated folder **${f.name}** (ID: \`${f.id}\`).`,
+        message: `Updated folder **${f.name}** (ID: \`${f.id}\`).`
       };
     }
 
@@ -80,8 +91,9 @@ export let manageFolder = SlateTool.create(
       output: {
         folderId: ctx.input.folderId,
         action: 'delete',
-        success: true,
+        success: true
       },
-      message: `Deleted folder \`${ctx.input.folderId}\`.`,
+      message: `Deleted folder \`${ctx.input.folderId}\`.`
     };
-  }).build();
+  })
+  .build();

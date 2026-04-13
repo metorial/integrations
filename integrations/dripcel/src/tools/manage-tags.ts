@@ -3,27 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `List all tags, retrieve a specific tag by ID, or delete a tag. Deleting a tag removes it from all associated contacts and campaigns.`,
-    tags: {
-      destructive: false
-    }
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `List all tags, retrieve a specific tag by ID, or delete a tag. Deleting a tag removes it from all associated contacts and campaigns.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'delete']).describe('Action to perform: list all tags, get a single tag, or delete a tag'),
-    tagId: z.string().optional().describe('Tag ID (required for get and delete actions)')
-  }))
-  .output(z.object({
-    tags: z.array(z.any()).optional().describe('Array of tag objects (for list action)'),
-    tag: z.any().optional().describe('Single tag object (for get action)'),
-    deleted: z.boolean().optional().describe('Whether the tag was deleted (for delete action)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'delete'])
+        .describe('Action to perform: list all tags, get a single tag, or delete a tag'),
+      tagId: z.string().optional().describe('Tag ID (required for get and delete actions)')
+    })
+  )
+  .output(
+    z.object({
+      tags: z.array(z.any()).optional().describe('Array of tag objects (for list action)'),
+      tag: z.any().optional().describe('Single tag object (for get action)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the tag was deleted (for delete action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {

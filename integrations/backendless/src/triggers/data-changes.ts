@@ -3,33 +3,42 @@ import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dataChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Data Changes',
-    key: 'data_changes',
-    description: 'Triggers when objects are created or updated in a Backendless database table. Polls for new and recently modified records using the `created` and `updated` timestamps.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Whether the object was created or updated'),
-    objectId: z.string().describe('The objectId of the affected record'),
-    record: z.record(z.string(), z.unknown()).describe('The full record data'),
-    tableName: z.string().describe('Name of the table the record belongs to')
-  }))
-  .output(z.object({
-    objectId: z.string().describe('The objectId of the affected record'),
-    tableName: z.string().describe('Name of the table'),
-    record: z.record(z.string(), z.unknown()).describe('The full record data including all properties'),
-    createdAt: z.string().optional().describe('ISO timestamp when the record was created'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the record was last updated')
-  }))
+export let dataChanges = SlateTrigger.create(spec, {
+  name: 'Data Changes',
+  key: 'data_changes',
+  description:
+    'Triggers when objects are created or updated in a Backendless database table. Polls for new and recently modified records using the `created` and `updated` timestamps.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the object was created or updated'),
+      objectId: z.string().describe('The objectId of the affected record'),
+      record: z.record(z.string(), z.unknown()).describe('The full record data'),
+      tableName: z.string().describe('Name of the table the record belongs to')
+    })
+  )
+  .output(
+    z.object({
+      objectId: z.string().describe('The objectId of the affected record'),
+      tableName: z.string().describe('Name of the table'),
+      record: z
+        .record(z.string(), z.unknown())
+        .describe('The full record data including all properties'),
+      createdAt: z.string().optional().describe('ISO timestamp when the record was created'),
+      updatedAt: z
+        .string()
+        .optional()
+        .describe('ISO timestamp when the record was last updated')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BackendlessClient({
         applicationId: ctx.auth.applicationId,
         token: ctx.auth.token,
@@ -100,7 +109,7 @@ export let dataChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let created = ctx.input.record.created as number | undefined;
       let updated = ctx.input.record.updated as number | undefined;
 
@@ -116,4 +125,5 @@ export let dataChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -1,38 +1,64 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
-import { createClient, escapeIdentifier, escapeLiteral, qualifiedTableName } from '../lib/helpers';
+import {
+  createClient,
+  escapeIdentifier,
+  escapeLiteral,
+  qualifiedTableName
+} from '../lib/helpers';
 import { z } from 'zod';
 
-export let insertRows = SlateTool.create(
-  spec,
-  {
-    name: 'Insert Rows',
-    key: 'insert_rows',
-    description: `Insert one or more rows into a PostgreSQL table. Provide the data as an array of objects where keys are column names and values are the data to insert.
+export let insertRows = SlateTool.create(spec, {
+  name: 'Insert Rows',
+  key: 'insert_rows',
+  description: `Insert one or more rows into a PostgreSQL table. Provide the data as an array of objects where keys are column names and values are the data to insert.
 Supports inserting multiple rows in a single operation and can optionally return the inserted rows.`,
-    instructions: [
-      'Column names in the row objects must exactly match the table column names.',
-      'Values are automatically escaped to prevent SQL injection.',
-      'Use null for NULL values.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'Column names in the row objects must exactly match the table column names.',
+    'Values are automatically escaped to prevent SQL injection.',
+    'Use null for NULL values.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    tableName: z.string().describe('Name of the table to insert into'),
-    schemaName: z.string().optional().describe('Schema containing the table'),
-    rows: z.array(z.record(z.string(), z.any())).min(1).describe('Array of row objects to insert, where keys are column names'),
-    returning: z.boolean().optional().default(true).describe('Whether to return the inserted rows using RETURNING *'),
-    onConflict: z.enum(['error', 'ignore', 'update']).optional().default('error').describe('Behavior on unique constraint conflict: error (default), ignore (DO NOTHING), or update (DO UPDATE SET)'),
-    conflictColumns: z.array(z.string()).optional().describe('Columns that define the conflict target (required when onConflict is "ignore" or "update")'),
-  }))
-  .output(z.object({
-    insertedCount: z.number().describe('Number of rows inserted'),
-    returnedRows: z.array(z.record(z.string(), z.any())).describe('Inserted rows (if returning was enabled)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tableName: z.string().describe('Name of the table to insert into'),
+      schemaName: z.string().optional().describe('Schema containing the table'),
+      rows: z
+        .array(z.record(z.string(), z.any()))
+        .min(1)
+        .describe('Array of row objects to insert, where keys are column names'),
+      returning: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Whether to return the inserted rows using RETURNING *'),
+      onConflict: z
+        .enum(['error', 'ignore', 'update'])
+        .optional()
+        .default('error')
+        .describe(
+          'Behavior on unique constraint conflict: error (default), ignore (DO NOTHING), or update (DO UPDATE SET)'
+        ),
+      conflictColumns: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Columns that define the conflict target (required when onConflict is "ignore" or "update")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      insertedCount: z.number().describe('Number of rows inserted'),
+      returnedRows: z
+        .array(z.record(z.string(), z.any()))
+        .describe('Inserted rows (if returning was enabled)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let schema = ctx.input.schemaName || ctx.config.defaultSchema;
     let fullTableName = qualifiedTableName(ctx.input.tableName, schema);
@@ -49,7 +75,7 @@ Supports inserting multiple rows in a single operation and can optionally return
     // Build values list
     let valueClauses: string[] = [];
     for (let row of ctx.input.rows) {
-      let values = columns.map((col) => {
+      let values = columns.map(col => {
         let val = row[col];
         if (val === null || val === undefined) return 'NULL';
         if (typeof val === 'number') return String(val);
@@ -75,8 +101,10 @@ Supports inserting multiple rows in a single operation and can optionally return
         throw new Error('conflictColumns must be specified when onConflict is "update"');
       }
       let conflictTarget = `(${conflictCols.map(escapeIdentifier).join(', ')})`;
-      let updateCols = columns.filter((c) => !conflictCols.includes(c));
-      let setClauses = updateCols.map((c) => `${escapeIdentifier(c)} = EXCLUDED.${escapeIdentifier(c)}`);
+      let updateCols = columns.filter(c => !conflictCols.includes(c));
+      let setClauses = updateCols.map(
+        c => `${escapeIdentifier(c)} = EXCLUDED.${escapeIdentifier(c)}`
+      );
       if (setClauses.length > 0) {
         sql += ` ON CONFLICT ${conflictTarget} DO UPDATE SET ${setClauses.join(', ')}`;
       } else {
@@ -94,9 +122,9 @@ Supports inserting multiple rows in a single operation and can optionally return
     return {
       output: {
         insertedCount: result.rowCount ?? ctx.input.rows.length,
-        returnedRows: result.rows,
+        returnedRows: result.rows
       },
-      message: `Inserted **${result.rowCount ?? ctx.input.rows.length}** row(s) into \`${ctx.input.tableName}\`.`,
+      message: `Inserted **${result.rowCount ?? ctx.input.rows.length}** row(s) into \`${ctx.input.tableName}\`.`
     };
   })
   .build();

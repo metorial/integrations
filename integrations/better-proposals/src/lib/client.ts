@@ -7,8 +7,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.betterproposals.io',
       headers: {
-        'Bptoken': config.token,
-      },
+        Bptoken: config.token
+      }
     });
   }
 
@@ -68,11 +68,11 @@ export class Client {
     if (params.taxLabel) body.TaxLabel = params.taxLabel;
     if (params.taxAmount) body.TaxAmount = params.taxAmount;
     if (params.contacts) {
-      body.Contacts = params.contacts.map((c) => ({
+      body.Contacts = params.contacts.map(c => ({
         FirstName: c.firstName,
         Surname: c.surname,
         Email: c.email,
-        Signature: c.signature ?? false,
+        Signature: c.signature ?? false
       }));
     }
     if (params.mergeTags) {
@@ -122,12 +122,9 @@ export class Client {
     return response.data;
   }
 
-  async createDocumentType(params: {
-    typeName: string;
-    typeColour?: string;
-  }): Promise<any> {
+  async createDocumentType(params: { typeName: string; typeColour?: string }): Promise<any> {
     let body: Record<string, any> = {
-      TypeName: params.typeName,
+      TypeName: params.typeName
     };
     if (params.typeColour) body.TypeColour = params.typeColour;
 

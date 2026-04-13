@@ -3,28 +3,41 @@ import { ReferralRockClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEmailSubscriptions = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Email Subscriptions',
-    key: 'manage_email_subscriptions',
-    description: `Manage the email unsubscribe list. Add or remove emails from the unsubscribe list, or query currently unsubscribed emails. Use to control which emails receive referral communications.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['unsubscribe', 'resubscribe', 'list']).describe('Action to perform: unsubscribe an email, resubscribe (remove from unsubscribe list), or list unsubscribed emails'),
-    email: z.string().optional().describe('Email address (required for unsubscribe and resubscribe actions, optional filter for list)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action succeeded'),
-    unsubscribedEmails: z.array(z.string()).optional().describe('List of unsubscribed email addresses (for list action)'),
-    message: z.string().optional().describe('Response message'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageEmailSubscriptions = SlateTool.create(spec, {
+  name: 'Manage Email Subscriptions',
+  key: 'manage_email_subscriptions',
+  description: `Manage the email unsubscribe list. Add or remove emails from the unsubscribe list, or query currently unsubscribed emails. Use to control which emails receive referral communications.`,
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['unsubscribe', 'resubscribe', 'list'])
+        .describe(
+          'Action to perform: unsubscribe an email, resubscribe (remove from unsubscribe list), or list unsubscribed emails'
+        ),
+      email: z
+        .string()
+        .optional()
+        .describe(
+          'Email address (required for unsubscribe and resubscribe actions, optional filter for list)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action succeeded'),
+      unsubscribedEmails: z
+        .array(z.string())
+        .optional()
+        .describe('List of unsubscribed email addresses (for list action)'),
+      message: z.string().optional().describe('Response message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ReferralRockClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'unsubscribe') {
@@ -32,7 +45,7 @@ export let manageEmailSubscriptions = SlateTool.create(
       await client.unsubscribeEmail(ctx.input.email);
       return {
         output: { success: true, message: `Email ${ctx.input.email} has been unsubscribed.` },
-        message: `Unsubscribed **${ctx.input.email}** from emails.`,
+        message: `Unsubscribed **${ctx.input.email}** from emails.`
       };
     }
 
@@ -41,7 +54,7 @@ export let manageEmailSubscriptions = SlateTool.create(
       await client.removeUnsubscribe(ctx.input.email);
       return {
         output: { success: true, message: `Email ${ctx.input.email} has been resubscribed.` },
-        message: `Resubscribed **${ctx.input.email}** to emails.`,
+        message: `Resubscribed **${ctx.input.email}** to emails.`
       };
     }
 
@@ -52,9 +65,9 @@ export let manageEmailSubscriptions = SlateTool.create(
     return {
       output: {
         success: true,
-        unsubscribedEmails: Array.isArray(emails) ? emails : [],
+        unsubscribedEmails: Array.isArray(emails) ? emails : []
       },
-      message: `Retrieved **${Array.isArray(emails) ? emails.length : 0}** unsubscribed email(s).`,
+      message: `Retrieved **${Array.isArray(emails) ? emails.length : 0}** unsubscribed email(s).`
     };
   })
   .build();

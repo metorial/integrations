@@ -9,8 +9,8 @@ export class SharePointClient {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -22,16 +22,14 @@ export class SharePointClient {
   }
 
   async getSiteByHostnameAndPath(hostname: string, path?: string) {
-    let url = path
-      ? `/sites/${hostname}:/${path}`
-      : `/sites/${hostname}`;
+    let url = path ? `/sites/${hostname}:/${path}` : `/sites/${hostname}`;
     let response = await this.http.get(url);
     return response.data as any;
   }
 
   async searchSites(query: string) {
     let response = await this.http.get('/sites', {
-      params: { search: query },
+      params: { search: query }
     });
     return response.data as any;
   }
@@ -87,28 +85,38 @@ export class SharePointClient {
     let response = await this.http.post(`/drives/${driveId}/items/${parentId}/children`, {
       name,
       folder: {},
-      '@microsoft.graph.conflictBehavior': 'rename',
+      '@microsoft.graph.conflictBehavior': 'rename'
     });
     return response.data as any;
   }
 
-  async uploadSmallFile(driveId: string, parentPath: string, fileName: string, content: string) {
+  async uploadSmallFile(
+    driveId: string,
+    parentPath: string,
+    fileName: string,
+    content: string
+  ) {
     let response = await this.http.put(
       `/drives/${driveId}/root:/${parentPath}/${fileName}:/content`,
       content,
       {
-        headers: { 'Content-Type': 'application/octet-stream' },
+        headers: { 'Content-Type': 'application/octet-stream' }
       }
     );
     return response.data as any;
   }
 
-  async uploadSmallFileToFolder(driveId: string, folderId: string, fileName: string, content: string) {
+  async uploadSmallFileToFolder(
+    driveId: string,
+    folderId: string,
+    fileName: string,
+    content: string
+  ) {
     let response = await this.http.put(
       `/drives/${driveId}/items/${folderId}:/${fileName}:/content`,
       content,
       {
-        headers: { 'Content-Type': 'application/octet-stream' },
+        headers: { 'Content-Type': 'application/octet-stream' }
       }
     );
     return response.data as any;
@@ -116,7 +124,7 @@ export class SharePointClient {
 
   async getFileContent(driveId: string, itemId: string) {
     let response = await this.http.get(`/drives/${driveId}/items/${itemId}/content`, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data as string;
   }
@@ -133,7 +141,7 @@ export class SharePointClient {
 
   async moveDriveItem(driveId: string, itemId: string, newParentId: string, newName?: string) {
     let body: any = {
-      parentReference: { id: newParentId },
+      parentReference: { id: newParentId }
     };
     if (newName) {
       body.name = newName;
@@ -142,12 +150,18 @@ export class SharePointClient {
     return response.data as any;
   }
 
-  async copyDriveItem(driveId: string, itemId: string, newParentDriveId: string, newParentId: string, newName?: string) {
+  async copyDriveItem(
+    driveId: string,
+    itemId: string,
+    newParentDriveId: string,
+    newParentId: string,
+    newName?: string
+  ) {
     let body: any = {
       parentReference: {
         driveId: newParentDriveId,
-        id: newParentId,
-      },
+        id: newParentId
+      }
     };
     if (newName) {
       body.name = newName;
@@ -158,7 +172,7 @@ export class SharePointClient {
 
   async renameDriveItem(driveId: string, itemId: string, newName: string) {
     let response = await this.http.patch(`/drives/${driveId}/items/${itemId}`, {
-      name: newName,
+      name: newName
     });
     return response.data as any;
   }
@@ -169,7 +183,9 @@ export class SharePointClient {
   }
 
   async searchDriveItems(driveId: string, query: string) {
-    let response = await this.http.get(`/drives/${driveId}/root/search(q='${encodeURIComponent(query)}')`);
+    let response = await this.http.get(
+      `/drives/${driveId}/root/search(q='${encodeURIComponent(query)}')`
+    );
     return response.data as any;
   }
 
@@ -182,21 +198,26 @@ export class SharePointClient {
 
   async getList(siteId: string, listId: string) {
     let response = await this.http.get(`/sites/${siteId}/lists/${listId}`, {
-      params: { expand: 'columns' },
+      params: { expand: 'columns' }
     });
     return response.data as any;
   }
 
-  async createList(siteId: string, displayName: string, template: string, columns?: Array<{ name: string; type: string; description?: string }>) {
+  async createList(
+    siteId: string,
+    displayName: string,
+    template: string,
+    columns?: Array<{ name: string; type: string; description?: string }>
+  ) {
     let body: any = {
       displayName,
-      list: { template },
+      list: { template }
     };
     if (columns && columns.length > 0) {
-      body.columns = columns.map((col) => {
+      body.columns = columns.map(col => {
         let colDef: any = {
           name: col.name,
-          description: col.description,
+          description: col.description
         };
         switch (col.type) {
           case 'text':
@@ -227,7 +248,11 @@ export class SharePointClient {
     return response.data as any;
   }
 
-  async updateList(siteId: string, listId: string, updates: { displayName?: string; description?: string }) {
+  async updateList(
+    siteId: string,
+    listId: string,
+    updates: { displayName?: string; description?: string }
+  ) {
     let response = await this.http.patch(`/sites/${siteId}/lists/${listId}`, updates);
     return response.data as any;
   }
@@ -238,7 +263,17 @@ export class SharePointClient {
 
   // ─── List Items ─────────────────────────────────────────────────
 
-  async listListItems(siteId: string, listId: string, params?: { expand?: string; top?: number; filter?: string; orderby?: string; skip?: number }) {
+  async listListItems(
+    siteId: string,
+    listId: string,
+    params?: {
+      expand?: string;
+      top?: number;
+      filter?: string;
+      orderby?: string;
+      skip?: number;
+    }
+  ) {
     let queryParams: any = {};
     if (params?.expand) queryParams.$expand = params.expand;
     if (params?.top) queryParams.$top = params.top;
@@ -247,27 +282,35 @@ export class SharePointClient {
     if (params?.skip) queryParams.$skip = params.skip;
 
     let response = await this.http.get(`/sites/${siteId}/lists/${listId}/items`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data as any;
   }
 
   async getListItem(siteId: string, listId: string, itemId: string) {
     let response = await this.http.get(`/sites/${siteId}/lists/${listId}/items/${itemId}`, {
-      params: { expand: 'fields' },
+      params: { expand: 'fields' }
     });
     return response.data as any;
   }
 
   async createListItem(siteId: string, listId: string, fields: Record<string, any>) {
     let response = await this.http.post(`/sites/${siteId}/lists/${listId}/items`, {
-      fields,
+      fields
     });
     return response.data as any;
   }
 
-  async updateListItem(siteId: string, listId: string, itemId: string, fields: Record<string, any>) {
-    let response = await this.http.patch(`/sites/${siteId}/lists/${listId}/items/${itemId}/fields`, fields);
+  async updateListItem(
+    siteId: string,
+    listId: string,
+    itemId: string,
+    fields: Record<string, any>
+  ) {
+    let response = await this.http.patch(
+      `/sites/${siteId}/lists/${listId}/items/${itemId}/fields`,
+      fields
+    );
     return response.data as any;
   }
 
@@ -282,11 +325,21 @@ export class SharePointClient {
     return response.data as any;
   }
 
-  async createColumn(siteId: string, listId: string, column: { name: string; description?: string; type: string; required?: boolean; choices?: string[] }) {
+  async createColumn(
+    siteId: string,
+    listId: string,
+    column: {
+      name: string;
+      description?: string;
+      type: string;
+      required?: boolean;
+      choices?: string[];
+    }
+  ) {
     let body: any = {
       name: column.name,
       description: column.description,
-      required: column.required,
+      required: column.required
     };
 
     switch (column.type) {
@@ -323,8 +376,16 @@ export class SharePointClient {
     await this.http.delete(`/sites/${siteId}/lists/${listId}/columns/${columnId}`);
   }
 
-  async updateColumn(siteId: string, listId: string, columnId: string, updates: { description?: string; required?: boolean }) {
-    let response = await this.http.patch(`/sites/${siteId}/lists/${listId}/columns/${columnId}`, updates);
+  async updateColumn(
+    siteId: string,
+    listId: string,
+    columnId: string,
+    updates: { description?: string; required?: boolean }
+  ) {
+    let response = await this.http.patch(
+      `/sites/${siteId}/lists/${listId}/columns/${columnId}`,
+      updates
+    );
     return response.data as any;
   }
 
@@ -340,7 +401,14 @@ export class SharePointClient {
     return response.data as any;
   }
 
-  async createSharingLink(driveId: string, itemId: string, type: string, scope: string, expirationDateTime?: string, password?: string) {
+  async createSharingLink(
+    driveId: string,
+    itemId: string,
+    type: string,
+    scope: string,
+    expirationDateTime?: string,
+    password?: string
+  ) {
     let body: any = { type, scope };
     if (expirationDateTime) body.expirationDateTime = expirationDateTime;
     if (password) body.password = password;
@@ -349,12 +417,20 @@ export class SharePointClient {
     return response.data as any;
   }
 
-  async inviteToItem(driveId: string, itemId: string, recipients: Array<{ email: string }>, roles: string[], message?: string, requireSignIn?: boolean, sendInvitation?: boolean) {
+  async inviteToItem(
+    driveId: string,
+    itemId: string,
+    recipients: Array<{ email: string }>,
+    roles: string[],
+    message?: string,
+    requireSignIn?: boolean,
+    sendInvitation?: boolean
+  ) {
     let body: any = {
-      recipients: recipients.map((r) => ({ email: r.email })),
+      recipients: recipients.map(r => ({ email: r.email })),
       roles,
       requireSignIn: requireSignIn ?? true,
-      sendInvitation: sendInvitation ?? true,
+      sendInvitation: sendInvitation ?? true
     };
     if (message) body.message = message;
 
@@ -392,9 +468,9 @@ export class SharePointClient {
           entityTypes,
           query: { queryString: query },
           from: from || 0,
-          size: size || 25,
-        },
-      ],
+          size: size || 25
+        }
+      ]
     };
 
     let response = await this.http.post('/search/query', body);
@@ -403,12 +479,18 @@ export class SharePointClient {
 
   // ─── Subscriptions (Graph Change Notifications) ─────────────────
 
-  async createSubscription(resource: string, changeType: string, notificationUrl: string, expirationDateTime: string, clientState?: string) {
+  async createSubscription(
+    resource: string,
+    changeType: string,
+    notificationUrl: string,
+    expirationDateTime: string,
+    clientState?: string
+  ) {
     let body: any = {
       changeType,
       notificationUrl,
       resource,
-      expirationDateTime,
+      expirationDateTime
     };
     if (clientState) body.clientState = clientState;
 
@@ -418,7 +500,7 @@ export class SharePointClient {
 
   async updateSubscription(subscriptionId: string, expirationDateTime: string) {
     let response = await this.http.patch(`/subscriptions/${subscriptionId}`, {
-      expirationDateTime,
+      expirationDateTime
     });
     return response.data as any;
   }
@@ -435,17 +517,13 @@ export class SharePointClient {
   // ─── Delta Queries ──────────────────────────────────────────────
 
   async getDelta(driveId: string, deltaToken?: string) {
-    let url = deltaToken
-      ? deltaToken
-      : `/drives/${driveId}/root/delta`;
+    let url = deltaToken ? deltaToken : `/drives/${driveId}/root/delta`;
     let response = await this.http.get(url);
     return response.data as any;
   }
 
   async getListItemsDelta(siteId: string, listId: string, deltaToken?: string) {
-    let url = deltaToken
-      ? deltaToken
-      : `/sites/${siteId}/lists/${listId}/items/delta`;
+    let url = deltaToken ? deltaToken : `/sites/${siteId}/lists/${listId}/items/delta`;
     let response = await this.http.get(url);
     return response.data as any;
   }

@@ -11,13 +11,9 @@ import {
   downloadDocument,
   getEmbeddedSignLink,
   listUsers,
-  listBrands,
+  listBrands
 } from './tools';
-import {
-  documentEvents,
-  templateEvents,
-  senderIdentityEvents,
-} from './triggers';
+import { documentEvents, templateEvents, senderIdentityEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,11 +28,7 @@ export let provider = Slate.create({
     downloadDocument,
     getEmbeddedSignLink,
     listUsers,
-    listBrands,
+    listBrands
   ],
-  triggers: [
-    documentEvents,
-    templateEvents,
-    senderIdentityEvents,
-  ],
+  triggers: [documentEvents, templateEvents, senderIdentityEvents]
 });

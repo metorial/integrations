@@ -9,11 +9,13 @@ Azure Speech (now part of Azure AI Foundry Tools) is a cloud-based speech proces
 Azure Speech supports three authentication methods:
 
 ### 1. Subscription Key (API Key)
+
 Uses a subscription key for service authentication, supporting both regional and custom endpoint configurations. The resource key must be passed as the `Ocp-Apim-Subscription-Key` header. Go to the Azure portal, navigate to your resource, and find the Keys & Endpoint section under Resource Management. Copy your endpoint and access key — you can use either KEY1 or KEY2.
 
 All API endpoints are region-specific. The base URL format is `https://<REGION>.api.cognitive.microsoft.com/` for management operations, and service-specific endpoints like `https://<REGION>.stt.speech.microsoft.com/` for speech-to-text or `https://<REGION>.tts.speech.microsoft.com/` for text-to-speech.
 
 ### 2. Key-Based Bearer Token
+
 When using the `Authorization: Bearer` header, you need to make a request to the `issueToken` endpoint, exchanging your resource key for an access token that's valid for 10 minutes.
 
 The token endpoint format is: `https://<REGION>.api.cognitive.microsoft.com/sts/v1.0/issueToken`
@@ -21,6 +23,7 @@ The token endpoint format is: `https://<REGION>.api.cognitive.microsoft.com/sts/
 Send a POST request with the `Ocp-Apim-Subscription-Key` header set to your subscription key. The response body is the bearer token to use in subsequent requests.
 
 ### 3. Microsoft Entra ID (Azure AD) Authentication
+
 Uses the `Authorization: Bearer` header with a token issued via Microsoft Entra ID. To configure your Speech resource for Microsoft Entra authentication, create a custom domain name and assign roles. You need to assign either the `Cognitive Services Speech Contributor` or `Cognitive Services Speech User` role.
 
 The actual access token must be constructed in the format: `aad#YOUR_RESOURCE_ID#YOUR_MICROSOFT_ENTRA_ACCESS_TOKEN`, including the `aad#` prefix and the `#` separator between resource ID and access token.
@@ -30,6 +33,7 @@ The OAuth scope for obtaining the Entra token is `https://cognitiveservices.azur
 ## Features
 
 ### Speech-to-Text
+
 Supports both real-time and batch transcription, providing versatile solutions for converting audio streams into text.
 
 - **Real-time transcription**: Instant transcription with intermediate results for live audio inputs.
@@ -40,6 +44,7 @@ Supports both real-time and batch transcription, providing versatile solutions f
 - **Language Identification**: Identifies languages spoken in audio by comparing against a list of supported languages. Can be used standalone, with speech-to-text recognition, or with speech translation.
 
 ### Text-to-Speech
+
 Converts text into synthesized speech and provides a list of supported voices for a region.
 
 - **Neural voices**: Large selection of pre-built neural voices across many languages and locales.
@@ -49,18 +54,21 @@ Converts text into synthesized speech and provides a list of supported voices fo
 - **Multiple output formats**: Supports 48-kHz, 24-kHz, 16-kHz, and 8-kHz audio outputs in various codecs and container formats.
 
 ### Text-to-Speech Avatar
+
 Converts text into a digital video of a photorealistic human speaking with a natural-sounding voice. The video can be synthesized asynchronously or in real time.
 
 - Choose from a range of standard avatars or create custom ones.
 - Language support is the same as for text-to-speech.
 
 ### Speech Translation
+
 Enables real-time, multilingual translation of speech to your applications, tools, and devices. Supports speech-to-speech and speech-to-text translation.
 
 - Configure source and target languages.
 - Available via the Speech SDK (not supported via REST API for short audio).
 
 ### Speaker Recognition
+
 Provides algorithms that verify and identify speakers by their unique voice characteristics, answering the question "who is speaking?".
 
 - **Speaker Verification**: Determines if a speaker is who they claim to be by comparing voice characteristics against a registered voice signature. Supports both text-dependent (passphrase) and text-independent modes.
@@ -68,6 +76,7 @@ Provides algorithms that verify and identify speakers by their unique voice char
 - Speaker Recognition is a Limited Access service, and registration is required for access to some features.
 
 ### Pronunciation Assessment
+
 Evaluates speech pronunciation and gives speakers feedback on the accuracy and fluency of spoken audio. Language learners can practice, get instant feedback, and improve their pronunciation.
 
 - Both scripted and unscripted assessments are supported.
@@ -76,6 +85,7 @@ Evaluates speech pronunciation and gives speakers feedback on the accuracy and f
 - Can detect errors such as extra, missing, or repeated words when compared to reference text.
 
 ### LLM-Enhanced Speech (LLM Speech)
+
 Delivers improved quality, deep contextual understanding, multilingual support, and prompt-tuning capabilities. Shares the same ultra-fast inference performance as fast transcription. Use cases include generating captions, summarizing meeting notes, assisting call center agents, and transcribing voicemails.
 
 ## Events

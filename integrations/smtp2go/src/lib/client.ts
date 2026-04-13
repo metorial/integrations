@@ -13,8 +13,8 @@ export class Client {
       baseURL: options.baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        'X-Smtp2go-Api-Key': options.token,
-      },
+        'X-Smtp2go-Api-Key': options.token
+      }
     });
   }
 
@@ -51,13 +51,13 @@ export class Client {
       attachments: params.attachments,
       inlines: params.inlines,
       template_id: params.templateId,
-      template_data: params.templateData,
+      template_data: params.templateData
     });
   }
 
   async sendMimeEmail(params: { mimeEmail: string }) {
     return this.post('/email/mime', {
-      mime_email: params.mimeEmail,
+      mime_email: params.mimeEmail
     });
   }
 
@@ -85,21 +85,17 @@ export class Client {
       opened_only: params.openedOnly,
       clicked_only: params.clickedOnly,
       sort_by: params.sortBy,
-      sort_dir: params.sortDir,
+      sort_dir: params.sortDir
     });
   }
 
   // ── SMS ──
 
-  async sendSms(params: {
-    to: string[];
-    from: string;
-    body: string;
-  }) {
+  async sendSms(params: { to: string[]; from: string; body: string }) {
     return this.post('/sms/send', {
       to: params.to,
       from: params.from,
-      body: params.body,
+      body: params.body
     });
   }
 
@@ -121,7 +117,7 @@ export class Client {
       html_body: params.htmlBody,
       text_body: params.textBody,
       subject: params.subject,
-      sender: params.sender,
+      sender: params.sender
     });
   }
 
@@ -139,13 +135,13 @@ export class Client {
       html_body: params.htmlBody,
       text_body: params.textBody,
       subject: params.subject,
-      sender: params.sender,
+      sender: params.sender
     });
   }
 
   async deleteTemplate(params: { templateId: string }) {
     return this.post('/template/delete', {
-      template_id: params.templateId,
+      template_id: params.templateId
     });
   }
 
@@ -157,75 +153,57 @@ export class Client {
     return this.post('/template/search', {
       template_name: params.templateName,
       limit: params.limit,
-      continue_token: params.continueToken,
+      continue_token: params.continueToken
     });
   }
 
   async viewTemplate(params: { templateId: string }) {
     return this.post('/template/view', {
-      template_id: params.templateId,
+      template_id: params.templateId
     });
   }
 
   // ── Statistics ──
 
-  async getEmailBounces(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEmailBounces(params?: { startDate?: string; endDate?: string }) {
     return this.post('/stats/email_bounces', {
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 
-  async getEmailCycle(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEmailCycle(params?: { startDate?: string; endDate?: string }) {
     return this.post('/stats/email_cycle', {
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 
-  async getEmailHistory(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEmailHistory(params?: { startDate?: string; endDate?: string }) {
     return this.post('/stats/email_history', {
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 
-  async getEmailSpam(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEmailSpam(params?: { startDate?: string; endDate?: string }) {
     return this.post('/stats/email_spam', {
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 
-  async getEmailUnsubscribes(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEmailUnsubscribes(params?: { startDate?: string; endDate?: string }) {
     return this.post('/stats/email_unsubs', {
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 
-  async getEmailSummary(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEmailSummary(params?: { startDate?: string; endDate?: string }) {
     return this.post('/stats/email_summary', {
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 
@@ -255,7 +233,7 @@ export class Client {
       limit: params.limit,
       continue_token: params.continueToken,
       only_latest: params.onlyLatest,
-      event_types: params.eventTypes,
+      event_types: params.eventTypes
     });
   }
 
@@ -273,27 +251,27 @@ export class Client {
       tracking_subdomain: params.trackingSubdomain,
       returnpath_subdomain: params.returnpathSubdomain,
       auto_verify: params.autoVerify,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async removeDomain(params: { domain: string; subaccountId?: string }) {
     return this.post('/domain/remove', {
       domain: params.domain,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async viewDomains(params?: { subaccountId?: string }) {
     return this.post('/domain/view', {
-      subaccount_id: params?.subaccountId,
+      subaccount_id: params?.subaccountId
     });
   }
 
   async verifyDomain(params: { domain: string; subaccountId?: string }) {
     return this.post('/domain/verify', {
       domain: params.domain,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
@@ -305,7 +283,7 @@ export class Client {
     return this.post('/domain/tracking', {
       domain: params.domain,
       tracking_subdomain: params.trackingSubdomain,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
@@ -317,7 +295,7 @@ export class Client {
     return this.post('/domain/returnpath', {
       domain: params.domain,
       returnpath_subdomain: params.returnpathSubdomain,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
@@ -326,20 +304,20 @@ export class Client {
   async addSingleSender(params: { emailAddress: string; subaccountId?: string }) {
     return this.post('/single_sender_emails/add', {
       email_address: params.emailAddress,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async removeSingleSender(params: { emailAddress: string; subaccountId?: string }) {
     return this.post('/single_sender_emails/remove', {
       email_address: params.emailAddress,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async viewSingleSenders(params?: { subaccountId?: string }) {
     return this.post('/single_sender_emails/view', {
-      subaccount_id: params?.subaccountId,
+      subaccount_id: params?.subaccountId
     });
   }
 
@@ -347,58 +325,50 @@ export class Client {
 
   async viewAllowedSenders(params?: { subaccountId?: string }) {
     return this.post('/allowed_senders/view', {
-      subaccount_id: params?.subaccountId,
+      subaccount_id: params?.subaccountId
     });
   }
 
   async addAllowedSenders(params: { allowedSenders: string[]; subaccountId?: string }) {
     return this.post('/allowed_senders/add', {
       allowed_senders: params.allowedSenders,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async removeAllowedSenders(params: { allowedSenders: string[]; subaccountId?: string }) {
     return this.post('/allowed_senders/remove', {
       allowed_senders: params.allowedSenders,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async updateAllowedSenders(params: { allowedSenders: string[]; subaccountId?: string }) {
     return this.post('/allowed_senders/update', {
       allowed_senders: params.allowedSenders,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   // ── Suppressions ──
 
-  async addSuppression(params: {
-    suppressions: string[];
-    subaccountId?: string;
-  }) {
+  async addSuppression(params: { suppressions: string[]; subaccountId?: string }) {
     return this.post('/suppression/add', {
       suppressions: params.suppressions,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
-  async removeSuppression(params: {
-    suppressions: string[];
-    subaccountId?: string;
-  }) {
+  async removeSuppression(params: { suppressions: string[]; subaccountId?: string }) {
     return this.post('/suppression/remove', {
       suppressions: params.suppressions,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
-  async viewSuppressions(params?: {
-    subaccountId?: string;
-  }) {
+  async viewSuppressions(params?: { subaccountId?: string }) {
     return this.post('/suppression/view', {
-      subaccount_id: params?.subaccountId,
+      subaccount_id: params?.subaccountId
     });
   }
 
@@ -414,7 +384,7 @@ export class Client {
       username: params.username,
       password: params.password,
       description: params.description,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
@@ -428,20 +398,20 @@ export class Client {
       username: params.username,
       password: params.password,
       description: params.description,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async removeSmtpUser(params: { username: string; subaccountId?: string }) {
     return this.post('/users/smtp/remove', {
       username: params.username,
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async viewSmtpUsers(params?: { subaccountId?: string }) {
     return this.post('/users/smtp/view', {
-      subaccount_id: params?.subaccountId,
+      subaccount_id: params?.subaccountId
     });
   }
 
@@ -463,7 +433,7 @@ export class Client {
       usernames: params.usernames,
       output_type: params.outputType,
       authorization_header: params.authorizationHeader,
-      custom_headers: params.customHeaders,
+      custom_headers: params.customHeaders
     });
   }
 
@@ -489,39 +459,31 @@ export class Client {
       usernames: params.usernames,
       output_type: params.outputType,
       authorization_header: params.authorizationHeader,
-      custom_headers: params.customHeaders,
+      custom_headers: params.customHeaders
     });
   }
 
   async removeWebhook(params: { webhookId: string }) {
     return this.post('/webhook/remove', {
-      webhook_id: params.webhookId,
+      webhook_id: params.webhookId
     });
   }
 
   // ── Subaccounts ──
 
-  async addSubaccount(params: {
-    email: string;
-    password: string;
-    name?: string;
-  }) {
+  async addSubaccount(params: { email: string; password: string; name?: string }) {
     return this.post('/subaccount/add', {
       email: params.email,
       password: params.password,
-      name: params.name,
+      name: params.name
     });
   }
 
-  async editSubaccount(params: {
-    subaccountId: string;
-    email?: string;
-    name?: string;
-  }) {
+  async editSubaccount(params: { subaccountId: string; email?: string; name?: string }) {
     return this.post('/subaccount/edit', {
       subaccount_id: params.subaccountId,
       email: params.email,
-      name: params.name,
+      name: params.name
     });
   }
 
@@ -531,13 +493,13 @@ export class Client {
 
   async closeSubaccount(params: { subaccountId: string }) {
     return this.post('/subaccount/close', {
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 
   async reopenSubaccount(params: { subaccountId: string }) {
     return this.post('/subaccount/reopen', {
-      subaccount_id: params.subaccountId,
+      subaccount_id: params.subaccountId
     });
   }
 }

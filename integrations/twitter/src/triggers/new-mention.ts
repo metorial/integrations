@@ -4,34 +4,33 @@ import { postSchema, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMention = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Mention',
-    key: 'new_mention',
-    description: 'Triggers when the authenticated user is mentioned in a post.'
-  }
-)
-  .input(z.object({
-    postId: z.string().describe('ID of the mention post'),
-    text: z.string().describe('Text of the mention post'),
-    authorId: z.string().optional().describe('User ID of the post author'),
-    conversationId: z.string().optional().describe('Conversation thread ID'),
-    createdAt: z.string().optional().describe('ISO 8601 timestamp'),
-    lang: z.string().optional().describe('Language code'),
-    inReplyToUserId: z.string().optional().describe('User ID being replied to'),
-    likeCount: z.number().optional().describe('Number of likes'),
-    retweetCount: z.number().optional().describe('Number of retweets'),
-    replyCount: z.number().optional().describe('Number of replies'),
-    quoteCount: z.number().optional().describe('Number of quote tweets')
-  }))
+export let newMention = SlateTrigger.create(spec, {
+  name: 'New Mention',
+  key: 'new_mention',
+  description: 'Triggers when the authenticated user is mentioned in a post.'
+})
+  .input(
+    z.object({
+      postId: z.string().describe('ID of the mention post'),
+      text: z.string().describe('Text of the mention post'),
+      authorId: z.string().optional().describe('User ID of the post author'),
+      conversationId: z.string().optional().describe('Conversation thread ID'),
+      createdAt: z.string().optional().describe('ISO 8601 timestamp'),
+      lang: z.string().optional().describe('Language code'),
+      inReplyToUserId: z.string().optional().describe('User ID being replied to'),
+      likeCount: z.number().optional().describe('Number of likes'),
+      retweetCount: z.number().optional().describe('Number of retweets'),
+      replyCount: z.number().optional().describe('Number of replies'),
+      quoteCount: z.number().optional().describe('Number of quote tweets')
+    })
+  )
   .output(postSchema)
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TwitterClient(ctx.auth.token);
 
       let me = await client.getMe();
@@ -75,7 +74,7 @@ export let newMention = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'post.mention',
         id: ctx.input.postId,
@@ -94,4 +93,5 @@ export let newMention = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

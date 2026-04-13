@@ -3,33 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDocument = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Document',
-    key: 'manage_document',
-    description: `Perform lifecycle actions on a document: archive, restore, delete, or move it to a different collection or parent.`,
-    tags: {
-      destructive: true,
-    },
+export let manageDocument = SlateTool.create(spec, {
+  name: 'Manage Document',
+  key: 'manage_document',
+  description: `Perform lifecycle actions on a document: archive, restore, delete, or move it to a different collection or parent.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the document'),
-    action: z.enum(['archive', 'restore', 'delete', 'permanent_delete', 'move']).describe('Action to perform'),
-    collectionId: z.string().optional().describe('Target collection ID (for move action)'),
-    parentDocumentId: z.string().optional().describe('Target parent document ID (for move action)'),
-  }))
-  .output(z.object({
-    documentId: z.string(),
-    title: z.string().optional(),
-    action: z.string(),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the document'),
+      action: z
+        .enum(['archive', 'restore', 'delete', 'permanent_delete', 'move'])
+        .describe('Action to perform'),
+      collectionId: z.string().optional().describe('Target collection ID (for move action)'),
+      parentDocumentId: z
+        .string()
+        .optional()
+        .describe('Target parent document ID (for move action)')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string(),
+      title: z.string().optional(),
+      action: z.string(),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let { documentId, action } = ctx.input;
@@ -55,7 +61,11 @@ export let manageDocument = SlateTool.create(
         break;
       }
       case 'move': {
-        let doc = await client.moveDocument(documentId, ctx.input.collectionId, ctx.input.parentDocumentId);
+        let doc = await client.moveDocument(
+          documentId,
+          ctx.input.collectionId,
+          ctx.input.parentDocumentId
+        );
         title = doc.title;
         break;
       }
@@ -66,9 +76,9 @@ export let manageDocument = SlateTool.create(
         documentId,
         title,
         action,
-        success: true,
+        success: true
       },
-      message: `Successfully performed **${action}** on document${title ? ` **"${title}"**` : ''}.`,
+      message: `Successfully performed **${action}** on document${title ? ` **"${title}"**` : ''}.`
     };
   })
   .build();

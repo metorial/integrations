@@ -82,34 +82,45 @@ Attio supports webhooks for real-time event subscriptions. Webhooks are created 
 The following webhook event categories are available:
 
 ### Record Events
+
 Events for when records (people, companies, deals, custom objects) are created, updated, merged, or deleted. Update events include the specific attribute that changed.
 
 ### List Events
+
 Events for when a list is created or updated (e.g., name or icon changes).
 
 ### List Entry Events
+
 Events for when records are added to, updated within, or removed from lists.
 
 ### List Attribute Events
+
 Events for changes to attribute definitions on lists.
 
 ### Object Attribute Events
+
 Events for changes to attribute definitions on objects.
 
 ### Note Events
+
 Events for when notes are created or updated. Note: body content updates do not currently trigger webhooks — this event is fired whenever the title of a note is modified. Body updates do not currently trigger webhooks.
 
 ### Note Content Events
+
 Events related to note content changes (separate from title-level note events).
 
 ### Task Events
+
 Events for when tasks are created, updated, or completed.
 
 ### Comment Events
+
 Events for when comments are created, updated, or deleted.
 
 ### Call Recording Events
+
 Events related to call recording activity.
 
 ### Workspace Member Events
+
 Events for changes to workspace membership.

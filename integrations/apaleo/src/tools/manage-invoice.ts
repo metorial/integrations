@@ -3,41 +3,54 @@ import { ApaleoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Invoice',
-    key: 'manage_invoice',
-    description: `Create, cancel, or mark invoices as paid. To **create** an invoice, provide a folioId. To **cancel** or **mark as paid**, provide the invoiceId. Also supports retrieving a specific invoice by ID.`,
-    tags: { destructive: true, readOnly: false },
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'cancel', 'mark_paid', 'get']).describe('Action to perform'),
-    folioId: z.string().optional().describe('Folio ID to create an invoice from (for "create")'),
-    invoiceId: z.string().optional().describe('Invoice ID (for "cancel", "mark_paid", or "get")'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().optional().describe('Invoice ID'),
-    action: z.string().describe('Action performed'),
-    success: z.boolean(),
-    invoice: z.object({
-      invoiceId: z.string().optional(),
-      number: z.string().optional(),
-      type: z.string().optional(),
-      status: z.string().optional(),
-      folioId: z.string().optional(),
-      reservationId: z.string().optional(),
-      propertyId: z.string().optional(),
-      recipientName: z.string().optional(),
-      totalGrossAmount: z.object({
-        amount: z.number().optional(),
-        currency: z.string().optional(),
-      }).optional(),
-      created: z.string().optional(),
-    }).passthrough().optional().describe('Invoice details (for "get" and "create")'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageInvoice = SlateTool.create(spec, {
+  name: 'Manage Invoice',
+  key: 'manage_invoice',
+  description: `Create, cancel, or mark invoices as paid. To **create** an invoice, provide a folioId. To **cancel** or **mark as paid**, provide the invoiceId. Also supports retrieving a specific invoice by ID.`,
+  tags: { destructive: true, readOnly: false }
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'cancel', 'mark_paid', 'get']).describe('Action to perform'),
+      folioId: z
+        .string()
+        .optional()
+        .describe('Folio ID to create an invoice from (for "create")'),
+      invoiceId: z
+        .string()
+        .optional()
+        .describe('Invoice ID (for "cancel", "mark_paid", or "get")')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().optional().describe('Invoice ID'),
+      action: z.string().describe('Action performed'),
+      success: z.boolean(),
+      invoice: z
+        .object({
+          invoiceId: z.string().optional(),
+          number: z.string().optional(),
+          type: z.string().optional(),
+          status: z.string().optional(),
+          folioId: z.string().optional(),
+          reservationId: z.string().optional(),
+          propertyId: z.string().optional(),
+          recipientName: z.string().optional(),
+          totalGrossAmount: z
+            .object({
+              amount: z.number().optional(),
+              currency: z.string().optional()
+            })
+            .optional(),
+          created: z.string().optional()
+        })
+        .passthrough()
+        .optional()
+        .describe('Invoice details (for "get" and "create")')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ApaleoClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -48,7 +61,7 @@ export let manageInvoice = SlateTool.create(
         let invoiceId = result.id;
         return {
           output: { invoiceId, action, success: true },
-          message: `Created invoice **${invoiceId}** from folio **${ctx.input.folioId}**.`,
+          message: `Created invoice **${invoiceId}** from folio **${ctx.input.folioId}**.`
         };
       }
       case 'cancel': {
@@ -56,7 +69,7 @@ export let manageInvoice = SlateTool.create(
         await client.cancelInvoice(ctx.input.invoiceId);
         return {
           output: { invoiceId: ctx.input.invoiceId, action, success: true },
-          message: `Cancelled invoice **${ctx.input.invoiceId}**.`,
+          message: `Cancelled invoice **${ctx.input.invoiceId}**.`
         };
       }
       case 'mark_paid': {
@@ -64,7 +77,7 @@ export let manageInvoice = SlateTool.create(
         await client.markInvoicePaid(ctx.input.invoiceId);
         return {
           output: { invoiceId: ctx.input.invoiceId, action, success: true },
-          message: `Marked invoice **${ctx.input.invoiceId}** as paid.`,
+          message: `Marked invoice **${ctx.input.invoiceId}** as paid.`
         };
       }
       case 'get': {
@@ -85,10 +98,10 @@ export let manageInvoice = SlateTool.create(
               propertyId: inv.property?.id,
               recipientName: inv.recipient?.name,
               totalGrossAmount: inv.totalGrossAmount,
-              created: inv.created,
-            },
+              created: inv.created
+            }
           },
-          message: `Invoice **${inv.id}** (#${inv.number}), status: **${inv.status}**.`,
+          message: `Invoice **${inv.id}** (#${inv.number}), status: **${inv.status}**.`
         };
       }
     }

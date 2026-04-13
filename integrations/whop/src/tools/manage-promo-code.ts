@@ -17,7 +17,7 @@ let promoCodeOutputSchema = z.object({
   newUsersOnly: z.boolean().describe('Restricted to new users only'),
   onePerCustomer: z.boolean().describe('Limited to one use per customer'),
   productId: z.string().nullable().describe('Scoped product ID'),
-  createdAt: z.string().describe('ISO 8601 creation timestamp'),
+  createdAt: z.string().describe('ISO 8601 creation timestamp')
 });
 
 let mapPromoCode = (p: any) => ({
@@ -34,57 +34,78 @@ let mapPromoCode = (p: any) => ({
   newUsersOnly: p.new_users_only || false,
   onePerCustomer: p.one_per_customer || false,
   productId: p.product?.id || null,
-  createdAt: p.created_at,
+  createdAt: p.created_at
 });
 
-export let managePromoCode = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Promo Code',
-    key: 'manage_promo_code',
-    description: `Create, retrieve, list, or delete Whop promo codes. Promo codes apply percentage or fixed-amount discounts to plans during checkout.
+export let managePromoCode = SlateTool.create(spec, {
+  name: 'Manage Promo Code',
+  key: 'manage_promo_code',
+  description: `Create, retrieve, list, or delete Whop promo codes. Promo codes apply percentage or fixed-amount discounts to plans during checkout.
 Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
-    instructions: [
-      'For "create": companyId, code, promoType, amountOff, baseCurrency, and promoDurationMonths are required.',
-      'For "get": promoCodeId is required.',
-      'For "list": companyId is required.',
-      'For "delete": promoCodeId is required.',
-    ],
-    tags: {
-      destructive: true,
-    },
+  instructions: [
+    'For "create": companyId, code, promoType, amountOff, baseCurrency, and promoDurationMonths are required.',
+    'For "get": promoCodeId is required.',
+    'For "list": companyId is required.',
+    'For "delete": promoCodeId is required.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'delete']).describe('Operation to perform'),
-    promoCodeId: z.string().optional().describe('Promo code ID (for get, delete)'),
-    companyId: z.string().optional().describe('Company ID (for create, list). Uses config companyId if not provided.'),
-    code: z.string().optional().describe('The promo code string (for create)'),
-    promoType: z.enum(['percentage', 'flat_amount']).optional().describe('Discount type'),
-    amountOff: z.number().optional().describe('Discount amount'),
-    baseCurrency: z.string().optional().describe('Currency code (for create)'),
-    promoDurationMonths: z.number().optional().describe('Duration in months the promo lasts'),
-    newUsersOnly: z.boolean().optional().describe('Restrict to new users only'),
-    productId: z.string().optional().describe('Scope to a specific product'),
-    planIds: z.array(z.string()).optional().describe('Scope to specific plans'),
-    stock: z.number().optional().describe('Available stock'),
-    unlimitedStock: z.boolean().optional().describe('Whether stock is unlimited'),
-    expiresAt: z.string().optional().describe('Expiration date (ISO 8601)'),
-    onePerCustomer: z.boolean().optional().describe('Limit one per customer'),
-    churnedUsersOnly: z.boolean().optional().describe('Restrict to churned users only'),
-    existingMembershipsOnly: z.boolean().optional().describe('Restrict to existing memberships only'),
-    status: z.enum(['active', 'inactive', 'archived']).optional().describe('Filter by status (for list)'),
-    cursor: z.string().optional().describe('Pagination cursor (for list)'),
-    limit: z.number().optional().describe('Number of results (for list)'),
-  }))
-  .output(z.object({
-    promoCode: promoCodeOutputSchema.nullable().describe('Promo code data (for get, create)'),
-    promoCodes: z.array(promoCodeOutputSchema).optional().describe('List of promo codes (for list)'),
-    deleted: z.boolean().optional().describe('Whether the promo code was deleted'),
-    hasNextPage: z.boolean().optional().describe('Whether more results are available (for list)'),
-    endCursor: z.string().nullable().optional().describe('Cursor for next page (for list)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'list', 'delete']).describe('Operation to perform'),
+      promoCodeId: z.string().optional().describe('Promo code ID (for get, delete)'),
+      companyId: z
+        .string()
+        .optional()
+        .describe('Company ID (for create, list). Uses config companyId if not provided.'),
+      code: z.string().optional().describe('The promo code string (for create)'),
+      promoType: z.enum(['percentage', 'flat_amount']).optional().describe('Discount type'),
+      amountOff: z.number().optional().describe('Discount amount'),
+      baseCurrency: z.string().optional().describe('Currency code (for create)'),
+      promoDurationMonths: z
+        .number()
+        .optional()
+        .describe('Duration in months the promo lasts'),
+      newUsersOnly: z.boolean().optional().describe('Restrict to new users only'),
+      productId: z.string().optional().describe('Scope to a specific product'),
+      planIds: z.array(z.string()).optional().describe('Scope to specific plans'),
+      stock: z.number().optional().describe('Available stock'),
+      unlimitedStock: z.boolean().optional().describe('Whether stock is unlimited'),
+      expiresAt: z.string().optional().describe('Expiration date (ISO 8601)'),
+      onePerCustomer: z.boolean().optional().describe('Limit one per customer'),
+      churnedUsersOnly: z.boolean().optional().describe('Restrict to churned users only'),
+      existingMembershipsOnly: z
+        .boolean()
+        .optional()
+        .describe('Restrict to existing memberships only'),
+      status: z
+        .enum(['active', 'inactive', 'archived'])
+        .optional()
+        .describe('Filter by status (for list)'),
+      cursor: z.string().optional().describe('Pagination cursor (for list)'),
+      limit: z.number().optional().describe('Number of results (for list)')
+    })
+  )
+  .output(
+    z.object({
+      promoCode: promoCodeOutputSchema
+        .nullable()
+        .describe('Promo code data (for get, create)'),
+      promoCodes: z
+        .array(promoCodeOutputSchema)
+        .optional()
+        .describe('List of promo codes (for list)'),
+      deleted: z.boolean().optional().describe('Whether the promo code was deleted'),
+      hasNextPage: z
+        .boolean()
+        .optional()
+        .describe('Whether more results are available (for list)'),
+      endCursor: z.string().nullable().optional().describe('Cursor for next page (for list)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WhopClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -93,7 +114,7 @@ Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
       let p = await client.getPromoCode(ctx.input.promoCodeId);
       return {
         output: { promoCode: mapPromoCode(p), endCursor: null },
-        message: `Retrieved promo code **${p.code}** (\`${p.id}\`): ${p.promo_type === 'percentage' ? `${p.amount_off}% off` : `${p.currency.toUpperCase()} ${p.amount_off} off`}.`,
+        message: `Retrieved promo code **${p.code}** (\`${p.id}\`): ${p.promo_type === 'percentage' ? `${p.amount_off}% off` : `${p.currency.toUpperCase()} ${p.amount_off} off`}.`
       };
     }
 
@@ -105,7 +126,7 @@ Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
         companyId,
         productIds: ctx.input.productId ? [ctx.input.productId] : undefined,
         planIds: ctx.input.planIds,
-        status: ctx.input.status,
+        status: ctx.input.status
       });
 
       let promoCodes = (result.data || []).map(mapPromoCode);
@@ -114,9 +135,9 @@ Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
           promoCode: null,
           promoCodes,
           hasNextPage: result.page_info?.has_next_page || false,
-          endCursor: result.page_info?.end_cursor || null,
+          endCursor: result.page_info?.end_cursor || null
         },
-        message: `Found **${promoCodes.length}** promo codes.`,
+        message: `Found **${promoCodes.length}** promo codes.`
       };
     }
 
@@ -125,9 +146,11 @@ Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
       if (!companyId) throw new Error('companyId is required for create');
       if (!ctx.input.code) throw new Error('code is required for create');
       if (!ctx.input.promoType) throw new Error('promoType is required for create');
-      if (ctx.input.amountOff === undefined) throw new Error('amountOff is required for create');
+      if (ctx.input.amountOff === undefined)
+        throw new Error('amountOff is required for create');
       if (!ctx.input.baseCurrency) throw new Error('baseCurrency is required for create');
-      if (ctx.input.promoDurationMonths === undefined) throw new Error('promoDurationMonths is required for create');
+      if (ctx.input.promoDurationMonths === undefined)
+        throw new Error('promoDurationMonths is required for create');
 
       let p = await client.createPromoCode({
         companyId,
@@ -144,12 +167,12 @@ Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
         expiresAt: ctx.input.expiresAt,
         onePerCustomer: ctx.input.onePerCustomer,
         churnedUsersOnly: ctx.input.churnedUsersOnly,
-        existingMembershipsOnly: ctx.input.existingMembershipsOnly,
+        existingMembershipsOnly: ctx.input.existingMembershipsOnly
       });
 
       return {
         output: { promoCode: mapPromoCode(p), endCursor: null },
-        message: `Created promo code **${p.code}** (\`${p.id}\`): ${p.promo_type === 'percentage' ? `${p.amount_off}% off` : `${p.currency.toUpperCase()} ${p.amount_off} off`}.`,
+        message: `Created promo code **${p.code}** (\`${p.id}\`): ${p.promo_type === 'percentage' ? `${p.amount_off}% off` : `${p.currency.toUpperCase()} ${p.amount_off} off`}.`
       };
     }
 
@@ -158,9 +181,10 @@ Use **action** to specify: \`create\`, \`get\`, \`list\`, or \`delete\`.`,
       let result = await client.deletePromoCode(ctx.input.promoCodeId);
       return {
         output: { promoCode: null, deleted: !!result, endCursor: null },
-        message: `Deleted promo code \`${ctx.input.promoCodeId}\`.`,
+        message: `Deleted promo code \`${ctx.input.promoCodeId}\`.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

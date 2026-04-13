@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let sendMessage = SlateTool.create(
-  spec,
-  {
-    name: 'Send Message',
-    key: 'send_message',
-    description: `Send a message to an individual user or an entire team through the Amara messaging system. Provide either a user or a team as the recipient, not both.`,
-    instructions: [
-      'Provide exactly one of "recipientUser" (username) or "recipientTeam" (team slug).',
-      'Both subject and content are required.'
-    ]
-  }
-)
-  .input(z.object({
-    recipientUser: z.string().optional().describe('Username of the recipient user'),
-    recipientTeam: z.string().optional().describe('Team slug to message the entire team'),
-    subject: z.string().describe('Message subject'),
-    content: z.string().describe('Message body content')
-  }))
-  .output(z.object({
-    sent: z.boolean().describe('Whether the message was sent successfully'),
-    recipient: z.string().describe('The recipient (user or team)')
-  }))
-  .handleInvocation(async (ctx) => {
+export let sendMessage = SlateTool.create(spec, {
+  name: 'Send Message',
+  key: 'send_message',
+  description: `Send a message to an individual user or an entire team through the Amara messaging system. Provide either a user or a team as the recipient, not both.`,
+  instructions: [
+    'Provide exactly one of "recipientUser" (username) or "recipientTeam" (team slug).',
+    'Both subject and content are required.'
+  ]
+})
+  .input(
+    z.object({
+      recipientUser: z.string().optional().describe('Username of the recipient user'),
+      recipientTeam: z.string().optional().describe('Team slug to message the entire team'),
+      subject: z.string().describe('Message subject'),
+      content: z.string().describe('Message body content')
+    })
+  )
+  .output(
+    z.object({
+      sent: z.boolean().describe('Whether the message was sent successfully'),
+      recipient: z.string().describe('The recipient (user or team)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       username: ctx.auth.username
@@ -53,4 +54,5 @@ export let sendMessage = SlateTool.create(
       },
       message: `Sent message "${ctx.input.subject}" to ${recipient}.`
     };
-  }).build();
+  })
+  .build();

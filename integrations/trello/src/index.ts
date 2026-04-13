@@ -15,11 +15,9 @@ import {
   search,
   getBoardMembers,
   addAttachment,
-  getActivity,
+  getActivity
 } from './tools';
-import {
-  boardActivity,
-} from './triggers';
+import { boardActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,9 +36,7 @@ export let provider = Slate.create({
     search,
     getBoardMembers,
     addAttachment,
-    getActivity,
+    getActivity
   ],
-  triggers: [
-    boardActivity,
-  ],
+  triggers: [boardActivity]
 });

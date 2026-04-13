@@ -13,48 +13,64 @@ let alertEventSchema = z.object({
   severity: z.string().describe('Syslog severity level'),
   hostname: z.string().describe('Hostname of the sender'),
   program: z.string().describe('Program or application name'),
-  message: z.string().describe('Log message content'),
+  message: z.string().describe('Log message content')
 });
 
 let alertCountSchema = z.object({
   sourceName: z.string().describe('Name of the sending system'),
   sourceId: z.number().describe('ID of the sending system'),
-  timeseries: z.record(z.string(), z.number()).describe('Map of Unix timestamps to event counts'),
+  timeseries: z
+    .record(z.string(), z.number())
+    .describe('Map of Unix timestamps to event counts')
 });
 
-export let savedSearchAlert = SlateTrigger.create(
-  spec,
-  {
-    name: 'Saved Search Alert',
-    key: 'saved_search_alert',
-    description: 'Triggers when a saved search alert fires, delivering matching log events or count summaries via webhook.',
-  }
-)
-  .input(z.object({
-    savedSearchId: z.number().describe('ID of the saved search that triggered the alert'),
-    savedSearchName: z.string().describe('Name of the saved search'),
-    countsOnly: z.boolean().describe('Whether this is a count-only alert'),
-    events: z.array(alertEventSchema).optional().describe('Matching log events (when not count-only)'),
-    counts: z.array(alertCountSchema).optional().describe('Count summaries by source (when count-only)'),
-    minId: z.string().optional().describe('Minimum event ID in this batch'),
-    maxId: z.string().optional().describe('Maximum event ID in this batch'),
-  }))
-  .output(z.object({
-    savedSearchId: z.number().describe('ID of the saved search that triggered the alert'),
-    savedSearchName: z.string().describe('Name of the saved search'),
-    eventCount: z.number().describe('Number of matching events'),
-    events: z.array(alertEventSchema).optional().describe('Matching log events (when not count-only)'),
-    counts: z.array(alertCountSchema).optional().describe('Count summaries by source (when count-only)'),
-  }))
+export let savedSearchAlert = SlateTrigger.create(spec, {
+  name: 'Saved Search Alert',
+  key: 'saved_search_alert',
+  description:
+    'Triggers when a saved search alert fires, delivering matching log events or count summaries via webhook.'
+})
+  .input(
+    z.object({
+      savedSearchId: z.number().describe('ID of the saved search that triggered the alert'),
+      savedSearchName: z.string().describe('Name of the saved search'),
+      countsOnly: z.boolean().describe('Whether this is a count-only alert'),
+      events: z
+        .array(alertEventSchema)
+        .optional()
+        .describe('Matching log events (when not count-only)'),
+      counts: z
+        .array(alertCountSchema)
+        .optional()
+        .describe('Count summaries by source (when count-only)'),
+      minId: z.string().optional().describe('Minimum event ID in this batch'),
+      maxId: z.string().optional().describe('Maximum event ID in this batch')
+    })
+  )
+  .output(
+    z.object({
+      savedSearchId: z.number().describe('ID of the saved search that triggered the alert'),
+      savedSearchName: z.string().describe('Name of the saved search'),
+      eventCount: z.number().describe('Number of matching events'),
+      events: z
+        .array(alertEventSchema)
+        .optional()
+        .describe('Matching log events (when not count-only)'),
+      counts: z
+        .array(alertCountSchema)
+        .optional()
+        .describe('Count summaries by source (when count-only)')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: string;
       let contentType = ctx.request.headers.get('content-type') || '';
 
       let payloadStr: string;
 
       if (contentType.includes('application/json')) {
-        let json = await ctx.request.json() as any;
+        let json = (await ctx.request.json()) as any;
         payloadStr = typeof json.payload === 'string' ? json.payload : JSON.stringify(json);
       } else {
         body = await ctx.request.text();
@@ -84,13 +100,13 @@ export let savedSearchAlert = SlateTrigger.create(
         severity: e.severity || '',
         hostname: e.hostname || '',
         program: e.program || '',
-        message: e.message || '',
+        message: e.message || ''
       }));
 
       let counts = (payload.counts || []).map((c: any) => ({
         sourceName: c.source_name || '',
         sourceId: c.source_id || 0,
-        timeseries: c.timeseries || {},
+        timeseries: c.timeseries || {}
       }));
 
       return {
@@ -102,13 +118,13 @@ export let savedSearchAlert = SlateTrigger.create(
             events: countsOnly ? undefined : events,
             counts: countsOnly ? counts : undefined,
             minId: payload.min_id ? String(payload.min_id) : undefined,
-            maxId: payload.max_id ? String(payload.max_id) : undefined,
-          },
-        ],
+            maxId: payload.max_id ? String(payload.max_id) : undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventCount = ctx.input.countsOnly
         ? (ctx.input.counts || []).reduce((sum, c) => {
             let total = Object.values(c.timeseries).reduce((a, b) => a + b, 0);
@@ -126,9 +142,9 @@ export let savedSearchAlert = SlateTrigger.create(
           savedSearchName: ctx.input.savedSearchName,
           eventCount,
           events: ctx.input.events,
-          counts: ctx.input.counts,
-        },
+          counts: ctx.input.counts
+        }
       };
-    },
+    }
   })
   .build();

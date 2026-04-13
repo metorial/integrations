@@ -13,14 +13,14 @@ import {
   listMembers,
   createInboxWebhook,
   listInboxWebhooks,
-  deleteInboxWebhook,
+  deleteInboxWebhook
 } from './tools';
 import {
   emailEvents,
   linkedinEvents,
   twitterEvents,
   leadLifecycleEvents,
-  campaignEvents,
+  campaignEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -38,13 +38,7 @@ export let provider = Slate.create({
     listMembers,
     createInboxWebhook,
     listInboxWebhooks,
-    deleteInboxWebhook,
+    deleteInboxWebhook
   ],
-  triggers: [
-    emailEvents,
-    linkedinEvents,
-    twitterEvents,
-    leadLifecycleEvents,
-    campaignEvents,
-  ],
+  triggers: [emailEvents, linkedinEvents, twitterEvents, leadLifecycleEvents, campaignEvents]
 });

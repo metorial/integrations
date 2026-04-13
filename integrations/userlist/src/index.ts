@@ -7,14 +7,14 @@ import {
   deleteCompany,
   manageRelationship,
   trackEvent,
-  sendMessage,
+  sendMessage
 } from './tools';
 import {
   userEvents,
   companyEvents,
   relationshipEvents,
   messageEvents,
-  formEvents,
+  formEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -26,13 +26,7 @@ export let provider = Slate.create({
     deleteCompany,
     manageRelationship,
     trackEvent,
-    sendMessage,
+    sendMessage
   ],
-  triggers: [
-    userEvents,
-    companyEvents,
-    relationshipEvents,
-    messageEvents,
-    formEvents,
-  ],
+  triggers: [userEvents, companyEvents, relationshipEvents, messageEvents, formEvents]
 });

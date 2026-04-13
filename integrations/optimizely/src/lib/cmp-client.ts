@@ -8,9 +8,9 @@ export class CmpClient {
     this.axios = createAxios({
       baseURL: 'https://api.cmp.optimizely.com',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -87,7 +87,12 @@ export class CmpClient {
   }
 
   // Assets / Library
-  async listAssets(params?: { page?: number; limit?: number; folder_id?: string; type?: string }) {
+  async listAssets(params?: {
+    page?: number;
+    limit?: number;
+    folder_id?: string;
+    type?: string;
+  }) {
     let response = await this.axios.get('/v3/assets', { params });
     return response.data;
   }
@@ -179,11 +184,7 @@ export class CmpClient {
     return response.data;
   }
 
-  async createWebhook(data: {
-    url: string;
-    events: string[];
-    secret?: string;
-  }) {
+  async createWebhook(data: { url: string; events: string[]; secret?: string }) {
     let response = await this.axios.post('/v3/webhooks', data);
     return response.data;
   }

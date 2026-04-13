@@ -3,40 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEmployee = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Employee',
-    key: 'manage_employee',
-    description: `Create, retrieve, update, list, or delete employee records. Supports personal information, job details, department assignment, and organizational structure for HR integration.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageEmployee = SlateTool.create(spec, {
+  name: 'Manage Employee',
+  key: 'manage_employee',
+  description: `Create, retrieve, update, list, or delete employee records. Supports personal information, job details, department assignment, and organizational structure for HR integration.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'update', 'delete']).describe('Action to perform'),
-    employeeId: z.string().optional().describe('Employee ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Employee first name'),
-    surname: z.string().optional().describe('Employee surname'),
-    createdBy: z.string().optional().describe('Creator identifier'),
-    email: z.string().optional().describe('Employee email address'),
-    department: z.string().optional().describe('Department name or ID'),
-    position: z.string().optional().describe('Job position/title'),
-    referenceId: z.string().optional().describe('External reference ID'),
-    page: z.number().optional().describe('Page number for listing'),
-    size: z.number().optional().describe('Page size for listing'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    search: z.string().optional().describe('Search term for filtering')
-  }))
-  .output(z.object({
-    employee: z.any().optional().describe('Employee record'),
-    employees: z.array(z.any()).optional().describe('List of employee records'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'update', 'delete'])
+        .describe('Action to perform'),
+      employeeId: z
+        .string()
+        .optional()
+        .describe('Employee ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Employee first name'),
+      surname: z.string().optional().describe('Employee surname'),
+      createdBy: z.string().optional().describe('Creator identifier'),
+      email: z.string().optional().describe('Employee email address'),
+      department: z.string().optional().describe('Department name or ID'),
+      position: z.string().optional().describe('Job position/title'),
+      referenceId: z.string().optional().describe('External reference ID'),
+      page: z.number().optional().describe('Page number for listing'),
+      size: z.number().optional().describe('Page size for listing'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      search: z.string().optional().describe('Search term for filtering')
+    })
+  )
+  .output(
+    z
+      .object({
+        employee: z.any().optional().describe('Employee record'),
+        employees: z.array(z.any()).optional().describe('List of employee records'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -47,7 +55,9 @@ export let manageEmployee = SlateTool.create(
     switch (action) {
       case 'create': {
         if (!ctx.input.name || !ctx.input.surname || !ctx.input.createdBy) {
-          throw new Error('name, surname, and createdBy are required for creating an employee');
+          throw new Error(
+            'name, surname, and createdBy are required for creating an employee'
+          );
         }
         let result = await client.createEmployee({
           name: ctx.input.name,
@@ -82,7 +92,7 @@ export let manageEmployee = SlateTool.create(
           search: ctx.input.search
         });
         let data = result?.data ?? result;
-        let employees = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+        let employees = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
         return {
           output: { employees, success: true },
           message: `Found **${employees.length}** employee(s).`
@@ -94,9 +104,11 @@ export let manageEmployee = SlateTool.create(
         if (ctx.input.name !== undefined) updatePayload.name = ctx.input.name;
         if (ctx.input.surname !== undefined) updatePayload.surname = ctx.input.surname;
         if (ctx.input.email !== undefined) updatePayload.email = ctx.input.email;
-        if (ctx.input.department !== undefined) updatePayload.department = ctx.input.department;
+        if (ctx.input.department !== undefined)
+          updatePayload.department = ctx.input.department;
         if (ctx.input.position !== undefined) updatePayload.position = ctx.input.position;
-        if (ctx.input.referenceId !== undefined) updatePayload.referenceId = ctx.input.referenceId;
+        if (ctx.input.referenceId !== undefined)
+          updatePayload.referenceId = ctx.input.referenceId;
 
         let result = await client.updateEmployee(employeeId, updatePayload);
         let data = result?.data ?? result;
@@ -114,4 +126,5 @@ export let manageEmployee = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

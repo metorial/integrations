@@ -51,13 +51,15 @@ let mapResult = (raw: RawEmailValidationResult): EmailValidationResult => ({
   role: raw.role ?? null,
   disposable: raw.disposable ?? null,
   free: raw.free ?? null,
-  score: raw.score ?? null,
+  score: raw.score ?? null
 });
 
 let checkForError = (data: any) => {
   if (data && data.success === false && data.error) {
     let err = data as ApiErrorResponse;
-    throw new Error(`Mailboxlayer API error (${err.error.code}): ${err.error.type} - ${err.error.info}`);
+    throw new Error(
+      `Mailboxlayer API error (${err.error.code}): ${err.error.type} - ${err.error.info}`
+    );
   }
 };
 
@@ -68,8 +70,8 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://apilayer.net/api',
       params: {
-        access_key: config.token,
-      },
+        access_key: config.token
+      }
     });
   }
 
@@ -79,7 +81,7 @@ export class Client {
     catchAll?: boolean;
   }): Promise<EmailValidationResult> {
     let queryParams: Record<string, string> = {
-      email: params.email,
+      email: params.email
     };
 
     if (params.smtp === false) {
@@ -101,7 +103,7 @@ export class Client {
     catchAll?: boolean;
   }): Promise<EmailValidationResult[]> {
     let queryParams: Record<string, string> = {
-      emails: params.emails.join(','),
+      emails: params.emails.join(',')
     };
 
     if (params.smtp === false) {

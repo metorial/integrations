@@ -27,7 +27,7 @@ import {
   getProbes,
   getAccountInfo,
   getActions,
-  getAnalysis,
+  getAnalysis
 } from './tools';
 import { stateChange } from './triggers';
 
@@ -60,9 +60,7 @@ export let provider = Slate.create({
     getProbes,
     getAccountInfo,
     getActions,
-    getAnalysis,
+    getAnalysis
   ],
-  triggers: [
-    stateChange,
-  ],
+  triggers: [stateChange]
 });

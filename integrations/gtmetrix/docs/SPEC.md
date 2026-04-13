@@ -16,6 +16,7 @@ GTmetrix uses HTTP Basic Access Authentication. The API key is used as the usern
 You can generate and view your API key in your GTmetrix Account Settings page. An API key is needed to use the GTmetrix REST API or the GTmetrix for WordPress plugin.
 
 Example using cURL:
+
 ```
 curl -u YOUR_API_KEY: https://gtmetrix.com/api/2.0/status
 ```

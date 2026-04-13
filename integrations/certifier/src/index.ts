@@ -15,7 +15,7 @@ import {
   listDesigns,
   getDesign,
   listCredentialInteractions,
-  createCredentialInteraction,
+  createCredentialInteraction
 } from './tools';
 import { credentialEvent } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     listDesigns,
     getDesign,
     listCredentialInteractions,
-    createCredentialInteraction,
+    createCredentialInteraction
   ],
-  triggers: [
-    credentialEvent,
-  ],
+  triggers: [credentialEvent]
 });

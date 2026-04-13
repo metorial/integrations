@@ -3,46 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let databaseChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Database Changes',
-    key: 'database_changes',
-    description: 'Polls for database additions and removals in the organization. Triggers when new databases are created or existing ones are deleted.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'deleted']).describe('Type of change detected'),
-    databaseName: z.string().describe('Name of the affected database'),
-    databaseId: z.string().describe('Unique identifier of the database'),
-    hostname: z.string().optional().describe('Hostname (for created databases)'),
-    group: z.string().optional().describe('Group the database belongs to'),
-    primaryRegion: z.string().optional().describe('Primary region of the database'),
-  }))
-  .output(z.object({
-    databaseName: z.string().describe('Name of the affected database'),
-    databaseId: z.string().describe('Unique identifier of the database'),
-    hostname: z.string().optional().describe('Hostname for connecting to the database'),
-    group: z.string().optional().describe('Group the database belongs to'),
-    primaryRegion: z.string().optional().describe('Primary region of the database'),
-  }))
+export let databaseChanges = SlateTrigger.create(spec, {
+  name: 'Database Changes',
+  key: 'database_changes',
+  description:
+    'Polls for database additions and removals in the organization. Triggers when new databases are created or existing ones are deleted.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'deleted']).describe('Type of change detected'),
+      databaseName: z.string().describe('Name of the affected database'),
+      databaseId: z.string().describe('Unique identifier of the database'),
+      hostname: z.string().optional().describe('Hostname (for created databases)'),
+      group: z.string().optional().describe('Group the database belongs to'),
+      primaryRegion: z.string().optional().describe('Primary region of the database')
+    })
+  )
+  .output(
+    z.object({
+      databaseName: z.string().describe('Name of the affected database'),
+      databaseId: z.string().describe('Unique identifier of the database'),
+      hostname: z.string().optional().describe('Hostname for connecting to the database'),
+      group: z.string().optional().describe('Group the database belongs to'),
+      primaryRegion: z.string().optional().describe('Primary region of the database')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        organizationSlug: ctx.config.organizationSlug,
+        organizationSlug: ctx.config.organizationSlug
       });
 
       let result = await client.listDatabases();
       let currentDatabases = result.databases;
 
-      let previousDatabaseIds = ((ctx.state as Record<string, unknown>)?.databaseIds as string[] | undefined) ?? [];
+      let previousDatabaseIds =
+        ((ctx.state as Record<string, unknown>)?.databaseIds as string[] | undefined) ?? [];
 
-      let currentDatabaseIds = currentDatabases.map((db) => db.DbId);
+      let currentDatabaseIds = currentDatabases.map(db => db.DbId);
 
       let inputs: Array<{
         changeType: 'created' | 'deleted';
@@ -54,7 +57,10 @@ export let databaseChanges = SlateTrigger.create(
       }> = [];
 
       // Only detect changes if we have a previous state (not the first poll)
-      if (previousDatabaseIds.length > 0 || (ctx.state as Record<string, unknown>)?.initialized) {
+      if (
+        previousDatabaseIds.length > 0 ||
+        (ctx.state as Record<string, unknown>)?.initialized
+      ) {
         // Find newly created databases
         for (let db of currentDatabases) {
           if (!previousDatabaseIds.includes(db.DbId)) {
@@ -64,20 +70,23 @@ export let databaseChanges = SlateTrigger.create(
               databaseId: db.DbId,
               hostname: db.Hostname,
               group: db.group,
-              primaryRegion: db.primaryRegion,
+              primaryRegion: db.primaryRegion
             });
           }
         }
 
         // Find deleted databases
-        let previousDbMap = ((ctx.state as Record<string, unknown>)?.databaseMap as Record<string, { name: string }> | undefined) ?? {};
+        let previousDbMap =
+          ((ctx.state as Record<string, unknown>)?.databaseMap as
+            | Record<string, { name: string }>
+            | undefined) ?? {};
         for (let prevId of previousDatabaseIds) {
           if (!currentDatabaseIds.includes(prevId)) {
             let prevDb = previousDbMap[prevId];
             inputs.push({
               changeType: 'deleted',
               databaseName: prevDb?.name ?? prevId,
-              databaseId: prevId,
+              databaseId: prevId
             });
           }
         }
@@ -93,12 +102,12 @@ export let databaseChanges = SlateTrigger.create(
         updatedState: {
           initialized: true,
           databaseIds: currentDatabaseIds,
-          databaseMap,
-        },
+          databaseMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `database.${ctx.input.changeType}`,
         id: `${ctx.input.databaseId}-${ctx.input.changeType}`,
@@ -107,8 +116,9 @@ export let databaseChanges = SlateTrigger.create(
           databaseId: ctx.input.databaseId,
           hostname: ctx.input.hostname,
           group: ctx.input.group,
-          primaryRegion: ctx.input.primaryRegion,
-        },
+          primaryRegion: ctx.input.primaryRegion
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

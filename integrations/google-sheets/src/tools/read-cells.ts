@@ -3,52 +3,82 @@ import { SheetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let readCells = SlateTool.create(
-  spec,
-  {
-    name: 'Read Cells',
-    key: 'read_cells',
-    description: `Reads values from one or more ranges in a spreadsheet. Supports A1 notation (e.g., "Sheet1!A1:B10") and named ranges. Can read a single range or multiple ranges at once. Returns values as formatted strings, raw values, or formulas.`,
-    instructions: [
-      'Use A1 notation to specify ranges, e.g., "Sheet1!A1:D10", "A1:B5", "Sheet1!A:A" for an entire column.',
-      'For multiple ranges, pass an array to the "ranges" field instead of using "range".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let readCells = SlateTool.create(spec, {
+  name: 'Read Cells',
+  key: 'read_cells',
+  description: `Reads values from one or more ranges in a spreadsheet. Supports A1 notation (e.g., "Sheet1!A1:B10") and named ranges. Can read a single range or multiple ranges at once. Returns values as formatted strings, raw values, or formulas.`,
+  instructions: [
+    'Use A1 notation to specify ranges, e.g., "Sheet1!A1:D10", "A1:B5", "Sheet1!A:A" for an entire column.',
+    'For multiple ranges, pass an array to the "ranges" field instead of using "range".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),
-    range: z.string().optional().describe('Single range in A1 notation (e.g., "Sheet1!A1:B10")'),
-    ranges: z.array(z.string()).optional().describe('Multiple ranges to read at once'),
-    valueRenderOption: z.enum(['FORMATTED_VALUE', 'UNFORMATTED_VALUE', 'FORMULA']).optional().describe('How values should be rendered. FORMATTED_VALUE returns display values, UNFORMATTED_VALUE returns raw values, FORMULA returns formulas.'),
-    majorDimension: z.enum(['ROWS', 'COLUMNS']).optional().describe('Whether to return data row-wise or column-wise. Defaults to ROWS.'),
-    dateTimeRenderOption: z.enum(['SERIAL_NUMBER', 'FORMATTED_STRING']).optional().describe('How dates/times should be rendered'),
-  }))
-  .output(z.object({
-    range: z.string().optional().describe('The range that was read (for single range reads)'),
-    values: z.array(z.array(z.any())).optional().describe('2D array of cell values (for single range reads)'),
-    valueRanges: z.array(z.object({
-      range: z.string().describe('The range that was read'),
-      values: z.array(z.array(z.any())).optional().describe('2D array of cell values'),
-    })).optional().describe('Array of range results (for multi-range reads)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),
+      range: z
+        .string()
+        .optional()
+        .describe('Single range in A1 notation (e.g., "Sheet1!A1:B10")'),
+      ranges: z.array(z.string()).optional().describe('Multiple ranges to read at once'),
+      valueRenderOption: z
+        .enum(['FORMATTED_VALUE', 'UNFORMATTED_VALUE', 'FORMULA'])
+        .optional()
+        .describe(
+          'How values should be rendered. FORMATTED_VALUE returns display values, UNFORMATTED_VALUE returns raw values, FORMULA returns formulas.'
+        ),
+      majorDimension: z
+        .enum(['ROWS', 'COLUMNS'])
+        .optional()
+        .describe('Whether to return data row-wise or column-wise. Defaults to ROWS.'),
+      dateTimeRenderOption: z
+        .enum(['SERIAL_NUMBER', 'FORMATTED_STRING'])
+        .optional()
+        .describe('How dates/times should be rendered')
+    })
+  )
+  .output(
+    z.object({
+      range: z
+        .string()
+        .optional()
+        .describe('The range that was read (for single range reads)'),
+      values: z
+        .array(z.array(z.any()))
+        .optional()
+        .describe('2D array of cell values (for single range reads)'),
+      valueRanges: z
+        .array(
+          z.object({
+            range: z.string().describe('The range that was read'),
+            values: z.array(z.array(z.any())).optional().describe('2D array of cell values')
+          })
+        )
+        .optional()
+        .describe('Array of range results (for multi-range reads)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SheetsClient(ctx.auth.token);
 
     let options = {
       valueRenderOption: ctx.input.valueRenderOption,
       majorDimension: ctx.input.majorDimension,
-      dateTimeRenderOption: ctx.input.dateTimeRenderOption,
+      dateTimeRenderOption: ctx.input.dateTimeRenderOption
     };
 
     if (ctx.input.ranges && ctx.input.ranges.length > 0) {
-      let result = await client.batchGetValues(ctx.input.spreadsheetId, ctx.input.ranges, options);
+      let result = await client.batchGetValues(
+        ctx.input.spreadsheetId,
+        ctx.input.ranges,
+        options
+      );
       let valueRanges = (result.valueRanges ?? []).map((vr: any) => ({
         range: vr.range,
-        values: vr.values,
+        values: vr.values
       }));
 
       let totalCells = valueRanges.reduce((sum: number, vr: any) => {
@@ -57,7 +87,7 @@ export let readCells = SlateTool.create(
 
       return {
         output: { valueRanges },
-        message: `Read ${valueRanges.length} range(s) containing ${totalCells} cell(s) total.`,
+        message: `Read ${valueRanges.length} range(s) containing ${totalCells} cell(s) total.`
       };
     }
 
@@ -73,9 +103,9 @@ export let readCells = SlateTool.create(
     return {
       output: {
         range: result.range,
-        values,
+        values
       },
-      message: `Read ${totalCells} cell(s) from range **${result.range}** (${values.length} rows).`,
+      message: `Read ${totalCells} cell(s) from range **${result.range}** (${values.length} rows).`
     };
   })
   .build();

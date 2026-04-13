@@ -42,31 +42,35 @@ let paginationOutputSchema = z.object({
   prevPage: z.number().nullable().describe('Previous page number')
 });
 
-export let listTasks = SlateTool.create(
-  spec,
-  {
-    name: 'List Tasks',
-    key: 'list_tasks',
-    description: `List tasks in SalesLoft. Filter by person, task type, or current user assignment. Includes both cadence-generated tasks and manually created ones.`,
-    tags: {
-      readOnly: true
-    }
+export let listTasks = SlateTool.create(spec, {
+  name: 'List Tasks',
+  key: 'list_tasks',
+  description: `List tasks in SalesLoft. Filter by person, task type, or current user assignment. Includes both cadence-generated tasks and manually created ones.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
-    personId: z.number().optional().describe('Filter by associated person ID'),
-    currentUser: z.boolean().optional().describe('Filter to tasks assigned to the current user'),
-    taskType: z.string().optional().describe('Filter by task type')
-  }))
-  .output(z.object({
-    tasks: z.array(taskOutputSchema).describe('List of tasks'),
-    paging: paginationOutputSchema
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
+      personId: z.number().optional().describe('Filter by associated person ID'),
+      currentUser: z
+        .boolean()
+        .optional()
+        .describe('Filter to tasks assigned to the current user'),
+      taskType: z.string().optional().describe('Filter by task type')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskOutputSchema).describe('List of tasks'),
+      paging: paginationOutputSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listTasks(ctx.input);
     let tasks = result.data.map(mapTask);
@@ -78,24 +82,24 @@ export let listTasks = SlateTool.create(
       },
       message: `Found **${tasks.length}** tasks (page ${result.metadata.paging.currentPage}).`
     };
-  }).build();
+  })
+  .build();
 
-export let getTask = SlateTool.create(
-  spec,
-  {
-    name: 'Get Task',
-    key: 'get_task',
-    description: `Fetch a single task from SalesLoft by ID. Returns task details including subject, type, status, due date, and assignments.`,
-    tags: {
-      readOnly: true
-    }
+export let getTask = SlateTool.create(spec, {
+  name: 'Get Task',
+  key: 'get_task',
+  description: `Fetch a single task from SalesLoft by ID. Returns task details including subject, type, status, due date, and assignments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    taskId: z.number().describe('ID of the task to fetch')
-  }))
+})
+  .input(
+    z.object({
+      taskId: z.number().describe('ID of the task to fetch')
+    })
+  )
   .output(taskOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let task = await client.getTask(ctx.input.taskId);
     let output = mapTask(task);
@@ -104,4 +108,5 @@ export let getTask = SlateTool.create(
       output,
       message: `Fetched task **${output.subject || 'Untitled'}** (ID: ${output.taskId}).`
     };
-  }).build();
+  })
+  .build();

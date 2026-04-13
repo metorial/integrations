@@ -45,14 +45,14 @@ export class KnackClient {
     this.authMode = config.authMode;
 
     this.api = createAxios({
-      baseURL: 'https://api.knack.com/v1',
+      baseURL: 'https://api.knack.com/v1'
     });
   }
 
   private getHeaders(): Record<string, string> {
     let headers: Record<string, string> = {
       'X-Knack-Application-Id': this.applicationId,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (this.authMode === 'api_key') {
@@ -67,12 +67,15 @@ export class KnackClient {
 
   async getApplicationMetadata(): Promise<Record<string, any>> {
     let response = await this.api.get(`/applications/${this.applicationId}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data.application;
   }
 
-  async listObjectRecords(objectKey: string, options?: ListRecordsOptions): Promise<KnackRecordsResponse> {
+  async listObjectRecords(
+    objectKey: string,
+    options?: ListRecordsOptions
+  ): Promise<KnackRecordsResponse> {
     let params: Record<string, any> = {};
 
     if (options?.page) params.page = options.page;
@@ -83,18 +86,22 @@ export class KnackClient {
 
     let response = await this.api.get(`/objects/${objectKey}/records`, {
       headers: this.getHeaders(),
-      params,
+      params
     });
 
     return {
       records: response.data.records,
       totalPages: response.data.total_pages,
       totalRecords: response.data.total_records,
-      currentPage: response.data.current_page,
+      currentPage: response.data.current_page
     };
   }
 
-  async listViewRecords(sceneKey: string, viewKey: string, options?: ListRecordsOptions): Promise<KnackRecordsResponse> {
+  async listViewRecords(
+    sceneKey: string,
+    viewKey: string,
+    options?: ListRecordsOptions
+  ): Promise<KnackRecordsResponse> {
     let params: Record<string, any> = {};
 
     if (options?.page) params.page = options.page;
@@ -105,105 +112,159 @@ export class KnackClient {
 
     let response = await this.api.get(`/pages/${sceneKey}/views/${viewKey}/records`, {
       headers: this.getHeaders(),
-      params,
+      params
     });
 
     return {
       records: response.data.records,
       totalPages: response.data.total_pages,
       totalRecords: response.data.total_records,
-      currentPage: response.data.current_page,
+      currentPage: response.data.current_page
     };
   }
 
   async getObjectRecord(objectKey: string, recordId: string): Promise<Record<string, any>> {
     let response = await this.api.get(`/objects/${objectKey}/records/${recordId}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
-  async getViewRecord(sceneKey: string, viewKey: string, recordId: string): Promise<Record<string, any>> {
-    let response = await this.api.get(`/pages/${sceneKey}/views/${viewKey}/records/${recordId}`, {
-      headers: this.getHeaders(),
-    });
+  async getViewRecord(
+    sceneKey: string,
+    viewKey: string,
+    recordId: string
+  ): Promise<Record<string, any>> {
+    let response = await this.api.get(
+      `/pages/${sceneKey}/views/${viewKey}/records/${recordId}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
-  async createObjectRecord(objectKey: string, fields: Record<string, any>): Promise<Record<string, any>> {
+  async createObjectRecord(
+    objectKey: string,
+    fields: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.api.post(`/objects/${objectKey}/records`, fields, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
-  async createViewRecord(sceneKey: string, viewKey: string, fields: Record<string, any>): Promise<Record<string, any>> {
+  async createViewRecord(
+    sceneKey: string,
+    viewKey: string,
+    fields: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.api.post(`/pages/${sceneKey}/views/${viewKey}/records`, fields, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
-  async updateObjectRecord(objectKey: string, recordId: string, fields: Record<string, any>): Promise<Record<string, any>> {
+  async updateObjectRecord(
+    objectKey: string,
+    recordId: string,
+    fields: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.api.put(`/objects/${objectKey}/records/${recordId}`, fields, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
-  async updateViewRecord(sceneKey: string, viewKey: string, recordId: string, fields: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.api.put(`/pages/${sceneKey}/views/${viewKey}/records/${recordId}`, fields, {
-      headers: this.getHeaders(),
-    });
+  async updateViewRecord(
+    sceneKey: string,
+    viewKey: string,
+    recordId: string,
+    fields: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.api.put(
+      `/pages/${sceneKey}/views/${viewKey}/records/${recordId}`,
+      fields,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
-  async deleteObjectRecord(objectKey: string, recordId: string): Promise<{ deleted: boolean }> {
+  async deleteObjectRecord(
+    objectKey: string,
+    recordId: string
+  ): Promise<{ deleted: boolean }> {
     let response = await this.api.delete(`/objects/${objectKey}/records/${recordId}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return { deleted: response.data.delete === true || response.status === 200 };
   }
 
-  async deleteViewRecord(sceneKey: string, viewKey: string, recordId: string): Promise<{ deleted: boolean }> {
-    let response = await this.api.delete(`/pages/${sceneKey}/views/${viewKey}/records/${recordId}`, {
-      headers: this.getHeaders(),
-    });
+  async deleteViewRecord(
+    sceneKey: string,
+    viewKey: string,
+    recordId: string
+  ): Promise<{ deleted: boolean }> {
+    let response = await this.api.delete(
+      `/pages/${sceneKey}/views/${viewKey}/records/${recordId}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return { deleted: response.data.delete === true || response.status === 200 };
   }
 
-  async uploadFile(objectKey: string, fieldKey: string, fileName: string, fileContent: string, contentType: string): Promise<string> {
+  async uploadFile(
+    objectKey: string,
+    fieldKey: string,
+    fileName: string,
+    fileContent: string,
+    contentType: string
+  ): Promise<string> {
     let headers = this.getHeaders();
     headers['Content-Type'] = `multipart/form-data`;
 
     // Step 1: Upload the file asset
     let formData = `--boundary\r\nContent-Disposition: form-data; name="files"; filename="${fileName}"\r\nContent-Type: ${contentType}\r\n\r\n${fileContent}\r\n--boundary--`;
 
-    let response = await this.api.post(`/applications/${this.applicationId}/assets/file/upload`, formData, {
-      headers: {
-        ...this.getHeaders(),
-        'Content-Type': 'multipart/form-data; boundary=boundary',
-      },
-    });
+    let response = await this.api.post(
+      `/applications/${this.applicationId}/assets/file/upload`,
+      formData,
+      {
+        headers: {
+          ...this.getHeaders(),
+          'Content-Type': 'multipart/form-data; boundary=boundary'
+        }
+      }
+    );
 
     return response.data.id;
   }
 
-  async remoteLogin(email: string, password: string): Promise<{ token: string; profile: Record<string, any> }> {
-    let response = await this.api.post('/applications/session', {
-      email,
-      password,
-    }, {
-      headers: {
-        'X-Knack-Application-Id': this.applicationId,
-        'X-Knack-REST-API-Key': this.token,
-        'Content-Type': 'application/json',
+  async remoteLogin(
+    email: string,
+    password: string
+  ): Promise<{ token: string; profile: Record<string, any> }> {
+    let response = await this.api.post(
+      '/applications/session',
+      {
+        email,
+        password
       },
-    });
+      {
+        headers: {
+          'X-Knack-Application-Id': this.applicationId,
+          'X-Knack-REST-API-Key': this.token,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     return {
       token: response.data.session.user.token,
-      profile: response.data.session.user,
+      profile: response.data.session.user
     };
   }
 }

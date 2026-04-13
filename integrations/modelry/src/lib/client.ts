@@ -58,8 +58,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -72,8 +72,8 @@ export class Client {
         description: params.description,
         tags: params.tags,
         dimensions: params.dimensions,
-        external_url: params.externalUrl,
-      },
+        external_url: params.externalUrl
+      }
     });
     return response.data;
   }

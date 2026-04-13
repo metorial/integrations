@@ -3,27 +3,31 @@ import { SkyfireClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let introspectToken = SlateTool.create(
-  spec,
-  {
-    name: 'Introspect Token',
-    key: 'introspect_token',
-    description: `Verify whether a Skyfire token (KYA, PAY, or KYA+PAY) is valid and check its remaining balance. Useful for sellers to validate a buyer's token before processing a request.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let introspectToken = SlateTool.create(spec, {
+  name: 'Introspect Token',
+  key: 'introspect_token',
+  description: `Verify whether a Skyfire token (KYA, PAY, or KYA+PAY) is valid and check its remaining balance. Useful for sellers to validate a buyer's token before processing a request.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    skyfireToken: z.string().describe('The KYA, PAY, or KYA+PAY JWT token to validate')
-  }))
-  .output(z.object({
-    isValid: z.boolean().describe('Whether the token is currently valid'),
-    remainingBalance: z.string().optional().describe('Remaining balance on the token (for PAY or KYA+PAY tokens)'),
-    validationError: z.string().optional().describe('Error message if the token is invalid')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      skyfireToken: z.string().describe('The KYA, PAY, or KYA+PAY JWT token to validate')
+    })
+  )
+  .output(
+    z.object({
+      isValid: z.boolean().describe('Whether the token is currently valid'),
+      remainingBalance: z
+        .string()
+        .optional()
+        .describe('Remaining balance on the token (for PAY or KYA+PAY tokens)'),
+      validationError: z.string().optional().describe('Error message if the token is invalid')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SkyfireClient({ token: ctx.auth.token });
 
     let result = await client.introspectToken(ctx.input.skyfireToken);

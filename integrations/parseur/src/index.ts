@@ -12,7 +12,7 @@ import {
   manageDocument,
   listTemplates,
   manageTemplate,
-  manageWebhook,
+  manageWebhook
 } from './tools';
 import { documentEvent } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     manageDocument,
     listTemplates,
     manageTemplate,
-    manageWebhook,
+    manageWebhook
   ],
-  triggers: [
-    documentEvent,
-  ],
+  triggers: [documentEvent]
 });

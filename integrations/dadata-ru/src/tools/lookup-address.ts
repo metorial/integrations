@@ -25,39 +25,40 @@ let addressDetailSchema = z.object({
   timezone: z.string().nullable().describe('Timezone'),
   taxOffice: z.string().nullable().describe('Tax office code'),
   okato: z.string().nullable().describe('OKATO code'),
-  oktmo: z.string().nullable().describe('OKTMO code'),
+  oktmo: z.string().nullable().describe('OKTMO code')
 });
 
-export let lookupAddress = SlateTool.create(
-  spec,
-  {
-    name: 'Lookup Address',
-    key: 'lookup_address',
-    description: `Looks up a specific address by FIAS ID, KLADR code, cadastral number, or GeoNames/OpenStreetMap ID. Returns detailed structured address data including coordinates and all administrative identifiers.
+export let lookupAddress = SlateTool.create(spec, {
+  name: 'Lookup Address',
+  key: 'lookup_address',
+  description: `Looks up a specific address by FIAS ID, KLADR code, cadastral number, or GeoNames/OpenStreetMap ID. Returns detailed structured address data including coordinates and all administrative identifiers.
 Use this for precise address lookups when you have a specific identifier rather than a text search.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('FIAS ID, KLADR code, cadastral number, or GeoNames/OSM ID'),
-    count: z.number().optional().describe('Number of results (max 20)'),
-    language: z.enum(['ru', 'en']).optional().describe('Response language'),
-  }))
-  .output(z.object({
-    addresses: z.array(addressDetailSchema).describe('Matched addresses'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('FIAS ID, KLADR code, cadastral number, or GeoNames/OSM ID'),
+      count: z.number().optional().describe('Number of results (max 20)'),
+      language: z.enum(['ru', 'en']).optional().describe('Response language')
+    })
+  )
+  .output(
+    z.object({
+      addresses: z.array(addressDetailSchema).describe('Matched addresses')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SuggestionsClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let data = await client.findById('address', {
       query: ctx.input.query,
       count: ctx.input.count,
-      language: ctx.input.language || ctx.config.language,
+      language: ctx.input.language || ctx.config.language
     });
 
     let addresses = (data.suggestions || []).map((s: any) => ({
@@ -82,13 +83,15 @@ Use this for precise address lookups when you have a specific identifier rather 
       timezone: s.data?.timezone ?? null,
       taxOffice: s.data?.tax_office ?? null,
       okato: s.data?.okato ?? null,
-      oktmo: s.data?.oktmo ?? null,
+      oktmo: s.data?.oktmo ?? null
     }));
 
     return {
       output: { addresses },
-      message: addresses.length > 0
-        ? `Found **${addresses.length}** address(es) for "${ctx.input.query}": ${addresses[0]?.value || 'N/A'}`
-        : `No addresses found for "${ctx.input.query}".`,
+      message:
+        addresses.length > 0
+          ? `Found **${addresses.length}** address(es) for "${ctx.input.query}": ${addresses[0]?.value || 'N/A'}`
+          : `No addresses found for "${ctx.input.query}".`
     };
-  }).build();
+  })
+  .build();

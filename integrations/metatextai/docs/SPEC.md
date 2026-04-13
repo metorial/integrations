@@ -20,6 +20,7 @@ API keys can be obtained from the Metatext AI platform after signing up at `http
 **Base URL:** `https://api.metatext.ai`
 
 Example request:
+
 ```
 POST https://api.metatext.ai/hub-inference/sentiment-analysis
 Headers:

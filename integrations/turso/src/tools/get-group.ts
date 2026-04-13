@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Get Group',
-    key: 'get_group',
-    description: `Retrieve detailed information about a specific database group, including its locations, primary region, and archive status.`,
-    tags: {
-      readOnly: true,
-    },
+export let getGroup = SlateTool.create(spec, {
+  name: 'Get Group',
+  key: 'get_group',
+  description: `Retrieve detailed information about a specific database group, including its locations, primary region, and archive status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    groupName: z.string().describe('Name of the group to retrieve'),
-  }))
-  .output(z.object({
-    groupName: z.string().describe('Name of the group'),
-    groupUuid: z.string().describe('Unique identifier of the group'),
-    locations: z.array(z.string()).describe('All locations where the group has replicas'),
-    primary: z.string().describe('Primary location of the group'),
-    archived: z.boolean().describe('Whether the group is archived'),
-    version: z.string().describe('Group version'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      groupName: z.string().describe('Name of the group to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      groupName: z.string().describe('Name of the group'),
+      groupUuid: z.string().describe('Unique identifier of the group'),
+      locations: z.array(z.string()).describe('All locations where the group has replicas'),
+      primary: z.string().describe('Primary location of the group'),
+      archived: z.boolean().describe('Whether the group is archived'),
+      version: z.string().describe('Group version')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationSlug: ctx.config.organizationSlug,
+      organizationSlug: ctx.config.organizationSlug
     });
 
     let result = await client.getGroup(ctx.input.groupName);
@@ -41,8 +42,9 @@ export let getGroup = SlateTool.create(
         locations: g.locations,
         primary: g.primary,
         archived: g.archived,
-        version: g.version,
+        version: g.version
       },
-      message: `Group **${g.name}** has ${g.locations.length} location(s): ${g.locations.join(', ')} (primary: ${g.primary}).`,
+      message: `Group **${g.name}** has ${g.locations.length} location(s): ${g.locations.join(', ')} (primary: ${g.primary}).`
     };
-  }).build();
+  })
+  .build();

@@ -4,7 +4,9 @@ import { z } from 'zod';
 
 let venueEventInputSchema = z.object({
   eventId: z.string().describe('Event ID'),
-  eventType: z.enum(['checkin', 'like', 'tip', 'photo']).describe('Type of venue content event'),
+  eventType: z
+    .enum(['checkin', 'like', 'tip', 'photo'])
+    .describe('Type of venue content event'),
   venueFsqId: z.string().optional().describe('Venue Foursquare ID'),
   venueName: z.string().optional().describe('Venue name'),
   venueAddress: z.string().optional().describe('Venue formatted address'),
@@ -12,36 +14,38 @@ let venueEventInputSchema = z.object({
   contentText: z.string().optional().describe('Content text (for tips)'),
   contentUrl: z.string().optional().describe('Content URL (for photos)'),
   createdAt: z.number().optional().describe('Event timestamp (Unix)'),
-  raw: z.any().optional().describe('Raw event payload'),
+  raw: z.any().optional().describe('Raw event payload')
 });
 
-export let venueEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Venue Event',
-    key: 'venue_event',
-    description: 'Triggers when content is added to a managed venue: check-ins, likes, tips, or photos. Requires the Venue Push API to be configured in the Foursquare developer console.',
-    instructions: [
-      'Configure the webhook URL in the Foursquare Developer Console under the Venue Push API settings.',
-      'At least one venue manager must have authorized your application.',
-      'Off-the-grid and opted-out check-ins are excluded.',
-      'Responses are anonymous — private information like shouts is not included.',
-    ],
-  }
-)
+export let venueEvent = SlateTrigger.create(spec, {
+  name: 'Venue Event',
+  key: 'venue_event',
+  description:
+    'Triggers when content is added to a managed venue: check-ins, likes, tips, or photos. Requires the Venue Push API to be configured in the Foursquare developer console.',
+  instructions: [
+    'Configure the webhook URL in the Foursquare Developer Console under the Venue Push API settings.',
+    'At least one venue manager must have authorized your application.',
+    'Off-the-grid and opted-out check-ins are excluded.',
+    'Responses are anonymous — private information like shouts is not included.'
+  ]
+})
   .input(venueEventInputSchema)
-  .output(z.object({
-    eventType: z.enum(['checkin', 'like', 'tip', 'photo']).describe('Type of venue content event'),
-    venueFsqId: z.string().optional().describe('Venue Foursquare ID'),
-    venueName: z.string().optional().describe('Venue name'),
-    venueAddress: z.string().optional().describe('Venue formatted address'),
-    contentId: z.string().optional().describe('ID of the content'),
-    contentText: z.string().optional().describe('Content text (for tips)'),
-    contentUrl: z.string().optional().describe('Content URL (for photos)'),
-    createdAt: z.number().optional().describe('Event timestamp (Unix)'),
-  }))
+  .output(
+    z.object({
+      eventType: z
+        .enum(['checkin', 'like', 'tip', 'photo'])
+        .describe('Type of venue content event'),
+      venueFsqId: z.string().optional().describe('Venue Foursquare ID'),
+      venueName: z.string().optional().describe('Venue name'),
+      venueAddress: z.string().optional().describe('Venue formatted address'),
+      contentId: z.string().optional().describe('ID of the content'),
+      contentText: z.string().optional().describe('Content text (for tips)'),
+      contentUrl: z.string().optional().describe('Content URL (for photos)'),
+      createdAt: z.number().optional().describe('Event timestamp (Unix)')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -69,7 +73,7 @@ export let venueEvent = SlateTrigger.create(
           venueAddress,
           contentId: checkin.id,
           createdAt: checkin.createdAt,
-          raw: body,
+          raw: body
         });
       }
 
@@ -84,7 +88,7 @@ export let venueEvent = SlateTrigger.create(
           venueAddress,
           contentId: like.id,
           createdAt: like.createdAt,
-          raw: body,
+          raw: body
         });
       }
 
@@ -100,14 +104,15 @@ export let venueEvent = SlateTrigger.create(
           contentId: tip.id,
           contentText: tip.text,
           createdAt: tip.createdAt,
-          raw: body,
+          raw: body
         });
       }
 
       // Photo events
       if (body?.photo) {
         let photo = body.photo;
-        let photoUrl = photo.prefix && photo.suffix ? `${photo.prefix}original${photo.suffix}` : undefined;
+        let photoUrl =
+          photo.prefix && photo.suffix ? `${photo.prefix}original${photo.suffix}` : undefined;
         inputs.push({
           eventId: photo.id || `venue_photo_${Date.now()}`,
           eventType: 'photo',
@@ -117,7 +122,7 @@ export let venueEvent = SlateTrigger.create(
           contentId: photo.id,
           contentUrl: photoUrl,
           createdAt: photo.createdAt,
-          raw: body,
+          raw: body
         });
       }
 
@@ -130,14 +135,14 @@ export let venueEvent = SlateTrigger.create(
           venueName,
           venueAddress,
           createdAt: Math.floor(Date.now() / 1000),
-          raw: body,
+          raw: body
         });
       }
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `venue.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -149,9 +154,9 @@ export let venueEvent = SlateTrigger.create(
           contentId: ctx.input.contentId,
           contentText: ctx.input.contentText,
           contentUrl: ctx.input.contentUrl,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

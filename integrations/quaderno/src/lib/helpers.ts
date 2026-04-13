@@ -1,6 +1,9 @@
 import { Client, ClientConfig } from './client';
 
-export let createClient = (ctx: { auth: { token: string; authMethod?: string }; config: { accountName: string } }): Client => {
+export let createClient = (ctx: {
+  auth: { token: string; authMethod?: string };
+  config: { accountName: string };
+}): Client => {
   return new Client({
     token: ctx.auth.token,
     accountName: ctx.config.accountName,

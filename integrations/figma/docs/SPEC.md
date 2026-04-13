@@ -13,6 +13,7 @@ Figma supports two authentication methods:
 Generate a personal access token for your Figma account. A personal access token allows you to make REST API requests using your personal Figma account. Tokens are created from Figma's Settings page under the Security tab. When generating a token, you assign scopes and an optional expiration.
 
 Include the token in requests via the `X-Figma-Token` header:
+
 ```
 X-Figma-Token: <personal_access_token>
 ```
@@ -33,29 +34,29 @@ Create an OAuth app to use OAuth 2, which lets you make requests with access tok
 
 Scopes for personal access tokens and OAuth 2 tokens determine which endpoints can be accessed. Available scopes:
 
-| Scope | Description |
-|---|---|
-| `current_user:read` | Read user name, email, and profile image |
-| `file_content:read` | Read file contents (nodes, editor type) |
-| `file_metadata:read` | Read file metadata |
-| `file_comments:read` | Read file comments |
-| `file_comments:write` | Post/delete comments and reactions |
-| `file_dev_resources:read` | Read dev resources in files |
-| `file_dev_resources:write` | Write dev resources to files |
-| `file_variables:read` | Read variables (Enterprise only) |
-| `file_variables:write` | Write variables/collections (Enterprise only) |
-| `file_versions:read` | Read file version history |
-| `files:read` | Deprecated broad read scope |
-| `library_analytics:read` | Read design system analytics (Enterprise only) |
-| `library_assets:read` | Read published component/style data |
-| `library_content:read` | Read published components/styles of files |
-| `team_library_content:read` | Read published components/styles of teams |
-| `projects:read` | List projects and files in projects |
-| `selections:read` | Read most recent selection in files |
-| `webhooks:read` | Read webhook metadata |
-| `webhooks:write` | Create and manage webhooks |
-| `org:activity_log_read` | Read org activity logs (Enterprise admin only) |
-| `org:discovery_read` | Read org text events (Enterprise Governance+ admin only) |
+| Scope                       | Description                                              |
+| --------------------------- | -------------------------------------------------------- |
+| `current_user:read`         | Read user name, email, and profile image                 |
+| `file_content:read`         | Read file contents (nodes, editor type)                  |
+| `file_metadata:read`        | Read file metadata                                       |
+| `file_comments:read`        | Read file comments                                       |
+| `file_comments:write`       | Post/delete comments and reactions                       |
+| `file_dev_resources:read`   | Read dev resources in files                              |
+| `file_dev_resources:write`  | Write dev resources to files                             |
+| `file_variables:read`       | Read variables (Enterprise only)                         |
+| `file_variables:write`      | Write variables/collections (Enterprise only)            |
+| `file_versions:read`        | Read file version history                                |
+| `files:read`                | Deprecated broad read scope                              |
+| `library_analytics:read`    | Read design system analytics (Enterprise only)           |
+| `library_assets:read`       | Read published component/style data                      |
+| `library_content:read`      | Read published components/styles of files                |
+| `team_library_content:read` | Read published components/styles of teams                |
+| `projects:read`             | List projects and files in projects                      |
+| `selections:read`           | Read most recent selection in files                      |
+| `webhooks:read`             | Read webhook metadata                                    |
+| `webhooks:write`            | Create and manage webhooks                               |
+| `org:activity_log_read`     | Read org activity logs (Enterprise admin only)           |
+| `org:discovery_read`        | Read org text events (Enterprise Governance+ admin only) |
 
 ## Features
 

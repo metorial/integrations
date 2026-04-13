@@ -12,7 +12,7 @@ import {
   getIngestionStatus,
   listIngestions,
   listTimezones,
-  validateKey,
+  validateKey
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     getIngestionStatus,
     listIngestions,
     listTimezones,
-    validateKey,
+    validateKey
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

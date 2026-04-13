@@ -31,25 +31,27 @@ let mapLabelToOutput = (label: any) => ({
   updatedAt: label.updatedAt
 });
 
-export let createLabelTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Label',
-    key: 'create_label',
-    description: `Creates a new issue label. Labels can be scoped to a team or shared across the workspace.`,
-    tags: {
-      readOnly: false
-    }
+export let createLabelTool = SlateTool.create(spec, {
+  name: 'Create Label',
+  key: 'create_label',
+  description: `Creates a new issue label. Labels can be scoped to a team or shared across the workspace.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Label name'),
-    color: z.string().optional().describe('Label color as hex code (e.g., #FF0000)'),
-    description: z.string().optional().describe('Label description'),
-    teamId: z.string().optional().describe('Team ID for team-scoped label (omit for workspace-level)')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Label name'),
+      color: z.string().optional().describe('Label color as hex code (e.g., #FF0000)'),
+      description: z.string().optional().describe('Label description'),
+      teamId: z
+        .string()
+        .optional()
+        .describe('Team ID for team-scoped label (omit for workspace-level)')
+    })
+  )
   .output(labelOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = { name: ctx.input.name };
@@ -67,27 +69,27 @@ export let createLabelTool = SlateTool.create(
       output: mapLabelToOutput(result.issueLabel),
       message: `Created label **${result.issueLabel.name}**`
     };
-  }).build();
+  })
+  .build();
 
-export let updateLabelTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Label',
-    key: 'update_label',
-    description: `Updates an existing issue label's name, color, or description.`,
-    tags: {
-      readOnly: false
-    }
+export let updateLabelTool = SlateTool.create(spec, {
+  name: 'Update Label',
+  key: 'update_label',
+  description: `Updates an existing issue label's name, color, or description.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    labelId: z.string().describe('Label ID'),
-    name: z.string().optional().describe('New label name'),
-    color: z.string().optional().describe('New color hex code'),
-    description: z.string().optional().describe('New description')
-  }))
+})
+  .input(
+    z.object({
+      labelId: z.string().describe('Label ID'),
+      name: z.string().optional().describe('New label name'),
+      color: z.string().optional().describe('New color hex code'),
+      description: z.string().optional().describe('New description')
+    })
+  )
   .output(labelOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {};
@@ -105,30 +107,32 @@ export let updateLabelTool = SlateTool.create(
       output: mapLabelToOutput(result.issueLabel),
       message: `Updated label **${result.issueLabel.name}**`
     };
-  }).build();
+  })
+  .build();
 
-export let listLabelsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Labels',
-    key: 'list_labels',
-    description: `Lists issue labels, optionally filtered by team. Returns both workspace-level and team-scoped labels.`,
-    tags: {
-      readOnly: true
-    }
+export let listLabelsTool = SlateTool.create(spec, {
+  name: 'List Labels',
+  key: 'list_labels',
+  description: `Lists issue labels, optionally filtered by team. Returns both workspace-level and team-scoped labels.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().optional().describe('Filter by team ID'),
-    first: z.number().optional().describe('Number of labels to return (default: 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    labels: z.array(labelOutputSchema),
-    hasNextPage: z.boolean(),
-    nextCursor: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().optional().describe('Filter by team ID'),
+      first: z.number().optional().describe('Number of labels to return (default: 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      labels: z.array(labelOutputSchema),
+      hasNextPage: z.boolean(),
+      nextCursor: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.listLabels({
       teamId: ctx.input.teamId,
@@ -146,4 +150,5 @@ export let listLabelsTool = SlateTool.create(
       },
       message: `Found **${labels.length}** labels`
     };
-  }).build();
+  })
+  .build();

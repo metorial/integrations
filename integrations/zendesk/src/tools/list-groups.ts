@@ -3,33 +3,34 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
 
-export let listGroups = SlateTool.create(
-  spec,
-  {
-    name: 'List Groups',
-    key: 'list_groups',
-    description: `Lists agent groups in Zendesk. Groups organize agents and are used for ticket assignment and routing.`,
-    tags: { readOnly: true },
-  }
-)
+export let listGroups = SlateTool.create(spec, {
+  name: 'List Groups',
+  key: 'list_groups',
+  description: `Lists agent groups in Zendesk. Groups organize agents and are used for ticket assignment and routing.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    groups: z.array(z.object({
-      groupId: z.string(),
-      name: z.string(),
-      description: z.string().nullable(),
-      isDefault: z.boolean(),
-      deleted: z.boolean(),
-      createdAt: z.string(),
-      updatedAt: z.string(),
-    })),
-    count: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      groups: z.array(
+        z.object({
+          groupId: z.string(),
+          name: z.string(),
+          description: z.string().nullable(),
+          isDefault: z.boolean(),
+          deleted: z.boolean(),
+          createdAt: z.string(),
+          updatedAt: z.string()
+        })
+      ),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZendeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     let data = await client.listGroups();
@@ -41,15 +42,15 @@ export let listGroups = SlateTool.create(
       isDefault: g.default || false,
       deleted: g.deleted || false,
       createdAt: g.created_at,
-      updatedAt: g.updated_at,
+      updatedAt: g.updated_at
     }));
 
     return {
       output: {
         groups,
-        count: data.count || groups.length,
+        count: data.count || groups.length
       },
-      message: `Found ${groups.length} group(s)`,
+      message: `Found ${groups.length} group(s)`
     };
   })
   .build();

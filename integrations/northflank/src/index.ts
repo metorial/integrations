@@ -10,7 +10,7 @@ import {
   manageSecret,
   listResources,
   runTemplate,
-  manageNotificationIntegration,
+  manageNotificationIntegration
 } from './tools';
 import { platformEvents } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     manageSecret,
     listResources,
     runTemplate,
-    manageNotificationIntegration,
+    manageNotificationIntegration
   ],
-  triggers: [
-    platformEvents,
-  ],
+  triggers: [platformEvents]
 });

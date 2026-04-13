@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    username: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      username: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -14,7 +16,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Amara API key from your account settings page'),
       username: z.string().describe('Your Amara username')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,

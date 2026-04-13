@@ -30,10 +30,7 @@ export class CincopaClient {
 
   // ─── Gallery Methods ────────────────────────────────
 
-  async listGalleries(options?: {
-    page?: number;
-    pageSize?: number;
-  }): Promise<any> {
+  async listGalleries(options?: { page?: number; pageSize?: number }): Promise<any> {
     let response = await axios.get('/gallery.list.json', {
       params: this.params({
         page: options?.page,
@@ -81,10 +78,7 @@ export class CincopaClient {
     return response.data;
   }
 
-  async deleteGallery(options: {
-    galleryId: string;
-    deleteAssets?: boolean;
-  }): Promise<any> {
+  async deleteGallery(options: { galleryId: string; deleteAssets?: boolean }): Promise<any> {
     let response = await axios.get('/gallery.delete.json', {
       params: this.params({
         fid: options.galleryId,
@@ -139,10 +133,7 @@ export class CincopaClient {
     return response.data;
   }
 
-  async setGalleryMaster(options: {
-    galleryId: string;
-    rid: string;
-  }): Promise<any> {
+  async setGalleryMaster(options: { galleryId: string; rid: string }): Promise<any> {
     let response = await axios.get('/gallery.set_master.json', {
       params: this.params({
         fid: options.galleryId,
@@ -274,10 +265,7 @@ export class CincopaClient {
     return response.data;
   }
 
-  async createPortal(options: {
-    name: string;
-    description?: string;
-  }): Promise<any> {
+  async createPortal(options: { name: string; description?: string }): Promise<any> {
     let response = await axios.get('/portal.create.json', {
       params: this.params({
         name: options.name,
@@ -325,10 +313,7 @@ export class CincopaClient {
     return response.data;
   }
 
-  async createLiveStream(options: {
-    name?: string;
-    description?: string;
-  }): Promise<any> {
+  async createLiveStream(options: { name?: string; description?: string }): Promise<any> {
     let response = await axios.get('/live.create.json', {
       params: this.params({
         name: options.name,
@@ -399,10 +384,7 @@ export class CincopaClient {
 
   // ─── Token Methods ──────────────────────────────────
 
-  async getTempToken(options?: {
-    permissions?: string;
-    ttl?: number;
-  }): Promise<any> {
+  async getTempToken(options?: { permissions?: string; ttl?: number }): Promise<any> {
     let response = await axios.get('/token.get_temp.json', {
       params: this.params({
         permissions: options?.permissions,

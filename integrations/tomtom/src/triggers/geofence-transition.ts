@@ -3,39 +3,41 @@ import { TomTomClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let geofenceTransitionTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Geofence Transition',
-    key: 'geofence_transition',
-    description: 'Triggers when a tracked object enters or exits a geofence boundary. Polls the TomTom Geofencing transitions API for new transition events.'
-  }
-)
-  .input(z.object({
-    transitionId: z.string().describe('Unique transition identifier'),
-    objectId: z.string().describe('ID of the object that crossed the fence'),
-    fenceId: z.string().describe('ID of the fence that was crossed'),
-    projectId: z.string().optional().describe('ID of the project containing the fence'),
-    transitionType: z.string().describe('Type of transition (ENTER or EXIT)'),
-    recordedAt: z.string().optional().describe('When the transition was recorded'),
-    lat: z.number().optional().describe('Latitude where the transition occurred'),
-    lon: z.number().optional().describe('Longitude where the transition occurred')
-  }))
-  .output(z.object({
-    objectId: z.string().describe('ID of the object that crossed the fence'),
-    fenceId: z.string().describe('ID of the fence that was crossed'),
-    projectId: z.string().optional().describe('ID of the project containing the fence'),
-    transitionType: z.string().describe('Type of transition (ENTER or EXIT)'),
-    recordedAt: z.string().optional().describe('When the transition was recorded'),
-    lat: z.number().optional().describe('Latitude where the transition occurred'),
-    lon: z.number().optional().describe('Longitude where the transition occurred')
-  }))
+export let geofenceTransitionTrigger = SlateTrigger.create(spec, {
+  name: 'Geofence Transition',
+  key: 'geofence_transition',
+  description:
+    'Triggers when a tracked object enters or exits a geofence boundary. Polls the TomTom Geofencing transitions API for new transition events.'
+})
+  .input(
+    z.object({
+      transitionId: z.string().describe('Unique transition identifier'),
+      objectId: z.string().describe('ID of the object that crossed the fence'),
+      fenceId: z.string().describe('ID of the fence that was crossed'),
+      projectId: z.string().optional().describe('ID of the project containing the fence'),
+      transitionType: z.string().describe('Type of transition (ENTER or EXIT)'),
+      recordedAt: z.string().optional().describe('When the transition was recorded'),
+      lat: z.number().optional().describe('Latitude where the transition occurred'),
+      lon: z.number().optional().describe('Longitude where the transition occurred')
+    })
+  )
+  .output(
+    z.object({
+      objectId: z.string().describe('ID of the object that crossed the fence'),
+      fenceId: z.string().describe('ID of the fence that was crossed'),
+      projectId: z.string().optional().describe('ID of the project containing the fence'),
+      transitionType: z.string().describe('Type of transition (ENTER or EXIT)'),
+      recordedAt: z.string().optional().describe('When the transition was recorded'),
+      lat: z.number().optional().describe('Latitude where the transition occurred'),
+      lon: z.number().optional().describe('Longitude where the transition occurred')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TomTomClient({ token: ctx.auth.token, adminKey: ctx.auth.adminKey });
 
       let lastTimestamp: string | undefined = ctx.state?.lastTimestamp;
@@ -66,14 +68,10 @@ export let geofenceTransitionTrigger = SlateTrigger.create(
         };
       });
 
-      let allIds = [
-        ...knownIds,
-        ...inputs.map((i: any) => i.transitionId)
-      ].slice(-200);
+      let allIds = [...knownIds, ...inputs.map((i: any) => i.transitionId)].slice(-200);
 
-      let updatedLastTimestamp = inputs.length > 0 && inputs[0]!.recordedAt
-        ? inputs[0]!.recordedAt
-        : lastTimestamp;
+      let updatedLastTimestamp =
+        inputs.length > 0 && inputs[0]!.recordedAt ? inputs[0]!.recordedAt : lastTimestamp;
 
       return {
         inputs,
@@ -84,7 +82,7 @@ export let geofenceTransitionTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `geofence.${ctx.input.transitionType.toLowerCase()}`,
         id: ctx.input.transitionId,
@@ -99,4 +97,5 @@ export let geofenceTransitionTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

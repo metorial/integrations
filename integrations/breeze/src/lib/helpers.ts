@@ -7,6 +7,6 @@ export let createClient = (ctx: {
   return new Client({
     token: ctx.auth.token,
     subdomain: ctx.config.subdomain,
-    teamId: ctx.config.teamId,
+    teamId: ctx.config.teamId
   });
 };

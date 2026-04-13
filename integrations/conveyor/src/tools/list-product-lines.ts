@@ -13,22 +13,21 @@ let productLineSchema = z.object({
   updatedAt: z.string().describe('When the product line was last updated')
 });
 
-export let listProductLines = SlateTool.create(
-  spec,
-  {
-    name: 'List Product Lines',
-    key: 'list_product_lines',
-    description: `Retrieve all product lines configured in your Conveyor account. Product lines are used to organize questionnaires and Trust Center content by product or service offering.`,
-    tags: {
-      readOnly: true
-    }
+export let listProductLines = SlateTool.create(spec, {
+  name: 'List Product Lines',
+  key: 'list_product_lines',
+  description: `Retrieve all product lines configured in your Conveyor account. Product lines are used to organize questionnaires and Trust Center content by product or service offering.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    productLines: z.array(productLineSchema).describe('List of product lines')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      productLines: z.array(productLineSchema).describe('List of product lines')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConveyorClient({ token: ctx.auth.token });
 
     let data = await client.listProductLines();
@@ -46,4 +45,5 @@ export let listProductLines = SlateTool.create(
       output: { productLines },
       message: `Found **${productLines.length}** product lines.`
     };
-  }).build();
+  })
+  .build();

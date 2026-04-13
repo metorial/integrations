@@ -32,7 +32,5 @@ export let provider = Slate.create({
     extractFullText,
     retryFileProcessing
   ],
-  triggers: [
-    documentProcessed
-  ]
+  triggers: [documentProcessed]
 });

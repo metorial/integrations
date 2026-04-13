@@ -8,9 +8,9 @@ export class AppVeyorClient {
     this.axios = createAxios({
       baseURL: 'https://ci.appveyor.com/api',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -21,42 +21,71 @@ export class AppVeyorClient {
     return response.data;
   }
 
-  async getProject(accountName: string, projectSlug: string): Promise<Record<string, unknown>> {
+  async getProject(
+    accountName: string,
+    projectSlug: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get(`/projects/${accountName}/${projectSlug}`);
     return response.data;
   }
 
-  async getProjectBranch(accountName: string, projectSlug: string, branch: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/branch/${encodeURIComponent(branch)}`);
+  async getProjectBranch(
+    accountName: string,
+    projectSlug: string,
+    branch: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/projects/${accountName}/${projectSlug}/branch/${encodeURIComponent(branch)}`
+    );
     return response.data;
   }
 
-  async getProjectBuildByVersion(accountName: string, projectSlug: string, buildVersion: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/build/${buildVersion}`);
+  async getProjectBuildByVersion(
+    accountName: string,
+    projectSlug: string,
+    buildVersion: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/projects/${accountName}/${projectSlug}/build/${buildVersion}`
+    );
     return response.data;
   }
 
-  async getProjectHistory(accountName: string, projectSlug: string, params?: {
-    recordsNumber?: number;
-    startBuildId?: number;
-    branch?: string;
-  }): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/history`, { params });
+  async getProjectHistory(
+    accountName: string,
+    projectSlug: string,
+    params?: {
+      recordsNumber?: number;
+      startBuildId?: number;
+      branch?: string;
+    }
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/history`, {
+      params
+    });
     return response.data;
   }
 
-  async getProjectDeployments(accountName: string, projectSlug: string): Promise<Record<string, unknown>> {
+  async getProjectDeployments(
+    accountName: string,
+    projectSlug: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/deployments`);
     return response.data;
   }
 
-  async getProjectSettings(accountName: string, projectSlug: string): Promise<Record<string, unknown>> {
+  async getProjectSettings(
+    accountName: string,
+    projectSlug: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/settings`);
     return response.data;
   }
 
   async getProjectSettingsYaml(accountName: string, projectSlug: string): Promise<string> {
-    let response = await this.axios.get(`/projects/${accountName}/${projectSlug}/settings/yaml`);
+    let response = await this.axios.get(
+      `/projects/${accountName}/${projectSlug}/settings/yaml`
+    );
     return response.data;
   }
 
@@ -72,20 +101,35 @@ export class AppVeyorClient {
     await this.axios.put('/projects', body);
   }
 
-  async updateProjectSettingsYaml(accountName: string, projectSlug: string, yaml: string): Promise<void> {
+  async updateProjectSettingsYaml(
+    accountName: string,
+    projectSlug: string,
+    yaml: string
+  ): Promise<void> {
+    await this.axios.put(`/projects/${accountName}/${projectSlug}/settings/yaml`, yaml, {
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
+
+  async updateProjectEnvironmentVariables(
+    accountName: string,
+    projectSlug: string,
+    variables: Record<string, unknown>[]
+  ): Promise<void> {
     await this.axios.put(
-      `/projects/${accountName}/${projectSlug}/settings/yaml`,
-      yaml,
-      { headers: { 'Content-Type': 'text/plain' } },
+      `/projects/${accountName}/${projectSlug}/settings/environment-variables`,
+      variables
     );
   }
 
-  async updateProjectEnvironmentVariables(accountName: string, projectSlug: string, variables: Record<string, unknown>[]): Promise<void> {
-    await this.axios.put(`/projects/${accountName}/${projectSlug}/settings/environment-variables`, variables);
-  }
-
-  async updateProjectBuildNumber(accountName: string, projectSlug: string, nextBuildNumber: number): Promise<void> {
-    await this.axios.put(`/projects/${accountName}/${projectSlug}/settings/build-number`, { nextBuildNumber });
+  async updateProjectBuildNumber(
+    accountName: string,
+    projectSlug: string,
+    nextBuildNumber: number
+  ): Promise<void> {
+    await this.axios.put(`/projects/${accountName}/${projectSlug}/settings/build-number`, {
+      nextBuildNumber
+    });
   }
 
   async deleteProject(accountName: string, projectSlug: string): Promise<void> {
@@ -118,7 +162,11 @@ export class AppVeyorClient {
     return response.data;
   }
 
-  async cancelBuild(accountName: string, projectSlug: string, buildVersion: string): Promise<void> {
+  async cancelBuild(
+    accountName: string,
+    projectSlug: string,
+    buildVersion: string
+  ): Promise<void> {
     await this.axios.delete(`/builds/${accountName}/${projectSlug}/${buildVersion}`);
   }
 
@@ -131,7 +179,7 @@ export class AppVeyorClient {
   async getBuildJobLog(jobId: string): Promise<string> {
     let response = await this.axios.get(`/buildjobs/${jobId}/log`, {
       responseType: 'text',
-      headers: { 'Accept': 'text/plain' },
+      headers: { Accept: 'text/plain' }
     });
     return response.data;
   }
@@ -143,7 +191,7 @@ export class AppVeyorClient {
 
   async downloadBuildJobArtifact(jobId: string, artifactFileName: string): Promise<string> {
     let response = await this.axios.get(`/buildjobs/${jobId}/artifacts/${artifactFileName}`, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
@@ -249,17 +297,11 @@ export class AppVeyorClient {
     return response.data;
   }
 
-  async addCollaborator(body: {
-    email: string;
-    roleId: number;
-  }): Promise<void> {
+  async addCollaborator(body: { email: string; roleId: number }): Promise<void> {
     await this.axios.post('/collaborators', body);
   }
 
-  async updateCollaborator(body: {
-    userId: number;
-    roleId: number;
-  }): Promise<void> {
+  async updateCollaborator(body: { userId: number; roleId: number }): Promise<void> {
     await this.axios.put('/collaborators', body);
   }
 

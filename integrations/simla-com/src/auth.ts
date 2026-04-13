@@ -2,21 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Simla.com API key'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Simla.com API key')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      token: z.string().describe('Your Simla.com API key (at least 32 characters). Found in Integration section of admin settings.'),
+      token: z
+        .string()
+        .describe(
+          'Your Simla.com API key (at least 32 characters). Found in Integration section of admin settings.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
     getProfile: async (ctx: any) => {
@@ -25,8 +31,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: 'simla-user',
-          name: 'Simla.com User',
-        },
+          name: 'Simla.com User'
+        }
       };
-    },
+    }
   });

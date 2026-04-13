@@ -10,8 +10,8 @@ export class NeuronWriterClient {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

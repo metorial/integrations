@@ -13,25 +13,24 @@ let projectSchema = z.object({
   createdAt: z.string().describe('ISO timestamp of creation'),
   updatedAt: z.string().optional().describe('ISO timestamp of last update'),
   apiUrl: z.string().describe('API endpoint URL'),
-  webUrl: z.string().describe('Web URL for the project'),
+  webUrl: z.string().describe('Web URL for the project')
 });
 
-export let listProjectsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List all V0 projects in your workspace. Returns project names, IDs, privacy settings, and URLs for each project.`,
-    tags: {
-      readOnly: true,
-    },
+export let listProjectsTool = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List all V0 projects in your workspace. Returns project names, IDs, privacy settings, and URLs for each project.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    projects: z.array(projectSchema).describe('List of projects'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      projects: z.array(projectSchema).describe('List of projects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new V0Client(ctx.auth.token);
     let result = await client.listProjects();
 
@@ -45,12 +44,12 @@ export let listProjectsTool = SlateTool.create(
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
       apiUrl: p.apiUrl,
-      webUrl: p.webUrl,
+      webUrl: p.webUrl
     }));
 
     return {
       output: { projects },
-      message: `Found **${projects.length}** project(s).`,
+      message: `Found **${projects.length}** project(s).`
     };
   })
   .build();

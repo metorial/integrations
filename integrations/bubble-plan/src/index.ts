@@ -29,14 +29,14 @@ import {
   createContact,
   updateContact,
   deleteContact,
-  listClients,
+  listClients
 } from './tools';
 import {
   projectTrigger,
   taskTrigger,
   subtaskTrigger,
   eventTrigger,
-  clientTrigger,
+  clientTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -70,13 +70,7 @@ export let provider = Slate.create({
     createContact,
     updateContact,
     deleteContact,
-    listClients,
+    listClients
   ],
-  triggers: [
-    projectTrigger,
-    taskTrigger,
-    subtaskTrigger,
-    eventTrigger,
-    clientTrigger,
-  ],
+  triggers: [projectTrigger, taskTrigger, subtaskTrigger, eventTrigger, clientTrigger]
 });

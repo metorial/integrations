@@ -3,65 +3,66 @@ import { HelloLeadsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newLeadAdded = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Lead Added',
-    key: 'new_lead_added',
-    description: 'Triggers when a new lead is created in HelloLeads CRM.',
-  }
-)
-  .input(z.object({
-    leadId: z.string().describe('Unique identifier of the lead'),
-    firstName: z.string().describe('First name of the lead'),
-    lastName: z.string().optional().describe('Last name of the lead'),
-    email: z.string().optional().describe('Email address of the lead'),
-    mobile: z.string().optional().describe('Mobile phone number'),
-    phone: z.string().optional().describe('Direct/office phone number'),
-    organization: z.string().optional().describe('Company or organization name'),
-    designation: z.string().optional().describe('Job title or designation'),
-    address: z.string().optional().describe('Street address'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State or province'),
-    country: z.string().optional().describe('Country'),
-    zip: z.string().optional().describe('Postal/ZIP code'),
-    website: z.string().optional().describe('Website URL'),
-    potential: z.string().optional().describe('Lead potential rating'),
-    dealSize: z.string().optional().describe('Estimated deal size'),
-    tags: z.string().optional().describe('Tags associated with the lead'),
-    notes: z.string().optional().describe('Notes about the lead'),
-    createdAt: z.string().optional().describe('Timestamp when the lead was created'),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('Unique identifier of the lead'),
-    firstName: z.string().describe('First name of the lead'),
-    lastName: z.string().optional().describe('Last name of the lead'),
-    email: z.string().optional().describe('Email address of the lead'),
-    mobile: z.string().optional().describe('Mobile phone number'),
-    phone: z.string().optional().describe('Direct/office phone number'),
-    organization: z.string().optional().describe('Company or organization name'),
-    designation: z.string().optional().describe('Job title or designation'),
-    address: z.string().optional().describe('Street address'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State or province'),
-    country: z.string().optional().describe('Country'),
-    zip: z.string().optional().describe('Postal/ZIP code'),
-    website: z.string().optional().describe('Website URL'),
-    potential: z.string().optional().describe('Lead potential rating'),
-    dealSize: z.string().optional().describe('Estimated deal size'),
-    tags: z.string().optional().describe('Tags associated with the lead'),
-    notes: z.string().optional().describe('Notes about the lead'),
-    createdAt: z.string().optional().describe('Timestamp when the lead was created'),
-  }))
+export let newLeadAdded = SlateTrigger.create(spec, {
+  name: 'New Lead Added',
+  key: 'new_lead_added',
+  description: 'Triggers when a new lead is created in HelloLeads CRM.'
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('Unique identifier of the lead'),
+      firstName: z.string().describe('First name of the lead'),
+      lastName: z.string().optional().describe('Last name of the lead'),
+      email: z.string().optional().describe('Email address of the lead'),
+      mobile: z.string().optional().describe('Mobile phone number'),
+      phone: z.string().optional().describe('Direct/office phone number'),
+      organization: z.string().optional().describe('Company or organization name'),
+      designation: z.string().optional().describe('Job title or designation'),
+      address: z.string().optional().describe('Street address'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State or province'),
+      country: z.string().optional().describe('Country'),
+      zip: z.string().optional().describe('Postal/ZIP code'),
+      website: z.string().optional().describe('Website URL'),
+      potential: z.string().optional().describe('Lead potential rating'),
+      dealSize: z.string().optional().describe('Estimated deal size'),
+      tags: z.string().optional().describe('Tags associated with the lead'),
+      notes: z.string().optional().describe('Notes about the lead'),
+      createdAt: z.string().optional().describe('Timestamp when the lead was created')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('Unique identifier of the lead'),
+      firstName: z.string().describe('First name of the lead'),
+      lastName: z.string().optional().describe('Last name of the lead'),
+      email: z.string().optional().describe('Email address of the lead'),
+      mobile: z.string().optional().describe('Mobile phone number'),
+      phone: z.string().optional().describe('Direct/office phone number'),
+      organization: z.string().optional().describe('Company or organization name'),
+      designation: z.string().optional().describe('Job title or designation'),
+      address: z.string().optional().describe('Street address'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State or province'),
+      country: z.string().optional().describe('Country'),
+      zip: z.string().optional().describe('Postal/ZIP code'),
+      website: z.string().optional().describe('Website URL'),
+      potential: z.string().optional().describe('Lead potential rating'),
+      dealSize: z.string().optional().describe('Estimated deal size'),
+      tags: z.string().optional().describe('Tags associated with the lead'),
+      notes: z.string().optional().describe('Notes about the lead'),
+      createdAt: z.string().optional().describe('Timestamp when the lead was created')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new HelloLeadsClient({
         token: ctx.auth.token,
-        email: ctx.auth.email,
+        email: ctx.auth.email
       });
 
       let lastSeenId = (ctx.state as any)?.lastSeenId ?? 0;
@@ -105,18 +106,18 @@ export let newLeadAdded = SlateTrigger.create(
         dealSize: lead.deal_size ? String(lead.deal_size) : undefined,
         tags: lead.tags || undefined,
         notes: lead.notes || undefined,
-        createdAt: lead.created_at ?? lead.createdAt ?? undefined,
+        createdAt: lead.created_at ?? lead.createdAt ?? undefined
       }));
 
       return {
         inputs,
         updatedState: {
-          lastSeenId: highestId,
-        },
+          lastSeenId: highestId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'lead.created',
         id: ctx.input.leadId,
@@ -139,9 +140,9 @@ export let newLeadAdded = SlateTrigger.create(
           dealSize: ctx.input.dealSize,
           tags: ctx.input.tags,
           notes: ctx.input.notes,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

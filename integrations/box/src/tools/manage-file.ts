@@ -3,33 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFile = SlateTool.create(
-  spec,
-  {
-    name: 'Manage File',
-    key: 'manage_file',
-    description: `Perform operations on an existing Box file: rename, move to another folder, copy, lock/unlock, update description, or delete. Specify the desired action and relevant parameters.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageFile = SlateTool.create(spec, {
+  name: 'Manage File',
+  key: 'manage_file',
+  description: `Perform operations on an existing Box file: rename, move to another folder, copy, lock/unlock, update description, or delete. Specify the desired action and relevant parameters.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    fileId: z.string().describe('The unique ID of the file to manage'),
-    action: z.enum(['rename', 'move', 'copy', 'lock', 'unlock', 'delete', 'update']).describe('The operation to perform on the file'),
-    name: z.string().optional().describe('New file name (for rename, copy, or update)'),
-    description: z.string().optional().describe('New file description (for update action)'),
-    parentFolderId: z.string().optional().describe('Target parent folder ID (required for move and copy)'),
-    lockExpiresAt: z.string().optional().describe('ISO 8601 timestamp when the lock should expire (for lock action)')
-  }))
-  .output(z.object({
-    fileId: z.string().describe('The file ID after the operation'),
-    name: z.string().optional().describe('File name after the operation'),
-    parentFolderId: z.string().optional().describe('Parent folder ID after the operation'),
-    deleted: z.boolean().optional().describe('True if the file was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileId: z.string().describe('The unique ID of the file to manage'),
+      action: z
+        .enum(['rename', 'move', 'copy', 'lock', 'unlock', 'delete', 'update'])
+        .describe('The operation to perform on the file'),
+      name: z.string().optional().describe('New file name (for rename, copy, or update)'),
+      description: z.string().optional().describe('New file description (for update action)'),
+      parentFolderId: z
+        .string()
+        .optional()
+        .describe('Target parent folder ID (required for move and copy)'),
+      lockExpiresAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the lock should expire (for lock action)')
+    })
+  )
+  .output(
+    z.object({
+      fileId: z.string().describe('The file ID after the operation'),
+      name: z.string().optional().describe('File name after the operation'),
+      parentFolderId: z.string().optional().describe('Parent folder ID after the operation'),
+      deleted: z.boolean().optional().describe('True if the file was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { fileId, action, name, description, parentFolderId, lockExpiresAt } = ctx.input;
 

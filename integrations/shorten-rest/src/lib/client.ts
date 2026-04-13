@@ -101,8 +101,8 @@ export class Client {
       baseURL: 'https://api.shorten.rest',
       headers: {
         'x-api-key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -113,7 +113,7 @@ export class Client {
 
   async getAlias(request: GetAliasRequest): Promise<AliasDetails> {
     let params: Record<string, string> = {
-      aliasName: request.aliasName,
+      aliasName: request.aliasName
     };
     if (request.domainName) {
       params.domainName = request.domainName;
@@ -128,7 +128,7 @@ export class Client {
 
   async deleteAlias(request: DeleteAliasRequest): Promise<void> {
     await this.axios.delete('/aliases', {
-      data: request,
+      data: request
     });
   }
 
@@ -146,7 +146,7 @@ export class Client {
 
   async getClicks(request: GetClicksRequest): Promise<GetClicksResponse> {
     let params: Record<string, string | number> = {
-      aliasName: request.aliasName,
+      aliasName: request.aliasName
     };
     if (request.domainName) {
       params.domainName = request.domainName;

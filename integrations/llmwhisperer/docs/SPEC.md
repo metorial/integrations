@@ -14,10 +14,12 @@ All APIs require an API key to be passed in the header. You can get your API key
 - **How to obtain:** Sign up for a LLMWhisperer account at the Unstract platform.
 
 **Base URLs (regional):**
+
 - US Central: `https://llmwhisperer-api.us-central.unstract.com/api/v2`
 - EU West: `https://llmwhisperer-api.eu-west.unstract.com/api/v2`
 
 Example:
+
 ```
 curl -X GET 'https://llmwhisperer-api.us-central.unstract.com/api/v2/get-usage-info' \
   -H 'unstract-key: <YOUR_API_KEY>'

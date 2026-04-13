@@ -3,46 +3,50 @@ import { CoinbaseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transactionPolling = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Transactions',
-    key: 'new_transactions',
-    description: '[Polling fallback] Polls for new transactions (sends, receives, buys, sells, transfers) across Coinbase accounts. Detects new transactions since the last poll.',
-  }
-)
-  .input(z.object({
-    transactionId: z.string().describe('Transaction ID'),
-    transactionType: z.string().describe('Transaction type (send, receive, buy, sell, etc.)'),
-    accountId: z.string().describe('Account ID'),
-    accountName: z.string().optional().describe('Account name'),
-    status: z.string().describe('Transaction status'),
-    amount: z.string().optional().describe('Transaction amount'),
-    currency: z.string().optional().describe('Currency code'),
-    nativeAmount: z.string().optional().describe('Amount in native currency'),
-    nativeCurrency: z.string().optional().describe('Native currency code'),
-    description: z.string().optional().nullable().describe('Transaction description'),
-    createdAt: z.string().describe('Transaction creation time'),
-  }))
-  .output(z.object({
-    transactionId: z.string().describe('Transaction ID'),
-    transactionType: z.string().describe('Transaction type'),
-    accountId: z.string().describe('Account ID'),
-    accountName: z.string().optional().describe('Account name'),
-    status: z.string().describe('Transaction status'),
-    amount: z.string().optional().describe('Transaction amount'),
-    currency: z.string().optional().describe('Currency code'),
-    nativeAmount: z.string().optional().describe('Amount in native currency'),
-    nativeCurrency: z.string().optional().describe('Native currency code'),
-    description: z.string().optional().nullable().describe('Transaction description'),
-    createdAt: z.string().describe('Transaction creation time'),
-  }))
+export let transactionPolling = SlateTrigger.create(spec, {
+  name: 'New Transactions',
+  key: 'new_transactions',
+  description:
+    '[Polling fallback] Polls for new transactions (sends, receives, buys, sells, transfers) across Coinbase accounts. Detects new transactions since the last poll.'
+})
+  .input(
+    z.object({
+      transactionId: z.string().describe('Transaction ID'),
+      transactionType: z
+        .string()
+        .describe('Transaction type (send, receive, buy, sell, etc.)'),
+      accountId: z.string().describe('Account ID'),
+      accountName: z.string().optional().describe('Account name'),
+      status: z.string().describe('Transaction status'),
+      amount: z.string().optional().describe('Transaction amount'),
+      currency: z.string().optional().describe('Currency code'),
+      nativeAmount: z.string().optional().describe('Amount in native currency'),
+      nativeCurrency: z.string().optional().describe('Native currency code'),
+      description: z.string().optional().nullable().describe('Transaction description'),
+      createdAt: z.string().describe('Transaction creation time')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().describe('Transaction ID'),
+      transactionType: z.string().describe('Transaction type'),
+      accountId: z.string().describe('Account ID'),
+      accountName: z.string().optional().describe('Account name'),
+      status: z.string().describe('Transaction status'),
+      amount: z.string().optional().describe('Transaction amount'),
+      currency: z.string().optional().describe('Currency code'),
+      nativeAmount: z.string().optional().describe('Amount in native currency'),
+      nativeCurrency: z.string().optional().describe('Native currency code'),
+      description: z.string().optional().nullable().describe('Transaction description'),
+      createdAt: z.string().describe('Transaction creation time')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CoinbaseClient({ token: ctx.auth.token });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -84,7 +88,7 @@ export let transactionPolling = SlateTrigger.create(
               nativeAmount: tx.native_amount?.amount,
               nativeCurrency: tx.native_amount?.currency,
               description: tx.description || null,
-              createdAt: tx.created_at,
+              createdAt: tx.created_at
             });
           }
         } catch {
@@ -96,12 +100,12 @@ export let transactionPolling = SlateTrigger.create(
         inputs: allInputs,
         updatedState: {
           lastPollTime: new Date().toISOString(),
-          knownTransactionIds: newKnownIds.slice(0, 500), // Keep recent IDs for dedup
-        },
+          knownTransactionIds: newKnownIds.slice(0, 500) // Keep recent IDs for dedup
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `transaction.${ctx.input.transactionType}`,
         id: ctx.input.transactionId,
@@ -116,8 +120,9 @@ export let transactionPolling = SlateTrigger.create(
           nativeAmount: ctx.input.nativeAmount,
           nativeCurrency: ctx.input.nativeCurrency,
           description: ctx.input.description,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

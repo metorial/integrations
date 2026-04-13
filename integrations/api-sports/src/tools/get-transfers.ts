@@ -13,43 +13,42 @@ let transferSchema = z.object({
   teamInLogo: z.string().nullable().describe('Destination team logo'),
   teamOutId: z.number().nullable().describe('Origin team ID'),
   teamOutName: z.string().nullable().describe('Origin team name'),
-  teamOutLogo: z.string().nullable().describe('Origin team logo'),
+  teamOutLogo: z.string().nullable().describe('Origin team logo')
 });
 
-export let getTransfersTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Transfers',
-    key: 'get_transfers',
-    description: `Retrieve football transfer history for a player or team. Returns transfer dates, types (loan, free, fee), and the teams involved. Useful for tracking transfer activity and player movement history.`,
-    instructions: [
-      'Provide either a playerId or teamId to query transfers.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getTransfersTool = SlateTool.create(spec, {
+  name: 'Get Transfers',
+  key: 'get_transfers',
+  description: `Retrieve football transfer history for a player or team. Returns transfer dates, types (loan, free, fee), and the teams involved. Useful for tracking transfer activity and player movement history.`,
+  instructions: ['Provide either a playerId or teamId to query transfers.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    player: z.number().optional().describe('Player ID to get transfer history for'),
-    team: z.number().optional().describe('Team ID to get transfer activity for'),
-  }))
-  .output(z.object({
-    transfers: z.array(transferSchema),
-    count: z.number().describe('Number of transfers returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      player: z.number().optional().describe('Player ID to get transfer history for'),
+      team: z.number().optional().describe('Team ID to get transfer activity for')
+    })
+  )
+  .output(
+    z.object({
+      transfers: z.array(transferSchema),
+      count: z.number().describe('Number of transfers returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, sport: 'football' });
 
     let data = await client.getTransfers({
       player: ctx.input.player,
-      team: ctx.input.team,
+      team: ctx.input.team
     });
 
     let allTransfers: any[] = [];
-    for (let item of (data.response ?? [])) {
+    for (let item of data.response ?? []) {
       let player = item.player ?? {};
-      for (let transfer of (item.transfers ?? [])) {
+      for (let transfer of item.transfers ?? []) {
         allTransfers.push({
           playerId: player.id ?? null,
           playerName: player.name ?? null,
@@ -60,7 +59,7 @@ export let getTransfersTool = SlateTool.create(
           teamInLogo: transfer.teams?.in?.logo ?? null,
           teamOutId: transfer.teams?.out?.id ?? null,
           teamOutName: transfer.teams?.out?.name ?? null,
-          teamOutLogo: transfer.teams?.out?.logo ?? null,
+          teamOutLogo: transfer.teams?.out?.logo ?? null
         });
       }
     }
@@ -68,8 +67,9 @@ export let getTransfersTool = SlateTool.create(
     return {
       output: {
         transfers: allTransfers,
-        count: allTransfers.length,
+        count: allTransfers.length
       },
-      message: `Found **${allTransfers.length}** transfer(s)${ctx.input.player ? ` for player #${ctx.input.player}` : ''}${ctx.input.team ? ` for team #${ctx.input.team}` : ''}.`,
+      message: `Found **${allTransfers.length}** transfer(s)${ctx.input.player ? ` for player #${ctx.input.player}` : ''}${ctx.input.team ? ` for team #${ctx.input.team}` : ''}.`
     };
-  }).build();
+  })
+  .build();

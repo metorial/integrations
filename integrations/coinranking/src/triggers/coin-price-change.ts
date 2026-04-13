@@ -3,45 +3,47 @@ import { CoinrankingClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let coinPriceChangeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Coin Price Change',
-    key: 'coin_price_change',
-    description: 'Monitors cryptocurrency prices and triggers when a new price is detected. Polls the Coinranking API at regular intervals and emits events with the latest price data for tracked coins.',
-  },
-)
-  .input(z.object({
-    coinUuid: z.string().describe('UUID of the coin'),
-    coinSymbol: z.string().describe('Ticker symbol of the coin'),
-    coinName: z.string().describe('Name of the coin'),
-    price: z.string().describe('Current price of the coin'),
-    change: z.string().nullable().describe('Price change percentage over the period'),
-    marketCap: z.string().nullable().describe('Current market capitalization'),
-    volume24h: z.string().nullable().describe('24-hour trading volume'),
-    rank: z.number().nullable().describe('Current rank by market cap'),
-    timestamp: z.number().describe('Timestamp when the price was captured'),
-  }))
-  .output(z.object({
-    coinUuid: z.string().describe('UUID of the coin'),
-    coinSymbol: z.string().describe('Ticker symbol of the coin'),
-    coinName: z.string().describe('Name of the coin'),
-    price: z.string().describe('Current price of the coin'),
-    change: z.string().nullable().describe('Price change percentage'),
-    marketCap: z.string().nullable().describe('Current market capitalization'),
-    volume24h: z.string().nullable().describe('24-hour trading volume'),
-    rank: z.number().nullable().describe('Current rank by market cap'),
-    timestamp: z.number().describe('Timestamp when the price was captured'),
-  }))
+export let coinPriceChangeTrigger = SlateTrigger.create(spec, {
+  name: 'Coin Price Change',
+  key: 'coin_price_change',
+  description:
+    'Monitors cryptocurrency prices and triggers when a new price is detected. Polls the Coinranking API at regular intervals and emits events with the latest price data for tracked coins.'
+})
+  .input(
+    z.object({
+      coinUuid: z.string().describe('UUID of the coin'),
+      coinSymbol: z.string().describe('Ticker symbol of the coin'),
+      coinName: z.string().describe('Name of the coin'),
+      price: z.string().describe('Current price of the coin'),
+      change: z.string().nullable().describe('Price change percentage over the period'),
+      marketCap: z.string().nullable().describe('Current market capitalization'),
+      volume24h: z.string().nullable().describe('24-hour trading volume'),
+      rank: z.number().nullable().describe('Current rank by market cap'),
+      timestamp: z.number().describe('Timestamp when the price was captured')
+    })
+  )
+  .output(
+    z.object({
+      coinUuid: z.string().describe('UUID of the coin'),
+      coinSymbol: z.string().describe('Ticker symbol of the coin'),
+      coinName: z.string().describe('Name of the coin'),
+      price: z.string().describe('Current price of the coin'),
+      change: z.string().nullable().describe('Price change percentage'),
+      marketCap: z.string().nullable().describe('Current market capitalization'),
+      volume24h: z.string().nullable().describe('24-hour trading volume'),
+      rank: z.number().nullable().describe('Current rank by market cap'),
+      timestamp: z.number().describe('Timestamp when the price was captured')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CoinrankingClient({
         token: ctx.auth.token,
-        referenceCurrencyUuid: ctx.config.referenceCurrencyUuid,
+        referenceCurrencyUuid: ctx.config.referenceCurrencyUuid
       });
 
       let previousPrices = (ctx.state?.prices as Record<string, string>) || {};
@@ -49,7 +51,7 @@ export let coinPriceChangeTrigger = SlateTrigger.create(
       let result = await client.listCoins({
         limit: 50,
         orderBy: 'marketCap',
-        orderDirection: 'desc',
+        orderDirection: 'desc'
       });
 
       let coins = result.data?.coins || [];
@@ -82,7 +84,7 @@ export let coinPriceChangeTrigger = SlateTrigger.create(
             marketCap: coin.marketCap || null,
             volume24h: coin['24hVolume'] || null,
             rank: coin.rank ?? null,
-            timestamp: now,
+            timestamp: now
           });
         }
       }
@@ -90,12 +92,12 @@ export let coinPriceChangeTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          prices: newPrices,
-        },
+          prices: newPrices
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'coin.price_changed',
         id: `${ctx.input.coinUuid}-${ctx.input.timestamp}`,
@@ -108,8 +110,9 @@ export let coinPriceChangeTrigger = SlateTrigger.create(
           marketCap: ctx.input.marketCap,
           volume24h: ctx.input.volume24h,
           rank: ctx.input.rank,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

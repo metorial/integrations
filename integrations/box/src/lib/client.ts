@@ -83,16 +83,24 @@ export class Client {
   async lockFile(fileId: string, expiresAt?: string): Promise<any> {
     let lock: Record<string, any> = { type: 'lock' };
     if (expiresAt) lock.expires_at = expiresAt;
-    let response = await api.put(`/files/${fileId}`, { lock }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.put(
+      `/files/${fileId}`,
+      { lock },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async unlockFile(fileId: string): Promise<any> {
-    let response = await api.put(`/files/${fileId}`, { lock: null }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.put(
+      `/files/${fileId}`,
+      { lock: null },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -117,11 +125,14 @@ export class Client {
     return response.data;
   }
 
-  async getFolderItems(folderId: string, options?: {
-    limit?: number;
-    offset?: number;
-    fields?: string[];
-  }): Promise<any> {
+  async getFolderItems(
+    folderId: string,
+    options?: {
+      limit?: number;
+      offset?: number;
+      fields?: string[];
+    }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.limit) params.limit = String(options.limit);
     if (options?.offset) params.offset = String(options.offset);
@@ -136,12 +147,16 @@ export class Client {
   }
 
   async createFolder(parentFolderId: string, name: string): Promise<any> {
-    let response = await api.post('/folders', {
-      name,
-      parent: { id: parentFolderId }
-    }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.post(
+      '/folders',
+      {
+        name,
+        parent: { id: parentFolderId }
+      },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -170,21 +185,25 @@ export class Client {
 
   // ─── Search ───
 
-  async search(query: string, options?: {
-    fileExtensions?: string[];
-    contentTypes?: string[];
-    ancestorFolderIds?: string[];
-    createdAtRange?: string;
-    updatedAtRange?: string;
-    ownerUserIds?: string[];
-    type?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
+  async search(
+    query: string,
+    options?: {
+      fileExtensions?: string[];
+      contentTypes?: string[];
+      ancestorFolderIds?: string[];
+      createdAtRange?: string;
+      updatedAtRange?: string;
+      ownerUserIds?: string[];
+      type?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any> {
     let params: Record<string, string> = { query };
     if (options?.fileExtensions) params.file_extensions = options.fileExtensions.join(',');
     if (options?.contentTypes) params.content_types = options.contentTypes.join(',');
-    if (options?.ancestorFolderIds) params.ancestor_folder_ids = options.ancestorFolderIds.join(',');
+    if (options?.ancestorFolderIds)
+      params.ancestor_folder_ids = options.ancestorFolderIds.join(',');
     if (options?.createdAtRange) params.created_at_range = options.createdAtRange;
     if (options?.updatedAtRange) params.updated_at_range = options.updatedAtRange;
     if (options?.ownerUserIds) params.owner_user_ids = options.ownerUserIds.join(',');
@@ -201,18 +220,27 @@ export class Client {
 
   // ─── Collaborations ───
 
-  async createCollaboration(itemType: string, itemId: string, accessibleBy: {
-    type: string;
-    id?: string;
-    login?: string;
-  }, role: string): Promise<any> {
-    let response = await api.post('/collaborations', {
-      item: { type: itemType, id: itemId },
-      accessible_by: accessibleBy,
-      role
-    }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+  async createCollaboration(
+    itemType: string,
+    itemId: string,
+    accessibleBy: {
+      type: string;
+      id?: string;
+      login?: string;
+    },
+    role: string
+  ): Promise<any> {
+    let response = await api.post(
+      '/collaborations',
+      {
+        item: { type: itemType, id: itemId },
+        accessible_by: accessibleBy,
+        role
+      },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -223,7 +251,11 @@ export class Client {
     return response.data;
   }
 
-  async updateCollaboration(collaborationId: string, role: string, status?: string): Promise<any> {
+  async updateCollaboration(
+    collaborationId: string,
+    role: string,
+    status?: string
+  ): Promise<any> {
     let body: Record<string, any> = { role };
     if (status) body.status = status;
     let response = await api.put(`/collaborations/${collaborationId}`, body, {
@@ -254,62 +286,89 @@ export class Client {
 
   // ─── Shared Links ───
 
-  async createFileSharedLink(fileId: string, options?: {
-    access?: string;
-    password?: string;
-    unsharedAt?: string;
-    permissions?: { canDownload?: boolean; canPreview?: boolean; canEdit?: boolean };
-  }): Promise<any> {
+  async createFileSharedLink(
+    fileId: string,
+    options?: {
+      access?: string;
+      password?: string;
+      unsharedAt?: string;
+      permissions?: { canDownload?: boolean; canPreview?: boolean; canEdit?: boolean };
+    }
+  ): Promise<any> {
     let sharedLink: Record<string, any> = {};
     if (options?.access) sharedLink.access = options.access;
     if (options?.password) sharedLink.password = options.password;
     if (options?.unsharedAt) sharedLink.unshared_at = options.unsharedAt;
     if (options?.permissions) {
       sharedLink.permissions = {};
-      if (options.permissions.canDownload !== undefined) sharedLink.permissions.can_download = options.permissions.canDownload;
-      if (options.permissions.canPreview !== undefined) sharedLink.permissions.can_preview = options.permissions.canPreview;
-      if (options.permissions.canEdit !== undefined) sharedLink.permissions.can_edit = options.permissions.canEdit;
+      if (options.permissions.canDownload !== undefined)
+        sharedLink.permissions.can_download = options.permissions.canDownload;
+      if (options.permissions.canPreview !== undefined)
+        sharedLink.permissions.can_preview = options.permissions.canPreview;
+      if (options.permissions.canEdit !== undefined)
+        sharedLink.permissions.can_edit = options.permissions.canEdit;
     }
-    let response = await api.put(`/files/${fileId}`, { shared_link: sharedLink }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-      params: { fields: 'shared_link' }
-    });
+    let response = await api.put(
+      `/files/${fileId}`,
+      { shared_link: sharedLink },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' },
+        params: { fields: 'shared_link' }
+      }
+    );
     return response.data;
   }
 
-  async createFolderSharedLink(folderId: string, options?: {
-    access?: string;
-    password?: string;
-    unsharedAt?: string;
-    permissions?: { canDownload?: boolean; canPreview?: boolean };
-  }): Promise<any> {
+  async createFolderSharedLink(
+    folderId: string,
+    options?: {
+      access?: string;
+      password?: string;
+      unsharedAt?: string;
+      permissions?: { canDownload?: boolean; canPreview?: boolean };
+    }
+  ): Promise<any> {
     let sharedLink: Record<string, any> = {};
     if (options?.access) sharedLink.access = options.access;
     if (options?.password) sharedLink.password = options.password;
     if (options?.unsharedAt) sharedLink.unshared_at = options.unsharedAt;
     if (options?.permissions) {
       sharedLink.permissions = {};
-      if (options.permissions.canDownload !== undefined) sharedLink.permissions.can_download = options.permissions.canDownload;
-      if (options.permissions.canPreview !== undefined) sharedLink.permissions.can_preview = options.permissions.canPreview;
+      if (options.permissions.canDownload !== undefined)
+        sharedLink.permissions.can_download = options.permissions.canDownload;
+      if (options.permissions.canPreview !== undefined)
+        sharedLink.permissions.can_preview = options.permissions.canPreview;
     }
-    let response = await api.put(`/folders/${folderId}`, { shared_link: sharedLink }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-      params: { fields: 'shared_link' }
-    });
+    let response = await api.put(
+      `/folders/${folderId}`,
+      { shared_link: sharedLink },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' },
+        params: { fields: 'shared_link' }
+      }
+    );
     return response.data;
   }
 
   async removeFileSharedLink(fileId: string): Promise<any> {
-    let response = await api.put(`/files/${fileId}`, { shared_link: null }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.put(
+      `/files/${fileId}`,
+      { shared_link: null },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async removeFolderSharedLink(folderId: string): Promise<any> {
-    let response = await api.put(`/folders/${folderId}`, { shared_link: null }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.put(
+      `/folders/${folderId}`,
+      { shared_link: null },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -335,9 +394,13 @@ export class Client {
   }
 
   async updateComment(commentId: string, message: string): Promise<any> {
-    let response = await api.put(`/comments/${commentId}`, { message }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.put(
+      `/comments/${commentId}`,
+      { message },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -349,11 +412,14 @@ export class Client {
 
   // ─── Tasks ───
 
-  async createTask(fileId: string, options: {
-    message?: string;
-    dueAt?: string;
-    action?: string;
-  }): Promise<any> {
+  async createTask(
+    fileId: string,
+    options: {
+      message?: string;
+      dueAt?: string;
+      action?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       item: { type: 'file', id: fileId },
       action: options.action || 'review'
@@ -373,13 +439,20 @@ export class Client {
     return response.data.entries || [];
   }
 
-  async createTaskAssignment(taskId: string, assignTo: { id?: string; login?: string }): Promise<any> {
-    let response = await api.post('/task_assignments', {
-      task: { type: 'task', id: taskId },
-      assign_to: assignTo
-    }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+  async createTaskAssignment(
+    taskId: string,
+    assignTo: { id?: string; login?: string }
+  ): Promise<any> {
+    let response = await api.post(
+      '/task_assignments',
+      {
+        task: { type: 'task', id: taskId },
+        assign_to: assignTo
+      },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -412,21 +485,39 @@ export class Client {
     return response.data.entries || [];
   }
 
-  async applyFileMetadata(fileId: string, scope: string, templateKey: string, metadata: Record<string, any>): Promise<any> {
-    let response = await api.post(`/files/${fileId}/metadata/${scope}/${templateKey}`, metadata, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+  async applyFileMetadata(
+    fileId: string,
+    scope: string,
+    templateKey: string,
+    metadata: Record<string, any>
+  ): Promise<any> {
+    let response = await api.post(
+      `/files/${fileId}/metadata/${scope}/${templateKey}`,
+      metadata,
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
-  async updateFileMetadata(fileId: string, scope: string, templateKey: string, operations: Array<{
-    op: string;
-    path: string;
-    value?: any;
-  }>): Promise<any> {
-    let response = await api.put(`/files/${fileId}/metadata/${scope}/${templateKey}`, operations, {
-      headers: { ...this.headers, 'Content-Type': 'application/json-patch+json' }
-    });
+  async updateFileMetadata(
+    fileId: string,
+    scope: string,
+    templateKey: string,
+    operations: Array<{
+      op: string;
+      path: string;
+      value?: any;
+    }>
+  ): Promise<any> {
+    let response = await api.put(
+      `/files/${fileId}/metadata/${scope}/${templateKey}`,
+      operations,
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json-patch+json' }
+      }
+    );
     return response.data;
   }
 
@@ -491,14 +582,23 @@ export class Client {
 
   // ─── Webhooks ───
 
-  async createWebhook(targetType: string, targetId: string, address: string, triggers: string[]): Promise<any> {
-    let response = await api.post('/webhooks', {
-      target: { type: targetType, id: targetId },
-      address,
-      triggers
-    }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+  async createWebhook(
+    targetType: string,
+    targetId: string,
+    address: string,
+    triggers: string[]
+  ): Promise<any> {
+    let response = await api.post(
+      '/webhooks',
+      {
+        target: { type: targetType, id: targetId },
+        address,
+        triggers
+      },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -550,7 +650,8 @@ export class Client {
     if (options.name) body.name = options.name;
     if (options.emailSubject) body.email_subject = options.emailSubject;
     if (options.emailMessage) body.email_message = options.emailMessage;
-    if (options.isDocumentPreparationNeeded !== undefined) body.is_document_preparation_needed = options.isDocumentPreparationNeeded;
+    if (options.isDocumentPreparationNeeded !== undefined)
+      body.is_document_preparation_needed = options.isDocumentPreparationNeeded;
     if (options.daysValid) body.days_valid = options.daysValid;
 
     let response = await api.post('/sign_requests', body, {
@@ -578,9 +679,13 @@ export class Client {
   }
 
   async cancelSignRequest(signRequestId: string): Promise<any> {
-    let response = await api.post(`/sign_requests/${signRequestId}/cancel`, {}, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await api.post(
+      `/sign_requests/${signRequestId}/cancel`,
+      {},
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -610,7 +715,12 @@ export class Client {
 
   // ─── Web Links ───
 
-  async createWebLink(url: string, parentFolderId: string, name?: string, description?: string): Promise<any> {
+  async createWebLink(
+    url: string,
+    parentFolderId: string,
+    name?: string,
+    description?: string
+  ): Promise<any> {
     let body: Record<string, any> = {
       url,
       parent: { id: parentFolderId }

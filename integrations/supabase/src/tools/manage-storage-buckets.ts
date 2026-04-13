@@ -3,50 +3,72 @@ import { ManagementClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageStorageBuckets = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Storage Buckets',
-    key: 'manage_storage_buckets',
-    description: `List, get, create, update, empty, or delete storage buckets in a Supabase project. Buckets organize files and control access policies.`,
-    tags: {
-      destructive: true,
-    },
+export let manageStorageBuckets = SlateTool.create(spec, {
+  name: 'Manage Storage Buckets',
+  key: 'manage_storage_buckets',
+  description: `List, get, create, update, empty, or delete storage buckets in a Supabase project. Buckets organize files and control access policies.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    projectRef: z.string().optional().describe('Project reference ID (uses config.projectRef if not provided)'),
-    action: z.enum(['list', 'get', 'create', 'update', 'empty', 'delete']).describe('Action to perform'),
-    bucketId: z.string().optional().describe('Bucket ID (required for get, update, empty, delete)'),
-    name: z.string().optional().describe('Bucket name (required for create)'),
-    isPublic: z.boolean().optional().describe('Whether the bucket is publicly accessible'),
-    fileSizeLimit: z.number().optional().describe('Maximum file size in bytes'),
-    allowedMimeTypes: z.array(z.string()).optional().describe('Allowed MIME types for uploads'),
-  }))
-  .output(z.object({
-    buckets: z.array(z.object({
-      bucketId: z.string().describe('Bucket ID'),
-      name: z.string().describe('Bucket name'),
-      isPublic: z.boolean().describe('Whether the bucket is public'),
-      fileSizeLimit: z.number().optional().describe('File size limit in bytes'),
-      allowedMimeTypes: z.array(z.string()).optional().describe('Allowed MIME types'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of buckets (for list action)'),
-    bucket: z.object({
-      bucketId: z.string().describe('Bucket ID'),
-      name: z.string().describe('Bucket name'),
-      isPublic: z.boolean().describe('Whether the bucket is public'),
-      fileSizeLimit: z.number().optional().describe('File size limit in bytes'),
-      allowedMimeTypes: z.array(z.string()).optional().describe('Allowed MIME types'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    }).optional().describe('Bucket details'),
-    deleted: z.boolean().optional().describe('Whether the bucket was deleted'),
-    emptied: z.boolean().optional().describe('Whether the bucket was emptied'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectRef: z
+        .string()
+        .optional()
+        .describe('Project reference ID (uses config.projectRef if not provided)'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'empty', 'delete'])
+        .describe('Action to perform'),
+      bucketId: z
+        .string()
+        .optional()
+        .describe('Bucket ID (required for get, update, empty, delete)'),
+      name: z.string().optional().describe('Bucket name (required for create)'),
+      isPublic: z.boolean().optional().describe('Whether the bucket is publicly accessible'),
+      fileSizeLimit: z.number().optional().describe('Maximum file size in bytes'),
+      allowedMimeTypes: z
+        .array(z.string())
+        .optional()
+        .describe('Allowed MIME types for uploads')
+    })
+  )
+  .output(
+    z.object({
+      buckets: z
+        .array(
+          z.object({
+            bucketId: z.string().describe('Bucket ID'),
+            name: z.string().describe('Bucket name'),
+            isPublic: z.boolean().describe('Whether the bucket is public'),
+            fileSizeLimit: z.number().optional().describe('File size limit in bytes'),
+            allowedMimeTypes: z.array(z.string()).optional().describe('Allowed MIME types'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of buckets (for list action)'),
+      bucket: z
+        .object({
+          bucketId: z.string().describe('Bucket ID'),
+          name: z.string().describe('Bucket name'),
+          isPublic: z.boolean().describe('Whether the bucket is public'),
+          fileSizeLimit: z.number().optional().describe('File size limit in bytes'),
+          allowedMimeTypes: z.array(z.string()).optional().describe('Allowed MIME types'),
+          createdAt: z.string().optional().describe('Creation timestamp')
+        })
+        .optional()
+        .describe('Bucket details'),
+      deleted: z.boolean().optional().describe('Whether the bucket was deleted'),
+      emptied: z.boolean().optional().describe('Whether the bucket was emptied')
+    })
+  )
+  .handleInvocation(async ctx => {
     let projectRef = ctx.input.projectRef ?? ctx.config.projectRef;
     if (!projectRef) {
-      throw new Error('projectRef is required — provide it as input or set it in the configuration');
+      throw new Error(
+        'projectRef is required — provide it as input or set it in the configuration'
+      );
     }
 
     let client = new ManagementClient(ctx.auth.token);
@@ -58,7 +80,7 @@ export let manageStorageBuckets = SlateTool.create(
       isPublic: b.public ?? false,
       fileSizeLimit: b.file_size_limit ?? undefined,
       allowedMimeTypes: b.allowed_mime_types ?? undefined,
-      createdAt: b.created_at ?? undefined,
+      createdAt: b.created_at ?? undefined
     });
 
     if (action === 'list') {
@@ -67,7 +89,7 @@ export let manageStorageBuckets = SlateTool.create(
 
       return {
         output: { buckets },
-        message: `Found **${buckets.length}** storage buckets in project **${projectRef}**.`,
+        message: `Found **${buckets.length}** storage buckets in project **${projectRef}**.`
       };
     }
 
@@ -76,7 +98,7 @@ export let manageStorageBuckets = SlateTool.create(
       let b = await client.getStorageBucket(projectRef, ctx.input.bucketId);
       return {
         output: { bucket: mapBucket(b) },
-        message: `Retrieved bucket **${b.name ?? ctx.input.bucketId}**.`,
+        message: `Retrieved bucket **${b.name ?? ctx.input.bucketId}**.`
       };
     }
 
@@ -86,11 +108,17 @@ export let manageStorageBuckets = SlateTool.create(
         name: ctx.input.name,
         public: ctx.input.isPublic,
         fileSizeLimit: ctx.input.fileSizeLimit,
-        allowedMimeTypes: ctx.input.allowedMimeTypes,
+        allowedMimeTypes: ctx.input.allowedMimeTypes
       });
       return {
-        output: { bucket: mapBucket({ ...b, name: ctx.input.name, public: ctx.input.isPublic ?? false }) },
-        message: `Created storage bucket **${ctx.input.name}**.`,
+        output: {
+          bucket: mapBucket({
+            ...b,
+            name: ctx.input.name,
+            public: ctx.input.isPublic ?? false
+          })
+        },
+        message: `Created storage bucket **${ctx.input.name}**.`
       };
     }
 
@@ -99,11 +127,11 @@ export let manageStorageBuckets = SlateTool.create(
       let b = await client.updateStorageBucket(projectRef, ctx.input.bucketId, {
         public: ctx.input.isPublic,
         fileSizeLimit: ctx.input.fileSizeLimit,
-        allowedMimeTypes: ctx.input.allowedMimeTypes,
+        allowedMimeTypes: ctx.input.allowedMimeTypes
       });
       return {
         output: { bucket: mapBucket(b) },
-        message: `Updated storage bucket **${ctx.input.bucketId}**.`,
+        message: `Updated storage bucket **${ctx.input.bucketId}**.`
       };
     }
 
@@ -112,7 +140,7 @@ export let manageStorageBuckets = SlateTool.create(
       await client.emptyStorageBucket(projectRef, ctx.input.bucketId);
       return {
         output: { emptied: true },
-        message: `Emptied storage bucket **${ctx.input.bucketId}**.`,
+        message: `Emptied storage bucket **${ctx.input.bucketId}**.`
       };
     }
 
@@ -121,6 +149,7 @@ export let manageStorageBuckets = SlateTool.create(
     await client.deleteStorageBucket(projectRef, ctx.input.bucketId);
     return {
       output: { deleted: true },
-      message: `Deleted storage bucket **${ctx.input.bucketId}**.`,
+      message: `Deleted storage bucket **${ctx.input.bucketId}**.`
     };
-  }).build();
+  })
+  .build();

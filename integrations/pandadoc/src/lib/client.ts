@@ -10,16 +10,15 @@ export class PandaDocClient {
   private axios: AxiosInstance;
 
   constructor(private config: ClientConfig) {
-    let authHeader = config.authType === 'api_key'
-      ? `API-Key ${config.token}`
-      : `Bearer ${config.token}`;
+    let authHeader =
+      config.authType === 'api_key' ? `API-Key ${config.token}` : `Bearer ${config.token}`;
 
     this.axios = createAxios({
       baseURL: 'https://api.pandadoc.com',
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -60,7 +59,7 @@ export class PandaDocClient {
   async downloadDocument(documentId: string): Promise<{ url: string }> {
     let response = await this.axios.get(`/public/v1/documents/${documentId}/download`, {
       maxRedirects: 0,
-      validateStatus: (status: number) => status >= 200 && status < 400,
+      validateStatus: (status: number) => status >= 200 && status < 400
     });
     if (response.status === 302 || response.status === 301) {
       return { url: response.headers.location || response.headers.Location };
@@ -68,7 +67,10 @@ export class PandaDocClient {
     return { url: response.data?.url || response.request?.responseURL || '' };
   }
 
-  async createDocumentLink(documentId: string, params: CreateDocumentLinkParams): Promise<any> {
+  async createDocumentLink(
+    documentId: string,
+    params: CreateDocumentLinkParams
+  ): Promise<any> {
     let response = await this.axios.post(`/public/v1/documents/${documentId}/session`, params);
     return response.data;
   }
@@ -83,7 +85,7 @@ export class PandaDocClient {
 
   async transferDocumentOwnership(documentId: string, membershipId: string): Promise<void> {
     await this.axios.patch(`/public/v1/documents/${documentId}/ownership`, {
-      membership_id: membershipId,
+      membership_id: membershipId
     });
   }
 
@@ -94,12 +96,18 @@ export class PandaDocClient {
   // ─── Document Recipients ─────────────────────────────────────────────
 
   async addRecipient(documentId: string, params: any): Promise<any> {
-    let response = await this.axios.post(`/public/v1/documents/${documentId}/recipients`, params);
+    let response = await this.axios.post(
+      `/public/v1/documents/${documentId}/recipients`,
+      params
+    );
     return response.data;
   }
 
   async updateRecipient(documentId: string, recipientId: string, params: any): Promise<any> {
-    let response = await this.axios.patch(`/public/v1/documents/${documentId}/recipients/${recipientId}`, params);
+    let response = await this.axios.patch(
+      `/public/v1/documents/${documentId}/recipients/${recipientId}`,
+      params
+    );
     return response.data;
   }
 
@@ -110,7 +118,10 @@ export class PandaDocClient {
   // ─── Linked Objects ──────────────────────────────────────────────────
 
   async createLinkedObject(documentId: string, params: any): Promise<any> {
-    let response = await this.axios.post(`/public/v1/documents/${documentId}/linked-objects`, params);
+    let response = await this.axios.post(
+      `/public/v1/documents/${documentId}/linked-objects`,
+      params
+    );
     return response.data;
   }
 
@@ -120,7 +131,9 @@ export class PandaDocClient {
   }
 
   async deleteLinkedObject(documentId: string, linkedObjectId: string): Promise<void> {
-    await this.axios.delete(`/public/v1/documents/${documentId}/linked-objects/${linkedObjectId}`);
+    await this.axios.delete(
+      `/public/v1/documents/${documentId}/linked-objects/${linkedObjectId}`
+    );
   }
 
   // ─── Templates ───────────────────────────────────────────────────────
@@ -168,7 +181,11 @@ export class PandaDocClient {
 
   // ─── Content Library ─────────────────────────────────────────────────
 
-  async listContentLibraryItems(params?: { q?: string; count?: number; page?: number }): Promise<any> {
+  async listContentLibraryItems(params?: {
+    q?: string;
+    count?: number;
+    page?: number;
+  }): Promise<any> {
     let response = await this.axios.get('/public/v1/content-library-items', { params });
     return response.data;
   }
@@ -180,7 +197,11 @@ export class PandaDocClient {
 
   // ─── Folders ─────────────────────────────────────────────────────────
 
-  async listDocumentFolders(params?: { parent_uuid?: string; count?: number; page?: number }): Promise<any> {
+  async listDocumentFolders(params?: {
+    parent_uuid?: string;
+    count?: number;
+    page?: number;
+  }): Promise<any> {
     let response = await this.axios.get('/public/v1/documents/folders', { params });
     return response.data;
   }
@@ -190,7 +211,11 @@ export class PandaDocClient {
     return response.data;
   }
 
-  async listTemplateFolders(params?: { parent_uuid?: string; count?: number; page?: number }): Promise<any> {
+  async listTemplateFolders(params?: {
+    parent_uuid?: string;
+    count?: number;
+    page?: number;
+  }): Promise<any> {
     let response = await this.axios.get('/public/v1/templates/folders', { params });
     return response.data;
   }
@@ -231,8 +256,14 @@ export class PandaDocClient {
     return response.data;
   }
 
-  async updateWebhookSubscription(subscriptionId: string, params: Partial<CreateWebhookParams>): Promise<any> {
-    let response = await this.axios.patch(`/public/v1/webhook-subscriptions/${subscriptionId}`, params);
+  async updateWebhookSubscription(
+    subscriptionId: string,
+    params: Partial<CreateWebhookParams>
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      `/public/v1/webhook-subscriptions/${subscriptionId}`,
+      params
+    );
     return response.data;
   }
 

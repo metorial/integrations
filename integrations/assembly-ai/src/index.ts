@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   submitTranscription,
@@ -11,11 +10,9 @@ import {
   searchTranscript,
   getRedactedAudio,
   lemurTask,
-  createStreamingToken,
+  createStreamingToken
 } from './tools';
-import { transcriptionCompleted,
-  inboundWebhook,
-} from './triggers';
+import { transcriptionCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     searchTranscript,
     getRedactedAudio,
     lemurTask,
-    createStreamingToken,
+    createStreamingToken
   ],
-  triggers: [
-    inboundWebhook,
-    transcriptionCompleted,
-  ],
+  triggers: [inboundWebhook, transcriptionCompleted]
 });

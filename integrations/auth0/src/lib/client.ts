@@ -8,8 +8,8 @@ export class Auth0Client {
       baseURL: `https://${params.domain}/api/v2`,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -36,8 +36,8 @@ export class Auth0Client {
         connection: params?.connection,
         fields: params?.fields,
         include_fields: params?.includeFields,
-        search_engine: params?.searchEngine ?? 'v3',
-      },
+        search_engine: params?.searchEngine ?? 'v3'
+      }
     });
     return response.data;
   }
@@ -71,29 +71,32 @@ export class Auth0Client {
       blocked: data.blocked,
       email_verified: data.emailVerified,
       verify_email: data.verifyEmail,
-      phone_verified: data.phoneVerified,
+      phone_verified: data.phoneVerified
     });
     return response.data;
   }
 
-  async updateUser(userId: string, data: {
-    email?: string;
-    password?: string;
-    username?: string;
-    phoneNumber?: string;
-    userMetadata?: Record<string, unknown>;
-    appMetadata?: Record<string, unknown>;
-    blocked?: boolean;
-    emailVerified?: boolean;
-    phoneVerified?: boolean;
-    connection?: string;
-    clientId?: string;
-    name?: string;
-    nickname?: string;
-    picture?: string;
-    givenName?: string;
-    familyName?: string;
-  }) {
+  async updateUser(
+    userId: string,
+    data: {
+      email?: string;
+      password?: string;
+      username?: string;
+      phoneNumber?: string;
+      userMetadata?: Record<string, unknown>;
+      appMetadata?: Record<string, unknown>;
+      blocked?: boolean;
+      emailVerified?: boolean;
+      phoneVerified?: boolean;
+      connection?: string;
+      clientId?: string;
+      name?: string;
+      nickname?: string;
+      picture?: string;
+      givenName?: string;
+      familyName?: string;
+    }
+  ) {
     let response = await this.http.patch(`/users/${encodeURIComponent(userId)}`, {
       email: data.email,
       password: data.password,
@@ -110,7 +113,7 @@ export class Auth0Client {
       nickname: data.nickname,
       picture: data.picture,
       given_name: data.givenName,
-      family_name: data.familyName,
+      family_name: data.familyName
     });
     return response.data;
   }
@@ -121,60 +124,71 @@ export class Auth0Client {
 
   async getUserRoles(userId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.http.get(`/users/${encodeURIComponent(userId)}/roles`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   async assignUserRoles(userId: string, roleIds: string[]) {
     await this.http.post(`/users/${encodeURIComponent(userId)}/roles`, {
-      roles: roleIds,
+      roles: roleIds
     });
   }
 
   async removeUserRoles(userId: string, roleIds: string[]) {
     await this.http.delete(`/users/${encodeURIComponent(userId)}/roles`, {
-      data: { roles: roleIds },
+      data: { roles: roleIds }
     });
   }
 
   async getUserPermissions(userId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.http.get(`/users/${encodeURIComponent(userId)}/permissions`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async assignUserPermissions(userId: string, permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>) {
+  async assignUserPermissions(
+    userId: string,
+    permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>
+  ) {
     await this.http.post(`/users/${encodeURIComponent(userId)}/permissions`, {
       permissions: permissions.map(p => ({
         resource_server_identifier: p.resourceServerIdentifier,
-        permission_name: p.permissionName,
-      })),
+        permission_name: p.permissionName
+      }))
     });
   }
 
-  async removeUserPermissions(userId: string, permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>) {
+  async removeUserPermissions(
+    userId: string,
+    permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>
+  ) {
     await this.http.delete(`/users/${encodeURIComponent(userId)}/permissions`, {
       data: {
         permissions: permissions.map(p => ({
           resource_server_identifier: p.resourceServerIdentifier,
-          permission_name: p.permissionName,
-        })),
-      },
+          permission_name: p.permissionName
+        }))
+      }
     });
   }
 
   // ─── Roles ───
 
-  async listRoles(params?: { page?: number; perPage?: number; includeTotals?: boolean; nameFilter?: string }) {
+  async listRoles(params?: {
+    page?: number;
+    perPage?: number;
+    includeTotals?: boolean;
+    nameFilter?: string;
+  }) {
     let response = await this.http.get('/roles', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
         include_totals: params?.includeTotals,
-        name_filter: params?.nameFilter,
-      },
+        name_filter: params?.nameFilter
+      }
     });
     return response.data;
   }
@@ -200,34 +214,47 @@ export class Auth0Client {
 
   async getRolePermissions(roleId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.http.get(`/roles/${encodeURIComponent(roleId)}/permissions`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async addRolePermissions(roleId: string, permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>) {
+  async addRolePermissions(
+    roleId: string,
+    permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>
+  ) {
     await this.http.post(`/roles/${encodeURIComponent(roleId)}/permissions`, {
       permissions: permissions.map(p => ({
         resource_server_identifier: p.resourceServerIdentifier,
-        permission_name: p.permissionName,
-      })),
+        permission_name: p.permissionName
+      }))
     });
   }
 
-  async removeRolePermissions(roleId: string, permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>) {
+  async removeRolePermissions(
+    roleId: string,
+    permissions: Array<{ resourceServerIdentifier: string; permissionName: string }>
+  ) {
     await this.http.delete(`/roles/${encodeURIComponent(roleId)}/permissions`, {
       data: {
         permissions: permissions.map(p => ({
           resource_server_identifier: p.resourceServerIdentifier,
-          permission_name: p.permissionName,
-        })),
-      },
+          permission_name: p.permissionName
+        }))
+      }
     });
   }
 
   // ─── Connections ───
 
-  async listConnections(params?: { page?: number; perPage?: number; includeTotals?: boolean; strategy?: string; name?: string; fields?: string }) {
+  async listConnections(params?: {
+    page?: number;
+    perPage?: number;
+    includeTotals?: boolean;
+    strategy?: string;
+    name?: string;
+    fields?: string;
+  }) {
     let response = await this.http.get('/connections', {
       params: {
         page: params?.page,
@@ -235,8 +262,8 @@ export class Auth0Client {
         include_totals: params?.includeTotals,
         strategy: params?.strategy,
         name: params?.name,
-        fields: params?.fields,
-      },
+        fields: params?.fields
+      }
     });
     return response.data;
   }
@@ -258,20 +285,23 @@ export class Auth0Client {
       strategy: data.strategy,
       options: data.options,
       enabled_clients: data.enabledClients,
-      metadata: data.metadata,
+      metadata: data.metadata
     });
     return response.data;
   }
 
-  async updateConnection(connectionId: string, data: {
-    options?: Record<string, unknown>;
-    enabledClients?: string[];
-    metadata?: Record<string, string>;
-  }) {
+  async updateConnection(
+    connectionId: string,
+    data: {
+      options?: Record<string, unknown>;
+      enabledClients?: string[];
+      metadata?: Record<string, string>;
+    }
+  ) {
     let response = await this.http.patch(`/connections/${encodeURIComponent(connectionId)}`, {
       options: data.options,
       enabled_clients: data.enabledClients,
-      metadata: data.metadata,
+      metadata: data.metadata
     });
     return response.data;
   }
@@ -282,15 +312,21 @@ export class Auth0Client {
 
   // ─── Applications (Clients) ───
 
-  async listClients(params?: { page?: number; perPage?: number; includeTotals?: boolean; fields?: string; appType?: string }) {
+  async listClients(params?: {
+    page?: number;
+    perPage?: number;
+    includeTotals?: boolean;
+    fields?: string;
+    appType?: string;
+  }) {
     let response = await this.http.get('/clients', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
         include_totals: params?.includeTotals,
         fields: params?.fields,
-        app_type: params?.appType,
-      },
+        app_type: params?.appType
+      }
     });
     return response.data;
   }
@@ -318,21 +354,24 @@ export class Auth0Client {
       allowed_origins: data.allowedOrigins,
       web_origins: data.webOrigins,
       allowed_logout_urls: data.allowedLogoutUrls,
-      logo_uri: data.logoUri,
+      logo_uri: data.logoUri
     });
     return response.data;
   }
 
-  async updateClient(clientId: string, data: {
-    name?: string;
-    appType?: string;
-    description?: string;
-    callbacks?: string[];
-    allowedOrigins?: string[];
-    webOrigins?: string[];
-    allowedLogoutUrls?: string[];
-    logoUri?: string;
-  }) {
+  async updateClient(
+    clientId: string,
+    data: {
+      name?: string;
+      appType?: string;
+      description?: string;
+      callbacks?: string[];
+      allowedOrigins?: string[];
+      webOrigins?: string[];
+      allowedLogoutUrls?: string[];
+      logoUri?: string;
+    }
+  ) {
     let response = await this.http.patch(`/clients/${encodeURIComponent(clientId)}`, {
       name: data.name,
       app_type: data.appType,
@@ -341,7 +380,7 @@ export class Auth0Client {
       allowed_origins: data.allowedOrigins,
       web_origins: data.webOrigins,
       allowed_logout_urls: data.allowedLogoutUrls,
-      logo_uri: data.logoUri,
+      logo_uri: data.logoUri
     });
     return response.data;
   }
@@ -352,13 +391,17 @@ export class Auth0Client {
 
   // ─── Organizations ───
 
-  async listOrganizations(params?: { page?: number; perPage?: number; includeTotals?: boolean }) {
+  async listOrganizations(params?: {
+    page?: number;
+    perPage?: number;
+    includeTotals?: boolean;
+  }) {
     let response = await this.http.get('/organizations', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        include_totals: params?.includeTotals,
-      },
+        include_totals: params?.includeTotals
+      }
     });
     return response.data;
   }
@@ -382,30 +425,40 @@ export class Auth0Client {
     let response = await this.http.post('/organizations', {
       name: data.name,
       display_name: data.displayName,
-      branding: data.branding ? {
-        logo_url: data.branding.logoUrl,
-        colors: data.branding.colors,
-      } : undefined,
-      metadata: data.metadata,
+      branding: data.branding
+        ? {
+            logo_url: data.branding.logoUrl,
+            colors: data.branding.colors
+          }
+        : undefined,
+      metadata: data.metadata
     });
     return response.data;
   }
 
-  async updateOrganization(organizationId: string, data: {
-    name?: string;
-    displayName?: string;
-    branding?: { logoUrl?: string; colors?: Record<string, string> };
-    metadata?: Record<string, string>;
-  }) {
-    let response = await this.http.patch(`/organizations/${encodeURIComponent(organizationId)}`, {
-      name: data.name,
-      display_name: data.displayName,
-      branding: data.branding ? {
-        logo_url: data.branding.logoUrl,
-        colors: data.branding.colors,
-      } : undefined,
-      metadata: data.metadata,
-    });
+  async updateOrganization(
+    organizationId: string,
+    data: {
+      name?: string;
+      displayName?: string;
+      branding?: { logoUrl?: string; colors?: Record<string, string> };
+      metadata?: Record<string, string>;
+    }
+  ) {
+    let response = await this.http.patch(
+      `/organizations/${encodeURIComponent(organizationId)}`,
+      {
+        name: data.name,
+        display_name: data.displayName,
+        branding: data.branding
+          ? {
+              logo_url: data.branding.logoUrl,
+              colors: data.branding.colors
+            }
+          : undefined,
+        metadata: data.metadata
+      }
+    );
     return response.data;
   }
 
@@ -413,22 +466,28 @@ export class Auth0Client {
     await this.http.delete(`/organizations/${encodeURIComponent(organizationId)}`);
   }
 
-  async listOrganizationMembers(organizationId: string, params?: { page?: number; perPage?: number }) {
-    let response = await this.http.get(`/organizations/${encodeURIComponent(organizationId)}/members`, {
-      params: { page: params?.page, per_page: params?.perPage },
-    });
+  async listOrganizationMembers(
+    organizationId: string,
+    params?: { page?: number; perPage?: number }
+  ) {
+    let response = await this.http.get(
+      `/organizations/${encodeURIComponent(organizationId)}/members`,
+      {
+        params: { page: params?.page, per_page: params?.perPage }
+      }
+    );
     return response.data;
   }
 
   async addOrganizationMembers(organizationId: string, memberIds: string[]) {
     await this.http.post(`/organizations/${encodeURIComponent(organizationId)}/members`, {
-      members: memberIds,
+      members: memberIds
     });
   }
 
   async removeOrganizationMembers(organizationId: string, memberIds: string[]) {
     await this.http.delete(`/organizations/${encodeURIComponent(organizationId)}/members`, {
-      data: { members: memberIds },
+      data: { members: memberIds }
     });
   }
 
@@ -455,8 +514,8 @@ export class Auth0Client {
         include_fields: params?.includeFields,
         include_totals: params?.includeTotals,
         from: params?.from,
-        take: params?.take,
-      },
+        take: params?.take
+      }
     });
     return response.data;
   }
@@ -468,19 +527,25 @@ export class Auth0Client {
 
   // ─── Resource Servers (APIs) ───
 
-  async listResourceServers(params?: { page?: number; perPage?: number; includeTotals?: boolean }) {
+  async listResourceServers(params?: {
+    page?: number;
+    perPage?: number;
+    includeTotals?: boolean;
+  }) {
     let response = await this.http.get('/resource-servers', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        include_totals: params?.includeTotals,
-      },
+        include_totals: params?.includeTotals
+      }
     });
     return response.data;
   }
 
   async getResourceServer(resourceServerId: string) {
-    let response = await this.http.get(`/resource-servers/${encodeURIComponent(resourceServerId)}`);
+    let response = await this.http.get(
+      `/resource-servers/${encodeURIComponent(resourceServerId)}`
+    );
     return response.data;
   }
 
@@ -500,27 +565,35 @@ export class Auth0Client {
       signing_alg: data.signingAlg,
       token_lifetime: data.tokenLifetime,
       token_dialect: data.tokenDialect,
-      skip_consent_for_verifiable_first_party_clients: data.skipConsentForVerifiableFirstPartyClients,
+      skip_consent_for_verifiable_first_party_clients:
+        data.skipConsentForVerifiableFirstPartyClients
     });
     return response.data;
   }
 
-  async updateResourceServer(resourceServerId: string, data: {
-    name?: string;
-    scopes?: Array<{ value: string; description?: string }>;
-    signingAlg?: string;
-    tokenLifetime?: number;
-    tokenDialect?: string;
-    skipConsentForVerifiableFirstPartyClients?: boolean;
-  }) {
-    let response = await this.http.patch(`/resource-servers/${encodeURIComponent(resourceServerId)}`, {
-      name: data.name,
-      scopes: data.scopes,
-      signing_alg: data.signingAlg,
-      token_lifetime: data.tokenLifetime,
-      token_dialect: data.tokenDialect,
-      skip_consent_for_verifiable_first_party_clients: data.skipConsentForVerifiableFirstPartyClients,
-    });
+  async updateResourceServer(
+    resourceServerId: string,
+    data: {
+      name?: string;
+      scopes?: Array<{ value: string; description?: string }>;
+      signingAlg?: string;
+      tokenLifetime?: number;
+      tokenDialect?: string;
+      skipConsentForVerifiableFirstPartyClients?: boolean;
+    }
+  ) {
+    let response = await this.http.patch(
+      `/resource-servers/${encodeURIComponent(resourceServerId)}`,
+      {
+        name: data.name,
+        scopes: data.scopes,
+        signing_alg: data.signingAlg,
+        token_lifetime: data.tokenLifetime,
+        token_dialect: data.tokenDialect,
+        skip_consent_for_verifiable_first_party_clients:
+          data.skipConsentForVerifiableFirstPartyClients
+      }
+    );
     return response.data;
   }
 
@@ -530,14 +603,19 @@ export class Auth0Client {
 
   // ─── Client Grants ───
 
-  async listClientGrants(params?: { page?: number; perPage?: number; audience?: string; clientId?: string }) {
+  async listClientGrants(params?: {
+    page?: number;
+    perPage?: number;
+    audience?: string;
+    clientId?: string;
+  }) {
     let response = await this.http.get('/client-grants', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
         audience: params?.audience,
-        client_id: params?.clientId,
-      },
+        client_id: params?.clientId
+      }
     });
     return response.data;
   }
@@ -546,14 +624,14 @@ export class Auth0Client {
     let response = await this.http.post('/client-grants', {
       client_id: data.clientId,
       audience: data.audience,
-      scope: data.scope,
+      scope: data.scope
     });
     return response.data;
   }
 
   async updateClientGrant(grantId: string, data: { scope: string[] }) {
     let response = await this.http.patch(`/client-grants/${encodeURIComponent(grantId)}`, {
-      scope: data.scope,
+      scope: data.scope
     });
     return response.data;
   }
@@ -584,7 +662,7 @@ export class Auth0Client {
       name: data.name,
       type: data.type,
       sink: data.sink,
-      filters: data.filters,
+      filters: data.filters
     });
     return response.data;
   }
@@ -600,8 +678,8 @@ export class Auth0Client {
       params: {
         triggerId: params?.triggerId,
         deployed: params?.deployed,
-        installed: params?.installed,
-      },
+        installed: params?.installed
+      }
     });
     return response.data;
   }
@@ -623,22 +701,25 @@ export class Auth0Client {
       supported_triggers: data.supportedTriggers,
       code: data.code,
       dependencies: data.dependencies,
-      secrets: data.secrets,
+      secrets: data.secrets
     });
     return response.data;
   }
 
-  async updateAction(actionId: string, data: {
-    name?: string;
-    code?: string;
-    dependencies?: Array<{ name: string; version: string }>;
-    secrets?: Array<{ name: string; value: string }>;
-  }) {
+  async updateAction(
+    actionId: string,
+    data: {
+      name?: string;
+      code?: string;
+      dependencies?: Array<{ name: string; version: string }>;
+      secrets?: Array<{ name: string; value: string }>;
+    }
+  ) {
     let response = await this.http.patch(`/actions/actions/${encodeURIComponent(actionId)}`, {
       name: data.name,
       code: data.code,
       dependencies: data.dependencies,
-      secrets: data.secrets,
+      secrets: data.secrets
     });
     return response.data;
   }
@@ -648,7 +729,9 @@ export class Auth0Client {
   }
 
   async deployAction(actionId: string) {
-    let response = await this.http.post(`/actions/actions/${encodeURIComponent(actionId)}/deploy`);
+    let response = await this.http.post(
+      `/actions/actions/${encodeURIComponent(actionId)}/deploy`
+    );
     return response.data;
   }
 }

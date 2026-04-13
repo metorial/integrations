@@ -3,51 +3,58 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { UptimeClient } from '../lib/client';
 
-export let incidentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incident Events',
-    key: 'incident_events',
-    description: 'Triggers when incidents are created, acknowledged, or resolved in Better Stack. Polls for new and updated incidents periodically.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'acknowledged', 'resolved']).describe('Type of incident event'),
-    eventId: z.string().describe('Unique event identifier for deduplication'),
-    incidentId: z.string().describe('Incident ID'),
-    name: z.string().nullable().describe('Incident name'),
-    url: z.string().nullable().describe('Affected URL'),
-    cause: z.string().nullable().describe('Incident cause'),
-    startedAt: z.string().nullable().describe('When the incident started'),
-    acknowledgedAt: z.string().nullable().describe('When acknowledged'),
-    resolvedAt: z.string().nullable().describe('When resolved'),
-    screenshotUrl: z.string().nullable().describe('Screenshot URL'),
-  }))
-  .output(z.object({
-    incidentId: z.string().describe('Incident ID'),
-    name: z.string().nullable().describe('Incident name'),
-    url: z.string().nullable().describe('Affected URL'),
-    cause: z.string().nullable().describe('Incident cause'),
-    status: z.string().describe('Current incident status'),
-    startedAt: z.string().nullable().describe('When the incident started'),
-    acknowledgedAt: z.string().nullable().describe('When acknowledged'),
-    resolvedAt: z.string().nullable().describe('When resolved'),
-    screenshotUrl: z.string().nullable().describe('Screenshot URL'),
-  }))
+export let incidentEvents = SlateTrigger.create(spec, {
+  name: 'Incident Events',
+  key: 'incident_events',
+  description:
+    'Triggers when incidents are created, acknowledged, or resolved in Better Stack. Polls for new and updated incidents periodically.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'acknowledged', 'resolved'])
+        .describe('Type of incident event'),
+      eventId: z.string().describe('Unique event identifier for deduplication'),
+      incidentId: z.string().describe('Incident ID'),
+      name: z.string().nullable().describe('Incident name'),
+      url: z.string().nullable().describe('Affected URL'),
+      cause: z.string().nullable().describe('Incident cause'),
+      startedAt: z.string().nullable().describe('When the incident started'),
+      acknowledgedAt: z.string().nullable().describe('When acknowledged'),
+      resolvedAt: z.string().nullable().describe('When resolved'),
+      screenshotUrl: z.string().nullable().describe('Screenshot URL')
+    })
+  )
+  .output(
+    z.object({
+      incidentId: z.string().describe('Incident ID'),
+      name: z.string().nullable().describe('Incident name'),
+      url: z.string().nullable().describe('Affected URL'),
+      cause: z.string().nullable().describe('Incident cause'),
+      status: z.string().describe('Current incident status'),
+      startedAt: z.string().nullable().describe('When the incident started'),
+      acknowledgedAt: z.string().nullable().describe('When acknowledged'),
+      resolvedAt: z.string().nullable().describe('When resolved'),
+      screenshotUrl: z.string().nullable().describe('Screenshot URL')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new UptimeClient({
         token: ctx.auth.token,
-        teamName: ctx.config.teamName,
+        teamName: ctx.config.teamName
       });
 
       let state = ctx.state || {};
       let lastPollTime = state.lastPollTime || null;
-      let knownIncidents: Record<string, { acknowledgedAt: string | null; resolvedAt: string | null }> = state.knownIncidents || {};
+      let knownIncidents: Record<
+        string,
+        { acknowledgedAt: string | null; resolvedAt: string | null }
+      > = state.knownIncidents || {};
 
       // Fetch recent incidents
       let params: Record<string, any> = { perPage: 50 };
@@ -58,7 +65,10 @@ export let incidentEvents = SlateTrigger.create(
       let result = await client.listIncidents(params);
       let incidents = result.data || [];
       let inputs: any[] = [];
-      let newKnownIncidents: Record<string, { acknowledgedAt: string | null; resolvedAt: string | null }> = { ...knownIncidents };
+      let newKnownIncidents: Record<
+        string,
+        { acknowledgedAt: string | null; resolvedAt: string | null }
+      > = { ...knownIncidents };
 
       for (let item of incidents) {
         let attrs = item.attributes || item;
@@ -73,7 +83,7 @@ export let incidentEvents = SlateTrigger.create(
           startedAt: attrs.started_at || null,
           acknowledgedAt: attrs.acknowledged_at || null,
           resolvedAt: attrs.resolved_at || null,
-          screenshotUrl: attrs.screenshot_url || null,
+          screenshotUrl: attrs.screenshot_url || null
         };
 
         if (!known) {
@@ -81,7 +91,7 @@ export let incidentEvents = SlateTrigger.create(
           inputs.push({
             eventType: 'created' as const,
             eventId: `${incidentId}_created_${attrs.started_at || Date.now()}`,
-            ...baseEvent,
+            ...baseEvent
           });
         }
 
@@ -90,7 +100,7 @@ export let incidentEvents = SlateTrigger.create(
           inputs.push({
             eventType: 'acknowledged' as const,
             eventId: `${incidentId}_acknowledged_${attrs.acknowledged_at}`,
-            ...baseEvent,
+            ...baseEvent
           });
         }
 
@@ -99,13 +109,13 @@ export let incidentEvents = SlateTrigger.create(
           inputs.push({
             eventType: 'resolved' as const,
             eventId: `${incidentId}_resolved_${attrs.resolved_at}`,
-            ...baseEvent,
+            ...baseEvent
           });
         }
 
         newKnownIncidents[incidentId] = {
           acknowledgedAt: attrs.acknowledged_at || null,
-          resolvedAt: attrs.resolved_at || null,
+          resolvedAt: attrs.resolved_at || null
         };
       }
 
@@ -122,16 +132,16 @@ export let incidentEvents = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: new Date().toISOString(),
-          knownIncidents: newKnownIncidents,
-        },
+          knownIncidents: newKnownIncidents
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusMap: Record<string, string> = {
         created: 'started',
         acknowledged: 'acknowledged',
-        resolved: 'resolved',
+        resolved: 'resolved'
       };
 
       return {
@@ -146,9 +156,9 @@ export let incidentEvents = SlateTrigger.create(
           startedAt: ctx.input.startedAt,
           acknowledgedAt: ctx.input.acknowledgedAt,
           resolvedAt: ctx.input.resolvedAt,
-          screenshotUrl: ctx.input.screenshotUrl,
-        },
+          screenshotUrl: ctx.input.screenshotUrl
+        }
       };
-    },
+    }
   })
   .build();

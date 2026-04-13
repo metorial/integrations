@@ -9,17 +9,17 @@ export class MezmoClient {
     this.api = createAxios({
       baseURL: 'https://api.mezmo.com',
       headers: {
-        'Authorization': `Token ${options.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${options.token}`,
+        'Content-Type': 'application/json'
+      }
     });
 
     this.ingestionApi = createAxios({
       baseURL: 'https://logs.mezmo.com',
       headers: {
         'Content-Type': 'application/json',
-        ...(options.ingestionKey ? { 'apikey': options.ingestionKey } : {}),
-      },
+        ...(options.ingestionKey ? { apikey: options.ingestionKey } : {})
+      }
     });
   }
 
@@ -43,9 +43,13 @@ export class MezmoClient {
     if (params.tags) queryParams.tags = params.tags;
     if (params.now) queryParams.now = String(params.now);
 
-    let response = await this.ingestionApi.post('/logs/ingest', { lines: params.lines }, {
-      params: queryParams,
-    });
+    let response = await this.ingestionApi.post(
+      '/logs/ingest',
+      { lines: params.lines },
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 
@@ -64,7 +68,7 @@ export class MezmoClient {
   }) {
     let queryParams: Record<string, string | number> = {
       from: params.from,
-      to: params.to,
+      to: params.to
     };
     if (params.query) queryParams.query = params.query;
     if (params.levels) queryParams.levels = params.levels;
@@ -77,7 +81,10 @@ export class MezmoClient {
     }
 
     let response = await this.api.get('/v2/export', { params: queryParams });
-    return response.data as { lines: Array<Record<string, unknown>>; pagination_id: string | null };
+    return response.data as {
+      lines: Array<Record<string, unknown>>;
+      pagination_id: string | null;
+    };
   }
 
   // --- Views ---
@@ -218,7 +225,9 @@ export class MezmoClient {
   }
 
   async confirmSuspendIngestion(suspendToken: string) {
-    let response = await this.api.post('/v1/config/ingestion/suspend/confirm', { token: suspendToken });
+    let response = await this.api.post('/v1/config/ingestion/suspend/confirm', {
+      token: suspendToken
+    });
     return response.data;
   }
 
@@ -231,35 +240,35 @@ export class MezmoClient {
 
   async getUsage(params: { from: number; to: number }) {
     let response = await this.api.get('/v1/usage', {
-      params: { from: params.from, to: params.to },
+      params: { from: params.from, to: params.to }
     });
     return response.data;
   }
 
   async getUsageByApps(params: { from: number; to: number }) {
     let response = await this.api.get('/v1/usage/apps', {
-      params: { from: params.from, to: params.to },
+      params: { from: params.from, to: params.to }
     });
     return response.data;
   }
 
   async getUsageByApp(appName: string, params: { from: number; to: number }) {
     let response = await this.api.get(`/v1/usage/apps/${encodeURIComponent(appName)}`, {
-      params: { from: params.from, to: params.to },
+      params: { from: params.from, to: params.to }
     });
     return response.data;
   }
 
   async getUsageByHosts(params: { from: number; to: number }) {
     let response = await this.api.get('/v1/usage/hosts', {
-      params: { from: params.from, to: params.to },
+      params: { from: params.from, to: params.to }
     });
     return response.data;
   }
 
   async getUsageByTags(params: { from: number; to: number }) {
     let response = await this.api.get('/v1/usage/tags', {
-      params: { from: params.from, to: params.to },
+      params: { from: params.from, to: params.to }
     });
     return response.data;
   }
@@ -290,15 +299,19 @@ export class MezmoClient {
 
   async listKeys(type?: 'ingestion' | 'service') {
     let response = await this.api.get('/v1/config/keys', {
-      params: type ? { type } : undefined,
+      params: type ? { type } : undefined
     });
     return response.data as Array<KeyResponse>;
   }
 
   async createKey(params: { name?: string; type: 'ingestion' | 'service' }) {
-    let response = await this.api.post('/v1/config/keys', { name: params.name }, {
-      params: { type: params.type },
-    });
+    let response = await this.api.post(
+      '/v1/config/keys',
+      { name: params.name },
+      {
+        params: { type: params.type }
+      }
+    );
     return response.data as KeyResponse;
   }
 

@@ -3,38 +3,39 @@ import { HarvestClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageClient = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Client',
-    key: 'manage_client',
-    description: `Create, update, or delete a client in Harvest. Clients are associated with projects and invoices.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageClient = SlateTool.create(spec, {
+  name: 'Manage Client',
+  key: 'manage_client',
+  description: `Create, update, or delete a client in Harvest. Clients are associated with projects and invoices.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    clientId: z.number().optional().describe('Client ID (required for update/delete)'),
-    name: z.string().optional().describe('Client name (required for create)'),
-    isActive: z.boolean().optional().describe('Whether the client is active'),
-    address: z.string().optional().describe('Client address'),
-    currency: z.string().optional().describe('Client currency code (e.g. USD, EUR)'),
-  }))
-  .output(z.object({
-    clientId: z.number().optional().describe('ID of the client'),
-    name: z.string().optional().describe('Client name'),
-    isActive: z.boolean().optional().describe('Whether active'),
-    address: z.string().optional().nullable().describe('Client address'),
-    currency: z.string().optional().describe('Currency code'),
-    deleted: z.boolean().optional().describe('Whether the client was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      clientId: z.number().optional().describe('Client ID (required for update/delete)'),
+      name: z.string().optional().describe('Client name (required for create)'),
+      isActive: z.boolean().optional().describe('Whether the client is active'),
+      address: z.string().optional().describe('Client address'),
+      currency: z.string().optional().describe('Client currency code (e.g. USD, EUR)')
+    })
+  )
+  .output(
+    z.object({
+      clientId: z.number().optional().describe('ID of the client'),
+      name: z.string().optional().describe('Client name'),
+      isActive: z.boolean().optional().describe('Whether active'),
+      address: z.string().optional().nullable().describe('Client address'),
+      currency: z.string().optional().describe('Currency code'),
+      deleted: z.boolean().optional().describe('Whether the client was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HarvestClient({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     if (ctx.input.action === 'delete') {
@@ -42,7 +43,7 @@ export let manageClient = SlateTool.create(
       await client.deleteClient(ctx.input.clientId);
       return {
         output: { clientId: ctx.input.clientId, deleted: true },
-        message: `Deleted client **#${ctx.input.clientId}**.`,
+        message: `Deleted client **#${ctx.input.clientId}**.`
       };
     }
 
@@ -52,7 +53,7 @@ export let manageClient = SlateTool.create(
         name: ctx.input.name,
         isActive: ctx.input.isActive,
         address: ctx.input.address,
-        currency: ctx.input.currency,
+        currency: ctx.input.currency
       });
       return {
         output: {
@@ -60,9 +61,9 @@ export let manageClient = SlateTool.create(
           name: c.name,
           isActive: c.is_active,
           address: c.address,
-          currency: c.currency,
+          currency: c.currency
         },
-        message: `Created client **${c.name}** (#${c.id}).`,
+        message: `Created client **${c.name}** (#${c.id}).`
       };
     }
 
@@ -72,7 +73,7 @@ export let manageClient = SlateTool.create(
       name: ctx.input.name,
       isActive: ctx.input.isActive,
       address: ctx.input.address,
-      currency: ctx.input.currency,
+      currency: ctx.input.currency
     });
     return {
       output: {
@@ -80,8 +81,9 @@ export let manageClient = SlateTool.create(
         name: c.name,
         isActive: c.is_active,
         address: c.address,
-        currency: c.currency,
+        currency: c.currency
       },
-      message: `Updated client **${c.name}** (#${c.id}).`,
+      message: `Updated client **${c.name}** (#${c.id}).`
     };
-  }).build();
+  })
+  .build();

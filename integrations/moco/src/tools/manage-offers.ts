@@ -52,30 +52,34 @@ let mapOffer = (o: any) => ({
   updatedAt: o.updated_at
 });
 
-export let listOffers = SlateTool.create(
-  spec,
-  {
-    name: 'List Offers',
-    key: 'list_offers',
-    description: `Retrieve a list of offers/proposals. Filter by status, company, project, deal, or date range.`,
-    tags: {
-      readOnly: true
-    }
+export let listOffers = SlateTool.create(spec, {
+  name: 'List Offers',
+  key: 'list_offers',
+  description: `Retrieve a list of offers/proposals. Filter by status, company, project, deal, or date range.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.enum(['created', 'sent', 'accepted', 'partially_billed', 'billed', 'archived']).optional().describe('Filter by offer status'),
-    companyId: z.number().optional().describe('Filter by company ID'),
-    projectId: z.number().optional().describe('Filter by project ID'),
-    dealId: z.number().optional().describe('Filter by deal ID'),
-    from: z.string().optional().describe('Filter offers from this date (YYYY-MM-DD)'),
-    to: z.string().optional().describe('Filter offers until this date (YYYY-MM-DD)'),
-    identifier: z.string().optional().describe('Filter by offer number')
-  }))
-  .output(z.object({
-    offers: z.array(offerOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['created', 'sent', 'accepted', 'partially_billed', 'billed', 'archived'])
+        .optional()
+        .describe('Filter by offer status'),
+      companyId: z.number().optional().describe('Filter by company ID'),
+      projectId: z.number().optional().describe('Filter by project ID'),
+      dealId: z.number().optional().describe('Filter by deal ID'),
+      from: z.string().optional().describe('Filter offers from this date (YYYY-MM-DD)'),
+      to: z.string().optional().describe('Filter offers until this date (YYYY-MM-DD)'),
+      identifier: z.string().optional().describe('Filter by offer number')
+    })
+  )
+  .output(
+    z.object({
+      offers: z.array(offerOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -94,24 +98,24 @@ export let listOffers = SlateTool.create(
       output: { offers },
       message: `Found **${offers.length}** offers.`
     };
-  }).build();
+  })
+  .build();
 
-export let getOffer = SlateTool.create(
-  spec,
-  {
-    name: 'Get Offer',
-    key: 'get_offer',
-    description: `Retrieve detailed information about a specific offer/proposal.`,
-    tags: {
-      readOnly: true
-    }
+export let getOffer = SlateTool.create(spec, {
+  name: 'Get Offer',
+  key: 'get_offer',
+  description: `Retrieve detailed information about a specific offer/proposal.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    offerId: z.number().describe('The ID of the offer to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      offerId: z.number().describe('The ID of the offer to retrieve')
+    })
+  )
   .output(offerOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let o = await client.getOffer(ctx.input.offerId);
 
@@ -119,34 +123,34 @@ export let getOffer = SlateTool.create(
       output: mapOffer(o),
       message: `Retrieved offer **${o.identifier || o.title}** (ID: ${o.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createOffer = SlateTool.create(
-  spec,
-  {
-    name: 'Create Offer',
-    key: 'create_offer',
-    description: `Create a new offer/proposal. Requires recipient address, dates, title, tax rate, currency, and line items.`,
-    tags: {
-      destructive: false
-    }
+export let createOffer = SlateTool.create(spec, {
+  name: 'Create Offer',
+  key: 'create_offer',
+  description: `Create a new offer/proposal. Requires recipient address, dates, title, tax rate, currency, and line items.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    recipientAddress: z.string().describe('Recipient address (multiline)'),
-    date: z.string().describe('Offer date (YYYY-MM-DD)'),
-    dueDate: z.string().describe('Valid until date (YYYY-MM-DD)'),
-    title: z.string().describe('Offer title'),
-    tax: z.number().describe('Tax percentage (e.g., 19.0)'),
-    currency: z.string().describe('Currency code (e.g., "EUR")'),
-    items: z.array(offerItemSchema).describe('Offer line items'),
-    companyId: z.number().optional().describe('Associated company ID'),
-    projectId: z.number().optional().describe('Associated project ID'),
-    dealId: z.number().optional().describe('Associated deal ID'),
-    tags: z.array(z.string()).optional().describe('Offer tags')
-  }))
+})
+  .input(
+    z.object({
+      recipientAddress: z.string().describe('Recipient address (multiline)'),
+      date: z.string().describe('Offer date (YYYY-MM-DD)'),
+      dueDate: z.string().describe('Valid until date (YYYY-MM-DD)'),
+      title: z.string().describe('Offer title'),
+      tax: z.number().describe('Tax percentage (e.g., 19.0)'),
+      currency: z.string().describe('Currency code (e.g., "EUR")'),
+      items: z.array(offerItemSchema).describe('Offer line items'),
+      companyId: z.number().optional().describe('Associated company ID'),
+      projectId: z.number().optional().describe('Associated project ID'),
+      dealId: z.number().optional().describe('Associated deal ID'),
+      tags: z.array(z.string()).optional().describe('Offer tags')
+    })
+  )
   .output(offerOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -177,25 +181,27 @@ export let createOffer = SlateTool.create(
       output: mapOffer(o),
       message: `Created offer **${o.identifier || o.title}** (ID: ${o.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateOfferStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Update Offer Status',
-    key: 'update_offer_status',
-    description: `Change the status of an offer/proposal. When a client digitally confirms, it triggers an update event.`,
-    tags: {
-      destructive: false
-    }
+export let updateOfferStatus = SlateTool.create(spec, {
+  name: 'Update Offer Status',
+  key: 'update_offer_status',
+  description: `Change the status of an offer/proposal. When a client digitally confirms, it triggers an update event.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    offerId: z.number().describe('The ID of the offer'),
-    status: z.enum(['created', 'sent', 'accepted', 'partially_billed', 'billed', 'archived']).describe('New offer status')
-  }))
+})
+  .input(
+    z.object({
+      offerId: z.number().describe('The ID of the offer'),
+      status: z
+        .enum(['created', 'sent', 'accepted', 'partially_billed', 'billed', 'archived'])
+        .describe('New offer status')
+    })
+  )
   .output(offerOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let o = await client.updateOfferStatus(ctx.input.offerId, ctx.input.status);
 
@@ -203,4 +209,5 @@ export let updateOfferStatus = SlateTool.create(
       output: mapOffer(o),
       message: `Updated offer **${ctx.input.offerId}** status to **${ctx.input.status}**.`
     };
-  }).build();
+  })
+  .build();

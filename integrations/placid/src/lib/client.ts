@@ -74,9 +74,9 @@ export class PlacidClient {
     this.api = createAxios({
       baseURL: 'https://api.placid.app/api/rest',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -113,7 +113,7 @@ export class PlacidClient {
     addToCollections?: string[];
   }): Promise<PlacidTemplate> {
     let body: Record<string, unknown> = {
-      title: params.title,
+      title: params.title
     };
     if (params.width !== undefined) body['width'] = params.width;
     if (params.height !== undefined) body['height'] = params.height;
@@ -126,11 +126,14 @@ export class PlacidClient {
     return response.data;
   }
 
-  async updateTemplate(templateUuid: string, params: {
-    title?: string;
-    tags?: string[];
-    customData?: string | null;
-  }): Promise<PlacidTemplate> {
+  async updateTemplate(
+    templateUuid: string,
+    params: {
+      title?: string;
+      tags?: string[];
+      customData?: string | null;
+    }
+  ): Promise<PlacidTemplate> {
     let body: Record<string, unknown> = {};
     if (params.title !== undefined) body['title'] = params.title;
     if (params.tags !== undefined) body['tags'] = params.tags;
@@ -167,7 +170,7 @@ export class PlacidClient {
     customData?: string | null;
   }): Promise<PlacidCollection> {
     let body: Record<string, unknown> = {
-      title: params.title,
+      title: params.title
     };
     if (params.templateUuids) body['template_uuids'] = params.templateUuids;
     if (params.customData !== undefined) body['custom_data'] = params.customData;
@@ -176,12 +179,15 @@ export class PlacidClient {
     return response.data;
   }
 
-  async updateCollection(collectionId: number, params: {
-    title?: string;
-    customData?: string | null;
-    addTemplateUuids?: string[];
-    removeTemplateUuids?: string[];
-  }): Promise<PlacidCollection> {
+  async updateCollection(
+    collectionId: number,
+    params: {
+      title?: string;
+      customData?: string | null;
+      addTemplateUuids?: string[];
+      removeTemplateUuids?: string[];
+    }
+  ): Promise<PlacidCollection> {
     let body: Record<string, unknown> = {};
     if (params.title !== undefined) body['title'] = params.title;
     if (params.customData !== undefined) body['custom_data'] = params.customData;
@@ -208,7 +214,7 @@ export class PlacidClient {
     createNow?: boolean;
   }): Promise<PlacidImage> {
     let body: Record<string, unknown> = {
-      template_uuid: params.templateUuid,
+      template_uuid: params.templateUuid
     };
     if (params.layers) body['layers'] = params.layers;
     if (params.modifications) body['modifications'] = params.modifications;
@@ -243,10 +249,10 @@ export class PlacidClient {
     passthrough?: string;
   }): Promise<PlacidPdf> {
     let body: Record<string, unknown> = {
-      pages: params.pages.map((page) => ({
+      pages: params.pages.map(page => ({
         template_uuid: page.templateUuid,
-        ...(page.layers ? { layers: page.layers } : {}),
-      })),
+        ...(page.layers ? { layers: page.layers } : {})
+      }))
     };
     if (params.modifications) body['modifications'] = params.modifications;
     if (params.transfer) body['transfer'] = params.transfer;
@@ -264,7 +270,7 @@ export class PlacidClient {
     transfer?: PlacidTransfer;
   }): Promise<PlacidPdf> {
     let body: Record<string, unknown> = {
-      urls: params.urls,
+      urls: params.urls
     };
     if (params.webhookSuccess) body['webhook_success'] = params.webhookSuccess;
     if (params.passthrough) body['passthrough'] = params.passthrough;
@@ -300,9 +306,9 @@ export class PlacidClient {
     passthrough?: string;
   }): Promise<PlacidVideo> {
     let body: Record<string, unknown> = {
-      clips: params.clips.map((clip) => {
+      clips: params.clips.map(clip => {
         let clipBody: Record<string, unknown> = {
-          template_uuid: clip.templateUuid,
+          template_uuid: clip.templateUuid
         };
         if (clip.layers) clipBody['layers'] = clip.layers;
         if (clip.audio) clipBody['audio'] = clip.audio;
@@ -310,7 +316,7 @@ export class PlacidClient {
         if (clip.audioTrimStart) clipBody['audio_trim_start'] = clip.audioTrimStart;
         if (clip.audioTrimEnd) clipBody['audio_trim_end'] = clip.audioTrimEnd;
         return clipBody;
-      }),
+      })
     };
     if (params.modifications) body['modifications'] = params.modifications;
     if (params.transfer) body['transfer'] = params.transfer;
@@ -345,8 +351,8 @@ export class PlacidClient {
 
     let response = await this.api.post('/media', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }

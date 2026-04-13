@@ -91,17 +91,16 @@ export class Client {
   private axios: AxiosInstance;
 
   constructor(private params: { token: string; authType?: 'oauth' | 'apikey' }) {
-    let authHeader = params.authType === 'apikey'
-      ? `apikey ${params.token}`
-      : `Bearer ${params.token}`;
+    let authHeader =
+      params.authType === 'apikey' ? `apikey ${params.token}` : `Bearer ${params.token}`;
 
     this.axios = createAxios({
       baseURL: 'https://app.mural.co/api/public/v1',
       headers: {
         Authorization: authHeader,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -121,7 +120,10 @@ export class Client {
 
   // ─── Rooms ─────────────────────────────────────────────────────
 
-  async listRooms(workspaceId: string, options?: { limit?: number; next?: string }): Promise<PaginatedResponse<RoomSummary>> {
+  async listRooms(
+    workspaceId: string,
+    options?: { limit?: number; next?: string }
+  ): Promise<PaginatedResponse<RoomSummary>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.next) params.next = options.next;
@@ -134,12 +136,20 @@ export class Client {
     return response.data.value;
   }
 
-  async createRoom(body: { workspaceId: string; name: string; description?: string; type?: string }): Promise<RoomSummary> {
+  async createRoom(body: {
+    workspaceId: string;
+    name: string;
+    description?: string;
+    type?: string;
+  }): Promise<RoomSummary> {
     let response = await this.axios.post('/rooms', body);
     return response.data.value;
   }
 
-  async updateRoom(roomId: string, body: { name?: string; description?: string }): Promise<RoomSummary> {
+  async updateRoom(
+    roomId: string,
+    body: { name?: string; description?: string }
+  ): Promise<RoomSummary> {
     let response = await this.axios.patch(`/rooms/${roomId}`, body);
     return response.data.value;
   }
@@ -164,7 +174,10 @@ export class Client {
 
   // ─── Murals ────────────────────────────────────────────────────
 
-  async listMuralsInWorkspace(workspaceId: string, options?: { limit?: number; next?: string }): Promise<PaginatedResponse<MuralSummary>> {
+  async listMuralsInWorkspace(
+    workspaceId: string,
+    options?: { limit?: number; next?: string }
+  ): Promise<PaginatedResponse<MuralSummary>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.next) params.next = options.next;
@@ -172,7 +185,10 @@ export class Client {
     return response.data;
   }
 
-  async listMuralsInRoom(roomId: string, options?: { limit?: number; next?: string }): Promise<PaginatedResponse<MuralSummary>> {
+  async listMuralsInRoom(
+    roomId: string,
+    options?: { limit?: number; next?: string }
+  ): Promise<PaginatedResponse<MuralSummary>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.next) params.next = options.next;
@@ -185,12 +201,19 @@ export class Client {
     return response.data.value;
   }
 
-  async createMural(body: { workspaceId: string; roomId?: string; title?: string }): Promise<MuralSummary> {
+  async createMural(body: {
+    workspaceId: string;
+    roomId?: string;
+    title?: string;
+  }): Promise<MuralSummary> {
     let response = await this.axios.post('/murals', body);
     return response.data.value;
   }
 
-  async updateMural(muralId: string, body: { title?: string; description?: string }): Promise<MuralSummary> {
+  async updateMural(
+    muralId: string,
+    body: { title?: string; description?: string }
+  ): Promise<MuralSummary> {
     let response = await this.axios.patch(`/murals/${muralId}`, body);
     return response.data.value;
   }
@@ -206,7 +229,10 @@ export class Client {
 
   // ─── Widgets ───────────────────────────────────────────────────
 
-  async listWidgets(muralId: string, options?: { limit?: number; next?: string }): Promise<PaginatedResponse<Widget>> {
+  async listWidgets(
+    muralId: string,
+    options?: { limit?: number; next?: string }
+  ): Promise<PaginatedResponse<Widget>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.next) params.next = options.next;
@@ -219,140 +245,214 @@ export class Client {
     return response.data.value;
   }
 
-  async createStickyNote(muralId: string, body: {
-    text?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    style?: { backgroundColor?: string };
-    shape?: string;
-  }): Promise<Widget> {
+  async createStickyNote(
+    muralId: string,
+    body: {
+      text?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      style?: { backgroundColor?: string };
+      shape?: string;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/sticky-note`, body);
     return response.data.value;
   }
 
-  async updateStickyNote(muralId: string, widgetId: string, body: {
-    text?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    style?: { backgroundColor?: string };
-  }): Promise<Widget> {
-    let response = await this.axios.patch(`/murals/${muralId}/widgets/sticky-note/${widgetId}`, body);
+  async updateStickyNote(
+    muralId: string,
+    widgetId: string,
+    body: {
+      text?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      style?: { backgroundColor?: string };
+    }
+  ): Promise<Widget> {
+    let response = await this.axios.patch(
+      `/murals/${muralId}/widgets/sticky-note/${widgetId}`,
+      body
+    );
     return response.data.value;
   }
 
-  async createShape(muralId: string, body: {
-    text?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    shape?: string;
-    style?: Record<string, any>;
-  }): Promise<Widget> {
+  async createShape(
+    muralId: string,
+    body: {
+      text?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      shape?: string;
+      style?: Record<string, any>;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/shape`, body);
     return response.data.value;
   }
 
-  async updateShape(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
-    let response = await this.axios.patch(`/murals/${muralId}/widgets/shape/${widgetId}`, body);
+  async updateShape(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
+    let response = await this.axios.patch(
+      `/murals/${muralId}/widgets/shape/${widgetId}`,
+      body
+    );
     return response.data.value;
   }
 
-  async createTextBox(muralId: string, body: {
-    text?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    style?: Record<string, any>;
-  }): Promise<Widget> {
+  async createTextBox(
+    muralId: string,
+    body: {
+      text?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      style?: Record<string, any>;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/text`, body);
     return response.data.value;
   }
 
-  async updateTextBox(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
+  async updateTextBox(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
     let response = await this.axios.patch(`/murals/${muralId}/widgets/text/${widgetId}`, body);
     return response.data.value;
   }
 
-  async createTitle(muralId: string, body: {
-    text?: string;
-    x?: number;
-    y?: number;
-    style?: Record<string, any>;
-  }): Promise<Widget> {
+  async createTitle(
+    muralId: string,
+    body: {
+      text?: string;
+      x?: number;
+      y?: number;
+      style?: Record<string, any>;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/title`, body);
     return response.data.value;
   }
 
-  async updateTitle(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
-    let response = await this.axios.patch(`/murals/${muralId}/widgets/title/${widgetId}`, body);
+  async updateTitle(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
+    let response = await this.axios.patch(
+      `/murals/${muralId}/widgets/title/${widgetId}`,
+      body
+    );
     return response.data.value;
   }
 
-  async createImage(muralId: string, body: {
-    url?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    title?: string;
-  }): Promise<Widget> {
+  async createImage(
+    muralId: string,
+    body: {
+      url?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      title?: string;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/image`, body);
     return response.data.value;
   }
 
-  async updateImage(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
-    let response = await this.axios.patch(`/murals/${muralId}/widgets/image/${widgetId}`, body);
+  async updateImage(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
+    let response = await this.axios.patch(
+      `/murals/${muralId}/widgets/image/${widgetId}`,
+      body
+    );
     return response.data.value;
   }
 
-  async createArrow(muralId: string, body: {
-    startWidgetId?: string;
-    endWidgetId?: string;
-    style?: Record<string, any>;
-  }): Promise<Widget> {
+  async createArrow(
+    muralId: string,
+    body: {
+      startWidgetId?: string;
+      endWidgetId?: string;
+      style?: Record<string, any>;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/arrow`, body);
     return response.data.value;
   }
 
-  async updateArrow(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
-    let response = await this.axios.patch(`/murals/${muralId}/widgets/arrow/${widgetId}`, body);
+  async updateArrow(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
+    let response = await this.axios.patch(
+      `/murals/${muralId}/widgets/arrow/${widgetId}`,
+      body
+    );
     return response.data.value;
   }
 
-  async createArea(muralId: string, body: {
-    title?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    style?: Record<string, any>;
-  }): Promise<Widget> {
+  async createArea(
+    muralId: string,
+    body: {
+      title?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      style?: Record<string, any>;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/area`, body);
     return response.data.value;
   }
 
-  async updateArea(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
+  async updateArea(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
     let response = await this.axios.patch(`/murals/${muralId}/widgets/area/${widgetId}`, body);
     return response.data.value;
   }
 
-  async createComment(muralId: string, body: {
-    text?: string;
-    x?: number;
-    y?: number;
-  }): Promise<Widget> {
+  async createComment(
+    muralId: string,
+    body: {
+      text?: string;
+      x?: number;
+      y?: number;
+    }
+  ): Promise<Widget> {
     let response = await this.axios.post(`/murals/${muralId}/widgets/comment`, body);
     return response.data.value;
   }
 
-  async updateComment(muralId: string, widgetId: string, body: Record<string, any>): Promise<Widget> {
-    let response = await this.axios.patch(`/murals/${muralId}/widgets/comment/${widgetId}`, body);
+  async updateComment(
+    muralId: string,
+    widgetId: string,
+    body: Record<string, any>
+  ): Promise<Widget> {
+    let response = await this.axios.patch(
+      `/murals/${muralId}/widgets/comment/${widgetId}`,
+      body
+    );
     return response.data.value;
   }
 
@@ -373,7 +473,11 @@ export class Client {
     return response.data.value;
   }
 
-  async updateTag(muralId: string, tagId: string, body: { text?: string; color?: string }): Promise<Tag> {
+  async updateTag(
+    muralId: string,
+    tagId: string,
+    body: { text?: string; color?: string }
+  ): Promise<Tag> {
     let response = await this.axios.patch(`/murals/${muralId}/tags/${tagId}`, body);
     return response.data.value;
   }
@@ -384,8 +488,14 @@ export class Client {
 
   // ─── Voting Sessions ──────────────────────────────────────────
 
-  async startVotingSession(muralId: string, body?: { votesPerUser?: number }): Promise<VotingSession> {
-    let response = await this.axios.post(`/murals/${muralId}/voting-sessions/start`, body || {});
+  async startVotingSession(
+    muralId: string,
+    body?: { votesPerUser?: number }
+  ): Promise<VotingSession> {
+    let response = await this.axios.post(
+      `/murals/${muralId}/voting-sessions/start`,
+      body || {}
+    );
     return response.data.value;
   }
 
@@ -395,12 +505,16 @@ export class Client {
   }
 
   async getVotingSession(muralId: string, votingSessionId: string): Promise<VotingSession> {
-    let response = await this.axios.get(`/murals/${muralId}/voting-sessions/${votingSessionId}`);
+    let response = await this.axios.get(
+      `/murals/${muralId}/voting-sessions/${votingSessionId}`
+    );
     return response.data.value;
   }
 
   async getVotingSessionResults(muralId: string, votingSessionId: string): Promise<any> {
-    let response = await this.axios.get(`/murals/${muralId}/voting-sessions/${votingSessionId}/results`);
+    let response = await this.axios.get(
+      `/murals/${muralId}/voting-sessions/${votingSessionId}/results`
+    );
     return response.data.value;
   }
 
@@ -420,7 +534,10 @@ export class Client {
     return response.data.value;
   }
 
-  async updateTimer(muralId: string, body: { status?: string; extraTimeInSeconds?: number }): Promise<any> {
+  async updateTimer(
+    muralId: string,
+    body: { status?: string; extraTimeInSeconds?: number }
+  ): Promise<any> {
     let response = await this.axios.patch(`/murals/${muralId}/timer`, body);
     return response.data.value;
   }
@@ -451,7 +568,10 @@ export class Client {
 
   // ─── Templates ─────────────────────────────────────────────────
 
-  async listTemplates(workspaceId: string, options?: { limit?: number; next?: string }): Promise<PaginatedResponse<TemplateSummary>> {
+  async listTemplates(
+    workspaceId: string,
+    options?: { limit?: number; next?: string }
+  ): Promise<PaginatedResponse<TemplateSummary>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.next) params.next = options.next;
@@ -459,12 +579,18 @@ export class Client {
     return response.data;
   }
 
-  async createTemplateFromMural(muralId: string, body: { name: string; description?: string }): Promise<TemplateSummary> {
+  async createTemplateFromMural(
+    muralId: string,
+    body: { name: string; description?: string }
+  ): Promise<TemplateSummary> {
     let response = await this.axios.post('/templates', { ...body, muralId });
     return response.data.value;
   }
 
-  async createMuralFromTemplate(templateId: string, body: { workspaceId: string; roomId?: string; title?: string }): Promise<MuralSummary> {
+  async createMuralFromTemplate(
+    templateId: string,
+    body: { workspaceId: string; roomId?: string; title?: string }
+  ): Promise<MuralSummary> {
     let response = await this.axios.post(`/templates/${templateId}/murals`, body);
     return response.data.value;
   }
@@ -485,7 +611,10 @@ export class Client {
     return response.data;
   }
 
-  async inviteToMural(muralId: string, body: { emails: string[]; role?: string; message?: string }): Promise<any> {
+  async inviteToMural(
+    muralId: string,
+    body: { emails: string[]; role?: string; message?: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/murals/${muralId}/users/invite`, body);
     return response.data;
   }
@@ -499,7 +628,10 @@ export class Client {
     return response.data;
   }
 
-  async inviteToRoom(roomId: string, body: { emails: string[]; role?: string; message?: string }): Promise<any> {
+  async inviteToRoom(
+    roomId: string,
+    body: { emails: string[]; role?: string; message?: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/rooms/${roomId}/users/invite`, body);
     return response.data;
   }
@@ -508,25 +640,41 @@ export class Client {
     await this.axios.post(`/rooms/${roomId}/users/remove`, body);
   }
 
-  async inviteToWorkspace(workspaceId: string, body: { emails: string[]; role?: string; message?: string }): Promise<any> {
+  async inviteToWorkspace(
+    workspaceId: string,
+    body: { emails: string[]; role?: string; message?: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/workspaces/${workspaceId}/users/invite`, body);
     return response.data;
   }
 
   // ─── Search ────────────────────────────────────────────────────
 
-  async searchMurals(workspaceId: string, query: string): Promise<PaginatedResponse<MuralSummary>> {
-    let response = await this.axios.get(`/search/${workspaceId}/murals`, { params: { query } });
+  async searchMurals(
+    workspaceId: string,
+    query: string
+  ): Promise<PaginatedResponse<MuralSummary>> {
+    let response = await this.axios.get(`/search/${workspaceId}/murals`, {
+      params: { query }
+    });
     return response.data;
   }
 
-  async searchRooms(workspaceId: string, query: string): Promise<PaginatedResponse<RoomSummary>> {
+  async searchRooms(
+    workspaceId: string,
+    query: string
+  ): Promise<PaginatedResponse<RoomSummary>> {
     let response = await this.axios.get(`/search/${workspaceId}/rooms`, { params: { query } });
     return response.data;
   }
 
-  async searchTemplates(workspaceId: string, query: string): Promise<PaginatedResponse<TemplateSummary>> {
-    let response = await this.axios.get(`/search/${workspaceId}/templates`, { params: { query } });
+  async searchTemplates(
+    workspaceId: string,
+    query: string
+  ): Promise<PaginatedResponse<TemplateSummary>> {
+    let response = await this.axios.get(`/search/${workspaceId}/templates`, {
+      params: { query }
+    });
     return response.data;
   }
 }

@@ -3,36 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateOpportunityTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Opportunity',
-    key: 'update_opportunity',
-    description: `Update an opportunity in Lever. Supports changing pipeline stage, archiving/unarchiving, managing tags, links, and sources. Multiple updates can be performed in a single call.`,
-    instructions: [
-      'To archive, set archived to true and optionally provide archiveReasonId.',
-      'To unarchive, set archived to false.',
-      'Tags, links, and sources support both adding and removing in the same call.',
-    ],
-  }
-)
-  .input(z.object({
-    opportunityId: z.string().describe('ID of the opportunity to update'),
-    stageId: z.string().optional().describe('Move to this pipeline stage ID'),
-    archived: z.boolean().optional().describe('Set to true to archive, false to unarchive'),
-    archiveReasonId: z.string().optional().describe('Archive reason ID (only when archiving)'),
-    addTags: z.array(z.string()).optional().describe('Tags to add'),
-    removeTags: z.array(z.string()).optional().describe('Tags to remove'),
-    addLinks: z.array(z.string()).optional().describe('Links to add'),
-    removeLinks: z.array(z.string()).optional().describe('Links to remove'),
-    addSources: z.array(z.string()).optional().describe('Sources to add'),
-    removeSources: z.array(z.string()).optional().describe('Sources to remove'),
-  }))
-  .output(z.object({
-    opportunityId: z.string().describe('ID of the updated opportunity'),
-    updatesApplied: z.array(z.string()).describe('List of updates that were applied'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateOpportunityTool = SlateTool.create(spec, {
+  name: 'Update Opportunity',
+  key: 'update_opportunity',
+  description: `Update an opportunity in Lever. Supports changing pipeline stage, archiving/unarchiving, managing tags, links, and sources. Multiple updates can be performed in a single call.`,
+  instructions: [
+    'To archive, set archived to true and optionally provide archiveReasonId.',
+    'To unarchive, set archived to false.',
+    'Tags, links, and sources support both adding and removing in the same call.'
+  ]
+})
+  .input(
+    z.object({
+      opportunityId: z.string().describe('ID of the opportunity to update'),
+      stageId: z.string().optional().describe('Move to this pipeline stage ID'),
+      archived: z.boolean().optional().describe('Set to true to archive, false to unarchive'),
+      archiveReasonId: z
+        .string()
+        .optional()
+        .describe('Archive reason ID (only when archiving)'),
+      addTags: z.array(z.string()).optional().describe('Tags to add'),
+      removeTags: z.array(z.string()).optional().describe('Tags to remove'),
+      addLinks: z.array(z.string()).optional().describe('Links to add'),
+      removeLinks: z.array(z.string()).optional().describe('Links to remove'),
+      addSources: z.array(z.string()).optional().describe('Sources to add'),
+      removeSources: z.array(z.string()).optional().describe('Sources to remove')
+    })
+  )
+  .output(
+    z.object({
+      opportunityId: z.string().describe('ID of the updated opportunity'),
+      updatesApplied: z.array(z.string()).describe('List of updates that were applied')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
     let updatesApplied: string[] = [];
 
@@ -42,7 +46,10 @@ export let updateOpportunityTool = SlateTool.create(
     }
 
     if (ctx.input.archived === true) {
-      await client.updateOpportunityArchived(ctx.input.opportunityId, ctx.input.archiveReasonId);
+      await client.updateOpportunityArchived(
+        ctx.input.opportunityId,
+        ctx.input.archiveReasonId
+      );
       updatesApplied.push('archived');
     } else if (ctx.input.archived === false) {
       await client.deleteOpportunityArchived(ctx.input.opportunityId);
@@ -82,9 +89,9 @@ export let updateOpportunityTool = SlateTool.create(
     return {
       output: {
         opportunityId: ctx.input.opportunityId,
-        updatesApplied,
+        updatesApplied
       },
-      message: `Updated opportunity **${ctx.input.opportunityId}**: ${updatesApplied.join(', ') || 'no changes'}.`,
+      message: `Updated opportunity **${ctx.input.opportunityId}**: ${updatesApplied.join(', ') || 'no changes'}.`
     };
   })
   .build();

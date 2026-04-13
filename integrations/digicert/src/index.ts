@@ -13,7 +13,7 @@ import {
   listOrganizations,
   manageOrganization,
   manageRequest,
-  listProducts,
+  listProducts
 } from './tools';
 import { certcentralEvents } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     listOrganizations,
     manageOrganization,
     manageRequest,
-    listProducts,
+    listProducts
   ],
-  triggers: [
-    certcentralEvents,
-  ],
+  triggers: [certcentralEvents]
 });

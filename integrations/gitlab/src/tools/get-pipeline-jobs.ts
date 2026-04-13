@@ -3,51 +3,65 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPipelineJobs = SlateTool.create(
-  spec,
-  {
-    name: 'Get Pipeline Jobs',
-    key: 'get_pipeline_jobs',
-    description: `List all jobs in a CI/CD pipeline, or get details and logs for a specific job. Use this to inspect job statuses, view build logs, retry failed jobs, or cancel running jobs.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let getPipelineJobs = SlateTool.create(spec, {
+  name: 'Get Pipeline Jobs',
+  key: 'get_pipeline_jobs',
+  description: `List all jobs in a CI/CD pipeline, or get details and logs for a specific job. Use this to inspect job statuses, view build logs, retry failed jobs, or cancel running jobs.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project ID or URL-encoded path'),
-    pipelineId: z.number().optional().describe('Pipeline ID to list jobs for'),
-    jobId: z.number().optional().describe('Specific job ID to get details or logs for'),
-    action: z.enum(['list', 'get', 'log', 'retry', 'cancel']).optional().describe('Action: list pipeline jobs, get job details, view job log, retry, or cancel. Defaults to "list" if pipelineId given, "get" if jobId given.'),
-    perPage: z.number().optional().describe('Results per page for list'),
-    page: z.number().optional().describe('Page number for list')
-  }))
-  .output(z.object({
-    jobs: z.array(z.object({
-      jobId: z.number().describe('Job ID'),
-      jobName: z.string().describe('Job name'),
-      stage: z.string().describe('Pipeline stage'),
-      status: z.string().describe('Job status'),
-      webUrl: z.string().describe('URL to the job'),
-      duration: z.number().nullable().describe('Duration in seconds'),
-      startedAt: z.string().nullable().describe('Start timestamp'),
-      finishedAt: z.string().nullable().describe('Finish timestamp'),
-      runner: z.string().nullable().describe('Runner description')
-    })).optional().describe('List of jobs (for list action)'),
-    job: z.object({
-      jobId: z.number().describe('Job ID'),
-      jobName: z.string().describe('Job name'),
-      stage: z.string().describe('Pipeline stage'),
-      status: z.string().describe('Job status'),
-      webUrl: z.string().describe('URL to the job'),
-      duration: z.number().nullable().describe('Duration in seconds'),
-      startedAt: z.string().nullable().describe('Start timestamp'),
-      finishedAt: z.string().nullable().describe('Finish timestamp')
-    }).optional().describe('Single job details (for get/retry/cancel actions)'),
-    log: z.string().optional().describe('Job log output (for log action)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project ID or URL-encoded path'),
+      pipelineId: z.number().optional().describe('Pipeline ID to list jobs for'),
+      jobId: z.number().optional().describe('Specific job ID to get details or logs for'),
+      action: z
+        .enum(['list', 'get', 'log', 'retry', 'cancel'])
+        .optional()
+        .describe(
+          'Action: list pipeline jobs, get job details, view job log, retry, or cancel. Defaults to "list" if pipelineId given, "get" if jobId given.'
+        ),
+      perPage: z.number().optional().describe('Results per page for list'),
+      page: z.number().optional().describe('Page number for list')
+    })
+  )
+  .output(
+    z.object({
+      jobs: z
+        .array(
+          z.object({
+            jobId: z.number().describe('Job ID'),
+            jobName: z.string().describe('Job name'),
+            stage: z.string().describe('Pipeline stage'),
+            status: z.string().describe('Job status'),
+            webUrl: z.string().describe('URL to the job'),
+            duration: z.number().nullable().describe('Duration in seconds'),
+            startedAt: z.string().nullable().describe('Start timestamp'),
+            finishedAt: z.string().nullable().describe('Finish timestamp'),
+            runner: z.string().nullable().describe('Runner description')
+          })
+        )
+        .optional()
+        .describe('List of jobs (for list action)'),
+      job: z
+        .object({
+          jobId: z.number().describe('Job ID'),
+          jobName: z.string().describe('Job name'),
+          stage: z.string().describe('Pipeline stage'),
+          status: z.string().describe('Job status'),
+          webUrl: z.string().describe('URL to the job'),
+          duration: z.number().nullable().describe('Duration in seconds'),
+          startedAt: z.string().nullable().describe('Start timestamp'),
+          finishedAt: z.string().nullable().describe('Finish timestamp')
+        })
+        .optional()
+        .describe('Single job details (for get/retry/cancel actions)'),
+      log: z.string().optional().describe('Job log output (for log action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -80,7 +94,8 @@ export let getPipelineJobs = SlateTool.create(
       };
     }
 
-    if (!ctx.input.jobId) throw new Error('Job ID is required for get/log/retry/cancel actions');
+    if (!ctx.input.jobId)
+      throw new Error('Job ID is required for get/log/retry/cancel actions');
 
     if (action === 'log') {
       let log = await client.getJobLog(ctx.input.projectId, ctx.input.jobId);
@@ -99,7 +114,8 @@ export let getPipelineJobs = SlateTool.create(
       job = await client.getJob(ctx.input.projectId, ctx.input.jobId);
     }
 
-    let actionVerb = { get: 'Retrieved', retry: 'Retried', cancel: 'Cancelled' }[action] || 'Retrieved';
+    let actionVerb =
+      { get: 'Retrieved', retry: 'Retried', cancel: 'Cancelled' }[action] || 'Retrieved';
 
     return {
       output: {

@@ -3,44 +3,46 @@ import { EodhdClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFinancialNews = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Financial News',
-    key: 'new_financial_news',
-    description: 'Triggers when new financial news articles are published, optionally filtered by ticker symbol or topic tag.'
-  }
-)
-  .input(z.object({
-    articleDate: z.string().describe('Publication timestamp of the article'),
-    articleTitle: z.string().describe('Article headline'),
-    articleContent: z.string().describe('Article body text'),
-    articleLink: z.string().describe('URL to the full article'),
-    articleSymbols: z.array(z.string()).describe('Ticker symbols mentioned'),
-    articleTags: z.array(z.string()).optional().nullable().describe('Topic tags'),
-    sentimentPolarity: z.number().optional().nullable().describe('Sentiment polarity score'),
-    sentimentNeg: z.number().optional().nullable().describe('Negative sentiment score'),
-    sentimentNeu: z.number().optional().nullable().describe('Neutral sentiment score'),
-    sentimentPos: z.number().optional().nullable().describe('Positive sentiment score')
-  }))
-  .output(z.object({
-    articleTitle: z.string().describe('Article headline'),
-    articleContent: z.string().describe('Article body text'),
-    articleLink: z.string().describe('URL to the full article'),
-    publishedAt: z.string().describe('Publication timestamp'),
-    symbols: z.array(z.string()).describe('Ticker symbols mentioned in the article'),
-    tags: z.array(z.string()).describe('Topic tags'),
-    sentimentPolarity: z.number().optional().nullable().describe('Sentiment polarity score'),
-    sentimentNeg: z.number().optional().nullable().describe('Negative sentiment score'),
-    sentimentNeu: z.number().optional().nullable().describe('Neutral sentiment score'),
-    sentimentPos: z.number().optional().nullable().describe('Positive sentiment score')
-  }))
+export let newFinancialNews = SlateTrigger.create(spec, {
+  name: 'New Financial News',
+  key: 'new_financial_news',
+  description:
+    'Triggers when new financial news articles are published, optionally filtered by ticker symbol or topic tag.'
+})
+  .input(
+    z.object({
+      articleDate: z.string().describe('Publication timestamp of the article'),
+      articleTitle: z.string().describe('Article headline'),
+      articleContent: z.string().describe('Article body text'),
+      articleLink: z.string().describe('URL to the full article'),
+      articleSymbols: z.array(z.string()).describe('Ticker symbols mentioned'),
+      articleTags: z.array(z.string()).optional().nullable().describe('Topic tags'),
+      sentimentPolarity: z.number().optional().nullable().describe('Sentiment polarity score'),
+      sentimentNeg: z.number().optional().nullable().describe('Negative sentiment score'),
+      sentimentNeu: z.number().optional().nullable().describe('Neutral sentiment score'),
+      sentimentPos: z.number().optional().nullable().describe('Positive sentiment score')
+    })
+  )
+  .output(
+    z.object({
+      articleTitle: z.string().describe('Article headline'),
+      articleContent: z.string().describe('Article body text'),
+      articleLink: z.string().describe('URL to the full article'),
+      publishedAt: z.string().describe('Publication timestamp'),
+      symbols: z.array(z.string()).describe('Ticker symbols mentioned in the article'),
+      tags: z.array(z.string()).describe('Topic tags'),
+      sentimentPolarity: z.number().optional().nullable().describe('Sentiment polarity score'),
+      sentimentNeg: z.number().optional().nullable().describe('Negative sentiment score'),
+      sentimentNeu: z.number().optional().nullable().describe('Neutral sentiment score'),
+      sentimentPos: z.number().optional().nullable().describe('Positive sentiment score')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new EodhdClient({ token: ctx.auth.token });
 
       let lastPolledDate = (ctx.state as { lastPolledDate?: string })?.lastPolledDate;
@@ -61,15 +63,19 @@ export let newFinancialNews = SlateTrigger.create(
       }> = Array.isArray(articles) ? articles : [];
 
       if (lastPolledDate) {
-        articlesList = articlesList.filter((a) => a.date > lastPolledDate);
+        articlesList = articlesList.filter(a => a.date > lastPolledDate);
       }
 
-      let newestDate = articlesList.length > 0
-        ? articlesList.reduce((max, a) => a.date > max ? a.date : max, articlesList[0]!.date)
-        : lastPolledDate;
+      let newestDate =
+        articlesList.length > 0
+          ? articlesList.reduce(
+              (max, a) => (a.date > max ? a.date : max),
+              articlesList[0]!.date
+            )
+          : lastPolledDate;
 
       return {
-        inputs: articlesList.map((article) => ({
+        inputs: articlesList.map(article => ({
           articleDate: article.date,
           articleTitle: article.title,
           articleContent: article.content,
@@ -87,7 +93,7 @@ export let newFinancialNews = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'news.published',
         id: `${ctx.input.articleDate}-${ctx.input.articleLink}`,
@@ -105,4 +111,5 @@ export let newFinancialNews = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

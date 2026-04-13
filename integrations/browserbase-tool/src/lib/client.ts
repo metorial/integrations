@@ -12,7 +12,7 @@ import type {
   Project,
   ProjectUsage,
   FetchPageParams,
-  FetchPageResponse,
+  FetchPageResponse
 } from './types';
 
 export class Client {
@@ -23,8 +23,8 @@ export class Client {
       baseURL: 'https://api.browserbase.com/v1',
       headers: {
         'X-BB-API-Key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -51,7 +51,7 @@ export class Client {
   async completeSession(sessionId: string, projectId: string): Promise<Session> {
     let res = await this.http.post(`/sessions/${sessionId}`, {
       status: 'REQUEST_RELEASE',
-      projectId,
+      projectId
     });
     return this.mapSession(res.data);
   }
@@ -128,7 +128,7 @@ export class Client {
       headers: d.headers as Record<string, string>,
       content: d.content as string,
       contentType: d.contentType as string,
-      encoding: d.encoding as string,
+      encoding: d.encoding as string
     };
   }
 
@@ -152,7 +152,7 @@ export class Client {
       userMetadata: (d.userMetadata as Record<string, string>) || null,
       connectUrl: d.connectUrl as string | undefined,
       seleniumRemoteUrl: d.seleniumRemoteUrl as string | undefined,
-      signingKey: d.signingKey as string | undefined,
+      signingKey: d.signingKey as string | undefined
     };
   }
 
@@ -162,7 +162,7 @@ export class Client {
       contextId: d.id as string,
       createdAt: d.createdAt as string,
       updatedAt: d.updatedAt as string,
-      projectId: d.projectId as string,
+      projectId: d.projectId as string
     };
   }
 
@@ -173,7 +173,7 @@ export class Client {
       uploadUrl: d.uploadUrl as string,
       publicKey: d.publicKey as string,
       cipherAlgorithm: d.cipherAlgorithm as string,
-      initializationVectorSize: d.initializationVectorSize as number,
+      initializationVectorSize: d.initializationVectorSize as number
     };
   }
 
@@ -184,7 +184,7 @@ export class Client {
       createdAt: d.createdAt as string,
       updatedAt: d.updatedAt as string,
       fileName: d.fileName as string,
-      projectId: d.projectId as string,
+      projectId: d.projectId as string
     };
   }
 
@@ -197,7 +197,7 @@ export class Client {
       name: d.name as string,
       ownerId: d.ownerId as string,
       defaultTimeout: d.defaultTimeout as number,
-      concurrency: d.concurrency as number,
+      concurrency: d.concurrency as number
     };
   }
 }

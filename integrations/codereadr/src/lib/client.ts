@@ -2,20 +2,21 @@ import { createAxios } from 'slates';
 import { parseXml, findChild, findChildren, getChildText, nodeToObject, XmlNode } from './xml';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.codereadr.com/api/',
+  baseURL: 'https://api.codereadr.com/api/'
 });
 
 export class CodereadrError extends Error {
-  constructor(public code: string, message: string) {
+  constructor(
+    public code: string,
+    message: string
+  ) {
     super(message);
     this.name = 'CodereadrError';
   }
 }
 
 export class Client {
-  constructor(
-    private token: string,
-  ) {}
+  constructor(private token: string) {}
 
   private async post(params: Record<string, string | undefined>): Promise<XmlNode> {
     let formData = new URLSearchParams();
@@ -28,7 +29,7 @@ export class Client {
     }
 
     let response = await apiAxios.post('', formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
     let xml = parseXml(response.data);
@@ -49,13 +50,13 @@ export class Client {
     let xml = await this.post({
       section: 'services',
       action: 'retrieve',
-      service_id: serviceId || 'all',
+      service_id: serviceId || 'all'
     });
 
     let services = findChildren(xml, 'service');
     return services.map(s => {
       let obj: Record<string, any> = {
-        serviceId: s.attributes.id,
+        serviceId: s.attributes.id
       };
       for (let child of s.children) {
         if (child.tag === 'user') {
@@ -110,30 +111,33 @@ export class Client {
       upload_email_format: params.uploadEmailFormat,
       postback_receiver_only: params.postbackReceiverOnly,
       postback_real_time_scans: params.postbackRealTimeScans,
-      postback_uploaded_scans: params.postbackUploadedScans,
+      postback_uploaded_scans: params.postbackUploadedScans
     });
 
     return getChildText(xml, 'id');
   }
 
-  async updateService(serviceId: string, params: {
-    name?: string;
-    description?: string;
-    validationMethod?: string;
-    databaseId?: string;
-    postbackUrl?: string;
-    duplicateValue?: string;
-    deviceDuplicateValue?: string;
-    periodStartDate?: string;
-    periodStartTime?: string;
-    periodEndDate?: string;
-    periodEndTime?: string;
-    uploadEmail?: string;
-    uploadEmailFormat?: string;
-    postbackReceiverOnly?: string;
-    postbackRealTimeScans?: string;
-    postbackUploadedScans?: string;
-  }): Promise<void> {
+  async updateService(
+    serviceId: string,
+    params: {
+      name?: string;
+      description?: string;
+      validationMethod?: string;
+      databaseId?: string;
+      postbackUrl?: string;
+      duplicateValue?: string;
+      deviceDuplicateValue?: string;
+      periodStartDate?: string;
+      periodStartTime?: string;
+      periodEndDate?: string;
+      periodEndTime?: string;
+      uploadEmail?: string;
+      uploadEmailFormat?: string;
+      postbackReceiverOnly?: string;
+      postbackRealTimeScans?: string;
+      postbackUploadedScans?: string;
+    }
+  ): Promise<void> {
     await this.post({
       section: 'services',
       action: 'update',
@@ -153,7 +157,7 @@ export class Client {
       upload_email_format: params.uploadEmailFormat,
       postback_receiver_only: params.postbackReceiverOnly,
       postback_real_time_scans: params.postbackRealTimeScans,
-      postback_uploaded_scans: params.postbackUploadedScans,
+      postback_uploaded_scans: params.postbackUploadedScans
     });
   }
 
@@ -161,7 +165,7 @@ export class Client {
     await this.post({
       section: 'services',
       action: 'delete',
-      service_id: serviceId,
+      service_id: serviceId
     });
   }
 
@@ -170,7 +174,7 @@ export class Client {
       section: 'services',
       action: 'adduserpermission',
       service_id: serviceId,
-      user_id: userId,
+      user_id: userId
     });
   }
 
@@ -179,18 +183,23 @@ export class Client {
       section: 'services',
       action: 'revokeuserpermission',
       service_id: serviceId,
-      user_id: userId,
+      user_id: userId
     });
   }
 
-  async addQuestionToService(serviceId: string, questionId: string, condition?: string, required?: boolean): Promise<void> {
+  async addQuestionToService(
+    serviceId: string,
+    questionId: string,
+    condition?: string,
+    required?: boolean
+  ): Promise<void> {
     await this.post({
       section: 'services',
       action: 'addquestion',
       service_id: serviceId,
       question_id: questionId,
       condition: condition,
-      required: required !== undefined ? (required ? '1' : '0') : undefined,
+      required: required !== undefined ? (required ? '1' : '0') : undefined
     });
   }
 
@@ -199,7 +208,7 @@ export class Client {
       section: 'services',
       action: 'removequestion',
       service_id: serviceId,
-      question_id: questionId,
+      question_id: questionId
     });
   }
 
@@ -209,13 +218,13 @@ export class Client {
     let xml = await this.post({
       section: 'users',
       action: 'retrieve',
-      user_id: userId || 'all',
+      user_id: userId || 'all'
     });
 
     let users = findChildren(xml, 'user');
     return users.map(u => {
       let obj: Record<string, any> = {
-        userId: u.attributes.id,
+        userId: u.attributes.id
       };
       for (let child of u.children) {
         if (child.tag === 'service') {
@@ -239,24 +248,27 @@ export class Client {
       action: 'create',
       username: params.username,
       password: params.password,
-      limit: params.limit,
+      limit: params.limit
     });
 
     return getChildText(xml, 'id');
   }
 
-  async updateUser(userId: string, params: {
-    username?: string;
-    password?: string;
-    limit?: string;
-  }): Promise<void> {
+  async updateUser(
+    userId: string,
+    params: {
+      username?: string;
+      password?: string;
+      limit?: string;
+    }
+  ): Promise<void> {
     await this.post({
       section: 'users',
       action: 'update',
       user_id: userId,
       username: params.username,
       password: params.password,
-      limit: params.limit,
+      limit: params.limit
     });
   }
 
@@ -264,7 +276,7 @@ export class Client {
     await this.post({
       section: 'users',
       action: 'delete',
-      user_id: userId,
+      user_id: userId
     });
   }
 
@@ -274,13 +286,13 @@ export class Client {
     let xml = await this.post({
       section: 'databases',
       action: 'retrieve',
-      database_id: databaseId || 'all',
+      database_id: databaseId || 'all'
     });
 
     let databases = findChildren(xml, 'database');
     return databases.map(d => {
       let obj: Record<string, any> = {
-        databaseId: d.attributes.id,
+        databaseId: d.attributes.id
       };
       for (let child of d.children) {
         if (child.tag === 'service') {
@@ -299,7 +311,8 @@ export class Client {
       section: 'databases',
       action: 'create',
       database_name: name,
-      case_sensitivity: caseSensitivity !== undefined ? (caseSensitivity ? '1' : '0') : undefined,
+      case_sensitivity:
+        caseSensitivity !== undefined ? (caseSensitivity ? '1' : '0') : undefined
     });
 
     return getChildText(xml, 'id');
@@ -310,7 +323,7 @@ export class Client {
       section: 'databases',
       action: 'update',
       database_id: databaseId,
-      database_name: name,
+      database_name: name
     });
   }
 
@@ -318,7 +331,7 @@ export class Client {
     await this.post({
       section: 'databases',
       action: 'delete',
-      database_id: databaseId,
+      database_id: databaseId
     });
   }
 
@@ -326,19 +339,22 @@ export class Client {
     await this.post({
       section: 'databases',
       action: 'clear',
-      database_id: databaseId,
+      database_id: databaseId
     });
   }
 
-  async showDatabaseValues(databaseId: string, params?: {
-    value?: string;
-    valueLike?: string;
-    response?: string;
-    responseLike?: string;
-    validity?: string;
-    limit?: string;
-    offset?: string;
-  }): Promise<{ count: string; values: any[] }> {
+  async showDatabaseValues(
+    databaseId: string,
+    params?: {
+      value?: string;
+      valueLike?: string;
+      response?: string;
+      responseLike?: string;
+      validity?: string;
+      limit?: string;
+      offset?: string;
+    }
+  ): Promise<{ count: string; values: any[] }> {
     let xml = await this.post({
       section: 'databases',
       action: 'showvalues',
@@ -349,7 +365,7 @@ export class Client {
       responselike: params?.responseLike,
       validity: params?.validity,
       limit: params?.limit,
-      offset: params?.offset,
+      offset: params?.offset
     });
 
     let count = getChildText(xml, 'count');
@@ -359,41 +375,56 @@ export class Client {
       values: values.map(v => ({
         value: v.text,
         response: v.attributes.response || '',
-        validity: v.attributes.validity || '',
-      })),
+        validity: v.attributes.validity || ''
+      }))
     };
   }
 
-  async addDatabaseValue(databaseId: string, value: string, response?: string, validity?: string): Promise<void> {
+  async addDatabaseValue(
+    databaseId: string,
+    value: string,
+    response?: string,
+    validity?: string
+  ): Promise<void> {
     await this.post({
       section: 'databases',
       action: 'addvalue',
       database_id: databaseId,
       value,
       response,
-      validity,
+      validity
     });
   }
 
-  async upsertDatabaseValue(databaseId: string, value: string, response?: string, validity?: string): Promise<void> {
+  async upsertDatabaseValue(
+    databaseId: string,
+    value: string,
+    response?: string,
+    validity?: string
+  ): Promise<void> {
     await this.post({
       section: 'databases',
       action: 'upsertvalue',
       database_id: databaseId,
       value,
       response,
-      validity,
+      validity
     });
   }
 
-  async editDatabaseValue(databaseId: string, value: string, response?: string, validity?: string): Promise<void> {
+  async editDatabaseValue(
+    databaseId: string,
+    value: string,
+    response?: string,
+    validity?: string
+  ): Promise<void> {
     await this.post({
       section: 'databases',
       action: 'editvalue',
       database_id: databaseId,
       value,
       response,
-      validity,
+      validity
     });
   }
 
@@ -402,20 +433,23 @@ export class Client {
       section: 'databases',
       action: 'deletevalue',
       database_id: databaseId,
-      value,
+      value
     });
   }
 
-  async upsertMultiValues(databaseId: string | undefined, values: Array<{
-    value: string;
-    databaseId?: string;
-    response?: string;
-    validity?: string;
-  }>): Promise<void> {
+  async upsertMultiValues(
+    databaseId: string | undefined,
+    values: Array<{
+      value: string;
+      databaseId?: string;
+      response?: string;
+      validity?: string;
+    }>
+  ): Promise<void> {
     let params: Record<string, string | undefined> = {
       section: 'databases',
       action: 'upsertmultivalue',
-      database_id: databaseId,
+      database_id: databaseId
     };
 
     for (let i = 0; i < values.length; i++) {
@@ -473,7 +507,7 @@ export class Client {
       keyword: params?.keyword,
       order_by: params?.orderBy,
       timezone: params?.timezone,
-      only_recent: params?.onlyRecent,
+      only_recent: params?.onlyRecent
     });
 
     let count = getChildText(xml, 'count');
@@ -482,14 +516,14 @@ export class Client {
       count,
       scans: scans.map(s => {
         let obj: Record<string, any> = {
-          scanId: s.attributes.id,
+          scanId: s.attributes.id
         };
         for (let child of s.children) {
           if (child.tag === 'answer') {
             if (!obj.answers) obj.answers = [];
             obj.answers.push({
               questionId: child.attributes.qid,
-              answerText: child.text,
+              answerText: child.text
             });
           } else if (child.tag === 'properties') {
             obj.properties = {};
@@ -501,7 +535,7 @@ export class Client {
           }
         }
         return obj;
-      }),
+      })
     };
   }
 
@@ -509,7 +543,7 @@ export class Client {
     await this.post({
       section: 'scans',
       action: 'delete',
-      scan_id: scanIds,
+      scan_id: scanIds
     });
   }
 
@@ -519,20 +553,20 @@ export class Client {
     let xml = await this.post({
       section: 'questions',
       action: 'retrieve',
-      question_id: questionId || 'all',
+      question_id: questionId || 'all'
     });
 
     let questions = findChildren(xml, 'question');
     return questions.map(q => {
       let obj: Record<string, any> = {
-        questionId: q.attributes.id,
+        questionId: q.attributes.id
       };
       for (let child of q.children) {
         if (child.tag === 'answer') {
           if (!obj.answers) obj.answers = [];
           obj.answers.push({
             answerId: child.attributes.id,
-            answerText: child.text,
+            answerText: child.text
           });
         } else {
           obj[child.tag] = child.text;
@@ -547,7 +581,7 @@ export class Client {
       section: 'questions',
       action: 'create',
       question_text: text,
-      question_type: type,
+      question_type: type
     });
 
     return getChildText(xml, 'id');
@@ -557,7 +591,7 @@ export class Client {
     await this.post({
       section: 'questions',
       action: 'delete',
-      question_id: questionId,
+      question_id: questionId
     });
   }
 
@@ -566,7 +600,7 @@ export class Client {
       section: 'questions',
       action: 'addanswer',
       question_id: questionId,
-      answer_text: answerText,
+      answer_text: answerText
     });
 
     return getChildText(xml, 'id');
@@ -576,7 +610,7 @@ export class Client {
     await this.post({
       section: 'questions',
       action: 'deleteanswer',
-      answer_id: answerId,
+      answer_id: answerId
     });
   }
 
@@ -586,13 +620,13 @@ export class Client {
     let xml = await this.post({
       section: 'devices',
       action: 'retrieve',
-      device_id: deviceId || 'all',
+      device_id: deviceId || 'all'
     });
 
     let devices = findChildren(xml, 'device');
     return devices.map(d => {
       let obj: Record<string, any> = {
-        deviceId: d.attributes.id,
+        deviceId: d.attributes.id
       };
       for (let child of d.children) {
         obj[child.tag] = child.text;
@@ -606,7 +640,7 @@ export class Client {
       section: 'devices',
       action: 'update',
       device_id: deviceId,
-      device_name: deviceName,
+      device_name: deviceName
     });
   }
 

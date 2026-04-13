@@ -27,19 +27,25 @@ Daffy also supports OAuth2, enabling other applications to allow their end-users
 ## Features
 
 ### User Profile Management
+
 Retrieve your own profile or look up other Daffy users by username. Profile information includes user name, avatar, fund name, fund summary, associated causes, and family/fund members. You can also check follow relationships between users.
 
 ### Fund Balance
+
 Check your fund's current balance, including total amount, pending deposits, portfolio balance, and available balance for donations. Balance information is private and only accessible for your own fund.
 
 ### Causes
+
 Retrieve the charitable causes a user cares about (e.g., Education, International, Sports). Each cause has an ID, name, color, and logo. Causes can be retrieved for any user by their user ID.
 
 ### Contributions
+
 View the history of contributions made to your fund. Each contribution includes the amount, payment type (bank account, credit card, crypto, stock, check, wire, DAF transfer, etc.), status (pending, success, waiting for funds, failed), currency, and frequency. Contributions are private and only accessible via your own API key.
 
 ### Donations
+
 Create, retrieve, and cancel donations to nonprofits from your fund.
+
 - **Create a donation** by specifying an amount (in USD), a nonprofit's EIN, and optional public note or private memo.
 - **List your own donations** with full details including amount, status, and associated nonprofit info.
 - **View another user's public donations** (limited information only).
@@ -47,14 +53,18 @@ Create, retrieve, and cancel donations to nonprofits from your fund.
 - Donation statuses include: scheduled, waiting_for_funds, approved, rejected, completed, not_completed, and check_mailed.
 
 ### Gifts (Daffy Gifts)
+
 Create and manage Daffy Gifts — digital charity gift cards that let recipients choose which charity to donate to.
+
 - **Create a gift** by specifying a recipient name and amount (minimum $18).
 - **List all gifts** you've created, with status tracking (new, accepted, denied, claimed).
 - **Retrieve a specific gift** by its unique code.
 - Each gift generates a shareable URL the recipient can use to claim it.
 
 ### Nonprofit Search & Lookup
+
 Search and retrieve information about nonprofits from Daffy's database of 1.7M+ U.S. charities.
+
 - **Look up a nonprofit by EIN** to get details such as name, website, location, logo, and associated causes.
 - **Search nonprofits** by text query and/or cause ID.
 - Nonprofit data includes geographic coordinates when available.

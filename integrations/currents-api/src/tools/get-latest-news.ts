@@ -13,42 +13,59 @@ let newsArticleSchema = z.object({
   language: z.string().describe('Language code of the article'),
   categories: z.array(z.string()).describe('Categories the article belongs to'),
   author: z.string().describe('Author of the article'),
-  countries: z.array(z.string()).describe('Country codes associated with the article'),
+  countries: z.array(z.string()).describe('Country codes associated with the article')
 });
 
-export let getLatestNews = SlateTool.create(
-  spec,
-  {
-    name: 'Get Latest News',
-    key: 'get_latest_news',
-    description: `Fetch the most recent news articles from global sources. Returns a real-time stream of international news that can be filtered by language, category, country, and keywords. Useful for staying updated on current events, monitoring specific topics, or building news feeds.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getLatestNews = SlateTool.create(spec, {
+  name: 'Get Latest News',
+  key: 'get_latest_news',
+  description: `Fetch the most recent news articles from global sources. Returns a real-time stream of international news that can be filtered by language, category, country, and keywords. Useful for staying updated on current events, monitoring specific topics, or building news feeds.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    language: z.string().optional().describe('Language code to filter articles (e.g., "en", "es", "fr"). Defaults to English if not specified.'),
-    category: z.string().optional().describe('News category to filter by (e.g., "technology", "business", "sports", "politics", "health", "science", "entertainment", "world", "finance", "programming", "academia", "lifestyle", "opinion", "food", "game", "general", "regional")'),
-    country: z.string().optional().describe('Country code to filter articles by region (e.g., "US", "GB", "DE")'),
-    keywords: z.string().optional().describe('Keywords to filter articles by in titles or descriptions'),
-  }))
-  .output(z.object({
-    articles: z.array(newsArticleSchema).describe('List of latest news articles'),
-    page: z.number().describe('Current page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      language: z
+        .string()
+        .optional()
+        .describe(
+          'Language code to filter articles (e.g., "en", "es", "fr"). Defaults to English if not specified.'
+        ),
+      category: z
+        .string()
+        .optional()
+        .describe(
+          'News category to filter by (e.g., "technology", "business", "sports", "politics", "health", "science", "entertainment", "world", "finance", "programming", "academia", "lifestyle", "opinion", "food", "game", "general", "regional")'
+        ),
+      country: z
+        .string()
+        .optional()
+        .describe('Country code to filter articles by region (e.g., "US", "GB", "DE")'),
+      keywords: z
+        .string()
+        .optional()
+        .describe('Keywords to filter articles by in titles or descriptions')
+    })
+  )
+  .output(
+    z.object({
+      articles: z.array(newsArticleSchema).describe('List of latest news articles'),
+      page: z.number().describe('Current page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getLatestNews({
       language: ctx.input.language,
       category: ctx.input.category,
       country: ctx.input.country,
-      keywords: ctx.input.keywords,
+      keywords: ctx.input.keywords
     });
 
-    let articles = (result.news || []).map((article) => ({
+    let articles = (result.news || []).map(article => ({
       articleId: article.id || '',
       title: article.title || '',
       description: article.description || '',
@@ -58,7 +75,7 @@ export let getLatestNews = SlateTool.create(
       language: article.language || '',
       categories: article.category || [],
       author: article.author || '',
-      countries: article.country || [],
+      countries: article.country || []
     }));
 
     let filterParts: string[] = [];
@@ -72,9 +89,9 @@ export let getLatestNews = SlateTool.create(
     return {
       output: {
         articles,
-        page: result.page || 1,
+        page: result.page || 1
       },
-      message: `Retrieved **${articles.length}** latest news articles${filterDesc}.`,
+      message: `Retrieved **${articles.length}** latest news articles${filterDesc}.`
     };
   })
   .build();

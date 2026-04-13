@@ -3,36 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageReleases = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Releases',
-    key: 'manage_releases',
-    description: `List releases, get release details, or rollback to a previous release for a Heroku app. Releases track each deployment and config change, allowing you to roll back if needed.`,
-    instructions: [
-      'For "rollback", provide the slug ID from the target release to roll back to.'
-    ]
-  }
-)
-  .input(z.object({
-    appIdOrName: z.string().describe('App name or unique identifier'),
-    action: z.enum(['list', 'get', 'rollback']).describe('Operation to perform'),
-    releaseIdOrVersion: z.string().optional().describe('Release ID or version number (for "get" action)'),
-    slugId: z.string().optional().describe('Slug ID to deploy (for "rollback" action)')
-  }))
-  .output(z.object({
-    releases: z.array(z.object({
-      releaseId: z.string().describe('Unique identifier of the release'),
-      version: z.number().describe('Sequential release version number'),
-      description: z.string().describe('Description of the release'),
-      status: z.string().describe('Release status'),
-      current: z.boolean().describe('Whether this is the current release'),
-      createdAt: z.string().describe('When the release was created'),
-      userEmail: z.string().describe('Email of the user who created the release'),
-      slugId: z.string().nullable().describe('ID of the slug used for this release')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageReleases = SlateTool.create(spec, {
+  name: 'Manage Releases',
+  key: 'manage_releases',
+  description: `List releases, get release details, or rollback to a previous release for a Heroku app. Releases track each deployment and config change, allowing you to roll back if needed.`,
+  instructions: [
+    'For "rollback", provide the slug ID from the target release to roll back to.'
+  ]
+})
+  .input(
+    z.object({
+      appIdOrName: z.string().describe('App name or unique identifier'),
+      action: z.enum(['list', 'get', 'rollback']).describe('Operation to perform'),
+      releaseIdOrVersion: z
+        .string()
+        .optional()
+        .describe('Release ID or version number (for "get" action)'),
+      slugId: z.string().optional().describe('Slug ID to deploy (for "rollback" action)')
+    })
+  )
+  .output(
+    z.object({
+      releases: z.array(
+        z.object({
+          releaseId: z.string().describe('Unique identifier of the release'),
+          version: z.number().describe('Sequential release version number'),
+          description: z.string().describe('Description of the release'),
+          status: z.string().describe('Release status'),
+          current: z.boolean().describe('Whether this is the current release'),
+          createdAt: z.string().describe('When the release was created'),
+          userEmail: z.string().describe('Email of the user who created the release'),
+          slugId: z.string().nullable().describe('ID of the slug used for this release')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { appIdOrName, action } = ctx.input;
 
@@ -56,7 +62,8 @@ export let manageReleases = SlateTool.create(
     }
 
     if (action === 'get') {
-      if (!ctx.input.releaseIdOrVersion) throw new Error('releaseIdOrVersion is required for "get" action.');
+      if (!ctx.input.releaseIdOrVersion)
+        throw new Error('releaseIdOrVersion is required for "get" action.');
       let release = await client.getRelease(appIdOrName, ctx.input.releaseIdOrVersion);
       return {
         output: { releases: [mapRelease(release)] },

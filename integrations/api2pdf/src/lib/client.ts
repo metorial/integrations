@@ -21,23 +21,21 @@ import type {
   MarkitdownParams,
   DataLoaderParams,
   WkhtmlHtmlToPdfParams,
-  WkhtmlUrlToPdfParams,
+  WkhtmlUrlToPdfParams
 } from './types';
 
 export class Api2PdfClient {
   private axios: AxiosInstance;
 
   constructor(config: { token: string; useXlCluster?: boolean }) {
-    let baseURL = config.useXlCluster
-      ? 'https://v2-xl.api2pdf.com'
-      : 'https://v2.api2pdf.com';
+    let baseURL = config.useXlCluster ? 'https://v2-xl.api2pdf.com' : 'https://v2.api2pdf.com';
 
     this.axios = createAxios({
       baseURL,
       headers: {
         Authorization: config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -129,8 +127,8 @@ export class Api2PdfClient {
         ...(params.width !== undefined && { width: params.width }),
         ...(params.height !== undefined && { height: params.height }),
         ...(params.showlabel !== undefined && { showlabel: params.showlabel }),
-        outputBinary: false,
-      },
+        outputBinary: false
+      }
     });
     return res.data;
   }
@@ -139,7 +137,7 @@ export class Api2PdfClient {
 
   async createZip(params: ZipParams): Promise<Api2PdfResponse> {
     let res = await this.axios.post<Api2PdfResponse>('/zip', params, {
-      params: { outputBinary: false },
+      params: { outputBinary: false }
     });
     return res.data;
   }

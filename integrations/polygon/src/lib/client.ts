@@ -9,8 +9,8 @@ export class PolygonClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -40,22 +40,17 @@ export class PolygonClient {
     includeOtc?: boolean;
   }) {
     let { date, ...query } = params;
-    let response = await this.axios.get(
-      `/v2/aggs/grouped/locale/us/market/stocks/${date}`,
-      { params: { adjusted: query.adjusted, include_otc: query.includeOtc } }
-    );
+    let response = await this.axios.get(`/v2/aggs/grouped/locale/us/market/stocks/${date}`, {
+      params: { adjusted: query.adjusted, include_otc: query.includeOtc }
+    });
     return response.data;
   }
 
-  async getPreviousClose(params: {
-    ticker: string;
-    adjusted?: boolean;
-  }) {
+  async getPreviousClose(params: { ticker: string; adjusted?: boolean }) {
     let { ticker, ...query } = params;
-    let response = await this.axios.get(
-      `/v2/aggs/ticker/${encodeURIComponent(ticker)}/prev`,
-      { params: query }
-    );
+    let response = await this.axios.get(`/v2/aggs/ticker/${encodeURIComponent(ticker)}/prev`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -69,16 +64,13 @@ export class PolygonClient {
     sort?: string;
   }) {
     let { ticker, timestampGte, timestampLte, ...query } = params;
-    let response = await this.axios.get(
-      `/v3/trades/${encodeURIComponent(ticker)}`,
-      {
-        params: {
-          ...query,
-          'timestamp.gte': timestampGte,
-          'timestamp.lte': timestampLte,
-        },
+    let response = await this.axios.get(`/v3/trades/${encodeURIComponent(ticker)}`, {
+      params: {
+        ...query,
+        'timestamp.gte': timestampGte,
+        'timestamp.lte': timestampLte
       }
-    );
+    });
     return response.data;
   }
 
@@ -92,30 +84,23 @@ export class PolygonClient {
     sort?: string;
   }) {
     let { ticker, timestampGte, timestampLte, ...query } = params;
-    let response = await this.axios.get(
-      `/v3/quotes/${encodeURIComponent(ticker)}`,
-      {
-        params: {
-          ...query,
-          'timestamp.gte': timestampGte,
-          'timestamp.lte': timestampLte,
-        },
+    let response = await this.axios.get(`/v3/quotes/${encodeURIComponent(ticker)}`, {
+      params: {
+        ...query,
+        'timestamp.gte': timestampGte,
+        'timestamp.lte': timestampLte
       }
-    );
+    });
     return response.data;
   }
 
   async getLastTrade(ticker: string) {
-    let response = await this.axios.get(
-      `/v2/last/trade/${encodeURIComponent(ticker)}`
-    );
+    let response = await this.axios.get(`/v2/last/trade/${encodeURIComponent(ticker)}`);
     return response.data;
   }
 
   async getLastQuote(ticker: string) {
-    let response = await this.axios.get(
-      `/v2/last/nbbo/${encodeURIComponent(ticker)}`
-    );
+    let response = await this.axios.get(`/v2/last/nbbo/${encodeURIComponent(ticker)}`);
     return response.data;
   }
 
@@ -128,38 +113,27 @@ export class PolygonClient {
     return response.data;
   }
 
-  async getAllStockSnapshots(params?: {
-    tickers?: string;
-    includeOtc?: boolean;
-  }) {
-    let response = await this.axios.get(
-      `/v2/snapshot/locale/us/markets/stocks/tickers`,
-      {
-        params: {
-          tickers: params?.tickers,
-          include_otc: params?.includeOtc,
-        },
+  async getAllStockSnapshots(params?: { tickers?: string; includeOtc?: boolean }) {
+    let response = await this.axios.get(`/v2/snapshot/locale/us/markets/stocks/tickers`, {
+      params: {
+        tickers: params?.tickers,
+        include_otc: params?.includeOtc
       }
-    );
+    });
     return response.data;
   }
 
   async getStockMovers(direction: 'gainers' | 'losers') {
-    let response = await this.axios.get(
-      `/v2/snapshot/locale/us/markets/stocks/${direction}`
-    );
+    let response = await this.axios.get(`/v2/snapshot/locale/us/markets/stocks/${direction}`);
     return response.data;
   }
 
   // ─── Unified Snapshots ────────────────────────────────────
 
-  async getUnifiedSnapshot(params: {
-    tickers: string;
-  }) {
-    let response = await this.axios.get(
-      `/v3/snapshot`,
-      { params: { 'ticker.any_of': params.tickers } }
-    );
+  async getUnifiedSnapshot(params: { tickers: string }) {
+    let response = await this.axios.get(`/v3/snapshot`, {
+      params: { 'ticker.any_of': params.tickers }
+    });
     return response.data;
   }
 
@@ -179,25 +153,22 @@ export class PolygonClient {
     limit?: number;
     sort?: string;
   }) {
-    let response = await this.axios.get(
-      `/v3/reference/options/contracts`,
-      {
-        params: {
-          underlying_ticker: params.underlyingTicker,
-          contract_type: params.contractType,
-          expiration_date: params.expirationDate,
-          'expiration_date.gte': params.expirationDateGte,
-          'expiration_date.lte': params.expirationDateLte,
-          strike_price: params.strikePrice,
-          'strike_price.gte': params.strikePriceGte,
-          'strike_price.lte': params.strikePriceLte,
-          expired: params.expired,
-          order: params.order,
-          limit: params.limit,
-          sort: params.sort,
-        },
+    let response = await this.axios.get(`/v3/reference/options/contracts`, {
+      params: {
+        underlying_ticker: params.underlyingTicker,
+        contract_type: params.contractType,
+        expiration_date: params.expirationDate,
+        'expiration_date.gte': params.expirationDateGte,
+        'expiration_date.lte': params.expirationDateLte,
+        strike_price: params.strikePrice,
+        'strike_price.gte': params.strikePriceGte,
+        'strike_price.lte': params.strikePriceLte,
+        expired: params.expired,
+        order: params.order,
+        limit: params.limit,
+        sort: params.sort
       }
-    );
+    });
     return response.data;
   }
 
@@ -228,8 +199,8 @@ export class PolygonClient {
           contract_type: rest.contractType,
           order: rest.order,
           limit: rest.limit,
-          sort: rest.sort,
-        },
+          sort: rest.sort
+        }
       }
     );
     return response.data;
@@ -245,10 +216,9 @@ export class PolygonClient {
   }
 
   async getAllForexSnapshots(params?: { tickers?: string }) {
-    let response = await this.axios.get(
-      `/v2/snapshot/locale/global/markets/forex/tickers`,
-      { params: { tickers: params?.tickers } }
-    );
+    let response = await this.axios.get(`/v2/snapshot/locale/global/markets/forex/tickers`, {
+      params: { tickers: params?.tickers }
+    });
     return response.data;
   }
 
@@ -290,10 +260,9 @@ export class PolygonClient {
   }
 
   async getAllCryptoSnapshots(params?: { tickers?: string }) {
-    let response = await this.axios.get(
-      `/v2/snapshot/locale/global/markets/crypto/tickers`,
-      { params: { tickers: params?.tickers } }
-    );
+    let response = await this.axios.get(`/v2/snapshot/locale/global/markets/crypto/tickers`, {
+      params: { tickers: params?.tickers }
+    });
     return response.data;
   }
 
@@ -307,10 +276,9 @@ export class PolygonClient {
   // ─── Indices ──────────────────────────────────────────────
 
   async getIndicesSnapshot(params?: { tickers?: string }) {
-    let response = await this.axios.get(
-      `/v3/snapshot/indices`,
-      { params: { 'ticker.any_of': params?.tickers } }
-    );
+    let response = await this.axios.get(`/v3/snapshot/indices`, {
+      params: { 'ticker.any_of': params?.tickers }
+    });
     return response.data;
   }
 
@@ -328,17 +296,14 @@ export class PolygonClient {
     timestampLte?: string;
   }) {
     let { ticker, timestampGte, timestampLte, seriesType, ...query } = params;
-    let response = await this.axios.get(
-      `/v1/indicators/sma/${encodeURIComponent(ticker)}`,
-      {
-        params: {
-          ...query,
-          series_type: seriesType,
-          'timestamp.gte': timestampGte,
-          'timestamp.lte': timestampLte,
-        },
+    let response = await this.axios.get(`/v1/indicators/sma/${encodeURIComponent(ticker)}`, {
+      params: {
+        ...query,
+        series_type: seriesType,
+        'timestamp.gte': timestampGte,
+        'timestamp.lte': timestampLte
       }
-    );
+    });
     return response.data;
   }
 
@@ -354,17 +319,14 @@ export class PolygonClient {
     timestampLte?: string;
   }) {
     let { ticker, timestampGte, timestampLte, seriesType, ...query } = params;
-    let response = await this.axios.get(
-      `/v1/indicators/ema/${encodeURIComponent(ticker)}`,
-      {
-        params: {
-          ...query,
-          series_type: seriesType,
-          'timestamp.gte': timestampGte,
-          'timestamp.lte': timestampLte,
-        },
+    let response = await this.axios.get(`/v1/indicators/ema/${encodeURIComponent(ticker)}`, {
+      params: {
+        ...query,
+        series_type: seriesType,
+        'timestamp.gte': timestampGte,
+        'timestamp.lte': timestampLte
       }
-    );
+    });
     return response.data;
   }
 
@@ -380,17 +342,14 @@ export class PolygonClient {
     timestampLte?: string;
   }) {
     let { ticker, timestampGte, timestampLte, seriesType, ...query } = params;
-    let response = await this.axios.get(
-      `/v1/indicators/rsi/${encodeURIComponent(ticker)}`,
-      {
-        params: {
-          ...query,
-          series_type: seriesType,
-          'timestamp.gte': timestampGte,
-          'timestamp.lte': timestampLte,
-        },
+    let response = await this.axios.get(`/v1/indicators/rsi/${encodeURIComponent(ticker)}`, {
+      params: {
+        ...query,
+        series_type: seriesType,
+        'timestamp.gte': timestampGte,
+        'timestamp.lte': timestampLte
       }
-    );
+    });
     return response.data;
   }
 
@@ -407,21 +366,27 @@ export class PolygonClient {
     timestampGte?: string;
     timestampLte?: string;
   }) {
-    let { ticker, timestampGte, timestampLte, seriesType, shortWindow, longWindow, signalWindow, ...query } = params;
-    let response = await this.axios.get(
-      `/v1/indicators/macd/${encodeURIComponent(ticker)}`,
-      {
-        params: {
-          ...query,
-          series_type: seriesType,
-          short_window: shortWindow,
-          long_window: longWindow,
-          signal_window: signalWindow,
-          'timestamp.gte': timestampGte,
-          'timestamp.lte': timestampLte,
-        },
+    let {
+      ticker,
+      timestampGte,
+      timestampLte,
+      seriesType,
+      shortWindow,
+      longWindow,
+      signalWindow,
+      ...query
+    } = params;
+    let response = await this.axios.get(`/v1/indicators/macd/${encodeURIComponent(ticker)}`, {
+      params: {
+        ...query,
+        series_type: seriesType,
+        short_window: shortWindow,
+        long_window: longWindow,
+        signal_window: signalWindow,
+        'timestamp.gte': timestampGte,
+        'timestamp.lte': timestampLte
       }
-    );
+    });
     return response.data;
   }
 
@@ -438,17 +403,11 @@ export class PolygonClient {
     limit?: number;
     sort?: string;
   }) {
-    let response = await this.axios.get(
-      `/v3/reference/tickers`,
-      { params }
-    );
+    let response = await this.axios.get(`/v3/reference/tickers`, { params });
     return response.data;
   }
 
-  async getTickerDetails(params: {
-    ticker: string;
-    date?: string;
-  }) {
+  async getTickerDetails(params: { ticker: string; date?: string }) {
     let { ticker, ...query } = params;
     let response = await this.axios.get(
       `/v3/reference/tickers/${encodeURIComponent(ticker)}`,
@@ -457,10 +416,7 @@ export class PolygonClient {
     return response.data;
   }
 
-  async getTickerEvents(params: {
-    ticker: string;
-    types?: string;
-  }) {
+  async getTickerEvents(params: { ticker: string; types?: string }) {
     let { ticker, ...query } = params;
     let response = await this.axios.get(
       `/vX/reference/tickers/${encodeURIComponent(ticker)}/events`,
@@ -470,9 +426,7 @@ export class PolygonClient {
   }
 
   async getRelatedCompanies(ticker: string) {
-    let response = await this.axios.get(
-      `/v1/related-companies/${encodeURIComponent(ticker)}`
-    );
+    let response = await this.axios.get(`/v1/related-companies/${encodeURIComponent(ticker)}`);
     return response.data;
   }
 
@@ -485,20 +439,17 @@ export class PolygonClient {
     limit?: number;
     sort?: string;
   }) {
-    let response = await this.axios.get(
-      `/v3/reference/splits`,
-      {
-        params: {
-          ticker: params?.ticker,
-          execution_date: params?.executionDate,
-          'execution_date.gte': params?.executionDateGte,
-          'execution_date.lte': params?.executionDateLte,
-          order: params?.order,
-          limit: params?.limit,
-          sort: params?.sort,
-        },
+    let response = await this.axios.get(`/v3/reference/splits`, {
+      params: {
+        ticker: params?.ticker,
+        execution_date: params?.executionDate,
+        'execution_date.gte': params?.executionDateGte,
+        'execution_date.lte': params?.executionDateLte,
+        order: params?.order,
+        limit: params?.limit,
+        sort: params?.sort
       }
-    );
+    });
     return response.data;
   }
 
@@ -513,22 +464,19 @@ export class PolygonClient {
     type?: string;
     frequency?: number;
   }) {
-    let response = await this.axios.get(
-      `/v3/reference/dividends`,
-      {
-        params: {
-          ticker: params?.ticker,
-          ex_dividend_date: params?.exDividendDate,
-          'ex_dividend_date.gte': params?.exDividendDateGte,
-          'ex_dividend_date.lte': params?.exDividendDateLte,
-          order: params?.order,
-          limit: params?.limit,
-          sort: params?.sort,
-          type: params?.type,
-          frequency: params?.frequency,
-        },
+    let response = await this.axios.get(`/v3/reference/dividends`, {
+      params: {
+        ticker: params?.ticker,
+        ex_dividend_date: params?.exDividendDate,
+        'ex_dividend_date.gte': params?.exDividendDateGte,
+        'ex_dividend_date.lte': params?.exDividendDateLte,
+        order: params?.order,
+        limit: params?.limit,
+        sort: params?.sort,
+        type: params?.type,
+        frequency: params?.frequency
       }
-    );
+    });
     return response.data;
   }
 
@@ -543,33 +491,24 @@ export class PolygonClient {
     filingDateLte?: string;
   }) {
     let { ticker, filingDateGte, filingDateLte, ...query } = params;
-    let response = await this.axios.get(
-      `/vX/reference/financials`,
-      {
-        params: {
-          ...query,
-          ticker,
-          'filing_date.gte': filingDateGte,
-          'filing_date.lte': filingDateLte,
-        },
+    let response = await this.axios.get(`/vX/reference/financials`, {
+      params: {
+        ...query,
+        ticker,
+        'filing_date.gte': filingDateGte,
+        'filing_date.lte': filingDateLte
       }
-    );
+    });
     return response.data;
   }
 
-  async getExchanges(params?: {
-    assetClass?: string;
-    locale?: string;
-  }) {
-    let response = await this.axios.get(
-      `/v3/reference/exchanges`,
-      {
-        params: {
-          asset_class: params?.assetClass,
-          locale: params?.locale,
-        },
+  async getExchanges(params?: { assetClass?: string; locale?: string }) {
+    let response = await this.axios.get(`/v3/reference/exchanges`, {
+      params: {
+        asset_class: params?.assetClass,
+        locale: params?.locale
       }
-    );
+    });
     return response.data;
   }
 
@@ -590,18 +529,15 @@ export class PolygonClient {
     limit?: number;
     sort?: string;
   }) {
-    let response = await this.axios.get(
-      `/v3/reference/conditions`,
-      {
-        params: {
-          asset_class: params?.assetClass,
-          data_type: params?.dataType,
-          order: params?.order,
-          limit: params?.limit,
-          sort: params?.sort,
-        },
+    let response = await this.axios.get(`/v3/reference/conditions`, {
+      params: {
+        asset_class: params?.assetClass,
+        data_type: params?.dataType,
+        order: params?.order,
+        limit: params?.limit,
+        sort: params?.sort
       }
-    );
+    });
     return response.data;
   }
 
@@ -615,19 +551,16 @@ export class PolygonClient {
     limit?: number;
     sort?: string;
   }) {
-    let response = await this.axios.get(
-      `/v2/reference/news`,
-      {
-        params: {
-          ticker: params?.ticker,
-          'published_utc.gte': params?.publishedUtcGte,
-          'published_utc.lte': params?.publishedUtcLte,
-          order: params?.order,
-          limit: params?.limit,
-          sort: params?.sort,
-        },
+    let response = await this.axios.get(`/v2/reference/news`, {
+      params: {
+        ticker: params?.ticker,
+        'published_utc.gte': params?.publishedUtcGte,
+        'published_utc.lte': params?.publishedUtcLte,
+        order: params?.order,
+        limit: params?.limit,
+        sort: params?.sort
       }
-    );
+    });
     return response.data;
   }
 }

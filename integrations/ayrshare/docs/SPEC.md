@@ -11,6 +11,7 @@ Ayrshare is a unified social media API that allows developers to manage social m
 Ayrshare authenticates API requests via an Authorization token passed in the HTTP header. The API Key must be sent with the `Bearer` prefix. The API Key can be found in the Ayrshare Dashboard by switching to your Primary Profile.
 
 **Header format:**
+
 ```
 Authorization: Bearer <API_KEY>
 Content-Type: application/json
@@ -105,6 +106,7 @@ Notification when a user's profile links or unlinks a social network. Includes t
 ### Messages Action
 
 Notifications for direct messaging activity on Facebook and Instagram. Includes three sub-events:
+
 - **New Message**: When a message is sent or received.
 - **Message Read**: When a message is read by the recipient.
 - **Reaction**: When a reaction (e.g., emoji) is created or deleted on a message.
@@ -122,6 +124,7 @@ Notification when a new RSS feed item is found for a registered RSS feed. When t
 ### X Account Activity Action
 
 Real-time notifications for activity on a linked X/Twitter account. Covers a wide range of events including:
+
 - Tweet creation (posts, retweets, replies, mentions, quote tweets)
 - Tweet deletion
 - Likes (favorites)

@@ -3,32 +3,33 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { LibrariesClient } from '../lib/libraries';
 
-export let manageLibrary = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Library',
-    key: 'manage_library',
-    description: `Create or delete a Creative Cloud Library. Creating a library makes it available across all Adobe applications. Deleting a library permanently removes it and all its elements.`,
-    tags: {
-      destructive: true,
-    },
+export let manageLibrary = SlateTool.create(spec, {
+  name: 'Manage Library',
+  key: 'manage_library',
+  description: `Create or delete a Creative Cloud Library. Creating a library makes it available across all Adobe applications. Deleting a library permanently removes it and all its elements.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'delete']).describe('Action to perform'),
-    libraryId: z.string().optional().describe('Library ID (required for delete)'),
-    name: z.string().optional().describe('Library name (required for create)'),
-  }))
-  .output(z.object({
-    libraryId: z.string().optional().describe('ID of created/deleted library'),
-    name: z.string().optional().describe('Name of created library'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'delete']).describe('Action to perform'),
+      libraryId: z.string().optional().describe('Library ID (required for delete)'),
+      name: z.string().optional().describe('Library name (required for create)')
+    })
+  )
+  .output(
+    z.object({
+      libraryId: z.string().optional().describe('ID of created/deleted library'),
+      name: z.string().optional().describe('Name of created library'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LibrariesClient({
       token: ctx.auth.token,
       clientId: ctx.auth.clientId,
-      orgId: ctx.auth.orgId,
+      orgId: ctx.auth.orgId
     });
 
     if (ctx.input.action === 'create') {
@@ -40,9 +41,9 @@ export let manageLibrary = SlateTool.create(
         output: {
           libraryId: result.id || result.library_urn,
           name: result.name || ctx.input.name,
-          success: true,
+          success: true
         },
-        message: `Created library **"${ctx.input.name}"** with ID \`${result.id || result.library_urn}\`.`,
+        message: `Created library **"${ctx.input.name}"** with ID \`${result.id || result.library_urn}\`.`
       };
     } else {
       if (!ctx.input.libraryId) {
@@ -52,9 +53,10 @@ export let manageLibrary = SlateTool.create(
       return {
         output: {
           libraryId: ctx.input.libraryId,
-          success: true,
+          success: true
         },
-        message: `Deleted library \`${ctx.input.libraryId}\`.`,
+        message: `Deleted library \`${ctx.input.libraryId}\`.`
       };
     }
-  }).build();
+  })
+  .build();

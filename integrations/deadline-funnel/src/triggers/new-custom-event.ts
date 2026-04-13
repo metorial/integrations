@@ -3,59 +3,59 @@ import { DeadlineFunnelClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newCustomEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Custom Event',
-    key: 'new_custom_event',
-    description: 'Triggers when a new custom event is created in Deadline Funnel. Custom events can be used for social proof and analytics tracking.',
-  },
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique identifier of the custom event'),
-    eventName: z.string().describe('Name of the custom event'),
-    email: z.string().describe('Email of the contact associated with the event'),
-    createdAt: z.string().describe('When the custom event was created'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique identifier of the custom event'),
-    eventName: z.string().describe('Name of the custom event'),
-    email: z.string().describe('Email of the contact associated with the event'),
-    createdAt: z.string().describe('When the custom event was created'),
-  }))
+export let newCustomEvent = SlateTrigger.create(spec, {
+  name: 'New Custom Event',
+  key: 'new_custom_event',
+  description:
+    'Triggers when a new custom event is created in Deadline Funnel. Custom events can be used for social proof and analytics tracking.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique identifier of the custom event'),
+      eventName: z.string().describe('Name of the custom event'),
+      email: z.string().describe('Email of the contact associated with the event'),
+      createdAt: z.string().describe('When the custom event was created')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique identifier of the custom event'),
+      eventName: z.string().describe('Name of the custom event'),
+      email: z.string().describe('Email of the contact associated with the event'),
+      createdAt: z.string().describe('When the custom event was created')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DeadlineFunnelClient({ token: ctx.auth.token });
       let lastTimestamp = (ctx.state as any)?.lastTimestamp || '';
 
       let events = await client.listCustomEvents({
-        since: lastTimestamp || undefined,
+        since: lastTimestamp || undefined
       });
 
-      let inputs = events.map((e) => ({
+      let inputs = events.map(e => ({
         eventId: e.eventId,
         eventName: e.name,
         email: e.email,
-        createdAt: e.createdAt,
+        createdAt: e.createdAt
       }));
 
-      let newLastTimestamp = events.length > 0
-        ? events[0]!.createdAt
-        : lastTimestamp;
+      let newLastTimestamp = events.length > 0 ? events[0]!.createdAt : lastTimestamp;
 
       return {
         inputs,
         updatedState: {
-          lastTimestamp: newLastTimestamp,
-        },
+          lastTimestamp: newLastTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'custom_event.created',
         id: ctx.input.eventId,
@@ -63,9 +63,9 @@ export let newCustomEvent = SlateTrigger.create(
           eventId: ctx.input.eventId,
           eventName: ctx.input.eventName,
           email: ctx.input.email,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

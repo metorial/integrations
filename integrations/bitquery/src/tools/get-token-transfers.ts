@@ -15,49 +15,75 @@ let transferOutputSchema = z.object({
   tokenDecimals: z.number().optional().describe('Token decimals'),
   sender: z.string().optional().describe('Sender address'),
   receiver: z.string().optional().describe('Receiver address'),
-  transferType: z.string().optional().describe('Transfer type'),
+  transferType: z.string().optional().describe('Transfer type')
 });
 
-export let getTokenTransfers = SlateTool.create(
-  spec,
-  {
-    name: 'Get Token Transfers',
-    key: 'get_token_transfers',
-    description: `Retrieve token transfer data from EVM blockchains or Solana. Track ERC-20, ERC-721, ERC-1155, and SPL token movements with filters for token, sender, receiver, and time range.
+export let getTokenTransfers = SlateTool.create(spec, {
+  name: 'Get Token Transfers',
+  key: 'get_token_transfers',
+  description: `Retrieve token transfer data from EVM blockchains or Solana. Track ERC-20, ERC-721, ERC-1155, and SPL token movements with filters for token, sender, receiver, and time range.
 Use this to monitor wallet activity, track specific token movements, or analyze transfer patterns.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    blockchain: z.enum(['eth', 'bsc', 'matic', 'arbitrum', 'base', 'optimism', 'opbnb', 'avalanche', 'fantom', 'cronos', 'solana'])
-      .describe('Blockchain network to query'),
-    tokenAddress: z.string().optional().describe('Token contract/mint address to filter'),
-    senderAddress: z.string().optional().describe('Sender address to filter'),
-    receiverAddress: z.string().optional().describe('Receiver address to filter'),
-    since: z.string().optional().describe('Start datetime filter (ISO 8601 format)'),
-    till: z.string().optional().describe('End datetime filter (ISO 8601 format)'),
-    limit: z.number().min(1).max(1000).default(25).describe('Maximum number of transfers to return'),
-  }))
-  .output(z.object({
-    transfers: z.array(transferOutputSchema).describe('List of token transfers'),
-    transferCount: z.number().describe('Number of transfers returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      blockchain: z
+        .enum([
+          'eth',
+          'bsc',
+          'matic',
+          'arbitrum',
+          'base',
+          'optimism',
+          'opbnb',
+          'avalanche',
+          'fantom',
+          'cronos',
+          'solana'
+        ])
+        .describe('Blockchain network to query'),
+      tokenAddress: z.string().optional().describe('Token contract/mint address to filter'),
+      senderAddress: z.string().optional().describe('Sender address to filter'),
+      receiverAddress: z.string().optional().describe('Receiver address to filter'),
+      since: z.string().optional().describe('Start datetime filter (ISO 8601 format)'),
+      till: z.string().optional().describe('End datetime filter (ISO 8601 format)'),
+      limit: z
+        .number()
+        .min(1)
+        .max(1000)
+        .default(25)
+        .describe('Maximum number of transfers to return')
+    })
+  )
+  .output(
+    z.object({
+      transfers: z.array(transferOutputSchema).describe('List of token transfers'),
+      transferCount: z.number().describe('Number of transfers returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BitqueryClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion as 'v1' | 'v2',
+      apiVersion: ctx.config.apiVersion as 'v1' | 'v2'
     });
 
-    let { blockchain, tokenAddress, senderAddress, receiverAddress, since, till, limit } = ctx.input;
+    let { blockchain, tokenAddress, senderAddress, receiverAddress, since, till, limit } =
+      ctx.input;
 
     ctx.info(`Fetching token transfers on ${blockchain}`);
 
     let transfers: Array<z.infer<typeof transferOutputSchema>> = [];
 
     if (blockchain === 'solana') {
-      let query = buildSolanaTransfersQuery(tokenAddress, senderAddress, receiverAddress, since, till);
+      let query = buildSolanaTransfersQuery(
+        tokenAddress,
+        senderAddress,
+        receiverAddress,
+        since,
+        till
+      );
       let variables: Record<string, any> = { limit };
       if (tokenAddress) variables.tokenAddress = tokenAddress;
       if (senderAddress) variables.senderAddress = senderAddress;
@@ -78,14 +104,20 @@ Use this to monitor wallet activity, track specific token movements, or analyze 
         tokenName: t.Transfer?.Currency?.Name,
         tokenAddress: t.Transfer?.Currency?.MintAddress,
         sender: t.Transfer?.Sender,
-        receiver: t.Transfer?.Receiver,
+        receiver: t.Transfer?.Receiver
       }));
     } else if (ctx.config.apiVersion === 'v1') {
-      let query = buildV1TransfersQuery(tokenAddress, senderAddress, receiverAddress, since, till);
+      let query = buildV1TransfersQuery(
+        tokenAddress,
+        senderAddress,
+        receiverAddress,
+        since,
+        till
+      );
       let variables: Record<string, any> = {
         network: mapToV1Network(blockchain),
         limit,
-        offset: 0,
+        offset: 0
       };
       if (tokenAddress) variables.currency = tokenAddress;
       if (senderAddress) variables.sender = senderAddress;
@@ -106,10 +138,16 @@ Use this to monitor wallet activity, track specific token movements, or analyze 
         tokenAddress: t.currency?.address,
         tokenDecimals: t.currency?.decimals,
         sender: t.sender?.address,
-        receiver: t.receiver?.address,
+        receiver: t.receiver?.address
       }));
     } else {
-      let query = buildV2EvmTransfersQuery(tokenAddress, senderAddress, receiverAddress, since, till);
+      let query = buildV2EvmTransfersQuery(
+        tokenAddress,
+        senderAddress,
+        receiverAddress,
+        since,
+        till
+      );
       let variables: Record<string, any> = { network: blockchain, limit };
       if (tokenAddress) variables.tokenAddress = tokenAddress;
       if (senderAddress) variables.senderAddress = senderAddress;
@@ -132,30 +170,45 @@ Use this to monitor wallet activity, track specific token movements, or analyze 
         tokenDecimals: t.Transfer?.Currency?.Decimals,
         sender: t.Transfer?.Sender,
         receiver: t.Transfer?.Receiver,
-        transferType: t.Transfer?.Type,
+        transferType: t.Transfer?.Type
       }));
     }
 
     return {
       output: {
         transfers,
-        transferCount: transfers.length,
+        transferCount: transfers.length
       },
-      message: `Retrieved **${transfers.length}** token transfer(s) on **${blockchain}**.`,
+      message: `Retrieved **${transfers.length}** token transfer(s) on **${blockchain}**.`
     };
   })
   .build();
 
 let mapToV1Network = (chain: string): string => {
   let map: Record<string, string> = {
-    eth: 'ethereum', bsc: 'bsc', matic: 'matic', arbitrum: 'arbitrum',
-    base: 'base', optimism: 'optimism', avalanche: 'avalanche_c', fantom: 'fantom', cronos: 'cronos',
+    eth: 'ethereum',
+    bsc: 'bsc',
+    matic: 'matic',
+    arbitrum: 'arbitrum',
+    base: 'base',
+    optimism: 'optimism',
+    avalanche: 'avalanche_c',
+    fantom: 'fantom',
+    cronos: 'cronos'
   };
   return map[chain] || chain;
 };
 
-let buildV1TransfersQuery = (token?: string, sender?: string, receiver?: string, since?: string, till?: string): string => {
-  let filters: string[] = ['options: {limit: $limit, offset: $offset, desc: "block.timestamp.iso8601"}'];
+let buildV1TransfersQuery = (
+  token?: string,
+  sender?: string,
+  receiver?: string,
+  since?: string,
+  till?: string
+): string => {
+  let filters: string[] = [
+    'options: {limit: $limit, offset: $offset, desc: "block.timestamp.iso8601"}'
+  ];
   if (since || till) filters.push('date: {since: $since, till: $till}');
   if (token) filters.push('currency: {is: $currency}');
   if (sender) filters.push('sender: {is: $sender}');
@@ -182,14 +235,24 @@ let buildV1TransfersQuery = (token?: string, sender?: string, receiver?: string,
 }`;
 };
 
-let buildV2EvmTransfersQuery = (token?: string, sender?: string, receiver?: string, since?: string, till?: string): string => {
+let buildV2EvmTransfersQuery = (
+  token?: string,
+  sender?: string,
+  receiver?: string,
+  since?: string,
+  till?: string
+): string => {
   let transferFilters: string[] = [];
   if (token) transferFilters.push('Currency: {SmartContract: {is: $tokenAddress}}');
   if (sender) transferFilters.push('Sender: {is: $senderAddress}');
   if (receiver) transferFilters.push('Receiver: {is: $receiverAddress}');
 
-  let transferFilter = transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
-  let timeFilter = (since || till) ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}` : '';
+  let transferFilter =
+    transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
+  let timeFilter =
+    since || till
+      ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}`
+      : '';
 
   let allWhereFilters = [transferFilter, timeFilter].filter(Boolean).join(', ');
   let whereClause = allWhereFilters ? `where: {${allWhereFilters}}` : '';
@@ -220,14 +283,24 @@ let buildV2EvmTransfersQuery = (token?: string, sender?: string, receiver?: stri
 }`;
 };
 
-let buildSolanaTransfersQuery = (token?: string, sender?: string, receiver?: string, since?: string, till?: string): string => {
+let buildSolanaTransfersQuery = (
+  token?: string,
+  sender?: string,
+  receiver?: string,
+  since?: string,
+  till?: string
+): string => {
   let transferFilters: string[] = [];
   if (token) transferFilters.push('Currency: {MintAddress: {is: $tokenAddress}}');
   if (sender) transferFilters.push('Sender: {is: $senderAddress}');
   if (receiver) transferFilters.push('Receiver: {is: $receiverAddress}');
 
-  let transferFilter = transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
-  let timeFilter = (since || till) ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}` : '';
+  let transferFilter =
+    transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
+  let timeFilter =
+    since || till
+      ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}`
+      : '';
 
   let allWhereFilters = [transferFilter, timeFilter].filter(Boolean).join(', ');
   let whereClause = allWhereFilters ? `where: {${allWhereFilters}}` : '';

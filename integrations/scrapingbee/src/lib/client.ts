@@ -40,15 +40,18 @@ export class Client {
     if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
     if (params.countryCode) queryParams['country_code'] = params.countryCode;
     if (params.blockAds !== undefined) queryParams['block_ads'] = params.blockAds;
-    if (params.blockResources !== undefined) queryParams['block_resources'] = params.blockResources;
+    if (params.blockResources !== undefined)
+      queryParams['block_resources'] = params.blockResources;
     if (params.device) queryParams['device'] = params.device;
     if (params.wait !== undefined) queryParams['wait'] = params.wait;
     if (params.waitFor) queryParams['wait_for'] = params.waitFor;
-    if (params.returnPageSource !== undefined) queryParams['return_page_source'] = params.returnPageSource;
+    if (params.returnPageSource !== undefined)
+      queryParams['return_page_source'] = params.returnPageSource;
     if (params.timeout !== undefined) queryParams['timeout'] = params.timeout;
     if (params.ownProxy) queryParams['own_proxy'] = params.ownProxy;
     if (params.jsonResponse !== undefined) queryParams['json_response'] = params.jsonResponse;
-    if (params.forwardHeaders !== undefined) queryParams['forward_headers'] = params.forwardHeaders;
+    if (params.forwardHeaders !== undefined)
+      queryParams['forward_headers'] = params.forwardHeaders;
     if (params.cookies) queryParams['cookies'] = params.cookies;
 
     let headers: Record<string, string> = {};
@@ -116,7 +119,8 @@ export class Client {
     };
 
     if (params.aiQuery) queryParams['ai_query'] = params.aiQuery;
-    if (params.aiExtractRules) queryParams['ai_extract_rules'] = JSON.stringify(params.aiExtractRules);
+    if (params.aiExtractRules)
+      queryParams['ai_extract_rules'] = JSON.stringify(params.aiExtractRules);
     if (params.aiSelector) queryParams['ai_selector'] = params.aiSelector;
     if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
     if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
@@ -154,7 +158,8 @@ export class Client {
     if (params.fullPage !== undefined) queryParams['screenshot_full_page'] = params.fullPage;
     if (params.windowWidth !== undefined) queryParams['window_width'] = params.windowWidth;
     if (params.windowHeight !== undefined) queryParams['window_height'] = params.windowHeight;
-    if (params.screenshotSelector) queryParams['screenshot_selector'] = params.screenshotSelector;
+    if (params.screenshotSelector)
+      queryParams['screenshot_selector'] = params.screenshotSelector;
     if (params.renderJs !== undefined) queryParams['render_js'] = params.renderJs;
     if (params.premiumProxy !== undefined) queryParams['premium_proxy'] = params.premiumProxy;
     if (params.countryCode) queryParams['country_code'] = params.countryCode;
@@ -167,7 +172,6 @@ export class Client {
       responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let base64 = Buffer.from(response.data, 'binary').toString('base64');
     return base64;
   }
@@ -321,9 +325,7 @@ export class Client {
     return response.data;
   }
 
-  async youtubeMetadata(params: {
-    videoId: string;
-  }): Promise<any> {
+  async youtubeMetadata(params: { videoId: string }): Promise<any> {
     let queryParams: Record<string, any> = {
       api_key: this.apiKey,
       video_id: params.videoId
@@ -336,10 +338,7 @@ export class Client {
     return response.data;
   }
 
-  async youtubeTranscript(params: {
-    videoId: string;
-    language?: string;
-  }): Promise<any> {
+  async youtubeTranscript(params: { videoId: string; language?: string }): Promise<any> {
     let queryParams: Record<string, any> = {
       api_key: this.apiKey,
       video_id: params.videoId
@@ -354,9 +353,7 @@ export class Client {
     return response.data;
   }
 
-  async youtubeTrainability(params: {
-    videoId: string;
-  }): Promise<any> {
+  async youtubeTrainability(params: { videoId: string }): Promise<any> {
     let queryParams: Record<string, any> = {
       api_key: this.apiKey,
       video_id: params.videoId

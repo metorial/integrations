@@ -4,16 +4,17 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(private authConfig: { token: string; authMethod: 'oauth' | 'basic' }) {
-    let authHeader = authConfig.authMethod === 'oauth'
-      ? `Bearer ${authConfig.token}`
-      : `Basic ${authConfig.token}`;
+    let authHeader =
+      authConfig.authMethod === 'oauth'
+        ? `Bearer ${authConfig.token}`
+        : `Basic ${authConfig.token}`;
 
     this.axios = createAxios({
       baseURL: 'https://acuityscheduling.com/api/v1',
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -61,31 +62,40 @@ export class Client {
     return response.data;
   }
 
-  async updateAppointment(appointmentId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-    notes?: string;
-    fields?: Array<{ id: number; value: string }>;
-    labels?: Array<{ id: number }>;
-  }) {
+  async updateAppointment(
+    appointmentId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+      notes?: string;
+      fields?: Array<{ id: number; value: string }>;
+      labels?: Array<{ id: number }>;
+    }
+  ) {
     let response = await this.axios.put(`/appointments/${appointmentId}`, data);
     return response.data;
   }
 
-  async cancelAppointment(appointmentId: number, data?: {
-    cancelNote?: string;
-    noEmail?: boolean;
-  }) {
+  async cancelAppointment(
+    appointmentId: number,
+    data?: {
+      cancelNote?: string;
+      noEmail?: boolean;
+    }
+  ) {
     let response = await this.axios.put(`/appointments/${appointmentId}/cancel`, data || {});
     return response.data;
   }
 
-  async rescheduleAppointment(appointmentId: number, data: {
-    datetime: string;
-    calendarID?: number;
-  }) {
+  async rescheduleAppointment(
+    appointmentId: number,
+    data: {
+      datetime: string;
+      calendarID?: number;
+    }
+  ) {
     let response = await this.axios.put(`/appointments/${appointmentId}/reschedule`, data);
     return response.data;
   }
@@ -129,11 +139,7 @@ export class Client {
 
   // ─── Blocks ───
 
-  async listBlocks(params?: {
-    minDate?: string;
-    maxDate?: string;
-    calendarID?: number;
-  }) {
+  async listBlocks(params?: { minDate?: string; maxDate?: string; calendarID?: number }) {
     let response = await this.axios.get('/blocks', { params });
     return response.data;
   }
@@ -143,12 +149,7 @@ export class Client {
     return response.data;
   }
 
-  async createBlock(data: {
-    start: string;
-    end: string;
-    calendarID: number;
-    notes?: string;
-  }) {
+  async createBlock(data: { start: string; end: string; calendarID: number; notes?: string }) {
     let response = await this.axios.post('/blocks', data);
     return response.data;
   }
@@ -189,13 +190,16 @@ export class Client {
     return response.data;
   }
 
-  async updateClient(clientId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-    notes?: string;
-  }) {
+  async updateClient(
+    clientId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+      notes?: string;
+    }
+  ) {
     let response = await this.axios.put(`/clients/${clientId}`, data);
     return response.data;
   }
@@ -243,10 +247,7 @@ export class Client {
     return response.data;
   }
 
-  async checkCertificate(params: {
-    certificate: string;
-    appointmentTypeID?: number;
-  }) {
+  async checkCertificate(params: { certificate: string; appointmentTypeID?: number }) {
     let response = await this.axios.get('/certificates/check', { params });
     return response.data;
   }
@@ -286,10 +287,7 @@ export class Client {
     return response.data;
   }
 
-  async createWebhook(data: {
-    event: string;
-    target: string;
-  }) {
+  async createWebhook(data: { event: string; target: string }) {
     let response = await this.axios.post('/webhooks', data);
     return response.data;
   }

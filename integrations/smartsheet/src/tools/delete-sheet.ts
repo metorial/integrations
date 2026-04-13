@@ -3,24 +3,25 @@ import { SmartsheetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteSheet = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Sheet',
-    key: 'delete_sheet',
-    description: `Permanently delete a sheet. This action cannot be undone.`,
-    tags: {
-      destructive: true
-    }
+export let deleteSheet = SlateTool.create(spec, {
+  name: 'Delete Sheet',
+  key: 'delete_sheet',
+  description: `Permanently delete a sheet. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    sheetId: z.string().describe('ID of the sheet to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sheetId: z.string().describe('ID of the sheet to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SmartsheetClient({ token: ctx.auth.token });
 
     await client.deleteSheet(ctx.input.sheetId);

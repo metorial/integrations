@@ -15,12 +15,9 @@ import {
   getTeamPerformance,
   manageTask,
   listSchedules,
-  pushContactToCampaign,
+  pushContactToCampaign
 } from './tools';
-import {
-  emailEvents,
-  contactEvents,
-} from './triggers';
+import { emailEvents, contactEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     getTeamPerformance,
     manageTask,
     listSchedules,
-    pushContactToCampaign,
+    pushContactToCampaign
   ],
-  triggers: [
-    emailEvents,
-    contactEvents,
-  ],
+  triggers: [emailEvents, contactEvents]
 });

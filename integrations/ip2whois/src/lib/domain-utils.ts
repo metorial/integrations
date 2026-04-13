@@ -4,7 +4,7 @@
  */
 export let toPunycode = (domain: string): string => {
   let parts = domain.split('.');
-  let encoded = parts.map((label) => {
+  let encoded = parts.map(label => {
     if (/^[\x00-\x7F]*$/.test(label)) {
       return label;
     }
@@ -19,7 +19,7 @@ export let toPunycode = (domain: string): string => {
  */
 export let fromPunycode = (domain: string): string => {
   let parts = domain.split('.');
-  let decoded = parts.map((label) => {
+  let decoded = parts.map(label => {
     if (label.startsWith('xn--')) {
       return punycodeDecode(label.slice(4));
     }
@@ -66,8 +66,25 @@ export let extractExtension = (input: string): string => {
 
   // Common second-level TLDs that form compound extensions
   let secondLevelTlds = new Set([
-    'co', 'com', 'net', 'org', 'edu', 'gov', 'mil', 'ac', 'or', 'ne',
-    'go', 'gob', 'nic', 'web', 'gen', 'info', 'biz', 'nom', 'int',
+    'co',
+    'com',
+    'net',
+    'org',
+    'edu',
+    'gov',
+    'mil',
+    'ac',
+    'or',
+    'ne',
+    'go',
+    'gob',
+    'nic',
+    'web',
+    'gen',
+    'info',
+    'biz',
+    'nom',
+    'int'
   ]);
 
   let lastPart = parts[parts.length - 1] as string;

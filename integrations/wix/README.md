@@ -5,39 +5,51 @@ Manage Wix-hosted websites and business solutions programmatically. Create and m
 ## Tools
 
 ### Get Site Properties
+
 Retrieve the site's metadata including business name, description, logo, contact info, locale settings, and more. Returns comprehensive site configuration and business information in a single call.
 
 ### Manage Blog
+
 List published posts, create/update draft posts, and publish drafts on a Wix Blog. Use **action** to specify the operation: \
 
 ### Manage Bookings
+
 List bookings services, query bookings, or create new bookings on a Wix site. Use **action** to specify the operation: \
 
 ### Manage Collections
+
 Query and retrieve product collections from a Wix Store. Use **action** to specify the operation: \
 
 ### Manage Contacts
+
 Create, update, delete, or retrieve CRM contacts on a Wix site. Use **action** to specify the operation: \
 
 ### Manage CMS Data
+
 Create, read, update, or delete items in Wix CMS data collections. Use **action** to specify the operation: \
 
 ### Manage Events
+
 Query and retrieve events on a Wix site. Use **action** to specify the operation: \
 
 ### Manage Media
+
 Import and list media files (images, videos, audio) in a Wix site's media library. Use **action** to specify the operation: \
 
 ### Manage Members
+
 Query and retrieve site members on a Wix site. Use **action** to specify the operation: \
 
 ### Manage Orders
+
 Search, retrieve, create, or update eCommerce orders on a Wix site. Use **action** to specify the operation: \
 
 ### Manage Pricing Plans
+
 Query and retrieve pricing plans on a Wix site. Use **action** to specify the operation: \
 
 ### Manage Products
+
 Create, update, delete, or retrieve products from a Wix Store catalog. Use **action** to specify the operation: \
 
 ## License

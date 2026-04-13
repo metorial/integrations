@@ -3,35 +3,37 @@ import { MonitoringClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workerTemperatureAlertTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Worker Temperature Alert',
-    key: 'worker_temperature_alert',
-    description: 'Fires when any GPU in any worker exceeds a configurable temperature threshold. Polls worker hardware data and checks temperatures against the defined limit. Useful for preventing thermal damage and triggering automated responses.'
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    workerName: z.string().describe('Name of the worker with high temperature'),
-    deviceName: z.string().describe('Name of the overheating device'),
-    temperature: z.number().describe('Current temperature in Celsius'),
-    threshold: z.number().describe('Temperature threshold that was exceeded')
-  }))
-  .output(z.object({
-    workerName: z.string().describe('Name of the affected worker'),
-    deviceName: z.string().describe('Name of the overheating GPU/device'),
-    temperature: z.number().describe('Current temperature in Celsius'),
-    threshold: z.number().describe('Threshold that was exceeded'),
-    fanSpeed: z.number().describe('Current fan speed (% or RPM)'),
-    powerConsumption: z.number().describe('Current power consumption in watts')
-  }))
+export let workerTemperatureAlertTrigger = SlateTrigger.create(spec, {
+  name: 'Worker Temperature Alert',
+  key: 'worker_temperature_alert',
+  description:
+    'Fires when any GPU in any worker exceeds a configurable temperature threshold. Polls worker hardware data and checks temperatures against the defined limit. Useful for preventing thermal damage and triggering automated responses.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      workerName: z.string().describe('Name of the worker with high temperature'),
+      deviceName: z.string().describe('Name of the overheating device'),
+      temperature: z.number().describe('Current temperature in Celsius'),
+      threshold: z.number().describe('Temperature threshold that was exceeded')
+    })
+  )
+  .output(
+    z.object({
+      workerName: z.string().describe('Name of the affected worker'),
+      deviceName: z.string().describe('Name of the overheating GPU/device'),
+      temperature: z.number().describe('Current temperature in Celsius'),
+      threshold: z.number().describe('Threshold that was exceeded'),
+      fanSpeed: z.number().describe('Current fan speed (% or RPM)'),
+      powerConsumption: z.number().describe('Current power consumption in watts')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MonitoringClient({ accessKey: ctx.auth.accessKey });
       let workers = await client.listWorkers();
 
@@ -78,7 +80,7 @@ export let workerTemperatureAlertTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'worker.temperature_alert',
         id: ctx.input.eventId,
@@ -92,4 +94,5 @@ export let workerTemperatureAlertTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

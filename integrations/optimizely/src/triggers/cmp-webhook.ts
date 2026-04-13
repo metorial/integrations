@@ -3,31 +3,33 @@ import { CmpClient } from '../lib/cmp-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let cmpWebhook = SlateTrigger.create(
-  spec,
-  {
-    name: 'CMP Webhook',
-    key: 'cmp_webhook',
-    description: 'Receives webhook events from Optimizely Content Marketing Platform including task, campaign, library, publishing, work request, and calendar events.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('CMP webhook event name'),
-    eventId: z.string().describe('Unique event identifier'),
-    resourceId: z.string().optional().describe('ID of the affected resource'),
-    resourceType: z.string().optional().describe('Type of the affected resource'),
-    payload: z.any().describe('Full webhook event payload'),
-  }))
-  .output(z.object({
-    eventName: z.string().describe('CMP webhook event name'),
-    resourceId: z.string().optional().describe('ID of the affected resource'),
-    resourceType: z.string().optional().describe('Type of the affected resource'),
-    timestamp: z.string().optional().describe('When the event occurred'),
-    actor: z.any().optional().describe('User who triggered the event'),
-    resourceData: z.any().optional().describe('Resource data from the event'),
-  }))
+export let cmpWebhook = SlateTrigger.create(spec, {
+  name: 'CMP Webhook',
+  key: 'cmp_webhook',
+  description:
+    'Receives webhook events from Optimizely Content Marketing Platform including task, campaign, library, publishing, work request, and calendar events.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('CMP webhook event name'),
+      eventId: z.string().describe('Unique event identifier'),
+      resourceId: z.string().optional().describe('ID of the affected resource'),
+      resourceType: z.string().optional().describe('Type of the affected resource'),
+      payload: z.any().describe('Full webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      eventName: z.string().describe('CMP webhook event name'),
+      resourceId: z.string().optional().describe('ID of the affected resource'),
+      resourceType: z.string().optional().describe('Type of the affected resource'),
+      timestamp: z.string().optional().describe('When the event occurred'),
+      actor: z.any().optional().describe('User who triggered the event'),
+      resourceData: z.any().optional().describe('Resource data from the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new CmpClient(ctx.auth.token);
 
       let allEvents = [
@@ -52,28 +54,28 @@ export let cmpWebhook = SlateTrigger.create(
         'work_request.created',
         'work_request.updated',
         'event.created',
-        'event.updated',
+        'event.updated'
       ];
 
       let webhook = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        events: allEvents,
+        events: allEvents
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id || webhook.webhook_id,
-        },
+          webhookId: webhook.id || webhook.webhook_id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new CmpClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventName = data.event || data.event_name || data.type || 'unknown';
       let eventId = data.id || data.event_id || `${eventName}-${Date.now()}`;
@@ -87,13 +89,13 @@ export let cmpWebhook = SlateTrigger.create(
             eventId: String(eventId),
             resourceId: resourceId ? String(resourceId) : undefined,
             resourceType,
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload;
       return {
         type: ctx.input.eventName.toLowerCase().replace(/\s+/g, '.'),
@@ -104,8 +106,9 @@ export let cmpWebhook = SlateTrigger.create(
           resourceType: ctx.input.resourceType,
           timestamp: payload.timestamp || payload.created_at || payload.occurred_at,
           actor: payload.actor || payload.user || payload.triggered_by,
-          resourceData: payload.data || payload.resource || payload.object,
-        },
+          resourceData: payload.data || payload.resource || payload.object
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

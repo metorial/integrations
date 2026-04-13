@@ -3,42 +3,44 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let monitorAlertTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Monitor State Change',
-    key: 'monitor_state_change',
-    description: 'Triggers when a Datadog monitor changes state (e.g., alert, warning, recovery, no data). Polls monitors for state transitions.'
-  }
-)
-  .input(z.object({
-    monitorId: z.number().describe('Monitor ID'),
-    monitorName: z.string().describe('Monitor name'),
-    monitorType: z.string().describe('Monitor type'),
-    overallState: z.string().describe('Current overall state of the monitor'),
-    query: z.string().describe('Monitor query'),
-    message: z.string().optional().describe('Monitor notification message'),
-    tags: z.array(z.string()).optional().describe('Monitor tags'),
-    priority: z.number().optional().describe('Monitor priority'),
-    modified: z.string().optional().describe('Last modification timestamp')
-  }))
-  .output(z.object({
-    monitorId: z.number().describe('Monitor ID'),
-    monitorName: z.string().describe('Monitor name'),
-    monitorType: z.string().describe('Monitor type'),
-    currentState: z.string().describe('Current state of the monitor'),
-    query: z.string().describe('Monitor query'),
-    message: z.string().optional().describe('Monitor notification message'),
-    tags: z.array(z.string()).optional().describe('Monitor tags'),
-    priority: z.number().optional().describe('Monitor priority'),
-    modified: z.string().optional().describe('Last modification timestamp')
-  }))
+export let monitorAlertTrigger = SlateTrigger.create(spec, {
+  name: 'Monitor State Change',
+  key: 'monitor_state_change',
+  description:
+    'Triggers when a Datadog monitor changes state (e.g., alert, warning, recovery, no data). Polls monitors for state transitions.'
+})
+  .input(
+    z.object({
+      monitorId: z.number().describe('Monitor ID'),
+      monitorName: z.string().describe('Monitor name'),
+      monitorType: z.string().describe('Monitor type'),
+      overallState: z.string().describe('Current overall state of the monitor'),
+      query: z.string().describe('Monitor query'),
+      message: z.string().optional().describe('Monitor notification message'),
+      tags: z.array(z.string()).optional().describe('Monitor tags'),
+      priority: z.number().optional().describe('Monitor priority'),
+      modified: z.string().optional().describe('Last modification timestamp')
+    })
+  )
+  .output(
+    z.object({
+      monitorId: z.number().describe('Monitor ID'),
+      monitorName: z.string().describe('Monitor name'),
+      monitorType: z.string().describe('Monitor type'),
+      currentState: z.string().describe('Current state of the monitor'),
+      query: z.string().describe('Monitor query'),
+      message: z.string().optional().describe('Monitor notification message'),
+      tags: z.array(z.string()).optional().describe('Monitor tags'),
+      priority: z.number().optional().describe('Monitor priority'),
+      modified: z.string().optional().describe('Last modification timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.auth, ctx.config);
       let state = ctx.state as { monitorStates?: Record<string, string> } | null;
       let previousStates = state?.monitorStates || {};
@@ -91,7 +93,7 @@ export let monitorAlertTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `monitor.${ctx.input.overallState.toLowerCase().replace(/\s+/g, '_')}`,
         id: `${ctx.input.monitorId}-${ctx.input.overallState}-${ctx.input.modified || Date.now()}`,

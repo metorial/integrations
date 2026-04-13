@@ -3,40 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let clientEventTypes = [
-  'NEW_CLIENT',
-  'CLIENT_UPDATED',
-  'CLIENT_DELETED'
-] as const;
+let clientEventTypes = ['NEW_CLIENT', 'CLIENT_UPDATED', 'CLIENT_DELETED'] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'NEW_CLIENT': 'client.created',
-  'CLIENT_UPDATED': 'client.updated',
-  'CLIENT_DELETED': 'client.deleted'
+  NEW_CLIENT: 'client.created',
+  CLIENT_UPDATED: 'client.updated',
+  CLIENT_DELETED: 'client.deleted'
 };
 
-export let clientEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Client Events',
-    key: 'client_events',
-    description: 'Triggered when clients are created, updated, or deleted.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    clientData: z.any().describe('Client data from webhook payload')
-  }))
-  .output(z.object({
-    clientId: z.string(),
-    name: z.string().optional(),
-    email: z.string().optional(),
-    address: z.string().optional(),
-    archived: z.boolean().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let clientEvents = SlateTrigger.create(spec, {
+  name: 'Client Events',
+  key: 'client_events',
+  description: 'Triggered when clients are created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      clientData: z.any().describe('Client data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      clientId: z.string(),
+      name: z.string().optional(),
+      email: z.string().optional(),
+      address: z.string().optional(),
+      archived: z.boolean().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -58,7 +55,7 @@ export let clientEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -75,21 +72,24 @@ export let clientEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          clientData: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            clientData: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let c = ctx.input.clientData;
       let clientId = c.id || c.clientId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `client.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `client.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

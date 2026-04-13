@@ -9,6 +9,7 @@ GroqCloud is a cloud-based AI inference platform powered by Groq's custom Langua
 GroqCloud uses **API key** authentication. Requests are authenticated by passing the API key in the `Authorization: Bearer` header to the base URL `https://api.groq.com/openai/v1`.
 
 To obtain an API key:
+
 1. Navigate to the Groq Cloud Console. If you don't have an account, sign up and complete the registration process.
 2. In the API Keys section, click "Create API Key", provide a descriptive name, and click "Submit" to generate the key.
 3. Copy the key immediately and store it securely — for security reasons, you won't be able to view the full API key again after leaving the page.

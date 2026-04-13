@@ -16,7 +16,7 @@ import type {
   DovetailFolder,
   DovetailFolderContent,
   SearchResults,
-  SummarizeResult,
+  SummarizeResult
 } from './types';
 
 interface PaginatedResponse<T> {
@@ -38,23 +38,25 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://dovetail.com/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
   // ---- Projects ----
 
-  async listProjects(params?: PaginationParams & {
-    folderId?: string;
-    titleContains?: string;
-    titleEqualTo?: string;
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailProject>> {
+  async listProjects(
+    params?: PaginationParams & {
+      folderId?: string;
+      titleContains?: string;
+      titleEqualTo?: string;
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailProject>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
     if (params?.titleContains) queryParams['filter[title][contains]'] = params.titleContains;
@@ -77,23 +79,28 @@ export class Client {
 
   // ---- Notes ----
 
-  async listNotes(params?: PaginationParams & {
-    titleContains?: string;
-    titleEqualTo?: string;
-    contentContains?: string;
-    authors?: string[];
-    createdAfter?: string;
-    createdBefore?: string;
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailNote>> {
+  async listNotes(
+    params?: PaginationParams & {
+      titleContains?: string;
+      titleEqualTo?: string;
+      contentContains?: string;
+      authors?: string[];
+      createdAfter?: string;
+      createdBefore?: string;
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailNote>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.titleContains) queryParams['filter[title][contains]'] = params.titleContains;
     if (params?.titleEqualTo) queryParams['filter[title][equal_to]'] = params.titleEqualTo;
-    if (params?.contentContains) queryParams['filter[content][contains]'] = params.contentContains;
-    if (params?.createdAfter) queryParams['filter[created_at][greater_than]'] = params.createdAfter;
-    if (params?.createdBefore) queryParams['filter[created_at][less_than]'] = params.createdBefore;
+    if (params?.contentContains)
+      queryParams['filter[content][contains]'] = params.contentContains;
+    if (params?.createdAfter)
+      queryParams['filter[created_at][greater_than]'] = params.createdAfter;
+    if (params?.createdBefore)
+      queryParams['filter[created_at][less_than]'] = params.createdBefore;
     if (params?.sort) queryParams['sort'] = params.sort;
 
     let response = await this.axios.get('/notes', { params: queryParams });
@@ -114,16 +121,21 @@ export class Client {
     return response.data.data;
   }
 
-  async updateNote(noteId: string, data: {
-    title?: string;
-    content?: string;
-    fields?: { label: string; value?: string }[];
-  }): Promise<DovetailNote> {
+  async updateNote(
+    noteId: string,
+    data: {
+      title?: string;
+      content?: string;
+      fields?: { label: string; value?: string }[];
+    }
+  ): Promise<DovetailNote> {
     let response = await this.axios.patch(`/notes/${noteId}`, data);
     return response.data.data;
   }
 
-  async deleteNote(noteId: string): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
+  async deleteNote(
+    noteId: string
+  ): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
     let response = await this.axios.delete(`/notes/${noteId}`);
     return response.data.data;
   }
@@ -142,17 +154,19 @@ export class Client {
 
   // ---- Data ----
 
-  async listData(params?: PaginationParams & {
-    projectId?: string;
-    folderId?: string;
-    titleContains?: string;
-    titleEqualTo?: string;
-    createdAfter?: string;
-    createdBefore?: string;
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailData>> {
+  async listData(
+    params?: PaginationParams & {
+      projectId?: string;
+      folderId?: string;
+      titleContains?: string;
+      titleEqualTo?: string;
+      createdAfter?: string;
+      createdBefore?: string;
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailData>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.projectId) queryParams['filter[project_id]'] = params.projectId;
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
@@ -191,7 +205,9 @@ export class Client {
     return response.data.data;
   }
 
-  async deleteData(dataId: string): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
+  async deleteData(
+    dataId: string
+  ): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
     let response = await this.axios.delete(`/data/${dataId}`);
     return response.data.data;
   }
@@ -201,7 +217,11 @@ export class Client {
     return response.data.data;
   }
 
-  async importDataFromFile(url: string, projectId?: string, mimeType?: string): Promise<DovetailData> {
+  async importDataFromFile(
+    url: string,
+    projectId?: string,
+    mimeType?: string
+  ): Promise<DovetailData> {
     let body: Record<string, string> = { url };
     if (projectId) body.project_id = projectId;
     if (mimeType) body.mime_type = mimeType;
@@ -211,11 +231,13 @@ export class Client {
 
   // ---- Insights ----
 
-  async listInsights(params?: PaginationParams & {
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailInsight>> {
+  async listInsights(
+    params?: PaginationParams & {
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailInsight>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.sort) queryParams['sort'] = params.sort;
 
@@ -237,17 +259,22 @@ export class Client {
     return response.data.data;
   }
 
-  async updateInsight(insightId: string, data: {
-    title?: string;
-    content?: string;
-    published?: boolean;
-    contributors?: string[];
-  }): Promise<DovetailInsight> {
+  async updateInsight(
+    insightId: string,
+    data: {
+      title?: string;
+      content?: string;
+      published?: boolean;
+      contributors?: string[];
+    }
+  ): Promise<DovetailInsight> {
     let response = await this.axios.patch(`/insights/${insightId}`, data);
     return response.data.data;
   }
 
-  async deleteInsight(insightId: string): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
+  async deleteInsight(
+    insightId: string
+  ): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
     let response = await this.axios.delete(`/insights/${insightId}`);
     return response.data.data;
   }
@@ -262,7 +289,11 @@ export class Client {
     return response.data.data;
   }
 
-  async importInsightFromFile(url: string, title?: string, mimeType?: string): Promise<DovetailInsight> {
+  async importInsightFromFile(
+    url: string,
+    title?: string,
+    mimeType?: string
+  ): Promise<DovetailInsight> {
     let body: Record<string, string> = { url };
     if (title) body.title = title;
     if (mimeType) body.mime_type = mimeType;
@@ -272,7 +303,9 @@ export class Client {
 
   // ---- Highlights ----
 
-  async listHighlights(params?: PaginationParams): Promise<{ highlights: DovetailHighlight[] }> {
+  async listHighlights(
+    params?: PaginationParams
+  ): Promise<{ highlights: DovetailHighlight[] }> {
     let queryParams = buildPaginationParams(params);
     let response = await this.axios.get('/highlights', { params: queryParams });
     return response.data.data;
@@ -313,22 +346,27 @@ export class Client {
     return response.data.data;
   }
 
-  async updateContact(contactId: string, data: Record<string, unknown>): Promise<DovetailContact> {
+  async updateContact(
+    contactId: string,
+    data: Record<string, unknown>
+  ): Promise<DovetailContact> {
     let response = await this.axios.patch(`/contacts/${contactId}`, data);
     return response.data.data;
   }
 
   // ---- Docs ----
 
-  async listDocs(params?: PaginationParams & {
-    projectId?: string;
-    folderId?: string;
-    titleContains?: string;
-    titleEqualTo?: string;
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailDoc>> {
+  async listDocs(
+    params?: PaginationParams & {
+      projectId?: string;
+      folderId?: string;
+      titleContains?: string;
+      titleEqualTo?: string;
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailDoc>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.projectId) queryParams['filter[project_id]'] = params.projectId;
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
@@ -354,15 +392,20 @@ export class Client {
     return response.data.data;
   }
 
-  async updateDoc(docId: string, data: {
-    title?: string;
-    content?: string;
-  }): Promise<DovetailDoc> {
+  async updateDoc(
+    docId: string,
+    data: {
+      title?: string;
+      content?: string;
+    }
+  ): Promise<DovetailDoc> {
     let response = await this.axios.patch(`/docs/${docId}`, data);
     return response.data.data;
   }
 
-  async deleteDoc(docId: string): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
+  async deleteDoc(
+    docId: string
+  ): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
     let response = await this.axios.delete(`/docs/${docId}`);
     return response.data.data;
   }
@@ -386,12 +429,14 @@ export class Client {
 
   // ---- Channels ----
 
-  async listChannels(params?: PaginationParams & {
-    folderId?: string;
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailChannel>> {
+  async listChannels(
+    params?: PaginationParams & {
+      folderId?: string;
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailChannel>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.folderId) queryParams['filter[folder_id]'] = params.folderId;
     if (params?.sort) queryParams['sort'] = params.sort;
@@ -407,7 +452,7 @@ export class Client {
   }): Promise<DovetailChannel> {
     let body: Record<string, string> = {
       title: data.title,
-      content_type: data.contentType,
+      content_type: data.contentType
     };
     if (data.folderId) body.project_category_id = data.folderId;
     let response = await this.axios.post('/channels', body);
@@ -419,15 +464,20 @@ export class Client {
     return response.data.data;
   }
 
-  async updateChannel(channelId: string, data: {
-    title: string;
-    context?: string;
-  }): Promise<DovetailChannel> {
+  async updateChannel(
+    channelId: string,
+    data: {
+      title: string;
+      context?: string;
+    }
+  ): Promise<DovetailChannel> {
     let response = await this.axios.patch(`/channels/${channelId}`, data);
     return response.data.data;
   }
 
-  async deleteChannel(channelId: string): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
+  async deleteChannel(
+    channelId: string
+  ): Promise<{ id: string; title: string; deleted_at: string; deleted: boolean }> {
     let response = await this.axios.delete(`/channels/${channelId}`);
     return response.data.data;
   }
@@ -442,15 +492,18 @@ export class Client {
     let response = await this.axios.post('/channels/topic', {
       title: data.title,
       description: data.description,
-      channel_id: data.channelId,
+      channel_id: data.channelId
     });
     return response.data.data;
   }
 
-  async updateTopic(topicId: string, data: {
-    title?: string;
-    description?: string;
-  }): Promise<DovetailTopic> {
+  async updateTopic(
+    topicId: string,
+    data: {
+      title?: string;
+      description?: string;
+    }
+  ): Promise<DovetailTopic> {
     let response = await this.axios.patch(`/channels/topic/${topicId}`, data);
     return response.data.data;
   }
@@ -473,7 +526,7 @@ export class Client {
     let body: Record<string, unknown> = {
       text: data.text,
       channel_id: data.channelId,
-      timestamp: data.timestamp,
+      timestamp: data.timestamp
     };
     if (data.sourceTitle) body.source_title = data.sourceTitle;
     if (data.sourceUrl) body.source_url = data.sourceUrl;
@@ -484,19 +537,22 @@ export class Client {
 
   // ---- Folders ----
 
-  async listFolders(params?: PaginationParams & {
-    titleContains?: string;
-    titleEqualTo?: string;
-    parentFolderId?: string | null;
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailFolder>> {
+  async listFolders(
+    params?: PaginationParams & {
+      titleContains?: string;
+      titleEqualTo?: string;
+      parentFolderId?: string | null;
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailFolder>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.titleContains) queryParams['filter[title][contains]'] = params.titleContains;
     if (params?.titleEqualTo) queryParams['filter[title][equal_to]'] = params.titleEqualTo;
     if (params?.parentFolderId !== undefined) {
-      queryParams['filter[parent_folder_id]'] = params.parentFolderId === null ? 'null' : params.parentFolderId;
+      queryParams['filter[parent_folder_id]'] =
+        params.parentFolderId === null ? 'null' : params.parentFolderId;
     }
     if (params?.sort) queryParams['sort'] = params.sort;
 
@@ -509,15 +565,20 @@ export class Client {
     return response.data.data;
   }
 
-  async getFolderContents(folderId: string, params?: PaginationParams & {
-    sort?: string;
-  }): Promise<PaginatedResponse<DovetailFolderContent>> {
+  async getFolderContents(
+    folderId: string,
+    params?: PaginationParams & {
+      sort?: string;
+    }
+  ): Promise<PaginatedResponse<DovetailFolderContent>> {
     let queryParams: Record<string, string> = {
-      ...buildPaginationParams(params),
+      ...buildPaginationParams(params)
     };
     if (params?.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.axios.get(`/folders/${folderId}/contents`, { params: queryParams });
+    let response = await this.axios.get(`/folders/${folderId}/contents`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -530,10 +591,13 @@ export class Client {
 
   // ---- Search ----
 
-  async search(query: string, params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<SearchResults> {
+  async search(
+    query: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<SearchResults> {
     let body: Record<string, unknown> = { query };
     if (params?.offset !== undefined) body.offset = params.offset;
     if (params?.limit !== undefined) body.limit = params.limit;

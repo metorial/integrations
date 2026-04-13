@@ -2,46 +2,61 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let chatEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Chat Events',
-    key: 'chat_events',
-    description: 'Receives webhook events for chat activity including messages, channels, users, and moderation events. Configure the webhook URL in your Sendbird Dashboard under Settings > Chat > Webhooks.',
-  }
-)
-  .input(z.object({
-    category: z.string().describe('Webhook event category (e.g. "group_channel:message_send")'),
-    senderUserId: z.string().optional().describe('User ID of the event sender'),
-    channelUrl: z.string().optional().describe('Channel URL related to the event'),
-    channelType: z.string().optional().describe('Channel type (group_channels or open_channels)'),
-    messageId: z.number().optional().describe('Message ID if the event relates to a message'),
-    messageText: z.string().optional().describe('Message text content'),
-    appId: z.string().optional().describe('Application ID'),
-    timestamp: z.number().optional().describe('Event timestamp in milliseconds'),
-    rawPayload: z.any().describe('Full raw webhook payload from Sendbird'),
-  }))
-  .output(z.object({
-    category: z.string().describe('Event category'),
-    channelUrl: z.string().optional().describe('Channel URL'),
-    channelType: z.string().optional().describe('Channel type'),
-    senderUserId: z.string().optional().describe('User ID of the sender'),
-    senderNickname: z.string().optional().describe('Nickname of the sender'),
-    messageId: z.number().optional().describe('Message ID'),
-    messageText: z.string().optional().describe('Message text content'),
-    messageType: z.string().optional().describe('Type of message (MESG, FILE, ADMM)'),
-    mentionType: z.string().optional().describe('Mention type if applicable'),
-    customType: z.string().optional().describe('Custom type of the message or channel'),
-    memberCount: z.number().optional().describe('Channel member count'),
-    members: z.array(z.object({
-      userId: z.string().describe('Member user ID'),
-      nickname: z.string().describe('Member nickname'),
-    })).optional().describe('Affected members (for invite/join/leave events)'),
-    timestamp: z.number().optional().describe('Event timestamp'),
-  }))
+export let chatEvents = SlateTrigger.create(spec, {
+  name: 'Chat Events',
+  key: 'chat_events',
+  description:
+    'Receives webhook events for chat activity including messages, channels, users, and moderation events. Configure the webhook URL in your Sendbird Dashboard under Settings > Chat > Webhooks.'
+})
+  .input(
+    z.object({
+      category: z
+        .string()
+        .describe('Webhook event category (e.g. "group_channel:message_send")'),
+      senderUserId: z.string().optional().describe('User ID of the event sender'),
+      channelUrl: z.string().optional().describe('Channel URL related to the event'),
+      channelType: z
+        .string()
+        .optional()
+        .describe('Channel type (group_channels or open_channels)'),
+      messageId: z
+        .number()
+        .optional()
+        .describe('Message ID if the event relates to a message'),
+      messageText: z.string().optional().describe('Message text content'),
+      appId: z.string().optional().describe('Application ID'),
+      timestamp: z.number().optional().describe('Event timestamp in milliseconds'),
+      rawPayload: z.any().describe('Full raw webhook payload from Sendbird')
+    })
+  )
+  .output(
+    z.object({
+      category: z.string().describe('Event category'),
+      channelUrl: z.string().optional().describe('Channel URL'),
+      channelType: z.string().optional().describe('Channel type'),
+      senderUserId: z.string().optional().describe('User ID of the sender'),
+      senderNickname: z.string().optional().describe('Nickname of the sender'),
+      messageId: z.number().optional().describe('Message ID'),
+      messageText: z.string().optional().describe('Message text content'),
+      messageType: z.string().optional().describe('Type of message (MESG, FILE, ADMM)'),
+      mentionType: z.string().optional().describe('Mention type if applicable'),
+      customType: z.string().optional().describe('Custom type of the message or channel'),
+      memberCount: z.number().optional().describe('Channel member count'),
+      members: z
+        .array(
+          z.object({
+            userId: z.string().describe('Member user ID'),
+            nickname: z.string().describe('Member nickname')
+          })
+        )
+        .optional()
+        .describe('Affected members (for invite/join/leave events)'),
+      timestamp: z.number().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let category = body.category ?? 'unknown';
       let sender = body.sender ?? {};
@@ -55,12 +70,12 @@ export let chatEvents = SlateTrigger.create(
       if (body.users) {
         members = (body.users as any[]).map((u: any) => ({
           userId: u.user_id ?? '',
-          nickname: u.nickname ?? '',
+          nickname: u.nickname ?? ''
         }));
       } else if (body.invitees) {
         members = (body.invitees as any[]).map((u: any) => ({
           userId: u.user_id ?? '',
-          nickname: u.nickname ?? '',
+          nickname: u.nickname ?? ''
         }));
       }
 
@@ -75,13 +90,13 @@ export let chatEvents = SlateTrigger.create(
             messageText: typeof messageText === 'string' ? messageText : undefined,
             appId: body.app_id,
             timestamp: body.ts ?? body.created_at,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { category, rawPayload } = ctx.input;
 
       let sender = rawPayload?.sender ?? {};
@@ -92,12 +107,12 @@ export let chatEvents = SlateTrigger.create(
       if (rawPayload?.users) {
         members = (rawPayload.users as any[]).map((u: any) => ({
           userId: u.user_id ?? '',
-          nickname: u.nickname ?? '',
+          nickname: u.nickname ?? ''
         }));
       } else if (rawPayload?.invitees) {
         members = (rawPayload.invitees as any[]).map((u: any) => ({
           userId: u.user_id ?? '',
-          nickname: u.nickname ?? '',
+          nickname: u.nickname ?? ''
         }));
       }
 
@@ -106,8 +121,10 @@ export let chatEvents = SlateTrigger.create(
         ctx.input.channelUrl,
         ctx.input.messageId,
         ctx.input.senderUserId,
-        ctx.input.timestamp,
-      ].filter(Boolean).join(':');
+        ctx.input.timestamp
+      ]
+        .filter(Boolean)
+        .join(':');
 
       return {
         type: category.replace(/:/g, '.'),
@@ -125,8 +142,9 @@ export let chatEvents = SlateTrigger.create(
           customType: payload.custom_type ?? channel.custom_type,
           memberCount: channel.member_count,
           members,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

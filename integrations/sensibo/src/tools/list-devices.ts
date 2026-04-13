@@ -16,25 +16,24 @@ let deviceSummarySchema = z.object({
   productModel: z.string().optional().describe('Sensibo device model'),
   firmwareVersion: z.string().optional().describe('Device firmware version'),
   isAlive: z.boolean().optional().describe('Whether the device is online'),
-  roomName: z.string().optional().describe('Name of the room the device is in'),
+  roomName: z.string().optional().describe('Name of the room the device is in')
 });
 
-export let listDevicesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Devices',
-    key: 'list_devices',
-    description: `Retrieve all Sensibo devices associated with your account. Returns each device's current state, sensor readings, and configuration. Useful for getting an overview of all connected climate control devices.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDevicesTool = SlateTool.create(spec, {
+  name: 'List Devices',
+  key: 'list_devices',
+  description: `Retrieve all Sensibo devices associated with your account. Returns each device's current state, sensor readings, and configuration. Useful for getting an overview of all connected climate control devices.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    devices: z.array(deviceSummarySchema).describe('List of Sensibo devices'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      devices: z.array(deviceSummarySchema).describe('List of Sensibo devices')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SensiboClient(ctx.auth.token);
     let devices = await client.listDevices();
 
@@ -51,12 +50,12 @@ export let listDevicesTool = SlateTool.create(
       productModel: d.productModel,
       firmwareVersion: d.firmwareVersion,
       isAlive: d.connectionStatus?.isAlive,
-      roomName: d.room?.name,
+      roomName: d.room?.name
     }));
 
     return {
       output: { devices: mapped },
-      message: `Found **${mapped.length}** Sensibo device(s): ${mapped.map((d: any) => `${d.name} (${d.deviceId})`).join(', ')}.`,
+      message: `Found **${mapped.length}** Sensibo device(s): ${mapped.map((d: any) => `${d.name} (${d.deviceId})`).join(', ')}.`
     };
   })
   .build();

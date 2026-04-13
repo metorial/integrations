@@ -2,29 +2,33 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let cmsPublish = SlateTrigger.create(
-  spec,
-  {
-    name: 'CMS Entry Published',
-    key: 'cms_entry_published',
-    description: 'Triggers when a CMS entry is published in Plasmic. Configure the webhook URL in the Plasmic CMS settings. Provides details about the published entry.',
-  }
-)
-  .input(z.object({
-    entryId: z.string().optional().describe('ID of the published CMS entry'),
-    modelId: z.string().optional().describe('ID of the CMS model the entry belongs to'),
-    rawPayload: z.record(z.string(), z.unknown()).describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    entryId: z.string().describe('ID of the published CMS entry'),
-    modelId: z.string().describe('ID of the CMS model'),
-    entry: z.record(z.string(), z.unknown()).describe('Published entry data from the webhook payload'),
-  }))
+export let cmsPublish = SlateTrigger.create(spec, {
+  name: 'CMS Entry Published',
+  key: 'cms_entry_published',
+  description:
+    'Triggers when a CMS entry is published in Plasmic. Configure the webhook URL in the Plasmic CMS settings. Provides details about the published entry.'
+})
+  .input(
+    z.object({
+      entryId: z.string().optional().describe('ID of the published CMS entry'),
+      modelId: z.string().optional().describe('ID of the CMS model the entry belongs to'),
+      rawPayload: z.record(z.string(), z.unknown()).describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      entryId: z.string().describe('ID of the published CMS entry'),
+      modelId: z.string().describe('ID of the CMS model'),
+      entry: z
+        .record(z.string(), z.unknown())
+        .describe('Published entry data from the webhook payload')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: Record<string, unknown> = {};
       try {
-        body = await ctx.request.json() as Record<string, unknown>;
+        body = (await ctx.request.json()) as Record<string, unknown>;
       } catch {
         // Webhook may not always include a body
       }
@@ -37,13 +41,13 @@ export let cmsPublish = SlateTrigger.create(
           {
             entryId,
             modelId,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let entryId = ctx.input.entryId ?? 'unknown';
       let modelId = ctx.input.modelId ?? 'unknown';
 
@@ -53,9 +57,9 @@ export let cmsPublish = SlateTrigger.create(
         output: {
           entryId,
           modelId,
-          entry: ctx.input.rawPayload,
-        },
+          entry: ctx.input.rawPayload
+        }
       };
-    },
+    }
   })
   .build();

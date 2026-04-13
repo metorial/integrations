@@ -10,7 +10,7 @@ import type {
   DocupilotContentBlock,
   DocupilotEnvelope,
   DocupilotEnvelopeDetail,
-  DocupilotDocumentMergeLink,
+  DocupilotDocumentMergeLink
 } from './types';
 
 export class Client {
@@ -20,10 +20,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.docupilot.app',
       headers: {
-        'Authorization': `Bearer ${credentials.token}`,
+        Authorization: `Bearer ${credentials.token}`,
         'X-Workspace': credentials.workspaceId,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -48,8 +48,8 @@ export class Client {
         type: params?.type,
         output_type: params?.outputType,
         page: params?.page,
-        ordering: params?.ordering,
-      },
+        ordering: params?.ordering
+      }
     });
     return response.data;
   }
@@ -65,8 +65,8 @@ export class Client {
         folder: params?.folder,
         status: params?.status,
         type: params?.type,
-        output_type: params?.outputType,
-      },
+        output_type: params?.outputType
+      }
     });
     return response.data;
   }
@@ -86,18 +86,21 @@ export class Client {
       title: data.title,
       output_type: data.outputType,
       description: data.description,
-      folder: data.folder,
+      folder: data.folder
     });
     return response.data;
   }
 
-  async updateTemplate(templateId: number, data: {
-    title?: string;
-    description?: string | null;
-    documentStatus?: string;
-    preferences?: Record<string, unknown>;
-    folder?: number | null;
-  }): Promise<DocupilotTemplate> {
+  async updateTemplate(
+    templateId: number,
+    data: {
+      title?: string;
+      description?: string | null;
+      documentStatus?: string;
+      preferences?: Record<string, unknown>;
+      folder?: number | null;
+    }
+  ): Promise<DocupilotTemplate> {
     let payload: Record<string, unknown> = {};
     if (data.title !== undefined) payload.title = data.title;
     if (data.description !== undefined) payload.description = data.description;
@@ -105,7 +108,10 @@ export class Client {
     if (data.preferences !== undefined) payload.preferences = data.preferences;
     if (data.folder !== undefined) payload.folder = data.folder;
 
-    let response = await this.axios.patch(`/dashboard/api/v2/templates/${templateId}/`, payload);
+    let response = await this.axios.patch(
+      `/dashboard/api/v2/templates/${templateId}/`,
+      payload
+    );
     return response.data;
   }
 
@@ -118,18 +124,24 @@ export class Client {
     return response.data;
   }
 
-  async copyTemplate(templateId: number, data?: {
-    title?: string;
-    folder?: number;
-  }): Promise<DocupilotTemplate> {
-    let response = await this.axios.post(`/dashboard/api/v2/templates/${templateId}/copy/`, data ?? {});
+  async copyTemplate(
+    templateId: number,
+    data?: {
+      title?: string;
+      folder?: number;
+    }
+  ): Promise<DocupilotTemplate> {
+    let response = await this.axios.post(
+      `/dashboard/api/v2/templates/${templateId}/copy/`,
+      data ?? {}
+    );
     return response.data;
   }
 
   async moveTemplates(templateIds: number[], folderId: number | null): Promise<unknown> {
     let response = await this.axios.post('/dashboard/api/v2/templates/move/', {
       templates: templateIds,
-      folder: folderId,
+      folder: folderId
     });
     return response.data;
   }
@@ -143,11 +155,15 @@ export class Client {
   // Document Generation
   // ──────────────────────────────
 
-  async generateDocument(templateId: number, mergeData: Record<string, unknown>, options?: {
-    download?: 'false' | 'file' | 'true';
-    includeUrl?: boolean;
-    outputType?: string;
-  }): Promise<DocupilotGenerateResponse> {
+  async generateDocument(
+    templateId: number,
+    mergeData: Record<string, unknown>,
+    options?: {
+      download?: 'false' | 'file' | 'true';
+      includeUrl?: boolean;
+      outputType?: string;
+    }
+  ): Promise<DocupilotGenerateResponse> {
     let response = await this.axios.post(
       `/dashboard/api/v2/templates/${templateId}/generate/`,
       mergeData,
@@ -155,20 +171,24 @@ export class Client {
         params: {
           download: options?.download,
           include_url: options?.includeUrl,
-          output_type: options?.outputType,
-        },
+          output_type: options?.outputType
+        }
       }
     );
     return response.data;
   }
 
   async getTemplateTestData(templateId: number): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/dashboard/api/v2/templates/${templateId}/test_data/`);
+    let response = await this.axios.get(
+      `/dashboard/api/v2/templates/${templateId}/test_data/`
+    );
     return response.data;
   }
 
   async listMergeLinks(templateId: number): Promise<DocupilotDocumentMergeLink[]> {
-    let response = await this.axios.get(`/dashboard/api/v2/templates/${templateId}/merge_links/`);
+    let response = await this.axios.get(
+      `/dashboard/api/v2/templates/${templateId}/merge_links/`
+    );
     return response.data;
   }
 
@@ -181,7 +201,7 @@ export class Client {
     permission?: 'manage' | 'read' | 'write';
   }): Promise<DocupilotFolder[]> {
     let response = await this.axios.get('/dashboard/api/v2/folders/', {
-      params,
+      params
     });
     return response.data;
   }
@@ -204,33 +224,59 @@ export class Client {
   // Deliveries
   // ──────────────────────────────
 
-  async listDeliveries(templateId: number, params?: {
-    ordering?: string;
-    type?: string;
-  }): Promise<DocupilotTemplateDelivery[]> {
-    let response = await this.axios.get(`/dashboard/api/v2/templates/${templateId}/deliveries/`, {
-      params,
-    });
+  async listDeliveries(
+    templateId: number,
+    params?: {
+      ordering?: string;
+      type?: string;
+    }
+  ): Promise<DocupilotTemplateDelivery[]> {
+    let response = await this.axios.get(
+      `/dashboard/api/v2/templates/${templateId}/deliveries/`,
+      {
+        params
+      }
+    );
     return response.data;
   }
 
-  async getDelivery(templateId: number, deliveryId: number): Promise<DocupilotTemplateDelivery> {
-    let response = await this.axios.get(`/dashboard/api/v2/templates/${templateId}/deliveries/${deliveryId}/`);
+  async getDelivery(
+    templateId: number,
+    deliveryId: number
+  ): Promise<DocupilotTemplateDelivery> {
+    let response = await this.axios.get(
+      `/dashboard/api/v2/templates/${templateId}/deliveries/${deliveryId}/`
+    );
     return response.data;
   }
 
-  async createDelivery(templateId: number, data: Record<string, unknown>): Promise<DocupilotTemplateDelivery> {
-    let response = await this.axios.post(`/dashboard/api/v2/templates/${templateId}/deliveries/`, data);
+  async createDelivery(
+    templateId: number,
+    data: Record<string, unknown>
+  ): Promise<DocupilotTemplateDelivery> {
+    let response = await this.axios.post(
+      `/dashboard/api/v2/templates/${templateId}/deliveries/`,
+      data
+    );
     return response.data;
   }
 
-  async updateDelivery(templateId: number, deliveryId: number, data: Record<string, unknown>): Promise<DocupilotTemplateDelivery> {
-    let response = await this.axios.put(`/dashboard/api/v2/templates/${templateId}/deliveries/${deliveryId}/`, data);
+  async updateDelivery(
+    templateId: number,
+    deliveryId: number,
+    data: Record<string, unknown>
+  ): Promise<DocupilotTemplateDelivery> {
+    let response = await this.axios.put(
+      `/dashboard/api/v2/templates/${templateId}/deliveries/${deliveryId}/`,
+      data
+    );
     return response.data;
   }
 
   async deleteDelivery(templateId: number, deliveryId: number): Promise<void> {
-    await this.axios.delete(`/dashboard/api/v2/templates/${templateId}/deliveries/${deliveryId}/`);
+    await this.axios.delete(
+      `/dashboard/api/v2/templates/${templateId}/deliveries/${deliveryId}/`
+    );
   }
 
   // ──────────────────────────────
@@ -252,14 +298,20 @@ export class Client {
         status: params?.status,
         start_date: params?.startDate,
         end_date: params?.endDate,
-        ordering: params?.ordering,
-      },
+        ordering: params?.ordering
+      }
     });
     return response.data;
   }
 
-  async retryDelivery(historyId: number, data: Record<string, unknown>): Promise<DocupilotMergeHistory> {
-    let response = await this.axios.post(`/dashboard/api/v2/history/${historyId}/retry_delivery/`, data);
+  async retryDelivery(
+    historyId: number,
+    data: Record<string, unknown>
+  ): Promise<DocupilotMergeHistory> {
+    let response = await this.axios.post(
+      `/dashboard/api/v2/history/${historyId}/retry_delivery/`,
+      data
+    );
     return response.data;
   }
 
@@ -273,7 +325,7 @@ export class Client {
     ordering?: string;
   }): Promise<DocupilotPaginatedList<DocupilotContentBlock>> {
     let response = await this.axios.get('/dashboard/api/v2/content_blocks/', {
-      params,
+      params
     });
     return response.data;
   }
@@ -285,7 +337,7 @@ export class Client {
 
   async getContentBlockByKey(key: string): Promise<DocupilotContentBlock> {
     let response = await this.axios.get('/dashboard/api/v2/content_blocks/detail/by-key/', {
-      params: { key },
+      params: { key }
     });
     return response.data;
   }
@@ -295,7 +347,9 @@ export class Client {
   }
 
   async getContentBlockSchema(contentBlockId: number): Promise<DocupilotTemplateSchema[]> {
-    let response = await this.axios.get(`/dashboard/api/v2/content_blocks/${contentBlockId}/schema/`);
+    let response = await this.axios.get(
+      `/dashboard/api/v2/content_blocks/${contentBlockId}/schema/`
+    );
     return response.data;
   }
 
@@ -310,7 +364,7 @@ export class Client {
     ordering?: string;
   }): Promise<DocupilotPaginatedList<DocupilotEnvelope>> {
     let response = await this.axios.get('/dashboard/esign/envelopes/', {
-      params,
+      params
     });
     return response.data;
   }
@@ -327,13 +381,15 @@ export class Client {
 
   async cancelEnvelope(envelopeId: number, reason?: string): Promise<unknown> {
     let response = await this.axios.post(`/dashboard/esign/envelopes/${envelopeId}/cancel/`, {
-      void_reason: reason,
+      void_reason: reason
     });
     return response.data;
   }
 
   async sendEnvelopeReminder(envelopeId: number): Promise<unknown> {
-    let response = await this.axios.post(`/dashboard/esign/envelopes/${envelopeId}/send_reminder/`);
+    let response = await this.axios.post(
+      `/dashboard/esign/envelopes/${envelopeId}/send_reminder/`
+    );
     return response.data;
   }
 

@@ -3,43 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newOrders = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Orders',
-    key: 'new_orders',
-    description: 'Triggers when new orders are placed for your Humanitix events. Polls all events on your account and detects newly created orders.',
-  }
-)
-  .input(z.object({
-    orderId: z.string().describe('Internal order ID'),
-    eventId: z.string().describe('Event ID the order belongs to'),
-    order: z.any().describe('Full order data from the API'),
-  }))
-  .output(z.object({
-    orderId: z.string().describe('Internal unique order ID'),
-    orderName: z.string().optional().describe('Buyer-facing order name/reference'),
-    firstName: z.string().optional().describe('Buyer first name'),
-    lastName: z.string().optional().describe('Buyer last name'),
-    email: z.string().optional().describe('Buyer email address'),
-    mobile: z.string().optional().describe('Buyer mobile number'),
-    status: z.string().optional().describe('Order status'),
-    financialStatus: z.string().optional().describe('Financial status of the order'),
-    paymentType: z.string().optional().describe('Payment method used'),
-    purchaseTotals: z.any().optional().describe('Purchase totals breakdown'),
-    totals: z.any().optional().describe('Itemized totals including fees and taxes'),
-    eventId: z.string().optional().describe('ID of the associated event'),
-    eventDateId: z.string().optional().describe('ID of the specific event date'),
-    createdAt: z.string().optional().describe('When the order was created'),
-    completedAt: z.string().optional().describe('When the order was completed'),
-    updatedAt: z.string().optional().describe('When the order was last updated'),
-  }))
+export let newOrders = SlateTrigger.create(spec, {
+  name: 'New Orders',
+  key: 'new_orders',
+  description:
+    'Triggers when new orders are placed for your Humanitix events. Polls all events on your account and detects newly created orders.'
+})
+  .input(
+    z.object({
+      orderId: z.string().describe('Internal order ID'),
+      eventId: z.string().describe('Event ID the order belongs to'),
+      order: z.any().describe('Full order data from the API')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string().describe('Internal unique order ID'),
+      orderName: z.string().optional().describe('Buyer-facing order name/reference'),
+      firstName: z.string().optional().describe('Buyer first name'),
+      lastName: z.string().optional().describe('Buyer last name'),
+      email: z.string().optional().describe('Buyer email address'),
+      mobile: z.string().optional().describe('Buyer mobile number'),
+      status: z.string().optional().describe('Order status'),
+      financialStatus: z.string().optional().describe('Financial status of the order'),
+      paymentType: z.string().optional().describe('Payment method used'),
+      purchaseTotals: z.any().optional().describe('Purchase totals breakdown'),
+      totals: z.any().optional().describe('Itemized totals including fees and taxes'),
+      eventId: z.string().optional().describe('ID of the associated event'),
+      eventDateId: z.string().optional().describe('ID of the specific event date'),
+      createdAt: z.string().optional().describe('When the order was created'),
+      completedAt: z.string().optional().describe('When the order was completed'),
+      updatedAt: z.string().optional().describe('When the order was last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let knownOrderIds: Record<string, boolean> = ctx.state?.knownOrderIds || {};
@@ -64,7 +66,7 @@ export let newOrders = SlateTrigger.create(
               newInputs.push({
                 orderId: order._id,
                 eventId,
-                order,
+                order
               });
             }
           }
@@ -75,12 +77,12 @@ export let newOrders = SlateTrigger.create(
         inputs: newInputs,
         updatedState: {
           knownOrderIds: updatedKnownOrderIds,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let order = ctx.input.order;
 
       return {
@@ -102,9 +104,9 @@ export let newOrders = SlateTrigger.create(
           eventDateId: order.eventDateId,
           createdAt: order.createdAt,
           completedAt: order.completedAt,
-          updatedAt: order.updatedAt,
-        },
+          updatedAt: order.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

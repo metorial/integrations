@@ -3,37 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let activityChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Changes',
-    key: 'activity_changes',
-    description: 'Triggers when sales activities (visits, calls, meetings) are created or updated in ForceManager.',
-  }
-)
-  .input(z.object({
-    activityId: z.number().describe('Activity ID'),
-    record: z.any().describe('Full activity record'),
-    detectedAt: z.string().describe('Timestamp when the change was detected')
-  }))
-  .output(z.object({
-    activityId: z.number().describe('Activity ID'),
-    activityTypeId: z.any().nullable().describe('Activity type'),
-    accountId: z.any().nullable().describe('Associated account'),
-    contactId: z.any().nullable().describe('Associated contact'),
-    salesRepId: z.any().nullable().describe('Sales rep who performed the activity'),
-    comment: z.string().nullable().describe('Activity comments'),
-    activityDateTime: z.string().nullable().describe('Activity date/time'),
-    dateCreated: z.string().nullable().describe('Record creation date'),
-    dateUpdated: z.string().nullable().describe('Record last update date'),
-    record: z.any().describe('Full activity record')
-  }))
+export let activityChanges = SlateTrigger.create(spec, {
+  name: 'Activity Changes',
+  key: 'activity_changes',
+  description:
+    'Triggers when sales activities (visits, calls, meetings) are created or updated in ForceManager.'
+})
+  .input(
+    z.object({
+      activityId: z.number().describe('Activity ID'),
+      record: z.any().describe('Full activity record'),
+      detectedAt: z.string().describe('Timestamp when the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.number().describe('Activity ID'),
+      activityTypeId: z.any().nullable().describe('Activity type'),
+      accountId: z.any().nullable().describe('Associated account'),
+      contactId: z.any().nullable().describe('Associated contact'),
+      salesRepId: z.any().nullable().describe('Sales rep who performed the activity'),
+      comment: z.string().nullable().describe('Activity comments'),
+      activityDateTime: z.string().nullable().describe('Activity date/time'),
+      dateCreated: z.string().nullable().describe('Record creation date'),
+      dateUpdated: z.string().nullable().describe('Record last update date'),
+      record: z.any().describe('Full activity record')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth);
       let lastPollTime = ctx.state?.lastPollTime || new Date().toISOString().replace('Z', '');
 
@@ -51,7 +53,7 @@ export let activityChanges = SlateTrigger.create(
       let now = new Date().toISOString().replace('Z', '');
 
       return {
-        inputs: allRecords.map((record) => ({
+        inputs: allRecords.map(record => ({
           activityId: record.id,
           record,
           detectedAt: now
@@ -62,7 +64,7 @@ export let activityChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let record = ctx.input.record;
       let isNew = record.dateCreated === record.dateUpdated;
 
@@ -83,4 +85,5 @@ export let activityChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

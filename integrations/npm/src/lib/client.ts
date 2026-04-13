@@ -5,7 +5,7 @@ export class NpmRegistryClient {
 
   constructor(config: { token?: string }) {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.token) {
@@ -14,13 +14,16 @@ export class NpmRegistryClient {
 
     this.http = createAxios({
       baseURL: 'https://registry.npmjs.org',
-      headers,
+      headers
     });
   }
 
   // --- Package Metadata ---
 
-  async getPackageMetadata(packageName: string, options?: { abbreviated?: boolean }): Promise<any> {
+  async getPackageMetadata(
+    packageName: string,
+    options?: { abbreviated?: boolean }
+  ): Promise<any> {
     let headers: Record<string, string> = {};
     if (options?.abbreviated) {
       headers['Accept'] = 'application/vnd.npm.install-v1+json';
@@ -78,7 +81,11 @@ export class NpmRegistryClient {
 
   // --- Deprecate ---
 
-  async deprecatePackageVersion(packageName: string, version: string, message: string): Promise<void> {
+  async deprecatePackageVersion(
+    packageName: string,
+    version: string,
+    message: string
+  ): Promise<void> {
     let metadata = await this.getPackageMetadata(packageName);
     let versionData = metadata.versions?.[version];
     if (!versionData) {
@@ -91,8 +98,8 @@ export class NpmRegistryClient {
       _rev: metadata._rev,
       name: metadata.name,
       versions: {
-        [version]: versionData,
-      },
+        [version]: versionData
+      }
     });
   }
 
@@ -126,7 +133,7 @@ export class NpmRegistryClient {
     }
 
     let body: Record<string, any> = {
-      password: params.password,
+      password: params.password
     };
     if (params.name) body['name'] = params.name;
     if (params.description) body['token_description'] = params.description;
@@ -157,11 +164,17 @@ export class NpmRegistryClient {
     if (otp) {
       headers['npm-otp'] = otp;
     }
-    let res = await this.http.get(`/-/package/${encodePackageName(packageName)}/trust`, { headers });
+    let res = await this.http.get(`/-/package/${encodePackageName(packageName)}/trust`, {
+      headers
+    });
     return res.data;
   }
 
-  async addTrustedPublisher(packageName: string, configurations: any[], otp?: string): Promise<any> {
+  async addTrustedPublisher(
+    packageName: string,
+    configurations: any[],
+    otp?: string
+  ): Promise<any> {
     let headers: Record<string, string> = {};
     if (otp) {
       headers['npm-otp'] = otp;
@@ -174,7 +187,11 @@ export class NpmRegistryClient {
     return res.data;
   }
 
-  async deleteTrustedPublisher(packageName: string, configurationId: string, otp?: string): Promise<void> {
+  async deleteTrustedPublisher(
+    packageName: string,
+    configurationId: string,
+    otp?: string
+  ): Promise<void> {
     let headers: Record<string, string> = {};
     if (otp) {
       headers['npm-otp'] = otp;
@@ -198,7 +215,7 @@ export class NpmDownloadsClient {
 
   constructor() {
     this.http = createAxios({
-      baseURL: 'https://api.npmjs.org',
+      baseURL: 'https://api.npmjs.org'
     });
   }
 

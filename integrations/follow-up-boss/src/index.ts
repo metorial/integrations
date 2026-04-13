@@ -15,7 +15,7 @@ import {
   listDeals,
   listTasks,
   enrollActionPlan,
-  listPipelines,
+  listPipelines
 } from './tools';
 import {
   peopleEvents,
@@ -24,7 +24,7 @@ import {
   dealEvents,
   appointmentEvents,
   noteEvents,
-  emailMarketingEvents,
+  emailMarketingEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -44,7 +44,7 @@ export let provider = Slate.create({
     listDeals,
     listTasks,
     enrollActionPlan,
-    listPipelines,
+    listPipelines
   ],
   triggers: [
     peopleEvents,
@@ -53,6 +53,6 @@ export let provider = Slate.create({
     dealEvents,
     appointmentEvents,
     noteEvents,
-    emailMarketingEvents,
-  ],
+    emailMarketingEvents
+  ]
 });

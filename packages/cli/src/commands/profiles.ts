@@ -1,12 +1,14 @@
 import { input } from '@inquirer/prompts';
 import { createSlatesClientFromProfile, openSlatesCliStore } from '@slates/profiles';
+import path from 'path';
 import { chooseProfile, syncProfileMetadata } from '../lib/context';
-import path from 'node:path';
 
 let normalizeEntry = (rootDir: string, entry: string) => {
   let absolute = path.isAbsolute(entry) ? entry : path.resolve(process.cwd(), entry);
   let relative = path.relative(rootDir, absolute);
-  return relative && !relative.startsWith('..') && !path.isAbsolute(relative) ? relative : absolute;
+  return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
+    ? relative
+    : absolute;
 };
 
 export let addProfile = async (opts: {
@@ -20,7 +22,10 @@ export let addProfile = async (opts: {
   let name = opts.name ?? (await input({ message: 'Profile name' }));
   let entry =
     opts.entry ??
-    (await input({ message: 'Local slate entry file', default: 'packages/slates/example/google-sheets/index.ts' }));
+    (await input({
+      message: 'Local slate entry file',
+      default: 'packages/slates/example/google-sheets/index.ts'
+    }));
   let exportName =
     opts.exportName ??
     (await input({ message: 'Export name (optional)', default: 'provider' }));

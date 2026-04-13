@@ -12,7 +12,7 @@ let attendeeSchema = z.object({
   isOrganizer: z.boolean().describe('Whether this attendee is the organizer'),
   responseStatus: z.string().describe('Attendee response status'),
   timeZone: z.string().describe('Attendee time zone'),
-  phoneNumber: z.string().nullable().optional().describe('Phone number'),
+  phoneNumber: z.string().nullable().optional().describe('Phone number')
 });
 
 let eventSchema = z.object({
@@ -26,39 +26,64 @@ let eventSchema = z.object({
   url: z.string().describe('Public event URL'),
   createdAt: z.string().describe('Creation timestamp'),
   attendees: z.array(attendeeSchema).describe('Event attendees'),
-  conferencing: z.object({
-    type: z.string().nullable().optional(),
-    joinUrl: z.string().nullable().optional(),
-    meetingId: z.string().nullable().optional(),
-  }).nullable().optional().describe('Conferencing details'),
+  conferencing: z
+    .object({
+      type: z.string().nullable().optional(),
+      joinUrl: z.string().nullable().optional(),
+      meetingId: z.string().nullable().optional()
+    })
+    .nullable()
+    .optional()
+    .describe('Conferencing details'),
   location: z.string().nullable().optional().describe('Event location'),
   metadata: z.record(z.string(), z.any()).optional().describe('Custom metadata'),
-  isGroupSession: z.boolean().optional().describe('Whether this is a group session'),
+  isGroupSession: z.boolean().optional().describe('Whether this is a group session')
 });
 
-export let listEventsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Events',
-    key: 'list_events',
-    description: `List scheduled events from SavvyCal. Supports filtering by event state and pagination via cursor-based navigation. Returns event details including attendees, conferencing info, and metadata.`,
-    tags: {
-      readOnly: true
-    }
+export let listEventsTool = SlateTool.create(spec, {
+  name: 'List Events',
+  key: 'list_events',
+  description: `List scheduled events from SavvyCal. Supports filtering by event state and pagination via cursor-based navigation. Returns event details including attendees, conferencing info, and metadata.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    state: z.enum(['confirmed', 'canceled', 'awaiting_reschedule', 'awaiting_checkout', 'checkout_expired', 'awaiting_approval', 'declined', 'tentative']).optional().describe('Filter by event state'),
-    period: z.string().optional().describe('Filter period (e.g., "all")'),
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of events to return (1-100, default 20)'),
-    cursor: z.string().optional().describe('Pagination cursor for fetching the next page')
-  }))
-  .output(z.object({
-    events: z.array(eventSchema),
-    nextCursor: z.string().nullable().describe('Cursor for the next page, null if no more pages'),
-    previousCursor: z.string().nullable().describe('Cursor for the previous page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      state: z
+        .enum([
+          'confirmed',
+          'canceled',
+          'awaiting_reschedule',
+          'awaiting_checkout',
+          'checkout_expired',
+          'awaiting_approval',
+          'declined',
+          'tentative'
+        ])
+        .optional()
+        .describe('Filter by event state'),
+      period: z.string().optional().describe('Filter period (e.g., "all")'),
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of events to return (1-100, default 20)'),
+      cursor: z.string().optional().describe('Pagination cursor for fetching the next page')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(eventSchema),
+      nextCursor: z
+        .string()
+        .nullable()
+        .describe('Cursor for the next page, null if no more pages'),
+      previousCursor: z.string().nullable().describe('Cursor for the previous page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listEvents({
@@ -89,11 +114,13 @@ export let listEventsTool = SlateTool.create(
         timeZone: a.time_zone,
         phoneNumber: a.phone_number
       })),
-      conferencing: e.conferencing ? {
-        type: e.conferencing.type,
-        joinUrl: e.conferencing.join_url,
-        meetingId: e.conferencing.meeting_id
-      } : null,
+      conferencing: e.conferencing
+        ? {
+            type: e.conferencing.type,
+            joinUrl: e.conferencing.join_url,
+            meetingId: e.conferencing.meeting_id
+          }
+        : null,
       location: e.location,
       metadata: e.metadata,
       isGroupSession: e.is_group_session

@@ -8,8 +8,8 @@ export class AnalyticsDataClient {
       baseURL: 'https://analyticsdata.googleapis.com/v1beta',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -24,7 +24,10 @@ export class AnalyticsDataClient {
     offset?: number;
     keepEmptyRows?: boolean;
   }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}:runReport`, params);
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}:runReport`,
+      params
+    );
     return response.data;
   }
 
@@ -35,7 +38,10 @@ export class AnalyticsDataClient {
     metricFilter?: any;
     limit?: number;
   }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}:runRealtimeReport`, params);
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}:runRealtimeReport`,
+      params
+    );
     return response.data;
   }
 
@@ -52,7 +58,10 @@ export class AnalyticsDataClient {
     };
     funnelBreakdown?: { breakdownDimension: { name: string } };
   }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}:runFunnelReport`, params);
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}:runFunnelReport`,
+      params
+    );
     return response.data;
   }
 
@@ -70,8 +79,8 @@ export class AnalyticsAdminClient {
       baseURL: 'https://analyticsadmin.googleapis.com/v1beta',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -99,138 +108,216 @@ export class AnalyticsAdminClient {
 
   async updateProperty(updateMask: string, body: any) {
     let response = await this.axios.patch(`/properties/${this.config.propertyId}`, body, {
-      params: { updateMask },
+      params: { updateMask }
     });
     return response.data;
   }
 
   // Data Stream methods
   async listDataStreams(params?: { pageSize?: number; pageToken?: string }) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/dataStreams`, { params });
-    return response.data;
-  }
-
-  async getDataStream(dataStreamId: string) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/dataStreams/${dataStreamId}`);
-    return response.data;
-  }
-
-  async createDataStream(body: any) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/dataStreams`, body);
-    return response.data;
-  }
-
-  async updateDataStream(dataStreamId: string, updateMask: string, body: any) {
-    let response = await this.axios.patch(`/properties/${this.config.propertyId}/dataStreams/${dataStreamId}`, body, {
-      params: { updateMask },
+    let response = await this.axios.get(`/properties/${this.config.propertyId}/dataStreams`, {
+      params
     });
     return response.data;
   }
 
+  async getDataStream(dataStreamId: string) {
+    let response = await this.axios.get(
+      `/properties/${this.config.propertyId}/dataStreams/${dataStreamId}`
+    );
+    return response.data;
+  }
+
+  async createDataStream(body: any) {
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/dataStreams`,
+      body
+    );
+    return response.data;
+  }
+
+  async updateDataStream(dataStreamId: string, updateMask: string, body: any) {
+    let response = await this.axios.patch(
+      `/properties/${this.config.propertyId}/dataStreams/${dataStreamId}`,
+      body,
+      {
+        params: { updateMask }
+      }
+    );
+    return response.data;
+  }
+
   async deleteDataStream(dataStreamId: string) {
-    let response = await this.axios.delete(`/properties/${this.config.propertyId}/dataStreams/${dataStreamId}`);
+    let response = await this.axios.delete(
+      `/properties/${this.config.propertyId}/dataStreams/${dataStreamId}`
+    );
     return response.data;
   }
 
   // Custom Dimension methods
   async listCustomDimensions(params?: { pageSize?: number; pageToken?: string }) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/customDimensions`, { params });
+    let response = await this.axios.get(
+      `/properties/${this.config.propertyId}/customDimensions`,
+      { params }
+    );
     return response.data;
   }
 
-  async createCustomDimension(body: { parameterName: string; displayName: string; description?: string; scope: string }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/customDimensions`, body);
+  async createCustomDimension(body: {
+    parameterName: string;
+    displayName: string;
+    description?: string;
+    scope: string;
+  }) {
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/customDimensions`,
+      body
+    );
     return response.data;
   }
 
   async updateCustomDimension(customDimensionId: string, updateMask: string, body: any) {
-    let response = await this.axios.patch(`/properties/${this.config.propertyId}/customDimensions/${customDimensionId}`, body, {
-      params: { updateMask },
-    });
+    let response = await this.axios.patch(
+      `/properties/${this.config.propertyId}/customDimensions/${customDimensionId}`,
+      body,
+      {
+        params: { updateMask }
+      }
+    );
     return response.data;
   }
 
   async archiveCustomDimension(customDimensionId: string) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/customDimensions/${customDimensionId}:archive`, {});
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/customDimensions/${customDimensionId}:archive`,
+      {}
+    );
     return response.data;
   }
 
   // Custom Metric methods
   async listCustomMetrics(params?: { pageSize?: number; pageToken?: string }) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/customMetrics`, { params });
+    let response = await this.axios.get(
+      `/properties/${this.config.propertyId}/customMetrics`,
+      { params }
+    );
     return response.data;
   }
 
-  async createCustomMetric(body: { parameterName: string; displayName: string; description?: string; scope: string; measurementUnit: string }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/customMetrics`, body);
+  async createCustomMetric(body: {
+    parameterName: string;
+    displayName: string;
+    description?: string;
+    scope: string;
+    measurementUnit: string;
+  }) {
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/customMetrics`,
+      body
+    );
     return response.data;
   }
 
   async updateCustomMetric(customMetricId: string, updateMask: string, body: any) {
-    let response = await this.axios.patch(`/properties/${this.config.propertyId}/customMetrics/${customMetricId}`, body, {
-      params: { updateMask },
-    });
+    let response = await this.axios.patch(
+      `/properties/${this.config.propertyId}/customMetrics/${customMetricId}`,
+      body,
+      {
+        params: { updateMask }
+      }
+    );
     return response.data;
   }
 
   async archiveCustomMetric(customMetricId: string) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/customMetrics/${customMetricId}:archive`, {});
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/customMetrics/${customMetricId}:archive`,
+      {}
+    );
     return response.data;
   }
 
   // Audience methods
   async listAudiences(params?: { pageSize?: number; pageToken?: string }) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/audiences`, { params });
-    return response.data;
-  }
-
-  async createAudience(body: any) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/audiences`, body);
-    return response.data;
-  }
-
-  async updateAudience(audienceId: string, updateMask: string, body: any) {
-    let response = await this.axios.patch(`/properties/${this.config.propertyId}/audiences/${audienceId}`, body, {
-      params: { updateMask },
+    let response = await this.axios.get(`/properties/${this.config.propertyId}/audiences`, {
+      params
     });
     return response.data;
   }
 
+  async createAudience(body: any) {
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/audiences`,
+      body
+    );
+    return response.data;
+  }
+
+  async updateAudience(audienceId: string, updateMask: string, body: any) {
+    let response = await this.axios.patch(
+      `/properties/${this.config.propertyId}/audiences/${audienceId}`,
+      body,
+      {
+        params: { updateMask }
+      }
+    );
+    return response.data;
+  }
+
   async archiveAudience(audienceId: string) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/audiences/${audienceId}:archive`, {});
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/audiences/${audienceId}:archive`,
+      {}
+    );
     return response.data;
   }
 
   // Key Events (Conversions) methods
   async listKeyEvents(params?: { pageSize?: number; pageToken?: string }) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/keyEvents`, { params });
-    return response.data;
-  }
-
-  async createKeyEvent(body: { eventName: string; countingMethod?: string }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}/keyEvents`, body);
-    return response.data;
-  }
-
-  async getKeyEvent(keyEventId: string) {
-    let response = await this.axios.get(`/properties/${this.config.propertyId}/keyEvents/${keyEventId}`);
-    return response.data;
-  }
-
-  async updateKeyEvent(keyEventId: string, updateMask: string, body: any) {
-    let response = await this.axios.patch(`/properties/${this.config.propertyId}/keyEvents/${keyEventId}`, body, {
-      params: { updateMask },
+    let response = await this.axios.get(`/properties/${this.config.propertyId}/keyEvents`, {
+      params
     });
     return response.data;
   }
 
+  async createKeyEvent(body: { eventName: string; countingMethod?: string }) {
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}/keyEvents`,
+      body
+    );
+    return response.data;
+  }
+
+  async getKeyEvent(keyEventId: string) {
+    let response = await this.axios.get(
+      `/properties/${this.config.propertyId}/keyEvents/${keyEventId}`
+    );
+    return response.data;
+  }
+
+  async updateKeyEvent(keyEventId: string, updateMask: string, body: any) {
+    let response = await this.axios.patch(
+      `/properties/${this.config.propertyId}/keyEvents/${keyEventId}`,
+      body,
+      {
+        params: { updateMask }
+      }
+    );
+    return response.data;
+  }
+
   async deleteKeyEvent(keyEventId: string) {
-    let response = await this.axios.delete(`/properties/${this.config.propertyId}/keyEvents/${keyEventId}`);
+    let response = await this.axios.delete(
+      `/properties/${this.config.propertyId}/keyEvents/${keyEventId}`
+    );
     return response.data;
   }
 
   // Measurement Protocol Secrets
-  async listMeasurementProtocolSecrets(dataStreamId: string, params?: { pageSize?: number; pageToken?: string }) {
+  async listMeasurementProtocolSecrets(
+    dataStreamId: string,
+    params?: { pageSize?: number; pageToken?: string }
+  ) {
     let response = await this.axios.get(
       `/properties/${this.config.propertyId}/dataStreams/${dataStreamId}/measurementProtocolSecrets`,
       { params }
@@ -261,7 +348,10 @@ export class AnalyticsAdminClient {
     limit?: number;
     offset?: number;
   }) {
-    let response = await this.axios.post(`/properties/${this.config.propertyId}:runAccessReport`, params);
+    let response = await this.axios.post(
+      `/properties/${this.config.propertyId}:runAccessReport`,
+      params
+    );
     return response.data;
   }
 
@@ -274,13 +364,10 @@ export class AnalyticsAdminClient {
     pageSize?: number;
     pageToken?: string;
   }) {
-    let response = await this.axios.post(
-      `/accounts/-:searchChangeHistoryEvents`,
-      {
-        property: `properties/${this.config.propertyId}`,
-        ...params,
-      }
-    );
+    let response = await this.axios.post(`/accounts/-:searchChangeHistoryEvents`, {
+      property: `properties/${this.config.propertyId}`,
+      ...params
+    });
     return response.data;
   }
 }
@@ -290,7 +377,7 @@ export class MeasurementProtocolClient {
 
   constructor(private config: { measurementId: string; apiSecret: string }) {
     this.axios = createAxios({
-      baseURL: 'https://www.google-analytics.com',
+      baseURL: 'https://www.google-analytics.com'
     });
   }
 
@@ -310,11 +397,11 @@ export class MeasurementProtocolClient {
     let response = await this.axios.post('/mp/collect', params, {
       params: {
         measurement_id: this.config.measurementId,
-        api_secret: this.config.apiSecret,
+        api_secret: this.config.apiSecret
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -331,11 +418,11 @@ export class MeasurementProtocolClient {
     let response = await this.axios.post('/debug/mp/collect', params, {
       params: {
         measurement_id: this.config.measurementId,
-        api_secret: this.config.apiSecret,
+        api_secret: this.config.apiSecret
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }

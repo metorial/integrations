@@ -2,10 +2,7 @@
   "name": "@metorial/groqcloud",
   "version": "0.1.2",
   "description": "Run AI inference on open-source language models with ultra-low latency using Groq's LPU hardware. Generate text via chat completions, produce structured JSON outputs, and perform function calling with built-in, remote (MCP), or local tools. Transcribe and translate audio using Whisper models, convert text to speech, and analyze images with multimodal vision models. Support chain-of-thought reasoning, content moderation with custom policies, and asynchronous batch processing for large-scale workloads. List and query available hosted models.",
-  "categories": [
-    "apis-and-http-requests",
-    "speech-recognition-and-synthesis"
-  ],
+  "categories": ["apis-and-http-requests", "speech-recognition-and-synthesis"],
   "skills": [
     "generate text completions",
     "produce structured JSON outputs",

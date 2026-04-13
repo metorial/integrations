@@ -6,18 +6,39 @@ import { z } from 'zod';
 let contactSchema = z.object({
   name: z.string().optional().describe('Contact full name'),
   title: z.string().optional().describe('Contact job title'),
-  emails: z.array(z.object({
-    email: z.string().describe('Email address'),
-    type: z.string().optional().describe('Email type (e.g. office, home, direct, other)')
-  })).optional().describe('Contact email addresses'),
-  phones: z.array(z.object({
-    phone: z.string().describe('Phone number'),
-    type: z.string().optional().describe('Phone type (e.g. office, mobile, home, direct, fax)')
-  })).optional().describe('Contact phone numbers'),
-  urls: z.array(z.object({
-    url: z.string().describe('URL'),
-    type: z.string().optional().describe('URL type (e.g. url, linkedin, twitter, facebook)')
-  })).optional().describe('Contact URLs')
+  emails: z
+    .array(
+      z.object({
+        email: z.string().describe('Email address'),
+        type: z.string().optional().describe('Email type (e.g. office, home, direct, other)')
+      })
+    )
+    .optional()
+    .describe('Contact email addresses'),
+  phones: z
+    .array(
+      z.object({
+        phone: z.string().describe('Phone number'),
+        type: z
+          .string()
+          .optional()
+          .describe('Phone type (e.g. office, mobile, home, direct, fax)')
+      })
+    )
+    .optional()
+    .describe('Contact phone numbers'),
+  urls: z
+    .array(
+      z.object({
+        url: z.string().describe('URL'),
+        type: z
+          .string()
+          .optional()
+          .describe('URL type (e.g. url, linkedin, twitter, facebook)')
+      })
+    )
+    .optional()
+    .describe('Contact URLs')
 });
 
 let addressSchema = z.object({
@@ -37,13 +58,17 @@ let leadOutputSchema = z.object({
   url: z.string().nullable().describe('Lead company URL'),
   dateCreated: z.string().describe('Creation timestamp'),
   dateUpdated: z.string().describe('Last updated timestamp'),
-  contacts: z.array(z.object({
-    contactId: z.string(),
-    name: z.string().nullable(),
-    title: z.string().nullable(),
-    emails: z.array(z.object({ email: z.string(), type: z.string() })),
-    phones: z.array(z.object({ phone: z.string(), type: z.string() }))
-  })).describe('Contacts associated with the lead'),
+  contacts: z
+    .array(
+      z.object({
+        contactId: z.string(),
+        name: z.string().nullable(),
+        title: z.string().nullable(),
+        emails: z.array(z.object({ email: z.string(), type: z.string() })),
+        phones: z.array(z.object({ phone: z.string(), type: z.string() }))
+      })
+    )
+    .describe('Contacts associated with the lead'),
   displayName: z.string().describe('Lead display name')
 });
 
@@ -129,34 +154,41 @@ let buildLeadPayload = (input: any) => {
   return payload;
 };
 
-export let manageLeadTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Lead',
-    key: 'manage_lead',
-    description: `Creates or updates a lead in Close CRM. If a leadId is provided, the existing lead is updated with the supplied fields. If no leadId is provided, a new lead is created. Supports setting contacts, addresses, and custom fields.`,
-    instructions: [
-      'Omit leadId to create a new lead. Provide leadId to update an existing lead.',
-      'Custom fields should be passed in customFields as key-value pairs. Keys can be provided with or without the "custom." prefix.',
-      'When creating a lead, at minimum provide a name.'
-    ],
-    tags: {
-      readOnly: false
-    }
+export let manageLeadTool = SlateTool.create(spec, {
+  name: 'Manage Lead',
+  key: 'manage_lead',
+  description: `Creates or updates a lead in Close CRM. If a leadId is provided, the existing lead is updated with the supplied fields. If no leadId is provided, a new lead is created. Supports setting contacts, addresses, and custom fields.`,
+  instructions: [
+    'Omit leadId to create a new lead. Provide leadId to update an existing lead.',
+    'Custom fields should be passed in customFields as key-value pairs. Keys can be provided with or without the "custom." prefix.',
+    'When creating a lead, at minimum provide a name.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    leadId: z.string().optional().describe('Lead ID to update. Omit to create a new lead.'),
-    name: z.string().optional().describe('Lead/company name'),
-    statusId: z.string().optional().describe('Lead status ID'),
-    description: z.string().optional().describe('Lead description or notes'),
-    url: z.string().optional().describe('Company website URL'),
-    contacts: z.array(contactSchema).optional().describe('Contacts to associate with the lead'),
-    addresses: z.array(addressSchema).optional().describe('Physical addresses for the lead'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values as key-value pairs (keys with or without "custom." prefix)')
-  }))
+})
+  .input(
+    z.object({
+      leadId: z.string().optional().describe('Lead ID to update. Omit to create a new lead.'),
+      name: z.string().optional().describe('Lead/company name'),
+      statusId: z.string().optional().describe('Lead status ID'),
+      description: z.string().optional().describe('Lead description or notes'),
+      url: z.string().optional().describe('Company website URL'),
+      contacts: z
+        .array(contactSchema)
+        .optional()
+        .describe('Contacts to associate with the lead'),
+      addresses: z.array(addressSchema).optional().describe('Physical addresses for the lead'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe(
+          'Custom field values as key-value pairs (keys with or without "custom." prefix)'
+        )
+    })
+  )
   .output(leadOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
     let payload = buildLeadPayload(ctx.input);
     let lead: any;
@@ -174,4 +206,5 @@ export let manageLeadTool = SlateTool.create(
       output: mapLeadToOutput(lead),
       message: `${action} lead **${lead.display_name || lead.name || lead.id}**`
     };
-  }).build();
+  })
+  .build();

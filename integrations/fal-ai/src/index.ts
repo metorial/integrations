@@ -9,7 +9,7 @@ import {
   submitQueueRequest,
   checkQueueStatus,
   uploadFile,
-  runModel,
+  runModel
 } from './tools';
 import { queueCompleted } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     submitQueueRequest,
     checkQueueStatus,
     uploadFile,
-    runModel,
+    runModel
   ],
-  triggers: [
-    queueCompleted,
-  ],
+  triggers: [queueCompleted]
 });

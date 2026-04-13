@@ -50,7 +50,7 @@ import {
   deleteWikiPage,
   listCollaborators,
   manageCollaborator,
-  listCommits,
+  listCommits
 } from './tools';
 import {
   pushEvents,
@@ -58,7 +58,7 @@ import {
   pullRequestEvents,
   repositoryEvents,
   releaseEvents,
-  wikiEvents,
+  wikiEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -113,7 +113,7 @@ export let provider = Slate.create({
     deleteWikiPage,
     listCollaborators,
     manageCollaborator,
-    listCommits,
+    listCommits
   ],
   triggers: [
     pushEvents,
@@ -121,6 +121,6 @@ export let provider = Slate.create({
     pullRequestEvents,
     repositoryEvents,
     releaseEvents,
-    wikiEvents,
-  ],
+    wikiEvents
+  ]
 });

@@ -51,8 +51,8 @@ export class RefinerClient {
       baseURL: 'https://api.refiner.io/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -79,7 +79,11 @@ export class RefinerClient {
     return response.data;
   }
 
-  async getContact(identifier: { id?: string; email?: string; uuid?: string }): Promise<Record<string, unknown>> {
+  async getContact(identifier: {
+    id?: string;
+    email?: string;
+    uuid?: string;
+  }): Promise<Record<string, unknown>> {
     let query: Record<string, unknown> = {};
     if (identifier.id) query.id = identifier.id;
     if (identifier.email) query.email = identifier.email;
@@ -89,7 +93,11 @@ export class RefinerClient {
     return response.data;
   }
 
-  async deleteContact(identifier: { id?: string; email?: string; uuid?: string }): Promise<Record<string, unknown>> {
+  async deleteContact(identifier: {
+    id?: string;
+    email?: string;
+    uuid?: string;
+  }): Promise<Record<string, unknown>> {
     let query: Record<string, unknown> = {};
     if (identifier.id) query.id = identifier.id;
     if (identifier.email) query.email = identifier.email;
@@ -180,12 +188,13 @@ export class RefinerClient {
     responseData?: Record<string, unknown>;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      form_uuid: params.formUuid,
+      form_uuid: params.formUuid
     };
     if (params.id) body.id = params.id;
     if (params.email) body.email = params.email;
     if (params.date) body.date = params.date;
-    if (params.preventDuplicates !== undefined) body.prevent_duplicates = params.preventDuplicates;
+    if (params.preventDuplicates !== undefined)
+      body.prevent_duplicates = params.preventDuplicates;
     if (params.responseData) {
       for (let [key, value] of Object.entries(params.responseData)) {
         body[key] = value;
@@ -202,7 +211,7 @@ export class RefinerClient {
   }): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/responses/tags', {
       uuid: params.responseUuid,
-      'tags[]': params.tags,
+      'tags[]': params.tags
     });
     return response.data;
   }
@@ -236,17 +245,20 @@ export class RefinerClient {
     return response.data;
   }
 
-  async publishForm(formUuid: string, published: boolean = true): Promise<Record<string, unknown>> {
+  async publishForm(
+    formUuid: string,
+    published: boolean = true
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/forms/publish', {
       form_uuid: formUuid,
-      published: published ? 1 : 0,
+      published: published ? 1 : 0
     });
     return response.data;
   }
 
   async deleteForm(formUuid: string): Promise<Record<string, unknown>> {
     let response = await this.axios.delete('/forms', {
-      data: { form_uuid: formUuid },
+      data: { form_uuid: formUuid }
     });
     return response.data;
   }
@@ -254,7 +266,7 @@ export class RefinerClient {
   async duplicateForm(formUuid: string, name: string): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/forms/duplicate', {
       form_uuid: formUuid,
-      name,
+      name
     });
     return response.data;
   }

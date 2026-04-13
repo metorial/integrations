@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,165 +18,165 @@ export let auth = SlateAuth.create()
       {
         title: 'Accounts Read',
         description: 'Read account information (required by default)',
-        scope: 'accounts:read',
+        scope: 'accounts:read'
       },
       {
         title: 'Campaigns Read',
         description: 'Read campaigns and campaign messages',
-        scope: 'campaigns:read',
+        scope: 'campaigns:read'
       },
       {
         title: 'Campaigns Write',
         description: 'Create, update, and delete campaigns',
-        scope: 'campaigns:write',
+        scope: 'campaigns:write'
       },
       {
         title: 'Catalogs Read',
         description: 'Read catalog items, variants, and categories',
-        scope: 'catalogs:read',
+        scope: 'catalogs:read'
       },
       {
         title: 'Catalogs Write',
         description: 'Create, update, and delete catalog data',
-        scope: 'catalogs:write',
+        scope: 'catalogs:write'
       },
       {
         title: 'Coupons Read',
         description: 'Read coupons and coupon codes',
-        scope: 'coupons:read',
+        scope: 'coupons:read'
       },
       {
         title: 'Coupons Write',
         description: 'Create and manage coupons and coupon codes',
-        scope: 'coupons:write',
+        scope: 'coupons:write'
       },
       {
         title: 'Data Privacy Write',
         description: 'Request profile deletions for privacy compliance',
-        scope: 'data-privacy:write',
+        scope: 'data-privacy:write'
       },
       {
         title: 'Events Read',
         description: 'Read events and event data',
-        scope: 'events:read',
+        scope: 'events:read'
       },
       {
         title: 'Events Write',
         description: 'Create custom events',
-        scope: 'events:write',
+        scope: 'events:write'
       },
       {
         title: 'Flows Read',
         description: 'Read flows, flow actions, and flow messages',
-        scope: 'flows:read',
+        scope: 'flows:read'
       },
       {
         title: 'Flows Write',
         description: 'Create, update, and delete flows',
-        scope: 'flows:write',
+        scope: 'flows:write'
       },
       {
         title: 'Forms Read',
         description: 'Read forms and form versions',
-        scope: 'forms:read',
+        scope: 'forms:read'
       },
       {
         title: 'Forms Write',
         description: 'Create and delete forms',
-        scope: 'forms:write',
+        scope: 'forms:write'
       },
       {
         title: 'Images Read',
         description: 'Read uploaded images',
-        scope: 'images:read',
+        scope: 'images:read'
       },
       {
         title: 'Images Write',
         description: 'Upload and manage images',
-        scope: 'images:write',
+        scope: 'images:write'
       },
       {
         title: 'Lists Read',
         description: 'Read lists and list membership',
-        scope: 'lists:read',
+        scope: 'lists:read'
       },
       {
         title: 'Lists Write',
         description: 'Create, update, and delete lists and memberships',
-        scope: 'lists:write',
+        scope: 'lists:write'
       },
       {
         title: 'Metrics Read',
         description: 'Read metrics and metric aggregates',
-        scope: 'metrics:read',
+        scope: 'metrics:read'
       },
       {
         title: 'Profiles Read',
         description: 'Read customer profiles',
-        scope: 'profiles:read',
+        scope: 'profiles:read'
       },
       {
         title: 'Profiles Write',
         description: 'Create, update, and manage customer profiles',
-        scope: 'profiles:write',
+        scope: 'profiles:write'
       },
       {
         title: 'Segments Read',
         description: 'Read segments and segment membership',
-        scope: 'segments:read',
+        scope: 'segments:read'
       },
       {
         title: 'Segments Write',
         description: 'Create, update, and delete segments',
-        scope: 'segments:write',
+        scope: 'segments:write'
       },
       {
         title: 'Subscriptions Read',
         description: 'Read subscription statuses',
-        scope: 'subscriptions:read',
+        scope: 'subscriptions:read'
       },
       {
         title: 'Subscriptions Write',
         description: 'Subscribe and unsubscribe profiles',
-        scope: 'subscriptions:write',
+        scope: 'subscriptions:write'
       },
       {
         title: 'Tags Read',
         description: 'Read tags and tag groups',
-        scope: 'tags:read',
+        scope: 'tags:read'
       },
       {
         title: 'Tags Write',
         description: 'Create, update, and delete tags',
-        scope: 'tags:write',
+        scope: 'tags:write'
       },
       {
         title: 'Templates Read',
         description: 'Read email templates',
-        scope: 'templates:read',
+        scope: 'templates:read'
       },
       {
         title: 'Templates Write',
         description: 'Create, update, and delete email templates',
-        scope: 'templates:write',
+        scope: 'templates:write'
       },
       {
         title: 'Webhooks Read',
         description: 'Read webhooks and webhook topics',
-        scope: 'webhooks:read',
+        scope: 'webhooks:read'
       },
       {
         title: 'Webhooks Write',
         description: 'Create, update, and delete webhooks',
-        scope: 'webhooks:write',
-      },
+        scope: 'webhooks:write'
+      }
     ],
 
     inputSchema: z.object({
-      codeVerifier: z.string().optional().describe('PKCE code verifier (auto-generated)'),
+      codeVerifier: z.string().optional().describe('PKCE code verifier (auto-generated)')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       // Generate PKCE code verifier and challenge
       let codeVerifier = generateCodeVerifier();
       let codeChallenge = await generateCodeChallenge(codeVerifier);
@@ -186,18 +188,18 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         scope: ctx.scopes.join(' '),
         code_challenge: codeChallenge,
-        code_challenge_method: 'S256',
+        code_challenge_method: 'S256'
       });
 
       return {
         url: `https://www.klaviyo.com/oauth/authorize?${params.toString()}`,
         input: {
-          codeVerifier,
-        },
+          codeVerifier
+        }
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let body = new URLSearchParams({
@@ -206,13 +208,13 @@ export let auth = SlateAuth.create()
         redirect_uri: ctx.redirectUri,
         code_verifier: ctx.input.codeVerifier ?? '',
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       let response = await axios.post('https://a.klaviyo.com/oauth/token', body.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data;
@@ -224,12 +226,12 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? undefined,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -240,13 +242,13 @@ export let auth = SlateAuth.create()
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       let response = await axios.post('https://a.klaviyo.com/oauth/token', body.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data;
@@ -258,8 +260,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -267,10 +269,10 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://a.klaviyo.com/api',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'revision': '2025-01-15',
-          'Accept': 'application/vnd.api+json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          revision: '2025-01-15',
+          Accept: 'application/vnd.api+json'
+        }
       });
 
       let response = await axios.get('/accounts/');
@@ -280,10 +282,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: account?.id,
           name: account?.attributes?.contact_information?.organization_name ?? undefined,
-          email: account?.attributes?.contact_information?.default_sender_email ?? undefined,
-        },
+          email: account?.attributes?.contact_information?.default_sender_email ?? undefined
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -291,14 +293,14 @@ export let auth = SlateAuth.create()
     key: 'private_api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Klaviyo Private API Key (found in Settings > API Keys)'),
+      token: z.string().describe('Klaviyo Private API Key (found in Settings > API Keys)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -306,10 +308,10 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://a.klaviyo.com/api',
         headers: {
-          'Authorization': `Klaviyo-API-Key ${ctx.output.token}`,
-          'revision': '2025-01-15',
-          'Accept': 'application/vnd.api+json',
-        },
+          Authorization: `Klaviyo-API-Key ${ctx.output.token}`,
+          revision: '2025-01-15',
+          Accept: 'application/vnd.api+json'
+        }
       });
 
       let response = await axios.get('/accounts/');
@@ -319,10 +321,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: account?.id,
           name: account?.attributes?.contact_information?.organization_name ?? undefined,
-          email: account?.attributes?.contact_information?.default_sender_email ?? undefined,
-        },
+          email: account?.attributes?.contact_information?.default_sender_email ?? undefined
+        }
       };
-    },
+    }
   });
 
 // PKCE helpers

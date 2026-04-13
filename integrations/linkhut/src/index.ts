@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   addBookmark,
@@ -11,11 +10,9 @@ import {
   listTags,
   manageTag,
   checkForUpdates,
-  getBookmarkDates,
+  getBookmarkDates
 } from './tools';
-import { bookmarkUpdated,
-  inboundWebhook,
-} from './triggers';
+import { bookmarkUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     listTags,
     manageTag,
     checkForUpdates,
-    getBookmarkDates,
+    getBookmarkDates
   ],
-  triggers: [
-    inboundWebhook,
-    bookmarkUpdated,
-  ],
+  triggers: [inboundWebhook, bookmarkUpdated]
 });

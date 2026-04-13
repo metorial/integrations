@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   issueCredential,
@@ -12,11 +11,9 @@ import {
   updateGroup,
   deleteGroup,
   listGroups,
-  listDesigns,
+  listDesigns
 } from './tools';
-import { credentialEvents,
-  inboundWebhook,
-} from './triggers';
+import { credentialEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     updateGroup,
     deleteGroup,
     listGroups,
-    listDesigns,
+    listDesigns
   ],
-  triggers: [
-    inboundWebhook,
-    credentialEvents,
-  ],
+  triggers: [inboundWebhook, credentialEvents]
 });

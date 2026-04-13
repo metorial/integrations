@@ -37,12 +37,12 @@ If a refresh_token is 24 hours or older, it will become 'stale' when it is next 
 
 **Available OAuth scopes:**
 
-| Scope | Description |
-|---|---|
-| `ViewDetails` | Search for models and view public/private details |
-| `EditDetails` | Edit basic details of a model |
-| `DownloadAssets` | Download purchased add-ons and colormap imagery |
-| `PurchaseAssets` | Purchase assets for a model on the user's behalf |
+| Scope            | Description                                       |
+| ---------------- | ------------------------------------------------- |
+| `ViewDetails`    | Search for models and view public/private details |
+| `EditDetails`    | Edit basic details of a model                     |
+| `DownloadAssets` | Download purchased add-ons and colormap imagery   |
+| `PurchaseAssets` | Purchase assets for a model on the user's behalf  |
 
 ## Features
 

@@ -3,39 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let gradeChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Grade Changes',
-    key: 'grade_changes',
-    description: 'Detects new or updated grades in a specific course by polling the gradebook API. Monitors all grade columns.',
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('User ID'),
-    columnId: z.string().describe('Grade column ID'),
-    courseId: z.string().describe('Course ID'),
-    score: z.number().optional().describe('Numeric score'),
-    text: z.string().optional().describe('Text grade'),
-    status: z.string().optional().describe('Grade status'),
-    modified: z.string().optional().describe('Last modified timestamp'),
-    changeIndex: z.number().optional().describe('Change index for tracking modifications'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('User ID'),
-    columnId: z.string().describe('Grade column ID'),
-    courseId: z.string().describe('Course ID'),
-    score: z.number().optional().describe('Numeric score'),
-    text: z.string().optional().describe('Text grade'),
-    status: z.string().optional().describe('Grade status'),
-    modified: z.string().optional().describe('Last modified timestamp'),
-  }))
+export let gradeChanges = SlateTrigger.create(spec, {
+  name: 'Grade Changes',
+  key: 'grade_changes',
+  description:
+    'Detects new or updated grades in a specific course by polling the gradebook API. Monitors all grade columns.'
+})
+  .input(
+    z.object({
+      userId: z.string().describe('User ID'),
+      columnId: z.string().describe('Grade column ID'),
+      courseId: z.string().describe('Course ID'),
+      score: z.number().optional().describe('Numeric score'),
+      text: z.string().optional().describe('Text grade'),
+      status: z.string().optional().describe('Grade status'),
+      modified: z.string().optional().describe('Last modified timestamp'),
+      changeIndex: z.number().optional().describe('Change index for tracking modifications')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('User ID'),
+      columnId: z.string().describe('Grade column ID'),
+      courseId: z.string().describe('Course ID'),
+      score: z.number().optional().describe('Numeric score'),
+      text: z.string().optional().describe('Text grade'),
+      status: z.string().optional().describe('Grade status'),
+      modified: z.string().optional().describe('Last modified timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
 
       let lastChangeIndices = (ctx.state?.lastChangeIndices as Record<string, number>) || {};
@@ -51,9 +53,11 @@ export let gradeChanges = SlateTrigger.create(
 
           for (let column of (columnsResult.results || []).slice(0, 10)) {
             try {
-              let gradesResult = await client.listColumnGrades(course.id, column.id, { limit: 200 });
+              let gradesResult = await client.listColumnGrades(course.id, column.id, {
+                limit: 200
+              });
 
-              for (let grade of (gradesResult.results || [])) {
+              for (let grade of gradesResult.results || []) {
                 let key = `${course.id}-${column.id}-${grade.userId}`;
                 let lastIndex = lastChangeIndices[key] ?? -1;
 
@@ -66,7 +70,7 @@ export let gradeChanges = SlateTrigger.create(
                     text: grade.text,
                     status: grade.status,
                     modified: grade.modified,
-                    changeIndex: grade.changeIndex,
+                    changeIndex: grade.changeIndex
                   });
                   updatedIndices[key] = grade.changeIndex;
                 }
@@ -83,12 +87,12 @@ export let gradeChanges = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          lastChangeIndices: updatedIndices,
-        },
+          lastChangeIndices: updatedIndices
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'grade.updated',
         id: `${ctx.input.courseId}-${ctx.input.columnId}-${ctx.input.userId}-${ctx.input.changeIndex ?? ctx.input.modified ?? Date.now()}`,
@@ -99,9 +103,9 @@ export let gradeChanges = SlateTrigger.create(
           score: ctx.input.score,
           text: ctx.input.text,
           status: ctx.input.status,
-          modified: ctx.input.modified,
-        },
+          modified: ctx.input.modified
+        }
       };
-    },
+    }
   })
   .build();

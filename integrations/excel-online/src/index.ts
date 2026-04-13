@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   findWorkbooks,
@@ -13,11 +12,9 @@ import {
   manageCharts,
   manageNamedItems,
   invokeFunction,
-  manageSessions,
+  manageSessions
 } from './tools';
-import { workbookChanged,
-  inboundWebhook,
-} from './triggers';
+import { workbookChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     manageCharts,
     manageNamedItems,
     invokeFunction,
-    manageSessions,
+    manageSessions
   ],
-  triggers: [
-    inboundWebhook,
-    workbookChanged,
-  ],
+  triggers: [inboundWebhook, workbookChanged]
 });

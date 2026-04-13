@@ -3,27 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let cancelEventTool = SlateTool.create(
-  spec,
-  {
-    name: 'Cancel Event',
-    key: 'cancel_event',
-    description: `Cancel an existing SavvyCal event. Optionally provide a cancellation reason that will be included in notifications.`,
-    tags: {
-      destructive: true
-    }
+export let cancelEventTool = SlateTool.create(spec, {
+  name: 'Cancel Event',
+  key: 'cancel_event',
+  description: `Cancel an existing SavvyCal event. Optionally provide a cancellation reason that will be included in notifications.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('ID of the event to cancel'),
-    cancelReason: z.string().optional().describe('Reason for the cancellation')
-  }))
-  .output(z.object({
-    eventId: z.string().describe('ID of the canceled event'),
-    state: z.string().describe('Updated event state'),
-    canceledAt: z.string().nullable().optional().describe('Cancellation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('ID of the event to cancel'),
+      cancelReason: z.string().optional().describe('Reason for the cancellation')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('ID of the canceled event'),
+      state: z.string().describe('Updated event state'),
+      canceledAt: z.string().nullable().optional().describe('Cancellation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let e = await client.cancelEvent(ctx.input.eventId, {

@@ -19,12 +19,12 @@ import {
   queryAnalyticsTool,
   manageDomainsTool,
   manageStreamTool,
-  manageNotificationsTool,
+  manageNotificationsTool
 } from './tools';
 import {
   notificationWebhookTrigger,
   dnsRecordChangesTrigger,
-  zoneStatusChangesTrigger,
+  zoneStatusChangesTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -48,11 +48,7 @@ export let provider = Slate.create({
     queryAnalyticsTool,
     manageDomainsTool,
     manageStreamTool,
-    manageNotificationsTool,
+    manageNotificationsTool
   ],
-  triggers: [
-    notificationWebhookTrigger,
-    dnsRecordChangesTrigger,
-    zoneStatusChangesTrigger,
-  ],
+  triggers: [notificationWebhookTrigger, dnsRecordChangesTrigger, zoneStatusChangesTrigger]
 });

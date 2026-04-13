@@ -3,39 +3,72 @@ import { createSalesforceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBulkJob = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Bulk Job',
-    key: 'manage_bulk_job',
-    description: `Create, monitor, and manage Salesforce Bulk API 2.0 jobs for processing large data volumes. Supports creating ingest jobs (insert, update, upsert, delete), uploading CSV data, closing/aborting jobs, checking status, and retrieving results. Also supports bulk query jobs.`,
-    instructions: [
-      'To run a bulk ingest: create a job, upload CSV data, then close the job to begin processing.',
-      'CSV data must include column headers matching Salesforce field API names.',
-      'Poll the job status until state is "JobComplete" or "Failed" before retrieving results.'
-    ],
-    constraints: [
-      'Individual CSV uploads are limited to 150 MB.',
-      'Bulk API has a limit on concurrent jobs per org.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['createIngestJob', 'uploadData', 'closeJob', 'abortJob', 'getStatus', 'getResults', 'createQueryJob', 'getQueryStatus', 'getQueryResults']).describe('The bulk operation to perform'),
-    objectType: z.string().optional().describe('Salesforce object type (required for createIngestJob)'),
-    operation: z.enum(['insert', 'update', 'upsert', 'delete']).optional().describe('Bulk operation type (required for createIngestJob)'),
-    jobId: z.string().optional().describe('Bulk job ID (required for uploadData, closeJob, abortJob, getStatus, getResults, getQueryStatus, getQueryResults)'),
-    csvData: z.string().optional().describe('CSV data to upload (required for uploadData)'),
-    soql: z.string().optional().describe('SOQL query for bulk query job (required for createQueryJob)'),
-    externalIdFieldName: z.string().optional().describe('External ID field name (required for upsert operations)'),
-    resultType: z.enum(['successfulResults', 'failedResults', 'unprocessedrecords']).optional().describe('Type of results to retrieve (for getResults action)')
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('The bulk job ID'),
-    state: z.string().optional().describe('Current state of the bulk job'),
-    jobResult: z.any().optional().describe('Full job status or result data')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageBulkJob = SlateTool.create(spec, {
+  name: 'Manage Bulk Job',
+  key: 'manage_bulk_job',
+  description: `Create, monitor, and manage Salesforce Bulk API 2.0 jobs for processing large data volumes. Supports creating ingest jobs (insert, update, upsert, delete), uploading CSV data, closing/aborting jobs, checking status, and retrieving results. Also supports bulk query jobs.`,
+  instructions: [
+    'To run a bulk ingest: create a job, upload CSV data, then close the job to begin processing.',
+    'CSV data must include column headers matching Salesforce field API names.',
+    'Poll the job status until state is "JobComplete" or "Failed" before retrieving results.'
+  ],
+  constraints: [
+    'Individual CSV uploads are limited to 150 MB.',
+    'Bulk API has a limit on concurrent jobs per org.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'createIngestJob',
+          'uploadData',
+          'closeJob',
+          'abortJob',
+          'getStatus',
+          'getResults',
+          'createQueryJob',
+          'getQueryStatus',
+          'getQueryResults'
+        ])
+        .describe('The bulk operation to perform'),
+      objectType: z
+        .string()
+        .optional()
+        .describe('Salesforce object type (required for createIngestJob)'),
+      operation: z
+        .enum(['insert', 'update', 'upsert', 'delete'])
+        .optional()
+        .describe('Bulk operation type (required for createIngestJob)'),
+      jobId: z
+        .string()
+        .optional()
+        .describe(
+          'Bulk job ID (required for uploadData, closeJob, abortJob, getStatus, getResults, getQueryStatus, getQueryResults)'
+        ),
+      csvData: z.string().optional().describe('CSV data to upload (required for uploadData)'),
+      soql: z
+        .string()
+        .optional()
+        .describe('SOQL query for bulk query job (required for createQueryJob)'),
+      externalIdFieldName: z
+        .string()
+        .optional()
+        .describe('External ID field name (required for upsert operations)'),
+      resultType: z
+        .enum(['successfulResults', 'failedResults', 'unprocessedrecords'])
+        .optional()
+        .describe('Type of results to retrieve (for getResults action)')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().optional().describe('The bulk job ID'),
+      state: z.string().optional().describe('Current state of the bulk job'),
+      jobResult: z.any().optional().describe('Full job status or result data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createSalesforceClient({
       instanceUrl: ctx.auth.instanceUrl,
       apiVersion: ctx.config.apiVersion,

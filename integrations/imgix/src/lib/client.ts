@@ -1,8 +1,8 @@
 import { createAxios } from 'slates';
 
 let jsonApiHeaders = {
-  'Accept': 'application/vnd.api+json',
-  'Content-Type': 'application/vnd.api+json',
+  Accept: 'application/vnd.api+json',
+  'Content-Type': 'application/vnd.api+json'
 };
 
 export class ImgixClient {
@@ -13,8 +13,8 @@ export class ImgixClient {
       baseURL: 'https://api.imgix.com/api/v1',
       headers: {
         ...jsonApiHeaders,
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -31,8 +31,10 @@ export class ImgixClient {
     let query: Record<string, string> = {};
     if (params?.sort) query['sort'] = params.sort;
     if (params?.filterName) query['filter[name]'] = params.filterName;
-    if (params?.filterEnabled !== undefined) query['filter[enabled]'] = String(params.filterEnabled);
-    if (params?.filterDeploymentType) query['filter[deployment.type]'] = params.filterDeploymentType;
+    if (params?.filterEnabled !== undefined)
+      query['filter[enabled]'] = String(params.filterEnabled);
+    if (params?.filterDeploymentType)
+      query['filter[deployment.type]'] = params.filterDeploymentType;
     if (params?.pageNumber !== undefined) query['page[number]'] = String(params.pageNumber);
     if (params?.pageSize !== undefined) query['page[size]'] = String(params.pageSize);
 
@@ -49,8 +51,8 @@ export class ImgixClient {
     let response = await this.axios.post('/sources', {
       data: {
         attributes,
-        type: 'sources',
-      },
+        type: 'sources'
+      }
     });
     return response.data;
   }
@@ -59,24 +61,27 @@ export class ImgixClient {
     let response = await this.axios.patch(`/sources/${sourceId}`, {
       data: {
         attributes,
-        type: 'sources',
-      },
+        type: 'sources'
+      }
     });
     return response.data;
   }
 
   // ── Assets ───────────────────────────────────────────
 
-  async listAssets(sourceId: string, params?: {
-    cursor?: string;
-    limit?: number;
-    sort?: string;
-    filterOriginPath?: string;
-    filterMediaKind?: string;
-    filterKeyword?: string;
-    filterCategories?: string;
-    filterTags?: string;
-  }) {
+  async listAssets(
+    sourceId: string,
+    params?: {
+      cursor?: string;
+      limit?: number;
+      sort?: string;
+      filterOriginPath?: string;
+      filterMediaKind?: string;
+      filterKeyword?: string;
+      filterCategories?: string;
+      filterTags?: string;
+    }
+  ) {
     let query: Record<string, string> = {};
     if (params?.cursor) query['page[cursor]'] = params.cursor;
     if (params?.limit !== undefined) query['page[limit]'] = String(params.limit);
@@ -102,8 +107,8 @@ export class ImgixClient {
     let response = await this.axios.patch(`/sources/${sourceId}/assets/${encodedPath}`, {
       data: {
         attributes,
-        type: 'assets',
-      },
+        type: 'assets'
+      }
     });
     return response.data;
   }
@@ -130,8 +135,8 @@ export class ImgixClient {
     let response = await this.axios.post('/purge', {
       data: {
         attributes,
-        type: 'purges',
-      },
+        type: 'purges'
+      }
     });
     return response.data;
   }
@@ -146,7 +151,8 @@ export class ImgixClient {
     let query: Record<string, string> = {};
     if (params?.sort) query['sort'] = params.sort;
     if (params?.filterReportType) query['filter[report_type]'] = params.filterReportType;
-    if (params?.filterCompleted !== undefined) query['filter[completed]'] = String(params.filterCompleted);
+    if (params?.filterCompleted !== undefined)
+      query['filter[completed]'] = String(params.filterCompleted);
 
     let response = await this.axios.get('/reports', { params: query });
     return response.data;

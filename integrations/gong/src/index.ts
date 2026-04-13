@@ -17,7 +17,7 @@ import {
   erasePrivacyData,
   listWorkspaces,
   pushDigitalInteraction,
-  getCrmData,
+  getCrmData
 } from './tools';
 import { callEvent } from './triggers';
 
@@ -40,9 +40,7 @@ export let provider = Slate.create({
     erasePrivacyData,
     listWorkspaces,
     pushDigitalInteraction,
-    getCrmData,
+    getCrmData
   ],
-  triggers: [
-    callEvent,
-  ],
+  triggers: [callEvent]
 });

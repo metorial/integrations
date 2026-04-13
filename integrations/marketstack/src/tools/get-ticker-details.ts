@@ -3,37 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTickerDetails = SlateTool.create(
-  spec,
-  {
-    name: 'Get Ticker Details',
-    key: 'get_ticker_details',
-    description: `Retrieve detailed company information for a specific ticker symbol, including company name, country, exchange details, and data availability. Useful for looking up metadata about a particular stock.`,
-    tags: {
-      readOnly: true,
-    },
+export let getTickerDetails = SlateTool.create(spec, {
+  name: 'Get Ticker Details',
+  key: 'get_ticker_details',
+  description: `Retrieve detailed company information for a specific ticker symbol, including company name, country, exchange details, and data availability. Useful for looking up metadata about a particular stock.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    symbol: z.string().describe('Ticker symbol (e.g. "AAPL")'),
-  }))
-  .output(z.object({
-    symbol: z.string(),
-    name: z.string(),
-    country: z.string().nullable(),
-    hasIntraday: z.boolean(),
-    hasEod: z.boolean(),
-    exchange: z.object({
+})
+  .input(
+    z.object({
+      symbol: z.string().describe('Ticker symbol (e.g. "AAPL")')
+    })
+  )
+  .output(
+    z.object({
+      symbol: z.string(),
       name: z.string(),
-      acronym: z.string(),
-      mic: z.string(),
-      country: z.string(),
-      countryCode: z.string(),
-      city: z.string(),
-      website: z.string(),
-    }),
-  }))
-  .handleInvocation(async (ctx) => {
+      country: z.string().nullable(),
+      hasIntraday: z.boolean(),
+      hasEod: z.boolean(),
+      exchange: z.object({
+        name: z.string(),
+        acronym: z.string(),
+        mic: z.string(),
+        country: z.string(),
+        countryCode: z.string(),
+        city: z.string(),
+        website: z.string()
+      })
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getTickerInfo(ctx.input.symbol);
@@ -53,9 +54,10 @@ export let getTickerDetails = SlateTool.create(
           country: t.stock_exchange.country,
           countryCode: t.stock_exchange.country_code,
           city: t.stock_exchange.city,
-          website: t.stock_exchange.website,
-        },
+          website: t.stock_exchange.website
+        }
       },
-      message: `Retrieved details for **${t.name}** (${t.symbol}) traded on ${t.stock_exchange.name}.`,
+      message: `Retrieved details for **${t.name}** (${t.symbol}) traded on ${t.stock_exchange.name}.`
     };
-  }).build();
+  })
+  .build();

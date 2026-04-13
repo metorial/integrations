@@ -52,31 +52,35 @@ let mapInvoice = (i: any) => ({
   updatedAt: i.updated_at
 });
 
-export let listInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'List Invoices',
-    key: 'list_invoices',
-    description: `Retrieve a list of invoices. Filter by status, company, project, date range, tags, or search term.`,
-    tags: {
-      readOnly: true
-    }
+export let listInvoices = SlateTool.create(spec, {
+  name: 'List Invoices',
+  key: 'list_invoices',
+  description: `Retrieve a list of invoices. Filter by status, company, project, date range, tags, or search term.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.enum(['draft', 'created', 'sent', 'partially_paid', 'paid', 'overdue', 'ignored']).optional().describe('Filter by invoice status'),
-    companyId: z.number().optional().describe('Filter by customer company ID'),
-    projectId: z.number().optional().describe('Filter by project ID'),
-    dateFrom: z.string().optional().describe('Filter invoices from this date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('Filter invoices until this date (YYYY-MM-DD)'),
-    tags: z.string().optional().describe('Comma-separated list of tags'),
-    identifier: z.string().optional().describe('Filter by invoice number'),
-    term: z.string().optional().describe('Full-text search term')
-  }))
-  .output(z.object({
-    invoices: z.array(invoiceOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['draft', 'created', 'sent', 'partially_paid', 'paid', 'overdue', 'ignored'])
+        .optional()
+        .describe('Filter by invoice status'),
+      companyId: z.number().optional().describe('Filter by customer company ID'),
+      projectId: z.number().optional().describe('Filter by project ID'),
+      dateFrom: z.string().optional().describe('Filter invoices from this date (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('Filter invoices until this date (YYYY-MM-DD)'),
+      tags: z.string().optional().describe('Comma-separated list of tags'),
+      identifier: z.string().optional().describe('Filter by invoice number'),
+      term: z.string().optional().describe('Full-text search term')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(invoiceOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -96,24 +100,24 @@ export let listInvoices = SlateTool.create(
       output: { invoices },
       message: `Found **${invoices.length}** invoices.`
     };
-  }).build();
+  })
+  .build();
 
-export let getInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Get Invoice',
-    key: 'get_invoice',
-    description: `Retrieve detailed information about a specific invoice, including line items, payments, and reminders.`,
-    tags: {
-      readOnly: true
-    }
+export let getInvoice = SlateTool.create(spec, {
+  name: 'Get Invoice',
+  key: 'get_invoice',
+  description: `Retrieve detailed information about a specific invoice, including line items, payments, and reminders.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('The ID of the invoice to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('The ID of the invoice to retrieve')
+    })
+  )
   .output(invoiceOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let i = await client.getInvoice(ctx.input.invoiceId);
 
@@ -121,35 +125,38 @@ export let getInvoice = SlateTool.create(
       output: mapInvoice(i),
       message: `Retrieved invoice **${i.identifier || i.title}** (ID: ${i.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Create Invoice',
-    key: 'create_invoice',
-    description: `Create a new invoice in MOCO. Requires customer, billing address, dates, title, tax rate, currency, and at least one line item.`,
-    tags: {
-      destructive: false
-    }
+export let createInvoice = SlateTool.create(spec, {
+  name: 'Create Invoice',
+  key: 'create_invoice',
+  description: `Create a new invoice in MOCO. Requires customer, billing address, dates, title, tax rate, currency, and at least one line item.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    customerId: z.number().describe('Customer company ID'),
-    recipientAddress: z.string().describe('Recipient billing address (multiline)'),
-    date: z.string().describe('Invoice date (YYYY-MM-DD)'),
-    dueDate: z.string().describe('Payment due date (YYYY-MM-DD)'),
-    title: z.string().describe('Invoice title'),
-    tax: z.number().describe('Tax percentage (e.g., 19.0)'),
-    currency: z.string().describe('Currency code (e.g., "EUR")'),
-    items: z.array(invoiceItemSchema).describe('Invoice line items'),
-    projectId: z.number().optional().describe('Associated project ID'),
-    tags: z.array(z.string()).optional().describe('Invoice tags'),
-    servicePeriodFrom: z.string().optional().describe('Service period start date (YYYY-MM-DD)'),
-    servicePeriodTo: z.string().optional().describe('Service period end date (YYYY-MM-DD)')
-  }))
+})
+  .input(
+    z.object({
+      customerId: z.number().describe('Customer company ID'),
+      recipientAddress: z.string().describe('Recipient billing address (multiline)'),
+      date: z.string().describe('Invoice date (YYYY-MM-DD)'),
+      dueDate: z.string().describe('Payment due date (YYYY-MM-DD)'),
+      title: z.string().describe('Invoice title'),
+      tax: z.number().describe('Tax percentage (e.g., 19.0)'),
+      currency: z.string().describe('Currency code (e.g., "EUR")'),
+      items: z.array(invoiceItemSchema).describe('Invoice line items'),
+      projectId: z.number().optional().describe('Associated project ID'),
+      tags: z.array(z.string()).optional().describe('Invoice tags'),
+      servicePeriodFrom: z
+        .string()
+        .optional()
+        .describe('Service period start date (YYYY-MM-DD)'),
+      servicePeriodTo: z.string().optional().describe('Service period end date (YYYY-MM-DD)')
+    })
+  )
   .output(invoiceOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -181,25 +188,25 @@ export let createInvoice = SlateTool.create(
       output: mapInvoice(i),
       message: `Created invoice **${i.identifier || i.title}** (ID: ${i.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateInvoiceStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Update Invoice Status',
-    key: 'update_invoice_status',
-    description: `Change the status of an existing invoice. Available statuses: created, sent, overdue, ignored.`,
-    tags: {
-      destructive: false
-    }
+export let updateInvoiceStatus = SlateTool.create(spec, {
+  name: 'Update Invoice Status',
+  key: 'update_invoice_status',
+  description: `Change the status of an existing invoice. Available statuses: created, sent, overdue, ignored.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('The ID of the invoice'),
-    status: z.enum(['created', 'sent', 'overdue', 'ignored']).describe('New invoice status')
-  }))
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('The ID of the invoice'),
+      status: z.enum(['created', 'sent', 'overdue', 'ignored']).describe('New invoice status')
+    })
+  )
   .output(invoiceOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let i = await client.updateInvoiceStatus(ctx.input.invoiceId, ctx.input.status);
 
@@ -207,26 +214,28 @@ export let updateInvoiceStatus = SlateTool.create(
       output: mapInvoice(i),
       message: `Updated invoice **${ctx.input.invoiceId}** status to **${ctx.input.status}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Invoice',
-    key: 'delete_invoice',
-    description: `Delete an invoice. Non-draft invoices require a reason for deletion.`,
-    tags: {
-      destructive: true
-    }
+export let deleteInvoice = SlateTool.create(spec, {
+  name: 'Delete Invoice',
+  key: 'delete_invoice',
+  description: `Delete an invoice. Non-draft invoices require a reason for deletion.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('The ID of the invoice to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('The ID of the invoice to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     await client.deleteInvoice(ctx.input.invoiceId);
 
@@ -234,4 +243,5 @@ export let deleteInvoice = SlateTool.create(
       output: { success: true },
       message: `Deleted invoice **${ctx.input.invoiceId}**.`
     };
-  }).build();
+  })
+  .build();

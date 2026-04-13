@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createSource,
@@ -18,11 +17,7 @@ import {
   deleteResource,
   manageProject
 } from './tools';
-import {
-  newResource,
-  resourceCompleted,
-  inboundWebhook,
-} from './triggers';
+import { newResource, resourceCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,9 +38,5 @@ export let provider = Slate.create({
     deleteResource,
     manageProject
   ],
-  triggers: [
-    inboundWebhook,
-    newResource,
-    resourceCompleted
-  ]
+  triggers: [inboundWebhook, newResource, resourceCompleted]
 });

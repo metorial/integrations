@@ -3,44 +3,54 @@ import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createJob = SlateTool.create(
-  spec,
-  {
-    name: 'Create Job',
-    key: 'create_job',
-    description: `Creates a new job (project/booking) in Tave with associated details. Jobs link contacts to work engagements like weddings, portrait sessions, or other photography services. Can include job type, stage, event details, and role assignments. Requires the **API Key (Public API V2)** authentication method.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    jobType: z.string().describe('Type of job (e.g., "Wedding", "Portrait", "Engagement")'),
-    brand: z.string().optional().describe('Brand to associate the job with'),
-    jobStage: z.string().optional().describe('Initial stage of the job'),
-    contactId: z.string().optional().describe('ID of the primary contact for this job'),
-    jobRole: z.string().optional().describe('Role of the primary contact (e.g., "Bride", "Groom", "Client")'),
-    eventType: z.string().optional().describe('Type of event'),
-    eventDate: z.string().optional().describe('Date of the event (e.g., "2026-06-15")'),
-    eventTime: z.string().optional().describe('Time of the event (e.g., "14:00")'),
-    eventEndDate: z.string().optional().describe('End date of the event'),
-    eventEndTime: z.string().optional().describe('End time of the event'),
-    timezone: z.string().optional().describe('Timezone for the event (e.g., "America/New_York")'),
-    source: z.string().optional().describe('How the client found you'),
-    notes: z.string().optional().describe('Notes about the job'),
-    customFields: z.record(z.string(), z.string()).optional().describe('Custom job fields as key-value pairs'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('ID of the created job'),
-    jobType: z.string().describe('Type of the created job'),
-    raw: z.any().optional().describe('Full job record from API'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createJob = SlateTool.create(spec, {
+  name: 'Create Job',
+  key: 'create_job',
+  description: `Creates a new job (project/booking) in Tave with associated details. Jobs link contacts to work engagements like weddings, portrait sessions, or other photography services. Can include job type, stage, event details, and role assignments. Requires the **API Key (Public API V2)** authentication method.`,
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      jobType: z.string().describe('Type of job (e.g., "Wedding", "Portrait", "Engagement")'),
+      brand: z.string().optional().describe('Brand to associate the job with'),
+      jobStage: z.string().optional().describe('Initial stage of the job'),
+      contactId: z.string().optional().describe('ID of the primary contact for this job'),
+      jobRole: z
+        .string()
+        .optional()
+        .describe('Role of the primary contact (e.g., "Bride", "Groom", "Client")'),
+      eventType: z.string().optional().describe('Type of event'),
+      eventDate: z.string().optional().describe('Date of the event (e.g., "2026-06-15")'),
+      eventTime: z.string().optional().describe('Time of the event (e.g., "14:00")'),
+      eventEndDate: z.string().optional().describe('End date of the event'),
+      eventEndTime: z.string().optional().describe('End time of the event'),
+      timezone: z
+        .string()
+        .optional()
+        .describe('Timezone for the event (e.g., "America/New_York")'),
+      source: z.string().optional().describe('How the client found you'),
+      notes: z.string().optional().describe('Notes about the job'),
+      customFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom job fields as key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('ID of the created job'),
+      jobType: z.string().describe('Type of the created job'),
+      raw: z.any().optional().describe('Full job record from API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TavePublicClient(ctx.auth.token);
 
     let data: Record<string, unknown> = {
-      job_type: ctx.input.jobType,
+      job_type: ctx.input.jobType
     };
 
     if (ctx.input.brand) data['brand'] = ctx.input.brand;
@@ -68,9 +78,9 @@ export let createJob = SlateTool.create(
       output: {
         jobId: String(result.id ?? result.job_id ?? ''),
         jobType: result.job_type ?? ctx.input.jobType,
-        raw: result,
+        raw: result
       },
-      message: `Successfully created **${ctx.input.jobType}** job${ctx.input.eventDate ? ' for ' + ctx.input.eventDate : ''}.`,
+      message: `Successfully created **${ctx.input.jobType}** job${ctx.input.eventDate ? ' for ' + ctx.input.eventDate : ''}.`
     };
   })
   .build();

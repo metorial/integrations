@@ -62,8 +62,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.remove.bg/v1.0',
       headers: {
-        'X-Api-Key': config.token,
-      },
+        'X-Api-Key': config.token
+      }
     });
   }
 
@@ -87,12 +87,13 @@ export class Client {
     if (params.bgImageFileB64) formData['bg_image_file_b64'] = params.bgImageFileB64;
     if (params.shadowType) formData['shadow_type'] = params.shadowType;
     if (params.shadowOpacity !== undefined) formData['shadow_opacity'] = params.shadowOpacity;
-    if (params.semitransparency !== undefined) formData['semitransparency'] = params.semitransparency;
+    if (params.semitransparency !== undefined)
+      formData['semitransparency'] = params.semitransparency;
 
     let response = await this.axios.post('/removebg', formData, {
       headers: {
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     let data = response.data?.data ?? response.data;
@@ -108,7 +109,7 @@ export class Client {
       foregroundTop: parseInt(headers['x-foreground-top'] ?? '0', 10),
       foregroundLeft: parseInt(headers['x-foreground-left'] ?? '0', 10),
       foregroundWidth: parseInt(headers['x-foreground-width'] ?? '0', 10),
-      foregroundHeight: parseInt(headers['x-foreground-height'] ?? '0', 10),
+      foregroundHeight: parseInt(headers['x-foreground-height'] ?? '0', 10)
     };
   }
 
@@ -124,7 +125,7 @@ export class Client {
       creditsPayg: credits.payg ?? 0,
       creditsEnterprise: credits.enterprise ?? 0,
       freeApiCalls: api.free_calls ?? 0,
-      apiSizes: api.sizes ?? '',
+      apiSizes: api.sizes ?? ''
     };
   }
 
@@ -139,7 +140,7 @@ export class Client {
     let response = await this.axios.post('/improve', formData);
 
     return {
-      submissionId: response.data?.id ?? response.data?.data?.id ?? '',
+      submissionId: response.data?.id ?? response.data?.data?.id ?? ''
     };
   }
 }

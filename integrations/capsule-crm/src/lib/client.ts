@@ -9,8 +9,8 @@ export class CapsuleClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -27,15 +27,15 @@ export class CapsuleClient {
         since: params?.since,
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
   async getParty(partyId: number, embed?: string[]) {
     let response = await this.axios.get(`/parties/${partyId}`, {
-      params: { embed: embed?.join(',') },
+      params: { embed: embed?.join(',') }
     });
     return response.data.party;
   }
@@ -54,31 +54,37 @@ export class CapsuleClient {
     await this.axios.delete(`/parties/${partyId}`);
   }
 
-  async searchParties(query: string, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async searchParties(
+    query: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get('/parties/search', {
       params: {
         q: query,
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
-  async listEmployees(organisationId: number, params?: {
-    page?: number;
-    perPage?: number;
-  }) {
+  async listEmployees(
+    organisationId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.axios.get(`/parties/${organisationId}/people`, {
       params: {
         page: params?.page,
-        perPage: params?.perPage,
-      },
+        perPage: params?.perPage
+      }
     });
     return response.data;
   }
@@ -96,15 +102,15 @@ export class CapsuleClient {
         since: params?.since,
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
   async getOpportunity(opportunityId: number, embed?: string[]) {
     let response = await this.axios.get(`/opportunities/${opportunityId}`, {
-      params: { embed: embed?.join(',') },
+      params: { embed: embed?.join(',') }
     });
     return response.data.opportunity;
   }
@@ -123,33 +129,39 @@ export class CapsuleClient {
     await this.axios.delete(`/opportunities/${opportunityId}`);
   }
 
-  async searchOpportunities(query: string, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async searchOpportunities(
+    query: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get('/opportunities/search', {
       params: {
         q: query,
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
-  async listOpportunitiesByParty(partyId: number, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async listOpportunitiesByParty(
+    partyId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get(`/parties/${partyId}/opportunities`, {
       params: {
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
@@ -167,15 +179,15 @@ export class CapsuleClient {
         since: params?.since,
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
   async getProject(projectId: number, embed?: string[]) {
     let response = await this.axios.get(`/kases/${projectId}`, {
-      params: { embed: embed?.join(',') },
+      params: { embed: embed?.join(',') }
     });
     return response.data.kase;
   }
@@ -194,33 +206,39 @@ export class CapsuleClient {
     await this.axios.delete(`/kases/${projectId}`);
   }
 
-  async searchProjects(query: string, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async searchProjects(
+    query: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get('/kases/search', {
       params: {
         q: query,
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
-  async listProjectsByParty(partyId: number, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async listProjectsByParty(
+    partyId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get(`/parties/${partyId}/kases`, {
       params: {
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
@@ -238,15 +256,15 @@ export class CapsuleClient {
         page: params?.page,
         perPage: params?.perPage,
         embed: params?.embed?.join(','),
-        status: params?.status,
-      },
+        status: params?.status
+      }
     });
     return response.data;
   }
 
   async getTask(taskId: number, embed?: string[]) {
     let response = await this.axios.get(`/tasks/${taskId}`, {
-      params: { embed: embed?.join(',') },
+      params: { embed: embed?.join(',') }
     });
     return response.data.task;
   }
@@ -267,39 +285,39 @@ export class CapsuleClient {
 
   // ── Entries ──────────────────────────────────────────────
 
-  async listEntries(params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async listEntries(params?: { page?: number; perPage?: number; embed?: string[] }) {
     let response = await this.axios.get('/entries', {
       params: {
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
-  async listEntriesForEntity(entityType: string, entityId: number, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async listEntriesForEntity(
+    entityType: string,
+    entityId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get(`/${entityType}/${entityId}/entries`, {
       params: {
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }
 
   async getEntry(entryId: number, embed?: string[]) {
     let response = await this.axios.get(`/entries/${entryId}`, {
-      params: { embed: embed?.join(',') },
+      params: { embed: embed?.join(',') }
     });
     return response.data.entry;
   }
@@ -320,15 +338,18 @@ export class CapsuleClient {
 
   // ── Tags ─────────────────────────────────────────────────
 
-  async listTags(entityType: string, params?: {
-    page?: number;
-    perPage?: number;
-  }) {
+  async listTags(
+    entityType: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.axios.get(`/${entityType}/tags`, {
       params: {
         page: params?.page,
-        perPage: params?.perPage,
-      },
+        perPage: params?.perPage
+      }
     });
     return response.data;
   }
@@ -420,17 +441,21 @@ export class CapsuleClient {
     return response.data;
   }
 
-  async listByFilter(entityType: string, filterId: number, params?: {
-    page?: number;
-    perPage?: number;
-    embed?: string[];
-  }) {
+  async listByFilter(
+    entityType: string,
+    filterId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+      embed?: string[];
+    }
+  ) {
     let response = await this.axios.get(`/${entityType}/filters/${filterId}`, {
       params: {
         page: params?.page,
         perPage: params?.perPage,
-        embed: params?.embed?.join(','),
-      },
+        embed: params?.embed?.join(',')
+      }
     });
     return response.data;
   }

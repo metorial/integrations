@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'coda',
   name: 'Coda',
-  description: 'Collaborative document platform combining docs, spreadsheets, and applications into a single workspace.',
+  description:
+    'Collaborative document platform combining docs, spreadsheets, and applications into a single workspace.',
   metadata: {},
   config,
-  auth,
+  auth
 });

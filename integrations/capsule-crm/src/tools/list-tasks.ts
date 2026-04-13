@@ -17,37 +17,44 @@ let taskSchema = z.object({
   owner: z.any().optional().describe('Assigned owner'),
   party: z.any().optional().describe('Linked party'),
   opportunity: z.any().optional().describe('Linked opportunity'),
-  kase: z.any().optional().describe('Linked project'),
+  kase: z.any().optional().describe('Linked project')
 });
 
-export let listTasks = SlateTool.create(
-  spec,
-  {
-    name: 'List Tasks',
-    key: 'list_tasks',
-    description: `List tasks from Capsule CRM with pagination. Filter by status (open, completed, pending). Use embed to include linked party, opportunity, or project details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTasks = SlateTool.create(spec, {
+  name: 'List Tasks',
+  key: 'list_tasks',
+  description: `List tasks from Capsule CRM with pagination. Filter by status (open, completed, pending). Use embed to include linked party, opportunity, or project details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.enum(['open', 'completed', 'pending']).optional().describe('Filter by task status'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
-    embed: z.array(z.enum(['party', 'opportunity', 'kase', 'owner', 'nextTask'])).optional().describe('Additional data to embed'),
-  }))
-  .output(z.object({
-    tasks: z.array(taskSchema).describe('List of tasks'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['open', 'completed', 'pending'])
+        .optional()
+        .describe('Filter by task status'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
+      embed: z
+        .array(z.enum(['party', 'opportunity', 'kase', 'owner', 'nextTask']))
+        .optional()
+        .describe('Additional data to embed')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskSchema).describe('List of tasks')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
     let result = await client.listTasks({
       status: ctx.input.status,
       page: ctx.input.page,
       perPage: ctx.input.perPage,
-      embed: ctx.input.embed,
+      embed: ctx.input.embed
     });
 
     let tasks = (result.tasks || []).map((t: any) => ({
@@ -64,11 +71,12 @@ export let listTasks = SlateTool.create(
       owner: t.owner,
       party: t.party,
       opportunity: t.opportunity,
-      kase: t.kase,
+      kase: t.kase
     }));
 
     return {
       output: { tasks },
-      message: `Retrieved **${tasks.length}** tasks.`,
+      message: `Retrieved **${tasks.length}** tasks.`
     };
-  }).build();
+  })
+  .build();

@@ -12,7 +12,7 @@ import {
   listExecutions,
   manageLeads,
   manageLists,
-  getWorkspace,
+  getWorkspace
 } from './tools';
 import { phantomExecutionCompleted } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     listExecutions,
     manageLeads,
     manageLists,
-    getWorkspace,
+    getWorkspace
   ],
-  triggers: [
-    phantomExecutionCompleted,
-  ],
+  triggers: [phantomExecutionCompleted]
 });

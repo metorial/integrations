@@ -13,6 +13,7 @@ Uploadcare uses API key-based authentication with a **Public Key** and **Secret 
 For quick tests: `Uploadcare.Simple`, a simple scheme where your Secret API Key is specified in every request's auth-param. With this method, auth-param is your `public_key:secret_key` pair, and your project secret_key is included in every request as plain text.
 
 **Header format:**
+
 ```
 Authorization: Uploadcare.Simple YOUR_PUBLIC_KEY:YOUR_SECRET_KEY
 ```
@@ -26,6 +27,7 @@ For production: `Uploadcare`, a scheme where a signature, not your Secret API Ke
 The signature must be constructed from specific request components, concatenated using LF line separators, and signed with HMAC/SHA1 using the project's secret_key.
 
 **Header format:**
+
 ```
 Accept: application/vnd.uploadcare-v0.7+json
 Date: Fri, 30 Sep 2016 11:10:54 GMT
@@ -37,6 +39,7 @@ Authorization: Uploadcare YOUR_PUBLIC_KEY:SIGNATURE
 The Upload API provides several ways of uploading files and its root is located at `https://upload.uploadcare.com/`. The Upload API requires only the **Public Key** for standard uploads. For enhanced security, **Signed Uploads** can be enabled, which prevents uploading files using a Public API key only — you'll have to generate a security token on the backend to upload a file.
 
 **Credentials required:**
+
 - **Public Key** — identifies the project, used in Upload API and as part of REST API auth.
 - **Secret Key** — used to sign REST API requests and generate upload signatures.
 

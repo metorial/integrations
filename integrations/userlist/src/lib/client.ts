@@ -67,10 +67,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://push.userlist.com',
       headers: {
-        'Authorization': `Push ${config.token}`,
+        Authorization: `Push ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 

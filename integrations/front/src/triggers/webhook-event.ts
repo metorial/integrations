@@ -2,36 +2,38 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let webhookEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Webhook Event',
-    key: 'webhook_event',
-    description: 'Receives real-time webhook events from Front. Supports all Front event types including messages, assignments, tags, comments, and conversation lifecycle changes. Requires manual webhook configuration in Front (via app webhook feature or rule webhook).',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event ID'),
-    eventType: z.string().describe('Type of the event'),
-    emittedAt: z.number().describe('Timestamp when the event was emitted'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    conversationSubject: z.string().optional().describe('Conversation subject'),
-    conversationStatus: z.string().optional().describe('Conversation status'),
-    sourceType: z.string().optional().describe('Source type'),
-    targetType: z.string().optional().describe('Target type'),
-    companyId: z.string().optional().describe('Company ID from authorization object'),
-  }))
-  .output(z.object({
-    conversationId: z.string().optional(),
-    conversationSubject: z.string().optional(),
-    conversationStatus: z.string().optional(),
-    sourceType: z.string().optional(),
-    targetType: z.string().optional(),
-    companyId: z.string().optional(),
-    emittedAt: z.number(),
-  }))
+export let webhookEvent = SlateTrigger.create(spec, {
+  name: 'Webhook Event',
+  key: 'webhook_event',
+  description:
+    'Receives real-time webhook events from Front. Supports all Front event types including messages, assignments, tags, comments, and conversation lifecycle changes. Requires manual webhook configuration in Front (via app webhook feature or rule webhook).'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event ID'),
+      eventType: z.string().describe('Type of the event'),
+      emittedAt: z.number().describe('Timestamp when the event was emitted'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      conversationSubject: z.string().optional().describe('Conversation subject'),
+      conversationStatus: z.string().optional().describe('Conversation status'),
+      sourceType: z.string().optional().describe('Source type'),
+      targetType: z.string().optional().describe('Target type'),
+      companyId: z.string().optional().describe('Company ID from authorization object')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string().optional(),
+      conversationSubject: z.string().optional(),
+      conversationStatus: z.string().optional(),
+      sourceType: z.string().optional(),
+      targetType: z.string().optional(),
+      companyId: z.string().optional(),
+      emittedAt: z.number()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -64,13 +66,13 @@ export let webhookEvent = SlateTrigger.create(
             conversationStatus: conversation.status,
             sourceType: source._meta?.type,
             targetType: target._meta?.type,
-            companyId: body.authorization?.id,
-          },
-        ],
+            companyId: body.authorization?.id
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `conversation.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -81,8 +83,8 @@ export let webhookEvent = SlateTrigger.create(
           sourceType: ctx.input.sourceType,
           targetType: ctx.input.targetType,
           companyId: ctx.input.companyId,
-          emittedAt: ctx.input.emittedAt,
-        },
+          emittedAt: ctx.input.emittedAt
+        }
       };
-    },
+    }
   });

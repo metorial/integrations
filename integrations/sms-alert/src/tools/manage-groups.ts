@@ -3,31 +3,42 @@ import { SmsAlertClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroups = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Groups',
-    key: 'manage_groups',
-    description: `List, create, rename, or delete contact groups. Groups are reusable recipient lists for sending bulk SMS campaigns.`,
-    instructions: [
-      'Group names must not contain spaces.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageGroups = SlateTool.create(spec, {
+  name: 'Manage Groups',
+  key: 'manage_groups',
+  description: `List, create, rename, or delete contact groups. Groups are reusable recipient lists for sending bulk SMS campaigns.`,
+  instructions: ['Group names must not contain spaces.'],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'rename', 'delete']).describe('Action to perform: list all groups, create a new group, rename an existing group, or delete a group.'),
-    groupName: z.string().optional().describe('Name of the group (required for create, rename, delete). For rename, this is the new name.'),
-    oldGroupName: z.string().optional().describe('Current group name to rename (required for rename action).'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Status of the API response.'),
-    description: z.any().describe('Response details including group list or confirmation.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'rename', 'delete'])
+        .describe(
+          'Action to perform: list all groups, create a new group, rename an existing group, or delete a group.'
+        ),
+      groupName: z
+        .string()
+        .optional()
+        .describe(
+          'Name of the group (required for create, rename, delete). For rename, this is the new name.'
+        ),
+      oldGroupName: z
+        .string()
+        .optional()
+        .describe('Current group name to rename (required for rename action).')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Status of the API response.'),
+      description: z.any().describe('Response details including group list or confirmation.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SmsAlertClient({ token: ctx.auth.token });
 
     let result: any;
@@ -36,8 +47,11 @@ export let manageGroups = SlateTool.create(
       ctx.info('Listing groups');
       result = await client.listGroups();
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Retrieved contact groups`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Retrieved contact groups`
       };
     }
 
@@ -47,8 +61,11 @@ export let manageGroups = SlateTool.create(
       ctx.info(`Creating group: ${ctx.input.groupName}`);
       result = await client.createGroup({ groupName: ctx.input.groupName });
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Group **${ctx.input.groupName}** created`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Group **${ctx.input.groupName}** created`
       };
     }
 
@@ -59,11 +76,14 @@ export let manageGroups = SlateTool.create(
       ctx.info(`Renaming group ${ctx.input.oldGroupName} to ${ctx.input.groupName}`);
       result = await client.editGroup({
         oldGroupName: ctx.input.oldGroupName,
-        newGroupName: ctx.input.groupName,
+        newGroupName: ctx.input.groupName
       });
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Group **${ctx.input.oldGroupName}** renamed to **${ctx.input.groupName}**`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Group **${ctx.input.oldGroupName}** renamed to **${ctx.input.groupName}**`
       };
     }
 
@@ -73,10 +93,14 @@ export let manageGroups = SlateTool.create(
       ctx.info(`Deleting group: ${ctx.input.groupName}`);
       result = await client.deleteGroup({ groupName: ctx.input.groupName });
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Group **${ctx.input.groupName}** deleted`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Group **${ctx.input.groupName}** deleted`
       };
     }
 
     throw new Error(`Invalid action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

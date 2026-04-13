@@ -15,29 +15,33 @@ let styleSchema = z.object({
   updatedAt: z.string().optional().describe('When the style was last updated')
 });
 
-export let getStyles = SlateTool.create(
-  spec,
-  {
-    name: 'Get Styles',
-    key: 'get_styles',
-    description: `Retrieve published styles from a Figma team or file. Returns style metadata including name, description, type (FILL, TEXT, EFFECT, GRID), and thumbnail.`,
-    tags: {
-      readOnly: true
-    }
+export let getStyles = SlateTool.create(spec, {
+  name: 'Get Styles',
+  key: 'get_styles',
+  description: `Retrieve published styles from a Figma team or file. Returns style metadata including name, description, type (FILL, TEXT, EFFECT, GRID), and thumbnail.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().optional().describe('Team ID to get all team styles'),
-    fileKey: z.string().optional().describe('File key to get styles from a specific file'),
-    styleKey: z.string().optional().describe('Specific style key to get details for a single style'),
-    pageSize: z.number().optional().describe('Number of styles to return (team-level only)'),
-    cursor: z.number().optional().describe('Pagination cursor (team-level only)')
-  }))
-  .output(z.object({
-    styles: z.array(styleSchema).describe('List of styles'),
-    cursor: z.number().optional().describe('Pagination cursor for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().optional().describe('Team ID to get all team styles'),
+      fileKey: z.string().optional().describe('File key to get styles from a specific file'),
+      styleKey: z
+        .string()
+        .optional()
+        .describe('Specific style key to get details for a single style'),
+      pageSize: z.number().optional().describe('Number of styles to return (team-level only)'),
+      cursor: z.number().optional().describe('Pagination cursor (team-level only)')
+    })
+  )
+  .output(
+    z.object({
+      styles: z.array(styleSchema).describe('List of styles'),
+      cursor: z.number().optional().describe('Pagination cursor for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
 
     if (ctx.input.styleKey) {
@@ -45,17 +49,19 @@ export let getStyles = SlateTool.create(
       let s = result.meta;
       return {
         output: {
-          styles: [{
-            styleKey: s.key,
-            name: s.name,
-            description: s.description,
-            styleType: s.style_type,
-            fileKey: s.file_key,
-            nodeId: s.node_id,
-            thumbnailUrl: s.thumbnail_url,
-            createdAt: s.created_at,
-            updatedAt: s.updated_at
-          }]
+          styles: [
+            {
+              styleKey: s.key,
+              name: s.name,
+              description: s.description,
+              styleType: s.style_type,
+              fileKey: s.file_key,
+              nodeId: s.node_id,
+              thumbnailUrl: s.thumbnail_url,
+              createdAt: s.created_at,
+              updatedAt: s.updated_at
+            }
+          ]
         },
         message: `Retrieved style **${s.name}**`
       };

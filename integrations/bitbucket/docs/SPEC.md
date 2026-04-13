@@ -27,6 +27,7 @@ Bitbucket Cloud REST API integrations and Atlassian Connect for Bitbucket add-on
 **Token lifecycle:** Access tokens expire in one hour. Use a refresh token to obtain a new access token: POST to `https://bitbucket.org/site/oauth2/access_token` with `grant_type=refresh_token`.
 
 **Scopes:** Scopes are defined on the client/consumer instance. Bitbucket Cloud does not currently support the use of the optional scope parameter on individual grant requests. Available scopes include:
+
 - `repository` / `repository:write` / `repository:admin` — Read, write, or admin access to repositories
 - `pullrequest` / `pullrequest:write` — Read or write access to pull requests
 - `issue` / `issue:write` — Read or write access to issues
@@ -53,42 +54,55 @@ Access tokens for a repository are single-purpose, repository-based access token
 ## Features
 
 ### Repository Management
+
 Create, read, update, delete, fork, and transfer Git repositories within workspaces. Configure repository settings such as privacy, description, language, branching model, and branch restrictions. Manage repository downloads and access permissions for users and groups.
 
 ### Pull Requests
+
 Create, update, approve, decline, and merge pull requests. Manage reviewers and default reviewers. Support for draft pull requests and change request workflows. Comment on pull requests with inline code comments (single-line and multi-line). Configure merge strategies and enforce merge checks.
 
 ### Commits and Source Code
+
 Browse repository source files at any revision. List and inspect commits across branches and tags. Comment on individual commits. Manage commit statuses (build statuses from CI/CD tools). View diffs between revisions.
 
 ### Branching and Refs
+
 Create, list, and delete branches and tags. Configure branching models (e.g., feature, bugfix, hotfix, release prefixes). Set branch permissions to restrict who can push or merge.
 
 ### Issue Tracking
+
 Bitbucket includes a built-in lightweight issue tracker per repository. Create, update, list, and query issues with fields like priority, status, type, component, milestone, and version. Import and export issue data. Comment on issues.
 
 ### Pipelines (CI/CD)
+
 Pipelines permissions provide access to view or control Bitbucket Pipelines, including viewing pipelines, steps, deployment environments, and variables, as well as stopping, rerunning, resuming, and manually triggering pipelines. Manage pipeline configuration variables and deployment environments. Configure self-hosted runners.
 
 ### Workspaces and Projects
+
 Manage workspaces that contain users, groups, and repositories. Create and configure projects to organize repositories. Control workspace membership and permissions. Manage workspace-level settings.
 
 ### Users and Permissions
+
 List and manage workspace members and groups. Control access at workspace, project, and repository levels. View user profiles and account information.
 
 ### Snippets
+
 Create, read, update, and delete code snippets (small pieces of code or text). Snippets support versioning and comments. They can be public or private.
 
 ### Webhooks
+
 Create, list, update, and delete webhooks programmatically on repositories and workspaces. A webhook consists of a subject (the resource that generates events, currently the repository), one or more events (the default is a repository push, but multiple events can be selected), and a URL endpoint.
 
 ### Code Search
+
 Search across code within repositories in a workspace.
 
 ### Deployments
+
 View and manage deployment environments and track deployment history within Bitbucket Pipelines.
 
 ### Reports (Code Insights)
+
 External tools can attach reports and annotations to commits, enabling code quality and security insights within pull requests.
 
 ## Events
@@ -96,7 +110,9 @@ External tools can attach reports and annotations to commits, enabling code qual
 Webhooks provide a way to configure Bitbucket Cloud to make requests to your self-hosted server (or another external service) whenever certain events occur in Bitbucket Cloud. Webhooks can be configured at the repository or workspace level. Each webhook specifies a URL and one or more event triggers.
 
 ### Repository Events
+
 Events related to repository-level activity:
+
 - **Push** (`repo:push`): Triggered when a user pushes one or more commits to a repository. Includes details of all updated references (branches/tags) and up to 5 recent commits per change.
 - **Fork** (`repo:fork`): Triggered when a user forks a repository.
 - **Updated** (`repo:updated`): Triggered when repository metadata (name, description, website, language) changes.
@@ -107,13 +123,17 @@ Events related to repository-level activity:
 - **Deleted** (`repo:deleted`): Triggered when a repository is hard deleted.
 
 ### Issue Events
+
 Events related to the built-in issue tracker:
+
 - **Issue Created** (`issue:created`): Triggered when a user creates an issue.
 - **Issue Updated** (`issue:updated`): Triggered when a user updates an issue (includes change details).
 - **Issue Comment Created** (`issue:comment_created`): Triggered when a user comments on an issue.
 
 ### Pull Request Events
+
 Events related to pull request activity:
+
 - **Created** (`pullrequest:created`): Triggered when a pull request is created.
 - **Updated** (`pullrequest:updated`): Triggered when a pull request is updated.
 - **Approved** (`pullrequest:approved`): Triggered when a user approves a pull request.

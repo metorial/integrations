@@ -5,33 +5,43 @@ Manage machine learning model, dataset, and Spaces repositories on Hugging Face 
 ## Tools
 
 ### Get User Info
+
 Get information about the authenticated user, including username, email, organizations, and account details.
 
 ### Chat Completion
+
 Run a chat completion using a model on the Hugging Face Inference API. Follows the OpenAI-compatible chat completions format. Supports conversation history with system, user, and assistant messages.
 
 ### Get Collection
+
 Retrieve a Hugging Face collection by its slug. Returns the collection's title, description, and all items (models, datasets, spaces) it contains.
 
 ### List Discussions
+
 List discussions and pull requests on a Hugging Face repository. Returns summaries including title, status, and whether each item is a PR.
 
 ### List Repository Files
+
 List files and directories in a Hugging Face repository at a given path and revision. Returns file metadata including type, size, and OID.
 
 ### Create Repository
+
 Create a new model, dataset, or Space repository on Hugging Face Hub. Supports setting visibility, SDK type (for Spaces), and license.
 
 ### Get Space Runtime
+
 Get runtime information for a Space, including hardware, stage, SDK, and storage details.
 
 ### Search Datasets
+
 Search for datasets on Hugging Face Hub. Filter by keyword, author, and tags. Results include dataset metadata such as downloads and likes.
 
 ### Search Models
+
 Search for machine learning models on Hugging Face Hub. Filter by keyword, author, library framework, pipeline task, and tags. Results include model metadata such as downloads, likes, and pipeline task.
 
 ### Search Spaces
+
 Search for Spaces (ML application demos) on Hugging Face Hub. Filter by keyword, author, and tags. Results include Space metadata such as SDK type and likes.
 
 ## License

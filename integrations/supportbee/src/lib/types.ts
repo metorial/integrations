@@ -1,14 +1,16 @@
 import { z } from 'zod';
 
-export let pictureSchema = z.object({
-  thumb20: z.string().optional(),
-  thumb24: z.string().optional(),
-  thumb32: z.string().optional(),
-  thumb48: z.string().optional(),
-  thumb64: z.string().optional(),
-  thumb128: z.string().optional(),
-  thumb256: z.string().optional()
-}).optional();
+export let pictureSchema = z
+  .object({
+    thumb20: z.string().optional(),
+    thumb24: z.string().optional(),
+    thumb32: z.string().optional(),
+    thumb48: z.string().optional(),
+    thumb64: z.string().optional(),
+    thumb128: z.string().optional(),
+    thumb256: z.string().optional()
+  })
+  .optional();
 
 export let userSchema = z.object({
   userId: z.number().describe('Unique identifier for the user'),
@@ -16,7 +18,10 @@ export let userSchema = z.object({
   firstName: z.string().optional().describe('First name of the user'),
   lastName: z.string().optional().describe('Last name of the user'),
   name: z.string().optional().describe('Full name of the user'),
-  role: z.string().optional().describe('Role of the user (admin, agent, collaborator, customer)'),
+  role: z
+    .string()
+    .optional()
+    .describe('Role of the user (admin, agent, collaborator, customer)'),
   agent: z.boolean().optional().describe('Whether the user is an agent'),
   imageUrl: z.string().optional().describe('Thumbnail URL of the user avatar')
 });
@@ -51,11 +56,18 @@ export let ticketSchema = z.object({
   createdAt: z.string().optional().describe('Ticket creation timestamp'),
   lastActivityAt: z.string().optional().describe('Timestamp of last activity on the ticket'),
   requester: ticketRequesterSchema.optional().describe('The person who submitted the ticket'),
-  currentUserAssignee: userSchema.optional().nullable().describe('User assigned to the ticket'),
-  currentTeamAssignee: z.object({
-    teamId: z.number().describe('Assigned team ID'),
-    name: z.string().optional().describe('Assigned team name')
-  }).optional().nullable().describe('Team assigned to the ticket'),
+  currentUserAssignee: userSchema
+    .optional()
+    .nullable()
+    .describe('User assigned to the ticket'),
+  currentTeamAssignee: z
+    .object({
+      teamId: z.number().describe('Assigned team ID'),
+      name: z.string().optional().describe('Assigned team name')
+    })
+    .optional()
+    .nullable()
+    .describe('Team assigned to the ticket'),
   labels: z.array(labelSchema).optional().describe('Labels applied to the ticket'),
   content: contentSchema.optional().describe('Ticket body content')
 });
@@ -87,10 +99,13 @@ export let snippetSchema = z.object({
   name: z.string().describe('Snippet name/title'),
   tags: z.string().optional().describe('Comma-separated tags for the snippet'),
   createdAt: z.string().optional().describe('Snippet creation timestamp'),
-  content: z.object({
-    text: z.string().optional().describe('Plain text content'),
-    html: z.string().optional().describe('HTML content')
-  }).optional().describe('Snippet body content')
+  content: z
+    .object({
+      text: z.string().optional().describe('Plain text content'),
+      html: z.string().optional().describe('HTML content')
+    })
+    .optional()
+    .describe('Snippet body content')
 });
 
 export let emailSchema = z.object({

@@ -9,8 +9,8 @@ export class GistClient {
       baseURL: 'https://api.getgist.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -107,7 +107,10 @@ export class GistClient {
     return response.data;
   }
 
-  async listMessages(conversationId: string, params?: { page?: number; per_page?: number }): Promise<any> {
+  async listMessages(
+    conversationId: string,
+    params?: { page?: number; per_page?: number }
+  ): Promise<any> {
     let response = await this.api.get(`/conversations/${conversationId}/messages`, { params });
     return response.data;
   }
@@ -137,18 +140,25 @@ export class GistClient {
     return response.data;
   }
 
-  async prioritizeConversation(conversationId: string, data: Record<string, any>): Promise<any> {
+  async prioritizeConversation(
+    conversationId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.post(`/conversations/${conversationId}/prioritize`, data);
     return response.data;
   }
 
   async tagConversation(conversationId: string, tagName: string): Promise<any> {
-    let response = await this.api.post(`/conversations/${conversationId}/tag`, { name: tagName });
+    let response = await this.api.post(`/conversations/${conversationId}/tag`, {
+      name: tagName
+    });
     return response.data;
   }
 
   async untagConversation(conversationId: string, tagName: string): Promise<any> {
-    let response = await this.api.post(`/conversations/${conversationId}/untag`, { name: tagName });
+    let response = await this.api.post(`/conversations/${conversationId}/untag`, {
+      name: tagName
+    });
     return response.data;
   }
 
@@ -208,7 +218,7 @@ export class GistClient {
   async tagContacts(tagName: string, contactIds: string[]): Promise<any> {
     let response = await this.api.post('/tags', {
       name: tagName,
-      contacts: contactIds.map(id => ({ id })),
+      contacts: contactIds.map(id => ({ id }))
     });
     return response.data;
   }
@@ -216,7 +226,7 @@ export class GistClient {
   async untagContacts(tagName: string, contactIds: string[]): Promise<any> {
     let response = await this.api.post('/tags', {
       name: tagName,
-      contacts: contactIds.map(id => ({ id, untag: true })),
+      contacts: contactIds.map(id => ({ id, untag: true }))
     });
     return response.data;
   }
@@ -257,7 +267,10 @@ export class GistClient {
     return response.data;
   }
 
-  async listFormSubmissions(formId: string, params?: { page?: number; per_page?: number }): Promise<any> {
+  async listFormSubmissions(
+    formId: string,
+    params?: { page?: number; per_page?: number }
+  ): Promise<any> {
     let response = await this.api.get(`/forms/${formId}/submissions`, { params });
     return response.data;
   }
@@ -279,13 +292,25 @@ export class GistClient {
     return response.data;
   }
 
-  async attachSubscriptionType(subscriptionTypeId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/subscription_types/${subscriptionTypeId}/attach`, data);
+  async attachSubscriptionType(
+    subscriptionTypeId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.post(
+      `/subscription_types/${subscriptionTypeId}/attach`,
+      data
+    );
     return response.data;
   }
 
-  async detachSubscriptionType(subscriptionTypeId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/subscription_types/${subscriptionTypeId}/detach`, data);
+  async detachSubscriptionType(
+    subscriptionTypeId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.post(
+      `/subscription_types/${subscriptionTypeId}/detach`,
+      data
+    );
     return response.data;
   }
 

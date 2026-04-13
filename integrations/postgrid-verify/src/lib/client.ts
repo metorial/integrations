@@ -150,22 +150,22 @@ export class Client {
       baseURL: 'https://api.postgrid.com/v1/addver',
       headers: {
         'x-api-key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     this.intlApi = createAxios({
       baseURL: 'https://api.postgrid.com/v1/intl_addver',
       headers: {
         'x-api-key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async verifyAddress(
     address: StructuredAddress | string,
-    options?: VerificationOptions,
+    options?: VerificationOptions
   ): Promise<VerificationResult> {
     let params: Record<string, string> = {};
     if (options?.includeDetails) params['includeDetails'] = 'true';
@@ -178,20 +178,24 @@ export class Client {
 
   async batchVerifyAddresses(
     addresses: (StructuredAddress | string)[],
-    options?: VerificationOptions,
+    options?: VerificationOptions
   ): Promise<VerificationResult[]> {
     let params: Record<string, string> = {};
     if (options?.includeDetails) params['includeDetails'] = 'true';
     if (options?.properCase) params['properCase'] = 'true';
     if (options?.geocode) params['geocode'] = 'true';
 
-    let response = await this.standardApi.post('/verifications/batch', { addresses }, { params });
+    let response = await this.standardApi.post(
+      '/verifications/batch',
+      { addresses },
+      { params }
+    );
     return response.data.data;
   }
 
   async getAutocompletePreviews(
     partialStreet: string,
-    options?: { properCase?: boolean; provInsteadOfPC?: boolean },
+    options?: { properCase?: boolean; provInsteadOfPC?: boolean }
   ): Promise<AutocompletePreview[]> {
     let params: Record<string, string> = { partialStreet };
     if (options?.properCase) params['properCase'] = 'true';
@@ -203,7 +207,7 @@ export class Client {
 
   async completeAddress(
     previewId: string,
-    options?: { geocode?: boolean; properCase?: boolean },
+    options?: { geocode?: boolean; properCase?: boolean }
   ): Promise<AutocompleteResult> {
     let params: Record<string, string> = {};
     if (options?.geocode) params['geocode'] = 'true';
@@ -215,11 +219,11 @@ export class Client {
 
   async getAutocompleteDrilldown(
     containerId: string,
-    options?: { properCase?: boolean; provInsteadOfPC?: boolean },
+    options?: { properCase?: boolean; provInsteadOfPC?: boolean }
   ): Promise<AutocompletePreview[]> {
     let params: Record<string, string> = {
       container: containerId,
-      advanced: 'true',
+      advanced: 'true'
     };
     if (options?.properCase) params['properCase'] = 'true';
     if (options?.provInsteadOfPC) params['provInsteadOfPC'] = 'true';
@@ -230,7 +234,7 @@ export class Client {
 
   async verifyInternationalAddress(
     address: StructuredAddress | string,
-    options?: { includeDetails?: boolean; geoData?: boolean; properCase?: boolean },
+    options?: { includeDetails?: boolean; geoData?: boolean; properCase?: boolean }
   ): Promise<IntlVerificationResult> {
     let params: Record<string, string> = {};
     if (options?.includeDetails) params['includeDetails'] = 'true';
@@ -243,7 +247,7 @@ export class Client {
 
   async batchVerifyInternationalAddresses(
     addresses: (StructuredAddress | string)[],
-    options?: { includeDetails?: boolean; geoData?: boolean; properCase?: boolean },
+    options?: { includeDetails?: boolean; geoData?: boolean; properCase?: boolean }
   ): Promise<IntlVerificationResult[]> {
     let params: Record<string, string> = {};
     if (options?.includeDetails) params['includeDetails'] = 'true';
@@ -256,7 +260,7 @@ export class Client {
 
   async getIntlAutocompletePreviews(
     partialStreet: string,
-    options?: { countriesFilter?: string; properCase?: boolean },
+    options?: { countriesFilter?: string; properCase?: boolean }
   ): Promise<IntlAutocompletePreview[]> {
     let params: Record<string, string> = { partialStreet };
     if (options?.countriesFilter) params['countriesFilter'] = options.countriesFilter;
@@ -268,7 +272,7 @@ export class Client {
 
   async completeIntlAddress(
     previewId: string,
-    options?: { geoData?: boolean; properCase?: boolean },
+    options?: { geoData?: boolean; properCase?: boolean }
   ): Promise<IntlAutocompleteResult> {
     let params: Record<string, string> = {};
     if (options?.geoData) params['geoData'] = 'true';
@@ -280,11 +284,11 @@ export class Client {
 
   async getIntlAutocompleteDrilldown(
     containerId: string,
-    options?: { countriesFilter?: string; properCase?: boolean },
+    options?: { countriesFilter?: string; properCase?: boolean }
   ): Promise<IntlAutocompletePreview[]> {
     let params: Record<string, string> = {
       container: containerId,
-      advanced: 'true',
+      advanced: 'true'
     };
     if (options?.countriesFilter) params['countriesFilter'] = options.countriesFilter;
     if (options?.properCase) params['properCase'] = 'true';

@@ -73,8 +73,8 @@ export class Client {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'X-Api-Key': config.token,
-      },
+        'X-Api-Key': config.token
+      }
     });
   }
 

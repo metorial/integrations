@@ -60,14 +60,18 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'tokenid': token,
-      },
+        tokenid: token
+      }
     });
   }
 
   // ---- Record CRUD ----
 
-  async listRecords(objectType: string, pageSize?: number, pageNumber?: number): Promise<ListRecordsResponse> {
+  async listRecords(
+    objectType: string,
+    pageSize?: number,
+    pageNumber?: number
+  ): Promise<ListRecordsResponse> {
     let params: Record<string, string> = {};
     if (pageSize !== undefined) params.pagesize = String(pageSize);
     if (pageNumber !== undefined) params.pagenumber = String(pageNumber);
@@ -86,7 +90,11 @@ export class Client {
     return response.data.data.Record;
   }
 
-  async updateRecord(objectType: string, recordId: string, data: Record<string, any>): Promise<FireberryRecord> {
+  async updateRecord(
+    objectType: string,
+    recordId: string,
+    data: Record<string, any>
+  ): Promise<FireberryRecord> {
     let response = await this.axios.put(`/api/record/${objectType}/${recordId}`, data);
     return response.data.data.Record;
   }
@@ -97,8 +105,14 @@ export class Client {
 
   // ---- Related Records ----
 
-  async getRelatedRecords(objectType: string, recordId: string, relatedObjectType: string): Promise<ListRecordsResponse> {
-    let response = await this.axios.get(`/api/record/${objectType}/${recordId}/${relatedObjectType}`);
+  async getRelatedRecords(
+    objectType: string,
+    recordId: string,
+    relatedObjectType: string
+  ): Promise<ListRecordsResponse> {
+    let response = await this.axios.get(
+      `/api/record/${objectType}/${recordId}/${relatedObjectType}`
+    );
     return response.data.data;
   }
 
@@ -113,29 +127,35 @@ export class Client {
 
   async getAllObjects(): Promise<MetadataObject[]> {
     let response = await this.axios.get('/metadata/records', {
-      params: { tokenid: this.token },
+      params: { tokenid: this.token }
     });
     return response.data.data;
   }
 
   async getObjectFields(objectId: number | string): Promise<MetadataField[]> {
     let response = await this.axios.get(`/metadata/records/${objectId}/fields`, {
-      params: { tokenid: this.token },
+      params: { tokenid: this.token }
     });
     return response.data.data;
   }
 
   async getFieldDetails(objectId: number | string, fieldName: string): Promise<MetadataField> {
     let response = await this.axios.get(`/metadata/records/${objectId}/fields/${fieldName}`, {
-      params: { tokenid: this.token },
+      params: { tokenid: this.token }
     });
     return response.data.data;
   }
 
-  async getPicklistValues(objectId: number | string, fieldName: string): Promise<MetadataFieldWithValues> {
-    let response = await this.axios.get(`/metadata/records/${objectId}/fields/${fieldName}/values`, {
-      params: { tokenid: this.token },
-    });
+  async getPicklistValues(
+    objectId: number | string,
+    fieldName: string
+  ): Promise<MetadataFieldWithValues> {
+    let response = await this.axios.get(
+      `/metadata/records/${objectId}/fields/${fieldName}/values`,
+      {
+        params: { tokenid: this.token }
+      }
+    );
     return response.data.data;
   }
 }

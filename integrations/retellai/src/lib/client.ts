@@ -5,14 +5,14 @@ export class RetellClient {
 
   constructor(private token: string) {
     this.axios = createAxios({
-      baseURL: 'https://api.retellai.com',
+      baseURL: 'https://api.retellai.com'
     });
   }
 
   private get headers() {
     return {
       Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -30,19 +30,30 @@ export class RetellClient {
     return res.data;
   }
 
-  async listAgents(params?: { limit?: number; paginationKey?: string; paginationKeyVersion?: number }) {
+  async listAgents(params?: {
+    limit?: number;
+    paginationKey?: string;
+    paginationKeyVersion?: number;
+  }) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.paginationKey) queryParams.pagination_key = params.paginationKey;
-    if (params?.paginationKeyVersion) queryParams.pagination_key_version = params.paginationKeyVersion;
-    let res = await this.axios.get('/list-agents', { headers: this.headers, params: queryParams });
+    if (params?.paginationKeyVersion)
+      queryParams.pagination_key_version = params.paginationKeyVersion;
+    let res = await this.axios.get('/list-agents', {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
   async updateAgent(agentId: string, data: Record<string, any>, version?: number) {
     let params: Record<string, any> = {};
     if (version !== undefined) params.version = version;
-    let res = await this.axios.patch(`/update-agent/${agentId}`, data, { headers: this.headers, params });
+    let res = await this.axios.patch(`/update-agent/${agentId}`, data, {
+      headers: this.headers,
+      params
+    });
     return res.data;
   }
 
@@ -91,7 +102,9 @@ export class RetellClient {
   }
 
   async getPhoneNumber(phoneNumber: string) {
-    let res = await this.axios.get(`/get-phone-number/${encodeURIComponent(phoneNumber)}`, { headers: this.headers });
+    let res = await this.axios.get(`/get-phone-number/${encodeURIComponent(phoneNumber)}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -101,12 +114,18 @@ export class RetellClient {
   }
 
   async updatePhoneNumber(phoneNumber: string, data: Record<string, any>) {
-    let res = await this.axios.patch(`/update-phone-number/${encodeURIComponent(phoneNumber)}`, data, { headers: this.headers });
+    let res = await this.axios.patch(
+      `/update-phone-number/${encodeURIComponent(phoneNumber)}`,
+      data,
+      { headers: this.headers }
+    );
     return res.data;
   }
 
   async deletePhoneNumber(phoneNumber: string) {
-    await this.axios.delete(`/delete-phone-number/${encodeURIComponent(phoneNumber)}`, { headers: this.headers });
+    await this.axios.delete(`/delete-phone-number/${encodeURIComponent(phoneNumber)}`, {
+      headers: this.headers
+    });
   }
 
   // ── Knowledge Bases ──
@@ -117,12 +136,16 @@ export class RetellClient {
   }
 
   async getKnowledgeBase(knowledgeBaseId: string) {
-    let res = await this.axios.get(`/get-knowledge-base/${knowledgeBaseId}`, { headers: this.headers });
+    let res = await this.axios.get(`/get-knowledge-base/${knowledgeBaseId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async deleteKnowledgeBase(knowledgeBaseId: string) {
-    await this.axios.delete(`/delete-knowledge-base/${knowledgeBaseId}`, { headers: this.headers });
+    await this.axios.delete(`/delete-knowledge-base/${knowledgeBaseId}`, {
+      headers: this.headers
+    });
   }
 
   // ── Voices ──

@@ -6,7 +6,7 @@ import {
   retrieveExtraction,
   getHighlights,
   getUsageInfo,
-  manageWebhook,
+  manageWebhook
 } from './tools';
 import { extractionCompleted } from './triggers';
 
@@ -18,9 +18,7 @@ export let provider = Slate.create({
     retrieveExtraction,
     getHighlights,
     getUsageInfo,
-    manageWebhook,
+    manageWebhook
   ],
-  triggers: [
-    extractionCompleted,
-  ],
+  triggers: [extractionCompleted]
 });

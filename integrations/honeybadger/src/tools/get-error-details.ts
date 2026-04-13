@@ -12,52 +12,64 @@ let noticeSchema = z.object({
   component: z.string().optional().describe('Component'),
   action: z.string().optional().describe('Action'),
   request: z.any().optional().describe('Request details'),
-  backtrace: z.any().optional().describe('Stack trace'),
+  backtrace: z.any().optional().describe('Stack trace')
 });
 
-export let getErrorDetails = SlateTool.create(
-  spec,
-  {
-    name: 'Get Error Details',
-    key: 'get_error_details',
-    description: `Retrieve detailed information about a specific error (fault) including its recent occurrences (notices), comments, and metadata. Provides full context for debugging.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    projectId: z.string().describe('Project ID'),
-    faultId: z.string().describe('Fault/Error ID'),
-    includeNotices: z.boolean().optional().describe('Include recent error occurrences (default: true)'),
-    includeComments: z.boolean().optional().describe('Include comments on this error (default: false)'),
-    noticeLimit: z.number().optional().describe('Max notices to return (max 25)'),
-  }))
-  .output(z.object({
-    faultId: z.number().describe('Fault ID'),
-    klass: z.string().optional().describe('Error class name'),
-    message: z.string().optional().describe('Error message'),
-    component: z.string().optional().describe('Component'),
-    action: z.string().optional().describe('Action'),
-    environment: z.string().optional().describe('Environment'),
-    resolved: z.boolean().optional().describe('Whether resolved'),
-    ignored: z.boolean().optional().describe('Whether ignored'),
-    noticesCount: z.number().optional().describe('Total occurrences'),
-    createdAt: z.string().optional().describe('First seen'),
-    lastNoticeAt: z.string().optional().describe('Last occurrence'),
-    tags: z.array(z.string()).optional().describe('Tags'),
-    assignee: z.any().optional().describe('Assigned user'),
-    notices: z.array(noticeSchema).optional().describe('Recent occurrences'),
-    comments: z.array(z.object({
-      commentId: z.number().describe('Comment ID'),
-      body: z.string().optional().describe('Comment text'),
-      author: z.any().optional().describe('Comment author'),
-      createdAt: z.string().optional().describe('When the comment was created'),
-    })).optional().describe('Comments on this error'),
-    url: z.string().optional().describe('URL to view error in Honeybadger'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getErrorDetails = SlateTool.create(spec, {
+  name: 'Get Error Details',
+  key: 'get_error_details',
+  description: `Retrieve detailed information about a specific error (fault) including its recent occurrences (notices), comments, and metadata. Provides full context for debugging.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      faultId: z.string().describe('Fault/Error ID'),
+      includeNotices: z
+        .boolean()
+        .optional()
+        .describe('Include recent error occurrences (default: true)'),
+      includeComments: z
+        .boolean()
+        .optional()
+        .describe('Include comments on this error (default: false)'),
+      noticeLimit: z.number().optional().describe('Max notices to return (max 25)')
+    })
+  )
+  .output(
+    z.object({
+      faultId: z.number().describe('Fault ID'),
+      klass: z.string().optional().describe('Error class name'),
+      message: z.string().optional().describe('Error message'),
+      component: z.string().optional().describe('Component'),
+      action: z.string().optional().describe('Action'),
+      environment: z.string().optional().describe('Environment'),
+      resolved: z.boolean().optional().describe('Whether resolved'),
+      ignored: z.boolean().optional().describe('Whether ignored'),
+      noticesCount: z.number().optional().describe('Total occurrences'),
+      createdAt: z.string().optional().describe('First seen'),
+      lastNoticeAt: z.string().optional().describe('Last occurrence'),
+      tags: z.array(z.string()).optional().describe('Tags'),
+      assignee: z.any().optional().describe('Assigned user'),
+      notices: z.array(noticeSchema).optional().describe('Recent occurrences'),
+      comments: z
+        .array(
+          z.object({
+            commentId: z.number().describe('Comment ID'),
+            body: z.string().optional().describe('Comment text'),
+            author: z.any().optional().describe('Comment author'),
+            createdAt: z.string().optional().describe('When the comment was created')
+          })
+        )
+        .optional()
+        .describe('Comments on this error'),
+      url: z.string().optional().describe('URL to view error in Honeybadger')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HoneybadgerClient({ token: ctx.auth.token });
     let { projectId, faultId, includeNotices, includeComments, noticeLimit } = ctx.input;
 
@@ -66,7 +78,7 @@ export let getErrorDetails = SlateTool.create(
     let notices: any[] | undefined;
     if (includeNotices !== false) {
       let noticesData = await client.listNotices(projectId, faultId, {
-        limit: noticeLimit || 5,
+        limit: noticeLimit || 5
       });
       notices = (noticesData.results || []).map((n: any) => ({
         noticeId: n.id,
@@ -77,7 +89,7 @@ export let getErrorDetails = SlateTool.create(
         component: n.request?.component,
         action: n.request?.action,
         request: n.request,
-        backtrace: n.backtrace,
+        backtrace: n.backtrace
       }));
     }
 
@@ -88,7 +100,7 @@ export let getErrorDetails = SlateTool.create(
         commentId: c.id,
         body: c.body,
         author: c.author,
-        createdAt: c.created_at,
+        createdAt: c.created_at
       }));
     }
 
@@ -109,9 +121,9 @@ export let getErrorDetails = SlateTool.create(
         assignee: fault.assignee,
         notices,
         comments,
-        url: fault.url,
+        url: fault.url
       },
-      message: `Error **${fault.klass}**: "${fault.message}" — ${fault.notices_count} occurrence(s), ${fault.resolved ? 'resolved' : 'unresolved'}.`,
+      message: `Error **${fault.klass}**: "${fault.message}" — ${fault.notices_count} occurrence(s), ${fault.resolved ? 'resolved' : 'unresolved'}.`
     };
   })
   .build();

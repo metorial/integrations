@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://www.remoteretrieval.com',
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,7 +25,7 @@ export class Client {
 
   async createOrderByCsv(orderFile: string) {
     let response = await this.axios.post('/api/v1/create-order-by-csv', {
-      order_file: orderFile,
+      order_file: orderFile
     });
     return response.data;
   }
@@ -55,7 +55,9 @@ export class Client {
   }
 
   async getOrderDetails(orderId: string) {
-    let response = await this.axios.get(`/api/v1/device_returns?oid=${encodeURIComponent(orderId)}`);
+    let response = await this.axios.get(
+      `/api/v1/device_returns?oid=${encodeURIComponent(orderId)}`
+    );
     return response.data;
   }
 

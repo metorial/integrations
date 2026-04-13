@@ -66,43 +66,42 @@ let paginationOutputSchema = z.object({
   prevPage: z.number().nullable().describe('Previous page number')
 });
 
-export let createAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Create Account',
-    key: 'create_account',
-    description: `Create a new account (company) in SalesLoft. Name and domain are required. Supports setting company details, address, industry, and custom fields.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createAccount = SlateTool.create(spec, {
+  name: 'Create Account',
+  key: 'create_account',
+  description: `Create a new account (company) in SalesLoft. Name and domain are required. Supports setting company details, address, industry, and custom fields.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Account/company name'),
-    domain: z.string().describe('Company domain (e.g., "example.com")'),
-    website: z.string().optional().describe('Website URL'),
-    description: z.string().optional().describe('Account description'),
-    phone: z.string().optional().describe('Phone number'),
-    linkedinUrl: z.string().optional().describe('LinkedIn URL'),
-    twitterHandle: z.string().optional().describe('Twitter handle'),
-    street: z.string().optional().describe('Street address'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State/Province'),
-    postalCode: z.string().optional().describe('Postal code'),
-    country: z.string().optional().describe('Country'),
-    industry: z.string().optional().describe('Industry'),
-    companyType: z.string().optional().describe('Company type'),
-    size: z.string().optional().describe('Company size'),
-    founded: z.string().optional().describe('Year founded'),
-    revenueRange: z.string().optional().describe('Revenue range'),
-    ownerId: z.number().optional().describe('Owner user ID'),
-    tags: z.array(z.string()).optional().describe('Tags to apply'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-    doNotContact: z.boolean().optional().describe('Do-not-contact flag')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Account/company name'),
+      domain: z.string().describe('Company domain (e.g., "example.com")'),
+      website: z.string().optional().describe('Website URL'),
+      description: z.string().optional().describe('Account description'),
+      phone: z.string().optional().describe('Phone number'),
+      linkedinUrl: z.string().optional().describe('LinkedIn URL'),
+      twitterHandle: z.string().optional().describe('Twitter handle'),
+      street: z.string().optional().describe('Street address'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State/Province'),
+      postalCode: z.string().optional().describe('Postal code'),
+      country: z.string().optional().describe('Country'),
+      industry: z.string().optional().describe('Industry'),
+      companyType: z.string().optional().describe('Company type'),
+      size: z.string().optional().describe('Company size'),
+      founded: z.string().optional().describe('Year founded'),
+      revenueRange: z.string().optional().describe('Revenue range'),
+      ownerId: z.number().optional().describe('Owner user ID'),
+      tags: z.array(z.string()).optional().describe('Tags to apply'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
+      doNotContact: z.boolean().optional().describe('Do-not-contact flag')
+    })
+  )
   .output(accountOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {
@@ -136,42 +135,42 @@ export let createAccount = SlateTool.create(
       output,
       message: `Created account **${output.name}** (ID: ${output.accountId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Update Account',
-    key: 'update_account',
-    description: `Update an existing account (company) in SalesLoft. Provide the account ID and any fields to update.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateAccount = SlateTool.create(spec, {
+  name: 'Update Account',
+  key: 'update_account',
+  description: `Update an existing account (company) in SalesLoft. Provide the account ID and any fields to update.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    accountId: z.number().describe('ID of the account to update'),
-    name: z.string().optional().describe('Updated name'),
-    domain: z.string().optional().describe('Updated domain'),
-    website: z.string().optional().describe('Updated website URL'),
-    description: z.string().optional().describe('Updated description'),
-    phone: z.string().optional().describe('Updated phone number'),
-    linkedinUrl: z.string().optional().describe('Updated LinkedIn URL'),
-    twitterHandle: z.string().optional().describe('Updated Twitter handle'),
-    street: z.string().optional().describe('Updated street address'),
-    city: z.string().optional().describe('Updated city'),
-    state: z.string().optional().describe('Updated state'),
-    postalCode: z.string().optional().describe('Updated postal code'),
-    country: z.string().optional().describe('Updated country'),
-    industry: z.string().optional().describe('Updated industry'),
-    ownerId: z.number().optional().describe('Updated owner user ID'),
-    tags: z.array(z.string()).optional().describe('Updated tags'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Updated custom fields'),
-    doNotContact: z.boolean().optional().describe('Updated do-not-contact flag')
-  }))
+})
+  .input(
+    z.object({
+      accountId: z.number().describe('ID of the account to update'),
+      name: z.string().optional().describe('Updated name'),
+      domain: z.string().optional().describe('Updated domain'),
+      website: z.string().optional().describe('Updated website URL'),
+      description: z.string().optional().describe('Updated description'),
+      phone: z.string().optional().describe('Updated phone number'),
+      linkedinUrl: z.string().optional().describe('Updated LinkedIn URL'),
+      twitterHandle: z.string().optional().describe('Updated Twitter handle'),
+      street: z.string().optional().describe('Updated street address'),
+      city: z.string().optional().describe('Updated city'),
+      state: z.string().optional().describe('Updated state'),
+      postalCode: z.string().optional().describe('Updated postal code'),
+      country: z.string().optional().describe('Updated country'),
+      industry: z.string().optional().describe('Updated industry'),
+      ownerId: z.number().optional().describe('Updated owner user ID'),
+      tags: z.array(z.string()).optional().describe('Updated tags'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Updated custom fields'),
+      doNotContact: z.boolean().optional().describe('Updated do-not-contact flag')
+    })
+  )
   .output(accountOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -200,24 +199,24 @@ export let updateAccount = SlateTool.create(
       output,
       message: `Updated account **${output.name}** (ID: ${output.accountId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account',
-    key: 'get_account',
-    description: `Fetch a single account (company) from SalesLoft by ID. Returns full company details, address, industry, tags, and custom fields.`,
-    tags: {
-      readOnly: true
-    }
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account',
+  key: 'get_account',
+  description: `Fetch a single account (company) from SalesLoft by ID. Returns full company details, address, industry, tags, and custom fields.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    accountId: z.number().describe('ID of the account to fetch')
-  }))
+})
+  .input(
+    z.object({
+      accountId: z.number().describe('ID of the account to fetch')
+    })
+  )
   .output(accountOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let account = await client.getAccount(ctx.input.accountId);
     let output = mapAccount(account);
@@ -226,28 +225,30 @@ export let getAccount = SlateTool.create(
       output,
       message: `Fetched account **${output.name}** (ID: ${output.accountId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Account',
-    key: 'delete_account',
-    description: `Permanently delete an account (company) from SalesLoft. This action is irreversible.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteAccount = SlateTool.create(spec, {
+  name: 'Delete Account',
+  key: 'delete_account',
+  description: `Permanently delete an account (company) from SalesLoft. This action is irreversible.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    accountId: z.number().describe('ID of the account to delete')
-  }))
-  .output(z.object({
-    accountId: z.number().describe('ID of the deleted account'),
-    deleted: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z.number().describe('ID of the account to delete')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.number().describe('ID of the deleted account'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteAccount(ctx.input.accountId);
 
@@ -258,32 +259,37 @@ export let deleteAccount = SlateTool.create(
       },
       message: `Deleted account with ID ${ctx.input.accountId}.`
     };
-  }).build();
+  })
+  .build();
 
-export let listAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'List Accounts',
-    key: 'list_accounts',
-    description: `List accounts (companies) in SalesLoft with optional filtering by domain or name. Supports pagination and sorting.`,
-    tags: {
-      readOnly: true
-    }
+export let listAccounts = SlateTool.create(spec, {
+  name: 'List Accounts',
+  key: 'list_accounts',
+  description: `List accounts (companies) in SalesLoft with optional filtering by domain or name. Supports pagination and sorting.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
-    sortBy: z.string().optional().describe('Field to sort by (e.g., "updated_at", "created_at", "name")'),
-    sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
-    domain: z.string().optional().describe('Filter by domain'),
-    name: z.string().optional().describe('Filter by exact account name')
-  }))
-  .output(z.object({
-    accounts: z.array(accountOutputSchema).describe('List of accounts'),
-    paging: paginationOutputSchema
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
+      sortBy: z
+        .string()
+        .optional()
+        .describe('Field to sort by (e.g., "updated_at", "created_at", "name")'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
+      domain: z.string().optional().describe('Filter by domain'),
+      name: z.string().optional().describe('Filter by exact account name')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z.array(accountOutputSchema).describe('List of accounts'),
+      paging: paginationOutputSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listAccounts(ctx.input);
     let accounts = result.data.map(mapAccount);
@@ -295,4 +301,5 @@ export let listAccounts = SlateTool.create(
       },
       message: `Found **${accounts.length}** accounts (page ${result.metadata.paging.currentPage}).`
     };
-  }).build();
+  })
+  .build();

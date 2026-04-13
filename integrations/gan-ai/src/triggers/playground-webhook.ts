@@ -3,28 +3,32 @@ import { PlaygroundClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let playgroundWebhook = SlateTrigger.create(
-  spec,
-  {
-    name: 'Playground Events',
-    key: 'playground_events',
-    description: 'Receives webhook events from the Playground API for avatar status changes, avatar video generation completions, and lip-sync video completions. Register this webhook URL when creating avatars or lip-sync jobs.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type: avatar, avatar_inference, or lipsync_inference'),
-    resourceId: z.string().describe('The avatar ID or inference ID related to this event'),
-    status: z.string().describe('Current status of the resource'),
-    rawPayload: z.any().describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('The avatar ID or inference ID'),
-    status: z.string().describe('Current status of the resource'),
-    eventType: z.string().describe('Type of event that occurred'),
-  }))
+export let playgroundWebhook = SlateTrigger.create(spec, {
+  name: 'Playground Events',
+  key: 'playground_events',
+  description:
+    'Receives webhook events from the Playground API for avatar status changes, avatar video generation completions, and lip-sync video completions. Register this webhook URL when creating avatars or lip-sync jobs.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Event type: avatar, avatar_inference, or lipsync_inference'),
+      resourceId: z.string().describe('The avatar ID or inference ID related to this event'),
+      status: z.string().describe('Current status of the resource'),
+      rawPayload: z.any().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('The avatar ID or inference ID'),
+      status: z.string().describe('Current status of the resource'),
+      eventType: z.string().describe('Type of event that occurred')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
       let eventType = (data.event_type as string) || 'unknown';
       let eventData = (data.data as Record<string, unknown>) || {};
 
@@ -43,16 +47,18 @@ export let playgroundWebhook = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          resourceId,
-          status,
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            resourceId,
+            status,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, resourceId, status } = ctx.input;
 
       let type = 'unknown';
@@ -70,9 +76,9 @@ export let playgroundWebhook = SlateTrigger.create(
         output: {
           resourceId,
           status,
-          eventType,
-        },
+          eventType
+        }
       };
-    },
+    }
   })
   .build();

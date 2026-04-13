@@ -13,7 +13,7 @@ import {
   manageField,
   listViews,
   manageWebhook,
-  linkRecords,
+  linkRecords
 } from './tools';
 import { recordEvent } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     manageField,
     listViews,
     manageWebhook,
-    linkRecords,
+    linkRecords
   ],
-  triggers: [
-    recordEvent,
-  ],
+  triggers: [recordEvent]
 });

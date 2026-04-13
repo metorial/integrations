@@ -12,7 +12,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${config.subdomain}.clientary.com/api/v2`,
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       auth: {
@@ -145,7 +145,16 @@ export class Client {
     return response.data;
   }
 
-  async sendInvoice(invoiceId: number, data: { recipients: string; subject?: string; message?: string; sendCopy?: boolean; attachPdf?: boolean }) {
+  async sendInvoice(
+    invoiceId: number,
+    data: {
+      recipients: string;
+      subject?: string;
+      message?: string;
+      sendCopy?: boolean;
+      attachPdf?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {
       recipients: data.recipients
     };
@@ -190,7 +199,10 @@ export class Client {
     return response.data;
   }
 
-  async sendEstimate(estimateId: number, data: { recipients: string; subject?: string; message?: string }) {
+  async sendEstimate(
+    estimateId: number,
+    data: { recipients: string; subject?: string; message?: string }
+  ) {
     let body: Record<string, any> = {
       recipients: data.recipients
     };
@@ -293,7 +305,13 @@ export class Client {
 
   // ─── Expenses ──────────────────────────────────────────────
 
-  async listExpenses(params?: { page?: number; clientId?: number; projectId?: number; fromDate?: string; toDate?: string }) {
+  async listExpenses(params?: {
+    page?: number;
+    clientId?: number;
+    projectId?: number;
+    fromDate?: string;
+    toDate?: string;
+  }) {
     let path = '/expenses';
     if (params?.clientId) path = `/clients/${params.clientId}/expenses`;
     else if (params?.projectId) path = `/projects/${params.projectId}/expenses`;
@@ -335,7 +353,10 @@ export class Client {
     return response.data;
   }
 
-  async createPayment(invoiceId: number, data: { amount?: number; note?: string; paymentProfileId?: number }) {
+  async createPayment(
+    invoiceId: number,
+    data: { amount?: number; note?: string; paymentProfileId?: number }
+  ) {
     let body: Record<string, any> = {};
     if (data.amount !== undefined) body.amount = data.amount;
     if (data.note) body.note = data.note;
@@ -369,7 +390,9 @@ export class Client {
   }
 
   async updateRecurringSchedule(scheduleId: number, data: Record<string, any>) {
-    let response = await this.axios.put(`/recurring/${scheduleId}`, { recurring_schedule: data });
+    let response = await this.axios.put(`/recurring/${scheduleId}`, {
+      recurring_schedule: data
+    });
     return response.data;
   }
 
@@ -398,12 +421,16 @@ export class Client {
   }
 
   async createPaymentProfile(clientId: number, data: Record<string, any>) {
-    let response = await this.axios.post(`/clients/${clientId}/payment_profiles`, { payment_profile: data });
+    let response = await this.axios.post(`/clients/${clientId}/payment_profiles`, {
+      payment_profile: data
+    });
     return response.data;
   }
 
   async deletePaymentProfile(clientId: number, profileId: number) {
-    let response = await this.axios.delete(`/clients/${clientId}/payment_profiles/${profileId}`);
+    let response = await this.axios.delete(
+      `/clients/${clientId}/payment_profiles/${profileId}`
+    );
     return response.data;
   }
 }

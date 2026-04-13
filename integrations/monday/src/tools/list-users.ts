@@ -16,32 +16,37 @@ let userSchema = z.object({
   isGuest: z.boolean().describe('Whether the user is a guest'),
   createdAt: z.string().nullable().describe('Account creation timestamp'),
   photoUrl: z.string().nullable().describe('Profile photo URL'),
-  teams: z.array(z.object({
-    teamId: z.string().describe('Team ID'),
-    name: z.string().describe('Team name'),
-  })).describe('Teams the user belongs to'),
+  teams: z
+    .array(
+      z.object({
+        teamId: z.string().describe('Team ID'),
+        name: z.string().describe('Team name')
+      })
+    )
+    .describe('Teams the user belongs to')
 });
 
-export let listUsersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve users from the Monday.com account. Filter by user IDs, email addresses, or name. Returns user profile details and team memberships.`,
-    tags: { readOnly: true },
-  },
-)
-  .input(z.object({
-    userIds: z.array(z.string()).optional().describe('Specific user IDs to retrieve'),
-    emails: z.array(z.string()).optional().describe('Filter users by email addresses'),
-    name: z.string().optional().describe('Fuzzy search by name'),
-    limit: z.number().optional().describe('Maximum number of users to return'),
-    page: z.number().optional().describe('Page number for pagination'),
-  }))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of users'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listUsersTool = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve users from the Monday.com account. Filter by user IDs, email addresses, or name. Returns user profile details and team memberships.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userIds: z.array(z.string()).optional().describe('Specific user IDs to retrieve'),
+      emails: z.array(z.string()).optional().describe('Filter users by email addresses'),
+      name: z.string().optional().describe('Fuzzy search by name'),
+      limit: z.number().optional().describe('Maximum number of users to return'),
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MondayClient({ token: ctx.auth.token });
 
     let users = await client.getUsers({
@@ -49,7 +54,7 @@ export let listUsersTool = SlateTool.create(
       emails: ctx.input.emails,
       name: ctx.input.name,
       limit: ctx.input.limit,
-      page: ctx.input.page,
+      page: ctx.input.page
     });
 
     let mapped = users.map((u: any) => ({
@@ -67,12 +72,13 @@ export let listUsersTool = SlateTool.create(
       photoUrl: u.photo_original || null,
       teams: (u.teams || []).map((t: any) => ({
         teamId: String(t.id),
-        name: t.name,
-      })),
+        name: t.name
+      }))
     }));
 
     return {
       output: { users: mapped },
-      message: `Found **${mapped.length}** user(s).`,
+      message: `Found **${mapped.length}** user(s).`
     };
-  }).build();
+  })
+  .build();

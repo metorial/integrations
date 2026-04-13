@@ -46,29 +46,24 @@ export class CensusDataClient {
     return response.data;
   }
 
-  async listDatasets(params?: {
-    vintage?: string;
-    keyword?: string;
-  }): Promise<any> {
+  async listDatasets(params?: { vintage?: string; keyword?: string }): Promise<any> {
     let path = params?.vintage ? `/${params.vintage}.json` : '.json';
     let response = await this.http.get(path);
     let datasets = response.data?.dataset || [];
 
     if (params?.keyword) {
       let keyword = params.keyword.toLowerCase();
-      datasets = datasets.filter((ds: any) =>
-        (ds.title || '').toLowerCase().includes(keyword) ||
-        (ds.description || '').toLowerCase().includes(keyword)
+      datasets = datasets.filter(
+        (ds: any) =>
+          (ds.title || '').toLowerCase().includes(keyword) ||
+          (ds.description || '').toLowerCase().includes(keyword)
       );
     }
 
     return datasets;
   }
 
-  async getDatasetVariables(params: {
-    dataset: string;
-    vintage?: string;
-  }): Promise<any> {
+  async getDatasetVariables(params: { dataset: string; vintage?: string }): Promise<any> {
     let basePath = params.vintage
       ? `/${params.vintage}/${params.dataset}/variables.json`
       : `/${params.dataset}/variables.json`;
@@ -77,10 +72,7 @@ export class CensusDataClient {
     return response.data?.variables || {};
   }
 
-  async getDatasetGroups(params: {
-    dataset: string;
-    vintage?: string;
-  }): Promise<any> {
+  async getDatasetGroups(params: { dataset: string; vintage?: string }): Promise<any> {
     let basePath = params.vintage
       ? `/${params.vintage}/${params.dataset}/groups.json`
       : `/${params.dataset}/groups.json`;
@@ -102,10 +94,7 @@ export class CensusDataClient {
     return response.data?.variables || {};
   }
 
-  async getDatasetGeography(params: {
-    dataset: string;
-    vintage?: string;
-  }): Promise<any> {
+  async getDatasetGeography(params: { dataset: string; vintage?: string }): Promise<any> {
     let basePath = params.vintage
       ? `/${params.vintage}/${params.dataset}/geography.json`
       : `/${params.dataset}/geography.json`;
@@ -133,7 +122,8 @@ export class GeocoderClient {
     vintage?: string;
     returnType?: 'locations' | 'geographies';
   }): Promise<any> {
-    let endpoint = params.returnType === 'geographies' ? '/geographies/address' : '/locations/address';
+    let endpoint =
+      params.returnType === 'geographies' ? '/geographies/address' : '/locations/address';
 
     let queryParams: Record<string, string> = {
       street: params.street,
@@ -159,9 +149,10 @@ export class GeocoderClient {
     vintage?: string;
     returnType?: 'locations' | 'geographies';
   }): Promise<any> {
-    let endpoint = params.returnType === 'geographies'
-      ? '/geographies/onelineaddress'
-      : '/locations/onelineaddress';
+    let endpoint =
+      params.returnType === 'geographies'
+        ? '/geographies/onelineaddress'
+        : '/locations/onelineaddress';
 
     let queryParams: Record<string, string> = {
       address: params.address,
@@ -184,9 +175,10 @@ export class GeocoderClient {
     vintage?: string;
     returnType?: 'locations' | 'geographies';
   }): Promise<any> {
-    let endpoint = params.returnType === 'geographies'
-      ? '/geographies/coordinates'
-      : '/locations/coordinates';
+    let endpoint =
+      params.returnType === 'geographies'
+        ? '/geographies/coordinates'
+        : '/locations/coordinates';
 
     let queryParams: Record<string, string> = {
       x: params.longitude.toString(),

@@ -8,7 +8,7 @@ let accountsUrls: Record<ZohoRegion, string> = {
   cn: 'https://accounts.zoho.com.cn',
   jp: 'https://accounts.zoho.com',
   sa: 'https://accounts.zoho.com',
-  ca: 'https://accounts.zohocloud.ca',
+  ca: 'https://accounts.zohocloud.ca'
 };
 
 let apiDomains: Record<ZohoRegion, string> = {
@@ -19,7 +19,7 @@ let apiDomains: Record<ZohoRegion, string> = {
   cn: 'https://www.zohoapis.com.cn',
   jp: 'https://www.zohoapis.jp',
   sa: 'https://www.zohoapis.sa',
-  ca: 'https://www.zohoapis.ca',
+  ca: 'https://www.zohoapis.ca'
 };
 
 export let getAccountsUrl = (region: ZohoRegion): string => {

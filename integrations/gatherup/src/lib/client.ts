@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://app.gatherup.com/api',
+  baseURL: 'https://app.gatherup.com/api'
 });
 
 export interface ClientConfig {
@@ -16,7 +16,7 @@ export class Client {
   private buildBody(params: Record<string, unknown> = {}): Record<string, unknown> {
     let body: Record<string, unknown> = {
       clientId: this.config.clientId,
-      ...params,
+      ...params
     };
     if (this.config.agent) {
       body.agent = this.config.agent;
@@ -27,7 +27,7 @@ export class Client {
   private buildQuery(params: Record<string, unknown> = {}): Record<string, unknown> {
     let query: Record<string, unknown> = {
       clientId: this.config.clientId,
-      ...params,
+      ...params
     };
     if (this.config.agent) {
       query.agent = this.config.agent;
@@ -38,7 +38,7 @@ export class Client {
   private get headers() {
     return {
       Authorization: `Bearer ${this.config.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -51,21 +51,29 @@ export class Client {
 
   // ==================== Businesses ====================
 
-  async listBusinesses(params: {
-    page?: number;
-    limit?: number;
-    includeDeletedBusinesses?: number;
-    aggregateResponse?: number;
-  } = {}): Promise<any> {
-    let res = await http.post('/businesses/get', this.buildBody({
-      ...params,
-      aggregateResponse: params.aggregateResponse ?? 1,
-    }), { headers: this.headers });
+  async listBusinesses(
+    params: {
+      page?: number;
+      limit?: number;
+      includeDeletedBusinesses?: number;
+      aggregateResponse?: number;
+    } = {}
+  ): Promise<any> {
+    let res = await http.post(
+      '/businesses/get',
+      this.buildBody({
+        ...params,
+        aggregateResponse: params.aggregateResponse ?? 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
   async getBusiness(businessId: number): Promise<any> {
-    let res = await http.post('/business/get', this.buildBody({ businessId }), { headers: this.headers });
+    let res = await http.post('/business/get', this.buildBody({ businessId }), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -91,7 +99,9 @@ export class Client {
     businessOwnerLastName?: string;
     businessOwnerSendPasswordEmail?: number;
   }): Promise<any> {
-    let res = await http.post('/business/create', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/business/create', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -116,27 +126,37 @@ export class Client {
     feedbackThreshold?: number;
     pageThreshold?: number;
   }): Promise<any> {
-    let res = await http.post('/business/update', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/business/update', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async deleteBusiness(businessId: number): Promise<any> {
-    let res = await http.post('/business/delete', this.buildBody({ businessId }), { headers: this.headers });
+    let res = await http.post('/business/delete', this.buildBody({ businessId }), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async searchBusiness(params: { by: string; search: string }): Promise<any> {
-    let res = await http.post('/business/search', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/business/search', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async deactivateBusiness(businessId: number): Promise<any> {
-    let res = await http.post('/business/deactivate', this.buildBody({ businessId }), { headers: this.headers });
+    let res = await http.post('/business/deactivate', this.buildBody({ businessId }), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async reactivateBusiness(businessId: number): Promise<any> {
-    let res = await http.post('/business/reactivate', this.buildBody({ businessId }), { headers: this.headers });
+    let res = await http.post('/business/reactivate', this.buildBody({ businessId }), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -147,29 +167,39 @@ export class Client {
 
   // ==================== Customers ====================
 
-  async listCustomers(params: {
-    businessId?: string;
-    customerId?: number;
-    customId?: string;
-    jobId?: string;
-    email?: string;
-    page?: number;
-    subscription?: number;
-    showHistory?: number;
-    aggregateResponse?: number;
-  } = {}): Promise<any> {
-    let res = await http.post('/customers/get', this.buildBody({
-      ...params,
-      aggregateResponse: params.aggregateResponse ?? 1,
-    }), { headers: this.headers });
+  async listCustomers(
+    params: {
+      businessId?: string;
+      customerId?: number;
+      customId?: string;
+      jobId?: string;
+      email?: string;
+      page?: number;
+      subscription?: number;
+      showHistory?: number;
+      aggregateResponse?: number;
+    } = {}
+  ): Promise<any> {
+    let res = await http.post(
+      '/customers/get',
+      this.buildBody({
+        ...params,
+        aggregateResponse: params.aggregateResponse ?? 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
   async getCustomer(customerId: number): Promise<any> {
-    let res = await http.post('/customers/get', this.buildBody({
-      customerId,
-      aggregateResponse: 1,
-    }), { headers: this.headers });
+    let res = await http.post(
+      '/customers/get',
+      this.buildBody({
+        customerId,
+        aggregateResponse: 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -186,7 +216,9 @@ export class Client {
     delayFeedbackRequest?: number;
     sendFeedbackRequest?: number;
   }): Promise<any> {
-    let res = await http.post('/customer/create', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/customer/create', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -201,12 +233,16 @@ export class Client {
     customerJobId?: string;
     customerTags?: string;
   }): Promise<any> {
-    let res = await http.post('/customer/update', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/customer/update', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async deleteCustomer(customerId: number): Promise<any> {
-    let res = await http.post('/customer/delete', this.buildBody({ customerId }), { headers: this.headers });
+    let res = await http.post('/customer/delete', this.buildBody({ customerId }), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -224,7 +260,7 @@ export class Client {
     }>;
   }): Promise<any> {
     let body: Record<string, unknown> = {
-      businessId: params.businessId,
+      businessId: params.businessId
     };
     params.customers.forEach((c, i) => {
       let n = i + 1;
@@ -239,7 +275,9 @@ export class Client {
     });
     body.aggregateResponse = 1;
 
-    let res = await http.post('/customers/create', this.buildBody(body), { headers: this.headers });
+    let res = await http.post('/customers/create', this.buildBody(body), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -251,41 +289,55 @@ export class Client {
     checkThreshold?: number;
     jobId?: string;
   }): Promise<any> {
-    let res = await http.post('/customer/feedback/send', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/customer/feedback/send', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async getFeedbacks(params: {
-    businessId?: string;
-    from?: string;
-    to?: string;
-    page?: number;
-    minRecommend?: number;
-    maxRecommend?: number;
-    showSurvey?: number;
-    customerId?: number;
-    visible?: number;
-    aggregateResponse?: number;
-  } = {}): Promise<any> {
-    let res = await http.post('/feedbacks/get', this.buildBody({
-      ...params,
-      aggregateResponse: params.aggregateResponse ?? 1,
-    }), { headers: this.headers });
+  async getFeedbacks(
+    params: {
+      businessId?: string;
+      from?: string;
+      to?: string;
+      page?: number;
+      minRecommend?: number;
+      maxRecommend?: number;
+      showSurvey?: number;
+      customerId?: number;
+      visible?: number;
+      aggregateResponse?: number;
+    } = {}
+  ): Promise<any> {
+    let res = await http.post(
+      '/feedbacks/get',
+      this.buildBody({
+        ...params,
+        aggregateResponse: params.aggregateResponse ?? 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
-  async getFeedbackResponses(params: {
-    businessId?: string;
-    feedbackId?: string;
-    from?: string;
-    to?: string;
-    page?: number;
-    aggregateResponse?: number;
-  } = {}): Promise<any> {
-    let res = await http.post('/feedbacks/responses/get', this.buildBody({
-      ...params,
-      aggregateResponse: params.aggregateResponse ?? 1,
-    }), { headers: this.headers });
+  async getFeedbackResponses(
+    params: {
+      businessId?: string;
+      feedbackId?: string;
+      from?: string;
+      to?: string;
+      page?: number;
+      aggregateResponse?: number;
+    } = {}
+  ): Promise<any> {
+    let res = await http.post(
+      '/feedbacks/responses/get',
+      this.buildBody({
+        ...params,
+        aggregateResponse: params.aggregateResponse ?? 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -296,43 +348,54 @@ export class Client {
     visibility?: number;
     respondAsBusinessOwner?: number;
   }): Promise<any> {
-    let res = await http.post('/customer/reply', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/customer/reply', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   // ==================== Online Reviews ====================
 
-  async getOnlineReviews(params: {
-    businessId?: string;
-    from?: string;
-    to?: string;
-    page?: number;
-    type?: string;
-    visible?: number;
-    aggregateResponse?: number;
-  } = {}): Promise<any> {
-    let res = await http.post('/online-reviews/get', this.buildBody({
-      ...params,
-      aggregateResponse: params.aggregateResponse ?? 1,
-    }), { headers: this.headers });
+  async getOnlineReviews(
+    params: {
+      businessId?: string;
+      from?: string;
+      to?: string;
+      page?: number;
+      type?: string;
+      visible?: number;
+      aggregateResponse?: number;
+    } = {}
+  ): Promise<any> {
+    let res = await http.post(
+      '/online-reviews/get',
+      this.buildBody({
+        ...params,
+        aggregateResponse: params.aggregateResponse ?? 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
-  async replyToOnlineReview(params: {
-    reviewId: number;
-    content: string;
-  }): Promise<any> {
-    let res = await http.post('/online-review/reply', this.buildBody(params), { headers: this.headers });
+  async replyToOnlineReview(params: { reviewId: number; content: string }): Promise<any> {
+    let res = await http.post('/online-review/reply', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async getFacebookRecommendations(params: {
-    businessId?: string;
-    from?: string;
-    to?: string;
-    page?: number;
-  } = {}): Promise<any> {
-    let res = await http.post('/facebook-recommendations/get', this.buildBody(params), { headers: this.headers });
+  async getFacebookRecommendations(
+    params: {
+      businessId?: string;
+      from?: string;
+      to?: string;
+      page?: number;
+    } = {}
+  ): Promise<any> {
+    let res = await http.post('/facebook-recommendations/get', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -344,10 +407,14 @@ export class Client {
     to?: string;
     aggregateResponse?: number;
   }): Promise<any> {
-    let res = await http.post('/survey-questions/average/get', this.buildBody({
-      ...params,
-      aggregateResponse: params.aggregateResponse ?? 1,
-    }), { headers: this.headers });
+    let res = await http.post(
+      '/survey-questions/average/get',
+      this.buildBody({
+        ...params,
+        aggregateResponse: params.aggregateResponse ?? 1
+      }),
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -359,23 +426,27 @@ export class Client {
     includeSchemaOrg?: number;
     widgetType?: string;
   }): Promise<any> {
-    let res = await http.post('/widget/get-html', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/widget/get-html', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 
   // ==================== Google Q&A ====================
 
-  async getGoogleQA(params: {
-    businessId?: number;
-    search?: string;
-    locations?: string;
-    status?: string;
-    labels?: string;
-    page?: number;
-  } = {}): Promise<any> {
+  async getGoogleQA(
+    params: {
+      businessId?: number;
+      search?: string;
+      locations?: string;
+      status?: string;
+      labels?: string;
+      page?: number;
+    } = {}
+  ): Promise<any> {
     let res = await http.get('/google-qa/get', {
       headers: this.headers,
-      params: this.buildQuery(params),
+      params: this.buildQuery(params)
     });
     return res.data;
   }
@@ -393,10 +464,11 @@ export class Client {
     let body: Record<string, unknown> = {
       email: params.email,
       firstName: params.firstName,
-      lastName: params.lastName,
+      lastName: params.lastName
     };
     if (params.roleId !== undefined) body.roleId = params.roleId;
-    if (params.sendPasswordEmail !== undefined) body.sendPasswordEmail = params.sendPasswordEmail;
+    if (params.sendPasswordEmail !== undefined)
+      body.sendPasswordEmail = params.sendPasswordEmail;
     if (params.managedBusinessIds) {
       params.managedBusinessIds.forEach((id, i) => {
         body[`businessId${i + 1}`] = id;
@@ -413,7 +485,9 @@ export class Client {
     autoFeedback: number;
     autoSend?: number;
   }): Promise<any> {
-    let res = await http.post('/business/auto-feedback-requests', this.buildBody(params), { headers: this.headers });
+    let res = await http.post('/business/auto-feedback-requests', this.buildBody(params), {
+      headers: this.headers
+    });
     return res.data;
   }
 }

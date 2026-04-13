@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.shipday.com',
+  baseURL: 'https://api.shipday.com'
 });
 
 export class ShipdayClient {
@@ -13,8 +13,8 @@ export class ShipdayClient {
 
   private get headers() {
     return {
-      'Authorization': `Basic ${this.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Basic ${this.token}`,
+      'Content-Type': 'application/json'
     };
   }
 
@@ -57,7 +57,11 @@ export class ShipdayClient {
   }
 
   async assignOrderToCarrier(orderId: number, carrierId: number) {
-    let response = await api.put(`/orders/assign/${orderId}/${carrierId}`, {}, { headers: this.headers });
+    let response = await api.put(
+      `/orders/assign/${orderId}/${carrierId}`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -67,12 +71,20 @@ export class ShipdayClient {
   }
 
   async markOrderReadyToPickup(orderId: number, readyToPickup: boolean) {
-    let response = await api.put(`/orders/${orderId}/meta`, { readyToPickup }, { headers: this.headers });
+    let response = await api.put(
+      `/orders/${orderId}/meta`,
+      { readyToPickup },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async updateOrderStatus(orderId: number, status: string) {
-    let response = await api.put(`/orders/${orderId}/status`, { status }, { headers: this.headers });
+    let response = await api.put(
+      `/orders/${orderId}/status`,
+      { status },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -89,7 +101,9 @@ export class ShipdayClient {
   }
 
   async editPickupOrder(orderId: number, order: Record<string, unknown>) {
-    let response = await api.put(`/pickup-orders/edit/${orderId}`, order, { headers: this.headers });
+    let response = await api.put(`/pickup-orders/edit/${orderId}`, order, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -120,7 +134,7 @@ export class ShipdayClient {
   async getOrderDeliveryProgress(trackingId: string, isStaticDataRequired: boolean = true) {
     let response = await api.get(`/order/progress/${trackingId}`, {
       headers: this.headers,
-      params: { isStaticDataRequired: String(isStaticDataRequired) },
+      params: { isStaticDataRequired: String(isStaticDataRequired) }
     });
     return response.data;
   }
@@ -155,7 +169,11 @@ export class ShipdayClient {
   }
 
   async cancelOnDemandDelivery(orderId: number) {
-    let response = await api.post(`/on-demand/cancel/${orderId}`, {}, { headers: this.headers });
+    let response = await api.post(
+      `/on-demand/cancel/${orderId}`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 }

@@ -7,8 +7,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.collegefootballdata.com',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -23,7 +23,9 @@ export class Client {
     classification?: string;
     gameId?: number;
   }) {
-    let response = await this.axios.get('/games', { params: { ...params, id: params.gameId } });
+    let response = await this.axios.get('/games', {
+      params: { ...params, id: params.gameId }
+    });
     return response.data;
   }
 
@@ -96,20 +98,12 @@ export class Client {
     return response.data;
   }
 
-  async getTeamATS(params: {
-    year: number;
-    conference?: string;
-    team?: string;
-  }) {
+  async getTeamATS(params: { year: number; conference?: string; team?: string }) {
     let response = await this.axios.get('/teams/ats', { params });
     return response.data;
   }
 
-  async getRoster(params?: {
-    team?: string;
-    year?: number;
-    classification?: string;
-  }) {
+  async getRoster(params?: { team?: string; year?: number; classification?: string }) {
     let response = await this.axios.get('/roster', { params });
     return response.data;
   }
@@ -119,11 +113,7 @@ export class Client {
     return response.data;
   }
 
-  async getRecords(params?: {
-    year?: number;
-    team?: string;
-    conference?: string;
-  }) {
+  async getRecords(params?: { year?: number; team?: string; conference?: string }) {
     let response = await this.axios.get('/records', { params });
     return response.data;
   }
@@ -273,11 +263,7 @@ export class Client {
     return response.data;
   }
 
-  async getSRSRatings(params?: {
-    year?: number;
-    team?: string;
-    conference?: string;
-  }) {
+  async getSRSRatings(params?: { year?: number; team?: string; conference?: string }) {
     let response = await this.axios.get('/ratings/srs', { params });
     return response.data;
   }
@@ -293,20 +279,12 @@ export class Client {
     return response.data;
   }
 
-  async getFPIRatings(params?: {
-    year?: number;
-    team?: string;
-    conference?: string;
-  }) {
+  async getFPIRatings(params?: { year?: number; team?: string; conference?: string }) {
     let response = await this.axios.get('/ratings/fpi', { params });
     return response.data;
   }
 
-  async getRankings(params: {
-    year: number;
-    seasonType?: string;
-    week?: number;
-  }) {
+  async getRankings(params: { year: number; seasonType?: string; week?: number }) {
     let response = await this.axios.get('/rankings', { params });
     return response.data;
   }
@@ -476,11 +454,7 @@ export class Client {
     return response.data;
   }
 
-  async getKickerPAARRatings(params?: {
-    year?: number;
-    team?: string;
-    conference?: string;
-  }) {
+  async getKickerPAARRatings(params?: { year?: number; team?: string; conference?: string }) {
     let response = await this.axios.get('/wepa/players/kicking', { params });
     return response.data;
   }

@@ -2,15 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let harvestIdApi = createAxios({
-  baseURL: 'https://id.getharvest.com/api/v2',
+  baseURL: 'https://id.getharvest.com/api/v2'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth2',
@@ -20,26 +22,26 @@ export let auth = SlateAuth.create()
       {
         title: 'All Harvest Accounts',
         description: 'Access to all Harvest accounts',
-        scope: 'harvest:all',
+        scope: 'harvest:all'
       },
       {
         title: 'All Forecast Accounts',
         description: 'Access to all Forecast accounts',
-        scope: 'forecast:all',
+        scope: 'forecast:all'
       },
       {
         title: 'All Accounts',
         description: 'Access to all Harvest and Forecast accounts',
-        scope: 'all',
-      },
+        scope: 'all'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         state: ctx.state,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       if (ctx.scopes.length > 0) {
@@ -47,17 +49,17 @@ export let auth = SlateAuth.create()
       }
 
       return {
-        url: `https://id.getharvest.com/oauth2/authorize?${params.toString()}`,
+        url: `https://id.getharvest.com/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await harvestIdApi.post('/oauth2/token', {
         code: ctx.code,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let data = response.data;
@@ -67,17 +69,17 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await harvestIdApi.post('/oauth2/token', {
         refresh_token: ctx.output.refreshToken,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
+        grant_type: 'refresh_token'
       });
 
       let data = response.data;
@@ -87,16 +89,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await harvestIdApi.get('/accounts', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let accounts = response.data;
@@ -106,10 +112,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user?.id ?? ''),
           name: `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim(),
-          email: user?.email ?? '',
-        },
+          email: user?.email ?? ''
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -117,22 +123,27 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal Access Token from https://id.getharvest.com/developers'),
+      token: z
+        .string()
+        .describe('Personal Access Token from https://id.getharvest.com/developers')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { token: string };
+    }) => {
       let response = await harvestIdApi.get('/accounts', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let accounts = response.data;
@@ -142,8 +153,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user?.id ?? ''),
           name: `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim(),
-          email: user?.email ?? '',
-        },
+          email: user?.email ?? ''
+        }
       };
-    },
+    }
   });

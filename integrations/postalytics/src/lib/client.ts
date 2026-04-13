@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.postalytics.com',
-  development: 'https://api-dev.postalytics.com',
+  development: 'https://api-dev.postalytics.com'
 };
 
 export interface ContactInput {
@@ -62,12 +62,12 @@ export class PostalyticsClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
@@ -100,7 +100,7 @@ export class PostalyticsClient {
       username: params.username,
       password: params.password,
       first_name: params.firstName,
-      last_name: params.lastName,
+      last_name: params.lastName
     };
     if (params.emailAddress !== undefined) body.email_address = params.emailAddress;
     if (params.company !== undefined) body.company = params.company;
@@ -141,7 +141,10 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async getContactsOnList(listId: string, params?: { start?: number; limit?: number }): Promise<Array<Record<string, unknown>>> {
+  async getContactsOnList(
+    listId: string,
+    params?: { start?: number; limit?: number }
+  ): Promise<Array<Record<string, unknown>>> {
     let queryParams: Record<string, string> = {};
     if (params?.start !== undefined) queryParams.start = String(params.start);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -161,10 +164,11 @@ export class PostalyticsClient {
       address_street: params.contact.addressStreet,
       address_city: params.contact.addressCity,
       address_state: params.contact.addressState,
-      address_zip: params.contact.addressZip,
+      address_zip: params.contact.addressZip
     };
     if (params.contact.company !== undefined) body.company = params.contact.company;
-    if (params.contact.addressStreet2 !== undefined) body.address_street2 = params.contact.addressStreet2;
+    if (params.contact.addressStreet2 !== undefined)
+      body.address_street2 = params.contact.addressStreet2;
     if (params.contact.country !== undefined) body.country = params.contact.country;
     if (params.contact.varField1 !== undefined) body.var_field_1 = params.contact.varField1;
     if (params.contact.varField2 !== undefined) body.var_field_2 = params.contact.varField2;
@@ -181,21 +185,28 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async updateContact(contactId: string, params: {
-    contactListId: string;
-    contact: Partial<ContactInput>;
-  }): Promise<Record<string, unknown>> {
+  async updateContact(
+    contactId: string,
+    params: {
+      contactListId: string;
+      contact: Partial<ContactInput>;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       contact_id: contactId,
-      contact_list_id: params.contactListId,
+      contact_list_id: params.contactListId
     };
     if (params.contact.firstName !== undefined) body.first_name = params.contact.firstName;
     if (params.contact.lastName !== undefined) body.last_name = params.contact.lastName;
     if (params.contact.company !== undefined) body.company = params.contact.company;
-    if (params.contact.addressStreet !== undefined) body.address_street = params.contact.addressStreet;
-    if (params.contact.addressStreet2 !== undefined) body.address_street2 = params.contact.addressStreet2;
-    if (params.contact.addressCity !== undefined) body.address_city = params.contact.addressCity;
-    if (params.contact.addressState !== undefined) body.address_state = params.contact.addressState;
+    if (params.contact.addressStreet !== undefined)
+      body.address_street = params.contact.addressStreet;
+    if (params.contact.addressStreet2 !== undefined)
+      body.address_street2 = params.contact.addressStreet2;
+    if (params.contact.addressCity !== undefined)
+      body.address_city = params.contact.addressCity;
+    if (params.contact.addressState !== undefined)
+      body.address_state = params.contact.addressState;
     if (params.contact.addressZip !== undefined) body.address_zip = params.contact.addressZip;
     if (params.contact.country !== undefined) body.country = params.contact.country;
     if (params.contact.varField1 !== undefined) body.var_field_1 = params.contact.varField1;
@@ -238,7 +249,7 @@ export class PostalyticsClient {
     let response = await this.axios.post('/api/v1/templates', {
       name: params.name,
       html: params.html,
-      size: params.size,
+      size: params.size
     });
     return response.data;
   }
@@ -270,11 +281,14 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async getCampaignEvents(campaignId: string, params?: {
-    dataId?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  }): Promise<Record<string, unknown>> {
+  async getCampaignEvents(
+    campaignId: string,
+    params?: {
+      dataId?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    }
+  ): Promise<Record<string, unknown>> {
     let url = `/api/v1/campaigns/${campaignId}/events`;
     if (params?.dataId) {
       url += `/${params.dataId}`;
@@ -292,7 +306,10 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async updateCampaignStatus(campaignId: string, params: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateCampaignStatus(
+    campaignId: string,
+    params: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(`/api/v1/campaigns/${campaignId}`, params);
     return response.data;
   }
@@ -304,14 +321,17 @@ export class PostalyticsClient {
 
   // ---- Send ----
 
-  async sendMailPiece(endpoint: string, contact: ContactInput): Promise<Record<string, unknown>> {
+  async sendMailPiece(
+    endpoint: string,
+    contact: ContactInput
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       first_name: contact.firstName,
       last_name: contact.lastName,
       address_street: contact.addressStreet,
       address_city: contact.addressCity,
       address_state: contact.addressState,
-      address_zip: contact.addressZip,
+      address_zip: contact.addressZip
     };
     if (contact.company !== undefined) body.company = contact.company;
     if (contact.addressStreet2 !== undefined) body.address_street2 = contact.addressStreet2;
@@ -338,14 +358,17 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async enrollContactInFlow(endpoint: string, contact: ContactInput): Promise<Record<string, unknown>> {
+  async enrollContactInFlow(
+    endpoint: string,
+    contact: ContactInput
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       first_name: contact.firstName,
       last_name: contact.lastName,
       address_street: contact.addressStreet,
       address_city: contact.addressCity,
       address_state: contact.addressState,
-      address_zip: contact.addressZip,
+      address_zip: contact.addressZip
     };
     if (contact.company !== undefined) body.company = contact.company;
     if (contact.addressStreet2 !== undefined) body.address_street2 = contact.addressStreet2;
@@ -365,7 +388,10 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async unenrollContactFromFlow(endpoint: string, dataId: string): Promise<Record<string, unknown>> {
+  async unenrollContactFromFlow(
+    endpoint: string,
+    dataId: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.delete(`/api/v1/flow/unenroll/${endpoint}/${dataId}`);
     return response.data;
   }
@@ -390,16 +416,19 @@ export class PostalyticsClient {
     let response = await this.axios.post('/api/v1/webhooks', {
       campaign_id: params.campaignId,
       is_enabled: params.isEnabled,
-      url: params.url,
+      url: params.url
     });
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    campaignId?: string;
-    isEnabled?: boolean;
-    url?: string;
-  }): Promise<Record<string, unknown>> {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      campaignId?: string;
+      isEnabled?: boolean;
+      url?: string;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
     if (params.campaignId !== undefined) body.campaign_id = params.campaignId;
     if (params.isEnabled !== undefined) body.is_enabled = params.isEnabled;
@@ -421,14 +450,17 @@ export class PostalyticsClient {
     return response.data;
   }
 
-  async addSuppressedContact(listId: string, contact: ContactInput): Promise<Record<string, unknown>> {
+  async addSuppressedContact(
+    listId: string,
+    contact: ContactInput
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       first_name: contact.firstName,
       last_name: contact.lastName,
       address_street: contact.addressStreet,
       address_city: contact.addressCity,
       address_state: contact.addressState,
-      address_zip: contact.addressZip,
+      address_zip: contact.addressZip
     };
     if (contact.company !== undefined) body.company = contact.company;
     if (contact.addressStreet2 !== undefined) body.address_street2 = contact.addressStreet2;
@@ -446,7 +478,7 @@ export class PostalyticsClient {
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       api_key: params.apiKey,
-      url: params.url,
+      url: params.url
     };
     if (params.resourceId !== undefined) body.id = params.resourceId;
 

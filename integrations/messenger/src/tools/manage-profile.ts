@@ -8,69 +8,123 @@ let menuActionSchema: z.ZodType<any> = z.object({
   title: z.string().describe('Menu item label'),
   payload: z.string().optional().describe('Postback payload (required for postback type)'),
   url: z.string().optional().describe('URL to open (required for web_url type)'),
-  callToActions: z.array(z.object({
-    type: z.enum(['postback', 'web_url']).describe('Sub-action type'),
-    title: z.string().describe('Sub-menu item label'),
-    payload: z.string().optional().describe('Postback payload'),
-    url: z.string().optional().describe('URL to open')
-  })).optional().describe('Sub-menu items (only for nested type, max 5)')
+  callToActions: z
+    .array(
+      z.object({
+        type: z.enum(['postback', 'web_url']).describe('Sub-action type'),
+        title: z.string().describe('Sub-menu item label'),
+        payload: z.string().optional().describe('Postback payload'),
+        url: z.string().optional().describe('URL to open')
+      })
+    )
+    .optional()
+    .describe('Sub-menu items (only for nested type, max 5)')
 });
 
-export let manageProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Messenger Profile',
-    key: 'manage_messenger_profile',
-    description: `Configure the Messenger experience for your Page. Set or update the **Get Started** button, **greeting text**, **persistent menu**, **ice breakers**, and **whitelisted domains**.
+export let manageProfile = SlateTool.create(spec, {
+  name: 'Manage Messenger Profile',
+  key: 'manage_messenger_profile',
+  description: `Configure the Messenger experience for your Page. Set or update the **Get Started** button, **greeting text**, **persistent menu**, **ice breakers**, and **whitelisted domains**.
 Provide only the fields you want to update — unspecified fields remain unchanged. Use the **delete** action to remove specific profile settings.`,
-    instructions: [
-      'Use action "set" to create or update profile settings. Only provide the fields you want to change.',
-      'Use action "get" to retrieve current profile settings.',
-      'Use action "delete" to remove specific profile fields.',
-      'Greeting text supports {{user_first_name}}, {{user_last_name}}, and {{user_full_name}} personalization tokens.',
-      'The persistent menu supports up to 3 top-level items per locale.'
-    ],
-    constraints: [
-      'Persistent menu is limited to 3 top-level items per locale.',
-      'Ice breakers are limited to a small number of questions.',
-      'Some features may be unavailable for EEA users.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'Use action "set" to create or update profile settings. Only provide the fields you want to change.',
+    'Use action "get" to retrieve current profile settings.',
+    'Use action "delete" to remove specific profile fields.',
+    'Greeting text supports {{user_first_name}}, {{user_last_name}}, and {{user_full_name}} personalization tokens.',
+    'The persistent menu supports up to 3 top-level items per locale.'
+  ],
+  constraints: [
+    'Persistent menu is limited to 3 top-level items per locale.',
+    'Ice breakers are limited to a small number of questions.',
+    'Some features may be unavailable for EEA users.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'set', 'delete']).describe('Action to perform on the Messenger profile'),
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'set', 'delete'])
+        .describe('Action to perform on the Messenger profile'),
 
-    // Fields for "get" and "delete" actions
-    fields: z.array(z.enum([
-      'get_started', 'greeting', 'persistent_menu', 'ice_breakers', 'whitelisted_domains'
-    ])).optional().describe('Profile fields to retrieve or delete. Required for "get" and "delete" actions.'),
+      // Fields for "get" and "delete" actions
+      fields: z
+        .array(
+          z.enum([
+            'get_started',
+            'greeting',
+            'persistent_menu',
+            'ice_breakers',
+            'whitelisted_domains'
+          ])
+        )
+        .optional()
+        .describe(
+          'Profile fields to retrieve or delete. Required for "get" and "delete" actions.'
+        ),
 
-    // Fields for "set" action
-    getStartedPayload: z.string().optional().describe('Postback payload triggered when the Get Started button is tapped'),
-    greetingTexts: z.array(z.object({
-      locale: z.string().describe('Locale code (e.g. "default", "en_US", "fr_FR")'),
-      text: z.string().describe('Greeting message text. Supports {{user_first_name}}, {{user_last_name}}, {{user_full_name}}.')
-    })).optional().describe('Greeting texts shown on the welcome screen, by locale'),
-    persistentMenu: z.array(z.object({
-      locale: z.string().describe('Locale code (e.g. "default")'),
-      composerInputDisabled: z.boolean().optional().describe('Whether to disable the text composer when the menu is active'),
-      callToActions: z.array(menuActionSchema).max(3).optional().describe('Top-level menu items (max 3)')
-    })).optional().describe('Persistent menu configuration by locale'),
-    iceBreakers: z.array(z.object({
-      question: z.string().describe('Question text shown to the user'),
-      payload: z.string().describe('Postback payload sent when the question is tapped')
-    })).optional().describe('Ice breaker questions shown to first-time users'),
-    whitelistedDomains: z.array(z.string()).optional().describe('List of domains whitelisted for Messenger Extensions and webviews')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    profileSettings: z.any().optional().describe('Current profile settings (only for "get" action)')
-  }))
-  .handleInvocation(async (ctx) => {
+      // Fields for "set" action
+      getStartedPayload: z
+        .string()
+        .optional()
+        .describe('Postback payload triggered when the Get Started button is tapped'),
+      greetingTexts: z
+        .array(
+          z.object({
+            locale: z.string().describe('Locale code (e.g. "default", "en_US", "fr_FR")'),
+            text: z
+              .string()
+              .describe(
+                'Greeting message text. Supports {{user_first_name}}, {{user_last_name}}, {{user_full_name}}.'
+              )
+          })
+        )
+        .optional()
+        .describe('Greeting texts shown on the welcome screen, by locale'),
+      persistentMenu: z
+        .array(
+          z.object({
+            locale: z.string().describe('Locale code (e.g. "default")'),
+            composerInputDisabled: z
+              .boolean()
+              .optional()
+              .describe('Whether to disable the text composer when the menu is active'),
+            callToActions: z
+              .array(menuActionSchema)
+              .max(3)
+              .optional()
+              .describe('Top-level menu items (max 3)')
+          })
+        )
+        .optional()
+        .describe('Persistent menu configuration by locale'),
+      iceBreakers: z
+        .array(
+          z.object({
+            question: z.string().describe('Question text shown to the user'),
+            payload: z.string().describe('Postback payload sent when the question is tapped')
+          })
+        )
+        .optional()
+        .describe('Ice breaker questions shown to first-time users'),
+      whitelistedDomains: z
+        .array(z.string())
+        .optional()
+        .describe('List of domains whitelisted for Messenger Extensions and webviews')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      profileSettings: z
+        .any()
+        .optional()
+        .describe('Current profile settings (only for "get" action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       pageId: ctx.config.pageId,
@@ -81,7 +135,13 @@ Provide only the fields you want to update — unspecified fields remain unchang
 
     switch (input.action) {
       case 'get': {
-        let fields = input.fields || ['get_started', 'greeting', 'persistent_menu', 'ice_breakers', 'whitelisted_domains'];
+        let fields = input.fields || [
+          'get_started',
+          'greeting',
+          'persistent_menu',
+          'ice_breakers',
+          'whitelisted_domains'
+        ];
         let profileData = await client.getMessengerProfile(fields);
 
         return {
@@ -132,4 +192,5 @@ Provide only the fields you want to update — unspecified fields remain unchang
         };
       }
     }
-  }).build();
+  })
+  .build();

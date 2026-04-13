@@ -3,40 +3,41 @@ import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPurchaseOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Get Purchase Order',
-    key: 'get_purchase_order',
-    description: `Retrieve a single purchase order by its ID, including all header fields, order lines, supplier info, and accounting details.`,
-    tags: {
-      readOnly: true,
-    },
+export let getPurchaseOrder = SlateTool.create(spec, {
+  name: 'Get Purchase Order',
+  key: 'get_purchase_order',
+  description: `Retrieve a single purchase order by its ID, including all header fields, order lines, supplier info, and accounting details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    purchaseOrderId: z.number().describe('Coupa purchase order ID'),
-  }))
-  .output(z.object({
-    purchaseOrderId: z.number().describe('Coupa internal purchase order ID'),
-    poNumber: z.string().nullable().optional().describe('PO number'),
-    status: z.string().nullable().optional().describe('PO status'),
-    version: z.number().nullable().optional().describe('Version number'),
-    supplier: z.any().nullable().optional().describe('Supplier object'),
-    shipToAddress: z.any().nullable().optional().describe('Ship-to address'),
-    currency: z.any().nullable().optional().describe('Currency object'),
-    paymentTerms: z.any().nullable().optional().describe('Payment terms'),
-    orderLines: z.array(z.any()).nullable().optional().describe('Order line items'),
-    totalAmount: z.any().nullable().optional().describe('Total PO amount'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-    createdBy: z.any().nullable().optional().describe('Creator user object'),
-    rawData: z.any().optional().describe('Complete raw PO data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      purchaseOrderId: z.number().describe('Coupa purchase order ID')
+    })
+  )
+  .output(
+    z.object({
+      purchaseOrderId: z.number().describe('Coupa internal purchase order ID'),
+      poNumber: z.string().nullable().optional().describe('PO number'),
+      status: z.string().nullable().optional().describe('PO status'),
+      version: z.number().nullable().optional().describe('Version number'),
+      supplier: z.any().nullable().optional().describe('Supplier object'),
+      shipToAddress: z.any().nullable().optional().describe('Ship-to address'),
+      currency: z.any().nullable().optional().describe('Currency object'),
+      paymentTerms: z.any().nullable().optional().describe('Payment terms'),
+      orderLines: z.array(z.any()).nullable().optional().describe('Order line items'),
+      totalAmount: z.any().nullable().optional().describe('Total PO amount'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
+      createdBy: z.any().nullable().optional().describe('Creator user object'),
+      rawData: z.any().optional().describe('Complete raw PO data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let po = await client.getPurchaseOrder(ctx.input.purchaseOrderId);
@@ -56,9 +57,9 @@ export let getPurchaseOrder = SlateTool.create(
         createdAt: po['created-at'] ?? po.created_at ?? null,
         updatedAt: po['updated-at'] ?? po.updated_at ?? null,
         createdBy: po['created-by'] ?? po.created_by ?? null,
-        rawData: po,
+        rawData: po
       },
-      message: `Retrieved purchase order **#${po['po-number'] ?? po.po_number ?? po.id}** (status: ${po.status}).`,
+      message: `Retrieved purchase order **#${po['po-number'] ?? po.po_number ?? po.id}** (status: ${po.status}).`
     };
   })
   .build();

@@ -17,42 +17,63 @@ let operationSchema = z.object({
   lastUpdatedTime: z.string().optional()
 });
 
-export let managePipeline = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Deployment Pipeline',
-    key: 'manage_pipeline',
-    description: `List deployment pipelines, view pipeline stages and artifacts, deploy content between stages, or check deployment operation status.`,
-    instructions: [
-      'Use "list" to see all available deployment pipelines.',
-      'Use "get" to view stages and workspace assignments for a specific pipeline.',
-      'Use "deploy" to promote content from one stage to the next.',
-      'Use "operations" to check deployment history and operation status.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'deploy', 'operations']).describe('Action to perform'),
-    pipelineId: z.string().optional().describe('Pipeline ID (required for get, deploy, operations)'),
-    sourceStageOrder: z.number().optional().describe('Source stage order for deployment (0=Dev, 1=Test, 2=Prod)'),
-    isBackwardDeployment: z.boolean().optional().describe('Whether this is a backward deployment'),
-    deployOptions: z.object({
-      allowCreateArtifact: z.boolean().optional(),
-      allowOverwriteArtifact: z.boolean().optional()
-    }).optional().describe('Deployment options')
-  }))
-  .output(z.object({
-    pipelines: z.array(z.object({
-      pipelineId: z.string(),
-      displayName: z.string(),
-      description: z.string().optional()
-    })).optional().describe('List of pipelines'),
-    stages: z.array(stageSchema).optional().describe('Pipeline stages'),
-    operations: z.array(operationSchema).optional().describe('Pipeline operations'),
-    deploymentOperationId: z.string().optional().describe('ID of the triggered deployment operation'),
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+export let managePipeline = SlateTool.create(spec, {
+  name: 'Manage Deployment Pipeline',
+  key: 'manage_pipeline',
+  description: `List deployment pipelines, view pipeline stages and artifacts, deploy content between stages, or check deployment operation status.`,
+  instructions: [
+    'Use "list" to see all available deployment pipelines.',
+    'Use "get" to view stages and workspace assignments for a specific pipeline.',
+    'Use "deploy" to promote content from one stage to the next.',
+    'Use "operations" to check deployment history and operation status.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'deploy', 'operations']).describe('Action to perform'),
+      pipelineId: z
+        .string()
+        .optional()
+        .describe('Pipeline ID (required for get, deploy, operations)'),
+      sourceStageOrder: z
+        .number()
+        .optional()
+        .describe('Source stage order for deployment (0=Dev, 1=Test, 2=Prod)'),
+      isBackwardDeployment: z
+        .boolean()
+        .optional()
+        .describe('Whether this is a backward deployment'),
+      deployOptions: z
+        .object({
+          allowCreateArtifact: z.boolean().optional(),
+          allowOverwriteArtifact: z.boolean().optional()
+        })
+        .optional()
+        .describe('Deployment options')
+    })
+  )
+  .output(
+    z.object({
+      pipelines: z
+        .array(
+          z.object({
+            pipelineId: z.string(),
+            displayName: z.string(),
+            description: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of pipelines'),
+      stages: z.array(stageSchema).optional().describe('Pipeline stages'),
+      operations: z.array(operationSchema).optional().describe('Pipeline operations'),
+      deploymentOperationId: z
+        .string()
+        .optional()
+        .describe('ID of the triggered deployment operation'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let { action, pipelineId } = ctx.input;
 
@@ -87,7 +108,8 @@ export let managePipeline = SlateTool.create(
     }
 
     if (action === 'deploy') {
-      if (ctx.input.sourceStageOrder === undefined) throw new Error('sourceStageOrder is required for deploy');
+      if (ctx.input.sourceStageOrder === undefined)
+        throw new Error('sourceStageOrder is required for deploy');
       let result = await client.deployPipelineStage(pipelineId, {
         sourceStageOrder: ctx.input.sourceStageOrder,
         isBackwardDeployment: ctx.input.isBackwardDeployment || false,

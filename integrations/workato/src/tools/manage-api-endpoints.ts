@@ -3,29 +3,40 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageApiEndpointsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage API Endpoints',
-    key: 'manage_api_endpoints',
-    description: `List API collections and endpoints in the Workato API Platform. Enable or disable individual API endpoints. Use to manage the lifecycle of APIs built on Workato.`,
-    tags: {
-      destructive: true,
-    },
+export let manageApiEndpointsTool = SlateTool.create(spec, {
+  name: 'Manage API Endpoints',
+  key: 'manage_api_endpoints',
+  description: `List API collections and endpoints in the Workato API Platform. Enable or disable individual API endpoints. Use to manage the lifecycle of APIs built on Workato.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['list_collections', 'list_endpoints', 'enable_endpoint', 'disable_endpoint'])
-      .describe('Action to perform'),
-    collectionId: z.string().optional().describe('API collection ID (for list_endpoints filter)'),
-    endpointId: z.string().optional().describe('Endpoint ID (required for enable/disable)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    collections: z.array(z.record(z.string(), z.unknown())).optional().describe('API collections'),
-    endpoints: z.array(z.record(z.string(), z.unknown())).optional().describe('API endpoints'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list_collections', 'list_endpoints', 'enable_endpoint', 'disable_endpoint'])
+        .describe('Action to perform'),
+      collectionId: z
+        .string()
+        .optional()
+        .describe('API collection ID (for list_endpoints filter)'),
+      endpointId: z.string().optional().describe('Endpoint ID (required for enable/disable)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      collections: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('API collections'),
+      endpoints: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('API endpoints')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action, collectionId, endpointId } = ctx.input;
 
@@ -34,7 +45,7 @@ export let manageApiEndpointsTool = SlateTool.create(
       let items = Array.isArray(result) ? result : (result.items ?? result.data ?? []);
       return {
         output: { success: true, collections: items },
-        message: `Found **${items.length}** API collections.`,
+        message: `Found **${items.length}** API collections.`
       };
     }
 
@@ -43,7 +54,7 @@ export let manageApiEndpointsTool = SlateTool.create(
       let items = Array.isArray(result) ? result : (result.items ?? result.data ?? []);
       return {
         output: { success: true, endpoints: items },
-        message: `Found **${items.length}** API endpoints.`,
+        message: `Found **${items.length}** API endpoints.`
       };
     }
 
@@ -53,7 +64,7 @@ export let manageApiEndpointsTool = SlateTool.create(
       await client.enableApiEndpoint(endpointId);
       return {
         output: { success: true },
-        message: `Enabled API endpoint **${endpointId}**.`,
+        message: `Enabled API endpoint **${endpointId}**.`
       };
     }
 
@@ -61,6 +72,6 @@ export let manageApiEndpointsTool = SlateTool.create(
     await client.disableApiEndpoint(endpointId);
     return {
       output: { success: true },
-      message: `Disabled API endpoint **${endpointId}**.`,
+      message: `Disabled API endpoint **${endpointId}**.`
     };
   });

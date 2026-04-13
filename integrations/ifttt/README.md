@@ -5,27 +5,35 @@ Automate workflows by connecting 900+ services through conditional Applets compo
 ## Tools
 
 ### Fire Webhook
+
 Trigger an IFTTT webhook event via the Maker Webhooks service. This fires the "Receive a web request" trigger, which can activate any Applet connected to it. Supports passing up to 3 simple string values, or a full JSON payload for the JSON trigger variant.
 
 ### Get Connection
+
 Retrieve the details and current status of an IFTTT connection. Returns the connection's configuration including its triggers, actions, queries, and the user's field settings if a user ID is provided.
 
 ### Get Field Options
+
 Retrieve the available options for a dynamic field in a trigger, action, or query. Useful for discovering valid values before running an action, performing a query, or configuring a trigger. Returns a list of label-value pairs (may include nested categories).
 
 ### Perform Query
+
 Execute a query on a connected IFTTT service to retrieve data. Queries let you fetch additional data from connected services, such as retrieving device states, listing items, or getting current values. Supports pagination with cursor-based navigation.
 
 ### Run Action
+
 Execute an action on a connected IFTTT service for a specific user. Actions are the output side of Applets, such as creating calendar events, sending messages, controlling smart home devices, posting to social media, etc. The available action fields depend on the connected service's action definition.
 
 ### Send Realtime Notification
+
 Notify IFTTT's Realtime API that new trigger events are available. This causes IFTTT to immediately poll your trigger endpoints for the specified users or trigger identities, enabling near-instant Applet runs instead of waiting for the normal ~1 hour polling cycle.
 
 ### Test Trigger
+
 Simulate a trigger event for a specific connection and user. This sends a test request that simulates an event firing for the user, which IFTTT will then forward to your webhook endpoint. Useful for testing and debugging connection integrations.
 
 ### Update Connection
+
 Update a user's IFTTT connection configuration. This replaces the current stored configuration for the user, including trigger fields, action fields, and query fields. Use **Get Connection** first to see current settings.
 
 ## License

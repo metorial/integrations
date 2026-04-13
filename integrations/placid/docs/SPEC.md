@@ -13,6 +13,7 @@ Placid is a creative automation platform that generates images, videos, and PDFs
 The Placid REST API uses authentication via an API token. It is passed along with every API call to identify your account and access the templates from your project. Placid API tokens are project-specific.
 
 To obtain your API token:
+
 1. Log in at `placid.app/login`
 2. Go to the **Projects** overview
 3. Select the project you want to work with
@@ -57,6 +58,7 @@ Collections allow organizing templates into groups. Collections can be created, 
 ### Dynamic Layers
 
 Templates contain dynamic layers that are populated at generation time. Supported layer types include:
+
 - **Text**: Set text content, color, and font.
 - **Picture**: Set image URL or video URL; supports webpage screenshot via viewport setting.
 - **Shape**: Configure background color, border, border radius, and custom SVG.

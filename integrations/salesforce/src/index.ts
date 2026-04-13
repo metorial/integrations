@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getRecord,
@@ -16,11 +15,7 @@ import {
   getOrgLimits,
   manageChatter
 } from './tools';
-import {
-  recordChanges,
-  newRecord,
-  inboundWebhook,
-} from './triggers';
+import { recordChanges, newRecord, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,9 +34,5 @@ export let provider = Slate.create({
     getOrgLimits,
     manageChatter
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanges,
-    newRecord
-  ]
+  triggers: [inboundWebhook, recordChanges, newRecord]
 });

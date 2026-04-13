@@ -115,9 +115,9 @@ export class Client {
     return createAxios({
       baseURL: `${this.baseUri}/restapi/v2.1/accounts/${this.accountId}`,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -166,7 +166,7 @@ export class Client {
   async voidEnvelope(envelopeId: string, voidedReason: string): Promise<any> {
     return this.updateEnvelope(envelopeId, {
       status: 'voided',
-      voidedReason,
+      voidedReason
     });
   }
 
@@ -197,7 +197,7 @@ export class Client {
   async getDocument(envelopeId: string, documentId: string): Promise<string> {
     let ax = this.getAxios();
     let response = await ax.get(`/envelopes/${envelopeId}/documents/${documentId}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     let binary = '';
     let bytes = new Uint8Array(response.data as ArrayBuffer);
@@ -247,13 +247,16 @@ export class Client {
 
   // ---- Embedded Signing ----
 
-  async createRecipientView(envelopeId: string, viewRequest: {
-    returnUrl: string;
-    authenticationMethod: string;
-    email: string;
-    userName: string;
-    clientUserId: string;
-  }): Promise<any> {
+  async createRecipientView(
+    envelopeId: string,
+    viewRequest: {
+      returnUrl: string;
+      authenticationMethod: string;
+      email: string;
+      userName: string;
+      clientUserId: string;
+    }
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.post(`/envelopes/${envelopeId}/views/recipient`, viewRequest);
     return response.data;

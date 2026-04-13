@@ -3,24 +3,25 @@ import { CallPageClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteUser = SlateTool.create(
-  spec,
-  {
-    name: 'Delete User',
-    key: 'delete_user',
-    description: `Permanently delete a user from the account. This also removes the user from any widgets they are assigned to.`,
-    tags: {
-      destructive: true
-    }
+export let deleteUser = SlateTool.create(spec, {
+  name: 'Delete User',
+  key: 'delete_user',
+  description: `Permanently delete a user from the account. This also removes the user from any widgets they are assigned to.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    userId: z.number().describe('The ID of the user to delete')
-  }))
-  .output(z.object({
-    userId: z.number().describe('The ID of the deleted user')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.number().describe('The ID of the user to delete')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('The ID of the deleted user')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CallPageClient({ token: ctx.auth.token });
 
     await client.deleteUser(ctx.input.userId);

@@ -3,27 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteApplication = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Application',
-    key: 'delete_application',
-    description: `Permanently delete a consumer application and all its associated endpoints and messages. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteApplication = SlateTool.create(spec, {
+  name: 'Delete Application',
+  key: 'delete_application',
+  description: `Permanently delete a consumer application and all its associated endpoints and messages. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    applicationId: z.string().describe('Application ID or UID to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the application was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      applicationId: z.string().describe('Application ID or UID to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the application was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region || 'us',
+      region: ctx.config.region || 'us'
     });
 
     ctx.progress('Deleting application...');
@@ -31,6 +32,7 @@ export let deleteApplication = SlateTool.create(
 
     return {
       output: { deleted: true },
-      message: `Deleted application \`${ctx.input.applicationId}\`.`,
+      message: `Deleted application \`${ctx.input.applicationId}\`.`
     };
-  }).build();
+  })
+  .build();

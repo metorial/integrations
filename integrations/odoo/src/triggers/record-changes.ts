@@ -3,35 +3,41 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Polls for new or recently modified records in a specified Odoo model. Detects record creation and updates based on the write_date field.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Whether this record was newly created or updated'),
-    recordId: z.number().describe('The Odoo record ID'),
-    model: z.string().describe('The model the record belongs to'),
-    record: z.record(z.string(), z.unknown()).describe('The full record data'),
-    writeDate: z.string().describe('The write_date timestamp of the record'),
-  }))
-  .output(z.object({
-    recordId: z.number().describe('The Odoo record ID'),
-    model: z.string().describe('The model the record belongs to'),
-    changeType: z.enum(['created', 'updated']).describe('Whether this record was newly created or updated'),
-    record: z.record(z.string(), z.unknown()).describe('The full record data'),
-    writeDate: z.string().describe('The write_date timestamp'),
-    createDate: z.string().optional().describe('The create_date timestamp'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Polls for new or recently modified records in a specified Odoo model. Detects record creation and updates based on the write_date field.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether this record was newly created or updated'),
+      recordId: z.number().describe('The Odoo record ID'),
+      model: z.string().describe('The model the record belongs to'),
+      record: z.record(z.string(), z.unknown()).describe('The full record data'),
+      writeDate: z.string().describe('The write_date timestamp of the record')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.number().describe('The Odoo record ID'),
+      model: z.string().describe('The model the record belongs to'),
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether this record was newly created or updated'),
+      record: z.record(z.string(), z.unknown()).describe('The full record data'),
+      writeDate: z.string().describe('The write_date timestamp'),
+      createDate: z.string().optional().describe('The create_date timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let state = ctx.state as { lastPollDate?: string; model?: string } | null;
@@ -51,11 +57,11 @@ export let recordChanges = SlateTrigger.create(
       let records = await client.searchRead(model, domain, {
         fields: ['id', 'write_date', 'create_date'],
         order: 'write_date asc',
-        limit: 200,
+        limit: 200
       });
 
       // For each record, determine if it was created or updated by comparing create_date and write_date
-      let inputs = records.map((record) => {
+      let inputs = records.map(record => {
         let writeDate = record.write_date as string;
         let createDate = record.create_date as string;
         let isNew = createDate === writeDate;
@@ -65,24 +71,25 @@ export let recordChanges = SlateTrigger.create(
           recordId: record.id as number,
           model,
           record,
-          writeDate,
+          writeDate
         };
       });
 
-      let newLastPollDate = records.length > 0
-        ? records[records.length - 1]!.write_date as string
-        : lastPollDate;
+      let newLastPollDate =
+        records.length > 0
+          ? (records[records.length - 1]!.write_date as string)
+          : lastPollDate;
 
       return {
         inputs,
         updatedState: {
           lastPollDate: newLastPollDate,
-          model,
-        },
+          model
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = createClient(ctx);
 
       // Fetch full record data for the event
@@ -98,9 +105,9 @@ export let recordChanges = SlateTrigger.create(
           changeType: ctx.input.changeType,
           record: fullRecord,
           writeDate: ctx.input.writeDate,
-          createDate: fullRecord.create_date as string | undefined,
-        },
+          createDate: fullRecord.create_date as string | undefined
+        }
       };
-    },
+    }
   })
   .build();

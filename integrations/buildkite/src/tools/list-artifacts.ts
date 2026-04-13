@@ -11,40 +11,40 @@ let artifactSchema = z.object({
   mimeType: z.string().describe('MIME type of the artifact'),
   fileSize: z.number().describe('Size of the artifact in bytes'),
   sha1sum: z.string().describe('SHA1 checksum of the artifact'),
-  downloadUrl: z.string().describe('URL to download the artifact'),
+  downloadUrl: z.string().describe('URL to download the artifact')
 });
 
-export let listArtifacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Artifacts',
-    key: 'list_artifacts',
-    description: `List artifacts produced by a specific build. Returns file names, paths, sizes, and download URLs. Artifacts are files generated during build execution (test reports, binaries, logs, etc.).`,
-    tags: {
-      readOnly: true,
-    },
+export let listArtifacts = SlateTool.create(spec, {
+  name: 'List Artifacts',
+  key: 'list_artifacts',
+  description: `List artifacts produced by a specific build. Returns file names, paths, sizes, and download URLs. Artifacts are files generated during build execution (test reports, binaries, logs, etc.).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    pipelineSlug: z.string().describe('Slug of the pipeline'),
-    buildNumber: z.number().describe('Build number'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    perPage: z.number().optional().describe('Number of results per page (max 100)'),
-  }))
-  .output(z.object({
-    artifacts: z.array(artifactSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pipelineSlug: z.string().describe('Slug of the pipeline'),
+      buildNumber: z.number().describe('Build number'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      perPage: z.number().optional().describe('Number of results per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      artifacts: z.array(artifactSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationSlug: ctx.config.organizationSlug,
+      organizationSlug: ctx.config.organizationSlug
     });
 
-    let artifacts = await client.listArtifacts(
-      ctx.input.pipelineSlug,
-      ctx.input.buildNumber,
-      { page: ctx.input.page, perPage: ctx.input.perPage }
-    );
+    let artifacts = await client.listArtifacts(ctx.input.pipelineSlug, ctx.input.buildNumber, {
+      page: ctx.input.page,
+      perPage: ctx.input.perPage
+    });
 
     let mapped = artifacts.map((a: any) => ({
       artifactId: a.id,
@@ -54,11 +54,11 @@ export let listArtifacts = SlateTool.create(
       mimeType: a.mime_type,
       fileSize: a.file_size,
       sha1sum: a.sha1sum,
-      downloadUrl: a.download_url,
+      downloadUrl: a.download_url
     }));
 
     return {
       output: { artifacts: mapped },
-      message: `Found **${mapped.length}** artifact(s) for build #${ctx.input.buildNumber}.`,
+      message: `Found **${mapped.length}** artifact(s) for build #${ctx.input.buildNumber}.`
     };
   });

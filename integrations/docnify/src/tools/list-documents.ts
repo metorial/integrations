@@ -11,27 +11,31 @@ let documentSummarySchema = z.object({
   updatedAt: z.string().describe('Timestamp when the document was last updated')
 });
 
-export let listDocuments = SlateTool.create(
-  spec,
-  {
-    name: 'List Documents',
-    key: 'list_documents',
-    description: `Lists documents in your Docnify account. Returns a summary of each document including its ID, name, status, and timestamps. Supports pagination through limit and offset parameters.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listDocuments = SlateTool.create(spec, {
+  name: 'List Documents',
+  key: 'list_documents',
+  description: `Lists documents in your Docnify account. Returns a summary of each document including its ID, name, status, and timestamps. Supports pagination through limit and offset parameters.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum number of documents to return (default varies by API)'),
-    offset: z.number().optional().describe('Number of documents to skip for pagination')
-  }))
-  .output(z.object({
-    documents: z.array(documentSummarySchema).describe('List of documents'),
-    count: z.number().describe('Number of documents returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of documents to return (default varies by API)'),
+      offset: z.number().optional().describe('Number of documents to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      documents: z.array(documentSummarySchema).describe('List of documents'),
+      count: z.number().describe('Number of documents returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl
@@ -42,7 +46,7 @@ export let listDocuments = SlateTool.create(
       offset: ctx.input.offset
     });
 
-    let mappedDocuments = documents.map((doc) => ({
+    let mappedDocuments = documents.map(doc => ({
       documentId: doc.id,
       documentName: doc.name,
       status: doc.status,

@@ -11,6 +11,7 @@ DailyBot uses **API Key-based authentication**.
 The V1 API uses HTTP headers and unique API keys to authenticate requests.
 
 **Obtaining an API Key:**
+
 - You require the Org Administrator role.
 - Navigate to Organization Settings, click "Integrations", go to the Integrations page, and click "Generate API Key".
 - You can create as many API Keys as you need and revoke them at any moment.
@@ -27,6 +28,7 @@ DailyBot supports an Exchange Token mechanism to make API calls on behalf of oth
 ## Features
 
 ### Check-in Management
+
 Create, update, delete, and list check-ins (async stand-ups and recurring surveys). Check-ins are based on templates and can be configured with scheduling frequency, days of the week, custom trigger times, reminder settings, anonymity, privacy levels, and reporting channels. You can also retrieve check-in responses filtered by date range, and send manual reminders to participants who haven't responded.
 
 - Check-ins can be set as trigger-based (manual only) or automatic with configurable recurring schedules.
@@ -34,31 +36,39 @@ Create, update, delete, and list check-ins (async stand-ups and recurring survey
 - Responses include blocker indicators and completion status.
 
 ### Forms
+
 List all forms visible to the API key owner. Forms support anonymous response collection, privacy settings, shortcuts, and date-bounded availability.
 
 - Forms are read-only via the API (listing only); form creation is managed through the web interface.
 
 ### Templates
+
 Retrieve templates for check-ins and forms, including their question definitions, logic flow, and intro/outro messages. Templates can be filtered by type (check-ins or forms) and whether they are system defaults.
 
 ### User Management
+
 List, view, and update users in the organization. Configurable fields include full name, occupation, timezone, work days, work start time, time-off dates, active status, and bot enablement.
 
 ### Team Management
+
 List teams, view team details, list team members, add users to teams, and remove users from teams. Teams can be marked as default across the organization.
 
 ### Messaging
+
 Send messages to specific users, teams, or channels via the connected chat platform. Messages can include text, images, and interactive buttons. A separate endpoint allows sending emails to users.
 
 - Group conversation creation is only supported in Slack, not other chat platforms.
 
 ### Kudos (Peer Recognition)
+
 Give kudos to users on behalf of the API key owner or on behalf of DailyBot. Kudos can be associated with company values, sent anonymously, and directed to multiple receivers.
 
 ### Organization Info
+
 Retrieve organization-level information including name, connected chat platform, supported domains, and platform configuration.
 
 ### Activity Ingestion
+
 Add any user activity to DailyBot so it shows up in check-in reports or user activity feeds. Such activity can happen in any external context or app. This is done by posting to a unique Activity Hook URL.
 
 ## Events
@@ -68,22 +78,27 @@ DailyBot can deliver data to your application via WebHooks based on your organiz
 Webhook requests can be authenticated via a Bearer token (sent in an `X-BEARER` header), HTTPS Basic Authentication, or OAuth 2.0.
 
 ### Check-in Response Events
+
 Triggered when a check-in response is completed, updated, or deleted by a team member. Privacy rules apply: anonymous responses will not include user information, and events are only sent if the subscriber has read permissions on the check-in.
 
 - Events: `followups.response.completed`, `followups.response.updated`, `followups.response.deleted`
 
 ### Form Response Events
+
 Triggered when a form response is created, updated, or deleted. Same privacy rules as check-in events apply.
 
 - Events: `forms.response.created`, `forms.response.updated`, `forms.response.deleted`
 
 ### Kudos Events
+
 Triggered when kudos are given to a user in the organization. The payload includes giver, receivers, content, and the related company value. Anonymous kudos will mask the giver's identity.
 
 - Event: `kudos.posted`
 
 ### Organization Events
+
 Triggered when user or team membership changes occur:
+
 - User activated: triggered when an administrator changes a user's status to active.
 - User deactivated: triggered when an administrator changes a user's status to inactive.
 - Team user added: triggered when a user is added to a team by an org or team administrator.

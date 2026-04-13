@@ -257,8 +257,14 @@ export class Client {
     return response.data;
   }
 
-  async updateTimeEntry(timeEntryId: number, input: UpdateTimeEntryInput): Promise<TimelinkTimeEntry> {
-    let response = await this.axios.put(`/time-entries/${timeEntryId}`, this.toSnakeCase(input));
+  async updateTimeEntry(
+    timeEntryId: number,
+    input: UpdateTimeEntryInput
+  ): Promise<TimelinkTimeEntry> {
+    let response = await this.axios.put(
+      `/time-entries/${timeEntryId}`,
+      this.toSnakeCase(input)
+    );
     return response.data;
   }
 
@@ -267,7 +273,10 @@ export class Client {
   }
 
   // Webhooks
-  async registerWebhook(url: string, events: string[]): Promise<{ id: string; [key: string]: any }> {
+  async registerWebhook(
+    url: string,
+    events: string[]
+  ): Promise<{ id: string; [key: string]: any }> {
     let response = await this.axios.post('/webhooks', {
       url,
       events
@@ -283,7 +292,7 @@ export class Client {
     let result: Record<string, any> = {};
     for (let [key, value] of Object.entries(obj)) {
       if (value === undefined) continue;
-      let snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+      let snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
       result[snakeKey] = value;
     }
     return result;

@@ -7,7 +7,7 @@ import {
   deleteTemplate,
   renderDocument,
   checkStatus,
-  listCategoriesAndTags,
+  listCategoriesAndTags
 } from './tools';
 import { renderCompleted } from './triggers';
 
@@ -20,9 +20,7 @@ export let provider = Slate.create({
     deleteTemplate,
     renderDocument,
     checkStatus,
-    listCategoriesAndTags,
+    listCategoriesAndTags
   ],
-  triggers: [
-    renderCompleted,
-  ],
+  triggers: [renderCompleted]
 });

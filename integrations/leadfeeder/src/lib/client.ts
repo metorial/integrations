@@ -124,7 +124,7 @@ let mapLocation = (locationData: any): LeadLocation | null => {
     region: attrs.region ?? '',
     regionCode: attrs.region_code ?? '',
     city: attrs.city ?? '',
-    stateCode: attrs.state_code ?? '',
+    stateCode: attrs.state_code ?? ''
   };
 };
 
@@ -168,7 +168,7 @@ let mapLead = (leadData: any, included?: any[]): Lead => {
     viewInLeadfeeder: attrs.view_in_leadfeeder ?? '',
     visits: attrs.visits ?? 0,
     quality: attrs.quality ?? 0,
-    location,
+    location
   };
 };
 
@@ -189,7 +189,7 @@ let mapVisit = (visitData: any): Visit => {
       timeOnPage: step.time_on_page ?? 0,
       pageTitle: step.page_title ?? '',
       pageUrl: step.page_url ?? '',
-      displayPageName: step.display_page_name ?? '',
+      displayPageName: step.display_page_name ?? ''
     })),
     keyword: attrs.keyword ?? '',
     queryTerm: attrs.query_term ?? '',
@@ -202,7 +202,7 @@ let mapVisit = (visitData: any): Visit => {
     visitorFirstName: attrs.visitor_first_name ?? '',
     visitorLastName: attrs.visitor_last_name ?? '',
     countryCode: attrs.country_code ?? '',
-    deviceType: attrs.device_type ?? '',
+    deviceType: attrs.device_type ?? ''
   };
 };
 
@@ -213,8 +213,8 @@ export class LeadfeederClient {
     this.http = createAxios({
       baseURL: 'https://api.leadfeeder.com',
       headers: {
-        'Authorization': `Token token=${token}`,
-      },
+        Authorization: `Token token=${token}`
+      }
     });
   }
 
@@ -226,7 +226,7 @@ export class LeadfeederClient {
       name: account.attributes?.name ?? '',
       subscription: account.attributes?.subscription ?? '',
       timezone: account.attributes?.timezone ?? '',
-      websiteTrackingStatus: account.attributes?.website_tracking_status ?? '',
+      websiteTrackingStatus: account.attributes?.website_tracking_status ?? ''
     }));
   }
 
@@ -238,7 +238,7 @@ export class LeadfeederClient {
       name: account.attributes?.name ?? '',
       subscription: account.attributes?.subscription ?? '',
       timezone: account.attributes?.timezone ?? '',
-      websiteTrackingStatus: account.attributes?.website_tracking_status ?? '',
+      websiteTrackingStatus: account.attributes?.website_tracking_status ?? ''
     };
   }
 
@@ -255,8 +255,8 @@ export class LeadfeederClient {
         start_date: params.startDate,
         end_date: params.endDate,
         'page[number]': params.pageNumber ?? 1,
-        'page[size]': params.pageSize ?? 100,
-      },
+        'page[size]': params.pageSize ?? 100
+      }
     });
 
     let items = (response.data?.data ?? []).map((lead: any) =>
@@ -266,7 +266,7 @@ export class LeadfeederClient {
     return {
       items,
       nextPageUrl: response.data?.links?.next ?? null,
-      totalPages: null,
+      totalPages: null
     };
   }
 
@@ -280,23 +280,20 @@ export class LeadfeederClient {
     leadId: string,
     params: DateRangeParams & PaginationParams
   ): Promise<PaginatedResponse<Visit>> {
-    let response = await this.http.get(
-      `/accounts/${accountId}/leads/${leadId}/visits`,
-      {
-        params: {
-          start_date: params.startDate,
-          end_date: params.endDate,
-          'page[number]': params.pageNumber ?? 1,
-          'page[size]': params.pageSize ?? 100,
-        },
+    let response = await this.http.get(`/accounts/${accountId}/leads/${leadId}/visits`, {
+      params: {
+        start_date: params.startDate,
+        end_date: params.endDate,
+        'page[number]': params.pageNumber ?? 1,
+        'page[size]': params.pageSize ?? 100
       }
-    );
+    });
 
     let items = (response.data?.data ?? []).map(mapVisit);
     return {
       items,
       nextPageUrl: response.data?.links?.next ?? null,
-      totalPages: null,
+      totalPages: null
     };
   }
 
@@ -309,15 +306,15 @@ export class LeadfeederClient {
         start_date: params.startDate,
         end_date: params.endDate,
         'page[number]': params.pageNumber ?? 1,
-        'page[size]': params.pageSize ?? 100,
-      },
+        'page[size]': params.pageSize ?? 100
+      }
     });
 
     let items = (response.data?.data ?? []).map(mapVisit);
     return {
       items,
       nextPageUrl: response.data?.links?.next ?? null,
-      totalPages: null,
+      totalPages: null
     };
   }
 
@@ -326,19 +323,17 @@ export class LeadfeederClient {
     return (response.data?.data ?? []).map((feed: any) => ({
       feedId: feed.id,
       name: feed.attributes?.name ?? '',
-      criteria: feed.attributes?.criteria ?? [],
+      criteria: feed.attributes?.criteria ?? []
     }));
   }
 
   async getCustomFeed(accountId: string, feedId: string): Promise<CustomFeed> {
-    let response = await this.http.get(
-      `/accounts/${accountId}/custom-feeds/${feedId}`
-    );
+    let response = await this.http.get(`/accounts/${accountId}/custom-feeds/${feedId}`);
     let feed = response.data?.data;
     return {
       feedId: feed.id,
       name: feed.attributes?.name ?? '',
-      criteria: feed.attributes?.criteria ?? [],
+      criteria: feed.attributes?.criteria ?? []
     };
   }
 
@@ -354,9 +349,9 @@ export class LeadfeederClient {
           account_id: accountId,
           custom_feed_id: customFeedId,
           start_date: params.startDate,
-          end_date: params.endDate,
-        },
-      },
+          end_date: params.endDate
+        }
+      }
     });
     let exp = response.data?.data;
     return {
@@ -364,7 +359,7 @@ export class LeadfeederClient {
       status: exp.attributes?.status ?? '',
       createdAt: exp.attributes?.created_at ?? '',
       statusUrl: exp.attributes?.status_url ?? '',
-      downloadUrl: exp.attributes?.download_url ?? '',
+      downloadUrl: exp.attributes?.download_url ?? ''
     };
   }
 
@@ -376,19 +371,17 @@ export class LeadfeederClient {
       status: exp.attributes?.status ?? '',
       createdAt: exp.attributes?.created_at ?? '',
       statusUrl: exp.attributes?.status_url ?? '',
-      downloadUrl: exp.attributes?.download_url ?? '',
+      downloadUrl: exp.attributes?.download_url ?? ''
     };
   }
 
   async getTrackingScript(accountId: string): Promise<TrackingScript> {
-    let response = await this.http.get(
-      `/accounts/${accountId}/website-tracking-script`
-    );
+    let response = await this.http.get(`/accounts/${accountId}/website-tracking-script`);
     let script = response.data?.data;
     return {
       scriptHash: script.attributes?.script_hash ?? '',
       scriptHtml: script.attributes?.script_html ?? '',
-      timezone: script.attributes?.timezone ?? '',
+      timezone: script.attributes?.timezone ?? ''
     };
   }
 }

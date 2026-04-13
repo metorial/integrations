@@ -48,6 +48,7 @@ Retrieve campaign details including status (draft, sending, sent, error), subjec
 ### Campaign Reporting
 
 Access detailed campaign performance reports including:
+
 - **Summary reports**: sent count, bounces (hard/soft), opens (total/unique), clicks (total/unique), complaints, and unsubscribes.
 - **Contact-level reports**: filter by status (bounced, clicked, complained, opened, sent, unsubscribed, not-opened, not-clicked) to see which contacts had each interaction.
 - **Link reports**: performance data for individual links within a campaign (total and unique clicks).

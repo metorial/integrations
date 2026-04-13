@@ -8,7 +8,7 @@ let noteSchema = z.object({
   author: z.string(),
   dateCreated: z.string(),
   note: z.string(),
-  customerNote: z.boolean(),
+  customerNote: z.boolean()
 });
 
 export let manageOrderNotes = SlateTool.create(spec, {
@@ -16,22 +16,30 @@ export let manageOrderNotes = SlateTool.create(spec, {
   key: 'manage_order_notes',
   description: `List, create, or delete notes on an order. Notes can be private (admin-only) or customer-visible. Useful for tracking order communication and internal notes.`,
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    orderId: z.number().describe('The order ID'),
-    action: z.enum(['list', 'create', 'delete']).describe('Operation to perform'),
-    noteId: z.number().optional().describe('Note ID (required for delete)'),
-    note: z.string().optional().describe('Note content (required for create)'),
-    customerNote: z.boolean().optional().default(false).describe('Whether the note is visible to the customer'),
-  }))
-  .output(z.object({
-    notes: z.array(noteSchema).optional(),
-    createdNote: noteSchema.optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      orderId: z.number().describe('The order ID'),
+      action: z.enum(['list', 'create', 'delete']).describe('Operation to perform'),
+      noteId: z.number().optional().describe('Note ID (required for delete)'),
+      note: z.string().optional().describe('Note content (required for create)'),
+      customerNote: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether the note is visible to the customer')
+    })
+  )
+  .output(
+    z.object({
+      notes: z.array(noteSchema).optional(),
+      createdNote: noteSchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { orderId, action } = ctx.input;
 
@@ -42,12 +50,12 @@ export let manageOrderNotes = SlateTool.create(spec, {
         author: n.author || '',
         dateCreated: n.date_created || '',
         note: n.note || '',
-        customerNote: n.customer_note || false,
+        customerNote: n.customer_note || false
       }));
 
       return {
         output: { notes: mapped },
-        message: `Found **${mapped.length}** notes on order #${orderId}.`,
+        message: `Found **${mapped.length}** notes on order #${orderId}.`
       };
     }
 
@@ -56,7 +64,7 @@ export let manageOrderNotes = SlateTool.create(spec, {
 
       let result = await client.createOrderNote(orderId, {
         note: ctx.input.note,
-        customer_note: ctx.input.customerNote,
+        customer_note: ctx.input.customerNote
       });
 
       return {
@@ -66,10 +74,10 @@ export let manageOrderNotes = SlateTool.create(spec, {
             author: result.author || '',
             dateCreated: result.date_created || '',
             note: result.note || '',
-            customerNote: result.customer_note || false,
-          },
+            customerNote: result.customer_note || false
+          }
         },
-        message: `Added ${ctx.input.customerNote ? 'customer' : 'private'} note to order #${orderId}.`,
+        message: `Added ${ctx.input.customerNote ? 'customer' : 'private'} note to order #${orderId}.`
       };
     }
 
@@ -80,7 +88,7 @@ export let manageOrderNotes = SlateTool.create(spec, {
 
       return {
         output: { deleted: true },
-        message: `Deleted note (ID: ${ctx.input.noteId}) from order #${orderId}.`,
+        message: `Deleted note (ID: ${ctx.input.noteId}) from order #${orderId}.`
       };
     }
 

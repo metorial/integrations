@@ -3,54 +3,83 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLivehuntRuleset = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Livehunt Ruleset',
-    key: 'manage_livehunt_ruleset',
-    description: `Create, update, enable/disable, or delete Livehunt YARA rulesets. Livehunt hooks into the stream of files submitted to VirusTotal and generates notifications when YARA rules match. **Premium feature.**`,
-    constraints: [
-      'This feature requires a VirusTotal Premium API key.',
-      'The notification limit configures the max notifications per ruleset in any 24-hour period.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageLivehuntRuleset = SlateTool.create(spec, {
+  name: 'Manage Livehunt Ruleset',
+  key: 'manage_livehunt_ruleset',
+  description: `Create, update, enable/disable, or delete Livehunt YARA rulesets. Livehunt hooks into the stream of files submitted to VirusTotal and generates notifications when YARA rules match. **Premium feature.**`,
+  constraints: [
+    'This feature requires a VirusTotal Premium API key.',
+    'The notification limit configures the max notifications per ruleset in any 24-hour period.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'get', 'list']).describe('Operation to perform'),
-    rulesetId: z.string().optional().describe('Ruleset ID (required for update, delete, get)'),
-    name: z.string().optional().describe('Ruleset name (for create/update)'),
-    rules: z.string().optional().describe('YARA rules content (for create/update)'),
-    enabled: z.boolean().optional().describe('Whether the ruleset is active (for create/update)'),
-    notificationLimit: z.number().optional().describe('Max notifications per 24 hours (for create/update)'),
-    notificationEmails: z.array(z.string()).optional().describe('Emails for notifications (for create/update)'),
-    limit: z.number().optional().default(10).describe('Max items for list action'),
-    cursor: z.string().optional().describe('Pagination cursor for list action')
-  }))
-  .output(z.object({
-    ruleset: z.object({
-      rulesetId: z.string().describe('Ruleset ID'),
-      name: z.string().optional().describe('Ruleset name'),
-      rules: z.string().optional().describe('YARA rules content'),
-      enabled: z.boolean().optional().describe('Whether the ruleset is active'),
-      notificationLimit: z.number().optional().describe('Max notifications per 24 hours'),
-      creationDate: z.string().optional().describe('Creation date (Unix timestamp)'),
-      modificationDate: z.string().optional().describe('Last modification date (Unix timestamp)')
-    }).optional().describe('Ruleset details (for get/create/update)'),
-    rulesets: z.array(z.object({
-      rulesetId: z.string().describe('Ruleset ID'),
-      name: z.string().optional().describe('Ruleset name'),
-      enabled: z.boolean().optional().describe('Whether the ruleset is active'),
-      ruleCount: z.number().optional().describe('Number of rules'),
-      creationDate: z.string().optional().describe('Creation date (Unix timestamp)')
-    })).optional().describe('List of rulesets (for list action)'),
-    deleted: z.boolean().optional().describe('Whether the ruleset was deleted (for delete action)'),
-    nextCursor: z.string().optional().describe('Cursor for next page (for list action)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'get', 'list'])
+        .describe('Operation to perform'),
+      rulesetId: z
+        .string()
+        .optional()
+        .describe('Ruleset ID (required for update, delete, get)'),
+      name: z.string().optional().describe('Ruleset name (for create/update)'),
+      rules: z.string().optional().describe('YARA rules content (for create/update)'),
+      enabled: z
+        .boolean()
+        .optional()
+        .describe('Whether the ruleset is active (for create/update)'),
+      notificationLimit: z
+        .number()
+        .optional()
+        .describe('Max notifications per 24 hours (for create/update)'),
+      notificationEmails: z
+        .array(z.string())
+        .optional()
+        .describe('Emails for notifications (for create/update)'),
+      limit: z.number().optional().default(10).describe('Max items for list action'),
+      cursor: z.string().optional().describe('Pagination cursor for list action')
+    })
+  )
+  .output(
+    z.object({
+      ruleset: z
+        .object({
+          rulesetId: z.string().describe('Ruleset ID'),
+          name: z.string().optional().describe('Ruleset name'),
+          rules: z.string().optional().describe('YARA rules content'),
+          enabled: z.boolean().optional().describe('Whether the ruleset is active'),
+          notificationLimit: z.number().optional().describe('Max notifications per 24 hours'),
+          creationDate: z.string().optional().describe('Creation date (Unix timestamp)'),
+          modificationDate: z
+            .string()
+            .optional()
+            .describe('Last modification date (Unix timestamp)')
+        })
+        .optional()
+        .describe('Ruleset details (for get/create/update)'),
+      rulesets: z
+        .array(
+          z.object({
+            rulesetId: z.string().describe('Ruleset ID'),
+            name: z.string().optional().describe('Ruleset name'),
+            enabled: z.boolean().optional().describe('Whether the ruleset is active'),
+            ruleCount: z.number().optional().describe('Number of rules'),
+            creationDate: z.string().optional().describe('Creation date (Unix timestamp)')
+          })
+        )
+        .optional()
+        .describe('List of rulesets (for list action)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the ruleset was deleted (for delete action)'),
+      nextCursor: z.string().optional().describe('Cursor for next page (for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     switch (ctx.input.action) {
@@ -157,4 +186,5 @@ export let manageLivehuntRuleset = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

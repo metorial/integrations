@@ -3,21 +3,21 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMemory = SlateTool.create(
-  spec,
-  {
-    name: 'Get Memory',
-    key: 'get_memory',
-    description: `Retrieve a specific memory by its ID, optionally including its full change history. Use this to inspect a single memory's content, metadata, and version history.`,
-    tags: {
-      readOnly: true,
-    },
+export let getMemory = SlateTool.create(spec, {
+  name: 'Get Memory',
+  key: 'get_memory',
+  description: `Retrieve a specific memory by its ID, optionally including its full change history. Use this to inspect a single memory's content, metadata, and version history.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
       memoryId: z.string().describe('Unique identifier of the memory to retrieve'),
-      includeHistory: z.boolean().optional().describe('Whether to include the full change history of the memory'),
+      includeHistory: z
+        .boolean()
+        .optional()
+        .describe('Whether to include the full change history of the memory')
     })
   )
   .output(
@@ -32,17 +32,20 @@ export let getMemory = SlateTool.create(
       metadata: z.record(z.string(), z.unknown()).optional().describe('Memory metadata'),
       createdAt: z.string().optional().describe('Creation timestamp'),
       updatedAt: z.string().optional().describe('Last update timestamp'),
-      history: z.array(z.record(z.string(), z.unknown())).optional().describe('Full change history of the memory'),
+      history: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Full change history of the memory')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       orgId: ctx.config.orgId,
-      projectId: ctx.config.projectId,
+      projectId: ctx.config.projectId
     });
 
-    let mem = await client.getMemory(ctx.input.memoryId) as Record<string, unknown>;
+    let mem = (await client.getMemory(ctx.input.memoryId)) as Record<string, unknown>;
 
     let history: Record<string, unknown>[] | undefined;
     if (ctx.input.includeHistory) {
@@ -62,9 +65,9 @@ export let getMemory = SlateTool.create(
         metadata: mem.metadata as Record<string, unknown> | undefined,
         createdAt: mem.created_at ? String(mem.created_at) : undefined,
         updatedAt: mem.updated_at ? String(mem.updated_at) : undefined,
-        history,
+        history
       },
-      message: `Retrieved memory **${ctx.input.memoryId}**: "${String(mem.memory || '').substring(0, 100)}${String(mem.memory || '').length > 100 ? '...' : ''}"${history ? ` with ${history.length} history entries` : ''}.`,
+      message: `Retrieved memory **${ctx.input.memoryId}**: "${String(mem.memory || '').substring(0, 100)}${String(mem.memory || '').length > 100 ? '...' : ''}"${history ? ` with ${history.length} history entries` : ''}.`
     };
   })
   .build();

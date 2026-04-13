@@ -11,43 +11,64 @@ let leagueSchema = z.object({
   country: z.string().nullable().describe('Country name'),
   countryCode: z.string().nullable().describe('Country code'),
   countryFlag: z.string().nullable().describe('URL of the country flag'),
-  seasons: z.array(z.object({
-    year: z.number().describe('Season year'),
-    start: z.string().nullable().describe('Season start date'),
-    end: z.string().nullable().describe('Season end date'),
-    current: z.boolean().describe('Whether this is the current season'),
-  })).describe('Available seasons'),
+  seasons: z
+    .array(
+      z.object({
+        year: z.number().describe('Season year'),
+        start: z.string().nullable().describe('Season start date'),
+        end: z.string().nullable().describe('Season end date'),
+        current: z.boolean().describe('Whether this is the current season')
+      })
+    )
+    .describe('Available seasons')
 });
 
-export let searchLeaguesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Search Leagues',
-    key: 'search_leagues',
-    description: `Search for leagues and competitions available in API-Sports. Filter by country, season, name, or type. Returns league details including available seasons and coverage information. Use this to discover league IDs needed by other tools.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchLeaguesTool = SlateTool.create(spec, {
+  name: 'Search Leagues',
+  key: 'search_leagues',
+  description: `Search for leagues and competitions available in API-Sports. Filter by country, season, name, or type. Returns league details including available seasons and coverage information. Use this to discover league IDs needed by other tools.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sport: z.enum([
-      'football', 'basketball', 'baseball', 'hockey', 'rugby',
-      'handball', 'volleyball', 'afl', 'nba', 'nfl', 'formula-1', 'mma'
-    ]).optional().describe('Sport to query. Defaults to the configured sport.'),
-    leagueId: z.number().optional().describe('Get a specific league by ID'),
-    name: z.string().optional().describe('Exact league name to search for'),
-    country: z.string().optional().describe('Country name to filter leagues by'),
-    season: z.number().optional().describe('Season year to filter by'),
-    type: z.string().optional().describe('League type filter (e.g., "league" or "cup")'),
-    current: z.boolean().optional().describe('Only return leagues with a currently active season'),
-    search: z.string().optional().describe('Search term (minimum 3 characters)'),
-  }))
-  .output(z.object({
-    leagues: z.array(leagueSchema),
-    count: z.number().describe('Total number of leagues returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sport: z
+        .enum([
+          'football',
+          'basketball',
+          'baseball',
+          'hockey',
+          'rugby',
+          'handball',
+          'volleyball',
+          'afl',
+          'nba',
+          'nfl',
+          'formula-1',
+          'mma'
+        ])
+        .optional()
+        .describe('Sport to query. Defaults to the configured sport.'),
+      leagueId: z.number().optional().describe('Get a specific league by ID'),
+      name: z.string().optional().describe('Exact league name to search for'),
+      country: z.string().optional().describe('Country name to filter leagues by'),
+      season: z.number().optional().describe('Season year to filter by'),
+      type: z.string().optional().describe('League type filter (e.g., "league" or "cup")'),
+      current: z
+        .boolean()
+        .optional()
+        .describe('Only return leagues with a currently active season'),
+      search: z.string().optional().describe('Search term (minimum 3 characters)')
+    })
+  )
+  .output(
+    z.object({
+      leagues: z.array(leagueSchema),
+      count: z.number().describe('Total number of leagues returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let sport = ctx.input.sport ?? ctx.config.sport;
     let client = new Client({ token: ctx.auth.token, sport });
 
@@ -58,7 +79,7 @@ export let searchLeaguesTool = SlateTool.create(
       season: ctx.input.season,
       type: ctx.input.type,
       current: ctx.input.current,
-      search: ctx.input.search,
+      search: ctx.input.search
     });
 
     let results = (data.response ?? []).map((item: any) => ({
@@ -73,15 +94,16 @@ export let searchLeaguesTool = SlateTool.create(
         year: s.year,
         start: s.start ?? null,
         end: s.end ?? null,
-        current: s.current ?? false,
-      })),
+        current: s.current ?? false
+      }))
     }));
 
     return {
       output: {
         leagues: results,
-        count: results.length,
+        count: results.length
       },
-      message: `Found **${results.length}** league(s) for **${sport}**${ctx.input.country ? ` in ${ctx.input.country}` : ''}${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}.`,
+      message: `Found **${results.length}** league(s) for **${sport}**${ctx.input.country ? ` in ${ctx.input.country}` : ''}${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

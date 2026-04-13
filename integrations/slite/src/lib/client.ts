@@ -80,7 +80,7 @@ export class Client {
       headers: {
         'x-slite-api-key': token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     });
   }

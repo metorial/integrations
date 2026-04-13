@@ -18,31 +18,30 @@ let clientSchema = z.object({
   status: z.number().optional().describe('Status: 1 = Active, 2 = Archived')
 });
 
-export let createClient = SlateTool.create(
-  spec,
-  {
-    name: 'Create Client',
-    key: 'create_client',
-    description: `Create a new client record in Clientary. Clients represent companies, groups, or organizations that you do business with. Once created, you can associate contacts, invoices, projects, estimates, and expenses with them.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createClient = SlateTool.create(spec, {
+  name: 'Create Client',
+  key: 'create_client',
+  description: `Create a new client record in Clientary. Clients represent companies, groups, or organizations that you do business with. Once created, you can associate contacts, invoices, projects, estimates, and expenses with them.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Client name (required)'),
-    address: z.string().optional().describe('Street address'),
-    address2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State or province'),
-    zip: z.string().optional().describe('Postal/ZIP code'),
-    country: z.string().optional().describe('Country'),
-    website: z.string().optional().describe('Website URL'),
-    description: z.string().optional().describe('Description or notes about the client')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Client name (required)'),
+      address: z.string().optional().describe('Street address'),
+      address2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State or province'),
+      zip: z.string().optional().describe('Postal/ZIP code'),
+      country: z.string().optional().describe('Country'),
+      website: z.string().optional().describe('Website URL'),
+      description: z.string().optional().describe('Description or notes about the client')
+    })
+  )
   .output(clientSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = { name: ctx.input.name };
@@ -78,32 +77,31 @@ export let createClient = SlateTool.create(
   })
   .build();
 
-export let updateClient = SlateTool.create(
-  spec,
-  {
-    name: 'Update Client',
-    key: 'update_client',
-    description: `Update an existing client's information in Clientary. You can modify any combination of fields including name, address, and contact details.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateClient = SlateTool.create(spec, {
+  name: 'Update Client',
+  key: 'update_client',
+  description: `Update an existing client's information in Clientary. You can modify any combination of fields including name, address, and contact details.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    clientId: z.number().describe('ID of the client to update'),
-    name: z.string().optional().describe('Client name'),
-    address: z.string().optional().describe('Street address'),
-    address2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State or province'),
-    zip: z.string().optional().describe('Postal/ZIP code'),
-    country: z.string().optional().describe('Country'),
-    website: z.string().optional().describe('Website URL'),
-    description: z.string().optional().describe('Description or notes about the client')
-  }))
+})
+  .input(
+    z.object({
+      clientId: z.number().describe('ID of the client to update'),
+      name: z.string().optional().describe('Client name'),
+      address: z.string().optional().describe('Street address'),
+      address2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State or province'),
+      zip: z.string().optional().describe('Postal/ZIP code'),
+      country: z.string().optional().describe('Country'),
+      website: z.string().optional().describe('Website URL'),
+      description: z.string().optional().describe('Description or notes about the client')
+    })
+  )
   .output(clientSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {};
@@ -140,28 +138,35 @@ export let updateClient = SlateTool.create(
   })
   .build();
 
-export let getClient = SlateTool.create(
-  spec,
-  {
-    name: 'Get Client',
-    key: 'get_client',
-    description: `Retrieve a specific client's details by ID, or list clients with optional filtering by update date.`,
-    tags: {
-      readOnly: true
-    }
+export let getClient = SlateTool.create(spec, {
+  name: 'Get Client',
+  key: 'get_client',
+  description: `Retrieve a specific client's details by ID, or list clients with optional filtering by update date.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    clientId: z.number().optional().describe('ID of a specific client to retrieve. If omitted, lists clients.'),
-    page: z.number().optional().describe('Page number for pagination (10 results per page)'),
-    updatedSince: z.string().optional().describe('Filter clients updated since this date (YYYY-MM-DD)')
-  }))
-  .output(z.object({
-    clients: z.array(clientSchema).describe('List of clients'),
-    totalCount: z.number().optional().describe('Total number of matching clients'),
-    pageCount: z.number().optional().describe('Total number of pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clientId: z
+        .number()
+        .optional()
+        .describe('ID of a specific client to retrieve. If omitted, lists clients.'),
+      page: z.number().optional().describe('Page number for pagination (10 results per page)'),
+      updatedSince: z
+        .string()
+        .optional()
+        .describe('Filter clients updated since this date (YYYY-MM-DD)')
+    })
+  )
+  .output(
+    z.object({
+      clients: z.array(clientSchema).describe('List of clients'),
+      totalCount: z.number().optional().describe('Total number of matching clients'),
+      pageCount: z.number().optional().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     if (ctx.input.clientId) {
@@ -169,20 +174,22 @@ export let getClient = SlateTool.create(
       let c = result.client || result;
       return {
         output: {
-          clients: [{
-            clientId: c.id,
-            name: c.name,
-            number: c.number,
-            address: c.address,
-            address2: c.address_2,
-            city: c.city,
-            state: c.state,
-            zip: c.zip,
-            country: c.country,
-            website: c.website,
-            description: c.description,
-            status: c.status
-          }]
+          clients: [
+            {
+              clientId: c.id,
+              name: c.name,
+              number: c.number,
+              address: c.address,
+              address2: c.address_2,
+              city: c.city,
+              state: c.state,
+              zip: c.zip,
+              country: c.country,
+              website: c.website,
+              description: c.description,
+              status: c.status
+            }
+          ]
         },
         message: `Retrieved client **${c.name}** (ID: ${c.id}).`
       };
@@ -219,25 +226,26 @@ export let getClient = SlateTool.create(
   })
   .build();
 
-export let deleteClient = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Client',
-    key: 'delete_client',
-    description: `Permanently delete a client from Clientary. **Warning:** This also deletes all associated projects, invoices, estimates, and contacts.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteClient = SlateTool.create(spec, {
+  name: 'Delete Client',
+  key: 'delete_client',
+  description: `Permanently delete a client from Clientary. **Warning:** This also deletes all associated projects, invoices, estimates, and contacts.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    clientId: z.number().describe('ID of the client to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clientId: z.number().describe('ID of the client to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
     await client.deleteClient(ctx.input.clientId);
 

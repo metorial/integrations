@@ -11,43 +11,52 @@ let sourceSchema = z.object({
   description: z.string().describe('Source description'),
   paywall: z.boolean().nullable().describe('Whether the source has a paywall'),
   avgMonthlyPosts: z.number().describe('Average monthly article count'),
-  topCategories: z.array(z.object({
-    name: z.string(),
-    count: z.number(),
-  })).describe('Most covered categories'),
-  topTopics: z.array(z.object({
-    name: z.string(),
-    count: z.number(),
-  })).describe('Most covered topics'),
+  topCategories: z
+    .array(
+      z.object({
+        name: z.string(),
+        count: z.number()
+      })
+    )
+    .describe('Most covered categories'),
+  topTopics: z
+    .array(
+      z.object({
+        name: z.string(),
+        count: z.number()
+      })
+    )
+    .describe('Most covered topics')
 });
 
-export let searchSources = SlateTool.create(
-  spec,
-  {
-    name: 'Search Sources',
-    key: 'search_sources',
-    description: `Discover and retrieve information about the 160,000+ media sources indexed by Perigon. Filter sources by name, domain, country, category, language, or paywall status. Returns source details including publishing volume and content focus areas.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchSources = SlateTool.create(spec, {
+  name: 'Search Sources',
+  key: 'search_sources',
+  description: `Discover and retrieve information about the 160,000+ media sources indexed by Perigon. Filter sources by name, domain, country, category, language, or paywall status. Returns source details including publishing volume and content focus areas.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Source name to search'),
-    domain: z.string().optional().describe('Filter by domain (e.g. "nytimes.com")'),
-    country: z.string().optional().describe('Filter by country code (e.g. "us")'),
-    category: z.string().optional().describe('Filter by content category'),
-    language: z.string().optional().describe('Filter by language code'),
-    paywall: z.boolean().optional().describe('Filter by paywall status'),
-    sortBy: z.string().optional().describe('Sort order (e.g. "globalRank")'),
-    page: z.number().optional().describe('Page number (zero-based)'),
-    size: z.number().optional().describe('Results per page'),
-  }))
-  .output(z.object({
-    numResults: z.number().describe('Total number of matching sources'),
-    sources: z.array(sourceSchema).describe('List of matching sources'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Source name to search'),
+      domain: z.string().optional().describe('Filter by domain (e.g. "nytimes.com")'),
+      country: z.string().optional().describe('Filter by country code (e.g. "us")'),
+      category: z.string().optional().describe('Filter by content category'),
+      language: z.string().optional().describe('Filter by language code'),
+      paywall: z.boolean().optional().describe('Filter by paywall status'),
+      sortBy: z.string().optional().describe('Sort order (e.g. "globalRank")'),
+      page: z.number().optional().describe('Page number (zero-based)'),
+      size: z.number().optional().describe('Results per page')
+    })
+  )
+  .output(
+    z.object({
+      numResults: z.number().describe('Total number of matching sources'),
+      sources: z.array(sourceSchema).describe('List of matching sources')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PerigonClient(ctx.auth.token);
 
     let result = await client.searchSources({
@@ -59,10 +68,10 @@ export let searchSources = SlateTool.create(
       paywall: ctx.input.paywall,
       sortBy: ctx.input.sortBy,
       page: ctx.input.page,
-      size: ctx.input.size,
+      size: ctx.input.size
     });
 
-    let sources = (result.results || []).map((s) => ({
+    let sources = (result.results || []).map(s => ({
       sourceId: s.id || '',
       domain: s.domain || '',
       name: s.name || '',
@@ -71,15 +80,15 @@ export let searchSources = SlateTool.create(
       paywall: s.paywall ?? null,
       avgMonthlyPosts: s.avgMonthlyPosts || 0,
       topCategories: s.topCategories || [],
-      topTopics: s.topTopics || [],
+      topTopics: s.topTopics || []
     }));
 
     return {
       output: {
         numResults: result.numResults || 0,
-        sources,
+        sources
       },
-      message: `Found **${result.numResults || 0}** sources (showing ${sources.length}).`,
+      message: `Found **${result.numResults || 0}** sources (showing ${sources.length}).`
     };
   })
   .build();

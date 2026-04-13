@@ -3,46 +3,47 @@ import { FreeAgentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Changes',
-    key: 'project_changes',
-    description: 'Polls for new or updated projects in FreeAgent.',
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('FreeAgent project ID'),
-    name: z.string().optional().describe('Project name'),
-    contact: z.string().optional().describe('Contact URL'),
-    status: z.string().optional().describe('Project status'),
-    currency: z.string().optional().describe('Currency code'),
-    budget: z.string().optional().describe('Budget amount'),
-    budgetUnits: z.string().optional().describe('Budget units'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    raw: z.record(z.string(), z.any()).optional().describe('Full project payload'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('FreeAgent project ID'),
-    name: z.string().optional().describe('Project name'),
-    contact: z.string().optional().describe('Contact URL'),
-    status: z.string().optional().describe('Project status'),
-    currency: z.string().optional().describe('Currency code'),
-    budget: z.string().optional().describe('Budget amount'),
-    budgetUnits: z.string().optional().describe('Budget units'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-  }))
+export let projectChanges = SlateTrigger.create(spec, {
+  name: 'Project Changes',
+  key: 'project_changes',
+  description: 'Polls for new or updated projects in FreeAgent.'
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('FreeAgent project ID'),
+      name: z.string().optional().describe('Project name'),
+      contact: z.string().optional().describe('Contact URL'),
+      status: z.string().optional().describe('Project status'),
+      currency: z.string().optional().describe('Currency code'),
+      budget: z.string().optional().describe('Budget amount'),
+      budgetUnits: z.string().optional().describe('Budget units'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      raw: z.record(z.string(), z.any()).optional().describe('Full project payload')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('FreeAgent project ID'),
+      name: z.string().optional().describe('Project name'),
+      contact: z.string().optional().describe('Contact URL'),
+      status: z.string().optional().describe('Project status'),
+      currency: z.string().optional().describe('Currency code'),
+      budget: z.string().optional().describe('Budget amount'),
+      budgetUnits: z.string().optional().describe('Budget units'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FreeAgentClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let lastPolled = ctx.state?.lastPolled as string | undefined;
@@ -70,19 +71,19 @@ export let projectChanges = SlateTrigger.create(
           budgetUnits: p.budget_units,
           updatedAt: p.updated_at,
           createdAt: p.created_at,
-          raw: p,
+          raw: p
         };
       });
 
       return {
         inputs,
         updatedState: {
-          lastPolled: now,
-        },
+          lastPolled: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let isNew = ctx.input.createdAt === ctx.input.updatedAt;
       let eventType = isNew ? 'created' : 'updated';
 
@@ -98,9 +99,9 @@ export let projectChanges = SlateTrigger.create(
           budget: ctx.input.budget,
           budgetUnits: ctx.input.budgetUnits,
           updatedAt: ctx.input.updatedAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

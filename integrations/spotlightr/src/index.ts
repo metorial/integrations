@@ -11,7 +11,7 @@ import {
   createGroup,
   updatePlayerSettings,
   listWhitelistedDomains,
-  addWhitelistedDomain,
+  addWhitelistedDomain
 } from './tools';
 import { videoWebhook } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     createGroup,
     updatePlayerSettings,
     listWhitelistedDomains,
-    addWhitelistedDomain,
+    addWhitelistedDomain
   ],
-  triggers: [
-    videoWebhook,
-  ],
+  triggers: [videoWebhook]
 });

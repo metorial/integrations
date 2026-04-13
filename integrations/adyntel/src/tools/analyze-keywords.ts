@@ -3,65 +3,70 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let keywordPositionSchema = z.object({
-  pos1: z.number().optional(),
-  pos2_3: z.number().optional(),
-  pos4_10: z.number().optional(),
-  pos11_20: z.number().optional(),
-  pos21_30: z.number().optional(),
-  pos31_40: z.number().optional(),
-  pos41_50: z.number().optional(),
-  pos51_60: z.number().optional(),
-  pos61_70: z.number().optional(),
-  pos71_80: z.number().optional(),
-  pos81_90: z.number().optional(),
-  pos91_100: z.number().optional(),
-  count: z.number().optional(),
-  isNew: z.number().optional(),
-  isUp: z.number().optional(),
-  isDown: z.number().optional(),
-  isLost: z.number().optional(),
-  estimatedTraffic: z.number().optional(),
-  estimatedAdBudget: z.number().optional(),
-  estimatedAvgCpc: z.number().optional(),
-}).passthrough();
+let keywordPositionSchema = z
+  .object({
+    pos1: z.number().optional(),
+    pos2_3: z.number().optional(),
+    pos4_10: z.number().optional(),
+    pos11_20: z.number().optional(),
+    pos21_30: z.number().optional(),
+    pos31_40: z.number().optional(),
+    pos41_50: z.number().optional(),
+    pos51_60: z.number().optional(),
+    pos61_70: z.number().optional(),
+    pos71_80: z.number().optional(),
+    pos81_90: z.number().optional(),
+    pos91_100: z.number().optional(),
+    count: z.number().optional(),
+    isNew: z.number().optional(),
+    isUp: z.number().optional(),
+    isDown: z.number().optional(),
+    isLost: z.number().optional(),
+    estimatedTraffic: z.number().optional(),
+    estimatedAdBudget: z.number().optional(),
+    estimatedAvgCpc: z.number().optional()
+  })
+  .passthrough();
 
-export let analyzeKeywords = SlateTool.create(
-  spec,
-  {
-    name: 'Analyze Keywords',
-    key: 'analyze_keywords',
-    description: `Get an overview of paid and organic keywords for a domain. Returns keyword position distribution, traffic estimates, estimated ad budget, CPC, and trends (new, rising, declining, lost keywords). Useful for competitive keyword intelligence and estimating a company's search advertising spend.`,
-    instructions: [
-      'Domain must be in bare format like "hubspot.com" without https:// or www. prefix.',
-    ],
-    constraints: [
-      'Each successful API call consumes 1 credit.',
-      'Budget and CPC figures are estimates based on publicly available data.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let analyzeKeywords = SlateTool.create(spec, {
+  name: 'Analyze Keywords',
+  key: 'analyze_keywords',
+  description: `Get an overview of paid and organic keywords for a domain. Returns keyword position distribution, traffic estimates, estimated ad budget, CPC, and trends (new, rising, declining, lost keywords). Useful for competitive keyword intelligence and estimating a company's search advertising spend.`,
+  instructions: [
+    'Domain must be in bare format like "hubspot.com" without https:// or www. prefix.'
+  ],
+  constraints: [
+    'Each successful API call consumes 1 credit.',
+    'Budget and CPC figures are estimates based on publicly available data.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    companyDomain: z.string().describe('Company website domain in bare format, e.g. "hubspot.com"'),
-  }))
-  .output(z.object({
-    organic: keywordPositionSchema.optional(),
-    organicPercentages: keywordPositionSchema.optional(),
-    paid: keywordPositionSchema.optional(),
-    paidPercentages: keywordPositionSchema.optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      companyDomain: z
+        .string()
+        .describe('Company website domain in bare format, e.g. "hubspot.com"')
+    })
+  )
+  .output(
+    z.object({
+      organic: keywordPositionSchema.optional(),
+      organicPercentages: keywordPositionSchema.optional(),
+      paid: keywordPositionSchema.optional(),
+      paidPercentages: keywordPositionSchema.optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      email: ctx.auth.email,
+      email: ctx.auth.email
     });
 
     let response = await client.getKeywordAnalysis({
-      companyDomain: ctx.input.companyDomain,
+      companyDomain: ctx.input.companyDomain
     });
 
     let mapPositionData = (data: any) => {
@@ -86,7 +91,7 @@ export let analyzeKeywords = SlateTool.create(
         isLost: data.is_lost ?? data.isLost,
         estimatedTraffic: data.estimated_traffic ?? data.estimatedTraffic,
         estimatedAdBudget: data.estimated_ad_budget ?? data.estimatedAdBudget,
-        estimatedAvgCpc: data.estimated_avg_cpc ?? data.estimatedAvgCpc,
+        estimatedAvgCpc: data.estimated_avg_cpc ?? data.estimatedAvgCpc
       };
     };
 
@@ -95,15 +100,22 @@ export let analyzeKeywords = SlateTool.create(
 
     let organicCount = organic?.count ?? 0;
     let paidCount = paid?.count ?? 0;
-    let budget = paid?.estimatedAdBudget ? `$${paid.estimatedAdBudget.toLocaleString()}` : 'N/A';
+    let budget = paid?.estimatedAdBudget
+      ? `$${paid.estimatedAdBudget.toLocaleString()}`
+      : 'N/A';
 
     return {
       output: {
         organic,
-        organicPercentages: mapPositionData(response?.organic_percentages ?? response?.organicPercentages),
+        organicPercentages: mapPositionData(
+          response?.organic_percentages ?? response?.organicPercentages
+        ),
         paid,
-        paidPercentages: mapPositionData(response?.paid_percentages ?? response?.paidPercentages),
+        paidPercentages: mapPositionData(
+          response?.paid_percentages ?? response?.paidPercentages
+        )
       },
-      message: `Keyword analysis for **${ctx.input.companyDomain}**: **${organicCount}** organic keywords, **${paidCount}** paid keywords, estimated ad budget: **${budget}**.`,
+      message: `Keyword analysis for **${ctx.input.companyDomain}**: **${organicCount}** organic keywords, **${paidCount}** paid keywords, estimated ad budget: **${budget}**.`
     };
-  }).build();
+  })
+  .build();

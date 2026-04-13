@@ -185,8 +185,10 @@ export interface Association {
     type: string;
     attributes?: Record<string, any>;
   };
-  paths?: Array<{
-    to: { id: string; type: string };
-    attributes?: Record<string, any>;
-  }[]>;
+  paths?: Array<
+    {
+      to: { id: string; type: string };
+      attributes?: Record<string, any>;
+    }[]
+  >;
 }

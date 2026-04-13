@@ -8,7 +8,7 @@ import {
   translateText,
   cleanUpText,
   listLanguages,
-  lookupWord,
+  lookupWord
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     translateText,
     cleanUpText,
     listLanguages,
-    lookupWord,
+    lookupWord
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -9,8 +9,8 @@ export class RedisCloudClient {
       headers: {
         'x-api-key': auth.accountKey,
         'x-api-secret-key': auth.userKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -83,7 +83,9 @@ export class RedisCloudClient {
   }
 
   async getDatabase(subscriptionId: number, databaseId: number) {
-    let response = await this.http.get(`/subscriptions/${subscriptionId}/databases/${databaseId}`);
+    let response = await this.http.get(
+      `/subscriptions/${subscriptionId}/databases/${databaseId}`
+    );
     return response.data;
   }
 
@@ -93,12 +95,17 @@ export class RedisCloudClient {
   }
 
   async updateDatabase(subscriptionId: number, databaseId: number, body: Record<string, any>) {
-    let response = await this.http.put(`/subscriptions/${subscriptionId}/databases/${databaseId}`, body);
+    let response = await this.http.put(
+      `/subscriptions/${subscriptionId}/databases/${databaseId}`,
+      body
+    );
     return response.data;
   }
 
   async deleteDatabase(subscriptionId: number, databaseId: number) {
-    let response = await this.http.delete(`/subscriptions/${subscriptionId}/databases/${databaseId}`);
+    let response = await this.http.delete(
+      `/subscriptions/${subscriptionId}/databases/${databaseId}`
+    );
     return response.data;
   }
 
@@ -110,44 +117,82 @@ export class RedisCloudClient {
   }
 
   async getEssentialsDatabase(subscriptionId: number, databaseId: number) {
-    let response = await this.http.get(`/fixed/subscriptions/${subscriptionId}/databases/${databaseId}`);
+    let response = await this.http.get(
+      `/fixed/subscriptions/${subscriptionId}/databases/${databaseId}`
+    );
     return response.data;
   }
 
   async createEssentialsDatabase(subscriptionId: number, body: Record<string, any>) {
-    let response = await this.http.post(`/fixed/subscriptions/${subscriptionId}/databases`, body);
+    let response = await this.http.post(
+      `/fixed/subscriptions/${subscriptionId}/databases`,
+      body
+    );
     return response.data;
   }
 
-  async updateEssentialsDatabase(subscriptionId: number, databaseId: number, body: Record<string, any>) {
-    let response = await this.http.put(`/fixed/subscriptions/${subscriptionId}/databases/${databaseId}`, body);
+  async updateEssentialsDatabase(
+    subscriptionId: number,
+    databaseId: number,
+    body: Record<string, any>
+  ) {
+    let response = await this.http.put(
+      `/fixed/subscriptions/${subscriptionId}/databases/${databaseId}`,
+      body
+    );
     return response.data;
   }
 
   async deleteEssentialsDatabase(subscriptionId: number, databaseId: number) {
-    let response = await this.http.delete(`/fixed/subscriptions/${subscriptionId}/databases/${databaseId}`);
+    let response = await this.http.delete(
+      `/fixed/subscriptions/${subscriptionId}/databases/${databaseId}`
+    );
     return response.data;
   }
 
   // ===== Database Backup & Import =====
 
-  async backupDatabase(subscriptionId: number, databaseId: number, body?: Record<string, any>) {
-    let response = await this.http.post(`/subscriptions/${subscriptionId}/databases/${databaseId}/backup`, body || {});
+  async backupDatabase(
+    subscriptionId: number,
+    databaseId: number,
+    body?: Record<string, any>
+  ) {
+    let response = await this.http.post(
+      `/subscriptions/${subscriptionId}/databases/${databaseId}/backup`,
+      body || {}
+    );
     return response.data;
   }
 
   async importDatabase(subscriptionId: number, databaseId: number, body: Record<string, any>) {
-    let response = await this.http.post(`/subscriptions/${subscriptionId}/databases/${databaseId}/import`, body);
+    let response = await this.http.post(
+      `/subscriptions/${subscriptionId}/databases/${databaseId}/import`,
+      body
+    );
     return response.data;
   }
 
-  async backupEssentialsDatabase(subscriptionId: number, databaseId: number, body?: Record<string, any>) {
-    let response = await this.http.post(`/fixed/subscriptions/${subscriptionId}/databases/${databaseId}/backup`, body || {});
+  async backupEssentialsDatabase(
+    subscriptionId: number,
+    databaseId: number,
+    body?: Record<string, any>
+  ) {
+    let response = await this.http.post(
+      `/fixed/subscriptions/${subscriptionId}/databases/${databaseId}/backup`,
+      body || {}
+    );
     return response.data;
   }
 
-  async importEssentialsDatabase(subscriptionId: number, databaseId: number, body: Record<string, any>) {
-    let response = await this.http.post(`/fixed/subscriptions/${subscriptionId}/databases/${databaseId}/import`, body);
+  async importEssentialsDatabase(
+    subscriptionId: number,
+    databaseId: number,
+    body: Record<string, any>
+  ) {
+    let response = await this.http.post(
+      `/fixed/subscriptions/${subscriptionId}/databases/${databaseId}/import`,
+      body
+    );
     return response.data;
   }
 

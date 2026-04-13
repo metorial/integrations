@@ -7,9 +7,9 @@ export class OneLoginClient {
     this.axios = createAxios({
       baseURL: `https://${config.subdomain}.onelogin.com`,
       headers: {
-        'Authorization': `bearer:${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `bearer:${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -38,7 +38,11 @@ export class OneLoginClient {
     return response.data;
   }
 
-  async updateUser(userId: number, userData: Record<string, any>, params?: Record<string, string>) {
+  async updateUser(
+    userId: number,
+    userData: Record<string, any>,
+    params?: Record<string, string>
+  ) {
     let response = await this.axios.put(`/api/2/users/${userId}`, userData, { params });
     return response.data;
   }
@@ -173,22 +177,32 @@ export class OneLoginClient {
   }
 
   async enrollFactor(userId: number, enrollData: Record<string, any>) {
-    let response = await this.axios.post(`/api/2/mfa/users/${userId}/registrations`, enrollData);
+    let response = await this.axios.post(
+      `/api/2/mfa/users/${userId}/registrations`,
+      enrollData
+    );
     return response.data;
   }
 
   async verifyEnrollment(userId: number, registrationId: string, otp: string) {
-    let response = await this.axios.put(`/api/2/mfa/users/${userId}/registrations/${registrationId}`, { otp });
+    let response = await this.axios.put(
+      `/api/2/mfa/users/${userId}/registrations/${registrationId}`,
+      { otp }
+    );
     return response.data;
   }
 
   async pollEnrollment(userId: number, registrationId: string) {
-    let response = await this.axios.get(`/api/2/mfa/users/${userId}/registrations/${registrationId}`);
+    let response = await this.axios.get(
+      `/api/2/mfa/users/${userId}/registrations/${registrationId}`
+    );
     return response.data;
   }
 
   async triggerMfa(userId: number, deviceId: number) {
-    let response = await this.axios.post(`/api/1/users/${userId}/otp_devices/${deviceId}/trigger`);
+    let response = await this.axios.post(
+      `/api/1/users/${userId}/otp_devices/${deviceId}/trigger`
+    );
     return response.data;
   }
 
@@ -197,19 +211,26 @@ export class OneLoginClient {
     if (deviceId) {
       body.device_id = deviceId;
     }
-    let response = await this.axios.put(`/api/2/mfa/users/${userId}/verifications/${verificationId}`, body);
+    let response = await this.axios.put(
+      `/api/2/mfa/users/${userId}/verifications/${verificationId}`,
+      body
+    );
     return response.data;
   }
 
   // ─── User Roles (v1) ─────────────────────────────────────────
 
   async assignRolesToUser(userId: number, roleIds: number[]) {
-    let response = await this.axios.put(`/api/1/users/${userId}/add_roles`, { role_id_array: roleIds });
+    let response = await this.axios.put(`/api/1/users/${userId}/add_roles`, {
+      role_id_array: roleIds
+    });
     return response.data;
   }
 
   async removeRolesFromUser(userId: number, roleIds: number[]) {
-    let response = await this.axios.put(`/api/1/users/${userId}/remove_roles`, { role_id_array: roleIds });
+    let response = await this.axios.put(`/api/1/users/${userId}/remove_roles`, {
+      role_id_array: roleIds
+    });
     return response.data;
   }
 }

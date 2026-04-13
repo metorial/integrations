@@ -9,8 +9,8 @@ export class SignWellClient {
       baseURL: 'https://www.signwell.com/api/v1',
       headers: {
         'X-Api-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -37,31 +37,33 @@ export class SignWellClient {
       email: string;
       signingOrder?: number;
     }>;
-    fields?: Array<Array<{
-      type: string;
-      required?: boolean;
-      x: number;
-      y: number;
-      page: number;
-      recipientId: string;
-      apiId?: string;
-      width?: number;
-      height?: number;
-      dateFormat?: string;
-      value?: string;
-      fixedWidth?: boolean;
-      lockSignDate?: boolean;
-    }>>;
+    fields?: Array<
+      Array<{
+        type: string;
+        required?: boolean;
+        x: number;
+        y: number;
+        page: number;
+        recipientId: string;
+        apiId?: string;
+        width?: number;
+        height?: number;
+        dateFormat?: string;
+        value?: string;
+        fixedWidth?: boolean;
+        lockSignDate?: boolean;
+      }>
+    >;
     metadata?: Record<string, string>;
     copiedContacts?: Array<{ email: string; name?: string }>;
   }) {
     let body: Record<string, any> = {
-      recipients: params.recipients.map((r) => ({
+      recipients: params.recipients.map(r => ({
         id: r.id,
         name: r.name,
         email: r.email,
-        ...(r.signingOrder !== undefined ? { signing_order: r.signingOrder } : {}),
-      })),
+        ...(r.signingOrder !== undefined ? { signing_order: r.signingOrder } : {})
+      }))
     };
 
     if (params.name !== undefined) body.name = params.name;
@@ -70,9 +72,11 @@ export class SignWellClient {
     if (params.draft !== undefined) body.draft = params.draft;
     if (params.testMode !== undefined) body.test_mode = params.testMode;
     if (params.embeddedSigning !== undefined) body.embedded_signing = params.embeddedSigning;
-    if (params.embeddedSigningNotifications !== undefined) body.embedded_signing_notifications = params.embeddedSigningNotifications;
+    if (params.embeddedSigningNotifications !== undefined)
+      body.embedded_signing_notifications = params.embeddedSigningNotifications;
     if (params.reminders !== undefined) body.reminders = params.reminders;
-    if (params.applySigningOrder !== undefined) body.apply_signing_order = params.applySigningOrder;
+    if (params.applySigningOrder !== undefined)
+      body.apply_signing_order = params.applySigningOrder;
     if (params.textTags !== undefined) body.text_tags = params.textTags;
     if (params.allowDecline !== undefined) body.allow_decline = params.allowDecline;
     if (params.allowReassign !== undefined) body.allow_reassign = params.allowReassign;
@@ -80,16 +84,16 @@ export class SignWellClient {
     if (params.metadata !== undefined) body.metadata = params.metadata;
 
     if (params.files) {
-      body.files = params.files.map((f) => ({
+      body.files = params.files.map(f => ({
         name: f.name,
         ...(f.fileUrl ? { file_url: f.fileUrl } : {}),
-        ...(f.fileBase64 ? { file_base64: f.fileBase64 } : {}),
+        ...(f.fileBase64 ? { file_base64: f.fileBase64 } : {})
       }));
     }
 
     if (params.fields) {
-      body.fields = params.fields.map((fieldGroup) =>
-        fieldGroup.map((f) => ({
+      body.fields = params.fields.map(fieldGroup =>
+        fieldGroup.map(f => ({
           type: f.type,
           x: f.x,
           y: f.y,
@@ -102,15 +106,15 @@ export class SignWellClient {
           ...(f.dateFormat ? { date_format: f.dateFormat } : {}),
           ...(f.value ? { value: f.value } : {}),
           ...(f.fixedWidth !== undefined ? { fixed_width: f.fixedWidth } : {}),
-          ...(f.lockSignDate !== undefined ? { lock_sign_date: f.lockSignDate } : {}),
+          ...(f.lockSignDate !== undefined ? { lock_sign_date: f.lockSignDate } : {})
         }))
       );
     }
 
     if (params.copiedContacts) {
-      body.copied_contacts = params.copiedContacts.map((c) => ({
+      body.copied_contacts = params.copiedContacts.map(c => ({
         email: c.email,
-        ...(c.name ? { name: c.name } : {}),
+        ...(c.name ? { name: c.name } : {})
       }));
     }
 
@@ -141,17 +145,18 @@ export class SignWellClient {
   }) {
     let body: Record<string, any> = {
       template_id: params.templateId,
-      recipients: params.recipients.map((r) => ({
+      recipients: params.recipients.map(r => ({
         placeholder_name: r.placeholderName,
         name: r.name,
-        email: r.email,
-      })),
+        email: r.email
+      }))
     };
 
     if (params.testMode !== undefined) body.test_mode = params.testMode;
     if (params.draft !== undefined) body.draft = params.draft;
     if (params.embeddedSigning !== undefined) body.embedded_signing = params.embeddedSigning;
-    if (params.embeddedSigningNotifications !== undefined) body.embedded_signing_notifications = params.embeddedSigningNotifications;
+    if (params.embeddedSigningNotifications !== undefined)
+      body.embedded_signing_notifications = params.embeddedSigningNotifications;
     if (params.reminders !== undefined) body.reminders = params.reminders;
     if (params.subject !== undefined) body.subject = params.subject;
     if (params.message !== undefined) body.message = params.message;
@@ -159,9 +164,9 @@ export class SignWellClient {
     if (params.metadata !== undefined) body.metadata = params.metadata;
 
     if (params.templateFields) {
-      body.template_fields = params.templateFields.map((f) => ({
+      body.template_fields = params.templateFields.map(f => ({
         api_id: f.apiId,
-        value: f.value,
+        value: f.value
       }));
     }
 
@@ -190,7 +195,7 @@ export class SignWellClient {
 
   async getCompletedPdf(documentId: string, urlOnly: boolean = true) {
     let response = await this.axios.get(`/documents/${documentId}/completed_pdf`, {
-      params: { url_only: urlOnly },
+      params: { url_only: urlOnly }
     });
     return response.data;
   }
@@ -204,11 +209,11 @@ export class SignWellClient {
     }>
   ) {
     let body = {
-      recipients: recipients.map((r) => ({
+      recipients: recipients.map(r => ({
         id: r.recipientId,
         ...(r.name !== undefined ? { name: r.name } : {}),
-        ...(r.email !== undefined ? { email: r.email } : {}),
-      })),
+        ...(r.email !== undefined ? { email: r.email } : {})
+      }))
     };
     let response = await this.axios.patch(`/documents/${documentId}/recipients`, body);
     return response.data;
@@ -239,29 +244,31 @@ export class SignWellClient {
       name: string;
       signingOrder?: number;
     }>;
-    fields?: Array<Array<{
-      type: string;
-      required?: boolean;
-      x: number;
-      y: number;
-      page: number;
-      placeholderId: string;
-      apiId?: string;
-      width?: number;
-      height?: number;
-      dateFormat?: string;
-      value?: string;
-      fixedWidth?: boolean;
-      lockSignDate?: boolean;
-    }>>;
+    fields?: Array<
+      Array<{
+        type: string;
+        required?: boolean;
+        x: number;
+        y: number;
+        page: number;
+        placeholderId: string;
+        apiId?: string;
+        width?: number;
+        height?: number;
+        dateFormat?: string;
+        value?: string;
+        fixedWidth?: boolean;
+        lockSignDate?: boolean;
+      }>
+    >;
   }) {
     let body: Record<string, any> = {
       name: params.name,
-      placeholders: params.placeholders.map((p) => ({
+      placeholders: params.placeholders.map(p => ({
         id: p.id,
         name: p.name,
-        ...(p.signingOrder !== undefined ? { signing_order: p.signingOrder } : {}),
-      })),
+        ...(p.signingOrder !== undefined ? { signing_order: p.signingOrder } : {})
+      }))
     };
 
     if (params.subject !== undefined) body.subject = params.subject;
@@ -269,23 +276,24 @@ export class SignWellClient {
     if (params.draft !== undefined) body.draft = params.draft;
     if (params.testMode !== undefined) body.test_mode = params.testMode;
     if (params.reminders !== undefined) body.reminders = params.reminders;
-    if (params.applySigningOrder !== undefined) body.apply_signing_order = params.applySigningOrder;
+    if (params.applySigningOrder !== undefined)
+      body.apply_signing_order = params.applySigningOrder;
     if (params.textTags !== undefined) body.text_tags = params.textTags;
     if (params.allowDecline !== undefined) body.allow_decline = params.allowDecline;
     if (params.allowReassign !== undefined) body.allow_reassign = params.allowReassign;
     if (params.expiresIn !== undefined) body.expires_in = params.expiresIn;
 
     if (params.files) {
-      body.files = params.files.map((f) => ({
+      body.files = params.files.map(f => ({
         name: f.name,
         ...(f.fileUrl ? { file_url: f.fileUrl } : {}),
-        ...(f.fileBase64 ? { file_base64: f.fileBase64 } : {}),
+        ...(f.fileBase64 ? { file_base64: f.fileBase64 } : {})
       }));
     }
 
     if (params.fields) {
-      body.fields = params.fields.map((fieldGroup) =>
-        fieldGroup.map((f) => ({
+      body.fields = params.fields.map(fieldGroup =>
+        fieldGroup.map(f => ({
           type: f.type,
           x: f.x,
           y: f.y,
@@ -298,7 +306,7 @@ export class SignWellClient {
           ...(f.dateFormat ? { date_format: f.dateFormat } : {}),
           ...(f.value ? { value: f.value } : {}),
           ...(f.fixedWidth !== undefined ? { fixed_width: f.fixedWidth } : {}),
-          ...(f.lockSignDate !== undefined ? { lock_sign_date: f.lockSignDate } : {}),
+          ...(f.lockSignDate !== undefined ? { lock_sign_date: f.lockSignDate } : {})
         }))
       );
     }
@@ -326,7 +334,8 @@ export class SignWellClient {
     if (params.subject !== undefined) body.subject = params.subject;
     if (params.message !== undefined) body.message = params.message;
     if (params.reminders !== undefined) body.reminders = params.reminders;
-    if (params.applySigningOrder !== undefined) body.apply_signing_order = params.applySigningOrder;
+    if (params.applySigningOrder !== undefined)
+      body.apply_signing_order = params.applySigningOrder;
     if (params.allowDecline !== undefined) body.allow_decline = params.allowDecline;
     if (params.allowReassign !== undefined) body.allow_reassign = params.allowReassign;
     if (params.expiresIn !== undefined) body.expires_in = params.expiresIn;
@@ -348,7 +357,7 @@ export class SignWellClient {
 
   async createWebhook(callbackUrl: string, testMode?: boolean) {
     let body: Record<string, any> = {
-      callback_url: callbackUrl,
+      callback_url: callbackUrl
     };
     if (testMode !== undefined) body.test_mode = testMode;
 
@@ -385,7 +394,7 @@ export class SignWellClient {
   }) {
     let body: Record<string, any> = {
       template_id: params.templateId,
-      file: params.csvFile,
+      file: params.csvFile
     };
     if (params.testMode !== undefined) body.test_mode = params.testMode;
     if (params.subject !== undefined) body.subject = params.subject;

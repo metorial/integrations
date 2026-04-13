@@ -15,7 +15,7 @@ import type {
   XeroItem,
   XeroCurrency,
   XeroBrandingTheme,
-  XeroReport,
+  XeroReport
 } from './types';
 
 export class XeroClient {
@@ -27,11 +27,11 @@ export class XeroClient {
     this.axios = createAxios({
       baseURL: 'https://api.xero.com/api.xro/2.0',
       headers: {
-        'Authorization': `Bearer ${params.token}`,
+        Authorization: `Bearer ${params.token}`,
         'xero-tenant-id': params.tenantId,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -84,7 +84,10 @@ export class XeroClient {
   }
 
   async voidInvoice(invoiceId: string): Promise<XeroInvoice> {
-    let response = await this.axios.post(`/Invoices/${invoiceId}`, { InvoiceID: invoiceId, Status: 'VOIDED' });
+    let response = await this.axios.post(`/Invoices/${invoiceId}`, {
+      InvoiceID: invoiceId,
+      Status: 'VOIDED'
+    });
     let data = response.data as { Invoices: XeroInvoice[] };
     return data.Invoices[0]!;
   }
@@ -175,7 +178,10 @@ export class XeroClient {
     return data.CreditNotes[0]!;
   }
 
-  async updateCreditNote(creditNoteId: string, creditNote: Partial<XeroCreditNote>): Promise<XeroCreditNote> {
+  async updateCreditNote(
+    creditNoteId: string,
+    creditNote: Partial<XeroCreditNote>
+  ): Promise<XeroCreditNote> {
     let response = await this.axios.post(`/CreditNotes/${creditNoteId}`, creditNote);
     let data = response.data as { CreditNotes: XeroCreditNote[] };
     return data.CreditNotes[0]!;
@@ -216,7 +222,10 @@ export class XeroClient {
   }
 
   async deletePayment(paymentId: string): Promise<XeroPayment> {
-    let response = await this.axios.post(`/Payments/${paymentId}`, { PaymentID: paymentId, Status: 'DELETED' });
+    let response = await this.axios.post(`/Payments/${paymentId}`, {
+      PaymentID: paymentId,
+      Status: 'DELETED'
+    });
     let data = response.data as { Payments: XeroPayment[] };
     return data.Payments[0]!;
   }
@@ -249,13 +258,18 @@ export class XeroClient {
     return data.BankTransactions[0]!;
   }
 
-  async createBankTransaction(transaction: Partial<XeroBankTransaction>): Promise<XeroBankTransaction> {
+  async createBankTransaction(
+    transaction: Partial<XeroBankTransaction>
+  ): Promise<XeroBankTransaction> {
     let response = await this.axios.post('/BankTransactions', transaction);
     let data = response.data as { BankTransactions: XeroBankTransaction[] };
     return data.BankTransactions[0]!;
   }
 
-  async updateBankTransaction(transactionId: string, transaction: Partial<XeroBankTransaction>): Promise<XeroBankTransaction> {
+  async updateBankTransaction(
+    transactionId: string,
+    transaction: Partial<XeroBankTransaction>
+  ): Promise<XeroBankTransaction> {
     let response = await this.axios.post(`/BankTransactions/${transactionId}`, transaction);
     let data = response.data as { BankTransactions: XeroBankTransaction[] };
     return data.BankTransactions[0]!;
@@ -337,13 +351,18 @@ export class XeroClient {
     return data.PurchaseOrders[0]!;
   }
 
-  async createPurchaseOrder(purchaseOrder: Partial<XeroPurchaseOrder>): Promise<XeroPurchaseOrder> {
+  async createPurchaseOrder(
+    purchaseOrder: Partial<XeroPurchaseOrder>
+  ): Promise<XeroPurchaseOrder> {
     let response = await this.axios.post('/PurchaseOrders', purchaseOrder);
     let data = response.data as { PurchaseOrders: XeroPurchaseOrder[] };
     return data.PurchaseOrders[0]!;
   }
 
-  async updatePurchaseOrder(purchaseOrderId: string, purchaseOrder: Partial<XeroPurchaseOrder>): Promise<XeroPurchaseOrder> {
+  async updatePurchaseOrder(
+    purchaseOrderId: string,
+    purchaseOrder: Partial<XeroPurchaseOrder>
+  ): Promise<XeroPurchaseOrder> {
     let response = await this.axios.post(`/PurchaseOrders/${purchaseOrderId}`, purchaseOrder);
     let data = response.data as { PurchaseOrders: XeroPurchaseOrder[] };
     return data.PurchaseOrders[0]!;
@@ -480,7 +499,10 @@ export class XeroClient {
     return data.ManualJournals[0]!;
   }
 
-  async updateManualJournal(journalId: string, journal: Partial<XeroManualJournal>): Promise<XeroManualJournal> {
+  async updateManualJournal(
+    journalId: string,
+    journal: Partial<XeroManualJournal>
+  ): Promise<XeroManualJournal> {
     let response = await this.axios.post(`/ManualJournals/${journalId}`, journal);
     let data = response.data as { ManualJournals: XeroManualJournal[] };
     return data.ManualJournals[0]!;

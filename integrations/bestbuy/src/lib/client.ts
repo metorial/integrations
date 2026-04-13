@@ -124,7 +124,7 @@ export class BestBuyClient {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: 'https://api.bestbuy.com',
+      baseURL: 'https://api.bestbuy.com'
     });
   }
 
@@ -141,7 +141,7 @@ export class BestBuyClient {
     let searchPart = params.query ? `(${params.query})` : '';
     let queryParams: Record<string, string> = {
       apiKey: this.token,
-      format: 'json',
+      format: 'json'
     };
 
     if (params.keyword) {
@@ -161,21 +161,21 @@ export class BestBuyClient {
     }
 
     let response = await this.axios.get(`/v1/products${searchPart}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getProduct(sku: string, show?: string): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = {
-      apiKey: this.token,
+      apiKey: this.token
     };
     if (show) {
       queryParams['show'] = show;
     }
 
     let response = await this.axios.get(`/v1/products/${sku}.json`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -191,7 +191,7 @@ export class BestBuyClient {
     let searchPart = params.query ? `(${params.query})` : '';
     let queryParams: Record<string, string> = {
       apiKey: this.token,
-      format: 'json',
+      format: 'json'
     };
 
     if (params.show) {
@@ -205,7 +205,7 @@ export class BestBuyClient {
     }
 
     let response = await this.axios.get(`/v1/categories${searchPart}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -239,7 +239,7 @@ export class BestBuyClient {
     let searchPart = filters.length > 0 ? `(${filters.join('&')})` : '';
     let queryParams: Record<string, string> = {
       apiKey: this.token,
-      format: 'json',
+      format: 'json'
     };
 
     if (params.show) {
@@ -253,7 +253,7 @@ export class BestBuyClient {
     }
 
     let response = await this.axios.get(`/v1/stores${searchPart}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -276,11 +276,11 @@ export class BestBuyClient {
     let storePart = filters.length > 0 ? `(${filters.join('&')})` : '';
     let queryParams: Record<string, string> = {
       apiKey: this.token,
-      format: 'json',
+      format: 'json'
     };
 
     let response = await this.axios.get(`/v1/products/${params.sku}/stores.json${storePart}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -293,7 +293,7 @@ export class BestBuyClient {
       : '/v1/products/trendingViewed';
 
     let response = await this.axios.get(path, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
@@ -304,28 +304,28 @@ export class BestBuyClient {
       : '/v1/products/mostViewed';
 
     let response = await this.axios.get(path, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
 
   async getAlsoViewedProducts(sku: string): Promise<RecommendationsResponse> {
     let response = await this.axios.get(`/v1/products/${sku}/alsoViewed`, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
 
   async getAlsoBoughtProducts(sku: string): Promise<RecommendationsResponse> {
     let response = await this.axios.get(`/v1/products/${sku}/alsoBought`, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
 
   async getViewedUltimatelyBought(sku: string): Promise<RecommendationsResponse> {
     let response = await this.axios.get(`/v1/products/${sku}/viewedUltimatelyBought`, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
@@ -334,7 +334,7 @@ export class BestBuyClient {
 
   async getOpenBoxBySku(sku: string): Promise<OpenBoxResponse> {
     let response = await this.axios.get(`/beta/products/${sku}/openBox`, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
@@ -342,14 +342,14 @@ export class BestBuyClient {
   async getOpenBoxBySkus(skus: string[]): Promise<OpenBoxResponse> {
     let skuList = skus.join(',');
     let response = await this.axios.get(`/beta/products/openBox(sku in(${skuList}))`, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }
 
   async getOpenBoxByCategory(categoryId: string): Promise<OpenBoxResponse> {
     let response = await this.axios.get(`/beta/products/openBox(categoryId=${categoryId})`, {
-      params: { apiKey: this.token },
+      params: { apiKey: this.token }
     });
     return response.data;
   }

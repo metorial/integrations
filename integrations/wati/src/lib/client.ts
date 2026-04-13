@@ -9,8 +9,8 @@ export class Client {
       baseURL,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -20,8 +20,8 @@ export class Client {
     let response = await this.axios.get('/api/ext/v3/contacts', {
       params: {
         page_number: options.pageNumber,
-        page_size: options.pageSize,
-      },
+        page_size: options.pageSize
+      }
     });
     return response.data;
   }
@@ -39,20 +39,22 @@ export class Client {
     let response = await this.axios.post('/api/ext/v3/contacts', {
       whatsapp_number: data.whatsappNumber,
       name: data.name,
-      custom_params: data.customParams,
+      custom_params: data.customParams
     });
     return response.data;
   }
 
-  async updateContacts(contacts: Array<{
-    target: string;
-    customParams?: Array<{ name: string; value: string }>;
-  }>) {
+  async updateContacts(
+    contacts: Array<{
+      target: string;
+      customParams?: Array<{ name: string; value: string }>;
+    }>
+  ) {
     let response = await this.axios.put('/api/ext/v3/contacts', {
-      contacts: contacts.map((c) => ({
+      contacts: contacts.map(c => ({
         target: c.target,
-        customParams: c.customParams,
-      })),
+        customParams: c.customParams
+      }))
     });
     return response.data;
   }
@@ -60,7 +62,7 @@ export class Client {
   async assignContactToTeams(target: string, teamIds: string[]) {
     let response = await this.axios.put('/api/ext/v3/contacts/teams', {
       target,
-      team_ids: teamIds,
+      team_ids: teamIds
     });
     return response.data;
   }
@@ -73,19 +75,22 @@ export class Client {
   // ─── Conversations / Messaging ───
 
   async getMessages(target: string, options: { pageNumber: number; pageSize: number }) {
-    let response = await this.axios.get(`/api/ext/v3/conversations/${encodeURIComponent(target)}/messages`, {
-      params: {
-        page_number: options.pageNumber,
-        page_size: options.pageSize,
-      },
-    });
+    let response = await this.axios.get(
+      `/api/ext/v3/conversations/${encodeURIComponent(target)}/messages`,
+      {
+        params: {
+          page_number: options.pageNumber,
+          page_size: options.pageSize
+        }
+      }
+    );
     return response.data;
   }
 
   async sendTextMessage(target: string, messageText: string) {
     let response = await this.axios.post('/api/ext/v3/conversations/messages/text', {
       target,
-      message_text: messageText,
+      message_text: messageText
     });
     return response.data;
   }
@@ -94,7 +99,7 @@ export class Client {
     let response = await this.axios.post('/api/ext/v3/conversations/messages/fileViaUrl', {
       target,
       fileUrl,
-      caption,
+      caption
     });
     return response.data;
   }
@@ -102,27 +107,35 @@ export class Client {
   async sendInteractiveMessage(target: string, interactiveMessage: Record<string, unknown>) {
     let response = await this.axios.post('/api/ext/v3/conversations/messages/interactive', {
       target,
-      interactive_message: interactiveMessage,
+      interactive_message: interactiveMessage
     });
     return response.data;
   }
 
   async getMediaByMessageId(messageId: string) {
-    let response = await this.axios.get(`/api/ext/v3/conversations/messages/file/${encodeURIComponent(messageId)}`);
+    let response = await this.axios.get(
+      `/api/ext/v3/conversations/messages/file/${encodeURIComponent(messageId)}`
+    );
     return response.data;
   }
 
   async assignOperator(target: string, operatorEmail: string) {
-    let response = await this.axios.put(`/api/ext/v3/conversations/${encodeURIComponent(target)}/operator`, {
-      email: operatorEmail,
-    });
+    let response = await this.axios.put(
+      `/api/ext/v3/conversations/${encodeURIComponent(target)}/operator`,
+      {
+        email: operatorEmail
+      }
+    );
     return response.data;
   }
 
   async updateConversationStatus(target: string, status: string) {
-    let response = await this.axios.put(`/api/ext/v3/conversations/${encodeURIComponent(target)}/status`, {
-      status,
-    });
+    let response = await this.axios.put(
+      `/api/ext/v3/conversations/${encodeURIComponent(target)}/status`,
+      {
+        status
+      }
+    );
     return response.data;
   }
 
@@ -134,7 +147,9 @@ export class Client {
   }
 
   async getTemplate(templateId: string) {
-    let response = await this.axios.get(`/api/ext/v3/messageTemplates/${encodeURIComponent(templateId)}`);
+    let response = await this.axios.get(
+      `/api/ext/v3/messageTemplates/${encodeURIComponent(templateId)}`
+    );
     return response.data;
   }
 
@@ -148,7 +163,7 @@ export class Client {
       template_id: data.templateId,
       target: data.target,
       custom_params: data.customParams,
-      channel: data.channel,
+      channel: data.channel
     });
     return response.data;
   }
@@ -165,7 +180,7 @@ export class Client {
       target: data.target,
       scheduled_at: data.scheduledAt,
       custom_params: data.customParams,
-      channel: data.channel,
+      channel: data.channel
     });
     return response.data;
   }
@@ -177,19 +192,23 @@ export class Client {
       params: {
         page_number: options.pageNumber,
         page_size: options.pageSize,
-        channel: options.channel,
-      },
+        channel: options.channel
+      }
     });
     return response.data;
   }
 
   async getCampaign(campaignId: string) {
-    let response = await this.axios.get(`/api/ext/v3/broadcasts/${encodeURIComponent(campaignId)}`);
+    let response = await this.axios.get(
+      `/api/ext/v3/broadcasts/${encodeURIComponent(campaignId)}`
+    );
     return response.data;
   }
 
   async getCampaignRecipients(campaignId: string) {
-    let response = await this.axios.get(`/api/ext/v3/broadcasts/${encodeURIComponent(campaignId)}/recipients`);
+    let response = await this.axios.get(
+      `/api/ext/v3/broadcasts/${encodeURIComponent(campaignId)}/recipients`
+    );
     return response.data;
   }
 
@@ -204,8 +223,8 @@ export class Client {
     let response = await this.axios.get('/api/ext/v3/channels', {
       params: {
         page_number: options.pageNumber,
-        page_size: options.pageSize,
-      },
+        page_size: options.pageSize
+      }
     });
     return response.data;
   }
@@ -216,8 +235,8 @@ export class Client {
     let response = await this.axios.get('/api/ext/v3/chatbots', {
       params: {
         page_number: options.pageNumber,
-        page_size: options.pageSize,
-      },
+        page_size: options.pageSize
+      }
     });
     return response.data;
   }
@@ -225,7 +244,7 @@ export class Client {
   async startChatbot(chatbotId: string, target: string) {
     let response = await this.axios.post('/api/ext/v3/chatbots/start', {
       chatbot_id: chatbotId,
-      target,
+      target
     });
     return response.data;
   }
@@ -244,18 +263,14 @@ export class Client {
 
   // ─── Webhooks ───
 
-  async createWebhook(data: {
-    url: string;
-    eventTypes: string[];
-    phoneNumber?: string;
-  }) {
+  async createWebhook(data: { url: string; eventTypes: string[]; phoneNumber?: string }) {
     let response = await this.axios.post('/api/v2/webhookEndpoints', [
       {
         url: data.url,
         eventTypes: data.eventTypes,
         status: 1,
-        phoneNumber: data.phoneNumber || '',
-      },
+        phoneNumber: data.phoneNumber || ''
+      }
     ]);
     return response.data;
   }

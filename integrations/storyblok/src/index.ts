@@ -13,7 +13,7 @@ import {
   manageCollaborator,
   manageRelease,
   getSpaceInfo,
-  listActivities,
+  listActivities
 } from './tools';
 import {
   storyEvents,
@@ -21,7 +21,7 @@ import {
   userEvents,
   releaseEvents,
   workflowEvents,
-  datasourceEvents,
+  datasourceEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -39,7 +39,7 @@ export let provider = Slate.create({
     manageCollaborator,
     manageRelease,
     getSpaceInfo,
-    listActivities,
+    listActivities
   ],
   triggers: [
     storyEvents,
@@ -47,6 +47,6 @@ export let provider = Slate.create({
     userEvents,
     releaseEvents,
     workflowEvents,
-    datasourceEvents,
-  ],
+    datasourceEvents
+  ]
 });

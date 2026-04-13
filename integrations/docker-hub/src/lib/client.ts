@@ -123,18 +123,20 @@ export class Client {
       baseURL: 'https://hub.docker.com',
       headers: {
         Authorization: `JWT ${opts.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Repositories ─────────────────────────────────────────────
 
-  async listRepositories(namespace: string, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<Repository>> {
-    let response = await this.http.get(
-      `/v2/namespaces/${namespace}/repositories`,
-      { params: { page: params?.page, page_size: params?.pageSize } }
-    );
+  async listRepositories(
+    namespace: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<Repository>> {
+    let response = await this.http.get(`/v2/namespaces/${namespace}/repositories`, {
+      params: { page: params?.page, page_size: params?.pageSize }
+    });
     return response.data as PaginatedResponse<Repository>;
   }
 
@@ -145,24 +147,28 @@ export class Client {
     return response.data;
   }
 
-  async createRepository(namespace: string, data: {
-    name: string;
-    description?: string;
-    full_description?: string;
-    is_private?: boolean;
-  }) {
-    let response = await this.http.post(
-      `/v2/namespaces/${namespace}/repositories`,
-      data
-    );
+  async createRepository(
+    namespace: string,
+    data: {
+      name: string;
+      description?: string;
+      full_description?: string;
+      is_private?: boolean;
+    }
+  ) {
+    let response = await this.http.post(`/v2/namespaces/${namespace}/repositories`, data);
     return response.data;
   }
 
-  async updateRepository(namespace: string, repository: string, data: {
-    description?: string;
-    full_description?: string;
-    is_private?: boolean;
-  }) {
+  async updateRepository(
+    namespace: string,
+    repository: string,
+    data: {
+      description?: string;
+      full_description?: string;
+      is_private?: boolean;
+    }
+  ) {
     let response = await this.http.patch(
       `/v2/namespaces/${namespace}/repositories/${repository}`,
       data
@@ -176,7 +182,11 @@ export class Client {
 
   // ── Tags ─────────────────────────────────────────────────────
 
-  async listTags(namespace: string, repository: string, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<Tag>> {
+  async listTags(
+    namespace: string,
+    repository: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<Tag>> {
     let response = await this.http.get(
       `/v2/namespaces/${namespace}/repositories/${repository}/tags`,
       { params: { page: params?.page, page_size: params?.pageSize } }
@@ -197,20 +207,25 @@ export class Client {
 
   // ── Search ───────────────────────────────────────────────────
 
-  async searchRepositories(query: string, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<SearchRepository>> {
+  async searchRepositories(
+    query: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<SearchRepository>> {
     let response = await this.http.get(`/v2/search/repositories/`, {
-      params: { query, page: params?.page, page_size: params?.pageSize },
+      params: { query, page: params?.page, page_size: params?.pageSize }
     });
     return response.data as PaginatedResponse<SearchRepository>;
   }
 
   // ── Organizations ────────────────────────────────────────────
 
-  async listOrgMembers(orgName: string, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<OrgMember>> {
-    let response = await this.http.get(
-      `/v2/orgs/${orgName}/members`,
-      { params: { page: params?.page, page_size: params?.pageSize } }
-    );
+  async listOrgMembers(
+    orgName: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<OrgMember>> {
+    let response = await this.http.get(`/v2/orgs/${orgName}/members`, {
+      params: { page: params?.page, page_size: params?.pageSize }
+    });
     return response.data as PaginatedResponse<OrgMember>;
   }
 
@@ -225,11 +240,13 @@ export class Client {
 
   // ── Teams ────────────────────────────────────────────────────
 
-  async listTeams(orgName: string, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<Team>> {
-    let response = await this.http.get(
-      `/v2/orgs/${orgName}/groups`,
-      { params: { page: params?.page, page_size: params?.pageSize } }
-    );
+  async listTeams(
+    orgName: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<Team>> {
+    let response = await this.http.get(`/v2/orgs/${orgName}/groups`, {
+      params: { page: params?.page, page_size: params?.pageSize }
+    });
     return response.data as PaginatedResponse<Team>;
   }
 
@@ -243,7 +260,11 @@ export class Client {
     return response.data;
   }
 
-  async updateTeam(orgName: string, teamName: string, data: { name?: string; description?: string }) {
+  async updateTeam(
+    orgName: string,
+    teamName: string,
+    data: { name?: string; description?: string }
+  ) {
     let response = await this.http.patch(`/v2/orgs/${orgName}/groups/${teamName}`, data);
     return response.data;
   }
@@ -252,16 +273,21 @@ export class Client {
     await this.http.delete(`/v2/orgs/${orgName}/groups/${teamName}`);
   }
 
-  async listTeamMembers(orgName: string, teamName: string, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<OrgMember>> {
-    let response = await this.http.get(
-      `/v2/orgs/${orgName}/groups/${teamName}/members`,
-      { params: { page: params?.page, page_size: params?.pageSize } }
-    );
+  async listTeamMembers(
+    orgName: string,
+    teamName: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<OrgMember>> {
+    let response = await this.http.get(`/v2/orgs/${orgName}/groups/${teamName}/members`, {
+      params: { page: params?.page, page_size: params?.pageSize }
+    });
     return response.data as PaginatedResponse<OrgMember>;
   }
 
   async addTeamMember(orgName: string, teamName: string, username: string) {
-    let response = await this.http.post(`/v2/orgs/${orgName}/groups/${teamName}/members`, { member: username });
+    let response = await this.http.post(`/v2/orgs/${orgName}/groups/${teamName}/members`, {
+      member: username
+    });
     return response.data;
   }
 
@@ -271,14 +297,21 @@ export class Client {
 
   // ── Webhooks ─────────────────────────────────────────────────
 
-  async listWebhooks(namespace: string, repository: string): Promise<PaginatedResponse<Webhook>> {
+  async listWebhooks(
+    namespace: string,
+    repository: string
+  ): Promise<PaginatedResponse<Webhook>> {
     let response = await this.http.get(
       `/v2/repositories/${namespace}/${repository}/webhooks/`
     );
     return response.data as PaginatedResponse<Webhook>;
   }
 
-  async createWebhook(namespace: string, repository: string, data: { name: string; webhookUrl: string; expectFinalCallback?: boolean }): Promise<Webhook> {
+  async createWebhook(
+    namespace: string,
+    repository: string,
+    data: { name: string; webhookUrl: string; expectFinalCallback?: boolean }
+  ): Promise<Webhook> {
     // First create the webhook
     let webhookResp = await this.http.post(
       `/v2/repositories/${namespace}/${repository}/webhooks/`,
@@ -295,16 +328,20 @@ export class Client {
   }
 
   async deleteWebhook(namespace: string, repository: string, webhookId: number) {
-    await this.http.delete(`/v2/repositories/${namespace}/${repository}/webhooks/${webhookId}/`);
+    await this.http.delete(
+      `/v2/repositories/${namespace}/${repository}/webhooks/${webhookId}/`
+    );
   }
 
   // ── Personal Access Tokens ──────────────────────────────────
 
-  async listAccessTokens(params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<PersonalAccessToken>> {
-    let response = await this.http.get(
-      `/v2/access-tokens`,
-      { params: { page: params?.page, page_size: params?.pageSize } }
-    );
+  async listAccessTokens(params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<PaginatedResponse<PersonalAccessToken>> {
+    let response = await this.http.get(`/v2/access-tokens`, {
+      params: { page: params?.page, page_size: params?.pageSize }
+    });
     return response.data as PaginatedResponse<PersonalAccessToken>;
   }
 
@@ -329,32 +366,30 @@ export class Client {
 
   // ── Audit Logs ──────────────────────────────────────────────
 
-  async listAuditLogs(account: string, params?: {
-    action?: string;
-    from?: string;
-    to?: string;
-    page?: number;
-    pageSize?: number;
-  }): Promise<PaginatedResponse<AuditLogEvent>> {
-    let response = await this.http.get(
-      `/v2/auditlogs/${account}`,
-      {
-        params: {
-          action: params?.action,
-          from: params?.from,
-          to: params?.to,
-          page: params?.page,
-          page_size: params?.pageSize,
-        },
+  async listAuditLogs(
+    account: string,
+    params?: {
+      action?: string;
+      from?: string;
+      to?: string;
+      page?: number;
+      pageSize?: number;
+    }
+  ): Promise<PaginatedResponse<AuditLogEvent>> {
+    let response = await this.http.get(`/v2/auditlogs/${account}`, {
+      params: {
+        action: params?.action,
+        from: params?.from,
+        to: params?.to,
+        page: params?.page,
+        page_size: params?.pageSize
       }
-    );
+    });
     return response.data as PaginatedResponse<AuditLogEvent>;
   }
 
   async listAuditLogActions(account: string): Promise<{ actions: AuditLogAction[] }> {
-    let response = await this.http.get(
-      `/v2/auditlogs/${account}/actions`
-    );
+    let response = await this.http.get(`/v2/auditlogs/${account}/actions`);
     return response.data as { actions: AuditLogAction[] };
   }
 }

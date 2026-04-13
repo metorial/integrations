@@ -10,8 +10,8 @@ export class Client {
       headers: {
         Authorization: config.token,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -31,20 +31,24 @@ export class Client {
 
   // ── Cards & Categories ────────────────────────────────────────
 
-  async listCards(params?: { categoryId?: string; page?: number; withImages?: number }): Promise<any> {
+  async listCards(params?: {
+    categoryId?: string;
+    page?: number;
+    withImages?: number;
+  }): Promise<any> {
     let response = await this.axios.get('/cards/list', {
       params: {
         category_id: params?.categoryId,
         page: params?.page,
-        with_images: params?.withImages ?? 1,
-      },
+        with_images: params?.withImages ?? 1
+      }
     });
     return response.data;
   }
 
   async getCardDetails(cardId: string): Promise<any> {
     let response = await this.axios.get('/cards/view', {
-      params: { card_id: cardId },
+      params: { card_id: cardId }
     });
     return response.data;
   }
@@ -58,14 +62,14 @@ export class Client {
 
   async listTemplates(categoryId?: string): Promise<any> {
     let response = await this.axios.get('/templates/list', {
-      params: categoryId ? { category_id: categoryId } : undefined,
+      params: categoryId ? { category_id: categoryId } : undefined
     });
     return response.data;
   }
 
   async getTemplate(templateId: string): Promise<any> {
     let response = await this.axios.get('/templates/view', {
-      params: { template_id: templateId },
+      params: { template_id: templateId }
     });
     return response.data;
   }
@@ -75,10 +79,13 @@ export class Client {
     return response.data;
   }
 
-  async updateTemplate(templateId: string, data: { name?: string; message?: string }): Promise<any> {
+  async updateTemplate(
+    templateId: string,
+    data: { name?: string; message?: string }
+  ): Promise<any> {
     let response = await this.axios.post('/templates/update', {
       template_id: templateId,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -122,23 +129,26 @@ export class Client {
       state: data.state,
       zip: data.zip,
       country_id: data.countryId,
-      birthday: data.birthday,
+      birthday: data.birthday
     });
     return response.data;
   }
 
-  async updateRecipient(recipientId: string, data: {
-    firstName?: string;
-    lastName?: string;
-    businessName?: string;
-    address1?: string;
-    address2?: string;
-    city?: string;
-    state?: string;
-    zip?: string;
-    countryId?: number;
-    birthday?: string;
-  }): Promise<any> {
+  async updateRecipient(
+    recipientId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      businessName?: string;
+      address1?: string;
+      address2?: string;
+      city?: string;
+      state?: string;
+      zip?: string;
+      countryId?: number;
+      birthday?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.post('/profile/updateRecipient', {
       id: recipientId,
       first_name: data.firstName,
@@ -150,14 +160,14 @@ export class Client {
       state: data.state,
       zip: data.zip,
       country_id: data.countryId,
-      birthday: data.birthday,
+      birthday: data.birthday
     });
     return response.data;
   }
 
   async deleteRecipient(recipientId: string): Promise<any> {
     let response = await this.axios.post('/profile/deleteRecipient', {
-      id: recipientId,
+      id: recipientId
     });
     return response.data;
   }
@@ -168,9 +178,18 @@ export class Client {
     let lowerQuery = query.toLowerCase();
     return recipients.filter((r: any) => {
       let searchable = [
-        r.first_name, r.last_name, r.business_name,
-        r.address1, r.city, r.state, r.zip, r.email,
-      ].filter(Boolean).join(' ').toLowerCase();
+        r.first_name,
+        r.last_name,
+        r.business_name,
+        r.address1,
+        r.city,
+        r.state,
+        r.zip,
+        r.email
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
       return searchable.includes(lowerQuery);
     });
   }
@@ -204,7 +223,7 @@ export class Client {
       state: data.state,
       zip: data.zip,
       country_id: data.countryId,
-      default: data.setDefault ? 1 : 0,
+      default: data.setDefault ? 1 : 0
     });
     return response.data;
   }
@@ -259,7 +278,7 @@ export class Client {
       insert_id: data.insertId,
       credit_card_id: data.creditCardId,
       date_send: data.dateSend,
-      validate_address: data.validateAddress ? 1 : 0,
+      validate_address: data.validateAddress ? 1 : 0
     });
     return response.data;
   }
@@ -305,13 +324,13 @@ export class Client {
       denomination_id: data.denominationId,
       insert_id: data.insertId,
       date_send: data.dateSend,
-      signature_id: data.signatureId,
+      signature_id: data.signatureId
     };
 
     if (data.addressId) {
       body.address_id = data.addressId;
     } else if (data.addresses && data.addresses.length > 0) {
-      body.addresses = data.addresses.map((a) => ({
+      body.addresses = data.addresses.map(a => ({
         to_first_name: a.toFirstName,
         to_last_name: a.toLastName,
         to_business_name: a.toBusinessName,
@@ -320,7 +339,7 @@ export class Client {
         to_city: a.toCity,
         to_state: a.toState,
         to_zip: a.toZip,
-        to_country_id: a.toCountryId,
+        to_country_id: a.toCountryId
       }));
     }
 
@@ -330,7 +349,7 @@ export class Client {
 
   async sendBasket(creditCardId?: string): Promise<any> {
     let response = await this.axios.post('/basket/send', {
-      credit_card_id: creditCardId,
+      credit_card_id: creditCardId
     });
     return response.data;
   }
@@ -380,7 +399,7 @@ export class Client {
 
   async listStates(countryId: number): Promise<any> {
     let response = await this.axios.get('/countries/listStates', {
-      params: { country_id: countryId },
+      params: { country_id: countryId }
     });
     return response.data;
   }

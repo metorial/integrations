@@ -17,10 +17,10 @@ export class Client {
     return createAxios({
       baseURL: `https://${apiDomain}/invoice/v3`,
       headers: {
-        'Authorization': `Zoho-oauthtoken ${this.token}`,
+        Authorization: `Zoho-oauthtoken ${this.token}`,
         'X-com-zoho-invoice-organizationid': this.organizationId,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -49,12 +49,14 @@ export class Client {
     await http.delete(`/invoices/${invoiceId}`);
   }
 
-  async listInvoices(params?: Record<string, any>): Promise<{ invoices: any[]; pageContext: any }> {
+  async listInvoices(
+    params?: Record<string, any>
+  ): Promise<{ invoices: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/invoices', { params });
     return {
       invoices: response.data.invoices ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -124,12 +126,14 @@ export class Client {
     await http.delete(`/contacts/${contactId}`);
   }
 
-  async listContacts(params?: Record<string, any>): Promise<{ contacts: any[]; pageContext: any }> {
+  async listContacts(
+    params?: Record<string, any>
+  ): Promise<{ contacts: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/contacts', { params });
     return {
       contacts: response.data.contacts ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -168,12 +172,14 @@ export class Client {
     await http.delete(`/estimates/${estimateId}`);
   }
 
-  async listEstimates(params?: Record<string, any>): Promise<{ estimates: any[]; pageContext: any }> {
+  async listEstimates(
+    params?: Record<string, any>
+  ): Promise<{ estimates: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/estimates', { params });
     return {
       estimates: response.data.estimates ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -222,12 +228,14 @@ export class Client {
     await http.delete(`/customerpayments/${paymentId}`);
   }
 
-  async listPayments(params?: Record<string, any>): Promise<{ payments: any[]; pageContext: any }> {
+  async listPayments(
+    params?: Record<string, any>
+  ): Promise<{ payments: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/customerpayments', { params });
     return {
       payments: response.data.customerpayments ?? response.data.payments ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -256,12 +264,14 @@ export class Client {
     await http.delete(`/creditnotes/${creditNoteId}`);
   }
 
-  async listCreditNotes(params?: Record<string, any>): Promise<{ creditNotes: any[]; pageContext: any }> {
+  async listCreditNotes(
+    params?: Record<string, any>
+  ): Promise<{ creditNotes: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/creditnotes', { params });
     return {
       creditNotes: response.data.creditnotes ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -305,12 +315,14 @@ export class Client {
     await http.delete(`/expenses/${expenseId}`);
   }
 
-  async listExpenses(params?: Record<string, any>): Promise<{ expenses: any[]; pageContext: any }> {
+  async listExpenses(
+    params?: Record<string, any>
+  ): Promise<{ expenses: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/expenses', { params });
     return {
       expenses: response.data.expenses ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -344,7 +356,7 @@ export class Client {
     let response = await http.get('/items', { params });
     return {
       items: response.data.items ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -383,12 +395,14 @@ export class Client {
     await http.delete(`/projects/${projectId}`);
   }
 
-  async listProjects(params?: Record<string, any>): Promise<{ projects: any[]; pageContext: any }> {
+  async listProjects(
+    params?: Record<string, any>
+  ): Promise<{ projects: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/projects', { params });
     return {
       projects: response.data.projects ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -416,7 +430,11 @@ export class Client {
     return response.data.task;
   }
 
-  async updateTask(projectId: string, taskId: string, data: Record<string, any>): Promise<any> {
+  async updateTask(
+    projectId: string,
+    taskId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let http = this.getAxios();
     let response = await http.put(`/projects/${projectId}/tasks/${taskId}`, data);
     return response.data.task;
@@ -458,12 +476,14 @@ export class Client {
     await http.delete(`/projects/timeentries/${timeEntryId}`);
   }
 
-  async listTimeEntries(params?: Record<string, any>): Promise<{ timeEntries: any[]; pageContext: any }> {
+  async listTimeEntries(
+    params?: Record<string, any>
+  ): Promise<{ timeEntries: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/projects/timeentries', { params });
     return {
       timeEntries: response.data.time_entries ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 
@@ -493,7 +513,10 @@ export class Client {
     return response.data.recurring_invoice;
   }
 
-  async updateRecurringInvoice(recurringInvoiceId: string, data: Record<string, any>): Promise<any> {
+  async updateRecurringInvoice(
+    recurringInvoiceId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let http = this.getAxios();
     let response = await http.put(`/recurringinvoices/${recurringInvoiceId}`, data);
     return response.data.recurring_invoice;
@@ -504,12 +527,14 @@ export class Client {
     await http.delete(`/recurringinvoices/${recurringInvoiceId}`);
   }
 
-  async listRecurringInvoices(params?: Record<string, any>): Promise<{ recurringInvoices: any[]; pageContext: any }> {
+  async listRecurringInvoices(
+    params?: Record<string, any>
+  ): Promise<{ recurringInvoices: any[]; pageContext: any }> {
     let http = this.getAxios();
     let response = await http.get('/recurringinvoices', { params });
     return {
       recurringInvoices: response.data.recurring_invoices ?? [],
-      pageContext: response.data.page_context,
+      pageContext: response.data.page_context
     };
   }
 

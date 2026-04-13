@@ -30,7 +30,5 @@ export let provider = Slate.create({
     getProduct,
     getSmartContracts
   ],
-  triggers: [
-    paymentNotification
-  ]
+  triggers: [paymentNotification]
 });

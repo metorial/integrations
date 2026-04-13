@@ -5,51 +5,67 @@ Process payments, manage orders, and handle financial transactions through PayPa
 ## Tools
 
 ### Add Tracking
+
 Add shipment tracking information to a captured PayPal payment. Associates a carrier and tracking number with a transaction so buyers can track their shipments.
 
 ### Capture Order
+
 Capture payment for an approved PayPal order. The order must have been approved by the buyer first. For orders with intent "AUTHORIZE", use this to finalize the payment after authorization.
 
 ### Create Invoice
+
 Create and optionally send a PayPal invoice. Define line items, recipient email, and invoice details. The invoice is created as a draft and can be automatically sent.
 
 ### Create Order
+
 Create a new PayPal checkout order. Supports both immediate capture and authorization-then-capture flows. Can include one or more purchase units, each with its own amount, items, and shipping details. Returns an approval URL for the buyer to complete payment.
 
 ### Create Subscription
+
 Create a new PayPal subscription for a billing plan. Returns an approval URL for the subscriber to activate. The billing plan must already exist.
 
 ### Get Order
+
 Retrieve details of a PayPal order by its ID. Returns the full order object including status, purchase units, payer information, and payment details.
 
 ### Get Payout
+
 Retrieve the status and details of a PayPal batch payout or individual payout item. Track whether payouts have been claimed by recipients.
 
 ### List Invoices
+
 List PayPal invoices with optional pagination. Returns invoice summaries including status, amounts, and recipient information.
 
 ### Manage Billing Plan
+
 Create, retrieve, list, activate, or deactivate PayPal billing plans. Billing plans define pricing and billing cycle details for subscriptions.
 
 ### Manage Dispute
+
 Manage PayPal customer disputes (chargebacks, claims, inquiries). List disputes, get details, accept claims, provide evidence, or escalate to PayPal.
 
 ### Manage Invoice
+
 Manage existing PayPal invoices. Send, cancel, or record payment against a draft or sent invoice. Can also retrieve invoice details.
 
 ### Manage Payment
+
 Manage payment authorizations, captures, and refunds. Capture an authorization, void an authorization, refund a captured payment, or view details of authorizations/captures/refunds.
 
 ### Manage Product
+
 Create, retrieve, or list PayPal catalog products. Products are used as the basis for billing plans and subscriptions.
 
 ### Manage Subscription
+
 Manage an existing PayPal subscription. Retrieve details, suspend, cancel, reactivate, or list transactions for a subscription.
 
 ### Search Transactions
+
 Search PayPal transaction history by date range, status, amount, and other filters. Useful for reconciliation, reporting, and finding specific transactions.
 
 ### Send Payout
+
 Send batch payouts to one or more recipients via PayPal email, phone, or PayPal ID. Supports multiple currencies and per-item notes. Returns a batch ID to track the payout status.
 
 ## License

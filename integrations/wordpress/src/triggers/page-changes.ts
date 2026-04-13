@@ -3,41 +3,45 @@ import { spec } from '../spec';
 import { createClient, extractPostSummary } from '../lib/helpers';
 import { z } from 'zod';
 
-export let pageChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Page Changes',
-    key: 'page_changes',
-    description: 'Triggers when a page is created or updated. Polls for new and modified pages at regular intervals.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Whether the page was newly created or updated'),
-    pageId: z.string().describe('ID of the affected page'),
-    title: z.string().describe('Page title'),
-    status: z.string().describe('Page status'),
-    url: z.string().describe('Page URL'),
-    slug: z.string().describe('URL slug'),
-    date: z.string().describe('Publication date'),
-    modifiedDate: z.string().describe('Last modified date'),
-    authorName: z.string().describe('Author display name')
-  }))
-  .output(z.object({
-    pageId: z.string().describe('ID of the affected page'),
-    title: z.string().describe('Page title'),
-    status: z.string().describe('Page status'),
-    url: z.string().describe('Page URL'),
-    slug: z.string().describe('URL slug'),
-    date: z.string().describe('Publication date'),
-    modifiedDate: z.string().describe('Last modified date'),
-    authorName: z.string().describe('Author display name')
-  }))
+export let pageChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Page Changes',
+  key: 'page_changes',
+  description:
+    'Triggers when a page is created or updated. Polls for new and modified pages at regular intervals.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the page was newly created or updated'),
+      pageId: z.string().describe('ID of the affected page'),
+      title: z.string().describe('Page title'),
+      status: z.string().describe('Page status'),
+      url: z.string().describe('Page URL'),
+      slug: z.string().describe('URL slug'),
+      date: z.string().describe('Publication date'),
+      modifiedDate: z.string().describe('Last modified date'),
+      authorName: z.string().describe('Author display name')
+    })
+  )
+  .output(
+    z.object({
+      pageId: z.string().describe('ID of the affected page'),
+      title: z.string().describe('Page title'),
+      status: z.string().describe('Page status'),
+      url: z.string().describe('Page URL'),
+      slug: z.string().describe('URL slug'),
+      date: z.string().describe('Publication date'),
+      modifiedDate: z.string().describe('Last modified date'),
+      authorName: z.string().describe('Author display name')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -67,7 +71,7 @@ export let pageChangesTrigger = SlateTrigger.create(
         let summary = extractPostSummary(page, ctx.config.apiType);
         let isNew = !knownPageIds.includes(summary.postId);
         return {
-          eventType: isNew ? 'created' as const : 'updated' as const,
+          eventType: isNew ? ('created' as const) : ('updated' as const),
           pageId: summary.postId,
           title: summary.title,
           status: summary.status,
@@ -79,10 +83,9 @@ export let pageChangesTrigger = SlateTrigger.create(
         };
       });
 
-      let newKnownIds = [...new Set([
-        ...knownPageIds,
-        ...inputs.map(i => i.pageId)
-      ])].slice(-500);
+      let newKnownIds = [...new Set([...knownPageIds, ...inputs.map(i => i.pageId)])].slice(
+        -500
+      );
 
       return {
         inputs,
@@ -93,7 +96,7 @@ export let pageChangesTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `page.${ctx.input.eventType}`,
         id: `page-${ctx.input.pageId}-${ctx.input.modifiedDate}`,

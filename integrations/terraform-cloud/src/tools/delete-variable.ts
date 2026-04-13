@@ -3,25 +3,26 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let deleteVariableTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Variable',
-    key: 'delete_variable',
-    description: `Permanently delete a variable from a workspace. This removes the variable from both the workspace and any future runs.`,
-    tags: {
-      destructive: true
-    }
+export let deleteVariableTool = SlateTool.create(spec, {
+  name: 'Delete Variable',
+  key: 'delete_variable',
+  description: `Permanently delete a variable from a workspace. This removes the variable from both the workspace and any future runs.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().describe('The workspace ID containing the variable'),
-    variableId: z.string().describe('The variable ID to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z.string().describe('The workspace ID containing the variable'),
+      variableId: z.string().describe('The variable ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     await client.deleteVariable(ctx.input.workspaceId, ctx.input.variableId);
 

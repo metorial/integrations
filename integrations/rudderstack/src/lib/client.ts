@@ -28,14 +28,19 @@ export class ControlPlaneClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
-    this.axios.interceptors.request.use((reqConfig) => {
+    this.axios.interceptors.request.use(reqConfig => {
       let url = reqConfig.url || '';
       // Bearer auth for: /v2/regulations, /v2/retl-connections, audit-logs
-      if (url.includes('/v2/regulations') || url.includes('/v2/retl-connections') || url.includes('/audit-logs') || url.includes('/v2/catalog')) {
+      if (
+        url.includes('/v2/regulations') ||
+        url.includes('/v2/retl-connections') ||
+        url.includes('/audit-logs') ||
+        url.includes('/v2/catalog')
+      ) {
         reqConfig.headers.set('Authorization', `Bearer ${config.token}`);
       } else {
         reqConfig.headers.set('Authorization', `Basic ${basicAuth}`);
@@ -67,11 +72,14 @@ export class ControlPlaneClient {
     return response.data;
   }
 
-  async updateTransformation(transformationId: string, data: {
-    code?: string;
-    description?: string;
-    publish?: boolean;
-  }): Promise<any> {
+  async updateTransformation(
+    transformationId: string,
+    data: {
+      code?: string;
+      description?: string;
+      publish?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/transformations/${transformationId}`, data);
     return response.data;
   }
@@ -84,7 +92,9 @@ export class ControlPlaneClient {
   async getTransformationVersions(transformationId: string, order?: string): Promise<any> {
     let params: Record<string, string> = {};
     if (order) params.orderBy = order;
-    let response = await this.axios.get(`/transformations/${transformationId}/versions`, { params });
+    let response = await this.axios.get(`/transformations/${transformationId}/versions`, {
+      params
+    });
     return response.data;
   }
 
@@ -111,11 +121,14 @@ export class ControlPlaneClient {
     return response.data;
   }
 
-  async updateLibrary(libraryId: string, data: {
-    code?: string;
-    description?: string;
-    publish?: boolean;
-  }): Promise<any> {
+  async updateLibrary(
+    libraryId: string,
+    data: {
+      code?: string;
+      description?: string;
+      publish?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/libraries/${libraryId}`, data);
     return response.data;
   }
@@ -134,12 +147,10 @@ export class ControlPlaneClient {
 
   // ===== Publish =====
 
-  async publish(data: {
-    transformationIds?: string[];
-    libraryIds?: string[];
-  }): Promise<any> {
+  async publish(data: { transformationIds?: string[]; libraryIds?: string[] }): Promise<any> {
     let body: Record<string, any> = {};
-    if (data.transformationIds) body.transformations = data.transformationIds.map(id => ({ id }));
+    if (data.transformationIds)
+      body.transformations = data.transformationIds.map(id => ({ id }));
     if (data.libraryIds) body.libraries = data.libraryIds.map(id => ({ id }));
     let response = await this.axios.post('/publish', body);
     return response.data;
@@ -147,10 +158,7 @@ export class ControlPlaneClient {
 
   // ===== Tracking Plans =====
 
-  async createTrackingPlan(data: {
-    name: string;
-    description?: string;
-  }): Promise<any> {
+  async createTrackingPlan(data: { name: string; description?: string }): Promise<any> {
     let response = await this.axios.post('/v2/catalog/tracking-plans', data);
     return response.data;
   }
@@ -165,10 +173,13 @@ export class ControlPlaneClient {
     return response.data;
   }
 
-  async updateTrackingPlan(trackingPlanId: string, data: {
-    name?: string;
-    description?: string;
-  }): Promise<any> {
+  async updateTrackingPlan(
+    trackingPlanId: string,
+    data: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/v2/catalog/tracking-plans/${trackingPlanId}`, data);
     return response.data;
   }
@@ -179,12 +190,17 @@ export class ControlPlaneClient {
   }
 
   async upsertTrackingPlanEvents(trackingPlanId: string, events: any[]): Promise<any> {
-    let response = await this.axios.put(`/v2/catalog/tracking-plans/${trackingPlanId}/events`, { events });
+    let response = await this.axios.put(
+      `/v2/catalog/tracking-plans/${trackingPlanId}/events`,
+      { events }
+    );
     return response.data;
   }
 
   async deleteTrackingPlanEvent(trackingPlanId: string, eventId: string): Promise<any> {
-    let response = await this.axios.delete(`/v2/catalog/tracking-plans/${trackingPlanId}/events/${eventId}`);
+    let response = await this.axios.delete(
+      `/v2/catalog/tracking-plans/${trackingPlanId}/events/${eventId}`
+    );
     return response.data;
   }
 
@@ -200,10 +216,7 @@ export class ControlPlaneClient {
     return response.data;
   }
 
-  async listRegulations(params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
+  async listRegulations(params?: { limit?: number; offset?: number }): Promise<any> {
     let response = await this.axios.get('/v2/regulations', { params });
     return response.data;
   }
@@ -216,7 +229,9 @@ export class ControlPlaneClient {
   // ===== Reverse ETL =====
 
   async triggerRetlSync(connectionId: string, syncType: string): Promise<any> {
-    let response = await this.axios.post(`/v2/retl-connections/${connectionId}/start`, { syncType });
+    let response = await this.axios.post(`/v2/retl-connections/${connectionId}/start`, {
+      syncType
+    });
     return response.data;
   }
 
@@ -226,16 +241,23 @@ export class ControlPlaneClient {
   }
 
   async getRetlSyncStatus(connectionId: string, syncId: string): Promise<any> {
-    let response = await this.axios.get(`/v2/retl-connections/${connectionId}/syncs/${syncId}`);
+    let response = await this.axios.get(
+      `/v2/retl-connections/${connectionId}/syncs/${syncId}`
+    );
     return response.data;
   }
 
-  async listRetlSyncs(connectionId: string, params?: {
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
-    let response = await this.axios.get(`/v2/retl-connections/${connectionId}/syncs`, { params });
+  async listRetlSyncs(
+    connectionId: string,
+    params?: {
+      status?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any> {
+    let response = await this.axios.get(`/v2/retl-connections/${connectionId}/syncs`, {
+      params
+    });
     return response.data;
   }
 
@@ -251,26 +273,22 @@ export class ControlPlaneClient {
     return response.data;
   }
 
-  async testSource(data: {
-    sourceId: string;
-    stage?: string;
-    event?: any;
-  }): Promise<any> {
+  async testSource(data: { sourceId: string; stage?: string; event?: any }): Promise<any> {
     let response = await this.axios.post('/v2/testSource', data);
     return response.data;
   }
 
   // ===== Event Audit (Data Governance) =====
 
-  async getEventModels(params?: {
-    sourceId?: string;
-  }): Promise<any> {
+  async getEventModels(params?: { sourceId?: string }): Promise<any> {
     let response = await this.axios.get('/v1/event-audit/event-models', { params });
     return response.data;
   }
 
   async getEventModelMetadata(eventModelId: string): Promise<any> {
-    let response = await this.axios.get(`/v1/event-audit/event-models/${eventModelId}/metadata`);
+    let response = await this.axios.get(
+      `/v1/event-audit/event-models/${eventModelId}/metadata`
+    );
     return response.data;
   }
 
@@ -298,8 +316,8 @@ export class DataPlaneClient {
       baseURL: config.dataPlaneUrl.replace(/\/+$/, ''),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${basicAuth}`,
-      },
+        Authorization: `Basic ${basicAuth}`
+      }
     });
   }
 

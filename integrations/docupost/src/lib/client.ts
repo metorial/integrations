@@ -53,7 +53,7 @@ export class Client {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.http = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
@@ -69,7 +69,7 @@ export class Client {
       from_address1: params.fromAddress1,
       from_city: params.fromCity,
       from_state: params.fromState,
-      from_zip: params.fromZip,
+      from_zip: params.fromZip
     };
 
     if (params.toCompany) queryParams['to_company'] = params.toCompany;
@@ -77,11 +77,14 @@ export class Client {
     if (params.fromAddress2) queryParams['from_address2'] = params.fromAddress2;
     if (params.pdfUrl) queryParams['pdf'] = params.pdfUrl;
     if (params.color !== undefined) queryParams['color'] = String(params.color);
-    if (params.doubleSided !== undefined) queryParams['doublesided'] = String(params.doubleSided);
+    if (params.doubleSided !== undefined)
+      queryParams['doublesided'] = String(params.doubleSided);
     if (params.mailClass) queryParams['class'] = params.mailClass;
     if (params.serviceLevel) queryParams['servicelevel'] = params.serviceLevel;
-    if (params.returnEnvelope !== undefined) queryParams['return_envelope'] = String(params.returnEnvelope);
-    if (params.prepaidReturnEnvelope !== undefined) queryParams['prepaid_return_envelope'] = String(params.prepaidReturnEnvelope);
+    if (params.returnEnvelope !== undefined)
+      queryParams['return_envelope'] = String(params.returnEnvelope);
+    if (params.prepaidReturnEnvelope !== undefined)
+      queryParams['prepaid_return_envelope'] = String(params.prepaidReturnEnvelope);
     if (params.description) queryParams['description'] = params.description;
 
     let body: Record<string, string> | undefined = undefined;
@@ -90,7 +93,7 @@ export class Client {
     }
 
     let response = await this.http.post('/sendletter', body ?? {}, {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -110,7 +113,7 @@ export class Client {
       from_address1: params.fromAddress1,
       from_city: params.fromCity,
       from_state: params.fromState,
-      from_zip: params.fromZip,
+      from_zip: params.fromZip
     };
 
     if (params.toAddress2) queryParams['to_address2'] = params.toAddress2;
@@ -118,19 +121,27 @@ export class Client {
     if (params.size) queryParams['size'] = params.size;
     if (params.description) queryParams['description'] = params.description;
 
-    let response = await this.http.post('/sendpostcard', {}, {
-      params: queryParams,
-    });
+    let response = await this.http.post(
+      '/sendpostcard',
+      {},
+      {
+        params: queryParams
+      }
+    );
 
     return response.data;
   }
 
   async getBalance(): Promise<any> {
-    let response = await this.http.post('/getbalance', {}, {
-      params: {
-        api_token: this.token,
-      },
-    });
+    let response = await this.http.post(
+      '/getbalance',
+      {},
+      {
+        params: {
+          api_token: this.token
+        }
+      }
+    );
 
     return response.data;
   }

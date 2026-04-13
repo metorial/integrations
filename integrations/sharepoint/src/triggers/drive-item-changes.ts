@@ -6,40 +6,47 @@ import { z } from 'zod';
 export let driveItemChanges = SlateTrigger.create(spec, {
   name: 'Drive Item Changes',
   key: 'drive_item_changes',
-  description: 'Triggers when files or folders are created, updated, or deleted in a SharePoint document library. Polls the drive delta API to detect changes.',
+  description:
+    'Triggers when files or folders are created, updated, or deleted in a SharePoint document library. Polls the drive delta API to detect changes.'
 })
-  .input(z.object({
-    driveId: z.string().describe('Drive ID being monitored'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    itemId: z.string().describe('Drive item ID'),
-    fileName: z.string().optional().describe('Name of the file or folder'),
-    isFolder: z.boolean().optional().describe('Whether this item is a folder'),
-    webUrl: z.string().optional().describe('URL of the item'),
-    size: z.number().optional().describe('File size in bytes'),
-    mimeType: z.string().optional().describe('MIME type of the file'),
-    lastModifiedDateTime: z.string().optional().describe('Last modified date'),
-    lastModifiedBy: z.string().optional().describe('User who modified the item'),
-    parentPath: z.string().optional().describe('Parent folder path'),
-  }))
-  .output(z.object({
-    driveId: z.string().describe('Drive ID'),
-    itemId: z.string().describe('Drive item ID'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change'),
-    fileName: z.string().optional().describe('Name of the file or folder'),
-    isFolder: z.boolean().optional().describe('Whether this item is a folder'),
-    webUrl: z.string().optional().describe('URL of the item'),
-    size: z.number().optional().describe('File size in bytes'),
-    mimeType: z.string().optional().describe('MIME type of the file'),
-    lastModifiedDateTime: z.string().optional().describe('Last modified date'),
-    lastModifiedBy: z.string().optional().describe('User who modified the item'),
-    parentPath: z.string().optional().describe('Parent folder path'),
-  }))
+  .input(
+    z.object({
+      driveId: z.string().describe('Drive ID being monitored'),
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      itemId: z.string().describe('Drive item ID'),
+      fileName: z.string().optional().describe('Name of the file or folder'),
+      isFolder: z.boolean().optional().describe('Whether this item is a folder'),
+      webUrl: z.string().optional().describe('URL of the item'),
+      size: z.number().optional().describe('File size in bytes'),
+      mimeType: z.string().optional().describe('MIME type of the file'),
+      lastModifiedDateTime: z.string().optional().describe('Last modified date'),
+      lastModifiedBy: z.string().optional().describe('User who modified the item'),
+      parentPath: z.string().optional().describe('Parent folder path')
+    })
+  )
+  .output(
+    z.object({
+      driveId: z.string().describe('Drive ID'),
+      itemId: z.string().describe('Drive item ID'),
+      changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change'),
+      fileName: z.string().optional().describe('Name of the file or folder'),
+      isFolder: z.boolean().optional().describe('Whether this item is a folder'),
+      webUrl: z.string().optional().describe('URL of the item'),
+      size: z.number().optional().describe('File size in bytes'),
+      mimeType: z.string().optional().describe('MIME type of the file'),
+      lastModifiedDateTime: z.string().optional().describe('Last modified date'),
+      lastModifiedBy: z.string().optional().describe('User who modified the item'),
+      parentPath: z.string().optional().describe('Parent folder path')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SharePointClient(ctx.auth.token);
       let state = ctx.state as {
         deltaToken?: string;
@@ -55,8 +62,8 @@ export let driveItemChanges = SlateTrigger.create(spec, {
           inputs: [],
           updatedState: {
             ...state,
-            initialized: false,
-          },
+            initialized: false
+          }
         };
       }
 
@@ -93,8 +100,8 @@ export let driveItemChanges = SlateTrigger.create(spec, {
             driveId,
             deltaToken: newDeltaToken,
             knownItems: updatedKnown,
-            initialized: true,
-          },
+            initialized: true
+          }
         };
       }
 
@@ -122,7 +129,7 @@ export let driveItemChanges = SlateTrigger.create(spec, {
             inputs.push({
               driveId,
               changeType: 'deleted',
-              itemId: item.id,
+              itemId: item.id
             });
             delete updatedKnown[item.id];
           }
@@ -138,7 +145,7 @@ export let driveItemChanges = SlateTrigger.create(spec, {
             mimeType: item.file?.mimeType,
             lastModifiedDateTime: item.lastModifiedDateTime,
             lastModifiedBy: item.lastModifiedBy?.user?.displayName,
-            parentPath: item.parentReference?.path,
+            parentPath: item.parentReference?.path
           });
           updatedKnown[item.id] = item.lastModifiedDateTime || '';
         } else {
@@ -153,7 +160,7 @@ export let driveItemChanges = SlateTrigger.create(spec, {
             mimeType: item.file?.mimeType,
             lastModifiedDateTime: item.lastModifiedDateTime,
             lastModifiedBy: item.lastModifiedBy?.user?.displayName,
-            parentPath: item.parentReference?.path,
+            parentPath: item.parentReference?.path
           });
           updatedKnown[item.id] = item.lastModifiedDateTime || '';
         }
@@ -165,12 +172,12 @@ export let driveItemChanges = SlateTrigger.create(spec, {
           driveId,
           deltaToken: newDeltaToken,
           knownItems: updatedKnown,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resourceType = ctx.input.isFolder ? 'folder' : 'file';
       return {
         type: `drive_item.${ctx.input.changeType}`,
@@ -186,9 +193,9 @@ export let driveItemChanges = SlateTrigger.create(spec, {
           mimeType: ctx.input.mimeType,
           lastModifiedDateTime: ctx.input.lastModifiedDateTime,
           lastModifiedBy: ctx.input.lastModifiedBy,
-          parentPath: ctx.input.parentPath,
-        },
+          parentPath: ctx.input.parentPath
+        }
       };
-    },
+    }
   })
   .build();

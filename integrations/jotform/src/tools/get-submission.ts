@@ -27,7 +27,7 @@ export let getSubmissionTool = SlateTool.create(spec, {
       answers: z.record(z.string(), z.any()).describe('Map of question IDs to answer objects')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

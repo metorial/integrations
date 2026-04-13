@@ -1,6 +1,5 @@
-import { createAxios } from 'slates';
-// @ts-ignore
 import { createHash } from 'crypto';
+import { createAxios } from 'slates';
 
 let api = createAxios({
   baseURL: 'https://www.planyo.com/rest/'

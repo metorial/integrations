@@ -8,9 +8,9 @@ export class HoneybadgerReportingClient {
       baseURL: 'https://api.honeybadger.io/v1',
       headers: {
         'X-API-Key': config.projectToken,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,8 +25,8 @@ export class HoneybadgerReportingClient {
         environment: deploy.environment,
         revision: deploy.revision,
         repository: deploy.repository,
-        local_username: deploy.localUsername,
-      },
+        local_username: deploy.localUsername
+      }
     });
     return response.data;
   }
@@ -42,11 +42,11 @@ export class HoneybadgerReportingClient {
   }
 
   async sendEvents(events: Array<Record<string, unknown>>) {
-    let ndjson = events.map((e) => JSON.stringify(e)).join('\n');
+    let ndjson = events.map(e => JSON.stringify(e)).join('\n');
     let response = await this.http.post('/events', ndjson, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -65,22 +65,22 @@ export class HoneybadgerReportingClient {
       notifier: {
         name: 'Slates Honeybadger Integration',
         url: 'https://slates.dev',
-        version: '1.0.0',
+        version: '1.0.0'
       },
       error: {
         class: error.errorClass,
         message: error.message,
         tags: error.tags,
-        fingerprint: error.fingerprint,
+        fingerprint: error.fingerprint
       },
       request: {
         component: error.component,
         action: error.action,
-        context: error.context,
+        context: error.context
       },
       server: {
-        environment_name: error.environment,
-      },
+        environment_name: error.environment
+      }
     });
     return response.data;
   }

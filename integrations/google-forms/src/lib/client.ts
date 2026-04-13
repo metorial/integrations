@@ -6,7 +6,7 @@ import type {
   GoogleFormsListResponsesResult,
   GoogleFormsListWatchesResult,
   GoogleFormsBatchUpdateRequest,
-  GoogleFormsBatchUpdateResponse,
+  GoogleFormsBatchUpdateResponse
 } from './types';
 
 export class GoogleFormsClient {
@@ -17,8 +17,8 @@ export class GoogleFormsClient {
       baseURL: 'https://forms.googleapis.com/v1',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -26,7 +26,7 @@ export class GoogleFormsClient {
 
   async createForm(title: string, documentTitle?: string): Promise<GoogleForm> {
     let body: any = {
-      info: { title },
+      info: { title }
     };
     if (documentTitle) {
       body.info.documentTitle = documentTitle;
@@ -41,7 +41,10 @@ export class GoogleFormsClient {
     return response.data as GoogleForm;
   }
 
-  async batchUpdate(formId: string, request: GoogleFormsBatchUpdateRequest): Promise<GoogleFormsBatchUpdateResponse> {
+  async batchUpdate(
+    formId: string,
+    request: GoogleFormsBatchUpdateRequest
+  ): Promise<GoogleFormsBatchUpdateResponse> {
     let response = await this.axios.post(`/forms/${formId}:batchUpdate`, request);
     return response.data as GoogleFormsBatchUpdateResponse;
   }
@@ -53,11 +56,14 @@ export class GoogleFormsClient {
     return response.data as GoogleFormResponse;
   }
 
-  async listResponses(formId: string, params?: {
-    filter?: string;
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<GoogleFormsListResponsesResult> {
+  async listResponses(
+    formId: string,
+    params?: {
+      filter?: string;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<GoogleFormsListResponsesResult> {
     let query: Record<string, any> = {};
     if (params?.filter) query.filter = params.filter;
     if (params?.pageSize) query.pageSize = params.pageSize;
@@ -75,7 +81,7 @@ export class GoogleFormsClient {
       let result = await this.listResponses(formId, {
         filter,
         pageSize: 5000,
-        pageToken,
+        pageToken
       });
 
       if (result.responses) {
@@ -89,14 +95,19 @@ export class GoogleFormsClient {
 
   // ─── Watches ────────────────────────────────────────────────────
 
-  async createWatch(formId: string, eventType: string, topicName: string, watchId?: string): Promise<GoogleFormsWatch> {
+  async createWatch(
+    formId: string,
+    eventType: string,
+    topicName: string,
+    watchId?: string
+  ): Promise<GoogleFormsWatch> {
     let body: any = {
       watch: {
         eventType,
         target: {
-          topic: { topicName },
-        },
-      },
+          topic: { topicName }
+        }
+      }
     };
     if (watchId) {
       body.watchId = watchId;

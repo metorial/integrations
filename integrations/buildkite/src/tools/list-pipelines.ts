@@ -16,36 +16,37 @@ let pipelineSchema = z.object({
   scheduled_builds_count: z.number().describe('Number of scheduled builds'),
   tags: z.array(z.string()).describe('Tags assigned to the pipeline'),
   archived: z.boolean().describe('Whether the pipeline is archived'),
-  createdAt: z.string().describe('When the pipeline was created'),
+  createdAt: z.string().describe('When the pipeline was created')
 });
 
-export let listPipelines = SlateTool.create(
-  spec,
-  {
-    name: 'List Pipelines',
-    key: 'list_pipelines',
-    description: `List CI/CD pipelines in your Buildkite organization. Returns pipeline names, slugs, repositories, and current build counts. Use this to discover available pipelines before triggering builds or inspecting pipeline details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPipelines = SlateTool.create(spec, {
+  name: 'List Pipelines',
+  key: 'list_pipelines',
+  description: `List CI/CD pipelines in your Buildkite organization. Returns pipeline names, slugs, repositories, and current build counts. Use this to discover available pipelines before triggering builds or inspecting pipeline details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    perPage: z.number().optional().describe('Number of results per page (max 100)'),
-  }))
-  .output(z.object({
-    pipelines: z.array(pipelineSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      perPage: z.number().optional().describe('Number of results per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      pipelines: z.array(pipelineSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationSlug: ctx.config.organizationSlug,
+      organizationSlug: ctx.config.organizationSlug
     });
 
     let pipelines = await client.listPipelines({
       page: ctx.input.page,
-      perPage: ctx.input.perPage,
+      perPage: ctx.input.perPage
     });
 
     let mapped = pipelines.map((p: any) => ({
@@ -61,11 +62,11 @@ export let listPipelines = SlateTool.create(
       scheduled_builds_count: p.scheduled_builds_count,
       tags: p.tags ?? [],
       archived: p.archived_at !== null,
-      createdAt: p.created_at,
+      createdAt: p.created_at
     }));
 
     return {
       output: { pipelines: mapped },
-      message: `Found **${mapped.length}** pipeline(s).`,
+      message: `Found **${mapped.length}** pipeline(s).`
     };
   });

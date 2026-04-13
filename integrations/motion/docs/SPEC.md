@@ -16,6 +16,7 @@ Motion uses API key authentication.
 All requests are made against the base URL `https://api.usemotion.com/v1`.
 
 **Example:**
+
 ```
 GET https://api.usemotion.com/v1/workspaces
 X-API-Key: your-api-key-here

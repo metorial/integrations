@@ -5,36 +5,47 @@ Manage employee data, company information, and organizational structures in Ripp
 ## Tools
 
 ### List Departments
+
 Retrieve all departments in the company. Supports pagination for companies with many departments.
 
 ### Get Company
+
 Retrieve the current company's details including name, address, work locations, primary email, and phone number. The company is determined by the API token or OAuth access token used.
 
 ### Get Current User
+
 Retrieve information about the Rippling user whose access token is being used. Useful for SSO flows and identifying the authenticated user. Returns the user's ID, work email, and company ID.
 
 ### List Custom Fields
+
 Retrieve custom field definitions configured for the company. Custom fields allow companies to store additional employee or resource information beyond standard fields.
 
 ### Get Employee
+
 Retrieve detailed information about a specific employee by their ID. Returns comprehensive employee data including name, email, title, department, employment status, and more.
 
 ### List Leave Types
+
 Retrieve the company's configured leave types. Can optionally filter by the system that manages each leave type.
 
 ### Get SAML Metadata
+
 Retrieve SAML IDP metadata for app integrations that have SAML enabled. The metadata is unique per customer app installation and changes with each new installation. Returns XML-formatted SAML metadata.
 
 ### List Employees
+
 Retrieve a list of employees from Rippling. Can list only active employees or include terminated employees as well. Supports pagination for large result sets.
 
 ### Create Group
+
 Create a new employee group in Rippling associated with a third-party application. Groups represent subsets of employees and can be used for department segmentation, mailing lists, access control, etc.
 
 ### List Leave Requests
+
 Retrieve leave requests from Rippling. Can be filtered by date range and status to find specific requests.
 
 ### Push ATS Candidate
+
 Push a candidate from an applicant tracking system directly into the Rippling onboarding flow. This initiates the onboarding process for a new hire in Rippling.
 
 ## License

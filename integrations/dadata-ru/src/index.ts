@@ -15,7 +15,7 @@ import {
   ipGeolocate,
   searchReferenceDirectory,
   getAccountInfo,
-  lookupAddress,
+  lookupAddress
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     ipGeolocate,
     searchReferenceDirectory,
     getAccountInfo,
-    lookupAddress,
+    lookupAddress
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -3,43 +3,53 @@ import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let codeEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Code Push Events',
-    key: 'code_push_events',
-    description: 'Fires when code is pushed to a Git repository. Includes details about the push, commits, and branches affected.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Azure DevOps event type'),
-    resourceId: z.string().describe('Unique event resource identifier'),
-    resource: z.any().describe('Event resource payload'),
-  }))
-  .output(z.object({
-    repositoryId: z.string().optional(),
-    repositoryName: z.string().optional(),
-    projectName: z.string().optional(),
-    pushedBy: z.string().optional(),
-    pushDate: z.string().optional(),
-    refUpdates: z.array(z.object({
-      refName: z.string().optional(),
-      oldObjectId: z.string().optional(),
-      newObjectId: z.string().optional(),
-    })).optional(),
-    commits: z.array(z.object({
-      commitId: z.string().optional(),
-      message: z.string().optional(),
-      authorName: z.string().optional(),
-      authorDate: z.string().optional(),
-    })).optional(),
-    url: z.string().optional(),
-  }))
+export let codeEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Code Push Events',
+  key: 'code_push_events',
+  description:
+    'Fires when code is pushed to a Git repository. Includes details about the push, commits, and branches affected.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Azure DevOps event type'),
+      resourceId: z.string().describe('Unique event resource identifier'),
+      resource: z.any().describe('Event resource payload')
+    })
+  )
+  .output(
+    z.object({
+      repositoryId: z.string().optional(),
+      repositoryName: z.string().optional(),
+      projectName: z.string().optional(),
+      pushedBy: z.string().optional(),
+      pushDate: z.string().optional(),
+      refUpdates: z
+        .array(
+          z.object({
+            refName: z.string().optional(),
+            oldObjectId: z.string().optional(),
+            newObjectId: z.string().optional()
+          })
+        )
+        .optional(),
+      commits: z
+        .array(
+          z.object({
+            commitId: z.string().optional(),
+            message: z.string().optional(),
+            authorName: z.string().optional(),
+            authorDate: z.string().optional()
+          })
+        )
+        .optional(),
+      url: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AzureDevOpsClient({
         token: ctx.auth.token,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let publisherInputs: Record<string, string> = {};
@@ -54,20 +64,20 @@ export let codeEventsTrigger = SlateTrigger.create(
         consumerActionId: 'httpRequest',
         publisherInputs,
         consumerInputs: {
-          url: ctx.input.webhookBaseUrl,
+          url: ctx.input.webhookBaseUrl
         },
-        resourceVersion: '1.0',
+        resourceVersion: '1.0'
       });
 
       return {
-        registrationDetails: { subscriptionId: sub.id },
+        registrationDetails: { subscriptionId: sub.id }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AzureDevOpsClient({
         token: ctx.auth.token,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let details = ctx.input.registrationDetails as { subscriptionId: string };
@@ -78,20 +88,22 @@ export let codeEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let resource = data.resource || {};
 
       return {
-        inputs: [{
-          eventType: data.eventType || 'git.push',
-          resourceId: data.id || resource.pushId?.toString() || `push-${Date.now()}`,
-          resource,
-        }],
+        inputs: [
+          {
+            eventType: data.eventType || 'git.push',
+            resourceId: data.id || resource.pushId?.toString() || `push-${Date.now()}`,
+            resource
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resource = ctx.input.resource || {};
       let repo = resource.repository || {};
 
@@ -107,16 +119,17 @@ export let codeEventsTrigger = SlateTrigger.create(
           refUpdates: (resource.refUpdates || []).map((r: any) => ({
             refName: r.name,
             oldObjectId: r.oldObjectId,
-            newObjectId: r.newObjectId,
+            newObjectId: r.newObjectId
           })),
           commits: (resource.commits || []).map((c: any) => ({
             commitId: c.commitId,
             message: c.comment,
             authorName: c.author?.name,
-            authorDate: c.author?.date,
+            authorDate: c.author?.date
           })),
-          url: repo.remoteUrl || resource.url,
-        },
+          url: repo.remoteUrl || resource.url
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

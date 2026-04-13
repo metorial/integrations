@@ -14,6 +14,7 @@ V1 and V2 APIs use the same authentication method. A single API key is valid for
 
 **Bearer Token (Header):**
 Include the API key as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer <YOUR_API_KEY>
 ```
@@ -30,27 +31,35 @@ Free and paid users have access to both V1 and V2 APIs. Pro features are availab
 ## Features
 
 ### Ethereum Network State
+
 Query the current state of the Ethereum network, including the current epoch and total validator count. The `chain` parameter (`mainnet` or `hoodi`) is required for all V2 requests.
 
 ### Validator Metrics & Rewards
+
 Access validator performance metrics and real-time staking rewards data. Retrieve detailed reward breakdowns per validator per epoch, including attestation rewards (head, source, target), sync committee rewards, block proposal rewards (execution layer and consensus layer), and penalties. Validators can be queried by index or public key. Attestation-based efficiency metrics are available, measuring correctness and inclusion delay of validator votes.
 
 ### Validator Duties
+
 Query upcoming and historical validator duties including block proposals, attestations, and sync committee assignments.
 
 ### Entities & Benchmarking
+
 Look up known staking entities (e.g., staking pools, operators) and compare their performance. Features include BeaconScore (performance scoring), an entities overview page, and entity-level dashboards for deep dives. BeaconScore and entity benchmarking are Pro-tier features.
 
 ### Validator Dashboard Management
+
 Create validator dashboards and validator groups through the UI, then manage them via API by adding and assigning validators to groups. Supports Ethereum mainnet, Holesky testnet, and Gnosis network. Dashboards can be shared with others. Supports monitoring of up to 100,000 validators with custom validator groups.
 
 ### Execution Layer Data
+
 Access execution layer data including real-time transaction tracking, wallet balances, token holdings, smart contract interaction analysis, and gas fee monitoring.
 
 ### Consensus Layer Data (V1 Legacy)
+
 The V1 API provides access to consensus layer data such as blocks, epochs, slots, validators, attestations, deposits, and withdrawals. The V1 API remains available but no new features will be added.
 
 ### Node Monitoring
+
 A free monitoring tool for solo stakers where the user specifies a monitoring endpoint on their beacon and validator nodes. Compatible with Lighthouse, Lodestar, Teku, and Nimbus consensus clients. Metrics are pushed to beaconcha.in and displayed in the mobile app.
 
 ## Events
@@ -58,6 +67,7 @@ A free monitoring tool for solo stakers where the user specifies a monitoring en
 Beaconcha.in supports notifications via email, push, or webhook.
 
 ### Validator Event Webhooks
+
 Webhooks can be configured at `https://beaconcha.in/user/webhooks`. The number of available webhook endpoints depends on the subscription tier (ranging from 1 to 30). Webhook notifications can also be formatted for Discord.
 
 Alerts can be set up for downtime, missed duties, rewards, and more. Specific notification types include:

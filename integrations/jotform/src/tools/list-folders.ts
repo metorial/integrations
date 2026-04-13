@@ -27,7 +27,7 @@ export let listFoldersTool = SlateTool.create(spec, {
       )
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

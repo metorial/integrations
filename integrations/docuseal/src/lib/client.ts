@@ -174,7 +174,7 @@ export interface UpdateSubmitterParams {
 
 // Helper to convert camelCase to snake_case
 let toSnakeCase = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 let toSnakeCaseKeys = (obj: Record<string, any>): Record<string, any> => {
@@ -183,7 +183,7 @@ let toSnakeCaseKeys = (obj: Record<string, any>): Record<string, any> => {
     if (value === undefined) continue;
     let snakeKey = toSnakeCase(key);
     if (Array.isArray(value)) {
-      result[snakeKey] = value.map((item) =>
+      result[snakeKey] = value.map(item =>
         typeof item === 'object' && item !== null && !Array.isArray(item)
           ? toSnakeCaseKeys(item)
           : item
@@ -205,8 +205,8 @@ export class Client {
       baseURL: config.baseUrl,
       headers: {
         'X-Auth-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

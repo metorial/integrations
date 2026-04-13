@@ -142,7 +142,7 @@ export class Client {
     // Both work with the X-Api-Key header, but OAuth tokens should use Bearer
     // For simplicity, try Bearer first since API keys also work with X-Api-Key
     return {
-      'Authorization': `Bearer ${this.config.token}`,
+      Authorization: `Bearer ${this.config.token}`,
       'X-Api-Key': this.config.token
     };
   }
@@ -225,7 +225,10 @@ export class Client {
     return response.data;
   }
 
-  async listTeamMembers(team?: string, cursor?: string): Promise<PaginatedResponse<TeamMember>> {
+  async listTeamMembers(
+    team?: string,
+    cursor?: string
+  ): Promise<PaginatedResponse<TeamMember>> {
     let params: Record<string, string> = {};
     if (team) params['team'] = team;
     if (cursor) params['cursor'] = cursor;

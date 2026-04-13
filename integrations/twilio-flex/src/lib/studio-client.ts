@@ -9,7 +9,7 @@ export class StudioClient {
     this.axios = createAxios({
       baseURL: 'https://studio.twilio.com/v2',
       headers: {
-        'Authorization': `Basic ${token}`,
+        Authorization: `Basic ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
@@ -31,8 +31,14 @@ export class StudioClient {
     await this.axios.delete(`/Flows/${flowSid}`);
   }
 
-  async triggerFlowExecution(flowSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/Flows/${flowSid}/Executions`, encodeFormBody(params));
+  async triggerFlowExecution(
+    flowSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/Flows/${flowSid}/Executions`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -48,7 +54,11 @@ export class StudioClient {
     return response.data;
   }
 
-  async listExecutionSteps(flowSid: string, executionSid: string, pageSize?: number): Promise<any> {
+  async listExecutionSteps(
+    flowSid: string,
+    executionSid: string,
+    pageSize?: number
+  ): Promise<any> {
     let response = await this.axios.get(`/Flows/${flowSid}/Executions/${executionSid}/Steps`, {
       params: { PageSize: pageSize || 50 }
     });

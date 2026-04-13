@@ -14,36 +14,36 @@ let priceChangeInputSchema = z.object({
   dayHigh: z.number().optional().describe('Day high price'),
   dayLow: z.number().optional().describe('Day low price'),
   dayVolume: z.number().optional().describe('Day volume'),
-  timestamp: z.number().optional().describe('Last update timestamp'),
+  timestamp: z.number().optional().describe('Last update timestamp')
 });
 
-export let stockPriceChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Stock Price Change',
-    key: 'stock_price_change',
-    description: 'Triggers when a monitored stock has a significant daily price change. Polls snapshot data and detects price movements compared to the previous close.',
-  }
-)
+export let stockPriceChange = SlateTrigger.create(spec, {
+  name: 'Stock Price Change',
+  key: 'stock_price_change',
+  description:
+    'Triggers when a monitored stock has a significant daily price change. Polls snapshot data and detects price movements compared to the previous close.'
+})
   .input(priceChangeInputSchema)
-  .output(z.object({
-    ticker: z.string().describe('Ticker symbol'),
-    previousClose: z.number().describe('Previous close price'),
-    currentPrice: z.number().describe('Current last trade price'),
-    changeAmount: z.number().describe('Price change amount from previous close'),
-    changePercent: z.number().describe('Price change percent from previous close'),
-    dayOpen: z.number().optional().describe('Day open price'),
-    dayHigh: z.number().optional().describe('Day high price'),
-    dayLow: z.number().optional().describe('Day low price'),
-    dayVolume: z.number().optional().describe('Day trading volume'),
-    timestamp: z.number().optional().describe('Last update timestamp'),
-  }))
+  .output(
+    z.object({
+      ticker: z.string().describe('Ticker symbol'),
+      previousClose: z.number().describe('Previous close price'),
+      currentPrice: z.number().describe('Current last trade price'),
+      changeAmount: z.number().describe('Price change amount from previous close'),
+      changePercent: z.number().describe('Price change percent from previous close'),
+      dayOpen: z.number().optional().describe('Day open price'),
+      dayHigh: z.number().optional().describe('Day high price'),
+      dayLow: z.number().optional().describe('Day low price'),
+      dayVolume: z.number().optional().describe('Day trading volume'),
+      timestamp: z.number().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let data = await client.getGainersLosers('gainers', { includeOtc: false });
@@ -54,7 +54,8 @@ export let stockPriceChange = SlateTrigger.create(
 
       let movers = [...gainers, ...losers];
 
-      let lastSeenUpdates = (ctx.state?.lastSeenUpdates as Record<string, number> | undefined) || {};
+      let lastSeenUpdates =
+        (ctx.state?.lastSeenUpdates as Record<string, number> | undefined) || {};
 
       let inputs = movers
         .filter((s: any) => {
@@ -79,7 +80,7 @@ export let stockPriceChange = SlateTrigger.create(
             dayHigh: s.day?.h,
             dayLow: s.day?.l,
             dayVolume: s.day?.v,
-            timestamp: s.updated,
+            timestamp: s.updated
           };
         });
 
@@ -91,12 +92,12 @@ export let stockPriceChange = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastSeenUpdates: updatedSeenMap,
-        },
+          lastSeenUpdates: updatedSeenMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let direction = ctx.input.changePercent >= 0 ? 'up' : 'down';
 
       return {
@@ -112,8 +113,9 @@ export let stockPriceChange = SlateTrigger.create(
           dayHigh: ctx.input.dayHigh,
           dayLow: ctx.input.dayLow,
           dayVolume: ctx.input.dayVolume,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -3,35 +3,34 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getShop = SlateTool.create(
-  spec,
-  {
-    name: 'Get Shop',
-    key: 'get_shop',
-    description: `Retrieve the store's details including name, domain, email, currency, timezone, and plan information.`,
-    tags: { readOnly: true }
-  }
-)
+export let getShop = SlateTool.create(spec, {
+  name: 'Get Shop',
+  key: 'get_shop',
+  description: `Retrieve the store's details including name, domain, email, currency, timezone, and plan information.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    shopId: z.string(),
-    name: z.string(),
-    email: z.string(),
-    domain: z.string(),
-    myshopifyDomain: z.string(),
-    currency: z.string(),
-    timezone: z.string(),
-    country: z.string(),
-    province: z.string(),
-    city: z.string(),
-    address1: z.string().nullable(),
-    phone: z.string().nullable(),
-    planName: z.string(),
-    weightUnit: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      shopId: z.string(),
+      name: z.string(),
+      email: z.string(),
+      domain: z.string(),
+      myshopifyDomain: z.string(),
+      currency: z.string(),
+      timezone: z.string(),
+      country: z.string(),
+      province: z.string(),
+      city: z.string(),
+      address1: z.string().nullable(),
+      phone: z.string().nullable(),
+      planName: z.string(),
+      weightUnit: z.string(),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -61,4 +60,5 @@ export let getShop = SlateTool.create(
       },
       message: `Store **${shop.name}** (${shop.myshopify_domain}) — ${shop.plan_name} plan, ${shop.currency} currency.`
     };
-  }).build();
+  })
+  .build();

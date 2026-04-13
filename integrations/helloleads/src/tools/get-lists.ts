@@ -5,30 +5,29 @@ import { z } from 'zod';
 
 let listSchema = z.object({
   listKey: z.string().describe('Unique key identifier for the list'),
-  name: z.string().describe('Display name of the list'),
+  name: z.string().describe('Display name of the list')
 });
 
-export let getLists = SlateTool.create(
-  spec,
-  {
-    name: 'Get Lists',
-    key: 'get_lists',
-    description: `Retrieve all lead lists from HelloLeads CRM. Lists are logical collections used to categorize leads by source, geography, timelines, or other criteria. Use the returned list keys when creating leads to assign them to a specific list.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getLists = SlateTool.create(spec, {
+  name: 'Get Lists',
+  key: 'get_lists',
+  description: `Retrieve all lead lists from HelloLeads CRM. Lists are logical collections used to categorize leads by source, geography, timelines, or other criteria. Use the returned list keys when creating leads to assign them to a specific list.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    lists: z.array(listSchema).describe('Available lead lists'),
-    count: z.number().describe('Number of lists returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      lists: z.array(listSchema).describe('Available lead lists'),
+      count: z.number().describe('Number of lists returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HelloLeadsClient({
       token: ctx.auth.token,
-      email: ctx.auth.email,
+      email: ctx.auth.email
     });
 
     let result = await client.listLists();
@@ -37,15 +36,15 @@ export let getLists = SlateTool.create(
 
     let lists = (rawLists as any[]).map((list: any) => ({
       listKey: String(list.list_key ?? list.key ?? list.id ?? ''),
-      name: String(list.name ?? ''),
+      name: String(list.name ?? '')
     }));
 
     return {
       output: {
         lists,
-        count: lists.length,
+        count: lists.length
       },
-      message: `Retrieved **${lists.length}** list(s) from HelloLeads.`,
+      message: `Retrieved **${lists.length}** list(s) from HelloLeads.`
     };
   })
   .build();

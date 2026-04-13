@@ -3,58 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let WEBHOOK_EVENT_TYPES = [
-  'message:sent:new',
-  'message:received:new',
-] as const;
+let WEBHOOK_EVENT_TYPES = ['message:sent:new', 'message:received:new'] as const;
 
-export let messageEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Events',
-    key: 'message_events',
-    description: 'Triggers when a WhatsApp message is sent or received across any connected account in the workspace.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of message event'),
-    messageUid: z.string().describe('Unique message identifier'),
-    chatId: z.number().optional().describe('Chat ID'),
-    timestamp: z.string().optional().describe('Message timestamp'),
-    senderPhone: z.string().optional().describe('Sender phone number'),
-    senderName: z.string().optional().describe('Sender display name'),
-    recipientPhone: z.string().optional().describe('Recipient phone number'),
-    recipientName: z.string().optional().describe('Recipient display name'),
-    fromMe: z.boolean().optional().describe('Whether sent by my account'),
-    text: z.string().optional().describe('Message text content'),
-    hasAttachment: z.boolean().optional().describe('Whether message has an attachment'),
-    attachmentUrl: z.string().optional().describe('Attachment download URL'),
-    attachmentFilename: z.string().optional().describe('Attachment filename'),
-    whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone'),
-    chatName: z.string().optional().describe('Chat display name'),
-    isGroup: z.boolean().optional().describe('Whether this is a group chat'),
-    isNewChat: z.boolean().optional().describe('Whether this started a new chat'),
-  }))
-  .output(z.object({
-    messageUid: z.string().describe('Unique message identifier'),
-    chatId: z.number().optional().describe('Chat ID'),
-    timestamp: z.string().optional().describe('Message timestamp'),
-    senderPhone: z.string().optional().describe('Sender phone number'),
-    senderName: z.string().optional().describe('Sender display name'),
-    recipientPhone: z.string().optional().describe('Recipient phone number'),
-    recipientName: z.string().optional().describe('Recipient display name'),
-    fromMe: z.boolean().optional().describe('Whether sent by the workspace account'),
-    text: z.string().optional().describe('Message text content'),
-    hasAttachment: z.boolean().optional().describe('Whether the message has an attachment'),
-    attachmentUrl: z.string().optional().describe('Attachment download URL (valid 15 min)'),
-    attachmentFilename: z.string().optional().describe('Attachment filename'),
-    whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone number'),
-    chatName: z.string().optional().describe('Chat display name'),
-    isGroup: z.boolean().optional().describe('Whether this is a group chat'),
-    isNewChat: z.boolean().optional().describe('Whether this message started a new chat'),
-  }))
+export let messageEvents = SlateTrigger.create(spec, {
+  name: 'Message Events',
+  key: 'message_events',
+  description:
+    'Triggers when a WhatsApp message is sent or received across any connected account in the workspace.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of message event'),
+      messageUid: z.string().describe('Unique message identifier'),
+      chatId: z.number().optional().describe('Chat ID'),
+      timestamp: z.string().optional().describe('Message timestamp'),
+      senderPhone: z.string().optional().describe('Sender phone number'),
+      senderName: z.string().optional().describe('Sender display name'),
+      recipientPhone: z.string().optional().describe('Recipient phone number'),
+      recipientName: z.string().optional().describe('Recipient display name'),
+      fromMe: z.boolean().optional().describe('Whether sent by my account'),
+      text: z.string().optional().describe('Message text content'),
+      hasAttachment: z.boolean().optional().describe('Whether message has an attachment'),
+      attachmentUrl: z.string().optional().describe('Attachment download URL'),
+      attachmentFilename: z.string().optional().describe('Attachment filename'),
+      whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone'),
+      chatName: z.string().optional().describe('Chat display name'),
+      isGroup: z.boolean().optional().describe('Whether this is a group chat'),
+      isNewChat: z.boolean().optional().describe('Whether this started a new chat')
+    })
+  )
+  .output(
+    z.object({
+      messageUid: z.string().describe('Unique message identifier'),
+      chatId: z.number().optional().describe('Chat ID'),
+      timestamp: z.string().optional().describe('Message timestamp'),
+      senderPhone: z.string().optional().describe('Sender phone number'),
+      senderName: z.string().optional().describe('Sender display name'),
+      recipientPhone: z.string().optional().describe('Recipient phone number'),
+      recipientName: z.string().optional().describe('Recipient display name'),
+      fromMe: z.boolean().optional().describe('Whether sent by the workspace account'),
+      text: z.string().optional().describe('Message text content'),
+      hasAttachment: z.boolean().optional().describe('Whether the message has an attachment'),
+      attachmentUrl: z.string().optional().describe('Attachment download URL (valid 15 min)'),
+      attachmentFilename: z.string().optional().describe('Attachment filename'),
+      whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone number'),
+      chatName: z.string().optional().describe('Chat display name'),
+      isGroup: z.boolean().optional().describe('Whether this is a group chat'),
+      isNewChat: z.boolean().optional().describe('Whether this message started a new chat')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let registrations: Array<{ webhookId: number; eventType: string }> = [];
@@ -63,21 +62,21 @@ export let messageEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           eventType,
           url: ctx.input.webhookBaseUrl,
-          enabled: true,
+          enabled: true
         });
         let webhookData = result?.data || result;
         registrations.push({
           webhookId: webhookData.id,
-          eventType,
+          eventType
         });
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations || [];
 
@@ -90,8 +89,8 @@ export let messageEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // TimelinesAI webhook payload can contain a single message or bundled messages
       let messages: any[] = [];
@@ -111,12 +110,17 @@ export let messageEvents = SlateTrigger.create(
         let fromMe = msg.direction === 'out' || msg.from_me === true;
         return {
           eventType: fromMe ? 'message:sent:new' : 'message:received:new',
-          messageUid: msg.message_id || msg.uid || msg.id || `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+          messageUid:
+            msg.message_id ||
+            msg.uid ||
+            msg.id ||
+            `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
           chatId: chat.chat_id || msg.chat_id,
           timestamp: msg.timestamp,
           senderPhone: msg.sender || msg.sender_phone || (fromMe ? account.phone : chat.phone),
           senderName: msg.sender_name || (fromMe ? account.full_name : chat.full_name),
-          recipientPhone: msg.recipient || msg.recipient_phone || (!fromMe ? account.phone : chat.phone),
+          recipientPhone:
+            msg.recipient || msg.recipient_phone || (!fromMe ? account.phone : chat.phone),
           recipientName: msg.recipient_name,
           fromMe,
           text: msg.text || '',
@@ -126,14 +130,14 @@ export let messageEvents = SlateTrigger.create(
           whatsappAccountPhone: account.phone,
           chatName: chat.full_name || chat.name,
           isGroup: chat.is_group,
-          isNewChat: chat.is_new_chat,
+          isNewChat: chat.is_new_chat
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -155,9 +159,9 @@ export let messageEvents = SlateTrigger.create(
           whatsappAccountPhone: input.whatsappAccountPhone,
           chatName: input.chatName,
           isGroup: input.isGroup,
-          isNewChat: input.isNewChat,
-        },
+          isNewChat: input.isNewChat
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listResources,
@@ -14,11 +13,9 @@ import {
   clusterInfo,
   manageRbac,
   manageAutoscaler,
-  manageJob,
+  manageJob
 } from './tools';
-import { resourceEvents,
-  inboundWebhook,
-} from './triggers';
+import { resourceEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     clusterInfo,
     manageRbac,
     manageAutoscaler,
-    manageJob,
+    manageJob
   ],
-  triggers: [
-    inboundWebhook,
-    resourceEvents,
-  ],
+  triggers: [inboundWebhook, resourceEvents]
 });

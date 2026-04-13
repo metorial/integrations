@@ -15,6 +15,7 @@ SiteSpeakAI uses **API key (Bearer token)** authentication.
 - **Header**: Include the token in the `Authorization` header as `Bearer YOUR_API_TOKEN`.
 
 Example:
+
 ```
 Authorization: Bearer YOUR_API_TOKEN
 ```
@@ -24,27 +25,35 @@ Most endpoints also require a **Chatbot ID** as a path parameter, which can be f
 ## Features
 
 ### Chatbot Querying
+
 Send questions to a trained chatbot and receive AI-generated answers along with source URLs used to formulate the response. Supports grouping messages into conversations via a conversation ID, and responses can be returned in either HTML or markdown format.
 
 ### Chatbot Configuration Retrieval
+
 Retrieve the full settings of a chatbot, including appearance (colors, icons, fonts, dimensions, position), behavior (welcome message, placeholder text, system prompt, goals prompt, default answer), AI model settings (model, temperature, topK), escalation configuration, and language settings.
 
 ### Conversation History
+
 Access the full history of visitor conversations with a chatbot. Can be filtered by a specific visitor's conversation ID, sorted in ascending or descending order, and optionally include the sources the bot used for each response. Deleted conversations can optionally be included.
 
 ### Updated Answers (Fine-tuning)
+
 Manage custom question-and-answer pairs that override or supplement the chatbot's trained knowledge. You can retrieve all existing updated answers, create new question-answer pairs, and delete existing ones. This is useful for correcting or improving specific chatbot responses.
 
 ### Lead Management
+
 Retrieve leads captured by a chatbot during conversations. Lead records include visitor information such as name, email, phone, and status.
 
 ### Suggested Messages
+
 Retrieve the suggested messages (prompts) configured for a chatbot. These are pre-defined questions shown to visitors to guide them toward relevant content.
 
 ### Training Sources
+
 Retrieve the list of content sources used to train a chatbot, including their type (e.g., website), URL, training status, and sync frequency.
 
 ### User & Chatbot Management
+
 Retrieve account details for the authenticated user and list all chatbots associated with the account.
 
 ## Events

@@ -25,27 +25,28 @@ let mapPresence = (p: any) => ({
   updatedAt: p.updated_at
 });
 
-export let listPresences = SlateTool.create(
-  spec,
-  {
-    name: 'List Presences',
-    key: 'list_presences',
-    description: `Retrieve clock-in/clock-out presence entries. Filter by date range and user.`,
-    tags: {
-      readOnly: true
-    }
+export let listPresences = SlateTool.create(spec, {
+  name: 'List Presences',
+  key: 'list_presences',
+  description: `Retrieve clock-in/clock-out presence entries. Filter by date range and user.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    from: z.string().optional().describe('Start date (YYYY-MM-DD)'),
-    to: z.string().optional().describe('End date (YYYY-MM-DD)'),
-    userId: z.number().optional().describe('Filter by user ID'),
-    isHomeOffice: z.boolean().optional().describe('Filter by home office status')
-  }))
-  .output(z.object({
-    presences: z.array(presenceOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      from: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+      to: z.string().optional().describe('End date (YYYY-MM-DD)'),
+      userId: z.number().optional().describe('Filter by user ID'),
+      isHomeOffice: z.boolean().optional().describe('Filter by home office status')
+    })
+  )
+  .output(
+    z.object({
+      presences: z.array(presenceOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -61,24 +62,24 @@ export let listPresences = SlateTool.create(
       output: { presences },
       message: `Found **${presences.length}** presence entries.`
     };
-  }).build();
+  })
+  .build();
 
-export let clockInOut = SlateTool.create(
-  spec,
-  {
-    name: 'Clock In/Out',
-    key: 'clock_in_out',
-    description: `Toggle clock-in or clock-out for the authenticated user. If clocked out, this will clock you in; if clocked in, this will clock you out.`,
-    tags: {
-      destructive: false
-    }
+export let clockInOut = SlateTool.create(spec, {
+  name: 'Clock In/Out',
+  key: 'clock_in_out',
+  description: `Toggle clock-in or clock-out for the authenticated user. If clocked out, this will clock you in; if clocked in, this will clock you out.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    isHomeOffice: z.boolean().optional().describe('Whether this is a home office session')
-  }))
+})
+  .input(
+    z.object({
+      isHomeOffice: z.boolean().optional().describe('Whether this is a home office session')
+    })
+  )
   .output(presenceOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {};
@@ -90,27 +91,27 @@ export let clockInOut = SlateTool.create(
       output: mapPresence(p),
       message: `Presence toggled for ${p.date}.`
     };
-  }).build();
+  })
+  .build();
 
-export let createPresence = SlateTool.create(
-  spec,
-  {
-    name: 'Create Presence',
-    key: 'create_presence',
-    description: `Create a presence entry with specific date and time. Useful for manual time corrections.`,
-    tags: {
-      destructive: false
-    }
+export let createPresence = SlateTool.create(spec, {
+  name: 'Create Presence',
+  key: 'create_presence',
+  description: `Create a presence entry with specific date and time. Useful for manual time corrections.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    date: z.string().describe('Presence date (YYYY-MM-DD)'),
-    from: z.string().describe('Clock-in time (HH:MM, e.g. "09:00")'),
-    to: z.string().optional().describe('Clock-out time (HH:MM, e.g. "17:30")'),
-    isHomeOffice: z.boolean().optional().describe('Whether this is a home office day')
-  }))
+})
+  .input(
+    z.object({
+      date: z.string().describe('Presence date (YYYY-MM-DD)'),
+      from: z.string().describe('Clock-in time (HH:MM, e.g. "09:00")'),
+      to: z.string().optional().describe('Clock-out time (HH:MM, e.g. "17:30")'),
+      isHomeOffice: z.boolean().optional().describe('Whether this is a home office day')
+    })
+  )
   .output(presenceOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -127,4 +128,5 @@ export let createPresence = SlateTool.create(
       output: mapPresence(p),
       message: `Created presence entry for ${p.date} from ${p.from}${p.to ? ` to ${p.to}` : ''}.`
     };
-  }).build();
+  })
+  .build();

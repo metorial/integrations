@@ -9,8 +9,8 @@ export class BoloFormsClient {
       baseURL: 'https://sapi.boloforms.com/signature',
       headers: {
         'x-api-key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,8 +35,8 @@ export class BoloFormsClient {
         sortOrder: options?.sortOrder,
         dateFrom: options?.dateFrom,
         dateTo: options?.dateTo,
-        documentId: options?.documentId,
-      },
+        documentId: options?.documentId
+      }
     });
     return response.data;
   }
@@ -64,7 +64,7 @@ export class BoloFormsClient {
       documentId: data.documentId,
       receiversList: data.receiversList,
       mailData: data.mailData,
-      customVariables: data.customVariables,
+      customVariables: data.customVariables
     });
     return response.data;
   }
@@ -91,7 +91,7 @@ export class BoloFormsClient {
       documentId: data.documentId,
       receiversList: data.receiversList,
       mailData: data.mailData,
-      customVariables: data.customVariables,
+      customVariables: data.customVariables
     });
     return response.data;
   }
@@ -107,8 +107,8 @@ export class BoloFormsClient {
         templateId: options.templateId,
         respondentDocumentId: options.respondentDocumentId,
         page: options.page,
-        limit: options.limit,
-      },
+        limit: options.limit
+      }
     });
     return response.data;
   }
@@ -124,8 +124,8 @@ export class BoloFormsClient {
         formId: options?.formId,
         responseId: options?.responseId,
         page: options?.page,
-        limit: options?.limit,
-      },
+        limit: options?.limit
+      }
     });
     return response.data;
   }

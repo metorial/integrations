@@ -3,46 +3,52 @@ import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let instagramProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Instagram Profile',
-    key: 'instagram_profile',
-    description: `Extract public data from an Instagram user profile including bio, follower/following counts, recent posts with engagement metrics, avatar, verification status, and business category.`,
-    tags: {
-      readOnly: true
-    }
+export let instagramProfile = SlateTool.create(spec, {
+  name: 'Instagram Profile',
+  key: 'instagram_profile',
+  description: `Extract public data from an Instagram user profile including bio, follower/following counts, recent posts with engagement metrics, avatar, verification status, and business category.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    usernameOrUrl: z.string().describe('Instagram username or profile URL')
-  }))
-  .output(z.object({
-    userId: z.string().optional(),
-    username: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    avatar: z.string().optional(),
-    followers: z.number().optional(),
-    following: z.number().optional(),
-    isPrivate: z.boolean().optional(),
-    isVerified: z.boolean().optional(),
-    isBusinessAccount: z.boolean().optional(),
-    categoryName: z.string().optional(),
-    website: z.string().optional(),
-    posts: z.array(z.object({
-      postId: z.string().optional(),
-      shortcode: z.string().optional(),
-      caption: z.string().optional(),
-      likes: z.number().optional(),
-      comments: z.number().optional(),
-      isVideo: z.boolean().optional(),
-      displayUrl: z.string().optional(),
-      timestamp: z.number().optional()
-    })).optional().describe('Recent posts'),
-    raw: z.any().describe('Full raw response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      usernameOrUrl: z.string().describe('Instagram username or profile URL')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().optional(),
+      username: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      avatar: z.string().optional(),
+      followers: z.number().optional(),
+      following: z.number().optional(),
+      isPrivate: z.boolean().optional(),
+      isVerified: z.boolean().optional(),
+      isBusinessAccount: z.boolean().optional(),
+      categoryName: z.string().optional(),
+      website: z.string().optional(),
+      posts: z
+        .array(
+          z.object({
+            postId: z.string().optional(),
+            shortcode: z.string().optional(),
+            caption: z.string().optional(),
+            likes: z.number().optional(),
+            comments: z.number().optional(),
+            isVideo: z.boolean().optional(),
+            displayUrl: z.string().optional(),
+            timestamp: z.number().optional()
+          })
+        )
+        .optional()
+        .describe('Recent posts'),
+      raw: z.any().describe('Full raw response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.getInstagramUser({ query: ctx.input.usernameOrUrl });
 
@@ -79,36 +85,37 @@ export let instagramProfile = SlateTool.create(
   })
   .build();
 
-export let instagramPost = SlateTool.create(
-  spec,
-  {
-    name: 'Instagram Post',
-    key: 'instagram_post',
-    description: `Extract data from a specific Instagram post including caption, media URLs, engagement metrics (likes, comments, views), location, and sponsor information.`,
-    tags: {
-      readOnly: true
-    }
+export let instagramPost = SlateTool.create(spec, {
+  name: 'Instagram Post',
+  key: 'instagram_post',
+  description: `Extract data from a specific Instagram post including caption, media URLs, engagement metrics (likes, comments, views), location, and sponsor information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    postUrlOrShortcode: z.string().describe('Instagram post URL or shortcode')
-  }))
-  .output(z.object({
-    postId: z.string().optional(),
-    shortcode: z.string().optional(),
-    text: z.string().optional(),
-    createdTime: z.string().optional(),
-    likeCount: z.number().optional(),
-    commentsCount: z.number().optional(),
-    videoViewsCount: z.number().optional(),
-    isVideo: z.boolean().optional(),
-    mediaUrl: z.string().optional(),
-    carouselMediaUrls: z.array(z.string()).optional(),
-    ownerId: z.string().optional(),
-    locationName: z.string().optional(),
-    raw: z.any().describe('Full raw response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      postUrlOrShortcode: z.string().describe('Instagram post URL or shortcode')
+    })
+  )
+  .output(
+    z.object({
+      postId: z.string().optional(),
+      shortcode: z.string().optional(),
+      text: z.string().optional(),
+      createdTime: z.string().optional(),
+      likeCount: z.number().optional(),
+      commentsCount: z.number().optional(),
+      videoViewsCount: z.number().optional(),
+      isVideo: z.boolean().optional(),
+      mediaUrl: z.string().optional(),
+      carouselMediaUrls: z.array(z.string()).optional(),
+      ownerId: z.string().optional(),
+      locationName: z.string().optional(),
+      raw: z.any().describe('Full raw response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.getInstagramPost({ query: ctx.input.postUrlOrShortcode });
 

@@ -6,9 +6,11 @@ let hfAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -52,7 +54,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -66,27 +68,31 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await hfAxios.post('/oauth/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await hfAxios.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       return {
         output: {
-          token: response.data.access_token,
+          token: response.data.access_token
         }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       // Hugging Face OAuth tokens don't typically have refresh tokens
       // Return existing output
       return {
@@ -123,10 +129,10 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Hugging Face User Access Token (starts with hf_)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
     },

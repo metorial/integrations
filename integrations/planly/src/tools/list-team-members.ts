@@ -11,25 +11,26 @@ let memberSchema = z.object({
   role: z.string().describe('Role in the team')
 });
 
-export let listTeamMembers = SlateTool.create(
-  spec,
-  {
-    name: 'List Team Members',
-    key: 'list_team_members',
-    description: `List all members of a team, including their names, emails, and roles. Useful for team management operations like transferring ownership or removing users.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listTeamMembers = SlateTool.create(spec, {
+  name: 'List Team Members',
+  key: 'list_team_members',
+  description: `List all members of a team, including their names, emails, and roles. Useful for team management operations like transferring ownership or removing users.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('ID of the team to list members for')
-  }))
-  .output(z.object({
-    members: z.array(memberSchema).describe('List of team members')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('ID of the team to list members for')
+    })
+  )
+  .output(
+    z.object({
+      members: z.array(memberSchema).describe('List of team members')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listTeamUsers(ctx.input.teamId);
     let users = result.data || result || [];

@@ -12,27 +12,35 @@ let teamMemberSchema = z.object({
 let teamSchema = z.object({
   teamName: z.string().describe('Name of the team'),
   createdAt: z.string().describe('When the team was created (ISO 8601)'),
-  members: z.array(teamMemberSchema).optional().describe('Members of the team (only included when includeMembers is true)')
+  members: z
+    .array(teamMemberSchema)
+    .optional()
+    .describe('Members of the team (only included when includeMembers is true)')
 });
 
-export let listTeams = SlateTool.create(
-  spec,
-  {
-    name: 'List Teams',
-    key: 'list_teams',
-    description: `List teams accessible to the authenticated user. Optionally includes team members for each team. Use this to discover team names for filtering meetings or managing team data.`,
-    tags: {
-      readOnly: true
-    }
+export let listTeams = SlateTool.create(spec, {
+  name: 'List Teams',
+  key: 'list_teams',
+  description: `List teams accessible to the authenticated user. Optionally includes team members for each team. Use this to discover team names for filtering meetings or managing team data.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeMembers: z.boolean().optional().default(false).describe('Whether to also fetch team members for each team')
-  }))
-  .output(z.object({
-    teams: z.array(teamSchema).describe('List of teams')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeMembers: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to also fetch team members for each team')
+    })
+  )
+  .output(
+    z.object({
+      teams: z.array(teamSchema).describe('List of teams')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     // Fetch all teams with pagination
@@ -63,7 +71,7 @@ export let listTeams = SlateTool.create(
           memberCursor = membersResult.next_cursor || undefined;
         } while (memberCursor);
 
-        teamEntry.members = allMembers.map((m) => ({
+        teamEntry.members = allMembers.map(m => ({
           name: m.name,
           email: m.email,
           createdAt: m.created_at
@@ -81,4 +89,5 @@ export let listTeams = SlateTool.create(
         ? `Found **${teams.length}** team(s) with **${memberCount}** total member(s).`
         : `Found **${teams.length}** team(s).`
     };
-  }).build();
+  })
+  .build();

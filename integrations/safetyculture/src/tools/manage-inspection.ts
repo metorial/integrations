@@ -3,37 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageInspection = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Inspection',
-    key: 'manage_inspection',
-    description: `Start, complete, archive, delete, or update an inspection. Use this to manage the lifecycle of inspections including setting owner, site, and exporting to PDF/Word.`,
-    instructions: [
-      'To start a new inspection, provide a templateId and set the operation to "start".',
-      'To complete, archive, or delete an inspection, provide the inspectionId and the corresponding operation.',
-      'To export, set operation to "export" and optionally specify the exportFormat.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageInspection = SlateTool.create(spec, {
+  name: 'Manage Inspection',
+  key: 'manage_inspection',
+  description: `Start, complete, archive, delete, or update an inspection. Use this to manage the lifecycle of inspections including setting owner, site, and exporting to PDF/Word.`,
+  instructions: [
+    'To start a new inspection, provide a templateId and set the operation to "start".',
+    'To complete, archive, or delete an inspection, provide the inspectionId and the corresponding operation.',
+    'To export, set operation to "export" and optionally specify the exportFormat.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    operation: z.enum(['start', 'complete', 'archive', 'delete', 'export', 'set_owner', 'set_site']).describe('The operation to perform on the inspection'),
-    inspectionId: z.string().optional().describe('The inspection ID (required for all operations except "start")'),
-    templateId: z.string().optional().describe('Template ID to start a new inspection from (required for "start")'),
-    siteId: z.string().optional().describe('Site ID (used with "start" or "set_site")'),
-    ownerId: z.string().optional().describe('User ID to set as inspection owner (required for "set_owner")'),
-    exportFormat: z.enum(['pdf', 'word']).optional().describe('Export format (for "export" operation, defaults to "pdf")'),
-  }))
-  .output(z.object({
-    inspectionId: z.string().optional().describe('ID of the affected inspection'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-    exportUrl: z.string().optional().describe('Download URL for exported inspection'),
-    rawResponse: z.any().optional().describe('Full API response'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      operation: z
+        .enum(['start', 'complete', 'archive', 'delete', 'export', 'set_owner', 'set_site'])
+        .describe('The operation to perform on the inspection'),
+      inspectionId: z
+        .string()
+        .optional()
+        .describe('The inspection ID (required for all operations except "start")'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Template ID to start a new inspection from (required for "start")'),
+      siteId: z.string().optional().describe('Site ID (used with "start" or "set_site")'),
+      ownerId: z
+        .string()
+        .optional()
+        .describe('User ID to set as inspection owner (required for "set_owner")'),
+      exportFormat: z
+        .enum(['pdf', 'word'])
+        .optional()
+        .describe('Export format (for "export" operation, defaults to "pdf")')
+    })
+  )
+  .output(
+    z.object({
+      inspectionId: z.string().optional().describe('ID of the affected inspection'),
+      success: z.boolean().describe('Whether the operation succeeded'),
+      exportUrl: z.string().optional().describe('Download URL for exported inspection'),
+      rawResponse: z.any().optional().describe('Full API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { operation, inspectionId, templateId, siteId, ownerId, exportFormat } = ctx.input;
 
@@ -47,7 +62,7 @@ export let manageInspection = SlateTool.create(
         let newId = result.audit_id || result.id;
         return {
           output: { inspectionId: newId, success: true, rawResponse: result },
-          message: `Started new inspection **${newId}** from template ${templateId}.`,
+          message: `Started new inspection **${newId}** from template ${templateId}.`
         };
       }
       case 'complete': {
@@ -74,7 +89,7 @@ export let manageInspection = SlateTool.create(
         let url = result.url || result.download_url;
         return {
           output: { inspectionId, success: true, exportUrl: url, rawResponse: result },
-          message: `Exported inspection **${inspectionId}** as ${exportFormat || 'pdf'}.${url ? ` [Download](${url})` : ''}`,
+          message: `Exported inspection **${inspectionId}** as ${exportFormat || 'pdf'}.${url ? ` [Download](${url})` : ''}`
         };
       }
       case 'set_owner': {
@@ -95,6 +110,7 @@ export let manageInspection = SlateTool.create(
 
     return {
       output: { inspectionId, success: true, rawResponse: result },
-      message,
+      message
     };
-  }).build();
+  })
+  .build();

@@ -3,37 +3,41 @@ import { FormdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getResultPdf = SlateTool.create(
-  spec,
-  {
-    name: 'Get Result PDF',
-    key: 'get_result_pdf',
-    description: `Generates and retrieves a PDF document from a form result entry. Supports configurable paper size, orientation, scaling, margins, and optional password protection. Returns the PDF as base64-encoded data.`,
-    tags: {
-      readOnly: true,
-    },
+export let getResultPdf = SlateTool.create(spec, {
+  name: 'Get Result PDF',
+  key: 'get_result_pdf',
+  description: `Generates and retrieves a PDF document from a form result entry. Supports configurable paper size, orientation, scaling, margins, and optional password protection. Returns the PDF as base64-encoded data.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    resultId: z.string().describe('The unique ID of the result entry to generate a PDF for'),
-    paperSize: z.enum(['A4', 'A3', 'Letter', 'Legal']).optional().describe('Paper size for the PDF'),
-    orientation: z.enum(['portrait', 'landscape']).optional().describe('Page orientation'),
-    scale: z.string().optional().describe('Scale percentage (e.g., "100")'),
-    marginTop: z.string().optional().describe('Top margin in mm'),
-    marginRight: z.string().optional().describe('Right margin in mm'),
-    marginBottom: z.string().optional().describe('Bottom margin in mm'),
-    marginLeft: z.string().optional().describe('Left margin in mm'),
-    password: z.string().optional().describe('Password to protect the PDF document'),
-  }))
-  .output(z.object({
-    pdfContentBase64: z.string().describe('Base64-encoded PDF file content'),
-    contentType: z.string().describe('MIME type of the PDF'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      resultId: z.string().describe('The unique ID of the result entry to generate a PDF for'),
+      paperSize: z
+        .enum(['A4', 'A3', 'Letter', 'Legal'])
+        .optional()
+        .describe('Paper size for the PDF'),
+      orientation: z.enum(['portrait', 'landscape']).optional().describe('Page orientation'),
+      scale: z.string().optional().describe('Scale percentage (e.g., "100")'),
+      marginTop: z.string().optional().describe('Top margin in mm'),
+      marginRight: z.string().optional().describe('Right margin in mm'),
+      marginBottom: z.string().optional().describe('Bottom margin in mm'),
+      marginLeft: z.string().optional().describe('Left margin in mm'),
+      password: z.string().optional().describe('Password to protect the PDF document')
+    })
+  )
+  .output(
+    z.object({
+      pdfContentBase64: z.string().describe('Base64-encoded PDF file content'),
+      contentType: z.string().describe('MIME type of the PDF')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FormdeskClient({
       token: ctx.auth.token,
       host: ctx.auth.host,
-      domain: ctx.auth.domain,
+      domain: ctx.auth.domain
     });
 
     ctx.progress('Generating PDF...');
@@ -46,15 +50,15 @@ export let getResultPdf = SlateTool.create(
       marginRight: ctx.input.marginRight,
       marginBottom: ctx.input.marginBottom,
       marginLeft: ctx.input.marginLeft,
-      password: ctx.input.password,
+      password: ctx.input.password
     });
 
     return {
       output: {
         pdfContentBase64: result.content,
-        contentType: result.contentType,
+        contentType: result.contentType
       },
-      message: `Successfully generated PDF for result **${ctx.input.resultId}**.`,
+      message: `Successfully generated PDF for result **${ctx.input.resultId}**.`
     };
   })
   .build();

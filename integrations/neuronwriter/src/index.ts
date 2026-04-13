@@ -7,7 +7,7 @@ import {
   getRecommendations,
   getContent,
   importContent,
-  evaluateContent,
+  evaluateContent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     getRecommendations,
     getContent,
     importContent,
-    evaluateContent,
+    evaluateContent
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

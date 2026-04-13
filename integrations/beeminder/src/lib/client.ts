@@ -81,15 +81,18 @@ export class BeeminderClient {
     return response.data;
   }
 
-  async updateGoal(goalSlug: string, params: {
-    title?: string;
-    yaxis?: string;
-    secret?: boolean;
-    datapublic?: boolean;
-    roadall?: any[];
-    tags?: string[];
-    callbackUrl?: string;
-  }) {
+  async updateGoal(
+    goalSlug: string,
+    params: {
+      title?: string;
+      yaxis?: string;
+      secret?: boolean;
+      datapublic?: boolean;
+      roadall?: any[];
+      tags?: string[];
+      callbackUrl?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.title !== undefined) body.title = params.title;
     if (params.yaxis !== undefined) body.yaxis = params.yaxis;
@@ -104,12 +107,16 @@ export class BeeminderClient {
   }
 
   async refreshGoal(goalSlug: string) {
-    let response = await this.http.get(`/users/${this.user}/goals/${goalSlug}/refresh_graph.json`);
+    let response = await this.http.get(
+      `/users/${this.user}/goals/${goalSlug}/refresh_graph.json`
+    );
     return response.data;
   }
 
   async shortcircuit(goalSlug: string) {
-    let response = await this.http.post(`/users/${this.user}/goals/${goalSlug}/shortcircuit.json`);
+    let response = await this.http.post(
+      `/users/${this.user}/goals/${goalSlug}/shortcircuit.json`
+    );
     return response.data;
   }
 
@@ -119,7 +126,9 @@ export class BeeminderClient {
   }
 
   async cancelStepdown(goalSlug: string) {
-    let response = await this.http.post(`/users/${this.user}/goals/${goalSlug}/cancel_stepdown.json`);
+    let response = await this.http.post(
+      `/users/${this.user}/goals/${goalSlug}/cancel_stepdown.json`
+    );
     return response.data;
   }
 
@@ -137,48 +146,63 @@ export class BeeminderClient {
 
   // ── Datapoints ────────────────────────────────────────────────
 
-  async getDatapoints(goalSlug: string, params?: {
-    sort?: string;
-    count?: number;
-    page?: number;
-    per?: number;
-  }) {
+  async getDatapoints(
+    goalSlug: string,
+    params?: {
+      sort?: string;
+      count?: number;
+      page?: number;
+      per?: number;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.sort !== undefined) queryParams.sort = params.sort;
     if (params?.count !== undefined) queryParams.count = params.count;
     if (params?.page !== undefined) queryParams.page = params.page;
     if (params?.per !== undefined) queryParams.per = params.per;
 
-    let response = await this.http.get(`/users/${this.user}/goals/${goalSlug}/datapoints.json`, {
-      params: queryParams
-    });
+    let response = await this.http.get(
+      `/users/${this.user}/goals/${goalSlug}/datapoints.json`,
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 
-  async createDatapoint(goalSlug: string, params: {
-    value: number;
-    timestamp?: number;
-    daystamp?: string;
-    comment?: string;
-    requestid?: string;
-  }) {
+  async createDatapoint(
+    goalSlug: string,
+    params: {
+      value: number;
+      timestamp?: number;
+      daystamp?: string;
+      comment?: string;
+      requestid?: string;
+    }
+  ) {
     let body: Record<string, any> = { value: params.value };
     if (params.timestamp !== undefined) body.timestamp = params.timestamp;
     if (params.daystamp !== undefined) body.daystamp = params.daystamp;
     if (params.comment !== undefined) body.comment = params.comment;
     if (params.requestid !== undefined) body.requestid = params.requestid;
 
-    let response = await this.http.post(`/users/${this.user}/goals/${goalSlug}/datapoints.json`, body);
+    let response = await this.http.post(
+      `/users/${this.user}/goals/${goalSlug}/datapoints.json`,
+      body
+    );
     return response.data;
   }
 
-  async createDatapoints(goalSlug: string, datapoints: Array<{
-    value: number;
-    timestamp?: number;
-    daystamp?: string;
-    comment?: string;
-    requestid?: string;
-  }>) {
+  async createDatapoints(
+    goalSlug: string,
+    datapoints: Array<{
+      value: number;
+      timestamp?: number;
+      daystamp?: string;
+      comment?: string;
+      requestid?: string;
+    }>
+  ) {
     let response = await this.http.post(
       `/users/${this.user}/goals/${goalSlug}/datapoints/create_all.json`,
       { datapoints }
@@ -186,12 +210,16 @@ export class BeeminderClient {
     return response.data;
   }
 
-  async updateDatapoint(goalSlug: string, datapointId: string, params: {
-    value?: number;
-    timestamp?: number;
-    daystamp?: string;
-    comment?: string;
-  }) {
+  async updateDatapoint(
+    goalSlug: string,
+    datapointId: string,
+    params: {
+      value?: number;
+      timestamp?: number;
+      daystamp?: string;
+      comment?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.value !== undefined) body.value = params.value;
     if (params.timestamp !== undefined) body.timestamp = params.timestamp;

@@ -13,8 +13,8 @@ export class Client {
       headers: {
         Authorization: `Bearer ${config.token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -41,8 +41,8 @@ export class Client {
     let response = await this.axios.post('/Gage/List', null, {
       params: {
         start: params?.start ?? 0,
-        record_number: params?.recordNumber ?? DEFAULT_PAGE_SIZE,
-      },
+        record_number: params?.recordNumber ?? DEFAULT_PAGE_SIZE
+      }
     });
     return response.data;
   }
@@ -86,8 +86,8 @@ export class Client {
     let response = await this.axios.post('/Calibration/List', null, {
       params: {
         start: params?.start ?? 0,
-        record_number: params?.recordNumber ?? DEFAULT_PAGE_SIZE,
-      },
+        record_number: params?.recordNumber ?? DEFAULT_PAGE_SIZE
+      }
     });
     return response.data;
   }
@@ -172,20 +172,28 @@ export class Client {
   // ── Attachments ───────────────────────────────────────────
 
   async uploadGageAttachment(gageId: number, fileData: any): Promise<any> {
-    let response = await this.axios.post(`/Attachment/UploadGageAttachment/${gageId}`, fileData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    let response = await this.axios.post(
+      `/Attachment/UploadGageAttachment/${gageId}`,
+      fileData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
     return response.data;
   }
 
   async uploadCalibrationAttachment(calibrationId: number, fileData: any): Promise<any> {
-    let response = await this.axios.post(`/Attachment/UploadCalibrationAttachment/${calibrationId}`, fileData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    let response = await this.axios.post(
+      `/Attachment/UploadCalibrationAttachment/${calibrationId}`,
+      fileData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
     return response.data;
   }
 

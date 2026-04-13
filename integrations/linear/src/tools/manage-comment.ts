@@ -31,24 +31,23 @@ let mapCommentToOutput = (comment: any) => ({
   updatedAt: comment.updatedAt
 });
 
-export let createCommentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Comment',
-    key: 'create_comment',
-    description: `Creates a new comment on a Linear issue. Supports Markdown formatting and @mentions using resource URLs.`,
-    tags: {
-      readOnly: false
-    }
+export let createCommentTool = SlateTool.create(spec, {
+  name: 'Create Comment',
+  key: 'create_comment',
+  description: `Creates a new comment on a Linear issue. Supports Markdown formatting and @mentions using resource URLs.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    issueId: z.string().describe('Issue ID (UUID or identifier like ENG-123) to comment on'),
-    body: z.string().describe('Comment body in Markdown'),
-    parentId: z.string().optional().describe('Parent comment ID for threaded replies')
-  }))
+})
+  .input(
+    z.object({
+      issueId: z.string().describe('Issue ID (UUID or identifier like ENG-123) to comment on'),
+      body: z.string().describe('Comment body in Markdown'),
+      parentId: z.string().optional().describe('Parent comment ID for threaded replies')
+    })
+  )
   .output(commentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {
@@ -68,25 +67,25 @@ export let createCommentTool = SlateTool.create(
       output: mapCommentToOutput(result.comment),
       message: `Added comment to issue **${result.comment.issue?.identifier || ctx.input.issueId}**`
     };
-  }).build();
+  })
+  .build();
 
-export let updateCommentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Comment',
-    key: 'update_comment',
-    description: `Updates an existing comment on a Linear issue.`,
-    tags: {
-      readOnly: false
-    }
+export let updateCommentTool = SlateTool.create(spec, {
+  name: 'Update Comment',
+  key: 'update_comment',
+  description: `Updates an existing comment on a Linear issue.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    commentId: z.string().describe('Comment ID to update'),
-    body: z.string().describe('New comment body in Markdown')
-  }))
+})
+  .input(
+    z.object({
+      commentId: z.string().describe('Comment ID to update'),
+      body: z.string().describe('New comment body in Markdown')
+    })
+  )
   .output(commentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let result = await client.updateComment(ctx.input.commentId, {
@@ -101,27 +100,29 @@ export let updateCommentTool = SlateTool.create(
       output: mapCommentToOutput(result.comment),
       message: `Updated comment on issue **${result.comment.issue?.identifier || 'unknown'}**`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteCommentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Comment',
-    key: 'delete_comment',
-    description: `Permanently deletes a comment from a Linear issue.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteCommentTool = SlateTool.create(spec, {
+  name: 'Delete Comment',
+  key: 'delete_comment',
+  description: `Permanently deletes a comment from a Linear issue.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    commentId: z.string().describe('Comment ID to delete')
-  }))
-  .output(z.object({
-    success: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      commentId: z.string().describe('Comment ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.deleteComment(ctx.input.commentId);
 
@@ -131,4 +132,5 @@ export let deleteCommentTool = SlateTool.create(
         ? `Deleted comment **${ctx.input.commentId}**`
         : `Failed to delete comment ${ctx.input.commentId}`
     };
-  }).build();
+  })
+  .build();

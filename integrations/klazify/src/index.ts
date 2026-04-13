@@ -8,7 +8,7 @@ import {
   getTechStack,
   findSimilarDomains,
   checkParkedDomain,
-  getDomainRegistration,
+  getDomainRegistration
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getTechStack,
     findSimilarDomains,
     checkParkedDomain,
-    getDomainRegistration,
+    getDomainRegistration
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

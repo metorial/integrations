@@ -3,31 +3,38 @@ import { BigQueryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let readTableData = SlateTool.create(
-  spec,
-  {
-    name: 'Read Table Data',
-    key: 'read_table_data',
-    description: `Read rows directly from a BigQuery table without running a query job. Useful for quickly inspecting table contents. For complex filtering or aggregation, use **Execute SQL Query** instead.`,
-    tags: {
-      readOnly: true
-    }
+export let readTableData = SlateTool.create(spec, {
+  name: 'Read Table Data',
+  key: 'read_table_data',
+  description: `Read rows directly from a BigQuery table without running a query job. Useful for quickly inspecting table contents. For complex filtering or aggregation, use **Execute SQL Query** instead.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('Dataset containing the table'),
-    tableId: z.string().describe('Table to read rows from'),
-    maxResults: z.number().optional().describe('Maximum number of rows to return (default 100)'),
-    pageToken: z.string().optional().describe('Page token for paginated results'),
-    startIndex: z.string().optional().describe('Zero-based row index to start reading from'),
-    selectedFields: z.string().optional().describe('Comma-separated list of columns to return')
-  }))
-  .output(z.object({
-    totalRows: z.string(),
-    rows: z.array(z.any()),
-    pageToken: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('Dataset containing the table'),
+      tableId: z.string().describe('Table to read rows from'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Maximum number of rows to return (default 100)'),
+      pageToken: z.string().optional().describe('Page token for paginated results'),
+      startIndex: z.string().optional().describe('Zero-based row index to start reading from'),
+      selectedFields: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of columns to return')
+    })
+  )
+  .output(
+    z.object({
+      totalRows: z.string(),
+      rows: z.array(z.any()),
+      pageToken: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BigQueryClient({
       token: ctx.auth.token,
       projectId: ctx.config.projectId,
@@ -52,58 +59,83 @@ export let readTableData = SlateTool.create(
   })
   .build();
 
-export let insertRows = SlateTool.create(
-  spec,
-  {
-    name: 'Insert Rows (Streaming)',
-    key: 'insert_rows',
-    description: `Stream rows into a BigQuery table using the streaming insert API. Rows are available for querying almost immediately. Each row is a JSON object matching the table schema. Optionally provide an insertId per row for best-effort deduplication.`,
-    instructions: [
-      'Row field names must match the table schema exactly.',
-      'Streaming inserts are not free; they incur per-byte costs.',
-      'Streamed data cannot be updated or deleted for a short buffer period.'
-    ],
-    constraints: [
-      'Maximum 50,000 rows per request.',
-      'Maximum 10 MB per request.',
-      'Rows become available for queries within a few seconds, but may take up to 90 minutes before they are available for table copy/export.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let insertRows = SlateTool.create(spec, {
+  name: 'Insert Rows (Streaming)',
+  key: 'insert_rows',
+  description: `Stream rows into a BigQuery table using the streaming insert API. Rows are available for querying almost immediately. Each row is a JSON object matching the table schema. Optionally provide an insertId per row for best-effort deduplication.`,
+  instructions: [
+    'Row field names must match the table schema exactly.',
+    'Streaming inserts are not free; they incur per-byte costs.',
+    'Streamed data cannot be updated or deleted for a short buffer period.'
+  ],
+  constraints: [
+    'Maximum 50,000 rows per request.',
+    'Maximum 10 MB per request.',
+    'Rows become available for queries within a few seconds, but may take up to 90 minutes before they are available for table copy/export.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('Target dataset'),
-    tableId: z.string().describe('Target table'),
-    rows: z.array(z.object({
-      insertId: z.string().optional().describe('Unique ID for deduplication'),
-      json: z.record(z.string(), z.any()).describe('Row data as key-value pairs matching the table schema')
-    })).describe('Rows to insert'),
-    skipInvalidRows: z.boolean().optional().describe('Insert valid rows even if some are invalid'),
-    ignoreUnknownValues: z.boolean().optional().describe('Accept rows with values not matching the schema'),
-    templateSuffix: z.string().optional().describe('Append suffix to table name for template tables')
-  }))
-  .output(z.object({
-    insertedCount: z.number(),
-    insertErrors: z.array(z.object({
-      rowIndex: z.number(),
-      errors: z.array(z.any())
-    })).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('Target dataset'),
+      tableId: z.string().describe('Target table'),
+      rows: z
+        .array(
+          z.object({
+            insertId: z.string().optional().describe('Unique ID for deduplication'),
+            json: z
+              .record(z.string(), z.any())
+              .describe('Row data as key-value pairs matching the table schema')
+          })
+        )
+        .describe('Rows to insert'),
+      skipInvalidRows: z
+        .boolean()
+        .optional()
+        .describe('Insert valid rows even if some are invalid'),
+      ignoreUnknownValues: z
+        .boolean()
+        .optional()
+        .describe('Accept rows with values not matching the schema'),
+      templateSuffix: z
+        .string()
+        .optional()
+        .describe('Append suffix to table name for template tables')
+    })
+  )
+  .output(
+    z.object({
+      insertedCount: z.number(),
+      insertErrors: z
+        .array(
+          z.object({
+            rowIndex: z.number(),
+            errors: z.array(z.any())
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BigQueryClient({
       token: ctx.auth.token,
       projectId: ctx.config.projectId,
       location: ctx.config.location
     });
 
-    let result = await client.insertTableData(ctx.input.datasetId, ctx.input.tableId, ctx.input.rows, {
-      skipInvalidRows: ctx.input.skipInvalidRows,
-      ignoreUnknownValues: ctx.input.ignoreUnknownValues,
-      templateSuffix: ctx.input.templateSuffix
-    });
+    let result = await client.insertTableData(
+      ctx.input.datasetId,
+      ctx.input.tableId,
+      ctx.input.rows,
+      {
+        skipInvalidRows: ctx.input.skipInvalidRows,
+        ignoreUnknownValues: ctx.input.ignoreUnknownValues,
+        templateSuffix: ctx.input.templateSuffix
+      }
+    );
 
     let insertErrors = result.insertErrors?.map((e: any) => ({
       rowIndex: e.index,
@@ -123,32 +155,42 @@ export let insertRows = SlateTool.create(
   })
   .build();
 
-export let copyTable = SlateTool.create(
-  spec,
-  {
-    name: 'Copy Table',
-    key: 'copy_table',
-    description: `Copy a BigQuery table to another table, within the same dataset or across datasets and projects. Creates an asynchronous copy job.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let copyTable = SlateTool.create(spec, {
+  name: 'Copy Table',
+  key: 'copy_table',
+  description: `Copy a BigQuery table to another table, within the same dataset or across datasets and projects. Creates an asynchronous copy job.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    sourceDatasetId: z.string().describe('Source dataset'),
-    sourceTableId: z.string().describe('Source table'),
-    sourceProjectId: z.string().optional().describe('Source project (defaults to configured project)'),
-    destinationDatasetId: z.string().describe('Destination dataset'),
-    destinationTableId: z.string().describe('Destination table'),
-    destinationProjectId: z.string().optional().describe('Destination project (defaults to configured project)'),
-    writeDisposition: z.enum(['WRITE_TRUNCATE', 'WRITE_APPEND', 'WRITE_EMPTY']).optional().describe('How to handle existing destination table data')
-  }))
-  .output(z.object({
-    jobId: z.string(),
-    state: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sourceDatasetId: z.string().describe('Source dataset'),
+      sourceTableId: z.string().describe('Source table'),
+      sourceProjectId: z
+        .string()
+        .optional()
+        .describe('Source project (defaults to configured project)'),
+      destinationDatasetId: z.string().describe('Destination dataset'),
+      destinationTableId: z.string().describe('Destination table'),
+      destinationProjectId: z
+        .string()
+        .optional()
+        .describe('Destination project (defaults to configured project)'),
+      writeDisposition: z
+        .enum(['WRITE_TRUNCATE', 'WRITE_APPEND', 'WRITE_EMPTY'])
+        .optional()
+        .describe('How to handle existing destination table data')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string(),
+      state: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BigQueryClient({
       token: ctx.auth.token,
       projectId: ctx.config.projectId,

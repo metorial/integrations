@@ -76,24 +76,31 @@ Mailercloud supports webhooks that send real-time HTTP POST notifications to a s
 Webhooks can be triggered by the following triggered events: send, open, click, fail, spam, unsubscribe and bounce.
 
 ### Send Event
+
 Triggered when an email campaign is sent to recipients. Includes details about the recipients and campaign. The payload is delivered in batches (e.g., 1000 recipients per trigger).
 
 ### Open Event
+
 Triggered when a recipient opens an email. Includes the recipient's information and the timestamp of the open event.
 
 ### Click Event
+
 Triggered when a recipient clicks a link in an email. Includes the clicked URL and the timestamp of the click event.
 
 ### Fail Event
+
 Triggered when an email fails to deliver to a recipient.
 
 ### Spam Event
+
 Triggered when a recipient marks an email as spam.
 
 ### Unsubscribe Event
+
 Triggered when a recipient unsubscribes from the mailing list.
 
 ### Bounce Event
+
 Triggered when an email bounces (hard or soft bounce), indicating the recipient's mail server rejected the message.
 
 **Configuration:** When creating a webhook, you specify the target URL and which event types to listen for. In the event of a webhook delivery failure, a retry mechanism is activated. The system will automatically attempt to resend the webhook payload up to three times. Retries are triggered when the response is not 200, 201, or 204, or in cases of timeouts. The retry time interval is 10 seconds between each attempt.

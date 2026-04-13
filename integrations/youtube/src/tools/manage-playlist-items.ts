@@ -3,45 +3,59 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePlaylistItems = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Playlist Items',
-    key: 'manage_playlist_items',
-    description: `Add, reorder, or remove videos from a YouTube playlist. Use "add" to insert a video, "update" to change position, "remove" to delete an item, or "list" to view playlist contents.`,
-    instructions: [
-      'For listing items: set action to "list" and provide playlistId.',
-      'For adding a video: set action to "add" with playlistId and videoId.',
-      'For reordering: set action to "update" with playlistItemId, playlistId, videoId, and new position.',
-      'For removing: set action to "remove" with playlistItemId.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'update', 'remove']).describe('Action to perform'),
-    playlistId: z.string().optional().describe('Playlist ID (required for list, add, update)'),
-    playlistItemId: z.string().optional().describe('Playlist item ID (required for update and remove)'),
-    videoId: z.string().optional().describe('Video ID to add or the current video for update'),
-    position: z.number().optional().describe('Position in the playlist (0-indexed)'),
-    maxResults: z.number().min(1).max(50).optional().describe('Max results for list action'),
-    pageToken: z.string().optional().describe('Pagination token for list action')
-  }))
-  .output(z.object({
-    items: z.array(z.object({
-      playlistItemId: z.string(),
-      videoId: z.string().optional(),
-      title: z.string().optional(),
-      description: z.string().optional(),
-      position: z.number().optional(),
-      publishedAt: z.string().optional(),
-      channelTitle: z.string().optional()
-    })).optional(),
-    nextPageToken: z.string().optional(),
-    totalResults: z.number().optional(),
-    addedItemId: z.string().optional(),
-    removed: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let managePlaylistItems = SlateTool.create(spec, {
+  name: 'Manage Playlist Items',
+  key: 'manage_playlist_items',
+  description: `Add, reorder, or remove videos from a YouTube playlist. Use "add" to insert a video, "update" to change position, "remove" to delete an item, or "list" to view playlist contents.`,
+  instructions: [
+    'For listing items: set action to "list" and provide playlistId.',
+    'For adding a video: set action to "add" with playlistId and videoId.',
+    'For reordering: set action to "update" with playlistItemId, playlistId, videoId, and new position.',
+    'For removing: set action to "remove" with playlistItemId.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'add', 'update', 'remove']).describe('Action to perform'),
+      playlistId: z
+        .string()
+        .optional()
+        .describe('Playlist ID (required for list, add, update)'),
+      playlistItemId: z
+        .string()
+        .optional()
+        .describe('Playlist item ID (required for update and remove)'),
+      videoId: z
+        .string()
+        .optional()
+        .describe('Video ID to add or the current video for update'),
+      position: z.number().optional().describe('Position in the playlist (0-indexed)'),
+      maxResults: z.number().min(1).max(50).optional().describe('Max results for list action'),
+      pageToken: z.string().optional().describe('Pagination token for list action')
+    })
+  )
+  .output(
+    z.object({
+      items: z
+        .array(
+          z.object({
+            playlistItemId: z.string(),
+            videoId: z.string().optional(),
+            title: z.string().optional(),
+            description: z.string().optional(),
+            position: z.number().optional(),
+            publishedAt: z.string().optional(),
+            channelTitle: z.string().optional()
+          })
+        )
+        .optional(),
+      nextPageToken: z.string().optional(),
+      totalResults: z.number().optional(),
+      addedItemId: z.string().optional(),
+      removed: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -54,7 +68,7 @@ export let managePlaylistItems = SlateTool.create(
         pageToken: ctx.input.pageToken
       });
 
-      let items = response.items.map((item) => ({
+      let items = response.items.map(item => ({
         playlistItemId: item.id,
         videoId: item.contentDetails?.videoId || item.snippet?.resourceId?.videoId,
         title: item.snippet?.title,
@@ -86,12 +100,14 @@ export let managePlaylistItems = SlateTool.create(
       return {
         output: {
           addedItemId: item.id,
-          items: [{
-            playlistItemId: item.id,
-            videoId: ctx.input.videoId,
-            title: item.snippet?.title,
-            position: item.snippet?.position
-          }]
+          items: [
+            {
+              playlistItemId: item.id,
+              videoId: ctx.input.videoId,
+              title: item.snippet?.title,
+              position: item.snippet?.position
+            }
+          ]
         },
         message: `Added video \`${ctx.input.videoId}\` to playlist at position ${item.snippet?.position ?? 'end'}.`
       };
@@ -110,12 +126,14 @@ export let managePlaylistItems = SlateTool.create(
 
       return {
         output: {
-          items: [{
-            playlistItemId: item.id,
-            videoId: ctx.input.videoId,
-            title: item.snippet?.title,
-            position: item.snippet?.position
-          }]
+          items: [
+            {
+              playlistItemId: item.id,
+              videoId: ctx.input.videoId,
+              title: item.snippet?.title,
+              position: item.snippet?.position
+            }
+          ]
         },
         message: `Updated playlist item position to ${item.snippet?.position ?? 'unknown'}.`
       };
@@ -129,4 +147,5 @@ export let managePlaylistItems = SlateTool.create(
         message: `Removed item \`${ctx.input.playlistItemId}\` from playlist.`
       };
     }
-  }).build();
+  })
+  .build();

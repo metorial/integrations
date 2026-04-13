@@ -2,36 +2,38 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let ticketEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Ticket Events',
-    key: 'ticket_events',
-    description: 'Triggers when a ticket is created, updated, status changes, assigned, resolved, or receives a comment. Configure the webhook URL in RepairShopr under Admin > Notification Center.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of ticket event'),
-    ticketId: z.number().describe('Ticket ID'),
-    webhookPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    ticketId: z.number().describe('Ticket ID'),
-    number: z.string().optional().describe('Ticket number'),
-    subject: z.string().optional().describe('Ticket subject'),
-    description: z.string().optional().describe('Problem description'),
-    status: z.string().optional().describe('Ticket status'),
-    priority: z.string().optional().describe('Priority level'),
-    customerId: z.number().optional().describe('Associated customer ID'),
-    customerName: z.string().optional().describe('Customer name'),
-    assignedTo: z.string().optional().describe('Assigned technician'),
-    ticketType: z.string().optional().describe('Ticket type'),
-    dueDate: z.string().optional().describe('Due date'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
+export let ticketEvents = SlateTrigger.create(spec, {
+  name: 'Ticket Events',
+  key: 'ticket_events',
+  description:
+    'Triggers when a ticket is created, updated, status changes, assigned, resolved, or receives a comment. Configure the webhook URL in RepairShopr under Admin > Notification Center.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of ticket event'),
+      ticketId: z.number().describe('Ticket ID'),
+      webhookPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.number().describe('Ticket ID'),
+      number: z.string().optional().describe('Ticket number'),
+      subject: z.string().optional().describe('Ticket subject'),
+      description: z.string().optional().describe('Problem description'),
+      status: z.string().optional().describe('Ticket status'),
+      priority: z.string().optional().describe('Priority level'),
+      customerId: z.number().optional().describe('Associated customer ID'),
+      customerName: z.string().optional().describe('Customer name'),
+      assignedTo: z.string().optional().describe('Assigned technician'),
+      ticketType: z.string().optional().describe('Ticket type'),
+      dueDate: z.string().optional().describe('Due date'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -48,15 +50,17 @@ export let ticketEvents = SlateTrigger.create(
       let eventType = body.type || body.event || body.action || 'updated';
 
       return {
-        inputs: [{
-          eventType: String(eventType),
-          ticketId: Number(ticketId),
-          webhookPayload: body,
-        }],
+        inputs: [
+          {
+            eventType: String(eventType),
+            ticketId: Number(ticketId),
+            webhookPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let ticket = ctx.input.webhookPayload?.ticket || ctx.input.webhookPayload || {};
       let eventType = ctx.input.eventType.toLowerCase().replace(/\s+/g, '_');
 
@@ -93,9 +97,9 @@ export let ticketEvents = SlateTrigger.create(
           ticketType: ticket.ticket_type,
           dueDate: ticket.due_date,
           createdAt: ticket.created_at,
-          updatedAt: ticket.updated_at,
-        },
+          updatedAt: ticket.updated_at
+        }
       };
-    },
+    }
   })
   .build();

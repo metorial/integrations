@@ -3,50 +3,59 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFunction = SlateTool.create(
-  spec,
-  {
-    name: 'Get Function',
-    key: 'get_function',
-    description: `Retrieve detailed information about a Lambda function including its configuration, code location, concurrency settings, and tags. Supports fetching a specific version or alias using the **qualifier** parameter.`,
-    tags: {
-      readOnly: true
-    }
+export let getFunction = SlateTool.create(spec, {
+  name: 'Get Function',
+  key: 'get_function',
+  description: `Retrieve detailed information about a Lambda function including its configuration, code location, concurrency settings, and tags. Supports fetching a specific version or alias using the **qualifier** parameter.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    functionName: z.string().describe('Function name, ARN, or partial ARN'),
-    qualifier: z.string().optional().describe('Version number or alias name')
-  }))
-  .output(z.object({
-    functionName: z.string().optional().describe('Name of the function'),
-    functionArn: z.string().optional().describe('ARN of the function'),
-    runtime: z.string().optional().describe('Runtime environment'),
-    role: z.string().optional().describe('Execution role ARN'),
-    handler: z.string().optional().describe('Function handler'),
-    codeSize: z.number().optional().describe('Size of the deployment package in bytes'),
-    codeSha256: z.string().optional().describe('SHA256 hash of the deployment package'),
-    description: z.string().optional().describe('Function description'),
-    timeout: z.number().optional().describe('Execution timeout in seconds'),
-    memorySize: z.number().optional().describe('Memory allocated in MB'),
-    lastModified: z.string().optional().describe('Last modified timestamp'),
-    version: z.string().optional().describe('Function version'),
-    state: z.string().optional().describe('Current state'),
-    stateReason: z.string().optional().describe('Reason for current state'),
-    packageType: z.string().optional().describe('Package type (Zip or Image)'),
-    architectures: z.array(z.string()).optional().describe('Instruction set architectures'),
-    environment: z.record(z.string(), z.string()).optional().describe('Environment variables'),
-    layers: z.array(z.object({
-      arn: z.string().optional(),
-      codeSize: z.number().optional()
-    })).optional().describe('Attached layers'),
-    codeLocation: z.string().optional().describe('Pre-signed URL to download the code'),
-    reservedConcurrency: z.number().optional().describe('Reserved concurrent executions'),
-    tags: z.record(z.string(), z.string()).optional().describe('Resource tags'),
-    ephemeralStorageSize: z.number().optional().describe('Ephemeral storage size in MB'),
-    loggingFormat: z.string().optional().describe('Log format (Text or JSON)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      functionName: z.string().describe('Function name, ARN, or partial ARN'),
+      qualifier: z.string().optional().describe('Version number or alias name')
+    })
+  )
+  .output(
+    z.object({
+      functionName: z.string().optional().describe('Name of the function'),
+      functionArn: z.string().optional().describe('ARN of the function'),
+      runtime: z.string().optional().describe('Runtime environment'),
+      role: z.string().optional().describe('Execution role ARN'),
+      handler: z.string().optional().describe('Function handler'),
+      codeSize: z.number().optional().describe('Size of the deployment package in bytes'),
+      codeSha256: z.string().optional().describe('SHA256 hash of the deployment package'),
+      description: z.string().optional().describe('Function description'),
+      timeout: z.number().optional().describe('Execution timeout in seconds'),
+      memorySize: z.number().optional().describe('Memory allocated in MB'),
+      lastModified: z.string().optional().describe('Last modified timestamp'),
+      version: z.string().optional().describe('Function version'),
+      state: z.string().optional().describe('Current state'),
+      stateReason: z.string().optional().describe('Reason for current state'),
+      packageType: z.string().optional().describe('Package type (Zip or Image)'),
+      architectures: z.array(z.string()).optional().describe('Instruction set architectures'),
+      environment: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Environment variables'),
+      layers: z
+        .array(
+          z.object({
+            arn: z.string().optional(),
+            codeSize: z.number().optional()
+          })
+        )
+        .optional()
+        .describe('Attached layers'),
+      codeLocation: z.string().optional().describe('Pre-signed URL to download the code'),
+      reservedConcurrency: z.number().optional().describe('Reserved concurrent executions'),
+      tags: z.record(z.string(), z.string()).optional().describe('Resource tags'),
+      ephemeralStorageSize: z.number().optional().describe('Ephemeral storage size in MB'),
+      loggingFormat: z.string().optional().describe('Log format (Text or JSON)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let result = await client.getFunction(ctx.input.functionName, ctx.input.qualifier);
 

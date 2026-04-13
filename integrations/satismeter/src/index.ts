@@ -10,7 +10,7 @@ import {
   trackEventTool,
   insertResponseTool,
   getUnsubscribesTool,
-  updateUnsubscribesTool,
+  updateUnsubscribesTool
 } from './tools';
 import { surveyResponseTrigger } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     trackEventTool,
     insertResponseTool,
     getUnsubscribesTool,
-    updateUnsubscribesTool,
+    updateUnsubscribesTool
   ],
-  triggers: [
-    surveyResponseTrigger,
-  ],
+  triggers: [surveyResponseTrigger]
 });

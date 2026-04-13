@@ -30,6 +30,7 @@ You can also include the API Key as a query parameter (`access_token`), though u
 **Account name (required):** All API requests are scoped to an account. The API base URL includes the account name (your Doppler email address) in the path, e.g., `https://restapi.fromdoppler.com/accounts/{account_email}/...`
 
 So authentication requires two credentials:
+
 1. **API Key** — obtained from the Doppler Control Panel under Advanced Preferences.
 2. **Account name** — the email address associated with your Doppler account, used in the URL path.
 

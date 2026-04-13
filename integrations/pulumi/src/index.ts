@@ -19,14 +19,9 @@ import {
   listOrgMembers,
   manageAccessTokens,
   listPolicyPacks,
-  manageWebhooks,
+  manageWebhooks
 } from './tools';
-import {
-  stackEvents,
-  deploymentEvents,
-  driftEvents,
-  policyViolationEvents,
-} from './triggers';
+import { stackEvents, deploymentEvents, driftEvents, policyViolationEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,12 +44,7 @@ export let provider = Slate.create({
     listOrgMembers,
     manageAccessTokens,
     listPolicyPacks,
-    manageWebhooks,
+    manageWebhooks
   ],
-  triggers: [
-    stackEvents,
-    deploymentEvents,
-    driftEvents,
-    policyViolationEvents,
-  ],
+  triggers: [stackEvents, deploymentEvents, driftEvents, policyViolationEvents]
 });

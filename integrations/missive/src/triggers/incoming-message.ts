@@ -3,45 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let incomingMessage = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incoming Message',
-    key: 'incoming_message',
-    description: 'Triggered when a new message is received across email, SMS, WhatsApp, Facebook Messenger, or Twilio Chat channels.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of incoming message event'),
-    ruleId: z.string().describe('Webhook rule ID'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    messageId: z.string().optional().describe('Latest message ID'),
-    raw: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    conversationId: z.string().optional().describe('Conversation ID'),
-    conversationSubject: z.string().optional().describe('Conversation subject'),
-    messageId: z.string().optional().describe('Latest message ID'),
-    messageSubject: z.string().optional().describe('Message subject'),
-    messagePreview: z.string().optional().describe('Message preview text'),
-    messageBody: z.string().optional().describe('Full message body'),
-    messageType: z.string().optional().describe('Message type'),
-    fromAddress: z.string().optional().describe('Sender address'),
-    fromName: z.string().optional().describe('Sender name'),
-    toAddresses: z.array(z.object({
-      address: z.string().optional(),
-      name: z.string().optional(),
-    })).optional().describe('Recipient addresses'),
-    teamId: z.string().optional().describe('Team ID'),
-    teamName: z.string().optional().describe('Team name'),
-    organizationId: z.string().optional().describe('Organization ID'),
-    organizationName: z.string().optional().describe('Organization name'),
-    sharedLabelIds: z.array(z.string()).optional().describe('Applied shared label IDs'),
-    assigneeIds: z.array(z.string()).optional().describe('Assignee user IDs'),
-    deliveredAt: z.number().optional().describe('Message delivery timestamp'),
-  }))
+export let incomingMessage = SlateTrigger.create(spec, {
+  name: 'Incoming Message',
+  key: 'incoming_message',
+  description:
+    'Triggered when a new message is received across email, SMS, WhatsApp, Facebook Messenger, or Twilio Chat channels.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of incoming message event'),
+      ruleId: z.string().describe('Webhook rule ID'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      messageId: z.string().optional().describe('Latest message ID'),
+      raw: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string().optional().describe('Conversation ID'),
+      conversationSubject: z.string().optional().describe('Conversation subject'),
+      messageId: z.string().optional().describe('Latest message ID'),
+      messageSubject: z.string().optional().describe('Message subject'),
+      messagePreview: z.string().optional().describe('Message preview text'),
+      messageBody: z.string().optional().describe('Full message body'),
+      messageType: z.string().optional().describe('Message type'),
+      fromAddress: z.string().optional().describe('Sender address'),
+      fromName: z.string().optional().describe('Sender name'),
+      toAddresses: z
+        .array(
+          z.object({
+            address: z.string().optional(),
+            name: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Recipient addresses'),
+      teamId: z.string().optional().describe('Team ID'),
+      teamName: z.string().optional().describe('Team name'),
+      organizationId: z.string().optional().describe('Organization ID'),
+      organizationName: z.string().optional().describe('Organization name'),
+      sharedLabelIds: z.array(z.string()).optional().describe('Applied shared label IDs'),
+      assigneeIds: z.array(z.string()).optional().describe('Assignee user IDs'),
+      deliveredAt: z.number().optional().describe('Message delivery timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let hookTypes = [
@@ -49,7 +56,7 @@ export let incomingMessage = SlateTrigger.create(
         'incoming_sms_message',
         'incoming_whatsapp_message',
         'incoming_facebook_message',
-        'incoming_twilio_chat_message',
+        'incoming_twilio_chat_message'
       ];
 
       let hookIds: string[] = [];
@@ -57,7 +64,7 @@ export let incomingMessage = SlateTrigger.create(
         try {
           let data = await client.createHook({
             type: hookType,
-            url: ctx.input.webhookBaseUrl,
+            url: ctx.input.webhookBaseUrl
           });
           let hookId = data.hooks?.id || data.id;
           if (hookId) hookIds.push(hookId);
@@ -67,11 +74,11 @@ export let incomingMessage = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { hookIds },
+        registrationDetails: { hookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let hookIds = (ctx.input.registrationDetails as any)?.hookIds || [];
       for (let hookId of hookIds) {
@@ -83,8 +90,8 @@ export let incomingMessage = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let conversationId = data.conversation?.id;
       let messageId = data.latest_message?.id;
@@ -97,20 +104,23 @@ export let incomingMessage = SlateTrigger.create(
             ruleId: data.rule?.id || '',
             conversationId,
             messageId,
-            raw: data,
-          },
-        ],
+            raw: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.raw;
       let conversation = raw.conversation || {};
       let message = raw.latest_message || {};
 
       return {
         type: ctx.input.eventType || 'incoming_message',
-        id: ctx.input.messageId || ctx.input.ruleId || `${ctx.input.conversationId}-${Date.now()}`,
+        id:
+          ctx.input.messageId ||
+          ctx.input.ruleId ||
+          `${ctx.input.conversationId}-${Date.now()}`,
         output: {
           conversationId: conversation.id,
           conversationSubject: conversation.subject,
@@ -123,7 +133,7 @@ export let incomingMessage = SlateTrigger.create(
           fromName: message.from_field?.name,
           toAddresses: message.to_fields?.map((f: any) => ({
             address: f.address,
-            name: f.name,
+            name: f.name
           })),
           teamId: conversation.team?.id,
           teamName: conversation.team?.name,
@@ -131,9 +141,9 @@ export let incomingMessage = SlateTrigger.create(
           organizationName: conversation.organization?.name,
           sharedLabelIds: conversation.shared_labels?.map((l: any) => l.id),
           assigneeIds: conversation.assignees?.map((a: any) => a.id),
-          deliveredAt: message.delivered_at,
-        },
+          deliveredAt: message.delivered_at
+        }
       };
-    },
+    }
   })
   .build();

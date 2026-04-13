@@ -4,17 +4,17 @@ export class MockServiceClient {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; apiKeyId?: string; apiKeySecret?: string }) {
-    let authHeader = params.apiKeyId && params.apiKeySecret
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      ? `Basic ${Buffer.from(`${params.apiKeyId}:${params.apiKeySecret}`).toString('base64')}`
-      : `Basic ${params.token}`;
+    let authHeader =
+      params.apiKeyId && params.apiKeySecret
+        ? `Basic ${Buffer.from(`${params.apiKeyId}:${params.apiKeySecret}`).toString('base64')}`
+        : `Basic ${params.token}`;
 
     this.axios = createAxios({
       baseURL: 'https://mock.blazemeter.com/api/v1',
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -30,36 +30,43 @@ export class MockServiceClient {
     return response.data?.result;
   }
 
-  async createVirtualService(workspaceId: number, params: {
-    name: string;
-    description?: string;
-    serviceUrl?: string;
-    thinkTime?: number;
-    unmatchedRequestPolicy?: string;
-    liveSystemUrl?: string;
-  }): Promise<any> {
+  async createVirtualService(
+    workspaceId: number,
+    params: {
+      name: string;
+      description?: string;
+      serviceUrl?: string;
+      thinkTime?: number;
+      unmatchedRequestPolicy?: string;
+      liveSystemUrl?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       name: params.name,
-      workspaceId,
+      workspaceId
     };
     if (params.description) body.description = params.description;
     if (params.serviceUrl) body.serviceUrl = params.serviceUrl;
     if (params.thinkTime !== undefined) body.thinkTime = params.thinkTime;
-    if (params.unmatchedRequestPolicy) body.unmatchedRequestPolicy = params.unmatchedRequestPolicy;
+    if (params.unmatchedRequestPolicy)
+      body.unmatchedRequestPolicy = params.unmatchedRequestPolicy;
     if (params.liveSystemUrl) body.liveSystemUrl = params.liveSystemUrl;
 
     let response = await this.axios.post(`/workspaces/${workspaceId}/service-mocks`, body);
     return response.data?.result;
   }
 
-  async updateVirtualService(serviceId: number, params: {
-    name?: string;
-    description?: string;
-    serviceUrl?: string;
-    thinkTime?: number;
-    unmatchedRequestPolicy?: string;
-    liveSystemUrl?: string;
-  }): Promise<any> {
+  async updateVirtualService(
+    serviceId: number,
+    params: {
+      name?: string;
+      description?: string;
+      serviceUrl?: string;
+      thinkTime?: number;
+      unmatchedRequestPolicy?: string;
+      liveSystemUrl?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/service-mocks/${serviceId}`, params);
     return response.data?.result;
   }
@@ -85,20 +92,23 @@ export class MockServiceClient {
     return response.data?.result || [];
   }
 
-  async createTransaction(serviceId: number, params: {
-    name: string;
-    request: {
-      method: string;
-      url: string;
-      headers?: Record<string, string>;
-      body?: string;
-    };
-    response: {
-      statusCode: number;
-      headers?: Record<string, string>;
-      body?: string;
-    };
-  }): Promise<any> {
+  async createTransaction(
+    serviceId: number,
+    params: {
+      name: string;
+      request: {
+        method: string;
+        url: string;
+        headers?: Record<string, string>;
+        body?: string;
+      };
+      response: {
+        statusCode: number;
+        headers?: Record<string, string>;
+        body?: string;
+      };
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/service-mocks/${serviceId}/transactions`, params);
     return response.data?.result;
   }

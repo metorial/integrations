@@ -109,7 +109,7 @@ export class Client {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: 'https://api.realvalidation.com/rpvWebService/',
+      baseURL: 'https://api.realvalidation.com/rpvWebService/'
     });
   }
 
@@ -118,20 +118,23 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
 
   async turboStandard(phone: string): Promise<TurboStandardResponse> {
-    let response = await this.axios.get<TurboStandardResponse>('RealPhoneValidationTurbo.php', {
-      params: {
-        phone,
-        token: this.token,
-        output: 'json',
-      },
-    });
+    let response = await this.axios.get<TurboStandardResponse>(
+      'RealPhoneValidationTurbo.php',
+      {
+        params: {
+          phone,
+          token: this.token,
+          output: 'json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -140,8 +143,8 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
@@ -151,8 +154,8 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
@@ -162,8 +165,8 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
@@ -173,8 +176,8 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
@@ -184,8 +187,8 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
@@ -195,32 +198,41 @@ export class Client {
       params: {
         phone,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }
 
   async fraudCheck(phone: string): Promise<FraudCheckResponse> {
-    let response = await this.axios.get<FraudCheckResponse>('RealPhoneValidationFraudChk.php', {
-      params: {
-        phone,
-        token: this.token,
-        output: 'json',
-      },
-    });
+    let response = await this.axios.get<FraudCheckResponse>(
+      'RealPhoneValidationFraudChk.php',
+      {
+        params: {
+          phone,
+          token: this.token,
+          output: 'json'
+        }
+      }
+    );
     return response.data;
   }
 
-  async reassignedNumberLookup(phone: string, contactDate: string): Promise<ReassignedNumberResponse> {
-    let response = await this.axios.get<ReassignedNumberResponse>('ReassignedNumberLookup.php', {
-      params: {
-        phone,
-        contact_date: contactDate,
-        token: this.token,
-        output: 'json',
-      },
-    });
+  async reassignedNumberLookup(
+    phone: string,
+    contactDate: string
+  ): Promise<ReassignedNumberResponse> {
+    let response = await this.axios.get<ReassignedNumberResponse>(
+      'ReassignedNumberLookup.php',
+      {
+        params: {
+          phone,
+          contact_date: contactDate,
+          token: this.token,
+          output: 'json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -229,8 +241,8 @@ export class Client {
       params: {
         email,
         token: this.token,
-        output: 'json',
-      },
+        output: 'json'
+      }
     });
     return response.data;
   }

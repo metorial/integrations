@@ -3,39 +3,66 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fullstoryEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'FullStory Events',
-    key: 'fullstory_events',
-    description: 'Triggers when FullStory system events occur, including notes created on sessions, segments created, segment threshold alerts, custom recording events, and metric alerts.'
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('The webhook event type (e.g., note.created, segment.created, segment.trend.alert, recording.event.custom, metric.alert)'),
-    webhookVersion: z.number().optional().describe('Webhook payload version'),
-    eventData: z.record(z.string(), z.any()).describe('Event-specific data payload')
-  }))
-  .output(z.object({
-    eventName: z.string().describe('The event type that triggered this webhook'),
-    noteText: z.string().optional().describe('Note text (for note.created events)'),
-    noteAuthorEmail: z.string().optional().describe('Email of the note author (for note.created events)'),
-    sessionReplayUrl: z.string().optional().describe('Session replay URL (for note and custom event types)'),
-    segmentName: z.string().optional().describe('Segment name (for segment events)'),
-    segmentId: z.string().optional().describe('Segment ID (for segment events)'),
-    segmentUrl: z.string().optional().describe('Segment URL (for segment events)'),
-    alertThreshold: z.number().optional().describe('Alert threshold value (for segment.trend.alert events)'),
-    alertDirection: z.string().optional().describe('Alert direction - above or below (for segment.trend.alert events)'),
-    alertActiveUsers: z.number().optional().describe('Number of active users that triggered the alert'),
-    customEventName: z.string().optional().describe('Custom event name (for recording.event.custom events)'),
-    customEventProperties: z.record(z.string(), z.any()).optional().describe('Custom event properties (for recording.event.custom events)'),
-    metricName: z.string().optional().describe('Metric name (for metric.alert events)'),
-    metricValue: z.number().optional().describe('Metric value that triggered the alert'),
-    userId: z.string().optional().describe('FullStory user ID associated with the event'),
-    rawData: z.record(z.string(), z.any()).describe('Complete raw event data')
-  }))
+export let fullstoryEvents = SlateTrigger.create(spec, {
+  name: 'FullStory Events',
+  key: 'fullstory_events',
+  description:
+    'Triggers when FullStory system events occur, including notes created on sessions, segments created, segment threshold alerts, custom recording events, and metric alerts.'
+})
+  .input(
+    z.object({
+      eventName: z
+        .string()
+        .describe(
+          'The webhook event type (e.g., note.created, segment.created, segment.trend.alert, recording.event.custom, metric.alert)'
+        ),
+      webhookVersion: z.number().optional().describe('Webhook payload version'),
+      eventData: z.record(z.string(), z.any()).describe('Event-specific data payload')
+    })
+  )
+  .output(
+    z.object({
+      eventName: z.string().describe('The event type that triggered this webhook'),
+      noteText: z.string().optional().describe('Note text (for note.created events)'),
+      noteAuthorEmail: z
+        .string()
+        .optional()
+        .describe('Email of the note author (for note.created events)'),
+      sessionReplayUrl: z
+        .string()
+        .optional()
+        .describe('Session replay URL (for note and custom event types)'),
+      segmentName: z.string().optional().describe('Segment name (for segment events)'),
+      segmentId: z.string().optional().describe('Segment ID (for segment events)'),
+      segmentUrl: z.string().optional().describe('Segment URL (for segment events)'),
+      alertThreshold: z
+        .number()
+        .optional()
+        .describe('Alert threshold value (for segment.trend.alert events)'),
+      alertDirection: z
+        .string()
+        .optional()
+        .describe('Alert direction - above or below (for segment.trend.alert events)'),
+      alertActiveUsers: z
+        .number()
+        .optional()
+        .describe('Number of active users that triggered the alert'),
+      customEventName: z
+        .string()
+        .optional()
+        .describe('Custom event name (for recording.event.custom events)'),
+      customEventProperties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom event properties (for recording.event.custom events)'),
+      metricName: z.string().optional().describe('Metric name (for metric.alert events)'),
+      metricValue: z.number().optional().describe('Metric value that triggered the alert'),
+      userId: z.string().optional().describe('FullStory user ID associated with the event'),
+      rawData: z.record(z.string(), z.any()).describe('Complete raw event data')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let allEventTypes = [
@@ -57,14 +84,14 @@ export let fullstoryEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { endpointId: string };
       await client.deleteWebhookEndpoint(details.endpointId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventName = body.eventName || body.event_name || '';
       let version = body.version;
@@ -81,7 +108,7 @@ export let fullstoryEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.eventData;
       let eventName = ctx.input.eventName;
 
@@ -95,14 +122,16 @@ export let fullstoryEvents = SlateTrigger.create(
         output.userId = data.userId || data.user_id;
       }
       if (data.sessionUrl || data.session_url || data.fsUrl || data.fs_url) {
-        output.sessionReplayUrl = data.sessionUrl || data.session_url || data.fsUrl || data.fs_url;
+        output.sessionReplayUrl =
+          data.sessionUrl || data.session_url || data.fsUrl || data.fs_url;
       }
 
       // Note events
       if (eventName === 'note.created') {
         output.noteText = data.text || data.noteText || data.note_text;
         output.noteAuthorEmail = data.authorEmail || data.author_email || data.email;
-        output.sessionReplayUrl = data.sessionUrl || data.session_url || data.fsUrl || data.fs_url;
+        output.sessionReplayUrl =
+          data.sessionUrl || data.session_url || data.fsUrl || data.fs_url;
       }
 
       // Segment events
@@ -122,8 +151,10 @@ export let fullstoryEvents = SlateTrigger.create(
       // Custom recording events
       if (eventName === 'recording.event.custom') {
         output.customEventName = data.eventName || data.event_name || data.name;
-        output.customEventProperties = data.properties || data.eventProperties || data.event_properties;
-        output.sessionReplayUrl = data.sessionUrl || data.session_url || data.fsUrl || data.fs_url;
+        output.customEventProperties =
+          data.properties || data.eventProperties || data.event_properties;
+        output.sessionReplayUrl =
+          data.sessionUrl || data.session_url || data.fsUrl || data.fs_url;
       }
 
       // Metric alerts

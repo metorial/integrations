@@ -14,7 +14,7 @@ import {
   subscribeEmail,
   unsubscribeEmail,
   listUnsubscribers,
-  listCategories,
+  listCategories
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     subscribeEmail,
     unsubscribeEmail,
     listUnsubscribers,
-    listCategories,
+    listCategories
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

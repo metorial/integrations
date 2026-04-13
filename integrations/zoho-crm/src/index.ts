@@ -14,7 +14,7 @@ import {
   manageTags,
   getRelatedRecords,
   sendEmail,
-  getOrganization,
+  getOrganization
 } from './tools';
 import { recordChanges } from './triggers';
 
@@ -34,9 +34,7 @@ export let provider = Slate.create({
     manageTags,
     getRelatedRecords,
     sendEmail,
-    getOrganization,
+    getOrganization
   ],
-  triggers: [
-    recordChanges,
-  ],
+  triggers: [recordChanges]
 });

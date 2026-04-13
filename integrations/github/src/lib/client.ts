@@ -7,22 +7,24 @@ export class GitHubClient {
     this.http = createAxios({
       baseURL: 'https://api.github.com',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
     });
   }
 
   // ─── Repositories ──────────────────────────────────────────────
 
-  async listRepositories(params: {
-    type?: string;
-    sort?: string;
-    direction?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listRepositories(
+    params: {
+      type?: string;
+      sort?: string;
+      direction?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get('/user/repos', { params });
     return response.data;
   }
@@ -46,7 +48,7 @@ export class GitHubClient {
       ...rest,
       auto_init: autoInit,
       gitignore_template: gitignoreTemplate,
-      license_template: licenseTemplate,
+      license_template: licenseTemplate
     };
 
     let url = org ? `/orgs/${org}/repos` : '/user/repos';
@@ -54,17 +56,21 @@ export class GitHubClient {
     return response.data;
   }
 
-  async updateRepository(owner: string, repo: string, data: {
-    name?: string;
-    description?: string;
-    homepage?: string;
-    private?: boolean;
-    hasIssues?: boolean;
-    hasProjects?: boolean;
-    hasWiki?: boolean;
-    defaultBranch?: string;
-    archived?: boolean;
-  }) {
+  async updateRepository(
+    owner: string,
+    repo: string,
+    data: {
+      name?: string;
+      description?: string;
+      homepage?: string;
+      private?: boolean;
+      hasIssues?: boolean;
+      hasProjects?: boolean;
+      hasWiki?: boolean;
+      defaultBranch?: string;
+      archived?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -86,22 +92,26 @@ export class GitHubClient {
 
   // ─── Issues ────────────────────────────────────────────────────
 
-  async listIssues(owner: string, repo: string, params: {
-    state?: string;
-    labels?: string;
-    sort?: string;
-    direction?: string;
-    since?: string;
-    perPage?: number;
-    page?: number;
-    assignee?: string;
-    milestone?: string;
-  } = {}) {
+  async listIssues(
+    owner: string,
+    repo: string,
+    params: {
+      state?: string;
+      labels?: string;
+      sort?: string;
+      direction?: string;
+      since?: string;
+      perPage?: number;
+      page?: number;
+      assignee?: string;
+      milestone?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/issues`, {
       params: {
         ...params,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
@@ -111,64 +121,91 @@ export class GitHubClient {
     return response.data;
   }
 
-  async createIssue(owner: string, repo: string, data: {
-    title: string;
-    body?: string;
-    assignees?: string[];
-    labels?: string[];
-    milestone?: number;
-  }) {
+  async createIssue(
+    owner: string,
+    repo: string,
+    data: {
+      title: string;
+      body?: string;
+      assignees?: string[];
+      labels?: string[];
+      milestone?: number;
+    }
+  ) {
     let response = await this.http.post(`/repos/${owner}/${repo}/issues`, data);
     return response.data;
   }
 
-  async updateIssue(owner: string, repo: string, issueNumber: number, data: {
-    title?: string;
-    body?: string;
-    state?: string;
-    stateReason?: string;
-    assignees?: string[];
-    labels?: string[];
-    milestone?: number | null;
-  }) {
+  async updateIssue(
+    owner: string,
+    repo: string,
+    issueNumber: number,
+    data: {
+      title?: string;
+      body?: string;
+      state?: string;
+      stateReason?: string;
+      assignees?: string[];
+      labels?: string[];
+      milestone?: number | null;
+    }
+  ) {
     let body: Record<string, any> = { ...data };
     if (data.stateReason !== undefined) {
       body.state_reason = data.stateReason;
       delete body.stateReason;
     }
-    let response = await this.http.patch(`/repos/${owner}/${repo}/issues/${issueNumber}`, body);
+    let response = await this.http.patch(
+      `/repos/${owner}/${repo}/issues/${issueNumber}`,
+      body
+    );
     return response.data;
   }
 
   async createIssueComment(owner: string, repo: string, issueNumber: number, body: string) {
-    let response = await this.http.post(`/repos/${owner}/${repo}/issues/${issueNumber}/comments`, { body });
+    let response = await this.http.post(
+      `/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+      { body }
+    );
     return response.data;
   }
 
-  async listIssueComments(owner: string, repo: string, issueNumber: number, params: {
-    perPage?: number;
-    page?: number;
-    since?: string;
-  } = {}) {
-    let response = await this.http.get(`/repos/${owner}/${repo}/issues/${issueNumber}/comments`, {
-      params: { per_page: params.perPage, page: params.page, since: params.since },
-    });
+  async listIssueComments(
+    owner: string,
+    repo: string,
+    issueNumber: number,
+    params: {
+      perPage?: number;
+      page?: number;
+      since?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(
+      `/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+      {
+        params: { per_page: params.perPage, page: params.page, since: params.since }
+      }
+    );
     return response.data;
   }
 
   // ─── Pull Requests ─────────────────────────────────────────────
 
-  async listPullRequests(owner: string, repo: string, params: {
-    state?: string;
-    head?: string;
-    base?: string;
-    sort?: string;
-    direction?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listPullRequests(
+    owner: string,
+    repo: string,
+    params: {
+      state?: string;
+      head?: string;
+      base?: string;
+      sort?: string;
+      direction?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/pulls`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
@@ -178,57 +215,75 @@ export class GitHubClient {
     return response.data;
   }
 
-  async createPullRequest(owner: string, repo: string, data: {
-    title: string;
-    head: string;
-    base: string;
-    body?: string;
-    draft?: boolean;
-    maintainerCanModify?: boolean;
-  }) {
+  async createPullRequest(
+    owner: string,
+    repo: string,
+    data: {
+      title: string;
+      head: string;
+      base: string;
+      body?: string;
+      draft?: boolean;
+      maintainerCanModify?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {
       title: data.title,
       head: data.head,
       base: data.base,
       body: data.body,
       draft: data.draft,
-      maintainer_can_modify: data.maintainerCanModify,
+      maintainer_can_modify: data.maintainerCanModify
     };
     let response = await this.http.post(`/repos/${owner}/${repo}/pulls`, body);
     return response.data;
   }
 
-  async updatePullRequest(owner: string, repo: string, pullNumber: number, data: {
-    title?: string;
-    body?: string;
-    state?: string;
-    base?: string;
-    maintainerCanModify?: boolean;
-  }) {
+  async updatePullRequest(
+    owner: string,
+    repo: string,
+    pullNumber: number,
+    data: {
+      title?: string;
+      body?: string;
+      state?: string;
+      base?: string;
+      maintainerCanModify?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.title !== undefined) body.title = data.title;
     if (data.body !== undefined) body.body = data.body;
     if (data.state !== undefined) body.state = data.state;
     if (data.base !== undefined) body.base = data.base;
-    if (data.maintainerCanModify !== undefined) body.maintainer_can_modify = data.maintainerCanModify;
+    if (data.maintainerCanModify !== undefined)
+      body.maintainer_can_modify = data.maintainerCanModify;
 
     let response = await this.http.patch(`/repos/${owner}/${repo}/pulls/${pullNumber}`, body);
     return response.data;
   }
 
-  async mergePullRequest(owner: string, repo: string, pullNumber: number, data: {
-    commitTitle?: string;
-    commitMessage?: string;
-    mergeMethod?: string;
-    sha?: string;
-  } = {}) {
+  async mergePullRequest(
+    owner: string,
+    repo: string,
+    pullNumber: number,
+    data: {
+      commitTitle?: string;
+      commitMessage?: string;
+      mergeMethod?: string;
+      sha?: string;
+    } = {}
+  ) {
     let body: Record<string, any> = {};
     if (data.commitTitle) body.commit_title = data.commitTitle;
     if (data.commitMessage) body.commit_message = data.commitMessage;
     if (data.mergeMethod) body.merge_method = data.mergeMethod;
     if (data.sha) body.sha = data.sha;
 
-    let response = await this.http.put(`/repos/${owner}/${repo}/pulls/${pullNumber}/merge`, body);
+    let response = await this.http.put(
+      `/repos/${owner}/${repo}/pulls/${pullNumber}/merge`,
+      body
+    );
     return response.data;
   }
 
@@ -237,36 +292,56 @@ export class GitHubClient {
     return response.data;
   }
 
-  async createPullRequestReview(owner: string, repo: string, pullNumber: number, data: {
-    body?: string;
-    event: string;
-    comments?: Array<{ path: string; position?: number; body: string }>;
-  }) {
-    let response = await this.http.post(`/repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, data);
+  async createPullRequestReview(
+    owner: string,
+    repo: string,
+    pullNumber: number,
+    data: {
+      body?: string;
+      event: string;
+      comments?: Array<{ path: string; position?: number; body: string }>;
+    }
+  ) {
+    let response = await this.http.post(
+      `/repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+      data
+    );
     return response.data;
   }
 
-  async requestReviewers(owner: string, repo: string, pullNumber: number, data: {
-    reviewers?: string[];
-    teamReviewers?: string[];
-  }) {
+  async requestReviewers(
+    owner: string,
+    repo: string,
+    pullNumber: number,
+    data: {
+      reviewers?: string[];
+      teamReviewers?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.reviewers) body.reviewers = data.reviewers;
     if (data.teamReviewers) body.team_reviewers = data.teamReviewers;
 
-    let response = await this.http.post(`/repos/${owner}/${repo}/pulls/${pullNumber}/requested_reviewers`, body);
+    let response = await this.http.post(
+      `/repos/${owner}/${repo}/pulls/${pullNumber}/requested_reviewers`,
+      body
+    );
     return response.data;
   }
 
   // ─── Branches ──────────────────────────────────────────────────
 
-  async listBranches(owner: string, repo: string, params: {
-    perPage?: number;
-    page?: number;
-    protected?: boolean;
-  } = {}) {
+  async listBranches(
+    owner: string,
+    repo: string,
+    params: {
+      perPage?: number;
+      page?: number;
+      protected?: boolean;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/branches`, {
-      params: { per_page: params.perPage, page: params.page, protected: params.protected },
+      params: { per_page: params.perPage, page: params.page, protected: params.protected }
     });
     return response.data;
   }
@@ -280,83 +355,115 @@ export class GitHubClient {
 
   async getContent(owner: string, repo: string, path: string, ref?: string) {
     let response = await this.http.get(`/repos/${owner}/${repo}/contents/${path}`, {
-      params: ref ? { ref } : undefined,
+      params: ref ? { ref } : undefined
     });
     return response.data;
   }
 
-  async createOrUpdateFile(owner: string, repo: string, path: string, data: {
-    message: string;
-    content: string;
-    sha?: string;
-    branch?: string;
-  }) {
+  async createOrUpdateFile(
+    owner: string,
+    repo: string,
+    path: string,
+    data: {
+      message: string;
+      content: string;
+      sha?: string;
+      branch?: string;
+    }
+  ) {
     let response = await this.http.put(`/repos/${owner}/${repo}/contents/${path}`, data);
     return response.data;
   }
 
-  async deleteFile(owner: string, repo: string, path: string, data: {
-    message: string;
-    sha: string;
-    branch?: string;
-  }) {
-    let response = await this.http.delete(`/repos/${owner}/${repo}/contents/${path}`, { data });
+  async deleteFile(
+    owner: string,
+    repo: string,
+    path: string,
+    data: {
+      message: string;
+      sha: string;
+      branch?: string;
+    }
+  ) {
+    let response = await this.http.delete(`/repos/${owner}/${repo}/contents/${path}`, {
+      data
+    });
     return response.data;
   }
 
   // ─── Labels ────────────────────────────────────────────────────
 
-  async listLabels(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listLabels(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/labels`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
 
-  async createLabel(owner: string, repo: string, data: { name: string; color?: string; description?: string }) {
+  async createLabel(
+    owner: string,
+    repo: string,
+    data: { name: string; color?: string; description?: string }
+  ) {
     let response = await this.http.post(`/repos/${owner}/${repo}/labels`, data);
     return response.data;
   }
 
   // ─── Milestones ────────────────────────────────────────────────
 
-  async listMilestones(owner: string, repo: string, params: {
-    state?: string;
-    sort?: string;
-    direction?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listMilestones(
+    owner: string,
+    repo: string,
+    params: {
+      state?: string;
+      sort?: string;
+      direction?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/milestones`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
   // ─── Workflows / Actions ───────────────────────────────────────
 
-  async listWorkflows(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listWorkflows(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/actions/workflows`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
 
-  async listWorkflowRuns(owner: string, repo: string, params: {
-    workflowId?: number | string;
-    branch?: string;
-    event?: string;
-    status?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listWorkflowRuns(
+    owner: string,
+    repo: string,
+    params: {
+      workflowId?: number | string;
+      branch?: string;
+      event?: string;
+      status?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let url = params.workflowId
       ? `/repos/${owner}/${repo}/actions/workflows/${params.workflowId}/runs`
       : `/repos/${owner}/${repo}/actions/runs`;
 
     let { workflowId, ...queryParams } = params;
     let response = await this.http.get(url, {
-      params: { ...queryParams, per_page: queryParams.perPage },
+      params: { ...queryParams, per_page: queryParams.perPage }
     });
     return response.data;
   }
@@ -366,11 +473,19 @@ export class GitHubClient {
     return response.data;
   }
 
-  async triggerWorkflowDispatch(owner: string, repo: string, workflowId: number | string, data: {
-    ref: string;
-    inputs?: Record<string, string>;
-  }) {
-    await this.http.post(`/repos/${owner}/${repo}/actions/workflows/${workflowId}/dispatches`, data);
+  async triggerWorkflowDispatch(
+    owner: string,
+    repo: string,
+    workflowId: number | string,
+    data: {
+      ref: string;
+      inputs?: Record<string, string>;
+    }
+  ) {
+    await this.http.post(
+      `/repos/${owner}/${repo}/actions/workflows/${workflowId}/dispatches`,
+      data
+    );
   }
 
   async cancelWorkflowRun(owner: string, repo: string, runId: number) {
@@ -381,22 +496,31 @@ export class GitHubClient {
     await this.http.post(`/repos/${owner}/${repo}/actions/runs/${runId}/rerun`);
   }
 
-  async listWorkflowRunJobs(owner: string, repo: string, runId: number, params: {
-    filter?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listWorkflowRunJobs(
+    owner: string,
+    repo: string,
+    runId: number,
+    params: {
+      filter?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/actions/runs/${runId}/jobs`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
   // ─── Releases ──────────────────────────────────────────────────
 
-  async listReleases(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listReleases(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/releases`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
@@ -411,22 +535,26 @@ export class GitHubClient {
     return response.data;
   }
 
-  async createRelease(owner: string, repo: string, data: {
-    tagName: string;
-    targetCommitish?: string;
-    name?: string;
-    body?: string;
-    draft?: boolean;
-    prerelease?: boolean;
-    generateReleaseNotes?: boolean;
-  }) {
+  async createRelease(
+    owner: string,
+    repo: string,
+    data: {
+      tagName: string;
+      targetCommitish?: string;
+      name?: string;
+      body?: string;
+      draft?: boolean;
+      prerelease?: boolean;
+      generateReleaseNotes?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {
       tag_name: data.tagName,
       name: data.name,
       body: data.body,
       draft: data.draft,
       prerelease: data.prerelease,
-      generate_release_notes: data.generateReleaseNotes,
+      generate_release_notes: data.generateReleaseNotes
     };
     if (data.targetCommitish) body.target_commitish = data.targetCommitish;
 
@@ -436,50 +564,62 @@ export class GitHubClient {
 
   // ─── Search ────────────────────────────────────────────────────
 
-  async searchRepositories(query: string, params: {
-    sort?: string;
-    order?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async searchRepositories(
+    query: string,
+    params: {
+      sort?: string;
+      order?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get('/search/repositories', {
-      params: { q: query, ...params, per_page: params.perPage },
+      params: { q: query, ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
-  async searchCode(query: string, params: {
-    sort?: string;
-    order?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async searchCode(
+    query: string,
+    params: {
+      sort?: string;
+      order?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get('/search/code', {
-      params: { q: query, ...params, per_page: params.perPage },
+      params: { q: query, ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
-  async searchIssues(query: string, params: {
-    sort?: string;
-    order?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async searchIssues(
+    query: string,
+    params: {
+      sort?: string;
+      order?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get('/search/issues', {
-      params: { q: query, ...params, per_page: params.perPage },
+      params: { q: query, ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
-  async searchUsers(query: string, params: {
-    sort?: string;
-    order?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async searchUsers(
+    query: string,
+    params: {
+      sort?: string;
+      order?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get('/search/users', {
-      params: { q: query, ...params, per_page: params.perPage },
+      params: { q: query, ...params, per_page: params.perPage }
     });
     return response.data;
   }
@@ -500,7 +640,7 @@ export class GitHubClient {
 
   async listUserOrgs(params: { perPage?: number; page?: number } = {}) {
     let response = await this.http.get('/user/orgs', {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
@@ -510,22 +650,28 @@ export class GitHubClient {
     return response.data;
   }
 
-  async listOrgMembers(org: string, params: { role?: string; perPage?: number; page?: number } = {}) {
+  async listOrgMembers(
+    org: string,
+    params: { role?: string; perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/orgs/${org}/members`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
-  async listOrgRepos(org: string, params: {
-    type?: string;
-    sort?: string;
-    direction?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listOrgRepos(
+    org: string,
+    params: {
+      type?: string;
+      sort?: string;
+      direction?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/orgs/${org}/repos`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
@@ -534,24 +680,28 @@ export class GitHubClient {
 
   async listOrgTeams(org: string, params: { perPage?: number; page?: number } = {}) {
     let response = await this.http.get(`/orgs/${org}/teams`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
 
   // ─── Commits ───────────────────────────────────────────────────
 
-  async listCommits(owner: string, repo: string, params: {
-    sha?: string;
-    path?: string;
-    author?: string;
-    since?: string;
-    until?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listCommits(
+    owner: string,
+    repo: string,
+    params: {
+      sha?: string;
+      path?: string;
+      author?: string;
+      since?: string;
+      until?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/commits`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
@@ -563,16 +713,20 @@ export class GitHubClient {
 
   // ─── Collaborators ────────────────────────────────────────────
 
-  async listCollaborators(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listCollaborators(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/collaborators`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
 
   async addCollaborator(owner: string, repo: string, username: string, permission?: string) {
     let response = await this.http.put(`/repos/${owner}/${repo}/collaborators/${username}`, {
-      permission,
+      permission
     });
     return response.data;
   }
@@ -583,13 +737,17 @@ export class GitHubClient {
 
   // ─── Webhooks ──────────────────────────────────────────────────
 
-  async createWebhook(owner: string, repo: string, data: {
-    url: string;
-    contentType?: string;
-    secret?: string;
-    events?: string[];
-    active?: boolean;
-  }) {
+  async createWebhook(
+    owner: string,
+    repo: string,
+    data: {
+      url: string;
+      contentType?: string;
+      secret?: string;
+      events?: string[];
+      active?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/repos/${owner}/${repo}/hooks`, {
       name: 'web',
       active: data.active ?? true,
@@ -597,8 +755,8 @@ export class GitHubClient {
       config: {
         url: data.url,
         content_type: data.contentType ?? 'json',
-        secret: data.secret,
-      },
+        secret: data.secret
+      }
     });
     return response.data;
   }
@@ -607,9 +765,13 @@ export class GitHubClient {
     await this.http.delete(`/repos/${owner}/${repo}/hooks/${hookId}`);
   }
 
-  async listWebhooks(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listWebhooks(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/hooks`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
@@ -618,7 +780,7 @@ export class GitHubClient {
 
   async listGists(params: { since?: string; perPage?: number; page?: number } = {}) {
     let response = await this.http.get('/gists', {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
@@ -637,10 +799,13 @@ export class GitHubClient {
     return response.data;
   }
 
-  async updateGist(gistId: string, data: {
-    description?: string;
-    files?: Record<string, { content?: string; filename?: string } | null>;
-  }) {
+  async updateGist(
+    gistId: string,
+    data: {
+      description?: string;
+      files?: Record<string, { content?: string; filename?: string } | null>;
+    }
+  ) {
     let response = await this.http.patch(`/gists/${gistId}`, data);
     return response.data;
   }
@@ -651,26 +816,36 @@ export class GitHubClient {
 
   // ─── Check Runs / Statuses ─────────────────────────────────────
 
-  async listCheckRunsForRef(owner: string, repo: string, ref: string, params: {
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listCheckRunsForRef(
+    owner: string,
+    repo: string,
+    ref: string,
+    params: {
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/commits/${ref}/check-runs`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
 
-  async createCommitStatus(owner: string, repo: string, sha: string, data: {
-    state: string;
-    targetUrl?: string;
-    description?: string;
-    context?: string;
-  }) {
+  async createCommitStatus(
+    owner: string,
+    repo: string,
+    sha: string,
+    data: {
+      state: string;
+      targetUrl?: string;
+      description?: string;
+      context?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       state: data.state,
       description: data.description,
-      context: data.context,
+      context: data.context
     };
     if (data.targetUrl) body.target_url = data.targetUrl;
 
@@ -685,78 +860,106 @@ export class GitHubClient {
 
   // ─── Deployments ───────────────────────────────────────────────
 
-  async listDeployments(owner: string, repo: string, params: {
-    environment?: string;
-    sha?: string;
-    ref?: string;
-    perPage?: number;
-    page?: number;
-  } = {}) {
+  async listDeployments(
+    owner: string,
+    repo: string,
+    params: {
+      environment?: string;
+      sha?: string;
+      ref?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/deployments`, {
-      params: { ...params, per_page: params.perPage },
+      params: { ...params, per_page: params.perPage }
     });
     return response.data;
   }
 
-  async createDeployment(owner: string, repo: string, data: {
-    ref: string;
-    environment?: string;
-    description?: string;
-    autoMerge?: boolean;
-    requiredContexts?: string[];
-  }) {
+  async createDeployment(
+    owner: string,
+    repo: string,
+    data: {
+      ref: string;
+      environment?: string;
+      description?: string;
+      autoMerge?: boolean;
+      requiredContexts?: string[];
+    }
+  ) {
     let body: Record<string, any> = {
       ref: data.ref,
       environment: data.environment,
       description: data.description,
       auto_merge: data.autoMerge,
-      required_contexts: data.requiredContexts,
+      required_contexts: data.requiredContexts
     };
 
     let response = await this.http.post(`/repos/${owner}/${repo}/deployments`, body);
     return response.data;
   }
 
-  async createDeploymentStatus(owner: string, repo: string, deploymentId: number, data: {
-    state: string;
-    targetUrl?: string;
-    description?: string;
-    environment?: string;
-    environmentUrl?: string;
-  }) {
+  async createDeploymentStatus(
+    owner: string,
+    repo: string,
+    deploymentId: number,
+    data: {
+      state: string;
+      targetUrl?: string;
+      description?: string;
+      environment?: string;
+      environmentUrl?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       state: data.state,
       description: data.description,
-      environment: data.environment,
+      environment: data.environment
     };
     if (data.targetUrl) body.target_url = data.targetUrl;
     if (data.environmentUrl) body.environment_url = data.environmentUrl;
 
-    let response = await this.http.post(`/repos/${owner}/${repo}/deployments/${deploymentId}/statuses`, body);
+    let response = await this.http.post(
+      `/repos/${owner}/${repo}/deployments/${deploymentId}/statuses`,
+      body
+    );
     return response.data;
   }
 
   // ─── Tags ──────────────────────────────────────────────────────
 
-  async listTags(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listTags(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/tags`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }
 
   // ─── Forks ─────────────────────────────────────────────────────
 
-  async createFork(owner: string, repo: string, data: { organization?: string; name?: string } = {}) {
+  async createFork(
+    owner: string,
+    repo: string,
+    data: { organization?: string; name?: string } = {}
+  ) {
     let response = await this.http.post(`/repos/${owner}/${repo}/forks`, data);
     return response.data;
   }
 
   // ─── Stars ─────────────────────────────────────────────────────
 
-  async listStargazers(owner: string, repo: string, params: { perPage?: number; page?: number } = {}) {
+  async listStargazers(
+    owner: string,
+    repo: string,
+    params: { perPage?: number; page?: number } = {}
+  ) {
     let response = await this.http.get(`/repos/${owner}/${repo}/stargazers`, {
-      params: { per_page: params.perPage, page: params.page },
+      params: { per_page: params.perPage, page: params.page }
     });
     return response.data;
   }

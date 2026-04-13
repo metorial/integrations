@@ -14,7 +14,10 @@ export class DsmClient {
     this.dsmBaseUrl = config.dsmBaseUrl;
   }
 
-  async getDesignTokens(format: string = 'json', exportFormat: string = 'lookup'): Promise<any> {
+  async getDesignTokens(
+    format: string = 'json',
+    exportFormat: string = 'lookup'
+  ): Promise<any> {
     let url = `${this.dsmBaseUrl}/style-data.${format}`;
     let params: Record<string, string> = {};
     if (format === 'json') {
@@ -24,9 +27,9 @@ export class DsmClient {
     let axios = createAxios();
     let response = await axios.get(url, {
       headers: {
-        'X-API-KEY': this.token,
+        'X-API-KEY': this.token
       },
-      params,
+      params
     });
 
     return response.data;
@@ -38,9 +41,9 @@ export class DsmClient {
     let axios = createAxios();
     let response = await axios.get(url, {
       headers: {
-        'X-API-KEY': this.token,
+        'X-API-KEY': this.token
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     return response.data;
@@ -52,9 +55,9 @@ export class DsmClient {
     let axios = createAxios();
     let response = await axios.get(url, {
       headers: {
-        'X-API-KEY': this.token,
+        'X-API-KEY': this.token
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     return response.data;
@@ -66,8 +69,8 @@ export class DsmClient {
     let axios = createAxios();
     let response = await axios.get(url, {
       headers: {
-        'X-API-KEY': this.token,
-      },
+        'X-API-KEY': this.token
+      }
     });
 
     return response.data;
@@ -92,9 +95,9 @@ export class ScimClient {
     return createAxios({
       baseURL: this.scimBaseUrl,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/scim+json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/scim+json'
+      }
     });
   }
 
@@ -128,30 +131,33 @@ export class ScimClient {
       userName: user.userName,
       name: {
         givenName: user.givenName,
-        familyName: user.familyName,
+        familyName: user.familyName
       },
       emails: [
         {
           value: user.email,
           type: 'work',
-          primary: true,
-        },
+          primary: true
+        }
       ],
-      active: user.active ?? true,
+      active: user.active ?? true
     });
     return response.data;
   }
 
-  async updateUser(userId: string, updates: {
-    userName?: string;
-    givenName?: string;
-    familyName?: string;
-    email?: string;
-    active?: boolean;
-  }): Promise<any> {
+  async updateUser(
+    userId: string,
+    updates: {
+      userName?: string;
+      givenName?: string;
+      familyName?: string;
+      email?: string;
+      active?: boolean;
+    }
+  ): Promise<any> {
     let axios = this.getAxios();
     let body: Record<string, any> = {
-      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User']
     };
 
     if (updates.userName !== undefined) body['userName'] = updates.userName;
@@ -176,9 +182,9 @@ export class ScimClient {
       Operations: [
         {
           op: 'replace',
-          value: { active: false },
-        },
-      ],
+          value: { active: false }
+        }
+      ]
     });
     return response.data;
   }

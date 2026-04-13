@@ -9,28 +9,29 @@ let discussionSummarySchema = z.object({
   status: z.string().describe('Status (open, closed, merged)'),
   author: z.string().optional().describe('Username of the author'),
   isPullRequest: z.boolean().describe('Whether this is a pull request'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let listDiscussionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Discussions',
-    key: 'list_discussions',
-    description: `List discussions and pull requests on a Hugging Face repository. Returns summaries including title, status, and whether each item is a PR.`,
-    tags: {
-      readOnly: true
-    }
+export let listDiscussionsTool = SlateTool.create(spec, {
+  name: 'List Discussions',
+  key: 'list_discussions',
+  description: `List discussions and pull requests on a Hugging Face repository. Returns summaries including title, status, and whether each item is a PR.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
-    repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")')
-  }))
-  .output(z.object({
-    discussions: z.array(discussionSummarySchema).describe('List of discussions')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
+      repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")')
+    })
+  )
+  .output(
+    z.object({
+      discussions: z.array(discussionSummarySchema).describe('List of discussions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubClient({ token: ctx.auth.token });
 
     let result = await client.listDiscussions({
@@ -44,47 +45,54 @@ export let listDiscussionsTool = SlateTool.create(
       status: d.status,
       author: d.author?.name || d.author,
       isPullRequest: d.isPullRequest || false,
-      createdAt: d.createdAt,
+      createdAt: d.createdAt
     }));
 
     return {
       output: { discussions },
       message: `Found **${discussions.length}** discussion(s) in **${ctx.input.repoId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let getDiscussionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Discussion',
-    key: 'get_discussion',
-    description: `Get detailed information about a specific discussion or pull request, including all comments and events.`,
-    tags: {
-      readOnly: true
-    }
+export let getDiscussionTool = SlateTool.create(spec, {
+  name: 'Get Discussion',
+  key: 'get_discussion',
+  description: `Get detailed information about a specific discussion or pull request, including all comments and events.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
-    repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
-    discussionNum: z.number().describe('Discussion number')
-  }))
-  .output(z.object({
-    discussionNum: z.number().describe('Discussion number'),
-    title: z.string().describe('Title'),
-    status: z.string().describe('Status'),
-    author: z.string().optional().describe('Author username'),
-    isPullRequest: z.boolean().describe('Whether this is a pull request'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    events: z.array(z.object({
-      eventId: z.string().optional().describe('Event ID'),
-      type: z.string().optional().describe('Event type'),
+})
+  .input(
+    z.object({
+      repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
+      repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
+      discussionNum: z.number().describe('Discussion number')
+    })
+  )
+  .output(
+    z.object({
+      discussionNum: z.number().describe('Discussion number'),
+      title: z.string().describe('Title'),
+      status: z.string().describe('Status'),
       author: z.string().optional().describe('Author username'),
-      content: z.string().optional().describe('Comment content'),
-      createdAt: z.string().optional().describe('Event timestamp')
-    })).optional().describe('List of events/comments on the discussion')
-  }))
-  .handleInvocation(async (ctx) => {
+      isPullRequest: z.boolean().describe('Whether this is a pull request'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      events: z
+        .array(
+          z.object({
+            eventId: z.string().optional().describe('Event ID'),
+            type: z.string().optional().describe('Event type'),
+            author: z.string().optional().describe('Author username'),
+            content: z.string().optional().describe('Comment content'),
+            createdAt: z.string().optional().describe('Event timestamp')
+          })
+        )
+        .optional()
+        .describe('List of events/comments on the discussion')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubClient({ token: ctx.auth.token });
 
     let d = await client.getDiscussion({
@@ -98,7 +106,7 @@ export let getDiscussionTool = SlateTool.create(
       type: e.type,
       author: e.author?.name || e.author,
       content: e.data?.latest?.raw || e.content,
-      createdAt: e.createdAt,
+      createdAt: e.createdAt
     }));
 
     return {
@@ -109,35 +117,41 @@ export let getDiscussionTool = SlateTool.create(
         author: d.author?.name || d.author,
         isPullRequest: d.isPullRequest || false,
         createdAt: d.createdAt,
-        events,
+        events
       },
       message: `Retrieved discussion **#${ctx.input.discussionNum}**: "${d.title}" (${d.status}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createDiscussionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Discussion',
-    key: 'create_discussion',
-    description: `Create a new discussion or pull request on a Hugging Face repository. Use this for opening conversations, requesting changes, or proposing contributions.`,
-    tags: {
-      destructive: false
-    }
+export let createDiscussionTool = SlateTool.create(spec, {
+  name: 'Create Discussion',
+  key: 'create_discussion',
+  description: `Create a new discussion or pull request on a Hugging Face repository. Use this for opening conversations, requesting changes, or proposing contributions.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
-    repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
-    title: z.string().describe('Title of the discussion'),
-    description: z.string().optional().describe('Initial comment/description'),
-    isPullRequest: z.boolean().optional().default(false).describe('Create as pull request instead of discussion')
-  }))
-  .output(z.object({
-    discussionNum: z.number().describe('Created discussion number'),
-    url: z.string().optional().describe('URL to the discussion')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
+      repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
+      title: z.string().describe('Title of the discussion'),
+      description: z.string().optional().describe('Initial comment/description'),
+      isPullRequest: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Create as pull request instead of discussion')
+    })
+  )
+  .output(
+    z.object({
+      discussionNum: z.number().describe('Created discussion number'),
+      url: z.string().optional().describe('URL to the discussion')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubClient({ token: ctx.auth.token });
 
     let result = await client.createDiscussion({
@@ -155,29 +169,31 @@ export let createDiscussionTool = SlateTool.create(
       },
       message: `Created ${ctx.input.isPullRequest ? 'pull request' : 'discussion'} **#${result.num}**: "${ctx.input.title}" on **${ctx.input.repoId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let commentOnDiscussionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Comment on Discussion',
-    key: 'comment_on_discussion',
-    description: `Post a comment on an existing discussion or pull request.`,
-    tags: {
-      destructive: false
-    }
+export let commentOnDiscussionTool = SlateTool.create(spec, {
+  name: 'Comment on Discussion',
+  key: 'comment_on_discussion',
+  description: `Post a comment on an existing discussion or pull request.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
-    repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
-    discussionNum: z.number().describe('Discussion number'),
-    comment: z.string().describe('Comment text (supports markdown)')
-  }))
-  .output(z.object({
-    posted: z.boolean().describe('Whether the comment was posted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
+      repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
+      discussionNum: z.number().describe('Discussion number'),
+      comment: z.string().describe('Comment text (supports markdown)')
+    })
+  )
+  .output(
+    z.object({
+      posted: z.boolean().describe('Whether the comment was posted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubClient({ token: ctx.auth.token });
 
     await client.commentOnDiscussion({
@@ -191,31 +207,33 @@ export let commentOnDiscussionTool = SlateTool.create(
       output: { posted: true },
       message: `Posted comment on discussion **#${ctx.input.discussionNum}** in **${ctx.input.repoId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateDiscussionStatusTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Discussion Status',
-    key: 'update_discussion_status',
-    description: `Open or close a discussion or pull request. Optionally merge a pull request instead of just closing it.`,
-    tags: {
-      destructive: false
-    }
+export let updateDiscussionStatusTool = SlateTool.create(spec, {
+  name: 'Update Discussion Status',
+  key: 'update_discussion_status',
+  description: `Open or close a discussion or pull request. Optionally merge a pull request instead of just closing it.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
-    repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
-    discussionNum: z.number().describe('Discussion number'),
-    action: z.enum(['open', 'close', 'merge']).describe('Action to perform'),
-    comment: z.string().optional().describe('Optional comment with the status change')
-  }))
-  .output(z.object({
-    discussionNum: z.number().describe('Discussion number'),
-    newStatus: z.string().describe('Updated status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      repoType: z.enum(['model', 'dataset', 'space']).describe('Type of repository'),
+      repoId: z.string().describe('Full repository ID (e.g. "username/repo-name")'),
+      discussionNum: z.number().describe('Discussion number'),
+      action: z.enum(['open', 'close', 'merge']).describe('Action to perform'),
+      comment: z.string().optional().describe('Optional comment with the status change')
+    })
+  )
+  .output(
+    z.object({
+      discussionNum: z.number().describe('Discussion number'),
+      newStatus: z.string().describe('Updated status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'merge') {
@@ -249,4 +267,5 @@ export let updateDiscussionStatusTool = SlateTool.create(
       },
       message: `${ctx.input.action === 'close' ? 'Closed' : 'Reopened'} discussion **#${ctx.input.discussionNum}** in **${ctx.input.repoId}**.`
     };
-  }).build();
+  })
+  .build();

@@ -15,55 +15,72 @@ let memberOutputSchema = z.object({
   emailOpenedCount: z.number().describe('Number of emails opened'),
   lastSeenAt: z.string().nullable().describe('Last activity timestamp'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let manageMember = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Member',
-    key: 'manage_member',
-    description: `Create, read, update, or delete a member (subscriber) on your Ghost site. Members can be free or paid subscribers with associated labels and newsletter subscriptions.`,
-    instructions: [
-      'For **creating**: set `action` to `"create"` and provide at least an `email`.',
-      'For **reading**: set `action` to `"read"` and provide `memberId`.',
-      'For **updating**: set `action` to `"update"`, provide `memberId` plus fields to change.',
-      'For **deleting**: set `action` to `"delete"` and provide `memberId`.',
-      'You can assign labels and newsletter subscriptions when creating or updating.',
-    ],
-    constraints: [
-      'The `comped` field grants free access to paid content without a Stripe subscription.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'read', 'update', 'delete']).describe('Operation to perform'),
-    memberId: z.string().optional().describe('Member ID (required for read/update/delete)'),
-    email: z.string().optional().describe('Member email address'),
-    name: z.string().optional().describe('Member name'),
-    note: z.string().optional().describe('Internal note about the member'),
-    labels: z.array(z.object({
-      name: z.string().describe('Label name'),
-    })).optional().describe('Labels to assign to the member'),
-    newsletters: z.array(z.object({
-      newsletterId: z.string().describe('Newsletter ID to subscribe to'),
-    })).optional().describe('Newsletters to subscribe the member to'),
-    comped: z.boolean().optional().describe('Whether the member has complimentary premium access'),
-  }))
+export let manageMember = SlateTool.create(spec, {
+  name: 'Manage Member',
+  key: 'manage_member',
+  description: `Create, read, update, or delete a member (subscriber) on your Ghost site. Members can be free or paid subscribers with associated labels and newsletter subscriptions.`,
+  instructions: [
+    'For **creating**: set `action` to `"create"` and provide at least an `email`.',
+    'For **reading**: set `action` to `"read"` and provide `memberId`.',
+    'For **updating**: set `action` to `"update"`, provide `memberId` plus fields to change.',
+    'For **deleting**: set `action` to `"delete"` and provide `memberId`.',
+    'You can assign labels and newsletter subscriptions when creating or updating.'
+  ],
+  constraints: [
+    'The `comped` field grants free access to paid content without a Stripe subscription.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'read', 'update', 'delete']).describe('Operation to perform'),
+      memberId: z.string().optional().describe('Member ID (required for read/update/delete)'),
+      email: z.string().optional().describe('Member email address'),
+      name: z.string().optional().describe('Member name'),
+      note: z.string().optional().describe('Internal note about the member'),
+      labels: z
+        .array(
+          z.object({
+            name: z.string().describe('Label name')
+          })
+        )
+        .optional()
+        .describe('Labels to assign to the member'),
+      newsletters: z
+        .array(
+          z.object({
+            newsletterId: z.string().describe('Newsletter ID to subscribe to')
+          })
+        )
+        .optional()
+        .describe('Newsletters to subscribe the member to'),
+      comped: z
+        .boolean()
+        .optional()
+        .describe('Whether the member has complimentary premium access')
+    })
+  )
   .output(memberOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let { action } = ctx.input;
 
     if (action === 'read') {
       if (!ctx.input.memberId) throw new Error('memberId is required for reading a member');
-      let result = await client.readMember(ctx.input.memberId, { include: 'newsletters,labels' });
+      let result = await client.readMember(ctx.input.memberId, {
+        include: 'newsletters,labels'
+      });
       let m = result.members[0];
-      return { output: mapMember(m), message: `Retrieved member **${m.email}** (${m.status}).` };
+      return {
+        output: mapMember(m),
+        message: `Retrieved member **${m.email}** (${m.status}).`
+      };
     }
 
     if (action === 'delete') {
@@ -71,11 +88,20 @@ export let manageMember = SlateTool.create(
       await client.deleteMember(ctx.input.memberId);
       return {
         output: {
-          memberId: ctx.input.memberId, uuid: '', email: '', name: null, note: null,
-          status: 'deleted', avatarImage: null, emailCount: 0, emailOpenedCount: 0,
-          lastSeenAt: null, createdAt: '', updatedAt: '',
+          memberId: ctx.input.memberId,
+          uuid: '',
+          email: '',
+          name: null,
+          note: null,
+          status: 'deleted',
+          avatarImage: null,
+          emailCount: 0,
+          emailOpenedCount: 0,
+          lastSeenAt: null,
+          createdAt: '',
+          updatedAt: ''
         },
-        message: `Deleted member \`${ctx.input.memberId}\`.`,
+        message: `Deleted member \`${ctx.input.memberId}\`.`
       };
     }
 
@@ -86,7 +112,7 @@ export let manageMember = SlateTool.create(
     if (ctx.input.comped !== undefined) memberData.comped = ctx.input.comped;
     if (ctx.input.labels) memberData.labels = ctx.input.labels;
     if (ctx.input.newsletters) {
-      memberData.newsletters = ctx.input.newsletters.map((n) => ({ id: n.newsletterId }));
+      memberData.newsletters = ctx.input.newsletters.map(n => ({ id: n.newsletterId }));
     }
 
     if (action === 'create') {
@@ -104,7 +130,8 @@ export let manageMember = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let mapMember = (m: any) => ({
   memberId: m.id,
@@ -118,5 +145,5 @@ let mapMember = (m: any) => ({
   emailOpenedCount: m.email_opened_count ?? 0,
   lastSeenAt: m.last_seen_at ?? null,
   createdAt: m.created_at,
-  updatedAt: m.updated_at,
+  updatedAt: m.updated_at
 });

@@ -11,7 +11,7 @@ import type {
   SimlaSegment,
   SimlaUser,
   SimlaTask,
-  SimlaPayment,
+  SimlaPayment
 } from './types';
 
 export class Client {
@@ -23,8 +23,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${config.subdomain}.simla.com/api/v5`,
       headers: {
-        'X-API-KEY': config.token,
-      },
+        'X-API-KEY': config.token
+      }
     });
   }
 
@@ -37,7 +37,11 @@ export class Client {
 
   // ========== Customers ==========
 
-  async getCustomers(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getCustomers(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     customers: SimlaCustomer[];
     pagination: PaginationResponse;
   }> {
@@ -48,11 +52,14 @@ export class Client {
     let response = await this.axios.get('/customers', { params });
     return {
       customers: response.data.customers || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
-  async getCustomer(id: string, by: 'id' | 'externalId' = 'externalId'): Promise<SimlaCustomer> {
+  async getCustomer(
+    id: string,
+    by: 'id' | 'externalId' = 'externalId'
+  ): Promise<SimlaCustomer> {
     let params: Record<string, any> = { by };
     this.addSiteParam(params);
     let response = await this.axios.get(`/customers/${encodeURIComponent(id)}`, { params });
@@ -64,32 +71,43 @@ export class Client {
     params.append('customer', JSON.stringify(customer));
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post('/customers/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { customerId: response.data.id };
   }
 
-  async editCustomer(id: string, customer: SimlaCustomer, by: 'id' | 'externalId' = 'externalId'): Promise<{ customerId: number }> {
+  async editCustomer(
+    id: string,
+    customer: SimlaCustomer,
+    by: 'id' | 'externalId' = 'externalId'
+  ): Promise<{ customerId: number }> {
     let params = new URLSearchParams();
     params.append('customer', JSON.stringify(customer));
     params.append('by', by);
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post(`/customers/${encodeURIComponent(id)}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { customerId: response.data.id };
   }
 
-  async combineCustomers(customers: Array<{ id: number }>, resultCustomerId: number): Promise<void> {
+  async combineCustomers(
+    customers: Array<{ id: number }>,
+    resultCustomerId: number
+  ): Promise<void> {
     let params = new URLSearchParams();
     params.append('customers', JSON.stringify(customers));
     params.append('resultCustomer', JSON.stringify({ id: resultCustomerId }));
     await this.axios.post('/customers/combine', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
-  async getCustomersHistory(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getCustomersHistory(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     history: SimlaHistoryEntry[];
     pagination: PaginationResponse;
     generatedAt: string;
@@ -102,13 +120,17 @@ export class Client {
     return {
       history: response.data.history || [],
       pagination: response.data.pagination,
-      generatedAt: response.data.generatedAt,
+      generatedAt: response.data.generatedAt
     };
   }
 
   // ========== Customer Notes ==========
 
-  async getCustomerNotes(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getCustomerNotes(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     notes: SimlaNote[];
     pagination: PaginationResponse;
   }> {
@@ -119,16 +141,20 @@ export class Client {
     let response = await this.axios.get('/customers/notes', { params });
     return {
       notes: response.data.notes || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
-  async createCustomerNote(note: { customer: { id?: number; externalId?: string; site?: string }; managerId?: number; text: string }): Promise<{ noteId: number }> {
+  async createCustomerNote(note: {
+    customer: { id?: number; externalId?: string; site?: string };
+    managerId?: number;
+    text: string;
+  }): Promise<{ noteId: number }> {
     let params = new URLSearchParams();
     params.append('note', JSON.stringify(note));
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post('/customers/notes/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { noteId: response.data.id };
   }
@@ -137,13 +163,17 @@ export class Client {
     let params = new URLSearchParams();
     params.append('id', String(noteId));
     await this.axios.post(`/customers/notes/${noteId}/delete`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
   // ========== Corporate Customers ==========
 
-  async getCorporateCustomers(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getCorporateCustomers(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     customersCorporate: SimlaCorporateCustomer[];
     pagination: PaginationResponse;
   }> {
@@ -154,41 +184,60 @@ export class Client {
     let response = await this.axios.get('/customers-corporate', { params });
     return {
       customersCorporate: response.data.customersCorporate || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
-  async getCorporateCustomer(id: string, by: 'id' | 'externalId' = 'externalId'): Promise<SimlaCorporateCustomer> {
+  async getCorporateCustomer(
+    id: string,
+    by: 'id' | 'externalId' = 'externalId'
+  ): Promise<SimlaCorporateCustomer> {
     let params: Record<string, any> = { by };
     this.addSiteParam(params);
-    let response = await this.axios.get(`/customers-corporate/${encodeURIComponent(id)}`, { params });
+    let response = await this.axios.get(`/customers-corporate/${encodeURIComponent(id)}`, {
+      params
+    });
     return response.data.customerCorporate;
   }
 
-  async createCorporateCustomer(customer: SimlaCorporateCustomer): Promise<{ customerId: number }> {
+  async createCorporateCustomer(
+    customer: SimlaCorporateCustomer
+  ): Promise<{ customerId: number }> {
     let params = new URLSearchParams();
     params.append('customerCorporate', JSON.stringify(customer));
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post('/customers-corporate/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { customerId: response.data.id };
   }
 
-  async editCorporateCustomer(id: string, customer: SimlaCorporateCustomer, by: 'id' | 'externalId' = 'externalId'): Promise<{ customerId: number }> {
+  async editCorporateCustomer(
+    id: string,
+    customer: SimlaCorporateCustomer,
+    by: 'id' | 'externalId' = 'externalId'
+  ): Promise<{ customerId: number }> {
     let params = new URLSearchParams();
     params.append('customerCorporate', JSON.stringify(customer));
     params.append('by', by);
     if (this.site) params.append('site', this.site);
-    let response = await this.axios.post(`/customers-corporate/${encodeURIComponent(id)}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.post(
+      `/customers-corporate/${encodeURIComponent(id)}/edit`,
+      params,
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return { customerId: response.data.id };
   }
 
   // ========== Orders ==========
 
-  async getOrders(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getOrders(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     orders: SimlaOrder[];
     pagination: PaginationResponse;
   }> {
@@ -199,7 +248,7 @@ export class Client {
     let response = await this.axios.get('/orders', { params });
     return {
       orders: response.data.orders || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -215,33 +264,45 @@ export class Client {
     params.append('order', JSON.stringify(order));
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post('/orders/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { orderId: response.data.id };
   }
 
-  async editOrder(id: string, order: SimlaOrder, by: 'id' | 'externalId' = 'externalId'): Promise<{ orderId: number }> {
+  async editOrder(
+    id: string,
+    order: SimlaOrder,
+    by: 'id' | 'externalId' = 'externalId'
+  ): Promise<{ orderId: number }> {
     let params = new URLSearchParams();
     params.append('order', JSON.stringify(order));
     params.append('by', by);
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post(`/orders/${encodeURIComponent(id)}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { orderId: response.data.id };
   }
 
-  async combineOrders(technique: 'ours' | 'summ' | 'theirs', order: { id: number }, resultOrder: { id: number }): Promise<void> {
+  async combineOrders(
+    technique: 'ours' | 'summ' | 'theirs',
+    order: { id: number },
+    resultOrder: { id: number }
+  ): Promise<void> {
     let params = new URLSearchParams();
     params.append('technique', technique);
     params.append('order', JSON.stringify(order));
     params.append('resultOrder', JSON.stringify(resultOrder));
     await this.axios.post('/orders/combine', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
-  async getOrdersHistory(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getOrdersHistory(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     history: SimlaHistoryEntry[];
     pagination: PaginationResponse;
     generatedAt: string;
@@ -254,7 +315,7 @@ export class Client {
     return {
       history: response.data.history || [],
       pagination: response.data.pagination,
-      generatedAt: response.data.generatedAt,
+      generatedAt: response.data.generatedAt
     };
   }
 
@@ -265,31 +326,39 @@ export class Client {
     params.append('payment', JSON.stringify(payment));
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post('/orders/payments/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { paymentId: response.data.id };
   }
 
-  async editOrderPayment(id: number, payment: SimlaPayment, by: 'id' | 'externalId' = 'id'): Promise<{ paymentId: number }> {
+  async editOrderPayment(
+    id: number,
+    payment: SimlaPayment,
+    by: 'id' | 'externalId' = 'id'
+  ): Promise<{ paymentId: number }> {
     let params = new URLSearchParams();
     params.append('payment', JSON.stringify(payment));
     params.append('by', by);
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post(`/orders/payments/${id}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { paymentId: response.data.id };
   }
 
   async deleteOrderPayment(id: number): Promise<void> {
     await this.axios.post(`/orders/payments/${id}/delete`, new URLSearchParams(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
   // ========== Products ==========
 
-  async getProducts(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getProducts(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     products: SimlaProduct[];
     pagination: PaginationResponse;
   }> {
@@ -300,12 +369,22 @@ export class Client {
     let response = await this.axios.get('/store/products', { params });
     return {
       products: response.data.products || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
-  async getProductGroups(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
-    productGroup: Array<{ id?: number; parentId?: number; name?: string; externalId?: string; active?: boolean }>;
+  async getProductGroups(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
+    productGroup: Array<{
+      id?: number;
+      parentId?: number;
+      name?: string;
+      externalId?: string;
+      active?: boolean;
+    }>;
     pagination: PaginationResponse;
   }> {
     let params: Record<string, any> = {};
@@ -315,13 +394,17 @@ export class Client {
     let response = await this.axios.get('/store/product-groups', { params });
     return {
       productGroup: response.data.productGroup || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
   // ========== Tasks ==========
 
-  async getTasks(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getTasks(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     tasks: SimlaTask[];
     pagination: PaginationResponse;
   }> {
@@ -332,7 +415,7 @@ export class Client {
     let response = await this.axios.get('/tasks', { params });
     return {
       tasks: response.data.tasks || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -346,7 +429,7 @@ export class Client {
     params.append('task', JSON.stringify(task));
     if (this.site) params.append('site', this.site);
     let response = await this.axios.post('/tasks/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { taskId: response.data.id };
   }
@@ -356,13 +439,17 @@ export class Client {
     params.append('task', JSON.stringify(task));
     if (this.site) params.append('site', this.site);
     await this.axios.post(`/tasks/${id}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
   // ========== Users ==========
 
-  async getUsers(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getUsers(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     users: SimlaUser[];
     pagination: PaginationResponse;
   }> {
@@ -373,7 +460,7 @@ export class Client {
     let response = await this.axios.get('/users', { params });
     return {
       users: response.data.users || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -386,13 +473,17 @@ export class Client {
     let params = new URLSearchParams();
     params.append('status', status);
     await this.axios.post(`/users/${id}/status`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
   // ========== Segments ==========
 
-  async getSegments(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getSegments(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     segments: SimlaSegment[];
     pagination: PaginationResponse;
   }> {
@@ -403,7 +494,7 @@ export class Client {
     let response = await this.axios.get('/segments', { params });
     return {
       segments: response.data.segments || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -476,7 +567,11 @@ export class Client {
 
   // ========== Custom Fields ==========
 
-  async getCustomFields(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getCustomFields(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     customFields: Array<Record<string, any>>;
     pagination: PaginationResponse;
   }> {
@@ -487,7 +582,7 @@ export class Client {
     let response = await this.axios.get('/custom-fields', { params });
     return {
       customFields: response.data.customFields || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -496,26 +591,37 @@ export class Client {
     return response.data.customField;
   }
 
-  async createCustomField(entity: string, customField: Record<string, any>): Promise<{ code: string }> {
+  async createCustomField(
+    entity: string,
+    customField: Record<string, any>
+  ): Promise<{ code: string }> {
     let params = new URLSearchParams();
     params.append('customField', JSON.stringify(customField));
     let response = await this.axios.post(`/custom-fields/${entity}/create`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { code: response.data.code };
   }
 
-  async editCustomField(entity: string, code: string, customField: Record<string, any>): Promise<void> {
+  async editCustomField(
+    entity: string,
+    code: string,
+    customField: Record<string, any>
+  ): Promise<void> {
     let params = new URLSearchParams();
     params.append('customField', JSON.stringify(customField));
     await this.axios.post(`/custom-fields/${entity}/${code}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
   // ========== Custom Dictionaries ==========
 
-  async getCustomDictionaries(filter?: Record<string, any>, page?: number, limit?: number): Promise<{
+  async getCustomDictionaries(
+    filter?: Record<string, any>,
+    page?: number,
+    limit?: number
+  ): Promise<{
     customDictionaries: Array<Record<string, any>>;
     pagination: PaginationResponse;
   }> {
@@ -526,7 +632,7 @@ export class Client {
     let response = await this.axios.get('/custom-fields/dictionaries', { params });
     return {
       customDictionaries: response.data.customDictionaries || [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -539,7 +645,7 @@ export class Client {
     let params = new URLSearchParams();
     params.append('customDictionary', JSON.stringify(dictionary));
     let response = await this.axios.post('/custom-fields/dictionaries/create', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return { code: response.data.code };
   }
@@ -548,7 +654,7 @@ export class Client {
     let params = new URLSearchParams();
     params.append('customDictionary', JSON.stringify(dictionary));
     await this.axios.post(`/custom-fields/dictionaries/${code}/edit`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
@@ -558,7 +664,7 @@ export class Client {
     let response = await this.axios.get('/credentials');
     return {
       credentials: response.data.credentials || [],
-      siteAccess: response.data.siteAccess || [],
+      siteAccess: response.data.siteAccess || []
     };
   }
 }

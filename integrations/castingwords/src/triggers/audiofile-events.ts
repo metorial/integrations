@@ -3,52 +3,64 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let audiofileEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Audiofile Events',
-    key: 'audiofile_events',
-    description: 'Receives webhook notifications from CastingWords when transcription events occur, including transcript completion, duplicate file detection, refund issuance, and difficult audio flagging.',
-  }
-)
-  .input(z.object({
-    event: z.string().describe('Event type (e.g. TRANSCRIPT_COMPLETE, DUPLICATE_FILE, REFUND_ISSUED, DIFFICULT_AUDIO)'),
-    audiofileId: z.string().optional().describe('ID of the affected audiofile'),
-    orderId: z.string().optional().describe('Associated order ID'),
-    originalLink: z.string().optional().describe('URL of the original media file'),
-    originalAudiofileId: z.string().optional().describe('ID of the previously transcribed audiofile (for duplicate events)'),
-    refundAmount: z.string().optional().describe('Refund amount in USD (for refund events)'),
-    transactionId: z.string().optional().describe('Refund transaction ID'),
-    originalTransactionId: z.string().optional().describe('Original transaction ID'),
-  }))
-  .output(z.object({
-    audiofileId: z.string().optional().describe('ID of the affected audiofile'),
-    orderId: z.string().optional().describe('Associated order ID'),
-    originalLink: z.string().optional().describe('URL of the original media file'),
-    originalAudiofileId: z.string().optional().describe('ID of the previously transcribed audiofile (for duplicate events)'),
-    refundAmount: z.string().optional().describe('Refund amount in USD (for refund events)'),
-    transactionId: z.string().optional().describe('Refund transaction ID'),
-    originalTransactionId: z.string().optional().describe('Original transaction ID'),
-  }))
+export let audiofileEvents = SlateTrigger.create(spec, {
+  name: 'Audiofile Events',
+  key: 'audiofile_events',
+  description:
+    'Receives webhook notifications from CastingWords when transcription events occur, including transcript completion, duplicate file detection, refund issuance, and difficult audio flagging.'
+})
+  .input(
+    z.object({
+      event: z
+        .string()
+        .describe(
+          'Event type (e.g. TRANSCRIPT_COMPLETE, DUPLICATE_FILE, REFUND_ISSUED, DIFFICULT_AUDIO)'
+        ),
+      audiofileId: z.string().optional().describe('ID of the affected audiofile'),
+      orderId: z.string().optional().describe('Associated order ID'),
+      originalLink: z.string().optional().describe('URL of the original media file'),
+      originalAudiofileId: z
+        .string()
+        .optional()
+        .describe('ID of the previously transcribed audiofile (for duplicate events)'),
+      refundAmount: z.string().optional().describe('Refund amount in USD (for refund events)'),
+      transactionId: z.string().optional().describe('Refund transaction ID'),
+      originalTransactionId: z.string().optional().describe('Original transaction ID')
+    })
+  )
+  .output(
+    z.object({
+      audiofileId: z.string().optional().describe('ID of the affected audiofile'),
+      orderId: z.string().optional().describe('Associated order ID'),
+      originalLink: z.string().optional().describe('URL of the original media file'),
+      originalAudiofileId: z
+        .string()
+        .optional()
+        .describe('ID of the previously transcribed audiofile (for duplicate events)'),
+      refundAmount: z.string().optional().describe('Refund amount in USD (for refund events)'),
+      transactionId: z.string().optional().describe('Refund transaction ID'),
+      originalTransactionId: z.string().optional().describe('Original transaction ID')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
       await client.registerWebhook(ctx.input.webhookBaseUrl);
       return {
         registrationDetails: {
-          webhookUrl: ctx.input.webhookBaseUrl,
-        },
+          webhookUrl: ctx.input.webhookBaseUrl
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       // CastingWords only supports a single webhook URL per account.
       // Unregistering by setting an empty URL.
       let client = new Client(ctx.auth.token);
       await client.registerWebhook('');
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // CastingWords sends webhooks as application/x-www-form-urlencoded
       // but may also appear as query params on GET requests for test events
       let params: Record<string, string> = {};
@@ -96,21 +108,21 @@ export let audiofileEvents = SlateTrigger.create(
             originalAudiofileId: params.original_audiofile,
             refundAmount: params.amount,
             transactionId: params.transaction,
-            originalTransactionId: params.original_transaction,
-          },
-        ],
+            originalTransactionId: params.original_transaction
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.event.toLowerCase();
 
       // Map CastingWords event names to standardized types
       let typeMap: Record<string, string> = {
-        'transcript_complete': 'audiofile.transcript_complete',
-        'duplicate_file': 'audiofile.duplicate_file',
-        'refund_issued': 'audiofile.refund_issued',
-        'difficult_audio': 'audiofile.difficult_audio',
+        transcript_complete: 'audiofile.transcript_complete',
+        duplicate_file: 'audiofile.duplicate_file',
+        refund_issued: 'audiofile.refund_issued',
+        difficult_audio: 'audiofile.difficult_audio'
       };
 
       let type = typeMap[eventType] || `audiofile.${eventType}`;
@@ -126,9 +138,9 @@ export let audiofileEvents = SlateTrigger.create(
           originalAudiofileId: ctx.input.originalAudiofileId,
           refundAmount: ctx.input.refundAmount,
           transactionId: ctx.input.transactionId,
-          originalTransactionId: ctx.input.originalTransactionId,
-        },
+          originalTransactionId: ctx.input.originalTransactionId
+        }
       };
-    },
+    }
   })
   .build();

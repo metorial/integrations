@@ -166,9 +166,11 @@ export class Client {
 
   // ─── Templates ──────────────────────────────────────────────
 
-  async sendGenericTemplate(options: SendMessageOptions & {
-    elements: GenericTemplateElement[];
-  }): Promise<any> {
+  async sendGenericTemplate(
+    options: SendMessageOptions & {
+      elements: GenericTemplateElement[];
+    }
+  ): Promise<any> {
     let api = this.createApi();
 
     let body: any = {
@@ -182,10 +184,12 @@ export class Client {
               title: el.title,
               subtitle: el.subtitle,
               image_url: el.imageUrl,
-              default_action: el.defaultActionUrl ? {
-                type: 'web_url',
-                url: el.defaultActionUrl
-              } : undefined,
+              default_action: el.defaultActionUrl
+                ? {
+                    type: 'web_url',
+                    url: el.defaultActionUrl
+                  }
+                : undefined,
               buttons: el.buttons?.map(btn => this.formatButton(btn))
             }))
           }
@@ -202,10 +206,12 @@ export class Client {
     return response.data;
   }
 
-  async sendButtonTemplate(options: SendMessageOptions & {
-    text: string;
-    buttons: ButtonItem[];
-  }): Promise<any> {
+  async sendButtonTemplate(
+    options: SendMessageOptions & {
+      text: string;
+      buttons: ButtonItem[];
+    }
+  ): Promise<any> {
     let api = this.createApi();
 
     let body: any = {
@@ -231,12 +237,14 @@ export class Client {
     return response.data;
   }
 
-  async sendMediaTemplate(options: SendMessageOptions & {
-    mediaType: 'image' | 'video';
-    mediaUrl?: string;
-    attachmentId?: string;
-    buttons?: ButtonItem[];
-  }): Promise<any> {
+  async sendMediaTemplate(
+    options: SendMessageOptions & {
+      mediaType: 'image' | 'video';
+      mediaUrl?: string;
+      attachmentId?: string;
+      buttons?: ButtonItem[];
+    }
+  ): Promise<any> {
     let api = this.createApi();
 
     let elementPayload: any = {
@@ -275,19 +283,21 @@ export class Client {
     return response.data;
   }
 
-  async sendReceiptTemplate(options: SendMessageOptions & {
-    recipientName: string;
-    orderNumber: string;
-    currency: string;
-    paymentMethod: string;
-    orderUrl?: string;
-    timestamp?: string;
-    items: ReceiptTemplateItem[];
-    subtotal?: number;
-    shippingCost?: number;
-    totalTax?: number;
-    totalCost: number;
-  }): Promise<any> {
+  async sendReceiptTemplate(
+    options: SendMessageOptions & {
+      recipientName: string;
+      orderNumber: string;
+      currency: string;
+      paymentMethod: string;
+      orderUrl?: string;
+      timestamp?: string;
+      items: ReceiptTemplateItem[];
+      subtotal?: number;
+      shippingCost?: number;
+      totalTax?: number;
+      totalCost: number;
+    }
+  ): Promise<any> {
     let api = this.createApi();
 
     let payload: any = {
@@ -357,7 +367,10 @@ export class Client {
 
   // ─── Sender Actions ─────────────────────────────────────────
 
-  async sendSenderAction(recipientId: string, action: 'typing_on' | 'typing_off' | 'mark_seen'): Promise<any> {
+  async sendSenderAction(
+    recipientId: string,
+    action: 'typing_on' | 'typing_off' | 'mark_seen'
+  ): Promise<any> {
     let api = this.createApi();
 
     let response = await api.post(`/${this.pageId}/messages`, {
@@ -373,7 +386,14 @@ export class Client {
   async getUserProfile(recipientId: string, fields?: string[]): Promise<UserProfile> {
     let api = this.createApi();
 
-    let profileFields = fields || ['first_name', 'last_name', 'profile_pic', 'locale', 'timezone', 'gender'];
+    let profileFields = fields || [
+      'first_name',
+      'last_name',
+      'profile_pic',
+      'locale',
+      'timezone',
+      'gender'
+    ];
 
     let response = await api.get(`/${recipientId}`, {
       params: {
@@ -467,7 +487,9 @@ export class Client {
     } else if (action.type === 'postback' && action.payload) {
       formatted.payload = action.payload;
     } else if (action.type === 'nested' && action.callToActions) {
-      formatted.call_to_actions = action.callToActions.map((sub: any) => this.formatMenuAction(sub));
+      formatted.call_to_actions = action.callToActions.map((sub: any) =>
+        this.formatMenuAction(sub)
+      );
     }
 
     return formatted;
@@ -475,7 +497,11 @@ export class Client {
 
   // ─── Handover Protocol ─────────────────────────────────────
 
-  async passThreadControl(recipientId: string, targetAppId: string, metadata?: string): Promise<any> {
+  async passThreadControl(
+    recipientId: string,
+    targetAppId: string,
+    metadata?: string
+  ): Promise<any> {
     let api = this.createApi();
 
     let body: any = {

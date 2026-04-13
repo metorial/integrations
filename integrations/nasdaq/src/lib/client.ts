@@ -159,13 +159,13 @@ export class TablesClient {
   constructor(config: { apiKey: string }) {
     this.apiKey = config.apiKey;
     this.http = createAxios({
-      baseURL: TABLES_BASE_URL,
+      baseURL: TABLES_BASE_URL
     });
   }
 
   async queryTable(params: TablesQueryParams): Promise<TablesResponse> {
     let queryParams: Record<string, string> = {
-      api_key: this.apiKey,
+      api_key: this.apiKey
     };
 
     if (params.columns && params.columns.length > 0) {
@@ -188,7 +188,7 @@ export class TablesClient {
 
     let format = params.format || 'json';
     let response = await this.http.get(`/datatables/${params.tablePath}.${format}`, {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -196,23 +196,26 @@ export class TablesClient {
 
   async getTableMetadata(tablePath: string): Promise<TableMetadataResponse> {
     let response = await this.http.get(`/datatables/${tablePath}/metadata.json`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async getTimeSeriesData(params: TimeSeriesParams): Promise<TimeSeriesDataResponse> {
     let queryParams: Record<string, string> = {
-      api_key: this.apiKey,
+      api_key: this.apiKey
     };
 
     if (params.startDate) queryParams['start_date'] = params.startDate;
     if (params.endDate) queryParams['end_date'] = params.endDate;
     if (params.order) queryParams['order'] = params.order;
-    if (params.collapse && params.collapse !== 'none') queryParams['collapse'] = params.collapse;
-    if (params.transform && params.transform !== 'none') queryParams['transform'] = params.transform;
+    if (params.collapse && params.collapse !== 'none')
+      queryParams['collapse'] = params.collapse;
+    if (params.transform && params.transform !== 'none')
+      queryParams['transform'] = params.transform;
     if (params.limit) queryParams['limit'] = String(params.limit);
-    if (params.columnIndex !== undefined) queryParams['column_index'] = String(params.columnIndex);
+    if (params.columnIndex !== undefined)
+      queryParams['column_index'] = String(params.columnIndex);
 
     let response = await this.http.get(
       `/datasets/${params.databaseCode}/${params.datasetCode}/data.json`,
@@ -222,7 +225,10 @@ export class TablesClient {
     return response.data;
   }
 
-  async getTimeSeries(params: { databaseCode: string; datasetCode: string }): Promise<TimeSeriesResponse> {
+  async getTimeSeries(params: {
+    databaseCode: string;
+    datasetCode: string;
+  }): Promise<TimeSeriesResponse> {
     let response = await this.http.get(
       `/datasets/${params.databaseCode}/${params.datasetCode}.json`,
       { params: { api_key: this.apiKey } }
@@ -233,7 +239,7 @@ export class TablesClient {
   async searchDatasets(params: DatasetSearchParams): Promise<DatasetSearchResponse> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      query: params.query,
+      query: params.query
     };
 
     if (params.databaseCode) queryParams['database_code'] = params.databaseCode;
@@ -241,7 +247,7 @@ export class TablesClient {
     if (params.page) queryParams['page'] = String(params.page);
 
     let response = await this.http.get('/datasets.json', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -249,7 +255,7 @@ export class TablesClient {
 
   async getDatabaseMetadata(databaseCode: string): Promise<DatabaseMetadataResponse> {
     let response = await this.http.get(`/databases/${databaseCode}.json`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
@@ -264,26 +270,36 @@ export class TablesClient {
       downloads: number;
       premium: boolean;
     }>;
-    meta: { query: string; per_page: number; current_page: number; total_pages: number; total_count: number; next_page: number | null };
+    meta: {
+      query: string;
+      per_page: number;
+      current_page: number;
+      total_pages: number;
+      total_count: number;
+      next_page: number | null;
+    };
   }> {
     let queryParams: Record<string, string> = {
-      api_key: this.apiKey,
+      api_key: this.apiKey
     };
 
     if (params?.perPage) queryParams['per_page'] = String(params.perPage);
     if (params?.page) queryParams['page'] = String(params.page);
 
     let response = await this.http.get('/databases.json', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async requestBulkExport(tablePath: string, filters?: Record<string, string>): Promise<BulkExportResponse> {
+  async requestBulkExport(
+    tablePath: string,
+    filters?: Record<string, string>
+  ): Promise<BulkExportResponse> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      'qopts.export': 'true',
+      'qopts.export': 'true'
     };
 
     if (filters) {
@@ -293,7 +309,7 @@ export class TablesClient {
     }
 
     let response = await this.http.get(`/datatables/${tablePath}.json`, {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;

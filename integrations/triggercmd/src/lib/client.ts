@@ -43,16 +43,16 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://www.triggercmd.com',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async triggerCommand(params: TriggerCommandParams): Promise<any> {
     let body: Record<string, string> = {
       computer: params.computer,
-      trigger: params.trigger,
+      trigger: params.trigger
     };
     if (params.params) {
       body.params = params.params;
@@ -68,7 +68,7 @@ export class Client {
 
   async listCommandsForComputer(computerId: string): Promise<Command[]> {
     let response = await this.http.post('/api/command/list', {
-      computer_id: computerId,
+      computer_id: computerId
     });
     return response.data;
   }
@@ -83,8 +83,8 @@ export class Client {
       params: {
         sortOn: 'createdAt,DESC',
         command_id: commandId,
-        token: this.token,
-      },
+        token: this.token
+      }
     });
     return response.data;
   }

@@ -3,32 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Folder',
-    key: 'manage_folder',
-    description: `Create, rename, move, copy, or delete a Box folder. For creating a new folder, provide the parent folder ID and name. For other operations, provide the folder ID and relevant parameters.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageFolder = SlateTool.create(spec, {
+  name: 'Manage Folder',
+  key: 'manage_folder',
+  description: `Create, rename, move, copy, or delete a Box folder. For creating a new folder, provide the parent folder ID and name. For other operations, provide the folder ID and relevant parameters.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'rename', 'move', 'copy', 'delete']).describe('The operation to perform'),
-    folderId: z.string().optional().describe('The folder ID (required for all actions except create)'),
-    parentFolderId: z.string().optional().describe('Parent folder ID (required for create, move, and copy; use "0" for root)'),
-    name: z.string().optional().describe('Folder name (required for create, optional for rename/copy)'),
-    recursive: z.boolean().optional().describe('Whether to recursively delete folder contents (for delete action)')
-  }))
-  .output(z.object({
-    folderId: z.string().describe('The folder ID after the operation'),
-    name: z.string().optional().describe('Folder name after the operation'),
-    parentFolderId: z.string().optional().describe('Parent folder ID after the operation'),
-    deleted: z.boolean().optional().describe('True if the folder was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'rename', 'move', 'copy', 'delete'])
+        .describe('The operation to perform'),
+      folderId: z
+        .string()
+        .optional()
+        .describe('The folder ID (required for all actions except create)'),
+      parentFolderId: z
+        .string()
+        .optional()
+        .describe('Parent folder ID (required for create, move, and copy; use "0" for root)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Folder name (required for create, optional for rename/copy)'),
+      recursive: z
+        .boolean()
+        .optional()
+        .describe('Whether to recursively delete folder contents (for delete action)')
+    })
+  )
+  .output(
+    z.object({
+      folderId: z.string().describe('The folder ID after the operation'),
+      name: z.string().optional().describe('Folder name after the operation'),
+      parentFolderId: z.string().optional().describe('Parent folder ID after the operation'),
+      deleted: z.boolean().optional().describe('True if the folder was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, folderId, parentFolderId, name, recursive } = ctx.input;
 

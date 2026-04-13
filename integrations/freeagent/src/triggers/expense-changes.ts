@@ -3,51 +3,52 @@ import { FreeAgentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let expenseChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Expense Changes',
-    key: 'expense_changes',
-    description: 'Polls for new or updated expenses in FreeAgent.',
-  }
-)
-  .input(z.object({
-    expenseId: z.string().describe('FreeAgent expense ID'),
-    category: z.string().optional().describe('Category URL'),
-    grossValue: z.string().optional().describe('Gross value'),
-    currency: z.string().optional().describe('Currency code'),
-    description: z.string().optional().describe('Expense description'),
-    datedOn: z.string().optional().describe('Expense date'),
-    user: z.string().optional().describe('User URL'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    raw: z.record(z.string(), z.any()).optional().describe('Full expense payload'),
-  }))
-  .output(z.object({
-    expenseId: z.string().describe('FreeAgent expense ID'),
-    category: z.string().optional().describe('Category URL'),
-    grossValue: z.string().optional().describe('Gross value'),
-    currency: z.string().optional().describe('Currency code'),
-    description: z.string().optional().describe('Expense description'),
-    datedOn: z.string().optional().describe('Expense date'),
-    user: z.string().optional().describe('User URL'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-  }))
+export let expenseChanges = SlateTrigger.create(spec, {
+  name: 'Expense Changes',
+  key: 'expense_changes',
+  description: 'Polls for new or updated expenses in FreeAgent.'
+})
+  .input(
+    z.object({
+      expenseId: z.string().describe('FreeAgent expense ID'),
+      category: z.string().optional().describe('Category URL'),
+      grossValue: z.string().optional().describe('Gross value'),
+      currency: z.string().optional().describe('Currency code'),
+      description: z.string().optional().describe('Expense description'),
+      datedOn: z.string().optional().describe('Expense date'),
+      user: z.string().optional().describe('User URL'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      raw: z.record(z.string(), z.any()).optional().describe('Full expense payload')
+    })
+  )
+  .output(
+    z.object({
+      expenseId: z.string().describe('FreeAgent expense ID'),
+      category: z.string().optional().describe('Category URL'),
+      grossValue: z.string().optional().describe('Gross value'),
+      currency: z.string().optional().describe('Currency code'),
+      description: z.string().optional().describe('Expense description'),
+      datedOn: z.string().optional().describe('Expense date'),
+      user: z.string().optional().describe('User URL'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FreeAgentClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let lastPolled = ctx.state?.lastPolled as string | undefined;
       let expenses = await client.listExpenses({
-        updatedSince: lastPolled,
+        updatedSince: lastPolled
       });
 
       let now = new Date().toISOString();
@@ -65,19 +66,19 @@ export let expenseChanges = SlateTrigger.create(
           user: e.user,
           updatedAt: e.updated_at,
           createdAt: e.created_at,
-          raw: e,
+          raw: e
         };
       });
 
       return {
         inputs,
         updatedState: {
-          lastPolled: now,
-        },
+          lastPolled: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let isNew = ctx.input.createdAt === ctx.input.updatedAt;
       let eventType = isNew ? 'created' : 'updated';
 
@@ -93,9 +94,9 @@ export let expenseChanges = SlateTrigger.create(
           datedOn: ctx.input.datedOn,
           user: ctx.input.user,
           updatedAt: ctx.input.updatedAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

@@ -23,49 +23,49 @@ let tradeInputSchema = z.object({
   sideAmount: z.number().optional(),
   sideAmountInUsd: z.number().optional(),
   buyer: z.string().optional(),
-  seller: z.string().optional(),
+  seller: z.string().optional()
 });
 
-export let newDexTrades = SlateTrigger.create(
-  spec,
-  {
-    name: 'New DEX Trades',
-    key: 'new_dex_trades',
-    description: 'Triggers when new DEX trades are detected on a specified blockchain. Polls for recent trades and emits new ones since the last check. Supports EVM chains and Solana.',
-  }
-)
+export let newDexTrades = SlateTrigger.create(spec, {
+  name: 'New DEX Trades',
+  key: 'new_dex_trades',
+  description:
+    'Triggers when new DEX trades are detected on a specified blockchain. Polls for recent trades and emits new ones since the last check. Supports EVM chains and Solana.'
+})
   .input(tradeInputSchema)
-  .output(z.object({
-    blockTime: z.string().describe('Timestamp of the block containing the trade'),
-    blockNumber: z.number().optional().describe('Block number or slot'),
-    transactionHash: z.string().describe('Transaction hash or signature'),
-    amount: z.number().optional().describe('Base token trade amount'),
-    amountInUsd: z.number().optional().describe('Trade amount in USD'),
-    price: z.number().optional().describe('Trade price'),
-    priceInUsd: z.number().optional().describe('Trade price in USD'),
-    baseTokenSymbol: z.string().optional().describe('Base token symbol'),
-    baseTokenName: z.string().optional().describe('Base token name'),
-    baseTokenAddress: z.string().optional().describe('Base token address'),
-    quoteTokenSymbol: z.string().optional().describe('Quote token symbol'),
-    quoteTokenName: z.string().optional().describe('Quote token name'),
-    quoteTokenAddress: z.string().optional().describe('Quote token address'),
-    dexProtocol: z.string().optional().describe('DEX protocol name'),
-    dexFamily: z.string().optional().describe('DEX protocol family'),
-    sideType: z.string().optional().describe('Trade side type'),
-    sideAmount: z.number().optional().describe('Quote side amount'),
-    sideAmountInUsd: z.number().optional().describe('Quote side amount in USD'),
-    buyer: z.string().optional().describe('Buyer address'),
-    seller: z.string().optional().describe('Seller address'),
-  }))
+  .output(
+    z.object({
+      blockTime: z.string().describe('Timestamp of the block containing the trade'),
+      blockNumber: z.number().optional().describe('Block number or slot'),
+      transactionHash: z.string().describe('Transaction hash or signature'),
+      amount: z.number().optional().describe('Base token trade amount'),
+      amountInUsd: z.number().optional().describe('Trade amount in USD'),
+      price: z.number().optional().describe('Trade price'),
+      priceInUsd: z.number().optional().describe('Trade price in USD'),
+      baseTokenSymbol: z.string().optional().describe('Base token symbol'),
+      baseTokenName: z.string().optional().describe('Base token name'),
+      baseTokenAddress: z.string().optional().describe('Base token address'),
+      quoteTokenSymbol: z.string().optional().describe('Quote token symbol'),
+      quoteTokenName: z.string().optional().describe('Quote token name'),
+      quoteTokenAddress: z.string().optional().describe('Quote token address'),
+      dexProtocol: z.string().optional().describe('DEX protocol name'),
+      dexFamily: z.string().optional().describe('DEX protocol family'),
+      sideType: z.string().optional().describe('Trade side type'),
+      sideAmount: z.number().optional().describe('Quote side amount'),
+      sideAmountInUsd: z.number().optional().describe('Quote side amount in USD'),
+      buyer: z.string().optional().describe('Buyer address'),
+      seller: z.string().optional().describe('Seller address')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BitqueryClient({
         token: ctx.auth.token,
-        apiVersion: ctx.config.apiVersion as 'v1' | 'v2',
+        apiVersion: ctx.config.apiVersion as 'v1' | 'v2'
       });
 
       let settings = ctx.state?.settings || {};
@@ -74,7 +74,8 @@ export let newDexTrades = SlateTrigger.create(
       let quoteCurrency = settings.quoteCurrency;
       let dexProtocol = settings.dexProtocol;
 
-      let lastPollTime = ctx.state?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      let lastPollTime =
+        ctx.state?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
       let now = new Date().toISOString();
 
       let trades: Array<z.infer<typeof tradeInputSchema>> = [];
@@ -107,14 +108,19 @@ export let newDexTrades = SlateTrigger.create(
             dexFamily: t.Trade?.Dex?.ProtocolFamily,
             sideType: t.Trade?.Side?.Type,
             sideAmount: t.Trade?.Side?.Amount,
-            sideAmountInUsd: t.Trade?.Side?.AmountInUSD,
+            sideAmountInUsd: t.Trade?.Side?.AmountInUSD
           }));
         } else {
-          let query = buildEvmTradesQuery(baseCurrency, quoteCurrency, dexProtocol, ctx.config.apiVersion as string);
+          let query = buildEvmTradesQuery(
+            baseCurrency,
+            quoteCurrency,
+            dexProtocol,
+            ctx.config.apiVersion as string
+          );
           let variables: Record<string, any> = {
             network: blockchain,
             limit: 100,
-            since: lastPollTime,
+            since: lastPollTime
           };
           if (baseCurrency) variables.baseCurrency = baseCurrency;
           if (quoteCurrency) variables.quoteCurrency = quoteCurrency;
@@ -138,7 +144,7 @@ export let newDexTrades = SlateTrigger.create(
               quoteTokenName: t.quoteCurrency?.name,
               quoteTokenAddress: t.quoteCurrency?.address,
               dexProtocol: t.exchange?.fullName,
-              sideType: t.side,
+              sideType: t.side
             }));
           } else {
             let raw = data?.EVM?.DEXTradeByTokens || [];
@@ -162,7 +168,7 @@ export let newDexTrades = SlateTrigger.create(
               sideAmount: t.Trade?.Side?.Amount,
               sideAmountInUsd: t.Trade?.Side?.AmountInUSD,
               buyer: t.Trade?.Buyer,
-              seller: t.Trade?.Seller,
+              seller: t.Trade?.Seller
             }));
           }
         }
@@ -174,12 +180,12 @@ export let newDexTrades = SlateTrigger.create(
         inputs: trades,
         updatedState: {
           lastPollTime: now,
-          settings,
-        },
+          settings
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'dex_trade.created',
         id: ctx.input.transactionHash || `${ctx.input.blockTime}-${ctx.input.blockNumber}`,
@@ -203,17 +209,18 @@ export let newDexTrades = SlateTrigger.create(
           sideAmount: ctx.input.sideAmount,
           sideAmountInUsd: ctx.input.sideAmountInUsd,
           buyer: ctx.input.buyer,
-          seller: ctx.input.seller,
-        },
+          seller: ctx.input.seller
+        }
       };
-    },
+    }
   })
   .build();
 
 let buildSolanaTradesQuery = (baseCurrency?: string, quoteCurrency?: string): string => {
   let whereFilters: string[] = [];
   if (baseCurrency) whereFilters.push('Currency: {MintAddress: {is: $baseCurrency}}');
-  if (quoteCurrency) whereFilters.push('Side: {Currency: {MintAddress: {is: $quoteCurrency}}}');
+  if (quoteCurrency)
+    whereFilters.push('Side: {Currency: {MintAddress: {is: $quoteCurrency}}}');
 
   let tradeFilter = whereFilters.length > 0 ? `Trade: {${whereFilters.join(', ')}}` : '';
   let timeFilter = 'Block: {Time: {since: $since}}';
@@ -246,14 +253,26 @@ let buildSolanaTradesQuery = (baseCurrency?: string, quoteCurrency?: string): st
 }`;
 };
 
-let buildEvmTradesQuery = (baseCurrency?: string, quoteCurrency?: string, exchange?: string, apiVersion?: string): string => {
+let buildEvmTradesQuery = (
+  baseCurrency?: string,
+  quoteCurrency?: string,
+  exchange?: string,
+  apiVersion?: string
+): string => {
   if (apiVersion === 'v1') {
-    let filters: string[] = ['options: {limit: $limit, desc: "block.timestamp.iso8601"}', 'date: {since: $since}'];
+    let filters: string[] = [
+      'options: {limit: $limit, desc: "block.timestamp.iso8601"}',
+      'date: {since: $since}'
+    ];
     if (baseCurrency) filters.push('baseCurrency: {is: $baseCurrency}');
     if (quoteCurrency) filters.push('quoteCurrency: {is: $quoteCurrency}');
     if (exchange) filters.push('exchangeName: {is: $exchange}');
 
-    let varDefs: string[] = ['$network: EthereumNetwork!', '$limit: Int!', '$since: ISO8601DateTime'];
+    let varDefs: string[] = [
+      '$network: EthereumNetwork!',
+      '$limit: Int!',
+      '$since: ISO8601DateTime'
+    ];
     if (baseCurrency) varDefs.push('$baseCurrency: String');
     if (quoteCurrency) varDefs.push('$quoteCurrency: String');
     if (exchange) varDefs.push('$exchange: String');
@@ -278,7 +297,8 @@ let buildEvmTradesQuery = (baseCurrency?: string, quoteCurrency?: string, exchan
   // V2
   let whereFilters: string[] = [];
   if (baseCurrency) whereFilters.push('Currency: {SmartContract: {is: $baseCurrency}}');
-  if (quoteCurrency) whereFilters.push('Side: {Currency: {SmartContract: {is: $quoteCurrency}}}');
+  if (quoteCurrency)
+    whereFilters.push('Side: {Currency: {SmartContract: {is: $quoteCurrency}}}');
   if (exchange) whereFilters.push('Dex: {ProtocolName: {is: $exchange}}');
 
   let tradeFilter = whereFilters.length > 0 ? `Trade: {${whereFilters.join(', ')}}` : '';

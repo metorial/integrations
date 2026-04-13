@@ -23,14 +23,14 @@ import {
   createEntry,
   manageTags,
   listPipelines,
-  listUsers,
+  listUsers
 } from './tools';
 import {
   partyEvents,
   opportunityEvents,
   projectEvents,
   taskEvents,
-  userEvents,
+  userEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -58,13 +58,7 @@ export let provider = Slate.create({
     createEntry,
     manageTags,
     listPipelines,
-    listUsers,
+    listUsers
   ],
-  triggers: [
-    partyEvents,
-    opportunityEvents,
-    projectEvents,
-    taskEvents,
-    userEvents,
-  ],
+  triggers: [partyEvents, opportunityEvents, projectEvents, taskEvents, userEvents]
 });

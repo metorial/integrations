@@ -68,7 +68,5 @@ export let provider = Slate.create({
     getAccount,
     listSatisfactionSurveys
   ],
-  triggers: [
-    ticketEvents
-  ]
+  triggers: [ticketEvents]
 });

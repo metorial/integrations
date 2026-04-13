@@ -25,7 +25,5 @@ export let provider = Slate.create({
     addCommentTool,
     getCommentsTool
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

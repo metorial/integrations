@@ -3,49 +3,67 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let databaseChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Database Changes',
-    key: 'database_changes',
-    description: 'Detects new, updated, and deleted records in a Ninox database using sequence-based change tracking. Requires `teamId` and `databaseId` to be set in the provider configuration.',
-  }
-)
-  .input(z.object({
-    recordKey: z.string().describe('Compound key of the record (tableId + recordId, e.g. "A1")'),
-    changeType: z.enum(['created_or_updated', 'deleted']).describe('Whether the record was created/updated or deleted'),
-    recordData: z.record(z.string(), z.any()).optional().describe('Raw record data from the change payload'),
-    databaseId: z.string().describe('ID of the database where the change occurred'),
-  }))
-  .output(z.object({
-    recordKey: z.string().describe('Compound key of the record (tableId + recordId, e.g. "A1")'),
-    tableId: z.string().describe('Table ID the record belongs to'),
-    recordId: z.string().describe('Numeric record ID as a string'),
-    changeType: z.enum(['created_or_updated', 'deleted']).describe('Whether the record was created/updated or deleted'),
-    fields: z.record(z.string(), z.any()).optional().describe('Record field values (only present for created/updated records, uses field IDs as keys)'),
-    createdAt: z.string().optional().describe('Record creation timestamp'),
-    createdBy: z.string().optional().describe('User who created the record'),
-    modifiedAt: z.string().optional().describe('Last modification timestamp'),
-    modifiedBy: z.string().optional().describe('User who last modified the record'),
-  }))
+export let databaseChanges = SlateTrigger.create(spec, {
+  name: 'Database Changes',
+  key: 'database_changes',
+  description:
+    'Detects new, updated, and deleted records in a Ninox database using sequence-based change tracking. Requires `teamId` and `databaseId` to be set in the provider configuration.'
+})
+  .input(
+    z.object({
+      recordKey: z
+        .string()
+        .describe('Compound key of the record (tableId + recordId, e.g. "A1")'),
+      changeType: z
+        .enum(['created_or_updated', 'deleted'])
+        .describe('Whether the record was created/updated or deleted'),
+      recordData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Raw record data from the change payload'),
+      databaseId: z.string().describe('ID of the database where the change occurred')
+    })
+  )
+  .output(
+    z.object({
+      recordKey: z
+        .string()
+        .describe('Compound key of the record (tableId + recordId, e.g. "A1")'),
+      tableId: z.string().describe('Table ID the record belongs to'),
+      recordId: z.string().describe('Numeric record ID as a string'),
+      changeType: z
+        .enum(['created_or_updated', 'deleted'])
+        .describe('Whether the record was created/updated or deleted'),
+      fields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe(
+          'Record field values (only present for created/updated records, uses field IDs as keys)'
+        ),
+      createdAt: z.string().optional().describe('Record creation timestamp'),
+      createdBy: z.string().optional().describe('User who created the record'),
+      modifiedAt: z.string().optional().describe('Last modification timestamp'),
+      modifiedBy: z.string().optional().describe('User who last modified the record')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let teamId = ctx.config.teamId;
       let databaseId = ctx.config.databaseId;
 
       if (!teamId || !databaseId) {
         ctx.warn('teamId and databaseId must be set in configuration for change tracking.');
         return {
-          inputs: [],
+          inputs: []
         };
       }
 
       let client = new Client({
         baseUrl: ctx.config.baseUrl,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let sinceSq = (ctx.input.state as any)?.sinceSq ?? 0;
@@ -57,8 +75,8 @@ export let databaseChanges = SlateTrigger.create(
         return {
           inputs: [],
           updatedState: {
-            sinceSq: changes.seq,
-          },
+            sinceSq: changes.seq
+          }
         };
       }
 
@@ -74,7 +92,7 @@ export let databaseChanges = SlateTrigger.create(
           recordKey: key,
           changeType: 'created_or_updated',
           recordData: data as Record<string, any>,
-          databaseId,
+          databaseId
         });
       }
 
@@ -82,18 +100,18 @@ export let databaseChanges = SlateTrigger.create(
         inputs.push({
           recordKey: key,
           changeType: 'deleted',
-          databaseId,
+          databaseId
         });
       }
 
       return {
         inputs,
         updatedState: {
-          sinceSq: changes.seq,
-        },
+          sinceSq: changes.seq
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let recordKey = ctx.input.recordKey;
 
       let tableIdMatch = recordKey.match(/^([A-Z]+)/);
@@ -108,8 +126,8 @@ export let databaseChanges = SlateTrigger.create(
             recordKey,
             tableId,
             recordId,
-            changeType: 'deleted' as const,
-          },
+            changeType: 'deleted' as const
+          }
         };
       }
 
@@ -137,9 +155,9 @@ export let databaseChanges = SlateTrigger.create(
           createdAt: metaFields['_cd'],
           createdBy: metaFields['_cu'],
           modifiedAt: metaFields['_md'],
-          modifiedBy: metaFields['_mu'],
-        },
+          modifiedBy: metaFields['_mu']
+        }
       };
-    },
+    }
   })
   .build();

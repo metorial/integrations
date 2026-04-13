@@ -12,12 +12,9 @@ import {
   getAutopilotConfig,
   addToAutopilot,
   listAutopilotMembers,
-  removeFromAutopilot,
+  removeFromAutopilot
 } from './tools';
-import {
-  surveyResponseTrigger,
-  unsubscribeTrigger,
-} from './triggers';
+import { surveyResponseTrigger, unsubscribeTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     getAutopilotConfig,
     addToAutopilot,
     listAutopilotMembers,
-    removeFromAutopilot,
+    removeFromAutopilot
   ],
-  triggers: [
-    surveyResponseTrigger,
-    unsubscribeTrigger,
-  ],
+  triggers: [surveyResponseTrigger, unsubscribeTrigger]
 });

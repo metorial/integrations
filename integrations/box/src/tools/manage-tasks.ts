@@ -3,46 +3,81 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTasks = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tasks',
-    key: 'manage_tasks',
-    description: `Create, list, update, or delete tasks on Box files. Tasks can be assigned to specific users with due dates and completion tracking. Supports review and approval task types.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageTasks = SlateTool.create(spec, {
+  name: 'Manage Tasks',
+  key: 'manage_tasks',
+  description: `Create, list, update, or delete tasks on Box files. Tasks can be assigned to specific users with due dates and completion tracking. Supports review and approval task types.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'update', 'delete']).describe('The task operation to perform'),
-    fileId: z.string().optional().describe('File ID (required for create and list)'),
-    taskId: z.string().optional().describe('Task ID (required for update and delete)'),
-    taskMessage: z.string().optional().describe('Task description or instructions (for create and update)'),
-    dueAt: z.string().optional().describe('ISO 8601 due date for the task (for create and update)'),
-    taskAction: z.enum(['review', 'complete']).optional().describe('Task action type (for create)'),
-    assigneeUserId: z.string().optional().describe('User ID to assign the task to (for create)'),
-    assigneeEmail: z.string().optional().describe('Email of user to assign the task to (for create)')
-  }))
-  .output(z.object({
-    taskId: z.string().optional().describe('ID of the task'),
-    taskMessage: z.string().optional().describe('Task description'),
-    dueAt: z.string().optional().describe('ISO 8601 due date'),
-    taskAction: z.string().optional().describe('Task action type'),
-    deleted: z.boolean().optional().describe('True if the task was deleted'),
-    assignmentId: z.string().optional().describe('ID of the task assignment if one was created'),
-    tasks: z.array(z.object({
-      taskId: z.string(),
-      taskMessage: z.string().optional(),
-      dueAt: z.string().optional(),
-      taskAction: z.string().optional(),
-      isCompleted: z.boolean().optional()
-    })).optional().describe('List of tasks on the file')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'update', 'delete'])
+        .describe('The task operation to perform'),
+      fileId: z.string().optional().describe('File ID (required for create and list)'),
+      taskId: z.string().optional().describe('Task ID (required for update and delete)'),
+      taskMessage: z
+        .string()
+        .optional()
+        .describe('Task description or instructions (for create and update)'),
+      dueAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 due date for the task (for create and update)'),
+      taskAction: z
+        .enum(['review', 'complete'])
+        .optional()
+        .describe('Task action type (for create)'),
+      assigneeUserId: z
+        .string()
+        .optional()
+        .describe('User ID to assign the task to (for create)'),
+      assigneeEmail: z
+        .string()
+        .optional()
+        .describe('Email of user to assign the task to (for create)')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().optional().describe('ID of the task'),
+      taskMessage: z.string().optional().describe('Task description'),
+      dueAt: z.string().optional().describe('ISO 8601 due date'),
+      taskAction: z.string().optional().describe('Task action type'),
+      deleted: z.boolean().optional().describe('True if the task was deleted'),
+      assignmentId: z
+        .string()
+        .optional()
+        .describe('ID of the task assignment if one was created'),
+      tasks: z
+        .array(
+          z.object({
+            taskId: z.string(),
+            taskMessage: z.string().optional(),
+            dueAt: z.string().optional(),
+            taskAction: z.string().optional(),
+            isCompleted: z.boolean().optional()
+          })
+        )
+        .optional()
+        .describe('List of tasks on the file')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let { action, fileId, taskId, taskMessage, dueAt, taskAction, assigneeUserId, assigneeEmail } = ctx.input;
+    let {
+      action,
+      fileId,
+      taskId,
+      taskMessage,
+      dueAt,
+      taskAction,
+      assigneeUserId,
+      assigneeEmail
+    } = ctx.input;
 
     if (action === 'list') {
       if (!fileId) throw new Error('fileId is required for list action');

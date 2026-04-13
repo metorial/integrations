@@ -272,9 +272,9 @@ export class DocsBotAdminClient {
     this.axios = createAxios({
       baseURL: 'https://docsbot.ai/api/',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -289,7 +289,10 @@ export class DocsBotAdminClient {
     return response.data;
   }
 
-  async updateTeam(teamId: string, params: { name?: string; openAIKey?: string }): Promise<Team> {
+  async updateTeam(
+    teamId: string,
+    params: { name?: string; openAIKey?: string }
+  ): Promise<Team> {
     let response = await this.axios.put(`/teams/${teamId}`, params);
     return response.data;
   }
@@ -331,56 +334,104 @@ export class DocsBotAdminClient {
     return response.data;
   }
 
-  async createSource(teamId: string, botId: string, params: CreateSourceParams): Promise<Source> {
+  async createSource(
+    teamId: string,
+    botId: string,
+    params: CreateSourceParams
+  ): Promise<Source> {
     let response = await this.axios.post(`/teams/${teamId}/bots/${botId}/sources`, params);
     return response.data;
   }
 
-  async editSource(teamId: string, botId: string, sourceId: string, params: EditSourceParams): Promise<Source> {
-    let response = await this.axios.put(`/teams/${teamId}/bots/${botId}/sources/${sourceId}`, params);
+  async editSource(
+    teamId: string,
+    botId: string,
+    sourceId: string,
+    params: EditSourceParams
+  ): Promise<Source> {
+    let response = await this.axios.put(
+      `/teams/${teamId}/bots/${botId}/sources/${sourceId}`,
+      params
+    );
     return response.data;
   }
 
-  async deleteSource(teamId: string, botId: string, sourceId: string): Promise<{ message: string }> {
-    let response = await this.axios.delete(`/teams/${teamId}/bots/${botId}/sources/${sourceId}`);
+  async deleteSource(
+    teamId: string,
+    botId: string,
+    sourceId: string
+  ): Promise<{ message: string }> {
+    let response = await this.axios.delete(
+      `/teams/${teamId}/bots/${botId}/sources/${sourceId}`
+    );
     return response.data;
   }
 
-  async getUploadUrl(teamId: string, botId: string, fileName: string): Promise<UploadUrlResponse> {
+  async getUploadUrl(
+    teamId: string,
+    botId: string,
+    fileName: string
+  ): Promise<UploadUrlResponse> {
     let response = await this.axios.get(`/teams/${teamId}/bots/${botId}/upload-url`, {
-      params: { fileName },
+      params: { fileName }
     });
     return response.data;
   }
 
   // Questions
-  async listQuestions(teamId: string, botId: string, params?: ListQuestionsParams): Promise<ListQuestionsResponse> {
+  async listQuestions(
+    teamId: string,
+    botId: string,
+    params?: ListQuestionsParams
+  ): Promise<ListQuestionsResponse> {
     let response = await this.axios.get(`/teams/${teamId}/bots/${botId}/questions`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async deleteQuestion(teamId: string, botId: string, questionId: string): Promise<{ message: string }> {
-    let response = await this.axios.delete(`/teams/${teamId}/bots/${botId}/questions/${questionId}`);
+  async deleteQuestion(
+    teamId: string,
+    botId: string,
+    questionId: string
+  ): Promise<{ message: string }> {
+    let response = await this.axios.delete(
+      `/teams/${teamId}/bots/${botId}/questions/${questionId}`
+    );
     return response.data;
   }
 
   // Conversations
-  async listConversations(teamId: string, botId: string, params?: ListConversationsParams): Promise<ListConversationsResponse> {
+  async listConversations(
+    teamId: string,
+    botId: string,
+    params?: ListConversationsParams
+  ): Promise<ListConversationsResponse> {
     let response = await this.axios.get(`/teams/${teamId}/bots/${botId}/conversations`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async getConversation(teamId: string, botId: string, conversationId: string): Promise<Conversation> {
-    let response = await this.axios.get(`/teams/${teamId}/bots/${botId}/conversations/${conversationId}`);
+  async getConversation(
+    teamId: string,
+    botId: string,
+    conversationId: string
+  ): Promise<Conversation> {
+    let response = await this.axios.get(
+      `/teams/${teamId}/bots/${botId}/conversations/${conversationId}`
+    );
     return response.data;
   }
 
-  async deleteConversation(teamId: string, botId: string, conversationId: string): Promise<{ message: string }> {
-    let response = await this.axios.delete(`/teams/${teamId}/bots/${botId}/conversations/${conversationId}`);
+  async deleteConversation(
+    teamId: string,
+    botId: string,
+    conversationId: string
+  ): Promise<{ message: string }> {
+    let response = await this.axios.delete(
+      `/teams/${teamId}/bots/${botId}/conversations/${conversationId}`
+    );
     return response.data;
   }
 }
@@ -392,23 +443,28 @@ export class DocsBotChatClient {
     this.axios = createAxios({
       baseURL: 'https://api.docsbot.ai/',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  async chatAgent(teamId: string, botId: string, params: ChatAgentParams): Promise<ChatEvent[]> {
+  async chatAgent(
+    teamId: string,
+    botId: string,
+    params: ChatAgentParams
+  ): Promise<ChatEvent[]> {
     let body: Record<string, any> = {
       conversationId: params.conversationId,
       question: params.question,
-      stream: false,
+      stream: false
     };
     if (params.metadata) body.metadata = params.metadata;
     if (params.contextItems !== undefined) body.context_items = params.contextItems;
     if (params.humanEscalation !== undefined) body.human_escalation = params.humanEscalation;
     if (params.followupRating !== undefined) body.followup_rating = params.followupRating;
-    if (params.documentRetriever !== undefined) body.document_retriever = params.documentRetriever;
+    if (params.documentRetriever !== undefined)
+      body.document_retriever = params.documentRetriever;
     if (params.fullSource !== undefined) body.full_source = params.fullSource;
     if (params.autocut !== undefined) body.autocut = params.autocut;
     if (params.testing !== undefined) body.testing = params.testing;
@@ -422,8 +478,15 @@ export class DocsBotChatClient {
     return response.data;
   }
 
-  async rateAnswer(teamId: string, botId: string, answerId: string, rating: number): Promise<boolean> {
-    let response = await this.axios.put(`/teams/${teamId}/bots/${botId}/rate/${answerId}`, { rating });
+  async rateAnswer(
+    teamId: string,
+    botId: string,
+    answerId: string,
+    rating: number
+  ): Promise<boolean> {
+    let response = await this.axios.put(`/teams/${teamId}/bots/${botId}/rate/${answerId}`, {
+      rating
+    });
     return response.data;
   }
 

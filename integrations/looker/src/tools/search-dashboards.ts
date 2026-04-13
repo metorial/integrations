@@ -14,20 +14,17 @@ let dashboardSchema = z.object({
   hidden: z.boolean().optional().describe('Whether the dashboard is hidden'),
   favorite: z.boolean().optional().describe('Whether the dashboard is favorited'),
   viewCount: z.number().optional().describe('View count'),
-  favoriteCount: z.number().optional().describe('Favorite count'),
+  favoriteCount: z.number().optional().describe('Favorite count')
 });
 
-export let searchDashboards = SlateTool.create(
-  spec,
-  {
-    name: 'Search Dashboards',
-    key: 'search_dashboards',
-    description: `Search for dashboards by title, description, or folder. Returns a list of matching dashboards with their metadata. Use this to discover dashboards or find specific ones.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchDashboards = SlateTool.create(spec, {
+  name: 'Search Dashboards',
+  key: 'search_dashboards',
+  description: `Search for dashboards by title, description, or folder. Returns a list of matching dashboards with their metadata. Use this to discover dashboards or find specific ones.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
       title: z.string().optional().describe('Title to search for (supports partial match)'),
@@ -35,19 +32,19 @@ export let searchDashboards = SlateTool.create(
       folderId: z.string().optional().describe('Filter by folder ID'),
       page: z.number().optional().describe('Page number (1-based)'),
       perPage: z.number().optional().describe('Results per page (default 25)'),
-      sorts: z.string().optional().describe('Sort order (e.g., "title asc")'),
+      sorts: z.string().optional().describe('Sort order (e.g., "title asc")')
     })
   )
   .output(
     z.object({
       dashboards: z.array(dashboardSchema).describe('Matching dashboards'),
-      count: z.number().describe('Number of results returned'),
+      count: z.number().describe('Number of results returned')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LookerClient({
       instanceUrl: ctx.config.instanceUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let results = await client.searchDashboards({
@@ -56,7 +53,7 @@ export let searchDashboards = SlateTool.create(
       folder_id: ctx.input.folderId,
       page: ctx.input.page,
       per_page: ctx.input.perPage,
-      sorts: ctx.input.sorts,
+      sorts: ctx.input.sorts
     });
 
     let dashboards = (results || []).map((d: any) => ({
@@ -70,11 +67,12 @@ export let searchDashboards = SlateTool.create(
       hidden: d.hidden,
       favorite: d.favorite,
       viewCount: d.view_count,
-      favoriteCount: d.favorite_count,
+      favoriteCount: d.favorite_count
     }));
 
     return {
       output: { dashboards, count: dashboards.length },
-      message: `Found **${dashboards.length}** dashboard(s)${ctx.input.title ? ` matching "${ctx.input.title}"` : ''}.`,
+      message: `Found **${dashboards.length}** dashboard(s)${ctx.input.title ? ` matching "${ctx.input.title}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

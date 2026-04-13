@@ -11,30 +11,33 @@ let itemEventInputSchema = z.object({
   replacementLineNum: z.string().optional().describe('Replacement item line number'),
   replacementName: z.string().optional().describe('Replacement item name'),
   timestamp: z.string().optional().describe('When the event occurred'),
-  rawPayload: z.any().describe('Full raw event payload'),
+  rawPayload: z.any().describe('Full raw event payload')
 });
 
-export let itemEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Item Events',
-    key: 'item_events',
-    description: 'Receives webhook notifications for item-level events during the picking process, including item_found, item_replaced, item_refunded, and item_not_picked. Configure the webhook URL in the Instacart Developer Dashboard.',
-  }
-)
+export let itemEvents = SlateTrigger.create(spec, {
+  name: 'Item Events',
+  key: 'item_events',
+  description:
+    'Receives webhook notifications for item-level events during the picking process, including item_found, item_replaced, item_refunded, and item_not_picked. Configure the webhook URL in the Instacart Developer Dashboard.'
+})
   .input(itemEventInputSchema)
-  .output(z.object({
-    orderId: z.string().describe('The order ID'),
-    userId: z.string().optional().describe('The Connect user ID'),
-    lineNum: z.string().optional().describe('Item line number'),
-    itemName: z.string().optional().describe('Item name'),
-    replacementLineNum: z.string().optional().describe('Replacement item line number, if replaced'),
-    replacementName: z.string().optional().describe('Replacement item name, if replaced'),
-    timestamp: z.string().optional().describe('When the event occurred'),
-  }))
+  .output(
+    z.object({
+      orderId: z.string().describe('The order ID'),
+      userId: z.string().optional().describe('The Connect user ID'),
+      lineNum: z.string().optional().describe('Item line number'),
+      itemName: z.string().optional().describe('Item name'),
+      replacementLineNum: z
+        .string()
+        .optional()
+        .describe('Replacement item line number, if replaced'),
+      replacementName: z.string().optional().describe('Replacement item name, if replaced'),
+      timestamp: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       let eventType = (data.event || data.event_type || data.type || 'unknown') as string;
       let orderId = (data.order_id || '') as string;
@@ -48,7 +51,7 @@ export let itemEvents = SlateTrigger.create(
       let events = data.events as Array<Record<string, unknown>> | undefined;
       if (events && Array.isArray(events)) {
         return {
-          inputs: events.map((evt) => ({
+          inputs: events.map(evt => ({
             eventType: (evt.event || evt.event_type || evt.type || 'unknown') as string,
             orderId: (evt.order_id || '') as string,
             userId: evt.user_id as string | undefined,
@@ -57,30 +60,30 @@ export let itemEvents = SlateTrigger.create(
             replacementLineNum: evt.replacement_line_num as string | undefined,
             replacementName: evt.replacement_name as string | undefined,
             timestamp: (evt.timestamp || evt.created_at) as string | undefined,
-            rawPayload: evt,
-          })),
+            rawPayload: evt
+          }))
         };
       }
 
       return {
-        inputs: [{
-          eventType,
-          orderId,
-          userId,
-          lineNum,
-          itemName,
-          replacementLineNum,
-          replacementName,
-          timestamp,
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            orderId,
+            userId,
+            lineNum,
+            itemName,
+            replacementLineNum,
+            replacementName,
+            timestamp,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let eventTypeNormalized = ctx.input.eventType
-        .toLowerCase()
-        .replace(/[^a-z0-9_]/g, '_');
+    handleEvent: async ctx => {
+      let eventTypeNormalized = ctx.input.eventType.toLowerCase().replace(/[^a-z0-9_]/g, '_');
 
       return {
         type: `item.${eventTypeNormalized}`,
@@ -92,9 +95,9 @@ export let itemEvents = SlateTrigger.create(
           itemName: ctx.input.itemName,
           replacementLineNum: ctx.input.replacementLineNum,
           replacementName: ctx.input.replacementName,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

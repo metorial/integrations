@@ -3,34 +3,49 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCallTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Call',
-    key: 'manage_call',
-    description: `Perform actions on an active Dialpad call: hang up, transfer to another number or user, or toggle call recording.`,
-    tags: {
-      destructive: true,
-    },
+export let manageCallTool = SlateTool.create(spec, {
+  name: 'Manage Call',
+  key: 'manage_call',
+  description: `Perform actions on an active Dialpad call: hang up, transfer to another number or user, or toggle call recording.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['hangup', 'transfer', 'toggle_recording']).describe('Action to perform on the call'),
-    callId: z.string().describe('The call ID to act on'),
-    transferPhoneNumber: z.string().optional().describe('Phone number to transfer to (for transfer action)'),
-    transferUserId: z.number().optional().describe('User ID to transfer to (for transfer action)'),
-    transferType: z.enum(['warm', 'cold']).optional().describe('Transfer type (warm = announced, cold = direct)'),
-    recordingEnabled: z.boolean().optional().describe('Whether to enable or disable recording (for toggle_recording action)'),
-  }))
-  .output(z.object({
-    callId: z.string().describe('The call ID'),
-    actionPerformed: z.string().describe('Action that was performed'),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['hangup', 'transfer', 'toggle_recording'])
+        .describe('Action to perform on the call'),
+      callId: z.string().describe('The call ID to act on'),
+      transferPhoneNumber: z
+        .string()
+        .optional()
+        .describe('Phone number to transfer to (for transfer action)'),
+      transferUserId: z
+        .number()
+        .optional()
+        .describe('User ID to transfer to (for transfer action)'),
+      transferType: z
+        .enum(['warm', 'cold'])
+        .optional()
+        .describe('Transfer type (warm = announced, cold = direct)'),
+      recordingEnabled: z
+        .boolean()
+        .optional()
+        .describe('Whether to enable or disable recording (for toggle_recording action)')
+    })
+  )
+  .output(
+    z.object({
+      callId: z.string().describe('The call ID'),
+      actionPerformed: z.string().describe('Action that was performed'),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action, callId } = ctx.input;
@@ -40,7 +55,7 @@ export let manageCallTool = SlateTool.create(
 
       return {
         output: { callId, actionPerformed: 'hangup', success: true },
-        message: `Hung up call **${callId}**`,
+        message: `Hung up call **${callId}**`
       };
     }
 
@@ -48,13 +63,13 @@ export let manageCallTool = SlateTool.create(
       await client.transferCall(callId, {
         phone_number: ctx.input.transferPhoneNumber,
         user_id: ctx.input.transferUserId,
-        type: ctx.input.transferType,
+        type: ctx.input.transferType
       });
 
       let target = ctx.input.transferPhoneNumber || `user ${ctx.input.transferUserId}`;
       return {
         output: { callId, actionPerformed: 'transfer', success: true },
-        message: `Transferred call **${callId}** to ${target}`,
+        message: `Transferred call **${callId}** to ${target}`
       };
     }
 
@@ -64,7 +79,7 @@ export let manageCallTool = SlateTool.create(
 
       return {
         output: { callId, actionPerformed: 'toggle_recording', success: true },
-        message: `${enabled ? 'Enabled' : 'Disabled'} recording on call **${callId}**`,
+        message: `${enabled ? 'Enabled' : 'Disabled'} recording on call **${callId}**`
       };
     }
 

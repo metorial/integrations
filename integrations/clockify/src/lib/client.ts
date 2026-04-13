@@ -66,19 +66,25 @@ export class Client {
 
   // ── Time Entries ──
 
-  getTimeEntries = async (userId: string, params?: {
-    start?: string;
-    end?: string;
-    project?: string;
-    task?: string;
-    tags?: string;
-    description?: string;
-    'page-size'?: number;
-    page?: number;
-    'in-progress'?: boolean;
-    hydrated?: boolean;
-  }) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/user/${userId}/time-entries`, { params });
+  getTimeEntries = async (
+    userId: string,
+    params?: {
+      start?: string;
+      end?: string;
+      project?: string;
+      task?: string;
+      tags?: string;
+      description?: string;
+      'page-size'?: number;
+      page?: number;
+      'in-progress'?: boolean;
+      hydrated?: boolean;
+    }
+  ) => {
+    let response = await this.ax.get(
+      `/workspaces/${this.workspaceId}/user/${userId}/time-entries`,
+      { params }
+    );
     return response.data;
   };
 
@@ -97,17 +103,23 @@ export class Client {
     return response.data;
   };
 
-  updateTimeEntry = async (timeEntryId: string, data: {
-    start: string;
-    end?: string;
-    description?: string;
-    projectId?: string;
-    taskId?: string;
-    tagIds?: string[];
-    billable?: boolean;
-    customFields?: Array<{ customFieldId: string; value: any }>;
-  }) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/time-entries/${timeEntryId}`, data);
+  updateTimeEntry = async (
+    timeEntryId: string,
+    data: {
+      start: string;
+      end?: string;
+      description?: string;
+      projectId?: string;
+      taskId?: string;
+      tagIds?: string[];
+      billable?: boolean;
+      customFields?: Array<{ customFieldId: string; value: any }>;
+    }
+  ) => {
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/time-entries/${timeEntryId}`,
+      data
+    );
     return response.data;
   };
 
@@ -116,12 +128,17 @@ export class Client {
   };
 
   stopTimer = async (userId: string, data: { end: string }) => {
-    let response = await this.ax.patch(`/workspaces/${this.workspaceId}/user/${userId}/time-entries`, data);
+    let response = await this.ax.patch(
+      `/workspaces/${this.workspaceId}/user/${userId}/time-entries`,
+      data
+    );
     return response.data;
   };
 
   getTimeEntry = async (timeEntryId: string) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/time-entries/${timeEntryId}`);
+    let response = await this.ax.get(
+      `/workspaces/${this.workspaceId}/time-entries/${timeEntryId}`
+    );
     return response.data;
   };
 
@@ -152,24 +169,34 @@ export class Client {
     color?: string;
     billable?: boolean;
     note?: string;
-    memberships?: Array<{ userId: string; hourlyRate?: { amount: number; currency: string }; costRate?: { amount: number; currency: string } }>;
+    memberships?: Array<{
+      userId: string;
+      hourlyRate?: { amount: number; currency: string };
+      costRate?: { amount: number; currency: string };
+    }>;
     estimate?: { estimate: string; type: string };
   }) => {
     let response = await this.ax.post(`/workspaces/${this.workspaceId}/projects`, data);
     return response.data;
   };
 
-  updateProject = async (projectId: string, data: {
-    name?: string;
-    clientId?: string;
-    isPublic?: boolean;
-    color?: string;
-    billable?: boolean;
-    archived?: boolean;
-    note?: string;
-    estimate?: { estimate: string; type: string };
-  }) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/projects/${projectId}`, data);
+  updateProject = async (
+    projectId: string,
+    data: {
+      name?: string;
+      clientId?: string;
+      isPublic?: boolean;
+      color?: string;
+      billable?: boolean;
+      archived?: boolean;
+      note?: string;
+      estimate?: { estimate: string; type: string };
+    }
+  ) => {
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/projects/${projectId}`,
+      data
+    );
     return response.data;
   };
 
@@ -179,49 +206,72 @@ export class Client {
 
   // ── Tasks ──
 
-  getTasks = async (projectId: string, params?: {
-    name?: string;
-    'is-active'?: boolean;
-    'page-size'?: number;
-    page?: number;
-  }) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/projects/${projectId}/tasks`, { params });
+  getTasks = async (
+    projectId: string,
+    params?: {
+      name?: string;
+      'is-active'?: boolean;
+      'page-size'?: number;
+      page?: number;
+    }
+  ) => {
+    let response = await this.ax.get(
+      `/workspaces/${this.workspaceId}/projects/${projectId}/tasks`,
+      { params }
+    );
     return response.data;
   };
 
   getTask = async (projectId: string, taskId: string) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/projects/${projectId}/tasks/${taskId}`);
+    let response = await this.ax.get(
+      `/workspaces/${this.workspaceId}/projects/${projectId}/tasks/${taskId}`
+    );
     return response.data;
   };
 
-  createTask = async (projectId: string, data: {
-    name: string;
-    assigneeIds?: string[];
-    billable?: boolean;
-    estimate?: string;
-    status?: string;
-    hourlyRate?: { amount: number; currency: string };
-    costRate?: { amount: number; currency: string };
-  }) => {
-    let response = await this.ax.post(`/workspaces/${this.workspaceId}/projects/${projectId}/tasks`, data);
+  createTask = async (
+    projectId: string,
+    data: {
+      name: string;
+      assigneeIds?: string[];
+      billable?: boolean;
+      estimate?: string;
+      status?: string;
+      hourlyRate?: { amount: number; currency: string };
+      costRate?: { amount: number; currency: string };
+    }
+  ) => {
+    let response = await this.ax.post(
+      `/workspaces/${this.workspaceId}/projects/${projectId}/tasks`,
+      data
+    );
     return response.data;
   };
 
-  updateTask = async (projectId: string, taskId: string, data: {
-    name?: string;
-    assigneeIds?: string[];
-    billable?: boolean;
-    estimate?: string;
-    status?: string;
-    hourlyRate?: { amount: number; currency: string };
-    costRate?: { amount: number; currency: string };
-  }) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/projects/${projectId}/tasks/${taskId}`, data);
+  updateTask = async (
+    projectId: string,
+    taskId: string,
+    data: {
+      name?: string;
+      assigneeIds?: string[];
+      billable?: boolean;
+      estimate?: string;
+      status?: string;
+      hourlyRate?: { amount: number; currency: string };
+      costRate?: { amount: number; currency: string };
+    }
+  ) => {
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/projects/${projectId}/tasks/${taskId}`,
+      data
+    );
     return response.data;
   };
 
   deleteTask = async (projectId: string, taskId: string) => {
-    await this.ax.delete(`/workspaces/${this.workspaceId}/projects/${projectId}/tasks/${taskId}`);
+    await this.ax.delete(
+      `/workspaces/${this.workspaceId}/projects/${projectId}/tasks/${taskId}`
+    );
   };
 
   // ── Clients ──
@@ -252,15 +302,21 @@ export class Client {
     return response.data;
   };
 
-  updateClient = async (clientId: string, data: {
-    name?: string;
-    email?: string;
-    address?: string;
-    note?: string;
-    currency?: string;
-    archived?: boolean;
-  }) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/clients/${clientId}`, data);
+  updateClient = async (
+    clientId: string,
+    data: {
+      name?: string;
+      email?: string;
+      address?: string;
+      note?: string;
+      currency?: string;
+      archived?: boolean;
+    }
+  ) => {
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/clients/${clientId}`,
+      data
+    );
     return response.data;
   };
 
@@ -297,7 +353,9 @@ export class Client {
   // ── User Groups ──
 
   getUserGroups = async (params?: { name?: string; page?: number; 'page-size'?: number }) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/user-groups`, { params });
+    let response = await this.ax.get(`/workspaces/${this.workspaceId}/user-groups`, {
+      params
+    });
     return response.data;
   };
 
@@ -307,7 +365,10 @@ export class Client {
   };
 
   updateUserGroup = async (groupId: string, data: { name?: string }) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/user-groups/${groupId}`, data);
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/user-groups/${groupId}`,
+      data
+    );
     return response.data;
   };
 
@@ -316,12 +377,16 @@ export class Client {
   };
 
   addUserToGroup = async (groupId: string, userId: string) => {
-    let response = await this.ax.post(`/workspaces/${this.workspaceId}/user-groups/${groupId}/users/${userId}`);
+    let response = await this.ax.post(
+      `/workspaces/${this.workspaceId}/user-groups/${groupId}/users/${userId}`
+    );
     return response.data;
   };
 
   removeUserFromGroup = async (groupId: string, userId: string) => {
-    await this.ax.delete(`/workspaces/${this.workspaceId}/user-groups/${groupId}/users/${userId}`);
+    await this.ax.delete(
+      `/workspaces/${this.workspaceId}/user-groups/${groupId}/users/${userId}`
+    );
   };
 
   // ── Workspace ──
@@ -338,11 +403,7 @@ export class Client {
 
   // ── Invoices ──
 
-  getInvoices = async (params?: {
-    page?: number;
-    'page-size'?: number;
-    status?: string;
-  }) => {
+  getInvoices = async (params?: { page?: number; 'page-size'?: number; status?: string }) => {
     let response = await this.ax.get(`/workspaces/${this.workspaceId}/invoices`, { params });
     return response.data;
   };
@@ -358,7 +419,10 @@ export class Client {
   };
 
   updateInvoice = async (invoiceId: string, data: Record<string, any>) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/invoices/${invoiceId}`, data);
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/invoices/${invoiceId}`,
+      data
+    );
     return response.data;
   };
 
@@ -368,11 +432,7 @@ export class Client {
 
   // ── Expenses ──
 
-  getExpenses = async (params?: {
-    page?: number;
-    'page-size'?: number;
-    project?: string;
-  }) => {
+  getExpenses = async (params?: { page?: number; 'page-size'?: number; project?: string }) => {
     let response = await this.ax.get(`/workspaces/${this.workspaceId}/expenses`, { params });
     return response.data;
   };
@@ -392,7 +452,10 @@ export class Client {
   };
 
   updateExpense = async (expenseId: string, data: Record<string, any>) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/expenses/${expenseId}`, data);
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/expenses/${expenseId}`,
+      data
+    );
     return response.data;
   };
 
@@ -450,7 +513,10 @@ export class Client {
     invoicingState?: string;
     approvalState?: string;
   }) => {
-    let response = await this.reportsAx.post(`/workspaces/${this.workspaceId}/reports/detailed`, data);
+    let response = await this.reportsAx.post(
+      `/workspaces/${this.workspaceId}/reports/detailed`,
+      data
+    );
     return response.data;
   };
 
@@ -466,7 +532,10 @@ export class Client {
     tags?: { ids?: string[]; containedInTimeentry?: string; status?: string };
     billable?: boolean;
   }) => {
-    let response = await this.reportsAx.post(`/workspaces/${this.workspaceId}/reports/summary`, data);
+    let response = await this.reportsAx.post(
+      `/workspaces/${this.workspaceId}/reports/summary`,
+      data
+    );
     return response.data;
   };
 
@@ -487,7 +556,9 @@ export class Client {
     start?: string;
     end?: string;
   }) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/time-off/requests`, { params });
+    let response = await this.ax.get(`/workspaces/${this.workspaceId}/time-off/requests`, {
+      params
+    });
     return response.data;
   };
 
@@ -498,12 +569,21 @@ export class Client {
     note?: string;
     halfDay?: boolean;
   }) => {
-    let response = await this.ax.post(`/workspaces/${this.workspaceId}/time-off/requests`, data);
+    let response = await this.ax.post(
+      `/workspaces/${this.workspaceId}/time-off/requests`,
+      data
+    );
     return response.data;
   };
 
-  updateTimeOffRequestStatus = async (requestId: string, data: { status: string; note?: string }) => {
-    let response = await this.ax.patch(`/workspaces/${this.workspaceId}/time-off/requests/${requestId}`, data);
+  updateTimeOffRequestStatus = async (
+    requestId: string,
+    data: { status: string; note?: string }
+  ) => {
+    let response = await this.ax.patch(
+      `/workspaces/${this.workspaceId}/time-off/requests/${requestId}`,
+      data
+    );
     return response.data;
   };
 
@@ -520,17 +600,25 @@ export class Client {
     start?: string;
     end?: string;
   }) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/scheduling/assignments`, { params });
+    let response = await this.ax.get(
+      `/workspaces/${this.workspaceId}/scheduling/assignments`,
+      { params }
+    );
     return response.data;
   };
 
   createScheduledAssignment = async (data: Record<string, any>) => {
-    let response = await this.ax.post(`/workspaces/${this.workspaceId}/scheduling/assignments`, data);
+    let response = await this.ax.post(
+      `/workspaces/${this.workspaceId}/scheduling/assignments`,
+      data
+    );
     return response.data;
   };
 
   deleteScheduledAssignment = async (assignmentId: string) => {
-    await this.ax.delete(`/workspaces/${this.workspaceId}/scheduling/assignments/${assignmentId}`);
+    await this.ax.delete(
+      `/workspaces/${this.workspaceId}/scheduling/assignments/${assignmentId}`
+    );
   };
 
   // ── Approvals ──
@@ -540,7 +628,9 @@ export class Client {
     'page-size'?: number;
     status?: string;
   }) => {
-    let response = await this.ax.get(`/workspaces/${this.workspaceId}/approval-requests`, { params });
+    let response = await this.ax.get(`/workspaces/${this.workspaceId}/approval-requests`, {
+      params
+    });
     return response.data;
   };
 
@@ -564,7 +654,10 @@ export class Client {
   };
 
   updateHoliday = async (holidayId: string, data: Record<string, any>) => {
-    let response = await this.ax.put(`/workspaces/${this.workspaceId}/holidays/${holidayId}`, data);
+    let response = await this.ax.put(
+      `/workspaces/${this.workspaceId}/holidays/${holidayId}`,
+      data
+    );
     return response.data;
   };
 

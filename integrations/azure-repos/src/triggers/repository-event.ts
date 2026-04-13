@@ -3,40 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let repositoryEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Repository Event',
-    key: 'repository_event',
-    description: 'Triggers on repository lifecycle events: created, deleted, forked, renamed, and status changed (enabled/disabled).',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Azure DevOps event type identifier'),
-    eventId: z.string().describe('Unique event identifier'),
-    action: z.enum(['created', 'deleted', 'forked', 'renamed', 'status_changed']).describe('Repository action'),
-    repositoryId: z.string().describe('Repository ID'),
-    repositoryName: z.string().describe('Repository name'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    defaultBranch: z.string().optional().describe('Default branch of the repository'),
-    remoteUrl: z.string().optional().describe('Git remote URL'),
-  }))
-  .output(z.object({
-    repositoryId: z.string().describe('Repository ID'),
-    repositoryName: z.string().describe('Repository name'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    defaultBranch: z.string().optional().describe('Default branch'),
-    remoteUrl: z.string().optional().describe('Git remote URL'),
-    webUrl: z.string().describe('Web URL to view the repository'),
-  }))
+export let repositoryEvent = SlateTrigger.create(spec, {
+  name: 'Repository Event',
+  key: 'repository_event',
+  description:
+    'Triggers on repository lifecycle events: created, deleted, forked, renamed, and status changed (enabled/disabled).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Azure DevOps event type identifier'),
+      eventId: z.string().describe('Unique event identifier'),
+      action: z
+        .enum(['created', 'deleted', 'forked', 'renamed', 'status_changed'])
+        .describe('Repository action'),
+      repositoryId: z.string().describe('Repository ID'),
+      repositoryName: z.string().describe('Repository name'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      defaultBranch: z.string().optional().describe('Default branch of the repository'),
+      remoteUrl: z.string().optional().describe('Git remote URL')
+    })
+  )
+  .output(
+    z.object({
+      repositoryId: z.string().describe('Repository ID'),
+      repositoryName: z.string().describe('Repository name'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      defaultBranch: z.string().optional().describe('Default branch'),
+      remoteUrl: z.string().optional().describe('Git remote URL'),
+      webUrl: z.string().describe('Web URL to view the repository')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         organization: ctx.config.organization,
-        project: ctx.config.project,
+        project: ctx.config.project
       });
 
       let eventTypes = [
@@ -44,7 +48,7 @@ export let repositoryEvent = SlateTrigger.create(
         'git.repo.deleted',
         'git.repo.forked',
         'git.repo.renamed',
-        'git.repo.statuschanged',
+        'git.repo.statuschanged'
       ];
 
       let subscriptionIds: string[] = [];
@@ -56,11 +60,11 @@ export let repositoryEvent = SlateTrigger.create(
           consumerId: 'webHooks',
           consumerActionId: 'httpRequest',
           publisherInputs: {
-            projectId: ctx.config.project,
+            projectId: ctx.config.project
           },
           consumerInputs: {
-            url: ctx.input.webhookBaseUrl,
-          },
+            url: ctx.input.webhookBaseUrl
+          }
         });
         if (subscription.id) {
           subscriptionIds.push(subscription.id);
@@ -68,15 +72,15 @@ export let repositoryEvent = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptionIds },
+        registrationDetails: { subscriptionIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         organization: ctx.config.organization,
-        project: ctx.config.project,
+        project: ctx.config.project
       });
 
       let details = ctx.input.registrationDetails as { subscriptionIds: string[] };
@@ -85,20 +89,23 @@ export let repositoryEvent = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.eventType as string;
       if (!eventType) {
         return { inputs: [] };
       }
 
-      let actionMap: Record<string, 'created' | 'deleted' | 'forked' | 'renamed' | 'status_changed'> = {
+      let actionMap: Record<
+        string,
+        'created' | 'deleted' | 'forked' | 'renamed' | 'status_changed'
+      > = {
         'git.repo.created': 'created',
         'git.repo.deleted': 'deleted',
         'git.repo.forked': 'forked',
         'git.repo.renamed': 'renamed',
-        'git.repo.statuschanged': 'status_changed',
+        'git.repo.statuschanged': 'status_changed'
       };
 
       let action = actionMap[eventType];
@@ -110,21 +117,23 @@ export let repositoryEvent = SlateTrigger.create(
       let project = resource.project ?? {};
 
       return {
-        inputs: [{
-          eventType,
-          eventId: data.id ?? `repo-${resource.id ?? Date.now()}-${action}`,
-          action,
-          repositoryId: resource.id ?? '',
-          repositoryName: resource.name ?? '',
-          projectId: project.id ?? '',
-          projectName: project.name ?? '',
-          defaultBranch: resource.defaultBranch,
-          remoteUrl: resource.remoteUrl,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: data.id ?? `repo-${resource.id ?? Date.now()}-${action}`,
+            action,
+            repositoryId: resource.id ?? '',
+            repositoryName: resource.name ?? '',
+            projectId: project.id ?? '',
+            projectName: project.name ?? '',
+            defaultBranch: resource.defaultBranch,
+            remoteUrl: resource.remoteUrl
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let webUrl = `https://dev.azure.com/${ctx.config.organization}/${ctx.input.projectName}/_git/${ctx.input.repositoryName}`;
 
       return {
@@ -137,9 +146,9 @@ export let repositoryEvent = SlateTrigger.create(
           projectName: ctx.input.projectName,
           defaultBranch: ctx.input.defaultBranch,
           remoteUrl: ctx.input.remoteUrl,
-          webUrl,
-        },
+          webUrl
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   queryRecords,
@@ -25,12 +24,9 @@ import {
   deleteTable,
   getTableSchema,
   addTableColumn,
-  executeTransaction,
+  executeTransaction
 } from './tools';
-import {
-  recordChanges,
-  inboundWebhook,
-} from './triggers';
+import { recordChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -58,10 +54,7 @@ export let provider = Slate.create({
     deleteTable,
     getTableSchema,
     addTableColumn,
-    executeTransaction,
+    executeTransaction
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanges,
-  ],
+  triggers: [inboundWebhook, recordChanges]
 });

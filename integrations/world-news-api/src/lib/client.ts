@@ -121,8 +121,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.worldnewsapi.com',
       headers: {
-        'x-api-key': config.token,
-      },
+        'x-api-key': config.token
+      }
     });
   }
 
@@ -135,8 +135,10 @@ export class Client {
     if (params.language) queryParams['language'] = params.language;
     if (params.minSentiment !== undefined) queryParams['min-sentiment'] = params.minSentiment;
     if (params.maxSentiment !== undefined) queryParams['max-sentiment'] = params.maxSentiment;
-    if (params.earliestPublishDate) queryParams['earliest-publish-date'] = params.earliestPublishDate;
-    if (params.latestPublishDate) queryParams['latest-publish-date'] = params.latestPublishDate;
+    if (params.earliestPublishDate)
+      queryParams['earliest-publish-date'] = params.earliestPublishDate;
+    if (params.latestPublishDate)
+      queryParams['latest-publish-date'] = params.latestPublishDate;
     if (params.newsSources) queryParams['news-sources'] = params.newsSources;
     if (params.authors) queryParams['authors'] = params.authors;
     if (params.categories) queryParams['categories'] = params.categories;
@@ -148,7 +150,7 @@ export class Client {
     if (params.number !== undefined) queryParams['number'] = params.number;
 
     let response = await this.axios.get<SearchNewsResponse>('/search-news', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -162,15 +164,17 @@ export class Client {
   }): Promise<TopNewsResponse> {
     let queryParams: Record<string, string | number | boolean> = {
       'source-country': params.sourceCountry,
-      'language': params.language,
+      language: params.language
     };
 
     if (params.date) queryParams['date'] = params.date;
-    if (params.headlinesOnly !== undefined) queryParams['headlines-only'] = params.headlinesOnly;
-    if (params.maxNewsPerCluster !== undefined) queryParams['max-news-per-cluster'] = params.maxNewsPerCluster;
+    if (params.headlinesOnly !== undefined)
+      queryParams['headlines-only'] = params.headlinesOnly;
+    if (params.maxNewsPerCluster !== undefined)
+      queryParams['max-news-per-cluster'] = params.maxNewsPerCluster;
 
     let response = await this.axios.get<TopNewsResponse>('/top-news', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -178,23 +182,20 @@ export class Client {
   async retrieveNews(ids: number[]): Promise<RetrieveNewsResponse> {
     let response = await this.axios.get<RetrieveNewsResponse>('/retrieve-news', {
       params: {
-        ids: ids.join(','),
-      },
+        ids: ids.join(',')
+      }
     });
     return response.data;
   }
 
-  async extractNews(params: {
-    url: string;
-    analyze?: boolean;
-  }): Promise<ExtractNewsResponse> {
+  async extractNews(params: { url: string; analyze?: boolean }): Promise<ExtractNewsResponse> {
     let queryParams: Record<string, string | boolean> = {
-      url: params.url,
+      url: params.url
     };
     if (params.analyze !== undefined) queryParams['analyze'] = params.analyze;
 
     let response = await this.axios.get<ExtractNewsResponse>('/extract-news', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -205,27 +206,27 @@ export class Client {
     subDomain?: boolean;
   }): Promise<ExtractLinksResponse> {
     let queryParams: Record<string, string | boolean> = {
-      url: params.url,
+      url: params.url
     };
     if (params.prefix) queryParams['prefix'] = params.prefix;
     if (params.subDomain !== undefined) queryParams['sub-domain'] = params.subDomain;
 
     let response = await this.axios.get<ExtractLinksResponse>('/extract-news-links', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async searchNewsSources(name: string): Promise<SearchSourcesResponse> {
     let response = await this.axios.get<SearchSourcesResponse>('/search-news-sources', {
-      params: { name },
+      params: { name }
     });
     return response.data;
   }
 
   async getGeoCoordinates(location: string): Promise<GeoCoordinatesResponse> {
     let response = await this.axios.get<GeoCoordinatesResponse>('/geo-coordinates', {
-      params: { location },
+      params: { location }
     });
     return response.data;
   }
@@ -241,7 +242,7 @@ export class Client {
     if (params.date) queryParams['date'] = params.date;
 
     let response = await this.axios.get<FrontPageResponse>('/retrieve-front-page', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }

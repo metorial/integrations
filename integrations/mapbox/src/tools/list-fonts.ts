@@ -3,28 +3,34 @@ import { MapboxClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listFontsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Fonts',
-    key: 'list_fonts',
-    description: `List all available fonts in your Mapbox account. Fonts are used in map styles for labels, text layers, and annotations. Returns the font stack names and their available font faces.`,
-    tags: {
-      readOnly: true,
-    },
+export let listFontsTool = SlateTool.create(spec, {
+  name: 'List Fonts',
+  key: 'list_fonts',
+  description: `List all available fonts in your Mapbox account. Fonts are used in map styles for labels, text layers, and annotations. Returns the font stack names and their available font faces.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    fonts: z.array(z.object({
-      fontFamily: z.string().describe('Font family name'),
-      fontStyles: z.array(z.string()).optional().describe('Available font style variants'),
-    })).describe('Available fonts'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      fonts: z
+        .array(
+          z.object({
+            fontFamily: z.string().describe('Font family name'),
+            fontStyles: z
+              .array(z.string())
+              .optional()
+              .describe('Available font style variants')
+          })
+        )
+        .describe('Available fonts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MapboxClient({
       token: ctx.auth.token,
-      username: ctx.config.username,
+      username: ctx.config.username
     });
 
     let result = await client.listFonts();
@@ -35,13 +41,13 @@ export let listFontsTool = SlateTool.create(
       for (let [family, styles] of Object.entries(result)) {
         fonts.push({
           fontFamily: family,
-          fontStyles: Array.isArray(styles) ? styles as string[] : undefined,
+          fontStyles: Array.isArray(styles) ? (styles as string[]) : undefined
         });
       }
     }
 
     return {
       output: { fonts },
-      message: `Found **${fonts.length}** font famil${fonts.length !== 1 ? 'ies' : 'y'}.`,
+      message: `Found **${fonts.length}** font famil${fonts.length !== 1 ? 'ies' : 'y'}.`
     };
   });

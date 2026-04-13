@@ -5,36 +5,47 @@ Access and inspect Figma design files, including full node trees, layers, proper
 ## Tools
 
 ### Export Images
+
 Render specific nodes from a Figma file as images. Returns download URLs for each requested node in PNG, SVG, JPG, or PDF format. URLs expire after 14 days.
 
 ### Get Components
+
 Retrieve published components from a Figma team or file. Returns component metadata including name, description, key, thumbnail, and containing frame. Use team-level for browsing the design system, or file-level for a specific file's components.
 
 ### Get File Versions
+
 Retrieve the version history of a Figma file. Each version includes a label, description, timestamp, and the user who created it. Supports pagination.
 
 ### Get File
+
 Retrieve a Figma file's structure, layers, and metadata. Returns the full JSON tree of nodes with properties like dimensions, colors, text, and effects. Optionally request specific nodes by ID or limit traversal depth.
 
 ### Get Image Fills
+
 Retrieve download URLs for all images used as fills in a Figma file. This returns URLs for user-uploaded images, not rendered node exports. URLs expire after 14 days.
 
 ### Get Styles
+
 Retrieve published styles from a Figma team or file. Returns style metadata including name, description, type (FILL, TEXT, EFFECT, GRID), and thumbnail.
 
 ### Get Current User
+
 Retrieve the currently authenticated Figma user's profile, including name, email, and avatar.
 
 ### List Team Projects
+
 List all projects within a Figma team. Returns project names and IDs that can be used to browse files within each project.
 
 ### List Comments
+
 Retrieve all comments on a Figma file, including replies and resolution status.
 
 ### Get Dev Resources
+
 Retrieve developer resources attached to nodes in a Figma file. Dev resources are URLs shown in Dev Mode that link to code, documentation, or other developer resources.
 
 ### Get Variables
+
 Retrieve variables and variable collections from a Figma file. Variables store reusable values for design properties like colors, spacing, and typography. Supports both local (all variables) and published (library-shared) variables. Enterprise plans only.
 
 ## License

@@ -40,12 +40,9 @@ import {
   listOrgUsers,
   addOrgUser,
   updateOrgUserRole,
-  removeOrgUser,
+  removeOrgUser
 } from './tools';
-import {
-  alertNotification,
-  annotationEvents,
-} from './triggers';
+import { alertNotification, annotationEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -89,10 +86,7 @@ export let provider = Slate.create({
     listOrgUsers,
     addOrgUser,
     updateOrgUserRole,
-    removeOrgUser,
+    removeOrgUser
   ],
-  triggers: [
-    alertNotification,
-    annotationEvents,
-  ],
+  triggers: [alertNotification, annotationEvents]
 });

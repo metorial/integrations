@@ -11,11 +11,9 @@ import {
   getBlockDetails,
   getExecutionAddress,
   getStakingEntities,
-  getSyncCommittee,
+  getSyncCommittee
 } from './tools';
-import {
-  validatorEvents,
-} from './triggers';
+import { validatorEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -30,9 +28,7 @@ export let provider = Slate.create({
     getBlockDetails,
     getExecutionAddress,
     getStakingEntities,
-    getSyncCommittee,
+    getSyncCommittee
   ],
-  triggers: [
-    validatorEvents,
-  ],
+  triggers: [validatorEvents]
 });

@@ -3,39 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignStatusChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Status Changes',
-    key: 'campaign_status_changes',
-    description: 'Triggers when campaigns in an ad account change status (e.g., become active, paused, or encounter serving issues). Polls periodically to detect changes.',
-  }
-)
-  .input(z.object({
-    campaignId: z.number().describe('Numeric ID of the campaign'),
-    campaignName: z.string().describe('Name of the campaign'),
-    previousStatus: z.string().optional().describe('Previous status'),
-    currentStatus: z.string().describe('Current status'),
-    servingStatuses: z.array(z.string()).optional().describe('Current serving statuses'),
-    account: z.string().describe('Account URN'),
-  }))
-  .output(z.object({
-    campaignId: z.number().describe('Numeric ID of the campaign'),
-    campaignName: z.string().describe('Name of the campaign'),
-    previousStatus: z.string().optional().describe('Previous campaign status'),
-    currentStatus: z.string().describe('Current campaign status'),
-    servingStatuses: z.array(z.string()).optional().describe('Current serving statuses'),
-    account: z.string().describe('Account URN'),
-  }))
+export let campaignStatusChanges = SlateTrigger.create(spec, {
+  name: 'Campaign Status Changes',
+  key: 'campaign_status_changes',
+  description:
+    'Triggers when campaigns in an ad account change status (e.g., become active, paused, or encounter serving issues). Polls periodically to detect changes.'
+})
+  .input(
+    z.object({
+      campaignId: z.number().describe('Numeric ID of the campaign'),
+      campaignName: z.string().describe('Name of the campaign'),
+      previousStatus: z.string().optional().describe('Previous status'),
+      currentStatus: z.string().describe('Current status'),
+      servingStatuses: z.array(z.string()).optional().describe('Current serving statuses'),
+      account: z.string().describe('Account URN')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.number().describe('Numeric ID of the campaign'),
+      campaignName: z.string().describe('Name of the campaign'),
+      previousStatus: z.string().optional().describe('Previous campaign status'),
+      currentStatus: z.string().describe('Current campaign status'),
+      servingStatuses: z.array(z.string()).optional().describe('Current serving statuses'),
+      account: z.string().describe('Account URN')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
-      let state = ctx.state as { campaignStatuses?: Record<string, string>; accountId?: string } | null;
+      let state = ctx.state as {
+        campaignStatuses?: Record<string, string>;
+        accountId?: string;
+      } | null;
       let previousStatuses = state?.campaignStatuses || {};
       let accountId = state?.accountId;
 
@@ -43,12 +48,12 @@ export let campaignStatusChanges = SlateTrigger.create(
         // On first poll, return empty - the trigger needs state containing accountId
         return {
           inputs: [],
-          updatedState: { campaignStatuses: {}, accountId: '' },
+          updatedState: { campaignStatuses: {}, accountId: '' }
         };
       }
 
       let result = await client.getCampaigns(accountId, {
-        pageSize: 100,
+        pageSize: 100
       });
 
       let inputs: Array<{
@@ -74,7 +79,7 @@ export let campaignStatusChanges = SlateTrigger.create(
             previousStatus: prev,
             currentStatus: campaign.status,
             servingStatuses: campaign.servingStatuses,
-            account: campaign.account,
+            account: campaign.account
           });
         }
       }
@@ -83,12 +88,12 @@ export let campaignStatusChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           campaignStatuses: newStatuses,
-          accountId,
-        },
+          accountId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.status_changed',
         id: `${ctx.input.campaignId}-${ctx.input.currentStatus}-${Date.now()}`,
@@ -98,9 +103,9 @@ export let campaignStatusChanges = SlateTrigger.create(
           previousStatus: ctx.input.previousStatus,
           currentStatus: ctx.input.currentStatus,
           servingStatuses: ctx.input.servingStatuses,
-          account: ctx.input.account,
-        },
+          account: ctx.input.account
+        }
       };
-    },
+    }
   })
   .build();

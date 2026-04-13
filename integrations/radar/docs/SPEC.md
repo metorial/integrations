@@ -18,6 +18,7 @@ Radar provides four types of API keys across two environments:
 Each API endpoint is designated as either Publishable-level or Secret-level, determining which key type is required.
 
 Example request:
+
 ```
 curl https://api.radar.io/v1/users \
   -H "Authorization: prj_live_sk_..."
@@ -61,6 +62,7 @@ Detect GPS spoofing, proxy and VPN usage, and device tampering. The fraud object
 ### Geocoding
 
 Convert between addresses and coordinates. Supports:
+
 - **Forward geocoding**: address to coordinates.
 - **Reverse geocoding**: coordinates to address.
 - **IP geocoding**: IP address to approximate location (city, state, country).
@@ -68,6 +70,7 @@ Convert between addresses and coordinates. Supports:
 ### Search
 
 Search for places, addresses, and geofences near a location. Includes:
+
 - **Autocomplete**: address and place autocomplete for search boxes and forms.
 - **Search places**: find nearby points of interest by category or chain.
 - **Search geofences**: find nearby geofences by tag or metadata.
@@ -99,6 +102,7 @@ Each webhook has a random security token. Request authenticity can be verified u
 ### Geofence Events
 
 Events triggered when users interact with your custom geofences:
+
 - `user.entered_geofence` — User entered a geofence.
 - `user.exited_geofence` — User exited a geofence.
 - `user.dwelled_in_geofence` — User remained in a geofence beyond a configured dwell threshold.
@@ -108,6 +112,7 @@ Each event includes confidence level, geofence metadata (tag, external ID, descr
 ### Place Events
 
 Events triggered when users visit known points of interest from Radar's places database:
+
 - `user.entered_place` — User entered a known place.
 - `user.exited_place` — User exited a known place.
 
@@ -116,6 +121,7 @@ Events include place name, chain, and categories.
 ### Trip Events
 
 Events triggered during trip lifecycle:
+
 - `user.started_trip` — A trip was started.
 - `user.updated_trip` — A trip was updated (includes live ETA).
 - `user.approaching_trip_destination` — User is approaching the destination (configurable ETA threshold).
@@ -126,6 +132,7 @@ Events triggered during trip lifecycle:
 ### Region Events
 
 Events triggered when users cross administrative boundaries:
+
 - `user.entered_region_country` — User entered a country.
 - `user.exited_region_country` — User exited a country.
 - `user.entered_region_state` — User entered a state.
@@ -136,5 +143,6 @@ Events triggered when users cross administrative boundaries:
 ### Beacon Events
 
 Events triggered by proximity to hardware beacons:
+
 - `user.entered_beacon` — User entered a beacon range.
 - `user.exited_beacon` — User exited a beacon range.

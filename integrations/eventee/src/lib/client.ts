@@ -94,9 +94,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.eventee.com/public/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -115,9 +115,11 @@ export class Client {
     return response.data;
   }
 
-  async inviteAttendees(users: InviteAttendeeUser[]): Promise<{ invited: number; users: Array<Record<string, unknown>> }> {
+  async inviteAttendees(
+    users: InviteAttendeeUser[]
+  ): Promise<{ invited: number; users: Array<Record<string, unknown>> }> {
     let payload = {
-      users: users.map((user) => ({
+      users: users.map(user => ({
         email: user.email,
         first_name: user.firstName,
         last_name: user.lastName,
@@ -130,8 +132,8 @@ export class Client {
         linkedin_url: user.linkedinUrl,
         job_position: user.jobPosition,
         company: user.company,
-        send_email: user.sendEmail,
-      })),
+        send_email: user.sendEmail
+      }))
     };
     let response = await this.axios.put('/attendee/invite', payload);
     return response.data;

@@ -9,6 +9,7 @@ eSignatures.io (now eSignatures.com) is a mobile-first electronic signature plat
 eSignatures.io uses a **Secret Token** (API key) for authentication. There are two supported methods:
 
 1. **Token as URL parameter**: Append your secret token as a query parameter to any API request:
+
    ```
    https://esignatures.com/api/<action>?token=your-secret-token
    ```

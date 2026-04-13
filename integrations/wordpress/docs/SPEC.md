@@ -15,9 +15,11 @@ WordPress supports different authentication methods depending on whether you are
 All authenticated requests to the WordPress.com REST API require an OAuth2 access token, which can be acquired through the Full OAuth2 Flow (required for third-party applications) or Credentials Direct Token Exchange for personal use.
 
 **Prerequisites:**
+
 - Register an application through the [WordPress.com Applications Manager](https://developer.wordpress.com/apps/) to obtain a **Client ID**, **Client Secret**, and **Redirect URI**.
 
 **Authorization Code Flow (recommended for production):**
+
 1. Redirect users to the authorization endpoint:
    `https://public-api.wordpress.com/oauth2/authorize?client_id={ID}&redirect_uri={URI}&response_type=code&scope={SCOPES}&state={STATE}`
 2. When users authorize your app, WordPress.com redirects them back to your app with an authorization code. You exchange this code for an access token using your client secret.
@@ -25,19 +27,23 @@ All authenticated requests to the WordPress.com REST API require an OAuth2 acces
 4. Include the token in the Authorization header: `Authorization: Bearer your_token_here`.
 
 **Implicit Flow (legacy, for browser-based apps):**
+
 - Use `response_type=token` in the authorization URL. The token is returned directly in the URL fragment.
 
 **Password Grant (development/testing only):**
+
 - POST to `https://public-api.wordpress.com/oauth2/token` with `grant_type=password`, `username`, `password`, `client_id`, `client_secret`. Only works with your own credentials.
 
 **Available OAuth2 Scopes:**
 `users`, `sites`, `posts`, `comments`, `taxonomy`, `follow`, `sharing`, `freshly-pressed`, `notifications`, `insights`, `read`, `stats`, `media`, `menus`, `batch`, `videos`. Special scopes: `global` (comprehensive access across all sites) and `auth` (limited to `/me/` endpoint for identity verification).
 
 **Optional parameters:**
+
 - `blog`: Specific blog URL or ID to limit access to a single site.
 - `state`: Recommended for CSRF protection.
 
 **Token Validation:**
+
 - `GET https://public-api.wordpress.com/oauth2/token-info?client_id={ID}&token={TOKEN}`
 
 ### Self-Hosted WordPress (WordPress.org) REST API — Application Passwords

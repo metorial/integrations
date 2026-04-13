@@ -3,42 +3,52 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePipelines = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Pipelines & Stages',
-    key: 'manage_pipelines',
-    description: `Manage sales pipelines and their stages in Pipedrive. Create, update, or delete pipelines and stages.
+export let managePipelines = SlateTool.create(spec, {
+  name: 'Manage Pipelines & Stages',
+  key: 'manage_pipelines',
+  description: `Manage sales pipelines and their stages in Pipedrive. Create, update, or delete pipelines and stages.
 Use this tool to configure your sales process structure. Stages define the steps within a pipeline that deals flow through.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    resourceType: z.enum(['pipeline', 'stage']).describe('Type of resource to manage'),
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    pipelineId: z.number().optional().describe('Pipeline ID (required for pipeline update/delete, and for stage create)'),
-    stageId: z.number().optional().describe('Stage ID (required for stage update/delete)'),
-    name: z.string().optional().describe('Name of the pipeline or stage'),
-    orderNr: z.number().optional().describe('Order number for stages within a pipeline'),
-    dealProbability: z.boolean().optional().describe('Whether pipeline deal probability is enabled'),
-    active: z.boolean().optional().describe('Whether the pipeline or stage is active'),
-    rottingEnabled: z.boolean().optional().describe('Whether deal rotting is enabled for this stage'),
-    rottingDays: z.number().optional().describe('Number of days for deal rotting'),
-  }))
-  .output(z.object({
-    pipelineId: z.number().optional().describe('Pipeline ID'),
-    stageId: z.number().optional().describe('Stage ID'),
-    name: z.string().optional().describe('Name'),
-    orderNr: z.number().optional().describe('Order number'),
-    active: z.boolean().optional().describe('Whether active'),
-    addTime: z.string().optional().describe('Creation timestamp'),
-    updateTime: z.string().optional().nullable().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the resource was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      resourceType: z.enum(['pipeline', 'stage']).describe('Type of resource to manage'),
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      pipelineId: z
+        .number()
+        .optional()
+        .describe('Pipeline ID (required for pipeline update/delete, and for stage create)'),
+      stageId: z.number().optional().describe('Stage ID (required for stage update/delete)'),
+      name: z.string().optional().describe('Name of the pipeline or stage'),
+      orderNr: z.number().optional().describe('Order number for stages within a pipeline'),
+      dealProbability: z
+        .boolean()
+        .optional()
+        .describe('Whether pipeline deal probability is enabled'),
+      active: z.boolean().optional().describe('Whether the pipeline or stage is active'),
+      rottingEnabled: z
+        .boolean()
+        .optional()
+        .describe('Whether deal rotting is enabled for this stage'),
+      rottingDays: z.number().optional().describe('Number of days for deal rotting')
+    })
+  )
+  .output(
+    z.object({
+      pipelineId: z.number().optional().describe('Pipeline ID'),
+      stageId: z.number().optional().describe('Stage ID'),
+      name: z.string().optional().describe('Name'),
+      orderNr: z.number().optional().describe('Order number'),
+      active: z.boolean().optional().describe('Whether active'),
+      addTime: z.string().optional().describe('Creation timestamp'),
+      updateTime: z.string().optional().nullable().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the resource was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { resourceType, action } = ctx.input;
 
@@ -48,13 +58,14 @@ Use this tool to configure your sales process structure. Stages define the steps
         await client.deletePipeline(ctx.input.pipelineId);
         return {
           output: { pipelineId: ctx.input.pipelineId, deleted: true },
-          message: `Pipeline **#${ctx.input.pipelineId}** has been deleted.`,
+          message: `Pipeline **#${ctx.input.pipelineId}** has been deleted.`
         };
       }
 
       let body: Record<string, any> = {};
       if (ctx.input.name) body.name = ctx.input.name;
-      if (ctx.input.dealProbability !== undefined) body.deal_probability = ctx.input.dealProbability ? 1 : 0;
+      if (ctx.input.dealProbability !== undefined)
+        body.deal_probability = ctx.input.dealProbability ? 1 : 0;
       if (ctx.input.active !== undefined) body.active = ctx.input.active ? 1 : 0;
       if (ctx.input.orderNr !== undefined) body.order_nr = ctx.input.orderNr;
 
@@ -74,9 +85,9 @@ Use this tool to configure your sales process structure. Stages define the steps
           orderNr: pipeline?.order_nr,
           active: pipeline?.active,
           addTime: pipeline?.add_time,
-          updateTime: pipeline?.update_time,
+          updateTime: pipeline?.update_time
         },
-        message: `Pipeline **"${pipeline?.name}"** (ID: ${pipeline?.id}) has been ${action === 'create' ? 'created' : 'updated'}.`,
+        message: `Pipeline **"${pipeline?.name}"** (ID: ${pipeline?.id}) has been ${action === 'create' ? 'created' : 'updated'}.`
       };
     }
 
@@ -86,7 +97,7 @@ Use this tool to configure your sales process structure. Stages define the steps
       await client.deleteStage(ctx.input.stageId);
       return {
         output: { stageId: ctx.input.stageId, deleted: true },
-        message: `Stage **#${ctx.input.stageId}** has been deleted.`,
+        message: `Stage **#${ctx.input.stageId}** has been deleted.`
       };
     }
 
@@ -94,7 +105,8 @@ Use this tool to configure your sales process structure. Stages define the steps
     if (ctx.input.name) body.name = ctx.input.name;
     if (ctx.input.pipelineId) body.pipeline_id = ctx.input.pipelineId;
     if (ctx.input.orderNr !== undefined) body.order_nr = ctx.input.orderNr;
-    if (ctx.input.rottingEnabled !== undefined) body.rotten_flag = ctx.input.rottingEnabled ? 1 : 0;
+    if (ctx.input.rottingEnabled !== undefined)
+      body.rotten_flag = ctx.input.rottingEnabled ? 1 : 0;
     if (ctx.input.rottingDays !== undefined) body.rotten_days = ctx.input.rottingDays;
 
     let result: any;
@@ -114,8 +126,8 @@ Use this tool to configure your sales process structure. Stages define the steps
         orderNr: stage?.order_nr,
         active: stage?.active_flag,
         addTime: stage?.add_time,
-        updateTime: stage?.update_time,
+        updateTime: stage?.update_time
       },
-      message: `Stage **"${stage?.name}"** (ID: ${stage?.id}) has been ${action === 'create' ? 'created' : 'updated'}.`,
+      message: `Stage **"${stage?.name}"** (ID: ${stage?.id}) has been ${action === 'create' ? 'created' : 'updated'}.`
     };
   });

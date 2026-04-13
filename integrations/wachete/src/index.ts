@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createMonitor,
@@ -11,11 +10,9 @@ import {
   getHistory,
   listFolders,
   manageFolder,
-  getCrawlerPages,
+  getCrawlerPages
 } from './tools';
-import { contentChange,
-  inboundWebhook,
-} from './triggers';
+import { contentChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     getHistory,
     listFolders,
     manageFolder,
-    getCrawlerPages,
+    getCrawlerPages
   ],
-  triggers: [
-    inboundWebhook,
-    contentChange,
-  ],
+  triggers: [inboundWebhook, contentChange]
 });

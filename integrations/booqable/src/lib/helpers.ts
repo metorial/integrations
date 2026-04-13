@@ -7,7 +7,7 @@ export let flattenResource = (resource: any): any => {
   return {
     resourceId: resource.id,
     resourceType: resource.type,
-    ...resource.attributes,
+    ...resource.attributes
   };
 };
 
@@ -31,9 +31,12 @@ export let flattenSingleResource = (data: any): any => {
 /**
  * Build a Client instance from context.
  */
-export let buildClientConfig = (ctx: { auth: { token: string; companySlug: string }; config: { companySlug?: string } }) => {
+export let buildClientConfig = (ctx: {
+  auth: { token: string; companySlug: string };
+  config: { companySlug?: string };
+}) => {
   return {
     token: ctx.auth.token,
-    companySlug: ctx.config.companySlug || ctx.auth.companySlug,
+    companySlug: ctx.config.companySlug || ctx.auth.companySlug
   };
 };

@@ -3,38 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let noteUpdatesPollTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Note Updates (Polling)',
-    key: 'note_updates_poll',
-    description: "[Polling fallback] Polls for recently created or updated notes using Evernote's search API. Detects new and modified notes since the last poll.",
-  }
-)
-  .input(z.object({
-    noteGuid: z.string().describe('GUID of the note'),
-    title: z.string().optional().describe('Title of the note'),
-    notebookGuid: z.string().optional().describe('GUID of the notebook containing the note'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the note was last updated'),
-    isNew: z.boolean().describe('Whether this note was newly created since last poll'),
-  }))
-  .output(z.object({
-    noteGuid: z.string().describe('GUID of the affected note'),
-    title: z.string().optional().describe('Title of the note'),
-    notebookGuid: z.string().optional().describe('GUID of the containing notebook'),
-    tagGuids: z.array(z.string()).optional().describe('Tag GUIDs on this note'),
-    createdAt: z.string().optional().describe('ISO timestamp when the note was created'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the note was last updated'),
-  }))
+export let noteUpdatesPollTrigger = SlateTrigger.create(spec, {
+  name: 'Note Updates (Polling)',
+  key: 'note_updates_poll',
+  description:
+    "[Polling fallback] Polls for recently created or updated notes using Evernote's search API. Detects new and modified notes since the last poll."
+})
+  .input(
+    z.object({
+      noteGuid: z.string().describe('GUID of the note'),
+      title: z.string().optional().describe('Title of the note'),
+      notebookGuid: z.string().optional().describe('GUID of the notebook containing the note'),
+      updatedAt: z
+        .string()
+        .optional()
+        .describe('ISO timestamp when the note was last updated'),
+      isNew: z.boolean().describe('Whether this note was newly created since last poll')
+    })
+  )
+  .output(
+    z.object({
+      noteGuid: z.string().describe('GUID of the affected note'),
+      title: z.string().optional().describe('Title of the note'),
+      notebookGuid: z.string().optional().describe('GUID of the containing notebook'),
+      tagGuids: z.array(z.string()).optional().describe('Tag GUIDs on this note'),
+      createdAt: z.string().optional().describe('ISO timestamp when the note was created'),
+      updatedAt: z.string().optional().describe('ISO timestamp when the note was last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        noteStoreUrl: ctx.auth.noteStoreUrl,
+        noteStoreUrl: ctx.auth.noteStoreUrl
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -49,8 +54,8 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
           inputs: [],
           updatedState: {
             lastPollTime: new Date().toISOString(),
-            lastUpdateCount: syncState.updateCount,
-          },
+            lastUpdateCount: syncState.updateCount
+          }
         };
       }
 
@@ -59,7 +64,10 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
       if (lastPollTime) {
         // Convert ISO string to Evernote date format (YYYYMMDD'T'HHmmss)
         let d = new Date(lastPollTime);
-        let dateStr = d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+        let dateStr = d
+          .toISOString()
+          .replace(/[-:]/g, '')
+          .replace(/\.\d{3}Z$/, 'Z');
         searchFilter.words = `updated:${dateStr}`;
       }
 
@@ -67,7 +75,7 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
         {
           words: searchFilter.words,
           order: 2, // Sort by updated
-          ascending: false,
+          ascending: false
         },
         0,
         100,
@@ -76,13 +84,13 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
           includeCreated: true,
           includeUpdated: true,
           includeNotebookGuid: true,
-          includeTagGuids: true,
+          includeTagGuids: true
         }
       );
 
       let inputs = result.notes.map(note => {
         let isNew = lastPollTime
-          ? (note.created !== undefined && note.created >= new Date(lastPollTime).getTime())
+          ? note.created !== undefined && note.created >= new Date(lastPollTime).getTime()
           : false;
 
         return {
@@ -90,7 +98,7 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
           title: note.title,
           notebookGuid: note.notebookGuid,
           updatedAt: note.updated ? new Date(note.updated).toISOString() : undefined,
-          isNew,
+          isNew
         };
       });
 
@@ -98,22 +106,24 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: new Date().toISOString(),
-          lastUpdateCount: syncState.updateCount,
-        },
+          lastUpdateCount: syncState.updateCount
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        noteStoreUrl: ctx.auth.noteStoreUrl,
+        noteStoreUrl: ctx.auth.noteStoreUrl
       });
 
       // Fetch full note metadata
       let note: { createdAt?: string; tagGuids?: string[] } = {};
       try {
         let fullNote = await client.getNote(ctx.input.noteGuid, false, false, false, false);
-        note.createdAt = fullNote.created ? new Date(fullNote.created).toISOString() : undefined;
+        note.createdAt = fullNote.created
+          ? new Date(fullNote.created).toISOString()
+          : undefined;
         note.tagGuids = fullNote.tagGuids;
       } catch {
         // Use what we have from the poll input
@@ -130,8 +140,9 @@ export let noteUpdatesPollTrigger = SlateTrigger.create(
           notebookGuid: ctx.input.notebookGuid,
           tagGuids: note.tagGuids,
           createdAt: note.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -3,66 +3,69 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let eventTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Calendar Event',
-    key: 'new_event',
-    description: 'Triggers when a new calendar event is added in Project Bubble.',
-  }
-)
-  .input(z.object({
-    resourceUrl: z.string().describe('URL to the event resource'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Event ID'),
-    eventName: z.string().describe('Event name'),
-    startDate: z.string().optional().describe('Event start date'),
-    dueDate: z.string().optional().describe('Event due date'),
-    projectId: z.string().optional().describe('Associated project ID'),
-    userId: z.string().optional().describe('Creator user ID'),
-    dateCreated: z.string().optional().describe('Date created'),
-  }))
+export let eventTrigger = SlateTrigger.create(spec, {
+  name: 'New Calendar Event',
+  key: 'new_event',
+  description: 'Triggers when a new calendar event is added in Project Bubble.'
+})
+  .input(
+    z.object({
+      resourceUrl: z.string().describe('URL to the event resource')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Event ID'),
+      eventName: z.string().describe('Event name'),
+      startDate: z.string().optional().describe('Event start date'),
+      dueDate: z.string().optional().describe('Event due date'),
+      projectId: z.string().optional().describe('Associated project ID'),
+      userId: z.string().optional().describe('Creator user ID'),
+      dateCreated: z.string().optional().describe('Date created')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        domain: ctx.config.domain,
+        domain: ctx.config.domain
       });
 
       let result = await client.subscribeWebhook(ctx.input.webhookBaseUrl, 'new_event');
-      let subscriptionId = String(result?.id || result?.data?.id || result?.subscription_id || '');
+      let subscriptionId = String(
+        result?.id || result?.data?.id || result?.subscription_id || ''
+      );
 
       return {
-        registrationDetails: { subscriptionId },
+        registrationDetails: { subscriptionId }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        domain: ctx.config.domain,
+        domain: ctx.config.domain
       });
 
       await client.unsubscribeWebhook(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       return {
         inputs: [
           {
-            resourceUrl: data.resource_url || '',
-          },
-        ],
+            resourceUrl: data.resource_url || ''
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        domain: ctx.config.domain,
+        domain: ctx.config.domain
       });
 
       let result = await client.fetchResourceByUrl(ctx.input.resourceUrl);
@@ -78,8 +81,9 @@ export let eventTrigger = SlateTrigger.create(
           dueDate: e.due_date || undefined,
           projectId: e.project_id ? String(e.project_id) : undefined,
           userId: e.user_id ? String(e.user_id) : undefined,
-          dateCreated: e.date_created || undefined,
-        },
+          dateCreated: e.date_created || undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

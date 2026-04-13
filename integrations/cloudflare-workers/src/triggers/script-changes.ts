@@ -3,34 +3,41 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let scriptChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Worker Script Changes',
-    key: 'script_changes',
-    description: 'Detects when Worker scripts are created, updated, or deleted in the account.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    scriptName: z.string().describe('Name of the affected Worker script'),
-    modifiedOn: z.string().optional().describe('ISO 8601 timestamp of the change'),
-    scriptMetadata: z.record(z.string(), z.any()).optional().describe('Script metadata at time of detection'),
-  }))
-  .output(z.object({
-    scriptName: z.string().describe('Name of the affected Worker script'),
-    modifiedOn: z.string().optional().describe('ISO 8601 timestamp of the change'),
-    handlers: z.array(z.string()).optional().describe('Event handlers defined on the script'),
-    compatibilityDate: z.string().optional().describe('Compatibility date'),
-    lastDeployedFrom: z.string().optional().describe('Source of last deployment'),
-    usageModel: z.string().optional().describe('Usage model'),
-  }))
+export let scriptChanges = SlateTrigger.create(spec, {
+  name: 'Worker Script Changes',
+  key: 'script_changes',
+  description: 'Detects when Worker scripts are created, updated, or deleted in the account.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
+      scriptName: z.string().describe('Name of the affected Worker script'),
+      modifiedOn: z.string().optional().describe('ISO 8601 timestamp of the change'),
+      scriptMetadata: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Script metadata at time of detection')
+    })
+  )
+  .output(
+    z.object({
+      scriptName: z.string().describe('Name of the affected Worker script'),
+      modifiedOn: z.string().optional().describe('ISO 8601 timestamp of the change'),
+      handlers: z
+        .array(z.string())
+        .optional()
+        .describe('Event handlers defined on the script'),
+      compatibilityDate: z.string().optional().describe('Compatibility date'),
+      lastDeployedFrom: z.string().optional().describe('Source of last deployment'),
+      usageModel: z.string().optional().describe('Usage model')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let scripts = await client.listScripts();
       let scriptList: any[] = scripts || [];
@@ -57,7 +64,7 @@ export let scriptChanges = SlateTrigger.create(
               eventType: 'created',
               scriptName: name,
               modifiedOn,
-              scriptMetadata: script,
+              scriptMetadata: script
             });
           }
         } else if (previousScripts[name] !== modifiedOn) {
@@ -65,7 +72,7 @@ export let scriptChanges = SlateTrigger.create(
             eventType: 'updated',
             scriptName: name,
             modifiedOn,
-            scriptMetadata: script,
+            scriptMetadata: script
           });
         }
       }
@@ -77,7 +84,7 @@ export let scriptChanges = SlateTrigger.create(
             inputs.push({
               eventType: 'deleted',
               scriptName: name,
-              modifiedOn: new Date().toISOString(),
+              modifiedOn: new Date().toISOString()
             });
           }
         }
@@ -86,12 +93,12 @@ export let scriptChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownScripts: currentScripts,
-        },
+          knownScripts: currentScripts
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let meta = ctx.input.scriptMetadata || {};
       return {
         type: `worker_script.${ctx.input.eventType}`,
@@ -102,9 +109,9 @@ export let scriptChanges = SlateTrigger.create(
           handlers: meta.handlers as string[] | undefined,
           compatibilityDate: meta.compatibility_date as string | undefined,
           lastDeployedFrom: meta.last_deployed_from as string | undefined,
-          usageModel: meta.usage_model as string | undefined,
-        },
+          usageModel: meta.usage_model as string | undefined
+        }
       };
-    },
+    }
   })
   .build();

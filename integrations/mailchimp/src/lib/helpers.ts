@@ -14,23 +14,62 @@ export let md5 = (input: string): string => {
     return safeAdd(bitRotateLeft(safeAdd(safeAdd(a, q), safeAdd(x, t)), s), b);
   };
 
-  let md5ff = (a: number, b: number, c: number, d: number, x: number, s: number, t: number): number => {
+  let md5ff = (
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    x: number,
+    s: number,
+    t: number
+  ): number => {
     return md5cmn((b & c) | (~b & d), a, b, x, s, t);
   };
 
-  let md5gg = (a: number, b: number, c: number, d: number, x: number, s: number, t: number): number => {
+  let md5gg = (
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    x: number,
+    s: number,
+    t: number
+  ): number => {
     return md5cmn((b & d) | (c & ~d), a, b, x, s, t);
   };
 
-  let md5hh = (a: number, b: number, c: number, d: number, x: number, s: number, t: number): number => {
+  let md5hh = (
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    x: number,
+    s: number,
+    t: number
+  ): number => {
     return md5cmn(b ^ c ^ d, a, b, x, s, t);
   };
 
-  let md5ii = (a: number, b: number, c: number, d: number, x: number, s: number, t: number): number => {
+  let md5ii = (
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    x: number,
+    s: number,
+    t: number
+  ): number => {
     return md5cmn(c ^ (b | ~d), a, b, x, s, t);
   };
 
-  let firstChunk = (chunks: number[], x: number[], a: number, b: number, c: number, d: number): number[] => {
+  let firstChunk = (
+    chunks: number[],
+    x: number[],
+    a: number,
+    b: number,
+    c: number,
+    d: number
+  ): number[] => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     a = md5ff(a, b, c, d, x[0]!, 7, -680876936);
     d = md5ff(d, a, b, c, x[1]!, 12, -389564586);
@@ -51,7 +90,14 @@ export let md5 = (input: string): string => {
     return [a, b, c, d];
   };
 
-  let secondChunk = (_chunks: number[], x: number[], a: number, b: number, c: number, d: number): number[] => {
+  let secondChunk = (
+    _chunks: number[],
+    x: number[],
+    a: number,
+    b: number,
+    c: number,
+    d: number
+  ): number[] => {
     a = md5gg(a, b, c, d, x[1]!, 5, -165796510);
     d = md5gg(d, a, b, c, x[6]!, 9, -1069501632);
     c = md5gg(c, d, a, b, x[11]!, 14, 643717713);
@@ -71,7 +117,14 @@ export let md5 = (input: string): string => {
     return [a, b, c, d];
   };
 
-  let thirdChunk = (_chunks: number[], x: number[], a: number, b: number, c: number, d: number): number[] => {
+  let thirdChunk = (
+    _chunks: number[],
+    x: number[],
+    a: number,
+    b: number,
+    c: number,
+    d: number
+  ): number[] => {
     a = md5hh(a, b, c, d, x[5]!, 4, -378558);
     d = md5hh(d, a, b, c, x[8]!, 11, -2022574463);
     c = md5hh(c, d, a, b, x[11]!, 16, 1839030562);
@@ -91,7 +144,14 @@ export let md5 = (input: string): string => {
     return [a, b, c, d];
   };
 
-  let fourthChunk = (_chunks: number[], x: number[], a: number, b: number, c: number, d: number): number[] => {
+  let fourthChunk = (
+    _chunks: number[],
+    x: number[],
+    a: number,
+    b: number,
+    c: number,
+    d: number
+  ): number[] => {
     a = md5ii(a, b, c, d, x[0]!, 6, -198630844);
     d = md5ii(d, a, b, c, x[7]!, 10, 1126891415);
     c = md5ii(c, d, a, b, x[14]!, 15, -1416354905);
@@ -115,7 +175,7 @@ export let md5 = (input: string): string => {
     let bin: number[] = [];
     let mask = (1 << 8) - 1;
     for (let i = 0; i < str.length * 8; i += 8) {
-      bin[i >> 5] = (bin[i >> 5]! | 0) | ((str.charCodeAt(i / 8) & mask) << i % 32);
+      bin[i >> 5] = bin[i >> 5]! | 0 | ((str.charCodeAt(i / 8) & mask) << (i % 32));
     }
     return bin;
   };
@@ -124,13 +184,15 @@ export let md5 = (input: string): string => {
     let hexTab = '0123456789abcdef';
     let str = '';
     for (let i = 0; i < binarray.length * 4; i++) {
-      str += hexTab.charAt(((binarray[i >> 2]! | 0) >> ((i % 4) * 8 + 4)) & 0xf) + hexTab.charAt(((binarray[i >> 2]! | 0) >> ((i % 4) * 8)) & 0xf);
+      str +=
+        hexTab.charAt(((binarray[i >> 2]! | 0) >> ((i % 4) * 8 + 4)) & 0xf) +
+        hexTab.charAt(((binarray[i >> 2]! | 0) >> ((i % 4) * 8)) & 0xf);
     }
     return str;
   };
 
   let binlMD5 = (x: number[], len: number): number[] => {
-    x[len >> 5] = (x[len >> 5]! | 0) | (0x80 << len % 32);
+    x[len >> 5] = x[len >> 5]! | 0 | (0x80 << (len % 32));
     x[(((len + 64) >>> 9) << 4) + 14] = len;
 
     let a = 1732584193;
@@ -149,16 +211,28 @@ export let md5 = (input: string): string => {
       let result: number[];
 
       result = firstChunk([], chunk, a, b, c, d);
-      a = result[0]!; b = result[1]!; c = result[2]!; d = result[3]!;
+      a = result[0]!;
+      b = result[1]!;
+      c = result[2]!;
+      d = result[3]!;
 
       result = secondChunk([], chunk, a, b, c, d);
-      a = result[0]!; b = result[1]!; c = result[2]!; d = result[3]!;
+      a = result[0]!;
+      b = result[1]!;
+      c = result[2]!;
+      d = result[3]!;
 
       result = thirdChunk([], chunk, a, b, c, d);
-      a = result[0]!; b = result[1]!; c = result[2]!; d = result[3]!;
+      a = result[0]!;
+      b = result[1]!;
+      c = result[2]!;
+      d = result[3]!;
 
       result = fourthChunk([], chunk, a, b, c, d);
-      a = result[0]!; b = result[1]!; c = result[2]!; d = result[3]!;
+      a = result[0]!;
+      b = result[1]!;
+      c = result[2]!;
+      d = result[3]!;
 
       a = safeAdd(a, olda);
       b = safeAdd(b, oldb);

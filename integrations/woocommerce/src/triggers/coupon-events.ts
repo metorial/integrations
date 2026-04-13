@@ -6,33 +6,37 @@ import { z } from 'zod';
 export let couponEvents = SlateTrigger.create(spec, {
   name: 'Coupon Events',
   key: 'coupon_events',
-  description: 'Triggers when a coupon is created, updated, deleted, or restored in the store.',
+  description: 'Triggers when a coupon is created, updated, deleted, or restored in the store.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Type of coupon event'),
-    webhookId: z.number().describe('WooCommerce webhook ID'),
-    coupon: z.any().describe('Raw coupon data from WooCommerce'),
-  }))
-  .output(z.object({
-    couponId: z.number(),
-    code: z.string(),
-    discountType: z.string(),
-    amount: z.string(),
-    description: z.string(),
-    dateExpires: z.string().nullable(),
-    usageCount: z.number(),
-    usageLimit: z.number().nullable(),
-    usageLimitPerUser: z.number().nullable(),
-    individualUse: z.boolean(),
-    freeShipping: z.boolean(),
-    minimumAmount: z.string(),
-    maximumAmount: z.string(),
-    productIds: z.array(z.number()),
-    excludedProductIds: z.array(z.number()),
-    dateCreated: z.string(),
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of coupon event'),
+      webhookId: z.number().describe('WooCommerce webhook ID'),
+      coupon: z.any().describe('Raw coupon data from WooCommerce')
+    })
+  )
+  .output(
+    z.object({
+      couponId: z.number(),
+      code: z.string(),
+      discountType: z.string(),
+      amount: z.string(),
+      description: z.string(),
+      dateExpires: z.string().nullable(),
+      usageCount: z.number(),
+      usageLimit: z.number().nullable(),
+      usageLimitPerUser: z.number().nullable(),
+      individualUse: z.boolean(),
+      freeShipping: z.boolean(),
+      minimumAmount: z.string(),
+      maximumAmount: z.string(),
+      productIds: z.array(z.number()),
+      excludedProductIds: z.array(z.number()),
+      dateCreated: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let topics = ['coupon.created', 'coupon.updated', 'coupon.deleted', 'coupon.restored'];
@@ -43,17 +47,17 @@ export let couponEvents = SlateTrigger.create(spec, {
           name: `Slates - ${topic}`,
           topic,
           delivery_url: ctx.input.webhookBaseUrl,
-          status: 'active',
+          status: 'active'
         });
         registeredWebhooks.push({ webhookId: webhook.id, topic });
       }
 
       return {
-        registrationDetails: { webhooks: registeredWebhooks },
+        registrationDetails: { webhooks: registeredWebhooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhooks = ctx.input.registrationDetails?.webhooks || [];
 
@@ -66,8 +70,8 @@ export let couponEvents = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let topic = ctx.request.headers.get('x-wc-webhook-topic') || '';
       let webhookId = parseInt(ctx.request.headers.get('x-wc-webhook-id') || '0', 10);
@@ -77,15 +81,17 @@ export let couponEvents = SlateTrigger.create(spec, {
       }
 
       return {
-        inputs: [{
-          eventType: topic || 'coupon.updated',
-          webhookId,
-          coupon: body,
-        }],
+        inputs: [
+          {
+            eventType: topic || 'coupon.updated',
+            webhookId,
+            coupon: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let c = ctx.input.coupon;
 
       return {
@@ -107,9 +113,9 @@ export let couponEvents = SlateTrigger.create(spec, {
           maximumAmount: c.maximum_amount || '0',
           productIds: c.product_ids || [],
           excludedProductIds: c.excluded_product_ids || [],
-          dateCreated: c.date_created || '',
-        },
+          dateCreated: c.date_created || ''
+        }
       };
-    },
+    }
   })
   .build();

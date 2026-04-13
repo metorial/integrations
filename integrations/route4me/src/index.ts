@@ -34,12 +34,9 @@ import {
   createTerritory,
   deleteTerritory,
   getTrackingHistory,
-  setGpsPosition,
+  setGpsPosition
 } from './tools';
-import {
-  activityWebhook,
-  activityPolling,
-} from './triggers';
+import { activityWebhook, activityPolling } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -77,10 +74,7 @@ export let provider = Slate.create({
     createTerritory,
     deleteTerritory,
     getTrackingHistory,
-    setGpsPosition,
+    setGpsPosition
   ],
-  triggers: [
-    activityWebhook,
-    activityPolling,
-  ],
+  triggers: [activityWebhook, activityPolling]
 });

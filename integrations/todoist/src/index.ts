@@ -29,7 +29,7 @@ import {
   updateFilter,
   deleteFilter,
   getCollaborators,
-  getProductivityStats,
+  getProductivityStats
 } from './tools';
 import {
   taskEvents,
@@ -38,7 +38,7 @@ import {
   sectionEvents,
   labelEvents,
   filterEvents,
-  reminderEvents,
+  reminderEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -72,7 +72,7 @@ export let provider = Slate.create({
     updateFilter,
     deleteFilter,
     getCollaborators,
-    getProductivityStats,
+    getProductivityStats
   ] as any[],
   triggers: [
     taskEvents,
@@ -81,6 +81,6 @@ export let provider = Slate.create({
     sectionEvents,
     labelEvents,
     filterEvents,
-    reminderEvents,
-  ] as any[],
+    reminderEvents
+  ] as any[]
 });

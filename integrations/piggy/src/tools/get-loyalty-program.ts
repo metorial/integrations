@@ -3,42 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getLoyaltyProgram = SlateTool.create(
-  spec,
-  {
-    name: 'Get Loyalty Program',
-    key: 'get_loyalty_program',
-    description: `Retrieve the loyalty program configuration including program name, max credit amount, custom credit name, and unit settings. Also lists available tiers and gift card programs.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLoyaltyProgram = SlateTool.create(spec, {
+  name: 'Get Loyalty Program',
+  key: 'get_loyalty_program',
+  description: `Retrieve the loyalty program configuration including program name, max credit amount, custom credit name, and unit settings. Also lists available tiers and gift card programs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeTiers: z.boolean().optional().describe('Also fetch the list of tiers'),
-    includeGiftcardPrograms: z.boolean().optional().describe('Also fetch the list of gift card programs'),
-  }))
-  .output(z.object({
-    programName: z.string().optional().describe('Loyalty program name'),
-    maxAmount: z.number().optional().describe('Maximum credit amount per transaction'),
-    customCreditName: z.string().optional().describe('Custom name for credits'),
-    unitName: z.string().optional().describe('Default unit name'),
-    unitLabel: z.string().optional().describe('Default unit label'),
-    tiers: z.array(z.object({
-      tierUuid: z.string().optional().describe('UUID of the tier'),
-      name: z.string().optional().describe('Tier name'),
-      description: z.string().optional().describe('Tier description'),
-      position: z.number().optional().describe('Tier position/rank'),
-    }).passthrough()).optional().describe('List of tiers'),
-    giftcardPrograms: z.array(z.object({
-      programUuid: z.string().optional().describe('UUID of the gift card program'),
-      name: z.string().optional().describe('Program name'),
-      active: z.boolean().optional().describe('Whether the program is active'),
-      maxAmountInCents: z.number().optional().describe('Max amount in cents'),
-      minAmountInCents: z.number().optional().describe('Min amount in cents'),
-    }).passthrough()).optional().describe('List of gift card programs'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeTiers: z.boolean().optional().describe('Also fetch the list of tiers'),
+      includeGiftcardPrograms: z
+        .boolean()
+        .optional()
+        .describe('Also fetch the list of gift card programs')
+    })
+  )
+  .output(
+    z.object({
+      programName: z.string().optional().describe('Loyalty program name'),
+      maxAmount: z.number().optional().describe('Maximum credit amount per transaction'),
+      customCreditName: z.string().optional().describe('Custom name for credits'),
+      unitName: z.string().optional().describe('Default unit name'),
+      unitLabel: z.string().optional().describe('Default unit label'),
+      tiers: z
+        .array(
+          z
+            .object({
+              tierUuid: z.string().optional().describe('UUID of the tier'),
+              name: z.string().optional().describe('Tier name'),
+              description: z.string().optional().describe('Tier description'),
+              position: z.number().optional().describe('Tier position/rank')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('List of tiers'),
+      giftcardPrograms: z
+        .array(
+          z
+            .object({
+              programUuid: z.string().optional().describe('UUID of the gift card program'),
+              name: z.string().optional().describe('Program name'),
+              active: z.boolean().optional().describe('Whether the program is active'),
+              maxAmountInCents: z.number().optional().describe('Max amount in cents'),
+              minAmountInCents: z.number().optional().describe('Min amount in cents')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('List of gift card programs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getLoyaltyProgram();
@@ -49,7 +67,7 @@ export let getLoyaltyProgram = SlateTool.create(
       maxAmount: program.max_amount,
       customCreditName: program.custom_credit_name,
       unitName: program.unit?.name,
-      unitLabel: program.unit?.label,
+      unitLabel: program.unit?.label
     };
 
     if (ctx.input.includeTiers) {
@@ -60,9 +78,11 @@ export let getLoyaltyProgram = SlateTool.create(
           name: t.name,
           description: t.description,
           position: t.position,
-          ...t,
+          ...t
         }));
-      } catch { output.tiers = []; }
+      } catch {
+        output.tiers = [];
+      }
     }
 
     if (ctx.input.includeGiftcardPrograms) {
@@ -74,14 +94,16 @@ export let getLoyaltyProgram = SlateTool.create(
           active: p.active,
           maxAmountInCents: p.max_amount_in_cents,
           minAmountInCents: p.min_amount_in_cents,
-          ...p,
+          ...p
         }));
-      } catch { output.giftcardPrograms = []; }
+      } catch {
+        output.giftcardPrograms = [];
+      }
     }
 
     return {
       output,
-      message: `Loyalty program: **${program.name || 'unnamed'}**${output.tiers ? `, ${output.tiers.length} tier(s)` : ''}${output.giftcardPrograms ? `, ${output.giftcardPrograms.length} gift card program(s)` : ''}.`,
+      message: `Loyalty program: **${program.name || 'unnamed'}**${output.tiers ? `, ${output.tiers.length} tier(s)` : ''}${output.giftcardPrograms ? `, ${output.giftcardPrograms.length} gift card program(s)` : ''}.`
     };
   })
   .build();

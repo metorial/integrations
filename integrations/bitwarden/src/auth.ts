@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    serverUrl: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      serverUrl: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Organization API Key',
@@ -14,15 +16,15 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       clientId: z.string().describe('Organization client ID (format: organization.xxxxx)'),
       clientSecret: z.string().describe('Organization client secret'),
-      identityUrl: z.enum([
-        'https://identity.bitwarden.com',
-        'https://identity.bitwarden.eu'
-      ]).default('https://identity.bitwarden.com').describe('Bitwarden Identity server URL'),
+      identityUrl: z
+        .enum(['https://identity.bitwarden.com', 'https://identity.bitwarden.eu'])
+        .default('https://identity.bitwarden.com')
+        .describe('Bitwarden Identity server URL')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios({
-        baseURL: ctx.input.identityUrl,
+        baseURL: ctx.input.identityUrl
       });
 
       let params = new URLSearchParams();
@@ -33,20 +35,21 @@ export let auth = SlateAuth.create()
 
       let response = await http.post('/connect/token', params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let identityUrl = ctx.input.identityUrl;
-      let serverUrl = identityUrl === 'https://identity.bitwarden.eu'
-        ? 'https://api.bitwarden.eu'
-        : 'https://api.bitwarden.com';
+      let serverUrl =
+        identityUrl === 'https://identity.bitwarden.eu'
+          ? 'https://api.bitwarden.eu'
+          : 'https://api.bitwarden.com';
 
       return {
         output: {
           token: response.data.access_token,
-          serverUrl,
-        },
+          serverUrl
+        }
       };
-    },
+    }
   });

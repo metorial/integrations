@@ -15,43 +15,52 @@ let insightStatsSchema = z.object({
   cpc: z.number().optional().describe('Cost per click'),
   ctr: z.number().optional().describe('Click-through rate'),
   followers: z.number().optional().describe('Current follower count'),
-  initialFollowers: z.number().optional().describe('Follower count at campaign start'),
+  initialFollowers: z.number().optional().describe('Follower count at campaign start')
 });
 
-export let campaignInsights = SlateTool.create(
-  spec,
-  {
-    name: 'Campaign Insights',
-    key: 'campaign_insights',
-    description: `Retrieve performance insights for an ad campaign. Returns total, today, and yesterday stats including spend, reach, clicks, conversions, CTR, and CPC. Optionally includes creative-level (per-ad) analytics for A/B testing analysis.`,
-    tags: {
-      readOnly: true,
-    },
+export let campaignInsights = SlateTool.create(spec, {
+  name: 'Campaign Insights',
+  key: 'campaign_insights',
+  description: `Retrieve performance insights for an ad campaign. Returns total, today, and yesterday stats including spend, reach, clicks, conversions, CTR, and CPC. Optionally includes creative-level (per-ad) analytics for A/B testing analysis.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    campaignId: z.number().describe('ID of the campaign to get insights for'),
-    includeCreativeInsights: z.boolean().optional().describe('Also retrieve per-creative/per-ad insights for A/B test analysis'),
-  }))
-  .output(z.object({
-    total: insightStatsSchema.describe('All-time campaign performance'),
-    today: insightStatsSchema.describe("Today's campaign performance"),
-    yesterday: insightStatsSchema.describe("Yesterday's campaign performance"),
-    creativeInsights: z.array(z.object({
-      adId: z.string().optional().describe('Ad ID'),
-      adName: z.string().optional().describe('Ad name'),
-      adsetId: z.string().optional().describe('Ad set ID'),
-      adsetName: z.string().optional().describe('Ad set name'),
-      effectiveStatus: z.string().optional().describe('Current ad status'),
-      amountSpent: z.number().optional().describe('Spend for this creative'),
-      reach: z.number().optional().describe('Reach for this creative'),
-      clicks: z.number().optional().describe('Clicks for this creative'),
-      conversions: z.number().optional().describe('Conversions for this creative'),
-      cpc: z.number().optional().describe('Cost per click'),
-      ctr: z.number().optional().describe('Click-through rate'),
-    })).optional().describe('Per-creative performance breakdown'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z.number().describe('ID of the campaign to get insights for'),
+      includeCreativeInsights: z
+        .boolean()
+        .optional()
+        .describe('Also retrieve per-creative/per-ad insights for A/B test analysis')
+    })
+  )
+  .output(
+    z.object({
+      total: insightStatsSchema.describe('All-time campaign performance'),
+      today: insightStatsSchema.describe("Today's campaign performance"),
+      yesterday: insightStatsSchema.describe("Yesterday's campaign performance"),
+      creativeInsights: z
+        .array(
+          z.object({
+            adId: z.string().optional().describe('Ad ID'),
+            adName: z.string().optional().describe('Ad name'),
+            adsetId: z.string().optional().describe('Ad set ID'),
+            adsetName: z.string().optional().describe('Ad set name'),
+            effectiveStatus: z.string().optional().describe('Current ad status'),
+            amountSpent: z.number().optional().describe('Spend for this creative'),
+            reach: z.number().optional().describe('Reach for this creative'),
+            clicks: z.number().optional().describe('Clicks for this creative'),
+            conversions: z.number().optional().describe('Conversions for this creative'),
+            cpc: z.number().optional().describe('Cost per click'),
+            ctr: z.number().optional().describe('Click-through rate')
+          })
+        )
+        .optional()
+        .describe('Per-creative performance breakdown')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ToneDenClient({ token: ctx.auth.token });
     let insights = await client.getCampaignInsights(ctx.input.campaignId);
 
@@ -67,13 +76,13 @@ export let campaignInsights = SlateTool.create(
       cpc: s?.cpc,
       ctr: s?.ctr,
       followers: s?.followers,
-      initialFollowers: s?.initial_followers,
+      initialFollowers: s?.initial_followers
     });
 
     let output: any = {
       total: mapStats(insights?.total),
       today: mapStats(insights?.today),
-      yesterday: mapStats(insights?.yesterday),
+      yesterday: mapStats(insights?.yesterday)
     };
 
     if (ctx.input.includeCreativeInsights) {
@@ -89,12 +98,13 @@ export let campaignInsights = SlateTool.create(
         clicks: ad.insights?.clicks,
         conversions: ad.insights?.conversions,
         cpc: ad.insights?.cpc,
-        ctr: ad.insights?.ctr,
+        ctr: ad.insights?.ctr
       }));
     }
 
     return {
       output,
-      message: `Retrieved insights for campaign **${ctx.input.campaignId}**. Total spend: ${insights?.total?.amount_spent ?? 'N/A'}, reach: ${insights?.total?.reach ?? 'N/A'}, clicks: ${insights?.total?.clicks ?? 'N/A'}.`,
+      message: `Retrieved insights for campaign **${ctx.input.campaignId}**. Total spend: ${insights?.total?.amount_spent ?? 'N/A'}, reach: ${insights?.total?.reach ?? 'N/A'}, clicks: ${insights?.total?.clicks ?? 'N/A'}.`
     };
-  }).build();
+  })
+  .build();

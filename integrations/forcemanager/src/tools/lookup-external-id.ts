@@ -3,33 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let lookupExternalId = SlateTool.create(
-  spec,
-  {
-    name: 'Lookup External ID',
-    key: 'lookup_external_id',
-    description: `Map an external system ID to a ForceManager internal ID.
+export let lookupExternalId = SlateTool.create(spec, {
+  name: 'Lookup External ID',
+  key: 'lookup_external_id',
+  description: `Map an external system ID to a ForceManager internal ID.
 Useful for synchronization with external ERPs, CRMs, or accounting systems that assign their own identifiers to records.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    entityType: z.string().describe('Entity type to search (e.g. "company", "contact", "opportunity", "product", "salesorder")'),
-    externalId: z.string().describe('The external system ID to look up')
-  }))
-  .output(z.object({
-    internalId: z.number().nullable().describe('ForceManager internal ID, or null if not found'),
-    entityType: z.string().describe('The entity type that was searched'),
-    externalId: z.string().describe('The external ID that was looked up')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      entityType: z
+        .string()
+        .describe(
+          'Entity type to search (e.g. "company", "contact", "opportunity", "product", "salesorder")'
+        ),
+      externalId: z.string().describe('The external system ID to look up')
+    })
+  )
+  .output(
+    z.object({
+      internalId: z
+        .number()
+        .nullable()
+        .describe('ForceManager internal ID, or null if not found'),
+      entityType: z.string().describe('The entity type that was searched'),
+      externalId: z.string().describe('The external ID that was looked up')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     try {
       let result = await client.getInternalId(ctx.input.entityType, ctx.input.externalId);
-      let internalId = result?.id || result?.internalId || (typeof result === 'number' ? result : null);
+      let internalId =
+        result?.id || result?.internalId || (typeof result === 'number' ? result : null);
 
       return {
         output: {
@@ -54,4 +63,5 @@ Useful for synchronization with external ERPs, CRMs, or accounting systems that 
       }
       throw err;
     }
-  }).build();
+  })
+  .build();

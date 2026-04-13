@@ -13,20 +13,20 @@ export class Client {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${this.token}`,
       Accept: 'application/json',
-      'X-Api-Version': '3',
+      'X-Api-Version': '3'
     };
     if (this.environment) {
       headers['X-Environment'] = this.environment;
     }
     return createAxios({
       baseURL: 'https://site-api.datocms.com',
-      headers,
+      headers
     });
   }
 
   private get jsonApiHeaders() {
     return {
-      'Content-Type': 'application/vnd.api+json',
+      'Content-Type': 'application/vnd.api+json'
     };
   }
 
@@ -39,17 +39,19 @@ export class Client {
 
   // ─── Records (Items) ─────────────────────────────────────────────
 
-  async listRecords(params: {
-    filterType?: string;
-    filterQuery?: string;
-    filterIds?: string;
-    version?: 'current' | 'published';
-    locale?: string;
-    orderBy?: string;
-    nested?: boolean;
-    pageOffset?: number;
-    pageLimit?: number;
-  } = {}): Promise<{ data: any[]; totalCount: number }> {
+  async listRecords(
+    params: {
+      filterType?: string;
+      filterQuery?: string;
+      filterIds?: string;
+      version?: 'current' | 'published';
+      locale?: string;
+      orderBy?: string;
+      nested?: boolean;
+      pageOffset?: number;
+      pageLimit?: number;
+    } = {}
+  ): Promise<{ data: any[]; totalCount: number }> {
     let queryParams: Record<string, string> = {};
     if (params.filterType) queryParams['filter[type]'] = params.filterType;
     if (params.filterQuery) queryParams['filter[query]'] = params.filterQuery;
@@ -58,7 +60,8 @@ export class Client {
     if (params.locale) queryParams['locale'] = params.locale;
     if (params.orderBy) queryParams['order_by'] = params.orderBy;
     if (params.nested !== undefined) queryParams['nested'] = String(params.nested);
-    if (params.pageOffset !== undefined) queryParams['page[offset]'] = String(params.pageOffset);
+    if (params.pageOffset !== undefined)
+      queryParams['page[offset]'] = String(params.pageOffset);
     if (params.pageLimit !== undefined) queryParams['page[limit]'] = String(params.pageLimit);
 
     let response = await this.axios.get('/items', { params: queryParams });
@@ -66,11 +69,16 @@ export class Client {
       data: response.data,
       totalCount: response.headers?.['x-api-total-count']
         ? parseInt(response.headers['x-api-total-count'], 10)
-        : (Array.isArray(response.data) ? response.data.length : 0),
+        : Array.isArray(response.data)
+          ? response.data.length
+          : 0
     };
   }
 
-  async getRecord(recordId: string, params: { version?: 'current' | 'published'; nested?: boolean } = {}): Promise<any> {
+  async getRecord(
+    recordId: string,
+    params: { version?: 'current' | 'published'; nested?: boolean } = {}
+  ): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params.version) queryParams['version'] = params.version;
     if (params.nested !== undefined) queryParams['nested'] = String(params.nested);
@@ -79,23 +87,27 @@ export class Client {
     return response.data;
   }
 
-  async createRecord(modelId: string, fields: Record<string, any>, meta?: { publishedAt?: string }): Promise<any> {
+  async createRecord(
+    modelId: string,
+    fields: Record<string, any>,
+    meta?: { publishedAt?: string }
+  ): Promise<any> {
     let body: Record<string, any> = {
       item_type: { type: 'item_type', id: modelId },
-      ...fields,
+      ...fields
     };
     if (meta) {
       body.meta = meta;
     }
     let response = await this.axios.post('/items', body, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
 
   async updateRecord(recordId: string, fields: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/items/${recordId}`, fields, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
@@ -106,16 +118,24 @@ export class Client {
   }
 
   async publishRecord(recordId: string): Promise<any> {
-    let response = await this.axios.put(`/items/${recordId}/publish`, {}, {
-      headers: this.jsonApiHeaders,
-    });
+    let response = await this.axios.put(
+      `/items/${recordId}/publish`,
+      {},
+      {
+        headers: this.jsonApiHeaders
+      }
+    );
     return response.data;
   }
 
   async unpublishRecord(recordId: string): Promise<any> {
-    let response = await this.axios.put(`/items/${recordId}/unpublish`, {}, {
-      headers: this.jsonApiHeaders,
-    });
+    let response = await this.axios.put(
+      `/items/${recordId}/unpublish`,
+      {},
+      {
+        headers: this.jsonApiHeaders
+      }
+    );
     return response.data;
   }
 
@@ -133,14 +153,14 @@ export class Client {
 
   async createModel(attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/item-types', attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
 
   async updateModel(modelId: string, attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/item-types/${modelId}`, attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
@@ -164,14 +184,14 @@ export class Client {
 
   async createField(modelId: string, attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/item-types/${modelId}/fields`, attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
 
   async updateField(fieldId: string, attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/fields/${fieldId}`, attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
@@ -183,14 +203,17 @@ export class Client {
 
   // ─── Uploads ──────────────────────────────────────────────────────
 
-  async listUploads(params: {
-    pageOffset?: number;
-    pageLimit?: number;
-    filterType?: string;
-    filterQuery?: string;
-  } = {}): Promise<{ data: any[]; totalCount: number }> {
+  async listUploads(
+    params: {
+      pageOffset?: number;
+      pageLimit?: number;
+      filterType?: string;
+      filterQuery?: string;
+    } = {}
+  ): Promise<{ data: any[]; totalCount: number }> {
     let queryParams: Record<string, string> = {};
-    if (params.pageOffset !== undefined) queryParams['page[offset]'] = String(params.pageOffset);
+    if (params.pageOffset !== undefined)
+      queryParams['page[offset]'] = String(params.pageOffset);
     if (params.pageLimit !== undefined) queryParams['page[limit]'] = String(params.pageLimit);
     if (params.filterType) queryParams['filter[type]'] = params.filterType;
     if (params.filterQuery) queryParams['filter[query]'] = params.filterQuery;
@@ -200,7 +223,9 @@ export class Client {
       data: response.data,
       totalCount: response.headers?.['x-api-total-count']
         ? parseInt(response.headers['x-api-total-count'], 10)
-        : (Array.isArray(response.data) ? response.data.length : 0),
+        : Array.isArray(response.data)
+          ? response.data.length
+          : 0
     };
   }
 
@@ -211,7 +236,7 @@ export class Client {
 
   async updateUpload(uploadId: string, attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/uploads/${uploadId}`, attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
@@ -234,16 +259,24 @@ export class Client {
   }
 
   async forkEnvironment(sourceId: string, newId: string): Promise<any> {
-    let response = await this.axios.post(`/environments/${sourceId}/fork`, { id: newId }, {
-      headers: this.jsonApiHeaders,
-    });
+    let response = await this.axios.post(
+      `/environments/${sourceId}/fork`,
+      { id: newId },
+      {
+        headers: this.jsonApiHeaders
+      }
+    );
     return response.data;
   }
 
   async promoteEnvironment(environmentId: string): Promise<any> {
-    let response = await this.axios.put(`/environments/${environmentId}/promote`, {}, {
-      headers: this.jsonApiHeaders,
-    });
+    let response = await this.axios.put(
+      `/environments/${environmentId}/promote`,
+      {},
+      {
+        headers: this.jsonApiHeaders
+      }
+    );
     return response.data;
   }
 
@@ -266,22 +299,26 @@ export class Client {
 
   async createBuildTrigger(attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/build-triggers', attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
 
   async updateBuildTrigger(triggerId: string, attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/build-triggers/${triggerId}`, attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
 
   async triggerBuild(triggerId: string): Promise<any> {
-    let response = await this.axios.post(`/build-triggers/${triggerId}/trigger`, {}, {
-      headers: this.jsonApiHeaders,
-    });
+    let response = await this.axios.post(
+      `/build-triggers/${triggerId}/trigger`,
+      {},
+      {
+        headers: this.jsonApiHeaders
+      }
+    );
     return response.data;
   }
 
@@ -316,14 +353,14 @@ export class Client {
     custom_payload?: string;
   }): Promise<any> {
     let response = await this.axios.post('/webhooks', attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
 
   async updateWebhook(webhookId: string, attributes: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/webhooks/${webhookId}`, attributes, {
-      headers: this.jsonApiHeaders,
+      headers: this.jsonApiHeaders
     });
     return response.data;
   }
@@ -342,19 +379,23 @@ export class Client {
 
   // ─── Search ───────────────────────────────────────────────────────
 
-  async searchSite(query: string, params: {
-    buildTriggerId?: string;
-    locale?: string;
-    pageOffset?: number;
-    pageLimit?: number;
-    fuzzy?: boolean;
-  } = {}): Promise<{ data: any[]; totalCount: number }> {
+  async searchSite(
+    query: string,
+    params: {
+      buildTriggerId?: string;
+      locale?: string;
+      pageOffset?: number;
+      pageLimit?: number;
+      fuzzy?: boolean;
+    } = {}
+  ): Promise<{ data: any[]; totalCount: number }> {
     let queryParams: Record<string, string> = {
-      q: query,
+      q: query
     };
     if (params.buildTriggerId) queryParams['build_trigger_id'] = params.buildTriggerId;
     if (params.locale) queryParams['locale'] = params.locale;
-    if (params.pageOffset !== undefined) queryParams['page[offset]'] = String(params.pageOffset);
+    if (params.pageOffset !== undefined)
+      queryParams['page[offset]'] = String(params.pageOffset);
     if (params.pageLimit !== undefined) queryParams['page[limit]'] = String(params.pageLimit);
     if (params.fuzzy !== undefined) queryParams['fuzzy'] = String(params.fuzzy);
 
@@ -363,7 +404,9 @@ export class Client {
       data: response.data,
       totalCount: response.headers?.['x-api-total-count']
         ? parseInt(response.headers['x-api-total-count'], 10)
-        : (Array.isArray(response.data) ? response.data.length : 0),
+        : Array.isArray(response.data)
+          ? response.data.length
+          : 0
     };
   }
 }

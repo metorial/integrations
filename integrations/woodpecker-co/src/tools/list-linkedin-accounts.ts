@@ -3,30 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listLinkedInAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'List LinkedIn Accounts',
-    key: 'list_linkedin_accounts',
-    description: `Retrieve all connected LinkedIn accounts used for LinkedIn campaign steps (profile visits, connection requests, and messages).`,
-    tags: {
-      readOnly: true,
-    },
+export let listLinkedInAccounts = SlateTool.create(spec, {
+  name: 'List LinkedIn Accounts',
+  key: 'list_linkedin_accounts',
+  description: `Retrieve all connected LinkedIn accounts used for LinkedIn campaign steps (profile visits, connection requests, and messages).`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accounts: z.array(z.object({
-      accountId: z.number().optional().describe('LinkedIn account ID'),
-      name: z.string().optional().describe('Account name'),
-      email: z.string().optional().describe('Associated email'),
-      status: z.string().optional().describe('Connection status'),
-    })).describe('List of connected LinkedIn accounts'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accounts: z
+        .array(
+          z.object({
+            accountId: z.number().optional().describe('LinkedIn account ID'),
+            name: z.string().optional().describe('Account name'),
+            email: z.string().optional().describe('Associated email'),
+            status: z.string().optional().describe('Connection status')
+          })
+        )
+        .describe('List of connected LinkedIn accounts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      companyId: ctx.config.companyId,
+      companyId: ctx.config.companyId
     });
 
     let data: any = await client.listLinkedInAccounts();
@@ -36,12 +39,12 @@ export let listLinkedInAccounts = SlateTool.create(
       accountId: a.id,
       name: a.name,
       email: a.email,
-      status: a.status,
+      status: a.status
     }));
 
     return {
       output: { accounts: mapped },
-      message: `Found **${mapped.length}** LinkedIn account(s).`,
+      message: `Found **${mapped.length}** LinkedIn account(s).`
     };
   })
   .build();

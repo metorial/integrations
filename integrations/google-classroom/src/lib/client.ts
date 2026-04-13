@@ -9,8 +9,8 @@ export class ClassroomClient {
       baseURL: 'https://classroom.googleapis.com/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -54,7 +54,7 @@ export class ClassroomClient {
 
   async updateCourse(courseId: string, course: Record<string, any>, updateMask: string) {
     let response = await this.http.patch(`/courses/${courseId}`, course, {
-      params: { updateMask },
+      params: { updateMask }
     });
     return response.data;
   }
@@ -68,7 +68,7 @@ export class ClassroomClient {
 
   async listCourseAliases(courseId: string, pageSize?: number, pageToken?: string) {
     let response = await this.http.get(`/courses/${courseId}/aliases`, {
-      params: { pageSize, pageToken },
+      params: { pageSize, pageToken }
     });
     return response.data;
   }
@@ -79,7 +79,9 @@ export class ClassroomClient {
   }
 
   async deleteCourseAlias(courseId: string, alias: string) {
-    let response = await this.http.delete(`/courses/${courseId}/aliases/${encodeURIComponent(alias)}`);
+    let response = await this.http.delete(
+      `/courses/${courseId}/aliases/${encodeURIComponent(alias)}`
+    );
     return response.data;
   }
 
@@ -87,7 +89,7 @@ export class ClassroomClient {
 
   async listTeachers(courseId: string, pageSize?: number, pageToken?: string) {
     let response = await this.http.get(`/courses/${courseId}/teachers`, {
-      params: { pageSize, pageToken },
+      params: { pageSize, pageToken }
     });
     return response.data;
   }
@@ -111,7 +113,7 @@ export class ClassroomClient {
 
   async listStudents(courseId: string, pageSize?: number, pageToken?: string) {
     let response = await this.http.get(`/courses/${courseId}/students`, {
-      params: { pageSize, pageToken },
+      params: { pageSize, pageToken }
     });
     return response.data;
   }
@@ -164,12 +166,15 @@ export class ClassroomClient {
 
   // ── CourseWork ──
 
-  async listCourseWork(courseId: string, params?: {
-    courseWorkStates?: string[];
-    orderBy?: string;
-    pageSize?: number;
-    pageToken?: string;
-  }) {
+  async listCourseWork(
+    courseId: string,
+    params?: {
+      courseWorkStates?: string[];
+      orderBy?: string;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ) {
     let response = await this.http.get(`/courses/${courseId}/courseWork`, { params });
     return response.data;
   }
@@ -184,10 +189,19 @@ export class ClassroomClient {
     return response.data;
   }
 
-  async updateCourseWork(courseId: string, courseWorkId: string, courseWork: Record<string, any>, updateMask: string) {
-    let response = await this.http.patch(`/courses/${courseId}/courseWork/${courseWorkId}`, courseWork, {
-      params: { updateMask },
-    });
+  async updateCourseWork(
+    courseId: string,
+    courseWorkId: string,
+    courseWork: Record<string, any>,
+    updateMask: string
+  ) {
+    let response = await this.http.patch(
+      `/courses/${courseId}/courseWork/${courseWorkId}`,
+      courseWork,
+      {
+        params: { updateMask }
+      }
+    );
     return response.data;
   }
 
@@ -198,13 +212,17 @@ export class ClassroomClient {
 
   // ── Student Submissions ──
 
-  async listStudentSubmissions(courseId: string, courseWorkId: string, params?: {
-    userId?: string;
-    states?: string[];
-    late?: string;
-    pageSize?: number;
-    pageToken?: string;
-  }) {
+  async listStudentSubmissions(
+    courseId: string,
+    courseWorkId: string,
+    params?: {
+      userId?: string;
+      states?: string[];
+      late?: string;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ) {
     let response = await this.http.get(
       `/courses/${courseId}/courseWork/${courseWorkId}/studentSubmissions`,
       { params }
@@ -248,7 +266,11 @@ export class ClassroomClient {
     return response.data;
   }
 
-  async reclaimStudentSubmission(courseId: string, courseWorkId: string, submissionId: string) {
+  async reclaimStudentSubmission(
+    courseId: string,
+    courseWorkId: string,
+    submissionId: string
+  ) {
     let response = await this.http.post(
       `/courses/${courseId}/courseWork/${courseWorkId}/studentSubmissions/${submissionId}:reclaim`
     );
@@ -257,18 +279,23 @@ export class ClassroomClient {
 
   // ── CourseWork Materials ──
 
-  async listCourseWorkMaterials(courseId: string, params?: {
-    courseWorkMaterialStates?: string[];
-    orderBy?: string;
-    pageSize?: number;
-    pageToken?: string;
-  }) {
+  async listCourseWorkMaterials(
+    courseId: string,
+    params?: {
+      courseWorkMaterialStates?: string[];
+      orderBy?: string;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ) {
     let response = await this.http.get(`/courses/${courseId}/courseWorkMaterials`, { params });
     return response.data;
   }
 
   async getCourseWorkMaterial(courseId: string, materialId: string) {
-    let response = await this.http.get(`/courses/${courseId}/courseWorkMaterials/${materialId}`);
+    let response = await this.http.get(
+      `/courses/${courseId}/courseWorkMaterials/${materialId}`
+    );
     return response.data;
   }
 
@@ -277,7 +304,12 @@ export class ClassroomClient {
     return response.data;
   }
 
-  async updateCourseWorkMaterial(courseId: string, materialId: string, material: Record<string, any>, updateMask: string) {
+  async updateCourseWorkMaterial(
+    courseId: string,
+    materialId: string,
+    material: Record<string, any>,
+    updateMask: string
+  ) {
     let response = await this.http.patch(
       `/courses/${courseId}/courseWorkMaterials/${materialId}`,
       material,
@@ -287,18 +319,23 @@ export class ClassroomClient {
   }
 
   async deleteCourseWorkMaterial(courseId: string, materialId: string) {
-    let response = await this.http.delete(`/courses/${courseId}/courseWorkMaterials/${materialId}`);
+    let response = await this.http.delete(
+      `/courses/${courseId}/courseWorkMaterials/${materialId}`
+    );
     return response.data;
   }
 
   // ── Announcements ──
 
-  async listAnnouncements(courseId: string, params?: {
-    announcementStates?: string[];
-    orderBy?: string;
-    pageSize?: number;
-    pageToken?: string;
-  }) {
+  async listAnnouncements(
+    courseId: string,
+    params?: {
+      announcementStates?: string[];
+      orderBy?: string;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ) {
     let response = await this.http.get(`/courses/${courseId}/announcements`, { params });
     return response.data;
   }
@@ -313,7 +350,12 @@ export class ClassroomClient {
     return response.data;
   }
 
-  async updateAnnouncement(courseId: string, announcementId: string, announcement: Record<string, any>, updateMask: string) {
+  async updateAnnouncement(
+    courseId: string,
+    announcementId: string,
+    announcement: Record<string, any>,
+    updateMask: string
+  ) {
     let response = await this.http.patch(
       `/courses/${courseId}/announcements/${announcementId}`,
       announcement,
@@ -323,7 +365,9 @@ export class ClassroomClient {
   }
 
   async deleteAnnouncement(courseId: string, announcementId: string) {
-    let response = await this.http.delete(`/courses/${courseId}/announcements/${announcementId}`);
+    let response = await this.http.delete(
+      `/courses/${courseId}/announcements/${announcementId}`
+    );
     return response.data;
   }
 
@@ -331,7 +375,7 @@ export class ClassroomClient {
 
   async listTopics(courseId: string, pageSize?: number, pageToken?: string) {
     let response = await this.http.get(`/courses/${courseId}/topics`, {
-      params: { pageSize, pageToken },
+      params: { pageSize, pageToken }
     });
     return response.data;
   }
@@ -362,7 +406,12 @@ export class ClassroomClient {
 
   // ── Rubrics ──
 
-  async listRubrics(courseId: string, courseWorkId: string, pageSize?: number, pageToken?: string) {
+  async listRubrics(
+    courseId: string,
+    courseWorkId: string,
+    pageSize?: number,
+    pageToken?: string
+  ) {
     let response = await this.http.get(
       `/courses/${courseId}/courseWork/${courseWorkId}/rubrics`,
       { params: { pageSize, pageToken } }
@@ -385,7 +434,13 @@ export class ClassroomClient {
     return response.data;
   }
 
-  async updateRubric(courseId: string, courseWorkId: string, rubricId: string, rubric: Record<string, any>, updateMask: string) {
+  async updateRubric(
+    courseId: string,
+    courseWorkId: string,
+    rubricId: string,
+    rubric: Record<string, any>,
+    updateMask: string
+  ) {
     let response = await this.http.patch(
       `/courses/${courseId}/courseWork/${courseWorkId}/rubrics/${rubricId}`,
       rubric,
@@ -405,7 +460,7 @@ export class ClassroomClient {
 
   async listGuardians(studentId: string, pageSize?: number, pageToken?: string) {
     let response = await this.http.get(`/userProfiles/${studentId}/guardians`, {
-      params: { pageSize, pageToken },
+      params: { pageSize, pageToken }
     });
     return response.data;
   }
@@ -416,23 +471,30 @@ export class ClassroomClient {
   }
 
   async deleteGuardian(studentId: string, guardianId: string) {
-    let response = await this.http.delete(`/userProfiles/${studentId}/guardians/${guardianId}`);
+    let response = await this.http.delete(
+      `/userProfiles/${studentId}/guardians/${guardianId}`
+    );
     return response.data;
   }
 
-  async listGuardianInvitations(studentId: string, params?: {
-    states?: string[];
-    invitedEmailAddress?: string;
-    pageSize?: number;
-    pageToken?: string;
-  }) {
-    let response = await this.http.get(`/userProfiles/${studentId}/guardianInvitations`, { params });
+  async listGuardianInvitations(
+    studentId: string,
+    params?: {
+      states?: string[];
+      invitedEmailAddress?: string;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ) {
+    let response = await this.http.get(`/userProfiles/${studentId}/guardianInvitations`, {
+      params
+    });
     return response.data;
   }
 
   async createGuardianInvitation(studentId: string, invitedEmailAddress: string) {
     let response = await this.http.post(`/userProfiles/${studentId}/guardianInvitations`, {
-      invitedEmailAddress,
+      invitedEmailAddress
     });
     return response.data;
   }

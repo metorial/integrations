@@ -35,7 +35,10 @@ export interface KofiWebhookPayload {
   shipping: KofiShipping | null;
 }
 
-export let verifyWebhookToken = (payload: KofiWebhookPayload, expectedToken: string): boolean => {
+export let verifyWebhookToken = (
+  payload: KofiWebhookPayload,
+  expectedToken: string
+): boolean => {
   return payload.verification_token === expectedToken;
 };
 
@@ -75,6 +78,6 @@ export let parseWebhookPayload = (data: Record<string, unknown>): KofiWebhookPay
     kofi_transaction_id: data.kofi_transaction_id as string,
     shop_items: shopItems,
     tier_name: (data.tier_name as string | null) ?? null,
-    shipping,
+    shipping
   };
 };

@@ -10,29 +10,42 @@ export let getSite = SlateTool.create(spec, {
   instructions: [
     'Provide **siteId** to look up a specific site by ID.',
     'Provide **hostname** (e.g. "contoso.sharepoint.com") and optionally **sitePath** (e.g. "sites/marketing") to look up by URL.',
-    'Set **getRootSite** to true to get the tenant root site.',
+    'Set **getRootSite** to true to get the tenant root site.'
   ],
   tags: {
     readOnly: true,
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    siteId: z.string().optional().describe('SharePoint site ID'),
-    hostname: z.string().optional().describe('SharePoint site hostname, e.g. "contoso.sharepoint.com"'),
-    sitePath: z.string().optional().describe('Relative path on the hostname, e.g. "sites/marketing"'),
-    getRootSite: z.boolean().optional().describe('If true, returns the root site of the tenant'),
-  }))
-  .output(z.object({
-    siteId: z.string().describe('Unique site ID'),
-    siteName: z.string().describe('Display name of the site'),
-    siteDescription: z.string().nullable().describe('Site description'),
-    webUrl: z.string().describe('Full URL of the site'),
-    createdDateTime: z.string().optional().describe('When the site was created'),
-    lastModifiedDateTime: z.string().optional().describe('When the site was last modified'),
-    hostname: z.string().optional().describe('Hostname of the site'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      siteId: z.string().optional().describe('SharePoint site ID'),
+      hostname: z
+        .string()
+        .optional()
+        .describe('SharePoint site hostname, e.g. "contoso.sharepoint.com"'),
+      sitePath: z
+        .string()
+        .optional()
+        .describe('Relative path on the hostname, e.g. "sites/marketing"'),
+      getRootSite: z
+        .boolean()
+        .optional()
+        .describe('If true, returns the root site of the tenant')
+    })
+  )
+  .output(
+    z.object({
+      siteId: z.string().describe('Unique site ID'),
+      siteName: z.string().describe('Display name of the site'),
+      siteDescription: z.string().nullable().describe('Site description'),
+      webUrl: z.string().describe('Full URL of the site'),
+      createdDateTime: z.string().optional().describe('When the site was created'),
+      lastModifiedDateTime: z.string().optional().describe('When the site was last modified'),
+      hostname: z.string().optional().describe('Hostname of the site')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
     let site: any;
 
@@ -54,9 +67,9 @@ export let getSite = SlateTool.create(spec, {
         webUrl: site.webUrl,
         createdDateTime: site.createdDateTime,
         lastModifiedDateTime: site.lastModifiedDateTime,
-        hostname: site.siteCollection?.hostname,
+        hostname: site.siteCollection?.hostname
       },
-      message: `Retrieved site **${site.displayName || site.name}** at ${site.webUrl}.`,
+      message: `Retrieved site **${site.displayName || site.name}** at ${site.webUrl}.`
     };
   })
   .build();

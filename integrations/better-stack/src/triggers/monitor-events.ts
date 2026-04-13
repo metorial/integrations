@@ -3,47 +3,52 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { UptimeClient } from '../lib/client';
 
-export let monitorEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Monitor Status Changes',
-    key: 'monitor_events',
-    description: 'Triggers when a monitor changes status (goes up, goes down, becomes paused/unpaused). Polls monitors periodically and detects status changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['up', 'down', 'paused', 'unpaused', 'validating', 'maintenance']).describe('Type of monitor status change'),
-    eventId: z.string().describe('Unique event identifier for deduplication'),
-    monitorId: z.string().describe('Monitor ID'),
-    name: z.string().nullable().describe('Monitor name'),
-    url: z.string().nullable().describe('Monitored URL'),
-    monitorType: z.string().nullable().describe('Type of monitor'),
-    previousStatus: z.string().nullable().describe('Previous monitor status'),
-    currentStatus: z.string().describe('Current monitor status'),
-    lastCheckedAt: z.string().nullable().describe('Last check timestamp'),
-  }))
-  .output(z.object({
-    monitorId: z.string().describe('Monitor ID'),
-    name: z.string().nullable().describe('Monitor name'),
-    url: z.string().nullable().describe('Monitored URL'),
-    monitorType: z.string().nullable().describe('Type of monitor'),
-    previousStatus: z.string().nullable().describe('Previous monitor status'),
-    currentStatus: z.string().describe('Current monitor status'),
-    lastCheckedAt: z.string().nullable().describe('Last check timestamp'),
-  }))
+export let monitorEvents = SlateTrigger.create(spec, {
+  name: 'Monitor Status Changes',
+  key: 'monitor_events',
+  description:
+    'Triggers when a monitor changes status (goes up, goes down, becomes paused/unpaused). Polls monitors periodically and detects status changes.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['up', 'down', 'paused', 'unpaused', 'validating', 'maintenance'])
+        .describe('Type of monitor status change'),
+      eventId: z.string().describe('Unique event identifier for deduplication'),
+      monitorId: z.string().describe('Monitor ID'),
+      name: z.string().nullable().describe('Monitor name'),
+      url: z.string().nullable().describe('Monitored URL'),
+      monitorType: z.string().nullable().describe('Type of monitor'),
+      previousStatus: z.string().nullable().describe('Previous monitor status'),
+      currentStatus: z.string().describe('Current monitor status'),
+      lastCheckedAt: z.string().nullable().describe('Last check timestamp')
+    })
+  )
+  .output(
+    z.object({
+      monitorId: z.string().describe('Monitor ID'),
+      name: z.string().nullable().describe('Monitor name'),
+      url: z.string().nullable().describe('Monitored URL'),
+      monitorType: z.string().nullable().describe('Type of monitor'),
+      previousStatus: z.string().nullable().describe('Previous monitor status'),
+      currentStatus: z.string().describe('Current monitor status'),
+      lastCheckedAt: z.string().nullable().describe('Last check timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new UptimeClient({
         token: ctx.auth.token,
-        teamName: ctx.config.teamName,
+        teamName: ctx.config.teamName
       });
 
       let state = ctx.state || {};
-      let knownStatuses: Record<string, { status: string; paused: boolean }> = state.knownStatuses || {};
+      let knownStatuses: Record<string, { status: string; paused: boolean }> =
+        state.knownStatuses || {};
       let isFirstRun = !state.initialized;
 
       let allMonitors: any[] = [];
@@ -78,17 +83,23 @@ export let monitorEvents = SlateTrigger.create(
           name: attrs.pronounceable_name || null,
           url: attrs.url || null,
           monitorType: attrs.monitor_type || null,
-          lastCheckedAt: attrs.last_checked_at || null,
+          lastCheckedAt: attrs.last_checked_at || null
         };
 
         if (!known) {
           // New monitor detected
           inputs.push({
-            eventType: (isPaused ? 'paused' : currentStatus === 'up' ? 'up' : currentStatus === 'down' ? 'down' : 'up') as any,
+            eventType: (isPaused
+              ? 'paused'
+              : currentStatus === 'up'
+                ? 'up'
+                : currentStatus === 'down'
+                  ? 'down'
+                  : 'up') as any,
             eventId: `${monitorId}_new_${Date.now()}`,
             previousStatus: null,
             currentStatus,
-            ...baseEvent,
+            ...baseEvent
           });
           continue;
         }
@@ -100,7 +111,7 @@ export let monitorEvents = SlateTrigger.create(
             eventId: `${monitorId}_paused_${Date.now()}`,
             previousStatus: known.status,
             currentStatus,
-            ...baseEvent,
+            ...baseEvent
           });
           continue;
         }
@@ -111,7 +122,7 @@ export let monitorEvents = SlateTrigger.create(
             eventId: `${monitorId}_unpaused_${Date.now()}`,
             previousStatus: known.status,
             currentStatus,
-            ...baseEvent,
+            ...baseEvent
           });
           continue;
         }
@@ -128,7 +139,7 @@ export let monitorEvents = SlateTrigger.create(
             eventId: `${monitorId}_${eventType}_${Date.now()}`,
             previousStatus: known.status,
             currentStatus,
-            ...baseEvent,
+            ...baseEvent
           });
         }
       }
@@ -137,12 +148,12 @@ export let monitorEvents = SlateTrigger.create(
         inputs,
         updatedState: {
           initialized: true,
-          knownStatuses: newKnownStatuses,
-        },
+          knownStatuses: newKnownStatuses
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `monitor.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -153,9 +164,9 @@ export let monitorEvents = SlateTrigger.create(
           monitorType: ctx.input.monitorType,
           previousStatus: ctx.input.previousStatus,
           currentStatus: ctx.input.currentStatus,
-          lastCheckedAt: ctx.input.lastCheckedAt,
-        },
+          lastCheckedAt: ctx.input.lastCheckedAt
+        }
       };
-    },
+    }
   })
   .build();

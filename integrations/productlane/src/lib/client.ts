@@ -9,15 +9,20 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Companies ──
 
-  async listCompanies(params?: { skip?: number; take?: number; domain?: string; name?: string }) {
+  async listCompanies(params?: {
+    skip?: number;
+    take?: number;
+    domain?: string;
+    name?: string;
+  }) {
     let response = await this.axios.get('/companies', { params });
     return response.data;
   }
@@ -44,19 +49,22 @@ export class Client {
     return response.data;
   }
 
-  async updateCompany(companyId: string, data: {
-    name?: string;
-    domains?: string[];
-    autoAdd?: boolean;
-    externalIds?: string[];
-    size?: number | null;
-    revenue?: number | null;
-    tierId?: string | null;
-    tierName?: string | null;
-    statusId?: string | null;
-    statusName?: string | null;
-    statusColor?: string | null;
-  }) {
+  async updateCompany(
+    companyId: string,
+    data: {
+      name?: string;
+      domains?: string[];
+      autoAdd?: boolean;
+      externalIds?: string[];
+      size?: number | null;
+      revenue?: number | null;
+      tierId?: string | null;
+      tierName?: string | null;
+      statusId?: string | null;
+      statusName?: string | null;
+      statusColor?: string | null;
+    }
+  ) {
     let response = await this.axios.patch(`/companies/${companyId}`, data);
     return response.data;
   }
@@ -68,7 +76,12 @@ export class Client {
 
   // ── Contacts ──
 
-  async listContacts(params?: { skip?: number; take?: number; email?: string; companyId?: string }) {
+  async listContacts(params?: {
+    skip?: number;
+    take?: number;
+    email?: string;
+    companyId?: string;
+  }) {
     let response = await this.axios.get('/contacts', { params });
     return response.data;
   }
@@ -89,13 +102,16 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    name?: string;
-    email?: string;
-    companyId?: string;
-    companyName?: string;
-    companyExternalId?: string;
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      name?: string;
+      email?: string;
+      companyId?: string;
+      companyName?: string;
+      companyExternalId?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/contacts/${contactId}`, data);
     return response.data;
   }
@@ -107,14 +123,20 @@ export class Client {
 
   // ── Threads (Insights / Feedback) ──
 
-  async listThreads(params?: { skip?: number; take?: number; state?: string; issueId?: string; projectId?: string }) {
+  async listThreads(params?: {
+    skip?: number;
+    take?: number;
+    state?: string;
+    issueId?: string;
+    projectId?: string;
+  }) {
     let response = await this.axios.get('/threads', { params });
     return response.data;
   }
 
   async getThread(threadId: string, includeConversation?: boolean) {
     let response = await this.axios.get(`/threads/${threadId}`, {
-      params: includeConversation ? { includeConversation: 'true' } : undefined,
+      params: includeConversation ? { includeConversation: 'true' } : undefined
     });
     return response.data;
   }
@@ -139,29 +161,35 @@ export class Client {
     return response.data;
   }
 
-  async updateThread(threadId: string, data: {
-    text?: string;
-    title?: string;
-    painLevel?: string;
-    state?: string;
-    assigneeId?: string | null;
-    projectId?: string;
-    contactId?: string;
-    companyId?: string;
-    tagIds?: string[];
-    notify?: { slack?: boolean; email?: boolean };
-    updatedAt?: string;
-  }) {
+  async updateThread(
+    threadId: string,
+    data: {
+      text?: string;
+      title?: string;
+      painLevel?: string;
+      state?: string;
+      assigneeId?: string | null;
+      projectId?: string;
+      contactId?: string;
+      companyId?: string;
+      tagIds?: string[];
+      notify?: { slack?: boolean; email?: boolean };
+      updatedAt?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/threads/${threadId}`, data);
     return response.data;
   }
 
-  async sendThreadMessage(threadId: string, data: {
-    content: string;
-    cc?: Array<{ name: string; email: string; mailboxHash: string }>;
-    bcc?: Array<{ name: string; email: string; mailboxHash: string }>;
-    channelId?: string;
-  }) {
+  async sendThreadMessage(
+    threadId: string,
+    data: {
+      content: string;
+      cc?: Array<{ name: string; email: string; mailboxHash: string }>;
+      bcc?: Array<{ name: string; email: string; mailboxHash: string }>;
+      channelId?: string;
+    }
+  ) {
     let response = await this.axios.post(`/threads/${threadId}/messages`, data);
     return response.data;
   }
@@ -209,7 +237,10 @@ export class Client {
 
   // ── Changelogs ──
 
-  async listChangelogs(workspaceId: string, params?: { language?: string; skip?: number; take?: number }) {
+  async listChangelogs(
+    workspaceId: string,
+    params?: { language?: string; skip?: number; take?: number }
+  ) {
     let response = await this.axios.get(`/changelogs/${workspaceId}`, { params });
     return response.data;
   }
@@ -230,13 +261,16 @@ export class Client {
     return response.data;
   }
 
-  async updateChangelog(changelogId: string, data: {
-    title?: string;
-    content?: string;
-    date?: string;
-    published?: boolean;
-    archived?: boolean;
-  }) {
+  async updateChangelog(
+    changelogId: string,
+    data: {
+      title?: string;
+      content?: string;
+      date?: string;
+      published?: boolean;
+      archived?: boolean;
+    }
+  ) {
     let response = await this.axios.patch(`/changelogs/${changelogId}`, data);
     return response.data;
   }
@@ -262,7 +296,10 @@ export class Client {
 
   // ── Documentation Articles ──
 
-  async listArticles(workspaceId: string, params?: { language?: string; groupId?: string; skip?: number; take?: number }) {
+  async listArticles(
+    workspaceId: string,
+    params?: { language?: string; groupId?: string; skip?: number; take?: number }
+  ) {
     let response = await this.axios.get(`/docs/articles/${workspaceId}`, { params });
     return response.data;
   }
@@ -284,14 +321,17 @@ export class Client {
     return response.data;
   }
 
-  async updateArticle(articleId: string, data: {
-    title?: string;
-    content?: string;
-    summary?: string;
-    published?: boolean;
-    archived?: boolean;
-    showOnHomePage?: boolean;
-  }) {
+  async updateArticle(
+    articleId: string,
+    data: {
+      title?: string;
+      content?: string;
+      summary?: string;
+      published?: boolean;
+      archived?: boolean;
+      showOnHomePage?: boolean;
+    }
+  ) {
     let response = await this.axios.patch(`/docs/articles/${articleId}`, data);
     return response.data;
   }

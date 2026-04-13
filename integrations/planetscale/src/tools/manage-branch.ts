@@ -3,51 +3,63 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBranch = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Branch',
-    key: 'manage_branch',
-    description: `Perform management actions on a PlanetScale database branch. Supports promoting to production, demoting from production, enabling/disabling safe migrations, retrieving branch schema, running schema lint, and deleting branches.`,
-    instructions: [
-      'Use action "get" to retrieve detailed branch information.',
-      'Use action "promote" to promote a development branch to production.',
-      'Use action "demote" to demote a production branch to development.',
-      'Use action "enable_safe_migrations" or "disable_safe_migrations" to toggle safe migrations on a production branch.',
-      'Use action "schema" to retrieve the branch schema.',
-      'Use action "lint" to run schema lint checks.',
-      'Use action "delete" to permanently delete a branch.',
-    ],
-  }
-)
-  .input(z.object({
-    databaseName: z.string().describe('Name of the database'),
-    branchName: z.string().describe('Name of the branch'),
-    action: z.enum(['get', 'promote', 'demote', 'enable_safe_migrations', 'disable_safe_migrations', 'schema', 'lint', 'delete']).describe('Action to perform on the branch'),
-  }))
-  .output(z.object({
-    branchId: z.string().optional(),
-    name: z.string().optional(),
-    state: z.string().optional(),
-    kind: z.string().optional(),
-    production: z.boolean().optional(),
-    ready: z.boolean().optional(),
-    safeMigrations: z.boolean().optional(),
-    sharded: z.boolean().optional(),
-    parentBranch: z.string().optional(),
-    region: z.string().optional(),
-    mysqlAddress: z.string().optional(),
-    schema: z.any().optional(),
-    lintErrors: z.any().optional(),
-    deleted: z.boolean().optional(),
-    createdAt: z.string().optional(),
-    htmlUrl: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageBranch = SlateTool.create(spec, {
+  name: 'Manage Branch',
+  key: 'manage_branch',
+  description: `Perform management actions on a PlanetScale database branch. Supports promoting to production, demoting from production, enabling/disabling safe migrations, retrieving branch schema, running schema lint, and deleting branches.`,
+  instructions: [
+    'Use action "get" to retrieve detailed branch information.',
+    'Use action "promote" to promote a development branch to production.',
+    'Use action "demote" to demote a production branch to development.',
+    'Use action "enable_safe_migrations" or "disable_safe_migrations" to toggle safe migrations on a production branch.',
+    'Use action "schema" to retrieve the branch schema.',
+    'Use action "lint" to run schema lint checks.',
+    'Use action "delete" to permanently delete a branch.'
+  ]
+})
+  .input(
+    z.object({
+      databaseName: z.string().describe('Name of the database'),
+      branchName: z.string().describe('Name of the branch'),
+      action: z
+        .enum([
+          'get',
+          'promote',
+          'demote',
+          'enable_safe_migrations',
+          'disable_safe_migrations',
+          'schema',
+          'lint',
+          'delete'
+        ])
+        .describe('Action to perform on the branch')
+    })
+  )
+  .output(
+    z.object({
+      branchId: z.string().optional(),
+      name: z.string().optional(),
+      state: z.string().optional(),
+      kind: z.string().optional(),
+      production: z.boolean().optional(),
+      ready: z.boolean().optional(),
+      safeMigrations: z.boolean().optional(),
+      sharded: z.boolean().optional(),
+      parentBranch: z.string().optional(),
+      region: z.string().optional(),
+      mysqlAddress: z.string().optional(),
+      schema: z.any().optional(),
+      lintErrors: z.any().optional(),
+      deleted: z.boolean().optional(),
+      createdAt: z.string().optional(),
+      htmlUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType,
-      organization: ctx.config.organization,
+      organization: ctx.config.organization
     });
 
     let { databaseName, branchName, action } = ctx.input;
@@ -56,7 +68,7 @@ export let manageBranch = SlateTool.create(
       await client.deleteBranch(databaseName, branchName);
       return {
         output: { deleted: true, name: branchName },
-        message: `Deleted branch **${branchName}** from database **${databaseName}**.`,
+        message: `Deleted branch **${branchName}** from database **${databaseName}**.`
       };
     }
 
@@ -64,7 +76,7 @@ export let manageBranch = SlateTool.create(
       let schema = await client.getBranchSchema(databaseName, branchName);
       return {
         output: { name: branchName, schema },
-        message: `Retrieved schema for branch **${branchName}**.`,
+        message: `Retrieved schema for branch **${branchName}**.`
       };
     }
 
@@ -72,7 +84,7 @@ export let manageBranch = SlateTool.create(
       let lintResult = await client.lintBranchSchema(databaseName, branchName);
       return {
         output: { name: branchName, lintErrors: lintResult },
-        message: `Ran schema lint on branch **${branchName}**.`,
+        message: `Ran schema lint on branch **${branchName}**.`
       };
     }
 
@@ -100,7 +112,7 @@ export let manageBranch = SlateTool.create(
       promote: 'Promoted',
       demote: 'Demoted',
       enable_safe_migrations: 'Enabled safe migrations for',
-      disable_safe_migrations: 'Disabled safe migrations for',
+      disable_safe_migrations: 'Disabled safe migrations for'
     };
 
     return {
@@ -117,8 +129,8 @@ export let manageBranch = SlateTool.create(
         region: branch.region?.display_name || branch.region?.slug,
         mysqlAddress: branch.mysql_address,
         createdAt: branch.created_at,
-        htmlUrl: branch.html_url,
+        htmlUrl: branch.html_url
       },
-      message: `${actionLabels[action]} branch **${branch.name}** on database **${databaseName}**.`,
+      message: `${actionLabels[action]} branch **${branch.name}** on database **${databaseName}**.`
     };
   });

@@ -22,28 +22,29 @@ OAuth 2.0 is the modern standard for authentication and is recommended for all n
 - **Redirect URI:** Must be configured in the Developer Portal under User Authentication Settings
 
 Scopes allow you to set granular access for your App so that your App only has the permissions that it needs. Available scopes include:
-  - `tweet.read` – Read posts
-  - `tweet.write` – Create/delete posts
-  - `tweet.moderate.write` – Hide/unhide replies
-  - `users.read` – Read user profile info
-  - `users.email` – Read user email address
-  - `follows.read` – Read follows
-  - `follows.write` – Follow/unfollow users
-  - `like.read` – Read likes
-  - `like.write` – Like/unlike posts
-  - `dm.read` – Read direct messages
-  - `dm.write` – Send direct messages
-  - `list.read` – Read lists
-  - `list.write` – Manage lists
-  - `media.write` – Upload media
-  - `offline.access` – Obtain a refresh token
-  - `space.read` – Read Spaces
-  - `bookmark.read` – Read bookmarks
-  - `bookmark.write` – Manage bookmarks
-  - `block.read` – Read blocks
-  - `block.write` – Block/unblock users
-  - `mute.read` – Read mutes
-  - `mute.write` – Mute/unmute users
+
+- `tweet.read` – Read posts
+- `tweet.write` – Create/delete posts
+- `tweet.moderate.write` – Hide/unhide replies
+- `users.read` – Read user profile info
+- `users.email` – Read user email address
+- `follows.read` – Read follows
+- `follows.write` – Follow/unfollow users
+- `like.read` – Read likes
+- `like.write` – Like/unlike posts
+- `dm.read` – Read direct messages
+- `dm.write` – Send direct messages
+- `list.read` – Read lists
+- `list.write` – Manage lists
+- `media.write` – Upload media
+- `offline.access` – Obtain a refresh token
+- `space.read` – Read Spaces
+- `bookmark.read` – Read bookmarks
+- `bookmark.write` – Manage bookmarks
+- `block.read` – Read blocks
+- `block.write` – Block/unblock users
+- `mute.read` – Read mutes
+- `mute.write` – Mute/unmute users
 
 By default, the access token you create through the Authorization Code Flow with PKCE will only stay valid for two hours unless you've used the `offline.access` scope. Refresh tokens remain valid for six months.
 
@@ -70,43 +71,57 @@ Register for a Twitter Developer account at developer.twitter.com. Following app
 ## Features
 
 ### Post Management
+
 Create, retrieve, delete, and search posts (tweets). Supports creating threaded posts (replies), quote posts, polls, and posts with media attachments. Search, retrieve, and publish posts. Access timelines, threads, and quote posts. Posts can include text up to 280 characters, images, videos, GIFs, and polls. The full-archive search feature allows searching posts back to 2006 (higher tiers only).
 
 ### User Management
+
 Look up users, manage follows, blocks, and mutes. Retrieve user profiles, follower/following lists, and engagement metrics. Manage relationships (follow, unfollow, block, unblock, mute, unmute) on behalf of authenticated users.
 
 ### Timelines
+
 Access a user's home timeline, user post timeline, mentions timeline, and reverse chronological timeline. Timelines return posts with configurable fields and expansions to control the data included in responses.
 
 ### Direct Messages
+
 Send and receive private messages. Create new conversations, send messages in existing conversations, and retrieve message history. Supports one-to-one and group conversations.
 
 ### Lists
+
 Create and manage curated lists of accounts. Add or remove members, follow/unfollow lists, and retrieve list details and membership.
 
 ### Bookmarks
+
 Save and manage bookmarked posts for the authenticated user. Create and remove bookmarks and retrieve a user's bookmarked posts.
 
 ### Likes and Retweets
+
 Like/unlike posts and retweet/undo retweet on behalf of an authenticated user. Retrieve users who liked or retweeted a specific post.
 
 ### Search and Filtering
+
 Search for recent or historical posts using a powerful query language with operators for keywords, hashtags, mentions, URLs, language, author, conversation ID, and more. Build queries with operators for users, keywords, dates, and more.
 
 ### Trends
+
 Access trending topics by location. Retrieve what is trending in specific geographic areas.
 
 ### Spaces
+
 Find live audio conversations and their participants. Look up Spaces by ID, creator, or keyword.
 
 ### Filtered Stream
+
 Receive posts in near real-time matching predefined rules via a persistent streaming connection. Define up to 1,000 filtering rules to receive only matching posts. Rules use the same query operators as search and can be added or removed without disconnecting. Useful for monitoring keywords, accounts, or topics at scale.
+
 - Only available on paid tiers.
 
 ### Engagement Metrics
+
 Access engagement metrics including impressions, likes, reposts, replies, and video views. Available as additional fields on post objects.
 
 ### Media Upload
+
 Upload images, videos, and GIFs for attaching to posts. Media is uploaded separately and then referenced by media ID when creating a post.
 
 ## Events
@@ -127,6 +142,7 @@ Events delivered include:
 - **Subscription revoke events:** When a user revokes app authorization
 
 Setup requirements:
+
 - To receive Account Activity events, you must register a webhook with a publicly accessible HTTPS URL.
 - The Account Activity API challenge response check is a security feature put in place to ensure that the Account Activity API's activities are being sent to the proper developer. X will automatically send a CRC to your webhook URL once every 24 hours.
 - Your app must have "Read, Write, and Access direct messages" permissions enabled.

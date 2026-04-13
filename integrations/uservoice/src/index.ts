@@ -19,13 +19,9 @@ import {
   listFeatures,
   listNpsRatings,
   addNote,
-  importExternalUsers,
+  importExternalUsers
 } from './tools';
-import {
-  suggestionWebhook,
-  newSuggestionsPolling,
-  statusUpdatesPolling,
-} from './triggers';
+import { suggestionWebhook, newSuggestionsPolling, statusUpdatesPolling } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -48,11 +44,7 @@ export let provider = Slate.create({
     listFeatures,
     listNpsRatings,
     addNote,
-    importExternalUsers,
+    importExternalUsers
   ],
-  triggers: [
-    suggestionWebhook,
-    newSuggestionsPolling,
-    statusUpdatesPolling,
-  ],
+  triggers: [suggestionWebhook, newSuggestionsPolling, statusUpdatesPolling]
 });

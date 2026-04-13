@@ -3,47 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newConversation = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Conversation',
-    key: 'new_conversation',
-    description: 'Triggers when a new conversation is created in the Crisp workspace.',
-  }
-)
-  .input(z.object({
-    sessionId: z.string(),
-    state: z.string().optional(),
-    nickname: z.string().optional(),
-    email: z.string().optional(),
-    subject: z.string().optional(),
-    createdAt: z.string().optional(),
-  }))
-  .output(z.object({
-    sessionId: z.string().describe('Session ID of the new conversation'),
-    state: z.string().optional().describe('Conversation state'),
-    nickname: z.string().optional().describe('Visitor nickname'),
-    email: z.string().optional().describe('Visitor email'),
-    subject: z.string().optional().describe('Conversation subject'),
-    createdAt: z.string().optional().describe('When the conversation was created'),
-  }))
+export let newConversation = SlateTrigger.create(spec, {
+  name: 'New Conversation',
+  key: 'new_conversation',
+  description: 'Triggers when a new conversation is created in the Crisp workspace.'
+})
+  .input(
+    z.object({
+      sessionId: z.string(),
+      state: z.string().optional(),
+      nickname: z.string().optional(),
+      email: z.string().optional(),
+      subject: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      sessionId: z.string().describe('Session ID of the new conversation'),
+      state: z.string().optional().describe('Conversation state'),
+      nickname: z.string().optional().describe('Visitor nickname'),
+      email: z.string().optional().describe('Visitor email'),
+      subject: z.string().optional().describe('Conversation subject'),
+      createdAt: z.string().optional().describe('When the conversation was created')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
 
       let conversations = await client.listConversations({
         pageNumber: 1,
-        orderDateCreated: 'desc',
+        orderDateCreated: 'desc'
       });
 
       let lastSeenTimestamp = ctx.state?.lastSeenTimestamp as string | undefined;
       let inputs: any[] = [];
 
-      for (let c of (conversations || [])) {
+      for (let c of conversations || []) {
         let createdAt = c.created_at ? String(c.created_at) : undefined;
 
         if (lastSeenTimestamp && createdAt && createdAt <= lastSeenTimestamp) {
@@ -56,7 +57,7 @@ export let newConversation = SlateTrigger.create(
           nickname: c.meta?.nickname,
           email: c.meta?.email,
           subject: c.meta?.subject,
-          createdAt,
+          createdAt
         });
       }
 
@@ -67,12 +68,12 @@ export let newConversation = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastSeenTimestamp: newTimestamp,
-        },
+          lastSeenTimestamp: newTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'conversation.created',
         id: ctx.input.sessionId,
@@ -82,9 +83,9 @@ export let newConversation = SlateTrigger.create(
           nickname: ctx.input.nickname,
           email: ctx.input.email,
           subject: ctx.input.subject,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

@@ -3,38 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let amazonSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Amazon Product Search',
-    key: 'amazon_search',
-    description: `Search Amazon products or look up a specific product by ASIN. Returns structured JSON with product details including title, price, ratings, images, and more. Supports multiple Amazon domains and languages.`,
-    instructions: [
-      'Provide a query to search for products, or an asin to look up a specific product.',
-      'If both query and asin are provided, the ASIN lookup takes priority.',
-      'Use domain to specify the Amazon marketplace (e.g., "amazon.com", "amazon.co.uk", "amazon.de").'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let amazonSearch = SlateTool.create(spec, {
+  name: 'Amazon Product Search',
+  key: 'amazon_search',
+  description: `Search Amazon products or look up a specific product by ASIN. Returns structured JSON with product details including title, price, ratings, images, and more. Supports multiple Amazon domains and languages.`,
+  instructions: [
+    'Provide a query to search for products, or an asin to look up a specific product.',
+    'If both query and asin are provided, the ASIN lookup takes priority.',
+    'Use domain to specify the Amazon marketplace (e.g., "amazon.com", "amazon.co.uk", "amazon.de").'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query for Amazon products'),
-    asin: z.string().optional().describe('Amazon Standard Identification Number for a specific product lookup'),
-    domain: z.string().optional().describe('Amazon domain (e.g., "amazon.com", "amazon.co.uk", "amazon.de")'),
-    language: z.string().optional().describe('Language code for results'),
-    countryCode: z.string().optional().describe('Two-letter country code for localized results'),
-    device: z.enum(['desktop', 'mobile']).optional().describe('Device type to emulate'),
-    sortBy: z.string().optional().describe('Sort order for search results (e.g., "price-asc-rank", "price-desc-rank", "review-rank", "date-desc-rank")'),
-    minPrice: z.number().optional().describe('Minimum price filter'),
-    maxPrice: z.number().optional().describe('Maximum price filter'),
-    page: z.number().optional().describe('Page number for pagination')
-  }))
-  .output(z.object({
-    results: z.any().describe('Structured Amazon product data as JSON')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search query for Amazon products'),
+      asin: z
+        .string()
+        .optional()
+        .describe('Amazon Standard Identification Number for a specific product lookup'),
+      domain: z
+        .string()
+        .optional()
+        .describe('Amazon domain (e.g., "amazon.com", "amazon.co.uk", "amazon.de")'),
+      language: z.string().optional().describe('Language code for results'),
+      countryCode: z
+        .string()
+        .optional()
+        .describe('Two-letter country code for localized results'),
+      device: z.enum(['desktop', 'mobile']).optional().describe('Device type to emulate'),
+      sortBy: z
+        .string()
+        .optional()
+        .describe(
+          'Sort order for search results (e.g., "price-asc-rank", "price-desc-rank", "review-rank", "date-desc-rank")'
+        ),
+      minPrice: z.number().optional().describe('Minimum price filter'),
+      maxPrice: z.number().optional().describe('Maximum price filter'),
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      results: z.any().describe('Structured Amazon product data as JSON')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.asin) {

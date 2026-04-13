@@ -14,7 +14,7 @@ import type {
   UpdateTaskParams,
   CreateProjectParams,
   UpdateProjectParams,
-  CreateCommentParams,
+  CreateCommentParams
 } from './types';
 
 export class BugherdClient {
@@ -25,11 +25,11 @@ export class BugherdClient {
       baseURL: 'https://www.bugherd.com/api_v2',
       auth: {
         username: token,
-        password: 'x',
+        password: 'x'
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -57,7 +57,10 @@ export class BugherdClient {
     return response.data.users ?? [];
   }
 
-  async getUserTasks(userId: number, filters?: TaskFilters): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
+  async getUserTasks(
+    userId: number,
+    filters?: TaskFilters
+  ): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
     let params: Record<string, string | number> = {};
     if (filters?.updatedSince) params['updated_since'] = filters.updatedSince;
     if (filters?.createdSince) params['created_since'] = filters.createdSince;
@@ -70,7 +73,10 @@ export class BugherdClient {
     return { tasks: response.data.tasks ?? [], meta: response.data.meta };
   }
 
-  async getUserProjects(userId: number, filters?: { createdSince?: string; isActive?: boolean }): Promise<BugherdProject[]> {
+  async getUserProjects(
+    userId: number,
+    filters?: { createdSince?: string; isActive?: boolean }
+  ): Promise<BugherdProject[]> {
     let params: Record<string, string | boolean> = {};
     if (filters?.createdSince) params['created_since'] = filters.createdSince;
     if (filters?.isActive !== undefined) params['is_active'] = filters.isActive;
@@ -103,14 +109,19 @@ export class BugherdClient {
         devurl: params.devurl,
         ...(params.isActive !== undefined && { is_active: params.isActive }),
         ...(params.isPublic !== undefined && { is_public: params.isPublic }),
-        ...(params.guestsSeeGuests !== undefined && { guests_see_guests: params.guestsSeeGuests }),
-      },
+        ...(params.guestsSeeGuests !== undefined && {
+          guests_see_guests: params.guestsSeeGuests
+        })
+      }
     };
     let response = await this.axios.post('/projects.json', body);
     return response.data.project;
   }
 
-  async updateProject(projectId: number, params: UpdateProjectParams): Promise<BugherdProject> {
+  async updateProject(
+    projectId: number,
+    params: UpdateProjectParams
+  ): Promise<BugherdProject> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body['name'] = params.name;
     if (params.devurl !== undefined) body['devurl'] = params.devurl;
@@ -130,7 +141,10 @@ export class BugherdClient {
     await this.axios.post(`/projects/${projectId}/add_member.json`, { user_id: userId });
   }
 
-  async addGuestToProject(projectId: number, params: { userId?: number; email?: string }): Promise<void> {
+  async addGuestToProject(
+    projectId: number,
+    params: { userId?: number; email?: string }
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (params.userId) body['user_id'] = params.userId;
     if (params.email) body['email'] = params.email;
@@ -139,27 +153,45 @@ export class BugherdClient {
 
   // ---- Tasks ----
 
-  async listTasks(projectId: number, filters?: TaskFilters): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
+  async listTasks(
+    projectId: number,
+    filters?: TaskFilters
+  ): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
     let params = this.buildTaskFilterParams(filters);
     let response = await this.axios.get(`/projects/${projectId}/tasks.json`, { params });
     return { tasks: response.data.tasks ?? [], meta: response.data.meta };
   }
 
-  async listFeedbackTasks(projectId: number, filters?: TaskFilters): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
+  async listFeedbackTasks(
+    projectId: number,
+    filters?: TaskFilters
+  ): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
     let params = this.buildTaskFilterParams(filters);
-    let response = await this.axios.get(`/projects/${projectId}/tasks/feedback.json`, { params });
+    let response = await this.axios.get(`/projects/${projectId}/tasks/feedback.json`, {
+      params
+    });
     return { tasks: response.data.tasks ?? [], meta: response.data.meta };
   }
 
-  async listArchivedTasks(projectId: number, filters?: TaskFilters): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
+  async listArchivedTasks(
+    projectId: number,
+    filters?: TaskFilters
+  ): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
     let params = this.buildTaskFilterParams(filters);
-    let response = await this.axios.get(`/projects/${projectId}/tasks/archive.json`, { params });
+    let response = await this.axios.get(`/projects/${projectId}/tasks/archive.json`, {
+      params
+    });
     return { tasks: response.data.tasks ?? [], meta: response.data.meta };
   }
 
-  async listTaskboardTasks(projectId: number, filters?: TaskFilters): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
+  async listTaskboardTasks(
+    projectId: number,
+    filters?: TaskFilters
+  ): Promise<{ tasks: BugherdTask[]; meta: BugherdMeta }> {
     let params = this.buildTaskFilterParams(filters);
-    let response = await this.axios.get(`/projects/${projectId}/tasks/taskboard.json`, { params });
+    let response = await this.axios.get(`/projects/${projectId}/tasks/taskboard.json`, {
+      params
+    });
     return { tasks: response.data.tasks ?? [], meta: response.data.meta };
   }
 
@@ -175,7 +207,7 @@ export class BugherdClient {
 
   async createTask(projectId: number, params: CreateTaskParams): Promise<BugherdTask> {
     let body: Record<string, any> = {
-      description: params.description,
+      description: params.description
     };
     if (params.priority) body['priority'] = params.priority;
     if (params.status) body['status'] = params.status;
@@ -190,72 +222,114 @@ export class BugherdClient {
     return response.data.task;
   }
 
-  async updateTask(projectId: number, taskId: number, params: UpdateTaskParams): Promise<BugherdTask> {
+  async updateTask(
+    projectId: number,
+    taskId: number,
+    params: UpdateTaskParams
+  ): Promise<BugherdTask> {
     let body: Record<string, any> = {};
     if (params.description !== undefined) body['description'] = params.description;
     if (params.priority !== undefined) body['priority'] = params.priority;
     if (params.status !== undefined) body['status'] = params.status;
     if (params.assignedToId !== undefined) body['assigned_to_id'] = params.assignedToId;
-    if (params.assignedToEmail !== undefined) body['assigned_to_email'] = params.assignedToEmail;
+    if (params.assignedToEmail !== undefined)
+      body['assigned_to_email'] = params.assignedToEmail;
     if (params.unassignUser !== undefined) body['unassign_user'] = params.unassignUser;
     if (params.tagNames !== undefined) body['tag_names'] = params.tagNames;
     if (params.externalId !== undefined) body['external_id'] = params.externalId;
     if (params.updaterEmail !== undefined) body['updater_email'] = params.updaterEmail;
 
-    let response = await this.axios.put(`/projects/${projectId}/tasks/${taskId}.json`, { task: body });
+    let response = await this.axios.put(`/projects/${projectId}/tasks/${taskId}.json`, {
+      task: body
+    });
     return response.data.task;
   }
 
-  async moveTasks(projectId: number, taskIds: number[], targetProjectId: number): Promise<void> {
+  async moveTasks(
+    projectId: number,
+    taskIds: number[],
+    targetProjectId: number
+  ): Promise<void> {
     await this.axios.post(`/projects/${projectId}/tasks/move_tasks.json`, {
       task_ids: taskIds,
-      target_project_id: targetProjectId,
+      target_project_id: targetProjectId
     });
   }
 
   // ---- Comments ----
 
   async listComments(projectId: number, taskId: number): Promise<BugherdComment[]> {
-    let response = await this.axios.get(`/projects/${projectId}/tasks/${taskId}/comments.json`);
+    let response = await this.axios.get(
+      `/projects/${projectId}/tasks/${taskId}/comments.json`
+    );
     return response.data.comments ?? [];
   }
 
-  async createComment(projectId: number, taskId: number, params: CreateCommentParams): Promise<BugherdComment> {
+  async createComment(
+    projectId: number,
+    taskId: number,
+    params: CreateCommentParams
+  ): Promise<BugherdComment> {
     let body: Record<string, any> = {
-      text: params.text,
+      text: params.text
     };
     if (params.userId) body['user_id'] = params.userId;
     if (params.email) body['email'] = params.email;
     if (params.isPrivate !== undefined) body['is_private'] = params.isPrivate;
 
-    let response = await this.axios.post(`/projects/${projectId}/tasks/${taskId}/comments.json`, { comment: body });
+    let response = await this.axios.post(
+      `/projects/${projectId}/tasks/${taskId}/comments.json`,
+      { comment: body }
+    );
     return response.data.comment;
   }
 
   // ---- Attachments ----
 
   async listAttachments(projectId: number, taskId: number): Promise<BugherdAttachment[]> {
-    let response = await this.axios.get(`/projects/${projectId}/tasks/${taskId}/attachments.json`);
+    let response = await this.axios.get(
+      `/projects/${projectId}/tasks/${taskId}/attachments.json`
+    );
     return response.data.attachments ?? [];
   }
 
-  async getAttachment(projectId: number, taskId: number, attachmentId: number): Promise<BugherdAttachment> {
-    let response = await this.axios.get(`/projects/${projectId}/tasks/${taskId}/attachments/${attachmentId}.json`);
+  async getAttachment(
+    projectId: number,
+    taskId: number,
+    attachmentId: number
+  ): Promise<BugherdAttachment> {
+    let response = await this.axios.get(
+      `/projects/${projectId}/tasks/${taskId}/attachments/${attachmentId}.json`
+    );
     return response.data.attachment;
   }
 
-  async createAttachmentFromUrl(projectId: number, taskId: number, fileName: string, url: string): Promise<BugherdAttachment> {
-    let response = await this.axios.post(`/projects/${projectId}/tasks/${taskId}/attachments.json`, {
-      attachment: {
-        file_name: fileName,
-        url: url,
-      },
-    });
+  async createAttachmentFromUrl(
+    projectId: number,
+    taskId: number,
+    fileName: string,
+    url: string
+  ): Promise<BugherdAttachment> {
+    let response = await this.axios.post(
+      `/projects/${projectId}/tasks/${taskId}/attachments.json`,
+      {
+        attachment: {
+          file_name: fileName,
+          url: url
+        }
+      }
+    );
     return response.data.attachment;
   }
 
-  async deleteAttachment(projectId: number, taskId: number, attachmentId: number): Promise<void> {
-    await this.axios.delete(`/projects/${projectId}/tasks/${taskId}/attachments/${attachmentId}.json`);
+  async deleteAttachment(
+    projectId: number,
+    taskId: number,
+    attachmentId: number
+  ): Promise<void> {
+    await this.axios.delete(
+      `/projects/${projectId}/tasks/${taskId}/attachments/${attachmentId}.json`
+    );
   }
 
   // ---- Custom Columns ----
@@ -272,14 +346,18 @@ export class BugherdClient {
 
   async createColumn(projectId: number, name: string): Promise<BugherdColumn> {
     let response = await this.axios.post(`/projects/${projectId}/columns.json`, {
-      column: { name },
+      column: { name }
     });
     return response.data.column;
   }
 
-  async updateColumn(projectId: number, columnId: number, name: string): Promise<BugherdColumn> {
+  async updateColumn(
+    projectId: number,
+    columnId: number,
+    name: string
+  ): Promise<BugherdColumn> {
     let response = await this.axios.put(`/projects/${projectId}/columns/${columnId}.json`, {
-      column: { name },
+      column: { name }
     });
     return response.data.column;
   }
@@ -291,10 +369,14 @@ export class BugherdClient {
     return response.data.webhooks ?? [];
   }
 
-  async createWebhook(targetUrl: string, event: string, projectId?: number): Promise<BugherdWebhook> {
+  async createWebhook(
+    targetUrl: string,
+    event: string,
+    projectId?: number
+  ): Promise<BugherdWebhook> {
     let body: Record<string, any> = {
       target_url: targetUrl,
-      event: event,
+      event: event
     };
     if (projectId !== undefined) body['project_id'] = projectId;
 

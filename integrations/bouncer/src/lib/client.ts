@@ -92,8 +92,8 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.usebouncer.com',
       headers: {
-        'x-api-key': config.token,
-      },
+        'x-api-key': config.token
+      }
     });
   }
 
@@ -108,19 +108,22 @@ export class Client {
 
   async batchVerifySync(emails: string[]): Promise<EmailRecord[]> {
     let response = await this.http.post('/v1.1/email/verify/batch/sync', emails, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
-  async createBatch(emails: Array<{ email: string }>, callback?: string): Promise<BatchCreateResponse> {
+  async createBatch(
+    emails: Array<{ email: string }>,
+    callback?: string
+  ): Promise<BatchCreateResponse> {
     let params: Record<string, string> = {};
     if (callback) {
       params['callback'] = callback;
     }
     let response = await this.http.post('/v1.1/email/verify/batch', emails, {
       params,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -139,7 +142,9 @@ export class Client {
     if (statusFilter) {
       params['download'] = statusFilter;
     }
-    let response = await this.http.get(`/v1.1/email/verify/batch/${batchId}/download`, { params });
+    let response = await this.http.get(`/v1.1/email/verify/batch/${batchId}/download`, {
+      params
+    });
     return response.data;
   }
 
@@ -153,14 +158,14 @@ export class Client {
 
   async verifyDomain(domain: string): Promise<DomainVerificationResponse> {
     let response = await this.http.get('/v1.1/domain', {
-      params: { domain },
+      params: { domain }
     });
     return response.data;
   }
 
   async createToxicityJob(emails: string[]): Promise<ToxicityJobResponse> {
     let response = await this.http.post('/v1/toxicity/list', emails, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }

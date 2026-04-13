@@ -3,36 +3,37 @@ import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newInvoice = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Invoice',
-    key: 'new_invoice',
-    description: 'Triggers when a new invoice is created in sevDesk.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    invoiceData: z.any().describe('Full invoice data from sevDesk'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    invoiceNumber: z.string().optional(),
-    contactId: z.string().optional(),
-    contactName: z.string().optional(),
-    invoiceDate: z.string().optional(),
-    status: z.string().optional(),
-    totalNet: z.string().optional(),
-    totalGross: z.string().optional(),
-    currency: z.string().optional(),
-    createdAt: z.string().optional(),
-  }))
+export let newInvoice = SlateTrigger.create(spec, {
+  name: 'New Invoice',
+  key: 'new_invoice',
+  description: 'Triggers when a new invoice is created in sevDesk.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      invoiceData: z.any().describe('Full invoice data from sevDesk')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      invoiceNumber: z.string().optional(),
+      contactId: z.string().optional(),
+      contactName: z.string().optional(),
+      invoiceDate: z.string().optional(),
+      status: z.string().optional(),
+      totalNet: z.string().optional(),
+      totalGross: z.string().optional(),
+      currency: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SevdeskClient({ token: ctx.auth.token });
 
       let lastSeenId: string | undefined = ctx.state?.lastSeenId;
@@ -40,7 +41,7 @@ export let newInvoice = SlateTrigger.create(
       let invoices = await client.listInvoices({
         limit: 50,
         offset: 0,
-        embed: 'contact',
+        embed: 'contact'
       });
 
       let sorted = (invoices ?? []).sort((a: any, b: any) => Number(b.id) - Number(a.id));
@@ -57,15 +58,15 @@ export let newInvoice = SlateTrigger.create(
       return {
         inputs: newInvoices.map((inv: any) => ({
           invoiceId: String(inv.id),
-          invoiceData: inv,
+          invoiceData: inv
         })),
         updatedState: {
-          lastSeenId: updatedLastSeenId,
-        },
+          lastSeenId: updatedLastSeenId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let inv = ctx.input.invoiceData;
 
       return {
@@ -81,8 +82,9 @@ export let newInvoice = SlateTrigger.create(
           totalNet: inv.sumNet ?? undefined,
           totalGross: inv.sumGross ?? undefined,
           currency: inv.currency ?? undefined,
-          createdAt: inv.create ?? undefined,
-        },
+          createdAt: inv.create ?? undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

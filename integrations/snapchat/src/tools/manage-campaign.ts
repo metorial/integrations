@@ -12,37 +12,50 @@ let campaignOutputSchema = z.object({
   startTime: z.string().optional().describe('Campaign start time'),
   endTime: z.string().optional().describe('Campaign end time'),
   dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
-  lifetimeSpendCapMicro: z.number().optional().describe('Lifetime spend cap in micro-currency'),
+  lifetimeSpendCapMicro: z
+    .number()
+    .optional()
+    .describe('Lifetime spend cap in micro-currency'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let manageCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Campaign',
-    key: 'manage_campaign',
-    description: `Create or update a Snapchat advertising campaign. To create a new campaign, provide an **adAccountId** and campaign properties. To update, also provide a **campaignId**. Supports setting name, status, objective, budget, and schedule.`,
-    instructions: [
-      'Budget values are in micro-currency (1 USD = 1,000,000 micro-currency).',
-      'Valid statuses: ACTIVE, PAUSED.',
-      'To create, adAccountId is required. To update, both adAccountId and campaignId are required.'
-    ]
-  }
-)
-  .input(z.object({
-    adAccountId: z.string().describe('Ad account ID the campaign belongs to'),
-    campaignId: z.string().optional().describe('Campaign ID to update (omit to create a new campaign)'),
-    name: z.string().optional().describe('Campaign name'),
-    status: z.enum(['ACTIVE', 'PAUSED']).optional().describe('Campaign status'),
-    objective: z.string().optional().describe('Campaign objective (e.g., APP_INSTALLS, WEB_CONVERSIONS, VIDEO_VIEWS, BRAND_AWARENESS, LEAD_GENERATION)'),
-    startTime: z.string().optional().describe('Campaign start time in ISO 8601 format'),
-    endTime: z.string().optional().describe('Campaign end time in ISO 8601 format'),
-    dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
-    lifetimeSpendCapMicro: z.number().optional().describe('Lifetime spend cap in micro-currency')
-  }))
+export let manageCampaign = SlateTool.create(spec, {
+  name: 'Manage Campaign',
+  key: 'manage_campaign',
+  description: `Create or update a Snapchat advertising campaign. To create a new campaign, provide an **adAccountId** and campaign properties. To update, also provide a **campaignId**. Supports setting name, status, objective, budget, and schedule.`,
+  instructions: [
+    'Budget values are in micro-currency (1 USD = 1,000,000 micro-currency).',
+    'Valid statuses: ACTIVE, PAUSED.',
+    'To create, adAccountId is required. To update, both adAccountId and campaignId are required.'
+  ]
+})
+  .input(
+    z.object({
+      adAccountId: z.string().describe('Ad account ID the campaign belongs to'),
+      campaignId: z
+        .string()
+        .optional()
+        .describe('Campaign ID to update (omit to create a new campaign)'),
+      name: z.string().optional().describe('Campaign name'),
+      status: z.enum(['ACTIVE', 'PAUSED']).optional().describe('Campaign status'),
+      objective: z
+        .string()
+        .optional()
+        .describe(
+          'Campaign objective (e.g., APP_INSTALLS, WEB_CONVERSIONS, VIDEO_VIEWS, BRAND_AWARENESS, LEAD_GENERATION)'
+        ),
+      startTime: z.string().optional().describe('Campaign start time in ISO 8601 format'),
+      endTime: z.string().optional().describe('Campaign end time in ISO 8601 format'),
+      dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
+      lifetimeSpendCapMicro: z
+        .number()
+        .optional()
+        .describe('Lifetime spend cap in micro-currency')
+    })
+  )
   .output(campaignOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let { adAccountId, campaignId, ...fields } = ctx.input;
 
@@ -53,8 +66,10 @@ export let manageCampaign = SlateTool.create(
     if (fields.objective) campaignData.objective = fields.objective;
     if (fields.startTime) campaignData.start_time = fields.startTime;
     if (fields.endTime) campaignData.end_time = fields.endTime;
-    if (fields.dailyBudgetMicro !== undefined) campaignData.daily_budget_micro = fields.dailyBudgetMicro;
-    if (fields.lifetimeSpendCapMicro !== undefined) campaignData.lifetime_spend_cap_micro = fields.lifetimeSpendCapMicro;
+    if (fields.dailyBudgetMicro !== undefined)
+      campaignData.daily_budget_micro = fields.dailyBudgetMicro;
+    if (fields.lifetimeSpendCapMicro !== undefined)
+      campaignData.lifetime_spend_cap_micro = fields.lifetimeSpendCapMicro;
 
     let result: any;
     if (campaignId) {

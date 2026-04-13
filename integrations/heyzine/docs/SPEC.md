@@ -21,6 +21,7 @@ Both credentials are obtained by registering and logging into a Heyzine account.
 ## Features
 
 ### Flipbook Conversion
+
 Convert PDF, DOCX, or PPTX files into interactive flipbooks by providing a URL to the source document. Supports both synchronous (waits for conversion to complete) and asynchronous (returns immediately with a status) modes. Configurable options include title, subtitle, description, page effects (via template), logo, background color, and UI controls (download button, fullscreen, share, navigation buttons). A template flipbook ID can be specified to copy styling from an existing flipbook.
 
 - Source files must be accessible via a direct URL with no redirections.
@@ -29,16 +30,21 @@ Convert PDF, DOCX, or PPTX files into interactive flipbooks by providing a URL t
 - Async conversion returns a state (`started`, `processed`, or `failed`); the flipbook URL returns a not-found page until processing completes.
 
 ### Flipbook Management
+
 List all flipbooks in an account, retrieve detailed information about a specific flipbook (including metadata, links, thumbnail, and oEmbed data), and delete flipbooks. Flipbooks can be tagged with comma-separated labels for organization.
 
 ### Bookshelf Management
+
 Bookshelves are collections of flipbooks displayed on a shared page. You can list all bookshelves, list flipbooks within a bookshelf, add flipbooks to a bookshelf at a specified position, and remove flipbooks from a bookshelf.
 
 ### Social Metadata
+
 Configure the title, description, and thumbnail image used when flipbooks or bookshelves are shared on social media platforms. This can be set independently for individual flipbooks and bookshelves.
 
 ### Password Protection & Access Control
+
 Protect flipbooks with password-based access. Supports multiple access modes:
+
 - **Per-user credentials**: Individual username/password pairs for each reader.
 - **Single password**: One shared password for all visitors.
 - **Google Sign-In**: Restrict access to specific Google accounts.
@@ -49,14 +55,17 @@ Protect flipbooks with password-based access. Supports multiple access modes:
 Login screen text for username and password prompts is customizable. Users can be added to and removed from the access list programmatically.
 
 ### oEmbed
+
 Retrieve oEmbed data for flipbooks, returning standard oEmbed 1.0 responses with embed HTML, dimensions, and thumbnails. Useful for embedding flipbooks in third-party platforms that support oEmbed discovery.
 
 ### jQuery Plugin
+
 A client-side jQuery plugin that automatically converts PDF links on a webpage into flipbook links. Supports modal presentation and customization via DOM attributes.
 
 ## Events
 
 ### Lead Collection Webhook
+
 Fires when new leads are collected through lead generation forms embedded in flipbooks. The webhook payload includes the lead's form responses (field labels and values), the date of collection, and the associated flipbook's identifier and title. Multiple leads can be batched in a single webhook call.
 
 - Webhook endpoint URLs and call frequency are configured in the account settings at `https://heyzine.com/account/#scripts`.

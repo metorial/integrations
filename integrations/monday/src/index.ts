@@ -23,13 +23,9 @@ import {
   updateWorkspaceTool,
   sendNotificationTool,
   listTagsTool,
-  getActivityLogsTool,
+  getActivityLogsTool
 } from './tools';
-import {
-  itemEventsTrigger,
-  columnValueChangesTrigger,
-  updateEventsTrigger,
-} from './triggers';
+import { itemEventsTrigger, columnValueChangesTrigger, updateEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -56,11 +52,7 @@ export let provider = Slate.create({
     updateWorkspaceTool,
     sendNotificationTool,
     listTagsTool,
-    getActivityLogsTool,
+    getActivityLogsTool
   ],
-  triggers: [
-    itemEventsTrigger,
-    columnValueChangesTrigger,
-    updateEventsTrigger,
-  ],
+  triggers: [itemEventsTrigger, columnValueChangesTrigger, updateEventsTrigger]
 });

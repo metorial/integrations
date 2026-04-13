@@ -14,9 +14,9 @@ export class ShippoClient {
     this.axios = createAxios({
       baseURL: 'https://api.goshippo.com',
       headers: {
-        'Authorization': `ShippoToken ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `ShippoToken ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -100,7 +100,12 @@ export class ShippoClient {
     return response.data;
   }
 
-  async listTransactions(params?: { page?: number; results?: number; rate?: string; tracking_status?: string }) {
+  async listTransactions(params?: {
+    page?: number;
+    results?: number;
+    rate?: string;
+    tracking_status?: string;
+  }) {
     let response = await this.axios.get('/transactions', { params });
     return response.data as PaginatedResponse<Record<string, unknown>>;
   }
@@ -112,7 +117,11 @@ export class ShippoClient {
     return response.data;
   }
 
-  async registerTrackingWebhook(data: { carrier: string; tracking_number: string; metadata?: string }) {
+  async registerTrackingWebhook(data: {
+    carrier: string;
+    tracking_number: string;
+    metadata?: string;
+  }) {
     let response = await this.axios.post('/tracks', data);
     return response.data;
   }
@@ -275,7 +284,10 @@ export class ShippoClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: { url?: string; event?: string; is_test?: boolean }) {
+  async updateWebhook(
+    webhookId: string,
+    data: { url?: string; event?: string; is_test?: boolean }
+  ) {
     let response = await this.axios.put(`/webhooks/${webhookId}`, data);
     return response.data;
   }

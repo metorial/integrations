@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Completed',
-    key: 'campaign_completed',
-    description: 'Triggers when a campaign finishes processing and its results become available.'
-  }
-)
-  .input(z.object({
-    campaignId: z.string().describe('The campaign ID that completed processing'),
-    campaignName: z.string().describe('Name of the completed campaign'),
-    status: z.string().describe('Campaign status'),
-    dateAdded: z.string().describe('When the campaign was submitted')
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('Unique identifier of the completed campaign'),
-    campaignName: z.string().describe('Name of the campaign'),
-    dateAdded: z.string().describe('Timestamp when the campaign was submitted')
-  }))
+export let campaignCompleted = SlateTrigger.create(spec, {
+  name: 'Campaign Completed',
+  key: 'campaign_completed',
+  description: 'Triggers when a campaign finishes processing and its results become available.'
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('The campaign ID that completed processing'),
+      campaignName: z.string().describe('Name of the completed campaign'),
+      status: z.string().describe('Campaign status'),
+      dateAdded: z.string().describe('When the campaign was submitted')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('Unique identifier of the completed campaign'),
+      campaignName: z.string().describe('Name of the campaign'),
+      dateAdded: z.string().describe('Timestamp when the campaign was submitted')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let campaigns = await client.getCampaignList();
@@ -35,7 +36,9 @@ export let campaignCompleted = SlateTrigger.create(
       let previousCompletedIds: string[] = ctx.state?.completedIds ?? [];
 
       let completedCampaigns = campaigns.filter(c => c.status === 'completed');
-      let newlyCompleted = completedCampaigns.filter(c => !previousCompletedIds.includes(c.id));
+      let newlyCompleted = completedCampaigns.filter(
+        c => !previousCompletedIds.includes(c.id)
+      );
 
       let allCompletedIds = completedCampaigns.map(c => c.id);
 
@@ -52,7 +55,7 @@ export let campaignCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.completed',
         id: ctx.input.campaignId,
@@ -63,4 +66,5 @@ export let campaignCompleted = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

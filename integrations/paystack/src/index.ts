@@ -36,7 +36,7 @@ import {
   resolveDispute,
   verifyBankAccount,
   listBanks,
-  resolveCardBin,
+  resolveCardBin
 } from './tools';
 import {
   transactionEvents,
@@ -46,7 +46,7 @@ import {
   refundEvents,
   disputeEvents,
   customerIdentificationEvents,
-  dedicatedVirtualAccountEvents,
+  dedicatedVirtualAccountEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -87,7 +87,7 @@ export let provider = Slate.create({
     resolveDispute,
     verifyBankAccount,
     listBanks,
-    resolveCardBin,
+    resolveCardBin
   ],
   triggers: [
     transactionEvents,
@@ -97,6 +97,6 @@ export let provider = Slate.create({
     refundEvents,
     disputeEvents,
     customerIdentificationEvents,
-    dedicatedVirtualAccountEvents,
-  ],
+    dedicatedVirtualAccountEvents
+  ]
 });

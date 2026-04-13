@@ -15,44 +15,53 @@ let timeEntrySchema = z.object({
   pausedDuration: z.number().nullable(),
   billable: z.boolean().nullable(),
   createdAt: z.string().nullable(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable()
 });
 
-export let manageTimeEntries = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Time Entries',
-    key: 'manage_time_entries',
-    description: `List, get, create, update, or delete time entries. Time entries track time spent on projects and can be billed to customers by converting them to invoices.`,
-    instructions: [
-      'For "list", use filter to narrow results (e.g., "state:open", "period:this_month", "contact_id:123", "project_id:456").',
-      'For "create", provide startedAt and endedAt in ISO 8601 format.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    timeEntryId: z.string().optional().describe('Time entry ID (for get, update, delete)'),
-    filter: z.string().optional().describe('Filter string for list (e.g., "state:open,period:this_month")'),
-    query: z.string().optional().describe('Search by description (for list)'),
-    page: z.number().optional().describe('Page number (for list)'),
-    perPage: z.number().optional().describe('Results per page (for list)'),
-    startedAt: z.string().optional().describe('Start time ISO 8601 (for create/update)'),
-    endedAt: z.string().optional().describe('End time ISO 8601 (for create/update)'),
-    description: z.string().optional().describe('Work description (for create/update)'),
-    contactId: z.string().optional().describe('Contact ID (for create/update)'),
-    projectId: z.string().optional().describe('Project ID (for create/update)'),
-    billable: z.boolean().optional().describe('Whether the time entry is billable (for create/update)'),
-  }))
-  .output(z.object({
-    timeEntry: timeEntrySchema.optional(),
-    timeEntries: z.array(timeEntrySchema).optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTimeEntries = SlateTool.create(spec, {
+  name: 'Manage Time Entries',
+  key: 'manage_time_entries',
+  description: `List, get, create, update, or delete time entries. Time entries track time spent on projects and can be billed to customers by converting them to invoices.`,
+  instructions: [
+    'For "list", use filter to narrow results (e.g., "state:open", "period:this_month", "contact_id:123", "project_id:456").',
+    'For "create", provide startedAt and endedAt in ISO 8601 format.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Operation to perform'),
+      timeEntryId: z.string().optional().describe('Time entry ID (for get, update, delete)'),
+      filter: z
+        .string()
+        .optional()
+        .describe('Filter string for list (e.g., "state:open,period:this_month")'),
+      query: z.string().optional().describe('Search by description (for list)'),
+      page: z.number().optional().describe('Page number (for list)'),
+      perPage: z.number().optional().describe('Results per page (for list)'),
+      startedAt: z.string().optional().describe('Start time ISO 8601 (for create/update)'),
+      endedAt: z.string().optional().describe('End time ISO 8601 (for create/update)'),
+      description: z.string().optional().describe('Work description (for create/update)'),
+      contactId: z.string().optional().describe('Contact ID (for create/update)'),
+      projectId: z.string().optional().describe('Project ID (for create/update)'),
+      billable: z
+        .boolean()
+        .optional()
+        .describe('Whether the time entry is billable (for create/update)')
+    })
+  )
+  .output(
+    z.object({
+      timeEntry: timeEntrySchema.optional(),
+      timeEntries: z.array(timeEntrySchema).optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MoneybirdClient({
       token: ctx.auth.token,
-      administrationId: ctx.config.administrationId,
+      administrationId: ctx.config.administrationId
     });
 
     let mapEntry = (e: any) => ({
@@ -67,7 +76,7 @@ export let manageTimeEntries = SlateTool.create(
       pausedDuration: e.paused_duration ?? null,
       billable: e.billable ?? null,
       createdAt: e.created_at || null,
-      updatedAt: e.updated_at || null,
+      updatedAt: e.updated_at || null
     });
 
     switch (ctx.input.action) {
@@ -76,12 +85,12 @@ export let manageTimeEntries = SlateTool.create(
           filter: ctx.input.filter,
           query: ctx.input.query,
           page: ctx.input.page,
-          perPage: ctx.input.perPage,
+          perPage: ctx.input.perPage
         });
         let mapped = entries.map(mapEntry);
         return {
           output: { timeEntries: mapped },
-          message: `Found ${mapped.length} time entr${mapped.length === 1 ? 'y' : 'ies'}.`,
+          message: `Found ${mapped.length} time entr${mapped.length === 1 ? 'y' : 'ies'}.`
         };
       }
       case 'get': {
@@ -89,7 +98,7 @@ export let manageTimeEntries = SlateTool.create(
         let entry = await client.getTimeEntry(ctx.input.timeEntryId);
         return {
           output: { timeEntry: mapEntry(entry) },
-          message: `Retrieved time entry: "${entry.description || entry.id}".`,
+          message: `Retrieved time entry: "${entry.description || entry.id}".`
         };
       }
       case 'create': {
@@ -103,7 +112,7 @@ export let manageTimeEntries = SlateTool.create(
         let entry = await client.createTimeEntry(entryData);
         return {
           output: { timeEntry: mapEntry(entry) },
-          message: `Created time entry: "${entry.description || entry.id}".`,
+          message: `Created time entry: "${entry.description || entry.id}".`
         };
       }
       case 'update': {
@@ -118,7 +127,7 @@ export let manageTimeEntries = SlateTool.create(
         let entry = await client.updateTimeEntry(ctx.input.timeEntryId, entryData);
         return {
           output: { timeEntry: mapEntry(entry) },
-          message: `Updated time entry: "${entry.description || entry.id}".`,
+          message: `Updated time entry: "${entry.description || entry.id}".`
         };
       }
       case 'delete': {
@@ -126,7 +135,7 @@ export let manageTimeEntries = SlateTool.create(
         await client.deleteTimeEntry(ctx.input.timeEntryId);
         return {
           output: { deleted: true },
-          message: `Deleted time entry ${ctx.input.timeEntryId}.`,
+          message: `Deleted time entry ${ctx.input.timeEntryId}.`
         };
       }
     }

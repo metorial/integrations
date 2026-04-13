@@ -3,37 +3,55 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageJobs = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Jobs',
-    key: 'manage_jobs',
-    description: `Manage Render cron job runs and one-off jobs. **trigger_cron** runs a cron job immediately, **cancel_cron** cancels a cron job run, **create_job** creates a one-off job, **list_jobs** lists one-off jobs, and **cancel_job** cancels a one-off job.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['trigger_cron', 'cancel_cron', 'create_job', 'list_jobs', 'get_job', 'cancel_job']).describe('Action to perform'),
-    serviceId: z.string().optional().describe('Service ID (for cron actions and create_job)'),
-    runId: z.string().optional().describe('Cron job run ID (for cancel_cron)'),
-    jobId: z.string().optional().describe('One-off job ID (for get_job/cancel_job)'),
-    startCommand: z.string().optional().describe('Command to run (for create_job)'),
-    planId: z.string().optional().describe('Instance plan (for create_job)'),
-    limit: z.number().optional().describe('Max results (for list_jobs)'),
-    cursor: z.string().optional().describe('Pagination cursor (for list_jobs)'),
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('Job or run ID'),
-    status: z.string().optional().describe('Job/run status'),
-    jobs: z.array(z.object({
-      jobId: z.string().describe('Job ID'),
-      serviceId: z.string().optional().describe('Service ID'),
-      startCommand: z.string().optional().describe('Command'),
-      status: z.string().optional().describe('Job status'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of jobs (for list_jobs)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageJobs = SlateTool.create(spec, {
+  name: 'Manage Jobs',
+  key: 'manage_jobs',
+  description: `Manage Render cron job runs and one-off jobs. **trigger_cron** runs a cron job immediately, **cancel_cron** cancels a cron job run, **create_job** creates a one-off job, **list_jobs** lists one-off jobs, and **cancel_job** cancels a one-off job.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'trigger_cron',
+          'cancel_cron',
+          'create_job',
+          'list_jobs',
+          'get_job',
+          'cancel_job'
+        ])
+        .describe('Action to perform'),
+      serviceId: z
+        .string()
+        .optional()
+        .describe('Service ID (for cron actions and create_job)'),
+      runId: z.string().optional().describe('Cron job run ID (for cancel_cron)'),
+      jobId: z.string().optional().describe('One-off job ID (for get_job/cancel_job)'),
+      startCommand: z.string().optional().describe('Command to run (for create_job)'),
+      planId: z.string().optional().describe('Instance plan (for create_job)'),
+      limit: z.number().optional().describe('Max results (for list_jobs)'),
+      cursor: z.string().optional().describe('Pagination cursor (for list_jobs)')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().optional().describe('Job or run ID'),
+      status: z.string().optional().describe('Job/run status'),
+      jobs: z
+        .array(
+          z.object({
+            jobId: z.string().describe('Job ID'),
+            serviceId: z.string().optional().describe('Service ID'),
+            startCommand: z.string().optional().describe('Command'),
+            status: z.string().optional().describe('Job status'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of jobs (for list_jobs)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RenderClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -42,7 +60,7 @@ export let manageJobs = SlateTool.create(
       let result = await client.triggerCronJobRun(ctx.input.serviceId);
       return {
         output: { jobId: result.id, status: result.status, success: true },
-        message: `Triggered cron job run for service \`${ctx.input.serviceId}\`.`,
+        message: `Triggered cron job run for service \`${ctx.input.serviceId}\`.`
       };
     }
 
@@ -52,7 +70,7 @@ export let manageJobs = SlateTool.create(
       await client.cancelCronJobRun(ctx.input.serviceId, ctx.input.runId);
       return {
         output: { jobId: ctx.input.runId, success: true },
-        message: `Cancelled cron job run \`${ctx.input.runId}\`.`,
+        message: `Cancelled cron job run \`${ctx.input.runId}\`.`
       };
     }
 
@@ -69,12 +87,12 @@ export let manageJobs = SlateTool.create(
           serviceId: j.serviceId,
           startCommand: j.startCommand,
           status: j.status,
-          createdAt: j.createdAt,
+          createdAt: j.createdAt
         };
       });
       return {
         output: { jobs, success: true },
-        message: `Found **${jobs.length}** job(s).${jobs.map(j => `\n- \`${j.jobId}\` — ${j.status || 'unknown'}`).join('')}`,
+        message: `Found **${jobs.length}** job(s).${jobs.map(j => `\n- \`${j.jobId}\` — ${j.status || 'unknown'}`).join('')}`
       };
     }
 
@@ -83,13 +101,13 @@ export let manageJobs = SlateTool.create(
       if (!ctx.input.startCommand) throw new Error('startCommand is required for create_job');
       let body: Record<string, any> = {
         serviceId: ctx.input.serviceId,
-        startCommand: ctx.input.startCommand,
+        startCommand: ctx.input.startCommand
       };
       if (ctx.input.planId) body.planId = ctx.input.planId;
       let j = await client.createJob(body);
       return {
         output: { jobId: j.id, status: j.status, success: true },
-        message: `Created one-off job \`${j.id}\` for service \`${ctx.input.serviceId}\`.`,
+        message: `Created one-off job \`${j.id}\` for service \`${ctx.input.serviceId}\`.`
       };
     }
 
@@ -98,7 +116,7 @@ export let manageJobs = SlateTool.create(
       let j = await client.getJob(ctx.input.jobId);
       return {
         output: { jobId: j.id, status: j.status, success: true },
-        message: `Job \`${j.id}\` — Status: **${j.status || 'unknown'}**.`,
+        message: `Job \`${j.id}\` — Status: **${j.status || 'unknown'}**.`
       };
     }
 
@@ -107,9 +125,10 @@ export let manageJobs = SlateTool.create(
       await client.cancelJob(ctx.input.jobId);
       return {
         output: { jobId: ctx.input.jobId, success: true },
-        message: `Cancelled job \`${ctx.input.jobId}\`.`,
+        message: `Cancelled job \`${ctx.input.jobId}\`.`
       };
     }
 
     return { output: { success: false }, message: 'Unknown action.' };
-  }).build();
+  })
+  .build();

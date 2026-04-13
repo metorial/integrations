@@ -9,7 +9,7 @@ import {
   manageTags,
   listAssets,
   manageFolders,
-  getUsage,
+  getUsage
 } from './tools';
 import { assetEvent } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     manageTags,
     listAssets,
     manageFolders,
-    getUsage,
+    getUsage
   ],
-  triggers: [
-    assetEvent,
-  ],
+  triggers: [assetEvent]
 });

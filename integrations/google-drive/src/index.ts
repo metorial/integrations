@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchFilesTool,
@@ -25,9 +24,7 @@ import {
   updateSharedDriveTool,
   deleteSharedDriveTool
 } from './tools';
-import { fileChangesTrigger,
-  inboundWebhook,
-} from './triggers';
+import { fileChangesTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,8 +52,5 @@ export let provider = Slate.create({
     updateSharedDriveTool,
     deleteSharedDriveTool
   ],
-  triggers: [
-    inboundWebhook,
-    fileChangesTrigger
-  ]
+  triggers: [inboundWebhook, fileChangesTrigger]
 });

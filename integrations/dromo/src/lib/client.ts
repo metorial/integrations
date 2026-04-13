@@ -10,8 +10,8 @@ export class DromoClient {
       baseURL: BASE_URL,
       headers: {
         'X-Dromo-License-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -74,7 +74,9 @@ export class DromoClient {
     return response.data;
   }
 
-  async createHeadlessImport(params: DromoHeadlessImportCreateInput): Promise<DromoHeadlessImportCreateResponse> {
+  async createHeadlessImport(
+    params: DromoHeadlessImportCreateInput
+  ): Promise<DromoHeadlessImportCreateResponse> {
     let response = await this.axios.post('/headless/imports/', params);
     return response.data;
   }

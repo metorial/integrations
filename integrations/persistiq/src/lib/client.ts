@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.persistiq.com/v1',
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -81,7 +81,7 @@ export class Client {
   async addLeadToCampaign(campaignId: string, leadId: string, mailboxId: string) {
     let response = await this.axios.post(`/campaigns/${campaignId}`, {
       leads: [{ id: leadId }],
-      mailbox_id: mailboxId,
+      mailbox_id: mailboxId
     });
     return response.data;
   }
@@ -89,8 +89,8 @@ export class Client {
   async removeLeadFromCampaign(campaignId: string, leadId: string) {
     let response = await this.axios.delete(`/campaigns/${campaignId}`, {
       data: {
-        leads: [{ id: leadId }],
-      },
+        leads: [{ id: leadId }]
+      }
     });
     return response.data;
   }

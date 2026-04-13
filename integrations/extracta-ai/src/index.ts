@@ -13,7 +13,7 @@ import {
   deleteClassificationTool,
   uploadClassificationFilesTool,
   getClassificationResultsTool,
-  getCreditsTool,
+  getCreditsTool
 } from './tools';
 import { extractionEventsTrigger } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     deleteClassificationTool,
     uploadClassificationFilesTool,
     getClassificationResultsTool,
-    getCreditsTool,
+    getCreditsTool
   ],
-  triggers: [
-    extractionEventsTrigger,
-  ],
+  triggers: [extractionEventsTrigger]
 });

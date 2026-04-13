@@ -3,47 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getJob = SlateTool.create(
-  spec,
-  {
-    name: 'Get Job',
-    key: 'get_job',
-    description: `Retrieve a single job (project) by its ID. Returns all available fields including name, address, status, related contact, tags, and assignees.`,
-    tags: {
-      readOnly: true
-    }
+export let getJob = SlateTool.create(spec, {
+  name: 'Get Job',
+  key: 'get_job',
+  description: `Retrieve a single job (project) by its ID. Returns all available fields including name, address, status, related contact, tags, and assignees.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    jobId: z.string().describe('The unique JobNimbus ID (jnid) of the job to retrieve')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Unique JobNimbus ID'),
-    name: z.string().optional().describe('Job name'),
-    description: z.string().optional().describe('Job description'),
-    number: z.string().optional().describe('Job number'),
-    statusName: z.string().optional().describe('Current workflow status'),
-    recordTypeName: z.string().optional().describe('Workflow type name'),
-    addressLine1: z.string().optional().describe('Job site address line 1'),
-    addressLine2: z.string().optional().describe('Job site address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State'),
-    zip: z.string().optional().describe('Zip code'),
-    country: z.string().optional().describe('Country'),
-    primaryContactId: z.string().optional().describe('Primary contact ID'),
-    primaryContactName: z.string().optional().describe('Primary contact name'),
-    sourceName: z.string().optional().describe('Lead source'),
-    tags: z.array(z.string()).optional().describe('Tags'),
-    owners: z.array(z.string()).optional().describe('Assignee IDs'),
-    salesRep: z.string().optional().describe('Sales rep ID'),
-    salesRepName: z.string().optional().describe('Sales rep name'),
-    dateCreated: z.number().optional().describe('Unix timestamp of creation'),
-    dateUpdated: z.number().optional().describe('Unix timestamp of last update'),
-    dateStart: z.number().optional().describe('Unix timestamp of start date'),
-    dateEnd: z.number().optional().describe('Unix timestamp of end date'),
-    createdByName: z.string().optional().describe('Name of record creator')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('The unique JobNimbus ID (jnid) of the job to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Unique JobNimbus ID'),
+      name: z.string().optional().describe('Job name'),
+      description: z.string().optional().describe('Job description'),
+      number: z.string().optional().describe('Job number'),
+      statusName: z.string().optional().describe('Current workflow status'),
+      recordTypeName: z.string().optional().describe('Workflow type name'),
+      addressLine1: z.string().optional().describe('Job site address line 1'),
+      addressLine2: z.string().optional().describe('Job site address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State'),
+      zip: z.string().optional().describe('Zip code'),
+      country: z.string().optional().describe('Country'),
+      primaryContactId: z.string().optional().describe('Primary contact ID'),
+      primaryContactName: z.string().optional().describe('Primary contact name'),
+      sourceName: z.string().optional().describe('Lead source'),
+      tags: z.array(z.string()).optional().describe('Tags'),
+      owners: z.array(z.string()).optional().describe('Assignee IDs'),
+      salesRep: z.string().optional().describe('Sales rep ID'),
+      salesRepName: z.string().optional().describe('Sales rep name'),
+      dateCreated: z.number().optional().describe('Unix timestamp of creation'),
+      dateUpdated: z.number().optional().describe('Unix timestamp of last update'),
+      dateStart: z.number().optional().describe('Unix timestamp of start date'),
+      dateEnd: z.number().optional().describe('Unix timestamp of end date'),
+      createdByName: z.string().optional().describe('Name of record creator')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let j = await client.getJob(ctx.input.jobId);
 
@@ -76,4 +77,5 @@ export let getJob = SlateTool.create(
       },
       message: `Retrieved job **${j.name || j.jnid}** (${j.status_name || 'no status'}).`
     };
-  }).build();
+  })
+  .build();

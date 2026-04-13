@@ -3,38 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteMedia = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Media',
-    key: 'delete_media',
-    description: `Permanently delete a file from the Strapi media library by its ID.`,
-    constraints: [
-      'This action is irreversible. Any content entries referencing this file will lose their media association.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let deleteMedia = SlateTool.create(spec, {
+  name: 'Delete Media',
+  key: 'delete_media',
+  description: `Permanently delete a file from the Strapi media library by its ID.`,
+  constraints: [
+    'This action is irreversible. Any content entries referencing this file will lose their media association.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    fileId: z.number().describe('Numeric ID of the media file to delete'),
-  }))
-  .output(z.object({
-    deletedFile: z.record(z.string(), z.any()).optional().describe('The deleted file data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileId: z.number().describe('Numeric ID of the media file to delete')
+    })
+  )
+  .output(
+    z.object({
+      deletedFile: z.record(z.string(), z.any()).optional().describe('The deleted file data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let result = await client.deleteFile(ctx.input.fileId);
 
     return {
       output: {
-        deletedFile: result,
+        deletedFile: result
       },
-      message: `Deleted media file **${ctx.input.fileId}**.`,
+      message: `Deleted media file **${ctx.input.fileId}**.`
     };
-  }).build();
+  })
+  .build();

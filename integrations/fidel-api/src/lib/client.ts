@@ -10,8 +10,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'fidel-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -32,7 +32,10 @@ export class Client {
     return res.data;
   }
 
-  async updateProgram(programId: string, data: { name?: string; metadata?: Record<string, any> }) {
+  async updateProgram(
+    programId: string,
+    data: { name?: string; metadata?: Record<string, any> }
+  ) {
     let res = await this.axios.patch(`/programs/${programId}`, data);
     return res.data?.items?.[0] ?? res.data;
   }
@@ -54,7 +57,10 @@ export class Client {
     return res.data;
   }
 
-  async updateBrand(brandId: string, data: { name?: string; logoURL?: string; metadata?: Record<string, any> }) {
+  async updateBrand(
+    brandId: string,
+    data: { name?: string; logoURL?: string; metadata?: Record<string, any> }
+  ) {
     let res = await this.axios.patch(`/brands/${brandId}`, data);
     return res.data?.items?.[0] ?? res.data;
   }
@@ -66,17 +72,21 @@ export class Client {
 
   // ── Locations ─────────────────────────────────────────────
 
-  async createLocation(brandId: string, programId: string, data: {
-    address: string;
-    city: string;
-    countryCode: string;
-    postcode: string;
-    metadata?: Record<string, any>;
-    geolocation?: { latitude: number; longitude: number };
-  }) {
+  async createLocation(
+    brandId: string,
+    programId: string,
+    data: {
+      address: string;
+      city: string;
+      countryCode: string;
+      postcode: string;
+      metadata?: Record<string, any>;
+      geolocation?: { latitude: number; longitude: number };
+    }
+  ) {
     let res = await this.axios.post(`/programs/${programId}/locations`, {
       ...data,
-      brandId,
+      brandId
     });
     return res.data?.items?.[0] ?? res.data;
   }
@@ -91,14 +101,18 @@ export class Client {
     return res.data;
   }
 
-  async updateLocation(locationId: string, programId: string, data: {
-    address?: string;
-    city?: string;
-    countryCode?: string;
-    postcode?: string;
-    metadata?: Record<string, any>;
-    geolocation?: { latitude: number; longitude: number };
-  }) {
+  async updateLocation(
+    locationId: string,
+    programId: string,
+    data: {
+      address?: string;
+      city?: string;
+      countryCode?: string;
+      postcode?: string;
+      metadata?: Record<string, any>;
+      geolocation?: { latitude: number; longitude: number };
+    }
+  ) {
     let res = await this.axios.patch(`/programs/${programId}/locations/${locationId}`, data);
     return res.data?.items?.[0] ?? res.data;
   }
@@ -110,14 +124,17 @@ export class Client {
 
   // ── Cards ─────────────────────────────────────────────────
 
-  async enrollCard(programId: string, data: {
-    number: string;
-    expMonth: number;
-    expYear: number;
-    countryCode: string;
-    termsOfUse?: boolean;
-    metadata?: Record<string, any>;
-  }) {
+  async enrollCard(
+    programId: string,
+    data: {
+      number: string;
+      expMonth: number;
+      expYear: number;
+      countryCode: string;
+      termsOfUse?: boolean;
+      metadata?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.post(`/programs/${programId}/cards`, data);
     return res.data?.items?.[0] ?? res.data;
   }
@@ -144,45 +161,60 @@ export class Client {
     return res.data?.items?.[0] ?? res.data;
   }
 
-  async listTransactionsByProgram(programId: string, params?: {
-    start?: number;
-    limit?: number;
-    from?: string;
-    to?: string;
-  }) {
+  async listTransactionsByProgram(
+    programId: string,
+    params?: {
+      start?: number;
+      limit?: number;
+      from?: string;
+      to?: string;
+    }
+  ) {
     let res = await this.axios.get(`/programs/${programId}/transactions`, { params });
     return res.data;
   }
 
-  async listTransactionsByCard(cardId: string, programId: string, params?: {
-    start?: number;
-    limit?: number;
-    from?: string;
-    to?: string;
-  }) {
-    let res = await this.axios.get(`/programs/${programId}/cards/${cardId}/transactions`, { params });
+  async listTransactionsByCard(
+    cardId: string,
+    programId: string,
+    params?: {
+      start?: number;
+      limit?: number;
+      from?: string;
+      to?: string;
+    }
+  ) {
+    let res = await this.axios.get(`/programs/${programId}/cards/${cardId}/transactions`, {
+      params
+    });
     return res.data;
   }
 
-  async createTestTransaction(programId: string, data: {
-    amount: number;
-    cardId: string;
-    locationId: string;
-    currency: string;
-  }) {
+  async createTestTransaction(
+    programId: string,
+    data: {
+      amount: number;
+      cardId: string;
+      locationId: string;
+      currency: string;
+    }
+  ) {
     let res = await this.axios.post(`/transactions/test`, {
       ...data,
-      programId,
+      programId
     });
     return res.data?.items?.[0] ?? res.data;
   }
 
   // ── Webhooks ──────────────────────────────────────────────
 
-  async createWebhook(programId: string, data: {
-    event: string;
-    url: string;
-  }) {
+  async createWebhook(
+    programId: string,
+    data: {
+      event: string;
+      url: string;
+    }
+  ) {
     let res = await this.axios.post(`/programs/${programId}/hooks`, data);
     return res.data?.items?.[0] ?? res.data;
   }
@@ -202,29 +234,36 @@ export class Client {
     return res.data;
   }
 
-  async updateWebhook(webhookId: string, programId: string, data: {
-    event?: string;
-    url?: string;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    programId: string,
+    data: {
+      event?: string;
+      url?: string;
+    }
+  ) {
     let res = await this.axios.patch(`/programs/${programId}/hooks/${webhookId}`, data);
     return res.data?.items?.[0] ?? res.data;
   }
 
   // ── Offers ────────────────────────────────────────────────
 
-  async createOffer(programId: string, data: {
-    brandId: string;
-    countryCode: string;
-    name: string;
-    type: { name: 'amount' | 'discount'; value: number };
-    startDate?: string;
-    endDate?: string;
-    maxReward?: number;
-    metadata?: Record<string, any>;
-  }) {
+  async createOffer(
+    programId: string,
+    data: {
+      brandId: string;
+      countryCode: string;
+      name: string;
+      type: { name: 'amount' | 'discount'; value: number };
+      startDate?: string;
+      endDate?: string;
+      maxReward?: number;
+      metadata?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.post(`/offers`, {
       ...data,
-      programId,
+      programId
     });
     return res.data?.items?.[0] ?? res.data;
   }
@@ -239,13 +278,16 @@ export class Client {
     return res.data;
   }
 
-  async updateOffer(offerId: string, data: {
-    name?: string;
-    startDate?: string;
-    endDate?: string;
-    maxReward?: number;
-    metadata?: Record<string, any>;
-  }) {
+  async updateOffer(
+    offerId: string,
+    data: {
+      name?: string;
+      startDate?: string;
+      endDate?: string;
+      maxReward?: number;
+      metadata?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.patch(`/offers/${offerId}`, data);
     return res.data?.items?.[0] ?? res.data;
   }

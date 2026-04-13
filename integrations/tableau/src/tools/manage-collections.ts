@@ -6,31 +6,44 @@ import { createClient } from '../lib/helpers';
 export let manageCollections = SlateTool.create(spec, {
   name: 'Manage Collections',
   key: 'manage_collections',
-  description: `List, create, update, or delete collections. Collections are curated groups of content items for organizational purposes.`,
+  description: `List, create, update, or delete collections. Collections are curated groups of content items for organizational purposes.`
 })
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
-    collectionId: z.string().optional().describe('Collection LUID (required for update, delete)'),
-    name: z.string().optional().describe('Collection name (required for create)'),
-    description: z.string().optional().describe('Collection description'),
-    pageSize: z.number().optional().describe('Page size for list'),
-    pageNumber: z.number().optional().describe('Page number for list')
-  }))
-  .output(z.object({
-    collections: z.array(z.object({
-      collectionId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional()
-    })).optional(),
-    collection: z.object({
-      collectionId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional()
-    }).optional(),
-    totalCount: z.number().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
+      collectionId: z
+        .string()
+        .optional()
+        .describe('Collection LUID (required for update, delete)'),
+      name: z.string().optional().describe('Collection name (required for create)'),
+      description: z.string().optional().describe('Collection description'),
+      pageSize: z.number().optional().describe('Page size for list'),
+      pageNumber: z.number().optional().describe('Page number for list')
+    })
+  )
+  .output(
+    z.object({
+      collections: z
+        .array(
+          z.object({
+            collectionId: z.string(),
+            name: z.string().optional(),
+            description: z.string().optional()
+          })
+        )
+        .optional(),
+      collection: z
+        .object({
+          collectionId: z.string(),
+          name: z.string().optional(),
+          description: z.string().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -54,7 +67,9 @@ export let manageCollections = SlateTool.create(spec, {
     if (action === 'create') {
       let c = await client.createCollection(ctx.input.name!, ctx.input.description);
       return {
-        output: { collection: { collectionId: c.id, name: c.name, description: c.description } },
+        output: {
+          collection: { collectionId: c.id, name: c.name, description: c.description }
+        },
         message: `Created collection **${c.name}**.`
       };
     }
@@ -65,7 +80,9 @@ export let manageCollections = SlateTool.create(spec, {
         description: ctx.input.description
       });
       return {
-        output: { collection: { collectionId: c.id, name: c.name, description: c.description } },
+        output: {
+          collection: { collectionId: c.id, name: c.name, description: c.description }
+        },
         message: `Updated collection **${c.name}**.`
       };
     }
@@ -79,4 +96,5 @@ export let manageCollections = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

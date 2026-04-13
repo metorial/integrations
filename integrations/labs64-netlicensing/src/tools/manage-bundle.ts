@@ -3,38 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBundle = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Bundle',
-    key: 'manage_bundle',
-    description: `Create, update, or delete a license bundle. Bundles group license templates together so that obtaining a bundle creates multiple licenses at once for a licensee.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageBundle = SlateTool.create(spec, {
+  name: 'Manage Bundle',
+  key: 'manage_bundle',
+  description: `Create, update, or delete a license bundle. Bundles group license templates together so that obtaining a bundle creates multiple licenses at once for a licensee.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
-    bundleNumber: z.string().optional().describe('Bundle identifier. Required for update/delete. Optional for create.'),
-    name: z.string().optional().describe('Bundle name'),
-    active: z.boolean().optional().describe('Whether the bundle is active'),
-    description: z.string().optional().describe('Bundle description'),
-    price: z.number().optional().describe('Bundle price'),
-    currency: z.string().optional().describe('Currency code (e.g., EUR)'),
-    licenseTemplatesNumbers: z.string().optional().describe('Comma-separated list of license template numbers to include'),
-  }))
-  .output(z.object({
-    bundleNumber: z.string().describe('Bundle number'),
-    name: z.string().optional().describe('Bundle name'),
-    active: z.boolean().optional().describe('Whether active'),
-    description: z.string().optional().describe('Bundle description'),
-    price: z.number().optional().describe('Price'),
-    currency: z.string().optional().describe('Currency'),
-    deleted: z.boolean().optional().describe('True if deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
+      bundleNumber: z
+        .string()
+        .optional()
+        .describe('Bundle identifier. Required for update/delete. Optional for create.'),
+      name: z.string().optional().describe('Bundle name'),
+      active: z.boolean().optional().describe('Whether the bundle is active'),
+      description: z.string().optional().describe('Bundle description'),
+      price: z.number().optional().describe('Bundle price'),
+      currency: z.string().optional().describe('Currency code (e.g., EUR)'),
+      licenseTemplatesNumbers: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of license template numbers to include')
+    })
+  )
+  .output(
+    z.object({
+      bundleNumber: z.string().describe('Bundle number'),
+      name: z.string().optional().describe('Bundle name'),
+      active: z.boolean().optional().describe('Whether active'),
+      description: z.string().optional().describe('Bundle description'),
+      price: z.number().optional().describe('Price'),
+      currency: z.string().optional().describe('Currency'),
+      deleted: z.boolean().optional().describe('True if deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, bundleNumber, ...params } = ctx.input;
 
@@ -43,7 +50,7 @@ export let manageBundle = SlateTool.create(
       await client.deleteBundle(bundleNumber);
       return {
         output: { bundleNumber, deleted: true },
-        message: `Bundle **${bundleNumber}** has been deleted.`,
+        message: `Bundle **${bundleNumber}** has been deleted.`
       };
     }
 
@@ -58,9 +65,9 @@ export let manageBundle = SlateTool.create(
           active: result.active,
           description: result.description,
           price: result.price,
-          currency: result.currency,
+          currency: result.currency
         },
-        message: `Bundle **${result.number}** (${result.name}) has been updated.`,
+        message: `Bundle **${result.number}** (${result.name}) has been updated.`
       };
     }
 
@@ -76,8 +83,9 @@ export let manageBundle = SlateTool.create(
         active: result.active,
         description: result.description,
         price: result.price,
-        currency: result.currency,
+        currency: result.currency
       },
-      message: `Bundle **${result.number}** (${result.name}) has been created.`,
+      message: `Bundle **${result.number}** (${result.name}) has been created.`
     };
-  }).build();
+  })
+  .build();

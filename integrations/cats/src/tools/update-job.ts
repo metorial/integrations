@@ -3,42 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateJob = SlateTool.create(
-  spec,
-  {
-    name: 'Update Job',
-    key: 'update_job',
-    description: `Update an existing job order. Only provide fields you want to change.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateJob = SlateTool.create(spec, {
+  name: 'Update Job',
+  key: 'update_job',
+  description: `Update an existing job order. Only provide fields you want to change.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    jobId: z.string().describe('ID of the job to update'),
-    title: z.string().optional().describe('Job title'),
-    orderId: z.string().optional().describe('Order/requisition ID'),
-    description: z.string().optional().describe('Job description'),
-    notes: z.string().optional().describe('Internal notes'),
-    ownerId: z.number().optional().describe('Recruiter/owner user ID'),
-    isActive: z.boolean().optional().describe('Whether active'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State'),
-    postalCode: z.string().optional().describe('Postal/ZIP code'),
-    countryCode: z.string().optional().describe('Country code'),
-    salary: z.string().optional().describe('Salary'),
-    duration: z.string().optional().describe('Duration'),
-    startDate: z.string().optional().describe('Start date (RFC 3339)'),
-    isHot: z.boolean().optional().describe('Mark as hot'),
-    openings: z.number().optional().describe('Number of openings'),
-    type: z.string().optional().describe('Job type'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('ID of the updated job'),
-    updated: z.boolean().describe('Whether the update was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('ID of the job to update'),
+      title: z.string().optional().describe('Job title'),
+      orderId: z.string().optional().describe('Order/requisition ID'),
+      description: z.string().optional().describe('Job description'),
+      notes: z.string().optional().describe('Internal notes'),
+      ownerId: z.number().optional().describe('Recruiter/owner user ID'),
+      isActive: z.boolean().optional().describe('Whether active'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State'),
+      postalCode: z.string().optional().describe('Postal/ZIP code'),
+      countryCode: z.string().optional().describe('Country code'),
+      salary: z.string().optional().describe('Salary'),
+      duration: z.string().optional().describe('Duration'),
+      startDate: z.string().optional().describe('Start date (RFC 3339)'),
+      isHot: z.boolean().optional().describe('Mark as hot'),
+      openings: z.number().optional().describe('Number of openings'),
+      type: z.string().optional().describe('Job type')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('ID of the updated job'),
+      updated: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -64,8 +65,9 @@ export let updateJob = SlateTool.create(
     return {
       output: {
         jobId: ctx.input.jobId,
-        updated: true,
+        updated: true
       },
-      message: `Updated job **${ctx.input.jobId}**.`,
+      message: `Updated job **${ctx.input.jobId}**.`
     };
-  }).build();
+  })
+  .build();

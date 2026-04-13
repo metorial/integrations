@@ -15,10 +15,7 @@ import {
   manageSuppressions,
   unsubscribeCustomers
 } from './tools';
-import {
-  surveyWebhook,
-  newFeedback
-} from './triggers';
+import { surveyWebhook, newFeedback } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,8 +34,5 @@ export let provider = Slate.create({
     manageSuppressions,
     unsubscribeCustomers
   ],
-  triggers: [
-    surveyWebhook,
-    newFeedback
-  ]
+  triggers: [surveyWebhook, newFeedback]
 });

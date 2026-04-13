@@ -11,6 +11,7 @@ Hub Planner is a cloud-based Resource Management platform that provides programm
 Hub Planner API is authenticated with a OAuth 2.0 Bearer Token. You must supply an Authorization header with the token for all requests, where the value is your generated API key. Do not provide the `Bearer` keyword before the API key in the header.
 
 The header should be set as:
+
 ```
 Authorization: <your_api_key>
 ```
@@ -49,6 +50,7 @@ Create bookings for resources on projects with start/end dates. Minimum required
 ### Timesheets
 
 Manage time entries for resources against projects. Timesheets allow tracking actual time worked versus scheduled/forecasted time.
+
 - Requires the Timesheets extension to be enabled on the account.
 
 ### Events
@@ -74,6 +76,7 @@ Manage client records that can be associated with projects.
 ### Billing Rates
 
 Configure billing rates for projects, resources, and bookings. Supports both internal and external rates.
+
 - Requires the Premium Extension.
 
 ### Project Managers
@@ -83,6 +86,7 @@ Assign and manage project managers for projects.
 ### Unassigned Work
 
 Manage unassigned work items that haven't yet been allocated to specific resources.
+
 - Requires the Unassigned Work extension.
 
 ### Tags
@@ -110,12 +114,14 @@ To use the webhooks functionality you first need to subscribe to the chosen even
 ### Project Events
 
 Notifications when projects are created or updated. Webhook payloads include project details such as resource IDs, project manager IDs, start/end dates, and work day configuration.
+
 - Event: `project.create`
 - Event: `project.update`
 
 ### Booking Events
 
 Notifications when bookings are created, updated, or deleted. Payloads include booking ID, resource and project details, start/end dates, category, and duration information.
+
 - Event: `booking.create`
 - Event: `booking.update`
 - Event: `booking.delete`

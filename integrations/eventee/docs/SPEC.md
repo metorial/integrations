@@ -22,25 +22,30 @@ Eventee uses **API Token (Bearer Token)** authentication for its Public API.
 ## Features
 
 ### Event Content Management
+
 - Retrieve and manage event content including the event agenda, sessions, stages/rooms, and tracks.
 - Update session details such as titles, descriptions, times, and speaker assignments.
 - Organize sessions with colorful tracks for easy attendee navigation.
 
 ### Attendee Management
+
 - Import attendees into an event with profile information (email, name, photo, phone, biography, social links, job position, company).
 - Invite attendees to events, optionally triggering invitation emails.
 - Retrieve attendee lists and profile data.
 - Delete test or unwanted attendee data.
 
 ### Registrations and RSVP
+
 - Invite registrants to events via the API with the same profile fields available as for attendees.
 - Manage RSVP-based event access where only invited/imported users can join.
 
 ### Check-In
+
 - Manage attendee check-in status programmatically.
 - Supports QR code-based check-in workflows.
 
 ### Speaker Management
+
 - Manage speaker profiles and their associations with sessions.
 
 ## Events
@@ -48,18 +53,23 @@ Eventee uses **API Token (Bearer Token)** authentication for its Public API.
 Eventee supports webhook-style event notifications through its Zapier integration, which uses instant triggers (webhooks). The following event categories are available:
 
 ### Attendee Joined
+
 - Fires when an imported or invited attendee joins the event in Eventee.
 
 ### Attendee Invitation
+
 - Fires when an attendee is imported or invited to an event.
 
 ### Check-In Changed
+
 - Fires when any attendee's check-in status is changed (checked in or checked out).
 
 ### RSVP Answered
+
 - Fires when a guest responds to an RSVP request for an event.
 
 ### New Registration
+
 - Fires when a new registration for an event is created.
 
 **Note:** These webhook-based events are exposed natively through Eventee's Zapier integration. Eventee does not appear to document a standalone webhook subscription API for direct use outside of Zapier.

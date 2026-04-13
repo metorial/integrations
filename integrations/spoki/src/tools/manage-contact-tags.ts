@@ -3,30 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContactTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact Tags',
-    key: 'manage_contact_tags',
-    description: `Adds or removes tags on a Spoki contact. Use this to segment and organize contacts with labels.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageContactTags = SlateTool.create(spec, {
+  name: 'Manage Contact Tags',
+  key: 'manage_contact_tags',
+  description: `Adds or removes tags on a Spoki contact. Use this to segment and organize contacts with labels.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    action: z.enum(['add', 'remove']).describe('Whether to add or remove the tag'),
-    tag: z.string().describe('Tag name to add or remove'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    tag: z.string().describe('The tag that was added or removed'),
-    action: z.string().describe('The action performed'),
-    raw: z.any().optional().describe('Full API response'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      action: z.enum(['add', 'remove']).describe('Whether to add or remove the tag'),
+      tag: z.string().describe('Tag name to add or remove')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      tag: z.string().describe('The tag that was added or removed'),
+      action: z.string().describe('The action performed'),
+      raw: z.any().optional().describe('Full API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result: any;
@@ -43,11 +44,12 @@ export let manageContactTags = SlateTool.create(
         contactId: ctx.input.contactId,
         tag: ctx.input.tag,
         action: ctx.input.action,
-        raw: result,
+        raw: result
       },
-      message: ctx.input.action === 'add'
-        ? `Added tag **${ctx.input.tag}** to contact ${ctx.input.contactId}`
-        : `Removed tag **${ctx.input.tag}** from contact ${ctx.input.contactId}`,
+      message:
+        ctx.input.action === 'add'
+          ? `Added tag **${ctx.input.tag}** to contact ${ctx.input.contactId}`
+          : `Removed tag **${ctx.input.tag}** from contact ${ctx.input.contactId}`
     };
   })
   .build();

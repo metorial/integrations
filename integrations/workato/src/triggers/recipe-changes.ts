@@ -3,51 +3,56 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recipeChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Recipe Changes',
-    key: 'recipe_changes',
-    description: 'Triggers when recipes are created or updated in the workspace. Detects new recipes and modifications to existing ones.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    recipeId: z.number().describe('Recipe ID'),
-    recipe: z.any().describe('Full recipe data'),
-  }))
-  .output(z.object({
-    recipeId: z.number().describe('Recipe ID'),
-    name: z.string().describe('Recipe name'),
-    description: z.string().nullable().describe('Recipe description'),
-    running: z.boolean().describe('Whether the recipe is currently running'),
-    triggerApplication: z.string().nullable().describe('Trigger application'),
-    actionApplications: z.array(z.string()).describe('Action applications'),
-    folderId: z.number().nullable().describe('Folder ID'),
-    projectId: z.number().nullable().describe('Project ID'),
-    versionNo: z.number().describe('Current version number'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp'),
-  }))
+export let recipeChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Recipe Changes',
+  key: 'recipe_changes',
+  description:
+    'Triggers when recipes are created or updated in the workspace. Detects new recipes and modifications to existing ones.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      recipeId: z.number().describe('Recipe ID'),
+      recipe: z.any().describe('Full recipe data')
+    })
+  )
+  .output(
+    z.object({
+      recipeId: z.number().describe('Recipe ID'),
+      name: z.string().describe('Recipe name'),
+      description: z.string().nullable().describe('Recipe description'),
+      running: z.boolean().describe('Whether the recipe is currently running'),
+      triggerApplication: z.string().nullable().describe('Trigger application'),
+      actionApplications: z.array(z.string()).describe('Action applications'),
+      folderId: z.number().nullable().describe('Folder ID'),
+      projectId: z.number().nullable().describe('Project ID'),
+      versionNo: z.number().describe('Current version number'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
-      let state = ctx.state as { lastPollTime?: string; knownRecipeIds?: number[] } | undefined;
+      let state = ctx.state as
+        | { lastPollTime?: string; knownRecipeIds?: number[] }
+        | undefined;
       let lastPollTime = state?.lastPollTime;
       let knownRecipeIds = state?.knownRecipeIds ?? [];
 
       let result = await client.listRecipes({
         updatedAfter: lastPollTime,
         perPage: 100,
-        order: 'activity',
+        order: 'activity'
       });
 
       let items = result.items ?? [];
-      let inputs: Array<{ changeType: 'created' | 'updated'; recipeId: number; recipe: any }> = [];
+      let inputs: Array<{ changeType: 'created' | 'updated'; recipeId: number; recipe: any }> =
+        [];
       let newKnownIds = [...knownRecipeIds];
 
       for (let recipe of items) {
@@ -60,7 +65,7 @@ export let recipeChangesTrigger = SlateTrigger.create(
           inputs.push({
             changeType: isNew ? 'created' : 'updated',
             recipeId: recipe.id,
-            recipe,
+            recipe
           });
         }
       }
@@ -74,12 +79,12 @@ export let recipeChangesTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: new Date().toISOString(),
-          knownRecipeIds: newKnownIds,
-        },
+          knownRecipeIds: newKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let r = ctx.input.recipe;
       return {
         type: `recipe.${ctx.input.changeType}`,
@@ -95,8 +100,8 @@ export let recipeChangesTrigger = SlateTrigger.create(
           projectId: r.project_id ?? null,
           versionNo: r.version_no ?? 1,
           createdAt: r.created_at,
-          updatedAt: r.updated_at,
-        },
+          updatedAt: r.updated_at
+        }
       };
-    },
+    }
   });

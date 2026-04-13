@@ -2,27 +2,35 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let errorEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Error Events',
-    key: 'error_events',
-    description: 'Triggered when a delivery error occurs, such as email or SMS delivery failures. Configure the webhook URL in your eSignatures dashboard.',
-  }
-)
-  .input(z.object({
-    eventStatus: z.string().describe('The webhook event status type'),
-    rawPayload: z.any().describe('Complete raw webhook payload'),
-  }))
-  .output(z.object({
-    errorCode: z.string().optional().describe('Error code (e.g., email-delivery-failed, sms-delivery-failed)'),
-    errorMessage: z.string().optional().describe('Detailed error message'),
-    contractId: z.string().optional().describe('ID of the affected contract'),
-    contractMetadata: z.string().optional().describe('Custom metadata of the affected contract'),
-  }))
+export let errorEvents = SlateTrigger.create(spec, {
+  name: 'Error Events',
+  key: 'error_events',
+  description:
+    'Triggered when a delivery error occurs, such as email or SMS delivery failures. Configure the webhook URL in your eSignatures dashboard.'
+})
+  .input(
+    z.object({
+      eventStatus: z.string().describe('The webhook event status type'),
+      rawPayload: z.any().describe('Complete raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      errorCode: z
+        .string()
+        .optional()
+        .describe('Error code (e.g., email-delivery-failed, sms-delivery-failed)'),
+      errorMessage: z.string().optional().describe('Detailed error message'),
+      contractId: z.string().optional().describe('ID of the affected contract'),
+      contractMetadata: z
+        .string()
+        .optional()
+        .describe('Custom metadata of the affected contract')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let status = body?.status || '';
 
@@ -34,13 +42,13 @@ export let errorEvents = SlateTrigger.create(
         inputs: [
           {
             eventStatus: status,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { rawPayload } = ctx.input;
       let data = rawPayload?.data || {};
 
@@ -51,8 +59,9 @@ export let errorEvents = SlateTrigger.create(
           errorCode: data?.error_code,
           errorMessage: data?.error_message,
           contractId: data?.contract_id,
-          contractMetadata: data?.metadata,
-        },
+          contractMetadata: data?.metadata
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

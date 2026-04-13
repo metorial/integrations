@@ -6,7 +6,7 @@ import type {
   DescribeRequest,
   UpscaleRequest,
   TaskSubmitResponse,
-  FetchTaskResponse,
+  FetchTaskResponse
 } from './types';
 
 export class Client {
@@ -17,8 +17,8 @@ export class Client {
       baseURL: params.baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: params.token,
-      },
+        Authorization: params.token
+      }
     });
   }
 
@@ -27,7 +27,7 @@ export class Client {
       prompt: req.prompt,
       ...(req.aspectRatio ? { aspect_ratio: req.aspectRatio } : {}),
       ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {}),
+      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
     });
     return response.data;
   }
@@ -37,7 +37,7 @@ export class Client {
       parent_task_id: req.parentTaskId,
       index: req.index,
       ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {}),
+      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
     });
     return response.data;
   }
@@ -47,7 +47,7 @@ export class Client {
       image_urls: req.imageUrls,
       ...(req.dimension ? { dimension: req.dimension } : {}),
       ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {}),
+      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
     });
     return response.data;
   }
@@ -56,14 +56,14 @@ export class Client {
     let response = await this.http.post('/describe', {
       image_url: req.imageUrl,
       ...(req.webhookUrl ? { webhook_url: req.webhookUrl } : {}),
-      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {}),
+      ...(req.webhookSecret ? { webhook_secret: req.webhookSecret } : {})
     });
     return response.data;
   }
 
   async upscale(req: UpscaleRequest): Promise<TaskSubmitResponse> {
     let body: Record<string, string> = {
-      type: req.type,
+      type: req.type
     };
     if (req.parentTaskId) {
       body['parent_task_id'] = req.parentTaskId;
@@ -87,17 +87,25 @@ export class Client {
 
   async fetchTask(taskId: string): Promise<FetchTaskResponse> {
     let response = await this.http.post('/fetch', {
-      task_id: taskId,
+      task_id: taskId
     });
     return response.data;
   }
 
-  async pollUntilComplete(taskId: string, maxAttempts: number = 60, intervalMs: number = 5000): Promise<FetchTaskResponse> {
+  async pollUntilComplete(
+    taskId: string,
+    maxAttempts: number = 60,
+    intervalMs: number = 5000
+  ): Promise<FetchTaskResponse> {
     for (let i = 0; i < maxAttempts; i++) {
       let result = await this.fetchTask(taskId);
 
-      if (result.status === 'processing' || result.status === 'queued' || result.status === 'pending') {
-        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      if (
+        result.status === 'processing' ||
+        result.status === 'queued' ||
+        result.status === 'pending'
+      ) {
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
         continue;
       }
 

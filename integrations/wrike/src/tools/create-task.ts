@@ -3,46 +3,58 @@ import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createTask = SlateTool.create(
-  spec,
-  {
-    name: 'Create Task',
-    key: 'create_task',
-    description: `Create a new task in a specified folder or project. Supports setting title, description, status, importance, dates, assignees, custom fields, and parent relationships.`,
-    tags: {
-      destructive: false
-    }
+export let createTask = SlateTool.create(spec, {
+  name: 'Create Task',
+  key: 'create_task',
+  description: `Create a new task in a specified folder or project. Supports setting title, description, status, importance, dates, assignees, custom fields, and parent relationships.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    folderId: z.string().describe('Folder or project ID where the task will be created'),
-    title: z.string().describe('Task title'),
-    description: z.string().optional().describe('Task description (supports HTML)'),
-    status: z.string().optional().describe('Task status: Active, Completed, Deferred, Cancelled'),
-    importance: z.string().optional().describe('Task importance: High, Normal, Low'),
-    startDate: z.string().optional().describe('Start date in YYYY-MM-DD format'),
-    dueDate: z.string().optional().describe('Due date in YYYY-MM-DD format'),
-    duration: z.number().optional().describe('Duration in minutes'),
-    responsibles: z.array(z.string()).optional().describe('Contact IDs of assignees'),
-    followers: z.array(z.string()).optional().describe('Contact IDs of followers'),
-    superTasks: z.array(z.string()).optional().describe('Parent task IDs for subtask relationship'),
-    customFields: z.array(z.object({
-      fieldId: z.string().describe('Custom field ID'),
-      value: z.string().describe('Custom field value')
-    })).optional().describe('Custom field values to set'),
-    customStatus: z.string().optional().describe('Custom status ID to apply')
-  }))
-  .output(z.object({
-    taskId: z.string(),
-    title: z.string(),
-    status: z.string(),
-    importance: z.string(),
-    createdDate: z.string(),
-    permalink: z.string().optional(),
-    parentIds: z.array(z.string()),
-    responsibleIds: z.array(z.string()).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      folderId: z.string().describe('Folder or project ID where the task will be created'),
+      title: z.string().describe('Task title'),
+      description: z.string().optional().describe('Task description (supports HTML)'),
+      status: z
+        .string()
+        .optional()
+        .describe('Task status: Active, Completed, Deferred, Cancelled'),
+      importance: z.string().optional().describe('Task importance: High, Normal, Low'),
+      startDate: z.string().optional().describe('Start date in YYYY-MM-DD format'),
+      dueDate: z.string().optional().describe('Due date in YYYY-MM-DD format'),
+      duration: z.number().optional().describe('Duration in minutes'),
+      responsibles: z.array(z.string()).optional().describe('Contact IDs of assignees'),
+      followers: z.array(z.string()).optional().describe('Contact IDs of followers'),
+      superTasks: z
+        .array(z.string())
+        .optional()
+        .describe('Parent task IDs for subtask relationship'),
+      customFields: z
+        .array(
+          z.object({
+            fieldId: z.string().describe('Custom field ID'),
+            value: z.string().describe('Custom field value')
+          })
+        )
+        .optional()
+        .describe('Custom field values to set'),
+      customStatus: z.string().optional().describe('Custom status ID to apply')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string(),
+      title: z.string(),
+      status: z.string(),
+      importance: z.string(),
+      createdDate: z.string(),
+      permalink: z.string().optional(),
+      parentIds: z.array(z.string()),
+      responsibleIds: z.array(z.string()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WrikeClient({
       token: ctx.auth.token,
       host: ctx.auth.host
@@ -84,4 +96,5 @@ export let createTask = SlateTool.create(
       },
       message: `Created task **${task.title}** (${task.id}).`
     };
-  }).build();
+  })
+  .build();

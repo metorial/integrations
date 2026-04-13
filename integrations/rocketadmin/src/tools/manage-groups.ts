@@ -3,34 +3,46 @@ import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroups = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Groups',
-    key: 'manage_groups',
-    description: `List, create, or delete groups within a database connection. Groups control user access at the table and field level. Also supports adding and removing users from groups.`,
-    tags: {
-      destructive: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete', 'add_user', 'remove_user', 'list_users']).describe('Action to perform'),
-    connectionId: z.string().describe('ID of the database connection'),
-    groupId: z.string().optional().describe('Group ID (required for delete, add_user, remove_user, list_users)'),
-    title: z.string().optional().describe('Group title (required for create)'),
-    email: z.string().optional().describe('User email (required for add_user, remove_user)'),
-  }))
-  .output(z.object({
-    groups: z.array(z.record(z.string(), z.unknown())).optional().describe('List of groups'),
-    group: z.record(z.string(), z.unknown()).optional().describe('Created or affected group'),
-    users: z.array(z.record(z.string(), z.unknown())).optional().describe('Users in the group'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageGroups = SlateTool.create(spec, {
+  name: 'Manage Groups',
+  key: 'manage_groups',
+  description: `List, create, or delete groups within a database connection. Groups control user access at the table and field level. Also supports adding and removing users from groups.`,
+  tags: {
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'delete', 'add_user', 'remove_user', 'list_users'])
+        .describe('Action to perform'),
+      connectionId: z.string().describe('ID of the database connection'),
+      groupId: z
+        .string()
+        .optional()
+        .describe('Group ID (required for delete, add_user, remove_user, list_users)'),
+      title: z.string().optional().describe('Group title (required for create)'),
+      email: z.string().optional().describe('User email (required for add_user, remove_user)')
+    })
+  )
+  .output(
+    z.object({
+      groups: z.array(z.record(z.string(), z.unknown())).optional().describe('List of groups'),
+      group: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Created or affected group'),
+      users: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Users in the group'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RocketadminClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let { action, connectionId, groupId, title, email } = ctx.input;
@@ -39,7 +51,7 @@ export let manageGroups = SlateTool.create(
       let groups = await client.listGroups(connectionId);
       return {
         output: { groups, success: true },
-        message: `Found **${groups.length}** group(s).`,
+        message: `Found **${groups.length}** group(s).`
       };
     }
 
@@ -48,7 +60,7 @@ export let manageGroups = SlateTool.create(
       let group = await client.createGroup(connectionId, title);
       return {
         output: { group, success: true },
-        message: `Group **${title}** created successfully.`,
+        message: `Group **${title}** created successfully.`
       };
     }
 
@@ -57,7 +69,7 @@ export let manageGroups = SlateTool.create(
       await client.deleteGroup(connectionId, groupId);
       return {
         output: { success: true },
-        message: `Group **${groupId}** deleted successfully.`,
+        message: `Group **${groupId}** deleted successfully.`
       };
     }
 
@@ -67,7 +79,7 @@ export let manageGroups = SlateTool.create(
       let group = await client.addUserToGroup(groupId, email);
       return {
         output: { group, success: true },
-        message: `User **${email}** added to group **${groupId}**.`,
+        message: `User **${email}** added to group **${groupId}**.`
       };
     }
 
@@ -77,7 +89,7 @@ export let manageGroups = SlateTool.create(
       await client.removeUserFromGroup(groupId, email);
       return {
         output: { success: true },
-        message: `User **${email}** removed from group **${groupId}**.`,
+        message: `User **${email}** removed from group **${groupId}**.`
       };
     }
 
@@ -86,9 +98,10 @@ export let manageGroups = SlateTool.create(
       let users = await client.getUsersInGroup(groupId);
       return {
         output: { users, success: true },
-        message: `Found **${users.length}** user(s) in group **${groupId}**.`,
+        message: `Found **${users.length}** user(s) in group **${groupId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

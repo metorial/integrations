@@ -26,12 +26,14 @@ let mapCheck = (raw: any): Check => ({
   customHeaders: raw.custom_headers ?? null,
   httpVerb: raw.http_verb ?? null,
   httpBody: raw.http_body ?? null,
-  ssl: raw.ssl ? {
-    testedAt: raw.ssl.tested_at ?? undefined,
-    expiresAt: raw.ssl.expires_at ?? undefined,
-    valid: raw.ssl.valid ?? undefined,
-    error: raw.ssl.error ?? null,
-  } : null,
+  ssl: raw.ssl
+    ? {
+        testedAt: raw.ssl.tested_at ?? undefined,
+        expiresAt: raw.ssl.expires_at ?? undefined,
+        valid: raw.ssl.valid ?? undefined,
+        error: raw.ssl.error ?? null
+      }
+    : null
 });
 
 let mapDowntime = (raw: any): Downtime => ({
@@ -40,7 +42,7 @@ let mapDowntime = (raw: any): Downtime => ({
   startedAt: raw.started_at,
   endedAt: raw.ended_at ?? null,
   duration: raw.duration ?? null,
-  partial: raw.partial ?? null,
+  partial: raw.partial ?? null
 });
 
 let mapRecipient = (raw: any): Recipient => ({
@@ -48,7 +50,7 @@ let mapRecipient = (raw: any): Recipient => ({
   type: raw.type,
   name: raw.name ?? null,
   value: raw.value,
-  selected: raw.selected,
+  selected: raw.selected
 });
 
 let mapStatusPage = (raw: any): StatusPage => ({
@@ -57,7 +59,7 @@ let mapStatusPage = (raw: any): StatusPage => ({
   name: raw.name ?? null,
   description: raw.description ?? null,
   visibility: raw.visibility ?? null,
-  checks: raw.checks ?? null,
+  checks: raw.checks ?? null
 });
 
 let mapNode = (code: string, raw: any): Node => ({
@@ -68,7 +70,7 @@ let mapNode = (code: string, raw: any): Node => ({
   country: raw.country,
   countryCode: raw.country_code,
   lat: raw.lat,
-  lng: raw.lng,
+  lng: raw.lng
 });
 
 let mapMetricsEntry = (raw: any): MetricsEntry => ({
@@ -78,7 +80,7 @@ let mapMetricsEntry = (raw: any): MetricsEntry => ({
     failures: raw.requests?.failures ?? 0,
     satisfied: raw.requests?.satisfied ?? 0,
     tolerated: raw.requests?.tolerated ?? 0,
-    byResponseTime: raw.requests?.by_response_time ?? null,
+    byResponseTime: raw.requests?.by_response_time ?? null
   },
   timings: {
     redirect: raw.timings?.redirect ?? null,
@@ -86,8 +88,8 @@ let mapMetricsEntry = (raw: any): MetricsEntry => ({
     connection: raw.timings?.connection ?? null,
     handshake: raw.timings?.handshake ?? null,
     response: raw.timings?.response ?? null,
-    total: raw.timings?.total ?? null,
-  },
+    total: raw.timings?.total ?? null
+  }
 });
 
 export class Client {
@@ -97,8 +99,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://updown.io/api',
       headers: {
-        'X-API-KEY': config.token,
-      },
+        'X-API-KEY': config.token
+      }
     });
   }
 
@@ -152,22 +154,25 @@ export class Client {
     return mapCheck(response.data);
   }
 
-  async updateCheck(token: string, data: {
-    url?: string;
-    type?: string;
-    period?: number;
-    apdexT?: number;
-    enabled?: boolean;
-    published?: boolean;
-    alias?: string;
-    stringMatch?: string;
-    httpVerb?: string;
-    httpBody?: string;
-    disabledLocations?: string[];
-    recipients?: string[];
-    customHeaders?: Record<string, string>;
-    muteUntil?: string;
-  }): Promise<Check> {
+  async updateCheck(
+    token: string,
+    data: {
+      url?: string;
+      type?: string;
+      period?: number;
+      apdexT?: number;
+      enabled?: boolean;
+      published?: boolean;
+      alias?: string;
+      stringMatch?: string;
+      httpVerb?: string;
+      httpBody?: string;
+      disabledLocations?: string[];
+      recipients?: string[];
+      customHeaders?: Record<string, string>;
+      muteUntil?: string;
+    }
+  ): Promise<Check> {
     let body: Record<string, any> = {};
     if (data.url !== undefined) body.url = data.url;
     if (data.type !== undefined) body.type = data.type;
@@ -194,10 +199,13 @@ export class Client {
 
   // ---- Downtimes ----
 
-  async getDowntimes(token: string, options?: {
-    page?: number;
-    results?: boolean;
-  }): Promise<Downtime[]> {
+  async getDowntimes(
+    token: string,
+    options?: {
+      page?: number;
+      results?: boolean;
+    }
+  ): Promise<Downtime[]> {
     let params: Record<string, any> = {};
     if (options?.page !== undefined) params.page = options.page;
     if (options?.results !== undefined) params.results = options.results;
@@ -207,11 +215,14 @@ export class Client {
 
   // ---- Metrics ----
 
-  async getMetrics(token: string, options?: {
-    from?: string;
-    to?: string;
-    group?: string;
-  }): Promise<{ uptime: number; metrics: Record<string, MetricsEntry> }> {
+  async getMetrics(
+    token: string,
+    options?: {
+      from?: string;
+      to?: string;
+      group?: string;
+    }
+  ): Promise<{ uptime: number; metrics: Record<string, MetricsEntry> }> {
     let params: Record<string, any> = {};
     if (options?.from !== undefined) params.from = options.from;
     if (options?.to !== undefined) params.to = options.to;
@@ -277,13 +288,16 @@ export class Client {
     return mapStatusPage(response.data);
   }
 
-  async updateStatusPage(token: string, data: {
-    name?: string;
-    description?: string;
-    visibility?: string;
-    checks?: string[];
-    accessKey?: string;
-  }): Promise<StatusPage> {
+  async updateStatusPage(
+    token: string,
+    data: {
+      name?: string;
+      description?: string;
+      visibility?: string;
+      checks?: string[];
+      accessKey?: string;
+    }
+  ): Promise<StatusPage> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;

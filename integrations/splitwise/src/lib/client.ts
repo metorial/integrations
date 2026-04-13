@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://secure.splitwise.com/api/v3.0',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,14 +25,17 @@ export class Client {
     return response.data.user;
   }
 
-  async updateUser(userId: number, params: {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    password?: string;
-    locale?: string;
-    default_currency?: string;
-  }) {
+  async updateUser(
+    userId: number,
+    params: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      password?: string;
+      locale?: string;
+      default_currency?: string;
+    }
+  ) {
     let response = await this.http.post(`/update_user/${userId}`, params);
     return response.data.user;
   }
@@ -53,14 +56,20 @@ export class Client {
     name: string;
     group_type?: string;
     simplify_by_default?: boolean;
-    users?: Array<{ user_id?: number; email?: string; first_name?: string; last_name?: string }>;
+    users?: Array<{
+      user_id?: number;
+      email?: string;
+      first_name?: string;
+      last_name?: string;
+    }>;
   }) {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
 
     if (params.group_type) body.group_type = params.group_type;
-    if (params.simplify_by_default !== undefined) body.simplify_by_default = params.simplify_by_default;
+    if (params.simplify_by_default !== undefined)
+      body.simplify_by_default = params.simplify_by_default;
 
     if (params.users) {
       params.users.forEach((user, index) => {
@@ -88,7 +97,7 @@ export class Client {
   async addUserToGroup(groupId: number, userId: number) {
     let response = await this.http.post('/add_user_to_group', {
       group_id: groupId,
-      user_id: userId,
+      user_id: userId
     });
     return response.data;
   }
@@ -96,7 +105,7 @@ export class Client {
   async removeUserFromGroup(groupId: number, userId: number) {
     let response = await this.http.post('/remove_user_from_group', {
       group_id: groupId,
-      user_id: userId,
+      user_id: userId
     });
     return response.data;
   }
@@ -136,7 +145,7 @@ export class Client {
       cost: params.cost,
       description: params.description,
       group_id: params.group_id,
-      split_equally: true,
+      split_equally: true
     };
 
     if (params.currency_code) body.currency_code = params.currency_code;
@@ -174,7 +183,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       cost: params.cost,
-      description: params.description,
+      description: params.description
     };
 
     if (params.group_id) body.group_id = params.group_id;
@@ -202,24 +211,27 @@ export class Client {
     return response.data.expenses;
   }
 
-  async updateExpense(expenseId: number, params: {
-    cost?: string;
-    description?: string;
-    group_id?: number;
-    currency_code?: string;
-    category_id?: number;
-    date?: string;
-    details?: string;
-    repeat_interval?: string;
-    users?: Array<{
-      user_id?: number;
-      email?: string;
-      first_name?: string;
-      last_name?: string;
-      paid_share: string;
-      owed_share: string;
-    }>;
-  }) {
+  async updateExpense(
+    expenseId: number,
+    params: {
+      cost?: string;
+      description?: string;
+      group_id?: number;
+      currency_code?: string;
+      category_id?: number;
+      date?: string;
+      details?: string;
+      repeat_interval?: string;
+      users?: Array<{
+        user_id?: number;
+        email?: string;
+        first_name?: string;
+        last_name?: string;
+        paid_share: string;
+        owed_share: string;
+      }>;
+    }
+  ) {
     let body: Record<string, any> = {};
 
     if (params.cost !== undefined) body.cost = params.cost;
@@ -277,7 +289,7 @@ export class Client {
     let response = await this.http.post('/create_friend', {
       user_email: email,
       user_first_name: firstName,
-      user_last_name: lastName,
+      user_last_name: lastName
     });
     return response.data;
   }
@@ -302,7 +314,7 @@ export class Client {
 
   async getComments(expenseId: number) {
     let response = await this.http.get('/get_comments', {
-      params: { expense_id: expenseId },
+      params: { expense_id: expenseId }
     });
     return response.data.comments;
   }
@@ -310,7 +322,7 @@ export class Client {
   async createComment(expenseId: number, content: string) {
     let response = await this.http.post('/create_comment', {
       expense_id: expenseId,
-      content,
+      content
     });
     return response.data.comment;
   }

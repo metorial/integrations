@@ -3,27 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTemplate = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Template',
-    key: 'manage_template',
-    description: `List, retrieve, update, or delete email templates (canned responses). Templates help maintain consistent messaging and save time on repetitive replies.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'update', 'delete']).describe('The operation to perform'),
-    templateId: z.string().optional().describe('Template ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Template name (for update)'),
-    subject: z.string().optional().describe('Template subject (for update)'),
-    body: z.string().optional().describe('Template body content (for update)'),
-  }))
-  .output(z.object({
-    templates: z.array(z.record(z.string(), z.any())).optional().describe('List of templates (for list action)'),
-    template: z.record(z.string(), z.any()).optional().describe('Template details (for get, update)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTemplate = SlateTool.create(spec, {
+  name: 'Manage Template',
+  key: 'manage_template',
+  description: `List, retrieve, update, or delete email templates (canned responses). Templates help maintain consistent messaging and save time on repetitive replies.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'update', 'delete']).describe('The operation to perform'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Template ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Template name (for update)'),
+      subject: z.string().optional().describe('Template subject (for update)'),
+      body: z.string().optional().describe('Template body content (for update)')
+    })
+  )
+  .output(
+    z.object({
+      templates: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of templates (for list action)'),
+      template: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Template details (for get, update)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, templateId, name, subject, body } = ctx.input;
 
@@ -32,7 +42,7 @@ export let manageTemplate = SlateTool.create(
       let templates = Array.isArray(result) ? result : (result.templates ?? result.data ?? []);
       return {
         output: { templates, success: true },
-        message: `Retrieved ${templates.length} template(s).`,
+        message: `Retrieved ${templates.length} template(s).`
       };
     }
 
@@ -41,7 +51,7 @@ export let manageTemplate = SlateTool.create(
       let template = await client.getTemplate(templateId);
       return {
         output: { template, success: true },
-        message: `Retrieved template **${templateId}**.`,
+        message: `Retrieved template **${templateId}**.`
       };
     }
 
@@ -54,7 +64,7 @@ export let manageTemplate = SlateTool.create(
       let template = await client.updateTemplate(templateId, updateData);
       return {
         output: { template, success: true },
-        message: `Updated template **${templateId}**.`,
+        message: `Updated template **${templateId}**.`
       };
     }
 
@@ -63,9 +73,10 @@ export let manageTemplate = SlateTool.create(
       await client.deleteTemplate(templateId);
       return {
         output: { success: true },
-        message: `Deleted template **${templateId}**.`,
+        message: `Deleted template **${templateId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

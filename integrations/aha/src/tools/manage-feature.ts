@@ -16,39 +16,44 @@ let featureOutputSchema = z.object({
   url: z.string().optional().describe('Aha! URL'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
-  deleted: z.boolean().optional().describe('True if the feature was deleted'),
+  deleted: z.boolean().optional().describe('True if the feature was deleted')
 });
 
-export let manageFeature = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Feature',
-    key: 'manage_feature',
-    description: `Create, update, or delete a feature in Aha!. Features are the core work items that belong to releases. You can set name, description, assignee, dates, tags, and workflow status.`,
-    instructions: [
-      'To **create** a feature, set action to "create" and provide a releaseId plus at least a name.',
-      'To **update** a feature, set action to "update" and provide the featureId plus the fields to change.',
-      'To **delete** a feature, set action to "delete" and provide the featureId.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageFeature = SlateTool.create(spec, {
+  name: 'Manage Feature',
+  key: 'manage_feature',
+  description: `Create, update, or delete a feature in Aha!. Features are the core work items that belong to releases. You can set name, description, assignee, dates, tags, and workflow status.`,
+  instructions: [
+    'To **create** a feature, set action to "create" and provide a releaseId plus at least a name.',
+    'To **update** a feature, set action to "update" and provide the featureId plus the fields to change.',
+    'To **delete** a feature, set action to "delete" and provide the featureId.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    featureId: z.string().optional().describe('Feature ID or reference number (required for update/delete)'),
-    releaseId: z.string().optional().describe('Release ID or reference number (required for create)'),
-    name: z.string().optional().describe('Feature name'),
-    description: z.string().optional().describe('Feature description (HTML supported)'),
-    assignedToUser: z.string().optional().describe('Email address of the user to assign'),
-    tags: z.array(z.string()).optional().describe('Tags to set'),
-    startDate: z.string().optional().describe('Start date (YYYY-MM-DD)'),
-    dueDate: z.string().optional().describe('Due date (YYYY-MM-DD)'),
-    workflowStatus: z.string().optional().describe('Workflow status name'),
-  }))
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      featureId: z
+        .string()
+        .optional()
+        .describe('Feature ID or reference number (required for update/delete)'),
+      releaseId: z
+        .string()
+        .optional()
+        .describe('Release ID or reference number (required for create)'),
+      name: z.string().optional().describe('Feature name'),
+      description: z.string().optional().describe('Feature description (HTML supported)'),
+      assignedToUser: z.string().optional().describe('Email address of the user to assign'),
+      tags: z.array(z.string()).optional().describe('Tags to set'),
+      startDate: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+      dueDate: z.string().optional().describe('Due date (YYYY-MM-DD)'),
+      workflowStatus: z.string().optional().describe('Workflow status name')
+    })
+  )
   .output(featureOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new AhaClient(ctx.config.subdomain, ctx.auth.token);
     let { action } = ctx.input;
 
@@ -63,7 +68,7 @@ export let manageFeature = SlateTool.create(
         tags: ctx.input.tags,
         startDate: ctx.input.startDate,
         dueDate: ctx.input.dueDate,
-        workflowStatus: ctx.input.workflowStatus,
+        workflowStatus: ctx.input.workflowStatus
       });
 
       return {
@@ -79,9 +84,9 @@ export let manageFeature = SlateTool.create(
           tags: feature.tags,
           url: feature.url,
           createdAt: feature.created_at,
-          updatedAt: feature.updated_at,
+          updatedAt: feature.updated_at
         },
-        message: `Created feature **${feature.reference_num}** — ${feature.name}.`,
+        message: `Created feature **${feature.reference_num}** — ${feature.name}.`
       };
     }
 
@@ -91,7 +96,7 @@ export let manageFeature = SlateTool.create(
       await client.deleteFeature(ctx.input.featureId);
       return {
         output: { featureId: ctx.input.featureId, deleted: true },
-        message: `Deleted feature \`${ctx.input.featureId}\`.`,
+        message: `Deleted feature \`${ctx.input.featureId}\`.`
       };
     }
 
@@ -103,7 +108,7 @@ export let manageFeature = SlateTool.create(
       tags: ctx.input.tags,
       startDate: ctx.input.startDate,
       dueDate: ctx.input.dueDate,
-      workflowStatus: ctx.input.workflowStatus,
+      workflowStatus: ctx.input.workflowStatus
     });
 
     return {
@@ -119,9 +124,9 @@ export let manageFeature = SlateTool.create(
         tags: feature.tags,
         url: feature.url,
         createdAt: feature.created_at,
-        updatedAt: feature.updated_at,
+        updatedAt: feature.updated_at
       },
-      message: `Updated feature **${feature.reference_num}** — ${feature.name}.`,
+      message: `Updated feature **${feature.reference_num}** — ${feature.name}.`
     };
   })
   .build();

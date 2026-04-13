@@ -37,12 +37,9 @@ import {
   updateCategory,
   deleteCategory,
   searchCategories,
-  unsubscribeMember,
+  unsubscribeMember
 } from './tools';
-import {
-  formSubmission,
-  memberChanges,
-} from './triggers';
+import { formSubmission, memberChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -83,10 +80,7 @@ export let provider = Slate.create({
     updateCategory,
     deleteCategory,
     searchCategories,
-    unsubscribeMember,
+    unsubscribeMember
   ],
-  triggers: [
-    formSubmission,
-    memberChanges,
-  ],
+  triggers: [formSubmission, memberChanges]
 });

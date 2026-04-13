@@ -9,7 +9,7 @@ export class GraphHopperClient {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
@@ -40,7 +40,7 @@ export class GraphHopperClient {
     let body: Record<string, unknown> = {
       points: params.points,
       profile: params.profile,
-      points_encoded: params.pointsEncoded ?? false,
+      points_encoded: params.pointsEncoded ?? false
     };
 
     if (params.locale) body.locale = params.locale;
@@ -81,7 +81,7 @@ export class GraphHopperClient {
     }
 
     let response = await this.axios.post('/route', body, {
-      params: { key: this.token },
+      params: { key: this.token }
     });
     return response.data;
   }
@@ -98,7 +98,7 @@ export class GraphHopperClient {
   }) {
     let body: Record<string, unknown> = {
       profile: params.profile,
-      fail_fast: params.failFast ?? false,
+      fail_fast: params.failFast ?? false
     };
 
     if (params.points) {
@@ -111,7 +111,7 @@ export class GraphHopperClient {
     if (params.outArrays) body.out_arrays = params.outArrays;
 
     let response = await this.axios.post('/matrix', body, {
-      params: { key: this.token },
+      params: { key: this.token }
     });
     return response.data;
   }
@@ -130,7 +130,7 @@ export class GraphHopperClient {
     osmTag?: string[];
   }) {
     let queryParams: Record<string, unknown> = {
-      key: this.token,
+      key: this.token
     };
 
     if (params.query) queryParams.q = params.query;
@@ -156,7 +156,7 @@ export class GraphHopperClient {
           }
         }
         return parts.join('&');
-      },
+      }
     });
     return response.data;
   }
@@ -174,7 +174,7 @@ export class GraphHopperClient {
     let queryParams: Record<string, unknown> = {
       key: this.token,
       point: params.point,
-      profile: params.profile,
+      profile: params.profile
     };
 
     if (params.timeLimit !== undefined) queryParams.time_limit = params.timeLimit;
@@ -200,7 +200,7 @@ export class GraphHopperClient {
   }) {
     let queryParams: Record<string, unknown> = {
       key: this.token,
-      profile: params.profile,
+      profile: params.profile
     };
 
     if (params.locale) queryParams.locale = params.locale;
@@ -213,8 +213,8 @@ export class GraphHopperClient {
     let response = await this.axios.post('/match', params.gpxContent, {
       params: queryParams,
       headers: {
-        'Content-Type': 'application/gpx+xml',
-      },
+        'Content-Type': 'application/gpx+xml'
+      }
     });
     return response.data;
   }
@@ -231,7 +231,7 @@ export class GraphHopperClient {
     configuration?: Record<string, unknown>;
   }) {
     let body: Record<string, unknown> = {
-      vehicles: params.vehicles,
+      vehicles: params.vehicles
     };
 
     if (params.vehicleTypes) body.vehicle_types = params.vehicleTypes;
@@ -243,7 +243,7 @@ export class GraphHopperClient {
 
     // Use synchronous endpoint for simplicity; falls back to async if needed
     let response = await this.axios.post('/vrp', body, {
-      params: { key: this.token },
+      params: { key: this.token }
     });
     return response.data;
   }
@@ -258,7 +258,7 @@ export class GraphHopperClient {
     configuration?: Record<string, unknown>;
   }) {
     let body: Record<string, unknown> = {
-      vehicles: params.vehicles,
+      vehicles: params.vehicles
     };
 
     if (params.vehicleTypes) body.vehicle_types = params.vehicleTypes;
@@ -269,25 +269,29 @@ export class GraphHopperClient {
     if (params.configuration) body.configuration = params.configuration;
 
     let response = await this.axios.post('/vrp/optimize', body, {
-      params: { key: this.token },
+      params: { key: this.token }
     });
     return response.data;
   }
 
   async getOptimizationSolution(jobId: string) {
     let response = await this.axios.get(`/vrp/solution/${jobId}`, {
-      params: { key: this.token },
+      params: { key: this.token }
     });
     return response.data;
   }
 
-  async pollOptimizationSolution(jobId: string, maxAttempts: number = 60, intervalMs: number = 2000): Promise<Record<string, unknown>> {
+  async pollOptimizationSolution(
+    jobId: string,
+    maxAttempts: number = 60,
+    intervalMs: number = 2000
+  ): Promise<Record<string, unknown>> {
     for (let i = 0; i < maxAttempts; i++) {
       let result = await this.getOptimizationSolution(jobId);
       if (result.status === 'finished') {
         return result;
       }
-      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
     throw new Error(`Optimization job ${jobId} did not finish within the timeout period`);
   }
@@ -313,44 +317,48 @@ export class GraphHopperClient {
     }>;
   }) {
     let body: Record<string, unknown> = {
-      customers: params.customers.map((c) => ({
+      customers: params.customers.map(c => ({
         id: c.customerId,
         address: {
           lon: c.longitude,
-          lat: c.latitude,
+          lat: c.latitude
         },
-        ...(c.quantity !== undefined ? { quantity: c.quantity } : {}),
+        ...(c.quantity !== undefined ? { quantity: c.quantity } : {})
       })),
       configuration: {
         response_type: 'json',
         routing: {
-          profile: params.profile || 'car',
+          profile: params.profile || 'car'
         },
         ...(params.numClusters
           ? {
               clustering: {
                 num_clusters: params.numClusters,
-                ...(params.minQuantity !== undefined ? { min_quantity: params.minQuantity } : {}),
-                ...(params.maxQuantity !== undefined ? { max_quantity: params.maxQuantity } : {}),
-              },
+                ...(params.minQuantity !== undefined
+                  ? { min_quantity: params.minQuantity }
+                  : {}),
+                ...(params.maxQuantity !== undefined
+                  ? { max_quantity: params.maxQuantity }
+                  : {})
+              }
             }
-          : {}),
-      },
+          : {})
+      }
     };
 
     if (params.clusters) {
-      (body as Record<string, unknown>).clusters = params.clusters.map((c) => ({
+      (body as Record<string, unknown>).clusters = params.clusters.map(c => ({
         center: {
           lon: c.centerLongitude,
-          lat: c.centerLatitude,
+          lat: c.centerLatitude
         },
         ...(c.minQuantity !== undefined ? { min_quantity: c.minQuantity } : {}),
-        ...(c.maxQuantity !== undefined ? { max_quantity: c.maxQuantity } : {}),
+        ...(c.maxQuantity !== undefined ? { max_quantity: c.maxQuantity } : {})
       }));
     }
 
     let response = await this.axios.post('/cluster', body, {
-      params: { key: this.token },
+      params: { key: this.token }
     });
     return response.data;
   }

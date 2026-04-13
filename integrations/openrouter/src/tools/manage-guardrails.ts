@@ -6,12 +6,15 @@ import { z } from 'zod';
 let guardrailInputSchema = z.object({
   name: z.string().optional().describe('Guardrail name'),
   budgetLimit: z.number().optional().describe('Spending limit in credits'),
-  budgetResetInterval: z.enum(['daily', 'weekly', 'monthly']).optional().describe('How often the budget resets'),
+  budgetResetInterval: z
+    .enum(['daily', 'weekly', 'monthly'])
+    .optional()
+    .describe('How often the budget resets'),
   modelAllowlist: z.array(z.string()).optional().describe('Only allow these model IDs'),
   modelDenylist: z.array(z.string()).optional().describe('Block these model IDs'),
   providerAllowlist: z.array(z.string()).optional().describe('Only allow these providers'),
   providerDenylist: z.array(z.string()).optional().describe('Block these providers'),
-  zdr: z.boolean().optional().describe('Enable Zero Data Retention for this guardrail'),
+  zdr: z.boolean().optional().describe('Enable Zero Data Retention for this guardrail')
 });
 
 let guardrailOutputSchema = z.object({
@@ -24,7 +27,7 @@ let guardrailOutputSchema = z.object({
   providerAllowlist: z.array(z.string()).optional().describe('Allowed providers'),
   providerDenylist: z.array(z.string()).optional().describe('Blocked providers'),
   zdr: z.boolean().optional().describe('Zero Data Retention enabled'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
 let normalizeGuardrail = (data: Record<string, unknown>) => ({
@@ -37,58 +40,57 @@ let normalizeGuardrail = (data: Record<string, unknown>) => ({
   providerAllowlist: (data.provider_allowlist as string[]) || undefined,
   providerDenylist: (data.provider_denylist as string[]) || undefined,
   zdr: (data.zdr as boolean) || undefined,
-  createdAt: data.created_at ? String(data.created_at) : undefined,
+  createdAt: data.created_at ? String(data.created_at) : undefined
 });
 
-export let listGuardrails = SlateTool.create(
-  spec,
-  {
-    name: 'List Guardrails',
-    key: 'list_guardrails',
-    description: `List all guardrails configured for your OpenRouter organization. Guardrails control spending limits, model/provider restrictions, and data privacy policies.`,
-    tags: {
-      readOnly: true,
-    },
+export let listGuardrails = SlateTool.create(spec, {
+  name: 'List Guardrails',
+  key: 'list_guardrails',
+  description: `List all guardrails configured for your OpenRouter organization. Guardrails control spending limits, model/provider restrictions, and data privacy policies.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    guardrails: z.array(guardrailOutputSchema).describe('List of guardrails'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      guardrails: z.array(guardrailOutputSchema).describe('List of guardrails')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       siteUrl: ctx.config.siteUrl,
-      appTitle: ctx.config.appTitle,
+      appTitle: ctx.config.appTitle
     });
 
     let rawGuardrails = await client.listGuardrails();
-    let guardrails = (Array.isArray(rawGuardrails) ? rawGuardrails : []).map(normalizeGuardrail);
+    let guardrails = (Array.isArray(rawGuardrails) ? rawGuardrails : []).map(
+      normalizeGuardrail
+    );
 
     return {
       output: { guardrails },
-      message: `Found **${guardrails.length}** guardrail(s).`,
+      message: `Found **${guardrails.length}** guardrail(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let createGuardrail = SlateTool.create(
-  spec,
-  {
-    name: 'Create Guardrail',
-    key: 'create_guardrail',
-    description: `Create a new guardrail to control spending limits, model/provider access, and data privacy policies for your OpenRouter organization.`,
-    tags: {
-      destructive: false,
-    },
+export let createGuardrail = SlateTool.create(spec, {
+  name: 'Create Guardrail',
+  key: 'create_guardrail',
+  description: `Create a new guardrail to control spending limits, model/provider access, and data privacy policies for your OpenRouter organization.`,
+  tags: {
+    destructive: false
   }
-)
+})
   .input(guardrailInputSchema.required({ name: true }))
   .output(guardrailOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       siteUrl: ctx.config.siteUrl,
-      appTitle: ctx.config.appTitle,
+      appTitle: ctx.config.appTitle
     });
 
     let result = await client.createGuardrail({
@@ -99,7 +101,7 @@ export let createGuardrail = SlateTool.create(
       modelDenylist: ctx.input.modelDenylist,
       providerAllowlist: ctx.input.providerAllowlist,
       providerDenylist: ctx.input.providerDenylist,
-      zdr: ctx.input.zdr,
+      zdr: ctx.input.zdr
     });
 
     let data = (result.data as Record<string, unknown>) || result;
@@ -107,30 +109,32 @@ export let createGuardrail = SlateTool.create(
 
     return {
       output,
-      message: `Created guardrail **${output.name || ctx.input.name}**.`,
+      message: `Created guardrail **${output.name || ctx.input.name}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateGuardrail = SlateTool.create(
-  spec,
-  {
-    name: 'Update Guardrail',
-    key: 'update_guardrail',
-    description: `Update an existing guardrail's configuration including spending limits, model/provider restrictions, and data privacy settings.`,
-    tags: {
-      destructive: false,
-    },
+export let updateGuardrail = SlateTool.create(spec, {
+  name: 'Update Guardrail',
+  key: 'update_guardrail',
+  description: `Update an existing guardrail's configuration including spending limits, model/provider restrictions, and data privacy settings.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    guardrailId: z.string().describe('ID of the guardrail to update'),
-  }).merge(guardrailInputSchema))
+})
+  .input(
+    z
+      .object({
+        guardrailId: z.string().describe('ID of the guardrail to update')
+      })
+      .merge(guardrailInputSchema)
+  )
   .output(guardrailOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       siteUrl: ctx.config.siteUrl,
-      appTitle: ctx.config.appTitle,
+      appTitle: ctx.config.appTitle
     });
 
     let result = await client.updateGuardrail(ctx.input.guardrailId, {
@@ -141,7 +145,7 @@ export let updateGuardrail = SlateTool.create(
       modelDenylist: ctx.input.modelDenylist,
       providerAllowlist: ctx.input.providerAllowlist,
       providerDenylist: ctx.input.providerDenylist,
-      zdr: ctx.input.zdr,
+      zdr: ctx.input.zdr
     });
 
     let data = (result.data as Record<string, unknown>) || result;
@@ -149,38 +153,41 @@ export let updateGuardrail = SlateTool.create(
 
     return {
       output,
-      message: `Updated guardrail **${output.name || ctx.input.guardrailId}**.`,
+      message: `Updated guardrail **${output.name || ctx.input.guardrailId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteGuardrail = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Guardrail',
-    key: 'delete_guardrail',
-    description: `Delete a guardrail by its ID. This is irreversible — all restrictions from this guardrail will be removed immediately.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteGuardrail = SlateTool.create(spec, {
+  name: 'Delete Guardrail',
+  key: 'delete_guardrail',
+  description: `Delete a guardrail by its ID. This is irreversible — all restrictions from this guardrail will be removed immediately.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    guardrailId: z.string().describe('ID of the guardrail to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the guardrail was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      guardrailId: z.string().describe('ID of the guardrail to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the guardrail was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       siteUrl: ctx.config.siteUrl,
-      appTitle: ctx.config.appTitle,
+      appTitle: ctx.config.appTitle
     });
 
     await client.deleteGuardrail(ctx.input.guardrailId);
 
     return {
       output: { deleted: true },
-      message: `Deleted guardrail **${ctx.input.guardrailId}**.`,
+      message: `Deleted guardrail **${ctx.input.guardrailId}**.`
     };
-  }).build();
+  })
+  .build();

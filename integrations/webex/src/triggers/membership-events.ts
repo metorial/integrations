@@ -3,31 +3,35 @@ import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let membershipEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Membership Events',
-    key: 'membership_events',
-    description: 'Triggers when people join, are updated in, or leave Webex spaces (membership created, updated, or deleted).'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of membership event'),
-    webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
-  }))
-  .output(z.object({
-    membershipId: z.string().describe('ID of the membership'),
-    roomId: z.string().optional().describe('ID of the space'),
-    personId: z.string().optional().describe('ID of the person'),
-    personEmail: z.string().optional().describe('Email of the person'),
-    personDisplayName: z.string().optional().describe('Display name of the person'),
-    personOrgId: z.string().optional().describe('Organization ID of the person'),
-    isModerator: z.boolean().optional().describe('Whether the person is a moderator'),
-    roomType: z.string().optional().describe('Type of room (direct or group)'),
-    created: z.string().optional().describe('Membership creation timestamp')
-  }))
+export let membershipEvents = SlateTrigger.create(spec, {
+  name: 'Membership Events',
+  key: 'membership_events',
+  description:
+    'Triggers when people join, are updated in, or leave Webex spaces (membership created, updated, or deleted).'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of membership event'),
+      webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
+    })
+  )
+  .output(
+    z.object({
+      membershipId: z.string().describe('ID of the membership'),
+      roomId: z.string().optional().describe('ID of the space'),
+      personId: z.string().optional().describe('ID of the person'),
+      personEmail: z.string().optional().describe('Email of the person'),
+      personDisplayName: z.string().optional().describe('Display name of the person'),
+      personOrgId: z.string().optional().describe('Organization ID of the person'),
+      isModerator: z.boolean().optional().describe('Whether the person is a moderator'),
+      roomType: z.string().optional().describe('Type of room (direct or group)'),
+      created: z.string().optional().describe('Membership creation timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
 
       let events = ['created', 'updated', 'deleted'];
@@ -48,11 +52,11 @@ export let membershipEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
+      for (let webhookId of details.webhookIds || []) {
         try {
           await client.deleteWebhook(webhookId);
         } catch {
@@ -61,8 +65,8 @@ export let membershipEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
@@ -74,7 +78,7 @@ export let membershipEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.webhookPayload;
       let resourceData = payload.data || {};
 

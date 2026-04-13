@@ -3,31 +3,42 @@ import { GoogleDocsClient, Request } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let textStyleSchema = z.object({
-  bold: z.boolean().optional().describe('Apply bold formatting'),
-  italic: z.boolean().optional().describe('Apply italic formatting'),
-  underline: z.boolean().optional().describe('Apply underline formatting'),
-  strikethrough: z.boolean().optional().describe('Apply strikethrough formatting'),
-  fontSize: z.number().optional().describe('Font size in points'),
-  fontFamily: z.string().optional().describe('Font family name'),
-  foregroundColor: z.object({
-    red: z.number().min(0).max(1).optional(),
-    green: z.number().min(0).max(1).optional(),
-    blue: z.number().min(0).max(1).optional()
-  }).optional().describe('Text color as RGB values (0-1)'),
-  backgroundColor: z.object({
-    red: z.number().min(0).max(1).optional(),
-    green: z.number().min(0).max(1).optional(),
-    blue: z.number().min(0).max(1).optional()
-  }).optional().describe('Background highlight color as RGB values (0-1)'),
-  link: z.string().optional().describe('URL to link the text to')
-}).describe('Text formatting options');
+let textStyleSchema = z
+  .object({
+    bold: z.boolean().optional().describe('Apply bold formatting'),
+    italic: z.boolean().optional().describe('Apply italic formatting'),
+    underline: z.boolean().optional().describe('Apply underline formatting'),
+    strikethrough: z.boolean().optional().describe('Apply strikethrough formatting'),
+    fontSize: z.number().optional().describe('Font size in points'),
+    fontFamily: z.string().optional().describe('Font family name'),
+    foregroundColor: z
+      .object({
+        red: z.number().min(0).max(1).optional(),
+        green: z.number().min(0).max(1).optional(),
+        blue: z.number().min(0).max(1).optional()
+      })
+      .optional()
+      .describe('Text color as RGB values (0-1)'),
+    backgroundColor: z
+      .object({
+        red: z.number().min(0).max(1).optional(),
+        green: z.number().min(0).max(1).optional(),
+        blue: z.number().min(0).max(1).optional()
+      })
+      .optional()
+      .describe('Background highlight color as RGB values (0-1)'),
+    link: z.string().optional().describe('URL to link the text to')
+  })
+  .describe('Text formatting options');
 
 let operationSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('insertText'),
     text: z.string().describe('Text to insert'),
-    index: z.number().optional().describe('Position to insert at (1-based). If not provided, appends to end of document')
+    index: z
+      .number()
+      .optional()
+      .describe('Position to insert at (1-based). If not provided, appends to end of document')
   }),
   z.object({
     type: z.literal('deleteText'),
@@ -49,7 +60,10 @@ let operationSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('insertImage'),
     imageUri: z.string().url().describe('URL of the image to insert'),
-    index: z.number().optional().describe('Position to insert at (1-based). If not provided, appends to end'),
+    index: z
+      .number()
+      .optional()
+      .describe('Position to insert at (1-based). If not provided, appends to end'),
     width: z.number().optional().describe('Image width in points'),
     height: z.number().optional().describe('Image height in points')
   }),
@@ -57,31 +71,43 @@ let operationSchema = z.discriminatedUnion('type', [
     type: z.literal('insertTable'),
     rows: z.number().min(1).describe('Number of rows'),
     columns: z.number().min(1).describe('Number of columns'),
-    index: z.number().optional().describe('Position to insert at (1-based). If not provided, appends to end')
+    index: z
+      .number()
+      .optional()
+      .describe('Position to insert at (1-based). If not provided, appends to end')
   }),
   z.object({
     type: z.literal('insertPageBreak'),
-    index: z.number().optional().describe('Position to insert at (1-based). If not provided, appends to end')
+    index: z
+      .number()
+      .optional()
+      .describe('Position to insert at (1-based). If not provided, appends to end')
   }),
   z.object({
     type: z.literal('createBulletList'),
     startIndex: z.number().describe('Start position of paragraphs to convert (1-based)'),
-    endIndex: z.number().describe('End position of paragraphs to convert (1-based, exclusive)'),
-    bulletPreset: z.enum([
-      'BULLET_DISC_CIRCLE_SQUARE',
-      'BULLET_DIAMONDX_ARROW3D_SQUARE',
-      'BULLET_CHECKBOX',
-      'BULLET_ARROW_DIAMOND_DISC',
-      'BULLET_STAR_CIRCLE_SQUARE',
-      'BULLET_ARROW3D_CIRCLE_SQUARE',
-      'BULLET_LEFTTRIANGLE_DIAMOND_DISC',
-      'NUMBERED_DECIMAL_ALPHA_ROMAN',
-      'NUMBERED_DECIMAL_ALPHA_ROMAN_PARENS',
-      'NUMBERED_DECIMAL_NESTED',
-      'NUMBERED_UPPERALPHA_ALPHA_ROMAN',
-      'NUMBERED_UPPERROMAN_UPPERALPHA_DECIMAL',
-      'NUMBERED_ZERODECIMAL_ALPHA_ROMAN'
-    ]).optional().default('BULLET_DISC_CIRCLE_SQUARE').describe('Style of bullets or numbering')
+    endIndex: z
+      .number()
+      .describe('End position of paragraphs to convert (1-based, exclusive)'),
+    bulletPreset: z
+      .enum([
+        'BULLET_DISC_CIRCLE_SQUARE',
+        'BULLET_DIAMONDX_ARROW3D_SQUARE',
+        'BULLET_CHECKBOX',
+        'BULLET_ARROW_DIAMOND_DISC',
+        'BULLET_STAR_CIRCLE_SQUARE',
+        'BULLET_ARROW3D_CIRCLE_SQUARE',
+        'BULLET_LEFTTRIANGLE_DIAMOND_DISC',
+        'NUMBERED_DECIMAL_ALPHA_ROMAN',
+        'NUMBERED_DECIMAL_ALPHA_ROMAN_PARENS',
+        'NUMBERED_DECIMAL_NESTED',
+        'NUMBERED_UPPERALPHA_ALPHA_ROMAN',
+        'NUMBERED_UPPERROMAN_UPPERALPHA_DECIMAL',
+        'NUMBERED_ZERODECIMAL_ALPHA_ROMAN'
+      ])
+      .optional()
+      .default('BULLET_DISC_CIRCLE_SQUARE')
+      .describe('Style of bullets or numbering')
   }),
   z.object({
     type: z.literal('removeBulletList'),
@@ -90,38 +116,42 @@ let operationSchema = z.discriminatedUnion('type', [
   })
 ]);
 
-export let editDocument = SlateTool.create(
-  spec,
-  {
-    name: 'Edit Document',
-    key: 'edit_document',
-    description: `Performs one or more editing operations on a Google Docs document. Supports inserting, deleting, and replacing text, formatting, inserting images, tables, page breaks, and creating bullet lists. Operations are executed in order.`,
-    instructions: [
-      'When inserting text at a specific position, use the index from getDocument to determine positions',
-      'The document body starts at index 1',
-      'When multiple operations affect the same positions, execute them from end to start to avoid index shifts',
-      'Images must be accessible via HTTPS URL'
-    ],
-    constraints: [
-      'Maximum document size is 25MB',
-      'Images must be publicly accessible or accessible to the authenticated user'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let editDocument = SlateTool.create(spec, {
+  name: 'Edit Document',
+  key: 'edit_document',
+  description: `Performs one or more editing operations on a Google Docs document. Supports inserting, deleting, and replacing text, formatting, inserting images, tables, page breaks, and creating bullet lists. Operations are executed in order.`,
+  instructions: [
+    'When inserting text at a specific position, use the index from getDocument to determine positions',
+    'The document body starts at index 1',
+    'When multiple operations affect the same positions, execute them from end to start to avoid index shifts',
+    'Images must be accessible via HTTPS URL'
+  ],
+  constraints: [
+    'Maximum document size is 25MB',
+    'Images must be publicly accessible or accessible to the authenticated user'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the document to edit'),
-    operations: z.array(operationSchema).min(1).describe('List of operations to perform, executed in order')
-  }))
-  .output(z.object({
-    documentId: z.string().describe('ID of the edited document'),
-    operationsExecuted: z.number().describe('Number of operations successfully executed'),
-    revisionId: z.string().optional().describe('New revision ID after edits')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the document to edit'),
+      operations: z
+        .array(operationSchema)
+        .min(1)
+        .describe('List of operations to perform, executed in order')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('ID of the edited document'),
+      operationsExecuted: z.number().describe('Number of operations successfully executed'),
+      revisionId: z.string().optional().describe('New revision ID after edits')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleDocsClient({
       token: ctx.auth.token
     });
@@ -235,10 +265,13 @@ export let editDocument = SlateTool.create(
               insertInlineImage: {
                 uri: op.imageUri,
                 location: { index: op.index },
-                objectSize: op.width && op.height ? {
-                  width: { magnitude: op.width, unit: 'PT' },
-                  height: { magnitude: op.height, unit: 'PT' }
-                } : undefined
+                objectSize:
+                  op.width && op.height
+                    ? {
+                        width: { magnitude: op.width, unit: 'PT' },
+                        height: { magnitude: op.height, unit: 'PT' }
+                      }
+                    : undefined
               }
             });
           } else {
@@ -246,10 +279,13 @@ export let editDocument = SlateTool.create(
               insertInlineImage: {
                 uri: op.imageUri,
                 endOfSegmentLocation: {},
-                objectSize: op.width && op.height ? {
-                  width: { magnitude: op.width, unit: 'PT' },
-                  height: { magnitude: op.height, unit: 'PT' }
-                } : undefined
+                objectSize:
+                  op.width && op.height
+                    ? {
+                        width: { magnitude: op.width, unit: 'PT' },
+                        height: { magnitude: op.height, unit: 'PT' }
+                      }
+                    : undefined
               }
             });
           }

@@ -1,10 +1,17 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
-import { geocodeAddress, reverseGeocode, batchGeocode, calculateDistance, createGeocodingList, getListStatus, getLists, deleteGeocodingList, downloadGeocodingList } from './tools';
-import { listCompleted,
-  inboundWebhook,
-} from './triggers';
+import {
+  geocodeAddress,
+  reverseGeocode,
+  batchGeocode,
+  calculateDistance,
+  createGeocodingList,
+  getListStatus,
+  getLists,
+  deleteGeocodingList,
+  downloadGeocodingList
+} from './tools';
+import { listCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -17,10 +24,7 @@ export let provider = Slate.create({
     getListStatus,
     getLists,
     deleteGeocodingList,
-    downloadGeocodingList,
+    downloadGeocodingList
   ],
-  triggers: [
-    inboundWebhook,
-    listCompleted,
-  ],
+  triggers: [inboundWebhook, listCompleted]
 });

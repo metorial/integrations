@@ -17,45 +17,59 @@ TextCortex uses **API Key** authentication.
 ## Features
 
 ### Text Generation & Autocomplete
+
 Expands, continues, and completes instructed sentences. Useful for general-purpose text generation from a given prompt. Configurable parameters include `prompt`, `temperature` (creativity, 0–1, default 0.7), `word_count`, `source_language`, and `n_gen` (number of generations).
 
 ### Blog Article Generation
+
 Generates blog articles on selected blog titles and keywords. Accepts parameters such as topic, title, blog categories, and target tone.
 
 ### Product Description Generation
+
 Generates product descriptions given product name, category, brand, and features. Supports 72 languages via source language codes, with an `auto` option for automatic language detection.
 
 ### Ad Copy Generation
+
 Generates ads based on the product being sold. The model is instructed with a product and a target segment for generating texts.
 
 ### Email Generation
+
 Generates email bodies based on the email subject, and generates email subjects based on given keywords.
 
 ### Social Media Content Generation
+
 Creates social media posts for various platforms with given keywords. Includes Instagram captions and other platform-specific content. Target audience can be specified as a parameter.
 
 ### Text Rewriting / Paraphrasing
+
 Rewrites given text without changing its meaning. Supports different rewriting modes (e.g., `voice_passive`). Available at the `/v1/texts/rewritings` endpoint.
 
 ### Text Summarization
+
 Summarizes given text, which can be provided as a string or as a file ID.
 
 ### Translation
+
 Translates given text into another language. Supports a wide range of languages.
 
 ### Code & SQL Generation
+
 Generates code for a given programming language and generates SQL queries given table descriptions.
 
 ### Text Classification & Entity Extraction
+
 Extracts core information out of text and classifies data on a large scale. Allows labeling text to specific instructions.
 
 ### Text Similarity
+
 Captures text similarities between texts, useful for finding similar entities within text data.
 
 ### Knowledge Bases
+
 A knowledge base lets you work with multiple files simultaneously, retrieving information and gaining insights across all your documents at once. The AI agent provides relevant answers with sources from your centralized data. Knowledge bases can be integrated with platforms such as Google Drive, SharePoint, Microsoft OneDrive, and Notion.
 
 ### Model Selection
+
 Within the NeoCortex system there are 4 model categories: Velox (fastest), Alta (most powerful), and Sophos (fine-tuned expert models for specialized workflows).
 
 ## Events

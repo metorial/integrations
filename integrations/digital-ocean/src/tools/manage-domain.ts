@@ -14,26 +14,27 @@ let domainRecordSchema = z.object({
   weight: z.number().optional().describe('Weight (for SRV records)')
 });
 
-export let listDomains = SlateTool.create(
-  spec,
-  {
-    name: 'List Domains',
-    key: 'list_domains',
-    description: `List all domains managed in your DigitalOcean DNS. Returns the domain name and TTL for each domain.`,
-    tags: {
-      readOnly: true
-    }
+export let listDomains = SlateTool.create(spec, {
+  name: 'List Domains',
+  key: 'list_domains',
+  description: `List all domains managed in your DigitalOcean DNS. Returns the domain name and TTL for each domain.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    domains: z.array(z.object({
-      name: z.string().describe('Domain name'),
-      ttl: z.number().optional().describe('Default TTL in seconds'),
-      zoneFile: z.string().optional().describe('Zone file contents')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      domains: z.array(
+        z.object({
+          name: z.string().describe('Domain name'),
+          ttl: z.number().optional().describe('Default TTL in seconds'),
+          zoneFile: z.string().optional().describe('Zone file contents')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let domains = await client.listDomains();
 
@@ -50,40 +51,47 @@ export let listDomains = SlateTool.create(
   })
   .build();
 
-export let manageDNSRecords = SlateTool.create(
-  spec,
-  {
-    name: 'Manage DNS Records',
-    key: 'manage_dns_records',
-    description: `List, create, update, or delete DNS records for a domain. Supports A, AAAA, CNAME, MX, TXT, NS, SRV, and CAA record types.`,
-    instructions: [
-      'Use "@" as the record name to target the root domain',
-      'CNAME records must point to a fully-qualified domain name ending with a dot',
-      'MX records require a priority value'
-    ]
-  }
-)
-  .input(z.object({
-    domainName: z.string().describe('Domain name to manage records for'),
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    recordId: z.number().optional().describe('Record ID (required for update/delete)'),
-    type: z.string().optional().describe('Record type: A, AAAA, CNAME, MX, TXT, NS, SRV, CAA (required for create)'),
-    name: z.string().optional().describe('Record name/host (required for create)'),
-    recordData: z.string().optional().describe('Record value/data (required for create)'),
-    priority: z.number().optional().describe('Priority (for MX, SRV)'),
-    port: z.number().optional().describe('Port (for SRV)'),
-    ttl: z.number().optional().describe('TTL in seconds'),
-    weight: z.number().optional().describe('Weight (for SRV)'),
-    filterType: z.string().optional().describe('Filter records by type when listing'),
-    page: z.number().optional().describe('Page number for listing'),
-    perPage: z.number().optional().describe('Results per page for listing')
-  }))
-  .output(z.object({
-    records: z.array(domainRecordSchema).optional().describe('List of DNS records (for list action)'),
-    record: domainRecordSchema.optional().describe('Created or updated record'),
-    deleted: z.boolean().optional().describe('Whether the record was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageDNSRecords = SlateTool.create(spec, {
+  name: 'Manage DNS Records',
+  key: 'manage_dns_records',
+  description: `List, create, update, or delete DNS records for a domain. Supports A, AAAA, CNAME, MX, TXT, NS, SRV, and CAA record types.`,
+  instructions: [
+    'Use "@" as the record name to target the root domain',
+    'CNAME records must point to a fully-qualified domain name ending with a dot',
+    'MX records require a priority value'
+  ]
+})
+  .input(
+    z.object({
+      domainName: z.string().describe('Domain name to manage records for'),
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      recordId: z.number().optional().describe('Record ID (required for update/delete)'),
+      type: z
+        .string()
+        .optional()
+        .describe('Record type: A, AAAA, CNAME, MX, TXT, NS, SRV, CAA (required for create)'),
+      name: z.string().optional().describe('Record name/host (required for create)'),
+      recordData: z.string().optional().describe('Record value/data (required for create)'),
+      priority: z.number().optional().describe('Priority (for MX, SRV)'),
+      port: z.number().optional().describe('Port (for SRV)'),
+      ttl: z.number().optional().describe('TTL in seconds'),
+      weight: z.number().optional().describe('Weight (for SRV)'),
+      filterType: z.string().optional().describe('Filter records by type when listing'),
+      page: z.number().optional().describe('Page number for listing'),
+      perPage: z.number().optional().describe('Results per page for listing')
+    })
+  )
+  .output(
+    z.object({
+      records: z
+        .array(domainRecordSchema)
+        .optional()
+        .describe('List of DNS records (for list action)'),
+      record: domainRecordSchema.optional().describe('Created or updated record'),
+      deleted: z.boolean().optional().describe('Whether the record was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -154,7 +162,11 @@ export let manageDNSRecords = SlateTool.create(
       if (ctx.input.ttl !== undefined) updateParams.ttl = ctx.input.ttl;
       if (ctx.input.weight !== undefined) updateParams.weight = ctx.input.weight;
 
-      let record = await client.updateDomainRecord(ctx.input.domainName, ctx.input.recordId, updateParams);
+      let record = await client.updateDomainRecord(
+        ctx.input.domainName,
+        ctx.input.recordId,
+        updateParams
+      );
 
       return {
         output: {
@@ -184,23 +196,24 @@ export let manageDNSRecords = SlateTool.create(
   })
   .build();
 
-export let createDomain = SlateTool.create(
-  spec,
-  {
-    name: 'Create Domain',
-    key: 'create_domain',
-    description: `Add a new domain to DigitalOcean DNS management. Optionally set the IP address for an automatic A record.`,
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Domain name (e.g., "example.com")'),
-    ipAddress: z.string().optional().describe('IP address for an automatic A record')
-  }))
-  .output(z.object({
-    name: z.string().describe('Domain name'),
-    ttl: z.number().optional().describe('Default TTL')
-  }))
-  .handleInvocation(async (ctx) => {
+export let createDomain = SlateTool.create(spec, {
+  name: 'Create Domain',
+  key: 'create_domain',
+  description: `Add a new domain to DigitalOcean DNS management. Optionally set the IP address for an automatic A record.`
+})
+  .input(
+    z.object({
+      name: z.string().describe('Domain name (e.g., "example.com")'),
+      ipAddress: z.string().optional().describe('IP address for an automatic A record')
+    })
+  )
+  .output(
+    z.object({
+      name: z.string().describe('Domain name'),
+      ttl: z.number().optional().describe('Default TTL')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let domain = await client.createDomain({
       name: ctx.input.name,

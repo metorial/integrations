@@ -1,23 +1,23 @@
 import { createAxios } from 'slates';
 
 let coreApi = createAxios({
-  baseURL: 'https://api.twilio.com/2010-04-01',
+  baseURL: 'https://api.twilio.com/2010-04-01'
 });
 
 let verifyApi = createAxios({
-  baseURL: 'https://verify.twilio.com/v2',
+  baseURL: 'https://verify.twilio.com/v2'
 });
 
 let lookupsApi = createAxios({
-  baseURL: 'https://lookups.twilio.com/v2',
+  baseURL: 'https://lookups.twilio.com/v2'
 });
 
 let conversationsApi = createAxios({
-  baseURL: 'https://conversations.twilio.com/v1',
+  baseURL: 'https://conversations.twilio.com/v1'
 });
 
 let messagingServicesApi = createAxios({
-  baseURL: 'https://messaging.twilio.com/v1',
+  baseURL: 'https://messaging.twilio.com/v1'
 });
 
 export interface TwilioClientConfig {
@@ -71,7 +71,7 @@ export class TwilioClient {
       MessagingServiceSid: params.messagingServiceSid,
       StatusCallback: params.statusCallback,
       ScheduleType: params.scheduleType,
-      SendAt: params.sendAt,
+      SendAt: params.sendAt
     };
 
     if (params.mediaUrl) {
@@ -86,8 +86,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -127,16 +127,15 @@ export class TwilioClient {
     let url = `/Accounts/${this.accountSid}/Messages.json${query ? '?' + query : ''}`;
 
     let response = await coreApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
   async deleteMessage(messageSid: string) {
-    await coreApi.delete(
-      `/Accounts/${this.accountSid}/Messages/${messageSid}.json`,
-      { headers: { Authorization: this.authHeader } }
-    );
+    await coreApi.delete(`/Accounts/${this.accountSid}/Messages/${messageSid}.json`, {
+      headers: { Authorization: this.authHeader }
+    });
   }
 
   async cancelScheduledMessage(messageSid: string) {
@@ -146,8 +145,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -182,13 +181,14 @@ export class TwilioClient {
       StatusCallback: params.statusCallback,
       StatusCallbackMethod: params.statusCallbackMethod,
       MachineDetection: params.machineDetection,
-      CallerId: params.callerId,
+      CallerId: params.callerId
     };
 
     if (params.timeout !== undefined) formParams.Timeout = String(params.timeout);
     if (params.record !== undefined) formParams.Record = String(params.record);
     if (params.recordingChannels) formParams.RecordingChannels = params.recordingChannels;
-    if (params.recordingStatusCallback) formParams.RecordingStatusCallback = params.recordingStatusCallback;
+    if (params.recordingStatusCallback)
+      formParams.RecordingStatusCallback = params.recordingStatusCallback;
     if (params.statusCallbackEvent) {
       for (let event of params.statusCallbackEvent) {
         formParams['StatusCallbackEvent'] = event;
@@ -201,18 +201,17 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
   }
 
   async getCall(callSid: string) {
-    let response = await coreApi.get(
-      `/Accounts/${this.accountSid}/Calls/${callSid}.json`,
-      { headers: { Authorization: this.authHeader } }
-    );
+    let response = await coreApi.get(`/Accounts/${this.accountSid}/Calls/${callSid}.json`, {
+      headers: { Authorization: this.authHeader }
+    });
     return response.data;
   }
 
@@ -242,24 +241,27 @@ export class TwilioClient {
     let url = `/Accounts/${this.accountSid}/Calls.json${query ? '?' + query : ''}`;
 
     let response = await coreApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
-  async updateCall(callSid: string, params: {
-    url?: string;
-    method?: string;
-    status?: string;
-    twiml?: string;
-    statusCallback?: string;
-  }) {
+  async updateCall(
+    callSid: string,
+    params: {
+      url?: string;
+      method?: string;
+      status?: string;
+      twiml?: string;
+      statusCallback?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       Url: params.url,
       Method: params.method,
       Status: params.status,
       Twiml: params.twiml,
-      StatusCallback: params.statusCallback,
+      StatusCallback: params.statusCallback
     };
 
     let response = await coreApi.post(
@@ -268,8 +270,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -277,15 +279,18 @@ export class TwilioClient {
 
   // ==================== Verify ====================
 
-  async createVerification(serviceSid: string, params: {
-    to: string;
-    channel: string;
-    locale?: string;
-    customCode?: string;
-    amount?: string;
-    payee?: string;
-    templateSid?: string;
-  }) {
+  async createVerification(
+    serviceSid: string,
+    params: {
+      to: string;
+      channel: string;
+      locale?: string;
+      customCode?: string;
+      amount?: string;
+      payee?: string;
+      templateSid?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       To: params.to,
       Channel: params.channel,
@@ -293,7 +298,7 @@ export class TwilioClient {
       CustomCode: params.customCode,
       Amount: params.amount,
       Payee: params.payee,
-      TemplateSid: params.templateSid,
+      TemplateSid: params.templateSid
     };
 
     let response = await verifyApi.post(
@@ -302,22 +307,25 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
   }
 
-  async checkVerification(serviceSid: string, params: {
-    code: string;
-    to?: string;
-    verificationSid?: string;
-  }) {
+  async checkVerification(
+    serviceSid: string,
+    params: {
+      code: string;
+      to?: string;
+      verificationSid?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       Code: params.code,
       To: params.to,
-      VerificationSid: params.verificationSid,
+      VerificationSid: params.verificationSid
     };
 
     let response = await verifyApi.post(
@@ -326,8 +334,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -341,23 +349,27 @@ export class TwilioClient {
     let url = `/Services${query ? '?' + query : ''}`;
 
     let response = await verifyApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
   // ==================== Lookup ====================
 
-  async lookupPhoneNumber(phoneNumber: string, params?: {
-    fields?: string[];
-    countryCode?: string;
-    firstName?: string;
-    lastName?: string;
-    addressLine1?: string;
-  }) {
+  async lookupPhoneNumber(
+    phoneNumber: string,
+    params?: {
+      fields?: string[];
+      countryCode?: string;
+      firstName?: string;
+      lastName?: string;
+      addressLine1?: string;
+    }
+  ) {
     let queryParams: Record<string, string | undefined> = {};
     if (params) {
-      if (params.fields && params.fields.length > 0) queryParams.Fields = params.fields.join(',');
+      if (params.fields && params.fields.length > 0)
+        queryParams.Fields = params.fields.join(',');
       queryParams.CountryCode = params.countryCode;
       queryParams.FirstName = params.firstName;
       queryParams.LastName = params.lastName;
@@ -369,23 +381,27 @@ export class TwilioClient {
     let url = `/PhoneNumbers/${encodedNumber}${query ? '?' + query : ''}`;
 
     let response = await lookupsApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
   // ==================== Phone Numbers ====================
 
-  async searchAvailablePhoneNumbers(countryCode: string, type: 'Local' | 'TollFree' | 'Mobile', params?: {
-    areaCode?: string;
-    contains?: string;
-    inRegion?: string;
-    inPostalCode?: string;
-    smsEnabled?: boolean;
-    voiceEnabled?: boolean;
-    mmsEnabled?: boolean;
-    pageSize?: number;
-  }) {
+  async searchAvailablePhoneNumbers(
+    countryCode: string,
+    type: 'Local' | 'TollFree' | 'Mobile',
+    params?: {
+      areaCode?: string;
+      contains?: string;
+      inRegion?: string;
+      inPostalCode?: string;
+      smsEnabled?: boolean;
+      voiceEnabled?: boolean;
+      mmsEnabled?: boolean;
+      pageSize?: number;
+    }
+  ) {
     let queryParams: Record<string, string | undefined> = {};
     if (params) {
       queryParams.AreaCode = params.areaCode;
@@ -393,7 +409,8 @@ export class TwilioClient {
       queryParams.InRegion = params.inRegion;
       queryParams.InPostalCode = params.inPostalCode;
       if (params.smsEnabled !== undefined) queryParams.SmsEnabled = String(params.smsEnabled);
-      if (params.voiceEnabled !== undefined) queryParams.VoiceEnabled = String(params.voiceEnabled);
+      if (params.voiceEnabled !== undefined)
+        queryParams.VoiceEnabled = String(params.voiceEnabled);
       if (params.mmsEnabled !== undefined) queryParams.MmsEnabled = String(params.mmsEnabled);
       if (params.pageSize) queryParams.PageSize = String(params.pageSize);
     }
@@ -402,7 +419,7 @@ export class TwilioClient {
     let url = `/Accounts/${this.accountSid}/AvailablePhoneNumbers/${countryCode}/${type}.json${query ? '?' + query : ''}`;
 
     let response = await coreApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
@@ -423,7 +440,7 @@ export class TwilioClient {
       VoiceMethod: params.voiceMethod,
       SmsUrl: params.smsUrl,
       SmsMethod: params.smsMethod,
-      StatusCallback: params.statusCallback,
+      StatusCallback: params.statusCallback
     };
 
     let response = await coreApi.post(
@@ -432,8 +449,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -465,22 +482,25 @@ export class TwilioClient {
     let url = `/Accounts/${this.accountSid}/IncomingPhoneNumbers.json${query ? '?' + query : ''}`;
 
     let response = await coreApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
-  async updateIncomingPhoneNumber(phoneNumberSid: string, params: {
-    friendlyName?: string;
-    voiceUrl?: string;
-    voiceMethod?: string;
-    voiceFallbackUrl?: string;
-    smsUrl?: string;
-    smsMethod?: string;
-    smsFallbackUrl?: string;
-    statusCallback?: string;
-    statusCallbackMethod?: string;
-  }) {
+  async updateIncomingPhoneNumber(
+    phoneNumberSid: string,
+    params: {
+      friendlyName?: string;
+      voiceUrl?: string;
+      voiceMethod?: string;
+      voiceFallbackUrl?: string;
+      smsUrl?: string;
+      smsMethod?: string;
+      smsFallbackUrl?: string;
+      statusCallback?: string;
+      statusCallbackMethod?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       FriendlyName: params.friendlyName,
       VoiceUrl: params.voiceUrl,
@@ -490,7 +510,7 @@ export class TwilioClient {
       SmsMethod: params.smsMethod,
       SmsFallbackUrl: params.smsFallbackUrl,
       StatusCallback: params.statusCallback,
-      StatusCallbackMethod: params.statusCallbackMethod,
+      StatusCallbackMethod: params.statusCallbackMethod
     };
 
     let response = await coreApi.post(
@@ -499,8 +519,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -527,27 +547,22 @@ export class TwilioClient {
       UniqueName: params.uniqueName,
       Attributes: params.attributes,
       State: params.state,
-      MessagingServiceSid: params.messagingServiceSid,
+      MessagingServiceSid: params.messagingServiceSid
     };
 
-    let response = await conversationsApi.post(
-      '/Conversations',
-      encodeFormData(formParams),
-      {
-        headers: {
-          Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+    let response = await conversationsApi.post('/Conversations', encodeFormData(formParams), {
+      headers: {
+        Authorization: this.authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
-    );
+    });
     return response.data;
   }
 
   async getConversation(conversationSid: string) {
-    let response = await conversationsApi.get(
-      `/Conversations/${conversationSid}`,
-      { headers: { Authorization: this.authHeader } }
-    );
+    let response = await conversationsApi.get(`/Conversations/${conversationSid}`, {
+      headers: { Authorization: this.authHeader }
+    });
     return response.data;
   }
 
@@ -562,22 +577,25 @@ export class TwilioClient {
     let url = `/Conversations${query ? '?' + query : ''}`;
 
     let response = await conversationsApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
-  async updateConversation(conversationSid: string, params: {
-    friendlyName?: string;
-    uniqueName?: string;
-    attributes?: string;
-    state?: string;
-  }) {
+  async updateConversation(
+    conversationSid: string,
+    params: {
+      friendlyName?: string;
+      uniqueName?: string;
+      attributes?: string;
+      state?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       FriendlyName: params.friendlyName,
       UniqueName: params.uniqueName,
       Attributes: params.attributes,
-      State: params.state,
+      State: params.state
     };
 
     let response = await conversationsApi.post(
@@ -586,33 +604,35 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
   }
 
   async deleteConversation(conversationSid: string) {
-    await conversationsApi.delete(
-      `/Conversations/${conversationSid}`,
-      { headers: { Authorization: this.authHeader } }
-    );
+    await conversationsApi.delete(`/Conversations/${conversationSid}`, {
+      headers: { Authorization: this.authHeader }
+    });
   }
 
-  async addConversationParticipant(conversationSid: string, params: {
-    identity?: string;
-    messagingBindingAddress?: string;
-    messagingBindingProxyAddress?: string;
-    attributes?: string;
-    roleSid?: string;
-  }) {
+  async addConversationParticipant(
+    conversationSid: string,
+    params: {
+      identity?: string;
+      messagingBindingAddress?: string;
+      messagingBindingProxyAddress?: string;
+      attributes?: string;
+      roleSid?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       Identity: params.identity,
       'MessagingBinding.Address': params.messagingBindingAddress,
       'MessagingBinding.ProxyAddress': params.messagingBindingProxyAddress,
       Attributes: params.attributes,
-      RoleSid: params.roleSid,
+      RoleSid: params.roleSid
     };
 
     let response = await conversationsApi.post(
@@ -621,8 +641,8 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
@@ -636,7 +656,7 @@ export class TwilioClient {
     let url = `/Conversations/${conversationSid}/Participants${query ? '?' + query : ''}`;
 
     let response = await conversationsApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
@@ -648,17 +668,20 @@ export class TwilioClient {
     );
   }
 
-  async sendConversationMessage(conversationSid: string, params: {
-    author?: string;
-    body: string;
-    attributes?: string;
-    mediaSid?: string;
-  }) {
+  async sendConversationMessage(
+    conversationSid: string,
+    params: {
+      author?: string;
+      body: string;
+      attributes?: string;
+      mediaSid?: string;
+    }
+  ) {
     let formParams: Record<string, string | undefined> = {
       Author: params.author,
       Body: params.body,
       Attributes: params.attributes,
-      MediaSid: params.mediaSid,
+      MediaSid: params.mediaSid
     };
 
     let response = await conversationsApi.post(
@@ -667,14 +690,17 @@ export class TwilioClient {
       {
         headers: {
           Authorization: this.authHeader,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     );
     return response.data;
   }
 
-  async listConversationMessages(conversationSid: string, params?: { pageSize?: number; order?: string }) {
+  async listConversationMessages(
+    conversationSid: string,
+    params?: { pageSize?: number; order?: string }
+  ) {
     let queryParams: Record<string, string | undefined> = {};
     if (params) {
       if (params.pageSize) queryParams.PageSize = String(params.pageSize);
@@ -685,7 +711,7 @@ export class TwilioClient {
     let url = `/Conversations/${conversationSid}/Messages${query ? '?' + query : ''}`;
 
     let response = await conversationsApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
@@ -700,12 +726,17 @@ export class TwilioClient {
     let url = `/Accounts/${this.accountSid}/Calls/${callSid}/Recordings.json${query ? '?' + query : ''}`;
 
     let response = await coreApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
 
-  async listRecordings(params?: { callSid?: string; dateCreatedBefore?: string; dateCreatedAfter?: string; pageSize?: number }) {
+  async listRecordings(params?: {
+    callSid?: string;
+    dateCreatedBefore?: string;
+    dateCreatedAfter?: string;
+    pageSize?: number;
+  }) {
     let queryParams: Record<string, string | undefined> = {};
     if (params) {
       queryParams.CallSid = params.callSid;
@@ -718,7 +749,7 @@ export class TwilioClient {
     let url = `/Accounts/${this.accountSid}/Recordings.json${query ? '?' + query : ''}`;
 
     let response = await coreApi.get(url, {
-      headers: { Authorization: this.authHeader },
+      headers: { Authorization: this.authHeader }
     });
     return response.data;
   }
@@ -726,10 +757,9 @@ export class TwilioClient {
   // ==================== Account ====================
 
   async getAccount() {
-    let response = await coreApi.get(
-      `/Accounts/${this.accountSid}.json`,
-      { headers: { Authorization: this.authHeader } }
-    );
+    let response = await coreApi.get(`/Accounts/${this.accountSid}.json`, {
+      headers: { Authorization: this.authHeader }
+    });
     return response.data;
   }
 }

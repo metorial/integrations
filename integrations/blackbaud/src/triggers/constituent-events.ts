@@ -32,42 +32,57 @@ let CONSTITUENT_EVENT_TYPES = [
   'com.blackbaud.constituent.solicitcode.change.v1',
   'com.blackbaud.constituent.solicitcode.delete.v1',
   'com.blackbaud.prospect.add.v1',
-  'com.blackbaud.prospect.delete.v1',
+  'com.blackbaud.prospect.delete.v1'
 ] as const;
 
-export let constituentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Constituent Events',
-    key: 'constituent_events',
-    description: 'Triggers when constituent records or related entities (addresses, emails, phones, codes, relationships) are added, changed, or deleted in Blackbaud.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The CloudEvents event type (e.g., com.blackbaud.constituent.change.v1).'),
-    eventId: z.string().describe('Unique event ID.'),
-    constituentId: z.string().optional().describe('System record ID of the affected constituent.'),
-    rawEvent: z.any().describe('Full CloudEvents payload.'),
-  }))
-  .output(z.object({
-    constituentId: z.string().optional().describe('System record ID of the affected constituent.'),
-    eventType: z.string().describe('The event type identifier.'),
-    resourceType: z.string().describe('The type of resource affected (e.g., constituent, address, email).'),
-    action: z.string().describe('The action performed (add, change, delete).'),
-    constituent: z.any().optional().describe('The constituent record if available.'),
-  }))
+export let constituentEvents = SlateTrigger.create(spec, {
+  name: 'Constituent Events',
+  key: 'constituent_events',
+  description:
+    'Triggers when constituent records or related entities (addresses, emails, phones, codes, relationships) are added, changed, or deleted in Blackbaud.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The CloudEvents event type (e.g., com.blackbaud.constituent.change.v1).'),
+      eventId: z.string().describe('Unique event ID.'),
+      constituentId: z
+        .string()
+        .optional()
+        .describe('System record ID of the affected constituent.'),
+      rawEvent: z.any().describe('Full CloudEvents payload.')
+    })
+  )
+  .output(
+    z.object({
+      constituentId: z
+        .string()
+        .optional()
+        .describe('System record ID of the affected constituent.'),
+      eventType: z.string().describe('The event type identifier.'),
+      resourceType: z
+        .string()
+        .describe('The type of resource affected (e.g., constituent, address, email).'),
+      action: z.string().describe('The action performed (add, change, delete).'),
+      constituent: z.any().optional().describe('The constituent record if available.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        subscriptionKey: ctx.auth.subscriptionKey,
+        subscriptionKey: ctx.auth.subscriptionKey
       });
 
       let subscriptionIds: string[] = [];
 
       for (let eventType of CONSTITUENT_EVENT_TYPES) {
         try {
-          let result = await client.createWebhookSubscription(ctx.input.webhookBaseUrl, eventType);
+          let result = await client.createWebhookSubscription(
+            ctx.input.webhookBaseUrl,
+            eventType
+          );
           if (result?.id) {
             subscriptionIds.push(result.id);
           }
@@ -77,14 +92,14 @@ export let constituentEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptionIds },
+        registrationDetails: { subscriptionIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        subscriptionKey: ctx.auth.subscriptionKey,
+        subscriptionKey: ctx.auth.subscriptionKey
       });
 
       let ids = ctx.input.registrationDetails?.subscriptionIds || [];
@@ -97,7 +112,7 @@ export let constituentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // Handle CloudEvents webhook validation handshake
       if (ctx.request.method === 'OPTIONS') {
         return { inputs: [] };
@@ -114,22 +129,20 @@ export let constituentEvents = SlateTrigger.create(
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events.map((event: any) => {
-        let constituentId = event?.data?.constituent_id
-          || event?.data?.id
-          || event?.subject;
+        let constituentId = event?.data?.constituent_id || event?.data?.id || event?.subject;
 
         return {
           eventType: event?.type || '',
           eventId: event?.id || `${event?.type}-${Date.now()}`,
           constituentId: constituentId ? String(constituentId) : undefined,
-          rawEvent: event,
+          rawEvent: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType;
 
       // Parse resource type and action from event type
@@ -153,7 +166,7 @@ export let constituentEvents = SlateTrigger.create(
         constituentId: ctx.input.constituentId,
         eventType: ctx.input.eventType,
         resourceType,
-        action,
+        action
       };
 
       // Try to fetch the constituent if we have an ID and it's not a delete
@@ -161,7 +174,7 @@ export let constituentEvents = SlateTrigger.create(
         try {
           let client = new Client({
             token: ctx.auth.token,
-            subscriptionKey: ctx.auth.subscriptionKey,
+            subscriptionKey: ctx.auth.subscriptionKey
           });
           output.constituent = await client.getConstituent(ctx.input.constituentId);
         } catch {
@@ -172,8 +185,8 @@ export let constituentEvents = SlateTrigger.create(
       return {
         type,
         id: ctx.input.eventId,
-        output,
+        output
       };
-    },
+    }
   })
   .build();

@@ -15,13 +15,9 @@ import {
   listAgents,
   manageAgentSchedule,
   manageTeamAgents,
-  manageClient,
+  manageClient
 } from './tools';
-import {
-  callCompleted,
-  leadCreated,
-  leadUpdated,
-} from './triggers';
+import { callCompleted, leadCreated, leadUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,11 +36,7 @@ export let provider = Slate.create({
     listAgents,
     manageAgentSchedule,
     manageTeamAgents,
-    manageClient,
+    manageClient
   ],
-  triggers: [
-    callCompleted,
-    leadCreated,
-    leadUpdated,
-  ],
+  triggers: [callCompleted, leadCreated, leadUpdated]
 });

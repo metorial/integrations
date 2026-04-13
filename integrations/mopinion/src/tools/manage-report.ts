@@ -3,31 +3,37 @@ import { MopinionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageReport = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Report',
-    key: 'manage_report',
-    description: `Create, update, or delete a Mopinion report. Use the **action** field to specify the operation. For creating, provide a name. For updating, provide the report ID and fields to change. For deleting, provide the report ID.`,
-    tags: {
-      destructive: true
-    }
+export let manageReport = SlateTool.create(spec, {
+  name: 'Manage Report',
+  key: 'manage_report',
+  description: `Create, update, or delete a Mopinion report. Use the **action** field to specify the operation. For creating, provide a name. For updating, provide the report ID and fields to change. For deleting, provide the report ID.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform on the report'),
-    reportId: z.number().optional().describe('Report ID (required for update and delete)'),
-    name: z.string().optional().describe('Report name (required for create, optional for update)'),
-    description: z.string().optional().describe('Report description'),
-    language: z.string().optional().describe('Report language code (e.g., "en", "nl")')
-  }))
-  .output(z.object({
-    reportId: z.number().optional().describe('ID of the affected report'),
-    name: z.string().optional().describe('Report name'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-    result: z.any().optional().describe('Full API response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('Operation to perform on the report'),
+      reportId: z.number().optional().describe('Report ID (required for update and delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Report name (required for create, optional for update)'),
+      description: z.string().optional().describe('Report description'),
+      language: z.string().optional().describe('Report language code (e.g., "en", "nl")')
+    })
+  )
+  .output(
+    z.object({
+      reportId: z.number().optional().describe('ID of the affected report'),
+      name: z.string().optional().describe('Report name'),
+      success: z.boolean().describe('Whether the operation succeeded'),
+      result: z.any().optional().describe('Full API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MopinionClient({
       publicKey: ctx.auth.publicKey,
       signatureToken: ctx.auth.signatureToken

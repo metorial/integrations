@@ -18,34 +18,45 @@ let creativeOutputSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let manageCreative = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Creative',
-    key: 'manage_creative',
-    description: `Create or update a Snapchat ad creative. Creatives define the visual content and call-to-action for ads. Supports Snap Ads, Story Ads, Collection Ads, and more. To create, provide **adAccountId** and creative properties. To update, also provide **creativeId**.`,
-    instructions: [
-      'Upload media first using Create Media, then reference it via topSnapMediaId.',
-      'Creative types: WEB_VIEW, SNAP_AD, APP_INSTALL, COLLECTION, LENS, AD_TO_LENS, STORY, REMOTE_WEBPAGE.'
-    ]
-  }
-)
-  .input(z.object({
-    adAccountId: z.string().describe('Ad account ID the creative belongs to'),
-    creativeId: z.string().optional().describe('Creative ID to update (omit to create a new creative)'),
-    name: z.string().optional().describe('Creative name'),
-    type: z.string().optional().describe('Creative type (e.g., WEB_VIEW, SNAP_AD, APP_INSTALL)'),
-    headline: z.string().optional().describe('Headline text'),
-    brandName: z.string().optional().describe('Brand name to display'),
-    shareable: z.boolean().optional().describe('Whether the creative is shareable'),
-    callToAction: z.string().optional().describe('Call-to-action text (e.g., INSTALL_NOW, VIEW_MORE, SIGN_UP)'),
-    topSnapMediaId: z.string().optional().describe('Media ID for the top snap'),
-    topSnapCropPosition: z.string().optional().describe('Crop position (e.g., MIDDLE)'),
-    webViewUrl: z.string().optional().describe('URL for web view creatives'),
-    appInstallProperties: z.any().optional().describe('App install properties (appName, iosAppId, androidAppUrl, etc.)')
-  }))
+export let manageCreative = SlateTool.create(spec, {
+  name: 'Manage Creative',
+  key: 'manage_creative',
+  description: `Create or update a Snapchat ad creative. Creatives define the visual content and call-to-action for ads. Supports Snap Ads, Story Ads, Collection Ads, and more. To create, provide **adAccountId** and creative properties. To update, also provide **creativeId**.`,
+  instructions: [
+    'Upload media first using Create Media, then reference it via topSnapMediaId.',
+    'Creative types: WEB_VIEW, SNAP_AD, APP_INSTALL, COLLECTION, LENS, AD_TO_LENS, STORY, REMOTE_WEBPAGE.'
+  ]
+})
+  .input(
+    z.object({
+      adAccountId: z.string().describe('Ad account ID the creative belongs to'),
+      creativeId: z
+        .string()
+        .optional()
+        .describe('Creative ID to update (omit to create a new creative)'),
+      name: z.string().optional().describe('Creative name'),
+      type: z
+        .string()
+        .optional()
+        .describe('Creative type (e.g., WEB_VIEW, SNAP_AD, APP_INSTALL)'),
+      headline: z.string().optional().describe('Headline text'),
+      brandName: z.string().optional().describe('Brand name to display'),
+      shareable: z.boolean().optional().describe('Whether the creative is shareable'),
+      callToAction: z
+        .string()
+        .optional()
+        .describe('Call-to-action text (e.g., INSTALL_NOW, VIEW_MORE, SIGN_UP)'),
+      topSnapMediaId: z.string().optional().describe('Media ID for the top snap'),
+      topSnapCropPosition: z.string().optional().describe('Crop position (e.g., MIDDLE)'),
+      webViewUrl: z.string().optional().describe('URL for web view creatives'),
+      appInstallProperties: z
+        .any()
+        .optional()
+        .describe('App install properties (appName, iosAppId, androidAppUrl, etc.)')
+    })
+  )
   .output(creativeOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let { adAccountId, creativeId, ...fields } = ctx.input;
 
@@ -58,9 +69,11 @@ export let manageCreative = SlateTool.create(
     if (fields.shareable !== undefined) creativeData.shareable = fields.shareable;
     if (fields.callToAction) creativeData.call_to_action = fields.callToAction;
     if (fields.topSnapMediaId) creativeData.top_snap_media_id = fields.topSnapMediaId;
-    if (fields.topSnapCropPosition) creativeData.top_snap_crop_position = fields.topSnapCropPosition;
+    if (fields.topSnapCropPosition)
+      creativeData.top_snap_crop_position = fields.topSnapCropPosition;
     if (fields.webViewUrl) creativeData.web_view_url = fields.webViewUrl;
-    if (fields.appInstallProperties) creativeData.app_install_properties = fields.appInstallProperties;
+    if (fields.appInstallProperties)
+      creativeData.app_install_properties = fields.appInstallProperties;
 
     let result: any;
     if (creativeId) {

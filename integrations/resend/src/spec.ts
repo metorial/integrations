@@ -8,5 +8,5 @@ export let spec = SlateSpecification.create({
   description: 'Email API platform for sending transactional and marketing emails.',
   metadata: {},
   config,
-  auth,
+  auth
 });

@@ -11,36 +11,44 @@ let threadEventTypes = [
   'thread.service_level_agreement_status_transitioned',
   'thread.thread_field_created',
   'thread.thread_field_updated',
-  'thread.thread_field_deleted',
+  'thread.thread_field_deleted'
 ] as const;
 
-export let threadEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Thread Events',
-    key: 'thread_events',
-    description: 'Triggers when thread lifecycle events occur: created, status changed, assigned/unassigned, labels changed, priority changed, SLA status transitioned, or thread fields modified.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Webhook event type'),
-    eventId: z.string().describe('Unique event ID'),
-    timestamp: z.string().describe('Event timestamp (ISO 8601)'),
-    workspaceId: z.string().describe('Workspace ID'),
-    payload: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    threadId: z.string().describe('Plain thread ID'),
-    title: z.string().nullable().describe('Thread title'),
-    status: z.string().nullable().describe('Thread status'),
-    priority: z.number().nullable().describe('Thread priority'),
-    customerId: z.string().nullable().describe('Customer ID'),
-    previousStatus: z.string().nullable().describe('Previous thread status (for transitions)'),
-    previousPriority: z.number().nullable().describe('Previous thread priority (for changes)'),
-  }))
+export let threadEvents = SlateTrigger.create(spec, {
+  name: 'Thread Events',
+  key: 'thread_events',
+  description:
+    'Triggers when thread lifecycle events occur: created, status changed, assigned/unassigned, labels changed, priority changed, SLA status transitioned, or thread fields modified.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Webhook event type'),
+      eventId: z.string().describe('Unique event ID'),
+      timestamp: z.string().describe('Event timestamp (ISO 8601)'),
+      workspaceId: z.string().describe('Workspace ID'),
+      payload: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      threadId: z.string().describe('Plain thread ID'),
+      title: z.string().nullable().describe('Thread title'),
+      status: z.string().nullable().describe('Thread status'),
+      priority: z.number().nullable().describe('Thread priority'),
+      customerId: z.string().nullable().describe('Customer ID'),
+      previousStatus: z
+        .string()
+        .nullable()
+        .describe('Previous thread status (for transitions)'),
+      previousPriority: z
+        .number()
+        .nullable()
+        .describe('Previous thread priority (for changes)')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!threadEventTypes.includes(data.type)) {
         return { inputs: [] };
@@ -53,12 +61,12 @@ export let threadEvents = SlateTrigger.create(
             eventId: data.id,
             timestamp: data.timestamp,
             workspaceId: data.workspaceId,
-            payload: data.payload,
-          },
-        ],
+            payload: data.payload
+          }
+        ]
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload;
       let thread = payload?.thread;
       let previousThread = payload?.previousThread;
@@ -73,9 +81,9 @@ export let threadEvents = SlateTrigger.create(
           priority: thread?.priority ?? null,
           customerId: thread?.customer?.id ?? null,
           previousStatus: previousThread?.status ?? null,
-          previousPriority: previousThread?.priority ?? null,
-        },
+          previousPriority: previousThread?.priority ?? null
+        }
       };
-    },
+    }
   })
   .build();

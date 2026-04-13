@@ -24,10 +24,10 @@ export class BotbabaClient {
     this.axios = createAxios({
       baseURL: 'https://app.botbaba.io/api',
       headers: {
-        'Authorization': config.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -50,12 +50,11 @@ export class BotbabaClient {
     provider: WhatsAppProvider,
     params: SendWhatsAppTemplateParams
   ): Promise<Record<string, unknown>> {
-    let endpoint = provider === '360dialog'
-      ? '/SendWhatsAppWAMessages'
-      : '/SendWhatsAppTemplateMessages';
+    let endpoint =
+      provider === '360dialog' ? '/SendWhatsAppWAMessages' : '/SendWhatsAppTemplateMessages';
 
     let body: Record<string, unknown> = {
-      mobile: params.mobileNumber,
+      mobile: params.mobileNumber
     };
 
     if (params.templateName) {

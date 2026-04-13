@@ -4,54 +4,56 @@ import { generateSecretToken, verifySecretToken } from '../lib/webhook-utils';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let chatMemberUpdatedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Chat Member Updated',
-    key: 'chat_member_updated',
-    description: 'Triggers when a chat member\'s status changes, the bot\'s own member status changes, or a join request is received. Covers my_chat_member, chat_member, and chat_join_request events.',
-  }
-)
-  .input(z.object({
-    updateId: z.number().describe('Unique update identifier'),
-    eventType: z.string().describe('Type of chat member event'),
-    eventData: z.any().describe('Raw event data from Telegram'),
-  }))
-  .output(z.object({
-    chatId: z.string().describe('Chat ID where the event occurred'),
-    chatType: z.string().describe('Chat type: private, group, supergroup, or channel'),
-    chatTitle: z.string().optional().describe('Chat title'),
-    userId: z.number().describe('User ID of the affected member'),
-    userFirstName: z.string().describe('First name of the affected member'),
-    userUsername: z.string().optional().describe('Username of the affected member'),
-    oldStatus: z.string().optional().describe('Previous member status'),
-    newStatus: z.string().optional().describe('New member status'),
-    date: z.number().describe('Unix timestamp of the event'),
-    inviteLink: z.string().optional().describe('Invite link used (for join requests)'),
-    bio: z.string().optional().describe('User bio (for join requests)'),
-  }))
+export let chatMemberUpdatedTrigger = SlateTrigger.create(spec, {
+  name: 'Chat Member Updated',
+  key: 'chat_member_updated',
+  description:
+    "Triggers when a chat member's status changes, the bot's own member status changes, or a join request is received. Covers my_chat_member, chat_member, and chat_join_request events."
+})
+  .input(
+    z.object({
+      updateId: z.number().describe('Unique update identifier'),
+      eventType: z.string().describe('Type of chat member event'),
+      eventData: z.any().describe('Raw event data from Telegram')
+    })
+  )
+  .output(
+    z.object({
+      chatId: z.string().describe('Chat ID where the event occurred'),
+      chatType: z.string().describe('Chat type: private, group, supergroup, or channel'),
+      chatTitle: z.string().optional().describe('Chat title'),
+      userId: z.number().describe('User ID of the affected member'),
+      userFirstName: z.string().describe('First name of the affected member'),
+      userUsername: z.string().optional().describe('Username of the affected member'),
+      oldStatus: z.string().optional().describe('Previous member status'),
+      newStatus: z.string().optional().describe('New member status'),
+      date: z.number().describe('Unix timestamp of the event'),
+      inviteLink: z.string().optional().describe('Invite link used (for join requests)'),
+      bio: z.string().optional().describe('User bio (for join requests)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new TelegramClient(ctx.auth.token);
       let secretToken = generateSecretToken();
 
       await client.setWebhook({
         url: ctx.input.webhookBaseUrl,
         allowedUpdates: ['my_chat_member', 'chat_member', 'chat_join_request'],
-        secretToken,
+        secretToken
       });
 
       return {
-        registrationDetails: { secretToken },
+        registrationDetails: { secretToken }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new TelegramClient(ctx.auth.token);
       await client.deleteWebhook();
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let registrationDetails = ctx.state?.registrationDetails;
       if (registrationDetails?.secretToken) {
         if (!verifySecretToken(ctx.request, registrationDetails.secretToken)) {
@@ -59,21 +61,33 @@ export let chatMemberUpdatedTrigger = SlateTrigger.create(
         }
       }
 
-      let data = await ctx.request.json() as any;
+      let data = (await ctx.request.json()) as any;
       let inputs: Array<{ updateId: number; eventType: string; eventData: any }> = [];
 
       if (data.my_chat_member) {
-        inputs.push({ updateId: data.update_id, eventType: 'my_chat_member', eventData: data.my_chat_member });
+        inputs.push({
+          updateId: data.update_id,
+          eventType: 'my_chat_member',
+          eventData: data.my_chat_member
+        });
       } else if (data.chat_member) {
-        inputs.push({ updateId: data.update_id, eventType: 'chat_member', eventData: data.chat_member });
+        inputs.push({
+          updateId: data.update_id,
+          eventType: 'chat_member',
+          eventData: data.chat_member
+        });
       } else if (data.chat_join_request) {
-        inputs.push({ updateId: data.update_id, eventType: 'chat_join_request', eventData: data.chat_join_request });
+        inputs.push({
+          updateId: data.update_id,
+          eventType: 'chat_join_request',
+          eventData: data.chat_join_request
+        });
       }
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let d = ctx.input.eventData;
       let isJoinRequest = ctx.input.eventType === 'chat_join_request';
 
@@ -109,9 +123,9 @@ export let chatMemberUpdatedTrigger = SlateTrigger.create(
           newStatus,
           date: d.date,
           inviteLink: isJoinRequest ? d.invite_link?.invite_link : undefined,
-          bio: isJoinRequest ? d.bio : undefined,
-        },
+          bio: isJoinRequest ? d.bio : undefined
+        }
       };
-    },
+    }
   })
   .build();

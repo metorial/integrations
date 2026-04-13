@@ -3,24 +3,21 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   certcentral: 'https://www.digicert.com/services/v2',
-  certcentral_eu: 'https://www.digicert.com/services/v2',
+  certcentral_eu: 'https://www.digicert.com/services/v2'
 };
 
 export class CertCentralClient {
   private axios: AxiosInstance;
 
-  constructor(opts: {
-    token: string;
-    platform: string;
-  }) {
+  constructor(opts: { token: string; platform: string }) {
     let baseURL = BASE_URLS[opts.platform] || BASE_URLS.certcentral;
 
     this.axios = createAxios({
       baseURL,
       headers: {
         'X-DC-DEVKEY': opts.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -57,17 +54,20 @@ export class CertCentralClient {
     return res.data;
   }
 
-  async revokeCertificate(certificateId: string, body: {
-    comments?: string;
-    skip_approval?: boolean;
-  }): Promise<any> {
+  async revokeCertificate(
+    certificateId: string,
+    body: {
+      comments?: string;
+      skip_approval?: boolean;
+    }
+  ): Promise<any> {
     let res = await this.axios.put(`/certificate/${certificateId}/revoke`, body);
     return res.data;
   }
 
   async downloadCertificate(certificateId: string, format: string = 'pem_all'): Promise<any> {
     let res = await this.axios.get(`/certificate/${certificateId}/download/format/${format}`, {
-      responseType: format === 'pem_all' ? 'text' : 'arraybuffer',
+      responseType: format === 'pem_all' ? 'text' : 'arraybuffer'
     });
     return res.data;
   }
@@ -103,10 +103,13 @@ export class CertCentralClient {
     return res.data;
   }
 
-  async getDomain(domainId: string, params?: {
-    include_validation?: boolean;
-    include_dcv?: boolean;
-  }): Promise<any> {
+  async getDomain(
+    domainId: string,
+    params?: {
+      include_validation?: boolean;
+      include_dcv?: boolean;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/domain/${domainId}`, { params });
     return res.data;
   }
@@ -131,10 +134,13 @@ export class CertCentralClient {
     return res.data;
   }
 
-  async submitDomainForValidation(domainId: string, body: {
-    dcv_method: string;
-    order_id?: number;
-  }): Promise<any> {
+  async submitDomainForValidation(
+    domainId: string,
+    body: {
+      dcv_method: string;
+      order_id?: number;
+    }
+  ): Promise<any> {
     let res = await this.axios.put(`/domain/${domainId}/dcv`, body);
     return res.data;
   }
@@ -155,9 +161,12 @@ export class CertCentralClient {
     return res.data;
   }
 
-  async getOrganization(organizationId: string, params?: {
-    include_validation?: boolean;
-  }): Promise<any> {
+  async getOrganization(
+    organizationId: string,
+    params?: {
+      include_validation?: boolean;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/organization/${organizationId}`, { params });
     return res.data;
   }
@@ -172,18 +181,19 @@ export class CertCentralClient {
     return res.data;
   }
 
-  async submitOrganizationForValidation(organizationId: string, body: {
-    validations: Array<{ type: string }>;
-  }): Promise<any> {
+  async submitOrganizationForValidation(
+    organizationId: string,
+    body: {
+      validations: Array<{ type: string }>;
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/organization/${organizationId}/validation`, body);
     return res.data;
   }
 
   // ── Products ────────────────────────────────────────────
 
-  async listProducts(params?: {
-    container_id?: number;
-  }): Promise<any> {
+  async listProducts(params?: { container_id?: number }): Promise<any> {
     let res = await this.axios.get('/product', { params });
     return res.data;
   }
@@ -209,7 +219,11 @@ export class CertCentralClient {
     return res.data;
   }
 
-  async updateRequestStatus(requestId: string, status: string, processorComment?: string): Promise<any> {
+  async updateRequestStatus(
+    requestId: string,
+    status: string,
+    processorComment?: string
+  ): Promise<any> {
     let body: Record<string, any> = { status };
     if (processorComment) {
       body.processor_comment = processorComment;

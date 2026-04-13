@@ -21,7 +21,7 @@ export class NgrokClient {
 
   private get headers() {
     return {
-      'Authorization': `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`,
       'Ngrok-Version': '2',
       'Content-Type': 'application/json'
     };
@@ -70,12 +70,15 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateDomain(domainId: string, data: {
-    description?: string;
-    metadata?: string;
-    certificateId?: string;
-    certificateManagementPolicy?: { authority: string; privateKeyType?: string } | null;
-  }) {
+  async updateDomain(
+    domainId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+      certificateId?: string;
+      certificateManagementPolicy?: { authority: string; privateKeyType?: string } | null;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
@@ -90,7 +93,9 @@ export class NgrokClient {
         };
       }
     }
-    let res = await this.axios.patch(`/reserved_domains/${domainId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/reserved_domains/${domainId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -100,11 +105,7 @@ export class NgrokClient {
 
   // ---- Reserved Addresses ----
 
-  async createAddress(data: {
-    description?: string;
-    metadata?: string;
-    region?: string;
-  }) {
+  async createAddress(data: { description?: string; metadata?: string; region?: string }) {
     let body: Record<string, any> = {};
     if (data.description) body['description'] = data.description;
     if (data.metadata) body['metadata'] = data.metadata;
@@ -126,14 +127,19 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateAddress(addressId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateAddress(
+    addressId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/reserved_addrs/${addressId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/reserved_addrs/${addressId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -174,20 +180,25 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateEndpoint(endpointId: string, data: {
-    url?: string;
-    trafficPolicy?: string;
-    description?: string;
-    metadata?: string;
-    bindings?: string[];
-  }) {
+  async updateEndpoint(
+    endpointId: string,
+    data: {
+      url?: string;
+      trafficPolicy?: string;
+      description?: string;
+      metadata?: string;
+      bindings?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.url !== undefined) body['url'] = data.url;
     if (data.trafficPolicy !== undefined) body['traffic_policy'] = data.trafficPolicy;
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
     if (data.bindings !== undefined) body['bindings'] = data.bindings;
-    let res = await this.axios.patch(`/endpoints/${endpointId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/endpoints/${endpointId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -226,7 +237,11 @@ export class NgrokClient {
   }
 
   async restartTunnelSession(sessionId: string) {
-    await this.axios.post(`/tunnel_sessions/${sessionId}/restart`, {}, { headers: this.headers });
+    await this.axios.post(
+      `/tunnel_sessions/${sessionId}/restart`,
+      {},
+      { headers: this.headers }
+    );
   }
 
   async stopTunnelSession(sessionId: string) {
@@ -235,11 +250,7 @@ export class NgrokClient {
 
   // ---- API Keys ----
 
-  async createApiKey(data: {
-    description?: string;
-    metadata?: string;
-    ownerId?: string;
-  }) {
+  async createApiKey(data: { description?: string; metadata?: string; ownerId?: string }) {
     let body: Record<string, any> = {};
     if (data.description) body['description'] = data.description;
     if (data.metadata) body['metadata'] = data.metadata;
@@ -261,10 +272,13 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateApiKey(keyId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateApiKey(
+    keyId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
@@ -306,16 +320,21 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateCredential(credentialId: string, data: {
-    description?: string;
-    metadata?: string;
-    acl?: string[];
-  }) {
+  async updateCredential(
+    credentialId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+      acl?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
     if (data.acl !== undefined) body['acl'] = data.acl;
-    let res = await this.axios.patch(`/credentials/${credentialId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/credentials/${credentialId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -325,10 +344,7 @@ export class NgrokClient {
 
   // ---- IP Policies ----
 
-  async createIpPolicy(data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async createIpPolicy(data: { description?: string; metadata?: string }) {
     let body: Record<string, any> = {};
     if (data.description) body['description'] = data.description;
     if (data.metadata) body['metadata'] = data.metadata;
@@ -349,14 +365,19 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateIpPolicy(policyId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateIpPolicy(
+    policyId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/ip_policies/${policyId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/ip_policies/${policyId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -397,16 +418,21 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateIpPolicyRule(ruleId: string, data: {
-    cidr?: string;
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateIpPolicyRule(
+    ruleId: string,
+    data: {
+      cidr?: string;
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.cidr !== undefined) body['cidr'] = data.cidr;
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/ip_policy_rules/${ruleId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/ip_policy_rules/${ruleId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -445,14 +471,19 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateTlsCertificate(certId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateTlsCertificate(
+    certId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/tls_certificates/${certId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/tls_certificates/${certId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -470,7 +501,9 @@ export class NgrokClient {
     let body: Record<string, any> = { ca_pem: data.caPem };
     if (data.description) body['description'] = data.description;
     if (data.metadata) body['metadata'] = data.metadata;
-    let res = await this.axios.post('/certificate_authorities', body, { headers: this.headers });
+    let res = await this.axios.post('/certificate_authorities', body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -483,18 +516,25 @@ export class NgrokClient {
   }
 
   async getCertificateAuthority(caId: string) {
-    let res = await this.axios.get(`/certificate_authorities/${caId}`, { headers: this.headers });
+    let res = await this.axios.get(`/certificate_authorities/${caId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateCertificateAuthority(caId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateCertificateAuthority(
+    caId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/certificate_authorities/${caId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/certificate_authorities/${caId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -529,27 +569,36 @@ export class NgrokClient {
   }
 
   async getEventSubscription(subscriptionId: string) {
-    let res = await this.axios.get(`/event_subscriptions/${subscriptionId}`, { headers: this.headers });
+    let res = await this.axios.get(`/event_subscriptions/${subscriptionId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateEventSubscription(subscriptionId: string, data: {
-    description?: string;
-    metadata?: string;
-    sources?: { type: string }[];
-    destinationIds?: string[];
-  }) {
+  async updateEventSubscription(
+    subscriptionId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+      sources?: { type: string }[];
+      destinationIds?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
     if (data.sources !== undefined) body['sources'] = data.sources;
     if (data.destinationIds !== undefined) body['destination_ids'] = data.destinationIds;
-    let res = await this.axios.patch(`/event_subscriptions/${subscriptionId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/event_subscriptions/${subscriptionId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
   async deleteEventSubscription(subscriptionId: string) {
-    await this.axios.delete(`/event_subscriptions/${subscriptionId}`, { headers: this.headers });
+    await this.axios.delete(`/event_subscriptions/${subscriptionId}`, {
+      headers: this.headers
+    });
   }
 
   // ---- Event Destinations ----
@@ -577,22 +626,29 @@ export class NgrokClient {
   }
 
   async getEventDestination(destinationId: string) {
-    let res = await this.axios.get(`/event_destinations/${destinationId}`, { headers: this.headers });
+    let res = await this.axios.get(`/event_destinations/${destinationId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateEventDestination(destinationId: string, data: {
-    description?: string;
-    metadata?: string;
-    format?: string;
-    target?: Record<string, any>;
-  }) {
+  async updateEventDestination(
+    destinationId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+      format?: string;
+      target?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
     if (data.format !== undefined) body['format'] = data.format;
     if (data.target !== undefined) body['target'] = data.target;
-    let res = await this.axios.patch(`/event_destinations/${destinationId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/event_destinations/${destinationId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -602,10 +658,7 @@ export class NgrokClient {
 
   // ---- Bot Users ----
 
-  async createBotUser(data: {
-    name: string;
-    active?: boolean;
-  }) {
+  async createBotUser(data: { name: string; active?: boolean }) {
     let body: Record<string, any> = { name: data.name };
     if (data.active !== undefined) body['active'] = data.active;
     let res = await this.axios.post('/bot_users', body, { headers: this.headers });
@@ -625,14 +678,19 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateBotUser(botUserId: string, data: {
-    name?: string;
-    active?: boolean;
-  }) {
+  async updateBotUser(
+    botUserId: string,
+    data: {
+      name?: string;
+      active?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body['name'] = data.name;
     if (data.active !== undefined) body['active'] = data.active;
-    let res = await this.axios.patch(`/bot_users/${botUserId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/bot_users/${botUserId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -667,20 +725,27 @@ export class NgrokClient {
   }
 
   async getSshCredential(credentialId: string) {
-    let res = await this.axios.get(`/ssh_credentials/${credentialId}`, { headers: this.headers });
+    let res = await this.axios.get(`/ssh_credentials/${credentialId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateSshCredential(credentialId: string, data: {
-    description?: string;
-    metadata?: string;
-    acl?: string[];
-  }) {
+  async updateSshCredential(
+    credentialId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+      acl?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
     if (data.acl !== undefined) body['acl'] = data.acl;
-    let res = await this.axios.patch(`/ssh_credentials/${credentialId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/ssh_credentials/${credentialId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -703,7 +768,9 @@ export class NgrokClient {
     if (data.privateKeyType) body['private_key_type'] = data.privateKeyType;
     if (data.ellipticCurve) body['elliptic_curve'] = data.ellipticCurve;
     if (data.keySize) body['key_size'] = data.keySize;
-    let res = await this.axios.post('/ssh_certificate_authorities', body, { headers: this.headers });
+    let res = await this.axios.post('/ssh_certificate_authorities', body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -716,18 +783,25 @@ export class NgrokClient {
   }
 
   async getSshCertificateAuthority(caId: string) {
-    let res = await this.axios.get(`/ssh_certificate_authorities/${caId}`, { headers: this.headers });
+    let res = await this.axios.get(`/ssh_certificate_authorities/${caId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateSshCertificateAuthority(caId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateSshCertificateAuthority(
+    caId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/ssh_certificate_authorities/${caId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/ssh_certificate_authorities/${caId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -768,18 +842,25 @@ export class NgrokClient {
   }
 
   async getSshHostCertificate(certId: string) {
-    let res = await this.axios.get(`/ssh_host_certificates/${certId}`, { headers: this.headers });
+    let res = await this.axios.get(`/ssh_host_certificates/${certId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateSshHostCertificate(certId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateSshHostCertificate(
+    certId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/ssh_host_certificates/${certId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/ssh_host_certificates/${certId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -824,18 +905,25 @@ export class NgrokClient {
   }
 
   async getSshUserCertificate(certId: string) {
-    let res = await this.axios.get(`/ssh_user_certificates/${certId}`, { headers: this.headers });
+    let res = await this.axios.get(`/ssh_user_certificates/${certId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
-  async updateSshUserCertificate(certId: string, data: {
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateSshUserCertificate(
+    certId: string,
+    data: {
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/ssh_user_certificates/${certId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/ssh_user_certificates/${certId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -872,7 +960,9 @@ export class NgrokClient {
   }
 
   async getIpRestriction(restrictionId: string) {
-    let res = await this.axios.get(`/ip_restrictions/${restrictionId}`, { headers: this.headers });
+    let res = await this.axios.get(`/ip_restrictions/${restrictionId}`, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -913,18 +1003,23 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateSecret(secretId: string, data: {
-    name?: string;
-    value?: string;
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateSecret(
+    secretId: string,
+    data: {
+      name?: string;
+      value?: string;
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body['name'] = data.name;
     if (data.value !== undefined) body['value'] = data.value;
     if (data.description !== undefined) body['description'] = data.description;
     if (data.metadata !== undefined) body['metadata'] = data.metadata;
-    let res = await this.axios.patch(`/vault_secrets/${secretId}`, body, { headers: this.headers });
+    let res = await this.axios.patch(`/vault_secrets/${secretId}`, body, {
+      headers: this.headers
+    });
     return res.data;
   }
 
@@ -934,11 +1029,7 @@ export class NgrokClient {
 
   // ---- Vaults ----
 
-  async createVault(data: {
-    name: string;
-    description?: string;
-    metadata?: string;
-  }) {
+  async createVault(data: { name: string; description?: string; metadata?: string }) {
     let body: Record<string, any> = { name: data.name };
     if (data.description) body['description'] = data.description;
     if (data.metadata) body['metadata'] = data.metadata;
@@ -959,11 +1050,14 @@ export class NgrokClient {
     return res.data;
   }
 
-  async updateVault(vaultId: string, data: {
-    name?: string;
-    description?: string;
-    metadata?: string;
-  }) {
+  async updateVault(
+    vaultId: string,
+    data: {
+      name?: string;
+      description?: string;
+      metadata?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body['name'] = data.name;
     if (data.description !== undefined) body['description'] = data.description;

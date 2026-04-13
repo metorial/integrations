@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let axios = createAxios({
-  baseURL: 'https://opengraph.io/api/1.1',
+  baseURL: 'https://opengraph.io/api/1.1'
 });
 
 export interface SiteOptions {
@@ -69,7 +69,10 @@ let toSnakeCase = (str: string): string => {
   return str.replace(/([A-Z])/g, '_$1').toLowerCase();
 };
 
-let buildParams = (appId: string, options: Record<string, unknown>): Record<string, unknown> => {
+let buildParams = (
+  appId: string,
+  options: Record<string, unknown>
+): Record<string, unknown> => {
   let params: Record<string, unknown> = { app_id: appId };
   for (let [key, value] of Object.entries(options)) {
     if (value !== undefined && value !== null) {

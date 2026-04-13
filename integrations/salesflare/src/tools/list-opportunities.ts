@@ -3,50 +3,62 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listOpportunities = SlateTool.create(
-  spec,
-  {
-    name: 'List Opportunities',
-    key: 'list_opportunities',
-    description: `Search and list sales opportunities in Salesflare. Filter by stage, owner, account, value range, close date, pipeline, tags, and more. Default date filter is on close_date.`,
-    tags: {
-      readOnly: true,
-    },
+export let listOpportunities = SlateTool.create(spec, {
+  name: 'List Opportunities',
+  key: 'list_opportunities',
+  description: `Search and list sales opportunities in Salesflare. Filter by stage, owner, account, value range, close date, pipeline, tags, and more. Default date filter is on close_date.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Full-text search'),
-    name: z.string().optional().describe('Filter by opportunity name'),
-    stageId: z.number().optional().describe('Filter by stage ID'),
-    stageName: z.string().optional().describe('Filter by stage name'),
-    ownerId: z.number().optional().describe('Filter by owner user ID'),
-    accountId: z.number().optional().describe('Filter by account ID'),
-    assigneeId: z.number().optional().describe('Filter by assignee user ID'),
-    pipelineId: z.number().optional().describe('Filter by pipeline ID'),
-    minValue: z.number().optional().describe('Minimum opportunity value'),
-    maxValue: z.number().optional().describe('Maximum opportunity value'),
-    closeAfter: z.string().optional().describe('Filter by close date after (ISO 8601)'),
-    closeBefore: z.string().optional().describe('Filter by close date before (ISO 8601)'),
-    creationAfter: z.string().optional().describe('Filter by creation date after (ISO 8601)'),
-    creationBefore: z.string().optional().describe('Filter by creation date before (ISO 8601)'),
-    closed: z.boolean().optional().describe('Filter by closed status'),
-    done: z.boolean().optional().describe('Filter by done status'),
-    tagName: z.array(z.string()).optional().describe('Filter by tag name(s)'),
-    hotness: z.number().optional().describe('Filter by hotness: 1=Room temp, 2=Hot, 3=On fire'),
-    limit: z.number().optional().default(20).describe('Max results to return'),
-    offset: z.number().optional().default(0).describe('Pagination offset'),
-    orderBy: z.array(z.string()).optional().describe('Sort order, e.g. ["value desc"]'),
-  }))
-  .output(z.object({
-    opportunities: z.array(z.record(z.string(), z.any())).describe('List of opportunity objects'),
-    count: z.number().describe('Number of opportunities returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Full-text search'),
+      name: z.string().optional().describe('Filter by opportunity name'),
+      stageId: z.number().optional().describe('Filter by stage ID'),
+      stageName: z.string().optional().describe('Filter by stage name'),
+      ownerId: z.number().optional().describe('Filter by owner user ID'),
+      accountId: z.number().optional().describe('Filter by account ID'),
+      assigneeId: z.number().optional().describe('Filter by assignee user ID'),
+      pipelineId: z.number().optional().describe('Filter by pipeline ID'),
+      minValue: z.number().optional().describe('Minimum opportunity value'),
+      maxValue: z.number().optional().describe('Maximum opportunity value'),
+      closeAfter: z.string().optional().describe('Filter by close date after (ISO 8601)'),
+      closeBefore: z.string().optional().describe('Filter by close date before (ISO 8601)'),
+      creationAfter: z
+        .string()
+        .optional()
+        .describe('Filter by creation date after (ISO 8601)'),
+      creationBefore: z
+        .string()
+        .optional()
+        .describe('Filter by creation date before (ISO 8601)'),
+      closed: z.boolean().optional().describe('Filter by closed status'),
+      done: z.boolean().optional().describe('Filter by done status'),
+      tagName: z.array(z.string()).optional().describe('Filter by tag name(s)'),
+      hotness: z
+        .number()
+        .optional()
+        .describe('Filter by hotness: 1=Room temp, 2=Hot, 3=On fire'),
+      limit: z.number().optional().default(20).describe('Max results to return'),
+      offset: z.number().optional().default(0).describe('Pagination offset'),
+      orderBy: z.array(z.string()).optional().describe('Sort order, e.g. ["value desc"]')
+    })
+  )
+  .output(
+    z.object({
+      opportunities: z
+        .array(z.record(z.string(), z.any()))
+        .describe('List of opportunity objects'),
+      count: z.number().describe('Number of opportunities returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let params: Record<string, any> = {
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     };
     if (ctx.input.search) params.search = ctx.input.search;
     if (ctx.input.name) params.name = ctx.input.name;
@@ -74,9 +86,9 @@ export let listOpportunities = SlateTool.create(
     return {
       output: {
         opportunities: list,
-        count: list.length,
+        count: list.length
       },
-      message: `Found **${list.length}** opportunity(ies).`,
+      message: `Found **${list.length}** opportunity(ies).`
     };
   })
   .build();

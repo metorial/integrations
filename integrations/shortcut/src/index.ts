@@ -27,7 +27,7 @@ import {
   manageLabels,
   createDocument,
   getDocument,
-  updateDocument,
+  updateDocument
 } from './tools';
 import { workspaceEvents } from './triggers';
 
@@ -60,9 +60,7 @@ export let provider = Slate.create({
     manageLabels,
     createDocument,
     getDocument,
-    updateDocument,
+    updateDocument
   ],
-  triggers: [
-    workspaceEvents,
-  ],
+  triggers: [workspaceEvents]
 });

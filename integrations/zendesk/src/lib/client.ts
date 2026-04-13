@@ -11,29 +11,33 @@ export class ZendeskClient {
   private http: AxiosInstance;
 
   constructor(private config: ZendeskClientConfig) {
-    let authHeader = config.tokenType === 'basic'
-      ? `Basic ${config.token}`
-      : `Bearer ${config.token}`;
+    let authHeader =
+      config.tokenType === 'basic' ? `Basic ${config.token}` : `Bearer ${config.token}`;
 
     this.http = createAxios({
       baseURL: `https://${config.subdomain}.zendesk.com/api/v2`,
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Tickets ──────────────────────────────────────────────
 
-  async listTickets(params?: { page?: number; perPage?: number; sortBy?: string; sortOrder?: string }) {
+  async listTickets(params?: {
+    page?: number;
+    perPage?: number;
+    sortBy?: string;
+    sortOrder?: string;
+  }) {
     let response = await this.http.get('/tickets.json', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
         sort_by: params?.sortBy,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -59,7 +63,7 @@ export class ZendeskClient {
 
   async getTicketComments(ticketId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.http.get(`/tickets/${ticketId}/comments.json`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -68,7 +72,7 @@ export class ZendeskClient {
 
   async listUsers(params?: { page?: number; perPage?: number; role?: string }) {
     let response = await this.http.get('/users.json', {
-      params: { page: params?.page, per_page: params?.perPage, role: params?.role },
+      params: { page: params?.page, per_page: params?.perPage, role: params?.role }
     });
     return response.data;
   }
@@ -106,7 +110,7 @@ export class ZendeskClient {
 
   async listOrganizations(params?: { page?: number; perPage?: number }) {
     let response = await this.http.get('/organizations.json', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -132,30 +136,39 @@ export class ZendeskClient {
 
   // ── Search ───────────────────────────────────────────────
 
-  async search(query: string, params?: { page?: number; perPage?: number; sortBy?: string; sortOrder?: string }) {
+  async search(
+    query: string,
+    params?: { page?: number; perPage?: number; sortBy?: string; sortOrder?: string }
+  ) {
     let response = await this.http.get('/search.json', {
       params: {
         query,
         page: params?.page,
         per_page: params?.perPage,
         sort_by: params?.sortBy,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
 
   // ── Help Center (Articles) ──────────────────────────────
 
-  async listArticles(params?: { page?: number; perPage?: number; sortBy?: string; sortOrder?: string; locale?: string }) {
+  async listArticles(params?: {
+    page?: number;
+    perPage?: number;
+    sortBy?: string;
+    sortOrder?: string;
+    locale?: string;
+  }) {
     let response = await this.http.get('/help_center/articles.json', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
         sort_by: params?.sortBy,
         sort_order: params?.sortOrder,
-        locale: params?.locale,
-      },
+        locale: params?.locale
+      }
     });
     return response.data;
   }
@@ -169,7 +182,9 @@ export class ZendeskClient {
   }
 
   async createArticle(sectionId: string, article: Record<string, any>) {
-    let response = await this.http.post(`/help_center/sections/${sectionId}/articles.json`, { article });
+    let response = await this.http.post(`/help_center/sections/${sectionId}/articles.json`, {
+      article
+    });
     return response.data.article;
   }
 
@@ -184,14 +199,14 @@ export class ZendeskClient {
 
   async listSections(params?: { page?: number; perPage?: number }) {
     let response = await this.http.get('/help_center/sections.json', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   async listCategories(params?: { page?: number; perPage?: number }) {
     let response = await this.http.get('/help_center/categories.json', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -214,7 +229,7 @@ export class ZendeskClient {
 
   async listTriggers(params?: { page?: number; perPage?: number; active?: boolean }) {
     let response = await this.http.get('/triggers.json', {
-      params: { page: params?.page, per_page: params?.perPage, active: params?.active },
+      params: { page: params?.page, per_page: params?.perPage, active: params?.active }
     });
     return response.data;
   }
@@ -223,7 +238,7 @@ export class ZendeskClient {
 
   async listAutomations(params?: { page?: number; perPage?: number; active?: boolean }) {
     let response = await this.http.get('/automations.json', {
-      params: { page: params?.page, per_page: params?.perPage, active: params?.active },
+      params: { page: params?.page, per_page: params?.perPage, active: params?.active }
     });
     return response.data;
   }
@@ -232,7 +247,7 @@ export class ZendeskClient {
 
   async listMacros(params?: { page?: number; perPage?: number }) {
     let response = await this.http.get('/macros.json', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -241,14 +256,14 @@ export class ZendeskClient {
 
   async listViews(params?: { page?: number; perPage?: number }) {
     let response = await this.http.get('/views.json', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   async getViewTickets(viewId: string, params?: { page?: number; perPage?: number }) {
     let response = await this.http.get(`/views/${viewId}/tickets.json`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -278,21 +293,21 @@ export class ZendeskClient {
 
   async getIncrementalTickets(startTime: number) {
     let response = await this.http.get('/incremental/tickets.json', {
-      params: { start_time: startTime },
+      params: { start_time: startTime }
     });
     return response.data;
   }
 
   async getIncrementalUsers(startTime: number) {
     let response = await this.http.get('/incremental/users.json', {
-      params: { start_time: startTime },
+      params: { start_time: startTime }
     });
     return response.data;
   }
 
   async getIncrementalOrganizations(startTime: number) {
     let response = await this.http.get('/incremental/organizations.json', {
-      params: { start_time: startTime },
+      params: { start_time: startTime }
     });
     return response.data;
   }
@@ -311,16 +326,19 @@ export class ZendeskClient {
     return response.data;
   }
 
-  async getCustomObjectRecords(customObjectKey: string, params?: { page?: number; perPage?: number }) {
+  async getCustomObjectRecords(
+    customObjectKey: string,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.http.get(`/custom_objects/${customObjectKey}/records`, {
-      params: { 'page[size]': params?.perPage },
+      params: { 'page[size]': params?.perPage }
     });
     return response.data;
   }
 
   async createCustomObjectRecord(customObjectKey: string, record: Record<string, any>) {
     let response = await this.http.post(`/custom_objects/${customObjectKey}/records`, {
-      custom_object_record: record,
+      custom_object_record: record
     });
     return response.data.custom_object_record;
   }
@@ -336,7 +354,7 @@ export class ZendeskClient {
 
   async listSatisfactionRatings(params?: { page?: number; perPage?: number }) {
     let response = await this.http.get('/satisfaction_ratings.json', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }

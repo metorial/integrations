@@ -10,7 +10,7 @@ import {
   updateGeneration,
   retryGeneration,
   deleteGenerations,
-  getCredits,
+  getCredits
 } from './tools';
 import { generationStatus } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     updateGeneration,
     retryGeneration,
     deleteGenerations,
-    getCredits,
+    getCredits
   ],
-  triggers: [
-    generationStatus,
-  ],
+  triggers: [generationStatus]
 });

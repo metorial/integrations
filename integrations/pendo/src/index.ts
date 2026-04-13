@@ -15,7 +15,7 @@ import {
   listFeatures,
   bulkDelete,
   getReport,
-  getMetadataSchema,
+  getMetadataSchema
 } from './tools';
 import { pendoEvents } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     listFeatures,
     bulkDelete,
     getReport,
-    getMetadataSchema,
+    getMetadataSchema
   ],
-  triggers: [
-    pendoEvents,
-  ],
+  triggers: [pendoEvents]
 });

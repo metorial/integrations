@@ -3,36 +3,38 @@ import { TablesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let datasetUpdated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Dataset Updated',
-    key: 'dataset_updated',
-    description: 'Triggers when recently refreshed time-series datasets are detected. Polls the Nasdaq Data Link dataset search API to find datasets that have been recently updated.',
-  }
-)
-  .input(z.object({
-    databaseCode: z.string().describe('Database code of the updated dataset.'),
-    datasetCode: z.string().describe('Dataset code of the updated dataset.'),
-    name: z.string().describe('Name of the dataset.'),
-    refreshedAt: z.string().describe('Timestamp of the latest refresh.'),
-    newestDate: z.string().describe('Newest available data date.'),
-  }))
-  .output(z.object({
-    databaseCode: z.string().describe('Database code.'),
-    datasetCode: z.string().describe('Dataset code.'),
-    name: z.string().describe('Dataset name.'),
-    refreshedAt: z.string().describe('Timestamp of the latest refresh.'),
-    newestDate: z.string().describe('Newest available data date.'),
-    frequency: z.string().describe('Data frequency.'),
-    columnNames: z.array(z.string()).describe('Available column names.'),
-  }))
+export let datasetUpdated = SlateTrigger.create(spec, {
+  name: 'Dataset Updated',
+  key: 'dataset_updated',
+  description:
+    'Triggers when recently refreshed time-series datasets are detected. Polls the Nasdaq Data Link dataset search API to find datasets that have been recently updated.'
+})
+  .input(
+    z.object({
+      databaseCode: z.string().describe('Database code of the updated dataset.'),
+      datasetCode: z.string().describe('Dataset code of the updated dataset.'),
+      name: z.string().describe('Name of the dataset.'),
+      refreshedAt: z.string().describe('Timestamp of the latest refresh.'),
+      newestDate: z.string().describe('Newest available data date.')
+    })
+  )
+  .output(
+    z.object({
+      databaseCode: z.string().describe('Database code.'),
+      datasetCode: z.string().describe('Dataset code.'),
+      name: z.string().describe('Dataset name.'),
+      refreshedAt: z.string().describe('Timestamp of the latest refresh.'),
+      newestDate: z.string().describe('Newest available data date.'),
+      frequency: z.string().describe('Data frequency.'),
+      columnNames: z.array(z.string()).describe('Available column names.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TablesClient({ apiKey: ctx.auth.token });
       let state = ctx.state || {};
       let seenRefreshTimes: Record<string, string> = state.seenRefreshTimes || {};
@@ -58,7 +60,7 @@ export let datasetUpdated = SlateTrigger.create(
                 datasetCode: ds.dataset_code,
                 name: ds.name,
                 refreshedAt: ds.refreshed_at,
-                newestDate: ds.newest_available_date,
+                newestDate: ds.newest_available_date
               });
             }
 
@@ -72,17 +74,17 @@ export let datasetUpdated = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          seenRefreshTimes,
-        },
+          seenRefreshTimes
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new TablesClient({ apiKey: ctx.auth.token });
 
       let response = await client.getTimeSeries({
         databaseCode: ctx.input.databaseCode,
-        datasetCode: ctx.input.datasetCode,
+        datasetCode: ctx.input.datasetCode
       });
 
       let ds = response.dataset;
@@ -97,8 +99,9 @@ export let datasetUpdated = SlateTrigger.create(
           refreshedAt: ds.refreshed_at || ctx.input.refreshedAt,
           newestDate: ds.newest_available_date || ctx.input.newestDate,
           frequency: ds.frequency || '',
-          columnNames: ds.column_names || [],
-        },
+          columnNames: ds.column_names || []
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

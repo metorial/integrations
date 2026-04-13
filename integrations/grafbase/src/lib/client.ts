@@ -17,16 +17,16 @@ export class Client {
     this.axios = createAxios({
       baseURL: base,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   private async graphql<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
     let response = await this.axios.post('/graphql', {
       query,
-      variables,
+      variables
     });
 
     let data = response.data;
@@ -63,7 +63,8 @@ export class Client {
   }
 
   async getAccountBySlug(slug: string): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       query GetAccount($slug: String!) {
         accountBySlug(slug: $slug) {
           id
@@ -71,17 +72,17 @@ export class Client {
           slug
         }
       }
-    `, { slug });
+    `,
+      { slug }
+    );
     return result.accountBySlug;
   }
 
   // ---- Graph Management ----
 
-  async createGraph(input: {
-    accountId: string;
-    slug: string;
-  }): Promise<any> {
-    let result = await this.graphql(`
+  async createGraph(input: { accountId: string; slug: string }): Promise<any> {
+    let result = await this.graphql(
+      `
       mutation CreateGraph($input: GraphCreateInput!) {
         graphCreate(input: $input) {
           ... on GraphCreateSuccess {
@@ -108,7 +109,9 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     let payload = result.graphCreate;
     if (payload.__typename && payload.__typename !== 'GraphCreateSuccess') {
@@ -118,7 +121,8 @@ export class Client {
   }
 
   async getGraph(accountSlug: string, graphSlug: string): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       query GetGraph($accountSlug: String!, $graphSlug: String!) {
         graphByAccountSlug(accountSlug: $accountSlug, graphSlug: $graphSlug) {
           id
@@ -137,12 +141,15 @@ export class Client {
           }
         }
       }
-    `, { accountSlug, graphSlug });
+    `,
+      { accountSlug, graphSlug }
+    );
     return result.graphByAccountSlug;
   }
 
   async getGraphById(graphId: string): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       query GetGraphByID($id: ID!) {
         node(id: $id) {
           ... on Graph {
@@ -163,12 +170,15 @@ export class Client {
           }
         }
       }
-    `, { id: graphId });
+    `,
+      { id: graphId }
+    );
     return result.node;
   }
 
   async deleteGraph(input: { graphId: string }): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       mutation DeleteGraph($input: GraphDeleteInput!) {
         graphDelete(input: $input) {
           ... on GraphDeleteSuccess {
@@ -179,7 +189,9 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     let payload = result.graphDelete;
     if (payload.__typename === 'GraphDoesNotExistError') {
@@ -190,11 +202,9 @@ export class Client {
 
   // ---- Branch Management ----
 
-  async createBranch(input: {
-    graphId: string;
-    name: string;
-  }): Promise<any> {
-    let result = await this.graphql(`
+  async createBranch(input: { graphId: string; name: string }): Promise<any> {
+    let result = await this.graphql(
+      `
       mutation CreateBranch($input: BranchCreateInput!) {
         branchCreate(input: $input) {
           ... on BranchCreateSuccess {
@@ -211,7 +221,9 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     let payload = result.branchCreate;
     if (payload.__typename && payload.__typename !== 'BranchCreateSuccess') {
@@ -221,7 +233,8 @@ export class Client {
   }
 
   async getBranch(accountSlug: string, graphSlug: string, branchName: string): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       query GetBranch($accountSlug: String!, $graphSlug: String!, $branchName: String!) {
         branch(accountSlug: $accountSlug, graphSlug: $graphSlug, name: $branchName) {
           id
@@ -229,12 +242,19 @@ export class Client {
           operationChecksEnabled
         }
       }
-    `, { accountSlug, graphSlug, branchName });
+    `,
+      { accountSlug, graphSlug, branchName }
+    );
     return result.branch;
   }
 
-  async deleteBranch(accountSlug: string, graphSlug: string, branchName: string): Promise<any> {
-    let result = await this.graphql(`
+  async deleteBranch(
+    accountSlug: string,
+    graphSlug: string,
+    branchName: string
+  ): Promise<any> {
+    let result = await this.graphql(
+      `
       mutation DeleteBranch($accountSlug: String!, $graphSlug: String!, $branchName: String!) {
         branchDelete(accountSlug: $accountSlug, graphSlug: $graphSlug, branchName: $branchName) {
           ... on BranchDeleteSuccess {
@@ -248,7 +268,9 @@ export class Client {
           }
         }
       }
-    `, { accountSlug, graphSlug, branchName });
+    `,
+      { accountSlug, graphSlug, branchName }
+    );
 
     let payload = result.branchDelete;
     if (payload.__typename === 'BranchDoesNotExistError') {
@@ -270,7 +292,8 @@ export class Client {
     schema: string;
     message?: string;
   }): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       mutation SubgraphPublish($input: SubgraphPublishInput!) {
         subgraphPublish(input: $input) {
           ... on SubgraphPublishSuccess {
@@ -283,7 +306,9 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     let payload = result.subgraphPublish;
     if (payload.__typename === 'SubgraphPublishError') {
@@ -300,7 +325,8 @@ export class Client {
     name: string;
     schema: string;
   }): Promise<any> {
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       mutation SubgraphCheck($input: SubgraphCheckInput!) {
         subgraphCheck(input: $input) {
           ... on SubgraphCheckSuccess {
@@ -322,7 +348,9 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     let payload = result.subgraphCheck;
     if (payload.__typename === 'SubgraphCheckError') {
@@ -333,9 +361,14 @@ export class Client {
 
   // ---- Subgraph Listing ----
 
-  async listSubgraphs(accountSlug: string, graphSlug: string, branch?: string): Promise<any[]> {
+  async listSubgraphs(
+    accountSlug: string,
+    graphSlug: string,
+    branch?: string
+  ): Promise<any[]> {
     let branchName = branch || 'main';
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       query ListSubgraphs($accountSlug: String!, $graphSlug: String!, $branchName: String!) {
         branch(accountSlug: $accountSlug, graphSlug: $graphSlug, name: $branchName) {
           subgraphs {
@@ -345,17 +378,25 @@ export class Client {
           }
         }
       }
-    `, { accountSlug, graphSlug, branchName });
+    `,
+      { accountSlug, graphSlug, branchName }
+    );
     return result.branch?.subgraphs || [];
   }
 
   // ---- Schema Retrieval ----
 
-  async getSchema(accountSlug: string, graphSlug: string, branch?: string, subgraphName?: string): Promise<string | null> {
+  async getSchema(
+    accountSlug: string,
+    graphSlug: string,
+    branch?: string,
+    subgraphName?: string
+  ): Promise<string | null> {
     let branchName = branch || 'main';
 
     if (subgraphName) {
-      let result = await this.graphql(`
+      let result = await this.graphql(
+        `
         query GetSubgraphSchema($accountSlug: String!, $graphSlug: String!, $branchName: String!) {
           branch(accountSlug: $accountSlug, graphSlug: $graphSlug, name: $branchName) {
             subgraphs {
@@ -364,20 +405,25 @@ export class Client {
             }
           }
         }
-      `, { accountSlug, graphSlug, branchName });
+      `,
+        { accountSlug, graphSlug, branchName }
+      );
 
       let subgraphs = result.branch?.subgraphs || [];
       let subgraph = subgraphs.find((s: any) => s.name === subgraphName);
       return subgraph?.schema || null;
     }
 
-    let result = await this.graphql(`
+    let result = await this.graphql(
+      `
       query GetFederatedSchema($accountSlug: String!, $graphSlug: String!, $branchName: String!) {
         branch(accountSlug: $accountSlug, graphSlug: $graphSlug, name: $branchName) {
           federatedSchema
         }
       }
-    `, { accountSlug, graphSlug, branchName });
+    `,
+      { accountSlug, graphSlug, branchName }
+    );
 
     return result.branch?.federatedSchema || null;
   }

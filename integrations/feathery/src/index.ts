@@ -26,7 +26,7 @@ import {
   createHiddenField,
   inviteTeamMember,
   removeTeamMember,
-  getLogs,
+  getLogs
 } from './tools';
 import { formEvent } from './triggers';
 
@@ -58,9 +58,7 @@ export let provider = Slate.create({
     createHiddenField,
     inviteTeamMember,
     removeTeamMember,
-    getLogs,
+    getLogs
   ],
-  triggers: [
-    formEvent,
-  ],
+  triggers: [formEvent]
 });

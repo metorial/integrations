@@ -78,6 +78,7 @@ The following events can be subscribed to: `document.created`, `document.sent`, 
 Each webhook payload includes full document details, metadata, and recipient information (status, signing order, role, etc.).
 
 **Configuration options:**
+
 - Webhook URL that will receive the event payload.
 - Selection of specific events to subscribe to.
 - Optionally, you can provide a secret key that will be used to sign the payload. This key will be included in the `X-Documenso-Secret` header of the request.

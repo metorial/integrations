@@ -36,7 +36,7 @@ import {
   listTasks,
   getLogs,
   listPaymentMethods,
-  listEssentialsPlans,
+  listEssentialsPlans
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -79,9 +79,7 @@ export let provider = Slate.create({
     listTasks,
     getLogs,
     listPaymentMethods,
-    listEssentialsPlans,
+    listEssentialsPlans
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -18,7 +18,7 @@ import {
   batchAnalyze,
   manageRankTracker,
   getLinkedDomains,
-  getMetricsByCountry,
+  getMetricsByCountry
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -43,9 +43,7 @@ export let provider = Slate.create({
     batchAnalyze,
     manageRankTracker,
     getLinkedDomains,
-    getMetricsByCountry,
+    getMetricsByCountry
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

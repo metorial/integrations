@@ -68,4 +68,4 @@ Tags can be applied to render requests (e.g., `Tags=invoice;services`) so that o
 
 ## Events
 
-The provider does not support events. Docmosis Cloud is a synchronous document generation API — there are no webhooks, event subscriptions, or polling mechanisms for listening to events. While generated documents can be *sent* to a webhook URL as a delivery option, this is an outbound delivery mechanism, not an event subscription system.
+The provider does not support events. Docmosis Cloud is a synchronous document generation API — there are no webhooks, event subscriptions, or polling mechanisms for listening to events. While generated documents can be _sent_ to a webhook URL as a delivery option, this is an outbound delivery mechanism, not an event subscription system.

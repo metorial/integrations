@@ -3,45 +3,65 @@ import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCredentials = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Credentials',
-    key: 'manage_credentials',
-    description: `List, get, create, update, or delete credentials stored in Jenkins. Credentials are used in jobs and pipelines for authenticating with external services.
+export let manageCredentials = SlateTool.create(spec, {
+  name: 'Manage Credentials',
+  key: 'manage_credentials',
+  description: `List, get, create, update, or delete credentials stored in Jenkins. Credentials are used in jobs and pipelines for authenticating with external services.
 Supports scoping credentials to specific domains and folders.`,
-    instructions: [
-      'For creating/updating credentials, use XML configuration format.',
-      'Example XML for username/password credential: <com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl><scope>GLOBAL</scope><id>my-cred-id</id><username>user</username><password>pass</password></com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>'
-    ],
-    tags: {
-      destructive: false
-    }
+  instructions: [
+    'For creating/updating credentials, use XML configuration format.',
+    'Example XML for username/password credential: <com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl><scope>GLOBAL</scope><id>my-cred-id</id><username>user</username><password>pass</password></com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    credentialId: z.string().optional().describe('ID of the credential. Required for "get", "update", and "delete".'),
-    xmlConfig: z.string().optional().describe('XML configuration for the credential. Required for "create" and "update".'),
-    domain: z.string().optional().describe('Credential domain. Defaults to the global domain "_".'),
-    folderPath: z.string().optional().describe('Folder path to scope the credentials to.')
-  }))
-  .output(z.object({
-    credentials: z.array(z.object({
-      credentialId: z.string().optional().describe('Credential ID'),
-      typeName: z.string().optional().describe('Credential type display name'),
-      displayName: z.string().optional().describe('Display name'),
-      description: z.string().optional().nullable().describe('Credential description')
-    })).optional().describe('List of credentials (for "list" action)'),
-    credential: z.object({
-      credentialId: z.string().optional().describe('Credential ID'),
-      typeName: z.string().optional().describe('Credential type'),
-      displayName: z.string().optional().describe('Display name'),
-      description: z.string().optional().nullable().describe('Description')
-    }).optional().describe('Credential details (for "get" action)'),
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      credentialId: z
+        .string()
+        .optional()
+        .describe('ID of the credential. Required for "get", "update", and "delete".'),
+      xmlConfig: z
+        .string()
+        .optional()
+        .describe('XML configuration for the credential. Required for "create" and "update".'),
+      domain: z
+        .string()
+        .optional()
+        .describe('Credential domain. Defaults to the global domain "_".'),
+      folderPath: z.string().optional().describe('Folder path to scope the credentials to.')
+    })
+  )
+  .output(
+    z.object({
+      credentials: z
+        .array(
+          z.object({
+            credentialId: z.string().optional().describe('Credential ID'),
+            typeName: z.string().optional().describe('Credential type display name'),
+            displayName: z.string().optional().describe('Display name'),
+            description: z.string().optional().nullable().describe('Credential description')
+          })
+        )
+        .optional()
+        .describe('List of credentials (for "list" action)'),
+      credential: z
+        .object({
+          credentialId: z.string().optional().describe('Credential ID'),
+          typeName: z.string().optional().describe('Credential type'),
+          displayName: z.string().optional().describe('Display name'),
+          description: z.string().optional().nullable().describe('Description')
+        })
+        .optional()
+        .describe('Credential details (for "get" action)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new JenkinsClient({
       instanceUrl: ctx.config.instanceUrl,
       username: ctx.auth.username,
@@ -110,4 +130,5 @@ Supports scoping credentials to specific domains and folders.`,
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

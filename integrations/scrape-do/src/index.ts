@@ -8,7 +8,7 @@ import {
   amazonSearch,
   createAsyncJob,
   getAsyncJob,
-  getAccountStats,
+  getAccountStats
 } from './tools';
 import { scrapeResult } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     amazonSearch,
     createAsyncJob,
     getAsyncJob,
-    getAccountStats,
+    getAccountStats
   ],
-  triggers: [
-    scrapeResult,
-  ],
+  triggers: [scrapeResult]
 });

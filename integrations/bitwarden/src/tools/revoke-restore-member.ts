@@ -3,31 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let revokeRestoreMember = SlateTool.create(
-  spec,
-  {
-    name: 'Revoke or Restore Member',
-    key: 'revoke_restore_member',
-    description: `Revoke or restore organization access for a member. Revoking suspends the member's access without removing them; restoring re-enables their access.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let revokeRestoreMember = SlateTool.create(spec, {
+  name: 'Revoke or Restore Member',
+  key: 'revoke_restore_member',
+  description: `Revoke or restore organization access for a member. Revoking suspends the member's access without removing them; restoring re-enables their access.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    memberId: z.string().describe('ID of the member'),
-    action: z.enum(['revoke', 'restore']).describe('Whether to revoke or restore the member\'s access'),
-  }))
-  .output(z.object({
-    memberId: z.string().describe('ID of the member'),
-    action: z.string().describe('Action that was performed'),
-    success: z.boolean().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      memberId: z.string().describe('ID of the member'),
+      action: z
+        .enum(['revoke', 'restore'])
+        .describe("Whether to revoke or restore the member's access")
+    })
+  )
+  .output(
+    z.object({
+      memberId: z.string().describe('ID of the member'),
+      action: z.string().describe('Action that was performed'),
+      success: z.boolean().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      serverUrl: ctx.auth.serverUrl,
+      serverUrl: ctx.auth.serverUrl
     });
 
     if (ctx.input.action === 'revoke') {
@@ -40,9 +43,9 @@ export let revokeRestoreMember = SlateTool.create(
       output: {
         memberId: ctx.input.memberId,
         action: ctx.input.action,
-        success: true,
+        success: true
       },
-      message: `Member **${ctx.input.memberId}** has been **${ctx.input.action}d**.`,
+      message: `Member **${ctx.input.memberId}** has been **${ctx.input.action}d**.`
     };
   })
   .build();

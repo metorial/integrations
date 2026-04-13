@@ -18,6 +18,7 @@ API keys authenticate requests to the Brevo API. Generate an API key from your a
 - Include the key in every request via the `api-key` HTTP header.
 
 Example:
+
 ```
 curl --request GET \
   --url https://api.brevo.com/v3/account \

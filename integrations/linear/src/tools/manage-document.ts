@@ -33,26 +33,25 @@ let mapDocumentToOutput = (doc: any) => ({
   updatedAt: doc.updatedAt
 });
 
-export let createDocumentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Document',
-    key: 'create_document',
-    description: `Creates a new document in Linear. Documents support rich Markdown content and can be associated with projects.`,
-    tags: {
-      readOnly: false
-    }
+export let createDocumentTool = SlateTool.create(spec, {
+  name: 'Create Document',
+  key: 'create_document',
+  description: `Creates a new document in Linear. Documents support rich Markdown content and can be associated with projects.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    title: z.string().describe('Document title'),
-    content: z.string().optional().describe('Document content in Markdown'),
-    projectId: z.string().optional().describe('Associate document with a project'),
-    icon: z.string().optional().describe('Document icon emoji'),
-    color: z.string().optional().describe('Document color')
-  }))
+})
+  .input(
+    z.object({
+      title: z.string().describe('Document title'),
+      content: z.string().optional().describe('Document content in Markdown'),
+      projectId: z.string().optional().describe('Associate document with a project'),
+      icon: z.string().optional().describe('Document icon emoji'),
+      color: z.string().optional().describe('Document color')
+    })
+  )
   .output(documentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = { title: ctx.input.title };
@@ -71,29 +70,33 @@ export let createDocumentTool = SlateTool.create(
       output: mapDocumentToOutput(result.document),
       message: `Created document **${result.document.title}**`
     };
-  }).build();
+  })
+  .build();
 
-export let updateDocumentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Document',
-    key: 'update_document',
-    description: `Updates an existing document's title, content, or project association.`,
-    tags: {
-      readOnly: false
-    }
+export let updateDocumentTool = SlateTool.create(spec, {
+  name: 'Update Document',
+  key: 'update_document',
+  description: `Updates an existing document's title, content, or project association.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    documentId: z.string().describe('Document ID'),
-    title: z.string().optional().describe('New title'),
-    content: z.string().optional().describe('New content in Markdown'),
-    projectId: z.string().nullable().optional().describe('New project ID or null to disassociate'),
-    icon: z.string().optional().describe('New icon emoji'),
-    color: z.string().optional().describe('New color')
-  }))
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('Document ID'),
+      title: z.string().optional().describe('New title'),
+      content: z.string().optional().describe('New content in Markdown'),
+      projectId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New project ID or null to disassociate'),
+      icon: z.string().optional().describe('New icon emoji'),
+      color: z.string().optional().describe('New color')
+    })
+  )
   .output(documentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {};
@@ -113,29 +116,31 @@ export let updateDocumentTool = SlateTool.create(
       output: mapDocumentToOutput(result.document),
       message: `Updated document **${result.document.title}**`
     };
-  }).build();
+  })
+  .build();
 
-export let listDocumentsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Documents',
-    key: 'list_documents',
-    description: `Lists documents in the workspace with pagination support.`,
-    tags: {
-      readOnly: true
-    }
+export let listDocumentsTool = SlateTool.create(spec, {
+  name: 'List Documents',
+  key: 'list_documents',
+  description: `Lists documents in the workspace with pagination support.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    first: z.number().optional().describe('Number of documents to return (default: 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    documents: z.array(documentOutputSchema),
-    hasNextPage: z.boolean(),
-    nextCursor: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      first: z.number().optional().describe('Number of documents to return (default: 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      documents: z.array(documentOutputSchema),
+      hasNextPage: z.boolean(),
+      nextCursor: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.listDocuments({
       first: ctx.input.first,
@@ -152,4 +157,5 @@ export let listDocumentsTool = SlateTool.create(
       },
       message: `Found **${documents.length}** documents`
     };
-  }).build();
+  })
+  .build();

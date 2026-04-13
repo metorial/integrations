@@ -27,8 +27,8 @@ export class AnthropicClient {
       headers: {
         'x-api-key': config.token,
         'anthropic-version': config.apiVersion,
-        'content-type': 'application/json',
-      },
+        'content-type': 'application/json'
+      }
     });
   }
 
@@ -54,7 +54,7 @@ export class AnthropicClient {
     let body: Record<string, unknown> = {
       model: params.model,
       max_tokens: params.maxTokens,
-      messages: params.messages,
+      messages: params.messages
     };
 
     if (params.system !== undefined) body.system = params.system;
@@ -85,7 +85,7 @@ export class AnthropicClient {
   }): Promise<{ inputTokens: number }> {
     let body: Record<string, unknown> = {
       model: params.model,
-      messages: params.messages,
+      messages: params.messages
     };
 
     if (params.system !== undefined) body.system = params.system;
@@ -101,7 +101,12 @@ export class AnthropicClient {
   async listModels(params?: {
     limit?: number;
     afterId?: string;
-  }): Promise<{ models: Array<Record<string, unknown>>; hasMore: boolean; firstId?: string; lastId?: string }> {
+  }): Promise<{
+    models: Array<Record<string, unknown>>;
+    hasMore: boolean;
+    firstId?: string;
+    lastId?: string;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
@@ -111,7 +116,7 @@ export class AnthropicClient {
       models: response.data.data,
       hasMore: response.data.has_more,
       firstId: response.data.first_id,
-      lastId: response.data.last_id,
+      lastId: response.data.last_id
     };
   }
 
@@ -122,15 +127,17 @@ export class AnthropicClient {
 
   // ---- Message Batches API ----
 
-  async createMessageBatch(requests: Array<{
-    customId: string;
-    params: Record<string, unknown>;
-  }>): Promise<BatchResult> {
+  async createMessageBatch(
+    requests: Array<{
+      customId: string;
+      params: Record<string, unknown>;
+    }>
+  ): Promise<BatchResult> {
     let body = {
-      requests: requests.map((r) => ({
+      requests: requests.map(r => ({
         custom_id: r.customId,
-        params: r.params,
-      })),
+        params: r.params
+      }))
     };
 
     let response = await this.axios.post('/v1/messages/batches', body);
@@ -152,8 +159,10 @@ export class AnthropicClient {
 
     let response = await this.axios.get('/v1/messages/batches', { params: queryParams });
     return {
-      batches: (response.data.data as Array<Record<string, unknown>>).map((b: Record<string, unknown>) => this.normalizeBatch(b)),
-      hasMore: response.data.has_more,
+      batches: (response.data.data as Array<Record<string, unknown>>).map(
+        (b: Record<string, unknown>) => this.normalizeBatch(b)
+      ),
+      hasMore: response.data.has_more
     };
   }
 
@@ -163,7 +172,15 @@ export class AnthropicClient {
   }
 
   private normalizeBatch(data: Record<string, unknown>): BatchResult {
-    let counts = data.request_counts as { processing: number; succeeded: number; errored: number; canceled: number; expired: number } | undefined;
+    let counts = data.request_counts as
+      | {
+          processing: number;
+          succeeded: number;
+          errored: number;
+          canceled: number;
+          expired: number;
+        }
+      | undefined;
     return {
       batchId: data.id as string,
       type: data.type as string | undefined,
@@ -172,7 +189,7 @@ export class AnthropicClient {
       createdAt: data.created_at as string | undefined,
       updatedAt: data.updated_at as string | undefined,
       expiresAt: data.expires_at as string | undefined,
-      resultsUrl: data.results_url as string | undefined,
+      resultsUrl: data.results_url as string | undefined
     };
   }
 
@@ -196,7 +213,7 @@ export class AnthropicClient {
     let response = await this.axios.get('/v1/organizations/users', { params: queryParams });
     return {
       members: response.data.data,
-      hasMore: response.data.has_more,
+      hasMore: response.data.has_more
     };
   }
 
@@ -227,7 +244,7 @@ export class AnthropicClient {
     let response = await this.axios.get('/v1/organizations/invites', { params: queryParams });
     return {
       invites: response.data.data,
-      hasMore: response.data.has_more,
+      hasMore: response.data.has_more
     };
   }
 
@@ -237,7 +254,10 @@ export class AnthropicClient {
 
   // ---- Admin API: Workspaces ----
 
-  async createWorkspace(name: string, params?: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async createWorkspace(
+    name: string,
+    params?: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/v1/organizations/workspaces', { name, ...params });
     return response.data;
   }
@@ -250,12 +270,15 @@ export class AnthropicClient {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
-    if (params?.includeArchived !== undefined) queryParams.include_archived = String(params.includeArchived);
+    if (params?.includeArchived !== undefined)
+      queryParams.include_archived = String(params.includeArchived);
 
-    let response = await this.axios.get('/v1/organizations/workspaces', { params: queryParams });
+    let response = await this.axios.get('/v1/organizations/workspaces', {
+      params: queryParams
+    });
     return {
       workspaces: response.data.data,
-      hasMore: response.data.has_more,
+      hasMore: response.data.has_more
     };
   }
 
@@ -264,47 +287,73 @@ export class AnthropicClient {
     return response.data;
   }
 
-  async updateWorkspace(workspaceId: string, params: Record<string, unknown>): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/v1/organizations/workspaces/${workspaceId}`, params);
+  async updateWorkspace(
+    workspaceId: string,
+    params: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.post(
+      `/v1/organizations/workspaces/${workspaceId}`,
+      params
+    );
     return response.data;
   }
 
   async archiveWorkspace(workspaceId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/v1/organizations/workspaces/${workspaceId}`, {
-      is_archived: true,
+      is_archived: true
     });
     return response.data;
   }
 
   // ---- Admin API: Workspace Members ----
 
-  async addWorkspaceMember(workspaceId: string, userId: string, role: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/v1/organizations/workspaces/${workspaceId}/members`, {
-      user_id: userId,
-      workspace_role: role,
-    });
+  async addWorkspaceMember(
+    workspaceId: string,
+    userId: string,
+    role: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.post(
+      `/v1/organizations/workspaces/${workspaceId}/members`,
+      {
+        user_id: userId,
+        workspace_role: role
+      }
+    );
     return response.data;
   }
 
-  async listWorkspaceMembers(workspaceId: string, params?: {
-    limit?: number;
-    afterId?: string;
-  }): Promise<{ members: Array<Record<string, unknown>>; hasMore: boolean }> {
+  async listWorkspaceMembers(
+    workspaceId: string,
+    params?: {
+      limit?: number;
+      afterId?: string;
+    }
+  ): Promise<{ members: Array<Record<string, unknown>>; hasMore: boolean }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.afterId !== undefined) queryParams.after_id = params.afterId;
 
-    let response = await this.axios.get(`/v1/organizations/workspaces/${workspaceId}/members`, { params: queryParams });
+    let response = await this.axios.get(
+      `/v1/organizations/workspaces/${workspaceId}/members`,
+      { params: queryParams }
+    );
     return {
       members: response.data.data,
-      hasMore: response.data.has_more,
+      hasMore: response.data.has_more
     };
   }
 
-  async updateWorkspaceMember(workspaceId: string, userId: string, role: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/v1/organizations/workspaces/${workspaceId}/members/${userId}`, {
-      workspace_role: role,
-    });
+  async updateWorkspaceMember(
+    workspaceId: string,
+    userId: string,
+    role: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.post(
+      `/v1/organizations/workspaces/${workspaceId}/members/${userId}`,
+      {
+        workspace_role: role
+      }
+    );
     return response.data;
   }
 
@@ -329,11 +378,14 @@ export class AnthropicClient {
     let response = await this.axios.get('/v1/organizations/api_keys', { params: queryParams });
     return {
       apiKeys: response.data.data,
-      hasMore: response.data.has_more,
+      hasMore: response.data.has_more
     };
   }
 
-  async updateApiKey(apiKeyId: string, params: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateApiKey(
+    apiKeyId: string,
+    params: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/v1/organizations/api_keys/${apiKeyId}`, params);
     return response.data;
   }

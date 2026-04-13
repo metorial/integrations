@@ -3,39 +3,46 @@ import { TldvClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Get Meeting',
-    key: 'get_meeting',
-    description: `Retrieve detailed metadata for a specific meeting by its ID. Returns the meeting name, date, duration, organizer, invitees, applied note template, and conference ID.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    meetingId: z.string().describe('The unique identifier of the meeting to retrieve.'),
-  }))
-  .output(z.object({
-    meetingId: z.string().describe('Unique meeting identifier.'),
-    name: z.string().describe('Meeting title.'),
-    happenedAt: z.string().describe('ISO 8601 timestamp of when the meeting occurred.'),
-    url: z.string().describe('tl;dv web URL for the meeting.'),
-    duration: z.number().describe('Meeting duration in seconds.'),
-    organizer: z.object({
-      name: z.string().describe('Organizer name.'),
-      email: z.string().describe('Organizer email.'),
-    }).describe('Meeting organizer details.'),
-    invitees: z.array(z.object({
-      name: z.string().describe('Invitee name.'),
-      email: z.string().describe('Invitee email.'),
-    })).describe('List of meeting invitees.'),
-    templateName: z.string().optional().describe('Name of the applied note template.'),
-    conferenceId: z.string().optional().describe('Conference platform meeting ID.'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getMeeting = SlateTool.create(spec, {
+  name: 'Get Meeting',
+  key: 'get_meeting',
+  description: `Retrieve detailed metadata for a specific meeting by its ID. Returns the meeting name, date, duration, organizer, invitees, applied note template, and conference ID.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      meetingId: z.string().describe('The unique identifier of the meeting to retrieve.')
+    })
+  )
+  .output(
+    z.object({
+      meetingId: z.string().describe('Unique meeting identifier.'),
+      name: z.string().describe('Meeting title.'),
+      happenedAt: z.string().describe('ISO 8601 timestamp of when the meeting occurred.'),
+      url: z.string().describe('tl;dv web URL for the meeting.'),
+      duration: z.number().describe('Meeting duration in seconds.'),
+      organizer: z
+        .object({
+          name: z.string().describe('Organizer name.'),
+          email: z.string().describe('Organizer email.')
+        })
+        .describe('Meeting organizer details.'),
+      invitees: z
+        .array(
+          z.object({
+            name: z.string().describe('Invitee name.'),
+            email: z.string().describe('Invitee email.')
+          })
+        )
+        .describe('List of meeting invitees.'),
+      templateName: z.string().optional().describe('Name of the applied note template.'),
+      conferenceId: z.string().optional().describe('Conference platform meeting ID.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TldvClient({ token: ctx.auth.token });
     let meeting = await client.getMeeting(ctx.input.meetingId);
 
@@ -48,15 +55,16 @@ export let getMeeting = SlateTool.create(
         duration: meeting.duration,
         organizer: {
           name: meeting.organizer?.name ?? '',
-          email: meeting.organizer?.email ?? '',
+          email: meeting.organizer?.email ?? ''
         },
-        invitees: (meeting.invitees ?? []).map((i) => ({
+        invitees: (meeting.invitees ?? []).map(i => ({
           name: i.name,
-          email: i.email,
+          email: i.email
         })),
         templateName: meeting.template?.name,
-        conferenceId: meeting.conferenceId,
+        conferenceId: meeting.conferenceId
       },
-      message: `Retrieved meeting **${meeting.name}** (${meeting.happenedAt}).`,
+      message: `Retrieved meeting **${meeting.name}** (${meeting.happenedAt}).`
     };
-  }).build();
+  })
+  .build();

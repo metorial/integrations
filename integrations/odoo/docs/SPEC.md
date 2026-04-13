@@ -15,6 +15,7 @@ From version 14 onwards, Odoo introduced API key authentication. A user can gene
 To generate an API key: Go to your Preferences (or My Profile), open the Account Security tab, and click New API Key. Input a description for the key, click Generate Key, then copy the key provided. Store this key carefully: it is equivalent to your password, and the system will not be able to retrieve or show the key again later on.
 
 **Required credentials:**
+
 - Odoo instance URL (e.g., `https://mycompany.odoo.com`)
 - Database name
 - Username (login email)
@@ -27,6 +28,7 @@ To generate an API key: Go to your Preferences (or My Profile), open the Account
 XML-RPC is the traditional API method in Odoo, and it works in all versions. To log in, you provide the database name, a username (usually the login email), and a password. These credentials are sent to the `/xmlrpc/2/common` endpoint. If the login is successful, Odoo returns a user ID (uid). This uid is then used in requests sent to the `/xmlrpc/2/object` endpoint.
 
 **Required credentials:**
+
 - Odoo instance URL
 - Database name
 - Username

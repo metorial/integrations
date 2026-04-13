@@ -56,23 +56,29 @@ let uriEncode = (str: string, encodeSlash: boolean = true): string => {
 
 let getAmzDate = (): { amzDate: string; dateStamp: string } => {
   let now = new Date();
-  let amzDate = now.toISOString().replace(/[:\-]|\.\d{3}/g, '').slice(0, 15) + 'Z';
+  let amzDate =
+    now
+      .toISOString()
+      .replace(/[:\-]|\.\d{3}/g, '')
+      .slice(0, 15) + 'Z';
   let dateStamp = amzDate.slice(0, 8);
   return { amzDate, dateStamp };
 };
 
 let buildCanonicalQueryString = (queryString: string): string => {
   if (!queryString) return '';
-  let params = queryString.split('&').map((p) => {
+  let params = queryString.split('&').map(p => {
     let [key, ...rest] = p.split('=');
     let value = rest.join('=');
     return { key: key || '', value: value || '' };
   });
   params.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value));
-  return params.map((p) => `${uriEncode(p.key)}=${uriEncode(p.value)}`).join('&');
+  return params.map(p => `${uriEncode(p.key)}=${uriEncode(p.value)}`).join('&');
 };
 
-let buildCanonicalHeaders = (headers: Record<string, string>): { canonicalHeaders: string; signedHeaders: string } => {
+let buildCanonicalHeaders = (
+  headers: Record<string, string>
+): { canonicalHeaders: string; signedHeaders: string } => {
   let entries = Object.entries(headers)
     .map(([k, v]) => [k.toLowerCase().trim(), v.trim()] as [string, string])
     .sort(([a], [b]) => a.localeCompare(b));
@@ -83,7 +89,17 @@ let buildCanonicalHeaders = (headers: Record<string, string>): { canonicalHeader
 };
 
 export let signRequest = (options: SigningOptions): Record<string, string> => {
-  let { method, url, headers, body, region, service, accessKeyId, secretAccessKey, sessionToken } = options;
+  let {
+    method,
+    url,
+    headers,
+    body,
+    region,
+    service,
+    accessKeyId,
+    secretAccessKey,
+    sessionToken
+  } = options;
 
   let { amzDate, dateStamp } = getAmzDate();
 
@@ -94,7 +110,7 @@ export let signRequest = (options: SigningOptions): Record<string, string> => {
   let headersToSign: Record<string, string> = {
     ...headers,
     host: parsedUrl.host,
-    'x-amz-date': amzDate,
+    'x-amz-date': amzDate
   };
 
   if (sessionToken) {
@@ -112,7 +128,7 @@ export let signRequest = (options: SigningOptions): Record<string, string> => {
     canonicalQueryString,
     canonicalHeaders,
     signedHeaders,
-    payloadHash,
+    payloadHash
   ].join('\n');
 
   let credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
@@ -120,17 +136,11 @@ export let signRequest = (options: SigningOptions): Record<string, string> => {
     'AWS4-HMAC-SHA256',
     amzDate,
     credentialScope,
-    sha256(canonicalRequest),
+    sha256(canonicalRequest)
   ].join('\n');
 
   let signingKey = hmacSha256(
-    hmacSha256(
-      hmacSha256(
-        hmacSha256(`AWS4${secretAccessKey}`, dateStamp),
-        region
-      ),
-      service
-    ),
+    hmacSha256(hmacSha256(hmacSha256(`AWS4${secretAccessKey}`, dateStamp), region), service),
     'aws4_request'
   );
 
@@ -141,7 +151,7 @@ export let signRequest = (options: SigningOptions): Record<string, string> => {
   let resultHeaders: Record<string, string> = {
     Authorization: authorization,
     'x-amz-date': amzDate,
-    'x-amz-content-sha256': payloadHash,
+    'x-amz-content-sha256': payloadHash
   };
 
   if (sessionToken) {

@@ -9,16 +9,19 @@ Sendbird AI Chatbot is a platform that allows businesses to create and deploy AI
 Sendbird AI Chatbot uses API token authentication for all Platform API requests.
 
 **API Token:**
+
 - Your API requests must be authenticated by Sendbird server using any of the API tokens from your Sendbird application. You can use the master API token found in your dashboard under Settings > Application > General > API tokens, which is generated when an application is created.
 - The master API token can't be revoked or changed. Using the master API token, you can generate secondary API tokens, revoke them, or list them. For most API requests, a secondary API token can be used instead of the master API token.
 - The token is passed via the `Api-Token` HTTP header on every request.
 
 **Application ID:**
+
 - To get the ID and the allocated base URL of your Sendbird application, sign in to your dashboard, select the application, go to Settings > Application > General, and then check the Application ID and API request URL.
 - API endpoints are relative to the base URL: `https://api-{application_id}.sendbird.com/v3/bots`.
 - The Application ID is case-sensitive.
 
 **Example request header:**
+
 ```
 Api-Token: {master_api_token_or_secondary_api_token}
 Content-Type: application/json; charset=utf8
@@ -29,6 +32,7 @@ Content-Type: application/json; charset=utf8
 ### AI Chatbot Management
 
 Create, update, list, retrieve, and delete AI chatbots within your application. Each chatbot is created within an application, with a limit of up to 10 AI chatbots by default. When creating a bot, you configure:
+
 - **AI backend and model**: e.g., `chatgpt` with a specific model like `gpt-4o`.
 - **System message**: Defines the persona and behavior of the chatbot.
 - **LLM parameters**: Temperature, max tokens, top_p, presence penalty, frequency penalty.

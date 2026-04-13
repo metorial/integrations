@@ -15,7 +15,10 @@ export let reportOutputSchema = z.object({
   gtmetrixScore: z.number().optional().describe('Overall GTmetrix numeric score (0-100)'),
   performanceScore: z.number().optional().describe('Lighthouse Performance score (0-100)'),
   structureScore: z.number().optional().describe('GTmetrix Structure score (0-100)'),
-  pagespeedScore: z.number().optional().describe('PageSpeed score (0-100, legacy report only)'),
+  pagespeedScore: z
+    .number()
+    .optional()
+    .describe('PageSpeed score (0-100, legacy report only)'),
   yslowScore: z.number().optional().describe('YSlow score (0-100, legacy report only)'),
 
   htmlBytes: z.number().optional().describe('HTML document size in bytes'),
@@ -30,7 +33,10 @@ export let reportOutputSchema = z.object({
   firstContentfulPaint: z.number().optional().describe('First Contentful Paint (ms)'),
   domInteractiveTime: z.number().optional().describe('DOM Interactive time (ms)'),
   domContentLoadedTime: z.number().optional().describe('DOM Content Loaded event time (ms)'),
-  domContentLoadedDuration: z.number().optional().describe('DOM Content Loaded event duration (ms)'),
+  domContentLoadedDuration: z
+    .number()
+    .optional()
+    .describe('DOM Content Loaded event duration (ms)'),
   onloadTime: z.number().optional().describe('Onload event time (ms)'),
   onloadDuration: z.number().optional().describe('Onload event duration (ms)'),
   fullyLoadedTime: z.number().optional().describe('Fully loaded time (ms)'),
@@ -42,8 +48,10 @@ export let reportOutputSchema = z.object({
   totalBlockingTime: z.number().optional().describe('Total Blocking Time (ms)'),
   cumulativeLayoutShift: z.number().optional().describe('Cumulative Layout Shift score'),
 
-  resourceLinks: z.record(z.string(), z.string()).describe('Links to report resources (HAR, screenshot, video, PDF, etc.)'),
-  reportUrl: z.string().optional().describe('Public URL of the GTmetrix report'),
+  resourceLinks: z
+    .record(z.string(), z.string())
+    .describe('Links to report resources (HAR, screenshot, video, PDF, etc.)'),
+  reportUrl: z.string().optional().describe('Public URL of the GTmetrix report')
 });
 
 export let testOutputSchema = z.object({
@@ -60,7 +68,7 @@ export let testOutputSchema = z.object({
   finished: z.number().optional().describe('Unix timestamp when the test finished'),
   creditsLeft: z.number().optional().describe('Remaining API credits after this test'),
   creditsUsed: z.number().optional().describe('Credits consumed by this test'),
-  error: z.string().optional().describe('Error message if the test failed'),
+  error: z.string().optional().describe('Error message if the test failed')
 });
 
 export let pageOutputSchema = z.object({
@@ -72,5 +80,7 @@ export let pageOutputSchema = z.object({
   latestReportTime: z.number().optional().describe('Unix timestamp of the most recent report'),
   latestReportId: z.string().optional().describe('Report ID of the most recent report'),
   reportCount: z.number().describe('Total number of reports for this page'),
-  monitored: z.string().describe('Monitoring status: "no", "hourly", "daily", "weekly", or "monthly"'),
+  monitored: z
+    .string()
+    .describe('Monitoring status: "no", "hourly", "daily", "weekly", or "monthly"')
 });

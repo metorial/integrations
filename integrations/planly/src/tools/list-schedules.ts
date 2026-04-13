@@ -19,31 +19,36 @@ let scheduleSchema = z.object({
   media: z.array(mediaItemSchema).optional().describe('Attached media files')
 });
 
-export let listSchedules = SlateTool.create(
-  spec,
-  {
-    name: 'List Schedules',
-    key: 'list_schedules',
-    description: `Retrieve scheduled posts for a team with pagination support. Returns post content, status, publish time, and attached media.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listSchedules = SlateTool.create(spec, {
+  name: 'List Schedules',
+  key: 'list_schedules',
+  description: `Retrieve scheduled posts for a team with pagination support. Returns post content, status, publish time, and attached media.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('ID of the team to list schedules for'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-    pageSize: z.number().optional().describe('Number of results per page (default 50)'),
-    orderByField: z.enum(['CreatedAt', 'PublishOn']).optional().describe('Field to sort by'),
-    orderByDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction')
-  }))
-  .output(z.object({
-    schedules: z.array(scheduleSchema).describe('List of scheduled posts'),
-    nextCursor: z.string().nullable().optional().describe('Cursor for the next page of results'),
-    totalCount: z.number().optional().describe('Total number of schedules')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('ID of the team to list schedules for'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response'),
+      pageSize: z.number().optional().describe('Number of results per page (default 50)'),
+      orderByField: z.enum(['CreatedAt', 'PublishOn']).optional().describe('Field to sort by'),
+      orderByDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z.object({
+      schedules: z.array(scheduleSchema).describe('List of scheduled posts'),
+      nextCursor: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Cursor for the next page of results'),
+      totalCount: z.number().optional().describe('Total number of schedules')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let pagination: any = {};
@@ -59,7 +64,7 @@ export let listSchedules = SlateTool.create(
     );
 
     let data = result.data || result;
-    let items = Array.isArray(data) ? data : (data.items || data.schedules || []);
+    let items = Array.isArray(data) ? data : data.items || data.schedules || [];
     let schedules = items.map((s: any) => ({
       scheduleId: s.id,
       content: s.content,

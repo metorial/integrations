@@ -10,7 +10,7 @@ import {
   searchAgencies,
   searchContractVehicles,
   lookupCodes,
-  searchStateLocalContracts,
+  searchStateLocalContracts
 } from './tools';
 import { pursuitAdded } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     searchAgencies,
     searchContractVehicles,
     lookupCodes,
-    searchStateLocalContracts,
+    searchStateLocalContracts
   ],
-  triggers: [
-    pursuitAdded,
-  ],
+  triggers: [pursuitAdded]
 });

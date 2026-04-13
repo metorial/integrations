@@ -17,6 +17,6 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): Client => {
   return new Client({
     token: auth.token,
     instanceName: auth.instanceName || config.instanceName,
-    authType: isBasicAuth ? 'basic' : 'oauth',
+    authType: isBasicAuth ? 'basic' : 'oauth'
   });
 };

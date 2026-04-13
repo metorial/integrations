@@ -3,44 +3,48 @@ import { SnapchatClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let adStatusChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Ad Updates',
-    key: 'ad_updates',
-    description: 'Triggers when ads are created or updated under a Snapchat ad squad. Detects changes to ad status, creative associations, and other properties by polling.',
-    instructions: [
-      'Set the adSquadId in the global configuration to specify which ad squad to monitor.'
-    ]
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Whether the ad was created or updated'),
-    adId: z.string().describe('ID of the ad'),
-    adSquadId: z.string().optional().describe('Parent ad squad ID'),
-    creativeId: z.string().optional().describe('Associated creative ID'),
-    name: z.string().optional().describe('Ad name'),
-    status: z.string().optional().describe('Ad status'),
-    type: z.string().optional().describe('Ad type'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp')
-  }))
-  .output(z.object({
-    adId: z.string().describe('ID of the ad'),
-    adSquadId: z.string().optional().describe('Parent ad squad ID'),
-    creativeId: z.string().optional().describe('Associated creative ID'),
-    name: z.string().optional().describe('Ad name'),
-    status: z.string().optional().describe('Ad status'),
-    type: z.string().optional().describe('Ad type'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp')
-  }))
+export let adStatusChange = SlateTrigger.create(spec, {
+  name: 'Ad Updates',
+  key: 'ad_updates',
+  description:
+    'Triggers when ads are created or updated under a Snapchat ad squad. Detects changes to ad status, creative associations, and other properties by polling.',
+  instructions: [
+    'Set the adSquadId in the global configuration to specify which ad squad to monitor.'
+  ]
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the ad was created or updated'),
+      adId: z.string().describe('ID of the ad'),
+      adSquadId: z.string().optional().describe('Parent ad squad ID'),
+      creativeId: z.string().optional().describe('Associated creative ID'),
+      name: z.string().optional().describe('Ad name'),
+      status: z.string().optional().describe('Ad status'),
+      type: z.string().optional().describe('Ad type'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      adId: z.string().describe('ID of the ad'),
+      adSquadId: z.string().optional().describe('Parent ad squad ID'),
+      creativeId: z.string().optional().describe('Associated creative ID'),
+      name: z.string().optional().describe('Ad name'),
+      status: z.string().optional().describe('Ad status'),
+      type: z.string().optional().describe('Ad type'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let adSquadId = ctx.config.adSquadId;
       if (!adSquadId) {
         return { inputs: [] };
@@ -49,7 +53,8 @@ export let adStatusChange = SlateTrigger.create(
       let client = new SnapchatClient(ctx.auth.token);
       let ads = await client.listAds(adSquadId);
 
-      let previousState: Record<string, string> = (ctx.input.state as Record<string, string>) ?? {};
+      let previousState: Record<string, string> =
+        (ctx.input.state as Record<string, string>) ?? {};
       let inputs: any[] = [];
 
       for (let ad of ads) {
@@ -96,7 +101,7 @@ export let adStatusChange = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `ad.${ctx.input.eventType}`,
         id: `${ctx.input.adId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,

@@ -3,31 +3,32 @@ import { SubscriptionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listSubscriptions = SlateTool.create(
-  spec,
-  {
-    name: 'List Subscriptions',
-    key: 'list_subscriptions',
-    description: `List all board subscriptions accessible with the current Subscription API credentials. Returns subscription IDs and associated board IDs.
+export let listSubscriptions = SlateTool.create(spec, {
+  name: 'List Subscriptions',
+  key: 'list_subscriptions',
+  description: `List all board subscriptions accessible with the current Subscription API credentials. Returns subscription IDs and associated board IDs.
 
 Only available via the **Subscription API**. Use subscription IDs to target specific boards when sending messages.`,
-    constraints: [
-      'Only supported by the Subscription API.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  constraints: ['Only supported by the Subscription API.'],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    subscriptions: z.array(z.object({
-      subscriptionId: z.string().describe('Unique ID of the subscription.'),
-      boardId: z.string().describe('ID of the board associated with this subscription.'),
-    })).describe('List of accessible board subscriptions.'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      subscriptions: z
+        .array(
+          z.object({
+            subscriptionId: z.string().describe('Unique ID of the subscription.'),
+            boardId: z.string().describe('ID of the board associated with this subscription.')
+          })
+        )
+        .describe('List of accessible board subscriptions.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let { apiType } = ctx.auth;
 
     if (apiType !== 'subscription') {
@@ -39,7 +40,7 @@ Only available via the **Subscription API**. Use subscription IDs to target spec
 
     return {
       output: { subscriptions },
-      message: `Found **${subscriptions.length}** subscription(s).`,
+      message: `Found **${subscriptions.length}** subscription(s).`
     };
   })
   .build();

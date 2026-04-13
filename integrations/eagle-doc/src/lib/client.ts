@@ -7,8 +7,8 @@ export class EagleDocClient {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        'api-key': config.token,
-      },
+        'api-key': config.token
+      }
     });
   }
 
@@ -27,7 +27,7 @@ export class EagleDocClient {
 
     let response = await this.axios.post('/api/invoice/v1/processing', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -52,7 +52,7 @@ export class EagleDocClient {
 
     let response = await this.axios.post('/api/receipt/v3/processing', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -72,7 +72,7 @@ export class EagleDocClient {
 
     let response = await this.axios.post('/api/finance/v1/processing', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -95,35 +95,29 @@ export class EagleDocClient {
 
     let response = await this.axios.post('/api/anydoc/v1/processing', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
 
   // ─── Document Splitting ────────────────────────────────────────
 
-  async splitDocument(params: {
-    fileBase64: string;
-    fileName: string;
-  }) {
+  async splitDocument(params: { fileBase64: string; fileName: string }) {
     let formData = this.buildFormData(params.fileBase64, params.fileName);
 
     let response = await this.axios.post('/api/doc/v1/split', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
 
   // ─── Signature Extraction ─────────────────────────────────────
 
-  async extractSignatures(params: {
-    fileBase64: string;
-    fileName: string;
-  }) {
+  async extractSignatures(params: { fileBase64: string; fileName: string }) {
     let formData = this.buildFormData(params.fileBase64, params.fileName);
 
     let response = await this.axios.post('/api/signature/v1/extract', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -147,7 +141,7 @@ export class EagleDocClient {
 
     let response = await this.axios.post('/api/finance/extract/batch/task/v1', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -167,21 +161,21 @@ export class EagleDocClient {
 
     let response = await this.axios.post('/api/anydoc/extract/batch/task/v1', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
 
   async getBatchTaskStatus(taskId: string) {
     let response = await this.axios.get('/api/doc/task/v1', {
-      params: { taskId },
+      params: { taskId }
     });
     return response.data;
   }
 
   async deleteBatchTask(taskId: string) {
     let response = await this.axios.delete('/api/doc/task/v1', {
-      params: { taskId },
+      params: { taskId }
     });
     return response.data;
   }
@@ -196,7 +190,6 @@ export class EagleDocClient {
   }) {
     let formData = new FormData();
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let fileBuffer = Buffer.from(params.fileBase64, 'base64');
     let fileBlob = new Blob([fileBuffer], { type: this.getMimeType(params.fileName) });
     formData.append('file', fileBlob, params.fileName);
@@ -208,7 +201,7 @@ export class EagleDocClient {
     formData.append('corrected', correctedBlob, 'corrected.json');
 
     let response = await this.axios.post('/api/docu/learning', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -224,13 +217,13 @@ export class EagleDocClient {
     formData.append('corrected', correctedBlob, 'corrected.json');
 
     let queryParams: Record<string, string> = {
-      instructions: params.instructions,
+      instructions: params.instructions
     };
     if (params.overwrite !== undefined) queryParams.overwrite = String(params.overwrite);
 
     let response = await this.axios.post('/api/docu/learning/instructions', formData, {
       params: queryParams,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -275,17 +268,17 @@ export class EagleDocClient {
 
   private buildFormData(fileBase64: string, fileName: string): FormData {
     let formData = new FormData();
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let fileBuffer = Buffer.from(fileBase64, 'base64');
     let fileBlob = new Blob([fileBuffer], { type: this.getMimeType(fileName) });
     formData.append('file', fileBlob, fileName);
     return formData;
   }
 
-  private buildMultiFileFormData(files: Array<{ base64: string; fileName: string }>): FormData {
+  private buildMultiFileFormData(
+    files: Array<{ base64: string; fileName: string }>
+  ): FormData {
     let formData = new FormData();
     for (let file of files) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let fileBuffer = Buffer.from(file.base64, 'base64');
       let fileBlob = new Blob([fileBuffer], { type: this.getMimeType(file.fileName) });
       formData.append('file', fileBlob, file.fileName);
@@ -296,13 +289,18 @@ export class EagleDocClient {
   private getMimeType(fileName: string): string {
     let ext = fileName.split('.').pop()?.toLowerCase();
     switch (ext) {
-      case 'pdf': return 'application/pdf';
-      case 'png': return 'image/png';
+      case 'pdf':
+        return 'application/pdf';
+      case 'png':
+        return 'image/png';
       case 'jpg':
-      case 'jpeg': return 'image/jpeg';
+      case 'jpeg':
+        return 'image/jpeg';
       case 'tif':
-      case 'tiff': return 'image/tiff';
-      default: return 'application/octet-stream';
+      case 'tiff':
+        return 'image/tiff';
+      default:
+        return 'application/octet-stream';
     }
   }
 }

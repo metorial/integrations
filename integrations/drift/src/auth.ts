@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    orgId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      orgId: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -17,51 +19,51 @@ export let auth = SlateAuth.create()
       {
         title: 'Contact Read',
         description: 'Listen to changes to contacts and query contacts',
-        scope: 'contact_read',
+        scope: 'contact_read'
       },
       {
         title: 'Contact Write',
         description: 'Create and update contacts',
-        scope: 'contact_write',
+        scope: 'contact_write'
       },
       {
         title: 'Conversation Read',
         description: 'Query conversations and messages',
-        scope: 'conversation_read',
+        scope: 'conversation_read'
       },
       {
         title: 'Conversation Write',
         description: 'Create messages via a bot',
-        scope: 'conversation_write',
+        scope: 'conversation_write'
       },
       {
         title: 'User Read',
         description: 'Read user data',
-        scope: 'user_read',
+        scope: 'user_read'
       },
       {
         title: 'User Write',
         description: 'Modify user data',
-        scope: 'user_write',
+        scope: 'user_write'
       },
       {
         title: 'GDPR Read',
         description: 'Perform data retrieval requests',
-        scope: 'gdpr_read',
+        scope: 'gdpr_read'
       },
       {
         title: 'GDPR Write',
         description: 'Perform data deletion requests',
-        scope: 'gdpr_write',
-      },
+        scope: 'gdpr_write'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       if (ctx.scopes.length > 0) {
@@ -69,23 +71,27 @@ export let auth = SlateAuth.create()
       }
 
       return {
-        url: `https://dev.drift.com/authorize?${params.toString()}`,
+        url: `https://dev.drift.com/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios({ baseURL: 'https://driftapi.com' });
 
-      let response = await axios.post('/oauth2/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        grant_type: 'authorization_code',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await axios.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -96,24 +102,28 @@ export let auth = SlateAuth.create()
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
             : undefined,
-          orgId: data.orgId ? String(data.orgId) : undefined,
-        },
+          orgId: data.orgId ? String(data.orgId) : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let axios = createAxios({ baseURL: 'https://driftapi.com' });
 
-      let response = await axios.post('/oauth2/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken || '',
-        grant_type: 'refresh_token',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await axios.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken || '',
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -124,8 +134,8 @@ export let auth = SlateAuth.create()
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
             : undefined,
-          orgId: data.orgId ? String(data.orgId) : ctx.output.orgId,
-        },
+          orgId: data.orgId ? String(data.orgId) : ctx.output.orgId
+        }
       };
     },
 
@@ -134,8 +144,8 @@ export let auth = SlateAuth.create()
 
       let response = await axios.get('/app/token', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let tokenInfo = response.data;
@@ -143,10 +153,10 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: tokenInfo.orgId ? String(tokenInfo.orgId) : undefined,
-          name: tokenInfo.org?.name,
-        },
+          name: tokenInfo.org?.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -154,14 +164,14 @@ export let auth = SlateAuth.create()
     key: 'personal_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal access token from Drift'),
+      token: z.string().describe('Personal access token from Drift')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -170,8 +180,8 @@ export let auth = SlateAuth.create()
 
       let response = await axios.get('/app/token', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let tokenInfo = response.data;
@@ -179,8 +189,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: tokenInfo.orgId ? String(tokenInfo.orgId) : undefined,
-          name: tokenInfo.org?.name,
-        },
+          name: tokenInfo.org?.name
+        }
       };
-    },
+    }
   });

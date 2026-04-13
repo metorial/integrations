@@ -3,37 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTask = SlateTool.create(
-  spec,
-  {
-    name: 'Update Task',
-    key: 'update_task',
-    description: `Update an existing task in Agiled. Change the title, description, assignee, due date, priority, or mark it as complete.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateTask = SlateTool.create(spec, {
+  name: 'Update Task',
+  key: 'update_task',
+  description: `Update an existing task in Agiled. Change the title, description, assignee, due date, priority, or mark it as complete.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    taskId: z.string().describe('ID of the task to update'),
-    title: z.string().optional().describe('Updated task title'),
-    description: z.string().optional().describe('Updated task description'),
-    projectId: z.string().optional().describe('Updated project ID'),
-    assignedTo: z.string().optional().describe('Updated assignee user ID'),
-    dueDate: z.string().optional().describe('Updated due date (YYYY-MM-DD)'),
-    startDate: z.string().optional().describe('Updated start date (YYYY-MM-DD)'),
-    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().describe('Updated priority'),
-    markComplete: z.boolean().optional().describe('Set to true to mark the task as complete'),
-  }))
-  .output(z.object({
-    taskId: z.string().describe('ID of the updated task'),
-    title: z.string().optional().describe('Updated task title'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('ID of the task to update'),
+      title: z.string().optional().describe('Updated task title'),
+      description: z.string().optional().describe('Updated task description'),
+      projectId: z.string().optional().describe('Updated project ID'),
+      assignedTo: z.string().optional().describe('Updated assignee user ID'),
+      dueDate: z.string().optional().describe('Updated due date (YYYY-MM-DD)'),
+      startDate: z.string().optional().describe('Updated start date (YYYY-MM-DD)'),
+      priority: z
+        .enum(['low', 'medium', 'high', 'urgent'])
+        .optional()
+        .describe('Updated priority'),
+      markComplete: z.boolean().optional().describe('Set to true to mark the task as complete')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('ID of the updated task'),
+      title: z.string().optional().describe('Updated task title')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      brand: ctx.auth.brand,
+      brand: ctx.auth.brand
     });
 
     if (ctx.input.markComplete) {
@@ -42,9 +46,9 @@ export let updateTask = SlateTool.create(
       return {
         output: {
           taskId: String(task.id ?? ctx.input.taskId),
-          title: task.heading as string | undefined,
+          title: task.heading as string | undefined
         },
-        message: `Marked task **${ctx.input.taskId}** as complete.`,
+        message: `Marked task **${ctx.input.taskId}** as complete.`
       };
     }
 
@@ -63,9 +67,9 @@ export let updateTask = SlateTool.create(
     return {
       output: {
         taskId: String(task.id ?? ctx.input.taskId),
-        title: task.heading as string | undefined,
+        title: task.heading as string | undefined
       },
-      message: `Updated task **${ctx.input.taskId}**.`,
+      message: `Updated task **${ctx.input.taskId}**.`
     };
   })
   .build();

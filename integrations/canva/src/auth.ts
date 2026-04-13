@@ -2,15 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let canvaApi = createAxios({
-  baseURL: 'https://api.canva.com/rest/v1',
+  baseURL: 'https://api.canva.com/rest/v1'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -19,92 +21,92 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Read Assets',
-        description: 'View metadata for the user\'s assets',
-        scope: 'asset:read',
+        description: "View metadata for the user's assets",
+        scope: 'asset:read'
       },
       {
         title: 'Write Assets',
         description: 'Upload, update, or delete assets',
-        scope: 'asset:write',
+        scope: 'asset:write'
       },
       {
         title: 'Read Brand Template Content',
         description: 'Read brand template content',
-        scope: 'brandtemplate:content:read',
+        scope: 'brandtemplate:content:read'
       },
       {
         title: 'Read Brand Template Metadata',
         description: 'View brand template metadata',
-        scope: 'brandtemplate:meta:read',
+        scope: 'brandtemplate:meta:read'
       },
       {
         title: 'Collaboration Events',
         description: 'Receive webhook notifications for collaboration events',
-        scope: 'collaboration:event',
+        scope: 'collaboration:event'
       },
       {
         title: 'Read Comments',
         description: 'View comments on designs',
-        scope: 'comment:read',
+        scope: 'comment:read'
       },
       {
         title: 'Write Comments',
         description: 'Create comments and replies on designs',
-        scope: 'comment:write',
+        scope: 'comment:write'
       },
       {
         title: 'Read Design Content',
         description: 'View contents of designs',
-        scope: 'design:content:read',
+        scope: 'design:content:read'
       },
       {
         title: 'Write Design Content',
         description: 'Create designs',
-        scope: 'design:content:write',
+        scope: 'design:content:write'
       },
       {
         title: 'Read Design Metadata',
         description: 'View design metadata',
-        scope: 'design:meta:read',
+        scope: 'design:meta:read'
       },
       {
         title: 'Manage Folder Permissions',
         description: 'Manage folder permissions',
-        scope: 'folder:permission:write',
+        scope: 'folder:permission:write'
       },
       {
         title: 'Read Folders',
         description: 'View folder metadata and contents',
-        scope: 'folder:read',
+        scope: 'folder:read'
       },
       {
         title: 'Write Folders',
         description: 'Add, move, or remove folders',
-        scope: 'folder:write',
+        scope: 'folder:write'
       },
       {
         title: 'Read Profile',
         description: 'Read user profile information',
-        scope: 'profile:read',
+        scope: 'profile:read'
       },
       {
         title: 'OpenID',
         description: 'Read user info through OIDC',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Profile (OIDC)',
         description: 'Read user profile through OIDC',
-        scope: 'profile',
+        scope: 'profile'
       },
       {
         title: 'Email (OIDC)',
         description: 'Read user email through OIDC',
-        scope: 'email',
-      },
+        scope: 'email'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let codeVerifier = generateCodeVerifier();
       let codeChallenge = await generateCodeChallenge(codeVerifier);
 
@@ -115,34 +117,35 @@ export let auth = SlateAuth.create()
         scope: ctx.scopes.join(' '),
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
         url: `https://www.canva.com/api/oauth/authorize?${params.toString()}`,
-        input: { codeVerifier },
+        input: { codeVerifier }
       };
     },
 
     inputSchema: z.object({
-      codeVerifier: z.string().optional(),
+      codeVerifier: z.string().optional()
     }),
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await canvaApi.post('/oauth/token',
+      let response = await canvaApi.post(
+        '/oauth/token',
         new URLSearchParams({
           grant_type: 'authorization_code',
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
-          code_verifier: ctx.input.codeVerifier || '',
+          code_verifier: ctx.input.codeVerifier || ''
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -161,28 +164,29 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await canvaApi.post('/oauth/token',
+      let response = await canvaApi.post(
+        '/oauth/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken,
+          refresh_token: ctx.output.refreshToken
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -201,8 +205,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -213,11 +217,13 @@ export let auth = SlateAuth.create()
     }) => {
       let [meResponse, profileResponse] = await Promise.all([
         canvaApi.get('/users/me', {
-          headers: { 'Authorization': `Bearer ${ctx.output.token}` },
+          headers: { Authorization: `Bearer ${ctx.output.token}` }
         }),
-        canvaApi.get('/users/me/profile', {
-          headers: { 'Authorization': `Bearer ${ctx.output.token}` },
-        }).catch(() => null),
+        canvaApi
+          .get('/users/me/profile', {
+            headers: { Authorization: `Bearer ${ctx.output.token}` }
+          })
+          .catch(() => null)
       ]);
 
       let meData = meResponse.data as {
@@ -232,10 +238,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: meData.team_user.user_id,
           name: profileData?.profile?.display_name,
-          teamId: meData.team_user.team_id,
-        },
+          teamId: meData.team_user.team_id
+        }
       };
-    },
+    }
   });
 
 let generateCodeVerifier = (): string => {

@@ -10,8 +10,8 @@ export class StormboardClient {
       baseURL: 'https://api.stormboard.com',
       headers: {
         'X-API-Key': opts.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -99,19 +99,26 @@ export class StormboardClient {
 
   // ─── Sections & Legend ───────────────────────────────
 
-  async updateSection(stormId: string, sectionChar: string, params: {
-    title?: string;
-    description?: string;
-    char?: string;
-  }): Promise<any> {
+  async updateSection(
+    stormId: string,
+    sectionChar: string,
+    params: {
+      title?: string;
+      description?: string;
+      char?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/storms/${stormId}/sections/${sectionChar}`, params);
     return response.data;
   }
 
-  async updateLegend(stormId: string, params: {
-    colour: string;
-    name: string;
-  }): Promise<any> {
+  async updateLegend(
+    stormId: string,
+    params: {
+      colour: string;
+      name: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/storms/${stormId}/legend`, params);
     return response.data;
   }
@@ -123,18 +130,25 @@ export class StormboardClient {
     return response.data;
   }
 
-  async createConnector(stormId: string, params: {
-    from: string;
-    to: string;
-    label?: string;
-  }): Promise<any> {
+  async createConnector(
+    stormId: string,
+    params: {
+      from: string;
+      to: string;
+      label?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/storms/${stormId}/connectors`, params);
     return response.data;
   }
 
-  async updateConnector(stormId: string, connectorId: string, params: {
-    label?: string;
-  }): Promise<any> {
+  async updateConnector(
+    stormId: string,
+    connectorId: string,
+    params: {
+      label?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/storms/${stormId}/connectors/${connectorId}`, params);
     return response.data;
   }
@@ -151,17 +165,24 @@ export class StormboardClient {
     return response.data;
   }
 
-  async createTag(stormId: string, params: {
-    name: string;
-  }): Promise<any> {
+  async createTag(
+    stormId: string,
+    params: {
+      name: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/storms/${stormId}/tags`, params);
     return response.data;
   }
 
-  async createIdeaTagData(stormId: string, ideaId: string, params: {
-    tag_id: string;
-    value?: string;
-  }): Promise<any> {
+  async createIdeaTagData(
+    stormId: string,
+    ideaId: string,
+    params: {
+      tag_id: string;
+      value?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/storms/${stormId}/ideas/${ideaId}/tags`, params);
     return response.data;
   }
@@ -183,9 +204,12 @@ export class StormboardClient {
     return response.data;
   }
 
-  async createChatMessage(stormId: string, params: {
-    message: string;
-  }): Promise<any> {
+  async createChatMessage(
+    stormId: string,
+    params: {
+      message: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/storms/${stormId}/chat`, params);
     return response.data;
   }
@@ -202,9 +226,12 @@ export class StormboardClient {
     return response.data;
   }
 
-  async inviteParticipant(stormId: string, params: {
-    email: string;
-  }): Promise<any> {
+  async inviteParticipant(
+    stormId: string,
+    params: {
+      email: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/storms/${stormId}/invite`, params);
     return response.data;
   }
@@ -226,7 +253,7 @@ export class StormboardClient {
 
   async joinStorm(stormId: string, accessKey: string): Promise<any> {
     let response = await this.http.post(`/storms/${stormId}/join`, {
-      access_key: accessKey,
+      access_key: accessKey
     });
     return response.data;
   }
@@ -238,17 +265,12 @@ export class StormboardClient {
     return response.data;
   }
 
-  async updateProfile(params: {
-    firstname?: string;
-    lastname?: string;
-  }): Promise<any> {
+  async updateProfile(params: { firstname?: string; lastname?: string }): Promise<any> {
     let response = await this.http.put('/users', params);
     return response.data;
   }
 
-  async updateNotifications(params: {
-    email_notifications?: boolean;
-  }): Promise<any> {
+  async updateNotifications(params: { email_notifications?: boolean }): Promise<any> {
     let response = await this.http.put('/users/notifications', params);
     return response.data;
   }

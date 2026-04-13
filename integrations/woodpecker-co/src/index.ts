@@ -20,14 +20,9 @@ import {
   manageManualTasks,
   generateReport,
   getReport,
-  listUsers,
+  listUsers
 } from './tools';
-import {
-  prospectEvents,
-  campaignEvents,
-  taskEvents,
-  linkedinEvents,
-} from './triggers';
+import { prospectEvents, campaignEvents, taskEvents, linkedinEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,12 +46,7 @@ export let provider = Slate.create({
     manageManualTasks,
     generateReport,
     getReport,
-    listUsers,
+    listUsers
   ],
-  triggers: [
-    prospectEvents,
-    campaignEvents,
-    taskEvents,
-    linkedinEvents,
-  ],
+  triggers: [prospectEvents, campaignEvents, taskEvents, linkedinEvents]
 });

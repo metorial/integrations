@@ -120,6 +120,7 @@ The SendGrid Event Webhook sends email event data as SendGrid processes it. This
 Events are grouped into three categories:
 
 **Delivery Events** — Indicate the status of email delivery:
+
 - Processed events occur when a message has been received by Twilio SendGrid and is ready to be delivered.
 - Delivered events occur when a message has been successfully delivered to the receiving server.
 - Deferred events occur when the receiving server temporarily rejects a message.
@@ -127,6 +128,7 @@ Events are grouped into three categories:
 - Dropped events occur when your message is not delivered by Twilio SendGrid. Includes a reason (e.g., unsubscribed address, bounced address, spam content).
 
 **Engagement Events** — Indicate recipient interaction:
+
 - Open events occur when a recipient has opened the HTML message. You must enable Open Tracking to receive this type of event.
 - Click events occur when a recipient clicks on a link within the message. You must enable Click Tracking to receive this type of event.
 - Unsubscribe events occur when recipients click on a message's subscription management link. You must enable Subscription Tracking to receive this type of event.
@@ -135,9 +137,11 @@ Events are grouped into three categories:
 - Spam report events occur when a recipient marks your email as spam.
 
 **Account Events:**
+
 - Account status change events related to compliance action taken by SendGrid.
 
 Configuration options:
+
 - You can select which event types to receive per webhook.
 - You may have multiple endpoints depending on your SendGrid plan. Having multiple endpoints means you can deliver different types of event data to different destinations.
 - The Event Webhook allows you to verify that the POST requests are coming from SendGrid with either or both Signature Verification and OAuth Verification.

@@ -2,84 +2,98 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let appointmentEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Appointment Event',
-    key: 'appointment_event',
-    description: 'Triggers when an appointment is created, modified, or deleted in eTermin via the Web Push webhook.',
-  }
-)
-  .input(z.object({
-    command: z.enum(['CREATED', 'MODIFIED', 'DELETED']).describe('The event command type'),
-    appointmentUid: z.string().describe('Unique identifier for the appointment'),
-    startDateTimeUtc: z.string().optional().describe('Start date/time in UTC (yyyyMMdd HHmmss)'),
-    endDateTimeUtc: z.string().optional().describe('End date/time in UTC (yyyyMMdd HHmmss)'),
-    startDateTime: z.string().optional().describe('Start date/time in local timezone (yyyyMMdd HHmmss)'),
-    endDateTime: z.string().optional().describe('End date/time in local timezone (yyyyMMdd HHmmss)'),
-    bookingDateUtc: z.string().optional().describe('Booking date in UTC (yyyyMMdd HHmmss)'),
-    salutation: z.string().optional().describe('Customer salutation'),
-    lastName: z.string().optional().describe('Customer last name'),
-    firstName: z.string().optional().describe('Customer first name'),
-    email: z.string().optional().describe('Customer email'),
-    phone: z.string().optional().describe('Customer phone'),
-    street: z.string().optional().describe('Customer street address'),
-    zip: z.string().optional().describe('Customer postal code'),
-    town: z.string().optional().describe('Customer city/town'),
-    birthday: z.string().optional().describe('Customer birthday'),
-    notes: z.string().optional().describe('Appointment notes'),
-    customerNumber: z.string().optional().describe('Customer number'),
-    calendarName: z.string().optional().describe('Calendar name'),
-    calendarId: z.string().optional().describe('Calendar ID'),
-    serviceName: z.string().optional().describe('Service name'),
-    serviceUid: z.string().optional().describe('Service unique identifier'),
-    selectedAnswers: z.string().optional().describe('Selected answers to custom booking questions'),
-    bookingLanguage: z.string().optional().describe('Booking language'),
-    additional1: z.string().optional().describe('Custom field 1'),
-    additional2: z.string().optional().describe('Custom field 2'),
-    additional3: z.string().optional().describe('Custom field 3'),
-    additional4: z.string().optional().describe('Custom field 4'),
-    additional5: z.string().optional().describe('Custom field 5'),
-    additional6: z.string().optional().describe('Custom field 6'),
-  }))
-  .output(z.object({
-    appointmentUid: z.string().describe('Unique identifier for the appointment'),
-    startDateTimeUtc: z.string().optional().describe('Start date/time in UTC'),
-    endDateTimeUtc: z.string().optional().describe('End date/time in UTC'),
-    startDateTime: z.string().optional().describe('Start date/time in local timezone'),
-    endDateTime: z.string().optional().describe('End date/time in local timezone'),
-    bookingDateUtc: z.string().optional().describe('Booking date in UTC'),
-    salutation: z.string().optional().describe('Customer salutation'),
-    lastName: z.string().optional().describe('Customer last name'),
-    firstName: z.string().optional().describe('Customer first name'),
-    email: z.string().optional().describe('Customer email'),
-    phone: z.string().optional().describe('Customer phone'),
-    street: z.string().optional().describe('Customer street address'),
-    zip: z.string().optional().describe('Customer postal code'),
-    town: z.string().optional().describe('Customer city/town'),
-    birthday: z.string().optional().describe('Customer birthday'),
-    notes: z.string().optional().describe('Appointment notes'),
-    customerNumber: z.string().optional().describe('Customer number'),
-    calendarName: z.string().optional().describe('Calendar name'),
-    calendarId: z.string().optional().describe('Calendar ID'),
-    serviceName: z.string().optional().describe('Service name'),
-    serviceUid: z.string().optional().describe('Service unique identifier'),
-    selectedAnswers: z.string().optional().describe('Custom booking question answers'),
-    bookingLanguage: z.string().optional().describe('Language used during booking'),
-    additional1: z.string().optional().describe('Custom field 1'),
-    additional2: z.string().optional().describe('Custom field 2'),
-    additional3: z.string().optional().describe('Custom field 3'),
-    additional4: z.string().optional().describe('Custom field 4'),
-    additional5: z.string().optional().describe('Custom field 5'),
-    additional6: z.string().optional().describe('Custom field 6'),
-  }))
+export let appointmentEvent = SlateTrigger.create(spec, {
+  name: 'Appointment Event',
+  key: 'appointment_event',
+  description:
+    'Triggers when an appointment is created, modified, or deleted in eTermin via the Web Push webhook.'
+})
+  .input(
+    z.object({
+      command: z.enum(['CREATED', 'MODIFIED', 'DELETED']).describe('The event command type'),
+      appointmentUid: z.string().describe('Unique identifier for the appointment'),
+      startDateTimeUtc: z
+        .string()
+        .optional()
+        .describe('Start date/time in UTC (yyyyMMdd HHmmss)'),
+      endDateTimeUtc: z.string().optional().describe('End date/time in UTC (yyyyMMdd HHmmss)'),
+      startDateTime: z
+        .string()
+        .optional()
+        .describe('Start date/time in local timezone (yyyyMMdd HHmmss)'),
+      endDateTime: z
+        .string()
+        .optional()
+        .describe('End date/time in local timezone (yyyyMMdd HHmmss)'),
+      bookingDateUtc: z.string().optional().describe('Booking date in UTC (yyyyMMdd HHmmss)'),
+      salutation: z.string().optional().describe('Customer salutation'),
+      lastName: z.string().optional().describe('Customer last name'),
+      firstName: z.string().optional().describe('Customer first name'),
+      email: z.string().optional().describe('Customer email'),
+      phone: z.string().optional().describe('Customer phone'),
+      street: z.string().optional().describe('Customer street address'),
+      zip: z.string().optional().describe('Customer postal code'),
+      town: z.string().optional().describe('Customer city/town'),
+      birthday: z.string().optional().describe('Customer birthday'),
+      notes: z.string().optional().describe('Appointment notes'),
+      customerNumber: z.string().optional().describe('Customer number'),
+      calendarName: z.string().optional().describe('Calendar name'),
+      calendarId: z.string().optional().describe('Calendar ID'),
+      serviceName: z.string().optional().describe('Service name'),
+      serviceUid: z.string().optional().describe('Service unique identifier'),
+      selectedAnswers: z
+        .string()
+        .optional()
+        .describe('Selected answers to custom booking questions'),
+      bookingLanguage: z.string().optional().describe('Booking language'),
+      additional1: z.string().optional().describe('Custom field 1'),
+      additional2: z.string().optional().describe('Custom field 2'),
+      additional3: z.string().optional().describe('Custom field 3'),
+      additional4: z.string().optional().describe('Custom field 4'),
+      additional5: z.string().optional().describe('Custom field 5'),
+      additional6: z.string().optional().describe('Custom field 6')
+    })
+  )
+  .output(
+    z.object({
+      appointmentUid: z.string().describe('Unique identifier for the appointment'),
+      startDateTimeUtc: z.string().optional().describe('Start date/time in UTC'),
+      endDateTimeUtc: z.string().optional().describe('End date/time in UTC'),
+      startDateTime: z.string().optional().describe('Start date/time in local timezone'),
+      endDateTime: z.string().optional().describe('End date/time in local timezone'),
+      bookingDateUtc: z.string().optional().describe('Booking date in UTC'),
+      salutation: z.string().optional().describe('Customer salutation'),
+      lastName: z.string().optional().describe('Customer last name'),
+      firstName: z.string().optional().describe('Customer first name'),
+      email: z.string().optional().describe('Customer email'),
+      phone: z.string().optional().describe('Customer phone'),
+      street: z.string().optional().describe('Customer street address'),
+      zip: z.string().optional().describe('Customer postal code'),
+      town: z.string().optional().describe('Customer city/town'),
+      birthday: z.string().optional().describe('Customer birthday'),
+      notes: z.string().optional().describe('Appointment notes'),
+      customerNumber: z.string().optional().describe('Customer number'),
+      calendarName: z.string().optional().describe('Calendar name'),
+      calendarId: z.string().optional().describe('Calendar ID'),
+      serviceName: z.string().optional().describe('Service name'),
+      serviceUid: z.string().optional().describe('Service unique identifier'),
+      selectedAnswers: z.string().optional().describe('Custom booking question answers'),
+      bookingLanguage: z.string().optional().describe('Language used during booking'),
+      additional1: z.string().optional().describe('Custom field 1'),
+      additional2: z.string().optional().describe('Custom field 2'),
+      additional3: z.string().optional().describe('Custom field 3'),
+      additional4: z.string().optional().describe('Custom field 4'),
+      additional5: z.string().optional().describe('Custom field 5'),
+      additional6: z.string().optional().describe('Custom field 6')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let contentType = ctx.request.headers.get('content-type') ?? '';
       let data: Record<string, string>;
 
       if (contentType.includes('application/json')) {
-        data = await ctx.request.json() as Record<string, string>;
+        data = (await ctx.request.json()) as Record<string, string>;
       } else {
         let text = await ctx.request.text();
         let params = new URLSearchParams(text);
@@ -125,20 +139,21 @@ export let appointmentEvent = SlateTrigger.create(
             additional3: data.ADDITIONAL3 ?? data.additional3,
             additional4: data.ADDITIONAL4 ?? data.additional4,
             additional5: data.ADDITIONAL5 ?? data.additional5,
-            additional6: data.ADDITIONAL6 ?? data.additional6,
-          },
-        ],
+            additional6: data.ADDITIONAL6 ?? data.additional6
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let commandMap: Record<string, string> = {
         CREATED: 'appointment.created',
         MODIFIED: 'appointment.modified',
-        DELETED: 'appointment.deleted',
+        DELETED: 'appointment.deleted'
       };
 
-      let eventType = commandMap[ctx.input.command] ?? `appointment.${ctx.input.command.toLowerCase()}`;
+      let eventType =
+        commandMap[ctx.input.command] ?? `appointment.${ctx.input.command.toLowerCase()}`;
 
       return {
         type: eventType,
@@ -172,8 +187,9 @@ export let appointmentEvent = SlateTrigger.create(
           additional3: ctx.input.additional3,
           additional4: ctx.input.additional4,
           additional5: ctx.input.additional5,
-          additional6: ctx.input.additional6,
-        },
+          additional6: ctx.input.additional6
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

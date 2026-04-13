@@ -1,10 +1,13 @@
 import { Client, ClientConfig } from './client';
 
-export let createClient = (ctx: { auth: { token: string; clientId: string }; config: { agent?: string } }): Client => {
+export let createClient = (ctx: {
+  auth: { token: string; clientId: string };
+  config: { agent?: string };
+}): Client => {
   let clientConfig: ClientConfig = {
     token: ctx.auth.token,
     clientId: ctx.auth.clientId,
-    agent: ctx.config.agent,
+    agent: ctx.config.agent
   };
   return new Client(clientConfig);
 };

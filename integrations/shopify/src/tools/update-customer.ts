@@ -3,34 +3,35 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Update Customer',
-    key: 'update_customer',
-    description: `Update an existing customer's information including name, email, phone, tags, note, and tax exemption status.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    customerId: z.string().describe('Shopify customer ID'),
-    email: z.string().optional().describe('New email address'),
-    firstName: z.string().optional().describe('New first name'),
-    lastName: z.string().optional().describe('New last name'),
-    phone: z.string().optional().describe('New phone number'),
-    tags: z.string().optional().describe('New comma-separated tags (replaces existing)'),
-    note: z.string().optional().describe('New internal note'),
-    taxExempt: z.boolean().optional().describe('Tax exemption status')
-  }))
-  .output(z.object({
-    customerId: z.string(),
-    email: z.string().nullable(),
-    firstName: z.string().nullable(),
-    lastName: z.string().nullable(),
-    tags: z.string(),
-    updatedAt: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateCustomer = SlateTool.create(spec, {
+  name: 'Update Customer',
+  key: 'update_customer',
+  description: `Update an existing customer's information including name, email, phone, tags, note, and tax exemption status.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('Shopify customer ID'),
+      email: z.string().optional().describe('New email address'),
+      firstName: z.string().optional().describe('New first name'),
+      lastName: z.string().optional().describe('New last name'),
+      phone: z.string().optional().describe('New phone number'),
+      tags: z.string().optional().describe('New comma-separated tags (replaces existing)'),
+      note: z.string().optional().describe('New internal note'),
+      taxExempt: z.boolean().optional().describe('Tax exemption status')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string(),
+      email: z.string().nullable(),
+      firstName: z.string().nullable(),
+      lastName: z.string().nullable(),
+      tags: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -59,4 +60,5 @@ export let updateCustomer = SlateTool.create(
       },
       message: `Updated customer **${c.first_name || ''} ${c.last_name || ''}**.`
     };
-  }).build();
+  })
+  .build();

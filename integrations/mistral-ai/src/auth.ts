@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -12,7 +14,7 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       token: z.string().describe('Mistral AI API key from https://console.mistral.ai')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

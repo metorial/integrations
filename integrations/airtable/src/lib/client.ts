@@ -7,7 +7,7 @@ import type {
   AirtableComment,
   AirtableWebhook,
   CreateWebhookResponse,
-  WebhookPayloadsResponse,
+  WebhookPayloadsResponse
 } from './types';
 
 export class Client {
@@ -20,8 +20,8 @@ export class Client {
       baseURL: 'https://api.airtable.com/v0',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -64,9 +64,12 @@ export class Client {
     if (options?.cellFormat) params['cellFormat'] = options.cellFormat;
     if (options?.timeZone) params['timeZone'] = options.timeZone;
     if (options?.userLocale) params['userLocale'] = options.userLocale;
-    if (options?.returnFieldsByFieldId) params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
+    if (options?.returnFieldsByFieldId)
+      params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
 
-    let response = await this.api.get(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, { params });
+    let response = await this.api.get(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, {
+      params
+    });
     return response.data;
   }
 
@@ -76,7 +79,8 @@ export class Client {
     options?: { returnFieldsByFieldId?: boolean }
   ): Promise<AirtableRecord> {
     let params: Record<string, any> = {};
-    if (options?.returnFieldsByFieldId) params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
+    if (options?.returnFieldsByFieldId)
+      params['returnFieldsByFieldId'] = options.returnFieldsByFieldId;
 
     let response = await this.api.get(
       `/${this.baseId}/${encodeURIComponent(tableIdOrName)}/${recordId}`,
@@ -91,7 +95,7 @@ export class Client {
     options?: { typecast?: boolean; returnFieldsByFieldId?: boolean }
   ): Promise<{ records: AirtableRecord[] }> {
     let body: Record<string, any> = {
-      records,
+      records
     };
     if (options?.typecast) body['typecast'] = true;
     if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
@@ -109,15 +113,16 @@ export class Client {
     options?: { typecast?: boolean; returnFieldsByFieldId?: boolean; method?: 'PATCH' | 'PUT' }
   ): Promise<{ records: AirtableRecord[] }> {
     let body: Record<string, any> = {
-      records,
+      records
     };
     if (options?.typecast) body['typecast'] = true;
     if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
 
     let method = options?.method || 'PATCH';
-    let response = method === 'PUT'
-      ? await this.api.put(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
-      : await this.api.patch(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body);
+    let response =
+      method === 'PUT'
+        ? await this.api.put(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body)
+        : await this.api.patch(`/${this.baseId}/${encodeURIComponent(tableIdOrName)}`, body);
 
     return response.data;
   }
@@ -134,9 +139,9 @@ export class Client {
   }> {
     let body: Record<string, any> = {
       performUpsert: {
-        fieldsToMergeOn,
+        fieldsToMergeOn
       },
-      records,
+      records
     };
     if (options?.typecast) body['typecast'] = true;
     if (options?.returnFieldsByFieldId) body['returnFieldsByFieldId'] = true;
@@ -171,7 +176,12 @@ export class Client {
 
   async createTable(
     name: string,
-    fields: { name: string; type: string; description?: string; options?: Record<string, any> }[],
+    fields: {
+      name: string;
+      type: string;
+      description?: string;
+      options?: Record<string, any>;
+    }[],
     description?: string
   ): Promise<any> {
     let body: Record<string, any> = { name, fields };
@@ -283,7 +293,7 @@ export class Client {
   ): Promise<CreateWebhookResponse> {
     let response = await this.api.post(`/bases/${this.baseId}/webhooks`, {
       notificationUrl,
-      specification,
+      specification
     });
     return response.data;
   }
@@ -309,30 +319,25 @@ export class Client {
     let params: Record<string, any> = {};
     if (cursor !== undefined) params['cursor'] = cursor;
 
-    let response = await this.api.get(`/bases/${this.baseId}/webhooks/${webhookId}/payloads`, { params });
+    let response = await this.api.get(`/bases/${this.baseId}/webhooks/${webhookId}/payloads`, {
+      params
+    });
     return response.data;
   }
 
   // ─── Collaborators ──────────────────────────────────────────────────
 
-  async addBaseCollaborator(
-    userId: string,
-    permissionLevel: string
-  ): Promise<any> {
+  async addBaseCollaborator(userId: string, permissionLevel: string): Promise<any> {
     let response = await this.api.post(`/meta/bases/${this.baseId}/collaborators`, {
-      collaborators: [{ user: { id: userId }, permissionLevel }],
+      collaborators: [{ user: { id: userId }, permissionLevel }]
     });
     return response.data;
   }
 
-  async updateBaseCollaborator(
-    userId: string,
-    permissionLevel: string
-  ): Promise<any> {
-    let response = await this.api.patch(
-      `/meta/bases/${this.baseId}/collaborators/${userId}`,
-      { permissionLevel }
-    );
+  async updateBaseCollaborator(userId: string, permissionLevel: string): Promise<any> {
+    let response = await this.api.patch(`/meta/bases/${this.baseId}/collaborators/${userId}`, {
+      permissionLevel
+    });
     return response.data;
   }
 

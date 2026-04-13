@@ -28,7 +28,9 @@ There is no OAuth flow or token refresh mechanism. The API key remains valid unt
 ## Features
 
 ### Link Management
+
 Create, update, and delete short links programmatically. Links can be created individually or in bulk (up to 1000 per request). Each link supports configuration of:
+
 - Custom domain and slug (vanity URL)
 - Nickname and notes
 - UTM parameters (source, medium, campaign, term, content)
@@ -41,7 +43,9 @@ Create, update, and delete short links programmatically. Links can be created in
 - Parameter forwarding to the destination URL
 
 ### Redirect Rules
+
 Configure smart redirect rules on links via a JSON rules array:
+
 - **Geo-Redirects**: Route visitors to different destinations based on their country (using ISO 3166 alpha-2 codes).
 - **Device Redirects**: Route visitors based on platform (ios, android, windows, linux, mac).
 - **Link Rotators**: Split traffic across multiple destination URLs by percentage.
@@ -49,17 +53,22 @@ Configure smart redirect rules on links via a JSON rules array:
 Rules can be combined on a single link.
 
 ### Click Analytics
+
 Export raw click data and traffic reports via the Analytics API. Click data includes timestamps, geolocation (country, city), device type, browser, operating system, ISP, referrer, and any query parameters passed. Analytics can be filtered by date range and pivoted by link. Data can also be exported as CSV or fed into Google Sheets and Excel via live data feeds.
 
 ### QR Code Generation
+
 Generate QR code images for any short link. Two methods are available:
+
 - **Public URL**: Append `.qr.png` to any short link URL (no authentication required).
 - **Authenticated API endpoint**: Use `/api/v1/link/:id/qr/png` for full control over styling, including custom foreground/background colors, QR dot style, eye style/colors, logo image with padding, and size.
 
 ### Webhook Management
+
 Create and manage webhooks programmatically at both the link level and workspace level. Webhooks can be added, listed, and deleted via the API for individual links or entire workspaces.
 
 ### Custom Domains
+
 Use your own branded domains for short links. Domains are configured via CNAME records and can have custom favicons. A default domain redirect can be set for the root domain.
 
 ## Events
@@ -67,6 +76,7 @@ Use your own branded domains for short links. Domains are configured via CNAME r
 Linkly supports **webhooks** that send real-time HTTP POST requests when clicks occur.
 
 ### Click Events
+
 - **Description**: Fires when a tracked link is clicked. The payload includes the event type (always "click"), an ISO 8601 timestamp, full link metadata (ID, name, destination URL, short URL, domain, slug, workspace ID, enabled status, UTM parameters, Open Graph settings, and redirect rules), and detailed click data (country, EU status, platform, browser, referrer, ISP, bot identifier, final destination, and query parameters).
 - **Configuration options**:
   - **Link-level webhooks**: Fire only when a specific link is clicked. Multiple webhook URLs can be configured per link.

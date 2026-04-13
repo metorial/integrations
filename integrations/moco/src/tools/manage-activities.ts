@@ -22,32 +22,33 @@ let activityOutputSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listActivities = SlateTool.create(
-  spec,
-  {
-    name: 'List Activities',
-    key: 'list_activities',
-    description: `Retrieve time tracking entries (activities). Filter by date range, project, task, user, or billing status. By default returns activities for the authenticated user.`,
-    tags: {
-      readOnly: true
-    }
+export let listActivities = SlateTool.create(spec, {
+  name: 'List Activities',
+  key: 'list_activities',
+  description: `Retrieve time tracking entries (activities). Filter by date range, project, task, user, or billing status. By default returns activities for the authenticated user.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    from: z.string().optional().describe('Start date for filtering (YYYY-MM-DD)'),
-    to: z.string().optional().describe('End date for filtering (YYYY-MM-DD)'),
-    userId: z.number().optional().describe('Filter by user ID'),
-    projectId: z.number().optional().describe('Filter by project ID'),
-    taskId: z.number().optional().describe('Filter by task ID'),
-    companyId: z.number().optional().describe('Filter by company ID'),
-    billable: z.boolean().optional().describe('Filter by billable status'),
-    billed: z.boolean().optional().describe('Filter by billed status'),
-    term: z.string().optional().describe('Full-text search term')
-  }))
-  .output(z.object({
-    activities: z.array(activityOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      from: z.string().optional().describe('Start date for filtering (YYYY-MM-DD)'),
+      to: z.string().optional().describe('End date for filtering (YYYY-MM-DD)'),
+      userId: z.number().optional().describe('Filter by user ID'),
+      projectId: z.number().optional().describe('Filter by project ID'),
+      taskId: z.number().optional().describe('Filter by task ID'),
+      companyId: z.number().optional().describe('Filter by company ID'),
+      billable: z.boolean().optional().describe('Filter by billable status'),
+      billed: z.boolean().optional().describe('Filter by billed status'),
+      term: z.string().optional().describe('Full-text search term')
+    })
+  )
+  .output(
+    z.object({
+      activities: z.array(activityOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -86,31 +87,37 @@ export let listActivities = SlateTool.create(
       output: { activities },
       message: `Found **${activities.length}** activities.`
     };
-  }).build();
+  })
+  .build();
 
-export let createActivity = SlateTool.create(
-  spec,
-  {
-    name: 'Create Activity',
-    key: 'create_activity',
-    description: `Log a new time entry against a project task. Specify date, duration, and optionally a description. Can also start a timer for current-day entries.`,
-    tags: {
-      destructive: false
-    }
+export let createActivity = SlateTool.create(spec, {
+  name: 'Create Activity',
+  key: 'create_activity',
+  description: `Log a new time entry against a project task. Specify date, duration, and optionally a description. Can also start a timer for current-day entries.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    date: z.string().describe('Date for the activity (YYYY-MM-DD)'),
-    projectId: z.number().describe('Project ID to log time against'),
-    taskId: z.number().describe('Task ID within the project'),
-    seconds: z.number().optional().describe('Duration in seconds (use 0 or omit to start a timer)'),
-    hours: z.number().optional().describe('Duration in hours (alternative to seconds, e.g. 1.5 for 1h30m)'),
-    description: z.string().optional().describe('Description of the work done'),
-    billable: z.boolean().optional().describe('Whether this time is billable'),
-    tag: z.string().optional().describe('Activity tag/label')
-  }))
+})
+  .input(
+    z.object({
+      date: z.string().describe('Date for the activity (YYYY-MM-DD)'),
+      projectId: z.number().describe('Project ID to log time against'),
+      taskId: z.number().describe('Task ID within the project'),
+      seconds: z
+        .number()
+        .optional()
+        .describe('Duration in seconds (use 0 or omit to start a timer)'),
+      hours: z
+        .number()
+        .optional()
+        .describe('Duration in hours (alternative to seconds, e.g. 1.5 for 1h30m)'),
+      description: z.string().optional().describe('Description of the work done'),
+      billable: z.boolean().optional().describe('Whether this time is billable'),
+      tag: z.string().optional().describe('Activity tag/label')
+    })
+  )
   .output(activityOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -152,32 +159,32 @@ export let createActivity = SlateTool.create(
       },
       message: `Created activity on **${a.date}** (ID: ${a.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateActivity = SlateTool.create(
-  spec,
-  {
-    name: 'Update Activity',
-    key: 'update_activity',
-    description: `Update an existing time entry. Modify duration, description, billing status, or tags.`,
-    tags: {
-      destructive: false
-    }
+export let updateActivity = SlateTool.create(spec, {
+  name: 'Update Activity',
+  key: 'update_activity',
+  description: `Update an existing time entry. Modify duration, description, billing status, or tags.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    activityId: z.number().describe('The ID of the activity to update'),
-    date: z.string().optional().describe('New date (YYYY-MM-DD)'),
-    projectId: z.number().optional().describe('New project ID'),
-    taskId: z.number().optional().describe('New task ID'),
-    seconds: z.number().optional().describe('New duration in seconds'),
-    hours: z.number().optional().describe('New duration in hours'),
-    description: z.string().optional().describe('New description'),
-    billable: z.boolean().optional().describe('New billable status'),
-    tag: z.string().optional().describe('New tag/label')
-  }))
+})
+  .input(
+    z.object({
+      activityId: z.number().describe('The ID of the activity to update'),
+      date: z.string().optional().describe('New date (YYYY-MM-DD)'),
+      projectId: z.number().optional().describe('New project ID'),
+      taskId: z.number().optional().describe('New task ID'),
+      seconds: z.number().optional().describe('New duration in seconds'),
+      hours: z.number().optional().describe('New duration in hours'),
+      description: z.string().optional().describe('New description'),
+      billable: z.boolean().optional().describe('New billable status'),
+      tag: z.string().optional().describe('New tag/label')
+    })
+  )
   .output(activityOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {};
@@ -213,26 +220,28 @@ export let updateActivity = SlateTool.create(
       },
       message: `Updated activity **${a.id}** on ${a.date}.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteActivity = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Activity',
-    key: 'delete_activity',
-    description: `Delete a time entry. Only unbilled and unlocked activities can be deleted.`,
-    tags: {
-      destructive: true
-    }
+export let deleteActivity = SlateTool.create(spec, {
+  name: 'Delete Activity',
+  key: 'delete_activity',
+  description: `Delete a time entry. Only unbilled and unlocked activities can be deleted.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    activityId: z.number().describe('The ID of the activity to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      activityId: z.number().describe('The ID of the activity to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     await client.deleteActivity(ctx.input.activityId);
 
@@ -240,30 +249,31 @@ export let deleteActivity = SlateTool.create(
       output: { success: true },
       message: `Deleted activity **${ctx.input.activityId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let manageTimer = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Timer',
-    key: 'manage_timer',
-    description: `Start or stop a timer on an activity. Timers can only be used for current-day activities.`,
-    tags: {
-      destructive: false
-    }
+export let manageTimer = SlateTool.create(spec, {
+  name: 'Manage Timer',
+  key: 'manage_timer',
+  description: `Start or stop a timer on an activity. Timers can only be used for current-day activities.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    activityId: z.number().describe('The ID of the activity'),
-    action: z.enum(['start', 'stop']).describe('Whether to start or stop the timer')
-  }))
+})
+  .input(
+    z.object({
+      activityId: z.number().describe('The ID of the activity'),
+      action: z.enum(['start', 'stop']).describe('Whether to start or stop the timer')
+    })
+  )
   .output(activityOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
-    let a = ctx.input.action === 'start'
-      ? await client.startTimer(ctx.input.activityId)
-      : await client.stopTimer(ctx.input.activityId);
+    let a =
+      ctx.input.action === 'start'
+        ? await client.startTimer(ctx.input.activityId)
+        : await client.stopTimer(ctx.input.activityId);
 
     return {
       output: {
@@ -286,4 +296,5 @@ export let manageTimer = SlateTool.create(
       },
       message: `Timer **${ctx.input.action === 'start' ? 'started' : 'stopped'}** on activity **${a.id}**.`
     };
-  }).build();
+  })
+  .build();

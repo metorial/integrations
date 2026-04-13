@@ -41,6 +41,7 @@ Using an API key is a way outside of the OAuth flow to gain access to the Salesl
 Scopes are used to manage access to SalesLoft data via the API. They represent specific permissions, allowing applications to request only the necessary data and actions, ensuring secure and granular access control.
 
 Key scopes include `person:read`, `person:write`, `account:read`, `account:write`, and others corresponding to specific resources. Privileged scopes include:
+
 - `email_contents:read` — Read email bodies and subjects.
 - `crm_id_person:write` — Write to the CRM ID field of the Person object.
 - `crm_id_account:write` — Write to the CRM ID field of the Account object.
@@ -113,24 +114,31 @@ Webhook subscriptions are made on behalf of a team. Once installed, the webhook 
 Based on available documentation and integration references, the following event categories are supported:
 
 ### Person Events
+
 - Triggers when an event occurs for a person. Supports created, updated, and deleted person events.
 
 ### Account Events
+
 - Triggers when an event occurs for an Account. Supports created, updated, and deleted Account events.
 
 ### Cadence Events
+
 - Triggers when an event occurs for a Cadence. Supports created, updated, and deleted Cadence events.
 
 ### Meeting Events
+
 - Triggers when an event occurs for a Meeting. Supports created and updated Meeting events.
 
 ### Call Events
+
 - Triggers when an event occurs for a Call. Supports created and updated Call events.
 
 ### Note Events
+
 - Triggers when an event occurs for a Note. Supports created, updated, and deleted Note events.
 
 ### Task Events
+
 - Triggers when an event occurs for a task.
 
 The webhook event types have associated permissions. When subscribing to an event that emits data for a particular resource, the authorized user must have the correct permissions or the corresponding data will not be available.

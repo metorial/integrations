@@ -3,41 +3,69 @@ import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let shareFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Share Folder',
-    key: 'share_folder',
-    description: `Share a folder with other users or manage shared folder membership. Use action "share" to make a folder shared, "add_member" to invite someone, "remove_member" to remove access, or "list_members" to see current members.`,
-    tags: {
-      destructive: false
-    }
+export let shareFolder = SlateTool.create(spec, {
+  name: 'Share Folder',
+  key: 'share_folder',
+  description: `Share a folder with other users or manage shared folder membership. Use action "share" to make a folder shared, "add_member" to invite someone, "remove_member" to remove access, or "list_members" to see current members.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['share', 'add_member', 'remove_member', 'list_members']).describe('Action to perform'),
-    path: z.string().optional().describe('Folder path (required for "share")'),
-    sharedFolderId: z.string().optional().describe('Shared folder ID (required for member management actions)'),
-    members: z.array(z.object({
-      email: z.string().describe('Email address of the member'),
-      accessLevel: z.enum(['viewer', 'editor', 'owner']).optional().describe('Access level for the member')
-    })).optional().describe('Members to add (for "add_member" action)'),
-    memberEmail: z.string().optional().describe('Email of the member to remove (for "remove_member")'),
-    customMessage: z.string().optional().describe('Custom message to include in the sharing invitation'),
-    quiet: z.boolean().optional().describe('If true, suppress email notifications')
-  }))
-  .output(z.object({
-    sharedFolderId: z.string().optional().describe('ID of the shared folder'),
-    members: z.array(z.object({
-      email: z.string().optional().describe('Member email'),
-      displayName: z.string().optional().describe('Member display name'),
-      accessLevel: z.string().optional().describe('Member access level'),
-      accountId: z.string().optional().describe('Member account ID'),
-      isInherited: z.boolean().optional().describe('Whether access is inherited from a parent folder')
-    })).optional().describe('Current folder members (for "list_members")'),
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['share', 'add_member', 'remove_member', 'list_members'])
+        .describe('Action to perform'),
+      path: z.string().optional().describe('Folder path (required for "share")'),
+      sharedFolderId: z
+        .string()
+        .optional()
+        .describe('Shared folder ID (required for member management actions)'),
+      members: z
+        .array(
+          z.object({
+            email: z.string().describe('Email address of the member'),
+            accessLevel: z
+              .enum(['viewer', 'editor', 'owner'])
+              .optional()
+              .describe('Access level for the member')
+          })
+        )
+        .optional()
+        .describe('Members to add (for "add_member" action)'),
+      memberEmail: z
+        .string()
+        .optional()
+        .describe('Email of the member to remove (for "remove_member")'),
+      customMessage: z
+        .string()
+        .optional()
+        .describe('Custom message to include in the sharing invitation'),
+      quiet: z.boolean().optional().describe('If true, suppress email notifications')
+    })
+  )
+  .output(
+    z.object({
+      sharedFolderId: z.string().optional().describe('ID of the shared folder'),
+      members: z
+        .array(
+          z.object({
+            email: z.string().optional().describe('Member email'),
+            displayName: z.string().optional().describe('Member display name'),
+            accessLevel: z.string().optional().describe('Member access level'),
+            accountId: z.string().optional().describe('Member account ID'),
+            isInherited: z
+              .boolean()
+              .optional()
+              .describe('Whether access is inherited from a parent folder')
+          })
+        )
+        .optional()
+        .describe('Current folder members (for "list_members")'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DropboxClient(ctx.auth.token);
 
     if (ctx.input.action === 'share') {
@@ -45,7 +73,10 @@ export let shareFolder = SlateTool.create(
       let result = await client.shareFolder(ctx.input.path);
       return {
         output: {
-          sharedFolderId: result.shared_folder_id || result['.tag'] === 'complete' ? result.shared_folder_id : undefined,
+          sharedFolderId:
+            result.shared_folder_id || result['.tag'] === 'complete'
+              ? result.shared_folder_id
+              : undefined,
           success: true
         },
         message: `Shared folder **${ctx.input.path}**.`
@@ -54,7 +85,8 @@ export let shareFolder = SlateTool.create(
 
     if (ctx.input.action === 'add_member') {
       if (!ctx.input.sharedFolderId) throw new Error('Shared folder ID is required');
-      if (!ctx.input.members || ctx.input.members.length === 0) throw new Error('At least one member is required');
+      if (!ctx.input.members || ctx.input.members.length === 0)
+        throw new Error('At least one member is required');
 
       await client.addFolderMember(
         ctx.input.sharedFolderId,
@@ -97,4 +129,5 @@ export let shareFolder = SlateTool.create(
       output: { members, success: true },
       message: `Found **${members.length}** members in the shared folder.`
     };
-  }).build();
+  })
+  .build();

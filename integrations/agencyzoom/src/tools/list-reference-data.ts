@@ -3,50 +3,65 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listReferenceData = SlateTool.create(
-  spec,
-  {
-    name: 'List Reference Data',
-    key: 'list_reference_data',
-    description: `Retrieve configuration and reference data such as carriers, product lines, employees, pipelines, lead sources, and more. Use this to look up valid IDs and values for use in other tools.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    dataType: z.enum([
-      'carriers',
-      'product_lines',
-      'product_categories',
-      'employees',
-      'lead_sources',
-      'lead_source_categories',
-      'locations',
-      'loss_reasons',
-      'custom_fields',
-      'pipelines',
-      'pipeline_stages',
-      'service_categories',
-      'service_priorities',
-      'service_resolutions',
-      'assign_groups',
-      'csrs',
-      'business_classifications',
-      'life_professionals',
-    ]).describe('Type of reference data to retrieve. Determines which API endpoint is called.'),
-    pipelineId: z.string().optional().describe('Pipeline ID, required when dataType is "pipeline_stages" to fetch stages for a specific pipeline'),
-    searchQuery: z.string().optional().describe('Search query string, used when dataType is "business_classifications" to filter results'),
-  }))
-  .output(z.object({
-    items: z.array(z.any()).describe('Array of reference data items returned from the API'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listReferenceData = SlateTool.create(spec, {
+  name: 'List Reference Data',
+  key: 'list_reference_data',
+  description: `Retrieve configuration and reference data such as carriers, product lines, employees, pipelines, lead sources, and more. Use this to look up valid IDs and values for use in other tools.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      dataType: z
+        .enum([
+          'carriers',
+          'product_lines',
+          'product_categories',
+          'employees',
+          'lead_sources',
+          'lead_source_categories',
+          'locations',
+          'loss_reasons',
+          'custom_fields',
+          'pipelines',
+          'pipeline_stages',
+          'service_categories',
+          'service_priorities',
+          'service_resolutions',
+          'assign_groups',
+          'csrs',
+          'business_classifications',
+          'life_professionals'
+        ])
+        .describe(
+          'Type of reference data to retrieve. Determines which API endpoint is called.'
+        ),
+      pipelineId: z
+        .string()
+        .optional()
+        .describe(
+          'Pipeline ID, required when dataType is "pipeline_stages" to fetch stages for a specific pipeline'
+        ),
+      searchQuery: z
+        .string()
+        .optional()
+        .describe(
+          'Search query string, used when dataType is "business_classifications" to filter results'
+        )
+    })
+  )
+  .output(
+    z.object({
+      items: z.array(z.any()).describe('Array of reference data items returned from the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result: any;
@@ -122,8 +137,9 @@ export let listReferenceData = SlateTool.create(
 
     return {
       output: {
-        items,
+        items
       },
-      message: `Retrieved **${items.length}** ${label} item(s).`,
+      message: `Retrieved **${items.length}** ${label} item(s).`
     };
-  }).build();
+  })
+  .build();

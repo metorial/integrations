@@ -26,11 +26,9 @@ import {
   getHookTool,
   deleteHookTool,
   assignProjectToChatTool,
-  getAccountInfoTool,
+  getAccountInfoTool
 } from './tools';
-import {
-  chatEventTrigger,
-} from './triggers';
+import { chatEventTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -60,9 +58,7 @@ export let provider = Slate.create({
     getHookTool,
     deleteHookTool,
     assignProjectToChatTool,
-    getAccountInfoTool,
+    getAccountInfoTool
   ],
-  triggers: [
-    chatEventTrigger,
-  ],
+  triggers: [chatEventTrigger]
 });

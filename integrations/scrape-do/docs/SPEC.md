@@ -32,6 +32,7 @@ There are no OAuth flows, scopes, or additional credentials required. A single t
 ## Features
 
 ### Web Page Scraping
+
 Scrape any public web page by providing its URL. Returns raw HTML, JSON, or any content type the target website serves. Supports both GET and POST requests to target URLs. Output can be returned in raw or markdown format.
 
 - **Geo-targeting**: Route requests through specific countries (`geoCode`) or continents (`regionalGeoCode`) using datacenter, residential, or mobile proxies.
@@ -40,6 +41,7 @@ Scrape any public web page by providing its URL. Returns raw HTML, JSON, or any 
 - **Device emulation**: Specify desktop, mobile, or tablet device types.
 
 ### Headless Browser Rendering
+
 Render JavaScript-heavy pages using a managed headless Chromium browser by setting `render=true`.
 
 - **Wait controls**: Configure when the page is considered loaded (`waitUntil`), add custom wait times (`customWait`), or wait for specific CSS selectors (`waitSelector`).
@@ -49,9 +51,11 @@ Render JavaScript-heavy pages using a managed headless Chromium browser by setti
 - **Network capture**: Return all network requests as JSON (`returnJSON`), including iframe content and WebSocket requests.
 
 ### Screenshots
+
 Capture visual screenshots of target web pages. Supports normal viewport screenshots, full-page screenshots, and partial screenshots targeting a specific CSS selector.
 
 ### Headers and Cookies Management
+
 Full control over HTTP headers and cookies sent to the target website.
 
 - **Custom headers**: Replace all default headers with your own.
@@ -61,6 +65,7 @@ Full control over HTTP headers and cookies sent to the target website.
 - **Pure cookies**: Retrieve original `Set-Cookie` headers from the target response.
 
 ### Amazon Scraper API
+
 A specialized plugin returning structured JSON data from Amazon across 21 international marketplaces.
 
 - **Product pages (PDP)**: Extract product details, pricing, images, ratings, and specifications by ASIN.
@@ -71,6 +76,7 @@ A specialized plugin returning structured JSON data from Amazon across 21 intern
 - **Language selection**: Request pages in marketplace-supported languages.
 
 ### Google Search API
+
 A specialized plugin that scrapes Google SERPs and returns structured JSON with 15+ result types (organic results, ads, knowledge graphs, local packs, video results, etc.).
 
 - **84 Google domains** supported for regional targeting.
@@ -79,6 +85,7 @@ A specialized plugin that scrapes Google SERPs and returns structured JSON with 
 - **Filtering**: SafeSearch, time-based filters, language restrictions, and spell correction control.
 
 ### Asynchronous API
+
 Process large-scale scraping jobs asynchronously. Submit a batch of target URLs as a job, receive a job ID, and retrieve results when ready.
 
 - Jobs run in a separate thread pool independent from the main API concurrency.
@@ -86,9 +93,11 @@ Process large-scale scraping jobs asynchronously. Submit a batch of target URLs 
 - All standard scraping parameters (geo-targeting, super proxy, render, etc.) are available.
 
 ### Proxy Mode
+
 Use Scrape.do as a standard HTTP/HTTPS proxy server (`proxy.scrape.do:8080`) compatible with any HTTP client, scraping library (Scrapy, Selenium, Puppeteer, Playwright), or tool that supports proxy configuration. Parameters are passed via the proxy username field.
 
 ### Statistics API
+
 Access detailed usage data and account statistics programmatically through the Statistics API or the dashboard.
 
 ## Events
@@ -96,7 +105,9 @@ Access detailed usage data and account statistics programmatically through the S
 The provider supports **webhooks** for asynchronous result delivery in two forms:
 
 ### Callback Webhooks (Default API)
+
 When making a standard scraping request, provide a `callback` URL parameter. Instead of waiting for the response synchronously, Scrape.do will send the scraping result to the specified callback URL when it completes.
 
 ### Async Job Webhooks
+
 When creating asynchronous jobs via the Async API, configure a `WebhookURL` in the job payload. Scrape.do will POST the job results to this URL upon completion, eliminating the need to poll for status.

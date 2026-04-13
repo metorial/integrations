@@ -24,23 +24,22 @@ let warehouseOutputSchema = z.object({
   returnAddress: addressSchema.describe('Return address')
 });
 
-export let listWarehouses = SlateTool.create(
-  spec,
-  {
-    name: 'List Warehouses',
-    key: 'list_warehouses',
-    description: `List all warehouse locations configured in your ShipEngine account. Warehouses can be used as ship-from addresses on shipments and labels.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let listWarehouses = SlateTool.create(spec, {
+  name: 'List Warehouses',
+  key: 'list_warehouses',
+  description: `List all warehouse locations configured in your ShipEngine account. Warehouses can be used as ship-from addresses on shipments and labels.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    warehouses: z.array(warehouseOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      warehouses: z.array(warehouseOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -54,27 +53,29 @@ export let listWarehouses = SlateTool.create(
       output: { warehouses },
       message: `Found **${warehouses.length}** warehouse(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let createWarehouse = SlateTool.create(
-  spec,
-  {
-    name: 'Create Warehouse',
-    key: 'create_warehouse',
-    description: `Create a new warehouse location that can be used as a ship-from address on shipments and labels. Optionally specify a different return address.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let createWarehouse = SlateTool.create(spec, {
+  name: 'Create Warehouse',
+  key: 'create_warehouse',
+  description: `Create a new warehouse location that can be used as a ship-from address on shipments and labels. Optionally specify a different return address.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Warehouse name'),
-    originAddress: addressSchema.describe('Origin/ship-from address'),
-    returnAddress: addressSchema.optional().describe('Return address (defaults to origin address)')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Warehouse name'),
+      originAddress: addressSchema.describe('Origin/ship-from address'),
+      returnAddress: addressSchema
+        .optional()
+        .describe('Return address (defaults to origin address)')
+    })
+  )
   .output(warehouseOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -83,35 +84,37 @@ export let createWarehouse = SlateTool.create(
     let result = await client.createWarehouse({
       name: ctx.input.name,
       origin_address: mapAddressToApi(ctx.input.originAddress),
-      return_address: ctx.input.returnAddress ? mapAddressToApi(ctx.input.returnAddress) : undefined
+      return_address: ctx.input.returnAddress
+        ? mapAddressToApi(ctx.input.returnAddress)
+        : undefined
     });
 
     return {
       output: mapWarehouseOutput(result),
       message: `Created warehouse **${result.name}** (${result.warehouse_id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateWarehouse = SlateTool.create(
-  spec,
-  {
-    name: 'Update Warehouse',
-    key: 'update_warehouse',
-    description: `Update an existing warehouse's name, origin address, or return address.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let updateWarehouse = SlateTool.create(spec, {
+  name: 'Update Warehouse',
+  key: 'update_warehouse',
+  description: `Update an existing warehouse's name, origin address, or return address.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    warehouseId: z.string().describe('ID of the warehouse to update'),
-    name: z.string().optional().describe('Updated warehouse name'),
-    originAddress: addressSchema.optional().describe('Updated origin address'),
-    returnAddress: addressSchema.optional().describe('Updated return address')
-  }))
+})
+  .input(
+    z.object({
+      warehouseId: z.string().describe('ID of the warehouse to update'),
+      name: z.string().optional().describe('Updated warehouse name'),
+      originAddress: addressSchema.optional().describe('Updated origin address'),
+      returnAddress: addressSchema.optional().describe('Updated return address')
+    })
+  )
   .output(warehouseOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -119,8 +122,10 @@ export let updateWarehouse = SlateTool.create(
 
     let update: any = {};
     if (ctx.input.name) update.name = ctx.input.name;
-    if (ctx.input.originAddress) update.origin_address = mapAddressToApi(ctx.input.originAddress);
-    if (ctx.input.returnAddress) update.return_address = mapAddressToApi(ctx.input.returnAddress);
+    if (ctx.input.originAddress)
+      update.origin_address = mapAddressToApi(ctx.input.originAddress);
+    if (ctx.input.returnAddress)
+      update.return_address = mapAddressToApi(ctx.input.returnAddress);
 
     let result = await client.updateWarehouse(ctx.input.warehouseId, update);
 
@@ -128,27 +133,29 @@ export let updateWarehouse = SlateTool.create(
       output: mapWarehouseOutput(result),
       message: `Updated warehouse **${result.name}** (${result.warehouse_id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteWarehouse = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Warehouse',
-    key: 'delete_warehouse',
-    description: `Delete a warehouse location from your ShipEngine account.`,
-    tags: {
-      readOnly: false,
-      destructive: true
-    }
+export let deleteWarehouse = SlateTool.create(spec, {
+  name: 'Delete Warehouse',
+  key: 'delete_warehouse',
+  description: `Delete a warehouse location from your ShipEngine account.`,
+  tags: {
+    readOnly: false,
+    destructive: true
   }
-)
-  .input(z.object({
-    warehouseId: z.string().describe('ID of the warehouse to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the warehouse was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      warehouseId: z.string().describe('ID of the warehouse to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the warehouse was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -160,7 +167,8 @@ export let deleteWarehouse = SlateTool.create(
       output: { deleted: true },
       message: `Deleted warehouse **${ctx.input.warehouseId}**.`
     };
-  }).build();
+  })
+  .build();
 
 let mapAddressToApi = (addr: any) => ({
   name: addr.name,

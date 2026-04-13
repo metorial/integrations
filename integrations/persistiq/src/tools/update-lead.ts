@@ -3,41 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateLead = SlateTool.create(
-  spec,
-  {
-    name: 'Update Lead',
-    key: 'update_lead',
-    description: `Update an existing lead's contact information and custom fields, or change their status. Combine data updates and status changes in a single operation.`,
-    instructions: [
-      'Status values must already be configured in the PersistIQ dashboard before they can be set via this tool.',
-    ],
-  }
-)
-  .input(z.object({
-    leadId: z.string().describe('ID of the lead to update (e.g. l_1abc)'),
-    email: z.string().optional().describe('Updated email address'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    companyName: z.string().optional().describe('Updated company name'),
-    title: z.string().optional().describe('Updated job title'),
-    industry: z.string().optional().describe('Updated industry'),
-    phone: z.string().optional().describe('Updated phone number'),
-    city: z.string().optional().describe('Updated city'),
-    state: z.string().optional().describe('Updated state'),
-    linkedin: z.string().optional().describe('Updated LinkedIn profile URL'),
-    twitter: z.string().optional().describe('Updated Twitter handle'),
-    status: z.string().optional().describe('New status for the lead (must be pre-configured in PersistIQ)'),
-    customFields: z.record(z.string(), z.string()).optional().describe('Custom field key-value pairs to update'),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('ID of the updated lead'),
-    status: z.string().optional().nullable().describe('Current status of the lead'),
-    email: z.string().optional().nullable().describe('Email address'),
-    firstName: z.string().optional().nullable().describe('First name'),
-    lastName: z.string().optional().nullable().describe('Last name'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateLead = SlateTool.create(spec, {
+  name: 'Update Lead',
+  key: 'update_lead',
+  description: `Update an existing lead's contact information and custom fields, or change their status. Combine data updates and status changes in a single operation.`,
+  instructions: [
+    'Status values must already be configured in the PersistIQ dashboard before they can be set via this tool.'
+  ]
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('ID of the lead to update (e.g. l_1abc)'),
+      email: z.string().optional().describe('Updated email address'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      companyName: z.string().optional().describe('Updated company name'),
+      title: z.string().optional().describe('Updated job title'),
+      industry: z.string().optional().describe('Updated industry'),
+      phone: z.string().optional().describe('Updated phone number'),
+      city: z.string().optional().describe('Updated city'),
+      state: z.string().optional().describe('Updated state'),
+      linkedin: z.string().optional().describe('Updated LinkedIn profile URL'),
+      twitter: z.string().optional().describe('Updated Twitter handle'),
+      status: z
+        .string()
+        .optional()
+        .describe('New status for the lead (must be pre-configured in PersistIQ)'),
+      customFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom field key-value pairs to update')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('ID of the updated lead'),
+      status: z.string().optional().nullable().describe('Current status of the lead'),
+      email: z.string().optional().nullable().describe('Email address'),
+      firstName: z.string().optional().nullable().describe('First name'),
+      lastName: z.string().optional().nullable().describe('Last name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, unknown> = {};
@@ -79,8 +86,9 @@ export let updateLead = SlateTool.create(
         status: lead.status,
         email: lead.data?.email,
         firstName: lead.data?.first_name,
-        lastName: lead.data?.last_name,
+        lastName: lead.data?.last_name
       },
-      message: `Updated lead **${lead.data?.first_name || ''} ${lead.data?.last_name || ''}** (${ctx.input.leadId}).`,
+      message: `Updated lead **${lead.data?.first_name || ''} ${lead.data?.last_name || ''}** (${ctx.input.leadId}).`
     };
-  }).build();
+  })
+  .build();

@@ -3,36 +3,38 @@ import { S3Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let objectChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Object Changes',
-    key: 'object_changes',
-    description: 'Polls an S3 bucket for new or modified objects. Detects objects created or updated since the last poll based on the LastModified timestamp.'
-  }
-)
-  .input(z.object({
-    objectKey: z.string().describe('Key of the changed object'),
-    lastModified: z.string().describe('When the object was last modified'),
-    eTag: z.string().describe('Entity tag of the object'),
-    sizeBytes: z.number().describe('Size of the object in bytes'),
-    storageClass: z.string().describe('Storage class of the object'),
-    bucketName: z.string().describe('Bucket containing the object')
-  }))
-  .output(z.object({
-    objectKey: z.string().describe('Key of the changed object'),
-    bucketName: z.string().describe('Bucket containing the object'),
-    lastModified: z.string().describe('When the object was last modified'),
-    eTag: z.string().describe('Entity tag (hash) of the object'),
-    sizeBytes: z.number().describe('Size of the object in bytes'),
-    storageClass: z.string().describe('Storage class of the object')
-  }))
+export let objectChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Object Changes',
+  key: 'object_changes',
+  description:
+    'Polls an S3 bucket for new or modified objects. Detects objects created or updated since the last poll based on the LastModified timestamp.'
+})
+  .input(
+    z.object({
+      objectKey: z.string().describe('Key of the changed object'),
+      lastModified: z.string().describe('When the object was last modified'),
+      eTag: z.string().describe('Entity tag of the object'),
+      sizeBytes: z.number().describe('Size of the object in bytes'),
+      storageClass: z.string().describe('Storage class of the object'),
+      bucketName: z.string().describe('Bucket containing the object')
+    })
+  )
+  .output(
+    z.object({
+      objectKey: z.string().describe('Key of the changed object'),
+      bucketName: z.string().describe('Bucket containing the object'),
+      lastModified: z.string().describe('When the object was last modified'),
+      eTag: z.string().describe('Entity tag (hash) of the object'),
+      sizeBytes: z.number().describe('Size of the object in bytes'),
+      storageClass: z.string().describe('Storage class of the object')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new S3Client({
         accessKeyId: ctx.auth.accessKeyId,
         secretAccessKey: ctx.auth.secretAccessKey,
@@ -50,7 +52,10 @@ export let objectChangesTrigger = SlateTrigger.create(
       if (!monitoredBucket) {
         let buckets = await client.listBuckets();
         if (buckets.length === 0) {
-          return { inputs: [], updatedState: { ...state, lastPollTime: new Date().toISOString() } };
+          return {
+            inputs: [],
+            updatedState: { ...state, lastPollTime: new Date().toISOString() }
+          };
         }
         monitoredBucket = buckets[0]!.bucketName;
       }
@@ -98,9 +103,10 @@ export let objectChangesTrigger = SlateTrigger.create(
       // Sort by lastModified descending so newest are first
       allObjects.sort((a, b) => b.lastModified.localeCompare(a.lastModified));
 
-      let newLastPollTime = allObjects.length > 0
-        ? allObjects[0]!.lastModified
-        : lastPollTime || new Date().toISOString();
+      let newLastPollTime =
+        allObjects.length > 0
+          ? allObjects[0]!.lastModified
+          : lastPollTime || new Date().toISOString();
 
       return {
         inputs: allObjects,
@@ -113,7 +119,7 @@ export let objectChangesTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'object.modified',
         id: `${ctx.input.bucketName}/${ctx.input.objectKey}@${ctx.input.eTag}`,
@@ -127,4 +133,5 @@ export let objectChangesTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -3,41 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Events',
-    key: 'project_events',
-    description: 'Receive real-time notifications for events in a Basecamp project via webhooks. Covers to-dos, messages, comments, documents, uploads, schedule entries, campfire cards, and more.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique ID of the webhook delivery'),
-    kind: z.string().describe('Event kind (e.g., todo_created, message_content_updated)'),
-    recordingType: z.string().describe('Type of the recording (e.g., Todo, Message, Comment)'),
-    recordingId: z.number().describe('ID of the affected recording'),
-    projectId: z.number().describe('ID of the project (bucket)'),
-    creatorId: z.number().describe('ID of the person who triggered the event'),
-    creatorName: z.string().describe('Name of the person who triggered the event'),
-    createdAt: z.string().describe('When the event occurred'),
-    details: z.any().describe('Full event payload from Basecamp'),
-  }))
-  .output(z.object({
-    recordingId: z.number().describe('ID of the affected recording'),
-    recordingType: z.string().describe('Type of the recording (e.g., Todo, Message, Comment)'),
-    title: z.string().nullable().describe('Title or content of the recording'),
-    projectId: z.number().describe('ID of the project'),
-    projectName: z.string().nullable().describe('Name of the project'),
-    creatorId: z.number().describe('ID of the person who triggered the event'),
-    creatorName: z.string().describe('Name of the person who triggered the event'),
-    createdAt: z.string().describe('When the event occurred'),
-    url: z.string().nullable().describe('App URL of the affected recording'),
-  }))
+export let projectEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Project Events',
+  key: 'project_events',
+  description:
+    'Receive real-time notifications for events in a Basecamp project via webhooks. Covers to-dos, messages, comments, documents, uploads, schedule entries, campfire cards, and more.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique ID of the webhook delivery'),
+      kind: z.string().describe('Event kind (e.g., todo_created, message_content_updated)'),
+      recordingType: z
+        .string()
+        .describe('Type of the recording (e.g., Todo, Message, Comment)'),
+      recordingId: z.number().describe('ID of the affected recording'),
+      projectId: z.number().describe('ID of the project (bucket)'),
+      creatorId: z.number().describe('ID of the person who triggered the event'),
+      creatorName: z.string().describe('Name of the person who triggered the event'),
+      createdAt: z.string().describe('When the event occurred'),
+      details: z.any().describe('Full event payload from Basecamp')
+    })
+  )
+  .output(
+    z.object({
+      recordingId: z.number().describe('ID of the affected recording'),
+      recordingType: z
+        .string()
+        .describe('Type of the recording (e.g., Todo, Message, Comment)'),
+      title: z.string().nullable().describe('Title or content of the recording'),
+      projectId: z.number().describe('ID of the project'),
+      projectName: z.string().nullable().describe('Name of the project'),
+      creatorId: z.number().describe('ID of the person who triggered the event'),
+      creatorName: z.string().describe('Name of the person who triggered the event'),
+      createdAt: z.string().describe('When the event occurred'),
+      url: z.string().nullable().describe('App URL of the affected recording')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       // We need a project to register a webhook on. The projectId must be provided.
@@ -53,11 +59,11 @@ export let projectEventsTrigger = SlateTrigger.create(
       for (let project of projects) {
         try {
           let webhook = await client.createWebhook(String(project.id), {
-            payloadUrl: ctx.input.webhookBaseUrl,
+            payloadUrl: ctx.input.webhookBaseUrl
           });
           registrations.push({
             projectId: project.id,
-            webhookId: webhook.id,
+            webhookId: webhook.id
           });
         } catch (e) {
           // Skip projects where webhook creation fails (e.g., permissions)
@@ -66,15 +72,15 @@ export let projectEventsTrigger = SlateTrigger.create(
 
       return {
         registrationDetails: {
-          registrations,
-        },
+          registrations
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       let registrations = (ctx.input.registrationDetails as any)?.registrations || [];
@@ -88,8 +94,8 @@ export let projectEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       // Basecamp webhook payload has: id, kind, details, recording (with id, type, bucket), creator
       let recording = data.recording || {};
@@ -107,13 +113,13 @@ export let projectEventsTrigger = SlateTrigger.create(
             creatorId: creator.id || 0,
             creatorName: creator.name || 'Unknown',
             createdAt: data.created_at || new Date().toISOString(),
-            details: data,
-          },
-        ],
+            details: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { kind, recordingType, details } = ctx.input;
       let recording = details?.recording || {};
 
@@ -137,9 +143,9 @@ export let projectEventsTrigger = SlateTrigger.create(
           creatorId: ctx.input.creatorId,
           creatorName: ctx.input.creatorName,
           createdAt: ctx.input.createdAt,
-          url: recording.app_url ?? null,
-        },
+          url: recording.app_url ?? null
+        }
       };
-    },
+    }
   })
   .build();

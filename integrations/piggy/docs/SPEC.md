@@ -31,6 +31,7 @@ OAuth 2.0 access tokens are provided as a bearer token in the Authorization HTTP
 Used for POS system integrations. The main difference between the OAuth API and the Register API is that authorization is done on a per-register basis, meaning each access token is linked to a specific Register and thus Shop. This uses an API key passed as a Bearer token in the Authorization header.
 
 For both methods, requests include the header:
+
 ```
 Authorization: Bearer {access_token_or_api_key}
 ```

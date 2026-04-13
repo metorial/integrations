@@ -3,59 +3,79 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchPeople = SlateTool.create(
-  spec,
-  {
-    name: 'Search People',
-    key: 'search_people',
-    description: `Search Apollo's database of 275M+ contacts to find prospects based on demographic filters. Returns people with their professional details and organization info.
+export let searchPeople = SlateTool.create(spec, {
+  name: 'Search People',
+  key: 'search_people',
+  description: `Search Apollo's database of 275M+ contacts to find prospects based on demographic filters. Returns people with their professional details and organization info.
 **Does not return email addresses or phone numbers** — use the Enrich Person tool for that.`,
-    instructions: [
-      'Use specific filters to narrow results. Broad searches may hit the 50,000 record display limit.',
-      'Employee count ranges use formats like "1,10", "11,50", "51,200", "201,500", "501,1000", "1001,5000", "5001,10000".'
-    ],
-    constraints: [
-      'Maximum 50,000 results (100 per page, up to 500 pages)',
-      'Does not return email addresses or phone numbers'
-    ],
-    tags: {
-      readOnly: true
-    }
+  instructions: [
+    'Use specific filters to narrow results. Broad searches may hit the 50,000 record display limit.',
+    'Employee count ranges use formats like "1,10", "11,50", "51,200", "201,500", "501,1000", "1001,5000", "5001,10000".'
+  ],
+  constraints: [
+    'Maximum 50,000 results (100 per page, up to 500 pages)',
+    'Does not return email addresses or phone numbers'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    keywords: z.string().optional().describe('Keywords to search for across person records'),
-    jobTitles: z.array(z.string()).optional().describe('Filter by job titles, e.g. ["CEO", "VP of Sales"]'),
-    locations: z.array(z.string()).optional().describe('Filter by person locations, e.g. ["San Francisco, CA", "New York"]'),
-    seniorities: z.array(z.string()).optional().describe('Filter by seniority levels, e.g. ["senior", "manager", "director", "vp", "c_suite"]'),
-    companyDomains: z.array(z.string()).optional().describe('Filter by company domains, e.g. ["apollo.io", "google.com"]'),
-    companyLocations: z.array(z.string()).optional().describe('Filter by company locations'),
-    companyEmployeeRanges: z.array(z.string()).optional().describe('Filter by company size ranges, e.g. ["1,10", "51,200", "1001,5000"]'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 25, max: 100)')
-  }))
-  .output(z.object({
-    people: z.array(z.object({
-      personId: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      name: z.string().optional(),
-      title: z.string().optional(),
-      headline: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      country: z.string().optional(),
-      seniority: z.string().optional(),
-      departments: z.array(z.string()).optional(),
-      organizationName: z.string().optional(),
-      organizationId: z.string().optional()
-    })),
-    totalEntries: z.number().optional(),
-    currentPage: z.number().optional(),
-    totalPages: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      keywords: z.string().optional().describe('Keywords to search for across person records'),
+      jobTitles: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by job titles, e.g. ["CEO", "VP of Sales"]'),
+      locations: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by person locations, e.g. ["San Francisco, CA", "New York"]'),
+      seniorities: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Filter by seniority levels, e.g. ["senior", "manager", "director", "vp", "c_suite"]'
+        ),
+      companyDomains: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by company domains, e.g. ["apollo.io", "google.com"]'),
+      companyLocations: z.array(z.string()).optional().describe('Filter by company locations'),
+      companyEmployeeRanges: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by company size ranges, e.g. ["1,10", "51,200", "1001,5000"]'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 25, max: 100)')
+    })
+  )
+  .output(
+    z.object({
+      people: z.array(
+        z.object({
+          personId: z.string().optional(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          name: z.string().optional(),
+          title: z.string().optional(),
+          headline: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          country: z.string().optional(),
+          seniority: z.string().optional(),
+          departments: z.array(z.string()).optional(),
+          organizationName: z.string().optional(),
+          organizationId: z.string().optional()
+        })
+      ),
+      totalEntries: z.number().optional(),
+      currentPage: z.number().optional(),
+      totalPages: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchPeople({

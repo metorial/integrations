@@ -3,40 +3,44 @@ import { MailchimpClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTemplateTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Template',
-    key: 'manage_template',
-    description: `Create, update, or delete an email template. To create, provide a name and HTML content. To update, provide templateId and the fields to change. To delete, provide templateId and set delete to true.`,
-    tags: {
-      destructive: true,
-    },
+export let manageTemplateTool = SlateTool.create(spec, {
+  name: 'Manage Template',
+  key: 'manage_template',
+  description: `Create, update, or delete an email template. To create, provide a name and HTML content. To update, provide templateId and the fields to change. To delete, provide templateId and set delete to true.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    templateId: z.number().optional().describe('Template ID (required for update/delete, omit for create)'),
-    delete: z.boolean().optional().describe('Set to true to delete the template'),
-    name: z.string().optional().describe('Template name'),
-    html: z.string().optional().describe('HTML content of the template'),
-    folderId: z.string().optional().describe('Folder ID to organize the template'),
-  }))
-  .output(z.object({
-    templateId: z.number().optional(),
-    name: z.string().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      templateId: z
+        .number()
+        .optional()
+        .describe('Template ID (required for update/delete, omit for create)'),
+      delete: z.boolean().optional().describe('Set to true to delete the template'),
+      name: z.string().optional().describe('Template name'),
+      html: z.string().optional().describe('HTML content of the template'),
+      folderId: z.string().optional().describe('Folder ID to organize the template')
+    })
+  )
+  .output(
+    z.object({
+      templateId: z.number().optional(),
+      name: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MailchimpClient({
       token: ctx.auth.token,
-      serverPrefix: ctx.auth.serverPrefix,
+      serverPrefix: ctx.auth.serverPrefix
     });
 
     if (ctx.input.delete && ctx.input.templateId) {
       await client.deleteTemplate(ctx.input.templateId);
       return {
         output: { templateId: ctx.input.templateId, deleted: true },
-        message: `Template **${ctx.input.templateId}** has been deleted.`,
+        message: `Template **${ctx.input.templateId}** has been deleted.`
       };
     }
 
@@ -49,18 +53,19 @@ export let manageTemplateTool = SlateTool.create(
       let result = await client.updateTemplate(ctx.input.templateId, updateData);
       return {
         output: { templateId: result.id, name: result.name },
-        message: `Template **${result.name}** has been updated.`,
+        message: `Template **${result.name}** has been updated.`
       };
     }
 
     let result = await client.createTemplate({
       name: ctx.input.name!,
       html: ctx.input.html!,
-      folderId: ctx.input.folderId,
+      folderId: ctx.input.folderId
     });
 
     return {
       output: { templateId: result.id, name: result.name },
-      message: `Template **${result.name}** (${result.id}) has been created.`,
+      message: `Template **${result.name}** (${result.id}) has been created.`
     };
-  }).build();
+  })
+  .build();

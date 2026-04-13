@@ -1,6 +1,6 @@
-import { spawn } from 'node:child_process';
-import { writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { spawn } from 'child_process';
+import { writeFile } from 'fs/promises';
+import path from 'path';
 import { chooseProfile } from '../lib/context';
 import { WithProfile } from '../lib/types';
 

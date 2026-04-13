@@ -18,16 +18,15 @@ export class Client {
   private http: ReturnType<typeof createAxios>;
 
   constructor(private config: GorgiasClientConfig) {
-    let authHeader = config.authType === 'basic'
-      ? `Basic ${config.token}`
-      : `Bearer ${config.token}`;
+    let authHeader =
+      config.authType === 'basic' ? `Basic ${config.token}` : `Bearer ${config.token}`;
 
     this.http = createAxios({
       baseURL: `https://${config.subdomain}.gorgias.com/api`,
       headers: {
-        'Authorization': authHeader,
+        Authorization: authHeader,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     });
   }
@@ -81,22 +80,25 @@ export class Client {
     return response.data;
   }
 
-  async updateTicket(ticketId: number, data: {
-    status?: string;
-    priority?: string;
-    subject?: string;
-    spam?: boolean;
-    language?: string;
-    assignee_user?: { id: number } | null;
-    assignee_team?: { id: number } | null;
-    customer?: { id?: number; email?: string };
-    tags?: Array<{ name: string }>;
-    custom_fields?: Array<{ id: number; value: any }>;
-    meta?: Record<string, any>;
-    external_id?: string;
-    snooze_datetime?: string | null;
-    closed_datetime?: string | null;
-  }): Promise<any> {
+  async updateTicket(
+    ticketId: number,
+    data: {
+      status?: string;
+      priority?: string;
+      subject?: string;
+      spam?: boolean;
+      language?: string;
+      assignee_user?: { id: number } | null;
+      assignee_team?: { id: number } | null;
+      customer?: { id?: number; email?: string };
+      tags?: Array<{ name: string }>;
+      custom_fields?: Array<{ id: number; value: any }>;
+      meta?: Record<string, any>;
+      external_id?: string;
+      snooze_datetime?: string | null;
+      closed_datetime?: string | null;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/tickets/${ticketId}`, data);
     return response.data;
   }
@@ -123,10 +125,13 @@ export class Client {
 
   // ── Messages ──
 
-  async listMessages(ticketId: number, params?: {
-    cursor?: string;
-    limit?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listMessages(
+    ticketId: number,
+    params?: {
+      cursor?: string;
+      limit?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.http.get(`/tickets/${ticketId}/messages`, { params });
     return response.data as PaginatedResponse<any>;
   }
@@ -136,27 +141,39 @@ export class Client {
     return response.data;
   }
 
-  async createMessage(ticketId: number, data: {
-    channel: string;
-    via: string;
-    from_agent: boolean;
-    sender?: { id?: number; email?: string };
-    receiver?: { id?: number; email?: string };
-    subject?: string;
-    body_html?: string;
-    body_text?: string;
-    stripped_text?: string;
-    source?: { to?: Array<{ address: string }>; from?: { address: string } };
-    attachments?: Array<{ url: string; name?: string; content_type?: string; size?: number }>;
-  }): Promise<any> {
+  async createMessage(
+    ticketId: number,
+    data: {
+      channel: string;
+      via: string;
+      from_agent: boolean;
+      sender?: { id?: number; email?: string };
+      receiver?: { id?: number; email?: string };
+      subject?: string;
+      body_html?: string;
+      body_text?: string;
+      stripped_text?: string;
+      source?: { to?: Array<{ address: string }>; from?: { address: string } };
+      attachments?: Array<{
+        url: string;
+        name?: string;
+        content_type?: string;
+        size?: number;
+      }>;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/tickets/${ticketId}/messages`, data);
     return response.data;
   }
 
-  async updateMessage(ticketId: number, messageId: number, data: {
-    body_html?: string;
-    body_text?: string;
-  }): Promise<any> {
+  async updateMessage(
+    ticketId: number,
+    messageId: number,
+    data: {
+      body_html?: string;
+      body_text?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/tickets/${ticketId}/messages/${messageId}`, data);
     return response.data;
   }
@@ -197,18 +214,21 @@ export class Client {
     return response.data;
   }
 
-  async updateCustomer(customerId: number, data: {
-    email?: string;
-    name?: string;
-    firstname?: string;
-    lastname?: string;
-    language?: string;
-    timezone?: string;
-    external_id?: string;
-    channels?: Array<{ type: string; address: string; preferred?: boolean }>;
-    note?: string;
-    meta?: Record<string, any>;
-  }): Promise<any> {
+  async updateCustomer(
+    customerId: number,
+    data: {
+      email?: string;
+      name?: string;
+      firstname?: string;
+      lastname?: string;
+      language?: string;
+      timezone?: string;
+      external_id?: string;
+      channels?: Array<{ type: string; address: string; preferred?: boolean }>;
+      note?: string;
+      meta?: Record<string, any>;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/customers/${customerId}`, data);
     return response.data;
   }
@@ -249,10 +269,13 @@ export class Client {
     return response.data;
   }
 
-  async updateTag(tagId: number, data: {
-    name?: string;
-    decoration?: { color?: string };
-  }): Promise<any> {
+  async updateTag(
+    tagId: number,
+    data: {
+      name?: string;
+      decoration?: { color?: string };
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/tags/${tagId}`, data);
     return response.data;
   }
@@ -287,13 +310,16 @@ export class Client {
     return response.data;
   }
 
-  async updateMacro(macroId: number, data: {
-    name?: string;
-    actions?: Array<{
-      type: string;
-      args?: any;
-    }>;
-  }): Promise<any> {
+  async updateMacro(
+    macroId: number,
+    data: {
+      name?: string;
+      actions?: Array<{
+        type: string;
+        args?: any;
+      }>;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/macros/${macroId}`, data);
     return response.data;
   }
@@ -330,15 +356,18 @@ export class Client {
     return response.data;
   }
 
-  async updateRule(ruleId: number, data: {
-    name?: string;
-    description?: string;
-    events?: Array<{ type: string }>;
-    conditions?: any;
-    actions?: Array<{ type: string; args?: any }>;
-    enabled?: boolean;
-    priority?: number;
-  }): Promise<any> {
+  async updateRule(
+    ruleId: number,
+    data: {
+      name?: string;
+      description?: string;
+      events?: Array<{ type: string }>;
+      conditions?: any;
+      actions?: Array<{ type: string; args?: any }>;
+      enabled?: boolean;
+      priority?: number;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/rules/${ruleId}`, data);
     return response.data;
   }
@@ -445,25 +474,28 @@ export class Client {
     return response.data;
   }
 
-  async updateIntegration(integrationId: number, data: {
-    name?: string;
-    description?: string;
-    http?: {
-      url?: string;
-      method?: string;
-      headers?: Record<string, string>;
-      request_content_type?: string;
-      response_content_type?: string;
-      triggers?: {
-        'ticket-created'?: boolean;
-        'ticket-message-created'?: boolean;
-        'ticket-updated'?: boolean;
+  async updateIntegration(
+    integrationId: number,
+    data: {
+      name?: string;
+      description?: string;
+      http?: {
+        url?: string;
+        method?: string;
+        headers?: Record<string, string>;
+        request_content_type?: string;
+        response_content_type?: string;
+        triggers?: {
+          'ticket-created'?: boolean;
+          'ticket-message-created'?: boolean;
+          'ticket-updated'?: boolean;
+        };
+        form?: {
+          body?: string;
+        };
       };
-      form?: {
-        body?: string;
-      };
-    };
-  }): Promise<any> {
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/integrations/${integrationId}`, data);
     return response.data;
   }
@@ -474,11 +506,14 @@ export class Client {
 
   // ── Search ──
 
-  async search(query: string, params?: {
-    type?: string;
-    limit?: number;
-    cursor?: string;
-  }): Promise<any> {
+  async search(
+    query: string,
+    params?: {
+      type?: string;
+      limit?: number;
+      cursor?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post('/search', {
       query,
       ...params

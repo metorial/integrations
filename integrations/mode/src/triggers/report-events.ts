@@ -4,32 +4,37 @@ import { normalizeReport } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reportEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Report Events',
-    key: 'report_events',
-    description: 'Triggered when a report is created or deleted in the workspace. Configure the webhook in Mode Workspace Settings > Webhooks.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('The Mode event name'),
-    reportToken: z.string().optional().describe('Token of the report'),
-    reportName: z.string().optional().describe('Name of the report (provided for delete events)'),
-    reportUrl: z.string().optional().describe('API URL to the report resource'),
-  }))
-  .output(z.object({
-    reportToken: z.string().describe('Token of the report'),
-    name: z.string().describe('Name of the report'),
-    description: z.string().describe('Description of the report'),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    archived: z.boolean(),
-    spaceToken: z.string(),
-  }))
+export let reportEvents = SlateTrigger.create(spec, {
+  name: 'Report Events',
+  key: 'report_events',
+  description:
+    'Triggered when a report is created or deleted in the workspace. Configure the webhook in Mode Workspace Settings > Webhooks.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('The Mode event name'),
+      reportToken: z.string().optional().describe('Token of the report'),
+      reportName: z
+        .string()
+        .optional()
+        .describe('Name of the report (provided for delete events)'),
+      reportUrl: z.string().optional().describe('API URL to the report resource')
+    })
+  )
+  .output(
+    z.object({
+      reportToken: z.string().describe('Token of the report'),
+      name: z.string().describe('Name of the report'),
+      description: z.string().describe('Description of the report'),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      archived: z.boolean(),
+      spaceToken: z.string()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventName = body.event || '';
 
       if (eventName !== 'report_created' && eventName !== 'report_deleted') {
@@ -56,13 +61,13 @@ export let reportEvents = SlateTrigger.create(
             eventName,
             reportToken,
             reportName: body.report_name || '',
-            reportUrl,
-          },
-        ],
+            reportUrl
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventName, reportToken, reportName } = ctx.input;
 
       // For created events, fetch full report details
@@ -71,7 +76,7 @@ export let reportEvents = SlateTrigger.create(
           let client = new ModeClient({
             token: ctx.auth.token,
             secret: ctx.auth.secret,
-            workspaceName: ctx.config.workspaceName,
+            workspaceName: ctx.config.workspaceName
           });
           let raw = await client.getReport(reportToken);
           let report = normalizeReport(raw);
@@ -85,8 +90,8 @@ export let reportEvents = SlateTrigger.create(
               createdAt: report.createdAt,
               updatedAt: report.updatedAt,
               archived: report.archived,
-              spaceToken: report.spaceToken,
-            },
+              spaceToken: report.spaceToken
+            }
           };
         } catch {
           // Fall through to basic output
@@ -105,9 +110,9 @@ export let reportEvents = SlateTrigger.create(
           createdAt: '',
           updatedAt: '',
           archived: false,
-          spaceToken: '',
-        },
+          spaceToken: ''
+        }
       };
-    },
+    }
   })
   .build();

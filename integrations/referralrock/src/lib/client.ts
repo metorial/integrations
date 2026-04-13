@@ -10,9 +10,9 @@ export class ReferralRockClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Basic ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -29,7 +29,7 @@ export class ReferralRockClient {
 
   async getProgramByName(programName: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/api/program/getsingle', {
-      params: { programName },
+      params: { programName }
     });
     return response.data;
   }
@@ -55,19 +55,23 @@ export class ReferralRockClient {
     return response.data;
   }
 
-  async updateMembers(members: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async updateMembers(
+    members: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/members/update', members);
     return response.data;
   }
 
-  async removeMembers(members: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async removeMembers(
+    members: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/members/remove', members);
     return response.data;
   }
 
   async getMemberStats(memberId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/api/memberstats/getsingle', {
-      params: { memberId },
+      params: { memberId }
     });
     return response.data;
   }
@@ -103,12 +107,16 @@ export class ReferralRockClient {
     return response.data;
   }
 
-  async updateReferrals(referrals: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async updateReferrals(
+    referrals: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/referral/update', referrals);
     return response.data;
   }
 
-  async removeReferrals(referrals: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async removeReferrals(
+    referrals: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/referral/remove', referrals);
     return response.data;
   }
@@ -139,23 +147,30 @@ export class ReferralRockClient {
     return response.data;
   }
 
-  async createRewards(rewards: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async createRewards(
+    rewards: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/rewards', rewards);
     return response.data;
   }
 
-  async updateRewards(rewards: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async updateRewards(
+    rewards: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/rewards/update', rewards);
     return response.data;
   }
 
-  async issueReward(body: {
-    rewardId: string;
-    recipientInfo?: string;
-    note?: string;
-  }, overrideIneligible?: boolean): Promise<Record<string, unknown>> {
+  async issueReward(
+    body: {
+      rewardId: string;
+      recipientInfo?: string;
+      note?: string;
+    },
+    overrideIneligible?: boolean
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/rewards/issue', body, {
-      params: overrideIneligible ? { overrideIneligible: true } : undefined,
+      params: overrideIneligible ? { overrideIneligible: true } : undefined
     });
     return response.data;
   }
@@ -169,7 +184,7 @@ export class ReferralRockClient {
 
   async getRewardRules(programId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/api/rewardrules', {
-      params: { programId },
+      params: { programId }
     });
     return response.data;
   }
@@ -199,14 +214,17 @@ export class ReferralRockClient {
     return response.data;
   }
 
-  async processPayoutTransaction(body: {
-    memberId?: string;
-    recipientId?: string;
-    payoutId: string;
-    note?: string;
-  }, overrideIneligible?: boolean): Promise<Record<string, unknown>> {
+  async processPayoutTransaction(
+    body: {
+      memberId?: string;
+      recipientId?: string;
+      payoutId: string;
+      note?: string;
+    },
+    overrideIneligible?: boolean
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/payouts/transactions', body, {
-      params: overrideIneligible ? { overrideIneligible: true } : undefined,
+      params: overrideIneligible ? { overrideIneligible: true } : undefined
     });
     return response.data;
   }
@@ -215,33 +233,39 @@ export class ReferralRockClient {
 
   async unsubscribeEmail(email: string): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/email/unsubscribe', JSON.stringify(email), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async removeUnsubscribe(email: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post('/api/email/removeunsubscribe', JSON.stringify(email), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      '/api/email/removeunsubscribe',
+      JSON.stringify(email),
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async getUnsubscribedEmails(email?: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/api/email/getunsubscribed', {
-      params: email ? { email } : undefined,
+      params: email ? { email } : undefined
     });
     return response.data;
   }
 
   // ── Invite Feeds ──
 
-  async sendInviteFeedBatch(contacts: Array<{
-    firstName: string;
-    lastName?: string;
-    email: string;
-    contactType?: string;
-  }>): Promise<Record<string, unknown>> {
+  async sendInviteFeedBatch(
+    contacts: Array<{
+      firstName: string;
+      lastName?: string;
+      email: string;
+      contactType?: string;
+    }>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/api/invitefeeds', contacts);
     return response.data;
   }
@@ -274,14 +298,14 @@ export class ReferralRockClient {
   async registerWebhook(targetUrl: string, event: string): Promise<{ web_hook_id: string }> {
     let response = await this.axios.post('/api/hooks', {
       target_url: targetUrl,
-      event,
+      event
     });
     return response.data;
   }
 
   async unregisterWebhook(webhookId: string): Promise<void> {
     await this.axios.delete('/api/hooks', {
-      data: { web_hook_id: webhookId },
+      data: { web_hook_id: webhookId }
     });
   }
 }

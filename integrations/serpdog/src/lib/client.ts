@@ -86,7 +86,7 @@ export class Client {
       hl: params.hl,
       sort_by: params.sortBy,
       topic_id: params.topicId,
-      next_page_token: params.nextPageToken,
+      next_page_token: params.nextPageToken
     });
   }
 
@@ -101,16 +101,14 @@ export class Client {
       data_id: params.dataId,
       hl: params.hl,
       category_id: params.categoryId,
-      next_page_token: params.nextPageToken,
+      next_page_token: params.nextPageToken
     });
   }
 
   // Google Maps Posts
-  async googleMapsPosts(params: {
-    dataId: string;
-  }) {
+  async googleMapsPosts(params: { dataId: string }) {
     return this.get('/maps_post', {
-      data_id: params.dataId,
+      data_id: params.dataId
     });
   }
 
@@ -153,7 +151,7 @@ export class Client {
       offers: params.offers,
       specs: params.specs,
       reviews: params.reviews,
-      filters: params.filters,
+      filters: params.filters
     });
   }
 
@@ -188,7 +186,7 @@ export class Client {
       as_vis: params.asVis,
       as_sdt: params.asSdt,
       safe: params.safe,
-      html: params.html,
+      html: params.html
     });
   }
 
@@ -203,7 +201,7 @@ export class Client {
       author_id: params.authorId,
       view_op: params.viewOp,
       sort: params.sort,
-      citation_id: params.citationId,
+      citation_id: params.citationId
     });
   }
 
@@ -245,20 +243,12 @@ export class Client {
   }
 
   // Google Finance
-  async googleFinance(params: {
-    q: string;
-    hl?: string;
-    html?: boolean;
-  }) {
+  async googleFinance(params: { q: string; hl?: string; html?: boolean }) {
     return this.get('/finance', params);
   }
 
   // Google Autocomplete
-  async googleAutocomplete(params: {
-    q: string;
-    gl?: string;
-    hl?: string;
-  }) {
+  async googleAutocomplete(params: { q: string; gl?: string; hl?: string }) {
     return this.get('/autocomplete', params);
   }
 
@@ -312,7 +302,7 @@ export class Client {
       url: params.url,
       premium: params.premium,
       country: params.country,
-      exclude_sponsored: params.excludeSponsored,
+      exclude_sponsored: params.excludeSponsored
     });
   }
 
@@ -341,18 +331,15 @@ export class Client {
       page: params.page,
       domain: params.domain,
       premium: params.premium,
-      country: params.country,
+      country: params.country
     });
   }
 
   // Walmart Product
-  async walmartProduct(params: {
-    productId: number;
-    storeId?: number;
-  }) {
+  async walmartProduct(params: { productId: number; storeId?: number }) {
     return this.get('/walmart_product', {
       product_id: params.productId,
-      store_id: params.storeId,
+      store_id: params.storeId
     });
   }
 
@@ -367,7 +354,7 @@ export class Client {
       find_loc: params.findLoc,
       find_desc: params.findDesc,
       sort_by: params.sortBy,
-      start: params.start,
+      start: params.start
     });
   }
 
@@ -386,7 +373,7 @@ export class Client {
       page: params.page,
       job_type: params.jobType,
       sort_by: params.sortBy,
-      exp_level: params.expLevel,
+      exp_level: params.expLevel
     });
   }
 
@@ -403,7 +390,7 @@ export class Client {
       render_js: params.renderJs,
       premium: params.premium,
       wait: params.wait,
-      country: params.country,
+      country: params.country
     });
   }
 

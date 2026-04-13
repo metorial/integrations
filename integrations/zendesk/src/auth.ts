@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    tokenType: z.enum(['bearer', 'basic']).optional(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      tokenType: z.enum(['bearer', 'basic']).optional(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -17,34 +19,50 @@ export let auth = SlateAuth.create()
       { title: 'Read', description: 'Read access to all resources', scope: 'read' },
       { title: 'Write', description: 'Write access to all resources', scope: 'write' },
       { title: 'Tickets Read', description: 'Read access to tickets', scope: 'tickets:read' },
-      { title: 'Tickets Write', description: 'Write access to tickets', scope: 'tickets:write' },
+      {
+        title: 'Tickets Write',
+        description: 'Write access to tickets',
+        scope: 'tickets:write'
+      },
       { title: 'Users Read', description: 'Read access to users', scope: 'users:read' },
       { title: 'Users Write', description: 'Write access to users', scope: 'users:write' },
-      { title: 'Organizations Read', description: 'Read access to organizations', scope: 'organizations:read' },
-      { title: 'Organizations Write', description: 'Write access to organizations', scope: 'organizations:write' },
-      { title: 'Impersonate', description: 'Make requests on behalf of end users', scope: 'impersonate' },
+      {
+        title: 'Organizations Read',
+        description: 'Read access to organizations',
+        scope: 'organizations:read'
+      },
+      {
+        title: 'Organizations Write',
+        description: 'Write access to organizations',
+        scope: 'organizations:write'
+      },
+      {
+        title: 'Impersonate',
+        description: 'Make requests on behalf of end users',
+        scope: 'impersonate'
+      }
     ],
 
     inputSchema: z.object({
-      subdomain: z.string().describe('Zendesk account subdomain'),
+      subdomain: z.string().describe('Zendesk account subdomain')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
         client_id: ctx.clientId,
         scope: ctx.scopes.join(' '),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
         url: `https://${ctx.input.subdomain}.zendesk.com/oauth/authorizations/new?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
       let response = await http.post(
@@ -55,10 +73,10 @@ export let auth = SlateAuth.create()
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           redirect_uri: ctx.redirectUri,
-          scope: ctx.scopes.join(' '),
+          scope: ctx.scopes.join(' ')
         },
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' }
         }
       );
 
@@ -71,13 +89,13 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
+            : undefined
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -91,10 +109,10 @@ export let auth = SlateAuth.create()
           refresh_token: ctx.output.refreshToken,
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          scope: ctx.scopes.join(' '),
+          scope: ctx.scopes.join(' ')
         },
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' }
         }
       );
 
@@ -107,9 +125,9 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
+            : undefined
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
@@ -117,8 +135,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: `https://${ctx.input.subdomain}.zendesk.com/api/v2`,
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/users/me.json');
@@ -130,10 +148,10 @@ export let auth = SlateAuth.create()
           email: user.email,
           name: user.name,
           imageUrl: user.photo?.content_url,
-          role: user.role,
-        },
+          role: user.role
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -143,18 +161,18 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       subdomain: z.string().describe('Zendesk account subdomain'),
       email: z.string().describe('Email address of a verified Zendesk user'),
-      token: z.string().describe('API token generated from Zendesk Admin Center'),
+      token: z.string().describe('API token generated from Zendesk Admin Center')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let credentials = `${ctx.input.email}/token:${ctx.input.token}`;
       let encodedToken = btoa(credentials);
 
       return {
         output: {
           token: encodedToken,
-          tokenType: 'basic' as const,
-        },
+          tokenType: 'basic' as const
+        }
       };
     },
 
@@ -162,8 +180,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: `https://${ctx.input.subdomain}.zendesk.com/api/v2`,
         headers: {
-          Authorization: `Basic ${ctx.output.token}`,
-        },
+          Authorization: `Basic ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/users/me.json');
@@ -175,8 +193,8 @@ export let auth = SlateAuth.create()
           email: user.email,
           name: user.name,
           imageUrl: user.photo?.content_url,
-          role: user.role,
-        },
+          role: user.role
+        }
       };
-    },
+    }
   });

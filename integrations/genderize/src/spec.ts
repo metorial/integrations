@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'genderize',
   name: 'Genderize',
-  description: 'Predict the gender associated with a given name using statistical data from Genderize.io.',
+  description:
+    'Predict the gender associated with a given name using statistical data from Genderize.io.',
   metadata: {},
   config,
-  auth,
+  auth
 });

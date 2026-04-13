@@ -13,6 +13,7 @@ OpenRouter supports two authentication methods:
 You can cover model costs with OpenRouter API keys. The API authenticates requests using Bearer tokens, which allows you to use curl or the OpenAI SDK directly with OpenRouter.
 
 To use an API key:
+
 1. Create an account at openrouter.ai.
 2. Navigate to the API Keys section and create a new secret key (keys are prefixed with `sk-or-`).
 3. Include the key in the `Authorization` header as: `Authorization: Bearer sk-or-...`
@@ -20,6 +21,7 @@ To use an API key:
 The base URL for API requests is `https://openrouter.ai/api/v1`.
 
 Optional headers for app attribution:
+
 - `HTTP-Referer`: Your site URL (for rankings on openrouter.ai)
 - `X-OpenRouter-Title`: Your app's title
 
@@ -28,6 +30,7 @@ Optional headers for app attribution:
 OpenRouter supports OAuth PKCE to let third-party applications authenticate end-users and obtain user-controlled API keys on their behalf.
 
 **Flow:**
+
 1. Redirect the user to `https://openrouter.ai/auth?callback_url=<YOUR_CALLBACK_URL>` with optional PKCE `code_challenge` and `code_challenge_method` (S256 recommended).
 2. The user will be prompted to log in to OpenRouter and authorize your app. After authorization, they will be redirected back to your site with a `code` parameter in the URL.
 3. Exchange the authorization code for an API key by POSTing to `https://openrouter.ai/api/v1/auth/keys` with the `code`, optional `code_verifier`, and `code_challenge_method`.
@@ -48,6 +51,7 @@ Send chat messages to any of the 400+ supported AI models using an OpenAI-compat
 ### Model Routing and Fallbacks
 
 OpenRouter will select the least expensive and best GPUs available to serve the request, and fall back to other providers or GPUs if it receives a 5xx response code or if you are rate-limited. Model variants modify routing behavior:
+
 - `:nitro` — Providers will be sorted by throughput rather than the default sort, optimizing for faster response times.
 - `:floor` — Providers will be sorted by price rather than the default sort, prioritizing the most cost-effective options.
 - `:free` — The model is always provided for free and has low rate limits.

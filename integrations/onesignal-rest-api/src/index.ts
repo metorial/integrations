@@ -24,11 +24,9 @@ import {
   getApp,
   createApp,
   updateApp,
-  exportData,
+  exportData
 } from './tools';
-import {
-  notificationEvents,
-} from './triggers';
+import { notificationEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -56,9 +54,7 @@ export let provider = Slate.create({
     getApp,
     createApp,
     updateApp,
-    exportData,
+    exportData
   ],
-  triggers: [
-    notificationEvents,
-  ],
+  triggers: [notificationEvents]
 });

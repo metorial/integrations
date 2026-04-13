@@ -26,7 +26,10 @@ let hmacSha256 = (key: string | ArrayBuffer, data: string): ArrayBuffer => {
   let hmac = crypto.createHmac('sha256', new Uint8Array(keyBuffer));
   hmac.update(data);
   let digest = hmac.digest();
-  return digest.buffer.slice(digest.byteOffset, digest.byteOffset + digest.byteLength) as ArrayBuffer;
+  return digest.buffer.slice(
+    digest.byteOffset,
+    digest.byteOffset + digest.byteLength
+  ) as ArrayBuffer;
 };
 
 let sha256Hex = (data: string): string => {
@@ -105,7 +108,8 @@ export let signRequest = (params: SignRequestParams): Record<string, string> => 
 
   let canonicalHeaders = headerKeys
     .map(k => {
-      let val = signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!] || '';
+      let val =
+        signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!] || '';
       return `${k}:${val.trim()}\n`;
     })
     .join('');
@@ -143,7 +147,7 @@ export let signRequest = (params: SignRequestParams): Record<string, string> => 
 
   let result: Record<string, string> = {
     'x-amz-date': amzDate,
-    'authorization': authorization
+    authorization: authorization
   };
 
   if (credentials.sessionToken) {

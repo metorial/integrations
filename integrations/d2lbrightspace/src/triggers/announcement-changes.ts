@@ -3,47 +3,57 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let announcementChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Announcement Changes',
-    key: 'announcement_changes',
-    description: 'Triggers when announcements (news items) are created or updated in a specific course or org unit. Polls the news feed and detects new or modified items.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Type of change'),
-    newsItemId: z.string().describe('News item ID'),
-    orgUnitId: z.string().describe('Org unit ID'),
-    title: z.string().optional().describe('Announcement title'),
-    body: z.string().optional().describe('Announcement body'),
-    createdDate: z.string().optional().describe('Created date'),
-    isPublished: z.boolean().optional().describe('Whether published'),
-  }))
-  .output(z.object({
-    newsItemId: z.string().describe('News item ID'),
-    orgUnitId: z.string().describe('Org unit ID'),
-    title: z.string().optional().describe('Announcement title'),
-    body: z.string().optional().describe('Announcement body'),
-    createdDate: z.string().optional().describe('Created date'),
-    isPublished: z.boolean().optional().describe('Whether published'),
-  }))
+export let announcementChanges = SlateTrigger.create(spec, {
+  name: 'Announcement Changes',
+  key: 'announcement_changes',
+  description:
+    'Triggers when announcements (news items) are created or updated in a specific course or org unit. Polls the news feed and detects new or modified items.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated']).describe('Type of change'),
+      newsItemId: z.string().describe('News item ID'),
+      orgUnitId: z.string().describe('Org unit ID'),
+      title: z.string().optional().describe('Announcement title'),
+      body: z.string().optional().describe('Announcement body'),
+      createdDate: z.string().optional().describe('Created date'),
+      isPublished: z.boolean().optional().describe('Whether published')
+    })
+  )
+  .output(
+    z.object({
+      newsItemId: z.string().describe('News item ID'),
+      orgUnitId: z.string().describe('Org unit ID'),
+      title: z.string().optional().describe('Announcement title'),
+      body: z.string().optional().describe('Announcement body'),
+      createdDate: z.string().optional().describe('Created date'),
+      isPublished: z.boolean().optional().describe('Whether published')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
-      let state = ctx.state as { knownItems?: Record<string, string>; orgUnitIds?: string[] } | null;
+    pollEvents: async ctx => {
+      let state = ctx.state as {
+        knownItems?: Record<string, string>;
+        orgUnitIds?: string[];
+      } | null;
 
       // Use current user's enrollments to find org units to monitor
       let client = createClient(ctx.config, ctx.auth);
 
       let enrollmentsResult = await client.getMyEnrollments({ canAccess: 'true' });
-      let enrollmentItems = enrollmentsResult?.Items || (Array.isArray(enrollmentsResult) ? enrollmentsResult : []);
+      let enrollmentItems =
+        enrollmentsResult?.Items ||
+        (Array.isArray(enrollmentsResult) ? enrollmentsResult : []);
 
       // Limit to first 10 org units to avoid excessive polling
-      let orgUnitIds = enrollmentItems.slice(0, 10).map((e: any) => String(e.OrgUnit?.Id)).filter(Boolean);
+      let orgUnitIds = enrollmentItems
+        .slice(0, 10)
+        .map((e: any) => String(e.OrgUnit?.Id))
+        .filter(Boolean);
 
       let inputs: any[] = [];
       let knownItems = state?.knownItems || {};
@@ -71,7 +81,7 @@ export let announcementChanges = SlateTrigger.create(
                   title: item.Title,
                   body: item.Body?.Text || item.Body?.Content || item.Body?.Html,
                   createdDate: item.CreatedDate,
-                  isPublished: item.IsPublished,
+                  isPublished: item.IsPublished
                 });
               }
             } else if (knownItems[key] !== lastModified) {
@@ -83,7 +93,7 @@ export let announcementChanges = SlateTrigger.create(
                 title: item.Title,
                 body: item.Body?.Text || item.Body?.Content || item.Body?.Html,
                 createdDate: item.CreatedDate,
-                isPublished: item.IsPublished,
+                isPublished: item.IsPublished
               });
             }
           }
@@ -96,12 +106,12 @@ export let announcementChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           knownItems: newKnownItems,
-          orgUnitIds,
-        },
+          orgUnitIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `announcement.${ctx.input.eventType}`,
         id: `announcement-${ctx.input.orgUnitId}-${ctx.input.newsItemId}-${ctx.input.eventType}-${Date.now()}`,
@@ -111,9 +121,9 @@ export let announcementChanges = SlateTrigger.create(
           title: ctx.input.title,
           body: ctx.input.body,
           createdDate: ctx.input.createdDate,
-          isPublished: ctx.input.isPublished,
-        },
+          isPublished: ctx.input.isPublished
+        }
       };
-    },
+    }
   })
   .build();

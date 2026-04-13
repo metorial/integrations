@@ -12,13 +12,9 @@ import {
   createOrder,
   getOrder,
   cancelOrder,
-  sandboxAdvanceOrder,
+  sandboxAdvanceOrder
 } from './tools';
-import {
-  orderEvents,
-  itemEvents,
-  deliveryEvents,
-} from './triggers';
+import { orderEvents, itemEvents, deliveryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -34,11 +30,7 @@ export let provider = Slate.create({
     createOrder,
     getOrder,
     cancelOrder,
-    sandboxAdvanceOrder,
+    sandboxAdvanceOrder
   ],
-  triggers: [
-    orderEvents,
-    itemEvents,
-    deliveryEvents,
-  ],
+  triggers: [orderEvents, itemEvents, deliveryEvents]
 });

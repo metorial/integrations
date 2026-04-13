@@ -3,35 +3,53 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createWebhookClient } from '../lib/helpers';
 
-export let entryEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Entry Events',
-    key: 'entry_events',
-    description: 'Triggers when an entry is created, saved, published, unpublished, archived, unarchived, or deleted in your Contentful space.'
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The entry action that triggered the event (e.g. create, save, publish, unpublish, archive, unarchive, delete).'),
-    entryId: z.string().describe('ID of the affected entry.'),
-    contentTypeId: z.string().optional().describe('Content type ID of the entry.'),
-    spaceId: z.string().optional().describe('Space ID where the event occurred.'),
-    environmentId: z.string().optional().describe('Environment ID where the event occurred.'),
-    fields: z.record(z.string(), z.any()).optional().describe('Entry fields at the time of the event.'),
-    webhookCallId: z.string().describe('Unique identifier for this webhook invocation.')
-  }))
-  .output(z.object({
-    entryId: z.string().describe('ID of the affected entry.'),
-    contentTypeId: z.string().optional().describe('Content type ID of the entry.'),
-    spaceId: z.string().optional().describe('Space ID where the event occurred.'),
-    environmentId: z.string().optional().describe('Environment ID where the event occurred.'),
-    fields: z.record(z.string(), z.any()).optional().describe('Entry fields at the time of the event.'),
-    version: z.number().optional().describe('Version of the entry after the event.'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp.'),
-    updatedAt: z.string().optional().describe('ISO 8601 last update timestamp.')
-  }))
+export let entryEvents = SlateTrigger.create(spec, {
+  name: 'Entry Events',
+  key: 'entry_events',
+  description:
+    'Triggers when an entry is created, saved, published, unpublished, archived, unarchived, or deleted in your Contentful space.'
+})
+  .input(
+    z.object({
+      eventAction: z
+        .string()
+        .describe(
+          'The entry action that triggered the event (e.g. create, save, publish, unpublish, archive, unarchive, delete).'
+        ),
+      entryId: z.string().describe('ID of the affected entry.'),
+      contentTypeId: z.string().optional().describe('Content type ID of the entry.'),
+      spaceId: z.string().optional().describe('Space ID where the event occurred.'),
+      environmentId: z
+        .string()
+        .optional()
+        .describe('Environment ID where the event occurred.'),
+      fields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Entry fields at the time of the event.'),
+      webhookCallId: z.string().describe('Unique identifier for this webhook invocation.')
+    })
+  )
+  .output(
+    z.object({
+      entryId: z.string().describe('ID of the affected entry.'),
+      contentTypeId: z.string().optional().describe('Content type ID of the entry.'),
+      spaceId: z.string().optional().describe('Space ID where the event occurred.'),
+      environmentId: z
+        .string()
+        .optional()
+        .describe('Environment ID where the event occurred.'),
+      fields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Entry fields at the time of the event.'),
+      version: z.number().optional().describe('Version of the entry after the event.'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp.'),
+      updatedAt: z.string().optional().describe('ISO 8601 last update timestamp.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createWebhookClient(ctx.config, ctx.auth);
 
       let webhook = await client.createWebhook({
@@ -53,34 +71,37 @@ export let entryEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createWebhookClient(ctx.config, ctx.auth);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any = await ctx.request.json();
       let topic = ctx.request.headers.get('X-Contentful-Topic') || '';
       let parts = topic.split('.');
       let eventAction = parts[2] || 'unknown';
 
       let sys = body?.sys || {};
-      let webhookCallId = ctx.request.headers.get('X-Contentful-Webhook-Call-Id') || `${sys.id}-${Date.now()}`;
+      let webhookCallId =
+        ctx.request.headers.get('X-Contentful-Webhook-Call-Id') || `${sys.id}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventAction,
-          entryId: sys.id || '',
-          contentTypeId: sys.contentType?.sys?.id,
-          spaceId: sys.space?.sys?.id,
-          environmentId: sys.environment?.sys?.id,
-          fields: body?.fields,
-          webhookCallId
-        }]
+        inputs: [
+          {
+            eventAction,
+            entryId: sys.id || '',
+            contentTypeId: sys.contentType?.sys?.id,
+            spaceId: sys.space?.sys?.id,
+            environmentId: sys.environment?.sys?.id,
+            fields: body?.fields,
+            webhookCallId
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `entry.${ctx.input.eventAction}`,
         id: ctx.input.webhookCallId,
@@ -96,4 +117,5 @@ export let entryEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

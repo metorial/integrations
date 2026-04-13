@@ -11,7 +11,7 @@ import {
   listCollections,
   searchCollections,
   deleteCollection,
-  memIt,
+  memIt
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     listCollections,
     searchCollections,
     deleteCollection,
-    memIt,
+    memIt
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

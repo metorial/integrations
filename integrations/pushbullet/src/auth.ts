@@ -2,7 +2,7 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let outputSchema = z.object({
-  token: z.string(),
+  token: z.string()
 });
 
 type AuthOutput = z.infer<typeof outputSchema>;
@@ -11,8 +11,8 @@ let fetchProfile = async (token: string) => {
   let http = createAxios({
     baseURL: 'https://api.pushbullet.com',
     headers: {
-      'Access-Token': token,
-    },
+      'Access-Token': token
+    }
   });
 
   let response = await http.get('/v2/users/me');
@@ -28,8 +28,8 @@ let fetchProfile = async (token: string) => {
       id: user.iden,
       email: user.email,
       name: user.name,
-      imageUrl: user.image_url,
-    },
+      imageUrl: user.image_url
+    }
   };
 };
 
@@ -42,43 +42,43 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://www.pushbullet.com/authorize?${params.toString()}`,
+        url: `https://www.pushbullet.com/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({
-        baseURL: 'https://api.pushbullet.com',
+        baseURL: 'https://api.pushbullet.com'
       });
 
       let response = await http.post('/oauth2/token', {
         grant_type: 'authorization_code',
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        code: ctx.code,
+        code: ctx.code
       });
 
       let data = response.data as { access_token: string };
 
       return {
         output: {
-          token: data.access_token,
-        },
+          token: data.access_token
+        }
       };
     },
 
     getProfile: async (ctx: { output: AuthOutput }) => {
       return fetchProfile(ctx.output.token);
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -86,18 +86,22 @@ export let auth = SlateAuth.create()
     key: 'access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Pushbullet access token from https://www.pushbullet.com/#settings/account'),
+      token: z
+        .string()
+        .describe(
+          'Your Pushbullet access token from https://www.pushbullet.com/#settings/account'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: AuthOutput }) => {
       return fetchProfile(ctx.output.token);
-    },
+    }
   });

@@ -1,5 +1,13 @@
 import { createAxios } from 'slates';
-import type { DatadogAuthConfig, Monitor, MonitorOptions, Dashboard, Event, LogSearchParams, MetricsQueryParams } from './types';
+import type {
+  DatadogAuthConfig,
+  Monitor,
+  MonitorOptions,
+  Dashboard,
+  Event,
+  LogSearchParams,
+  MetricsQueryParams
+} from './types';
 
 export class DatadogClient {
   private http;
@@ -14,7 +22,7 @@ export class DatadogClient {
   private getHeaders(): Record<string, string> {
     if (this.authConfig.authMethod === 'oauth') {
       return {
-        'Authorization': `Bearer ${this.authConfig.token}`,
+        Authorization: `Bearer ${this.authConfig.token}`,
         'Content-Type': 'application/json'
       };
     }
@@ -58,16 +66,22 @@ export class DatadogClient {
     return response.data;
   }
 
-  async submitMetrics(series: Array<{
-    metric: string;
-    type?: number;
-    points: Array<[number, number]>;
-    host?: string;
-    tags?: string[];
-  }>): Promise<any> {
-    let response = await this.http.post('/api/v1/series', { series }, {
-      headers: this.getHeaders()
-    });
+  async submitMetrics(
+    series: Array<{
+      metric: string;
+      type?: number;
+      points: Array<[number, number]>;
+      host?: string;
+      tags?: string[];
+    }>
+  ): Promise<any> {
+    let response = await this.http.post(
+      '/api/v1/series',
+      { series },
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -118,15 +132,18 @@ export class DatadogClient {
     return response.data;
   }
 
-  async updateMonitor(monitorId: number, monitor: {
-    name?: string;
-    type?: string;
-    query?: string;
-    message?: string;
-    tags?: string[];
-    priority?: number;
-    options?: MonitorOptions;
-  }): Promise<Monitor> {
+  async updateMonitor(
+    monitorId: number,
+    monitor: {
+      name?: string;
+      type?: string;
+      query?: string;
+      message?: string;
+      tags?: string[];
+      priority?: number;
+      options?: MonitorOptions;
+    }
+  ): Promise<Monitor> {
     let response = await this.http.put(`/api/v1/monitor/${monitorId}`, monitor, {
       headers: this.getHeaders()
     });
@@ -144,7 +161,10 @@ export class DatadogClient {
     return response.data;
   }
 
-  async muteMonitor(monitorId: number, params?: { scope?: string; end?: number }): Promise<Monitor> {
+  async muteMonitor(
+    monitorId: number,
+    params?: { scope?: string; end?: number }
+  ): Promise<Monitor> {
     let response = await this.http.post(`/api/v1/monitor/${monitorId}/mute`, params || {}, {
       headers: this.getHeaders()
     });
@@ -180,9 +200,12 @@ export class DatadogClient {
   }
 
   async getDashboard(dashboardId: string): Promise<Dashboard> {
-    let response = await this.http.get(`/api/v1/dashboard/${encodeURIComponent(dashboardId)}`, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.get(
+      `/api/v1/dashboard/${encodeURIComponent(dashboardId)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -202,7 +225,8 @@ export class DatadogClient {
       widgets: dashboard.widgets
     };
     if (dashboard.description !== undefined) body.description = dashboard.description;
-    if (dashboard.templateVariables !== undefined) body.template_variables = dashboard.templateVariables;
+    if (dashboard.templateVariables !== undefined)
+      body.template_variables = dashboard.templateVariables;
     if (dashboard.isReadOnly !== undefined) body.is_read_only = dashboard.isReadOnly;
     if (dashboard.notifyList !== undefined) body.notify_list = dashboard.notifyList;
     if (dashboard.reflowType !== undefined) body.reflow_type = dashboard.reflowType;
@@ -213,36 +237,47 @@ export class DatadogClient {
     return response.data;
   }
 
-  async updateDashboard(dashboardId: string, dashboard: {
-    title?: string;
-    layoutType?: string;
-    widgets?: any[];
-    description?: string;
-    templateVariables?: any[];
-    isReadOnly?: boolean;
-    notifyList?: string[];
-    reflowType?: string;
-  }): Promise<Dashboard> {
+  async updateDashboard(
+    dashboardId: string,
+    dashboard: {
+      title?: string;
+      layoutType?: string;
+      widgets?: any[];
+      description?: string;
+      templateVariables?: any[];
+      isReadOnly?: boolean;
+      notifyList?: string[];
+      reflowType?: string;
+    }
+  ): Promise<Dashboard> {
     let body: Record<string, any> = {};
     if (dashboard.title !== undefined) body.title = dashboard.title;
     if (dashboard.layoutType !== undefined) body.layout_type = dashboard.layoutType;
     if (dashboard.widgets !== undefined) body.widgets = dashboard.widgets;
     if (dashboard.description !== undefined) body.description = dashboard.description;
-    if (dashboard.templateVariables !== undefined) body.template_variables = dashboard.templateVariables;
+    if (dashboard.templateVariables !== undefined)
+      body.template_variables = dashboard.templateVariables;
     if (dashboard.isReadOnly !== undefined) body.is_read_only = dashboard.isReadOnly;
     if (dashboard.notifyList !== undefined) body.notify_list = dashboard.notifyList;
     if (dashboard.reflowType !== undefined) body.reflow_type = dashboard.reflowType;
 
-    let response = await this.http.put(`/api/v1/dashboard/${encodeURIComponent(dashboardId)}`, body, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.put(
+      `/api/v1/dashboard/${encodeURIComponent(dashboardId)}`,
+      body,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
   async deleteDashboard(dashboardId: string): Promise<any> {
-    let response = await this.http.delete(`/api/v1/dashboard/${encodeURIComponent(dashboardId)}`, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.delete(
+      `/api/v1/dashboard/${encodeURIComponent(dashboardId)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -344,7 +379,8 @@ export class DatadogClient {
     };
     if (incident.severity) attributes.severity = incident.severity;
     if (incident.fields) attributes.fields = incident.fields;
-    if (incident.notificationHandles) attributes.notification_handles = incident.notificationHandles;
+    if (incident.notificationHandles)
+      attributes.notification_handles = incident.notificationHandles;
 
     let body = {
       data: {
@@ -359,16 +395,20 @@ export class DatadogClient {
     return response.data;
   }
 
-  async updateIncident(incidentId: string, updates: {
-    title?: string;
-    customerImpacted?: boolean;
-    severity?: string;
-    state?: string;
-    fields?: Record<string, any>;
-  }): Promise<any> {
+  async updateIncident(
+    incidentId: string,
+    updates: {
+      title?: string;
+      customerImpacted?: boolean;
+      severity?: string;
+      state?: string;
+      fields?: Record<string, any>;
+    }
+  ): Promise<any> {
     let attributes: Record<string, any> = {};
     if (updates.title !== undefined) attributes.title = updates.title;
-    if (updates.customerImpacted !== undefined) attributes.customer_impacted = updates.customerImpacted;
+    if (updates.customerImpacted !== undefined)
+      attributes.customer_impacted = updates.customerImpacted;
     if (updates.severity !== undefined) attributes.severity = updates.severity;
     if (updates.state !== undefined) attributes.state = updates.state;
     if (updates.fields) attributes.fields = updates.fields;
@@ -381,9 +421,13 @@ export class DatadogClient {
       }
     };
 
-    let response = await this.http.patch(`/api/v2/incidents/${encodeURIComponent(incidentId)}`, body, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.patch(
+      `/api/v2/incidents/${encodeURIComponent(incidentId)}`,
+      body,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -416,13 +460,15 @@ export class DatadogClient {
     return response.data;
   }
 
-  async submitLogs(logs: Array<{
-    message: string;
-    ddsource?: string;
-    ddtags?: string;
-    hostname?: string;
-    service?: string;
-  }>): Promise<any> {
+  async submitLogs(
+    logs: Array<{
+      message: string;
+      ddsource?: string;
+      ddtags?: string;
+      hostname?: string;
+      service?: string;
+    }>
+  ): Promise<any> {
     let response = await this.http.post('/api/v2/logs', logs, {
       headers: this.getHeaders()
     });
@@ -492,19 +538,22 @@ export class DatadogClient {
     return response.data;
   }
 
-  async updateSLO(sloId: string, slo: {
-    name?: string;
-    description?: string;
-    tags?: string[];
-    thresholds?: Array<{
-      timeframe: string;
-      target: number;
-      warning?: number;
-    }>;
-    monitorIds?: number[];
-    query?: { numerator: string; denominator: string };
-    groups?: string[];
-  }): Promise<any> {
+  async updateSLO(
+    sloId: string,
+    slo: {
+      name?: string;
+      description?: string;
+      tags?: string[];
+      thresholds?: Array<{
+        timeframe: string;
+        target: number;
+        warning?: number;
+      }>;
+      monitorIds?: number[];
+      query?: { numerator: string; denominator: string };
+      groups?: string[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (slo.name !== undefined) body.name = slo.name;
     if (slo.description !== undefined) body.description = slo.description;
@@ -545,23 +594,33 @@ export class DatadogClient {
   }
 
   async getSyntheticsTest(publicId: string): Promise<any> {
-    let response = await this.http.get(`/api/v1/synthetics/tests/${encodeURIComponent(publicId)}`, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.get(
+      `/api/v1/synthetics/tests/${encodeURIComponent(publicId)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
   async getSyntheticsTestResults(publicId: string): Promise<any> {
-    let response = await this.http.get(`/api/v1/synthetics/tests/${encodeURIComponent(publicId)}/results`, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.get(
+      `/api/v1/synthetics/tests/${encodeURIComponent(publicId)}/results`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
   async triggerSyntheticsTests(tests: Array<{ public_id: string }>): Promise<any> {
-    let response = await this.http.post('/api/v1/synthetics/tests/trigger', { tests }, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.post(
+      '/api/v1/synthetics/tests/trigger',
+      { tests },
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -668,26 +727,36 @@ export class DatadogClient {
     if (webhook.encodeAs) body.encode_as = webhook.encodeAs;
     if (webhook.payload) body.payload = webhook.payload;
 
-    let response = await this.http.post('/api/v1/integration/webhooks/configuration/webhooks', body, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.post(
+      '/api/v1/integration/webhooks/configuration/webhooks',
+      body,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
   async getWebhook(webhookName: string): Promise<any> {
-    let response = await this.http.get(`/api/v1/integration/webhooks/configuration/webhooks/${encodeURIComponent(webhookName)}`, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.get(
+      `/api/v1/integration/webhooks/configuration/webhooks/${encodeURIComponent(webhookName)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
-  async updateWebhook(webhookName: string, webhook: {
-    name?: string;
-    url?: string;
-    customHeaders?: string;
-    encodeAs?: string;
-    payload?: string;
-  }): Promise<any> {
+  async updateWebhook(
+    webhookName: string,
+    webhook: {
+      name?: string;
+      url?: string;
+      customHeaders?: string;
+      encodeAs?: string;
+      payload?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (webhook.name !== undefined) body.name = webhook.name;
     if (webhook.url !== undefined) body.url = webhook.url;
@@ -695,16 +764,23 @@ export class DatadogClient {
     if (webhook.encodeAs !== undefined) body.encode_as = webhook.encodeAs;
     if (webhook.payload !== undefined) body.payload = webhook.payload;
 
-    let response = await this.http.put(`/api/v1/integration/webhooks/configuration/webhooks/${encodeURIComponent(webhookName)}`, body, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.put(
+      `/api/v1/integration/webhooks/configuration/webhooks/${encodeURIComponent(webhookName)}`,
+      body,
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
   async deleteWebhook(webhookName: string): Promise<void> {
-    await this.http.delete(`/api/v1/integration/webhooks/configuration/webhooks/${encodeURIComponent(webhookName)}`, {
-      headers: this.getHeaders()
-    });
+    await this.http.delete(
+      `/api/v1/integration/webhooks/configuration/webhooks/${encodeURIComponent(webhookName)}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
   }
 
   // ─── Hosts ─────────────────────────────────────────────
@@ -726,8 +802,10 @@ export class DatadogClient {
     if (params?.start !== undefined) queryParams.start = params.start;
     if (params?.count !== undefined) queryParams.count = params.count;
     if (params?.from !== undefined) queryParams.from = params.from;
-    if (params?.includeMutedHostsData !== undefined) queryParams.include_muted_hosts_data = params.includeMutedHostsData;
-    if (params?.includeHostsMetadata !== undefined) queryParams.include_hosts_metadata = params.includeHostsMetadata;
+    if (params?.includeMutedHostsData !== undefined)
+      queryParams.include_muted_hosts_data = params.includeMutedHostsData;
+    if (params?.includeHostsMetadata !== undefined)
+      queryParams.include_hosts_metadata = params.includeHostsMetadata;
 
     let response = await this.http.get('/api/v1/hosts', {
       headers: this.getHeaders(),
@@ -736,17 +814,28 @@ export class DatadogClient {
     return response.data;
   }
 
-  async muteHost(hostname: string, params?: { message?: string; end?: number; override?: boolean }): Promise<any> {
-    let response = await this.http.post(`/api/v1/host/${encodeURIComponent(hostname)}/mute`, params || {}, {
-      headers: this.getHeaders()
-    });
+  async muteHost(
+    hostname: string,
+    params?: { message?: string; end?: number; override?: boolean }
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/api/v1/host/${encodeURIComponent(hostname)}/mute`,
+      params || {},
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 
   async unmuteHost(hostname: string): Promise<any> {
-    let response = await this.http.post(`/api/v1/host/${encodeURIComponent(hostname)}/unmute`, {}, {
-      headers: this.getHeaders()
-    });
+    let response = await this.http.post(
+      `/api/v1/host/${encodeURIComponent(hostname)}/unmute`,
+      {},
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 }

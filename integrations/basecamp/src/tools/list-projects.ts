@@ -11,30 +11,35 @@ let projectSchema = z.object({
   createdAt: z.string().describe('When the project was created'),
   updatedAt: z.string().describe('When the project was last updated'),
   bookmarked: z.boolean().describe('Whether the project is bookmarked'),
-  purpose: z.string().nullable().describe('Purpose of the project'),
+  purpose: z.string().nullable().describe('Purpose of the project')
 });
 
-export let listProjectsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List all projects in your Basecamp account. Returns active projects by default; optionally filter by status to see archived or trashed projects.`,
-    tags: {
-      readOnly: true,
-    },
+export let listProjectsTool = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List all projects in your Basecamp account. Returns active projects by default; optionally filter by status to see archived or trashed projects.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.enum(['active', 'archived', 'trashed']).optional().default('active').describe('Filter projects by status'),
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema).describe('List of projects'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['active', 'archived', 'trashed'])
+        .optional()
+        .default('active')
+        .describe('Filter projects by status')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectSchema).describe('List of projects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     let statusParam = ctx.input.status === 'active' ? undefined : ctx.input.status;
@@ -48,12 +53,12 @@ export let listProjectsTool = SlateTool.create(
       createdAt: p.created_at,
       updatedAt: p.updated_at,
       bookmarked: p.bookmarked ?? false,
-      purpose: p.purpose ?? null,
+      purpose: p.purpose ?? null
     }));
 
     return {
       output: { projects: mapped },
-      message: `Found **${mapped.length}** ${ctx.input.status ?? 'active'} project(s).`,
+      message: `Found **${mapped.length}** ${ctx.input.status ?? 'active'} project(s).`
     };
   })
   .build();

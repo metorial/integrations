@@ -3,33 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFlakyTests = SlateTool.create(
-  spec,
-  {
-    name: 'Get Flaky Tests',
-    key: 'get_flaky_tests',
-    description: `Retrieve a list of flaky tests detected in a project. Flaky tests are tests that have inconsistent pass/fail results across recent runs.`,
-    tags: {
-      readOnly: true
-    }
+export let getFlakyTests = SlateTool.create(spec, {
+  name: 'Get Flaky Tests',
+  key: 'get_flaky_tests',
+  description: `Retrieve a list of flaky tests detected in a project. Flaky tests are tests that have inconsistent pass/fail results across recent runs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectSlug: z.string().describe('Project slug in the format vcs-slug/org-name/repo-name')
-  }))
-  .output(z.object({
-    flakyTests: z.array(z.object({
-      testName: z.string().optional(),
-      className: z.string().optional(),
-      source: z.string().optional(),
-      jobName: z.string().optional(),
-      workflowName: z.string().optional(),
-      timesFlaked: z.number().optional(),
-      pipelineNumber: z.number().optional()
-    })),
-    totalCount: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectSlug: z
+        .string()
+        .describe('Project slug in the format vcs-slug/org-name/repo-name')
+    })
+  )
+  .output(
+    z.object({
+      flakyTests: z.array(
+        z.object({
+          testName: z.string().optional(),
+          className: z.string().optional(),
+          source: z.string().optional(),
+          jobName: z.string().optional(),
+          workflowName: z.string().optional(),
+          timesFlaked: z.number().optional(),
+          pipelineNumber: z.number().optional()
+        })
+      ),
+      totalCount: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getFlakyTests(ctx.input.projectSlug);
 

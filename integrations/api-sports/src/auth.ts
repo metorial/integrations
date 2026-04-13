@@ -2,29 +2,31 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      token: z.string().describe('Your API-Sports API key from the dashboard'),
+      token: z.string().describe('Your API-Sports API key from the dashboard')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let http = createAxios({
         baseURL: 'https://v3.football.api-sports.io',
         headers: {
-          'x-apisports-key': ctx.output.token,
-        },
+          'x-apisports-key': ctx.output.token
+        }
       });
 
       let response = await http.get('/status');
@@ -33,12 +35,13 @@ export let auth = SlateAuth.create()
 
       return {
         profile: {
-          name: account?.firstname && account?.lastname
-            ? `${account.firstname} ${account.lastname}`
-            : account?.email,
+          name:
+            account?.firstname && account?.lastname
+              ? `${account.firstname} ${account.lastname}`
+              : account?.email,
           email: account?.email,
-          plan: subscription?.plan,
-        },
+          plan: subscription?.plan
+        }
       };
-    },
+    }
   });

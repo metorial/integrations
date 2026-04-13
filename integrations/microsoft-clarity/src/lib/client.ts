@@ -54,15 +54,15 @@ export class ClarityClient {
     this.axios = createAxios({
       baseURL: 'https://www.clarity.ms',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async getDashboardInsights(params: DashboardInsightsParams): Promise<DashboardMetric[]> {
     let queryParams: Record<string, string> = {
-      numOfDays: String(params.numOfDays),
+      numOfDays: String(params.numOfDays)
     };
 
     if (params.dimension1) {
@@ -76,7 +76,7 @@ export class ClarityClient {
     }
 
     let response = await this.axios.get('/export-data/api/v1/project-live-insights', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -85,7 +85,7 @@ export class ClarityClient {
   async listSessionRecordings(params: SessionRecordingsParams): Promise<any[]> {
     let body: Record<string, any> = {
       start: params.startDate,
-      end: params.endDate,
+      end: params.endDate
     };
 
     if (params.sortBy) {

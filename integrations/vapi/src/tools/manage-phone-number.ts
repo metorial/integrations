@@ -3,45 +3,66 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePhoneNumber = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Phone Number',
-    key: 'manage_phone_number',
-    description: `Create, update, retrieve, or delete phone numbers for inbound and outbound calling. Supports Vapi-managed numbers, Twilio, Vonage, Telnyx, and BYO (bring your own) phone numbers. Assign assistants, squads, or workflows to handle inbound calls.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let managePhoneNumber = SlateTool.create(spec, {
+  name: 'Manage Phone Number',
+  key: 'manage_phone_number',
+  description: `Create, update, retrieve, or delete phone numbers for inbound and outbound calling. Supports Vapi-managed numbers, Twilio, Vonage, Telnyx, and BYO (bring your own) phone numbers. Assign assistants, squads, or workflows to handle inbound calls.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
-    phoneNumberId: z.string().optional().describe('Phone number ID (required for get, update, delete)'),
-    provider: z.enum(['vapi', 'twilio', 'vonage', 'telnyx', 'byo-phone-number']).optional().describe('Phone number provider (required for create)'),
-    number: z.string().optional().describe('Phone number in E.164 format (required for twilio, vonage, telnyx, byo-phone-number)'),
-    name: z.string().optional().describe('Name for the phone number'),
-    assistantId: z.string().optional().describe('Assistant ID to route inbound calls to'),
-    squadId: z.string().optional().describe('Squad ID to route inbound calls to'),
-    workflowId: z.string().optional().describe('Workflow ID to route inbound calls to'),
-    credentialId: z.string().optional().describe('Credential ID (for vonage, telnyx, byo-phone-number)'),
-    numberDesiredAreaCode: z.string().optional().describe('Desired area code when provisioning a Vapi number'),
-    serverUrl: z.string().optional().describe('Server URL for receiving webhook events')
-  }))
-  .output(z.object({
-    phoneNumberId: z.string().optional().describe('ID of the phone number'),
-    provider: z.string().optional().describe('Phone number provider'),
-    number: z.string().optional().describe('Phone number in E.164 format'),
-    name: z.string().optional().describe('Name of the phone number'),
-    status: z.string().optional().describe('Phone number status (active, activating, blocked)'),
-    assistantId: z.string().optional().describe('Assistant ID routed to'),
-    squadId: z.string().optional().describe('Squad ID routed to'),
-    workflowId: z.string().optional().describe('Workflow ID routed to'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the phone number was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
+      phoneNumberId: z
+        .string()
+        .optional()
+        .describe('Phone number ID (required for get, update, delete)'),
+      provider: z
+        .enum(['vapi', 'twilio', 'vonage', 'telnyx', 'byo-phone-number'])
+        .optional()
+        .describe('Phone number provider (required for create)'),
+      number: z
+        .string()
+        .optional()
+        .describe(
+          'Phone number in E.164 format (required for twilio, vonage, telnyx, byo-phone-number)'
+        ),
+      name: z.string().optional().describe('Name for the phone number'),
+      assistantId: z.string().optional().describe('Assistant ID to route inbound calls to'),
+      squadId: z.string().optional().describe('Squad ID to route inbound calls to'),
+      workflowId: z.string().optional().describe('Workflow ID to route inbound calls to'),
+      credentialId: z
+        .string()
+        .optional()
+        .describe('Credential ID (for vonage, telnyx, byo-phone-number)'),
+      numberDesiredAreaCode: z
+        .string()
+        .optional()
+        .describe('Desired area code when provisioning a Vapi number'),
+      serverUrl: z.string().optional().describe('Server URL for receiving webhook events')
+    })
+  )
+  .output(
+    z.object({
+      phoneNumberId: z.string().optional().describe('ID of the phone number'),
+      provider: z.string().optional().describe('Phone number provider'),
+      number: z.string().optional().describe('Phone number in E.164 format'),
+      name: z.string().optional().describe('Name of the phone number'),
+      status: z
+        .string()
+        .optional()
+        .describe('Phone number status (active, activating, blocked)'),
+      assistantId: z.string().optional().describe('Assistant ID routed to'),
+      squadId: z.string().optional().describe('Squad ID routed to'),
+      workflowId: z.string().optional().describe('Workflow ID routed to'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the phone number was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, phoneNumberId } = ctx.input;
 
@@ -82,7 +103,8 @@ export let managePhoneNumber = SlateTool.create(
     if (ctx.input.squadId) body.squadId = ctx.input.squadId;
     if (ctx.input.workflowId) body.workflowId = ctx.input.workflowId;
     if (ctx.input.credentialId) body.credentialId = ctx.input.credentialId;
-    if (ctx.input.numberDesiredAreaCode) body.numberDesiredAreaCode = ctx.input.numberDesiredAreaCode;
+    if (ctx.input.numberDesiredAreaCode)
+      body.numberDesiredAreaCode = ctx.input.numberDesiredAreaCode;
     if (ctx.input.serverUrl) body.server = { url: ctx.input.serverUrl };
 
     if (action === 'create') {

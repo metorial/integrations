@@ -31,7 +31,8 @@ export class LinearClient {
   // ─── Issues ───
 
   async createIssue(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueCreate($input: IssueCreateInput!) {
         issueCreate(input: $input) {
           success
@@ -40,12 +41,15 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.issueCreate;
   }
 
   async updateIssue(issueId: string, input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
         issueUpdate(id: $id, input: $input) {
           success
@@ -54,34 +58,43 @@ export class LinearClient {
           }
         }
       }
-    `, { id: issueId, input });
+    `,
+      { id: issueId, input }
+    );
     return data.issueUpdate;
   }
 
   async deleteIssue(issueId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueDelete($id: String!) {
         issueDelete(id: $id) {
           success
         }
       }
-    `, { id: issueId });
+    `,
+      { id: issueId }
+    );
     return data.issueDelete;
   }
 
   async archiveIssue(issueId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueArchive($id: String!) {
         issueArchive(id: $id) {
           success
         }
       }
-    `, { id: issueId });
+    `,
+      { id: issueId }
+    );
     return data.issueArchive;
   }
 
   async getIssue(issueId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Issue($id: String!) {
         issue(id: $id) {
           ${ISSUE_FIELDS}
@@ -102,7 +115,9 @@ export class LinearClient {
           }
         }
       }
-    `, { id: issueId });
+    `,
+      { id: issueId }
+    );
     return data.issue;
   }
 
@@ -124,7 +139,8 @@ export class LinearClient {
     if (params.cycleId) filter.cycle = { id: { eq: params.cycleId } };
     if (params.stateId) filter.state = { id: { eq: params.stateId } };
 
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Issues($filter: IssueFilter, $first: Int, $after: String, $includeArchived: Boolean) {
         issues(filter: $filter, first: $first, after: $after, includeArchived: $includeArchived) {
           nodes {
@@ -136,22 +152,28 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      filter: Object.keys(filter).length > 0 ? filter : undefined,
-      first: params.first || 50,
-      after: params.after,
-      includeArchived: params.includeArchived
-    });
+    `,
+      {
+        filter: Object.keys(filter).length > 0 ? filter : undefined,
+        first: params.first || 50,
+        after: params.after,
+        includeArchived: params.includeArchived
+      }
+    );
     return data.issues;
   }
 
-  async searchIssues(query: string, params?: { first?: number; after?: string; teamId?: string; includeArchived?: boolean }) {
+  async searchIssues(
+    query: string,
+    params?: { first?: number; after?: string; teamId?: string; includeArchived?: boolean }
+  ) {
     let filter: Record<string, any> | undefined;
     if (params?.teamId) {
       filter = { team: { id: { eq: params.teamId } } };
     }
 
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query IssueSearch($query: String!, $first: Int, $after: String, $includeArchived: Boolean, $filter: IssueFilter) {
         searchIssues(query: $query, first: $first, after: $after, includeArchived: $includeArchived, filter: $filter) {
           nodes {
@@ -163,20 +185,23 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      query,
-      first: params?.first || 50,
-      after: params?.after,
-      includeArchived: params?.includeArchived,
-      filter
-    });
+    `,
+      {
+        query,
+        first: params?.first || 50,
+        after: params?.after,
+        includeArchived: params?.includeArchived,
+        filter
+      }
+    );
     return data.searchIssues;
   }
 
   // ─── Projects ───
 
   async createProject(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation ProjectCreate($input: ProjectCreateInput!) {
         projectCreate(input: $input) {
           success
@@ -185,12 +210,15 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.projectCreate;
   }
 
   async updateProject(projectId: string, input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation ProjectUpdate($id: String!, $input: ProjectUpdateInput!) {
         projectUpdate(id: $id, input: $input) {
           success
@@ -199,23 +227,29 @@ export class LinearClient {
           }
         }
       }
-    `, { id: projectId, input });
+    `,
+      { id: projectId, input }
+    );
     return data.projectUpdate;
   }
 
   async deleteProject(projectId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation ProjectDelete($id: String!) {
         projectDelete(id: $id) {
           success
         }
       }
-    `, { id: projectId });
+    `,
+      { id: projectId }
+    );
     return data.projectDelete;
   }
 
   async getProject(projectId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Project($id: String!) {
         project(id: $id) {
           ${PROJECT_FIELDS}
@@ -231,12 +265,19 @@ export class LinearClient {
           }
         }
       }
-    `, { id: projectId });
+    `,
+      { id: projectId }
+    );
     return data.project;
   }
 
-  async listProjects(params?: { first?: number; after?: string; filter?: Record<string, any> }) {
-    let data = await this.query(`
+  async listProjects(params?: {
+    first?: number;
+    after?: string;
+    filter?: Record<string, any>;
+  }) {
+    let data = await this.query(
+      `
       query Projects($first: Int, $after: String, $filter: ProjectFilter) {
         projects(first: $first, after: $after, filter: $filter) {
           nodes {
@@ -248,18 +289,21 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 50,
-      after: params?.after,
-      filter: params?.filter
-    });
+    `,
+      {
+        first: params?.first || 50,
+        after: params?.after,
+        filter: params?.filter
+      }
+    );
     return data.projects;
   }
 
   // ─── Cycles ───
 
   async createCycle(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation CycleCreate($input: CycleCreateInput!) {
         cycleCreate(input: $input) {
           success
@@ -268,12 +312,15 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.cycleCreate;
   }
 
   async updateCycle(cycleId: string, input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation CycleUpdate($id: String!, $input: CycleUpdateInput!) {
         cycleUpdate(id: $id, input: $input) {
           success
@@ -282,12 +329,15 @@ export class LinearClient {
           }
         }
       }
-    `, { id: cycleId, input });
+    `,
+      { id: cycleId, input }
+    );
     return data.cycleUpdate;
   }
 
   async getCycle(cycleId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Cycle($id: String!) {
         cycle(id: $id) {
           ${CYCLE_FIELDS}
@@ -303,15 +353,23 @@ export class LinearClient {
           }
         }
       }
-    `, { id: cycleId });
+    `,
+      { id: cycleId }
+    );
     return data.cycle;
   }
 
-  async listCycles(params?: { teamId?: string; first?: number; after?: string; filter?: Record<string, any> }) {
+  async listCycles(params?: {
+    teamId?: string;
+    first?: number;
+    after?: string;
+    filter?: Record<string, any>;
+  }) {
     let filter: Record<string, any> = params?.filter || {};
     if (params?.teamId) filter.team = { id: { eq: params.teamId } };
 
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Cycles($first: Int, $after: String, $filter: CycleFilter) {
         cycles(first: $first, after: $after, filter: $filter) {
           nodes {
@@ -323,18 +381,21 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 50,
-      after: params?.after,
-      filter: Object.keys(filter).length > 0 ? filter : undefined
-    });
+    `,
+      {
+        first: params?.first || 50,
+        after: params?.after,
+        filter: Object.keys(filter).length > 0 ? filter : undefined
+      }
+    );
     return data.cycles;
   }
 
   // ─── Teams ───
 
   async getTeam(teamId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Team($id: String!) {
         team(id: $id) {
           ${TEAM_FIELDS}
@@ -366,12 +427,15 @@ export class LinearClient {
           }
         }
       }
-    `, { id: teamId });
+    `,
+      { id: teamId }
+    );
     return data.team;
   }
 
   async listTeams(params?: { first?: number; after?: string }) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Teams($first: Int, $after: String) {
         teams(first: $first, after: $after) {
           nodes {
@@ -383,17 +447,20 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 50,
-      after: params?.after
-    });
+    `,
+      {
+        first: params?.first || 50,
+        after: params?.after
+      }
+    );
     return data.teams;
   }
 
   // ─── Comments ───
 
   async createComment(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation CommentCreate($input: CommentCreateInput!) {
         commentCreate(input: $input) {
           success
@@ -402,12 +469,15 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.commentCreate;
   }
 
   async updateComment(commentId: string, input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation CommentUpdate($id: String!, $input: CommentUpdateInput!) {
         commentUpdate(id: $id, input: $input) {
           success
@@ -416,25 +486,31 @@ export class LinearClient {
           }
         }
       }
-    `, { id: commentId, input });
+    `,
+      { id: commentId, input }
+    );
     return data.commentUpdate;
   }
 
   async deleteComment(commentId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation CommentDelete($id: String!) {
         commentDelete(id: $id) {
           success
         }
       }
-    `, { id: commentId });
+    `,
+      { id: commentId }
+    );
     return data.commentDelete;
   }
 
   // ─── Labels ───
 
   async createLabel(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueLabelCreate($input: IssueLabelCreateInput!) {
         issueLabelCreate(input: $input) {
           success
@@ -443,12 +519,15 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.issueLabelCreate;
   }
 
   async updateLabel(labelId: string, input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueLabelUpdate($id: String!, $input: IssueLabelUpdateInput!) {
         issueLabelUpdate(id: $id, input: $input) {
           success
@@ -457,18 +536,23 @@ export class LinearClient {
           }
         }
       }
-    `, { id: labelId, input });
+    `,
+      { id: labelId, input }
+    );
     return data.issueLabelUpdate;
   }
 
   async deleteLabel(labelId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation IssueLabelDelete($id: String!) {
         issueLabelDelete(id: $id) {
           success
         }
       }
-    `, { id: labelId });
+    `,
+      { id: labelId }
+    );
     return data.issueLabelDelete;
   }
 
@@ -476,7 +560,8 @@ export class LinearClient {
     let filter: Record<string, any> | undefined;
     if (params?.teamId) filter = { team: { id: { eq: params.teamId } } };
 
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query IssueLabels($first: Int, $after: String, $filter: IssueLabelFilter) {
         issueLabels(first: $first, after: $after, filter: $filter) {
           nodes {
@@ -488,18 +573,21 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 50,
-      after: params?.after,
-      filter
-    });
+    `,
+      {
+        first: params?.first || 50,
+        after: params?.after,
+        filter
+      }
+    );
     return data.issueLabels;
   }
 
   // ─── Documents ───
 
   async createDocument(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation DocumentCreate($input: DocumentCreateInput!) {
         documentCreate(input: $input) {
           success
@@ -508,12 +596,15 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.documentCreate;
   }
 
   async updateDocument(documentId: string, input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation DocumentUpdate($id: String!, $input: DocumentUpdateInput!) {
         documentUpdate(id: $id, input: $input) {
           success
@@ -522,34 +613,47 @@ export class LinearClient {
           }
         }
       }
-    `, { id: documentId, input });
+    `,
+      { id: documentId, input }
+    );
     return data.documentUpdate;
   }
 
   async deleteDocument(documentId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation DocumentDelete($id: String!) {
         documentDelete(id: $id) {
           success
         }
       }
-    `, { id: documentId });
+    `,
+      { id: documentId }
+    );
     return data.documentDelete;
   }
 
   async getDocument(documentId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Document($id: String!) {
         document(id: $id) {
           ${DOCUMENT_FIELDS}
         }
       }
-    `, { id: documentId });
+    `,
+      { id: documentId }
+    );
     return data.document;
   }
 
-  async listDocuments(params?: { first?: number; after?: string; filter?: Record<string, any> }) {
-    let data = await this.query(`
+  async listDocuments(params?: {
+    first?: number;
+    after?: string;
+    filter?: Record<string, any>;
+  }) {
+    let data = await this.query(
+      `
       query Documents($first: Int, $after: String, $filter: DocumentFilter) {
         documents(first: $first, after: $after, filter: $filter) {
           nodes {
@@ -561,11 +665,13 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 50,
-      after: params?.after,
-      filter: params?.filter
-    });
+    `,
+      {
+        first: params?.first || 50,
+        after: params?.after,
+        filter: params?.filter
+      }
+    );
     return data.documents;
   }
 
@@ -588,18 +694,22 @@ export class LinearClient {
   }
 
   async getUser(userId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query User($id: String!) {
         user(id: $id) {
           ${USER_FIELDS}
         }
       }
-    `, { id: userId });
+    `,
+      { id: userId }
+    );
     return data.user;
   }
 
   async listUsers(params?: { first?: number; after?: string }) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query Users($first: Int, $after: String) {
         users(first: $first, after: $after) {
           nodes {
@@ -611,10 +721,12 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 50,
-      after: params?.after
-    });
+    `,
+      {
+        first: params?.first || 50,
+        after: params?.after
+      }
+    );
     return data.users;
   }
 
@@ -624,7 +736,8 @@ export class LinearClient {
     let filter: Record<string, any> | undefined;
     if (params?.teamId) filter = { team: { id: { eq: params.teamId } } };
 
-    let data = await this.query(`
+    let data = await this.query(
+      `
       query WorkflowStates($first: Int, $after: String, $filter: WorkflowStateFilter) {
         workflowStates(first: $first, after: $after, filter: $filter) {
           nodes {
@@ -645,18 +758,21 @@ export class LinearClient {
           }
         }
       }
-    `, {
-      first: params?.first || 250,
-      after: params?.after,
-      filter
-    });
+    `,
+      {
+        first: params?.first || 250,
+        after: params?.after,
+        filter
+      }
+    );
     return data.workflowStates;
   }
 
   // ─── Webhooks ───
 
   async createWebhook(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation WebhookCreate($input: WebhookCreateInput!) {
         webhookCreate(input: $input) {
           success
@@ -674,25 +790,31 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.webhookCreate;
   }
 
   async deleteWebhook(webhookId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation WebhookDelete($id: String!) {
         webhookDelete(id: $id) {
           success
         }
       }
-    `, { id: webhookId });
+    `,
+      { id: webhookId }
+    );
     return data.webhookDelete;
   }
 
   // ─── Attachments ───
 
   async createAttachment(input: Record<string, any>) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation AttachmentCreate($input: AttachmentCreateInput!) {
         attachmentCreate(input: $input) {
           success
@@ -712,18 +834,23 @@ export class LinearClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
     return data.attachmentCreate;
   }
 
   async deleteAttachment(attachmentId: string) {
-    let data = await this.query(`
+    let data = await this.query(
+      `
       mutation AttachmentDelete($id: String!) {
         attachmentDelete(id: $id) {
           success
         }
       }
-    `, { id: attachmentId });
+    `,
+      { id: attachmentId }
+    );
     return data.attachmentDelete;
   }
 }

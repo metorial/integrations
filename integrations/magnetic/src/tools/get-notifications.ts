@@ -11,26 +11,31 @@ let notificationSchema = z.object({
   read: z.boolean().optional().describe('Whether the notification has been read')
 });
 
-export let getNotifications = SlateTool.create(
-  spec,
-  {
-    name: 'Get Notifications',
-    key: 'get_notifications',
-    description: `Retrieve notifications from Magnetic. Can fetch all notifications or only new/unread ones.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getNotifications = SlateTool.create(spec, {
+  name: 'Get Notifications',
+  key: 'get_notifications',
+  description: `Retrieve notifications from Magnetic. Can fetch all notifications or only new/unread ones.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    newOnly: z.boolean().optional().default(false).describe('If true, only return new/unread notifications')
-  }))
-  .output(z.object({
-    notifications: z.array(notificationSchema).describe('List of notifications'),
-    totalCount: z.number().describe('Number of notifications returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      newOnly: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('If true, only return new/unread notifications')
+    })
+  )
+  .output(
+    z.object({
+      notifications: z.array(notificationSchema).describe('List of notifications'),
+      totalCount: z.number().describe('Number of notifications returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MagneticClient({ token: ctx.auth.token });
 
     let results = await client.getNotifications(ctx.input.newOnly);

@@ -3,30 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWebhook = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Webhook',
-    key: 'manage_webhook',
-    description: `Create, list, retrieve, or delete webhooks for receiving real-time event notifications. Webhooks deliver event payloads to your callback URL when events occur in Helpwise.`,
-    instructions: [
-      'Available event types: conversation_created, conversation_closed, conversation_reopened, conversation_deleted, conversation_assigned, note_added, tag_applied, agent_reply, customer_reply.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'delete']).describe('The operation to perform'),
-    webhookId: z.string().optional().describe('Webhook ID (required for get, delete)'),
-    url: z.string().optional().describe('Callback URL to receive events (required for create)'),
-    eventType: z.string().optional().describe('Event type to subscribe to (required for create)'),
-    secretKey: z.string().optional().describe('Optional secret key for webhook verification (for create)'),
-  }))
-  .output(z.object({
-    webhooks: z.array(z.record(z.string(), z.any())).optional().describe('List of webhooks (for list action)'),
-    webhook: z.record(z.string(), z.any()).optional().describe('Webhook details (for get, create)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageWebhook = SlateTool.create(spec, {
+  name: 'Manage Webhook',
+  key: 'manage_webhook',
+  description: `Create, list, retrieve, or delete webhooks for receiving real-time event notifications. Webhooks deliver event payloads to your callback URL when events occur in Helpwise.`,
+  instructions: [
+    'Available event types: conversation_created, conversation_closed, conversation_reopened, conversation_deleted, conversation_assigned, note_added, tag_applied, agent_reply, customer_reply.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'create', 'delete']).describe('The operation to perform'),
+      webhookId: z.string().optional().describe('Webhook ID (required for get, delete)'),
+      url: z
+        .string()
+        .optional()
+        .describe('Callback URL to receive events (required for create)'),
+      eventType: z
+        .string()
+        .optional()
+        .describe('Event type to subscribe to (required for create)'),
+      secretKey: z
+        .string()
+        .optional()
+        .describe('Optional secret key for webhook verification (for create)')
+    })
+  )
+  .output(
+    z.object({
+      webhooks: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of webhooks (for list action)'),
+      webhook: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Webhook details (for get, create)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, webhookId, url, eventType, secretKey } = ctx.input;
 
@@ -35,7 +51,7 @@ export let manageWebhook = SlateTool.create(
       let webhooks = Array.isArray(result) ? result : (result.webhooks ?? result.data ?? []);
       return {
         output: { webhooks, success: true },
-        message: `Retrieved ${webhooks.length} webhook(s).`,
+        message: `Retrieved ${webhooks.length} webhook(s).`
       };
     }
 
@@ -44,7 +60,7 @@ export let manageWebhook = SlateTool.create(
       let webhook = await client.getWebhook(webhookId);
       return {
         output: { webhook, success: true },
-        message: `Retrieved webhook **${webhookId}**.`,
+        message: `Retrieved webhook **${webhookId}**.`
       };
     }
 
@@ -54,11 +70,11 @@ export let manageWebhook = SlateTool.create(
       let webhook = await client.createWebhook({
         url,
         event_type: eventType,
-        secret_key: secretKey,
+        secret_key: secretKey
       });
       return {
         output: { webhook, success: true },
-        message: `Created webhook for event **${eventType}** at ${url}.`,
+        message: `Created webhook for event **${eventType}** at ${url}.`
       };
     }
 
@@ -67,9 +83,10 @@ export let manageWebhook = SlateTool.create(
       await client.deleteWebhook(webhookId);
       return {
         output: { success: true },
-        message: `Deleted webhook **${webhookId}**.`,
+        message: `Deleted webhook **${webhookId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

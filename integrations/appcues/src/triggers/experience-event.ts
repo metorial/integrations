@@ -2,41 +2,52 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let experienceEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Experience Event',
-    key: 'experience_event',
-    description: 'Triggered when a user interacts with an Appcues experience — including web flows, checklists, banners, pins, mobile flows, and NPS surveys. Configure in Appcues Studio under Settings > Integrations > Webhooks.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('The Appcues event name'),
-    eventId: z.string().describe('Unique identifier for this event'),
-    userId: z.string().describe('The user who triggered the event'),
-    accountId: z.string().optional().describe('The Appcues account ID'),
-    groupId: z.string().optional().describe('The group ID associated with the user'),
-    timestamp: z.string().describe('When the event occurred'),
-    attributes: z.record(z.string(), z.any()).optional().describe('Event-specific attributes'),
-    context: z.record(z.string(), z.any()).optional().describe('Context data such as URL information'),
-  }))
-  .output(z.object({
-    eventName: z.string().describe('The Appcues event name'),
-    userId: z.string().describe('The user who triggered the event'),
-    groupId: z.string().optional().describe('Group ID associated with the user'),
-    timestamp: z.string().describe('When the event occurred'),
-    flowId: z.string().optional().describe('Flow/experience ID if applicable'),
-    flowName: z.string().optional().describe('Flow/experience name if applicable'),
-    flowType: z.string().optional().describe('Type of the flow/experience'),
-    score: z.number().optional().describe('NPS score if applicable'),
-    feedback: z.string().optional().describe('NPS feedback text if applicable'),
-    checklistId: z.string().optional().describe('Checklist ID if applicable'),
-    stepId: z.string().optional().describe('Step ID if applicable'),
-    attributes: z.record(z.string(), z.any()).optional().describe('All event-specific attributes'),
-    pageUrl: z.string().optional().describe('Page URL where the event occurred'),
-  }))
+export let experienceEvent = SlateTrigger.create(spec, {
+  name: 'Experience Event',
+  key: 'experience_event',
+  description:
+    'Triggered when a user interacts with an Appcues experience — including web flows, checklists, banners, pins, mobile flows, and NPS surveys. Configure in Appcues Studio under Settings > Integrations > Webhooks.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('The Appcues event name'),
+      eventId: z.string().describe('Unique identifier for this event'),
+      userId: z.string().describe('The user who triggered the event'),
+      accountId: z.string().optional().describe('The Appcues account ID'),
+      groupId: z.string().optional().describe('The group ID associated with the user'),
+      timestamp: z.string().describe('When the event occurred'),
+      attributes: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Event-specific attributes'),
+      context: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Context data such as URL information')
+    })
+  )
+  .output(
+    z.object({
+      eventName: z.string().describe('The Appcues event name'),
+      userId: z.string().describe('The user who triggered the event'),
+      groupId: z.string().optional().describe('Group ID associated with the user'),
+      timestamp: z.string().describe('When the event occurred'),
+      flowId: z.string().optional().describe('Flow/experience ID if applicable'),
+      flowName: z.string().optional().describe('Flow/experience name if applicable'),
+      flowType: z.string().optional().describe('Type of the flow/experience'),
+      score: z.number().optional().describe('NPS score if applicable'),
+      feedback: z.string().optional().describe('NPS feedback text if applicable'),
+      checklistId: z.string().optional().describe('Checklist ID if applicable'),
+      stepId: z.string().optional().describe('Step ID if applicable'),
+      attributes: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('All event-specific attributes'),
+      pageUrl: z.string().optional().describe('Page URL where the event occurred')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -51,7 +62,8 @@ export let experienceEvent = SlateTrigger.create(
       let eventName = String(data.name || '').toLowerCase();
 
       // Filter out workflow events (those are handled by the workflow trigger)
-      let isWorkflowEvent = eventName.startsWith('appcues:email') ||
+      let isWorkflowEvent =
+        eventName.startsWith('appcues:email') ||
         eventName.startsWith('appcues:push') ||
         eventName.startsWith('appcues:workflow') ||
         eventName.startsWith('email_') ||
@@ -64,23 +76,29 @@ export let experienceEvent = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventName: String(data.name || ''),
-          eventId: String(data.id || `${data.user_id || ''}_${data.name || ''}_${data.timestamp || Date.now()}`),
-          userId: String(data.user_id || ''),
-          accountId: data.account_id ? String(data.account_id) : undefined,
-          groupId: data.group_id ? String(data.group_id) : undefined,
-          timestamp: String(data.timestamp || new Date().toISOString()),
-          attributes: data.attributes || undefined,
-          context: data.context || undefined,
-        }],
+        inputs: [
+          {
+            eventName: String(data.name || ''),
+            eventId: String(
+              data.id ||
+                `${data.user_id || ''}_${data.name || ''}_${data.timestamp || Date.now()}`
+            ),
+            userId: String(data.user_id || ''),
+            accountId: data.account_id ? String(data.account_id) : undefined,
+            groupId: data.group_id ? String(data.group_id) : undefined,
+            timestamp: String(data.timestamp || new Date().toISOString()),
+            attributes: data.attributes || undefined,
+            context: data.context || undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let attrs: Record<string, any> = ctx.input.attributes || {};
 
-      let eventType = ctx.input.eventName.toLowerCase()
+      let eventType = ctx.input.eventName
+        .toLowerCase()
         .replace('appcues:', '')
         .replace(/ /g, '_');
 
@@ -108,9 +126,9 @@ export let experienceEvent = SlateTrigger.create(
           checklistId: checklistId || undefined,
           stepId: stepId || undefined,
           attributes: attrs,
-          pageUrl: pageUrl || undefined,
-        },
+          pageUrl: pageUrl || undefined
+        }
       };
-    },
+    }
   })
   .build();

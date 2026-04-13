@@ -3,43 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let billEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Bill Events',
-    key: 'bill_events',
-    description: 'Polls for new and updated Ramp bills. Detects new bills and changes in bill status since the last poll.',
-  }
-)
-  .input(z.object({
-    billId: z.string().describe('Unique ID of the bill'),
-    bill: z.any().describe('Full bill object from Ramp'),
-  }))
-  .output(z.object({
-    billId: z.string().describe('Unique ID of the bill'),
-    vendorId: z.string().optional().describe('Vendor ID'),
-    vendorName: z.string().optional().describe('Vendor name'),
-    invoiceNumber: z.string().optional().describe('Invoice number'),
-    amount: z.number().optional().describe('Bill amount'),
-    currency: z.string().optional().describe('Bill currency code'),
-    dueDate: z.string().optional().describe('Due date (ISO 8601)'),
-    status: z.string().optional().describe('Bill status'),
-    paymentStatus: z.string().optional().describe('Payment status'),
-    createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)'),
-    entityId: z.string().optional().describe('Business entity ID'),
-  }))
+export let billEvents = SlateTrigger.create(spec, {
+  name: 'Bill Events',
+  key: 'bill_events',
+  description:
+    'Polls for new and updated Ramp bills. Detects new bills and changes in bill status since the last poll.'
+})
+  .input(
+    z.object({
+      billId: z.string().describe('Unique ID of the bill'),
+      bill: z.any().describe('Full bill object from Ramp')
+    })
+  )
+  .output(
+    z.object({
+      billId: z.string().describe('Unique ID of the bill'),
+      vendorId: z.string().optional().describe('Vendor ID'),
+      vendorName: z.string().optional().describe('Vendor name'),
+      invoiceNumber: z.string().optional().describe('Invoice number'),
+      amount: z.number().optional().describe('Bill amount'),
+      currency: z.string().optional().describe('Bill currency code'),
+      dueDate: z.string().optional().describe('Due date (ISO 8601)'),
+      status: z.string().optional().describe('Bill status'),
+      paymentStatus: z.string().optional().describe('Payment status'),
+      createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)'),
+      entityId: z.string().optional().describe('Business entity ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let result = await client.listBills({
-        pageSize: 100,
+        pageSize: 100
       });
 
       let knownBillIds: Record<string, string> = ctx.state?.knownBillIds || {};
@@ -56,11 +58,11 @@ export let billEvents = SlateTrigger.create(
       return {
         inputs: newInputs,
         updatedState: {
-          knownBillIds,
-        },
+          knownBillIds
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let b = ctx.input.bill;
       let eventType = 'bill.updated';
 
@@ -78,9 +80,9 @@ export let billEvents = SlateTrigger.create(
           status: b.status,
           paymentStatus: b.payment_status,
           createdAt: b.created_at,
-          entityId: b.entity_id,
-        },
+          entityId: b.entity_id
+        }
       };
-    },
+    }
   })
   .build();

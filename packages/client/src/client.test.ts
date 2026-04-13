@@ -5,9 +5,9 @@ import {
   SlateSpecification,
   SlateTool
 } from '@slates/provider';
-import { mkdtemp, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
+import { mkdtemp, rm } from 'fs/promises';
+import { tmpdir } from 'os';
+import path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createLocalSlateTransport, createSlatesClient, SlateProtocolError } from './index';
@@ -211,4 +211,3 @@ describe('@slates/client local transport', () => {
     }
   });
 });
-

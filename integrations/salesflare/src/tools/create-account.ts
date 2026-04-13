@@ -3,45 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let addressSchema = z.object({
-  city: z.string().optional(),
-  country: z.string().optional(),
-  stateRegion: z.string().optional().describe('State or region'),
-  street: z.string().optional(),
-  zip: z.string().optional(),
-}).optional();
+let addressSchema = z
+  .object({
+    city: z.string().optional(),
+    country: z.string().optional(),
+    stateRegion: z.string().optional().describe('State or region'),
+    street: z.string().optional(),
+    zip: z.string().optional()
+  })
+  .optional();
 
-export let createAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Create Account',
-    key: 'create_account',
-    description: `Create a new account (company) in Salesflare. You can set name, domain, website, description, addresses, phone numbers, tags, and custom fields. Optionally update an existing account if one with the same domain already exists.`,
-    tags: {
-      destructive: false,
-    },
+export let createAccount = SlateTool.create(spec, {
+  name: 'Create Account',
+  key: 'create_account',
+  description: `Create a new account (company) in Salesflare. You can set name, domain, website, description, addresses, phone numbers, tags, and custom fields. Optionally update an existing account if one with the same domain already exists.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Company/account name'),
-    domain: z.string().optional().describe('Company domain (e.g. "example.com")'),
-    website: z.string().optional().describe('Company website URL'),
-    description: z.string().optional().describe('Account description'),
-    owner: z.number().optional().describe('User ID of the account owner'),
-    size: z.number().optional().describe('Company size (number of employees)'),
-    address: addressSchema.describe('Primary address'),
-    email: z.string().optional().describe('Primary email address'),
-    phoneNumber: z.string().optional().describe('Primary phone number'),
-    socialProfiles: z.array(z.string()).optional().describe('Social profile URLs'),
-    tags: z.array(z.string()).optional().describe('Tag names to assign'),
-    custom: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-    updateIfExists: z.boolean().optional().default(false).describe('If true, updates an existing account with the same domain'),
-  }))
-  .output(z.object({
-    accountId: z.number().describe('ID of the created/updated account'),
-    account: z.record(z.string(), z.any()).describe('Created account data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Company/account name'),
+      domain: z.string().optional().describe('Company domain (e.g. "example.com")'),
+      website: z.string().optional().describe('Company website URL'),
+      description: z.string().optional().describe('Account description'),
+      owner: z.number().optional().describe('User ID of the account owner'),
+      size: z.number().optional().describe('Company size (number of employees)'),
+      address: addressSchema.describe('Primary address'),
+      email: z.string().optional().describe('Primary email address'),
+      phoneNumber: z.string().optional().describe('Primary phone number'),
+      socialProfiles: z.array(z.string()).optional().describe('Social profile URLs'),
+      tags: z.array(z.string()).optional().describe('Tag names to assign'),
+      custom: z.record(z.string(), z.any()).optional().describe('Custom field values'),
+      updateIfExists: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('If true, updates an existing account with the same domain')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.number().describe('ID of the created/updated account'),
+      account: z.record(z.string(), z.any()).describe('Created account data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let data: Record<string, any> = {};
@@ -62,7 +69,7 @@ export let createAccount = SlateTool.create(
         country: ctx.input.address.country,
         state_region: ctx.input.address.stateRegion,
         street: ctx.input.address.street,
-        zip: ctx.input.address.zip,
+        zip: ctx.input.address.zip
       };
     }
 
@@ -72,9 +79,9 @@ export let createAccount = SlateTool.create(
     return {
       output: {
         accountId,
-        account: result,
+        account: result
       },
-      message: `Created account **${ctx.input.name || ctx.input.domain || accountId}** (ID: ${accountId}).`,
+      message: `Created account **${ctx.input.name || ctx.input.domain || accountId}** (ID: ${accountId}).`
     };
   })
   .build();

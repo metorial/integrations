@@ -11,34 +11,41 @@ let commentSchema = z.object({
   channel: z.string().nullable().describe('Channel the comment came from'),
   createdAt: z.string().describe('When the comment was created'),
   updatedAt: z.string().describe('When the comment was last updated'),
-  links: z.record(z.string(), z.any()).optional().describe('Associated resource links (suggestion, created_by)'),
+  links: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Associated resource links (suggestion, created_by)')
 });
 
-export let listComments = SlateTool.create(
-  spec,
-  {
-    name: 'List Comments',
-    key: 'list_comments',
-    description: `List comments across suggestions. Comments are public discussion on ideas. Filter by suggestion or browse all comments. Supports pagination and date range filtering.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    suggestionId: z.number().optional().describe('Filter comments by suggestion ID'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
-    sort: z.string().optional().describe('Sort field. Examples: "-created_at"'),
-    updatedAfter: z.string().optional().describe('Only return comments updated after this ISO 8601 date'),
-  }))
-  .output(z.object({
-    comments: z.array(commentSchema),
-    totalRecords: z.number().describe('Total number of matching comments'),
-    totalPages: z.number().describe('Total number of pages'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listComments = SlateTool.create(spec, {
+  name: 'List Comments',
+  key: 'list_comments',
+  description: `List comments across suggestions. Comments are public discussion on ideas. Filter by suggestion or browse all comments. Supports pagination and date range filtering.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      suggestionId: z.number().optional().describe('Filter comments by suggestion ID'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
+      sort: z.string().optional().describe('Sort field. Examples: "-created_at"'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Only return comments updated after this ISO 8601 date')
+    })
+  )
+  .output(
+    z.object({
+      comments: z.array(commentSchema),
+      totalRecords: z.number().describe('Total number of matching comments'),
+      totalPages: z.number().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.auth.subdomain,
+      subdomain: ctx.auth.subdomain
     });
 
     let params: Record<string, unknown> = {};
@@ -58,15 +65,16 @@ export let listComments = SlateTool.create(
       channel: c.channel || null,
       createdAt: c.created_at,
       updatedAt: c.updated_at,
-      links: c.links,
+      links: c.links
     }));
 
     return {
       output: {
         comments,
         totalRecords: result.pagination?.totalRecords || 0,
-        totalPages: result.pagination?.totalPages || 0,
+        totalPages: result.pagination?.totalPages || 0
       },
-      message: `Found **${comments.length}** comments.`,
+      message: `Found **${comments.length}** comments.`
     };
-  }).build();
+  })
+  .build();

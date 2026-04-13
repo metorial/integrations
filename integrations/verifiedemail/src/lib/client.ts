@@ -59,16 +59,16 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.verified.email/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
   async verifyEmail(email: string): Promise<VerificationResult> {
     let response = await this.axios.get('/verify', {
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
@@ -78,7 +78,10 @@ export class Client {
     return response.data;
   }
 
-  async getLists(params?: { page?: number; limit?: number }): Promise<{ lists: EmailList[]; total: number }> {
+  async getLists(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<{ lists: EmailList[]; total: number }> {
     let response = await this.axios.get('/lists', { params });
     return response.data;
   }
@@ -98,11 +101,14 @@ export class Client {
     return response.data;
   }
 
-  async getListResults(listId: string, params?: {
-    status?: string;
-    page?: number;
-    limit?: number;
-  }): Promise<{ results: VerificationResult[]; total: number }> {
+  async getListResults(
+    listId: string,
+    params?: {
+      status?: string;
+      page?: number;
+      limit?: number;
+    }
+  ): Promise<{ results: VerificationResult[]; total: number }> {
     let response = await this.axios.get(`/lists/${listId}/results`, { params });
     return response.data;
   }
@@ -121,11 +127,14 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, updates: {
-    url?: string;
-    events?: string[];
-    enabled?: boolean;
-  }): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: string,
+    updates: {
+      url?: string;
+      events?: string[];
+      enabled?: boolean;
+    }
+  ): Promise<Webhook> {
     let response = await this.axios.patch(`/webhooks/${webhookId}`, updates);
     return response.data;
   }

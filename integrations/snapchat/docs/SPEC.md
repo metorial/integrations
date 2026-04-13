@@ -23,9 +23,11 @@ OAuth apps are set up in the 'Business Details' section in Snap Business Manager
      &scope=snapchat-marketing-api
    ```
 2. **Exchange code for tokens:** POST to the token endpoint:
+
    ```
    https://accounts.snapchat.com/login/oauth2/access_token
    ```
+
    with `grant_type=authorization_code`, `client_id`, `client_secret`, `code`, and `redirect_uri`.
 
 3. **Refresh tokens:** The access token is valid for 3600 seconds (60 minutes). When the access token expires, generate a new one using the refresh token by POSTing to the same token endpoint with `grant_type=refresh_token`.
@@ -61,6 +63,7 @@ Upload media assets (images, videos), create ad creatives, and manage creative e
 ### Audience Targeting & Custom Audiences
 
 Target users by demographics, location, interests, device type, and behaviors. Build custom audiences from hashed first-party data (customer lists with emails, phone numbers, or mobile ad IDs). Create website-based custom audiences using Snap Pixel events, and build lookalike audiences from existing segments.
+
 - Audience size estimation is available to preview reach before launching.
 
 ### Measurement & Reporting
@@ -70,12 +73,14 @@ Pull campaign performance statistics with hourly, daily, or lifetime granularity
 ### Conversions API (CAPI)
 
 Snap's Conversions API is a structured, privacy-centric interface that allows you to directly pass web, app, and offline events to Snap via a Server-to-Server (S2S) integration. Supported event types include purchases, add-to-cart, page views, sign-ups, and up to 5 custom events. Requires a Snap Pixel ID (for web/offline events) or Snap App ID (for mobile events).
+
 - Events must include user-matching parameters (email, phone, IP, cookie ID, etc.) for attribution.
 - Supports deduplication with Snap Pixel via `client_dedup_id`.
 
 ### Public Profile API
 
 Access creator and business profile data on Snapchat, including profile information, Stories, Spotlights, and Lenses. Retrieve engagement statistics (views, shares, subscribers) with optional demographic breakdowns.
+
 - The Public Profile API is currently allowlist only.
 - Has both public endpoints (no user auth required) and authorized endpoints (requiring creator consent for additional data).
 
@@ -95,4 +100,4 @@ Create and manage Snap Pixels for tracking website events. Define custom convers
 
 The official Snapchat Ads API does not appear to have native webhook functionality. The search results do not contain any direct information about webhooks specifically for the Snapchat Ads API.
 
-The provider does not support webhooks or built-in event subscriptions. The Conversions API is designed for *sending* events to Snapchat (not receiving them). There is no purpose-built polling mechanism for receiving real-time notifications about campaign changes, lead submissions, or other platform activity.
+The provider does not support webhooks or built-in event subscriptions. The Conversions API is designed for _sending_ events to Snapchat (not receiving them). There is no purpose-built polling mechanism for receiving real-time notifications about campaign changes, lead submissions, or other platform activity.

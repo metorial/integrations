@@ -14,7 +14,7 @@ let addressSchema = z.object({
   postcode: z.string(),
   country: z.string(),
   email: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().optional()
 });
 
 let lineItemSchema = z.object({
@@ -27,21 +27,21 @@ let lineItemSchema = z.object({
   total: z.string(),
   totalTax: z.string(),
   sku: z.string(),
-  price: z.number(),
+  price: z.number()
 });
 
 let shippingLineSchema = z.object({
   shippingLineId: z.number(),
   methodTitle: z.string(),
   methodId: z.string(),
-  total: z.string(),
+  total: z.string()
 });
 
 let feeLineSchema = z.object({
   feeLineId: z.number(),
   name: z.string(),
   total: z.string(),
-  totalTax: z.string(),
+  totalTax: z.string()
 });
 
 export let getOrder = SlateTool.create(spec, {
@@ -50,45 +50,51 @@ export let getOrder = SlateTool.create(spec, {
   description: `Retrieve complete details of a specific order including line items, shipping, billing addresses, payment info, fees, and tax information.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    orderId: z.number().describe('The order ID to retrieve'),
-  }))
-  .output(z.object({
-    orderId: z.number(),
-    orderNumber: z.string(),
-    status: z.string(),
-    currency: z.string(),
-    total: z.string(),
-    subtotal: z.string(),
-    totalTax: z.string(),
-    shippingTotal: z.string(),
-    discountTotal: z.string(),
-    discountTax: z.string(),
-    customerId: z.number(),
-    customerNote: z.string(),
-    billing: addressSchema,
-    shipping: addressSchema,
-    paymentMethod: z.string(),
-    paymentMethodTitle: z.string(),
-    transactionId: z.string(),
-    datePaid: z.string().nullable(),
-    dateCompleted: z.string().nullable(),
-    lineItems: z.array(lineItemSchema),
-    shippingLines: z.array(shippingLineSchema),
-    feeLines: z.array(feeLineSchema),
-    couponLines: z.array(z.object({
-      couponLineId: z.number(),
-      code: z.string(),
-      discount: z.string(),
+  .input(
+    z.object({
+      orderId: z.number().describe('The order ID to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number(),
+      orderNumber: z.string(),
+      status: z.string(),
+      currency: z.string(),
+      total: z.string(),
+      subtotal: z.string(),
+      totalTax: z.string(),
+      shippingTotal: z.string(),
+      discountTotal: z.string(),
       discountTax: z.string(),
-    })),
-    dateCreated: z.string(),
-    dateModified: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+      customerId: z.number(),
+      customerNote: z.string(),
+      billing: addressSchema,
+      shipping: addressSchema,
+      paymentMethod: z.string(),
+      paymentMethodTitle: z.string(),
+      transactionId: z.string(),
+      datePaid: z.string().nullable(),
+      dateCompleted: z.string().nullable(),
+      lineItems: z.array(lineItemSchema),
+      shippingLines: z.array(shippingLineSchema),
+      feeLines: z.array(feeLineSchema),
+      couponLines: z.array(
+        z.object({
+          couponLineId: z.number(),
+          code: z.string(),
+          discount: z.string(),
+          discountTax: z.string()
+        })
+      ),
+      dateCreated: z.string(),
+      dateModified: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let o = await client.getOrder(ctx.input.orderId);
 
@@ -103,7 +109,7 @@ export let getOrder = SlateTool.create(spec, {
       postcode: a?.postcode || '',
       country: a?.country || '',
       email: a?.email || undefined,
-      phone: a?.phone || undefined,
+      phone: a?.phone || undefined
     });
 
     return {
@@ -137,30 +143,30 @@ export let getOrder = SlateTool.create(spec, {
           total: li.total || '0',
           totalTax: li.total_tax || '0',
           sku: li.sku || '',
-          price: li.price || 0,
+          price: li.price || 0
         })),
         shippingLines: (o.shipping_lines || []).map((sl: any) => ({
           shippingLineId: sl.id,
           methodTitle: sl.method_title || '',
           methodId: sl.method_id || '',
-          total: sl.total || '0',
+          total: sl.total || '0'
         })),
         feeLines: (o.fee_lines || []).map((fl: any) => ({
           feeLineId: fl.id,
           name: fl.name || '',
           total: fl.total || '0',
-          totalTax: fl.total_tax || '0',
+          totalTax: fl.total_tax || '0'
         })),
         couponLines: (o.coupon_lines || []).map((cl: any) => ({
           couponLineId: cl.id,
           code: cl.code || '',
           discount: cl.discount || '0',
-          discountTax: cl.discount_tax || '0',
+          discountTax: cl.discount_tax || '0'
         })),
         dateCreated: o.date_created || '',
-        dateModified: o.date_modified || '',
+        dateModified: o.date_modified || ''
       },
-      message: `Retrieved order **#${o.number || o.id}** (status: ${o.status}, total: ${o.currency_symbol || ''}${o.total}).`,
+      message: `Retrieved order **#${o.number || o.id}** (status: ${o.status}, total: ${o.currency_symbol || ''}${o.total}).`
     };
   })
   .build();

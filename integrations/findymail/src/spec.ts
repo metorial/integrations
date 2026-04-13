@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'findymail',
   name: 'Findymail',
-  description: 'B2B email and phone data enrichment service that finds and verifies professional email addresses, phone numbers, and company information.',
+  description:
+    'B2B email and phone data enrichment service that finds and verifies professional email addresses, phone numbers, and company information.',
   metadata: {},
   config,
-  auth,
+  auth
 });

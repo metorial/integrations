@@ -22,7 +22,7 @@ import {
   getSupplementsTool,
   getUsersTool,
   getCompanySettingsTool,
-  getLeadHistoryTool,
+  getLeadHistoryTool
 } from './tools';
 import {
   contactEventsTrigger,
@@ -32,7 +32,7 @@ import {
   jobClassificationEventsTrigger,
   jobContactEventsTrigger,
   jobAppointmentEventsTrigger,
-  jobRepresentativeEventsTrigger,
+  jobRepresentativeEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -59,7 +59,7 @@ export let provider = Slate.create({
     getSupplementsTool,
     getUsersTool,
     getCompanySettingsTool,
-    getLeadHistoryTool,
+    getLeadHistoryTool
   ],
   triggers: [
     contactEventsTrigger,
@@ -69,6 +69,6 @@ export let provider = Slate.create({
     jobClassificationEventsTrigger,
     jobContactEventsTrigger,
     jobAppointmentEventsTrigger,
-    jobRepresentativeEventsTrigger,
-  ],
+    jobRepresentativeEventsTrigger
+  ]
 });

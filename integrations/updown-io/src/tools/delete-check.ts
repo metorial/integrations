@@ -3,30 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteCheck = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Check',
-    key: 'delete_check',
-    description: `Permanently delete an uptime monitoring check. This removes the check and all its historical data including downtimes and metrics.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteCheck = SlateTool.create(spec, {
+  name: 'Delete Check',
+  key: 'delete_check',
+  description: `Permanently delete an uptime monitoring check. This removes the check and all its historical data including downtimes and metrics.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    checkToken: z.string().describe('The unique token identifier of the check to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the check was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      checkToken: z.string().describe('The unique token identifier of the check to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the check was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.deleteCheck(ctx.input.checkToken);
 
     return {
       output: result,
-      message: `Deleted check \`${ctx.input.checkToken}\`.`,
+      message: `Deleted check \`${ctx.input.checkToken}\`.`
     };
   })
   .build();

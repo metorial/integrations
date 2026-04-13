@@ -14,7 +14,7 @@ import {
   createPickerSession,
   getPickerSession,
   listPickedMedia,
-  deletePickerSession,
+  deletePickerSession
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     createPickerSession,
     getPickerSession,
     listPickedMedia,
-    deletePickerSession,
+    deletePickerSession
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

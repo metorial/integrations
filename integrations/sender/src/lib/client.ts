@@ -99,7 +99,7 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.sender.net/v2',
+      baseURL: 'https://api.sender.net/v2'
     });
   }
 
@@ -107,7 +107,7 @@ export class Client {
     return {
       Authorization: `Bearer ${this.config.token}`,
       'Content-Type': 'application/json',
-      Accept: 'application/json',
+      Accept: 'application/json'
     };
   }
 
@@ -116,14 +116,14 @@ export class Client {
   async listSubscribers(page: number = 1): Promise<PaginatedResponse<Subscriber>> {
     let response = await this.axios.get('/subscribers', {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
 
   async getSubscriber(identifier: string): Promise<{ success: boolean; data: Subscriber }> {
     let response = await this.axios.get(`/subscribers/${encodeURIComponent(identifier)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -138,7 +138,7 @@ export class Client {
     trigger_automation?: boolean;
   }): Promise<{ success: boolean; message: string[]; data: Subscriber }> {
     let response = await this.axios.post('/subscribers', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -157,16 +157,22 @@ export class Client {
       trigger_automation?: boolean;
     }
   ): Promise<{ success: boolean; message: string; data: unknown }> {
-    let response = await this.axios.patch(`/subscribers/${encodeURIComponent(identifier)}`, data, {
-      headers: this.headers,
-    });
+    let response = await this.axios.patch(
+      `/subscribers/${encodeURIComponent(identifier)}`,
+      data,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
-  async deleteSubscribers(subscribers: string[]): Promise<{ message: string; delete_instance: string }> {
+  async deleteSubscribers(
+    subscribers: string[]
+  ): Promise<{ message: string; delete_instance: string }> {
     let response = await this.axios.delete('/subscribers', {
       headers: this.headers,
-      data: { subscribers },
+      data: { subscribers }
     });
     return response.data;
   }
@@ -202,10 +208,13 @@ export class Client {
       invalid_emails: string[];
     };
   }> {
-    let response = await this.axios.delete(`/subscribers/groups/${encodeURIComponent(groupId)}`, {
-      headers: this.headers,
-      data: { subscribers },
-    });
+    let response = await this.axios.delete(
+      `/subscribers/groups/${encodeURIComponent(groupId)}`,
+      {
+        headers: this.headers,
+        data: { subscribers }
+      }
+    );
     return response.data;
   }
 
@@ -214,36 +223,45 @@ export class Client {
   async listGroups(page: number = 1): Promise<PaginatedResponse<Group>> {
     let response = await this.axios.get('/groups', {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
 
   async getGroup(groupId: string): Promise<{ success: boolean; data: Group }> {
     let response = await this.axios.get(`/groups/${encodeURIComponent(groupId)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async createGroup(title: string): Promise<{ success: boolean; message: string; data: Group }> {
-    let response = await this.axios.post('/groups', { title }, {
-      headers: this.headers,
-    });
+  async createGroup(
+    title: string
+  ): Promise<{ success: boolean; message: string; data: Group }> {
+    let response = await this.axios.post(
+      '/groups',
+      { title },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteGroup(groupId: string): Promise<{ success: boolean; message: string }> {
     let response = await this.axios.delete(`/groups/${encodeURIComponent(groupId)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async listGroupSubscribers(groupId: string, page: number = 1): Promise<PaginatedResponse<Subscriber>> {
+  async listGroupSubscribers(
+    groupId: string,
+    page: number = 1
+  ): Promise<PaginatedResponse<Subscriber>> {
     let response = await this.axios.get(`/groups/${encodeURIComponent(groupId)}/subscribers`, {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -253,7 +271,7 @@ export class Client {
   async listSegments(page: number = 1): Promise<PaginatedResponse<Segment>> {
     let response = await this.axios.get('/segments', {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -263,7 +281,7 @@ export class Client {
   async listFields(page: number = 1): Promise<PaginatedResponse<CustomField>> {
     let response = await this.axios.get('/fields', {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -277,14 +295,14 @@ export class Client {
   }): Promise<PaginatedResponse<Campaign>> {
     let response = await this.axios.get('/campaigns', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
 
   async getCampaign(campaignId: string): Promise<{ success: boolean; data: Campaign }> {
     let response = await this.axios.get(`/campaigns/${encodeURIComponent(campaignId)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -302,14 +320,14 @@ export class Client {
     google_analytics?: number;
   }): Promise<{ success: boolean; message: string; data: Campaign }> {
     let response = await this.axios.post('/campaigns', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteCampaign(campaignId: string): Promise<{ success: boolean; message: string }> {
     let response = await this.axios.delete(`/campaigns/${encodeURIComponent(campaignId)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -327,7 +345,7 @@ export class Client {
     headers?: Record<string, string>;
   }): Promise<{ success: boolean; message: string; emailId: string }> {
     let response = await this.axios.post('/message/send', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -343,15 +361,22 @@ export class Client {
       headers?: Record<string, string>;
     }
   ): Promise<{ success: boolean; message: string; emailId: string }> {
-    let response = await this.axios.post(`/message/${encodeURIComponent(campaignId)}/send`, data, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      `/message/${encodeURIComponent(campaignId)}/send`,
+      data,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   // ---- Workflows ----
 
-  async startWorkflow(workflowId: string, email: string): Promise<{ success: boolean; message: string }> {
+  async startWorkflow(
+    workflowId: string,
+    email: string
+  ): Promise<{ success: boolean; message: string }> {
     let response = await this.axios.post(
       `/workflows/${encodeURIComponent(workflowId)}/start`,
       { email },
@@ -362,28 +387,41 @@ export class Client {
 
   // ---- Statistics ----
 
-  async getCampaignClicks(campaignId: string, page: number = 1): Promise<PaginatedResponse<{
-    recipient_id: string;
-    link_id: string;
-    created_at: string;
-    email: string;
-    url: string;
-  }>> {
-    let response = await this.axios.get(`/campaigns/${encodeURIComponent(campaignId)}/clicks`, {
-      headers: this.headers,
-      params: { page },
-    });
+  async getCampaignClicks(
+    campaignId: string,
+    page: number = 1
+  ): Promise<
+    PaginatedResponse<{
+      recipient_id: string;
+      link_id: string;
+      created_at: string;
+      email: string;
+      url: string;
+    }>
+  > {
+    let response = await this.axios.get(
+      `/campaigns/${encodeURIComponent(campaignId)}/clicks`,
+      {
+        headers: this.headers,
+        params: { page }
+      }
+    );
     return response.data;
   }
 
-  async getCampaignOpens(campaignId: string, page: number = 1): Promise<PaginatedResponse<{
-    recipient_id: string;
-    created_at: string;
-    email: string;
-  }>> {
+  async getCampaignOpens(
+    campaignId: string,
+    page: number = 1
+  ): Promise<
+    PaginatedResponse<{
+      recipient_id: string;
+      created_at: string;
+      email: string;
+    }>
+  > {
     let response = await this.axios.get(`/campaigns/${encodeURIComponent(campaignId)}/opens`, {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -392,7 +430,7 @@ export class Client {
 
   async listWebhooks(): Promise<PaginatedResponse<Webhook>> {
     let response = await this.axios.get('/account/webhooks', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -403,15 +441,18 @@ export class Client {
     relation_id?: string;
   }): Promise<{ success: boolean; data: Webhook }> {
     let response = await this.axios.post('/account/webhooks', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteWebhook(webhookId: string): Promise<{ success: boolean; message: string }> {
-    let response = await this.axios.delete(`/account/webhooks/${encodeURIComponent(webhookId)}`, {
-      headers: this.headers,
-    });
+    let response = await this.axios.delete(
+      `/account/webhooks/${encodeURIComponent(webhookId)}`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 }

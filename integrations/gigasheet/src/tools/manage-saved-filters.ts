@@ -3,24 +3,33 @@ import { GigasheetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSavedFilters = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Saved Filters',
-    key: 'manage_saved_filters',
-    description: `List, create, update, or delete saved filters in Gigasheet. Saved filters store reusable filter logic that can be applied to any sheet.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create_or_update', 'delete']).describe('Saved filter action'),
-    filterHandle: z.string().optional().describe('Handle of the saved filter (for get, create_or_update, delete)'),
-    filterConfig: z.record(z.string(), z.unknown()).optional().describe('Filter configuration (for create_or_update)'),
-  }))
-  .output(z.object({
-    result: z.unknown().describe('Saved filter operation result'),
-    success: z.boolean().describe('Whether the operation completed'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSavedFilters = SlateTool.create(spec, {
+  name: 'Manage Saved Filters',
+  key: 'manage_saved_filters',
+  description: `List, create, update, or delete saved filters in Gigasheet. Saved filters store reusable filter logic that can be applied to any sheet.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create_or_update', 'delete'])
+        .describe('Saved filter action'),
+      filterHandle: z
+        .string()
+        .optional()
+        .describe('Handle of the saved filter (for get, create_or_update, delete)'),
+      filterConfig: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Filter configuration (for create_or_update)')
+    })
+  )
+  .output(
+    z.object({
+      result: z.unknown().describe('Saved filter operation result'),
+      success: z.boolean().describe('Whether the operation completed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GigasheetClient({ token: ctx.auth.token });
     let result: unknown;
 
@@ -38,7 +47,10 @@ export let manageSavedFilters = SlateTool.create(
         if (!ctx.input.filterHandle || !ctx.input.filterConfig) {
           throw new Error('filterHandle and filterConfig are required for create_or_update');
         }
-        result = await client.createOrUpdateSavedFilter(ctx.input.filterHandle, ctx.input.filterConfig);
+        result = await client.createOrUpdateSavedFilter(
+          ctx.input.filterHandle,
+          ctx.input.filterConfig
+        );
         break;
 
       case 'delete':
@@ -51,9 +63,9 @@ export let manageSavedFilters = SlateTool.create(
     return {
       output: {
         result,
-        success: true,
+        success: true
       },
-      message: `Saved filter **${ctx.input.action}** completed successfully.`,
+      message: `Saved filter **${ctx.input.action}** completed successfully.`
     };
   })
   .build();

@@ -15,7 +15,7 @@ export class Client {
   private getAxios() {
     return createAxios({
       baseURL: BASE_URL,
-      headers: generateAuthHeaders(this.publicKey, this.privateKey),
+      headers: generateAuthHeaders(this.publicKey, this.privateKey)
     });
   }
 
@@ -37,7 +37,7 @@ export class Client {
   async createAppointment(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.post('/appointment', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -45,7 +45,7 @@ export class Client {
   async updateAppointment(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.put('/appointment', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -86,7 +86,7 @@ export class Client {
   async createContact(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.post('/contact', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -94,7 +94,7 @@ export class Client {
   async updateContact(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.put('/contact', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -156,7 +156,7 @@ export class Client {
   async createService(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.post('/service', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -164,7 +164,7 @@ export class Client {
   async updateService(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.put('/service', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -200,7 +200,7 @@ export class Client {
   async createVoucher(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.post('/voucher', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -208,7 +208,7 @@ export class Client {
   async updateVoucher(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.put('/voucher', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -231,14 +231,16 @@ export class Client {
 
   async listNonWorkingTimes(calendarId: string) {
     let http = this.getAxios();
-    let res = await http.get('/calendarsnonworkingtimes', { params: { calendarid: calendarId } });
+    let res = await http.get('/calendarsnonworkingtimes', {
+      params: { calendarid: calendarId }
+    });
     return res.data;
   }
 
   async createNonWorkingTime(data: Record<string, string | number | undefined>) {
     let http = this.getAxios();
     let res = await http.post('/calendarsnonworkingtimes', encodeFormData(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return res.data;
   }
@@ -250,7 +252,9 @@ export class Client {
   }
 }
 
-let filterUndefined = (obj: Record<string, string | number | undefined>): Record<string, string | number> => {
+let filterUndefined = (
+  obj: Record<string, string | number | undefined>
+): Record<string, string | number> => {
   let result: Record<string, string | number> = {};
   for (let key of Object.keys(obj)) {
     let val = obj[key];

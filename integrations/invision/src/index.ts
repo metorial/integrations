@@ -7,7 +7,7 @@ import {
   getScimUser,
   provisionScimUser,
   updateScimUser,
-  deprovisionScimUser,
+  deprovisionScimUser
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     getScimUser,
     provisionScimUser,
     updateScimUser,
-    deprovisionScimUser,
+    deprovisionScimUser
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

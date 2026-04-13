@@ -25,31 +25,39 @@ let phoneticSchema = z.object({
 let entrySchema = z.object({
   word: z.string().describe('The looked-up word'),
   phonetic: z.string().optional().describe('Primary phonetic transcription'),
-  phonetics: z.array(phoneticSchema).describe('All available phonetic transcriptions and audio'),
+  phonetics: z
+    .array(phoneticSchema)
+    .describe('All available phonetic transcriptions and audio'),
   meanings: z.array(meaningSchema).describe('Meanings grouped by part of speech'),
   sourceUrls: z.array(z.string()).describe('Source URLs for the word data')
 });
 
-export let lookUpWord = SlateTool.create(
-  spec,
-  {
-    name: 'Look Up Word',
-    key: 'look_up_word',
-    description: `Look up a word in the dictionary to get its full definition, including all meanings grouped by part of speech, example sentences, phonetics, synonyms, and antonyms. Supports multiple languages by specifying a language code.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let lookUpWord = SlateTool.create(spec, {
+  name: 'Look Up Word',
+  key: 'look_up_word',
+  description: `Look up a word in the dictionary to get its full definition, including all meanings grouped by part of speech, example sentences, phonetics, synonyms, and antonyms. Supports multiple languages by specifying a language code.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    word: z.string().describe('The word to look up'),
-    languageCode: z.string().optional().describe('Language code override (e.g., "en", "fr", "es"). Uses the configured default if not specified.')
-  }))
-  .output(z.object({
-    entries: z.array(entrySchema).describe('Dictionary entries for the word')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      word: z.string().describe('The word to look up'),
+      languageCode: z
+        .string()
+        .optional()
+        .describe(
+          'Language code override (e.g., "en", "fr", "es"). Uses the configured default if not specified.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(entrySchema).describe('Dictionary entries for the word')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DictionaryClient({
       languageCode: ctx.config.languageCode
     });

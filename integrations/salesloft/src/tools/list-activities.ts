@@ -44,29 +44,30 @@ let mapEmailActivity = (raw: any) => ({
   stepId: raw.step?.id ?? null
 });
 
-export let listEmailActivities = SlateTool.create(
-  spec,
-  {
-    name: 'List Email Activities',
-    key: 'list_email_activities',
-    description: `List email activities in SalesLoft. Returns sent emails with tracking data including opens, clicks, replies, and bounces. Filter by person to see all emails sent to a specific contact.`,
-    tags: {
-      readOnly: true
-    }
+export let listEmailActivities = SlateTool.create(spec, {
+  name: 'List Email Activities',
+  key: 'list_email_activities',
+  description: `List email activities in SalesLoft. Returns sent emails with tracking data including opens, clicks, replies, and bounces. Filter by person to see all emails sent to a specific contact.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
-    personId: z.number().optional().describe('Filter by person ID')
-  }))
-  .output(z.object({
-    emails: z.array(emailActivitySchema).describe('List of email activities'),
-    paging: paginationOutputSchema
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
+      personId: z.number().optional().describe('Filter by person ID')
+    })
+  )
+  .output(
+    z.object({
+      emails: z.array(emailActivitySchema).describe('List of email activities'),
+      paging: paginationOutputSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listEmailActivities(ctx.input);
     let emails = result.data.map(mapEmailActivity);
@@ -78,7 +79,8 @@ export let listEmailActivities = SlateTool.create(
       },
       message: `Found **${emails.length}** email activities (page ${result.metadata.paging.currentPage}).`
     };
-  }).build();
+  })
+  .build();
 
 let callActivitySchema = z.object({
   callId: z.number().describe('Call activity ID'),
@@ -110,29 +112,30 @@ let mapCallActivity = (raw: any) => ({
   cadenceId: raw.cadence?.id ?? null
 });
 
-export let listCallActivities = SlateTool.create(
-  spec,
-  {
-    name: 'List Call Activities',
-    key: 'list_call_activities',
-    description: `List call activities in SalesLoft. Returns call records with duration, sentiment, disposition, and notes. Filter by person to see all calls made to a specific contact.`,
-    tags: {
-      readOnly: true
-    }
+export let listCallActivities = SlateTool.create(spec, {
+  name: 'List Call Activities',
+  key: 'list_call_activities',
+  description: `List call activities in SalesLoft. Returns call records with duration, sentiment, disposition, and notes. Filter by person to see all calls made to a specific contact.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
-    personId: z.number().optional().describe('Filter by person ID')
-  }))
-  .output(z.object({
-    calls: z.array(callActivitySchema).describe('List of call activities'),
-    paging: paginationOutputSchema
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
+      personId: z.number().optional().describe('Filter by person ID')
+    })
+  )
+  .output(
+    z.object({
+      calls: z.array(callActivitySchema).describe('List of call activities'),
+      paging: paginationOutputSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listCallActivities(ctx.input);
     let calls = result.data.map(mapCallActivity);
@@ -144,31 +147,40 @@ export let listCallActivities = SlateTool.create(
       },
       message: `Found **${calls.length}** call activities (page ${result.metadata.paging.currentPage}).`
     };
-  }).build();
+  })
+  .build();
 
-export let logCall = SlateTool.create(
-  spec,
-  {
-    name: 'Log Call',
-    key: 'log_call',
-    description: `Log a new call record in SalesLoft. Used to record calls made through third-party dialers or external systems. Associates the call with a person and optionally a cadence.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let logCall = SlateTool.create(spec, {
+  name: 'Log Call',
+  key: 'log_call',
+  description: `Log a new call record in SalesLoft. Used to record calls made through third-party dialers or external systems. Associates the call with a person and optionally a cadence.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    personId: z.number().describe('ID of the person called'),
-    to: z.string().optional().describe('Phone number called'),
-    duration: z.number().optional().describe('Call duration in seconds'),
-    disposition: z.string().optional().describe('Call disposition (e.g., "Connected", "No Answer", "Left Voicemail")'),
-    sentiment: z.string().optional().describe('Call sentiment (e.g., "Positive", "Neutral", "Negative")'),
-    note: z.string().optional().describe('Call notes'),
-    userId: z.number().optional().describe('ID of the user who made the call (defaults to authenticated user)')
-  }))
+})
+  .input(
+    z.object({
+      personId: z.number().describe('ID of the person called'),
+      to: z.string().optional().describe('Phone number called'),
+      duration: z.number().optional().describe('Call duration in seconds'),
+      disposition: z
+        .string()
+        .optional()
+        .describe('Call disposition (e.g., "Connected", "No Answer", "Left Voicemail")'),
+      sentiment: z
+        .string()
+        .optional()
+        .describe('Call sentiment (e.g., "Positive", "Neutral", "Negative")'),
+      note: z.string().optional().describe('Call notes'),
+      userId: z
+        .number()
+        .optional()
+        .describe('ID of the user who made the call (defaults to authenticated user)')
+    })
+  )
   .output(callActivitySchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {
@@ -188,4 +200,5 @@ export let logCall = SlateTool.create(
       output,
       message: `Logged call to person ${ctx.input.personId}${ctx.input.duration ? ` (${ctx.input.duration}s)` : ''}.`
     };
-  }).build();
+  })
+  .build();

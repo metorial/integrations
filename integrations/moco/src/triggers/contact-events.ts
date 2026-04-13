@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when a contact person is created, updated, or deleted.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type: create, update, or delete'),
-    contactId: z.number().describe('Contact ID'),
-    timestamp: z.string().describe('Event timestamp'),
-    userId: z.number().optional().describe('User ID that triggered the event'),
-    payload: z.any().describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    contactId: z.number().describe('Contact ID'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    companyId: z.number().optional().describe('Associated company ID'),
-    companyName: z.string().optional().describe('Associated company name')
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description: 'Triggers when a contact person is created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type: create, update, or delete'),
+      contactId: z.number().describe('Contact ID'),
+      timestamp: z.string().describe('Event timestamp'),
+      userId: z.number().optional().describe('User ID that triggered the event'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('Contact ID'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      companyId: z.number().optional().describe('Associated company ID'),
+      companyName: z.string().optional().describe('Associated company name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
       let events = ['create', 'update', 'delete'];
@@ -46,9 +47,11 @@ export let contactEvents = SlateTrigger.create(
       return { registrationDetails: { webhooks: registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: number }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: number }>;
+      };
 
       for (let reg of details.webhooks) {
         try {
@@ -59,24 +62,26 @@ export let contactEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let event = ctx.request.headers.get('X-Moco-Event') || 'update';
       let timestamp = ctx.request.headers.get('X-Moco-Timestamp') || new Date().toISOString();
       let userId = ctx.request.headers.get('X-Moco-User-Id');
 
       return {
-        inputs: [{
-          eventType: event,
-          contactId: body.id,
-          timestamp,
-          userId: userId ? Number(userId) : undefined,
-          payload: body
-        }]
+        inputs: [
+          {
+            eventType: event,
+            contactId: body.id,
+            timestamp,
+            userId: userId ? Number(userId) : undefined,
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload;
 
       return {
@@ -93,4 +98,5 @@ export let contactEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

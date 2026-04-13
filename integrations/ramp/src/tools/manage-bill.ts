@@ -7,48 +7,54 @@ let lineItemSchema = z.object({
   amount: z.number().describe('Line item amount in cents'),
   currencyCode: z.string().optional().describe('Currency code (e.g. USD)'),
   description: z.string().optional().describe('Line item description'),
-  accountingFieldSelections: z.array(z.object({
-    fieldId: z.string().describe('Accounting field ID'),
-    fieldOptionId: z.string().describe('Selected option ID'),
-  })).optional().describe('Accounting field selections for the line item'),
+  accountingFieldSelections: z
+    .array(
+      z.object({
+        fieldId: z.string().describe('Accounting field ID'),
+        fieldOptionId: z.string().describe('Selected option ID')
+      })
+    )
+    .optional()
+    .describe('Accounting field selections for the line item')
 });
 
-export let manageBill = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Bill',
-    key: 'manage_bill',
-    description: `Create, update, retrieve, or archive a Ramp bill (accounts payable).
+export let manageBill = SlateTool.create(spec, {
+  name: 'Manage Bill',
+  key: 'manage_bill',
+  description: `Create, update, retrieve, or archive a Ramp bill (accounts payable).
 - **get**: Retrieve a specific bill by ID.
 - **create**: Create a new bill with vendor, amount, due date, and optional line items. Bills created via API are automatically approved.
 - **update**: Modify an approved bill's fields.
 - **archive**: Archive/delete a bill.`,
-    instructions: [
-      'Amounts are in cents (e.g. 100000 = $1,000.00)',
-      'Bills created via API are automatically approved and skip the draft phase',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['get', 'create', 'update', 'archive']).describe('Action to perform'),
-    billId: z.string().optional().describe('Bill ID (required for get, update, archive)'),
-    vendorId: z.string().optional().describe('Vendor ID (required for create)'),
-    invoiceNumber: z.string().optional().describe('Invoice number'),
-    invoiceCurrency: z.string().optional().describe('Invoice currency code (e.g. USD)'),
-    amount: z.number().optional().describe('Total bill amount in cents'),
-    dueDate: z.string().optional().describe('Due date (ISO 8601 format)'),
-    issueDate: z.string().optional().describe('Issue date (ISO 8601 format)'),
-    memo: z.string().optional().describe('Memo or notes'),
-    lineItems: z.array(lineItemSchema).optional().describe('Bill line items'),
-    paymentMethod: z.string().optional().describe('Payment method'),
-  }))
-  .output(z.object({
-    bill: z.any().describe('Bill object from the API response'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Amounts are in cents (e.g. 100000 = $1,000.00)',
+    'Bills created via API are automatically approved and skip the draft phase'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'create', 'update', 'archive']).describe('Action to perform'),
+      billId: z.string().optional().describe('Bill ID (required for get, update, archive)'),
+      vendorId: z.string().optional().describe('Vendor ID (required for create)'),
+      invoiceNumber: z.string().optional().describe('Invoice number'),
+      invoiceCurrency: z.string().optional().describe('Invoice currency code (e.g. USD)'),
+      amount: z.number().optional().describe('Total bill amount in cents'),
+      dueDate: z.string().optional().describe('Due date (ISO 8601 format)'),
+      issueDate: z.string().optional().describe('Issue date (ISO 8601 format)'),
+      memo: z.string().optional().describe('Memo or notes'),
+      lineItems: z.array(lineItemSchema).optional().describe('Bill line items'),
+      paymentMethod: z.string().optional().describe('Payment method')
+    })
+  )
+  .output(
+    z.object({
+      bill: z.any().describe('Bill object from the API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action } = ctx.input;
@@ -58,7 +64,7 @@ export let manageBill = SlateTool.create(
       let bill = await client.getBill(ctx.input.billId);
       return {
         output: { bill },
-        message: `Retrieved bill **${ctx.input.billId}**.`,
+        message: `Retrieved bill **${ctx.input.billId}**.`
       };
     }
 
@@ -66,7 +72,7 @@ export let manageBill = SlateTool.create(
       if (!ctx.input.vendorId) throw new Error('vendorId is required for create action');
 
       let body: Record<string, any> = {
-        vendor_id: ctx.input.vendorId,
+        vendor_id: ctx.input.vendorId
       };
       if (ctx.input.invoiceNumber) body.invoice_number = ctx.input.invoiceNumber;
       if (ctx.input.invoiceCurrency) body.invoice_currency = ctx.input.invoiceCurrency;
@@ -76,14 +82,14 @@ export let manageBill = SlateTool.create(
       if (ctx.input.memo) body.memo = ctx.input.memo;
       if (ctx.input.paymentMethod) body.payment_method = ctx.input.paymentMethod;
       if (ctx.input.lineItems) {
-        body.line_items = ctx.input.lineItems.map((item) => {
+        body.line_items = ctx.input.lineItems.map(item => {
           let li: Record<string, any> = { amount: item.amount };
           if (item.currencyCode) li.currency_code = item.currencyCode;
           if (item.description) li.description = item.description;
           if (item.accountingFieldSelections) {
-            li.accounting_field_selections = item.accountingFieldSelections.map((s) => ({
+            li.accounting_field_selections = item.accountingFieldSelections.map(s => ({
               field_id: s.fieldId,
-              field_option_id: s.fieldOptionId,
+              field_option_id: s.fieldOptionId
             }));
           }
           return li;
@@ -93,7 +99,7 @@ export let manageBill = SlateTool.create(
       let bill = await client.createBill(body);
       return {
         output: { bill },
-        message: `Created bill for vendor **${ctx.input.vendorId}**${ctx.input.invoiceNumber ? ` (invoice #${ctx.input.invoiceNumber})` : ''}.`,
+        message: `Created bill for vendor **${ctx.input.vendorId}**${ctx.input.invoiceNumber ? ` (invoice #${ctx.input.invoiceNumber})` : ''}.`
       };
     }
 
@@ -109,7 +115,7 @@ export let manageBill = SlateTool.create(
       let bill = await client.updateBill(ctx.input.billId, body);
       return {
         output: { bill },
-        message: `Updated bill **${ctx.input.billId}**.`,
+        message: `Updated bill **${ctx.input.billId}**.`
       };
     }
 
@@ -118,7 +124,7 @@ export let manageBill = SlateTool.create(
       let bill = await client.archiveBill(ctx.input.billId);
       return {
         output: { bill },
-        message: `Archived bill **${ctx.input.billId}**.`,
+        message: `Archived bill **${ctx.input.billId}**.`
       };
     }
 

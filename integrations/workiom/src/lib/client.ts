@@ -10,7 +10,7 @@ export class Client {
       headers: {
         'Content-Type': 'application/json',
         'X-Api-Key': token,
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
   }
@@ -70,14 +70,22 @@ export class Client {
     return response.data?.result ?? response.data;
   }
 
-  async updateRecord(listId: string, recordId: string, fields: Record<string, any>): Promise<any> {
+  async updateRecord(
+    listId: string,
+    recordId: string,
+    fields: Record<string, any>
+  ): Promise<any> {
     let response = await this.http.put('/api/services/app/Data/UpdatePartial', fields, {
       params: { listId, id: recordId }
     });
     return response.data?.result ?? response.data;
   }
 
-  async updateRecordFull(listId: string, recordId: string, fields: Record<string, any>): Promise<any> {
+  async updateRecordFull(
+    listId: string,
+    recordId: string,
+    fields: Record<string, any>
+  ): Promise<any> {
     let response = await this.http.put('/api/services/app/Data/Update', fields, {
       params: { listId, id: recordId }
     });
@@ -93,7 +101,9 @@ export class Client {
   // ─── Webhook Subscriptions ─────────────────────────────
 
   async getWebhookSubscriptions(): Promise<any[]> {
-    let response = await this.http.get('/api/services/app/WebhookSubscription/GetAllSubscriptions');
+    let response = await this.http.get(
+      '/api/services/app/WebhookSubscription/GetAllSubscriptions'
+    );
     return response.data?.result?.items ?? response.data?.result ?? response.data;
   }
 

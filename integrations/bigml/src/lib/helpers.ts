@@ -64,7 +64,7 @@ export let RESOURCE_TYPES = [
   'configuration'
 ] as const;
 
-export type ResourceType = typeof RESOURCE_TYPES[number];
+export type ResourceType = (typeof RESOURCE_TYPES)[number];
 
 export let RESOURCE_STATUS = {
   WAITING: 0,
@@ -80,15 +80,25 @@ export let RESOURCE_STATUS = {
 
 export let statusLabel = (code: number): string => {
   switch (code) {
-    case 0: return 'waiting';
-    case 1: return 'queued';
-    case 2: return 'started';
-    case 3: return 'in_progress';
-    case 4: return 'summarized';
-    case 5: return 'finished';
-    case -1: return 'faulty';
-    case -2: return 'unknown';
-    case -3: return 'runnable';
-    default: return `status_${code}`;
+    case 0:
+      return 'waiting';
+    case 1:
+      return 'queued';
+    case 2:
+      return 'started';
+    case 3:
+      return 'in_progress';
+    case 4:
+      return 'summarized';
+    case 5:
+      return 'finished';
+    case -1:
+      return 'faulty';
+    case -2:
+      return 'unknown';
+    case -3:
+      return 'runnable';
+    default:
+      return `status_${code}`;
   }
 };

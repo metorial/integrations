@@ -2,21 +2,27 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      apiKey: z.string().describe('Dock Certs API key. Generate one in the Developer section of the Dock Certs dashboard.'),
+      apiKey: z
+        .string()
+        .describe(
+          'Dock Certs API key. Generate one in the Developer section of the Dock Certs dashboard.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
-    },
+    }
   });

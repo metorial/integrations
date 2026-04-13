@@ -17,9 +17,9 @@ export class Client {
       baseURL: 'https://api.finerworks.com',
       headers: {
         'Content-Type': 'application/json',
-        'web_api_key': config.webApiKey,
-        'app_key': config.appKey,
-      },
+        web_api_key: config.webApiKey,
+        app_key: config.appKey
+      }
     });
   }
 
@@ -49,7 +49,7 @@ export class Client {
   async fetchOrderStatus(params: { orderPos?: string[]; orderIds?: number[] }): Promise<any> {
     let response = await this.axios.post('/v3/fetch_order_status', {
       order_pos: params.orderPos ?? null,
-      order_ids: params.orderIds ?? null,
+      order_ids: params.orderIds ?? null
     });
     return response.data;
   }
@@ -57,7 +57,7 @@ export class Client {
   async updateOrder(orderId: number, updateCommand: string): Promise<any> {
     let response = await this.axios.put('/v3/update_order', {
       order_id: orderId,
-      update_command: updateCommand,
+      update_command: updateCommand
     });
     return response.data;
   }
@@ -66,7 +66,7 @@ export class Client {
     let response = await this.axios.post('/v3/submit_note', {
       order_id: orderId,
       subject,
-      message,
+      message
     });
     return response.data;
   }
@@ -74,7 +74,7 @@ export class Client {
   async updateCustomer(orderId: number, customerInfo: any): Promise<any> {
     let response = await this.axios.put('/v3/update_customer', {
       order_id: orderId,
-      customer_info: customerInfo,
+      customer_info: customerInfo
     });
     return response.data;
   }
@@ -102,7 +102,7 @@ export class Client {
 
   async validateRecipientAddress(recipient: any): Promise<any> {
     let response = await this.axios.post('/v3/validate_recipient_address', {
-      recipient,
+      recipient
     });
     return response.data;
   }
@@ -111,21 +111,21 @@ export class Client {
 
   async listProductTypes(ids?: number[]): Promise<any> {
     let response = await this.axios.post('/v3/list_product_types', {
-      ids: ids ?? null,
+      ids: ids ?? null
     });
     return response.data;
   }
 
   async listMediaTypes(ids?: number[]): Promise<any> {
     let response = await this.axios.post('/v3/list_media_types', {
-      ids: ids ?? null,
+      ids: ids ?? null
     });
     return response.data;
   }
 
   async listStyleTypes(ids?: number[]): Promise<any> {
     let response = await this.axios.post('/v3/list_style_types', {
-      ids: ids ?? null,
+      ids: ids ?? null
     });
     return response.data;
   }
@@ -133,9 +133,9 @@ export class Client {
   // ── Pricing ──
 
   async getPrices(items: { productQty: number; productSku: string }[]): Promise<any> {
-    let payload = items.map((item) => ({
+    let payload = items.map(item => ({
       product_qty: item.productQty,
-      product_sku: item.productSku,
+      product_sku: item.productSku
     }));
     let response = await this.axios.post('/v3/get_prices', payload);
     return response.data;
@@ -171,7 +171,7 @@ export class Client {
       upload_date_from: params.uploadDateFrom ?? null,
       upload_date_to: params.uploadDateTo ?? null,
       list_products: params.listProducts ?? true,
-      active: params.active ?? null,
+      active: params.active ?? null
     });
     return response.data;
   }
@@ -179,15 +179,17 @@ export class Client {
   async addImages(images: any[]): Promise<any> {
     let response = await this.axios.post('/v3/add_images', {
       images,
-      library: { name: 'inventory' },
+      library: { name: 'inventory' }
     });
     return response.data;
   }
 
-  async updateImages(images: { guid: string; title?: string; description?: string }[]): Promise<any> {
+  async updateImages(
+    images: { guid: string; title?: string; description?: string }[]
+  ): Promise<any> {
     let response = await this.axios.put('/v3/update_images', {
       images,
-      account_key: null,
+      account_key: null
     });
     return response.data;
   }
@@ -196,32 +198,35 @@ export class Client {
     let response = await this.axios.delete('/v3/delete_images', {
       data: {
         guids,
-        library: null,
-      },
+        library: null
+      }
     });
     return response.data;
   }
 
   // ── Framing ──
 
-  async listCollections(params?: { collectionId?: number; productCode?: string }): Promise<any> {
+  async listCollections(params?: {
+    collectionId?: number;
+    productCode?: string;
+  }): Promise<any> {
     let response = await this.axios.post('/v3/list_collections', {
       id: params?.collectionId ?? null,
-      product_code: params?.productCode ?? null,
+      product_code: params?.productCode ?? null
     });
     return response.data;
   }
 
   async listMats(matId?: number): Promise<any> {
     let response = await this.axios.post('/v3/list_mats', {
-      id: matId ?? null,
+      id: matId ?? null
     });
     return response.data;
   }
 
   async listGlazing(glazingId?: number): Promise<any> {
     let response = await this.axios.post('/v3/list_glazing', {
-      id: glazingId ?? null,
+      id: glazingId ?? null
     });
     return response.data;
   }
@@ -232,7 +237,10 @@ export class Client {
       frameId: number;
       width: number;
       height: number;
-      mats?: { id: number; windows: { width: number; height: number; windowX?: number; windowY?: number }[] }[];
+      mats?: {
+        id: number;
+        windows: { width: number; height: number; windowX?: number; windowY?: number }[];
+      }[];
       glazing?: { id: number };
       units?: number;
     };
@@ -251,18 +259,19 @@ export class Client {
         frame_id: params.config.frameId,
         width: params.config.width,
         height: params.config.height,
-        mats: params.config.mats?.map((m) => ({
-          id: m.id,
-          windows: m.windows.map((w) => ({
-            width: w.width,
-            height: w.height,
-            window_x: w.windowX ?? 0,
-            window_y: w.windowY ?? 0,
-            mat_image_to_display_url: null,
-          })),
-        })) ?? null,
+        mats:
+          params.config.mats?.map(m => ({
+            id: m.id,
+            windows: m.windows.map(w => ({
+              width: w.width,
+              height: w.height,
+              window_x: w.windowX ?? 0,
+              window_y: w.windowY ?? 0,
+              mat_image_to_display_url: null
+            }))
+          })) ?? null,
         glazing: params.config.glazing ?? null,
-        units: params.config.units ?? 0,
+        units: params.config.units ?? 0
       },
       render: {
         content_type: params.render?.contentType ?? 0,
@@ -270,8 +279,8 @@ export class Client {
         squared: params.render?.squared ?? false,
         shadow_inner: params.render?.shadowInner ?? false,
         prompt_image: params.render?.promptImage ?? false,
-        frame_image_to_display_url: params.render?.frameImageToDisplayUrl ?? null,
-      },
+        frame_image_to_display_url: params.render?.frameImageToDisplayUrl ?? null
+      }
     });
     return response.data;
   }

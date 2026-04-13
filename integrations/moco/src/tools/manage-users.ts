@@ -29,26 +29,27 @@ let mapUser = (u: any) => ({
   updatedAt: u.updated_at
 });
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve a list of users/staff members. Supports filtering by archived status, tags, and email.`,
-    tags: {
-      readOnly: true
-    }
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve a list of users/staff members. Supports filtering by archived status, tags, and email.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeArchived: z.boolean().optional().describe('Include archived/deactivated users'),
-    tags: z.string().optional().describe('Comma-separated list of tags to filter by'),
-    email: z.string().optional().describe('Filter by email address')
-  }))
-  .output(z.object({
-    users: z.array(userOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeArchived: z.boolean().optional().describe('Include archived/deactivated users'),
+      tags: z.string().optional().describe('Comma-separated list of tags to filter by'),
+      email: z.string().optional().describe('Filter by email address')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -63,24 +64,24 @@ export let listUsers = SlateTool.create(
       output: { users },
       message: `Found **${users.length}** users.`
     };
-  }).build();
+  })
+  .build();
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Retrieve detailed information about a specific user/staff member.`,
-    tags: {
-      readOnly: true
-    }
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Retrieve detailed information about a specific user/staff member.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.number().describe('The ID of the user to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      userId: z.number().describe('The ID of the user to retrieve')
+    })
+  )
   .output(userOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let u = await client.getUser(ctx.input.userId);
 
@@ -88,4 +89,5 @@ export let getUser = SlateTool.create(
       output: mapUser(u),
       message: `Retrieved user **${u.firstname} ${u.lastname}** (ID: ${u.id}).`
     };
-  }).build();
+  })
+  .build();

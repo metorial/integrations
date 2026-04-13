@@ -27,8 +27,8 @@ export class Client {
       headers: {
         'x-rapidapi-key': this.rapidApiToken,
         'x-rapidapi-host': 'pagexcrm.p.rapidapi.com',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     let formData = new URLSearchParams();

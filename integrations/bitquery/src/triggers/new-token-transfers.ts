@@ -15,41 +15,41 @@ let transferInputSchema = z.object({
   tokenDecimals: z.number().optional(),
   sender: z.string().optional(),
   receiver: z.string().optional(),
-  transferType: z.string().optional(),
+  transferType: z.string().optional()
 });
 
-export let newTokenTransfers = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Token Transfers',
-    key: 'new_token_transfers',
-    description: 'Triggers when new token transfers are detected on a specified blockchain. Polls for recent transfers filtered by token, sender, or receiver. Supports EVM chains and Solana.',
-  }
-)
+export let newTokenTransfers = SlateTrigger.create(spec, {
+  name: 'New Token Transfers',
+  key: 'new_token_transfers',
+  description:
+    'Triggers when new token transfers are detected on a specified blockchain. Polls for recent transfers filtered by token, sender, or receiver. Supports EVM chains and Solana.'
+})
   .input(transferInputSchema)
-  .output(z.object({
-    blockTime: z.string().describe('Block timestamp'),
-    blockNumber: z.number().optional().describe('Block number or slot'),
-    transactionHash: z.string().describe('Transaction hash or signature'),
-    amount: z.number().optional().describe('Transfer amount'),
-    amountInUsd: z.number().optional().describe('Transfer amount in USD'),
-    tokenSymbol: z.string().optional().describe('Token symbol'),
-    tokenName: z.string().optional().describe('Token name'),
-    tokenAddress: z.string().optional().describe('Token contract/mint address'),
-    tokenDecimals: z.number().optional().describe('Token decimals'),
-    sender: z.string().optional().describe('Sender address'),
-    receiver: z.string().optional().describe('Receiver address'),
-    transferType: z.string().optional().describe('Transfer type'),
-  }))
+  .output(
+    z.object({
+      blockTime: z.string().describe('Block timestamp'),
+      blockNumber: z.number().optional().describe('Block number or slot'),
+      transactionHash: z.string().describe('Transaction hash or signature'),
+      amount: z.number().optional().describe('Transfer amount'),
+      amountInUsd: z.number().optional().describe('Transfer amount in USD'),
+      tokenSymbol: z.string().optional().describe('Token symbol'),
+      tokenName: z.string().optional().describe('Token name'),
+      tokenAddress: z.string().optional().describe('Token contract/mint address'),
+      tokenDecimals: z.number().optional().describe('Token decimals'),
+      sender: z.string().optional().describe('Sender address'),
+      receiver: z.string().optional().describe('Receiver address'),
+      transferType: z.string().optional().describe('Transfer type')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BitqueryClient({
         token: ctx.auth.token,
-        apiVersion: ctx.config.apiVersion as 'v1' | 'v2',
+        apiVersion: ctx.config.apiVersion as 'v1' | 'v2'
       });
 
       let settings = ctx.state?.settings || {};
@@ -58,14 +58,19 @@ export let newTokenTransfers = SlateTrigger.create(
       let senderAddress = settings.senderAddress;
       let receiverAddress = settings.receiverAddress;
 
-      let lastPollTime = ctx.state?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      let lastPollTime =
+        ctx.state?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
       let now = new Date().toISOString();
 
       let transfers: Array<z.infer<typeof transferInputSchema>> = [];
 
       try {
         if (blockchain === 'solana') {
-          let query = buildSolanaTransfersPollQuery(tokenAddress, senderAddress, receiverAddress);
+          let query = buildSolanaTransfersPollQuery(
+            tokenAddress,
+            senderAddress,
+            receiverAddress
+          );
           let variables: Record<string, any> = { limit: 100, since: lastPollTime };
           if (tokenAddress) variables.tokenAddress = tokenAddress;
           if (senderAddress) variables.senderAddress = senderAddress;
@@ -84,20 +89,27 @@ export let newTokenTransfers = SlateTrigger.create(
             tokenName: t.Transfer?.Currency?.Name,
             tokenAddress: t.Transfer?.Currency?.MintAddress,
             sender: t.Transfer?.Sender,
-            receiver: t.Transfer?.Receiver,
+            receiver: t.Transfer?.Receiver
           }));
         } else if (ctx.config.apiVersion === 'v1') {
           let query = buildV1TransfersPollQuery(tokenAddress, senderAddress, receiverAddress);
           let networkMap: Record<string, string> = {
-            eth: 'ethereum', bsc: 'bsc', matic: 'matic', arbitrum: 'arbitrum',
-            base: 'base', optimism: 'optimism', avalanche: 'avalanche_c', fantom: 'fantom', cronos: 'cronos',
+            eth: 'ethereum',
+            bsc: 'bsc',
+            matic: 'matic',
+            arbitrum: 'arbitrum',
+            base: 'base',
+            optimism: 'optimism',
+            avalanche: 'avalanche_c',
+            fantom: 'fantom',
+            cronos: 'cronos'
           };
 
           let variables: Record<string, any> = {
             network: networkMap[blockchain] || blockchain,
             limit: 100,
             offset: 0,
-            since: lastPollTime,
+            since: lastPollTime
           };
           if (tokenAddress) variables.currency = tokenAddress;
           if (senderAddress) variables.sender = senderAddress;
@@ -116,14 +128,18 @@ export let newTokenTransfers = SlateTrigger.create(
             tokenAddress: t.currency?.address,
             tokenDecimals: t.currency?.decimals,
             sender: t.sender?.address,
-            receiver: t.receiver?.address,
+            receiver: t.receiver?.address
           }));
         } else {
-          let query = buildV2EvmTransfersPollQuery(tokenAddress, senderAddress, receiverAddress);
+          let query = buildV2EvmTransfersPollQuery(
+            tokenAddress,
+            senderAddress,
+            receiverAddress
+          );
           let variables: Record<string, any> = {
             network: blockchain,
             limit: 100,
-            since: lastPollTime,
+            since: lastPollTime
           };
           if (tokenAddress) variables.tokenAddress = tokenAddress;
           if (senderAddress) variables.senderAddress = senderAddress;
@@ -144,7 +160,7 @@ export let newTokenTransfers = SlateTrigger.create(
             tokenDecimals: t.Transfer?.Currency?.Decimals,
             sender: t.Transfer?.Sender,
             receiver: t.Transfer?.Receiver,
-            transferType: t.Transfer?.Type,
+            transferType: t.Transfer?.Type
           }));
         }
       } catch (error) {
@@ -155,12 +171,12 @@ export let newTokenTransfers = SlateTrigger.create(
         inputs: transfers,
         updatedState: {
           lastPollTime: now,
-          settings,
-        },
+          settings
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'token_transfer.created',
         id: ctx.input.transactionHash || `${ctx.input.blockTime}-${ctx.input.blockNumber}`,
@@ -176,20 +192,25 @@ export let newTokenTransfers = SlateTrigger.create(
           tokenDecimals: ctx.input.tokenDecimals,
           sender: ctx.input.sender,
           receiver: ctx.input.receiver,
-          transferType: ctx.input.transferType,
-        },
+          transferType: ctx.input.transferType
+        }
       };
-    },
+    }
   })
   .build();
 
-let buildSolanaTransfersPollQuery = (token?: string, sender?: string, receiver?: string): string => {
+let buildSolanaTransfersPollQuery = (
+  token?: string,
+  sender?: string,
+  receiver?: string
+): string => {
   let transferFilters: string[] = [];
   if (token) transferFilters.push('Currency: {MintAddress: {is: $tokenAddress}}');
   if (sender) transferFilters.push('Sender: {is: $senderAddress}');
   if (receiver) transferFilters.push('Receiver: {is: $receiverAddress}');
 
-  let transferFilter = transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
+  let transferFilter =
+    transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
   let timeFilter = 'Block: {Time: {since: $since}}';
   let allFilters = [transferFilter, timeFilter].filter(Boolean).join(', ');
 
@@ -217,13 +238,25 @@ let buildSolanaTransfersPollQuery = (token?: string, sender?: string, receiver?:
 }`;
 };
 
-let buildV1TransfersPollQuery = (token?: string, sender?: string, receiver?: string): string => {
-  let filters: string[] = ['options: {limit: $limit, offset: $offset, desc: "block.timestamp.iso8601"}', 'date: {since: $since}'];
+let buildV1TransfersPollQuery = (
+  token?: string,
+  sender?: string,
+  receiver?: string
+): string => {
+  let filters: string[] = [
+    'options: {limit: $limit, offset: $offset, desc: "block.timestamp.iso8601"}',
+    'date: {since: $since}'
+  ];
   if (token) filters.push('currency: {is: $currency}');
   if (sender) filters.push('sender: {is: $sender}');
   if (receiver) filters.push('receiver: {is: $receiver}');
 
-  let varDefs: string[] = ['$network: EthereumNetwork!', '$limit: Int!', '$offset: Int!', '$since: ISO8601DateTime'];
+  let varDefs: string[] = [
+    '$network: EthereumNetwork!',
+    '$limit: Int!',
+    '$offset: Int!',
+    '$since: ISO8601DateTime'
+  ];
   if (token) varDefs.push('$currency: String');
   if (sender) varDefs.push('$sender: String');
   if (receiver) varDefs.push('$receiver: String');
@@ -242,13 +275,18 @@ let buildV1TransfersPollQuery = (token?: string, sender?: string, receiver?: str
 }`;
 };
 
-let buildV2EvmTransfersPollQuery = (token?: string, sender?: string, receiver?: string): string => {
+let buildV2EvmTransfersPollQuery = (
+  token?: string,
+  sender?: string,
+  receiver?: string
+): string => {
   let transferFilters: string[] = [];
   if (token) transferFilters.push('Currency: {SmartContract: {is: $tokenAddress}}');
   if (sender) transferFilters.push('Sender: {is: $senderAddress}');
   if (receiver) transferFilters.push('Receiver: {is: $receiverAddress}');
 
-  let transferFilter = transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
+  let transferFilter =
+    transferFilters.length > 0 ? `Transfer: {${transferFilters.join(', ')}}` : '';
   let timeFilter = 'Block: {Time: {since: $since}}';
   let allFilters = [transferFilter, timeFilter].filter(Boolean).join(', ');
 

@@ -13,28 +13,32 @@ let siteSchema = z.object({
   createdOn: z.string().optional().describe('ISO 8601 creation timestamp'),
   lastPublished: z.string().optional().describe('ISO 8601 timestamp of last publish'),
   lastUpdated: z.string().optional().describe('ISO 8601 timestamp of last update'),
-  customDomains: z.array(z.object({
-    domainId: z.string().optional(),
-    url: z.string().optional(),
-  })).optional().describe('Custom domains configured for the site'),
+  customDomains: z
+    .array(
+      z.object({
+        domainId: z.string().optional(),
+        url: z.string().optional()
+      })
+    )
+    .optional()
+    .describe('Custom domains configured for the site')
 });
 
-export let listSites = SlateTool.create(
-  spec,
-  {
-    name: 'List Sites',
-    key: 'list_sites',
-    description: `List all Webflow sites accessible with the current authentication. Returns site metadata including names, domains, publish status, and workspace association.`,
-    tags: {
-      readOnly: true,
-    },
+export let listSites = SlateTool.create(spec, {
+  name: 'List Sites',
+  key: 'list_sites',
+  description: `List all Webflow sites accessible with the current authentication. Returns site metadata including names, domains, publish status, and workspace association.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    sites: z.array(siteSchema).describe('List of Webflow sites'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      sites: z.array(siteSchema).describe('List of Webflow sites')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebflowClient(ctx.auth.token);
     let data = await client.listSites();
     let sites = (data.sites ?? []).map((s: any) => ({
@@ -49,12 +53,13 @@ export let listSites = SlateTool.create(
       lastUpdated: s.lastUpdated,
       customDomains: (s.customDomains ?? []).map((d: any) => ({
         domainId: d.id,
-        url: d.url,
-      })),
+        url: d.url
+      }))
     }));
 
     return {
       output: { sites },
-      message: `Found **${sites.length}** site(s).`,
+      message: `Found **${sites.length}** site(s).`
     };
-  }).build();
+  })
+  .build();

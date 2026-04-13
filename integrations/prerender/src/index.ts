@@ -7,7 +7,7 @@ import {
   manageSitemaps,
   manageDomains,
   setRecacheSpeed,
-  renderPage,
+  renderPage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     manageSitemaps,
     manageDomains,
     setRecacheSpeed,
-    renderPage,
+    renderPage
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

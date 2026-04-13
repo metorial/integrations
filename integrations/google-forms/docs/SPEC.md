@@ -16,6 +16,7 @@ Google Forms API uses **OAuth 2.0** for authentication. A Google Cloud project w
 4. Use the client ID and client secret to implement the standard OAuth 2.0 authorization code flow.
 
 **Authorization endpoints:**
+
 - Authorization URL: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token URL: `https://oauth2.googleapis.com/token`
 
@@ -23,14 +24,14 @@ Google Forms API uses **OAuth 2.0** for authentication. A Google Cloud project w
 
 **Available OAuth Scopes:**
 
-| Scope | Description |
-|---|---|
-| `https://www.googleapis.com/auth/forms.body` | See, edit, create, and delete all your Google Forms forms. |
-| `https://www.googleapis.com/auth/forms.body.readonly` | See all your Google Forms forms. |
-| `https://www.googleapis.com/auth/forms.responses.readonly` | See all responses to your Google Forms forms. |
-| `https://www.googleapis.com/auth/drive` | See, edit, create, and delete all of your Google Drive files. (broader scope that also grants Forms access) |
-| `https://www.googleapis.com/auth/drive.file` | See, edit, create, and delete only the specific Google Drive files you use with this app. |
-| `https://www.googleapis.com/auth/drive.readonly` | See and download all your Google Drive files. (read-only alternative) |
+| Scope                                                      | Description                                                                                                 |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/forms.body`               | See, edit, create, and delete all your Google Forms forms.                                                  |
+| `https://www.googleapis.com/auth/forms.body.readonly`      | See all your Google Forms forms.                                                                            |
+| `https://www.googleapis.com/auth/forms.responses.readonly` | See all responses to your Google Forms forms.                                                               |
+| `https://www.googleapis.com/auth/drive`                    | See, edit, create, and delete all of your Google Drive files. (broader scope that also grants Forms access) |
+| `https://www.googleapis.com/auth/drive.file`               | See, edit, create, and delete only the specific Google Drive files you use with this app.                   |
+| `https://www.googleapis.com/auth/drive.readonly`           | See and download all your Google Drive files. (read-only alternative)                                       |
 
 Use the most narrowly scoped option that satisfies your needs. The `forms.body` and `forms.responses.readonly` scopes are preferred over the broader Drive scopes.
 

@@ -3,34 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDepartment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Department',
-    key: 'manage_department',
-    description: `Create, list, update, or delete departments. Supports multilingual translations for department names.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageDepartment = SlateTool.create(spec, {
+  name: 'Manage Department',
+  key: 'manage_department',
+  description: `Create, list, update, or delete departments. Supports multilingual translations for department names.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'update', 'delete']).describe('Action to perform'),
-    departmentId: z.string().optional().describe('Department ID (required for update, delete)'),
-    name: z.string().optional().describe('Department name'),
-    translations: z.record(z.string(), z.string()).optional().describe('Name translations keyed by language code (e.g. {"en": "Engineering", "de": "Technik"})'),
-    page: z.number().optional().describe('Page number for listing'),
-    size: z.number().optional().describe('Page size for listing'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction')
-  }))
-  .output(z.object({
-    department: z.any().optional().describe('Department record'),
-    departments: z.array(z.any()).optional().describe('List of departments'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'list', 'update', 'delete']).describe('Action to perform'),
+      departmentId: z
+        .string()
+        .optional()
+        .describe('Department ID (required for update, delete)'),
+      name: z.string().optional().describe('Department name'),
+      translations: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe(
+          'Name translations keyed by language code (e.g. {"en": "Engineering", "de": "Technik"})'
+        ),
+      page: z.number().optional().describe('Page number for listing'),
+      size: z.number().optional().describe('Page size for listing'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z
+      .object({
+        department: z.any().optional().describe('Department record'),
+        departments: z.array(z.any()).optional().describe('List of departments'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -59,7 +70,7 @@ export let manageDepartment = SlateTool.create(
           sortOrder: ctx.input.sortOrder
         });
         let data = result?.data ?? result;
-        let departments = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+        let departments = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
         return {
           output: { departments, success: true },
           message: `Found **${departments.length}** department(s).`
@@ -84,4 +95,5 @@ export let manageDepartment = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

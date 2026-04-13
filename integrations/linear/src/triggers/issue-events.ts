@@ -3,45 +3,50 @@ import { LinearClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let issueEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Issue Events',
-    key: 'issue_events',
-    description: 'Triggers when issues are created, updated, or removed in Linear. Includes state changes, assignment changes, priority changes, and more.'
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'remove']).describe('The action that occurred'),
-    webhookId: z.string().describe('Delivery ID from the webhook'),
-    issueId: z.string().describe('Issue ID'),
-    issueData: z.any().describe('Full issue data from webhook payload'),
-    updatedFrom: z.any().optional().describe('Previous values for updated fields')
-  }))
-  .output(z.object({
-    issueId: z.string().describe('Issue ID'),
-    identifier: z.string().nullable().describe('Human-readable identifier like ENG-123'),
-    title: z.string().nullable().describe('Issue title'),
-    description: z.string().nullable().describe('Issue description'),
-    priority: z.number().nullable().describe('Priority (0=None, 1=Urgent, 2=High, 3=Medium, 4=Low)'),
-    priorityLabel: z.string().nullable().describe('Priority label'),
-    url: z.string().nullable().describe('Issue URL'),
-    stateId: z.string().nullable().describe('Current workflow state ID'),
-    stateName: z.string().nullable().describe('Current workflow state name'),
-    assigneeId: z.string().nullable().describe('Assignee user ID'),
-    teamId: z.string().nullable().describe('Team ID'),
-    teamKey: z.string().nullable().describe('Team key'),
-    projectId: z.string().nullable().describe('Project ID'),
-    cycleId: z.string().nullable().describe('Cycle ID'),
-    labelIds: z.array(z.string()).nullable().describe('Label IDs'),
-    dueDate: z.string().nullable().describe('Due date'),
-    estimate: z.number().nullable().describe('Estimate points'),
-    createdAt: z.string().nullable(),
-    updatedAt: z.string().nullable(),
-    previousValues: z.any().nullable().describe('Previous field values (on update)')
-  }))
+export let issueEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Issue Events',
+  key: 'issue_events',
+  description:
+    'Triggers when issues are created, updated, or removed in Linear. Includes state changes, assignment changes, priority changes, and more.'
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'remove']).describe('The action that occurred'),
+      webhookId: z.string().describe('Delivery ID from the webhook'),
+      issueId: z.string().describe('Issue ID'),
+      issueData: z.any().describe('Full issue data from webhook payload'),
+      updatedFrom: z.any().optional().describe('Previous values for updated fields')
+    })
+  )
+  .output(
+    z.object({
+      issueId: z.string().describe('Issue ID'),
+      identifier: z.string().nullable().describe('Human-readable identifier like ENG-123'),
+      title: z.string().nullable().describe('Issue title'),
+      description: z.string().nullable().describe('Issue description'),
+      priority: z
+        .number()
+        .nullable()
+        .describe('Priority (0=None, 1=Urgent, 2=High, 3=Medium, 4=Low)'),
+      priorityLabel: z.string().nullable().describe('Priority label'),
+      url: z.string().nullable().describe('Issue URL'),
+      stateId: z.string().nullable().describe('Current workflow state ID'),
+      stateName: z.string().nullable().describe('Current workflow state name'),
+      assigneeId: z.string().nullable().describe('Assignee user ID'),
+      teamId: z.string().nullable().describe('Team ID'),
+      teamKey: z.string().nullable().describe('Team key'),
+      projectId: z.string().nullable().describe('Project ID'),
+      cycleId: z.string().nullable().describe('Cycle ID'),
+      labelIds: z.array(z.string()).nullable().describe('Label IDs'),
+      dueDate: z.string().nullable().describe('Due date'),
+      estimate: z.number().nullable().describe('Estimate points'),
+      createdAt: z.string().nullable(),
+      updatedAt: z.string().nullable(),
+      previousValues: z.any().nullable().describe('Previous field values (on update)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new LinearClient(ctx.auth.token);
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
@@ -61,13 +66,13 @@ export let issueEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new LinearClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let deliveryId = ctx.request.headers.get('Linear-Delivery') || body.webhookId || '';
       let eventType = ctx.request.headers.get('Linear-Event') || '';
 
@@ -76,17 +81,19 @@ export let issueEventsTrigger = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          action: body.action,
-          webhookId: deliveryId,
-          issueId: body.data?.id || '',
-          issueData: body.data,
-          updatedFrom: body.updatedFrom
-        }]
+        inputs: [
+          {
+            action: body.action,
+            webhookId: deliveryId,
+            issueId: body.data?.id || '',
+            issueData: body.data,
+            updatedFrom: body.updatedFrom
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.issueData || {};
 
       return {
@@ -116,4 +123,5 @@ export let issueEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

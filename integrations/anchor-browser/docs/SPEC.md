@@ -12,6 +12,7 @@ Anchor Browser uses API key authentication. All API requests must include the AP
 - **Value:** Your API key, obtained from the Anchor Browser console/dashboard.
 
 Example:
+
 ```
 curl --request POST \
   --url https://api.anchorbrowser.io/v1/sessions \

@@ -8,8 +8,8 @@ export class DriveClient {
     this.axios = createAxios({
       baseURL: 'https://www.googleapis.com/drive/v3',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -17,7 +17,7 @@ export class DriveClient {
     let body: Record<string, any> = {
       id: channelId,
       type: 'web_hook',
-      address: webhookUrl,
+      address: webhookUrl
     };
 
     if (expiration) {
@@ -31,13 +31,13 @@ export class DriveClient {
   async stopChannel(channelId: string, resourceId: string) {
     await this.axios.post('/channels/stop', {
       id: channelId,
-      resourceId,
+      resourceId
     });
   }
 
   async getFile(fileId: string, fields?: string) {
     let response = await this.axios.get(`/files/${fileId}`, {
-      params: { fields: fields ?? 'id,name,mimeType,modifiedTime,lastModifyingUser' },
+      params: { fields: fields ?? 'id,name,mimeType,modifiedTime,lastModifyingUser' }
     });
     return response.data;
   }

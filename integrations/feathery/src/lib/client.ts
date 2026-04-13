@@ -1,11 +1,11 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://api.feathery.io',
   canada: 'https://api-ca.feathery.io',
   europe: 'https://api-eu.feathery.io',
-  australia: 'https://api-au.feathery.io',
+  australia: 'https://api-au.feathery.io'
 };
 
 export class FeatheryClient {
@@ -17,8 +17,8 @@ export class FeatheryClient {
       baseURL,
       headers: {
         Authorization: `Token ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -39,7 +39,7 @@ export class FeatheryClient {
       email: params.email,
       role: params.role,
       ...params.permissions,
-      user_groups: params.userGroups,
+      user_groups: params.userGroups
     });
     return response.data;
   }
@@ -73,17 +73,20 @@ export class FeatheryClient {
       template_form_id: params.templateFormId,
       steps: params.steps,
       navigation_rules: params.navigationRules,
-      logic_rules: params.logicRules,
+      logic_rules: params.logicRules
     });
     return response.data;
   }
 
-  async updateForm(formId: string, params: {
-    enabled?: boolean;
-    formName?: string;
-    translations?: any;
-    integrations?: any[];
-  }): Promise<any> {
+  async updateForm(
+    formId: string,
+    params: {
+      enabled?: boolean;
+      formName?: string;
+      translations?: any;
+      integrations?: any[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.enabled !== undefined) body.enabled = params.enabled;
     if (params.formName !== undefined) body.form_name = params.formName;
@@ -96,14 +99,14 @@ export class FeatheryClient {
 
   async deleteForm(formId: string): Promise<void> {
     await this.axios.delete(`/api/form/${formId}/`, {
-      data: { confirm_delete: true },
+      data: { confirm_delete: true }
     });
   }
 
   async copyForm(params: { formName: string; copyFormId: string }): Promise<any> {
     let response = await this.axios.post('/api/form/copy/', {
       form_name: params.formName,
-      copy_form_id: params.copyFormId,
+      copy_form_id: params.copyFormId
     });
     return response.data;
   }
@@ -126,7 +129,7 @@ export class FeatheryClient {
     count?: boolean;
   }): Promise<any> {
     let queryParams: Record<string, any> = {
-      form_id: params.formId,
+      form_id: params.formId
     };
     if (params.startTime) queryParams.start_time = params.startTime;
     if (params.endTime) queryParams.end_time = params.endTime;
@@ -155,13 +158,13 @@ export class FeatheryClient {
     let body: Record<string, any> = {
       user_id: params.userId,
       forms: params.forms,
-      fields: params.fields,
+      fields: params.fields
     };
     if (params.complete !== undefined) body.complete = params.complete;
     if (params.documents) {
       body.documents = params.documents.map(d => ({
         id: d.id,
-        output_location: d.outputLocation,
+        output_location: d.outputLocation
       }));
     }
 
@@ -169,13 +172,10 @@ export class FeatheryClient {
     return response.data;
   }
 
-  async exportSubmissionPdf(params: {
-    formId: string;
-    userId: string;
-  }): Promise<any> {
+  async exportSubmissionPdf(params: { formId: string; userId: string }): Promise<any> {
     let response = await this.axios.post('/api/form/submission/pdf/', {
       form_id: params.formId,
-      user_id: params.userId,
+      user_id: params.userId
     });
     return response.data;
   }
@@ -231,34 +231,43 @@ export class FeatheryClient {
 
   // ---- Document Intelligence (AI Extraction) ----
 
-  async submitExtraction(extractionId: string, files: Array<{ name: string; content: string }>): Promise<any> {
+  async submitExtraction(
+    extractionId: string,
+    files: Array<{ name: string; content: string }>
+  ): Promise<any> {
     // For AI extraction, we need to send multipart form data
     let formData = new FormData();
     for (let file of files) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let blob = new Blob([Buffer.from(file.content, 'base64')], { type: 'application/octet-stream' });
+      let blob = new Blob([Buffer.from(file.content, 'base64')], {
+        type: 'application/octet-stream'
+      });
       formData.append('files', blob, file.name);
     }
 
     let response = await this.axios.post(`/api/ai/run/${extractionId}/`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }
 
-  async listExtractionRuns(extractionId: string, params?: {
-    startTime?: string;
-    endTime?: string;
-    userId?: string;
-  }): Promise<any> {
+  async listExtractionRuns(
+    extractionId: string,
+    params?: {
+      startTime?: string;
+      endTime?: string;
+      userId?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.startTime) queryParams.start_time = params.startTime;
     if (params?.endTime) queryParams.end_time = params.endTime;
     if (params?.userId) queryParams.user_id = params.userId;
 
-    let response = await this.axios.get(`/api/ai/run/batch/${extractionId}/`, { params: queryParams });
+    let response = await this.axios.get(`/api/ai/run/batch/${extractionId}/`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -281,7 +290,7 @@ export class FeatheryClient {
   }): Promise<any> {
     let body: Record<string, any> = {
       document: params.documentId,
-      field_values: params.fieldValues,
+      field_values: params.fieldValues
     };
     if (params.signerEmail) body.signer_email = params.signerEmail;
     if (params.userId) body.user_id = params.userId;
@@ -295,7 +304,7 @@ export class FeatheryClient {
     id: string;
   }): Promise<any[]> {
     let response = await this.axios.get('/api/document/envelope/', {
-      params: { type: params.type, id: params.id },
+      params: { type: params.type, id: params.id }
     });
     return response.data;
   }
@@ -350,20 +359,23 @@ export class FeatheryClient {
     return response.data;
   }
 
-  async updateWorkspace(workspaceId: string, params: {
-    name?: string;
-    logo?: string;
-    brandUrl?: string;
-    brandFavicon?: string;
-    brandName?: string;
-    colors?: Record<string, string>;
-    features?: Record<string, any>;
-    disabledTabs?: string[];
-    disabledSettings?: string[];
-    disabledElements?: string[];
-    enabledIntegrations?: string[];
-    metadata?: Record<string, any>;
-  }): Promise<any> {
+  async updateWorkspace(
+    workspaceId: string,
+    params: {
+      name?: string;
+      logo?: string;
+      brandUrl?: string;
+      brandFavicon?: string;
+      brandName?: string;
+      colors?: Record<string, string>;
+      features?: Record<string, any>;
+      disabledTabs?: string[];
+      disabledSettings?: string[];
+      disabledElements?: string[];
+      enabledIntegrations?: string[];
+      metadata?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.logo !== undefined) body.logo = params.logo;
@@ -373,9 +385,12 @@ export class FeatheryClient {
     if (params.colors !== undefined) body.colors = params.colors;
     if (params.features !== undefined) body.features = params.features;
     if (params.disabledTabs !== undefined) body.disabled_tabs = params.disabledTabs;
-    if (params.disabledSettings !== undefined) body.disabled_settings = params.disabledSettings;
-    if (params.disabledElements !== undefined) body.disabled_elements = params.disabledElements;
-    if (params.enabledIntegrations !== undefined) body.enabled_integrations = params.enabledIntegrations;
+    if (params.disabledSettings !== undefined)
+      body.disabled_settings = params.disabledSettings;
+    if (params.disabledElements !== undefined)
+      body.disabled_elements = params.disabledElements;
+    if (params.enabledIntegrations !== undefined)
+      body.enabled_integrations = params.enabledIntegrations;
     if (params.metadata !== undefined) body.metadata = params.metadata;
 
     let response = await this.axios.patch(`/api/workspace/${workspaceId}/`, body);
@@ -393,28 +408,38 @@ export class FeatheryClient {
 
   async populateWorkspaceTemplate(workspaceId: string, templateFormId: string): Promise<any> {
     let response = await this.axios.post(`/api/workspace/${workspaceId}/populate_template/`, {
-      template_form_id: templateFormId,
+      template_form_id: templateFormId
     });
     return response.data;
   }
 
   // ---- Logs ----
 
-  async getApiConnectorLogs(formId: string, params?: { startTime?: string; endTime?: string }): Promise<any> {
+  async getApiConnectorLogs(
+    formId: string,
+    params?: { startTime?: string; endTime?: string }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.startTime) queryParams.start_time = params.startTime;
     if (params?.endTime) queryParams.end_time = params.endTime;
 
-    let response = await this.axios.get(`/api/logs/api-connector/${formId}/`, { params: queryParams });
+    let response = await this.axios.get(`/api/logs/api-connector/${formId}/`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async getFormEmailLogs(formId: string, params?: { startTime?: string; endTime?: string }): Promise<any> {
+  async getFormEmailLogs(
+    formId: string,
+    params?: { startTime?: string; endTime?: string }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.startTime) queryParams.start_time = params.startTime;
     if (params?.endTime) queryParams.end_time = params.endTime;
 
-    let response = await this.axios.get(`/api/logs/email/form/${formId}/`, { params: queryParams });
+    let response = await this.axios.get(`/api/logs/email/form/${formId}/`, {
+      params: queryParams
+    });
     return response.data;
   }
 

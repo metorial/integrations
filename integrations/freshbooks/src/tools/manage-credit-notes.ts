@@ -10,44 +10,48 @@ let creditNoteLineSchema = z.object({
   taxName1: z.string().optional().describe('First tax name'),
   taxAmount1: z.string().optional().describe('First tax percentage'),
   taxName2: z.string().optional().describe('Second tax name'),
-  taxAmount2: z.string().optional().describe('Second tax percentage'),
+  taxAmount2: z.string().optional().describe('Second tax percentage')
 });
 
-export let manageCreditNotes = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Credit Notes',
-    key: 'manage_credit_notes',
-    description: `Create, update, or delete credit notes in FreshBooks. Credit notes are used for client refunds or adjustments and can include line items similar to invoices.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageCreditNotes = SlateTool.create(spec, {
+  name: 'Manage Credit Notes',
+  key: 'manage_credit_notes',
+  description: `Create, update, or delete credit notes in FreshBooks. Credit notes are used for client refunds or adjustments and can include line items similar to invoices.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    creditNoteId: z.number().optional().describe('Credit note ID (required for update/delete)'),
-    customerId: z.number().optional().describe('Client ID (required for create)'),
-    createDate: z.string().optional().describe('Credit note date (YYYY-MM-DD)'),
-    currencyCode: z.string().optional().describe('Three-letter currency code'),
-    notes: z.string().optional().describe('Additional notes'),
-    lines: z.array(creditNoteLineSchema).optional().describe('Line items'),
-  }))
-  .output(z.object({
-    creditNoteId: z.number(),
-    creditNumber: z.string().nullable().optional(),
-    customerId: z.number().nullable().optional(),
-    status: z.string().nullable().optional(),
-    amount: z.any().optional(),
-    currencyCode: z.string().nullable().optional(),
-    createDate: z.string().nullable().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      creditNoteId: z
+        .number()
+        .optional()
+        .describe('Credit note ID (required for update/delete)'),
+      customerId: z.number().optional().describe('Client ID (required for create)'),
+      createDate: z.string().optional().describe('Credit note date (YYYY-MM-DD)'),
+      currencyCode: z.string().optional().describe('Three-letter currency code'),
+      notes: z.string().optional().describe('Additional notes'),
+      lines: z.array(creditNoteLineSchema).optional().describe('Line items')
+    })
+  )
+  .output(
+    z.object({
+      creditNoteId: z.number(),
+      creditNumber: z.string().nullable().optional(),
+      customerId: z.number().nullable().optional(),
+      status: z.string().nullable().optional(),
+      amount: z.any().optional(),
+      currencyCode: z.string().nullable().optional(),
+      createDate: z.string().nullable().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let fbClient = new FreshBooksClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      businessId: ctx.config.businessId,
+      businessId: ctx.config.businessId
     });
 
     let buildPayload = () => {
@@ -57,11 +61,11 @@ export let manageCreditNotes = SlateTool.create(
       if (ctx.input.currencyCode !== undefined) payload.currency_code = ctx.input.currencyCode;
       if (ctx.input.notes !== undefined) payload.notes = ctx.input.notes;
       if (ctx.input.lines) {
-        payload.lines = ctx.input.lines.map((line) => {
+        payload.lines = ctx.input.lines.map(line => {
           let l: Record<string, any> = {
             name: line.name,
             qty: line.qty,
-            unit_cost: { amount: line.unitCost, code: ctx.input.currencyCode || 'USD' },
+            unit_cost: { amount: line.unitCost, code: ctx.input.currencyCode || 'USD' }
           };
           if (line.taxName1) l.taxName1 = line.taxName1;
           if (line.taxAmount1) l.taxAmount1 = line.taxAmount1;
@@ -80,14 +84,14 @@ export let manageCreditNotes = SlateTool.create(
       status: raw.status,
       amount: raw.amount,
       currencyCode: raw.currency_code,
-      createDate: raw.create_date,
+      createDate: raw.create_date
     });
 
     if (ctx.input.action === 'create') {
       let result = await fbClient.createCreditNote(buildPayload());
       return {
         output: mapResult(result),
-        message: `Created credit note (ID: ${result.id || result.credit_id}).`,
+        message: `Created credit note (ID: ${result.id || result.credit_id}).`
       };
     }
 
@@ -96,7 +100,7 @@ export let manageCreditNotes = SlateTool.create(
       let result = await fbClient.updateCreditNote(ctx.input.creditNoteId, buildPayload());
       return {
         output: mapResult(result),
-        message: `Updated credit note (ID: ${ctx.input.creditNoteId}).`,
+        message: `Updated credit note (ID: ${ctx.input.creditNoteId}).`
       };
     }
 
@@ -105,9 +109,10 @@ export let manageCreditNotes = SlateTool.create(
       let result = await fbClient.deleteCreditNote(ctx.input.creditNoteId);
       return {
         output: mapResult(result),
-        message: `Archived credit note (ID: ${ctx.input.creditNoteId}).`,
+        message: `Archived credit note (ID: ${ctx.input.creditNoteId}).`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

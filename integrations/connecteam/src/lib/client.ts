@@ -20,8 +20,8 @@ export class ConnecteamClient {
       baseURL: config.baseUrl,
       headers: {
         'X-API-KEY': config.token,
-        'Authorization': `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -34,24 +34,26 @@ export class ConnecteamClient {
 
   // ─── Users ─────────────────────────────────────────────
 
-  async getUsers(params?: PaginationParams & {
-    userIds?: number[];
-    userStatus?: string;
-    fullNames?: string[];
-    phoneNumbers?: string[];
-    emailAddresses?: string[];
-    createdAt?: number;
-    modifiedAt?: number;
-    sort?: string;
-    order?: string;
-  }): Promise<PaginatedResponse<{ users: any[] }>> {
+  async getUsers(
+    params?: PaginationParams & {
+      userIds?: number[];
+      userStatus?: string;
+      fullNames?: string[];
+      phoneNumbers?: string[];
+      emailAddresses?: string[];
+      createdAt?: number;
+      modifiedAt?: number;
+      sort?: string;
+      order?: string;
+    }
+  ): Promise<PaginatedResponse<{ users: any[] }>> {
     let response = await this.http.get('/users/v1/users', { params });
     return response.data;
   }
 
   async createUsers(users: any[], sendActivation?: boolean): Promise<any> {
     let response = await this.http.post('/users/v1/users', users, {
-      params: sendActivation != null ? { sendActivation } : undefined,
+      params: sendActivation != null ? { sendActivation } : undefined
     });
     return response.data;
   }
@@ -68,7 +70,7 @@ export class ConnecteamClient {
 
   async deleteUser(userId: number, deletionType?: string): Promise<any> {
     let response = await this.http.delete(`/users/v1/users/${userId}`, {
-      params: deletionType ? { deletionType } : undefined,
+      params: deletionType ? { deletionType } : undefined
     });
     return response.data;
   }
@@ -80,12 +82,14 @@ export class ConnecteamClient {
 
   // ─── Custom Fields ─────────────────────────────────────
 
-  async getCustomFields(params?: PaginationParams & {
-    customFieldIds?: number[];
-    categoryIds?: number[];
-    customFieldTypes?: string[];
-    customFieldNames?: string[];
-  }): Promise<any> {
+  async getCustomFields(
+    params?: PaginationParams & {
+      customFieldIds?: number[];
+      categoryIds?: number[];
+      customFieldTypes?: string[];
+      customFieldNames?: string[];
+    }
+  ): Promise<any> {
     let response = await this.http.get('/users/v1/custom-fields', { params });
     return response.data;
   }
@@ -109,45 +113,70 @@ export class ConnecteamClient {
     return response.data;
   }
 
-  async getTimeActivities(timeClockId: string, params?: PaginationParams & {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
-    let response = await this.http.get(`/time-clock/v1/time-clocks/${timeClockId}/time-activities`, { params });
+  async getTimeActivities(
+    timeClockId: string,
+    params?: PaginationParams & {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any> {
+    let response = await this.http.get(
+      `/time-clock/v1/time-clocks/${timeClockId}/time-activities`,
+      { params }
+    );
     return response.data;
   }
 
   async createTimeActivities(timeClockId: string, body: any): Promise<any> {
-    let response = await this.http.post(`/time-clock/v1/time-clocks/${timeClockId}/time-activities`, body);
+    let response = await this.http.post(
+      `/time-clock/v1/time-clocks/${timeClockId}/time-activities`,
+      body
+    );
     return response.data;
   }
 
   async updateTimeActivities(timeClockId: string, body: any): Promise<any> {
-    let response = await this.http.put(`/time-clock/v1/time-clocks/${timeClockId}/time-activities`, body);
+    let response = await this.http.put(
+      `/time-clock/v1/time-clocks/${timeClockId}/time-activities`,
+      body
+    );
     return response.data;
   }
 
   async clockIn(timeClockId: string, body: any): Promise<any> {
-    let response = await this.http.post(`/time-clock/v1/time-clocks/${timeClockId}/clock-in`, body);
+    let response = await this.http.post(
+      `/time-clock/v1/time-clocks/${timeClockId}/clock-in`,
+      body
+    );
     return response.data;
   }
 
   async clockOut(timeClockId: string, body: any): Promise<any> {
-    let response = await this.http.post(`/time-clock/v1/time-clocks/${timeClockId}/clock-out`, body);
+    let response = await this.http.post(
+      `/time-clock/v1/time-clocks/${timeClockId}/clock-out`,
+      body
+    );
     return response.data;
   }
 
-  async getTimesheetTotals(timeClockId: string, params?: PaginationParams & {
-    startDate?: string;
-    endDate?: string;
-    userIds?: number[];
-  }): Promise<any> {
-    let response = await this.http.get(`/time-clock/v1/time-clocks/${timeClockId}/timesheet`, { params });
+  async getTimesheetTotals(
+    timeClockId: string,
+    params?: PaginationParams & {
+      startDate?: string;
+      endDate?: string;
+      userIds?: number[];
+    }
+  ): Promise<any> {
+    let response = await this.http.get(`/time-clock/v1/time-clocks/${timeClockId}/timesheet`, {
+      params
+    });
     return response.data;
   }
 
   async getGeofences(timeClockId: string, params?: PaginationParams): Promise<any> {
-    let response = await this.http.get(`/time-clock/v1/time-clocks/${timeClockId}/geofences`, { params });
+    let response = await this.http.get(`/time-clock/v1/time-clocks/${timeClockId}/geofences`, {
+      params
+    });
     return response.data;
   }
 
@@ -159,7 +188,9 @@ export class ConnecteamClient {
   }
 
   async getTimeOffBalances(policyTypeId: string, params?: PaginationParams): Promise<any> {
-    let response = await this.http.get(`/time-off/v1/policy-types/${policyTypeId}/balances`, { params });
+    let response = await this.http.get(`/time-off/v1/policy-types/${policyTypeId}/balances`, {
+      params
+    });
     return response.data;
   }
 
@@ -174,12 +205,18 @@ export class ConnecteamClient {
   }
 
   async updateTimeOffBalance(policyTypeId: string, userId: number, body: any): Promise<any> {
-    let response = await this.http.put(`/time-off/v1/policy-types/${policyTypeId}/balances/${userId}`, body);
+    let response = await this.http.put(
+      `/time-off/v1/policy-types/${policyTypeId}/balances/${userId}`,
+      body
+    );
     return response.data;
   }
 
   async assignUserToTimeOffPolicy(timeOffPolicyId: string, body: any): Promise<any> {
-    let response = await this.http.put(`/time-off/v1/time-off-policies/${timeOffPolicyId}/assignments`, body);
+    let response = await this.http.put(
+      `/time-off/v1/time-off-policies/${timeOffPolicyId}/assignments`,
+      body
+    );
     return response.data;
   }
 
@@ -190,58 +227,83 @@ export class ConnecteamClient {
     return response.data;
   }
 
-  async getShifts(schedulerId: number, params: PaginationParams & {
-    startTime: number;
-    endTime: number;
-    isOpenShift?: boolean;
-    isPublished?: boolean;
-    jobId?: string[];
-    assignedUserIds?: number[];
-    shiftId?: string[];
-    title?: string;
-    sort?: string;
-    order?: string;
-  }): Promise<any> {
-    let response = await this.http.get(`/scheduler/v1/schedulers/${schedulerId}/shifts`, { params });
+  async getShifts(
+    schedulerId: number,
+    params: PaginationParams & {
+      startTime: number;
+      endTime: number;
+      isOpenShift?: boolean;
+      isPublished?: boolean;
+      jobId?: string[];
+      assignedUserIds?: number[];
+      shiftId?: string[];
+      title?: string;
+      sort?: string;
+      order?: string;
+    }
+  ): Promise<any> {
+    let response = await this.http.get(`/scheduler/v1/schedulers/${schedulerId}/shifts`, {
+      params
+    });
     return response.data;
   }
 
   async getShift(schedulerId: number, shiftId: string): Promise<any> {
-    let response = await this.http.get(`/scheduler/v1/schedulers/${schedulerId}/shifts/${shiftId}`);
+    let response = await this.http.get(
+      `/scheduler/v1/schedulers/${schedulerId}/shifts/${shiftId}`
+    );
     return response.data;
   }
 
   async createShifts(schedulerId: number, shifts: any[], notifyUsers?: boolean): Promise<any> {
-    let response = await this.http.post(`/scheduler/v1/schedulers/${schedulerId}/shifts`, shifts, {
-      params: notifyUsers != null ? { notifyUsers } : undefined,
-    });
+    let response = await this.http.post(
+      `/scheduler/v1/schedulers/${schedulerId}/shifts`,
+      shifts,
+      {
+        params: notifyUsers != null ? { notifyUsers } : undefined
+      }
+    );
     return response.data;
   }
 
   async updateShifts(schedulerId: number, shifts: any[], notifyUsers?: boolean): Promise<any> {
-    let response = await this.http.put(`/scheduler/v1/schedulers/${schedulerId}/shifts`, shifts, {
-      params: notifyUsers != null ? { notifyUsers } : undefined,
-    });
+    let response = await this.http.put(
+      `/scheduler/v1/schedulers/${schedulerId}/shifts`,
+      shifts,
+      {
+        params: notifyUsers != null ? { notifyUsers } : undefined
+      }
+    );
     return response.data;
   }
 
-  async deleteShift(schedulerId: number, shiftId: string, notifyUsers?: boolean): Promise<any> {
-    let response = await this.http.delete(`/scheduler/v1/schedulers/${schedulerId}/shifts/${shiftId}`, {
-      params: notifyUsers != null ? { notifyUsers } : undefined,
-    });
+  async deleteShift(
+    schedulerId: number,
+    shiftId: string,
+    notifyUsers?: boolean
+  ): Promise<any> {
+    let response = await this.http.delete(
+      `/scheduler/v1/schedulers/${schedulerId}/shifts/${shiftId}`,
+      {
+        params: notifyUsers != null ? { notifyUsers } : undefined
+      }
+    );
     return response.data;
   }
 
   async deleteShiftsBulk(schedulerId: number, body: any, notifyUsers?: boolean): Promise<any> {
     let response = await this.http.delete(`/scheduler/v1/schedulers/${schedulerId}/shifts`, {
       data: body,
-      params: notifyUsers != null ? { notifyUsers } : undefined,
+      params: notifyUsers != null ? { notifyUsers } : undefined
     });
     return response.data;
   }
 
   async getShiftCustomFields(schedulerId: number, params?: PaginationParams): Promise<any> {
-    let response = await this.http.get(`/scheduler/v1/schedulers/${schedulerId}/custom-fields`, { params });
+    let response = await this.http.get(
+      `/scheduler/v1/schedulers/${schedulerId}/custom-fields`,
+      { params }
+    );
     return response.data;
   }
 
@@ -250,40 +312,59 @@ export class ConnecteamClient {
     return response.data;
   }
 
-  async getUserUnavailability(params: { userId: number; startTime: number; endTime: number }): Promise<any> {
-    let response = await this.http.get('/scheduler/v1/schedulers/user-unavailability', { params });
-    return response.data;
-  }
-
-  async getScheduleUnavailabilities(schedulerId: number, params: PaginationParams & {
+  async getUserUnavailability(params: {
+    userId: number;
     startTime: number;
     endTime: number;
   }): Promise<any> {
-    let response = await this.http.get(`/scheduler/v1/schedulers/${schedulerId}/unavailabilities`, { params });
+    let response = await this.http.get('/scheduler/v1/schedulers/user-unavailability', {
+      params
+    });
+    return response.data;
+  }
+
+  async getScheduleUnavailabilities(
+    schedulerId: number,
+    params: PaginationParams & {
+      startTime: number;
+      endTime: number;
+    }
+  ): Promise<any> {
+    let response = await this.http.get(
+      `/scheduler/v1/schedulers/${schedulerId}/unavailabilities`,
+      { params }
+    );
     return response.data;
   }
 
   async createUnavailability(schedulerId: number, body: any): Promise<any> {
-    let response = await this.http.post(`/scheduler/v1/schedulers/${schedulerId}/unavailability`, body);
+    let response = await this.http.post(
+      `/scheduler/v1/schedulers/${schedulerId}/unavailability`,
+      body
+    );
     return response.data;
   }
 
   async deleteUnavailability(schedulerId: number, unavailabilityId: string): Promise<any> {
-    let response = await this.http.delete(`/scheduler/v1/schedulers/${schedulerId}/unavailability/${unavailabilityId}`);
+    let response = await this.http.delete(
+      `/scheduler/v1/schedulers/${schedulerId}/unavailability/${unavailabilityId}`
+    );
     return response.data;
   }
 
   // ─── Jobs ──────────────────────────────────────────────
 
-  async getJobs(params?: PaginationParams & {
-    instanceIds?: number[];
-    jobIds?: string[];
-    jobNames?: string[];
-    jobCodes?: string[];
-    includeDeleted?: boolean;
-    sort?: string;
-    order?: string;
-  }): Promise<any> {
+  async getJobs(
+    params?: PaginationParams & {
+      instanceIds?: number[];
+      jobIds?: string[];
+      jobNames?: string[];
+      jobCodes?: string[];
+      includeDeleted?: boolean;
+      sort?: string;
+      order?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.get('/jobs/v1/jobs', { params });
     return response.data;
   }
@@ -325,22 +406,36 @@ export class ConnecteamClient {
     return response.data;
   }
 
-  async getFormSubmissions(formId: number, params?: PaginationParams & {
-    userIds?: number[];
-    submittingStartTimestamp?: number;
-    submittingEndTime?: number;
-  }): Promise<any> {
-    let response = await this.http.get(`/forms/v1/forms/${formId}/form-submissions`, { params });
+  async getFormSubmissions(
+    formId: number,
+    params?: PaginationParams & {
+      userIds?: number[];
+      submittingStartTimestamp?: number;
+      submittingEndTime?: number;
+    }
+  ): Promise<any> {
+    let response = await this.http.get(`/forms/v1/forms/${formId}/form-submissions`, {
+      params
+    });
     return response.data;
   }
 
   async getFormSubmission(formId: number, formSubmissionId: string): Promise<any> {
-    let response = await this.http.get(`/forms/v1/forms/${formId}/form-submissions/${formSubmissionId}`);
+    let response = await this.http.get(
+      `/forms/v1/forms/${formId}/form-submissions/${formSubmissionId}`
+    );
     return response.data;
   }
 
-  async updateFormSubmission(formId: number, formSubmissionId: string, body: any): Promise<any> {
-    let response = await this.http.put(`/forms/v1/forms/${formId}/form-submissions/${formSubmissionId}`, body);
+  async updateFormSubmission(
+    formId: number,
+    formSubmissionId: string,
+    body: any
+  ): Promise<any> {
+    let response = await this.http.put(
+      `/forms/v1/forms/${formId}/form-submissions/${formSubmissionId}`,
+      body
+    );
     return response.data;
   }
 
@@ -352,7 +447,9 @@ export class ConnecteamClient {
   }
 
   async getTasks(taskBoardId: number, params?: PaginationParams): Promise<any> {
-    let response = await this.http.get(`/tasks/v1/taskboards/${taskBoardId}/tasks`, { params });
+    let response = await this.http.get(`/tasks/v1/taskboards/${taskBoardId}/tasks`, {
+      params
+    });
     return response.data;
   }
 
@@ -362,12 +459,17 @@ export class ConnecteamClient {
   }
 
   async updateTask(taskBoardId: number, taskId: string, body: any): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}`, body);
+    let response = await this.http.put(
+      `/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}`,
+      body
+    );
     return response.data;
   }
 
   async deleteTask(taskBoardId: number, taskId: string): Promise<any> {
-    let response = await this.http.delete(`/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}`);
+    let response = await this.http.delete(
+      `/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}`
+    );
     return response.data;
   }
 
@@ -376,23 +478,43 @@ export class ConnecteamClient {
     return response.data;
   }
 
-  async getSubTasks(taskBoardId: number, taskId: string, params?: PaginationParams): Promise<any> {
-    let response = await this.http.get(`/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks`, { params });
+  async getSubTasks(
+    taskBoardId: number,
+    taskId: string,
+    params?: PaginationParams
+  ): Promise<any> {
+    let response = await this.http.get(
+      `/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks`,
+      { params }
+    );
     return response.data;
   }
 
   async createSubTask(taskBoardId: number, taskId: string, body: any): Promise<any> {
-    let response = await this.http.post(`/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks`, body);
+    let response = await this.http.post(
+      `/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks`,
+      body
+    );
     return response.data;
   }
 
-  async updateSubTask(taskBoardId: number, taskId: string, subTaskId: string, body: any): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks/${subTaskId}`, body);
+  async updateSubTask(
+    taskBoardId: number,
+    taskId: string,
+    subTaskId: string,
+    body: any
+  ): Promise<any> {
+    let response = await this.http.put(
+      `/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks/${subTaskId}`,
+      body
+    );
     return response.data;
   }
 
   async deleteSubTask(taskBoardId: number, taskId: string, subTaskId: string): Promise<any> {
-    let response = await this.http.delete(`/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks/${subTaskId}`);
+    let response = await this.http.delete(
+      `/tasks/v1/taskboards/${taskBoardId}/tasks/${taskId}/sub-tasks/${subTaskId}`
+    );
     return response.data;
   }
 
@@ -403,21 +525,33 @@ export class ConnecteamClient {
     return response.data;
   }
 
-  async sendMessageToConversation(conversationId: string, body: {
-    message: string;
-    senderId?: number;
-    attachments?: { fileId: string }[];
-  }): Promise<any> {
-    let response = await this.http.post(`/chat/v1/conversations/${conversationId}/message`, body);
+  async sendMessageToConversation(
+    conversationId: string,
+    body: {
+      message: string;
+      senderId?: number;
+      attachments?: { fileId: string }[];
+    }
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/chat/v1/conversations/${conversationId}/message`,
+      body
+    );
     return response.data;
   }
 
-  async sendPrivateMessage(userId: string, body: {
-    message: string;
-    senderId?: number;
-    attachments?: { fileId: string }[];
-  }): Promise<any> {
-    let response = await this.http.post(`/chat/v1/conversations/privateMessage/${userId}`, body);
+  async sendPrivateMessage(
+    userId: string,
+    body: {
+      message: string;
+      senderId?: number;
+      attachments?: { fileId: string }[];
+    }
+  ): Promise<any> {
+    let response = await this.http.post(
+      `/chat/v1/conversations/privateMessage/${userId}`,
+      body
+    );
     return response.data;
   }
 
@@ -434,7 +568,9 @@ export class ConnecteamClient {
   }
 
   async getPackAssignments(packId: number, params?: PaginationParams): Promise<any> {
-    let response = await this.http.get(`/onboarding/v1/packs/${packId}/assignments`, { params });
+    let response = await this.http.get(`/onboarding/v1/packs/${packId}/assignments`, {
+      params
+    });
     return response.data;
   }
 
@@ -446,7 +582,9 @@ export class ConnecteamClient {
   // ─── Attachments ───────────────────────────────────────
 
   async generateUploadUrl(featureType: string): Promise<any> {
-    let response = await this.http.post('/attachments/v1/files/generate-upload-url', { featureType });
+    let response = await this.http.post('/attachments/v1/files/generate-upload-url', {
+      featureType
+    });
     return response.data;
   }
 

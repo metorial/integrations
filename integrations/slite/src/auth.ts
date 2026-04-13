@@ -2,19 +2,23 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Slite personal API key generated from Settings > API in the Slite app')
+      token: z
+        .string()
+        .describe('Slite personal API key generated from Settings > API in the Slite app')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -27,7 +31,7 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.slite.com/v1',
         headers: {
           'x-slite-api-key': ctx.output.token,
-          'Accept': 'application/json'
+          Accept: 'application/json'
         }
       });
 

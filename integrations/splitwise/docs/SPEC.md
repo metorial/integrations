@@ -40,27 +40,34 @@ For testing purposes only — you can use the API key provided on your project's
 ## Features
 
 ### User Management
+
 Retrieve the current authenticated user's profile or another user's profile. Update the current user's details including first name, last name, email, password, locale, and default currency.
 
 ### Group Management
+
 Create, retrieve, delete, and restore groups. Groups represent collections of users who share expenses (e.g., a household or a trip). Groups have a type (`home`, `trip`, `couple`, `other`), support simplified debts, and track member balances and debts. Users can be added to or removed from groups. Removing a user fails if they have a non-zero balance in the group. Deleting a group destroys all associated expenses.
 
 ### Expense Management
+
 Create, retrieve, update, delete, and restore expenses. Expenses can be split equally among a group or split with custom paid/owed shares per user. Key parameters include cost, description, date, currency, category, and group assignment. Expenses support recurring intervals (weekly, fortnightly, monthly, yearly). Users in an expense can be identified by user ID or by email and name (allowing non-Splitwise users to be included). Expenses include repayment information and receipt images.
 
 - When splitting equally, the authenticated user is assumed to be the payer.
 - Expenses can be filtered by group, friend, date range, or update time.
 
 ### Friend Management
+
 List, add, and remove friends. Friends include balance information showing what is owed between the current user and each friend, broken down by currency and by group. Multiple friends can be added at once. Friendships can only be deleted if there is no outstanding balance.
 
 ### Comments
+
 Retrieve, create, and delete comments on expenses. Comments can be user-generated or system-generated (e.g., tracking changes to an expense).
 
 ### Notifications
+
 Retrieve recent activity on the user's account. Notifications cover a wide range of events including expenses added/updated/deleted, comments added, group membership changes, friend changes, and debt simplifications. Notifications can be filtered by `updated_after` timestamp.
 
 ### Reference Data
+
 Retrieve the list of supported currencies and expense categories. Categories are hierarchical with parent categories and subcategories. When creating expenses, a subcategory must be used.
 
 ## Events

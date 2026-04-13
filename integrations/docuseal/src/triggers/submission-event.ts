@@ -12,58 +12,80 @@ let submitterSchema = z.object({
   externalId: z.string().nullable().optional().describe('External ID'),
   completedAt: z.string().nullable().optional().describe('Completion timestamp'),
   declinedAt: z.string().nullable().optional().describe('Declined timestamp'),
-  values: z.array(z.object({
-    field: z.string().describe('Field name'),
-    value: z.any().describe('Field value'),
-  })).optional().describe('Filled field values'),
-  documents: z.array(z.object({
-    name: z.string().optional().describe('Document name'),
-    url: z.string().optional().describe('Document URL'),
-  })).optional().describe('Signed documents'),
+  values: z
+    .array(
+      z.object({
+        field: z.string().describe('Field name'),
+        value: z.any().describe('Field value')
+      })
+    )
+    .optional()
+    .describe('Filled field values'),
+  documents: z
+    .array(
+      z.object({
+        name: z.string().optional().describe('Document name'),
+        url: z.string().optional().describe('Document URL')
+      })
+    )
+    .optional()
+    .describe('Signed documents')
 });
 
-export let submissionEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Submission Event',
-    key: 'submission_event',
-    description: 'Triggered on submission lifecycle events: created, completed (all parties signed), expired, or archived. Configure the webhook URL in the DocuSeal console under Settings > Webhooks.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['submission.created', 'submission.completed', 'submission.expired', 'submission.archived']).describe('Type of submission event'),
-    submissionId: z.number().describe('Submission ID'),
-    slug: z.string().optional().describe('Submission slug'),
-    status: z.string().optional().describe('Submission status'),
-    source: z.string().optional().describe('Submission source'),
-    completedAt: z.string().nullable().optional().describe('Completion timestamp'),
-    expireAt: z.string().nullable().optional().describe('Expiration timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    archivedAt: z.string().nullable().optional().describe('Archived timestamp'),
-    auditLogUrl: z.string().nullable().optional().describe('Audit log URL'),
-    combinedDocumentUrl: z.string().nullable().optional().describe('Combined document URL'),
-    templateId: z.number().optional().describe('Template ID'),
-    templateName: z.string().optional().describe('Template name'),
-    submitters: z.array(submitterSchema).optional().describe('Submitters in this submission'),
-  }))
-  .output(z.object({
-    submissionId: z.number().describe('Submission ID'),
-    slug: z.string().optional().describe('Submission slug'),
-    status: z.string().optional().describe('Submission status'),
-    source: z.string().optional().describe('Submission source'),
-    completedAt: z.string().nullable().optional().describe('Completion timestamp'),
-    expireAt: z.string().nullable().optional().describe('Expiration timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    archivedAt: z.string().nullable().optional().describe('Archived timestamp'),
-    auditLogUrl: z.string().nullable().optional().describe('Audit log URL'),
-    combinedDocumentUrl: z.string().nullable().optional().describe('Combined document URL'),
-    templateId: z.number().optional().describe('Template ID'),
-    templateName: z.string().optional().describe('Template name'),
-    submitters: z.array(submitterSchema).optional().describe('All submitters and their statuses'),
-  }))
+export let submissionEvent = SlateTrigger.create(spec, {
+  name: 'Submission Event',
+  key: 'submission_event',
+  description:
+    'Triggered on submission lifecycle events: created, completed (all parties signed), expired, or archived. Configure the webhook URL in the DocuSeal console under Settings > Webhooks.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum([
+          'submission.created',
+          'submission.completed',
+          'submission.expired',
+          'submission.archived'
+        ])
+        .describe('Type of submission event'),
+      submissionId: z.number().describe('Submission ID'),
+      slug: z.string().optional().describe('Submission slug'),
+      status: z.string().optional().describe('Submission status'),
+      source: z.string().optional().describe('Submission source'),
+      completedAt: z.string().nullable().optional().describe('Completion timestamp'),
+      expireAt: z.string().nullable().optional().describe('Expiration timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      archivedAt: z.string().nullable().optional().describe('Archived timestamp'),
+      auditLogUrl: z.string().nullable().optional().describe('Audit log URL'),
+      combinedDocumentUrl: z.string().nullable().optional().describe('Combined document URL'),
+      templateId: z.number().optional().describe('Template ID'),
+      templateName: z.string().optional().describe('Template name'),
+      submitters: z.array(submitterSchema).optional().describe('Submitters in this submission')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.number().describe('Submission ID'),
+      slug: z.string().optional().describe('Submission slug'),
+      status: z.string().optional().describe('Submission status'),
+      source: z.string().optional().describe('Submission source'),
+      completedAt: z.string().nullable().optional().describe('Completion timestamp'),
+      expireAt: z.string().nullable().optional().describe('Expiration timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      archivedAt: z.string().nullable().optional().describe('Archived timestamp'),
+      auditLogUrl: z.string().nullable().optional().describe('Audit log URL'),
+      combinedDocumentUrl: z.string().nullable().optional().describe('Combined document URL'),
+      templateId: z.number().optional().describe('Template ID'),
+      templateName: z.string().optional().describe('Template name'),
+      submitters: z
+        .array(submitterSchema)
+        .optional()
+        .describe('All submitters and their statuses')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventType = body.event_type as string;
 
@@ -84,11 +106,15 @@ export let submissionEvent = SlateTrigger.create(
         completedAt: s.completed_at,
         declinedAt: s.declined_at,
         values: s.values || [],
-        documents: (s.documents || []).map((d: any) => ({ name: d.name, url: d.url })),
+        documents: (s.documents || []).map((d: any) => ({ name: d.name, url: d.url }))
       }));
 
       let input = {
-        eventType: eventType as 'submission.created' | 'submission.completed' | 'submission.expired' | 'submission.archived',
+        eventType: eventType as
+          | 'submission.created'
+          | 'submission.completed'
+          | 'submission.expired'
+          | 'submission.archived',
         submissionId: data.id,
         slug: data.slug,
         status: data.status,
@@ -101,13 +127,13 @@ export let submissionEvent = SlateTrigger.create(
         combinedDocumentUrl: data.combined_document_url,
         templateId: data.template?.id,
         templateName: data.template?.name,
-        submitters,
+        submitters
       };
 
       return { inputs: [input] };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.eventType}_${ctx.input.submissionId}_${ctx.input.completedAt || ctx.input.archivedAt || ctx.input.createdAt || Date.now()}`,
@@ -124,9 +150,9 @@ export let submissionEvent = SlateTrigger.create(
           combinedDocumentUrl: ctx.input.combinedDocumentUrl,
           templateId: ctx.input.templateId,
           templateName: ctx.input.templateName,
-          submitters: ctx.input.submitters,
-        },
+          submitters: ctx.input.submitters
+        }
       };
-    },
+    }
   })
   .build();

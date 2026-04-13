@@ -3,40 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let activityEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Events',
-    key: 'activity_events',
-    description: 'Triggers when an activity (email, call, note, SMS, meeting) is created, updated, or deleted in Close.',
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The action that occurred (created, updated, deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    objectId: z.string().describe('ID of the affected activity'),
-    objectType: z.string().describe('Full object type (e.g. activity.email, activity.call, activity.note)'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed during an update'),
-    currentData: z.any().optional().describe('Current data after the change'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event was created')
-  }))
-  .output(z.object({
-    activityId: z.string().describe('ID of the affected activity'),
-    activityType: z.string().describe('Type of activity (email, call, note, sms, meeting)'),
-    action: z.string().describe('The action that occurred'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed'),
-    leadId: z.string().optional().describe('ID of the parent lead'),
-    contactId: z.string().optional().describe('ID of the related contact'),
-    subject: z.string().optional().describe('Subject (for emails)'),
-    bodyPreview: z.string().optional().describe('Preview of the body content'),
-    direction: z.string().optional().describe('Direction (incoming/outgoing) for emails, calls, SMS'),
-    status: z.string().optional().describe('Status of the activity'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event occurred'),
-  }))
+export let activityEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Activity Events',
+  key: 'activity_events',
+  description:
+    'Triggers when an activity (email, call, note, SMS, meeting) is created, updated, or deleted in Close.'
+})
+  .input(
+    z.object({
+      eventAction: z.string().describe('The action that occurred (created, updated, deleted)'),
+      eventId: z.string().describe('Unique event identifier'),
+      objectId: z.string().describe('ID of the affected activity'),
+      objectType: z
+        .string()
+        .describe('Full object type (e.g. activity.email, activity.call, activity.note)'),
+      changedFields: z
+        .array(z.string())
+        .optional()
+        .describe('Fields that changed during an update'),
+      currentData: z.any().optional().describe('Current data after the change'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event was created')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.string().describe('ID of the affected activity'),
+      activityType: z.string().describe('Type of activity (email, call, note, sms, meeting)'),
+      action: z.string().describe('The action that occurred'),
+      changedFields: z.array(z.string()).optional().describe('Fields that changed'),
+      leadId: z.string().optional().describe('ID of the parent lead'),
+      contactId: z.string().optional().describe('ID of the related contact'),
+      subject: z.string().optional().describe('Subject (for emails)'),
+      bodyPreview: z.string().optional().describe('Preview of the body content'),
+      direction: z
+        .string()
+        .optional()
+        .describe('Direction (incoming/outgoing) for emails, calls, SMS'),
+      status: z.string().optional().describe('Status of the activity'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
       let webhook = await client.createWebhook({
@@ -56,7 +66,7 @@ export let activityEventsTrigger = SlateTrigger.create(
           { object_type: 'activity.sms', action: 'deleted' },
           { object_type: 'activity.meeting', action: 'created' },
           { object_type: 'activity.meeting', action: 'updated' },
-          { object_type: 'activity.meeting', action: 'deleted' },
+          { object_type: 'activity.meeting', action: 'deleted' }
         ],
         status: 'active'
       });
@@ -69,13 +79,13 @@ export let activityEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!data || !data.event) {
         return { inputs: [] };
@@ -99,7 +109,7 @@ export let activityEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let currentData = ctx.input.currentData || {};
       let activityType = ctx.input.objectType.replace('activity.', '');
       let body = currentData.body_text || currentData.note || currentData.body_preview || '';
@@ -120,8 +130,9 @@ export let activityEventsTrigger = SlateTrigger.create(
           direction: currentData.direction,
           status: currentData.status,
           userId: ctx.input.userId,
-          dateCreated: ctx.input.dateCreated,
+          dateCreated: ctx.input.dateCreated
         }
       };
     }
-  }).build();
+  })
+  .build();

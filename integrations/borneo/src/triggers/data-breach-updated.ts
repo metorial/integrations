@@ -3,33 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dataBreachUpdated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Data Breach Updated',
-    key: 'data_breach_updated',
-    description: 'Triggers when a new data breach is created or an existing breach record is updated. Polls for recent changes to breach evaluation records.'
-  }
-)
-  .input(z.object({
-    breachId: z.string().describe('Data breach ID'),
-    status: z.string().optional().describe('Breach status'),
-    updatedAt: z.string().optional().describe('When the breach was last updated'),
-    breach: z.any().describe('Full breach data')
-  }))
-  .output(z.object({
-    breachId: z.string().describe('ID of the data breach'),
-    name: z.string().optional().describe('Breach name'),
-    status: z.string().optional().describe('Breach status'),
-    severity: z.string().optional().describe('Breach severity'),
-    updatedAt: z.string().optional().describe('When the breach was last updated')
-  }).passthrough())
+export let dataBreachUpdated = SlateTrigger.create(spec, {
+  name: 'Data Breach Updated',
+  key: 'data_breach_updated',
+  description:
+    'Triggers when a new data breach is created or an existing breach record is updated. Polls for recent changes to breach evaluation records.'
+})
+  .input(
+    z.object({
+      breachId: z.string().describe('Data breach ID'),
+      status: z.string().optional().describe('Breach status'),
+      updatedAt: z.string().optional().describe('When the breach was last updated'),
+      breach: z.any().describe('Full breach data')
+    })
+  )
+  .output(
+    z
+      .object({
+        breachId: z.string().describe('ID of the data breach'),
+        name: z.string().optional().describe('Breach name'),
+        status: z.string().optional().describe('Breach status'),
+        severity: z.string().optional().describe('Breach severity'),
+        updatedAt: z.string().optional().describe('When the breach was last updated')
+      })
+      .passthrough()
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -45,7 +49,7 @@ export let dataBreachUpdated = SlateTrigger.create(
       });
 
       let data = result?.data ?? result;
-      let breaches: any[] = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+      let breaches: any[] = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
 
       let newBreaches = breaches.filter((breach: any) => {
         if (!lastPollTime) return true;
@@ -74,7 +78,7 @@ export let dataBreachUpdated = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'data_breach.updated',
         id: ctx.input.breachId,
@@ -88,4 +92,5 @@ export let dataBreachUpdated = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

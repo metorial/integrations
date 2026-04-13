@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Base64-encoded API key:secret for Basic auth'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Base64-encoded API key:secret for Basic auth')
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key & Secret',
@@ -12,15 +14,15 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       apiKey: z.string().describe('Fivetran API key (Scoped or System key)'),
-      apiSecret: z.string().describe('Fivetran API secret'),
+      apiSecret: z.string().describe('Fivetran API secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let encoded = btoa(`${ctx.input.apiKey}:${ctx.input.apiSecret}`);
       return {
         output: {
-          token: encoded,
-        },
+          token: encoded
+        }
       };
     },
 
@@ -28,8 +30,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.fivetran.com/v1',
         headers: {
-          Authorization: `Basic ${ctx.output.token}`,
-        },
+          Authorization: `Basic ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/users/me');
@@ -40,8 +42,8 @@ export let auth = SlateAuth.create()
           id: user?.id,
           email: user?.email,
           name: [user?.given_name, user?.family_name].filter(Boolean).join(' ') || undefined,
-          imageUrl: user?.picture,
-        },
+          imageUrl: user?.picture
+        }
       };
-    },
+    }
   });

@@ -3,29 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCollections = SlateTool.create(
-  spec,
-  {
-    name: 'List Collections',
-    key: 'list_collections',
-    description: `List curated collections of models on Replicate, grouped by use case (e.g. text-to-image, super-resolution).`,
-    tags: {
-      readOnly: true
-    }
+export let listCollections = SlateTool.create(spec, {
+  name: 'List Collections',
+  key: 'list_collections',
+  description: `List curated collections of models on Replicate, grouped by use case (e.g. text-to-image, super-resolution).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cursor: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    collections: z.array(z.object({
-      slug: z.string().describe('Collection slug identifier'),
-      collectionName: z.string().describe('Collection display name'),
-      description: z.string().optional().describe('Collection description')
-    })),
-    nextCursor: z.string().optional().nullable().describe('Cursor for next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      collections: z.array(
+        z.object({
+          slug: z.string().describe('Collection slug identifier'),
+          collectionName: z.string().describe('Collection display name'),
+          description: z.string().optional().describe('Collection description')
+        })
+      ),
+      nextCursor: z.string().optional().nullable().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listCollections({ cursor: ctx.input.cursor });
 
@@ -41,36 +44,40 @@ export let listCollections = SlateTool.create(
       output: { collections, nextCursor },
       message: `Found **${collections.length}** collections.`
     };
-  }).build();
+  })
+  .build();
 
-export let getCollection = SlateTool.create(
-  spec,
-  {
-    name: 'Get Collection',
-    key: 'get_collection',
-    description: `Get details about a specific collection, including all models in the collection.`,
-    tags: {
-      readOnly: true
-    }
+export let getCollection = SlateTool.create(spec, {
+  name: 'Get Collection',
+  key: 'get_collection',
+  description: `Get details about a specific collection, including all models in the collection.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    slug: z.string().describe('Collection slug (e.g. "text-to-image", "super-resolution")')
-  }))
-  .output(z.object({
-    slug: z.string().describe('Collection slug'),
-    collectionName: z.string().describe('Collection display name'),
-    description: z.string().optional().describe('Collection description'),
-    models: z.array(z.object({
-      owner: z.string().describe('Model owner'),
-      modelName: z.string().describe('Model name'),
-      description: z.string().optional().nullable().describe('Model description'),
-      url: z.string().optional().describe('Model page URL'),
-      runCount: z.number().optional().describe('Total run count'),
-      coverImageUrl: z.string().optional().nullable().describe('Cover image URL')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      slug: z.string().describe('Collection slug (e.g. "text-to-image", "super-resolution")')
+    })
+  )
+  .output(
+    z.object({
+      slug: z.string().describe('Collection slug'),
+      collectionName: z.string().describe('Collection display name'),
+      description: z.string().optional().describe('Collection description'),
+      models: z.array(
+        z.object({
+          owner: z.string().describe('Model owner'),
+          modelName: z.string().describe('Model name'),
+          description: z.string().optional().nullable().describe('Model description'),
+          url: z.string().optional().describe('Model page URL'),
+          runCount: z.number().optional().describe('Total run count'),
+          coverImageUrl: z.string().optional().nullable().describe('Cover image URL')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getCollection(ctx.input.slug);
 
@@ -92,4 +99,5 @@ export let getCollection = SlateTool.create(
       },
       message: `Collection **${result.name}** contains **${models.length}** models.`
     };
-  }).build();
+  })
+  .build();

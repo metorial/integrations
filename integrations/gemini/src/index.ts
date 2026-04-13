@@ -12,7 +12,7 @@ import {
   createCachedContent,
   listCachedContents,
   updateCachedContent,
-  deleteCachedContent,
+  deleteCachedContent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     createCachedContent,
     listCachedContents,
     updateCachedContent,
-    deleteCachedContent,
+    deleteCachedContent
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

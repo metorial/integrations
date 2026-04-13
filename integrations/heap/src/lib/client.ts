@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://heapanalytics.com',
-  eu: 'https://c.eu.heap-api.com',
+  eu: 'https://c.eu.heap-api.com'
 };
 
 export interface TrackEventParams {
@@ -47,11 +47,7 @@ export class HeapClient {
   private appId: string;
   private apiKey: string;
 
-  constructor(config: {
-    appId: string;
-    apiKey: string;
-    datacenter: string;
-  }) {
+  constructor(config: { appId: string; apiKey: string; datacenter: string }) {
     this.appId = config.appId;
     this.apiKey = config.apiKey;
 
@@ -60,15 +56,15 @@ export class HeapClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async trackEvent(params: TrackEventParams): Promise<void> {
     let body: Record<string, unknown> = {
       app_id: this.appId,
-      event: params.event,
+      event: params.event
     };
 
     if (params.identity) body.identity = params.identity;
@@ -82,9 +78,9 @@ export class HeapClient {
   }
 
   async bulkTrackEvents(events: BulkTrackEventItem[]): Promise<void> {
-    let mappedEvents = events.map((e) => {
+    let mappedEvents = events.map(e => {
       let item: Record<string, unknown> = {
-        event: e.event,
+        event: e.event
       };
       if (e.identity) item.identity = e.identity;
       if (e.userId) item.user_id = e.userId;
@@ -97,7 +93,7 @@ export class HeapClient {
 
     await this.axios.post('/api/track', {
       app_id: this.appId,
-      events: mappedEvents,
+      events: mappedEvents
     });
   }
 
@@ -105,19 +101,19 @@ export class HeapClient {
     await this.axios.post('/api/add_user_properties', {
       app_id: this.appId,
       identity: params.identity,
-      properties: params.properties,
+      properties: params.properties
     });
   }
 
   async bulkAddUserProperties(users: UserPropertiesParams[]): Promise<void> {
-    let mappedUsers = users.map((u) => ({
+    let mappedUsers = users.map(u => ({
       identity: u.identity,
-      properties: u.properties,
+      properties: u.properties
     }));
 
     await this.axios.post('/api/add_user_properties', {
       app_id: this.appId,
-      users: mappedUsers,
+      users: mappedUsers
     });
   }
 
@@ -125,19 +121,19 @@ export class HeapClient {
     await this.axios.post('/api/add_account_properties', {
       app_id: this.appId,
       account_id: params.accountId,
-      properties: params.properties,
+      properties: params.properties
     });
   }
 
   async bulkAddAccountProperties(accounts: AccountPropertiesParams[]): Promise<void> {
-    let mappedAccounts = accounts.map((a) => ({
+    let mappedAccounts = accounts.map(a => ({
       account_id: a.accountId,
-      properties: a.properties,
+      properties: a.properties
     }));
 
     await this.axios.post('/api/add_account_properties', {
       app_id: this.appId,
-      accounts: mappedAccounts,
+      accounts: mappedAccounts
     });
   }
 
@@ -145,7 +141,7 @@ export class HeapClient {
     let body: Record<string, unknown> = {
       app_id: this.appId,
       user_id: params.userId,
-      identity: params.identity,
+      identity: params.identity
     };
 
     if (params.timestamp) body.timestamp = params.timestamp;
@@ -159,8 +155,8 @@ export class HeapClient {
     let response = await this.axios.post('/api/public/v0/auth_token', null, {
       headers: {
         Authorization: `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     return response.data.auth_token;
@@ -177,21 +173,23 @@ export class HeapClient {
     let lookupResponse = await this.axios.get(`/scim/v2/${this.appId}/Users`, {
       params: { filter },
       headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+        Authorization: `Bearer ${authToken}`
+      }
     });
 
     let resources = lookupResponse.data?.Resources || [];
     if (resources.length === 0) {
-      throw new Error(`No user found matching the provided ${params.identity ? 'identity' : 'userId'}`);
+      throw new Error(
+        `No user found matching the provided ${params.identity ? 'identity' : 'userId'}`
+      );
     }
 
     let scimUserId = resources[0].id;
 
     await this.axios.delete(`/scim/v2/${this.appId}/Users/${scimUserId}`, {
       headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+        Authorization: `Bearer ${authToken}`
+      }
     });
   }
 }

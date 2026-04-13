@@ -3,41 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTeam = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Team',
-    key: 'manage_team',
-    description: `Create or delete teams, and add or remove users from teams. Teams are used in call distribution for numbers. Retrieve team details with user membership.`,
-    constraints: [
-      'Team names must be unique and max 64 characters.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'delete', 'get', 'list', 'add_user', 'remove_user']).describe('The operation to perform'),
-    teamId: z.number().optional().describe('Team ID (required for delete, get, add_user, remove_user)'),
-    teamName: z.string().optional().describe('Team name (required for create, max 64 chars, must be unique)'),
-    userId: z.number().optional().describe('User ID (required for add_user and remove_user)'),
-    page: z.number().optional().describe('Page number for list action (default: 1)'),
-    perPage: z.number().optional().describe('Results per page for list action (max: 50)')
-  }))
-  .output(z.object({
-    teamId: z.number().optional().describe('Team ID'),
-    teamName: z.string().optional().describe('Team name'),
-    users: z.array(z.object({
-      userId: z.number(),
-      name: z.string()
-    })).optional().describe('Team members'),
-    teams: z.array(z.object({
-      teamId: z.number(),
-      teamName: z.string(),
-      userCount: z.number()
-    })).optional().describe('List of teams (for list action)'),
-    totalCount: z.number().optional().describe('Total teams count (for list action)'),
-    deleted: z.boolean().optional().describe('Whether the team was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTeam = SlateTool.create(spec, {
+  name: 'Manage Team',
+  key: 'manage_team',
+  description: `Create or delete teams, and add or remove users from teams. Teams are used in call distribution for numbers. Retrieve team details with user membership.`,
+  constraints: ['Team names must be unique and max 64 characters.']
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'delete', 'get', 'list', 'add_user', 'remove_user'])
+        .describe('The operation to perform'),
+      teamId: z
+        .number()
+        .optional()
+        .describe('Team ID (required for delete, get, add_user, remove_user)'),
+      teamName: z
+        .string()
+        .optional()
+        .describe('Team name (required for create, max 64 chars, must be unique)'),
+      userId: z
+        .number()
+        .optional()
+        .describe('User ID (required for add_user and remove_user)'),
+      page: z.number().optional().describe('Page number for list action (default: 1)'),
+      perPage: z.number().optional().describe('Results per page for list action (max: 50)')
+    })
+  )
+  .output(
+    z.object({
+      teamId: z.number().optional().describe('Team ID'),
+      teamName: z.string().optional().describe('Team name'),
+      users: z
+        .array(
+          z.object({
+            userId: z.number(),
+            name: z.string()
+          })
+        )
+        .optional()
+        .describe('Team members'),
+      teams: z
+        .array(
+          z.object({
+            teamId: z.number(),
+            teamName: z.string(),
+            userCount: z.number()
+          })
+        )
+        .optional()
+        .describe('List of teams (for list action)'),
+      totalCount: z.number().optional().describe('Total teams count (for list action)'),
+      deleted: z.boolean().optional().describe('Whether the team was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
 
@@ -92,7 +112,8 @@ export let manageTeam = SlateTool.create(
     }
 
     if (action === 'add_user') {
-      if (!ctx.input.teamId || !ctx.input.userId) throw new Error('teamId and userId are required for add_user');
+      if (!ctx.input.teamId || !ctx.input.userId)
+        throw new Error('teamId and userId are required for add_user');
       let team = await client.addUserToTeam(ctx.input.teamId, ctx.input.userId);
       return {
         output: {
@@ -108,7 +129,8 @@ export let manageTeam = SlateTool.create(
     }
 
     if (action === 'remove_user') {
-      if (!ctx.input.teamId || !ctx.input.userId) throw new Error('teamId and userId are required for remove_user');
+      if (!ctx.input.teamId || !ctx.input.userId)
+        throw new Error('teamId and userId are required for remove_user');
       let team = await client.removeUserFromTeam(ctx.input.teamId, ctx.input.userId);
       return {
         output: {
@@ -124,4 +146,5 @@ export let manageTeam = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

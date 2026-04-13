@@ -3,29 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMetricsHistory = SlateTool.create(
-  spec,
-  {
-    name: 'Get Metrics History',
-    key: 'get_metrics_history',
-    description: `Access historical performance data for an influencer account on Instagram, TikTok, Twitter/X, or Twitch. Returns time-series data including follower count history and other platform-specific metrics over time.`,
-    tags: {
-      readOnly: true,
-    },
+export let getMetricsHistory = SlateTool.create(spec, {
+  name: 'Get Metrics History',
+  key: 'get_metrics_history',
+  description: `Access historical performance data for an influencer account on Instagram, TikTok, Twitter/X, or Twitch. Returns time-series data including follower count history and other platform-specific metrics over time.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    platform: z.enum(['instagram', 'tiktok', 'twitter', 'twitch']).describe('Social media platform'),
-    channel: z.string().describe('Username or channel name/ID'),
-  }))
-  .output(z.object({
-    history: z.any().describe('Historical metrics data including follower charts and platform-specific time-series data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      platform: z
+        .enum(['instagram', 'tiktok', 'twitter', 'twitch'])
+        .describe('Social media platform'),
+      channel: z.string().describe('Username or channel name/ID')
+    })
+  )
+  .output(
+    z.object({
+      history: z
+        .any()
+        .describe(
+          'Historical metrics data including follower charts and platform-specific time-series data'
+        )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       clientId: ctx.auth.clientId,
-      apiVersion: ctx.config.apiVersion,
+      apiVersion: ctx.config.apiVersion
     });
 
     let response: any;
@@ -47,8 +54,9 @@ export let getMetricsHistory = SlateTool.create(
 
     return {
       output: {
-        history: response?.result ?? response,
+        history: response?.result ?? response
       },
-      message: `Retrieved metrics history for **${ctx.input.channel}** on ${ctx.input.platform}.`,
+      message: `Retrieved metrics history for **${ctx.input.channel}** on ${ctx.input.platform}.`
     };
-  }).build();
+  })
+  .build();

@@ -36,37 +36,49 @@ APIVerve also supports a GraphQL interface where authentication is handled via t
 ## Features
 
 ### Data Validation & Verification
+
 Validate and verify various types of data including email addresses, phone numbers, BIN numbers, SSL certificates, and domain WHOIS information. Useful for form validation, fraud prevention, and data quality assurance.
 
 ### Text Analysis & Processing
+
 Services range from simple utility functions like QR code generation and URL shortening to complex AI-powered services like sentiment analysis and image processing. Includes grammar checking, hashtag generation, and other text processing capabilities.
 
 ### Data Generation
+
 Generate test data, barcodes, QR codes, captchas, TOTP codes, baby names, and other synthetic data. Useful for testing, prototyping, and application features that require on-the-fly content creation.
 
 ### Finance & Currency
+
 Access financial data including currency exchange rates, currency symbols, gold prices, stock data, CPI inflation data, and BIN lookups. Supports various currencies and financial instruments.
 
 ### Weather & Geography
+
 Retrieve current weather conditions, air quality data, earthquake information, and geographic data for locations worldwide. Includes IP geolocation services.
 
 ### AI & Computer Vision
+
 AI-powered APIs for tasks such as gender detection from names, sentiment analysis, and image processing.
 
 ### Domain & Web Data
+
 Look up domain registration (WHOIS), SSL certificate details, fully qualified domain names, Gravatar profiles, and perform web scraping operations.
 
 ### Data Conversion & Lookup
+
 Convert between data formats and look up reference data such as US car models, historical events, and Bible verses.
 
 ### Multiple Response Formats
+
 APIs support multiple query options and return responses in JSON, XML, YAML, and CSV formats.
 
 ### GraphQL Access
+
 Access APIs through GraphQL to combine multiple API calls in a single request. Query only the data you need with precise field selection, and orchestrate complex data fetching workflows.
+
 - Each API called in your GraphQL query consumes its standard credit cost.
 
 ### Credit-Based Usage
+
 APIVerve gives access to 300+ production-ready APIs with a single API key. All APIs are accessible under a unified credit-based billing model. The free trial includes 100 API credits per month and a rate limit of 5 requests per minute. Some parameters are restricted to paid plans only.
 
 ## Events

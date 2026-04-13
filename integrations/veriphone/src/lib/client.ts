@@ -42,14 +42,14 @@ export class Client {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.http = createAxios({
-      baseURL: 'https://api.veriphone.io/v2',
+      baseURL: 'https://api.veriphone.io/v2'
     });
   }
 
   async verifyPhone(params: VerifyParams): Promise<VerifyResponse> {
     let queryParams: Record<string, string> = {
       key: this.token,
-      phone: params.phone,
+      phone: params.phone
     };
 
     if (params.defaultCountry) {
@@ -71,13 +71,13 @@ export class Client {
       internationalNumber: data.international_number ?? null,
       localNumber: data.local_number ?? null,
       e164: data.e164 ?? null,
-      carrier: data.carrier ?? null,
+      carrier: data.carrier ?? null
     };
   }
 
   async getExamplePhone(params: ExampleParams): Promise<ExampleResponse> {
     let queryParams: Record<string, string> = {
-      key: this.token,
+      key: this.token
     };
 
     if (params.countryCode) {
@@ -98,7 +98,7 @@ export class Client {
       countryPrefix: data.country_prefix,
       internationalNumber: data.international_number,
       localNumber: data.local_number,
-      e164: data.e164,
+      e164: data.e164
     };
   }
 }

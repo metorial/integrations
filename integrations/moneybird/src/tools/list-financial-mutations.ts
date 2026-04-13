@@ -15,47 +15,60 @@ let mutationSchema = z.object({
   currency: z.string().nullable(),
   amountOpen: z.string().nullable(),
   financialAccountId: z.string().nullable(),
-  batchReference: z.string().nullable(),
+  batchReference: z.string().nullable()
 });
 
-export let listFinancialMutations = SlateTool.create(
-  spec,
-  {
-    name: 'List Financial Mutations',
-    key: 'list_financial_mutations',
-    description: `List bank transactions (financial mutations) in Moneybird. Filter by period, state (unprocessed/processed), mutation type (debit/credit), or financial account. Useful for reconciliation and reviewing unprocessed transactions.`,
-    tags: {
-      readOnly: true,
-    },
+export let listFinancialMutations = SlateTool.create(spec, {
+  name: 'List Financial Mutations',
+  key: 'list_financial_mutations',
+  description: `List bank transactions (financial mutations) in Moneybird. Filter by period, state (unprocessed/processed), mutation type (debit/credit), or financial account. Useful for reconciliation and reviewing unprocessed transactions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    period: z.string().optional().describe('Filter period: "this_month", "prev_month", "this_quarter", "this_year", "prev_year", or custom "YYYYMMDD..YYYYMMDD"'),
-    state: z.enum(['all', 'unprocessed', 'processed']).optional().describe('Filter by processing state'),
-    mutationType: z.enum(['all', 'debit', 'credit']).optional().describe('Filter by mutation type'),
-    financialAccountId: z.string().optional().describe('Filter by financial account ID'),
-    page: z.number().optional().describe('Page number'),
-    perPage: z.number().optional().describe('Results per page (1-100)'),
-  }))
-  .output(z.object({
-    mutations: z.array(mutationSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      period: z
+        .string()
+        .optional()
+        .describe(
+          'Filter period: "this_month", "prev_month", "this_quarter", "this_year", "prev_year", or custom "YYYYMMDD..YYYYMMDD"'
+        ),
+      state: z
+        .enum(['all', 'unprocessed', 'processed'])
+        .optional()
+        .describe('Filter by processing state'),
+      mutationType: z
+        .enum(['all', 'debit', 'credit'])
+        .optional()
+        .describe('Filter by mutation type'),
+      financialAccountId: z.string().optional().describe('Filter by financial account ID'),
+      page: z.number().optional().describe('Page number'),
+      perPage: z.number().optional().describe('Results per page (1-100)')
+    })
+  )
+  .output(
+    z.object({
+      mutations: z.array(mutationSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MoneybirdClient({
       token: ctx.auth.token,
-      administrationId: ctx.config.administrationId,
+      administrationId: ctx.config.administrationId
     });
 
     let filterParts: string[] = [];
     if (ctx.input.period) filterParts.push(`period:${ctx.input.period}`);
     if (ctx.input.state) filterParts.push(`state:${ctx.input.state}`);
     if (ctx.input.mutationType) filterParts.push(`mutation_type:${ctx.input.mutationType}`);
-    if (ctx.input.financialAccountId) filterParts.push(`financial_account_id:${ctx.input.financialAccountId}`);
+    if (ctx.input.financialAccountId)
+      filterParts.push(`financial_account_id:${ctx.input.financialAccountId}`);
 
     let mutations = await client.listFinancialMutations({
       filter: filterParts.length > 0 ? filterParts.join(',') : undefined,
       page: ctx.input.page,
-      perPage: ctx.input.perPage,
+      perPage: ctx.input.perPage
     });
 
     let mapped = mutations.map((m: any) => ({
@@ -70,11 +83,11 @@ export let listFinancialMutations = SlateTool.create(
       currency: m.currency || null,
       amountOpen: m.amount_open || null,
       financialAccountId: m.financial_account_id ? String(m.financial_account_id) : null,
-      batchReference: m.batch_reference || null,
+      batchReference: m.batch_reference || null
     }));
 
     return {
       output: { mutations: mapped },
-      message: `Found ${mapped.length} financial mutation(s)${ctx.input.state ? ` (${ctx.input.state})` : ''}.`,
+      message: `Found ${mapped.length} financial mutation(s)${ctx.input.state ? ` (${ctx.input.state})` : ''}.`
     };
   });

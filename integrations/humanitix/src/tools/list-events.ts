@@ -11,7 +11,10 @@ let eventSchema = z.object({
   startDate: z.string().optional().describe('Start date of the event'),
   endDate: z.string().optional().describe('End date of the event'),
   timezone: z.string().optional().describe('Timezone of the event'),
-  eventLocation: z.any().optional().describe('Location details including address, coordinates, and venue name'),
+  eventLocation: z
+    .any()
+    .optional()
+    .describe('Location details including address, coordinates, and venue name'),
   currency: z.string().optional().describe('Currency used for pricing'),
   totalCapacity: z.number().optional().describe('Total capacity for the event'),
   published: z.boolean().optional().describe('Whether the event is published'),
@@ -21,36 +24,37 @@ let eventSchema = z.object({
   ticketTypes: z.array(z.any()).optional().describe('Available ticket types for the event'),
   tagIds: z.array(z.string()).optional().describe('Tag IDs associated with the event'),
   createdAt: z.string().optional().describe('When the event was created'),
-  updatedAt: z.string().optional().describe('When the event was last updated'),
+  updatedAt: z.string().optional().describe('When the event was last updated')
 });
 
-export let listEvents = SlateTool.create(
-  spec,
-  {
-    name: 'List Events',
-    key: 'list_events',
-    description: `List all events owned by or shared with your Humanitix account. Returns event details including name, dates, location, capacity, ticket types, and status. Supports pagination for accounts with many events.`,
-    tags: {
-      readOnly: true,
-    },
+export let listEvents = SlateTool.create(spec, {
+  name: 'List Events',
+  key: 'list_events',
+  description: `List all events owned by or shared with your Humanitix account. Returns event details including name, dates, location, capacity, ticket types, and status. Supports pagination for accounts with many events.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    pageSize: z.number().optional().describe('Number of events per page (max 100)'),
-  }))
-  .output(z.object({
-    events: z.array(eventSchema).describe('List of events'),
-    totalResults: z.number().optional().describe('Total number of events available'),
-    page: z.number().optional().describe('Current page number'),
-    pageSize: z.number().optional().describe('Number of results per page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      pageSize: z.number().optional().describe('Number of events per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(eventSchema).describe('List of events'),
+      totalResults: z.number().optional().describe('Total number of events available'),
+      page: z.number().optional().describe('Current page number'),
+      pageSize: z.number().optional().describe('Number of results per page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.getEvents({
       page: ctx.input.page,
-      pageSize: ctx.input.pageSize,
+      pageSize: ctx.input.pageSize
     });
 
     let events = (response.events || []).map((event: any) => ({
@@ -71,7 +75,7 @@ export let listEvents = SlateTool.create(
       ticketTypes: event.ticketTypes,
       tagIds: event.tagIds,
       createdAt: event.createdAt,
-      updatedAt: event.updatedAt,
+      updatedAt: event.updatedAt
     }));
 
     return {
@@ -79,9 +83,9 @@ export let listEvents = SlateTool.create(
         events,
         totalResults: response.totalResults,
         page: response.page,
-        pageSize: response.pageSize,
+        pageSize: response.pageSize
       },
-      message: `Found **${events.length}** events${response.totalResults ? ` out of ${response.totalResults} total` : ''}.`,
+      message: `Found **${events.length}** events${response.totalResults ? ` out of ${response.totalResults} total` : ''}.`
     };
   })
   .build();

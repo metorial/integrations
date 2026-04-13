@@ -3,12 +3,22 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let priceSchema = z.object({
-  netPrice: z.number().optional().describe('Net price of the article'),
-  grossPrice: z.number().optional().describe('Gross price of the article'),
-  taxRatePercentage: z.enum(['0', '7', '19']).transform(Number).optional().describe('Tax rate percentage (0, 7, or 19)'),
-  leadingPrice: z.enum(['net', 'gross']).optional().describe('Whether net or gross is the leading price'),
-}).optional().describe('Pricing information for the article');
+let priceSchema = z
+  .object({
+    netPrice: z.number().optional().describe('Net price of the article'),
+    grossPrice: z.number().optional().describe('Gross price of the article'),
+    taxRatePercentage: z
+      .enum(['0', '7', '19'])
+      .transform(Number)
+      .optional()
+      .describe('Tax rate percentage (0, 7, or 19)'),
+    leadingPrice: z
+      .enum(['net', 'gross'])
+      .optional()
+      .describe('Whether net or gross is the leading price')
+  })
+  .optional()
+  .describe('Pricing information for the article');
 
 let articleOutputSchema = z.object({
   id: z.string().optional().describe('Unique article ID'),
@@ -20,50 +30,60 @@ let articleOutputSchema = z.object({
   gtin: z.string().optional().describe('Global Trade Item Number'),
   note: z.string().optional().describe('Internal note'),
   unitName: z.string().optional().describe('Unit name (e.g. Stück)'),
-  price: z.object({
-    netPrice: z.number().optional(),
-    grossPrice: z.number().optional(),
-    taxRatePercentage: z.number().optional(),
-    leadingPrice: z.string().optional(),
-  }).optional().describe('Pricing details'),
+  price: z
+    .object({
+      netPrice: z.number().optional(),
+      grossPrice: z.number().optional(),
+      taxRatePercentage: z.number().optional(),
+      leadingPrice: z.string().optional()
+    })
+    .optional()
+    .describe('Pricing details'),
   version: z.number().optional().describe('Article version for optimistic locking'),
   createdDate: z.string().optional().describe('Creation date'),
   updatedDate: z.string().optional().describe('Last updated date'),
-  deleted: z.boolean().optional().describe('Whether the article was deleted'),
+  deleted: z.boolean().optional().describe('Whether the article was deleted')
 });
 
-export let manageArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Article',
-    key: 'manage_article',
-    description: `Create, retrieve, update, or delete articles (products or services) in Lexoffice. Articles represent goods or services that can be used on invoices and other vouchers.`,
-    instructions: [
-      'Use action "create" to add a new article — title and type are required.',
-      'Use action "get" to retrieve full details of an article by its ID.',
-      'Use action "update" to modify an existing article — articleId is required.',
-      'Use action "delete" to permanently remove an article — articleId is required.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageArticle = SlateTool.create(spec, {
+  name: 'Manage Article',
+  key: 'manage_article',
+  description: `Create, retrieve, update, or delete articles (products or services) in Lexoffice. Articles represent goods or services that can be used on invoices and other vouchers.`,
+  instructions: [
+    'Use action "create" to add a new article — title and type are required.',
+    'Use action "get" to retrieve full details of an article by its ID.',
+    'Use action "update" to modify an existing article — articleId is required.',
+    'Use action "delete" to permanently remove an article — articleId is required.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('Operation to perform on the article'),
-    articleId: z.string().optional().describe('Article ID (required for get, update, delete)'),
-    title: z.string().optional().describe('Article title (required for create)'),
-    description: z.string().optional().describe('Article description'),
-    type: z.enum(['product', 'service']).optional().describe('Article type: product or service (required for create)'),
-    articleNumber: z.string().optional().describe('Custom article number'),
-    gtin: z.string().optional().describe('Global Trade Item Number (EAN/UPC)'),
-    note: z.string().optional().describe('Internal note for the article'),
-    unitName: z.string().optional().describe('Unit name, e.g. "Stück", "Stunde", "kg"'),
-    price: priceSchema,
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete'])
+        .describe('Operation to perform on the article'),
+      articleId: z
+        .string()
+        .optional()
+        .describe('Article ID (required for get, update, delete)'),
+      title: z.string().optional().describe('Article title (required for create)'),
+      description: z.string().optional().describe('Article description'),
+      type: z
+        .enum(['product', 'service'])
+        .optional()
+        .describe('Article type: product or service (required for create)'),
+      articleNumber: z.string().optional().describe('Custom article number'),
+      gtin: z.string().optional().describe('Global Trade Item Number (EAN/UPC)'),
+      note: z.string().optional().describe('Internal note for the article'),
+      unitName: z.string().optional().describe('Unit name, e.g. "Stück", "Stunde", "kg"'),
+      price: priceSchema
+    })
+  )
   .output(articleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -73,7 +93,7 @@ export let manageArticle = SlateTool.create(
 
       let articleData: Record<string, any> = {
         title: ctx.input.title,
-        type: ctx.input.type,
+        type: ctx.input.type
       };
       if (ctx.input.description) articleData.description = ctx.input.description;
       if (ctx.input.articleNumber) articleData.articleNumber = ctx.input.articleNumber;
@@ -82,10 +102,14 @@ export let manageArticle = SlateTool.create(
       if (ctx.input.unitName) articleData.unitName = ctx.input.unitName;
       if (ctx.input.price) {
         articleData.price = {};
-        if (ctx.input.price.netPrice !== undefined) articleData.price.netPrice = ctx.input.price.netPrice;
-        if (ctx.input.price.grossPrice !== undefined) articleData.price.grossPrice = ctx.input.price.grossPrice;
-        if (ctx.input.price.taxRatePercentage !== undefined) articleData.price.taxRatePercentage = ctx.input.price.taxRatePercentage;
-        if (ctx.input.price.leadingPrice) articleData.price.leadingPrice = ctx.input.price.leadingPrice;
+        if (ctx.input.price.netPrice !== undefined)
+          articleData.price.netPrice = ctx.input.price.netPrice;
+        if (ctx.input.price.grossPrice !== undefined)
+          articleData.price.grossPrice = ctx.input.price.grossPrice;
+        if (ctx.input.price.taxRatePercentage !== undefined)
+          articleData.price.taxRatePercentage = ctx.input.price.taxRatePercentage;
+        if (ctx.input.price.leadingPrice)
+          articleData.price.leadingPrice = ctx.input.price.leadingPrice;
       }
 
       let result = await client.createArticle(articleData);
@@ -98,9 +122,9 @@ export let manageArticle = SlateTool.create(
           type: ctx.input.type,
           version: result.version,
           createdDate: result.createdDate,
-          updatedDate: result.updatedDate,
+          updatedDate: result.updatedDate
         },
-        message: `Created article **${ctx.input.title}** (${result.id}).`,
+        message: `Created article **${ctx.input.title}** (${result.id}).`
       };
     }
 
@@ -120,17 +144,19 @@ export let manageArticle = SlateTool.create(
           gtin: article.gtin,
           note: article.note,
           unitName: article.unitName,
-          price: article.price ? {
-            netPrice: article.price.netPrice,
-            grossPrice: article.price.grossPrice,
-            taxRatePercentage: article.price.taxRatePercentage,
-            leadingPrice: article.price.leadingPrice,
-          } : undefined,
+          price: article.price
+            ? {
+                netPrice: article.price.netPrice,
+                grossPrice: article.price.grossPrice,
+                taxRatePercentage: article.price.taxRatePercentage,
+                leadingPrice: article.price.leadingPrice
+              }
+            : undefined,
           version: article.version,
           createdDate: article.createdDate,
-          updatedDate: article.updatedDate,
+          updatedDate: article.updatedDate
         },
-        message: `Retrieved article **${article.title}** (${article.id}) — ${article.type}, article number: ${article.articleNumber || 'N/A'}.`,
+        message: `Retrieved article **${article.title}** (${article.id}) — ${article.type}, article number: ${article.articleNumber || 'N/A'}.`
       };
     }
 
@@ -147,10 +173,14 @@ export let manageArticle = SlateTool.create(
       if (ctx.input.unitName) articleData.unitName = ctx.input.unitName;
       if (ctx.input.price) {
         articleData.price = {};
-        if (ctx.input.price.netPrice !== undefined) articleData.price.netPrice = ctx.input.price.netPrice;
-        if (ctx.input.price.grossPrice !== undefined) articleData.price.grossPrice = ctx.input.price.grossPrice;
-        if (ctx.input.price.taxRatePercentage !== undefined) articleData.price.taxRatePercentage = ctx.input.price.taxRatePercentage;
-        if (ctx.input.price.leadingPrice) articleData.price.leadingPrice = ctx.input.price.leadingPrice;
+        if (ctx.input.price.netPrice !== undefined)
+          articleData.price.netPrice = ctx.input.price.netPrice;
+        if (ctx.input.price.grossPrice !== undefined)
+          articleData.price.grossPrice = ctx.input.price.grossPrice;
+        if (ctx.input.price.taxRatePercentage !== undefined)
+          articleData.price.taxRatePercentage = ctx.input.price.taxRatePercentage;
+        if (ctx.input.price.leadingPrice)
+          articleData.price.leadingPrice = ctx.input.price.leadingPrice;
       }
 
       let result = await client.updateArticle(ctx.input.articleId, articleData);
@@ -162,9 +192,9 @@ export let manageArticle = SlateTool.create(
           title: ctx.input.title,
           version: result.version,
           createdDate: result.createdDate,
-          updatedDate: result.updatedDate,
+          updatedDate: result.updatedDate
         },
-        message: `Updated article **${ctx.input.title || result.id}**.`,
+        message: `Updated article **${ctx.input.title || result.id}**.`
       };
     }
 
@@ -176,8 +206,9 @@ export let manageArticle = SlateTool.create(
     return {
       output: {
         id: ctx.input.articleId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted article **${ctx.input.articleId}**.`,
+      message: `Deleted article **${ctx.input.articleId}**.`
     };
-  }).build();
+  })
+  .build();

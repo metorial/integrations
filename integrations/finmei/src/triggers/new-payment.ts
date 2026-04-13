@@ -3,38 +3,40 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newPayment = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Payment',
-    key: 'new_payment',
-    description: 'Triggers when a new payment is recorded in Finmei. Polls the payments list and detects newly added payments.',
-  }
-)
-  .input(z.object({
-    paymentId: z.string().describe('Payment ID'),
-    invoiceId: z.string().optional().describe('Associated invoice ID'),
-    amount: z.number().optional().describe('Payment amount'),
-    date: z.string().optional().describe('Payment date'),
-    mode: z.string().optional().describe('Payment method'),
-    reference: z.string().optional().describe('Payment reference'),
-    status: z.string().optional().describe('Payment status'),
-  }))
-  .output(z.object({
-    paymentId: z.string().describe('Payment ID'),
-    invoiceId: z.string().optional().describe('Associated invoice ID'),
-    amount: z.number().optional().describe('Payment amount'),
-    date: z.string().optional().describe('Payment date'),
-    mode: z.string().optional().describe('Payment method/mode'),
-    reference: z.string().optional().describe('Payment reference number'),
-    status: z.string().optional().describe('Payment status'),
-  }))
+export let newPayment = SlateTrigger.create(spec, {
+  name: 'New Payment',
+  key: 'new_payment',
+  description:
+    'Triggers when a new payment is recorded in Finmei. Polls the payments list and detects newly added payments.'
+})
+  .input(
+    z.object({
+      paymentId: z.string().describe('Payment ID'),
+      invoiceId: z.string().optional().describe('Associated invoice ID'),
+      amount: z.number().optional().describe('Payment amount'),
+      date: z.string().optional().describe('Payment date'),
+      mode: z.string().optional().describe('Payment method'),
+      reference: z.string().optional().describe('Payment reference'),
+      status: z.string().optional().describe('Payment status')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.string().describe('Payment ID'),
+      invoiceId: z.string().optional().describe('Associated invoice ID'),
+      amount: z.number().optional().describe('Payment amount'),
+      date: z.string().optional().describe('Payment date'),
+      mode: z.string().optional().describe('Payment method/mode'),
+      reference: z.string().optional().describe('Payment reference number'),
+      status: z.string().optional().describe('Payment status')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FinmeiClient(ctx.auth.token);
 
       let state = ctx.state as { knownPaymentIds?: string[] } | null;
@@ -68,7 +70,7 @@ export let newPayment = SlateTrigger.create(
             date: p.date,
             mode: p.mode,
             reference: p.reference,
-            status: p.status,
+            status: p.status
           });
         }
       }
@@ -76,12 +78,12 @@ export let newPayment = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownPaymentIds: allIds,
-        },
+          knownPaymentIds: allIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'payment.created',
         id: `payment-${ctx.input.paymentId}`,
@@ -92,9 +94,9 @@ export let newPayment = SlateTrigger.create(
           date: ctx.input.date,
           mode: ctx.input.mode,
           reference: ctx.input.reference,
-          status: ctx.input.status,
-        },
+          status: ctx.input.status
+        }
       };
-    },
+    }
   })
   .build();

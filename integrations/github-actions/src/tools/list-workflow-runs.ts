@@ -10,44 +10,60 @@ let workflowRunSchema = z.object({
   headBranch: z.string().nullable().describe('Head branch'),
   headSha: z.string().describe('Head commit SHA'),
   status: z.string().nullable().describe('Run status (queued, in_progress, completed, etc.)'),
-  conclusion: z.string().nullable().describe('Run conclusion (success, failure, cancelled, skipped, etc.)'),
+  conclusion: z
+    .string()
+    .nullable()
+    .describe('Run conclusion (success, failure, cancelled, skipped, etc.)'),
   event: z.string().describe('Triggering event (push, pull_request, workflow_dispatch, etc.)'),
   runNumber: z.number().describe('Run number'),
   runAttempt: z.number().optional().describe('Current run attempt number'),
   htmlUrl: z.string().describe('URL to the run on GitHub'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp'),
-  actor: z.string().nullable().describe('User who triggered the run'),
+  actor: z.string().nullable().describe('User who triggered the run')
 });
 
-export let listWorkflowRuns = SlateTool.create(
-  spec,
-  {
-    name: 'List Workflow Runs',
-    key: 'list_workflow_runs',
-    description: `List workflow runs for a repository, optionally filtered by a specific workflow, branch, event, status, or actor. Returns run status, conclusions, and metadata for each run.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWorkflowRuns = SlateTool.create(spec, {
+  name: 'List Workflow Runs',
+  key: 'list_workflow_runs',
+  description: `List workflow runs for a repository, optionally filtered by a specific workflow, branch, event, status, or actor. Returns run status, conclusions, and metadata for each run.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    owner: z.string().describe('Repository owner (user or organization)'),
-    repo: z.string().describe('Repository name'),
-    workflowId: z.union([z.number(), z.string()]).optional().describe('Filter by workflow ID or file name'),
-    actor: z.string().optional().describe('Filter by the user who triggered the run'),
-    branch: z.string().optional().describe('Filter by branch name'),
-    event: z.string().optional().describe('Filter by event type (push, pull_request, workflow_dispatch, etc.)'),
-    status: z.string().optional().describe('Filter by status (queued, in_progress, completed, success, failure, etc.)'),
-    perPage: z.number().optional().describe('Results per page (max 100, default 30)'),
-    page: z.number().optional().describe('Page number for pagination'),
-    excludePullRequests: z.boolean().optional().describe('Exclude pull request triggered runs'),
-  }))
-  .output(z.object({
-    totalCount: z.number().describe('Total number of matching runs'),
-    runs: z.array(workflowRunSchema).describe('List of workflow runs'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      owner: z.string().describe('Repository owner (user or organization)'),
+      repo: z.string().describe('Repository name'),
+      workflowId: z
+        .union([z.number(), z.string()])
+        .optional()
+        .describe('Filter by workflow ID or file name'),
+      actor: z.string().optional().describe('Filter by the user who triggered the run'),
+      branch: z.string().optional().describe('Filter by branch name'),
+      event: z
+        .string()
+        .optional()
+        .describe('Filter by event type (push, pull_request, workflow_dispatch, etc.)'),
+      status: z
+        .string()
+        .optional()
+        .describe('Filter by status (queued, in_progress, completed, success, failure, etc.)'),
+      perPage: z.number().optional().describe('Results per page (max 100, default 30)'),
+      page: z.number().optional().describe('Page number for pagination'),
+      excludePullRequests: z
+        .boolean()
+        .optional()
+        .describe('Exclude pull request triggered runs')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().describe('Total number of matching runs'),
+      runs: z.array(workflowRunSchema).describe('List of workflow runs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitHubActionsClient(ctx.auth.token);
     let data = await client.listWorkflowRuns(ctx.input.owner, ctx.input.repo, {
       workflowId: ctx.input.workflowId,
@@ -57,7 +73,7 @@ export let listWorkflowRuns = SlateTool.create(
       status: ctx.input.status,
       perPage: ctx.input.perPage,
       page: ctx.input.page,
-      excludePullRequests: ctx.input.excludePullRequests,
+      excludePullRequests: ctx.input.excludePullRequests
     });
 
     let runs = (data.workflow_runs ?? []).map((r: any) => ({
@@ -74,14 +90,15 @@ export let listWorkflowRuns = SlateTool.create(
       htmlUrl: r.html_url,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
-      actor: r.actor?.login ?? null,
+      actor: r.actor?.login ?? null
     }));
 
     return {
       output: {
         totalCount: data.total_count,
-        runs,
+        runs
       },
-      message: `Found **${data.total_count}** workflow runs in **${ctx.input.owner}/${ctx.input.repo}**.`,
+      message: `Found **${data.total_count}** workflow runs in **${ctx.input.owner}/${ctx.input.repo}**.`
     };
-  }).build();
+  })
+  .build();

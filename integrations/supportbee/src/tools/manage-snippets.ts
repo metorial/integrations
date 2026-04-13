@@ -4,34 +4,40 @@ import { snippetSchema } from '../lib/types';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSnippets = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Snippets',
-    key: 'manage_snippets',
-    description: `List, create, update, or delete response template snippets. Snippets are saved replies for frequently asked questions that agents can reuse across tickets.`,
-    instructions: [
-      'Set action to "list" to retrieve all snippets.',
-      'Set action to "create" to create a new snippet (name required).',
-      'Set action to "update" to modify an existing snippet (snippetId required).',
-      'Set action to "delete" to remove a snippet (snippetId required).'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('The operation to perform'),
-    snippetId: z.number().optional().describe('Snippet ID (required for update and delete)'),
-    name: z.string().optional().describe('Snippet name/title (required for create)'),
-    tags: z.string().optional().describe('Comma-separated tags for the snippet'),
-    contentText: z.string().optional().describe('Plain text content of the snippet'),
-    contentHtml: z.string().optional().describe('HTML content of the snippet')
-  }))
-  .output(z.object({
-    snippets: z.array(snippetSchema).optional().describe('List of snippets (for list action)'),
-    snippet: snippetSchema.optional().describe('Created or updated snippet'),
-    deleted: z.boolean().optional().describe('Whether the snippet was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSnippets = SlateTool.create(spec, {
+  name: 'Manage Snippets',
+  key: 'manage_snippets',
+  description: `List, create, update, or delete response template snippets. Snippets are saved replies for frequently asked questions that agents can reuse across tickets.`,
+  instructions: [
+    'Set action to "list" to retrieve all snippets.',
+    'Set action to "create" to create a new snippet (name required).',
+    'Set action to "update" to modify an existing snippet (snippetId required).',
+    'Set action to "delete" to remove a snippet (snippetId required).'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'update', 'delete'])
+        .describe('The operation to perform'),
+      snippetId: z.number().optional().describe('Snippet ID (required for update and delete)'),
+      name: z.string().optional().describe('Snippet name/title (required for create)'),
+      tags: z.string().optional().describe('Comma-separated tags for the snippet'),
+      contentText: z.string().optional().describe('Plain text content of the snippet'),
+      contentHtml: z.string().optional().describe('HTML content of the snippet')
+    })
+  )
+  .output(
+    z.object({
+      snippets: z
+        .array(snippetSchema)
+        .optional()
+        .describe('List of snippets (for list action)'),
+      snippet: snippetSchema.optional().describe('Created or updated snippet'),
+      deleted: z.boolean().optional().describe('Whether the snippet was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       companySubdomain: ctx.config.companySubdomain
@@ -79,4 +85,5 @@ export let manageSnippets = SlateTool.create(
       output: { deleted: true },
       message: `Deleted snippet **#${ctx.input.snippetId}**`
     };
-  }).build();
+  })
+  .build();

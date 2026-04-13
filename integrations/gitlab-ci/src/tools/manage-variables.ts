@@ -12,49 +12,67 @@ let variableSchema = z.object({
   environmentScope: z.string().optional()
 });
 
-export let manageVariables = SlateTool.create(
-  spec,
-  {
-    name: 'Manage CI/CD Variables',
-    key: 'manage_variables',
-    description: `List, create, update, or delete CI/CD variables at the project or group level. Variables can be scoped to environments, marked as protected (limited to protected branches/tags), or masked in logs.`,
-    instructions: [
-      'Use action "list" to get all variables for the scope.',
-      'Use action "get" to fetch a single variable by key.',
-      'Use action "create" to create a new variable.',
-      'Use action "update" to modify an existing variable.',
-      'Use action "delete" to remove a variable.'
-    ]
-  }
-)
-  .input(z.object({
-    scope: z.enum(['project', 'group']).default('project').describe('Scope of the variable'),
-    scopeId: z.string().optional().describe('Project ID or group ID. Falls back to config projectId for project scope.'),
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    key: z.string().optional().describe('Variable key (required for get, create, update, delete)'),
-    value: z.string().optional().describe('Variable value (required for create, used in update)'),
-    variableType: z.enum(['env_var', 'file']).optional().describe('Variable type'),
-    isProtected: z.boolean().optional().describe('Only expose to protected branches/tags'),
-    isMasked: z.boolean().optional().describe('Mask the value in job logs'),
-    environmentScope: z.string().optional().describe('Environment scope (e.g. "production", "*")')
-  }))
-  .output(z.object({
-    variables: z.array(variableSchema).optional(),
-    variable: variableSchema.optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageVariables = SlateTool.create(spec, {
+  name: 'Manage CI/CD Variables',
+  key: 'manage_variables',
+  description: `List, create, update, or delete CI/CD variables at the project or group level. Variables can be scoped to environments, marked as protected (limited to protected branches/tags), or masked in logs.`,
+  instructions: [
+    'Use action "list" to get all variables for the scope.',
+    'Use action "get" to fetch a single variable by key.',
+    'Use action "create" to create a new variable.',
+    'Use action "update" to modify an existing variable.',
+    'Use action "delete" to remove a variable.'
+  ]
+})
+  .input(
+    z.object({
+      scope: z.enum(['project', 'group']).default('project').describe('Scope of the variable'),
+      scopeId: z
+        .string()
+        .optional()
+        .describe('Project ID or group ID. Falls back to config projectId for project scope.'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      key: z
+        .string()
+        .optional()
+        .describe('Variable key (required for get, create, update, delete)'),
+      value: z
+        .string()
+        .optional()
+        .describe('Variable value (required for create, used in update)'),
+      variableType: z.enum(['env_var', 'file']).optional().describe('Variable type'),
+      isProtected: z.boolean().optional().describe('Only expose to protected branches/tags'),
+      isMasked: z.boolean().optional().describe('Mask the value in job logs'),
+      environmentScope: z
+        .string()
+        .optional()
+        .describe('Environment scope (e.g. "production", "*")')
+    })
+  )
+  .output(
+    z.object({
+      variables: z.array(variableSchema).optional(),
+      variable: variableSchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
-    let { scope, action, key, value, variableType, isProtected, isMasked, environmentScope } = ctx.input;
-    let scopeId = ctx.input.scopeId || (scope === 'project' ? ctx.config.projectId : undefined);
+    let { scope, action, key, value, variableType, isProtected, isMasked, environmentScope } =
+      ctx.input;
+    let scopeId =
+      ctx.input.scopeId || (scope === 'project' ? ctx.config.projectId : undefined);
     if (!scopeId) {
       throw new Error(`${scope} ID is required.`);
     }
 
     if (action === 'list') {
-      let result = scope === 'project'
-        ? await client.listProjectVariables(scopeId)
-        : await client.listGroupVariables(scopeId);
+      let result =
+        scope === 'project'
+          ? await client.listProjectVariables(scopeId)
+          : await client.listGroupVariables(scopeId);
       let variables = (result as any[]).map((v: any) => ({
         key: v.key,
         value: v.value,
@@ -71,7 +89,7 @@ export let manageVariables = SlateTool.create(
 
     if (action === 'get') {
       if (!key) throw new Error('key is required for get action');
-      let v = await client.getProjectVariable(scopeId, key) as any;
+      let v = (await client.getProjectVariable(scopeId, key)) as any;
       return {
         output: {
           variable: {

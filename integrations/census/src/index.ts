@@ -11,7 +11,7 @@ import {
   listConnections,
   manageWebhook,
   listWebhooks,
-  getDatasetRecord,
+  getDatasetRecord
 } from './tools';
 import { syncAlert } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     listConnections,
     manageWebhook,
     listWebhooks,
-    getDatasetRecord,
+    getDatasetRecord
   ],
-  triggers: [
-    syncAlert,
-  ],
+  triggers: [syncAlert]
 });

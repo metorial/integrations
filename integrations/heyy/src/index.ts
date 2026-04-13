@@ -16,7 +16,7 @@ import {
   listChatsTool,
   updateChatTool,
   listWorkflowsTool,
-  triggerWorkflowTool,
+  triggerWorkflowTool
 } from './tools';
 import { incomingMessageTrigger } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     listChatsTool,
     updateChatTool,
     listWorkflowsTool,
-    triggerWorkflowTool,
+    triggerWorkflowTool
   ],
-  triggers: [
-    incomingMessageTrigger,
-  ],
+  triggers: [incomingMessageTrigger]
 });

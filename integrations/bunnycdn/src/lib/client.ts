@@ -9,7 +9,7 @@ let STORAGE_REGION_HOSTS: Record<string, string> = {
   syd: 'syd.storage.bunnycdn.com',
   se: 'se.storage.bunnycdn.com',
   br: 'br.storage.bunnycdn.com',
-  jh: 'jh.storage.bunnycdn.com',
+  jh: 'jh.storage.bunnycdn.com'
 };
 
 export class CoreClient {
@@ -19,10 +19,10 @@ export class CoreClient {
     this.axios = createAxios({
       baseURL: 'https://api.bunny.net',
       headers: {
-        'AccessKey': config.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        AccessKey: config.token,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -53,22 +53,30 @@ export class CoreClient {
   }
 
   async addPullZoneHostname(pullZoneId: number, hostname: string) {
-    let response = await this.axios.post(`/pullzone/${pullZoneId}/hostnames`, { Hostname: hostname });
+    let response = await this.axios.post(`/pullzone/${pullZoneId}/hostnames`, {
+      Hostname: hostname
+    });
     return response.data;
   }
 
   async deletePullZoneHostname(pullZoneId: number, hostname: string) {
-    let response = await this.axios.delete(`/pullzone/${pullZoneId}/hostnames`, { data: { Hostname: hostname } });
+    let response = await this.axios.delete(`/pullzone/${pullZoneId}/hostnames`, {
+      data: { Hostname: hostname }
+    });
     return response.data;
   }
 
   async addPullZoneBlockedIp(pullZoneId: number, blockedIp: string) {
-    let response = await this.axios.post(`/pullzone/${pullZoneId}/blockedips`, { BlockedIp: blockedIp });
+    let response = await this.axios.post(`/pullzone/${pullZoneId}/blockedips`, {
+      BlockedIp: blockedIp
+    });
     return response.data;
   }
 
   async deletePullZoneBlockedIp(pullZoneId: number, blockedIp: string) {
-    let response = await this.axios.delete(`/pullzone/${pullZoneId}/blockedips`, { data: { BlockedIp: blockedIp } });
+    let response = await this.axios.delete(`/pullzone/${pullZoneId}/blockedips`, {
+      data: { BlockedIp: blockedIp }
+    });
     return response.data;
   }
 
@@ -85,7 +93,11 @@ export class CoreClient {
   }
 
   // Storage Zones (management via core API)
-  async listStorageZones(params?: { page?: number; perPage?: number; includeDeleted?: boolean }) {
+  async listStorageZones(params?: {
+    page?: number;
+    perPage?: number;
+    includeDeleted?: boolean;
+  }) {
     let response = await this.axios.get('/storagezone', { params });
     return response.data;
   }
@@ -95,7 +107,12 @@ export class CoreClient {
     return response.data;
   }
 
-  async createStorageZone(data: { Name: string; Region?: string; ReplicationRegions?: string[]; ZoneTier?: number }) {
+  async createStorageZone(data: {
+    Name: string;
+    Region?: string;
+    ReplicationRegions?: string[];
+    ZoneTier?: number;
+  }) {
     let response = await this.axios.post('/storagezone', data);
     return response.data;
   }
@@ -152,14 +169,19 @@ export class CoreClient {
   }
 
   // Video Libraries (managed via core API)
-  async listVideoLibraries(params?: { page?: number; perPage?: number; search?: string; includeAccessKey?: boolean }) {
+  async listVideoLibraries(params?: {
+    page?: number;
+    perPage?: number;
+    search?: string;
+    includeAccessKey?: boolean;
+  }) {
     let response = await this.axios.get('/videolibrary', { params });
     return response.data;
   }
 
   async getVideoLibrary(libraryId: number, includeAccessKey?: boolean) {
     let response = await this.axios.get(`/videolibrary/${libraryId}`, {
-      params: includeAccessKey ? { includeAccessKey: true } : undefined,
+      params: includeAccessKey ? { includeAccessKey: true } : undefined
     });
     return response.data;
   }
@@ -200,8 +222,8 @@ export class StorageClient {
     this.axios = createAxios({
       baseURL: `https://${host}`,
       headers: {
-        'AccessKey': config.storageToken,
-      },
+        AccessKey: config.storageToken
+      }
     });
   }
 
@@ -217,22 +239,18 @@ export class StorageClient {
 
   async uploadFile(storageZoneName: string, filePath: string, content: string) {
     let normalizedPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
-    let response = await this.axios.put(
-      `/${storageZoneName}${normalizedPath}`,
-      content,
-      {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-        },
+    let response = await this.axios.put(`/${storageZoneName}${normalizedPath}`, content, {
+      headers: {
+        'Content-Type': 'application/octet-stream'
       }
-    );
+    });
     return response.data;
   }
 
   async downloadFile(storageZoneName: string, filePath: string) {
     let normalizedPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
     let response = await this.axios.get(`/${storageZoneName}${normalizedPath}`, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
@@ -251,15 +269,24 @@ export class StreamClient {
     this.axios = createAxios({
       baseURL: 'https://video.bunnycdn.com',
       headers: {
-        'AccessKey': config.streamToken,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        AccessKey: config.streamToken,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // Videos
-  async listVideos(libraryId: number, params?: { page?: number; itemsPerPage?: number; search?: string; collection?: string; orderBy?: string }) {
+  async listVideos(
+    libraryId: number,
+    params?: {
+      page?: number;
+      itemsPerPage?: number;
+      search?: string;
+      collection?: string;
+      orderBy?: string;
+    }
+  ) {
     let response = await this.axios.get(`/library/${libraryId}/videos`, { params });
     return response.data;
   }
@@ -269,7 +296,10 @@ export class StreamClient {
     return response.data;
   }
 
-  async createVideo(libraryId: number, data: { title: string; collectionId?: string; thumbnailTime?: number }) {
+  async createVideo(
+    libraryId: number,
+    data: { title: string; collectionId?: string; thumbnailTime?: number }
+  ) {
     let response = await this.axios.post(`/library/${libraryId}/videos`, data);
     return response.data;
   }
@@ -284,7 +314,10 @@ export class StreamClient {
     return response.data;
   }
 
-  async fetchVideo(libraryId: number, data: { url: string; headers?: Record<string, string> }) {
+  async fetchVideo(
+    libraryId: number,
+    data: { url: string; headers?: Record<string, string> }
+  ) {
     let response = await this.axios.post(`/library/${libraryId}/videos/fetch`, data);
     return response.data;
   }
@@ -295,24 +328,41 @@ export class StreamClient {
   }
 
   async setThumbnail(libraryId: number, videoId: string, thumbnailUrl: string) {
-    let response = await this.axios.post(`/library/${libraryId}/videos/${videoId}/thumbnail`, null, {
-      params: { thumbnailUrl },
-    });
+    let response = await this.axios.post(
+      `/library/${libraryId}/videos/${videoId}/thumbnail`,
+      null,
+      {
+        params: { thumbnailUrl }
+      }
+    );
     return response.data;
   }
 
-  async addCaption(libraryId: number, videoId: string, language: string, data: { srclang: string; label: string; captionsFile: string }) {
-    let response = await this.axios.post(`/library/${libraryId}/videos/${videoId}/captions/${language}`, data);
+  async addCaption(
+    libraryId: number,
+    videoId: string,
+    language: string,
+    data: { srclang: string; label: string; captionsFile: string }
+  ) {
+    let response = await this.axios.post(
+      `/library/${libraryId}/videos/${videoId}/captions/${language}`,
+      data
+    );
     return response.data;
   }
 
   async deleteCaption(libraryId: number, videoId: string, language: string) {
-    let response = await this.axios.delete(`/library/${libraryId}/videos/${videoId}/captions/${language}`);
+    let response = await this.axios.delete(
+      `/library/${libraryId}/videos/${videoId}/captions/${language}`
+    );
     return response.data;
   }
 
   // Collections
-  async listCollections(libraryId: number, params?: { page?: number; itemsPerPage?: number; search?: string; orderBy?: string }) {
+  async listCollections(
+    libraryId: number,
+    params?: { page?: number; itemsPerPage?: number; search?: string; orderBy?: string }
+  ) {
     let response = await this.axios.get(`/library/${libraryId}/collections`, { params });
     return response.data;
   }
@@ -328,12 +378,16 @@ export class StreamClient {
   }
 
   async updateCollection(libraryId: number, collectionId: string, name: string) {
-    let response = await this.axios.post(`/library/${libraryId}/collections/${collectionId}`, { name });
+    let response = await this.axios.post(`/library/${libraryId}/collections/${collectionId}`, {
+      name
+    });
     return response.data;
   }
 
   async deleteCollection(libraryId: number, collectionId: string) {
-    let response = await this.axios.delete(`/library/${libraryId}/collections/${collectionId}`);
+    let response = await this.axios.delete(
+      `/library/${libraryId}/collections/${collectionId}`
+    );
     return response.data;
   }
 }

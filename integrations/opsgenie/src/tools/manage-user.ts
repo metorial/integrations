@@ -3,40 +3,50 @@ import { OpsGenieClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Create, update, or delete a user. When creating, provide username (email), full name, and role. When updating, provide the user identifier and the fields to change.`,
-    instructions: [
-      'To create: set action to "create" and provide username, fullName, and role.',
-      'To update: set action to "update" and provide userIdentifier plus the fields to change.',
-      'To delete: set action to "delete" and provide userIdentifier.',
-      'Role can be "Owner", "Admin", "User", or a custom role name.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    userIdentifier: z.string().optional().describe('User ID or username (required for update/delete)'),
-    username: z.string().optional().describe('User email address (required for create)'),
-    fullName: z.string().optional().describe('Full name of the user (required for create)'),
-    role: z.string().optional().describe('User role: Owner, Admin, User, or custom role (required for create)'),
-    timezone: z.string().optional().describe('User timezone (e.g., "America/New_York")'),
-    locale: z.string().optional().describe('User locale (e.g., "en_US")'),
-    tags: z.array(z.string()).optional().describe('User tags'),
-    invitationDisabled: z.boolean().optional().describe('Disable invitation email (only for create)'),
-  }))
-  .output(z.object({
-    userId: z.string().optional().describe('User ID'),
-    username: z.string().optional().describe('User email'),
-    result: z.string().describe('Operation result message'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Create, update, or delete a user. When creating, provide username (email), full name, and role. When updating, provide the user identifier and the fields to change.`,
+  instructions: [
+    'To create: set action to "create" and provide username, fullName, and role.',
+    'To update: set action to "update" and provide userIdentifier plus the fields to change.',
+    'To delete: set action to "delete" and provide userIdentifier.',
+    'Role can be "Owner", "Admin", "User", or a custom role name.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      userIdentifier: z
+        .string()
+        .optional()
+        .describe('User ID or username (required for update/delete)'),
+      username: z.string().optional().describe('User email address (required for create)'),
+      fullName: z.string().optional().describe('Full name of the user (required for create)'),
+      role: z
+        .string()
+        .optional()
+        .describe('User role: Owner, Admin, User, or custom role (required for create)'),
+      timezone: z.string().optional().describe('User timezone (e.g., "America/New_York")'),
+      locale: z.string().optional().describe('User locale (e.g., "en_US")'),
+      tags: z.array(z.string()).optional().describe('User tags'),
+      invitationDisabled: z
+        .boolean()
+        .optional()
+        .describe('Disable invitation email (only for create)')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().optional().describe('User ID'),
+      username: z.string().optional().describe('User email'),
+      result: z.string().describe('Operation result message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OpsGenieClient({
       token: ctx.auth.token,
-      instance: ctx.config.instance,
+      instance: ctx.config.instance
     });
 
     switch (ctx.input.action) {
@@ -51,15 +61,15 @@ export let manageUser = SlateTool.create(
           timezone: ctx.input.timezone,
           locale: ctx.input.locale,
           tags: ctx.input.tags,
-          invitationDisabled: ctx.input.invitationDisabled,
+          invitationDisabled: ctx.input.invitationDisabled
         });
         return {
           output: {
             userId: user.id,
             username: user.username ?? ctx.input.username,
-            result: 'User created successfully',
+            result: 'User created successfully'
           },
-          message: `Created user **${ctx.input.fullName}** (${ctx.input.username})`,
+          message: `Created user **${ctx.input.fullName}** (${ctx.input.username})`
         };
       }
       case 'update': {
@@ -79,9 +89,9 @@ export let manageUser = SlateTool.create(
           output: {
             userId: updated.id ?? ctx.input.userIdentifier,
             username: updated.username,
-            result: 'User updated successfully',
+            result: 'User updated successfully'
           },
-          message: `Updated user \`${ctx.input.userIdentifier}\``,
+          message: `Updated user \`${ctx.input.userIdentifier}\``
         };
       }
       case 'delete': {
@@ -91,10 +101,11 @@ export let manageUser = SlateTool.create(
         await client.deleteUser(ctx.input.userIdentifier);
         return {
           output: {
-            result: 'User deleted successfully',
+            result: 'User deleted successfully'
           },
-          message: `Deleted user \`${ctx.input.userIdentifier}\``,
+          message: `Deleted user \`${ctx.input.userIdentifier}\``
         };
       }
     }
-  }).build();
+  })
+  .build();

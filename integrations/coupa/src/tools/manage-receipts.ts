@@ -13,40 +13,50 @@ let receiptOutputSchema = z.object({
   receiptLines: z.array(z.any()).nullable().optional().describe('Receipt line items'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  rawData: z.any().optional().describe('Complete raw receipt data'),
+  rawData: z.any().optional().describe('Complete raw receipt data')
 });
 
-export let searchReceipts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Receipts',
-    key: 'search_receipts',
-    description: `Search and list receipts in Coupa. Track goods received against purchase orders.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchReceipts = SlateTool.create(spec, {
+  name: 'Search Receipts',
+  key: 'search_receipts',
+  description: `Search and list receipts in Coupa. Track goods received against purchase orders.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.string().optional().describe('Filter by receipt status'),
-    purchaseOrderId: z.number().optional().describe('Filter by purchase order ID'),
-    createdAfter: z.string().optional().describe('Filter receipts created after this date (ISO 8601)'),
-    updatedAfter: z.string().optional().describe('Filter receipts updated after this date (ISO 8601)'),
-    exportedFlag: z.boolean().optional().describe('Filter by exported status'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional Coupa query filters'),
-    orderBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    receipts: z.array(receiptOutputSchema).describe('List of matching receipts'),
-    count: z.number().describe('Number of receipts returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z.string().optional().describe('Filter by receipt status'),
+      purchaseOrderId: z.number().optional().describe('Filter by purchase order ID'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter receipts created after this date (ISO 8601)'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter receipts updated after this date (ISO 8601)'),
+      exportedFlag: z.boolean().optional().describe('Filter by exported status'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional Coupa query filters'),
+      orderBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      receipts: z.array(receiptOutputSchema).describe('List of matching receipts'),
+      count: z.number().describe('Number of receipts returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let filters: Record<string, string> = {};
@@ -56,7 +66,8 @@ export let searchReceipts = SlateTool.create(
       }
     }
     if (ctx.input.status) filters['status'] = ctx.input.status;
-    if (ctx.input.purchaseOrderId) filters['order-header-id'] = String(ctx.input.purchaseOrderId);
+    if (ctx.input.purchaseOrderId)
+      filters['order-header-id'] = String(ctx.input.purchaseOrderId);
     if (ctx.input.createdAfter) filters['created-at[gt]'] = ctx.input.createdAfter;
     if (ctx.input.updatedAfter) filters['updated-at[gt]'] = ctx.input.updatedAfter;
 
@@ -66,7 +77,7 @@ export let searchReceipts = SlateTool.create(
       dir: ctx.input.sortDirection,
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      exportedFlag: ctx.input.exportedFlag,
+      exportedFlag: ctx.input.exportedFlag
     });
 
     let receipts = (Array.isArray(results) ? results : []).map((r: any) => ({
@@ -79,47 +90,46 @@ export let searchReceipts = SlateTool.create(
       receiptLines: r['receipt-lines'] ?? r.receipt_lines ?? null,
       createdAt: r['created-at'] ?? r.created_at ?? null,
       updatedAt: r['updated-at'] ?? r.updated_at ?? null,
-      rawData: r,
+      rawData: r
     }));
 
     return {
       output: {
         receipts,
-        count: receipts.length,
+        count: receipts.length
       },
-      message: `Found **${receipts.length}** receipt(s).`,
+      message: `Found **${receipts.length}** receipt(s).`
     };
   })
   .build();
 
-export let createReceipt = SlateTool.create(
-  spec,
-  {
-    name: 'Create Receipt',
-    key: 'create_receipt',
-    description: `Create a receipt to record goods received against a purchase order line.`,
-    tags: {
-      destructive: false,
-    },
+export let createReceipt = SlateTool.create(spec, {
+  name: 'Create Receipt',
+  key: 'create_receipt',
+  description: `Create a receipt to record goods received against a purchase order line.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    purchaseOrderLineId: z.number().describe('ID of the purchase order line being received'),
-    quantity: z.number().describe('Quantity received'),
-    receivedById: z.number().optional().describe('ID of the user receiving the goods'),
-    receiptDate: z.string().optional().describe('Date of receipt (ISO 8601)'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-  }))
+})
+  .input(
+    z.object({
+      purchaseOrderLineId: z.number().describe('ID of the purchase order line being received'),
+      quantity: z.number().describe('Quantity received'),
+      receivedById: z.number().optional().describe('ID of the user receiving the goods'),
+      receiptDate: z.string().optional().describe('Date of receipt (ISO 8601)'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Custom field values')
+    })
+  )
   .output(receiptOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let payload: any = {
       'order-line-id': ctx.input.purchaseOrderLineId,
-      quantity: String(ctx.input.quantity),
+      quantity: String(ctx.input.quantity)
     };
 
     if (ctx.input.receivedById) payload['received-by'] = { id: ctx.input.receivedById };
@@ -144,9 +154,9 @@ export let createReceipt = SlateTool.create(
         receiptLines: result['receipt-lines'] ?? result.receipt_lines ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `Created receipt **#${result.id}** for PO line ${ctx.input.purchaseOrderLineId}.`,
+      message: `Created receipt **#${result.id}** for PO line ${ctx.input.purchaseOrderLineId}.`
     };
   })
   .build();

@@ -3,55 +3,66 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let manageTask = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Task',
-    key: 'manage_task',
-    description: `Create, update, retrieve, or delete a task in Follow Up Boss. Tasks are used for follow-up reminders and to-dos assigned to team members.`,
-    instructions: [
-      'To create a task, provide personId, assignedTo, and dueDate at minimum.',
-      'To update, provide the taskId and the fields to change.',
-      'To retrieve, provide only the taskId.',
-      'To delete, set "delete" to true with a taskId.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageTask = SlateTool.create(spec, {
+  name: 'Manage Task',
+  key: 'manage_task',
+  description: `Create, update, retrieve, or delete a task in Follow Up Boss. Tasks are used for follow-up reminders and to-dos assigned to team members.`,
+  instructions: [
+    'To create a task, provide personId, assignedTo, and dueDate at minimum.',
+    'To update, provide the taskId and the fields to change.',
+    'To retrieve, provide only the taskId.',
+    'To delete, set "delete" to true with a taskId.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    taskId: z.number().optional().describe('ID of an existing task to update, retrieve, or delete'),
-    personId: z.number().optional().describe('Contact ID the task is associated with'),
-    assignedTo: z.number().optional().describe('User ID the task is assigned to'),
-    name: z.string().optional().describe('Task name/title'),
-    dueDate: z.string().optional().describe('Due date (ISO 8601)'),
-    completed: z.boolean().optional().describe('Whether the task is completed'),
-    note: z.string().optional().describe('Additional note on the task'),
-    delete: z.boolean().optional().describe('Set to true to delete the task'),
-  }))
-  .output(z.object({
-    taskId: z.number().optional(),
-    personId: z.number().optional(),
-    assignedTo: z.number().optional(),
-    name: z.string().optional(),
-    dueDate: z.string().optional(),
-    completed: z.boolean().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskId: z
+        .number()
+        .optional()
+        .describe('ID of an existing task to update, retrieve, or delete'),
+      personId: z.number().optional().describe('Contact ID the task is associated with'),
+      assignedTo: z.number().optional().describe('User ID the task is assigned to'),
+      name: z.string().optional().describe('Task name/title'),
+      dueDate: z.string().optional().describe('Due date (ISO 8601)'),
+      completed: z.boolean().optional().describe('Whether the task is completed'),
+      note: z.string().optional().describe('Additional note on the task'),
+      delete: z.boolean().optional().describe('Set to true to delete the task')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number().optional(),
+      personId: z.number().optional(),
+      assignedTo: z.number().optional(),
+      name: z.string().optional(),
+      dueDate: z.string().optional(),
+      completed: z.boolean().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.delete && ctx.input.taskId) {
       await client.deleteTask(ctx.input.taskId);
       return {
         output: { taskId: ctx.input.taskId, deleted: true },
-        message: `Deleted task **${ctx.input.taskId}**.`,
+        message: `Deleted task **${ctx.input.taskId}**.`
       };
     }
 
-    if (ctx.input.taskId && !ctx.input.name && !ctx.input.dueDate && !ctx.input.completed &&
-        !ctx.input.assignedTo && !ctx.input.note && !ctx.input.personId) {
+    if (
+      ctx.input.taskId &&
+      !ctx.input.name &&
+      !ctx.input.dueDate &&
+      !ctx.input.completed &&
+      !ctx.input.assignedTo &&
+      !ctx.input.note &&
+      !ctx.input.personId
+    ) {
       let task = await client.getTask(ctx.input.taskId);
       return {
         output: {
@@ -60,9 +71,9 @@ export let manageTask = SlateTool.create(
           assignedTo: task.assignedTo,
           name: task.name,
           dueDate: task.dueDate,
-          completed: task.completed,
+          completed: task.completed
         },
-        message: `Retrieved task **${task.name || task.id}**.`,
+        message: `Retrieved task **${task.name || task.id}**.`
       };
     }
 
@@ -92,8 +103,9 @@ export let manageTask = SlateTool.create(
         assignedTo: task.assignedTo,
         name: task.name,
         dueDate: task.dueDate,
-        completed: task.completed,
+        completed: task.completed
       },
-      message: `${action} task **${task.name || task.id}**.`,
+      message: `${action} task **${task.name || task.id}**.`
     };
-  }).build();
+  })
+  .build();

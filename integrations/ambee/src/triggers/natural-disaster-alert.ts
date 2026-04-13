@@ -3,41 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let naturalDisasterAlert = SlateTrigger.create(
-  spec,
-  {
-    name: 'Natural Disaster Alert',
-    key: 'natural_disaster_alert',
-    description: 'Polls for new natural disaster events (earthquakes, floods, cyclones, etc.) at a specified location, continent, or country. Triggers when new events are detected.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().optional().describe('Disaster event type code'),
-    title: z.string().optional().describe('Event title'),
-    severity: z.string().optional().describe('Event severity'),
-    rawEvent: z.any().describe('Full event payload'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().optional().describe('Disaster type (EQ, TN, TC, WF, FL, ET, DR, SW, SI, VO, LS)'),
-    title: z.string().optional().describe('Event title or description'),
-    severity: z.string().optional().describe('Severity level'),
-    lat: z.number().optional().describe('Event latitude'),
-    lng: z.number().optional().describe('Event longitude'),
-    country: z.string().optional().describe('Affected country'),
-    startedAt: z.string().optional().describe('Event start time'),
-    updatedAt: z.string().optional().describe('Last update time'),
-  }).passthrough())
+export let naturalDisasterAlert = SlateTrigger.create(spec, {
+  name: 'Natural Disaster Alert',
+  key: 'natural_disaster_alert',
+  description:
+    'Polls for new natural disaster events (earthquakes, floods, cyclones, etc.) at a specified location, continent, or country. Triggers when new events are detected.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().optional().describe('Disaster event type code'),
+      title: z.string().optional().describe('Event title'),
+      severity: z.string().optional().describe('Event severity'),
+      rawEvent: z.any().describe('Full event payload')
+    })
+  )
+  .output(
+    z
+      .object({
+        eventId: z.string().describe('Unique event identifier'),
+        eventType: z
+          .string()
+          .optional()
+          .describe('Disaster type (EQ, TN, TC, WF, FL, ET, DR, SW, SI, VO, LS)'),
+        title: z.string().optional().describe('Event title or description'),
+        severity: z.string().optional().describe('Severity level'),
+        lat: z.number().optional().describe('Event latitude'),
+        lng: z.number().optional().describe('Event longitude'),
+        country: z.string().optional().describe('Affected country'),
+        startedAt: z.string().optional().describe('Event start time'),
+        updatedAt: z.string().optional().describe('Last update time')
+      })
+      .passthrough()
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        language: ctx.config.language,
+        language: ctx.config.language
       });
 
       let lat = ctx.state?.lat as number | undefined;
@@ -63,7 +70,11 @@ export let naturalDisasterAlert = SlateTrigger.create(
       let updatedSeenIds = [...seenEventIds];
 
       for (let disaster of disasters) {
-        let id = disaster.event_id || disaster.eventId || disaster._id || JSON.stringify(disaster).slice(0, 64);
+        let id =
+          disaster.event_id ||
+          disaster.eventId ||
+          disaster._id ||
+          JSON.stringify(disaster).slice(0, 64);
         if (!seenEventIds.includes(id)) {
           updatedSeenIds.push(id);
           newEvents.push({
@@ -71,7 +82,7 @@ export let naturalDisasterAlert = SlateTrigger.create(
             eventType: disaster.event_type || disaster.eventType,
             title: disaster.title || disaster.name || disaster.description,
             severity: disaster.severity || disaster.alertlevel,
-            rawEvent: disaster,
+            rawEvent: disaster
           });
         }
       }
@@ -86,12 +97,12 @@ export let naturalDisasterAlert = SlateTrigger.create(
         updatedState: {
           ...ctx.state,
           seenEventIds: updatedSeenIds,
-          lastChecked: new Date().toISOString(),
-        },
+          lastChecked: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.rawEvent || {};
 
       return {
@@ -106,8 +117,9 @@ export let naturalDisasterAlert = SlateTrigger.create(
           lng: raw.lng || raw.lon || raw.longitude,
           country: raw.country || raw.countryCode,
           startedAt: raw.startDate || raw.created_at || raw.createdAt,
-          updatedAt: raw.updatedAt || raw.updated_at,
-        },
+          updatedAt: raw.updatedAt || raw.updated_at
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

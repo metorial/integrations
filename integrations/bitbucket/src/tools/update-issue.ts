@@ -3,34 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateIssueTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Issue',
-    key: 'update_issue',
-    description: `Update an existing issue's fields including title, content, status, priority, kind, assignee, component, milestone, and version.`,
-  }
-)
-  .input(z.object({
-    repoSlug: z.string().describe('Repository slug'),
-    issueId: z.number().describe('Issue ID to update'),
-    title: z.string().optional().describe('New title'),
-    content: z.string().optional().describe('New body content (Markdown)'),
-    status: z.enum(['new', 'open', 'resolved', 'on hold', 'invalid', 'duplicate', 'wontfix', 'closed']).optional().describe('Issue status'),
-    priority: z.enum(['trivial', 'minor', 'major', 'critical', 'blocker']).optional().describe('Issue priority'),
-    kind: z.enum(['bug', 'enhancement', 'proposal', 'task']).optional().describe('Issue type'),
-    assigneeUuid: z.string().optional().describe('Assignee user UUID'),
-    component: z.string().optional().describe('Component name'),
-    milestone: z.string().optional().describe('Milestone name'),
-    version: z.string().optional().describe('Version name'),
-  }))
-  .output(z.object({
-    issueId: z.number(),
-    title: z.string(),
-    status: z.string().optional(),
-    htmlUrl: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateIssueTool = SlateTool.create(spec, {
+  name: 'Update Issue',
+  key: 'update_issue',
+  description: `Update an existing issue's fields including title, content, status, priority, kind, assignee, component, milestone, and version.`
+})
+  .input(
+    z.object({
+      repoSlug: z.string().describe('Repository slug'),
+      issueId: z.number().describe('Issue ID to update'),
+      title: z.string().optional().describe('New title'),
+      content: z.string().optional().describe('New body content (Markdown)'),
+      status: z
+        .enum([
+          'new',
+          'open',
+          'resolved',
+          'on hold',
+          'invalid',
+          'duplicate',
+          'wontfix',
+          'closed'
+        ])
+        .optional()
+        .describe('Issue status'),
+      priority: z
+        .enum(['trivial', 'minor', 'major', 'critical', 'blocker'])
+        .optional()
+        .describe('Issue priority'),
+      kind: z
+        .enum(['bug', 'enhancement', 'proposal', 'task'])
+        .optional()
+        .describe('Issue type'),
+      assigneeUuid: z.string().optional().describe('Assignee user UUID'),
+      component: z.string().optional().describe('Component name'),
+      milestone: z.string().optional().describe('Milestone name'),
+      version: z.string().optional().describe('Version name')
+    })
+  )
+  .output(
+    z.object({
+      issueId: z.number(),
+      title: z.string(),
+      status: z.string().optional(),
+      htmlUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
     let body: Record<string, any> = {};
@@ -51,8 +70,9 @@ export let updateIssueTool = SlateTool.create(
         issueId: issue.id,
         title: issue.title,
         status: issue.state || undefined,
-        htmlUrl: issue.links?.html?.href || undefined,
+        htmlUrl: issue.links?.html?.href || undefined
       },
-      message: `Updated issue **#${issue.id}: ${issue.title}**.`,
+      message: `Updated issue **#${issue.id}: ${issue.title}**.`
     };
-  }).build();
+  })
+  .build();

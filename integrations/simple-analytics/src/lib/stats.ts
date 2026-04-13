@@ -26,7 +26,7 @@ export let getStats = async (config: ClientConfig, params: StatsParams) => {
 
   let queryParams: Record<string, string> = {
     version: '6',
-    info: 'false',
+    info: 'false'
   };
 
   if (params.fields && params.fields.length > 0) {
@@ -66,7 +66,7 @@ export let getEvents = async (config: ClientConfig, params: EventsParams) => {
 
   let queryParams: Record<string, string> = {
     version: '6',
-    info: 'false',
+    info: 'false'
   };
 
   if (params.events && params.events.length > 0) {

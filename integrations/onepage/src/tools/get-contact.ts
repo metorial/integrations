@@ -4,33 +4,35 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { contactSchema } from '../lib/schemas';
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve a single contact by ID, including all their details such as emails, phones, tags, address, and custom fields.`,
-    tags: {
-      readOnly: true,
-    },
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve a single contact by ID, including all their details such as emails, phones, tags, address, and custom fields.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to retrieve')
+    })
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       userId: ctx.auth.userId,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let contact = await client.getContact(ctx.input.contactId);
-    let name = [contact.firstName, contact.lastName].filter(Boolean).join(' ') || contact.companyName || 'Unknown';
+    let name =
+      [contact.firstName, contact.lastName].filter(Boolean).join(' ') ||
+      contact.companyName ||
+      'Unknown';
 
     return {
       output: contact,
-      message: `Retrieved contact **${name}**.`,
+      message: `Retrieved contact **${name}**.`
     };
   })
   .build();

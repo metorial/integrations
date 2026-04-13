@@ -3,42 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newLogs = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Logs',
-    key: 'new_logs',
-    description: 'Triggers when new LLM call logs are created. Polls for recently added logs across all files. Store the fileId to monitor in the initial state.',
-  }
-)
-  .input(z.object({
-    logId: z.string().describe('ID of the log'),
-    fileId: z.string().describe('File ID the log belongs to'),
-    versionId: z.string().optional().describe('Version ID of the log'),
-    createdAt: z.string().optional().describe('Timestamp when the log was created'),
-    logType: z.string().optional().describe('Type of the log (prompt, tool, flow, evaluator)'),
-    output: z.string().optional().describe('Output text of the log'),
-    inputValues: z.record(z.string(), z.any()).optional().describe('Input values used'),
-    tokenCount: z.number().optional().describe('Total token count'),
-    latencyMs: z.number().optional().describe('Latency in milliseconds'),
-  }))
-  .output(z.object({
-    logId: z.string().describe('ID of the log'),
-    fileId: z.string().describe('File ID the log belongs to'),
-    versionId: z.string().optional().describe('Version ID of the log'),
-    createdAt: z.string().optional().describe('Timestamp when the log was created'),
-    logType: z.string().optional().describe('Type of the log'),
-    output: z.string().optional().describe('Output text'),
-    inputValues: z.record(z.string(), z.any()).optional().describe('Input variables'),
-    tokenCount: z.number().optional().describe('Total token count'),
-    latencyMs: z.number().optional().describe('Latency in milliseconds'),
-  }))
+export let newLogs = SlateTrigger.create(spec, {
+  name: 'New Logs',
+  key: 'new_logs',
+  description:
+    'Triggers when new LLM call logs are created. Polls for recently added logs across all files. Store the fileId to monitor in the initial state.'
+})
+  .input(
+    z.object({
+      logId: z.string().describe('ID of the log'),
+      fileId: z.string().describe('File ID the log belongs to'),
+      versionId: z.string().optional().describe('Version ID of the log'),
+      createdAt: z.string().optional().describe('Timestamp when the log was created'),
+      logType: z
+        .string()
+        .optional()
+        .describe('Type of the log (prompt, tool, flow, evaluator)'),
+      output: z.string().optional().describe('Output text of the log'),
+      inputValues: z.record(z.string(), z.any()).optional().describe('Input values used'),
+      tokenCount: z.number().optional().describe('Total token count'),
+      latencyMs: z.number().optional().describe('Latency in milliseconds')
+    })
+  )
+  .output(
+    z.object({
+      logId: z.string().describe('ID of the log'),
+      fileId: z.string().describe('File ID the log belongs to'),
+      versionId: z.string().optional().describe('Version ID of the log'),
+      createdAt: z.string().optional().describe('Timestamp when the log was created'),
+      logType: z.string().optional().describe('Type of the log'),
+      output: z.string().optional().describe('Output text'),
+      inputValues: z.record(z.string(), z.any()).optional().describe('Input variables'),
+      tokenCount: z.number().optional().describe('Total token count'),
+      latencyMs: z.number().optional().describe('Latency in milliseconds')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let fileId = ctx.state?.fileId as string | undefined;
@@ -55,7 +60,7 @@ export let newLogs = SlateTrigger.create(
         startDate?: string;
       } = {
         page: 1,
-        size: 50,
+        size: 50
       };
 
       if (lastSeenAt) {
@@ -65,16 +70,18 @@ export let newLogs = SlateTrigger.create(
       let result = await client.listLogs(fileId, params);
       let records = result.records || [];
 
-      let newRecords = lastSeenIds.length > 0
-        ? records.filter((r: any) => !lastSeenIds.includes(r.id))
-        : records;
+      let newRecords =
+        lastSeenIds.length > 0
+          ? records.filter((r: any) => !lastSeenIds.includes(r.id))
+          : records;
 
       let newLastSeenAt = lastSeenAt;
       let newLastSeenIds: string[] = [];
 
       if (records.length > 0) {
         let mostRecentRecord = records[0];
-        newLastSeenAt = mostRecentRecord.created_at || mostRecentRecord.updated_at || lastSeenAt;
+        newLastSeenAt =
+          mostRecentRecord.created_at || mostRecentRecord.updated_at || lastSeenAt;
         newLastSeenIds = records.map((r: any) => r.id).slice(0, 100);
       }
 
@@ -90,19 +97,17 @@ export let newLogs = SlateTrigger.create(
           tokenCount: record.usage
             ? (record.usage.prompt_tokens || 0) + (record.usage.completion_tokens || 0)
             : undefined,
-          latencyMs: record.provider_latency
-            ? record.provider_latency * 1000
-            : undefined,
+          latencyMs: record.provider_latency ? record.provider_latency * 1000 : undefined
         })),
         updatedState: {
           fileId,
           lastSeenAt: newLastSeenAt || new Date().toISOString(),
-          lastSeenIds: newLastSeenIds,
-        },
+          lastSeenIds: newLastSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'log.created',
         id: ctx.input.logId,
@@ -115,9 +120,9 @@ export let newLogs = SlateTrigger.create(
           output: ctx.input.output,
           inputValues: ctx.input.inputValues,
           tokenCount: ctx.input.tokenCount,
-          latencyMs: ctx.input.latencyMs,
-        },
+          latencyMs: ctx.input.latencyMs
+        }
       };
-    },
+    }
   })
   .build();

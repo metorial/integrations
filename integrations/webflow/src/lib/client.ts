@@ -11,8 +11,8 @@ export class WebflowClient {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,10 +28,15 @@ export class WebflowClient {
     return response.data;
   }
 
-  async publishSite(siteId: string, customDomains?: string[], publishToWebflowSubdomain?: boolean): Promise<any> {
+  async publishSite(
+    siteId: string,
+    customDomains?: string[],
+    publishToWebflowSubdomain?: boolean
+  ): Promise<any> {
     let body: any = {};
     if (customDomains) body.customDomains = customDomains;
-    if (publishToWebflowSubdomain !== undefined) body.publishToWebflowSubdomain = publishToWebflowSubdomain;
+    if (publishToWebflowSubdomain !== undefined)
+      body.publishToWebflowSubdomain = publishToWebflowSubdomain;
     let response = await this.http.post(`/sites/${siteId}/publish`, body);
     return response.data;
   }
@@ -53,7 +58,10 @@ export class WebflowClient {
     return response.data;
   }
 
-  async createCollection(siteId: string, data: { displayName: string; singularName?: string; slug?: string }): Promise<any> {
+  async createCollection(
+    siteId: string,
+    data: { displayName: string; singularName?: string; slug?: string }
+  ): Promise<any> {
     let response = await this.http.post(`/sites/${siteId}/collections`, data);
     return response.data;
   }
@@ -71,7 +79,10 @@ export class WebflowClient {
   }
 
   async updateCollectionField(collectionId: string, fieldId: string, data: any): Promise<any> {
-    let response = await this.http.patch(`/collections/${collectionId}/fields/${fieldId}`, data);
+    let response = await this.http.patch(
+      `/collections/${collectionId}/fields/${fieldId}`,
+      data
+    );
     return response.data;
   }
 
@@ -82,12 +93,18 @@ export class WebflowClient {
 
   // ── Collection Items ───────────────────────────────
 
-  async listCollectionItems(collectionId: string, params: { offset?: number; limit?: number; sortBy?: string; sortOrder?: string } = {}): Promise<any> {
+  async listCollectionItems(
+    collectionId: string,
+    params: { offset?: number; limit?: number; sortBy?: string; sortOrder?: string } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/collections/${collectionId}/items`, { params });
     return response.data;
   }
 
-  async listCollectionItemsLive(collectionId: string, params: { offset?: number; limit?: number; sortBy?: string; sortOrder?: string } = {}): Promise<any> {
+  async listCollectionItemsLive(
+    collectionId: string,
+    params: { offset?: number; limit?: number; sortBy?: string; sortOrder?: string } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/collections/${collectionId}/items/live`, { params });
     return response.data;
   }
@@ -102,12 +119,19 @@ export class WebflowClient {
     return response.data;
   }
 
-  async createCollectionItem(collectionId: string, data: { fieldData: Record<string, any>; isArchived?: boolean; isDraft?: boolean }): Promise<any> {
+  async createCollectionItem(
+    collectionId: string,
+    data: { fieldData: Record<string, any>; isArchived?: boolean; isDraft?: boolean }
+  ): Promise<any> {
     let response = await this.http.post(`/collections/${collectionId}/items`, data);
     return response.data;
   }
 
-  async updateCollectionItem(collectionId: string, itemId: string, data: { fieldData?: Record<string, any>; isArchived?: boolean; isDraft?: boolean }): Promise<any> {
+  async updateCollectionItem(
+    collectionId: string,
+    itemId: string,
+    data: { fieldData?: Record<string, any>; isArchived?: boolean; isDraft?: boolean }
+  ): Promise<any> {
     let response = await this.http.patch(`/collections/${collectionId}/items/${itemId}`, data);
     return response.data;
   }
@@ -118,13 +142,18 @@ export class WebflowClient {
   }
 
   async publishCollectionItems(collectionId: string, itemIds: string[]): Promise<any> {
-    let response = await this.http.post(`/collections/${collectionId}/items/publish`, { itemIds });
+    let response = await this.http.post(`/collections/${collectionId}/items/publish`, {
+      itemIds
+    });
     return response.data;
   }
 
   // ── Pages ──────────────────────────────────────────
 
-  async listPages(siteId: string, params: { offset?: number; limit?: number; locale?: string } = {}): Promise<any> {
+  async listPages(
+    siteId: string,
+    params: { offset?: number; limit?: number; locale?: string } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/pages`, { params });
     return response.data;
   }
@@ -134,7 +163,10 @@ export class WebflowClient {
     return response.data;
   }
 
-  async updatePageSettings(pageId: string, data: { title?: string; slug?: string; description?: string; openGraph?: any; seo?: any }): Promise<any> {
+  async updatePageSettings(
+    pageId: string,
+    data: { title?: string; slug?: string; description?: string; openGraph?: any; seo?: any }
+  ): Promise<any> {
     let response = await this.http.patch(`/pages/${pageId}`, data);
     return response.data;
   }
@@ -146,7 +178,10 @@ export class WebflowClient {
 
   // ── Forms ──────────────────────────────────────────
 
-  async listForms(siteId: string, params: { offset?: number; limit?: number } = {}): Promise<any> {
+  async listForms(
+    siteId: string,
+    params: { offset?: number; limit?: number } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/forms`, { params });
     return response.data;
   }
@@ -156,7 +191,10 @@ export class WebflowClient {
     return response.data;
   }
 
-  async listFormSubmissions(formId: string, params: { offset?: number; limit?: number } = {}): Promise<any> {
+  async listFormSubmissions(
+    formId: string,
+    params: { offset?: number; limit?: number } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/forms/${formId}/submissions`, { params });
     return response.data;
   }
@@ -168,7 +206,10 @@ export class WebflowClient {
 
   // ── Ecommerce ──────────────────────────────────────
 
-  async listProducts(siteId: string, params: { offset?: number; limit?: number } = {}): Promise<any> {
+  async listProducts(
+    siteId: string,
+    params: { offset?: number; limit?: number } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/products`, { params });
     return response.data;
   }
@@ -183,12 +224,19 @@ export class WebflowClient {
     return response.data;
   }
 
-  async updateProduct(siteId: string, productId: string, data: { product?: any; sku?: any }): Promise<any> {
+  async updateProduct(
+    siteId: string,
+    productId: string,
+    data: { product?: any; sku?: any }
+  ): Promise<any> {
     let response = await this.http.patch(`/sites/${siteId}/products/${productId}`, data);
     return response.data;
   }
 
-  async listOrders(siteId: string, params: { offset?: number; limit?: number; status?: string } = {}): Promise<any> {
+  async listOrders(
+    siteId: string,
+    params: { offset?: number; limit?: number; status?: string } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/orders`, { params });
     return response.data;
   }
@@ -204,18 +252,30 @@ export class WebflowClient {
   }
 
   async getInventory(collectionId: string, itemId: string): Promise<any> {
-    let response = await this.http.get(`/collections/${collectionId}/items/${itemId}/inventory`);
+    let response = await this.http.get(
+      `/collections/${collectionId}/items/${itemId}/inventory`
+    );
     return response.data;
   }
 
-  async updateInventory(collectionId: string, itemId: string, data: { inventoryType?: string; quantity?: number }): Promise<any> {
-    let response = await this.http.patch(`/collections/${collectionId}/items/${itemId}/inventory`, data);
+  async updateInventory(
+    collectionId: string,
+    itemId: string,
+    data: { inventoryType?: string; quantity?: number }
+  ): Promise<any> {
+    let response = await this.http.patch(
+      `/collections/${collectionId}/items/${itemId}/inventory`,
+      data
+    );
     return response.data;
   }
 
   // ── Users ──────────────────────────────────────────
 
-  async listUsers(siteId: string, params: { offset?: number; limit?: number; sort?: string } = {}): Promise<any> {
+  async listUsers(
+    siteId: string,
+    params: { offset?: number; limit?: number; sort?: string } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/users`, { params });
     return response.data;
   }
@@ -225,12 +285,19 @@ export class WebflowClient {
     return response.data;
   }
 
-  async inviteUser(siteId: string, data: { email: string; accessGroups?: string[] }): Promise<any> {
+  async inviteUser(
+    siteId: string,
+    data: { email: string; accessGroups?: string[] }
+  ): Promise<any> {
     let response = await this.http.post(`/sites/${siteId}/users/invite`, data);
     return response.data;
   }
 
-  async updateUser(siteId: string, userId: string, data: { accessGroups?: string[] }): Promise<any> {
+  async updateUser(
+    siteId: string,
+    userId: string,
+    data: { accessGroups?: string[] }
+  ): Promise<any> {
     let response = await this.http.patch(`/sites/${siteId}/users/${userId}`, data);
     return response.data;
   }
@@ -240,7 +307,10 @@ export class WebflowClient {
     return response.data;
   }
 
-  async listAccessGroups(siteId: string, params: { offset?: number; limit?: number } = {}): Promise<any> {
+  async listAccessGroups(
+    siteId: string,
+    params: { offset?: number; limit?: number } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/accessgroups`, { params });
     return response.data;
   }
@@ -272,7 +342,10 @@ export class WebflowClient {
     return response.data;
   }
 
-  async createAssetFolder(siteId: string, data: { displayName: string; parentFolder?: string }): Promise<any> {
+  async createAssetFolder(
+    siteId: string,
+    data: { displayName: string; parentFolder?: string }
+  ): Promise<any> {
     let response = await this.http.post(`/sites/${siteId}/asset_folders`, data);
     return response.data;
   }
@@ -314,7 +387,17 @@ export class WebflowClient {
     return response.data;
   }
 
-  async registerScript(siteId: string, data: { sourceUrl?: string; integrityHash?: string; version: string; displayName: string; canCopy?: boolean; hostedLocation?: string }): Promise<any> {
+  async registerScript(
+    siteId: string,
+    data: {
+      sourceUrl?: string;
+      integrityHash?: string;
+      version: string;
+      displayName: string;
+      canCopy?: boolean;
+      hostedLocation?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/sites/${siteId}/registered_scripts`, data);
     return response.data;
   }
@@ -331,7 +414,10 @@ export class WebflowClient {
     return response.data;
   }
 
-  async createWebhook(siteId: string, data: { triggerType: string; url: string; filter?: any }): Promise<any> {
+  async createWebhook(
+    siteId: string,
+    data: { triggerType: string; url: string; filter?: any }
+  ): Promise<any> {
     let response = await this.http.post(`/sites/${siteId}/webhooks`, data);
     return response.data;
   }
@@ -343,14 +429,20 @@ export class WebflowClient {
 
   // ── Comments ───────────────────────────────────────
 
-  async listComments(siteId: string, params: { offset?: number; limit?: number } = {}): Promise<any> {
+  async listComments(
+    siteId: string,
+    params: { offset?: number; limit?: number } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/comments`, { params });
     return response.data;
   }
 
   // ── Components ─────────────────────────────────────
 
-  async listComponents(siteId: string, params: { offset?: number; limit?: number } = {}): Promise<any> {
+  async listComponents(
+    siteId: string,
+    params: { offset?: number; limit?: number } = {}
+  ): Promise<any> {
     let response = await this.http.get(`/sites/${siteId}/components`, { params });
     return response.data;
   }

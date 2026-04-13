@@ -43,11 +43,11 @@ export class SpeedToLeadClient {
     this.apiKey = config.apiKey;
 
     this.callAxios = createAxios({
-      baseURL: 'https://app.convolo.ai/rest/v1/ext',
+      baseURL: 'https://app.convolo.ai/rest/v1/ext'
     });
 
     this.reportAxios = createAxios({
-      baseURL: 'https://api.leads.convolo.ai/api/v2',
+      baseURL: 'https://api.leads.convolo.ai/api/v2'
     });
   }
 
@@ -55,7 +55,7 @@ export class SpeedToLeadClient {
     let body: Record<string, string> = {
       widget_key: this.widgetKey,
       api_key: this.apiKey,
-      lc_number: params.leadPhone,
+      lc_number: params.leadPhone
     };
 
     if (params.leadName) {
@@ -90,7 +90,7 @@ export class SpeedToLeadClient {
     }
 
     let response = await this.callAxios.post('/add_call_api/', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return response.data;
@@ -98,7 +98,7 @@ export class SpeedToLeadClient {
 
   async getCallReports(filters: CallReportFilters = {}): Promise<any> {
     let params: Record<string, string | number> = {
-      'api-key': this.apiKey,
+      'api-key': this.apiKey
     };
 
     if (filters.dateFrom) params['date_from'] = filters.dateFrom;
@@ -112,10 +112,14 @@ export class SpeedToLeadClient {
     if (filters.filterReferer) params['filter_referer'] = filters.filterReferer;
     if (filters.filterLeadNumber) params['filter_lead_number'] = filters.filterLeadNumber;
     if (filters.filterAgent) params['filter_agent'] = filters.filterAgent;
-    if (filters.filterAnswerTimeFrom !== undefined) params['filter_answer_time_from'] = filters.filterAnswerTimeFrom;
-    if (filters.filterAnswerTimeTo !== undefined) params['filter_answer_time_to'] = filters.filterAnswerTimeTo;
-    if (filters.filterTalkTimeFrom !== undefined) params['filter_talk_time_from'] = filters.filterTalkTimeFrom;
-    if (filters.filterTalkTimeTo !== undefined) params['filter_talk_time_to'] = filters.filterTalkTimeTo;
+    if (filters.filterAnswerTimeFrom !== undefined)
+      params['filter_answer_time_from'] = filters.filterAnswerTimeFrom;
+    if (filters.filterAnswerTimeTo !== undefined)
+      params['filter_answer_time_to'] = filters.filterAnswerTimeTo;
+    if (filters.filterTalkTimeFrom !== undefined)
+      params['filter_talk_time_from'] = filters.filterTalkTimeFrom;
+    if (filters.filterTalkTimeTo !== undefined)
+      params['filter_talk_time_to'] = filters.filterTalkTimeTo;
 
     let response = await this.reportAxios.get('/calls/payload-data-list', { params });
 

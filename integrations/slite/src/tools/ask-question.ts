@@ -3,34 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let askQuestion = SlateTool.create(
-  spec,
-  {
-    name: 'Ask Question',
-    key: 'ask_question',
-    description: `Ask a natural language question to Slite's AI-powered knowledge base. The AI searches across all accessible notes and returns an answer with source references. Results can be scoped to a specific parent note or assistant.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let askQuestion = SlateTool.create(spec, {
+  name: 'Ask Question',
+  key: 'ask_question',
+  description: `Ask a natural language question to Slite's AI-powered knowledge base. The AI searches across all accessible notes and returns an answer with source references. Results can be scoped to a specific parent note or assistant.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    question: z.string().describe('Natural language question to ask'),
-    parentNoteId: z.string().optional().describe('Restrict AI search to notes under this parent note'),
-    assistantId: z.string().optional().describe('Use a specific AI assistant (requires super tier)')
-  }))
-  .output(z.object({
-    answer: z.string().describe('AI-generated answer to the question'),
-    sources: z.array(z.object({
-      noteId: z.string().describe('ID of the source note'),
-      title: z.string().describe('Title of the source note'),
-      url: z.string().describe('URL to the source note'),
-      updatedAt: z.string().optional().describe('Last update of the source'),
-      explanation: z.string().optional().describe('Why this source was relevant (super tier only)')
-    })).describe('Notes used to generate the answer')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      question: z.string().describe('Natural language question to ask'),
+      parentNoteId: z
+        .string()
+        .optional()
+        .describe('Restrict AI search to notes under this parent note'),
+      assistantId: z
+        .string()
+        .optional()
+        .describe('Use a specific AI assistant (requires super tier)')
+    })
+  )
+  .output(
+    z.object({
+      answer: z.string().describe('AI-generated answer to the question'),
+      sources: z
+        .array(
+          z.object({
+            noteId: z.string().describe('ID of the source note'),
+            title: z.string().describe('Title of the source note'),
+            url: z.string().describe('URL to the source note'),
+            updatedAt: z.string().optional().describe('Last update of the source'),
+            explanation: z
+              .string()
+              .optional()
+              .describe('Why this source was relevant (super tier only)')
+          })
+        )
+        .describe('Notes used to generate the answer')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let result = await client.ask({
@@ -54,4 +68,5 @@ export let askQuestion = SlateTool.create(
       },
       message: `**Answer:** ${result.answer}\n\nBased on ${sources.length} source(s).`
     };
-  }).build();
+  })
+  .build();

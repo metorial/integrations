@@ -13,7 +13,7 @@ import {
   manageOfferTool,
   manageInterviewScheduleTool,
   listOrganizationTool,
-  setCustomField,
+  setCustomField
 } from './tools';
 import {
   candidateEventsTrigger,
@@ -21,7 +21,7 @@ import {
   jobEventsTrigger,
   offerEventsTrigger,
   interviewEventsTrigger,
-  openingEventsTrigger,
+  openingEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -39,7 +39,7 @@ export let provider = Slate.create({
     manageOfferTool,
     manageInterviewScheduleTool,
     listOrganizationTool,
-    setCustomField,
+    setCustomField
   ],
   triggers: [
     candidateEventsTrigger,
@@ -47,6 +47,6 @@ export let provider = Slate.create({
     jobEventsTrigger,
     offerEventsTrigger,
     interviewEventsTrigger,
-    openingEventsTrigger,
-  ],
+    openingEventsTrigger
+  ]
 });

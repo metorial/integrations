@@ -17,9 +17,9 @@ export class ModeClient {
       baseURL: 'https://app.mode.com/api',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/hal+json',
-        'Authorization': `Basic ${basicAuth}`,
-      },
+        Accept: 'application/hal+json',
+        Authorization: `Basic ${basicAuth}`
+      }
     });
   }
 
@@ -32,17 +32,26 @@ export class ModeClient {
 
   async listReportsInCollection(collectionToken: string, options?: ListOptions): Promise<any> {
     let params = buildListParams(options);
-    let response = await this.http.get(`/${this.workspace}/spaces/${collectionToken}/reports`, { params });
+    let response = await this.http.get(
+      `/${this.workspace}/spaces/${collectionToken}/reports`,
+      { params }
+    );
     return response.data;
   }
 
   async listReportsByDataSource(dataSourceToken: string, options?: ListOptions): Promise<any> {
     let params = buildListParams(options);
-    let response = await this.http.get(`/${this.workspace}/data_sources/${dataSourceToken}/reports`, { params });
+    let response = await this.http.get(
+      `/${this.workspace}/data_sources/${dataSourceToken}/reports`,
+      { params }
+    );
     return response.data;
   }
 
-  async updateReport(reportToken: string, data: { name?: string; description?: string; spaceToken?: string }): Promise<any> {
+  async updateReport(
+    reportToken: string,
+    data: { name?: string; description?: string; spaceToken?: string }
+  ): Promise<any> {
     let body: any = { report: {} };
     if (data.name !== undefined) body.report.name = data.name;
     if (data.description !== undefined) body.report.description = data.description;
@@ -57,7 +66,9 @@ export class ModeClient {
   }
 
   async unarchiveReport(reportToken: string): Promise<any> {
-    let response = await this.http.patch(`/${this.workspace}/reports/${reportToken}/unarchive`);
+    let response = await this.http.patch(
+      `/${this.workspace}/reports/${reportToken}/unarchive`
+    );
     return response.data;
   }
 
@@ -68,7 +79,9 @@ export class ModeClient {
   // ===== Queries =====
 
   async getQuery(reportToken: string, queryToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/queries/${queryToken}`);
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/queries/${queryToken}`
+    );
     return response.data;
   }
 
@@ -77,24 +90,37 @@ export class ModeClient {
     return response.data;
   }
 
-  async createQuery(reportToken: string, data: { rawQuery: string; dataSourceId: number; name?: string }): Promise<any> {
+  async createQuery(
+    reportToken: string,
+    data: { rawQuery: string; dataSourceId: number; name?: string }
+  ): Promise<any> {
     let body: any = {
       query: {
         raw_query: data.rawQuery,
-        data_source_id: data.dataSourceId,
-      },
+        data_source_id: data.dataSourceId
+      }
     };
     if (data.name !== undefined) body.query.name = data.name;
-    let response = await this.http.post(`/${this.workspace}/reports/${reportToken}/queries`, body);
+    let response = await this.http.post(
+      `/${this.workspace}/reports/${reportToken}/queries`,
+      body
+    );
     return response.data;
   }
 
-  async updateQuery(reportToken: string, queryToken: string, data: { rawQuery?: string; dataSourceId?: number; name?: string }): Promise<any> {
+  async updateQuery(
+    reportToken: string,
+    queryToken: string,
+    data: { rawQuery?: string; dataSourceId?: number; name?: string }
+  ): Promise<any> {
     let body: any = { query: {} };
     if (data.rawQuery !== undefined) body.query.raw_query = data.rawQuery;
     if (data.dataSourceId !== undefined) body.query.data_source_id = data.dataSourceId;
     if (data.name !== undefined) body.query.name = data.name;
-    let response = await this.http.patch(`/${this.workspace}/reports/${reportToken}/queries/${queryToken}`, body);
+    let response = await this.http.patch(
+      `/${this.workspace}/reports/${reportToken}/queries/${queryToken}`,
+      body
+    );
     return response.data;
   }
 
@@ -105,13 +131,17 @@ export class ModeClient {
   // ===== Report Runs =====
 
   async getReportRun(reportToken: string, runToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/runs/${runToken}`);
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/runs/${runToken}`
+    );
     return response.data;
   }
 
   async listReportRuns(reportToken: string, options?: ListOptions): Promise<any> {
     let params = buildListParams(options);
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/runs`, { params });
+    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/runs`, {
+      params
+    });
     return response.data;
   }
 
@@ -120,19 +150,30 @@ export class ModeClient {
     if (parameters) {
       body.parameters = parameters;
     }
-    let response = await this.http.post(`/${this.workspace}/reports/${reportToken}/runs`, body);
+    let response = await this.http.post(
+      `/${this.workspace}/reports/${reportToken}/runs`,
+      body
+    );
     return response.data;
   }
 
   // ===== Query Runs =====
 
-  async getQueryRun(reportToken: string, runToken: string, queryRunToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/runs/${runToken}/query_runs/${queryRunToken}`);
+  async getQueryRun(
+    reportToken: string,
+    runToken: string,
+    queryRunToken: string
+  ): Promise<any> {
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/runs/${runToken}/query_runs/${queryRunToken}`
+    );
     return response.data;
   }
 
   async listQueryRuns(reportToken: string, runToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/runs/${runToken}/query_runs`);
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/runs/${runToken}/query_runs`
+    );
     return response.data;
   }
 
@@ -143,7 +184,11 @@ export class ModeClient {
     return response.data;
   }
 
-  async listCollections(options?: { filter?: string; page?: number; perPage?: number }): Promise<any> {
+  async listCollections(options?: {
+    filter?: string;
+    page?: number;
+    perPage?: number;
+  }): Promise<any> {
     let params: Record<string, any> = {};
     if (options?.filter) params.filter = options.filter;
     if (options?.page) params.page = options.page;
@@ -152,19 +197,26 @@ export class ModeClient {
     return response.data;
   }
 
-  async createCollection(data: { name: string; description?: string; spaceType?: string }): Promise<any> {
+  async createCollection(data: {
+    name: string;
+    description?: string;
+    spaceType?: string;
+  }): Promise<any> {
     let body: any = {
       space: {
         name: data.name,
-        space_type: data.spaceType || 'custom',
-      },
+        space_type: data.spaceType || 'custom'
+      }
     };
     if (data.description !== undefined) body.space.description = data.description;
     let response = await this.http.post(`/${this.workspace}/spaces`, body);
     return response.data;
   }
 
-  async updateCollection(collectionToken: string, data: { name?: string; description?: string }): Promise<any> {
+  async updateCollection(
+    collectionToken: string,
+    data: { name?: string; description?: string }
+  ): Promise<any> {
     let body: any = { space: {} };
     if (data.name !== undefined) body.space.name = data.name;
     if (data.description !== undefined) body.space.description = data.description;
@@ -183,19 +235,34 @@ export class ModeClient {
     return response.data;
   }
 
-  async listDatasetsInCollection(collectionToken: string, options?: ListOptions): Promise<any> {
+  async listDatasetsInCollection(
+    collectionToken: string,
+    options?: ListOptions
+  ): Promise<any> {
     let params = buildListParams(options);
-    let response = await this.http.get(`/${this.workspace}/spaces/${collectionToken}/datasets`, { params });
+    let response = await this.http.get(
+      `/${this.workspace}/spaces/${collectionToken}/datasets`,
+      { params }
+    );
     return response.data;
   }
 
-  async listDatasetsByDataSource(dataSourceToken: string, options?: ListOptions): Promise<any> {
+  async listDatasetsByDataSource(
+    dataSourceToken: string,
+    options?: ListOptions
+  ): Promise<any> {
     let params = buildListParams(options);
-    let response = await this.http.get(`/${this.workspace}/data_sources/${dataSourceToken}/datasets`, { params });
+    let response = await this.http.get(
+      `/${this.workspace}/data_sources/${dataSourceToken}/datasets`,
+      { params }
+    );
     return response.data;
   }
 
-  async updateDataset(datasetToken: string, data: { name?: string; description?: string; spaceToken?: string }): Promise<any> {
+  async updateDataset(
+    datasetToken: string,
+    data: { name?: string; description?: string; spaceToken?: string }
+  ): Promise<any> {
     let body: any = { dataset: {} };
     if (data.name !== undefined) body.dataset.name = data.name;
     if (data.description !== undefined) body.dataset.description = data.description;
@@ -223,7 +290,9 @@ export class ModeClient {
   // ===== Report Schedules =====
 
   async getReportSchedule(reportToken: string, scheduleToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/schedules/${scheduleToken}`);
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/schedules/${scheduleToken}`
+    );
     return response.data;
   }
 
@@ -234,29 +303,45 @@ export class ModeClient {
 
   async createReportSchedule(reportToken: string, data: ScheduleData): Promise<any> {
     let body = buildScheduleBody(data);
-    let response = await this.http.post(`/${this.workspace}/reports/${reportToken}/schedules`, body);
+    let response = await this.http.post(
+      `/${this.workspace}/reports/${reportToken}/schedules`,
+      body
+    );
     return response.data;
   }
 
-  async updateReportSchedule(reportToken: string, scheduleToken: string, data: Partial<ScheduleData>): Promise<any> {
+  async updateReportSchedule(
+    reportToken: string,
+    scheduleToken: string,
+    data: Partial<ScheduleData>
+  ): Promise<any> {
     let body = buildScheduleBody(data);
-    let response = await this.http.patch(`/${this.workspace}/reports/${reportToken}/schedules/${scheduleToken}`, body);
+    let response = await this.http.patch(
+      `/${this.workspace}/reports/${reportToken}/schedules/${scheduleToken}`,
+      body
+    );
     return response.data;
   }
 
   async deleteReportSchedule(reportToken: string, scheduleToken: string): Promise<void> {
-    await this.http.delete(`/${this.workspace}/reports/${reportToken}/schedules/${scheduleToken}`);
+    await this.http.delete(
+      `/${this.workspace}/reports/${reportToken}/schedules/${scheduleToken}`
+    );
   }
 
   // ===== Report Subscriptions =====
 
   async listReportSubscriptions(reportToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/subscriptions`);
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/subscriptions`
+    );
     return response.data;
   }
 
   async getReportSubscription(reportToken: string, subscriptionToken: string): Promise<any> {
-    let response = await this.http.get(`/${this.workspace}/reports/${reportToken}/subscriptions/${subscriptionToken}`);
+    let response = await this.http.get(
+      `/${this.workspace}/reports/${reportToken}/subscriptions/${subscriptionToken}`
+    );
     return response.data;
   }
 
@@ -276,12 +361,16 @@ export class ModeClient {
   }
 
   async createDefinition(data: Record<string, any>): Promise<any> {
-    let response = await this.http.post(`/${this.workspace}/definitions`, { definition: data });
+    let response = await this.http.post(`/${this.workspace}/definitions`, {
+      definition: data
+    });
     return response.data;
   }
 
   async updateDefinition(definitionToken: string, data: Record<string, any>): Promise<any> {
-    let response = await this.http.patch(`/${this.workspace}/definitions/${definitionToken}`, { definition: data });
+    let response = await this.http.patch(`/${this.workspace}/definitions/${definitionToken}`, {
+      definition: data
+    });
     return response.data;
   }
 

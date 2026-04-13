@@ -9,45 +9,57 @@ let taskOutputSchema = z.object({
   text: z.string().describe('Title of the task'),
   notes: z.string().optional().describe('Task notes'),
   priority: z.number().optional().describe('Difficulty priority'),
-  completed: z.boolean().optional().describe('Whether the task is completed (for To-Dos and Dailies)'),
+  completed: z
+    .boolean()
+    .optional()
+    .describe('Whether the task is completed (for To-Dos and Dailies)'),
   isDue: z.boolean().optional().describe('Whether the Daily is due today'),
   value: z.number().optional().describe('Task value/score'),
   date: z.string().optional().describe('Due date for To-Dos'),
   tags: z.array(z.string()).optional().describe('Tag IDs applied to the task'),
-  checklist: z.array(z.object({
-    checklistItemId: z.string().describe('Checklist item ID'),
-    text: z.string().describe('Checklist item text'),
-    completed: z.boolean().describe('Whether item is completed'),
-  })).optional().describe('Checklist items'),
+  checklist: z
+    .array(
+      z.object({
+        checklistItemId: z.string().describe('Checklist item ID'),
+        text: z.string().describe('Checklist item text'),
+        completed: z.boolean().describe('Whether item is completed')
+      })
+    )
+    .optional()
+    .describe('Checklist items'),
   createdAt: z.string().optional().describe('When the task was created'),
-  updatedAt: z.string().optional().describe('When the task was last updated'),
+  updatedAt: z.string().optional().describe('When the task was last updated')
 });
 
-export let listTasks = SlateTool.create(
-  spec,
-  {
-    name: 'List Tasks',
-    key: 'list_tasks',
-    description: `Retrieve the authenticated user's tasks from Habitica. Optionally filter by task type (habits, dailies, todos, rewards).
+export let listTasks = SlateTool.create(spec, {
+  name: 'List Tasks',
+  key: 'list_tasks',
+  description: `Retrieve the authenticated user's tasks from Habitica. Optionally filter by task type (habits, dailies, todos, rewards).
 Returns task details including title, notes, difficulty, completion status, due dates, and checklist items.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    type: z.enum(['habits', 'dailys', 'todos', 'rewards']).optional().describe('Filter by task type. Use "dailys" for dailies (Habitica API convention)'),
-  }))
-  .output(z.object({
-    tasks: z.array(taskOutputSchema).describe('List of tasks'),
-    count: z.number().describe('Total number of tasks returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      type: z
+        .enum(['habits', 'dailys', 'todos', 'rewards'])
+        .optional()
+        .describe('Filter by task type. Use "dailys" for dailies (Habitica API convention)')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskOutputSchema).describe('List of tasks'),
+      count: z.number().describe('Total number of tasks returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HabiticaClient({
       userId: ctx.auth.userId,
       token: ctx.auth.token,
-      xClient: ctx.config.xClient,
+      xClient: ctx.config.xClient
     });
 
     let tasks = await client.getUserTasks(ctx.input.type);
@@ -66,17 +78,18 @@ Returns task details including title, notes, difficulty, completion status, due 
       checklist: t.checklist?.map((c: any) => ({
         checklistItemId: c.id,
         text: c.text,
-        completed: c.completed,
+        completed: c.completed
       })),
       createdAt: t.createdAt,
-      updatedAt: t.updatedAt,
+      updatedAt: t.updatedAt
     }));
 
     return {
       output: {
         tasks: mappedTasks,
-        count: mappedTasks.length,
+        count: mappedTasks.length
       },
-      message: `Retrieved **${mappedTasks.length}** task(s)${ctx.input.type ? ` of type **${ctx.input.type}**` : ''}`,
+      message: `Retrieved **${mappedTasks.length}** task(s)${ctx.input.type ? ` of type **${ctx.input.type}**` : ''}`
     };
-  }).build();
+  })
+  .build();

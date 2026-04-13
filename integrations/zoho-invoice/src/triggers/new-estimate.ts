@@ -13,7 +13,7 @@ let inputSchema = z.object({
   expiryDate: z.string().optional(),
   total: z.number().optional(),
   currencyCode: z.string().optional(),
-  createdTime: z.string(),
+  createdTime: z.string()
 });
 
 let outputSchema = z.object({
@@ -26,29 +26,27 @@ let outputSchema = z.object({
   expiryDate: z.string().optional(),
   total: z.number().optional(),
   currencyCode: z.string().optional(),
-  createdTime: z.string(),
+  createdTime: z.string()
 });
 
-export let newEstimate = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Estimate',
-    key: 'new_estimate',
-    description: 'Triggers when a new estimate is created in Zoho Invoice. Polls for recently created estimates.',
-  }
-)
+export let newEstimate = SlateTrigger.create(spec, {
+  name: 'New Estimate',
+  key: 'new_estimate',
+  description:
+    'Triggers when a new estimate is created in Zoho Invoice. Polls for recently created estimates.'
+})
   .input(inputSchema)
   .output(outputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         organizationId: ctx.config.organizationId,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let state = ctx.state as { lastCreatedTime?: string } | null;
@@ -57,7 +55,7 @@ export let newEstimate = SlateTrigger.create(
       let result = await client.listEstimates({
         sort_column: 'created_time',
         sort_order: 'D',
-        per_page: 25,
+        per_page: 25
       });
 
       let estimates = result.estimates ?? [];
@@ -79,7 +77,7 @@ export let newEstimate = SlateTrigger.create(
           expiryDate: est.expiry_date,
           total: est.total,
           currencyCode: est.currency_code,
-          createdTime,
+          createdTime
         });
 
         if (!newestCreatedTime || createdTime > newestCreatedTime) {
@@ -90,12 +88,12 @@ export let newEstimate = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastCreatedTime: newestCreatedTime || lastCreatedTime,
-        },
+          lastCreatedTime: newestCreatedTime || lastCreatedTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'estimate.created',
         id: ctx.input.estimateId,
@@ -109,8 +107,9 @@ export let newEstimate = SlateTrigger.create(
           expiryDate: ctx.input.expiryDate,
           total: ctx.input.total,
           currencyCode: ctx.input.currencyCode,
-          createdTime: ctx.input.createdTime,
-        },
+          createdTime: ctx.input.createdTime
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

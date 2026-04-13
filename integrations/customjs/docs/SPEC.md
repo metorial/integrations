@@ -62,6 +62,7 @@ Collects data directly into Make or n8n workflows. Forms can submit data to webh
 ### Mail Hook
 
 Creates custom email addresses that forward incoming emails to webhooks. Connects to Make, n8n, or any webhook endpoint to build email-triggered automations.
+
 - Emails are forwarded to webhooks in real-time with no delays or polling.
 - Provides sender, subject, body, HTML content, and metadata in JSON format, and includes attachments with direct download links.
 - Emails are stored for 60 days.
@@ -78,4 +79,4 @@ Runs functions written and stored within the CustomJS platform. Enables centrall
 
 ## Events
 
-The provider does not support events. CustomJS is a request-response execution platform and does not offer webhooks or event subscription mechanisms for listening to changes. Note that while CustomJS *sends data to* external webhooks (e.g., form submissions, Mail Hook forwarding), it does not provide an event system that external consumers can subscribe to for platform-level events.
+The provider does not support events. CustomJS is a request-response execution platform and does not offer webhooks or event subscription mechanisms for listening to changes. Note that while CustomJS _sends data to_ external webhooks (e.g., form submissions, Mail Hook forwarding), it does not provide an event system that external consumers can subscribe to for platform-level events.

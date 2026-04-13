@@ -19,31 +19,38 @@ let opportunitySchema = z.object({
   team: z.any().optional().describe('Assigned team'),
   lostReason: z.string().optional().describe('Reason if the opportunity was lost'),
   tags: z.array(z.any()).optional().describe('Associated tags'),
-  fields: z.array(z.any()).optional().describe('Custom fields'),
+  fields: z.array(z.any()).optional().describe('Custom fields')
 });
 
-export let listOpportunities = SlateTool.create(
-  spec,
-  {
-    name: 'List Opportunities',
-    key: 'list_opportunities',
-    description: `List sales opportunities from Capsule CRM with pagination. Optionally filter by modification date or by party to get opportunities related to a specific contact.`,
-    tags: {
-      readOnly: true,
-    },
+export let listOpportunities = SlateTool.create(spec, {
+  name: 'List Opportunities',
+  key: 'list_opportunities',
+  description: `List sales opportunities from Capsule CRM with pagination. Optionally filter by modification date or by party to get opportunities related to a specific contact.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    partyId: z.number().optional().describe('Filter opportunities by party ID'),
-    since: z.string().optional().describe('ISO 8601 date to filter opportunities modified after this date'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
-    embed: z.array(z.enum(['tags', 'fields', 'party', 'milestone', 'missingImportantFields'])).optional().describe('Additional data to embed'),
-  }))
-  .output(z.object({
-    opportunities: z.array(opportunitySchema).describe('List of opportunities'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      partyId: z.number().optional().describe('Filter opportunities by party ID'),
+      since: z
+        .string()
+        .optional()
+        .describe('ISO 8601 date to filter opportunities modified after this date'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
+      embed: z
+        .array(z.enum(['tags', 'fields', 'party', 'milestone', 'missingImportantFields']))
+        .optional()
+        .describe('Additional data to embed')
+    })
+  )
+  .output(
+    z.object({
+      opportunities: z.array(opportunitySchema).describe('List of opportunities')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
     let result;
@@ -51,14 +58,14 @@ export let listOpportunities = SlateTool.create(
       result = await client.listOpportunitiesByParty(ctx.input.partyId, {
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        embed: ctx.input.embed,
+        embed: ctx.input.embed
       });
     } else {
       result = await client.listOpportunities({
         since: ctx.input.since,
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        embed: ctx.input.embed,
+        embed: ctx.input.embed
       });
     }
 
@@ -78,11 +85,12 @@ export let listOpportunities = SlateTool.create(
       team: o.team,
       lostReason: o.lostReason,
       tags: o.tags,
-      fields: o.fields,
+      fields: o.fields
     }));
 
     return {
       output: { opportunities },
-      message: `Retrieved **${opportunities.length}** opportunities.`,
+      message: `Retrieved **${opportunities.length}** opportunities.`
     };
-  }).build();
+  })
+  .build();

@@ -19,14 +19,17 @@ The API key is passed as a Bearer token in the `Authorization` header: `Authoriz
 Linear supports OAuth2 authentication, which is recommended if you're building applications to integrate with Linear.
 
 **Endpoints:**
+
 - Authorization: `GET https://linear.app/oauth/authorize`
 - Token exchange: `POST https://api.linear.app/oauth/token`
 - Token revocation: `POST https://api.linear.app/oauth/revoke`
 
 **Credentials required:**
+
 - `client_id` and `client_secret` — obtained when creating an OAuth2 Application in Linear's API settings.
 
 **Scopes** (comma-separated):
+
 - `read` — (Default) Read access for the user's account. Always present.
 - `write` — Write access for the user's account.
 - `issues:create` — Allows creating new issues and their attachments only.
@@ -35,6 +38,7 @@ Linear supports OAuth2 authentication, which is recommended if you're building a
 - `admin` — Full access to admin-level endpoints.
 
 **Actor modes:**
+
 - `user` (default) — Resources are created as the authorizing user.
 - `app` — Resources are created as the application itself (for service accounts/agents).
 
@@ -50,45 +54,59 @@ OAuth2 applications created from October 1, 2025 onwards have refresh tokens ena
 ## Features
 
 ### Issue Tracking
+
 Create, read, update, and delete issues within teams. Issues support titles, descriptions (Markdown), assignees, priorities, labels, estimates, due dates, and workflow states (e.g., Backlog, Todo, In Progress, Done, Canceled). Issues can be linked to projects, cycles, and other issues. Sub-issues and parent-issue relationships are supported.
 
 ### Projects
+
 Manage projects that group related issues across teams. Projects have statuses, lead assignees, target dates, milestones, and descriptions. Projects can contain project updates to communicate progress.
 
 ### Cycles
+
 Manage time-boxed iterations (sprints) within teams. Cycles have start and end dates and contain a set of issues. Teams can configure cycle durations and auto-scheduling behavior.
 
 ### Teams
+
 Query and manage teams (organizational units that contain issues). Teams have configurable workflow states, labels, templates, estimation types (Fibonacci, exponential, T-shirt sizes, etc.), and cycle settings. Sub-teams are supported.
 
 ### Labels
+
 Create and manage issue labels at the team or organization level for categorizing issues.
 
 ### Users and Organization
+
 Query user profiles, team memberships, and organization-level settings. Manage user notification preferences.
 
 ### Documents
+
 Create and manage documents within the workspace. Documents support rich Markdown content and can be associated with projects.
 
 ### Comments
+
 Create and manage comments on issues. Supports Markdown formatting and @mentions via resource URLs.
 
 ### Attachments
+
 Manage issue attachments, including external link attachments and file uploads. Attachments can also be used to store custom metadata on issues.
 
 ### Customers
+
 Upsert customers, creating them if they don't exist, updating them otherwise. Matches against an existing customer with `id` or `externalId`. Customers can be linked to needs and issues.
 
 ### Search
+
 Vector search capabilities are available for similarity searches on issues. Standard filtering is also available on most entity queries with rich filter operators (date comparisons, string matching, relational filters).
 
 ### Workflow States
+
 Manage custom workflow states per team that define the lifecycle of issues (e.g., Triage, Backlog, Todo, In Progress, Done, Canceled).
 
 ### Notifications
+
 Query and manage notifications for the authenticated user.
 
 ### File Uploads
+
 Upload images, videos, and other files directly to Linear's cloud storage via the API.
 
 ## Events

@@ -17,7 +17,7 @@ import {
   ipGeolocation,
   dncCheck,
   fraudDetection,
-  checkBalance,
+  checkBalance
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -41,9 +41,7 @@ export let provider = Slate.create({
     ipGeolocation,
     dncCheck,
     fraudDetection,
-    checkBalance,
+    checkBalance
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -17,11 +17,13 @@ Pass your `api_key` in the request header for every request made to the API.
 - **Auth verification endpoint:** `https://formcarry.com/api/auth`
 
 Example:
+
 ```
 curl -H "api_key: YOUR_API_KEY" https://formcarry.com/api/auth
 ```
 
 A successful authentication response returns:
+
 ```json
 {
   "status": "success",
@@ -42,6 +44,7 @@ Formcarry allows you to collect submissions from your own HTML form, without any
 ### Submission Retrieval
 
 Retrieve form submissions programmatically with support for filtering, sorting, and pagination. Available filters include:
+
 - **Date range:** Filter by number of days (e.g., last 7 days).
 - **Attachments:** Filter submissions with or without file attachments.
 - **Spam status:** Filter spam vs. non-spam submissions.

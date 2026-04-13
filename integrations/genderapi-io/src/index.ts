@@ -7,7 +7,5 @@ import { inboundWebhook } from './triggers/inbound-webhook';
 export let provider = Slate.create({
   spec,
   tools: [detectGender, detectGenderBulk, validatePhone, checkUsage],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

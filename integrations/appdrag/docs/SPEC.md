@@ -13,11 +13,13 @@ AppDrag uses **API Key + App ID** authentication. AppDrag uses API keys for auth
 Every project created on AppDrag's Cloud Backend receives an APIKey to secure all requests to your API and Database. You can access your APIKey modal through the "API" or "Databases" dashboard. The same key is used for both.
 
 When making API calls:
+
 - The base URL follows the format: `https://{app_id}.appdrag.site/api/{folder}/{function}` or `https://{custom_domain}/api/{folder}/{function}`
 - For functions that require authentication, the APIKey parameter must be included. Every call made to such a function will require the APIKey parameter.
 - The API Key is passed as a POST form-data parameter named `APIKey`.
 
 To initialize the SDK (for use within cloud functions):
+
 ```
 cloudbackend.init('your_api_key', 'your_app_id');
 ```

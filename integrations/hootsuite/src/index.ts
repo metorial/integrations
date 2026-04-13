@@ -26,7 +26,5 @@ export let provider = Slate.create({
     manageTeamsTool,
     shortenLinkTool
   ],
-  triggers: [
-    hootsuiteEventsTrigger
-  ]
+  triggers: [hootsuiteEventsTrigger]
 });

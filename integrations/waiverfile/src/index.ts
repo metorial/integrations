@@ -11,12 +11,9 @@ import {
   deleteEvent,
   manageEventCategories,
   getWaiversForEvent,
-  listWaiversByDate,
+  listWaiversByDate
 } from './tools';
-import {
-  waiverTrigger,
-  eventTrigger,
-} from './triggers';
+import { waiverTrigger, eventTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     deleteEvent,
     manageEventCategories,
     getWaiversForEvent,
-    listWaiversByDate,
+    listWaiversByDate
   ],
-  triggers: [
-    waiverTrigger,
-    eventTrigger,
-  ],
+  triggers: [waiverTrigger, eventTrigger]
 });

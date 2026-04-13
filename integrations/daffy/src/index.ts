@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getUserProfile,
@@ -13,14 +12,9 @@ import {
   listGifts,
   getGift,
   searchNonprofits,
-  getNonprofit,
+  getNonprofit
 } from './tools';
-import {
-  newDonations,
-  newContributions,
-  newGifts,
-  inboundWebhook,
-} from './triggers';
+import { newDonations, newContributions, newGifts, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,12 +30,7 @@ export let provider = Slate.create({
     listGifts,
     getGift,
     searchNonprofits,
-    getNonprofit,
+    getNonprofit
   ],
-  triggers: [
-    inboundWebhook,
-    newDonations,
-    newContributions,
-    newGifts,
-  ],
+  triggers: [inboundWebhook, newDonations, newContributions, newGifts]
 });

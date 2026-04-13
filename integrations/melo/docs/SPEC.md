@@ -17,6 +17,7 @@ Melo uses **API key** authentication. All API requests require the `X-API-KEY` h
   - **Sandbox**: `https://preprod-api.notif.immo` (static/limited data for testing; broader queries recommended)
 
 Example request:
+
 ```
 curl --request GET 'https://api.notif.immo/documents/properties/{id}' \
   --header 'Content-Type: application/json' \

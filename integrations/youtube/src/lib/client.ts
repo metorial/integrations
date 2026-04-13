@@ -16,9 +16,7 @@ import type {
 export class Client {
   private axios;
 
-  constructor(
-    private config: { token: string }
-  ) {
+  constructor(private config: { token: string }) {
     this.axios = createAxios({
       baseURL: 'https://www.googleapis.com/youtube/v3',
       headers: {
@@ -107,7 +105,9 @@ export class Client {
     });
   }
 
-  async getVideoRating(videoIds: string[]): Promise<{ items: Array<{ videoId: string; rating: string }> }> {
+  async getVideoRating(
+    videoIds: string[]
+  ): Promise<{ items: Array<{ videoId: string; rating: string }> }> {
     let response = await this.axios.get('/videos/getRating', {
       params: {
         id: videoIds.join(',')
@@ -626,7 +626,12 @@ export class Client {
     part: string[];
     regionCode?: string;
     videoCategoryId?: string;
-  }): Promise<YouTubeListResponse<{ id: string; snippet: { channelId: string; title: string; assignable: boolean } }>> {
+  }): Promise<
+    YouTubeListResponse<{
+      id: string;
+      snippet: { channelId: string; title: string; assignable: boolean };
+    }>
+  > {
     let response = await this.axios.get('/videoCategories', {
       params: {
         part: params.part.join(','),

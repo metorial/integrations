@@ -17,29 +17,38 @@ let taskOutputSchema = z.object({
   roomName: z.string().optional().describe('Room name (only for personal task list)')
 });
 
-export let getTasks = SlateTool.create(
-  spec,
-  {
-    name: 'Get Tasks',
-    key: 'get_tasks',
-    description: `Retrieves tasks either from a specific room or the authenticated user's personal task list across all rooms. Filter by status (open/done) or assigner.`,
-    constraints: [
-      'Returns up to 100 tasks.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getTasks = SlateTool.create(spec, {
+  name: 'Get Tasks',
+  key: 'get_tasks',
+  description: `Retrieves tasks either from a specific room or the authenticated user's personal task list across all rooms. Filter by status (open/done) or assigner.`,
+  constraints: ['Returns up to 100 tasks.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    roomId: z.number().optional().describe('Room ID to get tasks from. Omit to get your personal task list across all rooms.'),
-    status: z.enum(['open', 'done']).optional().describe('Filter by task status'),
-    assignedByAccountId: z.number().optional().describe('Filter by the account ID of the task assigner (only for personal task list)')
-  }))
-  .output(z.object({
-    tasks: z.array(taskOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      roomId: z
+        .number()
+        .optional()
+        .describe(
+          'Room ID to get tasks from. Omit to get your personal task list across all rooms.'
+        ),
+      status: z.enum(['open', 'done']).optional().describe('Filter by task status'),
+      assignedByAccountId: z
+        .number()
+        .optional()
+        .describe(
+          'Filter by the account ID of the task assigner (only for personal task list)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth);
 
     if (ctx.input.roomId) {
@@ -88,4 +97,5 @@ export let getTasks = SlateTool.create(
         message: `Retrieved **${tasks.length}** personal tasks.`
       };
     }
-  }).build();
+  })
+  .build();

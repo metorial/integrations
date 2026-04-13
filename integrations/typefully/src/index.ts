@@ -1,6 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { createDraft, listDrafts, getDraft, updateDraft, deleteDraft, listSocialSets, manageTags, uploadMedia } from './tools';
+import {
+  createDraft,
+  listDrafts,
+  getDraft,
+  updateDraft,
+  deleteDraft,
+  listSocialSets,
+  manageTags,
+  uploadMedia
+} from './tools';
 import { draftEvents } from './triggers';
 
 export let provider = Slate.create({
@@ -13,9 +22,7 @@ export let provider = Slate.create({
     deleteDraft,
     listSocialSets,
     manageTags,
-    uploadMedia,
+    uploadMedia
   ],
-  triggers: [
-    draftEvents,
-  ],
+  triggers: [draftEvents]
 });

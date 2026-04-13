@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.scrape.do',
+  baseURL: 'https://api.scrape.do'
 });
 
 let asyncAxios = createAxios({
-  baseURL: 'https://q.scrape.do',
+  baseURL: 'https://q.scrape.do'
 });
 
 export interface ScrapeOptions {
@@ -180,10 +180,15 @@ export class ScrapeDoClient {
     this.token = token;
   }
 
-  async scrapeUrl(options: ScrapeOptions, method: 'GET' | 'POST' = 'GET', postBody?: string, headers?: Record<string, string>): Promise<{ statusCode: number; headers: Record<string, string>; body: string }> {
+  async scrapeUrl(
+    options: ScrapeOptions,
+    method: 'GET' | 'POST' = 'GET',
+    postBody?: string,
+    headers?: Record<string, string>
+  ): Promise<{ statusCode: number; headers: Record<string, string>; body: string }> {
     let params: Record<string, unknown> = {
       token: this.token,
-      url: options.url,
+      url: options.url
     };
 
     if (options.render !== undefined) params['render'] = options.render;
@@ -194,14 +199,17 @@ export class ScrapeDoClient {
     if (options.sessionId) params['sessionId'] = options.sessionId;
     if (options.customHeaders !== undefined) params['customHeaders'] = options.customHeaders;
     if (options.extraHeaders !== undefined) params['extraHeaders'] = options.extraHeaders;
-    if (options.forwardHeaders !== undefined) params['forwardHeaders'] = options.forwardHeaders;
+    if (options.forwardHeaders !== undefined)
+      params['forwardHeaders'] = options.forwardHeaders;
     if (options.setCookies) params['setCookies'] = options.setCookies;
     if (options.timeout !== undefined) params['timeout'] = options.timeout;
     if (options.retryTimeout !== undefined) params['retryTimeout'] = options.retryTimeout;
     if (options.disableRetry !== undefined) params['disableRetry'] = options.disableRetry;
-    if (options.disableRedirection !== undefined) params['disableRedirection'] = options.disableRedirection;
+    if (options.disableRedirection !== undefined)
+      params['disableRedirection'] = options.disableRedirection;
     if (options.output) params['output'] = options.output;
-    if (options.transparentResponse !== undefined) params['transparentResponse'] = options.transparentResponse;
+    if (options.transparentResponse !== undefined)
+      params['transparentResponse'] = options.transparentResponse;
     if (options.callback) params['callback'] = options.callback;
     if (options.pureCookies !== undefined) params['pureCookies'] = options.pureCookies;
 
@@ -211,21 +219,25 @@ export class ScrapeDoClient {
     if (options.waitSelector) params['waitSelector'] = options.waitSelector;
     if (options.width !== undefined) params['width'] = options.width;
     if (options.height !== undefined) params['height'] = options.height;
-    if (options.blockResources !== undefined) params['blockResources'] = options.blockResources;
+    if (options.blockResources !== undefined)
+      params['blockResources'] = options.blockResources;
     if (options.playWithBrowser) params['playWithBrowser'] = options.playWithBrowser;
     if (options.returnJSON !== undefined) params['returnJSON'] = options.returnJSON;
     if (options.showFrames !== undefined) params['showFrames'] = options.showFrames;
-    if (options.showWebsocketRequests !== undefined) params['showWebsocketRequests'] = options.showWebsocketRequests;
+    if (options.showWebsocketRequests !== undefined)
+      params['showWebsocketRequests'] = options.showWebsocketRequests;
 
     // Screenshot params
     if (options.screenShot !== undefined) params['screenShot'] = options.screenShot;
-    if (options.fullScreenShot !== undefined) params['fullScreenShot'] = options.fullScreenShot;
-    if (options.particularScreenShot) params['particularScreenShot'] = options.particularScreenShot;
+    if (options.fullScreenShot !== undefined)
+      params['fullScreenShot'] = options.fullScreenShot;
+    if (options.particularScreenShot)
+      params['particularScreenShot'] = options.particularScreenShot;
 
     let requestConfig: Record<string, unknown> = {
       params,
       responseType: 'text' as const,
-      validateStatus: () => true,
+      validateStatus: () => true
     };
 
     if (headers) {
@@ -251,14 +263,14 @@ export class ScrapeDoClient {
     return {
       statusCode: response.status,
       headers: responseHeaders,
-      body: typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+      body: typeof response.data === 'string' ? response.data : JSON.stringify(response.data)
     };
   }
 
   async googleSearch(options: GoogleSearchOptions): Promise<Record<string, unknown>> {
     let params: Record<string, unknown> = {
       token: this.token,
-      q: options.query,
+      q: options.query
     };
 
     if (options.device) params['device'] = options.device;
@@ -277,7 +289,7 @@ export class ScrapeDoClient {
 
     let response = await apiAxios.get('/plugin/google/search', {
       params,
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -287,7 +299,7 @@ export class ScrapeDoClient {
     let params: Record<string, unknown> = {
       token: this.token,
       asin: options.asin,
-      geocode: options.geocode,
+      geocode: options.geocode
     };
 
     if (options.zipcode) params['zipcode'] = options.zipcode;
@@ -297,7 +309,7 @@ export class ScrapeDoClient {
 
     let response = await apiAxios.get('/plugin/amazon/pdp', {
       params,
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -307,7 +319,7 @@ export class ScrapeDoClient {
     let params: Record<string, unknown> = {
       token: this.token,
       keyword: options.keyword,
-      geocode: options.geocode,
+      geocode: options.geocode
     };
 
     if (options.zipcode) params['zipcode'] = options.zipcode;
@@ -318,17 +330,19 @@ export class ScrapeDoClient {
 
     let response = await apiAxios.get('/plugin/amazon/search', {
       params,
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
   }
 
-  async amazonOfferListing(options: AmazonOfferListingOptions): Promise<Record<string, unknown>> {
+  async amazonOfferListing(
+    options: AmazonOfferListingOptions
+  ): Promise<Record<string, unknown>> {
     let params: Record<string, unknown> = {
       token: this.token,
       asin: options.asin,
-      geocode: options.geocode,
+      geocode: options.geocode
     };
 
     if (options.zipcode) params['zipcode'] = options.zipcode;
@@ -338,7 +352,7 @@ export class ScrapeDoClient {
 
     let response = await apiAxios.get('/plugin/amazon/offer-listing', {
       params,
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -347,7 +361,7 @@ export class ScrapeDoClient {
   async amazonRawHtml(options: AmazonRawOptions): Promise<string> {
     let params: Record<string, unknown> = {
       token: this.token,
-      url: options.url,
+      url: options.url
     };
 
     if (options.geocode) params['geocode'] = options.geocode;
@@ -356,15 +370,17 @@ export class ScrapeDoClient {
     let response = await apiAxios.get('/plugin/amazon/', {
       params,
       responseType: 'text',
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
   }
 
-  async createAsyncJob(options: CreateAsyncJobOptions): Promise<{ JobID: string; Message: string; TaskIDs: string[] }> {
+  async createAsyncJob(
+    options: CreateAsyncJobOptions
+  ): Promise<{ JobID: string; Message: string; TaskIDs: string[] }> {
     let body: Record<string, unknown> = {
-      Targets: options.targets,
+      Targets: options.targets
     };
 
     if (options.method) body['Method'] = options.method;
@@ -380,8 +396,10 @@ export class ScrapeDoClient {
     if (options.timeout !== undefined) body['Timeout'] = options.timeout;
     if (options.retryTimeout !== undefined) body['RetryTimeout'] = options.retryTimeout;
     if (options.disableRetry !== undefined) body['DisableRetry'] = options.disableRetry;
-    if (options.transparentResponse !== undefined) body['TransparentResponse'] = options.transparentResponse;
-    if (options.disableRedirection !== undefined) body['DisableRedirection'] = options.disableRedirection;
+    if (options.transparentResponse !== undefined)
+      body['TransparentResponse'] = options.transparentResponse;
+    if (options.disableRedirection !== undefined)
+      body['DisableRedirection'] = options.disableRedirection;
     if (options.output) body['Output'] = options.output;
     if (options.webhookUrl) body['WebhookURL'] = options.webhookUrl;
     if (options.webhookHeaders) body['WebhookHeaders'] = options.webhookHeaders;
@@ -389,7 +407,7 @@ export class ScrapeDoClient {
 
     let response = await asyncAxios.post('/api/v1/jobs', body, {
       headers: { 'X-Token': this.token },
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -398,7 +416,7 @@ export class ScrapeDoClient {
   async getAsyncJobStatus(jobId: string): Promise<AsyncJobStatus> {
     let response = await asyncAxios.get(`/api/v1/jobs/${jobId}`, {
       headers: { 'X-Token': this.token },
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -407,17 +425,20 @@ export class ScrapeDoClient {
   async getAsyncTaskResult(jobId: string, taskId: string): Promise<AsyncTaskResult> {
     let response = await asyncAxios.get(`/api/v1/jobs/${jobId}/${taskId}`, {
       headers: { 'X-Token': this.token },
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
   }
 
-  async listAsyncJobs(page: number = 1, pageSize: number = 10): Promise<Record<string, unknown>> {
+  async listAsyncJobs(
+    page: number = 1,
+    pageSize: number = 10
+  ): Promise<Record<string, unknown>> {
     let response = await asyncAxios.get('/api/v1/jobs', {
       headers: { 'X-Token': this.token },
       params: { page, page_size: pageSize },
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -426,7 +447,7 @@ export class ScrapeDoClient {
   async cancelAsyncJob(jobId: string): Promise<Record<string, unknown>> {
     let response = await asyncAxios.delete(`/api/v1/jobs/${jobId}`, {
       headers: { 'X-Token': this.token },
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;
@@ -435,7 +456,7 @@ export class ScrapeDoClient {
   async getAccountStats(): Promise<AccountStats> {
     let response = await apiAxios.get('/info', {
       params: { token: this.token },
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     return response.data;

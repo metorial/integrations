@@ -5,7 +5,7 @@ export class Client {
 
   constructor(config: { token: string; accountEmail?: string }) {
     let headers: Record<string, string> = {
-      'Authorization': `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`
     };
     if (config.accountEmail) {
       headers['Account-Email'] = config.accountEmail;
@@ -13,7 +13,7 @@ export class Client {
 
     this.http = createAxios({
       baseURL: 'https://api.pingdom.com/api/3.1',
-      headers,
+      headers
     });
   }
 
@@ -37,14 +37,14 @@ export class Client {
 
   async createCheck(data: Record<string, any>) {
     let response = await this.http.post('/checks', data, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async updateCheck(checkId: number, data: Record<string, any>) {
     let response = await this.http.put(`/checks/${checkId}`, data, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -74,14 +74,14 @@ export class Client {
 
   async createTmsCheck(data: Record<string, any>) {
     let response = await this.http.post('/tms/check', data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async updateTmsCheck(checkId: number, data: Record<string, any>) {
     let response = await this.http.put(`/tms/check/${checkId}`, data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -93,60 +93,75 @@ export class Client {
 
   // ─── Check Results ─────────────────────────────────────────────
 
-  async getCheckResults(checkId: number, params?: {
-    to?: number;
-    from?: number;
-    probes?: string;
-    status?: string;
-    limit?: number;
-    offset?: number;
-    includeanalysis?: boolean;
-    maxresponse?: number;
-    minresponse?: number;
-  }) {
+  async getCheckResults(
+    checkId: number,
+    params?: {
+      to?: number;
+      from?: number;
+      probes?: string;
+      status?: string;
+      limit?: number;
+      offset?: number;
+      includeanalysis?: boolean;
+      maxresponse?: number;
+      minresponse?: number;
+    }
+  ) {
     let response = await this.http.get(`/results/${checkId}`, { params });
     return response.data;
   }
 
   // ─── Summary Reports ───────────────────────────────────────────
 
-  async getSummaryAverage(checkId: number, params?: {
-    from?: number;
-    to?: number;
-    probes?: string;
-    includeuptime?: boolean;
-  }) {
+  async getSummaryAverage(
+    checkId: number,
+    params?: {
+      from?: number;
+      to?: number;
+      probes?: string;
+      includeuptime?: boolean;
+    }
+  ) {
     let response = await this.http.get(`/summary.average/${checkId}`, { params });
     return response.data;
   }
 
-  async getSummaryPerformance(checkId: number, params?: {
-    from?: number;
-    to?: number;
-    resolution?: string;
-    includeuptime?: boolean;
-    probes?: string;
-    order?: string;
-  }) {
+  async getSummaryPerformance(
+    checkId: number,
+    params?: {
+      from?: number;
+      to?: number;
+      resolution?: string;
+      includeuptime?: boolean;
+      probes?: string;
+      order?: string;
+    }
+  ) {
     let response = await this.http.get(`/summary.performance/${checkId}`, { params });
     return response.data;
   }
 
-  async getSummaryOutage(checkId: number, params?: {
-    from?: number;
-    to?: number;
-    order?: string;
-  }) {
+  async getSummaryOutage(
+    checkId: number,
+    params?: {
+      from?: number;
+      to?: number;
+      order?: string;
+    }
+  ) {
     let response = await this.http.get(`/summary.outage/${checkId}`, { params });
     return response.data;
   }
 
-  async getSummaryHoursOfDay(checkId: number, params?: {
-    from?: number;
-    to?: number;
-    probes?: string;
-    uselocaltime?: boolean;
-  }) {
+  async getSummaryHoursOfDay(
+    checkId: number,
+    params?: {
+      from?: number;
+      to?: number;
+      probes?: string;
+      uselocaltime?: boolean;
+    }
+  ) {
     let response = await this.http.get(`/summary.hoursofday/${checkId}`, { params });
     return response.data;
   }
@@ -160,14 +175,14 @@ export class Client {
 
   async createContact(data: Record<string, any>) {
     let response = await this.http.post('/alerting/contacts', data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async updateContact(contactId: number, data: Record<string, any>) {
     let response = await this.http.put(`/alerting/contacts/${contactId}`, data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -186,14 +201,14 @@ export class Client {
 
   async createTeam(data: Record<string, any>) {
     let response = await this.http.post('/alerting/teams', data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async updateTeam(teamId: number, data: Record<string, any>) {
     let response = await this.http.put(`/alerting/teams/${teamId}`, data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -205,11 +220,7 @@ export class Client {
 
   // ─── Maintenance Windows ───────────────────────────────────────
 
-  async listMaintenance(params?: {
-    limit?: number;
-    offset?: number;
-    orderby?: string;
-  }) {
+  async listMaintenance(params?: { limit?: number; offset?: number; orderby?: string }) {
     let response = await this.http.get('/maintenance', { params });
     return response.data;
   }
@@ -221,14 +232,14 @@ export class Client {
 
   async createMaintenance(data: Record<string, any>) {
     let response = await this.http.post('/maintenance', data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async updateMaintenance(maintenanceId: number, data: Record<string, any>) {
     let response = await this.http.put(`/maintenance/${maintenanceId}`, data, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -240,23 +251,22 @@ export class Client {
 
   // ─── Root Cause Analysis ───────────────────────────────────────
 
-  async getAnalysis(checkId: number, params?: {
-    limit?: number;
-    offset?: number;
-    from?: number;
-    to?: number;
-  }) {
+  async getAnalysis(
+    checkId: number,
+    params?: {
+      limit?: number;
+      offset?: number;
+      from?: number;
+      to?: number;
+    }
+  ) {
     let response = await this.http.get(`/analysis/${checkId}`, { params });
     return response.data;
   }
 
   // ─── Single (Ad-hoc) Check ────────────────────────────────────
 
-  async performSingleCheck(params: {
-    host: string;
-    type: string;
-    probeid?: number;
-  }) {
+  async performSingleCheck(params: { host: string; type: string; probeid?: number }) {
     let response = await this.http.get('/single', { params });
     return response.data;
   }

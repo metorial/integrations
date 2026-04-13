@@ -3,39 +3,57 @@ import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchFiles = SlateTool.create(
-  spec,
-  {
-    name: 'Search Files',
-    key: 'search_files',
-    description: `Search for files and folders in Dropbox by name or content. Returns matching entries with relevance info. Optionally filter by path or file category.`,
-    tags: {
-      readOnly: true
-    }
+export let searchFiles = SlateTool.create(spec, {
+  name: 'Search Files',
+  key: 'search_files',
+  description: `Search for files and folders in Dropbox by name or content. Returns matching entries with relevance info. Optionally filter by path or file category.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    path: z.string().optional().describe('Scope search to a specific folder path'),
-    maxResults: z.number().optional().describe('Maximum number of results to return'),
-    fileCategories: z.array(z.enum([
-      'image', 'document', 'pdf', 'spreadsheet', 'presentation',
-      'audio', 'video', 'folder', 'paper', 'others'
-    ])).optional().describe('Filter results by file category')
-  }))
-  .output(z.object({
-    matches: z.array(z.object({
-      tag: z.string().describe('Match type'),
-      name: z.string().describe('File or folder name'),
-      pathDisplay: z.string().optional().describe('Display path'),
-      entryId: z.string().optional().describe('Unique entry ID'),
-      entryType: z.string().optional().describe('Entry type: file, folder, or deleted'),
-      serverModified: z.string().optional().describe('Last server modification time'),
-      size: z.number().optional().describe('File size in bytes')
-    })).describe('Search result matches'),
-    hasMore: z.boolean().describe('Whether more results are available')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      path: z.string().optional().describe('Scope search to a specific folder path'),
+      maxResults: z.number().optional().describe('Maximum number of results to return'),
+      fileCategories: z
+        .array(
+          z.enum([
+            'image',
+            'document',
+            'pdf',
+            'spreadsheet',
+            'presentation',
+            'audio',
+            'video',
+            'folder',
+            'paper',
+            'others'
+          ])
+        )
+        .optional()
+        .describe('Filter results by file category')
+    })
+  )
+  .output(
+    z.object({
+      matches: z
+        .array(
+          z.object({
+            tag: z.string().describe('Match type'),
+            name: z.string().describe('File or folder name'),
+            pathDisplay: z.string().optional().describe('Display path'),
+            entryId: z.string().optional().describe('Unique entry ID'),
+            entryType: z.string().optional().describe('Entry type: file, folder, or deleted'),
+            serverModified: z.string().optional().describe('Last server modification time'),
+            size: z.number().optional().describe('File size in bytes')
+          })
+        )
+        .describe('Search result matches'),
+      hasMore: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DropboxClient(ctx.auth.token);
     let result = await client.searchFiles(
       ctx.input.query,
@@ -64,4 +82,5 @@ export let searchFiles = SlateTool.create(
       },
       message: `Found **${matches.length}** results for "${ctx.input.query}"${result.has_more ? ' (more available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

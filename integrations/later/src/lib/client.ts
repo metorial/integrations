@@ -65,13 +65,13 @@ export class Client {
 
   private headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
   async getInstance(): Promise<InstanceInfo> {
     let response = await http.get('/instance', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -84,7 +84,7 @@ export class Client {
 
     let response = await http.get('/campaigns', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -103,7 +103,7 @@ export class Client {
 
     let response = await http.get('/reporting-groups', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -134,7 +134,7 @@ export class Client {
 
     let response = await http.get('/report', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }

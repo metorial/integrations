@@ -3,18 +3,19 @@ import { CrowTerminalClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let postStatusChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Post Status Changes',
-    key: 'post_status_changes',
-    description: 'Triggers when a post changes status — e.g., when a queued post is published, a scheduled post begins processing, or a post fails to publish.',
-  }
-)
+export let postStatusChanges = SlateTrigger.create(spec, {
+  name: 'Post Status Changes',
+  key: 'post_status_changes',
+  description:
+    'Triggers when a post changes status — e.g., when a queued post is published, a scheduled post begins processing, or a post fails to publish.'
+})
   .input(
     z.object({
       postId: z.string().describe('Unique identifier of the post'),
-      previousStatus: z.string().nullable().describe('Previous status of the post, null if newly seen'),
+      previousStatus: z
+        .string()
+        .nullable()
+        .describe('Previous status of the post, null if newly seen'),
       currentStatus: z.string().describe('Current status of the post'),
       platform: z.string().describe('Social media platform'),
       text: z.string().describe('Text content of the post'),
@@ -22,7 +23,7 @@ export let postStatusChanges = SlateTrigger.create(
       publishedAt: z.string().nullable().describe('Publish timestamp if published'),
       failureReason: z.string().nullable().describe('Failure reason if applicable'),
       platformPostId: z.string().nullable().describe('Native post ID on the platform'),
-      platformPostUrl: z.string().nullable().describe('Direct URL on the platform'),
+      platformPostUrl: z.string().nullable().describe('Direct URL on the platform')
     })
   )
   .output(
@@ -33,21 +34,24 @@ export let postStatusChanges = SlateTrigger.create(
       status: z.string().describe('Current status of the post after the change'),
       previousStatus: z.string().nullable().describe('Status before the change'),
       accountId: z.string().describe('Account ID the post belongs to'),
-      publishedAt: z.string().nullable().describe('Publish timestamp if the post was published'),
+      publishedAt: z
+        .string()
+        .nullable()
+        .describe('Publish timestamp if the post was published'),
       failureReason: z.string().nullable().describe('Failure reason if the post failed'),
       platformPostId: z.string().nullable().describe('Native post ID on the platform'),
-      platformPostUrl: z.string().nullable().describe('Direct URL to the post on the platform'),
+      platformPostUrl: z.string().nullable().describe('Direct URL to the post on the platform')
     })
   )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CrowTerminalClient({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let knownStatuses: Record<string, string> = ctx.state?.knownStatuses || {};
@@ -84,7 +88,7 @@ export let postStatusChanges = SlateTrigger.create(
             publishedAt: post.publishedAt,
             failureReason: post.failureReason,
             platformPostId: post.platformPostId,
-            platformPostUrl: post.platformPostUrl,
+            platformPostUrl: post.platformPostUrl
           });
         }
       }
@@ -92,12 +96,12 @@ export let postStatusChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownStatuses: updatedStatuses,
-        },
+          knownStatuses: updatedStatuses
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusTransition = ctx.input.previousStatus
         ? `${ctx.input.previousStatus} → ${ctx.input.currentStatus}`
         : ctx.input.currentStatus;
@@ -117,9 +121,9 @@ export let postStatusChanges = SlateTrigger.create(
           publishedAt: ctx.input.publishedAt,
           failureReason: ctx.input.failureReason,
           platformPostId: ctx.input.platformPostId,
-          platformPostUrl: ctx.input.platformPostUrl,
-        },
+          platformPostUrl: ctx.input.platformPostUrl
+        }
       };
-    },
+    }
   })
   .build();

@@ -127,8 +127,8 @@ export class DetrackClient {
       baseURL: 'https://app.detrack.com/api/v2',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-KEY': token,
-      },
+        'X-API-KEY': token
+      }
     });
   }
 
@@ -151,61 +151,75 @@ export class DetrackClient {
     return response.data?.data ?? response.data;
   }
 
-  async updateJob(job: Partial<JobData> & { do_number: string; date: string }): Promise<Record<string, unknown>> {
+  async updateJob(
+    job: Partial<JobData> & { do_number: string; date: string }
+  ): Promise<Record<string, unknown>> {
     let response = await this.http.put('/dn/jobs', { data: job });
     return response.data?.data ?? response.data;
   }
 
-  async updateJobs(jobs: (Partial<JobData> & { do_number: string; date: string })[]): Promise<Record<string, unknown>[]> {
+  async updateJobs(
+    jobs: (Partial<JobData> & { do_number: string; date: string })[]
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.http.put('/dn/jobs/batch', { data: jobs });
     return response.data?.data ?? response.data;
   }
 
   async deleteJob(doNumber: string, date: string): Promise<Record<string, unknown>> {
-    let response = await this.http.delete('/dn/jobs', { data: { data: { do_number: doNumber, date } } });
+    let response = await this.http.delete('/dn/jobs', {
+      data: { data: { do_number: doNumber, date } }
+    });
     return response.data?.data ?? response.data;
   }
 
-  async deleteJobs(jobs: { do_number: string; date: string }[]): Promise<Record<string, unknown>> {
+  async deleteJobs(
+    jobs: { do_number: string; date: string }[]
+  ): Promise<Record<string, unknown>> {
     let response = await this.http.delete('/dn/jobs/batch', { data: { data: jobs } });
     return response.data?.data ?? response.data;
   }
 
   async reattemptJob(doNumber: string, date: string): Promise<Record<string, unknown>> {
-    let response = await this.http.post('/dn/jobs/reattempt', { data: { do_number: doNumber, date } });
+    let response = await this.http.post('/dn/jobs/reattempt', {
+      data: { do_number: doNumber, date }
+    });
     return response.data?.data ?? response.data;
   }
 
-  async listJobs(params: ListJobsParams = {}): Promise<{ jobs: Record<string, unknown>[]; total: number; page: number }> {
+  async listJobs(
+    params: ListJobsParams = {}
+  ): Promise<{ jobs: Record<string, unknown>[]; total: number; page: number }> {
     let response = await this.http.get('/dn/jobs', { params });
     let data = response.data;
     return {
       jobs: data?.data ?? [],
       total: data?.total ?? 0,
-      page: data?.page ?? 1,
+      page: data?.page ?? 1
     };
   }
 
-  async searchJobs(params: SearchJobsParams = {}): Promise<{ jobs: Record<string, unknown>[]; total: number; page: number }> {
+  async searchJobs(
+    params: SearchJobsParams = {}
+  ): Promise<{ jobs: Record<string, unknown>[]; total: number; page: number }> {
     let response = await this.http.get('/dn/jobs/search', { params });
     let data = response.data;
     return {
       jobs: data?.data ?? [],
       total: data?.total ?? 0,
-      page: data?.page ?? 1,
+      page: data?.page ?? 1
     };
   }
 
   async downloadJobPod(doNumber: string, date: string): Promise<{ url: string }> {
     let response = await this.http.get('/dn/jobs/export/pod', {
-      params: { do_number: doNumber, date },
+      params: { do_number: doNumber, date }
     });
     return response.data?.data ?? response.data;
   }
 
   async downloadJobShippingLabel(doNumber: string, date: string): Promise<{ url: string }> {
     let response = await this.http.get('/dn/jobs/export/shipping-label', {
-      params: { do_number: doNumber, date },
+      params: { do_number: doNumber, date }
     });
     return response.data?.data ?? response.data;
   }
@@ -227,7 +241,9 @@ export class DetrackClient {
     return response.data?.data ?? response.data;
   }
 
-  async updateVehicle(vehicle: Partial<VehicleData> & { name: string }): Promise<Record<string, unknown>> {
+  async updateVehicle(
+    vehicle: Partial<VehicleData> & { name: string }
+  ): Promise<Record<string, unknown>> {
     let response = await this.http.put('/dn/vehicles', { data: vehicle });
     return response.data?.data ?? response.data;
   }

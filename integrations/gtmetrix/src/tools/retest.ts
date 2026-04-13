@@ -4,28 +4,44 @@ import { testOutputSchema, reportOutputSchema } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let retest = SlateTool.create(
-  spec,
-  {
-    name: 'Retest',
-    key: 'retest',
-    description: `Re-runs a performance test using the original analysis options from an existing page or report. Useful for tracking performance changes over time without reconfiguring test parameters. Optionally waits for completion and returns the new report.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    pageId: z.string().optional().describe('Page ID to retest. Provide either pageId or reportId.'),
-    reportId: z.string().optional().describe('Report ID to retest. Provide either pageId or reportId.'),
-    waitForCompletion: z.boolean().optional().describe('If true, polls until the test completes and returns the full report. Default: false'),
-  }))
-  .output(z.object({
-    test: testOutputSchema,
-    report: reportOutputSchema.optional().describe('Full report data, only present when waitForCompletion is true and the test completed successfully'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let retest = SlateTool.create(spec, {
+  name: 'Retest',
+  key: 'retest',
+  description: `Re-runs a performance test using the original analysis options from an existing page or report. Useful for tracking performance changes over time without reconfiguring test parameters. Optionally waits for completion and returns the new report.`,
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      pageId: z
+        .string()
+        .optional()
+        .describe('Page ID to retest. Provide either pageId or reportId.'),
+      reportId: z
+        .string()
+        .optional()
+        .describe('Report ID to retest. Provide either pageId or reportId.'),
+      waitForCompletion: z
+        .boolean()
+        .optional()
+        .describe(
+          'If true, polls until the test completes and returns the full report. Default: false'
+        )
+    })
+  )
+  .output(
+    z.object({
+      test: testOutputSchema,
+      report: reportOutputSchema
+        .optional()
+        .describe(
+          'Full report data, only present when waitForCompletion is true and the test completed successfully'
+        )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (!ctx.input.pageId && !ctx.input.reportId) {
@@ -44,7 +60,7 @@ export let retest = SlateTool.create(
     if (!ctx.input.waitForCompletion) {
       return {
         output: { test },
-        message: `Retest **${test.testId}** queued. Credits used: ${test.creditsUsed ?? 'N/A'}, credits remaining: ${test.creditsLeft ?? 'N/A'}.`,
+        message: `Retest **${test.testId}** queued. Credits used: ${test.creditsUsed ?? 'N/A'}, credits remaining: ${test.creditsLeft ?? 'N/A'}.`
       };
     }
 
@@ -54,7 +70,7 @@ export let retest = SlateTool.create(
     if (completedTest.state === 'error') {
       return {
         output: { test: completedTest },
-        message: `Retest **${test.testId}** failed: ${completedTest.error ?? 'Unknown error'}`,
+        message: `Retest **${test.testId}** failed: ${completedTest.error ?? 'Unknown error'}`
       };
     }
 
@@ -67,7 +83,7 @@ export let retest = SlateTool.create(
 
     return {
       output: { test: completedTest, report },
-      message: `Retest completed — Grade: **${grade}**, Performance: **${perfScore}**`,
+      message: `Retest completed — Grade: **${grade}**, Performance: **${perfScore}**`
     };
   })
   .build();

@@ -3,37 +3,42 @@ import { XataWorkspaceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Polls a Xata table for new or updated records by tracking the latest version timestamp. Detects newly created and recently modified records.',
-  }
-)
-  .input(z.object({
-    recordId: z.string().describe('ID of the changed record'),
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    tableName: z.string().describe('Table the record belongs to'),
-    record: z.any().describe('Full record data'),
-    version: z.number().describe('Record version number'),
-    updatedAt: z.string().optional().describe('When the record was last updated'),
-  }))
-  .output(z.object({
-    recordId: z.string().describe('ID of the changed record'),
-    tableName: z.string().describe('Table the record belongs to'),
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    record: z.any().describe('Full record data'),
-    version: z.number().describe('Record version number'),
-    updatedAt: z.string().optional().describe('When the record was last updated'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Polls a Xata table for new or updated records by tracking the latest version timestamp. Detects newly created and recently modified records.'
+})
+  .input(
+    z.object({
+      recordId: z.string().describe('ID of the changed record'),
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      tableName: z.string().describe('Table the record belongs to'),
+      record: z.any().describe('Full record data'),
+      version: z.number().describe('Record version number'),
+      updatedAt: z.string().optional().describe('When the record was last updated')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('ID of the changed record'),
+      tableName: z.string().describe('Table the record belongs to'),
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      record: z.any().describe('Full record data'),
+      version: z.number().describe('Record version number'),
+      updatedAt: z.string().optional().describe('When the record was last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
-      let state = ctx.state as { lastPolledAt?: string; knownRecordVersions?: Record<string, number> } | null;
+    pollEvents: async ctx => {
+      let state = ctx.state as {
+        lastPolledAt?: string;
+        knownRecordVersions?: Record<string, number>;
+      } | null;
       let lastPolledAt = state?.lastPolledAt;
       let knownRecordVersions = state?.knownRecordVersions || {};
 
@@ -41,14 +46,14 @@ export let recordChanges = SlateTrigger.create(
       if (!configData.workspaceId || !configData.databaseName) {
         return {
           inputs: [],
-          updatedState: state || {},
+          updatedState: state || {}
         };
       }
 
       let client = new XataWorkspaceClient({
         token: ctx.auth.token,
         workspaceId: configData.workspaceId,
-        region: configData.region,
+        region: configData.region
       });
 
       let dbName = configData.databaseName;
@@ -73,7 +78,7 @@ export let recordChanges = SlateTrigger.create(
         let filter: any = {};
         if (lastPolledAt) {
           filter = {
-            'xata.updatedAt': { '$ge': lastPolledAt },
+            'xata.updatedAt': { $ge: lastPolledAt }
           };
         }
 
@@ -81,7 +86,7 @@ export let recordChanges = SlateTrigger.create(
           let result = await client.queryTable(dbName, branch, tableName, {
             filter: Object.keys(filter).length > 0 ? filter : undefined,
             sort: { 'xata.updatedAt': 'desc' },
-            page: { size: 100 },
+            page: { size: 100 }
           });
 
           let records = result.records || [];
@@ -100,7 +105,7 @@ export let recordChanges = SlateTrigger.create(
                 tableName,
                 record,
                 version,
-                updatedAt: record.xata?.updatedAt,
+                updatedAt: record.xata?.updatedAt
               });
             } else if (version > previousVersion) {
               inputs.push({
@@ -109,7 +114,7 @@ export let recordChanges = SlateTrigger.create(
                 tableName,
                 record,
                 version,
-                updatedAt: record.xata?.updatedAt,
+                updatedAt: record.xata?.updatedAt
               });
             }
 
@@ -127,12 +132,12 @@ export let recordChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPolledAt: new Date().toISOString(),
-          knownRecordVersions: mergedVersions,
-        },
+          knownRecordVersions: mergedVersions
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `record.${ctx.input.changeType}`,
         id: `${ctx.input.tableName}:${ctx.input.recordId}:${ctx.input.version}`,
@@ -142,8 +147,9 @@ export let recordChanges = SlateTrigger.create(
           changeType: ctx.input.changeType,
           record: ctx.input.record,
           version: ctx.input.version,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

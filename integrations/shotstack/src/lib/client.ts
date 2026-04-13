@@ -7,14 +7,18 @@ let getVersion = (env: Environment): string => {
   return env === 'production' ? 'v1' : 'stage';
 };
 
-let createApiClient = (apiPath: string, token: string, environment: Environment): AxiosInstance => {
+let createApiClient = (
+  apiPath: string,
+  token: string,
+  environment: Environment
+): AxiosInstance => {
   let version = getVersion(environment);
   return createAxios({
     baseURL: `https://api.shotstack.io/${apiPath}/${version}`,
     headers: {
       'x-api-key': token,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'
+    }
   });
 };
 
@@ -30,7 +34,10 @@ export class EditClient {
     return res.data;
   }
 
-  async getRender(renderId: string, options?: { data?: boolean; merged?: boolean }): Promise<any> {
+  async getRender(
+    renderId: string,
+    options?: { data?: boolean; merged?: boolean }
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (options?.data) params.data = true;
     if (options?.merged) params.merged = true;
@@ -53,7 +60,11 @@ export class EditClient {
     return res.data;
   }
 
-  async updateTemplate(templateId: string, name: string, template: Record<string, any>): Promise<any> {
+  async updateTemplate(
+    templateId: string,
+    name: string,
+    template: Record<string, any>
+  ): Promise<any> {
     let res = await this.http.put(`/templates/${templateId}`, { name, template });
     return res.data;
   }
@@ -62,7 +73,10 @@ export class EditClient {
     await this.http.delete(`/templates/${templateId}`);
   }
 
-  async renderTemplate(templateId: string, merge?: Array<{ find: string; replace: string }>): Promise<any> {
+  async renderTemplate(
+    templateId: string,
+    merge?: Array<{ find: string; replace: string }>
+  ): Promise<any> {
     let body: Record<string, any> = { id: templateId };
     if (merge && merge.length > 0) body.merge = merge;
     let res = await this.http.post('/templates/render', body);

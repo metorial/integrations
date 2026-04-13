@@ -20,14 +20,14 @@ import {
   deleteAttachment,
   listColumns,
   createColumn,
-  updateColumn,
+  updateColumn
 } from './tools';
 import {
   projectCreated,
   taskCreated,
   taskUpdated,
   taskDestroyed,
-  commentCreated,
+  commentCreated
 } from './triggers';
 
 export let provider = Slate.create({
@@ -52,13 +52,7 @@ export let provider = Slate.create({
     deleteAttachment,
     listColumns,
     createColumn,
-    updateColumn,
+    updateColumn
   ],
-  triggers: [
-    projectCreated,
-    taskCreated,
-    taskUpdated,
-    taskDestroyed,
-    commentCreated,
-  ],
+  triggers: [projectCreated, taskCreated, taskUpdated, taskDestroyed, commentCreated]
 });

@@ -25,7 +25,5 @@ export let provider = Slate.create({
     manageSellerService,
     manageAgent
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

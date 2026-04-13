@@ -15,6 +15,7 @@ Sprout Social supports two authentication methods. Both use a Bearer token in th
 Sprout's API supports OAuth 2.0 to access the API. It issues short-lived JWT access tokens. Two OAuth grant types are supported:
 
 **Machine-to-Machine (Client Credentials Grant):**
+
 - Create an OAuth client configuration in Sprout under Settings > Global Features > API > OAuth Client Management.
 - Retrieve the `client_id` and `client_secret`.
 - Token endpoint: `https://identity.sproutsocial.com/oauth2/84e39c75-d770-45d9-90a9-7b79e3037d2c/v1/token`
@@ -23,6 +24,7 @@ Sprout's API supports OAuth 2.0 to access the API. It issues short-lived JWT acc
 - Scope: `organization_id`
 
 **User-Based (Authorization Code Grant):**
+
 - Create an OAuth client configuration and specify allowed redirect URIs.
 - Use the Authorization Endpoint and Token Endpoint listed on the Authorization Server metadata URL above.
 - Users authenticate by logging in with their Sprout Social credentials.

@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.resend.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -39,25 +39,29 @@ export class Client {
     if (params.idempotencyKey) {
       headers['Idempotency-Key'] = params.idempotencyKey;
     }
-    let res = await this.axios.post('/emails', {
-      from: params.from,
-      to: params.to,
-      subject: params.subject,
-      html: params.html,
-      text: params.text,
-      cc: params.cc,
-      bcc: params.bcc,
-      reply_to: params.replyTo,
-      headers: params.headers,
-      attachments: params.attachments?.map((a) => ({
-        content: a.content,
-        filename: a.filename,
-        path: a.path,
-        content_type: a.contentType,
-      })),
-      tags: params.tags,
-      scheduled_at: params.scheduledAt,
-    }, { headers });
+    let res = await this.axios.post(
+      '/emails',
+      {
+        from: params.from,
+        to: params.to,
+        subject: params.subject,
+        html: params.html,
+        text: params.text,
+        cc: params.cc,
+        bcc: params.bcc,
+        reply_to: params.replyTo,
+        headers: params.headers,
+        attachments: params.attachments?.map(a => ({
+          content: a.content,
+          filename: a.filename,
+          path: a.path,
+          content_type: a.contentType
+        })),
+        tags: params.tags,
+        scheduled_at: params.scheduledAt
+      },
+      { headers }
+    );
     return res.data;
   }
 
@@ -81,7 +85,7 @@ export class Client {
     if (params.idempotencyKey) {
       headers['Idempotency-Key'] = params.idempotencyKey;
     }
-    let body = params.emails.map((e) => ({
+    let body = params.emails.map(e => ({
       from: e.from,
       to: e.to,
       subject: e.subject,
@@ -92,7 +96,7 @@ export class Client {
       reply_to: e.replyTo,
       headers: e.headers,
       tags: e.tags,
-      scheduled_at: e.scheduledAt,
+      scheduled_at: e.scheduledAt
     }));
     let res = await this.axios.post('/emails/batch', body, { headers });
     return res.data;
@@ -105,7 +109,7 @@ export class Client {
 
   async updateEmail(emailId: string, params: { scheduledAt: string }) {
     let res = await this.axios.patch(`/emails/${emailId}`, {
-      scheduled_at: params.scheduledAt,
+      scheduled_at: params.scheduledAt
     });
     return res.data;
   }
@@ -148,7 +152,7 @@ export class Client {
       custom_return_path: params.customReturnPath,
       open_tracking: params.openTracking,
       click_tracking: params.clickTracking,
-      tls: params.tls,
+      tls: params.tls
     });
     return res.data;
   }
@@ -158,15 +162,18 @@ export class Client {
     return res.data;
   }
 
-  async updateDomain(domainId: string, params: {
-    openTracking?: boolean;
-    clickTracking?: boolean;
-    tls?: string;
-  }) {
+  async updateDomain(
+    domainId: string,
+    params: {
+      openTracking?: boolean;
+      clickTracking?: boolean;
+      tls?: string;
+    }
+  ) {
     let res = await this.axios.patch(`/domains/${domainId}`, {
       open_tracking: params.openTracking,
       click_tracking: params.clickTracking,
-      tls: params.tls,
+      tls: params.tls
     });
     return res.data;
   }
@@ -200,7 +207,7 @@ export class Client {
       first_name: params.firstName,
       last_name: params.lastName,
       unsubscribed: params.unsubscribed,
-      properties: params.properties,
+      properties: params.properties
     });
     return res.data;
   }
@@ -210,29 +217,37 @@ export class Client {
     return res.data;
   }
 
-  async updateContact(contactIdOrEmail: string, params: {
-    firstName?: string;
-    lastName?: string;
-    unsubscribed?: boolean;
-    properties?: Record<string, string>;
-  }) {
+  async updateContact(
+    contactIdOrEmail: string,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      unsubscribed?: boolean;
+      properties?: Record<string, string>;
+    }
+  ) {
     let res = await this.axios.patch(`/contacts/${contactIdOrEmail}`, {
       first_name: params.firstName,
       last_name: params.lastName,
       unsubscribed: params.unsubscribed,
-      properties: params.properties,
+      properties: params.properties
     });
     return res.data;
   }
 
-  async listContacts(params?: { segmentId?: string; limit?: number; after?: string; before?: string }) {
+  async listContacts(params?: {
+    segmentId?: string;
+    limit?: number;
+    after?: string;
+    before?: string;
+  }) {
     let res = await this.axios.get('/contacts', {
       params: {
         segment_id: params?.segmentId,
         limit: params?.limit,
         after: params?.after,
-        before: params?.before,
-      },
+        before: params?.before
+      }
     });
     return res.data;
   }
@@ -288,7 +303,7 @@ export class Client {
       name: params.name,
       topic_id: params.topicId,
       send: params.send,
-      scheduled_at: params.scheduledAt,
+      scheduled_at: params.scheduledAt
     });
     return res.data;
   }
@@ -300,7 +315,7 @@ export class Client {
 
   async sendBroadcast(broadcastId: string, params?: { scheduledAt?: string }) {
     let res = await this.axios.post(`/broadcasts/${broadcastId}/send`, {
-      scheduled_at: params?.scheduledAt,
+      scheduled_at: params?.scheduledAt
     });
     return res.data;
   }
@@ -333,7 +348,7 @@ export class Client {
       from: params.from,
       subject: params.subject,
       reply_to: params.replyTo,
-      text: params.text,
+      text: params.text
     });
     return res.data;
   }
@@ -343,15 +358,18 @@ export class Client {
     return res.data;
   }
 
-  async updateTemplate(templateId: string, params: {
-    name?: string;
-    html?: string;
-    alias?: string;
-    from?: string;
-    subject?: string;
-    replyTo?: string | string[];
-    text?: string;
-  }) {
+  async updateTemplate(
+    templateId: string,
+    params: {
+      name?: string;
+      html?: string;
+      alias?: string;
+      from?: string;
+      subject?: string;
+      replyTo?: string | string[];
+      text?: string;
+    }
+  ) {
     let res = await this.axios.patch(`/templates/${templateId}`, {
       name: params.name,
       html: params.html,
@@ -359,7 +377,7 @@ export class Client {
       from: params.from,
       subject: params.subject,
       reply_to: params.replyTo,
-      text: params.text,
+      text: params.text
     });
     return res.data;
   }
@@ -386,15 +404,11 @@ export class Client {
 
   // ── API Keys ────────────────────────────────────────────
 
-  async createApiKey(params: {
-    name: string;
-    permission?: string;
-    domainId?: string;
-  }) {
+  async createApiKey(params: { name: string; permission?: string; domainId?: string }) {
     let res = await this.axios.post('/api-keys', {
       name: params.name,
       permission: params.permission,
-      domain_id: params.domainId,
+      domain_id: params.domainId
     });
     return res.data;
   }
@@ -411,13 +425,10 @@ export class Client {
 
   // ── Webhooks ────────────────────────────────────────────
 
-  async createWebhook(params: {
-    endpoint: string;
-    events: string[];
-  }) {
+  async createWebhook(params: { endpoint: string; events: string[] }) {
     let res = await this.axios.post('/webhooks', {
       endpoint: params.endpoint,
-      events: params.events,
+      events: params.events
     });
     return res.data;
   }
@@ -427,15 +438,18 @@ export class Client {
     return res.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    endpoint?: string;
-    events?: string[];
-    status?: string;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      endpoint?: string;
+      events?: string[];
+      status?: string;
+    }
+  ) {
     let res = await this.axios.patch(`/webhooks/${webhookId}`, {
       endpoint: params.endpoint,
       events: params.events,
-      status: params.status,
+      status: params.status
     });
     return res.data;
   }

@@ -5,7 +5,7 @@ import {
   searchCompany,
   advancedPeopleSearch,
   getAccountCredits,
-  submitDataFeedback,
+  submitDataFeedback
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -17,9 +17,7 @@ export let provider = Slate.create({
     searchCompany,
     advancedPeopleSearch,
     getAccountCredits,
-    submitDataFeedback,
+    submitDataFeedback
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

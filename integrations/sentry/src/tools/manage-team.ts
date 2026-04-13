@@ -3,39 +3,48 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTeamTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Team',
-    key: 'manage_team',
-    description: `Create, update, or delete a team. Also supports assigning or removing projects from a team.`,
-    instructions: [
-      'To create: provide name and optionally slug',
-      'To update: provide teamSlug and name or new slug',
-      'To delete: provide teamSlug and set action to "delete"',
-      'To assign/remove a project: set action to "assign_project" or "remove_project" with teamSlug and projectSlug'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageTeamTool = SlateTool.create(spec, {
+  name: 'Manage Team',
+  key: 'manage_team',
+  description: `Create, update, or delete a team. Also supports assigning or removing projects from a team.`,
+  instructions: [
+    'To create: provide name and optionally slug',
+    'To update: provide teamSlug and name or new slug',
+    'To delete: provide teamSlug and set action to "delete"',
+    'To assign/remove a project: set action to "assign_project" or "remove_project" with teamSlug and projectSlug'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'assign_project', 'remove_project']).describe('Action to perform'),
-    teamSlug: z.string().optional().describe('Team slug (required for update/delete/assign/remove)'),
-    projectSlug: z.string().optional().describe('Project slug (required for assign_project/remove_project)'),
-    name: z.string().optional().describe('Team name (required for create)'),
-    slug: z.string().optional().describe('Team slug to set')
-  }))
-  .output(z.object({
-    teamId: z.string().optional(),
-    teamSlug: z.string().optional(),
-    name: z.string().optional(),
-    deleted: z.boolean().optional(),
-    projectAssigned: z.boolean().optional(),
-    projectRemoved: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'assign_project', 'remove_project'])
+        .describe('Action to perform'),
+      teamSlug: z
+        .string()
+        .optional()
+        .describe('Team slug (required for update/delete/assign/remove)'),
+      projectSlug: z
+        .string()
+        .optional()
+        .describe('Project slug (required for assign_project/remove_project)'),
+      name: z.string().optional().describe('Team name (required for create)'),
+      slug: z.string().optional().describe('Team slug to set')
+    })
+  )
+  .output(
+    z.object({
+      teamId: z.string().optional(),
+      teamSlug: z.string().optional(),
+      name: z.string().optional(),
+      deleted: z.boolean().optional(),
+      projectAssigned: z.boolean().optional(),
+      projectRemoved: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'create') {
@@ -119,4 +128,5 @@ export let manageTeamTool = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

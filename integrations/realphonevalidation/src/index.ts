@@ -8,7 +8,7 @@ import {
   dncLookup,
   scoreFraudRisk,
   checkReassignedNumber,
-  verifyEmail,
+  verifyEmail
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     dncLookup,
     scoreFraudRisk,
     checkReassignedNumber,
-    verifyEmail,
+    verifyEmail
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

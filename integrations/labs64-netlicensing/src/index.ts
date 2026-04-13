@@ -19,7 +19,7 @@ import {
   createToken,
   listTokens,
   listTransactions,
-  getTransaction,
+  getTransaction
 } from './tools';
 import { licensingEvents } from './triggers';
 
@@ -44,9 +44,7 @@ export let provider = Slate.create({
     createToken,
     listTokens,
     listTransactions,
-    getTransaction,
+    getTransaction
   ],
-  triggers: [
-    licensingEvents,
-  ],
+  triggers: [licensingEvents]
 });

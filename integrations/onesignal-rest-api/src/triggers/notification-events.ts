@@ -5,36 +5,48 @@ import { spec } from '../spec';
 export let notificationEvents = SlateTrigger.create(spec, {
   name: 'Notification Events',
   key: 'notification_events',
-  description: 'Receives webhook events for notification interactions including displayed, clicked, and dismissed events. Configure the webhook URL in your OneSignal dashboard under Settings → Webhook.',
+  description:
+    'Receives webhook events for notification interactions including displayed, clicked, and dismissed events. Configure the webhook URL in your OneSignal dashboard under Settings → Webhook.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Event type, e.g. "notification.displayed", "notification.clicked", "notification.dismissed"'),
-    eventId: z.string().describe('Unique event identifier'),
-    notificationId: z.string().optional().describe('OneSignal notification ID'),
-    subscriptionId: z.string().optional().describe('Subscription ID that received the notification'),
-    onesignalId: z.string().optional().describe('OneSignal user ID'),
-    externalId: z.string().optional().describe('External user ID'),
-    appId: z.string().optional().describe('App ID'),
-    heading: z.string().optional().describe('Notification heading'),
-    content: z.string().optional().describe('Notification body'),
-    url: z.string().optional().describe('Notification launch URL'),
-    actionId: z.string().optional().describe('Action button ID if clicked'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-    rawPayload: z.any().optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    notificationId: z.string().optional().describe('OneSignal notification ID'),
-    subscriptionId: z.string().optional().describe('Subscription that interacted'),
-    onesignalId: z.string().optional().describe('OneSignal user ID'),
-    externalId: z.string().optional().describe('External user ID'),
-    heading: z.string().optional().describe('Notification heading text'),
-    content: z.string().optional().describe('Notification body text'),
-    url: z.string().optional().describe('Launch URL'),
-    actionId: z.string().optional().describe('Clicked action button ID'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-  }))
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Event type, e.g. "notification.displayed", "notification.clicked", "notification.dismissed"'
+        ),
+      eventId: z.string().describe('Unique event identifier'),
+      notificationId: z.string().optional().describe('OneSignal notification ID'),
+      subscriptionId: z
+        .string()
+        .optional()
+        .describe('Subscription ID that received the notification'),
+      onesignalId: z.string().optional().describe('OneSignal user ID'),
+      externalId: z.string().optional().describe('External user ID'),
+      appId: z.string().optional().describe('App ID'),
+      heading: z.string().optional().describe('Notification heading'),
+      content: z.string().optional().describe('Notification body'),
+      url: z.string().optional().describe('Notification launch URL'),
+      actionId: z.string().optional().describe('Action button ID if clicked'),
+      timestamp: z.string().optional().describe('Event timestamp'),
+      rawPayload: z.any().optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      notificationId: z.string().optional().describe('OneSignal notification ID'),
+      subscriptionId: z.string().optional().describe('Subscription that interacted'),
+      onesignalId: z.string().optional().describe('OneSignal user ID'),
+      externalId: z.string().optional().describe('External user ID'),
+      heading: z.string().optional().describe('Notification heading text'),
+      content: z.string().optional().describe('Notification body text'),
+      url: z.string().optional().describe('Launch URL'),
+      actionId: z.string().optional().describe('Clicked action button ID'),
+      timestamp: z.string().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.input.request.json();
@@ -68,14 +80,14 @@ export let notificationEvents = SlateTrigger.create(spec, {
           url: event.url || event.launch_url,
           actionId: event.action_id || event.actionId,
           timestamp: event.timestamp ? String(event.timestamp) : undefined,
-          rawPayload: event,
+          rawPayload: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -88,9 +100,9 @@ export let notificationEvents = SlateTrigger.create(spec, {
           content: ctx.input.content,
           url: ctx.input.url,
           actionId: ctx.input.actionId,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

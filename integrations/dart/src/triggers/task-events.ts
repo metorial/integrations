@@ -4,25 +4,25 @@ import { conciseTaskSchema } from '../lib/types';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Events',
-    key: 'task_events',
-    description: 'Triggers when tasks are created or updated in Dart. Polls for recently changed tasks and emits events for new and modified tasks.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Type of task event'),
-    taskId: z.string().describe('Task ID'),
-    task: z.any().describe('Task data from API')
-  }))
+export let taskEvents = SlateTrigger.create(spec, {
+  name: 'Task Events',
+  key: 'task_events',
+  description:
+    'Triggers when tasks are created or updated in Dart. Polls for recently changed tasks and emits events for new and modified tasks.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated']).describe('Type of task event'),
+      taskId: z.string().describe('Task ID'),
+      task: z.any().describe('Task data from API')
+    })
+  )
   .output(conciseTaskSchema)
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownTaskIds = (ctx.state?.knownTaskIds as string[] | undefined) ?? [];
@@ -41,20 +41,17 @@ export let taskEvents = SlateTrigger.create(
 
       let result = await client.listTasks(params);
 
-      let inputs = result.results.map((task) => {
+      let inputs = result.results.map(task => {
         let isNew = !knownTaskIds.includes(task.taskId);
         return {
-          eventType: isNew ? 'created' as const : 'updated' as const,
+          eventType: isNew ? ('created' as const) : ('updated' as const),
           taskId: task.taskId,
           task
         };
       });
 
       let newKnownIds = [
-        ...new Set([
-          ...knownTaskIds,
-          ...result.results.map((t) => t.taskId)
-        ])
+        ...new Set([...knownTaskIds, ...result.results.map(t => t.taskId)])
       ].slice(-1000); // Keep last 1000 IDs to avoid unbounded growth
 
       return {
@@ -65,7 +62,7 @@ export let taskEvents = SlateTrigger.create(
         }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let task = ctx.input.task;
       return {
         type: `task.${ctx.input.eventType}`,

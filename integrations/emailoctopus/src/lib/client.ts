@@ -95,15 +95,15 @@ let mapList = (raw: any): ListSummary => ({
     tag: f.tag,
     type: f.type,
     label: f.label,
-    fallback: f.fallback || '',
+    fallback: f.fallback || ''
   })),
   tags: raw.tags || [],
   counts: {
     pending: raw.counts?.pending || 0,
     subscribed: raw.counts?.subscribed || 0,
-    unsubscribed: raw.counts?.unsubscribed || 0,
+    unsubscribed: raw.counts?.unsubscribed || 0
   },
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 let mapContact = (raw: any): Contact => ({
@@ -113,7 +113,7 @@ let mapContact = (raw: any): Contact => ({
   tags: raw.tags || [],
   status: raw.status,
   createdAt: raw.created_at,
-  lastUpdatedAt: raw.last_updated_at,
+  lastUpdatedAt: raw.last_updated_at
 });
 
 let mapCampaign = (raw: any): Campaign => ({
@@ -124,14 +124,14 @@ let mapCampaign = (raw: any): Campaign => ({
   to: raw.to || [],
   from: {
     name: raw.from?.name || '',
-    emailAddress: raw.from?.email_address || '',
+    emailAddress: raw.from?.email_address || ''
   },
   content: {
     html: raw.content?.html || '',
-    plainText: raw.content?.plain_text || '',
+    plainText: raw.content?.plain_text || ''
   },
   createdAt: raw.created_at,
-  sentAt: raw.sent_at || null,
+  sentAt: raw.sent_at || null
 });
 
 export class Client {
@@ -141,9 +141,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -155,7 +155,7 @@ export class Client {
     let res = await this.axios.get('/lists', { params });
     return {
       data: (res.data.data || []).map(mapList),
-      pagingNext: res.data.paging?.next || null,
+      pagingNext: res.data.paging?.next || null
     };
   }
 
@@ -180,15 +180,18 @@ export class Client {
 
   // ─── Contacts ───
 
-  async getContacts(listId: string, options?: {
-    status?: string;
-    tag?: string;
-    createdBefore?: string;
-    createdAfter?: string;
-    updatedBefore?: string;
-    updatedAfter?: string;
-    startingAfter?: string;
-  }): Promise<PaginatedResponse<Contact>> {
+  async getContacts(
+    listId: string,
+    options?: {
+      status?: string;
+      tag?: string;
+      createdBefore?: string;
+      createdAfter?: string;
+      updatedBefore?: string;
+      updatedAfter?: string;
+      startingAfter?: string;
+    }
+  ): Promise<PaginatedResponse<Contact>> {
     let params: Record<string, string> = {};
     if (options?.status) params.status = options.status;
     if (options?.tag) params.tag = options.tag;
@@ -200,7 +203,7 @@ export class Client {
     let res = await this.axios.get(`/lists/${listId}/contacts`, { params });
     return {
       data: (res.data.data || []).map(mapContact),
-      pagingNext: res.data.paging?.next || null,
+      pagingNext: res.data.paging?.next || null
     };
   }
 
@@ -209,12 +212,15 @@ export class Client {
     return mapContact(res.data);
   }
 
-  async createContact(listId: string, data: {
-    emailAddress: string;
-    fields?: Record<string, string>;
-    tags?: string[];
-    status?: string;
-  }): Promise<Contact> {
+  async createContact(
+    listId: string,
+    data: {
+      emailAddress: string;
+      fields?: Record<string, string>;
+      tags?: string[];
+      status?: string;
+    }
+  ): Promise<Contact> {
     let body: any = { email_address: data.emailAddress };
     if (data.fields) body.fields = data.fields;
     if (data.tags) body.tags = data.tags;
@@ -223,12 +229,16 @@ export class Client {
     return mapContact(res.data);
   }
 
-  async updateContact(listId: string, contactId: string, data: {
-    emailAddress?: string;
-    fields?: Record<string, string>;
-    tags?: Record<string, boolean>;
-    status?: string;
-  }): Promise<Contact> {
+  async updateContact(
+    listId: string,
+    contactId: string,
+    data: {
+      emailAddress?: string;
+      fields?: Record<string, string>;
+      tags?: Record<string, boolean>;
+      status?: string;
+    }
+  ): Promise<Contact> {
     let body: any = {};
     if (data.emailAddress) body.email_address = data.emailAddress;
     if (data.fields) body.fields = data.fields;
@@ -238,12 +248,15 @@ export class Client {
     return mapContact(res.data);
   }
 
-  async upsertContact(listId: string, data: {
-    emailAddress: string;
-    fields?: Record<string, string>;
-    tags?: string[];
-    status?: string;
-  }): Promise<Contact> {
+  async upsertContact(
+    listId: string,
+    data: {
+      emailAddress: string;
+      fields?: Record<string, string>;
+      tags?: string[];
+      status?: string;
+    }
+  ): Promise<Contact> {
     let body: any = { email_address: data.emailAddress };
     if (data.fields) body.fields = data.fields;
     if (data.tags) body.tags = data.tags;
@@ -256,38 +269,44 @@ export class Client {
     await this.axios.delete(`/lists/${listId}/contacts/${contactId}`);
   }
 
-  async batchUpdateContacts(listId: string, contacts: Array<{
-    contactId: string;
-    emailAddress?: string;
-    fields?: Record<string, string>;
-    tags?: Record<string, boolean>;
-    status?: string;
-  }>): Promise<{ succeeded: any[]; failed: any[] }> {
+  async batchUpdateContacts(
+    listId: string,
+    contacts: Array<{
+      contactId: string;
+      emailAddress?: string;
+      fields?: Record<string, string>;
+      tags?: Record<string, boolean>;
+      status?: string;
+    }>
+  ): Promise<{ succeeded: any[]; failed: any[] }> {
     let body = {
-      data: contacts.map((c) => {
+      data: contacts.map(c => {
         let item: any = { id: c.contactId };
         if (c.emailAddress) item.email_address = c.emailAddress;
         if (c.fields) item.fields = c.fields;
         if (c.tags) item.tags = c.tags;
         if (c.status) item.status = c.status;
         return item;
-      }),
+      })
     };
     let res = await this.axios.put(`/lists/${listId}/contacts/batch`, body);
     return {
       succeeded: res.data.succeeded || [],
-      failed: res.data.failed || [],
+      failed: res.data.failed || []
     };
   }
 
   // ─── Custom Fields ───
 
-  async createField(listId: string, data: {
-    label: string;
-    tag: string;
-    type: string;
-    fallback?: string;
-  }): Promise<FieldInfo> {
+  async createField(
+    listId: string,
+    data: {
+      label: string;
+      tag: string;
+      type: string;
+      fallback?: string;
+    }
+  ): Promise<FieldInfo> {
     let body: any = { label: data.label, tag: data.tag, type: data.type };
     if (data.fallback !== undefined) body.fallback = data.fallback;
     let res = await this.axios.post(`/lists/${listId}/fields`, body);
@@ -295,14 +314,18 @@ export class Client {
       tag: res.data.tag,
       type: res.data.type,
       label: res.data.label,
-      fallback: res.data.fallback || '',
+      fallback: res.data.fallback || ''
     };
   }
 
-  async updateField(listId: string, fieldTag: string, data: {
-    label?: string;
-    fallback?: string;
-  }): Promise<FieldInfo> {
+  async updateField(
+    listId: string,
+    fieldTag: string,
+    data: {
+      label?: string;
+      fallback?: string;
+    }
+  ): Promise<FieldInfo> {
     let body: any = {};
     if (data.label !== undefined) body.label = data.label;
     if (data.fallback !== undefined) body.fallback = data.fallback;
@@ -311,7 +334,7 @@ export class Client {
       tag: res.data.tag,
       type: res.data.type,
       label: res.data.label,
-      fallback: res.data.fallback || '',
+      fallback: res.data.fallback || ''
     };
   }
 
@@ -323,7 +346,9 @@ export class Client {
 
   async getTags(listId: string): Promise<string[]> {
     let res = await this.axios.get(`/lists/${listId}/tags`);
-    return (res.data.data || res.data || []).map((t: any) => typeof t === 'string' ? t : t.tag);
+    return (res.data.data || res.data || []).map((t: any) =>
+      typeof t === 'string' ? t : t.tag
+    );
   }
 
   async createTag(listId: string, tag: string): Promise<string> {
@@ -348,7 +373,7 @@ export class Client {
     let res = await this.axios.get('/campaigns', { params });
     return {
       data: (res.data.data || []).map(mapCampaign),
-      pagingNext: res.data.paging?.next || null,
+      pagingNext: res.data.paging?.next || null
     };
   }
 
@@ -366,22 +391,25 @@ export class Client {
       sent: res.data.sent || 0,
       bounced: {
         hard: res.data.bounced?.hard || 0,
-        soft: res.data.bounced?.soft || 0,
+        soft: res.data.bounced?.soft || 0
       },
       opened: {
         total: res.data.opened?.total || 0,
-        unique: res.data.opened?.unique || 0,
+        unique: res.data.opened?.unique || 0
       },
       clicked: {
         total: res.data.clicked?.total || 0,
-        unique: res.data.clicked?.unique || 0,
+        unique: res.data.clicked?.unique || 0
       },
       complained: res.data.complained || 0,
-      unsubscribed: res.data.unsubscribed || 0,
+      unsubscribed: res.data.unsubscribed || 0
     };
   }
 
-  async getCampaignLinkReports(campaignId: string, startingAfter?: string): Promise<PaginatedResponse<LinkReport>> {
+  async getCampaignLinkReports(
+    campaignId: string,
+    startingAfter?: string
+  ): Promise<PaginatedResponse<LinkReport>> {
     let params: Record<string, string> = {};
     if (startingAfter) params.starting_after = startingAfter;
     let res = await this.axios.get(`/campaigns/${campaignId}/reports/links`, { params });
@@ -389,13 +417,17 @@ export class Client {
       data: (res.data.data || []).map((l: any) => ({
         url: l.url,
         clickedTotal: l.clicked_total || 0,
-        clickedUnique: l.clicked_unique || 0,
+        clickedUnique: l.clicked_unique || 0
       })),
-      pagingNext: res.data.paging?.next || null,
+      pagingNext: res.data.paging?.next || null
     };
   }
 
-  async getCampaignContactReports(campaignId: string, status: string, startingAfter?: string): Promise<PaginatedResponse<ContactReport>> {
+  async getCampaignContactReports(
+    campaignId: string,
+    status: string,
+    startingAfter?: string
+  ): Promise<PaginatedResponse<ContactReport>> {
     let params: Record<string, string> = { status };
     if (startingAfter) params.starting_after = startingAfter;
     let res = await this.axios.get(`/campaigns/${campaignId}/reports`, { params });
@@ -403,9 +435,9 @@ export class Client {
       data: (res.data.data || []).map((r: any) => ({
         contact: mapContact(r.contact),
         occurredAt: r.occurred_at,
-        type: r.type,
+        type: r.type
       })),
-      pagingNext: res.data.paging?.next || null,
+      pagingNext: res.data.paging?.next || null
     };
   }
 
@@ -413,7 +445,7 @@ export class Client {
 
   async triggerAutomation(automationId: string, contactId: string): Promise<void> {
     await this.axios.post(`/automations/${automationId}/queue`, {
-      list_member_id: contactId,
+      list_member_id: contactId
     });
   }
 }

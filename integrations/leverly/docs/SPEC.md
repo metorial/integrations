@@ -22,10 +22,12 @@ Leverly uses username and API key authentication. Your username and API key can 
 When integrating via Zapier or direct HTTP Post, the API key and username are used to authenticate requests. There is no publicly documented OAuth flow or token-based authentication beyond this mechanism.
 
 To authenticate:
+
 - **Username**: Your Leverly account username
 - **API Key**: Generated from the Leverly dashboard's integrations section
 
 There is no publicly available standalone REST API documentation. Integrations are primarily done via:
+
 1. Direct HTTP Post to Leverly's endpoint (with credentials)
 2. Zapier integration using the username/API key pair
 3. Email-based lead ingestion by adding your unique Leverly account email address to your lead distribution list, with Leverly's parsing engine extracting the needed data.

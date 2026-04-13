@@ -18,7 +18,7 @@ import {
   searchMessages,
   deleteMessage,
   moderateChannel,
-  blockUser,
+  blockUser
 } from './tools';
 import { chatEvents } from './triggers';
 
@@ -42,9 +42,7 @@ export let provider = Slate.create({
     searchMessages,
     deleteMessage,
     moderateChannel,
-    blockUser,
+    blockUser
   ],
-  triggers: [
-    chatEvents,
-  ],
+  triggers: [chatEvents]
 });

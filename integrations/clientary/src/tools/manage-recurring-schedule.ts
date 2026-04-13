@@ -19,7 +19,10 @@ let scheduleSchema = z.object({
   currencyCode: z.string().optional().describe('Currency code (e.g. USD)'),
   status: z.number().optional().describe('Status: 0 = Active, 1 = Paused, 2 = Stopped'),
   action: z.number().optional().describe('Action: 0 = Send, 1 = Draft, 2 = Autobill'),
-  timeInterval: z.string().optional().describe('Recurrence interval (e.g. monthly, weekly, quarterly)'),
+  timeInterval: z
+    .string()
+    .optional()
+    .describe('Recurrence interval (e.g. monthly, weekly, quarterly)'),
   nextDate: z.string().optional().describe('Next scheduled date (YYYY-MM-DD)'),
   duePeriod: z.number().optional().describe('Number of days until invoice is due'),
   occurrences: z.number().optional().describe('Total occurrences (0 = unlimited)'),
@@ -32,46 +35,57 @@ let scheduleSchema = z.object({
   items: z.array(scheduleItemSchema).optional().describe('Schedule line items')
 });
 
-export let createRecurringSchedule = SlateTool.create(
-  spec,
-  {
-    name: 'Create Recurring Schedule',
-    key: 'create_recurring_schedule',
-    description: `Create a recurring invoice schedule that automatically generates invoices at specified intervals. Supports weekly, biweekly, semimonthly, monthly, quarterly, semiannually, annually, and more.`,
-    instructions: [
-      'Action "Autobill" requires a valid payment profile for the client.',
-      'Set occurrences to 0 for unlimited recurrence.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createRecurringSchedule = SlateTool.create(spec, {
+  name: 'Create Recurring Schedule',
+  key: 'create_recurring_schedule',
+  description: `Create a recurring invoice schedule that automatically generates invoices at specified intervals. Supports weekly, biweekly, semimonthly, monthly, quarterly, semiannually, annually, and more.`,
+  instructions: [
+    'Action "Autobill" requires a valid payment profile for the client.',
+    'Set occurrences to 0 for unlimited recurrence.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    clientId: z.number().describe('Client ID for the recurring invoices'),
-    currencyCode: z.string().describe('Currency code (e.g. USD)'),
-    nextDate: z.string().describe('First/next scheduled date (YYYY-MM-DD)'),
-    duePeriod: z.number().describe('Days until invoice is due after generation'),
-    timeInterval: z.string().describe('Recurrence interval: weekly, biweekly, semimonthly, monthly, quarterly, semiannually, annually'),
-    action: z.number().optional().describe('Action on recurrence: 0 = Send, 1 = Draft, 2 = Autobill'),
-    occurrences: z.number().optional().describe('Total occurrences (0 = unlimited)'),
-    tax: z.number().optional().describe('First tax rate percentage'),
-    tax2: z.number().optional().describe('Second tax rate percentage'),
-    tax3: z.number().optional().describe('Third tax rate percentage'),
-    notes: z.string().optional().describe('Notes for generated invoices'),
-    poNumber: z.string().optional().describe('Purchase order number'),
-    items: z.array(z.object({
-      title: z.string().describe('Line item title'),
-      quantity: z.number().describe('Quantity'),
-      price: z.number().describe('Unit price'),
-      taxable: z.boolean().optional().describe('Subject to first tax'),
-      taxable2: z.boolean().optional().describe('Subject to second tax'),
-      taxable3: z.boolean().optional().describe('Subject to third tax')
-    })).optional().describe('Line items for each generated invoice')
-  }))
+})
+  .input(
+    z.object({
+      clientId: z.number().describe('Client ID for the recurring invoices'),
+      currencyCode: z.string().describe('Currency code (e.g. USD)'),
+      nextDate: z.string().describe('First/next scheduled date (YYYY-MM-DD)'),
+      duePeriod: z.number().describe('Days until invoice is due after generation'),
+      timeInterval: z
+        .string()
+        .describe(
+          'Recurrence interval: weekly, biweekly, semimonthly, monthly, quarterly, semiannually, annually'
+        ),
+      action: z
+        .number()
+        .optional()
+        .describe('Action on recurrence: 0 = Send, 1 = Draft, 2 = Autobill'),
+      occurrences: z.number().optional().describe('Total occurrences (0 = unlimited)'),
+      tax: z.number().optional().describe('First tax rate percentage'),
+      tax2: z.number().optional().describe('Second tax rate percentage'),
+      tax3: z.number().optional().describe('Third tax rate percentage'),
+      notes: z.string().optional().describe('Notes for generated invoices'),
+      poNumber: z.string().optional().describe('Purchase order number'),
+      items: z
+        .array(
+          z.object({
+            title: z.string().describe('Line item title'),
+            quantity: z.number().describe('Quantity'),
+            price: z.number().describe('Unit price'),
+            taxable: z.boolean().optional().describe('Subject to first tax'),
+            taxable2: z.boolean().optional().describe('Subject to second tax'),
+            taxable3: z.boolean().optional().describe('Subject to third tax')
+          })
+        )
+        .optional()
+        .describe('Line items for each generated invoice')
+    })
+  )
   .output(scheduleSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {
@@ -90,7 +104,7 @@ export let createRecurringSchedule = SlateTool.create(
     if (ctx.input.poNumber) data.po_number = ctx.input.poNumber;
 
     if (ctx.input.items) {
-      data.recurring_schedule_items_attributes = ctx.input.items.map((item) => ({
+      data.recurring_schedule_items_attributes = ctx.input.items.map(item => ({
         title: item.title,
         quantity: item.quantity,
         price: item.price,
@@ -110,41 +124,48 @@ export let createRecurringSchedule = SlateTool.create(
   })
   .build();
 
-export let updateRecurringSchedule = SlateTool.create(
-  spec,
-  {
-    name: 'Update Recurring Schedule',
-    key: 'update_recurring_schedule',
-    description: `Update an existing recurring schedule. Can modify interval, status, line items, and other settings. To manage items: omit \`scheduleItemId\` to add new, include it to update, set \`destroy\` to true to remove.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateRecurringSchedule = SlateTool.create(spec, {
+  name: 'Update Recurring Schedule',
+  key: 'update_recurring_schedule',
+  description: `Update an existing recurring schedule. Can modify interval, status, line items, and other settings. To manage items: omit \`scheduleItemId\` to add new, include it to update, set \`destroy\` to true to remove.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    scheduleId: z.number().describe('ID of the recurring schedule to update'),
-    status: z.number().optional().describe('Status: 0 = Active, 1 = Paused, 2 = Stopped'),
-    action: z.number().optional().describe('Action: 0 = Send, 1 = Draft, 2 = Autobill'),
-    timeInterval: z.string().optional().describe('Recurrence interval'),
-    nextDate: z.string().optional().describe('Next scheduled date (YYYY-MM-DD)'),
-    duePeriod: z.number().optional().describe('Days until due'),
-    occurrences: z.number().optional().describe('Total occurrences (0 = unlimited)'),
-    tax: z.number().optional().describe('First tax rate percentage'),
-    tax2: z.number().optional().describe('Second tax rate percentage'),
-    tax3: z.number().optional().describe('Third tax rate percentage'),
-    notes: z.string().optional().describe('Notes'),
-    poNumber: z.string().optional().describe('Purchase order number'),
-    items: z.array(z.object({
-      scheduleItemId: z.number().optional().describe('ID of existing item to update. Omit for new items.'),
-      title: z.string().optional().describe('Line item title'),
-      quantity: z.number().optional().describe('Quantity'),
-      price: z.number().optional().describe('Unit price'),
-      destroy: z.boolean().optional().describe('Set true to remove this item')
-    })).optional().describe('Line items to add, update, or remove')
-  }))
+})
+  .input(
+    z.object({
+      scheduleId: z.number().describe('ID of the recurring schedule to update'),
+      status: z.number().optional().describe('Status: 0 = Active, 1 = Paused, 2 = Stopped'),
+      action: z.number().optional().describe('Action: 0 = Send, 1 = Draft, 2 = Autobill'),
+      timeInterval: z.string().optional().describe('Recurrence interval'),
+      nextDate: z.string().optional().describe('Next scheduled date (YYYY-MM-DD)'),
+      duePeriod: z.number().optional().describe('Days until due'),
+      occurrences: z.number().optional().describe('Total occurrences (0 = unlimited)'),
+      tax: z.number().optional().describe('First tax rate percentage'),
+      tax2: z.number().optional().describe('Second tax rate percentage'),
+      tax3: z.number().optional().describe('Third tax rate percentage'),
+      notes: z.string().optional().describe('Notes'),
+      poNumber: z.string().optional().describe('Purchase order number'),
+      items: z
+        .array(
+          z.object({
+            scheduleItemId: z
+              .number()
+              .optional()
+              .describe('ID of existing item to update. Omit for new items.'),
+            title: z.string().optional().describe('Line item title'),
+            quantity: z.number().optional().describe('Quantity'),
+            price: z.number().optional().describe('Unit price'),
+            destroy: z.boolean().optional().describe('Set true to remove this item')
+          })
+        )
+        .optional()
+        .describe('Line items to add, update, or remove')
+    })
+  )
   .output(scheduleSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {};
@@ -161,7 +182,7 @@ export let updateRecurringSchedule = SlateTool.create(
     if (ctx.input.poNumber !== undefined) data.po_number = ctx.input.poNumber;
 
     if (ctx.input.items) {
-      data.recurring_schedule_items_attributes = ctx.input.items.map((item) => {
+      data.recurring_schedule_items_attributes = ctx.input.items.map(item => {
         let mapped: Record<string, any> = {};
         if (item.scheduleItemId) mapped.id = item.scheduleItemId;
         if (item.title !== undefined) mapped.title = item.title;
@@ -182,27 +203,31 @@ export let updateRecurringSchedule = SlateTool.create(
   })
   .build();
 
-export let getRecurringSchedules = SlateTool.create(
-  spec,
-  {
-    name: 'Get Recurring Schedules',
-    key: 'get_recurring_schedules',
-    description: `Retrieve a specific recurring schedule by ID or list all recurring schedules.`,
-    tags: {
-      readOnly: true
-    }
+export let getRecurringSchedules = SlateTool.create(spec, {
+  name: 'Get Recurring Schedules',
+  key: 'get_recurring_schedules',
+  description: `Retrieve a specific recurring schedule by ID or list all recurring schedules.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    scheduleId: z.number().optional().describe('ID of a specific schedule. If omitted, lists all schedules.'),
-    page: z.number().optional().describe('Page number for pagination (30 results per page)')
-  }))
-  .output(z.object({
-    schedules: z.array(scheduleSchema).describe('List of recurring schedules'),
-    totalCount: z.number().optional().describe('Total number of schedules'),
-    pageCount: z.number().optional().describe('Total number of pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scheduleId: z
+        .number()
+        .optional()
+        .describe('ID of a specific schedule. If omitted, lists all schedules.'),
+      page: z.number().optional().describe('Page number for pagination (30 results per page)')
+    })
+  )
+  .output(
+    z.object({
+      schedules: z.array(scheduleSchema).describe('List of recurring schedules'),
+      totalCount: z.number().optional().describe('Total number of schedules'),
+      pageCount: z.number().optional().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     if (ctx.input.scheduleId) {
@@ -228,25 +253,26 @@ export let getRecurringSchedules = SlateTool.create(
   })
   .build();
 
-export let deleteRecurringSchedule = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Recurring Schedule',
-    key: 'delete_recurring_schedule',
-    description: `Permanently delete a recurring schedule. Previously generated invoices are not affected.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteRecurringSchedule = SlateTool.create(spec, {
+  name: 'Delete Recurring Schedule',
+  key: 'delete_recurring_schedule',
+  description: `Permanently delete a recurring schedule. Previously generated invoices are not affected.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    scheduleId: z.number().describe('ID of the recurring schedule to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scheduleId: z.number().describe('ID of the recurring schedule to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
     await client.deleteRecurringSchedule(ctx.input.scheduleId);
 
@@ -273,13 +299,15 @@ let mapSchedule = (s: any) => ({
   tax3: s.tax3,
   notes: s.notes,
   poNumber: s.po_number,
-  items: s.recurring_schedule_items ? s.recurring_schedule_items.map((item: any) => ({
-    scheduleItemId: item.id,
-    title: item.title,
-    quantity: item.quantity,
-    price: item.price,
-    taxable: item.taxable,
-    taxable2: item.taxable2,
-    taxable3: item.taxable3
-  })) : undefined
+  items: s.recurring_schedule_items
+    ? s.recurring_schedule_items.map((item: any) => ({
+        scheduleItemId: item.id,
+        title: item.title,
+        quantity: item.quantity,
+        price: item.price,
+        taxable: item.taxable,
+        taxable2: item.taxable2,
+        taxable3: item.taxable3
+      }))
+    : undefined
 });

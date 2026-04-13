@@ -19,38 +19,39 @@ let userOutputSchema = z.object({
   isOwner: z.boolean().optional().describe('Whether the user is a workspace owner'),
   isBot: z.boolean().optional().describe('Whether this is a bot user'),
   deleted: z.boolean().optional().describe('Whether the user is deactivated'),
-  avatarUrl: z.string().optional().describe('User avatar image URL'),
+  avatarUrl: z.string().optional().describe('User avatar image URL')
 });
 
-export let getUserInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Info',
-    key: 'get_user_info',
-    description: `Look up a Slack user's profile and status. Search by user ID, email address, or list all workspace members.`,
-    instructions: [
-      'Provide **userId** to look up a specific user.',
-      'Provide **email** to find a user by their email address.',
-      'Set **listAll** to true to list workspace members (paginated).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getUserInfo = SlateTool.create(spec, {
+  name: 'Get User Info',
+  key: 'get_user_info',
+  description: `Look up a Slack user's profile and status. Search by user ID, email address, or list all workspace members.`,
+  instructions: [
+    'Provide **userId** to look up a specific user.',
+    'Provide **email** to find a user by their email address.',
+    'Set **listAll** to true to list workspace members (paginated).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('Slack user ID to look up'),
-    email: z.string().optional().describe('Email address to look up a user'),
-    listAll: z.boolean().optional().describe('List all workspace members'),
-    limit: z.number().optional().describe('Maximum users to return when listing all'),
-    cursor: z.string().optional().describe('Pagination cursor for listing all users'),
-  }))
-  .output(z.object({
-    users: z.array(userOutputSchema).describe('List of user profiles'),
-    nextCursor: z.string().optional().describe('Cursor for next page when listing all users'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().optional().describe('Slack user ID to look up'),
+      email: z.string().optional().describe('Email address to look up a user'),
+      listAll: z.boolean().optional().describe('List all workspace members'),
+      limit: z.number().optional().describe('Maximum users to return when listing all'),
+      cursor: z.string().optional().describe('Pagination cursor for listing all users')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userOutputSchema).describe('List of user profiles'),
+      nextCursor: z.string().optional().describe('Cursor for next page when listing all users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
 
     let mapUser = (u: any) => ({
@@ -69,14 +70,14 @@ export let getUserInfo = SlateTool.create(
       isOwner: u.is_owner,
       isBot: u.is_bot,
       deleted: u.deleted,
-      avatarUrl: u.profile?.image_192 || u.profile?.image_72,
+      avatarUrl: u.profile?.image_192 || u.profile?.image_72
     });
 
     if (ctx.input.userId) {
       let user = await client.getUserInfo(ctx.input.userId);
       return {
         output: { users: [mapUser(user)] },
-        message: `Found user **${user.real_name || user.name}** (\`${user.id}\`).`,
+        message: `Found user **${user.real_name || user.name}** (\`${user.id}\`).`
       };
     }
 
@@ -84,18 +85,21 @@ export let getUserInfo = SlateTool.create(
       let user = await client.lookupUserByEmail(ctx.input.email);
       return {
         output: { users: [mapUser(user)] },
-        message: `Found user **${user.real_name || user.name}** (\`${user.id}\`) by email.`,
+        message: `Found user **${user.real_name || user.name}** (\`${user.id}\`) by email.`
       };
     }
 
     if (ctx.input.listAll) {
-      let result = await client.listUsers({ limit: ctx.input.limit, cursor: ctx.input.cursor });
+      let result = await client.listUsers({
+        limit: ctx.input.limit,
+        cursor: ctx.input.cursor
+      });
       return {
         output: {
           users: result.members.map(mapUser),
-          nextCursor: result.nextCursor,
+          nextCursor: result.nextCursor
         },
-        message: `Listed ${result.members.length} workspace member(s).`,
+        message: `Listed ${result.members.length} workspace member(s).`
       };
     }
 

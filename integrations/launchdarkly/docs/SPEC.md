@@ -25,6 +25,7 @@ In LaunchDarkly, you can create access tokens in the Organization settings, from
 Tokens can be scoped using built-in roles (Reader, Writer, Admin) or custom roles with inline policies to restrict access to specific resources, projects, or environments.
 
 Example header:
+
 ```
 Authorization: api-12345abcde
 ```

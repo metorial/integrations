@@ -6,10 +6,12 @@ let aircallApi = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    authType: z.enum(['bearer', 'basic'])
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      authType: z.enum(['bearer', 'basic'])
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -23,7 +25,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -37,7 +39,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await aircallApi.post('/oauth/token', {
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
@@ -54,7 +56,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; authType: 'bearer' | 'basic' }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; authType: 'bearer' | 'basic' };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await aircallApi.get('/company', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
@@ -81,7 +87,7 @@ export let auth = SlateAuth.create()
       apiToken: z.string().describe('Your Aircall API Token (shown only on creation)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let encoded = btoa(`${ctx.input.apiId}:${ctx.input.apiToken}`);
       return {
         output: {
@@ -91,7 +97,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; authType: 'bearer' | 'basic' }; input: { apiId: string; apiToken: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; authType: 'bearer' | 'basic' };
+      input: { apiId: string; apiToken: string };
+    }) => {
       let response = await aircallApi.get('/company', {
         headers: {
           Authorization: `Basic ${ctx.output.token}`

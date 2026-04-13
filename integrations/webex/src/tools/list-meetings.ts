@@ -3,43 +3,56 @@ import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listMeetings = SlateTool.create(
-  spec,
-  {
-    name: 'List Meetings',
-    key: 'list_meetings',
-    description: `List scheduled Webex meetings. Filter by meeting number, state, date range, or host email. Returns meeting metadata, join links, and scheduling details.`,
-    tags: {
-      readOnly: true
-    }
+export let listMeetings = SlateTool.create(spec, {
+  name: 'List Meetings',
+  key: 'list_meetings',
+  description: `List scheduled Webex meetings. Filter by meeting number, state, date range, or host email. Returns meeting metadata, join links, and scheduling details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    meetingNumber: z.string().optional().describe('Filter by meeting number'),
-    state: z.string().optional().describe('Filter by meeting state (active, scheduled, ready, lobby, inProgress, ended, missed, expired)'),
-    meetingType: z.string().optional().describe('Filter by type (scheduledMeeting, meeting, meetingSeries)'),
-    from: z.string().optional().describe('Start of date range (ISO 8601)'),
-    to: z.string().optional().describe('End of date range (ISO 8601)'),
-    hostEmail: z.string().optional().describe('Filter by host email (admin use)'),
-    max: z.number().optional().describe('Maximum number of results (default 10)')
-  }))
-  .output(z.object({
-    meetings: z.array(z.object({
-      meetingId: z.string().describe('Unique ID of the meeting'),
-      meetingNumber: z.string().optional().describe('Meeting number'),
-      title: z.string().optional().describe('Meeting title'),
-      agenda: z.string().optional().describe('Meeting agenda'),
-      start: z.string().optional().describe('Scheduled start time'),
-      end: z.string().optional().describe('Scheduled end time'),
-      timezone: z.string().optional().describe('Timezone'),
-      hostEmail: z.string().optional().describe('Host email'),
-      hostDisplayName: z.string().optional().describe('Host display name'),
-      webLink: z.string().optional().describe('Join URL'),
-      state: z.string().optional().describe('Meeting state'),
-      meetingType: z.string().optional().describe('Meeting type')
-    })).describe('List of meetings')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      meetingNumber: z.string().optional().describe('Filter by meeting number'),
+      state: z
+        .string()
+        .optional()
+        .describe(
+          'Filter by meeting state (active, scheduled, ready, lobby, inProgress, ended, missed, expired)'
+        ),
+      meetingType: z
+        .string()
+        .optional()
+        .describe('Filter by type (scheduledMeeting, meeting, meetingSeries)'),
+      from: z.string().optional().describe('Start of date range (ISO 8601)'),
+      to: z.string().optional().describe('End of date range (ISO 8601)'),
+      hostEmail: z.string().optional().describe('Filter by host email (admin use)'),
+      max: z.number().optional().describe('Maximum number of results (default 10)')
+    })
+  )
+  .output(
+    z.object({
+      meetings: z
+        .array(
+          z.object({
+            meetingId: z.string().describe('Unique ID of the meeting'),
+            meetingNumber: z.string().optional().describe('Meeting number'),
+            title: z.string().optional().describe('Meeting title'),
+            agenda: z.string().optional().describe('Meeting agenda'),
+            start: z.string().optional().describe('Scheduled start time'),
+            end: z.string().optional().describe('Scheduled end time'),
+            timezone: z.string().optional().describe('Timezone'),
+            hostEmail: z.string().optional().describe('Host email'),
+            hostDisplayName: z.string().optional().describe('Host display name'),
+            webLink: z.string().optional().describe('Join URL'),
+            state: z.string().optional().describe('Meeting state'),
+            meetingType: z.string().optional().describe('Meeting type')
+          })
+        )
+        .describe('List of meetings')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.listMeetings({

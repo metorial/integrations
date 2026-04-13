@@ -7,8 +7,8 @@ export class ManagementClient {
     this.http = createAxios({
       baseURL: 'https://api.supabase.com/v1',
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -58,7 +58,7 @@ export class ManagementClient {
       organization_id: data.organizationId,
       region: data.region,
       db_pass: data.dbPass,
-      plan: data.plan ?? 'free',
+      plan: data.plan ?? 'free'
     });
     return response.data;
   }
@@ -89,7 +89,7 @@ export class ManagementClient {
 
   async runQuery(projectRef: string, query: string) {
     let response = await this.http.post(`/projects/${projectRef}/database/query`, {
-      query,
+      query
     });
     return response.data;
   }
@@ -106,30 +106,37 @@ export class ManagementClient {
     return response.data;
   }
 
-  async createEdgeFunction(projectRef: string, data: {
-    name: string;
-    slug: string;
-    body: string;
-    verifyJwt?: boolean;
-  }) {
+  async createEdgeFunction(
+    projectRef: string,
+    data: {
+      name: string;
+      slug: string;
+      body: string;
+      verifyJwt?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectRef}/functions`, {
       name: data.name,
       slug: data.slug,
       body: data.body,
-      verify_jwt: data.verifyJwt,
+      verify_jwt: data.verifyJwt
     });
     return response.data;
   }
 
-  async updateEdgeFunction(projectRef: string, functionSlug: string, data: {
-    name?: string;
-    body?: string;
-    verifyJwt?: boolean;
-  }) {
+  async updateEdgeFunction(
+    projectRef: string,
+    functionSlug: string,
+    data: {
+      name?: string;
+      body?: string;
+      verifyJwt?: boolean;
+    }
+  ) {
     let response = await this.http.patch(`/projects/${projectRef}/functions/${functionSlug}`, {
       name: data.name,
       body: data.body,
-      verify_jwt: data.verifyJwt,
+      verify_jwt: data.verifyJwt
     });
     return response.data;
   }
@@ -153,7 +160,7 @@ export class ManagementClient {
 
   async deleteSecrets(projectRef: string, secretNames: string[]) {
     let response = await this.http.delete(`/projects/${projectRef}/secrets`, {
-      data: secretNames,
+      data: secretNames
     });
     return response.data;
   }
@@ -170,41 +177,55 @@ export class ManagementClient {
     return response.data;
   }
 
-  async createStorageBucket(projectRef: string, data: {
-    name: string;
-    public?: boolean;
-    fileSizeLimit?: number;
-    allowedMimeTypes?: string[];
-  }) {
+  async createStorageBucket(
+    projectRef: string,
+    data: {
+      name: string;
+      public?: boolean;
+      fileSizeLimit?: number;
+      allowedMimeTypes?: string[];
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectRef}/storage/buckets`, {
       name: data.name,
       public: data.public ?? false,
       file_size_limit: data.fileSizeLimit,
-      allowed_mime_types: data.allowedMimeTypes,
+      allowed_mime_types: data.allowedMimeTypes
     });
     return response.data;
   }
 
-  async updateStorageBucket(projectRef: string, bucketId: string, data: {
-    public?: boolean;
-    fileSizeLimit?: number;
-    allowedMimeTypes?: string[];
-  }) {
-    let response = await this.http.patch(`/projects/${projectRef}/storage/buckets/${bucketId}`, {
-      public: data.public,
-      file_size_limit: data.fileSizeLimit,
-      allowed_mime_types: data.allowedMimeTypes,
-    });
+  async updateStorageBucket(
+    projectRef: string,
+    bucketId: string,
+    data: {
+      public?: boolean;
+      fileSizeLimit?: number;
+      allowedMimeTypes?: string[];
+    }
+  ) {
+    let response = await this.http.patch(
+      `/projects/${projectRef}/storage/buckets/${bucketId}`,
+      {
+        public: data.public,
+        file_size_limit: data.fileSizeLimit,
+        allowed_mime_types: data.allowedMimeTypes
+      }
+    );
     return response.data;
   }
 
   async deleteStorageBucket(projectRef: string, bucketId: string) {
-    let response = await this.http.delete(`/projects/${projectRef}/storage/buckets/${bucketId}`);
+    let response = await this.http.delete(
+      `/projects/${projectRef}/storage/buckets/${bucketId}`
+    );
     return response.data;
   }
 
   async emptyStorageBucket(projectRef: string, bucketId: string) {
-    let response = await this.http.post(`/projects/${projectRef}/storage/buckets/${bucketId}/empty`);
+    let response = await this.http.post(
+      `/projects/${projectRef}/storage/buckets/${bucketId}/empty`
+    );
     return response.data;
   }
 
@@ -236,18 +257,24 @@ export class ManagementClient {
 
   // ─── Project Logs ─────────────────────────────────────────
 
-  async getProjectLogs(projectRef: string, params: {
-    collection: string;
-    startTimestamp?: string;
-    endTimestamp?: string;
-  }) {
-    let response = await this.http.get(`/projects/${projectRef}/analytics/endpoints/logs.all`, {
-      params: {
-        iso_timestamp_start: params.startTimestamp,
-        iso_timestamp_end: params.endTimestamp,
-        source: params.collection,
-      },
-    });
+  async getProjectLogs(
+    projectRef: string,
+    params: {
+      collection: string;
+      startTimestamp?: string;
+      endTimestamp?: string;
+    }
+  ) {
+    let response = await this.http.get(
+      `/projects/${projectRef}/analytics/endpoints/logs.all`,
+      {
+        params: {
+          iso_timestamp_start: params.startTimestamp,
+          iso_timestamp_end: params.endTimestamp,
+          source: params.collection
+        }
+      }
+    );
     return response.data;
   }
 

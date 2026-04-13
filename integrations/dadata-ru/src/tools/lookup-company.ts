@@ -34,40 +34,41 @@ let companyDetailSchema = z.object({
   financeYear: z.number().nullable().describe('Most recent financial report year'),
   financeIncome: z.number().nullable().describe('Income from financial reports'),
   financeExpense: z.number().nullable().describe('Expenses from financial reports'),
-  employeeCount: z.number().nullable().describe('Number of employees'),
+  employeeCount: z.number().nullable().describe('Number of employees')
 });
 
-export let lookupCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Lookup Company',
-    key: 'lookup_company',
-    description: `Looks up detailed company information by INN, OGRN, or INN+KPP. Returns comprehensive data including name, address, management, financials, OKVED codes, branch info, and registration details.
+export let lookupCompany = SlateTool.create(spec, {
+  name: 'Lookup Company',
+  key: 'lookup_company',
+  description: `Looks up detailed company information by INN, OGRN, or INN+KPP. Returns comprehensive data including name, address, management, financials, OKVED codes, branch info, and registration details.
 Use this for precise lookups when you have a specific identifier, as opposed to the suggestion tool which is for fuzzy search.`,
-    instructions: [
-      'Provide an INN (10 digits for legal entities, 12 for individuals) or OGRN (13 or 15 digits).',
-      'Use kpp to find a specific branch when searching by INN.',
-      'Use branchType to filter for MAIN office or BRANCH only.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Provide an INN (10 digits for legal entities, 12 for individuals) or OGRN (13 or 15 digits).',
+    'Use kpp to find a specific branch when searching by INN.',
+    'Use branchType to filter for MAIN office or BRANCH only.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('INN, OGRN, or INN+KPP of the company'),
-    kpp: z.string().optional().describe('KPP to find a specific branch'),
-    branchType: z.enum(['MAIN', 'BRANCH']).optional().describe('Filter by branch type'),
-    type: z.enum(['LEGAL', 'INDIVIDUAL']).optional().describe('Filter by entity type'),
-    count: z.number().optional().describe('Number of results (max 20)'),
-  }))
-  .output(z.object({
-    companies: z.array(companyDetailSchema).describe('List of matched companies'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('INN, OGRN, or INN+KPP of the company'),
+      kpp: z.string().optional().describe('KPP to find a specific branch'),
+      branchType: z.enum(['MAIN', 'BRANCH']).optional().describe('Filter by branch type'),
+      type: z.enum(['LEGAL', 'INDIVIDUAL']).optional().describe('Filter by entity type'),
+      count: z.number().optional().describe('Number of results (max 20)')
+    })
+  )
+  .output(
+    z.object({
+      companies: z.array(companyDetailSchema).describe('List of matched companies')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SuggestionsClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let data = await client.findById('party', {
@@ -75,7 +76,7 @@ Use this for precise lookups when you have a specific identifier, as opposed to 
       kpp: ctx.input.kpp,
       branchType: ctx.input.branchType,
       type: ctx.input.type,
-      count: ctx.input.count,
+      count: ctx.input.count
     });
 
     let companies = (data.suggestions || []).map((s: any) => ({
@@ -93,8 +94,12 @@ Use this for precise lookups when you have a specific identifier, as opposed to 
       opfFull: s.data?.opf?.full ?? null,
       opfShort: s.data?.opf?.short ?? null,
       status: s.data?.state?.status ?? null,
-      registrationDate: s.data?.state?.registration_date != null ? String(s.data.state.registration_date) : null,
-      liquidationDate: s.data?.state?.liquidation_date != null ? String(s.data.state.liquidation_date) : null,
+      registrationDate:
+        s.data?.state?.registration_date != null
+          ? String(s.data.state.registration_date)
+          : null,
+      liquidationDate:
+        s.data?.state?.liquidation_date != null ? String(s.data.state.liquidation_date) : null,
       address: s.data?.address?.value ?? null,
       managementName: s.data?.management?.name ?? null,
       managementPost: s.data?.management?.post ?? null,
@@ -109,13 +114,15 @@ Use this for precise lookups when you have a specific identifier, as opposed to 
       financeYear: s.data?.finance?.year ?? null,
       financeIncome: s.data?.finance?.income ?? null,
       financeExpense: s.data?.finance?.expense ?? null,
-      employeeCount: s.data?.employee_count ?? null,
+      employeeCount: s.data?.employee_count ?? null
     }));
 
     return {
       output: { companies },
-      message: companies.length > 0
-        ? `Found **${companies.length}** company/companies for "${ctx.input.query}": ${companies.map((c: any) => c.value).join(', ')}`
-        : `No companies found for "${ctx.input.query}".`,
+      message:
+        companies.length > 0
+          ? `Found **${companies.length}** company/companies for "${ctx.input.query}": ${companies.map((c: any) => c.value).join(', ')}`
+          : `No companies found for "${ctx.input.query}".`
     };
-  }).build();
+  })
+  .build();

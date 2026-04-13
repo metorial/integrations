@@ -14,19 +14,23 @@ export class ExecutionClient {
     origin?: string;
   }): Promise<any> {
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code: params.code,
-      input: params.input || '',
-      returnBinary: params.returnBinary ? 'true' : 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': params.origin || 'slates/execute',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code: params.code,
+        input: params.input || '',
+        returnBinary: params.returnBinary ? 'true' : 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': params.origin || 'slates/execute'
+        }
+      }
+    );
 
     return response.data;
   }
@@ -38,11 +42,11 @@ export class ExecutionClient {
     heightMm?: number;
   }): Promise<any> {
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
     let body: Record<string, any> = {
-      html: params.html,
+      html: params.html
     };
 
     if (params.templateData) {
@@ -58,33 +62,33 @@ export class ExecutionClient {
     let response = await client.post('/html2pdf', body, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': this.token,
+        'x-api-key': this.token
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async markdownToPdf(params: {
-    markdown: string;
-  }): Promise<string> {
+  async markdownToPdf(params: { markdown: string }): Promise<string> {
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post('/markdown2pdf', {
-      markdown: params.markdown,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': this.token,
+    let response = await client.post(
+      '/markdown2pdf',
+      {
+        markdown: params.markdown
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this.token
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
@@ -94,11 +98,11 @@ export class ExecutionClient {
     box?: { x: number; y: number; width: number; height: number };
   }): Promise<string> {
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
     let body: Record<string, any> = {
-      url: params.url,
+      url: params.url
     };
 
     if (params.commands && params.commands.length > 0) {
@@ -112,12 +116,11 @@ export class ExecutionClient {
     let response = await client.post('/screenshot', body, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': this.token,
+        'x-api-key': this.token
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
@@ -126,11 +129,11 @@ export class ExecutionClient {
     commands?: Array<{ action: string; selector?: string; value?: string | number }>;
   }): Promise<string> {
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
     let body: Record<string, any> = {
-      url: params.url,
+      url: params.url
     };
 
     if (params.commands && params.commands.length > 0) {
@@ -140,16 +143,14 @@ export class ExecutionClient {
     let response = await client.post('/scraper', body, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': this.token,
-      },
+        'x-api-key': this.token
+      }
     });
 
     return response.data;
   }
 
-  async mergePdfs(params: {
-    urls: string[];
-  }): Promise<string> {
+  async mergePdfs(params: { urls: string[] }): Promise<string> {
     let code = `
 const { PDF_MERGE } = require('./utils');
 const axios = require('axios');
@@ -159,29 +160,29 @@ return PDF_MERGE(buffers);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: JSON.stringify(params.urls),
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/mergePdfs',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: JSON.stringify(params.urls),
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/mergePdfs'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async extractPdfPages(params: {
-    pdfUrl: string;
-    pageRange: string;
-  }): Promise<string> {
+  async extractPdfPages(params: { pdfUrl: string; pageRange: string }): Promise<string> {
     let code = `
 const { EXTRACT_PAGES_FROM_PDF } = require('./utils');
 const axios = require('axios');
@@ -191,28 +192,29 @@ return EXTRACT_PAGES_FROM_PDF(resp.data, parsed.pageRange);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: JSON.stringify({ url: params.pdfUrl, pageRange: params.pageRange }),
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/extractPdfPages',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: JSON.stringify({ url: params.pdfUrl, pageRange: params.pageRange }),
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/extractPdfPages'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async compressPdf(params: {
-    pdfUrl: string;
-  }): Promise<string> {
+  async compressPdf(params: { pdfUrl: string }): Promise<string> {
     let code = `
 const { PDF_COMPRESS } = require('./utils');
 const axios = require('axios');
@@ -221,28 +223,29 @@ return PDF_COMPRESS(resp.data);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.pdfUrl,
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/compressPdf',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.pdfUrl,
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/compressPdf'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async pdfToText(params: {
-    pdfUrl: string;
-  }): Promise<string> {
+  async pdfToText(params: { pdfUrl: string }): Promise<string> {
     let code = `
 const { PDFTOTEXT } = require('./utils');
 const axios = require('axios');
@@ -251,26 +254,28 @@ return PDFTOTEXT(resp.data);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.pdfUrl,
-      returnBinary: 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/pdfToText',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.pdfUrl,
+        returnBinary: 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/pdfToText'
+        }
+      }
+    );
 
     return response.data;
   }
 
-  async pdfToPng(params: {
-    pdfUrl: string;
-  }): Promise<string> {
+  async pdfToPng(params: { pdfUrl: string }): Promise<string> {
     let code = `
 const { PDF2PNG } = require('./utils');
 const axios = require('axios');
@@ -279,28 +284,29 @@ return PDF2PNG(resp.data);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.pdfUrl,
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/pdfToPng',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.pdfUrl,
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/pdfToPng'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async readPdfFormFields(params: {
-    pdfUrl: string;
-  }): Promise<any> {
+  async readPdfFormFields(params: { pdfUrl: string }): Promise<any> {
     let code = `
 const { PDF_GET_FORM_FIELD_NAMES } = require('./utils');
 const axios = require('axios');
@@ -309,19 +315,23 @@ return PDF_GET_FORM_FIELD_NAMES(resp.data);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.pdfUrl,
-      returnBinary: 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/readPdfFormFields',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.pdfUrl,
+        returnBinary: 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/readPdfFormFields'
+        }
+      }
+    );
 
     return response.data;
   }
@@ -339,137 +349,143 @@ return PDF_FILL_FORM(resp.data, parsed.fields);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: JSON.stringify({ url: params.pdfUrl, fields: params.fields }),
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/fillPdfForm',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: JSON.stringify({ url: params.pdfUrl, fields: params.fields }),
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/fillPdfForm'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async htmlToPng(params: {
-    html: string;
-  }): Promise<string> {
+  async htmlToPng(params: { html: string }): Promise<string> {
     let code = `
 const { HTML2PNG } = require('./utils');
 return HTML2PNG(input);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.html,
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/htmlToPng',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.html,
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/htmlToPng'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async htmlToDocx(params: {
-    html: string;
-  }): Promise<string> {
+  async htmlToDocx(params: { html: string }): Promise<string> {
     let code = `
 const { HTML2DOCX } = require('./utils');
 return HTML2DOCX(input);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.html,
-      returnBinary: 'true',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/htmlToDocx',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.html,
+        returnBinary: 'true'
       },
-      responseType: 'arraybuffer',
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/htmlToDocx'
+        },
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     return Buffer.from(response.data).toString('base64');
   }
 
-  async markdownToHtml(params: {
-    markdown: string;
-  }): Promise<string> {
+  async markdownToHtml(params: { markdown: string }): Promise<string> {
     let code = `
 const { MD2HTML } = require('./utils');
 return MD2HTML(input);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.markdown,
-      returnBinary: 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/markdownToHtml',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.markdown,
+        returnBinary: 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/markdownToHtml'
+        }
+      }
+    );
 
     return response.data;
   }
 
-  async sslCheck(params: {
-    domain: string;
-  }): Promise<any> {
+  async sslCheck(params: { domain: string }): Promise<any> {
     let code = `
 const checkCertExpiration = require('check-cert-expiration');
 return checkCertExpiration(input);
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: params.domain,
-      returnBinary: 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/sslCheck',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: params.domain,
+        returnBinary: 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/sslCheck'
+        }
+      }
+    );
 
     return response.data;
   }
 
-  async jsonPathQuery(params: {
-    json: string;
-    path: string;
-  }): Promise<any> {
+  async jsonPathQuery(params: { json: string; path: string }): Promise<any> {
     let code = `
 const { JSONPath } = require('jsonpath-plus');
 let parsed = JSON.parse(input);
@@ -477,19 +493,23 @@ return JSONPath({ path: parsed.path, json: JSON.parse(parsed.json) });
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: JSON.stringify({ json: params.json, path: params.path }),
-      returnBinary: 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/jsonPath',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: JSON.stringify({ json: params.json, path: params.path }),
+        returnBinary: 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/jsonPath'
+        }
+      }
+    );
 
     return response.data;
   }
@@ -529,25 +549,29 @@ switch (parsed.operation) {
     `.trim();
 
     let client = createAxios({
-      baseURL: 'https://e.customjs.io',
+      baseURL: 'https://e.customjs.io'
     });
 
-    let response = await client.post(`/__js1-${this.token}`, {
-      code,
-      input: JSON.stringify({
-        text: params.text,
-        pattern: params.pattern,
-        flags: params.flags || '',
-        operation: params.operation,
-        replacement: params.replacement || '',
-      }),
-      returnBinary: 'false',
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'customjs-origin': 'slates/regex',
+    let response = await client.post(
+      `/__js1-${this.token}`,
+      {
+        code,
+        input: JSON.stringify({
+          text: params.text,
+          pattern: params.pattern,
+          flags: params.flags || '',
+          operation: params.operation,
+          replacement: params.replacement || ''
+        }),
+        returnBinary: 'false'
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'customjs-origin': 'slates/regex'
+        }
+      }
+    );
 
     return response.data;
   }
@@ -565,16 +589,12 @@ export class PagesClient {
       baseURL: 'https://api.app.customjs.io',
       headers: {
         'x-api-key': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  async upsertPage(params: {
-    name: string;
-    htmlContent: string;
-    slug?: string;
-  }): Promise<{
+  async upsertPage(params: { name: string; htmlContent: string; slug?: string }): Promise<{
     pageId: string;
     htmlFileUrl: string;
     name: string;
@@ -585,7 +605,7 @@ export class PagesClient {
 
     let body: Record<string, any> = {
       name: params.name,
-      htmlContent: params.htmlContent,
+      htmlContent: params.htmlContent
     };
 
     if (params.slug) {

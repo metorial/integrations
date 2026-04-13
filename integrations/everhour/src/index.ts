@@ -39,7 +39,7 @@ import {
   createSection,
   updateSection,
   deleteSection,
-  getReport,
+  getReport
 } from './tools';
 import {
   projectEvents,
@@ -48,7 +48,7 @@ import {
   timerEvents,
   sectionEvents,
   clientEvents,
-  estimateEvents,
+  estimateEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -92,7 +92,7 @@ export let provider = Slate.create({
     createSection,
     updateSection,
     deleteSection,
-    getReport,
+    getReport
   ] as any,
   triggers: [
     projectEvents,
@@ -101,6 +101,6 @@ export let provider = Slate.create({
     timerEvents,
     sectionEvents,
     clientEvents,
-    estimateEvents,
-  ] as any,
+    estimateEvents
+  ] as any
 });

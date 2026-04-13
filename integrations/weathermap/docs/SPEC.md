@@ -24,6 +24,7 @@ Retrieve real-time weather conditions for any location globally. Provides compre
 ### Weather Forecasts
 
 Access short-term and extended weather forecasts. Available forecast types include:
+
 - Minute-by-minute forecast for 1 hour, hourly forecast for 48 hours, daily forecast for 8 days, and forecasts up to 1.5 years ahead (via One Call API 3.0).
 - 5-day/3-hour forecast available on free plans.
 - Configurable parameters include units, language, and the ability to exclude specific data sections (minutely, hourly, daily, alerts).
@@ -35,6 +36,7 @@ Access 47+ years of hourly archive data, forecast history, and statistical datas
 ### One Call API (v3.0)
 
 A comprehensive weather endpoint combining current conditions, forecast, historical data, and alerts within a single API call for a specific location. Also includes:
+
 - A weather overview with a human-readable weather summary utilizing AI technologies.
 - An AI Weather Assistant for retrieving weather data and advice in a conversational format.
 - Requires a separate "One Call by Call" subscription, which includes 1,000 free calls/day.

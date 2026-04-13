@@ -24,13 +24,13 @@ import {
   validateAddress,
   getAccountInfo,
   sendSms,
-  listTemplates,
+  listTemplates
 } from './tools';
 import {
   campaignStatus,
   mailpieceStatus,
   recipientBlacklisted,
-  recipientEvent,
+  recipientEvent
 } from './triggers';
 
 export let provider = Slate.create({
@@ -59,12 +59,7 @@ export let provider = Slate.create({
     validateAddress,
     getAccountInfo,
     sendSms,
-    listTemplates,
+    listTemplates
   ],
-  triggers: [
-    campaignStatus,
-    mailpieceStatus,
-    recipientBlacklisted,
-    recipientEvent,
-  ],
+  triggers: [campaignStatus, mailpieceStatus, recipientBlacklisted, recipientEvent]
 });

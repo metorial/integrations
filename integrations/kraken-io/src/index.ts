@@ -6,5 +6,5 @@ import { optimizationCompletedTrigger } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [optimizeImageTool, generateImageSetsTool, getAccountStatusTool],
-  triggers: [optimizationCompletedTrigger],
+  triggers: [optimizationCompletedTrigger]
 });

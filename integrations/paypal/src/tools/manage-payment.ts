@@ -3,54 +3,71 @@ import { PayPalClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePayment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Payment',
-    key: 'manage_payment',
-    description: `Manage payment authorizations, captures, and refunds. Capture an authorization, void an authorization, refund a captured payment, or view details of authorizations/captures/refunds.`,
-    instructions: [
-      'Use action **captureAuthorization** to capture funds from an authorized payment.',
-      'Use action **voidAuthorization** to void an authorization that has not been captured.',
-      'Use action **refundCapture** to refund a captured payment (full or partial).',
-      'Use action **getAuthorization**, **getCapture**, or **getRefund** to view details.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let managePayment = SlateTool.create(spec, {
+  name: 'Manage Payment',
+  key: 'manage_payment',
+  description: `Manage payment authorizations, captures, and refunds. Capture an authorization, void an authorization, refund a captured payment, or view details of authorizations/captures/refunds.`,
+  instructions: [
+    'Use action **captureAuthorization** to capture funds from an authorized payment.',
+    'Use action **voidAuthorization** to void an authorization that has not been captured.',
+    'Use action **refundCapture** to refund a captured payment (full or partial).',
+    'Use action **getAuthorization**, **getCapture**, or **getRefund** to view details.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum([
-      'captureAuthorization',
-      'voidAuthorization',
-      'refundCapture',
-      'getAuthorization',
-      'getCapture',
-      'getRefund',
-    ]).describe('Action to perform'),
-    resourceId: z.string().describe('Authorization ID, Capture ID, or Refund ID depending on the action'),
-    currencyCode: z.string().optional().describe('Currency code for partial capture/refund (e.g. USD)'),
-    amount: z.string().optional().describe('Amount for partial capture/refund as a string (e.g. "50.00")'),
-    finalCapture: z.boolean().optional().describe('Whether this is the final capture for the authorization'),
-    noteToPayer: z.string().optional().describe('Note to the payer for refunds'),
-    invoiceId: z.string().optional().describe('Invoice ID to associate with the capture or refund'),
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('ID of the resource'),
-    status: z.string().optional().describe('Status of the resource'),
-    currencyCode: z.string().optional().describe('Currency code'),
-    amount: z.string().optional().describe('Amount'),
-    createTime: z.string().optional().describe('Creation timestamp'),
-    resource: z.any().optional().describe('Full resource details from PayPal'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'captureAuthorization',
+          'voidAuthorization',
+          'refundCapture',
+          'getAuthorization',
+          'getCapture',
+          'getRefund'
+        ])
+        .describe('Action to perform'),
+      resourceId: z
+        .string()
+        .describe('Authorization ID, Capture ID, or Refund ID depending on the action'),
+      currencyCode: z
+        .string()
+        .optional()
+        .describe('Currency code for partial capture/refund (e.g. USD)'),
+      amount: z
+        .string()
+        .optional()
+        .describe('Amount for partial capture/refund as a string (e.g. "50.00")'),
+      finalCapture: z
+        .boolean()
+        .optional()
+        .describe('Whether this is the final capture for the authorization'),
+      noteToPayer: z.string().optional().describe('Note to the payer for refunds'),
+      invoiceId: z
+        .string()
+        .optional()
+        .describe('Invoice ID to associate with the capture or refund')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('ID of the resource'),
+      status: z.string().optional().describe('Status of the resource'),
+      currencyCode: z.string().optional().describe('Currency code'),
+      amount: z.string().optional().describe('Amount'),
+      createTime: z.string().optional().describe('Creation timestamp'),
+      resource: z.any().optional().describe('Full resource details from PayPal')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PayPalClient({
       token: ctx.auth.token,
       clientId: ctx.auth.clientId,
       clientSecret: ctx.auth.clientSecret,
-      environment: ctx.auth.environment,
+      environment: ctx.auth.environment
     });
 
     let result: Record<string, any>;
@@ -60,9 +77,13 @@ export let managePayment = SlateTool.create(
       case 'captureAuthorization': {
         let captureParams: Record<string, any> = {};
         if (ctx.input.amount && ctx.input.currencyCode) {
-          captureParams.amount = { currency_code: ctx.input.currencyCode, value: ctx.input.amount };
+          captureParams.amount = {
+            currency_code: ctx.input.currencyCode,
+            value: ctx.input.amount
+          };
         }
-        if (ctx.input.finalCapture !== undefined) captureParams.finalCapture = ctx.input.finalCapture;
+        if (ctx.input.finalCapture !== undefined)
+          captureParams.finalCapture = ctx.input.finalCapture;
         if (ctx.input.invoiceId) captureParams.invoiceId = ctx.input.invoiceId;
         if (ctx.input.noteToPayer) captureParams.noteToPayer = ctx.input.noteToPayer;
 
@@ -74,9 +95,9 @@ export let managePayment = SlateTool.create(
             currencyCode: result.amount?.currency_code,
             amount: result.amount?.value,
             createTime: result.create_time,
-            resource: result,
+            resource: result
           },
-          message: `Captured authorization \`${ctx.input.resourceId}\`. Capture ID: \`${result.id}\`, status: **${result.status}**.`,
+          message: `Captured authorization \`${ctx.input.resourceId}\`. Capture ID: \`${result.id}\`, status: **${result.status}**.`
         };
       }
       case 'voidAuthorization': {
@@ -84,15 +105,18 @@ export let managePayment = SlateTool.create(
         return {
           output: {
             resourceId: ctx.input.resourceId,
-            status: 'VOIDED',
+            status: 'VOIDED'
           },
-          message: `Voided authorization \`${ctx.input.resourceId}\`.`,
+          message: `Voided authorization \`${ctx.input.resourceId}\`.`
         };
       }
       case 'refundCapture': {
         let refundParams: Record<string, any> = {};
         if (ctx.input.amount && ctx.input.currencyCode) {
-          refundParams.amount = { currency_code: ctx.input.currencyCode, value: ctx.input.amount };
+          refundParams.amount = {
+            currency_code: ctx.input.currencyCode,
+            value: ctx.input.amount
+          };
         }
         if (ctx.input.invoiceId) refundParams.invoiceId = ctx.input.invoiceId;
         if (ctx.input.noteToPayer) refundParams.noteToPayer = ctx.input.noteToPayer;
@@ -105,9 +129,9 @@ export let managePayment = SlateTool.create(
             currencyCode: result.amount?.currency_code,
             amount: result.amount?.value,
             createTime: result.create_time,
-            resource: result,
+            resource: result
           },
-          message: `Refunded capture \`${ctx.input.resourceId}\`. Refund ID: \`${result.id}\`, status: **${result.status}**.`,
+          message: `Refunded capture \`${ctx.input.resourceId}\`. Refund ID: \`${result.id}\`, status: **${result.status}**.`
         };
       }
       case 'getAuthorization': {
@@ -119,9 +143,9 @@ export let managePayment = SlateTool.create(
             currencyCode: result.amount?.currency_code,
             amount: result.amount?.value,
             createTime: result.create_time,
-            resource: result,
+            resource: result
           },
-          message: `Authorization \`${result.id}\` is **${result.status}** for ${result.amount?.currency_code} ${result.amount?.value}.`,
+          message: `Authorization \`${result.id}\` is **${result.status}** for ${result.amount?.currency_code} ${result.amount?.value}.`
         };
       }
       case 'getCapture': {
@@ -133,9 +157,9 @@ export let managePayment = SlateTool.create(
             currencyCode: result.amount?.currency_code,
             amount: result.amount?.value,
             createTime: result.create_time,
-            resource: result,
+            resource: result
           },
-          message: `Capture \`${result.id}\` is **${result.status}** for ${result.amount?.currency_code} ${result.amount?.value}.`,
+          message: `Capture \`${result.id}\` is **${result.status}** for ${result.amount?.currency_code} ${result.amount?.value}.`
         };
       }
       case 'getRefund': {
@@ -147,9 +171,9 @@ export let managePayment = SlateTool.create(
             currencyCode: result.amount?.currency_code,
             amount: result.amount?.value,
             createTime: result.create_time,
-            resource: result,
+            resource: result
           },
-          message: `Refund \`${result.id}\` is **${result.status}** for ${result.amount?.currency_code} ${result.amount?.value}.`,
+          message: `Refund \`${result.id}\` is **${result.status}** for ${result.amount?.currency_code} ${result.amount?.value}.`
         };
       }
     }

@@ -1,6 +1,18 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listRows, getRow, createRows, updateRows, deleteRows, listTables, listFields, listViews, listDatabases, manageField, uploadFile } from './tools';
+import {
+  listRows,
+  getRow,
+  createRows,
+  updateRows,
+  deleteRows,
+  listTables,
+  listFields,
+  listViews,
+  listDatabases,
+  manageField,
+  uploadFile
+} from './tools';
 import { tableEvents } from './triggers';
 
 export let provider = Slate.create({
@@ -18,7 +30,5 @@ export let provider = Slate.create({
     manageField,
     uploadFile
   ],
-  triggers: [
-    tableEvents
-  ]
+  triggers: [tableEvents]
 });

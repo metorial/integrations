@@ -23,15 +23,11 @@ export let createFormTool = SlateTool.create(spec, {
       properties: z
         .record(z.string(), z.any())
         .optional()
-        .describe(
-          'Form-level properties such as title, height, thankurl, etc.'
-        ),
+        .describe('Form-level properties such as title, height, thankurl, etc.'),
       emails: z
         .record(z.string(), z.record(z.string(), z.any()))
         .optional()
-        .describe(
-          'Email notification configurations keyed by index.'
-        )
+        .describe('Email notification configurations keyed by index.')
     })
   )
   .output(
@@ -41,7 +37,7 @@ export let createFormTool = SlateTool.create(spec, {
       url: z.string().describe('Public URL of the new form')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

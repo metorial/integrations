@@ -8,8 +8,8 @@ export class AffinityClient {
       baseURL: 'https://api.affinity.co',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -26,8 +26,8 @@ export class AffinityClient {
         term: params?.term,
         with_interaction_dates: params?.withInteractionDates,
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -35,8 +35,8 @@ export class AffinityClient {
   async getPerson(personId: number, params?: { withInteractionDates?: boolean }) {
     let response = await this.axios.get(`/persons/${personId}`, {
       params: {
-        with_interaction_dates: params?.withInteractionDates,
-      },
+        with_interaction_dates: params?.withInteractionDates
+      }
     });
     return response.data;
   }
@@ -51,22 +51,25 @@ export class AffinityClient {
       first_name: data.firstName,
       last_name: data.lastName,
       emails: data.emails,
-      organization_ids: data.organization_ids,
+      organization_ids: data.organization_ids
     });
     return response.data;
   }
 
-  async updatePerson(personId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    emails?: string[];
-    organization_ids?: number[];
-  }) {
+  async updatePerson(
+    personId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      emails?: string[];
+      organization_ids?: number[];
+    }
+  ) {
     let response = await this.axios.put(`/persons/${personId}`, {
       first_name: data.firstName,
       last_name: data.lastName,
       emails: data.emails,
-      organization_ids: data.organization_ids,
+      organization_ids: data.organization_ids
     });
     return response.data;
   }
@@ -89,8 +92,8 @@ export class AffinityClient {
         term: params?.term,
         with_interaction_dates: params?.withInteractionDates,
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -98,34 +101,33 @@ export class AffinityClient {
   async getOrganization(organizationId: number, params?: { withInteractionDates?: boolean }) {
     let response = await this.axios.get(`/organizations/${organizationId}`, {
       params: {
-        with_interaction_dates: params?.withInteractionDates,
-      },
+        with_interaction_dates: params?.withInteractionDates
+      }
     });
     return response.data;
   }
 
-  async createOrganization(data: {
-    name: string;
-    domain?: string;
-    person_ids?: number[];
-  }) {
+  async createOrganization(data: { name: string; domain?: string; person_ids?: number[] }) {
     let response = await this.axios.post('/organizations', {
       name: data.name,
       domain: data.domain,
-      person_ids: data.person_ids,
+      person_ids: data.person_ids
     });
     return response.data;
   }
 
-  async updateOrganization(organizationId: number, data: {
-    name?: string;
-    domain?: string;
-    person_ids?: number[];
-  }) {
+  async updateOrganization(
+    organizationId: number,
+    data: {
+      name?: string;
+      domain?: string;
+      person_ids?: number[];
+    }
+  ) {
     let response = await this.axios.put(`/organizations/${organizationId}`, {
       name: data.name,
       domain: data.domain,
-      person_ids: data.person_ids,
+      person_ids: data.person_ids
     });
     return response.data;
   }
@@ -148,8 +150,8 @@ export class AffinityClient {
         term: params?.term,
         list_id: params?.listId,
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -169,20 +171,23 @@ export class AffinityClient {
       name: data.name,
       list_id: data.listId,
       person_ids: data.person_ids,
-      organization_ids: data.organization_ids,
+      organization_ids: data.organization_ids
     });
     return response.data;
   }
 
-  async updateOpportunity(opportunityId: number, data: {
-    name?: string;
-    person_ids?: number[];
-    organization_ids?: number[];
-  }) {
+  async updateOpportunity(
+    opportunityId: number,
+    data: {
+      name?: string;
+      person_ids?: number[];
+      organization_ids?: number[];
+    }
+  ) {
     let response = await this.axios.put(`/opportunities/${opportunityId}`, {
       name: data.name,
       person_ids: data.person_ids,
-      organization_ids: data.organization_ids,
+      organization_ids: data.organization_ids
     });
     return response.data;
   }
@@ -204,15 +209,18 @@ export class AffinityClient {
     return response.data;
   }
 
-  async getListEntries(listId: number, params?: {
-    pageSize?: number;
-    pageToken?: string;
-  }) {
+  async getListEntries(
+    listId: number,
+    params?: {
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ) {
     let response = await this.axios.get(`/lists/${listId}/list-entries`, {
       params: {
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -222,15 +230,18 @@ export class AffinityClient {
     return response.data;
   }
 
-  async createListEntry(listId: number, data: {
-    entityId: number;
-    entity_type?: number;
-    creator_id?: number;
-  }) {
+  async createListEntry(
+    listId: number,
+    data: {
+      entityId: number;
+      entity_type?: number;
+      creator_id?: number;
+    }
+  ) {
     let response = await this.axios.post(`/lists/${listId}/list-entries`, {
       entity_id: data.entityId,
       entity_type: data.entity_type,
-      creator_id: data.creator_id,
+      creator_id: data.creator_id
     });
     return response.data;
   }
@@ -251,8 +262,8 @@ export class AffinityClient {
       params: {
         list_id: params?.listId,
         entity_type: params?.entityType,
-        with_modified_names: params?.withModifiedNames,
-      },
+        with_modified_names: params?.withModifiedNames
+      }
     });
     return response.data;
   }
@@ -272,8 +283,8 @@ export class AffinityClient {
         organization_id: params.organizationId,
         opportunity_id: params.opportunityId,
         list_entry_id: params.listEntryId,
-        field_id: params.fieldId,
-      },
+        field_id: params.fieldId
+      }
     });
     return response.data;
   }
@@ -288,16 +299,19 @@ export class AffinityClient {
       field_id: data.fieldId,
       entity_id: data.entityId,
       value: data.value,
-      list_entry_id: data.listEntryId,
+      list_entry_id: data.listEntryId
     });
     return response.data;
   }
 
-  async updateFieldValue(fieldValueId: number, data: {
-    value: unknown;
-  }) {
+  async updateFieldValue(
+    fieldValueId: number,
+    data: {
+      value: unknown;
+    }
+  ) {
     let response = await this.axios.put(`/field-values/${fieldValueId}`, {
-      value: data.value,
+      value: data.value
     });
     return response.data;
   }
@@ -318,8 +332,8 @@ export class AffinityClient {
         field_id: params.fieldId,
         list_entry_id: params.listEntryId,
         entity_id: params.entityId,
-        action_type: params.action_type,
-      },
+        action_type: params.action_type
+      }
     });
     return response.data;
   }
@@ -341,8 +355,8 @@ export class AffinityClient {
         opportunity_id: params?.opportunityId,
         creator_id: params?.creatorId,
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -366,16 +380,19 @@ export class AffinityClient {
       opportunity_ids: data.opportunityIds,
       content: data.content,
       creator_id: data.creatorId,
-      created_at: data.createdAt,
+      created_at: data.createdAt
     });
     return response.data;
   }
 
-  async updateNote(noteId: number, data: {
-    content?: string;
-  }) {
+  async updateNote(
+    noteId: number,
+    data: {
+      content?: string;
+    }
+  ) {
     let response = await this.axios.put(`/notes/${noteId}`, {
-      content: data.content,
+      content: data.content
     });
     return response.data;
   }
@@ -402,8 +419,8 @@ export class AffinityClient {
         opportunity_id: params?.opportunityId,
         type: params?.type,
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -415,15 +432,12 @@ export class AffinityClient {
 
   // ─── Relationship Strengths ───────────────────────────────────────
 
-  async getRelationshipStrengths(params: {
-    externalId: number;
-    internalId?: number;
-  }) {
+  async getRelationshipStrengths(params: { externalId: number; internalId?: number }) {
     let response = await this.axios.get('/relationship-strengths', {
       params: {
         external_id: params.externalId,
-        internal_id: params.internalId,
-      },
+        internal_id: params.internalId
+      }
     });
     return response.data;
   }
@@ -445,8 +459,8 @@ export class AffinityClient {
         opportunity_id: params?.opportunityId,
         owner_id: params?.ownerId,
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -474,24 +488,27 @@ export class AffinityClient {
       content: data.content,
       due_date: data.dueDate,
       type: data.type,
-      reset_type: data.resetType,
+      reset_type: data.resetType
     });
     return response.data;
   }
 
-  async updateReminder(reminderId: number, data: {
-    content?: string;
-    dueDate?: string;
-    status?: number;
-    type?: number;
-    resetType?: number;
-  }) {
+  async updateReminder(
+    reminderId: number,
+    data: {
+      content?: string;
+      dueDate?: string;
+      status?: number;
+      type?: number;
+      resetType?: number;
+    }
+  ) {
     let response = await this.axios.put(`/reminders/${reminderId}`, {
       content: data.content,
       due_date: data.dueDate,
       status: data.status,
       type: data.type,
-      reset_type: data.resetType,
+      reset_type: data.resetType
     });
     return response.data;
   }
@@ -516,8 +533,8 @@ export class AffinityClient {
         organization_id: params.organizationId,
         opportunity_id: params.opportunityId,
         page_size: params.pageSize,
-        page_token: params.pageToken,
-      },
+        page_token: params.pageToken
+      }
     });
     return response.data;
   }
@@ -529,7 +546,7 @@ export class AffinityClient {
 
   async downloadEntityFile(entityFileId: number) {
     let response = await this.axios.get(`/entity-files/${entityFileId}/download`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -546,13 +563,10 @@ export class AffinityClient {
     return response.data;
   }
 
-  async createWebhook(data: {
-    webhookUrl: string;
-    subscriptions: string[];
-  }) {
+  async createWebhook(data: { webhookUrl: string; subscriptions: string[] }) {
     let response = await this.axios.post('/webhook', {
       webhook_url: data.webhookUrl,
-      subscriptions: data.subscriptions,
+      subscriptions: data.subscriptions
     });
     return response.data;
   }

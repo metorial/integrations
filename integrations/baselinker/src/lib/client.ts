@@ -7,9 +7,12 @@ export class BaseLinkerClient {
     this.token = config.token;
   }
 
-  private async request<T = any>(method: string, parameters: Record<string, any> = {}): Promise<T> {
+  private async request<T = any>(
+    method: string,
+    parameters: Record<string, any> = {}
+  ): Promise<T> {
     let axiosInstance = createAxios({
-      baseURL: 'https://api.baselinker.com',
+      baseURL: 'https://api.baselinker.com'
     });
 
     let params = new URLSearchParams();
@@ -19,8 +22,8 @@ export class BaseLinkerClient {
     let response = await axiosInstance.post('/connector.php', params.toString(), {
       headers: {
         'X-BLToken': this.token,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     let data = response.data;
@@ -34,18 +37,20 @@ export class BaseLinkerClient {
 
   // ── Orders ──
 
-  async getOrders(params: {
-    orderId?: number;
-    dateConfirmedFrom?: number;
-    dateFrom?: number;
-    idFrom?: number;
-    getUnconfirmedOrders?: boolean;
-    statusId?: number;
-    filterEmail?: string;
-    filterOrderSource?: string;
-    filterOrderSourceId?: number;
-    includeCustomExtraFields?: boolean;
-  } = {}): Promise<any> {
+  async getOrders(
+    params: {
+      orderId?: number;
+      dateConfirmedFrom?: number;
+      dateFrom?: number;
+      idFrom?: number;
+      getUnconfirmedOrders?: boolean;
+      statusId?: number;
+      filterEmail?: string;
+      filterOrderSource?: string;
+      filterOrderSourceId?: number;
+      includeCustomExtraFields?: boolean;
+    } = {}
+  ): Promise<any> {
     return this.request('getOrders', {
       order_id: params.orderId,
       date_confirmed_from: params.dateConfirmedFrom,
@@ -56,7 +61,7 @@ export class BaseLinkerClient {
       filter_email: params.filterEmail,
       filter_order_source: params.filterOrderSource,
       filter_order_source_id: params.filterOrderSourceId,
-      include_custom_extra_fields: params.includeCustomExtraFields,
+      include_custom_extra_fields: params.includeCustomExtraFields
     });
   }
 
@@ -155,7 +160,7 @@ export class BaseLinkerClient {
       extra_field_2: params.extraField2,
       custom_extra_fields: params.customExtraFields,
       custom_source_id: params.customSourceId,
-      products: params.products.map((p) => ({
+      products: params.products.map(p => ({
         storage: p.storage,
         storage_id: p.storageId,
         product_id: p.productId,
@@ -169,8 +174,8 @@ export class BaseLinkerClient {
         price_brutto: p.priceBrutto,
         tax_rate: p.taxRate,
         quantity: p.quantity,
-        weight: p.weight,
-      })),
+        weight: p.weight
+      }))
     });
   }
 
@@ -217,36 +222,51 @@ export class BaseLinkerClient {
     if (params.adminComments !== undefined) payload.admin_comments = params.adminComments;
     if (params.userComments !== undefined) payload.user_comments = params.userComments;
     if (params.paymentMethod !== undefined) payload.payment_method = params.paymentMethod;
-    if (params.paymentMethodCod !== undefined) payload.payment_method_cod = params.paymentMethodCod;
+    if (params.paymentMethodCod !== undefined)
+      payload.payment_method_cod = params.paymentMethodCod;
     if (params.email !== undefined) payload.email = params.email;
     if (params.phone !== undefined) payload.phone = params.phone;
     if (params.userLogin !== undefined) payload.user_login = params.userLogin;
     if (params.deliveryMethod !== undefined) payload.delivery_method = params.deliveryMethod;
     if (params.deliveryPrice !== undefined) payload.delivery_price = params.deliveryPrice;
-    if (params.deliveryFullname !== undefined) payload.delivery_fullname = params.deliveryFullname;
-    if (params.deliveryCompany !== undefined) payload.delivery_company = params.deliveryCompany;
-    if (params.deliveryAddress !== undefined) payload.delivery_address = params.deliveryAddress;
-    if (params.deliveryPostcode !== undefined) payload.delivery_postcode = params.deliveryPostcode;
+    if (params.deliveryFullname !== undefined)
+      payload.delivery_fullname = params.deliveryFullname;
+    if (params.deliveryCompany !== undefined)
+      payload.delivery_company = params.deliveryCompany;
+    if (params.deliveryAddress !== undefined)
+      payload.delivery_address = params.deliveryAddress;
+    if (params.deliveryPostcode !== undefined)
+      payload.delivery_postcode = params.deliveryPostcode;
     if (params.deliveryCity !== undefined) payload.delivery_city = params.deliveryCity;
     if (params.deliveryState !== undefined) payload.delivery_state = params.deliveryState;
-    if (params.deliveryCountryCode !== undefined) payload.delivery_country_code = params.deliveryCountryCode;
-    if (params.deliveryPointId !== undefined) payload.delivery_point_id = params.deliveryPointId;
-    if (params.deliveryPointName !== undefined) payload.delivery_point_name = params.deliveryPointName;
-    if (params.deliveryPointAddress !== undefined) payload.delivery_point_address = params.deliveryPointAddress;
-    if (params.deliveryPointPostcode !== undefined) payload.delivery_point_postcode = params.deliveryPointPostcode;
-    if (params.deliveryPointCity !== undefined) payload.delivery_point_city = params.deliveryPointCity;
-    if (params.invoiceFullname !== undefined) payload.invoice_fullname = params.invoiceFullname;
+    if (params.deliveryCountryCode !== undefined)
+      payload.delivery_country_code = params.deliveryCountryCode;
+    if (params.deliveryPointId !== undefined)
+      payload.delivery_point_id = params.deliveryPointId;
+    if (params.deliveryPointName !== undefined)
+      payload.delivery_point_name = params.deliveryPointName;
+    if (params.deliveryPointAddress !== undefined)
+      payload.delivery_point_address = params.deliveryPointAddress;
+    if (params.deliveryPointPostcode !== undefined)
+      payload.delivery_point_postcode = params.deliveryPointPostcode;
+    if (params.deliveryPointCity !== undefined)
+      payload.delivery_point_city = params.deliveryPointCity;
+    if (params.invoiceFullname !== undefined)
+      payload.invoice_fullname = params.invoiceFullname;
     if (params.invoiceCompany !== undefined) payload.invoice_company = params.invoiceCompany;
     if (params.invoiceNip !== undefined) payload.invoice_nip = params.invoiceNip;
     if (params.invoiceAddress !== undefined) payload.invoice_address = params.invoiceAddress;
-    if (params.invoicePostcode !== undefined) payload.invoice_postcode = params.invoicePostcode;
+    if (params.invoicePostcode !== undefined)
+      payload.invoice_postcode = params.invoicePostcode;
     if (params.invoiceCity !== undefined) payload.invoice_city = params.invoiceCity;
     if (params.invoiceState !== undefined) payload.invoice_state = params.invoiceState;
-    if (params.invoiceCountryCode !== undefined) payload.invoice_country_code = params.invoiceCountryCode;
+    if (params.invoiceCountryCode !== undefined)
+      payload.invoice_country_code = params.invoiceCountryCode;
     if (params.wantInvoice !== undefined) payload.want_invoice = params.wantInvoice;
     if (params.extraField1 !== undefined) payload.extra_field_1 = params.extraField1;
     if (params.extraField2 !== undefined) payload.extra_field_2 = params.extraField2;
-    if (params.customExtraFields !== undefined) payload.custom_extra_fields = params.customExtraFields;
+    if (params.customExtraFields !== undefined)
+      payload.custom_extra_fields = params.customExtraFields;
     if (params.pickState !== undefined) payload.pick_state = params.pickState;
     if (params.packState !== undefined) payload.pack_state = params.packState;
     if (params.star !== undefined) payload.star = params.star;
@@ -256,7 +276,7 @@ export class BaseLinkerClient {
   async setOrderStatus(orderId: number, statusId: number): Promise<any> {
     return this.request('setOrderStatus', {
       order_id: orderId,
-      status_id: statusId,
+      status_id: statusId
     });
   }
 
@@ -294,7 +314,7 @@ export class BaseLinkerClient {
       price_brutto: params.priceBrutto,
       tax_rate: params.taxRate,
       quantity: params.quantity,
-      weight: params.weight,
+      weight: params.weight
     });
   }
 
@@ -319,7 +339,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     let payload: Record<string, any> = {
       order_id: params.orderId,
-      order_product_id: params.orderProductId,
+      order_product_id: params.orderProductId
     };
     if (params.storage !== undefined) payload.storage = params.storage;
     if (params.storageId !== undefined) payload.storage_id = params.storageId;
@@ -342,7 +362,7 @@ export class BaseLinkerClient {
   async deleteOrderProduct(orderId: number, orderProductId: number): Promise<any> {
     return this.request('deleteOrderProduct', {
       order_id: orderId,
-      order_product_id: orderProductId,
+      order_product_id: orderProductId
     });
   }
 
@@ -356,7 +376,7 @@ export class BaseLinkerClient {
       order_id: params.orderId,
       payment_done: params.paymentDone,
       payment_date: params.paymentDate,
-      payment_comment: params.paymentComment,
+      payment_comment: params.paymentComment
     });
   }
 
@@ -398,7 +418,7 @@ export class BaseLinkerClient {
       filter_stock_from: params.filterStockFrom,
       filter_stock_to: params.filterStockTo,
       filter_sort: params.filterSort,
-      page: params.page,
+      page: params.page
     });
   }
 
@@ -408,7 +428,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('getInventoryProductsData', {
       inventory_id: params.inventoryId,
-      products: params.products,
+      products: params.products
     });
   }
 
@@ -438,7 +458,7 @@ export class BaseLinkerClient {
     bundleProducts?: Record<string, number>;
   }): Promise<any> {
     let payload: Record<string, any> = {
-      inventory_id: params.inventoryId,
+      inventory_id: params.inventoryId
     };
     if (params.productId !== undefined) payload.product_id = params.productId;
     if (params.parentId !== undefined) payload.parent_id = params.parentId;
@@ -467,7 +487,7 @@ export class BaseLinkerClient {
 
   async deleteInventoryProduct(productId: number): Promise<any> {
     return this.request('deleteInventoryProduct', {
-      product_id: productId,
+      product_id: productId
     });
   }
 
@@ -477,7 +497,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('getInventoryProductsStock', {
       inventory_id: params.inventoryId,
-      page: params.page,
+      page: params.page
     });
   }
 
@@ -487,7 +507,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('updateInventoryProductsStock', {
       inventory_id: params.inventoryId,
-      products: params.products,
+      products: params.products
     });
   }
 
@@ -497,7 +517,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('getInventoryProductsPrices', {
       inventory_id: params.inventoryId,
-      page: params.page,
+      page: params.page
     });
   }
 
@@ -507,13 +527,13 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('updateInventoryProductsPrices', {
       inventory_id: params.inventoryId,
-      products: params.products,
+      products: params.products
     });
   }
 
   async getInventoryCategories(inventoryId: number): Promise<any> {
     return this.request('getInventoryCategories', {
-      inventory_id: inventoryId,
+      inventory_id: inventoryId
     });
   }
 
@@ -527,13 +547,13 @@ export class BaseLinkerClient {
       inventory_id: params.inventoryId,
       category_id: params.categoryId,
       name: params.name,
-      parent_id: params.parentId,
+      parent_id: params.parentId
     });
   }
 
   async deleteInventoryCategory(categoryId: number): Promise<any> {
     return this.request('deleteInventoryCategory', {
-      category_id: categoryId,
+      category_id: categoryId
     });
   }
 
@@ -547,13 +567,13 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('addInventoryManufacturer', {
       manufacturer_id: params.manufacturerId,
-      name: params.name,
+      name: params.name
     });
   }
 
   async deleteInventoryManufacturer(manufacturerId: number): Promise<any> {
     return this.request('deleteInventoryManufacturer', {
-      manufacturer_id: manufacturerId,
+      manufacturer_id: manufacturerId
     });
   }
 
@@ -565,7 +585,7 @@ export class BaseLinkerClient {
 
   async getCourierFields(courierCode: string): Promise<any> {
     return this.request('getCourierFields', {
-      courier_code: courierCode,
+      courier_code: courierCode
     });
   }
 
@@ -581,7 +601,7 @@ export class BaseLinkerClient {
       courier_code: params.courierCode,
       account_id: params.accountId,
       fields: params.fields,
-      packages: params.packages,
+      packages: params.packages
     });
   }
 
@@ -597,12 +617,12 @@ export class BaseLinkerClient {
       courier_code: params.courierCode,
       account_id: params.accountId,
       fields: params.fields,
-      packages: params.packages?.map((p) => ({
+      packages: params.packages?.map(p => ({
         weight: p.weight,
         size_x: p.sizeX,
         size_y: p.sizeY,
-        size_z: p.sizeZ,
-      })),
+        size_z: p.sizeZ
+      }))
     });
   }
 
@@ -616,40 +636,42 @@ export class BaseLinkerClient {
       order_id: params.orderId,
       courier_code: params.courierCode,
       package_number: params.packageNumber,
-      pickup_date: params.pickupDate,
+      pickup_date: params.pickupDate
     });
   }
 
   async getLabel(courierCode: string, packageId: number): Promise<any> {
     return this.request('getLabel', {
       courier_code: courierCode,
-      package_id: packageId,
+      package_id: packageId
     });
   }
 
   async getOrderPackages(orderId: number): Promise<any> {
     return this.request('getOrderPackages', {
-      order_id: orderId,
+      order_id: orderId
     });
   }
 
   async getCourierPackagesStatusHistory(packageIds: number[]): Promise<any> {
     return this.request('getCourierPackagesStatusHistory', {
-      package_ids: packageIds,
+      package_ids: packageIds
     });
   }
 
   // ── Order Returns ──
 
-  async getOrderReturns(params: {
-    orderId?: number;
-    dateFrom?: number;
-    idFrom?: number;
-  } = {}): Promise<any> {
+  async getOrderReturns(
+    params: {
+      orderId?: number;
+      dateFrom?: number;
+      idFrom?: number;
+    } = {}
+  ): Promise<any> {
     return this.request('getOrderReturns', {
       order_id: params.orderId,
       date_from: params.dateFrom,
-      id_from: params.idFrom,
+      id_from: params.idFrom
     });
   }
 
@@ -670,10 +692,10 @@ export class BaseLinkerClient {
       order_id: params.orderId,
       reason_id: params.reasonId,
       admin_comments: params.adminComments,
-      products: params.products?.map((p) => ({
+      products: params.products?.map(p => ({
         order_product_id: p.orderProductId,
-        quantity: p.quantity,
-      })),
+        quantity: p.quantity
+      }))
     });
   }
 
@@ -690,21 +712,23 @@ export class BaseLinkerClient {
 
   async deleteOrderReturn(returnId: number): Promise<any> {
     return this.request('deleteOrderReturn', {
-      return_id: returnId,
+      return_id: returnId
     });
   }
 
   // ── Journal (Events) ──
 
-  async getJournalList(params: {
-    lastLogId?: number;
-    logsTypes?: number[];
-    orderId?: number;
-  } = {}): Promise<any> {
+  async getJournalList(
+    params: {
+      lastLogId?: number;
+      logsTypes?: number[];
+      orderId?: number;
+    } = {}
+  ): Promise<any> {
     return this.request('getJournalList', {
       last_log_id: params.lastLogId,
       logs_types: params.logsTypes,
-      order_id: params.orderId,
+      order_id: params.orderId
     });
   }
 
@@ -716,7 +740,7 @@ export class BaseLinkerClient {
 
   async getExternalStorageCategories(storageId: string): Promise<any> {
     return this.request('getExternalStorageCategories', {
-      storage_id: storageId,
+      storage_id: storageId
     });
   }
 
@@ -734,7 +758,7 @@ export class BaseLinkerClient {
       filter_sort: params.filterSort,
       filter_offset: params.filterOffset,
       filter_limit: params.filterLimit,
-      page: params.page,
+      page: params.page
     });
   }
 
@@ -744,7 +768,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('getExternalStorageProductsData', {
       storage_id: params.storageId,
-      products: params.products,
+      products: params.products
     });
   }
 
@@ -754,7 +778,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('getExternalStorageProductsQuantity', {
       storage_id: params.storageId,
-      page: params.page,
+      page: params.page
     });
   }
 
@@ -764,7 +788,7 @@ export class BaseLinkerClient {
   }): Promise<any> {
     return this.request('getExternalStorageProductsPrices', {
       storage_id: params.storageId,
-      page: params.page,
+      page: params.page
     });
   }
 }

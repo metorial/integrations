@@ -47,16 +47,19 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async updateCard(cardId: number, data: {
-    name?: string;
-    description?: string;
-    display?: string;
-    datasetQuery?: any;
-    collectionId?: number | null;
-    archived?: boolean;
-    visualizationSettings?: any;
-    enableEmbedding?: boolean;
-  }) {
+  async updateCard(
+    cardId: number,
+    data: {
+      name?: string;
+      description?: string;
+      display?: string;
+      datasetQuery?: any;
+      collectionId?: number | null;
+      archived?: boolean;
+      visualizationSettings?: any;
+      enableEmbedding?: boolean;
+    }
+  ) {
     let body: any = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -64,7 +67,8 @@ export class MetabaseClient {
     if (data.datasetQuery !== undefined) body.dataset_query = data.datasetQuery;
     if (data.collectionId !== undefined) body.collection_id = data.collectionId;
     if (data.archived !== undefined) body.archived = data.archived;
-    if (data.visualizationSettings !== undefined) body.visualization_settings = data.visualizationSettings;
+    if (data.visualizationSettings !== undefined)
+      body.visualization_settings = data.visualizationSettings;
     if (data.enableEmbedding !== undefined) body.enable_embedding = data.enableEmbedding;
 
     let response = await this.http.put(`/card/${cardId}`, body);
@@ -107,15 +111,18 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async updateDashboard(dashboardId: number, data: {
-    name?: string;
-    description?: string;
-    archived?: boolean;
-    collectionId?: number | null;
-    parameters?: any[];
-    enableEmbedding?: boolean;
-    embeddingParams?: any;
-  }) {
+  async updateDashboard(
+    dashboardId: number,
+    data: {
+      name?: string;
+      description?: string;
+      archived?: boolean;
+      collectionId?: number | null;
+      parameters?: any[];
+      enableEmbedding?: boolean;
+      embeddingParams?: any;
+    }
+  ) {
     let body: any = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -129,14 +136,17 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async addCardToDashboard(dashboardId: number, data: {
-    cardId: number;
-    row?: number;
-    col?: number;
-    sizeX?: number;
-    sizeY?: number;
-    parameterMappings?: any[];
-  }) {
+  async addCardToDashboard(
+    dashboardId: number,
+    data: {
+      cardId: number;
+      row?: number;
+      col?: number;
+      sizeX?: number;
+      sizeY?: number;
+      parameterMappings?: any[];
+    }
+  ) {
     let response = await this.http.post(`/dashboard/${dashboardId}/cards`, {
       cardId: data.cardId,
       row: data.row || 0,
@@ -155,11 +165,14 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async copyDashboard(dashboardId: number, data?: {
-    name?: string;
-    description?: string;
-    collectionId?: number | null;
-  }) {
+  async copyDashboard(
+    dashboardId: number,
+    data?: {
+      name?: string;
+      description?: string;
+      collectionId?: number | null;
+    }
+  ) {
     let response = await this.http.post(`/dashboard/${dashboardId}/copy`, {
       name: data?.name,
       description: data?.description,
@@ -185,12 +198,15 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async getCollectionItems(collectionId: number | string, params?: {
-    models?: string[];
-    archived?: boolean;
-    sortColumn?: string;
-    sortDirection?: string;
-  }) {
+  async getCollectionItems(
+    collectionId: number | string,
+    params?: {
+      models?: string[];
+      archived?: boolean;
+      sortColumn?: string;
+      sortDirection?: string;
+    }
+  ) {
     let response = await this.http.get(`/collection/${collectionId}/items`, {
       params: {
         models: params?.models,
@@ -217,13 +233,16 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async updateCollection(collectionId: number, data: {
-    name?: string;
-    description?: string;
-    archived?: boolean;
-    parentId?: number | null;
-    color?: string;
-  }) {
+  async updateCollection(
+    collectionId: number,
+    data: {
+      name?: string;
+      description?: string;
+      archived?: boolean;
+      parentId?: number | null;
+      color?: string;
+    }
+  ) {
     let body: any = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -329,13 +348,16 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async updateUser(userId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    groupIds?: number[];
-    isSuperuser?: boolean;
-  }) {
+  async updateUser(
+    userId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      groupIds?: number[];
+      isSuperuser?: boolean;
+    }
+  ) {
     let body: any = {};
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -454,13 +476,16 @@ export class MetabaseClient {
     return response.data;
   }
 
-  async updateAlert(alertId: number, data: {
-    alertCondition?: string;
-    alertFirstOnly?: boolean;
-    alertAboveGoal?: boolean;
-    channels?: any[];
-    archived?: boolean;
-  }) {
+  async updateAlert(
+    alertId: number,
+    data: {
+      alertCondition?: string;
+      alertFirstOnly?: boolean;
+      alertAboveGoal?: boolean;
+      channels?: any[];
+      archived?: boolean;
+    }
+  ) {
     let body: any = {};
     if (data.alertCondition !== undefined) body.alert_condition = data.alertCondition;
     if (data.alertFirstOnly !== undefined) body.alert_first_only = data.alertFirstOnly;

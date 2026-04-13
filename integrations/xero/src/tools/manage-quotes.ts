@@ -10,7 +10,7 @@ let lineItemSchema = z.object({
   accountCode: z.string().optional().describe('Account code'),
   taxType: z.string().optional().describe('Tax type code'),
   itemCode: z.string().optional().describe('Item code'),
-  discountRate: z.number().optional().describe('Discount percentage'),
+  discountRate: z.number().optional().describe('Discount percentage')
 });
 
 let quoteOutputSchema = z.object({
@@ -20,7 +20,10 @@ let quoteOutputSchema = z.object({
   title: z.string().optional().describe('Quote title'),
   summary: z.string().optional().describe('Quote summary'),
   terms: z.string().optional().describe('Quote terms'),
-  status: z.string().optional().describe('Status: DRAFT, SENT, ACCEPTED, DECLINED, INVOICED, DELETED'),
+  status: z
+    .string()
+    .optional()
+    .describe('Status: DRAFT, SENT, ACCEPTED, DECLINED, INVOICED, DELETED'),
   contactName: z.string().optional().describe('Contact name'),
   contactId: z.string().optional().describe('Contact ID'),
   date: z.string().optional().describe('Quote date'),
@@ -29,7 +32,7 @@ let quoteOutputSchema = z.object({
   totalTax: z.number().optional().describe('Total tax'),
   total: z.number().optional().describe('Total amount'),
   currencyCode: z.string().optional().describe('Currency code'),
-  updatedDate: z.string().optional().describe('Last updated timestamp'),
+  updatedDate: z.string().optional().describe('Last updated timestamp')
 });
 
 let mapQuote = (q: any) => ({
@@ -48,33 +51,35 @@ let mapQuote = (q: any) => ({
   totalTax: q.TotalTax,
   total: q.Total,
   currencyCode: q.CurrencyCode,
-  updatedDate: q.UpdatedDateUTC,
+  updatedDate: q.UpdatedDateUTC
 });
 
-export let createQuote = SlateTool.create(
-  spec,
-  {
-    name: 'Create Quote',
-    key: 'create_quote',
-    description: `Creates a new quote (estimate) in Xero. Quotes can be sent to contacts for approval, then converted to invoices once accepted.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('Contact ID for the quote'),
-    lineItems: z.array(lineItemSchema).min(1).describe('Line items for the quote'),
-    date: z.string().optional().describe('Quote date (YYYY-MM-DD)'),
-    expiryDate: z.string().optional().describe('Expiry date (YYYY-MM-DD)'),
-    title: z.string().optional().describe('Quote title'),
-    summary: z.string().optional().describe('Quote summary'),
-    terms: z.string().optional().describe('Terms and conditions'),
-    reference: z.string().optional().describe('Reference'),
-    status: z.enum(['DRAFT', 'SENT']).optional().describe('Initial status'),
-    lineAmountTypes: z.enum(['Exclusive', 'Inclusive', 'NoTax']).optional().describe('How amounts are calculated'),
-    currencyCode: z.string().optional().describe('Currency code'),
-  }))
+export let createQuote = SlateTool.create(spec, {
+  name: 'Create Quote',
+  key: 'create_quote',
+  description: `Creates a new quote (estimate) in Xero. Quotes can be sent to contacts for approval, then converted to invoices once accepted.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('Contact ID for the quote'),
+      lineItems: z.array(lineItemSchema).min(1).describe('Line items for the quote'),
+      date: z.string().optional().describe('Quote date (YYYY-MM-DD)'),
+      expiryDate: z.string().optional().describe('Expiry date (YYYY-MM-DD)'),
+      title: z.string().optional().describe('Quote title'),
+      summary: z.string().optional().describe('Quote summary'),
+      terms: z.string().optional().describe('Terms and conditions'),
+      reference: z.string().optional().describe('Reference'),
+      status: z.enum(['DRAFT', 'SENT']).optional().describe('Initial status'),
+      lineAmountTypes: z
+        .enum(['Exclusive', 'Inclusive', 'NoTax'])
+        .optional()
+        .describe('How amounts are calculated'),
+      currencyCode: z.string().optional().describe('Currency code')
+    })
+  )
   .output(quoteOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let quote = await client.createQuote({
@@ -86,7 +91,7 @@ export let createQuote = SlateTool.create(
         AccountCode: li.accountCode,
         TaxType: li.taxType,
         ItemCode: li.itemCode,
-        DiscountRate: li.discountRate,
+        DiscountRate: li.discountRate
       })),
       Date: ctx.input.date,
       ExpiryDate: ctx.input.expiryDate,
@@ -96,43 +101,50 @@ export let createQuote = SlateTool.create(
       Reference: ctx.input.reference,
       Status: ctx.input.status || 'DRAFT',
       LineAmountTypes: ctx.input.lineAmountTypes,
-      CurrencyCode: ctx.input.currencyCode,
+      CurrencyCode: ctx.input.currencyCode
     });
 
     let output = mapQuote(quote);
 
     return {
       output,
-      message: `Created quote **${output.quoteNumber || output.quoteId}** for **${output.total?.toFixed(2)} ${output.currencyCode || ''}** — ${output.contactName}.`,
+      message: `Created quote **${output.quoteNumber || output.quoteId}** for **${output.total?.toFixed(2)} ${output.currencyCode || ''}** — ${output.contactName}.`
     };
   })
   .build();
 
-export let listQuotes = SlateTool.create(
-  spec,
-  {
-    name: 'List Quotes',
-    key: 'list_quotes',
-    description: `Lists quotes from Xero with filtering options. Filter by status, contact, date range, or expiry date.`,
-    tags: { destructive: false, readOnly: true },
-  }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (starting from 1)'),
-    status: z.string().optional().describe('Filter by status: DRAFT, SENT, ACCEPTED, DECLINED, INVOICED, DELETED'),
-    contactId: z.string().optional().describe('Filter by contact ID'),
-    dateFrom: z.string().optional().describe('Start date filter (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('End date filter (YYYY-MM-DD)'),
-    expiryDateFrom: z.string().optional().describe('Expiry start date filter'),
-    expiryDateTo: z.string().optional().describe('Expiry end date filter'),
-    modifiedAfter: z.string().optional().describe('Only return quotes modified after this date (ISO 8601)'),
-    order: z.string().optional().describe('Order results'),
-  }))
-  .output(z.object({
-    quotes: z.array(quoteOutputSchema).describe('List of quotes'),
-    count: z.number().describe('Number of quotes returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listQuotes = SlateTool.create(spec, {
+  name: 'List Quotes',
+  key: 'list_quotes',
+  description: `Lists quotes from Xero with filtering options. Filter by status, contact, date range, or expiry date.`,
+  tags: { destructive: false, readOnly: true }
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (starting from 1)'),
+      status: z
+        .string()
+        .optional()
+        .describe('Filter by status: DRAFT, SENT, ACCEPTED, DECLINED, INVOICED, DELETED'),
+      contactId: z.string().optional().describe('Filter by contact ID'),
+      dateFrom: z.string().optional().describe('Start date filter (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('End date filter (YYYY-MM-DD)'),
+      expiryDateFrom: z.string().optional().describe('Expiry start date filter'),
+      expiryDateTo: z.string().optional().describe('Expiry end date filter'),
+      modifiedAfter: z
+        .string()
+        .optional()
+        .describe('Only return quotes modified after this date (ISO 8601)'),
+      order: z.string().optional().describe('Order results')
+    })
+  )
+  .output(
+    z.object({
+      quotes: z.array(quoteOutputSchema).describe('List of quotes'),
+      count: z.number().describe('Number of quotes returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let result = await client.getQuotes({
@@ -144,41 +156,43 @@ export let listQuotes = SlateTool.create(
       expiryDateFrom: ctx.input.expiryDateFrom,
       expiryDateTo: ctx.input.expiryDateTo,
       modifiedAfter: ctx.input.modifiedAfter,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
     let quotes = (result.Quotes || []).map(mapQuote);
 
     return {
       output: { quotes, count: quotes.length },
-      message: `Found **${quotes.length}** quote(s).`,
+      message: `Found **${quotes.length}** quote(s).`
     };
   })
   .build();
 
-export let updateQuote = SlateTool.create(
-  spec,
-  {
-    name: 'Update Quote',
-    key: 'update_quote',
-    description: `Updates an existing quote in Xero. Can modify status, line items, dates, and other details.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    quoteId: z.string().describe('The Xero quote ID to update'),
-    status: z.enum(['DRAFT', 'SENT', 'ACCEPTED', 'DECLINED', 'DELETED']).optional().describe('New status'),
-    contactId: z.string().optional().describe('New contact ID'),
-    lineItems: z.array(lineItemSchema).optional().describe('Replacement line items'),
-    date: z.string().optional().describe('New date'),
-    expiryDate: z.string().optional().describe('New expiry date'),
-    title: z.string().optional().describe('New title'),
-    summary: z.string().optional().describe('New summary'),
-    terms: z.string().optional().describe('New terms'),
-    reference: z.string().optional().describe('New reference'),
-  }))
+export let updateQuote = SlateTool.create(spec, {
+  name: 'Update Quote',
+  key: 'update_quote',
+  description: `Updates an existing quote in Xero. Can modify status, line items, dates, and other details.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      quoteId: z.string().describe('The Xero quote ID to update'),
+      status: z
+        .enum(['DRAFT', 'SENT', 'ACCEPTED', 'DECLINED', 'DELETED'])
+        .optional()
+        .describe('New status'),
+      contactId: z.string().optional().describe('New contact ID'),
+      lineItems: z.array(lineItemSchema).optional().describe('Replacement line items'),
+      date: z.string().optional().describe('New date'),
+      expiryDate: z.string().optional().describe('New expiry date'),
+      title: z.string().optional().describe('New title'),
+      summary: z.string().optional().describe('New summary'),
+      terms: z.string().optional().describe('New terms'),
+      reference: z.string().optional().describe('New reference')
+    })
+  )
   .output(quoteOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let updateData: Record<string, any> = {};
@@ -199,7 +213,7 @@ export let updateQuote = SlateTool.create(
         AccountCode: li.accountCode,
         TaxType: li.taxType,
         ItemCode: li.itemCode,
-        DiscountRate: li.discountRate,
+        DiscountRate: li.discountRate
       }));
     }
 
@@ -208,7 +222,7 @@ export let updateQuote = SlateTool.create(
 
     return {
       output,
-      message: `Updated quote **${output.quoteNumber || output.quoteId}** — Status: **${output.status}**.`,
+      message: `Updated quote **${output.quoteNumber || output.quoteId}** — Status: **${output.status}**.`
     };
   })
   .build();

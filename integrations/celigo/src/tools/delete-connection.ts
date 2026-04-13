@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteConnection = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Connection',
-    key: 'delete_connection',
-    description: `Permanently delete a connection from your Celigo account. This cannot be undone.`,
-    tags: {
-      destructive: true
-    }
+export let deleteConnection = SlateTool.create(spec, {
+  name: 'Delete Connection',
+  key: 'delete_connection',
+  description: `Permanently delete a connection from your Celigo account. This cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    connectionId: z.string().describe('ID of the connection to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the connection was successfully deleted'),
-    connectionId: z.string().describe('ID of the deleted connection')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      connectionId: z.string().describe('ID of the connection to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the connection was successfully deleted'),
+      connectionId: z.string().describe('ID of the deleted connection')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       region: ctx.config.region

@@ -3,32 +3,31 @@ import { L2sClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUserSettings = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Settings',
-    key: 'get_user_settings',
-    description: `Retrieve the authenticated user's account settings and configuration from L2S.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getUserSettings = SlateTool.create(spec, {
+  name: 'Get User Settings',
+  key: 'get_user_settings',
+  description: `Retrieve the authenticated user's account settings and configuration from L2S.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    settings: z.any().describe('User account settings and configuration'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      settings: z.any().describe('User account settings and configuration')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new L2sClient({ token: ctx.auth.token });
 
     let settings = await client.getUserSettings();
 
     return {
       output: {
-        settings,
+        settings
       },
-      message: `Retrieved user settings.`,
+      message: `Retrieved user settings.`
     };
   })
   .build();

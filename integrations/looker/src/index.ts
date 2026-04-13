@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   runQuery,
@@ -17,13 +16,9 @@ import {
   listModels,
   manageConnection,
   createEmbedUrl,
-  validateContent,
+  validateContent
 } from './tools';
-import {
-  dashboardActivity,
-  lookActivity,
-  inboundWebhook,
-} from './triggers';
+import { dashboardActivity, lookActivity, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,11 +38,7 @@ export let provider = Slate.create({
     listModels,
     manageConnection,
     createEmbedUrl,
-    validateContent,
+    validateContent
   ],
-  triggers: [
-    inboundWebhook,
-    dashboardActivity,
-    lookActivity,
-  ],
+  triggers: [inboundWebhook, dashboardActivity, lookActivity]
 });

@@ -8,7 +8,7 @@ import {
   locationMetadataTool,
   reverseGeocodeTool,
   verifyEmailTool,
-  verifyPhoneTool,
+  verifyPhoneTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     locationMetadataTool,
     reverseGeocodeTool,
     verifyEmailTool,
-    verifyPhoneTool,
+    verifyPhoneTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

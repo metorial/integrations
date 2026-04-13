@@ -3,46 +3,45 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let productWebhookTopics = [
-  'products/create',
-  'products/update',
-  'products/delete'
-] as const;
+let productWebhookTopics = ['products/create', 'products/update', 'products/delete'] as const;
 
-export let productEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Product Events',
-    key: 'product_events',
-    description: 'Triggers when products are created, updated, or deleted in the Shopify store.'
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic that fired'),
-    productId: z.string().describe('Shopify product ID'),
-    payload: z.any().describe('Raw product payload from Shopify')
-  }))
-  .output(z.object({
-    productId: z.string(),
-    title: z.string(),
-    vendor: z.string(),
-    productType: z.string(),
-    handle: z.string(),
-    status: z.string(),
-    tags: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    variantCount: z.number(),
-    variants: z.array(z.object({
-      variantId: z.string(),
+export let productEvents = SlateTrigger.create(spec, {
+  name: 'Product Events',
+  key: 'product_events',
+  description: 'Triggers when products are created, updated, or deleted in the Shopify store.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic that fired'),
+      productId: z.string().describe('Shopify product ID'),
+      payload: z.any().describe('Raw product payload from Shopify')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string(),
       title: z.string(),
-      price: z.string(),
-      sku: z.string().nullable(),
-      inventoryQuantity: z.number()
-    }))
-  }))
+      vendor: z.string(),
+      productType: z.string(),
+      handle: z.string(),
+      status: z.string(),
+      tags: z.string(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      variantCount: z.number(),
+      variants: z.array(
+        z.object({
+          variantId: z.string(),
+          title: z.string(),
+          price: z.string(),
+          sku: z.string().nullable(),
+          inventoryQuantity: z.number()
+        })
+      )
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -63,7 +62,7 @@ export let productEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -80,25 +79,34 @@ export let productEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let topic = ctx.request.headers.get('x-shopify-topic') || 'products/update';
 
       return {
-        inputs: [{
-          topic,
-          productId: String(body.id),
-          payload: body
-        }]
+        inputs: [
+          {
+            topic,
+            productId: String(body.id),
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload;
       let topicParts = ctx.input.topic.split('/');
       let eventType = topicParts[1] || 'update';
       // Normalize Shopify's "update" to "updated" for consistency
-      let normalizedType = eventType === 'update' ? 'updated' : eventType === 'create' ? 'created' : eventType === 'delete' ? 'deleted' : eventType;
+      let normalizedType =
+        eventType === 'update'
+          ? 'updated'
+          : eventType === 'create'
+            ? 'created'
+            : eventType === 'delete'
+              ? 'deleted'
+              : eventType;
 
       return {
         type: `product.${normalizedType}`,
@@ -124,4 +132,5 @@ export let productEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

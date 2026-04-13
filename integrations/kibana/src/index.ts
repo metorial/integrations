@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchSavedObjects,
@@ -27,11 +26,7 @@ import {
   manageRole,
   getKibanaStatus
 } from './tools';
-import {
-  ruleStatusChanges,
-  caseChanges,
-  inboundWebhook,
-} from './triggers';
+import { ruleStatusChanges, caseChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -61,9 +56,5 @@ export let provider = Slate.create({
     manageRole,
     getKibanaStatus
   ],
-  triggers: [
-    inboundWebhook,
-    ruleStatusChanges,
-    caseChanges
-  ]
+  triggers: [inboundWebhook, ruleStatusChanges, caseChanges]
 });

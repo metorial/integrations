@@ -39,30 +39,39 @@ The Sign In With Coinbase API supports the OAuth2 protocol so that developers ca
 ## Features
 
 ### Account Management
+
 View and manage cryptocurrency wallets and accounts on Coinbase. List all accounts, check balances per currency, and create or update wallets. Each account represents a different currency wallet.
 
 ### Trading (Advanced Trade)
+
 Automate market, limit, and stop-limit orders by building with the REST API. Supports trading in over 550 markets, including 237 USDC pairs. Manage orders (create, cancel, list), view order history, and access portfolio details. Permission levels can be set to View, Trade, or Transfer.
 
 ### Transactions
+
 Send and receive cryptocurrency. Create transactions to send crypto to external addresses or other Coinbase users. View transaction history including buys, sells, sends, receives, deposits, and withdrawals. Transactions involving sends may require two-factor authentication.
 
 ### Buy, Sell, Deposit, and Withdraw
+
 Programmatically buy and sell cryptocurrency using linked payment methods. Deposit fiat currency from bank accounts and withdraw fiat to bank accounts. Supports multiple fiat currencies.
 
 ### Market Data
+
 Market Data APIs are public and do not require authentication. Access real-time and historical prices, exchange rates, order books, and product/trading pair information. Retrieve spot prices, buy/sell prices, and currency information.
 
 ### Coinbase Commerce (Payments)
+
 Accept cryptocurrency payments from customers. Create charges and checkouts for goods and services. Supports fixed-price and donation-style payments. Track payment status through charge lifecycle states (NEW, PENDING, COMPLETED, EXPIRED, etc.).
 
 ### Onchain Data
+
 Access onchain data like balances, balance history and transaction history directly in your app. Query blockchain data across supported networks.
 
 ### Real-Time Market Data (WebSocket)
+
 Coinbase provides a WebSocket feed that enables developers to stream live market data in real-time. Subscribe to channels for ticker updates, order book snapshots, trade executions, and user-level order/fill updates. Filter by product IDs (trading pairs).
 
 ### User Profile
+
 Retrieve the authenticated user's profile information including name, email, time zone, native currency, and avatar. Access current user's payment methods.
 
 ## Events
@@ -70,6 +79,7 @@ Retrieve the authenticated user's profile information including name, email, tim
 Coinbase supports webhooks across multiple products:
 
 ### Coinbase App Notifications (Account Webhooks)
+
 Notifications are sent as HTTP POST requests (webhooks) to a notification endpoint which you can set in your OAuth application or API key settings. Once configured, you receive notifications instantly as events are created for your account.
 
 - Covers account-level events such as new transactions (sends, receives, buys, sells), wallet creation, and address-related events.
@@ -78,12 +88,14 @@ Notifications are sent as HTTP POST requests (webhooks) to a notification endpoi
 - Webhook payloads are signed with an RSA key; verify using the `CB-SIGNATURE` header.
 
 ### Coinbase Commerce Webhooks (Payment Events)
+
 Webhooks for crypto payment processing, notifying you of charge lifecycle events like creation, confirmation, and failure.
 
 - Event types include: `charge:created`, `charge:confirmed`, `charge:failed`, `charge:pending`, `charge:delayed`, `charge:resolved`.
 - Webhook payloads are signed, and you should verify the signature to ensure the webhook is genuine. Verification uses the `X-CC-Webhook-Signature` header with HMAC-SHA256.
 
 ### CDP Onchain Webhooks
+
 Real-time notifications for onchain activity such as ERC-20 transfers, NFT movements, and smart contract events on Base and other supported networks.
 
 - Primary event type: `onchain.activity.detected`.

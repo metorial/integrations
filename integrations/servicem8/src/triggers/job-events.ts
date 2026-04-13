@@ -21,34 +21,38 @@ let EVENT_TYPES = [
   'job.invoice_paid',
   'job.quote_sent',
   'job.quote_accepted',
-  'job.review_received',
+  'job.review_received'
 ] as const;
 
-export let jobEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Events',
-    key: 'job_events',
-    description: 'Triggers when job-level events occur in ServiceM8, such as job creation, completion, status changes, check-ins, invoicing, and quoting.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of job event (e.g. job.created, job.completed)'),
-    eventPayload: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    jobUuid: z.string().describe('UUID of the affected job'),
-    eventName: z.string().describe('Name of the event that occurred'),
-    generatedJobId: z.string().optional().describe('Human-readable job number'),
-    status: z.string().optional().describe('Current job status'),
-    description: z.string().optional().describe('Job description'),
-    jobAddress: z.string().optional().describe('Job address'),
-    companyUuid: z.string().optional().describe('UUID of the associated client'),
-    totalPrice: z.string().optional().describe('Job total price'),
-    editDate: z.string().optional().describe('Last modified timestamp'),
-  }))
+export let jobEvents = SlateTrigger.create(spec, {
+  name: 'Job Events',
+  key: 'job_events',
+  description:
+    'Triggers when job-level events occur in ServiceM8, such as job creation, completion, status changes, check-ins, invoicing, and quoting.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The type of job event (e.g. job.created, job.completed)'),
+      eventPayload: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      jobUuid: z.string().describe('UUID of the affected job'),
+      eventName: z.string().describe('Name of the event that occurred'),
+      generatedJobId: z.string().optional().describe('Human-readable job number'),
+      status: z.string().optional().describe('Current job status'),
+      description: z.string().optional().describe('Job description'),
+      jobAddress: z.string().optional().describe('Job address'),
+      companyUuid: z.string().optional().describe('UUID of the associated client'),
+      totalPrice: z.string().optional().describe('Job total price'),
+      editDate: z.string().optional().describe('Last modified timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let webhookClient = new WebhookClient({ token: ctx.auth.token });
       let registeredEvents: string[] = [];
 
@@ -57,7 +61,7 @@ export let jobEvents = SlateTrigger.create(
           await webhookClient.subscribeEventWebhook({
             event,
             callbackUrl: ctx.input.webhookBaseUrl,
-            uniqueId: `slates_job_events`,
+            uniqueId: `slates_job_events`
           });
           registeredEvents.push(event);
         } catch {
@@ -66,20 +70,23 @@ export let jobEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registeredEvents, callbackUrl: ctx.input.webhookBaseUrl },
+        registrationDetails: { registeredEvents, callbackUrl: ctx.input.webhookBaseUrl }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let webhookClient = new WebhookClient({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registeredEvents: string[]; callbackUrl: string };
+      let details = ctx.input.registrationDetails as {
+        registeredEvents: string[];
+        callbackUrl: string;
+      };
 
       for (let event of details.registeredEvents) {
         try {
           await webhookClient.unsubscribeEventWebhook({
             event,
             callbackUrl: details.callbackUrl,
-            uniqueId: `slates_job_events`,
+            uniqueId: `slates_job_events`
           });
         } catch {
           // Best effort cleanup
@@ -87,7 +94,7 @@ export let jobEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -101,8 +108,8 @@ export let jobEvents = SlateTrigger.create(
           inputs: [],
           response: new Response(body.challenge, {
             status: 200,
-            headers: { 'Content-Type': 'text/plain' },
-          }),
+            headers: { 'Content-Type': 'text/plain' }
+          })
         };
       }
 
@@ -115,14 +122,16 @@ export let jobEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType: eventName,
-          eventPayload: body,
-        }],
+        inputs: [
+          {
+            eventType: eventName,
+            eventPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.eventPayload;
       let eventType = ctx.input.eventType;
       let jobUuid = payload?.data?.uuid || payload?.entry?.[0]?.uuid || payload?.uuid || '';
@@ -150,8 +159,9 @@ export let jobEvents = SlateTrigger.create(
           jobAddress: job.job_address,
           companyUuid: job.company_uuid,
           totalPrice: job.total_price,
-          editDate: job.edit_date,
-        },
+          editDate: job.edit_date
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

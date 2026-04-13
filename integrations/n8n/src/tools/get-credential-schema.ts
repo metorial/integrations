@@ -3,24 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCredentialSchema = SlateTool.create(
-  spec,
-  {
-    name: 'Get Credential Schema',
-    key: 'get_credential_schema',
-    description: `Retrieve the JSON schema for a specific credential type. This is useful for understanding the required fields and their types before creating a credential.`,
-    tags: {
-      readOnly: true
-    }
+export let getCredentialSchema = SlateTool.create(spec, {
+  name: 'Get Credential Schema',
+  key: 'get_credential_schema',
+  description: `Retrieve the JSON schema for a specific credential type. This is useful for understanding the required fields and their types before creating a credential.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    credentialTypeName: z.string().describe('The credential type name (e.g. "slackApi", "githubApi", "googleSheetsOAuth2Api")')
-  }))
-  .output(z.object({
-    schema: z.any().describe('JSON schema describing the credential fields and their types')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      credentialTypeName: z
+        .string()
+        .describe(
+          'The credential type name (e.g. "slackApi", "githubApi", "googleSheetsOAuth2Api")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      schema: z.any().describe('JSON schema describing the credential fields and their types')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
       token: ctx.auth.token

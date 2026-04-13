@@ -12,7 +12,7 @@ import {
   getAirQualityTool,
   snapToRoadsTool,
   generateStaticMapTool,
-  geolocateTool,
+  geolocateTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     getAirQualityTool,
     snapToRoadsTool,
     generateStaticMapTool,
-    geolocateTool,
+    geolocateTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

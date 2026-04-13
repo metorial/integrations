@@ -13,10 +13,7 @@ import {
   manageSharing,
   getColors
 } from './tools';
-import {
-  eventChanges,
-  calendarListChanges
-} from './triggers';
+import { eventChanges, calendarListChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,8 +30,5 @@ export let provider = Slate.create({
     manageSharing,
     getColors
   ],
-  triggers: [
-    eventChanges,
-    calendarListChanges
-  ]
+  triggers: [eventChanges, calendarListChanges]
 });

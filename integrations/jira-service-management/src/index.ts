@@ -17,13 +17,9 @@ import {
   manageCustomerTool,
   searchKnowledgeBaseTool,
   listProjectsTool,
-  searchUsersTool,
+  searchUsersTool
 } from './tools';
-import {
-  issueEventsTrigger,
-  commentEventsTrigger,
-  projectEventsTrigger,
-} from './triggers';
+import { issueEventsTrigger, commentEventsTrigger, projectEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -44,11 +40,7 @@ export let provider = Slate.create({
     manageCustomerTool,
     searchKnowledgeBaseTool,
     listProjectsTool,
-    searchUsersTool,
+    searchUsersTool
   ],
-  triggers: [
-    issueEventsTrigger,
-    commentEventsTrigger,
-    projectEventsTrigger,
-  ],
+  triggers: [issueEventsTrigger, commentEventsTrigger, projectEventsTrigger]
 });

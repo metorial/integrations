@@ -15,25 +15,26 @@ let sectionSchema = z.object({
   updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listSections = SlateTool.create(
-  spec,
-  {
-    name: 'List Sections',
-    key: 'list_sections',
-    description: `Retrieve reusable content sections saved to the Bidsketch library. These template sections can be added to proposals as opening or closing content. Supports pagination.`,
-    tags: {
-      readOnly: true
-    }
+export let listSections = SlateTool.create(spec, {
+  name: 'List Sections',
+  key: 'list_sections',
+  description: `Retrieve reusable content sections saved to the Bidsketch library. These template sections can be added to proposals as opening or closing content. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of sections per page (max 100)')
-  }))
-  .output(z.object({
-    sections: z.array(sectionSchema).describe('List of reusable sections')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of sections per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      sections: z.array(sectionSchema).describe('List of reusable sections')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
     let data = await client.listSections(ctx.input.page, ctx.input.perPage);
 
@@ -56,25 +57,24 @@ export let listSections = SlateTool.create(
   })
   .build();
 
-export let createSection = SlateTool.create(
-  spec,
-  {
-    name: 'Create Section',
-    key: 'create_section',
-    description: `Create a new reusable content section in the Bidsketch library. Sections can be of type "opening" (shown before fees) or "closing" (shown after fees).`,
-    instructions: [
-      'Use HTML in the description for rich text formatting.'
-    ]
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Section name'),
-    sectionType: z.enum(['opening', 'closing']).describe('Section type: opening (before fees) or closing (after fees)'),
-    category: z.string().optional().describe('Category for grouping'),
-    description: z.string().optional().describe('Section content (HTML supported)')
-  }))
+export let createSection = SlateTool.create(spec, {
+  name: 'Create Section',
+  key: 'create_section',
+  description: `Create a new reusable content section in the Bidsketch library. Sections can be of type "opening" (shown before fees) or "closing" (shown after fees).`,
+  instructions: ['Use HTML in the description for rich text formatting.']
+})
+  .input(
+    z.object({
+      name: z.string().describe('Section name'),
+      sectionType: z
+        .enum(['opening', 'closing'])
+        .describe('Section type: opening (before fees) or closing (after fees)'),
+      category: z.string().optional().describe('Category for grouping'),
+      description: z.string().optional().describe('Section content (HTML supported)')
+    })
+  )
   .output(sectionSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let body: Record<string, unknown> = {
@@ -104,26 +104,25 @@ export let createSection = SlateTool.create(
   })
   .build();
 
-export let updateSection = SlateTool.create(
-  spec,
-  {
-    name: 'Update Section',
-    key: 'update_section',
-    description: `Update an existing reusable content section in the Bidsketch library. Only the provided fields will be modified.`,
-    tags: {
-      destructive: false
-    }
+export let updateSection = SlateTool.create(spec, {
+  name: 'Update Section',
+  key: 'update_section',
+  description: `Update an existing reusable content section in the Bidsketch library. Only the provided fields will be modified.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    sectionId: z.number().describe('ID of the section to update'),
-    name: z.string().optional().describe('Updated name'),
-    sectionType: z.enum(['opening', 'closing']).optional().describe('Updated section type'),
-    category: z.string().optional().describe('Updated category'),
-    description: z.string().optional().describe('Updated content (HTML)')
-  }))
+})
+  .input(
+    z.object({
+      sectionId: z.number().describe('ID of the section to update'),
+      name: z.string().optional().describe('Updated name'),
+      sectionType: z.enum(['opening', 'closing']).optional().describe('Updated section type'),
+      category: z.string().optional().describe('Updated category'),
+      description: z.string().optional().describe('Updated content (HTML)')
+    })
+  )
   .output(sectionSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let body: Record<string, unknown> = {};
@@ -151,24 +150,25 @@ export let updateSection = SlateTool.create(
   })
   .build();
 
-export let deleteSection = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Section',
-    key: 'delete_section',
-    description: `Delete a reusable content section from the Bidsketch library.`,
-    tags: {
-      destructive: true
-    }
+export let deleteSection = SlateTool.create(spec, {
+  name: 'Delete Section',
+  key: 'delete_section',
+  description: `Delete a reusable content section from the Bidsketch library.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    sectionId: z.number().describe('ID of the section to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sectionId: z.number().describe('ID of the section to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
     await client.deleteSection(ctx.input.sectionId);
 

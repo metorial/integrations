@@ -29,7 +29,7 @@ import {
   addHeaderFooter,
   createImagesFromPdf,
   classifyDocument,
-  runWorkflow,
+  runWorkflow
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -65,9 +65,7 @@ export let provider = Slate.create({
     addHeaderFooter,
     createImagesFromPdf,
     classifyDocument,
-    runWorkflow,
+    runWorkflow
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

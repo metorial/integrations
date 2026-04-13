@@ -16,37 +16,39 @@ let trackingEventSchema = z.object({
   statusDescription: z.string().optional().describe('Status description')
 });
 
-export let trackingTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Tracking Update',
-    key: 'tracking_update',
-    description: 'Fires when a tracking status changes for a package (e.g., accepted, in transit, delivered, exception).'
-  }
-)
-  .input(z.object({
-    resourceUrl: z.string().optional().describe('URL to the tracking resource'),
-    trackingNumber: z.string().describe('Tracking number'),
-    statusCode: z.string().describe('Current status code'),
-    carrierStatusCode: z.string().optional().describe('Carrier-specific status code'),
-    statusDescription: z.string().optional().describe('Status description'),
-    carrierCode: z.string().optional().describe('Carrier code'),
-    estimatedDeliveryDate: z.string().optional().describe('Estimated delivery date'),
-    actualDeliveryDate: z.string().optional().describe('Actual delivery date'),
-    events: z.array(z.any()).optional().describe('Raw tracking events')
-  }))
-  .output(z.object({
-    trackingNumber: z.string().describe('Tracking number'),
-    statusCode: z.string().describe('Current status code (e.g., AC, IT, DE, EX, UN, AT)'),
-    statusDescription: z.string().describe('Human-readable status description'),
-    carrierCode: z.string().optional().describe('Carrier code'),
-    carrierStatusCode: z.string().optional().describe('Carrier-specific status code'),
-    estimatedDeliveryDate: z.string().optional().describe('Estimated delivery date'),
-    actualDeliveryDate: z.string().optional().describe('Actual delivery date'),
-    events: z.array(trackingEventSchema).describe('Tracking event history')
-  }))
+export let trackingTrigger = SlateTrigger.create(spec, {
+  name: 'Tracking Update',
+  key: 'tracking_update',
+  description:
+    'Fires when a tracking status changes for a package (e.g., accepted, in transit, delivered, exception).'
+})
+  .input(
+    z.object({
+      resourceUrl: z.string().optional().describe('URL to the tracking resource'),
+      trackingNumber: z.string().describe('Tracking number'),
+      statusCode: z.string().describe('Current status code'),
+      carrierStatusCode: z.string().optional().describe('Carrier-specific status code'),
+      statusDescription: z.string().optional().describe('Status description'),
+      carrierCode: z.string().optional().describe('Carrier code'),
+      estimatedDeliveryDate: z.string().optional().describe('Estimated delivery date'),
+      actualDeliveryDate: z.string().optional().describe('Actual delivery date'),
+      events: z.array(z.any()).optional().describe('Raw tracking events')
+    })
+  )
+  .output(
+    z.object({
+      trackingNumber: z.string().describe('Tracking number'),
+      statusCode: z.string().describe('Current status code (e.g., AC, IT, DE, EX, UN, AT)'),
+      statusDescription: z.string().describe('Human-readable status description'),
+      carrierCode: z.string().optional().describe('Carrier code'),
+      carrierStatusCode: z.string().optional().describe('Carrier-specific status code'),
+      estimatedDeliveryDate: z.string().optional().describe('Estimated delivery date'),
+      actualDeliveryDate: z.string().optional().describe('Actual delivery date'),
+      events: z.array(trackingEventSchema).describe('Tracking event history')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -64,7 +66,7 @@ export let trackingTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -73,28 +75,30 @@ export let trackingTrigger = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let trackingNumber = data?.data?.tracking_number ?? data?.tracking_number ?? '';
       let statusCode = data?.data?.status_code ?? data?.status_code ?? '';
 
       return {
-        inputs: [{
-          resourceUrl: data?.resource_url ?? '',
-          trackingNumber,
-          statusCode,
-          carrierStatusCode: data?.data?.carrier_status_code,
-          statusDescription: data?.data?.status_description ?? data?.status_description,
-          carrierCode: data?.data?.carrier_code,
-          estimatedDeliveryDate: data?.data?.estimated_delivery_date,
-          actualDeliveryDate: data?.data?.actual_delivery_date,
-          events: data?.data?.events ?? []
-        }]
+        inputs: [
+          {
+            resourceUrl: data?.resource_url ?? '',
+            trackingNumber,
+            statusCode,
+            carrierStatusCode: data?.data?.carrier_status_code,
+            statusDescription: data?.data?.status_description ?? data?.status_description,
+            carrierCode: data?.data?.carrier_code,
+            estimatedDeliveryDate: data?.data?.estimated_delivery_date,
+            actualDeliveryDate: data?.data?.actual_delivery_date,
+            events: data?.data?.events ?? []
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let events = (ctx.input.events || []).map((e: any) => ({
         occurredAt: e.occurred_at ?? '',
         description: e.description ?? '',
@@ -123,4 +127,5 @@ export let trackingTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

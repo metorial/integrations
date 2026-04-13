@@ -11,6 +11,7 @@ Scale AI uses **HTTP Basic Authentication** with an API key.
 Basic Auth puts the username and password together separated by a colon (username:password). Because Scale doesn't have a password, the value is simply the API key followed by a trailing colon (e.g., `live_ScaleRocks:`). This string is then Base64-encoded and sent in the `Authorization` header as `Basic <encoded_string>`.
 
 Example using curl:
+
 ```
 curl "https://api.scale.com/v1/tasks" -u "YOUR_API_KEY:"
 ```

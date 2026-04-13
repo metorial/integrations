@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Bearer token for API authentication'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Bearer token for API authentication')
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth (Client Credentials)',
@@ -14,10 +16,10 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('OAuth Client ID'),
-      clientSecret: z.string().describe('OAuth Client Secret'),
+      clientSecret: z.string().describe('OAuth Client Secret')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       // Client credentials flow does not have a user-facing authorization URL.
       // We handle token acquisition in handleCallback directly.
       // Return a redirect back to our own callback URL with the state.
@@ -25,41 +27,41 @@ export let auth = SlateAuth.create()
       return { url };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let api = createAxios({ baseURL: 'https://api.piggy.eu' });
 
       let response = await api.post('/oauth/token', {
         grant_type: 'client_credentials',
         client_id: ctx.input.clientId,
-        client_secret: ctx.input.clientSecret,
+        client_secret: ctx.input.clientSecret
       });
 
       let tokenData = response.data;
 
       return {
         output: {
-          token: tokenData.access_token,
-        },
+          token: tokenData.access_token
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let api = createAxios({ baseURL: 'https://api.piggy.eu' });
 
       let response = await api.post('/oauth/token', {
         grant_type: 'client_credentials',
         client_id: ctx.input.clientId,
-        client_secret: ctx.input.clientSecret,
+        client_secret: ctx.input.clientSecret
       });
 
       let tokenData = response.data;
 
       return {
         output: {
-          token: tokenData.access_token,
-        },
+          token: tokenData.access_token
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -67,14 +69,16 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal Access Token or Register API key from the Piggy dashboard'),
+      token: z
+        .string()
+        .describe('Personal Access Token or Register API key from the Piggy dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   });

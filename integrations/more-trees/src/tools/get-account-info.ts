@@ -3,35 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccountInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account_info',
-    description: `Retrieve your More Trees account details including account name, credit balance, forest name, and forest slug. Uses the account code from configuration to look up your account.`,
-    tags: {
-      readOnly: true,
-    },
+export let getAccountInfo = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account_info',
+  description: `Retrieve your More Trees account details including account name, credit balance, forest name, and forest slug. Uses the account code from configuration to look up your account.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accountName: z.string().describe('Name of the account'),
-    creditBalance: z.number().describe('Current credit balance'),
-    forestName: z.string().describe('Name of the forest associated with this account'),
-    forestSlug: z.string().describe('URL slug of the forest'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountName: z.string().describe('Name of the account'),
+      creditBalance: z.number().describe('Current credit balance'),
+      forestName: z.string().describe('Name of the forest associated with this account'),
+      forestSlug: z.string().describe('URL slug of the forest')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      publicValidationKey: ctx.auth.publicValidationKey,
+      publicValidationKey: ctx.auth.publicValidationKey
     });
 
     let account = await client.getAccountInfo(ctx.config.accountCode);
 
     return {
       output: account,
-      message: `Account **${account.accountName}** has **${account.creditBalance}** credits remaining. Forest: **${account.forestName}** (\`${account.forestSlug}\`).`,
+      message: `Account **${account.accountName}** has **${account.creditBalance}** credits remaining. Forest: **${account.forestName}** (\`${account.forestSlug}\`).`
     };
   })
   .build();

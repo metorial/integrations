@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listOrganizations,
@@ -22,11 +21,7 @@ import {
   managePixel,
   getFundingSources
 } from './tools';
-import {
-  campaignStatusChange,
-  adStatusChange,
-  inboundWebhook,
-} from './triggers';
+import { campaignStatusChange, adStatusChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,9 +46,5 @@ export let provider = Slate.create({
     managePixel,
     getFundingSources
   ],
-  triggers: [
-    inboundWebhook,
-    campaignStatusChange,
-    adStatusChange
-  ]
+  triggers: [inboundWebhook, campaignStatusChange, adStatusChange]
 });

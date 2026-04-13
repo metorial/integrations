@@ -10,7 +10,7 @@ import type {
   AhaInitiative,
   AhaComment,
   AhaUser,
-  AhaTodo,
+  AhaTodo
 } from './types';
 
 export class AhaClient {
@@ -22,14 +22,17 @@ export class AhaClient {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
   // ─── Products ──────────────────────────────────────────────────
 
-  async listProducts(params?: { page?: number; perPage?: number }): Promise<{ products: AhaProduct[]; pagination: AhaPagination }> {
+  async listProducts(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<{ products: AhaProduct[]; pagination: AhaPagination }> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
@@ -45,12 +48,17 @@ export class AhaClient {
     return data.product;
   }
 
-  async createProduct(product: { name: string; prefix: string; description?: string; parentId?: string }): Promise<AhaProduct> {
+  async createProduct(product: {
+    name: string;
+    prefix: string;
+    description?: string;
+    parentId?: string;
+  }): Promise<AhaProduct> {
     let body: Record<string, any> = {
       product: {
         name: product.name,
-        reference_prefix: product.prefix,
-      },
+        reference_prefix: product.prefix
+      }
     };
     if (product.description) body.product.description = product.description;
     if (product.parentId) body.product.parent_id = product.parentId;
@@ -60,7 +68,10 @@ export class AhaClient {
     return data.product;
   }
 
-  async updateProduct(productId: string, updates: { name?: string; description?: string }): Promise<AhaProduct> {
+  async updateProduct(
+    productId: string,
+    updates: { name?: string; description?: string }
+  ): Promise<AhaProduct> {
     let body: Record<string, any> = { product: {} };
     if (updates.name !== undefined) body.product.name = updates.name;
     if (updates.description !== undefined) body.product.description = updates.description;
@@ -72,7 +83,10 @@ export class AhaClient {
 
   // ─── Releases ──────────────────────────────────────────────────
 
-  async listReleases(productId: string, params?: { page?: number; perPage?: number }): Promise<{ releases: AhaRelease[]; pagination: AhaPagination }> {
+  async listReleases(
+    productId: string,
+    params?: { page?: number; perPage?: number }
+  ): Promise<{ releases: AhaRelease[]; pagination: AhaPagination }> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
@@ -88,17 +102,20 @@ export class AhaClient {
     return data.release;
   }
 
-  async createRelease(productId: string, release: {
-    name: string;
-    startDate?: string;
-    releaseDate?: string;
-    description?: string;
-    parkingLot?: boolean;
-  }): Promise<AhaRelease> {
+  async createRelease(
+    productId: string,
+    release: {
+      name: string;
+      startDate?: string;
+      releaseDate?: string;
+      description?: string;
+      parkingLot?: boolean;
+    }
+  ): Promise<AhaRelease> {
     let body: Record<string, any> = {
       release: {
-        name: release.name,
-      },
+        name: release.name
+      }
     };
     if (release.startDate) body.release.start_date = release.startDate;
     if (release.releaseDate) body.release.release_date = release.releaseDate;
@@ -110,13 +127,16 @@ export class AhaClient {
     return data.release;
   }
 
-  async updateRelease(releaseId: string, updates: {
-    name?: string;
-    startDate?: string;
-    releaseDate?: string;
-    description?: string;
-    parkingLot?: boolean;
-  }): Promise<AhaRelease> {
+  async updateRelease(
+    releaseId: string,
+    updates: {
+      name?: string;
+      startDate?: string;
+      releaseDate?: string;
+      description?: string;
+      parkingLot?: boolean;
+    }
+  ): Promise<AhaRelease> {
     let body: Record<string, any> = { release: {} };
     if (updates.name !== undefined) body.release.name = updates.name;
     if (updates.startDate !== undefined) body.release.start_date = updates.startDate;
@@ -168,19 +188,22 @@ export class AhaClient {
     return data.feature;
   }
 
-  async createFeature(releaseId: string, feature: {
-    name: string;
-    description?: string;
-    assignedToUser?: string;
-    tags?: string[];
-    startDate?: string;
-    dueDate?: string;
-    workflowStatus?: string;
-  }): Promise<AhaFeature> {
+  async createFeature(
+    releaseId: string,
+    feature: {
+      name: string;
+      description?: string;
+      assignedToUser?: string;
+      tags?: string[];
+      startDate?: string;
+      dueDate?: string;
+      workflowStatus?: string;
+    }
+  ): Promise<AhaFeature> {
     let body: Record<string, any> = {
       feature: {
-        name: feature.name,
-      },
+        name: feature.name
+      }
     };
     if (feature.description) body.feature.description = feature.description;
     if (feature.assignedToUser) body.feature.assigned_to_user = feature.assignedToUser;
@@ -194,23 +217,28 @@ export class AhaClient {
     return data.feature;
   }
 
-  async updateFeature(featureId: string, updates: {
-    name?: string;
-    description?: string;
-    assignedToUser?: string;
-    tags?: string[];
-    startDate?: string;
-    dueDate?: string;
-    workflowStatus?: string;
-  }): Promise<AhaFeature> {
+  async updateFeature(
+    featureId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      assignedToUser?: string;
+      tags?: string[];
+      startDate?: string;
+      dueDate?: string;
+      workflowStatus?: string;
+    }
+  ): Promise<AhaFeature> {
     let body: Record<string, any> = { feature: {} };
     if (updates.name !== undefined) body.feature.name = updates.name;
     if (updates.description !== undefined) body.feature.description = updates.description;
-    if (updates.assignedToUser !== undefined) body.feature.assigned_to_user = updates.assignedToUser;
+    if (updates.assignedToUser !== undefined)
+      body.feature.assigned_to_user = updates.assignedToUser;
     if (updates.tags !== undefined) body.feature.tags = updates.tags.join(',');
     if (updates.startDate !== undefined) body.feature.start_date = updates.startDate;
     if (updates.dueDate !== undefined) body.feature.due_date = updates.dueDate;
-    if (updates.workflowStatus !== undefined) body.feature.workflow_status = updates.workflowStatus;
+    if (updates.workflowStatus !== undefined)
+      body.feature.workflow_status = updates.workflowStatus;
 
     let response = await this.axios.put(`/features/${featureId}`, body);
     let data = response.data as { feature: AhaFeature };
@@ -250,17 +278,20 @@ export class AhaClient {
     return data.epic;
   }
 
-  async createEpic(productId: string, epic: {
-    name: string;
-    description?: string;
-    assignedToUser?: string;
-    tags?: string[];
-    workflowStatus?: string;
-  }): Promise<AhaEpic> {
+  async createEpic(
+    productId: string,
+    epic: {
+      name: string;
+      description?: string;
+      assignedToUser?: string;
+      tags?: string[];
+      workflowStatus?: string;
+    }
+  ): Promise<AhaEpic> {
     let body: Record<string, any> = {
       epic: {
-        name: epic.name,
-      },
+        name: epic.name
+      }
     };
     if (epic.description) body.epic.description = epic.description;
     if (epic.assignedToUser) body.epic.assigned_to_user = epic.assignedToUser;
@@ -272,19 +303,24 @@ export class AhaClient {
     return data.epic;
   }
 
-  async updateEpic(epicId: string, updates: {
-    name?: string;
-    description?: string;
-    assignedToUser?: string;
-    tags?: string[];
-    workflowStatus?: string;
-  }): Promise<AhaEpic> {
+  async updateEpic(
+    epicId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      assignedToUser?: string;
+      tags?: string[];
+      workflowStatus?: string;
+    }
+  ): Promise<AhaEpic> {
     let body: Record<string, any> = { epic: {} };
     if (updates.name !== undefined) body.epic.name = updates.name;
     if (updates.description !== undefined) body.epic.description = updates.description;
-    if (updates.assignedToUser !== undefined) body.epic.assigned_to_user = updates.assignedToUser;
+    if (updates.assignedToUser !== undefined)
+      body.epic.assigned_to_user = updates.assignedToUser;
     if (updates.tags !== undefined) body.epic.tags = updates.tags.join(',');
-    if (updates.workflowStatus !== undefined) body.epic.workflow_status = updates.workflowStatus;
+    if (updates.workflowStatus !== undefined)
+      body.epic.workflow_status = updates.workflowStatus;
 
     let response = await this.axios.put(`/epics/${epicId}`, body);
     let data = response.data as { epic: AhaEpic };
@@ -321,17 +357,20 @@ export class AhaClient {
     return data.idea;
   }
 
-  async createIdea(productId: string, idea: {
-    name: string;
-    description?: string;
-    tags?: string[];
-    workflowStatus?: string;
-    skipPortal?: boolean;
-  }): Promise<AhaIdea> {
+  async createIdea(
+    productId: string,
+    idea: {
+      name: string;
+      description?: string;
+      tags?: string[];
+      workflowStatus?: string;
+      skipPortal?: boolean;
+    }
+  ): Promise<AhaIdea> {
     let body: Record<string, any> = {
       idea: {
-        name: idea.name,
-      },
+        name: idea.name
+      }
     };
     if (idea.description) body.idea.description = idea.description;
     if (idea.tags) body.idea.tags = idea.tags.join(',');
@@ -343,17 +382,21 @@ export class AhaClient {
     return data.idea;
   }
 
-  async updateIdea(ideaId: string, updates: {
-    name?: string;
-    description?: string;
-    tags?: string[];
-    workflowStatus?: string;
-  }): Promise<AhaIdea> {
+  async updateIdea(
+    ideaId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      tags?: string[];
+      workflowStatus?: string;
+    }
+  ): Promise<AhaIdea> {
     let body: Record<string, any> = { idea: {} };
     if (updates.name !== undefined) body.idea.name = updates.name;
     if (updates.description !== undefined) body.idea.description = updates.description;
     if (updates.tags !== undefined) body.idea.tags = updates.tags.join(',');
-    if (updates.workflowStatus !== undefined) body.idea.workflow_status = updates.workflowStatus;
+    if (updates.workflowStatus !== undefined)
+      body.idea.workflow_status = updates.workflowStatus;
 
     let response = await this.axios.put(`/ideas/${ideaId}`, body);
     let data = response.data as { idea: AhaIdea };
@@ -364,7 +407,11 @@ export class AhaClient {
     await this.axios.delete(`/ideas/${ideaId}`);
   }
 
-  async searchIdeas(productId: string, term: string, params?: { page?: number; perPage?: number }): Promise<{ ideas: AhaIdea[]; pagination: AhaPagination }> {
+  async searchIdeas(
+    productId: string,
+    term: string,
+    params?: { page?: number; perPage?: number }
+  ): Promise<{ ideas: AhaIdea[]; pagination: AhaPagination }> {
     let query: Record<string, any> = { q: term };
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
@@ -400,14 +447,17 @@ export class AhaClient {
     return data.goal;
   }
 
-  async createGoal(productId: string, goal: {
-    name: string;
-    description?: string;
-  }): Promise<AhaGoal> {
+  async createGoal(
+    productId: string,
+    goal: {
+      name: string;
+      description?: string;
+    }
+  ): Promise<AhaGoal> {
     let body: Record<string, any> = {
       goal: {
-        name: goal.name,
-      },
+        name: goal.name
+      }
     };
     if (goal.description) body.goal.description = goal.description;
 
@@ -416,10 +466,13 @@ export class AhaClient {
     return data.goal;
   }
 
-  async updateGoal(goalId: string, updates: {
-    name?: string;
-    description?: string;
-  }): Promise<AhaGoal> {
+  async updateGoal(
+    goalId: string,
+    updates: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<AhaGoal> {
     let body: Record<string, any> = { goal: {} };
     if (updates.name !== undefined) body.goal.name = updates.name;
     if (updates.description !== undefined) body.goal.description = updates.description;
@@ -446,7 +499,9 @@ export class AhaClient {
     if (params?.perPage) query.per_page = params.perPage;
     if (params?.updatedSince) query.updated_since = params.updatedSince;
 
-    let path = params?.productId ? `/products/${params.productId}/initiatives` : '/initiatives';
+    let path = params?.productId
+      ? `/products/${params.productId}/initiatives`
+      : '/initiatives';
 
     let response = await this.axios.get(path, { params: query });
     let data = response.data as { initiatives: AhaInitiative[]; pagination: AhaPagination };
@@ -459,14 +514,17 @@ export class AhaClient {
     return data.initiative;
   }
 
-  async createInitiative(productId: string, initiative: {
-    name: string;
-    description?: string;
-  }): Promise<AhaInitiative> {
+  async createInitiative(
+    productId: string,
+    initiative: {
+      name: string;
+      description?: string;
+    }
+  ): Promise<AhaInitiative> {
     let body: Record<string, any> = {
       initiative: {
-        name: initiative.name,
-      },
+        name: initiative.name
+      }
     };
     if (initiative.description) body.initiative.description = initiative.description;
 
@@ -475,10 +533,13 @@ export class AhaClient {
     return data.initiative;
   }
 
-  async updateInitiative(initiativeId: string, updates: {
-    name?: string;
-    description?: string;
-  }): Promise<AhaInitiative> {
+  async updateInitiative(
+    initiativeId: string,
+    updates: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<AhaInitiative> {
     let body: Record<string, any> = { initiative: {} };
     if (updates.name !== undefined) body.initiative.name = updates.name;
     if (updates.description !== undefined) body.initiative.description = updates.description;
@@ -494,22 +555,32 @@ export class AhaClient {
 
   // ─── Comments ──────────────────────────────────────────────────
 
-  async listComments(recordType: string, recordId: string, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<{ comments: AhaComment[]; pagination: AhaPagination }> {
+  async listComments(
+    recordType: string,
+    recordId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<{ comments: AhaComment[]; pagination: AhaPagination }> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/${recordType}/${recordId}/comments`, { params: query });
+    let response = await this.axios.get(`/${recordType}/${recordId}/comments`, {
+      params: query
+    });
     let data = response.data as { comments: AhaComment[]; pagination: AhaPagination };
     return data;
   }
 
-  async createComment(recordType: string, recordId: string, body: string): Promise<AhaComment> {
+  async createComment(
+    recordType: string,
+    recordId: string,
+    body: string
+  ): Promise<AhaComment> {
     let response = await this.axios.post(`/${recordType}/${recordId}/comments`, {
-      comment: { body },
+      comment: { body }
     });
     let data = response.data as { comment: AhaComment };
     return data.comment;
@@ -517,7 +588,7 @@ export class AhaClient {
 
   async updateComment(commentId: string, body: string): Promise<AhaComment> {
     let response = await this.axios.put(`/comments/${commentId}`, {
-      comment: { body },
+      comment: { body }
     });
     let data = response.data as { comment: AhaComment };
     return data.comment;
@@ -529,7 +600,11 @@ export class AhaClient {
 
   // ─── Users ─────────────────────────────────────────────────────
 
-  async listUsers(params?: { page?: number; perPage?: number; email?: string }): Promise<{ users: AhaUser[]; pagination: AhaPagination }> {
+  async listUsers(params?: {
+    page?: number;
+    perPage?: number;
+    email?: string;
+  }): Promise<{ users: AhaUser[]; pagination: AhaPagination }> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
@@ -548,29 +623,39 @@ export class AhaClient {
 
   // ─── To-dos ────────────────────────────────────────────────────
 
-  async listTodos(recordType: string, recordId: string, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<{ todos: AhaTodo[]; pagination: AhaPagination }> {
+  async listTodos(
+    recordType: string,
+    recordId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<{ todos: AhaTodo[]; pagination: AhaPagination }> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/${recordType}/${recordId}/to_dos`, { params: query });
+    let response = await this.axios.get(`/${recordType}/${recordId}/to_dos`, {
+      params: query
+    });
     let data = response.data as { to_dos: AhaTodo[]; pagination: AhaPagination };
     return { todos: data.to_dos, pagination: data.pagination };
   }
 
-  async createTodo(recordType: string, recordId: string, todo: {
-    name: string;
-    body?: string;
-    dueDate?: string;
-    assignees?: string[];
-  }): Promise<AhaTodo> {
+  async createTodo(
+    recordType: string,
+    recordId: string,
+    todo: {
+      name: string;
+      body?: string;
+      dueDate?: string;
+      assignees?: string[];
+    }
+  ): Promise<AhaTodo> {
     let body: Record<string, any> = {
       to_do: {
-        name: todo.name,
-      },
+        name: todo.name
+      }
     };
     if (todo.body) body.to_do.body = todo.body;
     if (todo.dueDate) body.to_do.due_date = todo.dueDate;
@@ -583,12 +668,15 @@ export class AhaClient {
     return data.to_do;
   }
 
-  async updateTodo(todoId: string, updates: {
-    name?: string;
-    body?: string;
-    dueDate?: string;
-    completed?: boolean;
-  }): Promise<AhaTodo> {
+  async updateTodo(
+    todoId: string,
+    updates: {
+      name?: string;
+      body?: string;
+      dueDate?: string;
+      completed?: boolean;
+    }
+  ): Promise<AhaTodo> {
     let body: Record<string, any> = { to_do: {} };
     if (updates.name !== undefined) body.to_do.name = updates.name;
     if (updates.body !== undefined) body.to_do.body = updates.body;

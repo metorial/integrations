@@ -3,34 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let attendeeActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Attendee Activity',
-    key: 'attendee_activity',
-    description: 'Triggered when an attendee is updated, checked in, or checked out at an Eventbrite event.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('The webhook action (e.g., "attendee.updated", "barcode.checked_in").'),
-    apiUrl: z.string().describe('The API URL to fetch the full attendee resource.'),
-  }))
-  .output(z.object({
-    attendeeId: z.string().describe('The unique attendee ID.'),
-    orderId: z.string().optional().describe('The associated order ID.'),
-    eventId: z.string().optional().describe('The event ID.'),
-    ticketClassName: z.string().optional().describe('Name of the ticket class.'),
-    ticketClassId: z.string().optional().describe('ID of the ticket class.'),
-    firstName: z.string().optional().describe('Attendee first name.'),
-    lastName: z.string().optional().describe('Attendee last name.'),
-    email: z.string().optional().describe('Attendee email.'),
-    status: z.string().optional().describe('Attendee status.'),
-    checkedIn: z.boolean().optional().describe('Whether the attendee is currently checked in.'),
-    created: z.string().optional().describe('When the attendee record was created.'),
-    changed: z.string().optional().describe('When the attendee record was last changed.'),
-  }))
+export let attendeeActivity = SlateTrigger.create(spec, {
+  name: 'Attendee Activity',
+  key: 'attendee_activity',
+  description:
+    'Triggered when an attendee is updated, checked in, or checked out at an Eventbrite event.'
+})
+  .input(
+    z.object({
+      action: z
+        .string()
+        .describe('The webhook action (e.g., "attendee.updated", "barcode.checked_in").'),
+      apiUrl: z.string().describe('The API URL to fetch the full attendee resource.')
+    })
+  )
+  .output(
+    z.object({
+      attendeeId: z.string().describe('The unique attendee ID.'),
+      orderId: z.string().optional().describe('The associated order ID.'),
+      eventId: z.string().optional().describe('The event ID.'),
+      ticketClassName: z.string().optional().describe('Name of the ticket class.'),
+      ticketClassId: z.string().optional().describe('ID of the ticket class.'),
+      firstName: z.string().optional().describe('Attendee first name.'),
+      lastName: z.string().optional().describe('Attendee last name.'),
+      email: z.string().optional().describe('Attendee email.'),
+      status: z.string().optional().describe('Attendee status.'),
+      checkedIn: z
+        .boolean()
+        .optional()
+        .describe('Whether the attendee is currently checked in.'),
+      created: z.string().optional().describe('When the attendee record was created.'),
+      changed: z.string().optional().describe('When the attendee record was last changed.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       if (!ctx.config.organizationId) {
         throw new Error('Organization ID is required in config to register webhooks.');
       }
@@ -39,35 +46,35 @@ export let attendeeActivity = SlateTrigger.create(
 
       let webhook = await client.createWebhook(ctx.config.organizationId, {
         endpoint_url: ctx.input.webhookBaseUrl,
-        actions: 'attendee.updated,barcode.checked_in,barcode.un_checked_in',
+        actions: 'attendee.updated,barcode.checked_in,barcode.un_checked_in'
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
         inputs: [
           {
             action: body.config?.action || 'attendee.updated',
-            apiUrl: body.api_url || '',
-          },
-        ],
+            apiUrl: body.api_url || ''
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let { eventId, attendeeId } = extractIdsFromUrl(ctx.input.apiUrl);
@@ -98,19 +105,21 @@ export let attendeeActivity = SlateTrigger.create(
           status: attendee.status,
           checkedIn: attendee.checked_in,
           created: attendee.created,
-          changed: attendee.changed,
-        },
+          changed: attendee.changed
+        }
       };
-    },
+    }
   })
   .build();
 
-let extractIdsFromUrl = (apiUrl: string): { eventId: string | null; attendeeId: string | null } => {
+let extractIdsFromUrl = (
+  apiUrl: string
+): { eventId: string | null; attendeeId: string | null } => {
   let eventMatch = apiUrl.match(/\/events\/(\d+)\//);
   let attendeeMatch = apiUrl.match(/\/attendees\/(\d+)\//);
   return {
     eventId: eventMatch?.[1] ?? null,
-    attendeeId: attendeeMatch?.[1] ?? null,
+    attendeeId: attendeeMatch?.[1] ?? null
   };
 };
 

@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMemberTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'Get Member Transactions',
-    key: 'get_member_transactions',
-    description: `Retrieve the transaction history for a specific member. Can filter by user ID or client ID.`,
-    tags: {
-      readOnly: true,
-    },
+export let getMemberTransactions = SlateTool.create(spec, {
+  name: 'Get Member Transactions',
+  key: 'get_member_transactions',
+  description: `Retrieve the transaction history for a specific member. Can filter by user ID or client ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('The user ID to retrieve transactions for.'),
-    clientId: z.string().optional().describe('The client ID to retrieve transactions for.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    transactions: z.any().describe('The transaction records.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().optional().describe('The user ID to retrieve transactions for.'),
+      clientId: z.string().optional().describe('The client ID to retrieve transactions for.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      transactions: z.any().describe('The transaction records.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let params: Record<string, any> = {};
@@ -37,8 +38,9 @@ export let getMemberTransactions = SlateTool.create(
     return {
       output: {
         status: result.status,
-        transactions: result.message,
+        transactions: result.message
       },
-      message: `Retrieved transaction history.`,
+      message: `Retrieved transaction history.`
     };
-  }).build();
+  })
+  .build();

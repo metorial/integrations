@@ -4,41 +4,51 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let transactionalSmsEventTypes = [
-  'sent', 'accepted', 'delivered', 'replied',
-  'softBounce', 'hardBounce', 'subscribe', 'unsubscribe',
-  'skip', 'blacklisted', 'rejected'
+  'sent',
+  'accepted',
+  'delivered',
+  'replied',
+  'softBounce',
+  'hardBounce',
+  'subscribe',
+  'unsubscribe',
+  'skip',
+  'blacklisted',
+  'rejected'
 ] as const;
 
-export let transactionalSmsEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transactional SMS Events',
-    key: 'transactional_sms_events',
-    description: 'Receive notifications for transactional SMS delivery status events including sent, delivered, bounced, replied, and unsubscribed.'
-  }
-)
-  .input(z.object({
-    event: z.string().describe('Event type'),
-    messageId: z.string().optional().describe('Message ID'),
-    phoneNumber: z.string().optional().describe('Recipient phone number'),
-    date: z.string().optional().describe('Event timestamp'),
-    ts: z.number().optional().describe('Event timestamp (Unix)'),
-    tsEvent: z.number().optional().describe('Event timestamp (Unix)'),
-    tag: z.string().optional().describe('SMS tag'),
-    reason: z.string().optional().describe('Reason for bounce/rejection'),
-    reply: z.string().optional().describe('Reply content for replied events'),
-    raw: z.any().optional().describe('Full raw event payload')
-  }))
-  .output(z.object({
-    messageId: z.string().optional().describe('SMS message ID'),
-    phoneNumber: z.string().optional().describe('Recipient phone number'),
-    tag: z.string().optional().describe('SMS tag'),
-    eventTimestamp: z.string().optional().describe('When the event occurred (ISO 8601)'),
-    reason: z.string().optional().describe('Reason for bounce or rejection'),
-    reply: z.string().optional().describe('Reply content (for replied events)')
-  }))
+export let transactionalSmsEvents = SlateTrigger.create(spec, {
+  name: 'Transactional SMS Events',
+  key: 'transactional_sms_events',
+  description:
+    'Receive notifications for transactional SMS delivery status events including sent, delivered, bounced, replied, and unsubscribed.'
+})
+  .input(
+    z.object({
+      event: z.string().describe('Event type'),
+      messageId: z.string().optional().describe('Message ID'),
+      phoneNumber: z.string().optional().describe('Recipient phone number'),
+      date: z.string().optional().describe('Event timestamp'),
+      ts: z.number().optional().describe('Event timestamp (Unix)'),
+      tsEvent: z.number().optional().describe('Event timestamp (Unix)'),
+      tag: z.string().optional().describe('SMS tag'),
+      reason: z.string().optional().describe('Reason for bounce/rejection'),
+      reply: z.string().optional().describe('Reply content for replied events'),
+      raw: z.any().optional().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().optional().describe('SMS message ID'),
+      phoneNumber: z.string().optional().describe('Recipient phone number'),
+      tag: z.string().optional().describe('SMS tag'),
+      eventTimestamp: z.string().optional().describe('When the event occurred (ISO 8601)'),
+      reason: z.string().optional().describe('Reason for bounce or rejection'),
+      reply: z.string().optional().describe('Reply content (for replied events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType
@@ -57,7 +67,7 @@ export let transactionalSmsEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType
@@ -67,7 +77,7 @@ export let transactionalSmsEvents = SlateTrigger.create(
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
       let events = Array.isArray(data) ? data : [data];
 
@@ -87,7 +97,7 @@ export let transactionalSmsEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = (ctx.input.event ?? 'unknown').toLowerCase();
       let eventTimestamp: string | undefined;
       if (ctx.input.tsEvent) {

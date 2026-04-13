@@ -3,49 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workflowChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Workflow Changes',
-    key: 'workflow_changes',
-    description: 'Detects when workflows are created, updated, activated, or deactivated by polling the n8n instance.'
-  }
-)
-  .input(z.object({
-    workflowId: z.string().describe('Workflow ID'),
-    name: z.string().describe('Workflow name'),
-    active: z.boolean().describe('Whether the workflow is active'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    createdAt: z.string().describe('Creation timestamp'),
-    changeType: z.enum(['created', 'updated', 'activated', 'deactivated']).describe('Type of change detected')
-  }))
-  .output(z.object({
-    workflowId: z.string().describe('Workflow ID'),
-    name: z.string().describe('Workflow name'),
-    active: z.boolean().describe('Whether the workflow is currently active'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    createdAt: z.string().describe('Creation timestamp')
-  }))
+export let workflowChanges = SlateTrigger.create(spec, {
+  name: 'Workflow Changes',
+  key: 'workflow_changes',
+  description:
+    'Detects when workflows are created, updated, activated, or deactivated by polling the n8n instance.'
+})
+  .input(
+    z.object({
+      workflowId: z.string().describe('Workflow ID'),
+      name: z.string().describe('Workflow name'),
+      active: z.boolean().describe('Whether the workflow is active'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      createdAt: z.string().describe('Creation timestamp'),
+      changeType: z
+        .enum(['created', 'updated', 'activated', 'deactivated'])
+        .describe('Type of change detected')
+    })
+  )
+  .output(
+    z.object({
+      workflowId: z.string().describe('Workflow ID'),
+      name: z.string().describe('Workflow name'),
+      active: z.boolean().describe('Whether the workflow is currently active'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         baseUrl: ctx.config.baseUrl,
         token: ctx.auth.token
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
-      let previousWorkflows = (ctx.state?.workflows || {}) as Record<string, { updatedAt: string; active: boolean }>;
+      let previousWorkflows = (ctx.state?.workflows || {}) as Record<
+        string,
+        { updatedAt: string; active: boolean }
+      >;
 
       let allWorkflows: any[] = [];
       let cursor: string | undefined;
 
       // Fetch all workflows (paginated)
       do {
-        let result = await client.listWorkflows({ limit: 100, cursor, excludePinnedData: true });
+        let result = await client.listWorkflows({
+          limit: 100,
+          cursor,
+          excludePinnedData: true
+        });
         allWorkflows = allWorkflows.concat(result.data || []);
         cursor = result.nextCursor;
       } while (cursor);
@@ -107,7 +118,7 @@ export let workflowChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `workflow.${ctx.input.changeType}`,
         id: `${ctx.input.workflowId}-${ctx.input.updatedAt}`,

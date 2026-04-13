@@ -10,25 +10,51 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
 
     scopes: [
-      { title: 'People Read', description: 'Read people/contacts information', scope: 'people:read' },
-      { title: 'People Write', description: 'Create and update people/contacts', scope: 'people:write' },
-      { title: 'Accounts Read', description: 'Read account/company data', scope: 'accounts:read' },
-      { title: 'Accounts Write', description: 'Create and update accounts', scope: 'accounts:write' },
+      {
+        title: 'People Read',
+        description: 'Read people/contacts information',
+        scope: 'people:read'
+      },
+      {
+        title: 'People Write',
+        description: 'Create and update people/contacts',
+        scope: 'people:write'
+      },
+      {
+        title: 'Accounts Read',
+        description: 'Read account/company data',
+        scope: 'accounts:read'
+      },
+      {
+        title: 'Accounts Write',
+        description: 'Create and update accounts',
+        scope: 'accounts:write'
+      },
       { title: 'Cadences Read', description: 'Read cadence data', scope: 'cadences:read' },
-      { title: 'Cadences Write', description: 'Create and manage cadences', scope: 'cadences:write' },
+      {
+        title: 'Cadences Write',
+        description: 'Create and manage cadences',
+        scope: 'cadences:write'
+      },
       { title: 'Calls Read', description: 'Read call activity data', scope: 'calls:read' },
-      { title: 'Calls Write', description: 'Create and update call records', scope: 'calls:write' },
+      {
+        title: 'Calls Write',
+        description: 'Create and update call records',
+        scope: 'calls:write'
+      },
       { title: 'Emails Read', description: 'Read email activity data', scope: 'emails:read' },
       { title: 'Emails Write', description: 'Create and send emails', scope: 'emails:write' },
       { title: 'Tasks Read', description: 'Read task data', scope: 'tasks:read' },
@@ -36,14 +62,30 @@ export let auth = SlateAuth.create()
       { title: 'Notes Read', description: 'Read note data', scope: 'notes:read' },
       { title: 'Notes Write', description: 'Create and manage notes', scope: 'notes:write' },
       { title: 'Meetings Read', description: 'Read meeting data', scope: 'meetings:read' },
-      { title: 'Conversations Read', description: 'Read conversation data', scope: 'conversations:read' },
+      {
+        title: 'Conversations Read',
+        description: 'Read conversation data',
+        scope: 'conversations:read'
+      },
       { title: 'Team Read', description: 'Read team and user data', scope: 'team:read' },
-      { title: 'Email Contents Read', description: 'Read email bodies and subjects (privileged)', scope: 'email_contents:read' },
-      { title: 'CRM ID Person Write', description: 'Write to CRM ID field of Person (privileged)', scope: 'crm_id_person:write' },
-      { title: 'CRM ID Account Write', description: 'Write to CRM ID field of Account (privileged)', scope: 'crm_id_account:write' },
+      {
+        title: 'Email Contents Read',
+        description: 'Read email bodies and subjects (privileged)',
+        scope: 'email_contents:read'
+      },
+      {
+        title: 'CRM ID Person Write',
+        description: 'Write to CRM ID field of Person (privileged)',
+        scope: 'crm_id_person:write'
+      },
+      {
+        title: 'CRM ID Account Write',
+        description: 'Write to CRM ID field of Account (privileged)',
+        scope: 'crm_id_account:write'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -60,7 +102,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await accountsAxios.post('/oauth/token', {
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
@@ -83,7 +125,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await accountsAxios.post('/oauth/token', {
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
@@ -134,7 +176,7 @@ export let auth = SlateAuth.create()
       apiKey: z.string().describe('SalesLoft API Key (starts with "ak_")')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey

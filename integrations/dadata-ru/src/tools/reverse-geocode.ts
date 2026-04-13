@@ -16,43 +16,49 @@ let reverseGeoResultSchema = z.object({
   geoLon: z.string().nullable().describe('Longitude'),
   fiasId: z.string().nullable().describe('FIAS identifier'),
   kladrId: z.string().nullable().describe('KLADR identifier'),
-  timezone: z.string().nullable().describe('Timezone'),
+  timezone: z.string().nullable().describe('Timezone')
 });
 
-export let reverseGeocode = SlateTool.create(
-  spec,
-  {
-    name: 'Reverse Geocode',
-    key: 'reverse_geocode',
-    description: `Finds addresses near given geographic coordinates (reverse geocoding). Returns all information about nearby addresses ordered by distance from the specified point.
+export let reverseGeocode = SlateTool.create(spec, {
+  name: 'Reverse Geocode',
+  key: 'reverse_geocode',
+  description: `Finds addresses near given geographic coordinates (reverse geocoding). Returns all information about nearby addresses ordered by distance from the specified point.
 Useful for determining the closest address to a GPS location.`,
-    instructions: [
-      'Provide latitude and longitude as decimal numbers.',
-      'Adjust radiusMeters to widen or narrow the search area (default 100m, max 1000m).',
-    ],
-    constraints: [
-      'Maximum search radius: 1000 meters.',
-      'Coverage varies: Moscow ~97%, large cities ~69%, rest of Russia ~47%.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Provide latitude and longitude as decimal numbers.',
+    'Adjust radiusMeters to widen or narrow the search area (default 100m, max 1000m).'
+  ],
+  constraints: [
+    'Maximum search radius: 1000 meters.',
+    'Coverage varies: Moscow ~97%, large cities ~69%, rest of Russia ~47%.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    latitude: z.number().describe('Latitude of the point'),
-    longitude: z.number().describe('Longitude of the point'),
-    count: z.number().optional().describe('Number of results (max 20, default 10)'),
-    radiusMeters: z.number().optional().describe('Search radius in meters (max 1000, default 100)'),
-    language: z.enum(['ru', 'en']).optional().describe('Response language'),
-  }))
-  .output(z.object({
-    addresses: z.array(reverseGeoResultSchema).describe('Nearby addresses ordered by distance'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      latitude: z.number().describe('Latitude of the point'),
+      longitude: z.number().describe('Longitude of the point'),
+      count: z.number().optional().describe('Number of results (max 20, default 10)'),
+      radiusMeters: z
+        .number()
+        .optional()
+        .describe('Search radius in meters (max 1000, default 100)'),
+      language: z.enum(['ru', 'en']).optional().describe('Response language')
+    })
+  )
+  .output(
+    z.object({
+      addresses: z
+        .array(reverseGeoResultSchema)
+        .describe('Nearby addresses ordered by distance')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SuggestionsClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let data = await client.geolocateAddress({
@@ -60,7 +66,7 @@ Useful for determining the closest address to a GPS location.`,
       lon: ctx.input.longitude,
       count: ctx.input.count,
       radiusMeters: ctx.input.radiusMeters,
-      language: ctx.input.language || ctx.config.language,
+      language: ctx.input.language || ctx.config.language
     });
 
     let addresses = (data.suggestions || []).map((s: any) => ({
@@ -76,13 +82,15 @@ Useful for determining the closest address to a GPS location.`,
       geoLon: s.data?.geo_lon ?? null,
       fiasId: s.data?.fias_id ?? null,
       kladrId: s.data?.kladr_id ?? null,
-      timezone: s.data?.timezone ?? null,
+      timezone: s.data?.timezone ?? null
     }));
 
     return {
       output: { addresses },
-      message: addresses.length > 0
-        ? `Found **${addresses.length}** address(es) near (${ctx.input.latitude}, ${ctx.input.longitude}): ${addresses[0]?.value || 'N/A'}`
-        : `No addresses found near (${ctx.input.latitude}, ${ctx.input.longitude}).`,
+      message:
+        addresses.length > 0
+          ? `Found **${addresses.length}** address(es) near (${ctx.input.latitude}, ${ctx.input.longitude}): ${addresses[0]?.value || 'N/A'}`
+          : `No addresses found near (${ctx.input.latitude}, ${ctx.input.longitude}).`
     };
-  }).build();
+  })
+  .build();

@@ -3,31 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLists = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Lead Lists',
-    key: 'manage_lists',
-    description: `Manage lead lists in the LinkedIn Leads database. Fetch all lists, get a specific list, create/update a list, or delete a list.
+export let manageLists = SlateTool.create(spec, {
+  name: 'Manage Lead Lists',
+  key: 'manage_lists',
+  description: `Manage lead lists in the LinkedIn Leads database. Fetch all lists, get a specific list, create/update a list, or delete a list.
 - **fetchAll**: Get all lists in the workspace.
 - **fetch**: Get a specific list by ID.
 - **save**: Create or update a list.
-- **delete**: Delete a list by ID.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['fetchAll', 'fetch', 'save', 'delete']).describe('Action to perform on lists'),
-    listId: z.string().optional().describe('ID of the list (required for "fetch", "save" with update, and "delete")'),
-    name: z.string().optional().describe('Name for the list (used with "save" action)'),
-    listMetadata: z.record(z.string(), z.any()).optional().describe('Additional metadata for the list (used with "save" action)'),
-  }))
-  .output(z.object({
-    lists: z.array(z.record(z.string(), z.any())).optional().describe('Retrieved lists'),
-    list: z.record(z.string(), z.any()).optional().describe('Single list details'),
-    deleted: z.boolean().optional().describe('Whether the delete was successful'),
-    actionPerformed: z.string().describe('Action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+- **delete**: Delete a list by ID.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['fetchAll', 'fetch', 'save', 'delete'])
+        .describe('Action to perform on lists'),
+      listId: z
+        .string()
+        .optional()
+        .describe('ID of the list (required for "fetch", "save" with update, and "delete")'),
+      name: z.string().optional().describe('Name for the list (used with "save" action)'),
+      listMetadata: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Additional metadata for the list (used with "save" action)')
+    })
+  )
+  .output(
+    z.object({
+      lists: z.array(z.record(z.string(), z.any())).optional().describe('Retrieved lists'),
+      list: z.record(z.string(), z.any()).optional().describe('Single list details'),
+      deleted: z.boolean().optional().describe('Whether the delete was successful'),
+      actionPerformed: z.string().describe('Action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'fetchAll') {
@@ -35,9 +44,9 @@ export let manageLists = SlateTool.create(
       return {
         output: {
           lists: Array.isArray(lists) ? lists : [],
-          actionPerformed: 'fetchAll',
+          actionPerformed: 'fetchAll'
         },
-        message: `Found **${Array.isArray(lists) ? lists.length : 0}** list(s).`,
+        message: `Found **${Array.isArray(lists) ? lists.length : 0}** list(s).`
       };
     }
 
@@ -49,9 +58,9 @@ export let manageLists = SlateTool.create(
       return {
         output: {
           list,
-          actionPerformed: 'fetch',
+          actionPerformed: 'fetch'
         },
-        message: `Retrieved list **${ctx.input.listId}**.`,
+        message: `Retrieved list **${ctx.input.listId}**.`
       };
     }
 
@@ -65,11 +74,11 @@ export let manageLists = SlateTool.create(
       return {
         output: {
           list: result,
-          actionPerformed: 'save',
+          actionPerformed: 'save'
         },
         message: ctx.input.listId
           ? `Updated list **${ctx.input.listId}**.`
-          : `Created new list${ctx.input.name ? ` **${ctx.input.name}**` : ''}.`,
+          : `Created new list${ctx.input.name ? ` **${ctx.input.name}**` : ''}.`
       };
     }
 
@@ -81,11 +90,12 @@ export let manageLists = SlateTool.create(
       return {
         output: {
           deleted: true,
-          actionPerformed: 'delete',
+          actionPerformed: 'delete'
         },
-        message: `Deleted list **${ctx.input.listId}**.`,
+        message: `Deleted list **${ctx.input.listId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

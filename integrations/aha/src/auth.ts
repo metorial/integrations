@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Aha! OAuth',
@@ -13,34 +15,35 @@ export let auth = SlateAuth.create()
     scopes: [],
 
     inputSchema: z.object({
-      subdomain: z.string().optional().describe('Your Aha! account subdomain (e.g. "company" for company.aha.io). If not known, leave blank to use secure.aha.io.'),
+      subdomain: z
+        .string()
+        .optional()
+        .describe(
+          'Your Aha! account subdomain (e.g. "company" for company.aha.io). If not known, leave blank to use secure.aha.io.'
+        )
     }),
 
-    getAuthorizationUrl: async (ctx) => {
-      let host = ctx.input.subdomain
-        ? `${ctx.input.subdomain}.aha.io`
-        : 'secure.aha.io';
+    getAuthorizationUrl: async ctx => {
+      let host = ctx.input.subdomain ? `${ctx.input.subdomain}.aha.io` : 'secure.aha.io';
 
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
         url: `https://${host}/oauth/authorize?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
-      let host = ctx.input.subdomain
-        ? `${ctx.input.subdomain}.aha.io`
-        : 'secure.aha.io';
+    handleCallback: async ctx => {
+      let host = ctx.input.subdomain ? `${ctx.input.subdomain}.aha.io` : 'secure.aha.io';
 
       let client = createAxios({
-        baseURL: `https://${host}`,
+        baseURL: `https://${host}`
       });
 
       let response = await client.post('/oauth/token', {
@@ -48,7 +51,7 @@ export let auth = SlateAuth.create()
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let data = response.data as {
@@ -63,13 +66,17 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: data.access_token,
+          token: data.access_token
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { subdomain?: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { subdomain?: string };
+      scopes: string[];
+    }) => {
       let subdomain = ctx.input.subdomain;
       if (!subdomain) {
         return { profile: {} };
@@ -80,8 +87,8 @@ export let auth = SlateAuth.create()
         headers: {
           Authorization: `Bearer ${ctx.output.token}`,
           'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+          Accept: 'application/json'
+        }
       });
 
       try {
@@ -100,13 +107,13 @@ export let auth = SlateAuth.create()
             id: data.user?.id,
             email: data.user?.email,
             name: data.user?.name,
-            imageUrl: data.user?.avatar_url,
-          },
+            imageUrl: data.user?.avatar_url
+          }
         };
       } catch {
         return { profile: {} };
       }
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -114,18 +121,20 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Aha! API key (Settings → Personal → Developer → Generate API key)'),
+      token: z
+        .string()
+        .describe('Aha! API key (Settings → Personal → Developer → Generate API key)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       return { profile: {} };
-    },
+    }
   });

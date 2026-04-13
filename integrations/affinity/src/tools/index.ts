@@ -24,9 +24,19 @@ export { listNotes, createNote, updateNote, deleteNote } from './manage-notes';
 export { getInteractions } from './get-interactions';
 
 export { getFields } from './get-fields';
-export { getFieldValues, setFieldValue, updateFieldValue, deleteFieldValue } from './manage-field-values';
+export {
+  getFieldValues,
+  setFieldValue,
+  updateFieldValue,
+  deleteFieldValue
+} from './manage-field-values';
 export { getFieldValueChanges } from './get-field-value-changes';
 
-export { listReminders, createReminder, updateReminder, deleteReminder } from './manage-reminders';
+export {
+  listReminders,
+  createReminder,
+  updateReminder,
+  deleteReminder
+} from './manage-reminders';
 export { getRelationshipStrengths } from './get-relationship-strengths';
 export { getEntityFiles } from './get-entity-files';

@@ -89,8 +89,8 @@ export class Client {
       baseURL: 'https://api.promptmate.io/v1',
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -103,7 +103,7 @@ export class Client {
 
   async getApp(appId: string): Promise<AppDetail> {
     let response = await this.http.get('/app', {
-      params: { appId },
+      params: { appId }
     });
     return response.data;
   }
@@ -117,19 +117,22 @@ export class Client {
 
   async getJobStatus(jobId: string): Promise<JobStatusResponse> {
     let response = await this.http.get('/app-jobs', {
-      params: { jobId },
+      params: { jobId }
     });
     return response.data;
   }
 
   // ── App Results ───────────────────────────────────────
 
-  async getAppResults(appId: string, onlyDefaultResultFields?: boolean): Promise<Array<Record<string, unknown>>> {
+  async getAppResults(
+    appId: string,
+    onlyDefaultResultFields?: boolean
+  ): Promise<Array<Record<string, unknown>>> {
     let response = await this.http.get('/app-results', {
       params: {
         appId,
-        ...(onlyDefaultResultFields !== undefined ? { onlyDefaultResultFields } : {}),
-      },
+        ...(onlyDefaultResultFields !== undefined ? { onlyDefaultResultFields } : {})
+      }
     });
     return response.data;
   }

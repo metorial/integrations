@@ -18,6 +18,7 @@ Svix authenticates API requests using API keys. If you don't include your key wh
 **Server URL / Region:**
 
 The Svix libraries automatically infer the correct server URL from the authentication token, so setting a server URL is not necessary unless you are self-hosting. The base URLs are region-specific:
+
 - US: `https://api.us.svix.com`
 - EU: `https://api.eu.svix.com`
 
@@ -34,6 +35,7 @@ When sending messages using the Svix API, you send them to a specific applicatio
 ### Message Sending
 
 Send webhook messages to applications with a single API call. Each message includes:
+
 - **eventType**: an identifier denoting the type of the event (e.g., `invoice.paid`). **eventId**: an optional unique ID for the event (unique per app).
 - **payload**: arbitrary JSON content delivered as the webhook body.
 - You can optionally include an application property when sending a message; if the application does not exist yet, it will be created automatically.
@@ -95,9 +97,11 @@ Operational webhooks are configured through the Operational Webhooks section of 
 ### Endpoint Events
 
 Notifications about changes to endpoint status.
+
 - `endpoint.disabled` triggers when an endpoint has been automatically disabled after multiple days of failing.
 
 ### Message Attempt Events
 
 Notifications about the outcome of message delivery attempts.
+
 - `message.attempt.exhausted` is sent after all retry attempts for a message to an endpoint have been exhausted and the message is marked as failed.

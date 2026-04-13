@@ -8,32 +8,32 @@ let inputSchema = z.object({
   homeTeam: z.string().describe('Home team name'),
   awayTeam: z.string().describe('Away team name'),
   lines: z.array(z.any()).describe('Array of betting lines from various sportsbooks'),
-  eventType: z.enum(['betting.new_lines', 'betting.lines_updated']).describe('Type of event'),
+  eventType: z.enum(['betting.new_lines', 'betting.lines_updated']).describe('Type of event')
 });
 
 type BettingLineInput = z.infer<typeof inputSchema>;
 
-export let bettingLineUpdates = SlateTrigger.create(
-  spec,
-  {
-    name: 'Betting Line Updates',
-    key: 'betting_line_updates',
-    description: 'Polls for new or changed betting lines (spread, over/under, moneyline) on college football games for a given year and week. Triggers when new lines are detected or existing lines change.',
-  }
-)
+export let bettingLineUpdates = SlateTrigger.create(spec, {
+  name: 'Betting Line Updates',
+  key: 'betting_line_updates',
+  description:
+    'Polls for new or changed betting lines (spread, over/under, moneyline) on college football games for a given year and week. Triggers when new lines are detected or existing lines change.'
+})
   .input(inputSchema)
-  .output(z.object({
-    gameId: z.number().describe('Game ID'),
-    homeTeam: z.string().describe('Home team name'),
-    awayTeam: z.string().describe('Away team name'),
-    lines: z.array(z.any()).describe('Current betting lines from sportsbooks'),
-  }))
+  .output(
+    z.object({
+      gameId: z.number().describe('Game ID'),
+      homeTeam: z.string().describe('Home team name'),
+      awayTeam: z.string().describe('Away team name'),
+      lines: z.array(z.any()).describe('Current betting lines from sportsbooks')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let currentYear = new Date().getFullYear();
@@ -61,7 +61,7 @@ export let bettingLineUpdates = SlateTrigger.create(
               homeTeam,
               awayTeam,
               lines,
-              eventType: 'betting.new_lines' as const,
+              eventType: 'betting.new_lines' as const
             });
           } else if (prev && prev !== lineHash) {
             inputs.push({
@@ -69,7 +69,7 @@ export let bettingLineUpdates = SlateTrigger.create(
               homeTeam,
               awayTeam,
               lines,
-              eventType: 'betting.lines_updated' as const,
+              eventType: 'betting.lines_updated' as const
             });
           }
         }
@@ -77,11 +77,11 @@ export let bettingLineUpdates = SlateTrigger.create(
 
       return {
         inputs,
-        updatedState: { lineHashes: newState },
+        updatedState: { lineHashes: newState }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.gameId}-${ctx.input.eventType}-${Date.now()}`,
@@ -89,9 +89,9 @@ export let bettingLineUpdates = SlateTrigger.create(
           gameId: ctx.input.gameId,
           homeTeam: ctx.input.homeTeam,
           awayTeam: ctx.input.awayTeam,
-          lines: ctx.input.lines,
-        },
+          lines: ctx.input.lines
+        }
       };
-    },
+    }
   })
   .build();

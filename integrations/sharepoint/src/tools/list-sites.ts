@@ -9,7 +9,7 @@ let siteSchema = z.object({
   siteDescription: z.string().nullable().describe('Site description'),
   webUrl: z.string().describe('Full URL of the site'),
   createdDateTime: z.string().optional().describe('When the site was created'),
-  lastModifiedDateTime: z.string().optional().describe('When the site was last modified'),
+  lastModifiedDateTime: z.string().optional().describe('When the site was last modified')
 });
 
 export let listSites = SlateTool.create(spec, {
@@ -18,22 +18,29 @@ export let listSites = SlateTool.create(spec, {
   description: `Search for SharePoint sites by keyword, or list subsites of a given site. Returns a list of matching sites with their IDs and URLs.`,
   instructions: [
     'Provide a **searchQuery** to find sites across the tenant.',
-    'Provide a **parentSiteId** to list subsites of a specific site.',
+    'Provide a **parentSiteId** to list subsites of a specific site.'
   ],
   tags: {
     readOnly: true,
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    searchQuery: z.string().optional().describe('Keyword to search for sites across the tenant'),
-    parentSiteId: z.string().optional().describe('Site ID to list subsites of'),
-  }))
-  .output(z.object({
-    sites: z.array(siteSchema).describe('List of matching sites'),
-    totalCount: z.number().describe('Number of sites returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      searchQuery: z
+        .string()
+        .optional()
+        .describe('Keyword to search for sites across the tenant'),
+      parentSiteId: z.string().optional().describe('Site ID to list subsites of')
+    })
+  )
+  .output(
+    z.object({
+      sites: z.array(siteSchema).describe('List of matching sites'),
+      totalCount: z.number().describe('Number of sites returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
     let result: any;
 
@@ -51,15 +58,15 @@ export let listSites = SlateTool.create(spec, {
       siteDescription: site.description || null,
       webUrl: site.webUrl,
       createdDateTime: site.createdDateTime,
-      lastModifiedDateTime: site.lastModifiedDateTime,
+      lastModifiedDateTime: site.lastModifiedDateTime
     }));
 
     return {
       output: {
         sites,
-        totalCount: sites.length,
+        totalCount: sites.length
       },
-      message: `Found **${sites.length}** site(s)${ctx.input.searchQuery ? ` matching "${ctx.input.searchQuery}"` : ''}.`,
+      message: `Found **${sites.length}** site(s)${ctx.input.searchQuery ? ` matching "${ctx.input.searchQuery}"` : ''}.`
     };
   })
   .build();

@@ -3,26 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve details for a specific Scale AI annotation project by name.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve details for a specific Scale AI annotation project by name.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectName: z.string().describe('Name of the project to retrieve'),
-  }))
-  .output(z.object({
-    projectName: z.string().describe('Name of the project'),
-    taskType: z.string().optional().describe('Task type associated with the project'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectName: z.string().describe('Name of the project to retrieve')
+    })
+  )
+  .output(
+    z
+      .object({
+        projectName: z.string().describe('Name of the project'),
+        taskType: z.string().optional().describe('Task type associated with the project'),
+        createdAt: z.string().optional().describe('ISO 8601 creation timestamp')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getProject(ctx.input.projectName);
@@ -32,9 +35,9 @@ export let getProject = SlateTool.create(
         projectName: result.name ?? ctx.input.projectName,
         taskType: result.type,
         createdAt: result.created_at,
-        ...result,
+        ...result
       },
-      message: `Retrieved project **${ctx.input.projectName}**.`,
+      message: `Retrieved project **${ctx.input.projectName}**.`
     };
   })
   .build();

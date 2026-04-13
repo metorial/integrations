@@ -16,14 +16,14 @@ import {
   managePublish,
   manageEnterpriseStore,
   listOrganizations,
-  manageWebhooks,
+  manageWebhooks
 } from './tools';
 import {
   buildEvents,
   distributionEvents,
   signingIdentityEvents,
   publishEvents,
-  enterpriseStoreEvents,
+  enterpriseStoreEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -44,13 +44,13 @@ export let provider = Slate.create({
     managePublish,
     manageEnterpriseStore,
     listOrganizations,
-    manageWebhooks,
+    manageWebhooks
   ],
   triggers: [
     buildEvents,
     distributionEvents,
     signingIdentityEvents,
     publishEvents,
-    enterpriseStoreEvents,
-  ],
+    enterpriseStoreEvents
+  ]
 });

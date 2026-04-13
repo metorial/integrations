@@ -9,12 +9,9 @@ import {
   listUsersTool,
   listCampaignsTool,
   manageCampaignTool,
-  manageContactsTool,
+  manageContactsTool
 } from './tools';
-import {
-  callEventTrigger,
-  smsEventTrigger,
-} from './triggers';
+import { callEventTrigger, smsEventTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -27,10 +24,7 @@ export let provider = Slate.create({
     listUsersTool,
     listCampaignsTool,
     manageCampaignTool,
-    manageContactsTool,
+    manageContactsTool
   ],
-  triggers: [
-    callEventTrigger,
-    smsEventTrigger,
-  ],
+  triggers: [callEventTrigger, smsEventTrigger]
 });

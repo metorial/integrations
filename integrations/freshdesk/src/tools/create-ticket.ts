@@ -3,43 +3,69 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Create Ticket',
-    key: 'create_ticket',
-    description: `Creates a new support ticket in Freshdesk. Supports setting subject, description, requester, priority, status, assignee, tags, and custom fields. Can also create outbound email tickets to initiate customer conversations.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createTicket = SlateTool.create(spec, {
+  name: 'Create Ticket',
+  key: 'create_ticket',
+  description: `Creates a new support ticket in Freshdesk. Supports setting subject, description, requester, priority, status, assignee, tags, and custom fields. Can also create outbound email tickets to initiate customer conversations.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    subject: z.string().describe('Subject of the ticket'),
-    description: z.string().describe('HTML content of the ticket description'),
-    requesterId: z.number().optional().describe('ID of the requester contact. Required if email is not provided.'),
-    email: z.string().optional().describe('Email of the requester. A new contact is created if not found. Required if requesterId is not provided.'),
-    phone: z.string().optional().describe('Phone number of the requester. Required if no email or requesterId.'),
-    name: z.string().optional().describe('Name of the requester'),
-    priority: z.number().optional().describe('Priority: 1=Low, 2=Medium, 3=High, 4=Urgent'),
-    status: z.number().optional().describe('Status: 2=Open, 3=Pending, 4=Resolved, 5=Closed'),
-    source: z.number().optional().describe('Source: 1=Email, 2=Portal, 3=Phone, 7=Chat, 9=Feedback Widget, 10=Outbound Email'),
-    type: z.string().optional().describe('Ticket type (e.g., "Question", "Incident", "Problem", "Feature Request")'),
-    groupId: z.number().optional().describe('ID of the group to assign the ticket to'),
-    responderId: z.number().optional().describe('ID of the agent to assign the ticket to'),
-    ccEmails: z.array(z.string()).optional().describe('Email addresses to CC on the ticket'),
-    tags: z.array(z.string()).optional().describe('Tags to associate with the ticket'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field key-value pairs')
-  }))
-  .output(z.object({
-    ticketId: z.number().describe('ID of the created ticket'),
-    subject: z.string().describe('Subject of the created ticket'),
-    status: z.number().describe('Status of the ticket'),
-    priority: z.number().describe('Priority of the ticket'),
-    createdAt: z.string().describe('Timestamp when the ticket was created')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      subject: z.string().describe('Subject of the ticket'),
+      description: z.string().describe('HTML content of the ticket description'),
+      requesterId: z
+        .number()
+        .optional()
+        .describe('ID of the requester contact. Required if email is not provided.'),
+      email: z
+        .string()
+        .optional()
+        .describe(
+          'Email of the requester. A new contact is created if not found. Required if requesterId is not provided.'
+        ),
+      phone: z
+        .string()
+        .optional()
+        .describe('Phone number of the requester. Required if no email or requesterId.'),
+      name: z.string().optional().describe('Name of the requester'),
+      priority: z.number().optional().describe('Priority: 1=Low, 2=Medium, 3=High, 4=Urgent'),
+      status: z
+        .number()
+        .optional()
+        .describe('Status: 2=Open, 3=Pending, 4=Resolved, 5=Closed'),
+      source: z
+        .number()
+        .optional()
+        .describe(
+          'Source: 1=Email, 2=Portal, 3=Phone, 7=Chat, 9=Feedback Widget, 10=Outbound Email'
+        ),
+      type: z
+        .string()
+        .optional()
+        .describe('Ticket type (e.g., "Question", "Incident", "Problem", "Feature Request")'),
+      groupId: z.number().optional().describe('ID of the group to assign the ticket to'),
+      responderId: z.number().optional().describe('ID of the agent to assign the ticket to'),
+      ccEmails: z.array(z.string()).optional().describe('Email addresses to CC on the ticket'),
+      tags: z.array(z.string()).optional().describe('Tags to associate with the ticket'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.number().describe('ID of the created ticket'),
+      subject: z.string().describe('Subject of the created ticket'),
+      status: z.number().describe('Status of the ticket'),
+      priority: z.number().describe('Priority of the ticket'),
+      createdAt: z.string().describe('Timestamp when the ticket was created')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -76,4 +102,5 @@ export let createTicket = SlateTool.create(
       },
       message: `Created ticket **#${ticket.id}**: "${ticket.subject}"`
     };
-  }).build();
+  })
+  .build();

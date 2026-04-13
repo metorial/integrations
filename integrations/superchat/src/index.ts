@@ -34,14 +34,9 @@ import {
   getInbox,
   listContactLists,
   addContactToList,
-  removeContactFromList,
+  removeContactFromList
 } from './tools';
-import {
-  messageEvents,
-  contactEvents,
-  conversationEvents,
-  noteEvents,
-} from './triggers';
+import { messageEvents, contactEvents, conversationEvents, noteEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -79,12 +74,7 @@ export let provider = Slate.create({
     getInbox,
     listContactLists,
     addContactToList,
-    removeContactFromList,
+    removeContactFromList
   ],
-  triggers: [
-    messageEvents,
-    contactEvents,
-    conversationEvents,
-    noteEvents,
-  ],
+  triggers: [messageEvents, contactEvents, conversationEvents, noteEvents]
 });

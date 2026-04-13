@@ -3,48 +3,62 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listComments = SlateTool.create(
-  spec,
-  {
-    name: 'List Comments',
-    key: 'list_comments',
-    description: `List comment threads on a YouTube video or channel. Returns top-level comments with reply counts, or list replies to a specific comment. Supports filtering by search terms and moderation status.`,
-    tags: {
-      readOnly: true
-    }
+export let listComments = SlateTool.create(spec, {
+  name: 'List Comments',
+  key: 'list_comments',
+  description: `List comment threads on a YouTube video or channel. Returns top-level comments with reply counts, or list replies to a specific comment. Supports filtering by search terms and moderation status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    videoId: z.string().optional().describe('Video ID to list comments for'),
-    channelId: z.string().optional().describe('Channel ID to list all comment threads for'),
-    allThreadsRelatedToChannelId: z.string().optional().describe('Channel ID to list all threads related to (including video comments)'),
-    parentCommentId: z.string().optional().describe('Parent comment ID to list replies for'),
-    maxResults: z.number().min(1).max(100).optional().describe('Maximum number of results (1-100)'),
-    pageToken: z.string().optional().describe('Token for pagination'),
-    order: z.enum(['time', 'relevance']).optional().describe('Sort order'),
-    searchTerms: z.string().optional().describe('Filter by search terms'),
-    moderationStatus: z.enum(['heldForReview', 'likelySpam', 'published']).optional().describe('Filter by moderation status')
-  }))
-  .output(z.object({
-    comments: z.array(z.object({
-      commentId: z.string(),
-      threadId: z.string().optional(),
-      authorName: z.string().optional(),
-      authorImageUrl: z.string().optional(),
-      authorChannelId: z.string().optional(),
-      textDisplay: z.string().optional(),
-      textOriginal: z.string().optional(),
-      likeCount: z.number().optional(),
-      publishedAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      replyCount: z.number().optional(),
-      videoId: z.string().optional(),
-      parentId: z.string().optional()
-    })),
-    totalResults: z.number().optional(),
-    nextPageToken: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      videoId: z.string().optional().describe('Video ID to list comments for'),
+      channelId: z.string().optional().describe('Channel ID to list all comment threads for'),
+      allThreadsRelatedToChannelId: z
+        .string()
+        .optional()
+        .describe('Channel ID to list all threads related to (including video comments)'),
+      parentCommentId: z.string().optional().describe('Parent comment ID to list replies for'),
+      maxResults: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of results (1-100)'),
+      pageToken: z.string().optional().describe('Token for pagination'),
+      order: z.enum(['time', 'relevance']).optional().describe('Sort order'),
+      searchTerms: z.string().optional().describe('Filter by search terms'),
+      moderationStatus: z
+        .enum(['heldForReview', 'likelySpam', 'published'])
+        .optional()
+        .describe('Filter by moderation status')
+    })
+  )
+  .output(
+    z.object({
+      comments: z.array(
+        z.object({
+          commentId: z.string(),
+          threadId: z.string().optional(),
+          authorName: z.string().optional(),
+          authorImageUrl: z.string().optional(),
+          authorChannelId: z.string().optional(),
+          textDisplay: z.string().optional(),
+          textOriginal: z.string().optional(),
+          likeCount: z.number().optional(),
+          publishedAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          replyCount: z.number().optional(),
+          videoId: z.string().optional(),
+          parentId: z.string().optional()
+        })
+      ),
+      totalResults: z.number().optional(),
+      nextPageToken: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.parentCommentId) {
@@ -55,7 +69,7 @@ export let listComments = SlateTool.create(
         pageToken: ctx.input.pageToken
       });
 
-      let comments = response.items.map((c) => ({
+      let comments = response.items.map(c => ({
         commentId: c.id,
         authorName: c.snippet?.authorDisplayName,
         authorImageUrl: c.snippet?.authorProfileImageUrl,
@@ -90,7 +104,7 @@ export let listComments = SlateTool.create(
       moderationStatus: ctx.input.moderationStatus
     });
 
-    let comments = response.items.map((thread) => {
+    let comments = response.items.map(thread => {
       let topComment = thread.snippet?.topLevelComment;
       return {
         commentId: topComment?.id || thread.id,
@@ -116,4 +130,5 @@ export let listComments = SlateTool.create(
       },
       message: `Retrieved **${comments.length}** comment thread(s).${response.nextPageToken ? ' More pages available.' : ''}`
     };
-  }).build();
+  })
+  .build();

@@ -7,8 +7,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.ipinfo.io',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json'
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
       }
     });
   }
@@ -41,7 +41,10 @@ export class Client {
     return response.data;
   }
 
-  async getHostedDomains(ip: string, options?: { page?: number; limit?: number }): Promise<HostedDomainsResponse> {
+  async getHostedDomains(
+    ip: string,
+    options?: { page?: number; limit?: number }
+  ): Promise<HostedDomainsResponse> {
     let params: Record<string, string> = {};
     if (options?.page !== undefined) params['page'] = String(options.page);
     if (options?.limit !== undefined) params['limit'] = String(options.limit);

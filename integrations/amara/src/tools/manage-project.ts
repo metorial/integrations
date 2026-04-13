@@ -3,39 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProject = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Create, update, or delete a project within a team. Projects organize team videos and can optionally have task workflows enabled.`,
-    instructions: [
-      'To create: provide teamSlug, name, and slug.',
-      'To update: provide teamSlug, projectSlug, and the fields to change.',
-      'To delete: provide teamSlug, projectSlug, and set "remove" to true.'
-    ]
-  }
-)
-  .input(z.object({
-    teamSlug: z.string().describe('Team slug'),
-    projectSlug: z.string().optional().describe('Project slug (required for update/delete)'),
-    remove: z.boolean().optional().describe('Set to true to delete the project'),
-    name: z.string().optional().describe('Project name (required for creation)'),
-    slug: z.string().optional().describe('Project slug (required for creation)'),
-    description: z.string().optional().describe('Project description'),
-    guidelines: z.string().optional().describe('Project guidelines')
-  }))
-  .output(z.object({
-    name: z.string().optional().describe('Project name'),
-    projectSlug: z.string().optional().describe('Project slug'),
-    description: z.string().optional().describe('Project description'),
-    guidelines: z.string().optional().describe('Project guidelines'),
-    workflowEnabled: z.boolean().optional().describe('Whether task workflow is enabled'),
-    created: z.string().optional().describe('Creation date'),
-    modified: z.string().optional().describe('Last modified date'),
-    removed: z.boolean().describe('Whether the project was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageProject = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Create, update, or delete a project within a team. Projects organize team videos and can optionally have task workflows enabled.`,
+  instructions: [
+    'To create: provide teamSlug, name, and slug.',
+    'To update: provide teamSlug, projectSlug, and the fields to change.',
+    'To delete: provide teamSlug, projectSlug, and set "remove" to true.'
+  ]
+})
+  .input(
+    z.object({
+      teamSlug: z.string().describe('Team slug'),
+      projectSlug: z.string().optional().describe('Project slug (required for update/delete)'),
+      remove: z.boolean().optional().describe('Set to true to delete the project'),
+      name: z.string().optional().describe('Project name (required for creation)'),
+      slug: z.string().optional().describe('Project slug (required for creation)'),
+      description: z.string().optional().describe('Project description'),
+      guidelines: z.string().optional().describe('Project guidelines')
+    })
+  )
+  .output(
+    z.object({
+      name: z.string().optional().describe('Project name'),
+      projectSlug: z.string().optional().describe('Project slug'),
+      description: z.string().optional().describe('Project description'),
+      guidelines: z.string().optional().describe('Project guidelines'),
+      workflowEnabled: z.boolean().optional().describe('Whether task workflow is enabled'),
+      created: z.string().optional().describe('Creation date'),
+      modified: z.string().optional().describe('Last modified date'),
+      removed: z.boolean().describe('Whether the project was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       username: ctx.auth.username
@@ -94,4 +95,5 @@ export let manageProject = SlateTool.create(
       },
       message: `Created project **"${project.name}"** (\`${project.slug}\`) in team \`${ctx.input.teamSlug}\`.`
     };
-  }).build();
+  })
+  .build();

@@ -3,33 +3,39 @@ import { GitHubActionsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWorkflowState = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Workflow State',
-    key: 'manage_workflow_state',
-    description: `Enable or disable a GitHub Actions workflow. Disabled workflows will not be triggered by events. Also retrieves workflow details and usage statistics.`,
-    tags: {
-      destructive: false,
-    },
+export let manageWorkflowState = SlateTool.create(spec, {
+  name: 'Manage Workflow State',
+  key: 'manage_workflow_state',
+  description: `Enable or disable a GitHub Actions workflow. Disabled workflows will not be triggered by events. Also retrieves workflow details and usage statistics.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    owner: z.string().describe('Repository owner (user or organization)'),
-    repo: z.string().describe('Repository name'),
-    workflowId: z.union([z.number(), z.string()]).describe('Workflow ID or file name'),
-    action: z.enum(['enable', 'disable', 'get', 'get_usage']).describe('Action to perform on the workflow'),
-  }))
-  .output(z.object({
-    workflowId: z.number().optional().describe('Workflow ID'),
-    name: z.string().optional().describe('Workflow name'),
-    state: z.string().optional().describe('Workflow state'),
-    path: z.string().optional().describe('Workflow file path'),
-    htmlUrl: z.string().optional().describe('URL to the workflow'),
-    billable: z.any().optional().describe('Billable usage by runner OS (UBUNTU, MACOS, WINDOWS)'),
-    actionPerformed: z.string().describe('The action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      owner: z.string().describe('Repository owner (user or organization)'),
+      repo: z.string().describe('Repository name'),
+      workflowId: z.union([z.number(), z.string()]).describe('Workflow ID or file name'),
+      action: z
+        .enum(['enable', 'disable', 'get', 'get_usage'])
+        .describe('Action to perform on the workflow')
+    })
+  )
+  .output(
+    z.object({
+      workflowId: z.number().optional().describe('Workflow ID'),
+      name: z.string().optional().describe('Workflow name'),
+      state: z.string().optional().describe('Workflow state'),
+      path: z.string().optional().describe('Workflow file path'),
+      htmlUrl: z.string().optional().describe('URL to the workflow'),
+      billable: z
+        .any()
+        .optional()
+        .describe('Billable usage by runner OS (UBUNTU, MACOS, WINDOWS)'),
+      actionPerformed: z.string().describe('The action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitHubActionsClient(ctx.auth.token);
     let { owner, repo, workflowId, action } = ctx.input;
 
@@ -37,7 +43,7 @@ export let manageWorkflowState = SlateTool.create(
       await client.enableWorkflow(owner, repo, workflowId);
       return {
         output: { actionPerformed: 'enabled' },
-        message: `Enabled workflow **${workflowId}** in **${owner}/${repo}**.`,
+        message: `Enabled workflow **${workflowId}** in **${owner}/${repo}**.`
       };
     }
 
@@ -45,7 +51,7 @@ export let manageWorkflowState = SlateTool.create(
       await client.disableWorkflow(owner, repo, workflowId);
       return {
         output: { actionPerformed: 'disabled' },
-        message: `Disabled workflow **${workflowId}** in **${owner}/${repo}**.`,
+        message: `Disabled workflow **${workflowId}** in **${owner}/${repo}**.`
       };
     }
 
@@ -54,9 +60,9 @@ export let manageWorkflowState = SlateTool.create(
       return {
         output: {
           billable: usage.billable,
-          actionPerformed: 'get_usage',
+          actionPerformed: 'get_usage'
         },
-        message: `Retrieved usage statistics for workflow **${workflowId}** in **${owner}/${repo}**.`,
+        message: `Retrieved usage statistics for workflow **${workflowId}** in **${owner}/${repo}**.`
       };
     }
 
@@ -68,8 +74,9 @@ export let manageWorkflowState = SlateTool.create(
         state: workflow.state,
         path: workflow.path,
         htmlUrl: workflow.html_url,
-        actionPerformed: 'get',
+        actionPerformed: 'get'
       },
-      message: `Retrieved workflow **${workflow.name}** (${workflow.state}) in **${owner}/${repo}**.`,
+      message: `Retrieved workflow **${workflow.name}** (${workflow.state}) in **${owner}/${repo}**.`
     };
-  }).build();
+  })
+  .build();

@@ -11,11 +11,13 @@ Hugging Face is a platform for hosting and sharing machine learning models, data
 User Access Tokens are the preferred way to authenticate an application or notebook to Hugging Face services. Tokens are created in the user's profile settings under the Access Tokens tab. Tokens begin with `hf_`.
 
 Tokens are passed as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer hf_xxxxx
 ```
 
 Token roles control access levels:
+
 - **Fine-grained**: Tokens with this role provide fine-grained access to specific resources, such as a specific model or models in a specific organization.
 - **Read**: Tokens with this role can only provide read access to repositories you could read, including public and private repositories that you, or an organization you're a member of, own.
 - **Write**: Tokens with this role provide read and write access to repositories.
@@ -25,6 +27,7 @@ Token roles control access levels:
 Hugging Face provides OAuth 2.0 and OpenID Connect support, allowing external applications to implement "Sign in with Hugging Face" functionality.
 
 Key endpoints:
+
 - **Authorization**: `https://huggingface.co/oauth/authorize`
 - **Token**: `https://huggingface.co/oauth/token`
 - **OpenID Configuration**: `https://huggingface.co/.well-known/openid-configuration`
@@ -34,6 +37,7 @@ OAuth applications are created through the user settings interface. Each applica
 You can create or use OAuth apps without a client secret, which is useful for native apps, CLIs, or other contexts where keeping a secret is impractical. Public apps authenticate using only the client ID (e.g., in device code or authorization code flows with PKCE).
 
 Supported OAuth scopes (with `openid` and `profile` always included):
+
 - `openid` – OpenID Connect identity
 - `profile` – User profile information
 - `email` – User email address
@@ -61,6 +65,7 @@ Spaces make it easy to create and deploy ML-powered demos in minutes. Spaces sup
 Leverage over 800,000+ models from different open-source libraries. Use models for a variety of tasks, including text generation, image generation, document embeddings, NER, summarization, image classification, and more.
 
 Two tiers are available:
+
 - **Serverless Inference API**: Free tier for prototyping; models are loaded on-demand on shared infrastructure.
 - **Inference Providers**: Give developers access to hundreds of ML models, powered by world-class inference providers, integrated into client SDKs. The platform integrates with leading AI infrastructure providers through a single, consistent API.
 - **Inference Endpoints (Dedicated)**: Deploy models on dedicated, fully managed infrastructure with autoscaling.

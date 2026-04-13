@@ -22,52 +22,73 @@ let localResultSchema = z.object({
   latitude: z.number().optional().describe('GPS latitude'),
   longitude: z.number().optional().describe('GPS longitude'),
   thumbnailUrl: z.string().optional().describe('Business thumbnail URL'),
-  serviceOptions: z.object({
-    dineIn: z.boolean().optional(),
-    takeout: z.boolean().optional(),
-    delivery: z.boolean().optional(),
-  }).optional().describe('Available service options'),
+  serviceOptions: z
+    .object({
+      dineIn: z.boolean().optional(),
+      takeout: z.boolean().optional(),
+      delivery: z.boolean().optional()
+    })
+    .optional()
+    .describe('Available service options')
 });
 
-export let mapsSearchTool = SlateTool.create(
-  spec,
-  {
-    name: 'Maps Search',
-    key: 'maps_search',
-    description: `Search Google Maps for local businesses, places, and points of interest. Returns business names, addresses, ratings, reviews, phone numbers, websites, operating hours, GPS coordinates, and service options. Can also retrieve detailed information for a specific place.`,
-    tags: {
-      readOnly: true,
-    },
+export let mapsSearchTool = SlateTool.create(spec, {
+  name: 'Maps Search',
+  key: 'maps_search',
+  description: `Search Google Maps for local businesses, places, and points of interest. Returns business names, addresses, ratings, reviews, phone numbers, websites, operating hours, GPS coordinates, and service options. Can also retrieve detailed information for a specific place.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query (e.g., "pizza near me", "hotels in Paris")'),
-    dataCid: z.string().optional().describe('Google CID to look up a specific place directly'),
-    coordinates: z.string().optional().describe('GPS coordinates in "@lat,lng,zoom" format (e.g., "@40.7455096,-74.0083012,14z")'),
-    language: z.string().optional().describe('Language code (e.g., "en")'),
-    country: z.string().optional().describe('Country code (e.g., "us")'),
-    page: z.number().optional().describe('Page number for pagination (0-indexed, increments of 20)'),
-    noCache: z.boolean().optional().describe('Force fresh results'),
-  }))
-  .output(z.object({
-    localResults: z.array(localResultSchema).describe('Local business/place results'),
-    placeDetails: z.object({
-      title: z.string().optional(),
-      placeId: z.string().optional(),
-      rating: z.number().optional(),
-      reviewCount: z.number().optional(),
-      address: z.string().optional(),
-      phone: z.string().optional(),
-      website: z.string().optional(),
-      description: z.string().optional(),
-      hours: z.any().optional(),
-    }).optional().describe('Detailed place information (when looking up a specific place)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .optional()
+        .describe('Search query (e.g., "pizza near me", "hotels in Paris")'),
+      dataCid: z
+        .string()
+        .optional()
+        .describe('Google CID to look up a specific place directly'),
+      coordinates: z
+        .string()
+        .optional()
+        .describe(
+          'GPS coordinates in "@lat,lng,zoom" format (e.g., "@40.7455096,-74.0083012,14z")'
+        ),
+      language: z.string().optional().describe('Language code (e.g., "en")'),
+      country: z.string().optional().describe('Country code (e.g., "us")'),
+      page: z
+        .number()
+        .optional()
+        .describe('Page number for pagination (0-indexed, increments of 20)'),
+      noCache: z.boolean().optional().describe('Force fresh results')
+    })
+  )
+  .output(
+    z.object({
+      localResults: z.array(localResultSchema).describe('Local business/place results'),
+      placeDetails: z
+        .object({
+          title: z.string().optional(),
+          placeId: z.string().optional(),
+          rating: z.number().optional(),
+          reviewCount: z.number().optional(),
+          address: z.string().optional(),
+          phone: z.string().optional(),
+          website: z.string().optional(),
+          description: z.string().optional(),
+          hours: z.any().optional()
+        })
+        .optional()
+        .describe('Detailed place information (when looking up a specific place)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SerpApiClient({ apiKey: ctx.auth.token });
 
     let params: Record<string, any> = {
-      engine: 'google_maps',
+      engine: 'google_maps'
     };
 
     if (ctx.input.dataCid) {
@@ -105,24 +126,28 @@ export let mapsSearchTool = SlateTool.create(
       latitude: r.gps_coordinates?.latitude,
       longitude: r.gps_coordinates?.longitude,
       thumbnailUrl: r.thumbnail,
-      serviceOptions: r.service_options ? {
-        dineIn: r.service_options.dine_in,
-        takeout: r.service_options.takeout,
-        delivery: r.service_options.delivery,
-      } : undefined,
+      serviceOptions: r.service_options
+        ? {
+            dineIn: r.service_options.dine_in,
+            takeout: r.service_options.takeout,
+            delivery: r.service_options.delivery
+          }
+        : undefined
     }));
 
-    let placeDetails = data.place_results ? {
-      title: data.place_results.title,
-      placeId: data.place_results.place_id,
-      rating: data.place_results.rating,
-      reviewCount: data.place_results.reviews,
-      address: data.place_results.address,
-      phone: data.place_results.phone,
-      website: data.place_results.website,
-      description: data.place_results.description,
-      hours: data.place_results.operating_hours,
-    } : undefined;
+    let placeDetails = data.place_results
+      ? {
+          title: data.place_results.title,
+          placeId: data.place_results.place_id,
+          rating: data.place_results.rating,
+          reviewCount: data.place_results.reviews,
+          address: data.place_results.address,
+          phone: data.place_results.phone,
+          website: data.place_results.website,
+          description: data.place_results.description,
+          hours: data.place_results.operating_hours
+        }
+      : undefined;
 
     let resultCount = localResults.length;
     let message = placeDetails
@@ -132,8 +157,9 @@ export let mapsSearchTool = SlateTool.create(
     return {
       output: {
         localResults,
-        placeDetails,
+        placeDetails
       },
-      message,
+      message
     };
-  }).build();
+  })
+  .build();

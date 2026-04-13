@@ -3,32 +3,37 @@ import { FlexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageInteractionChannelTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Interaction Channel',
-    key: 'manage_interaction_channel',
-    description: `Get details or update the status of a channel within a Flex interaction. Use this to close a channel, fetch channel status, or list all channels for an interaction.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageInteractionChannelTool = SlateTool.create(spec, {
+  name: 'Manage Interaction Channel',
+  key: 'manage_interaction_channel',
+  description: `Get details or update the status of a channel within a Flex interaction. Use this to close a channel, fetch channel status, or list all channels for an interaction.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'list', 'close']).describe('Action to perform on the channel'),
-    interactionSid: z.string().describe('Interaction SID'),
-    channelSid: z.string().optional().describe('Channel SID (required for get/close)')
-  }))
-  .output(z.object({
-    channels: z.array(z.object({
-      channelSid: z.string().describe('Channel SID'),
-      interactionSid: z.string().optional().describe('Interaction SID'),
-      type: z.string().optional().describe('Channel type'),
-      status: z.string().optional().describe('Channel status')
-    })).describe('Channel details')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'list', 'close']).describe('Action to perform on the channel'),
+      interactionSid: z.string().describe('Interaction SID'),
+      channelSid: z.string().optional().describe('Channel SID (required for get/close)')
+    })
+  )
+  .output(
+    z.object({
+      channels: z
+        .array(
+          z.object({
+            channelSid: z.string().describe('Channel SID'),
+            interactionSid: z.string().optional().describe('Interaction SID'),
+            type: z.string().optional().describe('Channel type'),
+            status: z.string().optional().describe('Channel status')
+          })
+        )
+        .describe('Channel details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FlexClient(ctx.auth.token);
 
     if (ctx.input.action === 'list') {
@@ -57,12 +62,14 @@ export let manageInteractionChannelTool = SlateTool.create(
       );
       return {
         output: {
-          channels: [{
-            channelSid: result.sid,
-            interactionSid: result.interaction_sid,
-            type: result.type,
-            status: result.status
-          }]
+          channels: [
+            {
+              channelSid: result.sid,
+              interactionSid: result.interaction_sid,
+              type: result.type,
+              status: result.status
+            }
+          ]
         },
         message: `Closed channel **${result.sid}** in interaction **${ctx.input.interactionSid}**.`
       };
@@ -75,13 +82,16 @@ export let manageInteractionChannelTool = SlateTool.create(
     );
     return {
       output: {
-        channels: [{
-          channelSid: result.sid,
-          interactionSid: result.interaction_sid,
-          type: result.type,
-          status: result.status
-        }]
+        channels: [
+          {
+            channelSid: result.sid,
+            interactionSid: result.interaction_sid,
+            type: result.type,
+            status: result.status
+          }
+        ]
       },
       message: `Channel **${result.sid}** is **${result.status}** (type: ${result.type}).`
     };
-  }).build();
+  })
+  .build();

@@ -19,7 +19,7 @@ let campaignSchema = z.object({
   recipientsCount: z.number().optional().describe('Number of recipients'),
   totalBounces: z.number().optional().describe('Total bounces'),
   totalComplaints: z.number().optional().describe('Total complaints'),
-  totalUnsubscribes: z.number().optional().describe('Total unsubscribes'),
+  totalUnsubscribes: z.number().optional().describe('Total unsubscribes')
 });
 
 export let getCampaigns = SlateTool.create(spec, {
@@ -28,20 +28,33 @@ export let getCampaigns = SlateTool.create(spec, {
   description: `Retrieve a list of campaigns or details for a specific campaign. Returns campaign metadata, status, and high-level metrics. Use the campaign analytics tool for detailed performance data.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    campaignId: z.string().optional().describe('Specific campaign ID to retrieve. If omitted, returns a paginated list of all campaigns.'),
-    page: z.number().optional().default(1).describe('Page number for pagination (starts at 1)'),
-    pageSize: z.number().optional().default(50).describe('Number of campaigns per page'),
-  }))
-  .output(z.object({
-    campaigns: z.array(campaignSchema).describe('List of campaigns'),
-    totalCount: z.number().optional().describe('Total number of campaigns (when listing)'),
-    currentPage: z.number().optional().describe('Current page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      campaignId: z
+        .string()
+        .optional()
+        .describe(
+          'Specific campaign ID to retrieve. If omitted, returns a paginated list of all campaigns.'
+        ),
+      page: z
+        .number()
+        .optional()
+        .default(1)
+        .describe('Page number for pagination (starts at 1)'),
+      pageSize: z.number().optional().default(50).describe('Number of campaigns per page')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(campaignSchema).describe('List of campaigns'),
+      totalCount: z.number().optional().describe('Total number of campaigns (when listing)'),
+      currentPage: z.number().optional().describe('Current page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MoosendClient({ token: ctx.auth.token });
 
     if (ctx.input.campaignId) {
@@ -49,9 +62,9 @@ export let getCampaigns = SlateTool.create(spec, {
       let campaign = mapCampaign(result);
       return {
         output: {
-          campaigns: [campaign],
+          campaigns: [campaign]
         },
-        message: `Retrieved campaign **${campaign.name}** (${campaign.campaignId}).`,
+        message: `Retrieved campaign **${campaign.name}** (${campaign.campaignId}).`
       };
     }
 
@@ -65,9 +78,9 @@ export let getCampaigns = SlateTool.create(spec, {
       output: {
         campaigns,
         totalCount: paging?.TotalResults as number | undefined,
-        currentPage: ctx.input.page,
+        currentPage: ctx.input.page
       },
-      message: `Retrieved **${campaigns.length}** campaign(s)${paging?.TotalResults ? ` of ${paging.TotalResults} total` : ''}.`,
+      message: `Retrieved **${campaigns.length}** campaign(s)${paging?.TotalResults ? ` of ${paging.TotalResults} total` : ''}.`
     };
   })
   .build();
@@ -88,5 +101,5 @@ let mapCampaign = (c: Record<string, unknown>) => ({
   recipientsCount: c?.RecipientsCount as number | undefined,
   totalBounces: c?.TotalBounces as number | undefined,
   totalComplaints: c?.TotalComplaints as number | undefined,
-  totalUnsubscribes: c?.TotalUnsubscribes as number | undefined,
+  totalUnsubscribes: c?.TotalUnsubscribes as number | undefined
 });

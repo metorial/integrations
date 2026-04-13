@@ -21,6 +21,7 @@ API keys can be passed in three ways (in order of recommendation):
 - **Query Parameter (not recommended):** Append `?api_key=YOUR_KEY` to the request URL. This is less secure as keys may be logged.
 
 API keys have two permission levels:
+
 - **Read:** Read-only access (GET requests only). Suitable for dashboards and reporting.
 - **Write:** Full access to read and modify data (GET, POST, DELETE). Required for creating customers, sending surveys, and updating records.
 
@@ -50,39 +51,51 @@ The redirect URI is not predefined in Retently — any URL can be used. Client c
 ## Features
 
 ### Customer Management
+
 Create, update, retrieve, and delete customers. Customers are identified by email address. You can assign custom properties (string, date, integer, collection, boolean types), tags, and company information to customers. If your request includes customers that were previously added to Retently, then their data will be updated with the information you will pass in the current request. Bulk operations support up to 1,000 customers per request.
 
 ### Company Management
+
 Retrieve company information including industry, tags, NPS/CSAT/CES metrics, and customer counts. Companies can be looked up by ID or domain name.
 
 ### Survey Delivery
+
 Send transactional surveys (NPS, CSAT, CES, 5-Star) to customers via a specified campaign. An optional delay parameter allows sending the survey at a later day from the triggered event. The delay is counted in days. Surveys can be sent to up to 100 customers per request. Supports email and in-app survey channels.
 
 ### Feedback Retrieval
+
 Retrieve survey responses with filtering by customer email/ID, campaign, date range, and custom customer attributes. Responses include score, text feedback, sentiment, and associated topics/tags. Individual responses can be fetched by ID.
 
 ### Feedback Annotation
+
 Add topics (with sentiment: positive, negative, or neutral) and tags to survey responses. Topics and tags can either replace existing ones or be appended to them.
 
 ### Campaign & Template Management
+
 Retrieve a list of survey campaigns with details such as metric type (NPS, CSAT, CES, 5-Star), channel (email, link, in-app, Intercom), campaign type (transactional, recurring), and active status. Retrieve available survey templates.
 
 ### Score Retrieval
+
 Get the latest score for a specific survey metric (NPS, CSAT, CES, or STAR) across your account, including rating distribution and response counts.
 
 ### Reporting
+
 Retrieve campaign reports with trend data, delivery statistics, and additional rating question stats. Reports can be filtered by campaign ID and date range.
 
 ### Trends
+
 Retrieve trend groups and detailed trend data within a group, including current vs. baseline scores, trend lines, and respondent distributions. Supports various date range presets and custom date ranges.
 
 ### Survey Outbox
+
 Retrieve a list of sent surveys with delivery status, recipient details, and filtering by campaign, channel, date range, and how the survey was sent (campaign, reminder, manual, test, imported).
 
 ### Suppression Management
+
 Manage suppression lists to block specific email addresses or domain patterns from receiving surveys. Supports wildcard domain patterns (e.g., `*.example.com`) and categorization (corporate, disposable, invalid).
 
 ### Customer Unsubscription
+
 Unsubscribe customers from receiving future surveys, optionally including a custom opt-out message.
 
 ## Events
@@ -92,19 +105,25 @@ Retently supports webhooks that allow you to send HTTP requests to another web a
 Based on available documentation, the following event types are supported:
 
 ### New Survey Response
+
 Triggers when a new survey response is received. Includes the customer's score, text feedback, and associated metadata.
 
 ### Campaign Score Updated
+
 Triggers when the survey campaign's score (NPS, CSAT, CES) is updated.
 
 ### Company Score Updated
+
 Triggers when a company's score (NPS, CSAT, CES) is updated.
 
 ### Overall Metric Score Updated
+
 Triggers when the score is updated for a particular metric (NPS, CSAT, CES).
 
 ### Customer Unsubscribed
+
 Triggers when a customer opts out of surveys.
 
 ### Bounced Survey
+
 Triggers when a survey email bounces (delivery failure).

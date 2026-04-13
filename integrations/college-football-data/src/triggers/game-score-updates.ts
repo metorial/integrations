@@ -13,43 +13,51 @@ let inputSchema = z.object({
   period: z.number().nullable().optional().describe('Current game period/quarter'),
   clock: z.string().nullable().optional().describe('Game clock time remaining'),
   situation: z.string().nullable().optional().describe('Current game situation'),
-  eventType: z.enum(['game.started', 'game.score_updated', 'game.completed']).describe('Type of event detected'),
+  eventType: z
+    .enum(['game.started', 'game.score_updated', 'game.completed'])
+    .describe('Type of event detected')
 });
 
 type GameScoreInput = z.infer<typeof inputSchema>;
 
-export let gameScoreUpdates = SlateTrigger.create(
-  spec,
-  {
-    name: 'Game Score Updates',
-    key: 'game_score_updates',
-    description: 'Polls the live scoreboard for game status changes and score updates. Triggers when games start, scores change, or games are completed.',
-  }
-)
+export let gameScoreUpdates = SlateTrigger.create(spec, {
+  name: 'Game Score Updates',
+  key: 'game_score_updates',
+  description:
+    'Polls the live scoreboard for game status changes and score updates. Triggers when games start, scores change, or games are completed.'
+})
   .input(inputSchema)
-  .output(z.object({
-    gameId: z.number().describe('Game ID'),
-    homeTeam: z.string().describe('Home team name'),
-    awayTeam: z.string().describe('Away team name'),
-    homeScore: z.number().nullable().describe('Home team score'),
-    awayScore: z.number().nullable().describe('Away team score'),
-    status: z.string().describe('Game status'),
-    period: z.number().nullable().optional().describe('Current game period/quarter'),
-    clock: z.string().nullable().optional().describe('Game clock'),
-    situation: z.string().nullable().optional().describe('Current game situation'),
-  }))
+  .output(
+    z.object({
+      gameId: z.number().describe('Game ID'),
+      homeTeam: z.string().describe('Home team name'),
+      awayTeam: z.string().describe('Away team name'),
+      homeScore: z.number().nullable().describe('Home team score'),
+      awayScore: z.number().nullable().describe('Away team score'),
+      status: z.string().describe('Game status'),
+      period: z.number().nullable().optional().describe('Current game period/quarter'),
+      clock: z.string().nullable().optional().describe('Game clock'),
+      situation: z.string().nullable().optional().describe('Current game situation')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let scoreboard = await client.getScoreboard();
 
-      let previousState: Record<string, { homeScore: number | null; awayScore: number | null; status: string }> = ctx.state?.gameStates ?? {};
+      let previousState: Record<
+        string,
+        { homeScore: number | null; awayScore: number | null; status: string }
+      > = ctx.state?.gameStates ?? {};
       let inputs: GameScoreInput[] = [];
-      let newState: Record<string, { homeScore: number | null; awayScore: number | null; status: string }> = {};
+      let newState: Record<
+        string,
+        { homeScore: number | null; awayScore: number | null; status: string }
+      > = {};
 
       if (Array.isArray(scoreboard)) {
         for (let game of scoreboard) {
@@ -78,7 +86,7 @@ export let gameScoreUpdates = SlateTrigger.create(
               period,
               clock,
               situation,
-              eventType: 'game.started' as const,
+              eventType: 'game.started' as const
             });
           } else if (prev) {
             if (prev.status !== 'completed' && status === 'completed') {
@@ -92,7 +100,7 @@ export let gameScoreUpdates = SlateTrigger.create(
                 period,
                 clock,
                 situation,
-                eventType: 'game.completed' as const,
+                eventType: 'game.completed' as const
               });
             } else if (prev.homeScore !== homeScore || prev.awayScore !== awayScore) {
               inputs.push({
@@ -105,7 +113,7 @@ export let gameScoreUpdates = SlateTrigger.create(
                 period,
                 clock,
                 situation,
-                eventType: 'game.score_updated' as const,
+                eventType: 'game.score_updated' as const
               });
             }
           }
@@ -114,11 +122,11 @@ export let gameScoreUpdates = SlateTrigger.create(
 
       return {
         inputs,
-        updatedState: { gameStates: newState },
+        updatedState: { gameStates: newState }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.gameId}-${ctx.input.eventType}-${ctx.input.homeScore}-${ctx.input.awayScore}`,
@@ -131,9 +139,9 @@ export let gameScoreUpdates = SlateTrigger.create(
           status: ctx.input.status,
           period: ctx.input.period,
           clock: ctx.input.clock,
-          situation: ctx.input.situation,
-        },
+          situation: ctx.input.situation
+        }
       };
-    },
+    }
   })
   .build();

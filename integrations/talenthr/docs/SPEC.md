@@ -26,24 +26,31 @@ The API base URL follows the pattern based on your TalentHR domain. Full API doc
 ## Features
 
 ### Employee Management
+
 Manage the full employee lifecycle including hiring (creating new employees), viewing employee records, and managing employee data. Add new employees (hire) to the system. Employee profiles include contact details, job titles, departments, custom fields, and organizational hierarchy.
 
 ### Organizational Structure
+
 Create and manage the building blocks of your organization's structure:
+
 - Create departments in your system.
 - Create divisions in the system.
 - Create job titles in the system.
 - Create locations in the system.
 
 ### Time Off Management
+
 Manage employee absences and time-off requests through the API:
+
 - List employees who are absent on a specific period.
 - List employees out of the company today and tomorrow.
 - Respond to an employee's time off request (approve or reject).
 - TalentHR supports all standard leave types, including vacation, sick leave, and work-from-home days, as well as custom types like parental leave and time off in lieu.
 
 ### Applicant Tracking
+
 TalentHR lets you create a branded careers page with your company's branding and open roles, and you can display job openings on your website using TalentHR's WordPress plugin, Zapier integration, or public API.
+
 - The API can be used to manage and expose job openings externally.
 
 ## Events

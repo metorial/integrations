@@ -23,11 +23,9 @@ import {
   getCommentThread,
   listBrandTemplates,
   getBrandTemplate,
-  autofillBrandTemplate,
+  autofillBrandTemplate
 } from './tools';
-import {
-  designNotification,
-} from './triggers';
+import { designNotification } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -54,9 +52,7 @@ export let provider = Slate.create({
     getCommentThread,
     listBrandTemplates,
     getBrandTemplate,
-    autofillBrandTemplate,
+    autofillBrandTemplate
   ],
-  triggers: [
-    designNotification,
-  ],
+  triggers: [designNotification]
 });

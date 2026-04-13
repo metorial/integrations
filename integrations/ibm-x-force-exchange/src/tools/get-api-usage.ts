@@ -3,25 +3,26 @@ import { XForceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getApiUsage = SlateTool.create(
-  spec,
-  {
-    name: 'Get API Usage',
-    key: 'get_api_usage',
-    description: `Retrieve your current API usage statistics for IBM X-Force Exchange. Shows consumption details per month for each subscription type, including entitlement limits and current usage counts.`,
-    tags: {
-      readOnly: true,
-    },
+export let getApiUsage = SlateTool.create(spec, {
+  name: 'Get API Usage',
+  key: 'get_api_usage',
+  description: `Retrieve your current API usage statistics for IBM X-Force Exchange. Shows consumption details per month for each subscription type, including entitlement limits and current usage counts.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    usage: z.record(z.string(), z.any()).describe('API usage details by subscription and month'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      usage: z
+        .record(z.string(), z.any())
+        .describe('API usage details by subscription and month')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new XForceClient({
       token: ctx.auth.token,
-      password: ctx.auth.password,
+      password: ctx.auth.password
     });
 
     ctx.progress('Fetching API usage...');
@@ -29,6 +30,7 @@ export let getApiUsage = SlateTool.create(
 
     return {
       output: { usage: data },
-      message: `Retrieved API usage statistics`,
+      message: `Retrieved API usage statistics`
     };
-  }).build();
+  })
+  .build();

@@ -3,41 +3,48 @@ import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageQuest = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Quest',
-    key: 'manage_quest',
-    description: `Manage quests in Habitica. Invite party members to a quest, accept or reject quest invitations, force-start, cancel, or abort an active quest.`,
-    instructions: [
-      'Use "invite" to start a quest invitation with a quest scroll key.',
-      'Use "accept" or "reject" to respond to a pending quest invitation.',
-      'Use "force-start" to begin a quest without waiting for all members.',
-      'Use "cancel" to cancel a pending quest before it starts.',
-      'Use "abort" to end an active quest in progress.',
-      'Most quest actions use "party" as the groupId.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['invite', 'accept', 'reject', 'force-start', 'cancel', 'abort']).describe('Quest action to perform'),
-    groupId: z.string().optional().default('party').describe('Group ID (defaults to "party")'),
-    questKey: z.string().optional().describe('Quest scroll key (required for invite action)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was performed successfully'),
-    questKey: z.string().optional().describe('Quest key if applicable'),
-    questActive: z.boolean().optional().describe('Whether the quest is now active'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageQuest = SlateTool.create(spec, {
+  name: 'Manage Quest',
+  key: 'manage_quest',
+  description: `Manage quests in Habitica. Invite party members to a quest, accept or reject quest invitations, force-start, cancel, or abort an active quest.`,
+  instructions: [
+    'Use "invite" to start a quest invitation with a quest scroll key.',
+    'Use "accept" or "reject" to respond to a pending quest invitation.',
+    'Use "force-start" to begin a quest without waiting for all members.',
+    'Use "cancel" to cancel a pending quest before it starts.',
+    'Use "abort" to end an active quest in progress.',
+    'Most quest actions use "party" as the groupId.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['invite', 'accept', 'reject', 'force-start', 'cancel', 'abort'])
+        .describe('Quest action to perform'),
+      groupId: z
+        .string()
+        .optional()
+        .default('party')
+        .describe('Group ID (defaults to "party")'),
+      questKey: z.string().optional().describe('Quest scroll key (required for invite action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was performed successfully'),
+      questKey: z.string().optional().describe('Quest key if applicable'),
+      questActive: z.boolean().optional().describe('Whether the quest is now active')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HabiticaClient({
       userId: ctx.auth.userId,
       token: ctx.auth.token,
-      xClient: ctx.config.xClient,
+      xClient: ctx.config.xClient
     });
 
     let groupId = ctx.input.groupId || 'party';
@@ -49,9 +56,9 @@ export let manageQuest = SlateTool.create(
         output: {
           success: true,
           questKey: result.key || ctx.input.questKey,
-          questActive: result.active,
+          questActive: result.active
         },
-        message: `Invited party to quest **${ctx.input.questKey}**`,
+        message: `Invited party to quest **${ctx.input.questKey}**`
       };
     }
 
@@ -61,9 +68,9 @@ export let manageQuest = SlateTool.create(
         output: {
           success: true,
           questKey: result.key,
-          questActive: result.active,
+          questActive: result.active
         },
-        message: `Accepted quest invitation`,
+        message: `Accepted quest invitation`
       };
     }
 
@@ -73,9 +80,9 @@ export let manageQuest = SlateTool.create(
         output: {
           success: true,
           questKey: result.key,
-          questActive: result.active,
+          questActive: result.active
         },
-        message: `Rejected quest invitation`,
+        message: `Rejected quest invitation`
       };
     }
 
@@ -85,9 +92,9 @@ export let manageQuest = SlateTool.create(
         output: {
           success: true,
           questKey: result.key,
-          questActive: result.active,
+          questActive: result.active
         },
-        message: `Force-started quest`,
+        message: `Force-started quest`
       };
     }
 
@@ -97,9 +104,9 @@ export let manageQuest = SlateTool.create(
         output: {
           success: true,
           questKey: result.key,
-          questActive: false,
+          questActive: false
         },
-        message: `Cancelled pending quest`,
+        message: `Cancelled pending quest`
       };
     }
 
@@ -109,11 +116,12 @@ export let manageQuest = SlateTool.create(
         output: {
           success: true,
           questKey: result.key,
-          questActive: false,
+          questActive: false
         },
-        message: `Aborted active quest`,
+        message: `Aborted active quest`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

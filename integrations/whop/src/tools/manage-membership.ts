@@ -18,7 +18,7 @@ let membershipOutputSchema = z.object({
   metadata: z.record(z.string(), z.string()).nullable().describe('Custom metadata'),
   renewalPeriodStart: z.string().nullable().describe('Current renewal period start'),
   renewalPeriodEnd: z.string().nullable().describe('Current renewal period end'),
-  createdAt: z.string().describe('ISO 8601 creation timestamp'),
+  createdAt: z.string().describe('ISO 8601 creation timestamp')
 });
 
 let mapMembership = (m: any) => ({
@@ -36,33 +36,43 @@ let mapMembership = (m: any) => ({
   metadata: m.metadata || null,
   renewalPeriodStart: m.renewal_period_start || null,
   renewalPeriodEnd: m.renewal_period_end || null,
-  createdAt: m.created_at,
+  createdAt: m.created_at
 });
 
-export let manageMembership = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Membership',
-    key: 'manage_membership',
-    description: `Retrieve, update metadata, cancel, uncancel, pause, or resume a Whop membership.
+export let manageMembership = SlateTool.create(spec, {
+  name: 'Manage Membership',
+  key: 'manage_membership',
+  description: `Retrieve, update metadata, cancel, uncancel, pause, or resume a Whop membership.
 Use **action** to specify: \`get\`, \`update_metadata\`, \`cancel\`, \`uncancel\`, \`pause\`, or \`resume\`.`,
-    instructions: [
-      'membershipId is always required.',
-      'For "update_metadata": provide metadata as key-value pairs. This replaces existing metadata.',
-      'For "cancel": cancellationMode defaults to "at_period_end". Use "immediate" for instant cancellation.',
-      'For "pause": optionally set voidPayments to void outstanding past-due payments.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['get', 'update_metadata', 'cancel', 'uncancel', 'pause', 'resume']).describe('Operation to perform'),
-    membershipId: z.string().describe('Membership ID or license key'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Metadata key-value pairs (for update_metadata)'),
-    cancellationMode: z.enum(['at_period_end', 'immediate']).optional().describe('Cancellation mode (for cancel)'),
-    voidPayments: z.boolean().optional().describe('Whether to void past-due payments (for pause)'),
-  }))
+  instructions: [
+    'membershipId is always required.',
+    'For "update_metadata": provide metadata as key-value pairs. This replaces existing metadata.',
+    'For "cancel": cancellationMode defaults to "at_period_end". Use "immediate" for instant cancellation.',
+    'For "pause": optionally set voidPayments to void outstanding past-due payments.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'update_metadata', 'cancel', 'uncancel', 'pause', 'resume'])
+        .describe('Operation to perform'),
+      membershipId: z.string().describe('Membership ID or license key'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Metadata key-value pairs (for update_metadata)'),
+      cancellationMode: z
+        .enum(['at_period_end', 'immediate'])
+        .optional()
+        .describe('Cancellation mode (for cancel)'),
+      voidPayments: z
+        .boolean()
+        .optional()
+        .describe('Whether to void past-due payments (for pause)')
+    })
+  )
   .output(membershipOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WhopClient(ctx.auth.token);
     let { action, membershipId } = ctx.input;
     let m: any;
@@ -70,7 +80,8 @@ Use **action** to specify: \`get\`, \`update_metadata\`, \`cancel\`, \`uncancel\
     if (action === 'get') {
       m = await client.getMembership(membershipId);
     } else if (action === 'update_metadata') {
-      if (!ctx.input.metadata) throw new Error('metadata is required for update_metadata action');
+      if (!ctx.input.metadata)
+        throw new Error('metadata is required for update_metadata action');
       m = await client.updateMembership(membershipId, ctx.input.metadata);
     } else if (action === 'cancel') {
       m = await client.cancelMembership(membershipId, ctx.input.cancellationMode);
@@ -90,11 +101,12 @@ Use **action** to specify: \`get\`, \`update_metadata\`, \`cancel\`, \`uncancel\
       cancel: 'Canceled',
       uncancel: 'Uncanceled',
       pause: 'Paused',
-      resume: 'Resumed',
+      resume: 'Resumed'
     };
 
     return {
       output: mapMembership(m),
-      message: `${actionLabels[action]} membership \`${m.id}\` (status: **${m.status}**).`,
+      message: `${actionLabels[action]} membership \`${m.id}\` (status: **${m.status}**).`
     };
-  }).build();
+  })
+  .build();

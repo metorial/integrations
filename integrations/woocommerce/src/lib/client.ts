@@ -3,20 +3,22 @@ import { createAxios } from 'slates';
 export class WooCommerceClient {
   private ax;
 
-  constructor(private params: {
-    storeUrl: string;
-    consumerKey: string;
-    consumerSecret: string;
-  }) {
+  constructor(
+    private params: {
+      storeUrl: string;
+      consumerKey: string;
+      consumerSecret: string;
+    }
+  ) {
     let baseUrl = params.storeUrl.replace(/\/+$/, '');
     let credentials = btoa(`${params.consumerKey}:${params.consumerSecret}`);
 
     this.ax = createAxios({
       baseURL: `${baseUrl}/wp-json/wc/v3`,
       headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -64,13 +66,23 @@ export class WooCommerceClient {
     return response.data;
   }
 
-  async updateProductVariation(productId: number, variationId: number, data: Record<string, any>) {
+  async updateProductVariation(
+    productId: number,
+    variationId: number,
+    data: Record<string, any>
+  ) {
     let response = await this.ax.put(`/products/${productId}/variations/${variationId}`, data);
     return response.data;
   }
 
-  async deleteProductVariation(productId: number, variationId: number, force: boolean = false) {
-    let response = await this.ax.delete(`/products/${productId}/variations/${variationId}`, { params: { force } });
+  async deleteProductVariation(
+    productId: number,
+    variationId: number,
+    force: boolean = false
+  ) {
+    let response = await this.ax.delete(`/products/${productId}/variations/${variationId}`, {
+      params: { force }
+    });
     return response.data;
   }
 
@@ -97,7 +109,9 @@ export class WooCommerceClient {
   }
 
   async deleteProductCategory(categoryId: number, force: boolean = true) {
-    let response = await this.ax.delete(`/products/categories/${categoryId}`, { params: { force } });
+    let response = await this.ax.delete(`/products/categories/${categoryId}`, {
+      params: { force }
+    });
     return response.data;
   }
 
@@ -177,7 +191,9 @@ export class WooCommerceClient {
   }
 
   async deleteOrderNote(orderId: number, noteId: number, force: boolean = true) {
-    let response = await this.ax.delete(`/orders/${orderId}/notes/${noteId}`, { params: { force } });
+    let response = await this.ax.delete(`/orders/${orderId}/notes/${noteId}`, {
+      params: { force }
+    });
     return response.data;
   }
 

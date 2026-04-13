@@ -24,6 +24,7 @@ The API key will only be displayed once, so make sure to save it. You can reques
 Pass the API key as an `x-slite-api-key` header on all requests to the base URL `https://api.slite.com/v1/`.
 
 Example:
+
 ```
 curl --header 'x-slite-api-key: <API Key>' \
      https://api.slite.com/v1/notes

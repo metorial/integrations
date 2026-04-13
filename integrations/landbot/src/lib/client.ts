@@ -13,7 +13,7 @@ export class PlatformClient {
 
   constructor(private token: string) {
     this.headers = {
-      'Authorization': `Token ${token}`,
+      Authorization: `Token ${token}`,
       'Content-Type': 'application/json'
     };
   }
@@ -43,13 +43,17 @@ export class PlatformClient {
   }
 
   async updateCustomerFields(customerId: number, fields: Record<string, any>) {
-    let response = await platformApi.put(`/customers/${customerId}/fields/data/`, {
-      type: 'object',
-      extra: {},
-      value: fields
-    }, {
-      headers: this.headers
-    });
+    let response = await platformApi.put(
+      `/customers/${customerId}/fields/data/`,
+      {
+        type: 'object',
+        extra: {},
+        value: fields
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -58,16 +62,24 @@ export class PlatformClient {
     if (options?.node) {
       body.node = options.node;
     }
-    let response = await platformApi.put(`/customers/${customerId}/assign_bot/${botId}/`, body, {
-      headers: this.headers
-    });
+    let response = await platformApi.put(
+      `/customers/${customerId}/assign_bot/${botId}/`,
+      body,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async unassignCustomer(customerId: number) {
-    let response = await platformApi.put(`/customers/${customerId}/unassign/`, {}, {
-      headers: this.headers
-    });
+    let response = await platformApi.put(
+      `/customers/${customerId}/unassign/`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -112,15 +124,18 @@ export class PlatformClient {
 
   // --- Send WhatsApp Template ---
 
-  async sendWhatsAppTemplate(customerId: number, templateData: {
-    templateId: number;
-    templateLanguage: string;
-    templateParams?: {
-      header?: { url?: string; filename?: string; params?: string[] };
-      body?: { params?: string[] };
-      buttons?: Array<{ params?: string[] }>;
-    };
-  }) {
+  async sendWhatsAppTemplate(
+    customerId: number,
+    templateData: {
+      templateId: number;
+      templateLanguage: string;
+      templateParams?: {
+        header?: { url?: string; filename?: string; params?: string[] };
+        body?: { params?: string[] };
+        buttons?: Array<{ params?: string[] }>;
+      };
+    }
+  ) {
     let body: Record<string, any> = {
       template_id: templateData.templateId,
       template_language: templateData.templateLanguage
@@ -215,46 +230,63 @@ export class ChatClient {
 
   constructor(private channelToken: string) {
     this.headers = {
-      'Authorization': `Token ${channelToken}`,
+      Authorization: `Token ${channelToken}`,
       'Content-Type': 'application/json'
     };
   }
 
   async sendTextMessage(customerToken: string, message: string) {
-    let response = await chatApi.post(`/send/${customerToken}/`, {
-      message: {
-        type: 'text',
-        message
+    let response = await chatApi.post(
+      `/send/${customerToken}/`,
+      {
+        message: {
+          type: 'text',
+          message
+        }
+      },
+      {
+        headers: this.headers
       }
-    }, {
-      headers: this.headers
-    });
+    );
     return response.data;
   }
 
   async sendImageMessage(customerToken: string, url: string) {
-    let response = await chatApi.post(`/send/${customerToken}/`, {
-      message: {
-        type: 'image',
-        url
+    let response = await chatApi.post(
+      `/send/${customerToken}/`,
+      {
+        message: {
+          type: 'image',
+          url
+        }
+      },
+      {
+        headers: this.headers
       }
-    }, {
-      headers: this.headers
-    });
+    );
     return response.data;
   }
 
-  async sendLocationMessage(customerToken: string, latitude: string, longitude: string, address?: string) {
-    let response = await chatApi.post(`/send/${customerToken}/`, {
-      message: {
-        type: 'location',
-        latitude,
-        longitude,
-        address
+  async sendLocationMessage(
+    customerToken: string,
+    latitude: string,
+    longitude: string,
+    address?: string
+  ) {
+    let response = await chatApi.post(
+      `/send/${customerToken}/`,
+      {
+        message: {
+          type: 'location',
+          latitude,
+          longitude,
+          address
+        }
+      },
+      {
+        headers: this.headers
       }
-    }, {
-      headers: this.headers
-    });
+    );
     return response.data;
   }
 }

@@ -9,42 +9,59 @@ export let manageUsers = SlateTool.create(spec, {
   description: `List, get, add, update, or remove users on the Tableau site. Use the **action** field to select the operation.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    action: z.enum(['list', 'get', 'add', 'update', 'remove']).describe('Operation to perform'),
-    userId: z.string().optional().describe('User LUID (required for get, update, remove)'),
-    username: z.string().optional().describe('Username (required for add)'),
-    siteRole: z.string().optional().describe('Site role, e.g. "Viewer", "Explorer", "Creator", "SiteAdministratorExplorer", "SiteAdministratorCreator" (required for add)'),
-    fullName: z.string().optional().describe('Full display name (for update)'),
-    email: z.string().optional().describe('Email address (for update)'),
-    authSetting: z.string().optional().describe('Auth setting (for add/update)'),
-    pageSize: z.number().optional().describe('Number of items per page'),
-    pageNumber: z.number().optional().describe('Page number (1-based)'),
-    filter: z.string().optional().describe('Filter expression for list'),
-    sort: z.string().optional().describe('Sort expression for list')
-  }))
-  .output(z.object({
-    users: z.array(z.object({
-      userId: z.string(),
-      name: z.string().optional(),
-      fullName: z.string().optional(),
-      email: z.string().optional(),
-      siteRole: z.string().optional(),
-      authSetting: z.string().optional(),
-      lastLogin: z.string().optional()
-    })).optional(),
-    user: z.object({
-      userId: z.string(),
-      name: z.string().optional(),
-      fullName: z.string().optional(),
-      email: z.string().optional(),
-      siteRole: z.string().optional(),
-      authSetting: z.string().optional(),
-      lastLogin: z.string().optional()
-    }).optional(),
-    totalCount: z.number().optional(),
-    removed: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'add', 'update', 'remove'])
+        .describe('Operation to perform'),
+      userId: z.string().optional().describe('User LUID (required for get, update, remove)'),
+      username: z.string().optional().describe('Username (required for add)'),
+      siteRole: z
+        .string()
+        .optional()
+        .describe(
+          'Site role, e.g. "Viewer", "Explorer", "Creator", "SiteAdministratorExplorer", "SiteAdministratorCreator" (required for add)'
+        ),
+      fullName: z.string().optional().describe('Full display name (for update)'),
+      email: z.string().optional().describe('Email address (for update)'),
+      authSetting: z.string().optional().describe('Auth setting (for add/update)'),
+      pageSize: z.number().optional().describe('Number of items per page'),
+      pageNumber: z.number().optional().describe('Page number (1-based)'),
+      filter: z.string().optional().describe('Filter expression for list'),
+      sort: z.string().optional().describe('Sort expression for list')
+    })
+  )
+  .output(
+    z.object({
+      users: z
+        .array(
+          z.object({
+            userId: z.string(),
+            name: z.string().optional(),
+            fullName: z.string().optional(),
+            email: z.string().optional(),
+            siteRole: z.string().optional(),
+            authSetting: z.string().optional(),
+            lastLogin: z.string().optional()
+          })
+        )
+        .optional(),
+      user: z
+        .object({
+          userId: z.string(),
+          name: z.string().optional(),
+          fullName: z.string().optional(),
+          email: z.string().optional(),
+          siteRole: z.string().optional(),
+          authSetting: z.string().optional(),
+          lastLogin: z.string().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional(),
+      removed: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -92,7 +109,11 @@ export let manageUsers = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      let u = await client.addUser(ctx.input.username!, ctx.input.siteRole!, ctx.input.authSetting);
+      let u = await client.addUser(
+        ctx.input.username!,
+        ctx.input.siteRole!,
+        ctx.input.authSetting
+      );
       return {
         output: {
           user: {
@@ -137,4 +158,5 @@ export let manageUsers = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

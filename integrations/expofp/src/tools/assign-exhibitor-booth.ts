@@ -3,31 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let assignExhibitorBooth = SlateTool.create(
-  spec,
-  {
-    name: 'Assign Exhibitor to Booth',
-    key: 'assign_exhibitor_booth',
-    description: `Assign an exhibitor to a booth or remove an exhibitor from a booth. Use "assign" to link an exhibitor to a booth, or "remove" to unlink them.`,
-    tags: {
-      readOnly: false,
-      destructive: false,
-    },
+export let assignExhibitorBooth = SlateTool.create(spec, {
+  name: 'Assign Exhibitor to Booth',
+  key: 'assign_exhibitor_booth',
+  description: `Assign an exhibitor to a booth or remove an exhibitor from a booth. Use "assign" to link an exhibitor to a booth, or "remove" to unlink them.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['assign', 'remove']).describe('Whether to assign or remove the exhibitor from the booth'),
-    eventId: z.number().describe('ID of the event'),
-    exhibitorId: z.number().describe('ID of the exhibitor'),
-    boothName: z.string().describe('Name of the booth'),
-  }))
-  .output(z.object({
-    eventId: z.number().describe('Event ID'),
-    exhibitorId: z.number().describe('Exhibitor ID'),
-    boothName: z.string().describe('Booth name'),
-    action: z.string().describe('Action performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['assign', 'remove'])
+        .describe('Whether to assign or remove the exhibitor from the booth'),
+      eventId: z.number().describe('ID of the event'),
+      exhibitorId: z.number().describe('ID of the exhibitor'),
+      boothName: z.string().describe('Name of the booth')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.number().describe('Event ID'),
+      exhibitorId: z.number().describe('Exhibitor ID'),
+      boothName: z.string().describe('Booth name'),
+      action: z.string().describe('Action performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, eventId, exhibitorId, boothName } = ctx.input;
 
@@ -42,11 +45,12 @@ export let assignExhibitorBooth = SlateTool.create(
         eventId,
         exhibitorId,
         boothName,
-        action,
+        action
       },
-      message: action === 'assign'
-        ? `Assigned exhibitor **${exhibitorId}** to booth **${boothName}**.`
-        : `Removed exhibitor **${exhibitorId}** from booth **${boothName}**.`
+      message:
+        action === 'assign'
+          ? `Assigned exhibitor **${exhibitorId}** to booth **${boothName}**.`
+          : `Removed exhibitor **${exhibitorId}** from booth **${boothName}**.`
     };
   })
   .build();

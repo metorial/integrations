@@ -3,26 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Get Group',
-    key: 'get_group',
-    description: `Retrieve details of a specific VEO group (community) by ID, including its members.`,
-    tags: {
-      readOnly: true,
-    },
+export let getGroup = SlateTool.create(spec, {
+  name: 'Get Group',
+  key: 'get_group',
+  description: `Retrieve details of a specific VEO group (community) by ID, including its members.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    groupId: z.string().describe('ID of the group to retrieve'),
-    includeMembers: z.boolean().optional().default(false).describe('Whether to also fetch group members'),
-  }))
-  .output(z.object({
-    group: z.record(z.string(), z.any()).describe('Group details'),
-    members: z.array(z.record(z.string(), z.any())).optional().describe('Group members (if requested)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      groupId: z.string().describe('ID of the group to retrieve'),
+      includeMembers: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to also fetch group members')
+    })
+  )
+  .output(
+    z.object({
+      group: z.record(z.string(), z.any()).describe('Group details'),
+      members: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Group members (if requested)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, environment: ctx.auth.environment });
 
     let group = await client.getGroup(ctx.input.groupId);
@@ -40,7 +48,7 @@ export let getGroup = SlateTool.create(
 
     return {
       output: { group, members },
-      message: `Retrieved group **"${groupName}"** (\`${ctx.input.groupId}\`)${members ? ` with ${members.length} members` : ''}.`,
+      message: `Retrieved group **"${groupName}"** (\`${ctx.input.groupId}\`)${members ? ` with ${members.length} members` : ''}.`
     };
   })
   .build();

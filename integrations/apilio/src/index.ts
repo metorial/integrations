@@ -12,7 +12,7 @@ import {
   getCondition,
   listLogicblocks,
   evaluateLogicblock,
-  manageLogicblock,
+  manageLogicblock
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     getCondition,
     listLogicblocks,
     evaluateLogicblock,
-    manageLogicblock,
+    manageLogicblock
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

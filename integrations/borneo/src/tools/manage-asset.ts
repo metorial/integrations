@@ -3,36 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAsset = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Asset',
-    key: 'manage_asset',
-    description: `Create, retrieve, update, list, or delete assets. Assets can be hardware, software, or documentation items tracked within the platform for inventory management.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageAsset = SlateTool.create(spec, {
+  name: 'Manage Asset',
+  key: 'manage_asset',
+  description: `Create, retrieve, update, list, or delete assets. Assets can be hardware, software, or documentation items tracked within the platform for inventory management.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'update', 'delete']).describe('Action to perform'),
-    assetId: z.string().optional().describe('Asset ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Asset name'),
-    type: z.string().optional().describe('Asset type (e.g. hardware, software, documentation)'),
-    description: z.string().optional().describe('Asset description'),
-    page: z.number().optional().describe('Page number for listing'),
-    size: z.number().optional().describe('Page size for listing'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    typeFilter: z.string().optional().describe('Filter by asset type when listing')
-  }))
-  .output(z.object({
-    asset: z.any().optional().describe('Asset record'),
-    assets: z.array(z.any()).optional().describe('List of assets'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'update', 'delete'])
+        .describe('Action to perform'),
+      assetId: z.string().optional().describe('Asset ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Asset name'),
+      type: z
+        .string()
+        .optional()
+        .describe('Asset type (e.g. hardware, software, documentation)'),
+      description: z.string().optional().describe('Asset description'),
+      page: z.number().optional().describe('Page number for listing'),
+      size: z.number().optional().describe('Page size for listing'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      typeFilter: z.string().optional().describe('Filter by asset type when listing')
+    })
+  )
+  .output(
+    z
+      .object({
+        asset: z.any().optional().describe('Asset record'),
+        assets: z.array(z.any()).optional().describe('List of assets'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -74,7 +82,7 @@ export let manageAsset = SlateTool.create(
           type: ctx.input.typeFilter
         });
         let data = result?.data ?? result;
-        let assets = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+        let assets = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
         return {
           output: { assets, success: true },
           message: `Found **${assets.length}** asset(s).`
@@ -85,7 +93,8 @@ export let manageAsset = SlateTool.create(
         let updatePayload: Record<string, any> = {};
         if (ctx.input.name !== undefined) updatePayload.name = ctx.input.name;
         if (ctx.input.type !== undefined) updatePayload.type = ctx.input.type;
-        if (ctx.input.description !== undefined) updatePayload.description = ctx.input.description;
+        if (ctx.input.description !== undefined)
+          updatePayload.description = ctx.input.description;
 
         let result = await client.updateAsset(assetId, updatePayload);
         let data = result?.data ?? result;
@@ -103,4 +112,5 @@ export let manageAsset = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

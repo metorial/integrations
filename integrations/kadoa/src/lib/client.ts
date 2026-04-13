@@ -11,8 +11,8 @@ export class KadoaClient {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': opts.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -42,16 +42,19 @@ export class KadoaClient {
     return res.data;
   }
 
-  async getWorkflowData(workflowId: string, params?: {
-    runId?: string;
-    format?: string;
-    sortBy?: string;
-    order?: string;
-    filters?: string;
-    page?: number;
-    limit?: number;
-    includeAnomalies?: boolean;
-  }): Promise<any> {
+  async getWorkflowData(
+    workflowId: string,
+    params?: {
+      runId?: string;
+      format?: string;
+      sortBy?: string;
+      order?: string;
+      filters?: string;
+      page?: number;
+      limit?: number;
+      includeAnomalies?: boolean;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/v4/workflows/${workflowId}/data`, { params });
     return res.data;
   }
@@ -61,10 +64,13 @@ export class KadoaClient {
     return res.data;
   }
 
-  async runWorkflow(workflowId: string, body?: {
-    variables?: Record<string, any>;
-    limit?: number;
-  }): Promise<any> {
+  async runWorkflow(
+    workflowId: string,
+    body?: {
+      variables?: Record<string, any>;
+      limit?: number;
+    }
+  ): Promise<any> {
     let res = await this.axios.put(`/v4/workflows/${workflowId}/run`, body || {});
     return res.data;
   }
@@ -84,51 +90,58 @@ export class KadoaClient {
     return res.data;
   }
 
-  async updateWorkflowMetadata(workflowId: string, body: {
-    urls?: string[];
-    limit?: number;
-    updateInterval?: string;
-    schedules?: string[];
-    name?: string;
-    description?: string;
-    tags?: string[];
-    location?: { type: string; isoCode?: string };
-    monitoring?: {
-      fields?: Array<{ fieldName: string; operator: string }>;
-      conditions?: {
-        logicalOperator?: string;
-        conditions?: Array<{
-          type?: string;
-          field?: string;
-          operator?: string;
-          value?: string;
-        }>;
-      };
-    };
-    entity?: string;
-    schema?: Array<{
-      name: string;
+  async updateWorkflowMetadata(
+    workflowId: string,
+    body: {
+      urls?: string[];
+      limit?: number;
+      updateInterval?: string;
+      schedules?: string[];
+      name?: string;
       description?: string;
-      example?: string;
-      dataType?: string;
-      isPrimaryKey?: boolean;
-      isRequired?: boolean;
-      isUnique?: boolean;
-    }>;
-    maxPages?: number;
-    maxDepth?: number;
-    navigationMode?: string;
-    userPrompt?: string;
-  }): Promise<any> {
+      tags?: string[];
+      location?: { type: string; isoCode?: string };
+      monitoring?: {
+        fields?: Array<{ fieldName: string; operator: string }>;
+        conditions?: {
+          logicalOperator?: string;
+          conditions?: Array<{
+            type?: string;
+            field?: string;
+            operator?: string;
+            value?: string;
+          }>;
+        };
+      };
+      entity?: string;
+      schema?: Array<{
+        name: string;
+        description?: string;
+        example?: string;
+        dataType?: string;
+        isPrimaryKey?: boolean;
+        isRequired?: boolean;
+        isUnique?: boolean;
+      }>;
+      maxPages?: number;
+      maxDepth?: number;
+      navigationMode?: string;
+      userPrompt?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.put(`/v4/workflows/${workflowId}/metadata`, body);
     return res.data;
   }
 
-  async bulkWorkflowAction(workflowIds: string[], action: string, params?: Record<string, any>): Promise<any> {
+  async bulkWorkflowAction(
+    workflowIds: string[],
+    action: string,
+    params?: Record<string, any>
+  ): Promise<any> {
     let res = await this.axios.post('/v4/workflows/bulk', {
       workflowIds,
       action,
-      params,
+      params
     });
     return res.data;
   }
@@ -150,27 +163,33 @@ export class KadoaClient {
     return res.data;
   }
 
-  async getCrawlPages(sessionId: string, params?: {
-    currentPage?: number;
-    pageSize?: number;
-  }): Promise<any> {
+  async getCrawlPages(
+    sessionId: string,
+    params?: {
+      currentPage?: number;
+      pageSize?: number;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/v4/crawl/${sessionId}/pages`, { params });
     return res.data;
   }
 
   async getCrawlPageContent(sessionId: string, pageId: string, format?: string): Promise<any> {
     let res = await this.axios.get(`/v4/crawl/${sessionId}/pages/${pageId}`, {
-      params: format ? { format } : undefined,
+      params: format ? { format } : undefined
     });
     return res.data;
   }
 
   // ── Ad-hoc Extraction ─────────────────────────────────
 
-  async runAdhocExtraction(schemaId: string, body: {
-    link: string;
-    location?: { type: string; isoCode?: string };
-  }): Promise<any> {
+  async runAdhocExtraction(
+    schemaId: string,
+    body: {
+      link: string;
+      location?: { type: string; isoCode?: string };
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/v4/adhoc/${schemaId}`, body);
     return res.data;
   }
@@ -213,7 +232,7 @@ export class KadoaClient {
 
   async deleteValidationRule(ruleId: string, reason?: string): Promise<any> {
     let res = await this.axios.delete(`/v4/data-validation/rules/${ruleId}`, {
-      data: reason ? { reason } : undefined,
+      data: reason ? { reason } : undefined
     });
     return res.data;
   }
@@ -233,9 +252,9 @@ export class KadoaClient {
     let res = await this.axios.post('/v4/webhook-subscriptions', {
       webhookConfig: {
         url: body.url,
-        httpMethod: body.httpMethod || 'POST',
+        httpMethod: body.httpMethod || 'POST'
       },
-      events: body.events,
+      events: body.events
     });
     return res.data;
   }

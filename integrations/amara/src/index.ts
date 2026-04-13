@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listVideos,
@@ -28,11 +27,7 @@ import {
   sendMessage,
   listLanguages
 } from './tools';
-import {
-  teamActivity,
-  teamNotifications,
-  inboundWebhook,
-} from './triggers';
+import { teamActivity, teamNotifications, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -63,9 +58,5 @@ export let provider = Slate.create({
     sendMessage,
     listLanguages
   ],
-  triggers: [
-    inboundWebhook,
-    teamActivity,
-    teamNotifications
-  ]
+  triggers: [inboundWebhook, teamActivity, teamNotifications]
 });

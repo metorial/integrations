@@ -3,34 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSession = SlateTool.create(
-  spec,
-  {
-    name: 'Get Session Details',
-    key: 'get_session',
-    description: `Retrieve detailed information about a specific browser session including its status, duration, configuration, credits used, and associated tags.`,
-    tags: {
-      readOnly: true,
-    },
+export let getSession = SlateTool.create(spec, {
+  name: 'Get Session Details',
+  key: 'get_session',
+  description: `Retrieve detailed information about a specific browser session including its status, duration, configuration, credits used, and associated tags.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sessionId: z.string().describe('ID of the session to retrieve'),
-  }))
-  .output(z.object({
-    sessionId: z.string(),
-    teamId: z.string(),
-    status: z.string(),
-    duration: z.number(),
-    creditsUsed: z.number(),
-    proxyBytes: z.number(),
-    tokens: z.number(),
-    steps: z.number(),
-    tags: z.array(z.string()),
-    createdAt: z.string(),
-    configuration: z.record(z.string(), z.unknown()).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sessionId: z.string().describe('ID of the session to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      sessionId: z.string(),
+      teamId: z.string(),
+      status: z.string(),
+      duration: z.number(),
+      creditsUsed: z.number(),
+      proxyBytes: z.number(),
+      tokens: z.number(),
+      steps: z.number(),
+      tags: z.array(z.string()),
+      createdAt: z.string(),
+      configuration: z.record(z.string(), z.unknown()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getSession(ctx.input.sessionId);
 
@@ -46,8 +47,9 @@ export let getSession = SlateTool.create(
         steps: result.steps ?? 0,
         tags: result.tags ?? [],
         createdAt: result.created_at ?? '',
-        configuration: result.configuration,
+        configuration: result.configuration
       },
-      message: `Session **${result.session_id}** is **${result.status}** (duration: ${result.duration ?? 0}s, credits: ${result.credits_used ?? 0}).`,
+      message: `Session **${result.session_id}** is **${result.status}** (duration: ${result.duration ?? 0}s, credits: ${result.credits_used ?? 0}).`
     };
-  }).build();
+  })
+  .build();

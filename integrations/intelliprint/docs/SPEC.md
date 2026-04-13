@@ -9,12 +9,14 @@ Intelliprint is a UK-based hybrid mail service that allows businesses to send ph
 Intelliprint API uses account-level API keys to authenticate you to your account. API keys are provided in the Authorization header using HTTP Bearer authentication.
 
 To obtain an API key:
+
 1. All Intelliprint accounts can create an API key in the API Keys section of their account.
 2. API keys are displayed only once when they are created. Intelliprint does not store them.
 
 There are no separate API keys for test mode. Instead, when you want to create a test Print Job, just set the `testmode` parameter to `true`.
 
 Example usage:
+
 ```
 Authorization: Bearer key_EXAMPLE
 ```

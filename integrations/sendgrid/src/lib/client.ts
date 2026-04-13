@@ -4,16 +4,17 @@ export class Client {
   private http: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; region?: string }) {
-    let baseURL = config.region === 'eu'
-      ? 'https://api.eu.sendgrid.com/v3'
-      : 'https://api.sendgrid.com/v3';
+    let baseURL =
+      config.region === 'eu'
+        ? 'https://api.eu.sendgrid.com/v3'
+        : 'https://api.sendgrid.com/v3';
 
     this.http = createAxios({
       baseURL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -56,36 +57,42 @@ export class Client {
     trackingSettings?: {
       clickTracking?: { enable?: boolean; enableText?: boolean };
       openTracking?: { enable?: boolean; substitutionTag?: string };
-      subscriptionTracking?: { enable?: boolean; text?: string; html?: string; substitutionTag?: string };
+      subscriptionTracking?: {
+        enable?: boolean;
+        text?: string;
+        html?: string;
+        substitutionTag?: string;
+      };
     };
   }) {
     let body: Record<string, any> = {
-      personalizations: params.personalizations.map((p) => {
+      personalizations: params.personalizations.map(p => {
         let personalization: Record<string, any> = {
-          to: p.to,
+          to: p.to
         };
         if (p.cc) personalization.cc = p.cc;
         if (p.bcc) personalization.bcc = p.bcc;
         if (p.subject) personalization.subject = p.subject;
         if (p.headers) personalization.headers = p.headers;
-        if (p.dynamicTemplateData) personalization.dynamic_template_data = p.dynamicTemplateData;
+        if (p.dynamicTemplateData)
+          personalization.dynamic_template_data = p.dynamicTemplateData;
         if (p.customArgs) personalization.custom_args = p.customArgs;
         if (p.sendAt) personalization.send_at = p.sendAt;
         return personalization;
       }),
-      from: params.from,
+      from: params.from
     };
 
     if (params.replyTo) body.reply_to = params.replyTo;
     if (params.subject) body.subject = params.subject;
     if (params.content) body.content = params.content;
     if (params.attachments) {
-      body.attachments = params.attachments.map((a) => ({
+      body.attachments = params.attachments.map(a => ({
         content: a.content,
         type: a.type,
         filename: a.filename,
         disposition: a.disposition,
-        content_id: a.contentId,
+        content_id: a.contentId
       }));
     }
     if (params.templateId) body.template_id = params.templateId;
@@ -96,7 +103,7 @@ export class Client {
     if (params.asm) {
       body.asm = {
         group_id: params.asm.groupId,
-        groups_to_display: params.asm.groupsToDisplay,
+        groups_to_display: params.asm.groupsToDisplay
       };
     }
     if (params.mailSettings) {
@@ -108,7 +115,8 @@ export class Client {
         body.mail_settings.bypass_spam_management = params.mailSettings.bypassSpamManagement;
       }
       if (params.mailSettings.bypassBounceManagement) {
-        body.mail_settings.bypass_bounce_management = params.mailSettings.bypassBounceManagement;
+        body.mail_settings.bypass_bounce_management =
+          params.mailSettings.bypassBounceManagement;
       }
       if (params.mailSettings.sandboxMode) {
         body.mail_settings.sandbox_mode = params.mailSettings.sandboxMode;
@@ -119,13 +127,13 @@ export class Client {
       if (params.trackingSettings.clickTracking) {
         body.tracking_settings.click_tracking = {
           enable: params.trackingSettings.clickTracking.enable,
-          enable_text: params.trackingSettings.clickTracking.enableText,
+          enable_text: params.trackingSettings.clickTracking.enableText
         };
       }
       if (params.trackingSettings.openTracking) {
         body.tracking_settings.open_tracking = {
           enable: params.trackingSettings.openTracking.enable,
-          substitution_tag: params.trackingSettings.openTracking.substitutionTag,
+          substitution_tag: params.trackingSettings.openTracking.substitutionTag
         };
       }
       if (params.trackingSettings.subscriptionTracking) {
@@ -133,7 +141,7 @@ export class Client {
           enable: params.trackingSettings.subscriptionTracking.enable,
           text: params.trackingSettings.subscriptionTracking.text,
           html: params.trackingSettings.subscriptionTracking.html,
-          substitution_tag: params.trackingSettings.subscriptionTracking.substitutionTag,
+          substitution_tag: params.trackingSettings.subscriptionTracking.substitutionTag
         };
       }
     }
@@ -144,9 +152,13 @@ export class Client {
 
   // ── Templates ──
 
-  async listTemplates(params: { generations?: 'legacy' | 'dynamic'; pageSize?: number; pageToken?: string }) {
+  async listTemplates(params: {
+    generations?: 'legacy' | 'dynamic';
+    pageSize?: number;
+    pageToken?: string;
+  }) {
     let query: Record<string, string> = {
-      generations: params.generations || 'dynamic',
+      generations: params.generations || 'dynamic'
     };
     if (params.pageSize) query.page_size = String(params.pageSize);
     if (params.pageToken) query.page_token = params.pageToken;
@@ -163,7 +175,7 @@ export class Client {
   async createTemplate(name: string, generation?: 'legacy' | 'dynamic') {
     let response = await this.http.post('/templates', {
       name,
-      generation: generation || 'dynamic',
+      generation: generation || 'dynamic'
     });
     return response.data;
   }
@@ -177,19 +189,22 @@ export class Client {
     await this.http.delete(`/templates/${templateId}`);
   }
 
-  async createTemplateVersion(templateId: string, params: {
-    name: string;
-    subject?: string;
-    htmlContent?: string;
-    plainContent?: string;
-    active?: number;
-    testData?: string;
-    editor?: 'code' | 'design';
-  }) {
+  async createTemplateVersion(
+    templateId: string,
+    params: {
+      name: string;
+      subject?: string;
+      htmlContent?: string;
+      plainContent?: string;
+      active?: number;
+      testData?: string;
+      editor?: 'code' | 'design';
+    }
+  ) {
     let body: Record<string, any> = {
       name: params.name,
       active: params.active ?? 1,
-      editor: params.editor || 'code',
+      editor: params.editor || 'code'
     };
     if (params.subject) body.subject = params.subject;
     if (params.htmlContent) body.html_content = params.htmlContent;
@@ -200,14 +215,18 @@ export class Client {
     return response.data;
   }
 
-  async updateTemplateVersion(templateId: string, versionId: string, params: {
-    name?: string;
-    subject?: string;
-    htmlContent?: string;
-    plainContent?: string;
-    active?: number;
-    testData?: string;
-  }) {
+  async updateTemplateVersion(
+    templateId: string,
+    versionId: string,
+    params: {
+      name?: string;
+      subject?: string;
+      htmlContent?: string;
+      plainContent?: string;
+      active?: number;
+      testData?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.subject !== undefined) body.subject = params.subject;
@@ -216,7 +235,10 @@ export class Client {
     if (params.active !== undefined) body.active = params.active;
     if (params.testData !== undefined) body.test_data = params.testData;
 
-    let response = await this.http.patch(`/templates/${templateId}/versions/${versionId}`, body);
+    let response = await this.http.patch(
+      `/templates/${templateId}/versions/${versionId}`,
+      body
+    );
     return response.data;
   }
 
@@ -226,22 +248,24 @@ export class Client {
 
   // ── Contacts ──
 
-  async upsertContacts(contacts: Array<{
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    addressLine1?: string;
-    addressLine2?: string;
-    city?: string;
-    stateProvinceRegion?: string;
-    postalCode?: string;
-    country?: string;
-    phone?: string;
-    alternateEmails?: string[];
-    customFields?: Record<string, any>;
-  }>) {
+  async upsertContacts(
+    contacts: Array<{
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      addressLine1?: string;
+      addressLine2?: string;
+      city?: string;
+      stateProvinceRegion?: string;
+      postalCode?: string;
+      country?: string;
+      phone?: string;
+      alternateEmails?: string[];
+      customFields?: Record<string, any>;
+    }>
+  ) {
     let body = {
-      contacts: contacts.map((c) => {
+      contacts: contacts.map(c => {
         let contact: Record<string, any> = { email: c.email };
         if (c.firstName) contact.first_name = c.firstName;
         if (c.lastName) contact.last_name = c.lastName;
@@ -255,7 +279,7 @@ export class Client {
         if (c.alternateEmails) contact.alternate_emails = c.alternateEmails;
         if (c.customFields) contact.custom_fields = c.customFields;
         return contact;
-      }),
+      })
     };
     let response = await this.http.put('/marketing/contacts', body);
     return response.data;
@@ -274,12 +298,12 @@ export class Client {
   async deleteContacts(contactIds: string[], deleteAllContacts?: boolean) {
     if (deleteAllContacts) {
       let response = await this.http.delete('/marketing/contacts', {
-        params: { delete_all_contacts: 'true' },
+        params: { delete_all_contacts: 'true' }
       });
       return response.data;
     }
     let response = await this.http.delete('/marketing/contacts', {
-      params: { ids: contactIds.join(',') },
+      params: { ids: contactIds.join(',') }
     });
     return response.data;
   }
@@ -325,14 +349,14 @@ export class Client {
   async addContactsToList(listId: string, contactIds: string[]) {
     let response = await this.http.put('/marketing/contacts', {
       list_ids: [listId],
-      contacts: contactIds.map((id) => ({ email: id })),
+      contacts: contactIds.map(id => ({ email: id }))
     });
     return response.data;
   }
 
   async removeContactFromList(listId: string, contactId: string) {
     await this.http.delete(`/marketing/lists/${listId}/contacts`, {
-      params: { contact_ids: contactId },
+      params: { contact_ids: contactId }
     });
   }
 
@@ -347,7 +371,7 @@ export class Client {
     let response = await this.http.post('/asm/groups', {
       name,
       description,
-      is_default: isDefault || false,
+      is_default: isDefault || false
     });
     return response.data;
   }
@@ -357,7 +381,10 @@ export class Client {
     return response.data;
   }
 
-  async updateSuppressionGroup(groupId: number, params: { name?: string; description?: string; isDefault?: boolean }) {
+  async updateSuppressionGroup(
+    groupId: number,
+    params: { name?: string; description?: string; isDefault?: boolean }
+  ) {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.description !== undefined) body.description = params.description;
@@ -372,7 +399,7 @@ export class Client {
 
   async addSuppressedEmails(groupId: number, emails: string[]) {
     let response = await this.http.post(`/asm/groups/${groupId}/suppressions`, {
-      recipient_emails: emails,
+      recipient_emails: emails
     });
     return response.data;
   }
@@ -388,7 +415,12 @@ export class Client {
 
   // ── Global Suppressions ──
 
-  async listGlobalSuppressions(startTime?: number, endTime?: number, limit?: number, offset?: number) {
+  async listGlobalSuppressions(
+    startTime?: number,
+    endTime?: number,
+    limit?: number,
+    offset?: number
+  ) {
     let params: Record<string, string> = {};
     if (startTime) params.start_time = String(startTime);
     if (endTime) params.end_time = String(endTime);
@@ -400,7 +432,7 @@ export class Client {
 
   async addGlobalSuppression(emails: string[]) {
     let response = await this.http.post('/asm/suppressions/global', {
-      recipient_emails: emails,
+      recipient_emails: emails
     });
     return response.data;
   }
@@ -425,7 +457,7 @@ export class Client {
 
   async deleteAllBounces() {
     await this.http.delete('/suppression/bounces', {
-      data: { delete_all: true },
+      data: { delete_all: true }
     });
   }
 
@@ -473,9 +505,13 @@ export class Client {
 
   // ── Stats ──
 
-  async getGlobalStats(params: { startDate: string; endDate?: string; aggregatedBy?: 'day' | 'week' | 'month' }) {
+  async getGlobalStats(params: {
+    startDate: string;
+    endDate?: string;
+    aggregatedBy?: 'day' | 'week' | 'month';
+  }) {
     let query: Record<string, string> = {
-      start_date: params.startDate,
+      start_date: params.startDate
     };
     if (params.endDate) query.end_date = params.endDate;
     if (params.aggregatedBy) query.aggregated_by = params.aggregatedBy;
@@ -483,10 +519,15 @@ export class Client {
     return response.data;
   }
 
-  async getCategoryStats(params: { startDate: string; endDate?: string; categories: string[]; aggregatedBy?: 'day' | 'week' | 'month' }) {
+  async getCategoryStats(params: {
+    startDate: string;
+    endDate?: string;
+    categories: string[];
+    aggregatedBy?: 'day' | 'week' | 'month';
+  }) {
     let query: Record<string, any> = {
       start_date: params.startDate,
-      categories: params.categories.join(','),
+      categories: params.categories.join(',')
     };
     if (params.endDate) query.end_date = params.endDate;
     if (params.aggregatedBy) query.aggregated_by = params.aggregatedBy;
@@ -530,7 +571,7 @@ export class Client {
       city: params.city,
       state: params.state,
       zip: params.zip,
-      country: params.country,
+      country: params.country
     });
     return response.data;
   }
@@ -570,11 +611,13 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       enabled: params.enabled,
-      url: params.url,
+      url: params.url
     };
-    if (params.groupResubscribe !== undefined) body.group_resubscribe = params.groupResubscribe;
+    if (params.groupResubscribe !== undefined)
+      body.group_resubscribe = params.groupResubscribe;
     if (params.delivered !== undefined) body.delivered = params.delivered;
-    if (params.groupUnsubscribe !== undefined) body.group_unsubscribe = params.groupUnsubscribe;
+    if (params.groupUnsubscribe !== undefined)
+      body.group_unsubscribe = params.groupUnsubscribe;
     if (params.spamReport !== undefined) body.spam_report = params.spamReport;
     if (params.bounce !== undefined) body.bounce = params.bounce;
     if (params.deferred !== undefined) body.deferred = params.deferred;
@@ -615,7 +658,7 @@ export class Client {
       subdomain: params.subdomain,
       custom_spf: params.customSpf,
       default: params.isDefault,
-      automatic_security: params.automaticSecurity ?? true,
+      automatic_security: params.automaticSecurity ?? true
     });
     return response.data;
   }

@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.hightouch.com/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,12 +25,20 @@ export class Client {
     return response.data;
   }
 
-  async createSource(data: { name: string; slug: string; type: string; configuration: Record<string, any> }) {
+  async createSource(data: {
+    name: string;
+    slug: string;
+    type: string;
+    configuration: Record<string, any>;
+  }) {
     let response = await this.axios.post('/sources', data);
     return response.data;
   }
 
-  async updateSource(sourceId: number, data: { name?: string; configuration?: Record<string, any> }) {
+  async updateSource(
+    sourceId: number,
+    data: { name?: string; configuration?: Record<string, any> }
+  ) {
     let response = await this.axios.patch(`/sources/${sourceId}`, data);
     return response.data;
   }
@@ -47,19 +55,33 @@ export class Client {
     return response.data;
   }
 
-  async createDestination(data: { name: string; slug: string; type: string; configuration: Record<string, any> }) {
+  async createDestination(data: {
+    name: string;
+    slug: string;
+    type: string;
+    configuration: Record<string, any>;
+  }) {
     let response = await this.axios.post('/destinations', data);
     return response.data;
   }
 
-  async updateDestination(destinationId: number, data: { name?: string; configuration?: Record<string, any> }) {
+  async updateDestination(
+    destinationId: number,
+    data: { name?: string; configuration?: Record<string, any> }
+  ) {
     let response = await this.axios.patch(`/destinations/${destinationId}`, data);
     return response.data;
   }
 
   // ── Models ──
 
-  async listModels(params?: { limit?: number; offset?: number; orderBy?: string; name?: string; slug?: string }) {
+  async listModels(params?: {
+    limit?: number;
+    offset?: number;
+    orderBy?: string;
+    name?: string;
+    slug?: string;
+  }) {
     let response = await this.axios.get('/models', { params });
     return response.data as { data: any[]; hasMore: boolean };
   }
@@ -87,17 +109,20 @@ export class Client {
     return response.data;
   }
 
-  async updateModel(modelId: number, data: {
-    name?: string;
-    primaryKey?: string;
-    isSchema?: boolean;
-    custom?: { query: string };
-    dbt?: { modelId: string };
-    raw?: { sql: string };
-    table?: { name: string };
-    visual?: { filter: string; parentId: string; label: string };
-    folderId?: string;
-  }) {
+  async updateModel(
+    modelId: number,
+    data: {
+      name?: string;
+      primaryKey?: string;
+      isSchema?: boolean;
+      custom?: { query: string };
+      dbt?: { modelId: string };
+      raw?: { sql: string };
+      table?: { name: string };
+      visual?: { filter: string; parentId: string; label: string };
+      folderId?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/models/${modelId}`, data);
     return response.data;
   }
@@ -137,14 +162,17 @@ export class Client {
     return response.data;
   }
 
-  async updateSync(syncId: number, data: {
-    configuration?: Record<string, any>;
-    disabled?: boolean;
-    schedule?: {
-      type: string;
-      schedule: Record<string, any>;
-    };
-  }) {
+  async updateSync(
+    syncId: number,
+    data: {
+      configuration?: Record<string, any>;
+      disabled?: boolean;
+      schedule?: {
+        type: string;
+        schedule: Record<string, any>;
+      };
+    }
+  ) {
     let response = await this.axios.patch(`/syncs/${syncId}`, data);
     return response.data;
   }
@@ -173,15 +201,18 @@ export class Client {
 
   // ── Sync Runs ──
 
-  async listSyncRuns(syncId: number, params?: {
-    limit?: number;
-    offset?: number;
-    orderBy?: string;
-    runId?: number;
-    after?: string;
-    before?: string;
-    within?: number;
-  }) {
+  async listSyncRuns(
+    syncId: number,
+    params?: {
+      limit?: number;
+      offset?: number;
+      orderBy?: string;
+      runId?: number;
+      after?: string;
+      before?: string;
+      within?: number;
+    }
+  ) {
     let response = await this.axios.get(`/syncs/${syncId}/runs`, { params });
     return response.data as { data: any[]; hasMore: boolean };
   }

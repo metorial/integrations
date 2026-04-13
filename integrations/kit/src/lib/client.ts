@@ -27,7 +27,7 @@ export class Client {
       }
     });
 
-    this.http.interceptors.request.use((reqConfig) => {
+    this.http.interceptors.request.use(reqConfig => {
       // OAuth tokens are longer; API keys are shorter. Both work via different headers.
       // We try Bearer first; if the token looks like an API key, also set that header.
       // Kit accepts both simultaneously without issue.
@@ -104,11 +104,14 @@ export class Client {
     return response.data;
   }
 
-  async updateSubscriber(subscriberId: number, data: {
-    emailAddress?: string;
-    firstName?: string;
-    fields?: Record<string, string>;
-  }): Promise<{ subscriber: KitSubscriber }> {
+  async updateSubscriber(
+    subscriberId: number,
+    data: {
+      emailAddress?: string;
+      firstName?: string;
+      fields?: Record<string, string>;
+    }
+  ): Promise<{ subscriber: KitSubscriber }> {
     let body: Record<string, any> = {};
     if (data.emailAddress) body.email_address = data.emailAddress;
     if (data.firstName) body.first_name = data.firstName;
@@ -123,11 +126,14 @@ export class Client {
     return response.data;
   }
 
-  async listTagsForSubscriber(subscriberId: number, params?: {
-    after?: string;
-    before?: string;
-    perPage?: number;
-  }): Promise<KitPaginatedResponse<KitTag>> {
+  async listTagsForSubscriber(
+    subscriberId: number,
+    params?: {
+      after?: string;
+      before?: string;
+      perPage?: number;
+    }
+  ): Promise<KitPaginatedResponse<KitTag>> {
     let query: Record<string, any> = {};
     if (params?.after) query.after = params.after;
     if (params?.before) query.before = params.before;
@@ -185,12 +191,15 @@ export class Client {
     await this.http.post(`/tags/${tagId}/subscribers/remove`, { email_address: emailAddress });
   }
 
-  async listSubscribersForTag(tagId: number, params?: {
-    after?: string;
-    before?: string;
-    perPage?: number;
-    status?: string;
-  }): Promise<KitPaginatedResponse<KitSubscriber>> {
+  async listSubscribersForTag(
+    tagId: number,
+    params?: {
+      after?: string;
+      before?: string;
+      perPage?: number;
+      status?: string;
+    }
+  ): Promise<KitPaginatedResponse<KitSubscriber>> {
     let query: Record<string, any> = {};
     if (params?.after) query.after = params.after;
     if (params?.before) query.before = params.before;
@@ -215,7 +224,10 @@ export class Client {
     return response.data;
   }
 
-  async updateCustomField(customFieldId: number, label: string): Promise<{ custom_field: KitCustomField }> {
+  async updateCustomField(
+    customFieldId: number,
+    label: string
+  ): Promise<{ custom_field: KitCustomField }> {
     let response = await this.http.put(`/custom_fields/${customFieldId}`, { label });
     return response.data;
   }
@@ -246,22 +258,33 @@ export class Client {
     return response.data;
   }
 
-  async addSubscriberToForm(formId: number, subscriberId: number): Promise<{ subscriber: KitSubscriber }> {
+  async addSubscriberToForm(
+    formId: number,
+    subscriberId: number
+  ): Promise<{ subscriber: KitSubscriber }> {
     let response = await this.http.post(`/forms/${formId}/subscribers/${subscriberId}`);
     return response.data;
   }
 
-  async addSubscriberToFormByEmail(formId: number, emailAddress: string): Promise<{ subscriber: KitSubscriber }> {
-    let response = await this.http.post(`/forms/${formId}/subscribers`, { email_address: emailAddress });
+  async addSubscriberToFormByEmail(
+    formId: number,
+    emailAddress: string
+  ): Promise<{ subscriber: KitSubscriber }> {
+    let response = await this.http.post(`/forms/${formId}/subscribers`, {
+      email_address: emailAddress
+    });
     return response.data;
   }
 
-  async listSubscribersForForm(formId: number, params?: {
-    after?: string;
-    before?: string;
-    perPage?: number;
-    status?: string;
-  }): Promise<KitPaginatedResponse<KitSubscriber>> {
+  async listSubscribersForForm(
+    formId: number,
+    params?: {
+      after?: string;
+      before?: string;
+      perPage?: number;
+      status?: string;
+    }
+  ): Promise<KitPaginatedResponse<KitSubscriber>> {
     let query: Record<string, any> = {};
     if (params?.after) query.after = params.after;
     if (params?.before) query.before = params.before;
@@ -316,7 +339,8 @@ export class Client {
     if (data.description !== undefined) body.description = data.description;
     if (data.emailAddress !== undefined) body.email_address = data.emailAddress;
     if (data.emailTemplateId !== undefined) body.email_template_id = data.emailTemplateId;
-    if (data.emailLayoutTemplate !== undefined) body.email_layout_template = data.emailLayoutTemplate;
+    if (data.emailLayoutTemplate !== undefined)
+      body.email_layout_template = data.emailLayoutTemplate;
     if (data.public !== undefined) body.public = data.public;
     if (data.publishedAt !== undefined) body.published_at = data.publishedAt;
     if (data.sendAt !== undefined) body.send_at = data.sendAt;
@@ -329,28 +353,32 @@ export class Client {
     return response.data;
   }
 
-  async updateBroadcast(broadcastId: number, data: {
-    subject?: string;
-    content?: string;
-    description?: string;
-    emailAddress?: string;
-    emailTemplateId?: number;
-    emailLayoutTemplate?: string;
-    public?: boolean;
-    publishedAt?: string;
-    sendAt?: string;
-    thumbnailAlt?: string;
-    thumbnailUrl?: string;
-    previewText?: string;
-    subscriberFilter?: Array<Record<string, any>>;
-  }): Promise<{ broadcast: KitBroadcast }> {
+  async updateBroadcast(
+    broadcastId: number,
+    data: {
+      subject?: string;
+      content?: string;
+      description?: string;
+      emailAddress?: string;
+      emailTemplateId?: number;
+      emailLayoutTemplate?: string;
+      public?: boolean;
+      publishedAt?: string;
+      sendAt?: string;
+      thumbnailAlt?: string;
+      thumbnailUrl?: string;
+      previewText?: string;
+      subscriberFilter?: Array<Record<string, any>>;
+    }
+  ): Promise<{ broadcast: KitBroadcast }> {
     let body: Record<string, any> = {};
     if (data.subject !== undefined) body.subject = data.subject;
     if (data.content !== undefined) body.content = data.content;
     if (data.description !== undefined) body.description = data.description;
     if (data.emailAddress !== undefined) body.email_address = data.emailAddress;
     if (data.emailTemplateId !== undefined) body.email_template_id = data.emailTemplateId;
-    if (data.emailLayoutTemplate !== undefined) body.email_layout_template = data.emailLayoutTemplate;
+    if (data.emailLayoutTemplate !== undefined)
+      body.email_layout_template = data.emailLayoutTemplate;
     if (data.public !== undefined) body.public = data.public;
     if (data.publishedAt !== undefined) body.published_at = data.publishedAt;
     if (data.sendAt !== undefined) body.send_at = data.sendAt;
@@ -390,29 +418,44 @@ export class Client {
     return response.data;
   }
 
-  async addSubscriberToSequence(sequenceId: number, subscriberId: number): Promise<{ subscriber: KitSubscriber }> {
-    let response = await this.http.post(`/sequences/${sequenceId}/subscribers/${subscriberId}`);
+  async addSubscriberToSequence(
+    sequenceId: number,
+    subscriberId: number
+  ): Promise<{ subscriber: KitSubscriber }> {
+    let response = await this.http.post(
+      `/sequences/${sequenceId}/subscribers/${subscriberId}`
+    );
     return response.data;
   }
 
-  async addSubscriberToSequenceByEmail(sequenceId: number, emailAddress: string): Promise<{ subscriber: KitSubscriber }> {
-    let response = await this.http.post(`/sequences/${sequenceId}/subscribers`, { email_address: emailAddress });
+  async addSubscriberToSequenceByEmail(
+    sequenceId: number,
+    emailAddress: string
+  ): Promise<{ subscriber: KitSubscriber }> {
+    let response = await this.http.post(`/sequences/${sequenceId}/subscribers`, {
+      email_address: emailAddress
+    });
     return response.data;
   }
 
-  async listSubscribersForSequence(sequenceId: number, params?: {
-    after?: string;
-    before?: string;
-    perPage?: number;
-    status?: string;
-  }): Promise<KitPaginatedResponse<KitSubscriber>> {
+  async listSubscribersForSequence(
+    sequenceId: number,
+    params?: {
+      after?: string;
+      before?: string;
+      perPage?: number;
+      status?: string;
+    }
+  ): Promise<KitPaginatedResponse<KitSubscriber>> {
     let query: Record<string, any> = {};
     if (params?.after) query.after = params.after;
     if (params?.before) query.before = params.before;
     if (params?.perPage) query.per_page = params.perPage;
     if (params?.status) query.status = params.status;
 
-    let response = await this.http.get(`/sequences/${sequenceId}/subscribers`, { params: query });
+    let response = await this.http.get(`/sequences/${sequenceId}/subscribers`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -513,20 +556,24 @@ export class Client {
   // Webhooks
   // ──────────────────────────────────────────────
 
-  async createWebhook(targetUrl: string, event: {
-    name: string;
-    formId?: number;
-    sequenceId?: number;
-    tagId?: number;
-    productId?: number;
-    initiatorValue?: string;
-  }): Promise<{ webhook: KitWebhook }> {
+  async createWebhook(
+    targetUrl: string,
+    event: {
+      name: string;
+      formId?: number;
+      sequenceId?: number;
+      tagId?: number;
+      productId?: number;
+      initiatorValue?: string;
+    }
+  ): Promise<{ webhook: KitWebhook }> {
     let eventPayload: Record<string, any> = { name: event.name };
     if (event.formId !== undefined) eventPayload.form_id = event.formId;
     if (event.sequenceId !== undefined) eventPayload.sequence_id = event.sequenceId;
     if (event.tagId !== undefined) eventPayload.tag_id = event.tagId;
     if (event.productId !== undefined) eventPayload.product_id = event.productId;
-    if (event.initiatorValue !== undefined) eventPayload.initiator_value = event.initiatorValue;
+    if (event.initiatorValue !== undefined)
+      eventPayload.initiator_value = event.initiatorValue;
 
     let response = await this.http.post('/webhooks', {
       target_url: targetUrl,

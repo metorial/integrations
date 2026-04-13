@@ -7,10 +7,10 @@ export class KlazifyClient {
     this.axios = createAxios({
       baseURL: 'https://www.klazify.com/api',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 

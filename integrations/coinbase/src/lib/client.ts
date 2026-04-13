@@ -14,8 +14,8 @@ export class CoinbaseClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'CB-VERSION': '2024-01-01',
-      },
+        'CB-VERSION': '2024-01-01'
+      }
     });
   }
 
@@ -65,18 +65,26 @@ export class CoinbaseClient {
   }
 
   async createAddress(accountId: string, name?: string): Promise<any> {
-    let response = await this.v2.post(`/accounts/${accountId}/addresses`, name ? { name } : {});
+    let response = await this.v2.post(
+      `/accounts/${accountId}/addresses`,
+      name ? { name } : {}
+    );
     return response.data.data;
   }
 
   // --- Transactions ---
 
-  async listTransactions(accountId: string, params?: { limit?: number; startingAfter?: string }): Promise<any> {
+  async listTransactions(
+    accountId: string,
+    params?: { limit?: number; startingAfter?: string }
+  ): Promise<any> {
     let query: Record<string, string> = {};
     if (params?.limit) query.limit = String(params.limit);
     if (params?.startingAfter) query.starting_after = params.startingAfter;
     let qs = new URLSearchParams(query).toString();
-    let url = qs ? `/accounts/${accountId}/transactions?${qs}` : `/accounts/${accountId}/transactions`;
+    let url = qs
+      ? `/accounts/${accountId}/transactions?${qs}`
+      : `/accounts/${accountId}/transactions`;
     let response = await this.v2.get(url);
     return response.data;
   }
@@ -86,16 +94,19 @@ export class CoinbaseClient {
     return response.data.data;
   }
 
-  async sendMoney(accountId: string, params: {
-    to: string;
-    amount: string;
-    currency: string;
-    description?: string;
-    idem?: string;
-  }): Promise<any> {
+  async sendMoney(
+    accountId: string,
+    params: {
+      to: string;
+      amount: string;
+      currency: string;
+      description?: string;
+      idem?: string;
+    }
+  ): Promise<any> {
     let response = await this.v2.post(`/accounts/${accountId}/transactions`, {
       type: 'send',
-      ...params,
+      ...params
     });
     return response.data.data;
   }
@@ -107,13 +118,16 @@ export class CoinbaseClient {
     return response.data;
   }
 
-  async createBuy(accountId: string, params: {
-    amount?: string;
-    total?: string;
-    currency: string;
-    paymentMethod?: string;
-    commit?: boolean;
-  }): Promise<any> {
+  async createBuy(
+    accountId: string,
+    params: {
+      amount?: string;
+      total?: string;
+      currency: string;
+      paymentMethod?: string;
+      commit?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { currency: params.currency };
     if (params.amount) body.amount = params.amount;
     if (params.total) body.total = params.total;
@@ -130,13 +144,16 @@ export class CoinbaseClient {
     return response.data;
   }
 
-  async createSell(accountId: string, params: {
-    amount?: string;
-    total?: string;
-    currency: string;
-    paymentMethod?: string;
-    commit?: boolean;
-  }): Promise<any> {
+  async createSell(
+    accountId: string,
+    params: {
+      amount?: string;
+      total?: string;
+      currency: string;
+      paymentMethod?: string;
+      commit?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { currency: params.currency };
     if (params.amount) body.amount = params.amount;
     if (params.total) body.total = params.total;
@@ -153,16 +170,19 @@ export class CoinbaseClient {
     return response.data;
   }
 
-  async createDeposit(accountId: string, params: {
-    amount: string;
-    currency: string;
-    paymentMethod: string;
-    commit?: boolean;
-  }): Promise<any> {
+  async createDeposit(
+    accountId: string,
+    params: {
+      amount: string;
+      currency: string;
+      paymentMethod: string;
+      commit?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       amount: params.amount,
       currency: params.currency,
-      payment_method: params.paymentMethod,
+      payment_method: params.paymentMethod
     };
     if (params.commit !== undefined) body.commit = params.commit;
     let response = await this.v2.post(`/accounts/${accountId}/deposits`, body);
@@ -176,16 +196,19 @@ export class CoinbaseClient {
     return response.data;
   }
 
-  async createWithdrawal(accountId: string, params: {
-    amount: string;
-    currency: string;
-    paymentMethod: string;
-    commit?: boolean;
-  }): Promise<any> {
+  async createWithdrawal(
+    accountId: string,
+    params: {
+      amount: string;
+      currency: string;
+      paymentMethod: string;
+      commit?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       amount: params.amount,
       currency: params.currency,
-      payment_method: params.paymentMethod,
+      payment_method: params.paymentMethod
     };
     if (params.commit !== undefined) body.commit = params.commit;
     let response = await this.v2.post(`/accounts/${accountId}/withdrawals`, body);

@@ -3,10 +3,13 @@ import { NgrokClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let refSchema = z.object({
-  id: z.string(),
-  uri: z.string()
-}).optional().nullable();
+let refSchema = z
+  .object({
+    id: z.string(),
+    uri: z.string()
+  })
+  .optional()
+  .nullable();
 
 let secretOutputSchema = z.object({
   secretId: z.string().describe('Secret ID'),
@@ -52,24 +55,25 @@ let mapVault = (v: any) => ({
   metadata: v.metadata || ''
 });
 
-export let listVaults = SlateTool.create(
-  spec,
-  {
-    name: 'List Vaults',
-    key: 'list_vaults',
-    description: `List all vaults. Vaults organize secrets used across your ngrok resources.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    beforeId: z.string().optional().describe('Pagination cursor'),
-    limit: z.number().optional().describe('Max results per page')
-  }))
-  .output(z.object({
-    vaults: z.array(vaultOutputSchema),
-    nextPageUri: z.string().optional().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listVaults = SlateTool.create(spec, {
+  name: 'List Vaults',
+  key: 'list_vaults',
+  description: `List all vaults. Vaults organize secrets used across your ngrok resources.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      beforeId: z.string().optional().describe('Pagination cursor'),
+      limit: z.number().optional().describe('Max results per page')
+    })
+  )
+  .output(
+    z.object({
+      vaults: z.array(vaultOutputSchema),
+      nextPageUri: z.string().optional().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let result = await client.listVaults({
       beforeId: ctx.input.beforeId,
@@ -80,24 +84,24 @@ export let listVaults = SlateTool.create(
       output: { vaults, nextPageUri: result.next_page_uri || null },
       message: `Found **${vaults.length}** vault(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let createVault = SlateTool.create(
-  spec,
-  {
-    name: 'Create Vault',
-    key: 'create_vault',
-    description: `Create a new vault to organize secrets. Secrets can then be stored within the vault.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Vault name'),
-    description: z.string().optional().describe('Description'),
-    metadata: z.string().optional().describe('Metadata')
-  }))
+export let createVault = SlateTool.create(spec, {
+  name: 'Create Vault',
+  key: 'create_vault',
+  description: `Create a new vault to organize secrets. Secrets can then be stored within the vault.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      name: z.string().describe('Vault name'),
+      description: z.string().optional().describe('Description'),
+      metadata: z.string().optional().describe('Metadata')
+    })
+  )
   .output(vaultOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let v = await client.createVault({
       name: ctx.input.name,
@@ -108,25 +112,25 @@ export let createVault = SlateTool.create(
       output: mapVault(v),
       message: `Created vault **${v.name}** (${v.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateVault = SlateTool.create(
-  spec,
-  {
-    name: 'Update Vault',
-    key: 'update_vault',
-    description: `Update a vault's name, description, or metadata.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    vaultId: z.string().describe('Vault ID to update'),
-    name: z.string().optional().describe('New name'),
-    description: z.string().optional().describe('New description'),
-    metadata: z.string().optional().describe('New metadata')
-  }))
+export let updateVault = SlateTool.create(spec, {
+  name: 'Update Vault',
+  key: 'update_vault',
+  description: `Update a vault's name, description, or metadata.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      vaultId: z.string().describe('Vault ID to update'),
+      name: z.string().optional().describe('New name'),
+      description: z.string().optional().describe('New description'),
+      metadata: z.string().optional().describe('New metadata')
+    })
+  )
   .output(vaultOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let v = await client.updateVault(ctx.input.vaultId, {
       name: ctx.input.name,
@@ -137,50 +141,54 @@ export let updateVault = SlateTool.create(
       output: mapVault(v),
       message: `Updated vault **${v.name}** (${v.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteVault = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Vault',
-    key: 'delete_vault',
-    description: `Delete a vault and all secrets it contains.`,
-    tags: { destructive: true }
-  }
-)
-  .input(z.object({
-    vaultId: z.string().describe('Vault ID to delete')
-  }))
-  .output(z.object({
-    success: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteVault = SlateTool.create(spec, {
+  name: 'Delete Vault',
+  key: 'delete_vault',
+  description: `Delete a vault and all secrets it contains.`,
+  tags: { destructive: true }
+})
+  .input(
+    z.object({
+      vaultId: z.string().describe('Vault ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     await client.deleteVault(ctx.input.vaultId);
     return {
       output: { success: true },
       message: `Deleted vault **${ctx.input.vaultId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let listSecrets = SlateTool.create(
-  spec,
-  {
-    name: 'List Secrets',
-    key: 'list_secrets',
-    description: `List all secrets across all vaults. Secret values are not returned in the listing.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    beforeId: z.string().optional().describe('Pagination cursor'),
-    limit: z.number().optional().describe('Max results per page')
-  }))
-  .output(z.object({
-    secrets: z.array(secretOutputSchema),
-    nextPageUri: z.string().optional().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listSecrets = SlateTool.create(spec, {
+  name: 'List Secrets',
+  key: 'list_secrets',
+  description: `List all secrets across all vaults. Secret values are not returned in the listing.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      beforeId: z.string().optional().describe('Pagination cursor'),
+      limit: z.number().optional().describe('Max results per page')
+    })
+  )
+  .output(
+    z.object({
+      secrets: z.array(secretOutputSchema),
+      nextPageUri: z.string().optional().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let result = await client.listSecrets({
       beforeId: ctx.input.beforeId,
@@ -191,26 +199,26 @@ export let listSecrets = SlateTool.create(
       output: { secrets, nextPageUri: result.next_page_uri || null },
       message: `Found **${secrets.length}** secret(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let createSecret = SlateTool.create(
-  spec,
-  {
-    name: 'Create Secret',
-    key: 'create_secret',
-    description: `Create a new secret in a vault. Secrets store sensitive values used across your ngrok resources.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Secret name'),
-    secretValue: z.string().describe('Secret value'),
-    vaultId: z.string().optional().describe('Vault ID to store the secret in'),
-    description: z.string().optional().describe('Description'),
-    metadata: z.string().optional().describe('Metadata')
-  }))
+export let createSecret = SlateTool.create(spec, {
+  name: 'Create Secret',
+  key: 'create_secret',
+  description: `Create a new secret in a vault. Secrets store sensitive values used across your ngrok resources.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      name: z.string().describe('Secret name'),
+      secretValue: z.string().describe('Secret value'),
+      vaultId: z.string().optional().describe('Vault ID to store the secret in'),
+      description: z.string().optional().describe('Description'),
+      metadata: z.string().optional().describe('Metadata')
+    })
+  )
   .output(secretOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let s = await client.createSecret({
       name: ctx.input.name,
@@ -223,26 +231,26 @@ export let createSecret = SlateTool.create(
       output: mapSecret(s),
       message: `Created secret **${s.name}** (${s.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateSecret = SlateTool.create(
-  spec,
-  {
-    name: 'Update Secret',
-    key: 'update_secret',
-    description: `Update a secret's name, value, description, or metadata.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    secretId: z.string().describe('Secret ID to update'),
-    name: z.string().optional().describe('New name'),
-    secretValue: z.string().optional().describe('New secret value'),
-    description: z.string().optional().describe('New description'),
-    metadata: z.string().optional().describe('New metadata')
-  }))
+export let updateSecret = SlateTool.create(spec, {
+  name: 'Update Secret',
+  key: 'update_secret',
+  description: `Update a secret's name, value, description, or metadata.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      secretId: z.string().describe('Secret ID to update'),
+      name: z.string().optional().describe('New name'),
+      secretValue: z.string().optional().describe('New secret value'),
+      description: z.string().optional().describe('New description'),
+      metadata: z.string().optional().describe('New metadata')
+    })
+  )
   .output(secretOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let s = await client.updateSecret(ctx.input.secretId, {
       name: ctx.input.name,
@@ -254,28 +262,31 @@ export let updateSecret = SlateTool.create(
       output: mapSecret(s),
       message: `Updated secret **${s.name}** (${s.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteSecret = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Secret',
-    key: 'delete_secret',
-    description: `Delete a secret from its vault.`,
-    tags: { destructive: true }
-  }
-)
-  .input(z.object({
-    secretId: z.string().describe('Secret ID to delete')
-  }))
-  .output(z.object({
-    success: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteSecret = SlateTool.create(spec, {
+  name: 'Delete Secret',
+  key: 'delete_secret',
+  description: `Delete a secret from its vault.`,
+  tags: { destructive: true }
+})
+  .input(
+    z.object({
+      secretId: z.string().describe('Secret ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     await client.deleteSecret(ctx.input.secretId);
     return {
       output: { success: true },
       message: `Deleted secret **${ctx.input.secretId}**.`
     };
-  }).build();
+  })
+  .build();

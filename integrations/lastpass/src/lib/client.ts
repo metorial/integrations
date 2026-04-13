@@ -6,7 +6,7 @@ import type {
   LastPassEvent,
   LastPassEventReportResponse,
   LastPassBatchAddUser,
-  LastPassDeleteResponse,
+  LastPassDeleteResponse
 } from './types';
 
 export class LastPassClient {
@@ -22,14 +22,14 @@ export class LastPassClient {
     let axios = createAxios({
       baseURL: 'https://lastpass.com',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     let body: Record<string, any> = {
       cid: this.companyId,
       provhash: this.provisioningHash,
-      cmd,
+      cmd
     };
 
     if (data !== undefined) {
@@ -57,10 +57,13 @@ export class LastPassClient {
     return this.execute<LastPassUserDataResponse>('getuserdata', data);
   }
 
-  async getUserDataPaginated(pageIndex: number, pageSize: number = 500): Promise<LastPassUserDataResponse> {
+  async getUserDataPaginated(
+    pageIndex: number,
+    pageSize: number = 500
+  ): Promise<LastPassUserDataResponse> {
     return this.execute<LastPassUserDataResponse>('getuserdata', {
       pagesize: pageSize,
-      pageindex: pageIndex,
+      pageindex: pageIndex
     });
   }
 
@@ -72,10 +75,13 @@ export class LastPassClient {
 
   // ─── User Deletion ─────────────────────────────────────────────
 
-  async deleteUser(username: string, deleteAction: 0 | 1 | 2 = 0): Promise<LastPassDeleteResponse> {
+  async deleteUser(
+    username: string,
+    deleteAction: 0 | 1 | 2 = 0
+  ): Promise<LastPassDeleteResponse> {
     return this.execute<LastPassDeleteResponse>('deluser', {
       username,
-      deleteaction: deleteAction,
+      deleteaction: deleteAction
     });
   }
 
@@ -83,7 +89,7 @@ export class LastPassClient {
 
   async disableUser(username: string): Promise<LastPassApiResponse> {
     return this.execute<LastPassApiResponse>('disableuser', {
-      username,
+      username
     });
   }
 
@@ -91,7 +97,7 @@ export class LastPassClient {
 
   async resetPassword(username: string): Promise<LastPassApiResponse> {
     return this.execute<LastPassApiResponse>('resetpassword', {
-      username,
+      username
     });
   }
 
@@ -99,17 +105,19 @@ export class LastPassClient {
 
   async disableMultifactor(username: string): Promise<LastPassApiResponse> {
     return this.execute<LastPassApiResponse>('disablemultifactor', {
-      username,
+      username
     });
   }
 
   // ─── Group Management ──────────────────────────────────────────
 
-  async batchChangeGroup(users: Array<{
-    username: string;
-    add?: string[];
-    del?: string[];
-  }>): Promise<LastPassApiResponse> {
+  async batchChangeGroup(
+    users: Array<{
+      username: string;
+      add?: string[];
+      del?: string[];
+    }>
+  ): Promise<LastPassApiResponse> {
     return this.execute<LastPassApiResponse>('batchchangegrp', users);
   }
 
@@ -137,7 +145,7 @@ export class LastPassClient {
   }): Promise<LastPassEvent[]> {
     let data: Record<string, any> = {
       from: params.from,
-      to: params.to,
+      to: params.to
     };
 
     if (params.search) {

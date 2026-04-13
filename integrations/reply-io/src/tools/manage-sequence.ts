@@ -3,43 +3,55 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSequence = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Sequence',
-    key: 'manage_sequence',
-    description: `Create, update, delete, or control the state of an outreach sequence. Use this to create new sequences, update existing ones, or change a sequence's state (start, pause, archive, delete).`,
-    instructions: [
-      'To create a sequence, provide the "name" and "settings" fields. The "sequenceId" is not needed for creation.',
-      'To update, provide "sequenceId" and any fields to change.',
-      'To change state, set "action" to "start", "pause", "archive", or "delete" along with "sequenceId".',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageSequence = SlateTool.create(spec, {
+  name: 'Manage Sequence',
+  key: 'manage_sequence',
+  description: `Create, update, delete, or control the state of an outreach sequence. Use this to create new sequences, update existing ones, or change a sequence's state (start, pause, archive, delete).`,
+  instructions: [
+    'To create a sequence, provide the "name" and "settings" fields. The "sequenceId" is not needed for creation.',
+    'To update, provide "sequenceId" and any fields to change.',
+    'To change state, set "action" to "start", "pause", "archive", or "delete" along with "sequenceId".'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'start', 'pause', 'archive', 'delete']).describe('Action to perform on the sequence'),
-    sequenceId: z.number().optional().describe('ID of the sequence (required for update/start/pause/archive/delete)'),
-    name: z.string().optional().describe('Sequence name (required for create)'),
-    scheduleId: z.number().optional().describe('Schedule ID to associate with the sequence'),
-    emailAccounts: z.array(z.number()).optional().describe('Email account IDs to use'),
-    settings: z.object({
-      emailsCountPerDay: z.number().optional(),
-      daysToFinishProspect: z.number().optional(),
-      emailSendingDelaySeconds: z.number().optional(),
-      dailyThrottling: z.number().optional(),
-      disableOpensTracking: z.boolean().optional(),
-      repliesHandlingType: z.enum(['MarkAsFinished', 'ContinueSending']).optional(),
-      enableLinksTracking: z.boolean().optional(),
-    }).optional().describe('Sequence settings'),
-  }))
-  .output(z.object({
-    sequence: z.record(z.string(), z.any()).optional().describe('Created or updated sequence details'),
-    deleted: z.boolean().optional().describe('Whether the sequence was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'start', 'pause', 'archive', 'delete'])
+        .describe('Action to perform on the sequence'),
+      sequenceId: z
+        .number()
+        .optional()
+        .describe('ID of the sequence (required for update/start/pause/archive/delete)'),
+      name: z.string().optional().describe('Sequence name (required for create)'),
+      scheduleId: z.number().optional().describe('Schedule ID to associate with the sequence'),
+      emailAccounts: z.array(z.number()).optional().describe('Email account IDs to use'),
+      settings: z
+        .object({
+          emailsCountPerDay: z.number().optional(),
+          daysToFinishProspect: z.number().optional(),
+          emailSendingDelaySeconds: z.number().optional(),
+          dailyThrottling: z.number().optional(),
+          disableOpensTracking: z.boolean().optional(),
+          repliesHandlingType: z.enum(['MarkAsFinished', 'ContinueSending']).optional(),
+          enableLinksTracking: z.boolean().optional()
+        })
+        .optional()
+        .describe('Sequence settings')
+    })
+  )
+  .output(
+    z.object({
+      sequence: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Created or updated sequence details'),
+      deleted: z.boolean().optional().describe('Whether the sequence was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, sequenceId, name, scheduleId, emailAccounts, settings } = ctx.input;
 
@@ -51,7 +63,7 @@ export let manageSequence = SlateTool.create(
       let sequence = await client.createSequence(data);
       return {
         output: { sequence },
-        message: `Created sequence **${sequence.name ?? name}** (ID: ${sequence.id}).`,
+        message: `Created sequence **${sequence.name ?? name}** (ID: ${sequence.id}).`
       };
     }
 
@@ -69,7 +81,7 @@ export let manageSequence = SlateTool.create(
       let sequence = await client.updateSequence(sequenceId, data);
       return {
         output: { sequence },
-        message: `Updated sequence **${sequence.name ?? sequenceId}**.`,
+        message: `Updated sequence **${sequence.name ?? sequenceId}**.`
       };
     }
 
@@ -77,7 +89,7 @@ export let manageSequence = SlateTool.create(
       await client.startSequence(sequenceId);
       return {
         output: { sequence: { sequenceId, status: 'Active' } },
-        message: `Started sequence **${sequenceId}**.`,
+        message: `Started sequence **${sequenceId}**.`
       };
     }
 
@@ -85,7 +97,7 @@ export let manageSequence = SlateTool.create(
       await client.pauseSequence(sequenceId);
       return {
         output: { sequence: { sequenceId, status: 'Paused' } },
-        message: `Paused sequence **${sequenceId}**.`,
+        message: `Paused sequence **${sequenceId}**.`
       };
     }
 
@@ -93,7 +105,7 @@ export let manageSequence = SlateTool.create(
       await client.archiveSequence(sequenceId);
       return {
         output: { sequence: { sequenceId, status: 'Archived' } },
-        message: `Archived sequence **${sequenceId}**.`,
+        message: `Archived sequence **${sequenceId}**.`
       };
     }
 
@@ -101,6 +113,7 @@ export let manageSequence = SlateTool.create(
     await client.deleteSequence(sequenceId);
     return {
       output: { deleted: true },
-      message: `Deleted sequence **${sequenceId}**.`,
+      message: `Deleted sequence **${sequenceId}**.`
     };
-  }).build();
+  })
+  .build();

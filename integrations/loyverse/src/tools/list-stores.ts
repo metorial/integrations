@@ -14,31 +14,32 @@ let storeSchema = z.object({
   phoneNumber: z.string().nullable().optional().describe('Phone number'),
   description: z.string().nullable().optional().describe('Store description'),
   createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  updatedAt: z.string().optional()
 });
 
-export let listStores = SlateTool.create(
-  spec,
-  {
-    name: 'List Stores',
-    key: 'list_stores',
-    description: `Retrieve all store locations and their configurations.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional(),
-    cursor: z.string().optional(),
-  }))
-  .output(z.object({
-    stores: z.array(storeSchema),
-    cursor: z.string().nullable().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listStores = SlateTool.create(spec, {
+  name: 'List Stores',
+  key: 'list_stores',
+  description: `Retrieve all store locations and their configurations.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z.number().min(1).max(250).optional(),
+      cursor: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      stores: z.array(storeSchema),
+      cursor: z.string().nullable().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listStores({
       limit: ctx.input.limit,
-      cursor: ctx.input.cursor,
+      cursor: ctx.input.cursor
     });
 
     let stores = (result.stores ?? []).map((s: any) => ({
@@ -52,12 +53,12 @@ export let listStores = SlateTool.create(
       phoneNumber: s.phone_number,
       description: s.description,
       createdAt: s.created_at,
-      updatedAt: s.updated_at,
+      updatedAt: s.updated_at
     }));
 
     return {
       output: { stores, cursor: result.cursor },
-      message: `Retrieved **${stores.length}** store(s).`,
+      message: `Retrieved **${stores.length}** store(s).`
     };
   })
   .build();

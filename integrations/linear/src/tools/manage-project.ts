@@ -14,11 +14,15 @@ let projectOutputSchema = z.object({
   targetDate: z.string().nullable().describe('Project target date'),
   leadId: z.string().nullable().describe('Project lead user ID'),
   leadName: z.string().nullable().describe('Project lead name'),
-  teams: z.array(z.object({
-    teamId: z.string(),
-    name: z.string(),
-    key: z.string()
-  })).describe('Teams associated with the project'),
+  teams: z
+    .array(
+      z.object({
+        teamId: z.string(),
+        name: z.string(),
+        key: z.string()
+      })
+    )
+    .describe('Teams associated with the project'),
   createdAt: z.string(),
   updatedAt: z.string()
 });
@@ -43,28 +47,30 @@ let mapProjectToOutput = (project: any) => ({
   updatedAt: project.updatedAt
 });
 
-export let createProjectTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Project',
-    key: 'create_project',
-    description: `Creates a new project in Linear. Projects group related issues across teams and support tracking progress with milestones and target dates.`,
-    tags: {
-      readOnly: false
-    }
+export let createProjectTool = SlateTool.create(spec, {
+  name: 'Create Project',
+  key: 'create_project',
+  description: `Creates a new project in Linear. Projects group related issues across teams and support tracking progress with milestones and target dates.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Project name'),
-    description: z.string().optional().describe('Project description (Markdown)'),
-    teamIds: z.array(z.string()).describe('Team IDs to associate with the project'),
-    leadId: z.string().optional().describe('User ID for the project lead'),
-    startDate: z.string().optional().describe('Start date (YYYY-MM-DD)'),
-    targetDate: z.string().optional().describe('Target completion date (YYYY-MM-DD)'),
-    state: z.string().optional().describe('Initial state (planned, started, paused, completed, canceled)')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Project name'),
+      description: z.string().optional().describe('Project description (Markdown)'),
+      teamIds: z.array(z.string()).describe('Team IDs to associate with the project'),
+      leadId: z.string().optional().describe('User ID for the project lead'),
+      startDate: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+      targetDate: z.string().optional().describe('Target completion date (YYYY-MM-DD)'),
+      state: z
+        .string()
+        .optional()
+        .describe('Initial state (planned, started, paused, completed, canceled)')
+    })
+  )
   .output(projectOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {
@@ -88,30 +94,41 @@ export let createProjectTool = SlateTool.create(
       output: mapProjectToOutput(result.project),
       message: `Created project **${result.project.name}**`
     };
-  }).build();
+  })
+  .build();
 
-export let updateProjectTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Project',
-    key: 'update_project',
-    description: `Updates an existing Linear project. Supports changing name, description, lead, dates, and state.`,
-    tags: {
-      readOnly: false
-    }
+export let updateProjectTool = SlateTool.create(spec, {
+  name: 'Update Project',
+  key: 'update_project',
+  description: `Updates an existing Linear project. Supports changing name, description, lead, dates, and state.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project ID'),
-    name: z.string().optional().describe('New project name'),
-    description: z.string().optional().describe('New description (Markdown)'),
-    leadId: z.string().nullable().optional().describe('New lead user ID or null to remove lead'),
-    startDate: z.string().nullable().optional().describe('New start date or null to clear'),
-    targetDate: z.string().nullable().optional().describe('New target date or null to clear'),
-    state: z.string().optional().describe('New state (planned, started, paused, completed, canceled)')
-  }))
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      name: z.string().optional().describe('New project name'),
+      description: z.string().optional().describe('New description (Markdown)'),
+      leadId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New lead user ID or null to remove lead'),
+      startDate: z.string().nullable().optional().describe('New start date or null to clear'),
+      targetDate: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New target date or null to clear'),
+      state: z
+        .string()
+        .optional()
+        .describe('New state (planned, started, paused, completed, canceled)')
+    })
+  )
   .output(projectOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {};
@@ -132,29 +149,31 @@ export let updateProjectTool = SlateTool.create(
       output: mapProjectToOutput(result.project),
       message: `Updated project **${result.project.name}**`
     };
-  }).build();
+  })
+  .build();
 
-export let listProjectsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `Lists all projects in the workspace with pagination support.`,
-    tags: {
-      readOnly: true
-    }
+export let listProjectsTool = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `Lists all projects in the workspace with pagination support.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    first: z.number().optional().describe('Number of projects to return (default: 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    projects: z.array(projectOutputSchema),
-    hasNextPage: z.boolean(),
-    nextCursor: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      first: z.number().optional().describe('Number of projects to return (default: 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectOutputSchema),
+      hasNextPage: z.boolean(),
+      nextCursor: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.listProjects({
       first: ctx.input.first,
@@ -171,50 +190,56 @@ export let listProjectsTool = SlateTool.create(
       },
       message: `Found **${projects.length}** projects`
     };
-  }).build();
+  })
+  .build();
 
-export let getProjectTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieves a single project by ID with full details including associated issues.`,
-    tags: {
-      readOnly: true
-    }
+export let getProjectTool = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieves a single project by ID with full details including associated issues.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project ID')
-  }))
-  .output(z.object({
-    projectId: z.string(),
-    name: z.string(),
-    description: z.string().nullable(),
-    url: z.string(),
-    state: z.string(),
-    progress: z.number(),
-    startDate: z.string().nullable(),
-    targetDate: z.string().nullable(),
-    leadId: z.string().nullable(),
-    leadName: z.string().nullable(),
-    teams: z.array(z.object({
-      teamId: z.string(),
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project ID')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string(),
       name: z.string(),
-      key: z.string()
-    })),
-    issues: z.array(z.object({
-      issueId: z.string(),
-      identifier: z.string(),
-      title: z.string(),
-      priority: z.number(),
-      stateName: z.string(),
-      assigneeName: z.string().nullable()
-    })),
-    createdAt: z.string(),
-    updatedAt: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+      description: z.string().nullable(),
+      url: z.string(),
+      state: z.string(),
+      progress: z.number(),
+      startDate: z.string().nullable(),
+      targetDate: z.string().nullable(),
+      leadId: z.string().nullable(),
+      leadName: z.string().nullable(),
+      teams: z.array(
+        z.object({
+          teamId: z.string(),
+          name: z.string(),
+          key: z.string()
+        })
+      ),
+      issues: z.array(
+        z.object({
+          issueId: z.string(),
+          identifier: z.string(),
+          title: z.string(),
+          priority: z.number(),
+          stateName: z.string(),
+          assigneeName: z.string().nullable()
+        })
+      ),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let project = await client.getProject(ctx.input.projectId);
 
@@ -232,4 +257,5 @@ export let getProjectTool = SlateTool.create(
       },
       message: `Retrieved project **${project.name}** (${project.state || 'unknown state'}, ${Math.round((project.progress || 0) * 100)}% complete)`
     };
-  }).build();
+  })
+  .build();

@@ -3,39 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUserTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update an existing tenant/customer account. Modify contact information, address, custom fields, or add a comment to the user's history log. Only provided fields will be updated.`,
-    tags: {
-      destructive: false,
-    },
+export let updateUserTool = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update an existing tenant/customer account. Modify contact information, address, custom fields, or add a comment to the user's history log. Only provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    userId: z.string().describe('The user ID to update'),
-    email: z.string().optional().describe('Updated email address'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    phone: z.string().optional().describe('Updated phone number'),
-    company: z.string().optional().describe('Updated company name'),
-    address: z.string().optional().describe('Updated street address'),
-    city: z.string().optional().describe('Updated city'),
-    region: z.string().optional().describe('Updated state or region'),
-    postcode: z.string().optional().describe('Updated postal/ZIP code'),
-    country: z.string().optional().describe('Updated country code'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Updated custom field values'),
-    historyComment: z.string().optional().describe('Comment to add to the user history log'),
-  }))
-  .output(z.object({
-    user: z.record(z.string(), z.any()).describe('The updated user account'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('The user ID to update'),
+      email: z.string().optional().describe('Updated email address'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      phone: z.string().optional().describe('Updated phone number'),
+      company: z.string().optional().describe('Updated company name'),
+      address: z.string().optional().describe('Updated street address'),
+      city: z.string().optional().describe('Updated city'),
+      region: z.string().optional().describe('Updated state or region'),
+      postcode: z.string().optional().describe('Updated postal/ZIP code'),
+      country: z.string().optional().describe('Updated country code'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Updated custom field values'),
+      historyComment: z.string().optional().describe('Comment to add to the user history log')
+    })
+  )
+  .output(
+    z.object({
+      user: z.record(z.string(), z.any()).describe('The updated user account')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.config.subdomain,
+      subdomain: ctx.config.subdomain
     });
 
     let updateData: Record<string, any> = {};
@@ -59,7 +63,7 @@ export let updateUserTool = SlateTool.create(
 
     return {
       output: { user },
-      message: `Updated user **${user.firstName || ''} ${user.lastName || ''}** (${user._id}).${ctx.input.historyComment ? ' Added history comment.' : ''}`,
+      message: `Updated user **${user.firstName || ''} ${user.lastName || ''}** (${user._id}).${ctx.input.historyComment ? ' Added history comment.' : ''}`
     };
   })
   .build();

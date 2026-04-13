@@ -3,40 +3,39 @@ import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Events',
-    key: 'task_events',
-    description: 'Triggered when a task is created, updated, or completed in Capsule CRM.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum([
-      'task/created',
-      'task/updated',
-      'task/completed',
-    ]).describe('Type of task event'),
-    tasks: z.array(z.any()).describe('Task records from the webhook payload'),
-  }))
-  .output(z.object({
-    taskId: z.number().describe('ID of the affected task'),
-    description: z.string().optional().describe('Task description'),
-    detail: z.string().optional().describe('Task details'),
-    status: z.string().optional().describe('Task status'),
-    dueOn: z.string().optional().describe('Due date'),
-    dueTime: z.string().optional().describe('Due time'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Update timestamp'),
-    completedAt: z.string().optional().describe('Completion timestamp'),
-    category: z.any().optional().describe('Task category'),
-    owner: z.any().optional().describe('Assigned owner'),
-    party: z.any().optional().describe('Linked party'),
-    opportunity: z.any().optional().describe('Linked opportunity'),
-    kase: z.any().optional().describe('Linked project'),
-  }))
+export let taskEvents = SlateTrigger.create(spec, {
+  name: 'Task Events',
+  key: 'task_events',
+  description: 'Triggered when a task is created, updated, or completed in Capsule CRM.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['task/created', 'task/updated', 'task/completed'])
+        .describe('Type of task event'),
+      tasks: z.array(z.any()).describe('Task records from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number().describe('ID of the affected task'),
+      description: z.string().optional().describe('Task description'),
+      detail: z.string().optional().describe('Task details'),
+      status: z.string().optional().describe('Task status'),
+      dueOn: z.string().optional().describe('Due date'),
+      dueTime: z.string().optional().describe('Due time'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Update timestamp'),
+      completedAt: z.string().optional().describe('Completion timestamp'),
+      category: z.any().optional().describe('Task category'),
+      owner: z.any().optional().describe('Assigned owner'),
+      party: z.any().optional().describe('Linked party'),
+      opportunity: z.any().optional().describe('Linked opportunity'),
+      kase: z.any().optional().describe('Linked project')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
 
       let events = ['task/created', 'task/updated', 'task/completed'];
@@ -46,17 +45,17 @@ export let taskEvents = SlateTrigger.create(
         let hook = await client.createRestHook({
           event,
           targetUrl: ctx.input.webhookBaseUrl,
-          description: `Slates: ${event}`,
+          description: `Slates: ${event}`
         });
         hooks.push({ hookId: hook.id, event });
       }
 
       return {
-        registrationDetails: { hooks },
+        registrationDetails: { hooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
       let hooks = (ctx.input.registrationDetails as any)?.hooks || [];
 
@@ -69,18 +68,20 @@ export let taskEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.event,
-          tasks: data.payload || [],
-        }],
+        inputs: [
+          {
+            eventType: data.event,
+            tasks: data.payload || []
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let tasks = ctx.input.tasks || [];
       let eventAction = ctx.input.eventType.split('/')[1] || 'unknown';
 
@@ -89,8 +90,8 @@ export let taskEvents = SlateTrigger.create(
           type: `task.${eventAction}`,
           id: `${ctx.input.eventType}-${Date.now()}`,
           output: {
-            taskId: 0,
-          },
+            taskId: 0
+          }
         };
       }
 
@@ -113,8 +114,9 @@ export let taskEvents = SlateTrigger.create(
           owner: t.owner,
           party: t.party,
           opportunity: t.opportunity,
-          kase: t.kase,
-        },
+          kase: t.kase
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

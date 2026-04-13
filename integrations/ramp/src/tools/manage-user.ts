@@ -3,41 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Invite a new user, update an existing user's details, deactivate, or reactivate a Ramp user.
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Invite a new user, update an existing user's details, deactivate, or reactivate a Ramp user.
 - **invite**: Sends an invitation email to join the Ramp business. Requires email, name, and role.
 - **update**: Modifies user fields such as department, location, manager, or role.
 - **deactivate** / **reactivate**: Changes the user's active status.`,
-    instructions: [
-      'For invite action, role must be one of: BUSINESS_ADMIN, BUSINESS_USER, BUSINESS_BOOKKEEPER',
-      'For invite, an idempotencyKey is auto-generated if not provided',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['invite', 'update', 'deactivate', 'reactivate']).describe('Action to perform on the user'),
-    userId: z.string().optional().describe('Required for update, deactivate, reactivate actions'),
-    email: z.string().optional().describe('Email address (required for invite)'),
-    firstName: z.string().optional().describe('First name (required for invite)'),
-    lastName: z.string().optional().describe('Last name (required for invite)'),
-    role: z.enum(['BUSINESS_ADMIN', 'BUSINESS_USER', 'BUSINESS_BOOKKEEPER']).optional().describe('User role'),
-    departmentId: z.string().optional().describe('Department ID to assign'),
-    locationId: z.string().optional().describe('Location ID to assign'),
-    directManagerId: z.string().optional().describe('Direct manager user ID'),
-    isManager: z.boolean().optional().describe('Whether the user is a manager'),
-    idempotencyKey: z.string().optional().describe('Unique idempotency key for invite action'),
-  }))
-  .output(z.object({
-    result: z.any().describe('API response from the action'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'For invite action, role must be one of: BUSINESS_ADMIN, BUSINESS_USER, BUSINESS_BOOKKEEPER',
+    'For invite, an idempotencyKey is auto-generated if not provided'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['invite', 'update', 'deactivate', 'reactivate'])
+        .describe('Action to perform on the user'),
+      userId: z
+        .string()
+        .optional()
+        .describe('Required for update, deactivate, reactivate actions'),
+      email: z.string().optional().describe('Email address (required for invite)'),
+      firstName: z.string().optional().describe('First name (required for invite)'),
+      lastName: z.string().optional().describe('Last name (required for invite)'),
+      role: z
+        .enum(['BUSINESS_ADMIN', 'BUSINESS_USER', 'BUSINESS_BOOKKEEPER'])
+        .optional()
+        .describe('User role'),
+      departmentId: z.string().optional().describe('Department ID to assign'),
+      locationId: z.string().optional().describe('Location ID to assign'),
+      directManagerId: z.string().optional().describe('Direct manager user ID'),
+      isManager: z.boolean().optional().describe('Whether the user is a manager'),
+      idempotencyKey: z
+        .string()
+        .optional()
+        .describe('Unique idempotency key for invite action')
+    })
+  )
+  .output(
+    z.object({
+      result: z.any().describe('API response from the action')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action } = ctx.input;
@@ -56,12 +68,12 @@ export let manageUser = SlateTool.create(
         locationId: ctx.input.locationId,
         directManagerId: ctx.input.directManagerId,
         isManager: ctx.input.isManager,
-        idempotencyKey: ctx.input.idempotencyKey || crypto.randomUUID(),
+        idempotencyKey: ctx.input.idempotencyKey || crypto.randomUUID()
       });
 
       return {
         output: { result },
-        message: `Invited **${ctx.input.email}** as **${ctx.input.role}**.`,
+        message: `Invited **${ctx.input.email}** as **${ctx.input.role}**.`
       };
     }
 
@@ -74,12 +86,12 @@ export let manageUser = SlateTool.create(
         departmentId: ctx.input.departmentId,
         locationId: ctx.input.locationId,
         directManagerId: ctx.input.directManagerId,
-        role: ctx.input.role,
+        role: ctx.input.role
       });
 
       return {
         output: { result },
-        message: `Updated user **${ctx.input.userId}**.`,
+        message: `Updated user **${ctx.input.userId}**.`
       };
     }
 
@@ -87,7 +99,7 @@ export let manageUser = SlateTool.create(
       let result = await client.deactivateUser(ctx.input.userId);
       return {
         output: { result },
-        message: `Deactivated user **${ctx.input.userId}**.`,
+        message: `Deactivated user **${ctx.input.userId}**.`
       };
     }
 
@@ -95,7 +107,7 @@ export let manageUser = SlateTool.create(
       let result = await client.reactivateUser(ctx.input.userId);
       return {
         output: { result },
-        message: `Reactivated user **${ctx.input.userId}**.`,
+        message: `Reactivated user **${ctx.input.userId}**.`
       };
     }
 

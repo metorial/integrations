@@ -2,11 +2,7 @@
   "name": "@metorial/sprout-social",
   "version": "0.1.1",
   "description": "Manage social media presence across X, Facebook, Instagram, LinkedIn, YouTube, TikTok, Pinterest, Threads, and Bluesky. Retrieve profile analytics including impressions, follower counts, engagement, and video views. Access post-level performance metrics such as reactions, comments, and shares. Retrieve messages (posts, comments, DMs, mentions, reviews) received or published by owned profiles. Create draft publishing posts with scheduled delivery times, media attachments, and tags targeting multiple profiles and networks. Upload media files for use in posts. Query social listening topics for earned media data including sentiment, engagement, and volume metrics. Manage customer care cases filtered by status, priority, type, queue, and assigned user. Retrieve account metadata including connected profiles, groups, tags, users, teams, and listening topics.",
-  "categories": [
-    "apis-and-http-requests",
-    "crm-and-sales-tools",
-    "news-and-media"
-  ],
+  "categories": ["apis-and-http-requests", "crm-and-sales-tools", "news-and-media"],
   "skills": [
     "retrieve profile analytics",
     "access post performance metrics",

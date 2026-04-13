@@ -2,24 +2,36 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Leadfeeder API token for the main API'),
-    ipEnrichToken: z.string().optional().describe('IP-Enrich API key for the lf-discover API'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Leadfeeder API token for the main API'),
+      ipEnrichToken: z
+        .string()
+        .optional()
+        .describe('IP-Enrich API key for the lf-discover API')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      apiToken: z.string().describe('Leadfeeder API token (found in Personal settings > API tokens)'),
-      ipEnrichApiKey: z.string().optional().describe('IP-Enrich API key (separate from the main API token, required for IP enrichment)'),
+      apiToken: z
+        .string()
+        .describe('Leadfeeder API token (found in Personal settings > API tokens)'),
+      ipEnrichApiKey: z
+        .string()
+        .optional()
+        .describe(
+          'IP-Enrich API key (separate from the main API token, required for IP enrichment)'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiToken,
-          ipEnrichToken: ctx.input.ipEnrichApiKey,
-        },
+          ipEnrichToken: ctx.input.ipEnrichApiKey
+        }
       };
     },
     getProfile: async (ctx: {
@@ -29,8 +41,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.leadfeeder.com',
         headers: {
-          'Authorization': `Token token=${ctx.output.token}`,
-        },
+          Authorization: `Token token=${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/accounts');
@@ -40,8 +52,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: firstAccount?.id,
-          name: firstAccount?.attributes?.name,
-        },
+          name: firstAccount?.attributes?.name
+        }
       };
-    },
+    }
   });

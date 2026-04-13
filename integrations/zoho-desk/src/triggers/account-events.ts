@@ -3,35 +3,32 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let accountEventTypes = [
-  'Account_Add',
-  'Account_Update',
-  'Account_Delete',
-] as const;
+let accountEventTypes = ['Account_Add', 'Account_Update', 'Account_Delete'] as const;
 
-export let accountEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Events',
-    key: 'account_events',
-    description: 'Triggered when a company account is created, updated, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of account event'),
-    accountId: z.string().describe('ID of the affected account'),
-    payload: z.any().describe('Full event payload from Zoho Desk'),
-  }))
-  .output(z.object({
-    accountId: z.string().describe('ID of the affected account'),
-    accountName: z.string().optional().describe('Account name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    website: z.string().optional().describe('Website URL'),
-    previousState: z.any().optional().describe('Previous state (for update events)'),
-  }))
+export let accountEvents = SlateTrigger.create(spec, {
+  name: 'Account Events',
+  key: 'account_events',
+  description: 'Triggered when a company account is created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of account event'),
+      accountId: z.string().describe('ID of the affected account'),
+      payload: z.any().describe('Full event payload from Zoho Desk')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.string().describe('ID of the affected account'),
+      accountName: z.string().optional().describe('Account name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      website: z.string().optional().describe('Website URL'),
+      previousState: z.any().optional().describe('Previous state (for update events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhookIds: string[] = [];
 
@@ -41,7 +38,7 @@ export let accountEvents = SlateTrigger.create(
             name: `Slates - ${eventType}`,
             url: ctx.input.webhookBaseUrl,
             eventType,
-            isActive: true,
+            isActive: true
           };
 
           if (eventType === 'Account_Update') {
@@ -58,32 +55,38 @@ export let accountEvents = SlateTrigger.create(
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
-        try { await client.deleteWebhook(webhookId); } catch { /* ignore */ }
+      for (let webhookId of details.webhookIds || []) {
+        try {
+          await client.deleteWebhook(webhookId);
+        } catch {
+          /* ignore */
+        }
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as Record<string, any>;
 
       let eventType = data.eventType || data.event_type || 'unknown';
       let account = data.payload || data.account || data;
       let accountId = account.id || account.accountId || data.accountId || '';
 
       return {
-        inputs: [{
-          eventType,
-          accountId: String(accountId),
-          payload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            accountId: String(accountId),
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, accountId, payload } = ctx.input;
       let account = payload?.payload || payload?.account || payload || {};
 
@@ -101,9 +104,9 @@ export let accountEvents = SlateTrigger.create(
           email: account.email,
           phone: account.phone,
           website: account.website,
-          previousState: account.prevState || payload?.prevState,
-        },
+          previousState: account.prevState || payload?.prevState
+        }
       };
-    },
+    }
   })
   .build();

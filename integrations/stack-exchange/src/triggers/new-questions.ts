@@ -3,52 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newQuestions = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Questions',
-    key: 'new_questions',
-    description: 'Triggers when new questions are posted on a Stack Exchange site. Optionally filter by tags.',
-  }
-)
-  .input(z.object({
-    questionId: z.number().describe('ID of the question'),
-    title: z.string().describe('Title of the question'),
-    link: z.string().describe('URL to the question'),
-    score: z.number().describe('Net vote score'),
-    answerCount: z.number().describe('Number of answers'),
-    viewCount: z.number().describe('Number of views'),
-    isAnswered: z.boolean().describe('Whether the question has been answered'),
-    tags: z.array(z.string()).describe('Tags on the question'),
-    creationDate: z.string().describe('When the question was created (ISO 8601)'),
-    ownerDisplayName: z.string().optional().describe('Display name of the author'),
-    ownerUserId: z.number().optional().describe('User ID of the author'),
-    body: z.string().optional().describe('HTML body of the question'),
-  }))
-  .output(z.object({
-    questionId: z.number().describe('ID of the question'),
-    title: z.string().describe('Title of the question'),
-    link: z.string().describe('URL to the question'),
-    score: z.number().describe('Net vote score'),
-    answerCount: z.number().describe('Number of answers'),
-    viewCount: z.number().describe('Number of views'),
-    isAnswered: z.boolean().describe('Whether the question has been answered'),
-    tags: z.array(z.string()).describe('Tags on the question'),
-    creationDate: z.string().describe('When the question was created (ISO 8601)'),
-    ownerDisplayName: z.string().optional().describe('Display name of the author'),
-    ownerUserId: z.number().optional().describe('User ID of the author'),
-    body: z.string().optional().describe('HTML body of the question'),
-  }))
+export let newQuestions = SlateTrigger.create(spec, {
+  name: 'New Questions',
+  key: 'new_questions',
+  description:
+    'Triggers when new questions are posted on a Stack Exchange site. Optionally filter by tags.'
+})
+  .input(
+    z.object({
+      questionId: z.number().describe('ID of the question'),
+      title: z.string().describe('Title of the question'),
+      link: z.string().describe('URL to the question'),
+      score: z.number().describe('Net vote score'),
+      answerCount: z.number().describe('Number of answers'),
+      viewCount: z.number().describe('Number of views'),
+      isAnswered: z.boolean().describe('Whether the question has been answered'),
+      tags: z.array(z.string()).describe('Tags on the question'),
+      creationDate: z.string().describe('When the question was created (ISO 8601)'),
+      ownerDisplayName: z.string().optional().describe('Display name of the author'),
+      ownerUserId: z.number().optional().describe('User ID of the author'),
+      body: z.string().optional().describe('HTML body of the question')
+    })
+  )
+  .output(
+    z.object({
+      questionId: z.number().describe('ID of the question'),
+      title: z.string().describe('Title of the question'),
+      link: z.string().describe('URL to the question'),
+      score: z.number().describe('Net vote score'),
+      answerCount: z.number().describe('Number of answers'),
+      viewCount: z.number().describe('Number of views'),
+      isAnswered: z.boolean().describe('Whether the question has been answered'),
+      tags: z.array(z.string()).describe('Tags on the question'),
+      creationDate: z.string().describe('When the question was created (ISO 8601)'),
+      ownerDisplayName: z.string().optional().describe('Display name of the author'),
+      ownerUserId: z.number().optional().describe('User ID of the author'),
+      body: z.string().optional().describe('HTML body of the question')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         key: ctx.auth.key,
-        site: ctx.config.site,
+        site: ctx.config.site
       });
 
       let lastPollDate = ctx.state?.lastPollDate as string | undefined;
@@ -58,7 +60,7 @@ export let newQuestions = SlateTrigger.create(
         sort: 'creation',
         order: 'desc',
         fromDate: fromDate,
-        pageSize: 50,
+        pageSize: 50
       });
 
       let now = new Date().toISOString();
@@ -75,18 +77,18 @@ export let newQuestions = SlateTrigger.create(
         creationDate: new Date(q.creation_date * 1000).toISOString(),
         ownerDisplayName: q.owner?.display_name,
         ownerUserId: q.owner?.user_id,
-        body: q.body,
+        body: q.body
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollDate: now,
-        },
+          lastPollDate: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'question.created',
         id: String(ctx.input.questionId),
@@ -102,8 +104,9 @@ export let newQuestions = SlateTrigger.create(
           creationDate: ctx.input.creationDate,
           ownerDisplayName: ctx.input.ownerDisplayName,
           ownerUserId: ctx.input.ownerUserId,
-          body: ctx.input.body,
-        },
+          body: ctx.input.body
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

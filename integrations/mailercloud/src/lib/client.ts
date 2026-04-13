@@ -24,19 +24,27 @@ export class Client {
   // ---- Lists ----
 
   async createList(name: string) {
-    let response = await axios.post('/list', {
-      name,
-      list_type: 1
-    }, { headers: this.headers });
+    let response = await axios.post(
+      '/list',
+      {
+        name,
+        list_type: 1
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async searchLists(params: { page?: number; limit?: number; search?: string }) {
-    let response = await axios.post('/lists/search', {
-      page: params.page ?? 1,
-      limit: params.limit ?? 20,
-      search: params.search ?? ''
-    }, { headers: this.headers });
+    let response = await axios.post(
+      '/lists/search',
+      {
+        page: params.page ?? 1,
+        limit: params.limit ?? 20,
+        search: params.search ?? ''
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -88,23 +96,26 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    name?: string;
-    lastName?: string;
-    middleName?: string;
-    city?: string;
-    state?: string;
-    zip?: string;
-    country?: string;
-    phone?: string;
-    industry?: string;
-    department?: string;
-    jobTitle?: string;
-    organization?: string;
-    leadSource?: string;
-    salary?: number;
-    customFields?: Record<string, string | number>;
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      name?: string;
+      lastName?: string;
+      middleName?: string;
+      city?: string;
+      state?: string;
+      zip?: string;
+      country?: string;
+      phone?: string;
+      industry?: string;
+      department?: string;
+      jobTitle?: string;
+      organization?: string;
+      leadSource?: string;
+      salary?: number;
+      customFields?: Record<string, string | number>;
+    }
+  ) {
     let body: Record<string, unknown> = {};
 
     if (data.name !== undefined) body.name = data.name;
@@ -127,12 +138,19 @@ export class Client {
     return response.data;
   }
 
-  async searchContacts(listId: string, params?: { page?: number; limit?: number; search?: string }) {
-    let response = await axios.post(`/contact/search/${listId}`, {
-      page: params?.page ?? 1,
-      limit: params?.limit ?? 20,
-      search: params?.search ?? ''
-    }, { headers: this.headers });
+  async searchContacts(
+    listId: string,
+    params?: { page?: number; limit?: number; search?: string }
+  ) {
+    let response = await axios.post(
+      `/contact/search/${listId}`,
+      {
+        page: params?.page ?? 1,
+        limit: params?.limit ?? 20,
+        search: params?.search ?? ''
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -144,12 +162,16 @@ export class Client {
   }
 
   async updateProperty(propertyId: string, data: { name?: string; description?: string }) {
-    let response = await axios.patch(`/contact/property/${propertyId}`, data, { headers: this.headers });
+    let response = await axios.patch(`/contact/property/${propertyId}`, data, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deleteProperty(propertyId: string) {
-    let response = await axios.delete(`/contact/property/${propertyId}`, { headers: this.headers });
+    let response = await axios.delete(`/contact/property/${propertyId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -187,16 +209,16 @@ export class Client {
 
   // ---- Webhooks ----
 
-  async createWebhook(data: {
-    name: string;
-    url: string;
-    events: string[];
-  }) {
-    let response = await axios.post('/webhook', {
-      name: data.name,
-      url: data.url,
-      events: data.events
-    }, { headers: this.headers });
+  async createWebhook(data: { name: string; url: string; events: string[] }) {
+    let response = await axios.post(
+      '/webhook',
+      {
+        name: data.name,
+        url: data.url,
+        events: data.events
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 

@@ -5,63 +5,80 @@ import { z } from 'zod';
 
 let linkedInvoiceSchema = z.object({
   invoiceId: z.string().describe('Invoice ID to apply payment to'),
-  amount: z.number().optional().describe('Amount to apply to this invoice (defaults to full amount)'),
+  amount: z
+    .number()
+    .optional()
+    .describe('Amount to apply to this invoice (defaults to full amount)')
 });
 
-export let createPayment = SlateTool.create(
-  spec,
-  {
-    name: 'Create Payment',
-    key: 'create_payment',
-    description: `Records a payment received from a customer. The payment can be linked to one or more invoices, or recorded as an unlinked payment (credit). Supports specifying the payment method and deposit account.`,
-    instructions: [
-      'Link payments to specific invoices using the linkedInvoices field for accurate tracking.',
-      'If no linkedInvoices are provided, the payment is recorded as unapplied credit.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let createPayment = SlateTool.create(spec, {
+  name: 'Create Payment',
+  key: 'create_payment',
+  description: `Records a payment received from a customer. The payment can be linked to one or more invoices, or recorded as an unlinked payment (credit). Supports specifying the payment method and deposit account.`,
+  instructions: [
+    'Link payments to specific invoices using the linkedInvoices field for accurate tracking.',
+    'If no linkedInvoices are provided, the payment is recorded as unapplied credit.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    customerId: z.string().describe('QuickBooks Customer ID making the payment'),
-    totalAmount: z.number().describe('Total payment amount'),
-    linkedInvoices: z.array(linkedInvoiceSchema).optional().describe('Invoices to apply the payment against'),
-    txnDate: z.string().optional().describe('Payment date (YYYY-MM-DD), defaults to today'),
-    paymentMethodId: z.string().optional().describe('Payment method reference ID (cash, check, credit card, etc.)'),
-    depositAccountId: z.string().optional().describe('Account ID to deposit the payment into'),
-    referenceNumber: z.string().optional().describe('Reference number (e.g., check number)'),
-    privateNote: z.string().optional().describe('Internal memo for the payment'),
-  }))
-  .output(z.object({
-    paymentId: z.string().describe('Payment ID'),
-    totalAmount: z.number().describe('Total payment amount'),
-    unappliedAmount: z.number().optional().describe('Amount not applied to any invoice'),
-    txnDate: z.string().optional().describe('Payment date'),
-    syncToken: z.string().describe('Sync token for updates'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('QuickBooks Customer ID making the payment'),
+      totalAmount: z.number().describe('Total payment amount'),
+      linkedInvoices: z
+        .array(linkedInvoiceSchema)
+        .optional()
+        .describe('Invoices to apply the payment against'),
+      txnDate: z.string().optional().describe('Payment date (YYYY-MM-DD), defaults to today'),
+      paymentMethodId: z
+        .string()
+        .optional()
+        .describe('Payment method reference ID (cash, check, credit card, etc.)'),
+      depositAccountId: z
+        .string()
+        .optional()
+        .describe('Account ID to deposit the payment into'),
+      referenceNumber: z.string().optional().describe('Reference number (e.g., check number)'),
+      privateNote: z.string().optional().describe('Internal memo for the payment')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.string().describe('Payment ID'),
+      totalAmount: z.number().describe('Total payment amount'),
+      unappliedAmount: z.number().optional().describe('Amount not applied to any invoice'),
+      txnDate: z.string().optional().describe('Payment date'),
+      syncToken: z.string().describe('Sync token for updates')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let paymentData: any = {
       CustomerRef: { value: ctx.input.customerId },
-      TotalAmt: ctx.input.totalAmount,
+      TotalAmt: ctx.input.totalAmount
     };
 
     if (ctx.input.txnDate) paymentData.TxnDate = ctx.input.txnDate;
-    if (ctx.input.paymentMethodId) paymentData.PaymentMethodRef = { value: ctx.input.paymentMethodId };
-    if (ctx.input.depositAccountId) paymentData.DepositToAccountRef = { value: ctx.input.depositAccountId };
+    if (ctx.input.paymentMethodId)
+      paymentData.PaymentMethodRef = { value: ctx.input.paymentMethodId };
+    if (ctx.input.depositAccountId)
+      paymentData.DepositToAccountRef = { value: ctx.input.depositAccountId };
     if (ctx.input.referenceNumber) paymentData.PaymentRefNum = ctx.input.referenceNumber;
     if (ctx.input.privateNote) paymentData.PrivateNote = ctx.input.privateNote;
 
     if (ctx.input.linkedInvoices && ctx.input.linkedInvoices.length > 0) {
-      paymentData.Line = ctx.input.linkedInvoices.map((inv) => ({
+      paymentData.Line = ctx.input.linkedInvoices.map(inv => ({
         Amount: inv.amount ?? ctx.input.totalAmount,
-        LinkedTxn: [{
-          TxnId: inv.invoiceId,
-          TxnType: 'Invoice',
-        }],
+        LinkedTxn: [
+          {
+            TxnId: inv.invoiceId,
+            TxnType: 'Invoice'
+          }
+        ]
       }));
     }
 
@@ -73,41 +90,48 @@ export let createPayment = SlateTool.create(
         totalAmount: payment.TotalAmt,
         unappliedAmount: payment.UnappliedAmt,
         txnDate: payment.TxnDate,
-        syncToken: payment.SyncToken,
+        syncToken: payment.SyncToken
       },
-      message: `Recorded payment of **$${payment.TotalAmt}** (ID: ${payment.Id})${ctx.input.linkedInvoices ? ` applied to ${ctx.input.linkedInvoices.length} invoice(s)` : ''}.`,
+      message: `Recorded payment of **$${payment.TotalAmt}** (ID: ${payment.Id})${ctx.input.linkedInvoices ? ` applied to ${ctx.input.linkedInvoices.length} invoice(s)` : ''}.`
     };
-  }).build();
+  })
+  .build();
 
-export let getPayment = SlateTool.create(
-  spec,
-  {
-    name: 'Get Payment',
-    key: 'get_payment',
-    description: `Retrieves a payment record by ID with full transaction details and linked invoices.`,
-    tags: {
-      readOnly: true,
-    },
+export let getPayment = SlateTool.create(spec, {
+  name: 'Get Payment',
+  key: 'get_payment',
+  description: `Retrieves a payment record by ID with full transaction details and linked invoices.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    paymentId: z.string().describe('QuickBooks Payment ID'),
-  }))
-  .output(z.object({
-    paymentId: z.string().describe('Payment ID'),
-    customerId: z.string().optional().describe('Customer ID'),
-    customerName: z.string().optional().describe('Customer name'),
-    totalAmount: z.number().describe('Total payment amount'),
-    unappliedAmount: z.number().optional().describe('Unapplied amount'),
-    txnDate: z.string().optional().describe('Payment date'),
-    syncToken: z.string().describe('Sync token'),
-    linkedTransactions: z.array(z.object({
-      txnId: z.string(),
-      txnType: z.string(),
-      amount: z.number().optional(),
-    })).optional().describe('Linked transactions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      paymentId: z.string().describe('QuickBooks Payment ID')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.string().describe('Payment ID'),
+      customerId: z.string().optional().describe('Customer ID'),
+      customerName: z.string().optional().describe('Customer name'),
+      totalAmount: z.number().describe('Total payment amount'),
+      unappliedAmount: z.number().optional().describe('Unapplied amount'),
+      txnDate: z.string().optional().describe('Payment date'),
+      syncToken: z.string().describe('Sync token'),
+      linkedTransactions: z
+        .array(
+          z.object({
+            txnId: z.string(),
+            txnType: z.string(),
+            amount: z.number().optional()
+          })
+        )
+        .optional()
+        .describe('Linked transactions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
     let payment = await client.getPayment(ctx.input.paymentId);
 
@@ -115,7 +139,7 @@ export let getPayment = SlateTool.create(
       (line.LinkedTxn || []).map((txn: any) => ({
         txnId: txn.TxnId,
         txnType: txn.TxnType,
-        amount: line.Amount,
+        amount: line.Amount
       }))
     );
 
@@ -128,8 +152,9 @@ export let getPayment = SlateTool.create(
         unappliedAmount: payment.UnappliedAmt,
         txnDate: payment.TxnDate,
         syncToken: payment.SyncToken,
-        linkedTransactions,
+        linkedTransactions
       },
-      message: `Retrieved payment **$${payment.TotalAmt}** (ID: ${payment.Id}) from customer ${payment.CustomerRef?.name ?? 'N/A'}.`,
+      message: `Retrieved payment **$${payment.TotalAmt}** (ID: ${payment.Id}) from customer ${payment.CustomerRef?.name ?? 'N/A'}.`
     };
-  }).build();
+  })
+  .build();

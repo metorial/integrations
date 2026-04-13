@@ -3,49 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let directoryEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Directory Events',
-    key: 'directory_events',
-    description: 'Polls JumpCloud Directory Insights for directory-level events including user creation, updates, deletions, admin changes, association changes, and privilege escalation events.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    service: z.string().describe('Service category'),
-    initiatedById: z.string().optional().describe('ID of the actor who initiated the event'),
-    initiatedByType: z.string().optional().describe('Type of the initiating actor'),
-    initiatedByEmail: z.string().optional().describe('Email of the initiating actor'),
-    resourceId: z.string().optional().describe('Affected resource ID'),
-    resourceType: z.string().optional().describe('Affected resource type'),
-    organization: z.string().optional().describe('Organization ID'),
-    rawEvent: z.any().describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    service: z.string().describe('Service category'),
-    initiatedById: z.string().optional().describe('Actor ID'),
-    initiatedByType: z.string().optional().describe('Actor type'),
-    initiatedByEmail: z.string().optional().describe('Actor email'),
-    resourceId: z.string().optional().describe('Affected resource ID'),
-    resourceType: z.string().optional().describe('Affected resource type'),
-    organization: z.string().optional().describe('Organization ID'),
-    changes: z.any().optional().describe('Changes made in the event'),
-    message: z.string().optional().describe('Human-readable event description'),
-  }))
+export let directoryEvents = SlateTrigger.create(spec, {
+  name: 'Directory Events',
+  key: 'directory_events',
+  description:
+    'Polls JumpCloud Directory Insights for directory-level events including user creation, updates, deletions, admin changes, association changes, and privilege escalation events.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      service: z.string().describe('Service category'),
+      initiatedById: z.string().optional().describe('ID of the actor who initiated the event'),
+      initiatedByType: z.string().optional().describe('Type of the initiating actor'),
+      initiatedByEmail: z.string().optional().describe('Email of the initiating actor'),
+      resourceId: z.string().optional().describe('Affected resource ID'),
+      resourceType: z.string().optional().describe('Affected resource type'),
+      organization: z.string().optional().describe('Organization ID'),
+      rawEvent: z.any().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      service: z.string().describe('Service category'),
+      initiatedById: z.string().optional().describe('Actor ID'),
+      initiatedByType: z.string().optional().describe('Actor type'),
+      initiatedByEmail: z.string().optional().describe('Actor email'),
+      resourceId: z.string().optional().describe('Affected resource ID'),
+      resourceType: z.string().optional().describe('Affected resource type'),
+      organization: z.string().optional().describe('Organization ID'),
+      changes: z.any().optional().describe('Changes made in the event'),
+      message: z.string().optional().describe('Human-readable event description')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        orgId: ctx.config.orgId,
+        orgId: ctx.config.orgId
       });
 
       let lastTimestamp = ctx.state?.lastTimestamp as string | undefined;
@@ -55,7 +57,7 @@ export let directoryEvents = SlateTrigger.create(
         service: ['directory'],
         startTime,
         limit: 100,
-        sort: 'ASC',
+        sort: 'ASC'
       });
 
       let newLastTimestamp = startTime;
@@ -65,7 +67,7 @@ export let directoryEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: result.events.map((e) => ({
+        inputs: result.events.map(e => ({
           eventId: e.id ?? `${e.timestamp}-${e.event_type}`,
           eventType: e.event_type ?? 'unknown',
           timestamp: e.timestamp ?? new Date().toISOString(),
@@ -76,14 +78,14 @@ export let directoryEvents = SlateTrigger.create(
           resourceId: e.resource?.id,
           resourceType: e.resource?.type,
           organization: e.organization,
-          rawEvent: e,
+          rawEvent: e
         })),
         updatedState: {
-          lastTimestamp: newLastTimestamp,
-        },
+          lastTimestamp: newLastTimestamp
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.rawEvent ?? {};
       let description = `${ctx.input.eventType} event`;
       if (ctx.input.initiatedByEmail) {
@@ -111,8 +113,9 @@ export let directoryEvents = SlateTrigger.create(
           resourceType: ctx.input.resourceType,
           organization: ctx.input.organization,
           changes: raw.changes,
-          message: description,
-        },
+          message: description
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

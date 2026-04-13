@@ -14,51 +14,83 @@ let scheduleSchema = z.object({
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
   ownerName: z.string().optional(),
-  variables: z.array(z.object({
-    key: z.string(),
-    value: z.string(),
-    variableType: z.string().optional()
-  })).optional()
+  variables: z
+    .array(
+      z.object({
+        key: z.string(),
+        value: z.string(),
+        variableType: z.string().optional()
+      })
+    )
+    .optional()
 });
 
-export let manageSchedules = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Pipeline Schedules',
-    key: 'manage_schedules',
-    description: `Create, list, update, or delete scheduled pipelines that run at recurring intervals using cron syntax. Schedule variables can be added, updated, or removed as part of schedule management.`,
-    instructions: [
-      'Use action "list" to see all pipeline schedules.',
-      'Use action "get" to fetch schedule details including variables.',
-      'Use action "create" to create a new schedule with cron expression.',
-      'Use action "update" to modify schedule settings.',
-      'Use action "delete" to remove a schedule.',
-      'Cron format: "minute hour day_of_month month day_of_week" (e.g. "0 1 * * *" for daily at 1 AM).'
-    ]
-  }
-)
-  .input(z.object({
-    projectId: z.string().optional().describe('Project ID or URL-encoded path. Falls back to config default.'),
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    scheduleId: z.number().optional().describe('Schedule ID (required for get, update, delete)'),
-    description: z.string().optional().describe('Schedule description (required for create)'),
-    ref: z.string().optional().describe('Branch or tag to run scheduled pipeline on (required for create)'),
-    cron: z.string().optional().describe('Cron expression (required for create, e.g. "0 1 * * *")'),
-    cronTimezone: z.string().optional().describe('Timezone (e.g. "UTC", "America/New_York")'),
-    active: z.boolean().optional().describe('Whether the schedule is active'),
-    variables: z.array(z.object({
-      action: z.enum(['create', 'update', 'delete']).describe('Action for this variable'),
-      key: z.string().describe('Variable key'),
-      value: z.string().optional().describe('Variable value (for create/update)'),
-      variableType: z.enum(['env_var', 'file']).optional().describe('Variable type')
-    })).optional().describe('Variable operations to perform on the schedule')
-  }))
-  .output(z.object({
-    schedules: z.array(scheduleSchema).optional(),
-    schedule: scheduleSchema.optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSchedules = SlateTool.create(spec, {
+  name: 'Manage Pipeline Schedules',
+  key: 'manage_schedules',
+  description: `Create, list, update, or delete scheduled pipelines that run at recurring intervals using cron syntax. Schedule variables can be added, updated, or removed as part of schedule management.`,
+  instructions: [
+    'Use action "list" to see all pipeline schedules.',
+    'Use action "get" to fetch schedule details including variables.',
+    'Use action "create" to create a new schedule with cron expression.',
+    'Use action "update" to modify schedule settings.',
+    'Use action "delete" to remove a schedule.',
+    'Cron format: "minute hour day_of_month month day_of_week" (e.g. "0 1 * * *" for daily at 1 AM).'
+  ]
+})
+  .input(
+    z.object({
+      projectId: z
+        .string()
+        .optional()
+        .describe('Project ID or URL-encoded path. Falls back to config default.'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      scheduleId: z
+        .number()
+        .optional()
+        .describe('Schedule ID (required for get, update, delete)'),
+      description: z
+        .string()
+        .optional()
+        .describe('Schedule description (required for create)'),
+      ref: z
+        .string()
+        .optional()
+        .describe('Branch or tag to run scheduled pipeline on (required for create)'),
+      cron: z
+        .string()
+        .optional()
+        .describe('Cron expression (required for create, e.g. "0 1 * * *")'),
+      cronTimezone: z
+        .string()
+        .optional()
+        .describe('Timezone (e.g. "UTC", "America/New_York")'),
+      active: z.boolean().optional().describe('Whether the schedule is active'),
+      variables: z
+        .array(
+          z.object({
+            action: z
+              .enum(['create', 'update', 'delete'])
+              .describe('Action for this variable'),
+            key: z.string().describe('Variable key'),
+            value: z.string().optional().describe('Variable value (for create/update)'),
+            variableType: z.enum(['env_var', 'file']).optional().describe('Variable type')
+          })
+        )
+        .optional()
+        .describe('Variable operations to perform on the schedule')
+    })
+  )
+  .output(
+    z.object({
+      schedules: z.array(scheduleSchema).optional(),
+      schedule: scheduleSchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let projectId = resolveProjectId(ctx.input.projectId, ctx.config.projectId);
     let { action, scheduleId } = ctx.input;
@@ -82,7 +114,7 @@ export let manageSchedules = SlateTool.create(
     });
 
     if (action === 'list') {
-      let result = await client.listPipelineSchedules(projectId) as any[];
+      let result = (await client.listPipelineSchedules(projectId)) as any[];
       let schedules = result.map(mapSchedule);
       return {
         output: { schedules },
@@ -116,7 +148,13 @@ export let manageSchedules = SlateTool.create(
       if (ctx.input.variables) {
         for (let v of ctx.input.variables) {
           if (v.action === 'create' && v.value !== undefined) {
-            await client.createPipelineScheduleVariable(projectId, sid, v.key, v.value, v.variableType);
+            await client.createPipelineScheduleVariable(
+              projectId,
+              sid,
+              v.key,
+              v.value,
+              v.variableType
+            );
           }
         }
         s = await client.getPipelineSchedule(projectId, sid);
@@ -145,9 +183,21 @@ export let manageSchedules = SlateTool.create(
       if (ctx.input.variables) {
         for (let v of ctx.input.variables) {
           if (v.action === 'create' && v.value !== undefined) {
-            await client.createPipelineScheduleVariable(projectId, scheduleId, v.key, v.value, v.variableType);
+            await client.createPipelineScheduleVariable(
+              projectId,
+              scheduleId,
+              v.key,
+              v.value,
+              v.variableType
+            );
           } else if (v.action === 'update' && v.value !== undefined) {
-            await client.updatePipelineScheduleVariable(projectId, scheduleId, v.key, v.value, v.variableType);
+            await client.updatePipelineScheduleVariable(
+              projectId,
+              scheduleId,
+              v.key,
+              v.value,
+              v.variableType
+            );
           } else if (v.action === 'delete') {
             await client.deletePipelineScheduleVariable(projectId, scheduleId, v.key);
           }

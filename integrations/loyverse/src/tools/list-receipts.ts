@@ -15,19 +15,23 @@ let lineItemSchema = z.object({
   grossTotalMoney: z.number().optional().describe('Gross total'),
   totalMoney: z.number().optional().describe('Total after discounts/taxes'),
   totalDiscount: z.number().optional().describe('Total discount amount'),
-  totalTax: z.number().optional().describe('Total tax amount'),
+  totalTax: z.number().optional().describe('Total tax amount')
 });
 
 let paymentSchema = z.object({
   paymentTypeId: z.string().optional().describe('Payment type ID'),
   moneyAmount: z.number().optional().describe('Amount paid'),
-  paymentName: z.string().nullable().optional().describe('Payment type name'),
+  paymentName: z.string().nullable().optional().describe('Payment type name')
 });
 
 let receiptSchema = z.object({
   receiptNumber: z.string().describe('Receipt number (unique identifier)'),
   receiptType: z.string().optional().describe('Receipt type (SALE, REFUND)'),
-  refundForReceiptNumber: z.string().nullable().optional().describe('Original receipt number if this is a refund'),
+  refundForReceiptNumber: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Original receipt number if this is a refund'),
   storeId: z.string().optional().describe('Store ID'),
   employeeId: z.string().nullable().optional().describe('Employee ID'),
   customerId: z.string().nullable().optional().describe('Customer ID'),
@@ -41,31 +45,49 @@ let receiptSchema = z.object({
   note: z.string().nullable().optional().describe('Receipt note'),
   receiptDate: z.string().optional().describe('Date of the receipt'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last update timestamp'),
+  updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listReceipts = SlateTool.create(
-  spec,
-  {
-    name: 'List Receipts',
-    key: 'list_receipts',
-    description: `Retrieve sales receipts (transactions) from Loyverse. Supports date range filtering for syncing sales data to external systems. Returns line items, payments, discounts, and tax details.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional().describe('Number of receipts to return (1-250, default 50)'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    createdAtMin: z.string().optional().describe('Filter receipts created at or after this ISO 8601 timestamp'),
-    createdAtMax: z.string().optional().describe('Filter receipts created at or before this ISO 8601 timestamp'),
-    updatedAtMin: z.string().optional().describe('Filter receipts updated at or after this ISO 8601 timestamp'),
-    updatedAtMax: z.string().optional().describe('Filter receipts updated at or before this ISO 8601 timestamp'),
-  }))
-  .output(z.object({
-    receipts: z.array(receiptSchema).describe('List of receipts'),
-    cursor: z.string().nullable().optional().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listReceipts = SlateTool.create(spec, {
+  name: 'List Receipts',
+  key: 'list_receipts',
+  description: `Retrieve sales receipts (transactions) from Loyverse. Supports date range filtering for syncing sales data to external systems. Returns line items, payments, discounts, and tax details.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of receipts to return (1-250, default 50)'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      createdAtMin: z
+        .string()
+        .optional()
+        .describe('Filter receipts created at or after this ISO 8601 timestamp'),
+      createdAtMax: z
+        .string()
+        .optional()
+        .describe('Filter receipts created at or before this ISO 8601 timestamp'),
+      updatedAtMin: z
+        .string()
+        .optional()
+        .describe('Filter receipts updated at or after this ISO 8601 timestamp'),
+      updatedAtMax: z
+        .string()
+        .optional()
+        .describe('Filter receipts updated at or before this ISO 8601 timestamp')
+    })
+  )
+  .output(
+    z.object({
+      receipts: z.array(receiptSchema).describe('List of receipts'),
+      cursor: z.string().nullable().optional().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listReceipts({
       limit: ctx.input.limit,
@@ -73,7 +95,7 @@ export let listReceipts = SlateTool.create(
       createdAtMin: ctx.input.createdAtMin,
       createdAtMax: ctx.input.createdAtMax,
       updatedAtMin: ctx.input.updatedAtMin,
-      updatedAtMax: ctx.input.updatedAtMax,
+      updatedAtMax: ctx.input.updatedAtMax
     });
 
     let receipts = (result.receipts ?? []).map((r: any) => ({
@@ -100,22 +122,22 @@ export let listReceipts = SlateTool.create(
         grossTotalMoney: li.gross_total_money,
         totalMoney: li.total_money,
         totalDiscount: li.total_discount,
-        totalTax: li.total_tax,
+        totalTax: li.total_tax
       })),
       payments: (r.payments ?? []).map((p: any) => ({
         paymentTypeId: p.payment_type_id,
         moneyAmount: p.money_amount,
-        paymentName: p.name,
+        paymentName: p.name
       })),
       note: r.note,
       receiptDate: r.receipt_date,
       createdAt: r.created_at,
-      updatedAt: r.updated_at,
+      updatedAt: r.updated_at
     }));
 
     return {
       output: { receipts, cursor: result.cursor },
-      message: `Retrieved **${receipts.length}** receipt(s).${result.cursor ? ' More available via cursor.' : ''}`,
+      message: `Retrieved **${receipts.length}** receipt(s).${result.cursor ? ' More available via cursor.' : ''}`
     };
   })
   .build();

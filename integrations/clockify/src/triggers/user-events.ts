@@ -13,35 +13,37 @@ let userEventTypes = [
 ] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'USER_JOINED_WORKSPACE': 'user.joined',
-  'USER_DELETED_FROM_WORKSPACE': 'user.deleted',
-  'USER_ACTIVATED_ON_WORKSPACE': 'user.activated',
-  'USER_DEACTIVATED_ON_WORKSPACE': 'user.deactivated',
-  'USER_EMAIL_CHANGED': 'user.email_changed',
-  'USER_UPDATED': 'user.updated'
+  USER_JOINED_WORKSPACE: 'user.joined',
+  USER_DELETED_FROM_WORKSPACE: 'user.deleted',
+  USER_ACTIVATED_ON_WORKSPACE: 'user.activated',
+  USER_DEACTIVATED_ON_WORKSPACE: 'user.deactivated',
+  USER_EMAIL_CHANGED: 'user.email_changed',
+  USER_UPDATED: 'user.updated'
 };
 
-export let userEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Events',
-    key: 'user_events',
-    description: 'Triggered when users join, leave, are activated/deactivated, or are updated in the workspace.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    user: z.any().describe('User data from webhook payload')
-  }))
-  .output(z.object({
-    userId: z.string(),
-    name: z.string().optional(),
-    email: z.string().optional(),
-    status: z.string().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let userEvents = SlateTrigger.create(spec, {
+  name: 'User Events',
+  key: 'user_events',
+  description:
+    'Triggered when users join, leave, are activated/deactivated, or are updated in the workspace.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      user: z.any().describe('User data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string(),
+      name: z.string().optional(),
+      email: z.string().optional(),
+      status: z.string().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -63,7 +65,7 @@ export let userEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -80,21 +82,24 @@ export let userEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          user: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            user: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let user = ctx.input.user;
       let userId = user.id || user.userId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `user.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `user.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

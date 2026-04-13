@@ -13,25 +13,30 @@ let taskOutputSchema = z.object({
   status: z.string().optional()
 });
 
-export let createTask = SlateTool.create(
-  spec,
-  {
-    name: 'Create Task',
-    key: 'create_task',
-    description: `Create a new task within a Clockify project. Tasks can have assignees, estimates, billable status, and custom rates.`,
-    tags: { readOnly: false }
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project to create the task in'),
-    name: z.string().describe('Name of the task'),
-    assigneeIds: z.array(z.string()).optional().describe('Array of user IDs to assign to the task'),
-    billable: z.boolean().optional().describe('Whether the task is billable'),
-    estimate: z.string().optional().describe('Time estimate (e.g., "PT1H30M" for 1 hour 30 minutes)'),
-    status: z.enum(['ACTIVE', 'DONE']).optional().describe('Task status')
-  }))
+export let createTask = SlateTool.create(spec, {
+  name: 'Create Task',
+  key: 'create_task',
+  description: `Create a new task within a Clockify project. Tasks can have assignees, estimates, billable status, and custom rates.`,
+  tags: { readOnly: false }
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project to create the task in'),
+      name: z.string().describe('Name of the task'),
+      assigneeIds: z
+        .array(z.string())
+        .optional()
+        .describe('Array of user IDs to assign to the task'),
+      billable: z.boolean().optional().describe('Whether the task is billable'),
+      estimate: z
+        .string()
+        .optional()
+        .describe('Time estimate (e.g., "PT1H30M" for 1 hour 30 minutes)'),
+      status: z.enum(['ACTIVE', 'DONE']).optional().describe('Task status')
+    })
+  )
   .output(taskOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -61,26 +66,25 @@ export let createTask = SlateTool.create(
   })
   .build();
 
-export let updateTask = SlateTool.create(
-  spec,
-  {
-    name: 'Update Task',
-    key: 'update_task',
-    description: `Update an existing task in a Clockify project. Modify name, assignees, billable status, estimate, or status.`,
-    tags: { readOnly: false }
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project containing the task'),
-    taskId: z.string().describe('ID of the task to update'),
-    name: z.string().optional().describe('Updated task name'),
-    assigneeIds: z.array(z.string()).optional().describe('Updated assignee user IDs'),
-    billable: z.boolean().optional().describe('Updated billable status'),
-    estimate: z.string().optional().describe('Updated time estimate'),
-    status: z.enum(['ACTIVE', 'DONE']).optional().describe('Updated status')
-  }))
+export let updateTask = SlateTool.create(spec, {
+  name: 'Update Task',
+  key: 'update_task',
+  description: `Update an existing task in a Clockify project. Modify name, assignees, billable status, estimate, or status.`,
+  tags: { readOnly: false }
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project containing the task'),
+      taskId: z.string().describe('ID of the task to update'),
+      name: z.string().optional().describe('Updated task name'),
+      assigneeIds: z.array(z.string()).optional().describe('Updated assignee user IDs'),
+      billable: z.boolean().optional().describe('Updated billable status'),
+      estimate: z.string().optional().describe('Updated time estimate'),
+      status: z.enum(['ACTIVE', 'DONE']).optional().describe('Updated status')
+    })
+  )
   .output(taskOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -110,23 +114,24 @@ export let updateTask = SlateTool.create(
   })
   .build();
 
-export let deleteTask = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Task',
-    key: 'delete_task',
-    description: `Delete a task from a Clockify project.`,
-    tags: { destructive: true }
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project containing the task'),
-    taskId: z.string().describe('ID of the task to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteTask = SlateTool.create(spec, {
+  name: 'Delete Task',
+  key: 'delete_task',
+  description: `Delete a task from a Clockify project.`,
+  tags: { destructive: true }
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project containing the task'),
+      taskId: z.string().describe('ID of the task to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -142,27 +147,28 @@ export let deleteTask = SlateTool.create(
   })
   .build();
 
-export let getTasks = SlateTool.create(
-  spec,
-  {
-    name: 'Get Tasks',
-    key: 'get_tasks',
-    description: `List tasks for a project in Clockify. Filter by name or active status. Supports pagination.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project to list tasks for'),
-    name: z.string().optional().describe('Filter by task name'),
-    isActive: z.boolean().optional().describe('Filter by active status'),
-    page: z.number().optional().describe('Page number'),
-    pageSize: z.number().optional().describe('Entries per page')
-  }))
-  .output(z.object({
-    tasks: z.array(taskOutputSchema),
-    count: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+export let getTasks = SlateTool.create(spec, {
+  name: 'Get Tasks',
+  key: 'get_tasks',
+  description: `List tasks for a project in Clockify. Filter by name or active status. Supports pagination.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project to list tasks for'),
+      name: z.string().optional().describe('Filter by task name'),
+      isActive: z.boolean().optional().describe('Filter by active status'),
+      page: z.number().optional().describe('Page number'),
+      pageSize: z.number().optional().describe('Entries per page')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskOutputSchema),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

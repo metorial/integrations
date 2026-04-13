@@ -16,38 +16,39 @@ let equipmentSchema = z.object({
   isContainer: z.boolean().optional().describe('Whether item is a case/container'),
   trackSerialNumbers: z.boolean().optional().describe('Whether serial numbers are tracked'),
   createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  updatedAt: z.string().optional()
 });
 
-export let listEquipment = SlateTool.create(
-  spec,
-  {
-    name: 'List Equipment',
-    key: 'list_equipment',
-    description: `Retrieve a list of equipment items from the Rentman inventory. Browse all available equipment, filter by fields, and paginate through results.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().optional().default(25).describe('Maximum number of results (max 300)'),
-    offset: z.number().optional().default(0).describe('Number of results to skip'),
-    sort: z.string().optional().describe('Sort field with + or - prefix'),
-    fields: z.string().optional().describe('Comma-separated fields to return'),
-  }))
-  .output(z.object({
-    equipment: z.array(equipmentSchema),
-    itemCount: z.number(),
-    limit: z.number(),
-    offset: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listEquipment = SlateTool.create(spec, {
+  name: 'List Equipment',
+  key: 'list_equipment',
+  description: `Retrieve a list of equipment items from the Rentman inventory. Browse all available equipment, filter by fields, and paginate through results.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z.number().optional().default(25).describe('Maximum number of results (max 300)'),
+      offset: z.number().optional().default(0).describe('Number of results to skip'),
+      sort: z.string().optional().describe('Sort field with + or - prefix'),
+      fields: z.string().optional().describe('Comma-separated fields to return')
+    })
+  )
+  .output(
+    z.object({
+      equipment: z.array(equipmentSchema),
+      itemCount: z.number(),
+      limit: z.number(),
+      offset: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.list('equipment', {
       limit: ctx.input.limit,
       offset: ctx.input.offset,
       sort: ctx.input.sort,
-      fields: ctx.input.fields,
+      fields: ctx.input.fields
     });
 
     let equipment = result.data.map((e: any) => ({
@@ -63,7 +64,7 @@ export let listEquipment = SlateTool.create(
       isContainer: e.is_container,
       trackSerialNumbers: e.track_serial_numbers,
       createdAt: e.created,
-      updatedAt: e.modified,
+      updatedAt: e.modified
     }));
 
     return {
@@ -71,8 +72,9 @@ export let listEquipment = SlateTool.create(
         equipment,
         itemCount: result.itemCount,
         limit: result.limit,
-        offset: result.offset,
+        offset: result.offset
       },
-      message: `Found **${result.itemCount}** equipment items. Returned ${equipment.length} items (offset: ${result.offset}).`,
+      message: `Found **${result.itemCount}** equipment items. Returned ${equipment.length} items (offset: ${result.offset}).`
     };
-  }).build();
+  })
+  .build();

@@ -6,14 +6,24 @@ import { z } from 'zod';
 let scheduledEventSchema = z.object({
   eventId: z.string().describe('The scheduled event ID'),
   guildId: z.string().describe('The guild ID the event belongs to'),
-  channelId: z.string().nullable().describe('The channel ID for the event (null for external events)'),
+  channelId: z
+    .string()
+    .nullable()
+    .describe('The channel ID for the event (null for external events)'),
   name: z.string().describe('The name of the scheduled event'),
   description: z.string().nullable().describe('The description of the scheduled event'),
   scheduledStartTime: z.string().describe('ISO 8601 timestamp of the scheduled start time'),
-  scheduledEndTime: z.string().nullable().describe('ISO 8601 timestamp of the scheduled end time'),
-  status: z.number().describe('The status of the event (1=SCHEDULED, 2=ACTIVE, 3=COMPLETED, 4=CANCELED)'),
-  entityType: z.number().describe('The type of the event entity (1=STAGE_INSTANCE, 2=VOICE, 3=EXTERNAL)'),
-  location: z.string().nullable().describe('The location of the event (for external events)'),
+  scheduledEndTime: z
+    .string()
+    .nullable()
+    .describe('ISO 8601 timestamp of the scheduled end time'),
+  status: z
+    .number()
+    .describe('The status of the event (1=SCHEDULED, 2=ACTIVE, 3=COMPLETED, 4=CANCELED)'),
+  entityType: z
+    .number()
+    .describe('The type of the event entity (1=STAGE_INSTANCE, 2=VOICE, 3=EXTERNAL)'),
+  location: z.string().nullable().describe('The location of the event (for external events)')
 });
 
 let formatEvent = (event: any) => ({
@@ -26,46 +36,89 @@ let formatEvent = (event: any) => ({
   scheduledEndTime: event.scheduled_end_time ?? null,
   status: event.status,
   entityType: event.entity_type,
-  location: event.entity_metadata?.location ?? null,
+  location: event.entity_metadata?.location ?? null
 });
 
-export let manageScheduledEventsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Scheduled Events',
-    key: 'manage_scheduled_events',
-    description: `Manage guild scheduled events in Discord. Supports listing, creating, updating, and deleting scheduled events for a guild.`,
-    instructions: [
-      'Use action "list" to fetch all scheduled events for a guild.',
-      'Use action "create" to create a new scheduled event. Requires name, entityType, scheduledStartTime, and privacyLevel. For EXTERNAL events (entityType 3), location and scheduledEndTime are required. For STAGE_INSTANCE (1) or VOICE (2) events, channelId is required.',
-      'Use action "update" to modify an existing scheduled event. Provide the eventId and any fields to update. You can also change the status (1=SCHEDULED, 2=ACTIVE, 3=COMPLETED, 4=CANCELED).',
-      'Use action "delete" to remove a scheduled event from the guild.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageScheduledEventsTool = SlateTool.create(spec, {
+  name: 'Manage Scheduled Events',
+  key: 'manage_scheduled_events',
+  description: `Manage guild scheduled events in Discord. Supports listing, creating, updating, and deleting scheduled events for a guild.`,
+  instructions: [
+    'Use action "list" to fetch all scheduled events for a guild.',
+    'Use action "create" to create a new scheduled event. Requires name, entityType, scheduledStartTime, and privacyLevel. For EXTERNAL events (entityType 3), location and scheduledEndTime are required. For STAGE_INSTANCE (1) or VOICE (2) events, channelId is required.',
+    'Use action "update" to modify an existing scheduled event. Provide the eventId and any fields to update. You can also change the status (1=SCHEDULED, 2=ACTIVE, 3=COMPLETED, 4=CANCELED).',
+    'Use action "delete" to remove a scheduled event from the guild.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('The scheduled event action to perform'),
-    guildId: z.string().describe('The guild ID to operate in'),
-    eventId: z.string().optional().describe('The scheduled event ID (required for update and delete)'),
-    channelId: z.string().optional().describe('The channel ID for the event (required for STAGE_INSTANCE and VOICE events)'),
-    name: z.string().optional().describe('The name of the scheduled event (required for create)'),
-    description: z.string().optional().describe('The description of the scheduled event'),
-    scheduledStartTime: z.string().optional().describe('ISO 8601 timestamp for the scheduled start time (required for create)'),
-    scheduledEndTime: z.string().optional().describe('ISO 8601 timestamp for the scheduled end time (required for EXTERNAL events)'),
-    entityType: z.number().optional().describe('The entity type: 1=STAGE_INSTANCE, 2=VOICE, 3=EXTERNAL (required for create)'),
-    privacyLevel: z.number().optional().describe('The privacy level: 2=GUILD_ONLY (required for create)'),
-    location: z.string().optional().describe('The location of the event (required for EXTERNAL events)'),
-    status: z.number().optional().describe('The status of the event: 1=SCHEDULED, 2=ACTIVE, 3=COMPLETED, 4=CANCELED (for update)'),
-  }))
-  .output(z.object({
-    event: scheduledEventSchema.optional().describe('The scheduled event object (for create and update actions)'),
-    events: z.array(scheduledEventSchema).optional().describe('Array of scheduled event objects (for list action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'update', 'delete'])
+        .describe('The scheduled event action to perform'),
+      guildId: z.string().describe('The guild ID to operate in'),
+      eventId: z
+        .string()
+        .optional()
+        .describe('The scheduled event ID (required for update and delete)'),
+      channelId: z
+        .string()
+        .optional()
+        .describe(
+          'The channel ID for the event (required for STAGE_INSTANCE and VOICE events)'
+        ),
+      name: z
+        .string()
+        .optional()
+        .describe('The name of the scheduled event (required for create)'),
+      description: z.string().optional().describe('The description of the scheduled event'),
+      scheduledStartTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp for the scheduled start time (required for create)'),
+      scheduledEndTime: z
+        .string()
+        .optional()
+        .describe(
+          'ISO 8601 timestamp for the scheduled end time (required for EXTERNAL events)'
+        ),
+      entityType: z
+        .number()
+        .optional()
+        .describe(
+          'The entity type: 1=STAGE_INSTANCE, 2=VOICE, 3=EXTERNAL (required for create)'
+        ),
+      privacyLevel: z
+        .number()
+        .optional()
+        .describe('The privacy level: 2=GUILD_ONLY (required for create)'),
+      location: z
+        .string()
+        .optional()
+        .describe('The location of the event (required for EXTERNAL events)'),
+      status: z
+        .number()
+        .optional()
+        .describe(
+          'The status of the event: 1=SCHEDULED, 2=ACTIVE, 3=COMPLETED, 4=CANCELED (for update)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      event: scheduledEventSchema
+        .optional()
+        .describe('The scheduled event object (for create and update actions)'),
+      events: z
+        .array(scheduledEventSchema)
+        .optional()
+        .describe('Array of scheduled event objects (for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DiscordClient({ token: ctx.auth.token, tokenType: ctx.auth.tokenType });
     let { action, guildId, eventId } = ctx.input;
 
@@ -74,21 +127,23 @@ export let manageScheduledEventsTool = SlateTool.create(
       let events = rawEvents.map((event: any) => formatEvent(event));
       return {
         output: { events },
-        message: `Retrieved ${events.length} scheduled event(s) from guild \`${guildId}\`.`,
+        message: `Retrieved ${events.length} scheduled event(s) from guild \`${guildId}\`.`
       };
     }
 
     if (action === 'create') {
       if (!ctx.input.name) throw new Error('name is required for create action');
       if (!ctx.input.entityType) throw new Error('entityType is required for create action');
-      if (!ctx.input.scheduledStartTime) throw new Error('scheduledStartTime is required for create action');
-      if (!ctx.input.privacyLevel) throw new Error('privacyLevel is required for create action');
+      if (!ctx.input.scheduledStartTime)
+        throw new Error('scheduledStartTime is required for create action');
+      if (!ctx.input.privacyLevel)
+        throw new Error('privacyLevel is required for create action');
 
       let data: Record<string, any> = {
         name: ctx.input.name,
         entity_type: ctx.input.entityType,
         scheduled_start_time: ctx.input.scheduledStartTime,
-        privacy_level: ctx.input.privacyLevel,
+        privacy_level: ctx.input.privacyLevel
       };
 
       if (ctx.input.description) {
@@ -111,7 +166,7 @@ export let manageScheduledEventsTool = SlateTool.create(
       let event = formatEvent(raw);
       return {
         output: { event },
-        message: `Created scheduled event \`${event.name}\` in guild \`${guildId}\`.`,
+        message: `Created scheduled event \`${event.name}\` in guild \`${guildId}\`.`
       };
     }
 
@@ -160,7 +215,7 @@ export let manageScheduledEventsTool = SlateTool.create(
       let event = formatEvent(raw);
       return {
         output: { event },
-        message: `Updated scheduled event \`${event.name}\` in guild \`${guildId}\`.`,
+        message: `Updated scheduled event \`${event.name}\` in guild \`${guildId}\`.`
       };
     }
 
@@ -169,7 +224,7 @@ export let manageScheduledEventsTool = SlateTool.create(
     await client.deleteGuildScheduledEvent(guildId, eventId);
     return {
       output: {},
-      message: `Deleted scheduled event \`${eventId}\` from guild \`${guildId}\`.`,
+      message: `Deleted scheduled event \`${eventId}\` from guild \`${guildId}\`.`
     };
   })
   .build();

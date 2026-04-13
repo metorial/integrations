@@ -6,9 +6,11 @@ let http = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Client Credentials',
@@ -16,21 +18,21 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('Client ID provided by your Later Account Manager'),
-      clientSecret: z.string().describe('Client Secret provided by your Later Account Manager'),
+      clientSecret: z.string().describe('Client Secret provided by your Later Account Manager')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let response = await http.post('/oauth/token', {
         clientId: ctx.input.clientId,
-        clientSecret: ctx.input.clientSecret,
+        clientSecret: ctx.input.clientSecret
       });
 
       let token = response.data.token || response.data.access_token || response.data.jwt;
 
       return {
         output: {
-          token,
-        },
+          token
+        }
       };
-    },
+    }
   });

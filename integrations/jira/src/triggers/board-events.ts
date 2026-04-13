@@ -7,56 +7,55 @@ let webhookEvents = [
   'board_created',
   'board_updated',
   'board_deleted',
-  'board_configuration_changed',
+  'board_configuration_changed'
 ] as const;
 
-export let boardEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Board Events',
-    key: 'board_events',
-    description: 'Triggers when a board is created, updated, deleted, or has its configuration changed.',
-  }
-)
-  .input(z.object({
-    webhookEvent: z.string().describe('The webhook event name.'),
-    timestamp: z.number().optional().describe('Event timestamp.'),
-    boardId: z.number().describe('The board ID.'),
-    boardName: z.string().describe('The board name.'),
-    boardType: z.string().optional().describe('The board type (scrum, kanban).'),
-  }))
-  .output(z.object({
-    boardId: z.number().describe('The board ID.'),
-    boardName: z.string().describe('The board name.'),
-    boardType: z.string().optional().describe('The board type.'),
-  }))
+export let boardEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Board Events',
+  key: 'board_events',
+  description:
+    'Triggers when a board is created, updated, deleted, or has its configuration changed.'
+})
+  .input(
+    z.object({
+      webhookEvent: z.string().describe('The webhook event name.'),
+      timestamp: z.number().optional().describe('Event timestamp.'),
+      boardId: z.number().describe('The board ID.'),
+      boardName: z.string().describe('The board name.'),
+      boardType: z.string().optional().describe('The board type (scrum, kanban).')
+    })
+  )
+  .output(
+    z.object({
+      boardId: z.number().describe('The board ID.'),
+      boardName: z.string().describe('The board name.'),
+      boardType: z.string().optional().describe('The board type.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new JiraClient({
         token: ctx.auth.token,
         cloudId: ctx.config.cloudId,
-        refreshToken: ctx.auth.refreshToken,
+        refreshToken: ctx.auth.refreshToken
       });
 
-      let result = await client.registerWebhook(
-        ctx.input.webhookBaseUrl,
-        [...webhookEvents],
-      );
+      let result = await client.registerWebhook(ctx.input.webhookBaseUrl, [...webhookEvents]);
 
       let webhookIds = (result.webhookRegistrationResult ?? [])
         .filter((r: any) => r.createdWebhookId)
         .map((r: any) => r.createdWebhookId);
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new JiraClient({
         token: ctx.auth.token,
         cloudId: ctx.config.cloudId,
-        refreshToken: ctx.auth.refreshToken,
+        refreshToken: ctx.auth.refreshToken
       });
 
       let webhookIds = ctx.input.registrationDetails?.webhookIds ?? [];
@@ -65,29 +64,31 @@ export let boardEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let board = data.board ?? {};
 
       return {
-        inputs: [{
-          webhookEvent: data.webhookEvent ?? '',
-          timestamp: data.timestamp,
-          boardId: board.id ?? 0,
-          boardName: board.name ?? '',
-          boardType: board.type,
-        }],
+        inputs: [
+          {
+            webhookEvent: data.webhookEvent ?? '',
+            timestamp: data.timestamp,
+            boardId: board.id ?? 0,
+            boardName: board.name ?? '',
+            boardType: board.type
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventName = ctx.input.webhookEvent;
       let typeMap: Record<string, string> = {
-        'board_created': 'board.created',
-        'board_updated': 'board.updated',
-        'board_deleted': 'board.deleted',
-        'board_configuration_changed': 'board.configuration_changed',
+        board_created: 'board.created',
+        board_updated: 'board.updated',
+        board_deleted: 'board.deleted',
+        board_configuration_changed: 'board.configuration_changed'
       };
       let eventType = typeMap[eventName] ?? 'board.updated';
 
@@ -97,9 +98,9 @@ export let boardEventsTrigger = SlateTrigger.create(
         output: {
           boardId: ctx.input.boardId,
           boardName: ctx.input.boardName,
-          boardType: ctx.input.boardType,
-        },
+          boardType: ctx.input.boardType
+        }
       };
-    },
+    }
   })
   .build();

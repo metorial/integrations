@@ -270,7 +270,12 @@ export class Client {
     return response.data as DubLink;
   }
 
-  async getLink(params: { linkId?: string; externalId?: string; domain?: string; key?: string }): Promise<DubLink> {
+  async getLink(params: {
+    linkId?: string;
+    externalId?: string;
+    domain?: string;
+    key?: string;
+  }): Promise<DubLink> {
     let query = new URLSearchParams();
     if (params.linkId) query.set('linkId', params.linkId);
     if (params.externalId) query.set('externalId', params.externalId);
@@ -290,7 +295,8 @@ export class Client {
     if (params.search) query.set('search', params.search);
     if (params.userId) query.set('userId', params.userId);
     if (params.tenantId) query.set('tenantId', params.tenantId);
-    if (params.showArchived !== undefined) query.set('showArchived', String(params.showArchived));
+    if (params.showArchived !== undefined)
+      query.set('showArchived', String(params.showArchived));
     if (params.sortBy) query.set('sortBy', params.sortBy);
     if (params.sortOrder) query.set('sortOrder', params.sortOrder);
     if (params.page) query.set('page', String(params.page));
@@ -331,19 +337,21 @@ export class Client {
 
   // Events
 
-  async listEvents(params: {
-    event?: string;
-    domain?: string;
-    key?: string;
-    linkId?: string;
-    externalId?: string;
-    interval?: string;
-    start?: string;
-    end?: string;
-    timezone?: string;
-    page?: number;
-    pageSize?: number;
-  } = {}): Promise<unknown[]> {
+  async listEvents(
+    params: {
+      event?: string;
+      domain?: string;
+      key?: string;
+      linkId?: string;
+      externalId?: string;
+      interval?: string;
+      start?: string;
+      end?: string;
+      timezone?: string;
+      page?: number;
+      pageSize?: number;
+    } = {}
+  ): Promise<unknown[]> {
     let query = new URLSearchParams();
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null) {
@@ -360,7 +368,12 @@ export class Client {
   async trackLead(params: TrackLeadParams): Promise<{
     click: { id: string };
     link: { id: string; domain: string; key: string; shortLink: string; url: string };
-    customer: { name: string | null; email: string | null; avatar: string | null; externalId: string | null };
+    customer: {
+      name: string | null;
+      email: string | null;
+      avatar: string | null;
+      externalId: string | null;
+    };
   }> {
     let response = await api.post('/track/lead', params, { headers: this.headers });
     return response.data as any;
@@ -368,8 +381,20 @@ export class Client {
 
   async trackSale(params: TrackSaleParams): Promise<{
     eventName: string;
-    customer: { id: string; name: string | null; email: string | null; avatar: string | null; externalId: string | null };
-    sale: { amount: number; currency: string; paymentProcessor: string; invoiceId: string | null; metadata: Record<string, unknown> | null };
+    customer: {
+      id: string;
+      name: string | null;
+      email: string | null;
+      avatar: string | null;
+      externalId: string | null;
+    };
+    sale: {
+      amount: number;
+      currency: string;
+      paymentProcessor: string;
+      invoiceId: string | null;
+      metadata: Record<string, unknown> | null;
+    };
   }> {
     let response = await api.post('/track/sale', params, { headers: this.headers });
     return response.data as any;
@@ -454,14 +479,19 @@ export class Client {
     return response.data as DubDomain;
   }
 
-  async updateDomain(domainSlug: string, params: {
-    slug?: string;
-    expiredUrl?: string;
-    notFoundUrl?: string;
-    archived?: boolean;
-    placeholder?: string;
-  }): Promise<DubDomain> {
-    let response = await api.patch(`/domains/${domainSlug}`, params, { headers: this.headers });
+  async updateDomain(
+    domainSlug: string,
+    params: {
+      slug?: string;
+      expiredUrl?: string;
+      notFoundUrl?: string;
+      archived?: boolean;
+      placeholder?: string;
+    }
+  ): Promise<DubDomain> {
+    let response = await api.patch(`/domains/${domainSlug}`, params, {
+      headers: this.headers
+    });
     return response.data as DubDomain;
   }
 
@@ -472,10 +502,16 @@ export class Client {
 
   // Metatags
 
-  async getMetatags(url: string): Promise<{ title: string | null; description: string | null; image: string | null }> {
+  async getMetatags(
+    url: string
+  ): Promise<{ title: string | null; description: string | null; image: string | null }> {
     let query = new URLSearchParams({ url });
     let response = await api.get(`/metatags?${query.toString()}`, { headers: this.headers });
-    return response.data as { title: string | null; description: string | null; image: string | null };
+    return response.data as {
+      title: string | null;
+      description: string | null;
+      image: string | null;
+    };
   }
 
   // Webhooks
@@ -502,14 +538,16 @@ export class Client {
     return response.data as { id: string };
   }
 
-  async listWebhooks(): Promise<Array<{
-    id: string;
-    name: string;
-    url: string;
-    secret: string;
-    triggers: string[];
-    linkIds: string[];
-  }>> {
+  async listWebhooks(): Promise<
+    Array<{
+      id: string;
+      name: string;
+      url: string;
+      secret: string;
+      triggers: string[];
+      linkIds: string[];
+    }>
+  > {
     let response = await api.get('/webhooks', { headers: this.headers });
     return response.data as any;
   }

@@ -3,38 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getIssue = SlateTool.create(
-  spec,
-  {
-    name: 'Get Issue',
-    key: 'get_issue',
-    description: `Retrieve full details of a specific issue (incident) by ID, including its timeline of activity and comments.`,
-    tags: {
-      readOnly: true,
-    },
+export let getIssue = SlateTool.create(spec, {
+  name: 'Get Issue',
+  key: 'get_issue',
+  description: `Retrieve full details of a specific issue (incident) by ID, including its timeline of activity and comments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    issueId: z.string().describe('The unique ID of the issue to retrieve'),
-    includeTimeline: z.boolean().optional().describe('Whether to also fetch the issue activity timeline'),
-  }))
-  .output(z.object({
-    issueId: z.string().describe('Unique issue identifier'),
-    title: z.string().optional().describe('Issue title'),
-    description: z.string().optional().describe('Issue description'),
-    status: z.string().optional().describe('Current status'),
-    priority: z.string().optional().describe('Priority level'),
-    categoryId: z.string().optional().describe('Category ID'),
-    siteId: z.string().optional().describe('Associated site ID'),
-    assetId: z.string().optional().describe('Associated asset ID'),
-    dueAt: z.string().optional().describe('Due date'),
-    occurredAt: z.string().optional().describe('When the incident occurred'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    creatorId: z.string().optional().describe('User ID of the issue creator'),
-    collaborators: z.array(z.string()).optional().describe('List of collaborator user IDs'),
-    timeline: z.any().optional().describe('Issue activity timeline if requested'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      issueId: z.string().describe('The unique ID of the issue to retrieve'),
+      includeTimeline: z
+        .boolean()
+        .optional()
+        .describe('Whether to also fetch the issue activity timeline')
+    })
+  )
+  .output(
+    z.object({
+      issueId: z.string().describe('Unique issue identifier'),
+      title: z.string().optional().describe('Issue title'),
+      description: z.string().optional().describe('Issue description'),
+      status: z.string().optional().describe('Current status'),
+      priority: z.string().optional().describe('Priority level'),
+      categoryId: z.string().optional().describe('Category ID'),
+      siteId: z.string().optional().describe('Associated site ID'),
+      assetId: z.string().optional().describe('Associated asset ID'),
+      dueAt: z.string().optional().describe('Due date'),
+      occurredAt: z.string().optional().describe('When the incident occurred'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      creatorId: z.string().optional().describe('User ID of the issue creator'),
+      collaborators: z.array(z.string()).optional().describe('List of collaborator user IDs'),
+      timeline: z.any().optional().describe('Issue activity timeline if requested')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let issue = await client.getIssue(ctx.input.issueId);
@@ -61,8 +65,9 @@ export let getIssue = SlateTool.create(
         createdAt: issue.created_at,
         creatorId: issue.creator?.user_id || issue.creator_id,
         collaborators,
-        timeline,
+        timeline
       },
-      message: `Retrieved issue **${issue.title || ctx.input.issueId}** (status: ${issue.status || 'unknown'}).`,
+      message: `Retrieved issue **${issue.title || ctx.input.issueId}** (status: ${issue.status || 'unknown'}).`
     };
-  }).build();
+  })
+  .build();

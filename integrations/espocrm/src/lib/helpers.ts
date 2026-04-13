@@ -13,7 +13,7 @@ export let createClient = (ctx: {
     auth: {
       token: ctx.auth.token,
       secretKey: ctx.auth.secretKey,
-      authMethod: ctx.auth.authMethod,
-    },
+      authMethod: ctx.auth.authMethod
+    }
   });
 };

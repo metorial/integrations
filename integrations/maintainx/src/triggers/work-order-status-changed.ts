@@ -3,49 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workOrderStatusChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Work Order Status Changed',
-    key: 'work_order_status_changed',
-    description: 'Triggers when a work order status is updated in MaintainX (e.g., moved to IN_PROGRESS, ON_HOLD, or DONE).',
-  }
-)
-  .input(z.object({
-    workOrderId: z.number().describe('Work order ID'),
-    title: z.string().optional().describe('Title'),
-    status: z.string().optional().describe('Current status'),
-    priority: z.string().optional().describe('Priority'),
-    updatedAt: z.string().optional().describe('Update timestamp'),
-  }))
-  .output(z.object({
-    workOrderId: z.number().describe('Work order ID'),
-    title: z.string().optional().describe('Title'),
-    description: z.string().optional().describe('Description'),
-    status: z.string().optional().describe('Current status (OPEN, IN_PROGRESS, ON_HOLD, DONE)'),
-    priority: z.string().optional().describe('Priority level'),
-    workOrderType: z.string().optional().describe('Type (REACTIVE or PREVENTIVE)'),
-    dueDate: z.string().optional().describe('Due date'),
-    completedAt: z.string().optional().describe('Completion timestamp (if done)'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let workOrderStatusChanged = SlateTrigger.create(spec, {
+  name: 'Work Order Status Changed',
+  key: 'work_order_status_changed',
+  description:
+    'Triggers when a work order status is updated in MaintainX (e.g., moved to IN_PROGRESS, ON_HOLD, or DONE).'
+})
+  .input(
+    z.object({
+      workOrderId: z.number().describe('Work order ID'),
+      title: z.string().optional().describe('Title'),
+      status: z.string().optional().describe('Current status'),
+      priority: z.string().optional().describe('Priority'),
+      updatedAt: z.string().optional().describe('Update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      workOrderId: z.number().describe('Work order ID'),
+      title: z.string().optional().describe('Title'),
+      description: z.string().optional().describe('Description'),
+      status: z
+        .string()
+        .optional()
+        .describe('Current status (OPEN, IN_PROGRESS, ON_HOLD, DONE)'),
+      priority: z.string().optional().describe('Priority level'),
+      workOrderType: z.string().optional().describe('Type (REACTIVE or PREVENTIVE)'),
+      dueDate: z.string().optional().describe('Due date'),
+      completedAt: z.string().optional().describe('Completion timestamp (if done)'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        organizationId: ctx.config.organizationId,
+        organizationId: ctx.config.organizationId
       });
 
       let lastUpdatedAt = (ctx.state as any)?.lastUpdatedAt as string | undefined;
       let knownStatuses = ((ctx.state as any)?.knownStatuses as Record<string, string>) ?? {};
 
       let params: Record<string, any> = {
-        limit: 50,
+        limit: 50
       };
 
       if (lastUpdatedAt) {
@@ -86,19 +91,19 @@ export let workOrderStatusChanged = SlateTrigger.create(
           title: wo.title,
           status: wo.status,
           priority: wo.priority,
-          updatedAt: wo.updatedAt,
+          updatedAt: wo.updatedAt
         })),
         updatedState: {
           lastUpdatedAt: newLastUpdatedAt ?? lastUpdatedAt,
-          knownStatuses: updatedKnownStatuses,
-        },
+          knownStatuses: updatedKnownStatuses
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        organizationId: ctx.config.organizationId,
+        organizationId: ctx.config.organizationId
       });
 
       // Fetch full details for the changed work order
@@ -118,8 +123,9 @@ export let workOrderStatusChanged = SlateTrigger.create(
           dueDate: wo.dueDate,
           completedAt: wo.completedAt,
           createdAt: wo.createdAt,
-          updatedAt: wo.updatedAt ?? ctx.input.updatedAt,
-        },
+          updatedAt: wo.updatedAt ?? ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

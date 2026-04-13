@@ -38,7 +38,9 @@ export class ZeplinClient {
   }
 
   async listOrganizationMembers(organizationId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/organizations/${organizationId}/members`, { params: pagination });
+    let response = await this.api.get(`/organizations/${organizationId}/members`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -62,7 +64,9 @@ export class ZeplinClient {
   // ─── Project Members ──────────────────────────────────
 
   async listProjectMembers(projectId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/members`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/members`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -78,7 +82,9 @@ export class ZeplinClient {
   // ─── Screens ──────────────────────────────────────────
 
   async listScreens(projectId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/screens`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/screens`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -87,39 +93,66 @@ export class ZeplinClient {
     return response.data;
   }
 
-  async updateScreen(projectId: string, screenId: string, data: { name?: string; description?: string; tags?: string[] }) {
+  async updateScreen(
+    projectId: string,
+    screenId: string,
+    data: { name?: string; description?: string; tags?: string[] }
+  ) {
     let response = await this.api.patch(`/projects/${projectId}/screens/${screenId}`, data);
     return response.data;
   }
 
-  async listScreenVersions(projectId: string, screenId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/screens/${screenId}/versions`, { params: pagination });
+  async listScreenVersions(
+    projectId: string,
+    screenId: string,
+    pagination?: PaginationParams
+  ) {
+    let response = await this.api.get(`/projects/${projectId}/screens/${screenId}/versions`, {
+      params: pagination
+    });
     return response.data;
   }
 
   // ─── Notes ────────────────────────────────────────────
 
   async listScreenNotes(projectId: string, screenId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/screens/${screenId}/notes`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/screens/${screenId}/notes`, {
+      params: pagination
+    });
     return response.data;
   }
 
-  async createScreenNote(projectId: string, screenId: string, data: {
-    content: string;
-    position?: { x: number; y: number };
-    color?: string;
-  }) {
-    let response = await this.api.post(`/projects/${projectId}/screens/${screenId}/notes`, data);
+  async createScreenNote(
+    projectId: string,
+    screenId: string,
+    data: {
+      content: string;
+      position?: { x: number; y: number };
+      color?: string;
+    }
+  ) {
+    let response = await this.api.post(
+      `/projects/${projectId}/screens/${screenId}/notes`,
+      data
+    );
     return response.data;
   }
 
-  async updateScreenNote(projectId: string, screenId: string, noteId: string, data: {
-    content?: string;
-    position?: { x: number; y: number };
-    color?: string;
-    status?: string;
-  }) {
-    let response = await this.api.patch(`/projects/${projectId}/screens/${screenId}/notes/${noteId}`, data);
+  async updateScreenNote(
+    projectId: string,
+    screenId: string,
+    noteId: string,
+    data: {
+      content?: string;
+      position?: { x: number; y: number };
+      color?: string;
+      status?: string;
+    }
+  ) {
+    let response = await this.api.patch(
+      `/projects/${projectId}/screens/${screenId}/notes/${noteId}`,
+      data
+    );
     return response.data;
   }
 
@@ -129,13 +162,29 @@ export class ZeplinClient {
 
   // ─── Note Comments ────────────────────────────────────
 
-  async listNoteComments(projectId: string, screenId: string, noteId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/screens/${screenId}/notes/${noteId}/comments`, { params: pagination });
+  async listNoteComments(
+    projectId: string,
+    screenId: string,
+    noteId: string,
+    pagination?: PaginationParams
+  ) {
+    let response = await this.api.get(
+      `/projects/${projectId}/screens/${screenId}/notes/${noteId}/comments`,
+      { params: pagination }
+    );
     return response.data;
   }
 
-  async createNoteComment(projectId: string, screenId: string, noteId: string, data: { content: string }) {
-    let response = await this.api.post(`/projects/${projectId}/screens/${screenId}/notes/${noteId}/comments`, data);
+  async createNoteComment(
+    projectId: string,
+    screenId: string,
+    noteId: string,
+    data: { content: string }
+  ) {
+    let response = await this.api.post(
+      `/projects/${projectId}/screens/${screenId}/notes/${noteId}/comments`,
+      data
+    );
     return response.data;
   }
 
@@ -146,37 +195,50 @@ export class ZeplinClient {
     return response.data;
   }
 
-  async createProjectColor(projectId: string, data: { name: string; r: number; g: number; b: number; a: number }) {
+  async createProjectColor(
+    projectId: string,
+    data: { name: string; r: number; g: number; b: number; a: number }
+  ) {
     let response = await this.api.post(`/projects/${projectId}/colors`, data);
     return response.data;
   }
 
   async listStyleguideColors(styleguideId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/styleguides/${styleguideId}/colors`, { params: pagination });
+    let response = await this.api.get(`/styleguides/${styleguideId}/colors`, {
+      params: pagination
+    });
     return response.data;
   }
 
   // ─── Text Styles ──────────────────────────────────────
 
   async listProjectTextStyles(projectId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/text_styles`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/text_styles`, {
+      params: pagination
+    });
     return response.data;
   }
 
   async listStyleguideTextStyles(styleguideId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/styleguides/${styleguideId}/text_styles`, { params: pagination });
+    let response = await this.api.get(`/styleguides/${styleguideId}/text_styles`, {
+      params: pagination
+    });
     return response.data;
   }
 
   // ─── Spacing Tokens ───────────────────────────────────
 
   async listProjectSpacingTokens(projectId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/spacing_tokens`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/spacing_tokens`, {
+      params: pagination
+    });
     return response.data;
   }
 
   async listStyleguideSpacingTokens(styleguideId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/styleguides/${styleguideId}/spacing_tokens`, { params: pagination });
+    let response = await this.api.get(`/styleguides/${styleguideId}/spacing_tokens`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -195,7 +257,9 @@ export class ZeplinClient {
   // ─── Components ───────────────────────────────────────
 
   async listProjectComponents(projectId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/components`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/components`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -205,18 +269,28 @@ export class ZeplinClient {
   }
 
   async listStyleguideComponents(styleguideId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/styleguides/${styleguideId}/components`, { params: pagination });
+    let response = await this.api.get(`/styleguides/${styleguideId}/components`, {
+      params: pagination
+    });
     return response.data;
   }
 
   async getStyleguideComponent(styleguideId: string, componentId: string) {
-    let response = await this.api.get(`/styleguides/${styleguideId}/components/${componentId}`);
+    let response = await this.api.get(
+      `/styleguides/${styleguideId}/components/${componentId}`
+    );
     return response.data;
   }
 
   // ─── Styleguides ──────────────────────────────────────
 
-  async listStyleguides(params?: PaginationParams & { linkedProject?: string; linkedStyleguide?: string; workspace?: string }) {
+  async listStyleguides(
+    params?: PaginationParams & {
+      linkedProject?: string;
+      linkedStyleguide?: string;
+      workspace?: string;
+    }
+  ) {
     let queryParams: Record<string, string | number | undefined> = {
       limit: params?.limit,
       offset: params?.offset,
@@ -241,7 +315,9 @@ export class ZeplinClient {
   // ─── Styleguide Members ───────────────────────────────
 
   async listStyleguideMembers(styleguideId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/styleguides/${styleguideId}/members`, { params: pagination });
+    let response = await this.api.get(`/styleguides/${styleguideId}/members`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -257,7 +333,9 @@ export class ZeplinClient {
   // ─── Flow Boards ──────────────────────────────────────
 
   async listFlowBoards(projectId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/flow_boards`, { params: pagination });
+    let response = await this.api.get(`/projects/${projectId}/flow_boards`, {
+      params: pagination
+    });
     return response.data;
   }
 
@@ -266,13 +344,27 @@ export class ZeplinClient {
     return response.data;
   }
 
-  async listFlowBoardNodes(projectId: string, flowBoardId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/flow_boards/${flowBoardId}/nodes`, { params: pagination });
+  async listFlowBoardNodes(
+    projectId: string,
+    flowBoardId: string,
+    pagination?: PaginationParams
+  ) {
+    let response = await this.api.get(
+      `/projects/${projectId}/flow_boards/${flowBoardId}/nodes`,
+      { params: pagination }
+    );
     return response.data;
   }
 
-  async listFlowBoardConnectors(projectId: string, flowBoardId: string, pagination?: PaginationParams) {
-    let response = await this.api.get(`/projects/${projectId}/flow_boards/${flowBoardId}/connectors`, { params: pagination });
+  async listFlowBoardConnectors(
+    projectId: string,
+    flowBoardId: string,
+    pagination?: PaginationParams
+  ) {
+    let response = await this.api.get(
+      `/projects/${projectId}/flow_boards/${flowBoardId}/connectors`,
+      { params: pagination }
+    );
     return response.data;
   }
 
@@ -305,13 +397,16 @@ export class ZeplinClient {
 
   // ─── Webhooks ─────────────────────────────────────────
 
-  async createOrganizationWebhook(organizationId: string, data: {
-    url: string;
-    secret: string;
-    events: string[];
-    projectIds?: string[];
-    styleguideIds?: string[];
-  }) {
+  async createOrganizationWebhook(
+    organizationId: string,
+    data: {
+      url: string;
+      secret: string;
+      events: string[];
+      projectIds?: string[];
+      styleguideIds?: string[];
+    }
+  ) {
     let response = await this.api.post(`/organizations/${organizationId}/webhooks`, {
       url: data.url,
       secret: data.secret,
@@ -326,11 +421,14 @@ export class ZeplinClient {
     await this.api.delete(`/organizations/${organizationId}/webhooks/${webhookId}`);
   }
 
-  async createProjectWebhook(projectId: string, data: {
-    url: string;
-    secret: string;
-    events: string[];
-  }) {
+  async createProjectWebhook(
+    projectId: string,
+    data: {
+      url: string;
+      secret: string;
+      events: string[];
+    }
+  ) {
     let response = await this.api.post(`/projects/${projectId}/webhooks`, {
       url: data.url,
       secret: data.secret,
@@ -343,11 +441,14 @@ export class ZeplinClient {
     await this.api.delete(`/projects/${projectId}/webhooks/${webhookId}`);
   }
 
-  async createStyleguideWebhook(styleguideId: string, data: {
-    url: string;
-    secret: string;
-    events: string[];
-  }) {
+  async createStyleguideWebhook(
+    styleguideId: string,
+    data: {
+      url: string;
+      secret: string;
+      events: string[];
+    }
+  ) {
     let response = await this.api.post(`/styleguides/${styleguideId}/webhooks`, {
       url: data.url,
       secret: data.secret,

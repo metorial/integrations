@@ -2,23 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your sevDesk API token. Found in Settings > User in the sevDesk web UI.'),
+      token: z
+        .string()
+        .describe('Your sevDesk API token. Found in Settings > User in the sevDesk web UI.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,12 +30,12 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://my.sevdesk.de/api/v1',
         headers: {
-          Authorization: ctx.output.token,
-        },
+          Authorization: ctx.output.token
+        }
       });
 
       let response = await axios.get('/SevUser', {
-        params: { limit: 1 },
+        params: { limit: 1 }
       });
 
       let user = response.data?.objects?.[0];
@@ -40,11 +44,14 @@ export let auth = SlateAuth.create()
           profile: {
             id: String(user.id),
             email: user.email ?? undefined,
-            name: [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || undefined,
-          },
+            name:
+              [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+              user.username ||
+              undefined
+          }
         };
       }
 
       return { profile: {} };
-    },
+    }
   });

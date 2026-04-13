@@ -3,38 +3,39 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getKpi = SlateTool.create(
-  spec,
-  {
-    name: 'Get KPI',
-    key: 'get_kpi',
-    description: `Retrieve a single KPI by its ID. Returns the full KPI configuration including name, description, category, frequency, target, and aggregation settings.`,
-    tags: {
-      readOnly: true
-    }
+export let getKpi = SlateTool.create(spec, {
+  name: 'Get KPI',
+  key: 'get_kpi',
+  description: `Retrieve a single KPI by its ID. Returns the full KPI configuration including name, description, category, frequency, target, and aggregation settings.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    kpiId: z.number().describe('ID of the KPI to retrieve')
-  }))
-  .output(z.object({
-    kpiId: z.number().describe('KPI identifier'),
-    categoryId: z.number().describe('Category the KPI belongs to'),
-    iconId: z.number().describe('Icon identifier'),
-    unitId: z.number().describe('Unit of measure identifier'),
-    frequencyId: z.string().describe('Tracking frequency code'),
-    name: z.string().describe('KPI name'),
-    description: z.string().nullable().describe('KPI description'),
-    targetDefault: z.number().nullable().describe('Default target value'),
-    valueDirection: z.string().describe('Value direction: U, D, or N'),
-    aggregateFunction: z.string().describe('Aggregation method: SUM or AVG'),
-    sortOrder: z.number().describe('Display order'),
-    isActive: z.boolean().describe('Whether the KPI is active'),
-    isCalculated: z.boolean().describe('Whether this is a calculated KPI'),
-    createdAt: z.string().nullable().describe('Creation timestamp (UTC)'),
-    updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      kpiId: z.number().describe('ID of the KPI to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      kpiId: z.number().describe('KPI identifier'),
+      categoryId: z.number().describe('Category the KPI belongs to'),
+      iconId: z.number().describe('Icon identifier'),
+      unitId: z.number().describe('Unit of measure identifier'),
+      frequencyId: z.string().describe('Tracking frequency code'),
+      name: z.string().describe('KPI name'),
+      description: z.string().nullable().describe('KPI description'),
+      targetDefault: z.number().nullable().describe('Default target value'),
+      valueDirection: z.string().describe('Value direction: U, D, or N'),
+      aggregateFunction: z.string().describe('Aggregation method: SUM or AVG'),
+      sortOrder: z.number().describe('Display order'),
+      isActive: z.boolean().describe('Whether the KPI is active'),
+      isCalculated: z.boolean().describe('Whether this is a calculated KPI'),
+      createdAt: z.string().nullable().describe('Creation timestamp (UTC)'),
+      updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let k = await client.getKpi(ctx.input.kpiId);
 
@@ -58,4 +59,5 @@ export let getKpi = SlateTool.create(
       },
       message: `Retrieved KPI **${k.name}** (ID: ${k.id}).`
     };
-  }).build();
+  })
+  .build();

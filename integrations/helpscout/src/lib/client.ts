@@ -7,33 +7,35 @@ export class HelpScoutClient {
     this.http = createAxios({
       baseURL: 'https://api.helpscout.net/v2',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Conversations ──────────────────────────────────────────
 
-  async listConversations(params: {
-    mailbox?: number;
-    status?: string;
-    tag?: string;
-    assignedTo?: number;
-    modifiedSince?: string;
-    sortField?: string;
-    sortOrder?: string;
-    page?: number;
-    query?: string;
-  } = {}) {
+  async listConversations(
+    params: {
+      mailbox?: number;
+      status?: string;
+      tag?: string;
+      assignedTo?: number;
+      modifiedSince?: string;
+      sortField?: string;
+      sortOrder?: string;
+      page?: number;
+      query?: string;
+    } = {}
+  ) {
     if (params.query) {
       let response = await this.http.get('/conversations', {
         params: {
           query: params.query,
           page: params.page,
           sortField: params.sortField,
-          sortOrder: params.sortOrder,
-        },
+          sortOrder: params.sortOrder
+        }
       });
       return response.data;
     }
@@ -48,7 +50,7 @@ export class HelpScoutClient {
     let requestParams: Record<string, any> = {
       page: params.page,
       sortField: params.sortField,
-      sortOrder: params.sortOrder,
+      sortOrder: params.sortOrder
     };
 
     if (queryParts.length > 0) {
@@ -86,7 +88,7 @@ export class HelpScoutClient {
       customer: data.customer,
       threads: data.threads,
       status: data.status ?? 'active',
-      autoReply: data.autoReply,
+      autoReply: data.autoReply
     };
     if (data.tags) body.tags = data.tags;
     if (data.assignTo) body.assignTo = data.assignTo;
@@ -96,13 +98,16 @@ export class HelpScoutClient {
     return { conversationId: location };
   }
 
-  async updateConversation(conversationId: number, operations: Array<{
-    op: string;
-    path: string;
-    value: any;
-  }>) {
+  async updateConversation(
+    conversationId: number,
+    operations: Array<{
+      op: string;
+      path: string;
+      value: any;
+    }>
+  ) {
     await this.http.patch(`/conversations/${conversationId}`, operations, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -111,18 +116,29 @@ export class HelpScoutClient {
   }
 
   async updateConversationStatus(conversationId: number, status: string) {
-    await this.http.put(`/conversations/${conversationId}/status`, { status, op: 'replace', path: '/status' });
+    await this.http.put(`/conversations/${conversationId}/status`, {
+      status,
+      op: 'replace',
+      path: '/status'
+    });
   }
 
   async assignConversation(conversationId: number, assignTo: number) {
-    await this.http.put(`/conversations/${conversationId}/assignee`, { assignTo, op: 'replace', path: '/assignTo' });
+    await this.http.put(`/conversations/${conversationId}/assignee`, {
+      assignTo,
+      op: 'replace',
+      path: '/assignTo'
+    });
   }
 
   async updateConversationTags(conversationId: number, tags: string[]) {
     await this.http.put(`/conversations/${conversationId}/tags`, { tags });
   }
 
-  async updateConversationCustomFields(conversationId: number, fields: Array<{ id: number; value: string }>) {
+  async updateConversationCustomFields(
+    conversationId: number,
+    fields: Array<{ id: number; value: string }>
+  ) {
     await this.http.put(`/conversations/${conversationId}/fields`, { fields });
   }
 
@@ -133,62 +149,73 @@ export class HelpScoutClient {
     return response.data;
   }
 
-  async createReply(conversationId: number, data: {
-    text: string;
-    customer: { email?: string; id?: number };
-    draft?: boolean;
-    status?: string;
-    attachments?: Array<{ fileName: string; mimeType: string; data: string }>;
-  }) {
+  async createReply(
+    conversationId: number,
+    data: {
+      text: string;
+      customer: { email?: string; id?: number };
+      draft?: boolean;
+      status?: string;
+      attachments?: Array<{ fileName: string; mimeType: string; data: string }>;
+    }
+  ) {
     await this.http.post(`/conversations/${conversationId}/reply`, {
       text: data.text,
       customer: data.customer,
       draft: data.draft ?? false,
       status: data.status,
-      attachments: data.attachments,
+      attachments: data.attachments
     });
   }
 
-  async createNote(conversationId: number, data: {
-    text: string;
-    attachments?: Array<{ fileName: string; mimeType: string; data: string }>;
-  }) {
+  async createNote(
+    conversationId: number,
+    data: {
+      text: string;
+      attachments?: Array<{ fileName: string; mimeType: string; data: string }>;
+    }
+  ) {
     await this.http.post(`/conversations/${conversationId}/notes`, {
       text: data.text,
-      attachments: data.attachments,
+      attachments: data.attachments
     });
   }
 
-  async createPhoneThread(conversationId: number, data: {
-    text: string;
-    customer: { email?: string; id?: number };
-  }) {
+  async createPhoneThread(
+    conversationId: number,
+    data: {
+      text: string;
+      customer: { email?: string; id?: number };
+    }
+  ) {
     await this.http.post(`/conversations/${conversationId}/phones`, {
       text: data.text,
-      customer: data.customer,
+      customer: data.customer
     });
   }
 
   // ─── Customers ──────────────────────────────────────────────
 
-  async listCustomers(params: {
-    mailbox?: number;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    query?: string;
-    page?: number;
-    sortField?: string;
-    sortOrder?: string;
-  } = {}) {
+  async listCustomers(
+    params: {
+      mailbox?: number;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      query?: string;
+      page?: number;
+      sortField?: string;
+      sortOrder?: string;
+    } = {}
+  ) {
     if (params.query) {
       let response = await this.http.get('/customers', {
         params: {
           query: params.query,
           page: params.page,
           sortField: params.sortField,
-          sortOrder: params.sortOrder,
-        },
+          sortOrder: params.sortOrder
+        }
       });
       return response.data;
     }
@@ -202,7 +229,7 @@ export class HelpScoutClient {
     let requestParams: Record<string, any> = {
       page: params.page,
       sortField: params.sortField,
-      sortOrder: params.sortOrder,
+      sortOrder: params.sortOrder
     };
 
     if (queryParts.length > 0) {
@@ -232,13 +259,16 @@ export class HelpScoutClient {
     return { customerId: location };
   }
 
-  async updateCustomer(customerId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    organization?: string;
-    jobTitle?: string;
-    background?: string;
-  }) {
+  async updateCustomer(
+    customerId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      organization?: string;
+      jobTitle?: string;
+      background?: string;
+    }
+  ) {
     await this.http.put(`/customers/${customerId}`, data);
   }
 
@@ -399,17 +429,20 @@ export class HelpScoutClient {
       url: data.url,
       events: data.events,
       secret: data.secret,
-      payloadVersion: data.payloadVersion ?? 'V2',
+      payloadVersion: data.payloadVersion ?? 'V2'
     });
     let location = response.headers?.['resource-id'] ?? response.headers?.['location'];
     return { webhookId: location };
   }
 
-  async updateWebhook(webhookId: number, data: {
-    url?: string;
-    events?: string[];
-    secret?: string;
-  }) {
+  async updateWebhook(
+    webhookId: number,
+    data: {
+      url?: string;
+      events?: string[];
+      secret?: string;
+    }
+  ) {
     await this.http.put(`/webhooks/${webhookId}`, data);
   }
 
@@ -463,14 +496,16 @@ export class HelpScoutClient {
 
   // ─── Satisfaction Ratings ───────────────────────────────────
 
-  async listSatisfactionRatings(params: {
-    mailbox?: number;
-    start?: string;
-    end?: string;
-    page?: number;
-    sortField?: string;
-    sortOrder?: string;
-  } = {}) {
+  async listSatisfactionRatings(
+    params: {
+      mailbox?: number;
+      start?: string;
+      end?: string;
+      page?: number;
+      sortField?: string;
+      sortOrder?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/ratings', { params });
     return response.data;
   }

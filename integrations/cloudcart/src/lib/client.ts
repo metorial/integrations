@@ -43,8 +43,8 @@ export class Client {
       headers: {
         'X-CloudCart-ApiKey': params.token,
         'Content-Type': 'application/vnd.api+json',
-        'Accept': 'application/vnd.api+json',
-      },
+        Accept: 'application/vnd.api+json'
+      }
     });
   }
 
@@ -68,12 +68,15 @@ export class Client {
     return res.data;
   }
 
-  async createProduct(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async createProduct(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let body: any = {
       data: {
         type: 'products',
-        attributes,
-      },
+        attributes
+      }
     };
     if (relationships) {
       body.data.relationships = relationships;
@@ -82,13 +85,16 @@ export class Client {
     return res.data;
   }
 
-  async updateProduct(productId: string, attributes: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async updateProduct(
+    productId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let res = await this.axios.patch(`/products/${productId}`, {
       data: {
         type: 'products',
         id: productId,
-        attributes,
-      },
+        attributes
+      }
     });
     return res.data;
   }
@@ -115,13 +121,16 @@ export class Client {
     return res.data;
   }
 
-  async updateVariant(variantId: string, attributes: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async updateVariant(
+    variantId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let res = await this.axios.patch(`/variants/${variantId}`, {
       data: {
         type: 'variants',
         id: variantId,
-        attributes,
-      },
+        attributes
+      }
     });
     return res.data;
   }
@@ -146,13 +155,17 @@ export class Client {
     return res.data;
   }
 
-  async updateOrder(orderId: string, attributes: Record<string, any>, meta?: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async updateOrder(
+    orderId: string,
+    attributes: Record<string, any>,
+    meta?: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let body: any = {
       data: {
         type: 'orders',
         id: orderId,
-        attributes,
-      },
+        attributes
+      }
     };
     if (meta) {
       body.data.meta = meta;
@@ -181,12 +194,15 @@ export class Client {
     return res.data;
   }
 
-  async createCustomer(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async createCustomer(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let body: any = {
       data: {
         type: 'customers',
-        attributes,
-      },
+        attributes
+      }
     };
     if (relationships) {
       body.data.relationships = relationships;
@@ -195,13 +211,16 @@ export class Client {
     return res.data;
   }
 
-  async updateCustomer(customerId: string, attributes: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async updateCustomer(
+    customerId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let res = await this.axios.patch(`/customers/${customerId}`, {
       data: {
         type: 'customers',
         id: customerId,
-        attributes,
-      },
+        attributes
+      }
     });
     return res.data;
   }
@@ -230,12 +249,15 @@ export class Client {
     return res.data;
   }
 
-  async createCategory(attributes: Record<string, any>, relationships?: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async createCategory(
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let body: any = {
       data: {
         type: 'categories',
-        attributes,
-      },
+        attributes
+      }
     };
     if (relationships) {
       body.data.relationships = relationships;
@@ -244,13 +266,16 @@ export class Client {
     return res.data;
   }
 
-  async updateCategory(categoryId: string, attributes: Record<string, any>): Promise<JsonApiSingleResponse> {
+  async updateCategory(
+    categoryId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiSingleResponse> {
     let res = await this.axios.patch(`/categories/${categoryId}`, {
       data: {
         type: 'categories',
         id: categoryId,
-        attributes,
-      },
+        attributes
+      }
     });
     return res.data;
   }
@@ -261,20 +286,23 @@ export class Client {
 
   // ─── Webhooks ──────────────────────────────────────────────────────
 
-  async listWebhooks(opts?: {
-    pagination?: PaginationParams;
-  }): Promise<JsonApiListResponse> {
+  async listWebhooks(opts?: { pagination?: PaginationParams }): Promise<JsonApiListResponse> {
     let params = this.buildListParams(opts);
     let res = await this.axios.get('/webhooks', { params });
     return res.data;
   }
 
-  async createWebhook(attributes: { url: string; event: string; request_headers?: Record<string, string>; new_version?: number }): Promise<JsonApiSingleResponse> {
+  async createWebhook(attributes: {
+    url: string;
+    event: string;
+    request_headers?: Record<string, string>;
+    new_version?: number;
+  }): Promise<JsonApiSingleResponse> {
     let res = await this.axios.post('/webhooks', {
       data: {
         type: 'webhooks',
-        attributes,
-      },
+        attributes
+      }
     });
     return res.data;
   }

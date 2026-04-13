@@ -3,27 +3,28 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let diskEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Disk Events',
-    key: 'disk_events',
-    description: 'Triggers when persistent disks are created, updated, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Webhook event type'),
-    eventId: z.string().describe('Event ID'),
-    timestamp: z.string().describe('Event timestamp'),
-    payload: z.any().describe('Raw event payload'),
-  }))
-  .output(z.object({
-    diskId: z.string().optional().describe('Disk ID'),
-    serviceId: z.string().optional().describe('Service the disk is attached to'),
-    serviceName: z.string().optional().describe('Service name'),
-  }))
+export let diskEvents = SlateTrigger.create(spec, {
+  name: 'Disk Events',
+  key: 'disk_events',
+  description: 'Triggers when persistent disks are created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Webhook event type'),
+      eventId: z.string().describe('Event ID'),
+      timestamp: z.string().describe('Event timestamp'),
+      payload: z.any().describe('Raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      diskId: z.string().optional().describe('Disk ID'),
+      serviceId: z.string().optional().describe('Service the disk is attached to'),
+      serviceName: z.string().optional().describe('Service name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new RenderClient(ctx.auth.token);
 
       let workspaces = await client.listWorkspaces({ limit: 1 });
@@ -34,35 +35,37 @@ export let diskEvents = SlateTrigger.create(
         ownerId,
         url: ctx.input.webhookBaseUrl,
         name: 'Slates Disk Events',
-        eventTypes: ['disk_created', 'disk_updated', 'disk_deleted'],
+        eventTypes: ['disk_created', 'disk_updated', 'disk_deleted']
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new RenderClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.type,
-          eventId: data.data?.id || `${data.type}-${data.timestamp}`,
-          timestamp: data.timestamp,
-          payload: data.data,
-        }],
+        inputs: [
+          {
+            eventType: data.type,
+            eventId: data.data?.id || `${data.type}-${data.timestamp}`,
+            timestamp: data.timestamp,
+            payload: data.data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload || {};
 
       return {
@@ -71,8 +74,9 @@ export let diskEvents = SlateTrigger.create(
         output: {
           diskId: payload.id,
           serviceId: payload.serviceId,
-          serviceName: payload.serviceName,
-        },
+          serviceName: payload.serviceName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

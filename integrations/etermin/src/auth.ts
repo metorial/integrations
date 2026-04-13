@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    publicKey: z.string(),
-    privateKey: z.string(),
-  }))
+  .output(
+    z.object({
+      publicKey: z.string(),
+      privateKey: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -13,16 +15,20 @@ export let auth = SlateAuth.create()
     key: 'hmac_api_key',
 
     inputSchema: z.object({
-      publicKey: z.string().describe('Public API Key from the eTermin dashboard (API section)'),
-      privateKey: z.string().describe('Private API Key from the eTermin dashboard (API section)'),
+      publicKey: z
+        .string()
+        .describe('Public API Key from the eTermin dashboard (API section)'),
+      privateKey: z
+        .string()
+        .describe('Private API Key from the eTermin dashboard (API section)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           publicKey: ctx.input.publicKey,
-          privateKey: ctx.input.privateKey,
-        },
+          privateKey: ctx.input.privateKey
+        }
       };
-    },
+    }
   });

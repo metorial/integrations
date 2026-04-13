@@ -2,10 +2,7 @@
   "name": "@metorial/surveymonkey",
   "version": "0.1.1",
   "description": "Create, distribute, and analyze online surveys. Manage surveys with multiple question types, pages, and languages. Distribute surveys via email, SMS, weblink, and popup collectors. Retrieve and filter survey responses with full answer details. Manage contact lists and send invite messages to recipients. Share survey results publicly or with specific users. Organize team collaboration through workgroups and groups. Set up webhooks for real-time response event notifications.",
-  "categories": [
-    "apis-and-http-requests",
-    "crm-and-sales-tools"
-  ],
+  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
   "skills": [
     "create and manage surveys",
     "distribute surveys via collectors",

@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let analyticsAxios = createAxios({
-  baseURL: 'https://youtubeanalytics.googleapis.com/v2',
+  baseURL: 'https://youtubeanalytics.googleapis.com/v2'
 });
 
 let reportingAxios = createAxios({
-  baseURL: 'https://youtubereporting.googleapis.com/v1',
+  baseURL: 'https://youtubereporting.googleapis.com/v1'
 });
 
 export interface AnalyticsQueryParams {
@@ -90,7 +90,7 @@ export class YouTubeAnalyticsClient {
       ids: params.ids,
       startDate: params.startDate,
       endDate: params.endDate,
-      metrics: params.metrics,
+      metrics: params.metrics
     };
 
     if (params.dimensions) queryParams['dimensions'] = params.dimensions;
@@ -99,76 +99,99 @@ export class YouTubeAnalyticsClient {
     if (params.maxResults !== undefined) queryParams['maxResults'] = params.maxResults;
     if (params.startIndex !== undefined) queryParams['startIndex'] = params.startIndex;
     if (params.currency) queryParams['currency'] = params.currency;
-    if (params.includeHistoricalChannelData !== undefined) queryParams['includeHistoricalChannelData'] = params.includeHistoricalChannelData;
+    if (params.includeHistoricalChannelData !== undefined)
+      queryParams['includeHistoricalChannelData'] = params.includeHistoricalChannelData;
 
     let response = await analyticsAxios.get('/reports', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     let data = response.data;
 
     return {
       columnHeaders: data.columnHeaders || [],
-      rows: data.rows || [],
+      rows: data.rows || []
     };
   }
 
   // --- Groups ---
 
-  async listGroups(params?: { groupId?: string; mine?: boolean; onBehalfOfContentOwner?: string; pageToken?: string }): Promise<{ groups: Group[]; nextPageToken?: string }> {
+  async listGroups(params?: {
+    groupId?: string;
+    mine?: boolean;
+    onBehalfOfContentOwner?: string;
+    pageToken?: string;
+  }): Promise<{ groups: Group[]; nextPageToken?: string }> {
     let queryParams: Record<string, string | boolean> = {};
 
     if (params?.groupId) queryParams['id'] = params.groupId;
     else queryParams['mine'] = true;
-    if (params?.onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
+    if (params?.onBehalfOfContentOwner)
+      queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
 
     let response = await analyticsAxios.get('/groups', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     let data = response.data;
 
     return {
       groups: (data.items || []).map(mapGroup),
-      nextPageToken: data.nextPageToken,
+      nextPageToken: data.nextPageToken
     };
   }
 
-  async createGroup(title: string, itemType: string, onBehalfOfContentOwner?: string): Promise<Group> {
+  async createGroup(
+    title: string,
+    itemType: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<Group> {
     let queryParams: Record<string, string> = {};
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
-    let response = await analyticsAxios.post('/groups', {
-      snippet: { title },
-      contentDetails: { itemType },
-    }, {
-      params: queryParams,
-      headers: {
-        ...this.authHeaders(),
-        'Content-Type': 'application/json',
+    let response = await analyticsAxios.post(
+      '/groups',
+      {
+        snippet: { title },
+        contentDetails: { itemType }
       },
-    });
+      {
+        params: queryParams,
+        headers: {
+          ...this.authHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     return mapGroup(response.data);
   }
 
-  async updateGroup(groupId: string, title: string, onBehalfOfContentOwner?: string): Promise<Group> {
+  async updateGroup(
+    groupId: string,
+    title: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<Group> {
     let queryParams: Record<string, string> = {};
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
-    let response = await analyticsAxios.put('/groups', {
-      id: groupId,
-      snippet: { title },
-    }, {
-      params: queryParams,
-      headers: {
-        ...this.authHeaders(),
-        'Content-Type': 'application/json',
+    let response = await analyticsAxios.put(
+      '/groups',
+      {
+        id: groupId,
+        snippet: { title }
       },
-    });
+      {
+        params: queryParams,
+        headers: {
+          ...this.authHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     return mapGroup(response.data);
   }
@@ -179,41 +202,53 @@ export class YouTubeAnalyticsClient {
 
     await analyticsAxios.delete('/groups', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
   }
 
   // --- Group Items ---
 
-  async listGroupItems(groupId: string, onBehalfOfContentOwner?: string): Promise<GroupItem[]> {
+  async listGroupItems(
+    groupId: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<GroupItem[]> {
     let queryParams: Record<string, string> = { groupId };
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
     let response = await analyticsAxios.get('/groupItems', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return (response.data.items || []).map(mapGroupItem);
   }
 
-  async addGroupItem(groupId: string, resourceId: string, resourceKind: string, onBehalfOfContentOwner?: string): Promise<GroupItem> {
+  async addGroupItem(
+    groupId: string,
+    resourceId: string,
+    resourceKind: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<GroupItem> {
     let queryParams: Record<string, string> = {};
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
-    let response = await analyticsAxios.post('/groupItems', {
-      groupId,
-      resource: {
-        kind: resourceKind,
-        id: resourceId,
+    let response = await analyticsAxios.post(
+      '/groupItems',
+      {
+        groupId,
+        resource: {
+          kind: resourceKind,
+          id: resourceId
+        }
       },
-    }, {
-      params: queryParams,
-      headers: {
-        ...this.authHeaders(),
-        'Content-Type': 'application/json',
-      },
-    });
+      {
+        params: queryParams,
+        headers: {
+          ...this.authHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     return mapGroupItem(response.data);
   }
@@ -224,21 +259,27 @@ export class YouTubeAnalyticsClient {
 
     await analyticsAxios.delete('/groupItems', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
   }
 
   // --- YouTube Reporting API ---
 
-  async listReportTypes(params?: { onBehalfOfContentOwner?: string; includeSystemManaged?: boolean; pageToken?: string }): Promise<{ reportTypes: ReportType[]; nextPageToken?: string }> {
+  async listReportTypes(params?: {
+    onBehalfOfContentOwner?: string;
+    includeSystemManaged?: boolean;
+    pageToken?: string;
+  }): Promise<{ reportTypes: ReportType[]; nextPageToken?: string }> {
     let queryParams: Record<string, string | boolean> = {};
-    if (params?.onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
-    if (params?.includeSystemManaged !== undefined) queryParams['includeSystemManaged'] = params.includeSystemManaged;
+    if (params?.onBehalfOfContentOwner)
+      queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
+    if (params?.includeSystemManaged !== undefined)
+      queryParams['includeSystemManaged'] = params.includeSystemManaged;
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
 
     let response = await reportingAxios.get('/reportTypes', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     let data = response.data;
@@ -246,56 +287,73 @@ export class YouTubeAnalyticsClient {
     return {
       reportTypes: (data.reportTypes || []).map((rt: any) => ({
         reportTypeId: rt.id,
-        name: rt.name,
+        name: rt.name
       })),
-      nextPageToken: data.nextPageToken,
+      nextPageToken: data.nextPageToken
     };
   }
 
-  async createReportingJob(reportTypeId: string, name: string, onBehalfOfContentOwner?: string): Promise<ReportingJob> {
+  async createReportingJob(
+    reportTypeId: string,
+    name: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<ReportingJob> {
     let queryParams: Record<string, string> = {};
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
-    let response = await reportingAxios.post('/jobs', {
-      reportTypeId,
-      name,
-    }, {
-      params: queryParams,
-      headers: {
-        ...this.authHeaders(),
-        'Content-Type': 'application/json',
+    let response = await reportingAxios.post(
+      '/jobs',
+      {
+        reportTypeId,
+        name
       },
-    });
+      {
+        params: queryParams,
+        headers: {
+          ...this.authHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     return mapReportingJob(response.data);
   }
 
-  async listReportingJobs(params?: { onBehalfOfContentOwner?: string; includeSystemManaged?: boolean; pageToken?: string }): Promise<{ jobs: ReportingJob[]; nextPageToken?: string }> {
+  async listReportingJobs(params?: {
+    onBehalfOfContentOwner?: string;
+    includeSystemManaged?: boolean;
+    pageToken?: string;
+  }): Promise<{ jobs: ReportingJob[]; nextPageToken?: string }> {
     let queryParams: Record<string, string | boolean> = {};
-    if (params?.onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
-    if (params?.includeSystemManaged !== undefined) queryParams['includeSystemManaged'] = params.includeSystemManaged;
+    if (params?.onBehalfOfContentOwner)
+      queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
+    if (params?.includeSystemManaged !== undefined)
+      queryParams['includeSystemManaged'] = params.includeSystemManaged;
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
 
     let response = await reportingAxios.get('/jobs', {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     let data = response.data;
 
     return {
       jobs: (data.jobs || []).map(mapReportingJob),
-      nextPageToken: data.nextPageToken,
+      nextPageToken: data.nextPageToken
     };
   }
 
-  async getReportingJob(jobId: string, onBehalfOfContentOwner?: string): Promise<ReportingJob> {
+  async getReportingJob(
+    jobId: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<ReportingJob> {
     let queryParams: Record<string, string> = {};
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
     let response = await reportingAxios.get(`/jobs/${encodeURIComponent(jobId)}`, {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return mapReportingJob(response.data);
@@ -307,39 +365,57 @@ export class YouTubeAnalyticsClient {
 
     await reportingAxios.delete(`/jobs/${encodeURIComponent(jobId)}`, {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
   }
 
-  async listBulkReports(jobId: string, params?: { createdAfter?: string; startTimeAtOrAfter?: string; startTimeBefore?: string; onBehalfOfContentOwner?: string; pageToken?: string }): Promise<{ reports: BulkReport[]; nextPageToken?: string }> {
+  async listBulkReports(
+    jobId: string,
+    params?: {
+      createdAfter?: string;
+      startTimeAtOrAfter?: string;
+      startTimeBefore?: string;
+      onBehalfOfContentOwner?: string;
+      pageToken?: string;
+    }
+  ): Promise<{ reports: BulkReport[]; nextPageToken?: string }> {
     let queryParams: Record<string, string> = {};
     if (params?.createdAfter) queryParams['createdAfter'] = params.createdAfter;
-    if (params?.startTimeAtOrAfter) queryParams['startTimeAtOrAfter'] = params.startTimeAtOrAfter;
+    if (params?.startTimeAtOrAfter)
+      queryParams['startTimeAtOrAfter'] = params.startTimeAtOrAfter;
     if (params?.startTimeBefore) queryParams['startTimeBefore'] = params.startTimeBefore;
-    if (params?.onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
+    if (params?.onBehalfOfContentOwner)
+      queryParams['onBehalfOfContentOwner'] = params.onBehalfOfContentOwner;
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
 
     let response = await reportingAxios.get(`/jobs/${encodeURIComponent(jobId)}/reports`, {
       params: queryParams,
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     let data = response.data;
 
     return {
       reports: (data.reports || []).map(mapBulkReport),
-      nextPageToken: data.nextPageToken,
+      nextPageToken: data.nextPageToken
     };
   }
 
-  async getBulkReport(jobId: string, reportId: string, onBehalfOfContentOwner?: string): Promise<BulkReport> {
+  async getBulkReport(
+    jobId: string,
+    reportId: string,
+    onBehalfOfContentOwner?: string
+  ): Promise<BulkReport> {
     let queryParams: Record<string, string> = {};
     if (onBehalfOfContentOwner) queryParams['onBehalfOfContentOwner'] = onBehalfOfContentOwner;
 
-    let response = await reportingAxios.get(`/jobs/${encodeURIComponent(jobId)}/reports/${encodeURIComponent(reportId)}`, {
-      params: queryParams,
-      headers: this.authHeaders(),
-    });
+    let response = await reportingAxios.get(
+      `/jobs/${encodeURIComponent(jobId)}/reports/${encodeURIComponent(reportId)}`,
+      {
+        params: queryParams,
+        headers: this.authHeaders()
+      }
+    );
 
     return mapBulkReport(response.data);
   }
@@ -347,7 +423,7 @@ export class YouTubeAnalyticsClient {
   async downloadBulkReport(downloadUrl: string): Promise<string> {
     let response = await reportingAxios.get(downloadUrl, {
       headers: this.authHeaders(),
-      responseType: 'text',
+      responseType: 'text'
     });
 
     return response.data;
@@ -363,14 +439,14 @@ let mapGroup = (raw: any): Group => ({
   title: raw.snippet?.title,
   publishedAt: raw.snippet?.publishedAt,
   itemCount: raw.contentDetails?.itemCount ? Number(raw.contentDetails.itemCount) : 0,
-  itemType: raw.contentDetails?.itemType,
+  itemType: raw.contentDetails?.itemType
 });
 
 let mapGroupItem = (raw: any): GroupItem => ({
   groupItemId: raw.id,
   groupId: raw.groupId,
   resourceKind: raw.resource?.kind,
-  resourceId: raw.resource?.id,
+  resourceId: raw.resource?.id
 });
 
 let mapReportingJob = (raw: any): ReportingJob => ({
@@ -379,7 +455,7 @@ let mapReportingJob = (raw: any): ReportingJob => ({
   name: raw.name,
   createTime: raw.createTime,
   expireTime: raw.expireTime,
-  systemManaged: raw.systemManaged,
+  systemManaged: raw.systemManaged
 });
 
 let mapBulkReport = (raw: any): BulkReport => ({
@@ -389,5 +465,5 @@ let mapBulkReport = (raw: any): BulkReport => ({
   endTime: raw.endTime,
   createTime: raw.createTime,
   jobExpireTime: raw.jobExpireTime,
-  downloadUrl: raw.downloadUrl,
+  downloadUrl: raw.downloadUrl
 });

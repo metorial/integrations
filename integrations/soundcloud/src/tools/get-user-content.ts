@@ -3,34 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUserTracks = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Tracks',
-    key: 'get_user_tracks',
-    description: `Retrieve tracks uploaded by a specific SoundCloud user. Returns track metadata including title, duration, play counts, and access level.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('User ID or URN'),
-    limit: z.number().optional().describe('Maximum number of tracks to return (default 20, max 200)')
-  }))
-  .output(z.object({
-    tracks: z.array(z.object({
-      trackId: z.string().describe('Track URN'),
-      title: z.string().describe('Track title'),
-      permalinkUrl: z.string().describe('Track URL'),
-      duration: z.number().describe('Duration in milliseconds'),
-      genre: z.string().nullable().describe('Genre'),
-      playbackCount: z.number().describe('Number of plays'),
-      likesCount: z.number().describe('Number of likes'),
-      access: z.string().describe('Access level'),
-      createdAt: z.string().describe('Creation date')
-    })).describe('List of tracks'),
-    hasMore: z.boolean().describe('Whether more tracks are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let getUserTracks = SlateTool.create(spec, {
+  name: 'Get User Tracks',
+  key: 'get_user_tracks',
+  description: `Retrieve tracks uploaded by a specific SoundCloud user. Returns track metadata including title, duration, play counts, and access level.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userId: z.string().describe('User ID or URN'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of tracks to return (default 20, max 200)')
+    })
+  )
+  .output(
+    z.object({
+      tracks: z
+        .array(
+          z.object({
+            trackId: z.string().describe('Track URN'),
+            title: z.string().describe('Track title'),
+            permalinkUrl: z.string().describe('Track URL'),
+            duration: z.number().describe('Duration in milliseconds'),
+            genre: z.string().nullable().describe('Genre'),
+            playbackCount: z.number().describe('Number of plays'),
+            likesCount: z.number().describe('Number of likes'),
+            access: z.string().describe('Access level'),
+            createdAt: z.string().describe('Creation date')
+          })
+        )
+        .describe('List of tracks'),
+      hasMore: z.boolean().describe('Whether more tracks are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getUserTracks(ctx.input.userId, {
@@ -56,33 +64,41 @@ export let getUserTracks = SlateTool.create(
   })
   .build();
 
-export let getUserPlaylists = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Playlists',
-    key: 'get_user_playlists',
-    description: `Retrieve playlists created by a specific SoundCloud user. Returns playlist metadata including title, track count, and sharing status.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('User ID or URN'),
-    limit: z.number().optional().describe('Maximum number of playlists to return (default 20, max 200)')
-  }))
-  .output(z.object({
-    playlists: z.array(z.object({
-      playlistId: z.string().describe('Playlist URN'),
-      title: z.string().describe('Playlist title'),
-      permalinkUrl: z.string().describe('Playlist URL'),
-      trackCount: z.number().describe('Number of tracks'),
-      duration: z.number().describe('Total duration in milliseconds'),
-      likesCount: z.number().describe('Number of likes'),
-      isAlbum: z.boolean().describe('Whether marked as an album'),
-      createdAt: z.string().describe('Creation date')
-    })).describe('List of playlists'),
-    hasMore: z.boolean().describe('Whether more playlists are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let getUserPlaylists = SlateTool.create(spec, {
+  name: 'Get User Playlists',
+  key: 'get_user_playlists',
+  description: `Retrieve playlists created by a specific SoundCloud user. Returns playlist metadata including title, track count, and sharing status.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userId: z.string().describe('User ID or URN'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of playlists to return (default 20, max 200)')
+    })
+  )
+  .output(
+    z.object({
+      playlists: z
+        .array(
+          z.object({
+            playlistId: z.string().describe('Playlist URN'),
+            title: z.string().describe('Playlist title'),
+            permalinkUrl: z.string().describe('Playlist URL'),
+            trackCount: z.number().describe('Number of tracks'),
+            duration: z.number().describe('Total duration in milliseconds'),
+            likesCount: z.number().describe('Number of likes'),
+            isAlbum: z.boolean().describe('Whether marked as an album'),
+            createdAt: z.string().describe('Creation date')
+          })
+        )
+        .describe('List of playlists'),
+      hasMore: z.boolean().describe('Whether more playlists are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getUserPlaylists(ctx.input.userId, {
@@ -107,32 +123,40 @@ export let getUserPlaylists = SlateTool.create(
   })
   .build();
 
-export let getUserFollowers = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Followers',
-    key: 'get_user_followers',
-    description: `Retrieve the list of followers for a specific SoundCloud user.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('User ID or URN'),
-    limit: z.number().optional().describe('Maximum number of followers to return (default 20, max 200)')
-  }))
-  .output(z.object({
-    followers: z.array(z.object({
-      userId: z.string().describe('Follower URN'),
-      username: z.string().describe('Username'),
-      fullName: z.string().describe('Full name'),
-      permalinkUrl: z.string().describe('Profile URL'),
-      avatarUrl: z.string().describe('Avatar URL'),
-      followersCount: z.number().describe('Number of followers'),
-      trackCount: z.number().describe('Number of tracks')
-    })).describe('List of followers'),
-    hasMore: z.boolean().describe('Whether more followers are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let getUserFollowers = SlateTool.create(spec, {
+  name: 'Get User Followers',
+  key: 'get_user_followers',
+  description: `Retrieve the list of followers for a specific SoundCloud user.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userId: z.string().describe('User ID or URN'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of followers to return (default 20, max 200)')
+    })
+  )
+  .output(
+    z.object({
+      followers: z
+        .array(
+          z.object({
+            userId: z.string().describe('Follower URN'),
+            username: z.string().describe('Username'),
+            fullName: z.string().describe('Full name'),
+            permalinkUrl: z.string().describe('Profile URL'),
+            avatarUrl: z.string().describe('Avatar URL'),
+            followersCount: z.number().describe('Number of followers'),
+            trackCount: z.number().describe('Number of tracks')
+          })
+        )
+        .describe('List of followers'),
+      hasMore: z.boolean().describe('Whether more followers are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getUserFollowers(ctx.input.userId, {
@@ -156,32 +180,40 @@ export let getUserFollowers = SlateTool.create(
   })
   .build();
 
-export let getUserFollowings = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Followings',
-    key: 'get_user_followings',
-    description: `Retrieve the list of users that a specific SoundCloud user is following.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('User ID or URN'),
-    limit: z.number().optional().describe('Maximum number of followings to return (default 20, max 200)')
-  }))
-  .output(z.object({
-    followings: z.array(z.object({
-      userId: z.string().describe('User URN'),
-      username: z.string().describe('Username'),
-      fullName: z.string().describe('Full name'),
-      permalinkUrl: z.string().describe('Profile URL'),
-      avatarUrl: z.string().describe('Avatar URL'),
-      followersCount: z.number().describe('Number of followers'),
-      trackCount: z.number().describe('Number of tracks')
-    })).describe('List of followings'),
-    hasMore: z.boolean().describe('Whether more followings are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let getUserFollowings = SlateTool.create(spec, {
+  name: 'Get User Followings',
+  key: 'get_user_followings',
+  description: `Retrieve the list of users that a specific SoundCloud user is following.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userId: z.string().describe('User ID or URN'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of followings to return (default 20, max 200)')
+    })
+  )
+  .output(
+    z.object({
+      followings: z
+        .array(
+          z.object({
+            userId: z.string().describe('User URN'),
+            username: z.string().describe('Username'),
+            fullName: z.string().describe('Full name'),
+            permalinkUrl: z.string().describe('Profile URL'),
+            avatarUrl: z.string().describe('Avatar URL'),
+            followersCount: z.number().describe('Number of followers'),
+            trackCount: z.number().describe('Number of tracks')
+          })
+        )
+        .describe('List of followings'),
+      hasMore: z.boolean().describe('Whether more followings are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getUserFollowings(ctx.input.userId, {

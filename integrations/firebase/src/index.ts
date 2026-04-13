@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   manageFirestoreDocument,
@@ -12,13 +11,13 @@ import {
   manageTopicSubscriptions,
   getRemoteConfig,
   updateRemoteConfig,
-  manageStorage,
+  manageStorage
 } from './tools';
 import {
   firestoreDocumentChanges,
   realtimeDbChanges,
   userChanges,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -34,12 +33,7 @@ export let provider = Slate.create({
     manageTopicSubscriptions,
     getRemoteConfig,
     updateRemoteConfig,
-    manageStorage,
+    manageStorage
   ],
-  triggers: [
-    inboundWebhook,
-    firestoreDocumentChanges,
-    realtimeDbChanges,
-    userChanges,
-  ],
+  triggers: [inboundWebhook, firestoreDocumentChanges, realtimeDbChanges, userChanges]
 });

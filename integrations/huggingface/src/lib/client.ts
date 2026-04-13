@@ -92,7 +92,7 @@ export class HubClient {
     let body: any = {
       type: params.repoType,
       name: params.name,
-      private: params.private ?? false,
+      private: params.private ?? false
     };
     if (params.organization) body.organization = params.organization;
     if (params.sdk) body.sdk = params.sdk;
@@ -111,7 +111,7 @@ export class HubClient {
   }): Promise<void> {
     let body: any = {
       type: params.repoType,
-      name: params.repoId,
+      name: params.repoId
     };
     if (params.organization) body.organization = params.organization;
 
@@ -288,25 +288,29 @@ export class HubClient {
     let revision = params.revision || 'main';
 
     // Use the commit API for uploading files
-    let operations = [{
-      key: 'file',
-      value: {
-        content: params.content,
-        path: params.filePath,
-        encoding: 'utf-8'
+    let operations = [
+      {
+        key: 'file',
+        value: {
+          content: params.content,
+          path: params.filePath,
+          encoding: 'utf-8'
+        }
       }
-    }];
+    ];
 
     let response = await hubAxios.post(
       `/api/${prefix}/${params.repoId}/commit/${revision}`,
       {
         summary: params.commitMessage || `Upload ${params.filePath}`,
-        operations: [{
-          op: 'addOrUpdate',
-          path: params.filePath,
-          content: params.content,
-          encoding: 'utf-8'
-        }]
+        operations: [
+          {
+            op: 'addOrUpdate',
+            path: params.filePath,
+            content: params.content,
+            encoding: 'utf-8'
+          }
+        ]
       },
       {
         headers: {
@@ -332,10 +336,12 @@ export class HubClient {
       `/api/${prefix}/${params.repoId}/commit/${revision}`,
       {
         summary: params.commitMessage || `Delete ${params.filePath}`,
-        operations: [{
-          op: 'delete',
-          path: params.filePath
-        }]
+        operations: [
+          {
+            op: 'delete',
+            path: params.filePath
+          }
+        ]
       },
       {
         headers: {
@@ -349,15 +355,11 @@ export class HubClient {
 
   // ---- Discussions ----
 
-  async listDiscussions(params: {
-    repoType: RepoType;
-    repoId: string;
-  }): Promise<any> {
+  async listDiscussions(params: { repoType: RepoType; repoId: string }): Promise<any> {
     let prefix = this.repoTypePrefix(params.repoType);
-    let response = await hubAxios.get(
-      `/api/${prefix}/${params.repoId}/discussions`,
-      { headers: this.headers() }
-    );
+    let response = await hubAxios.get(`/api/${prefix}/${params.repoId}/discussions`, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
@@ -390,11 +392,9 @@ export class HubClient {
       body.pullRequest = true;
     }
 
-    let response = await hubAxios.post(
-      `/api/${prefix}/${params.repoId}/discussions`,
-      body,
-      { headers: this.headers() }
-    );
+    let response = await hubAxios.post(`/api/${prefix}/${params.repoId}/discussions`, body, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
@@ -446,13 +446,10 @@ export class HubClient {
 
   // ---- Collections ----
 
-  async getCollection(params: {
-    slug: string;
-  }): Promise<any> {
-    let response = await hubAxios.get(
-      `/api/collections/${params.slug}`,
-      { headers: this.headers() }
-    );
+  async getCollection(params: { slug: string }): Promise<any> {
+    let response = await hubAxios.get(`/api/collections/${params.slug}`, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
@@ -475,13 +472,8 @@ export class HubClient {
     return response.data;
   }
 
-  async deleteCollection(params: {
-    slug: string;
-  }): Promise<void> {
-    await hubAxios.delete(
-      `/api/collections/${params.slug}`,
-      { headers: this.headers() }
-    );
+  async deleteCollection(params: { slug: string }): Promise<void> {
+    await hubAxios.delete(`/api/collections/${params.slug}`, { headers: this.headers() });
   }
 
   async addCollectionItem(params: {
@@ -501,32 +493,22 @@ export class HubClient {
     return response.data;
   }
 
-  async removeCollectionItem(params: {
-    slug: string;
-    itemId: string;
-  }): Promise<void> {
-    await hubAxios.delete(
-      `/api/collections/${params.slug}/items/${params.itemId}`,
-      { headers: this.headers() }
-    );
+  async removeCollectionItem(params: { slug: string; itemId: string }): Promise<void> {
+    await hubAxios.delete(`/api/collections/${params.slug}/items/${params.itemId}`, {
+      headers: this.headers()
+    });
   }
 
   // ---- Spaces Management ----
 
-  async getSpaceRuntime(params: {
-    repoId: string;
-  }): Promise<any> {
-    let response = await hubAxios.get(
-      `/api/spaces/${params.repoId}/runtime`,
-      { headers: this.headers() }
-    );
+  async getSpaceRuntime(params: { repoId: string }): Promise<any> {
+    let response = await hubAxios.get(`/api/spaces/${params.repoId}/runtime`, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
-  async setSpaceHardware(params: {
-    repoId: string;
-    hardware: string;
-  }): Promise<any> {
+  async setSpaceHardware(params: { repoId: string; hardware: string }): Promise<any> {
     let response = await hubAxios.post(
       `/api/spaces/${params.repoId}/hardware`,
       { flavor: params.hardware },
@@ -535,9 +517,7 @@ export class HubClient {
     return response.data;
   }
 
-  async pauseSpace(params: {
-    repoId: string;
-  }): Promise<any> {
+  async pauseSpace(params: { repoId: string }): Promise<any> {
     let response = await hubAxios.post(
       `/api/spaces/${params.repoId}/pause`,
       {},
@@ -546,9 +526,7 @@ export class HubClient {
     return response.data;
   }
 
-  async restartSpace(params: {
-    repoId: string;
-  }): Promise<any> {
+  async restartSpace(params: { repoId: string }): Promise<any> {
     let response = await hubAxios.post(
       `/api/spaces/${params.repoId}/restart`,
       {},
@@ -557,11 +535,7 @@ export class HubClient {
     return response.data;
   }
 
-  async addSpaceSecret(params: {
-    repoId: string;
-    key: string;
-    value: string;
-  }): Promise<void> {
+  async addSpaceSecret(params: { repoId: string; key: string; value: string }): Promise<void> {
     await hubAxios.post(
       `/api/spaces/${params.repoId}/secrets`,
       { key: params.key, value: params.value },
@@ -569,17 +543,11 @@ export class HubClient {
     );
   }
 
-  async deleteSpaceSecret(params: {
-    repoId: string;
-    key: string;
-  }): Promise<void> {
-    await hubAxios.delete(
-      `/api/spaces/${params.repoId}/secrets`,
-      {
-        headers: this.headers(),
-        data: { key: params.key }
-      }
-    );
+  async deleteSpaceSecret(params: { repoId: string; key: string }): Promise<void> {
+    await hubAxios.delete(`/api/spaces/${params.repoId}/secrets`, {
+      headers: this.headers(),
+      data: { key: params.key }
+    });
   }
 
   async addSpaceVariable(params: {
@@ -594,26 +562,17 @@ export class HubClient {
     );
   }
 
-  async deleteSpaceVariable(params: {
-    repoId: string;
-    key: string;
-  }): Promise<void> {
-    await hubAxios.delete(
-      `/api/spaces/${params.repoId}/variables`,
-      {
-        headers: this.headers(),
-        data: { key: params.key }
-      }
-    );
+  async deleteSpaceVariable(params: { repoId: string; key: string }): Promise<void> {
+    await hubAxios.delete(`/api/spaces/${params.repoId}/variables`, {
+      headers: this.headers(),
+      data: { key: params.key }
+    });
   }
 
   // ---- Webhook Management ----
 
   async listWebhooks(): Promise<any[]> {
-    let response = await hubAxios.get(
-      '/api/settings/webhooks',
-      { headers: this.headers() }
-    );
+    let response = await hubAxios.get('/api/settings/webhooks', { headers: this.headers() });
     return response.data;
   }
 
@@ -630,11 +589,9 @@ export class HubClient {
     };
     if (params.secret) body.secret = params.secret;
 
-    let response = await hubAxios.post(
-      '/api/settings/webhooks',
-      body,
-      { headers: this.headers() }
-    );
+    let response = await hubAxios.post('/api/settings/webhooks', body, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
@@ -651,26 +608,19 @@ export class HubClient {
     if (params.domains) body.domains = params.domains;
     if (params.secret) body.secret = params.secret;
 
-    let response = await hubAxios.post(
-      `/api/settings/webhooks/${params.webhookId}`,
-      body,
-      { headers: this.headers() }
-    );
+    let response = await hubAxios.post(`/api/settings/webhooks/${params.webhookId}`, body, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
-  async deleteWebhook(params: {
-    webhookId: string;
-  }): Promise<void> {
-    await hubAxios.delete(
-      `/api/settings/webhooks/${params.webhookId}`,
-      { headers: this.headers() }
-    );
+  async deleteWebhook(params: { webhookId: string }): Promise<void> {
+    await hubAxios.delete(`/api/settings/webhooks/${params.webhookId}`, {
+      headers: this.headers()
+    });
   }
 
-  async enableWebhook(params: {
-    webhookId: string;
-  }): Promise<any> {
+  async enableWebhook(params: { webhookId: string }): Promise<any> {
     let response = await hubAxios.post(
       `/api/settings/webhooks/${params.webhookId}/enable`,
       {},
@@ -679,9 +629,7 @@ export class HubClient {
     return response.data;
   }
 
-  async disableWebhook(params: {
-    webhookId: string;
-  }): Promise<any> {
+  async disableWebhook(params: { webhookId: string }): Promise<any> {
     let response = await hubAxios.post(
       `/api/settings/webhooks/${params.webhookId}/disable`,
       {},
@@ -699,16 +647,14 @@ export class HubClient {
     options?: any;
   }): Promise<any> {
     let body: any = {
-      inputs: params.inputs,
+      inputs: params.inputs
     };
     if (params.parameters) body.parameters = params.parameters;
     if (params.options) body.options = params.options;
 
-    let response = await inferenceAxios.post(
-      `/models/${params.modelId}`,
-      body,
-      { headers: this.headers() }
-    );
+    let response = await inferenceAxios.post(`/models/${params.modelId}`, body, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
@@ -723,7 +669,7 @@ export class HubClient {
   }): Promise<any> {
     let body: any = {
       model: params.model,
-      messages: params.messages,
+      messages: params.messages
     };
     if (params.maxTokens !== undefined) body.max_tokens = params.maxTokens;
     if (params.temperature !== undefined) body.temperature = params.temperature;
@@ -731,11 +677,9 @@ export class HubClient {
     if (params.stop) body.stop = params.stop;
     body.stream = false;
 
-    let response = await inferenceAxios.post(
-      '/v1/chat/completions',
-      body,
-      { headers: this.headers() }
-    );
+    let response = await inferenceAxios.post('/v1/chat/completions', body, {
+      headers: this.headers()
+    });
     return response.data;
   }
 
@@ -753,9 +697,11 @@ export class HubClient {
     if (params.maxNewTokens !== undefined) parameters.max_new_tokens = params.maxNewTokens;
     if (params.temperature !== undefined) parameters.temperature = params.temperature;
     if (params.topP !== undefined) parameters.top_p = params.topP;
-    if (params.repetitionPenalty !== undefined) parameters.repetition_penalty = params.repetitionPenalty;
+    if (params.repetitionPenalty !== undefined)
+      parameters.repetition_penalty = params.repetitionPenalty;
     if (params.doSample !== undefined) parameters.do_sample = params.doSample;
-    if (params.returnFullText !== undefined) parameters.return_full_text = params.returnFullText;
+    if (params.returnFullText !== undefined)
+      parameters.return_full_text = params.returnFullText;
 
     let response = await inferenceAxios.post(
       `/models/${params.model}`,
@@ -768,10 +714,7 @@ export class HubClient {
     return response.data;
   }
 
-  async featureExtraction(params: {
-    model: string;
-    inputs: string | string[];
-  }): Promise<any> {
+  async featureExtraction(params: { model: string; inputs: string | string[] }): Promise<any> {
     let response = await inferenceAxios.post(
       `/models/${params.model}`,
       { inputs: params.inputs },

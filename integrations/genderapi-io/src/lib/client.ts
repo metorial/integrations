@@ -78,7 +78,7 @@ let mapGenderSingleResponse = (data: any): GenderSingleResponse => ({
   country: data.country,
   totalNames: data.total_names,
   probability: data.probability,
-  duration: data.duration,
+  duration: data.duration
 });
 
 let mapGenderBulkResponse = (data: any): GenderBulkResponse => ({
@@ -93,9 +93,9 @@ let mapGenderBulkResponse = (data: any): GenderBulkResponse => ({
     country: n.country,
     totalNames: n.total_names,
     probability: n.probability,
-    id: n.id,
+    id: n.id
   })),
-  duration: data.duration,
+  duration: data.duration
 });
 
 let mapPhoneResponse = (data: any): PhoneValidationResponse => ({
@@ -116,7 +116,7 @@ let mapPhoneResponse = (data: any): PhoneValidationResponse => ({
   rawInput: data.rawInput,
   isGeographical: data.isGeographical,
   areaCode: data.areaCode,
-  location: data.location,
+  location: data.location
 });
 
 export class Client {
@@ -126,9 +126,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.genderapi.io',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -179,7 +179,7 @@ export class Client {
     data: Array<{ name: string; country?: string; id?: string }>;
   }): Promise<GenderBulkResponse> {
     let response = await this.axios.post('/api/name/multi/country', {
-      data: params.data,
+      data: params.data
     });
     return mapGenderBulkResponse(response.data);
   }
@@ -188,7 +188,7 @@ export class Client {
     data: Array<{ email: string; country?: string; id?: string }>;
   }): Promise<GenderBulkResponse> {
     let response = await this.axios.post('/api/email/multi/country', {
-      data: params.data,
+      data: params.data
     });
     return mapGenderBulkResponse(response.data);
   }
@@ -197,7 +197,7 @@ export class Client {
     data: Array<{ username: string; country?: string; id?: string }>;
   }): Promise<GenderBulkResponse> {
     let response = await this.axios.post('/api/username/multi/country', {
-      data: params.data,
+      data: params.data
     });
     return mapGenderBulkResponse(response.data);
   }
@@ -218,7 +218,7 @@ export class Client {
     return {
       status: response.data.status,
       remaining: response.data.remaining,
-      expiresAt: response.data.expiresAt,
+      expiresAt: response.data.expiresAt
     };
   }
 }

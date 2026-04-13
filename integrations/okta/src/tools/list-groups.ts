@@ -10,36 +10,40 @@ let groupSchema = z.object({
   type: z.string().describe('Group type (OKTA_GROUP, APP_GROUP, BUILT_IN)'),
   created: z.string(),
   lastUpdated: z.string(),
-  lastMembershipUpdated: z.string(),
+  lastMembershipUpdated: z.string()
 });
 
-export let listGroupsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Groups',
-    key: 'list_groups',
-    description: `Search and list groups in your Okta organization. Supports keyword search by name, filter expressions, and SCIM search queries.`,
-    tags: {
-      readOnly: true,
-    },
+export let listGroupsTool = SlateTool.create(spec, {
+  name: 'List Groups',
+  key: 'list_groups',
+  description: `Search and list groups in your Okta organization. Supports keyword search by name, filter expressions, and SCIM search queries.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search groups by name (starts-with matching)'),
-    filter: z.string().optional().describe('Okta filter expression'),
-    search: z.string().optional().describe('SCIM search expression'),
-    limit: z.number().optional().describe('Maximum number of groups to return (default 200)'),
-    after: z.string().optional().describe('Pagination cursor'),
-  }))
-  .output(z.object({
-    groups: z.array(groupSchema),
-    nextCursor: z.string().optional(),
-    hasMore: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search groups by name (starts-with matching)'),
+      filter: z.string().optional().describe('Okta filter expression'),
+      search: z.string().optional().describe('SCIM search expression'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of groups to return (default 200)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      groups: z.array(groupSchema),
+      nextCursor: z.string().optional(),
+      hasMore: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OktaClient({
       domain: ctx.config.domain,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let result = await client.listGroups({
@@ -47,7 +51,7 @@ export let listGroupsTool = SlateTool.create(
       filter: ctx.input.filter,
       search: ctx.input.search,
       limit: ctx.input.limit,
-      after: ctx.input.after,
+      after: ctx.input.after
     });
 
     let groups = result.items.map(g => ({
@@ -57,7 +61,7 @@ export let listGroupsTool = SlateTool.create(
       type: g.type,
       created: g.created,
       lastUpdated: g.lastUpdated,
-      lastMembershipUpdated: g.lastMembershipUpdated,
+      lastMembershipUpdated: g.lastMembershipUpdated
     }));
 
     let nextCursor: string | undefined;
@@ -70,8 +74,9 @@ export let listGroupsTool = SlateTool.create(
       output: {
         groups,
         nextCursor,
-        hasMore: !!result.nextUrl,
+        hasMore: !!result.nextUrl
       },
-      message: `Found **${groups.length}** group(s)${result.nextUrl ? ' (more available)' : ''}.`,
+      message: `Found **${groups.length}** group(s)${result.nextUrl ? ' (more available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

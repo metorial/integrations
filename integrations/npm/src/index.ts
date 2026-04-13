@@ -8,7 +8,7 @@ import {
   manageTokens,
   deprecatePackage,
   manageTrustedPublishers,
-  getUserProfile,
+  getUserProfile
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     manageTokens,
     deprecatePackage,
     manageTrustedPublishers,
-    getUserProfile,
+    getUserProfile
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

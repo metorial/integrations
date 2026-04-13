@@ -50,7 +50,10 @@ export let escapeXml = (str: string): string => {
     .replace(/'/g, '&apos;');
 };
 
-export let extractMetadata = (xml: string, prefix: string = 'x-ms-meta-'): Record<string, string> => {
+export let extractMetadata = (
+  xml: string,
+  prefix: string = 'x-ms-meta-'
+): Record<string, string> => {
   let metadataSection = getTagContent(xml, 'Metadata');
   if (!metadataSection) return {};
 

@@ -26,7 +26,5 @@ export let provider = Slate.create({
     scholarSearch,
     serpRanking
   ],
-  triggers: [
-    searchEvents
-  ]
+  triggers: [searchEvents]
 });

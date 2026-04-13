@@ -4,17 +4,23 @@ import { z } from 'zod';
 
 export let emailSchema = z.object({
   type: z.string().describe('Label for the email, e.g. "work", "home", "other"'),
-  value: z.string().describe('The email address'),
+  value: z.string().describe('The email address')
 });
 
 export let phoneSchema = z.object({
-  type: z.string().describe('Label for the phone, e.g. "work", "mobile", "home", "direct", "fax", "other"'),
-  value: z.string().describe('The phone number'),
+  type: z
+    .string()
+    .describe('Label for the phone, e.g. "work", "mobile", "home", "direct", "fax", "other"'),
+  value: z.string().describe('The phone number')
 });
 
 export let urlSchema = z.object({
-  type: z.string().describe('Label for the URL, e.g. "website", "blog", "twitter", "linkedin", "facebook", "other"'),
-  value: z.string().describe('The URL'),
+  type: z
+    .string()
+    .describe(
+      'Label for the URL, e.g. "website", "blog", "twitter", "linkedin", "facebook", "other"'
+    ),
+  value: z.string().describe('The URL')
 });
 
 export let addressSchema = z.object({
@@ -22,12 +28,12 @@ export let addressSchema = z.object({
   city: z.string().optional().describe('City'),
   state: z.string().optional().describe('State or region'),
   zipCode: z.string().optional().describe('ZIP or postal code'),
-  countryCode: z.string().optional().describe('ISO-3166 country code'),
+  countryCode: z.string().optional().describe('ISO-3166 country code')
 });
 
 export let customFieldValueSchema = z.object({
   customFieldId: z.string().describe('The ID of the custom field'),
-  value: z.any().describe('The value of the custom field'),
+  value: z.any().describe('The value of the custom field')
 });
 
 // --- Contact ---
@@ -52,7 +58,7 @@ export let contactSchema = z.object({
   starValue: z.number().optional().describe('Star rating (0-5)'),
   customFields: z.array(customFieldValueSchema).optional().describe('Custom field values'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Company ---
@@ -66,7 +72,7 @@ export let companySchema = z.object({
   address: addressSchema.optional().describe('Company postal address'),
   customFields: z.array(customFieldValueSchema).optional().describe('Custom field values'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Deal ---
@@ -86,7 +92,7 @@ export let dealSchema = z.object({
   text: z.string().optional().describe('Deal description or notes'),
   customFields: z.array(customFieldValueSchema).optional().describe('Custom field values'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Action ---
@@ -101,7 +107,7 @@ export let actionSchema = z.object({
   status: z.string().optional().describe('Action status: asap, date, waiting, queued, done'),
   done: z.boolean().optional().describe('Whether the action has been completed'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Note ---
@@ -114,7 +120,7 @@ export let noteSchema = z.object({
   linkedDealId: z.string().optional().describe('ID of a linked deal'),
   date: z.string().optional().describe('Note date'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Call ---
@@ -130,7 +136,7 @@ export let callSchema = z.object({
   via: z.string().optional().describe('How the call was made'),
   recordingLink: z.string().optional().describe('Link to call recording'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Meeting ---
@@ -143,7 +149,7 @@ export let meetingSchema = z.object({
   meetingTime: z.string().optional().describe('Time of the meeting'),
   place: z.string().optional().describe('Meeting location'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  modifiedAt: z.string().optional().describe('Last modification timestamp'),
+  modifiedAt: z.string().optional().describe('Last modification timestamp')
 });
 
 // --- Predefined Item ---
@@ -154,7 +160,7 @@ export let predefinedItemSchema = z.object({
   description: z.string().optional().describe('Item description'),
   cost: z.number().optional().describe('Item cost'),
   price: z.number().optional().describe('Item price'),
-  amount: z.number().optional().describe('Default amount'),
+  amount: z.number().optional().describe('Default amount')
 });
 
 // --- Status ---
@@ -164,7 +170,7 @@ export let statusSchema = z.object({
   text: z.string().describe('Status label text'),
   description: z.string().optional().describe('Status description'),
   color: z.string().optional().describe('Status color'),
-  count: z.number().optional().describe('Number of contacts with this status'),
+  count: z.number().optional().describe('Number of contacts with this status')
 });
 
 // --- Lead Source ---
@@ -172,5 +178,5 @@ export let statusSchema = z.object({
 export let leadSourceSchema = z.object({
   leadSourceId: z.string().describe('Unique identifier for the lead source'),
   text: z.string().describe('Lead source label text'),
-  count: z.number().optional().describe('Number of contacts with this lead source'),
+  count: z.number().optional().describe('Number of contacts with this lead source')
 });

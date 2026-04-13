@@ -3,30 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listProjectsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List all Railway projects accessible to the authenticated user. Optionally filter by workspace. Returns project names, descriptions, and timestamps.`,
-    tags: {
-      readOnly: true
-    }
+export let listProjectsTool = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List all Railway projects accessible to the authenticated user. Optionally filter by workspace. Returns project names, descriptions, and timestamps.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Filter projects by workspace ID. Omit to list all accessible projects.')
-  }))
-  .output(z.object({
-    projects: z.array(z.object({
-      projectId: z.string().describe('Unique project identifier'),
-      name: z.string().describe('Project name'),
-      description: z.string().nullable().describe('Project description'),
-      createdAt: z.string().describe('Creation timestamp'),
-      updatedAt: z.string().describe('Last update timestamp')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe('Filter projects by workspace ID. Omit to list all accessible projects.')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(
+        z.object({
+          projectId: z.string().describe('Unique project identifier'),
+          name: z.string().describe('Project name'),
+          description: z.string().nullable().describe('Project description'),
+          createdAt: z.string().describe('Creation timestamp'),
+          updatedAt: z.string().describe('Last update timestamp')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let projects = await client.listProjects(ctx.input.workspaceId);
 

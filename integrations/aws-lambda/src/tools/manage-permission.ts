@@ -3,36 +3,46 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePermission = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Permission',
-    key: 'manage_permission',
-    description: `Add, remove, or view resource-based policy statements on a Lambda function. These policies grant other AWS accounts or services (e.g., S3, API Gateway, EventBridge) permission to invoke the function.`,
-    instructions: [
-      'Use **action** "add" to grant access, "remove" to revoke, or "get" to view the current policy.',
-      'For "add", provide a unique statementId, the allowed action (e.g., lambda:InvokeFunction), and the principal.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['add', 'remove', 'get']).describe('Operation to perform'),
-    functionName: z.string().describe('Function name or ARN'),
-    qualifier: z.string().optional().describe('Version or alias'),
-    statementId: z.string().optional().describe('Unique statement identifier (required for add/remove)'),
-    permissionAction: z.string().optional().describe('Lambda action to allow (e.g., "lambda:InvokeFunction")'),
-    principal: z.string().optional().describe('AWS service or account (e.g., "s3.amazonaws.com" or account ID)'),
-    sourceArn: z.string().optional().describe('ARN of the source triggering the function'),
-    sourceAccount: z.string().optional().describe('AWS account ID of the source'),
-    principalOrgId: z.string().optional().describe('AWS Organizations ID for the principal')
-  }))
-  .output(z.object({
-    statement: z.string().optional().describe('Policy statement JSON'),
-    policy: z.string().optional().describe('Full policy JSON (for get action)'),
-    revisionId: z.string().optional().describe('Policy revision ID'),
-    removed: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let managePermission = SlateTool.create(spec, {
+  name: 'Manage Permission',
+  key: 'manage_permission',
+  description: `Add, remove, or view resource-based policy statements on a Lambda function. These policies grant other AWS accounts or services (e.g., S3, API Gateway, EventBridge) permission to invoke the function.`,
+  instructions: [
+    'Use **action** "add" to grant access, "remove" to revoke, or "get" to view the current policy.',
+    'For "add", provide a unique statementId, the allowed action (e.g., lambda:InvokeFunction), and the principal.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['add', 'remove', 'get']).describe('Operation to perform'),
+      functionName: z.string().describe('Function name or ARN'),
+      qualifier: z.string().optional().describe('Version or alias'),
+      statementId: z
+        .string()
+        .optional()
+        .describe('Unique statement identifier (required for add/remove)'),
+      permissionAction: z
+        .string()
+        .optional()
+        .describe('Lambda action to allow (e.g., "lambda:InvokeFunction")'),
+      principal: z
+        .string()
+        .optional()
+        .describe('AWS service or account (e.g., "s3.amazonaws.com" or account ID)'),
+      sourceArn: z.string().optional().describe('ARN of the source triggering the function'),
+      sourceAccount: z.string().optional().describe('AWS account ID of the source'),
+      principalOrgId: z.string().optional().describe('AWS Organizations ID for the principal')
+    })
+  )
+  .output(
+    z.object({
+      statement: z.string().optional().describe('Policy statement JSON'),
+      policy: z.string().optional().describe('Full policy JSON (for get action)'),
+      revisionId: z.string().optional().describe('Policy revision ID'),
+      removed: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action, functionName, qualifier } = ctx.input;
 

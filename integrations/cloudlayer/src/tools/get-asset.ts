@@ -4,23 +4,22 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { assetSchema } from '../lib/schemas';
 
-export let getAsset = SlateTool.create(
-  spec,
-  {
-    name: 'Get Asset',
-    key: 'get_asset',
-    description: `Retrieve details for a specific generated asset (PDF or image) by its ID. Returns the asset metadata including a pre-authenticated download URL.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getAsset = SlateTool.create(spec, {
+  name: 'Get Asset',
+  key: 'get_asset',
+  description: `Retrieve details for a specific generated asset (PDF or image) by its ID. Returns the asset metadata including a pre-authenticated download URL.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    assetId: z.string().describe('The unique asset identifier'),
-  }))
+})
+  .input(
+    z.object({
+      assetId: z.string().describe('The unique asset identifier')
+    })
+  )
   .output(assetSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getAsset(ctx.input.assetId);
@@ -33,9 +32,9 @@ export let getAsset = SlateTool.create(
         type: result.type,
         size: result.size,
         url: result.url,
-        timestamp: result.timestamp,
+        timestamp: result.timestamp
       },
-      message: `Asset **${ctx.input.assetId}** (${result.ext ?? 'unknown type'}, ${result.size ? `${result.size} bytes` : 'unknown size'}).${result.url ? ` [Download](${result.url})` : ''}`,
+      message: `Asset **${ctx.input.assetId}** (${result.ext ?? 'unknown type'}, ${result.size ? `${result.size} bytes` : 'unknown size'}).${result.url ? ` [Download](${result.url})` : ''}`
     };
   })
   .build();

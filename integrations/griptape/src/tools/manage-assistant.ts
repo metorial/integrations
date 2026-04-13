@@ -3,41 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAssistant = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Assistant',
-    key: 'manage_assistant',
-    description: `Create, update, or delete an Assistant in Griptape Cloud. Assistants are chat applications that can be connected to knowledge bases, rulesets, tools, and structures. Use this to configure and manage the lifecycle of your assistants.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageAssistant = SlateTool.create(spec, {
+  name: 'Manage Assistant',
+  key: 'manage_assistant',
+  description: `Create, update, or delete an Assistant in Griptape Cloud. Assistants are chat applications that can be connected to knowledge bases, rulesets, tools, and structures. Use this to configure and manage the lifecycle of your assistants.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    assistantId: z.string().optional().describe('Required for update and delete operations'),
-    name: z.string().optional().describe('Name for the assistant (required for create)'),
-    description: z.string().optional().describe('Description of the assistant'),
-    input: z.string().optional().describe('Default input/prompt for the assistant'),
-    model: z.string().optional().describe('Model to use for the assistant'),
-    knowledgeBaseIds: z.array(z.string()).optional().describe('Knowledge base IDs to attach'),
-    retrieverIds: z.array(z.string()).optional().describe('Retriever IDs to attach'),
-    rulesetIds: z.array(z.string()).optional().describe('Ruleset IDs to attach'),
-    structureIds: z.array(z.string()).optional().describe('Structure IDs to attach'),
-    toolIds: z.array(z.string()).optional().describe('Tool IDs to attach'),
-  }))
-  .output(z.object({
-    assistantId: z.string().optional().describe('ID of the assistant'),
-    name: z.string().optional().describe('Name of the assistant'),
-    description: z.string().optional().describe('Description of the assistant'),
-    model: z.string().optional().describe('Model used by the assistant'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the assistant was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      assistantId: z.string().optional().describe('Required for update and delete operations'),
+      name: z.string().optional().describe('Name for the assistant (required for create)'),
+      description: z.string().optional().describe('Description of the assistant'),
+      input: z.string().optional().describe('Default input/prompt for the assistant'),
+      model: z.string().optional().describe('Model to use for the assistant'),
+      knowledgeBaseIds: z
+        .array(z.string())
+        .optional()
+        .describe('Knowledge base IDs to attach'),
+      retrieverIds: z.array(z.string()).optional().describe('Retriever IDs to attach'),
+      rulesetIds: z.array(z.string()).optional().describe('Ruleset IDs to attach'),
+      structureIds: z.array(z.string()).optional().describe('Structure IDs to attach'),
+      toolIds: z.array(z.string()).optional().describe('Tool IDs to attach')
+    })
+  )
+  .output(
+    z.object({
+      assistantId: z.string().optional().describe('ID of the assistant'),
+      name: z.string().optional().describe('Name of the assistant'),
+      description: z.string().optional().describe('Description of the assistant'),
+      model: z.string().optional().describe('Model used by the assistant'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the assistant was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
     if (ctx.input.action === 'create') {
@@ -51,7 +55,7 @@ export let manageAssistant = SlateTool.create(
         retrieverIds: ctx.input.retrieverIds,
         rulesetIds: ctx.input.rulesetIds,
         structureIds: ctx.input.structureIds,
-        toolIds: ctx.input.toolIds,
+        toolIds: ctx.input.toolIds
       });
       return {
         output: {
@@ -60,9 +64,9 @@ export let manageAssistant = SlateTool.create(
           description: result.description,
           model: result.model,
           createdAt: result.created_at,
-          updatedAt: result.updated_at,
+          updatedAt: result.updated_at
         },
-        message: `Created assistant **${result.name}** (${result.assistant_id}).`,
+        message: `Created assistant **${result.name}** (${result.assistant_id}).`
       };
     }
 
@@ -77,7 +81,7 @@ export let manageAssistant = SlateTool.create(
         retrieverIds: ctx.input.retrieverIds,
         rulesetIds: ctx.input.rulesetIds,
         structureIds: ctx.input.structureIds,
-        toolIds: ctx.input.toolIds,
+        toolIds: ctx.input.toolIds
       });
       return {
         output: {
@@ -86,9 +90,9 @@ export let manageAssistant = SlateTool.create(
           description: result.description,
           model: result.model,
           createdAt: result.created_at,
-          updatedAt: result.updated_at,
+          updatedAt: result.updated_at
         },
-        message: `Updated assistant **${result.name}** (${result.assistant_id}).`,
+        message: `Updated assistant **${result.name}** (${result.assistant_id}).`
       };
     }
 
@@ -98,9 +102,9 @@ export let manageAssistant = SlateTool.create(
       return {
         output: {
           assistantId: ctx.input.assistantId,
-          deleted: true,
+          deleted: true
         },
-        message: `Deleted assistant ${ctx.input.assistantId}.`,
+        message: `Deleted assistant ${ctx.input.assistantId}.`
       };
     }
 

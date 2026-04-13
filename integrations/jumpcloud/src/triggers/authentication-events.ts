@@ -3,48 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let authenticationEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Authentication Events',
-    key: 'authentication_events',
-    description: 'Polls JumpCloud Directory Insights for authentication events across SSO, RADIUS, LDAP, and system logins. Captures successful and failed authentication attempts.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    service: z.string().describe('Service category (sso, radius, ldap, systems)'),
-    initiatedById: z.string().optional().describe('User ID who attempted authentication'),
-    initiatedByEmail: z.string().optional().describe('Email of the authenticating user'),
-    resourceId: z.string().optional().describe('Resource ID being authenticated to'),
-    resourceType: z.string().optional().describe('Resource type'),
-    organization: z.string().optional().describe('Organization ID'),
-    rawEvent: z.any().describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    service: z.string().describe('Service category'),
-    userId: z.string().optional().describe('Authenticating user ID'),
-    userEmail: z.string().optional().describe('Authenticating user email'),
-    resourceId: z.string().optional().describe('Target resource ID'),
-    resourceType: z.string().optional().describe('Target resource type'),
-    organization: z.string().optional().describe('Organization ID'),
-    success: z.boolean().optional().describe('Whether the authentication succeeded'),
-    clientIp: z.string().optional().describe('Client IP address'),
-    message: z.string().optional().describe('Human-readable event description'),
-  }))
+export let authenticationEvents = SlateTrigger.create(spec, {
+  name: 'Authentication Events',
+  key: 'authentication_events',
+  description:
+    'Polls JumpCloud Directory Insights for authentication events across SSO, RADIUS, LDAP, and system logins. Captures successful and failed authentication attempts.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      service: z.string().describe('Service category (sso, radius, ldap, systems)'),
+      initiatedById: z.string().optional().describe('User ID who attempted authentication'),
+      initiatedByEmail: z.string().optional().describe('Email of the authenticating user'),
+      resourceId: z.string().optional().describe('Resource ID being authenticated to'),
+      resourceType: z.string().optional().describe('Resource type'),
+      organization: z.string().optional().describe('Organization ID'),
+      rawEvent: z.any().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      service: z.string().describe('Service category'),
+      userId: z.string().optional().describe('Authenticating user ID'),
+      userEmail: z.string().optional().describe('Authenticating user email'),
+      resourceId: z.string().optional().describe('Target resource ID'),
+      resourceType: z.string().optional().describe('Target resource type'),
+      organization: z.string().optional().describe('Organization ID'),
+      success: z.boolean().optional().describe('Whether the authentication succeeded'),
+      clientIp: z.string().optional().describe('Client IP address'),
+      message: z.string().optional().describe('Human-readable event description')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        orgId: ctx.config.orgId,
+        orgId: ctx.config.orgId
       });
 
       let lastTimestamp = ctx.state?.lastTimestamp as string | undefined;
@@ -54,7 +56,7 @@ export let authenticationEvents = SlateTrigger.create(
         service: ['sso', 'radius', 'ldap', 'systems'],
         startTime,
         limit: 100,
-        sort: 'ASC',
+        sort: 'ASC'
       });
 
       let newLastTimestamp = startTime;
@@ -64,7 +66,7 @@ export let authenticationEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: result.events.map((e) => ({
+        inputs: result.events.map(e => ({
           eventId: e.id ?? `${e.timestamp}-${e.event_type}`,
           eventType: e.event_type ?? 'unknown',
           timestamp: e.timestamp ?? new Date().toISOString(),
@@ -74,14 +76,14 @@ export let authenticationEvents = SlateTrigger.create(
           resourceId: e.resource?.id,
           resourceType: e.resource?.type,
           organization: e.organization,
-          rawEvent: e,
+          rawEvent: e
         })),
         updatedState: {
-          lastTimestamp: newLastTimestamp,
-        },
+          lastTimestamp: newLastTimestamp
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.rawEvent ?? {};
       let success = raw.success !== undefined ? raw.success : undefined;
       let clientIp = raw.client_ip ?? raw.src_ip;
@@ -109,8 +111,9 @@ export let authenticationEvents = SlateTrigger.create(
           organization: ctx.input.organization,
           success,
           clientIp,
-          message: description,
-        },
+          message: description
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

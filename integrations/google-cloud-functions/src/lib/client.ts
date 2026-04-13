@@ -93,26 +93,18 @@ export class Client {
   }
 
   async createFunction(params: CreateFunctionParams): Promise<any> {
-    let response = await api.post(
-      `/v2/${this.parent}/functions`,
-      params.body,
-      {
-        headers: this.headers,
-        params: { functionId: params.functionId }
-      }
-    );
+    let response = await api.post(`/v2/${this.parent}/functions`, params.body, {
+      headers: this.headers,
+      params: { functionId: params.functionId }
+    });
     return response.data;
   }
 
   async updateFunction(params: UpdateFunctionParams): Promise<any> {
-    let response = await api.patch(
-      `/v2/${params.name}`,
-      params.body,
-      {
-        headers: this.headers,
-        params: { updateMask: params.updateMask }
-      }
-    );
+    let response = await api.patch(`/v2/${params.name}`, params.body, {
+      headers: this.headers,
+      params: { updateMask: params.updateMask }
+    });
     return response.data;
   }
 
@@ -134,11 +126,9 @@ export class Client {
     if (params?.kmsKeyName) body['kmsKeyName'] = params.kmsKeyName;
     if (params?.environment) body['environment'] = params.environment;
 
-    let response = await api.post(
-      `/v2/${this.parent}/functions:generateUploadUrl`,
-      body,
-      { headers: this.headers }
-    );
+    let response = await api.post(`/v2/${this.parent}/functions:generateUploadUrl`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -158,14 +148,15 @@ export class Client {
     let parent = location ? this.parentForLocation(location) : this.parent;
     let name = `${parent}/functions/${functionName}`;
 
-    let response = await api.get(
-      `/v2/${name}:getIamPolicy`,
-      { headers: this.headers }
-    );
+    let response = await api.get(`/v2/${name}:getIamPolicy`, { headers: this.headers });
     return response.data;
   }
 
-  async setIamPolicy(functionName: string, policy: { bindings: IamPolicyBinding[]; etag?: string }, location?: string): Promise<any> {
+  async setIamPolicy(
+    functionName: string,
+    policy: { bindings: IamPolicyBinding[]; etag?: string },
+    location?: string
+  ): Promise<any> {
     let parent = location ? this.parentForLocation(location) : this.parent;
     let name = `${parent}/functions/${functionName}`;
 
@@ -177,7 +168,11 @@ export class Client {
     return response.data;
   }
 
-  async testIamPermissions(functionName: string, permissions: string[], location?: string): Promise<any> {
+  async testIamPermissions(
+    functionName: string,
+    permissions: string[],
+    location?: string
+  ): Promise<any> {
     let parent = location ? this.parentForLocation(location) : this.parent;
     let name = `${parent}/functions/${functionName}`;
 
@@ -192,10 +187,7 @@ export class Client {
   async listRuntimes(location?: string): Promise<any> {
     let parent = location ? this.parentForLocation(location) : this.parent;
 
-    let response = await api.get(
-      `/v2/${parent}/runtimes`,
-      { headers: this.headers }
-    );
+    let response = await api.get(`/v2/${parent}/runtimes`, { headers: this.headers });
     return response.data;
   }
 
@@ -212,13 +204,10 @@ export class Client {
     if (pageSize) queryParams['pageSize'] = String(pageSize);
     if (pageToken) queryParams['pageToken'] = pageToken;
 
-    let response = await api.get(
-      `/v2/${this.parent}/operations`,
-      {
-        headers: this.headers,
-        params: queryParams
-      }
-    );
+    let response = await api.get(`/v2/${this.parent}/operations`, {
+      headers: this.headers,
+      params: queryParams
+    });
     return response.data;
   }
 }

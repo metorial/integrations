@@ -5,39 +5,43 @@ import { z } from 'zod';
 
 let commentEventTypes = ['comment.created', 'comment.deleted'] as const;
 
-export let commentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Comment Events',
-    key: 'comment_events',
-    description: 'Triggers when a comment is created or deleted on a task in Webvizio. Events are only fired when initiated by a user within the Webvizio interface.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(commentEventTypes).describe('Type of comment event'),
-    comment: z.object({
-      id: z.number(),
-      externalId: z.string().nullable(),
-      taskId: z.number(),
-      taskExternalId: z.string().nullable(),
-      author: z.string(),
-      body: z.string(),
-      bodyHtml: z.string().nullable(),
-      createdAt: z.string(),
-    }).describe('Comment data from the webhook payload'),
-  }))
-  .output(z.object({
-    commentId: z.number().describe('Webvizio comment ID'),
-    externalId: z.string().nullable().describe('External identifier'),
-    taskId: z.number().describe('Parent task ID'),
-    taskExternalId: z.string().nullable().describe('Parent task external ID'),
-    author: z.string().describe('Comment author email'),
-    body: z.string().describe('Comment text'),
-    bodyHtml: z.string().nullable().describe('Comment text in HTML format'),
-    createdAt: z.string().describe('Creation timestamp in ISO8601 format'),
-  }))
+export let commentEvents = SlateTrigger.create(spec, {
+  name: 'Comment Events',
+  key: 'comment_events',
+  description:
+    'Triggers when a comment is created or deleted on a task in Webvizio. Events are only fired when initiated by a user within the Webvizio interface.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(commentEventTypes).describe('Type of comment event'),
+      comment: z
+        .object({
+          id: z.number(),
+          externalId: z.string().nullable(),
+          taskId: z.number(),
+          taskExternalId: z.string().nullable(),
+          author: z.string(),
+          body: z.string(),
+          bodyHtml: z.string().nullable(),
+          createdAt: z.string()
+        })
+        .describe('Comment data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.number().describe('Webvizio comment ID'),
+      externalId: z.string().nullable().describe('External identifier'),
+      taskId: z.number().describe('Parent task ID'),
+      taskExternalId: z.string().nullable().describe('Parent task external ID'),
+      author: z.string().describe('Comment author email'),
+      body: z.string().describe('Comment text'),
+      bodyHtml: z.string().nullable().describe('Comment text in HTML format'),
+      createdAt: z.string().describe('Creation timestamp in ISO8601 format')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let registrations: { event: string; webhookId: number }[] = [];
@@ -45,19 +49,21 @@ export let commentEvents = SlateTrigger.create(
       for (let event of commentEventTypes) {
         let result = await client.subscribeWebhook({
           url: `${ctx.input.webhookBaseUrl}/${event}`,
-          event,
+          event
         });
         registrations.push({ event, webhookId: result.id });
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registrations: { event: string; webhookId: number }[] };
+      let details = ctx.input.registrationDetails as {
+        registrations: { event: string; webhookId: number }[];
+      };
 
       for (let reg of details.registrations) {
         try {
@@ -68,8 +74,8 @@ export let commentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       let comment = data as unknown as {
         id: number;
@@ -84,7 +90,7 @@ export let commentEvents = SlateTrigger.create(
 
       // Determine event type from the URL subpath
       let requestUrl = ctx.request.url;
-      let eventType: typeof commentEventTypes[number] = 'comment.created';
+      let eventType: (typeof commentEventTypes)[number] = 'comment.created';
       for (let evt of commentEventTypes) {
         if (requestUrl.endsWith(`/${evt}`)) {
           eventType = evt;
@@ -93,23 +99,25 @@ export let commentEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          comment: {
-            id: comment.id,
-            externalId: comment.externalId ?? null,
-            taskId: comment.taskId,
-            taskExternalId: comment.taskExternalId ?? null,
-            author: comment.author ?? '',
-            body: comment.body ?? '',
-            bodyHtml: comment.bodyHtml ?? null,
-            createdAt: comment.createdAt,
-          },
-        }],
+        inputs: [
+          {
+            eventType,
+            comment: {
+              id: comment.id,
+              externalId: comment.externalId ?? null,
+              taskId: comment.taskId,
+              taskExternalId: comment.taskExternalId ?? null,
+              author: comment.author ?? '',
+              body: comment.body ?? '',
+              bodyHtml: comment.bodyHtml ?? null,
+              createdAt: comment.createdAt
+            }
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let comment = ctx.input.comment;
 
       return {
@@ -123,9 +131,9 @@ export let commentEvents = SlateTrigger.create(
           author: comment.author,
           body: comment.body,
           bodyHtml: comment.bodyHtml,
-          createdAt: comment.createdAt,
-        },
+          createdAt: comment.createdAt
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   captureEventTool,
@@ -39,13 +38,9 @@ import {
   getSessionRecordingTool,
   listEventDefinitionsTool,
   listPropertyDefinitionsTool,
-  listProjectsTool,
+  listProjectsTool
 } from './tools';
-import {
-  newEventsTrigger,
-  featureFlagChangesTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newEventsTrigger, featureFlagChangesTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -87,11 +82,7 @@ export let provider = Slate.create({
     getSessionRecordingTool,
     listEventDefinitionsTool,
     listPropertyDefinitionsTool,
-    listProjectsTool,
+    listProjectsTool
   ],
-  triggers: [
-    inboundWebhook,
-    newEventsTrigger,
-    featureFlagChangesTrigger,
-  ],
+  triggers: [inboundWebhook, newEventsTrigger, featureFlagChangesTrigger]
 });

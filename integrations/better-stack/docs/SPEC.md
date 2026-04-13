@@ -19,6 +19,7 @@ Better Stack supports two types of API tokens:
    Go to Better Stack → API tokens → Team-based tokens. Select your team. Copy existing or create new tokens in the respective API tokens section.
 
 **Base URLs:**
+
 - Uptime API: `https://uptime.betterstack.com/api/v2/` (some endpoints use v3)
 - Telemetry API: `https://telemetry.betterstack.com/api/v1/` (some endpoints use v2)
 

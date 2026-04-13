@@ -3,38 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listForms = SlateTool.create(
-  spec,
-  {
-    name: 'List Forms',
-    key: 'list_forms',
-    description: `Retrieve a paginated list of forms, or get a specific form by ID. Can also list captured form submissions for a given form.`,
-    tags: {
-      readOnly: true,
-    },
+export let listForms = SlateTool.create(spec, {
+  name: 'List Forms',
+  key: 'list_forms',
+  description: `Retrieve a paginated list of forms, or get a specific form by ID. Can also list captured form submissions for a given form.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    formId: z.string().optional().describe('Specific form ID to retrieve'),
-    listCapturedResponses: z.boolean().optional().describe('List captured form responses for the specified form'),
-    page: z.number().optional().describe('Page number (default 1)'),
-    size: z.number().optional().describe('Items per page (default 50, max 100)'),
-  }))
-  .output(z.object({
-    forms: z.array(z.object({
-      formId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-    })).optional(),
-    form: z.object({
-      formId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-    }).optional(),
-    capturedResponses: z.array(z.any()).optional(),
-    totalCount: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      formId: z.string().optional().describe('Specific form ID to retrieve'),
+      listCapturedResponses: z
+        .boolean()
+        .optional()
+        .describe('List captured form responses for the specified form'),
+      page: z.number().optional().describe('Page number (default 1)'),
+      size: z.number().optional().describe('Items per page (default 50, max 100)')
+    })
+  )
+  .output(
+    z.object({
+      forms: z
+        .array(
+          z.object({
+            formId: z.string(),
+            name: z.string().optional(),
+            description: z.string().optional()
+          })
+        )
+        .optional(),
+      form: z
+        .object({
+          formId: z.string(),
+          name: z.string().optional(),
+          description: z.string().optional()
+        })
+        .optional(),
+      capturedResponses: z.array(z.any()).optional(),
+      totalCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.formId) {
@@ -52,11 +62,11 @@ export let listForms = SlateTool.create(
           form: {
             formId: data.id,
             name: data.name,
-            description: data.description,
+            description: data.description
           },
-          capturedResponses,
+          capturedResponses
         },
-        message: `Retrieved form **${data.name || data.id}**${capturedResponses ? ` with ${Array.isArray(capturedResponses) ? capturedResponses.length : 0} captured response(s)` : ''}.`,
+        message: `Retrieved form **${data.name || data.id}**${capturedResponses ? ` with ${Array.isArray(capturedResponses) ? capturedResponses.length : 0} captured response(s)` : ''}.`
       };
     }
 
@@ -68,11 +78,11 @@ export let listForms = SlateTool.create(
         forms: list.map((f: any) => ({
           formId: f.id,
           name: f.name,
-          description: f.description,
+          description: f.description
         })),
-        totalCount: result.total || list.length,
+        totalCount: result.total || list.length
       },
-      message: `Found **${list.length}** form(s).`,
+      message: `Found **${list.length}** form(s).`
     };
   })
   .build();

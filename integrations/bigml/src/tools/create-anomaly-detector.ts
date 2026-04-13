@@ -3,36 +3,43 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let createAnomalyDetector = SlateTool.create(
-  spec,
-  {
-    name: 'Create Anomaly Detector',
-    key: 'create_anomaly_detector',
-    description: `Create an anomaly detector using isolation forest algorithms. Identifies unusual data points in a dataset by measuring how easily they can be isolated from the rest of the data.
+export let createAnomalyDetector = SlateTool.create(spec, {
+  name: 'Create Anomaly Detector',
+  key: 'create_anomaly_detector',
+  description: `Create an anomaly detector using isolation forest algorithms. Identifies unusual data points in a dataset by measuring how easily they can be isolated from the rest of the data.
 After creation, use anomaly score predictions to evaluate how anomalous new data points are.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('Dataset resource ID (e.g., "dataset/abc123")'),
-    name: z.string().optional().describe('Name for the anomaly detector'),
-    inputFields: z.array(z.string()).optional().describe('List of field IDs to use for anomaly detection'),
-    topN: z.number().optional().describe('Number of top anomalies to include in the results'),
-    forestSize: z.number().optional().describe('Number of trees in the isolation forest'),
-    tags: z.array(z.string()).optional().describe('Tags to assign'),
-    projectId: z.string().optional().describe('Project to associate with')
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('BigML resource ID for the anomaly detector'),
-    name: z.string().optional().describe('Name of the anomaly detector'),
-    statusCode: z.number().describe('Status code'),
-    statusMessage: z.string().describe('Status message'),
-    created: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('Dataset resource ID (e.g., "dataset/abc123")'),
+      name: z.string().optional().describe('Name for the anomaly detector'),
+      inputFields: z
+        .array(z.string())
+        .optional()
+        .describe('List of field IDs to use for anomaly detection'),
+      topN: z
+        .number()
+        .optional()
+        .describe('Number of top anomalies to include in the results'),
+      forestSize: z.number().optional().describe('Number of trees in the isolation forest'),
+      tags: z.array(z.string()).optional().describe('Tags to assign'),
+      projectId: z.string().optional().describe('Project to associate with')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('BigML resource ID for the anomaly detector'),
+      name: z.string().optional().describe('Name of the anomaly detector'),
+      statusCode: z.number().describe('Status code'),
+      statusMessage: z.string().describe('Status message'),
+      created: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let body: Record<string, any> = {
@@ -58,4 +65,5 @@ After creation, use anomaly score predictions to evaluate how anomalous new data
       },
       message: `Anomaly detector **${result.resource}** created${result.name ? ` as "${result.name}"` : ''}. Status: ${result.status?.message ?? 'pending'}.`
     };
-  }).build();
+  })
+  .build();

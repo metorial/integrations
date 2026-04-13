@@ -17,21 +17,33 @@ export let manageNewsletterTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
-  .input(z.object({
-    action: z.enum(['subscribe', 'unsubscribe']).describe('Whether to subscribe or unsubscribe the contact'),
-    email: z.string().describe('Contact email address'),
-    smsPhoneNumber: z.string().optional().describe('SMS phone number in E.164 format'),
-    doubleOptin: z.boolean().optional().describe('Enable double opt-in for the subscription (subscribe only)'),
-    firstName: z.string().optional().describe('Contact first name'),
-    lastName: z.string().optional().describe('Contact last name'),
-    tags: z.array(z.string()).optional().describe('Tags to assign to the contact'),
-    acceptsSmsMarketing: z.boolean().optional().describe('Whether the contact accepts SMS marketing')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the event was sent successfully'),
-    eventType: z.string().describe('The event type that was sent')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['subscribe', 'unsubscribe'])
+        .describe('Whether to subscribe or unsubscribe the contact'),
+      email: z.string().describe('Contact email address'),
+      smsPhoneNumber: z.string().optional().describe('SMS phone number in E.164 format'),
+      doubleOptin: z
+        .boolean()
+        .optional()
+        .describe('Enable double opt-in for the subscription (subscribe only)'),
+      firstName: z.string().optional().describe('Contact first name'),
+      lastName: z.string().optional().describe('Contact last name'),
+      tags: z.array(z.string()).optional().describe('Tags to assign to the contact'),
+      acceptsSmsMarketing: z
+        .boolean()
+        .optional()
+        .describe('Whether the contact accepts SMS marketing')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the event was sent successfully'),
+      eventType: z.string().describe('The event type that was sent')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RemarketyClient({
       token: ctx.auth.token,
       storeId: ctx.auth.storeId,

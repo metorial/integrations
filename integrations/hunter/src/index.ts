@@ -13,7 +13,7 @@ import {
   deleteLead,
   manageLeadsList,
   manageSequence,
-  getAccount,
+  getAccount
 } from './tools';
 import { sequenceEmailEvent } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     deleteLead,
     manageLeadsList,
     manageSequence,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    sequenceEmailEvent,
-  ],
+  triggers: [sequenceEmailEvent]
 });

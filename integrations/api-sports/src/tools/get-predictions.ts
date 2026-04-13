@@ -22,28 +22,29 @@ let predictionSchema = z.object({
   awayLastFiveDefense: z.string().nullable().describe('Away team defense strength'),
   homeTeamName: z.string().nullable().describe('Home team name'),
   awayTeamName: z.string().nullable().describe('Away team name'),
-  leagueName: z.string().nullable().describe('League name'),
+  leagueName: z.string().nullable().describe('League name')
 });
 
-export let getPredictionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Predictions',
-    key: 'get_predictions',
-    description: `Retrieve AI-generated match predictions for a football fixture. Includes predicted winner, win probabilities, expected goals, betting advice, and team form analysis. Available for football fixtures only.`,
-    tags: {
-      readOnly: true,
-    },
+export let getPredictionsTool = SlateTool.create(spec, {
+  name: 'Get Predictions',
+  key: 'get_predictions',
+  description: `Retrieve AI-generated match predictions for a football fixture. Includes predicted winner, win probabilities, expected goals, betting advice, and team form analysis. Available for football fixtures only.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    fixtureId: z.number().describe('The football fixture ID to get predictions for'),
-  }))
-  .output(z.object({
-    predictions: z.array(predictionSchema),
-    count: z.number().describe('Number of predictions returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fixtureId: z.number().describe('The football fixture ID to get predictions for')
+    })
+  )
+  .output(
+    z.object({
+      predictions: z.array(predictionSchema),
+      count: z.number().describe('Number of predictions returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, sport: 'football' });
 
     let data = await client.getPredictions(ctx.input.fixtureId);
@@ -71,17 +72,19 @@ export let getPredictionsTool = SlateTool.create(
         awayLastFiveDefense: teams.away?.last_5?.def ?? null,
         homeTeamName: teams.home?.name ?? null,
         awayTeamName: teams.away?.name ?? null,
-        leagueName: league.name ?? null,
+        leagueName: league.name ?? null
       };
     });
 
     return {
       output: {
         predictions: results,
-        count: results.length,
+        count: results.length
       },
-      message: results.length > 0
-        ? `Prediction for fixture **#${ctx.input.fixtureId}**: ${results[0]?.advice ?? 'No advice available'}.`
-        : `No predictions available for fixture **#${ctx.input.fixtureId}**.`,
+      message:
+        results.length > 0
+          ? `Prediction for fixture **#${ctx.input.fixtureId}**: ${results[0]?.advice ?? 'No advice available'}.`
+          : `No predictions available for fixture **#${ctx.input.fixtureId}**.`
     };
-  }).build();
+  })
+  .build();

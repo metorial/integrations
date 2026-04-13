@@ -37,9 +37,7 @@ export interface DateRangeParams {
 }
 
 export class Client {
-  constructor(
-    private token: string
-  ) {}
+  constructor(private token: string) {}
 
   private get headers() {
     return {
@@ -50,11 +48,14 @@ export class Client {
 
   // ─── Customers ───
 
-  async getCustomers(params?: PaginationParams & DateRangeParams & {
-    email?: string;
-    attributes?: AttributeFilter[];
-    match?: 'all' | 'any';
-  }) {
+  async getCustomers(
+    params?: PaginationParams &
+      DateRangeParams & {
+        email?: string;
+        attributes?: AttributeFilter[];
+        match?: 'all' | 'any';
+      }
+  ) {
     let response = await apiAxios.get('/customers', {
       headers: this.headers,
       params: this.buildQueryParams(params)
@@ -70,11 +71,15 @@ export class Client {
   }
 
   async createOrUpdateCustomers(subscribers: CustomerInput[]) {
-    let response = await apiAxios.post('/customers', {
-      subscribers
-    }, {
-      headers: this.headers
-    });
+    let response = await apiAxios.post(
+      '/customers',
+      {
+        subscribers
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data.data;
   }
 
@@ -89,12 +94,16 @@ export class Client {
   }
 
   async unsubscribeCustomers(emails: string[], message?: string) {
-    let response = await apiAxios.post('/customers/unsubscribe', {
-      message,
-      subscribers: emails.map(email => ({ email }))
-    }, {
-      headers: this.headers
-    });
+    let response = await apiAxios.post(
+      '/customers/unsubscribe',
+      {
+        message,
+        subscribers: emails.map(email => ({ email }))
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -116,13 +125,16 @@ export class Client {
 
   // ─── Feedback ───
 
-  async getFeedback(params?: PaginationParams & DateRangeParams & {
-    email?: string;
-    customerId?: string;
-    campaignId?: string;
-    attributes?: AttributeFilter[];
-    match?: 'all' | 'any';
-  }) {
+  async getFeedback(
+    params?: PaginationParams &
+      DateRangeParams & {
+        email?: string;
+        customerId?: string;
+        campaignId?: string;
+        attributes?: AttributeFilter[];
+        match?: 'all' | 'any';
+      }
+  ) {
     let response = await apiAxios.get('/feedback', {
       headers: this.headers,
       params: this.buildQueryParams(params)
@@ -137,25 +149,37 @@ export class Client {
     return response.data.data;
   }
 
-  async setResponseTopics(responseId: string, topics: { name: string; sentiment: 'positive' | 'neutral' | 'negative' }[], op?: 'append' | 'override') {
-    let response = await apiAxios.post('/response/topics', {
-      id: responseId,
-      topics,
-      op
-    }, {
-      headers: this.headers
-    });
+  async setResponseTopics(
+    responseId: string,
+    topics: { name: string; sentiment: 'positive' | 'neutral' | 'negative' }[],
+    op?: 'append' | 'override'
+  ) {
+    let response = await apiAxios.post(
+      '/response/topics',
+      {
+        id: responseId,
+        topics,
+        op
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async setResponseTags(responseId: string, tags: string[], op?: 'append' | 'override') {
-    let response = await apiAxios.post('/response/tags', {
-      id: responseId,
-      tags,
-      op
-    }, {
-      headers: this.headers
-    });
+    let response = await apiAxios.post(
+      '/response/tags',
+      {
+        id: responseId,
+        tags,
+        op
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -227,11 +251,14 @@ export class Client {
     return response.data;
   }
 
-  async getTrends(groupId: string, params?: {
-    date?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getTrends(
+    groupId: string,
+    params?: {
+      date?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ) {
     let queryParams: Record<string, string> = {};
     if (params?.date) queryParams.date = params.date;
     if (params?.startDate) queryParams.startDate = params.startDate;
@@ -246,14 +273,17 @@ export class Client {
 
   // ─── Outbox ───
 
-  async getOutbox(params?: PaginationParams & DateRangeParams & {
-    email?: string;
-    campaignId?: string;
-    channel?: string;
-    sentBy?: string;
-    attributes?: AttributeFilter[];
-    match?: 'all' | 'any';
-  }) {
+  async getOutbox(
+    params?: PaginationParams &
+      DateRangeParams & {
+        email?: string;
+        campaignId?: string;
+        channel?: string;
+        sentBy?: string;
+        attributes?: AttributeFilter[];
+        match?: 'all' | 'any';
+      }
+  ) {
     let response = await apiAxios.get('/outbox', {
       headers: this.headers,
       params: this.buildQueryParams(params)
@@ -271,12 +301,16 @@ export class Client {
   }
 
   async addSuppressedEmail(email: string, note?: string) {
-    let response = await apiAxios.post('/suppressions/emails', {
-      email,
-      note
-    }, {
-      headers: this.headers
-    });
+    let response = await apiAxios.post(
+      '/suppressions/emails',
+      {
+        email,
+        note
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 

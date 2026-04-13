@@ -6,36 +6,38 @@ let axios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      apiKey: z.string().describe('Insighto.ai API key (starts with "in-")'),
+      apiKey: z.string().describe('Insighto.ai API key (starts with "in-")')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { apiKey: string } }) => {
       let response = await axios.get('/api/v1/user', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
       let user = response.data?.data || response.data;
       return {
         profile: {
           id: user.id,
           email: user.email,
-          name: user.name || user.first_name,
-        },
+          name: user.name || user.first_name
+        }
       };
-    },
+    }
   });

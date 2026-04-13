@@ -3,27 +3,24 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let extractContent = SlateTool.create(
-  spec,
-  {
-    name: 'Extract Content',
-    key: 'extract_content',
-    description: `Extract and retrieve content from specific URLs. Provide one or more URLs with an optional objective to focus extraction on relevant information.
+export let extractContent = SlateTool.create(spec, {
+  name: 'Extract Content',
+  key: 'extract_content',
+  description: `Extract and retrieve content from specific URLs. Provide one or more URLs with an optional objective to focus extraction on relevant information.
 Returns excerpts and/or full content from the target pages.`,
-    instructions: [
-      'Provide an objective to extract only relevant sections rather than full page content.',
-      'Enable fullContent to retrieve the complete page content in markdown format.',
-      'Up to 10 URLs can be processed in a single request.',
-    ],
-    constraints: [
-      'Maximum 10 URLs per request.',
-      'Objective text is limited to 3000 characters.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+  instructions: [
+    'Provide an objective to extract only relevant sections rather than full page content.',
+    'Enable fullContent to retrieve the complete page content in markdown format.',
+    'Up to 10 URLs can be processed in a single request.'
+  ],
+  constraints: [
+    'Maximum 10 URLs per request.',
+    'Objective text is limited to 3000 characters.'
+  ],
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       urls: z.array(z.string()).describe('URLs to extract content from (max 10)'),
@@ -40,8 +37,11 @@ Returns excerpts and/or full content from the target pages.`,
           z.boolean(),
           z.object({
             maxCharsPerResult: z.number().optional().describe('Max chars per result excerpt'),
-            maxCharsTotal: z.number().optional().describe('Max total chars across all excerpts'),
-          }),
+            maxCharsTotal: z
+              .number()
+              .optional()
+              .describe('Max total chars across all excerpts')
+          })
         ])
         .optional()
         .describe('Whether to return excerpts, or excerpt length settings. Defaults to true.'),
@@ -49,13 +49,19 @@ Returns excerpts and/or full content from the target pages.`,
         .union([
           z.boolean(),
           z.object({
-            maxCharsPerResult: z.number().optional().describe('Max chars per result full content'),
-            maxCharsTotal: z.number().optional().describe('Max total chars across all full content'),
-          }),
+            maxCharsPerResult: z
+              .number()
+              .optional()
+              .describe('Max chars per result full content'),
+            maxCharsTotal: z
+              .number()
+              .optional()
+              .describe('Max total chars across all full content')
+          })
         ])
         .optional()
-        .describe('Whether to return full page content. Defaults to false.'),
-    }),
+        .describe('Whether to return full page content. Defaults to false.')
+    })
   )
   .output(
     z.object({
@@ -65,10 +71,16 @@ Returns excerpts and/or full content from the target pages.`,
           z.object({
             url: z.string().describe('URL that was extracted'),
             title: z.string().nullable().describe('Page title or null'),
-            publishDate: z.string().nullable().describe('Publication date (YYYY-MM-DD) or null'),
+            publishDate: z
+              .string()
+              .nullable()
+              .describe('Publication date (YYYY-MM-DD) or null'),
             excerpts: z.array(z.string()).nullable().describe('Extracted excerpts or null'),
-            fullContent: z.string().nullable().describe('Full page content in markdown or null'),
-          }),
+            fullContent: z
+              .string()
+              .nullable()
+              .describe('Full page content in markdown or null')
+          })
         )
         .describe('Successfully extracted content'),
       errors: z
@@ -77,32 +89,34 @@ Returns excerpts and/or full content from the target pages.`,
             url: z.string().describe('URL that failed'),
             errorType: z.string().describe('Type of error encountered'),
             httpStatusCode: z.number().nullable().describe('HTTP status code or null'),
-            content: z.string().nullable().describe('Error details or null'),
-          }),
+            content: z.string().nullable().describe('Error details or null')
+          })
         )
         .describe('URLs that failed to extract'),
-      warnings: z.array(z.string()).nullable().describe('Any warnings from the extraction'),
-    }),
+      warnings: z.array(z.string()).nullable().describe('Any warnings from the extraction')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result = await client.extract({
       urls: ctx.input.urls,
       objective: ctx.input.objective,
       searchQueries: ctx.input.searchQueries,
       excerpts: ctx.input.excerpts,
-      fullContent: ctx.input.fullContent,
+      fullContent: ctx.input.fullContent
     });
 
     let successCount = result.results.length;
     let errorCount = result.errors.length;
-    let parts = [`Extracted content from **${successCount}** URL${successCount !== 1 ? 's' : ''}`];
+    let parts = [
+      `Extracted content from **${successCount}** URL${successCount !== 1 ? 's' : ''}`
+    ];
     if (errorCount > 0) {
       parts.push(`${errorCount} failed`);
     }
     return {
       output: result,
-      message: parts.join(', ') + '.',
+      message: parts.join(', ') + '.'
     };
   })
   .build();

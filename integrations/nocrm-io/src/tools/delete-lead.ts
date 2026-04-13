@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteLead = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Lead',
-    key: 'delete_lead',
-    description: `Move a lead to trash. Can also duplicate a lead before deleting, or perform a simple delete.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteLead = SlateTool.create(spec, {
+  name: 'Delete Lead',
+  key: 'delete_lead',
+  description: `Move a lead to trash. Can also duplicate a lead before deleting, or perform a simple delete.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    leadId: z.number().describe('ID of the lead to delete'),
-  }))
-  .output(z.object({
-    leadId: z.number().describe('ID of the deleted lead'),
-    deleted: z.boolean().describe('Whether the lead was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      leadId: z.number().describe('ID of the lead to delete')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.number().describe('ID of the deleted lead'),
+      deleted: z.boolean().describe('Whether the lead was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       subdomain: ctx.config.subdomain,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     await client.deleteLead(ctx.input.leadId);
@@ -33,9 +34,9 @@ export let deleteLead = SlateTool.create(
     return {
       output: {
         leadId: ctx.input.leadId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted lead ID: ${ctx.input.leadId} (moved to trash).`,
+      message: `Deleted lead ID: ${ctx.input.leadId} (moved to trash).`
     };
   })
   .build();

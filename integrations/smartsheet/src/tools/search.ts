@@ -5,34 +5,41 @@ import { z } from 'zod';
 
 let searchResultSchema = z.object({
   text: z.string().optional().describe('Matching text'),
-  objectType: z.string().optional().describe('Type of the matched object (sheet, row, discussion, etc.)'),
+  objectType: z
+    .string()
+    .optional()
+    .describe('Type of the matched object (sheet, row, discussion, etc.)'),
   objectId: z.number().optional().describe('ID of the matched object'),
-  parentObjectId: z.number().optional().describe('ID of the parent object (e.g., sheet ID for a row match)'),
+  parentObjectId: z
+    .number()
+    .optional()
+    .describe('ID of the parent object (e.g., sheet ID for a row match)'),
   parentObjectType: z.string().optional().describe('Type of the parent object'),
   parentObjectName: z.string().optional().describe('Name of the parent object'),
   contextData: z.array(z.string()).optional().describe('Additional context for the match')
 });
 
-export let search = SlateTool.create(
-  spec,
-  {
-    name: 'Search',
-    key: 'search',
-    description: `Search across all accessible sheets or within a specific sheet. Returns matching results with context including the object type, parent sheet, and matched text.`,
-    tags: {
-      readOnly: true
-    }
+export let search = SlateTool.create(spec, {
+  name: 'Search',
+  key: 'search',
+  description: `Search across all accessible sheets or within a specific sheet. Returns matching results with context including the object type, parent sheet, and matched text.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query text'),
-    sheetId: z.string().optional().describe('Limit search to a specific sheet ID')
-  }))
-  .output(z.object({
-    results: z.array(searchResultSchema).describe('Search results'),
-    totalCount: z.number().optional().describe('Total number of matching results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query text'),
+      sheetId: z.string().optional().describe('Limit search to a specific sheet ID')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(searchResultSchema).describe('Search results'),
+      totalCount: z.number().optional().describe('Total number of matching results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SmartsheetClient({ token: ctx.auth.token });
 
     let result;

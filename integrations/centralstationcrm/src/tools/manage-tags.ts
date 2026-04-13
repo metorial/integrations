@@ -3,34 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `Add or remove tags on people, companies, or deals in CentralStationCRM. Tags help categorize and filter records by criteria like industry, area, or channel.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `Add or remove tags on people, companies, or deals in CentralStationCRM. Tags help categorize and filter records by criteria like industry, area, or channel.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['add', 'remove']).describe('Whether to add or remove a tag'),
-    resourceType: z.enum(['person', 'company', 'deal']).describe('Type of resource to tag'),
-    resourceId: z.number().describe('ID of the person, company, or deal'),
-    tagName: z.string().optional().describe('Name of the tag to add (required when action is "add")'),
-    tagId: z.number().optional().describe('ID of the tag to remove (required when action is "remove")'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    tagId: z.number().optional().describe('ID of the tag that was added or removed'),
-    tagName: z.string().optional().describe('Name of the tag'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['add', 'remove']).describe('Whether to add or remove a tag'),
+      resourceType: z.enum(['person', 'company', 'deal']).describe('Type of resource to tag'),
+      resourceId: z.number().describe('ID of the person, company, or deal'),
+      tagName: z
+        .string()
+        .optional()
+        .describe('Name of the tag to add (required when action is "add")'),
+      tagId: z
+        .number()
+        .optional()
+        .describe('ID of the tag to remove (required when action is "remove")')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      tagId: z.number().optional().describe('ID of the tag that was added or removed'),
+      tagName: z.string().optional().describe('Name of the tag')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     if (ctx.input.action === 'add') {
@@ -53,9 +60,9 @@ export let manageTags = SlateTool.create(
         output: {
           success: true,
           tagId: tag?.id,
-          tagName: tag?.name ?? ctx.input.tagName,
+          tagName: tag?.name ?? ctx.input.tagName
         },
-        message: `Added tag **${ctx.input.tagName}** to ${ctx.input.resourceType} (ID: ${ctx.input.resourceId}).`,
+        message: `Added tag **${ctx.input.tagName}** to ${ctx.input.resourceType} (ID: ${ctx.input.resourceId}).`
       };
     } else {
       if (!ctx.input.tagId) {
@@ -74,9 +81,9 @@ export let manageTags = SlateTool.create(
         output: {
           success: true,
           tagId: ctx.input.tagId,
-          tagName: undefined,
+          tagName: undefined
         },
-        message: `Removed tag (ID: ${ctx.input.tagId}) from ${ctx.input.resourceType} (ID: ${ctx.input.resourceId}).`,
+        message: `Removed tag (ID: ${ctx.input.tagId}) from ${ctx.input.resourceType} (ID: ${ctx.input.resourceId}).`
       };
     }
   })

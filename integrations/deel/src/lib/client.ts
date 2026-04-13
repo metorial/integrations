@@ -10,14 +10,15 @@ export class Client {
   private http;
 
   constructor(private config: ClientConfig) {
-    let baseURL = config.environment === 'sandbox'
-      ? 'https://api-sandbox.demo.deel.com/rest/v2'
-      : 'https://api.letsdeel.com/rest/v2';
+    let baseURL =
+      config.environment === 'sandbox'
+        ? 'https://api-sandbox.demo.deel.com/rest/v2'
+        : 'https://api.letsdeel.com/rest/v2';
 
     let headers: Record<string, string> = {
-      'Authorization': `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json'
     };
 
     if (config.clientId) {
@@ -88,7 +89,9 @@ export class Client {
     return response.data;
   }
 
-  async reviewTimesheetsBatch(data: { timesheets: Array<{ id: string; status: string; reason?: string }> }) {
+  async reviewTimesheetsBatch(data: {
+    timesheets: Array<{ id: string; status: string; reason?: string }>;
+  }) {
     let response = await this.http.post('/timesheets/many/reviews', { data });
     return response.data;
   }
@@ -123,7 +126,9 @@ export class Client {
   }
 
   async listContractInvoiceAdjustments(contractId: string, params?: Record<string, any>) {
-    let response = await this.http.get(`/contracts/${contractId}/invoice-adjustments`, { params });
+    let response = await this.http.get(`/contracts/${contractId}/invoice-adjustments`, {
+      params
+    });
     return response.data;
   }
 
@@ -132,8 +137,13 @@ export class Client {
     return response.data;
   }
 
-  async reviewInvoiceAdjustment(adjustmentId: string, data: { status: string; reason?: string }) {
-    let response = await this.http.post(`/invoice-adjustments/${adjustmentId}/reviews`, { data });
+  async reviewInvoiceAdjustment(
+    adjustmentId: string,
+    data: { status: string; reason?: string }
+  ) {
+    let response = await this.http.post(`/invoice-adjustments/${adjustmentId}/reviews`, {
+      data
+    });
     return response.data;
   }
 
@@ -192,14 +202,21 @@ export class Client {
     return response.data;
   }
 
-  async createWebhook(data: { name: string; description?: string; url: string; events: string[]; status?: string; api_version?: string }) {
+  async createWebhook(data: {
+    name: string;
+    description?: string;
+    url: string;
+    events: string[];
+    status?: string;
+    api_version?: string;
+  }) {
     let response = await this.http.post('/webhooks', {
       name: data.name,
       description: data.description,
       url: data.url,
       events: data.events,
       status: data.status ?? 'enabled',
-      api_version: data.api_version ?? 'v2',
+      api_version: data.api_version ?? 'v2'
     });
     return response.data;
   }

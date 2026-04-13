@@ -16,6 +16,7 @@ RunPod uses **API Key** (Bearer token) authentication for all API requests.
 - RunPod does not store your API key, so it must be saved at creation time.
 
 **Base URLs:**
+
 - REST API: `https://rest.runpod.io/v1/`
 - Serverless Endpoints: `https://api.runpod.ai/v2/{endpoint_id}/`
 - GraphQL API (legacy): `https://api.runpod.io/graphql?api_key={YOUR_API_KEY}`

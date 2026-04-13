@@ -6,9 +6,11 @@ let http = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -18,7 +20,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Your Rafflys API key, found in your account settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

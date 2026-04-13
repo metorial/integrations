@@ -16,33 +16,34 @@ let endpointSchema = z.object({
   scalerType: z.string().nullable().describe('Autoscaling strategy'),
   scalerValue: z.number().nullable().describe('Scaler threshold value'),
   templateId: z.string().nullable().describe('Template ID used'),
-  createdAt: z.string().nullable().describe('Creation timestamp'),
+  createdAt: z.string().nullable().describe('Creation timestamp')
 });
 
-export let listEndpoints = SlateTool.create(
-  spec,
-  {
-    name: 'List Endpoints',
-    key: 'list_endpoints',
-    description: `List all Serverless endpoints in your RunPod account. Returns endpoint configuration details including autoscaling settings, GPU types, and worker counts.`,
-    tags: {
-      readOnly: true,
-    },
+export let listEndpoints = SlateTool.create(spec, {
+  name: 'List Endpoints',
+  key: 'list_endpoints',
+  description: `List all Serverless endpoints in your RunPod account. Returns endpoint configuration details including autoscaling settings, GPU types, and worker counts.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeTemplate: z.boolean().optional().describe('Include template details in response'),
-    includeWorkers: z.boolean().optional().describe('Include worker Pod details in response'),
-  }))
-  .output(z.object({
-    endpoints: z.array(endpointSchema).describe('List of Serverless endpoints'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeTemplate: z.boolean().optional().describe('Include template details in response'),
+      includeWorkers: z.boolean().optional().describe('Include worker Pod details in response')
+    })
+  )
+  .output(
+    z.object({
+      endpoints: z.array(endpointSchema).describe('List of Serverless endpoints')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RunPodClient({ token: ctx.auth.token });
 
     let result = await client.listEndpoints({
       includeTemplate: ctx.input.includeTemplate,
-      includeWorkers: ctx.input.includeWorkers,
+      includeWorkers: ctx.input.includeWorkers
     });
 
     let endpoints = Array.isArray(result) ? result : [];
@@ -60,12 +61,12 @@ export let listEndpoints = SlateTool.create(
       scalerType: e.scalerType ?? null,
       scalerValue: e.scalerValue ?? null,
       templateId: e.templateId ?? null,
-      createdAt: e.createdAt ?? null,
+      createdAt: e.createdAt ?? null
     }));
 
     return {
       output: { endpoints: mapped },
-      message: `Found **${mapped.length}** Serverless endpoint(s).`,
+      message: `Found **${mapped.length}** Serverless endpoint(s).`
     };
   })
   .build();

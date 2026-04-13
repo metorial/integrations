@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://exist.io/api/2',
+  baseURL: 'https://exist.io/api/2'
 });
 
 export interface PaginatedResponse<T> {
@@ -138,7 +138,7 @@ export class Client {
 
   async getProfile(): Promise<UserProfile> {
     let response = await http.get('/accounts/profile/', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -161,8 +161,8 @@ export class Client {
         page: params?.page,
         owned: params?.owned,
         manual: params?.manual,
-        include_inactive: params?.includeInactive,
-      },
+        include_inactive: params?.includeInactive
+      }
     });
     return response.data;
   }
@@ -183,8 +183,8 @@ export class Client {
         days: params?.days,
         date_max: params?.dateMax,
         limit: params?.limit,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return response.data;
   }
@@ -203,8 +203,8 @@ export class Client {
         limit: params.limit,
         page: params.page,
         date_min: params.dateMin,
-        date_max: params.dateMax,
-      },
+        date_max: params.dateMax
+      }
     });
     return response.data;
   }
@@ -219,8 +219,8 @@ export class Client {
       params: {
         groups: params?.groups,
         limit: params?.limit,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return response.data;
   }
@@ -230,16 +230,14 @@ export class Client {
   ): Promise<WriteResult> {
     let response = await http.post('/attributes/acquire/', attributes, {
       headers: { ...this.headers, 'Content-Type': 'application/json' },
-      params: { success_objects: 1 },
+      params: { success_objects: 1 }
     });
     return response.data;
   }
 
-  async releaseAttributes(
-    attributes: Array<{ name: string }>
-  ): Promise<WriteResult> {
+  async releaseAttributes(attributes: Array<{ name: string }>): Promise<WriteResult> {
     let response = await http.post('/attributes/release/', attributes, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -256,8 +254,8 @@ export class Client {
         groups: params?.groups,
         attributes: params?.attributes,
         limit: params?.limit,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return response.data;
   }
@@ -271,7 +269,7 @@ export class Client {
       manual?: boolean;
     }>
   ): Promise<WriteResult> {
-    let payload = attributes.map((attr) => {
+    let payload = attributes.map(attr => {
       if (attr.template) {
         return { template: attr.template, manual: attr.manual };
       }
@@ -279,12 +277,12 @@ export class Client {
         label: attr.label,
         group: attr.group,
         value_type: attr.valueType,
-        manual: attr.manual,
+        manual: attr.manual
       };
     });
     let response = await http.post('/attributes/create/', payload, {
       headers: { ...this.headers, 'Content-Type': 'application/json' },
-      params: { success_objects: 1 },
+      params: { success_objects: 1 }
     });
     return response.data;
   }
@@ -293,7 +291,7 @@ export class Client {
     updates: Array<{ name: string; date: string; value: number | string }>
   ): Promise<WriteResult> {
     let response = await http.post('/attributes/update/', updates, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -302,7 +300,7 @@ export class Client {
     increments: Array<{ name: string; date?: string; value: number }>
   ): Promise<WriteResult> {
     let response = await http.post('/attributes/increment/', increments, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -321,8 +319,8 @@ export class Client {
         limit: params?.limit,
         page: params?.page,
         strong: params?.strong,
-        confident: params?.confident,
-      },
+        confident: params?.confident
+      }
     });
     return response.data;
   }
@@ -335,8 +333,8 @@ export class Client {
       headers: this.headers,
       params: {
         attribute: params.attribute,
-        attribute2: params.attribute2,
-      },
+        attribute2: params.attribute2
+      }
     });
     return response.data;
   }
@@ -355,8 +353,8 @@ export class Client {
         page: params?.page,
         date_min: params?.dateMin,
         date_max: params?.dateMax,
-        priority: params?.priority,
-      },
+        priority: params?.priority
+      }
     });
     return response.data;
   }
@@ -379,8 +377,8 @@ export class Client {
         page: params?.page,
         date_min: params?.dateMin,
         date_max: params?.dateMax,
-        include_historical: params?.includeHistorical,
-      },
+        include_historical: params?.includeHistorical
+      }
     });
     return response.data;
   }

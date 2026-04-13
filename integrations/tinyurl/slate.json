@@ -2,11 +2,7 @@
   "name": "@metorial/tinyurl",
   "version": "0.1.2",
   "description": "Create, manage, and analyze shortened URLs. Shorten long URLs with custom aliases, branded domains, tags, and expiration dates. Retrieve, update, archive, and delete existing short links. View link analytics including click counts, geographic distribution, referrers, devices, and browsers. Perform bulk link operations and manage branded domains for custom short links.",
-  "categories": [
-    "apis-and-http-requests",
-    "crm-and-sales-tools",
-    "document-processing"
-  ],
+  "categories": ["apis-and-http-requests", "crm-and-sales-tools", "document-processing"],
   "skills": [
     "shorten URLs",
     "create custom aliases",

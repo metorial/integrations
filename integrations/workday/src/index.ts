@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listWorkers,
@@ -17,11 +16,9 @@ import {
   getCustomObject,
   createCustomObject,
   updateCustomObject,
-  deleteCustomObject,
+  deleteCustomObject
 } from './tools';
-import { workerChanges,
-  inboundWebhook,
-} from './triggers';
+import { workerChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,10 +38,7 @@ export let provider = Slate.create({
     getCustomObject,
     createCustomObject,
     updateCustomObject,
-    deleteCustomObject,
+    deleteCustomObject
   ],
-  triggers: [
-    inboundWebhook,
-    workerChanges,
-  ],
+  triggers: [inboundWebhook, workerChanges]
 });

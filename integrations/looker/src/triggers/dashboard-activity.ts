@@ -3,14 +3,11 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
 
-export let dashboardActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Dashboard Changes',
-    key: 'dashboard_activity',
-    description: 'Triggers when dashboards are created or updated in the Looker instance.',
-  }
-)
+export let dashboardActivity = SlateTrigger.create(spec, {
+  name: 'Dashboard Changes',
+  key: 'dashboard_activity',
+  description: 'Triggers when dashboards are created or updated in the Looker instance.'
+})
   .input(
     z.object({
       eventType: z.enum(['created', 'updated']).describe('Type of dashboard event'),
@@ -19,7 +16,7 @@ export let dashboardActivity = SlateTrigger.create(
       description: z.string().optional().describe('Dashboard description'),
       folderId: z.string().optional().describe('Folder ID'),
       updatedAt: z.string().optional().describe('Last update timestamp'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
     })
   )
   .output(
@@ -29,18 +26,18 @@ export let dashboardActivity = SlateTrigger.create(
       description: z.string().optional().describe('Dashboard description'),
       folderId: z.string().optional().describe('Folder ID'),
       updatedAt: z.string().optional().describe('Last update timestamp'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
     })
   )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new LookerClient({
         instanceUrl: ctx.config.instanceUrl,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let state = ctx.state || {};
@@ -48,7 +45,7 @@ export let dashboardActivity = SlateTrigger.create(
 
       let dashboards = await client.searchDashboards({
         sorts: 'updated_at desc',
-        per_page: 50,
+        per_page: 50
       });
 
       let inputs: Array<{
@@ -81,7 +78,7 @@ export let dashboardActivity = SlateTrigger.create(
             description: d.description,
             folderId: d.folder_id ? String(d.folder_id) : undefined,
             updatedAt: d.updated_at,
-            createdAt: d.created_at,
+            createdAt: d.created_at
           });
         } else if (updatedAt !== previousUpdatedAt) {
           inputs.push({
@@ -91,7 +88,7 @@ export let dashboardActivity = SlateTrigger.create(
             description: d.description,
             folderId: d.folder_id ? String(d.folder_id) : undefined,
             updatedAt: d.updated_at,
-            createdAt: d.created_at,
+            createdAt: d.created_at
           });
         }
       }
@@ -100,12 +97,12 @@ export let dashboardActivity = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPolledAt: new Date().toISOString(),
-          knownDashboards: newKnownDashboards,
-        },
+          knownDashboards: newKnownDashboards
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `dashboard.${ctx.input.eventType}`,
         id: `dashboard-${ctx.input.dashboardId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,
@@ -115,8 +112,9 @@ export let dashboardActivity = SlateTrigger.create(
           description: ctx.input.description,
           folderId: ctx.input.folderId,
           updatedAt: ctx.input.updatedAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

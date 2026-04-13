@@ -1,8 +1,8 @@
 import { checkbox } from '@inquirer/prompts';
-import { execFile } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
-import { createServer } from 'node:http';
-import { promisify } from 'node:util';
+import { execFile } from 'child_process';
+import { randomUUID } from 'crypto';
+import { createServer } from 'http';
+import { promisify } from 'util';
 
 let execFileAsync = promisify(execFile);
 

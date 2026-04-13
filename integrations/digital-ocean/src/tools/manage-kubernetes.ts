@@ -26,22 +26,21 @@ let clusterSchema = z.object({
   tags: z.array(z.string()).describe('Tags')
 });
 
-export let listKubernetesClusters = SlateTool.create(
-  spec,
-  {
-    name: 'List Kubernetes Clusters',
-    key: 'list_kubernetes_clusters',
-    description: `List all managed Kubernetes clusters in your DigitalOcean account. Returns cluster details including version, endpoint, node pools, and status.`,
-    tags: {
-      readOnly: true
-    }
+export let listKubernetesClusters = SlateTool.create(spec, {
+  name: 'List Kubernetes Clusters',
+  key: 'list_kubernetes_clusters',
+  description: `List all managed Kubernetes clusters in your DigitalOcean account. Returns cluster details including version, endpoint, node pools, and status.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    clusters: z.array(clusterSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      clusters: z.array(clusterSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let clusters = await client.listKubernetesClusters();
 
@@ -73,44 +72,54 @@ export let listKubernetesClusters = SlateTool.create(
   })
   .build();
 
-export let createKubernetesCluster = SlateTool.create(
-  spec,
-  {
-    name: 'Create Kubernetes Cluster',
-    key: 'create_kubernetes_cluster',
-    description: `Create a new managed Kubernetes cluster with specified node pools. Configure auto-scaling, maintenance windows, and networking.`,
-    instructions: [
-      'Use "latest" or a specific version like "1.29.1-do.0" for the Kubernetes version',
-      'Node pool sizes are Droplet sizes (e.g., "s-2vcpu-4gb")',
-      'At least one node pool is required'
-    ]
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Cluster name'),
-    region: z.string().describe('Region slug'),
-    version: z.string().describe('Kubernetes version'),
-    nodePools: z.array(z.object({
-      name: z.string().describe('Node pool name'),
-      size: z.string().describe('Droplet size slug'),
-      count: z.number().describe('Number of nodes'),
-      tags: z.array(z.string()).optional().describe('Tags for the node pool'),
-      autoScale: z.boolean().optional().describe('Enable auto-scaling'),
-      minNodes: z.number().optional().describe('Minimum nodes when auto-scaling'),
-      maxNodes: z.number().optional().describe('Maximum nodes when auto-scaling')
-    })).describe('Node pools configuration'),
-    tags: z.array(z.string()).optional().describe('Tags for the cluster'),
-    vpcUuid: z.string().optional().describe('VPC UUID'),
-    maintenanceDay: z.string().optional().describe('Day of week for maintenance (e.g., "monday")'),
-    maintenanceStartTime: z.string().optional().describe('Start time for maintenance window (e.g., "04:00")')
-  }))
+export let createKubernetesCluster = SlateTool.create(spec, {
+  name: 'Create Kubernetes Cluster',
+  key: 'create_kubernetes_cluster',
+  description: `Create a new managed Kubernetes cluster with specified node pools. Configure auto-scaling, maintenance windows, and networking.`,
+  instructions: [
+    'Use "latest" or a specific version like "1.29.1-do.0" for the Kubernetes version',
+    'Node pool sizes are Droplet sizes (e.g., "s-2vcpu-4gb")',
+    'At least one node pool is required'
+  ]
+})
+  .input(
+    z.object({
+      name: z.string().describe('Cluster name'),
+      region: z.string().describe('Region slug'),
+      version: z.string().describe('Kubernetes version'),
+      nodePools: z
+        .array(
+          z.object({
+            name: z.string().describe('Node pool name'),
+            size: z.string().describe('Droplet size slug'),
+            count: z.number().describe('Number of nodes'),
+            tags: z.array(z.string()).optional().describe('Tags for the node pool'),
+            autoScale: z.boolean().optional().describe('Enable auto-scaling'),
+            minNodes: z.number().optional().describe('Minimum nodes when auto-scaling'),
+            maxNodes: z.number().optional().describe('Maximum nodes when auto-scaling')
+          })
+        )
+        .describe('Node pools configuration'),
+      tags: z.array(z.string()).optional().describe('Tags for the cluster'),
+      vpcUuid: z.string().optional().describe('VPC UUID'),
+      maintenanceDay: z
+        .string()
+        .optional()
+        .describe('Day of week for maintenance (e.g., "monday")'),
+      maintenanceStartTime: z
+        .string()
+        .optional()
+        .describe('Start time for maintenance window (e.g., "04:00")')
+    })
+  )
   .output(clusterSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let maintenancePolicy = ctx.input.maintenanceDay && ctx.input.maintenanceStartTime
-      ? { day: ctx.input.maintenanceDay, startTime: ctx.input.maintenanceStartTime }
-      : undefined;
+    let maintenancePolicy =
+      ctx.input.maintenanceDay && ctx.input.maintenanceStartTime
+        ? { day: ctx.input.maintenanceDay, startTime: ctx.input.maintenanceStartTime }
+        : undefined;
 
     let c = await client.createKubernetesCluster({
       name: ctx.input.name,
@@ -148,24 +157,25 @@ export let createKubernetesCluster = SlateTool.create(
   })
   .build();
 
-export let deleteKubernetesCluster = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Kubernetes Cluster',
-    key: 'delete_kubernetes_cluster',
-    description: `Permanently delete a managed Kubernetes cluster and all its node pools. Associated volumes and load balancers are not automatically deleted.`,
-    tags: {
-      destructive: true
-    }
+export let deleteKubernetesCluster = SlateTool.create(spec, {
+  name: 'Delete Kubernetes Cluster',
+  key: 'delete_kubernetes_cluster',
+  description: `Permanently delete a managed Kubernetes cluster and all its node pools. Associated volumes and load balancers are not automatically deleted.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    clusterId: z.string().describe('ID of the Kubernetes cluster to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the cluster was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clusterId: z.string().describe('ID of the Kubernetes cluster to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the cluster was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteKubernetesCluster(ctx.input.clusterId);
 
@@ -176,60 +186,64 @@ export let deleteKubernetesCluster = SlateTool.create(
   })
   .build();
 
-export let getKubeconfig = SlateTool.create(
-  spec,
-  {
-    name: 'Get Kubeconfig',
-    key: 'get_kubeconfig',
-    description: `Download the kubeconfig file for a Kubernetes cluster. Use this to configure kubectl or other Kubernetes tools for cluster access.`,
-    tags: {
-      readOnly: true
-    }
+export let getKubeconfig = SlateTool.create(spec, {
+  name: 'Get Kubeconfig',
+  key: 'get_kubeconfig',
+  description: `Download the kubeconfig file for a Kubernetes cluster. Use this to configure kubectl or other Kubernetes tools for cluster access.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    clusterId: z.string().describe('ID of the Kubernetes cluster')
-  }))
-  .output(z.object({
-    kubeconfig: z.string().describe('Kubeconfig YAML content')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clusterId: z.string().describe('ID of the Kubernetes cluster')
+    })
+  )
+  .output(
+    z.object({
+      kubeconfig: z.string().describe('Kubeconfig YAML content')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let kubeconfig = await client.getKubernetesKubeconfig(ctx.input.clusterId);
 
     return {
-      output: { kubeconfig: typeof kubeconfig === 'string' ? kubeconfig : JSON.stringify(kubeconfig) },
+      output: {
+        kubeconfig: typeof kubeconfig === 'string' ? kubeconfig : JSON.stringify(kubeconfig)
+      },
       message: `Retrieved kubeconfig for Kubernetes cluster **${ctx.input.clusterId}**.`
     };
   })
   .build();
 
-export let manageNodePools = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Node Pools',
-    key: 'manage_node_pools',
-    description: `List, add, or remove node pools in a Kubernetes cluster. Node pools define groups of worker nodes with specific sizes and scaling configurations.`,
-  }
-)
-  .input(z.object({
-    clusterId: z.string().describe('Kubernetes cluster ID'),
-    action: z.enum(['list', 'add', 'delete']).describe('Action to perform'),
-    nodePoolId: z.string().optional().describe('Node pool ID (required for delete)'),
-    name: z.string().optional().describe('Node pool name (required for add)'),
-    size: z.string().optional().describe('Droplet size slug (required for add)'),
-    count: z.number().optional().describe('Number of nodes (required for add)'),
-    tags: z.array(z.string()).optional().describe('Tags for the new node pool'),
-    autoScale: z.boolean().optional().describe('Enable auto-scaling'),
-    minNodes: z.number().optional().describe('Minimum nodes for auto-scaling'),
-    maxNodes: z.number().optional().describe('Maximum nodes for auto-scaling')
-  }))
-  .output(z.object({
-    nodePools: z.array(nodePoolSchema).optional().describe('List of node pools'),
-    nodePool: nodePoolSchema.optional().describe('Created node pool'),
-    deleted: z.boolean().optional().describe('Whether the node pool was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageNodePools = SlateTool.create(spec, {
+  name: 'Manage Node Pools',
+  key: 'manage_node_pools',
+  description: `List, add, or remove node pools in a Kubernetes cluster. Node pools define groups of worker nodes with specific sizes and scaling configurations.`
+})
+  .input(
+    z.object({
+      clusterId: z.string().describe('Kubernetes cluster ID'),
+      action: z.enum(['list', 'add', 'delete']).describe('Action to perform'),
+      nodePoolId: z.string().optional().describe('Node pool ID (required for delete)'),
+      name: z.string().optional().describe('Node pool name (required for add)'),
+      size: z.string().optional().describe('Droplet size slug (required for add)'),
+      count: z.number().optional().describe('Number of nodes (required for add)'),
+      tags: z.array(z.string()).optional().describe('Tags for the new node pool'),
+      autoScale: z.boolean().optional().describe('Enable auto-scaling'),
+      minNodes: z.number().optional().describe('Minimum nodes for auto-scaling'),
+      maxNodes: z.number().optional().describe('Maximum nodes for auto-scaling')
+    })
+  )
+  .output(
+    z.object({
+      nodePools: z.array(nodePoolSchema).optional().describe('List of node pools'),
+      nodePool: nodePoolSchema.optional().describe('Created node pool'),
+      deleted: z.boolean().optional().describe('Whether the node pool was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {

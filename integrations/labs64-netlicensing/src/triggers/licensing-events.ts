@@ -2,36 +2,48 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let licensingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Licensing Events',
-    key: 'licensing_events',
-    description: 'Triggered by NetLicensing webhook notifications for licensing events including customer creation, license creation, payment transactions, and warning level changes. Configure webhooks in the NetLicensing Management Console under Settings / Notifications.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('Event name (e.g., LICENSEE_CREATED, LICENSE_CREATED, PAYMENT_TRANSACTION_PROCESSED, WARNING_LEVEL_CHANGED)'),
-    timestamp: z.string().describe('Event timestamp (ISO 8601)'),
-    entities: z.record(z.string(), z.any()).describe('Entity data from the event payload'),
-  }))
-  .output(z.object({
-    eventName: z.string().describe('Event name'),
-    timestamp: z.string().describe('Event timestamp'),
-    licenseeNumber: z.string().optional().describe('Affected licensee number'),
-    licenseNumber: z.string().optional().describe('Affected license number'),
-    transactionNumber: z.string().optional().describe('Affected transaction number'),
-    licenseeName: z.string().optional().describe('Licensee name'),
-    productNumber: z.string().optional().describe('Associated product number'),
-    active: z.boolean().optional().describe('Active status'),
-    status: z.string().optional().describe('Transaction status if applicable'),
-    warningLevel: z.string().optional().describe('Warning level (GREEN, YELLOW, RED) if applicable'),
-    price: z.string().optional().describe('Price if applicable'),
-    currency: z.string().optional().describe('Currency if applicable'),
-    entities: z.record(z.string(), z.any()).optional().describe('Full entity data from the event'),
-  }))
+export let licensingEvents = SlateTrigger.create(spec, {
+  name: 'Licensing Events',
+  key: 'licensing_events',
+  description:
+    'Triggered by NetLicensing webhook notifications for licensing events including customer creation, license creation, payment transactions, and warning level changes. Configure webhooks in the NetLicensing Management Console under Settings / Notifications.'
+})
+  .input(
+    z.object({
+      eventName: z
+        .string()
+        .describe(
+          'Event name (e.g., LICENSEE_CREATED, LICENSE_CREATED, PAYMENT_TRANSACTION_PROCESSED, WARNING_LEVEL_CHANGED)'
+        ),
+      timestamp: z.string().describe('Event timestamp (ISO 8601)'),
+      entities: z.record(z.string(), z.any()).describe('Entity data from the event payload')
+    })
+  )
+  .output(
+    z.object({
+      eventName: z.string().describe('Event name'),
+      timestamp: z.string().describe('Event timestamp'),
+      licenseeNumber: z.string().optional().describe('Affected licensee number'),
+      licenseNumber: z.string().optional().describe('Affected license number'),
+      transactionNumber: z.string().optional().describe('Affected transaction number'),
+      licenseeName: z.string().optional().describe('Licensee name'),
+      productNumber: z.string().optional().describe('Associated product number'),
+      active: z.boolean().optional().describe('Active status'),
+      status: z.string().optional().describe('Transaction status if applicable'),
+      warningLevel: z
+        .string()
+        .optional()
+        .describe('Warning level (GREEN, YELLOW, RED) if applicable'),
+      price: z.string().optional().describe('Price if applicable'),
+      currency: z.string().optional().describe('Currency if applicable'),
+      entities: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full entity data from the event')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -56,13 +68,13 @@ export let licensingEvents = SlateTrigger.create(
           {
             eventName,
             timestamp,
-            entities,
-          },
-        ],
+            entities
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventName, timestamp, entities } = ctx.input;
 
       let licenseeNumber: string | undefined;
@@ -105,9 +117,8 @@ export let licensingEvents = SlateTrigger.create(
 
       if (entities.WarningLevel) {
         let wl = entities.WarningLevel as any;
-        warningLevel = typeof wl === 'string'
-          ? wl
-          : Array.isArray(wl) ? wl[0]?.level : undefined;
+        warningLevel =
+          typeof wl === 'string' ? wl : Array.isArray(wl) ? wl[0]?.level : undefined;
       }
 
       // Derive a unique event id
@@ -118,7 +129,7 @@ export let licensingEvents = SlateTrigger.create(
         LICENSEE_CREATED: 'licensee.created',
         LICENSE_CREATED: 'license.created',
         PAYMENT_TRANSACTION_PROCESSED: 'transaction.processed',
-        WARNING_LEVEL_CHANGED: 'licensee.warning_level_changed',
+        WARNING_LEVEL_CHANGED: 'licensee.warning_level_changed'
       };
 
       let type = typeMap[eventName] || `licensing.${eventName.toLowerCase()}`;
@@ -139,8 +150,9 @@ export let licensingEvents = SlateTrigger.create(
           warningLevel,
           price,
           currency,
-          entities,
-        },
+          entities
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

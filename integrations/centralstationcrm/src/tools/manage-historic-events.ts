@@ -3,35 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageHistoricEvents = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Milestones',
-    key: 'manage_milestones',
-    description: `Add, update, or remove milestones and life events (birthdays, anniversaries, etc.) for a person in CentralStationCRM. These events support personalized outreach and relationship building.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageHistoricEvents = SlateTool.create(spec, {
+  name: 'Manage Milestones',
+  key: 'manage_milestones',
+  description: `Add, update, or remove milestones and life events (birthdays, anniversaries, etc.) for a person in CentralStationCRM. These events support personalized outreach and relationship building.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['add', 'update', 'remove', 'list']).describe('Action to perform'),
-    personId: z.number().describe('ID of the person'),
-    eventId: z.number().optional().describe('ID of the historic event (required for update and remove)'),
-    eventName: z.string().optional().describe('Name/title of the event (e.g., "Birthday", "Work Anniversary")'),
-    eventDate: z.string().optional().describe('Date of the event (YYYY-MM-DD)'),
-    category: z.string().optional().describe('Category of the event'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    eventId: z.number().optional().describe('ID of the historic event'),
-    events: z.array(z.any()).optional().describe('List of historic events (when action is "list")'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['add', 'update', 'remove', 'list']).describe('Action to perform'),
+      personId: z.number().describe('ID of the person'),
+      eventId: z
+        .number()
+        .optional()
+        .describe('ID of the historic event (required for update and remove)'),
+      eventName: z
+        .string()
+        .optional()
+        .describe('Name/title of the event (e.g., "Birthday", "Work Anniversary")'),
+      eventDate: z.string().optional().describe('Date of the event (YYYY-MM-DD)'),
+      category: z.string().optional().describe('Category of the event')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      eventId: z.number().optional().describe('ID of the historic event'),
+      events: z
+        .array(z.any())
+        .optional()
+        .describe('List of historic events (when action is "list")')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     if (ctx.input.action === 'list') {
@@ -41,9 +51,9 @@ export let manageHistoricEvents = SlateTool.create(
       return {
         output: {
           success: true,
-          events: items,
+          events: items
         },
-        message: `Found **${items.length}** milestones for person (ID: ${ctx.input.personId}).`,
+        message: `Found **${items.length}** milestones for person (ID: ${ctx.input.personId}).`
       };
     }
 
@@ -51,16 +61,16 @@ export let manageHistoricEvents = SlateTool.create(
       let result = await client.createPersonHistoricEvent(ctx.input.personId, {
         name: ctx.input.eventName,
         date: ctx.input.eventDate,
-        category: ctx.input.category,
+        category: ctx.input.category
       });
       let event = result?.historic_event ?? result;
 
       return {
         output: {
           success: true,
-          eventId: event?.id,
+          eventId: event?.id
         },
-        message: `Added milestone **${ctx.input.eventName}** to person (ID: ${ctx.input.personId}).`,
+        message: `Added milestone **${ctx.input.eventName}** to person (ID: ${ctx.input.personId}).`
       };
     }
 
@@ -72,15 +82,19 @@ export let manageHistoricEvents = SlateTool.create(
       if (ctx.input.eventDate !== undefined) data.date = ctx.input.eventDate;
       if (ctx.input.category !== undefined) data.category = ctx.input.category;
 
-      let result = await client.updatePersonHistoricEvent(ctx.input.personId, ctx.input.eventId, data);
+      let result = await client.updatePersonHistoricEvent(
+        ctx.input.personId,
+        ctx.input.eventId,
+        data
+      );
       let event = result?.historic_event ?? result;
 
       return {
         output: {
           success: true,
-          eventId: event?.id,
+          eventId: event?.id
         },
-        message: `Updated milestone (ID: ${ctx.input.eventId}) for person (ID: ${ctx.input.personId}).`,
+        message: `Updated milestone (ID: ${ctx.input.eventId}) for person (ID: ${ctx.input.personId}).`
       };
     }
 
@@ -91,9 +105,9 @@ export let manageHistoricEvents = SlateTool.create(
     return {
       output: {
         success: true,
-        eventId: ctx.input.eventId,
+        eventId: ctx.input.eventId
       },
-      message: `Removed milestone (ID: ${ctx.input.eventId}) from person (ID: ${ctx.input.personId}).`,
+      message: `Removed milestone (ID: ${ctx.input.eventId}) from person (ID: ${ctx.input.personId}).`
     };
   })
   .build();

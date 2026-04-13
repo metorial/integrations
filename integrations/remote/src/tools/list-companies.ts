@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCompanies = SlateTool.create(
-  spec,
-  {
-    name: 'List Companies',
-    key: 'list_companies',
-    description: `List all companies associated with your Remote account or integration. Returns company details including name, status, country, and settings.`,
-    tags: {
-      readOnly: true,
-    },
+export let listCompanies = SlateTool.create(spec, {
+  name: 'List Companies',
+  key: 'list_companies',
+  description: `List all companies associated with your Remote account or integration. Returns company details including name, status, country, and settings.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination'),
-    pageSize: z.number().optional().describe('Number of results per page'),
-  }))
-  .output(z.object({
-    companies: z.array(z.record(z.string(), z.any())).describe('List of company records'),
-    totalCount: z.number().optional().describe('Total number of companies'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination'),
+      pageSize: z.number().optional().describe('Number of results per page')
+    })
+  )
+  .output(
+    z.object({
+      companies: z.array(z.record(z.string(), z.any())).describe('List of company records'),
+      totalCount: z.number().optional().describe('Total number of companies')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment ?? 'production',
+      environment: ctx.config.environment ?? 'production'
     });
 
     let result = await client.listCompanies(ctx.input.page, ctx.input.pageSize);
@@ -35,8 +36,8 @@ export let listCompanies = SlateTool.create(
     return {
       output: {
         companies,
-        totalCount,
+        totalCount
       },
-      message: `Found **${totalCount}** company/companies.`,
+      message: `Found **${totalCount}** company/companies.`
     };
   });

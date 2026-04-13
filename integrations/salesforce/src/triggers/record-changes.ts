@@ -3,34 +3,46 @@ import { createSalesforceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Triggers when Salesforce records of a specified object type are created, updated, or deleted. Polls for changes periodically using the updated and deleted records endpoints. Configure the object type, whether to track deletes, and optional fields to retrieve via the initial state.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('The type of change detected'),
-    recordId: z.string().describe('ID of the changed record'),
-    objectType: z.string().describe('The Salesforce object type'),
-    timestamp: z.string().describe('Timestamp of the change'),
-    record: z.record(z.string(), z.any()).optional().describe('Full record data (for created/updated records)')
-  }))
-  .output(z.object({
-    recordId: z.string().describe('ID of the changed record'),
-    objectType: z.string().describe('The Salesforce object type that changed'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Whether the record was created, updated, or deleted'),
-    timestamp: z.string().describe('When the change occurred'),
-    record: z.record(z.string(), z.any()).optional().describe('Full record data (available for created/updated records, not for deleted)')
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Triggers when Salesforce records of a specified object type are created, updated, or deleted. Polls for changes periodically using the updated and deleted records endpoints. Configure the object type, whether to track deletes, and optional fields to retrieve via the initial state.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('The type of change detected'),
+      recordId: z.string().describe('ID of the changed record'),
+      objectType: z.string().describe('The Salesforce object type'),
+      timestamp: z.string().describe('Timestamp of the change'),
+      record: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full record data (for created/updated records)')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('ID of the changed record'),
+      objectType: z.string().describe('The Salesforce object type that changed'),
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Whether the record was created, updated, or deleted'),
+      timestamp: z.string().describe('When the change occurred'),
+      record: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full record data (available for created/updated records, not for deleted)')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createSalesforceClient({
         instanceUrl: ctx.auth.instanceUrl,
         apiVersion: ctx.config.apiVersion,
@@ -40,7 +52,7 @@ export let recordChanges = SlateTrigger.create(
       let state = ctx.input.state || {};
       let now = new Date();
       let lastPoll = state.lastPollTimestamp
-        ? state.lastPollTimestamp as string
+        ? (state.lastPollTimestamp as string)
         : new Date(now.getTime() - 60 * 60 * 1000).toISOString();
 
       let startTime = formatSalesforceDateTime(lastPoll);
@@ -59,7 +71,9 @@ export let recordChanges = SlateTrigger.create(
         let knownSet = new Set(knownIds);
 
         for (let recordId of updatedIds) {
-          let changeType: 'created' | 'updated' = knownSet.has(recordId) ? 'updated' : 'created';
+          let changeType: 'created' | 'updated' = knownSet.has(recordId)
+            ? 'updated'
+            : 'created';
 
           let record: Record<string, any> | undefined;
           if (fields && fields.length > 0) {
@@ -121,7 +135,7 @@ export let recordChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `${ctx.input.objectType.toLowerCase()}.${ctx.input.changeType}`,
         id: `${ctx.input.recordId}-${ctx.input.timestamp}`,

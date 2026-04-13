@@ -13,15 +13,17 @@ export let createEntityTool = SlateTool.create(spec, {
     'For single-select enum fields, provide the value as {"fibery/id": "enum-value-uuid"}.',
     'For relation fields (one-to-one), provide {"fibery/id": "related-entity-uuid"}.',
     'Rich text (document) fields cannot be set during creation — use "manage_document" after.',
-    'Collection (many-to-many) fields cannot be set during creation — use "manage_collection" after.',
+    'Collection (many-to-many) fields cannot be set during creation — use "manage_collection" after.'
   ],
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
   .input(
     z.object({
-      typeName: z.string().describe('Fully qualified type name (e.g., "Project Management/Task")'),
+      typeName: z
+        .string()
+        .describe('Fully qualified type name (e.g., "Project Management/Task")'),
       fields: z
         .record(z.string(), z.any())
         .describe(
@@ -30,19 +32,21 @@ export let createEntityTool = SlateTool.create(spec, {
       entityId: z
         .string()
         .optional()
-        .describe('Optional UUID for the entity. Auto-generated if not provided.'),
+        .describe('Optional UUID for the entity. Auto-generated if not provided.')
     })
   )
   .output(
     z.object({
       entityId: z.string().describe('The fibery/id of the created entity'),
-      entity: z.record(z.string(), z.any()).describe('The created entity data returned by Fibery'),
+      entity: z
+        .record(z.string(), z.any())
+        .describe('The created entity data returned by Fibery')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       accountName: ctx.config.accountName,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let entityData: Record<string, any> = { ...ctx.input.fields };
@@ -56,9 +60,9 @@ export let createEntityTool = SlateTool.create(spec, {
     return {
       output: {
         entityId,
-        entity: result,
+        entity: result
       },
-      message: `Created entity of type **${ctx.input.typeName}** with ID \`${entityId}\`.`,
+      message: `Created entity of type **${ctx.input.typeName}** with ID \`${entityId}\`.`
     };
   })
   .build();

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.airvisual.com/v2',
+  baseURL: 'https://api.airvisual.com/v2'
 });
 
 export class Client {
@@ -11,7 +11,10 @@ export class Client {
     this.token = config.token;
   }
 
-  private async get<T>(path: string, params: Record<string, string | number | undefined> = {}): Promise<T> {
+  private async get<T>(
+    path: string,
+    params: Record<string, string | number | undefined> = {}
+  ): Promise<T> {
     let filteredParams: Record<string, string | number> = { key: this.token };
     for (let [k, v] of Object.entries(params)) {
       if (v !== undefined) {
@@ -43,7 +46,11 @@ export class Client {
     return this.get('/cities', { state, country });
   }
 
-  async listStations(country: string, state: string, city: string): Promise<Array<{ station: string }>> {
+  async listStations(
+    country: string,
+    state: string,
+    city: string
+  ): Promise<Array<{ station: string }>> {
     return this.get('/stations', { city, state, country });
   }
 
@@ -54,18 +61,23 @@ export class Client {
   async getNearestCity(lat?: number, lon?: number): Promise<CityData> {
     return this.get('/nearest_city', {
       lat: lat !== undefined ? lat : undefined,
-      lon: lon !== undefined ? lon : undefined,
+      lon: lon !== undefined ? lon : undefined
     });
   }
 
   async getNearestStation(lat?: number, lon?: number): Promise<StationData> {
     return this.get('/nearest_station', {
       lat: lat !== undefined ? lat : undefined,
-      lon: lon !== undefined ? lon : undefined,
+      lon: lon !== undefined ? lon : undefined
     });
   }
 
-  async getStationData(country: string, state: string, city: string, station: string): Promise<StationData> {
+  async getStationData(
+    country: string,
+    state: string,
+    city: string,
+    station: string
+  ): Promise<StationData> {
     return this.get('/station', { station, city, state, country });
   }
 

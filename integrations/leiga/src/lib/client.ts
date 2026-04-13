@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://app.leiga.com/openapi/api',
+  baseURL: 'https://app.leiga.com/openapi/api'
 });
 
 export class Client {
@@ -14,20 +14,24 @@ export class Client {
   private headers() {
     return {
       'Content-Type': 'application/json',
-      'accessToken': this.token,
+      accessToken: this.token
     };
   }
 
-  private async request<T = any>(method: string, path: string, options?: {
-    data?: any;
-    params?: Record<string, any>;
-  }): Promise<T> {
+  private async request<T = any>(
+    method: string,
+    path: string,
+    options?: {
+      data?: any;
+      params?: Record<string, any>;
+    }
+  ): Promise<T> {
     let response = await api.request({
       method,
       url: path,
       headers: this.headers(),
       data: options?.data,
-      params: options?.params,
+      params: options?.params
     });
     return response.data;
   }
@@ -36,7 +40,11 @@ export class Client {
     return this.request<T>('GET', path, { params });
   }
 
-  private async post<T = any>(path: string, data?: any, params?: Record<string, any>): Promise<T> {
+  private async post<T = any>(
+    path: string,
+    data?: any,
+    params?: Record<string, any>
+  ): Promise<T> {
     return this.request<T>('POST', path, { data, params });
   }
 
@@ -157,9 +165,7 @@ export class Client {
     return this.post('/issue/batch-add', data);
   }
 
-  async batchUpdateIssues(data: {
-    issues: any[];
-  }): Promise<LeigaResponse<any>> {
+  async batchUpdateIssues(data: { issues: any[] }): Promise<LeigaResponse<any>> {
     return this.put('/issue/batch-update', data);
   }
 
@@ -455,7 +461,10 @@ export class Client {
 
   // ─── Personal Messages ─────────────────────────────────────
 
-  async listPersonalMessages(pageNumber?: number, pageSize?: number): Promise<LeigaResponse<any>> {
+  async listPersonalMessages(
+    pageNumber?: number,
+    pageSize?: number
+  ): Promise<LeigaResponse<any>> {
     return this.get('/message/list', { pageNumber, pageSize });
   }
 }

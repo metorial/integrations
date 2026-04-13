@@ -20,7 +20,7 @@ let notificationSchema = z.object({
   targetChannel: z.string().optional().describe('Message channel (push, email, sms)'),
   includedSegments: z.array(z.string()).optional().describe('Targeted segments'),
   templateId: z.string().optional().describe('Template used'),
-  platformDeliveryStats: z.any().optional().describe('Per-platform delivery statistics'),
+  platformDeliveryStats: z.any().optional().describe('Per-platform delivery statistics')
 });
 
 export let viewNotifications = SlateTool.create(spec, {
@@ -28,46 +28,66 @@ export let viewNotifications = SlateTool.create(spec, {
   key: 'view_notifications',
   description: `Retrieve notification details and delivery analytics. Can list recent notifications with pagination or fetch a specific notification by ID with detailed outcome metrics.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    notificationId: z.string().optional().describe('Specific notification ID to retrieve. If omitted, lists recent notifications.'),
-    limit: z.number().optional().describe('Number of notifications to return (max 50, default 50)'),
-    offset: z.number().optional().describe('Pagination offset'),
-    kind: z.number().optional().describe('Filter by kind: 0=dashboard, 1=API, 3=automated'),
-    outcomeNames: z.array(z.string()).optional().describe('Outcome metrics to include, e.g. ["os__click.count", "os__confirmed_delivery.count"]'),
-    outcomeTimeRange: z.string().optional().describe('Time range for outcomes: "1h", "1d", "1mo"'),
-  }))
-  .output(z.object({
-    notification: notificationSchema.optional().describe('Single notification details'),
-    notifications: z.array(notificationSchema).optional().describe('List of notifications'),
-    totalCount: z.number().optional().describe('Total number of notifications'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      notificationId: z
+        .string()
+        .optional()
+        .describe(
+          'Specific notification ID to retrieve. If omitted, lists recent notifications.'
+        ),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of notifications to return (max 50, default 50)'),
+      offset: z.number().optional().describe('Pagination offset'),
+      kind: z.number().optional().describe('Filter by kind: 0=dashboard, 1=API, 3=automated'),
+      outcomeNames: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Outcome metrics to include, e.g. ["os__click.count", "os__confirmed_delivery.count"]'
+        ),
+      outcomeTimeRange: z
+        .string()
+        .optional()
+        .describe('Time range for outcomes: "1h", "1d", "1mo"')
+    })
+  )
+  .output(
+    z.object({
+      notification: notificationSchema.optional().describe('Single notification details'),
+      notifications: z.array(notificationSchema).optional().describe('List of notifications'),
+      totalCount: z.number().optional().describe('Total number of notifications')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      appId: ctx.config.appId,
+      appId: ctx.config.appId
     });
 
     if (ctx.input.notificationId) {
       let result = await client.getNotification(ctx.input.notificationId, {
         outcomeNames: ctx.input.outcomeNames,
-        outcomeTimeRange: ctx.input.outcomeTimeRange,
+        outcomeTimeRange: ctx.input.outcomeTimeRange
       });
 
       let notification = mapNotification(result);
 
       return {
         output: { notification },
-        message: `Retrieved notification **${ctx.input.notificationId}**${notification.successful !== undefined ? ` — ${notification.successful} successful delivery(ies)` : ''}.`,
+        message: `Retrieved notification **${ctx.input.notificationId}**${notification.successful !== undefined ? ` — ${notification.successful} successful delivery(ies)` : ''}.`
       };
     }
 
     let result = await client.listNotifications({
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      kind: ctx.input.kind,
+      kind: ctx.input.kind
     });
 
     let notifications = (result.notifications || []).map(mapNotification);
@@ -75,9 +95,9 @@ export let viewNotifications = SlateTool.create(spec, {
     return {
       output: {
         notifications,
-        totalCount: result.total_count,
+        totalCount: result.total_count
       },
-      message: `Found **${result.total_count ?? notifications.length}** notification(s). Returned ${notifications.length} in this page.`,
+      message: `Found **${result.total_count ?? notifications.length}** notification(s). Returned ${notifications.length} in this page.`
     };
   })
   .build();
@@ -99,5 +119,5 @@ let mapNotification = (n: any) => ({
   targetChannel: n.target_channel,
   includedSegments: n.included_segments,
   templateId: n.template_id,
-  platformDeliveryStats: n.platform_delivery_stats,
+  platformDeliveryStats: n.platform_delivery_stats
 });

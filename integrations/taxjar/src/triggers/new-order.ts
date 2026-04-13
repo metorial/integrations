@@ -11,67 +11,69 @@ let orderLineItemSchema = z.object({
   productTaxCode: z.string().optional(),
   unitPrice: z.number().optional(),
   discount: z.number().optional(),
-  salesTax: z.number().optional(),
+  salesTax: z.number().optional()
 });
 
-export let newOrderTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Order Transaction',
-    key: 'new_order',
-    description: 'Triggers when a new order transaction is created in TaxJar. Polls for new orders since the last check.',
-  }
-)
-  .input(z.object({
-    transactionId: z.string().describe('Transaction ID of the order'),
-    order: z.any().describe('Full order data from TaxJar'),
-  }))
-  .output(z.object({
-    transactionId: z.string().describe('Unique transaction identifier'),
-    transactionDate: z.string().optional().describe('Date of the transaction'),
-    provider: z.string().optional().describe('Marketplace provider'),
-    fromCountry: z.string().optional(),
-    fromZip: z.string().optional(),
-    fromState: z.string().optional(),
-    fromCity: z.string().optional(),
-    fromStreet: z.string().optional(),
-    toCountry: z.string().optional(),
-    toZip: z.string().optional(),
-    toState: z.string().optional(),
-    toCity: z.string().optional(),
-    toStreet: z.string().optional(),
-    amount: z.number().optional().describe('Total order amount'),
-    shipping: z.number().optional().describe('Shipping cost'),
-    salesTax: z.number().optional().describe('Sales tax collected'),
-    lineItems: z.array(orderLineItemSchema).optional(),
-  }))
+export let newOrderTrigger = SlateTrigger.create(spec, {
+  name: 'New Order Transaction',
+  key: 'new_order',
+  description:
+    'Triggers when a new order transaction is created in TaxJar. Polls for new orders since the last check.'
+})
+  .input(
+    z.object({
+      transactionId: z.string().describe('Transaction ID of the order'),
+      order: z.any().describe('Full order data from TaxJar')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().describe('Unique transaction identifier'),
+      transactionDate: z.string().optional().describe('Date of the transaction'),
+      provider: z.string().optional().describe('Marketplace provider'),
+      fromCountry: z.string().optional(),
+      fromZip: z.string().optional(),
+      fromState: z.string().optional(),
+      fromCity: z.string().optional(),
+      fromStreet: z.string().optional(),
+      toCountry: z.string().optional(),
+      toZip: z.string().optional(),
+      toState: z.string().optional(),
+      toCity: z.string().optional(),
+      toStreet: z.string().optional(),
+      amount: z.number().optional().describe('Total order amount'),
+      shipping: z.number().optional().describe('Shipping cost'),
+      salesTax: z.number().optional().describe('Sales tax collected'),
+      lineItems: z.array(orderLineItemSchema).optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         environment: ctx.config.environment,
-        apiVersion: ctx.config.apiVersion,
+        apiVersion: ctx.config.apiVersion
       });
 
       let now = new Date();
       let fromDate = ctx.state?.lastPolledDate
-        ? ctx.state.lastPolledDate as string
+        ? (ctx.state.lastPolledDate as string)
         : new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]!;
 
       let toDate = now.toISOString().split('T')[0]!;
 
       let orderIds = await client.listOrders({
         from_transaction_date: fromDate,
-        to_transaction_date: toDate,
+        to_transaction_date: toDate
       });
 
       let knownIds = (ctx.state?.knownOrderIds as string[] | undefined) ?? [];
       let knownSet = new Set(knownIds);
-      let newOrderIds = orderIds.filter((id) => !knownSet.has(id));
+      let newOrderIds = orderIds.filter(id => !knownSet.has(id));
 
       let inputs: Array<{ transactionId: string; order: any }> = [];
 
@@ -80,7 +82,7 @@ export let newOrderTrigger = SlateTrigger.create(
           let order = await client.showOrder(orderId);
           inputs.push({
             transactionId: orderId,
-            order,
+            order
           });
         } catch (e) {
           ctx.warn(`Failed to fetch order ${orderId}: ${e}`);
@@ -93,12 +95,12 @@ export let newOrderTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPolledDate: toDate,
-          knownOrderIds: updatedKnownIds,
-        },
+          knownOrderIds: updatedKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let order = ctx.input.order;
 
       return {
@@ -129,10 +131,10 @@ export let newOrderTrigger = SlateTrigger.create(
             productTaxCode: li.product_tax_code,
             unitPrice: li.unit_price,
             discount: li.discount,
-            salesTax: li.sales_tax,
-          })),
-        },
+            salesTax: li.sales_tax
+          }))
+        }
       };
-    },
+    }
   })
   .build();

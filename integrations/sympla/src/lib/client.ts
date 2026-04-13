@@ -135,9 +135,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.sympla.com.br/public/v3',
       headers: {
-        's_token': this.token,
-        'Content-Type': 'application/json',
-      },
+        s_token: this.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -149,7 +149,7 @@ export class Client {
       page: params.page,
       field_sort: params.fieldSort,
       sort: params.sort,
-      fields: params.fields,
+      fields: params.fields
     };
 
     let response = await this.axios.get('/events', { params: this.cleanParams(queryParams) });
@@ -162,17 +162,22 @@ export class Client {
     return response.data.data;
   }
 
-  async listOrders(eventId: number, params: ListOrdersParams = {}): Promise<PaginatedResponse<SymplaOrder>> {
+  async listOrders(
+    eventId: number,
+    params: ListOrdersParams = {}
+  ): Promise<PaginatedResponse<SymplaOrder>> {
     let queryParams: Record<string, string | number | boolean | undefined> = {
       status: params.status,
       page_size: params.pageSize,
       page: params.page,
       field_sort: params.fieldSort,
       sort: params.sort,
-      fields: params.fields,
+      fields: params.fields
     };
 
-    let response = await this.axios.get(`/events/${eventId}/orders`, { params: this.cleanParams(queryParams) });
+    let response = await this.axios.get(`/events/${eventId}/orders`, {
+      params: this.cleanParams(queryParams)
+    });
     return this.mapPaginatedResponse(response.data);
   }
 
@@ -182,52 +187,80 @@ export class Client {
     return response.data.data;
   }
 
-  async listParticipantsByEvent(eventId: number, params: ListParticipantsParams = {}): Promise<PaginatedResponse<SymplaParticipant>> {
+  async listParticipantsByEvent(
+    eventId: number,
+    params: ListParticipantsParams = {}
+  ): Promise<PaginatedResponse<SymplaParticipant>> {
     let queryParams: Record<string, string | number | boolean | undefined> = {
       ticket_number: params.ticketNumber,
       page_size: params.pageSize,
       page: params.page,
       field_sort: params.fieldSort,
       sort: params.sort,
-      fields: params.fields,
+      fields: params.fields
     };
 
-    let response = await this.axios.get(`/events/${eventId}/participants`, { params: this.cleanParams(queryParams) });
+    let response = await this.axios.get(`/events/${eventId}/participants`, {
+      params: this.cleanParams(queryParams)
+    });
     return this.mapPaginatedResponse(response.data);
   }
 
-  async listParticipantsByOrder(eventId: number, orderId: string, params: Omit<ListParticipantsParams, 'ticketNumber'> = {}): Promise<PaginatedResponse<SymplaParticipant>> {
+  async listParticipantsByOrder(
+    eventId: number,
+    orderId: string,
+    params: Omit<ListParticipantsParams, 'ticketNumber'> = {}
+  ): Promise<PaginatedResponse<SymplaParticipant>> {
     let queryParams: Record<string, string | number | boolean | undefined> = {
       page_size: params.pageSize,
       page: params.page,
       field_sort: params.fieldSort,
       sort: params.sort,
-      fields: params.fields,
+      fields: params.fields
     };
 
-    let response = await this.axios.get(`/events/${eventId}/orders/${orderId}/participants`, { params: this.cleanParams(queryParams) });
+    let response = await this.axios.get(`/events/${eventId}/orders/${orderId}/participants`, {
+      params: this.cleanParams(queryParams)
+    });
     return this.mapPaginatedResponse(response.data);
   }
 
-  async getParticipantByTicketId(eventId: number, participantId: number, fields?: string): Promise<SymplaParticipant> {
+  async getParticipantByTicketId(
+    eventId: number,
+    participantId: number,
+    fields?: string
+  ): Promise<SymplaParticipant> {
     let params = fields ? { fields } : {};
-    let response = await this.axios.get(`/events/${eventId}/participants/${participantId}`, { params });
+    let response = await this.axios.get(`/events/${eventId}/participants/${participantId}`, {
+      params
+    });
     return response.data.data;
   }
 
-  async getParticipantByTicketNumber(eventId: number, ticketNumber: string, fields?: string): Promise<SymplaParticipant> {
+  async getParticipantByTicketNumber(
+    eventId: number,
+    ticketNumber: string,
+    fields?: string
+  ): Promise<SymplaParticipant> {
     let params = fields ? { fields } : {};
-    let response = await this.axios.get(`/events/${eventId}/participants/ticketNumber/${ticketNumber}`, { params });
+    let response = await this.axios.get(
+      `/events/${eventId}/participants/ticketNumber/${ticketNumber}`,
+      { params }
+    );
     return response.data.data;
   }
 
   async checkinByTicketId(eventId: number, participantId: number): Promise<{ data: any }> {
-    let response = await this.axios.post(`/events/${eventId}/participants/${participantId}/checkIn`);
+    let response = await this.axios.post(
+      `/events/${eventId}/participants/${participantId}/checkIn`
+    );
     return response.data;
   }
 
   async checkinByTicketNumber(eventId: number, ticketNumber: string): Promise<{ data: any }> {
-    let response = await this.axios.post(`/events/${eventId}/participants/ticketNumber/${ticketNumber}/checkIn`);
+    let response = await this.axios.post(
+      `/events/${eventId}/participants/ticketNumber/${ticketNumber}/checkIn`
+    );
     return response.data;
   }
 
@@ -236,7 +269,9 @@ export class Client {
     return response.data;
   }
 
-  private cleanParams(params: Record<string, string | number | boolean | undefined>): Record<string, string | number | boolean> {
+  private cleanParams(
+    params: Record<string, string | number | boolean | undefined>
+  ): Record<string, string | number | boolean> {
     let cleaned: Record<string, string | number | boolean> = {};
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null) {
@@ -252,12 +287,12 @@ export class Client {
       pagination: {
         hasNext: data.pagination?.has_next ?? false,
         quantity: data.pagination?.quantity ?? 0,
-        offset: data.pagination?.offset ?? 0,
+        offset: data.pagination?.offset ?? 0
       },
       sort: {
         fieldSort: data.sort?.field_sort ?? '',
-        sort: data.sort?.sort ?? '',
-      },
+        sort: data.sort?.sort ?? ''
+      }
     };
   }
 }

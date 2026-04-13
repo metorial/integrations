@@ -5,51 +5,73 @@ import { z } from 'zod';
 
 let brandShareSchema = z.object({
   brandName: z.string().describe('Name of the brand'),
-  combinedProductCount: z.number().nullable().describe('Total products across organic and sponsored results'),
-  combinedWeightedSov: z.number().nullable().describe('Combined weighted share of voice percentage'),
+  combinedProductCount: z
+    .number()
+    .nullable()
+    .describe('Total products across organic and sponsored results'),
+  combinedWeightedSov: z
+    .number()
+    .nullable()
+    .describe('Combined weighted share of voice percentage'),
   combinedBasicSov: z.number().nullable().describe('Combined basic share of voice percentage'),
-  combinedAveragePrice: z.number().nullable().describe('Average price across combined results'),
-  combinedAveragePosition: z.number().nullable().describe('Average position across combined results'),
+  combinedAveragePrice: z
+    .number()
+    .nullable()
+    .describe('Average price across combined results'),
+  combinedAveragePosition: z
+    .number()
+    .nullable()
+    .describe('Average position across combined results'),
   organicProductCount: z.number().nullable().describe('Number of organic products'),
-  organicWeightedSov: z.number().nullable().describe('Organic weighted share of voice percentage'),
+  organicWeightedSov: z
+    .number()
+    .nullable()
+    .describe('Organic weighted share of voice percentage'),
   sponsoredProductCount: z.number().nullable().describe('Number of sponsored products'),
-  sponsoredWeightedSov: z.number().nullable().describe('Sponsored weighted share of voice percentage'),
+  sponsoredWeightedSov: z
+    .number()
+    .nullable()
+    .describe('Sponsored weighted share of voice percentage')
 });
 
-export let shareOfVoiceTool = SlateTool.create(
-  spec,
-  {
-    name: 'Share of Voice',
-    key: 'share_of_voice',
-    description: `Analyze brand competition and visibility for a specific Amazon search keyword. Returns share of voice metrics showing how different brands compete across organic and sponsored search results (first 3 pages). Use this for **competitive analysis**, understanding brand positioning, and identifying market share distribution for a keyword.`,
-    instructions: [
-      'Provide a single keyword to analyze brand share of voice.',
-      'Results include both organic and sponsored breakdown per brand.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let shareOfVoiceTool = SlateTool.create(spec, {
+  name: 'Share of Voice',
+  key: 'share_of_voice',
+  description: `Analyze brand competition and visibility for a specific Amazon search keyword. Returns share of voice metrics showing how different brands compete across organic and sponsored search results (first 3 pages). Use this for **competitive analysis**, understanding brand positioning, and identifying market share distribution for a keyword.`,
+  instructions: [
+    'Provide a single keyword to analyze brand share of voice.',
+    'Results include both organic and sponsored breakdown per brand.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    keyword: z.string().describe('The Amazon search keyword to analyze'),
-  }))
-  .output(z.object({
-    keyword: z.string().describe('The analyzed keyword'),
-    searchVolume30Day: z.number().nullable().describe('30-day search volume for the keyword'),
-    medianPpcBid: z.number().nullable().describe('Median PPC bid for the keyword'),
-    productCount: z.number().nullable().describe('Total product count in search results'),
-    brands: z.array(brandShareSchema).describe('Brand share of voice breakdown'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      keyword: z.string().describe('The Amazon search keyword to analyze')
+    })
+  )
+  .output(
+    z.object({
+      keyword: z.string().describe('The analyzed keyword'),
+      searchVolume30Day: z
+        .number()
+        .nullable()
+        .describe('30-day search volume for the keyword'),
+      medianPpcBid: z.number().nullable().describe('Median PPC bid for the keyword'),
+      productCount: z.number().nullable().describe('Total product count in search results'),
+      brands: z.array(brandShareSchema).describe('Brand share of voice breakdown')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       marketplace: ctx.config.marketplace,
-      apiType: ctx.config.apiType,
+      apiType: ctx.config.apiType
     });
 
     let result = await client.shareOfVoice({
-      keyword: ctx.input.keyword,
+      keyword: ctx.input.keyword
     });
 
     let items = Array.isArray(result.data) ? result.data : result.data ? [result.data] : [];
@@ -84,7 +106,7 @@ export let shareOfVoiceTool = SlateTool.create(
           organicProductCount: attrs.organic_product_count ?? null,
           organicWeightedSov: attrs.organic_weighted_sov ?? null,
           sponsoredProductCount: attrs.sponsored_product_count ?? null,
-          sponsoredWeightedSov: attrs.sponsored_weighted_sov ?? null,
+          sponsoredWeightedSov: attrs.sponsored_weighted_sov ?? null
         });
       }
     }
@@ -95,9 +117,9 @@ export let shareOfVoiceTool = SlateTool.create(
         searchVolume30Day,
         medianPpcBid,
         productCount,
-        brands,
+        brands
       },
-      message: `Analyzed share of voice for keyword "${ctx.input.keyword}": **${brands.length}** brands found${searchVolume30Day ? `, 30-day search volume: **${searchVolume30Day}**` : ''}.`,
+      message: `Analyzed share of voice for keyword "${ctx.input.keyword}": **${brands.length}** brands found${searchVolume30Day ? `, 30-day search volume: **${searchVolume30Day}**` : ''}.`
     };
   })
   .build();

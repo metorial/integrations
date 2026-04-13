@@ -3,33 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let batchCompletedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Batch Completed',
-    key: 'batch_completed',
-    description: 'Fires when a batch label processing operation completes.'
-  }
-)
-  .input(z.object({
-    resourceUrl: z.string().optional().describe('URL to the batch resource'),
-    batchId: z.string().describe('Batch ID'),
-    status: z.string().describe('Batch status'),
-    completed: z.number().describe('Number of completed labels'),
-    errors: z.number().describe('Number of errors'),
-    count: z.number().describe('Total count')
-  }))
-  .output(z.object({
-    batchId: z.string().describe('Batch ID'),
-    status: z.string().describe('Batch status'),
-    completed: z.number().describe('Number of completed labels'),
-    errors: z.number().describe('Number of errors'),
-    count: z.number().describe('Total labels in the batch'),
-    labelDownloadUrl: z.string().optional().describe('URL to download batch labels'),
-    formDownloadUrl: z.string().optional().describe('URL to download batch forms')
-  }))
+export let batchCompletedTrigger = SlateTrigger.create(spec, {
+  name: 'Batch Completed',
+  key: 'batch_completed',
+  description: 'Fires when a batch label processing operation completes.'
+})
+  .input(
+    z.object({
+      resourceUrl: z.string().optional().describe('URL to the batch resource'),
+      batchId: z.string().describe('Batch ID'),
+      status: z.string().describe('Batch status'),
+      completed: z.number().describe('Number of completed labels'),
+      errors: z.number().describe('Number of errors'),
+      count: z.number().describe('Total count')
+    })
+  )
+  .output(
+    z.object({
+      batchId: z.string().describe('Batch ID'),
+      status: z.string().describe('Batch status'),
+      completed: z.number().describe('Number of completed labels'),
+      errors: z.number().describe('Number of errors'),
+      count: z.number().describe('Total labels in the batch'),
+      labelDownloadUrl: z.string().optional().describe('URL to download batch labels'),
+      formDownloadUrl: z.string().optional().describe('URL to download batch forms')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -47,7 +48,7 @@ export let batchCompletedTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -56,24 +57,26 @@ export let batchCompletedTrigger = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let batchData = data?.data ?? data ?? {};
 
       return {
-        inputs: [{
-          resourceUrl: data?.resource_url ?? '',
-          batchId: batchData.batch_id ?? '',
-          status: batchData.status ?? '',
-          completed: batchData.completed ?? 0,
-          errors: batchData.errors ?? 0,
-          count: batchData.count ?? 0
-        }]
+        inputs: [
+          {
+            resourceUrl: data?.resource_url ?? '',
+            batchId: batchData.batch_id ?? '',
+            status: batchData.status ?? '',
+            completed: batchData.completed ?? 0,
+            errors: batchData.errors ?? 0,
+            count: batchData.count ?? 0
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -100,4 +103,5 @@ export let batchCompletedTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

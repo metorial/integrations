@@ -53,18 +53,23 @@ The API exposes proposal sections (content blocks) as a resource that can be lis
 Bidsketch supports webhooks for the following event categories:
 
 ### New Client Created
+
 Triggers when a new client is created. Fires whether the client is created through the API or via the Bidsketch app.
 
 ### Proposal Created
+
 Triggers when a proposal is saved for the first time.
 
 ### Proposal Sent
+
 Triggers when a proposal is sent to a client.
 
 ### Proposal Viewed
+
 Triggers when a proposal is viewed by the client.
 
 ### Proposal Accepted or Declined
+
 Triggers when a proposal is either accepted or declined.
 
 Webhooks do not need to be manually configured in Bidsketch; they are automatically registered via the API.

@@ -9,14 +9,24 @@ export class EgnyteClient {
     this.http = createAxios({
       baseURL: `https://${config.domain}.egnyte.com`,
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
   // ── File System ──────────────────────────────────────────────
 
-  async listFolder(path: string, params?: { listContent?: boolean; allowedLinkTypes?: boolean; count?: number; offset?: number; sortBy?: string; sortDirection?: string }) {
+  async listFolder(
+    path: string,
+    params?: {
+      listContent?: boolean;
+      allowedLinkTypes?: boolean;
+      count?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDirection?: string;
+    }
+  ) {
     let response = await this.http.get(`/pubapi/v1/fs/${encodeFilePath(path)}`, {
       params: {
         list_content: params?.listContent !== false,
@@ -24,8 +34,8 @@ export class EgnyteClient {
         count: params?.count,
         offset: params?.offset,
         sort_by: params?.sortBy,
-        sort_direction: params?.sortDirection,
-      },
+        sort_direction: params?.sortDirection
+      }
     });
     return response.data;
   }
@@ -47,19 +57,24 @@ export class EgnyteClient {
 
   async createFolder(path: string) {
     let response = await this.http.post(`/pubapi/v1/fs/${encodeFilePath(path)}`, {
-      action: 'add_folder',
+      action: 'add_folder'
     });
     return response.data;
   }
 
-  async uploadFile(folderPath: string, fileName: string, content: string | Uint8Array, contentType?: string) {
+  async uploadFile(
+    folderPath: string,
+    fileName: string,
+    content: string | Uint8Array,
+    contentType?: string
+  ) {
     let response = await this.http.post(
       `/pubapi/v1/fs-content/${encodeFilePath(folderPath)}/${encodeURIComponent(fileName)}`,
       content,
       {
         headers: {
-          'Content-Type': contentType || 'application/octet-stream',
-        },
+          'Content-Type': contentType || 'application/octet-stream'
+        }
       }
     );
     return response.data;
@@ -72,19 +87,18 @@ export class EgnyteClient {
     }
     let response = await this.http.get(`/pubapi/v1/fs-content/${encodeFilePath(path)}`, {
       params,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       content: Buffer.from(response.data as ArrayBuffer).toString('base64'),
-      contentType: response.headers?.['content-type'] || 'application/octet-stream',
+      contentType: response.headers?.['content-type'] || 'application/octet-stream'
     };
   }
 
   async copyFileOrFolder(sourcePath: string, destinationPath: string, permissions?: string) {
     let body: Record<string, string> = {
       action: 'copy',
-      destination: destinationPath,
+      destination: destinationPath
     };
     if (permissions) {
       body.permissions = permissions;
@@ -96,7 +110,7 @@ export class EgnyteClient {
   async moveFileOrFolder(sourcePath: string, destinationPath: string, permissions?: string) {
     let body: Record<string, string> = {
       action: 'move',
-      destination: destinationPath,
+      destination: destinationPath
     };
     if (permissions) {
       body.permissions = permissions;
@@ -116,14 +130,14 @@ export class EgnyteClient {
   async lockFile(path: string, lockToken: string) {
     await this.http.post(`/pubapi/v1/fs/${encodeFilePath(path)}`, {
       action: 'lock',
-      lock_token: lockToken,
+      lock_token: lockToken
     });
   }
 
   async unlockFile(path: string, lockToken: string) {
     await this.http.post(`/pubapi/v1/fs/${encodeFilePath(path)}`, {
       action: 'unlock',
-      lock_token: lockToken,
+      lock_token: lockToken
     });
   }
 
@@ -157,7 +171,7 @@ export class EgnyteClient {
       expiry_date: params.expiryDate,
       expiry_clicks: params.expiryClicks,
       add_filename: params.addFilename,
-      password: params.password,
+      password: params.password
     });
     return response.data;
   }
@@ -181,8 +195,8 @@ export class EgnyteClient {
         type: params?.type,
         accessibility: params?.accessibility,
         offset: params?.offset,
-        count: params?.count,
-      },
+        count: params?.count
+      }
     });
     return response.data;
   }
@@ -200,40 +214,44 @@ export class EgnyteClient {
 
   async getPermissions(folderPath: string, params?: { users?: string; groups?: string }) {
     let response = await this.http.get(`/pubapi/v2/perms/${encodeFilePath(folderPath)}`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async setPermissions(folderPath: string, body: {
-    userPerms?: Record<string, string>;
-    groupPerms?: Record<string, string>;
-    inheritsPermissions?: boolean;
-    keepParentPermissions?: boolean;
-  }) {
+  async setPermissions(
+    folderPath: string,
+    body: {
+      userPerms?: Record<string, string>;
+      groupPerms?: Record<string, string>;
+      inheritsPermissions?: boolean;
+      keepParentPermissions?: boolean;
+    }
+  ) {
     let requestBody: Record<string, unknown> = {};
     if (body.userPerms) requestBody.userPerms = body.userPerms;
     if (body.groupPerms) requestBody.groupPerms = body.groupPerms;
-    if (body.inheritsPermissions !== undefined) requestBody.inheritsPermissions = String(body.inheritsPermissions);
-    if (body.keepParentPermissions !== undefined) requestBody.keepParentPermissions = String(body.keepParentPermissions);
+    if (body.inheritsPermissions !== undefined)
+      requestBody.inheritsPermissions = String(body.inheritsPermissions);
+    if (body.keepParentPermissions !== undefined)
+      requestBody.keepParentPermissions = String(body.keepParentPermissions);
 
-    let response = await this.http.post(`/pubapi/v2/perms/${encodeFilePath(folderPath)}`, requestBody);
+    let response = await this.http.post(
+      `/pubapi/v2/perms/${encodeFilePath(folderPath)}`,
+      requestBody
+    );
     return response.data;
   }
 
   // ── Users ────────────────────────────────────────────────────
 
-  async listUsers(params?: {
-    startIndex?: number;
-    count?: number;
-    filter?: string;
-  }) {
+  async listUsers(params?: { startIndex?: number; count?: number; filter?: string }) {
     let response = await this.http.get('/pubapi/v2/users', {
       params: {
         startIndex: params?.startIndex,
         count: params?.count,
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -262,14 +280,14 @@ export class EgnyteClient {
       email: body.email,
       name: {
         familyName: body.familyName,
-        givenName: body.givenName,
+        givenName: body.givenName
       },
       active: body.active !== false,
       sendInvite: body.sendInvite,
       authType: body.authType,
       userType: body.userType,
       idpUserId: body.idpUserId,
-      userPrincipalName: body.userPrincipalName,
+      userPrincipalName: body.userPrincipalName
     });
     return response.data;
   }
@@ -290,8 +308,8 @@ export class EgnyteClient {
       params: {
         startIndex: params?.startIndex,
         count: params?.count,
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -304,12 +322,15 @@ export class EgnyteClient {
   async createGroup(displayName: string, members?: Array<{ value: number }>) {
     let response = await this.http.post('/pubapi/v2/groups', {
       displayName,
-      members,
+      members
     });
     return response.data;
   }
 
-  async updateGroup(groupId: string, body: { displayName?: string; members?: Array<{ value: number }> }) {
+  async updateGroup(
+    groupId: string,
+    body: { displayName?: string; members?: Array<{ value: number }> }
+  ) {
     let response = await this.http.patch(`/pubapi/v2/groups/${groupId}`, body);
     return response.data;
   }
@@ -335,15 +356,18 @@ export class EgnyteClient {
         count: params.count,
         folder: params.folder,
         modified_before: params.modifiedBefore,
-        modified_after: params.modifiedAfter,
-      },
+        modified_after: params.modifiedAfter
+      }
     });
     return response.data;
   }
 
   // ── Audit ────────────────────────────────────────────────────
 
-  async createAuditReport(type: 'logins' | 'files' | 'permissions' | 'users' | 'groups', body: Record<string, unknown>) {
+  async createAuditReport(
+    type: 'logins' | 'files' | 'permissions' | 'users' | 'groups',
+    body: Record<string, unknown>
+  ) {
     let response = await this.http.post(`/pubapi/v1/audit/${type}`, body);
     return response.data;
   }
@@ -356,15 +380,20 @@ export class EgnyteClient {
   // ── Trash ────────────────────────────────────────────────────
 
   async listTrash(folderPath?: string, params?: { offset?: number; count?: number }) {
-    let path = folderPath ? `/pubapi/v1/fs/trash/${encodeFilePath(folderPath)}` : '/pubapi/v1/fs/trash';
+    let path = folderPath
+      ? `/pubapi/v1/fs/trash/${encodeFilePath(folderPath)}`
+      : '/pubapi/v1/fs/trash';
     let response = await this.http.get(path, { params });
     return response.data;
   }
 
   async restoreFromTrash(trashItemPath: string) {
-    let response = await this.http.post(`/pubapi/v1/fs/trash/${encodeFilePath(trashItemPath)}`, {
-      action: 'restore',
-    });
+    let response = await this.http.post(
+      `/pubapi/v1/fs/trash/${encodeFilePath(trashItemPath)}`,
+      {
+        action: 'restore'
+      }
+    );
     return response.data;
   }
 
@@ -381,7 +410,7 @@ export class EgnyteClient {
   async createComment(filePath: string, body: string) {
     let response = await this.http.post('/pubapi/v1/notes', {
       path: filePath,
-      body,
+      body
     });
     return response.data;
   }
@@ -391,8 +420,8 @@ export class EgnyteClient {
       params: {
         file: filePath,
         offset: params?.offset,
-        count: params?.count,
-      },
+        count: params?.count
+      }
     });
     return response.data;
   }
@@ -403,7 +432,11 @@ export class EgnyteClient {
 
   // ── Metadata ─────────────────────────────────────────────────
 
-  async setFileMetadataProperties(groupId: string, namespace: string, properties: Record<string, unknown>) {
+  async setFileMetadataProperties(
+    groupId: string,
+    namespace: string,
+    properties: Record<string, unknown>
+  ) {
     let response = await this.http.put(
       `/pubapi/v1/fs/ids/file/${groupId}/properties/${encodeURIComponent(namespace)}`,
       properties
@@ -411,7 +444,11 @@ export class EgnyteClient {
     return response.data;
   }
 
-  async setFolderMetadataProperties(folderId: string, namespace: string, properties: Record<string, unknown>) {
+  async setFolderMetadataProperties(
+    folderId: string,
+    namespace: string,
+    properties: Record<string, unknown>
+  ) {
     let response = await this.http.put(
       `/pubapi/v1/fs/ids/folder/${folderId}/properties/${encodeURIComponent(namespace)}`,
       properties
@@ -420,7 +457,9 @@ export class EgnyteClient {
   }
 
   async getNamespace(namespace: string) {
-    let response = await this.http.get(`/pubapi/v1/properties/namespace/${encodeURIComponent(namespace)}`);
+    let response = await this.http.get(
+      `/pubapi/v1/properties/namespace/${encodeURIComponent(namespace)}`
+    );
     return response.data;
   }
 
@@ -473,7 +512,7 @@ export class EgnyteClient {
       url: params.url,
       eventType: params.eventType,
       path: params.path,
-      authHeader: params.authHeader,
+      authHeader: params.authHeader
     });
     return response.data;
   }
@@ -503,5 +542,8 @@ export class EgnyteClient {
 // Helper to encode file paths for URL segments while preserving slashes
 let encodeFilePath = (path: string): string => {
   let normalized = path.startsWith('/') ? path.slice(1) : path;
-  return normalized.split('/').map(segment => encodeURIComponent(segment)).join('/');
+  return normalized
+    .split('/')
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
 };

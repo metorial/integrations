@@ -41,7 +41,5 @@ export let provider = Slate.create({
     verifySecurityCodeTool,
     urlInfoTool
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

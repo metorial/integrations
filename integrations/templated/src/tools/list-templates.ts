@@ -18,32 +18,36 @@ let templateSchema = z.object({
   pages: z.any().optional()
 });
 
-export let listTemplates = SlateTool.create(
-  spec,
-  {
-    name: 'List Templates',
-    key: 'list_templates',
-    description: `Search and list templates in your account. Supports filtering by name, dimensions, tags, and external ID. Optionally include layer and page data in the response.`,
-    tags: {
-      readOnly: true
-    }
+export let listTemplates = SlateTool.create(spec, {
+  name: 'List Templates',
+  key: 'list_templates',
+  description: `Search and list templates in your account. Supports filtering by name, dimensions, tags, and external ID. Optionally include layer and page data in the response.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search templates by name'),
-    page: z.number().optional().describe('Page number for pagination (starts at 0)'),
-    limit: z.number().optional().describe('Results per page. Default: 25'),
-    width: z.number().optional().describe('Filter by template width'),
-    height: z.number().optional().describe('Filter by template height'),
-    tags: z.string().optional().describe('Comma-separated tags to filter by'),
-    externalId: z.string().optional().describe('Filter by external ID'),
-    includeLayers: z.boolean().optional().describe('Include layer data in response'),
-    includePages: z.boolean().optional().describe('Include page and layer information in response')
-  }))
-  .output(z.object({
-    templates: z.array(templateSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search templates by name'),
+      page: z.number().optional().describe('Page number for pagination (starts at 0)'),
+      limit: z.number().optional().describe('Results per page. Default: 25'),
+      width: z.number().optional().describe('Filter by template width'),
+      height: z.number().optional().describe('Filter by template height'),
+      tags: z.string().optional().describe('Comma-separated tags to filter by'),
+      externalId: z.string().optional().describe('Filter by external ID'),
+      includeLayers: z.boolean().optional().describe('Include layer data in response'),
+      includePages: z
+        .boolean()
+        .optional()
+        .describe('Include page and layer information in response')
+    })
+  )
+  .output(
+    z.object({
+      templates: z.array(templateSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let templates = await client.listTemplates({
@@ -79,4 +83,5 @@ export let listTemplates = SlateTool.create(
       },
       message: `Found **${items.length}** template(s).`
     };
-  }).build();
+  })
+  .build();

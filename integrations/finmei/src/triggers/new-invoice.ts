@@ -3,38 +3,40 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newInvoice = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Invoice',
-    key: 'new_invoice',
-    description: 'Triggers when a new invoice is created in Finmei. Polls the invoices list and detects newly added invoices.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    code: z.string().optional().describe('Invoice code/number'),
-    status: z.string().optional().describe('Invoice status'),
-    currency: z.string().optional().describe('Currency code'),
-    amountDue: z.number().optional().describe('Amount due'),
-    issueDate: z.string().optional().describe('Issue date'),
-    dueDate: z.string().optional().describe('Due date'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    code: z.string().optional().describe('Invoice code/number'),
-    status: z.string().optional().describe('Invoice status'),
-    currency: z.string().optional().describe('Currency code'),
-    amountDue: z.number().optional().describe('Amount due on the invoice'),
-    issueDate: z.string().optional().describe('Invoice issue date'),
-    dueDate: z.string().optional().describe('Invoice due date'),
-  }))
+export let newInvoice = SlateTrigger.create(spec, {
+  name: 'New Invoice',
+  key: 'new_invoice',
+  description:
+    'Triggers when a new invoice is created in Finmei. Polls the invoices list and detects newly added invoices.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      code: z.string().optional().describe('Invoice code/number'),
+      status: z.string().optional().describe('Invoice status'),
+      currency: z.string().optional().describe('Currency code'),
+      amountDue: z.number().optional().describe('Amount due'),
+      issueDate: z.string().optional().describe('Issue date'),
+      dueDate: z.string().optional().describe('Due date')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      code: z.string().optional().describe('Invoice code/number'),
+      status: z.string().optional().describe('Invoice status'),
+      currency: z.string().optional().describe('Currency code'),
+      amountDue: z.number().optional().describe('Amount due on the invoice'),
+      issueDate: z.string().optional().describe('Invoice issue date'),
+      dueDate: z.string().optional().describe('Invoice due date')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FinmeiClient(ctx.auth.token);
 
       let state = ctx.state as { knownInvoiceIds?: string[] } | null;
@@ -68,7 +70,7 @@ export let newInvoice = SlateTrigger.create(
             currency: inv.currency,
             amountDue: inv.amount_due ?? inv.total,
             issueDate: inv.issue_date ?? inv.date,
-            dueDate: inv.due_date,
+            dueDate: inv.due_date
           });
         }
       }
@@ -76,12 +78,12 @@ export let newInvoice = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownInvoiceIds: allIds,
-        },
+          knownInvoiceIds: allIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'invoice.created',
         id: `invoice-${ctx.input.invoiceId}`,
@@ -92,9 +94,9 @@ export let newInvoice = SlateTrigger.create(
           currency: ctx.input.currency,
           amountDue: ctx.input.amountDue,
           issueDate: ctx.input.issueDate,
-          dueDate: ctx.input.dueDate,
-        },
+          dueDate: ctx.input.dueDate
+        }
       };
-    },
+    }
   })
   .build();

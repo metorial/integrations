@@ -97,10 +97,13 @@ export class Client {
     return res.data;
   }
 
-  async exportInsightPage(scanId: string, params?: {
-    format?: string;
-    filters?: Record<string, any>;
-  }) {
+  async exportInsightPage(
+    scanId: string,
+    params?: {
+      format?: string;
+      filters?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.post(`/scans/${scanId}/export-insights`, params);
     return res.data;
   }
@@ -205,10 +208,7 @@ export class Client {
 
   // ── Departments ────────────────────────────────────────
 
-  async createDepartment(params: {
-    name: string;
-    translations?: Record<string, string>;
-  }) {
+  async createDepartment(params: { name: string; translations?: Record<string, string> }) {
     let res = await this.axios.post('/departments', params);
     return res.data;
   }
@@ -252,10 +252,7 @@ export class Client {
 
   // ── Domains ────────────────────────────────────────────
 
-  async createDomain(params: {
-    name: string;
-    frequency: string;
-  }) {
+  async createDomain(params: { name: string; frequency: string }) {
     let res = await this.axios.post('/domains', params);
     return res.data;
   }
@@ -355,10 +352,7 @@ export class Client {
     return res.data;
   }
 
-  async exportProcessingActivities(params: {
-    language: string;
-    exportTypes: string[];
-  }) {
+  async exportProcessingActivities(params: { language: string; exportTypes: string[] }) {
     let res = await this.axios.post('/processing-activities/export', params);
     return res.data;
   }
@@ -524,16 +518,15 @@ export class Client {
 
   // ── Infotype Categories ────────────────────────────────
 
-  async createInfotypeCategory(params: {
-    categoryLabel: string;
-    infotypes: string[];
-  }) {
+  async createInfotypeCategory(params: { categoryLabel: string; infotypes: string[] }) {
     let res = await this.axios.post('/infotype-categories', params);
     return res.data;
   }
 
   async getInfotypeCategory(categoryLabel: string) {
-    let res = await this.axios.get(`/infotype-categories/${encodeURIComponent(categoryLabel)}`);
+    let res = await this.axios.get(
+      `/infotype-categories/${encodeURIComponent(categoryLabel)}`
+    );
     return res.data;
   }
 
@@ -548,7 +541,9 @@ export class Client {
   }
 
   async deleteInfotypeCategory(categoryLabel: string) {
-    let res = await this.axios.delete(`/infotype-categories/${encodeURIComponent(categoryLabel)}`);
+    let res = await this.axios.delete(
+      `/infotype-categories/${encodeURIComponent(categoryLabel)}`
+    );
     return res.data;
   }
 
@@ -596,9 +591,7 @@ export class Client {
 
   // ── Dashboard Reports ──────────────────────────────────
 
-  async downloadDashboardReport(params: {
-    reportType: string;
-  }) {
+  async downloadDashboardReport(params: { reportType: string }) {
     let res = await this.axios.post('/dashboard-reports/download', params);
     return res.data;
   }

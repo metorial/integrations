@@ -2,42 +2,44 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let inboundEmail = SlateTrigger.create(
-  spec,
-  {
-    name: 'Inbound Email',
-    key: 'inbound_email',
-    description: 'Receives parsed inbound emails via the SendGrid Inbound Parse Webhook. Requires MX record configuration on your domain pointing to SendGrid.',
-  }
-)
-  .input(z.object({
-    from: z.string().describe('Sender email address'),
-    to: z.string().describe('Recipient email address(es)'),
-    cc: z.string().optional().describe('CC addresses'),
-    subject: z.string().optional().describe('Email subject'),
-    text: z.string().optional().describe('Plain text email body'),
-    html: z.string().optional().describe('HTML email body'),
-    senderIp: z.string().optional().describe('IP address of the sending server'),
-    envelope: z.string().optional().describe('JSON string of the SMTP envelope'),
-    headers: z.string().optional().describe('Raw email headers'),
-    attachments: z.number().optional().describe('Number of attachments'),
-    spamScore: z.string().optional().describe('Spam score from SpamAssassin'),
-    spamReport: z.string().optional().describe('Full spam report'),
-    charsets: z.string().optional().describe('JSON string of character set encodings'),
-  }))
-  .output(z.object({
-    fromAddress: z.string().describe('Sender email address'),
-    toAddress: z.string().describe('Recipient email address(es)'),
-    ccAddress: z.string().optional().describe('CC addresses'),
-    subject: z.string().optional().describe('Email subject'),
-    textBody: z.string().optional().describe('Plain text email body'),
-    htmlBody: z.string().optional().describe('HTML email body'),
-    senderIp: z.string().optional().describe('Sender IP address'),
-    attachmentCount: z.number().optional().describe('Number of attachments'),
-    spamScore: z.string().optional().describe('SpamAssassin score'),
-  }))
+export let inboundEmail = SlateTrigger.create(spec, {
+  name: 'Inbound Email',
+  key: 'inbound_email',
+  description:
+    'Receives parsed inbound emails via the SendGrid Inbound Parse Webhook. Requires MX record configuration on your domain pointing to SendGrid.'
+})
+  .input(
+    z.object({
+      from: z.string().describe('Sender email address'),
+      to: z.string().describe('Recipient email address(es)'),
+      cc: z.string().optional().describe('CC addresses'),
+      subject: z.string().optional().describe('Email subject'),
+      text: z.string().optional().describe('Plain text email body'),
+      html: z.string().optional().describe('HTML email body'),
+      senderIp: z.string().optional().describe('IP address of the sending server'),
+      envelope: z.string().optional().describe('JSON string of the SMTP envelope'),
+      headers: z.string().optional().describe('Raw email headers'),
+      attachments: z.number().optional().describe('Number of attachments'),
+      spamScore: z.string().optional().describe('Spam score from SpamAssassin'),
+      spamReport: z.string().optional().describe('Full spam report'),
+      charsets: z.string().optional().describe('JSON string of character set encodings')
+    })
+  )
+  .output(
+    z.object({
+      fromAddress: z.string().describe('Sender email address'),
+      toAddress: z.string().describe('Recipient email address(es)'),
+      ccAddress: z.string().optional().describe('CC addresses'),
+      subject: z.string().optional().describe('Email subject'),
+      textBody: z.string().optional().describe('Plain text email body'),
+      htmlBody: z.string().optional().describe('HTML email body'),
+      senderIp: z.string().optional().describe('Sender IP address'),
+      attachmentCount: z.number().optional().describe('Number of attachments'),
+      spamScore: z.string().optional().describe('SpamAssassin score')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // Inbound Parse sends form-encoded data
       let contentType = ctx.request.headers.get('content-type') || '';
       let data: any;
@@ -68,25 +70,27 @@ export let inboundEmail = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          from: data.from || '',
-          to: data.to || '',
-          cc: data.cc,
-          subject: data.subject,
-          text: data.text,
-          html: data.html,
-          senderIp: data.sender_ip,
-          envelope: data.envelope,
-          headers: data.headers,
-          attachments: data.attachments ? parseInt(data.attachments, 10) : 0,
-          spamScore: data.spam_score,
-          spamReport: data.spam_report,
-          charsets: data.charsets,
-        }],
+        inputs: [
+          {
+            from: data.from || '',
+            to: data.to || '',
+            cc: data.cc,
+            subject: data.subject,
+            text: data.text,
+            html: data.html,
+            senderIp: data.sender_ip,
+            envelope: data.envelope,
+            headers: data.headers,
+            attachments: data.attachments ? parseInt(data.attachments, 10) : 0,
+            spamScore: data.spam_score,
+            spamReport: data.spam_report,
+            charsets: data.charsets
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       // Try to extract a unique message ID
       let messageId = '';
       try {
@@ -114,8 +118,8 @@ export let inboundEmail = SlateTrigger.create(
           htmlBody: ctx.input.html,
           senderIp: ctx.input.senderIp,
           attachmentCount: ctx.input.attachments,
-          spamScore: ctx.input.spamScore,
-        },
+          spamScore: ctx.input.spamScore
+        }
       };
-    },
+    }
   });

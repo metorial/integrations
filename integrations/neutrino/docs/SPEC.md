@@ -22,18 +22,23 @@ There is no OAuth or token-based authentication. The user ID and API key are obt
 ## Features
 
 ### Data Validation & Cleaning
+
 Parse, validate, and clean email addresses and phone numbers. Detect disposable or invalid emails and identify phone number types, carriers, and country of origin. Also includes a bad word filter for content moderation with configurable strictness levels ("strict" for children's content, "obscene" for adult audiences) and a user agent parser.
 
 ### Unit & Currency Conversion
+
 Convert between currencies and measurement units using a single conversion tool.
 
 ### Telephony & Verification
+
 Send security codes via SMS or automated phone calls for two-factor authentication. Verify security codes, send free-form SMS messages, and play back audio messages to phone numbers. All telephony APIs include a "limit" option to restrict the number of calls or SMS to a particular number, useful for abuse, fraud, and cost controls. HLR Lookup connects to the global mobile network to check mobile device status and carrier details.
 
 ### Geolocation
+
 Geocode addresses to coordinates and reverse geocode coordinates to addresses. Look up geolocation and ISP information for IP addresses, including reverse DNS.
 
 ### Security & Networking
+
 - **IP Blocklist**: Detect potentially malicious or dangerous IP addresses against known blocklists.
 - **Host Reputation**: Check the reputation of an IP address, domain name or URL against a comprehensive list of blacklists and blocklists.
 - **Domain Lookup**: Retrieve DNS and WHOIS information for domains.
@@ -41,15 +46,18 @@ Geocode addresses to coordinates and reverse geocode coordinates to addresses. L
 - **IP Probe**: Detect ISPs, hosting providers, and VPN/proxy usage for a given IP.
 
 ### E-Commerce
+
 Perform BIN (Bank Identification Number) or IIN (Issuer Identification Number) lookups to identify card issuers, types, and countries. Download the full BIN database for local use.
 
 ### Imaging
+
 - **HTML Render**: Render HTML content to PDF, JPG or PNG based on the latest Chromium browser engine. Fully supports HTML5, CSS3, SVG and JavaScript with configurable rendering options.
 - **Image Resize**: Resize images and output as JPEG or PNG.
 - **Image Watermark**: Overlay one image onto another with configurable position and opacity.
 - **QR Code**: Generate QR codes as PNG images with customizable size, foreground, and background colors.
 
 ### Web Tools
+
 - **Browser Bot**: Programmatically load and interact with web pages.
 - **HTML Clean**: Sanitize and clean HTML content.
 - **URL Info**: Retrieve metadata and information about a URL including page title and language.

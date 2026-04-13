@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let onCallChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'On-Call Change',
-    key: 'on_call_change',
-    description: '[Polling fallback] Fires when the on-call user changes for any team. Polls the current on-call roster and detects changes.',
-  }
-)
-  .input(z.object({
-    teamName: z.string().describe('Name of the team where on-call changed'),
-    teamSlug: z.string().describe('Slug of the team'),
-    previousOnCallUsers: z.array(z.string()).describe('Previously on-call users'),
-    currentOnCallUsers: z.array(z.string()).describe('Currently on-call users'),
-  }))
-  .output(z.object({
-    teamName: z.string().describe('Team name'),
-    teamSlug: z.string().describe('Team slug'),
-    previousOnCallUsers: z.array(z.string()).describe('Users who were previously on-call'),
-    currentOnCallUsers: z.array(z.string()).describe('Users who are now on-call'),
-  }))
+export let onCallChange = SlateTrigger.create(spec, {
+  name: 'On-Call Change',
+  key: 'on_call_change',
+  description:
+    '[Polling fallback] Fires when the on-call user changes for any team. Polls the current on-call roster and detects changes.'
+})
+  .input(
+    z.object({
+      teamName: z.string().describe('Name of the team where on-call changed'),
+      teamSlug: z.string().describe('Slug of the team'),
+      previousOnCallUsers: z.array(z.string()).describe('Previously on-call users'),
+      currentOnCallUsers: z.array(z.string()).describe('Currently on-call users')
+    })
+  )
+  .output(
+    z.object({
+      teamName: z.string().describe('Team name'),
+      teamSlug: z.string().describe('Team slug'),
+      previousOnCallUsers: z.array(z.string()).describe('Users who were previously on-call'),
+      currentOnCallUsers: z.array(z.string()).describe('Users who are now on-call')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         apiId: ctx.auth.apiId,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let data = await client.getCurrentOnCall();
@@ -47,8 +49,8 @@ export let onCallChange = SlateTrigger.create(
         let teamName = team?.team?.name ?? teamSlug;
         let onCallUsers: string[] = [];
 
-        for (let oncall of (team?.oncallNow ?? [])) {
-          for (let user of (oncall?.users ?? [])) {
+        for (let oncall of team?.oncallNow ?? []) {
+          for (let user of oncall?.users ?? []) {
             let username = user?.onCalluser?.username ?? '';
             if (username) onCallUsers.push(username);
           }
@@ -67,7 +69,7 @@ export let onCallChange = SlateTrigger.create(
             teamName,
             teamSlug,
             previousOnCallUsers: previousUsers,
-            currentOnCallUsers: onCallUsers,
+            currentOnCallUsers: onCallUsers
           });
         }
       }
@@ -75,12 +77,12 @@ export let onCallChange = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          onCallByTeam: currentState,
-        },
+          onCallByTeam: currentState
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'on_call.changed',
         id: `${ctx.input.teamSlug}-${ctx.input.currentOnCallUsers.join(',')}-${Date.now()}`,
@@ -88,8 +90,9 @@ export let onCallChange = SlateTrigger.create(
           teamName: ctx.input.teamName,
           teamSlug: ctx.input.teamSlug,
           previousOnCallUsers: ctx.input.previousOnCallUsers,
-          currentOnCallUsers: ctx.input.currentOnCallUsers,
-        },
+          currentOnCallUsers: ctx.input.currentOnCallUsers
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

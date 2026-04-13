@@ -19,6 +19,7 @@ To gain access to the API, log into your Reply account, navigate to `Settings`, 
 The API key is passed in the `X-API-Key` header with each request.
 
 Example:
+
 ```
 X-API-Key: AKp2BbuyfS-ugPMkBmd3sg2
 ```

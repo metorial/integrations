@@ -145,7 +145,10 @@ export class Client {
     return response.data;
   }
 
-  async listTemplates(folder?: string, includeSubFolders?: boolean): Promise<ListTemplatesResponse> {
+  async listTemplates(
+    folder?: string,
+    includeSubFolders?: boolean
+  ): Promise<ListTemplatesResponse> {
     let body: Record<string, any> = { accessKey: this.accessKey };
     if (folder) body.folder = folder;
     if (includeSubFolders !== undefined) body.includeSubFolders = includeSubFolders;
@@ -169,7 +172,10 @@ export class Client {
     return response.data;
   }
 
-  async getSampleData(templateName: string, sampleDataFormat?: string): Promise<SampleDataResponse> {
+  async getSampleData(
+    templateName: string,
+    sampleDataFormat?: string
+  ): Promise<SampleDataResponse> {
     let body: Record<string, any> = { accessKey: this.accessKey, templateName };
     if (sampleDataFormat) body.sampleDataFormat = sampleDataFormat;
     let response = await this.axios.post('/getSampleData', body);
@@ -240,7 +246,12 @@ export class Client {
     return response.data;
   }
 
-  async listImages(folderName?: string): Promise<{ succeeded: boolean; images?: Array<{ name: string; sizeBytes?: number; uploadedTime?: number }> }> {
+  async listImages(
+    folderName?: string
+  ): Promise<{
+    succeeded: boolean;
+    images?: Array<{ name: string; sizeBytes?: number; uploadedTime?: number }>;
+  }> {
     let body: Record<string, any> = { accessKey: this.accessKey };
     if (folderName) body.folderName = folderName;
     let response = await this.axios.post('/listImages', body);

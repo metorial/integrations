@@ -19,6 +19,7 @@ All requests are sent as POST requests to `https://api.baselinker.com/connector.
 Authorization with the HTTP header `X-BLToken` is recommended. Pass the token as the value of this header. The request body contains two POST fields: `method` (the API method name) and `parameters` (a JSON-encoded string of arguments).
 
 **Example:**
+
 ```
 curl 'https://api.baselinker.com/connector.php' \
   -H 'X-BLToken: YOUR-API-TOKEN' \
@@ -30,30 +31,40 @@ There are no OAuth flows, scopes, or additional credentials required. A single A
 ## Features
 
 ### Product Catalog
+
 Manage the BaseLinker product catalog (inventory). Create, update, and retrieve products with detailed data including variants, images, prices, descriptions, and custom attributes. Manage product inventories (warehouses), categories, manufacturers, and product-level stock quantities and prices. Supports linking products across multiple sales channels.
 
 ### Inventory Documents
+
 Manage inventory documents (warehouse documents) for tracking stock movements such as goods received, internal transfers, and stock adjustments within BaseLinker warehouses.
 
 ### Inventory Purchase Orders
+
 Create and manage purchase orders in BaseLinker storage. Orders are created as drafts by default. Track procurement from suppliers including order items, quantities, and fulfillment status.
 
 ### Inventory Suppliers and Payers
+
 Manage inventory suppliers and inventory payers associated with purchase orders and inventory documents.
 
 ### External Storages
+
 Interact with external storages (connected shops and warehouses). Retrieve product lists, quantities, and prices from external platforms connected to BaseLinker. Due to different performance of external warehouses, different integration methods and their specific requirements, the response standard may differ from the one described in the documentation.
 
 ### Orders
+
 Manage orders across various online sales channels. Create new orders, retrieve order lists (filtered by date, status, ID, email, or phone), update order fields and statuses, manage order products (add/remove items), add payments, set invoice data, and manage order-level custom fields. Supports fetching order sources and configurable order status workflows.
+
 - Orders can be filtered to include or exclude unconfirmed orders.
 - Supports adding receipts and invoices to orders.
 
 ### Order Returns
+
 Manage order returns for processing customer return requests and refunds related to existing orders.
 
 ### Courier Shipments
+
 Manage courier services including listing available couriers, retrieving courier service options, creating packages, getting shipping labels, and requesting parcel pickups. Supports tracking packages associated with orders.
+
 - Courier availability depends on which courier integrations are active on the BaseLinker account.
 
 ## Events

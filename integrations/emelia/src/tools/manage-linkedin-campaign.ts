@@ -3,31 +3,40 @@ import { EmeliaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLinkedInCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Manage LinkedIn Campaign',
-    key: 'manage_linkedin_campaign',
-    description: `Create, retrieve, list, start, pause, or delete a LinkedIn outreach campaign.
+export let manageLinkedInCampaign = SlateTool.create(spec, {
+  name: 'Manage LinkedIn Campaign',
+  key: 'manage_linkedin_campaign',
+  description: `Create, retrieve, list, start, pause, or delete a LinkedIn outreach campaign.
 - **list**: List all LinkedIn campaigns.
 - **create**: Create a new LinkedIn campaign.
 - **get**: Get details of a specific LinkedIn campaign.
 - **start**: Start a LinkedIn campaign.
 - **pause**: Pause a running LinkedIn campaign.
-- **delete**: Delete a LinkedIn campaign.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'get', 'start', 'pause', 'delete']).describe('Operation to perform'),
-    campaignId: z.string().optional().describe('Campaign ID (required for get, start, pause, delete)'),
-    name: z.string().optional().describe('Campaign name (required for create)'),
-  }))
-  .output(z.object({
-    campaign: z.record(z.string(), z.unknown()).optional().describe('Campaign details'),
-    campaigns: z.array(z.record(z.string(), z.unknown())).optional().describe('List of campaigns (for list)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+- **delete**: Delete a LinkedIn campaign.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'get', 'start', 'pause', 'delete'])
+        .describe('Operation to perform'),
+      campaignId: z
+        .string()
+        .optional()
+        .describe('Campaign ID (required for get, start, pause, delete)'),
+      name: z.string().optional().describe('Campaign name (required for create)')
+    })
+  )
+  .output(
+    z.object({
+      campaign: z.record(z.string(), z.unknown()).optional().describe('Campaign details'),
+      campaigns: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of campaigns (for list)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EmeliaClient(ctx.auth.token);
     let { action, campaignId, name } = ctx.input;
 
@@ -36,7 +45,7 @@ export let manageLinkedInCampaign = SlateTool.create(
       let campaignList = Array.isArray(campaigns) ? campaigns : [];
       return {
         output: { campaigns: campaignList, success: true },
-        message: `Retrieved **${campaignList.length}** LinkedIn campaign(s).`,
+        message: `Retrieved **${campaignList.length}** LinkedIn campaign(s).`
       };
     }
 
@@ -45,7 +54,7 @@ export let manageLinkedInCampaign = SlateTool.create(
       let campaign = await client.createLinkedInCampaign({ name });
       return {
         output: { campaign, success: true },
-        message: `Created LinkedIn campaign **${name}**.`,
+        message: `Created LinkedIn campaign **${name}**.`
       };
     }
 
@@ -55,7 +64,7 @@ export let manageLinkedInCampaign = SlateTool.create(
       let campaign = await client.getLinkedInCampaign(campaignId);
       return {
         output: { campaign, success: true },
-        message: `Retrieved LinkedIn campaign details.`,
+        message: `Retrieved LinkedIn campaign details.`
       };
     }
 
@@ -63,7 +72,7 @@ export let manageLinkedInCampaign = SlateTool.create(
       let campaign = await client.startLinkedInCampaign(campaignId);
       return {
         output: { campaign, success: true },
-        message: `Started LinkedIn campaign **${campaignId}**.`,
+        message: `Started LinkedIn campaign **${campaignId}**.`
       };
     }
 
@@ -71,7 +80,7 @@ export let manageLinkedInCampaign = SlateTool.create(
       let campaign = await client.pauseLinkedInCampaign(campaignId);
       return {
         output: { campaign, success: true },
-        message: `Paused LinkedIn campaign **${campaignId}**.`,
+        message: `Paused LinkedIn campaign **${campaignId}**.`
       };
     }
 
@@ -79,7 +88,7 @@ export let manageLinkedInCampaign = SlateTool.create(
       await client.deleteLinkedInCampaign(campaignId);
       return {
         output: { success: true },
-        message: `Deleted LinkedIn campaign **${campaignId}**.`,
+        message: `Deleted LinkedIn campaign **${campaignId}**.`
       };
     }
 

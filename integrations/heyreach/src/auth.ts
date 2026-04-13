@@ -2,23 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('HeyReach API key. Found in Integrations > API in your HeyReach account.'),
+      apiKey: z
+        .string()
+        .describe('HeyReach API key. Found in Integrations > API in your HeyReach account.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -26,8 +30,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.heyreach.io/api/public',
         headers: {
-          'X-API-KEY': ctx.output.token,
-        },
+          'X-API-KEY': ctx.output.token
+        }
       });
 
       let response = await http.get('/auth/CheckApiKey');
@@ -36,8 +40,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: 'heyreach-user',
           name: 'HeyReach Account',
-          verified: response.data === true || response.data?.data === true,
-        },
+          verified: response.data === true || response.data?.data === true
+        }
       };
-    },
+    }
   });

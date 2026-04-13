@@ -3,39 +3,46 @@ import { RedditAdsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCustomAudience = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Custom Audience',
-    key: 'manage_custom_audience',
-    description: `Create a new custom audience or update an existing one. Custom audiences can be customer lists (email or MAID), website retargeting, lookalike, or engagement retargeting audiences. Use this to configure audience metadata; use the "Manage Audience Users" tool to add or remove users.`,
-    instructions: [
-      'To create, omit audienceId. To update, provide the audienceId.',
-      'Audience types: CUSTOMER_LIST, WEBSITE, LOOKALIKE, ENGAGEMENT.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageCustomAudience = SlateTool.create(spec, {
+  name: 'Manage Custom Audience',
+  key: 'manage_custom_audience',
+  description: `Create a new custom audience or update an existing one. Custom audiences can be customer lists (email or MAID), website retargeting, lookalike, or engagement retargeting audiences. Use this to configure audience metadata; use the "Manage Audience Users" tool to add or remove users.`,
+  instructions: [
+    'To create, omit audienceId. To update, provide the audienceId.',
+    'Audience types: CUSTOMER_LIST, WEBSITE, LOOKALIKE, ENGAGEMENT.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    audienceId: z.string().optional().describe('Audience ID to update; omit to create a new audience'),
-    name: z.string().optional().describe('Audience name'),
-    audienceType: z.enum(['CUSTOMER_LIST', 'WEBSITE', 'LOOKALIKE', 'ENGAGEMENT']).optional().describe('Type of custom audience'),
-    description: z.string().optional().describe('Audience description'),
-  }))
-  .output(z.object({
-    audienceId: z.string().optional(),
-    name: z.string().optional(),
-    audienceType: z.string().optional(),
-    approximateSize: z.number().optional(),
-    status: z.string().optional(),
-    raw: z.any().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      audienceId: z
+        .string()
+        .optional()
+        .describe('Audience ID to update; omit to create a new audience'),
+      name: z.string().optional().describe('Audience name'),
+      audienceType: z
+        .enum(['CUSTOMER_LIST', 'WEBSITE', 'LOOKALIKE', 'ENGAGEMENT'])
+        .optional()
+        .describe('Type of custom audience'),
+      description: z.string().optional().describe('Audience description')
+    })
+  )
+  .output(
+    z.object({
+      audienceId: z.string().optional(),
+      name: z.string().optional(),
+      audienceType: z.string().optional(),
+      approximateSize: z.number().optional(),
+      status: z.string().optional(),
+      raw: z.any().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedditAdsClient({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     let payload: Record<string, any> = {};
@@ -61,9 +68,9 @@ export let manageCustomAudience = SlateTool.create(
         audienceType: result.type,
         approximateSize: result.approximate_size || result.size,
         status: result.status,
-        raw: result,
+        raw: result
       },
-      message: `Custom audience **${result.name || ctx.input.name}** ${action} successfully.`,
+      message: `Custom audience **${result.name || ctx.input.name}** ${action} successfully.`
     };
   })
   .build();

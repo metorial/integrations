@@ -3,55 +3,56 @@ import { SuperchatClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let noteEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Note Events',
-    key: 'note_events',
-    description: 'Triggered when an internal note is added to a conversation.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    noteId: z.string().describe('Note ID'),
-    content: z.string().optional().describe('Note content'),
-    authorId: z.string().optional().describe('Author user ID'),
-    authorName: z.string().optional().describe('Author display name'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
-  .output(z.object({
-    noteId: z.string().describe('Note ID'),
-    content: z.string().optional().describe('Note content'),
-    authorId: z.string().optional().describe('Author user ID'),
-    authorName: z.string().optional().describe('Author display name'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let noteEvents = SlateTrigger.create(spec, {
+  name: 'Note Events',
+  key: 'note_events',
+  description: 'Triggered when an internal note is added to a conversation.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      noteId: z.string().describe('Note ID'),
+      content: z.string().optional().describe('Note content'),
+      authorId: z.string().optional().describe('Author user ID'),
+      authorName: z.string().optional().describe('Author display name'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      noteId: z.string().describe('Note ID'),
+      content: z.string().optional().describe('Note content'),
+      authorId: z.string().optional().describe('Author user ID'),
+      authorName: z.string().optional().describe('Author display name'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new SuperchatClient({ token: ctx.auth.token });
 
       let webhook = await client.createWebhook(ctx.input.webhookBaseUrl, [
-        { type: 'note_created' },
+        { type: 'note_created' }
       ]);
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new SuperchatClient({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let note = data.note || data.payload?.note || {};
       let author = note.author || {};
@@ -66,13 +67,13 @@ export let noteEvents = SlateTrigger.create(
             authorName: author.name,
             conversationId: note.conversation_id,
             createdAt: note.created_at,
-            updatedAt: note.updated_at,
-          },
-        ],
+            updatedAt: note.updated_at
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'note.created',
         id: ctx.input.eventId,
@@ -83,9 +84,9 @@ export let noteEvents = SlateTrigger.create(
           authorName: ctx.input.authorName,
           conversationId: ctx.input.conversationId,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

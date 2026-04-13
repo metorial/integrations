@@ -20,13 +20,9 @@ import {
   listAppeals,
   getAppeal,
   listLists,
-  getListResults,
+  getListResults
 } from './tools';
-import {
-  constituentEvents,
-  giftEvents,
-  actionEvents,
-} from './triggers';
+import { constituentEvents, giftEvents, actionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -50,11 +46,7 @@ export let provider = Slate.create({
     listAppeals,
     getAppeal,
     listLists,
-    getListResults,
+    getListResults
   ],
-  triggers: [
-    constituentEvents,
-    giftEvents,
-    actionEvents,
-  ],
+  triggers: [constituentEvents, giftEvents, actionEvents]
 });

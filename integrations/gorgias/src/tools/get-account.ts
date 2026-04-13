@@ -3,28 +3,27 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account',
-    key: 'get_account',
-    description: `Retrieve account-level information and settings for the Gorgias helpdesk, including domain, plan, and business configuration.`,
-    tags: {
-      readOnly: true
-    }
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account',
+  key: 'get_account',
+  description: `Retrieve account-level information and settings for the Gorgias helpdesk, including domain, plan, and business configuration.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accountId: z.number().nullable().describe('Account ID'),
-    domain: z.string().nullable().describe('Account domain'),
-    name: z.string().nullable().describe('Company/account name'),
-    timezone: z.string().nullable().describe('Account timezone'),
-    language: z.string().nullable().describe('Default language'),
-    plan: z.string().nullable().describe('Current subscription plan'),
-    createdDatetime: z.string().nullable().describe('When the account was created')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountId: z.number().nullable().describe('Account ID'),
+      domain: z.string().nullable().describe('Account domain'),
+      name: z.string().nullable().describe('Company/account name'),
+      timezone: z.string().nullable().describe('Account timezone'),
+      language: z.string().nullable().describe('Default language'),
+      plan: z.string().nullable().describe('Current subscription plan'),
+      createdDatetime: z.string().nullable().describe('When the account was created')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let account = await client.getAccount();
 
@@ -40,4 +39,5 @@ export let getAccount = SlateTool.create(
       },
       message: `Retrieved account info for **${account.name || account.domain || 'Unknown'}**.`
     };
-  }).build();
+  })
+  .build();

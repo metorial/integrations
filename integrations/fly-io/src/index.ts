@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listApps,
@@ -20,13 +19,9 @@ import {
   manageVolume,
   manageSecrets,
   manageCertificates,
-  requestOidcToken,
+  requestOidcToken
 } from './tools';
-import {
-  machineStateChanged,
-  appMachinesChanged,
-  inboundWebhook,
-} from './triggers';
+import { machineStateChanged, appMachinesChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,11 +44,7 @@ export let provider = Slate.create({
     manageVolume,
     manageSecrets,
     manageCertificates,
-    requestOidcToken,
+    requestOidcToken
   ],
-  triggers: [
-    inboundWebhook,
-    machineStateChanged,
-    appMachinesChanged,
-  ],
+  triggers: [inboundWebhook, machineStateChanged, appMachinesChanged]
 });

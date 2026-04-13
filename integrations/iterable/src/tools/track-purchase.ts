@@ -13,37 +13,50 @@ let commerceItemSchema = z.object({
   categories: z.array(z.string()).optional().describe('Item categories'),
   imageUrl: z.string().optional().describe('URL of the item image'),
   url: z.string().optional().describe('URL of the item page'),
-  itemFields: z.record(z.string(), z.any()).optional().describe('Additional custom fields for this item')
+  itemFields: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Additional custom fields for this item')
 });
 
-export let trackPurchase = SlateTool.create(
-  spec,
-  {
-    name: 'Track Purchase',
-    key: 'track_purchase',
-    description: `Records a purchase event for a user in Iterable. Tracks commerce items with prices, quantities, and custom metadata. Unlocks commerce-specific campaign metrics and segmentation.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let trackPurchase = SlateTool.create(spec, {
+  name: 'Track Purchase',
+  key: 'track_purchase',
+  description: `Records a purchase event for a user in Iterable. Tracks commerce items with prices, quantities, and custom metadata. Unlocks commerce-specific campaign metrics and segmentation.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Email of the purchasing user'),
-    userId: z.string().optional().describe('User ID of the purchasing user'),
-    items: z.array(commerceItemSchema).describe('List of purchased items'),
-    total: z.number().describe('Total purchase amount'),
-    campaignId: z.number().optional().describe('Campaign ID to attribute this purchase to'),
-    templateId: z.number().optional().describe('Template ID to attribute this purchase to'),
-    createdAt: z.number().optional().describe('Unix timestamp (seconds) of when the purchase occurred'),
-    createNewFields: z.boolean().optional().describe('If true, creates new fields that do not already exist'),
-    purchaseFields: z.record(z.string(), z.any()).optional().describe('Additional custom fields for the purchase event')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the purchase was tracked'),
-    message: z.string().describe('Response message')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Email of the purchasing user'),
+      userId: z.string().optional().describe('User ID of the purchasing user'),
+      items: z.array(commerceItemSchema).describe('List of purchased items'),
+      total: z.number().describe('Total purchase amount'),
+      campaignId: z.number().optional().describe('Campaign ID to attribute this purchase to'),
+      templateId: z.number().optional().describe('Template ID to attribute this purchase to'),
+      createdAt: z
+        .number()
+        .optional()
+        .describe('Unix timestamp (seconds) of when the purchase occurred'),
+      createNewFields: z
+        .boolean()
+        .optional()
+        .describe('If true, creates new fields that do not already exist'),
+      purchaseFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Additional custom fields for the purchase event')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the purchase was tracked'),
+      message: z.string().describe('Response message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new IterableClient({
       token: ctx.auth.token,
       dataCenter: ctx.config.dataCenter
@@ -81,4 +94,5 @@ export let trackPurchase = SlateTool.create(
       },
       message: `Tracked purchase of **${ctx.input.items.length}** item(s) totaling **${ctx.input.total}** for user **${ctx.input.email || ctx.input.userId}**.`
     };
-  }).build();
+  })
+  .build();

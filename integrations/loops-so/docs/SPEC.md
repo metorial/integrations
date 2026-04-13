@@ -43,6 +43,7 @@ Loops supports outgoing webhooks that send HTTP POST requests to a configured en
 ### Contact Events
 
 Notifications about changes to contacts in your audience:
+
 - **contact.created** — A new contact has been created. Includes full contact data. When double opt-in is enabled, this fires only after confirmation.
 - **contact.unsubscribed** — A contact has been unsubscribed from your audience.
 - **contact.deleted** — A contact has been deleted from your audience.
@@ -52,6 +53,7 @@ Notifications about changes to contacts in your audience:
 ### Email Sending Events
 
 Notifications about emails being dispatched to recipients:
+
 - **campaign.email.sent** — A campaign email was sent to a contact. Fires per recipient. Includes campaign ID and related mailing lists if applicable.
 - **loop.email.sent** — A loop (automated workflow) email was sent to a contact. Fires per recipient.
 - **transactional.email.sent** — A transactional email was sent.
@@ -59,6 +61,7 @@ Notifications about emails being dispatched to recipients:
 ### Email Engagement Events
 
 Notifications about recipient interactions with sent emails. Each event includes the source type (campaign, loop, or transactional) and the related email identifiers:
+
 - **email.delivered** — Email successfully delivered to recipient.
 - **email.softBounced** — Email temporarily failed delivery (may be retried).
 - **email.hardBounced** — Email permanently failed delivery. Results in the contact being unsubscribed.

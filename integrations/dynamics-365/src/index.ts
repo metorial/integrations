@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createRecord,
@@ -16,11 +15,9 @@ import {
   getEntityAttributes,
   invokeFunction,
   invokeAction,
-  whoAmI,
+  whoAmI
 } from './tools';
-import { recordChanged,
-  inboundWebhook,
-} from './triggers';
+import { recordChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     getEntityAttributes,
     invokeFunction,
     invokeAction,
-    whoAmI,
+    whoAmI
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanged,
-  ],
+  triggers: [inboundWebhook, recordChanged]
 });

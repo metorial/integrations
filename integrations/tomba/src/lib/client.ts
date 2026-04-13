@@ -8,8 +8,8 @@ export class TombaClient {
       baseURL: 'https://api.tomba.io/v1',
       headers: {
         'X-Tomba-Key': credentials.apiKey,
-        'X-Tomba-Secret': credentials.apiSecret,
-      },
+        'X-Tomba-Secret': credentials.apiSecret
+      }
     });
   }
 
@@ -42,8 +42,8 @@ export class TombaClient {
         company: params.company,
         full_name: params.fullName,
         first_name: params.firstName,
-        last_name: params.lastName,
-      },
+        last_name: params.lastName
+      }
     });
     return response.data;
   }
@@ -163,25 +163,28 @@ export class TombaClient {
       twitter: lead.twitter,
       country: lead.country,
       linkedin: lead.linkedin,
-      notes: lead.notes,
+      notes: lead.notes
     });
     return response.data;
   }
 
-  async updateLead(leadId: string, lead: {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    position?: string;
-    company?: string;
-    score?: number;
-    websiteUrl?: string;
-    phoneNumber?: string;
-    twitter?: string;
-    country?: string;
-    linkedin?: string;
-    notes?: string;
-  }) {
+  async updateLead(
+    leadId: string,
+    lead: {
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+      position?: string;
+      company?: string;
+      score?: number;
+      websiteUrl?: string;
+      phoneNumber?: string;
+      twitter?: string;
+      country?: string;
+      linkedin?: string;
+      notes?: string;
+    }
+  ) {
     let response = await this.http.put(`/leads/${encodeURIComponent(leadId)}`, {
       email: lead.email,
       first_name: lead.firstName,
@@ -194,7 +197,7 @@ export class TombaClient {
       twitter: lead.twitter,
       country: lead.country,
       linkedin: lead.linkedin,
-      notes: lead.notes,
+      notes: lead.notes
     });
     return response.data;
   }

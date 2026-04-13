@@ -16,38 +16,39 @@ let userSchema = z.object({
   managerId: z.string().optional().describe('Manager user ID'),
   meetingConsentPageUrl: z.string().optional().describe('Meeting consent page URL'),
   settings: z.any().optional().describe('User settings'),
-  avatarUrl: z.string().optional().describe('Avatar URL (if includeAvatars is true)'),
+  avatarUrl: z.string().optional().describe('Avatar URL (if includeAvatars is true)')
 });
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve all Gong users in the organization. Returns user profile information including name, email, title, and activity status. Supports pagination and optionally includes avatar URLs.`,
-    tags: {
-      readOnly: true,
-    },
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve all Gong users in the organization. Returns user profile information including name, email, title, and activity status. Supports pagination and optionally includes avatar URLs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeAvatars: z.boolean().optional().describe('Include avatar URLs in the response'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-  }))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of users'),
-    totalRecords: z.number().optional().describe('Total number of users'),
-    cursor: z.string().optional().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeAvatars: z.boolean().optional().describe('Include avatar URLs in the response'),
+      cursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of users'),
+      totalRecords: z.number().optional().describe('Total number of users'),
+      cursor: z.string().optional().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GongClient({
       token: ctx.auth.token,
-      baseUrl: ctx.auth.baseUrl,
+      baseUrl: ctx.auth.baseUrl
     });
 
     let result = await client.listUsers({
       includeAvatars: ctx.input.includeAvatars,
-      cursor: ctx.input.cursor,
+      cursor: ctx.input.cursor
     });
 
     let users = (result.users || []).map((user: any) => ({
@@ -63,16 +64,16 @@ export let listUsers = SlateTool.create(
       managerId: user.managerId,
       meetingConsentPageUrl: user.meetingConsentPageUrl,
       settings: user.settings,
-      avatarUrl: user.avatarUrl,
+      avatarUrl: user.avatarUrl
     }));
 
     return {
       output: {
         users,
         totalRecords: result.records?.totalRecords,
-        cursor: result.records?.cursor,
+        cursor: result.records?.cursor
       },
-      message: `Retrieved ${users.length} user(s).`,
+      message: `Retrieved ${users.length} user(s).`
     };
   })
   .build();

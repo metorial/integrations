@@ -19,6 +19,7 @@ To obtain a bearer token, make a POST request to the identity endpoint:
 - **Self-hosted:** `https://your.domain.com/identity/connect/token`
 
 Request parameters (form-encoded):
+
 - `grant_type`: `client_credentials`
 - `scope`: `api.organization`
 - `client_id`: Your organization client ID (format: `organization.ClientId`)

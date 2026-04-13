@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
-let localizedStringSchema = z.record(z.string(), z.string()).describe('Localized strings keyed by language code, e.g. {"en": "Hello", "es": "Hola"}');
+let localizedStringSchema = z
+  .record(z.string(), z.string())
+  .describe('Localized strings keyed by language code, e.g. {"en": "Hello", "es": "Hola"}');
 
 export let sendNotification = SlateTool.create(spec, {
   name: 'Send Notification',
@@ -12,76 +14,121 @@ export let sendNotification = SlateTool.create(spec, {
   instructions: [
     'Specify exactly one targeting method: segments, aliases, filters, subscriptionIds, emailAddresses, or phoneNumbers.',
     'For push notifications, provide "contents" with localized message body. For emails, provide "emailSubject" and "emailBody". For SMS, provide "contents" and optionally "smsFrom".',
-    'Use "targetChannel" to explicitly set the channel when targeting methods could apply to multiple channels.',
+    'Use "targetChannel" to explicitly set the channel when targeting methods could apply to multiple channels.'
   ],
   constraints: [
     'Maximum 20,000 entries for aliases, subscriptionIds, emailAddresses, or phoneNumbers.',
-    'Maximum 200 filters per request.',
+    'Maximum 200 filters per request.'
   ],
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    // Targeting
-    segments: z.array(z.string()).optional().describe('Target predefined segments, e.g. ["All", "Active Users"]'),
-    aliases: z.record(z.string(), z.array(z.string())).optional().describe('Target by alias, e.g. {"external_id": ["user1", "user2"]}'),
-    filters: z.array(z.record(z.string(), z.any())).optional().describe('Custom audience filters with AND/OR logic'),
-    subscriptionIds: z.array(z.string()).optional().describe('Specific OneSignal subscription IDs to target'),
-    emailAddresses: z.array(z.string()).optional().describe('Direct email addresses to target'),
-    phoneNumbers: z.array(z.string()).optional().describe('E.164 format phone numbers to target'),
+  .input(
+    z.object({
+      // Targeting
+      segments: z
+        .array(z.string())
+        .optional()
+        .describe('Target predefined segments, e.g. ["All", "Active Users"]'),
+      aliases: z
+        .record(z.string(), z.array(z.string()))
+        .optional()
+        .describe('Target by alias, e.g. {"external_id": ["user1", "user2"]}'),
+      filters: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Custom audience filters with AND/OR logic'),
+      subscriptionIds: z
+        .array(z.string())
+        .optional()
+        .describe('Specific OneSignal subscription IDs to target'),
+      emailAddresses: z
+        .array(z.string())
+        .optional()
+        .describe('Direct email addresses to target'),
+      phoneNumbers: z
+        .array(z.string())
+        .optional()
+        .describe('E.164 format phone numbers to target'),
 
-    // Channel
-    targetChannel: z.enum(['push', 'email', 'sms']).optional().describe('Explicitly set the messaging channel'),
+      // Channel
+      targetChannel: z
+        .enum(['push', 'email', 'sms'])
+        .optional()
+        .describe('Explicitly set the messaging channel'),
 
-    // Push content
-    contents: localizedStringSchema.optional(),
-    headings: localizedStringSchema.optional(),
-    subtitle: localizedStringSchema.optional(),
-    customData: z.record(z.string(), z.any()).optional().describe('Custom key-value data payload'),
-    buttons: z.array(z.object({
-      id: z.string(),
-      text: z.string(),
-      icon: z.string().optional(),
-      url: z.string().optional(),
-    })).optional().describe('Action buttons for push notifications'),
-    bigPicture: z.string().optional().describe('URL to large image for Android push'),
-    chromeWebImage: z.string().optional().describe('URL to image for web push'),
-    iosAttachments: z.record(z.string(), z.string()).optional().describe('iOS media attachments, e.g. {"id": "https://example.com/image.jpg"}'),
+      // Push content
+      contents: localizedStringSchema.optional(),
+      headings: localizedStringSchema.optional(),
+      subtitle: localizedStringSchema.optional(),
+      customData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom key-value data payload'),
+      buttons: z
+        .array(
+          z.object({
+            id: z.string(),
+            text: z.string(),
+            icon: z.string().optional(),
+            url: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Action buttons for push notifications'),
+      bigPicture: z.string().optional().describe('URL to large image for Android push'),
+      chromeWebImage: z.string().optional().describe('URL to image for web push'),
+      iosAttachments: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('iOS media attachments, e.g. {"id": "https://example.com/image.jpg"}'),
 
-    // Email content
-    emailSubject: z.string().optional().describe('Email subject line'),
-    emailBody: z.string().optional().describe('HTML email body content'),
-    emailPreheader: z.string().optional().describe('Email preview text'),
-    emailFromName: z.string().optional().describe('Sender display name'),
-    emailReplyTo: z.string().optional().describe('Reply-to email address'),
+      // Email content
+      emailSubject: z.string().optional().describe('Email subject line'),
+      emailBody: z.string().optional().describe('HTML email body content'),
+      emailPreheader: z.string().optional().describe('Email preview text'),
+      emailFromName: z.string().optional().describe('Sender display name'),
+      emailReplyTo: z.string().optional().describe('Reply-to email address'),
 
-    // SMS content
-    smsFrom: z.string().optional().describe('SMS sender identifier'),
-    smsMediaUrls: z.array(z.string()).optional().describe('MMS media URLs'),
+      // SMS content
+      smsFrom: z.string().optional().describe('SMS sender identifier'),
+      smsMediaUrls: z.array(z.string()).optional().describe('MMS media URLs'),
 
-    // Scheduling
-    sendAfter: z.string().optional().describe('ISO 8601 scheduled delivery time'),
-    delayedOption: z.enum(['timezone', 'last-active']).optional().describe('Delivery optimization strategy'),
-    deliveryTimeOfDay: z.string().optional().describe('Time of day for delivery, e.g. "9:00AM"'),
+      // Scheduling
+      sendAfter: z.string().optional().describe('ISO 8601 scheduled delivery time'),
+      delayedOption: z
+        .enum(['timezone', 'last-active'])
+        .optional()
+        .describe('Delivery optimization strategy'),
+      deliveryTimeOfDay: z
+        .string()
+        .optional()
+        .describe('Time of day for delivery, e.g. "9:00AM"'),
 
-    // Other
-    templateId: z.string().optional().describe('Template ID to use for message content'),
-    name: z.string().optional().describe('Internal name for the message (not shown to recipients)'),
-    collapseId: z.string().optional().describe('Collapse ID for message replacement'),
-    priority: z.number().optional().describe('Delivery priority (10 = high)'),
-    ttl: z.number().optional().describe('Time to live in seconds'),
-  }))
-  .output(z.object({
-    notificationId: z.string().optional().describe('ID of the created notification'),
-    recipients: z.number().optional().describe('Number of recipients targeted'),
-    externalId: z.string().optional().describe('External ID if provided'),
-  }))
-  .handleInvocation(async (ctx) => {
+      // Other
+      templateId: z.string().optional().describe('Template ID to use for message content'),
+      name: z
+        .string()
+        .optional()
+        .describe('Internal name for the message (not shown to recipients)'),
+      collapseId: z.string().optional().describe('Collapse ID for message replacement'),
+      priority: z.number().optional().describe('Delivery priority (10 = high)'),
+      ttl: z.number().optional().describe('Time to live in seconds')
+    })
+  )
+  .output(
+    z.object({
+      notificationId: z.string().optional().describe('ID of the created notification'),
+      recipients: z.number().optional().describe('Number of recipients targeted'),
+      externalId: z.string().optional().describe('External ID if provided')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      appId: ctx.config.appId,
+      appId: ctx.config.appId
     });
 
     let body: Record<string, any> = {};
@@ -136,11 +183,11 @@ export let sendNotification = SlateTool.create(spec, {
       output: {
         notificationId: result.id,
         recipients: result.recipients,
-        externalId: result.external_id,
+        externalId: result.external_id
       },
       message: result.id
         ? `Notification **${result.id}** sent successfully${result.recipients ? ` to ${result.recipients} recipient(s)` : ''}.`
-        : 'Notification request submitted but no ID was returned (may indicate no valid recipients).',
+        : 'Notification request submitted but no ID was returned (may indicate no valid recipients).'
     };
   })
   .build();

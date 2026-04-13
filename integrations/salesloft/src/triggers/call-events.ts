@@ -5,39 +5,43 @@ import { z } from 'zod';
 
 let EVENT_TYPES = ['call_created', 'call_updated'] as const;
 
-export let callEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Call Events',
-    key: 'call_events',
-    description: 'Triggers when a call is created or updated in SalesLoft.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(EVENT_TYPES).describe('Type of call event'),
-    eventId: z.string().describe('Unique event identifier'),
-    call: z.any().describe('Call data from webhook payload')
-  }))
-  .output(z.object({
-    callId: z.number().describe('SalesLoft call ID'),
-    to: z.string().nullable().optional().describe('Called phone number'),
-    duration: z.number().nullable().optional().describe('Call duration in seconds'),
-    sentiment: z.string().nullable().optional().describe('Call sentiment'),
-    disposition: z.string().nullable().optional().describe('Call disposition'),
-    status: z.string().nullable().optional().describe('Call status'),
-    note: z.string().nullable().optional().describe('Call notes'),
-    personId: z.number().nullable().optional().describe('Associated person ID'),
-    userId: z.number().nullable().optional().describe('Caller user ID'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp')
-  }))
+export let callEvents = SlateTrigger.create(spec, {
+  name: 'Call Events',
+  key: 'call_events',
+  description: 'Triggers when a call is created or updated in SalesLoft.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(EVENT_TYPES).describe('Type of call event'),
+      eventId: z.string().describe('Unique event identifier'),
+      call: z.any().describe('Call data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      callId: z.number().describe('SalesLoft call ID'),
+      to: z.string().nullable().optional().describe('Called phone number'),
+      duration: z.number().nullable().optional().describe('Call duration in seconds'),
+      sentiment: z.string().nullable().optional().describe('Call sentiment'),
+      disposition: z.string().nullable().optional().describe('Call disposition'),
+      status: z.string().nullable().optional().describe('Call status'),
+      note: z.string().nullable().optional().describe('Call notes'),
+      personId: z.number().nullable().optional().describe('Associated person ID'),
+      userId: z.number().nullable().optional().describe('Caller user ID'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ subscriptionId: number; eventType: string }> = [];
 
       for (let eventType of EVENT_TYPES) {
-        let subscription = await client.createWebhookSubscription(ctx.input.webhookBaseUrl, eventType);
+        let subscription = await client.createWebhookSubscription(
+          ctx.input.webhookBaseUrl,
+          eventType
+        );
         registrations.push({
           subscriptionId: subscription.id,
           eventType
@@ -49,9 +53,11 @@ export let callEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registrations: Array<{ subscriptionId: number }> };
+      let details = ctx.input.registrationDetails as {
+        registrations: Array<{ subscriptionId: number }>;
+      };
 
       for (let reg of details.registrations) {
         try {
@@ -62,20 +68,22 @@ export let callEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventType = ctx.request.headers.get('x-salesloft-event') || 'call_updated';
 
       return {
-        inputs: [{
-          eventType: eventType as typeof EVENT_TYPES[number],
-          eventId: `${eventType}_${body?.id || Date.now()}`,
-          call: body
-        }]
+        inputs: [
+          {
+            eventType: eventType as (typeof EVENT_TYPES)[number],
+            eventId: `${eventType}_${body?.id || Date.now()}`,
+            call: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.call;
 
       return {
@@ -96,4 +104,5 @@ export let callEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

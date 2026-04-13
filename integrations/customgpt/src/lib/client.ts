@@ -74,9 +74,9 @@ export class CustomGPTClient {
     this.axios = createAxios({
       baseURL: 'https://app.customgpt.ai/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -102,7 +102,7 @@ export class CustomGPTClient {
       perPage: data.per_page,
       total: data.total,
       lastPage: data.last_page,
-      items: (data.data as Array<Record<string, unknown>>).map((p) => this.normalizeAgent(p)),
+      items: (data.data as Array<Record<string, unknown>>).map(p => this.normalizeAgent(p))
     };
   }
 
@@ -120,31 +120,38 @@ export class CustomGPTClient {
     let formData = new FormData();
     formData.append('project_name', params.projectName);
     if (params.sitemapPath !== undefined) formData.append('sitemap_path', params.sitemapPath);
-    if (params.isOcrEnabled !== undefined) formData.append('is_ocr_enabled', String(params.isOcrEnabled));
-    if (params.isVisionEnabled !== undefined) formData.append('is_vision_enabled', String(params.isVisionEnabled));
+    if (params.isOcrEnabled !== undefined)
+      formData.append('is_ocr_enabled', String(params.isOcrEnabled));
+    if (params.isVisionEnabled !== undefined)
+      formData.append('is_vision_enabled', String(params.isVisionEnabled));
 
     let response = await this.axios.post('/projects', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return this.normalizeAgent(response.data?.data);
   }
 
-  async updateAgent(projectId: number, params: {
-    projectName?: string;
-    sitemapPath?: string;
-    isShared?: boolean;
-    isOcrEnabled?: boolean;
-    areLicensesAllowed?: boolean;
-  }): Promise<Agent> {
+  async updateAgent(
+    projectId: number,
+    params: {
+      projectName?: string;
+      sitemapPath?: string;
+      isShared?: boolean;
+      isOcrEnabled?: boolean;
+      areLicensesAllowed?: boolean;
+    }
+  ): Promise<Agent> {
     let formData = new FormData();
     if (params.projectName !== undefined) formData.append('project_name', params.projectName);
     if (params.sitemapPath !== undefined) formData.append('sitemap_path', params.sitemapPath);
     if (params.isShared !== undefined) formData.append('is_shared', String(params.isShared));
-    if (params.isOcrEnabled !== undefined) formData.append('is_ocr_enabled', String(params.isOcrEnabled));
-    if (params.areLicensesAllowed !== undefined) formData.append('are_licenses_allowed', String(params.areLicensesAllowed));
+    if (params.isOcrEnabled !== undefined)
+      formData.append('is_ocr_enabled', String(params.isOcrEnabled));
+    if (params.areLicensesAllowed !== undefined)
+      formData.append('are_licenses_allowed', String(params.areLicensesAllowed));
 
     let response = await this.axios.post(`/projects/${projectId}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return this.normalizeAgent(response.data?.data);
   }
@@ -165,17 +172,22 @@ export class CustomGPTClient {
 
   // ---- Conversation Management ----
 
-  async listConversations(projectId: number, params?: {
-    page?: number;
-    order?: string;
-    orderBy?: string;
-  }): Promise<PaginatedResponse<Conversation>> {
+  async listConversations(
+    projectId: number,
+    params?: {
+      page?: number;
+      order?: string;
+      orderBy?: string;
+    }
+  ): Promise<PaginatedResponse<Conversation>> {
     let queryParams: Record<string, string> = {};
     if (params?.page !== undefined) queryParams.page = String(params.page);
     if (params?.order !== undefined) queryParams.order = params.order;
     if (params?.orderBy !== undefined) queryParams.orderBy = params.orderBy;
 
-    let response = await this.axios.get(`/projects/${projectId}/conversations`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/conversations`, {
+      params: queryParams
+    });
     let data = response.data?.data;
 
     return {
@@ -183,13 +195,18 @@ export class CustomGPTClient {
       perPage: data.per_page,
       total: data.total,
       lastPage: data.last_page,
-      items: (data.data as Array<Record<string, unknown>>).map((c) => this.normalizeConversation(c)),
+      items: (data.data as Array<Record<string, unknown>>).map(c =>
+        this.normalizeConversation(c)
+      )
     };
   }
 
-  async createConversation(projectId: number, params?: {
-    name?: string;
-  }): Promise<Conversation> {
+  async createConversation(
+    projectId: number,
+    params?: {
+      name?: string;
+    }
+  ): Promise<Conversation> {
     let body: Record<string, unknown> = {};
     if (params?.name !== undefined) body.name = params.name;
 
@@ -197,13 +214,20 @@ export class CustomGPTClient {
     return this.normalizeConversation(response.data?.data);
   }
 
-  async updateConversation(projectId: number, sessionId: string, params: {
-    name?: string;
-  }): Promise<Conversation> {
+  async updateConversation(
+    projectId: number,
+    sessionId: string,
+    params: {
+      name?: string;
+    }
+  ): Promise<Conversation> {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
 
-    let response = await this.axios.put(`/projects/${projectId}/conversations/${sessionId}`, body);
+    let response = await this.axios.put(
+      `/projects/${projectId}/conversations/${sessionId}`,
+      body
+    );
     return this.normalizeConversation(response.data?.data);
   }
 
@@ -211,22 +235,34 @@ export class CustomGPTClient {
     await this.axios.delete(`/projects/${projectId}/conversations/${sessionId}`);
   }
 
-  async exportConversation(projectId: number, sessionId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${projectId}/conversations/${sessionId}/export`);
+  async exportConversation(
+    projectId: number,
+    sessionId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/projects/${projectId}/conversations/${sessionId}/export`
+    );
     return response.data?.data;
   }
 
   // ---- Messages ----
 
-  async listMessages(projectId: number, sessionId: string, params?: {
-    page?: number;
-    order?: string;
-  }): Promise<PaginatedResponse<Message>> {
+  async listMessages(
+    projectId: number,
+    sessionId: string,
+    params?: {
+      page?: number;
+      order?: string;
+    }
+  ): Promise<PaginatedResponse<Message>> {
     let queryParams: Record<string, string> = {};
     if (params?.page !== undefined) queryParams.page = String(params.page);
     if (params?.order !== undefined) queryParams.order = params.order;
 
-    let response = await this.axios.get(`/projects/${projectId}/conversations/${sessionId}/messages`, { params: queryParams });
+    let response = await this.axios.get(
+      `/projects/${projectId}/conversations/${sessionId}/messages`,
+      { params: queryParams }
+    );
     let data = response.data?.data;
 
     return {
@@ -234,50 +270,89 @@ export class CustomGPTClient {
       perPage: data.per_page ?? 20,
       total: data.total ?? 0,
       lastPage: data.last_page ?? 1,
-      items: (data.data as Array<Record<string, unknown>>).map((m) => this.normalizeMessage(m)),
+      items: (data.data as Array<Record<string, unknown>>).map(m => this.normalizeMessage(m))
     };
   }
 
-  async sendMessage(projectId: number, sessionId: string, params: {
-    message: string;
-    lang?: string;
-    labels?: string[];
-    labelsExclusive?: boolean;
-  }): Promise<Message> {
+  async sendMessage(
+    projectId: number,
+    sessionId: string,
+    params: {
+      message: string;
+      lang?: string;
+      labels?: string[];
+      labelsExclusive?: boolean;
+    }
+  ): Promise<Message> {
     let body: Record<string, unknown> = {
-      prompt: params.message,
+      prompt: params.message
     };
     if (params.lang !== undefined) body.lang = params.lang;
     if (params.labels !== undefined) body.labels = params.labels;
     if (params.labelsExclusive !== undefined) body.labels_exclusive = params.labelsExclusive;
 
-    let response = await this.axios.post(`/projects/${projectId}/conversations/${sessionId}/messages`, body);
+    let response = await this.axios.post(
+      `/projects/${projectId}/conversations/${sessionId}/messages`,
+      body
+    );
     return this.normalizeMessage(response.data?.data);
   }
 
-  async getMessageDetails(projectId: number, sessionId: string, promptId: number): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${projectId}/conversations/${sessionId}/messages/${promptId}`);
+  async getMessageDetails(
+    projectId: number,
+    sessionId: string,
+    promptId: number
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/projects/${projectId}/conversations/${sessionId}/messages/${promptId}`
+    );
     return response.data?.data;
   }
 
-  async submitMessageFeedback(projectId: number, sessionId: string, promptId: number, feedback: string): Promise<void> {
-    await this.axios.put(`/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/feedback`, {
-      feedback,
-    });
+  async submitMessageFeedback(
+    projectId: number,
+    sessionId: string,
+    promptId: number,
+    feedback: string
+  ): Promise<void> {
+    await this.axios.put(
+      `/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/feedback`,
+      {
+        feedback
+      }
+    );
   }
 
-  async getMessageClaims(projectId: number, sessionId: string, promptId: number): Promise<Array<Record<string, unknown>>> {
-    let response = await this.axios.get(`/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/claims`);
+  async getMessageClaims(
+    projectId: number,
+    sessionId: string,
+    promptId: number
+  ): Promise<Array<Record<string, unknown>>> {
+    let response = await this.axios.get(
+      `/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/claims`
+    );
     return response.data?.data ?? [];
   }
 
-  async getMessageTrustScore(projectId: number, sessionId: string, promptId: number): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/trust-score`);
+  async getMessageTrustScore(
+    projectId: number,
+    sessionId: string,
+    promptId: number
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/trust-score`
+    );
     return response.data?.data;
   }
 
-  async verifyMessage(projectId: number, sessionId: string, promptId: number): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/verify`);
+  async verifyMessage(
+    projectId: number,
+    sessionId: string,
+    promptId: number
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.post(
+      `/projects/${projectId}/conversations/${sessionId}/messages/${promptId}/verify`
+    );
     return response.data?.data;
   }
 
@@ -286,30 +361,39 @@ export class CustomGPTClient {
   async listSources(projectId: number): Promise<Source[]> {
     let response = await this.axios.get(`/projects/${projectId}/sources`);
     let items = response.data?.data?.data ?? response.data?.data ?? [];
-    return (items as Array<Record<string, unknown>>).map((s) => this.normalizeSource(s));
+    return (items as Array<Record<string, unknown>>).map(s => this.normalizeSource(s));
   }
 
-  async addSource(projectId: number, params: {
-    sourceType: string;
-    sourceName?: string;
-    sourceUrl?: string;
-    isOcrEnabled?: boolean;
-    isVisionEnabled?: boolean;
-  }): Promise<Source> {
+  async addSource(
+    projectId: number,
+    params: {
+      sourceType: string;
+      sourceName?: string;
+      sourceUrl?: string;
+      isOcrEnabled?: boolean;
+      isVisionEnabled?: boolean;
+    }
+  ): Promise<Source> {
     let formData = new FormData();
     formData.append('source_type', params.sourceType);
     if (params.sourceName !== undefined) formData.append('source_name', params.sourceName);
     if (params.sourceUrl !== undefined) formData.append('source_url', params.sourceUrl);
-    if (params.isOcrEnabled !== undefined) formData.append('is_ocr_enabled', String(params.isOcrEnabled));
-    if (params.isVisionEnabled !== undefined) formData.append('is_vision_enabled', String(params.isVisionEnabled));
+    if (params.isOcrEnabled !== undefined)
+      formData.append('is_ocr_enabled', String(params.isOcrEnabled));
+    if (params.isVisionEnabled !== undefined)
+      formData.append('is_vision_enabled', String(params.isVisionEnabled));
 
     let response = await this.axios.post(`/projects/${projectId}/sources`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return this.normalizeSource(response.data?.data);
   }
 
-  async updateSource(projectId: number, sourceId: number, params: Record<string, unknown>): Promise<Source> {
+  async updateSource(
+    projectId: number,
+    sourceId: number,
+    params: Record<string, unknown>
+  ): Promise<Source> {
     let response = await this.axios.put(`/projects/${projectId}/sources/${sourceId}`, params);
     return this.normalizeSource(response.data?.data);
   }
@@ -324,13 +408,16 @@ export class CustomGPTClient {
 
   // ---- Pages (Documents) ----
 
-  async listPages(projectId: number, params?: {
-    page?: number;
-    limit?: number;
-    order?: string;
-    crawlStatus?: string;
-    indexStatus?: string;
-  }): Promise<PaginatedResponse<Page>> {
+  async listPages(
+    projectId: number,
+    params?: {
+      page?: number;
+      limit?: number;
+      order?: string;
+      crawlStatus?: string;
+      indexStatus?: string;
+    }
+  ): Promise<PaginatedResponse<Page>> {
     let queryParams: Record<string, string> = {};
     if (params?.page !== undefined) queryParams.page = String(params.page);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -338,7 +425,9 @@ export class CustomGPTClient {
     if (params?.crawlStatus !== undefined) queryParams.crawl_status = params.crawlStatus;
     if (params?.indexStatus !== undefined) queryParams.index_status = params.indexStatus;
 
-    let response = await this.axios.get(`/projects/${projectId}/pages`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/pages`, {
+      params: queryParams
+    });
     let data = response.data?.data?.pages ?? response.data?.data;
 
     return {
@@ -346,7 +435,7 @@ export class CustomGPTClient {
       perPage: data.per_page ?? 20,
       total: data.total ?? 0,
       lastPage: data.last_page ?? 1,
-      items: (data.data as Array<Record<string, unknown>>).map((p) => this.normalizePage(p)),
+      items: (data.data as Array<Record<string, unknown>>).map(p => this.normalizePage(p))
     };
   }
 
@@ -363,19 +452,29 @@ export class CustomGPTClient {
     return response.data?.data;
   }
 
-  async updatePageMetadata(projectId: number, pageId: number, metadata: Record<string, unknown>): Promise<Record<string, unknown>> {
-    let response = await this.axios.put(`/projects/${projectId}/pages/${pageId}/metadata`, metadata);
+  async updatePageMetadata(
+    projectId: number,
+    pageId: number,
+    metadata: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.put(
+      `/projects/${projectId}/pages/${pageId}/metadata`,
+      metadata
+    );
     return response.data?.data;
   }
 
-  async getPageLabels(projectId: number, pageId: number): Promise<Array<Record<string, unknown>>> {
+  async getPageLabels(
+    projectId: number,
+    pageId: number
+  ): Promise<Array<Record<string, unknown>>> {
     let response = await this.axios.get(`/projects/${projectId}/pages/${pageId}/labels`);
     return response.data?.data ?? [];
   }
 
   async setPageLabels(projectId: number, pageId: number, labelIds: number[]): Promise<void> {
     await this.axios.put(`/projects/${projectId}/pages/${pageId}/labels`, {
-      label_ids: labelIds,
+      label_ids: labelIds
     });
   }
 
@@ -386,7 +485,10 @@ export class CustomGPTClient {
     return response.data?.data;
   }
 
-  async updateSettings(projectId: number, settings: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateSettings(
+    projectId: number,
+    settings: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/projects/${projectId}/settings`, settings);
     return response.data?.data;
   }
@@ -396,18 +498,29 @@ export class CustomGPTClient {
     return response.data?.data ?? [];
   }
 
-  async getPersonaVersion(projectId: number, params?: { version?: number }): Promise<Record<string, unknown>> {
+  async getPersonaVersion(
+    projectId: number,
+    params?: { version?: number }
+  ): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = {};
     if (params?.version !== undefined) queryParams.version = String(params.version);
 
-    let response = await this.axios.get(`/projects/${projectId}/settings/persona-version`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/settings/persona-version`, {
+      params: queryParams
+    });
     return response.data?.data;
   }
 
-  async restorePersonaVersion(projectId: number, version: number): Promise<Record<string, unknown>> {
-    let response = await this.axios.put(`/projects/${projectId}/settings/persona-activate-version`, {
-      version,
-    });
+  async restorePersonaVersion(
+    projectId: number,
+    version: number
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.put(
+      `/projects/${projectId}/settings/persona-activate-version`,
+      {
+        version
+      }
+    );
     return response.data?.data;
   }
 
@@ -423,7 +536,11 @@ export class CustomGPTClient {
     return response.data?.data;
   }
 
-  async renameLabel(projectId: number, labelId: number, name: string): Promise<Record<string, unknown>> {
+  async renameLabel(
+    projectId: number,
+    labelId: number,
+    name: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(`/projects/${projectId}/labels/${labelId}`, { name });
     return response.data?.data;
   }
@@ -441,8 +558,14 @@ export class CustomGPTClient {
 
   // ---- Reports ----
 
-  async getReport(projectId: number, reportType: string, params?: Record<string, string>): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/projects/${projectId}/reports/${reportType}`, { params });
+  async getReport(
+    projectId: number,
+    reportType: string,
+    params?: Record<string, string>
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(`/projects/${projectId}/reports/${reportType}`, {
+      params
+    });
     return response.data?.data;
   }
 
@@ -478,7 +601,7 @@ export class CustomGPTClient {
       shareableLink: (data.shareable_link as string) ?? null,
       embedCode: (data.embed_code as string) ?? null,
       liveChatCode: (data.live_chat_code as string) ?? null,
-      areLicensesAllowed: data.are_licenses_allowed as boolean,
+      areLicensesAllowed: data.are_licenses_allowed as boolean
     };
   }
 
@@ -487,18 +610,18 @@ export class CustomGPTClient {
       sessionId: data.session_id as string,
       name: (data.name as string) ?? null,
       createdAt: data.created_at as string,
-      updatedAt: data.updated_at as string ?? data.created_at as string,
+      updatedAt: (data.updated_at as string) ?? (data.created_at as string)
     };
   }
 
   private normalizeMessage(data: Record<string, unknown>): Message {
     return {
-      promptId: data.id as number ?? data.prompt_id as number,
+      promptId: (data.id as number) ?? (data.prompt_id as number),
       userQuery: (data.user_query as string) ?? (data.prompt as string) ?? '',
       openaiResponse: (data.openai_response as string) ?? (data.response as string) ?? '',
       citations: (data.citations as Array<Record<string, unknown>>) ?? [],
       createdAt: data.created_at as string,
-      updatedAt: data.updated_at as string ?? data.created_at as string,
+      updatedAt: (data.updated_at as string) ?? (data.created_at as string)
     };
   }
 
@@ -511,7 +634,7 @@ export class CustomGPTClient {
       crawlStatus: (data.crawl_status as string) ?? '',
       indexStatus: (data.index_status as string) ?? '',
       createdAt: data.created_at as string,
-      updatedAt: data.updated_at as string,
+      updatedAt: data.updated_at as string
     };
   }
 
@@ -526,7 +649,7 @@ export class CustomGPTClient {
       filename: (data.filename as string) ?? null,
       filesize: (data.filesize as number) ?? null,
       createdAt: data.created_at as string,
-      updatedAt: data.updated_at as string,
+      updatedAt: data.updated_at as string
     };
   }
 }

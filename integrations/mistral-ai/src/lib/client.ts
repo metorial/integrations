@@ -44,7 +44,7 @@ export class MistralClient {
   }) {
     let body: any = {
       model: params.model,
-      messages: params.messages.map((m) => {
+      messages: params.messages.map(m => {
         let msg: any = { role: m.role, content: m.content };
         if (m.name) msg.name = m.name;
         if (m.toolCallId) msg.tool_call_id = m.toolCallId;
@@ -61,12 +61,14 @@ export class MistralClient {
     if (params.stop !== undefined) body.stop = params.stop;
     if (params.randomSeed !== undefined) body.random_seed = params.randomSeed;
     if (params.presencePenalty !== undefined) body.presence_penalty = params.presencePenalty;
-    if (params.frequencyPenalty !== undefined) body.frequency_penalty = params.frequencyPenalty;
+    if (params.frequencyPenalty !== undefined)
+      body.frequency_penalty = params.frequencyPenalty;
     if (params.n !== undefined) body.n = params.n;
     if (params.responseFormat !== undefined) body.response_format = params.responseFormat;
     if (params.tools !== undefined) body.tools = params.tools;
     if (params.toolChoice !== undefined) body.tool_choice = params.toolChoice;
-    if (params.parallelToolCalls !== undefined) body.parallel_tool_calls = params.parallelToolCalls;
+    if (params.parallelToolCalls !== undefined)
+      body.parallel_tool_calls = params.parallelToolCalls;
     if (params.safePrompt !== undefined) body.safe_prompt = params.safePrompt;
 
     let response = await this.axios.post('/chat/completions', body, {
@@ -140,9 +142,11 @@ export class MistralClient {
     if (params.responseFormat !== undefined) body.response_format = params.responseFormat;
     if (params.tools !== undefined) body.tools = params.tools;
     if (params.toolChoice !== undefined) body.tool_choice = params.toolChoice;
-    if (params.parallelToolCalls !== undefined) body.parallel_tool_calls = params.parallelToolCalls;
+    if (params.parallelToolCalls !== undefined)
+      body.parallel_tool_calls = params.parallelToolCalls;
     if (params.presencePenalty !== undefined) body.presence_penalty = params.presencePenalty;
-    if (params.frequencyPenalty !== undefined) body.frequency_penalty = params.frequencyPenalty;
+    if (params.frequencyPenalty !== undefined)
+      body.frequency_penalty = params.frequencyPenalty;
 
     let response = await this.axios.post('/agents/completions', body, {
       headers: this.headers
@@ -178,10 +182,7 @@ export class MistralClient {
 
   // ── Moderation ──
 
-  async moderate(params: {
-    model: string;
-    input: string | string[];
-  }) {
+  async moderate(params: { model: string; input: string | string[] }) {
     let body = {
       model: params.model,
       input: params.input
@@ -229,7 +230,8 @@ export class MistralClient {
     };
 
     if (params.pages !== undefined) body.pages = params.pages;
-    if (params.includeImageBase64 !== undefined) body.include_image_base64 = params.includeImageBase64;
+    if (params.includeImageBase64 !== undefined)
+      body.include_image_base64 = params.includeImageBase64;
     if (params.imageLimit !== undefined) body.image_limit = params.imageLimit;
     if (params.imageMinSize !== undefined) body.image_min_size = params.imageMinSize;
     if (params.tableFormat !== undefined) body.table_format = params.tableFormat;
@@ -333,7 +335,7 @@ export class MistralClient {
   }) {
     let body: any = {
       model: params.model,
-      training_files: params.trainingFiles.map((f) => ({
+      training_files: params.trainingFiles.map(f => ({
         file_id: f.fileId,
         weight: f.weight
       }))
@@ -346,13 +348,20 @@ export class MistralClient {
 
     if (params.hyperparameters) {
       let hp: any = {};
-      if (params.hyperparameters.trainingSteps !== undefined) hp.training_steps = params.hyperparameters.trainingSteps;
-      if (params.hyperparameters.learningRate !== undefined) hp.learning_rate = params.hyperparameters.learningRate;
-      if (params.hyperparameters.warmupFraction !== undefined) hp.warmup_fraction = params.hyperparameters.warmupFraction;
-      if (params.hyperparameters.weightDecay !== undefined) hp.weight_decay = params.hyperparameters.weightDecay;
-      if (params.hyperparameters.epochs !== undefined) hp.epochs = params.hyperparameters.epochs;
-      if (params.hyperparameters.fimRatio !== undefined) hp.fim_ratio = params.hyperparameters.fimRatio;
-      if (params.hyperparameters.seqLen !== undefined) hp.seq_len = params.hyperparameters.seqLen;
+      if (params.hyperparameters.trainingSteps !== undefined)
+        hp.training_steps = params.hyperparameters.trainingSteps;
+      if (params.hyperparameters.learningRate !== undefined)
+        hp.learning_rate = params.hyperparameters.learningRate;
+      if (params.hyperparameters.warmupFraction !== undefined)
+        hp.warmup_fraction = params.hyperparameters.warmupFraction;
+      if (params.hyperparameters.weightDecay !== undefined)
+        hp.weight_decay = params.hyperparameters.weightDecay;
+      if (params.hyperparameters.epochs !== undefined)
+        hp.epochs = params.hyperparameters.epochs;
+      if (params.hyperparameters.fimRatio !== undefined)
+        hp.fim_ratio = params.hyperparameters.fimRatio;
+      if (params.hyperparameters.seqLen !== undefined)
+        hp.seq_len = params.hyperparameters.seqLen;
       body.hyperparameters = hp;
     }
 
@@ -385,17 +394,25 @@ export class MistralClient {
   }
 
   async cancelFineTuningJob(jobId: string) {
-    let response = await this.axios.post(`/fine_tuning/jobs/${jobId}/cancel`, {}, {
-      headers: this.headers
-    });
+    let response = await this.axios.post(
+      `/fine_tuning/jobs/${jobId}/cancel`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }
 
   async startFineTuningJob(jobId: string) {
-    let response = await this.axios.post(`/fine_tuning/jobs/${jobId}/start`, {}, {
-      headers: this.headers
-    });
+    let response = await this.axios.post(
+      `/fine_tuning/jobs/${jobId}/start`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }
@@ -448,9 +465,13 @@ export class MistralClient {
   }
 
   async cancelBatchJob(jobId: string) {
-    let response = await this.axios.post(`/batch/jobs/${jobId}/cancel`, {}, {
-      headers: this.headers
-    });
+    let response = await this.axios.post(
+      `/batch/jobs/${jobId}/cancel`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }

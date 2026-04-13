@@ -3,38 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newCases = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Cases',
-    key: 'new_cases',
-    description: 'Triggers when new customer care cases are created or updated in Sprout Social.'
-  }
-)
-  .input(z.object({
-    caseId: z.string().describe('Unique identifier for the case.'),
-    eventType: z.enum(['created', 'updated']).describe('Whether the case is new or was updated.'),
-    status: z.string().optional().describe('Case status (OPEN, ON_HOLD, CLOSED).'),
-    priority: z.string().optional().describe('Case priority.'),
-    caseType: z.string().optional().describe('Case type (GENERAL, SUPPORT, LEAD, QUESTION, FEEDBACK).'),
-    createdTime: z.string().optional().describe('ISO 8601 timestamp when the case was created.'),
-    updatedTime: z.string().optional().describe('ISO 8601 timestamp when the case was last updated.'),
-    raw: z.any().optional().describe('Full raw case data.')
-  }))
-  .output(z.object({
-    caseId: z.string().describe('Unique identifier for the case.'),
-    status: z.string().optional().describe('Case status.'),
-    priority: z.string().optional().describe('Case priority.'),
-    caseType: z.string().optional().describe('Case type.'),
-    createdTime: z.string().optional().describe('ISO 8601 timestamp when the case was created.'),
-    updatedTime: z.string().optional().describe('ISO 8601 timestamp when the case was last updated.')
-  }))
+export let newCases = SlateTrigger.create(spec, {
+  name: 'New Cases',
+  key: 'new_cases',
+  description: 'Triggers when new customer care cases are created or updated in Sprout Social.'
+})
+  .input(
+    z.object({
+      caseId: z.string().describe('Unique identifier for the case.'),
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the case is new or was updated.'),
+      status: z.string().optional().describe('Case status (OPEN, ON_HOLD, CLOSED).'),
+      priority: z.string().optional().describe('Case priority.'),
+      caseType: z
+        .string()
+        .optional()
+        .describe('Case type (GENERAL, SUPPORT, LEAD, QUESTION, FEEDBACK).'),
+      createdTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the case was created.'),
+      updatedTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the case was last updated.'),
+      raw: z.any().optional().describe('Full raw case data.')
+    })
+  )
+  .output(
+    z.object({
+      caseId: z.string().describe('Unique identifier for the case.'),
+      status: z.string().optional().describe('Case status.'),
+      priority: z.string().optional().describe('Case priority.'),
+      caseType: z.string().optional().describe('Case type.'),
+      createdTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the case was created.'),
+      updatedTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the case was last updated.')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         customerId: ctx.config.customerId
@@ -59,9 +77,7 @@ export let newCases = SlateTrigger.create(
 
       try {
         let result = await client.getCases({
-          filters: [
-            `created_time.in(${startTime}..${endTimeStr})`
-          ],
+          filters: [`created_time.in(${startTime}..${endTimeStr})`],
           fields: ['status', 'priority', 'type', 'created_time', 'updated_time'],
           page: 1
         });
@@ -76,7 +92,7 @@ export let newCases = SlateTrigger.create(
           let isNew = !knownCaseIds.includes(caseId);
           allInputs.push({
             caseId,
-            eventType: isNew ? 'created' as const : 'updated' as const,
+            eventType: isNew ? ('created' as const) : ('updated' as const),
             status: caseItem.status,
             priority: caseItem.priority,
             caseType: caseItem.type,
@@ -87,10 +103,9 @@ export let newCases = SlateTrigger.create(
         }
 
         // Track known case IDs (keep last 500)
-        let updatedKnownIds = [...new Set([
-          ...allInputs.map(i => i.caseId),
-          ...knownCaseIds
-        ])].slice(0, 500);
+        let updatedKnownIds = [
+          ...new Set([...allInputs.map(i => i.caseId), ...knownCaseIds])
+        ].slice(0, 500);
 
         return {
           inputs: allInputs,
@@ -108,7 +123,7 @@ export let newCases = SlateTrigger.create(
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `case.${ctx.input.eventType}`,
         id: `${ctx.input.caseId}-${ctx.input.updatedTime || ctx.input.createdTime || Date.now()}`,

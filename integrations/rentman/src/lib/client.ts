@@ -28,31 +28,44 @@ export class Client {
       baseURL: 'https://api.rentman.net',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // Generic list method
-  async list<T = Record<string, any>>(resource: string, params?: ListParams): Promise<ListResponse<T>> {
+  async list<T = Record<string, any>>(
+    resource: string,
+    params?: ListParams
+  ): Promise<ListResponse<T>> {
     let response = await this.axios.get(`/${resource}`, { params });
     return response.data;
   }
 
   // Generic get by ID
-  async get<T = Record<string, any>>(resource: string, resourceId: number): Promise<ItemResponse<T>> {
+  async get<T = Record<string, any>>(
+    resource: string,
+    resourceId: number
+  ): Promise<ItemResponse<T>> {
     let response = await this.axios.get(`/${resource}/${resourceId}`);
     return response.data;
   }
 
   // Generic create
-  async create<T = Record<string, any>>(resource: string, data: Record<string, any>): Promise<ItemResponse<T>> {
+  async create<T = Record<string, any>>(
+    resource: string,
+    data: Record<string, any>
+  ): Promise<ItemResponse<T>> {
     let response = await this.axios.post(`/${resource}`, data);
     return response.data;
   }
 
   // Generic update
-  async update<T = Record<string, any>>(resource: string, resourceId: number, data: Record<string, any>): Promise<ItemResponse<T>> {
+  async update<T = Record<string, any>>(
+    resource: string,
+    resourceId: number,
+    data: Record<string, any>
+  ): Promise<ItemResponse<T>> {
     let response = await this.axios.put(`/${resource}/${resourceId}`, data);
     return response.data;
   }
@@ -69,7 +82,9 @@ export class Client {
     childResource: string,
     params?: ListParams
   ): Promise<ListResponse<T>> {
-    let response = await this.axios.get(`/${parentResource}/${parentId}/${childResource}`, { params });
+    let response = await this.axios.get(`/${parentResource}/${parentId}/${childResource}`, {
+      params
+    });
     return response.data;
   }
 
@@ -80,7 +95,10 @@ export class Client {
     childResource: string,
     data: Record<string, any>
   ): Promise<ItemResponse<T>> {
-    let response = await this.axios.post(`/${parentResource}/${parentId}/${childResource}`, data);
+    let response = await this.axios.post(
+      `/${parentResource}/${parentId}/${childResource}`,
+      data
+    );
     return response.data;
   }
 }

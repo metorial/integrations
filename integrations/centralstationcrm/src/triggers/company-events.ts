@@ -3,65 +3,68 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let companyEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Company Events',
-    key: 'company_events',
-    description: 'Triggers when a company is created, updated, or deleted in CentralStationCRM.',
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The action that triggered the event (create, update, destroy)'),
-    companyId: z.number().describe('ID of the affected company'),
-    companyName: z.string().optional().describe('Name of the company'),
-    rawPayload: z.any().describe('Complete webhook payload'),
-  }))
-  .output(z.object({
-    companyId: z.number().describe('ID of the company'),
-    companyName: z.string().optional().describe('Name of the company'),
-    background: z.string().optional().describe('Background information'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let companyEvents = SlateTrigger.create(spec, {
+  name: 'Company Events',
+  key: 'company_events',
+  description: 'Triggers when a company is created, updated, or deleted in CentralStationCRM.'
+})
+  .input(
+    z.object({
+      eventAction: z
+        .string()
+        .describe('The action that triggered the event (create, update, destroy)'),
+      companyId: z.number().describe('ID of the affected company'),
+      companyName: z.string().optional().describe('Name of the company'),
+      rawPayload: z.any().describe('Complete webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      companyId: z.number().describe('ID of the company'),
+      companyName: z.string().optional().describe('Name of the company'),
+      background: z.string().optional().describe('Background information'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountName: ctx.config.accountName,
+        accountName: ctx.config.accountName
       });
 
       let createHook = await client.createWebhook({
         url: `${ctx.input.webhookBaseUrl}/create`,
         object_type: 'Company',
-        action: 'create',
+        action: 'create'
       });
 
       let updateHook = await client.createWebhook({
         url: `${ctx.input.webhookBaseUrl}/update`,
         object_type: 'Company',
-        action: 'update',
+        action: 'update'
       });
 
       let deleteHook = await client.createWebhook({
         url: `${ctx.input.webhookBaseUrl}/destroy`,
         object_type: 'Company',
-        action: 'destroy',
+        action: 'destroy'
       });
 
       return {
         registrationDetails: {
           createHookId: (createHook?.hook ?? createHook)?.id,
           updateHookId: (updateHook?.hook ?? updateHook)?.id,
-          deleteHookId: (deleteHook?.hook ?? deleteHook)?.id,
-        },
+          deleteHookId: (deleteHook?.hook ?? deleteHook)?.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountName: ctx.config.accountName,
+        accountName: ctx.config.accountName
       });
 
       let details = ctx.input.registrationDetails as Record<string, number>;
@@ -70,8 +73,8 @@ export let companyEvents = SlateTrigger.create(
       if (details.deleteHookId) await client.deleteWebhook(details.deleteHookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
       let actionFromPath = pathParts[pathParts.length - 1] ?? 'unknown';
@@ -84,13 +87,13 @@ export let companyEvents = SlateTrigger.create(
             eventAction: actionFromPath,
             companyId: company?.id ?? 0,
             companyName: company?.name,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let company = ctx.input.rawPayload?.company ?? ctx.input.rawPayload;
 
       return {
@@ -101,9 +104,9 @@ export let companyEvents = SlateTrigger.create(
           companyName: company?.name ?? ctx.input.companyName,
           background: company?.background,
           createdAt: company?.created_at,
-          updatedAt: company?.updated_at,
-        },
+          updatedAt: company?.updated_at
+        }
       };
-    },
+    }
   })
   .build();

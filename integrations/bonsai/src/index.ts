@@ -10,7 +10,7 @@ import {
   listProjects,
   listTasks,
   listDeals,
-  listTaskTemplates,
+  listTaskTemplates
 } from './tools';
 import {
   proposalEvents,
@@ -19,7 +19,7 @@ import {
   dealUpdated,
   taskUpdated,
   eventScheduled,
-  formSubmitted,
+  formSubmitted
 } from './triggers';
 
 export let provider = Slate.create({
@@ -34,7 +34,7 @@ export let provider = Slate.create({
     listProjects,
     listTasks,
     listDeals,
-    listTaskTemplates,
+    listTaskTemplates
   ],
   triggers: [
     proposalEvents,
@@ -43,6 +43,6 @@ export let provider = Slate.create({
     dealUpdated,
     taskUpdated,
     eventScheduled,
-    formSubmitted,
-  ],
+    formSubmitted
+  ]
 });

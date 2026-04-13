@@ -7,8 +7,8 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.canva.com/rest/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -21,7 +21,7 @@ export class Client {
   }> {
     let [meRes, profileRes] = await Promise.all([
       this.api.get('/users/me'),
-      this.api.get('/users/me/profile').catch(() => null),
+      this.api.get('/users/me/profile').catch(() => null)
     ]);
 
     let me = meRes.data as { team_user: { user_id: string; team_id: string } };
@@ -30,7 +30,7 @@ export class Client {
     return {
       userId: me.team_user.user_id,
       teamId: me.team_user.team_id,
-      displayName: profile?.profile?.display_name,
+      displayName: profile?.profile?.display_name
     };
   }
 
@@ -42,9 +42,12 @@ export class Client {
     return mapAsset(data.asset);
   }
 
-  async updateAsset(assetId: string, update: { name?: string; tags?: string[] }): Promise<CanvaAsset> {
+  async updateAsset(
+    assetId: string,
+    update: { name?: string; tags?: string[] }
+  ): Promise<CanvaAsset> {
     let res = await this.api.patch(`/assets/${assetId}`, update, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     let data = res.data as { asset: RawCanvaAsset };
     return mapAsset(data.asset);
@@ -54,19 +57,20 @@ export class Client {
     await this.api.delete(`/assets/${assetId}`);
   }
 
-  async uploadAssetFromUrl(params: {
-    name: string;
-    url: string;
-  }): Promise<CanvaUploadJob> {
+  async uploadAssetFromUrl(params: { name: string; url: string }): Promise<CanvaUploadJob> {
     let nameBase64 = btoa(params.name);
-    let res = await this.api.post('/asset-uploads', {
-      url: params.url,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Asset-Upload-Metadata': JSON.stringify({ name_base64: nameBase64 }),
+    let res = await this.api.post(
+      '/asset-uploads',
+      {
+        url: params.url
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Asset-Upload-Metadata': JSON.stringify({ name_base64: nameBase64 })
+        }
+      }
+    );
     let data = res.data as { job: RawUploadJob };
     return mapUploadJob(data.job);
   }
@@ -97,7 +101,7 @@ export class Client {
     let data = res.data as { items: RawCanvaDesign[]; continuation?: string };
     return {
       designs: data.items.map(mapDesign),
-      continuation: data.continuation,
+      continuation: data.continuation
     };
   }
 
@@ -108,18 +112,20 @@ export class Client {
   }
 
   async createDesign(params: {
-    designType: { type: 'preset'; name: string } | { type: 'custom'; width: number; height: number };
+    designType:
+      | { type: 'preset'; name: string }
+      | { type: 'custom'; width: number; height: number };
     title?: string;
     assetId?: string;
   }): Promise<CanvaDesign> {
     let body: Record<string, unknown> = {
-      design_type: params.designType,
+      design_type: params.designType
     };
     if (params.title) body['title'] = params.title;
     if (params.assetId) body['asset_id'] = params.assetId;
 
     let res = await this.api.post('/designs', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     let data = res.data as { design: RawCanvaDesign };
     return mapDesign(data.design);
@@ -131,12 +137,16 @@ export class Client {
     designId: string;
     format: ExportFormat;
   }): Promise<CanvaExportJob> {
-    let res = await this.api.post('/exports', {
-      design_id: params.designId,
-      format: params.format,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let res = await this.api.post(
+      '/exports',
+      {
+        design_id: params.designId,
+        format: params.format
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     let data = res.data as { job: RawExportJob };
     return mapExportJob(data.job);
   }
@@ -158,15 +168,19 @@ export class Client {
     let metadata: Record<string, string> = { title_base64: titleBase64 };
     if (params.mimeType) metadata['mime_type'] = params.mimeType;
 
-    let res = await this.api.post('/imports/url', {
-      url: params.url,
-      title_base64: titleBase64,
-      ...(params.mimeType ? { mime_type: params.mimeType } : {}),
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
+    let res = await this.api.post(
+      '/imports/url',
+      {
+        url: params.url,
+        title_base64: titleBase64,
+        ...(params.mimeType ? { mime_type: params.mimeType } : {})
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     let data = res.data as { job: RawImportJob };
     return mapImportJob(data.job);
   }
@@ -186,22 +200,30 @@ export class Client {
   }
 
   async createFolder(params: { name: string; parentFolderId: string }): Promise<CanvaFolder> {
-    let res = await this.api.post('/folders', {
-      name: params.name,
-      parent_folder_id: params.parentFolderId,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let res = await this.api.post(
+      '/folders',
+      {
+        name: params.name,
+        parent_folder_id: params.parentFolderId
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     let data = res.data as { folder: RawCanvaFolder };
     return mapFolder(data.folder);
   }
 
   async updateFolder(folderId: string, params: { name: string }): Promise<CanvaFolder> {
-    let res = await this.api.patch(`/folders/${folderId}`, {
-      name: params.name,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let res = await this.api.patch(
+      `/folders/${folderId}`,
+      {
+        name: params.name
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     let data = res.data as { folder: RawCanvaFolder };
     return mapFolder(data.folder);
   }
@@ -210,12 +232,15 @@ export class Client {
     await this.api.delete(`/folders/${folderId}`);
   }
 
-  async listFolderItems(folderId: string, params?: {
-    limit?: number;
-    continuation?: string;
-    itemTypes?: string[];
-    sortBy?: string;
-  }): Promise<{ items: CanvaFolderItem[]; continuation?: string }> {
+  async listFolderItems(
+    folderId: string,
+    params?: {
+      limit?: number;
+      continuation?: string;
+      itemTypes?: string[];
+      sortBy?: string;
+    }
+  ): Promise<{ items: CanvaFolderItem[]; continuation?: string }> {
     let queryParams: Record<string, string | string[]> = {};
     if (params?.limit) queryParams['limit'] = String(params.limit);
     if (params?.continuation) queryParams['continuation'] = params.continuation;
@@ -226,32 +251,39 @@ export class Client {
     let data = res.data as { items: RawFolderItem[]; continuation?: string };
     return {
       items: data.items.map(mapFolderItem),
-      continuation: data.continuation,
+      continuation: data.continuation
     };
   }
 
   async moveFolderItem(params: { itemId: string; toFolderId: string }): Promise<void> {
-    await this.api.post('/folders/move', {
-      item_id: params.itemId,
-      to_folder_id: params.toFolderId,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    await this.api.post(
+      '/folders/move',
+      {
+        item_id: params.itemId,
+        to_folder_id: params.toFolderId
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 
   // ---- Comments ----
 
-  async createCommentThread(designId: string, params: {
-    messagePlaintext: string;
-    assigneeId?: string;
-  }): Promise<CanvaCommentThread> {
+  async createCommentThread(
+    designId: string,
+    params: {
+      messagePlaintext: string;
+      assigneeId?: string;
+    }
+  ): Promise<CanvaCommentThread> {
     let body: Record<string, string> = {
-      message_plaintext: params.messagePlaintext,
+      message_plaintext: params.messagePlaintext
     };
     if (params.assigneeId) body['assignee_id'] = params.assigneeId;
 
     let res = await this.api.post(`/designs/${designId}/comments`, body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     let data = res.data as { thread: RawCommentThread };
     return mapCommentThread(data.thread);
@@ -263,31 +295,45 @@ export class Client {
     return mapCommentThread(data.thread);
   }
 
-  async createReply(designId: string, threadId: string, params: {
-    messagePlaintext: string;
-  }): Promise<CanvaCommentReply> {
-    let res = await this.api.post(`/designs/${designId}/comments/${threadId}/replies`, {
-      message_plaintext: params.messagePlaintext,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+  async createReply(
+    designId: string,
+    threadId: string,
+    params: {
+      messagePlaintext: string;
+    }
+  ): Promise<CanvaCommentReply> {
+    let res = await this.api.post(
+      `/designs/${designId}/comments/${threadId}/replies`,
+      {
+        message_plaintext: params.messagePlaintext
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     let data = res.data as { reply: RawCommentReply };
     return mapCommentReply(data.reply);
   }
 
-  async listReplies(designId: string, threadId: string, params?: {
-    limit?: number;
-    continuation?: string;
-  }): Promise<{ replies: CanvaCommentReply[]; continuation?: string }> {
+  async listReplies(
+    designId: string,
+    threadId: string,
+    params?: {
+      limit?: number;
+      continuation?: string;
+    }
+  ): Promise<{ replies: CanvaCommentReply[]; continuation?: string }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams['limit'] = String(params.limit);
     if (params?.continuation) queryParams['continuation'] = params.continuation;
 
-    let res = await this.api.get(`/designs/${designId}/comments/${threadId}/replies`, { params: queryParams });
+    let res = await this.api.get(`/designs/${designId}/comments/${threadId}/replies`, {
+      params: queryParams
+    });
     let data = res.data as { items: RawCommentReply[]; continuation?: string };
     return {
       replies: data.items.map(mapCommentReply),
-      continuation: data.continuation,
+      continuation: data.continuation
     };
   }
 
@@ -313,7 +359,7 @@ export class Client {
     let data = res.data as { items: RawBrandTemplate[]; continuation?: string };
     return {
       templates: data.items.map(mapBrandTemplate),
-      continuation: data.continuation,
+      continuation: data.continuation
     };
   }
 
@@ -323,7 +369,9 @@ export class Client {
     return mapBrandTemplate(data.brand_template);
   }
 
-  async getBrandTemplateDataset(brandTemplateId: string): Promise<Record<string, { type: string }>> {
+  async getBrandTemplateDataset(
+    brandTemplateId: string
+  ): Promise<Record<string, { type: string }>> {
     let res = await this.api.get(`/brand-templates/${brandTemplateId}/dataset`);
     let data = res.data as { dataset: Record<string, { type: string }> };
     return data.dataset;
@@ -338,12 +386,12 @@ export class Client {
   }): Promise<CanvaAutofillJob> {
     let body: Record<string, unknown> = {
       brand_template_id: params.brandTemplateId,
-      data: params.data,
+      data: params.data
     };
     if (params.title) body['title'] = params.title;
 
     let res = await this.api.post('/autofills', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     let data = res.data as { job: RawAutofillJob };
     return mapAutofillJob(data.job);
@@ -570,8 +618,24 @@ export interface CanvaAutofillJob {
 
 export type ExportFormat =
   | { type: 'pdf'; export_quality?: string; size?: string; pages?: number[] }
-  | { type: 'jpg'; quality: number; height?: number; width?: number; export_quality?: string; pages?: number[] }
-  | { type: 'png'; height?: number; width?: number; lossless?: boolean; transparent_background?: boolean; as_single_image?: boolean; export_quality?: string; pages?: number[] }
+  | {
+      type: 'jpg';
+      quality: number;
+      height?: number;
+      width?: number;
+      export_quality?: string;
+      pages?: number[];
+    }
+  | {
+      type: 'png';
+      height?: number;
+      width?: number;
+      lossless?: boolean;
+      transparent_background?: boolean;
+      as_single_image?: boolean;
+      export_quality?: string;
+      pages?: number[];
+    }
   | { type: 'pptx'; pages?: number[] }
   | { type: 'gif'; height?: number; width?: number; export_quality?: string; pages?: number[] }
   | { type: 'mp4'; quality?: string; export_quality?: string; pages?: number[] };
@@ -589,7 +653,7 @@ let mapAsset = (raw: RawCanvaAsset): CanvaAsset => ({
   ownerTeamId: raw.owner.team_id,
   thumbnailUrl: raw.thumbnail?.url,
   thumbnailWidth: raw.thumbnail?.width,
-  thumbnailHeight: raw.thumbnail?.height,
+  thumbnailHeight: raw.thumbnail?.height
 });
 
 let mapUploadJob = (raw: RawUploadJob): CanvaUploadJob => ({
@@ -597,7 +661,7 @@ let mapUploadJob = (raw: RawUploadJob): CanvaUploadJob => ({
   status: raw.status,
   errorCode: raw.error?.code,
   errorMessage: raw.error?.message,
-  asset: raw.asset ? mapAsset(raw.asset) : undefined,
+  asset: raw.asset ? mapAsset(raw.asset) : undefined
 });
 
 let mapDesign = (raw: RawCanvaDesign): CanvaDesign => ({
@@ -610,7 +674,7 @@ let mapDesign = (raw: RawCanvaDesign): CanvaDesign => ({
   createdAt: raw.created_at,
   updatedAt: raw.updated_at,
   thumbnailUrl: raw.thumbnail?.url,
-  pageCount: raw.page_count,
+  pageCount: raw.page_count
 });
 
 let mapExportJob = (raw: RawExportJob): CanvaExportJob => ({
@@ -618,7 +682,7 @@ let mapExportJob = (raw: RawExportJob): CanvaExportJob => ({
   status: raw.status,
   downloadUrls: raw.urls,
   errorCode: raw.error?.code,
-  errorMessage: raw.error?.message,
+  errorMessage: raw.error?.message
 });
 
 let mapImportJob = (raw: RawImportJob): CanvaImportJob => ({
@@ -626,7 +690,7 @@ let mapImportJob = (raw: RawImportJob): CanvaImportJob => ({
   status: raw.status,
   designs: raw.result?.designs.map(mapDesign),
   errorCode: raw.error?.code,
-  errorMessage: raw.error?.message,
+  errorMessage: raw.error?.message
 });
 
 let mapFolder = (raw: RawCanvaFolder): CanvaFolder => ({
@@ -634,14 +698,14 @@ let mapFolder = (raw: RawCanvaFolder): CanvaFolder => ({
   name: raw.name,
   createdAt: raw.created_at,
   updatedAt: raw.updated_at,
-  thumbnailUrl: raw.thumbnail?.url,
+  thumbnailUrl: raw.thumbnail?.url
 });
 
 let mapFolderItem = (raw: RawFolderItem): CanvaFolderItem => ({
   type: raw.type,
   folder: raw.folder ? mapFolder(raw.folder) : undefined,
   design: raw.design ? mapDesign(raw.design) : undefined,
-  image: raw.image ? mapAsset(raw.image) : undefined,
+  image: raw.image ? mapAsset(raw.image) : undefined
 });
 
 let mapCommentThread = (raw: RawCommentThread): CanvaCommentThread => ({
@@ -656,7 +720,7 @@ let mapCommentThread = (raw: RawCommentThread): CanvaCommentThread => ({
   resolverUserId: raw.resolver?.user_id,
   resolverDisplayName: raw.resolver?.display_name,
   createdAt: raw.created_at,
-  updatedAt: raw.updated_at,
+  updatedAt: raw.updated_at
 });
 
 let mapCommentReply = (raw: RawCommentReply): CanvaCommentReply => ({
@@ -668,7 +732,7 @@ let mapCommentReply = (raw: RawCommentReply): CanvaCommentReply => ({
   contentPlaintext: raw.content?.plaintext,
   contentMarkdown: raw.content?.markdown,
   createdAt: raw.created_at,
-  updatedAt: raw.updated_at,
+  updatedAt: raw.updated_at
 });
 
 let mapBrandTemplate = (raw: RawBrandTemplate): CanvaBrandTemplate => ({
@@ -678,7 +742,7 @@ let mapBrandTemplate = (raw: RawBrandTemplate): CanvaBrandTemplate => ({
   createUrl: raw.create_url,
   createdAt: raw.created_at,
   updatedAt: raw.updated_at,
-  thumbnailUrl: raw.thumbnail?.url,
+  thumbnailUrl: raw.thumbnail?.url
 });
 
 let mapAutofillJob = (raw: RawAutofillJob): CanvaAutofillJob => ({
@@ -686,5 +750,5 @@ let mapAutofillJob = (raw: RawAutofillJob): CanvaAutofillJob => ({
   status: raw.status,
   design: raw.result?.design ? mapDesign(raw.result.design) : undefined,
   errorCode: raw.error?.code,
-  errorMessage: raw.error?.message,
+  errorMessage: raw.error?.message
 });

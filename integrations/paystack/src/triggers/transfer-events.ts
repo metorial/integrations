@@ -2,43 +2,44 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transferEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transfer Events',
-    key: 'transfer_events',
-    description: 'Triggers when an outbound transfer succeeds, fails, or is reversed.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Paystack event type'),
-    eventId: z.string().describe('Unique event identifier'),
-    transferCode: z.string().describe('Transfer code'),
-    reference: z.string().describe('Transfer reference'),
-    amount: z.number().describe('Transfer amount'),
-    currency: z.string().describe('Currency'),
-    status: z.string().describe('Transfer status'),
-    reason: z.string().nullable().describe('Transfer reason'),
-    recipientCode: z.string().describe('Recipient code'),
-    recipientName: z.string().describe('Recipient name'),
-    recipientAccountNumber: z.string().describe('Recipient account number'),
-    recipientBankName: z.string().describe('Recipient bank name'),
-  }))
-  .output(z.object({
-    transferCode: z.string().describe('Transfer code'),
-    reference: z.string().describe('Transfer reference'),
-    amount: z.number().describe('Transfer amount'),
-    currency: z.string().describe('Currency'),
-    status: z.string().describe('Transfer status'),
-    reason: z.string().nullable().describe('Transfer reason'),
-    recipientCode: z.string().describe('Recipient code'),
-    recipientName: z.string().describe('Recipient name'),
-    recipientAccountNumber: z.string().describe('Recipient account number'),
-    recipientBankName: z.string().describe('Recipient bank name'),
-  }))
+export let transferEvents = SlateTrigger.create(spec, {
+  name: 'Transfer Events',
+  key: 'transfer_events',
+  description: 'Triggers when an outbound transfer succeeds, fails, or is reversed.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Paystack event type'),
+      eventId: z.string().describe('Unique event identifier'),
+      transferCode: z.string().describe('Transfer code'),
+      reference: z.string().describe('Transfer reference'),
+      amount: z.number().describe('Transfer amount'),
+      currency: z.string().describe('Currency'),
+      status: z.string().describe('Transfer status'),
+      reason: z.string().nullable().describe('Transfer reason'),
+      recipientCode: z.string().describe('Recipient code'),
+      recipientName: z.string().describe('Recipient name'),
+      recipientAccountNumber: z.string().describe('Recipient account number'),
+      recipientBankName: z.string().describe('Recipient bank name')
+    })
+  )
+  .output(
+    z.object({
+      transferCode: z.string().describe('Transfer code'),
+      reference: z.string().describe('Transfer reference'),
+      amount: z.number().describe('Transfer amount'),
+      currency: z.string().describe('Currency'),
+      status: z.string().describe('Transfer status'),
+      reason: z.string().nullable().describe('Transfer reason'),
+      recipientCode: z.string().describe('Recipient code'),
+      recipientName: z.string().describe('Recipient name'),
+      recipientAccountNumber: z.string().describe('Recipient account number'),
+      recipientBankName: z.string().describe('Recipient bank name')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
       let event = body.event as string;
 
       if (!event.startsWith('transfer.')) {
@@ -62,17 +63,17 @@ export let transferEvents = SlateTrigger.create(
             recipientCode: recipient.recipient_code ?? '',
             recipientName: recipient.name ?? '',
             recipientAccountNumber: recipient.details?.account_number ?? '',
-            recipientBankName: recipient.details?.bank_name ?? '',
-          },
-        ],
+            recipientBankName: recipient.details?.bank_name ?? ''
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
         'transfer.success': 'transfer.successful',
         'transfer.failed': 'transfer.failed',
-        'transfer.reversed': 'transfer.reversed',
+        'transfer.reversed': 'transfer.reversed'
       };
 
       return {
@@ -88,9 +89,9 @@ export let transferEvents = SlateTrigger.create(
           recipientCode: ctx.input.recipientCode,
           recipientName: ctx.input.recipientName,
           recipientAccountNumber: ctx.input.recipientAccountNumber,
-          recipientBankName: ctx.input.recipientBankName,
-        },
+          recipientBankName: ctx.input.recipientBankName
+        }
       };
-    },
+    }
   })
   .build();

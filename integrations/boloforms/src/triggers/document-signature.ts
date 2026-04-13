@@ -2,37 +2,54 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let documentSignatureTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Signature Events',
-    key: 'document_signature_events',
-    description: 'Triggers when signature-related events occur on PDF documents, including when a document is fully signed, when an individual signer views the document, or when an individual signer completes their signature.',
-  }
-)
-  .input(z.object({
-    webhookEvent: z.string().describe('The webhook event type'),
-    documentId: z.string().optional().describe('ID of the document'),
-    documentName: z.string().optional().describe('Name of the document'),
-    documentUrl: z.string().optional().describe('URL of the document'),
-    finishedPdfUrl: z.string().optional().describe('URL to the completed signed PDF'),
-    signers: z.array(z.record(z.string(), z.any())).optional().describe('List of signers and their statuses'),
-    signer: z.record(z.string(), z.any()).optional().describe('Individual signer details for individual events'),
-    rawPayload: z.record(z.string(), z.any()).describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    documentId: z.string().optional().describe('ID of the document'),
-    documentName: z.string().optional().describe('Name of the document'),
-    documentUrl: z.string().optional().describe('URL of the document'),
-    finishedPdfUrl: z.string().optional().describe('URL to the completed signed PDF'),
-    signerEmail: z.string().optional().describe('Email of the individual signer (for individual events)'),
-    signerName: z.string().optional().describe('Name of the individual signer (for individual events)'),
-    signerStatus: z.string().optional().describe('Status of the individual signer'),
-    signers: z.array(z.record(z.string(), z.any())).optional().describe('All signers and their statuses'),
-  }))
+export let documentSignatureTrigger = SlateTrigger.create(spec, {
+  name: 'Document Signature Events',
+  key: 'document_signature_events',
+  description:
+    'Triggers when signature-related events occur on PDF documents, including when a document is fully signed, when an individual signer views the document, or when an individual signer completes their signature.'
+})
+  .input(
+    z.object({
+      webhookEvent: z.string().describe('The webhook event type'),
+      documentId: z.string().optional().describe('ID of the document'),
+      documentName: z.string().optional().describe('Name of the document'),
+      documentUrl: z.string().optional().describe('URL of the document'),
+      finishedPdfUrl: z.string().optional().describe('URL to the completed signed PDF'),
+      signers: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of signers and their statuses'),
+      signer: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Individual signer details for individual events'),
+      rawPayload: z.record(z.string(), z.any()).describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().optional().describe('ID of the document'),
+      documentName: z.string().optional().describe('Name of the document'),
+      documentUrl: z.string().optional().describe('URL of the document'),
+      finishedPdfUrl: z.string().optional().describe('URL to the completed signed PDF'),
+      signerEmail: z
+        .string()
+        .optional()
+        .describe('Email of the individual signer (for individual events)'),
+      signerName: z
+        .string()
+        .optional()
+        .describe('Name of the individual signer (for individual events)'),
+      signerStatus: z.string().optional().describe('Status of the individual signer'),
+      signers: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('All signers and their statuses')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let items = Array.isArray(data) ? data : [data];
 
@@ -44,13 +61,13 @@ export let documentSignatureTrigger = SlateTrigger.create(
         finishedPdfUrl: item.finishedPdfUrl,
         signers: item.signers,
         signer: item.signer ?? item.signerDetails,
-        rawPayload: item,
+        rawPayload: item
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.webhookEvent;
       let type = 'document.signature_event';
 
@@ -75,8 +92,9 @@ export let documentSignatureTrigger = SlateTrigger.create(
           signerEmail: signer?.email,
           signerName: signer?.name,
           signerStatus: signer?.status,
-          signers: ctx.input.signers,
-        },
+          signers: ctx.input.signers
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -3,50 +3,51 @@ import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let datasourceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Datasource Events',
-    key: 'datasource_events',
-    description: 'Triggers when datasource entries are saved or added.',
-  }
-)
-  .input(z.object({
-    datasourceId: z.number().optional().describe('ID of the affected datasource'),
-    spaceId: z.number().optional().describe('Space ID'),
-    webhookId: z.string().describe('Unique ID for deduplication'),
-  }))
-  .output(z.object({
-    datasourceId: z.number().optional().describe('ID of the affected datasource'),
-    spaceId: z.number().optional().describe('Space ID'),
-  }))
+export let datasourceEvents = SlateTrigger.create(spec, {
+  name: 'Datasource Events',
+  key: 'datasource_events',
+  description: 'Triggers when datasource entries are saved or added.'
+})
+  .input(
+    z.object({
+      datasourceId: z.number().optional().describe('ID of the affected datasource'),
+      spaceId: z.number().optional().describe('Space ID'),
+      webhookId: z.string().describe('Unique ID for deduplication')
+    })
+  )
+  .output(
+    z.object({
+      datasourceId: z.number().optional().describe('ID of the affected datasource'),
+      spaceId: z.number().optional().describe('Space ID')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new StoryblokClient({
         token: ctx.auth.token,
         region: ctx.config.region,
-        spaceId: ctx.config.spaceId,
+        spaceId: ctx.config.spaceId
       });
 
       let webhook = await client.createWebhook({
         name: 'Slates - Datasource Events',
         endpoint: ctx.input.webhookBaseUrl,
         actions: ['datasource.entries_updated'],
-        activated: true,
+        activated: true
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id?.toString(),
-        },
+          webhookId: webhook.id?.toString()
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new StoryblokClient({
         token: ctx.auth.token,
         region: ctx.config.region,
-        spaceId: ctx.config.spaceId,
+        spaceId: ctx.config.spaceId
       });
 
       let details = ctx.input.registrationDetails as { webhookId?: string };
@@ -55,8 +56,8 @@ export let datasourceEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as {
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as {
         action?: string;
         datasource_id?: number;
         space_id?: number;
@@ -67,23 +68,25 @@ export let datasourceEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          datasourceId: body.datasource_id,
-          spaceId: body.space_id,
-          webhookId: `datasource-${body.datasource_id}-entries-updated-${Date.now()}`,
-        }],
+        inputs: [
+          {
+            datasourceId: body.datasource_id,
+            spaceId: body.space_id,
+            webhookId: `datasource-${body.datasource_id}-entries-updated-${Date.now()}`
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'datasource.entries_updated',
         id: ctx.input.webhookId,
         output: {
           datasourceId: ctx.input.datasourceId,
-          spaceId: ctx.input.spaceId,
-        },
+          spaceId: ctx.input.spaceId
+        }
       };
-    },
+    }
   })
   .build();

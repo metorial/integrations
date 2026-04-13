@@ -5,42 +5,52 @@ import { z } from 'zod';
 
 let iamBindingSchema = z.object({
   role: z.string().describe('IAM role (e.g., "roles/storage.objectViewer")'),
-  members: z.array(z.string()).describe('List of members (e.g., ["user:alice@example.com", "serviceAccount:sa@project.iam.gserviceaccount.com"])'),
+  members: z
+    .array(z.string())
+    .describe(
+      'List of members (e.g., ["user:alice@example.com", "serviceAccount:sa@project.iam.gserviceaccount.com"])'
+    )
 });
 
-export let manageBucketIam = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Bucket IAM',
-    key: 'manage_bucket_iam',
-    description: `Get or set IAM policies on a Cloud Storage bucket. Use **action: "get"** to retrieve the current policy, or **action: "set"** to replace the entire policy with the provided bindings. Use **action: "add_binding"** or **action: "remove_binding"** to modify individual bindings without replacing the full policy.`,
-    instructions: [
-      'When adding or removing a binding, the tool fetches the current policy and modifies it accordingly.',
-      'Common roles: roles/storage.admin, roles/storage.objectViewer, roles/storage.objectCreator, roles/storage.objectAdmin.',
-    ],
-    constraints: [
-      'Requires full-control or cloud-platform scope.',
-    ],
-  }
-)
-  .input(z.object({
-    bucketName: z.string().describe('Name of the bucket'),
-    action: z.enum(['get', 'set', 'add_binding', 'remove_binding']).describe('IAM operation to perform'),
-    bindings: z.array(iamBindingSchema).optional().describe('Full list of IAM bindings (required for "set" action)'),
-    binding: iamBindingSchema.optional().describe('Single IAM binding to add or remove'),
-  }))
-  .output(z.object({
-    bucketName: z.string(),
-    bindings: z.array(z.object({
-      role: z.string(),
-      members: z.array(z.string()),
-    })),
-    etag: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageBucketIam = SlateTool.create(spec, {
+  name: 'Manage Bucket IAM',
+  key: 'manage_bucket_iam',
+  description: `Get or set IAM policies on a Cloud Storage bucket. Use **action: "get"** to retrieve the current policy, or **action: "set"** to replace the entire policy with the provided bindings. Use **action: "add_binding"** or **action: "remove_binding"** to modify individual bindings without replacing the full policy.`,
+  instructions: [
+    'When adding or removing a binding, the tool fetches the current policy and modifies it accordingly.',
+    'Common roles: roles/storage.admin, roles/storage.objectViewer, roles/storage.objectCreator, roles/storage.objectAdmin.'
+  ],
+  constraints: ['Requires full-control or cloud-platform scope.']
+})
+  .input(
+    z.object({
+      bucketName: z.string().describe('Name of the bucket'),
+      action: z
+        .enum(['get', 'set', 'add_binding', 'remove_binding'])
+        .describe('IAM operation to perform'),
+      bindings: z
+        .array(iamBindingSchema)
+        .optional()
+        .describe('Full list of IAM bindings (required for "set" action)'),
+      binding: iamBindingSchema.optional().describe('Single IAM binding to add or remove')
+    })
+  )
+  .output(
+    z.object({
+      bucketName: z.string(),
+      bindings: z.array(
+        z.object({
+          role: z.string(),
+          members: z.array(z.string())
+        })
+      ),
+      etag: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      projectId: ctx.config.projectId,
+      projectId: ctx.config.projectId
     });
 
     if (ctx.input.action === 'get') {
@@ -49,9 +59,9 @@ export let manageBucketIam = SlateTool.create(
         output: {
           bucketName: ctx.input.bucketName,
           bindings: policy.bindings || [],
-          etag: policy.etag,
+          etag: policy.etag
         },
-        message: `Retrieved IAM policy for bucket **${ctx.input.bucketName}** with ${(policy.bindings || []).length} binding(s).`,
+        message: `Retrieved IAM policy for bucket **${ctx.input.bucketName}** with ${(policy.bindings || []).length} binding(s).`
       };
     }
 
@@ -60,15 +70,15 @@ export let manageBucketIam = SlateTool.create(
         throw new Error('bindings are required for "set" action');
       }
       let policy = await client.setBucketIamPolicy(ctx.input.bucketName, {
-        bindings: ctx.input.bindings,
+        bindings: ctx.input.bindings
       });
       return {
         output: {
           bucketName: ctx.input.bucketName,
           bindings: policy.bindings || [],
-          etag: policy.etag,
+          etag: policy.etag
         },
-        message: `Set IAM policy for bucket **${ctx.input.bucketName}** with ${(policy.bindings || []).length} binding(s).`,
+        message: `Set IAM policy for bucket **${ctx.input.bucketName}** with ${(policy.bindings || []).length} binding(s).`
       };
     }
 
@@ -89,15 +99,15 @@ export let manageBucketIam = SlateTool.create(
 
       let policy = await client.setBucketIamPolicy(ctx.input.bucketName, {
         bindings,
-        etag: currentPolicy.etag,
+        etag: currentPolicy.etag
       });
       return {
         output: {
           bucketName: ctx.input.bucketName,
           bindings: policy.bindings || [],
-          etag: policy.etag,
+          etag: policy.etag
         },
-        message: `Added IAM binding for role **${ctx.input.binding.role}** on bucket **${ctx.input.bucketName}**.`,
+        message: `Added IAM binding for role **${ctx.input.binding.role}** on bucket **${ctx.input.bucketName}**.`
       };
     }
 
@@ -120,14 +130,15 @@ export let manageBucketIam = SlateTool.create(
 
     let policy = await client.setBucketIamPolicy(ctx.input.bucketName, {
       bindings,
-      etag: currentPolicy.etag,
+      etag: currentPolicy.etag
     });
     return {
       output: {
         bucketName: ctx.input.bucketName,
         bindings: policy.bindings || [],
-        etag: policy.etag,
+        etag: policy.etag
       },
-      message: `Removed IAM binding for role **${ctx.input.binding.role}** on bucket **${ctx.input.bucketName}**.`,
+      message: `Removed IAM binding for role **${ctx.input.binding.role}** on bucket **${ctx.input.bucketName}**.`
     };
-  }).build();
+  })
+  .build();

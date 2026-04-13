@@ -23,7 +23,5 @@ export let provider = Slate.create({
     getKeyInfo,
     getUsageStats
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

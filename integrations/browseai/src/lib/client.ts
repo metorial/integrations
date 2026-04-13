@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.browse.ai/v2',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -29,7 +29,7 @@ export class Client {
 
   async createTask(robotId: string, inputParameters: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/robots/${robotId}/tasks`, {
-      inputParameters,
+      inputParameters
     });
     return response.data.result;
   }
@@ -64,7 +64,7 @@ export class Client {
   ): Promise<any> {
     let response = await this.axios.post(`/robots/${robotId}/bulk-runs`, {
       title,
-      inputParameters: inputParametersList,
+      inputParameters: inputParametersList
     });
     return response.data.result;
   }
@@ -86,7 +86,7 @@ export class Client {
   async createWebhook(robotId: string, hookUrl: string, eventType: string): Promise<any> {
     let response = await this.axios.post(`/robots/${robotId}/webhooks`, {
       hookUrl,
-      eventType,
+      eventType
     });
     return response.data.result;
   }

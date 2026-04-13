@@ -3,38 +3,44 @@ import { GistClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchConversations = SlateTool.create(
-  spec,
-  {
-    name: 'Search Conversations',
-    key: 'search_conversations',
-    description: `Search and filter conversations in Gist. Filter by assignee, team, channel, tags, and contact. Also retrieves conversation counts.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    assigneeId: z.string().optional().describe('Filter by teammate assignee ID'),
-    teamId: z.string().optional().describe('Filter by team ID'),
-    channel: z.string().optional().describe('Filter by channel (chat, email, facebook, twitter, api)'),
-    tagId: z.string().optional().describe('Filter by tag ID'),
-    contactId: z.string().optional().describe('Filter by contact ID'),
-    page: z.number().optional().describe('Page number'),
-    perPage: z.number().optional().describe('Results per page (max: 60)'),
-  }))
-  .output(z.object({
-    conversations: z.array(z.object({
-      conversationId: z.string(),
-      subject: z.string().optional(),
-      contactId: z.string().optional(),
-      assigneeId: z.string().optional(),
-      teamId: z.string().optional(),
-      status: z.string().optional(),
-      priority: z.string().optional(),
-      createdAt: z.string().optional(),
-    })),
-    pages: z.any().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchConversations = SlateTool.create(spec, {
+  name: 'Search Conversations',
+  key: 'search_conversations',
+  description: `Search and filter conversations in Gist. Filter by assignee, team, channel, tags, and contact. Also retrieves conversation counts.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      assigneeId: z.string().optional().describe('Filter by teammate assignee ID'),
+      teamId: z.string().optional().describe('Filter by team ID'),
+      channel: z
+        .string()
+        .optional()
+        .describe('Filter by channel (chat, email, facebook, twitter, api)'),
+      tagId: z.string().optional().describe('Filter by tag ID'),
+      contactId: z.string().optional().describe('Filter by contact ID'),
+      page: z.number().optional().describe('Page number'),
+      perPage: z.number().optional().describe('Results per page (max: 60)')
+    })
+  )
+  .output(
+    z.object({
+      conversations: z.array(
+        z.object({
+          conversationId: z.string(),
+          subject: z.string().optional(),
+          contactId: z.string().optional(),
+          assigneeId: z.string().optional(),
+          teamId: z.string().optional(),
+          status: z.string().optional(),
+          priority: z.string().optional(),
+          createdAt: z.string().optional()
+        })
+      ),
+      pages: z.any().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
 
     let params: Record<string, any> = {};
@@ -55,14 +61,15 @@ export let searchConversations = SlateTool.create(
       teamId: c.team_id ? String(c.team_id) : undefined,
       status: c.status,
       priority: c.priority,
-      createdAt: c.created_at ? String(c.created_at) : undefined,
+      createdAt: c.created_at ? String(c.created_at) : undefined
     }));
 
     return {
       output: {
         conversations,
-        pages: data.pages,
+        pages: data.pages
       },
-      message: `Found **${conversations.length}** conversations.`,
+      message: `Found **${conversations.length}** conversations.`
     };
-  }).build();
+  })
+  .build();

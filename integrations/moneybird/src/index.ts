@@ -19,7 +19,7 @@ import {
   manageTimeEntries,
   manageProjects,
   listFinancialMutations,
-  linkBooking,
+  linkBooking
 } from './tools';
 import {
   contactEvents,
@@ -27,7 +27,7 @@ import {
   estimateEvents,
   paymentEvents,
   documentEvents,
-  recurringInvoiceEvents,
+  recurringInvoiceEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -51,7 +51,7 @@ export let provider = Slate.create({
     manageTimeEntries,
     manageProjects,
     listFinancialMutations,
-    linkBooking,
+    linkBooking
   ] as any,
   triggers: [
     contactEvents,
@@ -59,6 +59,6 @@ export let provider = Slate.create({
     estimateEvents,
     paymentEvents,
     documentEvents,
-    recurringInvoiceEvents,
-  ] as any,
+    recurringInvoiceEvents
+  ] as any
 });

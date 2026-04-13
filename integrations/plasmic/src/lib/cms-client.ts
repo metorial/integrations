@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let cmsAxios = createAxios({
-  baseURL: 'https://data.plasmic.app/api/v1/cms/databases',
+  baseURL: 'https://data.plasmic.app/api/v1/cms/databases'
 });
 
 export class CmsClient {
@@ -9,11 +9,7 @@ export class CmsClient {
   private publicToken: string;
   private secretToken?: string;
 
-  constructor(config: {
-    cmsId: string;
-    publicToken: string;
-    secretToken?: string;
-  }) {
+  constructor(config: { cmsId: string; publicToken: string; secretToken?: string }) {
     this.cmsId = config.cmsId;
     this.publicToken = config.publicToken;
     this.secretToken = config.secretToken;
@@ -21,7 +17,7 @@ export class CmsClient {
 
   private get readHeaders() {
     return {
-      'x-plasmic-api-cms-tokens': `${this.cmsId}:${this.publicToken}`,
+      'x-plasmic-api-cms-tokens': `${this.cmsId}:${this.publicToken}`
     };
   }
 
@@ -31,7 +27,7 @@ export class CmsClient {
     }
     return {
       'x-plasmic-api-cms-tokens': `${this.cmsId}:${this.secretToken}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -59,13 +55,10 @@ export class CmsClient {
 
     let headers = params.draft ? this.writeHeaders : this.readHeaders;
 
-    let response = await cmsAxios.get(
-      `/${this.cmsId}/tables/${params.modelId}/query`,
-      {
-        headers,
-        params: queryParams,
-      }
-    );
+    let response = await cmsAxios.get(`/${this.cmsId}/tables/${params.modelId}/query`, {
+      headers,
+      params: queryParams
+    });
 
     return response.data;
   }
@@ -88,13 +81,10 @@ export class CmsClient {
 
     let headers = params.draft ? this.writeHeaders : this.readHeaders;
 
-    let response = await cmsAxios.get(
-      `/${this.cmsId}/tables/${params.modelId}/count`,
-      {
-        headers,
-        params: queryParams,
-      }
-    );
+    let response = await cmsAxios.get(`/${this.cmsId}/tables/${params.modelId}/count`, {
+      headers,
+      params: queryParams
+    });
 
     return response.data;
   }
@@ -112,7 +102,7 @@ export class CmsClient {
       { data: params.data },
       {
         headers: this.writeHeaders,
-        params: queryParams,
+        params: queryParams
       }
     );
 
@@ -133,23 +123,17 @@ export class CmsClient {
       { data: params.data },
       {
         headers: this.writeHeaders,
-        params: queryParams,
+        params: queryParams
       }
     );
 
     return response.data;
   }
 
-  async deleteItem(params: {
-    modelId: string;
-    rowId: string;
-  }): Promise<void> {
-    await cmsAxios.delete(
-      `/${this.cmsId}/tables/${params.modelId}/rows/${params.rowId}`,
-      {
-        headers: this.writeHeaders,
-      }
-    );
+  async deleteItem(params: { modelId: string; rowId: string }): Promise<void> {
+    await cmsAxios.delete(`/${this.cmsId}/tables/${params.modelId}/rows/${params.rowId}`, {
+      headers: this.writeHeaders
+    });
   }
 
   async publishItem(params: {
@@ -160,7 +144,7 @@ export class CmsClient {
       `/${this.cmsId}/tables/${params.modelId}/rows/${params.rowId}/publish`,
       {},
       {
-        headers: this.writeHeaders,
+        headers: this.writeHeaders
       }
     );
 

@@ -12,35 +12,48 @@ let jobMaterialSchema = z.object({
   quantity: z.string().optional().describe('Quantity'),
   unitPrice: z.string().optional().describe('Unit price'),
   totalPrice: z.string().optional().describe('Total price (quantity * unit price)'),
-  active: z.number().optional().describe('1 = active, 0 = deleted'),
+  active: z.number().optional().describe('1 = active, 0 = deleted')
 });
 
-export let manageJobMaterials = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Job Materials',
-    key: 'manage_job_materials',
-    description: `List, add, update, or remove materials (line items) on a job. Use **action** to specify the operation: \`list\` returns all materials for a job, \`add\` creates a new line item, \`update\` modifies an existing one, and \`remove\` deletes it.`,
-    tags: {
-      destructive: false,
-    },
+export let manageJobMaterials = SlateTool.create(spec, {
+  name: 'Manage Job Materials',
+  key: 'manage_job_materials',
+  description: `List, add, update, or remove materials (line items) on a job. Use **action** to specify the operation: \`list\` returns all materials for a job, \`add\` creates a new line item, \`update\` modifies an existing one, and \`remove\` deletes it.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'update', 'remove']).describe('Operation to perform'),
-    jobUuid: z.string().optional().describe('UUID of the job (required for list and add)'),
-    jobMaterialUuid: z.string().optional().describe('UUID of the job material (required for update and remove)'),
-    materialUuid: z.string().optional().describe('UUID of the material from catalog (for add)'),
-    name: z.string().optional().describe('Material name (for add/update)'),
-    description: z.string().optional().describe('Material description (for add/update)'),
-    quantity: z.string().optional().describe('Quantity (for add/update)'),
-    unitPrice: z.string().optional().describe('Unit price (for add/update)'),
-  }))
-  .output(z.object({
-    materials: z.array(jobMaterialSchema).optional().describe('List of job materials (for list action)'),
-    jobMaterialUuid: z.string().optional().describe('UUID of the created/updated/removed material'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'add', 'update', 'remove']).describe('Operation to perform'),
+      jobUuid: z.string().optional().describe('UUID of the job (required for list and add)'),
+      jobMaterialUuid: z
+        .string()
+        .optional()
+        .describe('UUID of the job material (required for update and remove)'),
+      materialUuid: z
+        .string()
+        .optional()
+        .describe('UUID of the material from catalog (for add)'),
+      name: z.string().optional().describe('Material name (for add/update)'),
+      description: z.string().optional().describe('Material description (for add/update)'),
+      quantity: z.string().optional().describe('Quantity (for add/update)'),
+      unitPrice: z.string().optional().describe('Unit price (for add/update)')
+    })
+  )
+  .output(
+    z.object({
+      materials: z
+        .array(jobMaterialSchema)
+        .optional()
+        .describe('List of job materials (for list action)'),
+      jobMaterialUuid: z
+        .string()
+        .optional()
+        .describe('UUID of the created/updated/removed material')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -56,11 +69,11 @@ export let manageJobMaterials = SlateTool.create(
         quantity: m.quantity,
         unitPrice: m.unit_price,
         totalPrice: m.total_price,
-        active: m.active,
+        active: m.active
       }));
       return {
         output: { materials: mapped },
-        message: `Found **${mapped.length}** material line item(s) on the job.`,
+        message: `Found **${mapped.length}** material line item(s) on the job.`
       };
     }
 
@@ -76,7 +89,7 @@ export let manageJobMaterials = SlateTool.create(
       let jobMaterialUuid = await client.createJobMaterial(data);
       return {
         output: { jobMaterialUuid },
-        message: `Added material **${ctx.input.name || jobMaterialUuid}** to job.`,
+        message: `Added material **${ctx.input.name || jobMaterialUuid}** to job.`
       };
     }
 
@@ -90,7 +103,7 @@ export let manageJobMaterials = SlateTool.create(
       await client.updateJobMaterial(ctx.input.jobMaterialUuid!, data);
       return {
         output: { jobMaterialUuid: ctx.input.jobMaterialUuid },
-        message: `Updated material **${ctx.input.jobMaterialUuid}**.`,
+        message: `Updated material **${ctx.input.jobMaterialUuid}**.`
       };
     }
 
@@ -98,12 +111,13 @@ export let manageJobMaterials = SlateTool.create(
       await client.deleteJobMaterial(ctx.input.jobMaterialUuid!);
       return {
         output: { jobMaterialUuid: ctx.input.jobMaterialUuid },
-        message: `Removed material **${ctx.input.jobMaterialUuid}** from job.`,
+        message: `Removed material **${ctx.input.jobMaterialUuid}** from job.`
       };
     }
 
     return {
       output: {},
-      message: 'No action performed.',
+      message: 'No action performed.'
     };
-  }).build();
+  })
+  .build();

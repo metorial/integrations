@@ -3,49 +3,58 @@ import { FreshBooksClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTimeEntries = SlateTool.create(
-  spec,
-  {
-    name: 'List Time Entries',
-    key: 'list_time_entries',
-    description: `Search and list time entries in FreshBooks. Supports filtering by date range, project, client, and billing status. Requires a **businessId** in the configuration.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listTimeEntries = SlateTool.create(spec, {
+  name: 'List Time Entries',
+  key: 'list_time_entries',
+  description: `Search and list time entries in FreshBooks. Supports filtering by date range, project, client, and billing status. Requires a **businessId** in the configuration.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page'),
-    projectId: z.number().optional().describe('Filter by project ID'),
-    clientId: z.number().optional().describe('Filter by client ID'),
-    billable: z.boolean().optional().describe('Filter by billable status'),
-    billed: z.boolean().optional().describe('Filter by billed status'),
-    startedFrom: z.string().optional().describe('Filter entries started after this date (YYYY-MM-DD)'),
-    startedTo: z.string().optional().describe('Filter entries started before this date (YYYY-MM-DD)'),
-  }))
-  .output(z.object({
-    timeEntries: z.array(z.object({
-      timeEntryId: z.number(),
-      duration: z.number().nullable().optional(),
-      startedAt: z.string().nullable().optional(),
-      clientId: z.number().nullable().optional(),
-      projectId: z.number().nullable().optional(),
-      note: z.string().nullable().optional(),
-      billable: z.boolean().nullable().optional(),
-      billed: z.boolean().nullable().optional(),
-      isLogged: z.boolean().nullable().optional(),
-    })),
-    totalCount: z.number(),
-    currentPage: z.number(),
-    totalPages: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page'),
+      projectId: z.number().optional().describe('Filter by project ID'),
+      clientId: z.number().optional().describe('Filter by client ID'),
+      billable: z.boolean().optional().describe('Filter by billable status'),
+      billed: z.boolean().optional().describe('Filter by billed status'),
+      startedFrom: z
+        .string()
+        .optional()
+        .describe('Filter entries started after this date (YYYY-MM-DD)'),
+      startedTo: z
+        .string()
+        .optional()
+        .describe('Filter entries started before this date (YYYY-MM-DD)')
+    })
+  )
+  .output(
+    z.object({
+      timeEntries: z.array(
+        z.object({
+          timeEntryId: z.number(),
+          duration: z.number().nullable().optional(),
+          startedAt: z.string().nullable().optional(),
+          clientId: z.number().nullable().optional(),
+          projectId: z.number().nullable().optional(),
+          note: z.string().nullable().optional(),
+          billable: z.boolean().nullable().optional(),
+          billed: z.boolean().nullable().optional(),
+          isLogged: z.boolean().nullable().optional()
+        })
+      ),
+      totalCount: z.number(),
+      currentPage: z.number(),
+      totalPages: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshBooksClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      businessId: ctx.config.businessId,
+      businessId: ctx.config.businessId
     });
 
     let params: Record<string, string | number> = {};
@@ -69,7 +78,7 @@ export let listTimeEntries = SlateTool.create(
       note: t.note,
       billable: t.billable,
       billed: t.billed,
-      isLogged: t.is_logged,
+      isLogged: t.is_logged
     }));
 
     return {
@@ -77,8 +86,9 @@ export let listTimeEntries = SlateTool.create(
         timeEntries,
         totalCount: result.meta?.total || timeEntries.length,
         currentPage: result.meta?.page || 1,
-        totalPages: result.meta?.pages || 1,
+        totalPages: result.meta?.pages || 1
       },
-      message: `Found **${result.meta?.total || timeEntries.length}** time entries.`,
+      message: `Found **${result.meta?.total || timeEntries.length}** time entries.`
     };
-  }).build();
+  })
+  .build();

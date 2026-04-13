@@ -16,14 +16,17 @@ export class TrackClient {
     this.axios = createAxios({
       baseURL: getTrackBaseUrl(opts.region),
       headers: {
-        'Authorization': `Basic ${basicToken}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${basicToken}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async identifyPerson(identifier: string, attributes: Record<string, unknown>) {
-    let response = await this.axios.put(`/customers/${encodeURIComponent(identifier)}`, attributes);
+    let response = await this.axios.put(
+      `/customers/${encodeURIComponent(identifier)}`,
+      attributes
+    );
     return response.data;
   }
 
@@ -33,51 +36,88 @@ export class TrackClient {
   }
 
   async suppressPerson(identifier: string) {
-    let response = await this.axios.post(`/customers/${encodeURIComponent(identifier)}/suppress`);
+    let response = await this.axios.post(
+      `/customers/${encodeURIComponent(identifier)}/suppress`
+    );
     return response.data;
   }
 
   async unsuppressPerson(identifier: string) {
-    let response = await this.axios.post(`/customers/${encodeURIComponent(identifier)}/unsuppress`);
+    let response = await this.axios.post(
+      `/customers/${encodeURIComponent(identifier)}/unsuppress`
+    );
     return response.data;
   }
 
-  async trackEvent(identifier: string, event: { name: string; data?: Record<string, unknown>; timestamp?: number }) {
-    let response = await this.axios.post(`/customers/${encodeURIComponent(identifier)}/events`, event);
+  async trackEvent(
+    identifier: string,
+    event: { name: string; data?: Record<string, unknown>; timestamp?: number }
+  ) {
+    let response = await this.axios.post(
+      `/customers/${encodeURIComponent(identifier)}/events`,
+      event
+    );
     return response.data;
   }
 
-  async trackAnonymousEvent(event: { name: string; data?: Record<string, unknown>; anonymous_id?: string; timestamp?: number }) {
+  async trackAnonymousEvent(event: {
+    name: string;
+    data?: Record<string, unknown>;
+    anonymous_id?: string;
+    timestamp?: number;
+  }) {
     let response = await this.axios.post('/events', event);
     return response.data;
   }
 
-  async trackPageView(identifier: string, page: { name: string; data?: Record<string, unknown>; timestamp?: number }) {
-    let response = await this.axios.post(`/customers/${encodeURIComponent(identifier)}/events`, {
-      type: 'page',
-      name: page.name,
-      data: page.data,
-      timestamp: page.timestamp,
-    });
+  async trackPageView(
+    identifier: string,
+    page: { name: string; data?: Record<string, unknown>; timestamp?: number }
+  ) {
+    let response = await this.axios.post(
+      `/customers/${encodeURIComponent(identifier)}/events`,
+      {
+        type: 'page',
+        name: page.name,
+        data: page.data,
+        timestamp: page.timestamp
+      }
+    );
     return response.data;
   }
 
-  async addDevice(identifier: string, device: { id: string; platform: string; last_used?: number; attributes?: Record<string, unknown> }) {
-    let response = await this.axios.put(`/customers/${encodeURIComponent(identifier)}/devices`, {
-      device,
-    });
+  async addDevice(
+    identifier: string,
+    device: {
+      id: string;
+      platform: string;
+      last_used?: number;
+      attributes?: Record<string, unknown>;
+    }
+  ) {
+    let response = await this.axios.put(
+      `/customers/${encodeURIComponent(identifier)}/devices`,
+      {
+        device
+      }
+    );
     return response.data;
   }
 
   async deleteDevice(identifier: string, deviceToken: string) {
-    let response = await this.axios.delete(`/customers/${encodeURIComponent(identifier)}/devices/${encodeURIComponent(deviceToken)}`);
+    let response = await this.axios.delete(
+      `/customers/${encodeURIComponent(identifier)}/devices/${encodeURIComponent(deviceToken)}`
+    );
     return response.data;
   }
 
-  async mergeCustomers(primary: { idType: string; id: string }, secondary: { idType: string; id: string }) {
+  async mergeCustomers(
+    primary: { idType: string; id: string },
+    secondary: { idType: string; id: string }
+  ) {
     let response = await this.axios.post('/merge_customers', {
       primary: { [primary.idType]: primary.id },
-      secondary: { [secondary.idType]: secondary.id },
+      secondary: { [secondary.idType]: secondary.id }
     });
     return response.data;
   }
@@ -90,9 +130,9 @@ export class AppClient {
     this.axios = createAxios({
       baseURL: getAppBaseUrl(opts.region),
       headers: {
-        'Authorization': `Bearer ${opts.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${opts.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -106,31 +146,49 @@ export class AppClient {
   async getCustomerAttributes(customerId: string, idType?: string) {
     let params: Record<string, string> = {};
     if (idType) params.id_type = idType;
-    let response = await this.axios.get(`/customers/${encodeURIComponent(customerId)}/attributes`, { params });
+    let response = await this.axios.get(
+      `/customers/${encodeURIComponent(customerId)}/attributes`,
+      { params }
+    );
     return response.data;
   }
 
   async getCustomerSegments(customerId: string, idType?: string) {
     let params: Record<string, string> = {};
     if (idType) params.id_type = idType;
-    let response = await this.axios.get(`/customers/${encodeURIComponent(customerId)}/segments`, { params });
+    let response = await this.axios.get(
+      `/customers/${encodeURIComponent(customerId)}/segments`,
+      { params }
+    );
     return response.data;
   }
 
   async getCustomerMessages(customerId: string, idType?: string) {
     let params: Record<string, string> = {};
     if (idType) params.id_type = idType;
-    let response = await this.axios.get(`/customers/${encodeURIComponent(customerId)}/messages`, { params });
+    let response = await this.axios.get(
+      `/customers/${encodeURIComponent(customerId)}/messages`,
+      { params }
+    );
     return response.data;
   }
 
-  async getCustomerActivities(customerId: string, idType?: string, type?: string, start?: string, limit?: number) {
+  async getCustomerActivities(
+    customerId: string,
+    idType?: string,
+    type?: string,
+    start?: string,
+    limit?: number
+  ) {
     let params: Record<string, string | number> = {};
     if (idType) params.id_type = idType;
     if (type) params.type = type;
     if (start) params.start = start;
     if (limit) params.limit = limit;
-    let response = await this.axios.get(`/customers/${encodeURIComponent(customerId)}/activities`, { params });
+    let response = await this.axios.get(
+      `/customers/${encodeURIComponent(customerId)}/activities`,
+      { params }
+    );
     return response.data;
   }
 
@@ -161,14 +219,14 @@ export class AppClient {
 
   async addToManualSegment(segmentId: number, customerIds: string[]) {
     let response = await this.axios.post(`/segments/${segmentId}/add_customers`, {
-      ids: customerIds,
+      ids: customerIds
     });
     return response.data;
   }
 
   async removeFromManualSegment(segmentId: number, customerIds: string[]) {
     let response = await this.axios.post(`/segments/${segmentId}/remove_customers`, {
-      ids: customerIds,
+      ids: customerIds
     });
     return response.data;
   }
@@ -185,7 +243,10 @@ export class AppClient {
     return response.data;
   }
 
-  async getCampaignMetrics(campaignId: number, params?: { period?: string; steps?: number; type?: string }) {
+  async getCampaignMetrics(
+    campaignId: number,
+    params?: { period?: string; steps?: number; type?: string }
+  ) {
     let response = await this.axios.get(`/campaigns/${campaignId}/metrics`, { params });
     return response.data;
   }
@@ -198,7 +259,9 @@ export class AppClient {
   // ---- Broadcasts ----
 
   async listBroadcasts() {
-    let response = await this.axios.get('/campaigns', { params: { type: 'api_triggered_broadcast' } });
+    let response = await this.axios.get('/campaigns', {
+      params: { type: 'api_triggered_broadcast' }
+    });
     return response.data;
   }
 
@@ -237,12 +300,16 @@ export class AppClient {
   }
 
   async getCollection(collectionId: string) {
-    let response = await this.axios.get(`/api/collections/${encodeURIComponent(collectionId)}`);
+    let response = await this.axios.get(
+      `/api/collections/${encodeURIComponent(collectionId)}`
+    );
     return response.data;
   }
 
   async getCollectionContents(collectionId: string) {
-    let response = await this.axios.get(`/api/collections/${encodeURIComponent(collectionId)}/content`);
+    let response = await this.axios.get(
+      `/api/collections/${encodeURIComponent(collectionId)}/content`
+    );
     return response.data;
   }
 
@@ -257,7 +324,10 @@ export class AppClient {
     return response.data;
   }
 
-  async updateCollection(collectionId: string, update: { name?: string; data?: unknown[] | string }) {
+  async updateCollection(
+    collectionId: string,
+    update: { name?: string; data?: unknown[] | string }
+  ) {
     let body: Record<string, unknown> = {};
     if (update.name) body.name = update.name;
     if (update.data) {
@@ -267,12 +337,17 @@ export class AppClient {
         body.data = update.data;
       }
     }
-    let response = await this.axios.put(`/api/collections/${encodeURIComponent(collectionId)}`, body);
+    let response = await this.axios.put(
+      `/api/collections/${encodeURIComponent(collectionId)}`,
+      body
+    );
     return response.data;
   }
 
   async deleteCollection(collectionId: string) {
-    let response = await this.axios.delete(`/api/collections/${encodeURIComponent(collectionId)}`);
+    let response = await this.axios.delete(
+      `/api/collections/${encodeURIComponent(collectionId)}`
+    );
     return response.data;
   }
 
@@ -312,7 +387,10 @@ export class AppClient {
     return response.data;
   }
 
-  async getNewsletterMetrics(newsletterId: number, params?: { period?: string; steps?: number; type?: string }) {
+  async getNewsletterMetrics(
+    newsletterId: number,
+    params?: { period?: string; steps?: number; type?: string }
+  ) {
     let response = await this.axios.get(`/newsletters/${newsletterId}/metrics`, { params });
     return response.data;
   }

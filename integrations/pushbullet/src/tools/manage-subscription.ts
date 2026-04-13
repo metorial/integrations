@@ -3,31 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSubscription = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Subscription',
-    key: 'manage_subscription',
-    description: `Subscribe to a channel, mute/unmute a subscription, or unsubscribe. Subscribing to a channel means you'll receive pushes sent to that channel.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageSubscription = SlateTool.create(spec, {
+  name: 'Manage Subscription',
+  key: 'manage_subscription',
+  description: `Subscribe to a channel, mute/unmute a subscription, or unsubscribe. Subscribing to a channel means you'll receive pushes sent to that channel.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['subscribe', 'mute', 'unmute', 'unsubscribe']).describe('Action to perform'),
-    subscriptionIden: z.string().optional().describe('Subscription identifier (required for mute, unmute, and unsubscribe)'),
-    channelTag: z.string().optional().describe('Channel tag to subscribe to (required for subscribe)'),
-  }))
-  .output(z.object({
-    subscriptionIden: z.string().describe('Unique identifier of the subscription'),
-    action: z.string().describe('Action that was performed'),
-    channelTag: z.string().optional().describe('Channel tag'),
-    channelName: z.string().optional().describe('Channel name'),
-    muted: z.boolean().optional().describe('Current mute status'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['subscribe', 'mute', 'unmute', 'unsubscribe'])
+        .describe('Action to perform'),
+      subscriptionIden: z
+        .string()
+        .optional()
+        .describe('Subscription identifier (required for mute, unmute, and unsubscribe)'),
+      channelTag: z
+        .string()
+        .optional()
+        .describe('Channel tag to subscribe to (required for subscribe)')
+    })
+  )
+  .output(
+    z.object({
+      subscriptionIden: z.string().describe('Unique identifier of the subscription'),
+      action: z.string().describe('Action that was performed'),
+      channelTag: z.string().optional().describe('Channel tag'),
+      channelName: z.string().optional().describe('Channel name'),
+      muted: z.boolean().optional().describe('Current mute status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'subscribe') {
@@ -41,14 +50,16 @@ export let manageSubscription = SlateTool.create(
           action: 'subscribe',
           channelTag: sub.channel.tag,
           channelName: sub.channel.name,
-          muted: sub.muted,
+          muted: sub.muted
         },
-        message: `Subscribed to channel **${sub.channel.name}** (#${sub.channel.tag}).`,
+        message: `Subscribed to channel **${sub.channel.name}** (#${sub.channel.tag}).`
       };
     }
 
     if (!ctx.input.subscriptionIden) {
-      throw new Error('subscriptionIden is required for mute, unmute, and unsubscribe actions');
+      throw new Error(
+        'subscriptionIden is required for mute, unmute, and unsubscribe actions'
+      );
     }
 
     if (ctx.input.action === 'mute' || ctx.input.action === 'unmute') {
@@ -60,9 +71,9 @@ export let manageSubscription = SlateTool.create(
           action: ctx.input.action,
           channelTag: sub.channel.tag,
           channelName: sub.channel.name,
-          muted: sub.muted,
+          muted: sub.muted
         },
-        message: `Subscription to **${sub.channel.name}** has been **${ctx.input.action}d**.`,
+        message: `Subscription to **${sub.channel.name}** has been **${ctx.input.action}d**.`
       };
     }
 
@@ -71,9 +82,9 @@ export let manageSubscription = SlateTool.create(
     return {
       output: {
         subscriptionIden: ctx.input.subscriptionIden,
-        action: 'unsubscribe',
+        action: 'unsubscribe'
       },
-      message: `Unsubscribed from subscription \`${ctx.input.subscriptionIden}\`.`,
+      message: `Unsubscribed from subscription \`${ctx.input.subscriptionIden}\`.`
     };
   })
   .build();

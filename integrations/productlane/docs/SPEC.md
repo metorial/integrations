@@ -13,6 +13,7 @@ Productlane uses **API Key** authentication via Bearer token.
 Obtain your API key from the API settings page in Productlane. When making requests that require authentication, set the `Authorization` header to `Bearer API_KEY`, where `API_KEY` is the key you obtained.
 
 Example header:
+
 ```
 Authorization: Bearer <API_KEY>
 ```
@@ -38,17 +39,20 @@ Manage segments used to categorize and group contacts and companies. Segments ca
 ### Thread / Insight Management
 
 The Threads resource supports listing, creating, retrieving, and updating insights. Insights represent feedback items or conversation threads. You can create new feedback programmatically, which is useful for ingesting feedback from external sources into Productlane.
+
 - When creating feedback, you can associate it with a contact and relevant context.
 
 ### Portal (Public Roadmap & Voting)
 
 Access and interact with portal-related data including projects and issues that represent your public roadmap.
+
 - List projects, get individual projects, list issues, get individual issues, retrieve upvotes, upvote a project or issue, delete upvotes, and create feedback through the portal.
 - Portal endpoints for upvoting and feedback do not require authorization and accept an email to identify the user, along with an optional project or issue ID.
 
 ### Changelog
 
 Retrieve changelogs by listing all changelogs or getting a specific changelog by ID. Changelogs are identified by workspace ID and changelog ID. Each changelog entry includes title, date, published status, notes, and an optional image URL.
+
 - Changelog endpoints are public and do not require authentication.
 
 ### Workspace Information

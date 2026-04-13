@@ -2,34 +2,36 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let subscriberEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Subscriber Events',
-    key: 'subscriber_events',
-    description: 'Triggered when subscriber-related events occur on a list, including new subscriptions, unsubscriptions, hard bounces, and spam complaints. Configure the webhook URL in your Sendloop list settings.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of subscriber event'),
-    emailAddress: z.string().describe('Email address of the affected subscriber'),
-    listId: z.string().optional().describe('ID of the subscriber list'),
-    subscriberId: z.string().optional().describe('ID of the subscriber'),
-    rawPayload: z.record(z.string(), z.any()).describe('Full webhook payload from Sendloop')
-  }))
-  .output(z.object({
-    emailAddress: z.string().describe('Email address of the affected subscriber'),
-    listId: z.string().optional().describe('ID of the subscriber list'),
-    subscriberId: z.string().optional().describe('ID of the subscriber')
-  }))
+export let subscriberEvents = SlateTrigger.create(spec, {
+  name: 'Subscriber Events',
+  key: 'subscriber_events',
+  description:
+    'Triggered when subscriber-related events occur on a list, including new subscriptions, unsubscriptions, hard bounces, and spam complaints. Configure the webhook URL in your Sendloop list settings.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of subscriber event'),
+      emailAddress: z.string().describe('Email address of the affected subscriber'),
+      listId: z.string().optional().describe('ID of the subscriber list'),
+      subscriberId: z.string().optional().describe('ID of the subscriber'),
+      rawPayload: z.record(z.string(), z.any()).describe('Full webhook payload from Sendloop')
+    })
+  )
+  .output(
+    z.object({
+      emailAddress: z.string().describe('Email address of the affected subscriber'),
+      listId: z.string().optional().describe('ID of the subscriber list'),
+      subscriberId: z.string().optional().describe('ID of the subscriber')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: Record<string, any>;
 
       try {
         let contentType = ctx.request.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
-          body = await ctx.request.json() as Record<string, any>;
+          body = (await ctx.request.json()) as Record<string, any>;
         } else {
           let text = await ctx.request.text();
           let params = new URLSearchParams(text);
@@ -39,8 +41,10 @@ export let subscriberEvents = SlateTrigger.create(
         body = {};
       }
 
-      let eventType = body.EventType || body.event_type || body.Event || body.event || 'unknown';
-      let emailAddress = body.EmailAddress || body.email_address || body.Email || body.email || '';
+      let eventType =
+        body.EventType || body.event_type || body.Event || body.event || 'unknown';
+      let emailAddress =
+        body.EmailAddress || body.email_address || body.Email || body.email || '';
       let listId = body.ListID || body.list_id || body.SubscriberListID || '';
       let subscriberId = body.SubscriberID || body.subscriber_id || '';
 
@@ -59,7 +63,7 @@ export let subscriberEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, emailAddress, listId, subscriberId } = ctx.input;
 
       let typeMap: Record<string, string> = {

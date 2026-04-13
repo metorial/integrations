@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteComment = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Comment',
-    key: 'delete_comment',
-    description: `Delete a comment from a task in Nozbe Teams.`,
-    tags: {
-      destructive: true
-    }
+export let deleteComment = SlateTool.create(spec, {
+  name: 'Delete Comment',
+  key: 'delete_comment',
+  description: `Delete a comment from a task in Nozbe Teams.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    commentId: z.string().describe('ID of the comment to delete')
-  }))
-  .output(z.object({
-    commentId: z.string().describe('ID of the deleted comment'),
-    deleted: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      commentId: z.string().describe('ID of the comment to delete')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('ID of the deleted comment'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.deleteComment(ctx.input.commentId);
@@ -33,4 +34,5 @@ export let deleteComment = SlateTool.create(
       },
       message: `Deleted comment **${ctx.input.commentId}**.`
     };
-  }).build();
+  })
+  .build();

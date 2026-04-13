@@ -26,35 +26,36 @@ let ticketSchema = z.object({
   partialPaymentInstallments: z.string().optional().describe('Number of installments'),
   partialPaymentFrequency: z.string().optional().describe('Payment frequency'),
   partialPaymentAmount: z.string().optional().describe('Partial payment amount'),
-  additionalInstructions: z.string().optional().describe('Additional instructions'),
+  additionalInstructions: z.string().optional().describe('Additional instructions')
 });
 
-export let getEventTicketsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event Tickets',
-    key: 'get_event_tickets',
-    description: `Retrieve all ticket types (categories) for a specific event, including pricing, sale windows, quantity limits, group discounts, partial payment options, and visibility settings.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getEventTicketsTool = SlateTool.create(spec, {
+  name: 'Get Event Tickets',
+  key: 'get_event_tickets',
+  description: `Retrieve all ticket types (categories) for a specific event, including pricing, sale windows, quantity limits, group discounts, partial payment options, and visibility settings.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
-      eventId: z.string().describe('The event ID to get tickets for'),
-    }),
+      eventId: z.string().describe('The event ID to get tickets for')
+    })
   )
   .output(
     z.object({
-      tickets: z.array(ticketSchema).describe('List of ticket types for the event'),
-    }),
+      tickets: z.array(ticketSchema).describe('List of ticket types for the event')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.getEventTickets(ctx.input.eventId);
-    let rawTickets = Array.isArray(data?.tickets) ? data.tickets : Array.isArray(data) ? data : [];
+    let rawTickets = Array.isArray(data?.tickets)
+      ? data.tickets
+      : Array.isArray(data)
+        ? data
+        : [];
 
     let tickets = rawTickets.map((t: any) => ({
       ticketId: t.id,
@@ -79,11 +80,12 @@ export let getEventTicketsTool = SlateTool.create(
       partialPaymentInstallments: t.partial_payment_installments,
       partialPaymentFrequency: t.partial_payment_frequency,
       partialPaymentAmount: t.partial_payment_amount,
-      additionalInstructions: t.additional_instructions,
+      additionalInstructions: t.additional_instructions
     }));
 
     return {
       output: { tickets },
-      message: `Found **${tickets.length}** ticket type(s) for event ${ctx.input.eventId}.`,
+      message: `Found **${tickets.length}** ticket type(s) for event ${ctx.input.eventId}.`
     };
-  }).build();
+  })
+  .build();

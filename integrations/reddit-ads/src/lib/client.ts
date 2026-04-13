@@ -9,9 +9,9 @@ export class RedditAdsClient {
     this.ax = createAxios({
       baseURL: 'https://ads-api.reddit.com/api/v3',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -48,7 +48,10 @@ export class RedditAdsClient {
   }
 
   async updateCampaign(campaignId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.ax.put(`/accounts/${this.accountId}/campaigns/${campaignId}`, data);
+    let response = await this.ax.put(
+      `/accounts/${this.accountId}/campaigns/${campaignId}`,
+      data
+    );
     return response.data?.data || response.data;
   }
 
@@ -58,7 +61,9 @@ export class RedditAdsClient {
     if (params?.campaignId) {
       queryParams.campaign_id = params.campaignId;
     }
-    let response = await this.ax.get(`/accounts/${this.accountId}/ad_groups`, { params: queryParams });
+    let response = await this.ax.get(`/accounts/${this.accountId}/ad_groups`, {
+      params: queryParams
+    });
     return response.data?.data || response.data || [];
   }
 
@@ -73,7 +78,10 @@ export class RedditAdsClient {
   }
 
   async updateAdGroup(adGroupId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.ax.put(`/accounts/${this.accountId}/ad_groups/${adGroupId}`, data);
+    let response = await this.ax.put(
+      `/accounts/${this.accountId}/ad_groups/${adGroupId}`,
+      data
+    );
     return response.data?.data || response.data;
   }
 
@@ -83,7 +91,9 @@ export class RedditAdsClient {
     if (params?.adGroupId) {
       queryParams.ad_group_id = params.adGroupId;
     }
-    let response = await this.ax.get(`/accounts/${this.accountId}/ads`, { params: queryParams });
+    let response = await this.ax.get(`/accounts/${this.accountId}/ads`, {
+      params: queryParams
+    });
     return response.data?.data || response.data || [];
   }
 
@@ -109,7 +119,9 @@ export class RedditAdsClient {
   }
 
   async getCustomAudience(audienceId: string): Promise<any> {
-    let response = await this.ax.get(`/accounts/${this.accountId}/custom_audiences/${audienceId}`);
+    let response = await this.ax.get(
+      `/accounts/${this.accountId}/custom_audiences/${audienceId}`
+    );
     return response.data?.data || response.data;
   }
 
@@ -119,15 +131,21 @@ export class RedditAdsClient {
   }
 
   async updateCustomAudience(audienceId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.ax.put(`/accounts/${this.accountId}/custom_audiences/${audienceId}`, data);
+    let response = await this.ax.put(
+      `/accounts/${this.accountId}/custom_audiences/${audienceId}`,
+      data
+    );
     return response.data?.data || response.data;
   }
 
-  async manageAudienceUsers(audienceId: string, data: {
-    action_type: 'ADD' | 'REMOVE';
-    column_order: string[];
-    user_data: string[][];
-  }): Promise<any> {
+  async manageAudienceUsers(
+    audienceId: string,
+    data: {
+      action_type: 'ADD' | 'REMOVE';
+      column_order: string[];
+      user_data: string[][];
+    }
+  ): Promise<any> {
     let response = await this.ax.patch(`/custom_audiences/${audienceId}/users`, data);
     return response.data?.data || response.data;
   }

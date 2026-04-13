@@ -28,37 +28,48 @@ Both the `key` and `adminKey` parameters are then included in subsequent managem
 ## Features
 
 ### Map Display
+
 The Map Display API is a suite of web services designed for developers to create web and mobile applications around mapping. These web services can be used via RESTful APIs. Provides map tiles in raster (PNG/JPG) and vector formats, satellite imagery, hillshade layers, static map images, and custom map styles. Vector tiles are fully customizable on the client side: you can switch on/off single layers or change style without sending another request.
 
 ### Search and Geocoding
+
 Search is a RESTful API allowing single-line fuzzy search for addresses and POIs. Search assigns a latitude/longitude to a specific address, cross street, geographic feature, or point of interest. Includes autocomplete, reverse geocoding, geometry search, and batch search capabilities. EV Search is a REST API limited to and optimized for electric vehicle station POI category.
 
 ### Routing
+
 Plan the fastest, shortest, or eco route from A to B, taking into consideration real-time and historical traffic. Plan multiple alternative routes through one single API call. Plan a route through up to 150 intermediate waypoints. Plan the optimized route through intermediate waypoints (traveling salesman problem). Also supports:
+
 - Planning routes that avoid toll roads, ferries, or other road types. Planning routes for vehicles or pedestrians. Planning routes using advanced consumption models for both electric and combustion engines.
 - Drawing a polygon of the reachable range with the current fuel/energy budget.
 - The Matrix Routing API calculates a matrix of route summaries, including travel times and distances, for a set of routes defined with origin and destination locations.
 - Waypoint Optimization service optimizes the order of waypoints by fastest route.
 
 ### Traffic
+
 The Traffic API is a suite of web services designed for developers to create web and mobile applications around real-time traffic. Includes:
+
 - Detailed information about traffic jams and traffic-related incidents. Details include start-location, end-location, road-name, type of delay, length of the delay, significance, and distance.
 - Traffic flow tile APIs provide traffic speed information for display on a map view, with options for absolute or relative speed information.
 
 ### Geofencing
+
 TomTom's Geofencing API service is intended to define virtual barriers on real geographical locations. Together with the location of an object, you can determine whether that object is located within, outside, or close to a predefined geographical area.
+
 - Supports circles, polygons, corridors, and two-point rectangle fences with labels.
 - Fences can be arranged into projects for easier administration. Fences can have multiple user-defined attributes.
 - Provides the means to manage and read transition data. A transition is an event of an object crossing a border of a fence.
 - Alerts can be created which will be sent to users via the Notifications API.
 
 ### Location History
+
 The Location History API is intended to keep track and manage the locations of multiple objects. It can share data with TomTom's Geofencing service to enhance it with the history of object transitions through fence borders. Useful for fleet tracking and position reporting over time.
 
 ### Snap to Roads
+
 The Snap to Roads API offers a solution for matching received points (gathered from GPS devices) to a map road network and reconstructing the route driven. It also provides detailed information about the matched route, such as speed limits, road names, and traffic signs.
 
 ### Notifications
+
 TomTom's Notifications API is intended to manage communication from Maps APIs to users. The following means of contact are supported: webhooks and e-mails. Allows creating contact groups, managing notification history, and configuring delivery of alerts from other TomTom services (such as Geofencing).
 
 ## Events
@@ -66,7 +77,9 @@ TomTom's Notifications API is intended to manage communication from Maps APIs to
 TomTom supports event-driven notifications through its **Notifications API** combined with the **Geofencing API**.
 
 ### Geofence Transition Alerts
+
 When a driver enters or exits a geofence, it can trigger an alert, sending a notification to the assigned notification group. The Notifications API allows managing communications, sending out alerts via email or webhooks.
+
 - Configure alerts on geofences to fire when tracked objects enter, exit, or dwell within a defined area.
 - Alerts are delivered to **contact groups** that can include webhook URLs and email addresses.
 - Current limits include 20 webhook addresses per Contact Group.

@@ -8,7 +8,7 @@ import {
   getAstronomyDataTool,
   getSolarDataTool,
   getElevationTool,
-  getBioDataTool,
+  getBioDataTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getAstronomyDataTool,
     getSolarDataTool,
     getElevationTool,
-    getBioDataTool,
+    getBioDataTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

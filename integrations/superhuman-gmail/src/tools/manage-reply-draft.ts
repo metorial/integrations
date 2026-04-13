@@ -4,64 +4,88 @@ import {
   buildReplyHeaders,
   defaultReplySubject,
   defaultReplyTo,
-  pickReplyTarget,
+  pickReplyTarget
 } from '../lib/reply-context';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageReplyDraft = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Reply Draft',
-    key: 'manage_reply_draft',
-    description:
-      'Create, update, fetch, list, send, or delete **reply drafts** tied to a **thread**, with correct **In-Reply-To** and **References** headers when **replyToMessageId** (or the latest thread message) is used.',
-    instructions: [
-      'For **create**, pass **threadId**, **body**, and optionally **replyToMessageId**; **to** / **subject** default from the message you reply to.',
-      'Reuse **inReplyTo** and **references** from **get_conversation_context** if you already fetched them.',
-      '**send** sends the draft via Gmail immediately; **delete** discards it.',
-    ],
-    tags: {
-      readOnly: false,
-    },
+export let manageReplyDraft = SlateTool.create(spec, {
+  name: 'Manage Reply Draft',
+  key: 'manage_reply_draft',
+  description:
+    'Create, update, fetch, list, send, or delete **reply drafts** tied to a **thread**, with correct **In-Reply-To** and **References** headers when **replyToMessageId** (or the latest thread message) is used.',
+  instructions: [
+    'For **create**, pass **threadId**, **body**, and optionally **replyToMessageId**; **to** / **subject** default from the message you reply to.',
+    'Reuse **inReplyTo** and **references** from **get_conversation_context** if you already fetched them.',
+    '**send** sends the draft via Gmail immediately; **delete** discards it.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'send', 'get', 'list', 'delete']).describe('Draft operation.'),
-    draftId: z.string().optional().describe('Draft ID (update, send, get, delete).'),
-    threadId: z.string().optional().describe('Thread ID (create, update). Required for create.'),
-    replyToMessageId: z.string().optional().describe('Message being replied to; defaults to latest in thread when resolving headers.'),
-    inReplyTo: z.string().optional().describe('Override In-Reply-To header (Message-ID of parent).'),
-    references: z.string().optional().describe('Override References header chain.'),
-    to: z.array(z.string()).optional().describe('Recipients; defaults from Reply-To/From of target message.'),
-    cc: z.array(z.string()).optional(),
-    bcc: z.array(z.string()).optional(),
-    subject: z.string().optional().describe('Subject line; defaults to Re: … from target message.'),
-    body: z.string().optional().describe('Plain text or HTML body (create/update).'),
-    isHtml: z.boolean().optional().default(false),
-    query: z.string().optional().describe('Filter when listing drafts.'),
-    maxResults: z.number().optional().default(20),
-    pageToken: z.string().optional(),
-  }))
-  .output(z.object({
-    draftId: z.string().optional(),
-    messageId: z.string().optional(),
-    threadId: z.string().optional(),
-    subject: z.string().optional(),
-    from: z.string().optional(),
-    to: z.string().optional(),
-    snippet: z.string().optional(),
-    drafts: z.array(z.object({
-      draftId: z.string(),
-      messageId: z.string(),
-      threadId: z.string(),
-    })).optional(),
-    nextPageToken: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'send', 'get', 'list', 'delete'])
+        .describe('Draft operation.'),
+      draftId: z.string().optional().describe('Draft ID (update, send, get, delete).'),
+      threadId: z
+        .string()
+        .optional()
+        .describe('Thread ID (create, update). Required for create.'),
+      replyToMessageId: z
+        .string()
+        .optional()
+        .describe(
+          'Message being replied to; defaults to latest in thread when resolving headers.'
+        ),
+      inReplyTo: z
+        .string()
+        .optional()
+        .describe('Override In-Reply-To header (Message-ID of parent).'),
+      references: z.string().optional().describe('Override References header chain.'),
+      to: z
+        .array(z.string())
+        .optional()
+        .describe('Recipients; defaults from Reply-To/From of target message.'),
+      cc: z.array(z.string()).optional(),
+      bcc: z.array(z.string()).optional(),
+      subject: z
+        .string()
+        .optional()
+        .describe('Subject line; defaults to Re: … from target message.'),
+      body: z.string().optional().describe('Plain text or HTML body (create/update).'),
+      isHtml: z.boolean().optional().default(false),
+      query: z.string().optional().describe('Filter when listing drafts.'),
+      maxResults: z.number().optional().default(20),
+      pageToken: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      draftId: z.string().optional(),
+      messageId: z.string().optional(),
+      threadId: z.string().optional(),
+      subject: z.string().optional(),
+      from: z.string().optional(),
+      to: z.string().optional(),
+      snippet: z.string().optional(),
+      drafts: z
+        .array(
+          z.object({
+            draftId: z.string(),
+            messageId: z.string(),
+            threadId: z.string()
+          })
+        )
+        .optional(),
+      nextPageToken: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      userId: ctx.config.userId,
+      userId: ctx.config.userId
     });
 
     let { action } = ctx.input;
@@ -75,11 +99,13 @@ export let manageReplyDraft = SlateTool.create(
       let targetRaw = pickReplyTarget(rawMessages, ctx.input.replyToMessageId);
       let targetParsed = parseMessage(targetRaw);
 
-      let { inReplyTo, references } = ctx.input.inReplyTo && ctx.input.references
-        ? { inReplyTo: ctx.input.inReplyTo, references: ctx.input.references }
-        : buildReplyHeaders(targetRaw);
+      let { inReplyTo, references } =
+        ctx.input.inReplyTo && ctx.input.references
+          ? { inReplyTo: ctx.input.inReplyTo, references: ctx.input.references }
+          : buildReplyHeaders(targetRaw);
 
-      let to = ctx.input.to && ctx.input.to.length > 0 ? ctx.input.to : defaultReplyTo(targetParsed);
+      let to =
+        ctx.input.to && ctx.input.to.length > 0 ? ctx.input.to : defaultReplyTo(targetParsed);
       if (to.length === 0) {
         throw new Error('Could not infer recipients; provide **to** explicitly.');
       }
@@ -96,16 +122,16 @@ export let manageReplyDraft = SlateTool.create(
         isHtml: ctx.input.isHtml,
         threadId: ctx.input.threadId,
         inReplyTo,
-        references,
+        references
       });
 
       return {
         output: {
           draftId: draft.id,
           messageId: draft.message.id,
-          threadId: draft.message.threadId,
+          threadId: draft.message.threadId
         },
-        message: `Created reply draft **${draft.id}** in thread **${draft.message.threadId}**.`,
+        message: `Created reply draft **${draft.id}** in thread **${draft.message.threadId}**.`
       };
     }
 
@@ -129,7 +155,8 @@ export let manageReplyDraft = SlateTool.create(
         references = references ?? built.references;
       }
 
-      let to = ctx.input.to && ctx.input.to.length > 0 ? ctx.input.to : (parsed.to ? [parsed.to] : []);
+      let to =
+        ctx.input.to && ctx.input.to.length > 0 ? ctx.input.to : parsed.to ? [parsed.to] : [];
       if (to.length === 0) {
         throw new Error('Could not infer recipients for update; provide **to**.');
       }
@@ -146,16 +173,16 @@ export let manageReplyDraft = SlateTool.create(
         isHtml: ctx.input.isHtml,
         threadId,
         inReplyTo,
-        references,
+        references
       });
 
       return {
         output: {
           draftId: draft.id,
           messageId: draft.message.id,
-          threadId: draft.message.threadId,
+          threadId: draft.message.threadId
         },
-        message: `Updated draft **${ctx.input.draftId}**.`,
+        message: `Updated draft **${ctx.input.draftId}**.`
       };
     }
 
@@ -171,9 +198,9 @@ export let manageReplyDraft = SlateTool.create(
           threadId: message.threadId,
           subject: parsed.subject,
           from: parsed.from,
-          to: parsed.to,
+          to: parsed.to
         },
-        message: `Sent draft **${ctx.input.draftId}** as message **${message.id}**.`,
+        message: `Sent draft **${ctx.input.draftId}** as message **${message.id}**.`
       };
     }
 
@@ -191,9 +218,9 @@ export let manageReplyDraft = SlateTool.create(
           subject: parsed.subject,
           from: parsed.from,
           to: parsed.to,
-          snippet: parsed.snippet,
+          snippet: parsed.snippet
         },
-        message: `Retrieved draft **${ctx.input.draftId}**.`,
+        message: `Retrieved draft **${ctx.input.draftId}**.`
       };
     }
 
@@ -201,18 +228,18 @@ export let manageReplyDraft = SlateTool.create(
       let result = await client.listDrafts({
         maxResults: ctx.input.maxResults,
         pageToken: ctx.input.pageToken,
-        query: ctx.input.query,
+        query: ctx.input.query
       });
       return {
         output: {
-          drafts: result.drafts.map((d) => ({
+          drafts: result.drafts.map(d => ({
             draftId: d.id,
             messageId: d.message.id,
-            threadId: d.message.threadId,
+            threadId: d.message.threadId
           })),
-          nextPageToken: result.nextPageToken,
+          nextPageToken: result.nextPageToken
         },
-        message: `Listed **${result.drafts.length}** draft(s).`,
+        message: `Listed **${result.drafts.length}** draft(s).`
       };
     }
 
@@ -223,7 +250,7 @@ export let manageReplyDraft = SlateTool.create(
       await client.deleteDraft(ctx.input.draftId);
       return {
         output: { draftId: ctx.input.draftId },
-        message: `Deleted draft **${ctx.input.draftId}**.`,
+        message: `Deleted draft **${ctx.input.draftId}**.`
       };
     }
 

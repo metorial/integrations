@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listConnections,
@@ -16,12 +15,9 @@ import {
   manageCompanyUsers,
   manageActionRules,
   manageTableSettings,
-  exportCsv,
+  exportCsv
 } from './tools';
-import {
-  tableRowChanges,
-  inboundWebhook,
-} from './triggers';
+import { tableRowChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,10 +36,7 @@ export let provider = Slate.create({
     manageCompanyUsers,
     manageActionRules,
     manageTableSettings,
-    exportCsv,
+    exportCsv
   ],
-  triggers: [
-    inboundWebhook,
-    tableRowChanges,
-  ],
+  triggers: [inboundWebhook, tableRowChanges]
 });

@@ -15,33 +15,37 @@ let storageFileSchema = z.object({
   sha256: z.string().optional().describe('SHA-256 hash'),
   appName: z.string().optional().describe('Application name from metadata'),
   appVersion: z.string().optional().describe('Application version from metadata'),
-  appIdentifier: z.string().optional().describe('Package/bundle identifier from metadata'),
+  appIdentifier: z.string().optional().describe('Package/bundle identifier from metadata')
 });
 
-export let listStorageFiles = SlateTool.create(
-  spec,
-  {
-    name: 'List Storage Files',
-    key: 'list_storage_files',
-    description: `Browse uploaded app files in Sauce Labs storage. Filter by name, platform (Android/iOS), tags, or search text. Shows app metadata including version and bundle identifier.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query for file name or metadata'),
-    name: z.string().optional().describe('Exact file name filter (case-insensitive)'),
-    kind: z.array(z.enum(['android', 'ios'])).optional().describe('Filter by platform'),
-    tag: z.array(z.string()).optional().describe('Filter by tags'),
-    page: z.number().optional().describe('Page number (default 1)'),
-    perPage: z.number().optional().describe('Results per page (max 100)'),
-  }))
-  .output(z.object({
-    files: z.array(storageFileSchema).describe('Uploaded files'),
-    totalCount: z.number().optional().describe('Total matching files'),
-    page: z.number().optional().describe('Current page'),
-    perPage: z.number().optional().describe('Results per page'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listStorageFiles = SlateTool.create(spec, {
+  name: 'List Storage Files',
+  key: 'list_storage_files',
+  description: `Browse uploaded app files in Sauce Labs storage. Filter by name, platform (Android/iOS), tags, or search text. Shows app metadata including version and bundle identifier.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search query for file name or metadata'),
+      name: z.string().optional().describe('Exact file name filter (case-insensitive)'),
+      kind: z
+        .array(z.enum(['android', 'ios']))
+        .optional()
+        .describe('Filter by platform'),
+      tag: z.array(z.string()).optional().describe('Filter by tags'),
+      page: z.number().optional().describe('Page number (default 1)'),
+      perPage: z.number().optional().describe('Results per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      files: z.array(storageFileSchema).describe('Uploaded files'),
+      totalCount: z.number().optional().describe('Total matching files'),
+      page: z.number().optional().describe('Current page'),
+      perPage: z.number().optional().describe('Results per page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let result = await client.listStorageFiles({
       q: ctx.input.query,
@@ -49,7 +53,7 @@ export let listStorageFiles = SlateTool.create(
       kind: ctx.input.kind,
       tag: ctx.input.tag,
       page: ctx.input.page,
-      per_page: ctx.input.perPage,
+      per_page: ctx.input.perPage
     });
 
     let items = result.items ?? [];
@@ -65,7 +69,7 @@ export let listStorageFiles = SlateTool.create(
       sha256: f.sha256,
       appName: f.metadata?.name,
       appVersion: f.metadata?.version,
-      appIdentifier: f.metadata?.identifier,
+      appIdentifier: f.metadata?.identifier
     }));
 
     return {
@@ -73,9 +77,9 @@ export let listStorageFiles = SlateTool.create(
         files,
         totalCount: result.total_items,
         page: result.page,
-        perPage: result.per_page,
+        perPage: result.per_page
       },
-      message: `Found **${files.length}** file(s)${result.total_items != null ? ` (total: ${result.total_items})` : ''}.`,
+      message: `Found **${files.length}** file(s)${result.total_items != null ? ` (total: ${result.total_items})` : ''}.`
     };
   })
   .build();

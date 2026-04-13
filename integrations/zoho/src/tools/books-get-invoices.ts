@@ -11,34 +11,55 @@ export let booksGetInvoices = SlateTool.create(spec, {
   instructions: [
     'The organizationId is required. Use listOrganizations=true to discover available organizations.',
     'Provide invoiceId to fetch a single invoice with full details.',
-    'Filter by status: "sent", "draft", "overdue", "paid", "void", "unpaid", "partially_paid".',
+    'Filter by status: "sent", "draft", "overdue", "paid", "void", "unpaid", "partially_paid".'
   ],
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    organizationId: z.string().optional().describe('Zoho Books organization ID (required unless listing organizations)'),
-    invoiceId: z.string().optional().describe('Specific invoice ID to fetch'),
-    status: z.string().optional().describe('Filter by status (e.g., "sent", "draft", "overdue", "paid", "void")'),
-    customerId: z.string().optional().describe('Filter invoices by customer ID'),
-    page: z.number().optional().describe('Page number'),
-    perPage: z.number().optional().describe('Records per page (max 200)'),
-    sortColumn: z.string().optional().describe('Sort by column (e.g., "date", "invoice_number", "total")'),
-    sortOrder: z.enum(['ascending', 'descending']).optional().describe('Sort order'),
-    listOrganizations: z.boolean().optional().describe('If true, lists available organizations instead of invoices'),
-  }))
-  .output(z.object({
-    invoices: z.array(z.record(z.string(), z.any())).optional().describe('Invoice records'),
-    organizations: z.array(z.object({
-      organizationId: z.string(),
-      name: z.string(),
-      isDefault: z.boolean().optional(),
-      currencyCode: z.string().optional(),
-    })).optional().describe('Available organizations (if listOrganizations is true)'),
-    hasMorePages: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      organizationId: z
+        .string()
+        .optional()
+        .describe('Zoho Books organization ID (required unless listing organizations)'),
+      invoiceId: z.string().optional().describe('Specific invoice ID to fetch'),
+      status: z
+        .string()
+        .optional()
+        .describe('Filter by status (e.g., "sent", "draft", "overdue", "paid", "void")'),
+      customerId: z.string().optional().describe('Filter invoices by customer ID'),
+      page: z.number().optional().describe('Page number'),
+      perPage: z.number().optional().describe('Records per page (max 200)'),
+      sortColumn: z
+        .string()
+        .optional()
+        .describe('Sort by column (e.g., "date", "invoice_number", "total")'),
+      sortOrder: z.enum(['ascending', 'descending']).optional().describe('Sort order'),
+      listOrganizations: z
+        .boolean()
+        .optional()
+        .describe('If true, lists available organizations instead of invoices')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(z.record(z.string(), z.any())).optional().describe('Invoice records'),
+      organizations: z
+        .array(
+          z.object({
+            organizationId: z.string(),
+            name: z.string(),
+            isDefault: z.boolean().optional(),
+            currencyCode: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Available organizations (if listOrganizations is true)'),
+      hasMorePages: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
 
     if (ctx.input.listOrganizations) {
@@ -47,22 +68,26 @@ export let booksGetInvoices = SlateTool.create(spec, {
         organizationId: o.organization_id,
         name: o.name,
         isDefault: o.is_default_org,
-        currencyCode: o.currency_code,
+        currencyCode: o.currency_code
       }));
       return {
         output: { organizations: orgs },
-        message: `Found **${orgs.length}** Zoho Books organizations.`,
+        message: `Found **${orgs.length}** Zoho Books organizations.`
       };
     }
 
     if (!ctx.input.organizationId) throw new Error('organizationId is required');
-    let client = new ZohoBooksClient({ token: ctx.auth.token, datacenter: dc, organizationId: ctx.input.organizationId });
+    let client = new ZohoBooksClient({
+      token: ctx.auth.token,
+      datacenter: dc,
+      organizationId: ctx.input.organizationId
+    });
 
     if (ctx.input.invoiceId) {
       let result = await client.getInvoice(ctx.input.invoiceId);
       return {
         output: { invoices: [result?.invoice || result] },
-        message: `Fetched invoice **${result?.invoice?.invoice_number || ctx.input.invoiceId}**.`,
+        message: `Fetched invoice **${result?.invoice?.invoice_number || ctx.input.invoiceId}**.`
       };
     }
 
@@ -72,7 +97,7 @@ export let booksGetInvoices = SlateTool.create(spec, {
       status: ctx.input.status,
       customerId: ctx.input.customerId,
       sortColumn: ctx.input.sortColumn,
-      sortOrder: ctx.input.sortOrder,
+      sortOrder: ctx.input.sortOrder
     });
 
     let invoices = result?.invoices || [];
@@ -80,8 +105,9 @@ export let booksGetInvoices = SlateTool.create(spec, {
     return {
       output: {
         invoices,
-        hasMorePages: pageContext?.has_more_page ?? false,
+        hasMorePages: pageContext?.has_more_page ?? false
       },
-      message: `Retrieved **${invoices.length}** invoices.`,
+      message: `Retrieved **${invoices.length}** invoices.`
     };
-  }).build();
+  })
+  .build();

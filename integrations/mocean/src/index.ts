@@ -11,13 +11,9 @@ import {
   numberLookup,
   sendWhatsApp,
   manageWhatsAppTemplates,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
-import {
-  smsEvents,
-  whatsappEvents,
-  voiceEvents,
-} from './triggers';
+import { smsEvents, whatsappEvents, voiceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,11 +28,7 @@ export let provider = Slate.create({
     numberLookup,
     sendWhatsApp,
     manageWhatsAppTemplates,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    smsEvents,
-    whatsappEvents,
-    voiceEvents,
-  ],
+  triggers: [smsEvents, whatsappEvents, voiceEvents]
 });

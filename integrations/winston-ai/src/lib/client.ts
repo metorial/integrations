@@ -166,8 +166,8 @@ export class Client {
       baseURL: 'https://api.gowinston.ai',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -186,7 +186,7 @@ export class Client {
 
   async detectImage(params: DetectImageParams): Promise<DetectImageResponse> {
     let body: Record<string, unknown> = {
-      url: params.url,
+      url: params.url
     };
     if (params.version !== undefined) body.version = params.version;
 
@@ -221,7 +221,7 @@ export class Client {
   async compareTexts(params: TextCompareParams): Promise<TextCompareResponse> {
     let body = {
       first_text: params.firstText,
-      second_text: params.secondText,
+      second_text: params.secondText
     };
 
     let response = await this.axios.post('/v2/text-compare', body);

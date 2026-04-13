@@ -14,26 +14,28 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // --- Chats ---
 
-  async getChats(params: {
-    label?: string;
-    whatsappAccountId?: string;
-    group?: boolean;
-    responsible?: string;
-    name?: string;
-    phone?: string;
-    read?: boolean;
-    closed?: boolean;
-    page?: number;
-    createdAfter?: string;
-    createdBefore?: string;
-  } = {}): Promise<any> {
+  async getChats(
+    params: {
+      label?: string;
+      whatsappAccountId?: string;
+      group?: boolean;
+      responsible?: string;
+      name?: string;
+      phone?: string;
+      read?: boolean;
+      closed?: boolean;
+      page?: number;
+      createdAfter?: string;
+      createdBefore?: string;
+    } = {}
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params.label) query.label = params.label;
     if (params.whatsappAccountId) query.whatsapp_account_id = params.whatsappAccountId;
@@ -56,26 +58,32 @@ export class Client {
     return response.data;
   }
 
-  async updateChat(chatId: number, data: {
-    name?: string;
-    responsible?: string;
-    closed?: boolean;
-    read?: boolean;
-  }): Promise<any> {
+  async updateChat(
+    chatId: number,
+    data: {
+      name?: string;
+      responsible?: string;
+      closed?: boolean;
+      read?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/chats/${chatId}`, data);
     return response.data;
   }
 
   // --- Messages ---
 
-  async getChatMessages(chatId: number, params: {
-    fromMe?: boolean;
-    after?: string;
-    before?: string;
-    afterMessage?: string;
-    beforeMessage?: string;
-    sortingOrder?: 'asc' | 'desc';
-  } = {}): Promise<any> {
+  async getChatMessages(
+    chatId: number,
+    params: {
+      fromMe?: boolean;
+      after?: string;
+      before?: string;
+      afterMessage?: string;
+      beforeMessage?: string;
+      sortingOrder?: 'asc' | 'desc';
+    } = {}
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params.fromMe !== undefined) query.from_me = params.fromMe;
     if (params.after) query.after = params.after;
@@ -105,12 +113,15 @@ export class Client {
     return response.data;
   }
 
-  async sendMessageToChat(chatId: number, data: {
-    text?: string;
-    fileUid?: string;
-    label?: string;
-    replyTo?: string;
-  }): Promise<any> {
+  async sendMessageToChat(
+    chatId: number,
+    data: {
+      text?: string;
+      fileUid?: string;
+      label?: string;
+      replyTo?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.text) body.text = data.text;
     if (data.fileUid) body.file_uid = data.fileUid;
@@ -186,10 +197,13 @@ export class Client {
 
   // --- Notes ---
 
-  async addChatNote(chatId: number, data: {
-    text: string;
-    isPrivate?: boolean;
-  }): Promise<any> {
+  async addChatNote(
+    chatId: number,
+    data: {
+      text: string;
+      isPrivate?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { text: data.text };
     if (data.isPrivate !== undefined) body.is_private = data.isPrivate;
 
@@ -263,7 +277,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       event_type: data.eventType,
-      url: data.url,
+      url: data.url
     };
     if (data.enabled !== undefined) body.enabled = data.enabled;
 
@@ -276,11 +290,14 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: number, data: {
-    eventType?: string;
-    url?: string;
-    enabled?: boolean;
-  }): Promise<any> {
+  async updateWebhook(
+    webhookId: number,
+    data: {
+      eventType?: string;
+      url?: string;
+      enabled?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.eventType) body.event_type = data.eventType;
     if (data.url) body.url = data.url;

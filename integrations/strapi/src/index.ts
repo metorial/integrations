@@ -12,12 +12,9 @@ import {
   getMedia,
   uploadMedia,
   updateMedia,
-  deleteMedia,
+  deleteMedia
 } from './tools';
-import {
-  entryEvents,
-  mediaEvents,
-} from './triggers';
+import { entryEvents, mediaEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     getMedia,
     uploadMedia,
     updateMedia,
-    deleteMedia,
+    deleteMedia
   ],
-  triggers: [
-    entryEvents,
-    mediaEvents,
-  ],
+  triggers: [entryEvents, mediaEvents]
 });

@@ -17,30 +17,52 @@ let productResultSchema = z.object({
   isSponsored: z.boolean().optional().describe('Whether the product listing is sponsored')
 });
 
-export let productSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Product Search',
-    key: 'product_search',
-    description: `Search for products and retrieve structured product listings. Returns product data including titles, prices, ratings, reviews, images, and availability from major e-commerce sources. Useful for building price comparison tools, product research, or monitoring product availability.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let productSearch = SlateTool.create(spec, {
+  name: 'Product Search',
+  key: 'product_search',
+  description: `Search for products and retrieve structured product listings. Returns product data including titles, prices, ratings, reviews, images, and availability from major e-commerce sources. Useful for building price comparison tools, product research, or monitoring product availability.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Product search query (e.g., "iphone 14", "wireless headphones")'),
-    proxyLocation: z.enum([
-      'US', 'EU', 'CA', 'GB', 'FR', 'DE', 'SE', 'IE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'
-    ]).optional().describe('Geographic location for geo-targeted results, overrides default'),
-    deviceType: z.enum(['desktop', 'mobile']).optional().describe('Device type for results, overrides default')
-  }))
-  .output(z.object({
-    products: z.array(productResultSchema).describe('Product listings'),
-    ads: z.array(z.any()).optional().describe('Product advertisements')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .describe('Product search query (e.g., "iphone 14", "wireless headphones")'),
+      proxyLocation: z
+        .enum([
+          'US',
+          'EU',
+          'CA',
+          'GB',
+          'FR',
+          'DE',
+          'SE',
+          'IE',
+          'IN',
+          'JP',
+          'KR',
+          'SG',
+          'AU',
+          'BR'
+        ])
+        .optional()
+        .describe('Geographic location for geo-targeted results, overrides default'),
+      deviceType: z
+        .enum(['desktop', 'mobile'])
+        .optional()
+        .describe('Device type for results, overrides default')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(productResultSchema).describe('Product listings'),
+      ads: z.array(z.any()).optional().describe('Product advertisements')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       proxyLocation: ctx.config.proxyLocation,

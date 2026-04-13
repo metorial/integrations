@@ -9,44 +9,57 @@ let predictionSchema = z.object({
   confidence: z.number().optional().describe('Confidence score'),
   type: z.string().optional().describe('Prediction type'),
   page: z.number().optional().describe('Page number'),
-  boundingBox: z.object({
-    xmin: z.number(),
-    ymin: z.number(),
-    xmax: z.number(),
-    ymax: z.number()
-  }).optional().describe('Bounding box coordinates')
+  boundingBox: z
+    .object({
+      xmin: z.number(),
+      ymin: z.number(),
+      xmax: z.number(),
+      ymax: z.number()
+    })
+    .optional()
+    .describe('Bounding box coordinates')
 });
 
-export let getPredictionResults = SlateTool.create(
-  spec,
-  {
-    name: 'Get Prediction Results',
-    key: 'get_prediction_results',
-    description: `Retrieve extraction/prediction results for a previously processed document. Use this to check the status of async predictions or to retrieve detailed results by file ID or page ID.`,
-    instructions: [
-      'Use requestFileId (from async extraction) to get results for an entire file.',
-      'Use pageId to get results for a specific page.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getPredictionResults = SlateTool.create(spec, {
+  name: 'Get Prediction Results',
+  key: 'get_prediction_results',
+  description: `Retrieve extraction/prediction results for a previously processed document. Use this to check the status of async predictions or to retrieve detailed results by file ID or page ID.`,
+  instructions: [
+    'Use requestFileId (from async extraction) to get results for an entire file.',
+    'Use pageId to get results for a specific page.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    modelId: z.string().describe('ID of the model used for the prediction'),
-    requestFileId: z.string().optional().describe('File-level ID returned from an extraction request'),
-    pageId: z.string().optional().describe('Page-level ID for retrieving a specific page result')
-  }))
-  .output(z.object({
-    fileName: z.string().optional().describe('Original file name'),
-    fileUrl: z.string().optional().describe('URL of the processed file'),
-    approvalStatus: z.string().optional().describe('Approval status of the file'),
-    isModerated: z.boolean().optional().describe('Whether the file has been manually reviewed'),
-    predictions: z.array(predictionSchema).describe('Extracted predictions'),
-    rawResponse: z.any().optional().describe('Raw API response for additional details')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      modelId: z.string().describe('ID of the model used for the prediction'),
+      requestFileId: z
+        .string()
+        .optional()
+        .describe('File-level ID returned from an extraction request'),
+      pageId: z
+        .string()
+        .optional()
+        .describe('Page-level ID for retrieving a specific page result')
+    })
+  )
+  .output(
+    z.object({
+      fileName: z.string().optional().describe('Original file name'),
+      fileUrl: z.string().optional().describe('URL of the processed file'),
+      approvalStatus: z.string().optional().describe('Approval status of the file'),
+      isModerated: z
+        .boolean()
+        .optional()
+        .describe('Whether the file has been manually reviewed'),
+      predictions: z.array(predictionSchema).describe('Extracted predictions'),
+      rawResponse: z.any().optional().describe('Raw API response for additional details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NanonetsClient(ctx.auth.token);
 
     if (!ctx.input.requestFileId && !ctx.input.pageId) {
@@ -74,19 +87,22 @@ export let getPredictionResults = SlateTool.create(
         approvalStatus = approvalStatus || page.approval_status;
         isModerated = isModerated ?? page.is_moderated;
 
-        for (let pred of (page.prediction || page.predicted_boxes || [])) {
+        for (let pred of page.prediction || page.predicted_boxes || []) {
           predictions.push({
             label: pred.label,
             extractedText: pred.ocr_text || '',
             confidence: pred.score,
             type: pred.type,
             page: pred.page,
-            boundingBox: (pred.xmin != null) ? {
-              xmin: pred.xmin,
-              ymin: pred.ymin,
-              xmax: pred.xmax,
-              ymax: pred.ymax
-            } : undefined
+            boundingBox:
+              pred.xmin != null
+                ? {
+                    xmin: pred.xmin,
+                    ymin: pred.ymin,
+                    xmax: pred.xmax,
+                    ymax: pred.ymax
+                  }
+                : undefined
           });
         }
       }
@@ -96,19 +112,22 @@ export let getPredictionResults = SlateTool.create(
       approvalStatus = result.approval_status;
       isModerated = result.is_moderated;
 
-      for (let pred of (result.prediction || result.predicted_boxes || [])) {
+      for (let pred of result.prediction || result.predicted_boxes || []) {
         predictions.push({
           label: pred.label,
           extractedText: pred.ocr_text || '',
           confidence: pred.score,
           type: pred.type,
           page: pred.page,
-          boundingBox: (pred.xmin != null) ? {
-            xmin: pred.xmin,
-            ymin: pred.ymin,
-            xmax: pred.xmax,
-            ymax: pred.ymax
-          } : undefined
+          boundingBox:
+            pred.xmin != null
+              ? {
+                  xmin: pred.xmin,
+                  ymin: pred.ymin,
+                  xmax: pred.xmax,
+                  ymax: pred.ymax
+                }
+              : undefined
         });
       }
     }

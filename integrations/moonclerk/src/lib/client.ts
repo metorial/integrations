@@ -6,7 +6,7 @@ let paymentSourceSchema = {
   brand: null as string | null,
   expMonth: null as number | null,
   expYear: null as number | null,
-  bankName: null as string | null,
+  bankName: null as string | null
 };
 
 export type PaymentSource = typeof paymentSourceSchema;
@@ -132,7 +132,14 @@ export interface CustomerListParams extends ListParams {
 
 let mapPaymentSource = (source: Record<string, unknown> | null): PaymentSource => {
   if (!source) {
-    return { type: null, last4: null, brand: null, expMonth: null, expYear: null, bankName: null };
+    return {
+      type: null,
+      last4: null,
+      brand: null,
+      expMonth: null,
+      expYear: null,
+      bankName: null
+    };
   }
   return {
     type: (source.type as string) ?? null,
@@ -140,7 +147,7 @@ let mapPaymentSource = (source: Record<string, unknown> | null): PaymentSource =
     brand: (source.brand as string) ?? null,
     expMonth: (source.exp_month as number) ?? null,
     expYear: (source.exp_year as number) ?? null,
-    bankName: (source.bank_name as string) ?? null,
+    bankName: (source.bank_name as string) ?? null
   };
 };
 
@@ -153,7 +160,7 @@ let mapCoupon = (coupon: Record<string, unknown> | null): Coupon | null => {
     currency: (coupon.currency as string) ?? null,
     percentOff: (coupon.percent_off as number) ?? null,
     durationInMonths: (coupon.duration_in_months as number) ?? null,
-    maxRedemptions: (coupon.max_redemptions as number) ?? null,
+    maxRedemptions: (coupon.max_redemptions as number) ?? null
   };
 };
 
@@ -162,11 +169,13 @@ let mapDiscount = (discount: Record<string, unknown> | null): Discount | null =>
   return {
     coupon: mapCoupon((discount.coupon as Record<string, unknown>) ?? null),
     startedAt: (discount.started_at as string) ?? null,
-    endedAt: (discount.ended_at as string) ?? null,
+    endedAt: (discount.ended_at as string) ?? null
   };
 };
 
-let mapCustomFields = (fields: Record<string, unknown> | null): Record<string, CustomField> => {
+let mapCustomFields = (
+  fields: Record<string, unknown> | null
+): Record<string, CustomField> => {
   if (!fields) return {};
   let result: Record<string, CustomField> = {};
   for (let [key, value] of Object.entries(fields)) {
@@ -174,7 +183,7 @@ let mapCustomFields = (fields: Record<string, unknown> | null): Record<string, C
     result[key] = {
       customFieldId: (field.id as number) ?? 0,
       type: (field.type as string) ?? 'string',
-      response: field.response ?? null,
+      response: field.response ?? null
     };
   }
   return result;
@@ -197,14 +206,16 @@ let mapSubscription = (sub: Record<string, unknown> | null): Subscription | null
     expiresAt: (sub.expires_at as string) ?? null,
     canceledAt: (sub.canceled_at as string) ?? null,
     endedAt: (sub.ended_at as string) ?? null,
-    plan: plan ? {
-      planId: (plan.id as string) ?? null,
-      planReference: (plan.plan_reference as string) ?? null,
-      amount: (plan.amount as number) ?? 0,
-      currency: (plan.currency as string) ?? '',
-      interval: (plan.interval as string) ?? '',
-      intervalCount: (plan.interval_count as number) ?? 1,
-    } : null,
+    plan: plan
+      ? {
+          planId: (plan.id as string) ?? null,
+          planReference: (plan.plan_reference as string) ?? null,
+          amount: (plan.amount as number) ?? 0,
+          currency: (plan.currency as string) ?? '',
+          interval: (plan.interval as string) ?? '',
+          intervalCount: (plan.interval_count as number) ?? 1
+        }
+      : null
   };
 };
 
@@ -229,7 +240,7 @@ let mapPayment = (raw: Record<string, unknown>): Payment => {
     formId: (raw.form_id as number) ?? 0,
     coupon: mapCoupon((raw.coupon as Record<string, unknown>) ?? null),
     customFields: mapCustomFields((raw.custom_fields as Record<string, unknown>) ?? null),
-    checkout: (raw.checkout as Record<string, unknown>) ?? null,
+    checkout: (raw.checkout as Record<string, unknown>) ?? null
   };
 };
 
@@ -248,7 +259,7 @@ let mapCustomer = (raw: Record<string, unknown>): Customer => {
     formId: (raw.form_id as number) ?? 0,
     customFields: mapCustomFields((raw.custom_fields as Record<string, unknown>) ?? null),
     checkout: (raw.checkout as Record<string, unknown>) ?? null,
-    subscription: mapSubscription((raw.subscription as Record<string, unknown>) ?? null),
+    subscription: mapSubscription((raw.subscription as Record<string, unknown>) ?? null)
   };
 };
 
@@ -261,7 +272,7 @@ let mapForm = (raw: Record<string, unknown>): Form => {
     paymentVolume: (raw.payment_volume as number) ?? 0,
     successfulCheckoutCount: (raw.successful_checkout_count as number) ?? 0,
     createdAt: (raw.created_at as string) ?? '',
-    updatedAt: (raw.updated_at as string) ?? '',
+    updatedAt: (raw.updated_at as string) ?? ''
   };
 };
 
@@ -272,9 +283,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.moonclerk.com',
       headers: {
-        'Authorization': `Token token=${config.token}`,
-        'Accept': 'application/vnd.moonclerk+json;version=1',
-      },
+        Authorization: `Token token=${config.token}`,
+        Accept: 'application/vnd.moonclerk+json;version=1'
+      }
     });
   }
 
@@ -289,13 +300,19 @@ export class Client {
     if (params?.status) queryParams['status'] = params.status;
 
     let response = await this.axios.get('/payments', { params: queryParams });
-    let payments = (response.data as Record<string, unknown>).payments as Record<string, unknown>[];
+    let payments = (response.data as Record<string, unknown>).payments as Record<
+      string,
+      unknown
+    >[];
     return (payments ?? []).map(mapPayment);
   }
 
   async getPayment(paymentId: number): Promise<Payment> {
     let response = await this.axios.get(`/payments/${paymentId}`);
-    let payment = (response.data as Record<string, unknown>).payment as Record<string, unknown>;
+    let payment = (response.data as Record<string, unknown>).payment as Record<
+      string,
+      unknown
+    >;
     return mapPayment(payment);
   }
 
@@ -311,13 +328,19 @@ export class Client {
     if (params?.status) queryParams['status'] = params.status;
 
     let response = await this.axios.get('/customers', { params: queryParams });
-    let customers = (response.data as Record<string, unknown>).customers as Record<string, unknown>[];
+    let customers = (response.data as Record<string, unknown>).customers as Record<
+      string,
+      unknown
+    >[];
     return (customers ?? []).map(mapCustomer);
   }
 
   async getCustomer(customerId: number): Promise<Customer> {
     let response = await this.axios.get(`/customers/${customerId}`);
-    let customer = (response.data as Record<string, unknown>).customer as Record<string, unknown>;
+    let customer = (response.data as Record<string, unknown>).customer as Record<
+      string,
+      unknown
+    >;
     return mapCustomer(customer);
   }
 

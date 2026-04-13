@@ -3,39 +3,49 @@ import { z } from 'zod';
 import { getBaseUrl } from './lib/regions';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Storyblok OAuth',
     key: 'oauth',
 
     scopes: [
-      { title: 'Read Content', description: 'Read content from the space', scope: 'read_content' },
-      { title: 'Write Content', description: 'Write and manage content in the space', scope: 'write_content' },
+      {
+        title: 'Read Content',
+        description: 'Read content from the space',
+        scope: 'read_content'
+      },
+      {
+        title: 'Write Content',
+        description: 'Write and manage content in the space',
+        scope: 'write_content'
+      }
     ],
 
     inputSchema: z.object({
-      region: z.enum(['eu', 'us', 'ca', 'ap', 'cn']).default('eu').describe('Server region'),
+      region: z.enum(['eu', 'us', 'ca', 'ap', 'cn']).default('eu').describe('Server region')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
         url: `https://app.storyblok.com/oauth/authorize?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let baseUrl = getBaseUrl(ctx.input.region);
       let client = createAxios({ baseURL: baseUrl });
 
@@ -44,7 +54,7 @@ export let auth = SlateAuth.create()
         code: ctx.code,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let data = response.data as {
@@ -59,18 +69,22 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: data.access_token,
+          token: data.access_token
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { region: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { region: string };
+      scopes: string[];
+    }) => {
       let client = createAxios({
         baseURL: 'https://mapi.storyblok.com/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       try {
@@ -89,14 +103,16 @@ export let auth = SlateAuth.create()
           profile: {
             id: data.user?.id?.toString(),
             email: data.user?.email,
-            name: [data.user?.firstname, data.user?.lastname].filter(Boolean).join(' ') || undefined,
-            imageUrl: data.user?.avatar,
-          },
+            name:
+              [data.user?.firstname, data.user?.lastname].filter(Boolean).join(' ') ||
+              undefined,
+            imageUrl: data.user?.avatar
+          }
         };
       } catch {
         return { profile: {} };
       }
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -104,14 +120,18 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal Access Token from My Account → Account Settings → Personal access tokens'),
+      token: z
+        .string()
+        .describe(
+          'Personal Access Token from My Account → Account Settings → Personal access tokens'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -119,8 +139,8 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://mapi.storyblok.com/v1',
         headers: {
-          Authorization: ctx.output.token,
-        },
+          Authorization: ctx.output.token
+        }
       });
 
       try {
@@ -139,12 +159,14 @@ export let auth = SlateAuth.create()
           profile: {
             id: data.user?.id?.toString(),
             email: data.user?.email,
-            name: [data.user?.firstname, data.user?.lastname].filter(Boolean).join(' ') || undefined,
-            imageUrl: data.user?.avatar,
-          },
+            name:
+              [data.user?.firstname, data.user?.lastname].filter(Boolean).join(' ') ||
+              undefined,
+            imageUrl: data.user?.avatar
+          }
         };
       } catch {
         return { profile: {} };
       }
-    },
+    }
   });

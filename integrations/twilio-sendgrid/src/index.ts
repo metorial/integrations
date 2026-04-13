@@ -23,12 +23,9 @@ import {
   validateEmail,
   getAuthenticatedDomains,
   authenticateDomain,
-  validateDomain,
+  validateDomain
 } from './tools';
-import {
-  emailEvents,
-  inboundEmail,
-} from './triggers';
+import { emailEvents, inboundEmail } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,10 +52,7 @@ export let provider = Slate.create({
     validateEmail,
     getAuthenticatedDomains,
     authenticateDomain,
-    validateDomain,
+    validateDomain
   ],
-  triggers: [
-    emailEvents,
-    inboundEmail,
-  ],
+  triggers: [emailEvents, inboundEmail]
 });

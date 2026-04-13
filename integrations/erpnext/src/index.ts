@@ -30,7 +30,5 @@ export let provider = Slate.create({
     getReport,
     countDocuments
   ],
-  triggers: [
-    documentEvent
-  ]
+  triggers: [documentEvent]
 });

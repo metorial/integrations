@@ -3,7 +3,11 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let webhookPayloadSchema = z.object({
-  triggerType: z.string().describe('Webhook trigger type (e.g., firstException, exception, reopened, projectSpiking)'),
+  triggerType: z
+    .string()
+    .describe(
+      'Webhook trigger type (e.g., firstException, exception, reopened, projectSpiking)'
+    ),
   triggerMessage: z.string().optional().describe('Human-readable trigger message'),
   accountId: z.string().optional().describe('Bugsnag account ID'),
   accountName: z.string().optional().describe('Bugsnag account name'),
@@ -26,25 +30,25 @@ let webhookPayloadSchema = z.object({
   userEmail: z.string().optional().describe('Email of the user'),
   releaseVersion: z.string().optional().describe('Release version (for release events)'),
   commentMessage: z.string().optional().describe('Comment text (for comment events)'),
-  raw: z.any().optional().describe('Full raw webhook payload'),
+  raw: z.any().optional().describe('Full raw webhook payload')
 });
 
-export let errorEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Error & Project Events',
-    key: 'error_events',
-    description: 'Triggers on Bugsnag webhook events including new errors, error occurrences, frequent errors, error milestones, error reopened, error spikes, new releases, rate limiting, and comments. Configure the webhook URL in Bugsnag under Project Settings → Integrations and Email → Data Forwarding → Webhook.',
-  }
-)
-  .input(z.object({
-    triggerType: z.string().describe('The webhook trigger type'),
-    eventId: z.string().describe('Unique ID for deduplication'),
-    payload: z.any().describe('Full webhook payload'),
-  }))
+export let errorEvents = SlateTrigger.create(spec, {
+  name: 'Error & Project Events',
+  key: 'error_events',
+  description:
+    'Triggers on Bugsnag webhook events including new errors, error occurrences, frequent errors, error milestones, error reopened, error spikes, new releases, rate limiting, and comments. Configure the webhook URL in Bugsnag under Project Settings → Integrations and Email → Data Forwarding → Webhook.'
+})
+  .input(
+    z.object({
+      triggerType: z.string().describe('The webhook trigger type'),
+      eventId: z.string().describe('Unique ID for deduplication'),
+      payload: z.any().describe('Full webhook payload')
+    })
+  )
   .output(webhookPayloadSchema)
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -61,13 +65,13 @@ export let errorEvents = SlateTrigger.create(
           {
             triggerType,
             eventId: uniqueId,
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { payload, triggerType } = ctx.input;
 
       let triggerTypeMap: Record<string, string> = {
@@ -81,7 +85,7 @@ export let errorEvents = SlateTrigger.create(
         projectSamplingStarted: 'project.rate_limited',
         projectApproachingRateLimit: 'project.rate_limit_approaching',
         comment: 'error.comment',
-        errorStateManualChange: 'error.status_changed',
+        errorStateManualChange: 'error.status_changed'
       };
 
       let type = triggerTypeMap[triggerType] || `error.${triggerType}`;
@@ -102,7 +106,10 @@ export let errorEvents = SlateTrigger.create(
         unhandled: payload.error?.unhandled,
         firstReceived: payload.error?.firstReceived || payload.error?.first_received,
         receivedAt: payload.error?.receivedAt || payload.error?.received_at,
-        releaseStage: payload.error?.releaseStage || payload.error?.release_stage || payload.app?.releaseStage,
+        releaseStage:
+          payload.error?.releaseStage ||
+          payload.error?.release_stage ||
+          payload.app?.releaseStage,
         appVersion: payload.app?.version || payload.release?.version,
         errorUrl: payload.error?.url,
         userId: payload.user?.id,
@@ -110,13 +117,14 @@ export let errorEvents = SlateTrigger.create(
         userEmail: payload.user?.email,
         releaseVersion: payload.release?.version,
         commentMessage: payload.comment?.message,
-        raw: payload,
+        raw: payload
       };
 
       return {
         type,
         id: ctx.input.eventId,
-        output,
+        output
       };
-    },
-  }).build();
+    }
+  })
+  .build();

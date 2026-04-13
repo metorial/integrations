@@ -14,7 +14,7 @@ import type {
   StoryblokSpace,
   StoryblokTag,
   StoryblokActivity,
-  StoryblokWebhook,
+  StoryblokWebhook
 } from './types';
 
 export class StoryblokClient {
@@ -30,8 +30,8 @@ export class StoryblokClient {
       baseURL,
       headers: {
         Authorization: params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -93,7 +93,7 @@ export class StoryblokClient {
     path?: string;
   }): Promise<StoryblokStory> {
     let body: Record<string, any> = {
-      name: story.name,
+      name: story.name
     };
     if (story.slug) body.slug = story.slug;
     if (story.content) body.content = story.content;
@@ -109,16 +109,19 @@ export class StoryblokClient {
     return data.story;
   }
 
-  async updateStory(storyId: string, story: {
-    name?: string;
-    slug?: string;
-    content?: Record<string, any>;
-    parentId?: number;
-    isStartpage?: boolean;
-    path?: string;
-    scheduleAt?: string;
-    metaData?: Record<string, any>;
-  }): Promise<StoryblokStory> {
+  async updateStory(
+    storyId: string,
+    story: {
+      name?: string;
+      slug?: string;
+      content?: Record<string, any>;
+      parentId?: number;
+      isStartpage?: boolean;
+      path?: string;
+      scheduleAt?: string;
+      metaData?: Record<string, any>;
+    }
+  ): Promise<StoryblokStory> {
     let body: Record<string, any> = {};
     if (story.name) body.name = story.name;
     if (story.slug) body.slug = story.slug;
@@ -129,7 +132,9 @@ export class StoryblokClient {
     if (story.scheduleAt) body.schedule_at = story.scheduleAt;
     if (story.metaData) body.meta_data = story.metaData;
 
-    let response = await this.axios.put(this.spacePath(`/stories/${storyId}`), { story: body });
+    let response = await this.axios.put(this.spacePath(`/stories/${storyId}`), {
+      story: body
+    });
     let data = response.data as { story: StoryblokStory };
     return data.story;
   }
@@ -141,7 +146,9 @@ export class StoryblokClient {
   async publishStory(storyId: string, language?: string): Promise<StoryblokStory> {
     let params: Record<string, any> = {};
     if (language) params.lang = language;
-    let response = await this.axios.get(this.spacePath(`/stories/${storyId}/publish`), { params });
+    let response = await this.axios.get(this.spacePath(`/stories/${storyId}/publish`), {
+      params
+    });
     let data = response.data as { story: StoryblokStory };
     return data.story;
   }
@@ -192,17 +199,20 @@ export class StoryblokClient {
     return data.component;
   }
 
-  async updateComponent(componentId: string, component: {
-    name?: string;
-    displayName?: string;
-    schema?: Record<string, any>;
-    isRoot?: boolean;
-    isNestable?: boolean;
-    componentGroupUuid?: string;
-    color?: string;
-    icon?: string;
-    image?: string;
-  }): Promise<StoryblokComponent> {
+  async updateComponent(
+    componentId: string,
+    component: {
+      name?: string;
+      displayName?: string;
+      schema?: Record<string, any>;
+      isRoot?: boolean;
+      isNestable?: boolean;
+      componentGroupUuid?: string;
+      color?: string;
+      icon?: string;
+      image?: string;
+    }
+  ): Promise<StoryblokComponent> {
     let body: Record<string, any> = {};
     if (component.name) body.name = component.name;
     if (component.displayName) body.display_name = component.displayName;
@@ -214,7 +224,9 @@ export class StoryblokClient {
     if (component.icon) body.icon = component.icon;
     if (component.image) body.image = component.image;
 
-    let response = await this.axios.put(this.spacePath(`/components/${componentId}`), { component: body });
+    let response = await this.axios.put(this.spacePath(`/components/${componentId}`), {
+      component: body
+    });
     let data = response.data as { component: StoryblokComponent };
     return data.component;
   }
@@ -252,16 +264,19 @@ export class StoryblokClient {
     return data;
   }
 
-  async updateAsset(assetId: string, asset: {
-    name?: string;
-    alt?: string;
-    title?: string;
-    copyright?: string;
-    focus?: string;
-    assetFolderId?: number;
-    isPrivate?: boolean;
-    source?: string;
-  }): Promise<StoryblokAsset> {
+  async updateAsset(
+    assetId: string,
+    asset: {
+      name?: string;
+      alt?: string;
+      title?: string;
+      copyright?: string;
+      focus?: string;
+      assetFolderId?: number;
+      isPrivate?: boolean;
+      source?: string;
+    }
+  ): Promise<StoryblokAsset> {
     let body: Record<string, any> = {};
     if (asset.name) body.name = asset.name;
     if (asset.alt !== undefined) body.alt = asset.alt;
@@ -307,15 +322,20 @@ export class StoryblokClient {
     return data.datasource;
   }
 
-  async updateDatasource(datasourceId: string, datasource: {
-    name?: string;
-    slug?: string;
-  }): Promise<StoryblokDatasource> {
+  async updateDatasource(
+    datasourceId: string,
+    datasource: {
+      name?: string;
+      slug?: string;
+    }
+  ): Promise<StoryblokDatasource> {
     let body: Record<string, any> = {};
     if (datasource.name) body.name = datasource.name;
     if (datasource.slug) body.slug = datasource.slug;
 
-    let response = await this.axios.put(this.spacePath(`/datasources/${datasourceId}`), { datasource: body });
+    let response = await this.axios.put(this.spacePath(`/datasources/${datasourceId}`), {
+      datasource: body
+    });
     let data = response.data as { datasource: StoryblokDatasource };
     return data.datasource;
   }
@@ -326,17 +346,22 @@ export class StoryblokClient {
 
   // ─── Datasource Entries ───────────────────────────────────────
 
-  async listDatasourceEntries(datasourceId: string, params?: {
-    page?: number;
-    perPage?: number;
-    dimensionId?: string;
-  }): Promise<StoryblokDatasourceEntry[]> {
+  async listDatasourceEntries(
+    datasourceId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      dimensionId?: string;
+    }
+  ): Promise<StoryblokDatasourceEntry[]> {
     let query: Record<string, any> = { datasource_id: datasourceId };
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
     if (params?.dimensionId) query.dimension_id = params.dimensionId;
 
-    let response = await this.axios.get(this.spacePath('/datasource_entries'), { params: query });
+    let response = await this.axios.get(this.spacePath('/datasource_entries'), {
+      params: query
+    });
     let data = response.data as { datasource_entries: StoryblokDatasourceEntry[] };
     return data.datasource_entries;
   }
@@ -350,26 +375,33 @@ export class StoryblokClient {
     let body: Record<string, any> = {
       name: entry.name,
       value: entry.value,
-      datasource_id: entry.datasourceId,
+      datasource_id: entry.datasourceId
     };
     if (entry.dimensionValue) body.dimension_value = entry.dimensionValue;
 
-    let response = await this.axios.post(this.spacePath('/datasource_entries'), { datasource_entry: body });
+    let response = await this.axios.post(this.spacePath('/datasource_entries'), {
+      datasource_entry: body
+    });
     let data = response.data as { datasource_entry: StoryblokDatasourceEntry };
     return data.datasource_entry;
   }
 
-  async updateDatasourceEntry(entryId: string, entry: {
-    name?: string;
-    value?: string;
-    dimensionValue?: string;
-  }): Promise<StoryblokDatasourceEntry> {
+  async updateDatasourceEntry(
+    entryId: string,
+    entry: {
+      name?: string;
+      value?: string;
+      dimensionValue?: string;
+    }
+  ): Promise<StoryblokDatasourceEntry> {
     let body: Record<string, any> = {};
     if (entry.name) body.name = entry.name;
     if (entry.value !== undefined) body.value = entry.value;
     if (entry.dimensionValue !== undefined) body.dimension_value = entry.dimensionValue;
 
-    let response = await this.axios.put(this.spacePath(`/datasource_entries/${entryId}`), { datasource_entry: body });
+    let response = await this.axios.put(this.spacePath(`/datasource_entries/${entryId}`), {
+      datasource_entry: body
+    });
     let data = response.data as { datasource_entry: StoryblokDatasourceEntry };
     return data.datasource_entry;
   }
@@ -397,7 +429,9 @@ export class StoryblokClient {
     if (params.spaceRoleId) body.space_role_id = params.spaceRoleId;
     if (params.permissions) body.permissions = params.permissions;
 
-    let response = await this.axios.post(this.spacePath('/collaborators'), { collaborator: body });
+    let response = await this.axios.post(this.spacePath('/collaborators'), {
+      collaborator: body
+    });
     let data = response.data as { collaborator: StoryblokCollaborator };
     return data.collaborator;
   }
@@ -422,7 +456,9 @@ export class StoryblokClient {
     return data.workflows;
   }
 
-  async listWorkflowStages(params?: { workflowId?: string }): Promise<StoryblokWorkflowStage[]> {
+  async listWorkflowStages(params?: {
+    workflowId?: string;
+  }): Promise<StoryblokWorkflowStage[]> {
     let query: Record<string, any> = {};
     if (params?.workflowId) query.workflow_id = params.workflowId;
 
@@ -433,7 +469,10 @@ export class StoryblokClient {
 
   // ─── Releases ─────────────────────────────────────────────────
 
-  async listReleases(params?: { page?: number; perPage?: number }): Promise<StoryblokRelease[]> {
+  async listReleases(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<StoryblokRelease[]> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
@@ -521,13 +560,15 @@ export class StoryblokClient {
   }): Promise<StoryblokWebhook> {
     let body: Record<string, any> = {
       name: webhook.name,
-      endpoint: webhook.endpoint,
+      endpoint: webhook.endpoint
     };
     if (webhook.actions) body.actions = webhook.actions;
     if (webhook.activated !== undefined) body.activated = webhook.activated;
     if (webhook.secret) body.secret = webhook.secret;
 
-    let response = await this.axios.post(this.spacePath('/webhook_endpoints'), { webhook_endpoint: body });
+    let response = await this.axios.post(this.spacePath('/webhook_endpoints'), {
+      webhook_endpoint: body
+    });
     let data = response.data as { webhook_endpoint: StoryblokWebhook };
     return data.webhook_endpoint;
   }

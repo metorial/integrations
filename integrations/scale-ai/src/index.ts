@@ -17,13 +17,9 @@ import {
   manageTeam,
   importFile,
   createEvaluationTask,
-  resendCallback,
+  resendCallback
 } from './tools';
-import {
-  taskCompleted,
-  batchCompleted,
-  taskStatusChanged,
-} from './triggers';
+import { taskCompleted, batchCompleted, taskStatusChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -44,11 +40,7 @@ export let provider = Slate.create({
     manageTeam,
     importFile,
     createEvaluationTask,
-    resendCallback,
+    resendCallback
   ],
-  triggers: [
-    taskCompleted,
-    batchCompleted,
-    taskStatusChanged,
-  ],
+  triggers: [taskCompleted, batchCompleted, taskStatusChanged]
 });

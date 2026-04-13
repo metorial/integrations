@@ -13,6 +13,7 @@ Workday supports two primary authentication approaches, depending on the API typ
 REST requests use OAuth 2.0. You register an API client in Workday, grant scopes (what the client is allowed to access), and obtain access tokens (and a refresh token) to call endpoints.
 
 **Setup steps:**
+
 1. Search for "Register API Client for Integration" in Workday, fill out the required details including Client Name, Non-Expiring Refresh Tokens checkbox, and Scope selections for functional areas.
 2. To create a non-expiring refresh token, search for "View API Client" reports, navigate to the API Clients for Integrations tab, select your client, choose "Manage Refresh Tokens for Integrations," input the authorized Workday Account, and generate a new refresh token.
 3. The registration produces a **Client ID** and **Client Secret** (shown only once).
@@ -32,6 +33,7 @@ The token request uses `grant_type=refresh_token` with the refresh token value, 
 SOAP requests are authenticated with a special Workday user account (the ISU) using WS-Security headers. Access is controlled by the security group(s) and domain policies assigned to that ISU.
 
 **Setup steps:**
+
 1. Create an Integration System User (ISU) via the "Create Integration System User" task with a username and password.
 2. Create a Security Group, assign the ISU to it, and configure Domain Security Policy Permissions for the group.
 3. Activate Security Policy Changes, gather your WSDL from Public Web Services, and authenticate using the WSDL, ISU Username, and ISU Password.

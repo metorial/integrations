@@ -8,56 +8,86 @@ let modelSchema = z.object({
   name: z.string().optional().describe('Human-readable model name'),
   description: z.string().optional().describe('Model description'),
   contextLength: z.number().optional().describe('Maximum context length in tokens'),
-  pricing: z.object({
-    prompt: z.string().optional().describe('Cost per prompt token (in USD)'),
-    completion: z.string().optional().describe('Cost per completion token (in USD)'),
-    image: z.string().optional().describe('Cost per image token'),
-    request: z.string().optional().describe('Cost per request'),
-  }).optional().describe('Pricing information'),
-  topProvider: z.object({
-    contextLength: z.number().optional().describe('Context length for top provider'),
-    maxCompletionTokens: z.number().optional().describe('Max completion tokens for top provider'),
-    isModerated: z.boolean().optional().describe('Whether the top provider moderates content'),
-  }).optional().describe('Top provider details'),
-  architecture: z.object({
-    modality: z.string().optional().describe('Model modality (e.g., "text->text", "text+image->text")'),
-    tokenizer: z.string().optional().describe('Tokenizer used'),
-    instructType: z.string().optional().describe('Instruction type'),
-  }).optional().describe('Model architecture details'),
+  pricing: z
+    .object({
+      prompt: z.string().optional().describe('Cost per prompt token (in USD)'),
+      completion: z.string().optional().describe('Cost per completion token (in USD)'),
+      image: z.string().optional().describe('Cost per image token'),
+      request: z.string().optional().describe('Cost per request')
+    })
+    .optional()
+    .describe('Pricing information'),
+  topProvider: z
+    .object({
+      contextLength: z.number().optional().describe('Context length for top provider'),
+      maxCompletionTokens: z
+        .number()
+        .optional()
+        .describe('Max completion tokens for top provider'),
+      isModerated: z
+        .boolean()
+        .optional()
+        .describe('Whether the top provider moderates content')
+    })
+    .optional()
+    .describe('Top provider details'),
+  architecture: z
+    .object({
+      modality: z
+        .string()
+        .optional()
+        .describe('Model modality (e.g., "text->text", "text+image->text")'),
+      tokenizer: z.string().optional().describe('Tokenizer used'),
+      instructType: z.string().optional().describe('Instruction type')
+    })
+    .optional()
+    .describe('Model architecture details')
 });
 
-export let listModels = SlateTool.create(
-  spec,
-  {
-    name: 'List Models',
-    key: 'list_models',
-    description: `List all available AI models on OpenRouter with their metadata, pricing, and capabilities. Use to discover models, compare pricing, or find models that support specific features like tool calling.`,
-    instructions: [
-      'Use the supportedParameters filter to find models with specific capabilities (e.g., "tools" for tool calling, "response_format" for structured outputs).',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let listModels = SlateTool.create(spec, {
+  name: 'List Models',
+  key: 'list_models',
+  description: `List all available AI models on OpenRouter with their metadata, pricing, and capabilities. Use to discover models, compare pricing, or find models that support specific features like tool calling.`,
+  instructions: [
+    'Use the supportedParameters filter to find models with specific capabilities (e.g., "tools" for tool calling, "response_format" for structured outputs).'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    supportedParameters: z.string().optional().describe('Filter models by supported parameter (e.g., "tools", "response_format", "temperature")'),
-    search: z.string().optional().describe('Search term to filter models by name or ID (client-side filtering)'),
-    maxResults: z.number().optional().describe('Maximum number of models to return (default: 50)'),
-  }))
-  .output(z.object({
-    models: z.array(modelSchema).describe('List of available models'),
-    totalCount: z.number().describe('Total number of models matching the query'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      supportedParameters: z
+        .string()
+        .optional()
+        .describe(
+          'Filter models by supported parameter (e.g., "tools", "response_format", "temperature")'
+        ),
+      search: z
+        .string()
+        .optional()
+        .describe('Search term to filter models by name or ID (client-side filtering)'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Maximum number of models to return (default: 50)')
+    })
+  )
+  .output(
+    z.object({
+      models: z.array(modelSchema).describe('List of available models'),
+      totalCount: z.number().describe('Total number of models matching the query')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       siteUrl: ctx.config.siteUrl,
-      appTitle: ctx.config.appTitle,
+      appTitle: ctx.config.appTitle
     });
 
     let rawModels = await client.listModels({
-      supportedParameters: ctx.input.supportedParameters,
+      supportedParameters: ctx.input.supportedParameters
     });
 
     let models = rawModels.map((m: Record<string, unknown>) => {
@@ -70,37 +100,45 @@ export let listModels = SlateTool.create(
         name: (m.name as string) || undefined,
         description: (m.description as string) || undefined,
         contextLength: (m.context_length as number) || undefined,
-        ...(pricing ? {
-          pricing: {
-            prompt: (pricing.prompt as string) || undefined,
-            completion: (pricing.completion as string) || undefined,
-            image: (pricing.image as string) || undefined,
-            request: (pricing.request as string) || undefined,
-          },
-        } : {}),
-        ...(topProvider ? {
-          topProvider: {
-            contextLength: (topProvider.context_length as number) || undefined,
-            maxCompletionTokens: (topProvider.max_completion_tokens as number) || undefined,
-            isModerated: (topProvider.is_moderated as boolean) || undefined,
-          },
-        } : {}),
-        ...(architecture ? {
-          architecture: {
-            modality: (architecture.modality as string) || undefined,
-            tokenizer: (architecture.tokenizer as string) || undefined,
-            instructType: (architecture.instruct_type as string) || undefined,
-          },
-        } : {}),
+        ...(pricing
+          ? {
+              pricing: {
+                prompt: (pricing.prompt as string) || undefined,
+                completion: (pricing.completion as string) || undefined,
+                image: (pricing.image as string) || undefined,
+                request: (pricing.request as string) || undefined
+              }
+            }
+          : {}),
+        ...(topProvider
+          ? {
+              topProvider: {
+                contextLength: (topProvider.context_length as number) || undefined,
+                maxCompletionTokens:
+                  (topProvider.max_completion_tokens as number) || undefined,
+                isModerated: (topProvider.is_moderated as boolean) || undefined
+              }
+            }
+          : {}),
+        ...(architecture
+          ? {
+              architecture: {
+                modality: (architecture.modality as string) || undefined,
+                tokenizer: (architecture.tokenizer as string) || undefined,
+                instructType: (architecture.instruct_type as string) || undefined
+              }
+            }
+          : {})
       };
     });
 
     // Client-side search filter
     if (ctx.input.search) {
       let searchLower = ctx.input.search.toLowerCase();
-      models = models.filter((m: { modelId: string; name?: string }) =>
-        m.modelId.toLowerCase().includes(searchLower) ||
-        (m.name && m.name.toLowerCase().includes(searchLower))
+      models = models.filter(
+        (m: { modelId: string; name?: string }) =>
+          m.modelId.toLowerCase().includes(searchLower) ||
+          (m.name && m.name.toLowerCase().includes(searchLower))
       );
     }
 
@@ -111,8 +149,9 @@ export let listModels = SlateTool.create(
     return {
       output: {
         models,
-        totalCount,
+        totalCount
       },
-      message: `Found **${totalCount}** model(s)${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}. Showing ${models.length}.`,
+      message: `Found **${totalCount}** model(s)${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}. Showing ${models.length}.`
     };
-  }).build();
+  })
+  .build();

@@ -10,40 +10,53 @@ let fileSchema = z.object({
   mimetype: z.string().optional().describe('MIME type'),
   uploadedByEmail: z.string().optional().describe('Email of the uploader'),
   uploadedAt: z.string().optional().describe('Upload timestamp'),
-  temporaryDownloadUrl: z.string().optional().describe('Temporary download URL (valid for 15 minutes)'),
+  temporaryDownloadUrl: z
+    .string()
+    .optional()
+    .describe('Temporary download URL (valid for 15 minutes)')
 });
 
-export let manageFiles = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Files',
-    key: 'manage_files',
-    description: `Upload, list, get details, or delete files in TimelinesAI. Upload a file from a public URL to attach it to messages later. List all uploaded files or filter by filename. Get a file's temporary download URL or delete it.`,
-    instructions: [
-      'Set the action to "upload", "list", "get", or "delete".',
-      'For upload: provide a publicly accessible downloadUrl.',
-      'For list: optionally filter by filename or extension.',
-      'For get/delete: provide the fileUid.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageFiles = SlateTool.create(spec, {
+  name: 'Manage Files',
+  key: 'manage_files',
+  description: `Upload, list, get details, or delete files in TimelinesAI. Upload a file from a public URL to attach it to messages later. List all uploaded files or filter by filename. Get a file's temporary download URL or delete it.`,
+  instructions: [
+    'Set the action to "upload", "list", "get", or "delete".',
+    'For upload: provide a publicly accessible downloadUrl.',
+    'For list: optionally filter by filename or extension.',
+    'For get/delete: provide the fileUid.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['upload', 'list', 'get', 'delete']).describe('The operation to perform'),
-    downloadUrl: z.string().optional().describe('Public URL to download the file from (for upload action)'),
-    filename: z.string().optional().describe('Filename override for upload, or filter for list'),
-    contentType: z.string().optional().describe('MIME type override for upload'),
-    fileUid: z.string().optional().describe('File UID (for get or delete actions)'),
-  }))
-  .output(z.object({
-    files: z.array(fileSchema).optional().describe('List of files (for list action)'),
-    file: fileSchema.optional().describe('File details (for upload, get actions)'),
-    deleted: z.boolean().optional().describe('Whether the file was deleted (for delete action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['upload', 'list', 'get', 'delete']).describe('The operation to perform'),
+      downloadUrl: z
+        .string()
+        .optional()
+        .describe('Public URL to download the file from (for upload action)'),
+      filename: z
+        .string()
+        .optional()
+        .describe('Filename override for upload, or filter for list'),
+      contentType: z.string().optional().describe('MIME type override for upload'),
+      fileUid: z.string().optional().describe('File UID (for get or delete actions)')
+    })
+  )
+  .output(
+    z.object({
+      files: z.array(fileSchema).optional().describe('List of files (for list action)'),
+      file: fileSchema.optional().describe('File details (for upload, get actions)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the file was deleted (for delete action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, downloadUrl, filename, contentType, fileUid } = ctx.input;
 
@@ -60,10 +73,10 @@ export let manageFiles = SlateTool.create(
             mimetype: f.mimetype,
             uploadedByEmail: f.uploaded_by_email,
             uploadedAt: f.uploaded_at,
-            temporaryDownloadUrl: f.temporary_download_url,
-          },
+            temporaryDownloadUrl: f.temporary_download_url
+          }
         },
-        message: `File **${f.filename}** uploaded successfully. UID: **${f.uid}**`,
+        message: `File **${f.filename}** uploaded successfully. UID: **${f.uid}**`
       };
     }
 
@@ -75,11 +88,11 @@ export let manageFiles = SlateTool.create(
         size: f.size,
         mimetype: f.mimetype,
         uploadedByEmail: f.uploaded_by_email,
-        uploadedAt: f.uploaded_at,
+        uploadedAt: f.uploaded_at
       }));
       return {
         output: { files },
-        message: `Found **${files.length}** file(s).`,
+        message: `Found **${files.length}** file(s).`
       };
     }
 
@@ -96,10 +109,10 @@ export let manageFiles = SlateTool.create(
             mimetype: f.mimetype,
             uploadedByEmail: f.uploaded_by_email,
             uploadedAt: f.uploaded_at,
-            temporaryDownloadUrl: f.temporary_download_url,
-          },
+            temporaryDownloadUrl: f.temporary_download_url
+          }
         },
-        message: `File **${f.filename}** retrieved. Download URL valid for 15 minutes.`,
+        message: `File **${f.filename}** retrieved. Download URL valid for 15 minutes.`
       };
     }
 
@@ -108,7 +121,7 @@ export let manageFiles = SlateTool.create(
       await client.deleteFile(fileUid);
       return {
         output: { deleted: true },
-        message: `File **${fileUid}** deleted successfully.`,
+        message: `File **${fileUid}** deleted successfully.`
       };
     }
 

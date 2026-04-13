@@ -14,40 +14,42 @@ let postEventTypes = [
   'post.unscheduled',
   'post.rescheduled',
   'post.tag.attached',
-  'post.tag.detached',
+  'post.tag.detached'
 ] as const;
 
-export let postEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Post Events',
-    key: 'post_events',
-    description: 'Triggered when posts are created, edited, deleted, published, unpublished, scheduled, or when tags are attached/detached from posts.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of post event'),
-    post: z.any().describe('Post data from the webhook payload'),
-  }))
-  .output(z.object({
-    postId: z.string().describe('Post ID'),
-    title: z.string().describe('Post title'),
-    slug: z.string().describe('URL-friendly slug'),
-    status: z.string().describe('Post status'),
-    visibility: z.string().describe('Post visibility'),
-    featured: z.boolean().describe('Whether the post is featured'),
-    featureImage: z.string().nullable().describe('Feature image URL'),
-    excerpt: z.string().nullable().describe('Post excerpt'),
-    publishedAt: z.string().nullable().describe('Publication timestamp'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp'),
-    url: z.string().describe('Full post URL'),
-  }))
+export let postEvents = SlateTrigger.create(spec, {
+  name: 'Post Events',
+  key: 'post_events',
+  description:
+    'Triggered when posts are created, edited, deleted, published, unpublished, scheduled, or when tags are attached/detached from posts.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of post event'),
+      post: z.any().describe('Post data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      postId: z.string().describe('Post ID'),
+      title: z.string().describe('Post title'),
+      slug: z.string().describe('URL-friendly slug'),
+      status: z.string().describe('Post status'),
+      visibility: z.string().describe('Post visibility'),
+      featured: z.boolean().describe('Whether the post is featured'),
+      featureImage: z.string().nullable().describe('Feature image URL'),
+      excerpt: z.string().nullable().describe('Post excerpt'),
+      publishedAt: z.string().nullable().describe('Publication timestamp'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp'),
+      url: z.string().describe('Full post URL')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let webhookIds: string[] = [];
@@ -55,7 +57,7 @@ export let postEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           event,
           targetUrl: `${ctx.input.webhookBaseUrl}/${event}`,
-          name: `Slates: ${event}`,
+          name: `Slates: ${event}`
         });
         webhookIds.push(result.webhooks[0].id);
       }
@@ -63,10 +65,10 @@ export let postEvents = SlateTrigger.create(
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
@@ -79,8 +81,8 @@ export let postEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
       let eventType = pathParts.slice(-2).join('.') || 'post.edited';
@@ -89,14 +91,16 @@ export let postEvents = SlateTrigger.create(
       let post = data?.post?.current ?? data?.post ?? data;
 
       return {
-        inputs: [{
-          eventType,
-          post,
-        }],
+        inputs: [
+          {
+            eventType,
+            post
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let post = ctx.input.post ?? {};
 
       return {
@@ -114,8 +118,9 @@ export let postEvents = SlateTrigger.create(
           publishedAt: post.published_at ?? null,
           createdAt: post.created_at ?? null,
           updatedAt: post.updated_at ?? null,
-          url: post.url ?? '',
-        },
+          url: post.url ?? ''
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

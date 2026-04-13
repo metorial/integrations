@@ -3,41 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Changes',
-    key: 'invoice_changes',
-    description: 'Triggers when invoices are created or modified in your Elorus organization. Polls for new and updated invoices.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('The invoice ID.'),
-    eventType: z.enum(['created', 'updated']).describe('Whether the invoice was newly created or updated.'),
-    invoice: z.any().describe('The full invoice object.'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('The invoice ID.'),
-    sequenceNumber: z.string().optional().describe('The invoice sequence number.'),
-    clientId: z.string().optional().describe('The client contact ID.'),
-    clientName: z.string().optional().describe('Client display name.'),
-    date: z.string().optional().describe('Invoice date.'),
-    dueDate: z.string().optional().describe('Payment due date.'),
-    total: z.string().optional().describe('Invoice total amount.'),
-    currencyCode: z.string().optional().describe('Currency code.'),
-    status: z.string().optional().describe('Invoice status (draft, issued, paid, etc.).'),
-    isDraft: z.boolean().optional().describe('Whether the invoice is a draft.'),
-    isVoid: z.boolean().optional().describe('Whether the invoice is voided.'),
-    invoice: z.any().describe('The full invoice object.'),
-  }))
+export let invoiceChanges = SlateTrigger.create(spec, {
+  name: 'Invoice Changes',
+  key: 'invoice_changes',
+  description:
+    'Triggers when invoices are created or modified in your Elorus organization. Polls for new and updated invoices.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('The invoice ID.'),
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the invoice was newly created or updated.'),
+      invoice: z.any().describe('The full invoice object.')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('The invoice ID.'),
+      sequenceNumber: z.string().optional().describe('The invoice sequence number.'),
+      clientId: z.string().optional().describe('The client contact ID.'),
+      clientName: z.string().optional().describe('Client display name.'),
+      date: z.string().optional().describe('Invoice date.'),
+      dueDate: z.string().optional().describe('Payment due date.'),
+      total: z.string().optional().describe('Invoice total amount.'),
+      currencyCode: z.string().optional().describe('Currency code.'),
+      status: z.string().optional().describe('Invoice status (draft, issued, paid, etc.).'),
+      isDraft: z.boolean().optional().describe('Whether the invoice is a draft.'),
+      isVoid: z.boolean().optional().describe('Whether the invoice is voided.'),
+      invoice: z.any().describe('The full invoice object.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        organizationId: ctx.config.organizationId,
+        organizationId: ctx.config.organizationId
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -45,7 +49,7 @@ export let invoiceChanges = SlateTrigger.create(
 
       let params: any = {
         ordering: '-modified',
-        pageSize: 50,
+        pageSize: 50
       };
 
       if (lastPollTime) {
@@ -57,26 +61,25 @@ export let invoiceChanges = SlateTrigger.create(
 
       let inputs = result.results.map((invoice: any) => ({
         invoiceId: invoice.id,
-        eventType: (knownIds.includes(invoice.id) ? 'updated' : 'created') as 'created' | 'updated',
-        invoice,
+        eventType: (knownIds.includes(invoice.id) ? 'updated' : 'created') as
+          | 'created'
+          | 'updated',
+        invoice
       }));
 
       let updatedKnownIds = [
-        ...new Set([
-          ...knownIds,
-          ...result.results.map((inv: any) => inv.id),
-        ]),
+        ...new Set([...knownIds, ...result.results.map((inv: any) => inv.id)])
       ].slice(-1000);
 
       return {
         inputs,
         updatedState: {
           lastPollTime: now,
-          knownIds: updatedKnownIds,
-        },
+          knownIds: updatedKnownIds
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let inv = ctx.input.invoice;
 
       return {
@@ -94,9 +97,9 @@ export let invoiceChanges = SlateTrigger.create(
           status: inv.status,
           isDraft: inv.draft,
           isVoid: inv.is_void,
-          invoice: inv,
-        },
+          invoice: inv
+        }
       };
-    },
+    }
   })
   .build();

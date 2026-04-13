@@ -3,14 +3,12 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
 
-export let lookActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Look Changes',
-    key: 'look_activity',
-    description: 'Triggers when Looks (saved queries) are created or updated in the Looker instance.',
-  }
-)
+export let lookActivity = SlateTrigger.create(spec, {
+  name: 'Look Changes',
+  key: 'look_activity',
+  description:
+    'Triggers when Looks (saved queries) are created or updated in the Looker instance.'
+})
   .input(
     z.object({
       eventType: z.enum(['created', 'updated']).describe('Type of Look event'),
@@ -19,7 +17,7 @@ export let lookActivity = SlateTrigger.create(
       description: z.string().optional().describe('Look description'),
       folderId: z.string().optional().describe('Folder ID'),
       updatedAt: z.string().optional().describe('Last update timestamp'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
     })
   )
   .output(
@@ -29,18 +27,18 @@ export let lookActivity = SlateTrigger.create(
       description: z.string().optional().describe('Look description'),
       folderId: z.string().optional().describe('Folder ID'),
       updatedAt: z.string().optional().describe('Last update timestamp'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
     })
   )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new LookerClient({
         instanceUrl: ctx.config.instanceUrl,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let state = ctx.state || {};
@@ -48,7 +46,7 @@ export let lookActivity = SlateTrigger.create(
 
       let looks = await client.searchLooks({
         sorts: 'updated_at desc',
-        per_page: 50,
+        per_page: 50
       });
 
       let inputs: Array<{
@@ -81,7 +79,7 @@ export let lookActivity = SlateTrigger.create(
             description: l.description,
             folderId: l.folder_id ? String(l.folder_id) : undefined,
             updatedAt: l.updated_at,
-            createdAt: l.created_at,
+            createdAt: l.created_at
           });
         } else if (updatedAt !== previousUpdatedAt) {
           inputs.push({
@@ -91,7 +89,7 @@ export let lookActivity = SlateTrigger.create(
             description: l.description,
             folderId: l.folder_id ? String(l.folder_id) : undefined,
             updatedAt: l.updated_at,
-            createdAt: l.created_at,
+            createdAt: l.created_at
           });
         }
       }
@@ -100,12 +98,12 @@ export let lookActivity = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPolledAt: new Date().toISOString(),
-          knownLooks: newKnownLooks,
-        },
+          knownLooks: newKnownLooks
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `look.${ctx.input.eventType}`,
         id: `look-${ctx.input.lookId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,
@@ -115,8 +113,9 @@ export let lookActivity = SlateTrigger.create(
           description: ctx.input.description,
           folderId: ctx.input.folderId,
           updatedAt: ctx.input.updatedAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

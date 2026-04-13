@@ -3,33 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let environmentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Environment Events',
-    key: 'environment_events',
-    description: 'Triggers when environment-related deployment operations start, succeed, or fail.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['deploy_started', 'deploy_succeeded', 'deploy_failed']).describe('Type of environment event'),
-    entity: z.any().describe('The environment entity data'),
-    environment: z.string().optional().describe('Environment where the event occurred'),
-    siteId: z.string().optional().describe('Project site ID'),
-    webhookCallId: z.string().optional().describe('Unique webhook call identifier'),
-    eventTriggeredAt: z.string().optional().describe('Timestamp when the event occurred'),
-  }))
-  .output(z.object({
-    environmentId: z.string().describe('ID of the affected environment'),
-    status: z.string().describe('Environment deploy status'),
-    environment: z.string().optional().describe('Environment name'),
-    environmentData: z.any().describe('The environment entity data'),
-  }))
+export let environmentEvents = SlateTrigger.create(spec, {
+  name: 'Environment Events',
+  key: 'environment_events',
+  description:
+    'Triggers when environment-related deployment operations start, succeed, or fail.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['deploy_started', 'deploy_succeeded', 'deploy_failed'])
+        .describe('Type of environment event'),
+      entity: z.any().describe('The environment entity data'),
+      environment: z.string().optional().describe('Environment where the event occurred'),
+      siteId: z.string().optional().describe('Project site ID'),
+      webhookCallId: z.string().optional().describe('Unique webhook call identifier'),
+      eventTriggeredAt: z.string().optional().describe('Timestamp when the event occurred')
+    })
+  )
+  .output(
+    z.object({
+      environmentId: z.string().describe('ID of the affected environment'),
+      status: z.string().describe('Environment deploy status'),
+      environment: z.string().optional().describe('Environment name'),
+      environmentData: z.any().describe('The environment entity data')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let webhook = await client.createWebhook({
@@ -39,32 +43,32 @@ export let environmentEvents = SlateTrigger.create(
         events: [
           {
             entity_type: 'environment',
-            event_types: ['deploy_started', 'deploy_succeeded', 'deploy_failed'],
-          },
+            event_types: ['deploy_started', 'deploy_succeeded', 'deploy_failed']
+          }
         ],
         enabled: true,
         payload_api_version: '3',
-        auto_retry: true,
+        auto_retry: true
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!data || data.entity_type !== 'environment') {
         return { inputs: [] };
@@ -78,25 +82,27 @@ export let environmentEvents = SlateTrigger.create(
             environment: data.environment,
             siteId: data.site_id,
             webhookCallId: data.webhook_call_id,
-            eventTriggeredAt: data.event_triggered_at,
-          },
-        ],
+            eventTriggeredAt: data.event_triggered_at
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let entity = ctx.input.entity || {};
 
       return {
         type: `environment.${ctx.input.eventType}`,
-        id: ctx.input.webhookCallId || `${entity.id}-${ctx.input.eventType}-${ctx.input.eventTriggeredAt || Date.now()}`,
+        id:
+          ctx.input.webhookCallId ||
+          `${entity.id}-${ctx.input.eventType}-${ctx.input.eventTriggeredAt || Date.now()}`,
         output: {
           environmentId: entity.id || '',
           status: ctx.input.eventType,
           environment: ctx.input.environment,
-          environmentData: entity,
-        },
+          environmentData: entity
+        }
       };
-    },
+    }
   })
   .build();

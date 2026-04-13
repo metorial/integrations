@@ -75,8 +75,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.ragie.ai',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -104,7 +104,7 @@ export class Client {
       metadata: params.metadata,
       mode: params.mode,
       external_id: params.externalId,
-      partition: params.partition ?? this.partition,
+      partition: params.partition ?? this.partition
     });
     return this.mapDocument(res.data);
   }
@@ -121,7 +121,7 @@ export class Client {
       name: params.name,
       metadata: params.metadata,
       external_id: params.externalId,
-      partition: params.partition ?? this.partition,
+      partition: params.partition ?? this.partition
     });
     return this.mapDocument(res.data);
   }
@@ -139,107 +139,140 @@ export class Client {
 
     let res = await this.axios.get('/documents', {
       params: queryParams,
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return {
       documents: res.data.documents.map((d: any) => this.mapDocument(d)),
       pagination: {
         nextCursor: res.data.pagination.next_cursor,
-        totalCount: res.data.pagination.total_count,
-      },
+        totalCount: res.data.pagination.total_count
+      }
     };
   }
 
   async getDocument(documentId: string, partition?: string): Promise<RagieDocument> {
     let res = await this.axios.get(`/documents/${documentId}`, {
-      headers: this.getHeaders(partition),
+      headers: this.getHeaders(partition)
     });
     return this.mapDocument(res.data);
   }
 
-  async deleteDocument(documentId: string, params?: { async?: boolean; partition?: string }): Promise<{ status: string }> {
+  async deleteDocument(
+    documentId: string,
+    params?: { async?: boolean; partition?: string }
+  ): Promise<{ status: string }> {
     let res = await this.axios.delete(`/documents/${documentId}`, {
       params: params?.async ? { async: true } : undefined,
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return { status: res.data.status };
   }
 
-  async updateDocumentMetadata(documentId: string, params: {
-    metadata: Record<string, any>;
-    partition?: string;
-  }): Promise<any> {
-    let res = await this.axios.patch(`/documents/${documentId}/metadata`, {
-      metadata: params.metadata,
-    }, {
-      headers: this.getHeaders(params.partition),
-    });
+  async updateDocumentMetadata(
+    documentId: string,
+    params: {
+      metadata: Record<string, any>;
+      partition?: string;
+    }
+  ): Promise<any> {
+    let res = await this.axios.patch(
+      `/documents/${documentId}/metadata`,
+      {
+        metadata: params.metadata
+      },
+      {
+        headers: this.getHeaders(params.partition)
+      }
+    );
     return res.data;
   }
 
-  async updateDocumentRaw(documentId: string, params: {
-    data: string | Record<string, any>;
-    partition?: string;
-  }): Promise<{ status: string }> {
-    let res = await this.axios.put(`/documents/${documentId}/raw`, {
-      data: params.data,
-    }, {
-      headers: this.getHeaders(params.partition),
-    });
+  async updateDocumentRaw(
+    documentId: string,
+    params: {
+      data: string | Record<string, any>;
+      partition?: string;
+    }
+  ): Promise<{ status: string }> {
+    let res = await this.axios.put(
+      `/documents/${documentId}/raw`,
+      {
+        data: params.data
+      },
+      {
+        headers: this.getHeaders(params.partition)
+      }
+    );
     return { status: res.data.status };
   }
 
-  async updateDocumentFromUrl(documentId: string, params: {
-    url: string;
-    mode?: string;
-    partition?: string;
-  }): Promise<{ status: string }> {
-    let res = await this.axios.put(`/documents/${documentId}/url`, {
-      url: params.url,
-      mode: params.mode,
-    }, {
-      headers: this.getHeaders(params.partition),
-    });
+  async updateDocumentFromUrl(
+    documentId: string,
+    params: {
+      url: string;
+      mode?: string;
+      partition?: string;
+    }
+  ): Promise<{ status: string }> {
+    let res = await this.axios.put(
+      `/documents/${documentId}/url`,
+      {
+        url: params.url,
+        mode: params.mode
+      },
+      {
+        headers: this.getHeaders(params.partition)
+      }
+    );
     return { status: res.data.status };
   }
 
-  async getDocumentContent(documentId: string, params?: {
-    partition?: string;
-  }): Promise<any> {
+  async getDocumentContent(
+    documentId: string,
+    params?: {
+      partition?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/documents/${documentId}/content`, {
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return res.data;
   }
 
-  async getDocumentSummary(documentId: string, params?: {
-    partition?: string;
-  }): Promise<any> {
+  async getDocumentSummary(
+    documentId: string,
+    params?: {
+      partition?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/documents/${documentId}/summary`, {
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return res.data;
   }
 
-  async getDocumentChunks(documentId: string, params?: {
-    cursor?: string;
-    pageSize?: number;
-    partition?: string;
-  }): Promise<{ chunks: any[]; pagination: PaginationInfo }> {
+  async getDocumentChunks(
+    documentId: string,
+    params?: {
+      cursor?: string;
+      pageSize?: number;
+      partition?: string;
+    }
+  ): Promise<{ chunks: any[]; pagination: PaginationInfo }> {
     let queryParams: Record<string, any> = {};
     if (params?.cursor) queryParams.cursor = params.cursor;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
 
     let res = await this.axios.get(`/documents/${documentId}/chunks`, {
       params: queryParams,
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return {
       chunks: res.data.chunks,
       pagination: {
         nextCursor: res.data.pagination.next_cursor,
-        totalCount: res.data.pagination.total_count,
-      },
+        totalCount: res.data.pagination.total_count
+      }
     };
   }
 
@@ -253,15 +286,19 @@ export class Client {
     maxChunksPerDocument?: number;
     partition?: string;
   }): Promise<{ scoredChunks: ScoredChunk[] }> {
-    let res = await this.axios.post('/retrievals', {
-      query: params.query,
-      top_k: params.topK,
-      rerank: params.rerank,
-      filter: params.filter,
-      max_chunks_per_document: params.maxChunksPerDocument,
-    }, {
-      headers: this.getHeaders(params.partition),
-    });
+    let res = await this.axios.post(
+      '/retrievals',
+      {
+        query: params.query,
+        top_k: params.topK,
+        rerank: params.rerank,
+        filter: params.filter,
+        max_chunks_per_document: params.maxChunksPerDocument
+      },
+      {
+        headers: this.getHeaders(params.partition)
+      }
+    );
     return {
       scoredChunks: (res.data.scored_chunks || []).map((c: any) => ({
         id: c.id,
@@ -270,8 +307,8 @@ export class Client {
         index: c.index,
         metadata: c.metadata || {},
         documentMetadata: c.document_metadata || {},
-        links: c.links || {},
-      })),
+        links: c.links || {}
+      }))
     };
   }
 
@@ -295,7 +332,7 @@ export class Client {
       input: params.input,
       tools,
       model: 'deep-search',
-      stream: false,
+      stream: false
     };
     if (params.instructions) body.instructions = params.instructions;
     if (params.reasoningEffort) body.reasoning = { effort: params.reasoningEffort };
@@ -323,7 +360,7 @@ export class Client {
     filter?: Record<string, any>;
   }): Promise<Instruction> {
     let body: Record<string, any> = {
-      prompt: params.prompt,
+      prompt: params.prompt
     };
     if (params.name) body.name = params.name;
     if (params.entitySchema) body.entity_schema = params.entitySchema;
@@ -334,13 +371,16 @@ export class Client {
     return this.mapInstruction(res.data);
   }
 
-  async updateInstruction(instructionId: string, params: {
-    name?: string;
-    prompt?: string;
-    entitySchema?: Record<string, any>;
-    scope?: string;
-    filter?: Record<string, any>;
-  }): Promise<Instruction> {
+  async updateInstruction(
+    instructionId: string,
+    params: {
+      name?: string;
+      prompt?: string;
+      entitySchema?: Record<string, any>;
+      scope?: string;
+      filter?: Record<string, any>;
+    }
+  ): Promise<Instruction> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.prompt !== undefined) body.prompt = params.prompt;
@@ -356,33 +396,41 @@ export class Client {
     await this.axios.delete(`/instructions/${instructionId}`);
   }
 
-  async getInstructionEntities(instructionId: string, params?: {
-    cursor?: string;
-    pageSize?: number;
-    partition?: string;
-  }): Promise<{ entities: any[]; pagination: PaginationInfo }> {
+  async getInstructionEntities(
+    instructionId: string,
+    params?: {
+      cursor?: string;
+      pageSize?: number;
+      partition?: string;
+    }
+  ): Promise<{ entities: any[]; pagination: PaginationInfo }> {
     let queryParams: Record<string, any> = {};
     if (params?.cursor) queryParams.cursor = params.cursor;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
 
     let res = await this.axios.get(`/instructions/${instructionId}/entities`, {
       params: queryParams,
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return {
       entities: res.data.entities || res.data,
-      pagination: res.data.pagination ? {
-        nextCursor: res.data.pagination.next_cursor,
-        totalCount: res.data.pagination.total_count,
-      } : { nextCursor: null, totalCount: 0 },
+      pagination: res.data.pagination
+        ? {
+            nextCursor: res.data.pagination.next_cursor,
+            totalCount: res.data.pagination.total_count
+          }
+        : { nextCursor: null, totalCount: 0 }
     };
   }
 
-  async getDocumentEntities(documentId: string, params?: {
-    partition?: string;
-  }): Promise<any[]> {
+  async getDocumentEntities(
+    documentId: string,
+    params?: {
+      partition?: string;
+    }
+  ): Promise<any[]> {
     let res = await this.axios.get(`/documents/${documentId}/entities`, {
-      headers: this.getHeaders(params?.partition),
+      headers: this.getHeaders(params?.partition)
     });
     return res.data.entities || res.data;
   }
@@ -403,10 +451,13 @@ export class Client {
     return this.mapConnection(res.data);
   }
 
-  async updateConnection(connectionId: string, params: {
-    partitionStrategy?: string;
-    metadata?: Record<string, any>;
-  }): Promise<Connection> {
+  async updateConnection(
+    connectionId: string,
+    params: {
+      partitionStrategy?: string;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<Connection> {
     let body: Record<string, any> = {};
     if (params.partitionStrategy) body.partition_strategy = params.partitionStrategy;
     if (params.metadata) body.metadata = params.metadata;
@@ -427,7 +478,7 @@ export class Client {
 
   async deleteConnection(connectionId: string, keepFiles?: boolean): Promise<any> {
     let res = await this.axios.post(`/connections/${connectionId}`, {
-      keep_files: keepFiles ?? false,
+      keep_files: keepFiles ?? false
     });
     return res.data;
   }
@@ -453,9 +504,7 @@ export class Client {
     return [];
   }
 
-  async createPartition(params: {
-    name: string;
-  }): Promise<Partition> {
+  async createPartition(params: { name: string }): Promise<Partition> {
     let res = await this.axios.post('/partitions', { name: params.name });
     return this.mapPartition(res.data);
   }
@@ -511,7 +560,7 @@ export class Client {
       externalId: d.external_id ?? null,
       pageCount: d.page_count ?? null,
       createdAt: d.created_at,
-      updatedAt: d.updated_at,
+      updatedAt: d.updated_at
     };
   }
 
@@ -522,7 +571,7 @@ export class Client {
       prompt: i.prompt,
       entitySchema: i.entity_schema || null,
       createdAt: i.created_at,
-      updatedAt: i.updated_at,
+      updatedAt: i.updated_at
     };
   }
 
@@ -536,7 +585,7 @@ export class Client {
       metadata: c.metadata || {},
       enabled: c.enabled,
       createdAt: c.created_at,
-      updatedAt: c.updated_at,
+      updatedAt: c.updated_at
     };
   }
 
@@ -546,7 +595,7 @@ export class Client {
       name: p.name,
       documentCount: p.document_count ?? 0,
       createdAt: p.created_at,
-      updatedAt: p.updated_at,
+      updatedAt: p.updated_at
     };
   }
 
@@ -557,7 +606,7 @@ export class Client {
       url: e.url,
       partitionPattern: e.partition_pattern || null,
       createdAt: e.created_at,
-      updatedAt: e.updated_at,
+      updatedAt: e.updated_at
     };
   }
 }

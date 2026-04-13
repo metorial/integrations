@@ -12,7 +12,7 @@ export class WixClient {
 
   constructor(private config: WixClientConfig) {
     let headers: Record<string, string> = {
-      'Authorization': config.token,
+      Authorization: config.token
     };
     if (config.siteId) {
       headers['wix-site-id'] = config.siteId;
@@ -22,7 +22,7 @@ export class WixClient {
     }
     this.axios = createAxios({
       baseURL: 'https://www.wixapis.com',
-      headers,
+      headers
     });
   }
 
@@ -34,7 +34,7 @@ export class WixClient {
     paging?: { limit?: number; offset?: number };
   }) {
     let response = await this.axios.post('/stores/v1/products/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -67,7 +67,7 @@ export class WixClient {
     paging?: { limit?: number; offset?: number };
   }) {
     let response = await this.axios.post('/stores-reader/v1/collections/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -113,7 +113,7 @@ export class WixClient {
     fields?: string[];
   }) {
     let response = await this.axios.post('/contacts/v4/contacts/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -131,7 +131,7 @@ export class WixClient {
   async updateContact(contactId: string, revision: number, contactInfo: Record<string, any>) {
     let response = await this.axios.patch(`/contacts/v4/contacts/${contactId}`, {
       info: contactInfo,
-      revision,
+      revision
     });
     return response.data;
   }
@@ -166,7 +166,9 @@ export class WixClient {
   }
 
   async updateDraftPost(draftPostId: string, draftPost: Record<string, any>) {
-    let response = await this.axios.patch(`/blog/v3/draft-posts/${draftPostId}`, { draftPost });
+    let response = await this.axios.patch(`/blog/v3/draft-posts/${draftPostId}`, {
+      draftPost
+    });
     return response.data;
   }
 
@@ -192,7 +194,7 @@ export class WixClient {
     paging?: { limit?: number; offset?: number };
   }) {
     let response = await this.axios.post('/bookings/v2/services/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -210,7 +212,7 @@ export class WixClient {
     paging?: { limit?: number; offset?: number };
   }) {
     let response = await this.axios.post('/bookings/v2/bookings/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -235,7 +237,7 @@ export class WixClient {
   }) {
     let response = await this.axios.post('/events/v2/events/query', {
       query: query || {},
-      ...(query?.fieldset ? { fieldset: query.fieldset } : {}),
+      ...(query?.fieldset ? { fieldset: query.fieldset } : {})
     });
     return response.data;
   }
@@ -253,7 +255,7 @@ export class WixClient {
     paging?: { limit?: number; offset?: number };
   }) {
     let response = await this.axios.post('/members/v1/members/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -275,15 +277,15 @@ export class WixClient {
   async getInventoryVariants(productId: string) {
     let response = await this.axios.post('/stores/v2/inventoryItems/query', {
       query: {
-        filter: JSON.stringify({ productId }),
-      },
+        filter: JSON.stringify({ productId })
+      }
     });
     return response.data;
   }
 
   async updateInventoryVariants(inventoryId: string, variants: Array<Record<string, any>>) {
     let response = await this.axios.patch(`/stores/v1/inventoryItems/${inventoryId}`, {
-      inventoryItem: { trackQuantity: true, variants },
+      inventoryItem: { trackQuantity: true, variants }
     });
     return response.data;
   }
@@ -296,7 +298,7 @@ export class WixClient {
     paging?: { limit?: number; offset?: number };
   }) {
     let response = await this.axios.post('/pricing-plans/v2/plans/query', {
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
@@ -308,27 +310,32 @@ export class WixClient {
 
   // --- CMS Data ---
 
-  async queryDataItems(collectionId: string, query?: {
-    filter?: Record<string, any>;
-    sort?: Array<{ fieldName: string; order: string }>;
-    paging?: { limit?: number; offset?: number };
-  }) {
+  async queryDataItems(
+    collectionId: string,
+    query?: {
+      filter?: Record<string, any>;
+      sort?: Array<{ fieldName: string; order: string }>;
+      paging?: { limit?: number; offset?: number };
+    }
+  ) {
     let response = await this.axios.post('/wix-data/v2/items/query', {
       dataCollectionId: collectionId,
-      query: query || {},
+      query: query || {}
     });
     return response.data;
   }
 
   async getDataItem(collectionId: string, itemId: string) {
-    let response = await this.axios.get(`/wix-data/v2/collections/${collectionId}/items/${itemId}`);
+    let response = await this.axios.get(
+      `/wix-data/v2/collections/${collectionId}/items/${itemId}`
+    );
     return response.data;
   }
 
   async insertDataItem(collectionId: string, item: Record<string, any>) {
     let response = await this.axios.post('/wix-data/v2/items', {
       dataCollectionId: collectionId,
-      dataItem: { data: item },
+      dataItem: { data: item }
     });
     return response.data;
   }
@@ -336,13 +343,15 @@ export class WixClient {
   async updateDataItem(collectionId: string, itemId: string, item: Record<string, any>) {
     let response = await this.axios.put(`/wix-data/v2/items/${itemId}`, {
       dataCollectionId: collectionId,
-      dataItem: { _id: itemId, data: item },
+      dataItem: { _id: itemId, data: item }
     });
     return response.data;
   }
 
   async deleteDataItem(collectionId: string, itemId: string) {
-    let response = await this.axios.delete(`/wix-data/v2/collections/${collectionId}/items/${itemId}`);
+    let response = await this.axios.delete(
+      `/wix-data/v2/collections/${collectionId}/items/${itemId}`
+    );
     return response.data;
   }
 
@@ -352,7 +361,7 @@ export class WixClient {
     let response = await this.axios.post('/site-media/v1/files/import', {
       url,
       displayName,
-      parentFolderId,
+      parentFolderId
     });
     return response.data;
   }

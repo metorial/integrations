@@ -13,38 +13,45 @@ let newsArticleSchema = z.object({
   language: z.string().describe('Language code of the article'),
   categories: z.array(z.string()).describe('Categories the article belongs to'),
   author: z.string().describe('Author of the article'),
-  countries: z.array(z.string()).describe('Country codes associated with the article'),
+  countries: z.array(z.string()).describe('Country codes associated with the article')
 });
 
-export let getSourceNews = SlateTool.create(
-  spec,
-  {
-    name: 'Get Source News',
-    key: 'get_source_news',
-    description: `Retrieve news articles from a specific news source. Use the "Get News Sources" tool first to discover available source identifiers. Supports pagination to browse through older articles from the same source.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getSourceNews = SlateTool.create(spec, {
+  name: 'Get Source News',
+  key: 'get_source_news',
+  description: `Retrieve news articles from a specific news source. Use the "Get News Sources" tool first to discover available source identifiers. Supports pagination to browse through older articles from the same source.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    source: z.string().describe('Identifier of the news source (e.g., "bbc-news", "cnn"). Use "Get News Sources" to discover valid identifiers.'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-  }))
-  .output(z.object({
-    articles: z.array(newsArticleSchema).describe('List of articles from the specified source'),
-    page: z.number().describe('Current page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      source: z
+        .string()
+        .describe(
+          'Identifier of the news source (e.g., "bbc-news", "cnn"). Use "Get News Sources" to discover valid identifiers.'
+        ),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)')
+    })
+  )
+  .output(
+    z.object({
+      articles: z
+        .array(newsArticleSchema)
+        .describe('List of articles from the specified source'),
+      page: z.number().describe('Current page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getSourceNews({
       source: ctx.input.source,
-      page: ctx.input.page,
+      page: ctx.input.page
     });
 
-    let articles = (result.news || []).map((article) => ({
+    let articles = (result.news || []).map(article => ({
       articleId: article.id || '',
       title: article.title || '',
       description: article.description || '',
@@ -54,15 +61,15 @@ export let getSourceNews = SlateTool.create(
       language: article.language || '',
       categories: article.category || [],
       author: article.author || '',
-      countries: article.country || [],
+      countries: article.country || []
     }));
 
     return {
       output: {
         articles,
-        page: result.page || 1,
+        page: result.page || 1
       },
-      message: `Retrieved **${articles.length}** articles from source "${ctx.input.source}" on page ${result.page || 1}.`,
+      message: `Retrieved **${articles.length}** articles from source "${ctx.input.source}" on page ${result.page || 1}.`
     };
   })
   .build();

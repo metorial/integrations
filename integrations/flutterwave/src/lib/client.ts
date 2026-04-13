@@ -9,9 +9,9 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.flutterwave.com/v3',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -34,8 +34,8 @@ export class Client {
         status: params?.status,
         currency: params?.currency,
         customer_email: params?.customerEmail,
-        payment_type: params?.paymentType,
-      },
+        payment_type: params?.paymentType
+      }
     });
     return response.data;
   }
@@ -47,14 +47,14 @@ export class Client {
 
   async verifyTransactionByReference(txRef: string) {
     let response = await this.http.get('/transactions/verify_by_reference', {
-      params: { tx_ref: txRef },
+      params: { tx_ref: txRef }
     });
     return response.data;
   }
 
   async getTransactionFee(amount: number, currency: string) {
     let response = await this.http.get('/transactions/fee', {
-      params: { amount, currency },
+      params: { amount, currency }
     });
     return response.data;
   }
@@ -91,7 +91,7 @@ export class Client {
       reference: data.reference,
       callback_url: data.callbackUrl,
       debit_currency: data.debitCurrency,
-      beneficiary_name: data.beneficiaryName,
+      beneficiary_name: data.beneficiaryName
     });
     return response.data;
   }
@@ -103,7 +103,7 @@ export class Client {
     to?: string;
   }) {
     let response = await this.http.get('/transfers', {
-      params,
+      params
     });
     return response.data;
   }
@@ -115,7 +115,7 @@ export class Client {
 
   async getTransferFee(amount: number, currency: string) {
     let response = await this.http.get('/transfers/fee', {
-      params: { amount, currency },
+      params: { amount, currency }
     });
     return response.data;
   }
@@ -125,8 +125,8 @@ export class Client {
       params: {
         amount,
         destination_currency: destinationCurrency,
-        source_currency: sourceCurrency,
-      },
+        source_currency: sourceCurrency
+      }
     });
     return response.data;
   }
@@ -160,11 +160,7 @@ export class Client {
 
   // ==================== Subscriptions ====================
 
-  async listSubscriptions(params?: {
-    email?: string;
-    plan?: number;
-    status?: string;
-  }) {
+  async listSubscriptions(params?: { email?: string; plan?: number; status?: string }) {
     let response = await this.http.get('/subscriptions', { params });
     return response.data;
   }
@@ -203,7 +199,7 @@ export class Client {
       firstname: data.firstname,
       lastname: data.lastname,
       phonenumber: data.phonenumber,
-      narration: data.narration,
+      narration: data.narration
     });
     return response.data;
   }
@@ -222,7 +218,7 @@ export class Client {
 
   async getBillers(category?: string, country?: string) {
     let response = await this.http.get('/billers', {
-      params: { category, country },
+      params: { category, country }
     });
     return response.data;
   }
@@ -234,20 +230,27 @@ export class Client {
 
   async validateBillCustomer(itemCode: string, billerCode: string, customer: string) {
     let response = await this.http.get(`/bill-items/${itemCode}/validate`, {
-      params: { code: billerCode, customer },
+      params: { code: billerCode, customer }
     });
     return response.data;
   }
 
-  async createBillPayment(billerCode: string, itemCode: string, data: {
-    country: string;
-    customer: string;
-    amount: number;
-    recurrence?: string;
-    type: string;
-    reference?: string;
-  }) {
-    let response = await this.http.post(`/billers/${billerCode}/items/${itemCode}/payment`, data);
+  async createBillPayment(
+    billerCode: string,
+    itemCode: string,
+    data: {
+      country: string;
+      customer: string;
+      amount: number;
+      recurrence?: string;
+      type: string;
+      reference?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/billers/${billerCode}/items/${itemCode}/payment`,
+      data
+    );
     return response.data;
   }
 
@@ -286,8 +289,8 @@ export class Client {
         page: params?.page,
         from: params?.from,
         to: params?.to,
-        subaccount_id: params?.subaccountId,
-      },
+        subaccount_id: params?.subaccountId
+      }
     });
     return response.data;
   }
@@ -302,7 +305,7 @@ export class Client {
   async resolveBankAccount(accountNumber: string, accountBank: string) {
     let response = await this.http.post('/accounts/resolve', {
       account_number: accountNumber,
-      account_bank: accountBank,
+      account_bank: accountBank
     });
     return response.data;
   }
@@ -327,7 +330,7 @@ export class Client {
     let response = await this.http.post('/beneficiaries', {
       account_number: data.accountNumber,
       account_bank: data.accountBank,
-      beneficiary_name: data.beneficiaryName,
+      beneficiary_name: data.beneficiaryName
     });
     return response.data;
   }

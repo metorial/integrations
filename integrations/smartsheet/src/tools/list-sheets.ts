@@ -12,30 +12,34 @@ let sheetSchema = z.object({
   modifiedAt: z.string().optional().describe('When the sheet was last modified')
 });
 
-export let listSheets = SlateTool.create(
-  spec,
-  {
-    name: 'List Sheets',
-    key: 'list_sheets',
-    description: `List all sheets accessible to the current user. Returns sheet metadata including names, IDs, access levels, and timestamps. Use pagination parameters to control result size.`,
-    tags: {
-      readOnly: true
-    }
+export let listSheets = SlateTool.create(spec, {
+  name: 'List Sheets',
+  key: 'list_sheets',
+  description: `List all sheets accessible to the current user. Returns sheet metadata including names, IDs, access levels, and timestamps. Use pagination parameters to control result size.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (1-based) for pagination'),
-    pageSize: z.number().optional().describe('Number of results per page (max 500)'),
-    includeAll: z.boolean().optional().describe('If true, returns all results without pagination')
-  }))
-  .output(z.object({
-    sheets: z.array(sheetSchema).describe('List of sheets'),
-    pageNumber: z.number().optional().describe('Current page number'),
-    pageSize: z.number().optional().describe('Results per page'),
-    totalPages: z.number().optional().describe('Total number of pages'),
-    totalCount: z.number().optional().describe('Total number of sheets')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (1-based) for pagination'),
+      pageSize: z.number().optional().describe('Number of results per page (max 500)'),
+      includeAll: z
+        .boolean()
+        .optional()
+        .describe('If true, returns all results without pagination')
+    })
+  )
+  .output(
+    z.object({
+      sheets: z.array(sheetSchema).describe('List of sheets'),
+      pageNumber: z.number().optional().describe('Current page number'),
+      pageSize: z.number().optional().describe('Results per page'),
+      totalPages: z.number().optional().describe('Total number of pages'),
+      totalCount: z.number().optional().describe('Total number of sheets')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SmartsheetClient({ token: ctx.auth.token });
 
     let result = await client.listSheets({

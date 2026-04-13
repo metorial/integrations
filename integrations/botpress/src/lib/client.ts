@@ -7,13 +7,13 @@ export class AdminClient {
 
   constructor(private params: { token: string; workspaceId?: string }) {
     this.http = createAxios({
-      baseURL: 'https://api.botpress.cloud/v1/admin',
+      baseURL: 'https://api.botpress.cloud/v1/admin'
     });
   }
 
   private headers(extra?: Record<string, string>) {
     let h: Record<string, string> = {
-      Authorization: `Bearer ${this.params.token}`,
+      Authorization: `Bearer ${this.params.token}`
     };
     if (this.params.workspaceId) {
       h['x-workspace-id'] = this.params.workspaceId;
@@ -26,35 +26,35 @@ export class AdminClient {
   async listBots(opts?: { nextToken?: string; sortField?: string; sortDirection?: string }) {
     let response = await this.http.get('/bots', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getBot(botId: string) {
     let response = await this.http.get(`/bots/${botId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async createBot(data: { name?: string; tags?: Record<string, string> }) {
     let response = await this.http.post('/bots', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async updateBot(botId: string, data: Record<string, unknown>) {
     let response = await this.http.put(`/bots/${botId}`, data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteBot(botId: string) {
     let response = await this.http.delete(`/bots/${botId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -64,7 +64,7 @@ export class AdminClient {
   async getBotAnalytics(botId: string, opts?: { startDate?: string; endDate?: string }) {
     let response = await this.http.get(`/bots/${botId}/analytics`, {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
@@ -74,7 +74,7 @@ export class AdminClient {
   async getBotLogs(botId: string, opts?: { nextToken?: string; sortOrder?: string }) {
     let response = await this.http.get(`/bots/${botId}/logs`, {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
@@ -84,21 +84,21 @@ export class AdminClient {
   async listBotIssues(botId: string, opts?: { nextToken?: string }) {
     let response = await this.http.get(`/bots/${botId}/issues`, {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getBotIssue(botId: string, issueId: string) {
     let response = await this.http.get(`/bots/${botId}/issues/${issueId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteBotIssue(botId: string, issueId: string) {
     let response = await this.http.delete(`/bots/${botId}/issues/${issueId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -107,14 +107,14 @@ export class AdminClient {
 
   async listWorkspaces() {
     let response = await this.http.get('/workspaces', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getWorkspace(workspaceId: string) {
     let response = await this.http.get(`/workspaces/${workspaceId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -123,7 +123,7 @@ export class AdminClient {
 
   async listWorkspaceMembers(workspaceId: string) {
     let response = await this.http.get(`/workspaces/${workspaceId}/members`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -139,21 +139,21 @@ export class AdminClient {
   }) {
     let response = await this.http.get('/integrations', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getIntegration(integrationId: string) {
     let response = await this.http.get(`/integrations/${integrationId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getIntegrationByName(name: string) {
     let response = await this.http.get(`/integrations/name/${name}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -162,7 +162,7 @@ export class AdminClient {
 
   async getAccount() {
     let response = await this.http.get('/account', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -173,7 +173,7 @@ export class RuntimeClient {
 
   constructor(private params: { token: string; botId: string }) {
     this.http = createAxios({
-      baseURL: 'https://api.botpress.cloud/v1/chat',
+      baseURL: 'https://api.botpress.cloud/v1/chat'
     });
   }
 
@@ -181,7 +181,7 @@ export class RuntimeClient {
     return {
       Authorization: `Bearer ${this.params.token}`,
       'x-bot-id': this.params.botId,
-      ...extra,
+      ...extra
     };
   }
 
@@ -190,28 +190,28 @@ export class RuntimeClient {
   async listConversations(opts?: { nextToken?: string }) {
     let response = await this.http.get('/conversations', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getConversation(conversationId: string) {
     let response = await this.http.get(`/conversations/${conversationId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async createConversation(data: { channel: string; tags?: Record<string, string> }) {
     let response = await this.http.post('/conversations', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getOrCreateConversation(data: { channel: string; tags?: Record<string, string> }) {
     let response = await this.http.post('/conversations/get-or-create', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -221,14 +221,14 @@ export class RuntimeClient {
   async listMessages(opts?: { conversationId?: string; nextToken?: string }) {
     let response = await this.http.get('/messages', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getMessage(messageId: string) {
     let response = await this.http.get(`/messages/${messageId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -241,14 +241,14 @@ export class RuntimeClient {
     tags?: Record<string, string>;
   }) {
     let response = await this.http.post('/messages', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteMessage(messageId: string) {
     let response = await this.http.delete(`/messages/${messageId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -258,35 +258,42 @@ export class RuntimeClient {
   async listUsers(opts?: { nextToken?: string }) {
     let response = await this.http.get('/users', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getUser(userId: string) {
     let response = await this.http.get(`/users/${userId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async createUser(data: { tags?: Record<string, string>; name?: string; pictureUrl?: string }) {
+  async createUser(data: {
+    tags?: Record<string, string>;
+    name?: string;
+    pictureUrl?: string;
+  }) {
     let response = await this.http.post('/users', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async updateUser(userId: string, data: { tags?: Record<string, string>; name?: string; pictureUrl?: string }) {
+  async updateUser(
+    userId: string,
+    data: { tags?: Record<string, string>; name?: string; pictureUrl?: string }
+  ) {
     let response = await this.http.put(`/users/${userId}`, data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteUser(userId: string) {
     let response = await this.http.delete(`/users/${userId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -300,14 +307,14 @@ export class RuntimeClient {
     userId?: string;
   }) {
     let response = await this.http.post('/events', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getEvent(eventId: string) {
     let response = await this.http.get(`/events/${eventId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -315,7 +322,7 @@ export class RuntimeClient {
   async listEvents(opts?: { nextToken?: string }) {
     let response = await this.http.get('/events', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
@@ -324,22 +331,40 @@ export class RuntimeClient {
 
   async getState(stateType: string, resourceId: string, stateName: string) {
     let response = await this.http.get(`/states/${stateType}/${resourceId}/${stateName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async setState(stateType: string, resourceId: string, stateName: string, payload: Record<string, unknown>) {
-    let response = await this.http.post(`/states/${stateType}/${resourceId}/${stateName}`, { payload }, {
-      headers: this.headers(),
-    });
+  async setState(
+    stateType: string,
+    resourceId: string,
+    stateName: string,
+    payload: Record<string, unknown>
+  ) {
+    let response = await this.http.post(
+      `/states/${stateType}/${resourceId}/${stateName}`,
+      { payload },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async patchState(stateType: string, resourceId: string, stateName: string, payload: Record<string, unknown>) {
-    let response = await this.http.patch(`/states/${stateType}/${resourceId}/${stateName}`, { payload }, {
-      headers: this.headers(),
-    });
+  async patchState(
+    stateType: string,
+    resourceId: string,
+    stateName: string,
+    payload: Record<string, unknown>
+  ) {
+    let response = await this.http.patch(
+      `/states/${stateType}/${resourceId}/${stateName}`,
+      { payload },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
@@ -347,7 +372,7 @@ export class RuntimeClient {
 
   async listParticipants(conversationId: string) {
     let response = await this.http.get(`/conversations/${conversationId}/participants`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -356,7 +381,7 @@ export class RuntimeClient {
 
   async callAction(data: { type: string; input: Record<string, unknown> }) {
     let response = await this.http.post('/actions', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -367,14 +392,14 @@ export class TablesClient {
 
   constructor(private params: { token: string; botId: string }) {
     this.http = createAxios({
-      baseURL: 'https://api.botpress.cloud/v1/tables',
+      baseURL: 'https://api.botpress.cloud/v1/tables'
     });
   }
 
   private headers() {
     return {
       Authorization: `Bearer ${this.params.token}`,
-      'x-bot-id': this.params.botId,
+      'x-bot-id': this.params.botId
     };
   }
 
@@ -382,35 +407,39 @@ export class TablesClient {
 
   async listTables() {
     let response = await this.http.get('', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getTable(tableId: string) {
     let response = await this.http.get(`/${tableId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async createTable(data: { name: string; schema?: Record<string, unknown>; factor?: number }) {
+  async createTable(data: {
+    name: string;
+    schema?: Record<string, unknown>;
+    factor?: number;
+  }) {
     let response = await this.http.post('', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async updateTable(tableId: string, data: Record<string, unknown>) {
     let response = await this.http.put(`/${tableId}`, data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteTable(tableId: string) {
     let response = await this.http.delete(`/${tableId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -418,52 +447,70 @@ export class TablesClient {
   // === Rows ===
 
   async createRows(tableId: string, rows: Record<string, unknown>[]) {
-    let response = await this.http.post(`/${tableId}/rows`, { rows }, {
-      headers: this.headers(),
-    });
+    let response = await this.http.post(
+      `/${tableId}/rows`,
+      { rows },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async findRows(tableId: string, query: {
-    limit?: number;
-    offset?: number;
-    filter?: Record<string, unknown>;
-    search?: string;
-    select?: string[];
-    orderBy?: string;
-    orderDirection?: string;
-  }) {
+  async findRows(
+    tableId: string,
+    query: {
+      limit?: number;
+      offset?: number;
+      filter?: Record<string, unknown>;
+      search?: string;
+      select?: string[];
+      orderBy?: string;
+      orderDirection?: string;
+    }
+  ) {
     let response = await this.http.post(`/${tableId}/rows/find`, query, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getRow(tableId: string, rowId: number) {
     let response = await this.http.get(`/${tableId}/rows/${rowId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async updateRows(tableId: string, rows: Record<string, unknown>[]) {
-    let response = await this.http.put(`/${tableId}/rows`, { rows }, {
-      headers: this.headers(),
-    });
+    let response = await this.http.put(
+      `/${tableId}/rows`,
+      { rows },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async deleteRows(tableId: string, opts: { ids?: number[]; filter?: Record<string, unknown>; deleteAllRows?: boolean }) {
+  async deleteRows(
+    tableId: string,
+    opts: { ids?: number[]; filter?: Record<string, unknown>; deleteAllRows?: boolean }
+  ) {
     let response = await this.http.post(`/${tableId}/rows/delete`, opts, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async upsertRows(tableId: string, rows: Record<string, unknown>[], keyColumn: string) {
-    let response = await this.http.post(`/${tableId}/rows/upsert`, { rows, keyColumn }, {
-      headers: this.headers(),
-    });
+    let response = await this.http.post(
+      `/${tableId}/rows/upsert`,
+      { rows, keyColumn },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 }
@@ -473,28 +520,33 @@ export class FilesClient {
 
   constructor(private params: { token: string; botId: string }) {
     this.http = createAxios({
-      baseURL: 'https://api.botpress.cloud/v1/files',
+      baseURL: 'https://api.botpress.cloud/v1/files'
     });
   }
 
   private headers() {
     return {
       Authorization: `Bearer ${this.params.token}`,
-      'x-bot-id': this.params.botId,
+      'x-bot-id': this.params.botId
     };
   }
 
-  async listFiles(opts?: { nextToken?: string; tags?: string; sortField?: string; sortDirection?: string }) {
+  async listFiles(opts?: {
+    nextToken?: string;
+    tags?: string;
+    sortField?: string;
+    sortDirection?: string;
+  }) {
     let response = await this.http.get('', {
       headers: this.headers(),
-      params: opts,
+      params: opts
     });
     return response.data;
   }
 
   async getFile(fileId: string) {
     let response = await this.http.get(`/${fileId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -507,29 +559,32 @@ export class FilesClient {
     accessPolicies?: string[];
   }) {
     let response = await this.http.put('', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteFile(fileId: string) {
     let response = await this.http.delete(`/${fileId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async searchFiles(query: string, opts?: { limit?: number; tags?: string; contextDepth?: number }) {
+  async searchFiles(
+    query: string,
+    opts?: { limit?: number; tags?: string; contextDepth?: number }
+  ) {
     let response = await this.http.get('/search', {
       headers: this.headers(),
-      params: { query, ...opts },
+      params: { query, ...opts }
     });
     return response.data;
   }
 
   async updateFileMetadata(fileId: string, metadata: Record<string, unknown>) {
     let response = await this.http.put(`/${fileId}/metadata`, metadata, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }

@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'benchmark-email',
   name: 'Benchmark Email',
-  description: 'Email marketing platform for creating campaigns, managing contacts, and tracking performance.',
+  description:
+    'Email marketing platform for creating campaigns, managing contacts, and tracking performance.',
   metadata: {},
   config,
-  auth,
+  auth
 });

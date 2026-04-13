@@ -4,7 +4,7 @@ import type {
   BonsaiProject,
   BonsaiTask,
   BonsaiDeal,
-  BonsaiTaskTemplate,
+  BonsaiTaskTemplate
 } from './types';
 
 let BASE_URL = 'https://app.hellobonsai.com/api';
@@ -16,10 +16,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -77,7 +77,7 @@ export class Client {
       jobTitle: c.job_title ?? c.jobTitle ?? undefined,
       notes: c.notes ?? undefined,
       createdAt: c.created_at ?? c.createdAt ?? undefined,
-      updatedAt: c.updated_at ?? c.updatedAt ?? undefined,
+      updatedAt: c.updated_at ?? c.updatedAt ?? undefined
     };
   }
 
@@ -124,7 +124,7 @@ export class Client {
       currency: p.currency ?? undefined,
       status: p.status ?? undefined,
       createdAt: p.created_at ?? p.createdAt ?? undefined,
-      updatedAt: p.updated_at ?? p.updatedAt ?? undefined,
+      updatedAt: p.updated_at ?? p.updatedAt ?? undefined
     };
   }
 
@@ -165,7 +165,7 @@ export class Client {
   }): Promise<BonsaiTask[]> {
     let response = await this.axios.post('/v1/tasks/from_template', {
       project_id: params.projectId,
-      template_id: params.templateId,
+      template_id: params.templateId
     });
     let data = response.data as any;
     let tasks = Array.isArray(data) ? data : (data.tasks ?? data.data ?? []);
@@ -190,10 +190,12 @@ export class Client {
   async listTaskTemplates(): Promise<BonsaiTaskTemplate[]> {
     let response = await this.axios.get('/v1/task_templates');
     let data = response.data as any;
-    let templates = Array.isArray(data) ? data : (data.task_templates ?? data.templates ?? data.data ?? []);
+    let templates = Array.isArray(data)
+      ? data
+      : (data.task_templates ?? data.templates ?? data.data ?? []);
     return templates.map((t: any) => ({
       id: t.id ?? t._id ?? '',
-      name: t.name ?? '',
+      name: t.name ?? ''
     }));
   }
 
@@ -214,7 +216,7 @@ export class Client {
       tags: t.tags ?? undefined,
       recurring: t.recurring ?? undefined,
       createdAt: t.created_at ?? t.createdAt ?? undefined,
-      updatedAt: t.updated_at ?? t.updatedAt ?? undefined,
+      updatedAt: t.updated_at ?? t.updatedAt ?? undefined
     };
   }
 
@@ -260,8 +262,7 @@ export class Client {
       value: d.value ?? undefined,
       ownerEmail: d.owner_email ?? d.ownerEmail ?? undefined,
       createdAt: d.created_at ?? d.createdAt ?? undefined,
-      updatedAt: d.updated_at ?? d.updatedAt ?? undefined,
+      updatedAt: d.updated_at ?? d.updatedAt ?? undefined
     };
   }
-
 }

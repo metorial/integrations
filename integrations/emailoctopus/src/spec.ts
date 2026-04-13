@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'emailoctopus',
   name: 'EmailOctopus',
-  description: 'Email marketing platform for managing contact lists, sending campaigns, and running automated email sequences.',
+  description:
+    'Email marketing platform for managing contact lists, sending campaigns, and running automated email sequences.',
   metadata: {},
   config,
-  auth,
+  auth
 });

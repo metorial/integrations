@@ -14,31 +14,49 @@ Use the **List Collections** tool first to discover available collections and th
     'For "get": provide collectionId and recordId to fetch a single record.',
     'For "list": provide collectionId with limit/offset for pagination. Optionally use filter and sort arrays.',
     'For "update": provide collectionId, recordId, and recordData with fields to update.',
-    'For "delete": provide collectionId and recordId.',
+    'For "delete": provide collectionId and recordId.'
   ],
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'update', 'delete']).describe('Operation to perform'),
-    collectionId: z.string().describe('Collection ID'),
-    recordId: z.string().optional().describe('Record ID (required for get, update, delete)'),
-    recordData: z.record(z.string(), z.any()).optional().describe('Record field data as key-value pairs (for create/update)'),
-    limit: z.number().optional().describe('Number of records to return (for list, default: 10)'),
-    offset: z.number().optional().describe('Pagination offset (for list, default: 0)'),
-    filter: z.array(z.any()).optional().describe('Filter criteria array (for list)'),
-    sort: z.array(z.any()).optional().describe('Sort criteria array (for list)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    responseMessage: z.string().describe('Response message from the API'),
-    recordId: z.string().optional().describe('ID of the created/affected record'),
-    record: z.record(z.string(), z.any()).optional().describe('Record data (for get/create)'),
-    records: z.array(z.record(z.string(), z.any())).optional().describe('List of records (for list)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'update', 'delete'])
+        .describe('Operation to perform'),
+      collectionId: z.string().describe('Collection ID'),
+      recordId: z.string().optional().describe('Record ID (required for get, update, delete)'),
+      recordData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Record field data as key-value pairs (for create/update)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of records to return (for list, default: 10)'),
+      offset: z.number().optional().describe('Pagination offset (for list, default: 0)'),
+      filter: z.array(z.any()).optional().describe('Filter criteria array (for list)'),
+      sort: z.array(z.any()).optional().describe('Sort criteria array (for list)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      responseMessage: z.string().describe('Response message from the API'),
+      recordId: z.string().optional().describe('ID of the created/affected record'),
+      record: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Record data (for get/create)'),
+      records: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of records (for list)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZixflowClient({ token: ctx.auth.token });
     let { action, collectionId } = ctx.input;
     let result: any;
@@ -50,9 +68,9 @@ Use the **List Collections** tool first to discover available collections and th
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
           recordId: result._id ?? result.data?._id,
-          record: result.data,
+          record: result.data
         },
-        message: `Record created in collection ${collectionId} with ID ${result._id ?? result.data?._id ?? 'unknown'}.`,
+        message: `Record created in collection ${collectionId} with ID ${result._id ?? result.data?._id ?? 'unknown'}.`
       };
     }
 
@@ -63,9 +81,9 @@ Use the **List Collections** tool first to discover available collections and th
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
           recordId: ctx.input.recordId,
-          record: result.data,
+          record: result.data
         },
-        message: `Fetched record ${ctx.input.recordId} from collection ${collectionId}.`,
+        message: `Fetched record ${ctx.input.recordId} from collection ${collectionId}.`
       };
     }
 
@@ -74,28 +92,32 @@ Use the **List Collections** tool first to discover available collections and th
         limit: ctx.input.limit ?? 10,
         offset: ctx.input.offset ?? 0,
         filter: ctx.input.filter,
-        sort: ctx.input.sort,
+        sort: ctx.input.sort
       });
       let records = Array.isArray(result.data) ? result.data : [];
       return {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
-          records,
+          records
         },
-        message: `Fetched ${records.length} record(s) from collection ${collectionId}.`,
+        message: `Fetched ${records.length} record(s) from collection ${collectionId}.`
       };
     }
 
     if (action === 'update') {
-      result = await client.updateRecord(collectionId, ctx.input.recordId!, ctx.input.recordData ?? {});
+      result = await client.updateRecord(
+        collectionId,
+        ctx.input.recordId!,
+        ctx.input.recordData ?? {}
+      );
       return {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
-          recordId: ctx.input.recordId,
+          recordId: ctx.input.recordId
         },
-        message: `Updated record ${ctx.input.recordId} in collection ${collectionId}.`,
+        message: `Updated record ${ctx.input.recordId} in collection ${collectionId}.`
       };
     }
 
@@ -105,9 +127,9 @@ Use the **List Collections** tool first to discover available collections and th
       output: {
         success: result.status === true,
         responseMessage: result.message ?? 'Unknown response',
-        recordId: ctx.input.recordId,
+        recordId: ctx.input.recordId
       },
-      message: `Deleted record ${ctx.input.recordId} from collection ${collectionId}.`,
+      message: `Deleted record ${ctx.input.recordId} from collection ${collectionId}.`
     };
   })
   .build();

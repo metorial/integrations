@@ -3,69 +3,97 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let inviteeEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invitee Events',
-    key: 'invitee_events',
-    description: 'Triggers when an invitee schedules or cancels a Calendly event. Covers both invitee.created and invitee.canceled webhook events.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type (invitee.created or invitee.canceled)'),
-    eventUri: z.string().describe('URI of the webhook event'),
-    createdAt: z.string().describe('When the webhook event was created'),
-    inviteeUri: z.string().describe('URI of the invitee'),
-    inviteeName: z.string().describe('Name of the invitee'),
-    inviteeEmail: z.string().describe('Email of the invitee'),
-    scheduledEventUri: z.string().describe('URI of the scheduled event'),
-    scheduledEventName: z.string().describe('Name of the scheduled event'),
-    startTime: z.string().describe('Event start time'),
-    endTime: z.string().describe('Event end time'),
-    status: z.string().describe('Invitee status'),
-    timezone: z.string().nullable().describe('Invitee timezone'),
-    questionsAndAnswers: z.array(z.object({
-      question: z.string(),
-      answer: z.string()
-    })).describe('Custom question responses'),
-    tracking: z.any().optional().describe('UTM tracking data'),
-    cancelUrl: z.string().optional().describe('Cancel URL'),
-    rescheduleUrl: z.string().optional().describe('Reschedule URL'),
-    rescheduled: z.boolean().optional().describe('Whether this is a rescheduled event'),
-    cancellation: z.any().optional().describe('Cancellation details if canceled'),
-    eventMemberships: z.array(z.object({
-      userUri: z.string(),
-      userEmail: z.string(),
-      userName: z.string()
-    })).optional().describe('Event hosts/members')
-  }))
-  .output(z.object({
-    inviteeUri: z.string().describe('URI of the invitee'),
-    inviteeName: z.string().describe('Name of the invitee'),
-    inviteeEmail: z.string().describe('Email of the invitee'),
-    scheduledEventUri: z.string().describe('URI of the scheduled event'),
-    scheduledEventName: z.string().describe('Name of the scheduled event'),
-    startTime: z.string().describe('Event start time (ISO 8601)'),
-    endTime: z.string().describe('Event end time (ISO 8601)'),
-    status: z.string().describe('Invitee status (active or canceled)'),
-    timezone: z.string().nullable().describe('Invitee timezone'),
-    questionsAndAnswers: z.array(z.object({
-      question: z.string(),
-      answer: z.string()
-    })).describe('Custom question responses'),
-    tracking: z.any().optional().describe('UTM tracking data'),
-    cancelUrl: z.string().optional().describe('URL for invitee to cancel'),
-    rescheduleUrl: z.string().optional().describe('URL for invitee to reschedule'),
-    rescheduled: z.boolean().optional().describe('Whether this is a reschedule of a previous event'),
-    cancellation: z.any().optional().describe('Cancellation details (reason, canceled_by, etc.)'),
-    eventMemberships: z.array(z.object({
-      userUri: z.string(),
-      userEmail: z.string(),
-      userName: z.string()
-    })).optional().describe('Event hosts/members')
-  }))
+export let inviteeEvents = SlateTrigger.create(spec, {
+  name: 'Invitee Events',
+  key: 'invitee_events',
+  description:
+    'Triggers when an invitee schedules or cancels a Calendly event. Covers both invitee.created and invitee.canceled webhook events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The webhook event type (invitee.created or invitee.canceled)'),
+      eventUri: z.string().describe('URI of the webhook event'),
+      createdAt: z.string().describe('When the webhook event was created'),
+      inviteeUri: z.string().describe('URI of the invitee'),
+      inviteeName: z.string().describe('Name of the invitee'),
+      inviteeEmail: z.string().describe('Email of the invitee'),
+      scheduledEventUri: z.string().describe('URI of the scheduled event'),
+      scheduledEventName: z.string().describe('Name of the scheduled event'),
+      startTime: z.string().describe('Event start time'),
+      endTime: z.string().describe('Event end time'),
+      status: z.string().describe('Invitee status'),
+      timezone: z.string().nullable().describe('Invitee timezone'),
+      questionsAndAnswers: z
+        .array(
+          z.object({
+            question: z.string(),
+            answer: z.string()
+          })
+        )
+        .describe('Custom question responses'),
+      tracking: z.any().optional().describe('UTM tracking data'),
+      cancelUrl: z.string().optional().describe('Cancel URL'),
+      rescheduleUrl: z.string().optional().describe('Reschedule URL'),
+      rescheduled: z.boolean().optional().describe('Whether this is a rescheduled event'),
+      cancellation: z.any().optional().describe('Cancellation details if canceled'),
+      eventMemberships: z
+        .array(
+          z.object({
+            userUri: z.string(),
+            userEmail: z.string(),
+            userName: z.string()
+          })
+        )
+        .optional()
+        .describe('Event hosts/members')
+    })
+  )
+  .output(
+    z.object({
+      inviteeUri: z.string().describe('URI of the invitee'),
+      inviteeName: z.string().describe('Name of the invitee'),
+      inviteeEmail: z.string().describe('Email of the invitee'),
+      scheduledEventUri: z.string().describe('URI of the scheduled event'),
+      scheduledEventName: z.string().describe('Name of the scheduled event'),
+      startTime: z.string().describe('Event start time (ISO 8601)'),
+      endTime: z.string().describe('Event end time (ISO 8601)'),
+      status: z.string().describe('Invitee status (active or canceled)'),
+      timezone: z.string().nullable().describe('Invitee timezone'),
+      questionsAndAnswers: z
+        .array(
+          z.object({
+            question: z.string(),
+            answer: z.string()
+          })
+        )
+        .describe('Custom question responses'),
+      tracking: z.any().optional().describe('UTM tracking data'),
+      cancelUrl: z.string().optional().describe('URL for invitee to cancel'),
+      rescheduleUrl: z.string().optional().describe('URL for invitee to reschedule'),
+      rescheduled: z
+        .boolean()
+        .optional()
+        .describe('Whether this is a reschedule of a previous event'),
+      cancellation: z
+        .any()
+        .optional()
+        .describe('Cancellation details (reason, canceled_by, etc.)'),
+      eventMemberships: z
+        .array(
+          z.object({
+            userUri: z.string(),
+            userEmail: z.string(),
+            userName: z.string()
+          })
+        )
+        .optional()
+        .describe('Event hosts/members')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let organizationUri = ctx.auth.organizationUri;
@@ -94,14 +122,14 @@ export let inviteeEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookUri: string };
       await client.deleteWebhookSubscription(details.webhookUri);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let event = body.event as string;
       let payload = body.payload || {};
@@ -145,10 +173,9 @@ export let inviteeEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
-      let type = ctx.input.eventType === 'invitee.canceled'
-        ? 'invitee.canceled'
-        : 'invitee.created';
+    handleEvent: async ctx => {
+      let type =
+        ctx.input.eventType === 'invitee.canceled' ? 'invitee.canceled' : 'invitee.created';
 
       return {
         type,

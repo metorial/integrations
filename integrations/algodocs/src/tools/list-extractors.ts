@@ -3,25 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listExtractors = SlateTool.create(
-  spec,
-  {
-    name: 'List Extractors',
-    key: 'list_extractors',
-    description: `Lists all extractors configured in your Algodocs account. Each extractor defines rules for extracting specific fields and tables from documents. Use this to discover available extractors and obtain their IDs for uploading documents or retrieving extracted data.`,
-    tags: {
-      readOnly: true
-    }
+export let listExtractors = SlateTool.create(spec, {
+  name: 'List Extractors',
+  key: 'list_extractors',
+  description: `Lists all extractors configured in your Algodocs account. Each extractor defines rules for extracting specific fields and tables from documents. Use this to discover available extractors and obtain their IDs for uploading documents or retrieving extracted data.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    extractors: z.array(z.object({
-      extractorId: z.string().describe('Unique identifier of the extractor'),
-      name: z.string().describe('Name of the extractor')
-    })).describe('List of extractors in the account')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      extractors: z
+        .array(
+          z.object({
+            extractorId: z.string().describe('Unique identifier of the extractor'),
+            name: z.string().describe('Name of the extractor')
+          })
+        )
+        .describe('List of extractors in the account')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       email: ctx.auth.email

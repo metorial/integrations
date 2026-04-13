@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listWorkspaces,
@@ -24,9 +23,7 @@ import {
   listCapacities,
   assignWorkspaceCapacity
 } from './tools';
-import { datasetRefreshCompleted,
-  inboundWebhook,
-} from './triggers';
+import { datasetRefreshCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,8 +50,5 @@ export let provider = Slate.create({
     listCapacities,
     assignWorkspaceCapacity
   ],
-  triggers: [
-    inboundWebhook,
-    datasetRefreshCompleted
-  ]
+  triggers: [inboundWebhook, datasetRefreshCompleted]
 });

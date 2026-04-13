@@ -14,7 +14,7 @@ let addressInputSchema = z.object({
   postcode: z.string().optional(),
   country: z.string().optional(),
   email: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().optional()
 });
 
 export let updateCustomer = SlateTool.create(spec, {
@@ -22,25 +22,29 @@ export let updateCustomer = SlateTool.create(spec, {
   key: 'update_customer',
   description: `Update an existing customer's profile including name, email, billing and shipping addresses. Only provided fields will be updated.`,
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    customerId: z.number().describe('The customer ID to update'),
-    email: z.string().optional().describe('New email address'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    billing: addressInputSchema.optional().describe('Updated billing address'),
-    shipping: addressInputSchema.optional().describe('Updated shipping address'),
-  }))
-  .output(z.object({
-    customerId: z.number(),
-    email: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-    dateModified: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      customerId: z.number().describe('The customer ID to update'),
+      email: z.string().optional().describe('New email address'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      billing: addressInputSchema.optional().describe('Updated billing address'),
+      shipping: addressInputSchema.optional().describe('Updated shipping address')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.number(),
+      email: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      dateModified: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -76,9 +80,9 @@ export let updateCustomer = SlateTool.create(spec, {
         email: customer.email || '',
         firstName: customer.first_name || '',
         lastName: customer.last_name || '',
-        dateModified: customer.date_modified || '',
+        dateModified: customer.date_modified || ''
       },
-      message: `Updated customer **${customer.first_name || ''} ${customer.last_name || ''}** (ID: ${customer.id}).`,
+      message: `Updated customer **${customer.first_name || ''} ${customer.last_name || ''}** (ID: ${customer.id}).`
     };
   })
   .build();

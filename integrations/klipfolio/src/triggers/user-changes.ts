@@ -3,35 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Changes',
-    key: 'user_changes',
-    description: 'Detects new users added to your Klipfolio account by polling the users list.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created']).describe('Type of change detected'),
-    userId: z.string().describe('User ID'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    email: z.string().describe('Email address'),
-    dateCreated: z.string().optional().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('ID of the user'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    email: z.string().describe('Email address'),
-    dateCreated: z.string().optional().describe('Creation timestamp'),
-  }))
+export let userChanges = SlateTrigger.create(spec, {
+  name: 'User Changes',
+  key: 'user_changes',
+  description: 'Detects new users added to your Klipfolio account by polling the users list.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created']).describe('Type of change detected'),
+      userId: z.string().describe('User ID'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      email: z.string().describe('Email address'),
+      dateCreated: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('ID of the user'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      email: z.string().describe('Email address'),
+      dateCreated: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let result = await client.listUsers({ limit: 100 });
@@ -39,7 +40,14 @@ export let userChanges = SlateTrigger.create(
 
       let previousIds: string[] = ctx.state?.userIds || [];
       let previousIdSet = new Set(previousIds);
-      let inputs: Array<{ changeType: 'created'; userId: string; firstName: string; lastName: string; email: string; dateCreated?: string }> = [];
+      let inputs: Array<{
+        changeType: 'created';
+        userId: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        dateCreated?: string;
+      }> = [];
       let currentIds: string[] = [];
 
       for (let user of users) {
@@ -51,18 +59,18 @@ export let userChanges = SlateTrigger.create(
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
-            dateCreated: user.date_created,
+            dateCreated: user.date_created
           });
         }
       }
 
       return {
         inputs,
-        updatedState: { userIds: currentIds },
+        updatedState: { userIds: currentIds }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `user.${ctx.input.changeType}`,
         id: `${ctx.input.userId}-${ctx.input.dateCreated || 'created'}`,
@@ -71,9 +79,9 @@ export let userChanges = SlateTrigger.create(
           firstName: ctx.input.firstName,
           lastName: ctx.input.lastName,
           email: ctx.input.email,
-          dateCreated: ctx.input.dateCreated,
-        },
+          dateCreated: ctx.input.dateCreated
+        }
       };
-    },
+    }
   })
   .build();

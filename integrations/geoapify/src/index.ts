@@ -14,7 +14,7 @@ import {
   lookupPostcodes,
   mapMatch,
   batchGeocode,
-  checkBatchGeocode,
+  checkBatchGeocode
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     lookupPostcodes,
     mapMatch,
     batchGeocode,
-    checkBatchGeocode,
+    checkBatchGeocode
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

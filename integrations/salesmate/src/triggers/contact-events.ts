@@ -3,54 +3,72 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when contacts are created or updated in Salesmate.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Type of contact event'),
-    contactId: z.string().describe('ID of the contact'),
-    contact: z.record(z.string(), z.unknown()).describe('Contact record data'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    firstName: z.string().optional().describe('First name of the contact'),
-    lastName: z.string().optional().describe('Last name of the contact'),
-    email: z.string().optional().describe('Email address'),
-    company: z.string().optional().describe('Company name'),
-    owner: z.unknown().optional().describe('Owner of the contact'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    modifiedAt: z.string().optional().describe('Last modification timestamp'),
-    rawRecord: z.record(z.string(), z.unknown()).describe('Full contact record'),
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description: 'Triggers when contacts are created or updated in Salesmate.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated']).describe('Type of contact event'),
+      contactId: z.string().describe('ID of the contact'),
+      contact: z.record(z.string(), z.unknown()).describe('Contact record data')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      firstName: z.string().optional().describe('First name of the contact'),
+      lastName: z.string().optional().describe('Last name of the contact'),
+      email: z.string().optional().describe('Email address'),
+      company: z.string().optional().describe('Company name'),
+      owner: z.unknown().optional().describe('Owner of the contact'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      modifiedAt: z.string().optional().describe('Last modification timestamp'),
+      rawRecord: z.record(z.string(), z.unknown()).describe('Full contact record')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
-      let lastPolledAt = (ctx.state as Record<string, unknown>)?.lastPolledAt as string | undefined;
+      let lastPolledAt = (ctx.state as Record<string, unknown>)?.lastPolledAt as
+        | string
+        | undefined;
       let now = new Date().toISOString();
 
-      let fields = ['firstName', 'lastName', 'email', 'company', 'owner', 'createdAt', 'modifiedAt'];
+      let fields = [
+        'firstName',
+        'lastName',
+        'email',
+        'company',
+        'owner',
+        'createdAt',
+        'modifiedAt'
+      ];
 
-      let filters = lastPolledAt ? [{
-        moduleName: 'Contact',
-        field: { fieldName: 'modifiedAt' },
-        condition: 'GREATER_THAN',
-        data: lastPolledAt,
-      }] : [];
+      let filters = lastPolledAt
+        ? [
+            {
+              moduleName: 'Contact',
+              field: { fieldName: 'modifiedAt' },
+              condition: 'GREATER_THAN',
+              data: lastPolledAt
+            }
+          ]
+        : [];
 
-      let query = filters.length > 0 ? {
-        group: {
-          operator: 'AND' as const,
-          rules: filters,
-        },
-      } : undefined;
+      let query =
+        filters.length > 0
+          ? {
+              group: {
+                operator: 'AND' as const,
+                rules: filters
+              }
+            }
+          : undefined;
 
       let result = await client.searchContacts({
         fields,
@@ -58,7 +76,7 @@ export let contactEvents = SlateTrigger.create(
         sortBy: 'modifiedAt',
         sortOrder: 'desc',
         pageNo: 1,
-        rows: 100,
+        rows: 100
       });
 
       let records = result?.Data?.data ?? [];
@@ -69,20 +87,20 @@ export let contactEvents = SlateTrigger.create(
         let modifiedAt = record.modifiedAt as string | undefined;
         let isNew = !lastPolledAt || (createdAt && modifiedAt && createdAt === modifiedAt);
         return {
-          eventType: isNew ? 'created' as const : 'updated' as const,
+          eventType: isNew ? ('created' as const) : ('updated' as const),
           contactId: recordId,
-          contact: record,
+          contact: record
         };
       });
 
       return {
         inputs,
         updatedState: {
-          lastPolledAt: now,
-        },
+          lastPolledAt: now
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let record = ctx.input.contact;
       return {
         type: `contact.${ctx.input.eventType}`,
@@ -96,9 +114,9 @@ export let contactEvents = SlateTrigger.create(
           owner: record.owner,
           createdAt: record.createdAt as string | undefined,
           modifiedAt: record.modifiedAt as string | undefined,
-          rawRecord: record,
-        },
+          rawRecord: record
+        }
       };
-    },
+    }
   })
   .build();

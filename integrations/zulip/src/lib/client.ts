@@ -64,11 +64,14 @@ export class Client {
     return response.data;
   }
 
-  async updateMessage(messageId: number, params: {
-    topic?: string;
-    propagateMode?: string;
-    content?: string;
-  }) {
+  async updateMessage(
+    messageId: number,
+    params: {
+      topic?: string;
+      propagateMode?: string;
+      content?: string;
+    }
+  ) {
     let payload: Record<string, any> = {};
     if (params.topic !== undefined) payload.topic = params.topic;
     if (params.propagateMode) payload.propagate_mode = params.propagateMode;
@@ -86,11 +89,15 @@ export class Client {
   }
 
   async addReaction(messageId: number, emojiName: string) {
-    let response = await this.axios.post(`/api/v1/messages/${messageId}/reactions`, {
-      emoji_name: emojiName
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    let response = await this.axios.post(
+      `/api/v1/messages/${messageId}/reactions`,
+      {
+        emoji_name: emojiName
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -106,13 +113,17 @@ export class Client {
     op: 'add' | 'remove';
     flag: string;
   }) {
-    let response = await this.axios.post('/api/v1/messages/flags', {
-      messages: JSON.stringify(params.messages),
-      op: params.op,
-      flag: params.flag
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    let response = await this.axios.post(
+      '/api/v1/messages/flags',
+      {
+        messages: JSON.stringify(params.messages),
+        op: params.op,
+        flag: params.flag
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -121,7 +132,8 @@ export class Client {
   async getChannels(params?: { includePublic?: boolean; includeSubscribed?: boolean }) {
     let query: Record<string, any> = {};
     if (params?.includePublic !== undefined) query.include_public = params.includePublic;
-    if (params?.includeSubscribed !== undefined) query.include_subscribed = params.includeSubscribed;
+    if (params?.includeSubscribed !== undefined)
+      query.include_subscribed = params.includeSubscribed;
 
     let response = await this.axios.get('/api/v1/streams', { params: query });
     return response.data;
@@ -138,10 +150,12 @@ export class Client {
     isPrivate?: boolean;
     historyPublicToSubscribers?: boolean;
   }) {
-    let subscriptions = [{
-      name: params.name,
-      description: params.description || ''
-    }];
+    let subscriptions = [
+      {
+        name: params.name,
+        description: params.description || ''
+      }
+    ];
 
     let payload: Record<string, any> = {
       subscriptions: JSON.stringify(subscriptions)
@@ -158,14 +172,18 @@ export class Client {
     return response.data;
   }
 
-  async updateChannel(streamId: number, params: {
-    name?: string;
-    description?: string;
-    isPrivate?: boolean;
-  }) {
+  async updateChannel(
+    streamId: number,
+    params: {
+      name?: string;
+      description?: string;
+      isPrivate?: boolean;
+    }
+  ) {
     let payload: Record<string, any> = {};
     if (params.name !== undefined) payload.new_name = JSON.stringify(params.name);
-    if (params.description !== undefined) payload.description = JSON.stringify(params.description);
+    if (params.description !== undefined)
+      payload.description = JSON.stringify(params.description);
     if (params.isPrivate !== undefined) payload.is_private = params.isPrivate;
 
     let response = await this.axios.patch(`/api/v1/streams/${streamId}`, payload, {
@@ -206,10 +224,7 @@ export class Client {
     return response.data;
   }
 
-  async unsubscribe(params: {
-    subscriptions: string[];
-    principals?: number[];
-  }) {
+  async unsubscribe(params: { subscriptions: string[]; principals?: number[] }) {
     let payload: Record<string, any> = {
       subscriptions: JSON.stringify(params.subscriptions)
     };
@@ -259,25 +274,28 @@ export class Client {
     return response.data;
   }
 
-  async createUser(params: {
-    email: string;
-    password: string;
-    fullName: string;
-  }) {
-    let response = await this.axios.post('/api/v1/users', {
-      email: params.email,
-      password: params.password,
-      full_name: params.fullName
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+  async createUser(params: { email: string; password: string; fullName: string }) {
+    let response = await this.axios.post(
+      '/api/v1/users',
+      {
+        email: params.email,
+        password: params.password,
+        full_name: params.fullName
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
-  async updateUser(userId: number, params: {
-    fullName?: string;
-    role?: number;
-  }) {
+  async updateUser(
+    userId: number,
+    params: {
+      fullName?: string;
+      role?: number;
+    }
+  ) {
     let payload: Record<string, any> = {};
     if (params.fullName !== undefined) payload.full_name = params.fullName;
     if (params.role !== undefined) payload.role = params.role;
@@ -308,11 +326,7 @@ export class Client {
     return response.data;
   }
 
-  async setUserStatus(params: {
-    statusText?: string;
-    emoji?: string;
-    away?: boolean;
-  }) {
+  async setUserStatus(params: { statusText?: string; emoji?: string; away?: boolean }) {
     let payload: Record<string, any> = {};
     if (params.statusText !== undefined) payload.status_text = params.statusText;
     if (params.emoji !== undefined) payload.emoji_name = params.emoji;
@@ -331,25 +345,28 @@ export class Client {
     return response.data;
   }
 
-  async createUserGroup(params: {
-    name: string;
-    description: string;
-    members: number[];
-  }) {
-    let response = await this.axios.post('/api/v1/user_groups/create', {
-      name: params.name,
-      description: params.description,
-      members: JSON.stringify(params.members)
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+  async createUserGroup(params: { name: string; description: string; members: number[] }) {
+    let response = await this.axios.post(
+      '/api/v1/user_groups/create',
+      {
+        name: params.name,
+        description: params.description,
+        members: JSON.stringify(params.members)
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
-  async updateUserGroup(userGroupId: number, params: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateUserGroup(
+    userGroupId: number,
+    params: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let payload: Record<string, any> = {};
     if (params.name !== undefined) payload.name = params.name;
     if (params.description !== undefined) payload.description = params.description;
@@ -360,17 +377,24 @@ export class Client {
     return response.data;
   }
 
-  async updateUserGroupMembers(userGroupId: number, params: {
-    add?: number[];
-    remove?: number[];
-  }) {
+  async updateUserGroupMembers(
+    userGroupId: number,
+    params: {
+      add?: number[];
+      remove?: number[];
+    }
+  ) {
     let payload: Record<string, any> = {};
     if (params.add) payload.add = JSON.stringify(params.add);
     if (params.remove) payload.delete = JSON.stringify(params.remove);
 
-    let response = await this.axios.post(`/api/v1/user_groups/${userGroupId}/members`, payload, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    let response = await this.axios.post(
+      `/api/v1/user_groups/${userGroupId}/members`,
+      payload,
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -384,7 +408,8 @@ export class Client {
     let payload: Record<string, any> = {};
     if (params.eventTypes) payload.event_types = JSON.stringify(params.eventTypes);
     if (params.narrow) payload.narrow = JSON.stringify(params.narrow);
-    if (params.allPublicStreams !== undefined) payload.all_public_streams = params.allPublicStreams;
+    if (params.allPublicStreams !== undefined)
+      payload.all_public_streams = params.allPublicStreams;
 
     let response = await this.axios.post('/api/v1/register', payload, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -392,11 +417,7 @@ export class Client {
     return response.data;
   }
 
-  async getEvents(params: {
-    queueId: string;
-    lastEventId: number;
-    dontBlock?: boolean;
-  }) {
+  async getEvents(params: { queueId: string; lastEventId: number; dontBlock?: boolean }) {
     let query: Record<string, any> = {
       queue_id: params.queueId,
       last_event_id: params.lastEventId
@@ -491,17 +512,23 @@ export class Client {
     return response.data;
   }
 
-  async createDrafts(drafts: Array<{
-    type: 'stream' | 'private';
-    to: number[];
-    topic: string;
-    content: string;
-  }>) {
-    let response = await this.axios.post('/api/v1/drafts', {
-      drafts: JSON.stringify(drafts)
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+  async createDrafts(
+    drafts: Array<{
+      type: 'stream' | 'private';
+      to: number[];
+      topic: string;
+      content: string;
+    }>
+  ) {
+    let response = await this.axios.post(
+      '/api/v1/drafts',
+      {
+        drafts: JSON.stringify(drafts)
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 

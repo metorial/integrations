@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchRecords,
@@ -9,11 +8,9 @@ import {
   deleteRecords,
   listModelFields,
   listModels,
-  executeMethod,
+  executeMethod
 } from './tools';
-import { recordChanges,
-  inboundWebhook,
-} from './triggers';
+import { recordChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -25,10 +22,7 @@ export let provider = Slate.create({
     deleteRecords,
     listModelFields,
     listModels,
-    executeMethod,
+    executeMethod
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanges,
-  ],
+  triggers: [inboundWebhook, recordChanges]
 });

@@ -3,27 +3,26 @@ import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_user',
-    description: `Retrieve the authenticated user's profile information including their name and default email address.`,
-    tags: {
-      readOnly: true
-    }
+export let getUser = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_user',
+  description: `Retrieve the authenticated user's profile information including their name and default email address.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string().describe('Unique identifier of the user'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    defaultEmail: z.string().optional().describe('Default email address'),
-    createdAt: z.string().optional().describe('Account creation timestamp'),
-    modifiedAt: z.string().optional().describe('Last modification timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string().describe('Unique identifier of the user'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      defaultEmail: z.string().optional().describe('Default email address'),
+      createdAt: z.string().optional().describe('Account creation timestamp'),
+      modifiedAt: z.string().optional().describe('Last modification timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WaveClient(ctx.auth.token);
     let user = await client.getUser();
 

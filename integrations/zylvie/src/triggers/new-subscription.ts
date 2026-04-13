@@ -2,79 +2,91 @@ import { SlateTrigger } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
-import { buyerSchema, productSchema, couponSchema, customFieldSchema, mapBuyer, mapProduct, mapCustomFields } from '../lib/schemas';
+import {
+  buyerSchema,
+  productSchema,
+  couponSchema,
+  customFieldSchema,
+  mapBuyer,
+  mapProduct,
+  mapCustomFields
+} from '../lib/schemas';
 
 let webhookPayloadSchema = z.object({
   event: z.string(),
-  data: z.any(),
+  data: z.any()
 });
 
-export let newSubscriptionTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Subscription',
-    key: 'new_subscription',
-    description: 'Triggers when a user subscribes to a subscription product, whether starting with a free trial or a paid subscription. Includes subscription details, buyer info, and billing information.',
-  }
-)
+export let newSubscriptionTrigger = SlateTrigger.create(spec, {
+  name: 'New Subscription',
+  key: 'new_subscription',
+  description:
+    'Triggers when a user subscribes to a subscription product, whether starting with a free trial or a paid subscription. Includes subscription details, buyer info, and billing information.'
+})
   .input(webhookPayloadSchema)
-  .output(z.object({
-    subscriptionId: z.string().describe('Stripe subscription ID'),
-    createdAt: z.string().describe('Subscription creation timestamp'),
-    cancelAt: z.string().nullable().describe('Scheduled cancellation date'),
-    canceledAt: z.string().nullable().describe('Actual cancellation date'),
-    trialEnd: z.string().nullable().describe('Trial period end date'),
-    trialStart: z.string().nullable().describe('Trial period start date'),
-    currency: z.string().describe('Currency code'),
-    amount: z.number().describe('Subscription amount'),
-    interval: z.string().describe('Billing interval'),
-    intervalCount: z.number().describe('Interval multiplier'),
-    status: z.string().describe('Subscription status'),
-    product: productSchema.describe('Subscription product'),
-    buyer: buyerSchema.describe('Subscriber information'),
-    coupon: couponSchema.nullable().describe('Applied coupon'),
-    customFields: z.array(customFieldSchema).describe('Custom checkout fields'),
-    referrerEmail: z.string().nullable().describe('Referring affiliate email'),
-    commissionEarned: z.number().nullable().describe('Affiliate commission earned'),
-    commissionPaid: z.boolean().nullable().describe('Whether commission has been paid'),
-  }))
+  .output(
+    z.object({
+      subscriptionId: z.string().describe('Stripe subscription ID'),
+      createdAt: z.string().describe('Subscription creation timestamp'),
+      cancelAt: z.string().nullable().describe('Scheduled cancellation date'),
+      canceledAt: z.string().nullable().describe('Actual cancellation date'),
+      trialEnd: z.string().nullable().describe('Trial period end date'),
+      trialStart: z.string().nullable().describe('Trial period start date'),
+      currency: z.string().describe('Currency code'),
+      amount: z.number().describe('Subscription amount'),
+      interval: z.string().describe('Billing interval'),
+      intervalCount: z.number().describe('Interval multiplier'),
+      status: z.string().describe('Subscription status'),
+      product: productSchema.describe('Subscription product'),
+      buyer: buyerSchema.describe('Subscriber information'),
+      coupon: couponSchema.nullable().describe('Applied coupon'),
+      customFields: z.array(customFieldSchema).describe('Custom checkout fields'),
+      referrerEmail: z.string().nullable().describe('Referring affiliate email'),
+      commissionEarned: z.number().nullable().describe('Affiliate commission earned'),
+      commissionPaid: z.boolean().nullable().describe('Whether commission has been paid')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let result = await client.subscribeWebhook('subscription', ctx.input.webhookBaseUrl);
       return {
         registrationDetails: {
           webhookUrl: result.webhook,
-          signingSecret: result.signing_secret,
-        },
+          signingSecret: result.signing_secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.unsubscribeWebhook(ctx.input.registrationDetails.webhookUrl as string);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as { event: string; data: unknown };
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as { event: string; data: unknown };
       return {
-        inputs: [body],
+        inputs: [body]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.data as Record<string, unknown>;
 
       let buyer = mapBuyer((data.buyer || {}) as Record<string, unknown>);
       let product = mapProduct((data.product || {}) as Record<string, unknown>);
-      let customFields = mapCustomFields(data.custom_fields as Record<string, unknown>[] | undefined);
+      let customFields = mapCustomFields(
+        data.custom_fields as Record<string, unknown>[] | undefined
+      );
 
       let couponData = data.coupon as Record<string, unknown> | null;
-      let coupon = couponData ? {
-        code: couponData.code as string,
-        type: couponData.type as string,
-        amount: couponData.amount as number,
-      } : null;
+      let coupon = couponData
+        ? {
+            code: couponData.code as string,
+            type: couponData.type as string,
+            amount: couponData.amount as number
+          }
+        : null;
 
       let referrer = data.referrer as Record<string, unknown> | null;
 
@@ -99,8 +111,9 @@ export let newSubscriptionTrigger = SlateTrigger.create(
           customFields,
           referrerEmail: referrer ? (referrer.email as string) : null,
           commissionEarned: (data.commission_earned as number | null) ?? null,
-          commissionPaid: (data.commission_paid as boolean | null) ?? null,
-        },
+          commissionPaid: (data.commission_paid as boolean | null) ?? null
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

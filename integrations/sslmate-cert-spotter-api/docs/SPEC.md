@@ -11,6 +11,7 @@ SSLMate Cert Spotter is a certificate monitoring service that watches Certificat
 The API supports two methods of authentication, both using an SSLMate API key:
 
 1. **Bearer Token**: Pass the API key as an OAuth2 Bearer Token in the `Authorization` header:
+
    ```
    Authorization: Bearer 123_sampleapikey
    ```

@@ -3,42 +3,52 @@ import { Client, parseMessage } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let mailboxChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Mailbox Changes',
-    key: 'mailbox_changes',
-    description: 'Triggers when new messages arrive, messages are deleted, or labels change in the Gmail mailbox. Uses the Gmail history API for efficient incremental sync.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['message_added', 'message_deleted', 'labels_added', 'labels_removed']).describe('Type of mailbox change.'),
-    historyId: z.string().describe('History record ID.'),
-    messageId: z.string().describe('Affected message ID.'),
-    threadId: z.string().describe('Thread ID of the affected message.'),
-    labelIds: z.array(z.string()).optional().describe('Labels on the message.'),
-    changedLabelIds: z.array(z.string()).optional().describe('Label IDs that were added or removed.'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('ID of the affected message.'),
-    threadId: z.string().describe('Thread ID.'),
-    labelIds: z.array(z.string()).describe('Current labels on the message.'),
-    changedLabelIds: z.array(z.string()).optional().describe('Label IDs that changed (for label events).'),
-    from: z.string().optional().describe('Sender (for message_added events).'),
-    to: z.string().optional().describe('Recipients (for message_added events).'),
-    subject: z.string().optional().describe('Subject (for message_added events).'),
-    snippet: z.string().optional().describe('Message snippet (for message_added events).'),
-    date: z.string().optional().describe('Date (for message_added events).'),
-  }))
+export let mailboxChanges = SlateTrigger.create(spec, {
+  name: 'Mailbox Changes',
+  key: 'mailbox_changes',
+  description:
+    'Triggers when new messages arrive, messages are deleted, or labels change in the Gmail mailbox. Uses the Gmail history API for efficient incremental sync.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['message_added', 'message_deleted', 'labels_added', 'labels_removed'])
+        .describe('Type of mailbox change.'),
+      historyId: z.string().describe('History record ID.'),
+      messageId: z.string().describe('Affected message ID.'),
+      threadId: z.string().describe('Thread ID of the affected message.'),
+      labelIds: z.array(z.string()).optional().describe('Labels on the message.'),
+      changedLabelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Label IDs that were added or removed.')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('ID of the affected message.'),
+      threadId: z.string().describe('Thread ID.'),
+      labelIds: z.array(z.string()).describe('Current labels on the message.'),
+      changedLabelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Label IDs that changed (for label events).'),
+      from: z.string().optional().describe('Sender (for message_added events).'),
+      to: z.string().optional().describe('Recipients (for message_added events).'),
+      subject: z.string().optional().describe('Subject (for message_added events).'),
+      snippet: z.string().optional().describe('Message snippet (for message_added events).'),
+      date: z.string().optional().describe('Date (for message_added events).')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        userId: ctx.config.userId,
+        userId: ctx.config.userId
       });
 
       let currentHistoryId = ctx.state?.lastHistoryId as string | undefined;
@@ -48,8 +58,8 @@ export let mailboxChanges = SlateTrigger.create(
         return {
           inputs: [],
           updatedState: {
-            lastHistoryId: profile.historyId,
-          },
+            lastHistoryId: profile.historyId
+          }
         };
       }
 
@@ -70,7 +80,7 @@ export let mailboxChanges = SlateTrigger.create(
           startHistoryId: currentHistoryId,
           historyTypes: ['messageAdded', 'messageDeleted', 'labelAdded', 'labelRemoved'],
           maxResults: 100,
-          pageToken,
+          pageToken
         });
 
         latestHistoryId = result.historyId;
@@ -83,7 +93,7 @@ export let mailboxChanges = SlateTrigger.create(
                 historyId: record.id,
                 messageId: item.message.id,
                 threadId: item.message.threadId,
-                labelIds: item.message.labelIds,
+                labelIds: item.message.labelIds
               });
             }
           }
@@ -94,7 +104,7 @@ export let mailboxChanges = SlateTrigger.create(
                 historyId: record.id,
                 messageId: item.message.id,
                 threadId: item.message.threadId,
-                labelIds: item.message.labelIds,
+                labelIds: item.message.labelIds
               });
             }
           }
@@ -106,7 +116,7 @@ export let mailboxChanges = SlateTrigger.create(
                 messageId: item.message.id,
                 threadId: item.message.threadId,
                 labelIds: item.message.labelIds,
-                changedLabelIds: item.labelIds,
+                changedLabelIds: item.labelIds
               });
             }
           }
@@ -118,7 +128,7 @@ export let mailboxChanges = SlateTrigger.create(
                 messageId: item.message.id,
                 threadId: item.message.threadId,
                 labelIds: item.message.labelIds,
-                changedLabelIds: item.labelIds,
+                changedLabelIds: item.labelIds
               });
             }
           }
@@ -130,15 +140,15 @@ export let mailboxChanges = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          lastHistoryId: latestHistoryId,
-        },
+          lastHistoryId: latestHistoryId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        userId: ctx.config.userId,
+        userId: ctx.config.userId
       });
 
       let output: {
@@ -155,7 +165,7 @@ export let mailboxChanges = SlateTrigger.create(
         messageId: ctx.input.messageId,
         threadId: ctx.input.threadId,
         labelIds: ctx.input.labelIds || [],
-        changedLabelIds: ctx.input.changedLabelIds,
+        changedLabelIds: ctx.input.changedLabelIds
       };
 
       if (ctx.input.changeType === 'message_added') {
@@ -176,7 +186,7 @@ export let mailboxChanges = SlateTrigger.create(
       return {
         type: `message.${ctx.input.changeType}`,
         id: `${ctx.input.historyId}-${ctx.input.messageId}-${ctx.input.changeType}`,
-        output,
+        output
       };
-    },
+    }
   });

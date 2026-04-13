@@ -21,51 +21,60 @@ let issueOutputSchema = z.object({
   assigneeName: z.string().nullable().describe('Assignee name'),
   projectId: z.string().nullable().describe('Associated project ID'),
   projectName: z.string().nullable().describe('Associated project name'),
-  labels: z.array(z.object({
-    labelId: z.string(),
-    name: z.string(),
-    color: z.string()
-  })).describe('Labels attached to the issue'),
+  labels: z
+    .array(
+      z.object({
+        labelId: z.string(),
+        name: z.string(),
+        color: z.string()
+      })
+    )
+    .describe('Labels attached to the issue'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp')
 });
 
 export { issueOutputSchema };
 
-export let createIssueTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Issue',
-    key: 'create_issue',
-    description: `Creates a new issue in a Linear team. Supports setting title, description (Markdown), priority, assignee, labels, estimates, due dates, workflow state, parent issue, project, and cycle associations.`,
-    instructions: [
-      'The teamId is required. Use the "List Teams" tool first to get available team IDs.',
-      'Priority values: 0 = No priority, 1 = Urgent, 2 = High, 3 = Medium, 4 = Low.',
-      'Description supports Markdown formatting.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createIssueTool = SlateTool.create(spec, {
+  name: 'Create Issue',
+  key: 'create_issue',
+  description: `Creates a new issue in a Linear team. Supports setting title, description (Markdown), priority, assignee, labels, estimates, due dates, workflow state, parent issue, project, and cycle associations.`,
+  instructions: [
+    'The teamId is required. Use the "List Teams" tool first to get available team IDs.',
+    'Priority values: 0 = No priority, 1 = Urgent, 2 = High, 3 = Medium, 4 = Low.',
+    'Description supports Markdown formatting.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('ID of the team to create the issue in'),
-    title: z.string().describe('Title of the issue'),
-    description: z.string().optional().describe('Markdown description of the issue'),
-    priority: z.number().optional().describe('Priority level (0=None, 1=Urgent, 2=High, 3=Medium, 4=Low)'),
-    assigneeId: z.string().optional().describe('User ID to assign the issue to'),
-    stateId: z.string().optional().describe('Workflow state ID'),
-    labelIds: z.array(z.string()).optional().describe('Array of label IDs to attach'),
-    estimate: z.number().optional().describe('Estimate points for the issue'),
-    dueDate: z.string().optional().describe('Due date in ISO 8601 format (YYYY-MM-DD)'),
-    projectId: z.string().optional().describe('Project ID to associate with'),
-    cycleId: z.string().optional().describe('Cycle ID to associate with'),
-    parentId: z.string().optional().describe('Parent issue ID to create as sub-issue'),
-    subscriberIds: z.array(z.string()).optional().describe('User IDs to subscribe to the issue')
-  }))
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('ID of the team to create the issue in'),
+      title: z.string().describe('Title of the issue'),
+      description: z.string().optional().describe('Markdown description of the issue'),
+      priority: z
+        .number()
+        .optional()
+        .describe('Priority level (0=None, 1=Urgent, 2=High, 3=Medium, 4=Low)'),
+      assigneeId: z.string().optional().describe('User ID to assign the issue to'),
+      stateId: z.string().optional().describe('Workflow state ID'),
+      labelIds: z.array(z.string()).optional().describe('Array of label IDs to attach'),
+      estimate: z.number().optional().describe('Estimate points for the issue'),
+      dueDate: z.string().optional().describe('Due date in ISO 8601 format (YYYY-MM-DD)'),
+      projectId: z.string().optional().describe('Project ID to associate with'),
+      cycleId: z.string().optional().describe('Cycle ID to associate with'),
+      parentId: z.string().optional().describe('Parent issue ID to create as sub-issue'),
+      subscriberIds: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to subscribe to the issue')
+    })
+  )
   .output(issueOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
 
     let input: Record<string, any> = {
@@ -98,7 +107,8 @@ export let createIssueTool = SlateTool.create(
       output,
       message: `Created issue **${issue.identifier}**: ${issue.title} in team ${issue.team?.name || ctx.input.teamId}`
     };
-  }).build();
+  })
+  .build();
 
 export let mapIssueToOutput = (issue: any) => ({
   issueId: issue.id,

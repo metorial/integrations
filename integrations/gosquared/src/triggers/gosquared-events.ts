@@ -3,51 +3,80 @@ import { GoSquaredClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let gosquaredEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'GoSquared Events',
-    key: 'gosquared_events',
-    description: 'Triggered by GoSquared webhook notifications including Smart Group membership changes, traffic spike/dip alerts, and live chat messages.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the webhook event'),
-    eventId: z.string().describe('Unique identifier for this event'),
-    version: z.string().optional().describe('Webhook payload version'),
-    siteToken: z.string().optional().describe('GoSquared site token'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-    person: z.record(z.string(), z.any()).optional().describe('Person profile data if present'),
-    concurrents: z.number().optional().describe('Number of concurrent visitors for traffic events'),
-    triggeredAlert: z.record(z.string(), z.any()).optional().describe('Alert details for traffic events'),
-    siteDetails: z.record(z.string(), z.any()).optional().describe('Site summary for traffic events'),
-    snapshot: z.record(z.string(), z.any()).optional().describe('Traffic snapshot for traffic events'),
-    groupName: z.string().optional().describe('Smart Group name for group membership events'),
-    boundary: z.string().optional().describe('"enter" or "exit" for Smart Group events'),
-    chatMessage: z.record(z.string(), z.any()).optional().describe('Chat message details'),
-    raw: z.record(z.string(), z.any()).optional().describe('Full raw payload'),
-  }))
-  .output(z.object({
-    personId: z.string().optional().describe('Person ID if available'),
-    personName: z.string().optional().describe('Person name if available'),
-    personEmail: z.string().optional().describe('Person email if available'),
-    concurrents: z.number().optional().describe('Number of concurrent visitors (traffic events)'),
-    groupName: z.string().optional().describe('Smart Group name (group membership events)'),
-    boundary: z.string().optional().describe('Enter or exit boundary (group membership events)'),
-    messageContent: z.string().optional().describe('Chat message content (chat events)'),
-    messageFrom: z.string().optional().describe('Who sent the message: "client" or "agent" (chat events)'),
-    siteToken: z.string().optional().describe('GoSquared site token'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-  }))
+export let gosquaredEvents = SlateTrigger.create(spec, {
+  name: 'GoSquared Events',
+  key: 'gosquared_events',
+  description:
+    'Triggered by GoSquared webhook notifications including Smart Group membership changes, traffic spike/dip alerts, and live chat messages.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of the webhook event'),
+      eventId: z.string().describe('Unique identifier for this event'),
+      version: z.string().optional().describe('Webhook payload version'),
+      siteToken: z.string().optional().describe('GoSquared site token'),
+      timestamp: z.string().optional().describe('Event timestamp'),
+      person: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Person profile data if present'),
+      concurrents: z
+        .number()
+        .optional()
+        .describe('Number of concurrent visitors for traffic events'),
+      triggeredAlert: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Alert details for traffic events'),
+      siteDetails: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Site summary for traffic events'),
+      snapshot: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Traffic snapshot for traffic events'),
+      groupName: z
+        .string()
+        .optional()
+        .describe('Smart Group name for group membership events'),
+      boundary: z.string().optional().describe('"enter" or "exit" for Smart Group events'),
+      chatMessage: z.record(z.string(), z.any()).optional().describe('Chat message details'),
+      raw: z.record(z.string(), z.any()).optional().describe('Full raw payload')
+    })
+  )
+  .output(
+    z.object({
+      personId: z.string().optional().describe('Person ID if available'),
+      personName: z.string().optional().describe('Person name if available'),
+      personEmail: z.string().optional().describe('Person email if available'),
+      concurrents: z
+        .number()
+        .optional()
+        .describe('Number of concurrent visitors (traffic events)'),
+      groupName: z.string().optional().describe('Smart Group name (group membership events)'),
+      boundary: z
+        .string()
+        .optional()
+        .describe('Enter or exit boundary (group membership events)'),
+      messageContent: z.string().optional().describe('Chat message content (chat events)'),
+      messageFrom: z
+        .string()
+        .optional()
+        .describe('Who sent the message: "client" or "agent" (chat events)'),
+      siteToken: z.string().optional().describe('GoSquared site token'),
+      timestamp: z.string().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GoSquaredClient({
         token: ctx.auth.token,
-        siteToken: ctx.config.siteToken,
+        siteToken: ctx.config.siteToken
       });
 
       let result = await client.createWebhook(ctx.input.webhookBaseUrl, {
-        name: 'Slates Integration Webhook',
+        name: 'Slates Integration Webhook'
       });
 
       let webhookId = result?.id || result?.webhookId;
@@ -57,7 +86,7 @@ export let gosquaredEvents = SlateTrigger.create(
         'entered_smart_group',
         'exited_smart_group',
         'traffic_spike',
-        'traffic_dip',
+        'traffic_dip'
       ];
 
       for (let triggerType of triggerTypes) {
@@ -69,14 +98,14 @@ export let gosquaredEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { webhookId },
+        registrationDetails: { webhookId }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GoSquaredClient({
         token: ctx.auth.token,
-        siteToken: ctx.config.siteToken,
+        siteToken: ctx.config.siteToken
       });
 
       let webhookId = (ctx.input.registrationDetails as any)?.webhookId;
@@ -85,8 +114,8 @@ export let gosquaredEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
       let eventType = 'unknown';
       let eventId = '';
@@ -131,17 +160,19 @@ export let gosquaredEvents = SlateTrigger.create(
             groupName,
             boundary,
             chatMessage,
-            raw: data,
-          },
-        ],
+            raw: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let personId: string | undefined = ctx.input.person?.id as string | undefined;
       let personName: string | undefined = ctx.input.person?.name as string | undefined;
       let personEmail: string | undefined = ctx.input.person?.email as string | undefined;
-      let messageContent: string | undefined = ctx.input.chatMessage?.content as string | undefined;
+      let messageContent: string | undefined = ctx.input.chatMessage?.content as
+        | string
+        | undefined;
       let messageFrom: string | undefined = ctx.input.chatMessage?.from as string | undefined;
 
       let type: string;
@@ -178,9 +209,9 @@ export let gosquaredEvents = SlateTrigger.create(
           messageContent,
           messageFrom,
           siteToken: ctx.input.siteToken,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

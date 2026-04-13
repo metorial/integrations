@@ -3,28 +3,34 @@ import { TapfiliateClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMlmParent = SlateTool.create(
-  spec,
-  {
-    name: 'Manage MLM Parent',
-    key: 'manage_mlm_parent',
-    description: `Set or remove a parent-child relationship between affiliates for multi-level marketing (MLM). The parent affiliate earns commissions from the child affiliate's conversions based on the MLM levels configured in the program.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    affiliateId: z.string().describe('ID of the child affiliate'),
-    action: z.enum(['set', 'remove']).describe('Whether to set or remove the parent relationship'),
-    parentAffiliateId: z.string().optional().describe('ID of the parent affiliate (required when action is "set")'),
-  }))
-  .output(z.object({
-    affiliateId: z.string().describe('ID of the child affiliate'),
-    parentAffiliateId: z.string().optional().describe('ID of the parent affiliate, if set'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageMlmParent = SlateTool.create(spec, {
+  name: 'Manage MLM Parent',
+  key: 'manage_mlm_parent',
+  description: `Set or remove a parent-child relationship between affiliates for multi-level marketing (MLM). The parent affiliate earns commissions from the child affiliate's conversions based on the MLM levels configured in the program.`,
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      affiliateId: z.string().describe('ID of the child affiliate'),
+      action: z
+        .enum(['set', 'remove'])
+        .describe('Whether to set or remove the parent relationship'),
+      parentAffiliateId: z
+        .string()
+        .optional()
+        .describe('ID of the parent affiliate (required when action is "set")')
+    })
+  )
+  .output(
+    z.object({
+      affiliateId: z.string().describe('ID of the child affiliate'),
+      parentAffiliateId: z.string().optional().describe('ID of the parent affiliate, if set')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TapfiliateClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'set') {
@@ -35,17 +41,17 @@ export let manageMlmParent = SlateTool.create(
       return {
         output: {
           affiliateId: ctx.input.affiliateId,
-          parentAffiliateId: ctx.input.parentAffiliateId,
+          parentAffiliateId: ctx.input.parentAffiliateId
         },
-        message: `Set \`${ctx.input.parentAffiliateId}\` as MLM parent of \`${ctx.input.affiliateId}\`.`,
+        message: `Set \`${ctx.input.parentAffiliateId}\` as MLM parent of \`${ctx.input.affiliateId}\`.`
       };
     } else {
       await client.removeMlmParent(ctx.input.affiliateId);
       return {
         output: {
-          affiliateId: ctx.input.affiliateId,
+          affiliateId: ctx.input.affiliateId
         },
-        message: `Removed MLM parent from \`${ctx.input.affiliateId}\`.`,
+        message: `Removed MLM parent from \`${ctx.input.affiliateId}\`.`
       };
     }
   })

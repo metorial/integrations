@@ -33,7 +33,7 @@ import {
   createMaintenanceWindow,
   updateMaintenanceWindow,
   deleteMaintenanceWindow,
-  listMonitoringLocations,
+  listMonitoringLocations
 } from './tools';
 import { monitoringAlert } from './triggers';
 
@@ -72,9 +72,7 @@ export let provider = Slate.create({
     createMaintenanceWindow,
     updateMaintenanceWindow,
     deleteMaintenanceWindow,
-    listMonitoringLocations,
+    listMonitoringLocations
   ],
-  triggers: [
-    monitoringAlert,
-  ],
+  triggers: [monitoringAlert]
 });

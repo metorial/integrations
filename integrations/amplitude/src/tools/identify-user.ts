@@ -3,35 +3,56 @@ import { AmplitudeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let identifyUserTool = SlateTool.create(
-  spec,
-  {
-    name: 'Identify User',
-    key: 'identify_user',
-    description: `Set or update user properties for a specific user without sending an event. Supports Amplitude's property operations like $set, $setOnce, $add, $append, $prepend, $unset, and $clearAll. Can also be used for group identification and user identity mapping (aliasing).`,
-    instructions: [
-      'Use property operations like {"$set": {"plan": "premium"}} for user properties to control how values are applied.',
-      'For group identification, provide groupType and groupValue along with groupProperties.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let identifyUserTool = SlateTool.create(spec, {
+  name: 'Identify User',
+  key: 'identify_user',
+  description: `Set or update user properties for a specific user without sending an event. Supports Amplitude's property operations like $set, $setOnce, $add, $append, $prepend, $unset, and $clearAll. Can also be used for group identification and user identity mapping (aliasing).`,
+  instructions: [
+    'Use property operations like {"$set": {"plan": "premium"}} for user properties to control how values are applied.',
+    'For group identification, provide groupType and groupValue along with groupProperties.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('User ID to identify. At least one of userId or deviceId is required.'),
-    deviceId: z.string().optional().describe('Device ID to identify.'),
-    userProperties: z.record(z.string(), z.any()).optional().describe('User properties to set. Supports operations like $set, $setOnce, $add, $append, $prepend, $unset, $clearAll.'),
-    groupType: z.string().optional().describe('Group type for group identification (e.g., "company", "team").'),
-    groupValue: z.string().optional().describe('Group value for group identification (e.g., "Acme Corp").'),
-    groupProperties: z.record(z.string(), z.any()).optional().describe('Group properties to set when using group identification.'),
-    mapToGlobalUserId: z.string().optional().describe('Map this user to a global user ID for identity resolution/aliasing.')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the identification was successful.')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z
+        .string()
+        .optional()
+        .describe('User ID to identify. At least one of userId or deviceId is required.'),
+      deviceId: z.string().optional().describe('Device ID to identify.'),
+      userProperties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe(
+          'User properties to set. Supports operations like $set, $setOnce, $add, $append, $prepend, $unset, $clearAll.'
+        ),
+      groupType: z
+        .string()
+        .optional()
+        .describe('Group type for group identification (e.g., "company", "team").'),
+      groupValue: z
+        .string()
+        .optional()
+        .describe('Group value for group identification (e.g., "Acme Corp").'),
+      groupProperties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Group properties to set when using group identification.'),
+      mapToGlobalUserId: z
+        .string()
+        .optional()
+        .describe('Map this user to a global user ID for identity resolution/aliasing.')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the identification was successful.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AmplitudeClient({
       apiKey: ctx.auth.apiKey,
       secretKey: ctx.auth.secretKey,
@@ -56,7 +77,9 @@ export let identifyUserTool = SlateTool.create(
         ctx.input.groupValue,
         ctx.input.groupProperties
       );
-      actions.push(`group "${ctx.input.groupType}:${ctx.input.groupValue}" properties updated`);
+      actions.push(
+        `group "${ctx.input.groupType}:${ctx.input.groupValue}" properties updated`
+      );
     }
 
     if (ctx.input.mapToGlobalUserId && ctx.input.userId) {

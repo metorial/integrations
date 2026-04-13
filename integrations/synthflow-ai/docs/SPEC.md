@@ -67,6 +67,7 @@ Synthflow supports two types of webhooks:
 ### Post-Call Webhook
 
 Webhooks allow you to receive real-time notifications when a call is completed, eliminating the need to manually check for updates. Add a webhook URL to the request in order to receive information after the call. Specify the Webhook URL in your API request body using the `external_webhook_url` key. The post-call webhook payload includes:
+
 - Call status (completed, busy, failed, no answer, hangup on voicemail, etc.)
 - End call reason
 - Transcript and recording URL

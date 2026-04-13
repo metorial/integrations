@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listTests,
@@ -16,13 +15,9 @@ import {
   manageBucket,
   manageSchedule,
   manageMonitoringEnvironment,
-  manageWorkspaceUsers,
+  manageWorkspaceUsers
 } from './tools';
-import {
-  testRunCompleted,
-  monitoringTestRun,
-  inboundWebhook,
-} from './triggers';
+import { testRunCompleted, monitoringTestRun, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,11 +36,7 @@ export let provider = Slate.create({
     manageBucket,
     manageSchedule,
     manageMonitoringEnvironment,
-    manageWorkspaceUsers,
+    manageWorkspaceUsers
   ],
-  triggers: [
-    inboundWebhook,
-    testRunCompleted,
-    monitoringTestRun,
-  ],
+  triggers: [inboundWebhook, testRunCompleted, monitoringTestRun]
 });

@@ -15,12 +15,9 @@ import {
   listOffers,
   managePipeline,
   listDepartmentsLocations,
-  listDisqualifyReasons,
+  listDisqualifyReasons
 } from './tools';
-import {
-  candidateEvents,
-  jobEvents,
-} from './triggers';
+import { candidateEvents, jobEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     listOffers,
     managePipeline,
     listDepartmentsLocations,
-    listDisqualifyReasons,
+    listDisqualifyReasons
   ],
-  triggers: [
-    candidateEvents,
-    jobEvents,
-  ],
+  triggers: [candidateEvents, jobEvents]
 });

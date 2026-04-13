@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listLoadBalancers = SlateTool.create(
-  spec,
-  {
-    name: 'List Load Balancers',
-    key: 'list_load_balancers',
-    description: `List all load balancers in your DigitalOcean account. Returns configuration, health status, forwarding rules, and associated Droplets.`,
-    tags: {
-      readOnly: true
-    }
+export let listLoadBalancers = SlateTool.create(spec, {
+  name: 'List Load Balancers',
+  key: 'list_load_balancers',
+  description: `List all load balancers in your DigitalOcean account. Returns configuration, health status, forwarding rules, and associated Droplets.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    loadBalancers: z.array(z.object({
-      loadBalancerId: z.string().describe('Load balancer ID'),
-      name: z.string().describe('Load balancer name'),
-      ip: z.string().optional().describe('Load balancer IP address'),
-      status: z.string().describe('Status (new, active, errored)'),
-      region: z.string().describe('Region slug'),
-      dropletIds: z.array(z.number()).describe('Backend Droplet IDs'),
-      algorithm: z.string().optional().describe('Balancing algorithm'),
-      createdAt: z.string().describe('Creation timestamp')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      loadBalancers: z.array(
+        z.object({
+          loadBalancerId: z.string().describe('Load balancer ID'),
+          name: z.string().describe('Load balancer name'),
+          ip: z.string().optional().describe('Load balancer IP address'),
+          status: z.string().describe('Status (new, active, errored)'),
+          region: z.string().describe('Region slug'),
+          dropletIds: z.array(z.number()).describe('Backend Droplet IDs'),
+          algorithm: z.string().optional().describe('Balancing algorithm'),
+          createdAt: z.string().describe('Creation timestamp')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let lbs = await client.listLoadBalancers();
 
@@ -49,51 +50,85 @@ export let listLoadBalancers = SlateTool.create(
   })
   .build();
 
-export let manageFirewall = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Firewall',
-    key: 'manage_firewall',
-    description: `List, create, or delete cloud firewalls. Firewalls define inbound and outbound traffic rules applied to Droplets by ID or tag.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete']).describe('Action to perform'),
-    firewallId: z.string().optional().describe('Firewall ID (required for delete)'),
-    name: z.string().optional().describe('Firewall name (required for create)'),
-    inboundRules: z.array(z.object({
-      protocol: z.string().describe('Protocol: tcp, udp, icmp'),
-      ports: z.string().describe('Port or range (e.g., "80", "8000-9000", "all")'),
-      sourceAddresses: z.array(z.string()).optional().describe('Allowed source CIDR addresses'),
-      sourceDropletIds: z.array(z.number()).optional().describe('Allowed source Droplet IDs'),
-      sourceTags: z.array(z.string()).optional().describe('Allowed source tags')
-    })).optional().describe('Inbound rules (for create)'),
-    outboundRules: z.array(z.object({
-      protocol: z.string().describe('Protocol: tcp, udp, icmp'),
-      ports: z.string().describe('Port or range'),
-      destinationAddresses: z.array(z.string()).optional().describe('Allowed destination CIDR addresses'),
-      destinationDropletIds: z.array(z.number()).optional().describe('Allowed destination Droplet IDs'),
-      destinationTags: z.array(z.string()).optional().describe('Allowed destination tags')
-    })).optional().describe('Outbound rules (for create)'),
-    dropletIds: z.array(z.number()).optional().describe('Droplet IDs to apply firewall to'),
-    tags: z.array(z.string()).optional().describe('Tags to apply firewall to')
-  }))
-  .output(z.object({
-    firewalls: z.array(z.object({
-      firewallId: z.string().describe('Firewall ID'),
-      name: z.string().describe('Firewall name'),
-      status: z.string().describe('Firewall status'),
-      createdAt: z.string().describe('Creation timestamp')
-    })).optional().describe('List of firewalls'),
-    firewall: z.object({
-      firewallId: z.string().describe('Firewall ID'),
-      name: z.string().describe('Firewall name'),
-      status: z.string().describe('Firewall status'),
-      createdAt: z.string().describe('Creation timestamp')
-    }).optional().describe('Created firewall'),
-    deleted: z.boolean().optional().describe('Whether the firewall was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageFirewall = SlateTool.create(spec, {
+  name: 'Manage Firewall',
+  key: 'manage_firewall',
+  description: `List, create, or delete cloud firewalls. Firewalls define inbound and outbound traffic rules applied to Droplets by ID or tag.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'delete']).describe('Action to perform'),
+      firewallId: z.string().optional().describe('Firewall ID (required for delete)'),
+      name: z.string().optional().describe('Firewall name (required for create)'),
+      inboundRules: z
+        .array(
+          z.object({
+            protocol: z.string().describe('Protocol: tcp, udp, icmp'),
+            ports: z.string().describe('Port or range (e.g., "80", "8000-9000", "all")'),
+            sourceAddresses: z
+              .array(z.string())
+              .optional()
+              .describe('Allowed source CIDR addresses'),
+            sourceDropletIds: z
+              .array(z.number())
+              .optional()
+              .describe('Allowed source Droplet IDs'),
+            sourceTags: z.array(z.string()).optional().describe('Allowed source tags')
+          })
+        )
+        .optional()
+        .describe('Inbound rules (for create)'),
+      outboundRules: z
+        .array(
+          z.object({
+            protocol: z.string().describe('Protocol: tcp, udp, icmp'),
+            ports: z.string().describe('Port or range'),
+            destinationAddresses: z
+              .array(z.string())
+              .optional()
+              .describe('Allowed destination CIDR addresses'),
+            destinationDropletIds: z
+              .array(z.number())
+              .optional()
+              .describe('Allowed destination Droplet IDs'),
+            destinationTags: z
+              .array(z.string())
+              .optional()
+              .describe('Allowed destination tags')
+          })
+        )
+        .optional()
+        .describe('Outbound rules (for create)'),
+      dropletIds: z.array(z.number()).optional().describe('Droplet IDs to apply firewall to'),
+      tags: z.array(z.string()).optional().describe('Tags to apply firewall to')
+    })
+  )
+  .output(
+    z.object({
+      firewalls: z
+        .array(
+          z.object({
+            firewallId: z.string().describe('Firewall ID'),
+            name: z.string().describe('Firewall name'),
+            status: z.string().describe('Firewall status'),
+            createdAt: z.string().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of firewalls'),
+      firewall: z
+        .object({
+          firewallId: z.string().describe('Firewall ID'),
+          name: z.string().describe('Firewall name'),
+          status: z.string().describe('Firewall status'),
+          createdAt: z.string().describe('Creation timestamp')
+        })
+        .optional()
+        .describe('Created firewall'),
+      deleted: z.boolean().optional().describe('Whether the firewall was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -162,44 +197,59 @@ export let manageFirewall = SlateTool.create(
   })
   .build();
 
-export let manageVPC = SlateTool.create(
-  spec,
-  {
-    name: 'Manage VPCs',
-    key: 'manage_vpcs',
-    description: `List, create, update, or delete Virtual Private Clouds (VPCs). VPCs provide network isolation for Droplets and other resources.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    vpcId: z.string().optional().describe('VPC ID (required for update/delete)'),
-    name: z.string().optional().describe('VPC name (required for create, optional for update)'),
-    region: z.string().optional().describe('Region slug (required for create)'),
-    description: z.string().optional().describe('VPC description'),
-    ipRange: z.string().optional().describe('IP range in CIDR notation (e.g., "10.10.10.0/24")')
-  }))
-  .output(z.object({
-    vpcs: z.array(z.object({
-      vpcId: z.string().describe('VPC ID'),
-      name: z.string().describe('VPC name'),
-      region: z.string().describe('Region slug'),
-      description: z.string().optional().describe('Description'),
-      ipRange: z.string().describe('IP range'),
-      isDefault: z.boolean().describe('Whether this is the default VPC'),
-      createdAt: z.string().describe('Creation timestamp')
-    })).optional().describe('List of VPCs'),
-    vpc: z.object({
-      vpcId: z.string().describe('VPC ID'),
-      name: z.string().describe('VPC name'),
-      region: z.string().describe('Region slug'),
-      description: z.string().optional().describe('Description'),
-      ipRange: z.string().describe('IP range'),
-      isDefault: z.boolean().describe('Whether this is the default VPC'),
-      createdAt: z.string().describe('Creation timestamp')
-    }).optional().describe('Created/updated VPC'),
-    deleted: z.boolean().optional().describe('Whether the VPC was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageVPC = SlateTool.create(spec, {
+  name: 'Manage VPCs',
+  key: 'manage_vpcs',
+  description: `List, create, update, or delete Virtual Private Clouds (VPCs). VPCs provide network isolation for Droplets and other resources.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      vpcId: z.string().optional().describe('VPC ID (required for update/delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('VPC name (required for create, optional for update)'),
+      region: z.string().optional().describe('Region slug (required for create)'),
+      description: z.string().optional().describe('VPC description'),
+      ipRange: z
+        .string()
+        .optional()
+        .describe('IP range in CIDR notation (e.g., "10.10.10.0/24")')
+    })
+  )
+  .output(
+    z.object({
+      vpcs: z
+        .array(
+          z.object({
+            vpcId: z.string().describe('VPC ID'),
+            name: z.string().describe('VPC name'),
+            region: z.string().describe('Region slug'),
+            description: z.string().optional().describe('Description'),
+            ipRange: z.string().describe('IP range'),
+            isDefault: z.boolean().describe('Whether this is the default VPC'),
+            createdAt: z.string().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of VPCs'),
+      vpc: z
+        .object({
+          vpcId: z.string().describe('VPC ID'),
+          name: z.string().describe('VPC name'),
+          region: z.string().describe('Region slug'),
+          description: z.string().optional().describe('Description'),
+          ipRange: z.string().describe('IP range'),
+          isDefault: z.boolean().describe('Whether this is the default VPC'),
+          createdAt: z.string().describe('Creation timestamp')
+        })
+        .optional()
+        .describe('Created/updated VPC'),
+      deleted: z.boolean().optional().describe('Whether the VPC was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let mapVpc = (v: any) => ({
@@ -259,35 +309,52 @@ export let manageVPC = SlateTool.create(
   })
   .build();
 
-export let manageReservedIPs = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Reserved IPs',
-    key: 'manage_reserved_ips',
-    description: `List, create, assign, unassign, or delete reserved (static) IP addresses. Reserved IPs persist across Droplet destruction and can be reassigned.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'assign', 'unassign', 'delete']).describe('Action to perform'),
-    reservedIp: z.string().optional().describe('Reserved IP address (for assign/unassign/delete)'),
-    dropletId: z.number().optional().describe('Droplet ID (for create with Droplet or assign)'),
-    region: z.string().optional().describe('Region slug (for create without Droplet)')
-  }))
-  .output(z.object({
-    reservedIps: z.array(z.object({
-      ip: z.string().describe('IP address'),
-      region: z.string().describe('Region slug'),
-      dropletId: z.number().optional().describe('Assigned Droplet ID')
-    })).optional().describe('List of reserved IPs'),
-    reservedIp: z.object({
-      ip: z.string().describe('IP address'),
-      region: z.string().describe('Region slug'),
-      dropletId: z.number().optional().describe('Assigned Droplet ID')
-    }).optional().describe('Created/updated reserved IP'),
-    deleted: z.boolean().optional().describe('Whether the IP was deleted'),
-    actionId: z.number().optional().describe('Action ID for assign/unassign')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageReservedIPs = SlateTool.create(spec, {
+  name: 'Manage Reserved IPs',
+  key: 'manage_reserved_ips',
+  description: `List, create, assign, unassign, or delete reserved (static) IP addresses. Reserved IPs persist across Droplet destruction and can be reassigned.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'assign', 'unassign', 'delete'])
+        .describe('Action to perform'),
+      reservedIp: z
+        .string()
+        .optional()
+        .describe('Reserved IP address (for assign/unassign/delete)'),
+      dropletId: z
+        .number()
+        .optional()
+        .describe('Droplet ID (for create with Droplet or assign)'),
+      region: z.string().optional().describe('Region slug (for create without Droplet)')
+    })
+  )
+  .output(
+    z.object({
+      reservedIps: z
+        .array(
+          z.object({
+            ip: z.string().describe('IP address'),
+            region: z.string().describe('Region slug'),
+            dropletId: z.number().optional().describe('Assigned Droplet ID')
+          })
+        )
+        .optional()
+        .describe('List of reserved IPs'),
+      reservedIp: z
+        .object({
+          ip: z.string().describe('IP address'),
+          region: z.string().describe('Region slug'),
+          dropletId: z.number().optional().describe('Assigned Droplet ID')
+        })
+        .optional()
+        .describe('Created/updated reserved IP'),
+      deleted: z.boolean().optional().describe('Whether the IP was deleted'),
+      actionId: z.number().optional().describe('Action ID for assign/unassign')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let mapIp = (ip: any) => ({

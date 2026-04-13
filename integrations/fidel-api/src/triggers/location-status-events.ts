@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let locationStatusEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Location Status Events',
-    key: 'location_status_events',
-    description: 'Triggers when a location onboarding status changes with the card networks (Visa, Mastercard, American Express).',
-  }
-)
-  .input(z.object({
-    eventType: z.literal('location.status').describe('Event type'),
-    locationId: z.string().describe('Unique identifier of the location'),
-    rawEvent: z.any().describe('Raw event payload from Fidel API'),
-  }))
-  .output(z.object({
-    locationId: z.string().describe('Unique identifier of the location'),
-    programId: z.string().optional().describe('ID of the program'),
-    brandId: z.string().optional().describe('ID of the brand'),
-    accountId: z.string().optional().describe('Account ID'),
-    address: z.string().optional().describe('Street address'),
-    city: z.string().optional().describe('City'),
-    countryCode: z.string().optional().describe('Country code'),
-    postcode: z.string().optional().describe('Postal code'),
-    status: z.string().optional().describe('Current onboarding status'),
-    live: z.boolean().optional().describe('Whether the location is in live mode'),
-    created: z.string().optional().describe('ISO 8601 creation timestamp'),
-    updated: z.string().optional().describe('ISO 8601 update timestamp'),
-  }))
+export let locationStatusEvents = SlateTrigger.create(spec, {
+  name: 'Location Status Events',
+  key: 'location_status_events',
+  description:
+    'Triggers when a location onboarding status changes with the card networks (Visa, Mastercard, American Express).'
+})
+  .input(
+    z.object({
+      eventType: z.literal('location.status').describe('Event type'),
+      locationId: z.string().describe('Unique identifier of the location'),
+      rawEvent: z.any().describe('Raw event payload from Fidel API')
+    })
+  )
+  .output(
+    z.object({
+      locationId: z.string().describe('Unique identifier of the location'),
+      programId: z.string().optional().describe('ID of the program'),
+      brandId: z.string().optional().describe('ID of the brand'),
+      accountId: z.string().optional().describe('Account ID'),
+      address: z.string().optional().describe('Street address'),
+      city: z.string().optional().describe('City'),
+      countryCode: z.string().optional().describe('Country code'),
+      postcode: z.string().optional().describe('Postal code'),
+      status: z.string().optional().describe('Current onboarding status'),
+      live: z.boolean().optional().describe('Whether the location is in live mode'),
+      created: z.string().optional().describe('ISO 8601 creation timestamp'),
+      updated: z.string().optional().describe('ISO 8601 update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ webhookId: string; programId: string; event: string }> = [];
 
@@ -42,12 +44,12 @@ export let locationStatusEvents = SlateTrigger.create(
         try {
           let webhook = await client.createWebhook(program.id, {
             event: 'location.status',
-            url: ctx.input.webhookBaseUrl,
+            url: ctx.input.webhookBaseUrl
           });
           registrations.push({
             webhookId: webhook.id,
             programId: program.id,
-            event: 'location.status',
+            event: 'location.status'
           });
         } catch {
           // Continue on error
@@ -55,11 +57,11 @@ export let locationStatusEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations ?? [];
 
@@ -72,21 +74,21 @@ export let locationStatusEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
           {
             eventType: 'location.status' as const,
             locationId: data?.id ?? '',
-            rawEvent: data,
-          },
-        ],
+            rawEvent: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let location = ctx.input.rawEvent;
 
       return {
@@ -104,9 +106,9 @@ export let locationStatusEvents = SlateTrigger.create(
           status: location.status,
           live: location.live,
           created: location.created,
-          updated: location.updated,
-        },
+          updated: location.updated
+        }
       };
-    },
+    }
   })
   .build();

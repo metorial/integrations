@@ -3,28 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let archiveSubmission = SlateTool.create(
-  spec,
-  {
-    name: 'Archive Submission',
-    key: 'archive_submission',
-    description: `Archive a submission, removing it from active listings while preserving the data.`,
-    tags: {
-      destructive: true,
-    },
+export let archiveSubmission = SlateTool.create(spec, {
+  name: 'Archive Submission',
+  key: 'archive_submission',
+  description: `Archive a submission, removing it from active listings while preserving the data.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    submissionId: z.number().describe('ID of the submission to archive'),
-  }))
-  .output(z.object({
-    submissionId: z.number().describe('Archived submission ID'),
-    archivedAt: z.string().describe('Archive timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      submissionId: z.number().describe('ID of the submission to archive')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.number().describe('Archived submission ID'),
+      archivedAt: z.string().describe('Archive timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let result = await client.archiveSubmission(ctx.input.submissionId);
@@ -32,9 +33,9 @@ export let archiveSubmission = SlateTool.create(
     return {
       output: {
         submissionId: result.id,
-        archivedAt: result.archived_at,
+        archivedAt: result.archived_at
       },
-      message: `Archived submission ID **${result.id}**.`,
+      message: `Archived submission ID **${result.id}**.`
     };
   })
   .build();

@@ -50,8 +50,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://app.wisepops.com/api2',
       headers: {
-        'Authorization': `WISEPOPS-API key="${this.token}"`,
-      },
+        Authorization: `WISEPOPS-API key="${this.token}"`
+      }
     });
   }
 
@@ -83,19 +83,23 @@ export class Client {
   }
 
   async createHook(params: CreateHookParams): Promise<{ id: number }> {
-    let response = await this.axios.post('/hooks', {
-      event: params.event,
-      target_url: params.targetUrl,
-      ...(params.wisepopId ? { wisepop_id: params.wisepopId } : {}),
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      '/hooks',
+      {
+        event: params.event,
+        target_url: params.targetUrl,
+        ...(params.wisepopId ? { wisepop_id: params.wisepopId } : {})
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async deleteHook(hookId: number): Promise<void> {
     await this.axios.delete('/hooks', {
-      params: { hook_id: String(hookId) },
+      params: { hook_id: String(hookId) }
     });
   }
 
@@ -110,7 +114,7 @@ export class Client {
 
     let response = await this.axios.delete('/data-privacy', {
       headers: { 'Content-Type': 'application/json' },
-      data: body,
+      data: body
     });
     return response.data;
   }

@@ -19,7 +19,7 @@ import {
   uploadAsset,
   deleteAsset,
   getRemainingQuota,
-  listTalkingPhotos,
+  listTalkingPhotos
 } from './tools';
 import { videoEvents } from './triggers';
 
@@ -44,9 +44,7 @@ export let provider = Slate.create({
     uploadAsset,
     deleteAsset,
     getRemainingQuota,
-    listTalkingPhotos,
+    listTalkingPhotos
   ],
-  triggers: [
-    videoEvents,
-  ],
+  triggers: [videoEvents]
 });

@@ -8,8 +8,8 @@ export class SevdeskClient {
       baseURL: 'https://my.sevdesk.de/api/v1',
       headers: {
         Authorization: config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -48,7 +48,7 @@ export class SevdeskClient {
 
   async checkCustomerNumberAvailability(customerNumber: string) {
     let response = await this.axios.get('/Contact/Mapper/checkCustomerNumberAvailability', {
-      params: { customerNumber },
+      params: { customerNumber }
     });
     return response.data;
   }
@@ -152,15 +152,18 @@ export class SevdeskClient {
     return response.data?.objects ?? response.data;
   }
 
-  async sendInvoiceViaEmail(invoiceId: string, data: {
-    toEmail: string;
-    subject: string;
-    text: string;
-    copy?: boolean;
-    additionalAttachments?: string;
-    ccEmail?: string;
-    bccEmail?: string;
-  }) {
+  async sendInvoiceViaEmail(
+    invoiceId: string,
+    data: {
+      toEmail: string;
+      subject: string;
+      text: string;
+      copy?: boolean;
+      additionalAttachments?: string;
+      ccEmail?: string;
+      bccEmail?: string;
+    }
+  ) {
     let response = await this.axios.post(`/Invoice/${invoiceId}/sendViaEmail`, data);
     return response.data?.objects ?? response.data;
   }
@@ -168,18 +171,21 @@ export class SevdeskClient {
   async sendInvoiceBy(invoiceId: string, sendType: string, sendDraft?: boolean) {
     let response = await this.axios.post(`/Invoice/${invoiceId}/sendBy`, {
       sendType,
-      sendDraft: sendDraft ?? false,
+      sendDraft: sendDraft ?? false
     });
     return response.data?.objects ?? response.data;
   }
 
-  async bookInvoice(invoiceId: string, data: {
-    amount: number;
-    date: string;
-    type: string;
-    checkAccount: { id: string; objectName: string };
-    checkAccountTransaction?: { id: string; objectName: string };
-  }) {
+  async bookInvoice(
+    invoiceId: string,
+    data: {
+      amount: number;
+      date: string;
+      type: string;
+      checkAccount: { id: string; objectName: string };
+      checkAccountTransaction?: { id: string; objectName: string };
+    }
+  ) {
     let response = await this.axios.put(`/Invoice/${invoiceId}/bookAmount`, data);
     return response.data?.objects ?? response.data;
   }
@@ -206,7 +212,7 @@ export class SevdeskClient {
 
   async createInvoiceFromOrder(orderId: string) {
     let response = await this.axios.post('/Invoice/Factory/createInvoiceFromOrder', {
-      order: { id: orderId, objectName: 'Order' },
+      order: { id: orderId, objectName: 'Order' }
     });
     return response.data?.objects ?? response.data;
   }
@@ -245,17 +251,20 @@ export class SevdeskClient {
 
   async createCreditNoteFromInvoice(invoiceId: string) {
     let response = await this.axios.post('/CreditNote/Factory/createFromInvoice', {
-      invoice: { id: invoiceId, objectName: 'Invoice' },
+      invoice: { id: invoiceId, objectName: 'Invoice' }
     });
     return response.data?.objects ?? response.data;
   }
 
-  async bookCreditNote(creditNoteId: string, data: {
-    amount: number;
-    date: string;
-    type: string;
-    checkAccount: { id: string; objectName: string };
-  }) {
+  async bookCreditNote(
+    creditNoteId: string,
+    data: {
+      amount: number;
+      date: string;
+      type: string;
+      checkAccount: { id: string; objectName: string };
+    }
+  ) {
     let response = await this.axios.put(`/CreditNote/${creditNoteId}/bookAmount`, data);
     return response.data?.objects ?? response.data;
   }
@@ -291,12 +300,15 @@ export class SevdeskClient {
     return response.data?.objects ?? response.data;
   }
 
-  async bookVoucher(voucherId: string, data: {
-    amount: number;
-    date: string;
-    type: string;
-    checkAccount: { id: string; objectName: string };
-  }) {
+  async bookVoucher(
+    voucherId: string,
+    data: {
+      amount: number;
+      date: string;
+      type: string;
+      checkAccount: { id: string; objectName: string };
+    }
+  ) {
     let response = await this.axios.put(`/Voucher/${voucherId}/bookAmount`, data);
     return response.data?.objects ?? response.data;
   }
@@ -306,10 +318,7 @@ export class SevdeskClient {
     return response.data?.objects ?? response.data;
   }
 
-  async getReceiptGuidance(params?: {
-    forExpense?: boolean;
-    forRevenue?: boolean;
-  }) {
+  async getReceiptGuidance(params?: { forExpense?: boolean; forRevenue?: boolean }) {
     let response = await this.axios.get('/Voucher/Factory/getReceiptGuidance', { params });
     return response.data?.objects ?? response.data;
   }
@@ -362,15 +371,18 @@ export class SevdeskClient {
     await this.axios.delete(`/Order/${orderId}`);
   }
 
-  async sendOrderViaEmail(orderId: string, data: {
-    toEmail: string;
-    subject: string;
-    text: string;
-    copy?: boolean;
-    additionalAttachments?: string;
-    ccEmail?: string;
-    bccEmail?: string;
-  }) {
+  async sendOrderViaEmail(
+    orderId: string,
+    data: {
+      toEmail: string;
+      subject: string;
+      text: string;
+      copy?: boolean;
+      additionalAttachments?: string;
+      ccEmail?: string;
+      bccEmail?: string;
+    }
+  ) {
     let response = await this.axios.post(`/Order/${orderId}/sendViaEmail`, data);
     return response.data?.objects ?? response.data;
   }
@@ -459,21 +471,14 @@ export class SevdeskClient {
 
   // ── Check Accounts ────────────────────────────────────────────────────
 
-  async listCheckAccounts(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listCheckAccounts(params?: { limit?: number; offset?: number }) {
     let response = await this.axios.get('/CheckAccount', { params });
     return response.data?.objects ?? [];
   }
 
   // ── Categories ────────────────────────────────────────────────────────
 
-  async listCategories(params?: {
-    objectType?: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async listCategories(params?: { objectType?: string; limit?: number; offset?: number }) {
     let response = await this.axios.get('/Category', { params });
     return response.data?.objects ?? [];
   }

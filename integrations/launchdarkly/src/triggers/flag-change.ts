@@ -3,50 +3,52 @@ import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let flagChangeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Flag Changes',
-    key: 'flag_changes',
-    description: '[Polling fallback] Polls the LaunchDarkly audit log for feature flag changes. Triggers when flags are created, updated, toggled, or deleted. Useful when webhook setup is not possible.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('The action performed on the flag'),
-    flagName: z.string().describe('Name of the flag'),
-    flagKey: z.string().optional().describe('Key of the flag'),
-    projectKey: z.string().optional().describe('Project key'),
-    environmentKey: z.string().optional().describe('Environment key'),
-    description: z.string().describe('Description of the change'),
-    memberEmail: z.string().optional().describe('Email of the member who made the change'),
-    memberName: z.string().optional().describe('Name of the member'),
-    date: z.string().describe('Timestamp of the change'),
-    auditLogEntryId: z.string().describe('Audit log entry ID'),
-  }))
-  .output(z.object({
-    action: z.string().describe('The action performed'),
-    flagName: z.string().describe('Name of the flag'),
-    flagKey: z.string().optional().describe('Key of the flag'),
-    projectKey: z.string().optional().describe('Project key'),
-    environmentKey: z.string().optional().describe('Environment key'),
-    description: z.string().describe('Description of the change'),
-    memberEmail: z.string().optional().describe('Email of the member'),
-    memberName: z.string().optional().describe('Name of the member'),
-    date: z.string().describe('Timestamp of the change'),
-  }))
+export let flagChangeTrigger = SlateTrigger.create(spec, {
+  name: 'Flag Changes',
+  key: 'flag_changes',
+  description:
+    '[Polling fallback] Polls the LaunchDarkly audit log for feature flag changes. Triggers when flags are created, updated, toggled, or deleted. Useful when webhook setup is not possible.'
+})
+  .input(
+    z.object({
+      action: z.string().describe('The action performed on the flag'),
+      flagName: z.string().describe('Name of the flag'),
+      flagKey: z.string().optional().describe('Key of the flag'),
+      projectKey: z.string().optional().describe('Project key'),
+      environmentKey: z.string().optional().describe('Environment key'),
+      description: z.string().describe('Description of the change'),
+      memberEmail: z.string().optional().describe('Email of the member who made the change'),
+      memberName: z.string().optional().describe('Name of the member'),
+      date: z.string().describe('Timestamp of the change'),
+      auditLogEntryId: z.string().describe('Audit log entry ID')
+    })
+  )
+  .output(
+    z.object({
+      action: z.string().describe('The action performed'),
+      flagName: z.string().describe('Name of the flag'),
+      flagKey: z.string().optional().describe('Key of the flag'),
+      projectKey: z.string().optional().describe('Project key'),
+      environmentKey: z.string().optional().describe('Environment key'),
+      description: z.string().describe('Description of the change'),
+      memberEmail: z.string().optional().describe('Email of the member'),
+      memberName: z.string().optional().describe('Name of the member'),
+      date: z.string().describe('Timestamp of the change')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new LaunchDarklyClient(ctx.auth.token);
       let state = ctx.state as { lastTimestamp?: number } | undefined;
       let lastTimestamp = state?.lastTimestamp;
 
       let params: Record<string, any> = {
         limit: 50,
-        spec: 'proj/*:env/*:flag/*',
+        spec: 'proj/*:env/*:flag/*'
       };
 
       if (lastTimestamp) {
@@ -59,7 +61,7 @@ export let flagChangeTrigger = SlateTrigger.create(
       if (items.length === 0) {
         return {
           inputs: [],
-          updatedState: { lastTimestamp: lastTimestamp ?? Date.now() },
+          updatedState: { lastTimestamp: lastTimestamp ?? Date.now() }
         };
       }
 
@@ -89,19 +91,21 @@ export let flagChangeTrigger = SlateTrigger.create(
           environmentKey,
           description: entry.description ?? entry.shortDescription ?? '',
           memberEmail: entry.member?.email,
-          memberName: entry.member?.firstName ? `${entry.member.firstName} ${entry.member.lastName ?? ''}`.trim() : undefined,
+          memberName: entry.member?.firstName
+            ? `${entry.member.firstName} ${entry.member.lastName ?? ''}`.trim()
+            : undefined,
           date: String(entry.date),
-          auditLogEntryId: entry._id,
+          auditLogEntryId: entry._id
         };
       });
 
       return {
         inputs,
-        updatedState: { lastTimestamp: newTimestamp },
+        updatedState: { lastTimestamp: newTimestamp }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let action = ctx.input.action.toLowerCase().replace(/\s+/g, '_');
 
       return {
@@ -116,8 +120,9 @@ export let flagChangeTrigger = SlateTrigger.create(
           description: ctx.input.description,
           memberEmail: ctx.input.memberEmail,
           memberName: ctx.input.memberName,
-          date: ctx.input.date,
-        },
+          date: ctx.input.date
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

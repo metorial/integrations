@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let v1Client = createAxios({
-  baseURL: 'https://app.fullenrich.com/api/v1',
+  baseURL: 'https://app.fullenrich.com/api/v1'
 });
 
 let v2Client = createAxios({
-  baseURL: 'https://app.fullenrich.com/api/v2',
+  baseURL: 'https://app.fullenrich.com/api/v2'
 });
 
 export interface EnrichContact {
@@ -109,13 +109,13 @@ export class Client {
 
   private get authHeaders() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
   async startEnrichment(request: StartEnrichmentRequest): Promise<{ enrichmentId: string }> {
     let response = await v1Client.post('/contact/enrich/bulk', request, {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return { enrichmentId: response.data.enrichment_id };
   }
@@ -127,49 +127,51 @@ export class Client {
     }
     let response = await v1Client.get(`/contact/enrich/bulk/${enrichmentId}`, {
       headers: this.authHeaders,
-      params,
+      params
     });
     return response.data;
   }
 
-  async startReverseEmailLookup(request: StartReverseEmailRequest): Promise<{ enrichmentId: string }> {
+  async startReverseEmailLookup(
+    request: StartReverseEmailRequest
+  ): Promise<{ enrichmentId: string }> {
     let response = await v2Client.post('/contact/reverse/email/bulk', request, {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return { enrichmentId: response.data.enrichment_id };
   }
 
   async getReverseEmailResult(enrichmentId: string): Promise<any> {
     let response = await v2Client.get(`/contact/reverse/email/bulk/${enrichmentId}`, {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return response.data;
   }
 
   async searchPeople(request: PeopleSearchRequest): Promise<any> {
     let response = await v2Client.post('/people/search', request, {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return response.data;
   }
 
   async searchCompanies(request: CompanySearchRequest): Promise<any> {
     let response = await v2Client.post('/company/search', request, {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return response.data;
   }
 
   async getCreditBalance(): Promise<{ balance: number }> {
     let response = await v1Client.get('/account/credits', {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return { balance: response.data.balance };
   }
 
   async verifyApiKey(): Promise<{ workspaceId: string }> {
     let response = await v1Client.get('/account/keys/verify', {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
     return { workspaceId: response.data.workspace_id };
   }

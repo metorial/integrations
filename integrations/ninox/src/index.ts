@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listTeams,
@@ -15,11 +14,9 @@ import {
   executeScript,
   listFiles,
   deleteFile,
-  listViews,
+  listViews
 } from './tools';
-import { databaseChanges,
-  inboundWebhook,
-} from './triggers';
+import { databaseChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     executeScript,
     listFiles,
     deleteFile,
-    listViews,
+    listViews
   ],
-  triggers: [
-    inboundWebhook,
-    databaseChanges,
-  ],
+  triggers: [inboundWebhook, databaseChanges]
 });

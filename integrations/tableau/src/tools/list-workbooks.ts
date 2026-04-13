@@ -9,32 +9,47 @@ export let listWorkbooks = SlateTool.create(spec, {
   description: `List and search workbooks on the Tableau site. Supports pagination, filtering, and sorting to find specific workbooks.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    pageSize: z.number().optional().describe('Number of items per page (default 100, max 1000)'),
-    pageNumber: z.number().optional().describe('Page number to retrieve (1-based)'),
-    filter: z.string().optional().describe('Filter expression (e.g., "name:eq:Sales Dashboard")'),
-    sort: z.string().optional().describe('Sort expression (e.g., "name:asc" or "updatedAt:desc")')
-  }))
-  .output(z.object({
-    workbooks: z.array(z.object({
-      workbookId: z.string(),
-      name: z.string(),
-      description: z.string().optional(),
-      contentUrl: z.string().optional(),
-      webpageUrl: z.string().optional(),
-      showTabs: z.boolean().optional(),
-      size: z.number().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      projectId: z.string().optional(),
-      projectName: z.string().optional(),
-      ownerId: z.string().optional()
-    })),
-    totalCount: z.number(),
-    pageNumber: z.number(),
-    pageSize: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageSize: z
+        .number()
+        .optional()
+        .describe('Number of items per page (default 100, max 1000)'),
+      pageNumber: z.number().optional().describe('Page number to retrieve (1-based)'),
+      filter: z
+        .string()
+        .optional()
+        .describe('Filter expression (e.g., "name:eq:Sales Dashboard")'),
+      sort: z
+        .string()
+        .optional()
+        .describe('Sort expression (e.g., "name:asc" or "updatedAt:desc")')
+    })
+  )
+  .output(
+    z.object({
+      workbooks: z.array(
+        z.object({
+          workbookId: z.string(),
+          name: z.string(),
+          description: z.string().optional(),
+          contentUrl: z.string().optional(),
+          webpageUrl: z.string().optional(),
+          showTabs: z.boolean().optional(),
+          size: z.number().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          projectId: z.string().optional(),
+          projectName: z.string().optional(),
+          ownerId: z.string().optional()
+        })
+      ),
+      totalCount: z.number(),
+      pageNumber: z.number(),
+      pageSize: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let result = await client.queryWorkbooks({
       pageSize: ctx.input.pageSize,
@@ -68,4 +83,5 @@ export let listWorkbooks = SlateTool.create(spec, {
       },
       message: `Found **${workbooks.length}** workbooks (${pagination.totalAvailable || 0} total).`
     };
-  }).build();
+  })
+  .build();

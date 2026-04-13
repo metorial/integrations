@@ -16,6 +16,7 @@ To authenticate API requests, set the header key to `api_key` and value should b
 You can create an API key by following the instructions in the Documint documentation. API keys are generated from within your Documint account settings.
 
 **Example request:**
+
 ```
 GET https://api.documint.me/1/templates
 Headers:

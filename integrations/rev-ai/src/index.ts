@@ -11,7 +11,7 @@ import {
   identifyLanguage,
   manageCustomVocabulary,
   getCaptions,
-  getAccount,
+  getAccount
 } from './tools';
 import { jobCompleted } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     identifyLanguage,
     manageCustomVocabulary,
     getCaptions,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    jobCompleted,
-  ],
+  triggers: [jobCompleted]
 });

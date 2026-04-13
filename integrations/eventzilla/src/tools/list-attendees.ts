@@ -25,45 +25,46 @@ let attendeeSchema = z.object({
     .array(
       z.object({
         question: z.string().optional().describe('Question text'),
-        answer: z.string().optional().describe('Answer text'),
-      }),
+        answer: z.string().optional().describe('Answer text')
+      })
     )
     .optional()
-    .describe('Custom question responses'),
+    .describe('Custom question responses')
 });
 
-export let listAttendeesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Attendees',
-    key: 'list_attendees',
-    description: `Retrieve attendees for a specific event, including name, ticket type, barcode, check-in status, and custom question responses. Use the **Get Attendee** tool for individual attendee details by attendee ID.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let listAttendeesTool = SlateTool.create(spec, {
+  name: 'List Attendees',
+  key: 'list_attendees',
+  description: `Retrieve attendees for a specific event, including name, ticket type, barcode, check-in status, and custom question responses. Use the **Get Attendee** tool for individual attendee details by attendee ID.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       eventId: z.string().describe('The event ID to get attendees for'),
       offset: z.number().optional().describe('Number of records to skip'),
-      limit: z.number().optional().describe('Number of records per page'),
-    }),
+      limit: z.number().optional().describe('Number of records per page')
+    })
   )
   .output(
     z.object({
-      attendees: z.array(attendeeSchema).describe('List of attendees'),
-    }),
+      attendees: z.array(attendeeSchema).describe('List of attendees')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.listEventAttendees(ctx.input.eventId, {
       offset: ctx.input.offset,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
-    let rawAttendees = Array.isArray(data?.attendees) ? data.attendees : Array.isArray(data) ? data : [];
+    let rawAttendees = Array.isArray(data?.attendees)
+      ? data.attendees
+      : Array.isArray(data)
+        ? data
+        : [];
 
     let attendees = rawAttendees.map((a: any) => ({
       attendeeId: a.id,
@@ -85,12 +86,13 @@ export let listAttendeesTool = SlateTool.create(
       paymentType: a.payment_type,
       questions: a.questions?.map((q: any) => ({
         question: q.questions ?? q.question,
-        answer: q.answer,
-      })),
+        answer: q.answer
+      }))
     }));
 
     return {
       output: { attendees },
-      message: `Found **${attendees.length}** attendee(s) for event ${ctx.input.eventId}.`,
+      message: `Found **${attendees.length}** attendee(s) for event ${ctx.input.eventId}.`
     };
-  }).build();
+  })
+  .build();

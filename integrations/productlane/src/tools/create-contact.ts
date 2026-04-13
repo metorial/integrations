@@ -6,23 +6,30 @@ import { z } from 'zod';
 export let createContact = SlateTool.create(spec, {
   name: 'Create Contact',
   key: 'create_contact',
-  description: `Create a new contact in Productlane. Contacts represent individuals who provide feedback or interact through support channels. You can optionally link the contact to an existing company.`,
+  description: `Create a new contact in Productlane. Contacts represent individuals who provide feedback or interact through support channels. You can optionally link the contact to an existing company.`
 })
-  .input(z.object({
-    email: z.string().describe('Contact email address'),
-    name: z.string().optional().describe('Contact name'),
-    companyId: z.string().optional().describe('Link to a company by ID'),
-    companyName: z.string().optional().describe('Link to a company by name (creates if not found)'),
-    companyExternalId: z.string().optional().describe('Link to a company by external ID'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the created contact'),
-    email: z.string().describe('Contact email address'),
-    name: z.string().nullable().describe('Contact name'),
-    companyId: z.string().nullable().describe('Associated company ID'),
-    createdAt: z.string().describe('Creation timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      email: z.string().describe('Contact email address'),
+      name: z.string().optional().describe('Contact name'),
+      companyId: z.string().optional().describe('Link to a company by ID'),
+      companyName: z
+        .string()
+        .optional()
+        .describe('Link to a company by name (creates if not found)'),
+      companyExternalId: z.string().optional().describe('Link to a company by external ID')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the created contact'),
+      email: z.string().describe('Contact email address'),
+      name: z.string().nullable().describe('Contact name'),
+      companyId: z.string().nullable().describe('Associated company ID'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.createContact(ctx.input);
 
@@ -32,8 +39,9 @@ export let createContact = SlateTool.create(spec, {
         email: result.email,
         name: result.name ?? null,
         companyId: result.companyId ?? null,
-        createdAt: result.createdAt,
+        createdAt: result.createdAt
       },
-      message: `Created contact **${result.name || result.email}** (${result.id}).`,
+      message: `Created contact **${result.name || result.email}** (${result.id}).`
     };
-  }).build();
+  })
+  .build();

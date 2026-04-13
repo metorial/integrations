@@ -3,41 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDocument = SlateTool.create(
-  spec,
-  {
-    name: 'Get Document',
-    key: 'get_document',
-    description: `Retrieve a single document by its ID, including its full markdown content, metadata, and author information.`,
-    tags: {
-      readOnly: true,
-    },
+export let getDocument = SlateTool.create(spec, {
+  name: 'Get Document',
+  key: 'get_document',
+  description: `Retrieve a single document by its ID, including its full markdown content, metadata, and author information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the document to retrieve'),
-  }))
-  .output(z.object({
-    documentId: z.string(),
-    title: z.string(),
-    text: z.string().describe('Full markdown content of the document'),
-    emoji: z.string().optional(),
-    collectionId: z.string().optional(),
-    parentDocumentId: z.string().optional(),
-    template: z.boolean(),
-    publishedAt: z.string().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    archivedAt: z.string().optional(),
-    revision: z.number(),
-    fullWidth: z.boolean(),
-    createdBy: z.object({ userId: z.string(), name: z.string() }),
-    updatedBy: z.object({ userId: z.string(), name: z.string() }),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the document to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string(),
+      title: z.string(),
+      text: z.string().describe('Full markdown content of the document'),
+      emoji: z.string().optional(),
+      collectionId: z.string().optional(),
+      parentDocumentId: z.string().optional(),
+      template: z.boolean(),
+      publishedAt: z.string().optional(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      archivedAt: z.string().optional(),
+      revision: z.number(),
+      fullWidth: z.boolean(),
+      createdBy: z.object({ userId: z.string(), name: z.string() }),
+      updatedBy: z.object({ userId: z.string(), name: z.string() })
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let doc = await client.getDocument(ctx.input.documentId);
@@ -58,9 +59,9 @@ export let getDocument = SlateTool.create(
         revision: doc.revision,
         fullWidth: doc.fullWidth,
         createdBy: { userId: doc.createdBy.id, name: doc.createdBy.name },
-        updatedBy: { userId: doc.updatedBy.id, name: doc.updatedBy.name },
+        updatedBy: { userId: doc.updatedBy.id, name: doc.updatedBy.name }
       },
-      message: `Retrieved document **"${doc.title}"** (revision ${doc.revision}).`,
+      message: `Retrieved document **"${doc.title}"** (revision ${doc.revision}).`
     };
   })
   .build();

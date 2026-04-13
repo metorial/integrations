@@ -20,11 +20,9 @@ import {
   resendMessage,
   recoverEndpoint,
   getPortalAccess,
-  getEndpointStats,
+  getEndpointStats
 } from './tools';
-import {
-  operationalWebhooksTrigger,
-} from './triggers';
+import { operationalWebhooksTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -48,9 +46,7 @@ export let provider = Slate.create({
     resendMessage,
     recoverEndpoint,
     getPortalAccess,
-    getEndpointStats,
+    getEndpointStats
   ],
-  triggers: [
-    operationalWebhooksTrigger,
-  ],
+  triggers: [operationalWebhooksTrigger]
 });

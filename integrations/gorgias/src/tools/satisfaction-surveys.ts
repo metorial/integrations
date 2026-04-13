@@ -3,35 +3,38 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let listSatisfactionSurveys = SlateTool.create(
-  spec,
-  {
-    name: 'List Satisfaction Surveys',
-    key: 'list_satisfaction_surveys',
-    description: `Retrieve a paginated list of customer satisfaction surveys (CSAT). Surveys capture customer feedback after support interactions.`,
-    tags: {
-      readOnly: true
-    }
+export let listSatisfactionSurveys = SlateTool.create(spec, {
+  name: 'List Satisfaction Surveys',
+  key: 'list_satisfaction_surveys',
+  description: `Retrieve a paginated list of customer satisfaction surveys (CSAT). Surveys capture customer feedback after support interactions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cursor: z.string().optional().describe('Pagination cursor'),
-    limit: z.number().optional().describe('Number of surveys to return')
-  }))
-  .output(z.object({
-    surveys: z.array(z.object({
-      surveyId: z.number().describe('Survey ID'),
-      score: z.number().nullable().describe('Survey score'),
-      comment: z.string().nullable().describe('Customer comment'),
-      ticketId: z.number().nullable().describe('Associated ticket ID'),
-      customerEmail: z.string().nullable().describe('Customer email'),
-      createdDatetime: z.string().nullable().describe('When the survey was created'),
-      scoredDatetime: z.string().nullable().describe('When the customer responded')
-    })),
-    nextCursor: z.string().nullable().describe('Cursor for the next page'),
-    prevCursor: z.string().nullable().describe('Cursor for the previous page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cursor: z.string().optional().describe('Pagination cursor'),
+      limit: z.number().optional().describe('Number of surveys to return')
+    })
+  )
+  .output(
+    z.object({
+      surveys: z.array(
+        z.object({
+          surveyId: z.number().describe('Survey ID'),
+          score: z.number().nullable().describe('Survey score'),
+          comment: z.string().nullable().describe('Customer comment'),
+          ticketId: z.number().nullable().describe('Associated ticket ID'),
+          customerEmail: z.string().nullable().describe('Customer email'),
+          createdDatetime: z.string().nullable().describe('When the survey was created'),
+          scoredDatetime: z.string().nullable().describe('When the customer responded')
+        })
+      ),
+      nextCursor: z.string().nullable().describe('Cursor for the next page'),
+      prevCursor: z.string().nullable().describe('Cursor for the previous page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
 
     let result = await client.listSatisfactionSurveys({
@@ -57,4 +60,5 @@ export let listSatisfactionSurveys = SlateTool.create(
       },
       message: `Found **${surveys.length}** satisfaction survey(s).`
     };
-  }).build();
+  })
+  .build();

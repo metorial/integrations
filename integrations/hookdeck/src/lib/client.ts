@@ -10,7 +10,7 @@ import type {
   HookdeckIssue,
   HookdeckTransformation,
   HookdeckBookmark,
-  HookdeckIssueTrigger,
+  HookdeckIssueTrigger
 } from './types';
 
 export class Client {
@@ -21,14 +21,16 @@ export class Client {
       baseURL: `https://api.hookdeck.com/${config.apiVersion}`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- Sources ----
 
-  async listSources(params?: PaginationParams & { name?: string }): Promise<PaginatedResponse<HookdeckSource>> {
+  async listSources(
+    params?: PaginationParams & { name?: string }
+  ): Promise<PaginatedResponse<HookdeckSource>> {
     let response = await this.axios.get('/sources', { params });
     return response.data;
   }
@@ -49,13 +51,16 @@ export class Client {
     return response.data;
   }
 
-  async updateSource(sourceId: string, data: {
-    name?: string;
-    description?: string;
-    type?: string;
-    verification?: Record<string, unknown>;
-    config?: Record<string, unknown>;
-  }): Promise<HookdeckSource> {
+  async updateSource(
+    sourceId: string,
+    data: {
+      name?: string;
+      description?: string;
+      type?: string;
+      verification?: Record<string, unknown>;
+      config?: Record<string, unknown>;
+    }
+  ): Promise<HookdeckSource> {
     let response = await this.axios.put(`/sources/${sourceId}`, data);
     return response.data;
   }
@@ -77,7 +82,9 @@ export class Client {
 
   // ---- Destinations ----
 
-  async listDestinations(params?: PaginationParams & { name?: string }): Promise<PaginatedResponse<HookdeckDestination>> {
+  async listDestinations(
+    params?: PaginationParams & { name?: string }
+  ): Promise<PaginatedResponse<HookdeckDestination>> {
     let response = await this.axios.get('/destinations', { params });
     return response.data;
   }
@@ -97,12 +104,15 @@ export class Client {
     return response.data;
   }
 
-  async updateDestination(destinationId: string, data: {
-    name?: string;
-    description?: string;
-    type?: string;
-    config?: Record<string, unknown>;
-  }): Promise<HookdeckDestination> {
+  async updateDestination(
+    destinationId: string,
+    data: {
+      name?: string;
+      description?: string;
+      type?: string;
+      config?: Record<string, unknown>;
+    }
+  ): Promise<HookdeckDestination> {
     let response = await this.axios.put(`/destinations/${destinationId}`, data);
     return response.data;
   }
@@ -124,11 +134,13 @@ export class Client {
 
   // ---- Connections ----
 
-  async listConnections(params?: PaginationParams & {
-    name?: string;
-    source_id?: string;
-    destination_id?: string;
-  }): Promise<PaginatedResponse<HookdeckConnection>> {
+  async listConnections(
+    params?: PaginationParams & {
+      name?: string;
+      source_id?: string;
+      destination_id?: string;
+    }
+  ): Promise<PaginatedResponse<HookdeckConnection>> {
     let response = await this.axios.get('/connections', { params });
     return response.data;
   }
@@ -151,11 +163,14 @@ export class Client {
     return response.data;
   }
 
-  async updateConnection(connectionId: string, data: {
-    name?: string;
-    description?: string;
-    rules?: Record<string, unknown>[];
-  }): Promise<HookdeckConnection> {
+  async updateConnection(
+    connectionId: string,
+    data: {
+      name?: string;
+      description?: string;
+      rules?: Record<string, unknown>[];
+    }
+  ): Promise<HookdeckConnection> {
     let response = await this.axios.put(`/connections/${connectionId}`, data);
     return response.data;
   }
@@ -177,13 +192,15 @@ export class Client {
 
   // ---- Events ----
 
-  async listEvents(params?: PaginationParams & {
-    status?: string;
-    webhook_id?: string;
-    source_id?: string;
-    destination_id?: string;
-    created_at?: Record<string, string>;
-  }): Promise<PaginatedResponse<HookdeckEvent>> {
+  async listEvents(
+    params?: PaginationParams & {
+      status?: string;
+      webhook_id?: string;
+      source_id?: string;
+      destination_id?: string;
+      created_at?: Record<string, string>;
+    }
+  ): Promise<PaginatedResponse<HookdeckEvent>> {
     let response = await this.axios.get('/events', { params });
     return response.data;
   }
@@ -210,11 +227,13 @@ export class Client {
 
   // ---- Requests ----
 
-  async listRequests(params?: PaginationParams & {
-    source_id?: string;
-    status?: string;
-    rejection_cause?: string;
-  }): Promise<PaginatedResponse<HookdeckRequest>> {
+  async listRequests(
+    params?: PaginationParams & {
+      source_id?: string;
+      status?: string;
+      rejection_cause?: string;
+    }
+  ): Promise<PaginatedResponse<HookdeckRequest>> {
     let response = await this.axios.get('/requests', { params });
     return response.data;
   }
@@ -231,10 +250,12 @@ export class Client {
 
   // ---- Issues ----
 
-  async listIssues(params?: PaginationParams & {
-    type?: string;
-    status?: string;
-  }): Promise<PaginatedResponse<HookdeckIssue>> {
+  async listIssues(
+    params?: PaginationParams & {
+      type?: string;
+      status?: string;
+    }
+  ): Promise<PaginatedResponse<HookdeckIssue>> {
     let response = await this.axios.get('/issues', { params });
     return response.data;
   }
@@ -256,7 +277,9 @@ export class Client {
 
   // ---- Issue Triggers ----
 
-  async listIssueTriggers(params?: PaginationParams): Promise<PaginatedResponse<HookdeckIssueTrigger>> {
+  async listIssueTriggers(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<HookdeckIssueTrigger>> {
     let response = await this.axios.get('/issue-triggers', { params });
     return response.data;
   }
@@ -269,9 +292,12 @@ export class Client {
     return response.data;
   }
 
-  async updateIssueTrigger(triggerId: string, data: {
-    configs?: Record<string, unknown>;
-  }): Promise<HookdeckIssueTrigger> {
+  async updateIssueTrigger(
+    triggerId: string,
+    data: {
+      configs?: Record<string, unknown>;
+    }
+  ): Promise<HookdeckIssueTrigger> {
     let response = await this.axios.put(`/issue-triggers/${triggerId}`, data);
     return response.data;
   }
@@ -283,7 +309,9 @@ export class Client {
 
   // ---- Transformations ----
 
-  async listTransformations(params?: PaginationParams & { name?: string }): Promise<PaginatedResponse<HookdeckTransformation>> {
+  async listTransformations(
+    params?: PaginationParams & { name?: string }
+  ): Promise<PaginatedResponse<HookdeckTransformation>> {
     let response = await this.axios.get('/transformations', { params });
     return response.data;
   }
@@ -302,11 +330,14 @@ export class Client {
     return response.data;
   }
 
-  async updateTransformation(transformationId: string, data: {
-    name?: string;
-    code?: string;
-    env?: Record<string, string>;
-  }): Promise<HookdeckTransformation> {
+  async updateTransformation(
+    transformationId: string,
+    data: {
+      name?: string;
+      code?: string;
+      env?: Record<string, string>;
+    }
+  ): Promise<HookdeckTransformation> {
     let response = await this.axios.put(`/transformations/${transformationId}`, data);
     return response.data;
   }
@@ -318,7 +349,9 @@ export class Client {
 
   // ---- Bookmarks ----
 
-  async listBookmarks(params?: PaginationParams): Promise<PaginatedResponse<HookdeckBookmark>> {
+  async listBookmarks(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<HookdeckBookmark>> {
     let response = await this.axios.get('/bookmarks', { params });
     return response.data;
   }
@@ -383,8 +416,8 @@ export class Client {
       baseURL: 'https://hkdk.events/v1',
       headers: {
         Authorization: this.axios.defaults.headers.common?.['Authorization'] as string,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     let response = await publishAxios.post('/publish', data);
     return response.data;
@@ -392,9 +425,11 @@ export class Client {
 
   // ---- Attempts ----
 
-  async listAttempts(params?: PaginationParams & {
-    event_id?: string;
-  }): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async listAttempts(
+    params?: PaginationParams & {
+      event_id?: string;
+    }
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await this.axios.get('/attempts', { params });
     return response.data;
   }

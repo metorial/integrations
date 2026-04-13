@@ -9,7 +9,7 @@ import {
   mapLocation,
   sendReviewRequest,
   manageReviewRequest,
-  checkReviewOptIn,
+  checkReviewOptIn
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     mapLocation,
     sendReviewRequest,
     manageReviewRequest,
-    checkReviewOptIn,
+    checkReviewOptIn
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

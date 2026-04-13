@@ -17,40 +17,47 @@ let userOutputSchema = z.object({
   defaultAddress: z.any().nullable().optional().describe('Default address'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  rawData: z.any().optional().describe('Complete raw user data'),
+  rawData: z.any().optional().describe('Complete raw user data')
 });
 
-export let searchUsers = SlateTool.create(
-  spec,
-  {
-    name: 'Search Users',
-    key: 'search_users',
-    description: `Search and list users in Coupa. Filter by name, email, login, active status, department, and other attributes.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchUsers = SlateTool.create(spec, {
+  name: 'Search Users',
+  key: 'search_users',
+  description: `Search and list users in Coupa. Filter by name, email, login, active status, department, and other attributes.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    login: z.string().optional().describe('Filter by login name'),
-    email: z.string().optional().describe('Filter by email'),
-    active: z.boolean().optional().describe('Filter by active status'),
-    employeeNumber: z.string().optional().describe('Filter by employee number'),
-    updatedAfter: z.string().optional().describe('Filter users updated after this date (ISO 8601)'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional Coupa query filters'),
-    orderBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    users: z.array(userOutputSchema).describe('List of matching users'),
-    count: z.number().describe('Number of users returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      login: z.string().optional().describe('Filter by login name'),
+      email: z.string().optional().describe('Filter by email'),
+      active: z.boolean().optional().describe('Filter by active status'),
+      employeeNumber: z.string().optional().describe('Filter by employee number'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter users updated after this date (ISO 8601)'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional Coupa query filters'),
+      orderBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userOutputSchema).describe('List of matching users'),
+      count: z.number().describe('Number of users returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let filters: Record<string, string> = {};
@@ -70,7 +77,7 @@ export let searchUsers = SlateTool.create(
       orderBy: ctx.input.orderBy,
       dir: ctx.input.sortDirection,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let users = (Array.isArray(results) ? results : []).map((u: any) => ({
@@ -87,63 +94,69 @@ export let searchUsers = SlateTool.create(
       defaultAddress: u['default-address'] ?? u.default_address ?? null,
       createdAt: u['created-at'] ?? u.created_at ?? null,
       updatedAt: u['updated-at'] ?? u.updated_at ?? null,
-      rawData: u,
+      rawData: u
     }));
 
     return {
       output: {
         users,
-        count: users.length,
+        count: users.length
       },
-      message: `Found **${users.length}** user(s).`,
+      message: `Found **${users.length}** user(s).`
     };
   })
   .build();
 
-export let createUser = SlateTool.create(
-  spec,
-  {
-    name: 'Create User',
-    key: 'create_user',
-    description: `Create a new user in Coupa with login credentials, email, name, and role assignments.`,
-    tags: {
-      destructive: false,
-    },
+export let createUser = SlateTool.create(spec, {
+  name: 'Create User',
+  key: 'create_user',
+  description: `Create a new user in Coupa with login credentials, email, name, and role assignments.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    login: z.string().describe('User login name'),
-    email: z.string().describe('User email address'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    employeeNumber: z.string().optional().describe('Employee number'),
-    active: z.boolean().optional().describe('Whether user should be active (default true)'),
-    department: z.object({ name: z.string() }).optional().describe('Department'),
-    roles: z.array(z.object({ name: z.string() })).optional().describe('User roles to assign'),
-    defaultAddress: z.object({
-      addressId: z.number(),
-    }).optional().describe('Default address reference'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-  }))
+})
+  .input(
+    z.object({
+      login: z.string().describe('User login name'),
+      email: z.string().describe('User email address'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      employeeNumber: z.string().optional().describe('Employee number'),
+      active: z.boolean().optional().describe('Whether user should be active (default true)'),
+      department: z.object({ name: z.string() }).optional().describe('Department'),
+      roles: z
+        .array(z.object({ name: z.string() }))
+        .optional()
+        .describe('User roles to assign'),
+      defaultAddress: z
+        .object({
+          addressId: z.number()
+        })
+        .optional()
+        .describe('Default address reference'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Custom field values')
+    })
+  )
   .output(userOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let payload: any = {
       login: ctx.input.login,
       email: ctx.input.email,
       firstname: ctx.input.firstName,
-      lastname: ctx.input.lastName,
+      lastname: ctx.input.lastName
     };
 
     if (ctx.input.employeeNumber) payload['employee-number'] = ctx.input.employeeNumber;
     if (ctx.input.active !== undefined) payload.active = ctx.input.active;
     if (ctx.input.department) payload.department = ctx.input.department;
     if (ctx.input.roles) payload.roles = ctx.input.roles;
-    if (ctx.input.defaultAddress) payload['default-address'] = { id: ctx.input.defaultAddress.addressId };
+    if (ctx.input.defaultAddress)
+      payload['default-address'] = { id: ctx.input.defaultAddress.addressId };
 
     if (ctx.input.customFields) {
       for (let [key, value] of Object.entries(ctx.input.customFields)) {
@@ -168,40 +181,45 @@ export let createUser = SlateTool.create(
         defaultAddress: result['default-address'] ?? result.default_address ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `Created user **${result.login ?? result.id}** (${result.email}).`,
+      message: `Created user **${result.login ?? result.id}** (${result.email}).`
     };
   })
   .build();
 
-export let updateUser = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update an existing user in Coupa. Modify profile information, active status, department, or role assignments.`,
-    tags: {
-      destructive: false,
-    },
+export let updateUser = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update an existing user in Coupa. Modify profile information, active status, department, or role assignments.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    userId: z.number().describe('Coupa user ID to update'),
-    email: z.string().optional().describe('Updated email'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    employeeNumber: z.string().optional().describe('Updated employee number'),
-    active: z.boolean().optional().describe('Updated active status'),
-    department: z.object({ name: z.string() }).optional().describe('Updated department'),
-    roles: z.array(z.object({ name: z.string() })).optional().describe('Updated role assignments'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values to update'),
-  }))
+})
+  .input(
+    z.object({
+      userId: z.number().describe('Coupa user ID to update'),
+      email: z.string().optional().describe('Updated email'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      employeeNumber: z.string().optional().describe('Updated employee number'),
+      active: z.boolean().optional().describe('Updated active status'),
+      department: z.object({ name: z.string() }).optional().describe('Updated department'),
+      roles: z
+        .array(z.object({ name: z.string() }))
+        .optional()
+        .describe('Updated role assignments'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values to update')
+    })
+  )
   .output(userOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let payload: any = {};
@@ -237,9 +255,9 @@ export let updateUser = SlateTool.create(
         defaultAddress: result['default-address'] ?? result.default_address ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `Updated user **${result.login ?? result.id}**.`,
+      message: `Updated user **${result.login ?? result.id}**.`
     };
   })
   .build();

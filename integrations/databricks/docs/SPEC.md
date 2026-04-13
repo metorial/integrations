@@ -17,6 +17,7 @@ Authorization: Bearer <your-pat>
 ```
 
 Required inputs:
+
 - **Host**: Your Databricks workspace URL (e.g., `https://adb-1234567890123456.7.azuredatabricks.net`)
 - **Token**: The personal access token string
 
@@ -27,6 +28,7 @@ Tokens can be scoped to limit permissions to specific API operations.
 Databricks uses OAuth 2.0 as the preferred protocol for user authorization and authentication outside of the UI. This uses the authorization code flow with PKCE.
 
 Key endpoints:
+
 - **Authorization**: `https://<databricks-instance>/oidc/v1/authorize`
 - **Token**: `https://<databricks-instance>/oidc/v1/token`
 
@@ -39,6 +41,7 @@ Available scopes include `all-apis`, `sql`, `file.files`, `dashboards.genie`, am
 Machine-to-machine (M2M) authentication with OAuth allows services, scripts, or applications to access Databricks resources without interactive user sign-in. It uses a service principal and an OAuth client credential flow to request and manage tokens.
 
 Required inputs:
+
 - **Host**: Workspace URL or account console URL
 - **Client ID**: The service principal's client ID
 - **Client Secret**: The service principal's OAuth secret
@@ -56,6 +59,7 @@ Grant type: `client_credentials`
 For Azure Databricks only. Microsoft Entra service principal authentication uses the credentials of a Microsoft Entra service principal. Databricks recommends using OAuth M2M in most scenarios. OAuth M2M uses OAuth access tokens that are more robust when authenticating only with Azure Databricks. Only use Microsoft Entra service principal authentication when you must authenticate with Azure Databricks and other Azure resources at the same time.
 
 Required inputs:
+
 - **Host**: Workspace URL
 - **Azure Tenant ID**
 - **Azure Client ID**
@@ -130,16 +134,19 @@ Install and uninstall libraries and get the status of libraries on a cluster.
 Webhooks enable you to listen for Workspace Model Registry events so your integrations can automatically trigger actions. You can use webhooks to automate and integrate your machine learning pipeline with existing CI/CD tools and workflows. For example, you can trigger CI builds when a new model version is created or notify your team members through Slack each time a model transition to production is requested.
 
 Supported events include:
+
 - MODEL_VERSION_CREATED: A new model version was created for the associated model.
 - REGISTERED_MODEL_CREATED: A new registered model was created.
 - MODEL_VERSION_TAG_SET, MODEL_VERSION_TRANSITIONED_TO_STAGING, MODEL_VERSION_TRANSITIONED_TO_PRODUCTION, and MODEL_VERSION_TRANSITIONED_TO_ARCHIVED.
 - TRANSITION_REQUEST_TO_STAGING_CREATED, TRANSITION_REQUEST_TO_PRODUCTION_CREATED, and TRANSITION_REQUEST_TO_ARCHIVED_CREATED.
 
 Webhooks can be configured as:
+
 - HTTP registry webhooks that send triggers to an HTTP endpoint.
 - Job registry webhooks that trigger a job in a Databricks workspace.
 
 Scope options:
+
 - Model-specific webhooks apply to a specific registered model (requires CAN MANAGE permissions).
 - Registry-wide webhooks are triggered by events on any registered model in the workspace. You create them by omitting the model_name field, and they require workspace admin permissions.
 

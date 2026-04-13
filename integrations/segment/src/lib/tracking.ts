@@ -4,18 +4,17 @@ export class TrackingClient {
   private http: ReturnType<typeof createAxios>;
 
   constructor(writeKey: string, region: string = 'us') {
-    let baseURL = region === 'eu'
-      ? 'https://events.eu1.segmentapis.com'
-      : 'https://api.segment.io';
+    let baseURL =
+      region === 'eu' ? 'https://events.eu1.segmentapis.com' : 'https://api.segment.io';
 
     let encoded = btoa(writeKey + ':');
 
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Basic ${encoded}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${encoded}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 

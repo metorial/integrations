@@ -3,41 +3,47 @@ import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobStatusChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Status Change',
-    key: 'job_status_change',
-    description: 'Triggers when a job\'s status color changes (e.g. from blue/success to red/failure, or becomes disabled). Useful for monitoring overall job health changes rather than individual builds.'
-  }
-)
-  .input(z.object({
-    jobName: z.string().describe('Name of the job'),
-    jobUrl: z.string().describe('URL of the job'),
-    previousColor: z.string().describe('Previous status color'),
-    currentColor: z.string().describe('Current status color'),
-    changeDetectedAt: z.string().describe('ISO timestamp when the change was detected')
-  }))
-  .output(z.object({
-    jobName: z.string().describe('Name of the job'),
-    jobUrl: z.string().describe('URL of the job'),
-    previousColor: z.string().describe('Previous status color (blue=success, red=failure, yellow=unstable, disabled, notbuilt, aborted)'),
-    currentColor: z.string().describe('Current status color'),
-    changeDetectedAt: z.string().describe('ISO timestamp when the change was detected')
-  }))
+export let jobStatusChange = SlateTrigger.create(spec, {
+  name: 'Job Status Change',
+  key: 'job_status_change',
+  description:
+    "Triggers when a job's status color changes (e.g. from blue/success to red/failure, or becomes disabled). Useful for monitoring overall job health changes rather than individual builds."
+})
+  .input(
+    z.object({
+      jobName: z.string().describe('Name of the job'),
+      jobUrl: z.string().describe('URL of the job'),
+      previousColor: z.string().describe('Previous status color'),
+      currentColor: z.string().describe('Current status color'),
+      changeDetectedAt: z.string().describe('ISO timestamp when the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      jobName: z.string().describe('Name of the job'),
+      jobUrl: z.string().describe('URL of the job'),
+      previousColor: z
+        .string()
+        .describe(
+          'Previous status color (blue=success, red=failure, yellow=unstable, disabled, notbuilt, aborted)'
+        ),
+      currentColor: z.string().describe('Current status color'),
+      changeDetectedAt: z.string().describe('ISO timestamp when the change was detected')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new JenkinsClient({
         instanceUrl: ctx.config.instanceUrl,
         username: ctx.auth.username,
         token: ctx.auth.token
       });
 
-      let state = ctx.state as Record<string, any> || {};
+      let state = (ctx.state as Record<string, any>) || {};
       let knownColors: Record<string, string> = state.knownColors || {};
       let inputs: any[] = [];
 
@@ -70,7 +76,7 @@ export let jobStatusChange = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `job.status_changed`,
         id: `${ctx.input.jobName}-${ctx.input.previousColor}-${ctx.input.currentColor}-${ctx.input.changeDetectedAt}`,
@@ -83,4 +89,5 @@ export let jobStatusChange = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

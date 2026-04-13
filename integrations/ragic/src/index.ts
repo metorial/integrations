@@ -11,7 +11,7 @@ import {
   executeActionButton,
   listActionButtons,
   exportRecord,
-  getFileUrl,
+  getFileUrl
 } from './tools';
 import { recordChanges } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     executeActionButton,
     listActionButtons,
     exportRecord,
-    getFileUrl,
+    getFileUrl
   ],
-  triggers: [
-    recordChanges,
-  ],
+  triggers: [recordChanges]
 });

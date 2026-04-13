@@ -3,31 +3,30 @@ import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Events',
-    key: 'user_events',
-    description: 'Triggered when a user is created, updated, or deleted in Capsule CRM.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum([
-      'user/created',
-      'user/updated',
-      'user/deleted',
-    ]).describe('Type of user event'),
-    users: z.array(z.any()).describe('User records from the webhook payload'),
-  }))
-  .output(z.object({
-    userId: z.number().describe('ID of the affected user'),
-    name: z.string().optional().describe('Full name'),
-    username: z.string().optional().describe('Email/username'),
-    role: z.string().optional().describe('User role'),
-    status: z.string().optional().describe('Account status'),
-  }))
+export let userEvents = SlateTrigger.create(spec, {
+  name: 'User Events',
+  key: 'user_events',
+  description: 'Triggered when a user is created, updated, or deleted in Capsule CRM.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['user/created', 'user/updated', 'user/deleted'])
+        .describe('Type of user event'),
+      users: z.array(z.any()).describe('User records from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('ID of the affected user'),
+      name: z.string().optional().describe('Full name'),
+      username: z.string().optional().describe('Email/username'),
+      role: z.string().optional().describe('User role'),
+      status: z.string().optional().describe('Account status')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
 
       let events = ['user/created', 'user/updated', 'user/deleted'];
@@ -37,17 +36,17 @@ export let userEvents = SlateTrigger.create(
         let hook = await client.createRestHook({
           event,
           targetUrl: ctx.input.webhookBaseUrl,
-          description: `Slates: ${event}`,
+          description: `Slates: ${event}`
         });
         hooks.push({ hookId: hook.id, event });
       }
 
       return {
-        registrationDetails: { hooks },
+        registrationDetails: { hooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
       let hooks = (ctx.input.registrationDetails as any)?.hooks || [];
 
@@ -60,18 +59,20 @@ export let userEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.event,
-          users: data.payload || [],
-        }],
+        inputs: [
+          {
+            eventType: data.event,
+            users: data.payload || []
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let users = ctx.input.users || [];
       let eventAction = ctx.input.eventType.split('/')[1] || 'unknown';
 
@@ -80,8 +81,8 @@ export let userEvents = SlateTrigger.create(
           type: `user.${eventAction}`,
           id: `${ctx.input.eventType}-${Date.now()}`,
           output: {
-            userId: 0,
-          },
+            userId: 0
+          }
         };
       }
 
@@ -95,8 +96,9 @@ export let userEvents = SlateTrigger.create(
           name: u.name,
           username: u.username,
           role: u.role,
-          status: u.status,
-        },
+          status: u.status
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

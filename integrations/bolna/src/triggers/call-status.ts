@@ -2,103 +2,129 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let callStatus = SlateTrigger.create(
-  spec,
-  {
-    name: 'Call Status',
-    key: 'call_status',
-    description: 'Triggers when a call status changes. Receives real-time updates for all call lifecycle events including queued, ringing, in-progress, completed, failed, and more.'
-  }
-)
-  .input(z.object({
-    executionId: z.string().describe('Execution ID of the call'),
-    status: z.string().describe('Call status'),
-    agentId: z.string().optional().describe('Agent ID'),
-    batchId: z.string().optional().describe('Batch ID if part of a batch'),
-    transcript: z.string().optional().describe('Conversation transcript'),
-    conversationTime: z.number().optional().describe('Conversation duration in seconds'),
-    totalCost: z.number().optional().describe('Total cost in cents'),
-    answeredByVoiceMail: z.boolean().optional().describe('Whether voicemail answered'),
-    errorMessage: z.string().optional().describe('Error message if call failed'),
-    extractedData: z.any().optional().describe('Structured data extracted from conversation'),
-    contextDetails: z.any().optional().describe('Custom variables injected into the call'),
-    costBreakdown: z.object({
-      llm: z.number().optional(),
-      network: z.number().optional(),
-      platform: z.number().optional(),
-      synthesizer: z.number().optional(),
-      transcriber: z.number().optional()
-    }).optional().describe('Cost breakdown by component'),
-    telephonyData: z.object({
-      duration: z.string().optional(),
-      toNumber: z.string().optional(),
-      fromNumber: z.string().optional(),
-      recordingUrl: z.string().optional(),
-      callType: z.string().optional(),
-      telephonyProvider: z.string().optional(),
-      hangupBy: z.string().optional(),
-      hangupReason: z.string().optional()
-    }).optional().describe('Telephony metadata'),
-    transferCallData: z.object({
-      status: z.string().optional(),
-      duration: z.string().optional(),
-      cost: z.number().optional(),
-      toNumber: z.string().optional(),
-      fromNumber: z.string().optional(),
-      recordingUrl: z.string().optional()
-    }).optional().describe('Transfer call data if call was transferred'),
-    batchRunDetails: z.object({
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      retried: z.number().optional()
-    }).optional().describe('Batch run details')
-  }))
-  .output(z.object({
-    executionId: z.string().describe('Execution ID'),
-    status: z.string().describe('Call status'),
-    agentId: z.string().optional().describe('Agent ID'),
-    batchId: z.string().optional().describe('Batch ID'),
-    transcript: z.string().optional().describe('Conversation transcript'),
-    conversationTime: z.number().optional().describe('Conversation duration in seconds'),
-    totalCost: z.number().optional().describe('Total cost in cents'),
-    answeredByVoiceMail: z.boolean().optional().describe('Whether voicemail answered'),
-    errorMessage: z.string().optional().describe('Error message'),
-    extractedData: z.any().optional().describe('Extracted structured data'),
-    contextDetails: z.any().optional().describe('Call context variables'),
-    costBreakdown: z.object({
-      llm: z.number().optional(),
-      network: z.number().optional(),
-      platform: z.number().optional(),
-      synthesizer: z.number().optional(),
-      transcriber: z.number().optional()
-    }).optional().describe('Cost breakdown'),
-    toNumber: z.string().optional().describe('Recipient phone number'),
-    fromNumber: z.string().optional().describe('Caller phone number'),
-    recordingUrl: z.string().optional().describe('Call recording URL'),
-    callType: z.string().optional().describe('Call type (inbound/outbound)'),
-    telephonyProvider: z.string().optional().describe('Telephony provider used'),
-    hangupBy: z.string().optional().describe('Who hung up the call'),
-    hangupReason: z.string().optional().describe('Reason for hangup'),
-    callDuration: z.string().optional().describe('Total call duration'),
-    transferCallData: z.object({
-      status: z.string().optional(),
-      duration: z.string().optional(),
-      cost: z.number().optional(),
-      toNumber: z.string().optional(),
-      fromNumber: z.string().optional(),
-      recordingUrl: z.string().optional()
-    }).optional().describe('Transfer call data'),
-    batchRunDetails: z.object({
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      retried: z.number().optional()
-    }).optional().describe('Batch run details')
-  }))
+export let callStatus = SlateTrigger.create(spec, {
+  name: 'Call Status',
+  key: 'call_status',
+  description:
+    'Triggers when a call status changes. Receives real-time updates for all call lifecycle events including queued, ringing, in-progress, completed, failed, and more.'
+})
+  .input(
+    z.object({
+      executionId: z.string().describe('Execution ID of the call'),
+      status: z.string().describe('Call status'),
+      agentId: z.string().optional().describe('Agent ID'),
+      batchId: z.string().optional().describe('Batch ID if part of a batch'),
+      transcript: z.string().optional().describe('Conversation transcript'),
+      conversationTime: z.number().optional().describe('Conversation duration in seconds'),
+      totalCost: z.number().optional().describe('Total cost in cents'),
+      answeredByVoiceMail: z.boolean().optional().describe('Whether voicemail answered'),
+      errorMessage: z.string().optional().describe('Error message if call failed'),
+      extractedData: z
+        .any()
+        .optional()
+        .describe('Structured data extracted from conversation'),
+      contextDetails: z.any().optional().describe('Custom variables injected into the call'),
+      costBreakdown: z
+        .object({
+          llm: z.number().optional(),
+          network: z.number().optional(),
+          platform: z.number().optional(),
+          synthesizer: z.number().optional(),
+          transcriber: z.number().optional()
+        })
+        .optional()
+        .describe('Cost breakdown by component'),
+      telephonyData: z
+        .object({
+          duration: z.string().optional(),
+          toNumber: z.string().optional(),
+          fromNumber: z.string().optional(),
+          recordingUrl: z.string().optional(),
+          callType: z.string().optional(),
+          telephonyProvider: z.string().optional(),
+          hangupBy: z.string().optional(),
+          hangupReason: z.string().optional()
+        })
+        .optional()
+        .describe('Telephony metadata'),
+      transferCallData: z
+        .object({
+          status: z.string().optional(),
+          duration: z.string().optional(),
+          cost: z.number().optional(),
+          toNumber: z.string().optional(),
+          fromNumber: z.string().optional(),
+          recordingUrl: z.string().optional()
+        })
+        .optional()
+        .describe('Transfer call data if call was transferred'),
+      batchRunDetails: z
+        .object({
+          status: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          retried: z.number().optional()
+        })
+        .optional()
+        .describe('Batch run details')
+    })
+  )
+  .output(
+    z.object({
+      executionId: z.string().describe('Execution ID'),
+      status: z.string().describe('Call status'),
+      agentId: z.string().optional().describe('Agent ID'),
+      batchId: z.string().optional().describe('Batch ID'),
+      transcript: z.string().optional().describe('Conversation transcript'),
+      conversationTime: z.number().optional().describe('Conversation duration in seconds'),
+      totalCost: z.number().optional().describe('Total cost in cents'),
+      answeredByVoiceMail: z.boolean().optional().describe('Whether voicemail answered'),
+      errorMessage: z.string().optional().describe('Error message'),
+      extractedData: z.any().optional().describe('Extracted structured data'),
+      contextDetails: z.any().optional().describe('Call context variables'),
+      costBreakdown: z
+        .object({
+          llm: z.number().optional(),
+          network: z.number().optional(),
+          platform: z.number().optional(),
+          synthesizer: z.number().optional(),
+          transcriber: z.number().optional()
+        })
+        .optional()
+        .describe('Cost breakdown'),
+      toNumber: z.string().optional().describe('Recipient phone number'),
+      fromNumber: z.string().optional().describe('Caller phone number'),
+      recordingUrl: z.string().optional().describe('Call recording URL'),
+      callType: z.string().optional().describe('Call type (inbound/outbound)'),
+      telephonyProvider: z.string().optional().describe('Telephony provider used'),
+      hangupBy: z.string().optional().describe('Who hung up the call'),
+      hangupReason: z.string().optional().describe('Reason for hangup'),
+      callDuration: z.string().optional().describe('Total call duration'),
+      transferCallData: z
+        .object({
+          status: z.string().optional(),
+          duration: z.string().optional(),
+          cost: z.number().optional(),
+          toNumber: z.string().optional(),
+          fromNumber: z.string().optional(),
+          recordingUrl: z.string().optional()
+        })
+        .optional()
+        .describe('Transfer call data'),
+      batchRunDetails: z
+        .object({
+          status: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          retried: z.number().optional()
+        })
+        .optional()
+        .describe('Batch run details')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       // The webhook payload matches the execution data structure
       let input: any = {
@@ -163,7 +189,7 @@ export let callStatus = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -195,4 +221,5 @@ export let callStatus = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

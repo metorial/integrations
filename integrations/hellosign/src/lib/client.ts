@@ -131,8 +131,10 @@ export class Client {
       body[`signers[${i}][name]`] = signer.name;
       if (signer.order !== undefined) body[`signers[${i}][order]`] = signer.order;
       if (signer.pin) body[`signers[${i}][pin]`] = signer.pin;
-      if (signer.smsPhoneNumber) body[`signers[${i}][sms_phone_number]`] = signer.smsPhoneNumber;
-      if (signer.smsPhoneNumberType) body[`signers[${i}][sms_phone_number_type]`] = signer.smsPhoneNumberType;
+      if (signer.smsPhoneNumber)
+        body[`signers[${i}][sms_phone_number]`] = signer.smsPhoneNumber;
+      if (signer.smsPhoneNumberType)
+        body[`signers[${i}][sms_phone_number_type]`] = signer.smsPhoneNumberType;
     });
 
     if (params.ccEmailAddresses) {
@@ -178,7 +180,7 @@ export class Client {
     });
 
     if (params.ccs) {
-      params.ccs.forEach((cc) => {
+      params.ccs.forEach(cc => {
         body[`ccs[${cc.role}][email_address]`] = cc.emailAddress;
       });
     }
@@ -205,7 +207,9 @@ export class Client {
     return response.data.signature_request;
   }
 
-  async listSignatureRequests(params?: ListParams): Promise<{ signatureRequests: any[]; listInfo: ListInfo }> {
+  async listSignatureRequests(
+    params?: ListParams
+  ): Promise<{ signatureRequests: any[]; listInfo: ListInfo }> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.pageSize) query.page_size = params.pageSize;
@@ -226,13 +230,20 @@ export class Client {
     await this.axios.post(`/signature_request/remove/${signatureRequestId}`);
   }
 
-  async sendReminder(signatureRequestId: string, emailAddress: string, name?: string): Promise<any> {
+  async sendReminder(
+    signatureRequestId: string,
+    emailAddress: string,
+    name?: string
+  ): Promise<any> {
     let body: Record<string, any> = {
       email_address: emailAddress
     };
     if (name) body.name = name;
 
-    let response = await this.axios.post(`/signature_request/remind/${signatureRequestId}`, body);
+    let response = await this.axios.post(
+      `/signature_request/remind/${signatureRequestId}`,
+      body
+    );
     return response.data.signature_request;
   }
 
@@ -243,15 +254,23 @@ export class Client {
     if (params.signerName) body.signer_name = params.signerName;
     if (params.expiresAt) body.expires_at = params.expiresAt;
 
-    let response = await this.axios.post(`/signature_request/update/${params.signatureRequestId}`, body);
+    let response = await this.axios.post(
+      `/signature_request/update/${params.signatureRequestId}`,
+      body
+    );
     return response.data.signature_request;
   }
 
-  async getSignatureRequestFiles(signatureRequestId: string, fileType?: 'pdf' | 'zip'): Promise<{ fileUrl: string }> {
+  async getSignatureRequestFiles(
+    signatureRequestId: string,
+    fileType?: 'pdf' | 'zip'
+  ): Promise<{ fileUrl: string }> {
     let params: Record<string, any> = { get_url: true };
     if (fileType) params.file_type = fileType;
 
-    let response = await this.axios.get(`/signature_request/files/${signatureRequestId}`, { params });
+    let response = await this.axios.get(`/signature_request/files/${signatureRequestId}`, {
+      params
+    });
     return { fileUrl: response.data.file_url };
   }
 
@@ -275,7 +294,10 @@ export class Client {
     };
   }
 
-  async updateTemplate(templateId: string, params: { title?: string; subject?: string; message?: string }): Promise<any> {
+  async updateTemplate(
+    templateId: string,
+    params: { title?: string; subject?: string; message?: string }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.title) body.title = params.title;
     if (params.subject) body.subject = params.subject;
@@ -289,7 +311,10 @@ export class Client {
     await this.axios.post(`/template/delete/${templateId}`);
   }
 
-  async addTemplateUser(templateId: string, params: { accountId?: string; emailAddress?: string }): Promise<any> {
+  async addTemplateUser(
+    templateId: string,
+    params: { accountId?: string; emailAddress?: string }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.accountId) body.account_id = params.accountId;
     if (params.emailAddress) body.email_address = params.emailAddress;
@@ -298,7 +323,10 @@ export class Client {
     return response.data.template;
   }
 
-  async removeTemplateUser(templateId: string, params: { accountId?: string; emailAddress?: string }): Promise<any> {
+  async removeTemplateUser(
+    templateId: string,
+    params: { accountId?: string; emailAddress?: string }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.accountId) body.account_id = params.accountId;
     if (params.emailAddress) body.email_address = params.emailAddress;
@@ -307,7 +335,10 @@ export class Client {
     return response.data.template;
   }
 
-  async getTemplateFiles(templateId: string, fileType?: 'pdf' | 'zip'): Promise<{ fileUrl: string }> {
+  async getTemplateFiles(
+    templateId: string,
+    fileType?: 'pdf' | 'zip'
+  ): Promise<{ fileUrl: string }> {
     let params: Record<string, any> = { get_url: true };
     if (fileType) params.file_type = fileType;
 
@@ -327,7 +358,11 @@ export class Client {
     return response.data.team;
   }
 
-  async addTeamMember(params: { accountId?: string; emailAddress?: string; role?: string }): Promise<any> {
+  async addTeamMember(params: {
+    accountId?: string;
+    emailAddress?: string;
+    role?: string;
+  }): Promise<any> {
     let body: Record<string, any> = {};
     if (params.accountId) body.account_id = params.accountId;
     if (params.emailAddress) body.email_address = params.emailAddress;
@@ -348,7 +383,9 @@ export class Client {
 
   // ---- Embedded ----
 
-  async getEmbeddedSignUrl(signatureId: string): Promise<{ signUrl: string; expiresAt: number }> {
+  async getEmbeddedSignUrl(
+    signatureId: string
+  ): Promise<{ signUrl: string; expiresAt: number }> {
     let response = await this.axios.get(`/embedded/sign_url/${signatureId}`);
     return {
       signUrl: response.data.embedded.sign_url,
@@ -356,7 +393,10 @@ export class Client {
     };
   }
 
-  async getEmbeddedEditUrl(templateId: string, params?: { skipSignerRoles?: boolean; skipSubjectMessage?: boolean }): Promise<{ editUrl: string; expiresAt: number }> {
+  async getEmbeddedEditUrl(
+    templateId: string,
+    params?: { skipSignerRoles?: boolean; skipSubjectMessage?: boolean }
+  ): Promise<{ editUrl: string; expiresAt: number }> {
     let query: Record<string, any> = {};
     if (params?.skipSignerRoles) query.skip_signer_roles = 1;
     if (params?.skipSubjectMessage) query.skip_subject_message = 1;
@@ -379,7 +419,10 @@ export class Client {
     return response.data;
   }
 
-  async listBulkSendJobs(page?: number, pageSize?: number): Promise<{ bulkSendJobs: any[]; listInfo: ListInfo }> {
+  async listBulkSendJobs(
+    page?: number,
+    pageSize?: number
+  ): Promise<{ bulkSendJobs: any[]; listInfo: ListInfo }> {
     let params: Record<string, any> = {};
     if (page) params.page = page;
     if (pageSize) params.page_size = pageSize;

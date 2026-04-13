@@ -16,7 +16,7 @@ let leadOutputSchema = z.object({
   twitter: z.string().nullable().optional().describe('Twitter handle'),
   country: z.string().nullable().optional().describe('Country'),
   linkedin: z.string().nullable().optional().describe('LinkedIn profile URL'),
-  notes: z.string().nullable().optional().describe('Notes'),
+  notes: z.string().nullable().optional().describe('Notes')
 });
 
 let mapLead = (l: any) => ({
@@ -32,45 +32,46 @@ let mapLead = (l: any) => ({
   twitter: l.twitter,
   country: l.country,
   linkedin: l.linkedin,
-  notes: l.notes,
+  notes: l.notes
 });
 
-export let listLeads = SlateTool.create(
-  spec,
-  {
-    name: 'List Leads',
-    key: 'list_leads',
-    description: `Retrieve a paginated list of leads. Optionally filter by domain.`,
-    tags: {
-      readOnly: true,
-    },
+export let listLeads = SlateTool.create(spec, {
+  name: 'List Leads',
+  key: 'list_leads',
+  description: `Retrieve a paginated list of leads. Optionally filter by domain.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().optional().describe('Filter leads by domain'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    limit: z.number().optional().describe('Results per page (default: 10)'),
-  }))
-  .output(z.object({
-    leads: z.array(leadOutputSchema).describe('List of leads'),
-    total: z.number().nullable().optional().describe('Total leads count'),
-    page: z.number().nullable().optional().describe('Current page'),
-    limit: z.number().nullable().optional().describe('Results per page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z.string().optional().describe('Filter leads by domain'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      limit: z.number().optional().describe('Results per page (default: 10)')
+    })
+  )
+  .output(
+    z.object({
+      leads: z.array(leadOutputSchema).describe('List of leads'),
+      total: z.number().nullable().optional().describe('Total leads count'),
+      page: z.number().nullable().optional().describe('Current page'),
+      limit: z.number().nullable().optional().describe('Results per page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.listLeads({
       domain: ctx.input.domain,
       page: ctx.input.page,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
     let data = result.data || {};
-    let leads = (data.leads || data || []);
+    let leads = data.leads || data || [];
     let mapped = Array.isArray(leads) ? leads.map(mapLead) : [];
 
     return {
@@ -78,31 +79,31 @@ export let listLeads = SlateTool.create(
         leads: mapped,
         total: data.total || mapped.length,
         page: data.page || ctx.input.page,
-        limit: data.limit || ctx.input.limit,
+        limit: data.limit || ctx.input.limit
       },
-      message: `Retrieved **${mapped.length}** leads.`,
+      message: `Retrieved **${mapped.length}** leads.`
     };
-  }).build();
+  })
+  .build();
 
-export let getLead = SlateTool.create(
-  spec,
-  {
-    name: 'Get Lead',
-    key: 'get_lead',
-    description: `Retrieve detailed information for a specific lead by its ID.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLead = SlateTool.create(spec, {
+  name: 'Get Lead',
+  key: 'get_lead',
+  description: `Retrieve detailed information for a specific lead by its ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    leadId: z.string().describe('The lead ID to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('The lead ID to retrieve')
+    })
+  )
   .output(leadOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.getLead(ctx.input.leadId);
@@ -110,41 +111,41 @@ export let getLead = SlateTool.create(
 
     return {
       output: mapLead(data),
-      message: `Retrieved lead **${data.email || ctx.input.leadId}**.`,
+      message: `Retrieved lead **${data.email || ctx.input.leadId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let createLead = SlateTool.create(
-  spec,
-  {
-    name: 'Create Lead',
-    key: 'create_lead',
-    description: `Create a new lead in a specified lead list. The email must be unique within the list.`,
-    tags: {
-      destructive: false,
-    },
+export let createLead = SlateTool.create(spec, {
+  name: 'Create Lead',
+  key: 'create_lead',
+  description: `Create a new lead in a specified lead list. The email must be unique within the list.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    listId: z.string().describe('The lead list ID to add the lead to'),
-    email: z.string().describe('Email address (required, must be unique in the list)'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    position: z.string().optional().describe('Job position'),
-    company: z.string().optional().describe('Company name'),
-    score: z.number().optional().describe('Lead score'),
-    websiteUrl: z.string().optional().describe('Website URL'),
-    phoneNumber: z.string().optional().describe('Phone number'),
-    twitter: z.string().optional().describe('Twitter handle'),
-    country: z.string().optional().describe('Country'),
-    linkedin: z.string().optional().describe('LinkedIn profile URL'),
-    notes: z.string().optional().describe('Notes'),
-  }))
+})
+  .input(
+    z.object({
+      listId: z.string().describe('The lead list ID to add the lead to'),
+      email: z.string().describe('Email address (required, must be unique in the list)'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      position: z.string().optional().describe('Job position'),
+      company: z.string().optional().describe('Company name'),
+      score: z.number().optional().describe('Lead score'),
+      websiteUrl: z.string().optional().describe('Website URL'),
+      phoneNumber: z.string().optional().describe('Phone number'),
+      twitter: z.string().optional().describe('Twitter handle'),
+      country: z.string().optional().describe('Country'),
+      linkedin: z.string().optional().describe('LinkedIn profile URL'),
+      notes: z.string().optional().describe('Notes')
+    })
+  )
   .output(leadOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.createLead({
@@ -160,48 +161,48 @@ export let createLead = SlateTool.create(
       twitter: ctx.input.twitter,
       country: ctx.input.country,
       linkedin: ctx.input.linkedin,
-      notes: ctx.input.notes,
+      notes: ctx.input.notes
     });
 
     let data = result.data || result;
 
     return {
       output: mapLead(data),
-      message: `Created lead **${ctx.input.email}** in list **${ctx.input.listId}**.`,
+      message: `Created lead **${ctx.input.email}** in list **${ctx.input.listId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateLead = SlateTool.create(
-  spec,
-  {
-    name: 'Update Lead',
-    key: 'update_lead',
-    description: `Update the fields of an existing lead by its ID. Only provide the fields you want to change.`,
-    tags: {
-      destructive: false,
-    },
+export let updateLead = SlateTool.create(spec, {
+  name: 'Update Lead',
+  key: 'update_lead',
+  description: `Update the fields of an existing lead by its ID. Only provide the fields you want to change.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    leadId: z.string().describe('The lead ID to update'),
-    email: z.string().optional().describe('Updated email address'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    position: z.string().optional().describe('Updated job position'),
-    company: z.string().optional().describe('Updated company name'),
-    score: z.number().optional().describe('Updated lead score'),
-    websiteUrl: z.string().optional().describe('Updated website URL'),
-    phoneNumber: z.string().optional().describe('Updated phone number'),
-    twitter: z.string().optional().describe('Updated Twitter handle'),
-    country: z.string().optional().describe('Updated country'),
-    linkedin: z.string().optional().describe('Updated LinkedIn profile URL'),
-    notes: z.string().optional().describe('Updated notes'),
-  }))
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('The lead ID to update'),
+      email: z.string().optional().describe('Updated email address'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      position: z.string().optional().describe('Updated job position'),
+      company: z.string().optional().describe('Updated company name'),
+      score: z.number().optional().describe('Updated lead score'),
+      websiteUrl: z.string().optional().describe('Updated website URL'),
+      phoneNumber: z.string().optional().describe('Updated phone number'),
+      twitter: z.string().optional().describe('Updated Twitter handle'),
+      country: z.string().optional().describe('Updated country'),
+      linkedin: z.string().optional().describe('Updated LinkedIn profile URL'),
+      notes: z.string().optional().describe('Updated notes')
+    })
+  )
   .output(leadOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.updateLead(ctx.input.leadId, {
@@ -216,46 +217,49 @@ export let updateLead = SlateTool.create(
       twitter: ctx.input.twitter,
       country: ctx.input.country,
       linkedin: ctx.input.linkedin,
-      notes: ctx.input.notes,
+      notes: ctx.input.notes
     });
 
     let data = result.data || result;
 
     return {
       output: mapLead(data),
-      message: `Updated lead **${ctx.input.leadId}**.`,
+      message: `Updated lead **${ctx.input.leadId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteLead = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Lead',
-    key: 'delete_lead',
-    description: `Delete a lead by its ID. This action is permanent and cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteLead = SlateTool.create(spec, {
+  name: 'Delete Lead',
+  key: 'delete_lead',
+  description: `Delete a lead by its ID. This action is permanent and cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    leadId: z.string().describe('The lead ID to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('The lead ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     await client.deleteLead(ctx.input.leadId);
 
     return {
       output: {
-        success: true,
+        success: true
       },
-      message: `Deleted lead **${ctx.input.leadId}**.`,
+      message: `Deleted lead **${ctx.input.leadId}**.`
     };
-  }).build();
+  })
+  .build();

@@ -3,25 +3,26 @@ import { HeyGenClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteVideo = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Video',
-    key: 'delete_video',
-    description: `Permanently delete a generated video from your HeyGen account.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteVideo = SlateTool.create(spec, {
+  name: 'Delete Video',
+  key: 'delete_video',
+  description: `Permanently delete a generated video from your HeyGen account.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    videoId: z.string().describe('ID of the video to delete'),
-  }))
-  .output(z.object({
-    videoId: z.string().describe('ID of the deleted video'),
-    deleted: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      videoId: z.string().describe('ID of the video to delete')
+    })
+  )
+  .output(
+    z.object({
+      videoId: z.string().describe('ID of the deleted video'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HeyGenClient({ token: ctx.auth.token });
 
     await client.deleteVideo(ctx.input.videoId);
@@ -29,9 +30,9 @@ export let deleteVideo = SlateTool.create(
     return {
       output: {
         videoId: ctx.input.videoId,
-        deleted: true,
+        deleted: true
       },
-      message: `Video **${ctx.input.videoId}** has been deleted.`,
+      message: `Video **${ctx.input.videoId}** has been deleted.`
     };
   })
   .build();

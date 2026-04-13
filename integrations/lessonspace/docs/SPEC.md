@@ -13,6 +13,7 @@ Lessonspace uses API keys for authentication. The API key can be found on the Le
 To authenticate requests, add the `Authorization` header set to `Organisation YOUR_API_KEY`.
 
 **Example:**
+
 ```
 Authorization: Organisation sk_live_abc123...
 ```

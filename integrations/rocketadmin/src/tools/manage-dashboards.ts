@@ -3,32 +3,44 @@ import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDashboards = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Dashboards',
-    key: 'manage_dashboards',
-    description: `List, create, update, or delete dashboards for a database connection. Dashboards provide data visualization through customizable widgets.`,
-    tags: {
-      destructive: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    connectionId: z.string().optional().describe('Connection ID (required for list and create)'),
-    dashboardId: z.string().optional().describe('Dashboard ID (required for get, update, delete)'),
-    title: z.string().optional().describe('Dashboard title (required for create and update)'),
-  }))
-  .output(z.object({
-    dashboards: z.array(z.record(z.string(), z.unknown())).optional().describe('List of dashboards'),
-    dashboard: z.record(z.string(), z.unknown()).optional().describe('Dashboard details'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageDashboards = SlateTool.create(spec, {
+  name: 'Manage Dashboards',
+  key: 'manage_dashboards',
+  description: `List, create, update, or delete dashboards for a database connection. Dashboards provide data visualization through customizable widgets.`,
+  tags: {
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      connectionId: z
+        .string()
+        .optional()
+        .describe('Connection ID (required for list and create)'),
+      dashboardId: z
+        .string()
+        .optional()
+        .describe('Dashboard ID (required for get, update, delete)'),
+      title: z.string().optional().describe('Dashboard title (required for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      dashboards: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of dashboards'),
+      dashboard: z.record(z.string(), z.unknown()).optional().describe('Dashboard details'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RocketadminClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let { action, connectionId, dashboardId, title } = ctx.input;
@@ -38,7 +50,7 @@ export let manageDashboards = SlateTool.create(
       let dashboards = await client.listDashboards(connectionId);
       return {
         output: { dashboards, success: true },
-        message: `Found **${dashboards.length}** dashboard(s).`,
+        message: `Found **${dashboards.length}** dashboard(s).`
       };
     }
 
@@ -47,7 +59,7 @@ export let manageDashboards = SlateTool.create(
       let dashboard = await client.getDashboard(dashboardId);
       return {
         output: { dashboard, success: true },
-        message: `Retrieved dashboard **${dashboardId}**.`,
+        message: `Retrieved dashboard **${dashboardId}**.`
       };
     }
 
@@ -57,7 +69,7 @@ export let manageDashboards = SlateTool.create(
       let dashboard = await client.createDashboard(connectionId, title);
       return {
         output: { dashboard, success: true },
-        message: `Dashboard **${title}** created successfully.`,
+        message: `Dashboard **${title}** created successfully.`
       };
     }
 
@@ -67,7 +79,7 @@ export let manageDashboards = SlateTool.create(
       let dashboard = await client.updateDashboard(dashboardId, title);
       return {
         output: { dashboard, success: true },
-        message: `Dashboard **${dashboardId}** updated successfully.`,
+        message: `Dashboard **${dashboardId}** updated successfully.`
       };
     }
 
@@ -76,9 +88,10 @@ export let manageDashboards = SlateTool.create(
       await client.deleteDashboard(dashboardId);
       return {
         output: { success: true },
-        message: `Dashboard **${dashboardId}** deleted successfully.`,
+        message: `Dashboard **${dashboardId}** deleted successfully.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

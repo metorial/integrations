@@ -35,14 +35,16 @@ export class Client {
 
   // ── People ──
 
-  async listPeople(params?: PaginationParams & {
-    emailAddresses?: string[];
-    tagId?: number;
-    cadenceId?: number;
-    accountId?: number;
-    ownerId?: number;
-    updatedAtGte?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listPeople(
+    params?: PaginationParams & {
+      emailAddresses?: string[];
+      tagId?: number;
+      cadenceId?: number;
+      accountId?: number;
+      ownerId?: number;
+      updatedAtGte?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -80,11 +82,13 @@ export class Client {
 
   // ── Accounts ──
 
-  async listAccounts(params?: PaginationParams & {
-    domain?: string;
-    name?: string;
-    updatedAtGte?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listAccounts(
+    params?: PaginationParams & {
+      domain?: string;
+      name?: string;
+      updatedAtGte?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -119,10 +123,12 @@ export class Client {
 
   // ── Cadences ──
 
-  async listCadences(params?: PaginationParams & {
-    teamCadence?: boolean;
-    updatedAtGte?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listCadences(
+    params?: PaginationParams & {
+      teamCadence?: boolean;
+      updatedAtGte?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -142,7 +148,11 @@ export class Client {
 
   // ── Cadence Memberships ──
 
-  async addPersonToCadence(personId: number, cadenceId: number, userId?: number): Promise<any> {
+  async addPersonToCadence(
+    personId: number,
+    cadenceId: number,
+    userId?: number
+  ): Promise<any> {
     let body: Record<string, any> = {
       person_id: personId,
       cadence_id: cadenceId
@@ -156,10 +166,12 @@ export class Client {
     await this.axios.delete(`/cadence_memberships/${membershipId}.json`);
   }
 
-  async listCadenceMemberships(params?: PaginationParams & {
-    personId?: number;
-    cadenceId?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listCadenceMemberships(
+    params?: PaginationParams & {
+      personId?: number;
+      cadenceId?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -172,10 +184,12 @@ export class Client {
 
   // ── Activities: Emails ──
 
-  async listEmailActivities(params?: PaginationParams & {
-    updatedAtGte?: string;
-    personId?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listEmailActivities(
+    params?: PaginationParams & {
+      updatedAtGte?: string;
+      personId?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -195,10 +209,12 @@ export class Client {
 
   // ── Activities: Calls ──
 
-  async listCallActivities(params?: PaginationParams & {
-    updatedAtGte?: string;
-    personId?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listCallActivities(
+    params?: PaginationParams & {
+      updatedAtGte?: string;
+      personId?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -225,10 +241,12 @@ export class Client {
 
   // ── Email Templates ──
 
-  async listEmailTemplates(params?: PaginationParams & {
-    searchTitle?: string;
-    searchSubject?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listEmailTemplates(
+    params?: PaginationParams & {
+      searchTitle?: string;
+      searchSubject?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -248,12 +266,14 @@ export class Client {
 
   // ── Tasks ──
 
-  async listTasks(params?: PaginationParams & {
-    personId?: number;
-    currentUser?: boolean;
-    taskType?: string;
-    updatedAtGte?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listTasks(
+    params?: PaginationParams & {
+      personId?: number;
+      currentUser?: boolean;
+      taskType?: string;
+      updatedAtGte?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -275,11 +295,13 @@ export class Client {
 
   // ── Notes ──
 
-  async listNotes(params?: PaginationParams & {
-    personId?: number;
-    accountId?: number;
-    updatedAtGte?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listNotes(
+    params?: PaginationParams & {
+      personId?: number;
+      accountId?: number;
+      updatedAtGte?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -325,9 +347,11 @@ export class Client {
 
   // ── Tags ──
 
-  async listTags(params?: PaginationParams & {
-    search?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listTags(
+    params?: PaginationParams & {
+      search?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -356,7 +380,9 @@ export class Client {
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
 
-    let response = await this.axios.get('/webhook_subscriptions.json', { params: queryParams });
+    let response = await this.axios.get('/webhook_subscriptions.json', {
+      params: queryParams
+    });
     return this.mapPaginatedResponse(response.data);
   }
 
@@ -373,9 +399,11 @@ export class Client {
 
   // ── Successes ──
 
-  async listSuccesses(params?: PaginationParams & {
-    personId?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listSuccesses(
+    params?: PaginationParams & {
+      personId?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;

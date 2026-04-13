@@ -3,38 +3,44 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 
-export let getAsset = SlateTool.create(
-  spec,
-  {
-    name: 'Get Asset',
-    key: 'get_asset',
-    description: `Retrieve a single asset by ID. Returns full asset metadata including file URL, dimensions, and locale-specific fields.`,
-    tags: {
-      readOnly: true
-    }
+export let getAsset = SlateTool.create(spec, {
+  name: 'Get Asset',
+  key: 'get_asset',
+  description: `Retrieve a single asset by ID. Returns full asset metadata including file URL, dimensions, and locale-specific fields.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    assetId: z.string().describe('The ID of the asset to retrieve.')
-  }))
-  .output(z.object({
-    assetId: z.string(),
-    title: z.record(z.string(), z.string()).optional(),
-    description: z.record(z.string(), z.string()).optional(),
-    file: z.record(z.string(), z.object({
-      fileName: z.string().optional(),
-      contentType: z.string().optional(),
-      url: z.string().optional(),
-      size: z.number().optional(),
-      width: z.number().optional(),
-      height: z.number().optional()
-    })).optional(),
-    version: z.number().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    publishedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      assetId: z.string().describe('The ID of the asset to retrieve.')
+    })
+  )
+  .output(
+    z.object({
+      assetId: z.string(),
+      title: z.record(z.string(), z.string()).optional(),
+      description: z.record(z.string(), z.string()).optional(),
+      file: z
+        .record(
+          z.string(),
+          z.object({
+            fileName: z.string().optional(),
+            contentType: z.string().optional(),
+            url: z.string().optional(),
+            size: z.number().optional(),
+            width: z.number().optional(),
+            height: z.number().optional()
+          })
+        )
+        .optional(),
+      version: z.number().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      publishedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let asset = await client.getAsset(ctx.input.assetId);
 
@@ -66,4 +72,5 @@ export let getAsset = SlateTool.create(
       },
       message: `Retrieved asset **${asset.sys?.id}**.`
     };
-  }).build();
+  })
+  .build();

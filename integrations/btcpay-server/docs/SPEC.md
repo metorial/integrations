@@ -29,6 +29,7 @@ BTCPay Server's Greenfield API allows users to generate API keys with specific p
 This allows external applications to request the user to generate an API key with a specific set of permissions by simply generating a URL to BTCPay Server and redirecting the user to it.
 
 The authorize URL is: `https://{instance}/api-keys/authorize` with query parameters:
+
 - `applicationName` — Name of the requesting application
 - `permissions` — Array of requested permissions
 - `redirect` — URL to receive the API key via POST after authorization

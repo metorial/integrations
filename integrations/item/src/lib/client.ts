@@ -1,4 +1,3 @@
-// @ts-ignore
 import crypto from 'crypto';
 import { createAxios } from 'slates';
 
@@ -12,8 +11,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -54,7 +53,7 @@ export class Client {
     let response = await this.axios.get(`/api/objects/${objectType}`, { params: query });
     return {
       data: response.data.data ?? [],
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -71,7 +70,8 @@ export class Client {
 
     if (params.objectId !== undefined) query.id = params.objectId;
     if (params.email) query.email = params.email;
-    if (params.includeAllFields !== undefined) query.include_all_fields = params.includeAllFields;
+    if (params.includeAllFields !== undefined)
+      query.include_all_fields = params.includeAllFields;
     if (params.includeSummary !== undefined) query.include_summary = params.includeSummary;
 
     let response = await this.axios.get(`/api/objects/${objectType}`, { params: query });
@@ -89,7 +89,7 @@ export class Client {
     let response = await this.axios.put(`/api/objects/${objectType}`, {
       name: body.name,
       fields: body.fields,
-      profile_image_url: body.profileImageUrl,
+      profile_image_url: body.profileImageUrl
     });
     return response.data.data;
   }
@@ -109,7 +109,7 @@ export class Client {
       email: body.email,
       name: body.name,
       fields: body.fields,
-      profile_image_url: body.profileImageUrl,
+      profile_image_url: body.profileImageUrl
     });
     return response.data.data;
   }
@@ -117,8 +117,8 @@ export class Client {
   async deleteObject(objectType: string, objectId: number): Promise<{ success: boolean }> {
     let response = await this.axios.delete(`/api/objects/${objectType}`, {
       data: {
-        id: objectId,
-      },
+        id: objectId
+      }
     });
     return response.data;
   }
@@ -134,13 +134,13 @@ export class Client {
     }>
   ): Promise<any> {
     let response = await this.axios.post(`/api/objects/${objectType}/batch`, {
-      objects: objects.map((object) => ({
+      objects: objects.map(object => ({
         name: object.name,
         match_by: object.matchBy,
         match_value: object.matchValue,
         fields: object.fields,
-        profile_image_url: object.profileImageUrl,
-      })),
+        profile_image_url: object.profileImageUrl
+      }))
     });
     return response.data;
   }
@@ -169,13 +169,13 @@ export class Client {
     }
   ): Promise<{ data: any[]; view?: any; pagination?: any }> {
     let response = await this.axios.get(`/api/objects/${objectType}/views/${viewId}`, {
-      params,
+      params
     });
 
     return {
       data: response.data.data ?? [],
       view: response.data.view,
-      pagination: response.data.pagination,
+      pagination: response.data.pagination
     };
   }
 
@@ -190,12 +190,15 @@ export class Client {
     let headers: Record<string, string> = {};
 
     if (options?.signPayload) {
-      let signature = crypto.createHmac('sha256', this.config.token).update(rawBody).digest('hex');
+      let signature = crypto
+        .createHmac('sha256', this.config.token)
+        .update(rawBody)
+        .digest('hex');
       headers['x-webhook-signature'] = `sha256=${signature}`;
     }
 
     let response = await this.axios.post(`/api/webhooks/${skillId}`, rawBody, {
-      headers,
+      headers
     });
 
     return response.data;

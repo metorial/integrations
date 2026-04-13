@@ -3,49 +3,59 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateMember = SlateTool.create(
-  spec,
-  {
-    name: 'Update Member',
-    key: 'update_member',
-    description: `Update an existing member's profile in the directory. Supports updating standard fields as well as custom fields and member credits.
+export let updateMember = SlateTool.create(spec, {
+  name: 'Update Member',
+  key: 'update_member',
+  description: `Update an existing member's profile in the directory. Supports updating standard fields as well as custom fields and member credits.
 Invalid URL formats for website or social media fields will be skipped by the system.`,
-    tags: {
-      destructive: false,
-    },
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    userId: z.string().describe('The user ID of the member to update.'),
-    email: z.string().optional().describe('Updated email address.'),
-    firstName: z.string().optional().describe('Updated first name.'),
-    lastName: z.string().optional().describe('Updated last name.'),
-    phone: z.string().optional().describe('Updated phone number.'),
-    company: z.string().optional().describe('Updated company name.'),
-    website: z.string().optional().describe('Updated website URL.'),
-    address: z.string().optional().describe('Updated street address.'),
-    city: z.string().optional().describe('Updated city.'),
-    state: z.string().optional().describe('Updated state or province.'),
-    zip: z.string().optional().describe('Updated zip or postal code.'),
-    country: z.string().optional().describe('Updated country.'),
-    subscriptionId: z.string().optional().describe('Updated membership plan ID.'),
-    credits: z.number().optional().describe('Set the member credit balance to this value (overrides current credits).'),
-    addCredits: z.number().optional().describe('Number of credits to add to the member.'),
-    deductCredits: z.number().optional().describe('Number of credits to deduct from the member.'),
-    additionalFields: z.record(z.string(), z.string()).optional().describe('Any additional custom fields to update as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    member: z.any().describe('The updated member record.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('The user ID of the member to update.'),
+      email: z.string().optional().describe('Updated email address.'),
+      firstName: z.string().optional().describe('Updated first name.'),
+      lastName: z.string().optional().describe('Updated last name.'),
+      phone: z.string().optional().describe('Updated phone number.'),
+      company: z.string().optional().describe('Updated company name.'),
+      website: z.string().optional().describe('Updated website URL.'),
+      address: z.string().optional().describe('Updated street address.'),
+      city: z.string().optional().describe('Updated city.'),
+      state: z.string().optional().describe('Updated state or province.'),
+      zip: z.string().optional().describe('Updated zip or postal code.'),
+      country: z.string().optional().describe('Updated country.'),
+      subscriptionId: z.string().optional().describe('Updated membership plan ID.'),
+      credits: z
+        .number()
+        .optional()
+        .describe('Set the member credit balance to this value (overrides current credits).'),
+      addCredits: z.number().optional().describe('Number of credits to add to the member.'),
+      deductCredits: z
+        .number()
+        .optional()
+        .describe('Number of credits to deduct from the member.'),
+      additionalFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional custom fields to update as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      member: z.any().describe('The updated member record.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let data: Record<string, any> = {
-      user_id: ctx.input.userId,
+      user_id: ctx.input.userId
     };
 
     if (ctx.input.email) data.email = ctx.input.email;
@@ -74,8 +84,9 @@ Invalid URL formats for website or social media fields will be skipped by the sy
     return {
       output: {
         status: result.status,
-        member: result.message,
+        member: result.message
       },
-      message: `Updated member **${ctx.input.userId}**.`,
+      message: `Updated member **${ctx.input.userId}**.`
     };
-  }).build();
+  })
+  .build();

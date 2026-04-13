@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export type BoldSignRegion = 'us' | 'eu';
 
@@ -15,8 +15,8 @@ export class Client {
       baseURL: getBaseUrl(options.region),
       headers: {
         'X-API-KEY': options.token,
-        Authorization: `Bearer ${options.token}`,
-      },
+        Authorization: `Bearer ${options.token}`
+      }
     });
   }
 
@@ -55,7 +55,7 @@ export class Client {
     let body: Record<string, any> = {
       Title: params.title,
       Message: params.message,
-      Signers: params.signers.map((s) => ({
+      Signers: params.signers.map(s => ({
         Name: s.name,
         EmailAddress: s.emailAddress,
         SignerType: s.signerType ?? 'Signer',
@@ -63,9 +63,9 @@ export class Client {
         Locale: s.locale,
         PrivateMessage: s.privateMessage,
         AuthenticationCode: s.authenticationCode,
-        EnableEmailOTP: s.enableEmailOTP,
+        EnableEmailOTP: s.enableEmailOTP
       })),
-      CC: params.cc?.map((c) => ({ EmailAddress: c.emailAddress })),
+      CC: params.cc?.map(c => ({ EmailAddress: c.emailAddress })),
       FileUrls: params.fileUrls,
       BrandId: params.brandId,
       Labels: params.labels,
@@ -79,16 +79,16 @@ export class Client {
       ReminderSettings: params.reminderSettings
         ? {
             ReminderDays: params.reminderSettings.reminderDays,
-            ReminderCount: params.reminderSettings.reminderCount,
+            ReminderCount: params.reminderSettings.reminderCount
           }
-        : undefined,
+        : undefined
     };
 
     // Remove undefined values
     body = JSON.parse(JSON.stringify(body));
 
     let response = await this.axios.post('/v1/document/send', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return { documentId: response.data.documentId };
@@ -121,10 +121,10 @@ export class Client {
     if (params.startDate) queryParams.set('startDate', params.startDate);
     if (params.endDate) queryParams.set('endDate', params.endDate);
 
-    params.status?.forEach((s) => queryParams.append('status', s));
-    params.sentBy?.forEach((s) => queryParams.append('sentBy', s));
-    params.recipients?.forEach((s) => queryParams.append('recipients', s));
-    params.labels?.forEach((l) => queryParams.append('labels', l));
+    params.status?.forEach(s => queryParams.append('status', s));
+    params.sentBy?.forEach(s => queryParams.append('sentBy', s));
+    params.recipients?.forEach(s => queryParams.append('recipients', s));
+    params.labels?.forEach(l => queryParams.append('labels', l));
 
     let response = await this.axios.get(`/v1/document/list?${queryParams.toString()}`);
     return response.data;
@@ -132,60 +132,80 @@ export class Client {
 
   async getDocument(documentId: string): Promise<Record<string, any>> {
     let response = await this.axios.get('/v1/document/properties', {
-      params: { documentId },
+      params: { documentId }
     });
     return response.data;
   }
 
-  async revokeDocument(documentId: string, message: string, onBehalfOf?: string): Promise<void> {
+  async revokeDocument(
+    documentId: string,
+    message: string,
+    onBehalfOf?: string
+  ): Promise<void> {
     let body: Record<string, any> = { message };
     if (onBehalfOf) body.onBehalfOf = onBehalfOf;
 
-    await this.axios.post(`/v1/document/revoke?documentId=${encodeURIComponent(documentId)}`, body, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    await this.axios.post(
+      `/v1/document/revoke?documentId=${encodeURIComponent(documentId)}`,
+      body,
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 
-  async remindDocument(documentId: string, message?: string, onBehalfOf?: string): Promise<void> {
+  async remindDocument(
+    documentId: string,
+    message?: string,
+    onBehalfOf?: string
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (message) body.Message = message;
     if (onBehalfOf) body.OnBehalfOf = onBehalfOf;
 
-    await this.axios.post(`/v1/document/remind?documentId=${encodeURIComponent(documentId)}`, body, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    await this.axios.post(
+      `/v1/document/remind?documentId=${encodeURIComponent(documentId)}`,
+      body,
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 
   async deleteDocument(documentId: string): Promise<void> {
     await this.axios.delete(`/v1/document/delete`, {
-      params: { documentId },
+      params: { documentId }
     });
   }
 
-  async downloadDocument(documentId: string, onBehalfOf?: string): Promise<{ downloadUrl: string }> {
+  async downloadDocument(
+    documentId: string,
+    onBehalfOf?: string
+  ): Promise<{ downloadUrl: string }> {
     let params: Record<string, string> = { documentId };
     if (onBehalfOf) params.onBehalfOf = onBehalfOf;
 
     let response = await this.axios.get('/v1/document/download', {
       params,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let base64 = Buffer.from(response.data).toString('base64');
     return { downloadUrl: `data:application/pdf;base64,${base64}` };
   }
 
-  async downloadAuditLog(documentId: string, onBehalfOf?: string): Promise<{ downloadUrl: string }> {
+  async downloadAuditLog(
+    documentId: string,
+    onBehalfOf?: string
+  ): Promise<{ downloadUrl: string }> {
     let params: Record<string, string> = { documentId };
     if (onBehalfOf) params.onBehalfOf = onBehalfOf;
 
     let response = await this.axios.get('/v1/document/downloadAuditLog', {
       params,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let base64 = Buffer.from(response.data).toString('base64');
     return { downloadUrl: `data:application/pdf;base64,${base64}` };
   }
@@ -216,9 +236,9 @@ export class Client {
     if (params.templateType) queryParams.set('templateType', params.templateType);
     if (params.searchKey) queryParams.set('searchKey', params.searchKey);
 
-    params.createdBy?.forEach((s) => queryParams.append('createdBy', s));
-    params.templateLabels?.forEach((s) => queryParams.append('templateLabels', s));
-    params.brandIds?.forEach((s) => queryParams.append('brandIds', s));
+    params.createdBy?.forEach(s => queryParams.append('createdBy', s));
+    params.templateLabels?.forEach(s => queryParams.append('templateLabels', s));
+    params.brandIds?.forEach(s => queryParams.append('brandIds', s));
 
     let response = await this.axios.get(`/v1/template/list?${queryParams.toString()}`);
     return response.data;
@@ -226,7 +246,7 @@ export class Client {
 
   async getTemplate(templateId: string): Promise<Record<string, any>> {
     let response = await this.axios.get('/v1/template/properties', {
-      params: { templateId },
+      params: { templateId }
     });
     return response.data;
   }
@@ -260,16 +280,16 @@ export class Client {
     let body: Record<string, any> = {
       Title: params.title,
       Message: params.message,
-      Roles: params.roles.map((r) => ({
+      Roles: params.roles.map(r => ({
         RoleIndex: r.roleIndex,
         SignerName: r.signerName,
         SignerEmail: r.signerEmail,
         SignerType: r.signerType ?? 'Signer',
         SignerOrder: r.signerOrder,
         Locale: r.locale,
-        PrivateMessage: r.privateMessage,
+        PrivateMessage: r.privateMessage
       })),
-      CC: params.cc?.map((c) => ({ EmailAddress: c.emailAddress })),
+      CC: params.cc?.map(c => ({ EmailAddress: c.emailAddress })),
       BrandId: params.brandId,
       Labels: params.labels,
       ExpiryDays: params.expiryDays,
@@ -280,9 +300,9 @@ export class Client {
       ReminderSettings: params.reminderSettings
         ? {
             ReminderDays: params.reminderSettings.reminderDays,
-            ReminderCount: params.reminderSettings.reminderCount,
+            ReminderCount: params.reminderSettings.reminderCount
           }
-        : undefined,
+        : undefined
     };
 
     body = JSON.parse(JSON.stringify(body));
@@ -298,17 +318,13 @@ export class Client {
 
   async deleteTemplate(templateId: string): Promise<void> {
     await this.axios.delete('/v1/template/delete', {
-      params: { templateId },
+      params: { templateId }
     });
   }
 
   // ─── Users ──────────────────────────────────────────────
 
-  async listUsers(params: {
-    page?: number;
-    pageSize?: number;
-    searchKey?: string;
-  }): Promise<{
+  async listUsers(params: { page?: number; pageSize?: number; searchKey?: string }): Promise<{
     pageDetails: Record<string, any>;
     result: Array<Record<string, any>>;
   }> {
@@ -316,26 +332,22 @@ export class Client {
       params: {
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 10,
-        searchKey: params.searchKey,
-      },
+        searchKey: params.searchKey
+      }
     });
     return response.data;
   }
 
   async getUser(userId: string): Promise<Record<string, any>> {
     let response = await this.axios.get('/v1/users/get', {
-      params: { userId },
+      params: { userId }
     });
     return response.data;
   }
 
   // ─── Teams ──────────────────────────────────────────────
 
-  async listTeams(params: {
-    page?: number;
-    pageSize?: number;
-    searchKey?: string;
-  }): Promise<{
+  async listTeams(params: { page?: number; pageSize?: number; searchKey?: string }): Promise<{
     pageDetails: Record<string, any>;
     result: Array<Record<string, any>>;
   }> {
@@ -343,8 +355,8 @@ export class Client {
       params: {
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 10,
-        searchKey: params.searchKey,
-      },
+        searchKey: params.searchKey
+      }
     });
     return response.data;
   }
@@ -358,18 +370,15 @@ export class Client {
 
   // ─── Sender Identities ─────────────────────────────────
 
-  async listSenderIdentities(params: {
-    page?: number;
-    pageSize?: number;
-  }): Promise<{
+  async listSenderIdentities(params: { page?: number; pageSize?: number }): Promise<{
     pageDetails: Record<string, any>;
     result: Array<Record<string, any>>;
   }> {
     let response = await this.axios.get('/v1/senderIdentities/list', {
       params: {
         page: params.page ?? 1,
-        pageSize: params.pageSize ?? 10,
-      },
+        pageSize: params.pageSize ?? 10
+      }
     });
     return response.data;
   }
@@ -380,7 +389,7 @@ export class Client {
     notificationSettings?: Record<string, any>;
   }): Promise<Record<string, any>> {
     let response = await this.axios.post('/v1/senderIdentities/create', params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -399,8 +408,8 @@ export class Client {
       params: {
         page: params.page ?? 1,
         pageSize: params.pageSize ?? 10,
-        searchKey: params.searchKey,
-      },
+        searchKey: params.searchKey
+      }
     });
     return response.data;
   }
@@ -416,8 +425,8 @@ export class Client {
       params: {
         documentId: params.documentId,
         signerEmail: params.signerEmail,
-        redirectUrl: params.redirectUrl,
-      },
+        redirectUrl: params.redirectUrl
+      }
     });
     return response.data;
   }

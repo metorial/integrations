@@ -3,28 +3,33 @@ import { TypeformClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFormInsights = SlateTool.create(
-  spec,
-  {
-    name: 'Get Form Insights',
-    key: 'get_form_insights',
-    description: `Retrieve analytics and insights for a typeform, including response counts, completion rates, and question-level metrics.`,
-    tags: {
-      readOnly: true,
-    },
+export let getFormInsights = SlateTool.create(spec, {
+  name: 'Get Form Insights',
+  key: 'get_form_insights',
+  description: `Retrieve analytics and insights for a typeform, including response counts, completion rates, and question-level metrics.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    formId: z.string().describe('ID of the form to retrieve insights for'),
-  }))
-  .output(z.object({
-    formId: z.string().describe('Form ID'),
-    insights: z.any().describe('Form insights data including response counts, completion rates, and per-question metrics'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      formId: z.string().describe('ID of the form to retrieve insights for')
+    })
+  )
+  .output(
+    z.object({
+      formId: z.string().describe('Form ID'),
+      insights: z
+        .any()
+        .describe(
+          'Form insights data including response counts, completion rates, and per-question metrics'
+        )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TypeformClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let result = await client.getFormInsights(ctx.input.formId);
@@ -32,8 +37,9 @@ export let getFormInsights = SlateTool.create(
     return {
       output: {
         formId: ctx.input.formId,
-        insights: result,
+        insights: result
       },
-      message: `Retrieved insights for form \`${ctx.input.formId}\`.`,
+      message: `Retrieved insights for form \`${ctx.input.formId}\`.`
     };
-  }).build();
+  })
+  .build();

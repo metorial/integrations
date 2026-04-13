@@ -31,7 +31,5 @@ export let provider = Slate.create({
     walmartSearch,
     checkUsage
   ] as any,
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

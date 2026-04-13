@@ -24,25 +24,27 @@ export class GongClient {
     this.authHeader = isBasicAuth ? `Basic ${opts.token}` : `Bearer ${opts.token}`;
 
     this.axios = createAxios({
-      baseURL: opts.baseUrl,
+      baseURL: opts.baseUrl
     });
   }
 
   private get headers() {
     return {
-      'Authorization': this.authHeader,
-      'Content-Type': 'application/json',
+      Authorization: this.authHeader,
+      'Content-Type': 'application/json'
     };
   }
 
   // ========== CALLS ==========
 
-  async listCalls(params: {
-    fromDateTime?: string;
-    toDateTime?: string;
-    cursor?: string;
-    workspaceId?: string;
-  } = {}) {
+  async listCalls(
+    params: {
+      fromDateTime?: string;
+      toDateTime?: string;
+      cursor?: string;
+      workspaceId?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.fromDateTime) queryParams.fromDateTime = params.fromDateTime;
     if (params.toDateTime) queryParams.toDateTime = params.toDateTime;
@@ -51,7 +53,7 @@ export class GongClient {
 
     let response = await this.axios.get('/v2/calls', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -90,7 +92,7 @@ export class GongClient {
     cursor?: string;
   }) {
     let response = await this.axios.post('/v2/calls/extensive', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -105,24 +107,27 @@ export class GongClient {
     cursor?: string;
   }) {
     let response = await this.axios.post('/v2/calls/transcript', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ========== USERS ==========
 
-  async listUsers(params: {
-    cursor?: string;
-    includeAvatars?: boolean;
-  } = {}) {
+  async listUsers(
+    params: {
+      cursor?: string;
+      includeAvatars?: boolean;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.cursor) queryParams.cursor = params.cursor;
-    if (params.includeAvatars !== undefined) queryParams.includeAvatars = String(params.includeAvatars);
+    if (params.includeAvatars !== undefined)
+      queryParams.includeAvatars = String(params.includeAvatars);
 
     let response = await this.axios.get('/v2/users', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -138,7 +143,7 @@ export class GongClient {
     cursor?: string;
   }) {
     let response = await this.axios.post('/v2/stats/activity/aggregate', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -152,7 +157,7 @@ export class GongClient {
     cursor?: string;
   }) {
     let response = await this.axios.post('/v2/stats/activity/day-by-day', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -168,7 +173,7 @@ export class GongClient {
     cursor?: string;
   }) {
     let response = await this.axios.post('/v2/stats/interaction', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -186,22 +191,24 @@ export class GongClient {
     cursor?: string;
   }) {
     let response = await this.axios.post('/v2/stats/activity/scorecards', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ========== LIBRARY ==========
 
-  async getLibraryFolders(params: {
-    workspaceId?: string;
-  } = {}) {
+  async getLibraryFolders(
+    params: {
+      workspaceId?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.workspaceId) queryParams.workspaceId = params.workspaceId;
 
     let response = await this.axios.get('/v2/library/folders', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -209,48 +216,50 @@ export class GongClient {
   async getLibraryFolderCalls(folderId: string) {
     let response = await this.axios.get(`/v2/library/folder-content`, {
       headers: this.headers,
-      params: { folderId },
+      params: { folderId }
     });
     return response.data;
   }
 
   // ========== FLOWS (ENGAGE) ==========
 
-  async listFlows(params: {
-    workspaceId?: string;
-    flowEmailOwner?: string;
-  } = {}) {
+  async listFlows(
+    params: {
+      workspaceId?: string;
+      flowEmailOwner?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.workspaceId) queryParams.workspaceId = params.workspaceId;
     if (params.flowEmailOwner) queryParams.flowEmailOwner = params.flowEmailOwner;
 
     let response = await this.axios.get('/v2/flows', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async listFlowFolders(params: {
-    workspaceId?: string;
-    flowEmailOwner?: string;
-  } = {}) {
+  async listFlowFolders(
+    params: {
+      workspaceId?: string;
+      flowEmailOwner?: string;
+    } = {}
+  ) {
     let queryParams: Record<string, string> = {};
     if (params.workspaceId) queryParams.workspaceId = params.workspaceId;
     if (params.flowEmailOwner) queryParams.flowEmailOwner = params.flowEmailOwner;
 
     let response = await this.axios.get('/v2/flows/folders', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async listProspectFlows(body: {
-    crmProspectsIds: string[];
-  }) {
+  async listProspectFlows(body: { crmProspectsIds: string[] }) {
     let response = await this.axios.post('/v2/flows/prospects', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -261,17 +270,14 @@ export class GongClient {
     crmProspectsIds: string[];
   }) {
     let response = await this.axios.post('/v2/flows/prospects/assign', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async unassignProspectFromFlows(body: {
-    crmProspectId: string;
-    flowId?: string;
-  }) {
+  async unassignProspectFromFlows(body: { crmProspectId: string; flowId?: string }) {
     let response = await this.axios.post('/v2/flows/prospects/unassign', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -287,24 +293,21 @@ export class GongClient {
       headers: this.headers,
       params: {
         integrationId: body.integrationId,
-        objectType: body.objectType,
-      },
+        objectType: body.objectType
+      }
     });
     return response.data;
   }
 
-  async getManualCrmAssociations(params: {
-    fromDateTime: string;
-    cursor?: string;
-  }) {
+  async getManualCrmAssociations(params: { fromDateTime: string; cursor?: string }) {
     let queryParams: Record<string, string> = {
-      fromDateTime: params.fromDateTime,
+      fromDateTime: params.fromDateTime
     };
     if (params.cursor) queryParams.cursor = params.cursor;
 
     let response = await this.axios.get('/v2/calls/manual-crm-associations', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -321,14 +324,14 @@ export class GongClient {
     workspaceId?: string;
   }) {
     let response = await this.axios.post('/v2/meetings', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteMeeting(meetingId: string) {
     let response = await this.axios.delete(`/v2/meetings/${meetingId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -338,7 +341,7 @@ export class GongClient {
   async getDataPrivacyForEmail(emailAddress: string) {
     let response = await this.axios.get('/v2/data-privacy/data-for-email-address', {
       headers: this.headers,
-      params: { emailAddress },
+      params: { emailAddress }
     });
     return response.data;
   }
@@ -346,26 +349,34 @@ export class GongClient {
   async getDataPrivacyForPhone(phoneNumber: string) {
     let response = await this.axios.get('/v2/data-privacy/data-for-phone-number', {
       headers: this.headers,
-      params: { phoneNumber },
+      params: { phoneNumber }
     });
     return response.data;
   }
 
   async eraseDataForEmail(emailAddress: string) {
-    let response = await this.axios.post('/v2/data-privacy/erase-data-for-email-address', {
-      emailAddress,
-    }, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      '/v2/data-privacy/erase-data-for-email-address',
+      {
+        emailAddress
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async eraseDataForPhone(phoneNumber: string) {
-    let response = await this.axios.post('/v2/data-privacy/erase-data-for-phone-number', {
-      phoneNumber,
-    }, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      '/v2/data-privacy/erase-data-for-phone-number',
+      {
+        phoneNumber
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -373,7 +384,7 @@ export class GongClient {
 
   async listWorkspaces() {
     let response = await this.axios.get('/v2/workspaces', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -382,7 +393,7 @@ export class GongClient {
 
   async getSettings() {
     let response = await this.axios.get('/v2/settings/trackers', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -396,7 +407,7 @@ export class GongClient {
     cursor?: string;
   }) {
     let queryParams: Record<string, string> = {
-      fromDateTime: params.fromDateTime,
+      fromDateTime: params.fromDateTime
     };
     if (params.toDateTime) queryParams.toDateTime = params.toDateTime;
     if (params.logType) queryParams.logType = params.logType;
@@ -404,7 +415,7 @@ export class GongClient {
 
     let response = await this.axios.get('/v2/logs', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -425,7 +436,7 @@ export class GongClient {
     }>;
   }) {
     let response = await this.axios.post('/v2/digital-interaction', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -438,7 +449,7 @@ export class GongClient {
     };
   }) {
     let response = await this.axios.post('/v2/calls/users-access', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

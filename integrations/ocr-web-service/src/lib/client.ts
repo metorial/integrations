@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface OcrRequestParams {
   language?: string | string[];
@@ -42,7 +42,7 @@ export class Client {
     this.username = config.username;
     this.licenseCode = config.licenseCode;
     this.api = createAxios({
-      baseURL: 'https://www.ocrwebservice.com/restservices',
+      baseURL: 'https://www.ocrwebservice.com/restservices'
     });
   }
 
@@ -64,7 +64,7 @@ export class Client {
 
     if (params.zones && params.zones.length > 0) {
       query['zone'] = params.zones
-        .map((z) => `${z.top}:${z.left}:${z.height}:${z.width}`)
+        .map(z => `${z.top}:${z.left}:${z.height}:${z.width}`)
         .join(';');
     }
 
@@ -98,35 +98,33 @@ export class Client {
   ): Promise<OcrResponse> {
     let query = this.buildQueryParams(params);
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let fileBuffer = Buffer.from(fileContent, 'base64');
 
     let boundary = `----SlatesBoundary${Date.now()}`;
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     let bodyParts: Buffer[] = [];
 
     let header = `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n`;
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     bodyParts.push(Buffer.from(header, 'utf-8'));
     bodyParts.push(fileBuffer);
 
     let footer = `\r\n--${boundary}--\r\n`;
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     bodyParts.push(Buffer.from(footer, 'utf-8'));
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let body = Buffer.concat(bodyParts);
 
     let response = await this.api.post<OcrResponse>('/processDocument', body, {
       params: query,
       auth: {
         username: this.username,
-        password: this.licenseCode,
+        password: this.licenseCode
       },
       headers: {
         'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     if (response.data.ErrorMessage) {
@@ -146,12 +144,12 @@ export class Client {
       params: query,
       auth: {
         username: this.username,
-        password: this.licenseCode,
+        password: this.licenseCode
       },
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     if (response.data.ErrorMessage) {
@@ -165,11 +163,11 @@ export class Client {
     let response = await this.api.get<AccountInfoResponse>('/getAccountInformation', {
       auth: {
         username: this.username,
-        password: this.licenseCode,
+        password: this.licenseCode
       },
       headers: {
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     if (response.data.ErrorMessage) {

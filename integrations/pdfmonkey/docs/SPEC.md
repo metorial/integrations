@@ -13,6 +13,7 @@ The first step is to get your API Secret Key, available on the My Account page i
 Your API Secret Key should be passed as an HTTP header named `Authorization` and be prefixed with `Bearer`.
 
 Example:
+
 ```
 Authorization: Bearer YOUR_API_SECRET_KEY
 ```

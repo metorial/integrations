@@ -3,37 +3,39 @@ import { GtmClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workspaceChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Workspace Changed',
-    key: 'workspace_changed',
-    description: 'Triggers when changes are detected in a GTM workspace, such as modified tags, triggers, or variables. Polls workspace status to detect pending changes.'
-  }
-)
-  .input(z.object({
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    workspaceId: z.string().describe('Workspace ID'),
-    workspaceName: z.string().optional().describe('Workspace name'),
-    changeCount: z.number().describe('Number of changes detected'),
-    hasMergeConflicts: z.boolean().describe('Whether merge conflicts exist'),
-    detectedAt: z.string().describe('ISO timestamp when the change was detected')
-  }))
-  .output(z.object({
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    workspaceId: z.string().describe('Workspace ID'),
-    workspaceName: z.string().optional().describe('Workspace name'),
-    changeCount: z.number().describe('Number of pending changes'),
-    hasMergeConflicts: z.boolean().describe('Whether merge conflicts exist')
-  }))
+export let workspaceChanged = SlateTrigger.create(spec, {
+  name: 'Workspace Changed',
+  key: 'workspace_changed',
+  description:
+    'Triggers when changes are detected in a GTM workspace, such as modified tags, triggers, or variables. Polls workspace status to detect pending changes.'
+})
+  .input(
+    z.object({
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      workspaceId: z.string().describe('Workspace ID'),
+      workspaceName: z.string().optional().describe('Workspace name'),
+      changeCount: z.number().describe('Number of changes detected'),
+      hasMergeConflicts: z.boolean().describe('Whether merge conflicts exist'),
+      detectedAt: z.string().describe('ISO timestamp when the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      workspaceId: z.string().describe('Workspace ID'),
+      workspaceName: z.string().optional().describe('Workspace name'),
+      changeCount: z.number().describe('Number of pending changes'),
+      hasMergeConflicts: z.boolean().describe('Whether merge conflicts exist')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new GtmClient(ctx.auth.token);
 
       let lastChangeCounts = (ctx.state?.lastChangeCounts || {}) as Record<string, number>;
@@ -57,7 +59,10 @@ export let workspaceChanged = SlateTrigger.create(
           for (let container of containers) {
             if (!container.containerId) continue;
             try {
-              let workspacesResponse = await client.listWorkspaces(account.accountId, container.containerId);
+              let workspacesResponse = await client.listWorkspaces(
+                account.accountId,
+                container.containerId
+              );
               let workspaces = workspacesResponse.workspace || [];
 
               for (let workspace of workspaces) {
@@ -72,7 +77,11 @@ export let workspaceChanged = SlateTrigger.create(
                 // Initialize baseline change counts
                 let key = `${account.accountId}/${container.containerId}/${workspace.workspaceId}`;
                 try {
-                  let status = await client.getWorkspaceStatus(account.accountId, container.containerId, workspace.workspaceId);
+                  let status = await client.getWorkspaceStatus(
+                    account.accountId,
+                    container.containerId,
+                    workspace.workspaceId
+                  );
                   lastChangeCounts[key] = status.workspaceChange?.length || 0;
                 } catch {
                   lastChangeCounts[key] = 0;
@@ -107,7 +116,11 @@ export let workspaceChanged = SlateTrigger.create(
       for (let ws of monitoredWorkspaces) {
         let key = `${ws.accountId}/${ws.containerId}/${ws.workspaceId}`;
         try {
-          let status = await client.getWorkspaceStatus(ws.accountId, ws.containerId, ws.workspaceId);
+          let status = await client.getWorkspaceStatus(
+            ws.accountId,
+            ws.containerId,
+            ws.workspaceId
+          );
           let currentChangeCount = status.workspaceChange?.length || 0;
           let hasMergeConflicts = (status.mergeConflict || []).length > 0;
 
@@ -137,7 +150,7 @@ export let workspaceChanged = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'workspace.changed',
         id: `${ctx.input.accountId}_${ctx.input.containerId}_${ctx.input.workspaceId}_${ctx.input.detectedAt}`,

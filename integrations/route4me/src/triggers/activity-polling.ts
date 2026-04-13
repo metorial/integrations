@@ -3,47 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let activityPolling = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Feed (Polling)',
-    key: 'activity_feed_polling',
-    description: '[Polling fallback] Polls the Route4Me Activity Feed for new activities. Detects route optimization, stop changes, driver arrivals, geofence events, notes, member changes, and more. Use this when webhook configuration is not available.',
-  }
-)
-  .input(z.object({
-    activityId: z.string().describe('Activity ID'),
-    activityType: z.string().describe('Activity type identifier'),
-    activityMessage: z.string().optional().describe('Human-readable activity description'),
-    activityTimestamp: z.number().optional().describe('Activity timestamp'),
-    routeId: z.string().optional().describe('Related route ID'),
-    routeDestinationId: z.number().optional().describe('Related destination ID'),
-    memberId: z.number().optional().describe('Member who triggered the activity'),
-    routeName: z.string().optional().describe('Route name'),
-  }))
-  .output(z.object({
-    activityId: z.string().describe('Activity ID'),
-    activityType: z.string().describe('Activity type'),
-    activityMessage: z.string().optional().describe('Activity description'),
-    activityTimestamp: z.number().optional().describe('Activity timestamp'),
-    routeId: z.string().optional().describe('Related route ID'),
-    routeDestinationId: z.number().optional().describe('Related destination ID'),
-    memberId: z.number().optional().describe('Member who triggered the activity'),
-    routeName: z.string().optional().describe('Route name'),
-  }))
+export let activityPolling = SlateTrigger.create(spec, {
+  name: 'Activity Feed (Polling)',
+  key: 'activity_feed_polling',
+  description:
+    '[Polling fallback] Polls the Route4Me Activity Feed for new activities. Detects route optimization, stop changes, driver arrivals, geofence events, notes, member changes, and more. Use this when webhook configuration is not available.'
+})
+  .input(
+    z.object({
+      activityId: z.string().describe('Activity ID'),
+      activityType: z.string().describe('Activity type identifier'),
+      activityMessage: z.string().optional().describe('Human-readable activity description'),
+      activityTimestamp: z.number().optional().describe('Activity timestamp'),
+      routeId: z.string().optional().describe('Related route ID'),
+      routeDestinationId: z.number().optional().describe('Related destination ID'),
+      memberId: z.number().optional().describe('Member who triggered the activity'),
+      routeName: z.string().optional().describe('Route name')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.string().describe('Activity ID'),
+      activityType: z.string().describe('Activity type'),
+      activityMessage: z.string().optional().describe('Activity description'),
+      activityTimestamp: z.number().optional().describe('Activity timestamp'),
+      routeId: z.string().optional().describe('Related route ID'),
+      routeDestinationId: z.number().optional().describe('Related destination ID'),
+      memberId: z.number().optional().describe('Member who triggered the activity'),
+      routeName: z.string().optional().describe('Route name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastTimestamp = ctx.state?.lastTimestamp as number | undefined;
       let seenIds = (ctx.state?.seenIds as string[] | undefined) || [];
 
       let options: Record<string, any> = {
-        limit: 50,
+        limit: 50
       };
       if (lastTimestamp) {
         options.start = lastTimestamp;
@@ -84,16 +86,16 @@ export let activityPolling = SlateTrigger.create(
           routeId: a.route_id,
           routeDestinationId: a.route_destination_id,
           memberId: a.member_id,
-          routeName: a.route_name,
+          routeName: a.route_name
         })),
         updatedState: {
           lastTimestamp: newTimestamp,
-          seenIds: newSeenIds,
-        },
+          seenIds: newSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
         'route-optimized': 'route.optimized',
         'route-delete': 'route.deleted',
@@ -117,7 +119,7 @@ export let activityPolling = SlateTrigger.create(
         'area-added': 'area.added',
         'area-removed': 'area.removed',
         'area-updated': 'area.updated',
-        'message': 'user.message',
+        message: 'user.message'
       };
 
       let eventType = typeMap[ctx.input.activityType] || `activity.${ctx.input.activityType}`;
@@ -133,9 +135,9 @@ export let activityPolling = SlateTrigger.create(
           routeId: ctx.input.routeId,
           routeDestinationId: ctx.input.routeDestinationId,
           memberId: ctx.input.memberId,
-          routeName: ctx.input.routeName,
-        },
+          routeName: ctx.input.routeName
+        }
       };
-    },
+    }
   })
   .build();

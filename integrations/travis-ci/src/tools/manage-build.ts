@@ -3,31 +3,32 @@ import { TravisCIClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBuild = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Build',
-    key: 'manage_build',
-    description: `Cancel or restart a Travis CI build. Use this to stop a running build or re-run a completed/canceled build.`,
-    tags: {
-      destructive: true,
-    },
+export let manageBuild = SlateTool.create(spec, {
+  name: 'Manage Build',
+  key: 'manage_build',
+  description: `Cancel or restart a Travis CI build. Use this to stop a running build or re-run a completed/canceled build.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    buildId: z.string().describe('Numeric build ID.'),
-    action: z.enum(['cancel', 'restart']).describe('Action to perform on the build.'),
-  }))
-  .output(z.object({
-    buildId: z.number().describe('Build ID'),
-    buildNumber: z.string().optional().describe('Build number'),
-    state: z.string().optional().describe('Build state after action'),
-    repositorySlug: z.string().optional().describe('Repository slug'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      buildId: z.string().describe('Numeric build ID.'),
+      action: z.enum(['cancel', 'restart']).describe('Action to perform on the build.')
+    })
+  )
+  .output(
+    z.object({
+      buildId: z.number().describe('Build ID'),
+      buildNumber: z.string().optional().describe('Build number'),
+      state: z.string().optional().describe('Build state after action'),
+      repositorySlug: z.string().optional().describe('Repository slug')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TravisCIClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let result: any;
@@ -44,9 +45,9 @@ export let manageBuild = SlateTool.create(
         buildId: build.id || Number(ctx.input.buildId),
         buildNumber: build.number,
         state: build.state,
-        repositorySlug: build.repository?.slug,
+        repositorySlug: build.repository?.slug
       },
-      message: `Build **#${build.number || ctx.input.buildId}** has been **${ctx.input.action === 'cancel' ? 'cancelled' : 'restarted'}**.`,
+      message: `Build **#${build.number || ctx.input.buildId}** has been **${ctx.input.action === 'cancel' ? 'cancelled' : 'restarted'}**.`
     };
   })
   .build();

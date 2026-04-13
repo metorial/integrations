@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   executeQuery,
@@ -9,13 +8,9 @@ import {
   getTokenPrice,
   getSmartContractEvents,
   getTransactions,
-  getTokenHolders,
+  getTokenHolders
 } from './tools';
-import {
-  newDexTrades,
-  newTokenTransfers,
-  inboundWebhook,
-} from './triggers';
+import { newDexTrades, newTokenTransfers, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -27,11 +22,7 @@ export let provider = Slate.create({
     getTokenPrice,
     getSmartContractEvents,
     getTransactions,
-    getTokenHolders,
+    getTokenHolders
   ],
-  triggers: [
-    inboundWebhook,
-    newDexTrades,
-    newTokenTransfers,
-  ],
+  triggers: [inboundWebhook, newDexTrades, newTokenTransfers]
 });

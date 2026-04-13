@@ -2,29 +2,35 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Account API Token',
     key: 'account_api_token',
     inputSchema: z.object({
-      apiToken: z.string().describe('Codacy Account API Token. Generate one from your Codacy account under Account > Access management > Create API token.'),
+      apiToken: z
+        .string()
+        .describe(
+          'Codacy Account API Token. Generate one from your Codacy account under Account > Access management > Create API token.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiToken,
-        },
+          token: ctx.input.apiToken
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { apiToken: string } }) => {
       let client = createAxios({
         baseURL: 'https://app.codacy.com/api/v3',
         headers: {
-          'api-token': ctx.output.token,
-        },
+          'api-token': ctx.output.token
+        }
       });
 
       let response = await client.get('/user');
@@ -35,8 +41,8 @@ export let auth = SlateAuth.create()
           id: String(user.id ?? ''),
           email: user.mainEmail ?? user.email ?? '',
           name: user.name ?? '',
-          imageUrl: user.avatarUrl ?? '',
-        },
+          imageUrl: user.avatarUrl ?? ''
+        }
       };
-    },
+    }
   });

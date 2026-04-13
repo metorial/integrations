@@ -3,32 +3,33 @@ import { AtlasClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProjectTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Get details about a specific project, create a new project, or delete an existing project. Projects are the primary containers for clusters, database users, and network configurations in MongoDB Atlas.`,
-    tags: {
-      destructive: true,
-    },
+export let manageProjectTool = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Get details about a specific project, create a new project, or delete an existing project. Projects are the primary containers for clusters, database users, and network configurations in MongoDB Atlas.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'create', 'delete']).describe('Action to perform'),
-    projectId: z.string().optional().describe('Project ID (required for get and delete)'),
-    name: z.string().optional().describe('Project name (required for create)'),
-    organizationId: z.string().optional().describe('Organization ID (required for create)'),
-  }))
-  .output(z.object({
-    projectId: z.string().optional().describe('Project ID'),
-    name: z.string().optional().describe('Project name'),
-    orgId: z.string().optional().describe('Organization ID'),
-    clusterCount: z.number().optional().describe('Number of clusters in the project'),
-    created: z.string().optional().describe('ISO 8601 creation timestamp'),
-    deleted: z.boolean().optional().describe('Whether the project was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'create', 'delete']).describe('Action to perform'),
+      projectId: z.string().optional().describe('Project ID (required for get and delete)'),
+      name: z.string().optional().describe('Project name (required for create)'),
+      organizationId: z.string().optional().describe('Organization ID (required for create)')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().optional().describe('Project ID'),
+      name: z.string().optional().describe('Project name'),
+      orgId: z.string().optional().describe('Organization ID'),
+      clusterCount: z.number().optional().describe('Number of clusters in the project'),
+      created: z.string().optional().describe('ISO 8601 creation timestamp'),
+      deleted: z.boolean().optional().describe('Whether the project was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AtlasClient(ctx.auth);
 
     if (ctx.input.action === 'get') {
@@ -41,9 +42,9 @@ export let manageProjectTool = SlateTool.create(
           name: project.name,
           orgId: project.orgId,
           clusterCount: project.clusterCount ?? 0,
-          created: project.created,
+          created: project.created
         },
-        message: `Retrieved project **${project.name}** (${project.id}).`,
+        message: `Retrieved project **${project.name}** (${project.id}).`
       };
     }
 
@@ -53,7 +54,7 @@ export let manageProjectTool = SlateTool.create(
       if (!orgId) throw new Error('organizationId is required for create action');
       let project = await client.createProject({
         name: ctx.input.name,
-        orgId,
+        orgId
       });
       return {
         output: {
@@ -61,9 +62,9 @@ export let manageProjectTool = SlateTool.create(
           name: project.name,
           orgId: project.orgId,
           clusterCount: 0,
-          created: project.created,
+          created: project.created
         },
-        message: `Created project **${project.name}** (${project.id}).`,
+        message: `Created project **${project.name}** (${project.id}).`
       };
     }
 
@@ -74,11 +75,12 @@ export let manageProjectTool = SlateTool.create(
       return {
         output: {
           projectId: pid,
-          deleted: true,
+          deleted: true
         },
-        message: `Deleted project ${pid}.`,
+        message: `Deleted project ${pid}.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

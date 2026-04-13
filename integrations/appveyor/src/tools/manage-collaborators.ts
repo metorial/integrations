@@ -3,39 +3,51 @@ import { AppVeyorClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCollaborators = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Collaborators',
-    key: 'manage_collaborators',
-    description: `List, get, add, update, or remove collaborators on the AppVeyor account. Collaborators are existing AppVeyor users from other accounts who are granted a role in your account.`,
-    instructions: [
-      'For **list**: no additional parameters needed.',
-      'For **get**: provide userId.',
-      'For **add**: provide email and roleId.',
-      'For **update**: provide userId and roleId.',
-      'For **remove**: provide userId.',
-    ],
-    tags: {
-      destructive: true,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'add', 'update', 'remove']).describe('Operation to perform'),
-    userId: z.number().optional().describe('Collaborator user ID (required for get, update, remove)'),
-    email: z.string().optional().describe('Collaborator email (required for add)'),
-    roleId: z.number().optional().describe('Role ID to assign (required for add, update)'),
-  }))
-  .output(z.object({
-    collaborators: z.array(z.record(z.string(), z.unknown())).optional().describe('List of collaborators'),
-    collaborator: z.record(z.string(), z.unknown()).optional().describe('Collaborator details'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageCollaborators = SlateTool.create(spec, {
+  name: 'Manage Collaborators',
+  key: 'manage_collaborators',
+  description: `List, get, add, update, or remove collaborators on the AppVeyor account. Collaborators are existing AppVeyor users from other accounts who are granted a role in your account.`,
+  instructions: [
+    'For **list**: no additional parameters needed.',
+    'For **get**: provide userId.',
+    'For **add**: provide email and roleId.',
+    'For **update**: provide userId and roleId.',
+    'For **remove**: provide userId.'
+  ],
+  tags: {
+    destructive: true
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'add', 'update', 'remove'])
+        .describe('Operation to perform'),
+      userId: z
+        .number()
+        .optional()
+        .describe('Collaborator user ID (required for get, update, remove)'),
+      email: z.string().optional().describe('Collaborator email (required for add)'),
+      roleId: z.number().optional().describe('Role ID to assign (required for add, update)')
+    })
+  )
+  .output(
+    z.object({
+      collaborators: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of collaborators'),
+      collaborator: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Collaborator details'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AppVeyorClient({
       token: ctx.auth.token,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     switch (ctx.input.action) {
@@ -43,7 +55,7 @@ export let manageCollaborators = SlateTool.create(
         let collaborators = await client.listCollaborators();
         return {
           output: { collaborators, success: true },
-          message: `Found **${collaborators.length}** collaborator(s).`,
+          message: `Found **${collaborators.length}** collaborator(s).`
         };
       }
 
@@ -54,7 +66,7 @@ export let manageCollaborators = SlateTool.create(
         let collaborator = await client.getCollaborator(ctx.input.userId);
         return {
           output: { collaborator, success: true },
-          message: `Retrieved collaborator **${ctx.input.userId}**.`,
+          message: `Retrieved collaborator **${ctx.input.userId}**.`
         };
       }
 
@@ -64,11 +76,11 @@ export let manageCollaborators = SlateTool.create(
         }
         await client.addCollaborator({
           email: ctx.input.email,
-          roleId: ctx.input.roleId,
+          roleId: ctx.input.roleId
         });
         return {
           output: { success: true },
-          message: `Added collaborator **${ctx.input.email}**.`,
+          message: `Added collaborator **${ctx.input.email}**.`
         };
       }
 
@@ -78,11 +90,11 @@ export let manageCollaborators = SlateTool.create(
         }
         await client.updateCollaborator({
           userId: ctx.input.userId,
-          roleId: ctx.input.roleId,
+          roleId: ctx.input.roleId
         });
         return {
           output: { success: true },
-          message: `Updated collaborator **${ctx.input.userId}** role.`,
+          message: `Updated collaborator **${ctx.input.userId}** role.`
         };
       }
 
@@ -93,7 +105,7 @@ export let manageCollaborators = SlateTool.create(
         await client.deleteCollaborator(ctx.input.userId);
         return {
           output: { success: true },
-          message: `Removed collaborator **${ctx.input.userId}**.`,
+          message: `Removed collaborator **${ctx.input.userId}**.`
         };
       }
 

@@ -1,14 +1,20 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://hypeauditor.com/api/method',
+  baseURL: 'https://hypeauditor.com/api/method'
 });
 
 let marketAnalysisAxios = createAxios({
-  baseURL: 'https://hypeauditor.com/api/marketanalysis',
+  baseURL: 'https://hypeauditor.com/api/marketanalysis'
 });
 
-export type SocialNetwork = 'instagram' | 'youtube' | 'tiktok' | 'twitter' | 'twitch' | 'snapchat';
+export type SocialNetwork =
+  | 'instagram'
+  | 'youtube'
+  | 'tiktok'
+  | 'twitter'
+  | 'twitch'
+  | 'snapchat';
 
 export interface ClientConfig {
   token: string;
@@ -30,22 +36,26 @@ export class Client {
   private get headers() {
     return {
       'X-Auth-Token': this.token,
-      'X-Auth-Id': this.clientId,
+      'X-Auth-Id': this.clientId
     };
   }
 
   private async apiGet(endpoint: string, params?: Record<string, any>) {
     let response = await apiAxios.get(`/${endpoint}`, {
       headers: this.headers,
-      params: { v: this.apiVersion, ...params },
+      params: { v: this.apiVersion, ...params }
     });
     return response.data;
   }
 
-  private async apiPost(endpoint: string, data?: Record<string, any>, params?: Record<string, any>) {
+  private async apiPost(
+    endpoint: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>
+  ) {
     let response = await apiAxios.post(`/${endpoint}`, data, {
       headers: this.headers,
-      params: { v: this.apiVersion, ...params },
+      params: { v: this.apiVersion, ...params }
     });
     return response.data;
   }
@@ -53,21 +63,24 @@ export class Client {
   private async marketAnalysisGet(endpoint: string, params?: Record<string, any>) {
     let response = await marketAnalysisAxios.get(`/${endpoint}`, {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
 
   private async marketAnalysisPost(endpoint: string, data?: Record<string, any>) {
     let response = await marketAnalysisAxios.post(`/${endpoint}`, data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ==================== SUGGESTER ====================
 
-  async searchInfluencers(search: string, options?: { socialNetwork?: string; excludeNetworks?: string }) {
+  async searchInfluencers(
+    search: string,
+    options?: { socialNetwork?: string; excludeNetworks?: string }
+  ) {
     let params: Record<string, any> = { search };
     if (options?.socialNetwork) params.st = options.socialNetwork;
     if (options?.excludeNetworks) params.exclSt = options.excludeNetworks;
@@ -213,7 +226,7 @@ export class Client {
       date_from: params.dateFrom,
       date_to: params.dateTo,
       audience_geo: params.audienceGeo,
-      hashtags: params.hashtags,
+      hashtags: params.hashtags
     });
   }
 
@@ -225,7 +238,7 @@ export class Client {
     return this.marketAnalysisPost('instagramCompetitorAnalysis/posts', {
       report_id: reportId,
       from: page,
-      size,
+      size
     });
   }
 
@@ -246,14 +259,14 @@ export class Client {
     return this.apiGet('auditor.addToList', {
       list_id: listId,
       channel_id: channelId,
-      type: socialNetwork,
+      type: socialNetwork
     });
   }
 
   async removeFromList(reportId: number, listId: number) {
     return this.apiGet('auditor.removeFromList', {
       report_id: reportId,
-      list_id: listId,
+      list_id: listId
     });
   }
 
@@ -267,7 +280,8 @@ export class Client {
   }) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
-    if (params?.reportUnlockedFrom) queryParams.report_unlocked_from = params.reportUnlockedFrom;
+    if (params?.reportUnlockedFrom)
+      queryParams.report_unlocked_from = params.reportUnlockedFrom;
     if (params?.reportUnlockedTo) queryParams.report_unlocked_to = params.reportUnlockedTo;
     if (params?.cursor) queryParams.cursor = params.cursor;
     return this.apiGet('auditor.creators', queryParams);

@@ -68,6 +68,7 @@ The Optimizely API lets you create and manage Feature Experimentation projects, 
 You can use the REST API and webhooks to achieve some of the following examples: The Asset API can sync supported assets with the following: The CMP library with an Optimizely Digital Asset Manager (DAM). Asset metadata between two systems. A Sales Enablement or Marketing Automation platform, including the metadata needed to sort, organize, and target those assets to specialized audiences in those systems. The Asset API can send approved images from the CMP library to a specific folder in an image repository.
 
 Key capabilities include:
+
 - **Asset & Library Management:** Upload, manage, and organize assets (images, videos, articles, raw files, structured content) in folders with permissions.
 - **Task & Workflow Management:** Create and manage tasks, workflow steps/substeps, comments, briefs, and custom fields. Track task progress through workflow stages.
 - **Campaign Management:** Create and manage marketing campaigns with briefs, comments, attachments, and custom fields.
@@ -115,6 +116,7 @@ Webhooks in Optimizely Feature Experimentation can notify your server when certa
 Webhooks let you subscribe to events on the Optimizely Content Marketing Platform (CMP) to get programmatical notifications. When one of those events happens, Optimizely sends an HTTP POST payload with a JSON body to the configured callback URL.
 
 Webhook event categories include:
+
 - **Task Events:** Task asset added/removed/modified, draft added/removed, workflow substep updates (started, completed, skipped, assignee/due date changes), content preview requested.
 - **Campaign Events:** Notifications related to CMP campaign changes.
 - **Library Events:** Notifications about asset changes in the CMP library.
@@ -130,6 +132,7 @@ Configuration: Provide a callback URL (HTTPS required), select event names, and 
 This topic describes how to use webhooks to receive real-time event data on sent mailings, opens, clicks, bounces, unsubscribes, and spam complaints.
 
 Event types include:
+
 - **Sent:** Mailing was sent to a recipient.
 - **Open:** Recipient opened a mailing.
 - **Click:** Recipient clicked a link in a mailing.
@@ -144,8 +147,9 @@ To enable this feature, contact customer support. Webhooks are managed via the C
 Optimizely Graph can notify your applications when content changes, enabling workflows such as static site generation (for example, Gatsby) to stay up to date.
 
 Event types use a subject/action model:
+
 - **`doc.updated`:** A single content item was updated.
 - **`doc.expired`:** A content item has expired.
 - **`bulk.completed`:** A bulk content synchronization job chunk has finished processing.
 
-Filters events by subject and action. Use an asterisk (*) as a wildcard. You can also apply content filters (e.g., by status or custom fields) to receive only specific notifications.
+Filters events by subject and action. Use an asterisk (\*) as a wildcard. You can also apply content filters (e.g., by status or custom fields) to receive only specific notifications.

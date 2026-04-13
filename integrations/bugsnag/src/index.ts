@@ -16,7 +16,7 @@ import {
   manageComments,
   getStability,
   getPivots,
-  manageSavedSearches,
+  manageSavedSearches
 } from './tools';
 import { errorEvents } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     manageComments,
     getStability,
     getPivots,
-    manageSavedSearches,
+    manageSavedSearches
   ],
-  triggers: [
-    errorEvents,
-  ],
+  triggers: [errorEvents]
 });

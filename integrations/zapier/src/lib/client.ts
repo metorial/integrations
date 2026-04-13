@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.zapier.com',
+  baseURL: 'https://api.zapier.com'
 });
 
 export interface PaginationParams {
@@ -166,18 +166,20 @@ export class Client {
 
   private get headers() {
     return {
-      'Authorization': `Bearer ${this.token}`,
-      'Accept': 'application/json',
+      Authorization: `Bearer ${this.token}`,
+      Accept: 'application/json'
     };
   }
 
   // ---- Apps ----
 
-  async getApps(params?: PaginationParams & {
-    query?: string;
-    category?: string;
-    ids?: string;
-  }): Promise<PaginatedResponse<ZapierApp>> {
+  async getApps(
+    params?: PaginationParams & {
+      query?: string;
+      category?: string;
+      ids?: string;
+    }
+  ): Promise<PaginatedResponse<ZapierApp>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
@@ -187,7 +189,7 @@ export class Client {
 
     let response = await http.get('/v2/apps', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return transformKeys(response.data);
@@ -195,11 +197,13 @@ export class Client {
 
   // ---- Zaps ----
 
-  async getZaps(params?: PaginationParams & {
-    expand?: string;
-    includeShared?: boolean;
-    inputs?: Record<string, string>;
-  }): Promise<PaginatedResponse<Zap>> {
+  async getZaps(
+    params?: PaginationParams & {
+      expand?: string;
+      includeShared?: boolean;
+      inputs?: Record<string, string>;
+    }
+  ): Promise<PaginatedResponse<Zap>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
@@ -213,28 +217,35 @@ export class Client {
 
     let response = await http.get('/v2/zaps', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return transformKeys(response.data);
   }
 
-  async createZap(data: {
-    title: string;
-    steps: {
-      action: string;
-      inputs: Record<string, any>;
-      authentication: string | null;
-      alias?: string | null;
-    }[];
-  }, expand?: string): Promise<Zap> {
+  async createZap(
+    data: {
+      title: string;
+      steps: {
+        action: string;
+        inputs: Record<string, any>;
+        authentication: string | null;
+        alias?: string | null;
+      }[];
+    },
+    expand?: string
+  ): Promise<Zap> {
     let queryParams: Record<string, string> = {};
     if (expand) queryParams.expand = expand;
 
-    let response = await http.post('/v2/zaps', { data }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-      params: queryParams,
-    });
+    let response = await http.post(
+      '/v2/zaps',
+      { data },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' },
+        params: queryParams
+      }
+    );
 
     return transformKeys(response.data);
   }
@@ -246,76 +257,107 @@ export class Client {
     actionType?: string;
   }): Promise<PaginatedResponse<ZapAction>> {
     let queryParams: Record<string, string> = {
-      app: params.app,
+      app: params.app
     };
     if (params.actionType) queryParams.action_type = params.actionType;
 
     let response = await http.get('/v2/actions', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return transformKeys(response.data);
   }
 
-  async getInputFields(actionId: string, data: {
-    authentication: string | null;
-    inputs: Record<string, any>;
-  }): Promise<PaginatedResponse<any>> {
-    let response = await http.post(`/v2/actions/${actionId}/inputs`, { data }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-    });
+  async getInputFields(
+    actionId: string,
+    data: {
+      authentication: string | null;
+      inputs: Record<string, any>;
+    }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await http.post(
+      `/v2/actions/${actionId}/inputs`,
+      { data },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
 
     return transformKeys(response.data);
   }
 
-  async getOutputFields(actionId: string, data: {
-    authentication: string | null;
-    inputs: Record<string, any>;
-  }): Promise<PaginatedResponse<any>> {
-    let response = await http.post(`/v2/actions/${actionId}/outputs`, { data }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-    });
+  async getOutputFields(
+    actionId: string,
+    data: {
+      authentication: string | null;
+      inputs: Record<string, any>;
+    }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await http.post(
+      `/v2/actions/${actionId}/outputs`,
+      { data },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
 
     return transformKeys(response.data);
   }
 
-  async getChoices(actionId: string, fieldId: string, data: {
-    authentication: string | null;
-    inputs: Record<string, any>;
-  }): Promise<PaginatedResponse<any>> {
-    let response = await http.post(`/v2/actions/${actionId}/inputs/${fieldId}/choices`, { data }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-    });
+  async getChoices(
+    actionId: string,
+    fieldId: string,
+    data: {
+      authentication: string | null;
+      inputs: Record<string, any>;
+    }
+  ): Promise<PaginatedResponse<any>> {
+    let response = await http.post(
+      `/v2/actions/${actionId}/inputs/${fieldId}/choices`,
+      { data },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
 
     return transformKeys(response.data);
   }
 
-  async testStep(actionId: string, data: {
-    authentication: string | null;
-    inputs: Record<string, any>;
-  }): Promise<any> {
-    let response = await http.post(`/v2/actions/${actionId}/test`, { data }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-    });
+  async testStep(
+    actionId: string,
+    data: {
+      authentication: string | null;
+      inputs: Record<string, any>;
+    }
+  ): Promise<any> {
+    let response = await http.post(
+      `/v2/actions/${actionId}/test`,
+      { data },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
 
     return transformKeys(response.data);
   }
 
   // ---- Authentications ----
 
-  async getAuthentications(params: {
-    app: string;
-  } & PaginationParams): Promise<PaginatedResponse<ZapAuthentication>> {
+  async getAuthentications(
+    params: {
+      app: string;
+    } & PaginationParams
+  ): Promise<PaginatedResponse<ZapAuthentication>> {
     let queryParams: Record<string, string> = {
-      app: params.app,
+      app: params.app
     };
     if (params.limit) queryParams.limit = String(params.limit);
     if (params.offset) queryParams.offset = String(params.offset);
 
     let response = await http.get('/v2/authentications', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return transformKeys(response.data);
@@ -326,25 +368,31 @@ export class Client {
     app: string;
     authenticationFields: Record<string, string>;
   }): Promise<PaginatedResponse<ZapAuthentication>> {
-    let response = await http.post('/v2/authentications', {
-      data: {
-        title: data.title,
-        app: data.app,
-        authentication_fields: data.authenticationFields,
+    let response = await http.post(
+      '/v2/authentications',
+      {
+        data: {
+          title: data.title,
+          app: data.app,
+          authentication_fields: data.authenticationFields
+        }
       },
-    }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-    });
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
 
     return transformKeys(response.data);
   }
 
   // ---- Zap Templates ----
 
-  async getZapTemplates(params?: PaginationParams & {
-    apps?: string;
-    clientId?: string;
-  }): Promise<ZapTemplate[]> {
+  async getZapTemplates(
+    params?: PaginationParams & {
+      apps?: string;
+      clientId?: string;
+    }
+  ): Promise<ZapTemplate[]> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
@@ -353,7 +401,7 @@ export class Client {
 
     let response = await http.get('/v1/zap-templates', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     // Zap templates endpoint returns an array directly
@@ -374,7 +422,7 @@ export class Client {
 
     let response = await http.get('/v1/categories', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return transformKeys(response.data);
@@ -382,13 +430,15 @@ export class Client {
 
   // ---- Zap Runs ----
 
-  async getZapRuns(params?: PaginationParams & {
-    zapId?: number;
-    fromDate?: string;
-    toDate?: string;
-    statuses?: string;
-    search?: string;
-  }): Promise<PaginatedResponse<ZapRun>> {
+  async getZapRuns(
+    params?: PaginationParams & {
+      zapId?: number;
+      fromDate?: string;
+      toDate?: string;
+      statuses?: string;
+      search?: string;
+    }
+  ): Promise<PaginatedResponse<ZapRun>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
@@ -400,7 +450,7 @@ export class Client {
 
     let response = await http.get('/v2/zap-runs', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return transformKeys(response.data);
@@ -415,9 +465,13 @@ export class Client {
       authentication: string | null;
     };
   }): Promise<any> {
-    let response = await http.post('/v2/workflow-steps', { data }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
-    });
+    let response = await http.post(
+      '/v2/workflow-steps',
+      { data },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
 
     return transformKeys(response.data);
   }

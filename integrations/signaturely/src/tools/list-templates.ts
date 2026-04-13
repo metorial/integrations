@@ -3,26 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTemplates = SlateTool.create(
-  spec,
-  {
-    name: 'List Templates',
-    key: 'list_templates',
-    description: `Retrieves all available API templates from Signaturely. Templates define document layouts, signer roles, and field placements.
+export let listTemplates = SlateTool.create(spec, {
+  name: 'List Templates',
+  key: 'list_templates',
+  description: `Retrieves all available API templates from Signaturely. Templates define document layouts, signer roles, and field placements.
 Use this to discover available templates before creating signature requests. The returned template IDs can be used with the Create Signature Request tool.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    templates: z.array(z.object({
-      templateId: z.string().describe('Unique identifier of the template'),
-      title: z.string().optional().describe('Display name of the template'),
-    })).describe('List of available API templates'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      templates: z
+        .array(
+          z.object({
+            templateId: z.string().describe('Unique identifier of the template'),
+            title: z.string().optional().describe('Display name of the template')
+          })
+        )
+        .describe('List of available API templates')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     ctx.info('Listing available templates');
@@ -32,14 +35,14 @@ Use this to discover available templates before creating signature requests. The
     let items = result.items || result || [];
     let templates = (Array.isArray(items) ? items : []).map((tmpl: any) => ({
       templateId: tmpl.id?.toString() || '',
-      title: tmpl.title || tmpl.name || undefined,
+      title: tmpl.title || tmpl.name || undefined
     }));
 
     return {
       output: {
-        templates,
+        templates
       },
-      message: `Found **${templates.length}** template(s) available for signature requests.`,
+      message: `Found **${templates.length}** template(s) available for signature requests.`
     };
   })
   .build();

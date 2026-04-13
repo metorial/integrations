@@ -3,38 +3,35 @@ import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let tagEventTypes = [
-  'tag.added',
-  'tag.edited',
-  'tag.deleted',
-] as const;
+let tagEventTypes = ['tag.added', 'tag.edited', 'tag.deleted'] as const;
 
-export let tagEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Tag Events',
-    key: 'tag_events',
-    description: 'Triggered when tags are created, edited, or deleted on your Ghost site.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of tag event'),
-    tag: z.any().describe('Tag data from the webhook payload'),
-  }))
-  .output(z.object({
-    tagId: z.string().describe('Tag ID'),
-    name: z.string().describe('Tag name'),
-    slug: z.string().describe('URL-friendly slug'),
-    description: z.string().nullable().describe('Tag description'),
-    visibility: z.string().describe('Tag visibility'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp'),
-  }))
+export let tagEvents = SlateTrigger.create(spec, {
+  name: 'Tag Events',
+  key: 'tag_events',
+  description: 'Triggered when tags are created, edited, or deleted on your Ghost site.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of tag event'),
+      tag: z.any().describe('Tag data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      tagId: z.string().describe('Tag ID'),
+      name: z.string().describe('Tag name'),
+      slug: z.string().describe('URL-friendly slug'),
+      description: z.string().nullable().describe('Tag description'),
+      visibility: z.string().describe('Tag visibility'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let webhookIds: string[] = [];
@@ -42,7 +39,7 @@ export let tagEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           event,
           targetUrl: `${ctx.input.webhookBaseUrl}/${event}`,
-          name: `Slates: ${event}`,
+          name: `Slates: ${event}`
         });
         webhookIds.push(result.webhooks[0].id);
       }
@@ -50,10 +47,10 @@ export let tagEvents = SlateTrigger.create(
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
@@ -66,8 +63,8 @@ export let tagEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
       let eventType = pathParts.slice(-2).join('.') || 'tag.edited';
@@ -75,14 +72,16 @@ export let tagEvents = SlateTrigger.create(
       let tag = data?.tag?.current ?? data?.tag ?? data;
 
       return {
-        inputs: [{
-          eventType,
-          tag,
-        }],
+        inputs: [
+          {
+            eventType,
+            tag
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let tag = ctx.input.tag ?? {};
 
       return {
@@ -95,8 +94,9 @@ export let tagEvents = SlateTrigger.create(
           description: tag.description ?? null,
           visibility: tag.visibility ?? 'public',
           createdAt: tag.created_at ?? null,
-          updatedAt: tag.updated_at ?? null,
-        },
+          updatedAt: tag.updated_at ?? null
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

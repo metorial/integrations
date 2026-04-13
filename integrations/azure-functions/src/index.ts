@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listFunctionApps,
@@ -11,11 +10,9 @@ import {
   manageKeys,
   manageAppSettings,
   manageSlots,
-  listDeployments,
+  listDeployments
 } from './tools';
-import { functionAppChanges,
-  inboundWebhook,
-} from './triggers';
+import { functionAppChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     manageKeys,
     manageAppSettings,
     manageSlots,
-    listDeployments,
+    listDeployments
   ],
-  triggers: [
-    inboundWebhook,
-    functionAppChanges,
-  ],
+  triggers: [inboundWebhook, functionAppChanges]
 });

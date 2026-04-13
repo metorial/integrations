@@ -13,26 +13,25 @@ let pipeSchema = z.object({
   stream: z.boolean().describe('Whether streaming is enabled'),
   store: z.boolean().describe('Whether conversation storage is enabled'),
   temperature: z.number().describe('Temperature setting'),
-  maxTokens: z.number().describe('Max tokens setting'),
+  maxTokens: z.number().describe('Max tokens setting')
 });
 
-export let listPipes = SlateTool.create(
-  spec,
-  {
-    name: 'List Pipes',
-    key: 'list_pipes',
-    description: `List all AI pipes (agents) in your Langbase account. Returns configuration details for each pipe including the model, status, and settings.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
+export let listPipes = SlateTool.create(spec, {
+  name: 'List Pipes',
+  key: 'list_pipes',
+  description: `List all AI pipes (agents) in your Langbase account. Returns configuration details for each pipe including the model, status, and settings.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    pipes: z.array(pipeSchema).describe('List of pipes'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      pipes: z.array(pipeSchema).describe('List of pipes')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result = await client.listPipes();
 
@@ -46,11 +45,12 @@ export let listPipes = SlateTool.create(
       stream: p.stream ?? false,
       store: p.store ?? false,
       temperature: p.temperature ?? 0.7,
-      maxTokens: p.max_tokens ?? 1000,
+      maxTokens: p.max_tokens ?? 1000
     }));
 
     return {
       output: { pipes },
-      message: `Found **${pipes.length}** pipe(s).`,
+      message: `Found **${pipes.length}** pipe(s).`
     };
-  }).build();
+  })
+  .build();

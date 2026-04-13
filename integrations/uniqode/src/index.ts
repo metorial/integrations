@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createQrCode,
@@ -16,14 +15,9 @@ import {
   getAnalytics,
   listPlaces,
   manageLandingPage,
-  getFormResponses,
+  getFormResponses
 } from './tools';
-import {
-  newQrCode,
-  newFormResponse,
-  newGeofence,
-  inboundWebhook,
-} from './triggers';
+import { newQrCode, newFormResponse, newGeofence, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,12 +36,7 @@ export let provider = Slate.create({
     getAnalytics,
     listPlaces,
     manageLandingPage,
-    getFormResponses,
+    getFormResponses
   ],
-  triggers: [
-    inboundWebhook,
-    newQrCode,
-    newFormResponse,
-    newGeofence,
-  ],
+  triggers: [inboundWebhook, newQrCode, newFormResponse, newGeofence]
 });

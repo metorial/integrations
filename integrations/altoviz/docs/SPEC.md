@@ -26,33 +26,43 @@ The API base URL is `https://api.altoviz.com/v1`. You can verify your API key by
 ## Features
 
 ### Customers & Contacts Management
+
 Create, list, update, and delete customers and contacts. Entities support "internal ids" so you can map your own application IDs to Altoviz entities rather than storing Altoviz IDs. Customer families can also be managed and retrieved by internal ID. Customers can be searched by email.
 
 ### Sales Invoices
+
 Create, update, delete, list, finalize, and download sales invoices. Invoices can be updated and deleted as long as they are still in draft mode. Invoices can be marked as paid by setting the date and payment method. Invoices can be sent by email directly through the API. Results can be sorted and filtered by dates, customer, or status, and can include canceled invoices.
 
 ### Sales Quotes
+
 Create, list, update, and delete sales quotes. Quotes can be sent by email through the API.
 
 ### Sales Credits
+
 Just like sales invoices, you can list, add, edit and remove sales credits.
 
 ### Purchase Invoices
+
 Purchase invoices can be created by sending a PDF file to the API. Purchase invoices can also be downloaded.
 
 ### Products
+
 Create, list, update, and delete products. Products can be searched by product number. Product images can be added, updated, and retrieved.
 
 ### Suppliers & Receipts
+
 You can list, add, edit and delete receipts and suppliers.
 
 ### Metadata
+
 Metadata allows you to store important information for your app on Altoviz entities. Metadata can also be passed to the mark-as-paid API, where it will be stored on the payment.
 
 ### Settings & Reference Data
+
 Retrieve account settings including timezone, logo, VAT number, and VAT mode. List available VAT rates and classifications (accounting registers). List all available units.
 
 ### User Information
+
 Retrieve information about the currently authenticated user via `/v1/Users/me`.
 
 ## Events
@@ -60,26 +70,31 @@ Retrieve information about the currently authenticated user via `/v1/Users/me`.
 Altoviz supports webhooks that notify your application when specific data changes occur. Webhooks are registered via the API by providing a public URL and selecting the event types to listen for. You can optionally set a secret key during registration, which will be included in every call for verification. Altoviz generates signatures using HMAC with SHA-256 for integrity verification.
 
 ### Contact Events
+
 - `ContactCreated` — Fired after a contact is created.
 - `ContactUpdated` — Fired after a contact is updated.
 - `ContactDeleted` — Fired after a contact is deleted.
 
 ### Customer Events
+
 - `CustomerCreated` — Fired after a customer is created.
 - `CustomerUpdated` — Fired after a customer is updated.
 - `CustomerDeleted` — Fired after a customer is deleted.
 
 ### Invoice Events
+
 - `InvoiceCreated` — Fired after a sales invoice is created.
 - `InvoiceUpdated` — Fired after a sales invoice is updated.
 - `InvoiceDeleted` — Fired after a sales invoice is deleted.
 
 ### Quote Events
+
 - `QuoteCreated` — Fired after a quote is created.
 - `QuoteUpdated` — Fired after a quote is updated.
 - `QuoteDeleted` — Fired after a quote is deleted.
 
 ### Product Events
+
 - `ProductCreated` — Fired after a product is created.
 - `ProductUpdated` — Fired after a product is updated.
 - `ProductDeleted` — Fired after a product is deleted.

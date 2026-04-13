@@ -34,6 +34,7 @@ The Person Search feature gives you access to every profile in the full Person D
 ### Person Identify
 
 Use broad search inputs to retrieve multiple records from the person dataset. This enables searching through a single identifying attribute, such as name, email, phone number, company, school or location, in addition to using any combination of these attributes. The API scores and sorts all matching records based on the strength of their association with the input parameters.
+
 - Returns up to 20 of the best matching profiles, ranked by match score.
 - Useful for building comprehensive profiles when you have partial or ambiguous information about an individual.
 
@@ -64,6 +65,7 @@ Enrich data on a skill by performing a one-to-one match with those included in t
 ### Data Cleaner APIs
 
 Clean the company, location, and school data that you employ in your API queries. PDL uses these same APIs for standardizing data as part of their data build process. Three cleaners are available:
+
 - **Company Cleaner:** Standardize raw company name strings.
 - **Location Cleaner:** Standardize raw location strings into structured location data.
 - **School Cleaner:** Standardize raw school name strings.

@@ -24,7 +24,7 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): PostgresClie
     username: auth.username,
     password: auth.password,
     sslMode: auth.sslMode,
-    queryTimeout: config.queryTimeout,
+    queryTimeout: config.queryTimeout
   };
   return new PostgresClient(connectionConfig);
 };

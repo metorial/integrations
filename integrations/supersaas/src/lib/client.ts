@@ -14,8 +14,8 @@ export class Client {
       baseURL: 'https://www.supersaas.com',
       params: {
         account: auth.accountName,
-        api_key: auth.token,
-      },
+        api_key: auth.token
+      }
     });
   }
 
@@ -28,14 +28,14 @@ export class Client {
 
   async listResources(scheduleId: string): Promise<any[]> {
     let response = await this.axios.get('/api/resources.json', {
-      params: { schedule_id: scheduleId },
+      params: { schedule_id: scheduleId }
     });
     return response.data;
   }
 
   async getFieldList(scheduleId?: string): Promise<any[]> {
     let response = await this.axios.get('/api/field_list.json', {
-      params: scheduleId ? { schedule_id: scheduleId } : {},
+      params: scheduleId ? { schedule_id: scheduleId } : {}
     });
     return response.data;
   }
@@ -57,13 +57,17 @@ export class Client {
     return response.data;
   }
 
-  async listUsers(params?: { limit?: number; offset?: number; form?: boolean }): Promise<any[]> {
+  async listUsers(params?: {
+    limit?: number;
+    offset?: number;
+    form?: boolean;
+  }): Promise<any[]> {
     let response = await this.axios.get('/api/users.json', {
       params: {
         limit: params?.limit,
         offset: params?.offset,
-        form: params?.form ? 'true' : undefined,
-      },
+        form: params?.form ? 'true' : undefined
+      }
     });
     return response.data;
   }
@@ -81,7 +85,7 @@ export class Client {
       : '/api/users.json';
 
     let response = await this.axios.post(url, null, {
-      params: { ...userParams, webhook: 'true' },
+      params: { ...userParams, webhook: 'true' }
     });
     return response.data;
   }
@@ -94,9 +98,13 @@ export class Client {
       }
     }
 
-    let response = await this.axios.put(`/api/users/${encodeURIComponent(userId)}.json`, null, {
-      params: { ...userParams, webhook: 'true' },
-    });
+    let response = await this.axios.put(
+      `/api/users/${encodeURIComponent(userId)}.json`,
+      null,
+      {
+        params: { ...userParams, webhook: 'true' }
+      }
+    );
     return response.data;
   }
 
@@ -107,18 +115,23 @@ export class Client {
   // ─── Appointments ──────────────────────────────────────────────────
 
   async getAppointment(appointmentId: string): Promise<any> {
-    let response = await this.axios.get(`/api/bookings/${encodeURIComponent(appointmentId)}.json`);
+    let response = await this.axios.get(
+      `/api/bookings/${encodeURIComponent(appointmentId)}.json`
+    );
     return response.data;
   }
 
-  async listAppointments(scheduleId: string, params?: {
-    form?: boolean;
-    limit?: number;
-    offset?: number;
-    from?: string;
-    to?: string;
-    user?: string;
-  }): Promise<any[]> {
+  async listAppointments(
+    scheduleId: string,
+    params?: {
+      form?: boolean;
+      limit?: number;
+      offset?: number;
+      from?: string;
+      to?: string;
+      user?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/api/range/${encodeURIComponent(scheduleId)}.json`, {
       params: {
         from: params?.from,
@@ -126,65 +139,82 @@ export class Client {
         limit: params?.limit,
         offset: params?.offset,
         form: params?.form ? 'true' : undefined,
-        user: params?.user,
-      },
+        user: params?.user
+      }
     });
     return response.data;
   }
 
-  async getAgenda(scheduleId: string, userId: string, params?: {
-    from?: string;
-    slot?: boolean;
-  }): Promise<any[]> {
+  async getAgenda(
+    scheduleId: string,
+    userId: string,
+    params?: {
+      from?: string;
+      slot?: boolean;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/api/agenda/${encodeURIComponent(scheduleId)}.json`, {
       params: {
         user: userId,
         from: params?.from,
-        slot: params?.slot ? 'true' : undefined,
-      },
+        slot: params?.slot ? 'true' : undefined
+      }
     });
     return response.data;
   }
 
-  async getAvailability(scheduleId: string, params?: {
-    from?: string;
-    length?: number;
-    resource?: string;
-    full?: boolean;
-    limit?: number;
-  }): Promise<any[]> {
+  async getAvailability(
+    scheduleId: string,
+    params?: {
+      from?: string;
+      length?: number;
+      resource?: string;
+      full?: boolean;
+      limit?: number;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/api/free/${encodeURIComponent(scheduleId)}.json`, {
       params: {
         from: params?.from,
         length: params?.length,
         resource: params?.resource,
         full: params?.full ? 'true' : undefined,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
     return response.data;
   }
 
-  async getRecentChanges(scheduleId: string, params?: {
-    from?: string;
-    slot?: boolean;
-    limit?: number;
-    offset?: number;
-  }): Promise<any[]> {
-    let response = await this.axios.get(`/api/changes/${encodeURIComponent(scheduleId)}.json`, {
-      params: {
-        from: params?.from,
-        slot: params?.slot ? 'true' : undefined,
-        limit: params?.limit,
-        offset: params?.offset,
-      },
-    });
+  async getRecentChanges(
+    scheduleId: string,
+    params?: {
+      from?: string;
+      slot?: boolean;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any[]> {
+    let response = await this.axios.get(
+      `/api/changes/${encodeURIComponent(scheduleId)}.json`,
+      {
+        params: {
+          from: params?.from,
+          slot: params?.slot ? 'true' : undefined,
+          limit: params?.limit,
+          offset: params?.offset
+        }
+      }
+    );
     return response.data;
   }
 
-  async createAppointment(scheduleId: string, bookingData: Record<string, any>, userId?: string): Promise<any> {
+  async createAppointment(
+    scheduleId: string,
+    bookingData: Record<string, any>,
+    userId?: string
+  ): Promise<any> {
     let bookingParams: Record<string, any> = {
-      schedule_id: scheduleId,
+      schedule_id: scheduleId
     };
     if (userId) {
       bookingParams['user'] = userId;
@@ -196,12 +226,15 @@ export class Client {
     }
 
     let response = await this.axios.post('/api/bookings.json', null, {
-      params: { ...bookingParams, webhook: 'true' },
+      params: { ...bookingParams, webhook: 'true' }
     });
     return response.data;
   }
 
-  async updateAppointment(appointmentId: string, bookingData: Record<string, any>): Promise<any> {
+  async updateAppointment(
+    appointmentId: string,
+    bookingData: Record<string, any>
+  ): Promise<any> {
     let bookingParams: Record<string, any> = {};
     for (let [key, value] of Object.entries(bookingData)) {
       if (value !== undefined && value !== null) {
@@ -209,9 +242,13 @@ export class Client {
       }
     }
 
-    let response = await this.axios.put(`/api/bookings/${encodeURIComponent(appointmentId)}.json`, null, {
-      params: { ...bookingParams, webhook: 'true' },
-    });
+    let response = await this.axios.put(
+      `/api/bookings/${encodeURIComponent(appointmentId)}.json`,
+      null,
+      {
+        params: { ...bookingParams, webhook: 'true' }
+      }
+    );
     return response.data;
   }
 
@@ -221,27 +258,30 @@ export class Client {
 
   // ─── Forms ─────────────────────────────────────────────────────────
 
-  async getFormEntries(formId: string, params?: {
-    from?: string;
-    limit?: number;
-    offset?: number;
-    user?: string;
-  }): Promise<any[]> {
+  async getFormEntries(
+    formId: string,
+    params?: {
+      from?: string;
+      limit?: number;
+      offset?: number;
+      user?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get('/api/forms.json', {
       params: {
         form_id: formId,
         from: params?.from,
         limit: params?.limit,
         offset: params?.offset,
-        user: params?.user,
-      },
+        user: params?.user
+      }
     });
     return response.data;
   }
 
   async getFormEntry(formEntryId: string): Promise<any> {
     let response = await this.axios.get('/api/forms.json', {
-      params: { id: formEntryId },
+      params: { id: formEntryId }
     });
     return response.data;
   }
@@ -252,15 +292,15 @@ export class Client {
     let response = await this.axios.get('/api/promotions.json', {
       params: {
         limit: params?.limit,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
 
   async getPromotion(promotionCode: string): Promise<any> {
     let response = await this.axios.get('/api/promotions.json', {
-      params: { id: promotionCode },
+      params: { id: promotionCode }
     });
     return response.data;
   }
@@ -269,8 +309,8 @@ export class Client {
     let response = await this.axios.post('/api/promotions.json', null, {
       params: {
         id: newCode,
-        template_code: templateCode,
-      },
+        template_code: templateCode
+      }
     });
     return response.data;
   }
@@ -282,8 +322,8 @@ export class Client {
       params: {
         event: eventCode,
         parent_id: parentId,
-        target_url: targetUrl,
-      },
+        target_url: targetUrl
+      }
     });
     return response.data;
   }
@@ -291,8 +331,8 @@ export class Client {
   async deleteWebhook(webhookId: string, parentId: string): Promise<void> {
     await this.axios.delete(`/api/hooks/${encodeURIComponent(webhookId)}`, {
       params: {
-        parent_id: parentId,
-      },
+        parent_id: parentId
+      }
     });
   }
 }

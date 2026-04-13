@@ -42,69 +42,91 @@ Access tokens are passed via the `Authorization: Bearer <token>` header or as a 
 ## Features
 
 ### Course Management
+
 Create, update, list, and delete courses. Configure course settings such as grading standards, enrollment restrictions, start/end dates, syllabus content, and default views. Supports course templates and Blueprint Courses for content locking across associated courses.
 
 ### User Management
+
 List, create, update, and search users within an account. Manage user profiles, avatars, logins, and custom data. Supports merging and splitting user accounts. Users can be looked up by Canvas ID, SIS ID, or login ID.
 
 ### Enrollments
+
 Enroll users in courses with specific roles (student, teacher, TA, observer, designer). Manage enrollment states (active, invited, completed, inactive, deleted). Enrollments can be scoped to specific course sections.
 
 ### Assignments & Assignment Groups
+
 Create and manage assignments with configurable submission types (online upload, text entry, URL, media recording, external tool, etc.), due dates, point values, grading types, and peer review settings. Organize assignments into weighted groups.
 
 ### Submissions & Grading
+
 Submit work on behalf of students or retrieve submissions. Grade submissions, leave comments, and manage rubric assessments. Supports anonymous grading and moderated grading workflows. Access grade change audit logs.
 
 ### Quizzes
+
 Create and manage quizzes with various question types. Retrieve quiz submissions and statistics. Canvas supports both classic quizzes and New Quizzes.
 
 ### Discussions
+
 Create and manage discussion topics and threaded replies. Supports graded discussions, group discussions, and announcements. Manage discussion entry read/unread states.
 
 ### Modules
+
 Create and manage course modules that organize content into sequential learning paths. Add items (assignments, pages, files, URLs, etc.) to modules. Configure prerequisites and completion requirements.
 
 ### Pages (Wiki)
+
 Create, update, and manage wiki pages within courses or groups. Supports revision history and page-level editing roles.
 
 ### Files & Folders
+
 Upload, download, organize, and manage files and folders within courses, groups, or user personal file spaces. Supports usage rights and content licensing.
 
 ### Calendar Events & Scheduling
+
 Create and manage calendar events for courses, groups, and users. Supports recurring events. Manage appointment groups for office hours and scheduling.
 
 ### Gradebook
+
 Access computed grades, grading periods, grading standards, and grade passback. Supports custom grade statuses and late policies.
 
 ### Groups
+
 Create and manage groups and group categories within courses or accounts. Supports self-sign-up and auto-assignment of group members.
 
 ### Conversations (Messaging)
+
 Send and manage messages between users. Supports bulk messaging, forwarding, starring, and archiving.
 
 ### Rubrics
+
 Create, manage, and associate rubrics with assignments for structured assessment criteria.
 
 ### Outcomes & Outcome Groups
+
 Define learning outcomes and organize them into groups. Align outcomes with assignments and assess student mastery.
 
 ### Analytics
+
 Access course-level and account-level analytics including page views, participation data, assignment statistics, and student performance summaries.
 
 ### SIS Integration
+
 Import and manage Student Information System (SIS) data via CSV imports. Reference objects by SIS IDs throughout the API. Track import status and errors.
 
 ### Account Administration
+
 Manage account-level settings, sub-accounts, roles, permissions, terms, and authentication providers. Generate account-level reports.
 
 ### Content Sharing & Migration
+
 Share content between courses and users. Perform content migrations between courses or from external sources (Common Cartridge, QTI, etc.). Supports course copy operations.
 
 ### External Tools (LTI)
+
 Configure and manage LTI external tool integrations at the course or account level.
 
 ### Collaborations
+
 Manage real-time document collaboration spaces within courses using external tools like Google Docs or Microsoft Office.
 
 ## Events
@@ -120,61 +142,81 @@ Events can be delivered in two formats: Canvas or Caliper 1.1. Subscriptions are
 The available event categories include:
 
 ### Account Events
+
 Events for account-level changes such as notification creation and account settings updates.
 
 ### Asset Events
+
 Events related to user access of assets (page views, resource access tracking).
 
 ### Assignment Events
+
 Events emitted when assignments or assignment groups are created, updated, or have their override dates changed.
 
 ### Attachment Events
+
 Events for file creation, updates, and deletions within courses.
 
 ### Content Events
+
 Events for content migrations and content sharing activities.
 
 ### Conversation Events
+
 Events for message creation and forwarding.
 
 ### Course Events
+
 Events when courses are created, updated, completed, or have their sections changed. Includes course settings changes.
 
 ### Discussion Events
+
 Events for discussion topic and discussion entry creation, updates, and deletions.
 
 ### Enrollment Events
+
 Events when users are enrolled, enrollment state changes, or enrollments are updated in courses.
 
 ### Grade Events
+
 Events for grade changes on submissions, including final grade calculations.
 
 ### Group Events
+
 Events for group creation, updates, membership changes, and group category changes.
 
 ### Learning Outcomes Events
+
 Events related to outcome result calculations and rubric assessments.
 
 ### Login/Logout Events
+
 Events when users log in or log out of Canvas.
 
 ### Module Events
+
 Events for module creation, updates, and module item progression/completion.
 
 ### Quiz Events
+
 Events for quiz submissions, question answering, and quiz-related activities (classic quizzes).
 
 ### Submission Events
+
 Events when assignments are submitted, updated, or comments are added. Includes plagiarism-related resubmit events.
 
 ### SIS Batch Events
+
 Events related to SIS import batch processing.
 
 ### Syllabus Events
+
 Events when a course syllabus is updated.
 
 ### User Events
+
 Events for user creation, updates, and account-level user changes.
 
 ### Wiki Page Events
+
 Events when wiki pages are created, updated, or deleted.

@@ -7,7 +7,7 @@ import {
   scrapeZillow,
   scrapeIdealista,
   searchGoogle,
-  getUsage,
+  getUsage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     scrapeZillow,
     scrapeIdealista,
     searchGoogle,
-    getUsage,
+    getUsage
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

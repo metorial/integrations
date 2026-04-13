@@ -3,37 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let executionCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Execution Completed',
-    key: 'execution_completed',
-    description: 'Detects when workflow executions complete (successfully or with errors) by polling for new finished executions.'
-  }
-)
-  .input(z.object({
-    executionId: z.string().describe('Execution ID'),
-    workflowId: z.string().describe('Workflow ID'),
-    status: z.string().describe('Execution status'),
-    startedAt: z.string().optional().describe('Execution start timestamp'),
-    stoppedAt: z.string().optional().describe('Execution end timestamp'),
-    finished: z.boolean().describe('Whether the execution finished'),
-    mode: z.string().optional().describe('Execution mode')
-  }))
-  .output(z.object({
-    executionId: z.string().describe('Execution ID'),
-    workflowId: z.string().describe('ID of the executed workflow'),
-    status: z.string().describe('Execution status (success, error, canceled, etc.)'),
-    startedAt: z.string().optional().describe('Execution start timestamp'),
-    stoppedAt: z.string().optional().describe('Execution end timestamp'),
-    mode: z.string().optional().describe('Execution mode (manual, trigger, etc.)')
-  }))
+export let executionCompleted = SlateTrigger.create(spec, {
+  name: 'Execution Completed',
+  key: 'execution_completed',
+  description:
+    'Detects when workflow executions complete (successfully or with errors) by polling for new finished executions.'
+})
+  .input(
+    z.object({
+      executionId: z.string().describe('Execution ID'),
+      workflowId: z.string().describe('Workflow ID'),
+      status: z.string().describe('Execution status'),
+      startedAt: z.string().optional().describe('Execution start timestamp'),
+      stoppedAt: z.string().optional().describe('Execution end timestamp'),
+      finished: z.boolean().describe('Whether the execution finished'),
+      mode: z.string().optional().describe('Execution mode')
+    })
+  )
+  .output(
+    z.object({
+      executionId: z.string().describe('Execution ID'),
+      workflowId: z.string().describe('ID of the executed workflow'),
+      status: z.string().describe('Execution status (success, error, canceled, etc.)'),
+      startedAt: z.string().optional().describe('Execution start timestamp'),
+      stoppedAt: z.string().optional().describe('Execution end timestamp'),
+      mode: z.string().optional().describe('Execution mode (manual, trigger, etc.)')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         baseUrl: ctx.config.baseUrl,
         token: ctx.auth.token
@@ -88,7 +90,7 @@ export let executionCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `execution.${ctx.input.status}`,
         id: ctx.input.executionId,

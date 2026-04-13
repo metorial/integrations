@@ -22,47 +22,67 @@ let contactFieldsSchema = z.object({
   varField7: z.string().optional().describe('Custom variable field 7'),
   varField8: z.string().optional().describe('Custom variable field 8'),
   varField9: z.string().optional().describe('Custom variable field 9'),
-  varField10: z.string().optional().describe('Custom variable field 10'),
+  varField10: z.string().optional().describe('Custom variable field 10')
 });
 
-export let manageContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contacts',
-    key: 'manage_contacts',
-    description: `Create, update, retrieve, or delete contacts and contact lists in Postalytics. Supports listing all contact lists, viewing contacts on a list, getting a single contact's details, creating/updating contacts, and deleting contacts. Addresses are automatically validated via CASS and NCOA.`,
-    instructions: [
-      'Use action "list_lists" to see all contact lists.',
-      'Use action "get_contacts" with a listId to browse contacts on a specific list.',
-      'Use action "get" with a contactId to get full contact details.',
-      'Use action "create" to add a new contact to a list (firstName, lastName, addressStreet, addressCity, addressState, addressZip are required).',
-      'Use action "update" to modify an existing contact.',
-      'Use action "delete" to remove a contact.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageContacts = SlateTool.create(spec, {
+  name: 'Manage Contacts',
+  key: 'manage_contacts',
+  description: `Create, update, retrieve, or delete contacts and contact lists in Postalytics. Supports listing all contact lists, viewing contacts on a list, getting a single contact's details, creating/updating contacts, and deleting contacts. Addresses are automatically validated via CASS and NCOA.`,
+  instructions: [
+    'Use action "list_lists" to see all contact lists.',
+    'Use action "get_contacts" with a listId to browse contacts on a specific list.',
+    'Use action "get" with a contactId to get full contact details.',
+    'Use action "create" to add a new contact to a list (firstName, lastName, addressStreet, addressCity, addressState, addressZip are required).',
+    'Use action "update" to modify an existing contact.',
+    'Use action "delete" to remove a contact.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list_lists', 'get_contacts', 'get', 'create', 'update', 'delete']).describe('The action to perform'),
-    contactId: z.string().optional().describe('Contact ID (required for get, update, delete actions)'),
-    listId: z.string().optional().describe('Contact list ID (required for get_contacts, create, update actions)'),
-    start: z.number().optional().describe('Pagination offset for get_contacts'),
-    limit: z.number().optional().describe('Pagination limit for get_contacts'),
-    fields: contactFieldsSchema.optional().describe('Contact fields for create/update actions'),
-  }))
-  .output(z.object({
-    lists: z.array(z.record(z.string(), z.unknown())).optional().describe('Array of contact lists'),
-    contacts: z.array(z.record(z.string(), z.unknown())).optional().describe('Array of contacts on a list'),
-    contact: z.record(z.string(), z.unknown()).optional().describe('Single contact record'),
-    result: z.record(z.string(), z.unknown()).optional().describe('Operation result for create/update/delete'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list_lists', 'get_contacts', 'get', 'create', 'update', 'delete'])
+        .describe('The action to perform'),
+      contactId: z
+        .string()
+        .optional()
+        .describe('Contact ID (required for get, update, delete actions)'),
+      listId: z
+        .string()
+        .optional()
+        .describe('Contact list ID (required for get_contacts, create, update actions)'),
+      start: z.number().optional().describe('Pagination offset for get_contacts'),
+      limit: z.number().optional().describe('Pagination limit for get_contacts'),
+      fields: contactFieldsSchema
+        .optional()
+        .describe('Contact fields for create/update actions')
+    })
+  )
+  .output(
+    z.object({
+      lists: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Array of contact lists'),
+      contacts: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Array of contacts on a list'),
+      contact: z.record(z.string(), z.unknown()).optional().describe('Single contact record'),
+      result: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Operation result for create/update/delete')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PostalyticsClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action } = ctx.input;
@@ -71,7 +91,7 @@ export let manageContacts = SlateTool.create(
       let lists = await client.getContactLists();
       return {
         output: { lists },
-        message: `Found **${lists.length}** contact list(s).`,
+        message: `Found **${lists.length}** contact list(s).`
       };
     }
 
@@ -79,11 +99,11 @@ export let manageContacts = SlateTool.create(
       if (!ctx.input.listId) throw new Error('listId is required for get_contacts action');
       let contacts = await client.getContactsOnList(ctx.input.listId, {
         start: ctx.input.start,
-        limit: ctx.input.limit,
+        limit: ctx.input.limit
       });
       return {
         output: { contacts },
-        message: `Retrieved **${contacts.length}** contact(s) from list.`,
+        message: `Retrieved **${contacts.length}** contact(s) from list.`
       };
     }
 
@@ -92,7 +112,7 @@ export let manageContacts = SlateTool.create(
       let contact = await client.getContact(ctx.input.contactId);
       return {
         output: { contact },
-        message: `Retrieved contact details for **${contact.first_name || ''} ${contact.last_name || ''}**.`,
+        message: `Retrieved contact details for **${contact.first_name || ''} ${contact.last_name || ''}**.`
       };
     }
 
@@ -100,8 +120,17 @@ export let manageContacts = SlateTool.create(
       if (!ctx.input.listId) throw new Error('listId is required for create action');
       if (!ctx.input.fields) throw new Error('fields are required for create action');
       let fields = ctx.input.fields;
-      if (!fields.firstName || !fields.lastName || !fields.addressStreet || !fields.addressCity || !fields.addressState || !fields.addressZip) {
-        throw new Error('firstName, lastName, addressStreet, addressCity, addressState, addressZip are required');
+      if (
+        !fields.firstName ||
+        !fields.lastName ||
+        !fields.addressStreet ||
+        !fields.addressCity ||
+        !fields.addressState ||
+        !fields.addressZip
+      ) {
+        throw new Error(
+          'firstName, lastName, addressStreet, addressCity, addressState, addressZip are required'
+        );
       }
       let result = await client.createOrUpdateContact({
         contactListId: ctx.input.listId,
@@ -124,12 +153,12 @@ export let manageContacts = SlateTool.create(
           varField7: fields.varField7,
           varField8: fields.varField8,
           varField9: fields.varField9,
-          varField10: fields.varField10,
-        },
+          varField10: fields.varField10
+        }
       });
       return {
         output: { result },
-        message: `Contact **${fields.firstName} ${fields.lastName}** created successfully.`,
+        message: `Contact **${fields.firstName} ${fields.lastName}** created successfully.`
       };
     }
 
@@ -139,11 +168,11 @@ export let manageContacts = SlateTool.create(
       if (!ctx.input.fields) throw new Error('fields are required for update action');
       let result = await client.updateContact(ctx.input.contactId, {
         contactListId: ctx.input.listId,
-        contact: ctx.input.fields,
+        contact: ctx.input.fields
       });
       return {
         output: { result },
-        message: `Contact **${ctx.input.contactId}** updated successfully.`,
+        message: `Contact **${ctx.input.contactId}** updated successfully.`
       };
     }
 
@@ -152,9 +181,10 @@ export let manageContacts = SlateTool.create(
       let result = await client.deleteContact(ctx.input.contactId);
       return {
         output: { result },
-        message: `Contact **${ctx.input.contactId}** deleted successfully.`,
+        message: `Contact **${ctx.input.contactId}** deleted successfully.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

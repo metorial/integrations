@@ -3,34 +3,39 @@ import { PayhereClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let refundPayment = SlateTool.create(
-  spec,
-  {
-    name: 'Refund Payment',
-    key: 'refund_payment',
-    description: `Issue a full or partial refund for an existing payment. Requires specifying the payment, amount to refund, and a reason.`,
-    constraints: [
-      'The refund amount cannot exceed the original payment amount.',
-      'Refunds are processed through the original payment provider (Stripe or GoCardless).'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let refundPayment = SlateTool.create(spec, {
+  name: 'Refund Payment',
+  key: 'refund_payment',
+  description: `Issue a full or partial refund for an existing payment. Requires specifying the payment, amount to refund, and a reason.`,
+  constraints: [
+    'The refund amount cannot exceed the original payment amount.',
+    'Refunds are processed through the original payment provider (Stripe or GoCardless).'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    paymentId: z.number().describe('ID of the payment to refund'),
-    amount: z.number().describe('Amount to refund in the original currency (e.g. 1.50 for $1.50)'),
-    reason: z.enum(['requested_by_customer', 'duplicate', 'fraudulent']).describe('Reason for the refund')
-  }))
-  .output(z.object({
-    paymentId: z.number().describe('ID of the refunded payment'),
-    refunded: z.boolean().describe('Whether the refund was successful'),
-    amount: z.number().describe('Amount refunded'),
-    reason: z.string().describe('Reason for refund')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      paymentId: z.number().describe('ID of the payment to refund'),
+      amount: z
+        .number()
+        .describe('Amount to refund in the original currency (e.g. 1.50 for $1.50)'),
+      reason: z
+        .enum(['requested_by_customer', 'duplicate', 'fraudulent'])
+        .describe('Reason for the refund')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.number().describe('ID of the refunded payment'),
+      refunded: z.boolean().describe('Whether the refund was successful'),
+      amount: z.number().describe('Amount refunded'),
+      reason: z.string().describe('Reason for refund')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PayhereClient({ token: ctx.auth.token });
 
     await client.createRefund({

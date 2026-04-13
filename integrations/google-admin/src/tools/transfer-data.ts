@@ -3,59 +3,92 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transferData = SlateTool.create(
-  spec,
-  {
-    name: 'Transfer Data',
-    key: 'transfer_data',
-    description: `Transfer ownership of application data (Drive files, Calendar, etc.) from one user to another. Typically used during employee offboarding. Can also list available applications and check transfer status.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let transferData = SlateTool.create(spec, {
+  name: 'Transfer Data',
+  key: 'transfer_data',
+  description: `Transfer ownership of application data (Drive files, Calendar, etc.) from one user to another. Typically used during employee offboarding. Can also list available applications and check transfer status.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'list_applications']).describe('Action to perform'),
-    transferId: z.string().optional().describe('Transfer ID (for get action)'),
-    oldOwnerUserId: z.string().optional().describe('User ID of the current data owner (for create/list)'),
-    newOwnerUserId: z.string().optional().describe('User ID of the new data owner (for create/list)'),
-    applicationDataTransfers: z.array(z.object({
-      applicationId: z.string().describe('Application ID to transfer data from (use list_applications to find IDs)'),
-      applicationTransferParams: z.array(z.object({
-        key: z.string().describe('Transfer parameter key'),
-        value: z.array(z.string()).describe('Transfer parameter values')
-      })).optional().describe('Application-specific transfer parameters')
-    })).optional().describe('Applications and data to transfer (required for create)'),
-    status: z.string().optional().describe('Filter transfers by status (for list action)'),
-    maxResults: z.number().optional(),
-    pageToken: z.string().optional()
-  }))
-  .output(z.object({
-    transfer: z.object({
-      transferId: z.string().optional(),
-      oldOwnerUserId: z.string().optional(),
-      newOwnerUserId: z.string().optional(),
-      overallTransferStatusCode: z.string().optional(),
-      requestTime: z.string().optional(),
-      applicationDataTransfers: z.array(z.any()).optional()
-    }).optional(),
-    transfers: z.array(z.object({
-      transferId: z.string().optional(),
-      oldOwnerUserId: z.string().optional(),
-      newOwnerUserId: z.string().optional(),
-      overallTransferStatusCode: z.string().optional(),
-      requestTime: z.string().optional()
-    })).optional(),
-    applications: z.array(z.object({
-      applicationId: z.string().optional(),
-      applicationName: z.string().optional(),
-      transferParams: z.array(z.any()).optional()
-    })).optional(),
-    nextPageToken: z.string().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'list_applications'])
+        .describe('Action to perform'),
+      transferId: z.string().optional().describe('Transfer ID (for get action)'),
+      oldOwnerUserId: z
+        .string()
+        .optional()
+        .describe('User ID of the current data owner (for create/list)'),
+      newOwnerUserId: z
+        .string()
+        .optional()
+        .describe('User ID of the new data owner (for create/list)'),
+      applicationDataTransfers: z
+        .array(
+          z.object({
+            applicationId: z
+              .string()
+              .describe(
+                'Application ID to transfer data from (use list_applications to find IDs)'
+              ),
+            applicationTransferParams: z
+              .array(
+                z.object({
+                  key: z.string().describe('Transfer parameter key'),
+                  value: z.array(z.string()).describe('Transfer parameter values')
+                })
+              )
+              .optional()
+              .describe('Application-specific transfer parameters')
+          })
+        )
+        .optional()
+        .describe('Applications and data to transfer (required for create)'),
+      status: z.string().optional().describe('Filter transfers by status (for list action)'),
+      maxResults: z.number().optional(),
+      pageToken: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      transfer: z
+        .object({
+          transferId: z.string().optional(),
+          oldOwnerUserId: z.string().optional(),
+          newOwnerUserId: z.string().optional(),
+          overallTransferStatusCode: z.string().optional(),
+          requestTime: z.string().optional(),
+          applicationDataTransfers: z.array(z.any()).optional()
+        })
+        .optional(),
+      transfers: z
+        .array(
+          z.object({
+            transferId: z.string().optional(),
+            oldOwnerUserId: z.string().optional(),
+            newOwnerUserId: z.string().optional(),
+            overallTransferStatusCode: z.string().optional(),
+            requestTime: z.string().optional()
+          })
+        )
+        .optional(),
+      applications: z
+        .array(
+          z.object({
+            applicationId: z.string().optional(),
+            applicationName: z.string().optional(),
+            transferParams: z.array(z.any()).optional()
+          })
+        )
+        .optional(),
+      nextPageToken: z.string().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -76,8 +109,14 @@ export let transferData = SlateTool.create(
     }
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.oldOwnerUserId || !ctx.input.newOwnerUserId || !ctx.input.applicationDataTransfers) {
-        throw new Error('oldOwnerUserId, newOwnerUserId, and applicationDataTransfers are required');
+      if (
+        !ctx.input.oldOwnerUserId ||
+        !ctx.input.newOwnerUserId ||
+        !ctx.input.applicationDataTransfers
+      ) {
+        throw new Error(
+          'oldOwnerUserId, newOwnerUserId, and applicationDataTransfers are required'
+        );
       }
       let t = await client.createDataTransfer({
         oldOwnerUserId: ctx.input.oldOwnerUserId,

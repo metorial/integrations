@@ -3,34 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updatePerson = SlateTool.create(
-  spec,
-  {
-    name: 'Update Person',
-    key: 'update_person',
-    description: `Update an existing contact profile in the Crisp CRM. Change email, nickname, phone, segments, custom data, and subscription status in a single call.`,
-    instructions: [
-      'Segments replace the existing list — include all desired segments.',
-      'Custom data is merged with existing data — only provided keys are changed.',
-    ],
-  }
-)
-  .input(z.object({
-    peopleId: z.string().describe('The people profile ID to update'),
-    email: z.string().optional().describe('Update contact email'),
-    nickname: z.string().optional().describe('Update contact nickname'),
-    avatar: z.string().optional().describe('Update contact avatar URL'),
-    phone: z.string().optional().describe('Update contact phone number'),
-    address: z.string().optional().describe('Update contact address'),
-    segments: z.array(z.string()).optional().describe('Set contact segments (replaces existing)'),
-    customData: z.record(z.string(), z.any()).optional().describe('Update custom data key-value pairs (merged with existing)'),
-    emailSubscribed: z.boolean().optional().describe('Update email subscription status'),
-  }))
-  .output(z.object({
-    peopleId: z.string().describe('People profile ID'),
-    updated: z.array(z.string()).describe('List of aspects that were updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updatePerson = SlateTool.create(spec, {
+  name: 'Update Person',
+  key: 'update_person',
+  description: `Update an existing contact profile in the Crisp CRM. Change email, nickname, phone, segments, custom data, and subscription status in a single call.`,
+  instructions: [
+    'Segments replace the existing list — include all desired segments.',
+    'Custom data is merged with existing data — only provided keys are changed.'
+  ]
+})
+  .input(
+    z.object({
+      peopleId: z.string().describe('The people profile ID to update'),
+      email: z.string().optional().describe('Update contact email'),
+      nickname: z.string().optional().describe('Update contact nickname'),
+      avatar: z.string().optional().describe('Update contact avatar URL'),
+      phone: z.string().optional().describe('Update contact phone number'),
+      address: z.string().optional().describe('Update contact address'),
+      segments: z
+        .array(z.string())
+        .optional()
+        .describe('Set contact segments (replaces existing)'),
+      customData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Update custom data key-value pairs (merged with existing)'),
+      emailSubscribed: z.boolean().optional().describe('Update email subscription status')
+    })
+  )
+  .output(
+    z.object({
+      peopleId: z.string().describe('People profile ID'),
+      updated: z.array(z.string()).describe('List of aspects that were updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
     let updated: string[] = [];
 
@@ -56,16 +63,18 @@ export let updatePerson = SlateTool.create(
     }
 
     if (ctx.input.emailSubscribed !== undefined) {
-      await client.updatePeopleSubscriptionStatus(ctx.input.peopleId, { email: ctx.input.emailSubscribed });
+      await client.updatePeopleSubscriptionStatus(ctx.input.peopleId, {
+        email: ctx.input.emailSubscribed
+      });
       updated.push('subscription');
     }
 
     return {
       output: {
         peopleId: ctx.input.peopleId,
-        updated,
+        updated
       },
-      message: `Updated contact **${ctx.input.peopleId}**: ${updated.join(', ')}.`,
+      message: `Updated contact **${ctx.input.peopleId}**: ${updated.join(', ')}.`
     };
   })
   .build();

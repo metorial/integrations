@@ -21,6 +21,7 @@ Access tokens can be generated at: `https://www.pushbullet.com/#settings/account
 OAuth lets you access a user's Pushbullet account or have them authenticate with their Pushbullet account using a browser.
 
 **Setup:**
+
 1. Register your app (OAuth client) at `https://www.pushbullet.com/create-client`, which generates a `client_id` and `client_secret`.
 2. Redirect the user to the authorization URL: `https://www.pushbullet.com/authorize` with parameters:
    - `client_id` — Your OAuth client ID
@@ -28,10 +29,12 @@ OAuth lets you access a user's Pushbullet account or have them authenticate with
    - `response_type` — Either `code` (server-side flow) or `token` (client-side flow)
 
 **Server-side flow (`response_type=code`):**
+
 - After user authorization, your redirect URI receives a `code` parameter.
 - Exchange the code for an access token by POSTing to `https://api.pushbullet.com/oauth2/token` with `grant_type=authorization_code`, `client_id`, `client_secret`, and `code`.
 
 **Client-side flow (`response_type=token`):**
+
 - After authorization, the access token is returned as a URL fragment (`#access_token=<token>`) on the redirect URI.
 - For embedded browsers, `https://www.pushbullet.com/login-success` can be used as the redirect URI.
 
@@ -86,6 +89,7 @@ Pushbullet provides a **Realtime Event Stream** via a WebSocket connection at `w
 ### Tickle Events
 
 Indicates that a resource has changed on the server. The `subtype` field specifies what changed:
+
 - **push** — A change to pushes (new, updated, or deleted).
 - **device** — A change to devices.
 
@@ -94,6 +98,7 @@ Upon receiving a tickle, clients should fetch updated resources using the `modif
 ### Ephemeral Push Events
 
 Delivered directly on the stream when an ephemeral is sent. These include:
+
 - **Mirrored notifications** (`type=mirror`) — Android notifications forwarded to other devices, including app name, title, body, and icon.
 - **Notification dismissals** (`type=dismissal`) — Signals that a notification should be dismissed.
 - **Clipboard updates** (`type=clip`) — Universal copy/paste content shared across devices.

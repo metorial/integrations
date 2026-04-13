@@ -3,26 +3,37 @@ import { createSalesforceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let runReport = SlateTool.create(
-  spec,
-  {
-    name: 'Run Report',
-    key: 'run_report',
-    description: `Run an existing Salesforce report and retrieve its results, or list available reports. Optionally pass custom filters to override the report's default filters at runtime. Can also retrieve report metadata to understand available columns and filters.`,
-    tags: {
-      readOnly: true
-    }
+export let runReport = SlateTool.create(spec, {
+  name: 'Run Report',
+  key: 'run_report',
+  description: `Run an existing Salesforce report and retrieve its results, or list available reports. Optionally pass custom filters to override the report's default filters at runtime. Can also retrieve report metadata to understand available columns and filters.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    action: z.enum(['run', 'describe', 'list']).describe('Action to perform: run a report, describe its metadata, or list all reports'),
-    reportId: z.string().optional().describe('The Salesforce report ID (required for run and describe actions)'),
-    reportFilters: z.any().optional().describe('Optional runtime filter overrides as a reportMetadata object')
-  }))
-  .output(z.object({
-    reportResult: z.any().describe('Report execution results, metadata, or list of reports')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['run', 'describe', 'list'])
+        .describe(
+          'Action to perform: run a report, describe its metadata, or list all reports'
+        ),
+      reportId: z
+        .string()
+        .optional()
+        .describe('The Salesforce report ID (required for run and describe actions)'),
+      reportFilters: z
+        .any()
+        .optional()
+        .describe('Optional runtime filter overrides as a reportMetadata object')
+    })
+  )
+  .output(
+    z.object({
+      reportResult: z.any().describe('Report execution results, metadata, or list of reports')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createSalesforceClient({
       instanceUrl: ctx.auth.instanceUrl,
       apiVersion: ctx.config.apiVersion,

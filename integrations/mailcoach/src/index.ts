@@ -15,7 +15,7 @@ import {
   manageTag,
   manageSegment,
   manageSuppression,
-  importSubscribers,
+  importSubscribers
 } from './tools';
 import { mailcoachEvents } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     manageTag.build(),
     manageSegment.build(),
     manageSuppression.build(),
-    importSubscribers.build(),
+    importSubscribers.build()
   ],
-  triggers: [
-    mailcoachEvents.build(),
-  ],
+  triggers: [mailcoachEvents.build()]
 });

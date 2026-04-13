@@ -81,18 +81,15 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://usebasin.com/api/v1',
       headers: {
-        'Authorization': `Bearer ${opts.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${opts.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- Forms ----
 
-  async listForms(params?: {
-    page?: number;
-    query?: string;
-  }): Promise<any> {
+  async listForms(params?: { page?: number; query?: string }): Promise<any> {
     let res = await this.axios.get('/forms', { params });
     return res.data;
   }
@@ -144,11 +141,14 @@ export class Client {
     return res.data;
   }
 
-  async updateSubmission(submissionId: number, data: {
-    spam?: boolean;
-    read?: boolean;
-    trash?: boolean;
-  }): Promise<BasinSubmission> {
+  async updateSubmission(
+    submissionId: number,
+    data: {
+      spam?: boolean;
+      read?: boolean;
+      trash?: boolean;
+    }
+  ): Promise<BasinSubmission> {
     let res = await this.axios.patch(`/submissions/${submissionId}`, { submission: data });
     return res.data;
   }
@@ -158,22 +158,25 @@ export class Client {
     return res.data;
   }
 
-  async refireWebhooksForSubmission(submissionId: number): Promise<{ success: boolean; message: string }> {
+  async refireWebhooksForSubmission(
+    submissionId: number
+  ): Promise<{ success: boolean; message: string }> {
     let res = await this.axios.post(`/submissions/${submissionId}/refire_webhooks`);
     return res.data;
   }
 
-  async refireWebhooksForSubmissions(submissionIds: number[]): Promise<{ success: boolean; message: string }> {
-    let res = await this.axios.post('/submissions/refire_webhooks', { submission_ids: submissionIds });
+  async refireWebhooksForSubmissions(
+    submissionIds: number[]
+  ): Promise<{ success: boolean; message: string }> {
+    let res = await this.axios.post('/submissions/refire_webhooks', {
+      submission_ids: submissionIds
+    });
     return res.data;
   }
 
   // ---- Projects ----
 
-  async listProjects(params?: {
-    page?: number;
-    query?: string;
-  }): Promise<any> {
+  async listProjects(params?: { page?: number; query?: string }): Promise<any> {
     let res = await this.axios.get('/projects', { params });
     return res.data;
   }
@@ -200,20 +203,14 @@ export class Client {
 
   // ---- Domains ----
 
-  async listDomains(params?: {
-    page?: number;
-    query?: string;
-  }): Promise<any> {
+  async listDomains(params?: { page?: number; query?: string }): Promise<any> {
     let res = await this.axios.get('/domains', { params });
     return res.data;
   }
 
   // ---- Form Webhooks ----
 
-  async listFormWebhooks(params?: {
-    page?: number;
-    query?: string;
-  }): Promise<any> {
+  async listFormWebhooks(params?: { page?: number; query?: string }): Promise<any> {
     let res = await this.axios.get('/form_webhooks', { params });
     return res.data;
   }
@@ -235,7 +232,10 @@ export class Client {
     return res.data;
   }
 
-  async updateFormWebhook(webhookId: number, data: Record<string, unknown>): Promise<BasinFormWebhook> {
+  async updateFormWebhook(
+    webhookId: number,
+    data: Record<string, unknown>
+  ): Promise<BasinFormWebhook> {
     let res = await this.axios.put(`/form_webhooks/${webhookId}`, { form_webhook: data });
     return res.data;
   }
@@ -247,10 +247,7 @@ export class Client {
 
   // ---- Form Views ----
 
-  async listFormViews(params?: {
-    page?: number;
-    query?: string;
-  }): Promise<any> {
+  async listFormViews(params?: { page?: number; query?: string }): Promise<any> {
     let res = await this.axios.get('/form_views', { params });
     return res.data;
   }

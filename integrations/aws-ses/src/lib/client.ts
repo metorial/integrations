@@ -37,7 +37,7 @@ export class SesClient {
 
     let bodyStr = body ? JSON.stringify(body) : undefined;
     let headers: Record<string, string> = {
-      'content-type': 'application/json',
+      'content-type': 'application/json'
     };
 
     let signedHeaders = await signRequest({
@@ -49,7 +49,7 @@ export class SesClient {
       secretAccessKey: this.config.secretAccessKey,
       sessionToken: this.config.sessionToken,
       region: this.config.region,
-      service: 'ses',
+      service: 'ses'
     });
 
     let ax = createAxios({ baseURL: this.baseUrl });
@@ -57,7 +57,7 @@ export class SesClient {
       method,
       url,
       data: bodyStr,
-      headers: signedHeaders,
+      headers: signedHeaders
     });
 
     return response.data;
@@ -103,24 +103,36 @@ export class SesClient {
     if (params.fromEmailAddress) body.FromEmailAddress = params.fromEmailAddress;
     if (params.destination) {
       body.Destination = {};
-      if (params.destination.toAddresses) body.Destination.ToAddresses = params.destination.toAddresses;
-      if (params.destination.ccAddresses) body.Destination.CcAddresses = params.destination.ccAddresses;
-      if (params.destination.bccAddresses) body.Destination.BccAddresses = params.destination.bccAddresses;
+      if (params.destination.toAddresses)
+        body.Destination.ToAddresses = params.destination.toAddresses;
+      if (params.destination.ccAddresses)
+        body.Destination.CcAddresses = params.destination.ccAddresses;
+      if (params.destination.bccAddresses)
+        body.Destination.BccAddresses = params.destination.bccAddresses;
     }
 
     if (params.content.simple) {
       let s = params.content.simple;
       body.Content = {
         Simple: {
-          Subject: { Data: s.subject.data, ...(s.subject.charset ? { Charset: s.subject.charset } : {}) },
-          Body: {},
-        },
+          Subject: {
+            Data: s.subject.data,
+            ...(s.subject.charset ? { Charset: s.subject.charset } : {})
+          },
+          Body: {}
+        }
       };
       if (s.body.text) {
-        body.Content.Simple.Body.Text = { Data: s.body.text.data, ...(s.body.text.charset ? { Charset: s.body.text.charset } : {}) };
+        body.Content.Simple.Body.Text = {
+          Data: s.body.text.data,
+          ...(s.body.text.charset ? { Charset: s.body.text.charset } : {})
+        };
       }
       if (s.body.html) {
-        body.Content.Simple.Body.Html = { Data: s.body.html.data, ...(s.body.html.charset ? { Charset: s.body.html.charset } : {}) };
+        body.Content.Simple.Body.Html = {
+          Data: s.body.html.data,
+          ...(s.body.html.charset ? { Charset: s.body.html.charset } : {})
+        };
       }
       if (s.headers && s.headers.length > 0) {
         body.Content.Simple.Headers = s.headers.map(h => ({ Name: h.name, Value: h.value }));
@@ -139,17 +151,25 @@ export class SesClient {
     }
 
     if (params.replyToAddresses) body.ReplyToAddresses = params.replyToAddresses;
-    if (params.feedbackForwardingEmailAddress) body.FeedbackForwardingEmailAddress = params.feedbackForwardingEmailAddress;
-    if (params.emailTags) body.EmailTags = params.emailTags.map(t => ({ Name: t.name, Value: t.value }));
+    if (params.feedbackForwardingEmailAddress)
+      body.FeedbackForwardingEmailAddress = params.feedbackForwardingEmailAddress;
+    if (params.emailTags)
+      body.EmailTags = params.emailTags.map(t => ({ Name: t.name, Value: t.value }));
     if (params.configurationSetName) body.ConfigurationSetName = params.configurationSetName;
     if (params.listManagementOptions) {
-      body.ListManagementOptions = { ContactListName: params.listManagementOptions.contactListName };
+      body.ListManagementOptions = {
+        ContactListName: params.listManagementOptions.contactListName
+      };
       if (params.listManagementOptions.topicName) {
         body.ListManagementOptions.TopicName = params.listManagementOptions.topicName;
       }
     }
 
-    let result = await this.request<{ MessageId: string }>('POST', '/v2/email/outbound-emails', body);
+    let result = await this.request<{ MessageId: string }>(
+      'POST',
+      '/v2/email/outbound-emails',
+      body
+    );
     return { messageId: result.MessageId };
   }
 
@@ -179,13 +199,20 @@ export class SesClient {
       };
       replacementTags?: { name: string; value: string }[];
     }[];
-  }): Promise<{ bulkEmailEntryResults: { status: string; error?: string; messageId?: string }[] }> {
+  }): Promise<{
+    bulkEmailEntryResults: { status: string; error?: string; messageId?: string }[];
+  }> {
     let body: any = {};
 
     if (params.fromEmailAddress) body.FromEmailAddress = params.fromEmailAddress;
     if (params.replyToAddresses) body.ReplyToAddresses = params.replyToAddresses;
-    if (params.feedbackForwardingEmailAddress) body.FeedbackForwardingEmailAddress = params.feedbackForwardingEmailAddress;
-    if (params.defaultEmailTags) body.DefaultEmailTags = params.defaultEmailTags.map(t => ({ Name: t.name, Value: t.value }));
+    if (params.feedbackForwardingEmailAddress)
+      body.FeedbackForwardingEmailAddress = params.feedbackForwardingEmailAddress;
+    if (params.defaultEmailTags)
+      body.DefaultEmailTags = params.defaultEmailTags.map(t => ({
+        Name: t.name,
+        Value: t.value
+      }));
     if (params.configurationSetName) body.ConfigurationSetName = params.configurationSetName;
 
     body.DefaultContent = { Template: {} };
@@ -196,17 +223,21 @@ export class SesClient {
 
     body.BulkEmailEntries = params.bulkEmailEntries.map(entry => {
       let e: any = {
-        Destination: {},
+        Destination: {}
       };
-      if (entry.destination.toAddresses) e.Destination.ToAddresses = entry.destination.toAddresses;
-      if (entry.destination.ccAddresses) e.Destination.CcAddresses = entry.destination.ccAddresses;
-      if (entry.destination.bccAddresses) e.Destination.BccAddresses = entry.destination.bccAddresses;
+      if (entry.destination.toAddresses)
+        e.Destination.ToAddresses = entry.destination.toAddresses;
+      if (entry.destination.ccAddresses)
+        e.Destination.CcAddresses = entry.destination.ccAddresses;
+      if (entry.destination.bccAddresses)
+        e.Destination.BccAddresses = entry.destination.bccAddresses;
 
       if (entry.replacementEmailContent?.replacementTemplate?.replacementTemplateData) {
         e.ReplacementEmailContent = {
           ReplacementTemplate: {
-            ReplacementTemplateData: entry.replacementEmailContent.replacementTemplate.replacementTemplateData,
-          },
+            ReplacementTemplateData:
+              entry.replacementEmailContent.replacementTemplate.replacementTemplateData
+          }
         };
       }
       if (entry.replacementTags) {
@@ -215,13 +246,17 @@ export class SesClient {
       return e;
     });
 
-    let result = await this.request<{ BulkEmailEntryResults: any[] }>('POST', '/v2/email/outbound-bulk-emails', body);
+    let result = await this.request<{ BulkEmailEntryResults: any[] }>(
+      'POST',
+      '/v2/email/outbound-bulk-emails',
+      body
+    );
     return {
       bulkEmailEntryResults: (result.BulkEmailEntryResults || []).map((r: any) => ({
         status: r.Status,
         error: r.Error,
-        messageId: r.MessageId,
-      })),
+        messageId: r.MessageId
+      }))
     };
   }
 
@@ -236,8 +271,8 @@ export class SesClient {
     let body: any = {
       TemplateName: params.templateName,
       TemplateContent: {
-        Subject: params.subject,
-      },
+        Subject: params.subject
+      }
     };
     if (params.html) body.TemplateContent.Html = params.html;
     if (params.text) body.TemplateContent.Text = params.text;
@@ -250,12 +285,15 @@ export class SesClient {
     html?: string;
     text?: string;
   }> {
-    let result = await this.request<any>('GET', `/v2/email/templates/${encodeURIComponent(templateName)}`);
+    let result = await this.request<any>(
+      'GET',
+      `/v2/email/templates/${encodeURIComponent(templateName)}`
+    );
     return {
       templateName: result.TemplateName,
       subject: result.TemplateContent?.Subject,
       html: result.TemplateContent?.Html,
-      text: result.TemplateContent?.Text,
+      text: result.TemplateContent?.Text
     };
   }
 
@@ -267,22 +305,23 @@ export class SesClient {
   }): Promise<void> {
     let body: any = {
       TemplateContent: {
-        Subject: params.subject,
-      },
+        Subject: params.subject
+      }
     };
     if (params.html) body.TemplateContent.Html = params.html;
     if (params.text) body.TemplateContent.Text = params.text;
-    await this.request('PUT', `/v2/email/templates/${encodeURIComponent(params.templateName)}`, body);
+    await this.request(
+      'PUT',
+      `/v2/email/templates/${encodeURIComponent(params.templateName)}`,
+      body
+    );
   }
 
   async deleteEmailTemplate(templateName: string): Promise<void> {
     await this.request('DELETE', `/v2/email/templates/${encodeURIComponent(templateName)}`);
   }
 
-  async listEmailTemplates(params?: {
-    nextToken?: string;
-    pageSize?: number;
-  }): Promise<{
+  async listEmailTemplates(params?: { nextToken?: string; pageSize?: number }): Promise<{
     templates: { templateName: string; createdTimestamp: string }[];
     nextToken?: string;
   }> {
@@ -294,15 +333,22 @@ export class SesClient {
     return {
       templates: (result.TemplatesMetadata || []).map((t: any) => ({
         templateName: t.TemplateName,
-        createdTimestamp: t.CreatedTimestamp,
+        createdTimestamp: t.CreatedTimestamp
       })),
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
-  async testRenderEmailTemplate(templateName: string, templateData: string): Promise<{ renderedTemplate: string }> {
+  async testRenderEmailTemplate(
+    templateName: string,
+    templateData: string
+  ): Promise<{ renderedTemplate: string }> {
     let body = { TemplateData: templateData };
-    let result = await this.request<any>('POST', `/v2/email/templates/${encodeURIComponent(templateName)}/render`, body);
+    let result = await this.request<any>(
+      'POST',
+      `/v2/email/templates/${encodeURIComponent(templateName)}/render`,
+      body
+    );
     return { renderedTemplate: result.RenderedTemplate };
   }
 
@@ -319,7 +365,7 @@ export class SesClient {
     }[];
   }): Promise<void> {
     let body: any = {
-      ContactListName: params.contactListName,
+      ContactListName: params.contactListName
     };
     if (params.description) body.Description = params.description;
     if (params.topics) {
@@ -327,7 +373,7 @@ export class SesClient {
         TopicName: t.topicName,
         DisplayName: t.displayName,
         Description: t.description,
-        DefaultSubscriptionStatus: t.defaultSubscriptionStatus,
+        DefaultSubscriptionStatus: t.defaultSubscriptionStatus
       }));
     }
     await this.request('POST', '/v2/email/contact-lists', body);
@@ -336,11 +382,19 @@ export class SesClient {
   async getContactList(contactListName: string): Promise<{
     contactListName: string;
     description?: string;
-    topics?: { topicName: string; displayName: string; description?: string; defaultSubscriptionStatus: string }[];
+    topics?: {
+      topicName: string;
+      displayName: string;
+      description?: string;
+      defaultSubscriptionStatus: string;
+    }[];
     createdTimestamp?: string;
     lastUpdatedTimestamp?: string;
   }> {
-    let result = await this.request<any>('GET', `/v2/email/contact-lists/${encodeURIComponent(contactListName)}`);
+    let result = await this.request<any>(
+      'GET',
+      `/v2/email/contact-lists/${encodeURIComponent(contactListName)}`
+    );
     return {
       contactListName: result.ContactListName,
       description: result.Description,
@@ -348,10 +402,10 @@ export class SesClient {
         topicName: t.TopicName,
         displayName: t.DisplayName,
         description: t.Description,
-        defaultSubscriptionStatus: t.DefaultSubscriptionStatus,
+        defaultSubscriptionStatus: t.DefaultSubscriptionStatus
       })),
       createdTimestamp: result.CreatedTimestamp,
-      lastUpdatedTimestamp: result.LastUpdatedTimestamp,
+      lastUpdatedTimestamp: result.LastUpdatedTimestamp
     };
   }
 
@@ -372,20 +426,24 @@ export class SesClient {
         TopicName: t.topicName,
         DisplayName: t.displayName,
         Description: t.description,
-        DefaultSubscriptionStatus: t.defaultSubscriptionStatus,
+        DefaultSubscriptionStatus: t.defaultSubscriptionStatus
       }));
     }
-    await this.request('PUT', `/v2/email/contact-lists/${encodeURIComponent(params.contactListName)}`, body);
+    await this.request(
+      'PUT',
+      `/v2/email/contact-lists/${encodeURIComponent(params.contactListName)}`,
+      body
+    );
   }
 
   async deleteContactList(contactListName: string): Promise<void> {
-    await this.request('DELETE', `/v2/email/contact-lists/${encodeURIComponent(contactListName)}`);
+    await this.request(
+      'DELETE',
+      `/v2/email/contact-lists/${encodeURIComponent(contactListName)}`
+    );
   }
 
-  async listContactLists(params?: {
-    nextToken?: string;
-    pageSize?: number;
-  }): Promise<{
+  async listContactLists(params?: { nextToken?: string; pageSize?: number }): Promise<{
     contactLists: { contactListName: string; lastUpdatedTimestamp?: string }[];
     nextToken?: string;
   }> {
@@ -397,9 +455,9 @@ export class SesClient {
     return {
       contactLists: (result.ContactLists || []).map((c: any) => ({
         contactListName: c.ContactListName,
-        lastUpdatedTimestamp: c.LastUpdatedTimestamp,
+        lastUpdatedTimestamp: c.LastUpdatedTimestamp
       })),
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
@@ -413,20 +471,27 @@ export class SesClient {
     attributesData?: string;
   }): Promise<void> {
     let body: any = {
-      EmailAddress: params.emailAddress,
+      EmailAddress: params.emailAddress
     };
     if (params.topicPreferences) {
       body.TopicPreferences = params.topicPreferences.map(t => ({
         TopicName: t.topicName,
-        SubscriptionStatus: t.subscriptionStatus,
+        SubscriptionStatus: t.subscriptionStatus
       }));
     }
     if (params.unsubscribeAll !== undefined) body.UnsubscribeAll = params.unsubscribeAll;
     if (params.attributesData) body.AttributesData = params.attributesData;
-    await this.request('POST', `/v2/email/contact-lists/${encodeURIComponent(params.contactListName)}/contacts`, body);
+    await this.request(
+      'POST',
+      `/v2/email/contact-lists/${encodeURIComponent(params.contactListName)}/contacts`,
+      body
+    );
   }
 
-  async getContact(contactListName: string, emailAddress: string): Promise<{
+  async getContact(
+    contactListName: string,
+    emailAddress: string
+  ): Promise<{
     contactListName: string;
     emailAddress: string;
     topicPreferences?: { topicName: string; subscriptionStatus: string }[];
@@ -445,16 +510,16 @@ export class SesClient {
       emailAddress: result.EmailAddress,
       topicPreferences: result.TopicPreferences?.map((t: any) => ({
         topicName: t.TopicName,
-        subscriptionStatus: t.SubscriptionStatus,
+        subscriptionStatus: t.SubscriptionStatus
       })),
       topicDefaultPreferences: result.TopicDefaultPreferences?.map((t: any) => ({
         topicName: t.TopicName,
-        subscriptionStatus: t.SubscriptionStatus,
+        subscriptionStatus: t.SubscriptionStatus
       })),
       unsubscribeAll: result.UnsubscribeAll || false,
       attributesData: result.AttributesData,
       createdTimestamp: result.CreatedTimestamp,
-      lastUpdatedTimestamp: result.LastUpdatedTimestamp,
+      lastUpdatedTimestamp: result.LastUpdatedTimestamp
     };
   }
 
@@ -469,7 +534,7 @@ export class SesClient {
     if (params.topicPreferences) {
       body.TopicPreferences = params.topicPreferences.map(t => ({
         TopicName: t.topicName,
-        SubscriptionStatus: t.subscriptionStatus,
+        SubscriptionStatus: t.subscriptionStatus
       }));
     }
     if (params.unsubscribeAll !== undefined) body.UnsubscribeAll = params.unsubscribeAll;
@@ -517,16 +582,16 @@ export class SesClient {
         emailAddress: c.EmailAddress,
         topicPreferences: c.TopicPreferences?.map((t: any) => ({
           topicName: t.TopicName,
-          subscriptionStatus: t.SubscriptionStatus,
+          subscriptionStatus: t.SubscriptionStatus
         })),
         topicDefaultPreferences: c.TopicDefaultPreferences?.map((t: any) => ({
           topicName: t.TopicName,
-          subscriptionStatus: t.SubscriptionStatus,
+          subscriptionStatus: t.SubscriptionStatus
         })),
         unsubscribeAll: c.UnsubscribeAll || false,
-        lastUpdatedTimestamp: c.LastUpdatedTimestamp,
+        lastUpdatedTimestamp: c.LastUpdatedTimestamp
       })),
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
@@ -557,13 +622,16 @@ export class SesClient {
     if (params.dkimSigningAttributes) {
       body.DkimSigningAttributes = {};
       if (params.dkimSigningAttributes.domainSigningSelector) {
-        body.DkimSigningAttributes.DomainSigningSelector = params.dkimSigningAttributes.domainSigningSelector;
+        body.DkimSigningAttributes.DomainSigningSelector =
+          params.dkimSigningAttributes.domainSigningSelector;
       }
       if (params.dkimSigningAttributes.domainSigningPrivateKey) {
-        body.DkimSigningAttributes.DomainSigningPrivateKey = params.dkimSigningAttributes.domainSigningPrivateKey;
+        body.DkimSigningAttributes.DomainSigningPrivateKey =
+          params.dkimSigningAttributes.domainSigningPrivateKey;
       }
       if (params.dkimSigningAttributes.nextSigningKeyLength) {
-        body.DkimSigningAttributes.NextSigningKeyLength = params.dkimSigningAttributes.nextSigningKeyLength;
+        body.DkimSigningAttributes.NextSigningKeyLength =
+          params.dkimSigningAttributes.nextSigningKeyLength;
       }
     }
 
@@ -578,9 +646,9 @@ export class SesClient {
             tokens: result.DkimAttributes.Tokens,
             signingAttributesOrigin: result.DkimAttributes.SigningAttributesOrigin,
             nextSigningKeyLength: result.DkimAttributes.NextSigningKeyLength,
-            currentSigningKeyLength: result.DkimAttributes.CurrentSigningKeyLength,
+            currentSigningKeyLength: result.DkimAttributes.CurrentSigningKeyLength
           }
-        : undefined,
+        : undefined
     };
   }
 
@@ -601,7 +669,10 @@ export class SesClient {
     };
     configurationSetName?: string;
   }> {
-    let result = await this.request<any>('GET', `/v2/email/identities/${encodeURIComponent(emailIdentity)}`);
+    let result = await this.request<any>(
+      'GET',
+      `/v2/email/identities/${encodeURIComponent(emailIdentity)}`
+    );
     return {
       identityType: result.IdentityType,
       verifiedForSendingStatus: result.VerifiedForSendingStatus || false,
@@ -611,17 +682,17 @@ export class SesClient {
             signingEnabled: result.DkimAttributes.SigningEnabled,
             status: result.DkimAttributes.Status,
             tokens: result.DkimAttributes.Tokens,
-            signingAttributesOrigin: result.DkimAttributes.SigningAttributesOrigin,
+            signingAttributesOrigin: result.DkimAttributes.SigningAttributesOrigin
           }
         : undefined,
       mailFromAttributes: result.MailFromAttributes
         ? {
             mailFromDomain: result.MailFromAttributes.MailFromDomain,
             mailFromDomainStatus: result.MailFromAttributes.MailFromDomainStatus,
-            behaviorOnMxFailure: result.MailFromAttributes.BehaviorOnMxFailure,
+            behaviorOnMxFailure: result.MailFromAttributes.BehaviorOnMxFailure
           }
         : undefined,
-      configurationSetName: result.ConfigurationSetName,
+      configurationSetName: result.ConfigurationSetName
     };
   }
 
@@ -629,10 +700,7 @@ export class SesClient {
     await this.request('DELETE', `/v2/email/identities/${encodeURIComponent(emailIdentity)}`);
   }
 
-  async listEmailIdentities(params?: {
-    nextToken?: string;
-    pageSize?: number;
-  }): Promise<{
+  async listEmailIdentities(params?: { nextToken?: string; pageSize?: number }): Promise<{
     identities: {
       identityType: string;
       identityName: string;
@@ -651,16 +719,23 @@ export class SesClient {
         identityType: i.IdentityType,
         identityName: i.IdentityName,
         sendingEnabled: i.SendingEnabled || false,
-        verificationStatus: i.VerificationStatus,
+        verificationStatus: i.VerificationStatus
       })),
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
-  async putEmailIdentityDkimAttributes(emailIdentity: string, signingEnabled: boolean): Promise<void> {
-    await this.request('PUT', `/v2/email/identities/${encodeURIComponent(emailIdentity)}/dkim`, {
-      SigningEnabled: signingEnabled,
-    });
+  async putEmailIdentityDkimAttributes(
+    emailIdentity: string,
+    signingEnabled: boolean
+  ): Promise<void> {
+    await this.request(
+      'PUT',
+      `/v2/email/identities/${encodeURIComponent(emailIdentity)}/dkim`,
+      {
+        SigningEnabled: signingEnabled
+      }
+    );
   }
 
   async putEmailIdentityMailFromAttributes(
@@ -671,21 +746,35 @@ export class SesClient {
     let body: any = {};
     if (mailFromDomain !== undefined) body.MailFromDomain = mailFromDomain;
     if (behaviorOnMxFailure) body.BehaviorOnMxFailure = behaviorOnMxFailure;
-    await this.request('PUT', `/v2/email/identities/${encodeURIComponent(emailIdentity)}/mail-from`, body);
+    await this.request(
+      'PUT',
+      `/v2/email/identities/${encodeURIComponent(emailIdentity)}/mail-from`,
+      body
+    );
   }
 
-  async putEmailIdentityFeedbackAttributes(emailIdentity: string, emailForwardingEnabled: boolean): Promise<void> {
-    await this.request('PUT', `/v2/email/identities/${encodeURIComponent(emailIdentity)}/feedback`, {
-      EmailForwardingEnabled: emailForwardingEnabled,
-    });
+  async putEmailIdentityFeedbackAttributes(
+    emailIdentity: string,
+    emailForwardingEnabled: boolean
+  ): Promise<void> {
+    await this.request(
+      'PUT',
+      `/v2/email/identities/${encodeURIComponent(emailIdentity)}/feedback`,
+      {
+        EmailForwardingEnabled: emailForwardingEnabled
+      }
+    );
   }
 
   // ==================== Suppression List ====================
 
-  async putSuppressedDestination(emailAddress: string, reason: 'BOUNCE' | 'COMPLAINT'): Promise<void> {
+  async putSuppressedDestination(
+    emailAddress: string,
+    reason: 'BOUNCE' | 'COMPLAINT'
+  ): Promise<void> {
     await this.request('PUT', '/v2/email/suppression/addresses', {
       EmailAddress: emailAddress,
-      Reason: reason,
+      Reason: reason
     });
   }
 
@@ -707,14 +796,17 @@ export class SesClient {
       attributes: dest.Attributes
         ? {
             messageId: dest.Attributes.MessageId,
-            feedbackId: dest.Attributes.FeedbackId,
+            feedbackId: dest.Attributes.FeedbackId
           }
-        : undefined,
+        : undefined
     };
   }
 
   async deleteSuppressedDestination(emailAddress: string): Promise<void> {
-    await this.request('DELETE', `/v2/email/suppression/addresses/${encodeURIComponent(emailAddress)}`);
+    await this.request(
+      'DELETE',
+      `/v2/email/suppression/addresses/${encodeURIComponent(emailAddress)}`
+    );
   }
 
   async listSuppressedDestinations(params?: {
@@ -740,14 +832,19 @@ export class SesClient {
       query.Reasons = params.reasons.join(',');
     }
 
-    let result = await this.request<any>('GET', '/v2/email/suppression/addresses', undefined, query);
+    let result = await this.request<any>(
+      'GET',
+      '/v2/email/suppression/addresses',
+      undefined,
+      query
+    );
     return {
       suppressedDestinations: (result.SuppressedDestinationSummaries || []).map((s: any) => ({
         emailAddress: s.EmailAddress,
         reason: s.Reason,
-        lastUpdateTime: s.LastUpdateTime,
+        lastUpdateTime: s.LastUpdateTime
       })),
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
@@ -774,17 +871,20 @@ export class SesClient {
     };
   }): Promise<void> {
     let body: any = {
-      ConfigurationSetName: params.configurationSetName,
+      ConfigurationSetName: params.configurationSetName
     };
     if (params.deliveryOptions) {
       body.DeliveryOptions = {};
-      if (params.deliveryOptions.sendingPoolName) body.DeliveryOptions.SendingPoolName = params.deliveryOptions.sendingPoolName;
-      if (params.deliveryOptions.tlsPolicy) body.DeliveryOptions.TlsPolicy = params.deliveryOptions.tlsPolicy;
+      if (params.deliveryOptions.sendingPoolName)
+        body.DeliveryOptions.SendingPoolName = params.deliveryOptions.sendingPoolName;
+      if (params.deliveryOptions.tlsPolicy)
+        body.DeliveryOptions.TlsPolicy = params.deliveryOptions.tlsPolicy;
     }
     if (params.reputationOptions) {
       body.ReputationOptions = {};
       if (params.reputationOptions.reputationMetricsEnabled !== undefined) {
-        body.ReputationOptions.ReputationMetricsEnabled = params.reputationOptions.reputationMetricsEnabled;
+        body.ReputationOptions.ReputationMetricsEnabled =
+          params.reputationOptions.reputationMetricsEnabled;
       }
       if (params.reputationOptions.lastFreshStart) {
         body.ReputationOptions.LastFreshStart = params.reputationOptions.lastFreshStart;
@@ -799,13 +899,15 @@ export class SesClient {
     if (params.trackingOptions) {
       body.TrackingOptions = {};
       if (params.trackingOptions.customRedirectDomain) {
-        body.TrackingOptions.CustomRedirectDomain = params.trackingOptions.customRedirectDomain;
+        body.TrackingOptions.CustomRedirectDomain =
+          params.trackingOptions.customRedirectDomain;
       }
     }
     if (params.suppressionOptions) {
       body.SuppressionOptions = {};
       if (params.suppressionOptions.suppressedReasons) {
-        body.SuppressionOptions.SuppressedReasons = params.suppressionOptions.suppressedReasons;
+        body.SuppressionOptions.SuppressedReasons =
+          params.suppressionOptions.suppressedReasons;
       }
     }
     await this.request('POST', '/v2/email/configuration-sets', body);
@@ -831,19 +933,22 @@ export class SesClient {
       suppressedReasons?: string[];
     };
   }> {
-    let result = await this.request<any>('GET', `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}`);
+    let result = await this.request<any>(
+      'GET',
+      `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}`
+    );
     return {
       configurationSetName: result.ConfigurationSetName,
       deliveryOptions: result.DeliveryOptions
         ? {
             sendingPoolName: result.DeliveryOptions.SendingPoolName,
-            tlsPolicy: result.DeliveryOptions.TlsPolicy,
+            tlsPolicy: result.DeliveryOptions.TlsPolicy
           }
         : undefined,
       reputationOptions: result.ReputationOptions
         ? {
             reputationMetricsEnabled: result.ReputationOptions.ReputationMetricsEnabled,
-            lastFreshStart: result.ReputationOptions.LastFreshStart,
+            lastFreshStart: result.ReputationOptions.LastFreshStart
           }
         : undefined,
       sendingOptions: result.SendingOptions
@@ -854,18 +959,18 @@ export class SesClient {
         : undefined,
       suppressionOptions: result.SuppressionOptions
         ? { suppressedReasons: result.SuppressionOptions.SuppressedReasons }
-        : undefined,
+        : undefined
     };
   }
 
   async deleteConfigurationSet(configurationSetName: string): Promise<void> {
-    await this.request('DELETE', `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}`);
+    await this.request(
+      'DELETE',
+      `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}`
+    );
   }
 
-  async listConfigurationSets(params?: {
-    nextToken?: string;
-    pageSize?: number;
-  }): Promise<{
+  async listConfigurationSets(params?: { nextToken?: string; pageSize?: number }): Promise<{
     configurationSets: string[];
     nextToken?: string;
   }> {
@@ -873,26 +978,42 @@ export class SesClient {
     if (params?.nextToken) query.NextToken = params.nextToken;
     if (params?.pageSize) query.PageSize = String(params.pageSize);
 
-    let result = await this.request<any>('GET', '/v2/email/configuration-sets', undefined, query);
+    let result = await this.request<any>(
+      'GET',
+      '/v2/email/configuration-sets',
+      undefined,
+      query
+    );
     return {
       configurationSets: result.ConfigurationSets || [],
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
-  async putConfigurationSetSendingOptions(configurationSetName: string, sendingEnabled: boolean): Promise<void> {
-    await this.request('PUT', `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}/sending-options`, {
-      SendingEnabled: sendingEnabled,
-    });
+  async putConfigurationSetSendingOptions(
+    configurationSetName: string,
+    sendingEnabled: boolean
+  ): Promise<void> {
+    await this.request(
+      'PUT',
+      `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}/sending-options`,
+      {
+        SendingEnabled: sendingEnabled
+      }
+    );
   }
 
   async putConfigurationSetReputationOptions(
     configurationSetName: string,
     reputationMetricsEnabled: boolean
   ): Promise<void> {
-    await this.request('PUT', `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}/reputation-options`, {
-      ReputationMetricsEnabled: reputationMetricsEnabled,
-    });
+    await this.request(
+      'PUT',
+      `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}/reputation-options`,
+      {
+        ReputationMetricsEnabled: reputationMetricsEnabled
+      }
+    );
   }
 
   async putConfigurationSetTrackingOptions(
@@ -901,7 +1022,11 @@ export class SesClient {
   ): Promise<void> {
     let body: any = {};
     if (customRedirectDomain !== undefined) body.CustomRedirectDomain = customRedirectDomain;
-    await this.request('PUT', `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}/tracking-options`, body);
+    await this.request(
+      'PUT',
+      `/v2/email/configuration-sets/${encodeURIComponent(configurationSetName)}/tracking-options`,
+      body
+    );
   }
 
   async putConfigurationSetSuppressionOptions(
@@ -937,23 +1062,27 @@ export class SesClient {
       EventDestinationName: params.eventDestinationName,
       EventDestination: {
         MatchingEventTypes: params.matchingEventTypes,
-        Enabled: true,
-      },
+        Enabled: true
+      }
     };
     if (params.snsDestination) {
       body.EventDestination.SnsDestination = { TopicArn: params.snsDestination.topicArn };
     }
     if (params.cloudWatchDestination) {
       body.EventDestination.CloudWatchDestination = {
-        DimensionConfigurations: params.cloudWatchDestination.dimensionConfigurations.map(d => ({
-          DimensionName: d.dimensionName,
-          DimensionValueSource: d.dimensionValueSource,
-          DefaultDimensionValue: d.defaultDimensionValue,
-        })),
+        DimensionConfigurations: params.cloudWatchDestination.dimensionConfigurations.map(
+          d => ({
+            DimensionName: d.dimensionName,
+            DimensionValueSource: d.dimensionValueSource,
+            DefaultDimensionValue: d.defaultDimensionValue
+          })
+        )
       };
     }
     if (params.eventBridgeDestination) {
-      body.EventDestination.EventBridgeDestination = { EventBusArn: params.eventBridgeDestination.eventBusArn };
+      body.EventDestination.EventBridgeDestination = {
+        EventBusArn: params.eventBridgeDestination.eventBusArn
+      };
     }
     await this.request(
       'POST',
@@ -985,8 +1114,8 @@ export class SesClient {
         cloudWatchDestination: d.CloudWatchDestination,
         eventBridgeDestination: d.EventBridgeDestination
           ? { eventBusArn: d.EventBridgeDestination.EventBusArn }
-          : undefined,
-      })),
+          : undefined
+      }))
     };
   }
 
@@ -1015,21 +1144,24 @@ export class SesClient {
     poolName: string;
     scalingMode: string;
   }> {
-    let result = await this.request<any>('GET', `/v2/email/dedicated-ip-pools/${encodeURIComponent(poolName)}`);
+    let result = await this.request<any>(
+      'GET',
+      `/v2/email/dedicated-ip-pools/${encodeURIComponent(poolName)}`
+    );
     return {
       poolName: result.DedicatedIpPool?.PoolName,
-      scalingMode: result.DedicatedIpPool?.ScalingMode,
+      scalingMode: result.DedicatedIpPool?.ScalingMode
     };
   }
 
   async deleteDedicatedIpPool(poolName: string): Promise<void> {
-    await this.request('DELETE', `/v2/email/dedicated-ip-pools/${encodeURIComponent(poolName)}`);
+    await this.request(
+      'DELETE',
+      `/v2/email/dedicated-ip-pools/${encodeURIComponent(poolName)}`
+    );
   }
 
-  async listDedicatedIpPools(params?: {
-    nextToken?: string;
-    pageSize?: number;
-  }): Promise<{
+  async listDedicatedIpPools(params?: { nextToken?: string; pageSize?: number }): Promise<{
     dedicatedIpPools: string[];
     nextToken?: string;
   }> {
@@ -1037,10 +1169,15 @@ export class SesClient {
     if (params?.nextToken) query.NextToken = params.nextToken;
     if (params?.pageSize) query.PageSize = String(params.pageSize);
 
-    let result = await this.request<any>('GET', '/v2/email/dedicated-ip-pools', undefined, query);
+    let result = await this.request<any>(
+      'GET',
+      '/v2/email/dedicated-ip-pools',
+      undefined,
+      query
+    );
     return {
       dedicatedIpPools: result.DedicatedIpPools || [],
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
@@ -1074,7 +1211,7 @@ export class SesClient {
       sendQuota: {
         max24HourSend: result.SendQuota?.Max24HourSend || 0,
         maxSendRate: result.SendQuota?.MaxSendRate || 0,
-        sentLast24Hours: result.SendQuota?.SentLast24Hours || 0,
+        sentLast24Hours: result.SendQuota?.SentLast24Hours || 0
       },
       suppressionAttributes: result.SuppressionAttributes
         ? { suppressedReasons: result.SuppressionAttributes.SuppressedReasons || [] }
@@ -1083,19 +1220,24 @@ export class SesClient {
         ? {
             vdmEnabled: result.VdmAttributes.VdmEnabled,
             dashboardAttributes: result.VdmAttributes.DashboardAttributes
-              ? { engagementMetrics: result.VdmAttributes.DashboardAttributes.EngagementMetrics }
+              ? {
+                  engagementMetrics: result.VdmAttributes.DashboardAttributes.EngagementMetrics
+                }
               : undefined,
             guardianAttributes: result.VdmAttributes.GuardianAttributes
-              ? { optimizedSharedDelivery: result.VdmAttributes.GuardianAttributes.OptimizedSharedDelivery }
-              : undefined,
+              ? {
+                  optimizedSharedDelivery:
+                    result.VdmAttributes.GuardianAttributes.OptimizedSharedDelivery
+                }
+              : undefined
           }
-        : undefined,
+        : undefined
     };
   }
 
   async putAccountSendingAttributes(sendingEnabled: boolean): Promise<void> {
     await this.request('PUT', '/v2/email/account/sending', {
-      SendingEnabled: sendingEnabled,
+      SendingEnabled: sendingEnabled
     });
   }
 
@@ -1116,7 +1258,10 @@ export class SesClient {
       }[];
     }[];
   }> {
-    let result = await this.request<any>('GET', `/v2/email/insights/${encodeURIComponent(messageId)}`);
+    let result = await this.request<any>(
+      'GET',
+      `/v2/email/insights/${encodeURIComponent(messageId)}`
+    );
     return {
       messageId: result.MessageId,
       fromEmailAddress: result.FromEmailAddress,
@@ -1128,9 +1273,9 @@ export class SesClient {
         events: i.Events?.map((e: any) => ({
           timestamp: e.Timestamp,
           type: e.Type,
-          details: e.Details,
-        })),
-      })),
+          details: e.Details
+        }))
+      }))
     };
   }
 }

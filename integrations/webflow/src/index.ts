@@ -19,7 +19,7 @@ import {
   manageInventory,
   listUsers,
   manageUser,
-  listAssets,
+  listAssets
 } from './tools';
 import {
   formSubmissionTrigger,
@@ -27,7 +27,7 @@ import {
   pageEventsTrigger,
   ecommerceEventsTrigger,
   userAccountEventsTrigger,
-  collectionItemEventsTrigger,
+  collectionItemEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -51,7 +51,7 @@ export let provider = Slate.create({
     manageInventory,
     listUsers,
     manageUser,
-    listAssets,
+    listAssets
   ],
   triggers: [
     formSubmissionTrigger,
@@ -59,6 +59,6 @@ export let provider = Slate.create({
     pageEventsTrigger,
     ecommerceEventsTrigger,
     userAccountEventsTrigger,
-    collectionItemEventsTrigger,
-  ],
+    collectionItemEventsTrigger
+  ]
 });

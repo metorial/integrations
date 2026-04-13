@@ -13,39 +13,56 @@ let approvalOutputSchema = z.object({
   note: z.string().nullable().optional().describe('Approval note or reason'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  rawData: z.any().optional().describe('Complete raw approval data'),
+  rawData: z.any().optional().describe('Complete raw approval data')
 });
 
-export let searchApprovals = SlateTool.create(
-  spec,
-  {
-    name: 'Search Approvals',
-    key: 'search_approvals',
-    description: `Search and list approvals in Coupa. Filter by status, approver, type (requisitions, purchase orders, invoices, expenses), and other attributes.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchApprovals = SlateTool.create(spec, {
+  name: 'Search Approvals',
+  key: 'search_approvals',
+  description: `Search and list approvals in Coupa. Filter by status, approver, type (requisitions, purchase orders, invoices, expenses), and other attributes.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.string().optional().describe('Filter by approval status (e.g. "pending_approval", "approved", "rejected")'),
-    approverId: z.number().optional().describe('Filter by approver user ID'),
-    approvableType: z.string().optional().describe('Filter by document type (e.g. "RequisitionHeader", "OrderHeader", "InvoiceHeader")'),
-    updatedAfter: z.string().optional().describe('Filter approvals updated after this date (ISO 8601)'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional Coupa query filters'),
-    orderBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    approvals: z.array(approvalOutputSchema).describe('List of matching approvals'),
-    count: z.number().describe('Number of approvals returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .string()
+        .optional()
+        .describe(
+          'Filter by approval status (e.g. "pending_approval", "approved", "rejected")'
+        ),
+      approverId: z.number().optional().describe('Filter by approver user ID'),
+      approvableType: z
+        .string()
+        .optional()
+        .describe(
+          'Filter by document type (e.g. "RequisitionHeader", "OrderHeader", "InvoiceHeader")'
+        ),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter approvals updated after this date (ISO 8601)'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional Coupa query filters'),
+      orderBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      approvals: z.array(approvalOutputSchema).describe('List of matching approvals'),
+      count: z.number().describe('Number of approvals returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let filters: Record<string, string> = {};
@@ -64,7 +81,7 @@ export let searchApprovals = SlateTool.create(
       orderBy: ctx.input.orderBy,
       dir: ctx.input.sortDirection,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let approvals = (Array.isArray(results) ? results : []).map((a: any) => ({
@@ -77,47 +94,52 @@ export let searchApprovals = SlateTool.create(
       note: a.note ?? null,
       createdAt: a['created-at'] ?? a.created_at ?? null,
       updatedAt: a['updated-at'] ?? a.updated_at ?? null,
-      rawData: a,
+      rawData: a
     }));
 
     return {
       output: {
         approvals,
-        count: approvals.length,
+        count: approvals.length
       },
-      message: `Found **${approvals.length}** approval(s).`,
+      message: `Found **${approvals.length}** approval(s).`
     };
   })
   .build();
 
-export let processApproval = SlateTool.create(
-  spec,
-  {
-    name: 'Process Approval',
-    key: 'process_approval',
-    description: `Approve or reject a pending approval in Coupa. Provide the approval ID and the desired action (approve or reject) along with an optional reason.`,
-    tags: {
-      destructive: false,
-    },
+export let processApproval = SlateTool.create(spec, {
+  name: 'Process Approval',
+  key: 'process_approval',
+  description: `Approve or reject a pending approval in Coupa. Provide the approval ID and the desired action (approve or reject) along with an optional reason.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    approvalId: z.number().describe('ID of the approval to process'),
-    action: z.enum(['approve', 'reject']).describe('Action to take on the approval'),
-    reason: z.string().optional().describe('Reason for the approval/rejection (required for rejection)'),
-  }))
+})
+  .input(
+    z.object({
+      approvalId: z.number().describe('ID of the approval to process'),
+      action: z.enum(['approve', 'reject']).describe('Action to take on the approval'),
+      reason: z
+        .string()
+        .optional()
+        .describe('Reason for the approval/rejection (required for rejection)')
+    })
+  )
   .output(approvalOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let result: any;
     if (ctx.input.action === 'approve') {
       result = await client.approveApproval(ctx.input.approvalId, ctx.input.reason);
     } else {
-      result = await client.rejectApproval(ctx.input.approvalId, ctx.input.reason ?? 'Rejected');
+      result = await client.rejectApproval(
+        ctx.input.approvalId,
+        ctx.input.reason ?? 'Rejected'
+      );
     }
 
     return {
@@ -131,9 +153,9 @@ export let processApproval = SlateTool.create(
         note: result.note ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `${ctx.input.action === 'approve' ? 'Approved' : 'Rejected'} approval **#${ctx.input.approvalId}**.`,
+      message: `${ctx.input.action === 'approve' ? 'Approved' : 'Rejected'} approval **#${ctx.input.approvalId}**.`
     };
   })
   .build();

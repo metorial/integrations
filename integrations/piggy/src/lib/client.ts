@@ -7,10 +7,10 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.piggy.eu',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -45,14 +45,14 @@ export class Client {
 
   async findContactByEmail(email: string) {
     let response = await this.api.get('/api/v3/oauth/contacts/find-one-by', {
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
 
   async findOrCreateContact(email: string) {
     let response = await this.api.get('/api/v3/oauth/contacts/find-or-create', {
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
@@ -77,7 +77,9 @@ export class Client {
   }
 
   async deleteContact(contactUuid: string, type: 'DEFAULT' | 'GDPR' = 'DEFAULT') {
-    let response = await this.api.post(`/api/v3/oauth/contacts/${contactUuid}/delete`, { type });
+    let response = await this.api.post(`/api/v3/oauth/contacts/${contactUuid}/delete`, {
+      type
+    });
     return response.data;
   }
 
@@ -97,7 +99,9 @@ export class Client {
   }
 
   async getContactIdentifiers(contactUuid: string) {
-    let response = await this.api.get(`/api/v3/oauth/contacts/${contactUuid}/contact-identifiers`);
+    let response = await this.api.get(
+      `/api/v3/oauth/contacts/${contactUuid}/contact-identifiers`
+    );
     return response.data;
   }
 
@@ -105,7 +109,7 @@ export class Client {
 
   async findContactIdentifier(value: string) {
     let response = await this.api.get('/api/v3/oauth/contact-identifiers/find', {
-      params: { contact_identifier_value: value },
+      params: { contact_identifier_value: value }
     });
     return response.data;
   }
@@ -116,7 +120,7 @@ export class Client {
     contactIdentifierName?: string;
   }) {
     let body: Record<string, any> = {
-      contact_identifier_value: data.contactIdentifierValue,
+      contact_identifier_value: data.contactIdentifierValue
     };
     if (data.contactUuid) body.contact_uuid = data.contactUuid;
     if (data.contactIdentifierName) body.contact_identifier_name = data.contactIdentifierName;
@@ -128,14 +132,14 @@ export class Client {
   async linkContactIdentifier(contactIdentifierValue: string, contactUuid: string) {
     let response = await this.api.put('/api/v3/oauth/contact-identifiers/link', {
       contact_identifier_value: contactIdentifierValue,
-      contact_uuid: contactUuid,
+      contact_uuid: contactUuid
     });
     return response.data;
   }
 
   async unlinkContactIdentifier(contactIdentifierValue: string) {
     let response = await this.api.put('/api/v3/oauth/contact-identifiers/unlink', {
-      contact_identifier_value: contactIdentifierValue,
+      contact_identifier_value: contactIdentifierValue
     });
     return response.data;
   }
@@ -171,7 +175,9 @@ export class Client {
     if (params?.createdAtLt) query['created_at[lt]'] = params.createdAtLt;
     if (params?.createdAtLte) query['created_at[lte]'] = params.createdAtLte;
 
-    let response = await this.api.get('/api/v3/oauth/clients/loyalty-transactions', { params: query });
+    let response = await this.api.get('/api/v3/oauth/clients/loyalty-transactions', {
+      params: query
+    });
     return response.data;
   }
 
@@ -185,19 +191,22 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       shop_uuid: data.shopUuid,
-      contact_uuid: data.contactUuid,
+      contact_uuid: data.contactUuid
     };
     if (data.credits !== undefined) body.credits = data.credits;
     if (data.unitValue !== undefined) body.unit_value = data.unitValue;
     if (data.unitName) body.unit_name = data.unitName;
-    if (data.contactIdentifierValue) body.contact_identifier_value = data.contactIdentifierValue;
+    if (data.contactIdentifierValue)
+      body.contact_identifier_value = data.contactIdentifierValue;
 
     let response = await this.api.post('/api/v3/oauth/credit-receptions', body);
     return response.data;
   }
 
   async reverseCreditReception(creditReceptionUuid: string) {
-    let response = await this.api.post(`/api/v3/oauth/credit-receptions/${creditReceptionUuid}/reverse`);
+    let response = await this.api.post(
+      `/api/v3/oauth/credit-receptions/${creditReceptionUuid}/reverse`
+    );
     return response.data;
   }
 
@@ -209,12 +218,14 @@ export class Client {
   }) {
     let query: Record<string, any> = {
       shop_uuid: params.shopUuid,
-      unit_value: params.unitValue,
+      unit_value: params.unitValue
     };
     if (params.contactUuid) query.contact_uuid = params.contactUuid;
     if (params.unitName) query.unit_name = params.unitName;
 
-    let response = await this.api.get('/api/v3/oauth/credit-receptions/calculate', { params: query });
+    let response = await this.api.get('/api/v3/oauth/credit-receptions/calculate', {
+      params: query
+    });
     return response.data;
   }
 
@@ -234,11 +245,14 @@ export class Client {
     return response.data;
   }
 
-  async updateReward(rewardUuid: string, data: {
-    title?: string;
-    description?: string;
-    requiredCredits?: number;
-  }) {
+  async updateReward(
+    rewardUuid: string,
+    data: {
+      title?: string;
+      description?: string;
+      requiredCredits?: number;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.title !== undefined) body.title = data.title;
     if (data.description !== undefined) body.description = data.description;
@@ -257,16 +271,19 @@ export class Client {
     let body: Record<string, any> = {
       contact_uuid: data.contactUuid,
       reward_uuid: data.rewardUuid,
-      shop_uuid: data.shopUuid,
+      shop_uuid: data.shopUuid
     };
-    if (data.contactIdentifierValue) body.contact_identifier_value = data.contactIdentifierValue;
+    if (data.contactIdentifierValue)
+      body.contact_identifier_value = data.contactIdentifierValue;
 
     let response = await this.api.post('/api/v3/oauth/reward-receptions', body);
     return response.data;
   }
 
   async reverseRewardReception(rewardReceptionUuid: string) {
-    let response = await this.api.post(`/api/v3/oauth/reward-receptions/${rewardReceptionUuid}/reverse`);
+    let response = await this.api.post(
+      `/api/v3/oauth/reward-receptions/${rewardReceptionUuid}/reverse`
+    );
     return response.data;
   }
 
@@ -304,7 +321,7 @@ export class Client {
 
   async findVoucher(code: string) {
     let response = await this.api.get('/api/v3/oauth/vouchers/find', {
-      params: { code },
+      params: { code }
     });
     return response.data;
   }
@@ -319,24 +336,28 @@ export class Client {
     customAttributes?: Array<{ name: string; value: string }>;
   }) {
     let body: Record<string, any> = {
-      promotion_uuid: data.promotionUuid,
+      promotion_uuid: data.promotionUuid
     };
     if (data.code) body.code = data.code;
     if (data.contactUuid) body.contact_uuid = data.contactUuid;
     if (data.expirationDate) body.expiration_date = data.expirationDate;
     if (data.activationDate) body.activation_date = data.activationDate;
-    if (data.totalRedemptionsAllowed !== undefined) body.total_redemptions_allowed = data.totalRedemptionsAllowed;
+    if (data.totalRedemptionsAllowed !== undefined)
+      body.total_redemptions_allowed = data.totalRedemptionsAllowed;
     if (data.customAttributes) body.custom_attributes = data.customAttributes;
 
     let response = await this.api.post('/api/v3/oauth/vouchers', body);
     return response.data;
   }
 
-  async updateVoucher(voucherUuid: string, data: {
-    status?: 'ACTIVE' | 'DEACTIVATED';
-    expirationDate?: string;
-    customAttributes?: Array<{ name: string; value: string }>;
-  }) {
+  async updateVoucher(
+    voucherUuid: string,
+    data: {
+      status?: 'ACTIVE' | 'DEACTIVATED';
+      expirationDate?: string;
+      customAttributes?: Array<{ name: string; value: string }>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.status) body.status = data.status;
     if (data.expirationDate) body.expiration_date = data.expirationDate;
@@ -354,7 +375,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       code: data.code,
-      shop_uuid: data.shopUuid,
+      shop_uuid: data.shopUuid
     };
     if (data.contactUuid) body.contact_uuid = data.contactUuid;
     if (data.releaseKey) body.release_key = data.releaseKey;
@@ -386,18 +407,15 @@ export class Client {
 
   async findGiftcardByHash(hash: string) {
     let response = await this.api.get('/api/v3/oauth/giftcards/find-one-by', {
-      params: { hash },
+      params: { hash }
     });
     return response.data;
   }
 
-  async createGiftcard(data: {
-    giftcardProgramUuid: string;
-    type?: number;
-  }) {
+  async createGiftcard(data: { giftcardProgramUuid: string; type?: number }) {
     let response = await this.api.post('/api/v3/oauth/giftcards', {
       giftcard_program_uuid: data.giftcardProgramUuid,
-      type: data.type ?? 1, // 1 = digital
+      type: data.type ?? 1 // 1 = digital
     });
     return response.data;
   }
@@ -431,7 +449,9 @@ export class Client {
     if (params?.createdAtLt) query['created_at[lt]'] = params.createdAtLt;
     if (params?.createdAtLte) query['created_at[lte]'] = params.createdAtLte;
 
-    let response = await this.api.get('/api/v3/oauth/clients/giftcard-transactions', { params: query });
+    let response = await this.api.get('/api/v3/oauth/clients/giftcard-transactions', {
+      params: query
+    });
     return response.data;
   }
 
@@ -444,7 +464,7 @@ export class Client {
     let body: Record<string, any> = {
       giftcard_uuid: data.giftcardUuid,
       amount_in_cents: data.amountInCents,
-      shop_uuid: data.shopUuid,
+      shop_uuid: data.shopUuid
     };
     if (data.customAttributes) body.custom_attributes = data.customAttributes;
 
@@ -453,7 +473,9 @@ export class Client {
   }
 
   async reverseGiftcardTransaction(giftcardTransactionUuid: string) {
-    let response = await this.api.post(`/api/v3/oauth/giftcard-transactions/${giftcardTransactionUuid}/reverse`);
+    let response = await this.api.post(
+      `/api/v3/oauth/giftcard-transactions/${giftcardTransactionUuid}/reverse`
+    );
     return response.data;
   }
 
@@ -467,10 +489,11 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       amount_in_cents: data.amountInCents,
-      shop_uuid: data.shopUuid,
+      shop_uuid: data.shopUuid
     };
     if (data.contactUuid) body.contact_uuid = data.contactUuid;
-    if (data.contactIdentifierValue) body.contact_identifier_value = data.contactIdentifierValue;
+    if (data.contactIdentifierValue)
+      body.contact_identifier_value = data.contactIdentifierValue;
 
     let response = await this.api.post('/api/v3/oauth/prepaid-transactions', body);
     return response.data;
@@ -493,7 +516,9 @@ export class Client {
   }
 
   async reversePrepaidTransaction(prepaidTransactionUuid: string) {
-    let response = await this.api.post(`/api/v3/oauth/prepaid-transactions/${prepaidTransactionUuid}/reverse`);
+    let response = await this.api.post(
+      `/api/v3/oauth/prepaid-transactions/${prepaidTransactionUuid}/reverse`
+    );
     return response.data;
   }
 
@@ -512,13 +537,16 @@ export class Client {
   // ─── Orders ──────────────────────────────────────────────────
 
   async createAndProcessOrder(data: Record<string, any>) {
-    let response = await this.api.post('/api/v3/oauth/clients/orders/create-and-process', data);
+    let response = await this.api.post(
+      '/api/v3/oauth/clients/orders/create-and-process',
+      data
+    );
     return response.data;
   }
 
   async findOrder(externalIdentifier: string) {
     let response = await this.api.get('/api/v3/oauth/clients/orders/find', {
-      params: { external_identifier: externalIdentifier },
+      params: { external_identifier: externalIdentifier }
     });
     return response.data;
   }
@@ -567,7 +595,9 @@ export class Client {
     if (params?.eventType) query.event_type = params.eventType;
     if (params?.status) query.status = params.status;
 
-    let response = await this.api.get('/api/v3/oauth/webhook-subscriptions', { params: query });
+    let response = await this.api.get('/api/v3/oauth/webhook-subscriptions', {
+      params: query
+    });
     return response.data;
   }
 
@@ -581,7 +611,7 @@ export class Client {
     let body: Record<string, any> = {
       name: data.name,
       event_type: data.eventType,
-      url: data.url,
+      url: data.url
     };
     if (data.secret) body.secret = data.secret;
     if (data.attributes) body.attributes = data.attributes;
@@ -591,28 +621,38 @@ export class Client {
   }
 
   async getWebhookSubscription(webhookSubscriptionUuid: string) {
-    let response = await this.api.get(`/api/v3/oauth/webhook-subscriptions/${webhookSubscriptionUuid}`);
+    let response = await this.api.get(
+      `/api/v3/oauth/webhook-subscriptions/${webhookSubscriptionUuid}`
+    );
     return response.data;
   }
 
-  async updateWebhookSubscription(webhookSubscriptionUuid: string, data: {
-    name?: string;
-    url?: string;
-    status?: 'ACTIVE' | 'INACTIVE';
-    attributes?: string[];
-  }) {
+  async updateWebhookSubscription(
+    webhookSubscriptionUuid: string,
+    data: {
+      name?: string;
+      url?: string;
+      status?: 'ACTIVE' | 'INACTIVE';
+      attributes?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name) body.name = data.name;
     if (data.url) body.url = data.url;
     if (data.status) body.status = data.status;
     if (data.attributes) body.attributes = data.attributes;
 
-    let response = await this.api.put(`/api/v3/oauth/webhook-subscriptions/${webhookSubscriptionUuid}`, body);
+    let response = await this.api.put(
+      `/api/v3/oauth/webhook-subscriptions/${webhookSubscriptionUuid}`,
+      body
+    );
     return response.data;
   }
 
   async deleteWebhookSubscription(webhookSubscriptionUuid: string) {
-    let response = await this.api.delete(`/api/v3/oauth/webhook-subscriptions/${webhookSubscriptionUuid}`);
+    let response = await this.api.delete(
+      `/api/v3/oauth/webhook-subscriptions/${webhookSubscriptionUuid}`
+    );
     return response.data;
   }
 
@@ -630,7 +670,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       contact_uuid: data.contactUuid,
-      automation_uuid: data.automationUuid,
+      automation_uuid: data.automationUuid
     };
     if (data.runData) body.data = data.runData;
 

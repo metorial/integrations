@@ -3,31 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let networkChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Network Changes',
-    key: 'network_changes',
-    description: 'Triggers when network sites are added or removed. Monitors the network list for changes between polling intervals.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['added', 'removed']).describe('Whether the network was added or removed'),
-    networkId: z.string().describe('Network ID'),
-    networkName: z.string().describe('Network name'),
-    networkData: z.record(z.string(), z.any()).describe('Full network data'),
-  }))
-  .output(z.object({
-    networkId: z.string().describe('Network ID'),
-    networkName: z.string().describe('Network name'),
-    eventType: z.string().describe('Type of change'),
-    network: z.record(z.string(), z.any()).describe('Full network data'),
-  }))
+export let networkChanges = SlateTrigger.create(spec, {
+  name: 'Network Changes',
+  key: 'network_changes',
+  description:
+    'Triggers when network sites are added or removed. Monitors the network list for changes between polling intervals.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['added', 'removed'])
+        .describe('Whether the network was added or removed'),
+      networkId: z.string().describe('Network ID'),
+      networkName: z.string().describe('Network name'),
+      networkData: z.record(z.string(), z.any()).describe('Full network data')
+    })
+  )
+  .output(
+    z.object({
+      networkId: z.string().describe('Network ID'),
+      networkName: z.string().describe('Network name'),
+      eventType: z.string().describe('Type of change'),
+      network: z.record(z.string(), z.any()).describe('Full network data')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth.token);
       let currentNetworks = await client.listNetworks();
 
@@ -48,7 +52,7 @@ export let networkChanges = SlateTrigger.create(
             eventType: 'added',
             networkId: netId,
             networkName: net.name ?? '',
-            networkData: net,
+            networkData: net
           });
         }
       }
@@ -59,7 +63,7 @@ export let networkChanges = SlateTrigger.create(
             eventType: 'removed',
             networkId: prevId,
             networkName: '',
-            networkData: { id: prevId },
+            networkData: { id: prevId }
           });
         }
       }
@@ -67,11 +71,11 @@ export let networkChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          networkIds: Array.from(currentNetworkIds),
-        },
+          networkIds: Array.from(currentNetworkIds)
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `network.${ctx.input.eventType}`,
         id: `net-${ctx.input.networkId}-${ctx.input.eventType}-${Date.now()}`,
@@ -79,8 +83,9 @@ export let networkChanges = SlateTrigger.create(
           networkId: ctx.input.networkId,
           networkName: ctx.input.networkName,
           eventType: ctx.input.eventType,
-          network: ctx.input.networkData,
-        },
+          network: ctx.input.networkData
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

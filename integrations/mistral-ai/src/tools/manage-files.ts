@@ -12,26 +12,27 @@ let fileSchema = z.object({
   mimetype: z.string().optional().describe('File MIME type')
 });
 
-export let listFilesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Files',
-    key: 'list_files',
-    description: `List files uploaded to the Mistral AI platform. Files are used for fine-tuning datasets, batch inference inputs, and OCR processing.`,
-    tags: {
-      readOnly: true
-    }
+export let listFilesTool = SlateTool.create(spec, {
+  name: 'List Files',
+  key: 'list_files',
+  description: `List files uploaded to the Mistral AI platform. Files are used for fine-tuning datasets, batch inference inputs, and OCR processing.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (0-based)'),
-    pageSize: z.number().optional().describe('Number of files per page')
-  }))
-  .output(z.object({
-    files: z.array(fileSchema).describe('Uploaded files'),
-    total: z.number().optional().describe('Total number of files')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (0-based)'),
+      pageSize: z.number().optional().describe('Number of files per page')
+    })
+  )
+  .output(
+    z.object({
+      files: z.array(fileSchema).describe('Uploaded files'),
+      total: z.number().optional().describe('Total number of files')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MistralClient(ctx.auth.token);
 
     let result = await client.listFiles({
@@ -58,30 +59,31 @@ export let listFilesTool = SlateTool.create(
   })
   .build();
 
-export let getFileTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get File',
-    key: 'get_file',
-    description: `Retrieve metadata and a signed download URL for a file uploaded to Mistral AI.`,
-    tags: {
-      readOnly: true
-    }
+export let getFileTool = SlateTool.create(spec, {
+  name: 'Get File',
+  key: 'get_file',
+  description: `Retrieve metadata and a signed download URL for a file uploaded to Mistral AI.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    fileId: z.string().describe('ID of the file to retrieve')
-  }))
-  .output(z.object({
-    fileId: z.string().describe('File identifier'),
-    filename: z.string().optional().describe('Original filename'),
-    bytes: z.number().optional().describe('File size in bytes'),
-    purpose: z.string().optional().describe('File purpose'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    mimetype: z.string().optional().describe('File MIME type'),
-    downloadUrl: z.string().optional().describe('Signed download URL (valid for 24 hours)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileId: z.string().describe('ID of the file to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      fileId: z.string().describe('File identifier'),
+      filename: z.string().optional().describe('Original filename'),
+      bytes: z.number().optional().describe('File size in bytes'),
+      purpose: z.string().optional().describe('File purpose'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      mimetype: z.string().optional().describe('File MIME type'),
+      downloadUrl: z.string().optional().describe('Signed download URL (valid for 24 hours)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MistralClient(ctx.auth.token);
 
     let file = await client.getFile(ctx.input.fileId);
@@ -102,25 +104,26 @@ export let getFileTool = SlateTool.create(
   })
   .build();
 
-export let deleteFileTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete File',
-    key: 'delete_file',
-    description: `Delete a file from the Mistral AI platform. This permanently removes the file and cannot be undone.`,
-    tags: {
-      destructive: true
-    }
+export let deleteFileTool = SlateTool.create(spec, {
+  name: 'Delete File',
+  key: 'delete_file',
+  description: `Delete a file from the Mistral AI platform. This permanently removes the file and cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    fileId: z.string().describe('ID of the file to delete')
-  }))
-  .output(z.object({
-    fileId: z.string().describe('ID of the deleted file'),
-    deleted: z.boolean().describe('Whether the file was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileId: z.string().describe('ID of the file to delete')
+    })
+  )
+  .output(
+    z.object({
+      fileId: z.string().describe('ID of the deleted file'),
+      deleted: z.boolean().describe('Whether the file was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MistralClient(ctx.auth.token);
 
     let result = await client.deleteFile(ctx.input.fileId);

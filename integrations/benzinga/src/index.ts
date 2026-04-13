@@ -12,7 +12,7 @@ import {
   getGovernmentTradesTool,
   getInsiderTransactionsTool,
   getShortInterestTool,
-  getWiimsTool,
+  getWiimsTool
 } from './tools';
 import { newsWebhookTrigger } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     getGovernmentTradesTool,
     getInsiderTransactionsTool,
     getShortInterestTool,
-    getWiimsTool,
+    getWiimsTool
   ],
-  triggers: [
-    newsWebhookTrigger,
-  ],
+  triggers: [newsWebhookTrigger]
 });

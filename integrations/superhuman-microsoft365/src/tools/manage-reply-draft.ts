@@ -6,36 +6,33 @@ import { z } from 'zod';
 let recipientSchema = z.object({
   emailAddress: z.object({
     name: z.string().optional(),
-    address: z.string(),
-  }),
+    address: z.string()
+  })
 });
 
-export let manageReplyDraft = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Reply Draft',
-    key: 'manage_reply_draft',
-    description:
-      'Conversation-native reply drafting via Graph **createReply** / **createReplyAll** (creates a real draft message), then **patch** or **delete** that draft. Prefer this over raw compose when replying in a thread.',
-    instructions: [
-      'After **create_reply_draft** or **create_reply_all_draft**, use **update_draft** with the returned **draftMessageId**.',
-      'Send the finished draft with **Send Reply** (`send_draft` mode).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
+export let manageReplyDraft = SlateTool.create(spec, {
+  name: 'Manage Reply Draft',
+  key: 'manage_reply_draft',
+  description:
+    'Conversation-native reply drafting via Graph **createReply** / **createReplyAll** (creates a real draft message), then **patch** or **delete** that draft. Prefer this over raw compose when replying in a thread.',
+  instructions: [
+    'After **create_reply_draft** or **create_reply_all_draft**, use **update_draft** with the returned **draftMessageId**.',
+    'Send the finished draft with **Send Reply** (`send_draft` mode).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
   .input(
     z.discriminatedUnion('operation', [
       z.object({
         operation: z.literal('create_reply_draft'),
-        sourceMessageId: z.string().describe('Message to reply to'),
+        sourceMessageId: z.string().describe('Message to reply to')
       }),
       z.object({
         operation: z.literal('create_reply_all_draft'),
-        sourceMessageId: z.string().describe('Message to reply all to'),
+        sourceMessageId: z.string().describe('Message to reply all to')
       }),
       z.object({
         operation: z.literal('update_draft'),
@@ -46,22 +43,22 @@ export let manageReplyDraft = SlateTool.create(
         toRecipients: z.array(recipientSchema).optional(),
         ccRecipients: z.array(recipientSchema).optional(),
         bccRecipients: z.array(recipientSchema).optional(),
-        importance: z.enum(['low', 'normal', 'high']).optional(),
+        importance: z.enum(['low', 'normal', 'high']).optional()
       }),
       z.object({
         operation: z.literal('delete_draft'),
-        draftMessageId: z.string(),
-      }),
-    ]),
+        draftMessageId: z.string()
+      })
+    ])
   )
   .output(
     z.object({
       draftMessageId: z.string().optional(),
       webLink: z.string().optional(),
-      success: z.boolean(),
-    }),
+      success: z.boolean()
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
 
@@ -72,9 +69,9 @@ export let manageReplyDraft = SlateTool.create(
           output: {
             draftMessageId: draft.id,
             webLink: draft.webLink,
-            success: true,
+            success: true
           },
-          message: `Created reply draft **${draft.id}**.`,
+          message: `Created reply draft **${draft.id}**.`
         };
       }
       case 'create_reply_all_draft': {
@@ -83,16 +80,16 @@ export let manageReplyDraft = SlateTool.create(
           output: {
             draftMessageId: draft.id,
             webLink: draft.webLink,
-            success: true,
+            success: true
           },
-          message: `Created reply-all draft **${draft.id}**.`,
+          message: `Created reply-all draft **${draft.id}**.`
         };
       }
       case 'delete_draft': {
         await client.deleteMessage(input.draftMessageId);
         return {
           output: { success: true },
-          message: `Deleted draft **${input.draftMessageId}**.`,
+          message: `Deleted draft **${input.draftMessageId}**.`
         };
       }
       case 'update_draft': {
@@ -110,7 +107,7 @@ export let manageReplyDraft = SlateTool.create(
         if (input.bodyContent !== undefined) {
           updates.body = {
             contentType: input.bodyContentType ?? 'html',
-            content: input.bodyContent,
+            content: input.bodyContent
           };
         }
         if (input.toRecipients) {
@@ -131,9 +128,9 @@ export let manageReplyDraft = SlateTool.create(
           output: {
             draftMessageId: updated.id,
             webLink: updated.webLink,
-            success: true,
+            success: true
           },
-          message: `Updated draft **${input.draftMessageId}**.`,
+          message: `Updated draft **${input.draftMessageId}**.`
         };
       }
     }

@@ -3,36 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSSHKeys = SlateTool.create(
-  spec,
-  {
-    name: 'Manage SSH Keys',
-    key: 'manage_ssh_keys',
-    description: `List, create, or delete SSH keys on your DigitalOcean account. SSH keys are used for secure authentication when creating Droplets.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete']).describe('Action to perform'),
-    name: z.string().optional().describe('Key name (required for create)'),
-    publicKey: z.string().optional().describe('SSH public key content (required for create)'),
-    keyIdOrFingerprint: z.union([z.string(), z.number()]).optional().describe('Key ID or fingerprint (required for delete)')
-  }))
-  .output(z.object({
-    sshKeys: z.array(z.object({
-      sshKeyId: z.number().describe('SSH key ID'),
-      name: z.string().describe('Key name'),
-      fingerprint: z.string().describe('Key fingerprint'),
-      publicKey: z.string().describe('Public key content')
-    })).optional().describe('List of SSH keys'),
-    sshKey: z.object({
-      sshKeyId: z.number().describe('SSH key ID'),
-      name: z.string().describe('Key name'),
-      fingerprint: z.string().describe('Key fingerprint'),
-      publicKey: z.string().describe('Public key content')
-    }).optional().describe('Created SSH key'),
-    deleted: z.boolean().optional().describe('Whether the key was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSSHKeys = SlateTool.create(spec, {
+  name: 'Manage SSH Keys',
+  key: 'manage_ssh_keys',
+  description: `List, create, or delete SSH keys on your DigitalOcean account. SSH keys are used for secure authentication when creating Droplets.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'delete']).describe('Action to perform'),
+      name: z.string().optional().describe('Key name (required for create)'),
+      publicKey: z
+        .string()
+        .optional()
+        .describe('SSH public key content (required for create)'),
+      keyIdOrFingerprint: z
+        .union([z.string(), z.number()])
+        .optional()
+        .describe('Key ID or fingerprint (required for delete)')
+    })
+  )
+  .output(
+    z.object({
+      sshKeys: z
+        .array(
+          z.object({
+            sshKeyId: z.number().describe('SSH key ID'),
+            name: z.string().describe('Key name'),
+            fingerprint: z.string().describe('Key fingerprint'),
+            publicKey: z.string().describe('Public key content')
+          })
+        )
+        .optional()
+        .describe('List of SSH keys'),
+      sshKey: z
+        .object({
+          sshKeyId: z.number().describe('SSH key ID'),
+          name: z.string().describe('Key name'),
+          fingerprint: z.string().describe('Key fingerprint'),
+          publicKey: z.string().describe('Public key content')
+        })
+        .optional()
+        .describe('Created SSH key'),
+      deleted: z.boolean().optional().describe('Whether the key was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let mapKey = (k: any) => ({
@@ -65,7 +80,8 @@ export let manageSSHKeys = SlateTool.create(
     }
 
     // delete
-    if (!ctx.input.keyIdOrFingerprint) throw new Error('keyIdOrFingerprint is required for delete action');
+    if (!ctx.input.keyIdOrFingerprint)
+      throw new Error('keyIdOrFingerprint is required for delete action');
     await client.deleteSSHKey(ctx.input.keyIdOrFingerprint);
 
     return {

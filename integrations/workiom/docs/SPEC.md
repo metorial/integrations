@@ -13,6 +13,7 @@ Workiom supports two authentication methods:
 All APIs in Workiom require an API Key passed in the header. You can grab your API Key from Account Settings, then pass it through the header using the name `X-Api-Key`.
 
 Example:
+
 ```
 curl -X GET "https://api.workiom.com/api/services/app/Apps/GetAll" \
   -H "accept: text/plain" \

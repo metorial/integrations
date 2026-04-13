@@ -6,5 +6,5 @@ import { tpscheckEvents } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [checkNumber, batchCheck, checkCredits],
-  triggers: [tpscheckEvents],
+  triggers: [tpscheckEvents]
 });

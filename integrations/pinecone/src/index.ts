@@ -14,7 +14,7 @@ import {
   generateEmbeddingsTool,
   rerankTool,
   chatWithAssistantTool,
-  manageAssistantTool,
+  manageAssistantTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     generateEmbeddingsTool,
     rerankTool,
     chatWithAssistantTool,
-    manageAssistantTool,
+    manageAssistantTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

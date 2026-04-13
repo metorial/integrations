@@ -20,14 +20,14 @@ There are two ways to authorize a client and receive a User Token. The first is 
 
 **Parameters for the authorize route:**
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `key` | API key | Your application's API key |
-| `scope` | Comma-separated: `read`, `write`, `account` | `read`: read boards, orgs, etc. `write`: create/update resources. `account`: access member email, write member info |
-| `expiration` | `1hour`, `1day`, `30days`, `never` | Token lifetime |
-| `response_type` | `token` | Returns the token directly in the browser |
-| `callback_method` | `postMessage` or `fragment` | How the token is returned (use with `return_url`) |
-| `return_url` | Valid URL | Where to redirect after authorization (must match allowed origins) |
+| Parameter         | Values                                      | Description                                                                                                         |
+| ----------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `key`             | API key                                     | Your application's API key                                                                                          |
+| `scope`           | Comma-separated: `read`, `write`, `account` | `read`: read boards, orgs, etc. `write`: create/update resources. `account`: access member email, write member info |
+| `expiration`      | `1hour`, `1day`, `30days`, `never`          | Token lifetime                                                                                                      |
+| `response_type`   | `token`                                     | Returns the token directly in the browser                                                                           |
+| `callback_method` | `postMessage` or `fragment`                 | How the token is returned (use with `return_url`)                                                                   |
+| `return_url`      | Valid URL                                   | Where to redirect after authorization (must match allowed origins)                                                  |
 
 ### Method 2: OAuth 1.0
 
@@ -65,6 +65,7 @@ Create and manage lists within boards. Lists represent columns on a board (e.g.,
 ### Card Management
 
 Cards are the fundamental unit in Trello, and they only exist within the context of boards. Create, update, move, and delete cards. Cards support:
+
 - Descriptions, due dates, and start dates
 - Assigning members
 - Adding labels
@@ -125,6 +126,7 @@ Trello supports webhooks for real-time event notifications.
 Webhooks provide a way for application developers to receive notifications when a model changes. You need the id of a model to watch. This can be the id of a member, card, board, or anything that actions apply to. Any event involving this model will trigger the webhook.
 
 To create a webhook, you specify:
+
 - **`callbackURL`** (required): The URL Trello will POST event data to. The provided callbackURL must be a valid URL during creation. Trello runs a quick HTTP HEAD request on the URL, and if a 200 status code is not returned, the webhook will not be created.
 - **`idModel`** (required): The ID of the Trello model (board, list, card, member, organization) to monitor.
 - **`description`** (optional): A human-readable description of the webhook.

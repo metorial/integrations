@@ -3,29 +3,35 @@ import { PlacidClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getGenerationStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Generation Status',
-    key: 'get_generation_status',
-    description: `Check the status of a previously queued image, PDF, or video generation. Returns the current status and the output URL when generation is complete.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    generationType: z.enum(['image', 'pdf', 'video']).describe('Type of generation to check'),
-    generationId: z.number().describe('ID of the generation to check'),
-  }))
-  .output(z.object({
-    generationId: z.number().describe('ID of the generation'),
-    status: z.string().describe('Current status: queued, finished, or error'),
-    outputUrl: z.string().nullable().describe('URL of the generated file (null if not yet finished)'),
-    pollingUrl: z.string().describe('URL for continued polling'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getGenerationStatus = SlateTool.create(spec, {
+  name: 'Get Generation Status',
+  key: 'get_generation_status',
+  description: `Check the status of a previously queued image, PDF, or video generation. Returns the current status and the output URL when generation is complete.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      generationType: z
+        .enum(['image', 'pdf', 'video'])
+        .describe('Type of generation to check'),
+      generationId: z.number().describe('ID of the generation to check')
+    })
+  )
+  .output(
+    z.object({
+      generationId: z.number().describe('ID of the generation'),
+      status: z.string().describe('Current status: queued, finished, or error'),
+      outputUrl: z
+        .string()
+        .nullable()
+        .describe('URL of the generated file (null if not yet finished)'),
+      pollingUrl: z.string().describe('URL for continued polling')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlacidClient({ token: ctx.auth.token });
 
     let status: string;
@@ -61,11 +67,12 @@ export let getGenerationStatus = SlateTool.create(
         generationId: ctx.input.generationId,
         status,
         outputUrl,
-        pollingUrl,
+        pollingUrl
       },
-      message: status === 'finished'
-        ? `${ctx.input.generationType} **#${ctx.input.generationId}** is **finished**. [View output](${outputUrl})`
-        : `${ctx.input.generationType} **#${ctx.input.generationId}** status: **${status}**.`,
+      message:
+        status === 'finished'
+          ? `${ctx.input.generationType} **#${ctx.input.generationId}** is **finished**. [View output](${outputUrl})`
+          : `${ctx.input.generationType} **#${ctx.input.generationId}** status: **${status}**.`
     };
   })
   .build();

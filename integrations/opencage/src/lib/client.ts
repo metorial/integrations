@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 import { GeocodeResponse } from './types';
 
 let geocodeAxios = createAxios({
-  baseURL: 'https://api.opencagedata.com',
+  baseURL: 'https://api.opencagedata.com'
 });
 
 export interface ForwardGeocodeOptions {
@@ -42,7 +42,7 @@ export class Client {
   async forwardGeocode(options: ForwardGeocodeOptions): Promise<GeocodeResponse> {
     let params: Record<string, string | number> = {
       key: this.apiKey,
-      q: options.query,
+      q: options.query
     };
 
     if (options.countrycode) params.countrycode = options.countrycode;
@@ -65,7 +65,7 @@ export class Client {
   async reverseGeocode(options: ReverseGeocodeOptions): Promise<GeocodeResponse> {
     let params: Record<string, string | number> = {
       key: this.apiKey,
-      q: `${options.latitude},${options.longitude}`,
+      q: `${options.latitude},${options.longitude}`
     };
 
     if (options.language) params.language = options.language;

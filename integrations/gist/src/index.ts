@@ -28,14 +28,9 @@ import {
   manageOrder,
   manageCart,
   manageProduct,
-  manageCustomer,
+  manageCustomer
 } from './tools';
-import {
-  contactEvents,
-  conversationEvents,
-  campaignEvents,
-  meetingEvents,
-} from './triggers';
+import { contactEvents, conversationEvents, campaignEvents, meetingEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -67,12 +62,7 @@ export let provider = Slate.create({
     manageOrder,
     manageCart,
     manageProduct,
-    manageCustomer,
+    manageCustomer
   ],
-  triggers: [
-    contactEvents,
-    conversationEvents,
-    campaignEvents,
-    meetingEvents,
-  ],
+  triggers: [contactEvents, conversationEvents, campaignEvents, meetingEvents]
 });

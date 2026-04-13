@@ -3,37 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDoc = SlateTool.create(
-  spec,
-  {
-    name: 'Get Document',
-    key: 'get_doc',
-    description: `Retrieve a specific document with its full content and metadata. Optionally export as HTML or Markdown.`,
-    tags: {
-      readOnly: true,
-    },
+export let getDoc = SlateTool.create(spec, {
+  name: 'Get Document',
+  key: 'get_doc',
+  description: `Retrieve a specific document with its full content and metadata. Optionally export as HTML or Markdown.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    docId: z.string().describe('The document ID to retrieve'),
-    exportFormat: z.enum(['html', 'markdown']).optional().describe('Optionally export the document in this format'),
-  }))
-  .output(z.object({
-    docId: z.string(),
-    title: z.string(),
-    content: z.string().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string().optional(),
-    projectId: z.string().nullable().optional(),
-    projectTitle: z.string().nullable().optional(),
-    authors: z.array(z.string()).optional(),
-    fields: z.array(z.object({
-      label: z.string(),
-      value: z.string().nullable(),
-    })).optional(),
-    exportedContent: z.any().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      docId: z.string().describe('The document ID to retrieve'),
+      exportFormat: z
+        .enum(['html', 'markdown'])
+        .optional()
+        .describe('Optionally export the document in this format')
+    })
+  )
+  .output(
+    z.object({
+      docId: z.string(),
+      title: z.string(),
+      content: z.string().optional(),
+      createdAt: z.string(),
+      updatedAt: z.string().optional(),
+      projectId: z.string().nullable().optional(),
+      projectTitle: z.string().nullable().optional(),
+      authors: z.array(z.string()).optional(),
+      fields: z
+        .array(
+          z.object({
+            label: z.string(),
+            value: z.string().nullable()
+          })
+        )
+        .optional(),
+      exportedContent: z.any().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let doc = await client.getDoc(ctx.input.docId);
@@ -54,9 +62,9 @@ export let getDoc = SlateTool.create(
         projectTitle: doc.project?.title ?? null,
         authors: doc.authors,
         fields: doc.fields,
-        exportedContent,
+        exportedContent
       },
-      message: `Retrieved document **${doc.title}**${ctx.input.exportFormat ? ` (exported as ${ctx.input.exportFormat})` : ''}.`,
+      message: `Retrieved document **${doc.title}**${ctx.input.exportFormat ? ` (exported as ${ctx.input.exportFormat})` : ''}.`
     };
   })
   .build();

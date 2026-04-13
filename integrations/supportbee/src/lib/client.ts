@@ -13,7 +13,7 @@ export class Client {
       baseURL: this.baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     });
   }
@@ -30,21 +30,23 @@ export class Client {
 
   // ─── Tickets ────────────────────────────────────────────
 
-  async listTickets(options: {
-    perPage?: number;
-    page?: number;
-    archived?: boolean | 'any';
-    spam?: boolean;
-    trash?: boolean;
-    replies?: boolean;
-    assignedUser?: string;
-    assignedTeam?: string;
-    starred?: boolean;
-    label?: string;
-    since?: string;
-    until?: string;
-    sortBy?: string;
-  } = {}): Promise<{ tickets: Ticket[]; total: number; totalPages: number; currentPage: number }> {
+  async listTickets(
+    options: {
+      perPage?: number;
+      page?: number;
+      archived?: boolean | 'any';
+      spam?: boolean;
+      trash?: boolean;
+      replies?: boolean;
+      assignedUser?: string;
+      assignedTeam?: string;
+      starred?: boolean;
+      label?: string;
+      since?: string;
+      until?: string;
+      sortBy?: string;
+    } = {}
+  ): Promise<{ tickets: Ticket[]; total: number; totalPages: number; currentPage: number }> {
     let response = await this.http.get('/tickets', {
       params: this.params({
         per_page: options.perPage,
@@ -78,10 +80,13 @@ export class Client {
     return mapTicket(response.data.ticket);
   }
 
-  async searchTickets(query: string, options: {
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<{ tickets: Ticket[]; total: number }> {
+  async searchTickets(
+    query: string,
+    options: {
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<{ tickets: Ticket[]; total: number }> {
     let response = await this.http.get('/tickets/search', {
       params: this.params({
         query,
@@ -128,9 +133,13 @@ export class Client {
   }
 
   async archiveTicket(ticketId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/archive`, {}, {
-      params: this.params()
-    });
+    await this.http.post(
+      `/tickets/${ticketId}/archive`,
+      {},
+      {
+        params: this.params()
+      }
+    );
   }
 
   async unarchiveTicket(ticketId: number): Promise<void> {
@@ -140,9 +149,13 @@ export class Client {
   }
 
   async trashTicket(ticketId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/trash`, {}, {
-      params: this.params()
-    });
+    await this.http.post(
+      `/tickets/${ticketId}/trash`,
+      {},
+      {
+        params: this.params()
+      }
+    );
   }
 
   async untrashTicket(ticketId: number): Promise<void> {
@@ -152,9 +165,13 @@ export class Client {
   }
 
   async markSpam(ticketId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/spam`, {}, {
-      params: this.params()
-    });
+    await this.http.post(
+      `/tickets/${ticketId}/spam`,
+      {},
+      {
+        params: this.params()
+      }
+    );
   }
 
   async unmarkSpam(ticketId: number): Promise<void> {
@@ -164,9 +181,13 @@ export class Client {
   }
 
   async markAnswered(ticketId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/answered`, {}, {
-      params: this.params()
-    });
+    await this.http.post(
+      `/tickets/${ticketId}/answered`,
+      {},
+      {
+        params: this.params()
+      }
+    );
   }
 
   async markUnanswered(ticketId: number): Promise<void> {
@@ -176,9 +197,13 @@ export class Client {
   }
 
   async starTicket(ticketId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/star`, {}, {
-      params: this.params()
-    });
+    await this.http.post(
+      `/tickets/${ticketId}/star`,
+      {},
+      {
+        params: this.params()
+      }
+    );
   }
 
   async unstarTicket(ticketId: number): Promise<void> {
@@ -209,15 +234,18 @@ export class Client {
     return mapReply(response.data.reply);
   }
 
-  async createReply(ticketId: number, reply: {
-    contentHtml?: string;
-    contentText?: string;
-    attachmentIds?: number[];
-    cc?: string[];
-    bcc?: string[];
-    onBehalfOfId?: number;
-    onBehalfOfEmail?: string;
-  }): Promise<Reply> {
+  async createReply(
+    ticketId: number,
+    reply: {
+      contentHtml?: string;
+      contentText?: string;
+      attachmentIds?: number[];
+      cc?: string[];
+      bcc?: string[];
+      onBehalfOfId?: number;
+      onBehalfOfEmail?: string;
+    }
+  ): Promise<Reply> {
     let body: any = {
       reply: {
         content: {
@@ -250,11 +278,14 @@ export class Client {
     return (response.data.comments || []).map(mapComment);
   }
 
-  async createComment(ticketId: number, comment: {
-    contentText?: string;
-    contentHtml?: string;
-    attachmentIds?: number[];
-  }): Promise<Comment> {
+  async createComment(
+    ticketId: number,
+    comment: {
+      contentText?: string;
+      contentHtml?: string;
+      attachmentIds?: number[];
+    }
+  ): Promise<Comment> {
     let body = {
       comment: {
         content: {
@@ -273,9 +304,13 @@ export class Client {
   // ─── Assignments ────────────────────────────────────────
 
   async assignToUser(ticketId: number, userId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/user_assignment`, {
-      user_assignment: { user_id: userId }
-    }, { params: this.params() });
+    await this.http.post(
+      `/tickets/${ticketId}/user_assignment`,
+      {
+        user_assignment: { user_id: userId }
+      },
+      { params: this.params() }
+    );
   }
 
   async unassignUser(ticketId: number): Promise<void> {
@@ -285,9 +320,13 @@ export class Client {
   }
 
   async assignToTeam(ticketId: number, teamId: number): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/team_assignment`, {
-      team_assignment: { team_id: teamId }
-    }, { params: this.params() });
+    await this.http.post(
+      `/tickets/${ticketId}/team_assignment`,
+      {
+        team_assignment: { team_id: teamId }
+      },
+      { params: this.params() }
+    );
   }
 
   async unassignTeam(ticketId: number): Promise<void> {
@@ -306,9 +345,13 @@ export class Client {
   }
 
   async addLabel(ticketId: number, labelName: string): Promise<void> {
-    await this.http.post(`/tickets/${ticketId}/labels/${encodeURIComponent(labelName)}`, {}, {
-      params: this.params()
-    });
+    await this.http.post(
+      `/tickets/${ticketId}/labels/${encodeURIComponent(labelName)}`,
+      {},
+      {
+        params: this.params()
+      }
+    );
   }
 
   async removeLabel(ticketId: number, labelName: string): Promise<void> {
@@ -319,11 +362,13 @@ export class Client {
 
   // ─── Users ──────────────────────────────────────────────
 
-  async listUsers(options: {
-    withInvited?: boolean;
-    withRoles?: string;
-    type?: string;
-  } = {}): Promise<User[]> {
+  async listUsers(
+    options: {
+      withInvited?: boolean;
+      withRoles?: string;
+      type?: string;
+    } = {}
+  ): Promise<User[]> {
     let response = await this.http.get('/users', {
       params: this.params({
         with_invited: options.withInvited,
@@ -383,12 +428,15 @@ export class Client {
     return mapSnippet(response.data.snippet);
   }
 
-  async updateSnippet(snippetId: number, snippet: {
-    name?: string;
-    tags?: string;
-    contentText?: string;
-    contentHtml?: string;
-  }): Promise<Snippet> {
+  async updateSnippet(
+    snippetId: number,
+    snippet: {
+      name?: string;
+      tags?: string;
+      contentText?: string;
+      contentHtml?: string;
+    }
+  ): Promise<Snippet> {
     let body: any = { snippet: {} };
     if (snippet.name !== undefined) body.snippet.name = snippet.name;
     if (snippet.tags !== undefined) body.snippet.tags = snippet.tags;
@@ -429,12 +477,14 @@ export class Client {
 
   // ─── Reports ────────────────────────────────────────────
 
-  async getAvgFirstResponseTime(options: {
-    user?: string;
-    team?: string;
-    label?: string;
-    since?: string;
-  } = {}): Promise<any> {
+  async getAvgFirstResponseTime(
+    options: {
+      user?: string;
+      team?: string;
+      label?: string;
+      since?: string;
+    } = {}
+  ): Promise<any> {
     let response = await this.http.get('/reports/avg_first_response_time', {
       params: this.params({
         user: options.user,
@@ -446,12 +496,14 @@ export class Client {
     return response.data;
   }
 
-  async getTicketsCount(options: {
-    user?: string;
-    team?: string;
-    label?: string;
-    since?: string;
-  } = {}): Promise<any> {
+  async getTicketsCount(
+    options: {
+      user?: string;
+      team?: string;
+      label?: string;
+      since?: string;
+    } = {}
+  ): Promise<any> {
     let response = await this.http.get('/reports/tickets_count', {
       params: this.params({
         user: options.user,
@@ -463,12 +515,14 @@ export class Client {
     return response.data;
   }
 
-  async getRepliesCount(options: {
-    user?: string;
-    team?: string;
-    label?: string;
-    since?: string;
-  } = {}): Promise<any> {
+  async getRepliesCount(
+    options: {
+      user?: string;
+      team?: string;
+      label?: string;
+      since?: string;
+    } = {}
+  ): Promise<any> {
     let response = await this.http.get('/reports/replies_count', {
       params: this.params({
         user: options.user,
@@ -496,22 +550,30 @@ function mapTicket(raw: any): Ticket {
     unanswered: raw.unanswered,
     createdAt: raw.created_at,
     lastActivityAt: raw.last_activity_at,
-    requester: raw.requester ? {
-      userId: raw.requester.id,
-      email: raw.requester.email,
-      name: raw.requester.name
-    } : undefined,
-    currentUserAssignee: raw.current_user_assignee ? mapUser(raw.current_user_assignee) : undefined,
-    currentTeamAssignee: raw.current_team_assignee ? {
-      teamId: raw.current_team_assignee.id || raw.current_team_assignee.team?.id,
-      name: raw.current_team_assignee.name || raw.current_team_assignee.team?.name
-    } : undefined,
+    requester: raw.requester
+      ? {
+          userId: raw.requester.id,
+          email: raw.requester.email,
+          name: raw.requester.name
+        }
+      : undefined,
+    currentUserAssignee: raw.current_user_assignee
+      ? mapUser(raw.current_user_assignee)
+      : undefined,
+    currentTeamAssignee: raw.current_team_assignee
+      ? {
+          teamId: raw.current_team_assignee.id || raw.current_team_assignee.team?.id,
+          name: raw.current_team_assignee.name || raw.current_team_assignee.team?.name
+        }
+      : undefined,
     labels: raw.labels ? raw.labels.map(mapLabel) : undefined,
-    content: raw.content ? {
-      text: raw.content.text || raw.content.body,
-      html: raw.content.html,
-      attachments: raw.content.attachments
-    } : undefined
+    content: raw.content
+      ? {
+          text: raw.content.text || raw.content.body,
+          html: raw.content.html,
+          attachments: raw.content.attachments
+        }
+      : undefined
   };
 }
 
@@ -523,11 +585,13 @@ function mapReply(raw: any): Reply {
     cc: raw.cc,
     bcc: raw.bcc,
     replier: raw.replier ? mapUser(raw.replier) : undefined,
-    content: raw.content ? {
-      text: raw.content.text || raw.content.body,
-      html: raw.content.html,
-      attachments: raw.content.attachments
-    } : undefined
+    content: raw.content
+      ? {
+          text: raw.content.text || raw.content.body,
+          html: raw.content.html,
+          attachments: raw.content.attachments
+        }
+      : undefined
   };
 }
 
@@ -536,11 +600,13 @@ function mapComment(raw: any): Comment {
     commentId: raw.id,
     createdAt: raw.created_at,
     commenter: raw.commenter ? mapUser(raw.commenter) : undefined,
-    content: raw.content ? {
-      text: raw.content.text,
-      html: raw.content.html,
-      attachments: raw.content.attachments
-    } : undefined
+    content: raw.content
+      ? {
+          text: raw.content.text,
+          html: raw.content.html,
+          attachments: raw.content.attachments
+        }
+      : undefined
   };
 }
 
@@ -577,10 +643,12 @@ function mapSnippet(raw: any): Snippet {
     name: raw.name || '',
     tags: raw.tags,
     createdAt: raw.created_at,
-    content: raw.content ? {
-      text: raw.content.text,
-      html: raw.content.html
-    } : undefined
+    content: raw.content
+      ? {
+          text: raw.content.text,
+          html: raw.content.html
+        }
+      : undefined
   };
 }
 

@@ -13,8 +13,8 @@ export class Client {
       headers: {
         Authorization: `Bearer ${this.token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -39,38 +39,46 @@ export class Client {
 
   // ── Query ──
 
-  async queryChatbot(chatbotId: string, params: {
-    prompt: string;
-    conversationId?: string;
-    format?: 'html' | 'markdown';
-  }) {
+  async queryChatbot(
+    chatbotId: string,
+    params: {
+      prompt: string;
+      conversationId?: string;
+      format?: 'html' | 'markdown';
+    }
+  ) {
     let response = await this.axios.post(`/${chatbotId}/query`, {
       prompt: params.prompt,
       conversation_id: params.conversationId,
-      format: params.format,
+      format: params.format
     });
     return response.data;
   }
 
   // ── Conversations ──
 
-  async getConversations(chatbotId: string, params?: {
-    conversationId?: string;
-    includeDeleted?: boolean;
-    includeSources?: boolean;
-    limit?: number;
-    order?: 'asc' | 'desc';
-  }) {
+  async getConversations(
+    chatbotId: string,
+    params?: {
+      conversationId?: string;
+      includeDeleted?: boolean;
+      includeSources?: boolean;
+      limit?: number;
+      order?: 'asc' | 'desc';
+    }
+  ) {
     let queryParams: Record<string, string> = {};
 
     if (params?.conversationId) queryParams.conversation_id = params.conversationId;
-    if (params?.includeDeleted !== undefined) queryParams.include_deleted = String(params.includeDeleted);
-    if (params?.includeSources !== undefined) queryParams.include_sources = String(params.includeSources);
+    if (params?.includeDeleted !== undefined)
+      queryParams.include_deleted = String(params.includeDeleted);
+    if (params?.includeSources !== undefined)
+      queryParams.include_sources = String(params.includeSources);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.order) queryParams.order = params.order;
 
     let response = await this.axios.get(`/${chatbotId}/conversations`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -89,13 +97,16 @@ export class Client {
     return response.data;
   }
 
-  async createUpdatedAnswer(chatbotId: string, params: {
-    question: string;
-    suggestedAnswer: string;
-  }) {
+  async createUpdatedAnswer(
+    chatbotId: string,
+    params: {
+      question: string;
+      suggestedAnswer: string;
+    }
+  ) {
     let response = await this.axios.post(`/${chatbotId}/finetunes`, {
       question: params.question,
-      suggested_answer: params.suggestedAnswer,
+      suggested_answer: params.suggestedAnswer
     });
     return response.data;
   }

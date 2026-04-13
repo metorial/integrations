@@ -3,34 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPass = SlateTool.create(
-  spec,
-  {
-    name: 'Get Pass',
-    key: 'get_pass',
-    description: `Retrieve the full details of a single pass by its identifier, userProvidedId, or barcodeValue. Returns all pass data including field values, status, stored value, and download URIs.`,
-    tags: {
-      readOnly: true,
-    },
+export let getPass = SlateTool.create(spec, {
+  name: 'Get Pass',
+  key: 'get_pass',
+  description: `Retrieve the full details of a single pass by its identifier, userProvidedId, or barcodeValue. Returns all pass data including field values, status, stored value, and download URIs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    passId: z.string().describe('Pass identifier (UUID, userProvidedId, or barcodeValue)'),
-    includeFieldMapping: z.boolean().optional().default(true).describe('Include field mapping with labels and values'),
-  }))
-  .output(z.object({
-    passId: z.string().describe('Unique identifier of the pass'),
-    pass: z.record(z.string(), z.any()).describe('Full pass data including field values, status, stored value, and metadata'),
-    downloadUris: z.object({
-      iPhoneUri: z.string().optional().describe('Apple Wallet download URI'),
-      androidUri: z.string().optional().describe('Google Wallet download URI'),
-    }).optional().describe('Download URIs for the pass'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      passId: z.string().describe('Pass identifier (UUID, userProvidedId, or barcodeValue)'),
+      includeFieldMapping: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Include field mapping with labels and values')
+    })
+  )
+  .output(
+    z.object({
+      passId: z.string().describe('Unique identifier of the pass'),
+      pass: z
+        .record(z.string(), z.any())
+        .describe('Full pass data including field values, status, stored value, and metadata'),
+      downloadUris: z
+        .object({
+          iPhoneUri: z.string().optional().describe('Apple Wallet download URI'),
+          androidUri: z.string().optional().describe('Google Wallet download URI')
+        })
+        .optional()
+        .describe('Download URIs for the pass')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let pass = await client.getPass(ctx.input.passId, {
-      includeFieldMapping: ctx.input.includeFieldMapping,
+      includeFieldMapping: ctx.input.includeFieldMapping
     });
 
     let uris: { iPhoneUri?: string; androidUri?: string } | undefined;
@@ -44,8 +54,9 @@ export let getPass = SlateTool.create(
       output: {
         passId: pass.identifier || ctx.input.passId,
         pass,
-        downloadUris: uris,
+        downloadUris: uris
       },
-      message: `Retrieved pass \`${pass.identifier || ctx.input.passId}\`${pass.voided ? ' (voided)' : ''}.`,
+      message: `Retrieved pass \`${pass.identifier || ctx.input.passId}\`${pass.voided ? ' (voided)' : ''}.`
     };
-  }).build();
+  })
+  .build();

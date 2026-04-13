@@ -4,22 +4,21 @@ import { goalSchema, mapGoal } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getGoal = SlateTool.create(
-  spec,
-  {
-    name: 'Get Goal',
-    key: 'get_goal',
-    description: `Retrieve detailed information about a specific goal by its slug. Includes current value, pledge, safety buffer, road definition, and all goal configuration.`,
-    tags: {
-      readOnly: true
-    }
+export let getGoal = SlateTool.create(spec, {
+  name: 'Get Goal',
+  key: 'get_goal',
+  description: `Retrieve detailed information about a specific goal by its slug. Includes current value, pledge, safety buffer, road definition, and all goal configuration.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    goalSlug: z.string().describe('URL-friendly identifier of the goal')
-  }))
+})
+  .input(
+    z.object({
+      goalSlug: z.string().describe('URL-friendly identifier of the goal')
+    })
+  )
   .output(goalSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BeeminderClient({
       token: ctx.auth.token,
       username: ctx.auth.username

@@ -22,26 +22,34 @@ export class NeutrinoClient {
   }
 
   async emailValidate(params: { email: string; fixTypos?: boolean }) {
-    let response = await api.post('/email-validate', {
-      'email': params.email,
-      'fix-typos': params.fixTypos ?? false,
-      'output-case': 'camel'
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/email-validate',
+      {
+        email: params.email,
+        'fix-typos': params.fixTypos ?? false,
+        'output-case': 'camel'
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async emailVerify(params: { email: string; fixTypos?: boolean }) {
-    let response = await api.post('/email-verify', {
-      'email': params.email,
-      'fix-typos': params.fixTypos ?? false,
-      'output-case': 'camel'
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/email-verify',
+      {
+        email: params.email,
+        'fix-typos': params.fixTypos ?? false,
+        'output-case': 'camel'
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async phoneValidate(params: { number: string; countryCode?: string; ip?: string }) {
     let body: Record<string, string> = {
-      'number': params.number,
+      number: params.number,
       'output-case': 'camel'
     };
     if (params.countryCode) body['country-code'] = params.countryCode;
@@ -52,34 +60,46 @@ export class NeutrinoClient {
   }
 
   async ipInfo(params: { ip: string; reverseLookup?: boolean }) {
-    let response = await api.post('/ip-info', {
-      'ip': params.ip,
-      'reverse-lookup': params.reverseLookup ?? false,
-      'output-case': 'camel'
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/ip-info',
+      {
+        ip: params.ip,
+        'reverse-lookup': params.reverseLookup ?? false,
+        'output-case': 'camel'
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async ipBlocklist(params: { ip: string; vpnLookup?: boolean }) {
-    let response = await api.post('/ip-blocklist', {
-      'ip': params.ip,
-      'vpn-lookup': params.vpnLookup ?? false,
-      'output-case': 'camel'
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/ip-blocklist',
+      {
+        ip: params.ip,
+        'vpn-lookup': params.vpnLookup ?? false,
+        'output-case': 'camel'
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async ipProbe(params: { ip: string }) {
-    let response = await api.post('/ip-probe', {
-      'ip': params.ip,
-      'output-case': 'camel'
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/ip-probe',
+      {
+        ip: params.ip,
+        'output-case': 'camel'
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async hostReputation(params: { host: string; listRating?: number; zones?: string }) {
     let body: Record<string, string | number> = {
-      'host': params.host,
+      host: params.host,
       'output-case': 'camel'
     };
     if (params.listRating !== undefined) body['list-rating'] = params.listRating;
@@ -90,11 +110,15 @@ export class NeutrinoClient {
   }
 
   async domainLookup(params: { host: string; live?: boolean }) {
-    let response = await api.post('/domain-lookup', {
-      'host': params.host,
-      'live': params.live ?? true,
-      'output-case': 'camel'
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/domain-lookup',
+      {
+        host: params.host,
+        live: params.live ?? true,
+        'output-case': 'camel'
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -161,7 +185,12 @@ export class NeutrinoClient {
     return response.data;
   }
 
-  async convert(params: { fromValue: string; fromType: string; toType: string; historicalDate?: string }) {
+  async convert(params: {
+    fromValue: string;
+    fromType: string;
+    toType: string;
+    historicalDate?: string;
+  }) {
     let body: Record<string, string> = {
       'from-value': params.fromValue,
       'from-type': params.fromType,
@@ -174,9 +203,13 @@ export class NeutrinoClient {
     return response.data;
   }
 
-  async badWordFilter(params: { content: string; censorCharacter?: string; catalog?: string }) {
+  async badWordFilter(params: {
+    content: string;
+    censorCharacter?: string;
+    catalog?: string;
+  }) {
     let body: Record<string, string> = {
-      'content': params.content,
+      content: params.content,
       'output-case': 'camel'
     };
     if (params.censorCharacter) body['censor-character'] = params.censorCharacter;
@@ -197,7 +230,7 @@ export class NeutrinoClient {
     limitTtl?: number;
   }) {
     let body: Record<string, string | number> = {
-      'number': params.number,
+      number: params.number,
       'output-case': 'camel'
     };
     if (params.codeLength !== undefined) body['code-length'] = params.codeLength;
@@ -223,13 +256,19 @@ export class NeutrinoClient {
     return response.data;
   }
 
-  async urlInfo(params: { url: string; fetchContent?: boolean; ignoreCertificateErrors?: boolean; timeout?: number }) {
+  async urlInfo(params: {
+    url: string;
+    fetchContent?: boolean;
+    ignoreCertificateErrors?: boolean;
+    timeout?: number;
+  }) {
     let body: Record<string, string | number | boolean> = {
-      'url': params.url,
+      url: params.url,
       'output-case': 'camel'
     };
     if (params.fetchContent !== undefined) body['fetch-content'] = params.fetchContent;
-    if (params.ignoreCertificateErrors !== undefined) body['ignore-certificate-errors'] = params.ignoreCertificateErrors;
+    if (params.ignoreCertificateErrors !== undefined)
+      body['ignore-certificate-errors'] = params.ignoreCertificateErrors;
     if (params.timeout !== undefined) body['timeout'] = params.timeout;
 
     let response = await api.post('/url-info', body, { headers: this.headers });

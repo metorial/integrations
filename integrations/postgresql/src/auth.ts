@@ -2,25 +2,33 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    host: z.string().describe('PostgreSQL server hostname or IP address'),
-    port: z.number().describe('PostgreSQL server port'),
-    database: z.string().describe('Target database name'),
-    username: z.string().describe('Database username'),
-    password: z.string().describe('Database password'),
-    sslMode: z.enum(['disable', 'require', 'verify-ca', 'verify-full']).describe('SSL connection mode'),
-    connectionString: z.string().describe('Full PostgreSQL connection URI'),
-  }))
+  .output(
+    z.object({
+      host: z.string().describe('PostgreSQL server hostname or IP address'),
+      port: z.number().describe('PostgreSQL server port'),
+      database: z.string().describe('Target database name'),
+      username: z.string().describe('Database username'),
+      password: z.string().describe('Database password'),
+      sslMode: z
+        .enum(['disable', 'require', 'verify-ca', 'verify-full'])
+        .describe('SSL connection mode'),
+      connectionString: z.string().describe('Full PostgreSQL connection URI')
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Connection String',
     key: 'connection_string',
 
     inputSchema: z.object({
-      connectionString: z.string().describe('PostgreSQL connection URI (e.g., postgresql://user:password@host:5432/dbname?sslmode=require)'),
+      connectionString: z
+        .string()
+        .describe(
+          'PostgreSQL connection URI (e.g., postgresql://user:password@host:5432/dbname?sslmode=require)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let connStr = ctx.input.connectionString.trim();
       let parsed = parseConnectionString(connStr);
 
@@ -32,10 +40,10 @@ export let auth = SlateAuth.create()
           username: parsed.username,
           password: parsed.password,
           sslMode: parsed.sslMode,
-          connectionString: connStr,
-        },
+          connectionString: connStr
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -48,10 +56,13 @@ export let auth = SlateAuth.create()
       database: z.string().describe('Target database name'),
       username: z.string().describe('Database username'),
       password: z.string().describe('Database password'),
-      sslMode: z.enum(['disable', 'require', 'verify-ca', 'verify-full']).default('require').describe('SSL connection mode'),
+      sslMode: z
+        .enum(['disable', 'require', 'verify-ca', 'verify-full'])
+        .default('require')
+        .describe('SSL connection mode')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let { host, port, database, username, password, sslMode } = ctx.input;
       let encodedPassword = encodeURIComponent(password);
       let encodedUsername = encodeURIComponent(username);
@@ -66,13 +77,15 @@ export let auth = SlateAuth.create()
           username,
           password,
           sslMode,
-          connectionString,
-        },
+          connectionString
+        }
       };
-    },
+    }
   });
 
-let parseConnectionString = (connStr: string): {
+let parseConnectionString = (
+  connStr: string
+): {
   host: string;
   port: number;
   database: string;
@@ -85,13 +98,15 @@ let parseConnectionString = (connStr: string): {
   try {
     url = new URL(connStr);
   } catch {
-    throw new Error('Invalid PostgreSQL connection string format. Expected: postgresql://user:password@host:port/dbname');
+    throw new Error(
+      'Invalid PostgreSQL connection string format. Expected: postgresql://user:password@host:port/dbname'
+    );
   }
 
   let sslModeParam = url.searchParams.get('sslmode') || 'disable';
   let validSslModes = ['disable', 'require', 'verify-ca', 'verify-full'] as const;
-  let sslMode: typeof validSslModes[number] = validSslModes.includes(sslModeParam as any)
-    ? (sslModeParam as typeof validSslModes[number])
+  let sslMode: (typeof validSslModes)[number] = validSslModes.includes(sslModeParam as any)
+    ? (sslModeParam as (typeof validSslModes)[number])
     : 'disable';
 
   return {
@@ -100,6 +115,6 @@ let parseConnectionString = (connStr: string): {
     database: url.pathname.replace(/^\//, '') || 'postgres',
     username: decodeURIComponent(url.username || 'postgres'),
     password: decodeURIComponent(url.password || ''),
-    sslMode,
+    sslMode
   };
 };

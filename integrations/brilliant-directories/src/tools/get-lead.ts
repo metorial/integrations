@@ -3,31 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getLead = SlateTool.create(
-  spec,
-  {
-    name: 'Get Lead',
-    key: 'get_lead',
-    description: `Retrieve a lead from the directory by its lead ID or by querying a specific property.
+export let getLead = SlateTool.create(spec, {
+  name: 'Get Lead',
+  key: 'get_lead',
+  description: `Retrieve a lead from the directory by its lead ID or by querying a specific property.
 Returns lead data including contact information, categories, and timestamps.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    leadId: z.string().optional().describe('The lead ID to look up directly.'),
-    property: z.string().optional().describe('The column/field name to search by (e.g., "lead_email"). Used when leadId is not provided.'),
-    propertyValue: z.string().optional().describe('The value to match for the given property.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    lead: z.any().describe('The lead record(s) returned.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      leadId: z.string().optional().describe('The lead ID to look up directly.'),
+      property: z
+        .string()
+        .optional()
+        .describe(
+          'The column/field name to search by (e.g., "lead_email"). Used when leadId is not provided.'
+        ),
+      propertyValue: z
+        .string()
+        .optional()
+        .describe('The value to match for the given property.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      lead: z.any().describe('The lead record(s) returned.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let result;
@@ -42,8 +51,9 @@ Returns lead data including contact information, categories, and timestamps.`,
     return {
       output: {
         status: result.status,
-        lead: result.message,
+        lead: result.message
       },
-      message: `Retrieved lead data successfully.`,
+      message: `Retrieved lead data successfully.`
     };
-  }).build();
+  })
+  .build();

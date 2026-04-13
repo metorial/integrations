@@ -13,12 +13,14 @@ Breeze API supports HTTP Basic auth and token based authentication.
 **HTTP Basic Authentication:** You can use HTTP Basic authentication with your login credentials. Example: `curl -u username:password https://yoursubdomain.breezechms.com/api/projects.json`
 
 **API Token Authentication:** You can also authenticate by providing your API token in the request. The token has to be sent for each request your application makes to the Breeze API. The token can be passed as the username in HTTP Basic auth (with an empty password) or as a query parameter:
+
 - `curl -u your_api_token: https://yoursubdomain.breezechms.com/api/people/`
 - `curl https://yoursubdomain.breezechms.com/api/people/?api_token=your_api_token`
 
 Account Owners can obtain their API key by going to Manage Account > API Key.
 
 **Required Inputs:**
+
 - **Subdomain**: Your Breeze account subdomain (e.g., `yourchurch` from `yourchurch.breezechms.com`). All API requests are made to `https://yoursubdomain.breezechms.com/api/`.
 - **API Key**: The secret API token from your Breeze account settings.
 
@@ -116,6 +118,7 @@ Supported action categories include:
 - **Account**: subscription payment method updated.
 
 Parameters:
+
 - `action` (required): The specific action type to query.
 - `start` / `end`: Date range filters.
 - `user_id`: Filter by the user who performed the action.

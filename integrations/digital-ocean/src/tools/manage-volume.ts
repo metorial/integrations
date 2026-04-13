@@ -16,28 +16,29 @@ let volumeSchema = z.object({
   createdAt: z.string().describe('Creation timestamp')
 });
 
-export let listVolumes = SlateTool.create(
-  spec,
-  {
-    name: 'List Volumes',
-    key: 'list_volumes',
-    description: `List block storage volumes in your DigitalOcean account. Optionally filter by region or name.`,
-    tags: {
-      readOnly: true
-    }
+export let listVolumes = SlateTool.create(spec, {
+  name: 'List Volumes',
+  key: 'list_volumes',
+  description: `List block storage volumes in your DigitalOcean account. Optionally filter by region or name.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    region: z.string().optional().describe('Filter by region slug'),
-    name: z.string().optional().describe('Filter by exact volume name'),
-    page: z.number().optional().describe('Page number'),
-    perPage: z.number().optional().describe('Results per page')
-  }))
-  .output(z.object({
-    volumes: z.array(volumeSchema),
-    totalCount: z.number().describe('Total number of volumes')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      region: z.string().optional().describe('Filter by region slug'),
+      name: z.string().optional().describe('Filter by exact volume name'),
+      page: z.number().optional().describe('Page number'),
+      perPage: z.number().optional().describe('Results per page')
+    })
+  )
+  .output(
+    z.object({
+      volumes: z.array(volumeSchema),
+      totalCount: z.number().describe('Total number of volumes')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listVolumes({
       region: ctx.input.region,
@@ -66,26 +67,27 @@ export let listVolumes = SlateTool.create(
   })
   .build();
 
-export let createVolume = SlateTool.create(
-  spec,
-  {
-    name: 'Create Volume',
-    key: 'create_volume',
-    description: `Create a new block storage volume. Volumes can be attached to Droplets for persistent storage that survives Droplet destruction.`,
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Volume name'),
-    region: z.string().describe('Region slug (must match the Droplet region for attachment)'),
-    sizeGigabytes: z.number().describe('Volume size in GB (1-16384)'),
-    description: z.string().optional().describe('Volume description'),
-    filesystemType: z.string().optional().describe('Filesystem type (ext4 or xfs)'),
-    filesystemLabel: z.string().optional().describe('Filesystem label'),
-    tags: z.array(z.string()).optional().describe('Tags to apply'),
-    snapshotId: z.string().optional().describe('Create from a snapshot ID')
-  }))
+export let createVolume = SlateTool.create(spec, {
+  name: 'Create Volume',
+  key: 'create_volume',
+  description: `Create a new block storage volume. Volumes can be attached to Droplets for persistent storage that survives Droplet destruction.`
+})
+  .input(
+    z.object({
+      name: z.string().describe('Volume name'),
+      region: z
+        .string()
+        .describe('Region slug (must match the Droplet region for attachment)'),
+      sizeGigabytes: z.number().describe('Volume size in GB (1-16384)'),
+      description: z.string().optional().describe('Volume description'),
+      filesystemType: z.string().optional().describe('Filesystem type (ext4 or xfs)'),
+      filesystemLabel: z.string().optional().describe('Filesystem label'),
+      tags: z.array(z.string()).optional().describe('Tags to apply'),
+      snapshotId: z.string().optional().describe('Create from a snapshot ID')
+    })
+  )
   .output(volumeSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let v = await client.createVolume({
       name: ctx.input.name,
@@ -116,30 +118,32 @@ export let createVolume = SlateTool.create(
   })
   .build();
 
-export let manageVolumeAttachment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Volume Attachment',
-    key: 'manage_volume_attachment',
-    description: `Attach or detach a block storage volume to/from a Droplet. The volume and Droplet must be in the same region.`,
-  }
-)
-  .input(z.object({
-    volumeId: z.string().describe('Volume ID'),
-    action: z.enum(['attach', 'detach']).describe('Whether to attach or detach'),
-    dropletId: z.number().describe('Droplet ID'),
-    region: z.string().optional().describe('Region slug (helps disambiguate)')
-  }))
-  .output(z.object({
-    actionId: z.number().describe('Action ID'),
-    actionStatus: z.string().describe('Action status')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageVolumeAttachment = SlateTool.create(spec, {
+  name: 'Manage Volume Attachment',
+  key: 'manage_volume_attachment',
+  description: `Attach or detach a block storage volume to/from a Droplet. The volume and Droplet must be in the same region.`
+})
+  .input(
+    z.object({
+      volumeId: z.string().describe('Volume ID'),
+      action: z.enum(['attach', 'detach']).describe('Whether to attach or detach'),
+      dropletId: z.number().describe('Droplet ID'),
+      region: z.string().optional().describe('Region slug (helps disambiguate)')
+    })
+  )
+  .output(
+    z.object({
+      actionId: z.number().describe('Action ID'),
+      actionStatus: z.string().describe('Action status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let result = ctx.input.action === 'attach'
-      ? await client.attachVolume(ctx.input.volumeId, ctx.input.dropletId, ctx.input.region)
-      : await client.detachVolume(ctx.input.volumeId, ctx.input.dropletId, ctx.input.region);
+    let result =
+      ctx.input.action === 'attach'
+        ? await client.attachVolume(ctx.input.volumeId, ctx.input.dropletId, ctx.input.region)
+        : await client.detachVolume(ctx.input.volumeId, ctx.input.dropletId, ctx.input.region);
 
     return {
       output: {
@@ -151,24 +155,25 @@ export let manageVolumeAttachment = SlateTool.create(
   })
   .build();
 
-export let deleteVolume = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Volume',
-    key: 'delete_volume',
-    description: `Delete a block storage volume. The volume must be detached from all Droplets before deletion.`,
-    tags: {
-      destructive: true
-    }
+export let deleteVolume = SlateTool.create(spec, {
+  name: 'Delete Volume',
+  key: 'delete_volume',
+  description: `Delete a block storage volume. The volume must be detached from all Droplets before deletion.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    volumeId: z.string().describe('Volume ID to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the volume was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      volumeId: z.string().describe('Volume ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the volume was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteVolume(ctx.input.volumeId);
 

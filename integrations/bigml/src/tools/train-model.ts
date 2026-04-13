@@ -3,50 +3,78 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let trainModel = SlateTool.create(
-  spec,
-  {
-    name: 'Train Model',
-    key: 'train_model',
-    description: `Train a machine learning model from a dataset. Supports multiple model types: decision tree, ensemble (random forest, boosted trees), deepnet (neural network), logistic regression, linear regression, and time series.
+export let trainModel = SlateTool.create(spec, {
+  name: 'Train Model',
+  key: 'train_model',
+  description: `Train a machine learning model from a dataset. Supports multiple model types: decision tree, ensemble (random forest, boosted trees), deepnet (neural network), logistic regression, linear regression, and time series.
 Choose the model type based on your task — classification, regression, forecasting, etc.`,
-    instructions: [
-      'Provide a datasetId and select a modelType. The default "model" creates a decision tree.',
-      'For ensembles, you can configure the number of models and optionally enable boosting or randomization.',
-      'Use "deepnet" for complex classification/regression tasks requiring neural networks.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'Provide a datasetId and select a modelType. The default "model" creates a decision tree.',
+    'For ensembles, you can configure the number of models and optionally enable boosting or randomization.',
+    'Use "deepnet" for complex classification/regression tasks requiring neural networks.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('Dataset resource ID to train from (e.g., "dataset/abc123")'),
-    modelType: z.enum(['model', 'ensemble', 'deepnet', 'logisticregression', 'linearregression', 'timeseries']).default('model').describe('Type of model to train'),
-    name: z.string().optional().describe('Name for the model'),
-    objectiveField: z.string().optional().describe('Field ID of the target/objective field'),
-    inputFields: z.array(z.string()).optional().describe('List of field IDs to use as predictors'),
-    range: z.array(z.number()).optional().describe('Row range [start, end] to use for training (1-indexed)'),
-    numberOfModels: z.number().optional().describe('Number of models in an ensemble (only for ensemble type)'),
-    boosting: z.object({
-      iterations: z.number().optional().describe('Number of boosting iterations')
-    }).optional().describe('Enable gradient boosting for ensembles'),
-    randomize: z.boolean().optional().describe('Enable random forests for ensembles'),
-    numberOfHiddenLayers: z.number().optional().describe('Number of hidden layers (only for deepnet type)'),
-    horizon: z.number().optional().describe('Forecast horizon (only for timeseries type)'),
-    tags: z.array(z.string()).optional().describe('Tags to assign to the model'),
-    projectId: z.string().optional().describe('Project to associate the model with')
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('BigML resource ID for the trained model'),
-    name: z.string().optional().describe('Name of the model'),
-    modelType: z.string().describe('Type of model created'),
-    statusCode: z.number().describe('Status code'),
-    statusMessage: z.string().describe('Status message'),
-    created: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z
+        .string()
+        .describe('Dataset resource ID to train from (e.g., "dataset/abc123")'),
+      modelType: z
+        .enum([
+          'model',
+          'ensemble',
+          'deepnet',
+          'logisticregression',
+          'linearregression',
+          'timeseries'
+        ])
+        .default('model')
+        .describe('Type of model to train'),
+      name: z.string().optional().describe('Name for the model'),
+      objectiveField: z.string().optional().describe('Field ID of the target/objective field'),
+      inputFields: z
+        .array(z.string())
+        .optional()
+        .describe('List of field IDs to use as predictors'),
+      range: z
+        .array(z.number())
+        .optional()
+        .describe('Row range [start, end] to use for training (1-indexed)'),
+      numberOfModels: z
+        .number()
+        .optional()
+        .describe('Number of models in an ensemble (only for ensemble type)'),
+      boosting: z
+        .object({
+          iterations: z.number().optional().describe('Number of boosting iterations')
+        })
+        .optional()
+        .describe('Enable gradient boosting for ensembles'),
+      randomize: z.boolean().optional().describe('Enable random forests for ensembles'),
+      numberOfHiddenLayers: z
+        .number()
+        .optional()
+        .describe('Number of hidden layers (only for deepnet type)'),
+      horizon: z.number().optional().describe('Forecast horizon (only for timeseries type)'),
+      tags: z.array(z.string()).optional().describe('Tags to assign to the model'),
+      projectId: z.string().optional().describe('Project to associate the model with')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('BigML resource ID for the trained model'),
+      name: z.string().optional().describe('Name of the model'),
+      modelType: z.string().describe('Type of model created'),
+      statusCode: z.number().describe('Status code'),
+      statusMessage: z.string().describe('Status message'),
+      created: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let body: Record<string, any> = {
@@ -89,4 +117,5 @@ Choose the model type based on your task — classification, regression, forecas
       },
       message: `${modelType} **${result.resource}** created${result.name ? ` as "${result.name}"` : ''}. Status: ${result.status?.message ?? 'pending'}. Model training is asynchronous — check status with the Get Resource tool.`
     };
-  }).build();
+  })
+  .build();

@@ -18,31 +18,35 @@ let accountSchema = z.object({
   planStorage: z.number().optional().describe('Plan storage limit in bytes'),
   lastLogin: z.string().optional().describe('Last login timestamp'),
   imapAccessEnabled: z.boolean().optional().describe('IMAP access enabled'),
-  popAccessEnabled: z.boolean().optional().describe('POP access enabled'),
+  popAccessEnabled: z.boolean().optional().describe('POP access enabled')
 });
 
-export let getAccountInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account_info',
-    description: `Retrieve Zoho Mail account details including email addresses, storage usage, and access settings. Returns all mail accounts associated with the authenticated user, or details for a specific account.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getAccountInfo = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account_info',
+  description: `Retrieve Zoho Mail account details including email addresses, storage usage, and access settings. Returns all mail accounts associated with the authenticated user, or details for a specific account.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    accountId: z.string().optional().describe('Specific account ID to retrieve. If omitted, returns all accounts.'),
-  }))
-  .output(z.object({
-    accounts: z.array(accountSchema).describe('Account details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z
+        .string()
+        .optional()
+        .describe('Specific account ID to retrieve. If omitted, returns all accounts.')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z.array(accountSchema).describe('Account details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.dataCenterDomain,
+      domain: ctx.config.dataCenterDomain
     });
 
     let mapAccount = (a: any) => ({
@@ -60,7 +64,7 @@ export let getAccountInfo = SlateTool.create(
       planStorage: a.planStorage !== undefined ? Number(a.planStorage) : undefined,
       lastLogin: a.lastLogin ? String(a.lastLogin) : undefined,
       imapAccessEnabled: a.imapAccessEnabled,
-      popAccessEnabled: a.popAccessEnabled,
+      popAccessEnabled: a.popAccessEnabled
     });
 
     if (ctx.input.accountId) {
@@ -68,7 +72,7 @@ export let getAccountInfo = SlateTool.create(
       let mapped = mapAccount(account);
       return {
         output: { accounts: [mapped] },
-        message: `Retrieved account details for **${mapped.emailAddress || mapped.accountId}**.`,
+        message: `Retrieved account details for **${mapped.emailAddress || mapped.accountId}**.`
       };
     }
 
@@ -76,7 +80,7 @@ export let getAccountInfo = SlateTool.create(
     let mapped = accounts.map(mapAccount);
     return {
       output: { accounts: mapped },
-      message: `Retrieved **${mapped.length}** account(s).`,
+      message: `Retrieved **${mapped.length}** account(s).`
     };
   })
   .build();

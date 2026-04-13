@@ -3,36 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchPosts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Posts',
-    key: 'search_posts',
-    description: `Search for single-image posts (standard posts) in the directory. Supports keyword, category, location, and date range filtering.
+export let searchPosts = SlateTool.create(spec, {
+  name: 'Search Posts',
+  key: 'search_posts',
+  description: `Search for single-image posts (standard posts) in the directory. Supports keyword, category, location, and date range filtering.
 Location-based searching requires a Google Maps API key configured in the site's Advanced Settings.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Keyword search query.'),
-    category: z.string().optional().describe('Category filter.'),
-    address: z.string().optional().describe('Location/address filter.'),
-    dateRange: z.string().optional().describe('Date range filter.'),
-    limit: z.number().optional().describe('Number of results per page (20-100).'),
-    page: z.string().optional().describe('Pagination token from a previous response.'),
-    outputType: z.enum(['array', 'html']).optional().describe('Output format.'),
-    additionalFilters: z.record(z.string(), z.string()).optional().describe('Any additional search filters as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    posts: z.any().describe('The search results.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Keyword search query.'),
+      category: z.string().optional().describe('Category filter.'),
+      address: z.string().optional().describe('Location/address filter.'),
+      dateRange: z.string().optional().describe('Date range filter.'),
+      limit: z.number().optional().describe('Number of results per page (20-100).'),
+      page: z.string().optional().describe('Pagination token from a previous response.'),
+      outputType: z.enum(['array', 'html']).optional().describe('Output format.'),
+      additionalFilters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional search filters as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      posts: z.any().describe('The search results.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let params: Record<string, any> = {};
@@ -54,8 +58,9 @@ Location-based searching requires a Google Maps API key configured in the site's
     return {
       output: {
         status: result.status,
-        posts: result.message,
+        posts: result.message
       },
-      message: `Found posts matching the search criteria.`,
+      message: `Found posts matching the search criteria.`
     };
-  }).build();
+  })
+  .build();

@@ -33,43 +33,71 @@ let builtInVariableSchema = z.object({
   workspaceId: z.string().optional().describe('Parent workspace ID')
 });
 
-export let manageVariable = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Variable',
-    key: 'manage_variable',
-    description: `Create, list, get, update, or delete user-defined variables in a GTM workspace. Also supports listing, enabling, and disabling built-in variables.`,
-    instructions: [
-      'Common variable types: "v" (Data Layer Variable), "jsm" (Custom JavaScript), "j" (JavaScript Variable), "k" (First-party Cookie), "c" (Constant), "r" (Random Number), "u" (URL), "d" (DOM Element), "aev" (Auto-Event Variable), "smm" (Lookup Table), "remm" (RegEx Table).',
-      'Set variableCategory to "builtIn" to work with built-in variables instead.',
-      'Built-in variable types include: "pageUrl", "pageHostname", "pagePath", "referrer", "event", "clickElement", "clickClasses", "clickId", "clickTarget", "clickUrl", "clickText", "formElement", "formClasses", "formId", "formTarget", "formUrl", "formText", "errorMessage", "errorUrl", "errorLine", "newHistoryFragment", "oldHistoryFragment", "newHistoryState", "oldHistoryState", "historySource", etc.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageVariable = SlateTool.create(spec, {
+  name: 'Manage Variable',
+  key: 'manage_variable',
+  description: `Create, list, get, update, or delete user-defined variables in a GTM workspace. Also supports listing, enabling, and disabling built-in variables.`,
+  instructions: [
+    'Common variable types: "v" (Data Layer Variable), "jsm" (Custom JavaScript), "j" (JavaScript Variable), "k" (First-party Cookie), "c" (Constant), "r" (Random Number), "u" (URL), "d" (DOM Element), "aev" (Auto-Event Variable), "smm" (Lookup Table), "remm" (RegEx Table).',
+    'Set variableCategory to "builtIn" to work with built-in variables instead.',
+    'Built-in variable types include: "pageUrl", "pageHostname", "pagePath", "referrer", "event", "clickElement", "clickClasses", "clickId", "clickTarget", "clickUrl", "clickText", "formElement", "formClasses", "formId", "formTarget", "formUrl", "formText", "errorMessage", "errorUrl", "errorLine", "newHistoryFragment", "oldHistoryFragment", "newHistoryState", "oldHistoryState", "historySource", etc.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'get', 'update', 'delete']).describe('Operation to perform'),
-    variableCategory: z.enum(['custom', 'builtIn']).optional().describe('Category of variable (default: "custom")'),
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    workspaceId: z.string().describe('GTM workspace ID'),
-    variableId: z.string().optional().describe('Variable ID (required for get, update, delete on custom variables)'),
-    name: z.string().optional().describe('Variable name (required for create)'),
-    type: z.string().optional().describe('Variable type (required for create custom variables)'),
-    parameter: z.array(parameterSchema).optional().describe('Variable configuration parameters'),
-    notes: z.string().optional().describe('Variable notes'),
-    parentFolderId: z.string().optional().describe('Folder ID to organize this variable in'),
-    builtInTypes: z.array(z.string()).optional().describe('For built-in variables: types to enable or disable (used with create/delete actions on builtIn category)')
-  }))
-  .output(z.object({
-    variable: variableOutputSchema.optional().describe('Variable details (for single custom variable operations)'),
-    variables: z.array(variableOutputSchema).optional().describe('List of custom variables (for list action)'),
-    builtInVariables: z.array(builtInVariableSchema).optional().describe('List of built-in variables')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'get', 'update', 'delete'])
+        .describe('Operation to perform'),
+      variableCategory: z
+        .enum(['custom', 'builtIn'])
+        .optional()
+        .describe('Category of variable (default: "custom")'),
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      workspaceId: z.string().describe('GTM workspace ID'),
+      variableId: z
+        .string()
+        .optional()
+        .describe('Variable ID (required for get, update, delete on custom variables)'),
+      name: z.string().optional().describe('Variable name (required for create)'),
+      type: z
+        .string()
+        .optional()
+        .describe('Variable type (required for create custom variables)'),
+      parameter: z
+        .array(parameterSchema)
+        .optional()
+        .describe('Variable configuration parameters'),
+      notes: z.string().optional().describe('Variable notes'),
+      parentFolderId: z.string().optional().describe('Folder ID to organize this variable in'),
+      builtInTypes: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'For built-in variables: types to enable or disable (used with create/delete actions on builtIn category)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      variable: variableOutputSchema
+        .optional()
+        .describe('Variable details (for single custom variable operations)'),
+      variables: z
+        .array(variableOutputSchema)
+        .optional()
+        .describe('List of custom variables (for list action)'),
+      builtInVariables: z
+        .array(builtInVariableSchema)
+        .optional()
+        .describe('List of built-in variables')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GtmClient(ctx.auth.token);
     let { action, accountId, containerId, workspaceId, variableId } = ctx.input;
     let category = ctx.input.variableCategory || 'custom';
@@ -89,7 +117,12 @@ export let manageVariable = SlateTool.create(
         if (!ctx.input.builtInTypes || ctx.input.builtInTypes.length === 0) {
           throw new Error('builtInTypes is required to enable built-in variables');
         }
-        let enabled = await client.enableBuiltInVariables(accountId, containerId, workspaceId, ctx.input.builtInTypes);
+        let enabled = await client.enableBuiltInVariables(
+          accountId,
+          containerId,
+          workspaceId,
+          ctx.input.builtInTypes
+        );
         return {
           output: { builtInVariables: enabled } as any,
           message: `Enabled **${enabled.length}** built-in variable(s)`
@@ -100,14 +133,21 @@ export let manageVariable = SlateTool.create(
         if (!ctx.input.builtInTypes || ctx.input.builtInTypes.length === 0) {
           throw new Error('builtInTypes is required to disable built-in variables');
         }
-        await client.disableBuiltInVariables(accountId, containerId, workspaceId, ctx.input.builtInTypes);
+        await client.disableBuiltInVariables(
+          accountId,
+          containerId,
+          workspaceId,
+          ctx.input.builtInTypes
+        );
         return {
           output: { builtInVariables: [] } as any,
           message: `Disabled **${ctx.input.builtInTypes.length}** built-in variable type(s)`
         };
       }
 
-      throw new Error(`Action "${action}" is not supported for built-in variables. Use "list", "create" (enable), or "delete" (disable).`);
+      throw new Error(
+        `Action "${action}" is not supported for built-in variables. Use "list", "create" (enable), or "delete" (disable).`
+      );
     }
 
     // Custom variable operations
@@ -139,7 +179,8 @@ export let manageVariable = SlateTool.create(
       };
     }
 
-    if (!variableId) throw new Error('variableId is required for get, update, and delete actions');
+    if (!variableId)
+      throw new Error('variableId is required for get, update, and delete actions');
 
     if (action === 'get') {
       let variable = await client.getVariable(accountId, containerId, workspaceId, variableId);
@@ -155,9 +196,16 @@ export let manageVariable = SlateTool.create(
       if (ctx.input.type !== undefined) updateData.type = ctx.input.type;
       if (ctx.input.parameter !== undefined) updateData.parameter = ctx.input.parameter;
       if (ctx.input.notes !== undefined) updateData.notes = ctx.input.notes;
-      if (ctx.input.parentFolderId !== undefined) updateData.parentFolderId = ctx.input.parentFolderId;
+      if (ctx.input.parentFolderId !== undefined)
+        updateData.parentFolderId = ctx.input.parentFolderId;
 
-      let variable = await client.updateVariable(accountId, containerId, workspaceId, variableId, updateData);
+      let variable = await client.updateVariable(
+        accountId,
+        containerId,
+        workspaceId,
+        variableId,
+        updateData
+      );
       return {
         output: { variable } as any,
         message: `Updated variable **"${variable.name}"** (ID: \`${variable.variableId}\`)`

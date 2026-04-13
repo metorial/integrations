@@ -3,28 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let changeThreadPriority = SlateTool.create(
-  spec,
-  {
-    name: 'Change Thread Priority',
-    key: 'change_thread_priority',
-    description: `Change the priority level of a support thread. Priority levels: 0 = urgent, 1 = high, 2 = normal, 3 = low.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let changeThreadPriority = SlateTool.create(spec, {
+  name: 'Change Thread Priority',
+  key: 'change_thread_priority',
+  description: `Change the priority level of a support thread. Priority levels: 0 = urgent, 1 = high, 2 = normal, 3 = low.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    threadId: z.string().describe('Plain thread ID'),
-    priority: z.number().describe('Priority level: 0 (urgent), 1 (high), 2 (normal), 3 (low)'),
-  }))
-  .output(z.object({
-    threadId: z.string().describe('Plain thread ID'),
-    title: z.string().nullable().describe('Thread title'),
-    priority: z.number().describe('Updated priority level'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      threadId: z.string().describe('Plain thread ID'),
+      priority: z
+        .number()
+        .describe('Priority level: 0 (urgent), 1 (high), 2 (normal), 3 (low)')
+    })
+  )
+  .output(
+    z.object({
+      threadId: z.string().describe('Plain thread ID'),
+      title: z.string().nullable().describe('Thread title'),
+      priority: z.number().describe('Updated priority level')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let res = await client.changeThreadPriority(ctx.input.threadId, ctx.input.priority);
@@ -37,9 +40,9 @@ export let changeThreadPriority = SlateTool.create(
       output: {
         threadId: thread.id,
         title: thread.title,
-        priority: thread.priority,
+        priority: thread.priority
       },
-      message: `Thread **${thread.title || thread.id}** priority set to **${label}**`,
+      message: `Thread **${thread.title || thread.id}** priority set to **${label}**`
     };
   })
   .build();

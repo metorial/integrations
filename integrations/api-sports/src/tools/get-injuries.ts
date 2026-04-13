@@ -14,37 +14,38 @@ let injurySchema = z.object({
   teamLogo: z.string().nullable().describe('Team logo URL'),
   leagueName: z.string().nullable().describe('League name'),
   fixtureId: z.number().nullable().describe('Related fixture ID'),
-  fixtureDate: z.string().nullable().describe('Fixture date'),
+  fixtureDate: z.string().nullable().describe('Fixture date')
 });
 
-export let getInjuriesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Injuries',
-    key: 'get_injuries',
-    description: `Retrieve player injury and suspension data for football. Filter by league, season, fixture, team, or specific player. Returns injury type, reason, and affected fixture information.`,
-    instructions: [
-      'Injury data availability varies by league. Use the Search Leagues tool to check coverage.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getInjuriesTool = SlateTool.create(spec, {
+  name: 'Get Injuries',
+  key: 'get_injuries',
+  description: `Retrieve player injury and suspension data for football. Filter by league, season, fixture, team, or specific player. Returns injury type, reason, and affected fixture information.`,
+  instructions: [
+    'Injury data availability varies by league. Use the Search Leagues tool to check coverage.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    league: z.number().optional().describe('League ID to filter by'),
-    season: z.number().optional().describe('Season year'),
-    fixture: z.number().optional().describe('Fixture ID to get injuries for'),
-    team: z.number().optional().describe('Team ID to filter by'),
-    player: z.number().optional().describe('Player ID to filter by'),
-    date: z.string().optional().describe('Date filter (YYYY-MM-DD)'),
-    timezone: z.string().optional().describe('Timezone for dates'),
-  }))
-  .output(z.object({
-    injuries: z.array(injurySchema),
-    count: z.number().describe('Number of injuries returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      league: z.number().optional().describe('League ID to filter by'),
+      season: z.number().optional().describe('Season year'),
+      fixture: z.number().optional().describe('Fixture ID to get injuries for'),
+      team: z.number().optional().describe('Team ID to filter by'),
+      player: z.number().optional().describe('Player ID to filter by'),
+      date: z.string().optional().describe('Date filter (YYYY-MM-DD)'),
+      timezone: z.string().optional().describe('Timezone for dates')
+    })
+  )
+  .output(
+    z.object({
+      injuries: z.array(injurySchema),
+      count: z.number().describe('Number of injuries returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, sport: 'football' });
 
     let data = await client.getInjuries({
@@ -54,7 +55,7 @@ export let getInjuriesTool = SlateTool.create(
       team: ctx.input.team,
       player: ctx.input.player,
       date: ctx.input.date,
-      timezone: ctx.input.timezone,
+      timezone: ctx.input.timezone
     });
 
     let results = (data.response ?? []).map((item: any) => ({
@@ -68,14 +69,15 @@ export let getInjuriesTool = SlateTool.create(
       teamLogo: item.team?.logo ?? null,
       leagueName: item.league?.name ?? null,
       fixtureId: item.fixture?.id ?? null,
-      fixtureDate: item.fixture?.date ?? null,
+      fixtureDate: item.fixture?.date ?? null
     }));
 
     return {
       output: {
         injuries: results,
-        count: results.length,
+        count: results.length
       },
-      message: `Found **${results.length}** injury/suspension record(s).`,
+      message: `Found **${results.length}** injury/suspension record(s).`
     };
-  }).build();
+  })
+  .build();

@@ -3,60 +3,98 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let contentItemSchema = z.object({
-  type: z.string().optional().describe('Type of content (e.g., "page_content")'),
-  url: z.string().optional().describe('URL of the content'),
-  domain: z.string().optional().describe('Domain of the content'),
-  title: z.string().optional().describe('Page title'),
-  mainTitle: z.string().optional().describe('Main title of the page'),
-  language: z.string().optional().describe('Content language'),
-  sentimentConnotation: z.string().optional().describe('Sentiment connotation (positive, negative, neutral)'),
-  connotationTypes: z.record(z.string(), z.number()).optional().describe('Breakdown of sentiment connotation types'),
-  pageCategory: z.array(z.string()).optional().describe('Categories of the page'),
-  datePublished: z.string().optional().describe('Date content was published'),
-  contentQualityScore: z.number().optional().describe('Content quality score'),
-}).passthrough();
+let contentItemSchema = z
+  .object({
+    type: z.string().optional().describe('Type of content (e.g., "page_content")'),
+    url: z.string().optional().describe('URL of the content'),
+    domain: z.string().optional().describe('Domain of the content'),
+    title: z.string().optional().describe('Page title'),
+    mainTitle: z.string().optional().describe('Main title of the page'),
+    language: z.string().optional().describe('Content language'),
+    sentimentConnotation: z
+      .string()
+      .optional()
+      .describe('Sentiment connotation (positive, negative, neutral)'),
+    connotationTypes: z
+      .record(z.string(), z.number())
+      .optional()
+      .describe('Breakdown of sentiment connotation types'),
+    pageCategory: z.array(z.string()).optional().describe('Categories of the page'),
+    datePublished: z.string().optional().describe('Date content was published'),
+    contentQualityScore: z.number().optional().describe('Content quality score')
+  })
+  .passthrough();
 
-export let contentAnalysis = SlateTool.create(
-  spec,
-  {
-    name: 'Content Analysis',
-    key: 'content_analysis',
-    description: `Search for and analyze web content mentioning a specific keyword or brand across the web. Provides sentiment analysis, content quality scores, publication dates, and category classifications. Choose between search mode (individual results) or summary mode (aggregate statistics). Ideal for brand monitoring, content research, and competitive intelligence.`,
-    instructions: [
-      'Provide a keyword or brand name to search for across the web.',
-      'Use "search" mode to get individual content results with sentiment, or "summary" mode for aggregate stats.',
-      'Filter by sentiment connotation (positive, negative, neutral) to focus analysis.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    keyword: z.string().describe('Keyword or brand name to search for'),
-    mode: z.enum(['search', 'summary']).default('search').describe('Analysis mode: "search" for individual results, "summary" for aggregate statistics'),
-    sentimentConnotation: z.enum(['positive', 'negative', 'neutral']).optional().describe('Filter by sentiment connotation'),
-    pageType: z.array(z.string()).optional().describe('Filter by page type (e.g., ["ecommerce", "news", "blogs"])'),
-    searchMode: z.string().optional().describe('Search mode (e.g., "as_is" for exact match)'),
-    limit: z.number().optional().describe('Maximum number of results (search mode only)'),
-    offset: z.number().optional().describe('Pagination offset (search mode only)'),
-    orderBy: z.array(z.string()).optional().describe('Order results (e.g., ["content_quality_score,desc"])'),
-  }))
-  .output(z.object({
-    keyword: z.string().describe('Searched keyword'),
-    totalCount: z.number().optional().describe('Total matching results'),
-    items: z.array(contentItemSchema).optional().describe('Individual content items (search mode)'),
-    summary: z.object({
-      totalCount: z.number().optional().describe('Total mentions found'),
-      sentimentConnotations: z.record(z.string(), z.number()).optional().describe('Sentiment distribution'),
-      topDomains: z.array(z.string()).optional().describe('Top mentioning domains'),
-      connotationTypes: z.record(z.string(), z.number()).optional().describe('Connotation type breakdown'),
-    }).optional().describe('Aggregate statistics (summary mode)'),
-    cost: z.number().optional().describe('API cost'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let contentAnalysis = SlateTool.create(spec, {
+  name: 'Content Analysis',
+  key: 'content_analysis',
+  description: `Search for and analyze web content mentioning a specific keyword or brand across the web. Provides sentiment analysis, content quality scores, publication dates, and category classifications. Choose between search mode (individual results) or summary mode (aggregate statistics). Ideal for brand monitoring, content research, and competitive intelligence.`,
+  instructions: [
+    'Provide a keyword or brand name to search for across the web.',
+    'Use "search" mode to get individual content results with sentiment, or "summary" mode for aggregate stats.',
+    'Filter by sentiment connotation (positive, negative, neutral) to focus analysis.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      keyword: z.string().describe('Keyword or brand name to search for'),
+      mode: z
+        .enum(['search', 'summary'])
+        .default('search')
+        .describe(
+          'Analysis mode: "search" for individual results, "summary" for aggregate statistics'
+        ),
+      sentimentConnotation: z
+        .enum(['positive', 'negative', 'neutral'])
+        .optional()
+        .describe('Filter by sentiment connotation'),
+      pageType: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by page type (e.g., ["ecommerce", "news", "blogs"])'),
+      searchMode: z
+        .string()
+        .optional()
+        .describe('Search mode (e.g., "as_is" for exact match)'),
+      limit: z.number().optional().describe('Maximum number of results (search mode only)'),
+      offset: z.number().optional().describe('Pagination offset (search mode only)'),
+      orderBy: z
+        .array(z.string())
+        .optional()
+        .describe('Order results (e.g., ["content_quality_score,desc"])')
+    })
+  )
+  .output(
+    z.object({
+      keyword: z.string().describe('Searched keyword'),
+      totalCount: z.number().optional().describe('Total matching results'),
+      items: z
+        .array(contentItemSchema)
+        .optional()
+        .describe('Individual content items (search mode)'),
+      summary: z
+        .object({
+          totalCount: z.number().optional().describe('Total mentions found'),
+          sentimentConnotations: z
+            .record(z.string(), z.number())
+            .optional()
+            .describe('Sentiment distribution'),
+          topDomains: z.array(z.string()).optional().describe('Top mentioning domains'),
+          connotationTypes: z
+            .record(z.string(), z.number())
+            .optional()
+            .describe('Connotation type breakdown')
+        })
+        .optional()
+        .describe('Aggregate statistics (summary mode)'),
+      cost: z.number().optional().describe('API cost')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.mode === 'search') {
@@ -67,7 +105,7 @@ export let contentAnalysis = SlateTool.create(
         searchMode: ctx.input.searchMode,
         limit: ctx.input.limit,
         offset: ctx.input.offset,
-        orderBy: ctx.input.orderBy,
+        orderBy: ctx.input.orderBy
       });
 
       let result = client.extractFirstResult(response);
@@ -82,7 +120,7 @@ export let contentAnalysis = SlateTool.create(
         connotationTypes: item.connotation_types,
         pageCategory: item.page_category,
         datePublished: item.date_published,
-        contentQualityScore: item.content_quality_score,
+        contentQualityScore: item.content_quality_score
       }));
 
       return {
@@ -90,14 +128,14 @@ export let contentAnalysis = SlateTool.create(
           keyword: ctx.input.keyword,
           totalCount: result?.total_count,
           items,
-          cost: response.cost,
+          cost: response.cost
         },
-        message: `Found **${items.length}** content items mentioning **"${ctx.input.keyword}"** (total: ${result?.total_count ?? 'unknown'}).`,
+        message: `Found **${items.length}** content items mentioning **"${ctx.input.keyword}"** (total: ${result?.total_count ?? 'unknown'}).`
       };
     } else {
       let response = await client.contentAnalysisSummaryLive({
         keyword: ctx.input.keyword,
-        pageType: ctx.input.pageType,
+        pageType: ctx.input.pageType
       });
 
       let result = client.extractFirstResult(response);
@@ -109,11 +147,12 @@ export let contentAnalysis = SlateTool.create(
             totalCount: result?.total_count,
             sentimentConnotations: result?.sentiment_connotations,
             topDomains: result?.top_domains,
-            connotationTypes: result?.connotation_types,
+            connotationTypes: result?.connotation_types
           },
-          cost: response.cost,
+          cost: response.cost
         },
-        message: `Content summary for **"${ctx.input.keyword}"**: **${result?.total_count ?? 0}** mentions found across the web.`,
+        message: `Content summary for **"${ctx.input.keyword}"**: **${result?.total_count ?? 0}** mentions found across the web.`
       };
     }
-  }).build();
+  })
+  .build();

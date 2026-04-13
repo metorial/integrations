@@ -15,6 +15,7 @@ Every request to the RocketReach API requires an API Key for authentication. All
 - To create a RocketReach API key, go to Account Settings and click "Generate New API Key."
 
 **Example:**
+
 ```
 Api-Key: YOUR_API_KEY
 ```

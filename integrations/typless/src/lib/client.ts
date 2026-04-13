@@ -7,9 +7,7 @@ let axios = createAxios({
 export class Client {
   private headers: Record<string, string>;
 
-  constructor(
-    private config: { token: string }
-  ) {
+  constructor(private config: { token: string }) {
     this.headers = {
       Authorization: `Token ${config.token}`
     };
@@ -113,9 +111,7 @@ export class Client {
     });
   }
 
-  async startTraining(params: {
-    documentTypeName: string;
-  }): Promise<void> {
+  async startTraining(params: { documentTypeName: string }): Promise<void> {
     await axios.post('/start-training/', null, {
       headers: {
         ...this.headers,
@@ -127,20 +123,22 @@ export class Client {
     });
   }
 
-  async getDocumentTypes(): Promise<Array<{
-    slug: string;
-    name: string;
-    fieldsCount: number;
-    lineItemFieldsCount: number;
-    documentsCount: number;
-    modelsCount: number;
-  }>> {
+  async getDocumentTypes(): Promise<
+    Array<{
+      slug: string;
+      name: string;
+      fieldsCount: number;
+      lineItemFieldsCount: number;
+      documentsCount: number;
+      modelsCount: number;
+    }>
+  > {
     let response = await axios.get('/document-types/', {
       headers: this.headers
     });
 
     let data = response.data;
-    let types = Array.isArray(data) ? data : (data.results || data.document_types || []);
+    let types = Array.isArray(data) ? data : data.results || data.document_types || [];
 
     return types.map((dt: any) => ({
       slug: dt.slug || dt.document_type_name || '',
@@ -234,9 +232,7 @@ export class Client {
     };
   }
 
-  async getExtractionResult(params: {
-    extractionId: string;
-  }): Promise<{
+  async getExtractionResult(params: { extractionId: string }): Promise<{
     status: string;
     error: any;
     result: {

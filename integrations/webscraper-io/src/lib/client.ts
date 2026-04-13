@@ -5,7 +5,7 @@ export class Client {
 
   constructor(private token: string) {
     this.axios = createAxios({
-      baseURL: 'https://api.webscraper.io/api/v1',
+      baseURL: 'https://api.webscraper.io/api/v1'
     });
   }
 
@@ -43,12 +43,17 @@ export class Client {
       currentPage: response.data.current_page,
       lastPage: response.data.last_page,
       total: response.data.total,
-      perPage: response.data.per_page,
+      perPage: response.data.per_page
     };
   }
 
-  async updateSitemap(sitemapId: number, sitemap: { _id: string; startUrl: string[]; selectors: any[] }) {
-    let response = await this.axios.put(`/sitemap/${sitemapId}`, sitemap, { params: this.params });
+  async updateSitemap(
+    sitemapId: number,
+    sitemap: { _id: string; startUrl: string[]; selectors: any[] }
+  ) {
+    let response = await this.axios.put(`/sitemap/${sitemapId}`, sitemap, {
+      params: this.params
+    });
     return response.data.data;
   }
 
@@ -97,7 +102,7 @@ export class Client {
       currentPage: response.data.current_page,
       lastPage: response.data.last_page,
       total: response.data.total,
-      perPage: response.data.per_page,
+      perPage: response.data.per_page
     };
   }
 
@@ -111,7 +116,7 @@ export class Client {
   async downloadScrapedDataJson(jobId: number) {
     let response = await this.axios.get(`/scraping-job/${jobId}/json`, {
       params: this.params,
-      responseType: 'text',
+      responseType: 'text'
     });
     let text = response.data as string;
     let records = text
@@ -124,7 +129,7 @@ export class Client {
   async downloadScrapedDataCsv(jobId: number) {
     let response = await this.axios.get(`/scraping-job/${jobId}/csv`, {
       params: this.params,
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data as string;
   }
@@ -132,7 +137,9 @@ export class Client {
   // ──── Data Quality ────
 
   async getDataQuality(jobId: number) {
-    let response = await this.axios.get(`/scraping-job/${jobId}/data-quality`, { params: this.params });
+    let response = await this.axios.get(`/scraping-job/${jobId}/data-quality`, {
+      params: this.params
+    });
     return response.data.data;
   }
 
@@ -148,35 +155,40 @@ export class Client {
       currentPage: response.data.current_page,
       lastPage: response.data.last_page,
       total: response.data.total,
-      perPage: response.data.per_page,
+      perPage: response.data.per_page
     };
   }
 
   // ──── Scheduler ────
 
   async getScheduler(sitemapId: number) {
-    let response = await this.axios.get(`/sitemap/${sitemapId}/scheduler`, { params: this.params });
+    let response = await this.axios.get(`/sitemap/${sitemapId}/scheduler`, {
+      params: this.params
+    });
     return response.data.data;
   }
 
-  async enableScheduler(sitemapId: number, options: {
-    cronMinute: string;
-    cronHour: string;
-    cronDay: string;
-    cronMonth: string;
-    cronWeekday: string;
-    cronTimezone?: string;
-    driver?: string;
-    proxy?: string;
-    requestInterval?: number;
-    pageLoadDelay?: number;
-  }) {
+  async enableScheduler(
+    sitemapId: number,
+    options: {
+      cronMinute: string;
+      cronHour: string;
+      cronDay: string;
+      cronMonth: string;
+      cronWeekday: string;
+      cronTimezone?: string;
+      driver?: string;
+      proxy?: string;
+      requestInterval?: number;
+      pageLoadDelay?: number;
+    }
+  ) {
     let body: Record<string, any> = {
       cron_minute: options.cronMinute,
       cron_hour: options.cronHour,
       cron_day: options.cronDay,
       cron_month: options.cronMonth,
-      cron_weekday: options.cronWeekday,
+      cron_weekday: options.cronWeekday
     };
     if (options.cronTimezone) body.cron_timezone = options.cronTimezone;
     if (options.driver) body.driver = options.driver;
@@ -184,12 +196,18 @@ export class Client {
     if (options.requestInterval !== undefined) body.request_interval = options.requestInterval;
     if (options.pageLoadDelay !== undefined) body.page_load_delay = options.pageLoadDelay;
 
-    let response = await this.axios.post(`/sitemap/${sitemapId}/enable-scheduler`, body, { params: this.params });
+    let response = await this.axios.post(`/sitemap/${sitemapId}/enable-scheduler`, body, {
+      params: this.params
+    });
     return response.data.data;
   }
 
   async disableScheduler(sitemapId: number) {
-    let response = await this.axios.post(`/sitemap/${sitemapId}/disable-scheduler`, {}, { params: this.params });
+    let response = await this.axios.post(
+      `/sitemap/${sitemapId}/disable-scheduler`,
+      {},
+      { params: this.params }
+    );
     return response.data.data;
   }
 }

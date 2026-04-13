@@ -3,25 +3,26 @@ import { E2BClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let killSandbox = SlateTool.create(
-  spec,
-  {
-    name: 'Kill Sandbox',
-    key: 'kill_sandbox',
-    description: `Permanently terminate a running or paused sandbox. All files, processes, and state will be destroyed. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let killSandbox = SlateTool.create(spec, {
+  name: 'Kill Sandbox',
+  key: 'kill_sandbox',
+  description: `Permanently terminate a running or paused sandbox. All files, processes, and state will be destroyed. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    sandboxId: z.string().describe('The unique identifier of the sandbox to terminate.'),
-  }))
-  .output(z.object({
-    sandboxId: z.string().describe('The ID of the terminated sandbox.'),
-    killed: z.boolean().describe('Whether the sandbox was successfully terminated.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sandboxId: z.string().describe('The unique identifier of the sandbox to terminate.')
+    })
+  )
+  .output(
+    z.object({
+      sandboxId: z.string().describe('The ID of the terminated sandbox.'),
+      killed: z.boolean().describe('Whether the sandbox was successfully terminated.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new E2BClient({ token: ctx.auth.token });
 
     ctx.progress('Terminating sandbox...');
@@ -30,8 +31,9 @@ export let killSandbox = SlateTool.create(
     return {
       output: {
         sandboxId: ctx.input.sandboxId,
-        killed: true,
+        killed: true
       },
-      message: `Sandbox **${ctx.input.sandboxId}** has been permanently terminated.`,
+      message: `Sandbox **${ctx.input.sandboxId}** has been permanently terminated.`
     };
-  }).build();
+  })
+  .build();

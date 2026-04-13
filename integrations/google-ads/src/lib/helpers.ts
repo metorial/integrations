@@ -15,6 +15,6 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): GoogleAdsCli
   return new GoogleAdsClient({
     token: auth.token,
     developerToken: auth.developerToken,
-    loginCustomerId: config.loginCustomerId,
+    loginCustomerId: config.loginCustomerId
   });
 };

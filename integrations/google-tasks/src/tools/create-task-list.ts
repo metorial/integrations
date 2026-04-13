@@ -3,30 +3,31 @@ import { GoogleTasksClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createTaskList = SlateTool.create(
-  spec,
-  {
-    name: 'Create Task List',
-    key: 'create_task_list',
-    description: `Create a new task list with the specified title. Returns the newly created list with its assigned ID.`,
-    constraints: [
-      'A user can have up to 2,000 task lists.',
-      'Task list title can be up to 1,024 characters.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let createTaskList = SlateTool.create(spec, {
+  name: 'Create Task List',
+  key: 'create_task_list',
+  description: `Create a new task list with the specified title. Returns the newly created list with its assigned ID.`,
+  constraints: [
+    'A user can have up to 2,000 task lists.',
+    'Task list title can be up to 1,024 characters.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    title: z.string().describe('Title for the new task list (max 1024 characters)')
-  }))
-  .output(z.object({
-    taskListId: z.string().describe('Unique identifier for the created task list'),
-    title: z.string().describe('Title of the created task list'),
-    updated: z.string().optional().describe('Creation time in RFC 3339 format')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      title: z.string().describe('Title for the new task list (max 1024 characters)')
+    })
+  )
+  .output(
+    z.object({
+      taskListId: z.string().describe('Unique identifier for the created task list'),
+      title: z.string().describe('Title of the created task list'),
+      updated: z.string().optional().describe('Creation time in RFC 3339 format')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleTasksClient(ctx.auth.token);
     let list = await client.createTaskList(ctx.input.title);
 
@@ -38,4 +39,5 @@ export let createTaskList = SlateTool.create(
       },
       message: `Created task list **"${list.title}"**.`
     };
-  }).build();
+  })
+  .build();

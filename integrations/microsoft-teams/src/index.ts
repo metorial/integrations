@@ -17,14 +17,14 @@ import {
   manageOnlineMeeting,
   getPresence,
   manageTags,
-  manageShifts,
+  manageShifts
 } from './tools';
 import {
   channelMessageTrigger,
   chatMessageTrigger,
   teamChangeTrigger,
   membershipChangeTrigger,
-  channelChangeTrigger,
+  channelChangeTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,13 +46,13 @@ export let provider = Slate.create({
     manageOnlineMeeting,
     getPresence,
     manageTags,
-    manageShifts,
+    manageShifts
   ],
   triggers: [
     channelMessageTrigger,
     chatMessageTrigger,
     teamChangeTrigger,
     membershipChangeTrigger,
-    channelChangeTrigger,
-  ],
+    channelChangeTrigger
+  ]
 });

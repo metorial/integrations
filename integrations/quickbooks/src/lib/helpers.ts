@@ -9,6 +9,6 @@ export let createClientFromContext = (ctx: ContextLike): QuickBooksClient => {
   return new QuickBooksClient({
     token: ctx.auth.token,
     companyId: ctx.config.companyId,
-    environment: ctx.config.environment,
+    environment: ctx.config.environment
   });
 };

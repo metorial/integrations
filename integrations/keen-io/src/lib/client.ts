@@ -12,26 +12,37 @@ export class Client {
       baseURL: `https://api.keen.io/3.0/projects/${config.projectId}`,
       headers: {
         Authorization: config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Event Streaming ──
 
-  async recordEvent(collectionName: string, eventData: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/events/${encodeURIComponent(collectionName)}`, eventData);
+  async recordEvent(
+    collectionName: string,
+    eventData: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post(
+      `/events/${encodeURIComponent(collectionName)}`,
+      eventData
+    );
     return response.data;
   }
 
-  async recordMultipleEvents(events: Record<string, Record<string, any>[]>): Promise<Record<string, any>> {
+  async recordMultipleEvents(
+    events: Record<string, Record<string, any>[]>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post('/events', events);
     return response.data;
   }
 
   // ── Queries ──
 
-  async runQuery(analysisType: string, params: Record<string, any>): Promise<Record<string, any>> {
+  async runQuery(
+    analysisType: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/queries/${analysisType}`, params);
     return response.data;
   }
@@ -48,10 +59,13 @@ export class Client {
 
   // ── Extractions ──
 
-  async extractEvents(collectionName: string, params: Record<string, any>): Promise<Record<string, any>> {
+  async extractEvents(
+    collectionName: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post('/queries/extraction', {
       event_collection: collectionName,
-      ...params,
+      ...params
     });
     return response.data;
   }
@@ -68,13 +82,25 @@ export class Client {
     return response.data;
   }
 
-  async createSavedQuery(queryName: string, queryDefinition: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.put(`/queries/saved/${encodeURIComponent(queryName)}`, queryDefinition);
+  async createSavedQuery(
+    queryName: string,
+    queryDefinition: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.put(
+      `/queries/saved/${encodeURIComponent(queryName)}`,
+      queryDefinition
+    );
     return response.data;
   }
 
-  async updateSavedQuery(queryName: string, queryDefinition: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.put(`/queries/saved/${encodeURIComponent(queryName)}`, queryDefinition);
+  async updateSavedQuery(
+    queryName: string,
+    queryDefinition: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.put(
+      `/queries/saved/${encodeURIComponent(queryName)}`,
+      queryDefinition
+    );
     return response.data;
   }
 
@@ -83,7 +109,9 @@ export class Client {
   }
 
   async runSavedQuery(queryName: string): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/queries/saved/${encodeURIComponent(queryName)}/result`);
+    let response = await this.axios.get(
+      `/queries/saved/${encodeURIComponent(queryName)}/result`
+    );
     return response.data;
   }
 
@@ -99,8 +127,14 @@ export class Client {
     return response.data;
   }
 
-  async createCachedQuery(queryName: string, queryDefinition: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.put(`/queries/cached/${encodeURIComponent(queryName)}`, queryDefinition);
+  async createCachedQuery(
+    queryName: string,
+    queryDefinition: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.put(
+      `/queries/cached/${encodeURIComponent(queryName)}`,
+      queryDefinition
+    );
     return response.data;
   }
 
@@ -109,7 +143,9 @@ export class Client {
   }
 
   async getCachedQueryResult(queryName: string): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/queries/cached/${encodeURIComponent(queryName)}/result`);
+    let response = await this.axios.get(
+      `/queries/cached/${encodeURIComponent(queryName)}/result`
+    );
     return response.data;
   }
 
@@ -125,8 +161,14 @@ export class Client {
     return response.data;
   }
 
-  async createDataset(datasetName: string, definition: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.put(`/datasets/${encodeURIComponent(datasetName)}`, definition);
+  async createDataset(
+    datasetName: string,
+    definition: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.put(
+      `/datasets/${encodeURIComponent(datasetName)}`,
+      definition
+    );
     return response.data;
   }
 
@@ -134,13 +176,20 @@ export class Client {
     await this.axios.delete(`/datasets/${encodeURIComponent(datasetName)}`);
   }
 
-  async getDatasetResults(datasetName: string, indexBy: string, timeframe: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/datasets/${encodeURIComponent(datasetName)}/results`, {
-      params: {
-        index_by: indexBy,
-        timeframe: JSON.stringify(timeframe),
-      },
-    });
+  async getDatasetResults(
+    datasetName: string,
+    indexBy: string,
+    timeframe: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.get(
+      `/datasets/${encodeURIComponent(datasetName)}/results`,
+      {
+        params: {
+          index_by: indexBy,
+          timeframe: JSON.stringify(timeframe)
+        }
+      }
+    );
     return response.data;
   }
 
@@ -173,7 +222,10 @@ export class Client {
     return response.data;
   }
 
-  async updateAccessKey(keyId: string, keyDefinition: Record<string, any>): Promise<Record<string, any>> {
+  async updateAccessKey(
+    keyId: string,
+    keyDefinition: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/keys/${encodeURIComponent(keyId)}`, keyDefinition);
     return response.data;
   }
@@ -189,9 +241,12 @@ export class Client {
 
   // ── Deletion ──
 
-  async deleteEvents(collectionName: string, params?: Record<string, any>): Promise<Record<string, any>> {
+  async deleteEvents(
+    collectionName: string,
+    params?: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.delete(`/events/${encodeURIComponent(collectionName)}`, {
-      data: params,
+      data: params
     });
     return response.data;
   }

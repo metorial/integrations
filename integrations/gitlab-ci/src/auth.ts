@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    host: z.string().optional(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      host: z.string().optional(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -65,7 +67,7 @@ export let auth = SlateAuth.create()
       host: z.string().default('https://gitlab.com').describe('GitLab host URL')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let host = ctx.input.host || 'https://gitlab.com';
       let scopeStr = ctx.scopes.join(' ');
       let params = new URLSearchParams({
@@ -81,7 +83,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let host = ctx.input.host || 'https://gitlab.com';
       let http = createAxios({ baseURL: host });
 
@@ -116,7 +118,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let host = ctx.input.host || ctx.output.host || 'https://gitlab.com';
       let http = createAxios({ baseURL: host });
 
@@ -150,12 +152,16 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; host?: string; refreshToken?: string; expiresAt?: string }; input: { host: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; host?: string; refreshToken?: string; expiresAt?: string };
+      input: { host: string };
+      scopes: string[];
+    }) => {
       let host = ctx.output.host || 'https://gitlab.com';
       let http = createAxios({ baseURL: `${host}/api/v4` });
 
       let response = await http.get('/user', {
-        headers: { 'Authorization': `Bearer ${ctx.output.token}` }
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let user = response.data as {
@@ -186,7 +192,7 @@ export let auth = SlateAuth.create()
       host: z.string().default('https://gitlab.com').describe('GitLab host URL')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -195,7 +201,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; host?: string; refreshToken?: string; expiresAt?: string }; input: { token: string; host: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; host?: string; refreshToken?: string; expiresAt?: string };
+      input: { token: string; host: string };
+    }) => {
       let host = ctx.output.host || 'https://gitlab.com';
       let http = createAxios({ baseURL: `${host}/api/v4` });
 

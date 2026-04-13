@@ -18,38 +18,39 @@ let contactSchema = z.object({
   vatCode: z.string().optional(),
   tags: z.string().optional(),
   createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  updatedAt: z.string().optional()
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Retrieve a list of contacts from Rentman. Contacts represent companies or individuals linked to projects. Supports pagination and sorting.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().optional().default(25).describe('Maximum number of results (max 300)'),
-    offset: z.number().optional().default(0).describe('Number of results to skip'),
-    sort: z.string().optional().describe('Sort field with + or - prefix'),
-    fields: z.string().optional().describe('Comma-separated fields to return'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema),
-    itemCount: z.number(),
-    limit: z.number(),
-    offset: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Retrieve a list of contacts from Rentman. Contacts represent companies or individuals linked to projects. Supports pagination and sorting.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z.number().optional().default(25).describe('Maximum number of results (max 300)'),
+      offset: z.number().optional().default(0).describe('Number of results to skip'),
+      sort: z.string().optional().describe('Sort field with + or - prefix'),
+      fields: z.string().optional().describe('Comma-separated fields to return')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSchema),
+      itemCount: z.number(),
+      limit: z.number(),
+      offset: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.list('contacts', {
       limit: ctx.input.limit,
       offset: ctx.input.offset,
       sort: ctx.input.sort,
-      fields: ctx.input.fields,
+      fields: ctx.input.fields
     });
 
     let contacts = result.data.map((c: any) => ({
@@ -67,7 +68,7 @@ export let listContacts = SlateTool.create(
       vatCode: c.vat_code,
       tags: c.tags,
       createdAt: c.created,
-      updatedAt: c.modified,
+      updatedAt: c.modified
     }));
 
     return {
@@ -75,8 +76,9 @@ export let listContacts = SlateTool.create(
         contacts,
         itemCount: result.itemCount,
         limit: result.limit,
-        offset: result.offset,
+        offset: result.offset
       },
-      message: `Found **${result.itemCount}** contacts. Returned ${contacts.length} contacts (offset: ${result.offset}).`,
+      message: `Found **${result.itemCount}** contacts. Returned ${contacts.length} contacts (offset: ${result.offset}).`
     };
-  }).build();
+  })
+  .build();

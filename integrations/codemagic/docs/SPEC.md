@@ -15,6 +15,7 @@ The actions permitted by the token are determined by the user's role within the 
 **Using the token:** When making API calls, include the API token in the `x-auth-token` request header.
 
 Example:
+
 ```
 curl -H "Content-Type: application/json" \
      -H "x-auth-token: <API Token>" \
@@ -58,4 +59,4 @@ For apps configured using codemagic.yaml, the API provides Secrets and Environme
 
 ## Events
 
-The provider does not support outbound webhooks or event subscriptions that notify external systems about Codemagic events (e.g., build completed). Codemagic *receives* inbound webhooks from Git providers (GitHub, GitLab, Bitbucket, etc.) to trigger builds automatically based on push, pull request, and tag events, but it does not provide a mechanism to subscribe to or receive notifications about Codemagic-side events via webhooks or server-sent events.
+The provider does not support outbound webhooks or event subscriptions that notify external systems about Codemagic events (e.g., build completed). Codemagic _receives_ inbound webhooks from Git providers (GitHub, GitLab, Bitbucket, etc.) to trigger builds automatically based on push, pull request, and tag events, but it does not provide a mechanism to subscribe to or receive notifications about Codemagic-side events via webhooks or server-sent events.

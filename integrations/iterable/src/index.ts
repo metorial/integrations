@@ -17,9 +17,7 @@ import {
   getChannels,
   exportData
 } from './tools';
-import {
-  systemWebhook
-} from './triggers';
+import { systemWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,7 +38,5 @@ export let provider = Slate.create({
     getChannels,
     exportData
   ],
-  triggers: [
-    systemWebhook
-  ]
+  triggers: [systemWebhook]
 });

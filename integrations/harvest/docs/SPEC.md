@@ -17,6 +17,7 @@ A Personal Access Token is tied directly to you and is the quickest way to start
 Once generated, a Personal Access Token can be used to access the API by providing the token in the Authorization header. Each request will require your account ID as well, since you can use this Personal Access Token to access any of your Harvest or Forecast accounts.
 
 Required headers for every request:
+
 - `Authorization: Bearer {ACCESS_TOKEN}`
 - `Harvest-Account-Id: {ACCOUNT_ID}`
 - `User-Agent: AppName (contact@email.com)`
@@ -26,6 +27,7 @@ Required headers for every request:
 Implementing a full OAuth2 Authentication flow allows other people to use your Harvest integrations.
 
 To set up OAuth2, register an application at https://id.getharvest.com/developers with the following:
+
 - **Name** – name of your application.
 - **Redirect URL** – the URL where successful authentications are redirected.
 - **Multi Account** – whether your integration supports multiple account access or just one.
@@ -46,6 +48,7 @@ To set up OAuth2, register an application at https://id.getharvest.com/developer
 **Scopes:**
 
 Scopes define which accounts the user grants access to. Possible scope values include:
+
 - `harvest:{ACCOUNT_ID}` – access to a specific Harvest account
 - `forecast:{ACCOUNT_ID}` – access to a specific Forecast account
 - `harvest:all` / `forecast:all` – access to all Harvest or Forecast accounts
@@ -94,6 +97,7 @@ Create and manage roles that can be assigned to users for organizational purpose
 ### Reporting
 
 Generate reports including:
+
 - **Time Reports** – time tracked across projects, tasks, and users.
 - **Expense Reports** – expenses grouped by various dimensions.
 - **Uninvoiced Report** – uninvoiced time and expenses.

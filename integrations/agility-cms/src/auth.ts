@@ -6,33 +6,42 @@ let mgmtBaseUrls: Record<string, string> = {
   usa2: 'https://mgmt-usa2.aglty.io',
   canada: 'https://mgmt-ca.aglty.io',
   europe: 'https://mgmt-eu.aglty.io',
-  australia: 'https://mgmt-aus.aglty.io',
+  australia: 'https://mgmt-aus.aglty.io'
 };
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('API key or OAuth access token for authenticating requests'),
-    refreshToken: z.string().optional().describe('OAuth refresh token for token renewal'),
-    expiresAt: z.string().optional().describe('ISO 8601 timestamp when the access token expires'),
-    authMethod: z.enum(['api_key', 'oauth']).describe('Which authentication method is in use'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('API key or OAuth access token for authenticating requests'),
+      refreshToken: z.string().optional().describe('OAuth refresh token for token renewal'),
+      expiresAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the access token expires'),
+      authMethod: z
+        .enum(['api_key', 'oauth'])
+        .describe('Which authentication method is in use')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Agility CMS API Key (fetch or preview). Found in Settings > API Keys.'),
+      apiKey: z
+        .string()
+        .describe('Agility CMS API Key (fetch or preview). Found in Settings > API Keys.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,
-          authMethod: 'api_key' as const,
-        },
+          authMethod: 'api_key' as const
+        }
       };
-    },
+    }
   })
   .addOauth({
     type: 'auth.oauth',
@@ -43,54 +52,61 @@ export let auth = SlateAuth.create()
       {
         title: 'OpenID',
         description: 'OpenID Connect authentication',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Profile',
         description: 'Access to user profile information',
-        scope: 'profile',
+        scope: 'profile'
       },
       {
         title: 'Email',
         description: 'Access to user email address',
-        scope: 'email',
+        scope: 'email'
       },
       {
         title: 'Offline Access',
         description: 'Enable refresh token for offline access',
-        scope: 'offline_access',
-      },
+        scope: 'offline_access'
+      }
     ],
 
     inputSchema: z.object({
-      region: z.enum(['usa', 'usa2', 'canada', 'europe', 'australia']).default('usa').describe('Hosting region for the Management API'),
+      region: z
+        .enum(['usa', 'usa2', 'canada', 'europe', 'australia'])
+        .default('usa')
+        .describe('Hosting region for the Management API')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let baseUrl = mgmtBaseUrls[ctx.input.region] || mgmtBaseUrls.usa;
       let params = new URLSearchParams({
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
         url: `${baseUrl}/oauth/authorize?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let baseUrl = mgmtBaseUrls[ctx.input.region] || mgmtBaseUrls.usa;
       let httpClient = createAxios({ baseURL: baseUrl });
 
       let response = await httpClient.post('/oauth/token', {
         code: ctx.code,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
-      let data = response.data as { access_token: string; refresh_token?: string; expires_in?: number };
+      let data = response.data as {
+        access_token: string;
+        refresh_token?: string;
+        expires_in?: number;
+      };
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -100,13 +116,13 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          authMethod: 'oauth' as const,
+          authMethod: 'oauth' as const
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -115,10 +131,14 @@ export let auth = SlateAuth.create()
       let httpClient = createAxios({ baseURL: baseUrl });
 
       let response = await httpClient.post('/oauth/refresh', {
-        refresh_token: ctx.output.refreshToken,
+        refresh_token: ctx.output.refreshToken
       });
 
-      let data = response.data as { access_token: string; refresh_token?: string; expires_in?: number };
+      let data = response.data as {
+        access_token: string;
+        refresh_token?: string;
+        expires_in?: number;
+      };
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
         : undefined;
@@ -128,9 +148,9 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          authMethod: 'oauth' as const,
+          authMethod: 'oauth' as const
         },
-        input: ctx.input,
+        input: ctx.input
       };
-    },
+    }
   });

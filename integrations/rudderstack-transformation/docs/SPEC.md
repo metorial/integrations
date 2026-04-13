@@ -14,11 +14,13 @@ To authenticate:
 2. Use HTTP Basic Authentication with an empty string (`""`) as the username and your workspace-level Service Access Token as the password.
 
 Alternatively, pass the token directly in the authorization header as:
+
 ```
 Authorization: Basic {Base64Encoded(:<SERVICE_ACCESS_TOKEN>)}
 ```
 
 The base URL depends on your region:
+
 - **US**: `https://api.rudderstack.com`
 - **EU**: `https://api.eu.rudderstack.com`
 

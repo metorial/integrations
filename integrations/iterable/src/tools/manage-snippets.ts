@@ -3,33 +3,45 @@ import { IterableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSnippets = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Snippets',
-    key: 'manage_snippets',
-    description: `Create, update, list, or delete snippets in Iterable. Snippets are reusable content blocks that can be embedded in templates using Handlebars syntax.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageSnippets = SlateTool.create(spec, {
+  name: 'Manage Snippets',
+  key: 'manage_snippets',
+  description: `Create, update, list, or delete snippets in Iterable. Snippets are reusable content blocks that can be embedded in templates using Handlebars syntax.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
-    name: z.string().optional().describe('Snippet name (required for create, update, delete)'),
-    content: z.string().optional().describe('Snippet content/HTML (required for create and update)')
-  }))
-  .output(z.object({
-    snippets: z.array(z.object({
-      name: z.string().describe('Snippet name'),
-      content: z.string().optional().describe('Snippet content'),
-      createdAt: z.string().optional().describe('When the snippet was created'),
-      updatedAt: z.string().optional().describe('When the snippet was last updated')
-    })).optional().describe('List of snippets'),
-    message: z.string().describe('Result message')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
+      name: z
+        .string()
+        .optional()
+        .describe('Snippet name (required for create, update, delete)'),
+      content: z
+        .string()
+        .optional()
+        .describe('Snippet content/HTML (required for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      snippets: z
+        .array(
+          z.object({
+            name: z.string().describe('Snippet name'),
+            content: z.string().optional().describe('Snippet content'),
+            createdAt: z.string().optional().describe('When the snippet was created'),
+            updatedAt: z.string().optional().describe('When the snippet was last updated')
+          })
+        )
+        .optional()
+        .describe('List of snippets'),
+      message: z.string().describe('Result message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new IterableClient({
       token: ctx.auth.token,
       dataCenter: ctx.config.dataCenter
@@ -86,4 +98,5 @@ export let manageSnippets = SlateTool.create(
       },
       message: `Deleted snippet **${ctx.input.name}**.`
     };
-  }).build();
+  })
+  .build();

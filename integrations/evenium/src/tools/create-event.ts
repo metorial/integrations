@@ -3,32 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Create Event',
-    key: 'create_event',
-    description: `Create a new event in Evenium. Requires a title and start date at minimum. Optionally include an end date and description.`,
-    tags: {
-      destructive: false
-    }
+export let createEvent = SlateTool.create(spec, {
+  name: 'Create Event',
+  key: 'create_event',
+  description: `Create a new event in Evenium. Requires a title and start date at minimum. Optionally include an end date and description.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    title: z.string().describe('Event title'),
-    startDate: z.string().describe('Event start date in RFC 3339 format (e.g. 2024-06-15T09:00:00Z)'),
-    endDate: z.string().optional().describe('Event end date in RFC 3339 format'),
-    description: z.string().optional().describe('Event description')
-  }))
-  .output(z.object({
-    eventId: z.string().describe('ID of the newly created event'),
-    title: z.string().describe('Event title'),
-    startDate: z.string().describe('Event start date'),
-    endDate: z.string().optional().describe('Event end date'),
-    description: z.string().optional().describe('Event description'),
-    status: z.string().optional().describe('Event status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      title: z.string().describe('Event title'),
+      startDate: z
+        .string()
+        .describe('Event start date in RFC 3339 format (e.g. 2024-06-15T09:00:00Z)'),
+      endDate: z.string().optional().describe('Event end date in RFC 3339 format'),
+      description: z.string().optional().describe('Event description')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('ID of the newly created event'),
+      title: z.string().describe('Event title'),
+      startDate: z.string().describe('Event start date'),
+      endDate: z.string().optional().describe('Event end date'),
+      description: z.string().optional().describe('Event description'),
+      status: z.string().optional().describe('Event status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let event = await client.createEvent({
@@ -49,4 +52,5 @@ export let createEvent = SlateTool.create(
       },
       message: `Created event **${event.title}** with ID \`${event.id}\`.`
     };
-  }).build();
+  })
+  .build();

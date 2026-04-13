@@ -11,6 +11,7 @@ Adyntel is an ad intelligence API that retrieves publicly available advertising 
 Adyntel uses API key-based authentication combined with the account email address. You can copy the API key from your Dashboard at any time. To authorize your calls you need to include the `api_key` as a query string alongside the other variables of your API call.
 
 Each API request requires two credentials passed in the request body (as JSON):
+
 - **`api_key`** (string): Your Adyntel API key, obtained from the dashboard at `platform.adyntel.com`.
 - **`email`** (string): The email address used to register your Adyntel account.
 

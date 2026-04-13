@@ -1,6 +1,11 @@
 import { SlateTool } from 'slates';
 import { VimeoClient } from '../lib/client';
-import { videoSchema, paginationInputSchema, paginationOutputSchema, mapVideo } from '../lib/schemas';
+import {
+  videoSchema,
+  paginationInputSchema,
+  paginationOutputSchema,
+  mapVideo
+} from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -22,22 +27,21 @@ let mapCategory = (c: any) => ({
   pictureUrl: c.pictures?.sizes?.[c.pictures.sizes.length - 1]?.link ?? null
 });
 
-export let listCategoriesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Categories',
-    key: 'list_categories',
-    description: `List all top-level video categories on Vimeo. Categories define genres that videos belong to.`,
-    tags: {
-      readOnly: true
-    }
+export let listCategoriesTool = SlateTool.create(spec, {
+  name: 'List Categories',
+  key: 'list_categories',
+  description: `List all top-level video categories on Vimeo. Categories define genres that videos belong to.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(paginationInputSchema)
-  .output(paginationOutputSchema.extend({
-    categories: z.array(categorySchema).describe('List of categories')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    paginationOutputSchema.extend({
+      categories: z.array(categorySchema).describe('List of categories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new VimeoClient(ctx.auth.token);
     let result = await client.listCategories({
       page: ctx.input.page,
@@ -55,27 +59,43 @@ export let listCategoriesTool = SlateTool.create(
       },
       message: `Found **${result.total ?? categories.length}** categories`
     };
-  }).build();
+  })
+  .build();
 
-export let listCategoryVideosTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Category Videos',
-    key: 'list_category_videos',
-    description: `List videos in a specific category on Vimeo. Browse videos by genre.`,
-    tags: {
-      readOnly: true
-    }
+export let listCategoryVideosTool = SlateTool.create(spec, {
+  name: 'List Category Videos',
+  key: 'list_category_videos',
+  description: `List videos in a specific category on Vimeo. Browse videos by genre.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(paginationInputSchema.extend({
-    categoryName: z.string().describe('The category slug/identifier (e.g. "animation", "music")'),
-    sort: z.enum(['alphabetical', 'comments', 'date', 'duration', 'featured', 'likes', 'plays', 'relevant']).optional().describe('Sort order for the results')
-  }))
-  .output(paginationOutputSchema.extend({
-    videos: z.array(videoSchema).describe('List of videos in the category')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    paginationInputSchema.extend({
+      categoryName: z
+        .string()
+        .describe('The category slug/identifier (e.g. "animation", "music")'),
+      sort: z
+        .enum([
+          'alphabetical',
+          'comments',
+          'date',
+          'duration',
+          'featured',
+          'likes',
+          'plays',
+          'relevant'
+        ])
+        .optional()
+        .describe('Sort order for the results')
+    })
+  )
+  .output(
+    paginationOutputSchema.extend({
+      videos: z.array(videoSchema).describe('List of videos in the category')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new VimeoClient(ctx.auth.token);
     let result = await client.getCategoryVideos(ctx.input.categoryName, {
       page: ctx.input.page,
@@ -94,4 +114,5 @@ export let listCategoryVideosTool = SlateTool.create(
       },
       message: `Found **${result.total ?? videos.length}** videos in category "${ctx.input.categoryName}"`
     };
-  }).build();
+  })
+  .build();

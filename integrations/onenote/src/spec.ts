@@ -5,7 +5,8 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'onenote',
   name: 'OneNote',
-  description: 'Microsoft OneNote digital note-taking application, accessed through the Microsoft Graph API.',
+  description:
+    'Microsoft OneNote digital note-taking application, accessed through the Microsoft Graph API.',
   metadata: {},
   config,
   auth

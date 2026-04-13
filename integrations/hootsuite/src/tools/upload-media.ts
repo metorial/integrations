@@ -3,38 +3,56 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { HootsuiteClient } from '../lib/client';
 
-export let uploadMediaTool = SlateTool.create(
-  spec,
-  {
-    name: 'Upload Media',
-    key: 'upload_media',
-    description: `Create a pre-signed upload URL for media files or check the status of a previously initiated upload.
+export let uploadMediaTool = SlateTool.create(spec, {
+  name: 'Upload Media',
+  key: 'upload_media',
+  description: `Create a pre-signed upload URL for media files or check the status of a previously initiated upload.
 Use **create** to get an upload URL for a file, then upload the file directly to the returned S3 URL.
 Use **status** to check whether media processing is complete before attaching to a message.`,
-    instructions: [
-      'After creating an upload URL, PUT the file to the returned URL with the correct Content-Type.',
-      'Poll the status endpoint until the state is READY before using the media ID in a message.'
-    ],
-    tags: {
-      readOnly: false
-    }
+  instructions: [
+    'After creating an upload URL, PUT the file to the returned URL with the correct Content-Type.',
+    'Poll the status endpoint until the state is READY before using the media ID in a message.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'status']).describe('Whether to create an upload URL or check upload status'),
-    sizeBytes: z.number().optional().describe('File size in bytes (required for create)'),
-    mimeType: z.string().optional().describe('MIME type of the file (required for create, e.g. image/jpeg, video/mp4)'),
-    mediaId: z.string().optional().describe('Media ID to check status for (required for status)')
-  }))
-  .output(z.object({
-    mediaId: z.string().describe('Media ID'),
-    uploadUrl: z.string().optional().describe('Pre-signed S3 upload URL (only for create action)'),
-    uploadUrlDurationSeconds: z.number().optional().describe('How long the upload URL is valid'),
-    state: z.string().optional().describe('Upload processing state (e.g. READY, PROCESSING, FAILED)'),
-    mimeType: z.string().optional().describe('MIME type of the uploaded file'),
-    thumbnailUrl: z.string().optional().describe('Thumbnail URL if available')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'status'])
+        .describe('Whether to create an upload URL or check upload status'),
+      sizeBytes: z.number().optional().describe('File size in bytes (required for create)'),
+      mimeType: z
+        .string()
+        .optional()
+        .describe('MIME type of the file (required for create, e.g. image/jpeg, video/mp4)'),
+      mediaId: z
+        .string()
+        .optional()
+        .describe('Media ID to check status for (required for status)')
+    })
+  )
+  .output(
+    z.object({
+      mediaId: z.string().describe('Media ID'),
+      uploadUrl: z
+        .string()
+        .optional()
+        .describe('Pre-signed S3 upload URL (only for create action)'),
+      uploadUrlDurationSeconds: z
+        .number()
+        .optional()
+        .describe('How long the upload URL is valid'),
+      state: z
+        .string()
+        .optional()
+        .describe('Upload processing state (e.g. READY, PROCESSING, FAILED)'),
+      mimeType: z.string().optional().describe('MIME type of the uploaded file'),
+      thumbnailUrl: z.string().optional().describe('Thumbnail URL if available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HootsuiteClient(ctx.auth.token);
 
     if (ctx.input.action === 'create') {
@@ -74,4 +92,5 @@ Use **status** to check whether media processing is complete before attaching to
       },
       message: `Media **${status.id}** is in state **${status.state}**.`
     };
-  }).build();
+  })
+  .build();

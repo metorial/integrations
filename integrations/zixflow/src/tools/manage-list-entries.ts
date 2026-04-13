@@ -12,32 +12,53 @@ export let manageListEntries = SlateTool.create(spec, {
     'For "get": provide listId and entryId.',
     'For "list": provide listId with limit/offset for pagination.',
     'For "update": provide listId, entryId, and entryData.',
-    'For "delete": provide listId and entryId.',
+    'For "delete": provide listId and entryId.'
   ],
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'update', 'delete']).describe('Operation to perform'),
-    listId: z.string().describe('List ID'),
-    entryId: z.string().optional().describe('List entry ID (required for get, update, delete)'),
-    recordId: z.string().optional().describe('Collection record ID to link (required for create)'),
-    entryData: z.record(z.string(), z.any()).optional().describe('Entry field data as key-value pairs (for create/update)'),
-    limit: z.number().optional().describe('Number of entries to return (for list, default: 10)'),
-    offset: z.number().optional().describe('Pagination offset (for list, default: 0)'),
-    filter: z.array(z.any()).optional().describe('Filter criteria array (for list)'),
-    sort: z.array(z.any()).optional().describe('Sort criteria array (for list)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    responseMessage: z.string().describe('Response message from the API'),
-    entryId: z.string().optional().describe('ID of the created/affected entry'),
-    entry: z.record(z.string(), z.any()).optional().describe('Entry data (for get/create)'),
-    entries: z.array(z.record(z.string(), z.any())).optional().describe('List of entries (for list)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'update', 'delete'])
+        .describe('Operation to perform'),
+      listId: z.string().describe('List ID'),
+      entryId: z
+        .string()
+        .optional()
+        .describe('List entry ID (required for get, update, delete)'),
+      recordId: z
+        .string()
+        .optional()
+        .describe('Collection record ID to link (required for create)'),
+      entryData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Entry field data as key-value pairs (for create/update)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of entries to return (for list, default: 10)'),
+      offset: z.number().optional().describe('Pagination offset (for list, default: 0)'),
+      filter: z.array(z.any()).optional().describe('Filter criteria array (for list)'),
+      sort: z.array(z.any()).optional().describe('Sort criteria array (for list)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      responseMessage: z.string().describe('Response message from the API'),
+      entryId: z.string().optional().describe('ID of the created/affected entry'),
+      entry: z.record(z.string(), z.any()).optional().describe('Entry data (for get/create)'),
+      entries: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of entries (for list)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZixflowClient({ token: ctx.auth.token });
     let { action, listId } = ctx.input;
     let result: any;
@@ -49,9 +70,9 @@ export let manageListEntries = SlateTool.create(spec, {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
           entryId: result.data?._id,
-          entry: result.data,
+          entry: result.data
         },
-        message: `Created list entry in list ${listId}.`,
+        message: `Created list entry in list ${listId}.`
       };
     }
 
@@ -62,9 +83,9 @@ export let manageListEntries = SlateTool.create(spec, {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
           entryId: ctx.input.entryId,
-          entry: result.data,
+          entry: result.data
         },
-        message: `Fetched list entry ${ctx.input.entryId}.`,
+        message: `Fetched list entry ${ctx.input.entryId}.`
       };
     }
 
@@ -73,28 +94,32 @@ export let manageListEntries = SlateTool.create(spec, {
         limit: ctx.input.limit ?? 10,
         offset: ctx.input.offset ?? 0,
         filter: ctx.input.filter,
-        sort: ctx.input.sort,
+        sort: ctx.input.sort
       });
       let entries = Array.isArray(result.data) ? result.data : [];
       return {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
-          entries,
+          entries
         },
-        message: `Fetched ${entries.length} entry(ies) from list ${listId}.`,
+        message: `Fetched ${entries.length} entry(ies) from list ${listId}.`
       };
     }
 
     if (action === 'update') {
-      result = await client.updateListEntry(listId, ctx.input.entryId!, ctx.input.entryData ?? {});
+      result = await client.updateListEntry(
+        listId,
+        ctx.input.entryId!,
+        ctx.input.entryData ?? {}
+      );
       return {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
-          entryId: ctx.input.entryId,
+          entryId: ctx.input.entryId
         },
-        message: `Updated list entry ${ctx.input.entryId}.`,
+        message: `Updated list entry ${ctx.input.entryId}.`
       };
     }
 
@@ -104,9 +129,9 @@ export let manageListEntries = SlateTool.create(spec, {
       output: {
         success: result.status === true,
         responseMessage: result.message ?? 'Unknown response',
-        entryId: ctx.input.entryId,
+        entryId: ctx.input.entryId
       },
-      message: `Deleted list entry ${ctx.input.entryId}.`,
+      message: `Deleted list entry ${ctx.input.entryId}.`
     };
   })
   .build();

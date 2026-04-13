@@ -2,21 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      apiKey: z.string().describe('Your OnceHub API key. Found in Account Settings > API & Webhooks Integration.'),
+      apiKey: z
+        .string()
+        .describe(
+          'Your OnceHub API key. Found in Account Settings > API & Webhooks Integration.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { apiKey: string } }) => {
@@ -24,8 +30,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.oncehub.com/v2',
         headers: {
           'API-Key': ctx.output.token,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       let response = await http.get('/users/me');
@@ -35,8 +41,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           name: user.name,
-          email: user.email,
-        },
+          email: user.email
+        }
       };
-    },
+    }
   });

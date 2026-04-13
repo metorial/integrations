@@ -5,30 +5,39 @@ Create, read, update, and delete posts, pages, and custom post types. Manage med
 ## Tools
 
 ### List Posts
+
 Retrieve a list of blog posts with filtering options. Filter by status, search term, category, tag, author, and date range. Results are paginated.
 
 ### List Comments
+
 Retrieve comments from the site. Can filter by post ID, status, and search term. Results are paginated.
 
 ### List Media
+
 Browse the site's media library. Filter by media type (image, video, audio, application) or search by keyword. Results are paginated.
 
 ### List Pages
+
 Retrieve a list of pages with optional filtering by status, search term, and sorting. Results are paginated.
 
 ### Create Post
+
 Create a new blog post on the WordPress site. Supports setting title, content, excerpt, status (draft/publish/pending/private), scheduling via date, post format, categories, tags, featured image, and comment settings.
 
 ### List Categories
+
 Retrieve all categories on the site. Categories are hierarchical and can be used to organize posts. Supports search filtering.
 
 ### List Users
+
 Retrieve a list of users on the WordPress site. Filter by search term or role. Results are paginated.
 
 ### Search Content
+
 Search across posts and pages on the site by keyword. Returns matching content with titles, excerpts, and URLs. Useful for finding specific content or checking for duplicate topics.
 
 ### Get Site Info
+
 Retrieve general site information including title, description, URL, and other metadata. Useful for verifying site configuration and connectivity.
 
 ## License

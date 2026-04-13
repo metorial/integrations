@@ -5,13 +5,6 @@ import { resultCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,
-  tools: [
-    listForms,
-    getFormItems,
-    getFormResults,
-    manageWebhooks,
-  ],
-  triggers: [
-    resultCompleted,
-  ],
+  tools: [listForms, getFormItems, getFormResults, manageWebhooks],
+  triggers: [resultCompleted]
 });

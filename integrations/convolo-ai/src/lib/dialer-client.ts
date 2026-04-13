@@ -33,7 +33,7 @@ export class DialerClient {
     this.apiKey = config.apiKey;
 
     this.axios = createAxios({
-      baseURL: 'https://api.dialer.brightcall.ai/api/v3',
+      baseURL: 'https://api.dialer.brightcall.ai/api/v3'
     });
   }
 
@@ -42,7 +42,7 @@ export class DialerClient {
 
     let response = await this.axios.post('/stat/calls/list', body, {
       params: { 'api-key': this.apiKey },
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return response.data;
@@ -53,7 +53,7 @@ export class DialerClient {
 
     let response = await this.axios.post('/stat/calls-detailed-e-chart', body, {
       params: { 'api-key': this.apiKey },
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return response.data;
@@ -64,7 +64,7 @@ export class DialerClient {
 
     let response = await this.axios.post('/stat/calls/count', body, {
       params: { 'api-key': this.apiKey },
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return response.data;
@@ -73,7 +73,7 @@ export class DialerClient {
   private buildFilterBody(filters: DialerCallFilters): Record<string, any> {
     let body: Record<string, any> = {
       dayFrom: filters.dayFrom,
-      dayTo: filters.dayTo,
+      dayTo: filters.dayTo
     };
 
     if (filters.dateInterval) body.dateInterval = filters.dateInterval;

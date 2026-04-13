@@ -9,6 +9,7 @@ NeuronWriter is a content optimization tool that uses semantic SEO and NLP algor
 NeuronWriter uses API key authentication. Each request to the API must include the `X-API-KEY` HTTP header with the user's Neuron API key.
 
 To obtain an API key:
+
 1. Log into your NeuronWriter account, click your profile icon > "Profile" > "Neuron API Access", and click "Generate New API Key" and copy it.
 
 This feature requires a Gold plan or higher.
@@ -30,6 +31,7 @@ List all projects within the account, including their name, language, and associ
 Add new queries in bulk and retrieve share URLs, and integrate NeuronWriter recommendations into your content generation process. When creating a new query, you specify a project, keyword, search engine (e.g., `google.co.uk`), and content language. After creating a new query, it usually takes around 60 seconds until recommendations are prepared.
 
 Recommendations include:
+
 - **Content metrics:** Target word count and readability scores based on SERP median values.
 - **Term suggestions:** Recommended keywords and phrases for title, meta description, headings (H1, H2), and body content, with usage frequency ranges based on competitor analysis.
 - **Entity recommendations:** Relevant named entities with importance and relevance scores.
@@ -52,6 +54,7 @@ Evaluate content against NeuronWriter's SEO scoring without saving it. Accepts t
 ### Shareable URLs
 
 When a query is created, NeuronWriter returns multiple access URLs:
+
 - A direct query URL for account holders.
 - A share URL with edit and save access.
 - A read-only preview URL.

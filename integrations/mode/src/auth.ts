@@ -3,13 +3,13 @@ import { z } from 'zod';
 
 let outputSchema = z.object({
   token: z.string().describe('Mode API token (public component)'),
-  secret: z.string().describe('Mode API secret (private component)'),
+  secret: z.string().describe('Mode API secret (private component)')
 });
 
 let inputSchema = z.object({
   token: z.string().describe('Mode API token (public component of the credential)'),
   secret: z.string().describe('Mode API secret (private component of the credential)'),
-  workspaceName: z.string().describe('Workspace name for profile verification'),
+  workspaceName: z.string().describe('Workspace name for profile verification')
 });
 
 type OutputType = z.infer<typeof outputSchema>;
@@ -28,8 +28,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: ctx.input.token,
-          secret: ctx.input.secret,
-        },
+          secret: ctx.input.secret
+        }
       };
     },
 
@@ -39,9 +39,9 @@ export let auth = SlateAuth.create()
         baseURL: 'https://app.mode.com/api',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/hal+json',
-          'Authorization': `Basic ${basicAuth}`,
-        },
+          Accept: 'application/hal+json',
+          Authorization: `Basic ${basicAuth}`
+        }
       });
 
       try {
@@ -53,8 +53,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           name: ctx.input.workspaceName,
-          id: ctx.input.workspaceName,
-        },
+          id: ctx.input.workspaceName
+        }
       };
-    },
+    }
   });

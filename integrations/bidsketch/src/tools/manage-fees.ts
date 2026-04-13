@@ -20,25 +20,26 @@ let feeSchema = z.object({
   updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listFees = SlateTool.create(
-  spec,
-  {
-    name: 'List Fees',
-    key: 'list_fees',
-    description: `Retrieve reusable fee items saved to the Bidsketch account library. These are template fees that can be added to proposals. Supports pagination.`,
-    tags: {
-      readOnly: true
-    }
+export let listFees = SlateTool.create(spec, {
+  name: 'List Fees',
+  key: 'list_fees',
+  description: `Retrieve reusable fee items saved to the Bidsketch account library. These are template fees that can be added to proposals. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of fees per page (max 100)')
-  }))
-  .output(z.object({
-    fees: z.array(feeSchema).describe('List of reusable fees')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of fees per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      fees: z.array(feeSchema).describe('List of reusable fees')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
     let data = await client.listFees(ctx.input.page, ctx.input.perPage);
 
@@ -66,29 +67,28 @@ export let listFees = SlateTool.create(
   })
   .build();
 
-export let createFee = SlateTool.create(
-  spec,
-  {
-    name: 'Create Fee',
-    key: 'create_fee',
-    description: `Create a new reusable fee item in the Bidsketch library. Reusable fees can later be added to proposals. Supports fixed, hourly, monthly, yearly, and custom fee types.`,
-    instructions: [
-      'For custom fee types, provide a "unit" label (e.g. "pages", "items").',
-      'Amount is the per-unit cost; total is calculated as amount × quantity.'
-    ]
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Fee name'),
-    feeType: z.enum(['fixed', 'hourly', 'monthly', 'yearly', 'custom']).describe('Fee type'),
-    amount: z.number().describe('Amount (total for fixed, per-unit for others)'),
-    quantity: z.number().optional().describe('Quantity multiplier'),
-    unit: z.string().optional().describe('Custom unit label (required for custom fee type)'),
-    category: z.string().optional().describe('Category for grouping'),
-    description: z.string().optional().describe('Fee description (HTML supported)')
-  }))
+export let createFee = SlateTool.create(spec, {
+  name: 'Create Fee',
+  key: 'create_fee',
+  description: `Create a new reusable fee item in the Bidsketch library. Reusable fees can later be added to proposals. Supports fixed, hourly, monthly, yearly, and custom fee types.`,
+  instructions: [
+    'For custom fee types, provide a "unit" label (e.g. "pages", "items").',
+    'Amount is the per-unit cost; total is calculated as amount × quantity.'
+  ]
+})
+  .input(
+    z.object({
+      name: z.string().describe('Fee name'),
+      feeType: z.enum(['fixed', 'hourly', 'monthly', 'yearly', 'custom']).describe('Fee type'),
+      amount: z.number().describe('Amount (total for fixed, per-unit for others)'),
+      quantity: z.number().optional().describe('Quantity multiplier'),
+      unit: z.string().optional().describe('Custom unit label (required for custom fee type)'),
+      category: z.string().optional().describe('Category for grouping'),
+      description: z.string().optional().describe('Fee description (HTML supported)')
+    })
+  )
   .output(feeSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let body: Record<string, unknown> = {
@@ -126,29 +126,31 @@ export let createFee = SlateTool.create(
   })
   .build();
 
-export let updateFee = SlateTool.create(
-  spec,
-  {
-    name: 'Update Fee',
-    key: 'update_fee',
-    description: `Update an existing reusable fee item in the Bidsketch library. Only the provided fields will be modified.`,
-    tags: {
-      destructive: false
-    }
+export let updateFee = SlateTool.create(spec, {
+  name: 'Update Fee',
+  key: 'update_fee',
+  description: `Update an existing reusable fee item in the Bidsketch library. Only the provided fields will be modified.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    feeId: z.number().describe('ID of the fee to update'),
-    name: z.string().optional().describe('Updated name'),
-    feeType: z.enum(['fixed', 'hourly', 'monthly', 'yearly', 'custom']).optional().describe('Updated fee type'),
-    amount: z.number().optional().describe('Updated amount'),
-    quantity: z.number().optional().describe('Updated quantity'),
-    unit: z.string().optional().describe('Updated custom unit label'),
-    category: z.string().optional().describe('Updated category'),
-    description: z.string().optional().describe('Updated description (HTML)')
-  }))
+})
+  .input(
+    z.object({
+      feeId: z.number().describe('ID of the fee to update'),
+      name: z.string().optional().describe('Updated name'),
+      feeType: z
+        .enum(['fixed', 'hourly', 'monthly', 'yearly', 'custom'])
+        .optional()
+        .describe('Updated fee type'),
+      amount: z.number().optional().describe('Updated amount'),
+      quantity: z.number().optional().describe('Updated quantity'),
+      unit: z.string().optional().describe('Updated custom unit label'),
+      category: z.string().optional().describe('Updated category'),
+      description: z.string().optional().describe('Updated description (HTML)')
+    })
+  )
   .output(feeSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let body: Record<string, unknown> = {};
@@ -184,24 +186,25 @@ export let updateFee = SlateTool.create(
   })
   .build();
 
-export let deleteFee = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Fee',
-    key: 'delete_fee',
-    description: `Delete a reusable fee item from the Bidsketch library.`,
-    tags: {
-      destructive: true
-    }
+export let deleteFee = SlateTool.create(spec, {
+  name: 'Delete Fee',
+  key: 'delete_fee',
+  description: `Delete a reusable fee item from the Bidsketch library.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    feeId: z.number().describe('ID of the fee to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      feeId: z.number().describe('ID of the fee to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
     await client.deleteFee(ctx.input.feeId);
 

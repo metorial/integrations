@@ -3,43 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMessages = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Messages',
-    key: 'new_messages',
-    description: 'Triggers when new messages (posts, comments, DMs, mentions, reviews, replies) are received by or published to owned social profiles.'
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Unique identifier for the message.'),
-    network: z.string().optional().describe('Social network the message belongs to.'),
-    postType: z.string().optional().describe('Type of the post.'),
-    postCategory: z.string().optional().describe('Category of the post.'),
-    createdTime: z.string().optional().describe('ISO 8601 timestamp when the message was created.'),
-    text: z.string().optional().describe('Text content of the message.'),
-    permaLink: z.string().optional().describe('Permanent link to the message.'),
-    from: z.any().optional().describe('Sender information.'),
-    tags: z.array(z.any()).optional().describe('Tags applied to the message.'),
-    raw: z.any().optional().describe('Full raw message data.')
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Unique identifier for the message.'),
-    network: z.string().optional().describe('Social network the message belongs to.'),
-    postType: z.string().optional().describe('Type of the post.'),
-    postCategory: z.string().optional().describe('Category of the post.'),
-    createdTime: z.string().optional().describe('ISO 8601 timestamp when the message was created.'),
-    text: z.string().optional().describe('Text content of the message.'),
-    permaLink: z.string().optional().describe('Permanent link to the message.'),
-    from: z.any().optional().describe('Sender information.'),
-    tags: z.array(z.any()).optional().describe('Tags applied to the message.')
-  }))
+export let newMessages = SlateTrigger.create(spec, {
+  name: 'New Messages',
+  key: 'new_messages',
+  description:
+    'Triggers when new messages (posts, comments, DMs, mentions, reviews, replies) are received by or published to owned social profiles.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Unique identifier for the message.'),
+      network: z.string().optional().describe('Social network the message belongs to.'),
+      postType: z.string().optional().describe('Type of the post.'),
+      postCategory: z.string().optional().describe('Category of the post.'),
+      createdTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the message was created.'),
+      text: z.string().optional().describe('Text content of the message.'),
+      permaLink: z.string().optional().describe('Permanent link to the message.'),
+      from: z.any().optional().describe('Sender information.'),
+      tags: z.array(z.any()).optional().describe('Tags applied to the message.'),
+      raw: z.any().optional().describe('Full raw message data.')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Unique identifier for the message.'),
+      network: z.string().optional().describe('Social network the message belongs to.'),
+      postType: z.string().optional().describe('Type of the post.'),
+      postCategory: z.string().optional().describe('Category of the post.'),
+      createdTime: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the message was created.'),
+      text: z.string().optional().describe('Text content of the message.'),
+      permaLink: z.string().optional().describe('Permanent link to the message.'),
+      from: z.any().optional().describe('Sender information.'),
+      tags: z.array(z.any()).optional().describe('Tags applied to the message.')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         customerId: ctx.config.customerId
@@ -69,11 +77,17 @@ export let newMessages = SlateTrigger.create(
 
       try {
         let result = await client.getMessages({
-          filters: [
-            `group_id.eq(${firstGroup.id})`,
-            `created_time.in(${startTime}..${now})`
+          filters: [`group_id.eq(${firstGroup.id})`, `created_time.in(${startTime}..${now})`],
+          fields: [
+            'network',
+            'created_time',
+            'post_category',
+            'post_type',
+            'perma_link',
+            'text',
+            'from',
+            'internal.tags.id'
           ],
-          fields: ['network', 'created_time', 'post_category', 'post_type', 'perma_link', 'text', 'from', 'internal.tags.id'],
           sort: ['created_time:desc'],
           limit: 50
         });
@@ -107,7 +121,7 @@ export let newMessages = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `message.${(ctx.input.postCategory || 'received').toLowerCase()}`,
         id: ctx.input.messageId,

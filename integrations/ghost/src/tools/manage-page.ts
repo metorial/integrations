@@ -19,49 +19,54 @@ let pageOutputSchema = z.object({
   publishedAt: z.string().nullable().describe('Publication timestamp'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp'),
-  url: z.string().describe('Full URL of the page'),
+  url: z.string().describe('Full URL of the page')
 });
 
-export let managePage = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Page',
-    key: 'manage_page',
-    description: `Create, read, update, or delete a static page on your Ghost site. Pages are standalone content separate from the blog post feed, commonly used for About, Contact, or other permanent pages.`,
-    instructions: [
-      'For **creating**: set `action` to `"create"` and provide at least a `title`.',
-      'For **reading**: set `action` to `"read"` and provide either `pageId` or `slug`.',
-      'For **updating**: set `action` to `"update"`, provide `pageId` and `updatedAt`, plus fields to change.',
-      'For **deleting**: set `action` to `"delete"` and provide `pageId`.',
-      'When providing HTML content, set `source` to `"html"`.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'read', 'update', 'delete']).describe('Operation to perform'),
-    pageId: z.string().optional().describe('Page ID (required for read/update/delete)'),
-    slug: z.string().optional().describe('Page slug (alternative to pageId for reading)'),
-    title: z.string().optional().describe('Page title'),
-    html: z.string().optional().describe('HTML content'),
-    lexical: z.string().optional().describe('Lexical JSON content'),
-    status: z.enum(['draft', 'published', 'scheduled']).optional().describe('Page status'),
-    visibility: z.enum(['public', 'members', 'paid', 'tiers']).optional().describe('Content visibility'),
-    featureImage: z.string().optional().describe('Feature image URL'),
-    customExcerpt: z.string().optional().describe('Custom excerpt/summary'),
-    tags: z.array(z.string()).optional().describe('Tag names to assign'),
-    authors: z.array(z.string()).optional().describe('Author emails to assign'),
-    publishedAt: z.string().optional().describe('Publication date (ISO 8601)'),
-    metaTitle: z.string().optional().describe('SEO meta title'),
-    metaDescription: z.string().optional().describe('SEO meta description'),
-    canonicalUrl: z.string().optional().describe('Canonical URL'),
-    updatedAt: z.string().optional().describe('Last known updated_at timestamp (required for updates)'),
-    source: z.enum(['html']).optional().describe('Set to "html" when providing HTML content'),
-  }))
+export let managePage = SlateTool.create(spec, {
+  name: 'Manage Page',
+  key: 'manage_page',
+  description: `Create, read, update, or delete a static page on your Ghost site. Pages are standalone content separate from the blog post feed, commonly used for About, Contact, or other permanent pages.`,
+  instructions: [
+    'For **creating**: set `action` to `"create"` and provide at least a `title`.',
+    'For **reading**: set `action` to `"read"` and provide either `pageId` or `slug`.',
+    'For **updating**: set `action` to `"update"`, provide `pageId` and `updatedAt`, plus fields to change.',
+    'For **deleting**: set `action` to `"delete"` and provide `pageId`.',
+    'When providing HTML content, set `source` to `"html"`.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'read', 'update', 'delete']).describe('Operation to perform'),
+      pageId: z.string().optional().describe('Page ID (required for read/update/delete)'),
+      slug: z.string().optional().describe('Page slug (alternative to pageId for reading)'),
+      title: z.string().optional().describe('Page title'),
+      html: z.string().optional().describe('HTML content'),
+      lexical: z.string().optional().describe('Lexical JSON content'),
+      status: z.enum(['draft', 'published', 'scheduled']).optional().describe('Page status'),
+      visibility: z
+        .enum(['public', 'members', 'paid', 'tiers'])
+        .optional()
+        .describe('Content visibility'),
+      featureImage: z.string().optional().describe('Feature image URL'),
+      customExcerpt: z.string().optional().describe('Custom excerpt/summary'),
+      tags: z.array(z.string()).optional().describe('Tag names to assign'),
+      authors: z.array(z.string()).optional().describe('Author emails to assign'),
+      publishedAt: z.string().optional().describe('Publication date (ISO 8601)'),
+      metaTitle: z.string().optional().describe('SEO meta title'),
+      metaDescription: z.string().optional().describe('SEO meta description'),
+      canonicalUrl: z.string().optional().describe('Canonical URL'),
+      updatedAt: z
+        .string()
+        .optional()
+        .describe('Last known updated_at timestamp (required for updates)'),
+      source: z.enum(['html']).optional().describe('Set to "html" when providing HTML content')
+    })
+  )
   .output(pageOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let { action } = ctx.input;
@@ -69,9 +74,15 @@ export let managePage = SlateTool.create(
     if (action === 'read') {
       let result: any;
       if (ctx.input.slug) {
-        result = await client.readPageBySlug(ctx.input.slug, { include: 'tags,authors', formats: 'html' });
+        result = await client.readPageBySlug(ctx.input.slug, {
+          include: 'tags,authors',
+          formats: 'html'
+        });
       } else if (ctx.input.pageId) {
-        result = await client.readPage(ctx.input.pageId, { include: 'tags,authors', formats: 'html' });
+        result = await client.readPage(ctx.input.pageId, {
+          include: 'tags,authors',
+          formats: 'html'
+        });
       } else {
         throw new Error('Either pageId or slug is required for reading a page');
       }
@@ -84,11 +95,24 @@ export let managePage = SlateTool.create(
       await client.deletePage(ctx.input.pageId);
       return {
         output: {
-          pageId: ctx.input.pageId, uuid: '', title: '', slug: '', status: 'deleted',
-          visibility: '', html: null, excerpt: null, customExcerpt: null, featureImage: null,
-          metaTitle: null, metaDescription: null, publishedAt: null, createdAt: '', updatedAt: '', url: '',
+          pageId: ctx.input.pageId,
+          uuid: '',
+          title: '',
+          slug: '',
+          status: 'deleted',
+          visibility: '',
+          html: null,
+          excerpt: null,
+          customExcerpt: null,
+          featureImage: null,
+          metaTitle: null,
+          metaDescription: null,
+          publishedAt: null,
+          createdAt: '',
+          updatedAt: '',
+          url: ''
         },
-        message: `Deleted page \`${ctx.input.pageId}\`.`,
+        message: `Deleted page \`${ctx.input.pageId}\`.`
       };
     }
 
@@ -111,7 +135,8 @@ export let managePage = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let buildPageData = (input: any): Record<string, any> => {
   let data: Record<string, any> = {};
@@ -147,5 +172,5 @@ let mapPage = (p: any) => ({
   publishedAt: p.published_at ?? null,
   createdAt: p.created_at,
   updatedAt: p.updated_at,
-  url: p.url,
+  url: p.url
 });

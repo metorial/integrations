@@ -5,30 +5,39 @@ Manage human capital management, financial management, payroll, and planning in 
 ## Tools
 
 ### Execute WQL Query
+
 Execute a Workday Query Language (WQL) query against Workday data. WQL is a SQL-like language for high-performance querying of Workday data across functional areas. Supports **SELECT**, **FROM**, **WHERE**, **LIMIT**, and **OFFSET** clauses.
 
 ### Get Custom Report
+
 Retrieve data from a Workday custom report via Report-as-a-Service (RaaS). Reports must be Advanced type and web-service enabled in Workday. Supports passing prompt parameters to filter report data.
 
 ### Get Time Blocks
+
 Retrieve time tracking blocks for a specific worker. Returns recorded time entries including clock-in/out times and durations. Optionally filter by date range.
 
 ### Get Worker
+
 Retrieve detailed information about a specific worker by their ID. Returns the full worker profile including personal information, employment details, position, compensation, organizational assignments, and status.
 
 ### List Workers
+
 Search and list workers in Workday. Returns a paginated list of worker summaries including names, emails, titles, and organization assignments. Use **search** to filter by name or other attributes.
 
 ### List Custom Objects
+
 List records of a specific custom object type in Workday. Custom objects extend Workday's data model for organization-specific needs.
 
 ### Get Inbox Tasks
+
 Retrieve pending inbox tasks for a specific worker. Returns business process steps awaiting action, such as approvals, reviews, and to-do items.
 
 ### List Supervisory Organizations
+
 Retrieve a list of supervisory organizations in Workday. Supervisory organizations represent the management hierarchy and team structure.
 
 ### Get Time Off Entries
+
 Retrieve time-off entries for a specific worker. Returns requested time-off entries with details including dates, quantities, types, and statuses. Optionally filter by date range.
 
 ## License

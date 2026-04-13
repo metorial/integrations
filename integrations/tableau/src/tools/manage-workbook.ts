@@ -9,33 +9,42 @@ export let manageWorkbook = SlateTool.create(spec, {
   description: `Get details, update properties, delete, refresh extracts, or manage tags for a workbook. Use the **action** field to select the operation.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    action: z.enum(['get', 'update', 'delete', 'refresh', 'addTags', 'removeTags']).describe('Operation to perform'),
-    workbookId: z.string().describe('LUID of the workbook'),
-    name: z.string().optional().describe('New name (for update)'),
-    description: z.string().optional().describe('New description (for update)'),
-    projectId: z.string().optional().describe('New project LUID to move workbook to (for update)'),
-    ownerUserId: z.string().optional().describe('New owner user LUID (for update)'),
-    showTabs: z.boolean().optional().describe('Whether to show tabs (for update)'),
-    tags: z.array(z.string()).optional().describe('Tags to add or remove')
-  }))
-  .output(z.object({
-    workbookId: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    contentUrl: z.string().optional(),
-    showTabs: z.boolean().optional(),
-    projectId: z.string().optional(),
-    projectName: z.string().optional(),
-    ownerId: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    jobId: z.string().optional(),
-    deleted: z.boolean().optional(),
-    connections: z.array(z.any()).optional(),
-    views: z.array(z.any()).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'update', 'delete', 'refresh', 'addTags', 'removeTags'])
+        .describe('Operation to perform'),
+      workbookId: z.string().describe('LUID of the workbook'),
+      name: z.string().optional().describe('New name (for update)'),
+      description: z.string().optional().describe('New description (for update)'),
+      projectId: z
+        .string()
+        .optional()
+        .describe('New project LUID to move workbook to (for update)'),
+      ownerUserId: z.string().optional().describe('New owner user LUID (for update)'),
+      showTabs: z.boolean().optional().describe('Whether to show tabs (for update)'),
+      tags: z.array(z.string()).optional().describe('Tags to add or remove')
+    })
+  )
+  .output(
+    z.object({
+      workbookId: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      contentUrl: z.string().optional(),
+      showTabs: z.boolean().optional(),
+      projectId: z.string().optional(),
+      projectName: z.string().optional(),
+      ownerId: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      jobId: z.string().optional(),
+      deleted: z.boolean().optional(),
+      connections: z.array(z.any()).optional(),
+      views: z.array(z.any()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action, workbookId } = ctx.input;
 
@@ -130,4 +139,5 @@ export let manageWorkbook = SlateTool.create(spec, {
       output: { workbookId },
       message: `Unknown action: ${action}`
     };
-  }).build();
+  })
+  .build();

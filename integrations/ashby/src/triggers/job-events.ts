@@ -8,36 +8,43 @@ let webhookTypes = [
   'jobUpdate',
   'jobPostingUpdate',
   'jobPostingPublish',
-  'jobPostingUnpublish',
+  'jobPostingUnpublish'
 ] as const;
 
-export let jobEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Events',
-    key: 'job_events',
-    description: 'Triggers when a job is created or updated, or when a job posting is published, unpublished, or updated.',
-  }
-)
-  .input(z.object({
-    webhookType: z.string().describe('The type of webhook event'),
-    webhookActionId: z.string().describe('Unique ID grouping related webhook events from the same action'),
-    jobId: z.string().optional().describe('The job ID'),
-    jobPostingId: z.string().optional().describe('The job posting ID'),
-    rawPayload: z.any().describe('The full webhook payload'),
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('The job ID'),
-    jobTitle: z.string().optional().describe('The job title'),
-    jobStatus: z.string().optional().describe('The job status'),
-    locationId: z.string().optional().describe('Job location ID'),
-    departmentId: z.string().optional().describe('Job department ID'),
-    jobPostingId: z.string().optional().describe('The job posting ID'),
-    jobPostingTitle: z.string().optional().describe('The job posting title'),
-    jobPostingStatus: z.string().optional().describe('The posting status (published/unpublished)'),
-  }))
+export let jobEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Job Events',
+  key: 'job_events',
+  description:
+    'Triggers when a job is created or updated, or when a job posting is published, unpublished, or updated.'
+})
+  .input(
+    z.object({
+      webhookType: z.string().describe('The type of webhook event'),
+      webhookActionId: z
+        .string()
+        .describe('Unique ID grouping related webhook events from the same action'),
+      jobId: z.string().optional().describe('The job ID'),
+      jobPostingId: z.string().optional().describe('The job posting ID'),
+      rawPayload: z.any().describe('The full webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().optional().describe('The job ID'),
+      jobTitle: z.string().optional().describe('The job title'),
+      jobStatus: z.string().optional().describe('The job status'),
+      locationId: z.string().optional().describe('Job location ID'),
+      departmentId: z.string().optional().describe('Job department ID'),
+      jobPostingId: z.string().optional().describe('The job posting ID'),
+      jobPostingTitle: z.string().optional().describe('The job posting title'),
+      jobPostingStatus: z
+        .string()
+        .optional()
+        .describe('The posting status (published/unpublished)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
       let secretToken = crypto.randomUUID();
       let registrations: Array<{ webhookId: string; webhookType: string }> = [];
@@ -46,33 +53,35 @@ export let jobEventsTrigger = SlateTrigger.create(
         let response = await client.createWebhook({
           webhookType,
           requestUrl: ctx.input.webhookBaseUrl,
-          secretToken,
+          secretToken
         });
         registrations.push({
           webhookId: response.results.id,
-          webhookType,
+          webhookType
         });
       }
 
       return {
         registrationDetails: {
           webhookIds: registrations,
-          secretToken,
-        },
+          secretToken
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { webhookIds: Array<{ webhookId: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhookIds: Array<{ webhookId: string }>;
+      };
 
       for (let registration of details.webhookIds) {
         await client.deleteWebhook(registration.webhookId);
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
       let jobId = data.data?.job?.id || data.data?.jobId;
       let jobPostingId = data.data?.jobPosting?.id || data.data?.jobPostingId;
@@ -84,13 +93,13 @@ export let jobEventsTrigger = SlateTrigger.create(
             webhookActionId: data.webhookActionId || crypto.randomUUID(),
             jobId,
             jobPostingId,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
       let payload = ctx.input.rawPayload;
 
@@ -103,7 +112,8 @@ export let jobEventsTrigger = SlateTrigger.create(
       let jobPostingTitle: string | undefined;
       let jobPostingStatus: string | undefined;
 
-      let isJobEvent = ctx.input.webhookType === 'jobCreate' || ctx.input.webhookType === 'jobUpdate';
+      let isJobEvent =
+        ctx.input.webhookType === 'jobCreate' || ctx.input.webhookType === 'jobUpdate';
       let isPostingEvent = ctx.input.webhookType.startsWith('jobPosting');
 
       if (isJobEvent && jobId) {
@@ -133,7 +143,8 @@ export let jobEventsTrigger = SlateTrigger.create(
         } catch {
           let postingData = payload.data?.jobPosting || {};
           jobPostingTitle = postingData.title;
-          jobPostingStatus = ctx.input.webhookType === 'jobPostingUnpublish' ? 'unpublished' : 'published';
+          jobPostingStatus =
+            ctx.input.webhookType === 'jobPostingUnpublish' ? 'unpublished' : 'published';
         }
       }
 
@@ -142,7 +153,7 @@ export let jobEventsTrigger = SlateTrigger.create(
         jobUpdate: 'job.updated',
         jobPostingUpdate: 'job_posting.updated',
         jobPostingPublish: 'job_posting.published',
-        jobPostingUnpublish: 'job_posting.unpublished',
+        jobPostingUnpublish: 'job_posting.unpublished'
       };
 
       return {
@@ -156,8 +167,9 @@ export let jobEventsTrigger = SlateTrigger.create(
           departmentId,
           jobPostingId,
           jobPostingTitle,
-          jobPostingStatus,
-        },
+          jobPostingStatus
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

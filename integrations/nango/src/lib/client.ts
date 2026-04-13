@@ -12,9 +12,9 @@ export class NangoClient {
     this.http = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,7 +25,10 @@ export class NangoClient {
     return response.data;
   }
 
-  async getIntegration(uniqueKey: string, include?: string[]): Promise<{ data: NangoIntegration }> {
+  async getIntegration(
+    uniqueKey: string,
+    include?: string[]
+  ): Promise<{ data: NangoIntegration }> {
     let params: Record<string, any> = {};
     if (include && include.length > 0) {
       params.include = include;
@@ -44,11 +47,14 @@ export class NangoClient {
     return response.data;
   }
 
-  async updateIntegration(uniqueKey: string, body: {
-    unique_key?: string;
-    display_name?: string;
-    credentials?: Record<string, any>;
-  }): Promise<{ data: NangoIntegration }> {
+  async updateIntegration(
+    uniqueKey: string,
+    body: {
+      unique_key?: string;
+      display_name?: string;
+      credentials?: Record<string, any>;
+    }
+  ): Promise<{ data: NangoIntegration }> {
     let response = await this.http.patch(`/integrations/${uniqueKey}`, body);
     return response.data;
   }
@@ -70,11 +76,14 @@ export class NangoClient {
     return response.data;
   }
 
-  async getConnection(connectionId: string, params: {
-    provider_config_key: string;
-    force_refresh?: boolean;
-    refresh_token?: boolean;
-  }): Promise<NangoConnectionFull> {
+  async getConnection(
+    connectionId: string,
+    params: {
+      provider_config_key: string;
+      force_refresh?: boolean;
+      refresh_token?: boolean;
+    }
+  ): Promise<NangoConnectionFull> {
     let response = await this.http.get(`/connections/${connectionId}`, { params });
     return response.data;
   }
@@ -91,9 +100,12 @@ export class NangoClient {
     return response.data;
   }
 
-  async deleteConnection(connectionId: string, providerConfigKey: string): Promise<{ success: boolean }> {
+  async deleteConnection(
+    connectionId: string,
+    providerConfigKey: string
+  ): Promise<{ success: boolean }> {
     let response = await this.http.delete(`/connections/${connectionId}`, {
-      params: { provider_config_key: providerConfigKey },
+      params: { provider_config_key: providerConfigKey }
     });
     return response.data;
   }
@@ -133,7 +145,7 @@ export class NangoClient {
   }): Promise<any> {
     let requestHeaders: Record<string, string> = {
       'Connection-Id': params.connectionId,
-      'Provider-Config-Key': params.providerConfigKey,
+      'Provider-Config-Key': params.providerConfigKey
     };
 
     if (params.retries !== undefined) {
@@ -151,7 +163,7 @@ export class NangoClient {
       url: `/proxy/${params.endpoint}`,
       headers: requestHeaders,
       data: params.data,
-      params: params.queryParams,
+      params: params.queryParams
     });
     return response.data;
   }
@@ -208,11 +220,11 @@ export class NangoClient {
   }): Promise<{ records: NangoRecord[]; next_cursor?: string }> {
     let requestHeaders: Record<string, string> = {
       'Connection-Id': params.connectionId,
-      'Provider-Config-Key': params.providerConfigKey,
+      'Provider-Config-Key': params.providerConfigKey
     };
 
     let queryParams: Record<string, any> = {
-      model: params.model,
+      model: params.model
     };
     if (params.cursor) queryParams.cursor = params.cursor;
     if (params.modifiedAfter) queryParams.modified_after = params.modifiedAfter;
@@ -221,7 +233,7 @@ export class NangoClient {
 
     let response = await this.http.get('/records', {
       headers: requestHeaders,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -234,15 +246,19 @@ export class NangoClient {
     actionName: string;
     input?: Record<string, any>;
   }): Promise<any> {
-    let response = await this.http.post('/action/trigger', {
-      action_name: params.actionName,
-      input: params.input,
-    }, {
-      headers: {
-        'Connection-Id': params.connectionId,
-        'Provider-Config-Key': params.providerConfigKey,
+    let response = await this.http.post(
+      '/action/trigger',
+      {
+        action_name: params.actionName,
+        input: params.input
       },
-    });
+      {
+        headers: {
+          'Connection-Id': params.connectionId,
+          'Provider-Config-Key': params.providerConfigKey
+        }
+      }
+    );
     return response.data;
   }
 
@@ -268,14 +284,14 @@ export class NangoClient {
 
   async getConnectSession(token: string): Promise<any> {
     let response = await this.http.get('/connect/sessions', {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   }
 
   async deleteConnectSession(token: string): Promise<any> {
     let response = await this.http.delete('/connect/sessions', {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   }

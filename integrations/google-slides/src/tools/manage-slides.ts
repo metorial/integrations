@@ -3,45 +3,76 @@ import { SlidesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSlides = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Slides',
-    key: 'manage_slides',
-    description: `Create, duplicate, reorder, or delete slides within a presentation. Supports specifying a predefined layout (e.g. BLANK, TITLE, TITLE_AND_BODY) or a custom layout ID when creating slides. Use one action at a time.`,
-    instructions: [
-      'For creating slides, use predefinedLayout for standard layouts or layoutId for custom ones.',
-      'Available predefined layouts: BLANK, CAPTION_ONLY, TITLE, TITLE_AND_BODY, TITLE_AND_TWO_COLUMNS, TITLE_ONLY, ONE_COLUMN_TEXT, MAIN_POINT, SECTION_HEADER, SECTION_TITLE_AND_DESCRIPTION, BIG_NUMBER.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageSlides = SlateTool.create(spec, {
+  name: 'Manage Slides',
+  key: 'manage_slides',
+  description: `Create, duplicate, reorder, or delete slides within a presentation. Supports specifying a predefined layout (e.g. BLANK, TITLE, TITLE_AND_BODY) or a custom layout ID when creating slides. Use one action at a time.`,
+  instructions: [
+    'For creating slides, use predefinedLayout for standard layouts or layoutId for custom ones.',
+    'Available predefined layouts: BLANK, CAPTION_ONLY, TITLE, TITLE_AND_BODY, TITLE_AND_TWO_COLUMNS, TITLE_ONLY, ONE_COLUMN_TEXT, MAIN_POINT, SECTION_HEADER, SECTION_TITLE_AND_DESCRIPTION, BIG_NUMBER.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    presentationId: z.string().describe('ID of the presentation'),
-    action: z.enum(['create', 'duplicate', 'move', 'delete']).describe('Action to perform on the slide'),
+})
+  .input(
+    z.object({
+      presentationId: z.string().describe('ID of the presentation'),
+      action: z
+        .enum(['create', 'duplicate', 'move', 'delete'])
+        .describe('Action to perform on the slide'),
 
-    predefinedLayout: z.enum([
-      'BLANK', 'CAPTION_ONLY', 'TITLE', 'TITLE_AND_BODY',
-      'TITLE_AND_TWO_COLUMNS', 'TITLE_ONLY', 'ONE_COLUMN_TEXT',
-      'MAIN_POINT', 'SECTION_HEADER', 'SECTION_TITLE_AND_DESCRIPTION',
-      'BIG_NUMBER', 'PREDEFINED_LAYOUT_UNSPECIFIED'
-    ]).optional().describe('Predefined layout for new slide (for create action)'),
-    layoutId: z.string().optional().describe('Custom layout ID from the presentation masters (for create action)'),
-    insertionIndex: z.number().optional().describe('Zero-based index at which to insert the slide (for create and move actions)'),
+      predefinedLayout: z
+        .enum([
+          'BLANK',
+          'CAPTION_ONLY',
+          'TITLE',
+          'TITLE_AND_BODY',
+          'TITLE_AND_TWO_COLUMNS',
+          'TITLE_ONLY',
+          'ONE_COLUMN_TEXT',
+          'MAIN_POINT',
+          'SECTION_HEADER',
+          'SECTION_TITLE_AND_DESCRIPTION',
+          'BIG_NUMBER',
+          'PREDEFINED_LAYOUT_UNSPECIFIED'
+        ])
+        .optional()
+        .describe('Predefined layout for new slide (for create action)'),
+      layoutId: z
+        .string()
+        .optional()
+        .describe('Custom layout ID from the presentation masters (for create action)'),
+      insertionIndex: z
+        .number()
+        .optional()
+        .describe(
+          'Zero-based index at which to insert the slide (for create and move actions)'
+        ),
 
-    slideObjectId: z.string().optional().describe('Object ID of the slide to duplicate, move, or delete'),
-    slideObjectIds: z.array(z.string()).optional().describe('Object IDs of slides to move (for move action)')
-  }))
-  .output(z.object({
-    presentationId: z.string().describe('ID of the presentation'),
-    action: z.string().describe('Action that was performed'),
-    createdSlideId: z.string().optional().describe('Object ID of the newly created or duplicated slide'),
-    replies: z.array(z.any()).optional().describe('Raw API replies from the batch update')
-  }))
-  .handleInvocation(async (ctx) => {
+      slideObjectId: z
+        .string()
+        .optional()
+        .describe('Object ID of the slide to duplicate, move, or delete'),
+      slideObjectIds: z
+        .array(z.string())
+        .optional()
+        .describe('Object IDs of slides to move (for move action)')
+    })
+  )
+  .output(
+    z.object({
+      presentationId: z.string().describe('ID of the presentation'),
+      action: z.string().describe('Action that was performed'),
+      createdSlideId: z
+        .string()
+        .optional()
+        .describe('Object ID of the newly created or duplicated slide'),
+      replies: z.array(z.any()).optional().describe('Raw API replies from the batch update')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlidesClient(ctx.auth.token);
     let { presentationId, action } = ctx.input;
     let result: any;
@@ -66,7 +97,9 @@ export let manageSlides = SlateTool.create(
         break;
       }
       case 'move': {
-        let ids = ctx.input.slideObjectIds || (ctx.input.slideObjectId ? [ctx.input.slideObjectId] : []);
+        let ids =
+          ctx.input.slideObjectIds ||
+          (ctx.input.slideObjectId ? [ctx.input.slideObjectId] : []);
         if (ids.length === 0) {
           throw new Error('slideObjectId or slideObjectIds is required for move action');
         }

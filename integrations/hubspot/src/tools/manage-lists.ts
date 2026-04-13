@@ -10,32 +10,41 @@ let listOutputSchema = z.object({
   objectTypeId: z.string().optional().describe('Object type ID the list contains'),
   size: z.number().optional().describe('Number of records in the list'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last updated timestamp'),
+  updatedAt: z.string().optional().describe('Last updated timestamp')
 });
 
-export let createList = SlateTool.create(
-  spec,
-  {
-    name: 'Create List',
-    key: 'create_list',
-    description: `Create a new contact list in HubSpot. Lists can be STATIC (manually managed membership) or DYNAMIC (membership based on filter criteria).`,
-    instructions: [
-      'Use objectTypeId "0-1" for contacts, "0-2" for companies.',
-      'For DYNAMIC lists, provide a filterBranch defining the membership criteria.',
-    ],
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    name: z.string().describe('List name'),
-    processingType: z.enum(['STATIC', 'DYNAMIC']).describe('STATIC for manual membership, DYNAMIC for filter-based'),
-    objectTypeId: z.string().default('0-1').describe('Object type ID (0-1 for contacts, 0-2 for companies)'),
-    filterBranch: z.any().optional().describe('Filter criteria for DYNAMIC lists'),
-  }))
+export let createList = SlateTool.create(spec, {
+  name: 'Create List',
+  key: 'create_list',
+  description: `Create a new contact list in HubSpot. Lists can be STATIC (manually managed membership) or DYNAMIC (membership based on filter criteria).`,
+  instructions: [
+    'Use objectTypeId "0-1" for contacts, "0-2" for companies.',
+    'For DYNAMIC lists, provide a filterBranch defining the membership criteria.'
+  ],
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      name: z.string().describe('List name'),
+      processingType: z
+        .enum(['STATIC', 'DYNAMIC'])
+        .describe('STATIC for manual membership, DYNAMIC for filter-based'),
+      objectTypeId: z
+        .string()
+        .default('0-1')
+        .describe('Object type ID (0-1 for contacts, 0-2 for companies)'),
+      filterBranch: z.any().optional().describe('Filter criteria for DYNAMIC lists')
+    })
+  )
   .output(listOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new HubSpotClient(ctx.auth.token);
-    let result = await client.createList(ctx.input.name, ctx.input.processingType, ctx.input.objectTypeId, ctx.input.filterBranch);
+    let result = await client.createList(
+      ctx.input.name,
+      ctx.input.processingType,
+      ctx.input.objectTypeId,
+      ctx.input.filterBranch
+    );
 
     return {
       output: {
@@ -45,26 +54,26 @@ export let createList = SlateTool.create(
         objectTypeId: result.objectTypeId,
         size: result.size,
         createdAt: result.createdAt,
-        updatedAt: result.updatedAt,
+        updatedAt: result.updatedAt
       },
-      message: `Created ${ctx.input.processingType} list **${ctx.input.name}** (ID: ${result.listId || result.id})`,
+      message: `Created ${ctx.input.processingType} list **${ctx.input.name}** (ID: ${result.listId || result.id})`
     };
-  }).build();
+  })
+  .build();
 
-export let getList = SlateTool.create(
-  spec,
-  {
-    name: 'Get List',
-    key: 'get_list',
-    description: `Retrieve a list from HubSpot by ID, including its metadata and membership count.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    listId: z.string().describe('HubSpot list ID'),
-  }))
+export let getList = SlateTool.create(spec, {
+  name: 'Get List',
+  key: 'get_list',
+  description: `Retrieve a list from HubSpot by ID, including its metadata and membership count.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      listId: z.string().describe('HubSpot list ID')
+    })
+  )
   .output(listOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new HubSpotClient(ctx.auth.token);
     let result = await client.getList(ctx.input.listId);
 
@@ -76,34 +85,39 @@ export let getList = SlateTool.create(
         objectTypeId: result.objectTypeId,
         size: result.size,
         createdAt: result.createdAt,
-        updatedAt: result.updatedAt,
+        updatedAt: result.updatedAt
       },
-      message: `Retrieved list **${result.name}** (${result.size || 0} members)`,
+      message: `Retrieved list **${result.name}** (${result.size || 0} members)`
     };
-  }).build();
+  })
+  .build();
 
-export let updateListMembership = SlateTool.create(
-  spec,
-  {
-    name: 'Update List Membership',
-    key: 'update_list_membership',
-    description: `Add or remove records from a static list in HubSpot. Provide record IDs to add, remove, or both in a single operation.`,
-    constraints: [
-      'Only works with STATIC lists. DYNAMIC lists are automatically managed by their filter criteria.',
-    ],
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    listId: z.string().describe('HubSpot list ID'),
-    addRecordIds: z.array(z.string()).optional().describe('Record IDs to add to the list'),
-    removeRecordIds: z.array(z.string()).optional().describe('Record IDs to remove from the list'),
-  }))
-  .output(z.object({
-    recordsAdded: z.number().optional().describe('Number of records added'),
-    recordsRemoved: z.number().optional().describe('Number of records removed'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateListMembership = SlateTool.create(spec, {
+  name: 'Update List Membership',
+  key: 'update_list_membership',
+  description: `Add or remove records from a static list in HubSpot. Provide record IDs to add, remove, or both in a single operation.`,
+  constraints: [
+    'Only works with STATIC lists. DYNAMIC lists are automatically managed by their filter criteria.'
+  ],
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      listId: z.string().describe('HubSpot list ID'),
+      addRecordIds: z.array(z.string()).optional().describe('Record IDs to add to the list'),
+      removeRecordIds: z
+        .array(z.string())
+        .optional()
+        .describe('Record IDs to remove from the list')
+    })
+  )
+  .output(
+    z.object({
+      recordsAdded: z.number().optional().describe('Number of records added'),
+      recordsRemoved: z.number().optional().describe('Number of records removed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubSpotClient(ctx.auth.token);
     let added = 0;
     let removed = 0;
@@ -121,55 +135,62 @@ export let updateListMembership = SlateTool.create(
     return {
       output: {
         recordsAdded: added,
-        recordsRemoved: removed,
+        recordsRemoved: removed
       },
-      message: `Updated list membership: **${added}** added, **${removed}** removed`,
+      message: `Updated list membership: **${added}** added, **${removed}** removed`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteList = SlateTool.create(
-  spec,
-  {
-    name: 'Delete List',
-    key: 'delete_list',
-    description: `Delete a list from HubSpot. This removes the list definition but does not delete the records in it.`,
-    tags: { destructive: true, readOnly: false },
-  }
-)
-  .input(z.object({
-    listId: z.string().describe('HubSpot list ID to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteList = SlateTool.create(spec, {
+  name: 'Delete List',
+  key: 'delete_list',
+  description: `Delete a list from HubSpot. This removes the list definition but does not delete the records in it.`,
+  tags: { destructive: true, readOnly: false }
+})
+  .input(
+    z.object({
+      listId: z.string().describe('HubSpot list ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubSpotClient(ctx.auth.token);
     await client.deleteList(ctx.input.listId);
 
     return {
       output: { success: true },
-      message: `Deleted list (ID: ${ctx.input.listId})`,
+      message: `Deleted list (ID: ${ctx.input.listId})`
     };
-  }).build();
+  })
+  .build();
 
-export let searchLists = SlateTool.create(
-  spec,
-  {
-    name: 'Search Lists',
-    key: 'search_lists',
-    description: `Search for lists in HubSpot by name. Optionally filter by processing type (STATIC or DYNAMIC).`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    query: z.string().describe('Search query for list name'),
-    processingTypes: z.array(z.enum(['STATIC', 'DYNAMIC'])).optional().describe('Filter by processing type'),
-  }))
-  .output(z.object({
-    lists: z.array(listOutputSchema).describe('Matching lists'),
-    total: z.number().optional().describe('Total number of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchLists = SlateTool.create(spec, {
+  name: 'Search Lists',
+  key: 'search_lists',
+  description: `Search for lists in HubSpot by name. Optionally filter by processing type (STATIC or DYNAMIC).`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query for list name'),
+      processingTypes: z
+        .array(z.enum(['STATIC', 'DYNAMIC']))
+        .optional()
+        .describe('Filter by processing type')
+    })
+  )
+  .output(
+    z.object({
+      lists: z.array(listOutputSchema).describe('Matching lists'),
+      total: z.number().optional().describe('Total number of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HubSpotClient(ctx.auth.token);
     let result = await client.searchLists(ctx.input.query, ctx.input.processingTypes);
 
@@ -180,14 +201,15 @@ export let searchLists = SlateTool.create(
       objectTypeId: r.objectTypeId,
       size: r.size,
       createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
+      updatedAt: r.updatedAt
     }));
 
     return {
       output: {
         lists,
-        total: result.total || lists.length,
+        total: result.total || lists.length
       },
-      message: `Found **${lists.length}** lists matching "${ctx.input.query}"`,
+      message: `Found **${lists.length}** lists matching "${ctx.input.query}"`
     };
-  }).build();
+  })
+  .build();

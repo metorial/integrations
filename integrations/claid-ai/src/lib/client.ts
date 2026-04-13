@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.claid.ai/v1',
+  baseURL: 'https://api.claid.ai/v1'
 });
 
 export class Client {
@@ -9,8 +9,8 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.headers = {
-      'Authorization': `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.token}`,
+      'Content-Type': 'application/json'
     };
   }
 
@@ -22,7 +22,7 @@ export class Client {
     output?: Record<string, unknown>;
   }) {
     let response = await api.post('/image/edit', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -33,14 +33,14 @@ export class Client {
     output?: Record<string, unknown>;
   }) {
     let response = await api.post('/image/edit/async', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getAsyncEditStatus(taskId: number) {
     let response = await api.get(`/image/edit/async/${taskId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -56,7 +56,7 @@ export class Client {
     output?: string;
   }) {
     let response = await api.post('/image/generate', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -69,7 +69,7 @@ export class Client {
     output?: Record<string, unknown>;
   }) {
     let response = await api.post('/scene/create', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -85,14 +85,14 @@ export class Client {
     options?: Record<string, unknown>;
   }) {
     let response = await api.post('/image/ai-fashion-models', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getFashionModelStatus(taskId: number) {
     let response = await api.get(`/image/ai-fashion-models/${taskId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -105,14 +105,14 @@ export class Client {
     options: Record<string, unknown>;
   }) {
     let response = await api.post('/video/generate', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getVideoStatus(taskId: number) {
     let response = await api.get(`/video/generate/${taskId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -121,14 +121,14 @@ export class Client {
 
   async listStorages() {
     let response = await api.get('/storage/storages', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getStorage(storageId: number) {
     let response = await api.get(`/storage/storages/${storageId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -139,32 +139,35 @@ export class Client {
     parameters: Record<string, unknown>;
   }) {
     let response = await api.post('/storage/storages', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async updateStorage(storageId: number, params: {
-    name?: string;
-    type?: string;
-    parameters?: Record<string, unknown>;
-  }) {
+  async updateStorage(
+    storageId: number,
+    params: {
+      name?: string;
+      type?: string;
+      parameters?: Record<string, unknown>;
+    }
+  ) {
     let response = await api.patch(`/storage/storages/${storageId}`, params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteStorage(storageId: number) {
     let response = await api.delete(`/storage/storages/${storageId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async listStorageTypes() {
     let response = await api.get('/storage/storage-types', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

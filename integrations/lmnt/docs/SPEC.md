@@ -11,6 +11,7 @@ LMNT uses API key authentication. Get your API key by going to your account page
 The API key is passed via the `X-API-Key` header in REST API requests. The authorization header is `X-API-Key` and is required for all requests.
 
 Example:
+
 ```
 X-API-Key: your_api_key_here
 ```

@@ -3,47 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let objectChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Object Changes',
-    key: 'object_changes',
-    description: 'Detects new or updated objects in a Cloud Storage bucket by polling. Triggers when objects are created or overwritten.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['object.created', 'object.updated']).describe('Type of change detected'),
-    objectName: z.string().describe('Name of the object'),
-    bucketName: z.string().describe('Bucket containing the object'),
-    sizeBytes: z.string().optional(),
-    contentType: z.string().optional(),
-    storageClass: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    generation: z.string().optional(),
-    metageneration: z.string().optional(),
-    md5Hash: z.string().optional(),
-  }))
-  .output(z.object({
-    objectName: z.string(),
-    bucketName: z.string(),
-    sizeBytes: z.string().optional(),
-    contentType: z.string().optional(),
-    storageClass: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    generation: z.string().optional(),
-    md5Hash: z.string().optional(),
-  }))
+export let objectChanges = SlateTrigger.create(spec, {
+  name: 'Object Changes',
+  key: 'object_changes',
+  description:
+    'Detects new or updated objects in a Cloud Storage bucket by polling. Triggers when objects are created or overwritten.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['object.created', 'object.updated'])
+        .describe('Type of change detected'),
+      objectName: z.string().describe('Name of the object'),
+      bucketName: z.string().describe('Bucket containing the object'),
+      sizeBytes: z.string().optional(),
+      contentType: z.string().optional(),
+      storageClass: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      generation: z.string().optional(),
+      metageneration: z.string().optional(),
+      md5Hash: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      objectName: z.string(),
+      bucketName: z.string(),
+      sizeBytes: z.string().optional(),
+      contentType: z.string().optional(),
+      storageClass: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      generation: z.string().optional(),
+      md5Hash: z.string().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        projectId: ctx.config.projectId,
+        projectId: ctx.config.projectId
       });
 
       let pollingInput = (ctx.state as any)?.input || ctx.input;
@@ -65,7 +69,7 @@ export let objectChanges = SlateTrigger.create(
         let result = await client.listObjects(bucketName, {
           prefix,
           maxResults: 500,
-          pageToken,
+          pageToken
         });
         if (result.items) {
           allObjects.push(...result.items);
@@ -103,11 +107,15 @@ export let objectChanges = SlateTrigger.create(
               updatedAt: obj.updated,
               generation: obj.generation,
               metageneration: obj.metageneration,
-              md5Hash: obj.md5Hash,
+              md5Hash: obj.md5Hash
             });
-          } else if (known.generation !== obj.generation || known.metageneration !== obj.metageneration) {
+          } else if (
+            known.generation !== obj.generation ||
+            known.metageneration !== obj.metageneration
+          ) {
             inputs.push({
-              eventType: known.generation !== obj.generation ? 'object.created' : 'object.updated',
+              eventType:
+                known.generation !== obj.generation ? 'object.created' : 'object.updated',
               objectName: obj.name,
               bucketName: obj.bucket,
               sizeBytes: obj.size,
@@ -117,7 +125,7 @@ export let objectChanges = SlateTrigger.create(
               updatedAt: obj.updated,
               generation: obj.generation,
               metageneration: obj.metageneration,
-              md5Hash: obj.md5Hash,
+              md5Hash: obj.md5Hash
             });
           }
         }
@@ -127,7 +135,7 @@ export let objectChanges = SlateTrigger.create(
       for (let obj of allObjects) {
         newKnownObjects[obj.name] = {
           generation: obj.generation,
-          metageneration: obj.metageneration,
+          metageneration: obj.metageneration
         };
       }
 
@@ -136,12 +144,12 @@ export let objectChanges = SlateTrigger.create(
         updatedState: {
           input: pollingInput,
           lastKnownObjects: newKnownObjects,
-          lastPollTime: new Date().toISOString(),
-        },
+          lastPollTime: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.bucketName}/${ctx.input.objectName}/${ctx.input.generation || ctx.input.updatedAt || Date.now()}`,
@@ -154,8 +162,9 @@ export let objectChanges = SlateTrigger.create(
           createdAt: ctx.input.createdAt,
           updatedAt: ctx.input.updatedAt,
           generation: ctx.input.generation,
-          md5Hash: ctx.input.md5Hash,
-        },
+          md5Hash: ctx.input.md5Hash
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

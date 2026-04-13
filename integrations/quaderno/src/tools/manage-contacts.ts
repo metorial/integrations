@@ -26,25 +26,29 @@ let contactSchema = z.object({
   url: z.string().optional().describe('URL of the contact record')
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Retrieve a list of contacts (customers and vendors) from Quaderno. Supports searching by name, email, or tax ID.`,
-    tags: {
-      readOnly: true
-    }
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Retrieve a list of contacts (customers and vendors) from Quaderno. Supports searching by name, email, or tax ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query to filter contacts by name, email, or tax ID'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)')
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .optional()
+        .describe('Search query to filter contacts by name, email, or tax ID'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let result = await client.listContacts({
       q: ctx.input.query,
@@ -78,24 +82,24 @@ export let listContacts = SlateTool.create(
       output: { contacts },
       message: `Found **${contacts.length}** contact(s)${ctx.input.query ? ` matching "${ctx.input.query}"` : ''}`
     };
-  }).build();
+  })
+  .build();
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve a single contact by ID from Quaderno, including all their details such as address, tax ID, and preferences.`,
-    tags: {
-      readOnly: true
-    }
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve a single contact by ID from Quaderno, including all their details such as address, tax ID, and preferences.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to retrieve')
+    })
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let c = await client.getContact(ctx.input.contactId);
 
@@ -126,39 +130,39 @@ export let getContact = SlateTool.create(
       output,
       message: `Retrieved contact **${c.full_name || c.email || c.id}**`
     };
-  }).build();
+  })
+  .build();
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact (customer or vendor) in Quaderno. Contacts appear on invoices, credit notes, and expenses.`,
-    tags: {
-      destructive: false
-    }
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact (customer or vendor) in Quaderno. Contacts appear on invoices, credit notes, and expenses.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    kind: z.enum(['person', 'company']).optional().describe('Contact type'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone1: z.string().optional().describe('Primary phone number'),
-    taxId: z.string().optional().describe('Tax identification number'),
-    contactName: z.string().optional().describe('Contact person name (for companies)'),
-    streetLine1: z.string().optional().describe('Street address line 1'),
-    streetLine2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    postalCode: z.string().optional().describe('Postal/ZIP code'),
-    region: z.string().optional().describe('State or region'),
-    country: z.string().optional().describe('Two-letter ISO country code'),
-    currency: z.string().optional().describe('Preferred currency code'),
-    language: z.string().optional().describe('Preferred language code'),
-    notes: z.string().optional().describe('Internal notes')
-  }))
+})
+  .input(
+    z.object({
+      kind: z.enum(['person', 'company']).optional().describe('Contact type'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone1: z.string().optional().describe('Primary phone number'),
+      taxId: z.string().optional().describe('Tax identification number'),
+      contactName: z.string().optional().describe('Contact person name (for companies)'),
+      streetLine1: z.string().optional().describe('Street address line 1'),
+      streetLine2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      postalCode: z.string().optional().describe('Postal/ZIP code'),
+      region: z.string().optional().describe('State or region'),
+      country: z.string().optional().describe('Two-letter ISO country code'),
+      currency: z.string().optional().describe('Preferred currency code'),
+      language: z.string().optional().describe('Preferred language code'),
+      notes: z.string().optional().describe('Internal notes')
+    })
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let data: Record<string, any> = {};
@@ -206,40 +210,40 @@ export let createContact = SlateTool.create(
       },
       message: `Created contact **${c.full_name || c.email || c.id}**`
     };
-  }).build();
+  })
+  .build();
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact's details in Quaderno. Only the provided fields will be updated.`,
-    tags: {
-      destructive: false
-    }
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact's details in Quaderno. Only the provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to update'),
-    kind: z.enum(['person', 'company']).optional().describe('Contact type'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone1: z.string().optional().describe('Primary phone number'),
-    taxId: z.string().optional().describe('Tax identification number'),
-    contactName: z.string().optional().describe('Contact person name'),
-    streetLine1: z.string().optional().describe('Street address line 1'),
-    streetLine2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    postalCode: z.string().optional().describe('Postal/ZIP code'),
-    region: z.string().optional().describe('State or region'),
-    country: z.string().optional().describe('Two-letter ISO country code'),
-    currency: z.string().optional().describe('Preferred currency code'),
-    language: z.string().optional().describe('Preferred language code'),
-    notes: z.string().optional().describe('Internal notes')
-  }))
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to update'),
+      kind: z.enum(['person', 'company']).optional().describe('Contact type'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone1: z.string().optional().describe('Primary phone number'),
+      taxId: z.string().optional().describe('Tax identification number'),
+      contactName: z.string().optional().describe('Contact person name'),
+      streetLine1: z.string().optional().describe('Street address line 1'),
+      streetLine2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      postalCode: z.string().optional().describe('Postal/ZIP code'),
+      region: z.string().optional().describe('State or region'),
+      country: z.string().optional().describe('Two-letter ISO country code'),
+      currency: z.string().optional().describe('Preferred currency code'),
+      language: z.string().optional().describe('Preferred language code'),
+      notes: z.string().optional().describe('Internal notes')
+    })
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let data: Record<string, any> = {};
@@ -287,27 +291,29 @@ export let updateContact = SlateTool.create(
       },
       message: `Updated contact **${c.full_name || c.email || c.id}**`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteContact = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Contact',
-    key: 'delete_contact',
-    description: `Delete a contact from Quaderno. Contacts with associated documents (invoices, credit notes, expenses) cannot be deleted.`,
-    constraints: ['Contacts with associated documents cannot be deleted'],
-    tags: {
-      destructive: true
-    }
+export let deleteContact = SlateTool.create(spec, {
+  name: 'Delete Contact',
+  key: 'delete_contact',
+  description: `Delete a contact from Quaderno. Contacts with associated documents (invoices, credit notes, expenses) cannot be deleted.`,
+  constraints: ['Contacts with associated documents cannot be deleted'],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the contact was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the contact was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     await client.deleteContact(ctx.input.contactId);
 
@@ -315,4 +321,5 @@ export let deleteContact = SlateTool.create(
       output: { success: true },
       message: `Deleted contact **${ctx.input.contactId}**`
     };
-  }).build();
+  })
+  .build();

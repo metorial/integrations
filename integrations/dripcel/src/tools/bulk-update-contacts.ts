@@ -3,30 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let bulkUpdateContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Bulk Update Contacts',
-    key: 'bulk_update_contacts',
-    description: `Bulk update multiple contacts at once by adding or removing tags or deduplication IDs. Filter contacts by cell numbers or tags, then apply batch updates.`,
-    tags: {
-      destructive: false
-    }
+export let bulkUpdateContacts = SlateTool.create(spec, {
+  name: 'Bulk Update Contacts',
+  key: 'bulk_update_contacts',
+  description: `Bulk update multiple contacts at once by adding or removing tags or deduplication IDs. Filter contacts by cell numbers or tags, then apply batch updates.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    filterCells: z.array(z.string()).optional().describe('Filter contacts by cell numbers'),
-    filterTagIdsIn: z.array(z.string()).optional().describe('Filter contacts that have any of these tag IDs'),
-    filterTagIdsAll: z.array(z.string()).optional().describe('Filter contacts that have all of these tag IDs'),
-    addTagIds: z.array(z.string()).optional().describe('Tag IDs to add to matching contacts'),
-    removeTagIds: z.array(z.string()).optional().describe('Tag IDs to remove from matching contacts'),
-    addDedupedCampaignIds: z.array(z.string()).optional().describe('Deduplication campaign IDs to add to matching contacts')
-  }))
-  .output(z.object({
-    matchedCount: z.number().describe('Number of contacts that matched the filter'),
-    modifiedCount: z.number().describe('Number of contacts that were actually modified')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      filterCells: z.array(z.string()).optional().describe('Filter contacts by cell numbers'),
+      filterTagIdsIn: z
+        .array(z.string())
+        .optional()
+        .describe('Filter contacts that have any of these tag IDs'),
+      filterTagIdsAll: z
+        .array(z.string())
+        .optional()
+        .describe('Filter contacts that have all of these tag IDs'),
+      addTagIds: z
+        .array(z.string())
+        .optional()
+        .describe('Tag IDs to add to matching contacts'),
+      removeTagIds: z
+        .array(z.string())
+        .optional()
+        .describe('Tag IDs to remove from matching contacts'),
+      addDedupedCampaignIds: z
+        .array(z.string())
+        .optional()
+        .describe('Deduplication campaign IDs to add to matching contacts')
+    })
+  )
+  .output(
+    z.object({
+      matchedCount: z.number().describe('Number of contacts that matched the filter'),
+      modifiedCount: z.number().describe('Number of contacts that were actually modified')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let find: Record<string, any> = {};

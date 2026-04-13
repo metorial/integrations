@@ -3,62 +3,69 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Get Product',
-    key: 'get_product',
-    description: `Retrieve a single product by ID with all details including variants, images, and options.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    productId: z.string().describe('Shopify product ID')
-  }))
-  .output(z.object({
-    productId: z.string(),
-    title: z.string(),
-    bodyHtml: z.string().nullable(),
-    vendor: z.string(),
-    productType: z.string(),
-    handle: z.string(),
-    status: z.string(),
-    tags: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    publishedAt: z.string().nullable(),
-    templateSuffix: z.string().nullable(),
-    options: z.array(z.object({
-      optionId: z.string(),
-      name: z.string(),
-      position: z.number(),
-      values: z.array(z.string())
-    })),
-    variants: z.array(z.object({
-      variantId: z.string(),
+export let getProduct = SlateTool.create(spec, {
+  name: 'Get Product',
+  key: 'get_product',
+  description: `Retrieve a single product by ID with all details including variants, images, and options.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      productId: z.string().describe('Shopify product ID')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string(),
       title: z.string(),
-      price: z.string(),
-      compareAtPrice: z.string().nullable(),
-      sku: z.string().nullable(),
-      barcode: z.string().nullable(),
-      position: z.number(),
-      inventoryQuantity: z.number(),
-      inventoryItemId: z.string(),
-      weight: z.number().nullable(),
-      weightUnit: z.string().nullable(),
-      requiresShipping: z.boolean(),
-      taxable: z.boolean()
-    })),
-    images: z.array(z.object({
-      imageId: z.string(),
-      src: z.string(),
-      alt: z.string().nullable(),
-      position: z.number(),
-      width: z.number().nullable(),
-      height: z.number().nullable()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+      bodyHtml: z.string().nullable(),
+      vendor: z.string(),
+      productType: z.string(),
+      handle: z.string(),
+      status: z.string(),
+      tags: z.string(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      publishedAt: z.string().nullable(),
+      templateSuffix: z.string().nullable(),
+      options: z.array(
+        z.object({
+          optionId: z.string(),
+          name: z.string(),
+          position: z.number(),
+          values: z.array(z.string())
+        })
+      ),
+      variants: z.array(
+        z.object({
+          variantId: z.string(),
+          title: z.string(),
+          price: z.string(),
+          compareAtPrice: z.string().nullable(),
+          sku: z.string().nullable(),
+          barcode: z.string().nullable(),
+          position: z.number(),
+          inventoryQuantity: z.number(),
+          inventoryItemId: z.string(),
+          weight: z.number().nullable(),
+          weightUnit: z.string().nullable(),
+          requiresShipping: z.boolean(),
+          taxable: z.boolean()
+        })
+      ),
+      images: z.array(
+        z.object({
+          imageId: z.string(),
+          src: z.string(),
+          alt: z.string().nullable(),
+          position: z.number(),
+          width: z.number().nullable(),
+          height: z.number().nullable()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -113,4 +120,5 @@ export let getProduct = SlateTool.create(
       },
       message: `Retrieved product **${p.title}** (${p.status}).`
     };
-  }).build();
+  })
+  .build();

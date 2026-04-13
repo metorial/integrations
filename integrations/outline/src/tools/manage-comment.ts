@@ -3,48 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageComment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Comment',
-    key: 'manage_comment',
-    description: `Create, update, or delete a comment on a document. Comments support threaded replies via parentCommentId.
+export let manageComment = SlateTool.create(spec, {
+  name: 'Manage Comment',
+  key: 'manage_comment',
+  description: `Create, update, or delete a comment on a document. Comments support threaded replies via parentCommentId.
 The comment data uses ProseMirror JSON format for rich text.`,
-    instructions: [
-      'Comment data uses ProseMirror JSON format. For simple text, use: { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Your comment" }] }] }',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    commentId: z.string().optional().describe('Comment ID (required for update and delete)'),
-    documentId: z.string().optional().describe('Document ID (required for create)'),
-    parentCommentId: z.string().optional().describe('Parent comment ID for creating a threaded reply'),
-    content: z.any().optional().describe('Comment content in ProseMirror JSON format'),
-  }))
-  .output(z.object({
-    commentId: z.string(),
-    documentId: z.string().optional(),
-    action: z.string(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Comment data uses ProseMirror JSON format. For simple text, use: { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Your comment" }] }] }'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      commentId: z.string().optional().describe('Comment ID (required for update and delete)'),
+      documentId: z.string().optional().describe('Document ID (required for create)'),
+      parentCommentId: z
+        .string()
+        .optional()
+        .describe('Parent comment ID for creating a threaded reply'),
+      content: z.any().optional().describe('Comment content in ProseMirror JSON format')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string(),
+      documentId: z.string().optional(),
+      action: z.string(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let { action } = ctx.input;
 
     switch (action) {
       case 'create': {
-        if (!ctx.input.documentId) throw new Error('documentId is required when creating a comment');
+        if (!ctx.input.documentId)
+          throw new Error('documentId is required when creating a comment');
         if (!ctx.input.content) throw new Error('content is required when creating a comment');
         let comment = await client.createComment({
           documentId: ctx.input.documentId,
           parentCommentId: ctx.input.parentCommentId,
-          data: ctx.input.content,
+          data: ctx.input.content
         });
         return {
           output: {
@@ -52,9 +57,9 @@ The comment data uses ProseMirror JSON format for rich text.`,
             documentId: comment.documentId,
             action,
             createdAt: comment.createdAt,
-            updatedAt: comment.updatedAt,
+            updatedAt: comment.updatedAt
           },
-          message: `Created comment on document.`,
+          message: `Created comment on document.`
         };
       }
       case 'update': {
@@ -62,7 +67,7 @@ The comment data uses ProseMirror JSON format for rich text.`,
         if (!ctx.input.content) throw new Error('content is required when updating a comment');
         let comment = await client.updateComment({
           id: ctx.input.commentId,
-          data: ctx.input.content,
+          data: ctx.input.content
         });
         return {
           output: {
@@ -70,9 +75,9 @@ The comment data uses ProseMirror JSON format for rich text.`,
             documentId: comment.documentId,
             action,
             createdAt: comment.createdAt,
-            updatedAt: comment.updatedAt,
+            updatedAt: comment.updatedAt
           },
-          message: `Updated comment.`,
+          message: `Updated comment.`
         };
       }
       case 'delete': {
@@ -81,9 +86,9 @@ The comment data uses ProseMirror JSON format for rich text.`,
         return {
           output: {
             commentId: ctx.input.commentId,
-            action,
+            action
           },
-          message: `Deleted comment.`,
+          message: `Deleted comment.`
         };
       }
     }

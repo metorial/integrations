@@ -8,22 +8,24 @@ export class MakeClient {
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Scenarios ──────────────────────────────────────────────────
 
-  async listScenarios(params: {
-    teamId?: number;
-    organizationId?: number;
-    folderId?: number;
-    isActive?: boolean;
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listScenarios(
+    params: {
+      teamId?: number;
+      organizationId?: number;
+      folderId?: number;
+      isActive?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.teamId !== undefined) query.teamId = params.teamId;
     if (params.organizationId !== undefined) query.organizationId = params.organizationId;
@@ -52,13 +54,16 @@ export class MakeClient {
     return response.data;
   }
 
-  async updateScenario(scenarioId: number, data: {
-    name?: string;
-    blueprint?: string;
-    scheduling?: Record<string, any>;
-    folderId?: number;
-    isEnabled?: boolean;
-  }) {
+  async updateScenario(
+    scenarioId: number,
+    data: {
+      name?: string;
+      blueprint?: string;
+      scheduling?: Record<string, any>;
+      folderId?: number;
+      isEnabled?: boolean;
+    }
+  ) {
     let response = await this.http.patch(`/scenarios/${scenarioId}`, data);
     return response.data;
   }
@@ -83,11 +88,14 @@ export class MakeClient {
     return response.data;
   }
 
-  async cloneScenario(scenarioId: number, data: {
-    targetTeamId: number;
-    name?: string;
-    notAnalyze?: boolean;
-  }) {
+  async cloneScenario(
+    scenarioId: number,
+    data: {
+      targetTeamId: number;
+      name?: string;
+      notAnalyze?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/scenarios/${scenarioId}/clone`, data);
     return response.data;
   }
@@ -102,10 +110,13 @@ export class MakeClient {
     return response.data;
   }
 
-  async getScenarioLogs(scenarioId: number, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async getScenarioLogs(
+    scenarioId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -116,10 +127,13 @@ export class MakeClient {
 
   // ─── Connections ────────────────────────────────────────────────
 
-  async listConnections(teamId: number, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listConnections(
+    teamId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = { teamId };
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -133,13 +147,16 @@ export class MakeClient {
     return response.data;
   }
 
-  async createConnection(teamId: number, data: {
-    accountName: string;
-    accountType: string;
-    scopes?: string[];
-  }) {
+  async createConnection(
+    teamId: number,
+    data: {
+      accountName: string;
+      accountType: string;
+      scopes?: string[];
+    }
+  ) {
     let response = await this.http.post('/connections', data, {
-      params: { teamId },
+      params: { teamId }
     });
     return response.data;
   }
@@ -164,12 +181,15 @@ export class MakeClient {
 
   // ─── Data Stores ────────────────────────────────────────────────
 
-  async listDataStores(teamId: number, params: {
-    limit?: number;
-    offset?: number;
-    sortBy?: string;
-    sortDir?: string;
-  } = {}) {
+  async listDataStores(
+    teamId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDir?: string;
+    } = {}
+  ) {
     let query: Record<string, any> = { teamId };
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -195,11 +215,14 @@ export class MakeClient {
     return response.data;
   }
 
-  async updateDataStore(dataStoreId: number, data: {
-    name?: string;
-    datastructureId?: number;
-    maxSizeMB?: number;
-  }) {
+  async updateDataStore(
+    dataStoreId: number,
+    data: {
+      name?: string;
+      datastructureId?: number;
+      maxSizeMB?: number;
+    }
+  ) {
     let response = await this.http.patch(`/data-stores/${dataStoreId}`, data);
     return response.data;
   }
@@ -210,15 +233,18 @@ export class MakeClient {
 
     let response = await this.http.delete('/data-stores', {
       params,
-      data: { ids: [dataStoreId] },
+      data: { ids: [dataStoreId] }
     });
     return response.data;
   }
 
-  async listDataStoreRecords(dataStoreId: number, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listDataStoreRecords(
+    dataStoreId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -237,7 +263,11 @@ export class MakeClient {
     return response.data;
   }
 
-  async updateDataStoreRecord(dataStoreId: number, recordKey: string, data: Record<string, any>) {
+  async updateDataStoreRecord(
+    dataStoreId: number,
+    recordKey: string,
+    data: Record<string, any>
+  ) {
     let response = await this.http.put(`/data-stores/${dataStoreId}/data/${recordKey}`, data);
     return response.data;
   }
@@ -249,12 +279,15 @@ export class MakeClient {
 
   // ─── Hooks (Webhooks) ──────────────────────────────────────────
 
-  async listHooks(teamId: number, params: {
-    typeName?: string;
-    assigned?: boolean;
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listHooks(
+    teamId: number,
+    params: {
+      typeName?: string;
+      assigned?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = { teamId };
     if (params.typeName !== undefined) query.typeName = params.typeName;
     if (params.assigned !== undefined) query.assigned = params.assigned;
@@ -319,21 +352,27 @@ export class MakeClient {
     return response.data;
   }
 
-  async updateOrganization(organizationId: number, data: {
-    name?: string;
-    timezoneId?: number;
-    countryId?: number;
-  }) {
+  async updateOrganization(
+    organizationId: number,
+    data: {
+      name?: string;
+      timezoneId?: number;
+      countryId?: number;
+    }
+  ) {
     let response = await this.http.patch(`/organizations/${organizationId}`, data);
     return response.data;
   }
 
   // ─── Teams ─────────────────────────────────────────────────────
 
-  async listTeams(organizationId: number, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listTeams(
+    organizationId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = { organizationId };
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -347,11 +386,7 @@ export class MakeClient {
     return response.data;
   }
 
-  async createTeam(data: {
-    name: string;
-    organizationId: number;
-    operationsLimit?: number;
-  }) {
+  async createTeam(data: { name: string; organizationId: number; operationsLimit?: number }) {
     let response = await this.http.post('/teams', data);
     return response.data;
   }
@@ -384,10 +419,13 @@ export class MakeClient {
 
   // ─── Incomplete Executions (DLQs) ──────────────────────────────
 
-  async listIncompleteExecutions(scenarioId: number, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listIncompleteExecutions(
+    scenarioId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -398,10 +436,13 @@ export class MakeClient {
 
   // ─── Data Structures ────────────────────────────────────────────
 
-  async listDataStructures(teamId: number, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listDataStructures(
+    teamId: number,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = { teamId };
     if (params.limit !== undefined) query['pg[limit]'] = params.limit;
     if (params.offset !== undefined) query['pg[offset]'] = params.offset;
@@ -425,11 +466,14 @@ export class MakeClient {
     return response.data;
   }
 
-  async updateDataStructure(dataStructureId: number, data: {
-    name?: string;
-    spec?: Array<Record<string, any>>;
-    strict?: boolean;
-  }) {
+  async updateDataStructure(
+    dataStructureId: number,
+    data: {
+      name?: string;
+      spec?: Array<Record<string, any>>;
+      strict?: boolean;
+    }
+  ) {
     let response = await this.http.patch(`/data-structures/${dataStructureId}`, data);
     return response.data;
   }
@@ -446,19 +490,26 @@ export class MakeClient {
     return response.data;
   }
 
-  async createTeamVariable(teamId: number, data: {
-    name: string;
-    value: string;
-    typeId: number;
-  }) {
+  async createTeamVariable(
+    teamId: number,
+    data: {
+      name: string;
+      value: string;
+      typeId: number;
+    }
+  ) {
     let response = await this.http.post(`/teams/${teamId}/variables`, data);
     return response.data;
   }
 
-  async updateTeamVariable(teamId: number, variableName: string, data: {
-    value?: string;
-    typeId?: number;
-  }) {
+  async updateTeamVariable(
+    teamId: number,
+    variableName: string,
+    data: {
+      value?: string;
+      typeId?: number;
+    }
+  ) {
     let response = await this.http.patch(`/teams/${teamId}/variables/${variableName}`, data);
     return response.data;
   }
@@ -467,7 +518,9 @@ export class MakeClient {
     let params: Record<string, any> = {};
     if (confirmed !== undefined) params.confirmed = confirmed;
 
-    let response = await this.http.delete(`/teams/${teamId}/variables/${variableName}`, { params });
+    let response = await this.http.delete(`/teams/${teamId}/variables/${variableName}`, {
+      params
+    });
     return response.data;
   }
 

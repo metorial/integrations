@@ -11,39 +11,44 @@ let workflowSchema = z.object({
   stoppedAt: z.string().optional()
 });
 
-export let getPipeline = SlateTool.create(
-  spec,
-  {
-    name: 'Get Pipeline',
-    key: 'get_pipeline',
-    description: `Retrieve details about a specific pipeline by ID, including its workflows and their statuses. Provides a comprehensive view of the pipeline's current state.`,
-    tags: {
-      readOnly: true
-    }
+export let getPipeline = SlateTool.create(spec, {
+  name: 'Get Pipeline',
+  key: 'get_pipeline',
+  description: `Retrieve details about a specific pipeline by ID, including its workflows and their statuses. Provides a comprehensive view of the pipeline's current state.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    pipelineId: z.string().describe('The UUID of the pipeline to retrieve')
-  }))
-  .output(z.object({
-    pipelineId: z.string(),
-    pipelineNumber: z.number(),
-    state: z.string(),
-    createdAt: z.string(),
-    trigger: z.object({
-      type: z.string(),
-      receivedAt: z.string().optional()
-    }).optional(),
-    vcs: z.object({
-      providerName: z.string().optional(),
-      branch: z.string().optional(),
-      tag: z.string().optional(),
-      revision: z.string().optional(),
-      originRepositoryUrl: z.string().optional()
-    }).optional(),
-    workflows: z.array(workflowSchema).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pipelineId: z.string().describe('The UUID of the pipeline to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      pipelineId: z.string(),
+      pipelineNumber: z.number(),
+      state: z.string(),
+      createdAt: z.string(),
+      trigger: z
+        .object({
+          type: z.string(),
+          receivedAt: z.string().optional()
+        })
+        .optional(),
+      vcs: z
+        .object({
+          providerName: z.string().optional(),
+          branch: z.string().optional(),
+          tag: z.string().optional(),
+          revision: z.string().optional(),
+          originRepositoryUrl: z.string().optional()
+        })
+        .optional(),
+      workflows: z.array(workflowSchema).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let pipeline = await client.getPipeline(ctx.input.pipelineId);
@@ -57,13 +62,15 @@ export let getPipeline = SlateTool.create(
       stoppedAt: w.stopped_at
     }));
 
-    let vcs = pipeline.vcs ? {
-      providerName: pipeline.vcs.provider_name,
-      branch: pipeline.vcs.branch,
-      tag: pipeline.vcs.tag,
-      revision: pipeline.vcs.revision,
-      originRepositoryUrl: pipeline.vcs.origin_repository_url
-    } : undefined;
+    let vcs = pipeline.vcs
+      ? {
+          providerName: pipeline.vcs.provider_name,
+          branch: pipeline.vcs.branch,
+          tag: pipeline.vcs.tag,
+          revision: pipeline.vcs.revision,
+          originRepositoryUrl: pipeline.vcs.origin_repository_url
+        }
+      : undefined;
 
     return {
       output: {
@@ -71,10 +78,12 @@ export let getPipeline = SlateTool.create(
         pipelineNumber: pipeline.number,
         state: pipeline.state,
         createdAt: pipeline.created_at,
-        trigger: pipeline.trigger ? {
-          type: pipeline.trigger.type,
-          receivedAt: pipeline.trigger.received_at
-        } : undefined,
+        trigger: pipeline.trigger
+          ? {
+              type: pipeline.trigger.type,
+              receivedAt: pipeline.trigger.received_at
+            }
+          : undefined,
         vcs,
         workflows
       },

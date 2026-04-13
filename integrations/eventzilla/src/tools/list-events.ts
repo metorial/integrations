@@ -16,8 +16,14 @@ let eventSchema = z.object({
   timeZone: z.string().optional().describe('Event timezone'),
   ticketsSold: z.number().optional().describe('Number of tickets sold'),
   ticketsTotal: z.number().optional().describe('Total number of tickets'),
-  status: z.string().optional().describe('Event status: Live, Draft, Unpublished, or Completed'),
-  showRemaining: z.boolean().optional().describe('Whether remaining ticket count is displayed'),
+  status: z
+    .string()
+    .optional()
+    .describe('Event status: Live, Draft, Unpublished, or Completed'),
+  showRemaining: z
+    .boolean()
+    .optional()
+    .describe('Whether remaining ticket count is displayed'),
   twitterHashtag: z.string().optional().describe('Twitter hashtag for the event'),
   utcOffset: z.string().optional().describe('UTC offset'),
   inviteCode: z.string().optional().describe('Invite code'),
@@ -26,27 +32,30 @@ let eventSchema = z.object({
   bgImageUrl: z.string().optional().describe('Event background image URL'),
   venue: z.string().optional().describe('Event venue'),
   categories: z.string().optional().describe('Comma-separated event categories'),
-  language: z.string().optional().describe('Event language'),
+  language: z.string().optional().describe('Event language')
 });
 
-export let listEventsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Events',
-    key: 'list_events',
-    description: `Retrieve a list of events from your Eventzilla account. Filter by status (live, draft, unpublished, completed) or category. Supports pagination.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let listEventsTool = SlateTool.create(spec, {
+  name: 'List Events',
+  key: 'list_events',
+  description: `Retrieve a list of events from your Eventzilla account. Filter by status (live, draft, unpublished, completed) or category. Supports pagination.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
-      status: z.enum(['live', 'draft', 'unpublished', 'completed']).optional().describe('Filter events by status'),
-      category: z.string().optional().describe('Filter events by category (e.g., Music, Business)'),
+      status: z
+        .enum(['live', 'draft', 'unpublished', 'completed'])
+        .optional()
+        .describe('Filter events by status'),
+      category: z
+        .string()
+        .optional()
+        .describe('Filter events by category (e.g., Music, Business)'),
       offset: z.number().optional().describe('Number of records to skip (default: 0)'),
-      limit: z.number().optional().describe('Number of records per page (default: 20)'),
-    }),
+      limit: z.number().optional().describe('Number of records per page (default: 20)')
+    })
   )
   .output(
     z.object({
@@ -55,23 +64,27 @@ export let listEventsTool = SlateTool.create(
         .object({
           offset: z.number().describe('Current offset'),
           limit: z.number().describe('Current limit'),
-          total: z.number().describe('Total number of events'),
+          total: z.number().describe('Total number of events')
         })
         .optional()
-        .describe('Pagination details'),
-    }),
+        .describe('Pagination details')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.listEvents({
       status: ctx.input.status,
       category: ctx.input.category,
       offset: ctx.input.offset,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
-    let rawEvents = Array.isArray(data?.events) ? data.events : Array.isArray(data) ? data : [];
+    let rawEvents = Array.isArray(data?.events)
+      ? data.events
+      : Array.isArray(data)
+        ? data
+        : [];
     let rawPagination = data?.pagination?.[0] ?? data?.pagination;
 
     let events = rawEvents.map((e: any) => ({
@@ -97,19 +110,20 @@ export let listEventsTool = SlateTool.create(
       bgImageUrl: e.bgimage_url,
       venue: e.venue,
       categories: e.categories,
-      language: e.language,
+      language: e.language
     }));
 
     let pagination = rawPagination
       ? {
           offset: rawPagination.offset,
           limit: rawPagination.limit,
-          total: rawPagination.total,
+          total: rawPagination.total
         }
       : undefined;
 
     return {
       output: { events, pagination },
-      message: `Found **${events.length}** event(s)${ctx.input.status ? ` with status "${ctx.input.status}"` : ''}${ctx.input.category ? ` in category "${ctx.input.category}"` : ''}.`,
+      message: `Found **${events.length}** event(s)${ctx.input.status ? ` with status "${ctx.input.status}"` : ''}${ctx.input.category ? ` in category "${ctx.input.category}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

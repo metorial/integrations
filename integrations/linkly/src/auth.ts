@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    workspaceId: z.number()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      workspaceId: z.number()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key',
@@ -16,7 +18,7 @@ export let auth = SlateAuth.create()
       workspaceId: z.number()
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,

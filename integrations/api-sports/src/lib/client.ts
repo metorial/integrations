@@ -27,7 +27,7 @@ let sportVersionMap: Record<SportType, string> = {
   nba: 'v2',
   nfl: 'v1',
   'formula-1': 'v1',
-  mma: 'v1',
+  mma: 'v1'
 };
 
 let getBaseUrl = (sport: SportType): string => {
@@ -46,8 +46,8 @@ export class Client {
     this.http = createAxios({
       baseURL: getBaseUrl(opts.sport),
       headers: {
-        'x-apisports-key': opts.token,
-      },
+        'x-apisports-key': opts.token
+      }
     });
   }
 
@@ -86,7 +86,7 @@ export class Client {
       season: params?.season,
       type: params?.type,
       current: params?.current != null ? (params.current ? 'true' : 'false') : undefined,
-      search: params?.search,
+      search: params?.search
     });
   }
 
@@ -106,7 +106,7 @@ export class Client {
       league: params?.league,
       season: params?.season,
       country: params?.country,
-      search: params?.search,
+      search: params?.search
     });
   }
 
@@ -135,7 +135,7 @@ export class Client {
       league: params?.league,
       season: params?.season,
       search: params?.search,
-      page: params?.page,
+      page: params?.page
     });
   }
 
@@ -185,9 +185,7 @@ export class Client {
 
   // ─── Live Scores ────────────────────────────────────────────
 
-  async getLiveFixtures(params?: {
-    league?: number;
-  }): Promise<any> {
+  async getLiveFixtures(params?: { league?: number }): Promise<any> {
     if (this.sport === 'football') {
       return this.get('/fixtures', { live: 'all', league: params?.league });
     }
@@ -208,24 +206,23 @@ export class Client {
 
   // ─── Match Statistics ──────────────────────────────────────
 
-  async getFixtureStatistics(fixtureId: number, params?: {
-    team?: number;
-    type?: string;
-  }): Promise<any> {
+  async getFixtureStatistics(
+    fixtureId: number,
+    params?: {
+      team?: number;
+      type?: string;
+    }
+  ): Promise<any> {
     return this.get('/fixtures/statistics', {
       fixture: fixtureId,
       team: params?.team,
-      type: params?.type,
+      type: params?.type
     });
   }
 
   // ─── Standings ─────────────────────────────────────────────
 
-  async getStandings(params: {
-    league: number;
-    season: number;
-    team?: number;
-  }): Promise<any> {
+  async getStandings(params: { league: number; season: number; team?: number }): Promise<any> {
     return this.get('/standings', params);
   }
 
@@ -274,16 +271,13 @@ export class Client {
     return this.get('/coachs', {
       id: params?.coachId,
       team: params?.team,
-      search: params?.search,
+      search: params?.search
     });
   }
 
   // ─── Transfers ─────────────────────────────────────────────
 
-  async getTransfers(params?: {
-    player?: number;
-    team?: number;
-  }): Promise<any> {
+  async getTransfers(params?: { player?: number; team?: number }): Promise<any> {
     return this.get('/transfers', params);
   }
 
@@ -331,7 +325,7 @@ export class Client {
       circuit: params?.circuit,
       next: params?.next,
       last: params?.last,
-      timezone: params?.timezone,
+      timezone: params?.timezone
     });
   }
 
@@ -347,7 +341,7 @@ export class Client {
       name: params?.name,
       country: params?.country,
       city: params?.city,
-      search: params?.search,
+      search: params?.search
     });
   }
 

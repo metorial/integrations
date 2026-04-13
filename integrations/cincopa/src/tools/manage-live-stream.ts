@@ -3,31 +3,40 @@ import { CincopaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLiveStream = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Live Stream',
-    key: 'manage_live_stream',
-    description: `List, create, start, stop, reset, or delete Cincopa live streams. Use "list" to see all streams, "create" to set up a new stream, "start"/"stop" to control streaming, "reset" to restart the stream configuration, or "delete" to remove a stream.`,
-    instructions: [
-      'Use action "list" to get all live streams.',
-      'Use action "create" with an optional name and description.',
-      'Use action "start", "stop", "reset", or "delete" with a streamId.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'start', 'stop', 'reset', 'delete']).describe('Action to perform'),
-    streamId: z.string().optional().describe('Stream ID (required for start, stop, reset, delete)'),
-    name: z.string().optional().describe('Stream name (for create action)'),
-    description: z.string().optional().describe('Stream description (for create action)')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    streams: z.array(z.record(z.string(), z.any())).optional().describe('List of live stream objects (for list action)'),
-    streamId: z.string().optional().describe('Created stream ID')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageLiveStream = SlateTool.create(spec, {
+  name: 'Manage Live Stream',
+  key: 'manage_live_stream',
+  description: `List, create, start, stop, reset, or delete Cincopa live streams. Use "list" to see all streams, "create" to set up a new stream, "start"/"stop" to control streaming, "reset" to restart the stream configuration, or "delete" to remove a stream.`,
+  instructions: [
+    'Use action "list" to get all live streams.',
+    'Use action "create" with an optional name and description.',
+    'Use action "start", "stop", "reset", or "delete" with a streamId.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'start', 'stop', 'reset', 'delete'])
+        .describe('Action to perform'),
+      streamId: z
+        .string()
+        .optional()
+        .describe('Stream ID (required for start, stop, reset, delete)'),
+      name: z.string().optional().describe('Stream name (for create action)'),
+      description: z.string().optional().describe('Stream description (for create action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      streams: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of live stream objects (for list action)'),
+      streamId: z.string().optional().describe('Created stream ID')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CincopaClient({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -91,4 +100,5 @@ export let manageLiveStream = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

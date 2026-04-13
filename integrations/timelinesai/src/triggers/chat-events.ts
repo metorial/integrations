@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let chatEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Chat Events',
-    key: 'chat_events',
-    description: 'Triggers when a new chat is created or an existing chat is renamed in the workspace.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of chat event (chat.created or chat.renamed)'),
-    chatId: z.number().describe('Chat ID'),
-    chatName: z.string().optional().describe('Chat display name'),
-    phone: z.string().optional().describe('Contact phone number'),
-    isGroup: z.boolean().optional().describe('Whether this is a group chat'),
-    whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone'),
-    responsible: z.string().optional().describe('Assigned team member'),
-    previousName: z.string().optional().describe('Previous chat name (for rename events)'),
-  }))
-  .output(z.object({
-    chatId: z.number().describe('Chat ID'),
-    chatName: z.string().optional().describe('Chat display name'),
-    phone: z.string().optional().describe('Contact phone number'),
-    isGroup: z.boolean().optional().describe('Whether this is a group chat'),
-    whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone'),
-    responsible: z.string().optional().describe('Assigned team member email'),
-    previousName: z.string().optional().describe('Previous chat name (for rename events)'),
-  }))
+export let chatEvents = SlateTrigger.create(spec, {
+  name: 'Chat Events',
+  key: 'chat_events',
+  description:
+    'Triggers when a new chat is created or an existing chat is renamed in the workspace.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of chat event (chat.created or chat.renamed)'),
+      chatId: z.number().describe('Chat ID'),
+      chatName: z.string().optional().describe('Chat display name'),
+      phone: z.string().optional().describe('Contact phone number'),
+      isGroup: z.boolean().optional().describe('Whether this is a group chat'),
+      whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone'),
+      responsible: z.string().optional().describe('Assigned team member'),
+      previousName: z.string().optional().describe('Previous chat name (for rename events)')
+    })
+  )
+  .output(
+    z.object({
+      chatId: z.number().describe('Chat ID'),
+      chatName: z.string().optional().describe('Chat display name'),
+      phone: z.string().optional().describe('Contact phone number'),
+      isGroup: z.boolean().optional().describe('Whether this is a group chat'),
+      whatsappAccountPhone: z.string().optional().describe('WhatsApp account phone'),
+      responsible: z.string().optional().describe('Assigned team member email'),
+      previousName: z.string().optional().describe('Previous chat name (for rename events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let eventTypes = ['chat.created', 'chat.renamed'];
@@ -41,21 +43,21 @@ export let chatEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           eventType,
           url: ctx.input.webhookBaseUrl,
-          enabled: true,
+          enabled: true
         });
         let webhookData = result?.data || result;
         registrations.push({
           webhookId: webhookData.id,
-          eventType,
+          eventType
         });
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations || [];
 
@@ -68,8 +70,8 @@ export let chatEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let chat = body.chat || body;
       let account = body.whatsapp_account || body.account || {};
@@ -82,20 +84,22 @@ export let chatEvents = SlateTrigger.create(
       let chatId = chat.chat_id || chat.id || body.chat_id;
 
       return {
-        inputs: [{
-          eventType,
-          chatId,
-          chatName: chat.full_name || chat.name || body.name,
-          phone: chat.phone || body.phone,
-          isGroup: chat.is_group ?? body.is_group,
-          whatsappAccountPhone: account.phone,
-          responsible: chat.responsible_email || chat.responsible,
-          previousName: body.previous_name || body.old_name,
-        }],
+        inputs: [
+          {
+            eventType,
+            chatId,
+            chatName: chat.full_name || chat.name || body.name,
+            phone: chat.phone || body.phone,
+            isGroup: chat.is_group ?? body.is_group,
+            whatsappAccountPhone: account.phone,
+            responsible: chat.responsible_email || chat.responsible,
+            previousName: body.previous_name || body.old_name
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -108,9 +112,9 @@ export let chatEvents = SlateTrigger.create(
           isGroup: input.isGroup,
           whatsappAccountPhone: input.whatsappAccountPhone,
           responsible: input.responsible,
-          previousName: input.previousName,
-        },
+          previousName: input.previousName
+        }
       };
-    },
+    }
   })
   .build();

@@ -2,29 +2,31 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('OpenAI API key'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('OpenAI API key')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      token: z.string().describe('Your OpenAI API key (starts with sk-)'),
+      token: z.string().describe('Your OpenAI API key (starts with sk-)')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
     getProfile: async (ctx: any) => {
       let axios = createAxios({
         baseURL: 'https://api.openai.com/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/me');
@@ -34,8 +36,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: me.id,
           name: me.name,
-          email: me.email,
-        },
+          email: me.email
+        }
       };
-    },
+    }
   });

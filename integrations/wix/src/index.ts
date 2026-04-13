@@ -12,7 +12,7 @@ import {
   manageDataItems,
   managePricingPlans,
   manageMembers,
-  manageMedia,
+  manageMedia
 } from './tools';
 import {
   ecommerceEvents,
@@ -20,7 +20,7 @@ import {
   contactEvents,
   bookingEvents,
   blogEvents,
-  siteEvents,
+  siteEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -37,7 +37,7 @@ export let provider = Slate.create({
     manageDataItems,
     managePricingPlans,
     manageMembers,
-    manageMedia,
+    manageMedia
   ],
   triggers: [
     ecommerceEvents,
@@ -45,6 +45,6 @@ export let provider = Slate.create({
     contactEvents,
     bookingEvents,
     blogEvents,
-    siteEvents,
-  ],
+    siteEvents
+  ]
 });

@@ -3,57 +3,67 @@ import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let webhookEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Instagram Webhook Events',
-    key: 'webhook_events',
-    description: 'Receives real-time webhook notifications from Instagram for comments, mentions, story insights, and direct messages. Requires manual webhook configuration in the Meta Developer Dashboard.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['comment', 'mention', 'story_insights', 'message']).describe('Type of webhook event'),
-    eventId: z.string().describe('Unique event identifier'),
-    commentId: z.string().optional().describe('Comment ID (for comment and mention events)'),
-    mediaId: z.string().optional().describe('Related media ID'),
-    commentText: z.string().optional().describe('Comment text'),
-    senderId: z.string().optional().describe('Sender ID for messages'),
-    recipientId: z.string().optional().describe('Recipient ID for messages'),
-    messageText: z.string().optional().describe('Message text content'),
-    messageId: z.string().optional().describe('Message ID for messaging events'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-    storyMetrics: z.object({
-      exits: z.number().optional(),
-      replies: z.number().optional(),
-      reach: z.number().optional(),
-      tapsForward: z.number().optional(),
-      tapsBack: z.number().optional(),
-      impressions: z.number().optional(),
-    }).optional().describe('Story insight metrics'),
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Type of event received'),
-    commentId: z.string().optional().describe('Comment ID'),
-    mediaId: z.string().optional().describe('Related media ID'),
-    commentText: z.string().optional().describe('Comment text'),
-    senderId: z.string().optional().describe('Message sender ID'),
-    recipientId: z.string().optional().describe('Message recipient ID'),
-    messageText: z.string().optional().describe('Message text'),
-    messageId: z.string().optional().describe('Message ID'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-    storyMetrics: z.object({
-      exits: z.number().optional(),
-      replies: z.number().optional(),
-      reach: z.number().optional(),
-      tapsForward: z.number().optional(),
-      tapsBack: z.number().optional(),
-      impressions: z.number().optional(),
-    }).optional().describe('Story insight metrics'),
-  }))
+export let webhookEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Instagram Webhook Events',
+  key: 'webhook_events',
+  description:
+    'Receives real-time webhook notifications from Instagram for comments, mentions, story insights, and direct messages. Requires manual webhook configuration in the Meta Developer Dashboard.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['comment', 'mention', 'story_insights', 'message'])
+        .describe('Type of webhook event'),
+      eventId: z.string().describe('Unique event identifier'),
+      commentId: z.string().optional().describe('Comment ID (for comment and mention events)'),
+      mediaId: z.string().optional().describe('Related media ID'),
+      commentText: z.string().optional().describe('Comment text'),
+      senderId: z.string().optional().describe('Sender ID for messages'),
+      recipientId: z.string().optional().describe('Recipient ID for messages'),
+      messageText: z.string().optional().describe('Message text content'),
+      messageId: z.string().optional().describe('Message ID for messaging events'),
+      timestamp: z.string().optional().describe('Event timestamp'),
+      storyMetrics: z
+        .object({
+          exits: z.number().optional(),
+          replies: z.number().optional(),
+          reach: z.number().optional(),
+          tapsForward: z.number().optional(),
+          tapsBack: z.number().optional(),
+          impressions: z.number().optional()
+        })
+        .optional()
+        .describe('Story insight metrics')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('Type of event received'),
+      commentId: z.string().optional().describe('Comment ID'),
+      mediaId: z.string().optional().describe('Related media ID'),
+      commentText: z.string().optional().describe('Comment text'),
+      senderId: z.string().optional().describe('Message sender ID'),
+      recipientId: z.string().optional().describe('Message recipient ID'),
+      messageText: z.string().optional().describe('Message text'),
+      messageId: z.string().optional().describe('Message ID'),
+      timestamp: z.string().optional().describe('Event timestamp'),
+      storyMetrics: z
+        .object({
+          exits: z.number().optional(),
+          replies: z.number().optional(),
+          reach: z.number().optional(),
+          tapsForward: z.number().optional(),
+          tapsBack: z.number().optional(),
+          impressions: z.number().optional()
+        })
+        .optional()
+        .describe('Story insight metrics')
+    })
+  )
   .webhook({
     // No autoRegisterWebhook — Instagram webhooks must be configured manually in Meta Developer Dashboard
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let request = ctx.request;
 
       // Handle Meta webhook verification challenge (GET request)
@@ -69,7 +79,7 @@ export let webhookEventsTrigger = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let body = await request.json() as any;
+      let body = (await request.json()) as any;
       let inputs: Array<{
         eventType: 'comment' | 'mention' | 'story_insights' | 'message';
         eventId: string;
@@ -110,30 +120,37 @@ export let webhookEventsTrigger = SlateTrigger.create(
                 commentId: value.id,
                 mediaId: value.media?.id,
                 commentText: value.text,
-                timestamp: entryTime ? new Date(Number(entryTime) * 1000).toISOString() : undefined,
+                timestamp: entryTime
+                  ? new Date(Number(entryTime) * 1000).toISOString()
+                  : undefined
               });
             } else if (field === 'mentions') {
               inputs.push({
                 eventType: 'mention',
-                eventId: value.comment_id || value.media_id || `mention_${entryId}_${entryTime}`,
+                eventId:
+                  value.comment_id || value.media_id || `mention_${entryId}_${entryTime}`,
                 commentId: value.comment_id,
                 mediaId: value.media_id,
-                timestamp: entryTime ? new Date(Number(entryTime) * 1000).toISOString() : undefined,
+                timestamp: entryTime
+                  ? new Date(Number(entryTime) * 1000).toISOString()
+                  : undefined
               });
             } else if (field === 'story_insights') {
               inputs.push({
                 eventType: 'story_insights',
                 eventId: value.media_id || `story_${entryId}_${entryTime}`,
                 mediaId: value.media_id,
-                timestamp: entryTime ? new Date(Number(entryTime) * 1000).toISOString() : undefined,
+                timestamp: entryTime
+                  ? new Date(Number(entryTime) * 1000).toISOString()
+                  : undefined,
                 storyMetrics: {
                   exits: value.exits,
                   replies: value.replies,
                   reach: value.reach,
                   tapsForward: value.taps_forward,
                   tapsBack: value.taps_back,
-                  impressions: value.impressions,
-                },
+                  impressions: value.impressions
+                }
               });
             }
           }
@@ -157,7 +174,7 @@ export let webhookEventsTrigger = SlateTrigger.create(
                 recipientId: recipient,
                 messageText: message.text,
                 messageId: message.mid,
-                timestamp: msgTimestamp,
+                timestamp: msgTimestamp
               });
             }
           }
@@ -167,13 +184,13 @@ export let webhookEventsTrigger = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { input } = ctx;
       let typeMap: Record<string, string> = {
         comment: 'comment.created',
         mention: 'mention.created',
         story_insights: 'story.insights_available',
-        message: 'message.received',
+        message: 'message.received'
       };
 
       return {
@@ -189,8 +206,9 @@ export let webhookEventsTrigger = SlateTrigger.create(
           messageText: input.messageText,
           messageId: input.messageId,
           timestamp: input.timestamp,
-          storyMetrics: input.storyMetrics,
-        },
+          storyMetrics: input.storyMetrics
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

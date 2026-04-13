@@ -15,40 +15,44 @@ let pageSchema = z.object({
   archived: z.boolean().optional().describe('Whether the page is archived'),
   draft: z.boolean().optional().describe('Whether the page is a draft'),
   seo: z.any().optional().describe('SEO metadata for the page'),
-  openGraph: z.any().optional().describe('Open Graph metadata for the page'),
+  openGraph: z.any().optional().describe('Open Graph metadata for the page')
 });
 
-export let listPages = SlateTool.create(
-  spec,
-  {
-    name: 'List Pages',
-    key: 'list_pages',
-    description: `List all pages for a Webflow site with their metadata, including titles, slugs, SEO settings, and parent-child relationships.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPages = SlateTool.create(spec, {
+  name: 'List Pages',
+  key: 'list_pages',
+  description: `List all pages for a Webflow site with their metadata, including titles, slugs, SEO settings, and parent-child relationships.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    siteId: z.string().describe('Unique identifier of the Webflow site'),
-    offset: z.number().optional().describe('Pagination offset'),
-    limit: z.number().optional().describe('Maximum number of pages to return'),
-    locale: z.string().optional().describe('Filter pages by locale identifier'),
-  }))
-  .output(z.object({
-    pages: z.array(pageSchema).describe('List of pages'),
-    pagination: z.object({
-      offset: z.number().optional(),
-      limit: z.number().optional(),
-      total: z.number().optional(),
-    }).optional().describe('Pagination metadata'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      siteId: z.string().describe('Unique identifier of the Webflow site'),
+      offset: z.number().optional().describe('Pagination offset'),
+      limit: z.number().optional().describe('Maximum number of pages to return'),
+      locale: z.string().optional().describe('Filter pages by locale identifier')
+    })
+  )
+  .output(
+    z.object({
+      pages: z.array(pageSchema).describe('List of pages'),
+      pagination: z
+        .object({
+          offset: z.number().optional(),
+          limit: z.number().optional(),
+          total: z.number().optional()
+        })
+        .optional()
+        .describe('Pagination metadata')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebflowClient(ctx.auth.token);
     let data = await client.listPages(ctx.input.siteId, {
       offset: ctx.input.offset,
       limit: ctx.input.limit,
-      locale: ctx.input.locale,
+      locale: ctx.input.locale
     });
 
     let pages = (data.pages ?? []).map((p: any) => ({
@@ -63,11 +67,12 @@ export let listPages = SlateTool.create(
       archived: p.archived,
       draft: p.draft,
       seo: p.seo,
-      openGraph: p.openGraph,
+      openGraph: p.openGraph
     }));
 
     return {
       output: { pages, pagination: data.pagination },
-      message: `Found **${pages.length}** page(s).`,
+      message: `Found **${pages.length}** page(s).`
     };
-  }).build();
+  })
+  .build();

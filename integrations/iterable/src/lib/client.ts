@@ -4,9 +4,10 @@ export class IterableClient {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; dataCenter: string }) {
-    let baseURL = config.dataCenter === 'eu'
-      ? 'https://api.eu.iterable.com/api'
-      : 'https://api.iterable.com/api';
+    let baseURL =
+      config.dataCenter === 'eu'
+        ? 'https://api.eu.iterable.com/api'
+        : 'https://api.iterable.com/api';
 
     this.axios = createAxios({
       baseURL,
@@ -31,13 +32,15 @@ export class IterableClient {
     return response.data;
   }
 
-  async bulkUpdateUsers(users: {
-    email?: string;
-    userId?: string;
-    dataFields?: Record<string, any>;
-    preferUserId?: boolean;
-    mergeNestedObjects?: boolean;
-  }[]): Promise<any> {
+  async bulkUpdateUsers(
+    users: {
+      email?: string;
+      userId?: string;
+      dataFields?: Record<string, any>;
+      preferUserId?: boolean;
+      mergeNestedObjects?: boolean;
+    }[]
+  ): Promise<any> {
     let response = await this.axios.post('/users/bulkUpdate', { users });
     return response.data;
   }
@@ -100,15 +103,17 @@ export class IterableClient {
     return response.data;
   }
 
-  async trackBulkEvents(events: {
-    email?: string;
-    userId?: string;
-    eventName: string;
-    createdAt?: number;
-    dataFields?: Record<string, any>;
-    campaignId?: number;
-    templateId?: number;
-  }[]): Promise<any> {
+  async trackBulkEvents(
+    events: {
+      email?: string;
+      userId?: string;
+      eventName: string;
+      createdAt?: number;
+      dataFields?: Record<string, any>;
+      campaignId?: number;
+      templateId?: number;
+    }[]
+  ): Promise<any> {
     let response = await this.axios.post('/events/bulkTrack', { events });
     return response.data;
   }
@@ -193,7 +198,10 @@ export class IterableClient {
     return response.data;
   }
 
-  async subscribeToList(listId: number, subscribers: { email?: string; userId?: string; dataFields?: Record<string, any> }[]): Promise<any> {
+  async subscribeToList(
+    listId: number,
+    subscribers: { email?: string; userId?: string; dataFields?: Record<string, any> }[]
+  ): Promise<any> {
     let response = await this.axios.post('/lists/subscribe', {
       listId,
       subscribers
@@ -201,7 +209,10 @@ export class IterableClient {
     return response.data;
   }
 
-  async unsubscribeFromList(listId: number, subscribers: { email?: string; userId?: string }[]): Promise<any> {
+  async unsubscribeFromList(
+    listId: number,
+    subscribers: { email?: string; userId?: string }[]
+  ): Promise<any> {
     let response = await this.axios.post('/lists/unsubscribe', {
       listId,
       subscribers
@@ -231,7 +242,11 @@ export class IterableClient {
     return response.data;
   }
 
-  async getCampaignMetrics(campaignId: number, startDateTime?: string, endDateTime?: string): Promise<any> {
+  async getCampaignMetrics(
+    campaignId: number,
+    startDateTime?: string,
+    endDateTime?: string
+  ): Promise<any> {
     let params: Record<string, any> = { campaignId };
     if (startDateTime) params.startDateTime = startDateTime;
     if (endDateTime) params.endDateTime = endDateTime;
@@ -399,22 +414,38 @@ export class IterableClient {
     return response.data;
   }
 
-  async getCatalogItems(catalogName: string, params?: { page?: number; pageSize?: number }): Promise<any> {
-    let response = await this.axios.get(`/catalogs/${encodeURIComponent(catalogName)}/items`, { params });
+  async getCatalogItems(
+    catalogName: string,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<any> {
+    let response = await this.axios.get(`/catalogs/${encodeURIComponent(catalogName)}/items`, {
+      params
+    });
     return response.data;
   }
 
-  async bulkUploadCatalogItems(catalogName: string, items: Record<string, any>, replaceUploadedFieldsOnly?: boolean): Promise<any> {
+  async bulkUploadCatalogItems(
+    catalogName: string,
+    items: Record<string, any>,
+    replaceUploadedFieldsOnly?: boolean
+  ): Promise<any> {
     let body: Record<string, any> = { documents: items };
-    if (replaceUploadedFieldsOnly !== undefined) body.replaceUploadedFieldsOnly = replaceUploadedFieldsOnly;
-    let response = await this.axios.post(`/catalogs/${encodeURIComponent(catalogName)}/items`, body);
+    if (replaceUploadedFieldsOnly !== undefined)
+      body.replaceUploadedFieldsOnly = replaceUploadedFieldsOnly;
+    let response = await this.axios.post(
+      `/catalogs/${encodeURIComponent(catalogName)}/items`,
+      body
+    );
     return response.data;
   }
 
   async deleteCatalogItems(catalogName: string, itemIds: string[]): Promise<any> {
-    let response = await this.axios.delete(`/catalogs/${encodeURIComponent(catalogName)}/items`, {
-      data: { itemIds }
-    });
+    let response = await this.axios.delete(
+      `/catalogs/${encodeURIComponent(catalogName)}/items`,
+      {
+        data: { itemIds }
+      }
+    );
     return response.data;
   }
 

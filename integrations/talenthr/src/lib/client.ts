@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://pubapi.talenthr.io/v1',
+  baseURL: 'https://pubapi.talenthr.io/v1'
 });
 
 export class Client {
@@ -24,8 +24,8 @@ export class Client {
       data: options.data,
       auth: {
         username: this.token,
-        password: 'c',
-      },
+        password: 'c'
+      }
     });
     return response.data;
   }
@@ -63,7 +63,7 @@ export class Client {
     return this.request({
       method: 'POST',
       path: '/employees/hire',
-      data,
+      data
     });
   }
 
@@ -71,7 +71,7 @@ export class Client {
     return this.request({
       method: 'PUT',
       path: `/employees/${employeeId}`,
-      data,
+      data
     });
   }
 
@@ -109,7 +109,7 @@ export class Client {
       };
     }>({
       path: '/directory',
-      params,
+      params
     });
   }
 
@@ -117,7 +117,7 @@ export class Client {
 
   async listDepartments() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/departments',
+      path: '/departments'
     });
   }
 
@@ -125,13 +125,13 @@ export class Client {
     return this.request<{ data: { id: number; name: string } }>({
       method: 'POST',
       path: '/departments',
-      data: { name },
+      data: { name }
     });
   }
 
   async listDivisions() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/divisions',
+      path: '/divisions'
     });
   }
 
@@ -139,13 +139,13 @@ export class Client {
     return this.request<{ data: { id: number; name: string } }>({
       method: 'POST',
       path: '/divisions',
-      data: { name },
+      data: { name }
     });
   }
 
   async listJobTitles() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/job-titles',
+      path: '/job-titles'
     });
   }
 
@@ -153,13 +153,13 @@ export class Client {
     return this.request<{ data: { id: number; name: string } }>({
       method: 'POST',
       path: '/job-titles',
-      data: { name },
+      data: { name }
     });
   }
 
   async listLocations() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/locations',
+      path: '/locations'
     });
   }
 
@@ -167,13 +167,13 @@ export class Client {
     return this.request<{ data: { id: number; name: string } }>({
       method: 'POST',
       path: '/locations',
-      data: { name },
+      data: { name }
     });
   }
 
   async listEmploymentStatuses() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/employment-statuses',
+      path: '/employment-statuses'
     });
   }
 
@@ -193,15 +193,19 @@ export class Client {
       };
     }>({
       path: `/employees/${employeeId}/time-off-requests`,
-      params,
+      params
     });
   }
 
-  async respondToTimeOffRequest(employeeId: string, timeOffRequestId: string, accept: boolean) {
+  async respondToTimeOffRequest(
+    employeeId: string,
+    timeOffRequestId: string,
+    accept: boolean
+  ) {
     return this.request({
       method: 'POST',
       path: `/employees/${employeeId}/time-off-requests/${timeOffRequestId}/reply`,
-      data: { accept },
+      data: { accept }
     });
   }
 
@@ -215,11 +219,15 @@ export class Client {
         [key: string]: any;
       }>;
     }>({
-      path: '/job-positions',
+      path: '/job-positions'
     });
   }
 
-  async listJobApplications(params?: { limit?: number; offset?: number; jobPositionId?: string }) {
+  async listJobApplications(params?: {
+    limit?: number;
+    offset?: number;
+    jobPositionId?: string;
+  }) {
     let { jobPositionId, ...restParams } = params || {};
     let path = jobPositionId
       ? `/job-positions/${jobPositionId}/ats-applicants`
@@ -244,7 +252,7 @@ export class Client {
       };
     }>({
       path,
-      params: restParams,
+      params: restParams
     });
   }
 
@@ -252,25 +260,25 @@ export class Client {
 
   async listNationalities() {
     return this.request<{ data: string[] }>({
-      path: '/nationalities',
+      path: '/nationalities'
     });
   }
 
   async listCountries() {
     return this.request<{ data: string[] }>({
-      path: '/countries',
+      path: '/countries'
     });
   }
 
   async listRelationshipTypes() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/relationship-types',
+      path: '/relationship-types'
     });
   }
 
   async listLanguages() {
     return this.request<{ data: Array<{ id: number; name: string }> }>({
-      path: '/languages',
+      path: '/languages'
     });
   }
 

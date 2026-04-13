@@ -3,42 +3,44 @@ import { FirmaoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Changes',
-    key: 'task_changes',
-    description: 'Triggers when tasks are created or modified in Firmao. Polls for recently modified task records.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    taskId: z.number().describe('ID of the changed task'),
-    raw: z.any().describe('Full task record from the API'),
-  }))
-  .output(z.object({
-    taskId: z.number(),
-    name: z.string(),
-    description: z.string().optional(),
-    status: z.string().optional(),
-    priority: z.string().optional(),
-    taskType: z.string().optional(),
-    plannedStartDate: z.string().optional(),
-    plannedEndDate: z.string().optional(),
-    projectId: z.number().optional(),
-    projectName: z.string().optional(),
-    creationDate: z.string().optional(),
-    lastModificationDate: z.string().optional(),
-  }))
+export let taskChanges = SlateTrigger.create(spec, {
+  name: 'Task Changes',
+  key: 'task_changes',
+  description:
+    'Triggers when tasks are created or modified in Firmao. Polls for recently modified task records.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      taskId: z.number().describe('ID of the changed task'),
+      raw: z.any().describe('Full task record from the API')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number(),
+      name: z.string(),
+      description: z.string().optional(),
+      status: z.string().optional(),
+      priority: z.string().optional(),
+      taskType: z.string().optional(),
+      plannedStartDate: z.string().optional(),
+      plannedEndDate: z.string().optional(),
+      projectId: z.number().optional(),
+      projectName: z.string().optional(),
+      creationDate: z.string().optional(),
+      lastModificationDate: z.string().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FirmaoClient({
         token: ctx.auth.token,
-        organizationId: ctx.config.organizationId,
+        organizationId: ctx.config.organizationId
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -52,31 +54,33 @@ export let taskChanges = SlateTrigger.create(
         sort: 'lastModificationDate',
         dir: 'DESC',
         limit: 50,
-        filters,
+        filters
       });
 
       let now = new Date().toISOString();
 
       let inputs = result.data.map((t: any) => {
-        let isNew = !lastPollTime || (t.creationDate && t.creationDate === t.lastModificationDate);
+        let isNew =
+          !lastPollTime || (t.creationDate && t.creationDate === t.lastModificationDate);
         return {
-          changeType: isNew ? 'created' as const : 'updated' as const,
+          changeType: isNew ? ('created' as const) : ('updated' as const),
           taskId: t.id,
-          raw: t,
+          raw: t
         };
       });
 
       return {
         inputs,
         updatedState: {
-          lastPollTime: result.data.length > 0
-            ? result.data[0].lastModificationDate ?? now
-            : lastPollTime ?? now,
-        },
+          lastPollTime:
+            result.data.length > 0
+              ? (result.data[0].lastModificationDate ?? now)
+              : (lastPollTime ?? now)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let t = ctx.input.raw;
       return {
         type: `task.${ctx.input.changeType}`,
@@ -93,9 +97,9 @@ export let taskChanges = SlateTrigger.create(
           projectId: typeof t.project === 'object' ? t.project?.id : t.project,
           projectName: typeof t.project === 'object' ? t.project?.name : undefined,
           creationDate: t.creationDate,
-          lastModificationDate: t.lastModificationDate,
-        },
+          lastModificationDate: t.lastModificationDate
+        }
       };
-    },
+    }
   })
   .build();

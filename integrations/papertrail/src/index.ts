@@ -21,7 +21,7 @@ import {
   removeUser,
   listArchives,
   getAccountUsage,
-  listDestinations,
+  listDestinations
 } from './tools';
 import { savedSearchAlert } from './triggers';
 
@@ -48,9 +48,7 @@ export let provider = Slate.create({
     removeUser,
     listArchives,
     getAccountUsage,
-    listDestinations,
+    listDestinations
   ],
-  triggers: [
-    savedSearchAlert,
-  ],
+  triggers: [savedSearchAlert]
 });

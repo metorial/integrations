@@ -16,11 +16,17 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Metabase API key (created in Admin Settings > Authentication > API Keys)'),
-      instanceUrl: z.string().describe('The URL of your Metabase instance (e.g., https://your-metabase.example.com)')
+      token: z
+        .string()
+        .describe('Metabase API key (created in Admin Settings > Authentication > API Keys)'),
+      instanceUrl: z
+        .string()
+        .describe(
+          'The URL of your Metabase instance (e.g., https://your-metabase.example.com)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -29,7 +35,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: AuthOutput; input: { token: string; instanceUrl: string } }) => {
+    getProfile: async (ctx: {
+      output: AuthOutput;
+      input: { token: string; instanceUrl: string };
+    }) => {
       let http = createAxios({
         baseURL: `${ctx.output.instanceUrl}/api`,
         headers: {
@@ -57,10 +66,14 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       username: z.string().describe('Your Metabase email address'),
       password: z.string().describe('Your Metabase password'),
-      instanceUrl: z.string().describe('The URL of your Metabase instance (e.g., https://your-metabase.example.com)')
+      instanceUrl: z
+        .string()
+        .describe(
+          'The URL of your Metabase instance (e.g., https://your-metabase.example.com)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = ctx.input.instanceUrl.replace(/\/+$/, '');
       let http = createAxios({
         baseURL: `${baseUrl}/api`
@@ -79,7 +92,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: AuthOutput; input: { username: string; password: string; instanceUrl: string } }) => {
+    getProfile: async (ctx: {
+      output: AuthOutput;
+      input: { username: string; password: string; instanceUrl: string };
+    }) => {
       let http = createAxios({
         baseURL: `${ctx.output.instanceUrl}/api`,
         headers: {

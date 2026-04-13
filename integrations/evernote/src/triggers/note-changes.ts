@@ -3,34 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let noteChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Note Changes',
-    key: 'note_changes',
-    description: 'Receive notifications when notes are created or updated via Evernote webhooks. Webhook registration must be configured manually through Evernote developer support.',
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('Numeric user ID from the webhook'),
-    notebookGuid: z.string().describe('GUID of the affected notebook'),
-    noteGuid: z.string().optional().describe('GUID of the affected note (if applicable)'),
-    reason: z.string().describe('Reason for the notification: create, update, business_create, or business_update'),
-  }))
-  .output(z.object({
-    noteGuid: z.string().optional().describe('GUID of the affected note'),
-    title: z.string().optional().describe('Title of the affected note'),
-    notebookGuid: z.string().describe('GUID of the affected notebook'),
-    userId: z.string().describe('Numeric user ID'),
-    reason: z.string().describe('Event reason code'),
-    createdAt: z.string().optional().describe('ISO timestamp when the note was created'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the note was last updated'),
-  }))
+export let noteChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Note Changes',
+  key: 'note_changes',
+  description:
+    'Receive notifications when notes are created or updated via Evernote webhooks. Webhook registration must be configured manually through Evernote developer support.'
+})
+  .input(
+    z.object({
+      userId: z.string().describe('Numeric user ID from the webhook'),
+      notebookGuid: z.string().describe('GUID of the affected notebook'),
+      noteGuid: z.string().optional().describe('GUID of the affected note (if applicable)'),
+      reason: z
+        .string()
+        .describe(
+          'Reason for the notification: create, update, business_create, or business_update'
+        )
+    })
+  )
+  .output(
+    z.object({
+      noteGuid: z.string().optional().describe('GUID of the affected note'),
+      title: z.string().optional().describe('Title of the affected note'),
+      notebookGuid: z.string().describe('GUID of the affected notebook'),
+      userId: z.string().describe('Numeric user ID'),
+      reason: z.string().describe('Event reason code'),
+      createdAt: z.string().optional().describe('ISO timestamp when the note was created'),
+      updatedAt: z.string().optional().describe('ISO timestamp when the note was last updated')
+    })
+  )
   .webhook({
     // Evernote webhook registration is manual (via developer support ticket)
     // so we do NOT implement autoRegisterWebhook/autoUnregisterWebhook
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // Evernote sends webhooks as HTTP GET requests with query parameters
       let url = new URL(ctx.request.url);
       let userId = url.searchParams.get('userId') || '';
@@ -48,13 +54,13 @@ export let noteChangesTrigger = SlateTrigger.create(
             userId,
             notebookGuid,
             noteGuid,
-            reason,
-          },
-        ],
+            reason
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let noteTitle: string | undefined;
       let createdAt: string | undefined;
       let updatedAt: string | undefined;
@@ -64,7 +70,7 @@ export let noteChangesTrigger = SlateTrigger.create(
         try {
           let client = new Client({
             token: ctx.auth.token,
-            noteStoreUrl: ctx.auth.noteStoreUrl,
+            noteStoreUrl: ctx.auth.noteStoreUrl
           });
           let note = await client.getNote(ctx.input.noteGuid, false, false, false, false);
           noteTitle = note.title;
@@ -75,9 +81,10 @@ export let noteChangesTrigger = SlateTrigger.create(
         }
       }
 
-      let eventType = ctx.input.reason === 'create' || ctx.input.reason === 'business_create'
-        ? 'note.created'
-        : 'note.updated';
+      let eventType =
+        ctx.input.reason === 'create' || ctx.input.reason === 'business_create'
+          ? 'note.created'
+          : 'note.updated';
 
       return {
         type: eventType,
@@ -89,8 +96,9 @@ export let noteChangesTrigger = SlateTrigger.create(
           userId: ctx.input.userId,
           reason: ctx.input.reason,
           createdAt,
-          updatedAt,
-        },
+          updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

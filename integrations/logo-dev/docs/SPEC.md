@@ -9,6 +9,7 @@ Logo.dev is an API service that provides access to company logos from a database
 Logo.dev uses API key authentication with two types of keys:
 
 - **Publishable Key** (prefixed `pk_...`): Publishable keys are automatically secured for safe client-side use. They can be used anywhere — browsers, mobile apps, client-side code. They only work with the `img.logo.dev` image CDN. The publishable key is passed as a `token` query parameter on image URLs:
+
   ```
   https://img.logo.dev/shopify.com?token=YOUR_PUBLISHABLE_KEY
   ```

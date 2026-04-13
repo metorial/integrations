@@ -3,51 +3,66 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOrganization = SlateTool.create(
-  spec,
-  {
-    name: 'Get Organization',
-    key: 'get_organization',
-    description: `Retrieve information about the current organization, including usage statistics, subscription details, and billing information.`,
-    tags: {
-      readOnly: true,
-    },
+export let getOrganization = SlateTool.create(spec, {
+  name: 'Get Organization',
+  key: 'get_organization',
+  description: `Retrieve information about the current organization, including usage statistics, subscription details, and billing information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeUsage: z.boolean().optional().describe('Whether to include organization usage statistics'),
-    includeSubscription: z.boolean().optional().describe('Whether to include subscription details'),
-    includeInvoices: z.boolean().optional().describe('Whether to include invoice history'),
-  }))
-  .output(z.object({
-    organizationName: z.string().describe('Organization display name'),
-    organizationSlug: z.string().describe('Organization slug'),
-    type: z.string().describe('Organization type'),
-    overages: z.boolean().describe('Whether overages are enabled'),
-    blockedReads: z.boolean().describe('Whether reads are blocked'),
-    blockedWrites: z.boolean().describe('Whether writes are blocked'),
-    usage: z.object({
-      rowsRead: z.number(),
-      rowsWritten: z.number(),
-      storageBytes: z.number(),
-      databases: z.number(),
-      locations: z.number(),
-      groups: z.number(),
-    }).optional().describe('Organization usage statistics'),
-    subscription: z.string().optional().describe('Current subscription plan'),
-    invoices: z.array(z.object({
-      invoiceNumber: z.string(),
-      amountDue: z.string(),
-      dueDate: z.string(),
-      paidAt: z.string(),
-      paymentFailedAt: z.string(),
-      invoicePdf: z.string(),
-    })).optional().describe('Invoice history'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeUsage: z
+        .boolean()
+        .optional()
+        .describe('Whether to include organization usage statistics'),
+      includeSubscription: z
+        .boolean()
+        .optional()
+        .describe('Whether to include subscription details'),
+      includeInvoices: z.boolean().optional().describe('Whether to include invoice history')
+    })
+  )
+  .output(
+    z.object({
+      organizationName: z.string().describe('Organization display name'),
+      organizationSlug: z.string().describe('Organization slug'),
+      type: z.string().describe('Organization type'),
+      overages: z.boolean().describe('Whether overages are enabled'),
+      blockedReads: z.boolean().describe('Whether reads are blocked'),
+      blockedWrites: z.boolean().describe('Whether writes are blocked'),
+      usage: z
+        .object({
+          rowsRead: z.number(),
+          rowsWritten: z.number(),
+          storageBytes: z.number(),
+          databases: z.number(),
+          locations: z.number(),
+          groups: z.number()
+        })
+        .optional()
+        .describe('Organization usage statistics'),
+      subscription: z.string().optional().describe('Current subscription plan'),
+      invoices: z
+        .array(
+          z.object({
+            invoiceNumber: z.string(),
+            amountDue: z.string(),
+            dueDate: z.string(),
+            paidAt: z.string(),
+            paymentFailedAt: z.string(),
+            invoicePdf: z.string()
+          })
+        )
+        .optional()
+        .describe('Invoice history')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationSlug: ctx.config.organizationSlug,
+      organizationSlug: ctx.config.organizationSlug
     });
 
     let org = await client.getOrganization();
@@ -58,7 +73,7 @@ export let getOrganization = SlateTool.create(
       type: org.type,
       overages: org.overages,
       blockedReads: org.blocked_reads,
-      blockedWrites: org.blocked_writes,
+      blockedWrites: org.blocked_writes
     };
 
     if (ctx.input.includeUsage) {
@@ -70,7 +85,7 @@ export let getOrganization = SlateTool.create(
         storageBytes: u.storage_bytes,
         databases: u.databases,
         locations: u.locations,
-        groups: u.groups,
+        groups: u.groups
       };
     }
 
@@ -81,18 +96,19 @@ export let getOrganization = SlateTool.create(
 
     if (ctx.input.includeInvoices) {
       let invoiceResult = await client.listInvoices();
-      output.invoices = invoiceResult.invoices.map((inv) => ({
+      output.invoices = invoiceResult.invoices.map(inv => ({
         invoiceNumber: inv.invoice_number,
         amountDue: inv.amount_due,
         dueDate: inv.due_date,
         paidAt: inv.paid_at,
         paymentFailedAt: inv.payment_failed_at,
-        invoicePdf: inv.invoice_pdf,
+        invoicePdf: inv.invoice_pdf
       }));
     }
 
     return {
       output: output as any,
-      message: `Organization **${org.name}** (${org.slug}), type: ${org.type}.`,
+      message: `Organization **${org.name}** (${org.slug}), type: ${org.type}.`
     };
-  }).build();
+  })
+  .build();

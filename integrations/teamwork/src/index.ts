@@ -16,7 +16,7 @@ import {
   manageComment,
   manageNotebook,
   manageProjectPeople,
-  getActivity,
+  getActivity
 } from './tools';
 import {
   taskEvents,
@@ -24,7 +24,7 @@ import {
   milestoneEvents,
   timeEntryEvents,
   commentEvents,
-  messageEvents,
+  messageEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -45,7 +45,7 @@ export let provider = Slate.create({
     manageComment,
     manageNotebook,
     manageProjectPeople,
-    getActivity,
+    getActivity
   ],
   triggers: [
     taskEvents,
@@ -53,6 +53,6 @@ export let provider = Slate.create({
     milestoneEvents,
     timeEntryEvents,
     commentEvents,
-    messageEvents,
-  ],
+    messageEvents
+  ]
 });

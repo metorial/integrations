@@ -21,6 +21,7 @@ OAuth should be used by application developers who wish to build an integration 
 Dialpad uses the "three-legged" OAuth authorization code flow, as defined in RFC 6749 section 4.1. PKCE is also supported.
 
 **Endpoints:**
+
 - Authorization: `https://dialpad.com/oauth2/authorize` (Production) / `https://sandbox.dialpad.com/oauth2/authorize` (Sandbox)
 - Token: `https://dialpad.com/oauth2/token` (Production) / `https://sandbox.dialpad.com/oauth2/token` (Sandbox)
 - Deauthorization: `https://dialpad.com/oauth2/deauthorize` (Production) / `https://sandbox.dialpad.com/oauth2/deauthorize` (Sandbox)
@@ -28,6 +29,7 @@ Dialpad uses the "three-legged" OAuth authorization code flow, as defined in RFC
 **Registration:** You must register your OAuth application with Dialpad via a form to receive a client ID and client secret.
 
 **Scopes:** By default, applications have basic access. Additional scopes include:
+
 - `recordings_export` – Access recording URLs in call events
 - `message_content_export` – Export SMS content for the authenticated user
 - `message_content_export:all` – Export company-wide SMS content
@@ -42,61 +44,81 @@ All requests are authenticated via an API key/token in the query parameter or as
 ## Features
 
 ### User Management
+
 Create, update, delete, and list users within a company. Manage user settings such as Do Not Disturb status, office assignments, desk phones, E911 addresses, caller ID, and phone number assignments.
 
 ### Call Management
+
 Initiate calls on behalf of users, retrieve call details and call lists, transfer calls, add participants, assign/unassign operators, hang up calls, and toggle call recording or voice intelligence. Retrieve AI-generated call recaps and transcripts.
 
 ### SMS and Messaging
+
 Send SMS messages to recipients. Support for bulk messaging, scheduled messages, and message content export. Channel-based messaging is also available for creating and managing messaging channels with members.
 
 ### Contact Management
+
 Create, update, delete, and list contacts. Supports create-or-update operations using external unique identifiers for syncing contacts from external systems.
 
 ### Call Centers and Departments
+
 Create and manage call centers and departments, including listing, updating, and deleting them. Manage operators within call centers and departments — add, remove, list operators, and control their duty status and skill levels.
 
 ### Call Routing
+
 Create programmable call routers that invoke an external routing URL to dynamically determine how incoming calls are handled. Supports actions like playing messages, asking questions via IVR with DTMF input, and routing calls to specific targets. A default target is used as fallback.
+
 - Routers auto-disable after repeated failures or slow responses from the routing endpoint.
 
 ### Phone Number Management
+
 Assign, unassign, swap, and list Dialpad phone numbers for users, offices, rooms, and call routers. Reformat phone strings and manage number tags.
 
 ### Offices and Company Settings
+
 Retrieve and update company-level settings. List and manage offices (including creating secondary offices), billing plans, available licenses, and E911 addresses.
 
 ### Analytics and Stats
+
 Initiate and retrieve statistical reports for analytics purposes. Manage scheduled reports for automated delivery of analytics data.
 
 ### Meetings and Conference Rooms
+
 Create, update, delete, and list Dialpad meetings. Manage meeting rooms and retrieve meeting summaries.
 
 ### Fax
+
 Send faxes and manage fax line assignments. Requires the `fax_message` scope.
 
 ### Scorecards
+
 Retrieve and list scorecards for call quality evaluation. Export scorecard results via an asynchronous processing flow.
 
 ### Custom IVR
+
 Create and manage custom Interactive Voice Response (IVR) menus that can be assigned to call routing targets.
 
 ### Blocked Numbers
+
 Add, remove, list, and retrieve blocked phone numbers at the company level.
 
 ### Screen Pop
+
 Trigger screen pop notifications for users during calls to surface contextual information. Requires the `screen_pop` scope.
 
 ### Access Control Policies
+
 Create, update, delete, and manage access control policies. Assign and unassign policies to control user permissions.
 
 ### Call Labels and Dispositions
+
 Manage call labels and disposition codes that can be applied to calls for categorization and post-call workflows.
 
 ### Digital Engagement
+
 Access digital engagement session data for omnichannel reporting, including conversation history with sentiment analysis.
 
 ### Workforce Management (WFM)
+
 Retrieve activity metrics and agent metrics for workforce management and scheduling analysis.
 
 ## Events
@@ -106,26 +128,36 @@ Dialpad supports webhook-based event subscriptions. A unique webhook ID is gener
 Call events can be subscribed to for an entire company, office, or a more granular target such as a call center or user. Subscriptions are limited to 100 per subscription type for all targets combined under a Dialpad Company. Subscriptions targeting the Company itself are limited to 10 per subscription type.
 
 ### Call Events
+
 Real-time notifications about call lifecycle state transitions (e.g., ringing, connected, ended). Includes details such as call participants, call IDs, recording URLs (if scoped), and relationships between calls in transfer/monitor scenarios.
+
 - Can filter by specific call states to limit which events are delivered.
 - Can target company, office, call center, department, or individual user.
 
 ### SMS Events
+
 Notifications when SMS messages are sent or received. Can be scoped to specific targets.
+
 - Requires `message_content_export` or `message_content_export:all` scope to include message content.
 
 ### Contact Events
+
 Notifications when contacts are created or updated within Dialpad.
 
 ### Agent Status Events
+
 Real-time notifications about call center agent duty status changes (e.g., available, off-duty, wrap-up).
 
 ### Change Log Events
+
 Notifications about administrative changes within the Dialpad account, such as user provisioning, setting changes, and other system modifications. Requires the `change_log` scope.
+
 - Covers a variety of action types for tracking organizational changes.
 
 ### Fax Events
+
 Notifications about fax activity. Requires the `fax_message` scope.
 
 ### Channel Events
+
 Notifications about activity within messaging channels.

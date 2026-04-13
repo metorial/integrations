@@ -3,32 +3,34 @@ import { createSalesforceClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newRecord = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Record',
-    key: 'new_record',
-    description: 'Triggers when a new record is created in Salesforce for a specified object type. Uses SOQL to query for recently created records ordered by creation date. Set the objectType, fields, and optional condition in the initial state.'
-  }
-)
-  .input(z.object({
-    recordId: z.string().describe('ID of the new record'),
-    objectType: z.string().describe('The Salesforce object type'),
-    createdDate: z.string().describe('When the record was created'),
-    record: z.record(z.string(), z.any()).describe('The full record data')
-  }))
-  .output(z.object({
-    recordId: z.string().describe('ID of the new record'),
-    objectType: z.string().describe('The Salesforce object type'),
-    createdDate: z.string().describe('When the record was created'),
-    record: z.record(z.string(), z.any()).describe('The full record data')
-  }))
+export let newRecord = SlateTrigger.create(spec, {
+  name: 'New Record',
+  key: 'new_record',
+  description:
+    'Triggers when a new record is created in Salesforce for a specified object type. Uses SOQL to query for recently created records ordered by creation date. Set the objectType, fields, and optional condition in the initial state.'
+})
+  .input(
+    z.object({
+      recordId: z.string().describe('ID of the new record'),
+      objectType: z.string().describe('The Salesforce object type'),
+      createdDate: z.string().describe('When the record was created'),
+      record: z.record(z.string(), z.any()).describe('The full record data')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('ID of the new record'),
+      objectType: z.string().describe('The Salesforce object type'),
+      createdDate: z.string().describe('When the record was created'),
+      record: z.record(z.string(), z.any()).describe('The full record data')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createSalesforceClient({
         instanceUrl: ctx.auth.instanceUrl,
         apiVersion: ctx.config.apiVersion,
@@ -66,9 +68,8 @@ export let newRecord = SlateTrigger.create(
         record
       }));
 
-      let newLastCreatedDate = records.length > 0
-        ? records[records.length - 1].CreatedDate
-        : lastCreatedDate;
+      let newLastCreatedDate =
+        records.length > 0 ? records[records.length - 1].CreatedDate : lastCreatedDate;
 
       return {
         inputs,
@@ -81,7 +82,7 @@ export let newRecord = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `${ctx.input.objectType.toLowerCase()}.created`,
         id: ctx.input.recordId,

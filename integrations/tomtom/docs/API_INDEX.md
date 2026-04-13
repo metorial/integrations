@@ -14,9 +14,11 @@ This directory contains comprehensive research on TomTom APIs used for the Slate
 ## Quick Navigation
 
 ### 1. Traffic Flow API
+
 **File:** API_RESEARCH.md - Section 1
 
 **Key Endpoint:**
+
 - Flow Segment Data: `GET /traffic/services/4/flowSegmentData/{style}/{zoom}/{format}`
 
 **Parameters:** point, style, zoom, format, unit, thickness, openLr
@@ -26,9 +28,11 @@ This directory contains comprehensive research on TomTom APIs used for the Slate
 ---
 
 ### 2. Traffic Incidents API
+
 **File:** API_RESEARCH.md - Section 2
 
 **Key Endpoints:**
+
 - Incident Details: `GET/POST /traffic/services/5/incidentDetails`
 
 **Parameters:** bbox (or ids), language, categoryFilter, timeValidityFilter
@@ -38,9 +42,11 @@ This directory contains comprehensive research on TomTom APIs used for the Slate
 ---
 
 ### 3. Geofencing API
+
 **File:** API_RESEARCH.md - Section 3
 
 **Key Endpoints:**
+
 - List Projects: `GET /geofencing/1/projects`
 - Get Project Details: `GET /geofencing/1/projects/{projectId}`
 - Get Fence Details: `GET /geofencing/1/fences/{fenceId}`
@@ -57,9 +63,11 @@ This directory contains comprehensive research on TomTom APIs used for the Slate
 ---
 
 ### 4. Location History API
+
 **File:** API_RESEARCH.md - Section 4
 
 **Key Endpoints:**
+
 - Send Position: `POST /locationHistory/1/history/positions`
 - Get Position History: `GET /locationHistory/1/history/positions/{objectId}`
 - Last Position: `GET /locationHistory/1/history/positions/{objectId}/latest`
@@ -73,9 +81,11 @@ This directory contains comprehensive research on TomTom APIs used for the Slate
 ---
 
 ### 5. Notifications API
+
 **File:** API_RESEARCH.md - Section 5
 
 **Key Endpoints:**
+
 - List Settings: `GET /notifications/1/settings`
 - Create Contact Group: `POST /notifications/1/groups`
 - List Contact Groups: `GET /notifications/1/groups`
@@ -99,16 +109,19 @@ This directory contains comprehensive research on TomTom APIs used for the Slate
 ## Authentication Reference
 
 ### API Key
+
 - Query parameter: `key=YOUR_API_KEY`
 - Generate in TomTom Developer Portal
 - Used for public API calls
 
 ### Admin Key
+
 - Query parameter: `adminKey=YOUR_ADMIN_KEY`
 - Required for Geofencing and Location History management
 - Generated via registration endpoints
 
 **Registration Endpoints:**
+
 ```
 POST https://api.tomtom.com/geofencing/1/register?key=YOUR_API_KEY
 POST https://api.tomtom.com/locationHistory/1/register?key=YOUR_API_KEY
@@ -126,28 +139,31 @@ Alternative regional endpoint: `https://kr-api.tomtom.com` (Korea)
 
 ## Common Query Parameters
 
-| Parameter | Used By | Description |
-|-----------|---------|-------------|
-| key | All APIs | API Key (required) |
-| adminKey | Geofencing, Location History | Admin Key (management only) |
-| from | History, Notifications | ISO 8601 timestamp (period start) |
-| to | History, Notifications | ISO 8601 timestamp (period end) |
-| maxResults | Pagination | Max results per page (default: 100, max: 100) |
-| pageNumber | Pagination | Page number for results (default: 1) |
+| Parameter  | Used By                      | Description                                   |
+| ---------- | ---------------------------- | --------------------------------------------- |
+| key        | All APIs                     | API Key (required)                            |
+| adminKey   | Geofencing, Location History | Admin Key (management only)                   |
+| from       | History, Notifications       | ISO 8601 timestamp (period start)             |
+| to         | History, Notifications       | ISO 8601 timestamp (period end)               |
+| maxResults | Pagination                   | Max results per page (default: 100, max: 100) |
+| pageNumber | Pagination                   | Page number for results (default: 1)          |
 
 ---
 
 ## Data Formats
 
 ### Coordinates
+
 - Format: `longitude,latitude[,altitude]`
 - Projection: WGS84 (EPSG:4326)
 
 ### Timestamps
+
 - Format: ISO 8601 (YYYY-MM-DDThh:mm:ss)
 - Example: `2024-03-14T14:30:45`
 
 ### Geometry
+
 - GeoJSON Feature format
 - Types: Point, LineString, Polygon
 - Required for Location History and Geofencing
@@ -156,28 +172,28 @@ Alternative regional endpoint: `https://kr-api.tomtom.com` (Korea)
 
 ## HTTP Methods
 
-| Method | Purpose |
-|--------|---------|
-| GET | Retrieve data, list resources |
-| POST | Create new resources, submit queries |
-| PUT | Replace entire resource |
-| PATCH | Partially update resource |
-| DELETE | Remove resource |
+| Method | Purpose                              |
+| ------ | ------------------------------------ |
+| GET    | Retrieve data, list resources        |
+| POST   | Create new resources, submit queries |
+| PUT    | Replace entire resource              |
+| PATCH  | Partially update resource            |
+| DELETE | Remove resource                      |
 
 ---
 
 ## Common HTTP Status Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | OK |
-| 201 | Created |
-| 204 | No Content (successful deletion) |
-| 400 | Bad Request |
-| 401 | Unauthorized (invalid API key) |
-| 403 | Forbidden (invalid Admin Key) |
-| 404 | Not Found |
-| 500 | Server Error |
+| Code | Meaning                          |
+| ---- | -------------------------------- |
+| 200  | OK                               |
+| 201  | Created                          |
+| 204  | No Content (successful deletion) |
+| 400  | Bad Request                      |
+| 401  | Unauthorized (invalid API key)   |
+| 403  | Forbidden (invalid Admin Key)    |
+| 404  | Not Found                        |
+| 500  | Server Error                     |
 
 ---
 
@@ -193,12 +209,12 @@ Alternative regional endpoint: `https://kr-api.tomtom.com` (Korea)
 
 ## Data Retention Policies
 
-| Data | Retention |
-|------|-----------|
-| Traffic Data | Updated every minute |
-| Location History | 3 months active + 6 months archive |
-| Transition Records | 3 months active + 6 months archive |
-| Notification History | 7 days (auto-deleted) |
+| Data                 | Retention                          |
+| -------------------- | ---------------------------------- |
+| Traffic Data         | Updated every minute               |
+| Location History     | 3 months active + 6 months archive |
+| Transition Records   | 3 months active + 6 months archive |
+| Notification History | 7 days (auto-deleted)              |
 
 ---
 
@@ -215,6 +231,7 @@ Alternative regional endpoint: `https://kr-api.tomtom.com` (Korea)
 ## References
 
 For complete endpoint documentation, visit:
+
 - [TomTom Developer Portal](https://developer.tomtom.com)
 - [Traffic API Documentation](https://developer.tomtom.com/traffic-api/documentation)
 - [Geofencing API Documentation](https://developer.tomtom.com/geofencing-api/documentation)

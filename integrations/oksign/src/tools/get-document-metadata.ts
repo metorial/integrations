@@ -3,44 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDocumentMetadata = SlateTool.create(
-  spec,
-  {
-    name: 'Get Document Metadata',
-    key: 'get_document_metadata',
-    description: `Retrieve detailed metadata from a signed document, including signature details (who signed, when, authentication method), form field values, and document status. Uses the v2 metadata endpoint for enhanced field information.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getDocumentMetadata = SlateTool.create(spec, {
+  name: 'Get Document Metadata',
+  key: 'get_document_metadata',
+  description: `Retrieve detailed metadata from a signed document, including signature details (who signed, when, authentication method), form field values, and document status. Uses the v2 metadata endpoint for enhanced field information.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    signedDocumentId: z.string().describe('The signed document ID (not the source document ID)')
-  }))
-  .output(z.object({
-    filename: z.string().describe('Document filename'),
-    fileSize: z.number().describe('Document file size in bytes'),
-    signaturesRequired: z.number().describe('Total number of signature fields in the document'),
-    signaturesCompleted: z.number().describe('Number of completed signatures'),
-    isFullySigned: z.boolean().describe('Whether all signatures have been collected'),
-    fields: z.array(z.object({
-      name: z.string().describe('Field name'),
-      value: z.string().describe('Field value'),
-      fieldType: z.string().describe('Field type (CanvasSIG, Text, etc.)'),
-      signerId: z.string().describe('Signer ID the field belongs to')
-    })).describe('Completed form fields with their values'),
-    signatures: z.array(z.object({
-      signedBy: z.string().describe('Name of the person who signed'),
-      actingAs: z.string().describe('Capacity in which they signed'),
-      authMethod: z.string().describe('Authentication method used (Pen, TAN, eID, Itsme, Smart-ID)'),
-      signedAt: z.string().describe('ISO timestamp of when the signature was placed'),
-      serialNumber: z.string().describe('Certificate serial number (for X.509 signatures)'),
-      provider: z.string().describe('Signature provider'),
-      signerId: z.string().describe('Signer ID')
-    })).describe('Signature details for each signer')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      signedDocumentId: z
+        .string()
+        .describe('The signed document ID (not the source document ID)')
+    })
+  )
+  .output(
+    z.object({
+      filename: z.string().describe('Document filename'),
+      fileSize: z.number().describe('Document file size in bytes'),
+      signaturesRequired: z
+        .number()
+        .describe('Total number of signature fields in the document'),
+      signaturesCompleted: z.number().describe('Number of completed signatures'),
+      isFullySigned: z.boolean().describe('Whether all signatures have been collected'),
+      fields: z
+        .array(
+          z.object({
+            name: z.string().describe('Field name'),
+            value: z.string().describe('Field value'),
+            fieldType: z.string().describe('Field type (CanvasSIG, Text, etc.)'),
+            signerId: z.string().describe('Signer ID the field belongs to')
+          })
+        )
+        .describe('Completed form fields with their values'),
+      signatures: z
+        .array(
+          z.object({
+            signedBy: z.string().describe('Name of the person who signed'),
+            actingAs: z.string().describe('Capacity in which they signed'),
+            authMethod: z
+              .string()
+              .describe('Authentication method used (Pen, TAN, eID, Itsme, Smart-ID)'),
+            signedAt: z.string().describe('ISO timestamp of when the signature was placed'),
+            serialNumber: z
+              .string()
+              .describe('Certificate serial number (for X.509 signatures)'),
+            provider: z.string().describe('Signature provider'),
+            signerId: z.string().describe('Signer ID')
+          })
+        )
+        .describe('Signature details for each signer')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let metadata = await client.retrieveMetadata(ctx.input.signedDocumentId);
 

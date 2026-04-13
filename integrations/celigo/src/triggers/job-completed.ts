@@ -3,43 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Completed',
-    key: 'job_completed',
-    description: 'Triggers when a flow job completes, fails, or is cancelled. Polls for recently finished jobs and returns their execution stats.'
-  }
-)
-  .input(z.object({
-    jobId: z.string().describe('Unique job identifier'),
-    status: z.string().describe('Job status (completed, failed, cancelled)'),
-    flowId: z.string().optional().describe('Associated flow ID'),
-    numSuccess: z.number().optional().describe('Number of successful records'),
-    numError: z.number().optional().describe('Number of errored records'),
-    startedAt: z.string().optional().describe('Job start time'),
-    endedAt: z.string().optional().describe('Job end time'),
-    createdAt: z.string().describe('Job creation time'),
-    rawJob: z.any().describe('Full job object')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Unique job identifier'),
-    status: z.string().describe('Job status'),
-    flowId: z.string().optional().describe('Associated flow ID'),
-    numSuccess: z.number().optional().describe('Number of successful records'),
-    numError: z.number().optional().describe('Number of errored records'),
-    numIgnore: z.number().optional().describe('Number of ignored records'),
-    startedAt: z.string().optional().describe('Job start time'),
-    endedAt: z.string().optional().describe('Job end time'),
-    type: z.string().optional().describe('Job type'),
-    retriable: z.boolean().optional().describe('Whether the failed records are retriable')
-  }))
+export let jobCompleted = SlateTrigger.create(spec, {
+  name: 'Job Completed',
+  key: 'job_completed',
+  description:
+    'Triggers when a flow job completes, fails, or is cancelled. Polls for recently finished jobs and returns their execution stats.'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('Unique job identifier'),
+      status: z.string().describe('Job status (completed, failed, cancelled)'),
+      flowId: z.string().optional().describe('Associated flow ID'),
+      numSuccess: z.number().optional().describe('Number of successful records'),
+      numError: z.number().optional().describe('Number of errored records'),
+      startedAt: z.string().optional().describe('Job start time'),
+      endedAt: z.string().optional().describe('Job end time'),
+      createdAt: z.string().describe('Job creation time'),
+      rawJob: z.any().describe('Full job object')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Unique job identifier'),
+      status: z.string().describe('Job status'),
+      flowId: z.string().optional().describe('Associated flow ID'),
+      numSuccess: z.number().optional().describe('Number of successful records'),
+      numError: z.number().optional().describe('Number of errored records'),
+      numIgnore: z.number().optional().describe('Number of ignored records'),
+      startedAt: z.string().optional().describe('Job start time'),
+      endedAt: z.string().optional().describe('Job end time'),
+      type: z.string().optional().describe('Job type'),
+      retriable: z.boolean().optional().describe('Whether the failed records are retriable')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         region: ctx.config.region
@@ -54,8 +56,9 @@ export let jobCompleted = SlateTrigger.create(
 
       let jobs = await client.listJobs(params);
 
-      let finishedJobs = jobs.filter((j: any) =>
-        j.status === 'completed' || j.status === 'failed' || j.status === 'cancelled'
+      let finishedJobs = jobs.filter(
+        (j: any) =>
+          j.status === 'completed' || j.status === 'failed' || j.status === 'cancelled'
       );
 
       let seenIds = (ctx.state?.seenIds as string[] | undefined) || [];
@@ -66,7 +69,10 @@ export let jobCompleted = SlateTrigger.create(
       let newLastPollTime = lastPollTime;
       if (jobs.length > 0) {
         let mostRecentCreatedAt = jobs[0]?.createdAt;
-        if (mostRecentCreatedAt && (!newLastPollTime || mostRecentCreatedAt > newLastPollTime)) {
+        if (
+          mostRecentCreatedAt &&
+          (!newLastPollTime || mostRecentCreatedAt > newLastPollTime)
+        ) {
           newLastPollTime = mostRecentCreatedAt;
         }
       }
@@ -90,7 +96,7 @@ export let jobCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -110,4 +116,5 @@ export let jobCompleted = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

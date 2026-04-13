@@ -21,40 +21,53 @@ let appointmentSchema = z.object({
   canceled: z.boolean().describe('Whether the appointment is canceled'),
   timezone: z.string().describe('Timezone of the appointment'),
   notes: z.string().optional().describe('Appointment notes'),
-  confirmationPage: z.string().optional().describe('Confirmation page URL'),
+  confirmationPage: z.string().optional().describe('Confirmation page URL')
 });
 
-export let listAppointments = SlateTool.create(
-  spec,
-  {
-    name: 'List Appointments',
-    key: 'list_appointments',
-    description: `Retrieve a list of scheduled appointments. Filter by date range, calendar, appointment type, client name, email, or phone. Returns up to 100 appointments per request.`,
-    tags: {
-      readOnly: true,
-    },
+export let listAppointments = SlateTool.create(spec, {
+  name: 'List Appointments',
+  key: 'list_appointments',
+  description: `Retrieve a list of scheduled appointments. Filter by date range, calendar, appointment type, client name, email, or phone. Returns up to 100 appointments per request.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    minDate: z.string().optional().describe('Only return appointments on or after this date (e.g. "2024-01-01")'),
-    maxDate: z.string().optional().describe('Only return appointments on or before this date (e.g. "2024-12-31")'),
-    calendarId: z.number().optional().describe('Filter by calendar ID'),
-    appointmentTypeId: z.number().optional().describe('Filter by appointment type ID'),
-    canceled: z.boolean().optional().describe('Include canceled appointments (default: false)'),
-    firstName: z.string().optional().describe('Filter by client first name'),
-    lastName: z.string().optional().describe('Filter by client last name'),
-    email: z.string().optional().describe('Filter by client email'),
-    phone: z.string().optional().describe('Filter by client phone'),
-    max: z.number().optional().describe('Maximum number of results (default: 100)'),
-    direction: z.enum(['ASC', 'DESC']).optional().describe('Sort direction by date (default: DESC)'),
-  }))
-  .output(z.object({
-    appointments: z.array(appointmentSchema).describe('List of appointments'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      minDate: z
+        .string()
+        .optional()
+        .describe('Only return appointments on or after this date (e.g. "2024-01-01")'),
+      maxDate: z
+        .string()
+        .optional()
+        .describe('Only return appointments on or before this date (e.g. "2024-12-31")'),
+      calendarId: z.number().optional().describe('Filter by calendar ID'),
+      appointmentTypeId: z.number().optional().describe('Filter by appointment type ID'),
+      canceled: z
+        .boolean()
+        .optional()
+        .describe('Include canceled appointments (default: false)'),
+      firstName: z.string().optional().describe('Filter by client first name'),
+      lastName: z.string().optional().describe('Filter by client last name'),
+      email: z.string().optional().describe('Filter by client email'),
+      phone: z.string().optional().describe('Filter by client phone'),
+      max: z.number().optional().describe('Maximum number of results (default: 100)'),
+      direction: z
+        .enum(['ASC', 'DESC'])
+        .optional()
+        .describe('Sort direction by date (default: DESC)')
+    })
+  )
+  .output(
+    z.object({
+      appointments: z.array(appointmentSchema).describe('List of appointments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      authMethod: ctx.auth.authMethod,
+      authMethod: ctx.auth.authMethod
     });
 
     let results = await client.listAppointments({
@@ -69,7 +82,7 @@ export let listAppointments = SlateTool.create(
       phone: ctx.input.phone,
       max: ctx.input.max,
       direction: ctx.input.direction,
-      excludeForms: true,
+      excludeForms: true
     });
 
     let appointments = (results as any[]).map((a: any) => ({
@@ -90,11 +103,12 @@ export let listAppointments = SlateTool.create(
       canceled: a.canceled || false,
       timezone: a.timezone || '',
       notes: a.notes || undefined,
-      confirmationPage: a.confirmationPage || undefined,
+      confirmationPage: a.confirmationPage || undefined
     }));
 
     return {
       output: { appointments },
-      message: `Found **${appointments.length}** appointment(s).`,
+      message: `Found **${appointments.length}** appointment(s).`
     };
-  }).build();
+  })
+  .build();

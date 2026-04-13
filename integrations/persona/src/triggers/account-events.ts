@@ -4,32 +4,34 @@ import { normalizeResource } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let accountEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Events',
-    key: 'account_events',
-    description: 'Receive webhook events for account lifecycle changes including creation, redaction, archiving, restoration, consolidation, and tag changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type (e.g., account.created, account.archived)'),
-    eventId: z.string().describe('Unique event identifier'),
-    resourceId: z.string().optional().describe('Account ID'),
-    payload: z.any().describe('Full event payload'),
-  }))
-  .output(z.object({
-    accountId: z.string().optional().describe('Persona account ID'),
-    referenceId: z.string().optional().describe('Your reference ID'),
-    nameFirst: z.string().optional().describe('First name'),
-    nameLast: z.string().optional().describe('Last name'),
-    emailAddress: z.string().optional().describe('Email address'),
-    tags: z.array(z.string()).optional().describe('Account tags'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    attributes: z.record(z.string(), z.any()).optional().describe('Full account attributes'),
-  }))
+export let accountEvents = SlateTrigger.create(spec, {
+  name: 'Account Events',
+  key: 'account_events',
+  description:
+    'Receive webhook events for account lifecycle changes including creation, redaction, archiving, restoration, consolidation, and tag changes.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type (e.g., account.created, account.archived)'),
+      eventId: z.string().describe('Unique event identifier'),
+      resourceId: z.string().optional().describe('Account ID'),
+      payload: z.any().describe('Full event payload')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.string().optional().describe('Persona account ID'),
+      referenceId: z.string().optional().describe('Your reference ID'),
+      nameFirst: z.string().optional().describe('First name'),
+      nameLast: z.string().optional().describe('Last name'),
+      emailAddress: z.string().optional().describe('Email address'),
+      tags: z.array(z.string()).optional().describe('Account tags'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      attributes: z.record(z.string(), z.any()).optional().describe('Full account attributes')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new PersonaClient({ token: ctx.auth.token });
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
@@ -40,18 +42,18 @@ export let accountEvents = SlateTrigger.create(
           'account.restored',
           'account.consolidated',
           'account.tag-added',
-          'account.tag-removed',
-        ],
+          'account.tag-removed'
+        ]
       });
 
       return {
         registrationDetails: {
-          webhookId: result.data?.id,
-        },
+          webhookId: result.data?.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new PersonaClient({ token: ctx.auth.token });
       let webhookId = ctx.input.registrationDetails?.webhookId;
       if (webhookId) {
@@ -63,7 +65,7 @@ export let accountEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -82,16 +84,18 @@ export let accountEvents = SlateTrigger.create(
       let payloadData = n.payload?.data || {};
 
       return {
-        inputs: [{
-          eventType,
-          eventId: eventData.id || `${eventType}_${payloadData.id}_${Date.now()}`,
-          resourceId: payloadData.id,
-          payload: n.payload,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: eventData.id || `${eventType}_${payloadData.id}_${Date.now()}`,
+            resourceId: payloadData.id,
+            payload: n.payload
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payloadData = ctx.input.payload?.data || {};
       let payloadAttrs = payloadData.attributes || {};
 
@@ -106,8 +110,9 @@ export let accountEvents = SlateTrigger.create(
           emailAddress: payloadAttrs['email-address'] || payloadAttrs.email_address,
           tags: payloadAttrs.tags,
           createdAt: payloadAttrs['created-at'] || payloadAttrs.created_at,
-          attributes: payloadAttrs,
-        },
+          attributes: payloadAttrs
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

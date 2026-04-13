@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.notif.immo',
-  sandbox: 'https://preprod-api.notif.immo',
+  sandbox: 'https://preprod-api.notif.immo'
 };
 
 export class Client {
@@ -15,14 +15,16 @@ export class Client {
       baseURL,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-KEY': config.token,
-      },
+        'X-API-KEY': config.token
+      }
     });
   }
 
   // ── Properties ──
 
-  async searchProperties(params: Record<string, unknown>): Promise<HydraCollection<PropertyDocument>> {
+  async searchProperties(
+    params: Record<string, unknown>
+  ): Promise<HydraCollection<PropertyDocument>> {
     let response = await this.axios.get('/documents/properties', { params });
     return response.data;
   }
@@ -32,8 +34,14 @@ export class Client {
     return response.data;
   }
 
-  async getSimilarProperties(propertyId: string, params?: Record<string, unknown>): Promise<HydraCollection<PropertyDocument>> {
-    let response = await this.axios.get(`/documents/properties/${propertyId}/similar-properties`, { params });
+  async getSimilarProperties(
+    propertyId: string,
+    params?: Record<string, unknown>
+  ): Promise<HydraCollection<PropertyDocument>> {
+    let response = await this.axios.get(
+      `/documents/properties/${propertyId}/similar-properties`,
+      { params }
+    );
     return response.data;
   }
 
@@ -42,7 +50,7 @@ export class Client {
   async listSearches(params?: Record<string, unknown>): Promise<HydraCollection<SavedSearch>> {
     let response = await this.axios.get('/searches', {
       params,
-      headers: { platformOrigin: 'melo' },
+      headers: { platformOrigin: 'melo' }
     });
     return response.data;
   }
@@ -68,7 +76,9 @@ export class Client {
 
   // ── Market Indicators ──
 
-  async getPricePerMeterEvolution(params: Record<string, unknown>): Promise<HydraCollection<PricePerMeterData>> {
+  async getPricePerMeterEvolution(
+    params: Record<string, unknown>
+  ): Promise<HydraCollection<PricePerMeterData>> {
     let response = await this.axios.get('/indicators/price_per_meter', { params });
     return response.data;
   }
@@ -78,12 +88,16 @@ export class Client {
     return response.data;
   }
 
-  async getPointsOfInterest(params: Record<string, unknown>): Promise<HydraCollection<PointOfInterest>> {
+  async getPointsOfInterest(
+    params: Record<string, unknown>
+  ): Promise<HydraCollection<PointOfInterest>> {
     let response = await this.axios.get('/indicators/points_of_interest', { params });
     return response.data;
   }
 
-  async locationAutocomplete(params: Record<string, unknown>): Promise<HydraCollection<LocationSuggestion>> {
+  async locationAutocomplete(
+    params: Record<string, unknown>
+  ): Promise<HydraCollection<LocationSuggestion>> {
     let response = await this.axios.get('/public/location-autocomplete', { params });
     return response.data;
   }

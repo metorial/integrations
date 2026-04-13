@@ -8,7 +8,7 @@ import {
   searchPeople,
   searchCompanies,
   getCreditBalance,
-  verifyApiKey,
+  verifyApiKey
 } from './tools';
 import { enrichmentCompleted } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     searchPeople,
     searchCompanies,
     getCreditBalance,
-    verifyApiKey,
+    verifyApiKey
   ],
-  triggers: [
-    enrichmentCompleted,
-  ],
+  triggers: [enrichmentCompleted]
 });

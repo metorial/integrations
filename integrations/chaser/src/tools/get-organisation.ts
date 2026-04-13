@@ -10,12 +10,12 @@ export let getOrganisation = SlateTool.create(spec, {
   description: `Retrieve details about the connected Chaser organisation, including name, legal name, base currency, country, timezone, and last sync date.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
   .input(z.object({}))
   .output(organisationOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getOrganisation();
@@ -29,9 +29,9 @@ export let getOrganisation = SlateTool.create(spec, {
         baseCurrency: result.baseCurrency || '',
         countryCode: result.countryCode || '',
         timezone: result.timezone || '',
-        lastSyncDate: result.lastSyncDate ?? null,
+        lastSyncDate: result.lastSyncDate ?? null
       },
-      message: `Organisation: **${result.name}** (${result.baseCurrency}, ${result.countryCode}). Last synced: ${result.lastSyncDate || 'never'}.`,
+      message: `Organisation: **${result.name}** (${result.baseCurrency}, ${result.countryCode}). Last synced: ${result.lastSyncDate || 'never'}.`
     };
   })
   .build();

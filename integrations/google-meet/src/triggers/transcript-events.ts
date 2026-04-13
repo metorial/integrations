@@ -3,46 +3,46 @@ import { MeetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transcriptEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transcript Events',
-    key: 'transcript_events',
-    description: 'Triggers when a transcript file is generated for a conference. Polls conference records for new transcripts with FILE_GENERATED state.'
-  }
-)
-  .input(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name'),
-    transcriptName: z.string().describe('Transcript resource name'),
-    state: z.string().describe('Transcript state'),
-    startTime: z.string().optional().describe('When transcription started'),
-    endTime: z.string().optional().describe('When transcription ended'),
-    docsId: z.string().optional().describe('Google Docs document ID'),
-    docsUri: z.string().optional().describe('URI to view the transcript document')
-  }))
-  .output(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name'),
-    transcriptName: z.string().describe('Transcript resource name'),
-    state: z.string().describe('Transcript state'),
-    startTime: z.string().optional().describe('When transcription started'),
-    endTime: z.string().optional().describe('When transcription ended'),
-    docsId: z.string().optional().describe('Google Docs document ID'),
-    docsUri: z.string().optional().describe('URI to view the transcript')
-  }))
+export let transcriptEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Transcript Events',
+  key: 'transcript_events',
+  description:
+    'Triggers when a transcript file is generated for a conference. Polls conference records for new transcripts with FILE_GENERATED state.'
+})
+  .input(
+    z.object({
+      conferenceRecordName: z.string().describe('Conference record resource name'),
+      transcriptName: z.string().describe('Transcript resource name'),
+      state: z.string().describe('Transcript state'),
+      startTime: z.string().optional().describe('When transcription started'),
+      endTime: z.string().optional().describe('When transcription ended'),
+      docsId: z.string().optional().describe('Google Docs document ID'),
+      docsUri: z.string().optional().describe('URI to view the transcript document')
+    })
+  )
+  .output(
+    z.object({
+      conferenceRecordName: z.string().describe('Conference record resource name'),
+      transcriptName: z.string().describe('Transcript resource name'),
+      state: z.string().describe('Transcript state'),
+      startTime: z.string().optional().describe('When transcription started'),
+      endTime: z.string().optional().describe('When transcription ended'),
+      docsId: z.string().optional().describe('Google Docs document ID'),
+      docsUri: z.string().optional().describe('URI to view the transcript')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MeetClient({ token: ctx.auth.token });
 
       let knownTranscripts = (ctx.state?.knownTranscripts as string[] | undefined) || [];
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
 
-      let filter = lastPollTime
-        ? `end_time>="${lastPollTime}"`
-        : undefined;
+      let filter = lastPollTime ? `end_time>="${lastPollTime}"` : undefined;
 
       let records = await client.listConferenceRecords(filter, 20);
       let inputs: Array<{
@@ -92,7 +92,7 @@ export let transcriptEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'transcript.file_generated',
         id: ctx.input.transcriptName,
@@ -107,4 +107,5 @@ export let transcriptEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

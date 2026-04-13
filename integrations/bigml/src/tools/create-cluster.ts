@@ -3,35 +3,46 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let createCluster = SlateTool.create(
-  spec,
-  {
-    name: 'Create Cluster',
-    key: 'create_cluster',
-    description: `Create an unsupervised cluster model to group data instances by similarity. Computes centroids representing the center of each cluster.
+export let createCluster = SlateTool.create(spec, {
+  name: 'Create Cluster',
+  key: 'create_cluster',
+  description: `Create an unsupervised cluster model to group data instances by similarity. Computes centroids representing the center of each cluster.
 After creation, use predictions to assign new data points to the nearest cluster centroid.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('Dataset resource ID to cluster (e.g., "dataset/abc123")'),
-    name: z.string().optional().describe('Name for the cluster'),
-    k: z.number().optional().describe('Number of clusters to create. If omitted, BigML selects the optimal k automatically.'),
-    inputFields: z.array(z.string()).optional().describe('List of field IDs to use for clustering'),
-    tags: z.array(z.string()).optional().describe('Tags to assign'),
-    projectId: z.string().optional().describe('Project to associate with')
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('BigML resource ID for the cluster'),
-    name: z.string().optional().describe('Name of the cluster'),
-    statusCode: z.number().describe('Status code'),
-    statusMessage: z.string().describe('Status message'),
-    created: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z
+        .string()
+        .describe('Dataset resource ID to cluster (e.g., "dataset/abc123")'),
+      name: z.string().optional().describe('Name for the cluster'),
+      k: z
+        .number()
+        .optional()
+        .describe(
+          'Number of clusters to create. If omitted, BigML selects the optimal k automatically.'
+        ),
+      inputFields: z
+        .array(z.string())
+        .optional()
+        .describe('List of field IDs to use for clustering'),
+      tags: z.array(z.string()).optional().describe('Tags to assign'),
+      projectId: z.string().optional().describe('Project to associate with')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('BigML resource ID for the cluster'),
+      name: z.string().optional().describe('Name of the cluster'),
+      statusCode: z.number().describe('Status code'),
+      statusMessage: z.string().describe('Status message'),
+      created: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let body: Record<string, any> = {
@@ -56,4 +67,5 @@ After creation, use predictions to assign new data points to the nearest cluster
       },
       message: `Cluster **${result.resource}** created${result.name ? ` as "${result.name}"` : ''}${ctx.input.k ? ` with k=${ctx.input.k}` : ''}. Status: ${result.status?.message ?? 'pending'}.`
     };
-  }).build();
+  })
+  .build();

@@ -61,6 +61,7 @@ All agent tasks return step-by-step results and a final output, and can use cust
 ### Session Recordings
 
 Recording captures all browser interactions, DOM changes, and network requests for the duration of a session. Two types are available:
+
 - **rrweb recordings**: DOM-based replay recordings (enabled by default).
 - **Video recordings (MP4)**: Screen capture video requiring explicit opt-in via `enableVideoWebRecording`.
 

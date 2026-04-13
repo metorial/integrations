@@ -28,39 +28,52 @@ let paymentInputSchema = z.object({
   isGift: z.boolean().describe('Whether this was a gift purchase'),
   vatApplied: z.boolean().describe('Whether VAT was applied'),
   date: z.string().describe('Transaction timestamp'),
-  amountRefunded: z.number().nullable().describe('Refunded amount in cents (for refund events)'),
+  amountRefunded: z
+    .number()
+    .nullable()
+    .describe('Refunded amount in cents (for refund events)'),
   dateRefunded: z.string().nullable().describe('Refund timestamp (for refund events)'),
   signature: z.string().describe('HMAC-SHA256 signature for verification')
 });
 
-export let paymentTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Payment Event',
-    key: 'payment_event',
-    description: 'Triggers when a payment is completed or refunded in your Payhip store. Covers both full and partial refunds.'
-  }
-)
+export let paymentTrigger = SlateTrigger.create(spec, {
+  name: 'Payment Event',
+  key: 'payment_event',
+  description:
+    'Triggers when a payment is completed or refunded in your Payhip store. Covers both full and partial refunds.'
+})
   .input(paymentInputSchema)
-  .output(z.object({
-    transactionId: z.string().describe('Unique transaction identifier'),
-    email: z.string().describe('Customer email address'),
-    currency: z.string().describe('Payment currency code (e.g. USD)'),
-    price: z.number().describe('Total payment amount in cents'),
-    items: z.array(lineItemSchema).describe('Products included in the transaction'),
-    paymentType: z.string().describe('Payment method used'),
-    stripeFee: z.number().nullable().describe('Stripe processing fee in cents'),
-    payhipFee: z.number().nullable().describe('Payhip fee in cents'),
-    isGift: z.boolean().describe('Whether the purchase was a gift'),
-    vatApplied: z.boolean().describe('Whether VAT was applied'),
-    date: z.string().describe('Transaction date as Unix timestamp'),
-    amountRefunded: z.number().nullable().describe('Refunded amount in cents (null if not a refund)'),
-    dateRefunded: z.string().nullable().describe('Refund date as Unix timestamp (null if not a refund)'),
-    isPartialRefund: z.boolean().describe('Whether this is a partial refund (false for full refunds and non-refund events)')
-  }))
+  .output(
+    z.object({
+      transactionId: z.string().describe('Unique transaction identifier'),
+      email: z.string().describe('Customer email address'),
+      currency: z.string().describe('Payment currency code (e.g. USD)'),
+      price: z.number().describe('Total payment amount in cents'),
+      items: z.array(lineItemSchema).describe('Products included in the transaction'),
+      paymentType: z.string().describe('Payment method used'),
+      stripeFee: z.number().nullable().describe('Stripe processing fee in cents'),
+      payhipFee: z.number().nullable().describe('Payhip fee in cents'),
+      isGift: z.boolean().describe('Whether the purchase was a gift'),
+      vatApplied: z.boolean().describe('Whether VAT was applied'),
+      date: z.string().describe('Transaction date as Unix timestamp'),
+      amountRefunded: z
+        .number()
+        .nullable()
+        .describe('Refunded amount in cents (null if not a refund)'),
+      dateRefunded: z
+        .string()
+        .nullable()
+        .describe('Refund date as Unix timestamp (null if not a refund)'),
+      isPartialRefund: z
+        .boolean()
+        .describe(
+          'Whether this is a partial refund (false for full refunds and non-refund events)'
+        )
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
       let eventType = data.type as string;
 
@@ -93,7 +106,7 @@ export let paymentTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       let mappedItems = (input.items ?? []).map((item: any) => ({
@@ -109,9 +122,10 @@ export let paymentTrigger = SlateTrigger.create(
         variant: item.variant != null ? String(item.variant) : null
       }));
 
-      let isPartialRefund = input.eventType === 'refunded'
-        && input.amountRefunded != null
-        && input.amountRefunded < input.price;
+      let isPartialRefund =
+        input.eventType === 'refunded' &&
+        input.amountRefunded != null &&
+        input.amountRefunded < input.price;
 
       return {
         type: input.eventType === 'paid' ? 'payment.completed' : 'payment.refunded',

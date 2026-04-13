@@ -1,31 +1,31 @@
 import { createAxios } from 'slates';
 
 let mapsAxios = createAxios({
-  baseURL: 'https://maps.googleapis.com',
+  baseURL: 'https://maps.googleapis.com'
 });
 
 let placesAxios = createAxios({
-  baseURL: 'https://places.googleapis.com',
+  baseURL: 'https://places.googleapis.com'
 });
 
 let routesAxios = createAxios({
-  baseURL: 'https://routes.googleapis.com',
+  baseURL: 'https://routes.googleapis.com'
 });
 
 let addressValidationAxios = createAxios({
-  baseURL: 'https://addressvalidation.googleapis.com',
+  baseURL: 'https://addressvalidation.googleapis.com'
 });
 
 let airQualityAxios = createAxios({
-  baseURL: 'https://airquality.googleapis.com',
+  baseURL: 'https://airquality.googleapis.com'
 });
 
 let roadsAxios = createAxios({
-  baseURL: 'https://roads.googleapis.com',
+  baseURL: 'https://roads.googleapis.com'
 });
 
 let geolocationAxios = createAxios({
-  baseURL: 'https://www.googleapis.com',
+  baseURL: 'https://www.googleapis.com'
 });
 
 export class GoogleMapsClient {
@@ -51,8 +51,8 @@ export class GoogleMapsClient {
         bounds: params.bounds,
         language: params.language,
         region: params.region,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -70,8 +70,8 @@ export class GoogleMapsClient {
         result_type: params.resultType,
         location_type: params.locationType,
         language: params.language,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -90,12 +90,12 @@ export class GoogleMapsClient {
         address: {
           regionCode: params.regionCode,
           locality: params.locality,
-          addressLines: params.addressLines,
+          addressLines: params.addressLines
         },
-        enableUspsCass: params.enableUspsCass,
+        enableUspsCass: params.enableUspsCass
       },
       {
-        params: { key: this.token },
+        params: { key: this.token }
       }
     );
     return response.data;
@@ -128,7 +128,7 @@ export class GoogleMapsClient {
       openNow: params.openNow,
       minRating: params.minRating,
       pageSize: params.maxResultCount,
-      priceLevels: params.priceLevels,
+      priceLevels: params.priceLevels
     };
 
     if (params.locationBias) {
@@ -136,10 +136,10 @@ export class GoogleMapsClient {
         circle: {
           center: {
             latitude: params.locationBias.latitude,
-            longitude: params.locationBias.longitude,
+            longitude: params.locationBias.longitude
           },
-          radius: params.locationBias.radius,
-        },
+          radius: params.locationBias.radius
+        }
       };
     }
 
@@ -147,8 +147,9 @@ export class GoogleMapsClient {
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': this.token,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.types,places.primaryType,places.businessStatus,places.priceLevel,places.websiteUri,places.nationalPhoneNumber,places.regularOpeningHours',
-      },
+        'X-Goog-FieldMask':
+          'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.types,places.primaryType,places.businessStatus,places.priceLevel,places.websiteUri,places.nationalPhoneNumber,places.regularOpeningHours'
+      }
     });
     return response.data;
   }
@@ -173,35 +174,34 @@ export class GoogleMapsClient {
         circle: {
           center: {
             latitude: params.latitude,
-            longitude: params.longitude,
+            longitude: params.longitude
           },
-          radius: params.radius,
-        },
-      },
+          radius: params.radius
+        }
+      }
     };
 
     let response = await placesAxios.post('/v1/places:searchNearby', body, {
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': this.token,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.types,places.primaryType,places.businessStatus,places.priceLevel,places.websiteUri,places.nationalPhoneNumber,places.regularOpeningHours',
-      },
+        'X-Goog-FieldMask':
+          'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.types,places.primaryType,places.businessStatus,places.priceLevel,places.websiteUri,places.nationalPhoneNumber,places.regularOpeningHours'
+      }
     });
     return response.data;
   }
 
-  async getPlaceDetails(params: {
-    placeId: string;
-    languageCode?: string;
-  }) {
+  async getPlaceDetails(params: { placeId: string; languageCode?: string }) {
     let response = await placesAxios.get(`/v1/places/${params.placeId}`, {
       headers: {
         'X-Goog-Api-Key': this.token,
-        'X-Goog-FieldMask': 'id,displayName,formattedAddress,location,rating,userRatingCount,types,primaryType,businessStatus,priceLevel,websiteUri,nationalPhoneNumber,internationalPhoneNumber,regularOpeningHours,reviews,editorialSummary,shortFormattedAddress,addressComponents,adrFormatAddress,googleMapsUri',
+        'X-Goog-FieldMask':
+          'id,displayName,formattedAddress,location,rating,userRatingCount,types,primaryType,businessStatus,priceLevel,websiteUri,nationalPhoneNumber,internationalPhoneNumber,regularOpeningHours,reviews,editorialSummary,shortFormattedAddress,addressComponents,adrFormatAddress,googleMapsUri'
       },
       params: {
-        languageCode: params.languageCode,
-      },
+        languageCode: params.languageCode
+      }
     });
     return response.data;
   }
@@ -236,8 +236,8 @@ export class GoogleMapsClient {
         arrival_time: params.arrivalTime,
         language: params.language,
         region: params.region,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -245,9 +245,17 @@ export class GoogleMapsClient {
   // ── Routes API ──
 
   async computeRoutes(params: {
-    origin: { latitude: number; longitude: number } | { placeId: string } | { address: string };
-    destination: { latitude: number; longitude: number } | { placeId: string } | { address: string };
-    intermediates?: Array<{ latitude: number; longitude: number } | { placeId: string } | { address: string }>;
+    origin:
+      | { latitude: number; longitude: number }
+      | { placeId: string }
+      | { address: string };
+    destination:
+      | { latitude: number; longitude: number }
+      | { placeId: string }
+      | { address: string };
+    intermediates?: Array<
+      { latitude: number; longitude: number } | { placeId: string } | { address: string }
+    >;
     travelMode?: string;
     routingPreference?: string;
     computeAlternativeRoutes?: boolean;
@@ -258,7 +266,9 @@ export class GoogleMapsClient {
     languageCode?: string;
     units?: string;
   }) {
-    let toWaypoint = (wp: { latitude: number; longitude: number } | { placeId: string } | { address: string }) => {
+    let toWaypoint = (
+      wp: { latitude: number; longitude: number } | { placeId: string } | { address: string }
+    ) => {
       if ('placeId' in wp) {
         return { placeId: wp.placeId };
       }
@@ -280,8 +290,8 @@ export class GoogleMapsClient {
       routeModifiers: {
         avoidTolls: params.avoidTolls || false,
         avoidHighways: params.avoidHighways || false,
-        avoidFerries: params.avoidFerries || false,
-      },
+        avoidFerries: params.avoidFerries || false
+      }
     };
 
     if (params.intermediates && params.intermediates.length > 0) {
@@ -292,8 +302,9 @@ export class GoogleMapsClient {
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': this.token,
-        'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs,routes.description,routes.travelAdvisory,routes.routeLabels',
-      },
+        'X-Goog-FieldMask':
+          'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs,routes.description,routes.travelAdvisory,routes.routeLabels'
+      }
     });
     return response.data;
   }
@@ -308,38 +319,41 @@ export class GoogleMapsClient {
       if ('placeId' in wp) {
         return { waypoint: { placeId: wp.placeId } };
       }
-      return { waypoint: { location: { latLng: { latitude: wp.latitude, longitude: wp.longitude } } } };
+      return {
+        waypoint: { location: { latLng: { latitude: wp.latitude, longitude: wp.longitude } } }
+      };
     };
 
-    let response = await routesAxios.post('/distanceMatrix/v2:computeRouteMatrix', {
-      origins: params.origins.map(toWaypoint),
-      destinations: params.destinations.map(toWaypoint),
-      travelMode: params.travelMode || 'DRIVE',
-      routingPreference: params.routingPreference,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': this.token,
-        'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,status,condition',
+    let response = await routesAxios.post(
+      '/distanceMatrix/v2:computeRouteMatrix',
+      {
+        origins: params.origins.map(toWaypoint),
+        destinations: params.destinations.map(toWaypoint),
+        travelMode: params.travelMode || 'DRIVE',
+        routingPreference: params.routingPreference
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': this.token,
+          'X-Goog-FieldMask':
+            'originIndex,destinationIndex,duration,distanceMeters,status,condition'
+        }
+      }
+    );
     return response.data;
   }
 
   // ── Elevation ──
 
-  async getElevation(params: {
-    locations: Array<{ latitude: number; longitude: number }>;
-  }) {
-    let locString = params.locations
-      .map((loc) => `${loc.latitude},${loc.longitude}`)
-      .join('|');
+  async getElevation(params: { locations: Array<{ latitude: number; longitude: number }> }) {
+    let locString = params.locations.map(loc => `${loc.latitude},${loc.longitude}`).join('|');
 
     let response = await mapsAxios.get('/maps/api/elevation/json', {
       params: {
         locations: locString,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -348,16 +362,14 @@ export class GoogleMapsClient {
     path: Array<{ latitude: number; longitude: number }>;
     samples: number;
   }) {
-    let pathString = params.path
-      .map((loc) => `${loc.latitude},${loc.longitude}`)
-      .join('|');
+    let pathString = params.path.map(loc => `${loc.latitude},${loc.longitude}`).join('|');
 
     let response = await mapsAxios.get('/maps/api/elevation/json', {
       params: {
         path: pathString,
         samples: params.samples,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -375,8 +387,8 @@ export class GoogleMapsClient {
         location: `${params.latitude},${params.longitude}`,
         timestamp: params.timestamp || Math.floor(Date.now() / 1000),
         language: params.language,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -394,7 +406,7 @@ export class GoogleMapsClient {
       {
         location: {
           latitude: params.latitude,
-          longitude: params.longitude,
+          longitude: params.longitude
         },
         universalAqi: true,
         extraComputations: params.extraComputations || [
@@ -402,12 +414,12 @@ export class GoogleMapsClient {
           'DOMINANT_POLLUTANT_CONCENTRATION',
           'POLLUTANT_CONCENTRATION',
           'LOCAL_AQI',
-          'POLLUTANT_ADDITIONAL_INFO',
+          'POLLUTANT_ADDITIONAL_INFO'
         ],
-        languageCode: params.languageCode || 'en',
+        languageCode: params.languageCode || 'en'
       },
       {
-        params: { key: this.token },
+        params: { key: this.token }
       }
     );
     return response.data;
@@ -419,16 +431,14 @@ export class GoogleMapsClient {
     path: Array<{ latitude: number; longitude: number }>;
     interpolate?: boolean;
   }) {
-    let pathString = params.path
-      .map((p) => `${p.latitude},${p.longitude}`)
-      .join('|');
+    let pathString = params.path.map(p => `${p.latitude},${p.longitude}`).join('|');
 
     let response = await roadsAxios.get('/v1/snapToRoads', {
       params: {
         path: pathString,
         interpolate: params.interpolate,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -489,14 +499,12 @@ export class GoogleMapsClient {
     return `${baseUrl}?${searchParams.toString()}`;
   }
 
-  async getStreetViewMetadata(params: {
-    location: string;
-  }) {
+  async getStreetViewMetadata(params: { location: string }) {
     let response = await mapsAxios.get('/maps/api/streetview/metadata', {
       params: {
         location: params.location,
-        key: this.token,
-      },
+        key: this.token
+      }
     });
     return response.data;
   }
@@ -523,10 +531,10 @@ export class GoogleMapsClient {
       {
         considerIp: params.considerIp,
         cellTowers: params.cellTowers,
-        wifiAccessPoints: params.wifiAccessPoints,
+        wifiAccessPoints: params.wifiAccessPoints
       },
       {
-        params: { key: this.token },
+        params: { key: this.token }
       }
     );
     return response.data;

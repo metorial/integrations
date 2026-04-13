@@ -3,38 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let leadEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Lead Events',
-    key: 'lead_events',
-    description: 'Triggers when a lead is created, updated, or deleted in Close.',
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The action that occurred (created, updated, deleted, merged)'),
-    eventId: z.string().describe('Unique event identifier'),
-    objectId: z.string().describe('ID of the affected lead'),
-    objectType: z.string().describe('Object type (lead)'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed during an update'),
-    previousData: z.any().optional().describe('Previous data before the change'),
-    currentData: z.any().optional().describe('Current data after the change'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event was created')
-  }))
-  .output(z.object({
-    leadId: z.string().describe('ID of the affected lead'),
-    action: z.string().describe('The action that occurred'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed'),
-    leadName: z.string().optional().describe('Name of the lead'),
-    statusId: z.string().optional().describe('Current status ID'),
-    statusLabel: z.string().optional().describe('Current status label'),
-    url: z.string().optional().describe('Lead URL'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event occurred'),
-  }))
+export let leadEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Lead Events',
+  key: 'lead_events',
+  description: 'Triggers when a lead is created, updated, or deleted in Close.'
+})
+  .input(
+    z.object({
+      eventAction: z
+        .string()
+        .describe('The action that occurred (created, updated, deleted, merged)'),
+      eventId: z.string().describe('Unique event identifier'),
+      objectId: z.string().describe('ID of the affected lead'),
+      objectType: z.string().describe('Object type (lead)'),
+      changedFields: z
+        .array(z.string())
+        .optional()
+        .describe('Fields that changed during an update'),
+      previousData: z.any().optional().describe('Previous data before the change'),
+      currentData: z.any().optional().describe('Current data after the change'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event was created')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('ID of the affected lead'),
+      action: z.string().describe('The action that occurred'),
+      changedFields: z.array(z.string()).optional().describe('Fields that changed'),
+      leadName: z.string().optional().describe('Name of the lead'),
+      statusId: z.string().optional().describe('Current status ID'),
+      statusLabel: z.string().optional().describe('Current status label'),
+      url: z.string().optional().describe('Lead URL'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
       let webhook = await client.createWebhook({
@@ -43,7 +49,7 @@ export let leadEventsTrigger = SlateTrigger.create(
           { object_type: 'lead', action: 'created' },
           { object_type: 'lead', action: 'updated' },
           { object_type: 'lead', action: 'deleted' },
-          { object_type: 'lead', action: 'merged' },
+          { object_type: 'lead', action: 'merged' }
         ],
         status: 'active'
       });
@@ -56,13 +62,13 @@ export let leadEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!data || !data.event) {
         return { inputs: [] };
@@ -87,7 +93,7 @@ export let leadEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let currentData = ctx.input.currentData || {};
 
       return {
@@ -102,8 +108,9 @@ export let leadEventsTrigger = SlateTrigger.create(
           statusLabel: currentData.status_label,
           url: currentData.url,
           userId: ctx.input.userId,
-          dateCreated: ctx.input.dateCreated,
+          dateCreated: ctx.input.dateCreated
         }
       };
     }
-  }).build();
+  })
+  .build();

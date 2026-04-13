@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -138,13 +140,14 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
-      let scopeStr = ctx.scopes.length > 0 ? `&scope=${encodeURIComponent(ctx.scopes.join(' '))}` : '';
+    getAuthorizationUrl: async ctx => {
+      let scopeStr =
+        ctx.scopes.length > 0 ? `&scope=${encodeURIComponent(ctx.scopes.join(' '))}` : '';
       let url = `https://app.intercom.com/oauth?client_id=${encodeURIComponent(ctx.clientId)}&state=${encodeURIComponent(ctx.state)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}${scopeStr}`;
       return { url };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({
         baseURL: 'https://api.intercom.io'
       });
@@ -166,8 +169,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.intercom.io',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/json'
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/json'
         }
       });
 
@@ -193,7 +196,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Intercom Access Token from your app in the Developer Hub')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -205,8 +208,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.intercom.io',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/json'
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/json'
         }
       });
 

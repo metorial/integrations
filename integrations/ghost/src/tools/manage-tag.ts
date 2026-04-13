@@ -14,40 +14,39 @@ let tagOutputSchema = z.object({
   metaDescription: z.string().nullable().describe('SEO meta description'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp'),
-  url: z.string().describe('Tag URL'),
+  url: z.string().describe('Tag URL')
 });
 
-export let manageTag = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tag',
-    key: 'manage_tag',
-    description: `Create, read, update, or delete a tag. Tags organize posts and pages into categories. Internal tags (prefixed with \`#\`) are hidden from the public site.`,
-    instructions: [
-      'For **creating**: set `action` to `"create"` and provide a `name`.',
-      'For **reading**: set `action` to `"read"` and provide `tagId` or `slug`.',
-      'For **updating**: set `action` to `"update"`, provide `tagId` plus fields to change.',
-      'For **deleting**: set `action` to `"delete"` and provide `tagId`.',
-      'Prefix the tag name with `#` to create an internal (private) tag.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'read', 'update', 'delete']).describe('Operation to perform'),
-    tagId: z.string().optional().describe('Tag ID (required for read/update/delete)'),
-    slug: z.string().optional().describe('Tag slug (alternative to tagId for reading)'),
-    name: z.string().optional().describe('Tag name'),
-    description: z.string().optional().describe('Tag description'),
-    featureImage: z.string().optional().describe('Feature image URL'),
-    visibility: z.enum(['public', 'internal']).optional().describe('Tag visibility'),
-    metaTitle: z.string().optional().describe('SEO meta title'),
-    metaDescription: z.string().optional().describe('SEO meta description'),
-  }))
+export let manageTag = SlateTool.create(spec, {
+  name: 'Manage Tag',
+  key: 'manage_tag',
+  description: `Create, read, update, or delete a tag. Tags organize posts and pages into categories. Internal tags (prefixed with \`#\`) are hidden from the public site.`,
+  instructions: [
+    'For **creating**: set `action` to `"create"` and provide a `name`.',
+    'For **reading**: set `action` to `"read"` and provide `tagId` or `slug`.',
+    'For **updating**: set `action` to `"update"`, provide `tagId` plus fields to change.',
+    'For **deleting**: set `action` to `"delete"` and provide `tagId`.',
+    'Prefix the tag name with `#` to create an internal (private) tag.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'read', 'update', 'delete']).describe('Operation to perform'),
+      tagId: z.string().optional().describe('Tag ID (required for read/update/delete)'),
+      slug: z.string().optional().describe('Tag slug (alternative to tagId for reading)'),
+      name: z.string().optional().describe('Tag name'),
+      description: z.string().optional().describe('Tag description'),
+      featureImage: z.string().optional().describe('Feature image URL'),
+      visibility: z.enum(['public', 'internal']).optional().describe('Tag visibility'),
+      metaTitle: z.string().optional().describe('SEO meta title'),
+      metaDescription: z.string().optional().describe('SEO meta description')
+    })
+  )
   .output(tagOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let { action } = ctx.input;
@@ -70,11 +69,19 @@ export let manageTag = SlateTool.create(
       await client.deleteTag(ctx.input.tagId);
       return {
         output: {
-          tagId: ctx.input.tagId, name: '', slug: '', description: null,
-          featureImage: null, visibility: '', metaTitle: null, metaDescription: null,
-          createdAt: '', updatedAt: '', url: '',
+          tagId: ctx.input.tagId,
+          name: '',
+          slug: '',
+          description: null,
+          featureImage: null,
+          visibility: '',
+          metaTitle: null,
+          metaDescription: null,
+          createdAt: '',
+          updatedAt: '',
+          url: ''
         },
-        message: `Deleted tag \`${ctx.input.tagId}\`.`,
+        message: `Deleted tag \`${ctx.input.tagId}\`.`
       };
     }
 
@@ -84,7 +91,8 @@ export let manageTag = SlateTool.create(
     if (ctx.input.featureImage !== undefined) tagData.feature_image = ctx.input.featureImage;
     if (ctx.input.visibility !== undefined) tagData.visibility = ctx.input.visibility;
     if (ctx.input.metaTitle !== undefined) tagData.meta_title = ctx.input.metaTitle;
-    if (ctx.input.metaDescription !== undefined) tagData.meta_description = ctx.input.metaDescription;
+    if (ctx.input.metaDescription !== undefined)
+      tagData.meta_description = ctx.input.metaDescription;
 
     if (action === 'create') {
       if (!ctx.input.name) throw new Error('name is required for creating a tag');
@@ -101,7 +109,8 @@ export let manageTag = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let mapTag = (t: any) => ({
   tagId: t.id,
@@ -114,5 +123,5 @@ let mapTag = (t: any) => ({
   metaDescription: t.meta_description ?? null,
   createdAt: t.created_at,
   updatedAt: t.updated_at,
-  url: t.url,
+  url: t.url
 });

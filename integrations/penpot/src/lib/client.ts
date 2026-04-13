@@ -13,10 +13,10 @@ export class Client {
     return createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'Authorization': `Token ${this.token}`,
+        Authorization: `Token ${this.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -36,7 +36,11 @@ export class Client {
     return this.rpcGet('get-profile');
   }
 
-  async updateProfile(data: { fullname?: string; lang?: string; theme?: string }): Promise<any> {
+  async updateProfile(data: {
+    fullname?: string;
+    lang?: string;
+    theme?: string;
+  }): Promise<any> {
     return this.rpc('update-profile', data);
   }
 
@@ -77,10 +81,13 @@ export class Client {
     return this.rpcGet('get-team-invitations', { 'team-id': teamId });
   }
 
-  async createTeamInvitations(teamId: string, invitations: Array<{ email: string; role: string }>): Promise<any> {
+  async createTeamInvitations(
+    teamId: string,
+    invitations: Array<{ email: string; role: string }>
+  ): Promise<any> {
     return this.rpc('create-team-invitations', {
       'team-id': teamId,
-      invitations,
+      invitations
     });
   }
 
@@ -88,21 +95,21 @@ export class Client {
     return this.rpc('update-team-member-role', {
       'team-id': teamId,
       'member-id': memberId,
-      role,
+      role
     });
   }
 
   async deleteTeamMember(teamId: string, memberId: string): Promise<any> {
     return this.rpc('delete-team-member', {
       'team-id': teamId,
-      'member-id': memberId,
+      'member-id': memberId
     });
   }
 
   async deleteTeamInvitation(teamId: string, email: string): Promise<any> {
     return this.rpc('delete-team-invitation', {
       'team-id': teamId,
-      email,
+      email
     });
   }
 
@@ -132,7 +139,7 @@ export class Client {
     return this.rpc('update-project-pin', {
       'team-id': teamId,
       id: projectId,
-      'is-pinned': isPinned,
+      'is-pinned': isPinned
     });
   }
 
@@ -184,13 +191,19 @@ export class Client {
 
   // ─── File Updates (Pages, Shapes, Components) ───────────────
 
-  async updateFile(fileId: string, sessionId: string, revn: number, vern: number, changes: any[]): Promise<any> {
+  async updateFile(
+    fileId: string,
+    sessionId: string,
+    revn: number,
+    vern: number,
+    changes: any[]
+  ): Promise<any> {
     return this.rpc('update-file', {
       id: fileId,
       'session-id': sessionId,
       revn,
       vern,
-      changes,
+      changes
     });
   }
 
@@ -215,20 +228,26 @@ export class Client {
     return this.rpcGet('get-comments', { 'thread-id': threadId });
   }
 
-  async createCommentThread(fileId: string, pageId: string, content: string, position: { x: number; y: number }, frameId: string): Promise<any> {
+  async createCommentThread(
+    fileId: string,
+    pageId: string,
+    content: string,
+    position: { x: number; y: number },
+    frameId: string
+  ): Promise<any> {
     return this.rpc('create-comment-thread', {
       'file-id': fileId,
       'page-id': pageId,
       content,
       position,
-      'frame-id': frameId,
+      'frame-id': frameId
     });
   }
 
   async createComment(threadId: string, content: string): Promise<any> {
     return this.rpc('create-comment', {
       'thread-id': threadId,
-      content,
+      content
     });
   }
 
@@ -257,24 +276,29 @@ export class Client {
   async linkFileToLibrary(fileId: string, libraryId: string): Promise<any> {
     return this.rpc('link-file-to-library', {
       'file-id': fileId,
-      'library-id': libraryId,
+      'library-id': libraryId
     });
   }
 
   async unlinkFileFromLibrary(fileId: string, libraryId: string): Promise<any> {
     return this.rpc('unlink-file-from-library', {
       'file-id': fileId,
-      'library-id': libraryId,
+      'library-id': libraryId
     });
   }
 
   // ─── Media ───────────────────────────────────────────────────
 
-  async createFileMediaObjectFromUrl(fileId: string, url: string, isLocal: boolean, name?: string): Promise<any> {
+  async createFileMediaObjectFromUrl(
+    fileId: string,
+    url: string,
+    isLocal: boolean,
+    name?: string
+  ): Promise<any> {
     let data: Record<string, any> = {
       'file-id': fileId,
       'is-local': isLocal,
-      url,
+      url
     };
     if (name) data['name'] = name;
     return this.rpc('create-file-media-object-from-url', data);
@@ -286,20 +310,29 @@ export class Client {
     return this.rpcGet('get-webhooks', { 'team-id': teamId });
   }
 
-  async createWebhook(teamId: string, uri: string, mtype: string = 'application/json'): Promise<any> {
+  async createWebhook(
+    teamId: string,
+    uri: string,
+    mtype: string = 'application/json'
+  ): Promise<any> {
     return this.rpc('create-webhook', {
       'team-id': teamId,
       uri,
-      mtype,
+      mtype
     });
   }
 
-  async updateWebhook(webhookId: string, uri: string, mtype: string, isActive: boolean): Promise<any> {
+  async updateWebhook(
+    webhookId: string,
+    uri: string,
+    mtype: string,
+    isActive: boolean
+  ): Promise<any> {
     return this.rpc('update-webhook', {
       id: webhookId,
       uri,
       mtype,
-      'is-active': isActive,
+      'is-active': isActive
     });
   }
 
@@ -309,11 +342,15 @@ export class Client {
 
   // ─── File Export ─────────────────────────────────────────────
 
-  async exportBinfile(fileId: string, includeLibraries: boolean, embedAssets: boolean): Promise<any> {
+  async exportBinfile(
+    fileId: string,
+    includeLibraries: boolean,
+    embedAssets: boolean
+  ): Promise<any> {
     return this.rpc('export-binfile', {
       'file-id': fileId,
       'include-libraries': includeLibraries,
-      'embed-assets': embedAssets,
+      'embed-assets': embedAssets
     });
   }
 

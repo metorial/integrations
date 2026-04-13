@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 import { buildMimeMessage, encodeBase64Url } from './mime';
 
 let gmailAxios = createAxios({
-  baseURL: 'https://gmail.googleapis.com/gmail/v1',
+  baseURL: 'https://gmail.googleapis.com/gmail/v1'
 });
 
 export interface MessageHeader {
@@ -51,8 +51,14 @@ export interface HistoryRecord {
   messages?: Array<{ id: string; threadId: string }>;
   messagesAdded?: Array<{ message: { id: string; threadId: string; labelIds?: string[] } }>;
   messagesDeleted?: Array<{ message: { id: string; threadId: string; labelIds?: string[] } }>;
-  labelsAdded?: Array<{ message: { id: string; threadId: string; labelIds?: string[] }; labelIds: string[] }>;
-  labelsRemoved?: Array<{ message: { id: string; threadId: string; labelIds?: string[] }; labelIds: string[] }>;
+  labelsAdded?: Array<{
+    message: { id: string; threadId: string; labelIds?: string[] };
+    labelIds: string[];
+  }>;
+  labelsRemoved?: Array<{
+    message: { id: string; threadId: string; labelIds?: string[] };
+    labelIds: string[];
+  }>;
 }
 
 export class Client {
@@ -66,13 +72,18 @@ export class Client {
 
   private headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
-  async getProfile(): Promise<{ emailAddress: string; messagesTotal: number; threadsTotal: number; historyId: string }> {
+  async getProfile(): Promise<{
+    emailAddress: string;
+    messagesTotal: number;
+    threadsTotal: number;
+    historyId: string;
+  }> {
     let response = await gmailAxios.get(`/users/${this.userId}/profile`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -80,7 +91,7 @@ export class Client {
   async getMessage(messageId: string, format?: string): Promise<GmailMessage> {
     let response = await gmailAxios.get(`/users/${this.userId}/messages/${messageId}`, {
       headers: this.headers(),
-      params: { format: format || 'full' },
+      params: { format: format || 'full' }
     });
     return response.data;
   }
@@ -106,7 +117,7 @@ export class Client {
     }
 
     let response = await gmailAxios.post(`/users/${this.userId}/messages/send`, payload, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -117,7 +128,11 @@ export class Client {
     maxResults?: number;
     pageToken?: string;
     includeSpamTrash?: boolean;
-  }): Promise<{ threads: Array<{ id: string; snippet: string; historyId: string }>; nextPageToken?: string; resultSizeEstimate: number }> {
+  }): Promise<{
+    threads: Array<{ id: string; snippet: string; historyId: string }>;
+    nextPageToken?: string;
+    resultSizeEstimate: number;
+  }> {
     let response = await gmailAxios.get(`/users/${this.userId}/threads`, {
       headers: this.headers(),
       params: {
@@ -125,51 +140,67 @@ export class Client {
         labelIds: params.labelIds,
         maxResults: params.maxResults || 20,
         pageToken: params.pageToken,
-        includeSpamTrash: params.includeSpamTrash,
-      },
+        includeSpamTrash: params.includeSpamTrash
+      }
     });
     return {
       threads: response.data.threads || [],
       nextPageToken: response.data.nextPageToken,
-      resultSizeEstimate: response.data.resultSizeEstimate || 0,
+      resultSizeEstimate: response.data.resultSizeEstimate || 0
     };
   }
 
   async getThread(threadId: string, format?: string): Promise<GmailThread> {
     let response = await gmailAxios.get(`/users/${this.userId}/threads/${threadId}`, {
       headers: this.headers(),
-      params: { format: format || 'full' },
+      params: { format: format || 'full' }
     });
     return response.data;
   }
 
-  async modifyThread(threadId: string, addLabelIds?: string[], removeLabelIds?: string[]): Promise<GmailThread> {
-    let response = await gmailAxios.post(`/users/${this.userId}/threads/${threadId}/modify`, {
-      addLabelIds: addLabelIds || [],
-      removeLabelIds: removeLabelIds || [],
-    }, {
-      headers: this.headers(),
-    });
+  async modifyThread(
+    threadId: string,
+    addLabelIds?: string[],
+    removeLabelIds?: string[]
+  ): Promise<GmailThread> {
+    let response = await gmailAxios.post(
+      `/users/${this.userId}/threads/${threadId}/modify`,
+      {
+        addLabelIds: addLabelIds || [],
+        removeLabelIds: removeLabelIds || []
+      },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   async trashThread(threadId: string): Promise<GmailThread> {
-    let response = await gmailAxios.post(`/users/${this.userId}/threads/${threadId}/trash`, {}, {
-      headers: this.headers(),
-    });
+    let response = await gmailAxios.post(
+      `/users/${this.userId}/threads/${threadId}/trash`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   async untrashThread(threadId: string): Promise<GmailThread> {
-    let response = await gmailAxios.post(`/users/${this.userId}/threads/${threadId}/untrash`, {}, {
-      headers: this.headers(),
-    });
+    let response = await gmailAxios.post(
+      `/users/${this.userId}/threads/${threadId}/untrash`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   async deleteThread(threadId: string): Promise<void> {
     await gmailAxios.delete(`/users/${this.userId}/threads/${threadId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -177,26 +208,30 @@ export class Client {
     maxResults?: number;
     pageToken?: string;
     query?: string;
-  }): Promise<{ drafts: Array<{ id: string; message: { id: string; threadId: string } }>; nextPageToken?: string; resultSizeEstimate: number }> {
+  }): Promise<{
+    drafts: Array<{ id: string; message: { id: string; threadId: string } }>;
+    nextPageToken?: string;
+    resultSizeEstimate: number;
+  }> {
     let response = await gmailAxios.get(`/users/${this.userId}/drafts`, {
       headers: this.headers(),
       params: {
         maxResults: params.maxResults || 20,
         pageToken: params.pageToken,
-        q: params.query,
-      },
+        q: params.query
+      }
     });
     return {
       drafts: response.data.drafts || [],
       nextPageToken: response.data.nextPageToken,
-      resultSizeEstimate: response.data.resultSizeEstimate || 0,
+      resultSizeEstimate: response.data.resultSizeEstimate || 0
     };
   }
 
   async getDraft(draftId: string, format?: string): Promise<GmailDraft> {
     let response = await gmailAxios.get(`/users/${this.userId}/drafts/${draftId}`, {
       headers: this.headers(),
-      params: { format: format || 'full' },
+      params: { format: format || 'full' }
     });
     return response.data;
   }
@@ -216,57 +251,64 @@ export class Client {
     let encoded = encodeBase64Url(raw);
 
     let payload: Record<string, any> = {
-      message: { raw: encoded },
+      message: { raw: encoded }
     };
     if (params.threadId) {
       payload['message']['threadId'] = params.threadId;
     }
 
     let response = await gmailAxios.post(`/users/${this.userId}/drafts`, payload, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async updateDraft(draftId: string, params: {
-    to: string[];
-    cc?: string[];
-    bcc?: string[];
-    subject: string;
-    body: string;
-    isHtml?: boolean;
-    threadId?: string;
-    inReplyTo?: string;
-    references?: string;
-  }): Promise<GmailDraft> {
+  async updateDraft(
+    draftId: string,
+    params: {
+      to: string[];
+      cc?: string[];
+      bcc?: string[];
+      subject: string;
+      body: string;
+      isHtml?: boolean;
+      threadId?: string;
+      inReplyTo?: string;
+      references?: string;
+    }
+  ): Promise<GmailDraft> {
     let raw = buildMimeMessage(params);
     let encoded = encodeBase64Url(raw);
 
     let payload: Record<string, any> = {
-      message: { raw: encoded },
+      message: { raw: encoded }
     };
     if (params.threadId) {
       payload['message']['threadId'] = params.threadId;
     }
 
     let response = await gmailAxios.put(`/users/${this.userId}/drafts/${draftId}`, payload, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async sendDraft(draftId: string): Promise<GmailMessage> {
-    let response = await gmailAxios.post(`/users/${this.userId}/drafts/send`, {
-      id: draftId,
-    }, {
-      headers: this.headers(),
-    });
+    let response = await gmailAxios.post(
+      `/users/${this.userId}/drafts/send`,
+      {
+        id: draftId
+      },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   async deleteDraft(draftId: string): Promise<void> {
     await gmailAxios.delete(`/users/${this.userId}/drafts/${draftId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -284,13 +326,13 @@ export class Client {
         labelId: params.labelId,
         historyTypes: params.historyTypes,
         maxResults: params.maxResults || 100,
-        pageToken: params.pageToken,
-      },
+        pageToken: params.pageToken
+      }
     });
     return {
       history: response.data.history || [],
       nextPageToken: response.data.nextPageToken,
-      historyId: response.data.historyId,
+      historyId: response.data.historyId
     };
   }
 }
@@ -322,20 +364,27 @@ export let extractBody = (payload: MessagePart): { text?: string; html?: string 
   return result;
 };
 
-export let extractAttachments = (payload: MessagePart): Array<{
+export let extractAttachments = (
+  payload: MessagePart
+): Array<{
   attachmentId: string;
   filename: string;
   mimeType: string;
   size: number;
 }> => {
-  let attachments: Array<{ attachmentId: string; filename: string; mimeType: string; size: number }> = [];
+  let attachments: Array<{
+    attachmentId: string;
+    filename: string;
+    mimeType: string;
+    size: number;
+  }> = [];
 
   if (payload.filename && payload.body?.attachmentId) {
     attachments.push({
       attachmentId: payload.body.attachmentId,
       filename: payload.filename,
       mimeType: payload.mimeType,
-      size: payload.body.size,
+      size: payload.body.size
     });
   }
 
@@ -371,7 +420,7 @@ export let parseMessage = (message: GmailMessage) => {
     references: extractHeader(message, 'References'),
     bodyText: body.text,
     bodyHtml: body.html,
-    attachments,
+    attachments
   };
 };
 

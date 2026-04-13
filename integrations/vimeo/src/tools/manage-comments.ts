@@ -22,24 +22,25 @@ let mapComment = (c: any) => ({
   authorUri: c.user?.uri ?? null
 });
 
-export let listCommentsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Video Comments',
-    key: 'list_video_comments',
-    description: `Retrieve comments on a specific video. Results are paginated.`,
-    tags: {
-      readOnly: true
-    }
+export let listCommentsTool = SlateTool.create(spec, {
+  name: 'List Video Comments',
+  key: 'list_video_comments',
+  description: `Retrieve comments on a specific video. Results are paginated.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(paginationInputSchema.extend({
-    videoId: z.string().describe('The ID of the video to get comments for')
-  }))
-  .output(paginationOutputSchema.extend({
-    comments: z.array(commentSchema).describe('List of comments')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    paginationInputSchema.extend({
+      videoId: z.string().describe('The ID of the video to get comments for')
+    })
+  )
+  .output(
+    paginationOutputSchema.extend({
+      comments: z.array(commentSchema).describe('List of comments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new VimeoClient(ctx.auth.token);
     let result = await client.getVideoComments(ctx.input.videoId, {
       page: ctx.input.page,
@@ -57,25 +58,25 @@ export let listCommentsTool = SlateTool.create(
       },
       message: `Found **${result.total ?? comments.length}** comments on video ${ctx.input.videoId}`
     };
-  }).build();
+  })
+  .build();
 
-export let addCommentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Add Video Comment',
-    key: 'add_video_comment',
-    description: `Post a new comment on a specific Vimeo video. Requires the **interact** scope.`,
-    tags: {
-      destructive: false
-    }
+export let addCommentTool = SlateTool.create(spec, {
+  name: 'Add Video Comment',
+  key: 'add_video_comment',
+  description: `Post a new comment on a specific Vimeo video. Requires the **interact** scope.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    videoId: z.string().describe('The ID of the video to comment on'),
-    text: z.string().describe('The comment text to post')
-  }))
+})
+  .input(
+    z.object({
+      videoId: z.string().describe('The ID of the video to comment on'),
+      text: z.string().describe('The comment text to post')
+    })
+  )
   .output(commentSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new VimeoClient(ctx.auth.token);
     let comment = await client.addVideoComment(ctx.input.videoId, ctx.input.text);
     let mapped = mapComment(comment);
@@ -84,4 +85,5 @@ export let addCommentTool = SlateTool.create(
       output: mapped,
       message: `Posted comment on video ${ctx.input.videoId}`
     };
-  }).build();
+  })
+  .build();

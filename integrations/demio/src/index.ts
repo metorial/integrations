@@ -6,5 +6,5 @@ import { webinarEvents } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [listEvents, getEvent, registerParticipant, getParticipants],
-  triggers: [webinarEvents],
+  triggers: [webinarEvents]
 });

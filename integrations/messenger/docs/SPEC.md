@@ -46,6 +46,7 @@ While in Development mode, apps are automatically approved for all login permiss
 ### Sending Messages
 
 The Send API allows sending messages from a Page to users who have initiated a conversation. Supported message types include:
+
 - Text, images, buttons, and quick replies.
 - Media content such as images, videos, and audio files, allowing chatbots to showcase visual content or play audio clips as part of conversations.
 - File attachments.
@@ -55,6 +56,7 @@ The Send API allows sending messages from a Page to users who have initiated a c
 ### Message Templates
 
 Structured message templates enable rich, interactive content beyond plain text:
+
 - **Generic Template:** Horizontal scrollable carousel of items with images, titles, subtitles, and buttons.
 - **Button Template:** Text with attached buttons (URL, postback, or call).
 - **Receipt Template:** Displays order confirmations with itemized details.
@@ -64,6 +66,7 @@ Structured message templates enable rich, interactive content beyond plain text:
 ### Messenger Profile Management
 
 Configures the appearance and behavior of the Messenger experience for a Page:
+
 - **Get Started Button:** Displays a "Get Started" button for first-time users, triggering a postback event.
 - **Greeting Text:** Allows you to specify the greeting message people will see on the welcome screen of your bot. The welcome screen is displayed for people interacting with your bot for the first time. Supports personalization with user name variables and localization by locale.
 - **Persistent Menu:** A fixed navigation bar inside Messenger conversations. It's always visible to the user, providing quick access to essential actions. It's called persistent because it remains visible regardless of where the user is in the conversation. Supports up to 3 top-level items per locale, with nested sub-menus.

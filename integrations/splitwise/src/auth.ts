@@ -6,9 +6,11 @@ let httpClient = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -16,40 +18,40 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://secure.splitwise.com/oauth/authorize?${params.toString()}`,
+        url: `https://secure.splitwise.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await httpClient.post('/oauth/token', {
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         grant_type: 'authorization_code',
         code: ctx.code,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       return {
         output: {
-          token: response.data.access_token,
-        },
+          token: response.data.access_token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
       let response = await httpClient.get('/api/v3.0/get_current_user', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -59,10 +61,10 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email,
           name: [user.first_name, user.last_name].filter(Boolean).join(' '),
-          imageUrl: user.picture?.medium,
-        },
+          imageUrl: user.picture?.medium
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -70,22 +72,24 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Splitwise API key from your application settings at secure.splitwise.com'),
+      token: z
+        .string()
+        .describe('Splitwise API key from your application settings at secure.splitwise.com')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let response = await httpClient.get('/api/v3.0/get_current_user', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -95,8 +99,8 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email,
           name: [user.first_name, user.last_name].filter(Boolean).join(' '),
-          imageUrl: user.picture?.medium,
-        },
+          imageUrl: user.picture?.medium
+        }
       };
-    },
+    }
   });

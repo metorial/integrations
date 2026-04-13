@@ -34,6 +34,7 @@ Available extractors:
 - **Spelling** – Provides spelling correction suggestions.
 
 Key options:
+
 - Language can be auto-detected or forced via ISO-639-2 code.
 - HTML cleanup mode can be configured (`raw`, `stripTags`, `cleanHTML`) for URL-based analysis.
 - Entity overlap can be allowed or disallowed.

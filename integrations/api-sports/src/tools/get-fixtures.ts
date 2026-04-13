@@ -26,51 +26,68 @@ let fixtureSchema = z.object({
   homeGoals: z.number().nullable().describe('Home team goals/score'),
   awayGoals: z.number().nullable().describe('Away team goals/score'),
   homeScoreHalftime: z.number().nullable().describe('Home team halftime score'),
-  awayScoreHalftime: z.number().nullable().describe('Away team halftime score'),
+  awayScoreHalftime: z.number().nullable().describe('Away team halftime score')
 });
 
-export let getFixturesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Fixtures',
-    key: 'get_fixtures',
-    description: `Retrieve match fixtures, results, and schedules. Supports filtering by league, team, date range, status, and round. Use for football fixtures; for other sports, the same filters apply but map to the sport's game/match data. Can also retrieve live games by setting **live** to true.`,
-    instructions: [
-      'Provide at least one filter (league, team, date, fixtureId, or live) to avoid overly broad queries.',
-      'Date format is YYYY-MM-DD. Date ranges use "from" and "to" parameters.',
-    ],
-    constraints: [
-      'The API may limit results per request. Use specific filters to narrow results.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getFixturesTool = SlateTool.create(spec, {
+  name: 'Get Fixtures',
+  key: 'get_fixtures',
+  description: `Retrieve match fixtures, results, and schedules. Supports filtering by league, team, date range, status, and round. Use for football fixtures; for other sports, the same filters apply but map to the sport's game/match data. Can also retrieve live games by setting **live** to true.`,
+  instructions: [
+    'Provide at least one filter (league, team, date, fixtureId, or live) to avoid overly broad queries.',
+    'Date format is YYYY-MM-DD. Date ranges use "from" and "to" parameters.'
+  ],
+  constraints: [
+    'The API may limit results per request. Use specific filters to narrow results.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sport: z.enum([
-      'football', 'basketball', 'baseball', 'hockey', 'rugby',
-      'handball', 'volleyball', 'afl', 'nba', 'nfl', 'formula-1', 'mma'
-    ]).optional().describe('Sport to query. Defaults to the configured sport.'),
-    fixtureId: z.number().optional().describe('Get a specific fixture by ID'),
-    live: z.boolean().optional().describe('Set to true to get only live/in-play matches'),
-    league: z.number().optional().describe('League ID to filter by'),
-    season: z.number().optional().describe('Season year'),
-    team: z.number().optional().describe('Team ID to filter by'),
-    date: z.string().optional().describe('Specific date (YYYY-MM-DD)'),
-    from: z.string().optional().describe('Start date for range (YYYY-MM-DD)'),
-    to: z.string().optional().describe('End date for range (YYYY-MM-DD)'),
-    round: z.string().optional().describe('Round or matchday filter'),
-    status: z.string().optional().describe('Match status filter (e.g., NS, 1H, HT, 2H, FT, LIVE)'),
-    timezone: z.string().optional().describe('Timezone for dates (e.g., Europe/London)'),
-    last: z.number().optional().describe('Get last N fixtures for a team'),
-    next: z.number().optional().describe('Get next N fixtures for a team'),
-  }))
-  .output(z.object({
-    fixtures: z.array(fixtureSchema),
-    count: z.number().describe('Number of fixtures returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sport: z
+        .enum([
+          'football',
+          'basketball',
+          'baseball',
+          'hockey',
+          'rugby',
+          'handball',
+          'volleyball',
+          'afl',
+          'nba',
+          'nfl',
+          'formula-1',
+          'mma'
+        ])
+        .optional()
+        .describe('Sport to query. Defaults to the configured sport.'),
+      fixtureId: z.number().optional().describe('Get a specific fixture by ID'),
+      live: z.boolean().optional().describe('Set to true to get only live/in-play matches'),
+      league: z.number().optional().describe('League ID to filter by'),
+      season: z.number().optional().describe('Season year'),
+      team: z.number().optional().describe('Team ID to filter by'),
+      date: z.string().optional().describe('Specific date (YYYY-MM-DD)'),
+      from: z.string().optional().describe('Start date for range (YYYY-MM-DD)'),
+      to: z.string().optional().describe('End date for range (YYYY-MM-DD)'),
+      round: z.string().optional().describe('Round or matchday filter'),
+      status: z
+        .string()
+        .optional()
+        .describe('Match status filter (e.g., NS, 1H, HT, 2H, FT, LIVE)'),
+      timezone: z.string().optional().describe('Timezone for dates (e.g., Europe/London)'),
+      last: z.number().optional().describe('Get last N fixtures for a team'),
+      next: z.number().optional().describe('Get next N fixtures for a team')
+    })
+  )
+  .output(
+    z.object({
+      fixtures: z.array(fixtureSchema),
+      count: z.number().describe('Number of fixtures returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let sport = ctx.input.sport ?? ctx.config.sport;
     let client = new Client({ token: ctx.auth.token, sport });
 
@@ -86,7 +103,7 @@ export let getFixturesTool = SlateTool.create(
       status: ctx.input.status,
       timezone: ctx.input.timezone,
       last: ctx.input.last,
-      next: ctx.input.next,
+      next: ctx.input.next
     };
 
     if (ctx.input.fixtureId) {
@@ -133,7 +150,7 @@ export let getFixturesTool = SlateTool.create(
           homeGoals: goals.home ?? null,
           awayGoals: goals.away ?? null,
           homeScoreHalftime: score.halftime?.home ?? null,
-          awayScoreHalftime: score.halftime?.away ?? null,
+          awayScoreHalftime: score.halftime?.away ?? null
         };
       }
       // Generic sport mapping
@@ -160,19 +177,24 @@ export let getFixturesTool = SlateTool.create(
         homeGoals: item.scores?.home?.total ?? item.scores?.home ?? null,
         awayGoals: item.scores?.away?.total ?? item.scores?.away ?? null,
         homeScoreHalftime: null,
-        awayScoreHalftime: null,
+        awayScoreHalftime: null
       };
     });
 
-    let liveCount = results.filter((f: any) => f.statusShort && !['FT', 'NS', 'TBD', 'PST', 'CANC', 'ABD', 'AWD', 'WO'].includes(f.statusShort)).length;
+    let liveCount = results.filter(
+      (f: any) =>
+        f.statusShort &&
+        !['FT', 'NS', 'TBD', 'PST', 'CANC', 'ABD', 'AWD', 'WO'].includes(f.statusShort)
+    ).length;
 
     return {
       output: {
         fixtures: results,
-        count: results.length,
+        count: results.length
       },
       message: ctx.input.live
         ? `Found **${results.length}** live fixture(s) for **${sport}**.`
-        : `Found **${results.length}** fixture(s) for **${sport}**${liveCount > 0 ? ` (${liveCount} currently live)` : ''}.`,
+        : `Found **${results.length}** fixture(s) for **${sport}**${liveCount > 0 ? ` (${liveCount} currently live)` : ''}.`
     };
-  }).build();
+  })
+  .build();

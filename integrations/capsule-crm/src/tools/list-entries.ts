@@ -14,31 +14,41 @@ let entrySchema = z.object({
   party: z.any().optional().describe('Linked party'),
   opportunity: z.any().optional().describe('Linked opportunity'),
   kase: z.any().optional().describe('Linked project'),
-  attachments: z.array(z.any()).optional().describe('File attachments'),
+  attachments: z.array(z.any()).optional().describe('File attachments')
 });
 
-export let listEntries = SlateTool.create(
-  spec,
-  {
-    name: 'List Entries',
-    key: 'list_entries',
-    description: `List activity history entries from Capsule CRM. Can list all entries or entries for a specific party, opportunity, or project. Entries include notes, emails, and other logged activities.`,
-    tags: {
-      readOnly: true,
-    },
+export let listEntries = SlateTool.create(spec, {
+  name: 'List Entries',
+  key: 'list_entries',
+  description: `List activity history entries from Capsule CRM. Can list all entries or entries for a specific party, opportunity, or project. Entries include notes, emails, and other logged activities.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    entityType: z.enum(['parties', 'opportunities', 'kases']).optional().describe('Entity type to list entries for'),
-    entityId: z.number().optional().describe('ID of the entity to list entries for (required if entityType is set)'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 50)'),
-    embed: z.array(z.enum(['party', 'kase', 'opportunity', 'creator', 'activityType'])).optional().describe('Additional data to embed'),
-  }))
-  .output(z.object({
-    entries: z.array(entrySchema).describe('List of entries'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      entityType: z
+        .enum(['parties', 'opportunities', 'kases'])
+        .optional()
+        .describe('Entity type to list entries for'),
+      entityId: z
+        .number()
+        .optional()
+        .describe('ID of the entity to list entries for (required if entityType is set)'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 50)'),
+      embed: z
+        .array(z.enum(['party', 'kase', 'opportunity', 'creator', 'activityType']))
+        .optional()
+        .describe('Additional data to embed')
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(entrySchema).describe('List of entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
     let result;
@@ -46,13 +56,13 @@ export let listEntries = SlateTool.create(
       result = await client.listEntriesForEntity(ctx.input.entityType, ctx.input.entityId, {
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        embed: ctx.input.embed,
+        embed: ctx.input.embed
       });
     } else {
       result = await client.listEntries({
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        embed: ctx.input.embed,
+        embed: ctx.input.embed
       });
     }
 
@@ -67,11 +77,12 @@ export let listEntries = SlateTool.create(
       party: e.party,
       opportunity: e.opportunity,
       kase: e.kase,
-      attachments: e.attachments,
+      attachments: e.attachments
     }));
 
     return {
       output: { entries },
-      message: `Retrieved **${entries.length}** entries.`,
+      message: `Retrieved **${entries.length}** entries.`
     };
-  }).build();
+  })
+  .build();

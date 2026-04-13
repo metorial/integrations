@@ -3,42 +3,46 @@ import { TrelloClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageList = SlateTool.create(
-  spec,
-  {
-    name: 'Manage List',
-    key: 'manage_list',
-    description: `Create, update, or archive a list on a Trello board. Lists represent columns on a board (e.g. "To Do", "Doing", "Done").`,
-    instructions: [
-      'To create a list, set action to "create" and provide boardId and name.',
-      'To update, set action to "update" and provide listId plus fields to change.',
-      'To archive or unarchive, set action to "update" with closed=true or closed=false.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update']).describe('Action to perform'),
-    listId: z.string().optional().describe('List ID (required for update)'),
-    boardId: z.string().optional().describe('Board ID (required for create)'),
-    name: z.string().optional().describe('List name (required for create)'),
-    closed: z.boolean().optional().describe('Set to true to archive, false to unarchive'),
-    position: z.string().optional().describe('Position of the list: "top", "bottom", or a positive number'),
-  }))
-  .output(z.object({
-    listId: z.string().describe('List ID'),
-    name: z.string().describe('List name'),
-    closed: z.boolean().describe('Whether the list is archived'),
-    position: z.number().describe('Position of the list'),
-    boardId: z.string().describe('Board ID'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageList = SlateTool.create(spec, {
+  name: 'Manage List',
+  key: 'manage_list',
+  description: `Create, update, or archive a list on a Trello board. Lists represent columns on a board (e.g. "To Do", "Doing", "Done").`,
+  instructions: [
+    'To create a list, set action to "create" and provide boardId and name.',
+    'To update, set action to "update" and provide listId plus fields to change.',
+    'To archive or unarchive, set action to "update" with closed=true or closed=false.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update']).describe('Action to perform'),
+      listId: z.string().optional().describe('List ID (required for update)'),
+      boardId: z.string().optional().describe('Board ID (required for create)'),
+      name: z.string().optional().describe('List name (required for create)'),
+      closed: z.boolean().optional().describe('Set to true to archive, false to unarchive'),
+      position: z
+        .string()
+        .optional()
+        .describe('Position of the list: "top", "bottom", or a positive number')
+    })
+  )
+  .output(
+    z.object({
+      listId: z.string().describe('List ID'),
+      name: z.string().describe('List name'),
+      closed: z.boolean().describe('Whether the list is archived'),
+      position: z.number().describe('Position of the list'),
+      boardId: z.string().describe('Board ID')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TrelloClient({ apiKey: ctx.auth.apiKey, token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
       let list = await client.createList({
         name: ctx.input.name!,
         idBoard: ctx.input.boardId!,
-        pos: ctx.input.position,
+        pos: ctx.input.position
       });
 
       return {
@@ -47,9 +51,9 @@ export let manageList = SlateTool.create(
           name: list.name,
           closed: list.closed ?? false,
           position: list.pos,
-          boardId: list.idBoard,
+          boardId: list.idBoard
         },
-        message: `Created list **${list.name}**.`,
+        message: `Created list **${list.name}**.`
       };
     }
 
@@ -66,8 +70,9 @@ export let manageList = SlateTool.create(
         name: list.name,
         closed: list.closed ?? false,
         position: list.pos,
-        boardId: list.idBoard,
+        boardId: list.idBoard
       },
-      message: `Updated list **${list.name}**.`,
+      message: `Updated list **${list.name}**.`
     };
-  }).build();
+  })
+  .build();

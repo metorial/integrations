@@ -19,6 +19,7 @@ HelloLeads CRM provides APIs and website integration scripts; the details of the
 The base URL for API requests is `https://app.helloleads.io/index.php/private/api/`.
 
 Example request headers:
+
 ```
 hls-key: token=abc123yourtoken
 Xemail: user@example.com

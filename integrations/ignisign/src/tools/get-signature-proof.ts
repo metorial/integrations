@@ -3,30 +3,34 @@ import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSignatureProof = SlateTool.create(
-  spec,
-  {
-    name: 'Get Signature Proof',
-    key: 'get_signature_proof',
-    description: `Retrieve signature proof artifacts for a signed document, including signature images (base64) and low-level cryptographic proofs. Use this after a document has been signed to get proof evidence.`,
-    tags: {
-      readOnly: true,
-    },
+export let getSignatureProof = SlateTool.create(spec, {
+  name: 'Get Signature Proof',
+  key: 'get_signature_proof',
+  description: `Retrieve signature proof artifacts for a signed document, including signature images (base64) and low-level cryptographic proofs. Use this after a document has been signed to get proof evidence.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the signed document'),
-    includeImages: z.boolean().optional().describe('If true, also fetch signature image representations (base64)'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('Document ID'),
-    images: z.any().optional().describe('Signature images in base64 format'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the signed document'),
+      includeImages: z
+        .boolean()
+        .optional()
+        .describe('If true, also fetch signature image representations (base64)')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('Document ID'),
+      images: z.any().optional().describe('Signature images in base64 format')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new IgnisignClient({
       token: ctx.auth.token,
       appId: ctx.config.appId,
-      appEnv: ctx.config.appEnv,
+      appEnv: ctx.config.appEnv
     });
 
     let images: any = undefined;
@@ -37,8 +41,9 @@ export let getSignatureProof = SlateTool.create(
     return {
       output: {
         documentId: ctx.input.documentId,
-        images,
+        images
       },
-      message: `Retrieved signature proof artifacts for document **${ctx.input.documentId}**.`,
+      message: `Retrieved signature proof artifacts for document **${ctx.input.documentId}**.`
     };
-  }).build();
+  })
+  .build();

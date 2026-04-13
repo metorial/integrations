@@ -3,40 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact's details in Agiled. Provide the contact ID and any fields you want to change.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact's details in Agiled. Provide the contact ID and any fields you want to change.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to update'),
-    name: z.string().optional().describe('Updated full name'),
-    email: z.string().optional().describe('Updated email address'),
-    phone: z.string().optional().describe('Updated phone number'),
-    companyName: z.string().optional().describe('Updated company name'),
-    address: z.string().optional().describe('Updated street address'),
-    city: z.string().optional().describe('Updated city'),
-    state: z.string().optional().describe('Updated state or province'),
-    country: z.string().optional().describe('Updated country'),
-    postalCode: z.string().optional().describe('Updated postal/ZIP code'),
-    website: z.string().optional().describe('Updated website URL'),
-    notes: z.string().optional().describe('Updated notes'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the updated contact'),
-    name: z.string().optional().describe('Updated name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to update'),
+      name: z.string().optional().describe('Updated full name'),
+      email: z.string().optional().describe('Updated email address'),
+      phone: z.string().optional().describe('Updated phone number'),
+      companyName: z.string().optional().describe('Updated company name'),
+      address: z.string().optional().describe('Updated street address'),
+      city: z.string().optional().describe('Updated city'),
+      state: z.string().optional().describe('Updated state or province'),
+      country: z.string().optional().describe('Updated country'),
+      postalCode: z.string().optional().describe('Updated postal/ZIP code'),
+      website: z.string().optional().describe('Updated website URL'),
+      notes: z.string().optional().describe('Updated notes')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the updated contact'),
+      name: z.string().optional().describe('Updated name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      brand: ctx.auth.brand,
+      brand: ctx.auth.brand
     });
 
     let updateData: Record<string, unknown> = {};
@@ -58,9 +59,10 @@ export let updateContact = SlateTool.create(
     return {
       output: {
         contactId: String(contact.id ?? ctx.input.contactId),
-        name: contact.client_name as string | undefined ?? contact.name as string | undefined,
+        name:
+          (contact.client_name as string | undefined) ?? (contact.name as string | undefined)
       },
-      message: `Updated contact **${ctx.input.contactId}**.`,
+      message: `Updated contact **${ctx.input.contactId}**.`
     };
   })
   .build();

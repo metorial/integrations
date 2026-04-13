@@ -19,35 +19,44 @@ let projectSchema = z.object({
   organizationName: z.string().optional().describe('Parent organization name')
 });
 
-export let listProjects = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List all Zeplin projects the authenticated user is a member of. Returns project metadata including name, platform, status, and resource counts. Supports pagination.`,
-    tags: {
-      readOnly: true
-    }
+export let listProjects = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List all Zeplin projects the authenticated user is a member of. Returns project metadata including name, platform, status, and resource counts. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(100).optional().describe('Number of results per page (1-100, default: 30)'),
-    offset: z.number().min(0).optional().describe('Pagination offset (default: 0)'),
-    status: z.string().optional().describe('Filter by project status (e.g. "active", "archived")'),
-    workspace: z.string().optional().describe('Filter by workspace ID')
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema).describe('List of projects')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Number of results per page (1-100, default: 30)'),
+      offset: z.number().min(0).optional().describe('Pagination offset (default: 0)'),
+      status: z
+        .string()
+        .optional()
+        .describe('Filter by project status (e.g. "active", "archived")'),
+      workspace: z.string().optional().describe('Filter by workspace ID')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectSchema).describe('List of projects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZeplinClient(ctx.auth.token);
 
-    let projects = await client.listProjects({
+    let projects = (await client.listProjects({
       limit: ctx.input.limit,
       offset: ctx.input.offset,
       status: ctx.input.status,
       workspace: ctx.input.workspace
-    }) as any[];
+    })) as any[];
 
     let mapped = projects.map((p: any) => ({
       projectId: p.id,

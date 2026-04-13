@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listUserPools,
@@ -13,11 +12,7 @@ import {
   manageAppClient,
   manageIdentityPool
 } from './tools';
-import {
-  userChanges,
-  groupChanges,
-  inboundWebhook,
-} from './triggers';
+import { userChanges, groupChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,9 +28,5 @@ export let provider = Slate.create({
     manageAppClient,
     manageIdentityPool
   ],
-  triggers: [
-    inboundWebhook,
-    userChanges,
-    groupChanges
-  ]
+  triggers: [inboundWebhook, userChanges, groupChanges]
 });

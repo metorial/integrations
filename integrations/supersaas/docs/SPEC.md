@@ -11,6 +11,7 @@ SuperSaaS is an online appointment scheduling platform that provides booking and
 SuperSaaS uses an **API key** for authentication. To be able to use the API you would first need to create an API key on the Account Info page inside your account to be able to authenticate.
 
 Two credentials are required for all API requests:
+
 - **Account Name**: Your SuperSaaS account name (not your email address).
 - **API Key**: Generated from the Account Info page within your SuperSaaS dashboard.
 

@@ -42,53 +42,68 @@ Required for public add-ons, multi-tenant integrations, and access to advanced A
 ## Features
 
 ### Job Management
+
 Create, update, retrieve, and delete jobs. Jobs include details like address, description, status, and billing information. Jobs can also be created from templates. Job activities (scheduling entries), checklists, contacts, and payments are managed as related sub-resources.
 
 - Jobs can be organized by categories, badges, and job queues.
 - Job templates allow quick creation of recurring or standardized jobs.
 
 ### Client & Contact Management
+
 Manage clients (referred to as "Company" in the API) and their associated contacts. Create, update, and delete client records with address, phone, and email data. Contacts can be associated at the company level or at individual job level.
 
 - Note: The API refers to "Clients/Customers" as "Company" — naming differs from the UI.
 
 ### Scheduling & Staff Allocation
+
 Manage job allocations (assigning staff to jobs), allocation windows (time slots), and job activities (scheduled work periods with start/end dates). Staff members can be created, updated, and managed with roles and security settings.
 
 ### Materials & Invoicing
+
 Manage a materials/products catalog and associate materials with jobs (job materials). Materials can be grouped into bundles. Job payments can be recorded. Tax rates and suppliers are configurable.
 
 ### Assets
+
 Track and manage customer assets with configurable asset types and custom asset type fields. Assets are linked to clients/locations.
 
 ### Forms & Checklists
+
 Create and manage custom forms with configurable form fields, and collect form responses. Job checklists can be attached to jobs for task tracking.
 
 ### Notes & Attachments
+
 Add notes and file attachments to jobs and other records. Supports attaching files to the job diary.
 
 ### Messaging (OAuth 2.0 only)
+
 Send emails and SMS messages through the ServiceM8 platform on behalf of the account.
 
 ### Document Templates
+
 Define document templates and produce templated documents (e.g., quotes, invoices) by merging data with templates.
 
 ### Custom Fields (OAuth 2.0 only)
+
 Add custom fields to standard objects (e.g., jobs, clients). Custom fields are prefixed with `customfield_` and are readable/writable via the REST API.
 
 ### Inbox Management
+
 List, read, archive, snooze, and manage inbox messages. Convert inbox messages to jobs or attach them to existing jobs.
 
 ### Search
+
 Search across multiple object types or within a specific object type. Includes semantic search for jobs.
 
 ### Activity Feed
+
 Post messages to the account's activity feed.
 
 ### Knowledge Base
+
 Manage knowledge articles for internal reference.
 
 ### Account Provisioning
+
 Provision new ServiceM8 accounts programmatically (for platform partners).
 
 ## Events
@@ -96,6 +111,7 @@ Provision new ServiceM8 accounts programmatically (for platform partners).
 ServiceM8 supports webhooks through two subscription types:
 
 ### Object Webhooks
+
 Subscribe to field-level changes on any object type (e.g., job, company, jobActivity, attachment, note, material). When any of the specified fields on that object change, a POST is sent to your callback URL containing the object type, UUID of the changed record, list of changed fields, timestamp, and a resource URL to fetch the full record.
 
 - **Parameters:** `object` (object type to watch), `fields` (comma-separated list of fields to monitor), `callback_url`, optional `unique_id` for grouping.
@@ -103,6 +119,7 @@ Subscribe to field-level changes on any object type (e.g., job, company, jobActi
 - Public applications (OAuth 2.0) must complete a challenge verification handshake when subscribing; API key subscriptions do not require this.
 
 ### Event Webhooks
+
 Subscribe to business-level events such as `job.created` and `job.completed`. When the specified event occurs, a webhook is sent to your callback URL with detailed event data.
 
 - **Parameters:** `event` (event name), `callback_url`, optional `unique_id`.

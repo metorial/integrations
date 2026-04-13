@@ -17,6 +17,7 @@ You'll need an API key, which can be found within your LeadIQ account in Setting
 `https://api.leadiq.com/graphql`
 
 **Example:**
+
 ```
 curl -X POST https://api.leadiq.com/graphql \
   -u YOUR_API_KEY: \
@@ -27,6 +28,7 @@ curl -X POST https://api.leadiq.com/graphql \
 Note the trailing colon after the API key (empty password field in Basic auth).
 
 **Access tiers:**
+
 - Users across all plans can make up to 50 one-off, non-recurring calls to test the API.
 - Beyond the free tier, API access requires a direct sales discussion for enterprise-level agreements.
 

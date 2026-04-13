@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let downloadAuditTrail = SlateTool.create(
-  spec,
-  {
-    name: 'Download Audit Trail',
-    key: 'download_audit_trail',
-    description: `Download the audit trail PDF for an agreement. The audit trail captures the complete history of events including creation, viewing, signing, delegation, and authentication actions.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let downloadAuditTrail = SlateTool.create(spec, {
+  name: 'Download Audit Trail',
+  key: 'download_audit_trail',
+  description: `Download the audit trail PDF for an agreement. The audit trail captures the complete history of events including creation, viewing, signing, delegation, and authentication actions.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    agreementId: z.string().describe('ID of the agreement to download the audit trail for')
-  }))
-  .output(z.object({
-    agreementId: z.string().describe('ID of the agreement'),
-    auditTrailBase64: z.string().describe('Base64-encoded PDF content of the audit trail')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      agreementId: z.string().describe('ID of the agreement to download the audit trail for')
+    })
+  )
+  .output(
+    z.object({
+      agreementId: z.string().describe('ID of the agreement'),
+      auditTrailBase64: z.string().describe('Base64-encoded PDF content of the audit trail')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiBaseUrl: ctx.auth.apiBaseUrl,

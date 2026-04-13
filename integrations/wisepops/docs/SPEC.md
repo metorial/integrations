@@ -51,6 +51,7 @@ The event type `phone` triggers when a phone block is submitted in a campaign.
 The event type `survey` triggers when a survey block is submitted in a campaign.
 
 For all webhook event types:
+
 - The `event` parameter is required. Allowed values are `email`, `phone`, and `survey`, respectively for sign-up blocks, phone blocks, and survey blocks.
 - The `target_url` parameter is required — the URL that will receive collected forms.
 - The HTTP header `X-Wisepops-Signature` is included, containing the HMAC hex digest of the payload using your API key as a cryptographic key, letting you verify that Wisepops is the emitter.

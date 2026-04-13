@@ -10,12 +10,9 @@ import {
   listSavedSearches,
   getPricePerMeterEvolution,
   locationAutocomplete,
-  getPointsOfInterest,
+  getPointsOfInterest
 } from './tools';
-import {
-  propertyEvents,
-  newPropertyMatch,
-} from './triggers';
+import { propertyEvents, newPropertyMatch } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     listSavedSearches,
     getPricePerMeterEvolution,
     locationAutocomplete,
-    getPointsOfInterest,
+    getPointsOfInterest
   ],
-  triggers: [
-    propertyEvents,
-    newPropertyMatch,
-  ],
+  triggers: [propertyEvents, newPropertyMatch]
 });

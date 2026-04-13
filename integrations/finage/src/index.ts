@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getStockPrice,
@@ -18,11 +17,9 @@ import {
   getTechnicalIndicator,
   getSectorPerformance,
   getEconomicCalendar,
-  getStockSignals,
+  getStockSignals
 } from './tools';
-import { newMarketNews,
-  inboundWebhook,
-} from './triggers';
+import { newMarketNews, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,10 +40,7 @@ export let provider = Slate.create({
     getTechnicalIndicator,
     getSectorPerformance,
     getEconomicCalendar,
-    getStockSignals,
+    getStockSignals
   ],
-  triggers: [
-    inboundWebhook,
-    newMarketNews,
-  ],
+  triggers: [inboundWebhook, newMarketNews]
 });

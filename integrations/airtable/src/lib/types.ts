@@ -88,27 +88,39 @@ export interface WebhookPayload {
     source: string;
     sourceMetadata?: Record<string, any>;
   };
-  changedTablesById: Record<string, {
-    changedRecordsById?: Record<string, {
-      current?: { cellValuesByFieldId: Record<string, any> };
-      previous?: { cellValuesByFieldId: Record<string, any> };
-      unchanged?: { cellValuesByFieldId: Record<string, any> };
-    }>;
-    createdRecordsById?: Record<string, {
-      createdTime: string;
-      cellValuesByFieldId: Record<string, any>;
-    }>;
-    destroyedRecordIds?: string[];
-    changedFieldsById?: Record<string, {
-      current: Record<string, any>;
-      previous?: Record<string, any>;
-    }>;
-    createdFieldsById?: Record<string, Record<string, any>>;
-    destroyedFieldIds?: string[];
-    changedViewsById?: Record<string, Record<string, any>>;
-    createdViewsById?: Record<string, Record<string, any>>;
-    destroyedViewIds?: string[];
-  }>;
+  changedTablesById: Record<
+    string,
+    {
+      changedRecordsById?: Record<
+        string,
+        {
+          current?: { cellValuesByFieldId: Record<string, any> };
+          previous?: { cellValuesByFieldId: Record<string, any> };
+          unchanged?: { cellValuesByFieldId: Record<string, any> };
+        }
+      >;
+      createdRecordsById?: Record<
+        string,
+        {
+          createdTime: string;
+          cellValuesByFieldId: Record<string, any>;
+        }
+      >;
+      destroyedRecordIds?: string[];
+      changedFieldsById?: Record<
+        string,
+        {
+          current: Record<string, any>;
+          previous?: Record<string, any>;
+        }
+      >;
+      createdFieldsById?: Record<string, Record<string, any>>;
+      destroyedFieldIds?: string[];
+      changedViewsById?: Record<string, Record<string, any>>;
+      createdViewsById?: Record<string, Record<string, any>>;
+      destroyedViewIds?: string[];
+    }
+  >;
 }
 
 export interface WebhookPayloadsResponse {

@@ -12,7 +12,7 @@ let apiAxios = createAxios({
 let outputSchema = z.object({
   token: z.string(),
   userEmail: z.string().optional(),
-  authMethod: z.enum(['api_key', 'oauth']),
+  authMethod: z.enum(['api_key', 'oauth'])
 });
 
 type AuthOutput = z.infer<typeof outputSchema>;
@@ -26,26 +26,29 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('Your Copper API key (found in Settings > API Credentials)'),
-      userEmail: z.string().describe('The email address of the user who generated the API key'),
+      userEmail: z.string().describe('The email address of the user who generated the API key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
           userEmail: ctx.input.userEmail,
-          authMethod: 'api_key' as const,
+          authMethod: 'api_key' as const
         }
       };
     },
 
-    getProfile: async (ctx: { output: AuthOutput; input: { token: string; userEmail: string } }) => {
+    getProfile: async (ctx: {
+      output: AuthOutput;
+      input: { token: string; userEmail: string };
+    }) => {
       let response = await apiAxios.get('/account', {
         headers: {
           'X-PW-AccessToken': ctx.output.token,
           'X-PW-UserEmail': ctx.output.userEmail || '',
           'X-PW-Application': 'developer_api',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         }
       });
 
@@ -53,7 +56,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(response.data.id),
           name: response.data.name,
-          email: ctx.output.userEmail,
+          email: ctx.output.userEmail
         }
       };
     }
@@ -67,42 +70,46 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Full read and write access to all Copper resources',
-        scope: 'developer/v1/all',
+        scope: 'developer/v1/all'
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
-        url: `https://app.copper.com/oauth/authorize?${params.toString()}`,
+        url: `https://app.copper.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await authAxios.post('/oauth/token', {
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+    handleCallback: async ctx => {
+      let response = await authAxios.post(
+        '/oauth/token',
+        {
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       return {
         output: {
           token: response.data.access_token,
           userEmail: undefined,
-          authMethod: 'oauth' as const,
+          authMethod: 'oauth' as const
         }
       };
     },
@@ -110,15 +117,15 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: AuthOutput; input: {}; scopes: string[] }) => {
       let response = await apiAxios.get('/account', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ctx.output.token}`,
+          'Content-Type': 'application/json'
         }
       });
 
       return {
         profile: {
           id: String(response.data.id),
-          name: response.data.name,
+          name: response.data.name
         }
       };
     }

@@ -3,66 +3,66 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let giftCardEventSchema = z.object({
-  code: z.string().describe('Gift card code'),
-  title: z.string().nullable().describe('Gift card title'),
-  canBeRedeemed: z.boolean().describe('Whether redeemable'),
-  hasExpired: z.boolean().describe('Whether expired'),
-  notYetValid: z.boolean().describe('Whether not yet valid'),
-  isVoided: z.boolean().describe('Whether voided'),
-  backingType: z.string().describe('Currency or Units'),
-  remainingValue: z.number().describe('Remaining currency balance'),
-  initialValue: z.number().describe('Initial currency value'),
-  remainingUnits: z.number().nullable().describe('Remaining units'),
-  initialUnits: z.number().nullable().describe('Initial units'),
-  recipientName: z.string().nullable().describe('Recipient name'),
-  recipientEmail: z.string().nullable().describe('Recipient email'),
-  sku: z.string().nullable().describe('SKU'),
-  expiresOn: z.string().nullable().describe('Expiry date'),
-  validFrom: z.string().nullable().describe('Valid-from date'),
-}).passthrough();
+let giftCardEventSchema = z
+  .object({
+    code: z.string().describe('Gift card code'),
+    title: z.string().nullable().describe('Gift card title'),
+    canBeRedeemed: z.boolean().describe('Whether redeemable'),
+    hasExpired: z.boolean().describe('Whether expired'),
+    notYetValid: z.boolean().describe('Whether not yet valid'),
+    isVoided: z.boolean().describe('Whether voided'),
+    backingType: z.string().describe('Currency or Units'),
+    remainingValue: z.number().describe('Remaining currency balance'),
+    initialValue: z.number().describe('Initial currency value'),
+    remainingUnits: z.number().nullable().describe('Remaining units'),
+    initialUnits: z.number().nullable().describe('Initial units'),
+    recipientName: z.string().nullable().describe('Recipient name'),
+    recipientEmail: z.string().nullable().describe('Recipient email'),
+    sku: z.string().nullable().describe('SKU'),
+    expiresOn: z.string().nullable().describe('Expiry date'),
+    validFrom: z.string().nullable().describe('Valid-from date')
+  })
+  .passthrough();
 
-export let giftCardCreatedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Gift Card Created',
-    key: 'gift_card_created',
-    description: 'Fires when a new gift card is created, either as part of an order or via the API.',
-  }
-)
+export let giftCardCreatedTrigger = SlateTrigger.create(spec, {
+  name: 'Gift Card Created',
+  key: 'gift_card_created',
+  description:
+    'Fires when a new gift card is created, either as part of an order or via the API.'
+})
   .input(giftCardEventSchema)
   .output(giftCardEventSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        testMode: ctx.config.testMode,
+        testMode: ctx.config.testMode
       });
 
       let webhook = await client.createWebhook({
         targetUrl: ctx.input.webhookBaseUrl,
         eventType: 'GiftCardCreated',
-        testMode: ctx.config.testMode,
+        testMode: ctx.config.testMode
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        testMode: ctx.config.testMode,
+        testMode: ctx.config.testMode
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       if (body.test === true) {
         return { inputs: [] };
@@ -86,18 +86,18 @@ export let giftCardCreatedTrigger = SlateTrigger.create(
             recipientEmail: body.recipientEmail ?? null,
             sku: body.sku ?? null,
             expiresOn: body.expiresOn ?? null,
-            validFrom: body.validFrom ?? null,
-          },
-        ],
+            validFrom: body.validFrom ?? null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'gift_card.created',
         id: ctx.input.code,
-        output: ctx.input,
+        output: ctx.input
       };
-    },
+    }
   })
   .build();

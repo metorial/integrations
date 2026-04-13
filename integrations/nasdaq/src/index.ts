@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   queryTable,
@@ -12,13 +11,9 @@ import {
   getLastSale,
   getBars,
   getSnapshot,
-  getOptionsChain,
+  getOptionsChain
 } from './tools';
-import {
-  datasetUpdated,
-  tableDataChanged,
-  inboundWebhook,
-} from './triggers';
+import { datasetUpdated, tableDataChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,11 +28,7 @@ export let provider = Slate.create({
     getLastSale,
     getBars,
     getSnapshot,
-    getOptionsChain,
+    getOptionsChain
   ],
-  triggers: [
-    inboundWebhook,
-    datasetUpdated,
-    tableDataChanged,
-  ],
+  triggers: [inboundWebhook, datasetUpdated, tableDataChanged]
 });

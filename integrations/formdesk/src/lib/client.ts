@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface ClientConfig {
   token: string;
@@ -90,22 +90,22 @@ export class FormdeskClient {
     this.http = createAxios({
       baseURL: `https://${clientConfig.host}/api/rest/v1/${clientConfig.domain}`,
       headers: {
-        'Authorization': `Bearer ${clientConfig.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${clientConfig.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async getForms(): Promise<any[]> {
     let response = await this.http.get('/forms');
     let data = response.data;
-    return Array.isArray(data) ? data : (data?.forms || []);
+    return Array.isArray(data) ? data : data?.forms || [];
   }
 
   async getFormFilters(formName: string): Promise<any[]> {
     let response = await this.http.get(`/forms/${encodeURIComponent(formName)}/filters`);
     let data = response.data;
-    return Array.isArray(data) ? data : (data?.filters || []);
+    return Array.isArray(data) ? data : data?.filters || [];
   }
 
   async getResultIDs(params: GetResultIDsParams): Promise<any> {
@@ -124,9 +124,12 @@ export class FormdeskClient {
     if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
     if (params.offset !== undefined) queryParams['offset'] = String(params.offset);
 
-    let response = await this.http.get(`/forms/${encodeURIComponent(params.formName)}/results`, {
-      params: queryParams,
-    });
+    let response = await this.http.get(
+      `/forms/${encodeURIComponent(params.formName)}/results`,
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 
@@ -135,7 +138,7 @@ export class FormdeskClient {
     if (includeFiles) queryParams['include_files'] = 'true';
 
     let response = await this.http.get(`/results/${encodeURIComponent(resultId)}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -173,7 +176,7 @@ export class FormdeskClient {
     if (filesOnly) queryParams['files_only'] = 'true';
 
     let response = await this.http.delete(`/results/${encodeURIComponent(resultId)}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -185,7 +188,7 @@ export class FormdeskClient {
 
   async exportResults(params: ExportResultsParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      format: params.format,
+      format: params.format
     };
 
     if (params.createdAfter) queryParams['created_after'] = params.createdAfter;
@@ -198,15 +201,17 @@ export class FormdeskClient {
     if (params.syncStatus) queryParams['sync_status'] = params.syncStatus;
     if (params.filter) queryParams['filter'] = params.filter;
 
-    let response = await this.http.get(`/forms/${encodeURIComponent(params.formName)}/export`, {
-      params: queryParams,
-      responseType: 'arraybuffer',
-    });
+    let response = await this.http.get(
+      `/forms/${encodeURIComponent(params.formName)}/export`,
+      {
+        params: queryParams,
+        responseType: 'arraybuffer'
+      }
+    );
     return {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       content: Buffer.from(response.data).toString('base64'),
       contentType: response.headers['content-type'] || 'application/octet-stream',
-      credits: response.headers['credits'],
+      credits: response.headers['credits']
     };
   }
 
@@ -224,24 +229,22 @@ export class FormdeskClient {
 
     let response = await this.http.get(`/results/${encodeURIComponent(params.resultId)}/pdf`, {
       params: queryParams,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       content: Buffer.from(response.data).toString('base64'),
-      contentType: response.headers['content-type'] || 'application/pdf',
+      contentType: response.headers['content-type'] || 'application/pdf'
     };
   }
 
   async getFile(fileNameOrId: string): Promise<any> {
     let response = await this.http.get(`/files/${encodeURIComponent(fileNameOrId)}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       content: Buffer.from(response.data).toString('base64'),
       contentType: response.headers['content-type'] || 'application/octet-stream',
-      fileName: fileNameOrId,
+      fileName: fileNameOrId
     };
   }
 
@@ -250,10 +253,10 @@ export class FormdeskClient {
     if (search) queryParams['search'] = search;
 
     let response = await this.http.get('/visitors', {
-      params: queryParams,
+      params: queryParams
     });
     let data = response.data;
-    return Array.isArray(data) ? data : (data?.visitors || []);
+    return Array.isArray(data) ? data : data?.visitors || [];
   }
 
   async addVisitor(params: VisitorParams): Promise<any> {
@@ -274,7 +277,7 @@ export class FormdeskClient {
   async authenticateVisitor(username: string, password: string): Promise<any> {
     let response = await this.http.post('/visitors/authenticate', {
       username,
-      password,
+      password
     });
     return response.data;
   }
@@ -284,7 +287,7 @@ export class FormdeskClient {
     if (formList) queryParams['form_list'] = formList;
 
     let response = await this.http.get(`/visitors/${encodeURIComponent(visitorId)}/results`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -296,13 +299,14 @@ export class FormdeskClient {
 
   async parkData(params: ParkDataParams): Promise<any> {
     let body: Record<string, any> = {
-      ...params.fields,
+      ...params.fields
     };
     let queryParams: Record<string, string> = {};
 
     if (params.expires !== undefined) queryParams['expires'] = String(params.expires);
     if (params.reuse !== undefined) queryParams['reuse'] = params.reuse ? 'true' : 'false';
-    if (params.preventChange !== undefined) queryParams['preventchange'] = params.preventChange ? 'true' : 'false';
+    if (params.preventChange !== undefined)
+      queryParams['preventchange'] = params.preventChange ? 'true' : 'false';
 
     let response = await this.http.post(
       `/forms/${encodeURIComponent(params.formName)}/park`,

@@ -3,27 +3,36 @@ import { GigasheetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageComments = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Comments',
-    key: 'manage_comments',
-    description: `Add, retrieve, or delete comments on a Gigasheet sheet. Supports both column-level and cell-level comments.`,
-  }
-)
-  .input(z.object({
-    sheetHandle: z.string().describe('Handle of the sheet'),
-    action: z.enum(['get_all', 'add_column_comment', 'add_cell_comment', 'delete_column_comment', 'delete_cell_comment']).describe('Comment action to perform'),
-    columnName: z.string().optional().describe('Column name (for column or cell comments)'),
-    rowId: z.string().optional().describe('Row ID (for cell comments)'),
-    commentText: z.string().optional().describe('Comment text (for add actions)'),
-    commentId: z.string().optional().describe('Comment ID (for delete actions)'),
-  }))
-  .output(z.object({
-    result: z.unknown().describe('Comment operation result'),
-    success: z.boolean().describe('Whether the operation completed'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageComments = SlateTool.create(spec, {
+  name: 'Manage Comments',
+  key: 'manage_comments',
+  description: `Add, retrieve, or delete comments on a Gigasheet sheet. Supports both column-level and cell-level comments.`
+})
+  .input(
+    z.object({
+      sheetHandle: z.string().describe('Handle of the sheet'),
+      action: z
+        .enum([
+          'get_all',
+          'add_column_comment',
+          'add_cell_comment',
+          'delete_column_comment',
+          'delete_cell_comment'
+        ])
+        .describe('Comment action to perform'),
+      columnName: z.string().optional().describe('Column name (for column or cell comments)'),
+      rowId: z.string().optional().describe('Row ID (for cell comments)'),
+      commentText: z.string().optional().describe('Comment text (for add actions)'),
+      commentId: z.string().optional().describe('Comment ID (for delete actions)')
+    })
+  )
+  .output(
+    z.object({
+      result: z.unknown().describe('Comment operation result'),
+      success: z.boolean().describe('Whether the operation completed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GigasheetClient({ token: ctx.auth.token });
     let result: unknown;
 
@@ -38,19 +47,21 @@ export let manageComments = SlateTool.create(
         }
         result = await client.addColumnComment(ctx.input.sheetHandle, {
           column: ctx.input.columnName,
-          comment: ctx.input.commentText,
+          comment: ctx.input.commentText
         });
         break;
 
       case 'add_cell_comment':
         if (!ctx.input.columnName || !ctx.input.rowId || !ctx.input.commentText) {
-          throw new Error('columnName, rowId, and commentText are required for add_cell_comment');
+          throw new Error(
+            'columnName, rowId, and commentText are required for add_cell_comment'
+          );
         }
         result = await client.addCellComment(
           ctx.input.sheetHandle,
           ctx.input.columnName,
           ctx.input.rowId,
-          ctx.input.commentText,
+          ctx.input.commentText
         );
         break;
 
@@ -64,13 +75,15 @@ export let manageComments = SlateTool.create(
 
       case 'delete_cell_comment':
         if (!ctx.input.columnName || !ctx.input.rowId || !ctx.input.commentId) {
-          throw new Error('columnName, rowId, and commentId are required for delete_cell_comment');
+          throw new Error(
+            'columnName, rowId, and commentId are required for delete_cell_comment'
+          );
         }
         await client.deleteCellComment(
           ctx.input.sheetHandle,
           ctx.input.columnName,
           ctx.input.rowId,
-          ctx.input.commentId,
+          ctx.input.commentId
         );
         result = { deleted: true };
         break;
@@ -79,9 +92,9 @@ export let manageComments = SlateTool.create(
     return {
       output: {
         result,
-        success: true,
+        success: true
       },
-      message: `Comment **${ctx.input.action}** completed successfully.`,
+      message: `Comment **${ctx.input.action}** completed successfully.`
     };
   })
   .build();

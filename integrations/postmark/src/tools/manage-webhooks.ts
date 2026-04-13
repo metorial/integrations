@@ -3,95 +3,135 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let triggerSchema = z.object({
-  open: z.object({
-    enabled: z.boolean().describe('Enable open tracking webhook.'),
-    postFirstOpenOnly: z.boolean().optional().describe('Only post on first open.'),
-  }).optional(),
-  click: z.object({
-    enabled: z.boolean().describe('Enable click tracking webhook.'),
-  }).optional(),
-  delivery: z.object({
-    enabled: z.boolean().describe('Enable delivery webhook.'),
-  }).optional(),
-  bounce: z.object({
-    enabled: z.boolean().describe('Enable bounce webhook.'),
-    includeContent: z.boolean().optional().describe('Include full message content in bounce.'),
-  }).optional(),
-  spamComplaint: z.object({
-    enabled: z.boolean().describe('Enable spam complaint webhook.'),
-    includeContent: z.boolean().optional().describe('Include full message content.'),
-  }).optional(),
-  subscriptionChange: z.object({
-    enabled: z.boolean().describe('Enable subscription change webhook.'),
-  }).optional(),
-}).describe('Webhook trigger configuration.');
+let triggerSchema = z
+  .object({
+    open: z
+      .object({
+        enabled: z.boolean().describe('Enable open tracking webhook.'),
+        postFirstOpenOnly: z.boolean().optional().describe('Only post on first open.')
+      })
+      .optional(),
+    click: z
+      .object({
+        enabled: z.boolean().describe('Enable click tracking webhook.')
+      })
+      .optional(),
+    delivery: z
+      .object({
+        enabled: z.boolean().describe('Enable delivery webhook.')
+      })
+      .optional(),
+    bounce: z
+      .object({
+        enabled: z.boolean().describe('Enable bounce webhook.'),
+        includeContent: z
+          .boolean()
+          .optional()
+          .describe('Include full message content in bounce.')
+      })
+      .optional(),
+    spamComplaint: z
+      .object({
+        enabled: z.boolean().describe('Enable spam complaint webhook.'),
+        includeContent: z.boolean().optional().describe('Include full message content.')
+      })
+      .optional(),
+    subscriptionChange: z
+      .object({
+        enabled: z.boolean().describe('Enable subscription change webhook.')
+      })
+      .optional()
+  })
+  .describe('Webhook trigger configuration.');
 
-export let manageWebhooks = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Webhooks',
-    key: 'manage_webhooks',
-    description: `List, get, create, update, or delete webhooks on your Postmark server. Webhooks notify your application about message events like bounces, deliveries, opens, clicks, spam complaints, and subscription changes.`,
-    instructions: [
-      'Set **action** to "list", "get", "create", "update", or "delete".',
-      'For "create", provide the **url** and **triggers** configuration.',
-      'Up to 10 webhooks can be configured per server.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageWebhooks = SlateTool.create(spec, {
+  name: 'Manage Webhooks',
+  key: 'manage_webhooks',
+  description: `List, get, create, update, or delete webhooks on your Postmark server. Webhooks notify your application about message events like bounces, deliveries, opens, clicks, spam complaints, and subscription changes.`,
+  instructions: [
+    'Set **action** to "list", "get", "create", "update", or "delete".',
+    'For "create", provide the **url** and **triggers** configuration.',
+    'Up to 10 webhooks can be configured per server.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Webhook operation.'),
-    webhookId: z.number().optional().describe('Webhook ID (for get/update/delete).'),
-    url: z.string().optional().describe('Webhook endpoint URL (for create/update).'),
-    messageStream: z.string().optional().describe('Message stream to filter or attach to.'),
-    httpAuth: z.object({
-      username: z.string().describe('HTTP basic auth username.'),
-      password: z.string().describe('HTTP basic auth password.'),
-    }).optional().describe('HTTP basic authentication for the webhook.'),
-    httpHeaders: z.array(z.object({
-      name: z.string().describe('Header name.'),
-      value: z.string().describe('Header value.'),
-    })).optional().describe('Custom HTTP headers for the webhook.'),
-    triggers: triggerSchema.optional(),
-  }))
-  .output(z.object({
-    webhooks: z.array(z.object({
-      webhookId: z.number().describe('Webhook ID.'),
-      url: z.string().describe('Webhook URL.'),
-      messageStream: z.string().describe('Associated message stream.'),
-      triggers: z.object({
-        openEnabled: z.boolean().describe('Open tracking enabled.'),
-        clickEnabled: z.boolean().describe('Click tracking enabled.'),
-        deliveryEnabled: z.boolean().describe('Delivery notification enabled.'),
-        bounceEnabled: z.boolean().describe('Bounce notification enabled.'),
-        spamComplaintEnabled: z.boolean().describe('Spam complaint enabled.'),
-        subscriptionChangeEnabled: z.boolean().describe('Subscription change enabled.'),
-      }).describe('Configured triggers.'),
-    })).optional().describe('Webhook list (for list action).'),
-    webhook: z.object({
-      webhookId: z.number().describe('Webhook ID.'),
-      url: z.string().describe('Webhook URL.'),
-      messageStream: z.string().describe('Associated message stream.'),
-      triggers: z.object({
-        openEnabled: z.boolean().describe('Open tracking enabled.'),
-        clickEnabled: z.boolean().describe('Click tracking enabled.'),
-        deliveryEnabled: z.boolean().describe('Delivery notification enabled.'),
-        bounceEnabled: z.boolean().describe('Bounce notification enabled.'),
-        spamComplaintEnabled: z.boolean().describe('Spam complaint enabled.'),
-        subscriptionChangeEnabled: z.boolean().describe('Subscription change enabled.'),
-      }).describe('Configured triggers.'),
-    }).optional().describe('Webhook details (for get/create/update).'),
-    deleted: z.boolean().optional().describe('Whether the webhook was deleted.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Webhook operation.'),
+      webhookId: z.number().optional().describe('Webhook ID (for get/update/delete).'),
+      url: z.string().optional().describe('Webhook endpoint URL (for create/update).'),
+      messageStream: z.string().optional().describe('Message stream to filter or attach to.'),
+      httpAuth: z
+        .object({
+          username: z.string().describe('HTTP basic auth username.'),
+          password: z.string().describe('HTTP basic auth password.')
+        })
+        .optional()
+        .describe('HTTP basic authentication for the webhook.'),
+      httpHeaders: z
+        .array(
+          z.object({
+            name: z.string().describe('Header name.'),
+            value: z.string().describe('Header value.')
+          })
+        )
+        .optional()
+        .describe('Custom HTTP headers for the webhook.'),
+      triggers: triggerSchema.optional()
+    })
+  )
+  .output(
+    z.object({
+      webhooks: z
+        .array(
+          z.object({
+            webhookId: z.number().describe('Webhook ID.'),
+            url: z.string().describe('Webhook URL.'),
+            messageStream: z.string().describe('Associated message stream.'),
+            triggers: z
+              .object({
+                openEnabled: z.boolean().describe('Open tracking enabled.'),
+                clickEnabled: z.boolean().describe('Click tracking enabled.'),
+                deliveryEnabled: z.boolean().describe('Delivery notification enabled.'),
+                bounceEnabled: z.boolean().describe('Bounce notification enabled.'),
+                spamComplaintEnabled: z.boolean().describe('Spam complaint enabled.'),
+                subscriptionChangeEnabled: z.boolean().describe('Subscription change enabled.')
+              })
+              .describe('Configured triggers.')
+          })
+        )
+        .optional()
+        .describe('Webhook list (for list action).'),
+      webhook: z
+        .object({
+          webhookId: z.number().describe('Webhook ID.'),
+          url: z.string().describe('Webhook URL.'),
+          messageStream: z.string().describe('Associated message stream.'),
+          triggers: z
+            .object({
+              openEnabled: z.boolean().describe('Open tracking enabled.'),
+              clickEnabled: z.boolean().describe('Click tracking enabled.'),
+              deliveryEnabled: z.boolean().describe('Delivery notification enabled.'),
+              bounceEnabled: z.boolean().describe('Bounce notification enabled.'),
+              spamComplaintEnabled: z.boolean().describe('Spam complaint enabled.'),
+              subscriptionChangeEnabled: z.boolean().describe('Subscription change enabled.')
+            })
+            .describe('Configured triggers.')
+        })
+        .optional()
+        .describe('Webhook details (for get/create/update).'),
+      deleted: z.boolean().optional().describe('Whether the webhook was deleted.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountToken: ctx.auth.accountToken,
+      accountToken: ctx.auth.accountToken
     });
 
     let mapWebhook = (w: any) => ({
@@ -104,8 +144,8 @@ export let manageWebhooks = SlateTool.create(
         deliveryEnabled: w.Triggers?.Delivery?.Enabled ?? false,
         bounceEnabled: w.Triggers?.Bounce?.Enabled ?? false,
         spamComplaintEnabled: w.Triggers?.SpamComplaint?.Enabled ?? false,
-        subscriptionChangeEnabled: w.Triggers?.SubscriptionChange?.Enabled ?? false,
-      },
+        subscriptionChangeEnabled: w.Triggers?.SubscriptionChange?.Enabled ?? false
+      }
     });
 
     if (ctx.input.action === 'list') {
@@ -113,9 +153,9 @@ export let manageWebhooks = SlateTool.create(
 
       return {
         output: {
-          webhooks: result.Webhooks.map(mapWebhook),
+          webhooks: result.Webhooks.map(mapWebhook)
         },
-        message: `Found **${result.Webhooks.length}** webhooks.`,
+        message: `Found **${result.Webhooks.length}** webhooks.`
       };
     }
 
@@ -126,9 +166,9 @@ export let manageWebhooks = SlateTool.create(
 
       return {
         output: {
-          webhook: mapWebhook(w),
+          webhook: mapWebhook(w)
         },
-        message: `Retrieved webhook **${w.ID}** → ${w.Url}`,
+        message: `Retrieved webhook **${w.ID}** → ${w.Url}`
       };
     }
 
@@ -142,14 +182,14 @@ export let manageWebhooks = SlateTool.create(
         messageStream: ctx.input.messageStream,
         httpAuth: ctx.input.httpAuth,
         httpHeaders: ctx.input.httpHeaders,
-        triggers: ctx.input.triggers,
+        triggers: ctx.input.triggers
       });
 
       return {
         output: {
-          webhook: mapWebhook(w),
+          webhook: mapWebhook(w)
         },
-        message: `Created webhook **${w.ID}** → ${w.Url}`,
+        message: `Created webhook **${w.ID}** → ${w.Url}`
       };
     }
 
@@ -160,14 +200,14 @@ export let manageWebhooks = SlateTool.create(
         url: ctx.input.url,
         httpAuth: ctx.input.httpAuth,
         httpHeaders: ctx.input.httpHeaders,
-        triggers: ctx.input.triggers,
+        triggers: ctx.input.triggers
       });
 
       return {
         output: {
-          webhook: mapWebhook(w),
+          webhook: mapWebhook(w)
         },
-        message: `Updated webhook **${w.ID}** → ${w.Url}`,
+        message: `Updated webhook **${w.ID}** → ${w.Url}`
       };
     }
 
@@ -178,8 +218,8 @@ export let manageWebhooks = SlateTool.create(
 
     return {
       output: {
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted webhook **${ctx.input.webhookId}**.`,
+      message: `Deleted webhook **${ctx.input.webhookId}**.`
     };
   });

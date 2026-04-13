@@ -8,7 +8,7 @@ import {
   verifyInternationalAddress,
   batchVerifyInternationalAddresses,
   autocompleteInternationalAddress,
-  completeInternationalAddressSuggestion,
+  completeInternationalAddressSuggestion
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     verifyInternationalAddress,
     batchVerifyInternationalAddresses,
     autocompleteInternationalAddress,
-    completeInternationalAddressSuggestion,
+    completeInternationalAddressSuggestion
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -11,13 +11,13 @@ import {
   batchScrapeTool,
   getBatchScrapeStatusTool,
   runAgentTool,
-  getAgentStatusTool,
+  getAgentStatusTool
 } from './tools';
 import {
   crawlEventsTrigger,
   batchScrapeEventsTrigger,
   extractEventsTrigger,
-  agentEventsTrigger,
+  agentEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -33,12 +33,12 @@ export let provider = Slate.create({
     batchScrapeTool.build(),
     getBatchScrapeStatusTool.build(),
     runAgentTool.build(),
-    getAgentStatusTool.build(),
+    getAgentStatusTool.build()
   ],
   triggers: [
     crawlEventsTrigger.build(),
     batchScrapeEventsTrigger.build(),
     extractEventsTrigger.build(),
-    agentEventsTrigger.build(),
-  ],
+    agentEventsTrigger.build()
+  ]
 });

@@ -10,7 +10,7 @@ import type {
   Webhook,
   PaginatedResponse,
   ListBookingsParams,
-  PaginationParams,
+  PaginationParams
 } from './types';
 
 export class Client {
@@ -21,8 +21,8 @@ export class Client {
       baseURL: 'https://api.oncehub.com/v2',
       headers: {
         'API-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -31,14 +31,16 @@ export class Client {
 
     if (params.startingTimeGt) queryParams['starting_time.gt'] = params.startingTimeGt;
     if (params.startingTimeLt) queryParams['starting_time.lt'] = params.startingTimeLt;
-    if (params.lastUpdatedTimeGt) queryParams['last_updated_time.gt'] = params.lastUpdatedTimeGt;
+    if (params.lastUpdatedTimeGt)
+      queryParams['last_updated_time.gt'] = params.lastUpdatedTimeGt;
     if (params.creationTimeGt) queryParams['creation_time.gt'] = params.creationTimeGt;
     if (params.status) queryParams['status'] = params.status;
     if (params.owner) queryParams['owner'] = params.owner;
     if (params.bookingPage) queryParams['booking_page'] = params.bookingPage;
     if (params.eventType) queryParams['event_type'] = params.eventType;
     if (params.bookingCalendar) queryParams['booking_calendar'] = params.bookingCalendar;
-    if (params.expand && params.expand.length > 0) queryParams['expand'] = params.expand.join(',');
+    if (params.expand && params.expand.length > 0)
+      queryParams['expand'] = params.expand.join(',');
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.after) queryParams['after'] = params.after;
     if (params.before) queryParams['before'] = params.before;
@@ -55,7 +57,9 @@ export class Client {
     return response.data;
   }
 
-  async listBookingCalendars(params: PaginationParams = {}): Promise<PaginatedResponse<BookingCalendar>> {
+  async listBookingCalendars(
+    params: PaginationParams = {}
+  ): Promise<PaginatedResponse<BookingCalendar>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.after) queryParams['after'] = params.after;
@@ -70,7 +74,9 @@ export class Client {
     return response.data;
   }
 
-  async listBookingPages(params: PaginationParams = {}): Promise<PaginatedResponse<BookingPage>> {
+  async listBookingPages(
+    params: PaginationParams = {}
+  ): Promise<PaginatedResponse<BookingPage>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.after) queryParams['after'] = params.after;
@@ -85,7 +91,9 @@ export class Client {
     return response.data;
   }
 
-  async listMasterPages(params: PaginationParams = {}): Promise<PaginatedResponse<MasterPage>> {
+  async listMasterPages(
+    params: PaginationParams = {}
+  ): Promise<PaginatedResponse<MasterPage>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.after) queryParams['after'] = params.after;

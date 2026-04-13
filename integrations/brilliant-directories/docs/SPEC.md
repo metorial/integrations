@@ -15,6 +15,7 @@ The REST API uses API key authentication. All HTTP requests are secured with an 
 An admin must generate a unique API Key from within the site's Admin Dashboard by navigating to Developer Hub >> Generate API Key. The generated token must be saved immediately as it will not be accessible again after the window is closed.
 
 **Required credentials:**
+
 - **API Key**: Passed via the `X-Api-Key` HTTP header on every request.
 - **Website Domain**: The base URL of the specific Brilliant Directories website (e.g., `https://mywebsite.com`). All API endpoints are relative to this domain (e.g., `https://mywebsite.com/api/v2/...`).
 

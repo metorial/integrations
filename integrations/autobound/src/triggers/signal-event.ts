@@ -5,15 +5,23 @@ import { z } from 'zod';
 
 let signalInputSchema = z.object({
   signalId: z.string().describe('Unique signal event identifier'),
-  signalType: z.string().describe('Signal category (e.g., "news", "workMilestone", "earnings-transcript")'),
-  signalSubtype: z.string().optional().describe('Specific signal subtype (e.g., "jobChange", "funding")'),
+  signalType: z
+    .string()
+    .describe('Signal category (e.g., "news", "workMilestone", "earnings-transcript")'),
+  signalSubtype: z
+    .string()
+    .optional()
+    .describe('Specific signal subtype (e.g., "jobChange", "funding")'),
   companyDomain: z.string().optional().describe('Associated company domain'),
   companyName: z.string().optional().describe('Associated company name'),
   contactEmail: z.string().optional().describe('Associated contact email'),
   contactName: z.string().optional().describe('Associated contact name'),
   detectedAt: z.string().optional().describe('When the signal was detected'),
-  variables: z.record(z.string(), z.any()).optional().describe('Signal-specific structured data'),
-  raw: z.record(z.string(), z.any()).optional().describe('Full raw signal payload'),
+  variables: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Signal-specific structured data'),
+  raw: z.record(z.string(), z.any()).optional().describe('Full raw signal payload')
 });
 
 let signalOutputSchema = z.object({
@@ -25,43 +33,44 @@ let signalOutputSchema = z.object({
   contactEmail: z.string().optional().describe('Associated contact email'),
   contactName: z.string().optional().describe('Associated contact name'),
   detectedAt: z.string().optional().describe('When the signal was detected'),
-  variables: z.record(z.string(), z.any()).optional().describe('Signal-specific structured data'),
+  variables: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Signal-specific structured data')
 });
 
-export let signalEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Signal Event',
-    key: 'signal_event',
-    description: 'Triggers when Autobound detects new signals (buying signals) matching your subscription criteria. Covers 25+ signal types including job changes, funding, news, SEC filings, hiring trends, tech stack changes, earnings transcripts, and more.',
-  }
-)
+export let signalEvent = SlateTrigger.create(spec, {
+  name: 'Signal Event',
+  key: 'signal_event',
+  description:
+    'Triggers when Autobound detects new signals (buying signals) matching your subscription criteria. Covers 25+ signal types including job changes, funding, news, SEC filings, hiring trends, tech stack changes, earnings transcripts, and more.'
+})
   .input(signalInputSchema)
   .output(signalOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AutoboundClient(ctx.auth.token);
 
       let result = await client.createWebhookSubscription({
-        endpointUrl: ctx.input.webhookBaseUrl,
+        endpointUrl: ctx.input.webhookBaseUrl
       });
 
       return {
         registrationDetails: {
           subscriptionId: result.subscriptionId,
-          signingSecret: result.signingSecret,
-        },
+          signingSecret: result.signingSecret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AutoboundClient(ctx.auth.token);
 
       await client.deleteWebhookSubscription(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // Handle both single signal and array of signals
       let signals = Array.isArray(body) ? body : [body];
@@ -76,13 +85,13 @@ export let signalEvent = SlateTrigger.create(
         contactName: signal.contact_name ?? signal.contactName,
         detectedAt: signal.detected_at ?? signal.detectedAt ?? signal.timestamp,
         variables: signal.variables ?? signal.data,
-        raw: signal,
+        raw: signal
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let signalType = ctx.input.signalType;
       let subtype = ctx.input.signalSubtype;
       let eventType = subtype ? `signal.${signalType}.${subtype}` : `signal.${signalType}`;
@@ -99,9 +108,9 @@ export let signalEvent = SlateTrigger.create(
           contactEmail: ctx.input.contactEmail,
           contactName: ctx.input.contactName,
           detectedAt: ctx.input.detectedAt,
-          variables: ctx.input.variables,
-        },
+          variables: ctx.input.variables
+        }
       };
-    },
+    }
   })
   .build();

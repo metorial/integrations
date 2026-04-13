@@ -17,37 +17,59 @@ let customerSchema = z.object({
   note: z.string().nullable().optional().describe('Customer note'),
   totalMoneySpent: z.number().optional().describe('Total money spent'),
   totalPoints: z.number().optional().describe('Loyalty points balance'),
-  permanentDeletionAt: z.string().nullable().optional().describe('Scheduled permanent deletion timestamp'),
+  permanentDeletionAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Scheduled permanent deletion timestamp'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
-  deletedAt: z.string().nullable().optional().describe('Deletion timestamp'),
+  deletedAt: z.string().nullable().optional().describe('Deletion timestamp')
 });
 
-export let listCustomers = SlateTool.create(
-  spec,
-  {
-    name: 'List Customers',
-    key: 'list_customers',
-    description: `Retrieve customer records from Loyverse. Supports filtering by email, phone number, and date ranges for syncing customer data. Returns paginated results.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional().describe('Number of customers to return (1-250, default 50)'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-    email: z.string().optional().describe('Filter by exact email address'),
-    phoneNumber: z.string().optional().describe('Filter by exact phone number'),
-    createdAtMin: z.string().optional().describe('Filter customers created at or after this ISO 8601 timestamp'),
-    createdAtMax: z.string().optional().describe('Filter customers created at or before this ISO 8601 timestamp'),
-    updatedAtMin: z.string().optional().describe('Filter customers updated at or after this ISO 8601 timestamp'),
-    updatedAtMax: z.string().optional().describe('Filter customers updated at or before this ISO 8601 timestamp'),
-    showDeleted: z.boolean().optional().describe('Include deleted customers'),
-  }))
-  .output(z.object({
-    customers: z.array(customerSchema).describe('List of customers'),
-    cursor: z.string().nullable().optional().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listCustomers = SlateTool.create(spec, {
+  name: 'List Customers',
+  key: 'list_customers',
+  description: `Retrieve customer records from Loyverse. Supports filtering by email, phone number, and date ranges for syncing customer data. Returns paginated results.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of customers to return (1-250, default 50)'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response'),
+      email: z.string().optional().describe('Filter by exact email address'),
+      phoneNumber: z.string().optional().describe('Filter by exact phone number'),
+      createdAtMin: z
+        .string()
+        .optional()
+        .describe('Filter customers created at or after this ISO 8601 timestamp'),
+      createdAtMax: z
+        .string()
+        .optional()
+        .describe('Filter customers created at or before this ISO 8601 timestamp'),
+      updatedAtMin: z
+        .string()
+        .optional()
+        .describe('Filter customers updated at or after this ISO 8601 timestamp'),
+      updatedAtMax: z
+        .string()
+        .optional()
+        .describe('Filter customers updated at or before this ISO 8601 timestamp'),
+      showDeleted: z.boolean().optional().describe('Include deleted customers')
+    })
+  )
+  .output(
+    z.object({
+      customers: z.array(customerSchema).describe('List of customers'),
+      cursor: z.string().nullable().optional().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listCustomers({
       limit: ctx.input.limit,
@@ -58,7 +80,7 @@ export let listCustomers = SlateTool.create(
       createdAtMax: ctx.input.createdAtMax,
       updatedAtMin: ctx.input.updatedAtMin,
       updatedAtMax: ctx.input.updatedAtMax,
-      showDeleted: ctx.input.showDeleted,
+      showDeleted: ctx.input.showDeleted
     });
 
     let customers = (result.customers ?? []).map((c: any) => ({
@@ -78,12 +100,12 @@ export let listCustomers = SlateTool.create(
       permanentDeletionAt: c.permanent_deletion_at,
       createdAt: c.created_at,
       updatedAt: c.updated_at,
-      deletedAt: c.deleted_at,
+      deletedAt: c.deleted_at
     }));
 
     return {
       output: { customers, cursor: result.cursor },
-      message: `Retrieved **${customers.length}** customer(s).${result.cursor ? ' More available via cursor.' : ''}`,
+      message: `Retrieved **${customers.length}** customer(s).${result.cursor ? ' More available via cursor.' : ''}`
     };
   })
   .build();

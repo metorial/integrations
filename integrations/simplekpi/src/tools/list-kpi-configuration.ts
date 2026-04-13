@@ -23,24 +23,23 @@ let iconSchema = z.object({
   name: z.string().describe('Icon name (SVG)')
 });
 
-export let listKpiConfiguration = SlateTool.create(
-  spec,
-  {
-    name: 'List KPI Configuration',
-    key: 'list_kpi_configuration',
-    description: `Retrieve KPI configuration reference data: available units, frequencies, and icons. Use this to get valid IDs when creating or updating KPIs.`,
-    tags: {
-      readOnly: true
-    }
+export let listKpiConfiguration = SlateTool.create(spec, {
+  name: 'List KPI Configuration',
+  key: 'list_kpi_configuration',
+  description: `Retrieve KPI configuration reference data: available units, frequencies, and icons. Use this to get valid IDs when creating or updating KPIs.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    units: z.array(unitSchema).describe('Available KPI units'),
-    frequencies: z.array(frequencySchema).describe('Available tracking frequencies'),
-    icons: z.array(iconSchema).describe('Available KPI icons')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      units: z.array(unitSchema).describe('Available KPI units'),
+      frequencies: z.array(frequencySchema).describe('Available tracking frequencies'),
+      icons: z.array(iconSchema).describe('Available KPI icons')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
 
     let [units, frequencies, icons] = await Promise.all([
@@ -77,4 +76,5 @@ export let listKpiConfiguration = SlateTool.create(
       },
       message: `Retrieved **${mappedUnits.length}** units, **${mappedFrequencies.length}** frequencies, and **${mappedIcons.length}** icons.`
     };
-  }).build();
+  })
+  .build();

@@ -14,25 +14,24 @@ let leadOutputSchema = z.object({
   phone: z.string().optional().describe('Phone number'),
   linkedin: z.string().optional().describe('LinkedIn profile URL'),
   twitter: z.string().optional().describe('Twitter handle'),
-  notes: z.string().optional().describe('Notes about the lead'),
+  notes: z.string().optional().describe('Notes about the lead')
 });
 
-export let getLead = SlateTool.create(
-  spec,
-  {
-    name: 'Get Lead',
-    key: 'get_lead',
-    description: `Retrieve a single lead by its ID. Returns the full lead record including contact details, company info, and social profiles.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLead = SlateTool.create(spec, {
+  name: 'Get Lead',
+  key: 'get_lead',
+  description: `Retrieve a single lead by its ID. Returns the full lead record including contact details, company info, and social profiles.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    leadId: z.string().describe('ID of the lead to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('ID of the lead to retrieve')
+    })
+  )
   .output(leadOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getLead(ctx.input.leadId);
@@ -49,9 +48,9 @@ export let getLead = SlateTool.create(
         phone: result.phone,
         linkedin: result.linkedin,
         twitter: result.twitter,
-        notes: result.notes,
+        notes: result.notes
       },
-      message: `Retrieved lead **${result.first_name ?? ''} ${result.last_name ?? ''}** (${result.email ?? 'no email'}).`,
+      message: `Retrieved lead **${result.first_name ?? ''} ${result.last_name ?? ''}** (${result.email ?? 'no email'}).`
     };
   })
   .build();

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.supadata.ai/v1',
+  baseURL: 'https://api.supadata.ai/v1'
 });
 
 export class Client {
@@ -13,7 +13,7 @@ export class Client {
 
   private get headers() {
     return {
-      'x-api-key': this.token,
+      'x-api-key': this.token
     };
   }
 
@@ -28,14 +28,14 @@ export class Client {
   }) {
     let response = await http.get('/transcript', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getTranscriptResult(jobId: string) {
     let response = await http.get(`/transcript/${jobId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -45,7 +45,7 @@ export class Client {
   async getMetadata(params: { url: string }) {
     let response = await http.get('/metadata', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -58,28 +58,24 @@ export class Client {
     schema?: Record<string, any>;
   }) {
     let response = await http.post('/extract', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getExtractionResult(jobId: string) {
     let response = await http.get(`/extract/${jobId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ── Web Scrape ───────────────────────────────────────────────────────
 
-  async scrapeWebPage(params: {
-    url: string;
-    noLinks?: boolean;
-    lang?: string;
-  }) {
+  async scrapeWebPage(params: { url: string; noLinks?: boolean; lang?: string }) {
     let response = await http.get('/web/scrape', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -89,7 +85,7 @@ export class Client {
   async mapWebsite(params: { url: string }) {
     let response = await http.get('/web/map', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -98,14 +94,14 @@ export class Client {
 
   async createCrawl(params: { url: string; limit?: number }) {
     let response = await http.post('/web/crawl', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getCrawlStatus(jobId: string) {
     let response = await http.get(`/web/crawl/${jobId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -115,7 +111,7 @@ export class Client {
   async getYouTubeVideo(params: { url: string }) {
     let response = await http.get('/youtube/video', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -125,7 +121,7 @@ export class Client {
   async getYouTubeChannel(params: { url: string }) {
     let response = await http.get('/youtube/channel', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -137,7 +133,7 @@ export class Client {
   }) {
     let response = await http.get('/youtube/channel/videos', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -147,18 +143,15 @@ export class Client {
   async getYouTubePlaylist(params: { url: string }) {
     let response = await http.get('/youtube/playlist', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async getYouTubePlaylistVideos(params: {
-    url: string;
-    limit?: number;
-  }) {
+  async getYouTubePlaylistVideos(params: { url: string; limit?: number }) {
     let response = await http.get('/youtube/playlist/videos', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -173,7 +166,7 @@ export class Client {
   }) {
     let response = await http.get('/youtube/search', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -188,19 +181,15 @@ export class Client {
   }) {
     let response = await http.get('/youtube/transcript', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async translateYouTubeTranscript(params: {
-    videoId: string;
-    lang: string;
-    text?: boolean;
-  }) {
+  async translateYouTubeTranscript(params: { videoId: string; lang: string; text?: boolean }) {
     let response = await http.get('/youtube/transcript/translate', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -214,7 +203,7 @@ export class Client {
     limit?: number;
   }) {
     let response = await http.post('/youtube/transcript/batch', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

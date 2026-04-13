@@ -17,7 +17,7 @@ import {
   continueAskFredThread,
   shareMeeting,
   revokeMeetingAccess,
-  getAiApps,
+  getAiApps
 } from './tools';
 import { transcriptionCompleted } from './triggers';
 
@@ -40,9 +40,7 @@ export let provider = Slate.create({
     continueAskFredThread,
     shareMeeting,
     revokeMeetingAccess,
-    getAiApps,
+    getAiApps
   ],
-  triggers: [
-    transcriptionCompleted,
-  ],
+  triggers: [transcriptionCompleted]
 });

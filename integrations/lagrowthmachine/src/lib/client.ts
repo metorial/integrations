@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://apiv2.lagrowthmachine.com/flow',
+  baseURL: 'https://apiv2.lagrowthmachine.com/flow'
 });
 
 export interface LeadData {
@@ -105,14 +105,14 @@ export class Client {
 
   async searchLead(searchParams: SearchLeadParams): Promise<any> {
     let response = await http.get('/leads/search', {
-      params: { ...this.params, ...searchParams },
+      params: { ...this.params, ...searchParams }
     });
     return response.data;
   }
 
   async createOrUpdateLead(leadData: LeadData): Promise<any> {
     let response = await http.post('/leads', leadData, {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
@@ -120,14 +120,14 @@ export class Client {
   async removeLeadFromAudiences(data: RemoveLeadParams): Promise<any> {
     let response = await http.delete('/leads', {
       params: this.params,
-      data,
+      data
     });
     return response.data;
   }
 
   async updateLeadStatus(data: UpdateLeadStatusParams): Promise<any> {
     let response = await http.put('/leads/status', data, {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
@@ -137,64 +137,64 @@ export class Client {
       params: {
         ...this.params,
         ...(skip !== undefined ? { skip } : {}),
-        ...(limit !== undefined ? { limit } : {}),
-      },
+        ...(limit !== undefined ? { limit } : {})
+      }
     });
     return response.data;
   }
 
   async listAudiences(): Promise<any> {
     let response = await http.get('/audiences', {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async listIdentities(): Promise<any> {
     let response = await http.get('/identities', {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async listMembers(): Promise<any> {
     let response = await http.get('/members', {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async createInboxWebhook(data: CreateInboxWebhookParams): Promise<any> {
     let response = await http.post('/inbox-webhooks', data, {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async listInboxWebhooks(): Promise<any> {
     let response = await http.get('/inbox-webhooks', {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async deleteInboxWebhook(webhookId: string): Promise<any> {
     let response = await http.delete(`/inbox-webhooks/${webhookId}`, {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async sendLinkedInMessage(data: SendLinkedInMessageParams): Promise<any> {
     let response = await http.post('/linkedin/message', data, {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }
 
   async importFromLinkedIn(data: ImportLinkedInParams): Promise<any> {
     let response = await http.post('/linkedin/import', data, {
-      params: this.params,
+      params: this.params
     });
     return response.data;
   }

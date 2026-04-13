@@ -7,18 +7,15 @@ export class RipplingClient {
     this.axios = createAxios({
       baseURL: 'https://api.rippling.com/platform/api',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Employees ──────────────────────────────────────────────
 
-  async listEmployees(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listEmployees(params?: { limit?: number; offset?: number }) {
     let response = await this.axios.get('/employees', { params });
     return response.data;
   }
@@ -33,7 +30,9 @@ export class RipplingClient {
     if (params?.offset) queryParams.offset = params.offset;
     if (params?.sendAllRoles) queryParams.send_all_roles = params.sendAllRoles;
 
-    let response = await this.axios.get('/employees/include_terminated', { params: queryParams });
+    let response = await this.axios.get('/employees/include_terminated', {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -61,20 +60,14 @@ export class RipplingClient {
 
   // ── Departments ────────────────────────────────────────────
 
-  async listDepartments(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listDepartments(params?: { limit?: number; offset?: number }) {
     let response = await this.axios.get('/departments', { params });
     return response.data;
   }
 
   // ── Teams ──────────────────────────────────────────────────
 
-  async listTeams(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listTeams(params?: { limit?: number; offset?: number }) {
     let response = await this.axios.get('/teams', { params });
     return response.data;
   }
@@ -88,15 +81,11 @@ export class RipplingClient {
 
   // ── Groups ─────────────────────────────────────────────────
 
-  async createGroup(data: {
-    name: string;
-    spokeId: string;
-    userIds: string[];
-  }) {
+  async createGroup(data: { name: string; spokeId: string; userIds: string[] }) {
     let response = await this.axios.post('/groups', {
       name: data.name,
       spokeId: data.spokeId,
-      userIds: data.userIds,
+      userIds: data.userIds
     });
     return response.data;
   }
@@ -106,12 +95,15 @@ export class RipplingClient {
     return response.data;
   }
 
-  async updateGroup(groupId: string, data: {
-    name?: string;
-    spokeId?: string;
-    users?: string[];
-    version?: number;
-  }) {
+  async updateGroup(
+    groupId: string,
+    data: {
+      name?: string;
+      spokeId?: string;
+      users?: string[];
+      version?: number;
+    }
+  ) {
     let response = await this.axios.put(`/groups/${groupId}`, data);
     return response.data;
   }
@@ -123,18 +115,14 @@ export class RipplingClient {
 
   // ── Leave Requests ─────────────────────────────────────────
 
-  async listLeaveRequests(params?: {
-    startDate?: string;
-    endDate?: string;
-    status?: string;
-  }) {
+  async listLeaveRequests(params?: { startDate?: string; endDate?: string; status?: string }) {
     let response = await this.axios.get('/leave_requests', { params });
     return response.data;
   }
 
   async processLeaveRequest(leaveRequestId: string, action: 'APPROVE' | 'DECLINE') {
     let response = await this.axios.post(`/leave_requests/${leaveRequestId}/process`, null, {
-      params: { action },
+      params: { action }
     });
     return response.data;
   }
@@ -171,10 +159,7 @@ export class RipplingClient {
 
   // ── Custom Fields ──────────────────────────────────────────
 
-  async listCustomFields(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listCustomFields(params?: { limit?: number; offset?: number }) {
     let response = await this.axios.get('/custom_fields', { params });
     return response.data;
   }

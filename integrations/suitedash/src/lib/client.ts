@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://app.suitedash.com/secure-api',
+  baseURL: 'https://app.suitedash.com/secure-api'
 });
 
 export interface ClientConfig {
@@ -69,17 +69,17 @@ export class Client {
 
   private get headers() {
     return {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       'X-Public-ID': this.publicId,
-      'X-Secret-Key': this.secretKey,
+      'X-Secret-Key': this.secretKey
     };
   }
 
   async listContacts(page: number = 1): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await http.get('/contacts', {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -101,14 +101,14 @@ export class Client {
 
   async createContact(data: ContactInput): Promise<Record<string, unknown>> {
     let response = await http.post('/contact', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async updateContact(data: Record<string, unknown>): Promise<Record<string, unknown>> {
     let response = await http.put('/contact', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -116,7 +116,7 @@ export class Client {
   async listCompanies(page: number = 1): Promise<PaginatedResponse<Record<string, unknown>>> {
     let response = await http.get('/companies', {
       headers: this.headers,
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -138,28 +138,33 @@ export class Client {
 
   async createCompany(data: CompanyInput): Promise<Record<string, unknown>> {
     let response = await http.post('/company', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async updateCompany(companyId: string, data: CompanyUpdateInput): Promise<Record<string, unknown>> {
+  async updateCompany(
+    companyId: string,
+    data: CompanyUpdateInput
+  ): Promise<Record<string, unknown>> {
     let response = await http.put(`/company/${companyId}`, data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getContactMeta(): Promise<Record<string, unknown>> {
     let response = await http.get('/contact/meta', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async subscribeToMarketingAudience(data: MarketingSubscribeInput): Promise<Record<string, unknown>> {
+  async subscribeToMarketingAudience(
+    data: MarketingSubscribeInput
+  ): Promise<Record<string, unknown>> {
     let response = await http.post('/marketing/subscribe', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

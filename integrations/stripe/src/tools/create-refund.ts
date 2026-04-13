@@ -3,55 +3,71 @@ import { StripeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createRefund = SlateTool.create(
-  spec,
-  {
-    name: 'Create Refund',
-    key: 'create_refund',
-    description: `Issue a full or partial refund on a charge or PaymentIntent. Optionally specify a reason for the refund. You can also retrieve existing refunds or list all refunds.`,
-    instructions: [
-      'Provide either chargeId or paymentIntentId, not both.',
-      'Omit amount for a full refund; provide amount for a partial refund (in smallest currency unit).',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let createRefund = SlateTool.create(spec, {
+  name: 'Create Refund',
+  key: 'create_refund',
+  description: `Issue a full or partial refund on a charge or PaymentIntent. Optionally specify a reason for the refund. You can also retrieve existing refunds or list all refunds.`,
+  instructions: [
+    'Provide either chargeId or paymentIntentId, not both.',
+    'Omit amount for a full refund; provide amount for a partial refund (in smallest currency unit).'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list']).describe('Operation to perform'),
-    refundId: z.string().optional().describe('Refund ID (for get)'),
-    chargeId: z.string().optional().describe('Charge ID to refund'),
-    paymentIntentId: z.string().optional().describe('PaymentIntent ID to refund'),
-    amount: z.number().optional().describe('Amount to refund in smallest currency unit (omit for full refund)'),
-    reason: z.enum(['duplicate', 'fraudulent', 'requested_by_customer']).optional().describe('Reason for the refund'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Key-value metadata'),
-    limit: z.number().optional().describe('Max results (for list)'),
-    startingAfter: z.string().optional().describe('Cursor for pagination'),
-  }))
-  .output(z.object({
-    refundId: z.string().optional().describe('Refund ID'),
-    amount: z.number().optional().describe('Refund amount'),
-    currency: z.string().optional().describe('Currency code'),
-    status: z.string().optional().describe('Refund status'),
-    chargeId: z.string().optional().nullable().describe('Associated charge ID'),
-    paymentIntentId: z.string().optional().nullable().describe('Associated PaymentIntent ID'),
-    reason: z.string().optional().nullable().describe('Refund reason'),
-    created: z.number().optional().describe('Creation timestamp'),
-    refunds: z.array(z.object({
-      refundId: z.string(),
-      amount: z.number(),
-      currency: z.string(),
-      status: z.string(),
-      created: z.number(),
-    })).optional().describe('List of refunds'),
-    hasMore: z.boolean().optional().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'list']).describe('Operation to perform'),
+      refundId: z.string().optional().describe('Refund ID (for get)'),
+      chargeId: z.string().optional().describe('Charge ID to refund'),
+      paymentIntentId: z.string().optional().describe('PaymentIntent ID to refund'),
+      amount: z
+        .number()
+        .optional()
+        .describe('Amount to refund in smallest currency unit (omit for full refund)'),
+      reason: z
+        .enum(['duplicate', 'fraudulent', 'requested_by_customer'])
+        .optional()
+        .describe('Reason for the refund'),
+      metadata: z.record(z.string(), z.string()).optional().describe('Key-value metadata'),
+      limit: z.number().optional().describe('Max results (for list)'),
+      startingAfter: z.string().optional().describe('Cursor for pagination')
+    })
+  )
+  .output(
+    z.object({
+      refundId: z.string().optional().describe('Refund ID'),
+      amount: z.number().optional().describe('Refund amount'),
+      currency: z.string().optional().describe('Currency code'),
+      status: z.string().optional().describe('Refund status'),
+      chargeId: z.string().optional().nullable().describe('Associated charge ID'),
+      paymentIntentId: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Associated PaymentIntent ID'),
+      reason: z.string().optional().nullable().describe('Refund reason'),
+      created: z.number().optional().describe('Creation timestamp'),
+      refunds: z
+        .array(
+          z.object({
+            refundId: z.string(),
+            amount: z.number(),
+            currency: z.string(),
+            status: z.string(),
+            created: z.number()
+          })
+        )
+        .optional()
+        .describe('List of refunds'),
+      hasMore: z.boolean().optional().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StripeClient({
       token: ctx.auth.token,
-      stripeAccountId: ctx.config.stripeAccountId,
+      stripeAccountId: ctx.config.stripeAccountId
     });
 
     let { action } = ctx.input;
@@ -74,9 +90,9 @@ export let createRefund = SlateTool.create(
           chargeId: refund.charge,
           paymentIntentId: refund.payment_intent,
           reason: refund.reason,
-          created: refund.created,
+          created: refund.created
         },
-        message: `Created refund **${refund.id}** for ${refund.amount} ${refund.currency.toUpperCase()} — status: ${refund.status}`,
+        message: `Created refund **${refund.id}** for ${refund.amount} ${refund.currency.toUpperCase()} — status: ${refund.status}`
       };
     }
 
@@ -92,9 +108,9 @@ export let createRefund = SlateTool.create(
           chargeId: refund.charge,
           paymentIntentId: refund.payment_intent,
           reason: refund.reason,
-          created: refund.created,
+          created: refund.created
         },
-        message: `Refund **${refund.id}**: ${refund.amount} ${refund.currency.toUpperCase()} — status: ${refund.status}`,
+        message: `Refund **${refund.id}**: ${refund.amount} ${refund.currency.toUpperCase()} — status: ${refund.status}`
       };
     }
 
@@ -113,10 +129,11 @@ export let createRefund = SlateTool.create(
           amount: r.amount,
           currency: r.currency,
           status: r.status,
-          created: r.created,
+          created: r.created
         })),
-        hasMore: result.has_more,
+        hasMore: result.has_more
       },
-      message: `Found **${result.data.length}** refund(s)${result.has_more ? ' (more available)' : ''}`,
+      message: `Found **${result.data.length}** refund(s)${result.has_more ? ' (more available)' : ''}`
     };
-  }).build();
+  })
+  .build();

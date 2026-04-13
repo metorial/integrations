@@ -18,13 +18,9 @@ import {
   updateAsset,
   deleteAsset,
   createMigrationDocument,
-  updateMigrationDocument,
+  updateMigrationDocument
 } from './tools';
-import {
-  documentChanges,
-  releaseChanges,
-  tagChanges,
-} from './triggers';
+import { documentChanges, releaseChanges, tagChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -46,11 +42,7 @@ export let provider = Slate.create({
     updateAsset,
     deleteAsset,
     createMigrationDocument,
-    updateMigrationDocument,
+    updateMigrationDocument
   ],
-  triggers: [
-    documentChanges,
-    releaseChanges,
-    tagChanges,
-  ]
+  triggers: [documentChanges, releaseChanges, tagChanges]
 });

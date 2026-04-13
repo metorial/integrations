@@ -6,19 +6,23 @@ let http = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Bolna API key from the Developers tab in the Bolna dashboard')
+      token: z
+        .string()
+        .describe('Bolna API key from the Developers tab in the Bolna dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

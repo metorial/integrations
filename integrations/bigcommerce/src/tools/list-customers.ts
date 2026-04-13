@@ -3,42 +3,70 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCustomers = SlateTool.create(
-  spec,
-  {
-    name: 'List Customers',
-    key: 'list_customers',
-    description: `Search and list customers. Supports filtering by email, name, company, customer group, date range, and more. Returns paginated results with customer details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listCustomers = SlateTool.create(spec, {
+  name: 'List Customers',
+  key: 'list_customers',
+  description: `Search and list customers. Supports filtering by email, name, company, customer group, date range, and more. Returns paginated results with customer details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    limit: z.number().optional().describe('Number of customers per page (max: 250, default: 50)'),
-    email: z.string().optional().describe('Filter by exact email address'),
-    name: z.string().optional().describe('Filter by customer name (partial match using name:like)'),
-    company: z.string().optional().describe('Filter by company name'),
-    customerGroupId: z.number().optional().describe('Filter by customer group ID'),
-    dateCreatedMin: z.string().optional().describe('Filter customers created after this date (ISO 8601)'),
-    dateCreatedMax: z.string().optional().describe('Filter customers created before this date (ISO 8601)'),
-    dateModifiedMin: z.string().optional().describe('Filter customers modified after this date'),
-    dateModifiedMax: z.string().optional().describe('Filter customers modified before this date'),
-    sortBy: z.enum(['name', 'date_created', 'date_modified', 'last_name']).optional().describe('Sort field'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    include: z.array(z.enum(['addresses', 'storecredit', 'attributes', 'formfields'])).optional().describe('Sub-resources to include'),
-  }))
-  .output(z.object({
-    customers: z.array(z.any()).describe('Array of customer objects'),
-    totalCustomers: z.number().optional().describe('Total number of customers matching filter'),
-    currentPage: z.number().optional().describe('Current page number'),
-    totalPages: z.number().optional().describe('Total number of pages'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of customers per page (max: 250, default: 50)'),
+      email: z.string().optional().describe('Filter by exact email address'),
+      name: z
+        .string()
+        .optional()
+        .describe('Filter by customer name (partial match using name:like)'),
+      company: z.string().optional().describe('Filter by company name'),
+      customerGroupId: z.number().optional().describe('Filter by customer group ID'),
+      dateCreatedMin: z
+        .string()
+        .optional()
+        .describe('Filter customers created after this date (ISO 8601)'),
+      dateCreatedMax: z
+        .string()
+        .optional()
+        .describe('Filter customers created before this date (ISO 8601)'),
+      dateModifiedMin: z
+        .string()
+        .optional()
+        .describe('Filter customers modified after this date'),
+      dateModifiedMax: z
+        .string()
+        .optional()
+        .describe('Filter customers modified before this date'),
+      sortBy: z
+        .enum(['name', 'date_created', 'date_modified', 'last_name'])
+        .optional()
+        .describe('Sort field'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      include: z
+        .array(z.enum(['addresses', 'storecredit', 'attributes', 'formfields']))
+        .optional()
+        .describe('Sub-resources to include')
+    })
+  )
+  .output(
+    z.object({
+      customers: z.array(z.any()).describe('Array of customer objects'),
+      totalCustomers: z
+        .number()
+        .optional()
+        .describe('Total number of customers matching filter'),
+      currentPage: z.number().optional().describe('Current page number'),
+      totalPages: z.number().optional().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      storeHash: ctx.config.storeHash,
+      storeHash: ctx.config.storeHash
     });
 
     let params: Record<string, any> = {};
@@ -64,9 +92,9 @@ export let listCustomers = SlateTool.create(
         customers: result.data,
         totalCustomers: pagination?.total,
         currentPage: pagination?.current_page,
-        totalPages: pagination?.total_pages,
+        totalPages: pagination?.total_pages
       },
-      message: `Found ${result.data.length} customers${pagination?.total ? ` (${pagination.total} total)` : ''}.`,
+      message: `Found ${result.data.length} customers${pagination?.total ? ` (${pagination.total} total)` : ''}.`
     };
   })
   .build();

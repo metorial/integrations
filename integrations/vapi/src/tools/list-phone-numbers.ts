@@ -3,38 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPhoneNumbers = SlateTool.create(
-  spec,
-  {
-    name: 'List Phone Numbers',
-    key: 'list_phone_numbers',
-    description: `List phone numbers provisioned in your Vapi account. Returns phone numbers across all providers (Vapi, Twilio, Vonage, Telnyx, BYO) with their routing configuration.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listPhoneNumbers = SlateTool.create(spec, {
+  name: 'List Phone Numbers',
+  key: 'list_phone_numbers',
+  description: `List phone numbers provisioned in your Vapi account. Returns phone numbers across all providers (Vapi, Twilio, Vonage, Telnyx, BYO) with their routing configuration.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum number of phone numbers to return (default 100)'),
-    createdAfter: z.string().optional().describe('Filter for numbers created after this ISO 8601 timestamp'),
-    createdBefore: z.string().optional().describe('Filter for numbers created before this ISO 8601 timestamp')
-  }))
-  .output(z.object({
-    phoneNumbers: z.array(z.object({
-      phoneNumberId: z.string().describe('ID of the phone number'),
-      provider: z.string().optional().describe('Phone number provider'),
-      number: z.string().optional().describe('Phone number in E.164 format'),
-      name: z.string().optional().describe('Name of the phone number'),
-      status: z.string().optional().describe('Status (active, activating, blocked)'),
-      assistantId: z.string().optional().describe('Assigned assistant ID'),
-      squadId: z.string().optional().describe('Assigned squad ID'),
-      workflowId: z.string().optional().describe('Assigned workflow ID'),
-      createdAt: z.string().optional().describe('Creation timestamp')
-    })).describe('List of phone numbers'),
-    count: z.number().describe('Number of phone numbers returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of phone numbers to return (default 100)'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter for numbers created after this ISO 8601 timestamp'),
+      createdBefore: z
+        .string()
+        .optional()
+        .describe('Filter for numbers created before this ISO 8601 timestamp')
+    })
+  )
+  .output(
+    z.object({
+      phoneNumbers: z
+        .array(
+          z.object({
+            phoneNumberId: z.string().describe('ID of the phone number'),
+            provider: z.string().optional().describe('Phone number provider'),
+            number: z.string().optional().describe('Phone number in E.164 format'),
+            name: z.string().optional().describe('Name of the phone number'),
+            status: z.string().optional().describe('Status (active, activating, blocked)'),
+            assistantId: z.string().optional().describe('Assigned assistant ID'),
+            squadId: z.string().optional().describe('Assigned squad ID'),
+            workflowId: z.string().optional().describe('Assigned workflow ID'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .describe('List of phone numbers'),
+      count: z.number().describe('Number of phone numbers returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let params: Record<string, any> = {};

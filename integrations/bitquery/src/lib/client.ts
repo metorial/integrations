@@ -17,7 +17,7 @@ export class BitqueryClient {
 
     let baseURL = config.apiVersion === 'v1' ? V1_ENDPOINT : V2_ENDPOINT;
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.apiVersion === 'v1') {
@@ -28,7 +28,7 @@ export class BitqueryClient {
 
     this.axios = createAxios({
       baseURL,
-      headers,
+      headers
     });
   }
 

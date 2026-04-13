@@ -3,42 +3,44 @@ import { Client, ListParams } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updatedTaskTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Updated Task',
-    key: 'updated_task',
-    description: 'Triggers when an existing task is updated in Nozbe Teams. Detects changes to name, assignment, due date, completion status, and other task properties.'
-  }
-)
-  .input(z.object({
-    taskId: z.string().describe('Task ID'),
-    name: z.string().describe('Task name'),
-    projectId: z.string().optional().describe('Project ID'),
-    responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
-    lastModified: z.number().optional().describe('Last modification timestamp'),
-    endedAt: z.number().nullable().optional().describe('Completion timestamp'),
-    dueAt: z.number().nullable().optional().describe('Due date timestamp'),
-    isAbandoned: z.boolean().optional().describe('Whether the task is abandoned'),
-    priorityPosition: z.number().nullable().optional().describe('Priority position')
-  }))
-  .output(z.object({
-    taskId: z.string().describe('Task ID'),
-    name: z.string().describe('Task name'),
-    projectId: z.string().optional().describe('Project ID'),
-    responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
-    lastModified: z.number().optional().describe('Last modification timestamp'),
-    endedAt: z.number().nullable().optional().describe('Completion timestamp'),
-    dueAt: z.number().nullable().optional().describe('Due date timestamp'),
-    isAbandoned: z.boolean().optional().describe('Whether the task is abandoned'),
-    priorityPosition: z.number().nullable().optional().describe('Priority position')
-  }))
+export let updatedTaskTrigger = SlateTrigger.create(spec, {
+  name: 'Updated Task',
+  key: 'updated_task',
+  description:
+    'Triggers when an existing task is updated in Nozbe Teams. Detects changes to name, assignment, due date, completion status, and other task properties.'
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      name: z.string().describe('Task name'),
+      projectId: z.string().optional().describe('Project ID'),
+      responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
+      lastModified: z.number().optional().describe('Last modification timestamp'),
+      endedAt: z.number().nullable().optional().describe('Completion timestamp'),
+      dueAt: z.number().nullable().optional().describe('Due date timestamp'),
+      isAbandoned: z.boolean().optional().describe('Whether the task is abandoned'),
+      priorityPosition: z.number().nullable().optional().describe('Priority position')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      name: z.string().describe('Task name'),
+      projectId: z.string().optional().describe('Project ID'),
+      responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
+      lastModified: z.number().optional().describe('Last modification timestamp'),
+      endedAt: z.number().nullable().optional().describe('Completion timestamp'),
+      dueAt: z.number().nullable().optional().describe('Due date timestamp'),
+      isAbandoned: z.boolean().optional().describe('Whether the task is abandoned'),
+      priorityPosition: z.number().nullable().optional().describe('Priority position')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let params: ListParams = {
@@ -76,7 +78,7 @@ export let updatedTaskTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'task.updated',
         id: `${ctx.input.taskId}-${ctx.input.lastModified}`,
@@ -93,4 +95,5 @@ export let updatedTaskTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

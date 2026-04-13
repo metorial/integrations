@@ -6,11 +6,13 @@ let axios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -29,7 +31,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -43,7 +45,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await axios.post('/oauth/token', {
         grant_type: 'authorization_code',
         code: ctx.code,
@@ -65,7 +67,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await axios.post('/oauth/token', {
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,
@@ -90,7 +92,7 @@ export let auth = SlateAuth.create()
       let apiAxios = createAxios({
         baseURL: 'https://app.nusii.com/api/v2',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'Content-Type': 'application/json',
           'User-Agent': 'Slates Integration (slates.dev)'
         }
@@ -114,10 +116,12 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Nusii API token (found in Settings > Integrations & API)')
+      token: z
+        .string()
+        .describe('Your Nusii API token (found in Settings > Integrations & API)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -129,7 +133,7 @@ export let auth = SlateAuth.create()
       let apiAxios = createAxios({
         baseURL: 'https://app.nusii.com/api/v2',
         headers: {
-          'Authorization': `Token token=${ctx.output.token}`,
+          Authorization: `Token token=${ctx.output.token}`,
           'Content-Type': 'application/json',
           'User-Agent': 'Slates Integration (slates.dev)'
         }

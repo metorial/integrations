@@ -11,7 +11,11 @@ let earningSchema = z.object({
   currency: z.string().optional().nullable().describe('Currency'),
   actual: z.number().optional().nullable().describe('Actual EPS'),
   estimate: z.number().optional().nullable().describe('Estimated EPS'),
-  difference: z.number().optional().nullable().describe('Difference between actual and estimate'),
+  difference: z
+    .number()
+    .optional()
+    .nullable()
+    .describe('Difference between actual and estimate'),
   percent: z.number().optional().nullable().describe('Percentage difference')
 });
 
@@ -38,34 +42,40 @@ let splitSchema = z.object({
   new_shares: z.string().optional().nullable().describe('New shares count')
 });
 
-export let getFinancialCalendar = SlateTool.create(
-  spec,
-  {
-    name: 'Get Financial Calendar',
-    key: 'get_financial_calendar',
-    description: `Retrieve upcoming financial calendar events including earnings reports, IPOs, and stock splits. Filter by date range and/or specific ticker symbols.`,
-    instructions: [
-      'Choose one calendar type: earnings, ipos, or splits',
-      'For earnings, you can filter by specific symbols using comma-separated tickers'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getFinancialCalendar = SlateTool.create(spec, {
+  name: 'Get Financial Calendar',
+  key: 'get_financial_calendar',
+  description: `Retrieve upcoming financial calendar events including earnings reports, IPOs, and stock splits. Filter by date range and/or specific ticker symbols.`,
+  instructions: [
+    'Choose one calendar type: earnings, ipos, or splits',
+    'For earnings, you can filter by specific symbols using comma-separated tickers'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    calendarType: z.enum(['earnings', 'ipos', 'splits']).describe('Type of financial calendar event'),
-    from: z.string().optional().describe('Start date in YYYY-MM-DD format'),
-    to: z.string().optional().describe('End date in YYYY-MM-DD format'),
-    symbols: z.string().optional().describe('Comma-separated ticker symbols to filter by (earnings and splits only)')
-  }))
-  .output(z.object({
-    calendarType: z.string().describe('Type of calendar events returned'),
-    earnings: z.array(earningSchema).optional().describe('Earnings calendar entries'),
-    ipos: z.array(ipoSchema).optional().describe('IPO calendar entries'),
-    splits: z.array(splitSchema).optional().describe('Splits calendar entries')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      calendarType: z
+        .enum(['earnings', 'ipos', 'splits'])
+        .describe('Type of financial calendar event'),
+      from: z.string().optional().describe('Start date in YYYY-MM-DD format'),
+      to: z.string().optional().describe('End date in YYYY-MM-DD format'),
+      symbols: z
+        .string()
+        .optional()
+        .describe('Comma-separated ticker symbols to filter by (earnings and splits only)')
+    })
+  )
+  .output(
+    z.object({
+      calendarType: z.string().describe('Type of calendar events returned'),
+      earnings: z.array(earningSchema).optional().describe('Earnings calendar entries'),
+      ipos: z.array(ipoSchema).optional().describe('IPO calendar entries'),
+      splits: z.array(splitSchema).optional().describe('Splits calendar entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EodhdClient({ token: ctx.auth.token });
     let calendarType = ctx.input.calendarType;
 
@@ -104,4 +114,5 @@ export let getFinancialCalendar = SlateTool.create(
       output: { calendarType, splits },
       message: `Retrieved **${splits.length}** upcoming stock split events.`
     };
-  }).build();
+  })
+  .build();

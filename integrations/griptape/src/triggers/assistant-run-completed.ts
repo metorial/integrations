@@ -3,40 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let assistantRunCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Assistant Run Completed',
-    key: 'assistant_run_completed',
-    description: 'Triggers when an assistant run reaches a terminal state (succeeded, failed, error, or cancelled).',
-  }
-)
-  .input(z.object({
-    assistantRunId: z.string().describe('ID of the completed run'),
-    assistantId: z.string().describe('ID of the assistant'),
-    status: z.string().describe('Terminal status of the run'),
-    input: z.string().optional().describe('Input provided to the run'),
-    output: z.any().optional().describe('Output of the run'),
-    threadId: z.string().optional().describe('Thread ID'),
-    createdAt: z.string().describe('When the run was created'),
-    completedAt: z.string().optional().describe('When the run completed'),
-  }))
-  .output(z.object({
-    assistantRunId: z.string().describe('ID of the completed run'),
-    assistantId: z.string().describe('ID of the assistant'),
-    status: z.string().describe('Terminal status of the run'),
-    input: z.string().optional().describe('Input provided to the run'),
-    output: z.any().optional().describe('Output of the run'),
-    threadId: z.string().optional().describe('Thread ID'),
-    createdAt: z.string().describe('When the run was created'),
-    completedAt: z.string().optional().describe('When the run completed'),
-  }))
+export let assistantRunCompleted = SlateTrigger.create(spec, {
+  name: 'Assistant Run Completed',
+  key: 'assistant_run_completed',
+  description:
+    'Triggers when an assistant run reaches a terminal state (succeeded, failed, error, or cancelled).'
+})
+  .input(
+    z.object({
+      assistantRunId: z.string().describe('ID of the completed run'),
+      assistantId: z.string().describe('ID of the assistant'),
+      status: z.string().describe('Terminal status of the run'),
+      input: z.string().optional().describe('Input provided to the run'),
+      output: z.any().optional().describe('Output of the run'),
+      threadId: z.string().optional().describe('Thread ID'),
+      createdAt: z.string().describe('When the run was created'),
+      completedAt: z.string().optional().describe('When the run completed')
+    })
+  )
+  .output(
+    z.object({
+      assistantRunId: z.string().describe('ID of the completed run'),
+      assistantId: z.string().describe('ID of the assistant'),
+      status: z.string().describe('Terminal status of the run'),
+      input: z.string().optional().describe('Input provided to the run'),
+      output: z.any().optional().describe('Output of the run'),
+      threadId: z.string().optional().describe('Thread ID'),
+      createdAt: z.string().describe('When the run was created'),
+      completedAt: z.string().optional().describe('When the run completed')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
       let knownCompletedIds: string[] = ctx.state?.knownCompletedIds ?? [];
@@ -65,7 +67,7 @@ export let assistantRunCompleted = SlateTrigger.create(
         try {
           let runsResult = await client.listAssistantRuns(assistantId, {
             pageSize: 20,
-            status: ['SUCCEEDED', 'FAILED', 'ERROR', 'CANCELLED'],
+            status: ['SUCCEEDED', 'FAILED', 'ERROR', 'CANCELLED']
           });
 
           for (let run of runsResult.items) {
@@ -78,7 +80,7 @@ export let assistantRunCompleted = SlateTrigger.create(
                 output: run.output,
                 threadId: run.thread_id,
                 createdAt: run.created_at,
-                completedAt: run.completed_at,
+                completedAt: run.completed_at
               });
               newCompletedIds.push(run.assistant_run_id);
             }
@@ -97,12 +99,12 @@ export let assistantRunCompleted = SlateTrigger.create(
         inputs,
         updatedState: {
           knownCompletedIds: newCompletedIds,
-          assistantIds,
-        },
+          assistantIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `assistant_run.${ctx.input.status.toLowerCase()}`,
         id: ctx.input.assistantRunId,
@@ -114,9 +116,9 @@ export let assistantRunCompleted = SlateTrigger.create(
           output: ctx.input.output,
           threadId: ctx.input.threadId,
           createdAt: ctx.input.createdAt,
-          completedAt: ctx.input.completedAt,
-        },
+          completedAt: ctx.input.completedAt
+        }
       };
-    },
+    }
   })
   .build();

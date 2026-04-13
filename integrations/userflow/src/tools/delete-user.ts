@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteUser = SlateTool.create(
-  spec,
-  {
-    name: 'Delete User',
-    key: 'delete_user',
-    description: `Permanently deletes a user and all associated data including attributes, memberships, events, and flow history. Groups the user was a member of are left intact. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteUser = SlateTool.create(spec, {
+  name: 'Delete User',
+  key: 'delete_user',
+  description: `Permanently deletes a user and all associated data including attributes, memberships, events, and flow history. Groups the user was a member of are left intact. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    userId: z.string().describe('ID of the user to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('ID of the user to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion,
+      apiVersion: ctx.config.apiVersion
     });
 
     let result = await client.deleteUser(ctx.input.userId);
 
     return {
       output: {
-        deleted: result.deleted,
+        deleted: result.deleted
       },
-      message: `User **${ctx.input.userId}** has been permanently deleted.`,
+      message: `User **${ctx.input.userId}** has been permanently deleted.`
     };
   })
   .build();

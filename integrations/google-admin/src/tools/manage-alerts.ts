@@ -3,71 +3,113 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAlerts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Alerts',
-    key: 'manage_alerts',
-    description: `List, get, delete, undelete, or provide feedback on security alerts from the Google Workspace Alert Center. Alerts cover threats like phishing, malware, suspicious logins, and policy violations.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageAlerts = SlateTool.create(spec, {
+  name: 'Manage Alerts',
+  key: 'manage_alerts',
+  description: `List, get, delete, undelete, or provide feedback on security alerts from the Google Workspace Alert Center. Alerts cover threats like phishing, malware, suspicious logins, and policy violations.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'delete', 'undelete', 'add_feedback', 'list_feedback', 'get_metadata']).describe('Action to perform'),
-    alertId: z.string().optional().describe('Alert ID (required for get, delete, undelete, add_feedback, list_feedback, get_metadata)'),
-    filter: z.string().optional().describe('Filter for list action (e.g. \'createTime >= "2024-01-01T00:00:00Z"\')'),
-    orderBy: z.string().optional().describe('Order for list action (e.g. "create_time desc")'),
-    pageSize: z.number().optional().describe('Page size for list (max 50). Defaults to 20.'),
-    pageToken: z.string().optional(),
-    feedbackType: z.enum(['ALERT_FEEDBACK_TYPE_UNSPECIFIED', 'NOT_USEFUL', 'SOMEWHAT_USEFUL', 'VERY_USEFUL']).optional().describe('Feedback type (for add_feedback)')
-  }))
-  .output(z.object({
-    alerts: z.array(z.object({
-      alertId: z.string().optional(),
-      customerId: z.string().optional(),
-      type: z.string().optional(),
-      source: z.string().optional(),
-      createTime: z.string().optional(),
-      startTime: z.string().optional(),
-      endTime: z.string().optional(),
-      securityInvestigationToolLink: z.string().optional()
-    })).optional(),
-    alert: z.object({
-      alertId: z.string().optional(),
-      customerId: z.string().optional(),
-      type: z.string().optional(),
-      source: z.string().optional(),
-      createTime: z.string().optional(),
-      startTime: z.string().optional(),
-      endTime: z.string().optional(),
-      updateTime: z.string().optional(),
-      securityInvestigationToolLink: z.string().optional(),
-      alertData: z.any().optional()
-    }).optional(),
-    feedback: z.array(z.object({
-      feedbackId: z.string().optional(),
-      alertId: z.string().optional(),
-      type: z.string().optional(),
-      createTime: z.string().optional(),
-      email: z.string().optional()
-    })).optional(),
-    metadata: z.object({
-      alertId: z.string().optional(),
-      customerId: z.string().optional(),
-      status: z.string().optional(),
-      assignee: z.string().optional(),
-      updateTime: z.string().optional(),
-      severity: z.string().optional(),
-      etag: z.string().optional()
-    }).optional(),
-    nextPageToken: z.string().optional(),
-    deleted: z.boolean().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'list',
+          'get',
+          'delete',
+          'undelete',
+          'add_feedback',
+          'list_feedback',
+          'get_metadata'
+        ])
+        .describe('Action to perform'),
+      alertId: z
+        .string()
+        .optional()
+        .describe(
+          'Alert ID (required for get, delete, undelete, add_feedback, list_feedback, get_metadata)'
+        ),
+      filter: z
+        .string()
+        .optional()
+        .describe('Filter for list action (e.g. \'createTime >= "2024-01-01T00:00:00Z"\')'),
+      orderBy: z
+        .string()
+        .optional()
+        .describe('Order for list action (e.g. "create_time desc")'),
+      pageSize: z.number().optional().describe('Page size for list (max 50). Defaults to 20.'),
+      pageToken: z.string().optional(),
+      feedbackType: z
+        .enum([
+          'ALERT_FEEDBACK_TYPE_UNSPECIFIED',
+          'NOT_USEFUL',
+          'SOMEWHAT_USEFUL',
+          'VERY_USEFUL'
+        ])
+        .optional()
+        .describe('Feedback type (for add_feedback)')
+    })
+  )
+  .output(
+    z.object({
+      alerts: z
+        .array(
+          z.object({
+            alertId: z.string().optional(),
+            customerId: z.string().optional(),
+            type: z.string().optional(),
+            source: z.string().optional(),
+            createTime: z.string().optional(),
+            startTime: z.string().optional(),
+            endTime: z.string().optional(),
+            securityInvestigationToolLink: z.string().optional()
+          })
+        )
+        .optional(),
+      alert: z
+        .object({
+          alertId: z.string().optional(),
+          customerId: z.string().optional(),
+          type: z.string().optional(),
+          source: z.string().optional(),
+          createTime: z.string().optional(),
+          startTime: z.string().optional(),
+          endTime: z.string().optional(),
+          updateTime: z.string().optional(),
+          securityInvestigationToolLink: z.string().optional(),
+          alertData: z.any().optional()
+        })
+        .optional(),
+      feedback: z
+        .array(
+          z.object({
+            feedbackId: z.string().optional(),
+            alertId: z.string().optional(),
+            type: z.string().optional(),
+            createTime: z.string().optional(),
+            email: z.string().optional()
+          })
+        )
+        .optional(),
+      metadata: z
+        .object({
+          alertId: z.string().optional(),
+          customerId: z.string().optional(),
+          status: z.string().optional(),
+          assignee: z.string().optional(),
+          updateTime: z.string().optional(),
+          severity: z.string().optional(),
+          etag: z.string().optional()
+        })
+        .optional(),
+      nextPageToken: z.string().optional(),
+      deleted: z.boolean().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -152,13 +194,15 @@ export let manageAlerts = SlateTool.create(
       let f = await client.createAlertFeedback(ctx.input.alertId, ctx.input.feedbackType);
       return {
         output: {
-          feedback: [{
-            feedbackId: f.feedbackId,
-            alertId: f.alertId,
-            type: f.type,
-            createTime: f.createTime,
-            email: f.email
-          }],
+          feedback: [
+            {
+              feedbackId: f.feedbackId,
+              alertId: f.alertId,
+              type: f.type,
+              createTime: f.createTime,
+              email: f.email
+            }
+          ],
           action: 'add_feedback'
         },
         message: `Added **${ctx.input.feedbackType}** feedback to alert **${ctx.input.alertId}**.`

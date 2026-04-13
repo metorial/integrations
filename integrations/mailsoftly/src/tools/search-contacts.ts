@@ -3,31 +3,35 @@ import { MailsoftlyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Contacts',
-    key: 'search_contacts',
-    description: `Searches contacts in Mailsoftly based on field criteria such as email, first name, or last name. Provide one or more field-value pairs to filter contacts.`,
-    instructions: [
-      'Use field names like "email", "first_name", "last_name", or any custom field name as search criteria.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let searchContacts = SlateTool.create(spec, {
+  name: 'Search Contacts',
+  key: 'search_contacts',
+  description: `Searches contacts in Mailsoftly based on field criteria such as email, first name, or last name. Provide one or more field-value pairs to filter contacts.`,
+  instructions: [
+    'Use field names like "email", "first_name", "last_name", or any custom field name as search criteria.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Filter by email address.'),
-    firstName: z.string().optional().describe('Filter by first name.'),
-    lastName: z.string().optional().describe('Filter by last name.'),
-    customCriteria: z.record(z.string(), z.string()).optional().describe('Additional search criteria as key-value pairs using field names.'),
-  }))
-  .output(z.object({
-    contacts: z.array(z.any()).describe('List of contacts matching the search criteria.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Filter by email address.'),
+      firstName: z.string().optional().describe('Filter by first name.'),
+      lastName: z.string().optional().describe('Filter by last name.'),
+      customCriteria: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional search criteria as key-value pairs using field names.')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(z.any()).describe('List of contacts matching the search criteria.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MailsoftlyClient({ token: ctx.auth.token });
 
     let criteria: Record<string, string> = {};
@@ -42,7 +46,7 @@ export let searchContacts = SlateTool.create(
 
     return {
       output: { contacts },
-      message: `Found **${contacts.length}** contact(s) matching the search criteria.`,
+      message: `Found **${contacts.length}** contact(s) matching the search criteria.`
     };
   })
   .build();

@@ -44,7 +44,5 @@ export let provider = Slate.create({
     deleteFonts,
     getAccount
   ],
-  triggers: [
-    editorEvent
-  ]
+  triggers: [editorEvent]
 });

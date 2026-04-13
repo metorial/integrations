@@ -19,29 +19,36 @@ let couponSchema = z.object({
   redemptionCount: z.number().describe('Number of times used'),
   products: z.array(z.string()).describe('Product IDs this coupon applies to'),
   affiliateId: z.string().nullable().describe('Associated affiliate ID'),
-  requiresSubscriptionProduct: z.string().nullable().describe('Required subscription product ID'),
+  requiresSubscriptionProduct: z
+    .string()
+    .nullable()
+    .describe('Required subscription product ID')
 });
 
-export let listCoupons = SlateTool.create(
-  spec,
-  {
-    name: 'List Coupons',
-    key: 'list_coupons',
-    description: `List all coupons in your Zylvie store. Optionally include archived coupons.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listCoupons = SlateTool.create(spec, {
+  name: 'List Coupons',
+  key: 'list_coupons',
+  description: `List all coupons in your Zylvie store. Optionally include archived coupons.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeArchived: z.boolean().optional().describe('Set to true to retrieve archived coupons instead of active ones'),
-  }))
-  .output(z.object({
-    count: z.number().describe('Total number of coupons returned'),
-    coupons: z.array(couponSchema).describe('List of coupons'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeArchived: z
+        .boolean()
+        .optional()
+        .describe('Set to true to retrieve archived coupons instead of active ones')
+    })
+  )
+  .output(
+    z.object({
+      count: z.number().describe('Total number of coupons returned'),
+      coupons: z.array(couponSchema).describe('List of coupons')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listCoupons(ctx.input.includeArchived);
@@ -62,14 +69,15 @@ export let listCoupons = SlateTool.create(
       redemptionCount: c.redemption_count as number,
       products: (c.products as string[]) || [],
       affiliateId: (c.affiliate as string | null) ?? null,
-      requiresSubscriptionProduct: (c.requires_subscription_product as string | null) ?? null,
+      requiresSubscriptionProduct: (c.requires_subscription_product as string | null) ?? null
     }));
 
     return {
       output: {
         count: result.count,
-        coupons,
+        coupons
       },
-      message: `Found **${result.count}** coupon(s)${ctx.input.includeArchived ? ' (including archived)' : ''}.`,
+      message: `Found **${result.count}** coupon(s)${ctx.input.includeArchived ? ' (including archived)' : ''}.`
     };
-  }).build();
+  })
+  .build();

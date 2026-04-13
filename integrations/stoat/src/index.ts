@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   sendMessage,
@@ -34,14 +33,9 @@ import {
   createInvite,
   fetchInvite,
   deleteInvite,
-  fetchServerInvites,
+  fetchServerInvites
 } from './tools';
-import {
-  newMessage,
-  channelMessage,
-  serverMemberChanges,
-  inboundWebhook,
-} from './triggers';
+import { newMessage, channelMessage, serverMemberChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -78,12 +72,7 @@ export let provider = Slate.create({
     createInvite,
     fetchInvite,
     deleteInvite,
-    fetchServerInvites,
+    fetchServerInvites
   ],
-  triggers: [
-    inboundWebhook,
-    newMessage,
-    channelMessage,
-    serverMemberChanges,
-  ],
+  triggers: [inboundWebhook, newMessage, channelMessage, serverMemberChanges]
 });

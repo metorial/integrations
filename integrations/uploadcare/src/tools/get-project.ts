@@ -3,28 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project Info',
-    key: 'get_project',
-    description: `Retrieve information about the current Uploadcare project, including name, public key, autostore setting, and collaborators.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project Info',
+  key: 'get_project',
+  description: `Retrieve information about the current Uploadcare project, including name, public key, autostore setting, and collaborators.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    projectName: z.string().describe('Name of the project'),
-    publicKey: z.string().describe('Public API key for the project'),
-    autostoreEnabled: z.boolean().describe('Whether files are automatically stored'),
-    collaborators: z.array(z.object({
-      email: z.string().describe('Collaborator email'),
-      name: z.string().describe('Collaborator name'),
-    })).describe('List of project collaborators'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      projectName: z.string().describe('Name of the project'),
+      publicKey: z.string().describe('Public API key for the project'),
+      autostoreEnabled: z.boolean().describe('Whether files are automatically stored'),
+      collaborators: z
+        .array(
+          z.object({
+            email: z.string().describe('Collaborator email'),
+            name: z.string().describe('Collaborator name')
+          })
+        )
+        .describe('List of project collaborators')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
     let project = await client.getProject();
 
@@ -33,8 +36,9 @@ export let getProject = SlateTool.create(
         projectName: project.name,
         publicKey: project.pub_key,
         autostoreEnabled: project.autostore_enabled,
-        collaborators: project.collaborators,
+        collaborators: project.collaborators
       },
-      message: `Project **${project.name}** (${project.pub_key}), autostore: ${project.autostore_enabled ? 'enabled' : 'disabled'}, ${project.collaborators.length} collaborator(s).`,
+      message: `Project **${project.name}** (${project.pub_key}), autostore: ${project.autostore_enabled ? 'enabled' : 'disabled'}, ${project.collaborators.length} collaborator(s).`
     };
-  }).build();
+  })
+  .build();

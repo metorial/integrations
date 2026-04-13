@@ -3,33 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reactToMessage = SlateTool.create(
-  spec,
-  {
-    name: 'React to Message',
-    key: 'react_to_message',
-    description: `Add or remove an emoji reaction on a WhatsApp message. Can also retrieve current reactions on a message.`,
-    instructions: [
-      'Set reaction to an emoji character to add a reaction.',
-      'Set reaction to an empty string to clear the reaction.',
-      'Set getOnly to true to just retrieve current reactions without modifying.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let reactToMessage = SlateTool.create(spec, {
+  name: 'React to Message',
+  key: 'react_to_message',
+  description: `Add or remove an emoji reaction on a WhatsApp message. Can also retrieve current reactions on a message.`,
+  instructions: [
+    'Set reaction to an emoji character to add a reaction.',
+    'Set reaction to an empty string to clear the reaction.',
+    'Set getOnly to true to just retrieve current reactions without modifying.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    messageUid: z.string().describe('UID of the message to react to'),
-    reaction: z.string().optional().describe('Emoji character to react with, or empty string to clear reaction'),
-    getOnly: z.boolean().optional().describe('Only retrieve current reactions without modifying'),
-  }))
-  .output(z.object({
-    messageUid: z.string().describe('Message UID'),
-    reactions: z.record(z.string(), z.number()).optional().describe('Map of emoji to reaction count'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      messageUid: z.string().describe('UID of the message to react to'),
+      reaction: z
+        .string()
+        .optional()
+        .describe('Emoji character to react with, or empty string to clear reaction'),
+      getOnly: z
+        .boolean()
+        .optional()
+        .describe('Only retrieve current reactions without modifying')
+    })
+  )
+  .output(
+    z.object({
+      messageUid: z.string().describe('Message UID'),
+      reactions: z
+        .record(z.string(), z.number())
+        .optional()
+        .describe('Map of emoji to reaction count')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { messageUid, reaction, getOnly } = ctx.input;
 
@@ -38,9 +48,9 @@ export let reactToMessage = SlateTool.create(
       return {
         output: {
           messageUid,
-          reactions: result?.data || {},
+          reactions: result?.data || {}
         },
-        message: `Retrieved reactions for message **${messageUid}**.`,
+        message: `Retrieved reactions for message **${messageUid}**.`
       };
     }
 
@@ -54,9 +64,11 @@ export let reactToMessage = SlateTool.create(
     return {
       output: {
         messageUid: resultUid,
-        reactions: undefined,
+        reactions: undefined
       },
-      message: reaction ? `Reacted with ${reaction} on message **${resultUid}**.` : `Cleared reaction on message **${resultUid}**.`,
+      message: reaction
+        ? `Reacted with ${reaction} on message **${resultUid}**.`
+        : `Cleared reaction on message **${resultUid}**.`
     };
   })
   .build();

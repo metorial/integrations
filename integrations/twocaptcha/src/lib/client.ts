@@ -52,19 +52,22 @@ export class TwoCaptchaClient {
     this.axios = createAxios({
       baseURL: 'https://api.2captcha.com',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  async createTask(task: Record<string, unknown>, options?: {
-    callbackUrl?: string;
-    languagePool?: string;
-    softId?: number;
-  }): Promise<CreateTaskResponse> {
+  async createTask(
+    task: Record<string, unknown>,
+    options?: {
+      callbackUrl?: string;
+      languagePool?: string;
+      softId?: number;
+    }
+  ): Promise<CreateTaskResponse> {
     let body: Record<string, unknown> = {
       clientKey: this.clientKey,
-      task,
+      task
     };
 
     if (options?.callbackUrl) body.callbackUrl = options.callbackUrl;
@@ -78,14 +81,14 @@ export class TwoCaptchaClient {
   async getTaskResult(taskId: number): Promise<TaskResultResponse> {
     let response = await this.axios.post('/getTaskResult', {
       clientKey: this.clientKey,
-      taskId,
+      taskId
     });
     return response.data as TaskResultResponse;
   }
 
   async getBalance(): Promise<BalanceResponse> {
     let response = await this.axios.post('/getBalance', {
-      clientKey: this.clientKey,
+      clientKey: this.clientKey
     });
     return response.data as BalanceResponse;
   }
@@ -93,7 +96,7 @@ export class TwoCaptchaClient {
   async reportCorrect(taskId: number): Promise<ReportResponse> {
     let response = await this.axios.post('/reportCorrect', {
       clientKey: this.clientKey,
-      taskId,
+      taskId
     });
     return response.data as ReportResponse;
   }
@@ -101,7 +104,7 @@ export class TwoCaptchaClient {
   async reportIncorrect(taskId: number): Promise<ReportResponse> {
     let response = await this.axios.post('/reportIncorrect', {
       clientKey: this.clientKey,
-      taskId,
+      taskId
     });
     return response.data as ReportResponse;
   }
@@ -119,7 +122,7 @@ export class TwoCaptchaClient {
     let task: Record<string, unknown> = {
       type: params.proxy ? 'RecaptchaV2Task' : 'RecaptchaV2TaskProxyless',
       websiteURL: params.websiteUrl,
-      websiteKey: params.websiteKey,
+      websiteKey: params.websiteKey
     };
 
     if (params.isInvisible !== undefined) task.isInvisible = params.isInvisible;
@@ -144,7 +147,7 @@ export class TwoCaptchaClient {
     let task: Record<string, unknown> = {
       type: params.proxy ? 'RecaptchaV3Task' : 'RecaptchaV3TaskProxyless',
       websiteURL: params.websiteUrl,
-      websiteKey: params.websiteKey,
+      websiteKey: params.websiteKey
     };
 
     if (params.pageAction) task.pageAction = params.pageAction;
@@ -167,7 +170,7 @@ export class TwoCaptchaClient {
     let task: Record<string, unknown> = {
       type: params.proxy ? 'HCaptchaTask' : 'HCaptchaTaskProxyless',
       websiteURL: params.websiteUrl,
-      websiteKey: params.websiteKey,
+      websiteKey: params.websiteKey
     };
 
     if (params.isInvisible !== undefined) task.isInvisible = params.isInvisible;
@@ -189,10 +192,11 @@ export class TwoCaptchaClient {
     let task: Record<string, unknown> = {
       type: params.proxy ? 'FunCaptchaTask' : 'FunCaptchaTaskProxyless',
       websiteURL: params.websiteUrl,
-      websitePublicKey: params.websitePublicKey,
+      websitePublicKey: params.websitePublicKey
     };
 
-    if (params.funcaptchaApiJSSubdomain) task.funcaptchaApiJSSubdomain = params.funcaptchaApiJSSubdomain;
+    if (params.funcaptchaApiJSSubdomain)
+      task.funcaptchaApiJSSubdomain = params.funcaptchaApiJSSubdomain;
     if (params.data) task.data = params.data;
     if (params.userAgent) task.userAgent = params.userAgent;
     if (params.proxy) Object.assign(task, params.proxy);
@@ -213,11 +217,12 @@ export class TwoCaptchaClient {
     let task: Record<string, unknown> = {
       type: params.proxy ? 'GeeTestTask' : 'GeeTestTaskProxyless',
       websiteURL: params.websiteUrl,
-      gt: params.gt,
+      gt: params.gt
     };
 
     if (params.challenge) task.challenge = params.challenge;
-    if (params.geetestApiServerSubdomain) task.geetestApiServerSubdomain = params.geetestApiServerSubdomain;
+    if (params.geetestApiServerSubdomain)
+      task.geetestApiServerSubdomain = params.geetestApiServerSubdomain;
     if (params.geetestGetLib) task.geetestGetLib = params.geetestGetLib;
     if (params.version !== undefined) task.version = params.version;
     if (params.initParameters) task.initParameters = params.initParameters;
@@ -238,7 +243,7 @@ export class TwoCaptchaClient {
     let task: Record<string, unknown> = {
       type: params.proxy ? 'TurnstileTask' : 'TurnstileTaskProxyless',
       websiteURL: params.websiteUrl,
-      websiteKey: params.websiteKey,
+      websiteKey: params.websiteKey
     };
 
     if (params.action) task.action = params.action;
@@ -263,7 +268,7 @@ export class TwoCaptchaClient {
   }): Record<string, unknown> {
     let task: Record<string, unknown> = {
       type: 'ImageToTextTask',
-      body: params.body,
+      body: params.body
     };
 
     if (params.phrase !== undefined) task.phrase = params.phrase;
@@ -278,12 +283,10 @@ export class TwoCaptchaClient {
     return task;
   }
 
-  buildTextCaptchaTask(params: {
-    comment: string;
-  }): Record<string, unknown> {
+  buildTextCaptchaTask(params: { comment: string }): Record<string, unknown> {
     return {
       type: 'TextCaptchaTask',
-      comment: params.comment,
+      comment: params.comment
     };
   }
 }

@@ -42,11 +42,5 @@ export let provider = Slate.create({
     sendMessage,
     createInsightCard
   ],
-  triggers: [
-    callEvents,
-    userEvents,
-    contactEvents,
-    numberEvents,
-    messageEvents
-  ]
+  triggers: [callEvents, userEvents, contactEvents, numberEvents, messageEvents]
 });

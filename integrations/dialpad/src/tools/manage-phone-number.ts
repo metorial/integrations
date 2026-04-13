@@ -3,35 +3,47 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePhoneNumberTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Phone Number',
-    key: 'manage_phone_number',
-    description: `List, assign, or unassign Dialpad phone numbers. Numbers can be assigned to users, offices, rooms, or call routers.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'assign', 'unassign']).describe('Action to perform'),
-    phoneNumber: z.string().optional().describe('Phone number (E.164 format) for assign/unassign'),
-    targetType: z.enum(['user', 'office', 'room', 'call_router']).optional().describe('Target type for the number'),
-    targetId: z.string().optional().describe('Target ID for the number'),
-    cursor: z.string().optional().describe('Pagination cursor (for list action)'),
-  }))
-  .output(z.object({
-    numbers: z.array(z.object({
-      phoneNumber: z.string().optional(),
-      targetType: z.string().optional(),
-      targetId: z.string().optional(),
-    })).optional().describe('List of phone numbers (for list action)'),
-    nextCursor: z.string().optional(),
-    success: z.boolean().optional().describe('Whether the assign/unassign was successful'),
-    actionPerformed: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let managePhoneNumberTool = SlateTool.create(spec, {
+  name: 'Manage Phone Number',
+  key: 'manage_phone_number',
+  description: `List, assign, or unassign Dialpad phone numbers. Numbers can be assigned to users, offices, rooms, or call routers.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'assign', 'unassign']).describe('Action to perform'),
+      phoneNumber: z
+        .string()
+        .optional()
+        .describe('Phone number (E.164 format) for assign/unassign'),
+      targetType: z
+        .enum(['user', 'office', 'room', 'call_router'])
+        .optional()
+        .describe('Target type for the number'),
+      targetId: z.string().optional().describe('Target ID for the number'),
+      cursor: z.string().optional().describe('Pagination cursor (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      numbers: z
+        .array(
+          z.object({
+            phoneNumber: z.string().optional(),
+            targetType: z.string().optional(),
+            targetId: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of phone numbers (for list action)'),
+      nextCursor: z.string().optional(),
+      success: z.boolean().optional().describe('Whether the assign/unassign was successful'),
+      actionPerformed: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action } = ctx.input;
@@ -40,22 +52,22 @@ export let managePhoneNumberTool = SlateTool.create(
       let result = await client.listNumbers({
         cursor: ctx.input.cursor,
         target_type: ctx.input.targetType,
-        target_id: ctx.input.targetId,
+        target_id: ctx.input.targetId
       });
 
       let numbers = (result.items || []).map((n: any) => ({
         phoneNumber: n.number || n.phone_number,
         targetType: n.target_type,
-        targetId: n.target_id ? String(n.target_id) : undefined,
+        targetId: n.target_id ? String(n.target_id) : undefined
       }));
 
       return {
         output: {
           numbers,
           nextCursor: result.cursor || undefined,
-          actionPerformed: 'list',
+          actionPerformed: 'list'
         },
-        message: `Found **${numbers.length}** phone number(s)`,
+        message: `Found **${numbers.length}** phone number(s)`
       };
     }
 
@@ -67,12 +79,12 @@ export let managePhoneNumberTool = SlateTool.create(
       await client.assignNumber({
         number: ctx.input.phoneNumber,
         target_type: ctx.input.targetType,
-        target_id: Number(ctx.input.targetId),
+        target_id: Number(ctx.input.targetId)
       });
 
       return {
         output: { success: true, actionPerformed: 'assign' },
-        message: `Assigned **${ctx.input.phoneNumber}** to ${ctx.input.targetType} ${ctx.input.targetId}`,
+        message: `Assigned **${ctx.input.phoneNumber}** to ${ctx.input.targetType} ${ctx.input.targetId}`
       };
     }
 
@@ -84,12 +96,12 @@ export let managePhoneNumberTool = SlateTool.create(
       await client.unassignNumber({
         number: ctx.input.phoneNumber,
         target_type: ctx.input.targetType,
-        target_id: Number(ctx.input.targetId),
+        target_id: Number(ctx.input.targetId)
       });
 
       return {
         output: { success: true, actionPerformed: 'unassign' },
-        message: `Unassigned **${ctx.input.phoneNumber}** from ${ctx.input.targetType} ${ctx.input.targetId}`,
+        message: `Unassigned **${ctx.input.phoneNumber}** from ${ctx.input.targetType} ${ctx.input.targetId}`
       };
     }
 

@@ -4,22 +4,47 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let transcriptionOptionsSchema = z.object({
-  model: z.string().optional().describe('Model to use for transcription (e.g., "nova-3", "nova-2", "whisper-large"). Defaults to the latest general model.'),
-  language: z.string().optional().describe('BCP-47 language code (e.g., "en", "es", "fr"). If not set, automatic language detection is used.'),
+  model: z
+    .string()
+    .optional()
+    .describe(
+      'Model to use for transcription (e.g., "nova-3", "nova-2", "whisper-large"). Defaults to the latest general model.'
+    ),
+  language: z
+    .string()
+    .optional()
+    .describe(
+      'BCP-47 language code (e.g., "en", "es", "fr"). If not set, automatic language detection is used.'
+    ),
   detectLanguage: z.boolean().optional().describe('Enable automatic language detection.'),
   punctuate: z.boolean().optional().describe('Add punctuation to the transcript.'),
-  smartFormat: z.boolean().optional().describe('Enable smart formatting for currencies, phone numbers, emails, etc.'),
-  diarize: z.boolean().optional().describe('Identify and label different speakers in the audio.'),
-  utterances: z.boolean().optional().describe('Segment transcript into utterances (speaker turns).'),
-  keywords: z.array(z.string()).optional().describe('Keywords to boost recognition for (e.g., ["Deepgram", "AI"]).'),
+  smartFormat: z
+    .boolean()
+    .optional()
+    .describe('Enable smart formatting for currencies, phone numbers, emails, etc.'),
+  diarize: z
+    .boolean()
+    .optional()
+    .describe('Identify and label different speakers in the audio.'),
+  utterances: z
+    .boolean()
+    .optional()
+    .describe('Segment transcript into utterances (speaker turns).'),
+  keywords: z
+    .array(z.string())
+    .optional()
+    .describe('Keywords to boost recognition for (e.g., ["Deepgram", "AI"]).'),
   search: z.array(z.string()).optional().describe('Terms to search for in the transcript.'),
   summarize: z.boolean().optional().describe('Generate a summary of the transcript.'),
   topics: z.boolean().optional().describe('Detect topics discussed in the audio.'),
   intents: z.boolean().optional().describe('Detect intents in the audio.'),
   sentiment: z.boolean().optional().describe('Analyze sentiment of the transcript.'),
   paragraphs: z.boolean().optional().describe('Split transcript into paragraphs.'),
-  redact: z.array(z.string()).optional().describe('Types of information to redact (e.g., ["pci", "ssn", "numbers"]).'),
-  tag: z.string().optional().describe('Tag for tracking the request in usage reports.'),
+  redact: z
+    .array(z.string())
+    .optional()
+    .describe('Types of information to redact (e.g., ["pci", "ssn", "numbers"]).'),
+  tag: z.string().optional().describe('Tag for tracking the request in usage reports.')
 });
 
 let wordSchema = z.object({
@@ -28,7 +53,7 @@ let wordSchema = z.object({
   end: z.number(),
   confidence: z.number(),
   speaker: z.number().optional(),
-  punctuatedWord: z.string().optional(),
+  punctuatedWord: z.string().optional()
 });
 
 let alternativeSchema = z.object({
@@ -39,59 +64,99 @@ let alternativeSchema = z.object({
   summaries: z.array(z.any()).optional(),
   topics: z.array(z.any()).optional(),
   intents: z.array(z.any()).optional(),
-  sentiments: z.array(z.any()).optional(),
+  sentiments: z.array(z.any()).optional()
 });
 
 let channelSchema = z.object({
   alternatives: z.array(alternativeSchema),
-  detectedLanguage: z.string().optional(),
+  detectedLanguage: z.string().optional()
 });
 
-export let transcribeAudioTool = SlateTool.create(
-  spec,
-  {
-    name: 'Transcribe Audio',
-    key: 'transcribe_audio',
-    description: `Transcribe pre-recorded audio to text. Supports audio from a URL or raw audio data (base64-encoded). Provides options for model selection, language detection, speaker diarization, smart formatting, keyword boosting, and text intelligence features (summarization, topic detection, sentiment analysis). Returns the full transcript with word-level timestamps and confidence scores.`,
-    instructions: [
-      'Provide either an audioUrl OR audioData+mimetype, not both.',
-      'For best results with smart formatting, use the "nova-3" model.',
-      'Enable diarize=true and utterances=true together for speaker-attributed transcripts.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let transcribeAudioTool = SlateTool.create(spec, {
+  name: 'Transcribe Audio',
+  key: 'transcribe_audio',
+  description: `Transcribe pre-recorded audio to text. Supports audio from a URL or raw audio data (base64-encoded). Provides options for model selection, language detection, speaker diarization, smart formatting, keyword boosting, and text intelligence features (summarization, topic detection, sentiment analysis). Returns the full transcript with word-level timestamps and confidence scores.`,
+  instructions: [
+    'Provide either an audioUrl OR audioData+mimetype, not both.',
+    'For best results with smart formatting, use the "nova-3" model.',
+    'Enable diarize=true and utterances=true together for speaker-attributed transcripts.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    audioUrl: z.string().optional().describe('URL of the audio file to transcribe. Use this OR audioData, not both.'),
-    audioData: z.string().optional().describe('Base64-encoded audio data. Must also provide mimetype.'),
-    mimetype: z.string().optional().describe('MIME type of the audio data (e.g., "audio/wav", "audio/mp3"). Required when using audioData.'),
-    ...transcriptionOptionsSchema.shape,
-  }))
-  .output(z.object({
-    requestId: z.string().optional().describe('Unique request identifier.'),
-    transcript: z.string().describe('Full transcript text from the primary channel/alternative.'),
-    confidence: z.number().optional().describe('Overall confidence score of the transcript.'),
-    words: z.array(wordSchema).optional().describe('Word-level details with timestamps and confidence.'),
-    channels: z.array(channelSchema).optional().describe('Per-channel transcription results.'),
-    detectedLanguage: z.string().optional().describe('Detected language if language detection was enabled.'),
-    summary: z.any().optional().describe('Summary of the transcript if summarize was enabled.'),
-    topics: z.any().optional().describe('Detected topics if topics was enabled.'),
-    intents: z.any().optional().describe('Detected intents if intents was enabled.'),
-    sentiments: z.any().optional().describe('Sentiment analysis results if sentiment was enabled.'),
-    utterances: z.array(z.object({
-      start: z.number(),
-      end: z.number(),
-      confidence: z.number(),
-      channel: z.number(),
-      transcript: z.string(),
-      speaker: z.number().optional(),
-      words: z.array(wordSchema).optional(),
-    })).optional().describe('Utterance segments if utterances was enabled.'),
-    metadata: z.any().optional().describe('Request metadata including model info, duration, etc.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      audioUrl: z
+        .string()
+        .optional()
+        .describe('URL of the audio file to transcribe. Use this OR audioData, not both.'),
+      audioData: z
+        .string()
+        .optional()
+        .describe('Base64-encoded audio data. Must also provide mimetype.'),
+      mimetype: z
+        .string()
+        .optional()
+        .describe(
+          'MIME type of the audio data (e.g., "audio/wav", "audio/mp3"). Required when using audioData.'
+        ),
+      ...transcriptionOptionsSchema.shape
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().optional().describe('Unique request identifier.'),
+      transcript: z
+        .string()
+        .describe('Full transcript text from the primary channel/alternative.'),
+      confidence: z
+        .number()
+        .optional()
+        .describe('Overall confidence score of the transcript.'),
+      words: z
+        .array(wordSchema)
+        .optional()
+        .describe('Word-level details with timestamps and confidence.'),
+      channels: z
+        .array(channelSchema)
+        .optional()
+        .describe('Per-channel transcription results.'),
+      detectedLanguage: z
+        .string()
+        .optional()
+        .describe('Detected language if language detection was enabled.'),
+      summary: z
+        .any()
+        .optional()
+        .describe('Summary of the transcript if summarize was enabled.'),
+      topics: z.any().optional().describe('Detected topics if topics was enabled.'),
+      intents: z.any().optional().describe('Detected intents if intents was enabled.'),
+      sentiments: z
+        .any()
+        .optional()
+        .describe('Sentiment analysis results if sentiment was enabled.'),
+      utterances: z
+        .array(
+          z.object({
+            start: z.number(),
+            end: z.number(),
+            confidence: z.number(),
+            channel: z.number(),
+            transcript: z.string(),
+            speaker: z.number().optional(),
+            words: z.array(wordSchema).optional()
+          })
+        )
+        .optional()
+        .describe('Utterance segments if utterances was enabled.'),
+      metadata: z
+        .any()
+        .optional()
+        .describe('Request metadata including model info, duration, etc.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DeepgramClient(ctx.auth.token);
 
     if (!ctx.input.audioUrl && !ctx.input.audioData) {
@@ -118,7 +183,7 @@ export let transcribeAudioTool = SlateTool.create(
         sentiment: ctx.input.sentiment,
         paragraphs: ctx.input.paragraphs,
         redact: ctx.input.redact,
-        tag: ctx.input.tag,
+        tag: ctx.input.tag
       });
     } else {
       if (!ctx.input.mimetype) {
@@ -142,7 +207,7 @@ export let transcribeAudioTool = SlateTool.create(
         sentiment: ctx.input.sentiment,
         paragraphs: ctx.input.paragraphs,
         redact: ctx.input.redact,
-        tag: ctx.input.tag,
+        tag: ctx.input.tag
       });
     }
 
@@ -159,15 +224,15 @@ export let transcribeAudioTool = SlateTool.create(
           end: w.end,
           confidence: w.confidence,
           speaker: w.speaker,
-          punctuatedWord: w.punctuated_word,
+          punctuatedWord: w.punctuated_word
         })),
         paragraphs: alt.paragraphs,
         summaries: alt.summaries,
         topics: alt.topics,
         intents: alt.intents,
-        sentiments: alt.sentiments,
+        sentiments: alt.sentiments
       })),
-      detectedLanguage: ch.detected_language,
+      detectedLanguage: ch.detected_language
     }));
 
     let transcript = firstAlt?.transcript || '';
@@ -177,7 +242,7 @@ export let transcribeAudioTool = SlateTool.create(
       end: w.end,
       confidence: w.confidence,
       speaker: w.speaker,
-      punctuatedWord: w.punctuated_word,
+      punctuatedWord: w.punctuated_word
     }));
 
     let utterances = result.results?.utterances?.map((u: any) => ({
@@ -193,8 +258,8 @@ export let transcribeAudioTool = SlateTool.create(
         end: w.end,
         confidence: w.confidence,
         speaker: w.speaker,
-        punctuatedWord: w.punctuated_word,
-      })),
+        punctuatedWord: w.punctuated_word
+      }))
     }));
 
     let wordCount = words?.length || 0;
@@ -214,9 +279,9 @@ export let transcribeAudioTool = SlateTool.create(
         intents: result.results?.intents,
         sentiments: result.results?.sentiments,
         utterances,
-        metadata: result.metadata,
+        metadata: result.metadata
       },
-      message: `Transcribed audio${durationStr}: "${transcript.substring(0, 200)}${transcript.length > 200 ? '...' : ''}" (${wordCount} words, confidence: ${((firstAlt?.confidence || 0) * 100).toFixed(1)}%)`,
+      message: `Transcribed audio${durationStr}: "${transcript.substring(0, 200)}${transcript.length > 200 ? '...' : ''}" (${wordCount} words, confidence: ${((firstAlt?.confidence || 0) * 100).toFixed(1)}%)`
     };
   })
   .build();

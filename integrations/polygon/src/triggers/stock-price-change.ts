@@ -3,53 +3,55 @@ import { PolygonClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let stockPriceChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Stock Price Change',
-    key: 'stock_price_change',
-    description: 'Triggers periodically with the latest snapshot data for monitored stock tickers. Provides current price, daily change, and volume information.',
-  }
-)
-  .input(z.object({
-    ticker: z.string().describe('Stock ticker symbol'),
-    snapshotTimestamp: z.number().optional().describe('Snapshot update timestamp'),
-    todaysChange: z.number().optional().describe('Absolute price change'),
-    todaysChangePercent: z.number().optional().describe('Percentage price change'),
-    dayOpen: z.number().optional().describe('Day open price'),
-    dayHigh: z.number().optional().describe('Day high price'),
-    dayLow: z.number().optional().describe('Day low price'),
-    dayClose: z.number().optional().describe('Day close/current price'),
-    dayVolume: z.number().optional().describe('Day trading volume'),
-    dayVwap: z.number().optional().describe('Volume-weighted average price'),
-    prevDayClose: z.number().optional().describe('Previous day close price'),
-    prevDayVolume: z.number().optional().describe('Previous day volume'),
-    lastTradePrice: z.number().optional().describe('Last trade price'),
-    lastTradeSize: z.number().optional().describe('Last trade size'),
-    lastTradeTimestamp: z.number().optional().describe('Last trade timestamp'),
-  }))
-  .output(z.object({
-    ticker: z.string().describe('Stock ticker symbol'),
-    todaysChange: z.number().optional().describe('Absolute price change'),
-    todaysChangePercent: z.number().optional().describe('Percentage price change'),
-    dayOpen: z.number().optional().describe('Day open price'),
-    dayHigh: z.number().optional().describe('Day high price'),
-    dayLow: z.number().optional().describe('Day low price'),
-    dayClose: z.number().optional().describe('Day close/current price'),
-    dayVolume: z.number().optional().describe('Day trading volume'),
-    dayVwap: z.number().optional().describe('Volume-weighted average price'),
-    prevDayClose: z.number().optional().describe('Previous day close price'),
-    prevDayVolume: z.number().optional().describe('Previous day volume'),
-    lastTradePrice: z.number().optional().describe('Last trade price'),
-    lastTradeSize: z.number().optional().describe('Last trade size'),
-    lastTradeTimestamp: z.number().optional().describe('Last trade timestamp'),
-  }))
+export let stockPriceChange = SlateTrigger.create(spec, {
+  name: 'Stock Price Change',
+  key: 'stock_price_change',
+  description:
+    'Triggers periodically with the latest snapshot data for monitored stock tickers. Provides current price, daily change, and volume information.'
+})
+  .input(
+    z.object({
+      ticker: z.string().describe('Stock ticker symbol'),
+      snapshotTimestamp: z.number().optional().describe('Snapshot update timestamp'),
+      todaysChange: z.number().optional().describe('Absolute price change'),
+      todaysChangePercent: z.number().optional().describe('Percentage price change'),
+      dayOpen: z.number().optional().describe('Day open price'),
+      dayHigh: z.number().optional().describe('Day high price'),
+      dayLow: z.number().optional().describe('Day low price'),
+      dayClose: z.number().optional().describe('Day close/current price'),
+      dayVolume: z.number().optional().describe('Day trading volume'),
+      dayVwap: z.number().optional().describe('Volume-weighted average price'),
+      prevDayClose: z.number().optional().describe('Previous day close price'),
+      prevDayVolume: z.number().optional().describe('Previous day volume'),
+      lastTradePrice: z.number().optional().describe('Last trade price'),
+      lastTradeSize: z.number().optional().describe('Last trade size'),
+      lastTradeTimestamp: z.number().optional().describe('Last trade timestamp')
+    })
+  )
+  .output(
+    z.object({
+      ticker: z.string().describe('Stock ticker symbol'),
+      todaysChange: z.number().optional().describe('Absolute price change'),
+      todaysChangePercent: z.number().optional().describe('Percentage price change'),
+      dayOpen: z.number().optional().describe('Day open price'),
+      dayHigh: z.number().optional().describe('Day high price'),
+      dayLow: z.number().optional().describe('Day low price'),
+      dayClose: z.number().optional().describe('Day close/current price'),
+      dayVolume: z.number().optional().describe('Day trading volume'),
+      dayVwap: z.number().optional().describe('Volume-weighted average price'),
+      prevDayClose: z.number().optional().describe('Previous day close price'),
+      prevDayVolume: z.number().optional().describe('Previous day volume'),
+      lastTradePrice: z.number().optional().describe('Last trade price'),
+      lastTradeSize: z.number().optional().describe('Last trade size'),
+      lastTradeTimestamp: z.number().optional().describe('Last trade timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new PolygonClient(ctx.auth.token);
 
       let tickers = (ctx.state?.tickers as string) || 'AAPL,MSFT,GOOG,AMZN,TSLA';
@@ -80,7 +82,7 @@ export let stockPriceChange = SlateTrigger.create(
           prevDayVolume: t.prevDay?.v,
           lastTradePrice: t.lastTrade?.p,
           lastTradeSize: t.lastTrade?.s,
-          lastTradeTimestamp: t.lastTrade?.t,
+          lastTradeTimestamp: t.lastTrade?.t
         }));
 
       let updatedTimestamps: Record<string, number> = { ...lastTimestamps };
@@ -94,12 +96,12 @@ export let stockPriceChange = SlateTrigger.create(
         inputs,
         updatedState: {
           tickers,
-          lastTimestamps: updatedTimestamps,
-        },
+          lastTimestamps: updatedTimestamps
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'stock.price_updated',
         id: `${ctx.input.ticker}_${ctx.input.snapshotTimestamp || Date.now()}`,
@@ -117,8 +119,9 @@ export let stockPriceChange = SlateTrigger.create(
           prevDayVolume: ctx.input.prevDayVolume,
           lastTradePrice: ctx.input.lastTradePrice,
           lastTradeSize: ctx.input.lastTradeSize,
-          lastTradeTimestamp: ctx.input.lastTradeTimestamp,
-        },
+          lastTradeTimestamp: ctx.input.lastTradeTimestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

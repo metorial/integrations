@@ -17,35 +17,51 @@ let messageSchema = z.object({
   updated: z.string().optional().describe('Last updated timestamp')
 });
 
-export let listMessages = SlateTool.create(
-  spec,
-  {
-    name: 'List Messages',
-    key: 'list_messages',
-    description: `List messages in a Webex space or direct conversation. Use **roomId** to list messages in a specific space, or use **personId**/**personEmail** to list direct messages with a specific person.`,
-    instructions: [
-      'Either provide roomId for space messages, or personId/personEmail for direct messages.',
-      'Results are returned in reverse chronological order (newest first).'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listMessages = SlateTool.create(spec, {
+  name: 'List Messages',
+  key: 'list_messages',
+  description: `List messages in a Webex space or direct conversation. Use **roomId** to list messages in a specific space, or use **personId**/**personEmail** to list direct messages with a specific person.`,
+  instructions: [
+    'Either provide roomId for space messages, or personId/personEmail for direct messages.',
+    'Results are returned in reverse chronological order (newest first).'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    roomId: z.string().optional().describe('ID of the space to list messages from'),
-    personId: z.string().optional().describe('Person ID to list direct messages with'),
-    personEmail: z.string().optional().describe('Email to list direct messages with'),
-    parentId: z.string().optional().describe('List only thread replies to this parent message'),
-    mentionedPeople: z.string().optional().describe('Filter to messages mentioning this person ID (use "me" for yourself)'),
-    before: z.string().optional().describe('List messages sent before this ISO 8601 timestamp'),
-    beforeMessage: z.string().optional().describe('List messages sent before this message ID'),
-    max: z.number().optional().describe('Maximum number of messages to return (default 50, max 1000)')
-  }))
-  .output(z.object({
-    messages: z.array(messageSchema).describe('List of messages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      roomId: z.string().optional().describe('ID of the space to list messages from'),
+      personId: z.string().optional().describe('Person ID to list direct messages with'),
+      personEmail: z.string().optional().describe('Email to list direct messages with'),
+      parentId: z
+        .string()
+        .optional()
+        .describe('List only thread replies to this parent message'),
+      mentionedPeople: z
+        .string()
+        .optional()
+        .describe('Filter to messages mentioning this person ID (use "me" for yourself)'),
+      before: z
+        .string()
+        .optional()
+        .describe('List messages sent before this ISO 8601 timestamp'),
+      beforeMessage: z
+        .string()
+        .optional()
+        .describe('List messages sent before this message ID'),
+      max: z
+        .number()
+        .optional()
+        .describe('Maximum number of messages to return (default 50, max 1000)')
+    })
+  )
+  .output(
+    z.object({
+      messages: z.array(messageSchema).describe('List of messages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
     let items: any[];
 

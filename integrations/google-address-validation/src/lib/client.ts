@@ -175,20 +175,20 @@ export class Client {
       return createAxios({
         baseURL: BASE_URL,
         headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json',
-        },
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
       });
     }
 
     return createAxios({
       baseURL: BASE_URL,
       params: {
-        key: this.token,
+        key: this.token
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

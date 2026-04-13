@@ -3,51 +3,70 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let aiExtractDocumentData = SlateTool.create(
-  spec,
-  {
-    name: 'AI Extract Document Data',
-    key: 'ai_extract_document_data',
-    description: `Use AI to extract structured data as JSON from specific document types including invoices, receipts, contracts, ID documents, credit cards, bank checks, bank statements, pay stubs, tax documents, health insurance cards, marriage certificates, and mortgage documents.
+export let aiExtractDocumentData = SlateTool.create(spec, {
+  name: 'AI Extract Document Data',
+  key: 'ai_extract_document_data',
+  description: `Use AI to extract structured data as JSON from specific document types including invoices, receipts, contracts, ID documents, credit cards, bank checks, bank statements, pay stubs, tax documents, health insurance cards, marriage certificates, and mortgage documents.
 Returns extracted fields as structured JSON for easy integration into workflows.`,
-    instructions: [
-      'Choose the appropriate document type for accurate extraction.',
-      'The result is returned as a JSON string in the extractedData field.',
-      'Use queryFields to request specific fields from the document.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  instructions: [
+    'Choose the appropriate document type for accurate extraction.',
+    'The result is returned as a JSON string in the extractedData field.',
+    'Use queryFields to request specific fields from the document.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    documentType: z.enum([
-      'invoice',
-      'receipt',
-      'contract',
-      'id_document',
-      'credit_card',
-      'bank_check_us',
-      'bank_statement_us',
-      'health_insurance_card_us',
-      'marriage_certificate_us',
-      'mortgage_us',
-      'pay_stub_us',
-      'tax_us',
-    ]).describe('Type of document to process'),
-    fileContent: z.string().describe('Base64-encoded document file content'),
-    dateFormat: z.string().optional().describe('DateTime format string for extracted dates'),
-    removeNewLines: z.boolean().optional().describe('Remove line breaks from extracted text'),
-    queryFields: z.string().optional().describe('Comma-separated list of specific fields to extract'),
-    mortgageModel: z.string().optional().describe('Mortgage model type (e.g., Mortgage1003, MortgageClosingDisclosure) - only for mortgage documents'),
-    taxModel: z.string().optional().describe('Tax form model (e.g., TaxUS, TaxW2, Tax1040) - only for tax documents'),
-  }))
-  .output(z.object({
-    extractedData: z.string().describe('JSON string containing the extracted structured data'),
-    operationId: z.string().describe('Encodian operation ID'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentType: z
+        .enum([
+          'invoice',
+          'receipt',
+          'contract',
+          'id_document',
+          'credit_card',
+          'bank_check_us',
+          'bank_statement_us',
+          'health_insurance_card_us',
+          'marriage_certificate_us',
+          'mortgage_us',
+          'pay_stub_us',
+          'tax_us'
+        ])
+        .describe('Type of document to process'),
+      fileContent: z.string().describe('Base64-encoded document file content'),
+      dateFormat: z.string().optional().describe('DateTime format string for extracted dates'),
+      removeNewLines: z
+        .boolean()
+        .optional()
+        .describe('Remove line breaks from extracted text'),
+      queryFields: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of specific fields to extract'),
+      mortgageModel: z
+        .string()
+        .optional()
+        .describe(
+          'Mortgage model type (e.g., Mortgage1003, MortgageClosingDisclosure) - only for mortgage documents'
+        ),
+      taxModel: z
+        .string()
+        .optional()
+        .describe('Tax form model (e.g., TaxUS, TaxW2, Tax1040) - only for tax documents')
+    })
+  )
+  .output(
+    z.object({
+      extractedData: z
+        .string()
+        .describe('JSON string containing the extracted structured data'),
+      operationId: z.string().describe('Encodian operation ID')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let endpointMap: Record<string, string> = {
@@ -62,11 +81,11 @@ Returns extracted fields as structured JSON for easy integration into workflows.
       marriage_certificate_us: 'AIProcessMarriageCertificateUS',
       mortgage_us: 'AIProcessMortgageUS',
       pay_stub_us: 'AIProcessPayStubUS',
-      tax_us: 'AIProcessTaxUS',
+      tax_us: 'AIProcessTaxUS'
     };
 
     let body: Record<string, any> = {
-      fileContent: ctx.input.fileContent,
+      fileContent: ctx.input.fileContent
     };
 
     if (ctx.input.dateFormat) body.dateFormat = ctx.input.dateFormat;
@@ -81,9 +100,9 @@ Returns extracted fields as structured JSON for easy integration into workflows.
     return {
       output: {
         extractedData: result.result || '',
-        operationId: result.OperationId || '',
+        operationId: result.OperationId || ''
       },
-      message: `Successfully extracted data from **${ctx.input.documentType.replace(/_/g, ' ')}** document using AI.`,
+      message: `Successfully extracted data from **${ctx.input.documentType.replace(/_/g, ' ')}** document using AI.`
     };
   })
   .build();

@@ -3,68 +3,73 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactEventTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Event',
-    key: 'contact_event',
-    description: 'Triggered when contacts are created or updated within Dialpad. Requires company admin privileges.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type (created or updated)'),
-    contactId: z.string().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    displayName: z.string().optional(),
-    emails: z.array(z.string()).optional(),
-    phones: z.array(z.string()).optional(),
-    companyName: z.string().optional(),
-    type: z.string().optional(),
-    rawPayload: z.any().optional(),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('Contact ID'),
-    eventType: z.string().describe('Event type (created or updated)'),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    displayName: z.string().optional(),
-    emails: z.array(z.string()).optional(),
-    phones: z.array(z.string()).optional(),
-    companyName: z.string().optional(),
-    type: z.string().optional(),
-  }))
+export let contactEventTrigger = SlateTrigger.create(spec, {
+  name: 'Contact Event',
+  key: 'contact_event',
+  description:
+    'Triggered when contacts are created or updated within Dialpad. Requires company admin privileges.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type (created or updated)'),
+      contactId: z.string().optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      displayName: z.string().optional(),
+      emails: z.array(z.string()).optional(),
+      phones: z.array(z.string()).optional(),
+      companyName: z.string().optional(),
+      type: z.string().optional(),
+      rawPayload: z.any().optional()
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('Contact ID'),
+      eventType: z.string().describe('Event type (created or updated)'),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      displayName: z.string().optional(),
+      emails: z.array(z.string()).optional(),
+      phones: z.array(z.string()).optional(),
+      companyName: z.string().optional(),
+      type: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new DialpadClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let webhook = await client.createWebhook({
-        hook_url: ctx.input.webhookBaseUrl,
+        hook_url: ctx.input.webhookBaseUrl
       });
 
       let subscription = await client.createContactEventSubscription({
-        endpoint_id: webhook.id,
+        endpoint_id: webhook.id
       });
 
       return {
         registrationDetails: {
           webhookId: String(webhook.id),
-          subscriptionId: String(subscription.id),
-        },
+          subscriptionId: String(subscription.id)
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new DialpadClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
-      let details = ctx.input.registrationDetails as { webhookId: string; subscriptionId: string };
+      let details = ctx.input.registrationDetails as {
+        webhookId: string;
+        subscriptionId: string;
+      };
 
       if (details.subscriptionId) {
         try {
@@ -83,8 +88,8 @@ export let contactEventTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let events = Array.isArray(data) ? data : [data];
 
@@ -103,14 +108,14 @@ export let contactEventTrigger = SlateTrigger.create(
           phones: event.phones,
           companyName: event.company_name,
           type: event.contact_type || event.type,
-          rawPayload: event,
+          rawPayload: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `contact.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -123,9 +128,9 @@ export let contactEventTrigger = SlateTrigger.create(
           emails: ctx.input.emails,
           phones: ctx.input.phones,
           companyName: ctx.input.companyName,
-          type: ctx.input.type,
-        },
+          type: ctx.input.type
+        }
       };
-    },
+    }
   })
   .build();

@@ -11,6 +11,7 @@ InfluxDB Cloud authenticates API requests using **API tokens**. InfluxDB uses AP
 **Token-based authentication (primary method):**
 
 Include the API token in the `Authorization` header with each request:
+
 ```
 Authorization: Token YOUR_API_TOKEN
 ```

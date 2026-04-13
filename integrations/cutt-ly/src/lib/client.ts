@@ -107,7 +107,7 @@ export class CuttlyClient {
   async shortenUrl(params: ShortenParams): Promise<ShortenResult> {
     let queryParams: Record<string, string> = {
       key: this.apiKey,
-      short: params.url,
+      short: params.url
     };
 
     if (params.name) queryParams['name'] = params.name;
@@ -123,14 +123,14 @@ export class CuttlyClient {
       date: urlData?.date ?? '',
       shortLink: urlData?.shortLink ?? '',
       fullLink: urlData?.fullLink ?? '',
-      title: urlData?.title ?? '',
+      title: urlData?.title ?? ''
     };
   }
 
   async editLink(params: EditParams): Promise<EditResult> {
     let queryParams: Record<string, string> = {
       key: this.apiKey,
-      edit: params.shortLink,
+      edit: params.shortLink
     };
 
     if (params.name !== undefined) queryParams['name'] = params.name;
@@ -144,19 +144,23 @@ export class CuttlyClient {
     if (params.referrer !== undefined) queryParams['referrer'] = params.referrer;
     if (params.expire !== undefined) queryParams['expire'] = String(params.expire);
     if (params.expireCond !== undefined) queryParams['expireCond'] = params.expireCond;
-    if (params.expireRedirect !== undefined) queryParams['expireRedirect'] = params.expireRedirect;
-    if (params.expireUnique !== undefined) queryParams['expireUnique'] = String(params.expireUnique);
+    if (params.expireRedirect !== undefined)
+      queryParams['expireRedirect'] = params.expireRedirect;
+    if (params.expireUnique !== undefined)
+      queryParams['expireUnique'] = String(params.expireUnique);
     if (params.abtest !== undefined) queryParams['abtest'] = String(params.abtest);
     if (params.abtestB !== undefined) queryParams['abtest_b'] = String(params.abtestB);
-    if (params.abtestBVariation !== undefined) queryParams['abtest_bvariation'] = params.abtestBVariation;
+    if (params.abtestBVariation !== undefined)
+      queryParams['abtest_bvariation'] = params.abtestBVariation;
     if (params.abtestC !== undefined) queryParams['abtest_c'] = String(params.abtestC);
-    if (params.abtestCVariation !== undefined) queryParams['abtest_cvariation'] = params.abtestCVariation;
+    if (params.abtestCVariation !== undefined)
+      queryParams['abtest_cvariation'] = params.abtestCVariation;
 
     let response = await this.http.get('', { params: queryParams });
     let editData = response.data?.url;
 
     return {
-      status: editData?.status ?? 0,
+      status: editData?.status ?? 0
     };
   }
 
@@ -164,7 +168,7 @@ export class CuttlyClient {
     let queryParams: Record<string, string> = {
       key: this.apiKey,
       edit: params.shortLink,
-      password: '1',
+      password: '1'
     };
 
     let formData = new URLSearchParams();
@@ -173,13 +177,13 @@ export class CuttlyClient {
     let response = await this.http.post('', formData.toString(), {
       params: queryParams,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
     let editData = response.data?.url;
 
     return {
-      status: editData?.status ?? 0,
+      status: editData?.status ?? 0
     };
   }
 
@@ -187,7 +191,7 @@ export class CuttlyClient {
     let queryParams: Record<string, string> = {
       key: this.apiKey,
       edit: shortLink,
-      password: '1',
+      password: '1'
     };
 
     let formData = new URLSearchParams();
@@ -196,13 +200,13 @@ export class CuttlyClient {
     let response = await this.http.post('', formData.toString(), {
       params: queryParams,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
     let editData = response.data?.url;
 
     return {
-      status: editData?.status ?? 0,
+      status: editData?.status ?? 0
     };
   }
 
@@ -210,21 +214,21 @@ export class CuttlyClient {
     let queryParams: Record<string, string> = {
       key: this.apiKey,
       edit: shortLink,
-      delete: '1',
+      delete: '1'
     };
 
     let response = await this.http.get('', { params: queryParams });
     let editData = response.data?.url;
 
     return {
-      status: editData?.status ?? 0,
+      status: editData?.status ?? 0
     };
   }
 
   async getStats(params: StatsParams): Promise<StatsResult> {
     let queryParams: Record<string, string> = {
       key: this.apiKey,
-      stats: params.shortLink,
+      stats: params.shortLink
     };
 
     if (params.dateFrom) queryParams['date_from'] = params.dateFrom;
@@ -237,7 +241,7 @@ export class CuttlyClient {
     if (statsData?.refs?.ref && Array.isArray(statsData.refs.ref)) {
       referrers = statsData.refs.ref.map((r: { link?: string; clicks?: number }) => ({
         link: r.link ?? '',
-        clicks: r.clicks ?? 0,
+        clicks: r.clicks ?? 0
       }));
     }
 
@@ -252,7 +256,7 @@ export class CuttlyClient {
     if (statsData?.bots?.bots && Array.isArray(statsData.bots.bots)) {
       botDetails = statsData.bots.bots.map((b: { name?: string; clicks?: number }) => ({
         name: b.name ?? '',
-        clicks: b.clicks ?? 0,
+        clicks: b.clicks ?? 0
       }));
     }
 
@@ -275,7 +279,7 @@ export class CuttlyClient {
       browsers,
       brands,
       languages,
-      botDetails,
+      botDetails
     };
   }
 }
@@ -284,7 +288,7 @@ let parseDeviceArray = (data: unknown): DeviceEntry[] => {
   if (!data || !Array.isArray(data)) return [];
   return data.map((d: { tag?: string; clicks?: number }) => ({
     tag: d.tag ?? '',
-    clicks: d.clicks ?? 0,
+    clicks: d.clicks ?? 0
   }));
 };
 
@@ -297,14 +301,14 @@ let SHORTEN_STATUS_MESSAGES: Record<number, string> = {
   5: 'URL did not pass validation (contains invalid characters)',
   6: 'The URL is from a blocked domain',
   7: 'URL shortened successfully',
-  8: 'Monthly link limit reached. Upgrade your subscription to add more links.',
+  8: 'Monthly link limit reached. Upgrade your subscription to add more links.'
 };
 
 let EDIT_STATUS_MESSAGES: Record<number, string> = {
   1: 'Link updated successfully',
   2: 'Could not save changes to database',
   3: 'The URL does not exist or you do not own it',
-  4: 'URL validation failed for source or destination',
+  4: 'URL validation failed for source or destination'
 };
 
 export let getShortenStatusMessage = (status: number): string => {

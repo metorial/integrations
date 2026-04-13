@@ -23,12 +23,9 @@ import {
   manageCustomEmail,
   managePostLoadHook,
   pushData,
-  validateData,
+  validateData
 } from './tools';
-import {
-  postLoadTrigger,
-  extractionStatusTrigger,
-} from './triggers';
+import { postLoadTrigger, extractionStatusTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,10 +52,7 @@ export let provider = Slate.create({
     manageCustomEmail,
     managePostLoadHook,
     pushData,
-    validateData,
+    validateData
   ],
-  triggers: [
-    postLoadTrigger,
-    extractionStatusTrigger,
-  ],
+  triggers: [postLoadTrigger, extractionStatusTrigger]
 });

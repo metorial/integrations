@@ -3,42 +3,70 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getExtractedData = SlateTool.create(
-  spec,
-  {
-    name: 'Get Extracted Data',
-    key: 'get_extracted_data',
-    description: `Retrieves structured data extracted from processed documents. Query by a single **documentId** to get results for one document, or by **extractorId** to retrieve results across multiple documents. Optionally filter by folder and date range when querying by extractor.`,
-    instructions: [
-      'Provide either **documentId** or **extractorId** — not both.',
-      'When using extractorId, you may optionally filter by folderId, limit, or date.',
-      'The **date** parameter filters for documents uploaded in the last N days (e.g., "10" for the last 10 days).'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getExtractedData = SlateTool.create(spec, {
+  name: 'Get Extracted Data',
+  key: 'get_extracted_data',
+  description: `Retrieves structured data extracted from processed documents. Query by a single **documentId** to get results for one document, or by **extractorId** to retrieve results across multiple documents. Optionally filter by folder and date range when querying by extractor.`,
+  instructions: [
+    'Provide either **documentId** or **extractorId** — not both.',
+    'When using extractorId, you may optionally filter by folderId, limit, or date.',
+    'The **date** parameter filters for documents uploaded in the last N days (e.g., "10" for the last 10 days).'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    documentId: z.string().optional().describe('ID of a specific document to get extracted data for'),
-    extractorId: z.string().optional().describe('ID of the extractor to get extracted data for (returns data across multiple documents)'),
-    folderId: z.string().optional().describe('Filter results by folder ID (only when using extractorId)'),
-    limit: z.number().optional().describe('Maximum number of records to return (default: 10000, only when using extractorId)'),
-    date: z.string().optional().describe('Number of days to look back for uploaded documents (e.g., "10" for last 10 days, only when using extractorId)')
-  }))
-  .output(z.object({
-    records: z.array(z.object({
-      recordId: z.string().describe('Unique identifier of the extracted record'),
-      documentId: z.string().describe('ID of the source document'),
-      extractorId: z.string().describe('ID of the extractor used'),
-      folderId: z.string().describe('ID of the folder containing the document'),
-      uploadedAt: z.string().describe('Timestamp when the document was uploaded'),
-      fileName: z.string().describe('Name of the source file'),
-      pageNumber: z.number().describe('Page number the data was extracted from'),
-      extractedFields: z.record(z.string(), z.unknown()).describe('User-defined extracted fields and their values')
-    })).describe('List of extracted data records')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentId: z
+        .string()
+        .optional()
+        .describe('ID of a specific document to get extracted data for'),
+      extractorId: z
+        .string()
+        .optional()
+        .describe(
+          'ID of the extractor to get extracted data for (returns data across multiple documents)'
+        ),
+      folderId: z
+        .string()
+        .optional()
+        .describe('Filter results by folder ID (only when using extractorId)'),
+      limit: z
+        .number()
+        .optional()
+        .describe(
+          'Maximum number of records to return (default: 10000, only when using extractorId)'
+        ),
+      date: z
+        .string()
+        .optional()
+        .describe(
+          'Number of days to look back for uploaded documents (e.g., "10" for last 10 days, only when using extractorId)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      records: z
+        .array(
+          z.object({
+            recordId: z.string().describe('Unique identifier of the extracted record'),
+            documentId: z.string().describe('ID of the source document'),
+            extractorId: z.string().describe('ID of the extractor used'),
+            folderId: z.string().describe('ID of the folder containing the document'),
+            uploadedAt: z.string().describe('Timestamp when the document was uploaded'),
+            fileName: z.string().describe('Name of the source file'),
+            pageNumber: z.number().describe('Page number the data was extracted from'),
+            extractedFields: z
+              .record(z.string(), z.unknown())
+              .describe('User-defined extracted fields and their values')
+          })
+        )
+        .describe('List of extracted data records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       email: ctx.auth.email
@@ -62,7 +90,15 @@ export let getExtractedData = SlateTool.create(
       throw new Error('Provide either "documentId" or "extractorId".');
     }
 
-    let systemFields = ['id', 'documentId', 'extractorId', 'folderId', 'uploadedAt', 'fileName', 'pageNumber'];
+    let systemFields = [
+      'id',
+      'documentId',
+      'extractorId',
+      'folderId',
+      'uploadedAt',
+      'fileName',
+      'pageNumber'
+    ];
 
     let records = rawRecords.map(record => {
       let extractedFields: Record<string, unknown> = {};

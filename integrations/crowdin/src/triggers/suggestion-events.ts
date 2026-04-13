@@ -3,38 +3,44 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let suggestionEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Translation Suggestion Events',
-    key: 'suggestion_events',
-    description: 'Triggered when translation suggestions are added, updated, deleted, approved, or disapproved in a Crowdin project.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The event type (suggestion.added, suggestion.updated, suggestion.deleted, suggestion.approved, suggestion.disapproved)'),
-    eventId: z.string().describe('Unique event identifier'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    languageId: z.string().optional().describe('Language code'),
-    sourceStringId: z.string().optional().describe('Source string ID'),
-    translationId: z.string().optional().describe('Translation suggestion ID'),
-    userId: z.string().optional().describe('User ID who triggered the event'),
-    username: z.string().optional().describe('Username'),
-    fileId: z.string().optional().describe('File ID'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    languageId: z.string().optional().describe('Language code'),
-    sourceStringId: z.string().optional().describe('Source string ID'),
-    translationId: z.string().optional().describe('Translation suggestion ID'),
-    userId: z.string().optional().describe('User ID'),
-    username: z.string().optional().describe('Username'),
-    fileId: z.string().optional().describe('File ID'),
-  }))
+export let suggestionEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Translation Suggestion Events',
+  key: 'suggestion_events',
+  description:
+    'Triggered when translation suggestions are added, updated, deleted, approved, or disapproved in a Crowdin project.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The event type (suggestion.added, suggestion.updated, suggestion.deleted, suggestion.approved, suggestion.disapproved)'
+        ),
+      eventId: z.string().describe('Unique event identifier'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      languageId: z.string().optional().describe('Language code'),
+      sourceStringId: z.string().optional().describe('Source string ID'),
+      translationId: z.string().optional().describe('Translation suggestion ID'),
+      userId: z.string().optional().describe('User ID who triggered the event'),
+      username: z.string().optional().describe('Username'),
+      fileId: z.string().optional().describe('File ID')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      languageId: z.string().optional().describe('Language code'),
+      sourceStringId: z.string().optional().describe('Source string ID'),
+      translationId: z.string().optional().describe('Translation suggestion ID'),
+      userId: z.string().optional().describe('User ID'),
+      username: z.string().optional().describe('Username'),
+      fileId: z.string().optional().describe('File ID')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let projects = await client.listProjects({ limit: 500 });
@@ -46,10 +52,16 @@ export let suggestionEventsTrigger = SlateTrigger.create(
           let webhook = await client.createWebhook(projectId, {
             name: 'Slates Suggestion Events',
             url: ctx.input.webhookBaseUrl,
-            events: ['suggestion.added', 'suggestion.updated', 'suggestion.deleted', 'suggestion.approved', 'suggestion.disapproved'],
+            events: [
+              'suggestion.added',
+              'suggestion.updated',
+              'suggestion.deleted',
+              'suggestion.approved',
+              'suggestion.disapproved'
+            ],
             requestType: 'POST',
             contentType: 'application/json',
-            isActive: true,
+            isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
         } catch (e) {
@@ -60,7 +72,7 @@ export let suggestionEventsTrigger = SlateTrigger.create(
       return { registrationDetails: { registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let registrations = ctx.input.registrationDetails?.registrations || [];
 
@@ -73,8 +85,8 @@ export let suggestionEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = data.events ? data.events : [data];
 
       let inputs = events
@@ -94,14 +106,14 @@ export let suggestionEventsTrigger = SlateTrigger.create(
             translationId,
             userId: evt.user_id ? String(evt.user_id) : undefined,
             username: evt.user || undefined,
-            fileId: evt.file_id ? String(evt.file_id) : undefined,
+            fileId: evt.file_id ? String(evt.file_id) : undefined
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -113,9 +125,9 @@ export let suggestionEventsTrigger = SlateTrigger.create(
           translationId: ctx.input.translationId,
           userId: ctx.input.userId,
           username: ctx.input.username,
-          fileId: ctx.input.fileId,
-        },
+          fileId: ctx.input.fileId
+        }
       };
-    },
+    }
   })
   .build();

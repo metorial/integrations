@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Stormboard API key. Found at https://www.stormboard.com/users/account#api'),
+      token: z
+        .string()
+        .describe(
+          'Your Stormboard API key. Found at https://www.stormboard.com/users/account#api'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,8 +33,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.stormboard.com',
         headers: {
           'X-API-Key': ctx.output.token,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       let response = await http.get('/users');
@@ -38,8 +44,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id?.toString(),
           name: user.name || user.full || undefined,
-          email: user.email || undefined,
-        },
+          email: user.email || undefined
+        }
       };
-    },
+    }
   });

@@ -3,37 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'List Campaigns',
-    key: 'list_campaigns',
-    description: `Lists email campaigns with optional pagination. Returns campaign names, types, send dates, and status information.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listCampaigns = SlateTool.create(spec, {
+  name: 'List Campaigns',
+  key: 'list_campaigns',
+  description: `Lists email campaigns with optional pagination. Returns campaign names, types, send dates, and status information.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum number of campaigns to return (default 20)'),
-    offset: z.number().optional().describe('Number of campaigns to skip for pagination'),
-    orderByDateDesc: z.boolean().optional().describe('Sort by send date descending')
-  }))
-  .output(z.object({
-    campaigns: z.array(z.object({
-      campaignId: z.string(),
-      name: z.string().optional(),
-      type: z.string().optional(),
-      status: z.string().optional(),
-      sendDate: z.string().optional(),
-      totalSent: z.number().optional(),
-      opens: z.number().optional(),
-      clicks: z.number().optional()
-    })),
-    totalCount: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of campaigns to return (default 20)'),
+      offset: z.number().optional().describe('Number of campaigns to skip for pagination'),
+      orderByDateDesc: z.boolean().optional().describe('Sort by send date descending')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(
+        z.object({
+          campaignId: z.string(),
+          name: z.string().optional(),
+          type: z.string().optional(),
+          status: z.string().optional(),
+          sendDate: z.string().optional(),
+          totalSent: z.number().optional(),
+          opens: z.number().optional(),
+          clicks: z.number().optional()
+        })
+      ),
+      totalCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -63,4 +69,5 @@ export let listCampaigns = SlateTool.create(
       output: { campaigns, totalCount },
       message: `Found **${campaigns.length}** campaigns${totalCount !== undefined ? ` (out of ${totalCount} total)` : ''}.`
     };
-  }).build();
+  })
+  .build();

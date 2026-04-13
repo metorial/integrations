@@ -3,43 +3,45 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let customerPaymentEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Payment Events',
-    key: 'customer_payment_events',
-    description: 'Polls for new customer payments received. Detects when payments are recorded against invoices.'
-  }
-)
-  .input(z.object({
-    paymentId: z.string(),
-    eventType: z.string(),
-    paymentNumber: z.string().optional(),
-    customerId: z.string().optional(),
-    customerName: z.string().optional(),
-    amount: z.number().optional(),
-    date: z.string().optional(),
-    paymentMode: z.string().optional(),
-    currencyCode: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
-  .output(z.object({
-    paymentId: z.string(),
-    paymentNumber: z.string().optional(),
-    customerId: z.string().optional(),
-    customerName: z.string().optional(),
-    amount: z.number().optional(),
-    date: z.string().optional(),
-    paymentMode: z.string().optional(),
-    currencyCode: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
+export let customerPaymentEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Customer Payment Events',
+  key: 'customer_payment_events',
+  description:
+    'Polls for new customer payments received. Detects when payments are recorded against invoices.'
+})
+  .input(
+    z.object({
+      paymentId: z.string(),
+      eventType: z.string(),
+      paymentNumber: z.string().optional(),
+      customerId: z.string().optional(),
+      customerName: z.string().optional(),
+      amount: z.number().optional(),
+      date: z.string().optional(),
+      paymentMode: z.string().optional(),
+      currencyCode: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.string(),
+      paymentNumber: z.string().optional(),
+      customerId: z.string().optional(),
+      customerName: z.string().optional(),
+      amount: z.number().optional(),
+      date: z.string().optional(),
+      paymentMode: z.string().optional(),
+      currencyCode: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownPayments = (ctx.state?.knownPayments || {}) as Record<string, boolean>;
@@ -79,9 +81,7 @@ export let customerPaymentEventsTrigger = SlateTrigger.create(
         newKnownPayments[p.payment_id] = true;
       }
 
-      let newPollTime = payments.length > 0
-        ? payments[0].last_modified_time
-        : lastPollTime;
+      let newPollTime = payments.length > 0 ? payments[0].last_modified_time : lastPollTime;
 
       return {
         inputs,
@@ -92,7 +92,7 @@ export let customerPaymentEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `customer_payment.${ctx.input.eventType}`,
         id: `${ctx.input.paymentId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -109,4 +109,5 @@ export let customerPaymentEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

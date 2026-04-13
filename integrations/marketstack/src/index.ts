@@ -13,7 +13,7 @@ import {
   getEtfHoldings,
   getAnalystRatings,
   searchSecFilings,
-  getSecFinancialData,
+  getSecFinancialData
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     getEtfHoldings,
     getAnalystRatings,
     searchSecFilings,
-    getSecFinancialData,
+    getSecFinancialData
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

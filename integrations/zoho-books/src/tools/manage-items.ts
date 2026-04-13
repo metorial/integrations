@@ -3,41 +3,46 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let listItemsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Items',
-    key: 'list_items',
-    description: `Search and list products and services (items) that can be used in invoices, estimates, and other transactions.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    searchText: z.string().optional().describe('Search by item name or SKU'),
-    filterBy: z.enum(['Status.All', 'Status.Active', 'Status.Inactive']).optional(),
-    page: z.number().optional().default(1),
-    perPage: z.number().optional().default(200)
-  }))
-  .output(z.object({
-    items: z.array(z.object({
-      itemId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      rate: z.number().optional(),
-      sku: z.string().optional(),
-      unit: z.string().optional(),
-      status: z.string().optional(),
-      taxId: z.string().optional(),
-      taxName: z.string().optional(),
-      productType: z.string().optional()
-    })),
-    pageContext: z.object({
-      page: z.number(),
-      perPage: z.number(),
-      hasMorePage: z.boolean()
-    }).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listItemsTool = SlateTool.create(spec, {
+  name: 'List Items',
+  key: 'list_items',
+  description: `Search and list products and services (items) that can be used in invoices, estimates, and other transactions.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      searchText: z.string().optional().describe('Search by item name or SKU'),
+      filterBy: z.enum(['Status.All', 'Status.Active', 'Status.Inactive']).optional(),
+      page: z.number().optional().default(1),
+      perPage: z.number().optional().default(200)
+    })
+  )
+  .output(
+    z.object({
+      items: z.array(
+        z.object({
+          itemId: z.string(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          rate: z.number().optional(),
+          sku: z.string().optional(),
+          unit: z.string().optional(),
+          status: z.string().optional(),
+          taxId: z.string().optional(),
+          taxName: z.string().optional(),
+          productType: z.string().optional()
+        })
+      ),
+      pageContext: z
+        .object({
+          page: z.number(),
+          perPage: z.number(),
+          hasMorePage: z.boolean()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let query: Record<string, any> = { page: ctx.input.page, per_page: ctx.input.perPage };
     if (ctx.input.searchText) query.search_text = ctx.input.searchText;
@@ -57,45 +62,49 @@ export let listItemsTool = SlateTool.create(
       productType: i.product_type
     }));
 
-    let pageContext = resp.page_context ? {
-      page: resp.page_context.page,
-      perPage: resp.page_context.per_page,
-      hasMorePage: resp.page_context.has_more_page
-    } : undefined;
+    let pageContext = resp.page_context
+      ? {
+          page: resp.page_context.page,
+          perPage: resp.page_context.per_page,
+          hasMorePage: resp.page_context.has_more_page
+        }
+      : undefined;
 
     return {
       output: { items, pageContext },
       message: `Found **${items.length}** item(s) on page ${ctx.input.page}.`
     };
-  }).build();
+  })
+  .build();
 
-export let createItemTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Item',
-    key: 'create_item',
-    description: `Create a new product or service item that can be used across invoices, estimates, bills, and other transactions.`
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Item name'),
-    description: z.string().optional(),
-    rate: z.number().optional().describe('Default selling price'),
-    purchaseRate: z.number().optional().describe('Default purchase/cost price'),
-    sku: z.string().optional().describe('Stock Keeping Unit'),
-    unit: z.string().optional().describe('Unit of measurement (e.g. qty, hrs, kg)'),
-    taxId: z.string().optional(),
-    productType: z.enum(['goods', 'service']).optional().default('goods'),
-    accountId: z.string().optional().describe('Sales account ID'),
-    purchaseAccountId: z.string().optional().describe('Purchase account ID')
-  }))
-  .output(z.object({
-    itemId: z.string(),
-    name: z.string().optional(),
-    rate: z.number().optional(),
-    status: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let createItemTool = SlateTool.create(spec, {
+  name: 'Create Item',
+  key: 'create_item',
+  description: `Create a new product or service item that can be used across invoices, estimates, bills, and other transactions.`
+})
+  .input(
+    z.object({
+      name: z.string().describe('Item name'),
+      description: z.string().optional(),
+      rate: z.number().optional().describe('Default selling price'),
+      purchaseRate: z.number().optional().describe('Default purchase/cost price'),
+      sku: z.string().optional().describe('Stock Keeping Unit'),
+      unit: z.string().optional().describe('Unit of measurement (e.g. qty, hrs, kg)'),
+      taxId: z.string().optional(),
+      productType: z.enum(['goods', 'service']).optional().default('goods'),
+      accountId: z.string().optional().describe('Sales account ID'),
+      purchaseAccountId: z.string().optional().describe('Purchase account ID')
+    })
+  )
+  .output(
+    z.object({
+      itemId: z.string(),
+      name: z.string().optional(),
+      rate: z.number().optional(),
+      status: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -122,34 +131,36 @@ export let createItemTool = SlateTool.create(
       },
       message: `Created item **${item.name}** with rate ${item.rate}.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateItemTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Item',
-    key: 'update_item',
-    description: `Update an existing item's details, pricing, or status. Supports marking items as active or inactive.`
-  }
-)
-  .input(z.object({
-    itemId: z.string().describe('ID of the item to update'),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    rate: z.number().optional(),
-    purchaseRate: z.number().optional(),
-    sku: z.string().optional(),
-    unit: z.string().optional(),
-    taxId: z.string().optional(),
-    markAs: z.enum(['active', 'inactive']).optional().describe('Change item status')
-  }))
-  .output(z.object({
-    itemId: z.string(),
-    name: z.string().optional(),
-    rate: z.number().optional(),
-    status: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateItemTool = SlateTool.create(spec, {
+  name: 'Update Item',
+  key: 'update_item',
+  description: `Update an existing item's details, pricing, or status. Supports marking items as active or inactive.`
+})
+  .input(
+    z.object({
+      itemId: z.string().describe('ID of the item to update'),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      rate: z.number().optional(),
+      purchaseRate: z.number().optional(),
+      sku: z.string().optional(),
+      unit: z.string().optional(),
+      taxId: z.string().optional(),
+      markAs: z.enum(['active', 'inactive']).optional().describe('Change item status')
+    })
+  )
+  .output(
+    z.object({
+      itemId: z.string(),
+      name: z.string().optional(),
+      rate: z.number().optional(),
+      status: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -183,4 +194,5 @@ export let updateItemTool = SlateTool.create(
       },
       message: `Updated item **${item.name}**.`
     };
-  }).build();
+  })
+  .build();

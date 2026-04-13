@@ -22,14 +22,9 @@ import {
   listCompanies,
   updateCompany,
   getActionStream,
-  listStatusesAndSources,
+  listStatusesAndSources
 } from './tools';
-import {
-  contactEvents,
-  actionEvents,
-  dealEvents,
-  noteEvents,
-} from './triggers';
+import { contactEvents, actionEvents, dealEvents, noteEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,12 +50,7 @@ export let provider = Slate.create({
     listCompanies,
     updateCompany,
     getActionStream,
-    listStatusesAndSources,
+    listStatusesAndSources
   ],
-  triggers: [
-    contactEvents,
-    actionEvents,
-    dealEvents,
-    noteEvents,
-  ],
+  triggers: [contactEvents, actionEvents, dealEvents, noteEvents]
 });

@@ -21,13 +21,13 @@ import {
   validatePost,
   addFeed,
   getFeeds,
-  deleteFeed,
+  deleteFeed
 } from './tools';
 import {
   scheduledPostTrigger,
   socialAccountTrigger,
   messagesTrigger,
-  feedTrigger,
+  feedTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -53,12 +53,7 @@ export let provider = Slate.create({
     validatePost,
     addFeed,
     getFeeds,
-    deleteFeed,
+    deleteFeed
   ],
-  triggers: [
-    scheduledPostTrigger,
-    socialAccountTrigger,
-    messagesTrigger,
-    feedTrigger,
-  ],
+  triggers: [scheduledPostTrigger, socialAccountTrigger, messagesTrigger, feedTrigger]
 });

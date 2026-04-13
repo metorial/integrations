@@ -9,7 +9,7 @@ import {
   sendEnvelopeFromTemplate,
   voidEnvelope,
   createEmbeddedSigningUrl,
-  getEnvelopeRecipients,
+  getEnvelopeRecipients
 } from './tools';
 import { envelopeEvents } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     sendEnvelopeFromTemplate,
     voidEnvelope,
     createEmbeddedSigningUrl,
-    getEnvelopeRecipients,
+    getEnvelopeRecipients
   ],
-  triggers: [
-    envelopeEvents,
-  ],
+  triggers: [envelopeEvents]
 });

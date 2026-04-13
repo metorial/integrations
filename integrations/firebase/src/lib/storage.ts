@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let storageAxios = createAxios({
-  baseURL: 'https://storage.googleapis.com',
+  baseURL: 'https://storage.googleapis.com'
 });
 
 export interface StorageObject {
@@ -27,7 +27,7 @@ let mapStorageObject = (obj: any): StorageObject => ({
   md5Hash: obj.md5Hash,
   mediaLink: obj.mediaLink,
   selfLink: obj.selfLink,
-  generation: obj.generation,
+  generation: obj.generation
 });
 
 export class StorageClient {
@@ -41,7 +41,7 @@ export class StorageClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
@@ -61,21 +61,21 @@ export class StorageClient {
         prefix: params?.prefix,
         delimiter: params?.delimiter,
         maxResults: params?.maxResults || 100,
-        pageToken: params?.pageToken,
-      },
+        pageToken: params?.pageToken
+      }
     });
 
     return {
       objects: (response.data.items || []).map(mapStorageObject),
       prefixes: response.data.prefixes,
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
   async getObjectMetadata(objectPath: string): Promise<StorageObject> {
     let encodedPath = encodeURIComponent(objectPath);
     let response = await storageAxios.get(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return mapStorageObject(response.data);
@@ -84,7 +84,7 @@ export class StorageClient {
   async deleteObject(objectPath: string): Promise<void> {
     let encodedPath = encodeURIComponent(objectPath);
     await storageAxios.delete(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -92,13 +92,17 @@ export class StorageClient {
     let encodedPath = encodeURIComponent(objectPath);
     let response = await storageAxios.get(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
       headers: this.headers,
-      params: { alt: 'json' },
+      params: { alt: 'json' }
     });
 
     return response.data.mediaLink || '';
   }
 
-  async copyObject(sourceObjectPath: string, destinationBucket: string, destinationObjectPath: string): Promise<StorageObject> {
+  async copyObject(
+    sourceObjectPath: string,
+    destinationBucket: string,
+    destinationObjectPath: string
+  ): Promise<StorageObject> {
     let encodedSource = encodeURIComponent(sourceObjectPath);
     let encodedDest = encodeURIComponent(destinationObjectPath);
 
@@ -106,20 +110,27 @@ export class StorageClient {
       `/storage/v1/b/${this.bucket}/o/${encodedSource}/copyTo/b/${destinationBucket}/o/${encodedDest}`,
       {},
       {
-        headers: this.headers,
+        headers: this.headers
       }
     );
 
     return mapStorageObject(response.data);
   }
 
-  async updateObjectMetadata(objectPath: string, metadata: Record<string, string>): Promise<StorageObject> {
+  async updateObjectMetadata(
+    objectPath: string,
+    metadata: Record<string, string>
+  ): Promise<StorageObject> {
     let encodedPath = encodeURIComponent(objectPath);
-    let response = await storageAxios.patch(`/storage/v1/b/${this.bucket}/o/${encodedPath}`, {
-      metadata,
-    }, {
-      headers: this.headers,
-    });
+    let response = await storageAxios.patch(
+      `/storage/v1/b/${this.bucket}/o/${encodedPath}`,
+      {
+        metadata
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return mapStorageObject(response.data);
   }

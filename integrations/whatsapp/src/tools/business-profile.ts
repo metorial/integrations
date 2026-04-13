@@ -3,29 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getBusinessProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Get Business Profile',
-    key: 'get_business_profile',
-    description: `Retrieve the WhatsApp Business profile information for your phone number, including description, address, email, websites, industry vertical, and profile picture.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getBusinessProfile = SlateTool.create(spec, {
+  name: 'Get Business Profile',
+  key: 'get_business_profile',
+  description: `Retrieve the WhatsApp Business profile information for your phone number, including description, address, email, websites, industry vertical, and profile picture.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    about: z.string().optional().describe('Short about text shown on the business profile'),
-    address: z.string().optional().describe('Business address'),
-    description: z.string().optional().describe('Business description'),
-    email: z.string().optional().describe('Business email address'),
-    websites: z.array(z.string()).optional().describe('Business website URLs (max 2)'),
-    vertical: z.string().optional().describe('Industry vertical category'),
-    profilePictureUrl: z.string().optional().describe('URL of the profile picture')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      about: z.string().optional().describe('Short about text shown on the business profile'),
+      address: z.string().optional().describe('Business address'),
+      description: z.string().optional().describe('Business description'),
+      email: z.string().optional().describe('Business email address'),
+      websites: z.array(z.string()).optional().describe('Business website URLs (max 2)'),
+      vertical: z.string().optional().describe('Industry vertical category'),
+      profilePictureUrl: z.string().optional().describe('URL of the profile picture')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       phoneNumberId: ctx.config.phoneNumberId,
@@ -51,39 +50,65 @@ export let getBusinessProfile = SlateTool.create(
   })
   .build();
 
-export let updateBusinessProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Update Business Profile',
-    key: 'update_business_profile',
-    description: `Update the WhatsApp Business profile for your phone number. Only the fields you provide will be updated; omitted fields remain unchanged.`,
-    instructions: [
-      'Maximum 2 websites allowed',
-      'Vertical must be one of: AUTOMOTIVE, BEAUTY, APPAREL, EDU, ENTERTAIN, EVENT_PLAN, FINANCE, GROCERY, GOVT, HOTEL, HEALTH, NONPROFIT, PROF_SERVICES, RETAIL, TRAVEL, RESTAURANT, NOT_A_BIZ, OTHER'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateBusinessProfile = SlateTool.create(spec, {
+  name: 'Update Business Profile',
+  key: 'update_business_profile',
+  description: `Update the WhatsApp Business profile for your phone number. Only the fields you provide will be updated; omitted fields remain unchanged.`,
+  instructions: [
+    'Maximum 2 websites allowed',
+    'Vertical must be one of: AUTOMOTIVE, BEAUTY, APPAREL, EDU, ENTERTAIN, EVENT_PLAN, FINANCE, GROCERY, GOVT, HOTEL, HEALTH, NONPROFIT, PROF_SERVICES, RETAIL, TRAVEL, RESTAURANT, NOT_A_BIZ, OTHER'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    about: z.string().optional().describe('Short about text (max 139 characters)'),
-    address: z.string().optional().describe('Business address (max 256 characters)'),
-    description: z.string().optional().describe('Business description (max 512 characters)'),
-    email: z.string().optional().describe('Business email address (max 128 characters)'),
-    websites: z.array(z.string()).max(2).optional().describe('Business website URLs (max 2)'),
-    vertical: z.enum([
-      'AUTOMOTIVE', 'BEAUTY', 'APPAREL', 'EDU', 'ENTERTAIN', 'EVENT_PLAN',
-      'FINANCE', 'GROCERY', 'GOVT', 'HOTEL', 'HEALTH', 'NONPROFIT',
-      'PROF_SERVICES', 'RETAIL', 'TRAVEL', 'RESTAURANT', 'NOT_A_BIZ', 'OTHER'
-    ]).optional().describe('Industry vertical category'),
-    profilePictureHandle: z.string().optional().describe('Handle of an uploaded profile picture')
-  }))
-  .output(z.object({
-    success: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      about: z.string().optional().describe('Short about text (max 139 characters)'),
+      address: z.string().optional().describe('Business address (max 256 characters)'),
+      description: z.string().optional().describe('Business description (max 512 characters)'),
+      email: z.string().optional().describe('Business email address (max 128 characters)'),
+      websites: z
+        .array(z.string())
+        .max(2)
+        .optional()
+        .describe('Business website URLs (max 2)'),
+      vertical: z
+        .enum([
+          'AUTOMOTIVE',
+          'BEAUTY',
+          'APPAREL',
+          'EDU',
+          'ENTERTAIN',
+          'EVENT_PLAN',
+          'FINANCE',
+          'GROCERY',
+          'GOVT',
+          'HOTEL',
+          'HEALTH',
+          'NONPROFIT',
+          'PROF_SERVICES',
+          'RETAIL',
+          'TRAVEL',
+          'RESTAURANT',
+          'NOT_A_BIZ',
+          'OTHER'
+        ])
+        .optional()
+        .describe('Industry vertical category'),
+      profilePictureHandle: z
+        .string()
+        .optional()
+        .describe('Handle of an uploaded profile picture')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       phoneNumberId: ctx.config.phoneNumberId,

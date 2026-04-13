@@ -3,43 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getReferenceData = SlateTool.create(
-  spec,
-  {
-    name: 'Get Reference Data',
-    key: 'get_reference_data',
-    description: `Retrieve system reference data such as order statuses, payment types, delivery types, order methods, stores, sites, units of measurement, and more. Use the **referenceType** field to specify which reference data to fetch. Useful for discovering available codes when creating or filtering orders and customers.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    referenceType: z.enum([
-      'statuses',
-      'statusGroups',
-      'paymentTypes',
-      'paymentStatuses',
-      'deliveryTypes',
-      'deliveryServices',
-      'orderMethods',
-      'orderTypes',
-      'productStatuses',
-      'sites',
-      'stores',
-      'units',
-      'countries',
-    ]).describe('The type of reference data to retrieve'),
-  }))
-  .output(z.object({
-    referenceType: z.string().describe('The type of reference data returned'),
-    entries: z.array(z.record(z.string(), z.any())).describe('Array of reference data entries'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getReferenceData = SlateTool.create(spec, {
+  name: 'Get Reference Data',
+  key: 'get_reference_data',
+  description: `Retrieve system reference data such as order statuses, payment types, delivery types, order methods, stores, sites, units of measurement, and more. Use the **referenceType** field to specify which reference data to fetch. Useful for discovering available codes when creating or filtering orders and customers.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      referenceType: z
+        .enum([
+          'statuses',
+          'statusGroups',
+          'paymentTypes',
+          'paymentStatuses',
+          'deliveryTypes',
+          'deliveryServices',
+          'orderMethods',
+          'orderTypes',
+          'productStatuses',
+          'sites',
+          'stores',
+          'units',
+          'countries'
+        ])
+        .describe('The type of reference data to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      referenceType: z.string().describe('The type of reference data returned'),
+      entries: z
+        .array(z.record(z.string(), z.any()))
+        .describe('Array of reference data entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain,
-      site: ctx.config.site,
+      site: ctx.config.site
     });
 
     let entries: Array<Record<string, any>> = [];
@@ -83,14 +88,15 @@ export let getReferenceData = SlateTool.create(
       entries = Object.values(result.units || {});
     } else if (type === 'countries') {
       let result = await client.getCountries();
-      entries = result.countriesIso.map((iso) => ({ isoCode: iso }));
+      entries = result.countriesIso.map(iso => ({ isoCode: iso }));
     }
 
     return {
       output: {
         referenceType: type,
-        entries,
+        entries
       },
-      message: `Retrieved **${entries.length}** ${type} entries.`,
+      message: `Retrieved **${entries.length}** ${type} entries.`
     };
-  }).build();
+  })
+  .build();

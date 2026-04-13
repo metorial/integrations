@@ -16,48 +16,75 @@ let destinationSchema = z.object({
   authType: z.string().nullable().optional().describe('Outbound authentication type'),
   disabledAt: z.string().nullable().optional().describe('Timestamp if disabled'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let manageDestinations = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Destinations',
-    key: 'manage_destinations',
-    description: `Create, update, delete, list, enable, or disable Hookdeck destinations. A destination is the target endpoint where events are routed to. Supports HTTP, CLI, and Mock API types with configurable authentication and rate limiting.`,
-    instructions: [
-      'Destination config includes url, rate_limit, rate_limit_period, http_method, auth_type, and auth.',
-      'Auth types: HOOKDECK_SIGNATURE, BASIC_AUTH, API_KEY, BEARER_TOKEN, CUSTOM_SIGNATURE.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageDestinations = SlateTool.create(spec, {
+  name: 'Manage Destinations',
+  key: 'manage_destinations',
+  description: `Create, update, delete, list, enable, or disable Hookdeck destinations. A destination is the target endpoint where events are routed to. Supports HTTP, CLI, and Mock API types with configurable authentication and rate limiting.`,
+  instructions: [
+    'Destination config includes url, rate_limit, rate_limit_period, http_method, auth_type, and auth.',
+    'Auth types: HOOKDECK_SIGNATURE, BASIC_AUTH, API_KEY, BEARER_TOKEN, CUSTOM_SIGNATURE.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'enable', 'disable']).describe('Action to perform'),
-    destinationId: z.string().optional().describe('Destination ID (required for get, update, delete, enable, disable)'),
-    name: z.string().optional().describe('Destination name (required for create, optional for update/list)'),
-    description: z.string().optional().describe('Destination description'),
-    type: z.string().optional().describe('Destination type (HTTP, CLI, MOCK_API)'),
-    url: z.string().optional().describe('Target HTTP URL for the destination'),
-    rateLimit: z.number().optional().describe('Max delivery rate'),
-    rateLimitPeriod: z.enum(['second', 'minute', 'hour']).optional().describe('Rate limit period'),
-    httpMethod: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional().describe('HTTP method override'),
-    authType: z.enum(['HOOKDECK_SIGNATURE', 'BASIC_AUTH', 'API_KEY', 'BEARER_TOKEN', 'CUSTOM_SIGNATURE']).optional().describe('Outbound authentication type'),
-    authConfig: z.record(z.string(), z.unknown()).optional().describe('Authentication configuration details (varies by authType)'),
-    limit: z.number().optional().describe('Max results (for list)'),
-    cursor: z.string().optional().describe('Pagination cursor (for list)'),
-  }))
-  .output(z.object({
-    destination: destinationSchema.optional().describe('Single destination'),
-    destinations: z.array(destinationSchema).optional().describe('List of destinations'),
-    deletedId: z.string().optional().describe('ID of the deleted destination'),
-    nextCursor: z.string().optional().describe('Next pagination cursor'),
-    totalCount: z.number().optional().describe('Total count'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete', 'enable', 'disable'])
+        .describe('Action to perform'),
+      destinationId: z
+        .string()
+        .optional()
+        .describe('Destination ID (required for get, update, delete, enable, disable)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Destination name (required for create, optional for update/list)'),
+      description: z.string().optional().describe('Destination description'),
+      type: z.string().optional().describe('Destination type (HTTP, CLI, MOCK_API)'),
+      url: z.string().optional().describe('Target HTTP URL for the destination'),
+      rateLimit: z.number().optional().describe('Max delivery rate'),
+      rateLimitPeriod: z
+        .enum(['second', 'minute', 'hour'])
+        .optional()
+        .describe('Rate limit period'),
+      httpMethod: z
+        .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+        .optional()
+        .describe('HTTP method override'),
+      authType: z
+        .enum([
+          'HOOKDECK_SIGNATURE',
+          'BASIC_AUTH',
+          'API_KEY',
+          'BEARER_TOKEN',
+          'CUSTOM_SIGNATURE'
+        ])
+        .optional()
+        .describe('Outbound authentication type'),
+      authConfig: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Authentication configuration details (varies by authType)'),
+      limit: z.number().optional().describe('Max results (for list)'),
+      cursor: z.string().optional().describe('Pagination cursor (for list)')
+    })
+  )
+  .output(
+    z.object({
+      destination: destinationSchema.optional().describe('Single destination'),
+      destinations: z.array(destinationSchema).optional().describe('List of destinations'),
+      deletedId: z.string().optional().describe('ID of the deleted destination'),
+      nextCursor: z.string().optional().describe('Next pagination cursor'),
+      totalCount: z.number().optional().describe('Total count')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, apiVersion: ctx.config.apiVersion });
 
     let mapDestination = (d: any) => {
@@ -75,7 +102,7 @@ export let manageDestinations = SlateTool.create(
         authType: (cfg.auth_type as string | null) ?? null,
         disabledAt: (d.disabled_at as string | null) ?? null,
         createdAt: d.created_at as string,
-        updatedAt: d.updated_at as string,
+        updatedAt: d.updated_at as string
       };
     };
 
@@ -83,7 +110,8 @@ export let manageDestinations = SlateTool.create(
       let config: Record<string, unknown> = {};
       if (ctx.input.url !== undefined) config.url = ctx.input.url;
       if (ctx.input.rateLimit !== undefined) config.rate_limit = ctx.input.rateLimit;
-      if (ctx.input.rateLimitPeriod !== undefined) config.rate_limit_period = ctx.input.rateLimitPeriod;
+      if (ctx.input.rateLimitPeriod !== undefined)
+        config.rate_limit_period = ctx.input.rateLimitPeriod;
       if (ctx.input.httpMethod !== undefined) config.http_method = ctx.input.httpMethod;
       if (ctx.input.authType !== undefined) config.auth_type = ctx.input.authType;
       if (ctx.input.authConfig !== undefined) config.auth = ctx.input.authConfig;
@@ -95,22 +123,22 @@ export let manageDestinations = SlateTool.create(
         let result = await client.listDestinations({
           name: ctx.input.name,
           limit: ctx.input.limit,
-          next: ctx.input.cursor,
+          next: ctx.input.cursor
         });
         return {
           output: {
             destinations: result.models.map(d => mapDestination(d)),
             totalCount: result.count,
-            nextCursor: result.pagination.next,
+            nextCursor: result.pagination.next
           },
-          message: `Listed **${result.models.length}** destinations (${result.count} total).`,
+          message: `Listed **${result.models.length}** destinations (${result.count} total).`
         };
       }
       case 'get': {
         let dest = await client.getDestination(ctx.input.destinationId!);
         return {
           output: { destination: mapDestination(dest) },
-          message: `Retrieved destination **${dest.name}** (\`${dest.id}\`).`,
+          message: `Retrieved destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
       case 'create': {
@@ -118,11 +146,11 @@ export let manageDestinations = SlateTool.create(
           name: ctx.input.name!,
           description: ctx.input.description,
           type: ctx.input.type,
-          config: buildConfig(),
+          config: buildConfig()
         });
         return {
           output: { destination: mapDestination(dest) },
-          message: `Created destination **${dest.name}** (\`${dest.id}\`).`,
+          message: `Created destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
       case 'update': {
@@ -130,32 +158,32 @@ export let manageDestinations = SlateTool.create(
           name: ctx.input.name,
           description: ctx.input.description,
           type: ctx.input.type,
-          config: buildConfig(),
+          config: buildConfig()
         });
         return {
           output: { destination: mapDestination(dest) },
-          message: `Updated destination **${dest.name}** (\`${dest.id}\`).`,
+          message: `Updated destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
       case 'delete': {
         let result = await client.deleteDestination(ctx.input.destinationId!);
         return {
           output: { deletedId: result.id },
-          message: `Deleted destination \`${result.id}\`.`,
+          message: `Deleted destination \`${result.id}\`.`
         };
       }
       case 'enable': {
         let dest = await client.enableDestination(ctx.input.destinationId!);
         return {
           output: { destination: mapDestination(dest) },
-          message: `Enabled destination **${dest.name}** (\`${dest.id}\`).`,
+          message: `Enabled destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
       case 'disable': {
         let dest = await client.disableDestination(ctx.input.destinationId!);
         return {
           output: { destination: mapDestination(dest) },
-          message: `Disabled destination **${dest.name}** (\`${dest.id}\`).`,
+          message: `Disabled destination **${dest.name}** (\`${dest.id}\`).`
         };
       }
     }

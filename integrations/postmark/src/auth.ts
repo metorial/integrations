@@ -2,14 +2,16 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let postmarkAxios = createAxios({
-  baseURL: 'https://api.postmarkapp.com',
+  baseURL: 'https://api.postmarkapp.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    accountToken: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      accountToken: z.string().optional()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Server API Token',
@@ -17,24 +19,27 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       serverToken: z.string(),
-      accountToken: z.string().optional(),
+      accountToken: z.string().optional()
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.serverToken,
-          accountToken: ctx.input.accountToken,
-        },
+          accountToken: ctx.input.accountToken
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; accountToken?: string }; input: { serverToken: string; accountToken?: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; accountToken?: string };
+      input: { serverToken: string; accountToken?: string };
+    }) => {
       let response = await postmarkAxios.get('/server', {
         headers: {
-          'Accept': 'application/json',
-          'X-Postmark-Server-Token': ctx.output.token,
-        },
+          Accept: 'application/json',
+          'X-Postmark-Server-Token': ctx.output.token
+        }
       });
 
       let data = response.data;
@@ -42,8 +47,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: String(data.ID),
-          name: data.Name,
-        },
+          name: data.Name
+        }
       };
-    },
+    }
   });

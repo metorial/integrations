@@ -8,7 +8,7 @@ import {
   submitBatch,
   checkBatchTask,
   submitFeedback,
-  checkUsage,
+  checkUsage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     submitBatch,
     checkBatchTask,
     submitFeedback,
-    checkUsage,
+    checkUsage
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

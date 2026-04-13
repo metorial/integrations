@@ -13,33 +13,37 @@ let messageEventTypes = [
   'thread.discord_message_received',
   'thread.discord_message_sent',
   'thread.ms_teams_message_received',
-  'thread.ms_teams_message_sent',
+  'thread.ms_teams_message_sent'
 ] as const;
 
-export let messageEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Events',
-    key: 'message_events',
-    description: 'Triggers when messaging events occur on threads: emails sent/received, Slack messages, chat messages, Discord messages, MS Teams messages, or internal notes created.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Webhook event type'),
-    eventId: z.string().describe('Unique event ID'),
-    timestamp: z.string().describe('Event timestamp (ISO 8601)'),
-    workspaceId: z.string().describe('Workspace ID'),
-    payload: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    threadId: z.string().describe('Thread ID the message belongs to'),
-    threadTitle: z.string().nullable().describe('Thread title'),
-    channel: z.string().describe('Message channel (email, slack, chat, discord, ms_teams, note)'),
-    direction: z.string().describe('Message direction (received, sent, created)'),
-  }))
+export let messageEvents = SlateTrigger.create(spec, {
+  name: 'Message Events',
+  key: 'message_events',
+  description:
+    'Triggers when messaging events occur on threads: emails sent/received, Slack messages, chat messages, Discord messages, MS Teams messages, or internal notes created.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Webhook event type'),
+      eventId: z.string().describe('Unique event ID'),
+      timestamp: z.string().describe('Event timestamp (ISO 8601)'),
+      workspaceId: z.string().describe('Workspace ID'),
+      payload: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      threadId: z.string().describe('Thread ID the message belongs to'),
+      threadTitle: z.string().nullable().describe('Thread title'),
+      channel: z
+        .string()
+        .describe('Message channel (email, slack, chat, discord, ms_teams, note)'),
+      direction: z.string().describe('Message direction (received, sent, created)')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!messageEventTypes.includes(data.type)) {
         return { inputs: [] };
@@ -52,12 +56,12 @@ export let messageEvents = SlateTrigger.create(
             eventId: data.id,
             timestamp: data.timestamp,
             workspaceId: data.workspaceId,
-            payload: data.payload,
-          },
-        ],
+            payload: data.payload
+          }
+        ]
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload;
       let thread = payload?.thread;
 
@@ -72,10 +76,13 @@ export let messageEvents = SlateTrigger.create(
         'thread.discord_message_received': { channel: 'discord', direction: 'received' },
         'thread.discord_message_sent': { channel: 'discord', direction: 'sent' },
         'thread.ms_teams_message_received': { channel: 'ms_teams', direction: 'received' },
-        'thread.ms_teams_message_sent': { channel: 'ms_teams', direction: 'sent' },
+        'thread.ms_teams_message_sent': { channel: 'ms_teams', direction: 'sent' }
       };
 
-      let info = channelMap[ctx.input.eventType] || { channel: 'unknown', direction: 'unknown' };
+      let info = channelMap[ctx.input.eventType] || {
+        channel: 'unknown',
+        direction: 'unknown'
+      };
 
       return {
         type: ctx.input.eventType,
@@ -84,9 +91,9 @@ export let messageEvents = SlateTrigger.create(
           threadId: thread?.id ?? '',
           threadTitle: thread?.title ?? null,
           channel: info.channel,
-          direction: info.direction,
-        },
+          direction: info.direction
+        }
       };
-    },
+    }
   })
   .build();

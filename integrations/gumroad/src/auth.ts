@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -33,7 +35,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -47,7 +49,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post('https://gumroad.com/oauth/token', {
@@ -60,7 +62,7 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: response.data.access_token,
+          token: response.data.access_token
         }
       };
     },
@@ -81,7 +83,7 @@ export let auth = SlateAuth.create()
           id: user.user_id,
           email: user.email,
           name: user.name || user.display_name,
-          imageUrl: user.profile_url,
+          imageUrl: user.profile_url
         }
       };
     }
@@ -92,13 +94,15 @@ export let auth = SlateAuth.create()
     key: 'access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal access token generated from Gumroad Advanced Settings')
+      token: z
+        .string()
+        .describe('Personal access token generated from Gumroad Advanced Settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
     },
@@ -119,7 +123,7 @@ export let auth = SlateAuth.create()
           id: user.user_id,
           email: user.email,
           name: user.name || user.display_name,
-          imageUrl: user.profile_url,
+          imageUrl: user.profile_url
         }
       };
     }

@@ -32,7 +32,7 @@ export let getFormTool = SlateTool.create(spec, {
         .describe('Map of question IDs to question definitions')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

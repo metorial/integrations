@@ -11,6 +11,7 @@ Amazon Web Services (AWS) is a cloud computing platform offering over 200 servic
 AWS Signature Version 4 (SigV4) is the primary process for adding authentication information to AWS API requests sent over HTTP. For security, most requests to AWS must be signed with an access key, which consists of an access key ID and secret access key.
 
 **Credentials required:**
+
 - **Access Key ID** (e.g., `AKIAIOSFODNN7EXAMPLE`) — identifies the IAM principal making the request.
 - **Secret Access Key** — used to derive a signing key for the request signature.
 - **Region** — the AWS region for the target service (e.g., `us-east-1`).
@@ -21,6 +22,7 @@ AWS Signature Version 4 (SigV4) is the primary process for adding authentication
 You can use the AWS SigV4 signing protocol to create a signed request for AWS API requests. Creating a canonical request based on the request details. Calculating a signature using your AWS credentials. Adding this signature to the request as an Authorization header. AWS then replicates this process and verifies the signature, granting or denying access accordingly.
 
 The Authorization header follows this format:
+
 ```
 Authorization: AWS4-HMAC-SHA256 Credential={access_key_id}/{date}/{region}/{service}/aws4_request, SignedHeaders={signed_headers}, Signature={signature}
 ```
@@ -34,6 +36,7 @@ You can use the AWS Security Token Service (AWS STS) to create and provide trust
 The AWS STS API operations create a new session with temporary security credentials that include an access key pair and a session token. The access key pair consists of an access key ID and a secret key. Users (or an application that the user runs) can use these credentials to access your resources.
 
 When using temporary credentials, the following are required:
+
 - **Access Key ID** (temporary)
 - **Secret Access Key** (temporary)
 - **Session Token** — you must include the session token, which lets AWS verify that the temporary security credentials are valid.
@@ -101,6 +104,7 @@ Nearly all AWS services emit events to EventBridge automatically. You create **r
 - **Custom Application Events**: Applications can publish custom events to EventBridge event buses using the `PutEvents` API.
 
 Configurable options include:
+
 - **Event patterns**: Filter events by source, detail-type, and any field within the event payload using content-based filtering.
 - **Event buses**: Use the default bus for AWS events, or create custom buses for application events. Partner event buses receive events from SaaS integrations.
 - **Targets**: Route matched events to over 35 targets including Lambda, SQS, SNS, Step Functions, Kinesis, and HTTP endpoints.

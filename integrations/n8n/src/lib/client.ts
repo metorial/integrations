@@ -75,7 +75,8 @@ export class Client {
     if (params?.tags) query.tags = params.tags;
     if (params?.name) query.name = params.name;
     if (params?.projectId) query.projectId = params.projectId;
-    if (params?.excludePinnedData !== undefined) query.excludePinnedData = params.excludePinnedData;
+    if (params?.excludePinnedData !== undefined)
+      query.excludePinnedData = params.excludePinnedData;
 
     let response = await this.axios.get('/workflows', { params: query });
     return response.data;
@@ -103,7 +104,10 @@ export class Client {
     await this.axios.delete(`/workflows/${workflowId}`);
   }
 
-  async activateWorkflow(workflowId: string, options?: { versionId?: string; name?: string; description?: string }): Promise<any> {
+  async activateWorkflow(
+    workflowId: string,
+    options?: { versionId?: string; name?: string; description?: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/workflows/${workflowId}/activate`, options || {});
     return response.data;
   }
@@ -193,12 +197,19 @@ export class Client {
     return response.data;
   }
 
-  async createCredential(credential: { name: string; type: string; data: Record<string, any> }): Promise<any> {
+  async createCredential(credential: {
+    name: string;
+    type: string;
+    data: Record<string, any>;
+  }): Promise<any> {
     let response = await this.axios.post('/credentials', credential);
     return response.data;
   }
 
-  async updateCredential(credentialId: string, update: { name?: string; type?: string; data?: Record<string, any> }): Promise<any> {
+  async updateCredential(
+    credentialId: string,
+    update: { name?: string; type?: string; data?: Record<string, any> }
+  ): Promise<any> {
     let response = await this.axios.patch(`/credentials/${credentialId}`, update);
     return response.data;
   }
@@ -280,12 +291,19 @@ export class Client {
     return response.data;
   }
 
-  async createVariable(variable: { key: string; value: string; projectId?: string }): Promise<any> {
+  async createVariable(variable: {
+    key: string;
+    value: string;
+    projectId?: string;
+  }): Promise<any> {
     let response = await this.axios.post('/variables', variable);
     return response.data;
   }
 
-  async updateVariable(variableId: string, variable: { key: string; value: string }): Promise<any> {
+  async updateVariable(
+    variableId: string,
+    variable: { key: string; value: string }
+  ): Promise<any> {
     let response = await this.axios.put(`/variables/${variableId}`, variable);
     return response.data;
   }
@@ -319,7 +337,10 @@ export class Client {
     await this.axios.delete(`/projects/${projectId}`);
   }
 
-  async listProjectMembers(projectId: string, params?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async listProjectMembers(
+    projectId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = {};
     if (params?.limit !== undefined) query.limit = params.limit;
     if (params?.cursor) query.cursor = params.cursor;
@@ -328,7 +349,10 @@ export class Client {
     return response.data;
   }
 
-  async addProjectMembers(projectId: string, relations: { userId: string; role: string }[]): Promise<void> {
+  async addProjectMembers(
+    projectId: string,
+    relations: { userId: string; role: string }[]
+  ): Promise<void> {
     await this.axios.post(`/projects/${projectId}/users`, { relations });
   }
 
@@ -336,7 +360,11 @@ export class Client {
     await this.axios.delete(`/projects/${projectId}/users/${userId}`);
   }
 
-  async changeProjectMemberRole(projectId: string, userId: string, role: string): Promise<void> {
+  async changeProjectMemberRole(
+    projectId: string,
+    userId: string,
+    role: string
+  ): Promise<void> {
     await this.axios.patch(`/projects/${projectId}/users/${userId}`, { role });
   }
 

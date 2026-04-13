@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 let scheduleVersionSchema = z.object({
   scheduleId: z.string().describe('Schedule version ID'),
-  effectiveDate: z.string().describe('Date this schedule became effective'),
+  effectiveDate: z.string().describe('Date this schedule became effective')
 });
 
 let stationScheduleItemSchema = z.object({
@@ -13,60 +13,88 @@ let stationScheduleItemSchema = z.object({
   trainHeadStation: z.string().describe('Final destination of the train'),
   originTime: z.string().describe('Departure time from this station'),
   bikeflag: z.string().describe('"1" if bikes are allowed'),
-  platform: z.string().describe('Platform designation'),
+  platform: z.string().describe('Platform designation')
 });
 
 let routeScheduleStopSchema = z.object({
   station: z.string().describe('Station abbreviation'),
   originTime: z.string().describe('Departure time from this station'),
-  bikeflag: z.string().describe('"1" if bikes are allowed'),
+  bikeflag: z.string().describe('"1" if bikes are allowed')
 });
 
 let routeScheduleTrainSchema = z.object({
   trainIndex: z.string().describe('Train index number'),
-  stops: z.array(routeScheduleStopSchema).describe('Ordered stops for this train'),
+  stops: z.array(routeScheduleStopSchema).describe('Ordered stops for this train')
 });
 
-export let getSchedule = SlateTool.create(
-  spec,
-  {
-    name: 'Get Schedule',
-    key: 'get_schedule',
-    description: `Retrieve BART schedule information. Can list available schedule versions, get the full daily schedule for a specific station, or get the complete schedule for a specific route. Station schedules show all departures for the day; route schedules show every train run with all stop times.`,
-    instructions: [
-      'Use station abbreviation codes for station schedules (e.g., "12TH", "EMBR").',
-      'Route numbers range from 1-12 for route schedules.',
-      'Date format: "mm/dd/yyyy", "today", "now". For route schedules, also "wd" (weekday), "sa" (Saturday), "su" (Sunday).',
-      'Time format for route schedules: "h:mm am/pm" to filter by start time.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getSchedule = SlateTool.create(spec, {
+  name: 'Get Schedule',
+  key: 'get_schedule',
+  description: `Retrieve BART schedule information. Can list available schedule versions, get the full daily schedule for a specific station, or get the complete schedule for a specific route. Station schedules show all departures for the day; route schedules show every train run with all stop times.`,
+  instructions: [
+    'Use station abbreviation codes for station schedules (e.g., "12TH", "EMBR").',
+    'Route numbers range from 1-12 for route schedules.',
+    'Date format: "mm/dd/yyyy", "today", "now". For route schedules, also "wd" (weekday), "sa" (Saturday), "su" (Sunday).',
+    'Time format for route schedules: "h:mm am/pm" to filter by start time.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    scheduleType: z.enum(['versions', 'station', 'route']).describe('"versions" to list schedule versions, "station" for a station schedule, "route" for a route schedule'),
-    stationAbbr: z.string().optional().describe('Station abbreviation code (required when scheduleType is "station")'),
-    routeNumber: z.string().optional().describe('Route number 1-12 (required when scheduleType is "route")'),
-    date: z.string().optional().describe('Schedule date in "mm/dd/yyyy" format, "today", "now", or "wd"/"sa"/"su" for route schedules'),
-    time: z.string().optional().describe('Start time filter for route schedules in "h:mm am/pm" format'),
-  }))
-  .output(z.object({
-    scheduleVersions: z.array(scheduleVersionSchema).optional().describe('Available schedule versions'),
-    stationSchedule: z.object({
-      stationName: z.string().describe('Station name'),
-      stationAbbr: z.string().describe('Station abbreviation'),
-      scheduleDate: z.string().describe('Schedule date'),
-      scheduleNumber: z.string().describe('Schedule version number'),
-      items: z.array(stationScheduleItemSchema).describe('Scheduled departures'),
-    }).optional().describe('Station schedule (when scheduleType is "station")'),
-    routeSchedule: z.object({
-      scheduleDate: z.string().describe('Schedule date'),
-      scheduleNumber: z.string().describe('Schedule version number'),
-      trains: z.array(routeScheduleTrainSchema).describe('Train runs with stop times'),
-    }).optional().describe('Route schedule (when scheduleType is "route")'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scheduleType: z
+        .enum(['versions', 'station', 'route'])
+        .describe(
+          '"versions" to list schedule versions, "station" for a station schedule, "route" for a route schedule'
+        ),
+      stationAbbr: z
+        .string()
+        .optional()
+        .describe('Station abbreviation code (required when scheduleType is "station")'),
+      routeNumber: z
+        .string()
+        .optional()
+        .describe('Route number 1-12 (required when scheduleType is "route")'),
+      date: z
+        .string()
+        .optional()
+        .describe(
+          'Schedule date in "mm/dd/yyyy" format, "today", "now", or "wd"/"sa"/"su" for route schedules'
+        ),
+      time: z
+        .string()
+        .optional()
+        .describe('Start time filter for route schedules in "h:mm am/pm" format')
+    })
+  )
+  .output(
+    z.object({
+      scheduleVersions: z
+        .array(scheduleVersionSchema)
+        .optional()
+        .describe('Available schedule versions'),
+      stationSchedule: z
+        .object({
+          stationName: z.string().describe('Station name'),
+          stationAbbr: z.string().describe('Station abbreviation'),
+          scheduleDate: z.string().describe('Schedule date'),
+          scheduleNumber: z.string().describe('Schedule version number'),
+          items: z.array(stationScheduleItemSchema).describe('Scheduled departures')
+        })
+        .optional()
+        .describe('Station schedule (when scheduleType is "station")'),
+      routeSchedule: z
+        .object({
+          scheduleDate: z.string().describe('Schedule date'),
+          scheduleNumber: z.string().describe('Schedule version number'),
+          trains: z.array(routeScheduleTrainSchema).describe('Train runs with stop times')
+        })
+        .optional()
+        .describe('Route schedule (when scheduleType is "route")')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BartClient({ token: ctx.auth.token });
 
     if (ctx.input.scheduleType === 'versions') {
@@ -76,12 +104,12 @@ export let getSchedule = SlateTool.create(
 
       let mappedSchedules = schedules.map((s: any) => ({
         scheduleId: s['@id'] || '',
-        effectiveDate: s['@effectivedate'] || '',
+        effectiveDate: s['@effectivedate'] || ''
       }));
 
       return {
         output: { scheduleVersions: mappedSchedules },
-        message: `Retrieved **${mappedSchedules.length}** schedule version(s).`,
+        message: `Retrieved **${mappedSchedules.length}** schedule version(s).`
       };
     }
 
@@ -100,7 +128,7 @@ export let getSchedule = SlateTool.create(
         trainHeadStation: item['@trainHeadStation'] || '',
         originTime: item['@origTime'] || '',
         bikeflag: item['@bikeflag'] || '0',
-        platform: item['@platform'] || '',
+        platform: item['@platform'] || ''
       }));
 
       return {
@@ -110,10 +138,10 @@ export let getSchedule = SlateTool.create(
             stationAbbr: station?.abbr || '',
             scheduleDate: result?.date || '',
             scheduleNumber: result?.sched_num || '',
-            items: mappedItems,
-          },
+            items: mappedItems
+          }
         },
-        message: `Retrieved **${mappedItems.length}** scheduled departures for **${station?.name || ctx.input.stationAbbr}**.`,
+        message: `Retrieved **${mappedItems.length}** scheduled departures for **${station?.name || ctx.input.stationAbbr}**.`
       };
     }
 
@@ -125,7 +153,7 @@ export let getSchedule = SlateTool.create(
     let result = await client.getRouteSchedule({
       route: ctx.input.routeNumber,
       date: ctx.input.date,
-      time: ctx.input.time,
+      time: ctx.input.time
     });
 
     let route = result?.route;
@@ -141,8 +169,8 @@ export let getSchedule = SlateTool.create(
         stops: stops.map((stop: any) => ({
           station: stop['@station'] || '',
           originTime: stop['@origTime'] || '',
-          bikeflag: stop['@bikeflag'] || '0',
-        })),
+          bikeflag: stop['@bikeflag'] || '0'
+        }))
       };
     });
 
@@ -151,10 +179,10 @@ export let getSchedule = SlateTool.create(
         routeSchedule: {
           scheduleDate: result?.date || '',
           scheduleNumber: result?.sched_num || '',
-          trains: mappedTrains,
-        },
+          trains: mappedTrains
+        }
       },
-      message: `Retrieved schedule with **${mappedTrains.length}** train run(s) for route **${ctx.input.routeNumber}**.`,
+      message: `Retrieved schedule with **${mappedTrains.length}** train run(s) for route **${ctx.input.routeNumber}**.`
     };
   })
   .build();

@@ -3,39 +3,41 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createCognitoClient } from '../lib/helpers';
 
-export let groupChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Group Changes',
-    key: 'group_changes',
-    description: 'Detects new, modified, and deleted groups in a Cognito user pool by polling the ListGroups API. Triggers on group creation, updates, and deletion.'
-  }
-)
-  .input(z.object({
-    groupName: z.string(),
-    userPoolId: z.string(),
-    eventType: z.enum(['created', 'updated', 'deleted']),
-    description: z.string().optional(),
-    precedence: z.number().optional(),
-    roleArn: z.string().optional(),
-    creationDate: z.number().optional(),
-    lastModifiedDate: z.number().optional()
-  }))
-  .output(z.object({
-    groupName: z.string(),
-    userPoolId: z.string(),
-    description: z.string().optional(),
-    precedence: z.number().optional(),
-    roleArn: z.string().optional(),
-    creationDate: z.number().optional(),
-    lastModifiedDate: z.number().optional()
-  }))
+export let groupChanges = SlateTrigger.create(spec, {
+  name: 'Group Changes',
+  key: 'group_changes',
+  description:
+    'Detects new, modified, and deleted groups in a Cognito user pool by polling the ListGroups API. Triggers on group creation, updates, and deletion.'
+})
+  .input(
+    z.object({
+      groupName: z.string(),
+      userPoolId: z.string(),
+      eventType: z.enum(['created', 'updated', 'deleted']),
+      description: z.string().optional(),
+      precedence: z.number().optional(),
+      roleArn: z.string().optional(),
+      creationDate: z.number().optional(),
+      lastModifiedDate: z.number().optional()
+    })
+  )
+  .output(
+    z.object({
+      groupName: z.string(),
+      userPoolId: z.string(),
+      description: z.string().optional(),
+      precedence: z.number().optional(),
+      roleArn: z.string().optional(),
+      creationDate: z.number().optional(),
+      lastModifiedDate: z.number().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createCognitoClient(ctx);
       let lastPollTime = (ctx.state?.lastPollTime as number) || 0;
       let knownGroups = (ctx.state?.knownGroups as Record<string, number>) || {};
@@ -44,7 +46,10 @@ export let groupChanges = SlateTrigger.create(
       if (!userPoolId) {
         let pools = await client.listUserPools(1);
         if (!pools.UserPools || pools.UserPools.length === 0) {
-          return { inputs: [], updatedState: { lastPollTime: Date.now() / 1000, knownGroups: {}, userPoolId: '' } };
+          return {
+            inputs: [],
+            updatedState: { lastPollTime: Date.now() / 1000, knownGroups: {}, userPoolId: '' }
+          };
         }
         userPoolId = pools.UserPools[0].Id;
       }
@@ -125,7 +130,7 @@ export let groupChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `group.${ctx.input.eventType}`,
         id: `${ctx.input.groupName}-${ctx.input.lastModifiedDate || Date.now()}`,
@@ -140,4 +145,5 @@ export let groupChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

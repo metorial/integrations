@@ -23,37 +23,34 @@ let userSchema = z.object({
   facebookId: z.string().optional().describe('Facebook ID'),
   twitterId: z.string().optional().describe('Twitter ID'),
   lastSeen: z.string().optional().describe('Last seen timestamp'),
-  userType: z.string().optional().describe('User type: organizer or sub-organizer'),
+  userType: z.string().optional().describe('User type: organizer or sub-organizer')
 });
 
-export let listUsersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve organizer and sub-organizer account details including contact information, company, address, timezone, and social media profiles.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let listUsersTool = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve organizer and sub-organizer account details including contact information, company, address, timezone, and social media profiles.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       offset: z.number().optional().describe('Number of records to skip'),
-      limit: z.number().optional().describe('Number of records per page'),
-    }),
+      limit: z.number().optional().describe('Number of records per page')
+    })
   )
   .output(
     z.object({
-      users: z.array(userSchema).describe('List of users'),
-    }),
+      users: z.array(userSchema).describe('List of users')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.listUsers({
       offset: ctx.input.offset,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
     let rawUsers = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
@@ -78,11 +75,12 @@ export let listUsersTool = SlateTool.create(
       facebookId: u.facebook_id,
       twitterId: u.twitter_id,
       lastSeen: u.last_seen,
-      userType: u.user_type,
+      userType: u.user_type
     }));
 
     return {
       output: { users },
-      message: `Found **${users.length}** user(s).`,
+      message: `Found **${users.length}** user(s).`
     };
-  }).build();
+  })
+  .build();

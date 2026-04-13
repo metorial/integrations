@@ -18,6 +18,7 @@ Each API request must include an `Authorization` header with Basic authenticatio
 Requests are made to `https://www.ocrwebservice.com/restservices/` with `auth` using `username` and `license_api_password`.
 
 Example:
+
 ```
 Authorization: Basic base64(username:license_key)
 ```

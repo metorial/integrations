@@ -39,6 +39,7 @@ Look up a company by its domain name and receive a comprehensive company profile
 Identify the company associated with an IP address. Useful for de-anonymizing website traffic for sales, marketing, analytics, or personalization.
 
 The response includes:
+
 - The matched company profile (same schema as the Company API)
 - Result type: `business`, `isp`, or `hosting`
 - A confidence score (0–1) and a `fuzzy` flag indicating match quality
@@ -54,6 +55,7 @@ Retrieve a company's logo image via a dedicated logo URL (`logo.bigpicture.io/lo
 ### JavaScript Tracking SDK
 
 A client-side JavaScript SDK for website visitor tracking and integration routing. It provides methods to:
+
 - **Identify** users by associating traits (name, email, company) with visitor behavior
 - **Track** custom events
 - **Group** users into organizations or teams

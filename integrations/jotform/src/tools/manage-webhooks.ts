@@ -17,14 +17,8 @@ export let manageWebhooksTool = SlateTool.create(spec, {
   .input(
     z.object({
       formId: z.string().describe('ID of the form to manage webhooks for'),
-      webhookUrl: z
-        .string()
-        .optional()
-        .describe('URL to register as a new webhook endpoint'),
-      deleteWebhookId: z
-        .string()
-        .optional()
-        .describe('ID of the webhook to remove')
+      webhookUrl: z.string().optional().describe('URL to register as a new webhook endpoint'),
+      deleteWebhookId: z.string().optional().describe('ID of the webhook to remove')
     })
   )
   .output(
@@ -36,7 +30,7 @@ export let manageWebhooksTool = SlateTool.create(spec, {
       webhookDeleted: z.boolean().describe('Whether a webhook was deleted')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

@@ -20,6 +20,7 @@ The Management API provides access to all data and settings that your account ha
 - Base URL for the cloud-hosted version: `https://app.formbricks.com/api/v1/` (v1) or `https://app.formbricks.com/api/v2/` (v2 beta). Self-hosted instances use their own domain.
 
 Example authentication header:
+
 ```
 x-api-key: <your-api-key>
 ```
@@ -27,27 +28,35 @@ x-api-key: <your-api-key>
 ## Features
 
 ### Survey Management
+
 The Management API supports creating and managing surveys. You can list, create, update, and delete surveys programmatically. The platform allows for flexible survey management: adding different question types, setting up validation and restrictions for respondents, using hidden fields, or distributing them via single-use links.
 
 ### Response Management
+
 The API supports handling responses. You can list responses for a survey, create responses, update existing responses, and delete responses. Responses include metadata such as user agent, country, source URL, and time-to-completion per question.
 
 ### Contact & People Management
+
 You can list and manage contacts (people) who have interacted with your surveys. You can retrieve a contact's state including their segments, displays, responses and other tracking information. If the contact doesn't exist, it will be created. The API also supports bulk uploading contacts and managing contact attribute keys.
 
 ### Contact Segmentation & Survey Links
+
 You can generate personalized survey links for contacts in a segment. This enables targeted survey distribution to specific user cohorts. Generated links can have configurable expiration periods.
 
 ### Action Classes
+
 You can create, list, and delete action classes. Actions represent user behaviors (e.g., page visits, button clicks) that can serve as triggers to display surveys to users.
 
 ### Attribute Classes
+
 You can create, list, and delete attribute classes. Attributes define custom properties on contacts/people used for segmentation and targeting.
 
 ### File Storage
+
 The API supports uploading public files, which can be used within surveys or other platform features.
 
 ### Account Information
+
 You can retrieve information about the authenticated account, including project details and environment type via the `/me` endpoint.
 
 ## Events
@@ -57,6 +66,7 @@ Formbricks supports webhooks that deliver real-time HTTP notifications when spec
 Webhooks can be created and managed both through the Formbricks UI and via the Management API. Formbricks implements the Standard Webhooks specification with HMAC signature verification for security.
 
 ### Response Events
+
 Formbricks provides the following webhook events: `responseCreated`, `responseUpdated`, and `responseFinished`.
 
 - **responseCreated** — Fires when a new response is started for a survey (may be partial/incomplete).

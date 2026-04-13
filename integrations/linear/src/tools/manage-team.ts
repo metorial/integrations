@@ -18,27 +18,28 @@ let teamSummarySchema = z.object({
   updatedAt: z.string()
 });
 
-export let listTeamsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Teams',
-    key: 'list_teams',
-    description: `Lists all teams in the workspace. Use this to discover team IDs needed for creating issues, cycles, and filtering.`,
-    tags: {
-      readOnly: true
-    }
+export let listTeamsTool = SlateTool.create(spec, {
+  name: 'List Teams',
+  key: 'list_teams',
+  description: `Lists all teams in the workspace. Use this to discover team IDs needed for creating issues, cycles, and filtering.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    first: z.number().optional().describe('Number of teams to return (default: 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    teams: z.array(teamSummarySchema),
-    hasNextPage: z.boolean(),
-    nextCursor: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      first: z.number().optional().describe('Number of teams to return (default: 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      teams: z.array(teamSummarySchema),
+      hasNextPage: z.boolean(),
+      nextCursor: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.listTeams({
       first: ctx.input.first,
@@ -68,57 +69,65 @@ export let listTeamsTool = SlateTool.create(
       },
       message: `Found **${teams.length}** teams: ${teams.map((t: any) => `${t.name} (${t.key})`).join(', ')}`
     };
-  }).build();
+  })
+  .build();
 
-export let getTeamTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Team',
-    key: 'get_team',
-    description: `Retrieves detailed information about a team including its workflow states, labels, and members.`,
-    tags: {
-      readOnly: true
-    }
+export let getTeamTool = SlateTool.create(spec, {
+  name: 'Get Team',
+  key: 'get_team',
+  description: `Retrieves detailed information about a team including its workflow states, labels, and members.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('Team ID')
-  }))
-  .output(z.object({
-    teamId: z.string(),
-    name: z.string(),
-    key: z.string(),
-    description: z.string().nullable(),
-    color: z.string().nullable(),
-    icon: z.string().nullable(),
-    private: z.boolean(),
-    timezone: z.string().nullable(),
-    cyclesEnabled: z.boolean(),
-    triageEnabled: z.boolean(),
-    workflowStates: z.array(z.object({
-      stateId: z.string(),
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('Team ID')
+    })
+  )
+  .output(
+    z.object({
+      teamId: z.string(),
       name: z.string(),
-      type: z.string(),
-      color: z.string(),
-      position: z.number()
-    })),
-    labels: z.array(z.object({
-      labelId: z.string(),
-      name: z.string(),
-      color: z.string()
-    })),
-    members: z.array(z.object({
-      userId: z.string(),
-      name: z.string(),
-      email: z.string(),
-      displayName: z.string().nullable(),
-      avatarUrl: z.string().nullable(),
-      active: z.boolean()
-    })),
-    createdAt: z.string(),
-    updatedAt: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+      key: z.string(),
+      description: z.string().nullable(),
+      color: z.string().nullable(),
+      icon: z.string().nullable(),
+      private: z.boolean(),
+      timezone: z.string().nullable(),
+      cyclesEnabled: z.boolean(),
+      triageEnabled: z.boolean(),
+      workflowStates: z.array(
+        z.object({
+          stateId: z.string(),
+          name: z.string(),
+          type: z.string(),
+          color: z.string(),
+          position: z.number()
+        })
+      ),
+      labels: z.array(
+        z.object({
+          labelId: z.string(),
+          name: z.string(),
+          color: z.string()
+        })
+      ),
+      members: z.array(
+        z.object({
+          userId: z.string(),
+          name: z.string(),
+          email: z.string(),
+          displayName: z.string().nullable(),
+          avatarUrl: z.string().nullable(),
+          active: z.boolean()
+        })
+      ),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let team = await client.getTeam(ctx.input.teamId);
 
@@ -159,4 +168,5 @@ export let getTeamTool = SlateTool.create(
       },
       message: `Retrieved team **${team.name}** (${team.key}) with ${team.members?.nodes?.length || 0} members, ${team.states?.nodes?.length || 0} workflow states, and ${team.labels?.nodes?.length || 0} labels`
     };
-  }).build();
+  })
+  .build();

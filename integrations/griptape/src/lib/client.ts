@@ -27,9 +27,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: `${config.baseUrl}/api`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -42,7 +42,7 @@ export class Client {
       totalCount: raw.total_count,
       totalPages: raw.total_pages,
       nextPage: raw.next_page ?? undefined,
-      previousPage: raw.previous_page ?? undefined,
+      previousPage: raw.previous_page ?? undefined
     };
   }
 
@@ -80,7 +80,7 @@ export class Client {
       retriever_ids: data.retrieverIds,
       ruleset_ids: data.rulesetIds,
       structure_ids: data.structureIds,
-      tool_ids: data.toolIds,
+      tool_ids: data.toolIds
     });
     return res.data;
   }
@@ -90,17 +90,20 @@ export class Client {
     return res.data;
   }
 
-  async updateAssistant(assistantId: string, data: {
-    name?: string;
-    description?: string;
-    input?: string;
-    model?: string;
-    knowledgeBaseIds?: string[];
-    retrieverIds?: string[];
-    rulesetIds?: string[];
-    structureIds?: string[];
-    toolIds?: string[];
-  }): Promise<any> {
+  async updateAssistant(
+    assistantId: string,
+    data: {
+      name?: string;
+      description?: string;
+      input?: string;
+      model?: string;
+      knowledgeBaseIds?: string[];
+      retrieverIds?: string[];
+      rulesetIds?: string[];
+      structureIds?: string[];
+      toolIds?: string[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -121,24 +124,33 @@ export class Client {
 
   // ── Assistant Runs ───────────────────────────────────────
 
-  async listAssistantRuns(assistantId: string, params?: PaginationParams & { status?: string[] }): Promise<PaginatedResponse<any>> {
+  async listAssistantRuns(
+    assistantId: string,
+    params?: PaginationParams & { status?: string[] }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.status?.length) query.status = params.status.join(',');
     let res = await this.axios.get(`/assistants/${assistantId}/runs`, { params: query });
-    return { items: res.data.assistant_runs, pagination: this.mapPagination(res.data.pagination) };
+    return {
+      items: res.data.assistant_runs,
+      pagination: this.mapPagination(res.data.pagination)
+    };
   }
 
-  async createAssistantRun(assistantId: string, data: {
-    input?: string;
-    args?: string[];
-    threadId?: string;
-    newThread?: boolean;
-    knowledgeBaseIds?: string[];
-    retrieverIds?: string[];
-    rulesetIds?: string[];
-    structureIds?: string[];
-    toolIds?: string[];
-  }): Promise<any> {
+  async createAssistantRun(
+    assistantId: string,
+    data: {
+      input?: string;
+      args?: string[];
+      threadId?: string;
+      newThread?: boolean;
+      knowledgeBaseIds?: string[];
+      retrieverIds?: string[];
+      rulesetIds?: string[];
+      structureIds?: string[];
+      toolIds?: string[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.input !== undefined) body.input = data.input;
     if (data.args !== undefined) body.args = data.args;
@@ -181,20 +193,33 @@ export class Client {
 
   // ── Structure Runs ───────────────────────────────────────
 
-  async listStructureRuns(structureId: string, params?: PaginationParams & { status?: string[] }): Promise<PaginatedResponse<any>> {
+  async listStructureRuns(
+    structureId: string,
+    params?: PaginationParams & { status?: string[] }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.status?.length) query.status = params.status.join(',');
     let res = await this.axios.get(`/structures/${structureId}/runs`, { params: query });
-    return { items: res.data.structure_runs, pagination: this.mapPagination(res.data.pagination) };
+    return {
+      items: res.data.structure_runs,
+      pagination: this.mapPagination(res.data.pagination)
+    };
   }
 
-  async createStructureRun(structureId: string, data: {
-    args: string[];
-    envVars?: Array<{ name: string; value: string; source?: string }>;
-  }): Promise<any> {
+  async createStructureRun(
+    structureId: string,
+    data: {
+      args: string[];
+      envVars?: Array<{ name: string; value: string; source?: string }>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { args: data.args };
     if (data.envVars) {
-      body.env_vars = data.envVars.map(v => ({ name: v.name, value: v.value, source: v.source ?? 'manual' }));
+      body.env_vars = data.envVars.map(v => ({
+        name: v.name,
+        value: v.value,
+        source: v.source ?? 'manual'
+      }));
     }
     let res = await this.axios.post(`/structures/${structureId}/runs`, body);
     return res.data;
@@ -218,8 +243,13 @@ export class Client {
   // ── Knowledge Bases ──────────────────────────────────────
 
   async listKnowledgeBases(params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let res = await this.axios.get('/knowledge-bases', { params: this.paginationQuery(params) });
-    return { items: res.data.knowledge_bases, pagination: this.mapPagination(res.data.pagination) };
+    let res = await this.axios.get('/knowledge-bases', {
+      params: this.paginationQuery(params)
+    });
+    return {
+      items: res.data.knowledge_bases,
+      pagination: this.mapPagination(res.data.pagination)
+    };
   }
 
   async getKnowledgeBase(knowledgeBaseId: string): Promise<any> {
@@ -231,10 +261,14 @@ export class Client {
     await this.axios.delete(`/knowledge-bases/${knowledgeBaseId}`);
   }
 
-  async queryKnowledgeBase(knowledgeBaseId: string, query: string, queryArgs?: Record<string, any>): Promise<any> {
+  async queryKnowledgeBase(
+    knowledgeBaseId: string,
+    query: string,
+    queryArgs?: Record<string, any>
+  ): Promise<any> {
     let res = await this.axios.post(`/knowledge-bases/${knowledgeBaseId}/query`, {
       query,
-      query_args: queryArgs,
+      query_args: queryArgs
     });
     return res.data;
   }
@@ -249,11 +283,19 @@ export class Client {
     return res.data;
   }
 
-  async listKnowledgeBaseJobs(knowledgeBaseId: string, params?: PaginationParams & { status?: string[] }): Promise<PaginatedResponse<any>> {
+  async listKnowledgeBaseJobs(
+    knowledgeBaseId: string,
+    params?: PaginationParams & { status?: string[] }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.status?.length) query.status = params.status.join(',');
-    let res = await this.axios.get(`/knowledge-bases/${knowledgeBaseId}/knowledge-base-jobs`, { params: query });
-    return { items: res.data.knowledge_base_jobs, pagination: this.mapPagination(res.data.pagination) };
+    let res = await this.axios.get(`/knowledge-bases/${knowledgeBaseId}/knowledge-base-jobs`, {
+      params: query
+    });
+    return {
+      items: res.data.knowledge_base_jobs,
+      pagination: this.mapPagination(res.data.pagination)
+    };
   }
 
   async getKnowledgeBaseJob(jobId: string): Promise<any> {
@@ -264,8 +306,13 @@ export class Client {
   // ── Data Connectors (Data Sources) ──────────────────────
 
   async listDataConnectors(params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let res = await this.axios.get('/data-connectors', { params: this.paginationQuery(params) });
-    return { items: res.data.data_connectors, pagination: this.mapPagination(res.data.pagination) };
+    let res = await this.axios.get('/data-connectors', {
+      params: this.paginationQuery(params)
+    });
+    return {
+      items: res.data.data_connectors,
+      pagination: this.mapPagination(res.data.pagination)
+    };
   }
 
   async getDataConnector(dataConnectorId: string): Promise<any> {
@@ -282,10 +329,15 @@ export class Client {
     return res.data;
   }
 
-  async listDataJobs(dataConnectorId: string, params?: PaginationParams & { status?: string[] }): Promise<PaginatedResponse<any>> {
+  async listDataJobs(
+    dataConnectorId: string,
+    params?: PaginationParams & { status?: string[] }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.status?.length) query.status = params.status.join(',');
-    let res = await this.axios.get(`/data-connectors/${dataConnectorId}/data-jobs`, { params: query });
+    let res = await this.axios.get(`/data-connectors/${dataConnectorId}/data-jobs`, {
+      params: query
+    });
     return { items: res.data.data_jobs, pagination: this.mapPagination(res.data.pagination) };
   }
 
@@ -310,7 +362,10 @@ export class Client {
     await this.axios.delete(`/buckets/${bucketId}`);
   }
 
-  async listAssets(bucketId: string, params?: { prefix?: string; postfix?: string }): Promise<any> {
+  async listAssets(
+    bucketId: string,
+    params?: { prefix?: string; postfix?: string }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.prefix) query.prefix = params.prefix;
     if (params?.postfix) query.postfix = params.postfix;
@@ -334,10 +389,14 @@ export class Client {
     return res.data;
   }
 
-  async queryRetriever(retrieverId: string, query: string, queryArgs?: Record<string, any>): Promise<any> {
+  async queryRetriever(
+    retrieverId: string,
+    query: string,
+    queryArgs?: Record<string, any>
+  ): Promise<any> {
     let res = await this.axios.post(`/retrievers/${retrieverId}/query`, {
       query,
-      query_args: queryArgs,
+      query_args: queryArgs
     });
     return res.data;
   }
@@ -362,21 +421,34 @@ export class Client {
     await this.axios.delete(`/tools/${toolId}`);
   }
 
-  async runToolActivity(toolId: string, activityPath: string, input?: Record<string, any>): Promise<any> {
-    let res = await this.axios.post(`/tools/${toolId}/activities/${activityPath}`, input ?? {});
+  async runToolActivity(
+    toolId: string,
+    activityPath: string,
+    input?: Record<string, any>
+  ): Promise<any> {
+    let res = await this.axios.post(
+      `/tools/${toolId}/activities/${activityPath}`,
+      input ?? {}
+    );
     return res.data;
   }
 
   // ── Rules ────────────────────────────────────────────────
 
-  async listRules(params?: PaginationParams & { rulesetId?: string }): Promise<PaginatedResponse<any>> {
+  async listRules(
+    params?: PaginationParams & { rulesetId?: string }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.rulesetId) query.ruleset_id = params.rulesetId;
     let res = await this.axios.get('/rules', { params: query });
     return { items: res.data.rules, pagination: this.mapPagination(res.data.pagination) };
   }
 
-  async createRule(data: { name: string; rule: string; metadata?: Record<string, any> }): Promise<any> {
+  async createRule(data: {
+    name: string;
+    rule: string;
+    metadata?: Record<string, any>;
+  }): Promise<any> {
     let res = await this.axios.post('/rules', data);
     return res.data;
   }
@@ -386,7 +458,10 @@ export class Client {
     return res.data;
   }
 
-  async updateRule(ruleId: string, data: { name?: string; rule?: string; metadata?: Record<string, any> }): Promise<any> {
+  async updateRule(
+    ruleId: string,
+    data: { name?: string; rule?: string; metadata?: Record<string, any> }
+  ): Promise<any> {
     let res = await this.axios.patch(`/rules/${ruleId}`, data);
     return res.data;
   }
@@ -397,7 +472,9 @@ export class Client {
 
   // ── Rulesets ─────────────────────────────────────────────
 
-  async listRulesets(params?: PaginationParams & { alias?: string }): Promise<PaginatedResponse<any>> {
+  async listRulesets(
+    params?: PaginationParams & { alias?: string }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.alias) query.alias = params.alias;
     let res = await this.axios.get('/rulesets', { params: query });
@@ -416,7 +493,7 @@ export class Client {
       alias: data.alias,
       description: data.description,
       metadata: data.metadata,
-      rule_ids: data.ruleIds,
+      rule_ids: data.ruleIds
     });
     return res.data;
   }
@@ -426,13 +503,16 @@ export class Client {
     return res.data;
   }
 
-  async updateRuleset(rulesetId: string, data: {
-    name?: string;
-    alias?: string;
-    description?: string;
-    metadata?: Record<string, any>;
-    ruleIds?: string[];
-  }): Promise<any> {
+  async updateRuleset(
+    rulesetId: string,
+    data: {
+      name?: string;
+      alias?: string;
+      description?: string;
+      metadata?: Record<string, any>;
+      ruleIds?: string[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.alias !== undefined) body.alias = data.alias;
@@ -449,7 +529,9 @@ export class Client {
 
   // ── Threads ──────────────────────────────────────────────
 
-  async listThreads(params?: PaginationParams & { alias?: string; startsWith?: string; createdBy?: string }): Promise<PaginatedResponse<any>> {
+  async listThreads(
+    params?: PaginationParams & { alias?: string; startsWith?: string; createdBy?: string }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, any> = this.paginationQuery(params);
     if (params?.alias) query.alias = params.alias;
     if (params?.startsWith) query.starts_with = params.startsWith;
@@ -472,11 +554,14 @@ export class Client {
     return res.data;
   }
 
-  async updateThread(threadId: string, data: {
-    name?: string;
-    alias?: string;
-    metadata?: Record<string, any>;
-  }): Promise<any> {
+  async updateThread(
+    threadId: string,
+    data: {
+      name?: string;
+      alias?: string;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/threads/${threadId}`, data);
     return res.data;
   }
@@ -487,16 +572,24 @@ export class Client {
 
   // ── Messages ─────────────────────────────────────────────
 
-  async listMessages(threadId: string, params?: PaginationParams): Promise<PaginatedResponse<any>> {
-    let res = await this.axios.get(`/threads/${threadId}/messages`, { params: this.paginationQuery(params) });
+  async listMessages(
+    threadId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
+    let res = await this.axios.get(`/threads/${threadId}/messages`, {
+      params: this.paginationQuery(params)
+    });
     return { items: res.data.messages, pagination: this.mapPagination(res.data.pagination) };
   }
 
-  async createMessage(threadId: string, data: {
-    input: string;
-    output: string;
-    metadata?: Record<string, any>;
-  }): Promise<any> {
+  async createMessage(
+    threadId: string,
+    data: {
+      input: string;
+      output: string;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/threads/${threadId}/messages`, data);
     return res.data;
   }
@@ -506,11 +599,14 @@ export class Client {
     return res.data;
   }
 
-  async updateMessage(messageId: string, data: {
-    input?: string;
-    output?: string;
-    metadata?: Record<string, any>;
-  }): Promise<any> {
+  async updateMessage(
+    messageId: string,
+    data: {
+      input?: string;
+      output?: string;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/messages/${messageId}`, data);
     return res.data;
   }

@@ -5,7 +5,7 @@ import { z } from 'zod';
 let sectionEventInput = z.object({
   eventName: z.string().describe('Todoist event name'),
   deliveryId: z.string().describe('Unique delivery ID'),
-  eventData: z.any().describe('Raw section event data'),
+  eventData: z.any().describe('Raw section event data')
 });
 
 let sectionOutput = z.object({
@@ -13,7 +13,7 @@ let sectionOutput = z.object({
   name: z.string().describe('Section name'),
   projectId: z.string().describe('Parent project ID'),
   order: z.number().optional().describe('Section order'),
-  isArchived: z.boolean().optional().describe('Whether section is archived'),
+  isArchived: z.boolean().optional().describe('Whether section is archived')
 });
 
 let eventNameToType: Record<string, string> = {
@@ -21,40 +21,46 @@ let eventNameToType: Record<string, string> = {
   'section:updated': 'section.updated',
   'section:deleted': 'section.deleted',
   'section:archived': 'section.archived',
-  'section:unarchived': 'section.unarchived',
+  'section:unarchived': 'section.unarchived'
 };
 
-export let sectionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Section Events',
-    key: 'section_events',
-    description: 'Triggers when sections are created, updated, deleted, archived, or unarchived in Todoist.',
-  }
-)
+export let sectionEvents = SlateTrigger.create(spec, {
+  name: 'Section Events',
+  key: 'section_events',
+  description:
+    'Triggers when sections are created, updated, deleted, archived, or unarchived in Todoist.'
+})
   .input(sectionEventInput)
   .output(sectionOutput)
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventName = body.event_name || '';
       let deliveryId = ctx.request.headers.get('X-Todoist-Delivery-ID') || `${Date.now()}`;
 
-      let validEvents = ['section:added', 'section:updated', 'section:deleted', 'section:archived', 'section:unarchived'];
+      let validEvents = [
+        'section:added',
+        'section:updated',
+        'section:deleted',
+        'section:archived',
+        'section:unarchived'
+      ];
       if (!validEvents.includes(eventName)) {
         return { inputs: [] };
       }
 
       return {
-        inputs: [{
-          eventName,
-          deliveryId,
-          eventData: body.event_data || body,
-        }],
+        inputs: [
+          {
+            eventName,
+            deliveryId,
+            eventData: body.event_data || body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.eventData;
       let type = eventNameToType[ctx.input.eventName] || 'section.unknown';
 
@@ -66,8 +72,8 @@ export let sectionEvents = SlateTrigger.create(
           name: data.name || '',
           projectId: String(data.project_id || ''),
           order: data.section_order ?? data.order,
-          isArchived: data.is_archived,
-        },
+          isArchived: data.is_archived
+        }
       };
-    },
+    }
   });

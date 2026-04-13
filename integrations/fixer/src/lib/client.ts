@@ -39,12 +39,15 @@ export interface FixerFluctuationResponse {
   start_date: string;
   end_date: string;
   base: string;
-  rates: Record<string, {
-    start_rate: number;
-    end_rate: number;
-    change: number;
-    change_pct: number;
-  }>;
+  rates: Record<
+    string,
+    {
+      start_rate: number;
+      end_rate: number;
+      change: number;
+      change_pct: number;
+    }
+  >;
 }
 
 export interface FixerSymbolsResponse {
@@ -68,8 +71,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.apilayer.com/fixer',
       headers: {
-        apikey: config.token,
-      },
+        apikey: config.token
+      }
     });
   }
 
@@ -107,7 +110,7 @@ export class Client {
     let queryParams: Record<string, string | number> = {
       from: params.from,
       to: params.to,
-      amount: params.amount,
+      amount: params.amount
     };
     if (params.date) queryParams.date = params.date;
 
@@ -123,7 +126,7 @@ export class Client {
   }): Promise<FixerTimeSeriesResponse> {
     let queryParams: Record<string, string> = {
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.base) queryParams.base = params.base;
     if (params.symbols?.length) queryParams.symbols = params.symbols.join(',');
@@ -140,7 +143,7 @@ export class Client {
   }): Promise<FixerFluctuationResponse> {
     let queryParams: Record<string, string> = {
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.base) queryParams.base = params.base;
     if (params.symbols?.length) queryParams.symbols = params.symbols.join(',');

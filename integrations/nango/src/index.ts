@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listIntegrations,
@@ -11,13 +10,9 @@ import {
   getRecords,
   triggerAction,
   createConnectSession,
-  manageConnectionMetadata,
+  manageConnectionMetadata
 } from './tools';
-import {
-  connectionEvents,
-  syncEvents,
-  inboundWebhook,
-} from './triggers';
+import { connectionEvents, syncEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,11 +26,7 @@ export let provider = Slate.create({
     getRecords,
     triggerAction,
     createConnectSession,
-    manageConnectionMetadata,
+    manageConnectionMetadata
   ],
-  triggers: [
-    inboundWebhook,
-    connectionEvents,
-    syncEvents,
-  ],
+  triggers: [inboundWebhook, connectionEvents, syncEvents]
 });

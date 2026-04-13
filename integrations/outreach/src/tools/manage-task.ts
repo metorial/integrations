@@ -4,44 +4,45 @@ import { flattenResource, cleanAttributes } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTask = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Task',
-    key: 'manage_task',
-    description: `Update a task in Outreach. Mark tasks as completed, change status, due date, or other task properties.
+export let manageTask = SlateTool.create(spec, {
+  name: 'Manage Task',
+  key: 'manage_task',
+  description: `Update a task in Outreach. Mark tasks as completed, change status, due date, or other task properties.
 Tasks are automatically created by sequences or can be manually assigned. Use this to manage task state.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    taskId: z.string().describe('Task ID to update'),
-    state: z.enum(['incomplete', 'complete']).optional().describe('Task state'),
-    dueAt: z.string().optional().describe('Due date (ISO 8601 format)'),
-    note: z.string().optional().describe('Task note'),
-  }))
-  .output(z.object({
-    taskId: z.string(),
-    state: z.string().optional(),
-    taskType: z.string().optional(),
-    action: z.string().optional(),
-    subject: z.string().optional(),
-    dueAt: z.string().optional(),
-    note: z.string().optional(),
-    completedAt: z.string().optional(),
-    prospectId: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('Task ID to update'),
+      state: z.enum(['incomplete', 'complete']).optional().describe('Task state'),
+      dueAt: z.string().optional().describe('Due date (ISO 8601 format)'),
+      note: z.string().optional().describe('Task note')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string(),
+      state: z.string().optional(),
+      taskType: z.string().optional(),
+      action: z.string().optional(),
+      subject: z.string().optional(),
+      dueAt: z.string().optional(),
+      note: z.string().optional(),
+      completedAt: z.string().optional(),
+      prospectId: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let attributes = cleanAttributes({
       state: ctx.input.state,
       dueAt: ctx.input.dueAt,
-      note: ctx.input.note,
+      note: ctx.input.note
     });
 
     let resource = await client.updateTask(ctx.input.taskId, attributes);
@@ -58,9 +59,9 @@ Tasks are automatically created by sequences or can be manually assigned. Use th
         note: flat.note,
         completedAt: flat.completedAt,
         prospectId: flat.prospectId,
-        updatedAt: flat.updatedAt,
+        updatedAt: flat.updatedAt
       },
-      message: `Task **${flat.id}** updated. State: **${flat.state}**.`,
+      message: `Task **${flat.id}** updated. State: **${flat.state}**.`
     };
   })
   .build();

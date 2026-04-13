@@ -9,7 +9,7 @@ import {
   resizeImage,
   getJobResult,
   deleteJobResult,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
 import { jobCompleted } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     resizeImage,
     getJobResult,
     deleteJobResult,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    jobCompleted,
-  ],
+  triggers: [jobCompleted]
 });

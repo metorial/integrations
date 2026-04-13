@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let personChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Person Changes',
-    key: 'person_changes',
-    description: 'Triggers when a person (contact) is created or updated in Pipeline CRM.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    personId: z.number().describe('ID of the affected person'),
-    person: z.any().describe('Full person record from the API')
-  }))
-  .output(z.object({
-    personId: z.number().describe('Unique person ID'),
-    firstName: z.string().nullable().optional().describe('First name'),
-    lastName: z.string().nullable().optional().describe('Last name'),
-    email: z.string().nullable().optional().describe('Email address'),
-    phone: z.string().nullable().optional().describe('Phone number'),
-    title: z.string().nullable().optional().describe('Job title'),
-    type: z.string().nullable().optional().describe('Person type'),
-    companyName: z.string().nullable().optional().describe('Associated company name'),
-    userId: z.number().nullable().optional().describe('Owner user ID'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp')
-  }))
+export let personChanges = SlateTrigger.create(spec, {
+  name: 'Person Changes',
+  key: 'person_changes',
+  description: 'Triggers when a person (contact) is created or updated in Pipeline CRM.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      personId: z.number().describe('ID of the affected person'),
+      person: z.any().describe('Full person record from the API')
+    })
+  )
+  .output(
+    z.object({
+      personId: z.number().describe('Unique person ID'),
+      firstName: z.string().nullable().optional().describe('First name'),
+      lastName: z.string().nullable().optional().describe('Last name'),
+      email: z.string().nullable().optional().describe('Email address'),
+      phone: z.string().nullable().optional().describe('Phone number'),
+      title: z.string().nullable().optional().describe('Job title'),
+      type: z.string().nullable().optional().describe('Person type'),
+      companyName: z.string().nullable().optional().describe('Associated company name'),
+      userId: z.number().nullable().optional().describe('Owner user ID'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         appKey: ctx.auth.appKey
@@ -51,21 +52,27 @@ export let personChanges = SlateTrigger.create(
       let entries = result.entries ?? [];
 
       let newEntries = lastPolledAt
-        ? entries.filter((person: any) => person.updated_at && person.updated_at > lastPolledAt)
+        ? entries.filter(
+            (person: any) => person.updated_at && person.updated_at > lastPolledAt
+          )
         : entries;
 
       let inputs = newEntries.map((person: any) => {
         let isNew = !lastPolledAt || (person.created_at && person.created_at > lastPolledAt);
         return {
-          eventType: isNew ? 'created' as const : 'updated' as const,
+          eventType: isNew ? ('created' as const) : ('updated' as const),
           personId: person.id,
           person
         };
       });
 
-      let latestTimestamp = entries.length > 0
-        ? entries.reduce((max: string, p: any) => p.updated_at > max ? p.updated_at : max, entries[0]!.updated_at)
-        : lastPolledAt;
+      let latestTimestamp =
+        entries.length > 0
+          ? entries.reduce(
+              (max: string, p: any) => (p.updated_at > max ? p.updated_at : max),
+              entries[0]!.updated_at
+            )
+          : lastPolledAt;
 
       return {
         inputs,
@@ -75,7 +82,7 @@ export let personChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let person = ctx.input.person;
 
       return {
@@ -96,4 +103,5 @@ export let personChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

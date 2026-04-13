@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.flexisign.io/v1',
+  baseURL: 'https://api.flexisign.io/v1'
 });
 
 export class FlexisignClient {
@@ -13,13 +13,13 @@ export class FlexisignClient {
 
   private get headers() {
     return {
-      'api-key': this.token,
+      'api-key': this.token
     };
   }
 
   async listTemplates(): Promise<FlexisignTemplate[]> {
     let response = await api.get('/templates/all', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -28,8 +28,8 @@ export class FlexisignClient {
     let response = await api.get('/template', {
       headers: this.headers,
       params: {
-        templateId,
-      },
+        templateId
+      }
     });
     return response.data;
   }
@@ -38,7 +38,7 @@ export class FlexisignClient {
     body: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
     let response = await api.post('/template/create-document', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

@@ -3,47 +3,54 @@ import { GoogleCalendarClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event',
-    key: 'get_event',
-    description: `Retrieve the full details of a specific event by its ID, including attendees, recurrence, conference data, and all metadata.`,
-    tags: {
-      readOnly: true
-    }
+export let getEvent = SlateTool.create(spec, {
+  name: 'Get Event',
+  key: 'get_event',
+  description: `Retrieve the full details of a specific event by its ID, including attendees, recurrence, conference data, and all metadata.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    calendarId: z.string().default('primary').describe('Calendar ID. Use "primary" for the user\'s primary calendar.'),
-    eventId: z.string().describe('The event ID to retrieve')
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Event ID'),
-    summary: z.string().optional().describe('Event title'),
-    description: z.string().optional().describe('Event description'),
-    location: z.string().optional().describe('Event location'),
-    start: z.any().optional().describe('Event start time'),
-    end: z.any().optional().describe('Event end time'),
-    status: z.string().optional().describe('Event status'),
-    htmlLink: z.string().optional().describe('URL to view the event'),
-    hangoutLink: z.string().optional().describe('Google Meet link'),
-    creator: z.any().optional().describe('Event creator'),
-    organizer: z.any().optional().describe('Event organizer'),
-    attendees: z.array(z.any()).optional().describe('Event attendees'),
-    recurrence: z.array(z.string()).optional().describe('Recurrence rules'),
-    recurringEventId: z.string().optional().describe('Parent recurring event ID'),
-    visibility: z.string().optional().describe('Event visibility'),
-    transparency: z.string().optional().describe('Event transparency'),
-    colorId: z.string().optional().describe('Color ID'),
-    reminders: z.any().optional().describe('Reminder settings'),
-    conferenceData: z.any().optional().describe('Conference/meeting data'),
-    created: z.string().optional().describe('Creation timestamp'),
-    updated: z.string().optional().describe('Last modification timestamp'),
-    iCalUID: z.string().optional().describe('iCalendar UID'),
-    eventType: z.string().optional().describe('Event type (default, outOfOffice, focusTime, workingLocation)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      calendarId: z
+        .string()
+        .default('primary')
+        .describe('Calendar ID. Use "primary" for the user\'s primary calendar.'),
+      eventId: z.string().describe('The event ID to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Event ID'),
+      summary: z.string().optional().describe('Event title'),
+      description: z.string().optional().describe('Event description'),
+      location: z.string().optional().describe('Event location'),
+      start: z.any().optional().describe('Event start time'),
+      end: z.any().optional().describe('Event end time'),
+      status: z.string().optional().describe('Event status'),
+      htmlLink: z.string().optional().describe('URL to view the event'),
+      hangoutLink: z.string().optional().describe('Google Meet link'),
+      creator: z.any().optional().describe('Event creator'),
+      organizer: z.any().optional().describe('Event organizer'),
+      attendees: z.array(z.any()).optional().describe('Event attendees'),
+      recurrence: z.array(z.string()).optional().describe('Recurrence rules'),
+      recurringEventId: z.string().optional().describe('Parent recurring event ID'),
+      visibility: z.string().optional().describe('Event visibility'),
+      transparency: z.string().optional().describe('Event transparency'),
+      colorId: z.string().optional().describe('Color ID'),
+      reminders: z.any().optional().describe('Reminder settings'),
+      conferenceData: z.any().optional().describe('Conference/meeting data'),
+      created: z.string().optional().describe('Creation timestamp'),
+      updated: z.string().optional().describe('Last modification timestamp'),
+      iCalUID: z.string().optional().describe('iCalendar UID'),
+      eventType: z
+        .string()
+        .optional()
+        .describe('Event type (default, outOfOffice, focusTime, workingLocation)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleCalendarClient(ctx.auth.token);
     let e = await client.getEvent(ctx.input.calendarId, ctx.input.eventId);
 
@@ -75,4 +82,5 @@ export let getEvent = SlateTool.create(
       },
       message: `Retrieved event **"${e.summary || 'Untitled'}"**${e.htmlLink ? ` ([View](${e.htmlLink}))` : ''}.`
     };
-  }).build();
+  })
+  .build();

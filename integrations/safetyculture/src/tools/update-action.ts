@@ -3,29 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateAction = SlateTool.create(
-  spec,
-  {
-    name: 'Update Action',
-    key: 'update_action',
-    description: `Update an existing corrective action. Modify its title, description, status, priority, due date, assignees, or site. Only provided fields will be updated.`,
-  }
-)
-  .input(z.object({
-    actionId: z.string().describe('ID of the action to update'),
-    title: z.string().optional().describe('New title'),
-    description: z.string().optional().describe('New description'),
-    status: z.string().optional().describe('New status (e.g., "IN PROGRESS", "DONE")'),
-    priority: z.string().optional().describe('New priority (e.g., "NONE", "LOW", "MEDIUM", "HIGH")'),
-    dueAt: z.string().optional().describe('New due date in ISO 8601 format'),
-    assigneeIds: z.array(z.string()).optional().describe('New list of assigned user IDs (replaces existing)'),
-    siteId: z.string().optional().describe('New site ID to associate with'),
-  }))
-  .output(z.object({
-    actionId: z.string().describe('ID of the updated action'),
-    updatedFields: z.array(z.string()).describe('List of fields that were updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateAction = SlateTool.create(spec, {
+  name: 'Update Action',
+  key: 'update_action',
+  description: `Update an existing corrective action. Modify its title, description, status, priority, due date, assignees, or site. Only provided fields will be updated.`
+})
+  .input(
+    z.object({
+      actionId: z.string().describe('ID of the action to update'),
+      title: z.string().optional().describe('New title'),
+      description: z.string().optional().describe('New description'),
+      status: z.string().optional().describe('New status (e.g., "IN PROGRESS", "DONE")'),
+      priority: z
+        .string()
+        .optional()
+        .describe('New priority (e.g., "NONE", "LOW", "MEDIUM", "HIGH")'),
+      dueAt: z.string().optional().describe('New due date in ISO 8601 format'),
+      assigneeIds: z
+        .array(z.string())
+        .optional()
+        .describe('New list of assigned user IDs (replaces existing)'),
+      siteId: z.string().optional().describe('New site ID to associate with')
+    })
+  )
+  .output(
+    z.object({
+      actionId: z.string().describe('ID of the updated action'),
+      updatedFields: z.array(z.string()).describe('List of fields that were updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { actionId } = ctx.input;
     let updatedFields: string[] = [];
@@ -61,6 +68,7 @@ export let updateAction = SlateTool.create(
 
     return {
       output: { actionId, updatedFields },
-      message: `Updated action **${actionId}**: modified ${updatedFields.join(', ')}.`,
+      message: `Updated action **${actionId}**: modified ${updatedFields.join(', ')}.`
     };
-  }).build();
+  })
+  .build();

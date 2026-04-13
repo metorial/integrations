@@ -1,7 +1,6 @@
+import crypto from 'crypto';
 import { createAxios } from 'slates';
 import { buildOAuth1Header, type OAuth1Credentials } from './oauth1';
-// @ts-ignore crypto module is available in the Node.js runtime used at deploy time.
-import crypto from 'crypto';
 
 export interface SmugMugClientConfig {
   token: string;
@@ -32,7 +31,7 @@ export class Client {
       consumerKey: config.consumerKey,
       consumerSecret: config.consumerSecret,
       token: config.token,
-      tokenSecret: config.tokenSecret,
+      tokenSecret: config.tokenSecret
     };
   }
 
@@ -40,7 +39,10 @@ export class Client {
     return buildOAuth1Header(method, fullUrl, this.credentials);
   }
 
-  private buildUrl(path: string, params?: Record<string, string | number | undefined>): string {
+  private buildUrl(
+    path: string,
+    params?: Record<string, string | number | undefined>
+  ): string {
     let url = `https://api.smugmug.com${path}`;
     let searchParams = new URLSearchParams();
     if (params) {
@@ -62,15 +64,19 @@ export class Client {
     let response = await httpClient.get(path, {
       params,
       headers: {
-        'Authorization': authHeader,
-        'Accept': 'application/json',
-      },
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
     });
 
     return response.data;
   }
 
-  async post(path: string, data?: any, params?: Record<string, string | number | undefined>): Promise<any> {
+  async post(
+    path: string,
+    data?: any,
+    params?: Record<string, string | number | undefined>
+  ): Promise<any> {
     let fullUrl = this.buildUrl(path, params);
     let authHeader = this.getAuthHeader('POST', fullUrl);
     let httpClient = createAxios({ baseURL: 'https://api.smugmug.com' });
@@ -78,10 +84,10 @@ export class Client {
     let response = await httpClient.post(path, data, {
       params,
       headers: {
-        'Authorization': authHeader,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: authHeader,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
 
     return response.data;
@@ -94,10 +100,10 @@ export class Client {
 
     let response = await httpClient.patch(path, data, {
       headers: {
-        'Authorization': authHeader,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: authHeader,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
 
     return response.data;
@@ -110,9 +116,9 @@ export class Client {
 
     let response = await httpClient.delete(path, {
       headers: {
-        'Authorization': authHeader,
-        'Accept': 'application/json',
-      },
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
     });
 
     return response.data;
@@ -136,7 +142,10 @@ export class Client {
   }
 
   async updateUserProfile(nickname: string, profileData: Record<string, any>): Promise<any> {
-    let data = await this.patch(`/api/v2/user/${encodeURIComponent(nickname)}!profile`, profileData);
+    let data = await this.patch(
+      `/api/v2/user/${encodeURIComponent(nickname)}!profile`,
+      profileData
+    );
     return data?.Response?.UserProfile;
   }
 
@@ -147,7 +156,10 @@ export class Client {
     return data?.Response?.Node;
   }
 
-  async getNodeChildren(nodeId: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async getNodeChildren(
+    nodeId: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = {};
     if (pagination?.start) params.start = pagination.start;
     if (pagination?.count) params.count = pagination.count;
@@ -155,12 +167,15 @@ export class Client {
     let data = await this.get(`/api/v2/node/${encodeURIComponent(nodeId)}!children`, params);
     return {
       items: data?.Response?.Node || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
   async createNode(parentNodeId: string, nodeData: Record<string, any>): Promise<any> {
-    let data = await this.post(`/api/v2/node/${encodeURIComponent(parentNodeId)}!children`, nodeData);
+    let data = await this.post(
+      `/api/v2/node/${encodeURIComponent(parentNodeId)}!children`,
+      nodeData
+    );
     return data?.Response?.Node;
   }
 
@@ -173,7 +188,11 @@ export class Client {
     await this.delete(`/api/v2/node/${encodeURIComponent(nodeId)}`);
   }
 
-  async searchNodes(text: string, scope?: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async searchNodes(
+    text: string,
+    scope?: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = { Text: text };
     if (scope) params.Scope = scope;
     if (pagination?.start) params.start = pagination.start;
@@ -182,7 +201,7 @@ export class Client {
     let data = await this.get('/api/v2/node!search', params);
     return {
       items: data?.Response?.Node || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
@@ -193,7 +212,11 @@ export class Client {
     return data?.Response?.Album;
   }
 
-  async createAlbum(folderPath: string, nickname: string, albumData: Record<string, any>): Promise<any> {
+  async createAlbum(
+    folderPath: string,
+    nickname: string,
+    albumData: Record<string, any>
+  ): Promise<any> {
     let path = folderPath
       ? `/api/v2/folder/user/${encodeURIComponent(nickname)}/${folderPath}!albums`
       : `/api/v2/folder/user/${encodeURIComponent(nickname)}!albums`;
@@ -210,7 +233,10 @@ export class Client {
     await this.delete(`/api/v2/album/${encodeURIComponent(albumKey)}`);
   }
 
-  async getAlbumImages(albumKey: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async getAlbumImages(
+    albumKey: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = {};
     if (pagination?.start) params.start = pagination.start;
     if (pagination?.count) params.count = pagination.count;
@@ -218,11 +244,15 @@ export class Client {
     let data = await this.get(`/api/v2/album/${encodeURIComponent(albumKey)}!images`, params);
     return {
       items: data?.Response?.AlbumImage || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
-  async searchAlbums(text: string, scope?: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async searchAlbums(
+    text: string,
+    scope?: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = { Text: text };
     if (scope) params.Scope = scope;
     if (pagination?.start) params.start = pagination.start;
@@ -231,7 +261,7 @@ export class Client {
     let data = await this.get('/api/v2/album!search', params);
     return {
       items: data?.Response?.Album || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
@@ -266,7 +296,11 @@ export class Client {
     return data?.Response?.ImageSizeDetails;
   }
 
-  async searchImages(text: string, scope?: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async searchImages(
+    text: string,
+    scope?: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = { Text: text };
     if (scope) params.Scope = scope;
     if (pagination?.start) params.start = pagination.start;
@@ -275,43 +309,50 @@ export class Client {
     let data = await this.get('/api/v2/image!search', params);
     return {
       items: data?.Response?.Image || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
   async collectImage(targetAlbumKey: string, imageUri: string): Promise<any> {
-    let data = await this.post(`/api/v2/album/${encodeURIComponent(targetAlbumKey)}!collectimages`, {
-      ImageUris: imageUri,
-    });
+    let data = await this.post(
+      `/api/v2/album/${encodeURIComponent(targetAlbumKey)}!collectimages`,
+      {
+        ImageUris: imageUri
+      }
+    );
     return data;
   }
 
   async moveImages(targetAlbumUri: string, imageUris: string[]): Promise<any> {
     let data = await this.post(`${targetAlbumUri}!moveimages`, {
-      MoveUris: imageUris.join(','),
+      MoveUris: imageUris.join(',')
     });
     return data;
   }
 
   // ===== Upload =====
 
-  async uploadImageFromUrl(albumUri: string, sourceUrl: string, options?: {
-    fileName?: string;
-    title?: string;
-    caption?: string;
-    keywords?: string;
-    hidden?: boolean;
-    replaceImageUri?: string;
-  }): Promise<any> {
+  async uploadImageFromUrl(
+    albumUri: string,
+    sourceUrl: string,
+    options?: {
+      fileName?: string;
+      title?: string;
+      caption?: string;
+      keywords?: string;
+      hidden?: boolean;
+      replaceImageUri?: string;
+    }
+  ): Promise<any> {
     let uploadUrl = 'https://upload.smugmug.com/';
     let authHeader = this.getAuthHeader('POST', uploadUrl);
 
     let headers: Record<string, string> = {
-      'Authorization': authHeader,
+      Authorization: authHeader,
       'Content-Type': 'application/json',
       'X-Smug-AlbumUri': albumUri,
       'X-Smug-ResponseType': 'JSON',
-      'X-Smug-Version': 'v2',
+      'X-Smug-Version': 'v2'
     };
 
     if (options?.fileName) headers['X-Smug-FileName'] = options.fileName;
@@ -325,13 +366,14 @@ export class Client {
 
     // First download the image from the URL
     let imageResponse = await httpClient.get(sourceUrl, { responseType: 'arraybuffer' });
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     let imageBuffer = Buffer.from(imageResponse.data);
 
     let md5 = await this.computeMd5(imageBuffer);
     headers['Content-Length'] = String(imageBuffer.length);
     headers['Content-MD5'] = md5;
-    headers['Content-Type'] = imageResponse.headers['content-type'] || 'application/octet-stream';
+    headers['Content-Type'] =
+      imageResponse.headers['content-type'] || 'application/octet-stream';
 
     // Re-generate auth header for the actual upload with proper content type
     headers['Authorization'] = this.getAuthHeader('POST', uploadUrl);
@@ -352,33 +394,47 @@ export class Client {
   }
 
   async getFolder(nickname: string, folderPath: string): Promise<any> {
-    let data = await this.get(`/api/v2/folder/user/${encodeURIComponent(nickname)}/${folderPath}`);
+    let data = await this.get(
+      `/api/v2/folder/user/${encodeURIComponent(nickname)}/${folderPath}`
+    );
     return data?.Response?.Folder;
   }
 
   // ===== Comments =====
 
-  async getAlbumComments(albumKey: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async getAlbumComments(
+    albumKey: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = {};
     if (pagination?.start) params.start = pagination.start;
     if (pagination?.count) params.count = pagination.count;
 
-    let data = await this.get(`/api/v2/album/${encodeURIComponent(albumKey)}!comments`, params);
+    let data = await this.get(
+      `/api/v2/album/${encodeURIComponent(albumKey)}!comments`,
+      params
+    );
     return {
       items: data?.Response?.Comment || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
-  async getImageComments(imageKey: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async getImageComments(
+    imageKey: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = {};
     if (pagination?.start) params.start = pagination.start;
     if (pagination?.count) params.count = pagination.count;
 
-    let data = await this.get(`/api/v2/image/${encodeURIComponent(imageKey)}-0!comments`, params);
+    let data = await this.get(
+      `/api/v2/image/${encodeURIComponent(imageKey)}-0!comments`,
+      params
+    );
     return {
       items: data?.Response?.Comment || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
@@ -396,27 +452,39 @@ export class Client {
     return data?.Response?.Feature || [];
   }
 
-  async getRecentImages(nickname: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async getRecentImages(
+    nickname: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = {};
     if (pagination?.start) params.start = pagination.start;
     if (pagination?.count) params.count = pagination.count;
 
-    let data = await this.get(`/api/v2/user/${encodeURIComponent(nickname)}!recentimages`, params);
+    let data = await this.get(
+      `/api/v2/user/${encodeURIComponent(nickname)}!recentimages`,
+      params
+    );
     return {
       items: data?.Response?.Image || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 
-  async getPopularMedia(nickname: string, pagination?: PaginationParams): Promise<PaginatedResponse<any>> {
+  async getPopularMedia(
+    nickname: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, string | number | undefined> = {};
     if (pagination?.start) params.start = pagination.start;
     if (pagination?.count) params.count = pagination.count;
 
-    let data = await this.get(`/api/v2/user/${encodeURIComponent(nickname)}!popularmedia`, params);
+    let data = await this.get(
+      `/api/v2/user/${encodeURIComponent(nickname)}!popularmedia`,
+      params
+    );
     return {
       items: data?.Response?.Image || [],
-      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 },
+      pages: data?.Response?.Pages || { total: 0, start: 1, count: 0 }
     };
   }
 

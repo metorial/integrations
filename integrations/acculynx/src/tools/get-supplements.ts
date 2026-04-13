@@ -3,31 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSupplementsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Supplements',
-    key: 'get_supplements',
-    description: `Retrieve supplements from AccuLynx. List all supplements or get details for a specific supplement including its line items and notations.`,
-    tags: {
-      readOnly: true,
-    },
+export let getSupplementsTool = SlateTool.create(spec, {
+  name: 'Get Supplements',
+  key: 'get_supplements',
+  description: `Retrieve supplements from AccuLynx. List all supplements or get details for a specific supplement including its line items and notations.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    supplementId: z.string().optional().describe('Specific supplement ID to retrieve details for'),
-    includeItems: z.boolean().optional().describe('Include supplement line items (requires supplementId)'),
-    includeNotations: z.boolean().optional().describe('Include supplement notations (requires supplementId)'),
-    pageSize: z.number().optional().describe('Number of items per page (for listing)'),
-    pageStartIndex: z.number().optional().describe('Index of the first element to return (for listing)'),
-  }))
-  .output(z.object({
-    supplement: z.record(z.string(), z.any()).optional().describe('Supplement details'),
-    supplements: z.array(z.record(z.string(), z.any())).optional().describe('Array of supplement objects'),
-    items: z.array(z.record(z.string(), z.any())).optional().describe('Supplement line items'),
-    notations: z.array(z.record(z.string(), z.any())).optional().describe('Supplement notations'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      supplementId: z
+        .string()
+        .optional()
+        .describe('Specific supplement ID to retrieve details for'),
+      includeItems: z
+        .boolean()
+        .optional()
+        .describe('Include supplement line items (requires supplementId)'),
+      includeNotations: z
+        .boolean()
+        .optional()
+        .describe('Include supplement notations (requires supplementId)'),
+      pageSize: z.number().optional().describe('Number of items per page (for listing)'),
+      pageStartIndex: z
+        .number()
+        .optional()
+        .describe('Index of the first element to return (for listing)')
+    })
+  )
+  .output(
+    z.object({
+      supplement: z.record(z.string(), z.any()).optional().describe('Supplement details'),
+      supplements: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Array of supplement objects'),
+      items: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Supplement line items'),
+      notations: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Supplement notations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.supplementId) {
@@ -39,31 +61,37 @@ export let getSupplementsTool = SlateTool.create(
         try {
           let result = await client.getSupplementItems(ctx.input.supplementId);
           items = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
-        } catch (e) { items = []; }
+        } catch (e) {
+          items = [];
+        }
       }
 
       if (ctx.input.includeNotations) {
         try {
           let result = await client.getSupplementNotations(ctx.input.supplementId);
           notations = Array.isArray(result) ? result : (result?.items ?? result?.data ?? []);
-        } catch (e) { notations = []; }
+        } catch (e) {
+          notations = [];
+        }
       }
 
       return {
         output: { supplement, items, notations },
-        message: `Retrieved supplement **${ctx.input.supplementId}**${items ? ` with ${items.length} item(s)` : ''}${notations ? ` and ${notations.length} notation(s)` : ''}.`,
+        message: `Retrieved supplement **${ctx.input.supplementId}**${items ? ` with ${items.length} item(s)` : ''}${notations ? ` and ${notations.length} notation(s)` : ''}.`
       };
     }
 
     let result = await client.getSupplements({
       pageSize: ctx.input.pageSize,
-      pageStartIndex: ctx.input.pageStartIndex,
+      pageStartIndex: ctx.input.pageStartIndex
     });
-    let supplements = Array.isArray(result) ? result : (result?.items ?? result?.data ?? [result]);
+    let supplements = Array.isArray(result)
+      ? result
+      : (result?.items ?? result?.data ?? [result]);
 
     return {
       output: { supplements },
-      message: `Retrieved **${supplements.length}** supplement(s).`,
+      message: `Retrieved **${supplements.length}** supplement(s).`
     };
   })
   .build();

@@ -12,12 +12,9 @@ import {
   getFileMetadata,
   purgeCache,
   manageFolders,
-  manageFileVersions,
+  manageFileVersions
 } from './tools';
-import {
-  videoTransformation,
-  uploadTransform,
-} from './triggers';
+import { videoTransformation, uploadTransform } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     getFileMetadata,
     purgeCache,
     manageFolders,
-    manageFileVersions,
+    manageFileVersions
   ],
-  triggers: [
-    videoTransformation,
-    uploadTransform,
-  ],
+  triggers: [videoTransformation, uploadTransform]
 });

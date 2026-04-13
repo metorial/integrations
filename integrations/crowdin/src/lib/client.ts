@@ -11,8 +11,8 @@ export class CrowdinClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        Authorization: `Bearer ${opts.token}`,
-      },
+        Authorization: `Bearer ${opts.token}`
+      }
     });
   }
 
@@ -41,7 +41,10 @@ export class CrowdinClient {
     return response.data.data;
   }
 
-  async updateProject(projectId: number, patches: Array<{ op: string; path: string; value: any }>) {
+  async updateProject(
+    projectId: number,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
     let response = await this.axios.patch(`/projects/${projectId}`, patches);
     return response.data.data;
   }
@@ -52,7 +55,16 @@ export class CrowdinClient {
 
   // --- Source Files ---
 
-  async listFiles(projectId: number, params?: { branchId?: number; directoryId?: number; filter?: string; limit?: number; offset?: number }) {
+  async listFiles(
+    projectId: number,
+    params?: {
+      branchId?: number;
+      directoryId?: number;
+      filter?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/files`, { params });
     return response.data;
   }
@@ -77,39 +89,52 @@ export class CrowdinClient {
     let response = await this.axios.post('/storages', content, {
       headers: {
         'Content-Type': 'application/octet-stream',
-        'Crowdin-API-FileName': fileName,
-      },
+        'Crowdin-API-FileName': fileName
+      }
     });
     return response.data.data;
   }
 
   // --- File operations ---
 
-  async createFile(projectId: number, body: {
-    storageId: number;
-    name: string;
-    branchId?: number;
-    directoryId?: number;
-    title?: string;
-    type?: string;
-  }) {
+  async createFile(
+    projectId: number,
+    body: {
+      storageId: number;
+      name: string;
+      branchId?: number;
+      directoryId?: number;
+      title?: string;
+      type?: string;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/files`, body);
     return response.data.data;
   }
 
-  async updateFile(projectId: number, fileId: number, body: { storageId: number; updateOption?: string }) {
+  async updateFile(
+    projectId: number,
+    fileId: number,
+    body: { storageId: number; updateOption?: string }
+  ) {
     let response = await this.axios.put(`/projects/${projectId}/files/${fileId}`, body);
     return response.data.data;
   }
 
   // --- Directories ---
 
-  async listDirectories(projectId: number, params?: { branchId?: number; limit?: number; offset?: number }) {
+  async listDirectories(
+    projectId: number,
+    params?: { branchId?: number; limit?: number; offset?: number }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/directories`, { params });
     return response.data;
   }
 
-  async createDirectory(projectId: number, body: { name: string; branchId?: number; directoryId?: number; title?: string }) {
+  async createDirectory(
+    projectId: number,
+    body: { name: string; branchId?: number; directoryId?: number; title?: string }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/directories`, body);
     return response.data.data;
   }
@@ -128,16 +153,19 @@ export class CrowdinClient {
 
   // --- Source Strings ---
 
-  async listStrings(projectId: number, params?: {
-    fileId?: number;
-    branchId?: number;
-    directoryId?: number;
-    filter?: string;
-    scope?: string;
-    croql?: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async listStrings(
+    projectId: number,
+    params?: {
+      fileId?: number;
+      branchId?: number;
+      directoryId?: number;
+      filter?: string;
+      scope?: string;
+      croql?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/strings`, { params });
     return response.data;
   }
@@ -147,22 +175,32 @@ export class CrowdinClient {
     return response.data.data;
   }
 
-  async addString(projectId: number, body: {
-    text: string;
-    identifier: string;
-    fileId?: number;
-    branchId?: number;
-    context?: string;
-    isHidden?: boolean;
-    maxLength?: number;
-    labelIds?: number[];
-  }) {
+  async addString(
+    projectId: number,
+    body: {
+      text: string;
+      identifier: string;
+      fileId?: number;
+      branchId?: number;
+      context?: string;
+      isHidden?: boolean;
+      maxLength?: number;
+      labelIds?: number[];
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/strings`, body);
     return response.data.data;
   }
 
-  async updateString(projectId: number, stringId: number, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(`/projects/${projectId}/strings/${stringId}`, patches);
+  async updateString(
+    projectId: number,
+    stringId: number,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
+    let response = await this.axios.patch(
+      `/projects/${projectId}/strings/${stringId}`,
+      patches
+    );
     return response.data.data;
   }
 
@@ -173,81 +211,132 @@ export class CrowdinClient {
   // --- Translation Status ---
 
   async getProjectProgress(projectId: number, params?: { limit?: number; offset?: number }) {
-    let response = await this.axios.get(`/projects/${projectId}/languages/progress`, { params });
+    let response = await this.axios.get(`/projects/${projectId}/languages/progress`, {
+      params
+    });
     return response.data;
   }
 
-  async getFileProgress(projectId: number, fileId: number, params?: { limit?: number; offset?: number }) {
-    let response = await this.axios.get(`/projects/${projectId}/files/${fileId}/languages/progress`, { params });
+  async getFileProgress(
+    projectId: number,
+    fileId: number,
+    params?: { limit?: number; offset?: number }
+  ) {
+    let response = await this.axios.get(
+      `/projects/${projectId}/files/${fileId}/languages/progress`,
+      { params }
+    );
     return response.data;
   }
 
-  async getBranchProgress(projectId: number, branchId: number, params?: { limit?: number; offset?: number }) {
-    let response = await this.axios.get(`/projects/${projectId}/branches/${branchId}/languages/progress`, { params });
+  async getBranchProgress(
+    projectId: number,
+    branchId: number,
+    params?: { limit?: number; offset?: number }
+  ) {
+    let response = await this.axios.get(
+      `/projects/${projectId}/branches/${branchId}/languages/progress`,
+      { params }
+    );
     return response.data;
   }
 
-  async getLanguageProgress(projectId: number, languageId: string, params?: { limit?: number; offset?: number }) {
-    let response = await this.axios.get(`/projects/${projectId}/languages/${languageId}/files/progress`, { params });
+  async getLanguageProgress(
+    projectId: number,
+    languageId: string,
+    params?: { limit?: number; offset?: number }
+  ) {
+    let response = await this.axios.get(
+      `/projects/${projectId}/languages/${languageId}/files/progress`,
+      { params }
+    );
     return response.data;
   }
 
   // --- Translations ---
 
-  async uploadTranslation(projectId: number, languageId: string, body: {
-    storageId: number;
-    fileId: number;
-    importEqSuggestions?: boolean;
-    autoApproveImported?: boolean;
-  }) {
-    let response = await this.axios.post(`/projects/${projectId}/translations/${languageId}`, body);
+  async uploadTranslation(
+    projectId: number,
+    languageId: string,
+    body: {
+      storageId: number;
+      fileId: number;
+      importEqSuggestions?: boolean;
+      autoApproveImported?: boolean;
+    }
+  ) {
+    let response = await this.axios.post(
+      `/projects/${projectId}/translations/${languageId}`,
+      body
+    );
     return response.data.data;
   }
 
-  async buildTranslations(projectId: number, body?: {
-    branchId?: number;
-    targetLanguageIds?: string[];
-    skipUntranslatedStrings?: boolean;
-    skipUntranslatedFiles?: boolean;
-    exportApprovedOnly?: boolean;
-  }) {
-    let response = await this.axios.post(`/projects/${projectId}/translations/builds`, body || {});
+  async buildTranslations(
+    projectId: number,
+    body?: {
+      branchId?: number;
+      targetLanguageIds?: string[];
+      skipUntranslatedStrings?: boolean;
+      skipUntranslatedFiles?: boolean;
+      exportApprovedOnly?: boolean;
+    }
+  ) {
+    let response = await this.axios.post(
+      `/projects/${projectId}/translations/builds`,
+      body || {}
+    );
     return response.data.data;
   }
 
   async getBuildStatus(projectId: number, buildId: number) {
-    let response = await this.axios.get(`/projects/${projectId}/translations/builds/${buildId}`);
+    let response = await this.axios.get(
+      `/projects/${projectId}/translations/builds/${buildId}`
+    );
     return response.data.data;
   }
 
   async downloadBuild(projectId: number, buildId: number) {
-    let response = await this.axios.get(`/projects/${projectId}/translations/builds/${buildId}/download`);
+    let response = await this.axios.get(
+      `/projects/${projectId}/translations/builds/${buildId}/download`
+    );
     return response.data.data;
   }
 
-  async listBuilds(projectId: number, params?: { branchId?: number; limit?: number; offset?: number }) {
-    let response = await this.axios.get(`/projects/${projectId}/translations/builds`, { params });
+  async listBuilds(
+    projectId: number,
+    params?: { branchId?: number; limit?: number; offset?: number }
+  ) {
+    let response = await this.axios.get(`/projects/${projectId}/translations/builds`, {
+      params
+    });
     return response.data;
   }
 
   // --- String Translations ---
 
-  async addTranslation(projectId: number, body: {
-    stringId: number;
-    languageId: string;
-    text: string;
-    pluralCategoryName?: string;
-  }) {
+  async addTranslation(
+    projectId: number,
+    body: {
+      stringId: number;
+      languageId: string;
+      text: string;
+      pluralCategoryName?: string;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/translations`, body);
     return response.data.data;
   }
 
-  async listStringTranslations(projectId: number, params: {
-    stringId: number;
-    languageId: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async listStringTranslations(
+    projectId: number,
+    params: {
+      stringId: number;
+      languageId: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/translations`, { params });
     return response.data;
   }
@@ -258,22 +347,27 @@ export class CrowdinClient {
 
   // --- Pre-Translation ---
 
-  async applyPreTranslation(projectId: number, body: {
-    languageIds: string[];
-    fileIds: number[];
-    method?: string;
-    engineId?: number;
-    autoApproveOption?: string;
-    duplicateTranslations?: boolean;
-    translateUntranslatedOnly?: boolean;
-    translateWithPerfectMatchOnly?: boolean;
-  }) {
+  async applyPreTranslation(
+    projectId: number,
+    body: {
+      languageIds: string[];
+      fileIds: number[];
+      method?: string;
+      engineId?: number;
+      autoApproveOption?: string;
+      duplicateTranslations?: boolean;
+      translateUntranslatedOnly?: boolean;
+      translateWithPerfectMatchOnly?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/pre-translations`, body);
     return response.data.data;
   }
 
   async getPreTranslationStatus(projectId: number, preTranslationId: string) {
-    let response = await this.axios.get(`/projects/${projectId}/pre-translations/${preTranslationId}`);
+    let response = await this.axios.get(
+      `/projects/${projectId}/pre-translations/${preTranslationId}`
+    );
     return response.data.data;
   }
 
@@ -303,7 +397,10 @@ export class CrowdinClient {
     await this.axios.delete(`/tms/${tmId}`);
   }
 
-  async exportTM(tmId: number, body?: { sourceLanguageId?: string; targetLanguageId?: string; format?: string }) {
+  async exportTM(
+    tmId: number,
+    body?: { sourceLanguageId?: string; targetLanguageId?: string; format?: string }
+  ) {
     let response = await this.axios.post(`/tms/${tmId}/exports`, body || {});
     return response.data.data;
   }
@@ -320,17 +417,23 @@ export class CrowdinClient {
 
   // --- TM Segments ---
 
-  async listTMSegments(tmId: number, params?: { croql?: string; limit?: number; offset?: number }) {
+  async listTMSegments(
+    tmId: number,
+    params?: { croql?: string; limit?: number; offset?: number }
+  ) {
     let response = await this.axios.get(`/tms/${tmId}/segments`, { params });
     return response.data;
   }
 
-  async addTMSegment(tmId: number, body: {
-    records: Array<{
-      languageId: string;
-      text: string;
-    }>;
-  }) {
+  async addTMSegment(
+    tmId: number,
+    body: {
+      records: Array<{
+        languageId: string;
+        text: string;
+      }>;
+    }
+  ) {
     let response = await this.axios.post(`/tms/${tmId}/segments`, body);
     return response.data.data;
   }
@@ -352,7 +455,10 @@ export class CrowdinClient {
     return response.data.data;
   }
 
-  async updateGlossary(glossaryId: number, patches: Array<{ op: string; path: string; value: any }>) {
+  async updateGlossary(
+    glossaryId: number,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
     let response = await this.axios.patch(`/glossaries/${glossaryId}`, patches);
     return response.data.data;
   }
@@ -363,7 +469,10 @@ export class CrowdinClient {
 
   // --- Glossary Terms ---
 
-  async listTerms(glossaryId: number, params?: { languageId?: string; limit?: number; offset?: number }) {
+  async listTerms(
+    glossaryId: number,
+    params?: { languageId?: string; limit?: number; offset?: number }
+  ) {
     let response = await this.axios.get(`/glossaries/${glossaryId}/terms`, { params });
     return response.data;
   }
@@ -373,20 +482,30 @@ export class CrowdinClient {
     return response.data.data;
   }
 
-  async addTerm(glossaryId: number, body: {
-    languageId: string;
-    text: string;
-    description?: string;
-    partOfSpeech?: string;
-    status?: string;
-    translationOfTermId?: number;
-  }) {
+  async addTerm(
+    glossaryId: number,
+    body: {
+      languageId: string;
+      text: string;
+      description?: string;
+      partOfSpeech?: string;
+      status?: string;
+      translationOfTermId?: number;
+    }
+  ) {
     let response = await this.axios.post(`/glossaries/${glossaryId}/terms`, body);
     return response.data.data;
   }
 
-  async updateTerm(glossaryId: number, termId: number, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.axios.patch(`/glossaries/${glossaryId}/terms/${termId}`, patches);
+  async updateTerm(
+    glossaryId: number,
+    termId: number,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
+    let response = await this.axios.patch(
+      `/glossaries/${glossaryId}/terms/${termId}`,
+      patches
+    );
     return response.data.data;
   }
 
@@ -396,7 +515,10 @@ export class CrowdinClient {
 
   // --- Tasks ---
 
-  async listTasks(projectId: number, params?: { status?: string; assigneeId?: number; limit?: number; offset?: number }) {
+  async listTasks(
+    projectId: number,
+    params?: { status?: string; assigneeId?: number; limit?: number; offset?: number }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/tasks`, { params });
     return response.data;
   }
@@ -406,24 +528,31 @@ export class CrowdinClient {
     return response.data.data;
   }
 
-  async createTask(projectId: number, body: {
-    title: string;
-    languageId: string;
-    fileIds: number[];
-    type: number;
-    status?: string;
-    description?: string;
-    assignees?: Array<{ id: number }>;
-    deadline?: string;
-    labelIds?: number[];
-    dateFrom?: string;
-    dateTo?: string;
-  }) {
+  async createTask(
+    projectId: number,
+    body: {
+      title: string;
+      languageId: string;
+      fileIds: number[];
+      type: number;
+      status?: string;
+      description?: string;
+      assignees?: Array<{ id: number }>;
+      deadline?: string;
+      labelIds?: number[];
+      dateFrom?: string;
+      dateTo?: string;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/tasks`, body);
     return response.data.data;
   }
 
-  async updateTask(projectId: number, taskId: number, patches: Array<{ op: string; path: string; value: any }>) {
+  async updateTask(
+    projectId: number,
+    taskId: number,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
     let response = await this.axios.patch(`/projects/${projectId}/tasks/${taskId}`, patches);
     return response.data.data;
   }
@@ -434,17 +563,32 @@ export class CrowdinClient {
 
   // --- Members ---
 
-  async listProjectMembers(projectId: number, params?: { search?: string; role?: string; languageId?: string; limit?: number; offset?: number }) {
+  async listProjectMembers(
+    projectId: number,
+    params?: {
+      search?: string;
+      role?: string;
+      languageId?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/members`, { params });
     return response.data;
   }
 
-  async addProjectMember(projectId: number, body: {
-    userIds: number[];
-    managerAccess?: boolean;
-    permissions?: Record<string, any>;
-    roles?: Array<{ name: string; permissions?: { allLanguages?: boolean; languagesAccess?: Record<string, any> } }>;
-  }) {
+  async addProjectMember(
+    projectId: number,
+    body: {
+      userIds: number[];
+      managerAccess?: boolean;
+      permissions?: Record<string, any>;
+      roles?: Array<{
+        name: string;
+        permissions?: { allLanguages?: boolean; languagesAccess?: Record<string, any> };
+      }>;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/members`, body);
     return response.data;
   }
@@ -460,16 +604,19 @@ export class CrowdinClient {
     return response.data;
   }
 
-  async createWebhook(projectId: number, body: {
-    name: string;
-    url: string;
-    events: string[];
-    requestType: string;
-    isActive?: boolean;
-    batchingEnabled?: boolean;
-    contentType?: string;
-    headers?: Record<string, string>;
-  }) {
+  async createWebhook(
+    projectId: number,
+    body: {
+      name: string;
+      url: string;
+      events: string[];
+      requestType: string;
+      isActive?: boolean;
+      batchingEnabled?: boolean;
+      contentType?: string;
+      headers?: Record<string, string>;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/webhooks`, body);
     return response.data.data;
   }

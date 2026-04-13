@@ -31,6 +31,7 @@ Most Ingestion API calls such as Import Events, Track Events, User Profiles, and
 ### Regional Endpoints
 
 Mixpanel supports different API base URLs depending on data residency:
+
 - **Standard:** `api.mixpanel.com`
 - **EU Residency:** `eu.mixpanel.com`
 
@@ -59,6 +60,7 @@ Manage how Mixpanel links anonymous and identified users. Supports creating iden
 ### Query and Analytics Reports
 
 Query pre-built analytics reports programmatically, including:
+
 - **Insights:** Query saved insight reports.
 - **Funnels:** Query saved funnel reports and list available funnels.
 - **Retention:** Query retention and frequency reports.

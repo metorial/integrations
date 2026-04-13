@@ -21,7 +21,7 @@ export class Client {
 
   constructor(private config: { token?: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.genderize.io',
+      baseURL: 'https://api.genderize.io'
     });
   }
 
@@ -48,12 +48,12 @@ export class Client {
       ? response.data
       : [response.data];
 
-    return results.map((r) => ({
+    return results.map(r => ({
       name: r.name,
       gender: r.gender,
       probability: r.probability,
       count: r.count,
-      ...(r.country_id ? { countryId: r.country_id } : {}),
+      ...(r.country_id ? { countryId: r.country_id } : {})
     }));
   }
 }

@@ -14,7 +14,7 @@ let addressSchema = z.object({
   postcode: z.string(),
   country: z.string(),
   email: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().optional()
 });
 
 let lineItemSchema = z.object({
@@ -25,41 +25,45 @@ let lineItemSchema = z.object({
   quantity: z.number(),
   subtotal: z.string(),
   total: z.string(),
-  sku: z.string(),
+  sku: z.string()
 });
 
 export let orderEvents = SlateTrigger.create(spec, {
   name: 'Order Events',
   key: 'order_events',
-  description: 'Triggers when an order is created, updated, deleted, or restored in the store.',
+  description: 'Triggers when an order is created, updated, deleted, or restored in the store.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Type of order event'),
-    webhookId: z.number().describe('WooCommerce webhook ID that sent this event'),
-    order: z.any().describe('Raw order data from WooCommerce'),
-  }))
-  .output(z.object({
-    orderId: z.number(),
-    orderNumber: z.string(),
-    status: z.string(),
-    currency: z.string(),
-    total: z.string(),
-    subtotal: z.string(),
-    totalTax: z.string(),
-    shippingTotal: z.string(),
-    discountTotal: z.string(),
-    customerId: z.number(),
-    customerNote: z.string(),
-    billing: addressSchema,
-    shipping: addressSchema,
-    paymentMethod: z.string(),
-    paymentMethodTitle: z.string(),
-    lineItems: z.array(lineItemSchema),
-    dateCreated: z.string(),
-    dateModified: z.string(),
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of order event'),
+      webhookId: z.number().describe('WooCommerce webhook ID that sent this event'),
+      order: z.any().describe('Raw order data from WooCommerce')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number(),
+      orderNumber: z.string(),
+      status: z.string(),
+      currency: z.string(),
+      total: z.string(),
+      subtotal: z.string(),
+      totalTax: z.string(),
+      shippingTotal: z.string(),
+      discountTotal: z.string(),
+      customerId: z.number(),
+      customerNote: z.string(),
+      billing: addressSchema,
+      shipping: addressSchema,
+      paymentMethod: z.string(),
+      paymentMethodTitle: z.string(),
+      lineItems: z.array(lineItemSchema),
+      dateCreated: z.string(),
+      dateModified: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let topics = ['order.created', 'order.updated', 'order.deleted', 'order.restored'];
@@ -70,17 +74,17 @@ export let orderEvents = SlateTrigger.create(spec, {
           name: `Slates - ${topic}`,
           topic,
           delivery_url: ctx.input.webhookBaseUrl,
-          status: 'active',
+          status: 'active'
         });
         registeredWebhooks.push({ webhookId: webhook.id, topic });
       }
 
       return {
-        registrationDetails: { webhooks: registeredWebhooks },
+        registrationDetails: { webhooks: registeredWebhooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhooks = ctx.input.registrationDetails?.webhooks || [];
 
@@ -93,8 +97,8 @@ export let orderEvents = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let topic = ctx.request.headers.get('x-wc-webhook-topic') || '';
       let webhookId = parseInt(ctx.request.headers.get('x-wc-webhook-id') || '0', 10);
@@ -106,15 +110,17 @@ export let orderEvents = SlateTrigger.create(spec, {
       let eventType = topic || 'order.updated';
 
       return {
-        inputs: [{
-          eventType,
-          webhookId,
-          order: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            webhookId,
+            order: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let o = ctx.input.order;
 
       let mapAddress = (a: any) => ({
@@ -128,7 +134,7 @@ export let orderEvents = SlateTrigger.create(spec, {
         postcode: a?.postcode || '',
         country: a?.country || '',
         email: a?.email || undefined,
-        phone: a?.phone || undefined,
+        phone: a?.phone || undefined
       });
 
       return {
@@ -158,12 +164,12 @@ export let orderEvents = SlateTrigger.create(spec, {
             quantity: li.quantity || 0,
             subtotal: li.subtotal || '0',
             total: li.total || '0',
-            sku: li.sku || '',
+            sku: li.sku || ''
           })),
           dateCreated: o.date_created || '',
-          dateModified: o.date_modified || '',
-        },
+          dateModified: o.date_modified || ''
+        }
       };
-    },
+    }
   })
   .build();

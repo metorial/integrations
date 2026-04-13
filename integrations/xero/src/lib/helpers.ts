@@ -6,11 +6,13 @@ export let createClientFromContext = (ctx: {
 }): XeroClient => {
   let tenantId = ctx.config.tenantId || ctx.auth.tenantId;
   if (!tenantId) {
-    throw new Error('Tenant ID is required. Set it in the configuration or ensure it is available from authentication.');
+    throw new Error(
+      'Tenant ID is required. Set it in the configuration or ensure it is available from authentication.'
+    );
   }
 
   return new XeroClient({
     token: ctx.auth.token,
-    tenantId,
+    tenantId
   });
 };

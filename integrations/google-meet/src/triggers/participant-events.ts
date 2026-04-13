@@ -3,42 +3,51 @@ import { MeetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let participantEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Participant Events',
-    key: 'participant_events',
-    description: 'Triggers when participants join or leave an active conference. Polls for participant changes across conference records.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['joined', 'left']).describe('Whether the participant joined or left'),
-    conferenceRecordName: z.string().describe('Conference record resource name'),
-    participantName: z.string().describe('Participant resource name'),
-    displayName: z.string().optional().describe('Display name of the participant'),
-    userType: z.enum(['signedIn', 'anonymous', 'phone']).describe('Type of participant'),
-    userResourceName: z.string().optional().describe('User resource name for signed-in users'),
-    earliestStartTime: z.string().optional().describe('When the participant first joined'),
-    latestEndTime: z.string().optional().describe('When the participant last left')
-  }))
-  .output(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name'),
-    participantName: z.string().describe('Participant resource name'),
-    displayName: z.string().optional().describe('Display name'),
-    userType: z.string().describe('Type: signedIn, anonymous, or phone'),
-    userResourceName: z.string().optional().describe('User resource name for signed-in users'),
-    earliestStartTime: z.string().optional().describe('When the participant first joined'),
-    latestEndTime: z.string().optional().describe('When the participant last left')
-  }))
+export let participantEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Participant Events',
+  key: 'participant_events',
+  description:
+    'Triggers when participants join or leave an active conference. Polls for participant changes across conference records.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['joined', 'left']).describe('Whether the participant joined or left'),
+      conferenceRecordName: z.string().describe('Conference record resource name'),
+      participantName: z.string().describe('Participant resource name'),
+      displayName: z.string().optional().describe('Display name of the participant'),
+      userType: z.enum(['signedIn', 'anonymous', 'phone']).describe('Type of participant'),
+      userResourceName: z
+        .string()
+        .optional()
+        .describe('User resource name for signed-in users'),
+      earliestStartTime: z.string().optional().describe('When the participant first joined'),
+      latestEndTime: z.string().optional().describe('When the participant last left')
+    })
+  )
+  .output(
+    z.object({
+      conferenceRecordName: z.string().describe('Conference record resource name'),
+      participantName: z.string().describe('Participant resource name'),
+      displayName: z.string().optional().describe('Display name'),
+      userType: z.string().describe('Type: signedIn, anonymous, or phone'),
+      userResourceName: z
+        .string()
+        .optional()
+        .describe('User resource name for signed-in users'),
+      earliestStartTime: z.string().optional().describe('When the participant first joined'),
+      latestEndTime: z.string().optional().describe('When the participant last left')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MeetClient({ token: ctx.auth.token });
 
-      let knownParticipants = (ctx.state?.knownParticipants as Record<string, string[]> | undefined) || {};
+      let knownParticipants =
+        (ctx.state?.knownParticipants as Record<string, string[]> | undefined) || {};
       let activeConferences = (ctx.state?.activeConferences as string[] | undefined) || [];
 
       // Get recent conference records to find active ones
@@ -129,7 +138,7 @@ export let participantEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `participant.${ctx.input.eventType}`,
         id: `${ctx.input.participantName}-${ctx.input.eventType}-${ctx.input.latestEndTime || ctx.input.earliestStartTime || Date.now()}`,
@@ -144,4 +153,5 @@ export let participantEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

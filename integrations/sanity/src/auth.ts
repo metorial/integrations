@@ -2,35 +2,41 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('A Sanity robot token or personal token. Robot tokens are recommended for integrations. Generate one at Settings > API > Tokens in your project management console.'),
+      token: z
+        .string()
+        .describe(
+          'A Sanity robot token or personal token. Robot tokens are recommended for integrations. Generate one at Settings > API > Tokens in your project management console.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let ax = createAxios({
-        baseURL: 'https://api.sanity.io/v2024-01-01',
+        baseURL: 'https://api.sanity.io/v2024-01-01'
       });
 
       let response = await ax.get('/users/me', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data;
@@ -39,8 +45,8 @@ export let auth = SlateAuth.create()
           id: user.id,
           email: user.email,
           name: user.name,
-          imageUrl: user.profileImage,
-        },
+          imageUrl: user.profileImage
+        }
       };
-    },
+    }
   });

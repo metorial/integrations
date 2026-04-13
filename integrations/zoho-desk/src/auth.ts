@@ -6,7 +6,7 @@ let regionToAccountsDomain: Record<string, string> = {
   eu: 'accounts.zoho.eu',
   in: 'accounts.zoho.in',
   au: 'accounts.zoho.com.au',
-  cn: 'accounts.zoho.com.cn',
+  cn: 'accounts.zoho.com.cn'
 };
 
 let regionToDeskDomain: Record<string, string> = {
@@ -14,47 +14,112 @@ let regionToDeskDomain: Record<string, string> = {
   eu: 'desk.zoho.eu',
   in: 'desk.zoho.in',
   au: 'desk.zoho.com.au',
-  cn: 'desk.zoho.com.cn',
+  cn: 'desk.zoho.com.cn'
 };
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    accountsDomain: z.string().optional(),
-    deskDomain: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      accountsDomain: z.string().optional(),
+      deskDomain: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
 
     scopes: [
-      { title: 'Tickets - Full Access', description: 'Create, read, update, and delete tickets', scope: 'Desk.tickets.ALL' },
+      {
+        title: 'Tickets - Full Access',
+        description: 'Create, read, update, and delete tickets',
+        scope: 'Desk.tickets.ALL'
+      },
       { title: 'Tickets - Read', description: 'Read tickets', scope: 'Desk.tickets.READ' },
-      { title: 'Tickets - Create', description: 'Create tickets', scope: 'Desk.tickets.CREATE' },
-      { title: 'Tickets - Update', description: 'Update tickets', scope: 'Desk.tickets.UPDATE' },
-      { title: 'Tickets - Delete', description: 'Delete tickets', scope: 'Desk.tickets.DELETE' },
-      { title: 'Contacts - Full Access', description: 'Create, read, update, and delete contacts', scope: 'Desk.contacts.ALL' },
+      {
+        title: 'Tickets - Create',
+        description: 'Create tickets',
+        scope: 'Desk.tickets.CREATE'
+      },
+      {
+        title: 'Tickets - Update',
+        description: 'Update tickets',
+        scope: 'Desk.tickets.UPDATE'
+      },
+      {
+        title: 'Tickets - Delete',
+        description: 'Delete tickets',
+        scope: 'Desk.tickets.DELETE'
+      },
+      {
+        title: 'Contacts - Full Access',
+        description: 'Create, read, update, and delete contacts',
+        scope: 'Desk.contacts.ALL'
+      },
       { title: 'Contacts - Read', description: 'Read contacts', scope: 'Desk.contacts.READ' },
-      { title: 'Contacts - Create', description: 'Create contacts', scope: 'Desk.contacts.CREATE' },
-      { title: 'Contacts - Update', description: 'Update contacts', scope: 'Desk.contacts.UPDATE' },
-      { title: 'Contacts - Delete', description: 'Delete contacts', scope: 'Desk.contacts.DELETE' },
-      { title: 'Accounts - Full Access', description: 'Create, read, update, and delete company accounts', scope: 'Desk.accounts.ALL' },
-      { title: 'Tasks - Full Access', description: 'Create, read, update, and delete tasks', scope: 'Desk.tasks.ALL' },
-      { title: 'Events - Full Access', description: 'Manage webhooks and calendar events', scope: 'Desk.events.ALL' },
-      { title: 'Articles - Full Access', description: 'Create, read, update, and delete knowledge base articles', scope: 'Desk.articles.ALL' },
-      { title: 'Settings - Full Access', description: 'Manage Zoho Desk settings', scope: 'Desk.settings.ALL' },
-      { title: 'Basic - Full Access', description: 'Access basic Zoho Desk data', scope: 'Desk.basic.ALL' },
-      { title: 'Search - Read', description: 'Search across modules', scope: 'Desk.search.READ' },
+      {
+        title: 'Contacts - Create',
+        description: 'Create contacts',
+        scope: 'Desk.contacts.CREATE'
+      },
+      {
+        title: 'Contacts - Update',
+        description: 'Update contacts',
+        scope: 'Desk.contacts.UPDATE'
+      },
+      {
+        title: 'Contacts - Delete',
+        description: 'Delete contacts',
+        scope: 'Desk.contacts.DELETE'
+      },
+      {
+        title: 'Accounts - Full Access',
+        description: 'Create, read, update, and delete company accounts',
+        scope: 'Desk.accounts.ALL'
+      },
+      {
+        title: 'Tasks - Full Access',
+        description: 'Create, read, update, and delete tasks',
+        scope: 'Desk.tasks.ALL'
+      },
+      {
+        title: 'Events - Full Access',
+        description: 'Manage webhooks and calendar events',
+        scope: 'Desk.events.ALL'
+      },
+      {
+        title: 'Articles - Full Access',
+        description: 'Create, read, update, and delete knowledge base articles',
+        scope: 'Desk.articles.ALL'
+      },
+      {
+        title: 'Settings - Full Access',
+        description: 'Manage Zoho Desk settings',
+        scope: 'Desk.settings.ALL'
+      },
+      {
+        title: 'Basic - Full Access',
+        description: 'Access basic Zoho Desk data',
+        scope: 'Desk.basic.ALL'
+      },
+      {
+        title: 'Search - Read',
+        description: 'Search across modules',
+        scope: 'Desk.search.READ'
+      }
     ],
 
     inputSchema: z.object({
-      region: z.enum(['us', 'eu', 'in', 'au', 'cn']).default('us').describe('Zoho data center region'),
+      region: z
+        .enum(['us', 'eu', 'in', 'au', 'cn'])
+        .default('us')
+        .describe('Zoho data center region')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let region = ctx.input.region || 'us';
       let accountsDomain = regionToAccountsDomain[region] || 'accounts.zoho.com';
       let scopeString = ctx.scopes.join(',');
@@ -63,17 +128,17 @@ export let auth = SlateAuth.create()
 
       return {
         url,
-        input: { region },
+        input: { region }
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let region = ctx.input.region || 'us';
       let accountsDomain = regionToAccountsDomain[region] || 'accounts.zoho.com';
       let deskDomain = regionToDeskDomain[region] || 'desk.zoho.com';
 
       let http = createAxios({
-        baseURL: `https://${accountsDomain}`,
+        baseURL: `https://${accountsDomain}`
       });
 
       let response = await http.post('/oauth/v2/token', null, {
@@ -82,8 +147,8 @@ export let auth = SlateAuth.create()
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
-        },
+          redirect_uri: ctx.redirectUri
+        }
       });
 
       let data = response.data;
@@ -95,17 +160,17 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt,
           accountsDomain,
-          deskDomain,
+          deskDomain
         },
-        input: { region },
+        input: { region }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let accountsDomain = ctx.output.accountsDomain || 'accounts.zoho.com';
 
       let http = createAxios({
-        baseURL: `https://${accountsDomain}`,
+        baseURL: `https://${accountsDomain}`
       });
 
       let response = await http.post('/oauth/v2/token', null, {
@@ -113,8 +178,8 @@ export let auth = SlateAuth.create()
           grant_type: 'refresh_token',
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          refresh_token: ctx.output.refreshToken,
-        },
+          refresh_token: ctx.output.refreshToken
+        }
       });
 
       let data = response.data;
@@ -124,19 +189,23 @@ export let auth = SlateAuth.create()
         output: {
           ...ctx.output,
           token: data.access_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; deskDomain?: string }; input: { region: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; deskDomain?: string };
+      input: { region: string };
+      scopes: string[];
+    }) => {
       let deskDomain = ctx.output.deskDomain || 'desk.zoho.com';
 
       let http = createAxios({
         baseURL: `https://${deskDomain}`,
         headers: {
-          Authorization: `Zoho-oauthtoken ${ctx.output.token}`,
-        },
+          Authorization: `Zoho-oauthtoken ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/api/v1/myinfo');
@@ -147,8 +216,8 @@ export let auth = SlateAuth.create()
           id: profile.id,
           email: profile.emailId,
           name: profile.name || `${profile.firstName || ''} ${profile.lastName || ''}`.trim(),
-          imageUrl: profile.photoURL,
-        },
+          imageUrl: profile.photoURL
+        }
       };
-    },
+    }
   });

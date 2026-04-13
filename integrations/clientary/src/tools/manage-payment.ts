@@ -14,29 +14,36 @@ let paymentSchema = z.object({
   createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let createPayment = SlateTool.create(
-  spec,
-  {
-    name: 'Create Payment',
-    key: 'create_payment',
-    description: `Apply a payment to an invoice. Provide an amount and optional note, or use a stored payment profile to automatically charge the full outstanding balance.`,
-    instructions: [
-      'When using paymentProfileId, the amount and note fields are ignored — the full invoice balance is charged automatically.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createPayment = SlateTool.create(spec, {
+  name: 'Create Payment',
+  key: 'create_payment',
+  description: `Apply a payment to an invoice. Provide an amount and optional note, or use a stored payment profile to automatically charge the full outstanding balance.`,
+  instructions: [
+    'When using paymentProfileId, the amount and note fields are ignored — the full invoice balance is charged automatically.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('ID of the invoice to apply payment to'),
-    amount: z.number().optional().describe('Payment amount. Required unless using paymentProfileId.'),
-    note: z.string().optional().describe('Payment note'),
-    paymentProfileId: z.number().optional().describe('Payment profile ID to charge. Overrides amount/note and bills the full balance.')
-  }))
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('ID of the invoice to apply payment to'),
+      amount: z
+        .number()
+        .optional()
+        .describe('Payment amount. Required unless using paymentProfileId.'),
+      note: z.string().optional().describe('Payment note'),
+      paymentProfileId: z
+        .number()
+        .optional()
+        .describe(
+          'Payment profile ID to charge. Overrides amount/note and bills the full balance.'
+        )
+    })
+  )
   .output(paymentSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let result = await client.createPayment(ctx.input.invoiceId, {
@@ -54,27 +61,31 @@ export let createPayment = SlateTool.create(
   })
   .build();
 
-export let listPayments = SlateTool.create(
-  spec,
-  {
-    name: 'List Payments',
-    key: 'list_payments',
-    description: `List all payments with pagination. Sorted by received date by default. Use \`sort: "created_at"\` to sort by creation date.`,
-    tags: {
-      readOnly: true
-    }
+export let listPayments = SlateTool.create(spec, {
+  name: 'List Payments',
+  key: 'list_payments',
+  description: `List all payments with pagination. Sorted by received date by default. Use \`sort: "created_at"\` to sort by creation date.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (30 results per page)'),
-    sort: z.enum(['received_on', 'created_at']).optional().describe('Sort field. Default: received_on')
-  }))
-  .output(z.object({
-    payments: z.array(paymentSchema).describe('List of payments'),
-    totalCount: z.number().optional().describe('Total number of payments'),
-    pageCount: z.number().optional().describe('Total number of pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (30 results per page)'),
+      sort: z
+        .enum(['received_on', 'created_at'])
+        .optional()
+        .describe('Sort field. Default: received_on')
+    })
+  )
+  .output(
+    z.object({
+      payments: z.array(paymentSchema).describe('List of payments'),
+      totalCount: z.number().optional().describe('Total number of payments'),
+      pageCount: z.number().optional().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let result = await client.listPayments({
@@ -95,26 +106,27 @@ export let listPayments = SlateTool.create(
   })
   .build();
 
-export let deletePayment = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Payment',
-    key: 'delete_payment',
-    description: `Permanently remove a payment from an invoice.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deletePayment = SlateTool.create(spec, {
+  name: 'Delete Payment',
+  key: 'delete_payment',
+  description: `Permanently remove a payment from an invoice.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('ID of the invoice the payment is applied to'),
-    paymentId: z.number().describe('ID of the payment to remove')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('ID of the invoice the payment is applied to'),
+      paymentId: z.number().describe('ID of the payment to remove')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
     await client.deletePayment(ctx.input.invoiceId, ctx.input.paymentId);
 

@@ -6,31 +6,40 @@ import { z } from 'zod';
 let financialEntrySchema = z.object({
   fiscalDateEnding: z.string().describe('End date of the fiscal period'),
   reportedCurrency: z.string().describe('Currency of the reported values'),
-  fields: z.record(z.string(), z.string()).describe('Key-value pairs of financial line items and their values'),
+  fields: z
+    .record(z.string(), z.string())
+    .describe('Key-value pairs of financial line items and their values')
 });
 
-export let getFinancialStatements = SlateTool.create(
-  spec,
-  {
-    name: 'Get Financial Statements',
-    key: 'get_financial_statements',
-    description: `Retrieve financial statements for a US-listed company. Supports income statements, balance sheets, and cash flow statements in both annual and quarterly granularity. Returns all line items reported by the company.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    symbol: z.string().describe('Stock ticker symbol, e.g. "AAPL"'),
-    statementType: z.enum(['income_statement', 'balance_sheet', 'cash_flow']).describe('Type of financial statement to retrieve'),
-    period: z.enum(['annual', 'quarterly']).optional().default('annual').describe('Reporting period granularity'),
-  }))
-  .output(z.object({
-    symbol: z.string().describe('Ticker symbol'),
-    statementType: z.string().describe('Type of financial statement'),
-    reports: z.array(financialEntrySchema).describe('Financial reports, most recent first'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getFinancialStatements = SlateTool.create(spec, {
+  name: 'Get Financial Statements',
+  key: 'get_financial_statements',
+  description: `Retrieve financial statements for a US-listed company. Supports income statements, balance sheets, and cash flow statements in both annual and quarterly granularity. Returns all line items reported by the company.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      symbol: z.string().describe('Stock ticker symbol, e.g. "AAPL"'),
+      statementType: z
+        .enum(['income_statement', 'balance_sheet', 'cash_flow'])
+        .describe('Type of financial statement to retrieve'),
+      period: z
+        .enum(['annual', 'quarterly'])
+        .optional()
+        .default('annual')
+        .describe('Reporting period granularity')
+    })
+  )
+  .output(
+    z.object({
+      symbol: z.string().describe('Ticker symbol'),
+      statementType: z.string().describe('Type of financial statement'),
+      reports: z.array(financialEntrySchema).describe('Financial reports, most recent first')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { symbol, statementType, period } = ctx.input;
 
@@ -55,7 +64,7 @@ export let getFinancialStatements = SlateTool.create(
       return {
         fiscalDateEnding: fiscalDateEnding || '',
         reportedCurrency: reportedCurrency || '',
-        fields: stringFields,
+        fields: stringFields
       };
     });
 
@@ -64,9 +73,9 @@ export let getFinancialStatements = SlateTool.create(
       output: {
         symbol,
         statementType,
-        reports,
+        reports
       },
-      message: `Retrieved ${reports.length} ${period} ${label} report(s) for **${symbol}**.`,
+      message: `Retrieved ${reports.length} ${period} ${label} report(s) for **${symbol}**.`
     };
   })
   .build();

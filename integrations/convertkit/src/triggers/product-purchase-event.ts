@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let productPurchaseEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Product Purchase',
-    key: 'product_purchase_event',
-    description: 'Fires when a subscriber purchases a specific product. This webhook event requires a product ID and must be configured manually, as the API does not expose a product listing endpoint.',
-  }
-)
-  .input(z.object({
-    productId: z.number().describe('Product ID that was purchased'),
-    subscriberId: z.number().describe('Subscriber ID'),
-    firstName: z.string().nullable().describe('Subscriber first name'),
-    emailAddress: z.string().describe('Subscriber email address'),
-    state: z.string().describe('Subscriber state'),
-    createdAt: z.string().describe('Subscriber creation timestamp'),
-    fields: z.record(z.string(), z.string().nullable()).describe('Custom field values'),
-  }))
-  .output(z.object({
-    productId: z.number().describe('Product ID that was purchased'),
-    subscriberId: z.number().describe('Subscriber ID'),
-    firstName: z.string().nullable().describe('First name'),
-    emailAddress: z.string().describe('Email address'),
-    state: z.string().describe('Current subscriber state'),
-    createdAt: z.string().describe('When the subscriber was created'),
-    fields: z.record(z.string(), z.string().nullable()).describe('Custom field values'),
-  }))
+export let productPurchaseEvent = SlateTrigger.create(spec, {
+  name: 'Product Purchase',
+  key: 'product_purchase_event',
+  description:
+    'Fires when a subscriber purchases a specific product. This webhook event requires a product ID and must be configured manually, as the API does not expose a product listing endpoint.'
+})
+  .input(
+    z.object({
+      productId: z.number().describe('Product ID that was purchased'),
+      subscriberId: z.number().describe('Subscriber ID'),
+      firstName: z.string().nullable().describe('Subscriber first name'),
+      emailAddress: z.string().describe('Subscriber email address'),
+      state: z.string().describe('Subscriber state'),
+      createdAt: z.string().describe('Subscriber creation timestamp'),
+      fields: z.record(z.string(), z.string().nullable()).describe('Custom field values')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.number().describe('Product ID that was purchased'),
+      subscriberId: z.number().describe('Subscriber ID'),
+      firstName: z.string().nullable().describe('First name'),
+      emailAddress: z.string().describe('Email address'),
+      state: z.string().describe('Current subscriber state'),
+      createdAt: z.string().describe('When the subscriber was created'),
+      fields: z.record(z.string(), z.string().nullable()).describe('Custom field values')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
       let subscriber = body.subscriber;
 
       if (!subscriber) {
@@ -49,13 +51,13 @@ export let productPurchaseEvent = SlateTrigger.create(
             emailAddress: subscriber.email_address,
             state: subscriber.state,
             createdAt: subscriber.created_at,
-            fields: subscriber.fields || {},
-          },
-        ],
+            fields: subscriber.fields || {}
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'product.purchased',
         id: `product-purchased-${ctx.input.productId}-${ctx.input.subscriberId}-${Date.now()}`,
@@ -66,8 +68,8 @@ export let productPurchaseEvent = SlateTrigger.create(
           emailAddress: ctx.input.emailAddress,
           state: ctx.input.state,
           createdAt: ctx.input.createdAt,
-          fields: ctx.input.fields,
-        },
+          fields: ctx.input.fields
+        }
       };
-    },
+    }
   });

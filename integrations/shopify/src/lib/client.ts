@@ -6,11 +6,7 @@ export class ShopifyClient {
   private shopDomain: string;
   private apiVersion: string;
 
-  constructor(config: {
-    token: string;
-    shopDomain: string;
-    apiVersion: string;
-  }) {
+  constructor(config: { token: string; shopDomain: string; apiVersion: string }) {
     this.shopDomain = config.shopDomain.replace('.myshopify.com', '').trim();
     this.apiVersion = config.apiVersion;
     this.http = createAxios({
@@ -79,7 +75,12 @@ export class ShopifyClient {
     await this.http.delete(`/products/${productId}.json`);
   }
 
-  async getProductCount(params?: { vendor?: string; productType?: string; collectionId?: string; status?: string }) {
+  async getProductCount(params?: {
+    vendor?: string;
+    productType?: string;
+    collectionId?: string;
+    status?: string;
+  }) {
     let queryParams: Record<string, any> = {};
     if (params?.vendor) queryParams.vendor = params.vendor;
     if (params?.productType) queryParams.product_type = params.productType;
@@ -95,7 +96,9 @@ export class ShopifyClient {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.sinceId) queryParams.since_id = params.sinceId;
-    let response = await this.http.get(`/products/${productId}/variants.json`, { params: queryParams });
+    let response = await this.http.get(`/products/${productId}/variants.json`, {
+      params: queryParams
+    });
     return response.data.variants;
   }
 
@@ -152,7 +155,11 @@ export class ShopifyClient {
     return response.data.order;
   }
 
-  async getOrderCount(params?: { status?: string; financialStatus?: string; fulfillmentStatus?: string }) {
+  async getOrderCount(params?: {
+    status?: string;
+    financialStatus?: string;
+    fulfillmentStatus?: string;
+  }) {
     let queryParams: Record<string, any> = {};
     if (params?.status) queryParams.status = params.status;
     if (params?.financialStatus) queryParams.financial_status = params.financialStatus;
@@ -171,7 +178,10 @@ export class ShopifyClient {
     return response.data.order;
   }
 
-  async cancelOrder(orderId: string, params?: { reason?: string; email?: boolean; restock?: boolean }) {
+  async cancelOrder(
+    orderId: string,
+    params?: { reason?: string; email?: boolean; restock?: boolean }
+  ) {
     let response = await this.http.post(`/orders/${orderId}/cancel.json`, params || {});
     return response.data.order;
   }
@@ -250,7 +260,9 @@ export class ShopifyClient {
     let queryParams: Record<string, any> = {};
     if (params?.status) queryParams.status = params.status;
     if (params?.limit) queryParams.limit = params.limit;
-    let response = await this.http.get(`/customers/${customerId}/orders.json`, { params: queryParams });
+    let response = await this.http.get(`/customers/${customerId}/orders.json`, {
+      params: queryParams
+    });
     return response.data.orders;
   }
 
@@ -271,7 +283,11 @@ export class ShopifyClient {
     return response.data.inventory_levels;
   }
 
-  async setInventoryLevel(params: { inventoryItemId: string; locationId: string; available: number }) {
+  async setInventoryLevel(params: {
+    inventoryItemId: string;
+    locationId: string;
+    available: number;
+  }) {
     let response = await this.http.post('/inventory_levels/set.json', {
       inventory_item_id: params.inventoryItemId,
       location_id: params.locationId,
@@ -280,7 +296,11 @@ export class ShopifyClient {
     return response.data.inventory_level;
   }
 
-  async adjustInventoryLevel(params: { inventoryItemId: string; locationId: string; availableAdjustment: number }) {
+  async adjustInventoryLevel(params: {
+    inventoryItemId: string;
+    locationId: string;
+    availableAdjustment: number;
+  }) {
     let response = await this.http.post('/inventory_levels/adjust.json', {
       inventory_item_id: params.inventoryItemId,
       location_id: params.locationId,
@@ -295,7 +315,9 @@ export class ShopifyClient {
   }
 
   async updateInventoryItem(inventoryItemId: string, inventoryItem: Record<string, any>) {
-    let response = await this.http.put(`/inventory_items/${inventoryItemId}.json`, { inventory_item: inventoryItem });
+    let response = await this.http.put(`/inventory_items/${inventoryItemId}.json`, {
+      inventory_item: inventoryItem
+    });
     return response.data.inventory_item;
   }
 
@@ -311,22 +333,32 @@ export class ShopifyClient {
     return response.data.location;
   }
 
-  async getLocationInventoryLevels(locationId: string, params?: { limit?: number; pageInfo?: string }) {
+  async getLocationInventoryLevels(
+    locationId: string,
+    params?: { limit?: number; pageInfo?: string }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.pageInfo) queryParams.page_info = params.pageInfo;
-    let response = await this.http.get(`/locations/${locationId}/inventory_levels.json`, { params: queryParams });
+    let response = await this.http.get(`/locations/${locationId}/inventory_levels.json`, {
+      params: queryParams
+    });
     return response.data.inventory_levels;
   }
 
   // ---- Fulfillments ----
 
-  async listFulfillments(orderId: string, params?: { limit?: number; sinceId?: string; pageInfo?: string }) {
+  async listFulfillments(
+    orderId: string,
+    params?: { limit?: number; sinceId?: string; pageInfo?: string }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.sinceId) queryParams.since_id = params.sinceId;
     if (params?.pageInfo) queryParams.page_info = params.pageInfo;
-    let response = await this.http.get(`/orders/${orderId}/fulfillments.json`, { params: queryParams });
+    let response = await this.http.get(`/orders/${orderId}/fulfillments.json`, {
+      params: queryParams
+    });
     return response.data.fulfillments;
   }
 
@@ -336,9 +368,12 @@ export class ShopifyClient {
   }
 
   async updateFulfillmentTracking(fulfillmentId: string, tracking: Record<string, any>) {
-    let response = await this.http.post(`/fulfillments/${fulfillmentId}/update_tracking.json`, {
-      fulfillment: tracking
-    });
+    let response = await this.http.post(
+      `/fulfillments/${fulfillmentId}/update_tracking.json`,
+      {
+        fulfillment: tracking
+      }
+    );
     return response.data.fulfillment;
   }
 
@@ -383,12 +418,16 @@ export class ShopifyClient {
   }
 
   async createCustomCollection(collection: Record<string, any>) {
-    let response = await this.http.post('/custom_collections.json', { custom_collection: collection });
+    let response = await this.http.post('/custom_collections.json', {
+      custom_collection: collection
+    });
     return response.data.custom_collection;
   }
 
   async updateCustomCollection(collectionId: string, collection: Record<string, any>) {
-    let response = await this.http.put(`/custom_collections/${collectionId}.json`, { custom_collection: collection });
+    let response = await this.http.put(`/custom_collections/${collectionId}.json`, {
+      custom_collection: collection
+    });
     return response.data.custom_collection;
   }
 
@@ -423,12 +462,16 @@ export class ShopifyClient {
   }
 
   async createSmartCollection(collection: Record<string, any>) {
-    let response = await this.http.post('/smart_collections.json', { smart_collection: collection });
+    let response = await this.http.post('/smart_collections.json', {
+      smart_collection: collection
+    });
     return response.data.smart_collection;
   }
 
   async updateSmartCollection(collectionId: string, collection: Record<string, any>) {
-    let response = await this.http.put(`/smart_collections/${collectionId}.json`, { smart_collection: collection });
+    let response = await this.http.put(`/smart_collections/${collectionId}.json`, {
+      smart_collection: collection
+    });
     return response.data.smart_collection;
   }
 
@@ -436,7 +479,12 @@ export class ShopifyClient {
     await this.http.delete(`/smart_collections/${collectionId}.json`);
   }
 
-  async listCollects(params?: { productId?: string; collectionId?: string; limit?: number; pageInfo?: string }) {
+  async listCollects(params?: {
+    productId?: string;
+    collectionId?: string;
+    limit?: number;
+    pageInfo?: string;
+  }) {
     let queryParams: Record<string, any> = {};
     if (params?.productId) queryParams.product_id = params.productId;
     if (params?.collectionId) queryParams.collection_id = params.collectionId;
@@ -489,7 +537,9 @@ export class ShopifyClient {
   }
 
   async updateDraftOrder(draftOrderId: string, draftOrder: Record<string, any>) {
-    let response = await this.http.put(`/draft_orders/${draftOrderId}.json`, { draft_order: draftOrder });
+    let response = await this.http.put(`/draft_orders/${draftOrderId}.json`, {
+      draft_order: draftOrder
+    });
     return response.data.draft_order;
   }
 
@@ -533,7 +583,9 @@ export class ShopifyClient {
   }
 
   async updatePriceRule(priceRuleId: string, priceRule: Record<string, any>) {
-    let response = await this.http.put(`/price_rules/${priceRuleId}.json`, { price_rule: priceRule });
+    let response = await this.http.put(`/price_rules/${priceRuleId}.json`, {
+      price_rule: priceRule
+    });
     return response.data.price_rule;
   }
 
@@ -541,26 +593,42 @@ export class ShopifyClient {
     await this.http.delete(`/price_rules/${priceRuleId}.json`);
   }
 
-  async listDiscountCodes(priceRuleId: string, params?: { limit?: number; pageInfo?: string }) {
+  async listDiscountCodes(
+    priceRuleId: string,
+    params?: { limit?: number; pageInfo?: string }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.pageInfo) queryParams.page_info = params.pageInfo;
-    let response = await this.http.get(`/price_rules/${priceRuleId}/discount_codes.json`, { params: queryParams });
+    let response = await this.http.get(`/price_rules/${priceRuleId}/discount_codes.json`, {
+      params: queryParams
+    });
     return response.data.discount_codes;
   }
 
   async createDiscountCode(priceRuleId: string, discountCode: Record<string, any>) {
-    let response = await this.http.post(`/price_rules/${priceRuleId}/discount_codes.json`, { discount_code: discountCode });
+    let response = await this.http.post(`/price_rules/${priceRuleId}/discount_codes.json`, {
+      discount_code: discountCode
+    });
     return response.data.discount_code;
   }
 
-  async updateDiscountCode(priceRuleId: string, discountCodeId: string, discountCode: Record<string, any>) {
-    let response = await this.http.put(`/price_rules/${priceRuleId}/discount_codes/${discountCodeId}.json`, { discount_code: discountCode });
+  async updateDiscountCode(
+    priceRuleId: string,
+    discountCodeId: string,
+    discountCode: Record<string, any>
+  ) {
+    let response = await this.http.put(
+      `/price_rules/${priceRuleId}/discount_codes/${discountCodeId}.json`,
+      { discount_code: discountCode }
+    );
     return response.data.discount_code;
   }
 
   async deleteDiscountCode(priceRuleId: string, discountCodeId: string) {
-    await this.http.delete(`/price_rules/${priceRuleId}/discount_codes/${discountCodeId}.json`);
+    await this.http.delete(
+      `/price_rules/${priceRuleId}/discount_codes/${discountCodeId}.json`
+    );
   }
 
   async lookupDiscountCode(code: string) {
@@ -626,7 +694,9 @@ export class ShopifyClient {
   }
 
   async calculateRefund(orderId: string, refund: Record<string, any>) {
-    let response = await this.http.post(`/orders/${orderId}/refunds/calculate.json`, { refund });
+    let response = await this.http.post(`/orders/${orderId}/refunds/calculate.json`, {
+      refund
+    });
     return response.data.refund;
   }
 
@@ -648,16 +718,24 @@ export class ShopifyClient {
 
   // ---- Metafields ----
 
-  async listMetafields(resource: string, resourceId: string, params?: { limit?: number; namespace?: string }) {
+  async listMetafields(
+    resource: string,
+    resourceId: string,
+    params?: { limit?: number; namespace?: string }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.namespace) queryParams.namespace = params.namespace;
-    let response = await this.http.get(`/${resource}/${resourceId}/metafields.json`, { params: queryParams });
+    let response = await this.http.get(`/${resource}/${resourceId}/metafields.json`, {
+      params: queryParams
+    });
     return response.data.metafields;
   }
 
   async createMetafield(resource: string, resourceId: string, metafield: Record<string, any>) {
-    let response = await this.http.post(`/${resource}/${resourceId}/metafields.json`, { metafield });
+    let response = await this.http.post(`/${resource}/${resourceId}/metafields.json`, {
+      metafield
+    });
     return response.data.metafield;
   }
 
@@ -667,7 +745,12 @@ export class ShopifyClient {
 
   // ---- Pages ----
 
-  async listPages(params?: { limit?: number; sinceId?: string; title?: string; pageInfo?: string }) {
+  async listPages(params?: {
+    limit?: number;
+    sinceId?: string;
+    title?: string;
+    pageInfo?: string;
+  }) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.sinceId) queryParams.since_id = params.sinceId;

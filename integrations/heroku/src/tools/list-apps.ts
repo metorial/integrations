@@ -3,34 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listApps = SlateTool.create(
-  spec,
-  {
-    name: 'List Apps',
-    key: 'list_apps',
-    description: `List all Heroku applications accessible to the authenticated user. Returns app names, regions, stacks, URLs, and ownership details.`,
-    tags: {
-      readOnly: true
-    }
+export let listApps = SlateTool.create(spec, {
+  name: 'List Apps',
+  key: 'list_apps',
+  description: `List all Heroku applications accessible to the authenticated user. Returns app names, regions, stacks, URLs, and ownership details.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    apps: z.array(z.object({
-      appId: z.string().describe('Unique identifier of the app'),
-      name: z.string().describe('Name of the app'),
-      region: z.string().describe('Region where the app runs'),
-      stack: z.string().describe('Stack used by the app'),
-      webUrl: z.string().describe('Web URL of the app'),
-      gitUrl: z.string().describe('Git URL for deploying to the app'),
-      maintenance: z.boolean().describe('Whether the app is in maintenance mode'),
-      createdAt: z.string().describe('When the app was created'),
-      updatedAt: z.string().describe('When the app was last updated'),
-      ownerEmail: z.string().describe('Email of the app owner'),
-      teamName: z.string().nullable().describe('Team the app belongs to, if any')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      apps: z.array(
+        z.object({
+          appId: z.string().describe('Unique identifier of the app'),
+          name: z.string().describe('Name of the app'),
+          region: z.string().describe('Region where the app runs'),
+          stack: z.string().describe('Stack used by the app'),
+          webUrl: z.string().describe('Web URL of the app'),
+          gitUrl: z.string().describe('Git URL for deploying to the app'),
+          maintenance: z.boolean().describe('Whether the app is in maintenance mode'),
+          createdAt: z.string().describe('When the app was created'),
+          updatedAt: z.string().describe('When the app was last updated'),
+          ownerEmail: z.string().describe('Email of the app owner'),
+          teamName: z.string().nullable().describe('Team the app belongs to, if any')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let apps = await client.listApps();
 

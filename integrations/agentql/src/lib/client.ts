@@ -93,14 +93,14 @@ let buildProxyPayload = (proxy?: TetraProxy | CustomProxy) => {
   if (proxy.type === 'tetra') {
     return {
       type: 'tetra',
-      country_code: proxy.countryCode ?? 'US',
+      country_code: proxy.countryCode ?? 'US'
     };
   }
   return {
     type: 'custom',
     url: proxy.url,
     username: proxy.username ?? null,
-    password: proxy.password ?? null,
+    password: proxy.password ?? null
   };
 };
 
@@ -111,8 +111,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'X-API-Key': config.token,
-      },
+        'X-API-Key': config.token
+      }
     });
   }
 
@@ -127,21 +127,27 @@ export class Client {
     if (params.params) {
       let p: Record<string, unknown> = {};
       if (params.params.waitFor !== undefined) p.wait_for = params.params.waitFor;
-      if (params.params.isScrollToBottomEnabled !== undefined) p.is_scroll_to_bottom_enabled = params.params.isScrollToBottomEnabled;
+      if (params.params.isScrollToBottomEnabled !== undefined)
+        p.is_scroll_to_bottom_enabled = params.params.isScrollToBottomEnabled;
       if (params.params.mode) p.mode = params.params.mode;
-      if (params.params.isScreenshotEnabled !== undefined) p.is_screenshot_enabled = params.params.isScreenshotEnabled;
+      if (params.params.isScreenshotEnabled !== undefined)
+        p.is_screenshot_enabled = params.params.isScreenshotEnabled;
       if (params.params.browserProfile) p.browser_profile = params.params.browserProfile;
       if (params.params.proxy) p.proxy = buildProxyPayload(params.params.proxy);
       body.params = p;
     }
 
     let response = await this.axios.post<QueryDataResponse>('/v1/query-data', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
-  async queryDocument(file: Uint8Array, fileName: string, params: QueryDocumentParams): Promise<QueryDocumentResponse> {
+  async queryDocument(
+    file: Uint8Array,
+    fileName: string,
+    params: QueryDocumentParams
+  ): Promise<QueryDocumentResponse> {
     let bodyObj: Record<string, unknown> = {};
     if (params.query) bodyObj.query = params.query;
     if (params.prompt) bodyObj.prompt = params.prompt;
@@ -165,12 +171,13 @@ export class Client {
       if (params.browserUaPreset) body.browser_ua_preset = params.browserUaPreset;
       if (params.browserProfile) body.browser_profile = params.browserProfile;
       if (params.shutdownMode) body.shutdown_mode = params.shutdownMode;
-      if (params.inactivityTimeoutSeconds !== undefined) body.inactivity_timeout_seconds = params.inactivityTimeoutSeconds;
+      if (params.inactivityTimeoutSeconds !== undefined)
+        body.inactivity_timeout_seconds = params.inactivityTimeoutSeconds;
       if (params.proxy) body.proxy = buildProxyPayload(params.proxy);
     }
 
     let response = await this.axios.post<CreateSessionResponse>('/v1/tetra/sessions', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }

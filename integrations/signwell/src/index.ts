@@ -12,7 +12,7 @@ import {
   getTemplate,
   createTemplate,
   updateTemplate,
-  deleteTemplate,
+  deleteTemplate
 } from './tools';
 import { documentEvents } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     getTemplate,
     createTemplate,
     updateTemplate,
-    deleteTemplate,
+    deleteTemplate
   ],
-  triggers: [
-    documentEvents,
-  ],
+  triggers: [documentEvents]
 });

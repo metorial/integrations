@@ -13,7 +13,7 @@ import {
   getReport,
   getCustomerJourney,
   getContact,
-  identifyVisitor,
+  identifyVisitor
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     getReport,
     getCustomerJourney,
     getContact,
-    identifyVisitor,
+    identifyVisitor
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

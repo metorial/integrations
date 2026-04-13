@@ -3,42 +3,44 @@ import { spec } from '../spec';
 import { createClient, extractCommentSummary } from '../lib/helpers';
 import { z } from 'zod';
 
-export let newCommentTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Comment',
-    key: 'new_comment',
-    description: 'Triggers when a new comment is posted on the site. Polls for new comments at regular intervals.'
-  }
-)
-  .input(z.object({
-    commentId: z.string().describe('ID of the new comment'),
-    postId: z.string().describe('ID of the associated post'),
-    authorName: z.string().describe('Comment author name'),
-    authorEmail: z.string().describe('Comment author email'),
-    content: z.string().describe('Comment content'),
-    status: z.string().describe('Comment status'),
-    date: z.string().describe('Comment date'),
-    parentCommentId: z.string().describe('Parent comment ID'),
-    type: z.string().describe('Comment type')
-  }))
-  .output(z.object({
-    commentId: z.string().describe('ID of the new comment'),
-    postId: z.string().describe('ID of the associated post'),
-    authorName: z.string().describe('Comment author name'),
-    authorEmail: z.string().describe('Comment author email'),
-    content: z.string().describe('Comment content'),
-    status: z.string().describe('Comment status'),
-    date: z.string().describe('Comment date'),
-    parentCommentId: z.string().describe('Parent comment ID (0 if top-level)'),
-    type: z.string().describe('Comment type')
-  }))
+export let newCommentTrigger = SlateTrigger.create(spec, {
+  name: 'New Comment',
+  key: 'new_comment',
+  description:
+    'Triggers when a new comment is posted on the site. Polls for new comments at regular intervals.'
+})
+  .input(
+    z.object({
+      commentId: z.string().describe('ID of the new comment'),
+      postId: z.string().describe('ID of the associated post'),
+      authorName: z.string().describe('Comment author name'),
+      authorEmail: z.string().describe('Comment author email'),
+      content: z.string().describe('Comment content'),
+      status: z.string().describe('Comment status'),
+      date: z.string().describe('Comment date'),
+      parentCommentId: z.string().describe('Parent comment ID'),
+      type: z.string().describe('Comment type')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('ID of the new comment'),
+      postId: z.string().describe('ID of the associated post'),
+      authorName: z.string().describe('Comment author name'),
+      authorEmail: z.string().describe('Comment author email'),
+      content: z.string().describe('Comment content'),
+      status: z.string().describe('Comment status'),
+      date: z.string().describe('Comment date'),
+      parentCommentId: z.string().describe('Parent comment ID (0 if top-level)'),
+      type: z.string().describe('Comment type')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
 
       let lastCommentId = ctx.state?.lastCommentId as string | undefined;
@@ -57,9 +59,7 @@ export let newCommentTrigger = SlateTrigger.create(
         inputs.push(summary);
       }
 
-      let newLastCommentId = inputs.length > 0
-        ? inputs[0]!.commentId
-        : lastCommentId;
+      let newLastCommentId = inputs.length > 0 ? inputs[0]!.commentId : lastCommentId;
 
       return {
         inputs,
@@ -69,7 +69,7 @@ export let newCommentTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'comment.created',
         id: `comment-${ctx.input.commentId}`,

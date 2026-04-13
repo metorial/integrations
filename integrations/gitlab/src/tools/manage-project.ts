@@ -3,39 +3,60 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProject = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Create, update, fork, or delete a GitLab project. Use the **action** field to specify the operation. For creating, provide a name and optional settings. For updating, provide the project ID and fields to change. For forking, provide the source project ID.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageProject = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Create, update, fork, or delete a GitLab project. Use the **action** field to specify the operation. For creating, provide a name and optional settings. For updating, provide the project ID and fields to change. For forking, provide the source project ID.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'fork']).describe('Operation to perform on the project'),
-    projectId: z.string().optional().describe('Project ID or URL-encoded path (required for update, delete, fork)'),
-    name: z.string().optional().describe('Project name (required for create, optional for update)'),
-    description: z.string().optional().describe('Project description'),
-    visibility: z.enum(['public', 'internal', 'private']).optional().describe('Project visibility level'),
-    defaultBranch: z.string().optional().describe('Default branch name'),
-    initializeWithReadme: z.boolean().optional().describe('Initialize repository with a README (create only)'),
-    namespaceId: z.number().optional().describe('Namespace ID to create/fork the project in'),
-    path: z.string().optional().describe('Project path/slug'),
-    archived: z.boolean().optional().describe('Whether to archive/unarchive the project (update only)')
-  }))
-  .output(z.object({
-    projectId: z.number().describe('Unique project ID'),
-    name: z.string().describe('Project name'),
-    pathWithNamespace: z.string().describe('Full path including namespace'),
-    webUrl: z.string().describe('URL to the project'),
-    visibility: z.string().describe('Visibility level'),
-    defaultBranch: z.string().nullable().describe('Default branch')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'fork'])
+        .describe('Operation to perform on the project'),
+      projectId: z
+        .string()
+        .optional()
+        .describe('Project ID or URL-encoded path (required for update, delete, fork)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Project name (required for create, optional for update)'),
+      description: z.string().optional().describe('Project description'),
+      visibility: z
+        .enum(['public', 'internal', 'private'])
+        .optional()
+        .describe('Project visibility level'),
+      defaultBranch: z.string().optional().describe('Default branch name'),
+      initializeWithReadme: z
+        .boolean()
+        .optional()
+        .describe('Initialize repository with a README (create only)'),
+      namespaceId: z
+        .number()
+        .optional()
+        .describe('Namespace ID to create/fork the project in'),
+      path: z.string().optional().describe('Project path/slug'),
+      archived: z
+        .boolean()
+        .optional()
+        .describe('Whether to archive/unarchive the project (update only)')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('Unique project ID'),
+      name: z.string().describe('Project name'),
+      pathWithNamespace: z.string().describe('Full path including namespace'),
+      webUrl: z.string().describe('URL to the project'),
+      visibility: z.string().describe('Visibility level'),
+      defaultBranch: z.string().nullable().describe('Default branch')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -96,7 +117,12 @@ export let manageProject = SlateTool.create(
       }
     }
 
-    let actionVerb = ctx.input.action === 'create' ? 'Created' : ctx.input.action === 'update' ? 'Updated' : 'Forked';
+    let actionVerb =
+      ctx.input.action === 'create'
+        ? 'Created'
+        : ctx.input.action === 'update'
+          ? 'Updated'
+          : 'Forked';
 
     return {
       output: {

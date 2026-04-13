@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getProfileTool,
@@ -11,11 +10,9 @@ import {
   createAttributeTool,
   getCorrelationsTool,
   getInsightsTool,
-  getAveragesTool,
+  getAveragesTool
 } from './tools';
-import { newInsightsTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newInsightsTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     createAttributeTool,
     getCorrelationsTool,
     getInsightsTool,
-    getAveragesTool,
+    getAveragesTool
   ],
-  triggers: [
-    inboundWebhook,
-    newInsightsTrigger,
-  ],
+  triggers: [inboundWebhook, newInsightsTrigger]
 });

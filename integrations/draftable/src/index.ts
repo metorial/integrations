@@ -8,7 +8,7 @@ import {
   getViewerUrl,
   exportComparison,
   getExportStatus,
-  getChangeDetails,
+  getChangeDetails
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getViewerUrl,
     exportComparison,
     getExportStatus,
-    getChangeDetails,
+    getChangeDetails
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

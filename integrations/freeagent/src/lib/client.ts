@@ -26,10 +26,10 @@ export class FreeAgentClient {
     this.http = createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -88,8 +88,10 @@ export class FreeAgentClient {
     if (params?.view) queryParams.view = params.view;
     if (params?.sort) queryParams.sort = params.sort;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.nestedItems) queryParams.nested_invoice_items = 'true';
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
@@ -152,8 +154,10 @@ export class FreeAgentClient {
     let queryParams: Record<string, string> = {};
     if (params?.view) queryParams.view = params.view;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.nestedItems) queryParams.nested_estimate_items = 'true';
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
@@ -206,8 +210,10 @@ export class FreeAgentClient {
     let queryParams: Record<string, string> = {};
     if (params?.view) queryParams.view = params.view;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.sort) queryParams.sort = params.sort;
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
@@ -249,7 +255,8 @@ export class FreeAgentClient {
     if (params?.fromDate) queryParams.from_date = params.fromDate;
     if (params?.toDate) queryParams.to_date = params.toDate;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
 
@@ -294,7 +301,8 @@ export class FreeAgentClient {
     let queryParams: Record<string, string> = {};
     if (params?.view) queryParams.view = params.view;
     if (params?.sort) queryParams.sort = params.sort;
-    if (params?.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params?.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
 
@@ -341,7 +349,8 @@ export class FreeAgentClient {
     if (params?.view) queryParams.view = params.view;
     if (params?.sort) queryParams.sort = params.sort;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
 
@@ -355,9 +364,13 @@ export class FreeAgentClient {
   }
 
   async createTask(projectId: string, task: Record<string, any>) {
-    let response = await this.http.post(`/tasks`, { task }, {
-      params: { project: buildResourceUrl(this.baseUrl, 'projects', projectId) },
-    });
+    let response = await this.http.post(
+      `/tasks`,
+      { task },
+      {
+        params: { project: buildResourceUrl(this.baseUrl, 'projects', projectId) }
+      }
+    );
     return response.data.task;
   }
 
@@ -388,9 +401,12 @@ export class FreeAgentClient {
     if (params?.fromDate) queryParams.from_date = params.fromDate;
     if (params?.toDate) queryParams.to_date = params.toDate;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.userId) queryParams.user = buildResourceUrl(this.baseUrl, 'users', params.userId);
-    if (params?.taskId) queryParams.task = buildResourceUrl(this.baseUrl, 'tasks', params.taskId);
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.userId)
+      queryParams.user = buildResourceUrl(this.baseUrl, 'users', params.userId);
+    if (params?.taskId)
+      queryParams.task = buildResourceUrl(this.baseUrl, 'tasks', params.taskId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
 
@@ -438,11 +454,7 @@ export class FreeAgentClient {
 
   // ==================== Bank Accounts ====================
 
-  async listBankAccounts(params?: {
-    view?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listBankAccounts(params?: { view?: string; page?: number; perPage?: number }) {
     let queryParams: Record<string, string> = {};
     if (params?.view) queryParams.view = params.view;
     if (params?.page) queryParams.page = String(params.page);
@@ -463,7 +475,9 @@ export class FreeAgentClient {
   }
 
   async updateBankAccount(bankAccountId: string, bankAccount: Record<string, any>) {
-    let response = await this.http.put(`/bank_accounts/${bankAccountId}`, { bank_account: bankAccount });
+    let response = await this.http.put(`/bank_accounts/${bankAccountId}`, {
+      bank_account: bankAccount
+    });
     return response.data.bank_account;
   }
 
@@ -473,16 +487,19 @@ export class FreeAgentClient {
 
   // ==================== Bank Transactions ====================
 
-  async listBankTransactions(bankAccountId: string, params?: {
-    view?: string;
-    fromDate?: string;
-    toDate?: string;
-    updatedSince?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listBankTransactions(
+    bankAccountId: string,
+    params?: {
+      view?: string;
+      fromDate?: string;
+      toDate?: string;
+      updatedSince?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let queryParams: Record<string, string> = {
-      bank_account: buildResourceUrl(this.baseUrl, 'bank_accounts', bankAccountId),
+      bank_account: buildResourceUrl(this.baseUrl, 'bank_accounts', bankAccountId)
     };
     if (params?.view) queryParams.view = params.view;
     if (params?.fromDate) queryParams.from_date = params.fromDate;
@@ -518,8 +535,10 @@ export class FreeAgentClient {
     if (params?.fromDate) queryParams.from_date = params.fromDate;
     if (params?.toDate) queryParams.to_date = params.toDate;
     if (params?.updatedSince) queryParams.updated_since = params.updatedSince;
-    if (params?.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
-    if (params?.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params?.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params?.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
     if (params?.nestedItems) queryParams.nested_bill_items = 'true';
     if (params?.page) queryParams.page = String(params.page);
     if (params?.perPage) queryParams.per_page = String(params.perPage);
@@ -555,11 +574,7 @@ export class FreeAgentClient {
 
   // ==================== Users ====================
 
-  async listUsers(params?: {
-    view?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listUsers(params?: { view?: string; page?: number; perPage?: number }) {
     let queryParams: Record<string, string> = {};
     if (params?.view) queryParams.view = params.view;
     if (params?.page) queryParams.page = String(params.page);
@@ -608,11 +623,7 @@ export class FreeAgentClient {
 
   // ==================== Recurring Invoices ====================
 
-  async listRecurringInvoices(params?: {
-    view?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listRecurringInvoices(params?: { view?: string; page?: number; perPage?: number }) {
     let queryParams: Record<string, string> = {};
     if (params?.view) queryParams.view = params.view;
     if (params?.page) queryParams.page = String(params.page);
@@ -629,21 +640,18 @@ export class FreeAgentClient {
 
   // ==================== Financial Reports ====================
 
-  async getProfitAndLoss(params?: {
-    fromDate?: string;
-    toDate?: string;
-  }) {
+  async getProfitAndLoss(params?: { fromDate?: string; toDate?: string }) {
     let queryParams: Record<string, string> = {};
     if (params?.fromDate) queryParams.from_date = params.fromDate;
     if (params?.toDate) queryParams.to_date = params.toDate;
 
-    let response = await this.http.get('/accounting/profit_and_loss/summary', { params: queryParams });
+    let response = await this.http.get('/accounting/profit_and_loss/summary', {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async getBalanceSheet(params?: {
-    asAtDate?: string;
-  }) {
+  async getBalanceSheet(params?: { asAtDate?: string }) {
     let queryParams: Record<string, string> = {};
     if (params?.asAtDate) queryParams.as_at_date = params.asAtDate;
 
@@ -651,15 +659,14 @@ export class FreeAgentClient {
     return response.data;
   }
 
-  async getTrialBalance(params?: {
-    fromDate?: string;
-    toDate?: string;
-  }) {
+  async getTrialBalance(params?: { fromDate?: string; toDate?: string }) {
     let queryParams: Record<string, string> = {};
     if (params?.fromDate) queryParams.from_date = params.fromDate;
     if (params?.toDate) queryParams.to_date = params.toDate;
 
-    let response = await this.http.get('/accounting/trial_balance/summary', { params: queryParams });
+    let response = await this.http.get('/accounting/trial_balance/summary', {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -667,8 +674,10 @@ export class FreeAgentClient {
 
   async listNotes(params: { contactId?: string; projectId?: string }) {
     let queryParams: Record<string, string> = {};
-    if (params.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
-    if (params.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
 
     let response = await this.http.get('/notes', { params: queryParams });
     return response.data.notes || [];
@@ -676,10 +685,16 @@ export class FreeAgentClient {
 
   async createNote(params: { contactId?: string; projectId?: string; note: string }) {
     let queryParams: Record<string, string> = {};
-    if (params.contactId) queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
-    if (params.projectId) queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
+    if (params.contactId)
+      queryParams.contact = buildResourceUrl(this.baseUrl, 'contacts', params.contactId);
+    if (params.projectId)
+      queryParams.project = buildResourceUrl(this.baseUrl, 'projects', params.projectId);
 
-    let response = await this.http.post('/notes', { note: { note: params.note } }, { params: queryParams });
+    let response = await this.http.post(
+      '/notes',
+      { note: { note: params.note } },
+      { params: queryParams }
+    );
     return response.data.note;
   }
 
@@ -694,7 +709,11 @@ export let normalizeResource = (resource: Record<string, any>): Record<string, a
     if (key === 'url' && typeof value === 'string') {
       result.url = value;
       result.resourceId = extractId(value);
-    } else if (typeof value === 'string' && value.startsWith('https://api.') && value.includes('/v2/')) {
+    } else if (
+      typeof value === 'string' &&
+      value.startsWith('https://api.') &&
+      value.includes('/v2/')
+    ) {
       result[key] = value;
       result[`${key}Id`] = extractId(value);
     } else {

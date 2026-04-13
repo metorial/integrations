@@ -17,14 +17,14 @@ import {
   getMeetingParticipants,
   manageMeetingRegistrants,
   deleteRecording,
-  getMeetingReport,
+  getMeetingReport
 } from './tools';
 import {
   meetingEvents,
   webinarEvents,
   recordingEvents,
   userEvents,
-  chatMessageEvents,
+  chatMessageEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,13 +46,7 @@ export let provider = Slate.create({
     getMeetingParticipants,
     manageMeetingRegistrants,
     deleteRecording,
-    getMeetingReport,
+    getMeetingReport
   ],
-  triggers: [
-    meetingEvents,
-    webinarEvents,
-    recordingEvents,
-    userEvents,
-    chatMessageEvents,
-  ],
+  triggers: [meetingEvents, webinarEvents, recordingEvents, userEvents, chatMessageEvents]
 });

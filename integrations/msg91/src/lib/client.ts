@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let controlApi = createAxios({
-  baseURL: 'https://control.msg91.com/api/v5',
+  baseURL: 'https://control.msg91.com/api/v5'
 });
 
 let otpApi = createAxios({
-  baseURL: 'https://api.msg91.com/api/v5',
+  baseURL: 'https://api.msg91.com/api/v5'
 });
 
 export class Msg91Client {
@@ -19,7 +19,7 @@ export class Msg91Client {
     return {
       authkey: this.authkey,
       'content-type': 'application/json',
-      accept: 'application/json',
+      accept: 'application/json'
     };
   }
 
@@ -36,7 +36,7 @@ export class Msg91Client {
   }) {
     let body: Record<string, any> = {
       template_id: params.templateId,
-      recipients: params.recipients,
+      recipients: params.recipients
     };
     if (params.shortUrl) body.short_url = params.shortUrl;
     if (params.shortUrlExpiry) body.short_url_expiry = params.shortUrlExpiry;
@@ -74,17 +74,14 @@ export class Msg91Client {
     return res.data;
   }
 
-  async getSmsAnalytics(params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getSmsAnalytics(params?: { startDate?: string; endDate?: string }) {
     let queryParams: Record<string, string> = {};
     if (params?.startDate) queryParams.start_date = params.startDate;
     if (params?.endDate) queryParams.end_date = params.endDate;
 
     let res = await controlApi.get('/sms/analytics', {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
     return res.data;
   }
@@ -101,7 +98,7 @@ export class Msg91Client {
     email?: string;
   }) {
     let queryParams: Record<string, any> = {
-      mobile: params.mobile,
+      mobile: params.mobile
     };
     if (params.templateId) queryParams.template_id = params.templateId;
     if (params.otp) queryParams.otp = params.otp;
@@ -112,37 +109,31 @@ export class Msg91Client {
 
     let res = await otpApi.post('/otp', null, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
     return res.data;
   }
 
-  async verifyOtp(params: {
-    mobile: string;
-    otp: string;
-  }) {
+  async verifyOtp(params: { mobile: string; otp: string }) {
     let res = await otpApi.get('/otp/verify', {
       headers: this.headers(),
       params: {
         mobile: params.mobile,
-        otp: params.otp,
-      },
+        otp: params.otp
+      }
     });
     return res.data;
   }
 
-  async resendOtp(params: {
-    mobile: string;
-    retryType?: 'text' | 'voice';
-  }) {
+  async resendOtp(params: { mobile: string; retryType?: 'text' | 'voice' }) {
     let queryParams: Record<string, any> = {
-      mobile: params.mobile,
+      mobile: params.mobile
     };
     if (params.retryType) queryParams.retrytype = params.retryType;
 
     let res = await otpApi.post('/otp/retry', null, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
     return res.data;
   }
@@ -167,7 +158,7 @@ export class Msg91Client {
       recipients: params.recipients,
       from: params.from,
       domain: params.domain,
-      template_id: params.templateId,
+      template_id: params.templateId
     };
     if (params.replyTo) body.reply_to = params.replyTo;
     if (params.attachments) body.attachments = params.attachments;
@@ -231,19 +222,19 @@ export class Msg91Client {
           name: params.templateName,
           language: {
             code: params.languageCode,
-            policy: 'deterministic',
+            policy: 'deterministic'
           },
           namespace: params.namespace,
-          to_and_components: params.recipients.map((r) => ({
+          to_and_components: params.recipients.map(r => ({
             to: r.to,
-            components: r.components,
-          })),
-        },
-      },
+            components: r.components
+          }))
+        }
+      }
     };
 
     let res = await otpApi.post('/whatsapp/whatsapp-outbound-message/bulk/', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -285,12 +276,15 @@ export class Msg91Client {
     callerId: string;
     clientNumber: string;
     callbackUrl?: string;
-    variables?: Record<string, { type: string; value: string; asDigits?: boolean; currencyCode?: string }>;
+    variables?: Record<
+      string,
+      { type: string; value: string; asDigits?: boolean; currencyCode?: string }
+    >;
   }) {
     let body: Record<string, any> = {
       template: params.template,
       caller_id: params.callerId,
-      client_number: params.clientNumber,
+      client_number: params.clientNumber
     };
     if (params.callbackUrl) body.callback_url = params.callbackUrl;
     if (params.variables) body.variables = params.variables;
@@ -307,7 +301,7 @@ export class Msg91Client {
     let body = {
       caller_id: params.callerId,
       destination: params.destination,
-      destinationB: params.destinationB,
+      destinationB: params.destinationB
     };
 
     let res = await controlApi.post('/voice/call/ctc', body, { headers: this.headers() });
@@ -332,15 +326,11 @@ export class Msg91Client {
 
   // ─── RCS ──────────────────────────────────────────────────────────────
 
-  async sendRcsText(params: {
-    to: string;
-    message: string;
-    senderId: string;
-  }) {
+  async sendRcsText(params: { to: string; message: string; senderId: string }) {
     let body = {
       to: params.to,
       message: params.message,
-      sender_id: params.senderId,
+      sender_id: params.senderId
     };
 
     let res = await controlApi.post('/rcs/bulk/template', body, { headers: this.headers() });
@@ -358,7 +348,7 @@ export class Msg91Client {
       to: params.to,
       media_url: params.mediaUrl,
       media_type: params.mediaType,
-      sender_id: params.senderId,
+      sender_id: params.senderId
     };
     if (params.caption) body.caption = params.caption;
 
@@ -378,7 +368,7 @@ export class Msg91Client {
     let body: Record<string, any> = {
       to: params.to,
       sender_id: params.senderId,
-      title: params.title,
+      title: params.title
     };
     if (params.description) body.description = params.description;
     if (params.mediaUrl) body.media_url = params.mediaUrl;
@@ -433,8 +423,8 @@ export class Msg91Client {
 
     let body: Record<string, any> = {
       data: {
-        sendTo: params.recipients,
-      },
+        sendTo: params.recipients
+      }
     };
     if (params.attachments) body.data.attachments = params.attachments;
     if (params.replyTo) body.data.reply_to = params.replyTo;
@@ -449,11 +439,9 @@ export class Msg91Client {
 
   // ─── CONTACTS (SEGMENTO) ─────────────────────────────────────────────
 
-  async createOrUpdateContact(params: {
-    contact: Record<string, any>;
-  }) {
+  async createOrUpdateContact(params: { contact: Record<string, any> }) {
     let res = await controlApi.post('/segmento/contact', params.contact, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -469,40 +457,36 @@ export class Msg91Client {
     if (params.pageSize) body.page_size = params.pageSize;
 
     let res = await controlApi.post('/segmento/contact/filter', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async deleteContacts(params: {
-    contactIds: string[];
-  }) {
+  async deleteContacts(params: { contactIds: string[] }) {
     let res = await controlApi.delete('/segmento/contacts', {
       headers: this.headers(),
-      data: { ids: params.contactIds },
+      data: { ids: params.contactIds }
     });
     return res.data;
   }
 
   async getPhonebookFields() {
     let res = await controlApi.get('/segmento/phonebook/fields', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async trackEvent(params: {
-    events: Array<Record<string, any>>;
-  }) {
+  async trackEvent(params: { events: Array<Record<string, any>> }) {
     let res = await controlApi.post('/segmento/events', params.events, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async getEventTypes() {
     let res = await controlApi.get('/segmento/events/types', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }

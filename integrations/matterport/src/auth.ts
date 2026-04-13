@@ -2,13 +2,15 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    authType: z.enum(['basic', 'bearer']),
-    tokenId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      authType: z.enum(['basic', 'bearer']),
+      tokenId: z.string().optional()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Token (Basic Auth)',
@@ -16,20 +18,21 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       tokenId: z.string().describe('Token ID from Matterport Developer Tools'),
-      tokenSecret: z.string().describe('Token Secret from Matterport Developer Tools'),
+      tokenSecret: z.string().describe('Token Secret from Matterport Developer Tools')
     }),
 
-    getOutput: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let basicToken = Buffer.from(`${ctx.input.tokenId}:${ctx.input.tokenSecret}`).toString('base64');
+    getOutput: async ctx => {
+      let basicToken = Buffer.from(`${ctx.input.tokenId}:${ctx.input.tokenSecret}`).toString(
+        'base64'
+      );
       return {
         output: {
           token: basicToken,
           authType: 'basic' as const,
-          tokenId: ctx.input.tokenId,
+          tokenId: ctx.input.tokenId
         }
       };
-    },
+    }
   })
   .addOauth({
     type: 'auth.oauth',
@@ -40,40 +43,40 @@ export let auth = SlateAuth.create()
       {
         title: 'View Details',
         description: 'Search for models and view public/private details',
-        scope: 'ViewDetails',
+        scope: 'ViewDetails'
       },
       {
         title: 'Edit Details',
         description: 'Edit basic details of a model',
-        scope: 'EditDetails',
+        scope: 'EditDetails'
       },
       {
         title: 'Download Assets',
         description: 'Download purchased add-ons and colormap imagery',
-        scope: 'DownloadAssets',
+        scope: 'DownloadAssets'
       },
       {
         title: 'Purchase Assets',
-        description: 'Purchase assets for a model on the user\'s behalf',
-        scope: 'PurchaseAssets',
-      },
+        description: "Purchase assets for a model on the user's behalf",
+        scope: 'PurchaseAssets'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         scope: ctx.scopes.join(' '),
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://authn.matterport.com/oauth/authorize?${params.toString()}`,
+        url: `https://authn.matterport.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post('https://api.matterport.com/api/oauth/token', {
@@ -82,7 +85,7 @@ export let auth = SlateAuth.create()
         scope: ctx.scopes.join(' '),
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
@@ -92,12 +95,12 @@ export let auth = SlateAuth.create()
           token: response.data.access_token,
           refreshToken: response.data.refresh_token,
           expiresAt,
-          authType: 'bearer' as const,
-        },
+          authType: 'bearer' as const
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post('https://api.matterport.com/api/oauth/token', {
@@ -105,7 +108,7 @@ export let auth = SlateAuth.create()
         refresh_token: ctx.output.refreshToken,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
@@ -115,8 +118,8 @@ export let auth = SlateAuth.create()
           token: response.data.access_token,
           refreshToken: response.data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          authType: 'bearer' as const,
-        },
+          authType: 'bearer' as const
+        }
       };
-    },
+    }
   });

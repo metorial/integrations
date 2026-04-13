@@ -3,33 +3,39 @@ import { OpsGenieClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let incidentAction = SlateTool.create(
-  spec,
-  {
-    name: 'Incident Action',
-    key: 'incident_action',
-    description: `Perform an action on an existing incident: close, resolve, delete, or add a note. Only available on Standard and Enterprise plans.`,
-    instructions: [
-      'Use "resolve" to mark an incident as resolved.',
-      'Use "close" to close an incident.',
-      'For "add_note", provide note text.',
-    ],
-  }
-)
-  .input(z.object({
-    incidentIdentifier: z.string().describe('Incident ID or tiny ID'),
-    identifierType: z.enum(['id', 'tiny']).optional().describe('Type of identifier provided. Defaults to "id"'),
-    action: z.enum(['close', 'resolve', 'delete', 'add_note']).describe('Action to perform on the incident'),
-    note: z.string().optional().describe('Note to include with the action'),
-  }))
-  .output(z.object({
-    requestId: z.string().describe('ID to track the async processing status'),
-    result: z.string().describe('Result message from the API'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let incidentAction = SlateTool.create(spec, {
+  name: 'Incident Action',
+  key: 'incident_action',
+  description: `Perform an action on an existing incident: close, resolve, delete, or add a note. Only available on Standard and Enterprise plans.`,
+  instructions: [
+    'Use "resolve" to mark an incident as resolved.',
+    'Use "close" to close an incident.',
+    'For "add_note", provide note text.'
+  ]
+})
+  .input(
+    z.object({
+      incidentIdentifier: z.string().describe('Incident ID or tiny ID'),
+      identifierType: z
+        .enum(['id', 'tiny'])
+        .optional()
+        .describe('Type of identifier provided. Defaults to "id"'),
+      action: z
+        .enum(['close', 'resolve', 'delete', 'add_note'])
+        .describe('Action to perform on the incident'),
+      note: z.string().optional().describe('Note to include with the action')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().describe('ID to track the async processing status'),
+      result: z.string().describe('Result message from the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OpsGenieClient({
       token: ctx.auth.token,
-      instance: ctx.config.instance,
+      instance: ctx.config.instance
     });
 
     let id = ctx.input.incidentIdentifier;
@@ -57,8 +63,9 @@ export let incidentAction = SlateTool.create(
     return {
       output: {
         requestId: response.requestId ?? '',
-        result: response.result ?? 'Request will be processed',
+        result: response.result ?? 'Request will be processed'
       },
-      message: `Performed **${ctx.input.action}** on incident \`${ctx.input.incidentIdentifier}\``,
+      message: `Performed **${ctx.input.action}** on incident \`${ctx.input.incidentIdentifier}\``
     };
-  }).build();
+  })
+  .build();

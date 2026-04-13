@@ -3,45 +3,48 @@ import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchCreditNotes = SlateTool.create(
-  spec,
-  {
-    name: 'Search Credit Notes',
-    key: 'search_credit_notes',
-    description: `Search and list credit notes in sevDesk. Filter by status, contact, or credit note number. Supports pagination.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchCreditNotes = SlateTool.create(spec, {
+  name: 'Search Credit Notes',
+  key: 'search_credit_notes',
+  description: `Search and list credit notes in sevDesk. Filter by status, contact, or credit note number. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.string().optional().describe('Filter by status'),
-    creditNoteNumber: z.string().optional().describe('Filter by credit note number'),
-    contactId: z.string().optional().describe('Filter by contact ID'),
-    limit: z.number().optional().describe('Max results (default: 100, max: 1000)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    creditNotes: z.array(z.object({
-      creditNoteId: z.string(),
-      creditNoteNumber: z.string().optional(),
-      contactId: z.string().optional(),
-      contactName: z.string().optional(),
-      status: z.string().optional(),
-      totalNet: z.string().optional(),
-      totalGross: z.string().optional(),
-      creditNoteDate: z.string().optional(),
-      createdAt: z.string().optional(),
-    })),
-    totalCount: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z.string().optional().describe('Filter by status'),
+      creditNoteNumber: z.string().optional().describe('Filter by credit note number'),
+      contactId: z.string().optional().describe('Filter by contact ID'),
+      limit: z.number().optional().describe('Max results (default: 100, max: 1000)'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      creditNotes: z.array(
+        z.object({
+          creditNoteId: z.string(),
+          creditNoteNumber: z.string().optional(),
+          contactId: z.string().optional(),
+          contactName: z.string().optional(),
+          status: z.string().optional(),
+          totalNet: z.string().optional(),
+          totalGross: z.string().optional(),
+          creditNoteDate: z.string().optional(),
+          createdAt: z.string().optional()
+        })
+      ),
+      totalCount: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SevdeskClient({ token: ctx.auth.token });
 
     let params: Record<string, any> = {
       limit: ctx.input.limit ?? 100,
       offset: ctx.input.offset,
-      embed: 'contact',
+      embed: 'contact'
     };
     if (ctx.input.status) params.status = ctx.input.status;
     if (ctx.input.creditNoteNumber) params.creditNoteNumber = ctx.input.creditNoteNumber;
@@ -61,14 +64,15 @@ export let searchCreditNotes = SlateTool.create(
       totalNet: cn.sumNet ?? undefined,
       totalGross: cn.sumGross ?? undefined,
       creditNoteDate: cn.creditNoteDate ?? undefined,
-      createdAt: cn.create ?? undefined,
+      createdAt: cn.create ?? undefined
     }));
 
     return {
       output: {
         creditNotes,
-        totalCount: creditNotes.length,
+        totalCount: creditNotes.length
       },
-      message: `Found **${creditNotes.length}** credit note(s).`,
+      message: `Found **${creditNotes.length}** credit note(s).`
     };
-  }).build();
+  })
+  .build();

@@ -19,7 +19,7 @@ import {
   lookupAnimal,
   lookupIp,
   lookupDomain,
-  validateContact,
+  validateContact
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -45,9 +45,7 @@ export let provider = Slate.create({
     lookupAnimal,
     lookupIp,
     lookupDomain,
-    validateContact,
+    validateContact
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

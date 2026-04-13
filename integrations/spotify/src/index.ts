@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchCatalog,
@@ -12,11 +11,9 @@ import {
   getUserProfile,
   getTopItems,
   manageFollowing,
-  getRecentlyPlayed,
+  getRecentlyPlayed
 } from './tools';
-import { recentlyPlayedTrigger,
-  inboundWebhook,
-} from './triggers';
+import { recentlyPlayedTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     getUserProfile.build(),
     getTopItems.build(),
     manageFollowing.build(),
-    getRecentlyPlayed.build(),
+    getRecentlyPlayed.build()
   ],
-  triggers: [
-    inboundWebhook,
-    recentlyPlayedTrigger.build(),
-  ],
+  triggers: [inboundWebhook, recentlyPlayedTrigger.build()]
 });

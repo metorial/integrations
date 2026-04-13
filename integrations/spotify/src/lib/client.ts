@@ -16,7 +16,7 @@ import type {
   SpotifySavedTrack,
   SpotifySavedAlbum,
   SpotifyAudioFeatures,
-  SimplifiedAlbum,
+  SimplifiedAlbum
 } from './types';
 
 export class SpotifyClient {
@@ -26,9 +26,9 @@ export class SpotifyClient {
     this.axios = createAxios({
       baseURL: 'https://api.spotify.com/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -43,7 +43,7 @@ export class SpotifyClient {
   }): Promise<SpotifySearchResult> {
     let searchParams: Record<string, string> = {
       q: params.query,
-      type: params.types.join(','),
+      type: params.types.join(',')
     };
     if (params.market || this.config.market) {
       searchParams['market'] = params.market || this.config.market!;
@@ -62,23 +62,32 @@ export class SpotifyClient {
     return response.data as SpotifyArtist;
   }
 
-  async getArtistAlbums(artistId: string, params?: {
-    includeGroups?: string;
-    market?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<SpotifyPaginated<SimplifiedAlbum>> {
+  async getArtistAlbums(
+    artistId: string,
+    params?: {
+      includeGroups?: string;
+      market?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<SpotifyPaginated<SimplifiedAlbum>> {
     let searchParams: Record<string, string> = {};
     if (params?.includeGroups) searchParams['include_groups'] = params.includeGroups;
-    if (params?.market || this.config.market) searchParams['market'] = params?.market || this.config.market!;
+    if (params?.market || this.config.market)
+      searchParams['market'] = params?.market || this.config.market!;
     if (params?.limit) searchParams['limit'] = String(params.limit);
     if (params?.offset) searchParams['offset'] = String(params.offset);
 
-    let response = await this.axios.get(`/artists/${artistId}/albums`, { params: searchParams });
+    let response = await this.axios.get(`/artists/${artistId}/albums`, {
+      params: searchParams
+    });
     return response.data as SpotifyPaginated<SimplifiedAlbum>;
   }
 
-  async getArtistTopTracks(artistId: string, market?: string): Promise<{ tracks: SpotifyTrack[] }> {
+  async getArtistTopTracks(
+    artistId: string,
+    market?: string
+  ): Promise<{ tracks: SpotifyTrack[] }> {
     let params: Record<string, string> = {};
     if (market || this.config.market) params['market'] = market || this.config.market!;
 
@@ -101,13 +110,17 @@ export class SpotifyClient {
     return response.data as SpotifyAlbum;
   }
 
-  async getAlbumTracks(albumId: string, params?: {
-    market?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<SpotifyPaginated<SpotifyTrack>> {
+  async getAlbumTracks(
+    albumId: string,
+    params?: {
+      market?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<SpotifyPaginated<SpotifyTrack>> {
     let searchParams: Record<string, string> = {};
-    if (params?.market || this.config.market) searchParams['market'] = params?.market || this.config.market!;
+    if (params?.market || this.config.market)
+      searchParams['market'] = params?.market || this.config.market!;
     if (params?.limit) searchParams['limit'] = String(params.limit);
     if (params?.offset) searchParams['offset'] = String(params.offset);
 
@@ -137,7 +150,10 @@ export class SpotifyClient {
     return response.data as SpotifyTrack;
   }
 
-  async getSeveralTracks(trackIds: string[], market?: string): Promise<{ tracks: SpotifyTrack[] }> {
+  async getSeveralTracks(
+    trackIds: string[],
+    market?: string
+  ): Promise<{ tracks: SpotifyTrack[] }> {
     let params: Record<string, string> = { ids: trackIds.join(',') };
     if (market || this.config.market) params['market'] = market || this.config.market!;
 
@@ -150,21 +166,27 @@ export class SpotifyClient {
     return response.data as SpotifyAudioFeatures;
   }
 
-  async getSeveralAudioFeatures(trackIds: string[]): Promise<{ audio_features: SpotifyAudioFeatures[] }> {
+  async getSeveralAudioFeatures(
+    trackIds: string[]
+  ): Promise<{ audio_features: SpotifyAudioFeatures[] }> {
     let response = await this.axios.get('/audio-features', {
-      params: { ids: trackIds.join(',') },
+      params: { ids: trackIds.join(',') }
     });
     return response.data as { audio_features: SpotifyAudioFeatures[] };
   }
 
   // ==================== Playlists ====================
 
-  async getPlaylist(playlistId: string, params?: {
-    market?: string;
-    fields?: string;
-  }): Promise<SpotifyPlaylist> {
+  async getPlaylist(
+    playlistId: string,
+    params?: {
+      market?: string;
+      fields?: string;
+    }
+  ): Promise<SpotifyPlaylist> {
     let searchParams: Record<string, string> = {};
-    if (params?.market || this.config.market) searchParams['market'] = params?.market || this.config.market!;
+    if (params?.market || this.config.market)
+      searchParams['market'] = params?.market || this.config.market!;
     if (params?.fields) searchParams['fields'] = params.fields;
 
     let response = await this.axios.get(`/playlists/${playlistId}`, { params: searchParams });
@@ -183,26 +205,36 @@ export class SpotifyClient {
     return response.data as SpotifyPaginated<SimplifiedPlaylist>;
   }
 
-  async createPlaylist(userId: string, data: {
-    name: string;
-    description?: string;
-    public?: boolean;
-    collaborative?: boolean;
-  }): Promise<SpotifyPlaylist> {
+  async createPlaylist(
+    userId: string,
+    data: {
+      name: string;
+      description?: string;
+      public?: boolean;
+      collaborative?: boolean;
+    }
+  ): Promise<SpotifyPlaylist> {
     let response = await this.axios.post(`/users/${userId}/playlists`, data);
     return response.data as SpotifyPlaylist;
   }
 
-  async updatePlaylistDetails(playlistId: string, data: {
-    name?: string;
-    description?: string;
-    public?: boolean;
-    collaborative?: boolean;
-  }): Promise<void> {
+  async updatePlaylistDetails(
+    playlistId: string,
+    data: {
+      name?: string;
+      description?: string;
+      public?: boolean;
+      collaborative?: boolean;
+    }
+  ): Promise<void> {
     await this.axios.put(`/playlists/${playlistId}`, data);
   }
 
-  async addItemsToPlaylist(playlistId: string, uris: string[], position?: number): Promise<{ snapshot_id: string }> {
+  async addItemsToPlaylist(
+    playlistId: string,
+    uris: string[],
+    position?: number
+  ): Promise<{ snapshot_id: string }> {
     let body: Record<string, any> = { uris };
     if (position !== undefined) body['position'] = position;
 
@@ -210,9 +242,13 @@ export class SpotifyClient {
     return response.data as { snapshot_id: string };
   }
 
-  async removeItemsFromPlaylist(playlistId: string, uris: string[], snapshotId?: string): Promise<{ snapshot_id: string }> {
+  async removeItemsFromPlaylist(
+    playlistId: string,
+    uris: string[],
+    snapshotId?: string
+  ): Promise<{ snapshot_id: string }> {
     let body: Record<string, any> = {
-      tracks: uris.map(uri => ({ uri })),
+      tracks: uris.map(uri => ({ uri }))
     };
     if (snapshotId) body['snapshot_id'] = snapshotId;
 
@@ -220,10 +256,16 @@ export class SpotifyClient {
     return response.data as { snapshot_id: string };
   }
 
-  async reorderPlaylistItems(playlistId: string, rangeStart: number, insertBefore: number, rangeLength?: number, snapshotId?: string): Promise<{ snapshot_id: string }> {
+  async reorderPlaylistItems(
+    playlistId: string,
+    rangeStart: number,
+    insertBefore: number,
+    rangeLength?: number,
+    snapshotId?: string
+  ): Promise<{ snapshot_id: string }> {
     let body: Record<string, any> = {
       range_start: rangeStart,
-      insert_before: insertBefore,
+      insert_before: insertBefore
     };
     if (rangeLength !== undefined) body['range_length'] = rangeLength;
     if (snapshotId) body['snapshot_id'] = snapshotId;
@@ -232,24 +274,33 @@ export class SpotifyClient {
     return response.data as { snapshot_id: string };
   }
 
-  async replacePlaylistItems(playlistId: string, uris: string[]): Promise<{ snapshot_id: string }> {
+  async replacePlaylistItems(
+    playlistId: string,
+    uris: string[]
+  ): Promise<{ snapshot_id: string }> {
     let response = await this.axios.put(`/playlists/${playlistId}/tracks`, { uris });
     return response.data as { snapshot_id: string };
   }
 
-  async getPlaylistTracks(playlistId: string, params?: {
-    market?: string;
-    limit?: number;
-    offset?: number;
-    fields?: string;
-  }): Promise<SpotifyPaginated<any>> {
+  async getPlaylistTracks(
+    playlistId: string,
+    params?: {
+      market?: string;
+      limit?: number;
+      offset?: number;
+      fields?: string;
+    }
+  ): Promise<SpotifyPaginated<any>> {
     let searchParams: Record<string, string> = {};
-    if (params?.market || this.config.market) searchParams['market'] = params?.market || this.config.market!;
+    if (params?.market || this.config.market)
+      searchParams['market'] = params?.market || this.config.market!;
     if (params?.limit) searchParams['limit'] = String(params.limit);
     if (params?.offset) searchParams['offset'] = String(params.offset);
     if (params?.fields) searchParams['fields'] = params.fields;
 
-    let response = await this.axios.get(`/playlists/${playlistId}/tracks`, { params: searchParams });
+    let response = await this.axios.get(`/playlists/${playlistId}/tracks`, {
+      params: searchParams
+    });
     return response.data as SpotifyPaginated<any>;
   }
 
@@ -373,7 +424,8 @@ export class SpotifyClient {
     offset?: number;
   }): Promise<SpotifyPaginated<SpotifySavedTrack>> {
     let searchParams: Record<string, string> = {};
-    if (params?.market || this.config.market) searchParams['market'] = params?.market || this.config.market!;
+    if (params?.market || this.config.market)
+      searchParams['market'] = params?.market || this.config.market!;
     if (params?.limit) searchParams['limit'] = String(params.limit);
     if (params?.offset) searchParams['offset'] = String(params.offset);
 
@@ -391,7 +443,7 @@ export class SpotifyClient {
 
   async checkSavedTracks(trackIds: string[]): Promise<boolean[]> {
     let response = await this.axios.get('/me/tracks/contains', {
-      params: { ids: trackIds.join(',') },
+      params: { ids: trackIds.join(',') }
     });
     return response.data as boolean[];
   }
@@ -402,7 +454,8 @@ export class SpotifyClient {
     offset?: number;
   }): Promise<SpotifyPaginated<SpotifySavedAlbum>> {
     let searchParams: Record<string, string> = {};
-    if (params?.market || this.config.market) searchParams['market'] = params?.market || this.config.market!;
+    if (params?.market || this.config.market)
+      searchParams['market'] = params?.market || this.config.market!;
     if (params?.limit) searchParams['limit'] = String(params.limit);
     if (params?.offset) searchParams['offset'] = String(params.offset);
 
@@ -420,7 +473,7 @@ export class SpotifyClient {
 
   async checkSavedAlbums(albumIds: string[]): Promise<boolean[]> {
     let response = await this.axios.get('/me/albums/contains', {
-      params: { ids: albumIds.join(',') },
+      params: { ids: albumIds.join(',') }
     });
     return response.data as boolean[];
   }
@@ -439,11 +492,14 @@ export class SpotifyClient {
 
   // ==================== Personalization ====================
 
-  async getTopItems(type: 'artists' | 'tracks', params?: {
-    timeRange?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<SpotifyPaginated<SpotifyArtist | SpotifyTrack>> {
+  async getTopItems(
+    type: 'artists' | 'tracks',
+    params?: {
+      timeRange?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<SpotifyPaginated<SpotifyArtist | SpotifyTrack>> {
     let searchParams: Record<string, string> = {};
     if (params?.timeRange) searchParams['time_range'] = params.timeRange;
     if (params?.limit) searchParams['limit'] = String(params.limit);
@@ -463,28 +519,34 @@ export class SpotifyClient {
     if (params?.after) searchParams['after'] = params.after;
     if (params?.before) searchParams['before'] = params.before;
 
-    let response = await this.axios.get('/me/player/recently-played', { params: searchParams });
+    let response = await this.axios.get('/me/player/recently-played', {
+      params: searchParams
+    });
     return response.data as SpotifyCursorPaginated<PlayHistoryItem>;
   }
 
   // ==================== Follow ====================
 
   async followArtistsOrUsers(type: 'artist' | 'user', ids: string[]): Promise<void> {
-    await this.axios.put('/me/following', { ids }, {
-      params: { type },
-    });
+    await this.axios.put(
+      '/me/following',
+      { ids },
+      {
+        params: { type }
+      }
+    );
   }
 
   async unfollowArtistsOrUsers(type: 'artist' | 'user', ids: string[]): Promise<void> {
     await this.axios.delete('/me/following', {
       params: { type },
-      data: { ids },
+      data: { ids }
     });
   }
 
   async checkFollowing(type: 'artist' | 'user', ids: string[]): Promise<boolean[]> {
     let response = await this.axios.get('/me/following/contains', {
-      params: { type, ids: ids.join(',') },
+      params: { type, ids: ids.join(',') }
     });
     return response.data as boolean[];
   }
@@ -528,15 +590,20 @@ export class SpotifyClient {
     return response.data as { categories: SpotifyPaginated<any> };
   }
 
-  async getCategoryPlaylists(categoryId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<{ playlists: SpotifyPaginated<SimplifiedPlaylist> }> {
+  async getCategoryPlaylists(
+    categoryId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<{ playlists: SpotifyPaginated<SimplifiedPlaylist> }> {
     let searchParams: Record<string, string> = {};
     if (params?.limit) searchParams['limit'] = String(params.limit);
     if (params?.offset) searchParams['offset'] = String(params.offset);
 
-    let response = await this.axios.get(`/browse/categories/${categoryId}/playlists`, { params: searchParams });
+    let response = await this.axios.get(`/browse/categories/${categoryId}/playlists`, {
+      params: searchParams
+    });
     return response.data as { playlists: SpotifyPaginated<SimplifiedPlaylist> };
   }
 }

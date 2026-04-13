@@ -26,8 +26,8 @@ export class TeamworkClient {
       baseURL,
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -81,22 +81,25 @@ export class TeamworkClient {
         'start-date': data.startDate,
         'end-date': data.endDate,
         status: data.status,
-        tags: data.tags,
-      },
+        tags: data.tags
+      }
     });
     return response.data;
   }
 
-  async updateProject(projectId: string, data: {
-    name?: string;
-    description?: string;
-    companyId?: string;
-    categoryId?: string;
-    startDate?: string;
-    endDate?: string;
-    status?: string;
-    tags?: string;
-  }) {
+  async updateProject(
+    projectId: string,
+    data: {
+      name?: string;
+      description?: string;
+      companyId?: string;
+      categoryId?: string;
+      startDate?: string;
+      endDate?: string;
+      status?: string;
+      tags?: string;
+    }
+  ) {
     let response = await this.axios.put(`/projects/${projectId}.json`, {
       project: {
         name: data.name,
@@ -106,8 +109,8 @@ export class TeamworkClient {
         'start-date': data.startDate,
         'end-date': data.endDate,
         status: data.status,
-        tags: data.tags,
-      },
+        tags: data.tags
+      }
     });
     return response.data;
   }
@@ -124,7 +127,9 @@ export class TeamworkClient {
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
 
-    let response = await this.axios.get(`/projects/${projectId}/tasklists.json`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/tasklists.json`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -132,8 +137,8 @@ export class TeamworkClient {
     let response = await this.axios.post(`/projects/${projectId}/tasklists.json`, {
       'todo-list': {
         name: data.name,
-        description: data.description,
-      },
+        description: data.description
+      }
     });
     return response.data;
   }
@@ -161,7 +166,8 @@ export class TeamworkClient {
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
     if (params?.filter) queryParams.filter = params.filter;
-    if (params?.responsiblePartyIds) queryParams['responsible-party-ids'] = params.responsiblePartyIds;
+    if (params?.responsiblePartyIds)
+      queryParams['responsible-party-ids'] = params.responsiblePartyIds;
     if (params?.startDate) queryParams.startDate = params.startDate;
     if (params?.endDate) queryParams.endDate = params.endDate;
     if (params?.includeCompleted) queryParams.includeCompletedTasks = 'true';
@@ -190,36 +196,42 @@ export class TeamworkClient {
     return response.data;
   }
 
-  async createTask(taskListId: string, data: {
-    content: string;
-    description?: string;
-    'responsible-party-id'?: string;
-    'start-date'?: string;
-    'due-date'?: string;
-    priority?: string;
-    'estimated-minutes'?: number;
-    tags?: string;
-    parentTaskId?: string;
-  }) {
+  async createTask(
+    taskListId: string,
+    data: {
+      content: string;
+      description?: string;
+      'responsible-party-id'?: string;
+      'start-date'?: string;
+      'due-date'?: string;
+      priority?: string;
+      'estimated-minutes'?: number;
+      tags?: string;
+      parentTaskId?: string;
+    }
+  ) {
     let response = await this.axios.post(`/tasklists/${taskListId}/tasks.json`, {
-      'todo-item': data,
+      'todo-item': data
     });
     return response.data;
   }
 
-  async updateTask(taskId: string, data: {
-    content?: string;
-    description?: string;
-    'responsible-party-id'?: string;
-    'start-date'?: string;
-    'due-date'?: string;
-    priority?: string;
-    'estimated-minutes'?: number;
-    tags?: string;
-    parentTaskId?: string;
-  }) {
+  async updateTask(
+    taskId: string,
+    data: {
+      content?: string;
+      description?: string;
+      'responsible-party-id'?: string;
+      'start-date'?: string;
+      'due-date'?: string;
+      priority?: string;
+      'estimated-minutes'?: number;
+      tags?: string;
+      parentTaskId?: string;
+    }
+  ) {
     let response = await this.axios.put(`/tasks/${taskId}.json`, {
-      'todo-item': data,
+      'todo-item': data
     });
     return response.data;
   }
@@ -298,20 +310,23 @@ export class TeamworkClient {
         hours: String(params.hours),
         minutes: String(params.minutes),
         isbillable: params.isBillable ? '1' : '0',
-        tags: params.tags,
-      },
+        tags: params.tags
+      }
     });
     return response.data;
   }
 
-  async updateTimeEntry(timeEntryId: string, data: {
-    description?: string;
-    date?: string;
-    hours?: number;
-    minutes?: number;
-    isBillable?: boolean;
-    tags?: string;
-  }) {
+  async updateTimeEntry(
+    timeEntryId: string,
+    data: {
+      description?: string;
+      date?: string;
+      hours?: number;
+      minutes?: number;
+      isBillable?: boolean;
+      tags?: string;
+    }
+  ) {
     let entry: Record<string, any> = {};
     if (data.description !== undefined) entry.description = data.description;
     if (data.date !== undefined) entry.date = data.date;
@@ -321,7 +336,7 @@ export class TeamworkClient {
     if (data.tags !== undefined) entry.tags = data.tags;
 
     let response = await this.axios.put(`/time_entries/${timeEntryId}.json`, {
-      'time-entry': entry,
+      'time-entry': entry
     });
     return response.data;
   }
@@ -368,14 +383,17 @@ export class TeamworkClient {
     return response.data;
   }
 
-  async createMilestone(projectId: string, data: {
-    title: string;
-    description?: string;
-    deadline?: string;
-    responsiblePartyIds?: string;
-    tags?: string;
-    notify?: boolean;
-  }) {
+  async createMilestone(
+    projectId: string,
+    data: {
+      title: string;
+      description?: string;
+      deadline?: string;
+      responsiblePartyIds?: string;
+      tags?: string;
+      notify?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/milestones.json`, {
       milestone: {
         title: data.title,
@@ -383,27 +401,30 @@ export class TeamworkClient {
         deadline: data.deadline,
         'responsible-party-ids': data.responsiblePartyIds,
         tags: data.tags,
-        notify: data.notify,
-      },
+        notify: data.notify
+      }
     });
     return response.data;
   }
 
-  async updateMilestone(milestoneId: string, data: {
-    title?: string;
-    description?: string;
-    deadline?: string;
-    responsiblePartyIds?: string;
-    tags?: string;
-  }) {
+  async updateMilestone(
+    milestoneId: string,
+    data: {
+      title?: string;
+      description?: string;
+      deadline?: string;
+      responsiblePartyIds?: string;
+      tags?: string;
+    }
+  ) {
     let response = await this.axios.put(`/milestones/${milestoneId}.json`, {
       milestone: {
         title: data.title,
         description: data.description,
         deadline: data.deadline,
         'responsible-party-ids': data.responsiblePartyIds,
-        tags: data.tags,
-      },
+        tags: data.tags
+      }
     });
     return response.data;
   }
@@ -425,7 +446,12 @@ export class TeamworkClient {
 
   // ── People ────────────────────────────────────────────────
 
-  async listPeople(params?: { page?: number; pageSize?: number; searchTerm?: string; projectId?: string }) {
+  async listPeople(params?: {
+    page?: number;
+    pageSize?: number;
+    searchTerm?: string;
+    projectId?: string;
+  }) {
     let queryParams: Record<string, string> = {};
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
@@ -472,7 +498,9 @@ export class TeamworkClient {
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
 
-    let response = await this.axios.get(`/projects/${projectId}/posts.json`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/posts.json`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -481,38 +509,44 @@ export class TeamworkClient {
     return response.data;
   }
 
-  async createMessage(projectId: string, data: {
-    title: string;
-    body: string;
-    categoryId?: string;
-    tags?: string;
-    notify?: string[];
-  }) {
+  async createMessage(
+    projectId: string,
+    data: {
+      title: string;
+      body: string;
+      categoryId?: string;
+      tags?: string;
+      notify?: string[];
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/posts.json`, {
       post: {
         title: data.title,
         body: data.body,
         'category-id': data.categoryId,
         tags: data.tags,
-        notify: data.notify,
-      },
+        notify: data.notify
+      }
     });
     return response.data;
   }
 
-  async updateMessage(messageId: string, data: {
-    title?: string;
-    body?: string;
-    categoryId?: string;
-    tags?: string;
-  }) {
+  async updateMessage(
+    messageId: string,
+    data: {
+      title?: string;
+      body?: string;
+      categoryId?: string;
+      tags?: string;
+    }
+  ) {
     let response = await this.axios.put(`/posts/${messageId}.json`, {
       post: {
         title: data.title,
         body: data.body,
         'category-id': data.categoryId,
-        tags: data.tags,
-      },
+        tags: data.tags
+      }
     });
     return response.data;
   }
@@ -524,33 +558,43 @@ export class TeamworkClient {
 
   // ── Comments ──────────────────────────────────────────────
 
-  async getComments(resourceType: string, resourceId: string, params?: { page?: number; pageSize?: number }) {
+  async getComments(
+    resourceType: string,
+    resourceId: string,
+    params?: { page?: number; pageSize?: number }
+  ) {
     let queryParams: Record<string, string> = {};
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
 
-    let response = await this.axios.get(`/${resourceType}/${resourceId}/comments.json`, { params: queryParams });
+    let response = await this.axios.get(`/${resourceType}/${resourceId}/comments.json`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async createComment(resourceType: string, resourceId: string, data: {
-    body: string;
-    notify?: string[];
-    contentType?: string;
-  }) {
+  async createComment(
+    resourceType: string,
+    resourceId: string,
+    data: {
+      body: string;
+      notify?: string[];
+      contentType?: string;
+    }
+  ) {
     let response = await this.axios.post(`/${resourceType}/${resourceId}/comments.json`, {
       comment: {
         body: data.body,
         notify: data.notify,
-        'content-type': data.contentType,
-      },
+        'content-type': data.contentType
+      }
     });
     return response.data;
   }
 
   async updateComment(commentId: string, data: { body: string }) {
     let response = await this.axios.put(`/comments/${commentId}.json`, {
-      comment: { body: data.body },
+      comment: { body: data.body }
     });
     return response.data;
   }
@@ -591,8 +635,8 @@ export class TeamworkClient {
         events: data.events,
         contentType: data.contentType || 'json',
         version: data.version || 2,
-        secret: data.secret,
-      },
+        secret: data.secret
+      }
     });
     return response.data;
   }
@@ -620,19 +664,24 @@ export class TeamworkClient {
     return response.data;
   }
 
-  async getProjectActivity(projectId: string, params?: {
-    page?: number;
-    pageSize?: number;
-    maxId?: string;
-    sinceId?: string;
-  }) {
+  async getProjectActivity(
+    projectId: string,
+    params?: {
+      page?: number;
+      pageSize?: number;
+      maxId?: string;
+      sinceId?: string;
+    }
+  ) {
     let queryParams: Record<string, string> = {};
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
     if (params?.maxId) queryParams.maxId = params.maxId;
     if (params?.sinceId) queryParams.sinceId = params.sinceId;
 
-    let response = await this.axios.get(`/projects/${projectId}/latestActivity.json`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/latestActivity.json`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -643,7 +692,9 @@ export class TeamworkClient {
     if (params?.page) queryParams.page = String(params.page);
     if (params?.pageSize) queryParams.pageSize = String(params.pageSize);
 
-    let response = await this.axios.get(`/projects/${projectId}/notebooks.json`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/notebooks.json`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -652,38 +703,44 @@ export class TeamworkClient {
     return response.data;
   }
 
-  async createNotebook(projectId: string, data: {
-    name: string;
-    content: string;
-    categoryId?: string;
-    tags?: string;
-    notify?: boolean;
-  }) {
+  async createNotebook(
+    projectId: string,
+    data: {
+      name: string;
+      content: string;
+      categoryId?: string;
+      tags?: string;
+      notify?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/notebooks.json`, {
       notebook: {
         name: data.name,
         content: data.content,
         categoryId: data.categoryId,
         tags: data.tags,
-        notify: data.notify,
-      },
+        notify: data.notify
+      }
     });
     return response.data;
   }
 
-  async updateNotebook(notebookId: string, data: {
-    name?: string;
-    content?: string;
-    categoryId?: string;
-    tags?: string;
-  }) {
+  async updateNotebook(
+    notebookId: string,
+    data: {
+      name?: string;
+      content?: string;
+      categoryId?: string;
+      tags?: string;
+    }
+  ) {
     let response = await this.axios.put(`/notebooks/${notebookId}.json`, {
       notebook: {
         name: data.name,
         content: data.content,
         categoryId: data.categoryId,
-        tags: data.tags,
-      },
+        tags: data.tags
+      }
     });
     return response.data;
   }
@@ -698,8 +755,8 @@ export class TeamworkClient {
   async addPeopleToProject(projectId: string, personIds: string[]) {
     let response = await this.axios.post(`/projects/${projectId}/people.json`, {
       add: {
-        userIdList: personIds.join(','),
-      },
+        userIdList: personIds.join(',')
+      }
     });
     return response.data;
   }
@@ -707,8 +764,8 @@ export class TeamworkClient {
   async removePeopleFromProject(projectId: string, personIds: string[]) {
     let response = await this.axios.put(`/projects/${projectId}/people.json`, {
       remove: {
-        userIdList: personIds.join(','),
-      },
+        userIdList: personIds.join(',')
+      }
     });
     return response.data;
   }

@@ -8,7 +8,7 @@ import {
   getVideo,
   popularVideos,
   listCollections,
-  getCollectionMedia,
+  getCollectionMedia
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getVideo,
     popularVideos,
     listCollections,
-    getCollectionMedia,
+    getCollectionMedia
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

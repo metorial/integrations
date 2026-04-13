@@ -2,24 +2,26 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let captchaSolved = SlateTrigger.create(
-  spec,
-  {
-    name: 'Captcha Solved',
-    key: 'captcha_solved',
-    description: 'Triggered when a captcha solution is ready. 2Captcha sends an HTTP POST request with the captcha ID and solution to the registered callback URL.',
-  },
-)
-  .input(z.object({
-    captchaId: z.string().describe('ID of the solved captcha task'),
-    answer: z.string().describe('The captcha solution/answer'),
-  }))
-  .output(z.object({
-    captchaId: z.string().describe('ID of the solved captcha task'),
-    answer: z.string().describe('The captcha solution/answer'),
-  }))
+export let captchaSolved = SlateTrigger.create(spec, {
+  name: 'Captcha Solved',
+  key: 'captcha_solved',
+  description:
+    'Triggered when a captcha solution is ready. 2Captcha sends an HTTP POST request with the captcha ID and solution to the registered callback URL.'
+})
+  .input(
+    z.object({
+      captchaId: z.string().describe('ID of the solved captcha task'),
+      answer: z.string().describe('The captcha solution/answer')
+    })
+  )
+  .output(
+    z.object({
+      captchaId: z.string().describe('ID of the solved captcha task'),
+      answer: z.string().describe('The captcha solution/answer')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // 2Captcha sends POST with URL-encoded form data: id=CAPTCHA_ID&code=CAPTCHA_ANSWER
       let text = await ctx.request.text();
       let params = new URLSearchParams(text);
@@ -42,20 +44,21 @@ export let captchaSolved = SlateTrigger.create(
         inputs: [
           {
             captchaId,
-            answer,
-          },
-        ],
+            answer
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'captcha.solved',
         id: ctx.input.captchaId,
         output: {
           captchaId: ctx.input.captchaId,
-          answer: ctx.input.answer,
-        },
+          answer: ctx.input.answer
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

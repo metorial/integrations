@@ -23,6 +23,7 @@ When making API requests, include the API key in the header of your HTTP request
 The API host varies based on your geographical location. To determine the correct API host, visit the 'Rest API' section under 'Integrations' in your Whautomate account and copy your host name. Use the relevant hostname for your region when making API calls for optimal performance.
 
 Example request header:
+
 ```
 x-api-key: your-api-key-here
 Host: your-region-host.whautomate.com

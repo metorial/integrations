@@ -10,8 +10,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'X-Spoki-Api-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,7 +28,7 @@ export class Client {
     lists?: string[];
   }) {
     let body: Record<string, any> = {
-      phone: data.phone,
+      phone: data.phone
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -42,16 +42,19 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    phone?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    language?: string;
-    customFields?: Record<string, any>;
-    tags?: string[];
-    lists?: string[];
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      phone?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      language?: string;
+      customFields?: Record<string, any>;
+      tags?: string[];
+      lists?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.phone) body.phone = data.phone;
     if (data.firstName) body.first_name = data.firstName;
@@ -106,7 +109,9 @@ export class Client {
   }
 
   async removeContactFromList(contactId: string, listId: string) {
-    let response = await this.axios.delete(`/contacts/${contactId}/lists/`, { data: { list: listId } });
+    let response = await this.axios.delete(`/contacts/${contactId}/lists/`, {
+      data: { list: listId }
+    });
     return response.data;
   }
 
@@ -121,7 +126,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       phone: data.phone,
-      message: data.message,
+      message: data.message
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -142,7 +147,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       template_id: data.templateId,
-      phone: data.phone,
+      phone: data.phone
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -166,7 +171,7 @@ export class Client {
     customFields?: Record<string, any>;
   }) {
     let body: Record<string, any> = {
-      phone: data.phone,
+      phone: data.phone
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -189,7 +194,7 @@ export class Client {
       customFields?: Record<string, any>;
     }>;
   }) {
-    let contacts = data.contacts.map((c) => {
+    let contacts = data.contacts.map(c => {
       let contact: Record<string, any> = { phone: c.phone };
       if (c.firstName) contact.first_name = c.firstName;
       if (c.lastName) contact.last_name = c.lastName;
@@ -200,7 +205,7 @@ export class Client {
     });
 
     let response = await this.axios.post(`/automations/${data.automationId}/start_many/`, {
-      contacts,
+      contacts
     });
     return response.data;
   }
@@ -219,7 +224,7 @@ export class Client {
     customFields?: Record<string, any>;
   }) {
     let body: Record<string, any> = {
-      name: data.name,
+      name: data.name
     };
     if (data.contactId) body.contact_id = data.contactId;
     if (data.phone) body.phone = data.phone;
@@ -234,14 +239,17 @@ export class Client {
     return response.data;
   }
 
-  async updateDeal(dealId: string, data: {
-    name?: string;
-    value?: number;
-    stageId?: string;
-    ownerId?: string;
-    expectedCloseDate?: string;
-    customFields?: Record<string, any>;
-  }) {
+  async updateDeal(
+    dealId: string,
+    data: {
+      name?: string;
+      value?: number;
+      stageId?: string;
+      ownerId?: string;
+      expectedCloseDate?: string;
+      customFields?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name) body.name = data.name;
     if (data.value !== undefined) body.value = data.value;
@@ -264,11 +272,7 @@ export class Client {
     return response.data;
   }
 
-  async listDeals(params?: {
-    page?: number;
-    pipelineId?: string;
-    stageId?: string;
-  }) {
+  async listDeals(params?: { page?: number; pipelineId?: string; stageId?: string }) {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.pipelineId) queryParams.pipeline_id = params.pipelineId;

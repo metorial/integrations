@@ -18,7 +18,7 @@ let sha256 = async (data: string): Promise<string> => {
 };
 
 let hmacSha256 = async (key: ArrayBuffer | Uint8Array, data: string): Promise<ArrayBuffer> => {
-  let keyBuffer = key instanceof Uint8Array ? key.buffer as ArrayBuffer : key;
+  let keyBuffer = key instanceof Uint8Array ? (key.buffer as ArrayBuffer) : key;
   let cryptoKey = await crypto.subtle.importKey(
     'raw',
     keyBuffer,
@@ -60,17 +60,30 @@ export interface SignedHeaders {
 }
 
 export let signRequest = async (params: SignRequestParams): Promise<SignedHeaders> => {
-  let { method, url, headers, body, accessKeyId, secretAccessKey, sessionToken, region, service } = params;
+  let {
+    method,
+    url,
+    headers,
+    body,
+    accessKeyId,
+    secretAccessKey,
+    sessionToken,
+    region,
+    service
+  } = params;
 
   let parsedUrl = new URL(url);
   let now = new Date();
   let dateStamp = now.toISOString().replace(/[-:]/g, '').slice(0, 8); // YYYYMMDD
-  let amzDate = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); // YYYYMMDDTHHMMSSZ
+  let amzDate = now
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}/, ''); // YYYYMMDDTHHMMSSZ
 
   let allHeaders: Record<string, string> = {
     ...headers,
     host: parsedUrl.host,
-    'x-amz-date': amzDate,
+    'x-amz-date': amzDate
   };
 
   if (sessionToken) {
@@ -120,12 +133,9 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedHeader
   // Create string to sign
   let credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
   let canonicalRequestHash = await sha256(canonicalRequest);
-  let stringToSign = [
-    'AWS4-HMAC-SHA256',
-    amzDate,
-    credentialScope,
-    canonicalRequestHash
-  ].join('\n');
+  let stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join(
+    '\n'
+  );
 
   // Derive signing key and calculate signature
   let signingKey = await getSigningKey(secretAccessKey, dateStamp, region, service);
@@ -137,7 +147,7 @@ export let signRequest = async (params: SignRequestParams): Promise<SignedHeader
 
   let result: SignedHeaders = {
     ...allHeaders,
-    Authorization: authorization,
+    Authorization: authorization
   };
 
   return result;

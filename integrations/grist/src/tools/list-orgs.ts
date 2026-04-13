@@ -8,28 +8,27 @@ let orgSchema = z.object({
   name: z.string().describe('Organization name'),
   domain: z.string().nullable().describe('Organization domain/subdomain'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last update timestamp'),
+  updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listOrgs = SlateTool.create(
-  spec,
-  {
-    name: 'List Organizations',
-    key: 'list_orgs',
-    description: `List all accessible organizations (team sites and personal spaces). Returns org IDs, names, and domains that the authenticated user can access.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let listOrgs = SlateTool.create(spec, {
+  name: 'List Organizations',
+  key: 'list_orgs',
+  description: `List all accessible organizations (team sites and personal spaces). Returns org IDs, names, and domains that the authenticated user can access.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    organizations: z.array(orgSchema).describe('List of accessible organizations'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      organizations: z.array(orgSchema).describe('List of accessible organizations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GristClient({
       token: ctx.auth.token,
-      serverUrl: ctx.auth.serverUrl,
+      serverUrl: ctx.auth.serverUrl
     });
 
     let orgs = await client.listOrgs();
@@ -39,11 +38,12 @@ export let listOrgs = SlateTool.create(
       name: org.name,
       domain: org.domain ?? null,
       createdAt: org.createdAt,
-      updatedAt: org.updatedAt,
+      updatedAt: org.updatedAt
     }));
 
     return {
       output: { organizations },
-      message: `Found **${organizations.length}** organization(s).`,
+      message: `Found **${organizations.length}** organization(s).`
     };
-  }).build();
+  })
+  .build();

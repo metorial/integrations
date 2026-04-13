@@ -3,29 +3,28 @@ import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccountTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account',
-    description: `Retrieve your ClickSend account details including balance, user information, and allowed email addresses. Useful for checking available funds, verifying account settings, or finding email address IDs needed for sending emails.`,
-    tags: {
-      readOnly: true
-    }
+export let getAccountTool = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account',
+  description: `Retrieve your ClickSend account details including balance, user information, and allowed email addresses. Useful for checking available funds, verifying account settings, or finding email address IDs needed for sending emails.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string().describe('Account user ID'),
-    username: z.string().describe('API username'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Account email'),
-    balance: z.number().describe('Current account balance'),
-    country: z.string().optional().describe('Account country'),
-    phoneNumber: z.string().optional().describe('Account phone number')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string().describe('Account user ID'),
+      username: z.string().describe('API username'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Account email'),
+      balance: z.number().describe('Current account balance'),
+      country: z.string().optional().describe('Account country'),
+      phoneNumber: z.string().optional().describe('Account phone number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClickSendClient({
       username: ctx.auth.username,
       token: ctx.auth.token
@@ -46,4 +45,5 @@ export let getAccountTool = SlateTool.create(
       },
       message: `Account **${account.username}** — balance: **$${parseFloat(account.balance || 0).toFixed(2)}**`
     };
-  }).build();
+  })
+  .build();

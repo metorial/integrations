@@ -3,44 +3,50 @@ import { SlackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let channelActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Channel Activity',
-    key: 'channel_activity',
-    description: '[Polling fallback] Triggers when channels are created, archived, unarchived, or their membership changes. Polls the conversations list to detect changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'archived', 'unarchived', 'updated']).describe('Type of channel event'),
-    channelId: z.string().describe('Channel ID'),
-    channelName: z.string().optional().describe('Channel name'),
-    isPrivate: z.boolean().optional().describe('Whether the channel is private'),
-    creator: z.string().optional().describe('Creator user ID'),
-  }))
-  .output(z.object({
-    channelId: z.string().describe('Channel ID'),
-    channelName: z.string().optional().describe('Channel name'),
-    isPrivate: z.boolean().optional().describe('Whether the channel is private'),
-    isArchived: z.boolean().optional().describe('Whether the channel is archived'),
-    creator: z.string().optional().describe('Creator user ID'),
-    topic: z.string().optional().describe('Channel topic'),
-    purpose: z.string().optional().describe('Channel purpose'),
-    numMembers: z.number().optional().describe('Number of members'),
-  }))
+export let channelActivity = SlateTrigger.create(spec, {
+  name: 'Channel Activity',
+  key: 'channel_activity',
+  description:
+    '[Polling fallback] Triggers when channels are created, archived, unarchived, or their membership changes. Polls the conversations list to detect changes.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'archived', 'unarchived', 'updated'])
+        .describe('Type of channel event'),
+      channelId: z.string().describe('Channel ID'),
+      channelName: z.string().optional().describe('Channel name'),
+      isPrivate: z.boolean().optional().describe('Whether the channel is private'),
+      creator: z.string().optional().describe('Creator user ID')
+    })
+  )
+  .output(
+    z.object({
+      channelId: z.string().describe('Channel ID'),
+      channelName: z.string().optional().describe('Channel name'),
+      isPrivate: z.boolean().optional().describe('Whether the channel is private'),
+      isArchived: z.boolean().optional().describe('Whether the channel is archived'),
+      creator: z.string().optional().describe('Creator user ID'),
+      topic: z.string().optional().describe('Channel topic'),
+      purpose: z.string().optional().describe('Channel purpose'),
+      numMembers: z.number().optional().describe('Number of members')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 2,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 2
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SlackClient(ctx.auth.token);
-      let state = ctx.state as { knownChannels?: Record<string, { name?: string; isArchived?: boolean }> } | null;
+      let state = ctx.state as {
+        knownChannels?: Record<string, { name?: string; isArchived?: boolean }>;
+      } | null;
       let knownChannels = state?.knownChannels || {};
 
       let result = await client.listConversations({
         types: 'public_channel,private_channel',
-        limit: 200,
+        limit: 200
       });
 
       let inputs: Array<{
@@ -56,7 +62,7 @@ export let channelActivity = SlateTrigger.create(
       for (let channel of result.channels) {
         updatedKnownChannels[channel.id] = {
           name: channel.name,
-          isArchived: channel.is_archived,
+          isArchived: channel.is_archived
         };
 
         let known = knownChannels[channel.id];
@@ -69,7 +75,7 @@ export let channelActivity = SlateTrigger.create(
               channelId: channel.id,
               channelName: channel.name,
               isPrivate: channel.is_private,
-              creator: channel.creator,
+              creator: channel.creator
             });
           }
         } else {
@@ -78,21 +84,21 @@ export let channelActivity = SlateTrigger.create(
               eventType: 'archived',
               channelId: channel.id,
               channelName: channel.name,
-              isPrivate: channel.is_private,
+              isPrivate: channel.is_private
             });
           } else if (!channel.is_archived && known.isArchived) {
             inputs.push({
               eventType: 'unarchived',
               channelId: channel.id,
               channelName: channel.name,
-              isPrivate: channel.is_private,
+              isPrivate: channel.is_private
             });
           } else if (channel.name !== known.name) {
             inputs.push({
               eventType: 'updated',
               channelId: channel.id,
               channelName: channel.name,
-              isPrivate: channel.is_private,
+              isPrivate: channel.is_private
             });
           }
         }
@@ -101,12 +107,12 @@ export let channelActivity = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownChannels: updatedKnownChannels,
-        },
+          knownChannels: updatedKnownChannels
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new SlackClient(ctx.auth.token);
 
       let channelInfo: any = {};
@@ -127,9 +133,9 @@ export let channelActivity = SlateTrigger.create(
           creator: ctx.input.creator || channelInfo.creator,
           topic: channelInfo.topic?.value,
           purpose: channelInfo.purpose?.value,
-          numMembers: channelInfo.num_members,
-        },
+          numMembers: channelInfo.num_members
+        }
       };
-    },
+    }
   })
   .build();

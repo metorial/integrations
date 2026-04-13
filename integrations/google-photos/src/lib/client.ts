@@ -92,8 +92,8 @@ export class GooglePhotosLibraryClient {
     this.axios = createAxios({
       baseURL: 'https://photoslibrary.googleapis.com/v1',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -101,7 +101,7 @@ export class GooglePhotosLibraryClient {
 
   async createAlbum(title: string): Promise<AlbumResponse> {
     let response = await this.axios.post('/albums', {
-      album: { title },
+      album: { title }
     });
     return response.data;
   }
@@ -119,7 +119,7 @@ export class GooglePhotosLibraryClient {
     let response = await this.axios.get('/albums', { params });
     return {
       albums: response.data.albums || [],
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
@@ -139,29 +139,21 @@ export class GooglePhotosLibraryClient {
       albumBody.coverPhotoMediaItemId = updates.coverPhotoMediaItemId;
     }
 
-    let response = await this.axios.patch(
-      `/albums/${albumId}`,
-      albumBody,
-      { params: { updateMask: updateMaskFields.join(',') } }
-    );
+    let response = await this.axios.patch(`/albums/${albumId}`, albumBody, {
+      params: { updateMask: updateMaskFields.join(',') }
+    });
     return response.data;
   }
 
-  async addMediaItemsToAlbum(
-    albumId: string,
-    mediaItemIds: string[]
-  ): Promise<void> {
+  async addMediaItemsToAlbum(albumId: string, mediaItemIds: string[]): Promise<void> {
     await this.axios.post(`/albums/${albumId}:batchAddMediaItems`, {
-      mediaItemIds,
+      mediaItemIds
     });
   }
 
-  async removeMediaItemsFromAlbum(
-    albumId: string,
-    mediaItemIds: string[]
-  ): Promise<void> {
+  async removeMediaItemsFromAlbum(albumId: string, mediaItemIds: string[]): Promise<void> {
     await this.axios.post(`/albums/${albumId}:batchRemoveMediaItems`, {
-      mediaItemIds,
+      mediaItemIds
     });
   }
 
@@ -176,7 +168,7 @@ export class GooglePhotosLibraryClient {
   ): Promise<{ enrichmentItem: { id: string } }> {
     let response = await this.axios.post(`/albums/${albumId}:addEnrichment`, {
       newEnrichmentItem: enrichment,
-      albumPosition: albumPosition || { position: 'LAST_IN_ALBUM' },
+      albumPosition: albumPosition || { position: 'LAST_IN_ALBUM' }
     });
     return response.data;
   }
@@ -192,7 +184,7 @@ export class GooglePhotosLibraryClient {
     mediaItemIds: string[]
   ): Promise<{ mediaItemResults: Array<{ mediaItem: MediaItemResponse; status?: any }> }> {
     let response = await this.axios.get('/mediaItems:batchGet', {
-      params: { mediaItemIds },
+      params: { mediaItemIds }
     });
     return response.data;
   }
@@ -204,7 +196,7 @@ export class GooglePhotosLibraryClient {
     let response = await this.axios.get('/mediaItems', { params });
     return {
       mediaItems: response.data.mediaItems || [],
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
@@ -218,14 +210,11 @@ export class GooglePhotosLibraryClient {
     let response = await this.axios.post('/mediaItems:search', params);
     return {
       mediaItems: response.data.mediaItems || [],
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
-  async updateMediaItem(
-    mediaItemId: string,
-    description: string
-  ): Promise<MediaItemResponse> {
+  async updateMediaItem(mediaItemId: string, description: string): Promise<MediaItemResponse> {
     let response = await this.axios.patch(
       `/mediaItems/${mediaItemId}`,
       { description },
@@ -236,10 +225,7 @@ export class GooglePhotosLibraryClient {
 
   // --- Upload ---
 
-  async uploadBytes(
-    fileContent: string,
-    mimeType: string
-  ): Promise<string> {
+  async uploadBytes(fileContent: string, mimeType: string): Promise<string> {
     let response = await this.axios.post(
       'https://photoslibrary.googleapis.com/v1/uploads',
       fileContent,
@@ -247,9 +233,9 @@ export class GooglePhotosLibraryClient {
         headers: {
           'Content-Type': 'application/octet-stream',
           'X-Goog-Upload-Content-Type': mimeType,
-          'X-Goog-Upload-Protocol': 'raw',
+          'X-Goog-Upload-Protocol': 'raw'
         },
-        baseURL: '',
+        baseURL: ''
       }
     );
     return response.data;
@@ -270,13 +256,13 @@ export class GooglePhotosLibraryClient {
     }>;
   }> {
     let body: Record<string, any> = {
-      newMediaItems: items.map((item) => ({
+      newMediaItems: items.map(item => ({
         description: item.description || '',
         simpleMediaItem: {
           fileName: item.fileName,
-          uploadToken: item.uploadToken,
-        },
-      })),
+          uploadToken: item.uploadToken
+        }
+      }))
     };
 
     if (albumId) {
@@ -295,8 +281,8 @@ export class GooglePhotosPickerClient {
     this.axios = createAxios({
       baseURL: 'https://photospicker.googleapis.com/v1',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -363,12 +349,12 @@ export class GooglePhotosPickerClient {
     let response = await this.axios.get('/mediaItems', {
       params: {
         sessionId,
-        ...params,
-      },
+        ...params
+      }
     });
     return {
       mediaItems: response.data.mediaItems || [],
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 }

@@ -3,53 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let courseProgress = SlateTrigger.create(
-  spec,
-  {
-    name: 'Course Progress Updated',
-    key: 'course_progress',
-    description: 'Polls for new or updated learner tracking records across courses. Detects new completions and progress updates.',
-  }
-)
-  .input(z.object({
-    trackingId: z.string().describe('Unique tracking record identifier'),
-    courseId: z.string().describe('Course ID this tracking belongs to'),
-    learnerIdentifier: z.string().describe('Learner identifier'),
-    clientIdentifier: z.string().optional().describe('Client identifier'),
-    completed: z.boolean().describe('Whether the course has been completed'),
-    progress: z.number().optional().describe('Progress percentage'),
-    isNewTracking: z.boolean().describe('Whether this is a newly detected tracking record'),
-    raw: z.record(z.string(), z.any()).describe('Full tracking record from the API'),
-  }))
-  .output(z.object({
-    trackingId: z.string().describe('Unique tracking record identifier'),
-    courseId: z.string().describe('Course ID'),
-    learnerIdentifier: z.string().describe('Learner identifier'),
-    clientIdentifier: z.string().optional().describe('Client identifier'),
-    completed: z.boolean().describe('Whether the course has been completed'),
-    progress: z.number().optional().describe('Progress percentage'),
-    isNewTracking: z.boolean().describe('Whether this is a newly detected tracking record'),
-    raw: z.record(z.string(), z.any()).describe('Full tracking record from the API'),
-  }))
+export let courseProgress = SlateTrigger.create(spec, {
+  name: 'Course Progress Updated',
+  key: 'course_progress',
+  description:
+    'Polls for new or updated learner tracking records across courses. Detects new completions and progress updates.'
+})
+  .input(
+    z.object({
+      trackingId: z.string().describe('Unique tracking record identifier'),
+      courseId: z.string().describe('Course ID this tracking belongs to'),
+      learnerIdentifier: z.string().describe('Learner identifier'),
+      clientIdentifier: z.string().optional().describe('Client identifier'),
+      completed: z.boolean().describe('Whether the course has been completed'),
+      progress: z.number().optional().describe('Progress percentage'),
+      isNewTracking: z.boolean().describe('Whether this is a newly detected tracking record'),
+      raw: z.record(z.string(), z.any()).describe('Full tracking record from the API')
+    })
+  )
+  .output(
+    z.object({
+      trackingId: z.string().describe('Unique tracking record identifier'),
+      courseId: z.string().describe('Course ID'),
+      learnerIdentifier: z.string().describe('Learner identifier'),
+      clientIdentifier: z.string().optional().describe('Client identifier'),
+      completed: z.boolean().describe('Whether the course has been completed'),
+      progress: z.number().optional().describe('Progress percentage'),
+      isNewTracking: z.boolean().describe('Whether this is a newly detected tracking record'),
+      raw: z.record(z.string(), z.any()).describe('Full tracking record from the API')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         userId: ctx.auth.userId,
-        authScheme: ctx.auth.authScheme,
+        authScheme: ctx.auth.authScheme
       });
 
-      let knownTrackings: Record<string, boolean> = (ctx.state?.knownTrackings as Record<string, boolean>) ?? {};
+      let knownTrackings: Record<string, boolean> =
+        (ctx.state?.knownTrackings as Record<string, boolean>) ?? {};
       let knownCourseIds: string[] = (ctx.state?.courseIds as string[]) ?? [];
 
       // On first poll, fetch all courses to discover course IDs
       if (knownCourseIds.length === 0) {
         let coursesResult = await client.listCourses({ length: 100, page: 0 });
-        let courses = Array.isArray(coursesResult) ? coursesResult : (coursesResult?.data ?? []);
+        let courses = Array.isArray(coursesResult)
+          ? coursesResult
+          : (coursesResult?.data ?? []);
         knownCourseIds = courses.map((c: any) => String(c.id));
       }
 
@@ -71,7 +76,7 @@ export let courseProgress = SlateTrigger.create(
           let result = await client.listTrackings({
             id: Number(courseId),
             length: 100,
-            page: 0,
+            page: 0
           });
 
           let trackings = Array.isArray(result) ? result : (result?.data ?? []);
@@ -93,7 +98,7 @@ export let courseProgress = SlateTrigger.create(
                 completed: isCompleted,
                 progress: tracking.progress,
                 isNewTracking: isNew,
-                raw: tracking,
+                raw: tracking
               });
             }
           }
@@ -106,12 +111,12 @@ export let courseProgress = SlateTrigger.create(
         inputs,
         updatedState: {
           knownTrackings: newKnownTrackings,
-          courseIds: knownCourseIds,
-        },
+          courseIds: knownCourseIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNewTracking ? 'tracking.created' : 'tracking.completed';
 
       return {
@@ -125,9 +130,9 @@ export let courseProgress = SlateTrigger.create(
           completed: ctx.input.completed,
           progress: ctx.input.progress,
           isNewTracking: ctx.input.isNewTracking,
-          raw: ctx.input.raw,
-        },
+          raw: ctx.input.raw
+        }
       };
-    },
+    }
   })
   .build();

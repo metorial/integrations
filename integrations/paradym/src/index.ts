@@ -16,7 +16,7 @@ import {
   listTrustedEntities,
   listProjects,
   listIssuedCredentials,
-  listDids,
+  listDids
 } from './tools';
 import { credentialEvent } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     listTrustedEntities,
     listProjects,
     listIssuedCredentials,
-    listDids,
+    listDids
   ],
-  triggers: [
-    credentialEvent,
-  ],
+  triggers: [credentialEvent]
 });

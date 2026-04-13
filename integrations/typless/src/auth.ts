@@ -6,19 +6,23 @@ let axios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Typless API key found on the Settings page of the Typless dashboard')
+      token: z
+        .string()
+        .describe('Typless API key found on the Settings page of the Typless dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

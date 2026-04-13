@@ -1,15 +1,16 @@
+import crypto from 'crypto';
 import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
-// @ts-ignore crypto module is available in the Node.js runtime used at deploy time.
-import crypto from 'crypto';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    publicKey: z.string(),
-    privateKey: z.string(),
-    authMethod: z.enum(['hmac', 'session_key'])
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      publicKey: z.string(),
+      privateKey: z.string(),
+      authMethod: z.enum(['hmac', 'session_key'])
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key (HMAC)',
@@ -20,7 +21,7 @@ export let auth = SlateAuth.create()
       privateKey: z.string().describe('ForceManager API Private Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: '',
@@ -34,7 +35,8 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let ax = createAxios({ baseURL: 'https://api.forcemanager.com/api/v4' });
       let timestamp = Math.floor(Date.now() / 1000).toString();
-      let signature = crypto.createHash('sha1')
+      let signature = crypto
+        .createHash('sha1')
         .update(timestamp + ctx.output.publicKey + ctx.output.privateKey)
         .digest('hex');
 
@@ -48,7 +50,8 @@ export let auth = SlateAuth.create()
         params: { count: 1 }
       });
 
-      let user = Array.isArray(response.data) && response.data.length > 0 ? response.data[0] : null;
+      let user =
+        Array.isArray(response.data) && response.data.length > 0 ? response.data[0] : null;
 
       return {
         profile: {
@@ -69,7 +72,7 @@ export let auth = SlateAuth.create()
       privateKey: z.string().describe('ForceManager API Private Key (password)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let ax = createAxios({ baseURL: 'https://api.forcemanager.com/api/v4' });
 
       let response = await ax.post('/login', {
@@ -100,7 +103,8 @@ export let auth = SlateAuth.create()
         params: { count: 1 }
       });
 
-      let user = Array.isArray(response.data) && response.data.length > 0 ? response.data[0] : null;
+      let user =
+        Array.isArray(response.data) && response.data.length > 0 ? response.data[0] : null;
 
       return {
         profile: {

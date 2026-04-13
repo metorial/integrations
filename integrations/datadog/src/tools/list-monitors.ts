@@ -3,41 +3,59 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let listMonitors = SlateTool.create(
-  spec,
-  {
-    name: 'List Monitors',
-    key: 'list_monitors',
-    description: `List and search Datadog monitors. Retrieve monitors filtered by name, tags, or state. Returns monitor details including current alert state.`,
-    tags: {
-      readOnly: true
-    }
+export let listMonitors = SlateTool.create(spec, {
+  name: 'List Monitors',
+  key: 'list_monitors',
+  description: `List and search Datadog monitors. Retrieve monitors filtered by name, tags, or state. Returns monitor details including current alert state.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Filter monitors by name (substring match)'),
-    tags: z.string().optional().describe('Comma-separated list of tags to filter by, e.g. "env:production,service:web"'),
-    monitorTags: z.string().optional().describe('Comma-separated list of monitor tags to filter by'),
-    groupStates: z.string().optional().describe('Comma-separated group states to include: "all", "alert", "warn", "no data"'),
-    page: z.number().optional().describe('Page number for pagination (0-indexed)'),
-    pageSize: z.number().optional().describe('Number of monitors per page (max 1000)')
-  }))
-  .output(z.object({
-    monitors: z.array(z.object({
-      monitorId: z.number(),
-      name: z.string(),
-      type: z.string(),
-      query: z.string(),
-      overallState: z.string().optional(),
-      message: z.string().optional(),
-      tags: z.array(z.string()).optional(),
-      priority: z.number().optional(),
-      created: z.string().optional(),
-      modified: z.string().optional(),
-      creatorName: z.string().optional()
-    })).describe('List of monitors matching the filter criteria')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Filter monitors by name (substring match)'),
+      tags: z
+        .string()
+        .optional()
+        .describe(
+          'Comma-separated list of tags to filter by, e.g. "env:production,service:web"'
+        ),
+      monitorTags: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of monitor tags to filter by'),
+      groupStates: z
+        .string()
+        .optional()
+        .describe(
+          'Comma-separated group states to include: "all", "alert", "warn", "no data"'
+        ),
+      page: z.number().optional().describe('Page number for pagination (0-indexed)'),
+      pageSize: z.number().optional().describe('Number of monitors per page (max 1000)')
+    })
+  )
+  .output(
+    z.object({
+      monitors: z
+        .array(
+          z.object({
+            monitorId: z.number(),
+            name: z.string(),
+            type: z.string(),
+            query: z.string(),
+            overallState: z.string().optional(),
+            message: z.string().optional(),
+            tags: z.array(z.string()).optional(),
+            priority: z.number().optional(),
+            created: z.string().optional(),
+            modified: z.string().optional(),
+            creatorName: z.string().optional()
+          })
+        )
+        .describe('List of monitors matching the filter criteria')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let monitors = await client.listMonitors(ctx.input);
 

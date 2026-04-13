@@ -69,26 +69,31 @@ Exa supports webhooks for the Websets API. Webhooks let you get notifications wh
 The available webhook event types are:
 
 ### Webset Events
+
 - **`webset.created`** — A new Webset has been created.
 - **`webset.deleted`** — A Webset has been deleted.
 - **`webset.paused`** — A Webset has been paused.
 - **`webset.idle`** — A Webset has finished all running operations and is idle.
 
 ### Webset Search Events
+
 - **`webset.search.created`** — A new search has been started on a Webset.
 - **`webset.search.updated`** — A search has been updated with progress.
 - **`webset.search.completed`** — A search has finished finding all items.
 - **`webset.search.canceled`** — A search has been canceled.
 
 ### Webset Item Events
+
 - **`webset.item.created`** — A new item has been added to a Webset.
 - **`webset.item.enriched`** — An item has completed enrichment processing.
 
 ### Import Events
+
 - **`import.created`** — A new data import has been started.
 - **`import.completed`** — A data import has finished.
 
 ### Monitor Events
+
 - **`monitor.created`** — A new monitor has been created.
 - **`monitor.updated`** — A monitor's configuration has been updated.
 - **`monitor.deleted`** — A monitor has been deleted.
@@ -96,6 +101,7 @@ The available webhook event types are:
 - **`monitor.run.completed`** — A scheduled monitor run has finished.
 
 ### Export Events
+
 - **`webset.export.created`** — A new export job has been started.
 - **`webset.export.completed`** — An export job has finished and is ready for download.
 

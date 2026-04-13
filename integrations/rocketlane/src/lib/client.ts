@@ -10,9 +10,9 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'api-key': config.token,
-        'accept': 'application/json',
-        'content-type': 'application/json',
-      },
+        accept: 'application/json',
+        'content-type': 'application/json'
+      }
     });
   }
 
@@ -44,15 +44,18 @@ export class Client {
     return res.data;
   }
 
-  async updateProject(projectId: number, data: {
-    projectName?: string;
-    startDate?: string;
-    dueDate?: string;
-    projectDescription?: string;
-    visibility?: string;
-    owner?: { emailId?: string; userId?: number };
-    fields?: Array<{ fieldId: number; fieldValue: any }>;
-  }) {
+  async updateProject(
+    projectId: number,
+    data: {
+      projectName?: string;
+      startDate?: string;
+      dueDate?: string;
+      projectDescription?: string;
+      visibility?: string;
+      owner?: { emailId?: string; userId?: number };
+      fields?: Array<{ fieldId: number; fieldValue: any }>;
+    }
+  ) {
     let res = await this.axios.put(`/projects/${projectId}`, data);
     return res.data;
   }
@@ -67,7 +70,10 @@ export class Client {
     return res.data;
   }
 
-  async addProjectMembers(projectId: number, members: Array<{ emailId?: string; userId?: number; role?: string }>) {
+  async addProjectMembers(
+    projectId: number,
+    members: Array<{ emailId?: string; userId?: number; role?: string }>
+  ) {
     let res = await this.axios.post(`/projects/${projectId}/members`, { members });
     return res.data;
   }
@@ -79,7 +85,12 @@ export class Client {
 
   // ─── Tasks ───────────────────────────────────────────────
 
-  async listTasks(params?: { projectId?: number; phaseId?: number; offset?: number; limit?: number }) {
+  async listTasks(params?: {
+    projectId?: number;
+    phaseId?: number;
+    offset?: number;
+    limit?: number;
+  }) {
     let res = await this.axios.get('/tasks', { params });
     return res.data;
   }
@@ -109,20 +120,23 @@ export class Client {
     return res.data;
   }
 
-  async updateTask(taskId: number, data: {
-    taskName?: string;
-    assignees?: Array<{ emailId?: string; userId?: number }>;
-    followers?: Array<{ emailId?: string; userId?: number }>;
-    startDate?: string;
-    dueDate?: string;
-    effort?: number;
-    progress?: number;
-    description?: string;
-    status?: string;
-    priority?: string;
-    atRisk?: boolean;
-    fields?: Array<{ fieldId: number; fieldValue: any }>;
-  }) {
+  async updateTask(
+    taskId: number,
+    data: {
+      taskName?: string;
+      assignees?: Array<{ emailId?: string; userId?: number }>;
+      followers?: Array<{ emailId?: string; userId?: number }>;
+      startDate?: string;
+      dueDate?: string;
+      effort?: number;
+      progress?: number;
+      description?: string;
+      status?: string;
+      priority?: string;
+      atRisk?: boolean;
+      fields?: Array<{ fieldId: number; fieldValue: any }>;
+    }
+  ) {
     let res = await this.axios.put(`/tasks/${taskId}`, data);
     return res.data;
   }
@@ -160,12 +174,15 @@ export class Client {
     return res.data;
   }
 
-  async updatePhase(phaseId: number, data: {
-    phaseName?: string;
-    startDate?: string;
-    dueDate?: string;
-    private?: boolean;
-  }) {
+  async updatePhase(
+    phaseId: number,
+    data: {
+      phaseName?: string;
+      startDate?: string;
+      dueDate?: string;
+      private?: boolean;
+    }
+  ) {
     let res = await this.axios.put(`/phases/${phaseId}`, data);
     return res.data;
   }
@@ -196,11 +213,14 @@ export class Client {
     return res.data;
   }
 
-  async updateCompany(companyId: number, data: {
-    companyName?: string;
-    companyUrl?: string;
-    fields?: Array<{ fieldId: number; fieldValue: any }>;
-  }) {
+  async updateCompany(
+    companyId: number,
+    data: {
+      companyName?: string;
+      companyUrl?: string;
+      fields?: Array<{ fieldId: number; fieldValue: any }>;
+    }
+  ) {
     let res = await this.axios.put(`/companies/${companyId}`, data);
     return res.data;
   }
@@ -234,7 +254,12 @@ export class Client {
 
   // ─── Time Entries ────────────────────────────────────────
 
-  async listTimeEntries(params?: { projectId?: number; userId?: number; offset?: number; limit?: number }) {
+  async listTimeEntries(params?: {
+    projectId?: number;
+    userId?: number;
+    offset?: number;
+    limit?: number;
+  }) {
     let res = await this.axios.get('/time-entries', { params });
     return res.data;
   }
@@ -257,12 +282,15 @@ export class Client {
     return res.data;
   }
 
-  async updateTimeEntry(timeEntryId: number, data: {
-    duration?: number;
-    date?: string;
-    description?: string;
-    categoryId?: number;
-  }) {
+  async updateTimeEntry(
+    timeEntryId: number,
+    data: {
+      duration?: number;
+      date?: string;
+      description?: string;
+      categoryId?: number;
+    }
+  ) {
     let res = await this.axios.put(`/time-entries/${timeEntryId}`, data);
     return res.data;
   }
@@ -289,19 +317,18 @@ export class Client {
     return res.data;
   }
 
-  async createSpace(data: {
-    spaceName: string;
-    projectId: number;
-    description?: string;
-  }) {
+  async createSpace(data: { spaceName: string; projectId: number; description?: string }) {
     let res = await this.axios.post('/spaces', data);
     return res.data;
   }
 
-  async updateSpace(spaceId: number, data: {
-    spaceName?: string;
-    description?: string;
-  }) {
+  async updateSpace(
+    spaceId: number,
+    data: {
+      spaceName?: string;
+      description?: string;
+    }
+  ) {
     let res = await this.axios.put(`/spaces/${spaceId}`, data);
     return res.data;
   }
@@ -338,11 +365,7 @@ export class Client {
     return res.data;
   }
 
-  async createComment(data: {
-    conversationId?: number;
-    taskId?: number;
-    body: string;
-  }) {
+  async createComment(data: { conversationId?: number; taskId?: number; body: string }) {
     let res = await this.axios.post('/comments', data);
     return res.data;
   }
@@ -384,10 +407,13 @@ export class Client {
     return res.data;
   }
 
-  async updateField(fieldId: number, data: {
-    fieldLabel?: string;
-    options?: Array<{ label: string; value: string }>;
-  }) {
+  async updateField(
+    fieldId: number,
+    data: {
+      fieldLabel?: string;
+      options?: Array<{ label: string; value: string }>;
+    }
+  ) {
     let res = await this.axios.put(`/fields/${fieldId}`, data);
     return res.data;
   }
@@ -411,14 +437,24 @@ export class Client {
 
   // ─── Resource Allocations ────────────────────────────────
 
-  async listResourceAllocations(params?: { projectId?: number; userId?: number; offset?: number; limit?: number }) {
+  async listResourceAllocations(params?: {
+    projectId?: number;
+    userId?: number;
+    offset?: number;
+    limit?: number;
+  }) {
     let res = await this.axios.get('/resource-allocations', { params });
     return res.data;
   }
 
   // ─── Financials ──────────────────────────────────────────
 
-  async searchInvoices(params?: { projectId?: number; status?: string; offset?: number; limit?: number }) {
+  async searchInvoices(params?: {
+    projectId?: number;
+    status?: string;
+    offset?: number;
+    limit?: number;
+  }) {
     let res = await this.axios.get('/invoices', { params });
     return res.data;
   }

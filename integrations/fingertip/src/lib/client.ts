@@ -24,7 +24,7 @@ import type {
   PageTheme,
   Webhook,
   WebhookTrigger,
-  SiteAnalytics,
+  SiteAnalytics
 } from './types';
 
 let BASE_URL = 'https://api.fingertip.com/v1';
@@ -37,18 +37,20 @@ export class FingertipClient {
       baseURL: BASE_URL,
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Sites ──
 
-  async listSites(params?: PaginationParams & {
-    search?: string;
-    workspaceId?: string;
-    statuses?: string[];
-  }): Promise<PaginatedResponse<Site>> {
+  async listSites(
+    params?: PaginationParams & {
+      search?: string;
+      workspaceId?: string;
+      statuses?: string[];
+    }
+  ): Promise<PaginatedResponse<Site>> {
     let response = await this.axios.get('/sites', { params });
     return response.data;
   }
@@ -73,17 +75,23 @@ export class FingertipClient {
     return response.data;
   }
 
-  async getSiteAnalytics(siteId: string, params?: {
-    period?: '7d' | '30d' | '90d' | '1y' | 'all';
-    includeStore?: boolean;
-  }): Promise<SiteAnalytics> {
+  async getSiteAnalytics(
+    siteId: string,
+    params?: {
+      period?: '7d' | '30d' | '90d' | '1y' | 'all';
+      includeStore?: boolean;
+    }
+  ): Promise<SiteAnalytics> {
     let response = await this.axios.get(`/sites/${siteId}/analytics`, { params });
     return response.data;
   }
 
   // ── Pages ──
 
-  async listPages(siteId: string, params?: PaginationParams): Promise<PaginatedResponse<Page>> {
+  async listPages(
+    siteId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<Page>> {
     let response = await this.axios.get(`/sites/${siteId}/pages`, { params });
     return response.data;
   }
@@ -183,23 +191,51 @@ export class FingertipClient {
     return response.data;
   }
 
-  async declineBooking(bookingId: string, siteId: string, cancellationReason?: string): Promise<{ success: boolean }> {
-    let response = await this.axios.post(`/bookings/${bookingId}/decline`, { siteId, cancellationReason });
+  async declineBooking(
+    bookingId: string,
+    siteId: string,
+    cancellationReason?: string
+  ): Promise<{ success: boolean }> {
+    let response = await this.axios.post(`/bookings/${bookingId}/decline`, {
+      siteId,
+      cancellationReason
+    });
     return response.data;
   }
 
-  async completeBooking(bookingId: string, siteId: string, options?: { noShow?: boolean; chargeAmountInCents?: number }): Promise<{ success: boolean }> {
-    let response = await this.axios.post(`/bookings/${bookingId}/complete`, { siteId, ...options });
+  async completeBooking(
+    bookingId: string,
+    siteId: string,
+    options?: { noShow?: boolean; chargeAmountInCents?: number }
+  ): Promise<{ success: boolean }> {
+    let response = await this.axios.post(`/bookings/${bookingId}/complete`, {
+      siteId,
+      ...options
+    });
     return response.data;
   }
 
-  async rescheduleBooking(bookingId: string, startTime: string, endTime: string): Promise<{ success: boolean }> {
-    let response = await this.axios.post(`/bookings/${bookingId}/reschedule`, { startTime, endTime });
+  async rescheduleBooking(
+    bookingId: string,
+    startTime: string,
+    endTime: string
+  ): Promise<{ success: boolean }> {
+    let response = await this.axios.post(`/bookings/${bookingId}/reschedule`, {
+      startTime,
+      endTime
+    });
     return response.data;
   }
 
-  async cancelBooking(bookingId: string, siteId: string, options?: { cancellationReason?: string; chargeCancellationFee?: boolean }): Promise<{ success: boolean }> {
-    let response = await this.axios.post(`/bookings/${bookingId}/cancel`, { siteId, ...options });
+  async cancelBooking(
+    bookingId: string,
+    siteId: string,
+    options?: { cancellationReason?: string; chargeCancellationFee?: boolean }
+  ): Promise<{ success: boolean }> {
+    let response = await this.axios.post(`/bookings/${bookingId}/cancel`, {
+      siteId,
+      ...options
+    });
     return response.data;
   }
 
@@ -305,7 +341,10 @@ export class FingertipClient {
     return response.data.workspace ?? response.data;
   }
 
-  async updateWorkspace(workspaceId: string, input: { name?: string; slug?: string }): Promise<Workspace> {
+  async updateWorkspace(
+    workspaceId: string,
+    input: { name?: string; slug?: string }
+  ): Promise<Workspace> {
     let response = await this.axios.patch(`/workspaces/${workspaceId}`, input);
     return response.data.workspace ?? response.data;
   }
@@ -322,12 +361,18 @@ export class FingertipClient {
     return response.data;
   }
 
-  async createWebhook(endpointUrl: string, triggers: WebhookTrigger[]): Promise<{ id: string }> {
+  async createWebhook(
+    endpointUrl: string,
+    triggers: WebhookTrigger[]
+  ): Promise<{ id: string }> {
     let response = await this.axios.post('/webhooks', { endpointUrl, triggers });
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, input: { endpointUrl?: string; triggers?: WebhookTrigger[] }): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: string,
+    input: { endpointUrl?: string; triggers?: WebhookTrigger[] }
+  ): Promise<Webhook> {
     let response = await this.axios.patch(`/webhooks/${webhookId}`, input);
     return response.data;
   }

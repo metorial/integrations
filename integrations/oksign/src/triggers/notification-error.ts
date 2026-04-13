@@ -5,40 +5,50 @@ import { z } from 'zod';
 
 let POLL_INTERVAL_SECONDS = 300; // 5 minutes (API rate limit: 1 request per 3 minutes)
 
-export let notificationError = SlateTrigger.create(
-  spec,
-  {
-    name: 'Notification Delivery Error',
-    key: 'notification_error',
-    description: 'Triggers when an email or SMS notification fails to deliver. Detects bounce, block, spam, invalid email, and deferred delivery events.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Error event type (hard_bounce, soft_bounce, blocked, spam, invalid_email, deferred)'),
-    email: z.string().optional().describe('Affected email address'),
-    mobile: z.string().optional().describe('Affected mobile number'),
-    documentId: z.string().optional().describe('Related document ID'),
-    reason: z.string().optional().describe('Human-readable error reason'),
-    rawEvent: z.any().describe('Full raw event from OKSign')
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Error event type (hard_bounce, soft_bounce, blocked, spam, invalid_email, deferred)'),
-    email: z.string().optional().describe('Affected email address'),
-    mobile: z.string().optional().describe('Affected mobile number'),
-    documentId: z.string().optional().describe('Related document ID'),
-    reason: z.string().optional().describe('Human-readable error reason')
-  }))
+export let notificationError = SlateTrigger.create(spec, {
+  name: 'Notification Delivery Error',
+  key: 'notification_error',
+  description:
+    'Triggers when an email or SMS notification fails to deliver. Detects bounce, block, spam, invalid email, and deferred delivery events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Error event type (hard_bounce, soft_bounce, blocked, spam, invalid_email, deferred)'
+        ),
+      email: z.string().optional().describe('Affected email address'),
+      mobile: z.string().optional().describe('Affected mobile number'),
+      documentId: z.string().optional().describe('Related document ID'),
+      reason: z.string().optional().describe('Human-readable error reason'),
+      rawEvent: z.any().describe('Full raw event from OKSign')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Error event type (hard_bounce, soft_bounce, blocked, spam, invalid_email, deferred)'
+        ),
+      email: z.string().optional().describe('Affected email address'),
+      mobile: z.string().optional().describe('Affected mobile number'),
+      documentId: z.string().optional().describe('Related document ID'),
+      reason: z.string().optional().describe('Human-readable error reason')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: POLL_INTERVAL_SECONDS
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let now = new Date();
       let lastPollTime = ctx.state?.lastPollTime
-        ? ctx.state.lastPollTime as string
+        ? (ctx.state.lastPollTime as string)
         : new Date(now.getTime() - POLL_INTERVAL_SECONDS * 1000).toISOString();
 
       let toTime = now.toISOString();
@@ -60,7 +70,7 @@ export let notificationError = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let uniqueId = `${ctx.input.eventType}-${ctx.input.email || ctx.input.mobile || ''}-${ctx.input.documentId || ''}-${Date.now()}`;
 
       return {

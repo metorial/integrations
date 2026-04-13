@@ -9,8 +9,8 @@ export class SendbirdChatClient {
       baseURL: `https://api-${config.applicationId}.sendbird.com/v3`,
       headers: {
         'Api-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,10 +28,12 @@ export class SendbirdChatClient {
     let body: Record<string, unknown> = {
       user_id: params.userId,
       nickname: params.nickname,
-      profile_url: params.profileUrl ?? '',
+      profile_url: params.profileUrl ?? ''
     };
-    if (params.issueAccessToken !== undefined) body.issue_access_token = params.issueAccessToken;
-    if (params.issueSessionToken !== undefined) body.issue_session_token = params.issueSessionToken;
+    if (params.issueAccessToken !== undefined)
+      body.issue_access_token = params.issueAccessToken;
+    if (params.issueSessionToken !== undefined)
+      body.issue_session_token = params.issueSessionToken;
     if (params.metadata) body.metadata = params.metadata;
 
     let response = await this.axios.post('/users', body);
@@ -43,18 +45,22 @@ export class SendbirdChatClient {
     return response.data;
   }
 
-  async updateUser(userId: string, params: {
-    nickname?: string;
-    profileUrl?: string;
-    isActive?: boolean;
-    leaveAllWhenDeactivated?: boolean;
-    metadata?: Record<string, string>;
-  }) {
+  async updateUser(
+    userId: string,
+    params: {
+      nickname?: string;
+      profileUrl?: string;
+      isActive?: boolean;
+      leaveAllWhenDeactivated?: boolean;
+      metadata?: Record<string, string>;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.nickname !== undefined) body.nickname = params.nickname;
     if (params.profileUrl !== undefined) body.profile_url = params.profileUrl;
     if (params.isActive !== undefined) body.is_active = params.isActive;
-    if (params.leaveAllWhenDeactivated !== undefined) body.leave_all_when_deactivated = params.leaveAllWhenDeactivated;
+    if (params.leaveAllWhenDeactivated !== undefined)
+      body.leave_all_when_deactivated = params.leaveAllWhenDeactivated;
     if (params.metadata !== undefined) body.metadata = params.metadata;
 
     let response = await this.axios.put(`/users/${encodeURIComponent(userId)}`, body);
@@ -82,9 +88,11 @@ export class SendbirdChatClient {
     if (params?.token) queryParams.token = params.token;
     if (params?.activeMode) queryParams.active_mode = params.activeMode;
     if (params?.showBot !== undefined) queryParams.show_bot = params.showBot;
-    if (params?.userIds && params.userIds.length > 0) queryParams.user_ids = params.userIds.join(',');
+    if (params?.userIds && params.userIds.length > 0)
+      queryParams.user_ids = params.userIds.join(',');
     if (params?.nickname) queryParams.nickname = params.nickname;
-    if (params?.nicknameStartswith) queryParams.nickname_startswith = params.nicknameStartswith;
+    if (params?.nicknameStartswith)
+      queryParams.nickname_startswith = params.nicknameStartswith;
     if (params?.metadatakey) queryParams.metadatakey = params.metadatakey;
     if (params?.metadatavaluesIn) queryParams.metadatavalues_in = params.metadatavaluesIn;
 
@@ -133,17 +141,20 @@ export class SendbirdChatClient {
     return response.data;
   }
 
-  async updateGroupChannel(channelUrl: string, params: {
-    name?: string;
-    coverUrl?: string;
-    customType?: string;
-    data?: string;
-    isDistinct?: boolean;
-    isPublic?: boolean;
-    accessCode?: string;
-    operatorIds?: string[];
-    isFrozen?: boolean;
-  }) {
+  async updateGroupChannel(
+    channelUrl: string,
+    params: {
+      name?: string;
+      coverUrl?: string;
+      customType?: string;
+      data?: string;
+      isDistinct?: boolean;
+      isPublic?: boolean;
+      accessCode?: string;
+      operatorIds?: string[];
+      isFrozen?: boolean;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.coverUrl !== undefined) body.cover_url = params.coverUrl;
@@ -155,12 +166,17 @@ export class SendbirdChatClient {
     if (params.operatorIds !== undefined) body.operator_ids = params.operatorIds;
     if (params.isFrozen !== undefined) body.freeze = params.isFrozen;
 
-    let response = await this.axios.put(`/group_channels/${encodeURIComponent(channelUrl)}`, body);
+    let response = await this.axios.put(
+      `/group_channels/${encodeURIComponent(channelUrl)}`,
+      body
+    );
     return response.data;
   }
 
   async deleteGroupChannel(channelUrl: string) {
-    let response = await this.axios.delete(`/group_channels/${encodeURIComponent(channelUrl)}`);
+    let response = await this.axios.delete(
+      `/group_channels/${encodeURIComponent(channelUrl)}`
+    );
     return response.data;
   }
 
@@ -188,15 +204,19 @@ export class SendbirdChatClient {
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.token) queryParams.token = params.token;
     if (params?.showMember !== undefined) queryParams.show_member = params.showMember;
-    if (params?.showReadReceipt !== undefined) queryParams.show_read_receipt = params.showReadReceipt;
-    if (params?.showDeliveryReceipt !== undefined) queryParams.show_delivery_receipt = params.showDeliveryReceipt;
+    if (params?.showReadReceipt !== undefined)
+      queryParams.show_read_receipt = params.showReadReceipt;
+    if (params?.showDeliveryReceipt !== undefined)
+      queryParams.show_delivery_receipt = params.showDeliveryReceipt;
     if (params?.showEmpty !== undefined) queryParams.show_empty = params.showEmpty;
     if (params?.showFrozen !== undefined) queryParams.show_frozen = params.showFrozen;
     if (params?.distinctMode) queryParams.distinct_mode = params.distinctMode;
     if (params?.publicMode) queryParams.public_mode = params.publicMode;
     if (params?.superMode) queryParams.super_mode = params.superMode;
-    if (params?.membersExactlyIn) queryParams.members_exactly_in = params.membersExactlyIn.join(',');
-    if (params?.membersIncludeIn) queryParams.members_include_in = params.membersIncludeIn.join(',');
+    if (params?.membersExactlyIn)
+      queryParams.members_exactly_in = params.membersExactlyIn.join(',');
+    if (params?.membersIncludeIn)
+      queryParams.members_include_in = params.membersIncludeIn.join(',');
     if (params?.nameContains) queryParams.name_contains = params.nameContains;
     if (params?.nameStartswith) queryParams.name_startswith = params.nameStartswith;
     if (params?.customType) queryParams.custom_type = params.customType;
@@ -209,16 +229,22 @@ export class SendbirdChatClient {
   }
 
   async inviteToGroupChannel(channelUrl: string, userIds: string[]) {
-    let response = await this.axios.post(`/group_channels/${encodeURIComponent(channelUrl)}/invite`, {
-      user_ids: userIds,
-    });
+    let response = await this.axios.post(
+      `/group_channels/${encodeURIComponent(channelUrl)}/invite`,
+      {
+        user_ids: userIds
+      }
+    );
     return response.data;
   }
 
   async leaveGroupChannel(channelUrl: string, userIds: string[]) {
-    let response = await this.axios.put(`/group_channels/${encodeURIComponent(channelUrl)}/leave`, {
-      user_ids: userIds,
-    });
+    let response = await this.axios.put(
+      `/group_channels/${encodeURIComponent(channelUrl)}/leave`,
+      {
+        user_ids: userIds
+      }
+    );
     return response.data;
   }
 
@@ -249,14 +275,17 @@ export class SendbirdChatClient {
     return response.data;
   }
 
-  async updateOpenChannel(channelUrl: string, params: {
-    name?: string;
-    coverUrl?: string;
-    customType?: string;
-    data?: string;
-    operatorIds?: string[];
-    isFrozen?: boolean;
-  }) {
+  async updateOpenChannel(
+    channelUrl: string,
+    params: {
+      name?: string;
+      coverUrl?: string;
+      customType?: string;
+      data?: string;
+      operatorIds?: string[];
+      isFrozen?: boolean;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.coverUrl !== undefined) body.cover_url = params.coverUrl;
@@ -265,7 +294,10 @@ export class SendbirdChatClient {
     if (params.operatorIds !== undefined) body.operator_ids = params.operatorIds;
     if (params.isFrozen !== undefined) body.freeze = params.isFrozen;
 
-    let response = await this.axios.put(`/open_channels/${encodeURIComponent(channelUrl)}`, body);
+    let response = await this.axios.put(
+      `/open_channels/${encodeURIComponent(channelUrl)}`,
+      body
+    );
     return response.data;
   }
 
@@ -296,25 +328,29 @@ export class SendbirdChatClient {
 
   // ── Messages ──
 
-  async sendMessage(channelType: 'group_channels' | 'open_channels', channelUrl: string, params: {
-    messageType: 'MESG' | 'FILE' | 'ADMM';
-    userId?: string;
-    message?: string;
-    fileUrl?: string;
-    fileName?: string;
-    fileType?: string;
-    fileSize?: number;
-    customType?: string;
-    data?: string;
-    mentionType?: string;
-    mentionedUserIds?: string[];
-    sortedMetaarray?: Array<{ key: string; value: string[] }>;
-    dedupId?: string;
-    apnsBundleId?: string;
-    pushMessageTemplate?: string;
-  }) {
+  async sendMessage(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params: {
+      messageType: 'MESG' | 'FILE' | 'ADMM';
+      userId?: string;
+      message?: string;
+      fileUrl?: string;
+      fileName?: string;
+      fileType?: string;
+      fileSize?: number;
+      customType?: string;
+      data?: string;
+      mentionType?: string;
+      mentionedUserIds?: string[];
+      sortedMetaarray?: Array<{ key: string; value: string[] }>;
+      dedupId?: string;
+      apnsBundleId?: string;
+      pushMessageTemplate?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {
-      message_type: params.messageType,
+      message_type: params.messageType
     };
     if (params.userId !== undefined) body.user_id = params.userId;
     if (params.message !== undefined) body.message = params.message;
@@ -325,29 +361,37 @@ export class SendbirdChatClient {
     if (params.customType !== undefined) body.custom_type = params.customType;
     if (params.data !== undefined) body.data = params.data;
     if (params.mentionType !== undefined) body.mention_type = params.mentionType;
-    if (params.mentionedUserIds !== undefined) body.mentioned_user_ids = params.mentionedUserIds;
+    if (params.mentionedUserIds !== undefined)
+      body.mentioned_user_ids = params.mentionedUserIds;
     if (params.sortedMetaarray !== undefined) body.sorted_metaarray = params.sortedMetaarray;
     if (params.dedupId !== undefined) body.dedup_id = params.dedupId;
 
-    let response = await this.axios.post(`/${channelType}/${encodeURIComponent(channelUrl)}/messages`, body);
+    let response = await this.axios.post(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/messages`,
+      body
+    );
     return response.data;
   }
 
-  async listMessages(channelType: 'group_channels' | 'open_channels', channelUrl: string, params: {
-    messageTs?: number;
-    messageId?: number;
-    prevLimit?: number;
-    nextLimit?: number;
-    include?: boolean;
-    reverse?: boolean;
-    senderId?: string;
-    senderIds?: string[];
-    messageType?: string;
-    customType?: string;
-    includeReactions?: boolean;
-    includeThreadInfo?: boolean;
-    includeParentMessageInfo?: boolean;
-  }) {
+  async listMessages(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params: {
+      messageTs?: number;
+      messageId?: number;
+      prevLimit?: number;
+      nextLimit?: number;
+      include?: boolean;
+      reverse?: boolean;
+      senderId?: string;
+      senderIds?: string[];
+      messageType?: string;
+      customType?: string;
+      includeReactions?: boolean;
+      includeThreadInfo?: boolean;
+      includeParentMessageInfo?: boolean;
+    }
+  ) {
     let queryParams: Record<string, unknown> = {};
     if (params.messageTs !== undefined) queryParams.message_ts = params.messageTs;
     if (params.messageId !== undefined) queryParams.message_id = params.messageId;
@@ -359,37 +403,58 @@ export class SendbirdChatClient {
     if (params.senderIds) queryParams.sender_ids = params.senderIds.join(',');
     if (params.messageType) queryParams.message_type = params.messageType;
     if (params.customType) queryParams.custom_type = params.customType;
-    if (params.includeReactions !== undefined) queryParams.include_reactions = params.includeReactions;
-    if (params.includeThreadInfo !== undefined) queryParams.include_thread_info = params.includeThreadInfo;
-    if (params.includeParentMessageInfo !== undefined) queryParams.include_parent_message_info = params.includeParentMessageInfo;
+    if (params.includeReactions !== undefined)
+      queryParams.include_reactions = params.includeReactions;
+    if (params.includeThreadInfo !== undefined)
+      queryParams.include_thread_info = params.includeThreadInfo;
+    if (params.includeParentMessageInfo !== undefined)
+      queryParams.include_parent_message_info = params.includeParentMessageInfo;
 
-    let response = await this.axios.get(`/${channelType}/${encodeURIComponent(channelUrl)}/messages`, { params: queryParams });
+    let response = await this.axios.get(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/messages`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
-  async updateMessage(channelType: 'group_channels' | 'open_channels', channelUrl: string, messageId: number, params: {
-    messageType: 'MESG' | 'FILE' | 'ADMM';
-    message?: string;
-    customType?: string;
-    data?: string;
-    mentionType?: string;
-    mentionedUserIds?: string[];
-  }) {
+  async updateMessage(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    messageId: number,
+    params: {
+      messageType: 'MESG' | 'FILE' | 'ADMM';
+      message?: string;
+      customType?: string;
+      data?: string;
+      mentionType?: string;
+      mentionedUserIds?: string[];
+    }
+  ) {
     let body: Record<string, unknown> = {
-      message_type: params.messageType,
+      message_type: params.messageType
     };
     if (params.message !== undefined) body.message = params.message;
     if (params.customType !== undefined) body.custom_type = params.customType;
     if (params.data !== undefined) body.data = params.data;
     if (params.mentionType !== undefined) body.mention_type = params.mentionType;
-    if (params.mentionedUserIds !== undefined) body.mentioned_user_ids = params.mentionedUserIds;
+    if (params.mentionedUserIds !== undefined)
+      body.mentioned_user_ids = params.mentionedUserIds;
 
-    let response = await this.axios.put(`/${channelType}/${encodeURIComponent(channelUrl)}/messages/${messageId}`, body);
+    let response = await this.axios.put(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/messages/${messageId}`,
+      body
+    );
     return response.data;
   }
 
-  async deleteMessage(channelType: 'group_channels' | 'open_channels', channelUrl: string, messageId: number) {
-    let response = await this.axios.delete(`/${channelType}/${encodeURIComponent(channelUrl)}/messages/${messageId}`);
+  async deleteMessage(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    messageId: number
+  ) {
+    let response = await this.axios.delete(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/messages/${messageId}`
+    );
     return response.data;
   }
 
@@ -405,7 +470,7 @@ export class SendbirdChatClient {
     userId?: string;
   }) {
     let queryParams: Record<string, unknown> = {
-      query: params.query,
+      query: params.query
     };
     if (params.channelUrl) queryParams.channel_url = params.channelUrl;
     if (params.channelCustomType) queryParams.channel_custom_type = params.channelCustomType;
@@ -422,106 +487,163 @@ export class SendbirdChatClient {
 
   // ── Moderation ──
 
-  async banUserFromChannel(channelType: 'group_channels' | 'open_channels', channelUrl: string, params: {
-    userId: string;
-    agentId?: string;
-    seconds?: number;
-    description?: string;
-  }) {
+  async banUserFromChannel(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params: {
+      userId: string;
+      agentId?: string;
+      seconds?: number;
+      description?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {
-      user_id: params.userId,
+      user_id: params.userId
     };
     if (params.agentId !== undefined) body.agent_id = params.agentId;
     if (params.seconds !== undefined) body.seconds = params.seconds;
     if (params.description !== undefined) body.description = params.description;
 
-    let response = await this.axios.post(`/${channelType}/${encodeURIComponent(channelUrl)}/ban`, body);
+    let response = await this.axios.post(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/ban`,
+      body
+    );
     return response.data;
   }
 
-  async unbanUserFromChannel(channelType: 'group_channels' | 'open_channels', channelUrl: string, userId: string) {
-    let response = await this.axios.delete(`/${channelType}/${encodeURIComponent(channelUrl)}/ban/${encodeURIComponent(userId)}`);
+  async unbanUserFromChannel(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    userId: string
+  ) {
+    let response = await this.axios.delete(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/ban/${encodeURIComponent(userId)}`
+    );
     return response.data;
   }
 
-  async muteUserInChannel(channelType: 'group_channels' | 'open_channels', channelUrl: string, params: {
-    userId: string;
-    seconds?: number;
-    description?: string;
-  }) {
+  async muteUserInChannel(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params: {
+      userId: string;
+      seconds?: number;
+      description?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {
-      user_id: params.userId,
+      user_id: params.userId
     };
     if (params.seconds !== undefined) body.seconds = params.seconds;
     if (params.description !== undefined) body.description = params.description;
 
-    let response = await this.axios.post(`/${channelType}/${encodeURIComponent(channelUrl)}/mute`, body);
+    let response = await this.axios.post(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/mute`,
+      body
+    );
     return response.data;
   }
 
-  async unmuteUserInChannel(channelType: 'group_channels' | 'open_channels', channelUrl: string, userId: string) {
-    let response = await this.axios.delete(`/${channelType}/${encodeURIComponent(channelUrl)}/mute/${encodeURIComponent(userId)}`);
+  async unmuteUserInChannel(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    userId: string
+  ) {
+    let response = await this.axios.delete(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/mute/${encodeURIComponent(userId)}`
+    );
     return response.data;
   }
 
   async blockUser(userId: string, targetUserId: string) {
     let response = await this.axios.post(`/users/${encodeURIComponent(userId)}/block`, {
-      target_id: targetUserId,
+      target_id: targetUserId
     });
     return response.data;
   }
 
   async unblockUser(userId: string, targetUserId: string) {
-    let response = await this.axios.delete(`/users/${encodeURIComponent(userId)}/block/${encodeURIComponent(targetUserId)}`);
+    let response = await this.axios.delete(
+      `/users/${encodeURIComponent(userId)}/block/${encodeURIComponent(targetUserId)}`
+    );
     return response.data;
   }
 
-  async listBannedUsers(channelType: 'group_channels' | 'open_channels', channelUrl: string, params?: {
-    limit?: number;
-    token?: string;
-  }) {
+  async listBannedUsers(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params?: {
+      limit?: number;
+      token?: string;
+    }
+  ) {
     let queryParams: Record<string, unknown> = {};
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.token) queryParams.token = params.token;
 
-    let response = await this.axios.get(`/${channelType}/${encodeURIComponent(channelUrl)}/ban`, { params: queryParams });
+    let response = await this.axios.get(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/ban`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
-  async listMutedUsers(channelType: 'group_channels' | 'open_channels', channelUrl: string, params?: {
-    limit?: number;
-    token?: string;
-  }) {
+  async listMutedUsers(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params?: {
+      limit?: number;
+      token?: string;
+    }
+  ) {
     let queryParams: Record<string, unknown> = {};
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.token) queryParams.token = params.token;
 
-    let response = await this.axios.get(`/${channelType}/${encodeURIComponent(channelUrl)}/mute`, { params: queryParams });
+    let response = await this.axios.get(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/mute`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
-  async freezeChannel(channelType: 'group_channels' | 'open_channels', channelUrl: string, freeze: boolean) {
-    let response = await this.axios.put(`/${channelType}/${encodeURIComponent(channelUrl)}/freeze`, {
-      freeze,
-    });
+  async freezeChannel(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    freeze: boolean
+  ) {
+    let response = await this.axios.put(
+      `/${channelType}/${encodeURIComponent(channelUrl)}/freeze`,
+      {
+        freeze
+      }
+    );
     return response.data;
   }
 
   // ── Channel Members ──
 
-  async listGroupChannelMembers(channelUrl: string, params?: {
-    limit?: number;
-    token?: string;
-    showReadReceipt?: boolean;
-    showDeliveryReceipt?: boolean;
-  }) {
+  async listGroupChannelMembers(
+    channelUrl: string,
+    params?: {
+      limit?: number;
+      token?: string;
+      showReadReceipt?: boolean;
+      showDeliveryReceipt?: boolean;
+    }
+  ) {
     let queryParams: Record<string, unknown> = {};
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.token) queryParams.token = params.token;
-    if (params?.showReadReceipt !== undefined) queryParams.show_read_receipt = params.showReadReceipt;
-    if (params?.showDeliveryReceipt !== undefined) queryParams.show_delivery_receipt = params.showDeliveryReceipt;
+    if (params?.showReadReceipt !== undefined)
+      queryParams.show_read_receipt = params.showReadReceipt;
+    if (params?.showDeliveryReceipt !== undefined)
+      queryParams.show_delivery_receipt = params.showDeliveryReceipt;
 
-    let response = await this.axios.get(`/group_channels/${encodeURIComponent(channelUrl)}/members`, { params: queryParams });
+    let response = await this.axios.get(
+      `/group_channels/${encodeURIComponent(channelUrl)}/members`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
@@ -555,9 +677,9 @@ export class SendbirdChatClient {
         user_id: params.message.userId,
         content: params.message.content,
         data: params.message.data,
-        custom_type: params.message.customType,
+        custom_type: params.message.customType
       },
-      target_at: params.targetAt,
+      target_at: params.targetAt
     };
     if (params.targetList) body.target_list = params.targetList;
     if (params.targetChannelType) body.target_channel_type = params.targetChannelType;
@@ -572,11 +694,7 @@ export class SendbirdChatClient {
     return response.data;
   }
 
-  async listAnnouncements(params?: {
-    limit?: number;
-    token?: string;
-    status?: string[];
-  }) {
+  async listAnnouncements(params?: { limit?: number; token?: string; status?: string[] }) {
     let queryParams: Record<string, unknown> = {};
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.token) queryParams.token = params.token;
@@ -603,7 +721,7 @@ export class SendbirdChatClient {
     let body: Record<string, unknown> = {
       offending_user_id: params.offendingUserId,
       report_type: params.reportType,
-      report_category: params.reportCategory,
+      report_category: params.reportCategory
     };
     if (params.reportingUserId) body.reporting_user_id = params.reportingUserId;
     if (params.reportDescription) body.report_description = params.reportDescription;
@@ -612,39 +730,54 @@ export class SendbirdChatClient {
     return response.data;
   }
 
-  async reportMessage(channelType: 'group_channels' | 'open_channels', channelUrl: string, messageId: number, params: {
-    reportType: string;
-    reportCategory: string;
-    reportingUserId?: string;
-    offendingUserId?: string;
-    reportDescription?: string;
-  }) {
+  async reportMessage(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    messageId: number,
+    params: {
+      reportType: string;
+      reportCategory: string;
+      reportingUserId?: string;
+      offendingUserId?: string;
+      reportDescription?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {
       report_type: params.reportType,
-      report_category: params.reportCategory,
+      report_category: params.reportCategory
     };
     if (params.reportingUserId) body.reporting_user_id = params.reportingUserId;
     if (params.offendingUserId) body.offending_user_id = params.offendingUserId;
     if (params.reportDescription) body.report_description = params.reportDescription;
 
-    let response = await this.axios.post(`/report/${channelType}/${encodeURIComponent(channelUrl)}/messages/${messageId}`, body);
+    let response = await this.axios.post(
+      `/report/${channelType}/${encodeURIComponent(channelUrl)}/messages/${messageId}`,
+      body
+    );
     return response.data;
   }
 
-  async reportChannel(channelType: 'group_channels' | 'open_channels', channelUrl: string, params: {
-    reportType: string;
-    reportCategory: string;
-    reportingUserId?: string;
-    reportDescription?: string;
-  }) {
+  async reportChannel(
+    channelType: 'group_channels' | 'open_channels',
+    channelUrl: string,
+    params: {
+      reportType: string;
+      reportCategory: string;
+      reportingUserId?: string;
+      reportDescription?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {
       report_type: params.reportType,
-      report_category: params.reportCategory,
+      report_category: params.reportCategory
     };
     if (params.reportingUserId) body.reporting_user_id = params.reportingUserId;
     if (params.reportDescription) body.report_description = params.reportDescription;
 
-    let response = await this.axios.post(`/report/${channelType}/${encodeURIComponent(channelUrl)}`, body);
+    let response = await this.axios.post(
+      `/report/${channelType}/${encodeURIComponent(channelUrl)}`,
+      body
+    );
     return response.data;
   }
 }

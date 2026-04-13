@@ -19,6 +19,7 @@ The service requires an authenticated developer account and a valid subscription
 - The API key is issued in the Developer Portal. Keys are tied to your subscription quota.
 
 **Example:**
+
 ```
 curl "https://api.minerstat.com/v2/coins" -H "X-API-Key: YOUR_KEY"
 ```
@@ -60,6 +61,7 @@ The Pools API provides curated information about mining pools, supported coins, 
 The monitoring API allows you to monitor workers' real-time data, such as hashrate and hardware data, and historical data about mining, profitability, and balance on pools and wallets.
 
 Available data includes:
+
 - List of all workers with hashrate, hardware details, temperature, fans, power consumption, estimated earnings, accepted and rejected shares, and basic system information.
 - Historical information on hashrates, temperatures, fans, and power consumptions. Historical information on estimated earnings, temperatures, fans, power consumption, and efficiency.
 - Worker activity logs for the last 3 days, group statistics, global statistics, 24h logs, and balance statistics for monitored pools and wallets.

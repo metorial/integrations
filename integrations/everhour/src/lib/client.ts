@@ -8,8 +8,8 @@ export class EverhourClient {
       baseURL: 'https://api.everhour.com',
       headers: {
         'X-Api-Key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -42,7 +42,10 @@ export class EverhourClient {
     return response.data;
   }
 
-  async updateClient(clientId: number, data: { name?: string; projects?: string[]; businessDetails?: string }) {
+  async updateClient(
+    clientId: number,
+    data: { name?: string; projects?: string[]; businessDetails?: string }
+  ) {
     let response = await this.axios.put(`/clients/${clientId}`, data);
     return response.data;
   }
@@ -51,16 +54,19 @@ export class EverhourClient {
     await this.axios.delete(`/clients/${clientId}`);
   }
 
-  async setClientBudget(clientId: number, data: {
-    type: string;
-    budget: number;
-    period?: string;
-    appliedFrom?: string;
-    disallowOverbudget?: boolean;
-    excludeUnbillableTime?: boolean;
-    excludeExpenses?: boolean;
-    threshold?: number;
-  }) {
+  async setClientBudget(
+    clientId: number,
+    data: {
+      type: string;
+      budget: number;
+      period?: string;
+      appliedFrom?: string;
+      disallowOverbudget?: boolean;
+      excludeUnbillableTime?: boolean;
+      excludeExpenses?: boolean;
+      threshold?: number;
+    }
+  ) {
     let response = await this.axios.put(`/clients/${clientId}/budget`, data);
     return response.data;
   }
@@ -100,24 +106,27 @@ export class EverhourClient {
     return response.data;
   }
 
-  async setProjectBilling(projectId: string, data: {
-    billing?: { type: string; fee?: number };
-    budget?: {
-      type?: string;
-      budget?: number;
-      period?: string;
-      appliedFrom?: string;
-      disallowOverbudget?: boolean;
-      excludeUnbillableTime?: boolean;
-      excludeExpenses?: boolean;
-      threshold?: number;
-    };
-    rate?: {
-      type?: string;
-      rate?: number;
-      userRateOverrides?: Record<string, number>;
-    };
-  }) {
+  async setProjectBilling(
+    projectId: string,
+    data: {
+      billing?: { type: string; fee?: number };
+      budget?: {
+        type?: string;
+        budget?: number;
+        period?: string;
+        appliedFrom?: string;
+        disallowOverbudget?: boolean;
+        excludeUnbillableTime?: boolean;
+        excludeExpenses?: boolean;
+        threshold?: number;
+      };
+      rate?: {
+        type?: string;
+        rate?: number;
+        userRateOverrides?: Record<string, number>;
+      };
+    }
+  ) {
     let response = await this.axios.put(`/projects/${projectId}/billing`, data);
     return response.data;
   }
@@ -134,12 +143,18 @@ export class EverhourClient {
     return response.data;
   }
 
-  async createSection(projectId: string, data: { name: string; position?: number; status?: string }) {
+  async createSection(
+    projectId: string,
+    data: { name: string; position?: number; status?: string }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/sections`, data);
     return response.data;
   }
 
-  async updateSection(sectionId: number, data: { name?: string; position?: number; status?: string }) {
+  async updateSection(
+    sectionId: number,
+    data: { name?: string; position?: number; status?: string }
+  ) {
     let response = await this.axios.put(`/sections/${sectionId}`, data);
     return response.data;
   }
@@ -150,7 +165,10 @@ export class EverhourClient {
 
   // ─── Tasks ───────────────────────────────────────────────
 
-  async listTasks(projectId: string, params?: { page?: number; limit?: number; 'exclude-closed'?: boolean; query?: string }) {
+  async listTasks(
+    projectId: string,
+    params?: { page?: number; limit?: number; 'exclude-closed'?: boolean; query?: string }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/tasks`, { params });
     return response.data;
   }
@@ -165,33 +183,42 @@ export class EverhourClient {
     return response.data;
   }
 
-  async searchTasksInProject(projectId: string, params: { query?: string; limit?: number; searchInClosed?: boolean }) {
+  async searchTasksInProject(
+    projectId: string,
+    params: { query?: string; limit?: number; searchInClosed?: boolean }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/tasks/search`, { params });
     return response.data;
   }
 
-  async createTask(projectId: string, data: {
-    name: string;
-    section?: number;
-    labels?: string[];
-    position?: number;
-    description?: string;
-    dueOn?: string;
-    status?: string;
-  }) {
+  async createTask(
+    projectId: string,
+    data: {
+      name: string;
+      section?: number;
+      labels?: string[];
+      position?: number;
+      description?: string;
+      dueOn?: string;
+      status?: string;
+    }
+  ) {
     let response = await this.axios.post(`/projects/${projectId}/tasks`, data);
     return response.data;
   }
 
-  async updateTask(taskId: string, data: {
-    name?: string;
-    section?: number;
-    labels?: string[];
-    position?: number;
-    description?: string;
-    dueOn?: string;
-    status?: string;
-  }) {
+  async updateTask(
+    taskId: string,
+    data: {
+      name?: string;
+      section?: number;
+      labels?: string[];
+      position?: number;
+      description?: string;
+      dueOn?: string;
+      status?: string;
+    }
+  ) {
     let response = await this.axios.put(`/tasks/${taskId}`, data);
     return response.data;
   }
@@ -200,7 +227,10 @@ export class EverhourClient {
     await this.axios.delete(`/tasks/${taskId}`);
   }
 
-  async setTaskEstimate(taskId: string, data: { total: number; type: string; users?: Record<string, number> }) {
+  async setTaskEstimate(
+    taskId: string,
+    data: { total: number; type: string; users?: Record<string, number> }
+  ) {
     let response = await this.axios.put(`/tasks/${taskId}/estimate`, data);
     return response.data;
   }
@@ -216,7 +246,10 @@ export class EverhourClient {
     return response.data;
   }
 
-  async listUserTime(userId: number, params?: { from?: string; to?: string; limit?: number; page?: number }) {
+  async listUserTime(
+    userId: number,
+    params?: { from?: string; to?: string; limit?: number; page?: number }
+  ) {
     let response = await this.axios.get(`/users/${userId}/time`, { params });
     return response.data;
   }
@@ -226,17 +259,29 @@ export class EverhourClient {
     return response.data;
   }
 
-  async listProjectTime(projectId: string, params?: { from?: string; to?: string; limit?: number; page?: number }) {
+  async listProjectTime(
+    projectId: string,
+    params?: { from?: string; to?: string; limit?: number; page?: number }
+  ) {
     let response = await this.axios.get(`/projects/${projectId}/time`, { params });
     return response.data;
   }
 
-  async logTime(data: { time: number; date: string; task?: string; user?: number; comment?: string }) {
+  async logTime(data: {
+    time: number;
+    date: string;
+    task?: string;
+    user?: number;
+    comment?: string;
+  }) {
     let response = await this.axios.post('/time', data);
     return response.data;
   }
 
-  async updateTimeRecord(timeId: number, data: { time?: number; date?: string; task?: string; user?: number; comment?: string }) {
+  async updateTimeRecord(
+    timeId: number,
+    data: { time?: number; date?: string; task?: string; user?: number; comment?: string }
+  ) {
     let response = await this.axios.put(`/time/${timeId}`, data);
     return response.data;
   }
@@ -288,16 +333,19 @@ export class EverhourClient {
     return response.data;
   }
 
-  async updateExpense(expenseId: number, data: {
-    amount?: number;
-    category?: number;
-    date?: string;
-    billable?: boolean;
-    details?: string;
-    project?: string;
-    quantity?: number;
-    user?: number;
-  }) {
+  async updateExpense(
+    expenseId: number,
+    data: {
+      amount?: number;
+      category?: number;
+      date?: string;
+      billable?: boolean;
+      details?: string;
+      project?: string;
+      quantity?: number;
+      user?: number;
+    }
+  ) {
     let response = await this.axios.put(`/expenses/${expenseId}`, data);
     return response.data;
   }
@@ -311,17 +359,35 @@ export class EverhourClient {
     return response.data;
   }
 
-  async createExpenseCategory(data: { name: string; color?: string; unitBased?: boolean; unitName?: string; unitPrice?: number }) {
+  async createExpenseCategory(data: {
+    name: string;
+    color?: string;
+    unitBased?: boolean;
+    unitName?: string;
+    unitPrice?: number;
+  }) {
     let response = await this.axios.post('/expenses/categories', data);
     return response.data;
   }
 
-  async updateExpenseCategory(categoryId: number, data: { name?: string; color?: string; unitBased?: boolean; unitName?: string; unitPrice?: number }) {
+  async updateExpenseCategory(
+    categoryId: number,
+    data: {
+      name?: string;
+      color?: string;
+      unitBased?: boolean;
+      unitName?: string;
+      unitPrice?: number;
+    }
+  ) {
     let response = await this.axios.put(`/expenses/categories/${categoryId}`, data);
     return response.data;
   }
 
-  async deleteExpenseCategory(categoryId: number, data?: { targetCategory?: number; removeExpenses?: boolean }) {
+  async deleteExpenseCategory(
+    categoryId: number,
+    data?: { targetCategory?: number; removeExpenses?: boolean }
+  ) {
     await this.axios.delete(`/expenses/categories/${categoryId}`, { data });
   }
 
@@ -337,36 +403,42 @@ export class EverhourClient {
     return response.data;
   }
 
-  async createInvoice(clientId: number, data: {
-    limitDateFrom?: string;
-    limitDateTill?: string;
-    includeExpenses?: boolean;
-    includeTime?: boolean;
-    projects?: string[];
-    tax?: { rate: number; amount?: number };
-    discount?: { rate: number; amount?: number };
-  }) {
+  async createInvoice(
+    clientId: number,
+    data: {
+      limitDateFrom?: string;
+      limitDateTill?: string;
+      includeExpenses?: boolean;
+      includeTime?: boolean;
+      projects?: string[];
+      tax?: { rate: number; amount?: number };
+      discount?: { rate: number; amount?: number };
+    }
+  ) {
     let response = await this.axios.post(`/clients/${clientId}/invoices`, data);
     return response.data;
   }
 
-  async updateInvoice(invoiceId: number, data: {
-    publicId?: string;
-    issueDate?: string;
-    dueDate?: string;
-    reference?: string;
-    publicNotes?: string;
-    tax?: { rate: number; amount?: number };
-    discount?: { rate: number; amount?: number };
-    invoiceItems?: Array<{
-      id?: number;
-      name: string;
-      billedTime?: number;
-      listAmount?: number;
-      taxable?: boolean;
-      position?: number;
-    }>;
-  }) {
+  async updateInvoice(
+    invoiceId: number,
+    data: {
+      publicId?: string;
+      issueDate?: string;
+      dueDate?: string;
+      reference?: string;
+      publicNotes?: string;
+      tax?: { rate: number; amount?: number };
+      discount?: { rate: number; amount?: number };
+      invoiceItems?: Array<{
+        id?: number;
+        name: string;
+        billedTime?: number;
+        listAmount?: number;
+        taxable?: boolean;
+        position?: number;
+      }>;
+    }
+  ) {
     let response = await this.axios.put(`/invoices/${invoiceId}`, data);
     return response.data;
   }
@@ -412,13 +484,16 @@ export class EverhourClient {
     return response.data;
   }
 
-  async updateAssignment(assignmentId: number, data: {
-    startDate?: string;
-    endDate?: string;
-    time?: number;
-    project?: string;
-    task?: string;
-  }) {
+  async updateAssignment(
+    assignmentId: number,
+    data: {
+      startDate?: string;
+      endDate?: string;
+      time?: number;
+      project?: string;
+      task?: string;
+    }
+  ) {
     let response = await this.axios.put(`/resource-planner/assignments/${assignmentId}`, data);
     return response.data;
   }
@@ -434,12 +509,20 @@ export class EverhourClient {
     return response.data;
   }
 
-  async createTimeOffType(data: { name: string; color?: string; paid?: boolean; description?: string }) {
+  async createTimeOffType(data: {
+    name: string;
+    color?: string;
+    paid?: boolean;
+    description?: string;
+  }) {
     let response = await this.axios.post('/resource-planner/time-off-types', data);
     return response.data;
   }
 
-  async updateTimeOffType(typeId: number, data: { name?: string; color?: string; paid?: boolean; description?: string }) {
+  async updateTimeOffType(
+    typeId: number,
+    data: { name?: string; color?: string; paid?: boolean; description?: string }
+  ) {
     let response = await this.axios.put(`/resource-planner/time-off-types/${typeId}`, data);
     return response.data;
   }
@@ -450,17 +533,35 @@ export class EverhourClient {
 
   // ─── Reports / Dashboards ───────────────────────────────
 
-  async getProjectsReport(params?: { 'date.gte'?: string; 'date.lte'?: string; projectId?: string; clientId?: number; memberId?: number }) {
+  async getProjectsReport(params?: {
+    'date.gte'?: string;
+    'date.lte'?: string;
+    projectId?: string;
+    clientId?: number;
+    memberId?: number;
+  }) {
     let response = await this.axios.get('/dashboards/projects', { params });
     return response.data;
   }
 
-  async getClientsReport(params?: { 'date.gte'?: string; 'date.lte'?: string; projectId?: string; clientId?: number; memberId?: number }) {
+  async getClientsReport(params?: {
+    'date.gte'?: string;
+    'date.lte'?: string;
+    projectId?: string;
+    clientId?: number;
+    memberId?: number;
+  }) {
     let response = await this.axios.get('/dashboards/clients', { params });
     return response.data;
   }
 
-  async getUsersReport(params?: { 'date.gte'?: string; 'date.lte'?: string; projectId?: string; clientId?: number; memberId?: number }) {
+  async getUsersReport(params?: {
+    'date.gte'?: string;
+    'date.lte'?: string;
+    projectId?: string;
+    clientId?: number;
+    memberId?: number;
+  }) {
     let response = await this.axios.get('/dashboards/users', { params });
     return response.data;
   }
@@ -492,7 +593,11 @@ export class EverhourClient {
     return response.data;
   }
 
-  async updateTimecard(userId: number, date: string, data: { clockIn?: string; clockOut?: string; breakTime?: number }) {
+  async updateTimecard(
+    userId: number,
+    date: string,
+    data: { clockIn?: string; clockOut?: string; breakTime?: number }
+  ) {
     let response = await this.axios.put(`/users/${userId}/timecards/${date}`, data);
     return response.data;
   }
@@ -513,23 +618,32 @@ export class EverhourClient {
     return response.data;
   }
 
-  async submitTimesheetForApproval(timesheetId: number, data?: { comment?: string; reviewer?: number; sendNotification?: boolean }) {
+  async submitTimesheetForApproval(
+    timesheetId: number,
+    data?: { comment?: string; reviewer?: number; sendNotification?: boolean }
+  ) {
     let response = await this.axios.post(`/timesheets/${timesheetId}/approval`, data || {});
     return response.data;
   }
 
-  async approveOrRejectTimesheet(timesheetId: number, data: {
-    status: string;
-    comment?: string;
-    sendNotification?: boolean;
-    days?: Record<string, boolean>;
-  }) {
+  async approveOrRejectTimesheet(
+    timesheetId: number,
+    data: {
+      status: string;
+      comment?: string;
+      sendNotification?: boolean;
+      days?: Record<string, boolean>;
+    }
+  ) {
     let response = await this.axios.put(`/timesheets/${timesheetId}/approval`, data);
     return response.data;
   }
 
   async discardTimesheetApproval(timesheetId: number, data?: { comment?: string }) {
-    let response = await this.axios.put(`/timesheets/${timesheetId}/discard-approval`, data || {});
+    let response = await this.axios.put(
+      `/timesheets/${timesheetId}/discard-approval`,
+      data || {}
+    );
     return response.data;
   }
 
@@ -545,7 +659,10 @@ export class EverhourClient {
     return response.data;
   }
 
-  async updateWebhook(hookId: number, data: { targetUrl?: string; events?: string[]; project?: string }) {
+  async updateWebhook(
+    hookId: number,
+    data: { targetUrl?: string; events?: string[]; project?: string }
+  ) {
     let response = await this.axios.put(`/hooks/${hookId}`, data);
     return response.data;
   }

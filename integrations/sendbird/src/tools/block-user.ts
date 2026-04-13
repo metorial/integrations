@@ -3,31 +3,34 @@ import { SendbirdChatClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let blockUser = SlateTool.create(
-  spec,
-  {
-    name: 'Block/Unblock User',
-    key: 'block_user',
-    description: `Block or unblock a user. When a user blocks another, they stop receiving messages from the blocked user.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let blockUser = SlateTool.create(spec, {
+  name: 'Block/Unblock User',
+  key: 'block_user',
+  description: `Block or unblock a user. When a user blocks another, they stop receiving messages from the blocked user.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    userId: z.string().describe('ID of the user performing the block/unblock'),
-    targetUserId: z.string().describe('ID of the user to block or unblock'),
-    action: z.enum(['block', 'unblock']).describe('Whether to block or unblock the target user'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    action: z.string().describe('The action performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('ID of the user performing the block/unblock'),
+      targetUserId: z.string().describe('ID of the user to block or unblock'),
+      action: z
+        .enum(['block', 'unblock'])
+        .describe('Whether to block or unblock the target user')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      action: z.string().describe('The action performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SendbirdChatClient({
       applicationId: ctx.config.applicationId,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     if (ctx.input.action === 'block') {
@@ -39,8 +42,9 @@ export let blockUser = SlateTool.create(
     return {
       output: {
         success: true,
-        action: ctx.input.action,
+        action: ctx.input.action
       },
-      message: `User **${ctx.input.userId}** ${ctx.input.action}ed user **${ctx.input.targetUserId}**.`,
+      message: `User **${ctx.input.userId}** ${ctx.input.action}ed user **${ctx.input.targetUserId}**.`
     };
-  }).build();
+  })
+  .build();

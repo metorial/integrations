@@ -14,7 +14,7 @@ import {
   classifyDocument,
   getPdfInfo,
   searchPdfText,
-  pdfOcr,
+  pdfOcr
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     classifyDocument,
     getPdfInfo,
     searchPdfText,
-    pdfOcr,
+    pdfOcr
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

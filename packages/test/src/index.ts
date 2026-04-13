@@ -4,7 +4,7 @@ import {
   openSlatesCliStore,
   SlatesProfileRecord
 } from '@slates/profiles';
-import { readFile } from 'node:fs/promises';
+import { readFile } from 'fs/promises';
 import { expect } from 'vitest';
 
 export interface SlatesRuntimeContext {

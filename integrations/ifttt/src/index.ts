@@ -8,12 +8,9 @@ import {
   testTriggerTool,
   fireWebhookTool,
   sendRealtimeNotificationTool,
-  getFieldOptionsTool,
+  getFieldOptionsTool
 } from './tools';
-import {
-  connectionEventTrigger,
-  triggerFiredTrigger,
-} from './triggers';
+import { connectionEventTrigger, triggerFiredTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -25,10 +22,7 @@ export let provider = Slate.create({
     testTriggerTool,
     fireWebhookTool,
     sendRealtimeNotificationTool,
-    getFieldOptionsTool,
+    getFieldOptionsTool
   ],
-  triggers: [
-    connectionEventTrigger,
-    triggerFiredTrigger,
-  ],
+  triggers: [connectionEventTrigger, triggerFiredTrigger]
 });

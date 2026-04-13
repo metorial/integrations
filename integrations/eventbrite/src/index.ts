@@ -13,13 +13,9 @@ import {
   manageVenue,
   manageDiscount,
   manageOrganizer,
-  getUser,
+  getUser
 } from './tools';
-import {
-  eventLifecycle,
-  orderActivity,
-  attendeeActivity,
-} from './triggers';
+import { eventLifecycle, orderActivity, attendeeActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,11 +32,7 @@ export let provider = Slate.create({
     manageVenue,
     manageDiscount,
     manageOrganizer,
-    getUser,
+    getUser
   ],
-  triggers: [
-    eventLifecycle,
-    orderActivity,
-    attendeeActivity,
-  ],
+  triggers: [eventLifecycle, orderActivity, attendeeActivity]
 });

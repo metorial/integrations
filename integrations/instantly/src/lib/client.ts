@@ -7,29 +7,31 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.instantly.ai/api/v2',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Campaigns ──────────────────────────────────────────────
 
-  async listCampaigns(params: {
-    limit?: number;
-    startingAfter?: string;
-    search?: string;
-    status?: number;
-    tagIds?: string;
-  } = {}) {
+  async listCampaigns(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      search?: string;
+      status?: number;
+      tagIds?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/campaigns', {
       params: {
         limit: params.limit,
         starting_after: params.startingAfter,
         search: params.search,
         status: params.status,
-        tag_ids: params.tagIds,
-      },
+        tag_ids: params.tagIds
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -39,15 +41,11 @@ export class Client {
     return res.data;
   }
 
-  async createCampaign(data: {
-    name: string;
-    campaignSchedule?: any;
-    sequences?: any[];
-  }) {
+  async createCampaign(data: { name: string; campaignSchedule?: any; sequences?: any[] }) {
     let res = await this.axios.post('/campaigns', {
       name: data.name,
       campaign_schedule: data.campaignSchedule,
-      sequences: data.sequences,
+      sequences: data.sequences
     });
     return res.data;
   }
@@ -74,91 +72,101 @@ export class Client {
 
   // ─── Campaign Analytics ─────────────────────────────────────
 
-  async getCampaignAnalytics(params: {
-    campaignId?: string;
-    campaignIds?: string[];
-    startDate?: string;
-    endDate?: string;
-  } = {}) {
+  async getCampaignAnalytics(
+    params: {
+      campaignId?: string;
+      campaignIds?: string[];
+      startDate?: string;
+      endDate?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/campaigns/analytics', {
       params: {
         id: params.campaignId,
         ids: params.campaignIds,
         start_date: params.startDate,
-        end_date: params.endDate,
-      },
+        end_date: params.endDate
+      }
     });
     return res.data;
   }
 
-  async getCampaignAnalyticsOverview(params: {
-    campaignId?: string;
-    campaignIds?: string[];
-    startDate?: string;
-    endDate?: string;
-    campaignStatus?: number;
-  } = {}) {
+  async getCampaignAnalyticsOverview(
+    params: {
+      campaignId?: string;
+      campaignIds?: string[];
+      startDate?: string;
+      endDate?: string;
+      campaignStatus?: number;
+    } = {}
+  ) {
     let res = await this.axios.get('/campaigns/analytics/overview', {
       params: {
         id: params.campaignId,
         ids: params.campaignIds,
         start_date: params.startDate,
         end_date: params.endDate,
-        campaign_status: params.campaignStatus,
-      },
+        campaign_status: params.campaignStatus
+      }
     });
     return res.data;
   }
 
-  async getDailyCampaignAnalytics(params: {
-    campaignId?: string;
-    startDate?: string;
-    endDate?: string;
-    campaignStatus?: number;
-  } = {}) {
+  async getDailyCampaignAnalytics(
+    params: {
+      campaignId?: string;
+      startDate?: string;
+      endDate?: string;
+      campaignStatus?: number;
+    } = {}
+  ) {
     let res = await this.axios.get('/campaigns/analytics/daily', {
       params: {
         campaign_id: params.campaignId,
         start_date: params.startDate,
         end_date: params.endDate,
-        campaign_status: params.campaignStatus,
-      },
+        campaign_status: params.campaignStatus
+      }
     });
     return res.data;
   }
 
-  async getStepAnalytics(params: {
-    campaignId?: string;
-    startDate?: string;
-    endDate?: string;
-    includeOpportunitiesCount?: boolean;
-  } = {}) {
+  async getStepAnalytics(
+    params: {
+      campaignId?: string;
+      startDate?: string;
+      endDate?: string;
+      includeOpportunitiesCount?: boolean;
+    } = {}
+  ) {
     let res = await this.axios.get('/campaigns/analytics/steps', {
       params: {
         campaign_id: params.campaignId,
         start_date: params.startDate,
         end_date: params.endDate,
-        include_opportunities_count: params.includeOpportunitiesCount,
-      },
+        include_opportunities_count: params.includeOpportunitiesCount
+      }
     });
     return res.data;
   }
 
   // ─── Leads ──────────────────────────────────────────────────
 
-  async listLeads(params: {
-    campaignId?: string;
-    listId?: string;
-    interestStatus?: number;
-    startingAfter?: string;
-    limit?: number;
-  } = {}) {
+  async listLeads(
+    params: {
+      campaignId?: string;
+      listId?: string;
+      interestStatus?: number;
+      startingAfter?: string;
+      limit?: number;
+    } = {}
+  ) {
     let res = await this.axios.post('/leads/list', {
       campaign_id: params.campaignId,
       list_id: params.listId,
       interest_status: params.interestStatus,
       starting_after: params.startingAfter,
-      limit: params.limit,
+      limit: params.limit
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -196,7 +204,7 @@ export class Client {
       lt_interest_status: data.interestStatus,
       skip_if_in_workspace: data.skipIfInWorkspace,
       skip_if_in_campaign: data.skipIfInCampaign,
-      custom_variables: data.customVariables,
+      custom_variables: data.customVariables
     });
     return res.data;
   }
@@ -221,7 +229,7 @@ export class Client {
       lead_email: data.leadEmail,
       interest_value: data.interestValue,
       campaign_id: data.campaignId,
-      list_id: data.listId,
+      list_id: data.listId
     });
     return res.data;
   }
@@ -238,28 +246,30 @@ export class Client {
       from_campaign_id: data.fromCampaignId,
       to_campaign_id: data.toCampaignId,
       from_list_id: data.fromListId,
-      to_list_id: data.toListId,
+      to_list_id: data.toListId
     });
     return res.data;
   }
 
   // ─── Email Accounts ─────────────────────────────────────────
 
-  async listAccounts(params: {
-    limit?: number;
-    startingAfter?: string;
-    search?: string;
-    status?: number;
-    tagIds?: string;
-  } = {}) {
+  async listAccounts(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      search?: string;
+      status?: number;
+      tagIds?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/accounts', {
       params: {
         limit: params.limit,
         starting_after: params.startingAfter,
         search: params.search,
         status: params.status,
-        tag_ids: params.tagIds,
-      },
+        tag_ids: params.tagIds
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -291,18 +301,20 @@ export class Client {
 
   // ─── Emails ─────────────────────────────────────────────────
 
-  async listEmails(params: {
-    limit?: number;
-    startingAfter?: string;
-    campaignId?: string;
-    listId?: string;
-    eaccount?: string;
-    lead?: string;
-    search?: string;
-    isUnread?: boolean;
-    emailType?: string;
-    previewOnly?: boolean;
-  } = {}) {
+  async listEmails(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      campaignId?: string;
+      listId?: string;
+      eaccount?: string;
+      lead?: string;
+      search?: string;
+      isUnread?: boolean;
+      emailType?: string;
+      previewOnly?: boolean;
+    } = {}
+  ) {
     let res = await this.axios.get('/emails', {
       params: {
         limit: params.limit,
@@ -314,8 +326,8 @@ export class Client {
         search: params.search,
         is_unread: params.isUnread,
         email_type: params.emailType,
-        preview_only: params.previewOnly,
-      },
+        preview_only: params.previewOnly
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -344,7 +356,7 @@ export class Client {
       to: data.to,
       body: data.body,
       cc: data.cc,
-      bcc: data.bcc,
+      bcc: data.bcc
     });
     return res.data;
   }
@@ -363,17 +375,19 @@ export class Client {
 
   // ─── Lead Lists ─────────────────────────────────────────────
 
-  async listLeadLists(params: {
-    limit?: number;
-    startingAfter?: string;
-    search?: string;
-  } = {}) {
+  async listLeadLists(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      search?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/lead-lists', {
       params: {
         limit: params.limit,
         starting_after: params.startingAfter,
-        search: params.search,
-      },
+        search: params.search
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -400,15 +414,17 @@ export class Client {
 
   // ─── Lead Labels ────────────────────────────────────────────
 
-  async listLeadLabels(params: {
-    limit?: number;
-    startingAfter?: string;
-  } = {}) {
+  async listLeadLabels(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/lead-labels', {
       params: {
         limit: params.limit,
-        starting_after: params.startingAfter,
-      },
+        starting_after: params.startingAfter
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -435,15 +451,17 @@ export class Client {
 
   // ─── Block List Entries ─────────────────────────────────────
 
-  async listBlockListEntries(params: {
-    limit?: number;
-    startingAfter?: string;
-  } = {}) {
+  async listBlockListEntries(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/block-lists-entries', {
       params: {
         limit: params.limit,
-        starting_after: params.startingAfter,
-      },
+        starting_after: params.startingAfter
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -460,17 +478,19 @@ export class Client {
 
   // ─── Custom Tags ────────────────────────────────────────────
 
-  async listCustomTags(params: {
-    limit?: number;
-    startingAfter?: string;
-    search?: string;
-  } = {}) {
+  async listCustomTags(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      search?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/custom-tags', {
       params: {
         limit: params.limit,
         starting_after: params.startingAfter,
-        search: params.search,
-      },
+        search: params.search
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -485,34 +505,32 @@ export class Client {
     return res.data;
   }
 
-  async toggleTagResource(data: {
-    tagId: string;
-    resourceIds: string[];
-    assign: boolean;
-  }) {
+  async toggleTagResource(data: { tagId: string; resourceIds: string[]; assign: boolean }) {
     let res = await this.axios.post('/custom-tags/toggle-resource', {
       tag_id: data.tagId,
       resource_ids: data.resourceIds,
-      assign: data.assign,
+      assign: data.assign
     });
     return res.data;
   }
 
   // ─── Webhooks ───────────────────────────────────────────────
 
-  async listWebhooks(params: {
-    limit?: number;
-    startingAfter?: string;
-    campaign?: string;
-    eventType?: string;
-  } = {}) {
+  async listWebhooks(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      campaign?: string;
+      eventType?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/webhooks', {
       params: {
         limit: params.limit,
         starting_after: params.startingAfter,
         campaign: params.campaign,
-        event_type: params.eventType,
-      },
+        event_type: params.eventType
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
@@ -529,7 +547,7 @@ export class Client {
       event_type: data.eventType,
       campaign: data.campaignId,
       name: data.name,
-      headers: data.headers,
+      headers: data.headers
     });
     return res.data;
   }
@@ -546,28 +564,27 @@ export class Client {
 
   // ─── Account-Campaign Mappings ──────────────────────────────
 
-  async listAccountCampaignMappings(params: {
-    limit?: number;
-    startingAfter?: string;
-    campaignId?: string;
-  } = {}) {
+  async listAccountCampaignMappings(
+    params: {
+      limit?: number;
+      startingAfter?: string;
+      campaignId?: string;
+    } = {}
+  ) {
     let res = await this.axios.get('/account-campaign-mappings', {
       params: {
         limit: params.limit,
         starting_after: params.startingAfter,
-        campaign_id: params.campaignId,
-      },
+        campaign_id: params.campaignId
+      }
     });
     return res.data as { items: any[]; next_starting_after: string | null };
   }
 
-  async createAccountCampaignMapping(data: {
-    campaignId: string;
-    accountEmail: string;
-  }) {
+  async createAccountCampaignMapping(data: { campaignId: string; accountEmail: string }) {
     let res = await this.axios.post('/account-campaign-mappings', {
       campaign_id: data.campaignId,
-      email: data.accountEmail,
+      email: data.accountEmail
     });
     return res.data;
   }

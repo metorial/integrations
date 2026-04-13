@@ -9,6 +9,7 @@ GenderAPI is a service that determines a person's gender based on their first na
 GenderAPI uses **API Key** authentication. An API key is obtained by registering an account at `app.genderapi.io`. The API key can be provided in two ways:
 
 1. **Bearer Token in Authorization Header** (recommended): Pass the API key in the `Authorization` header as `Bearer YOUR_API_KEY`. For example:
+
    ```
    Authorization: Bearer YOUR_API_KEY
    ```

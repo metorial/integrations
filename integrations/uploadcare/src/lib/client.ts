@@ -81,10 +81,10 @@ export class Client {
     return createAxios({
       baseURL: 'https://api.uploadcare.com/',
       headers: {
-        'Accept': 'application/vnd.uploadcare-v0.7+json',
-        'Authorization': `Uploadcare.Simple ${this.auth.publicKey}:${this.auth.secretKey}`,
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/vnd.uploadcare-v0.7+json',
+        Authorization: `Uploadcare.Simple ${this.auth.publicKey}:${this.auth.secretKey}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -106,7 +106,7 @@ export class Client {
   async getFile(fileId: string, include?: string): Promise<FileObject> {
     let axios = this.getAxios();
     let response = await axios.get(`/files/${fileId}/`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -123,13 +123,17 @@ export class Client {
     return response.data;
   }
 
-  async batchStore(fileIds: string[]): Promise<{ status: string; problems: Record<string, string>; result: FileObject[] }> {
+  async batchStore(
+    fileIds: string[]
+  ): Promise<{ status: string; problems: Record<string, string>; result: FileObject[] }> {
     let axios = this.getAxios();
     let response = await axios.put('/files/storage/', fileIds);
     return response.data;
   }
 
-  async batchDelete(fileIds: string[]): Promise<{ status: string; problems: Record<string, string>; result: FileObject[] }> {
+  async batchDelete(
+    fileIds: string[]
+  ): Promise<{ status: string; problems: Record<string, string>; result: FileObject[] }> {
     let axios = this.getAxios();
     let response = await axios.delete('/files/storage/', { data: fileIds });
     return response.data;
@@ -137,22 +141,29 @@ export class Client {
 
   // ── File Copy ──
 
-  async localCopy(source: string, store?: boolean): Promise<{ type: string; result: FileObject }> {
+  async localCopy(
+    source: string,
+    store?: boolean
+  ): Promise<{ type: string; result: FileObject }> {
     let axios = this.getAxios();
     let response = await axios.post('/files/local_copy/', { source, store });
     return response.data;
   }
 
-  async remoteCopy(source: string, target: string, options?: {
-    makePublic?: boolean;
-    pattern?: string;
-  }): Promise<{ type: string; result: string }> {
+  async remoteCopy(
+    source: string,
+    target: string,
+    options?: {
+      makePublic?: boolean;
+      pattern?: string;
+    }
+  ): Promise<{ type: string; result: string }> {
     let axios = this.getAxios();
     let response = await axios.post('/files/remote_copy/', {
       source,
       target,
       make_public: options?.makePublic,
-      pattern: options?.pattern,
+      pattern: options?.pattern
     });
     return response.data;
   }
@@ -173,9 +184,13 @@ export class Client {
 
   async updateMetadataKey(fileId: string, key: string, value: string): Promise<string> {
     let axios = this.getAxios();
-    let response = await axios.put(`/files/${fileId}/metadata/${key}/`, JSON.stringify(value), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await axios.put(
+      `/files/${fileId}/metadata/${key}/`,
+      JSON.stringify(value),
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -233,17 +248,20 @@ export class Client {
       event: params.event,
       is_active: params.isActive ?? true,
       signing_secret: params.signingSecret,
-      version: '0.7',
+      version: '0.7'
     });
     return response.data;
   }
 
-  async updateWebhook(webhookId: number, params: {
-    targetUrl?: string;
-    event?: string;
-    isActive?: boolean;
-    signingSecret?: string;
-  }): Promise<WebhookObject> {
+  async updateWebhook(
+    webhookId: number,
+    params: {
+      targetUrl?: string;
+      event?: string;
+      isActive?: boolean;
+      signingSecret?: string;
+    }
+  ): Promise<WebhookObject> {
     let axios = this.getAxios();
     let body: Record<string, any> = {};
     if (params.targetUrl !== undefined) body.target_url = params.targetUrl;
@@ -258,7 +276,7 @@ export class Client {
   async deleteWebhook(targetUrl: string): Promise<void> {
     let axios = this.getAxios();
     await axios.delete('/webhooks/unsubscribe/', {
-      data: { target_url: targetUrl },
+      data: { target_url: targetUrl }
     });
   }
 
@@ -272,7 +290,11 @@ export class Client {
 
   // ── Add-Ons ──
 
-  async executeAddon(addonName: string, target: string, params?: Record<string, any>): Promise<string> {
+  async executeAddon(
+    addonName: string,
+    target: string,
+    params?: Record<string, any>
+  ): Promise<string> {
     let axios = this.getAxios();
     let body: Record<string, any> = { target };
     if (params) body.params = params;
@@ -280,17 +302,24 @@ export class Client {
     return response.data.request_id;
   }
 
-  async getAddonStatus(addonName: string, requestId: string): Promise<{ status: string; result?: Record<string, any> }> {
+  async getAddonStatus(
+    addonName: string,
+    requestId: string
+  ): Promise<{ status: string; result?: Record<string, any> }> {
     let axios = this.getAxios();
     let response = await axios.get(`/addons/${addonName}/execute/status/`, {
-      params: { request_id: requestId },
+      params: { request_id: requestId }
     });
     return response.data;
   }
 
   // ── Document Conversion ──
 
-  async convertDocument(paths: string[], store?: boolean, saveInGroup?: boolean): Promise<{
+  async convertDocument(
+    paths: string[],
+    store?: boolean,
+    saveInGroup?: boolean
+  ): Promise<{
     result: ConversionResult[];
     problems: Record<string, string>;
   }> {
@@ -298,7 +327,7 @@ export class Client {
     let response = await axios.post('/convert/document/', {
       paths,
       store: store ? '1' : '0',
-      save_in_group: saveInGroup ? 1 : 0,
+      save_in_group: saveInGroup ? 1 : 0
     });
     return response.data;
   }
@@ -311,14 +340,17 @@ export class Client {
 
   // ── Video Encoding ──
 
-  async convertVideo(paths: string[], store?: boolean): Promise<{
+  async convertVideo(
+    paths: string[],
+    store?: boolean
+  ): Promise<{
     result: ConversionResult[];
     problems: Record<string, string>;
   }> {
     let axios = this.getAxios();
     let response = await axios.post('/convert/video/', {
       paths,
-      store: store ? '1' : '0',
+      store: store ? '1' : '0'
     });
     return response.data;
   }

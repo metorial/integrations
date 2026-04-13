@@ -17,14 +17,14 @@ import {
   addIssueComment,
   listUsersAndGroups,
   manageSchedules,
-  manageAssets,
+  manageAssets
 } from './tools';
 import {
   inspectionEvents,
   actionEvents,
   issueEvents,
   mediaEvents,
-  trainingEvents,
+  trainingEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,13 +46,7 @@ export let provider = Slate.create({
     addIssueComment,
     listUsersAndGroups,
     manageSchedules,
-    manageAssets,
+    manageAssets
   ],
-  triggers: [
-    inspectionEvents,
-    actionEvents,
-    issueEvents,
-    mediaEvents,
-    trainingEvents,
-  ],
+  triggers: [inspectionEvents, actionEvents, issueEvents, mediaEvents, trainingEvents]
 });

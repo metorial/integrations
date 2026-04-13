@@ -21,36 +21,47 @@ The API is available on specific pricing plans. There are two tiers: Standard AP
 ## Features
 
 ### Form Management
+
 Retrieve a list of all forms, get details for a specific form by slug or ID, and update form settings. Forms are identified by either their slug or unique ID.
 
 ### Form Fields
+
 List and retrieve individual form fields for a given form. Fields can also be updated, allowing you to modify question configuration programmatically. Each field is identified by a unique field key.
 
 ### Submissions
+
 Retrieve and manage form submissions. You can list all submissions for a form, get individual submission details, and delete submissions. Submissions can be accessed either through a form (by form slug/ID) or directly by submission ID.
 
 ### Partial Submissions
+
 Paperform provides access to partial submissions — form responses that were started but not completed. You can list, retrieve, and delete partial submissions. Partial submission data is available for 30 days after each drop-off.
 
 ### Products
+
 Manage products associated with payment/order forms. You can list, create, retrieve, update, and delete products on a form. Products are identified by SKU. You can also update a product's available quantity and sold count independently.
 
 ### Coupons
+
 Create and manage discount coupons for forms. Supports listing, creating, retrieving, updating, and deleting coupons. Each coupon is identified by its code.
 
 ### Spaces
+
 Spaces allow organizing forms into groups. You can list, create, retrieve, and update spaces, as well as list all forms within a specific space.
 
 ### Translations
+
 Manage form translations for multilingual support. You can list, create, retrieve, update, and delete translations.
 
 ### Papersign Documents
+
 Manage eSignature documents through the Papersign API. You can list and retrieve documents, send documents for signing, copy documents, cancel in-progress documents, and move documents between folders.
 
 ### Papersign Folders
+
 List existing Papersign folders and create new ones for organizing documents.
 
 ### Papersign Spaces
+
 List Papersign spaces to view how documents are organized at the top level.
 
 ## Events
@@ -58,9 +69,11 @@ List Papersign spaces to view how documents are organized at the top level.
 Paperform supports webhooks for both form submissions and Papersign document events. Webhooks can be managed via the API (Business API tier required) or configured through the form editor UI.
 
 ### Form Submission Events
+
 Webhooks can be triggered in response to a New Submission or a Partial Submission. Webhooks POST a JSON payload on submission to the saved webhook URL(s). The payload includes all question data, submission ID, creation timestamp, IP address, and payment information if applicable. Paperform webhooks support custom headers, which can be used for authentication and supplying additional information. Partial Submission webhooks are only triggered when a given partial response has not been updated within the last 30 minutes, and has not been submitted yet.
 
 ### Papersign Document Events
+
 Webhooks can be configured to fire when signature requests are sent out, when a document's signatures are completed, or at any other point during the signing process. Each webhook is associated with a specific space or folder, rather than a single document. Available trigger events are:
 
 - **Document sent** — A signature request has been sent out.

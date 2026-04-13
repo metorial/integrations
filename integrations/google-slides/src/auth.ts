@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Google OAuth',
@@ -25,7 +27,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Drive File',
-        description: 'See, edit, create, and delete only the specific Google Drive files used with the app. (Recommended)',
+        description:
+          'See, edit, create, and delete only the specific Google Drive files used with the app. (Recommended)',
         scope: 'https://www.googleapis.com/auth/drive.file'
       },
       {
@@ -40,7 +43,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Spreadsheets (Read-only)',
-        description: 'See all Google Sheets spreadsheets. Required for refreshing linked charts.',
+        description:
+          'See all Google Sheets spreadsheets. Required for refreshing linked charts.',
         scope: 'https://www.googleapis.com/auth/spreadsheets.readonly'
       },
       {
@@ -50,7 +54,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'User Profile',
-        description: 'See your personal info, including any personal info you\'ve made publicly available.',
+        description:
+          "See your personal info, including any personal info you've made publicly available.",
         scope: 'https://www.googleapis.com/auth/userinfo.profile'
       },
       {
@@ -60,7 +65,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -76,20 +81,24 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
-      let response = await http.post('https://oauth2.googleapis.com/token', new URLSearchParams({
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code'
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await http.post(
+        'https://oauth2.googleapis.com/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
 
@@ -107,23 +116,27 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let http = createAxios();
 
-      let response = await http.post('https://oauth2.googleapis.com/token', new URLSearchParams({
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token'
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await http.post(
+        'https://oauth2.googleapis.com/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
 
@@ -141,7 +154,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let http = createAxios({
         baseURL: 'https://www.googleapis.com'
       });

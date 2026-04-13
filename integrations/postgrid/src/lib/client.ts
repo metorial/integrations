@@ -9,8 +9,8 @@ export class PrintMailClient {
     this.axios = createAxios({
       baseURL: PRINT_MAIL_BASE_URL,
       headers: {
-        'x-api-key': this.token,
-      },
+        'x-api-key': this.token
+      }
     });
   }
 
@@ -71,11 +71,14 @@ export class PrintMailClient {
     return res.data;
   }
 
-  async updateTemplate(templateId: string, data: {
-    description?: string;
-    html?: string;
-    metadata?: Record<string, any>;
-  }) {
+  async updateTemplate(
+    templateId: string,
+    data: {
+      description?: string;
+      html?: string;
+      metadata?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.patch(`/templates/${templateId}`, data);
     return res.data;
   }

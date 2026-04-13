@@ -46,7 +46,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.adrapid.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -81,10 +81,13 @@ export class Client {
     };
   }
 
-  async getUserAccess(userId: string, options?: {
-    templateId?: string;
-    editorOptions?: Record<string, any>;
-  }): Promise<UserAccessResponse> {
+  async getUserAccess(
+    userId: string,
+    options?: {
+      templateId?: string;
+      editorOptions?: Record<string, any>;
+    }
+  ): Promise<UserAccessResponse> {
     let params: Record<string, string> = {};
     if (options?.templateId) {
       params['template_id'] = options.templateId;
@@ -97,7 +100,11 @@ export class Client {
     return response.data;
   }
 
-  async pollBannerUntilReady(bannerId: string, maxAttempts: number = 30, intervalMs: number = 2000): Promise<Banner> {
+  async pollBannerUntilReady(
+    bannerId: string,
+    maxAttempts: number = 30,
+    intervalMs: number = 2000
+  ): Promise<Banner> {
     for (let i = 0; i < maxAttempts; i++) {
       let banner = await this.getBanner(bannerId);
       if (banner.status === 'ready' || banner.status === 'failed') {
@@ -110,7 +117,7 @@ export class Client {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private normalizeBanner(data: any): Banner {
@@ -118,16 +125,18 @@ export class Client {
       bannerId: data.id || data._id || '',
       status: data.status || 'unknown',
       templateId: data.templateId || '',
-      files: Array.isArray(data.files) ? data.files.map((f: any) => ({
-        id: f.id || f._id || '',
-        url: f.url || '',
-        status: f.status || '',
-        name: f.name,
-        type: f.type,
-        size: f.size,
-        width: f.width,
-        height: f.height
-      })) : [],
+      files: Array.isArray(data.files)
+        ? data.files.map((f: any) => ({
+            id: f.id || f._id || '',
+            url: f.url || '',
+            status: f.status || '',
+            name: f.name,
+            type: f.type,
+            size: f.size,
+            width: f.width,
+            height: f.height
+          }))
+        : [],
       createdAt: data.createdAt || data.created_at,
       updatedAt: data.updatedAt || data.updated_at
     };

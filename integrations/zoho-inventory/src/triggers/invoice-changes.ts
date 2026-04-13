@@ -3,48 +3,50 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let invoiceChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Changes',
-    key: 'invoice_changes',
-    description: 'Triggers when invoices are created or updated in Zoho Inventory. Polls for recently modified invoices.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    invoiceNumber: z.string().optional().describe('Invoice number'),
-    customerName: z.string().optional().describe('Customer name'),
-    status: z.string().optional().describe('Invoice status'),
-    total: z.number().optional().describe('Total amount'),
-    balanceDue: z.number().optional().describe('Balance due'),
-    date: z.string().optional().describe('Invoice date'),
-    dueDate: z.string().optional().describe('Due date'),
-    lastModifiedTime: z.string().optional().describe('Last modified time'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    invoiceNumber: z.string().optional().describe('Invoice number'),
-    customerName: z.string().optional().describe('Customer name'),
-    status: z.string().optional().describe('Invoice status'),
-    total: z.number().optional().describe('Total amount'),
-    balanceDue: z.number().optional().describe('Balance due'),
-    date: z.string().optional().describe('Invoice date'),
-    dueDate: z.string().optional().describe('Due date'),
-    lastModifiedTime: z.string().optional().describe('Last modified time'),
-  }))
+export let invoiceChanges = SlateTrigger.create(spec, {
+  name: 'Invoice Changes',
+  key: 'invoice_changes',
+  description:
+    'Triggers when invoices are created or updated in Zoho Inventory. Polls for recently modified invoices.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      invoiceNumber: z.string().optional().describe('Invoice number'),
+      customerName: z.string().optional().describe('Customer name'),
+      status: z.string().optional().describe('Invoice status'),
+      total: z.number().optional().describe('Total amount'),
+      balanceDue: z.number().optional().describe('Balance due'),
+      date: z.string().optional().describe('Invoice date'),
+      dueDate: z.string().optional().describe('Due date'),
+      lastModifiedTime: z.string().optional().describe('Last modified time')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      invoiceNumber: z.string().optional().describe('Invoice number'),
+      customerName: z.string().optional().describe('Customer name'),
+      status: z.string().optional().describe('Invoice status'),
+      total: z.number().optional().describe('Total amount'),
+      balanceDue: z.number().optional().describe('Balance due'),
+      date: z.string().optional().describe('Invoice date'),
+      dueDate: z.string().optional().describe('Due date'),
+      lastModifiedTime: z.string().optional().describe('Last modified time')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let result = await client.listInvoices({
         sort_column: 'last_modified_time',
         sort_order: 'descending',
-        per_page: 25,
+        per_page: 25
       });
 
       let invoices = result.invoices || [];
@@ -52,15 +54,20 @@ export let invoiceChanges = SlateTrigger.create(
       let newInvoices: any[] = [];
 
       for (let invoice of invoices) {
-        if (lastPolledAt && invoice.last_modified_time && invoice.last_modified_time <= lastPolledAt) {
+        if (
+          lastPolledAt &&
+          invoice.last_modified_time &&
+          invoice.last_modified_time <= lastPolledAt
+        ) {
           break;
         }
         newInvoices.push(invoice);
       }
 
-      let updatedLastPolled = invoices.length > 0 && invoices[0].last_modified_time
-        ? invoices[0].last_modified_time
-        : lastPolledAt;
+      let updatedLastPolled =
+        invoices.length > 0 && invoices[0].last_modified_time
+          ? invoices[0].last_modified_time
+          : lastPolledAt;
 
       return {
         inputs: newInvoices.map((inv: any) => ({
@@ -72,15 +79,15 @@ export let invoiceChanges = SlateTrigger.create(
           balanceDue: inv.balance ?? undefined,
           date: inv.date ?? undefined,
           dueDate: inv.due_date ?? undefined,
-          lastModifiedTime: inv.last_modified_time ?? undefined,
+          lastModifiedTime: inv.last_modified_time ?? undefined
         })),
         updatedState: {
-          lastPolledAt: updatedLastPolled,
-        },
+          lastPolledAt: updatedLastPolled
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'invoice.updated',
         id: `inv-${ctx.input.invoiceId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -93,8 +100,9 @@ export let invoiceChanges = SlateTrigger.create(
           balanceDue: ctx.input.balanceDue,
           date: ctx.input.date,
           dueDate: ctx.input.dueDate,
-          lastModifiedTime: ctx.input.lastModifiedTime,
-        },
+          lastModifiedTime: ctx.input.lastModifiedTime
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

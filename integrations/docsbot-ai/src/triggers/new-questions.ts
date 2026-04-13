@@ -3,44 +3,46 @@ import { DocsBotAdminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newQuestions = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Questions',
-    key: 'new_questions',
-    description: 'Triggers when new questions are asked to a bot. Polls the question history for new entries. Monitors the bot specified in the global config botId, or all bots if not set.',
-  }
-)
-  .input(z.object({
-    botId: z.string().describe('Bot ID that received the question'),
-    questionId: z.string().describe('Unique question identifier'),
-    createdAt: z.string().describe('ISO 8601 timestamp of the question'),
-    alias: z.string().describe('Anonymous username'),
-    question: z.string().describe('User question text'),
-    answer: z.string().describe('Bot answer'),
-    rating: z.number().describe('Rating value'),
-    escalation: z.boolean().describe('Whether support was escalated'),
-    couldAnswer: z.boolean().optional().describe('Whether the bot could answer'),
-    metadata: z.record(z.string(), z.string()).optional().describe('User metadata'),
-  }))
-  .output(z.object({
-    questionId: z.string().describe('Question identifier'),
-    botId: z.string().describe('Bot ID that received the question'),
-    createdAt: z.string().describe('ISO 8601 timestamp'),
-    alias: z.string().describe('Anonymous username'),
-    question: z.string().describe('User question text'),
-    answer: z.string().describe('Bot answer in Markdown'),
-    rating: z.number().describe('Rating: -1 (negative), 0 (neutral), 1 (positive)'),
-    escalation: z.boolean().describe('Whether support was escalated'),
-    couldAnswer: z.boolean().optional().describe('Whether the bot could answer'),
-    metadata: z.record(z.string(), z.string()).optional().describe('User metadata'),
-  }))
+export let newQuestions = SlateTrigger.create(spec, {
+  name: 'New Questions',
+  key: 'new_questions',
+  description:
+    'Triggers when new questions are asked to a bot. Polls the question history for new entries. Monitors the bot specified in the global config botId, or all bots if not set.'
+})
+  .input(
+    z.object({
+      botId: z.string().describe('Bot ID that received the question'),
+      questionId: z.string().describe('Unique question identifier'),
+      createdAt: z.string().describe('ISO 8601 timestamp of the question'),
+      alias: z.string().describe('Anonymous username'),
+      question: z.string().describe('User question text'),
+      answer: z.string().describe('Bot answer'),
+      rating: z.number().describe('Rating value'),
+      escalation: z.boolean().describe('Whether support was escalated'),
+      couldAnswer: z.boolean().optional().describe('Whether the bot could answer'),
+      metadata: z.record(z.string(), z.string()).optional().describe('User metadata')
+    })
+  )
+  .output(
+    z.object({
+      questionId: z.string().describe('Question identifier'),
+      botId: z.string().describe('Bot ID that received the question'),
+      createdAt: z.string().describe('ISO 8601 timestamp'),
+      alias: z.string().describe('Anonymous username'),
+      question: z.string().describe('User question text'),
+      answer: z.string().describe('Bot answer in Markdown'),
+      rating: z.number().describe('Rating: -1 (negative), 0 (neutral), 1 (positive)'),
+      escalation: z.boolean().describe('Whether support was escalated'),
+      couldAnswer: z.boolean().optional().describe('Whether the bot could answer'),
+      metadata: z.record(z.string(), z.string()).optional().describe('User metadata')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DocsBotAdminClient(ctx.auth.token);
       let teamId = ctx.config.teamId;
       let lastSeenTimestamp = ctx.state?.lastSeenTimestamp as string | undefined;
@@ -50,7 +52,7 @@ export let newQuestions = SlateTrigger.create(
         botIds = [ctx.config.botId];
       } else {
         let bots = await client.listBots(teamId);
-        botIds = bots.map((b) => b.id);
+        botIds = bots.map(b => b.id);
       }
 
       let allInputs: Array<{
@@ -71,12 +73,12 @@ export let newQuestions = SlateTrigger.create(
       for (let botId of botIds) {
         let result = await client.listQuestions(teamId, botId, {
           perPage: 50,
-          ascending: false,
+          ascending: false
         });
 
         let questions = result.questions;
         if (lastSeenTimestamp) {
-          questions = questions.filter((q) => q.createdAt > lastSeenTimestamp);
+          questions = questions.filter(q => q.createdAt > lastSeenTimestamp);
         }
 
         for (let q of questions) {
@@ -93,7 +95,7 @@ export let newQuestions = SlateTrigger.create(
             rating: q.rating,
             escalation: q.escalation,
             couldAnswer: q.couldAnswer ?? undefined,
-            metadata: q.metadata,
+            metadata: q.metadata
           });
         }
       }
@@ -101,12 +103,12 @@ export let newQuestions = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          lastSeenTimestamp: newestTimestamp,
-        },
+          lastSeenTimestamp: newestTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'question.created',
         id: ctx.input.questionId,
@@ -120,9 +122,9 @@ export let newQuestions = SlateTrigger.create(
           rating: ctx.input.rating,
           escalation: ctx.input.escalation,
           couldAnswer: ctx.input.couldAnswer,
-          metadata: ctx.input.metadata,
-        },
+          metadata: ctx.input.metadata
+        }
       };
-    },
+    }
   })
   .build();

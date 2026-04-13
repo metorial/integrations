@@ -3,48 +3,58 @@ import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let batchJobStatusTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Batch Job Status Change',
-    key: 'batch_job_status',
-    description: 'Triggers when a batch inference job changes status (e.g., starts running, completes, or fails). Polls the Mistral AI API periodically to detect status changes.'
-  }
-)
-  .input(z.object({
-    jobId: z.string().describe('Batch job ID'),
-    status: z.string().describe('Current job status'),
-    previousStatus: z.string().optional().describe('Previous job status'),
-    endpoint: z.string().describe('Target API endpoint'),
-    model: z.string().nullable().optional().describe('Model used'),
-    totalRequests: z.number().optional().describe('Total requests in the batch'),
-    succeededRequests: z.number().optional().describe('Number of successful requests'),
-    failedRequests: z.number().optional().describe('Number of failed requests'),
-    outputFile: z.string().nullable().optional().describe('Output file ID'),
-    errorFile: z.string().nullable().optional().describe('Error file ID'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    completedAt: z.number().nullable().optional().describe('Completion timestamp')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Batch job ID'),
-    status: z.string().describe('Current job status'),
-    previousStatus: z.string().optional().describe('Previous job status'),
-    endpoint: z.string().describe('Target API endpoint'),
-    model: z.string().nullable().optional().describe('Model used'),
-    totalRequests: z.number().optional().describe('Total requests in the batch'),
-    succeededRequests: z.number().optional().describe('Number of successful requests'),
-    failedRequests: z.number().optional().describe('Number of failed requests'),
-    outputFile: z.string().nullable().optional().describe('Output file ID (available on completion)'),
-    errorFile: z.string().nullable().optional().describe('Error file ID (available on failure)'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    completedAt: z.number().nullable().optional().describe('Completion timestamp')
-  }))
+export let batchJobStatusTrigger = SlateTrigger.create(spec, {
+  name: 'Batch Job Status Change',
+  key: 'batch_job_status',
+  description:
+    'Triggers when a batch inference job changes status (e.g., starts running, completes, or fails). Polls the Mistral AI API periodically to detect status changes.'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('Batch job ID'),
+      status: z.string().describe('Current job status'),
+      previousStatus: z.string().optional().describe('Previous job status'),
+      endpoint: z.string().describe('Target API endpoint'),
+      model: z.string().nullable().optional().describe('Model used'),
+      totalRequests: z.number().optional().describe('Total requests in the batch'),
+      succeededRequests: z.number().optional().describe('Number of successful requests'),
+      failedRequests: z.number().optional().describe('Number of failed requests'),
+      outputFile: z.string().nullable().optional().describe('Output file ID'),
+      errorFile: z.string().nullable().optional().describe('Error file ID'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      completedAt: z.number().nullable().optional().describe('Completion timestamp')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Batch job ID'),
+      status: z.string().describe('Current job status'),
+      previousStatus: z.string().optional().describe('Previous job status'),
+      endpoint: z.string().describe('Target API endpoint'),
+      model: z.string().nullable().optional().describe('Model used'),
+      totalRequests: z.number().optional().describe('Total requests in the batch'),
+      succeededRequests: z.number().optional().describe('Number of successful requests'),
+      failedRequests: z.number().optional().describe('Number of failed requests'),
+      outputFile: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Output file ID (available on completion)'),
+      errorFile: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Error file ID (available on failure)'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      completedAt: z.number().nullable().optional().describe('Completion timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MistralClient(ctx.auth.token);
 
       let result = await client.listBatchJobs({ pageSize: 50 });
@@ -102,7 +112,7 @@ export let batchJobStatusTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `batch_job.${ctx.input.status.toLowerCase()}`,
         id: `batch-${ctx.input.jobId}-${ctx.input.status}-${ctx.input.completedAt || Date.now()}`,

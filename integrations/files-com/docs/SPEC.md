@@ -51,6 +51,7 @@ A Bundle is the API/SDK term for the feature called Share Links in the web inter
 ### Remote Server Connections
 
 Connect external storage systems as remote servers, including AWS S3, Azure Blob Storage, Azure Files, Google Cloud Storage, Google Drive, SharePoint, Box, Dropbox, and servers using SFTP, FTP, FTPS, and WebDAV protocols. Remote servers can be integrated as:
+
 - **Mounts**: Real-time pass-through access to remote file systems as Files.com folders.
 - **Syncs**: Scheduled push or pull replication between Files.com and remote systems.
 

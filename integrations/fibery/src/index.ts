@@ -9,7 +9,7 @@ import {
   manageDocumentTool,
   manageCollectionTool,
   uploadFileTool,
-  batchCreateOrUpdateTool,
+  batchCreateOrUpdateTool
 } from './tools';
 import { entityChangesTrigger } from './triggers';
 
@@ -24,7 +24,7 @@ export let provider = Slate.create({
     manageDocumentTool,
     manageCollectionTool,
     uploadFileTool,
-    batchCreateOrUpdateTool,
+    batchCreateOrUpdateTool
   ],
-  triggers: [entityChangesTrigger],
+  triggers: [entityChangesTrigger]
 });

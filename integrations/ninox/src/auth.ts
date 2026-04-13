@@ -2,29 +2,35 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Personal Access Token',
     key: 'personal_access_token',
     inputSchema: z.object({
-      token: z.string().describe('Ninox Personal Access Token. Generate one from the Ninox web app under Actions (gear icon) > Integrations > Generate.'),
+      token: z
+        .string()
+        .describe(
+          'Ninox Personal Access Token. Generate one from the Ninox web app under Actions (gear icon) > Integrations > Generate.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let axiosInstance = createAxios({
         baseURL: 'https://api.ninox.com/v1',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axiosInstance.get('/teams');
@@ -32,8 +38,11 @@ export let auth = SlateAuth.create()
 
       return {
         profile: {
-          name: teams.length > 0 ? `Ninox User (${teams.length} team${teams.length !== 1 ? 's' : ''})` : 'Ninox User',
-        },
+          name:
+            teams.length > 0
+              ? `Ninox User (${teams.length} team${teams.length !== 1 ? 's' : ''})`
+              : 'Ninox User'
+        }
       };
-    },
+    }
   });

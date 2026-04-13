@@ -24,6 +24,7 @@ Blackbaud's SKY API uses **OAuth 2.0 Authorization Code Flow** for authenticatio
 - **Redirect URI**: Must be configured in the application settings and match the redirect URI sent in the authorization request.
 
 The flow works as follows:
+
 1. Redirect the user to the authorization endpoint with your `client_id`, `redirect_uri`, and `response_type=code`.
 2. The user authenticates with their Blackbaud ID and grants consent.
 3. Blackbaud redirects back with an authorization `code`.
@@ -44,9 +45,9 @@ When scopes are changed, an admin for the Blackbaud customer must review and app
 
 ### Required Headers for API Calls
 
-| Header | Value |
-|---|---|
-| `Authorization` | `Bearer {access_token}` |
+| Header                    | Value                           |
+| ------------------------- | ------------------------------- |
+| `Authorization`           | `Bearer {access_token}`         |
 | `Bb-Api-Subscription-Key` | Your developer subscription key |
 
 ## Features

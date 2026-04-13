@@ -2,37 +2,39 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let incomingEmail = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incoming Email',
-    key: 'incoming_email',
-    description: 'Triggers when a new email is received at a proxy email address. Configure the webhook URL on your proxy email to receive real-time notifications.',
-  },
-)
-  .input(z.object({
-    recipient: z.string().describe('Proxy email address that received the message'),
-    sender: z.string().describe('Sender email address'),
-    subject: z.string().describe('Email subject line'),
-    bodyHtml: z.string().nullable().describe('HTML body of the email'),
-    bodyPlain: z.string().nullable().describe('Plain text body of the email'),
-    from: z.string().nullable().describe('Full From header value'),
-    to: z.string().nullable().describe('Full To header value'),
-    attachments: z.any().nullable().describe('Email attachments data'),
-    rawPayload: z.any().describe('Complete raw webhook payload'),
-  }))
-  .output(z.object({
-    recipient: z.string().describe('Proxy email address that received the message'),
-    sender: z.string().describe('Sender email address'),
-    subject: z.string().describe('Email subject line'),
-    bodyHtml: z.string().nullable().describe('HTML body of the email'),
-    bodyPlain: z.string().nullable().describe('Plain text body of the email'),
-    from: z.string().nullable().describe('Full From header (may include display name)'),
-    to: z.string().nullable().describe('Full To header value'),
-    attachments: z.any().nullable().describe('Email attachments data'),
-  }))
+export let incomingEmail = SlateTrigger.create(spec, {
+  name: 'Incoming Email',
+  key: 'incoming_email',
+  description:
+    'Triggers when a new email is received at a proxy email address. Configure the webhook URL on your proxy email to receive real-time notifications.'
+})
+  .input(
+    z.object({
+      recipient: z.string().describe('Proxy email address that received the message'),
+      sender: z.string().describe('Sender email address'),
+      subject: z.string().describe('Email subject line'),
+      bodyHtml: z.string().nullable().describe('HTML body of the email'),
+      bodyPlain: z.string().nullable().describe('Plain text body of the email'),
+      from: z.string().nullable().describe('Full From header value'),
+      to: z.string().nullable().describe('Full To header value'),
+      attachments: z.any().nullable().describe('Email attachments data'),
+      rawPayload: z.any().describe('Complete raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      recipient: z.string().describe('Proxy email address that received the message'),
+      sender: z.string().describe('Sender email address'),
+      subject: z.string().describe('Email subject line'),
+      bodyHtml: z.string().nullable().describe('HTML body of the email'),
+      bodyPlain: z.string().nullable().describe('Plain text body of the email'),
+      from: z.string().nullable().describe('Full From header (may include display name)'),
+      to: z.string().nullable().describe('Full To header value'),
+      attachments: z.any().nullable().describe('Email attachments data')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -64,13 +66,13 @@ export let incomingEmail = SlateTrigger.create(
             from,
             to,
             attachments,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       let eventId = `${input.recipient}-${input.sender}-${input.subject}-${Date.now()}`;
@@ -86,9 +88,9 @@ export let incomingEmail = SlateTrigger.create(
           bodyPlain: input.bodyPlain,
           from: input.from,
           to: input.to,
-          attachments: input.attachments,
-        },
+          attachments: input.attachments
+        }
       };
-    },
+    }
   })
   .build();

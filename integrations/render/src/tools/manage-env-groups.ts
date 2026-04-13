@@ -3,40 +3,64 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEnvGroups = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Environment Groups',
-    key: 'manage_env_groups',
-    description: `Manage Render environment groups — shared sets of environment variables that can be linked to multiple services. Supports **list**, **get**, **create**, **update**, **delete**, **link_service**, **unlink_service**, **set_var**, and **delete_var** actions.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'link_service', 'unlink_service', 'set_var', 'delete_var']).describe('Action to perform'),
-    envGroupId: z.string().optional().describe('Environment group ID (required for most actions)'),
-    ownerId: z.string().optional().describe('Workspace ID (for list/create)'),
-    name: z.string().optional().describe('Group name (for create/update)'),
-    serviceId: z.string().optional().describe('Service ID (for link/unlink)'),
-    varName: z.string().optional().describe('Variable name (for set_var/delete_var)'),
-    varValue: z.string().optional().describe('Variable value (for set_var)'),
-    limit: z.number().optional().describe('Max results for list'),
-    cursor: z.string().optional().describe('Pagination cursor for list'),
-  }))
-  .output(z.object({
-    envGroups: z.array(z.object({
-      envGroupId: z.string().describe('Environment group ID'),
-      name: z.string().describe('Group name'),
-      ownerId: z.string().optional().describe('Workspace/owner ID'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of environment groups'),
-    envGroup: z.object({
-      envGroupId: z.string().describe('Environment group ID'),
-      name: z.string().optional().describe('Group name'),
-      ownerId: z.string().optional().describe('Workspace/owner ID'),
-    }).optional().describe('Single environment group details'),
-    success: z.boolean().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageEnvGroups = SlateTool.create(spec, {
+  name: 'Manage Environment Groups',
+  key: 'manage_env_groups',
+  description: `Manage Render environment groups — shared sets of environment variables that can be linked to multiple services. Supports **list**, **get**, **create**, **update**, **delete**, **link_service**, **unlink_service**, **set_var**, and **delete_var** actions.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'list',
+          'get',
+          'create',
+          'update',
+          'delete',
+          'link_service',
+          'unlink_service',
+          'set_var',
+          'delete_var'
+        ])
+        .describe('Action to perform'),
+      envGroupId: z
+        .string()
+        .optional()
+        .describe('Environment group ID (required for most actions)'),
+      ownerId: z.string().optional().describe('Workspace ID (for list/create)'),
+      name: z.string().optional().describe('Group name (for create/update)'),
+      serviceId: z.string().optional().describe('Service ID (for link/unlink)'),
+      varName: z.string().optional().describe('Variable name (for set_var/delete_var)'),
+      varValue: z.string().optional().describe('Variable value (for set_var)'),
+      limit: z.number().optional().describe('Max results for list'),
+      cursor: z.string().optional().describe('Pagination cursor for list')
+    })
+  )
+  .output(
+    z.object({
+      envGroups: z
+        .array(
+          z.object({
+            envGroupId: z.string().describe('Environment group ID'),
+            name: z.string().describe('Group name'),
+            ownerId: z.string().optional().describe('Workspace/owner ID'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of environment groups'),
+      envGroup: z
+        .object({
+          envGroupId: z.string().describe('Environment group ID'),
+          name: z.string().optional().describe('Group name'),
+          ownerId: z.string().optional().describe('Workspace/owner ID')
+        })
+        .optional()
+        .describe('Single environment group details'),
+      success: z.boolean().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RenderClient(ctx.auth.token);
     let { action, envGroupId } = ctx.input;
 
@@ -52,12 +76,12 @@ export let manageEnvGroups = SlateTool.create(
           envGroupId: eg.id,
           name: eg.name,
           ownerId: eg.ownerId,
-          createdAt: eg.createdAt,
+          createdAt: eg.createdAt
         };
       });
       return {
         output: { envGroups, success: true },
-        message: `Found **${envGroups.length}** environment group(s).${envGroups.map(g => `\n- **${g.name}** (\`${g.envGroupId}\`)`).join('')}`,
+        message: `Found **${envGroups.length}** environment group(s).${envGroups.map(g => `\n- **${g.name}** (\`${g.envGroupId}\`)`).join('')}`
       };
     }
 
@@ -67,8 +91,11 @@ export let manageEnvGroups = SlateTool.create(
       let body: Record<string, any> = { ownerId: ctx.input.ownerId, name: ctx.input.name };
       let eg = await client.createEnvGroup(body);
       return {
-        output: { envGroup: { envGroupId: eg.id, name: eg.name, ownerId: eg.ownerId }, success: true },
-        message: `Created environment group **${eg.name}** (\`${eg.id}\`).`,
+        output: {
+          envGroup: { envGroupId: eg.id, name: eg.name, ownerId: eg.ownerId },
+          success: true
+        },
+        message: `Created environment group **${eg.name}** (\`${eg.id}\`).`
       };
     }
 
@@ -77,8 +104,11 @@ export let manageEnvGroups = SlateTool.create(
     if (action === 'get') {
       let eg = await client.getEnvGroup(envGroupId);
       return {
-        output: { envGroup: { envGroupId: eg.id, name: eg.name, ownerId: eg.ownerId }, success: true },
-        message: `Environment group **${eg.name}** (\`${eg.id}\`).`,
+        output: {
+          envGroup: { envGroupId: eg.id, name: eg.name, ownerId: eg.ownerId },
+          success: true
+        },
+        message: `Environment group **${eg.name}** (\`${eg.id}\`).`
       };
     }
 
@@ -88,7 +118,7 @@ export let manageEnvGroups = SlateTool.create(
       let eg = await client.updateEnvGroup(envGroupId, body);
       return {
         output: { envGroup: { envGroupId: eg.id, name: eg.name }, success: true },
-        message: `Updated environment group **${eg.name}**.`,
+        message: `Updated environment group **${eg.name}**.`
       };
     }
 
@@ -96,7 +126,7 @@ export let manageEnvGroups = SlateTool.create(
       await client.deleteEnvGroup(envGroupId);
       return {
         output: { success: true },
-        message: `Deleted environment group \`${envGroupId}\`.`,
+        message: `Deleted environment group \`${envGroupId}\`.`
       };
     }
 
@@ -105,7 +135,7 @@ export let manageEnvGroups = SlateTool.create(
       await client.linkServiceToEnvGroup(envGroupId, ctx.input.serviceId);
       return {
         output: { success: true },
-        message: `Linked service \`${ctx.input.serviceId}\` to environment group \`${envGroupId}\`.`,
+        message: `Linked service \`${ctx.input.serviceId}\` to environment group \`${envGroupId}\`.`
       };
     }
 
@@ -114,17 +144,18 @@ export let manageEnvGroups = SlateTool.create(
       await client.unlinkServiceFromEnvGroup(envGroupId, ctx.input.serviceId);
       return {
         output: { success: true },
-        message: `Unlinked service \`${ctx.input.serviceId}\` from environment group \`${envGroupId}\`.`,
+        message: `Unlinked service \`${ctx.input.serviceId}\` from environment group \`${envGroupId}\`.`
       };
     }
 
     if (action === 'set_var') {
       if (!ctx.input.varName) throw new Error('varName is required for set_var');
-      if (ctx.input.varValue === undefined) throw new Error('varValue is required for set_var');
+      if (ctx.input.varValue === undefined)
+        throw new Error('varValue is required for set_var');
       await client.setEnvGroupVar(envGroupId, ctx.input.varName, ctx.input.varValue);
       return {
         output: { success: true },
-        message: `Set variable \`${ctx.input.varName}\` on environment group \`${envGroupId}\`.`,
+        message: `Set variable \`${ctx.input.varName}\` on environment group \`${envGroupId}\`.`
       };
     }
 
@@ -133,9 +164,10 @@ export let manageEnvGroups = SlateTool.create(
       await client.deleteEnvGroupVar(envGroupId, ctx.input.varName);
       return {
         output: { success: true },
-        message: `Deleted variable \`${ctx.input.varName}\` from environment group \`${envGroupId}\`.`,
+        message: `Deleted variable \`${ctx.input.varName}\` from environment group \`${envGroupId}\`.`
       };
     }
 
     return { output: { success: false }, message: 'Unknown action.' };
-  }).build();
+  })
+  .build();

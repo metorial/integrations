@@ -9,8 +9,8 @@ export class ZixflowClient {
       baseURL: 'https://api.zixflow.com/api/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -32,7 +32,7 @@ export class ZixflowClient {
       templateName: params.templateName,
       language: params.language,
       variables: params.variables ?? {},
-      submissionStatus: true,
+      submissionStatus: true
     };
     if (params.source) body.source = params.source;
     if (params.linkWithRecord !== undefined) body.linkWithRecord = params.linkWithRecord;
@@ -56,7 +56,7 @@ export class ZixflowClient {
       phoneId: params.phoneId,
       type: params.type,
       ...params.content,
-      submissionStatus: true,
+      submissionStatus: true
     };
     if (params.source) body.source = params.source;
     if (params.linkWithRecord !== undefined) body.linkWithRecord = params.linkWithRecord;
@@ -71,15 +71,21 @@ export class ZixflowClient {
     return response.data;
   }
 
-  async getWhatsAppTemplates(phoneId: string, limit: number = 10, offset: number = 0): Promise<any> {
+  async getWhatsAppTemplates(
+    phoneId: string,
+    limit: number = 10,
+    offset: number = 0
+  ): Promise<any> {
     let response = await this.axios.get(`/campaign/whatsapp/templates/${phoneId}`, {
-      params: { limit, offset },
+      params: { limit, offset }
     });
     return response.data;
   }
 
   async getWhatsAppTemplateVariables(phoneId: string, templateName: string): Promise<any> {
-    let response = await this.axios.get(`/campaign/whatsapp/template-variables/${phoneId}/${templateName}`);
+    let response = await this.axios.get(
+      `/campaign/whatsapp/template-variables/${phoneId}/${templateName}`
+    );
     return response.data;
   }
 
@@ -100,7 +106,7 @@ export class ZixflowClient {
       route: params.route,
       number: params.number,
       message: params.message,
-      submissionStatus: true,
+      submissionStatus: true
     };
     if (params.isFlash !== undefined) body.isFlash = params.isFlash;
     if (params.dltTemplateId) body.dltTemplateId = params.dltTemplateId;
@@ -127,7 +133,7 @@ export class ZixflowClient {
       botId: params.botId,
       templateName: params.templateName,
       variables: params.variables ?? {},
-      submissionStatus: true,
+      submissionStatus: true
     };
     if (params.source) body.source = params.source;
     if (params.linkWithRecord !== undefined) body.linkWithRecord = params.linkWithRecord;
@@ -150,7 +156,7 @@ export class ZixflowClient {
       to: params.to,
       botId: params.botId,
       ...params.content,
-      submissionStatus: true,
+      submissionStatus: true
     };
     if (params.source) body.source = params.source;
     if (params.linkWithRecord !== undefined) body.linkWithRecord = params.linkWithRecord;
@@ -180,7 +186,7 @@ export class ZixflowClient {
       to: params.to,
       subject: params.subject,
       from: params.from,
-      fromName: params.fromName,
+      fromName: params.fromName
     };
     if (params.bodyHtml) body.bodyHtml = params.bodyHtml;
     if (params.bodyText) body.bodyText = params.bodyText;
@@ -188,7 +194,8 @@ export class ZixflowClient {
     if (params.trackOpens !== undefined) body.trackOpens = params.trackOpens;
     if (params.replyToEmail) body.replyToEmail = params.replyToEmail;
     if (params.replyToName) body.replyToName = params.replyToName;
-    if (params.attachments && params.attachments.length > 0) body.attachments = params.attachments;
+    if (params.attachments && params.attachments.length > 0)
+      body.attachments = params.attachments;
     if (params.reportUrl) body.reportUrl = params.reportUrl;
 
     let response = await this.axios.post('/campaign/email/send', body);
@@ -208,7 +215,7 @@ export class ZixflowClient {
     callbackData?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      messages: params.messages,
+      messages: params.messages
     };
     if (params.webhookUrl) body.webhookurl = params.webhookUrl;
     if (params.callbackData) body.callbackData = params.callbackData;
@@ -243,17 +250,20 @@ export class ZixflowClient {
     return response.data;
   }
 
-  async getRecords(collectionId: string, params: {
-    limit: number;
-    offset: number;
-    filter?: any[];
-    sort?: any[];
-  }): Promise<any> {
+  async getRecords(
+    collectionId: string,
+    params: {
+      limit: number;
+      offset: number;
+      filter?: any[];
+      sort?: any[];
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/collection-record/${collectionId}/list`, {
       filter: params.filter ?? [],
       sort: params.sort ?? [],
       limit: params.limit,
-      offset: params.offset,
+      offset: params.offset
     });
     return response.data;
   }
@@ -263,8 +273,15 @@ export class ZixflowClient {
     return response.data;
   }
 
-  async updateRecord(collectionId: string, recordId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/collection-record/${collectionId}/${recordId}`, data);
+  async updateRecord(
+    collectionId: string,
+    recordId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/collection-record/${collectionId}/${recordId}`,
+      data
+    );
     return response.data;
   }
 
@@ -287,24 +304,31 @@ export class ZixflowClient {
 
   // ── List Entries ──────────────────────────────────────────
 
-  async createListEntry(listId: string, recordId: string, data?: Record<string, any>): Promise<any> {
+  async createListEntry(
+    listId: string,
+    recordId: string,
+    data?: Record<string, any>
+  ): Promise<any> {
     let body: Record<string, any> = { recordId };
     if (data) body.data = data;
     let response = await this.axios.post(`/list-entry/${listId}`, body);
     return response.data;
   }
 
-  async getListEntries(listId: string, params: {
-    limit: number;
-    offset: number;
-    filter?: any[];
-    sort?: any[];
-  }): Promise<any> {
+  async getListEntries(
+    listId: string,
+    params: {
+      limit: number;
+      offset: number;
+      filter?: any[];
+      sort?: any[];
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/list-entry/${listId}/list`, {
       filter: params.filter ?? [],
       sort: params.sort ?? [],
       limit: params.limit,
-      offset: params.offset,
+      offset: params.offset
     });
     return response.data;
   }
@@ -314,7 +338,11 @@ export class ZixflowClient {
     return response.data;
   }
 
-  async updateListEntry(listId: string, entryId: string, data: Record<string, any>): Promise<any> {
+  async updateListEntry(
+    listId: string,
+    entryId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/list-entry/${listId}/${entryId}`, data);
     return response.data;
   }
@@ -349,7 +377,7 @@ export class ZixflowClient {
       filter: params.filter ?? [],
       sort: params.sort ?? [],
       limit: params.limit,
-      offset: params.offset,
+      offset: params.offset
     });
     return response.data;
   }

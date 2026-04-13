@@ -38,11 +38,9 @@ import {
   listCampaigns,
   updateCampaign,
   sendCampaign,
-  deleteCampaign,
+  deleteCampaign
 } from './tools';
-import {
-  mailEvents,
-} from './triggers';
+import { mailEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -84,9 +82,7 @@ export let provider = Slate.create({
     listCampaigns,
     updateCampaign,
     sendCampaign,
-    deleteCampaign,
+    deleteCampaign
   ] as any,
-  triggers: [
-    mailEvents,
-  ] as any,
+  triggers: [mailEvents] as any
 });

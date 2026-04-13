@@ -19,7 +19,7 @@ import {
   manageTenants,
   manageBackup,
   manageReferences,
-  clusterStatus,
+  clusterStatus
 } from './tools/index';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -45,9 +45,7 @@ export let provider = Slate.create({
     manageTenants,
     manageBackup,
     manageReferences,
-    clusterStatus,
+    clusterStatus
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

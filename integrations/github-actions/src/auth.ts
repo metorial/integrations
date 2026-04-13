@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -14,118 +16,128 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Repository',
-        description: 'Full access to public and private repositories, including Actions workflows, runs, and artifacts',
-        scope: 'repo',
+        description:
+          'Full access to public and private repositories, including Actions workflows, runs, and artifacts',
+        scope: 'repo'
       },
       {
         title: 'Public Repository',
         description: 'Access to public repositories only',
-        scope: 'public_repo',
+        scope: 'public_repo'
       },
       {
         title: 'Workflow',
         description: 'Manage GitHub Actions workflow files',
-        scope: 'workflow',
+        scope: 'workflow'
       },
       {
         title: 'Admin: Organization',
-        description: 'Full management of organizations, required for organization-level secrets and runners',
-        scope: 'admin:org',
+        description:
+          'Full management of organizations, required for organization-level secrets and runners',
+        scope: 'admin:org'
       },
       {
         title: 'Write Organization',
         description: 'Write access to organization membership and settings',
-        scope: 'write:org',
+        scope: 'write:org'
       },
       {
         title: 'Read Organization',
         description: 'Read access to organization membership',
-        scope: 'read:org',
+        scope: 'read:org'
       },
       {
         title: 'Admin: Repo Hook',
         description: 'Full access to repository webhooks for configuring event triggers',
-        scope: 'admin:repo_hook',
+        scope: 'admin:repo_hook'
       },
       {
         title: 'Admin: Org Hook',
         description: 'Full access to organization webhooks',
-        scope: 'admin:org_hook',
+        scope: 'admin:org_hook'
       },
       {
         title: 'User',
         description: 'Read/write access to user profile information',
-        scope: 'user',
+        scope: 'user'
       },
       {
         title: 'User Email',
         description: 'Read access to email addresses',
-        scope: 'user:email',
-      },
+        scope: 'user:email'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
-        url: `https://github.com/login/oauth/authorize?${params.toString()}`,
+        url: `https://github.com/login/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
-      let response = await http.post('https://github.com/login/oauth/access_token', {
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }, {
-        headers: {
-          'Accept': 'application/json',
+      let response = await http.post(
+        'https://github.com/login/oauth/access_token',
+        {
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
         },
-      });
+        {
+          headers: {
+            Accept: 'application/json'
+          }
+        }
+      );
 
       let data = response.data;
 
       return {
         output: {
           token: data.access_token,
-          refreshToken: data.refresh_token,
-        },
+          refreshToken: data.refresh_token
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let http = createAxios();
 
-      let response = await http.post('https://github.com/login/oauth/access_token', {
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-      }, {
-        headers: {
-          'Accept': 'application/json',
+      let response = await http.post(
+        'https://github.com/login/oauth/access_token',
+        {
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
         },
-      });
+        {
+          headers: {
+            Accept: 'application/json'
+          }
+        }
+      );
 
       let data = response.data;
 
       return {
         output: {
           token: data.access_token,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-        },
+          refreshToken: data.refresh_token ?? ctx.output.refreshToken
+        }
       };
     },
 
@@ -133,9 +145,9 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.github.com',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/vnd.github+json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/vnd.github+json'
+        }
       });
 
       let response = await http.get('/user');
@@ -146,10 +158,10 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email ?? undefined,
           name: user.name ?? user.login,
-          imageUrl: user.avatar_url,
-        },
+          imageUrl: user.avatar_url
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -157,14 +169,18 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('GitHub Personal Access Token (classic or fine-grained) with Actions permissions'),
+      token: z
+        .string()
+        .describe(
+          'GitHub Personal Access Token (classic or fine-grained) with Actions permissions'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -172,9 +188,9 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.github.com',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/vnd.github+json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/vnd.github+json'
+        }
       });
 
       let response = await http.get('/user');
@@ -185,8 +201,8 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email ?? undefined,
           name: user.name ?? user.login,
-          imageUrl: user.avatar_url,
-        },
+          imageUrl: user.avatar_url
+        }
       };
-    },
+    }
   });

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listAdAccounts,
@@ -19,13 +18,9 @@ import {
   createConversionRule,
   sendConversionEvents,
   listLeadForms,
-  getLeadFormResponses,
+  getLeadFormResponses
 } from './tools';
-import {
-  leadFormSubmissions,
-  campaignStatusChanges,
-  inboundWebhook,
-} from './triggers';
+import { leadFormSubmissions, campaignStatusChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,11 +42,7 @@ export let provider = Slate.create({
     createConversionRule,
     sendConversionEvents,
     listLeadForms,
-    getLeadFormResponses,
+    getLeadFormResponses
   ],
-  triggers: [
-    inboundWebhook,
-    leadFormSubmissions,
-    campaignStatusChanges,
-  ],
+  triggers: [inboundWebhook, leadFormSubmissions, campaignStatusChanges]
 });

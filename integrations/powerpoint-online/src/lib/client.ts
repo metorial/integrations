@@ -1,5 +1,11 @@
 import { createAxios } from 'slates';
-import type { DriveItem, Permission, DriveItemVersion, ThumbnailSet, Subscription } from './types';
+import type {
+  DriveItem,
+  Permission,
+  DriveItemVersion,
+  ThumbnailSet,
+  Subscription
+} from './types';
 
 export class GraphClient {
   private axios;
@@ -8,14 +14,19 @@ export class GraphClient {
     this.axios = createAxios({
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
   // ─── Drive Item Resolution ───────────────────────────────────────
 
-  private buildItemPath(itemId?: string, itemPath?: string, driveId?: string, siteId?: string): string {
+  private buildItemPath(
+    itemId?: string,
+    itemPath?: string,
+    driveId?: string,
+    siteId?: string
+  ): string {
     let base: string;
     if (siteId) {
       base = `/sites/${siteId}/drive`;
@@ -43,7 +54,12 @@ export class GraphClient {
     driveId?: string;
     siteId?: string;
   }): Promise<DriveItem> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let response = await this.axios.get(path);
     return response.data;
   }
@@ -56,7 +72,12 @@ export class GraphClient {
     top?: number;
     skipToken?: string;
   }): Promise<{ items: DriveItem[]; nextLink?: string }> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let queryParams: Record<string, string> = {};
     if (params.top) queryParams['$top'] = String(params.top);
     if (params.skipToken) queryParams['$skiptoken'] = params.skipToken;
@@ -64,7 +85,7 @@ export class GraphClient {
     let response = await this.axios.get(`${path}/children`, { params: queryParams });
     return {
       items: response.data.value,
-      nextLink: response.data['@odata.nextLink'],
+      nextLink: response.data['@odata.nextLink']
     };
   }
 
@@ -91,8 +112,12 @@ export class GraphClient {
     if (params.parentId) {
       uploadPath = `${base}/items/${params.parentId}:/${params.fileName}:/content`;
     } else if (params.parentPath) {
-      let normalizedParent = params.parentPath.startsWith('/') ? params.parentPath : `/${params.parentPath}`;
-      let fullPath = normalizedParent.endsWith('/') ? `${normalizedParent}${params.fileName}` : `${normalizedParent}/${params.fileName}`;
+      let normalizedParent = params.parentPath.startsWith('/')
+        ? params.parentPath
+        : `/${params.parentPath}`;
+      let fullPath = normalizedParent.endsWith('/')
+        ? `${normalizedParent}${params.fileName}`
+        : `${normalizedParent}/${params.fileName}`;
       uploadPath = `${base}/root:${fullPath}:/content`;
     } else {
       uploadPath = `${base}/root:/${params.fileName}:/content`;
@@ -113,8 +138,10 @@ export class GraphClient {
     let response = await this.axios.put(uploadPath, bytes, {
       params: queryParams,
       headers: {
-        'Content-Type': params.contentType || 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      },
+        'Content-Type':
+          params.contentType ||
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      }
     });
 
     return response.data;
@@ -142,8 +169,12 @@ export class GraphClient {
     if (params.parentId) {
       uploadPath = `${base}/items/${params.parentId}:/${params.fileName}:/createUploadSession`;
     } else if (params.parentPath) {
-      let normalizedParent = params.parentPath.startsWith('/') ? params.parentPath : `/${params.parentPath}`;
-      let fullPath = normalizedParent.endsWith('/') ? `${normalizedParent}${params.fileName}` : `${normalizedParent}/${params.fileName}`;
+      let normalizedParent = params.parentPath.startsWith('/')
+        ? params.parentPath
+        : `/${params.parentPath}`;
+      let fullPath = normalizedParent.endsWith('/')
+        ? `${normalizedParent}${params.fileName}`
+        : `${normalizedParent}/${params.fileName}`;
       uploadPath = `${base}/root:${fullPath}:/createUploadSession`;
     } else {
       uploadPath = `${base}/root:/${params.fileName}:/createUploadSession`;
@@ -152,14 +183,14 @@ export class GraphClient {
     let body: Record<string, any> = {
       item: {
         '@microsoft.graph.conflictBehavior': params.conflictBehavior || 'rename',
-        name: params.fileName,
-      },
+        name: params.fileName
+      }
     };
 
     let response = await this.axios.post(uploadPath, body);
     return {
       uploadUrl: response.data.uploadUrl,
-      expirationDateTime: response.data.expirationDateTime,
+      expirationDateTime: response.data.expirationDateTime
     };
   }
 
@@ -170,7 +201,12 @@ export class GraphClient {
     siteId?: string;
     format?: string;
   }): Promise<string> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let contentPath = `${path}/content`;
     let queryParams: Record<string, string> = {};
     if (params.format) {
@@ -180,7 +216,7 @@ export class GraphClient {
     let response = await this.axios.get(contentPath, {
       params: queryParams,
       maxRedirects: 0,
-      validateStatus: (status: number) => status >= 200 && status < 400,
+      validateStatus: (status: number) => status >= 200 && status < 400
     });
 
     // Graph API returns a 302 redirect with the download URL
@@ -208,7 +244,12 @@ export class GraphClient {
     driveId?: string;
     siteId?: string;
   }): Promise<void> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     await this.axios.delete(path);
   }
 
@@ -221,7 +262,12 @@ export class GraphClient {
     newParentDriveId?: string;
     newName?: string;
   }): Promise<DriveItem> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let body: Record<string, any> = {};
 
     if (params.newParentId) {
@@ -249,7 +295,12 @@ export class GraphClient {
     newParentDriveId?: string;
     newName?: string;
   }): Promise<string> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let body: Record<string, any> = {};
 
     if (params.newParentId) {
@@ -265,7 +316,7 @@ export class GraphClient {
     }
 
     let response = await this.axios.post(`${path}/copy`, body, {
-      validateStatus: (status: number) => status >= 200 && status < 400,
+      validateStatus: (status: number) => status >= 200 && status < 400
     });
 
     // Copy returns a 202 with a monitor URL in the Location header
@@ -280,7 +331,12 @@ export class GraphClient {
     name?: string;
     description?: string;
   }): Promise<DriveItem> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let body: Record<string, any> = {};
 
     if (params.name !== undefined) body.name = params.name;
@@ -302,9 +358,14 @@ export class GraphClient {
     password?: string;
     expirationDateTime?: string;
   }): Promise<Permission> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let body: Record<string, any> = {
-      type: params.linkType,
+      type: params.linkType
     };
 
     if (params.scope) body.scope = params.scope;
@@ -326,12 +387,17 @@ export class GraphClient {
     requireSignIn?: boolean;
     sendInvitation?: boolean;
   }): Promise<Permission[]> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let body: Record<string, any> = {
       recipients: params.recipients,
       roles: params.roles,
       requireSignIn: params.requireSignIn ?? true,
-      sendInvitation: params.sendInvitation ?? true,
+      sendInvitation: params.sendInvitation ?? true
     };
 
     if (params.message) body.message = params.message;
@@ -346,7 +412,12 @@ export class GraphClient {
     driveId?: string;
     siteId?: string;
   }): Promise<Permission[]> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let response = await this.axios.get(`${path}/permissions`);
     return response.data.value;
   }
@@ -369,7 +440,12 @@ export class GraphClient {
     driveId?: string;
     siteId?: string;
   }): Promise<DriveItemVersion[]> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let response = await this.axios.get(`${path}/versions`);
     return response.data.value;
   }
@@ -392,7 +468,12 @@ export class GraphClient {
     driveId?: string;
     siteId?: string;
   }): Promise<ThumbnailSet[]> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let response = await this.axios.get(`${path}/thumbnails`);
     return response.data.value;
   }
@@ -403,11 +484,16 @@ export class GraphClient {
     driveId?: string;
     siteId?: string;
   }): Promise<{ getUrl: string; postUrl: string }> {
-    let path = this.buildItemPath(params.itemId, params.itemPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.itemId,
+      params.itemPath,
+      params.driveId,
+      params.siteId
+    );
     let response = await this.axios.post(`${path}/preview`, {});
     return {
       getUrl: response.data.getUrl || '',
-      postUrl: response.data.postUrl || '',
+      postUrl: response.data.postUrl || ''
     };
   }
 
@@ -433,13 +519,16 @@ export class GraphClient {
     if (params.top) queryString['$top'] = String(params.top);
     if (params.skipToken) queryString['$skiptoken'] = params.skipToken;
 
-    let response = await this.axios.get(`${base}/root/search(q='${encodeURIComponent(params.query)}')`, {
-      params: params.top ? { '$top': String(params.top) } : undefined,
-    });
+    let response = await this.axios.get(
+      `${base}/root/search(q='${encodeURIComponent(params.query)}')`,
+      {
+        params: params.top ? { $top: String(params.top) } : undefined
+      }
+    );
 
     return {
       items: response.data.value,
-      nextLink: response.data['@odata.nextLink'],
+      nextLink: response.data['@odata.nextLink']
     };
   }
 
@@ -456,7 +545,7 @@ export class GraphClient {
       changeType: params.changeType,
       notificationUrl: params.notificationUrl,
       resource: params.resource,
-      expirationDateTime: params.expirationDateTime,
+      expirationDateTime: params.expirationDateTime
     };
 
     if (params.clientState) {
@@ -471,9 +560,12 @@ export class GraphClient {
     await this.axios.delete(`/subscriptions/${subscriptionId}`);
   }
 
-  async updateSubscription(subscriptionId: string, expirationDateTime: string): Promise<Subscription> {
+  async updateSubscription(
+    subscriptionId: string,
+    expirationDateTime: string
+  ): Promise<Subscription> {
     let response = await this.axios.patch(`/subscriptions/${subscriptionId}`, {
-      expirationDateTime,
+      expirationDateTime
     });
     return response.data;
   }
@@ -495,7 +587,7 @@ export class GraphClient {
       return {
         items: response.data.value,
         deltaLink: response.data['@odata.deltaLink'],
-        nextLink: response.data['@odata.nextLink'],
+        nextLink: response.data['@odata.nextLink']
       };
     }
 
@@ -523,7 +615,7 @@ export class GraphClient {
     return {
       items: response.data.value,
       deltaLink: response.data['@odata.deltaLink'],
-      nextLink: response.data['@odata.nextLink'],
+      nextLink: response.data['@odata.nextLink']
     };
   }
 
@@ -537,12 +629,17 @@ export class GraphClient {
     siteId?: string;
     conflictBehavior?: 'rename' | 'replace' | 'fail';
   }): Promise<DriveItem> {
-    let path = this.buildItemPath(params.parentId, params.parentPath, params.driveId, params.siteId);
+    let path = this.buildItemPath(
+      params.parentId,
+      params.parentPath,
+      params.driveId,
+      params.siteId
+    );
 
     let body: Record<string, any> = {
       name: params.folderName,
       folder: {},
-      '@microsoft.graph.conflictBehavior': params.conflictBehavior || 'rename',
+      '@microsoft.graph.conflictBehavior': params.conflictBehavior || 'rename'
     };
 
     let response = await this.axios.post(`${path}/children`, body);

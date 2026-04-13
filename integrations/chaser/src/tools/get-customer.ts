@@ -9,19 +9,25 @@ export let getCustomer = SlateTool.create(spec, {
   key: 'get_customer',
   description: `Retrieve a single customer by their internal Chaser ID or external ID. Optionally include computed fields like payment portal link, payer rating, and average days to pay.`,
   instructions: [
-    'Use the internal Chaser customer ID directly, or prefix the external ID with "ext_" (e.g. "ext_CUST-001").',
+    'Use the internal Chaser customer ID directly, or prefix the external ID with "ext_" (e.g. "ext_CUST-001").'
   ],
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    customerId: z.string().describe('Internal Chaser customer ID or "ext_{externalId}"'),
-    includeAdditionalFields: z.boolean().optional().default(false).describe('Include payment portal link, payer rating, and average days to pay'),
-  }))
+  .input(
+    z.object({
+      customerId: z.string().describe('Internal Chaser customer ID or "ext_{externalId}"'),
+      includeAdditionalFields: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include payment portal link, payer rating, and average days to pay')
+    })
+  )
   .output(customerOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getCustomer(ctx.input.customerId);
@@ -42,10 +48,11 @@ export let getCustomer = SlateTool.create(spec, {
         paymentPortalLink: result.paymentPortalLink ?? null,
         payerRating: result.payerRating ?? null,
         payerRatingUpdatedAt: result.payerRatingUpdatedAt ?? null,
-        payerRatingNumberInvoicesConsidered: result.payerRatingNumberInvoicesConsidered ?? null,
-        averageDaysToPay: result.averageDaysToPay ?? null,
+        payerRatingNumberInvoicesConsidered:
+          result.payerRatingNumberInvoicesConsidered ?? null,
+        averageDaysToPay: result.averageDaysToPay ?? null
       },
-      message: `Retrieved customer **${result.companyName}** (${result.externalId}).`,
+      message: `Retrieved customer **${result.companyName}** (${result.externalId}).`
     };
   })
   .build();

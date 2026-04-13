@@ -5,7 +5,7 @@ export class Client {
 
   constructor(private params: { token: string; apiVersion: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.wit.ai',
+      baseURL: 'https://api.wit.ai'
     });
     this.axios.defaults.headers.common['Authorization'] = `Bearer ${params.token}`;
   }
@@ -82,7 +82,9 @@ export class Client {
   }
 
   async getAppTag(appId: string, tagName: string) {
-    let res = await this.axios.get(`/apps/${appId}/tags/${tagName}`, { params: { v: this.v } });
+    let res = await this.axios.get(`/apps/${appId}/tags/${tagName}`, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
@@ -92,7 +94,9 @@ export class Client {
   }
 
   async deleteAppTag(appId: string, tagName: string) {
-    let res = await this.axios.delete(`/apps/${appId}/tags/${tagName}`, { params: { v: this.v } });
+    let res = await this.axios.delete(`/apps/${appId}/tags/${tagName}`, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
@@ -130,27 +134,41 @@ export class Client {
   }
 
   async getEntity(entityId: string) {
-    let res = await this.axios.get(`/entities/${encodeURIComponent(entityId)}`, { params: { v: this.v } });
+    let res = await this.axios.get(`/entities/${encodeURIComponent(entityId)}`, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
-  async createEntity(entity: { name: string; roles: string[]; lookups?: string[]; keywords?: Array<{ keyword: string; synonyms: string[] }> }) {
+  async createEntity(entity: {
+    name: string;
+    roles: string[];
+    lookups?: string[];
+    keywords?: Array<{ keyword: string; synonyms: string[] }>;
+  }) {
     let res = await this.axios.post('/entities', entity, { params: { v: this.v } });
     return res.data;
   }
 
   async updateEntity(entityId: string, entity: Record<string, unknown>) {
-    let res = await this.axios.put(`/entities/${encodeURIComponent(entityId)}`, entity, { params: { v: this.v } });
+    let res = await this.axios.put(`/entities/${encodeURIComponent(entityId)}`, entity, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
   async deleteEntity(entityId: string) {
-    let res = await this.axios.delete(`/entities/${encodeURIComponent(entityId)}`, { params: { v: this.v } });
+    let res = await this.axios.delete(`/entities/${encodeURIComponent(entityId)}`, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
   async deleteEntityRole(entityId: string, role: string) {
-    let res = await this.axios.delete(`/entities/${encodeURIComponent(entityId)}:${encodeURIComponent(role)}`, { params: { v: this.v } });
+    let res = await this.axios.delete(
+      `/entities/${encodeURIComponent(entityId)}:${encodeURIComponent(role)}`,
+      { params: { v: this.v } }
+    );
     return res.data;
   }
 
@@ -159,12 +177,19 @@ export class Client {
   // ──────────────────────────────────────────────
 
   async addEntityKeyword(entityId: string, keyword: { keyword: string; synonyms: string[] }) {
-    let res = await this.axios.post(`/entities/${encodeURIComponent(entityId)}/keywords`, keyword, { params: { v: this.v } });
+    let res = await this.axios.post(
+      `/entities/${encodeURIComponent(entityId)}/keywords`,
+      keyword,
+      { params: { v: this.v } }
+    );
     return res.data;
   }
 
   async deleteEntityKeyword(entityId: string, keyword: string) {
-    let res = await this.axios.delete(`/entities/${encodeURIComponent(entityId)}/keywords/${encodeURIComponent(keyword)}`, { params: { v: this.v } });
+    let res = await this.axios.delete(
+      `/entities/${encodeURIComponent(entityId)}/keywords/${encodeURIComponent(keyword)}`,
+      { params: { v: this.v } }
+    );
     return res.data;
   }
 
@@ -195,7 +220,9 @@ export class Client {
   }
 
   async getTrait(traitName: string) {
-    let res = await this.axios.get(`/traits/${encodeURIComponent(traitName)}`, { params: { v: this.v } });
+    let res = await this.axios.get(`/traits/${encodeURIComponent(traitName)}`, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
@@ -205,17 +232,26 @@ export class Client {
   }
 
   async deleteTrait(traitName: string) {
-    let res = await this.axios.delete(`/traits/${encodeURIComponent(traitName)}`, { params: { v: this.v } });
+    let res = await this.axios.delete(`/traits/${encodeURIComponent(traitName)}`, {
+      params: { v: this.v }
+    });
     return res.data;
   }
 
   async addTraitValue(traitName: string, value: string) {
-    let res = await this.axios.post(`/traits/${encodeURIComponent(traitName)}/values`, { value }, { params: { v: this.v } });
+    let res = await this.axios.post(
+      `/traits/${encodeURIComponent(traitName)}/values`,
+      { value },
+      { params: { v: this.v } }
+    );
     return res.data;
   }
 
   async deleteTraitValue(traitName: string, value: string) {
-    let res = await this.axios.delete(`/traits/${encodeURIComponent(traitName)}/values/${encodeURIComponent(value)}`, { params: { v: this.v } });
+    let res = await this.axios.delete(
+      `/traits/${encodeURIComponent(traitName)}/values/${encodeURIComponent(value)}`,
+      { params: { v: this.v } }
+    );
     return res.data;
   }
 
@@ -232,21 +268,23 @@ export class Client {
     return res.data;
   }
 
-  async trainUtterances(utterances: Array<{
-    text: string;
-    intent?: string;
-    entities?: Array<{
-      entity: string;
-      start: number;
-      end: number;
-      body: string;
-      entities?: Array<unknown>;
-    }>;
-    traits?: Array<{
-      trait: string;
-      value: string;
-    }>;
-  }>) {
+  async trainUtterances(
+    utterances: Array<{
+      text: string;
+      intent?: string;
+      entities?: Array<{
+        entity: string;
+        start: number;
+        end: number;
+        body: string;
+        entities?: Array<unknown>;
+      }>;
+      traits?: Array<{
+        trait: string;
+        value: string;
+      }>;
+    }>
+  ) {
     let res = await this.axios.post('/utterances', utterances, { params: { v: this.v } });
     return res.data;
   }
@@ -254,7 +292,7 @@ export class Client {
   async deleteUtterances(texts: string[]) {
     let res = await this.axios.delete('/utterances', {
       params: { v: this.v },
-      data: texts.map((text) => ({ text })),
+      data: texts.map(text => ({ text }))
     });
     return res.data;
   }
@@ -291,7 +329,7 @@ export class Client {
   }) {
     let res = await this.axios.post('/synthesize', params, {
       params: { v: this.v },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return res.data;
   }

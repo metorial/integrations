@@ -17,12 +17,24 @@ let prospectFieldsSchema = z.object({
   title: z.string().optional().describe('Honorific title, e.g. Mr., Ms. (max 255 chars)'),
   jobTitle: z.string().optional().describe('Job title (max 255 chars)'),
   gender: z.enum(['male', 'female']).optional().describe('Gender'),
-  profileImage: z.string().optional().describe('Profile image as a URL or base64-encoded image'),
+  profileImage: z
+    .string()
+    .optional()
+    .describe('Profile image as a URL or base64-encoded image'),
   lat: z.string().optional().describe('Latitude coordinate'),
   long: z.string().optional().describe('Longitude coordinate'),
-  customImage1: z.string().optional().describe('Custom image 1 as a URL or base64-encoded image'),
-  customImage2: z.string().optional().describe('Custom image 2 as a URL or base64-encoded image'),
-  customImage3: z.string().optional().describe('Custom image 3 as a URL or base64-encoded image'),
+  customImage1: z
+    .string()
+    .optional()
+    .describe('Custom image 1 as a URL or base64-encoded image'),
+  customImage2: z
+    .string()
+    .optional()
+    .describe('Custom image 2 as a URL or base64-encoded image'),
+  customImage3: z
+    .string()
+    .optional()
+    .describe('Custom image 3 as a URL or base64-encoded image')
 });
 
 let toApiFields = (fields: z.infer<typeof prospectFieldsSchema>): Record<string, unknown> => {
@@ -49,26 +61,27 @@ let toApiFields = (fields: z.infer<typeof prospectFieldsSchema>): Record<string,
   return result;
 };
 
-export let createProspect = SlateTool.create(
-  spec,
-  {
-    name: 'Create Prospect',
-    key: 'create_prospect',
-    description: `Create a new business prospect record in Hyperise. The returned record ID can be used to apply prospect data to any Hyperise image template for personalization. Required fields are **businessName**, **email**, and **website**.`,
-    instructions: [
-      'The businessName, email, and website fields are required by the Hyperise API.',
-      'Logo and profileImage accept either a URL or a base64-encoded image string.',
-    ],
-  }
-)
+export let createProspect = SlateTool.create(spec, {
+  name: 'Create Prospect',
+  key: 'create_prospect',
+  description: `Create a new business prospect record in Hyperise. The returned record ID can be used to apply prospect data to any Hyperise image template for personalization. Required fields are **businessName**, **email**, and **website**.`,
+  instructions: [
+    'The businessName, email, and website fields are required by the Hyperise API.',
+    'Logo and profileImage accept either a URL or a base64-encoded image string.'
+  ]
+})
   .input(prospectFieldsSchema)
-  .output(z.object({
-    prospectId: z.string().describe('Unique ID of the created prospect record'),
-    businessName: z.string().optional().describe('Business name'),
-    email: z.string().optional().describe('Email address'),
-    website: z.string().optional().describe('Website URL'),
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+  .output(
+    z
+      .object({
+        prospectId: z.string().describe('Unique ID of the created prospect record'),
+        businessName: z.string().optional().describe('Business name'),
+        email: z.string().optional().describe('Email address'),
+        website: z.string().optional().describe('Website URL')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let apiData = toApiFields(ctx.input);
     let result = await client.createProspect(apiData);
@@ -81,31 +94,36 @@ export let createProspect = SlateTool.create(
         businessName: prospect.business_name,
         email: prospect.email,
         website: prospect.website,
-        ...prospect,
+        ...prospect
       },
-      message: `Created prospect **${prospect.business_name || prospect.email || prospect.id}**.`,
+      message: `Created prospect **${prospect.business_name || prospect.email || prospect.id}**.`
     };
   })
   .build();
 
-export let updateProspect = SlateTool.create(
-  spec,
-  {
-    name: 'Update Prospect',
-    key: 'update_prospect',
-    description: `Update an existing business prospect record in Hyperise. Provide the prospect ID and any fields to update. Only the specified fields will be changed.`,
-  }
-)
-  .input(z.object({
-    prospectId: z.string().describe('ID of the prospect record to update'),
-  }).merge(prospectFieldsSchema))
-  .output(z.object({
-    prospectId: z.string().describe('ID of the updated prospect record'),
-    businessName: z.string().optional().describe('Business name'),
-    email: z.string().optional().describe('Email address'),
-    website: z.string().optional().describe('Website URL'),
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+export let updateProspect = SlateTool.create(spec, {
+  name: 'Update Prospect',
+  key: 'update_prospect',
+  description: `Update an existing business prospect record in Hyperise. Provide the prospect ID and any fields to update. Only the specified fields will be changed.`
+})
+  .input(
+    z
+      .object({
+        prospectId: z.string().describe('ID of the prospect record to update')
+      })
+      .merge(prospectFieldsSchema)
+  )
+  .output(
+    z
+      .object({
+        prospectId: z.string().describe('ID of the updated prospect record'),
+        businessName: z.string().optional().describe('Business name'),
+        email: z.string().optional().describe('Email address'),
+        website: z.string().optional().describe('Website URL')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { prospectId, ...fields } = ctx.input;
     let apiData = toApiFields(fields);
@@ -119,69 +137,73 @@ export let updateProspect = SlateTool.create(
         businessName: prospect.business_name,
         email: prospect.email,
         website: prospect.website,
-        ...prospect,
+        ...prospect
       },
-      message: `Updated prospect **${prospect.business_name || prospect.email || prospectId}**.`,
+      message: `Updated prospect **${prospect.business_name || prospect.email || prospectId}**.`
     };
   })
   .build();
 
-export let deleteProspect = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Prospect',
-    key: 'delete_prospect',
-    description: `Delete a business prospect record from Hyperise by its ID. This action is irreversible.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteProspect = SlateTool.create(spec, {
+  name: 'Delete Prospect',
+  key: 'delete_prospect',
+  description: `Delete a business prospect record from Hyperise by its ID. This action is irreversible.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    prospectId: z.string().describe('ID of the prospect record to delete'),
-  }))
-  .output(z.object({
-    prospectId: z.string().describe('ID of the deleted prospect'),
-    deleted: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      prospectId: z.string().describe('ID of the prospect record to delete')
+    })
+  )
+  .output(
+    z.object({
+      prospectId: z.string().describe('ID of the deleted prospect'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteProspect(ctx.input.prospectId);
 
     return {
       output: {
         prospectId: ctx.input.prospectId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted prospect **${ctx.input.prospectId}**.`,
+      message: `Deleted prospect **${ctx.input.prospectId}**.`
     };
   })
   .build();
 
-export let getProspect = SlateTool.create(
-  spec,
-  {
-    name: 'Get Prospect',
-    key: 'get_prospect',
-    description: `Retrieve a single business prospect record from Hyperise by its ID. Returns the full prospect profile including business details, personal information, and image URLs.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProspect = SlateTool.create(spec, {
+  name: 'Get Prospect',
+  key: 'get_prospect',
+  description: `Retrieve a single business prospect record from Hyperise by its ID. Returns the full prospect profile including business details, personal information, and image URLs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    prospectId: z.string().describe('ID of the prospect record to retrieve'),
-  }))
-  .output(z.object({
-    prospectId: z.string().describe('Unique ID of the prospect record'),
-    businessName: z.string().optional().describe('Business name'),
-    email: z.string().optional().describe('Email address'),
-    website: z.string().optional().describe('Website URL'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    jobTitle: z.string().optional().describe('Job title'),
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      prospectId: z.string().describe('ID of the prospect record to retrieve')
+    })
+  )
+  .output(
+    z
+      .object({
+        prospectId: z.string().describe('Unique ID of the prospect record'),
+        businessName: z.string().optional().describe('Business name'),
+        email: z.string().optional().describe('Email address'),
+        website: z.string().optional().describe('Website URL'),
+        firstName: z.string().optional().describe('First name'),
+        lastName: z.string().optional().describe('Last name'),
+        jobTitle: z.string().optional().describe('Job title')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getProspect(ctx.input.prospectId);
 
@@ -196,35 +218,40 @@ export let getProspect = SlateTool.create(
         firstName: prospect.first_name,
         lastName: prospect.last_name,
         jobTitle: prospect.job_title,
-        ...prospect,
+        ...prospect
       },
-      message: `Retrieved prospect **${prospect.business_name || prospect.email || ctx.input.prospectId}**.`,
+      message: `Retrieved prospect **${prospect.business_name || prospect.email || ctx.input.prospectId}**.`
     };
   })
   .build();
 
-export let listProspects = SlateTool.create(
-  spec,
-  {
-    name: 'List Prospects',
-    key: 'list_prospects',
-    description: `List all business prospect records in the Hyperise account. Returns prospect IDs, names, emails, and other stored profile data.`,
-    tags: {
-      readOnly: true,
-    },
+export let listProspects = SlateTool.create(spec, {
+  name: 'List Prospects',
+  key: 'list_prospects',
+  description: `List all business prospect records in the Hyperise account. Returns prospect IDs, names, emails, and other stored profile data.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    prospects: z.array(z.object({
-      prospectId: z.string().describe('Unique ID of the prospect record'),
-      businessName: z.string().optional().describe('Business name'),
-      email: z.string().optional().describe('Email address'),
-      firstName: z.string().optional().describe('First name'),
-      lastName: z.string().optional().describe('Last name'),
-    }).passthrough()).describe('List of prospect records'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      prospects: z
+        .array(
+          z
+            .object({
+              prospectId: z.string().describe('Unique ID of the prospect record'),
+              businessName: z.string().optional().describe('Business name'),
+              email: z.string().optional().describe('Email address'),
+              firstName: z.string().optional().describe('First name'),
+              lastName: z.string().optional().describe('Last name')
+            })
+            .passthrough()
+        )
+        .describe('List of prospect records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let data = await client.listProspects();
 
@@ -236,12 +263,12 @@ export let listProspects = SlateTool.create(
       email: p.email,
       firstName: p.first_name,
       lastName: p.last_name,
-      ...p,
+      ...p
     }));
 
     return {
       output: { prospects: mapped },
-      message: `Found **${mapped.length}** prospect(s).`,
+      message: `Found **${mapped.length}** prospect(s).`
     };
   })
   .build();

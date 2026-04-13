@@ -18,33 +18,38 @@ let bulkEntrySchema = z.object({
   isProxy: z.boolean().describe('Whether the IP is detected as a proxy')
 });
 
-export let bulkIpGeolocation = SlateTool.create(
-  spec,
-  {
-    name: 'Bulk IP Geolocation',
-    key: 'bulk_ip_geolocation',
-    description: `Look up geographic location and network metadata for multiple IP addresses in a single request. Returns country, region, city, coordinates, timezone, ASN, and proxy status for each IP.
+export let bulkIpGeolocation = SlateTool.create(spec, {
+  name: 'Bulk IP Geolocation',
+  key: 'bulk_ip_geolocation',
+  description: `Look up geographic location and network metadata for multiple IP addresses in a single request. Returns country, region, city, coordinates, timezone, ASN, and proxy status for each IP.
 
 Useful for batch processing large lists of IP addresses efficiently instead of making individual requests.`,
-    constraints: [
-      'Maximum of 1000 IP addresses per request.',
-      'Requires a paid plan.'
-    ],
-    tags: {
-      readOnly: true
-    }
+  constraints: ['Maximum of 1000 IP addresses per request.', 'Requires a paid plan.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ipAddresses: z.array(z.string()).min(1).max(1000).describe('List of IPv4 or IPv6 addresses to look up (max 1000)')
-  }))
-  .output(z.object({
-    results: z.array(bulkEntrySchema).describe('Geolocation results for each IP address'),
-    totalQueried: z.number().describe('Number of IPs that were queried')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ipAddresses: z
+        .array(z.string())
+        .min(1)
+        .max(1000)
+        .describe('List of IPv4 or IPv6 addresses to look up (max 1000)')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(bulkEntrySchema).describe('Geolocation results for each IP address'),
+      totalQueried: z.number().describe('Number of IPs that were queried')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let bulkResult = await client.getBulkGeolocation(ctx.input.ipAddresses, ctx.config.language);
+    let bulkResult = await client.getBulkGeolocation(
+      ctx.input.ipAddresses,
+      ctx.config.language
+    );
 
     let results = Object.entries(bulkResult).map(([ip, data]) => ({
       ip,
@@ -70,4 +75,5 @@ Useful for batch processing large lists of IP addresses efficiently instead of m
       },
       message: `Looked up **${results.length}** IP addresses across **${countries.length}** countries: ${countries.slice(0, 5).join(', ')}${countries.length > 5 ? `, and ${countries.length - 5} more` : ''}`
     };
-  }).build();
+  })
+  .build();

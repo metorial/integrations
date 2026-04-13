@@ -23,6 +23,7 @@ There are three types of API keys:
 The API key you use to authenticate the request determines whether the request is live mode or test mode.
 
 Example:
+
 ```
 curl https://api.stripe.com/v1/charges \
   -u sk_test_YOUR_SECRET_KEY:
@@ -50,54 +51,71 @@ For Stripe Apps distributed via the App Marketplace. Your callback URL receives 
 ## Features
 
 ### Payment Processing
+
 Create and manage one-time charges and payments. Supports card payments, bank transfers, digital wallets, and dozens of regional payment methods across multiple currencies. Use PaymentIntents to orchestrate the full payment lifecycle including authorization, capture, and confirmation. Save payment methods for future use via SetupIntents.
 
 ### Subscriptions & Recurring Billing
+
 Create and manage subscription plans with flexible billing cycles. Handle upgrades, downgrades, trials, pausing, and cancellations. Supports metered/usage-based billing. Automatically generates invoices for subscription cycles and handles failed payment retries.
 
 ### Invoicing
+
 Create, send, and manage invoices programmatically. Supports draft, finalized, paid, void, and uncollectible states. Invoices can be sent directly to customers with hosted payment pages or used for manual/offline billing.
 
 ### Customer Management
+
 Create and manage customer records including contact information, payment methods, and billing settings. Attach multiple payment methods to a customer. Track customer balance and credit.
 
 ### Products & Prices
+
 Define a product catalog with associated prices. Supports one-time and recurring pricing models, tiered pricing, and multiple currencies per product.
 
 ### Connect (Platform & Marketplace)
+
 Build platforms and marketplaces where your users can accept payments. Manage connected accounts (Standard, Express, or Custom), handle onboarding, and control fund flows. Split payments between platform and connected accounts. Manage payouts to connected accounts.
 
 ### Payouts
+
 Transfer funds from your Stripe balance to external bank accounts or debit cards. Configure automatic or manual payout schedules.
 
 ### Refunds & Disputes
+
 Issue full or partial refunds on payments. Manage charge disputes (chargebacks) including submitting evidence.
 
 ### Checkout & Payment Links
+
 Create hosted checkout sessions or shareable payment links for accepting one-time or recurring payments without building a custom payment form.
 
 ### Coupons & Promotions
+
 Create discount coupons and promotion codes that can be applied to invoices, subscriptions, or checkout sessions. Supports percentage-based and fixed-amount discounts with configurable duration and redemption limits.
 
 ### Reporting & Balance
+
 Access your Stripe balance information, view balance transactions, and generate financial reports. Track funds across available, pending, and reserved states.
 
 ### Fraud Prevention (Radar)
+
 Built-in machine-learning fraud detection. Create custom rules to block, allow, or review payments based on risk signals.
 
 ### Tax
+
 Automatically calculate and collect taxes on transactions. Supports tax rates, tax IDs, and tax reporting.
 
 ### Billing Portal
+
 Provide customers with a self-service portal to manage their subscriptions, payment methods, and billing history.
 
 ### File Uploads
+
 Upload files (e.g., dispute evidence, identity documents) to Stripe for use with various API resources.
 
 ### Issuing
+
 Create and manage virtual and physical payment cards programmatically. Control spending with real-time authorization rules.
 
 ### Treasury
+
 Provide financial accounts (store-of-value) with features like fund management, money movement, and account details for building embedded banking experiences.
 
 ## Events

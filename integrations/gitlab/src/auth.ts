@@ -2,25 +2,33 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    instanceUrl: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      instanceUrl: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'GitLab OAuth',
     key: 'gitlab_oauth',
 
     inputSchema: z.object({
-      instanceUrl: z.string().optional().describe('GitLab instance URL (e.g. https://gitlab.example.com). Leave empty for GitLab.com.')
+      instanceUrl: z
+        .string()
+        .optional()
+        .describe(
+          'GitLab instance URL (e.g. https://gitlab.example.com). Leave empty for GitLab.com.'
+        )
     }),
 
     scopes: [
       {
         title: 'API',
-        description: 'Complete read/write access to the API, including all groups, projects, registries, and packages',
+        description:
+          'Complete read/write access to the API, including all groups, projects, registries, and packages',
         scope: 'api'
       },
       {
@@ -30,7 +38,7 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Read User',
-        description: 'Read-only access to the authenticated user\'s profile',
+        description: "Read-only access to the authenticated user's profile",
         scope: 'read_user'
       },
       {
@@ -70,7 +78,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'OpenID',
-        description: 'Authenticate via OpenID Connect; read-only access to profile and group memberships',
+        description:
+          'Authenticate via OpenID Connect; read-only access to profile and group memberships',
         scope: 'openid'
       },
       {
@@ -80,12 +89,12 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Email',
-        description: 'Read-only access to the user\'s primary email via OpenID Connect',
+        description: "Read-only access to the user's primary email via OpenID Connect",
         scope: 'email'
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let baseUrl = ctx.input.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
 
       let params = new URLSearchParams({
@@ -104,24 +113,28 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let baseUrl = ctx.input.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
 
       let oauthAxios = createAxios({
         baseURL: baseUrl
       });
 
-      let response = await oauthAxios.post('/oauth/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await oauthAxios.post(
+        '/oauth/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          grant_type: 'authorization_code',
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -138,7 +151,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -149,16 +162,20 @@ export let auth = SlateAuth.create()
         baseURL: baseUrl
       });
 
-      let response = await oauthAxios.post('/oauth/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken,
-        grant_type: 'refresh_token'
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await oauthAxios.post(
+        '/oauth/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -175,7 +192,16 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string; instanceUrl?: string }; input: { instanceUrl?: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        refreshToken?: string;
+        expiresAt?: string;
+        instanceUrl?: string;
+      };
+      input: { instanceUrl?: string };
+      scopes: string[];
+    }) => {
       let baseUrl = ctx.output.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
 
       let apiAxios = createAxios({
@@ -184,7 +210,7 @@ export let auth = SlateAuth.create()
 
       let response = await apiAxios.get('/user', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -209,10 +235,15 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('GitLab personal, project, or group access token'),
-      instanceUrl: z.string().optional().describe('GitLab instance URL (e.g. https://gitlab.example.com). Leave empty for GitLab.com.')
+      instanceUrl: z
+        .string()
+        .optional()
+        .describe(
+          'GitLab instance URL (e.g. https://gitlab.example.com). Leave empty for GitLab.com.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -221,7 +252,15 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string; instanceUrl?: string }; input: { token: string; instanceUrl?: string } }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        refreshToken?: string;
+        expiresAt?: string;
+        instanceUrl?: string;
+      };
+      input: { token: string; instanceUrl?: string };
+    }) => {
       let baseUrl = ctx.output.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
 
       let apiAxios = createAxios({

@@ -10,7 +10,7 @@ import {
   deleteEmailList,
   manageWebhook,
   listWebhooks,
-  deleteWebhook,
+  deleteWebhook
 } from './tools';
 import { verificationEvents } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     deleteEmailList,
     manageWebhook,
     listWebhooks,
-    deleteWebhook,
+    deleteWebhook
   ],
-  triggers: [
-    verificationEvents,
-  ],
+  triggers: [verificationEvents]
 });

@@ -3,43 +3,46 @@ import { FreshBooksClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPayments = SlateTool.create(
-  spec,
-  {
-    name: 'List Payments',
-    key: 'list_payments',
-    description: `Search and list payments in FreshBooks. Supports filtering by client, invoice, date range, and payment type. Returns paginated results.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listPayments = SlateTool.create(spec, {
+  name: 'List Payments',
+  key: 'list_payments',
+  description: `Search and list payments in FreshBooks. Supports filtering by client, invoice, date range, and payment type. Returns paginated results.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 25, max: 100)'),
-    clientId: z.number().optional().describe('Filter by client ID'),
-    invoiceId: z.number().optional().describe('Filter by invoice ID'),
-  }))
-  .output(z.object({
-    payments: z.array(z.object({
-      paymentId: z.number(),
-      invoiceId: z.number().nullable().optional(),
-      clientId: z.number().nullable().optional(),
-      amount: z.any().optional(),
-      date: z.string().nullable().optional(),
-      paymentType: z.string().nullable().optional(),
-      note: z.string().nullable().optional(),
-    })),
-    totalCount: z.number(),
-    currentPage: z.number(),
-    totalPages: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 25, max: 100)'),
+      clientId: z.number().optional().describe('Filter by client ID'),
+      invoiceId: z.number().optional().describe('Filter by invoice ID')
+    })
+  )
+  .output(
+    z.object({
+      payments: z.array(
+        z.object({
+          paymentId: z.number(),
+          invoiceId: z.number().nullable().optional(),
+          clientId: z.number().nullable().optional(),
+          amount: z.any().optional(),
+          date: z.string().nullable().optional(),
+          paymentType: z.string().nullable().optional(),
+          note: z.string().nullable().optional()
+        })
+      ),
+      totalCount: z.number(),
+      currentPage: z.number(),
+      totalPages: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshBooksClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      businessId: ctx.config.businessId,
+      businessId: ctx.config.businessId
     });
 
     let params: Record<string, string | number> = {};
@@ -57,7 +60,7 @@ export let listPayments = SlateTool.create(
       amount: p.amount,
       date: p.date,
       paymentType: p.type,
-      note: p.note,
+      note: p.note
     }));
 
     return {
@@ -65,8 +68,9 @@ export let listPayments = SlateTool.create(
         payments,
         totalCount: result.total || 0,
         currentPage: result.page || 1,
-        totalPages: result.pages || 1,
+        totalPages: result.pages || 1
       },
-      message: `Found **${result.total || 0}** payments (page ${result.page || 1} of ${result.pages || 1}).`,
+      message: `Found **${result.total || 0}** payments (page ${result.page || 1} of ${result.pages || 1}).`
     };
-  }).build();
+  })
+  .build();

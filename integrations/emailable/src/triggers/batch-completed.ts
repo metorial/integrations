@@ -26,51 +26,74 @@ let verificationResultSchema = z.object({
   duration: z.number().describe('Verification duration in seconds')
 });
 
-export let batchCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Batch Verification Completed',
-    key: 'batch_completed',
-    description: 'Triggers when a batch email verification completes. Set the callback URL from this trigger as the callback URL when creating a batch verification to receive results automatically.',
-    instructions: [
-      'To use this trigger, provide the webhook URL as the callbackUrl parameter when submitting a batch via the Verify Email Batch tool.',
-      'Emailable retries hourly for up to 3 days if the callback endpoint does not return HTTP 200.'
-    ]
-  }
-)
-  .input(z.object({
-    batchId: z.string().describe('The batch identifier'),
-    message: z.string().describe('Completion message'),
-    emails: z.array(z.any()).optional().describe('Individual verification results (for batches up to 1,000 emails)'),
-    downloadFile: z.string().optional().describe('CSV download URL (for batches over 1,000 emails)'),
-    totalCounts: z.object({
-      deliverable: z.number(),
-      undeliverable: z.number(),
-      risky: z.number(),
-      unknown: z.number(),
-      duplicate: z.number(),
-      processed: z.number(),
-      total: z.number()
-    }).optional().describe('Aggregate counts by state'),
-    reasonCounts: z.record(z.string(), z.number()).optional().describe('Aggregate counts by reason')
-  }))
-  .output(z.object({
-    batchId: z.string().describe('The batch identifier'),
-    message: z.string().describe('Completion status message'),
-    totalEmails: z.number().describe('Total number of emails in the batch'),
-    processedEmails: z.number().describe('Number of emails processed'),
-    deliverableCount: z.number().describe('Count of deliverable emails'),
-    undeliverableCount: z.number().describe('Count of undeliverable emails'),
-    riskyCount: z.number().describe('Count of risky emails'),
-    unknownCount: z.number().describe('Count of unknown emails'),
-    duplicateCount: z.number().describe('Count of duplicate emails'),
-    emails: z.array(verificationResultSchema).optional().describe('Individual verification results (for batches up to 1,000 emails)'),
-    downloadFile: z.string().optional().describe('CSV download URL (for batches over 1,000 emails)'),
-    reasonCounts: z.record(z.string(), z.number()).optional().describe('Aggregate counts by verification reason')
-  }))
+export let batchCompleted = SlateTrigger.create(spec, {
+  name: 'Batch Verification Completed',
+  key: 'batch_completed',
+  description:
+    'Triggers when a batch email verification completes. Set the callback URL from this trigger as the callback URL when creating a batch verification to receive results automatically.',
+  instructions: [
+    'To use this trigger, provide the webhook URL as the callbackUrl parameter when submitting a batch via the Verify Email Batch tool.',
+    'Emailable retries hourly for up to 3 days if the callback endpoint does not return HTTP 200.'
+  ]
+})
+  .input(
+    z.object({
+      batchId: z.string().describe('The batch identifier'),
+      message: z.string().describe('Completion message'),
+      emails: z
+        .array(z.any())
+        .optional()
+        .describe('Individual verification results (for batches up to 1,000 emails)'),
+      downloadFile: z
+        .string()
+        .optional()
+        .describe('CSV download URL (for batches over 1,000 emails)'),
+      totalCounts: z
+        .object({
+          deliverable: z.number(),
+          undeliverable: z.number(),
+          risky: z.number(),
+          unknown: z.number(),
+          duplicate: z.number(),
+          processed: z.number(),
+          total: z.number()
+        })
+        .optional()
+        .describe('Aggregate counts by state'),
+      reasonCounts: z
+        .record(z.string(), z.number())
+        .optional()
+        .describe('Aggregate counts by reason')
+    })
+  )
+  .output(
+    z.object({
+      batchId: z.string().describe('The batch identifier'),
+      message: z.string().describe('Completion status message'),
+      totalEmails: z.number().describe('Total number of emails in the batch'),
+      processedEmails: z.number().describe('Number of emails processed'),
+      deliverableCount: z.number().describe('Count of deliverable emails'),
+      undeliverableCount: z.number().describe('Count of undeliverable emails'),
+      riskyCount: z.number().describe('Count of risky emails'),
+      unknownCount: z.number().describe('Count of unknown emails'),
+      duplicateCount: z.number().describe('Count of duplicate emails'),
+      emails: z
+        .array(verificationResultSchema)
+        .optional()
+        .describe('Individual verification results (for batches up to 1,000 emails)'),
+      downloadFile: z
+        .string()
+        .optional()
+        .describe('CSV download URL (for batches over 1,000 emails)'),
+      reasonCounts: z
+        .record(z.string(), z.number())
+        .optional()
+        .describe('Aggregate counts by verification reason')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let mapEmailResult = (raw: any) => ({
         email: raw.email,
@@ -98,22 +121,26 @@ export let batchCompleted = SlateTrigger.create(
 
       let emails = data.emails ? data.emails.map(mapEmailResult) : undefined;
 
-      let totalCounts = data.total_counts ? {
-        deliverable: data.total_counts.deliverable ?? 0,
-        undeliverable: data.total_counts.undeliverable ?? 0,
-        risky: data.total_counts.risky ?? 0,
-        unknown: data.total_counts.unknown ?? 0,
-        duplicate: data.total_counts.duplicate ?? 0,
-        processed: data.total_counts.processed ?? 0,
-        total: data.total_counts.total ?? 0
-      } : undefined;
+      let totalCounts = data.total_counts
+        ? {
+            deliverable: data.total_counts.deliverable ?? 0,
+            undeliverable: data.total_counts.undeliverable ?? 0,
+            risky: data.total_counts.risky ?? 0,
+            unknown: data.total_counts.unknown ?? 0,
+            duplicate: data.total_counts.duplicate ?? 0,
+            processed: data.total_counts.processed ?? 0,
+            total: data.total_counts.total ?? 0
+          }
+        : undefined;
 
-      let reasonCounts = data.reason_counts ? Object.fromEntries(
-        Object.entries(data.reason_counts).map(([key, value]) => [
-          key.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase()),
-          value
-        ])
-      ) as Record<string, number> : undefined;
+      let reasonCounts = data.reason_counts
+        ? (Object.fromEntries(
+            Object.entries(data.reason_counts).map(([key, value]) => [
+              key.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase()),
+              value
+            ])
+          ) as Record<string, number>)
+        : undefined;
 
       return {
         inputs: [
@@ -129,7 +156,7 @@ export let batchCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       let totalCounts = input.totalCounts;
 

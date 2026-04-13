@@ -3,44 +3,85 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let browseCategories = SlateTool.create(
-  spec,
-  {
-    name: 'Browse Categories',
-    key: 'browse_categories',
-    description: `Browse and search Target's product category hierarchy. Retrieve root-level categories, child categories of a parent, search categories by name, or get products within a specific category. Use this to discover category IDs for filtering searches.`,
-    instructions: [
-      'Call with no parameters to get root-level categories.',
-      'Provide parentId to get child categories under a specific parent.',
-      'Provide searchTerm to search categories by name.',
-      'Provide categoryId (and optional sorting/filtering) to get products listed in that category.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let browseCategories = SlateTool.create(spec, {
+  name: 'Browse Categories',
+  key: 'browse_categories',
+  description: `Browse and search Target's product category hierarchy. Retrieve root-level categories, child categories of a parent, search categories by name, or get products within a specific category. Use this to discover category IDs for filtering searches.`,
+  instructions: [
+    'Call with no parameters to get root-level categories.',
+    'Provide parentId to get child categories under a specific parent.',
+    'Provide searchTerm to search categories by name.',
+    'Provide categoryId (and optional sorting/filtering) to get products listed in that category.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    categoryId: z.string().optional().describe('Category ID to browse products within. When provided, returns products in this category.'),
-    parentId: z.string().optional().describe('Parent category ID to list child categories for.'),
-    searchTerm: z.string().optional().describe('Search term to find categories by name.'),
-    sortBy: z.enum(['best_seller', 'price_high_to_low', 'price_low_to_high', 'best_match', 'highest_rating', 'newly_listed', 'featured']).optional().describe('Sort order for category product results.'),
-    page: z.number().optional().describe('Page number for category product results.'),
-    customerZipcode: z.string().optional().describe('US zipcode to localize category product results.'),
-  }))
-  .output(z.object({
-    categories: z.array(z.any()).optional().describe('Array of categories with ID, name, path, and children indicator.'),
-    currentCategory: z.any().optional().describe('Current category details when browsing by ID.'),
-    parentCategory: z.any().optional().describe('Parent category when viewing child categories.'),
-    categoryResults: z.array(z.any()).optional().describe('Products listed in the category (when categoryId is provided for product browsing).'),
-    pagination: z.any().optional().describe('Pagination info for category product results.'),
-    facets: z.array(z.any()).optional().describe('Available facets for filtering category product results.'),
-    requestInfo: z.any().optional().describe('Request metadata.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      categoryId: z
+        .string()
+        .optional()
+        .describe(
+          'Category ID to browse products within. When provided, returns products in this category.'
+        ),
+      parentId: z
+        .string()
+        .optional()
+        .describe('Parent category ID to list child categories for.'),
+      searchTerm: z.string().optional().describe('Search term to find categories by name.'),
+      sortBy: z
+        .enum([
+          'best_seller',
+          'price_high_to_low',
+          'price_low_to_high',
+          'best_match',
+          'highest_rating',
+          'newly_listed',
+          'featured'
+        ])
+        .optional()
+        .describe('Sort order for category product results.'),
+      page: z.number().optional().describe('Page number for category product results.'),
+      customerZipcode: z
+        .string()
+        .optional()
+        .describe('US zipcode to localize category product results.')
+    })
+  )
+  .output(
+    z.object({
+      categories: z
+        .array(z.any())
+        .optional()
+        .describe('Array of categories with ID, name, path, and children indicator.'),
+      currentCategory: z
+        .any()
+        .optional()
+        .describe('Current category details when browsing by ID.'),
+      parentCategory: z
+        .any()
+        .optional()
+        .describe('Parent category when viewing child categories.'),
+      categoryResults: z
+        .array(z.any())
+        .optional()
+        .describe(
+          'Products listed in the category (when categoryId is provided for product browsing).'
+        ),
+      pagination: z.any().optional().describe('Pagination info for category product results.'),
+      facets: z
+        .array(z.any())
+        .optional()
+        .describe('Available facets for filtering category product results.'),
+      requestInfo: z.any().optional().describe('Request metadata.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let isCategoryProductBrowse = ctx.input.categoryId && (ctx.input.sortBy || ctx.input.page || !ctx.input.parentId);
+    let isCategoryProductBrowse =
+      ctx.input.categoryId && (ctx.input.sortBy || ctx.input.page || !ctx.input.parentId);
 
     // If user wants products within a category (not just the category list)
     if (isCategoryProductBrowse && !ctx.input.parentId && !ctx.input.searchTerm) {
@@ -60,9 +101,9 @@ export let browseCategories = SlateTool.create(
           categoryResults: data.category_results ?? [],
           pagination: data.pagination,
           facets: data.facets,
-          requestInfo: data.request_info,
+          requestInfo: data.request_info
         },
-        message: `Found **${resultCount}** products in category.`,
+        message: `Found **${resultCount}** products in category.`
       };
     }
 
@@ -81,8 +122,9 @@ export let browseCategories = SlateTool.create(
         categories: data.categories,
         currentCategory: data.current_category,
         parentCategory: data.parent_category,
-        requestInfo: data.request_info,
+        requestInfo: data.request_info
       },
-      message: `Retrieved **${categoryCount}** categories${ctx.input.searchTerm ? ` matching "${ctx.input.searchTerm}"` : ''}.`,
+      message: `Retrieved **${categoryCount}** categories${ctx.input.searchTerm ? ` matching "${ctx.input.searchTerm}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

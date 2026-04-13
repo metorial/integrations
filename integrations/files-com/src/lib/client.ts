@@ -18,8 +18,8 @@ export class FilesComClient {
       baseURL: this.baseUrl,
       headers: {
         'X-FilesAPI-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -34,7 +34,7 @@ export class FilesComClient {
   async downloadFile(path: string): Promise<{ downloadUri: string }> {
     let encodedPath = encodePath(path);
     let response = await this.axios.get(`/files/${encodedPath}`, {
-      params: { action: 'redirect' },
+      params: { action: 'redirect' }
     });
     return { downloadUri: response.data.download_uri ?? response.headers?.['location'] ?? '' };
   }
@@ -42,57 +42,72 @@ export class FilesComClient {
   async deleteFile(path: string, params?: { recursive?: boolean }): Promise<void> {
     let encodedPath = encodePath(path);
     await this.axios.delete(`/files/${encodedPath}`, {
-      params: params ?? {},
+      params: params ?? {}
     });
   }
 
-  async copyFile(path: string, destination: string, params?: { overwrite?: boolean; structure?: boolean }): Promise<Record<string, unknown>> {
+  async copyFile(
+    path: string,
+    destination: string,
+    params?: { overwrite?: boolean; structure?: boolean }
+  ): Promise<Record<string, unknown>> {
     let encodedPath = encodePath(path);
     let response = await this.axios.post(`/file_actions/copy/${encodedPath}`, {
       destination,
-      ...params,
+      ...params
     });
     return response.data;
   }
 
-  async moveFile(path: string, destination: string, params?: { overwrite?: boolean }): Promise<Record<string, unknown>> {
+  async moveFile(
+    path: string,
+    destination: string,
+    params?: { overwrite?: boolean }
+  ): Promise<Record<string, unknown>> {
     let encodedPath = encodePath(path);
     let response = await this.axios.post(`/file_actions/move/${encodedPath}`, {
       destination,
-      ...params,
+      ...params
     });
     return response.data;
   }
 
   // ─── Folders ──────────────────────────────────────────────────────────
 
-  async listFolder(path: string, params?: {
-    cursor?: string;
-    perPage?: number;
-    search?: string;
-    sortBy?: Record<string, string>;
-  }): Promise<{ entries: Record<string, unknown>[]; cursor?: string }> {
+  async listFolder(
+    path: string,
+    params?: {
+      cursor?: string;
+      perPage?: number;
+      search?: string;
+      sortBy?: Record<string, string>;
+    }
+  ): Promise<{ entries: Record<string, unknown>[]; cursor?: string }> {
     let encodedPath = encodePath(path);
     let response = await this.axios.get(`/folders/${encodedPath}`, {
       params: {
         cursor: params?.cursor,
         per_page: params?.perPage ?? 100,
         search_all: params?.search,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       entries: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
-  async createFolder(path: string, params?: { mkdirParents?: boolean; providedMtime?: string }): Promise<Record<string, unknown>> {
+  async createFolder(
+    path: string,
+    params?: { mkdirParents?: boolean; providedMtime?: string }
+  ): Promise<Record<string, unknown>> {
     let encodedPath = encodePath(path);
     let response = await this.axios.post(`/folders/${encodedPath}`, {
       mkdir_parents: params?.mkdirParents ?? true,
-      provided_mtime: params?.providedMtime,
+      provided_mtime: params?.providedMtime
     });
     return response.data;
   }
@@ -110,13 +125,14 @@ export class FilesComClient {
         cursor: params?.cursor,
         per_page: params?.perPage ?? 100,
         search: params?.search,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       users: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -130,7 +146,10 @@ export class FilesComClient {
     return response.data;
   }
 
-  async updateUser(userId: number, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateUser(
+    userId: number,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/users/${userId}.json`, data);
     return response.data;
   }
@@ -150,13 +169,14 @@ export class FilesComClient {
       params: {
         cursor: params?.cursor,
         per_page: params?.perPage ?? 100,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       groups: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -170,7 +190,10 @@ export class FilesComClient {
     return response.data;
   }
 
-  async updateGroup(groupId: number, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateGroup(
+    groupId: number,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/groups/${groupId}.json`, data);
     return response.data;
   }
@@ -196,13 +219,14 @@ export class FilesComClient {
         group_id: params?.groupId,
         include_groups: params?.includeGroups,
         cursor: params?.cursor,
-        per_page: params?.perPage ?? 100,
-      },
+        per_page: params?.perPage ?? 100
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       permissions: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -228,13 +252,14 @@ export class FilesComClient {
         cursor: params?.cursor,
         per_page: params?.perPage ?? 100,
         user_id: params?.userId,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       bundles: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -248,7 +273,10 @@ export class FilesComClient {
     return response.data;
   }
 
-  async updateBundle(bundleId: number, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateBundle(
+    bundleId: number,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/bundles/${bundleId}.json`, data);
     return response.data;
   }
@@ -272,13 +300,14 @@ export class FilesComClient {
       params: {
         cursor: params?.cursor,
         per_page: params?.perPage ?? 100,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       automations: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -292,7 +321,10 @@ export class FilesComClient {
     return response.data;
   }
 
-  async updateAutomation(automationId: number, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateAutomation(
+    automationId: number,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/automations/${automationId}.json`, data);
     return response.data;
   }
@@ -320,13 +352,14 @@ export class FilesComClient {
         per_page: params?.perPage ?? 100,
         path: params?.path,
         user_id: params?.userId,
-        group_id: params?.groupId,
-      },
+        group_id: params?.groupId
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       notifications: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -335,7 +368,10 @@ export class FilesComClient {
     return response.data;
   }
 
-  async updateNotification(notificationId: number, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateNotification(
+    notificationId: number,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/notifications/${notificationId}.json`, data);
     return response.data;
   }
@@ -359,13 +395,14 @@ export class FilesComClient {
         per_page: params?.perPage ?? 100,
         path: params?.path,
         'filter[behavior]': params?.behavior,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       behaviors: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -374,7 +411,10 @@ export class FilesComClient {
     return response.data;
   }
 
-  async updateBehavior(behaviorId: number, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateBehavior(
+    behaviorId: number,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/behaviors/${behaviorId}.json`, data);
     return response.data;
   }
@@ -402,7 +442,7 @@ export class FilesComClient {
   }): Promise<{ logs: Record<string, unknown>[]; cursor?: string }> {
     let queryParams: Record<string, unknown> = {
       cursor: params?.cursor,
-      per_page: params?.perPage ?? 100,
+      per_page: params?.perPage ?? 100
     };
 
     if (params?.path) queryParams['filter[path]'] = params.path;
@@ -413,12 +453,13 @@ export class FilesComClient {
     if (params?.endAt) queryParams['filter_lt[created_at]'] = params.endAt;
 
     let response = await this.axios.get('/action_logs.json', {
-      params: queryParams,
+      params: queryParams
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       logs: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 
@@ -435,13 +476,14 @@ export class FilesComClient {
         cursor: params?.cursor,
         per_page: params?.perPage ?? 100,
         user_id: params?.userId,
-        sort_by: params?.sortBy,
-      },
+        sort_by: params?.sortBy
+      }
     });
-    let cursor = response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
+    let cursor =
+      response.headers?.['x-files-cursor-next'] ?? response.headers?.['X-Files-Cursor-Next'];
     return {
       apiKeys: response.data,
-      cursor: cursor || undefined,
+      cursor: cursor || undefined
     };
   }
 

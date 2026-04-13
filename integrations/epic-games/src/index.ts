@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   lookupProductUser,
@@ -13,13 +12,9 @@ import {
   getEntitlements,
   redeemEntitlements,
   manageVoiceRoom,
-  getAntiCheatStatus,
+  getAntiCheatStatus
 } from './tools';
-import {
-  sanctionsSync,
-  playerReportsPoll,
-  inboundWebhook,
-} from './triggers';
+import { sanctionsSync, playerReportsPoll, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,11 +30,7 @@ export let provider = Slate.create({
     getEntitlements,
     redeemEntitlements,
     manageVoiceRoom,
-    getAntiCheatStatus,
+    getAntiCheatStatus
   ],
-  triggers: [
-    inboundWebhook,
-    sanctionsSync,
-    playerReportsPoll,
-  ],
+  triggers: [inboundWebhook, sanctionsSync, playerReportsPoll]
 });

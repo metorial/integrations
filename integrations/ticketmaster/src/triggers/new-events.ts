@@ -4,65 +4,71 @@ import { mapEvent } from '../lib/mappers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Events',
-    key: 'new_events',
-    description: 'Polls for newly published events on Ticketmaster. Detects events that have appeared since the last poll based on date sorting.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Ticketmaster event ID'),
-    name: z.string(),
-    url: z.string(),
-    startDate: z.string(),
-    startLocalDate: z.string(),
-    startLocalTime: z.string(),
-    statusCode: z.string(),
-    venueName: z.string(),
-    venueCity: z.string(),
-    venueCountryCode: z.string(),
-    attractionNames: z.array(z.string()),
-    segmentName: z.string(),
-    genreName: z.string(),
-    rawEvent: z.any(),
-  }))
-  .output(z.object({
-    eventId: z.string(),
-    name: z.string(),
-    url: z.string(),
-    startDate: z.string(),
-    startLocalDate: z.string(),
-    startLocalTime: z.string(),
-    statusCode: z.string(),
-    venueName: z.string(),
-    venueCity: z.string(),
-    venueCountryCode: z.string(),
-    attractionNames: z.array(z.string()),
-    segmentName: z.string(),
-    genreName: z.string(),
-    priceRanges: z.array(z.object({
-      currency: z.string(),
-      min: z.number().nullable(),
-      max: z.number().nullable(),
-    })),
-    images: z.array(z.object({
+export let newEventsTrigger = SlateTrigger.create(spec, {
+  name: 'New Events',
+  key: 'new_events',
+  description:
+    'Polls for newly published events on Ticketmaster. Detects events that have appeared since the last poll based on date sorting.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Ticketmaster event ID'),
+      name: z.string(),
       url: z.string(),
-      width: z.number().nullable(),
-      height: z.number().nullable(),
-    })),
-  }))
+      startDate: z.string(),
+      startLocalDate: z.string(),
+      startLocalTime: z.string(),
+      statusCode: z.string(),
+      venueName: z.string(),
+      venueCity: z.string(),
+      venueCountryCode: z.string(),
+      attractionNames: z.array(z.string()),
+      segmentName: z.string(),
+      genreName: z.string(),
+      rawEvent: z.any()
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string(),
+      name: z.string(),
+      url: z.string(),
+      startDate: z.string(),
+      startLocalDate: z.string(),
+      startLocalTime: z.string(),
+      statusCode: z.string(),
+      venueName: z.string(),
+      venueCity: z.string(),
+      venueCountryCode: z.string(),
+      attractionNames: z.array(z.string()),
+      segmentName: z.string(),
+      genreName: z.string(),
+      priceRanges: z.array(
+        z.object({
+          currency: z.string(),
+          min: z.number().nullable(),
+          max: z.number().nullable()
+        })
+      ),
+      images: z.array(
+        z.object({
+          url: z.string(),
+          width: z.number().nullable(),
+          height: z.number().nullable()
+        })
+      )
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DiscoveryClient({
         token: ctx.auth.token,
         countryCode: ctx.config.countryCode,
-        locale: ctx.config.locale,
+        locale: ctx.config.locale
       });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -71,7 +77,7 @@ export let newEventsTrigger = SlateTrigger.create(
       let now = new Date();
       let searchParams: any = {
         sort: 'date,desc',
-        size: 50,
+        size: 50
       };
 
       if (lastPolledAt) {
@@ -99,25 +105,24 @@ export let newEventsTrigger = SlateTrigger.create(
           attractionNames: mapped?.attractions?.map((a: any) => a.name) || [],
           segmentName: mapped?.classifications?.[0]?.segmentName || '',
           genreName: mapped?.classifications?.[0]?.genreName || '',
-          rawEvent: e,
+          rawEvent: e
         };
       });
 
-      let updatedSeenIds = [...new Set([
-        ...seenIds.slice(-500),
-        ...rawEvents.map((e: any) => e.id),
-      ])];
+      let updatedSeenIds = [
+        ...new Set([...seenIds.slice(-500), ...rawEvents.map((e: any) => e.id)])
+      ];
 
       return {
         inputs,
         updatedState: {
           lastPolledAt: now.toISOString(),
-          seenIds: updatedSeenIds,
-        },
+          seenIds: updatedSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let event = ctx.input.rawEvent;
       let mapped = mapEvent(event);
 
@@ -141,14 +146,15 @@ export let newEventsTrigger = SlateTrigger.create(
           priceRanges: (mapped?.priceRanges || []).map((p: any) => ({
             currency: p.currency || '',
             min: p.min ?? null,
-            max: p.max ?? null,
+            max: p.max ?? null
           })),
           images: (mapped?.images || []).slice(0, 5).map((img: any) => ({
             url: img.url || '',
             width: img.width ?? null,
-            height: img.height ?? null,
-          })),
-        },
+            height: img.height ?? null
+          }))
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

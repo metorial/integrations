@@ -13,28 +13,29 @@ let databaseSchema = z.object({
   memoryLimitInGb: z.number().optional().describe('Memory limit in GB'),
   memoryUsedInMb: z.number().optional().describe('Memory currently used in MB'),
   publicEndpoint: z.string().optional().describe('Public endpoint URL'),
-  privateEndpoint: z.string().optional().describe('Private endpoint URL'),
+  privateEndpoint: z.string().optional().describe('Private endpoint URL')
 });
 
-export let listDatabases = SlateTool.create(
-  spec,
-  {
-    name: 'List Databases',
-    key: 'list_databases',
-    description: `List all databases within a Redis Cloud subscription. Returns database IDs, names, status, endpoints, and memory usage. Supports both **Pro** and **Essentials** subscriptions.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDatabases = SlateTool.create(spec, {
+  name: 'List Databases',
+  key: 'list_databases',
+  description: `List all databases within a Redis Cloud subscription. Returns database IDs, names, status, endpoints, and memory usage. Supports both **Pro** and **Essentials** subscriptions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    subscriptionId: z.number().describe('The subscription ID to list databases for'),
-    type: z.enum(['pro', 'essentials']).default('pro').describe('Subscription type'),
-  }))
-  .output(z.object({
-    databases: z.array(databaseSchema).describe('List of databases in the subscription'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      subscriptionId: z.number().describe('The subscription ID to list databases for'),
+      type: z.enum(['pro', 'essentials']).default('pro').describe('Subscription type')
+    })
+  )
+  .output(
+    z.object({
+      databases: z.array(databaseSchema).describe('List of databases in the subscription')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedisCloudClient(ctx.auth);
     let data: any;
 
@@ -57,11 +58,12 @@ export let listDatabases = SlateTool.create(
       memoryLimitInGb: db.memoryLimitInGb,
       memoryUsedInMb: db.memoryUsedInMb,
       publicEndpoint: db.publicEndpoint,
-      privateEndpoint: db.privateEndpoint,
+      privateEndpoint: db.privateEndpoint
     }));
 
     return {
       output: { databases },
-      message: `Found **${databases.length}** database(s) in subscription **${ctx.input.subscriptionId}**.`,
+      message: `Found **${databases.length}** database(s) in subscription **${ctx.input.subscriptionId}**.`
     };
-  }).build();
+  })
+  .build();

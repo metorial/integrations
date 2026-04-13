@@ -21,7 +21,9 @@ export let createWebhookClient = (
   auth: { managementToken?: string }
 ): ContentfulWebhookClient => {
   if (!auth.managementToken) {
-    throw new Error('A Content Management API token is required for webhook management. Provide a managementToken in the authentication settings.');
+    throw new Error(
+      'A Content Management API token is required for webhook management. Provide a managementToken in the authentication settings.'
+    );
   }
 
   return new ContentfulWebhookClient({

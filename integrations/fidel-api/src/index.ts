@@ -30,7 +30,7 @@ import {
   createWebhook,
   listWebhooks,
   deleteWebhook,
-  updateWebhook,
+  updateWebhook
 } from './tools';
 import {
   transactionEvents,
@@ -38,7 +38,7 @@ import {
   brandConsentEvents,
   locationStatusEvents,
   programStatusEvents,
-  marketplaceOfferEvents,
+  marketplaceOfferEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -73,7 +73,7 @@ export let provider = Slate.create({
     createWebhook,
     listWebhooks,
     deleteWebhook,
-    updateWebhook,
+    updateWebhook
   ],
   triggers: [
     transactionEvents,
@@ -81,6 +81,6 @@ export let provider = Slate.create({
     brandConsentEvents,
     locationStatusEvents,
     programStatusEvents,
-    marketplaceOfferEvents,
-  ],
+    marketplaceOfferEvents
+  ]
 });

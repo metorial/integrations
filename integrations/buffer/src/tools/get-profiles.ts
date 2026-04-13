@@ -5,7 +5,9 @@ import { z } from 'zod';
 
 let profileSchema = z.object({
   profileId: z.string().describe('Unique identifier for the profile'),
-  service: z.string().describe('Social network service name (e.g. twitter, facebook, linkedin)'),
+  service: z
+    .string()
+    .describe('Social network service name (e.g. twitter, facebook, linkedin)'),
   serviceUsername: z.string().describe('Username on the social network'),
   formattedService: z.string().describe('Human-readable service name'),
   formattedUsername: z.string().describe('Human-readable username'),
@@ -16,24 +18,30 @@ let profileSchema = z.object({
   draftsCount: z.number().describe('Number of draft updates')
 });
 
-export let getProfilesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Profiles',
-    key: 'get_profiles',
-    description: `Retrieve connected social media profiles. Returns all profiles linked to the account, or a single profile by ID. Includes service type, username, avatar, and post counts.`,
-    tags: {
-      readOnly: true
-    }
+export let getProfilesTool = SlateTool.create(spec, {
+  name: 'Get Profiles',
+  key: 'get_profiles',
+  description: `Retrieve connected social media profiles. Returns all profiles linked to the account, or a single profile by ID. Includes service type, username, avatar, and post counts.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    profileId: z.string().optional().describe('Optional profile ID to retrieve a specific profile. If omitted, returns all profiles.')
-  }))
-  .output(z.object({
-    profiles: z.array(profileSchema).describe('List of social media profiles')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      profileId: z
+        .string()
+        .optional()
+        .describe(
+          'Optional profile ID to retrieve a specific profile. If omitted, returns all profiles.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      profiles: z.array(profileSchema).describe('List of social media profiles')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let profiles;
@@ -44,7 +52,7 @@ export let getProfilesTool = SlateTool.create(
       profiles = await client.getProfiles();
     }
 
-    let mapped = profiles.map((p) => ({
+    let mapped = profiles.map(p => ({
       profileId: p.id,
       service: p.service,
       serviceUsername: p.serviceUsername,

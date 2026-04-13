@@ -3,30 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateComment = SlateTool.create(
-  spec,
-  {
-    name: 'Update Comment',
-    key: 'update_comment',
-    description: `Update an existing comment on a task in Nozbe Teams. Modify the comment body or toggle pinned status.`,
-    tags: {
-      destructive: false
-    }
+export let updateComment = SlateTool.create(spec, {
+  name: 'Update Comment',
+  key: 'update_comment',
+  description: `Update an existing comment on a task in Nozbe Teams. Modify the comment body or toggle pinned status.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    commentId: z.string().describe('ID of the comment to update'),
-    body: z.string().optional().describe('New comment text in Markdown format'),
-    isPinned: z.boolean().optional().describe('Whether the comment should be pinned')
-  }))
-  .output(z.object({
-    commentId: z.string().describe('ID of the updated comment'),
-    body: z.string().describe('Updated comment body'),
-    taskId: z.string().describe('Task ID'),
-    editedAt: z.number().nullable().optional().describe('Edit timestamp'),
-    isPinned: z.boolean().optional().describe('Pinned status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      commentId: z.string().describe('ID of the comment to update'),
+      body: z.string().optional().describe('New comment text in Markdown format'),
+      isPinned: z.boolean().optional().describe('Whether the comment should be pinned')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('ID of the updated comment'),
+      body: z.string().describe('Updated comment body'),
+      taskId: z.string().describe('Task ID'),
+      editedAt: z.number().nullable().optional().describe('Edit timestamp'),
+      isPinned: z.boolean().optional().describe('Pinned status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, unknown> = {};
@@ -45,4 +46,5 @@ export let updateComment = SlateTool.create(
       },
       message: `Updated comment **${comment.id}**.`
     };
-  }).build();
+  })
+  .build();

@@ -13,6 +13,7 @@ Google Drive API supports two primary authentication methods:
 To authorize your app, the Google Drive API requires you to define OAuth scopes in two places: the Google Cloud console and your app. You need a Google Cloud project with the Drive API enabled, and OAuth 2.0 credentials (client ID and client secret) configured in the Google Cloud Console.
 
 **OAuth Endpoints:**
+
 - Authorization: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token: `https://oauth2.googleapis.com/token`
 
@@ -22,16 +23,16 @@ To access private data, your app must obtain an access token. A single access to
 
 The following scopes are available:
 
-| Scope | Description | Sensitivity |
-|---|---|---|
-| `https://www.googleapis.com/auth/drive` | Full access to all Drive files | Restricted |
-| `https://www.googleapis.com/auth/drive.readonly` | Read-only access to all Drive files | Restricted |
-| `https://www.googleapis.com/auth/drive.file` | Access only to files created or opened by the app | Non-sensitive |
-| `https://www.googleapis.com/auth/drive.appdata` | Access to app-specific data folder | Non-sensitive |
-| `https://www.googleapis.com/auth/drive.metadata` | Read/write access to file metadata only | Sensitive |
-| `https://www.googleapis.com/auth/drive.metadata.readonly` | Read-only access to file metadata | Sensitive |
-| `https://www.googleapis.com/auth/drive.photos.readonly` | Read-only access to photos and videos in Google Photos | Sensitive |
-| `https://www.googleapis.com/auth/drive.scripts` | Access to Apps Script project files | Sensitive |
+| Scope                                                     | Description                                            | Sensitivity   |
+| --------------------------------------------------------- | ------------------------------------------------------ | ------------- |
+| `https://www.googleapis.com/auth/drive`                   | Full access to all Drive files                         | Restricted    |
+| `https://www.googleapis.com/auth/drive.readonly`          | Read-only access to all Drive files                    | Restricted    |
+| `https://www.googleapis.com/auth/drive.file`              | Access only to files created or opened by the app      | Non-sensitive |
+| `https://www.googleapis.com/auth/drive.appdata`           | Access to app-specific data folder                     | Non-sensitive |
+| `https://www.googleapis.com/auth/drive.metadata`          | Read/write access to file metadata only                | Sensitive     |
+| `https://www.googleapis.com/auth/drive.metadata.readonly` | Read-only access to file metadata                      | Sensitive     |
+| `https://www.googleapis.com/auth/drive.photos.readonly`   | Read-only access to photos and videos in Google Photos | Sensitive     |
+| `https://www.googleapis.com/auth/drive.scripts`           | Access to Apps Script project files                    | Sensitive     |
 
 Restricted scopes provide wide access to Google user data and require restricted scope OAuth App Verification. The `drive.file` scope is a non-sensitive scope that allows users to choose which files they want to share with your application.
 
@@ -99,6 +100,7 @@ There are two watch methods:
 - **Changes Watch (`changes.watch`)**: Subscribes to changes for a user. Notifies when any file in the user's Drive (or a specific shared drive) changes.
 
 **Configuration:**
+
 - Requires a `type` property set to `web_hook` and an `address` property set to the HTTPS webhook callback URL.
 - An optional expiration time in milliseconds can be set for the channel.
 - There is no automatic way to renew a notification channel. When a channel is close to its expiration, you must replace it with a new one by calling the watch method.
@@ -118,6 +120,7 @@ This is currently in Developer Preview and requires the v1beta version of the AP
 - An access proposal is created or resolved on a file. An approval is created, cancelled, reset, or completed on a file.
 
 **Configuration:**
+
 - Requires a Google Cloud Pub/Sub topic as the notification endpoint.
 - You specify the `targetResource` (a file, folder, or shared drive) and `eventTypes` (an array of event types you want to receive).
 - Subscriptions are supported for events on all files and folders but not on the root folder of shared drives. For shared drives, subscriptions are only supported for files and folders inside them. Changes made directly to the root folder of a shared drive won't trigger events.

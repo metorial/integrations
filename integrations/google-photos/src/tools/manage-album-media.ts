@@ -3,32 +3,39 @@ import { GooglePhotosLibraryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAlbumMedia = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Album Media',
-    key: 'manage_album_media',
-    description: `Add or remove media items from an album. Use this to organize media items into albums created by your app.`,
-    constraints: [
-      'Only works with albums and media items created by the app.',
-      'Up to 50 media items can be added or removed in a single call.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageAlbumMedia = SlateTool.create(spec, {
+  name: 'Manage Album Media',
+  key: 'manage_album_media',
+  description: `Add or remove media items from an album. Use this to organize media items into albums created by your app.`,
+  constraints: [
+    'Only works with albums and media items created by the app.',
+    'Up to 50 media items can be added or removed in a single call.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    albumId: z.string().describe('The ID of the album to manage'),
-    action: z.enum(['add', 'remove']).describe('Whether to add or remove media items from the album'),
-    mediaItemIds: z.array(z.string()).min(1).max(50).describe('List of media item IDs to add or remove (max 50)'),
-  }))
-  .output(z.object({
-    albumId: z.string().describe('The album that was modified'),
-    action: z.string().describe('The action that was performed'),
-    mediaItemCount: z.number().describe('Number of media items affected'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      albumId: z.string().describe('The ID of the album to manage'),
+      action: z
+        .enum(['add', 'remove'])
+        .describe('Whether to add or remove media items from the album'),
+      mediaItemIds: z
+        .array(z.string())
+        .min(1)
+        .max(50)
+        .describe('List of media item IDs to add or remove (max 50)')
+    })
+  )
+  .output(
+    z.object({
+      albumId: z.string().describe('The album that was modified'),
+      action: z.string().describe('The action that was performed'),
+      mediaItemCount: z.number().describe('Number of media items affected')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GooglePhotosLibraryClient(ctx.auth.token);
 
     if (ctx.input.action === 'add') {
@@ -43,9 +50,9 @@ export let manageAlbumMedia = SlateTool.create(
       output: {
         albumId: ctx.input.albumId,
         action: ctx.input.action,
-        mediaItemCount: ctx.input.mediaItemIds.length,
+        mediaItemCount: ctx.input.mediaItemIds.length
       },
-      message: `${actionVerb} **${ctx.input.mediaItemIds.length}** media item(s) ${ctx.input.action === 'add' ? 'to' : 'from'} album.`,
+      message: `${actionVerb} **${ctx.input.mediaItemIds.length}** media item(s) ${ctx.input.action === 'add' ? 'to' : 'from'} album.`
     };
   })
   .build();

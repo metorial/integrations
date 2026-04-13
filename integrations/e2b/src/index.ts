@@ -19,7 +19,7 @@ import {
   deleteWebhook,
   listVolumes,
   createVolume,
-  deleteVolume,
+  deleteVolume
 } from './tools';
 import { sandboxLifecycleTrigger } from './triggers';
 
@@ -44,9 +44,7 @@ export let provider = Slate.create({
     deleteWebhook,
     listVolumes,
     createVolume,
-    deleteVolume,
+    deleteVolume
   ],
-  triggers: [
-    sandboxLifecycleTrigger,
-  ],
+  triggers: [sandboxLifecycleTrigger]
 });

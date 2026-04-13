@@ -3,43 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getIncident = SlateTool.create(
-  spec,
-  {
-    name: 'Get Incident',
-    key: 'get_incident',
-    description: `Retrieve full details of a single incident by its ID or numeric reference (e.g. "123" for INC-123). Returns complete incident data including severity, status, custom fields, role assignments, timestamps, and duration metrics.`,
-    tags: {
-      readOnly: true,
-    },
+export let getIncident = SlateTool.create(spec, {
+  name: 'Get Incident',
+  key: 'get_incident',
+  description: `Retrieve full details of a single incident by its ID or numeric reference (e.g. "123" for INC-123). Returns complete incident data including severity, status, custom fields, role assignments, timestamps, and duration metrics.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    incidentId: z.string().describe('The incident ID (UUID) or numeric reference (e.g. "123" for INC-123)'),
-  }))
-  .output(z.object({
-    incidentId: z.string(),
-    reference: z.string(),
-    name: z.string(),
-    summary: z.string().optional(),
-    visibility: z.string(),
-    mode: z.string(),
-    severity: z.any().optional(),
-    status: z.any().optional(),
-    incidentType: z.any().optional(),
-    creator: z.any().optional(),
-    roleAssignments: z.array(z.any()).optional(),
-    customFieldEntries: z.array(z.any()).optional(),
-    timestampValues: z.array(z.any()).optional(),
-    durationMetrics: z.array(z.any()).optional(),
-    permalink: z.string().optional(),
-    callUrl: z.string().optional(),
-    slackChannelId: z.string().optional(),
-    slackChannelName: z.string().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      incidentId: z
+        .string()
+        .describe('The incident ID (UUID) or numeric reference (e.g. "123" for INC-123)')
+    })
+  )
+  .output(
+    z.object({
+      incidentId: z.string(),
+      reference: z.string(),
+      name: z.string(),
+      summary: z.string().optional(),
+      visibility: z.string(),
+      mode: z.string(),
+      severity: z.any().optional(),
+      status: z.any().optional(),
+      incidentType: z.any().optional(),
+      creator: z.any().optional(),
+      roleAssignments: z.array(z.any()).optional(),
+      customFieldEntries: z.array(z.any()).optional(),
+      timestampValues: z.array(z.any()).optional(),
+      durationMetrics: z.array(z.any()).optional(),
+      permalink: z.string().optional(),
+      callUrl: z.string().optional(),
+      slackChannelId: z.string().optional(),
+      slackChannelName: z.string().optional(),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getIncident(ctx.input.incidentId);
     let inc = result.incident;
@@ -65,8 +68,9 @@ export let getIncident = SlateTool.create(
         slackChannelId: inc.slack_channel_id || undefined,
         slackChannelName: inc.slack_channel_name || undefined,
         createdAt: inc.created_at,
-        updatedAt: inc.updated_at,
+        updatedAt: inc.updated_at
       },
-      message: `Retrieved incident **${inc.reference}**: ${inc.name}`,
+      message: `Retrieved incident **${inc.reference}**: ${inc.name}`
     };
-  }).build();
+  })
+  .build();

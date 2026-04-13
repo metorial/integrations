@@ -14,7 +14,7 @@ let categoryScoresSchema = z.object({
   sexual: z.number().describe('Score for sexual content'),
   sexualMinors: z.number().describe('Score for sexual/minors content'),
   violence: z.number().describe('Score for violence content'),
-  violenceGraphic: z.number().describe('Score for violence/graphic content'),
+  violenceGraphic: z.number().describe('Score for violence/graphic content')
 });
 
 let categoryFlagsSchema = z.object({
@@ -28,39 +28,53 @@ let categoryFlagsSchema = z.object({
   sexual: z.boolean(),
   sexualMinors: z.boolean(),
   violence: z.boolean(),
-  violenceGraphic: z.boolean(),
+  violenceGraphic: z.boolean()
 });
 
-export let moderateContent = SlateTool.create(
-  spec,
-  {
-    name: 'Moderate Content',
-    key: 'moderate_content',
-    description: `Classify text against OpenAI's content policy categories. Returns flagged status and per-category scores for hate, harassment, self-harm, sexual, and violence content. Useful for filtering harmful content in user-generated input.`,
-    tags: {
-      readOnly: true,
-      destructive: false,
-    },
+export let moderateContent = SlateTool.create(spec, {
+  name: 'Moderate Content',
+  key: 'moderate_content',
+  description: `Classify text against OpenAI's content policy categories. Returns flagged status and per-category scores for hate, harassment, self-harm, sexual, and violence content. Useful for filtering harmful content in user-generated input.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    input: z.union([z.string(), z.array(z.string())]).describe('Text or array of texts to moderate'),
-    model: z.string().optional().describe('Moderation model to use (e.g. "omni-moderation-latest")'),
-  }))
-  .output(z.object({
-    results: z.array(z.object({
-      flagged: z.boolean().describe('Whether the content was flagged as violating any policy'),
-      categories: categoryFlagsSchema.describe('Whether each category was flagged'),
-      categoryScores: categoryScoresSchema.describe('Confidence scores for each category (0-1)'),
-    })).describe('Moderation results for each input'),
-    model: z.string().describe('Model used for moderation'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      input: z
+        .union([z.string(), z.array(z.string())])
+        .describe('Text or array of texts to moderate'),
+      model: z
+        .string()
+        .optional()
+        .describe('Moderation model to use (e.g. "omni-moderation-latest")')
+    })
+  )
+  .output(
+    z.object({
+      results: z
+        .array(
+          z.object({
+            flagged: z
+              .boolean()
+              .describe('Whether the content was flagged as violating any policy'),
+            categories: categoryFlagsSchema.describe('Whether each category was flagged'),
+            categoryScores: categoryScoresSchema.describe(
+              'Confidence scores for each category (0-1)'
+            )
+          })
+        )
+        .describe('Moderation results for each input'),
+      model: z.string().describe('Model used for moderation')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result = await client.createModeration({
       input: ctx.input.input,
-      model: ctx.input.model,
+      model: ctx.input.model
     });
 
     let results = (result.results ?? []).map((r: any) => ({
@@ -76,7 +90,7 @@ export let moderateContent = SlateTool.create(
         sexual: r.categories?.sexual ?? false,
         sexualMinors: r.categories?.['sexual/minors'] ?? false,
         violence: r.categories?.violence ?? false,
-        violenceGraphic: r.categories?.['violence/graphic'] ?? false,
+        violenceGraphic: r.categories?.['violence/graphic'] ?? false
       },
       categoryScores: {
         hate: r.category_scores?.hate ?? 0,
@@ -89,8 +103,8 @@ export let moderateContent = SlateTool.create(
         sexual: r.category_scores?.sexual ?? 0,
         sexualMinors: r.category_scores?.['sexual/minors'] ?? 0,
         violence: r.category_scores?.violence ?? 0,
-        violenceGraphic: r.category_scores?.['violence/graphic'] ?? 0,
-      },
+        violenceGraphic: r.category_scores?.['violence/graphic'] ?? 0
+      }
     }));
 
     let flaggedCount = results.filter((r: any) => r.flagged).length;
@@ -98,9 +112,9 @@ export let moderateContent = SlateTool.create(
     return {
       output: {
         results,
-        model: result.model,
+        model: result.model
       },
-      message: `Moderated **${results.length}** input(s). **${flaggedCount}** flagged.`,
+      message: `Moderated **${results.length}** input(s). **${flaggedCount}** flagged.`
     };
   })
   .build();

@@ -8,9 +8,9 @@ export class Client {
       baseURL: 'https://api.leadiq.com',
       headers: {
         'Content-Type': 'application/json',
-        // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-        'Authorization': `Basic ${Buffer.from(config.token + ':').toString('base64')}`,
-      },
+
+        Authorization: `Basic ${Buffer.from(config.token + ':').toString('base64')}`
+      }
     });
   }
 

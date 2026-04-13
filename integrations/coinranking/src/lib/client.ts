@@ -71,8 +71,8 @@ export class CoinrankingClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'x-access-token': config.token,
-      },
+        'x-access-token': config.token
+      }
     });
   }
 
@@ -162,7 +162,7 @@ export class CoinrankingClient {
 
   async search(params: SearchParams) {
     let query: Record<string, unknown> = {
-      query: params.query,
+      query: params.query
     };
     let refCurrency = this.refCurrency(params.referenceCurrencyUuid);
     if (refCurrency) query['referenceCurrencyUuid'] = refCurrency;

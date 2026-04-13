@@ -20,13 +20,9 @@ import {
   listTaskLists,
   listTasks,
   createTask,
-  manageTask,
+  manageTask
 } from './tools';
-import {
-  messageChanges,
-  eventChanges,
-  contactChanges,
-} from './triggers';
+import { messageChanges, eventChanges, contactChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -50,11 +46,7 @@ export let provider = Slate.create({
     listTaskLists,
     listTasks,
     createTask,
-    manageTask,
+    manageTask
   ],
-  triggers: [
-    messageChanges,
-    eventChanges,
-    contactChanges,
-  ],
+  triggers: [messageChanges, eventChanges, contactChanges]
 });

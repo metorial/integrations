@@ -3,46 +3,48 @@ import { HabiticaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Activity',
-    key: 'task_activity',
-    description: 'Triggers when a task is created, updated, deleted, scored, or a checklist item is scored in Habitica.',
-  },
-)
-  .input(z.object({
-    webhookType: z.string().describe('Type of task event'),
-    taskId: z.string().describe('Task ID'),
-    taskType: z.string().optional().describe('Task type'),
-    taskText: z.string().optional().describe('Task title'),
-    direction: z.string().optional().describe('Score direction (up/down)'),
-    delta: z.number().optional().describe('Change in task value'),
-    checklistItemId: z.string().optional().describe('Checklist item ID if applicable'),
-    eventId: z.string().describe('Unique event identifier'),
-    rawPayload: z.record(z.string(), z.any()).optional().describe('Full webhook payload'),
-  }))
-  .output(z.object({
-    taskId: z.string().describe('Task ID'),
-    taskType: z.string().optional().describe('Task type: habit, daily, todo, or reward'),
-    taskText: z.string().optional().describe('Task title'),
-    taskNotes: z.string().optional().describe('Task notes'),
-    direction: z.string().optional().describe('Score direction if scored'),
-    delta: z.number().optional().describe('Task value change if scored'),
-    completed: z.boolean().optional().describe('Whether the task is completed'),
-    checklistItemId: z.string().optional().describe('Checklist item ID if applicable'),
-    hp: z.number().optional().describe('User HP after scoring'),
-    mp: z.number().optional().describe('User mana after scoring'),
-    exp: z.number().optional().describe('User experience after scoring'),
-    gp: z.number().optional().describe('User gold after scoring'),
-    lvl: z.number().optional().describe('User level after scoring'),
-  }))
+export let taskActivity = SlateTrigger.create(spec, {
+  name: 'Task Activity',
+  key: 'task_activity',
+  description:
+    'Triggers when a task is created, updated, deleted, scored, or a checklist item is scored in Habitica.'
+})
+  .input(
+    z.object({
+      webhookType: z.string().describe('Type of task event'),
+      taskId: z.string().describe('Task ID'),
+      taskType: z.string().optional().describe('Task type'),
+      taskText: z.string().optional().describe('Task title'),
+      direction: z.string().optional().describe('Score direction (up/down)'),
+      delta: z.number().optional().describe('Change in task value'),
+      checklistItemId: z.string().optional().describe('Checklist item ID if applicable'),
+      eventId: z.string().describe('Unique event identifier'),
+      rawPayload: z.record(z.string(), z.any()).optional().describe('Full webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      taskType: z.string().optional().describe('Task type: habit, daily, todo, or reward'),
+      taskText: z.string().optional().describe('Task title'),
+      taskNotes: z.string().optional().describe('Task notes'),
+      direction: z.string().optional().describe('Score direction if scored'),
+      delta: z.number().optional().describe('Task value change if scored'),
+      completed: z.boolean().optional().describe('Whether the task is completed'),
+      checklistItemId: z.string().optional().describe('Checklist item ID if applicable'),
+      hp: z.number().optional().describe('User HP after scoring'),
+      mp: z.number().optional().describe('User mana after scoring'),
+      exp: z.number().optional().describe('User experience after scoring'),
+      gp: z.number().optional().describe('User gold after scoring'),
+      lvl: z.number().optional().describe('User level after scoring')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new HabiticaClient({
         userId: ctx.auth.userId,
         token: ctx.auth.token,
-        xClient: ctx.config.xClient,
+        xClient: ctx.config.xClient
       });
 
       let webhook = await client.createWebhook({
@@ -55,30 +57,30 @@ export let taskActivity = SlateTrigger.create(
           updated: true,
           deleted: true,
           scored: true,
-          checklistScored: true,
-        },
+          checklistScored: true
+        }
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id || webhook._id,
-        },
+          webhookId: webhook.id || webhook._id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new HabiticaClient({
         userId: ctx.auth.userId,
         token: ctx.auth.token,
-        xClient: ctx.config.xClient,
+        xClient: ctx.config.xClient
       });
 
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, any>;
 
       let webhookType = body.type || body.webhookType || 'unknown';
       let task = body.task || {};
@@ -90,21 +92,23 @@ export let taskActivity = SlateTrigger.create(
       let eventId = `task-${webhookType}-${task.id || task._id || 'unknown'}-${Date.now()}`;
 
       return {
-        inputs: [{
-          webhookType,
-          taskId: task.id || task._id || '',
-          taskType: task.type,
-          taskText: task.text,
-          direction,
-          delta,
-          checklistItemId: checklistItem?.id,
-          eventId,
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            webhookType,
+            taskId: task.id || task._id || '',
+            taskType: task.type,
+            taskText: task.text,
+            direction,
+            delta,
+            checklistItemId: checklistItem?.id,
+            eventId,
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.rawPayload || {};
       let task = payload.task || {};
       let user = payload.user || {};
@@ -126,9 +130,9 @@ export let taskActivity = SlateTrigger.create(
           mp: stats.mp,
           exp: stats.exp,
           gp: stats.gp,
-          lvl: stats.lvl,
-        },
+          lvl: stats.lvl
+        }
       };
-    },
+    }
   })
   .build();

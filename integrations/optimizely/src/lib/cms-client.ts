@@ -8,14 +8,19 @@ export class CmsClient {
     this.axios = createAxios({
       baseURL: 'https://api.cms.optimizely.com',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // Content Items
-  async listContent(params?: { page?: number; pageSize?: number; contentType?: string; parentKey?: string }) {
+  async listContent(params?: {
+    page?: number;
+    pageSize?: number;
+    contentType?: string;
+    parentKey?: string;
+  }) {
     let response = await this.axios.get('/api/content', { params });
     return response.data;
   }
@@ -37,11 +42,14 @@ export class CmsClient {
     return response.data;
   }
 
-  async updateContent(contentKey: string, data: {
-    name?: string;
-    properties?: Record<string, any>;
-    status?: string;
-  }) {
+  async updateContent(
+    contentKey: string,
+    data: {
+      name?: string;
+      properties?: Record<string, any>;
+      status?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/api/content/${contentKey}`, data);
     return response.data;
   }

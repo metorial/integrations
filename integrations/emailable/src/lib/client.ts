@@ -134,7 +134,16 @@ let mapReasonCounts = (data: any): BatchReasonCounts => {
 };
 
 let mapTotalCounts = (data: any): BatchTotalCounts => {
-  if (!data) return { deliverable: 0, undeliverable: 0, risky: 0, unknown: 0, duplicate: 0, processed: 0, total: 0 };
+  if (!data)
+    return {
+      deliverable: 0,
+      undeliverable: 0,
+      risky: 0,
+      unknown: 0,
+      duplicate: 0,
+      processed: 0,
+      total: 0
+    };
   return {
     deliverable: data.deliverable ?? 0,
     undeliverable: data.undeliverable ?? 0,

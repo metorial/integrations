@@ -17,6 +17,7 @@ Authorization: Bearer <WRITER_API_KEY>
 API keys are created and managed from the AI Studio Admin Settings under the API Keys section. API keys are attached to AI Studio API agents, and permissions are set at the agent level.
 
 To obtain an API key:
+
 1. Navigate to Admin Settings > API Keys in AI Studio, click the API agent tile, and click "Generate a new key." Give the key a name and click Generate.
 2. Immediately copy and save the key securely after generation — you cannot view the key again after navigating away.
 
@@ -29,6 +30,7 @@ There is no OAuth2 flow; all API access is via API keys.
 ### Text Generation and Chat Completions
 
 Generate text from prompts using Writer's Palmyra models. Supported models include palmyra-x5, palmyra-x4, palmyra-fin, palmyra-med, palmyra-creative, and palmyra-x-003-instruct. Two modes are available:
+
 - **Text completion**: Generate text from a single prompt string.
 - **Chat completion**: Generate responses from a conversation history (array of messages). Supports system, user, and assistant roles.
 
@@ -37,6 +39,7 @@ Key options include temperature, max tokens, top-p, stop sequences, streaming (v
 ### Tool Calling
 
 The chat completion API supports tool calling, allowing the model to invoke external functions during a conversation. Built-in tool types include:
+
 - **Custom functions**: Define function signatures and let the model generate arguments to call them.
 - **Knowledge Graph**: Query a Knowledge Graph within a chat for RAG-based responses.
 - **Vision**: Analyze images within a chat conversation.
@@ -49,6 +52,7 @@ You can force the model to call a specific tool using a JSON object, e.g., `{"ty
 ### Knowledge Graphs
 
 A Knowledge Graph is a collection of files used to answer questions. Through the API you can:
+
 - Create, list, retrieve, update, and delete Knowledge Graphs.
 - Add and remove files from a Knowledge Graph.
 - Query a Knowledge Graph to get AI-generated answers grounded in your uploaded data, with inline citations.
@@ -59,6 +63,7 @@ A Knowledge Graph is a collection of files used to answer questions. Through the
 ### No-Code Agents (Applications API)
 
 The Applications API allows you to turn deployed no-code agents into microservices, which can also be used as tools in tool calling. You can:
+
 - Invoke text generation agents and research agents programmatically by providing defined inputs.
 - Run agents asynchronously.
 - The endpoint supports only agents with text generation and research capabilities. It does not support chat agents.

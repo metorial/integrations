@@ -11,37 +11,38 @@ let roomOutputSchema = z.object({
   createdOn: z.string().optional(),
   updatedOn: z.string().optional(),
   type: z.string().optional(),
-  status: z.string().optional(),
+  status: z.string().optional()
 });
 
-export let listRoomsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Rooms',
-    key: 'list_rooms',
-    description: `List rooms within a workspace. Returns room names, IDs, and metadata. Use **workspaceId** to scope the listing.`,
-    tags: {
-      readOnly: true,
-    },
+export let listRoomsTool = SlateTool.create(spec, {
+  name: 'List Rooms',
+  key: 'list_rooms',
+  description: `List rooms within a workspace. Returns room names, IDs, and metadata. Use **workspaceId** to scope the listing.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().describe('ID of the workspace to list rooms from'),
-    limit: z.number().optional().describe('Maximum number of rooms to return'),
-    nextToken: z.string().optional().describe('Pagination token from a previous request'),
-  }))
-  .output(z.object({
-    rooms: z.array(roomOutputSchema),
-    nextToken: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z.string().describe('ID of the workspace to list rooms from'),
+      limit: z.number().optional().describe('Maximum number of rooms to return'),
+      nextToken: z.string().optional().describe('Pagination token from a previous request')
+    })
+  )
+  .output(
+    z.object({
+      rooms: z.array(roomOutputSchema),
+      nextToken: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listRooms(ctx.input.workspaceId, {
       limit: ctx.input.limit,
-      next: ctx.input.nextToken,
+      next: ctx.input.nextToken
     });
 
-    let rooms = result.value.map((r) => ({
+    let rooms = result.value.map(r => ({
       roomId: r.id,
       name: r.name,
       description: r.description,
@@ -49,40 +50,40 @@ export let listRoomsTool = SlateTool.create(
       createdOn: r.createdOn,
       updatedOn: r.updatedOn,
       type: r.type,
-      status: r.status,
+      status: r.status
     }));
 
     return {
       output: { rooms, nextToken: result.next },
-      message: `Found **${rooms.length}** room(s) in workspace.`,
+      message: `Found **${rooms.length}** room(s) in workspace.`
     };
-  }).build();
+  })
+  .build();
 
-export let createRoomTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Room',
-    key: 'create_room',
-    description: `Create a new room within a workspace. Rooms organize murals and can have folders for further organization.`,
-    tags: {
-      destructive: false,
-    },
+export let createRoomTool = SlateTool.create(spec, {
+  name: 'Create Room',
+  key: 'create_room',
+  description: `Create a new room within a workspace. Rooms organize murals and can have folders for further organization.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    workspaceId: z.string().describe('ID of the workspace to create the room in'),
-    name: z.string().describe('Name for the new room'),
-    description: z.string().optional().describe('Description of the room'),
-    type: z.string().optional().describe('Room type (e.g., "open" or "private")'),
-  }))
+})
+  .input(
+    z.object({
+      workspaceId: z.string().describe('ID of the workspace to create the room in'),
+      name: z.string().describe('Name for the new room'),
+      description: z.string().optional().describe('Description of the room'),
+      type: z.string().optional().describe('Room type (e.g., "open" or "private")')
+    })
+  )
   .output(roomOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let room = await client.createRoom({
       workspaceId: ctx.input.workspaceId,
       name: ctx.input.name,
       description: ctx.input.description,
-      type: ctx.input.type,
+      type: ctx.input.type
     });
 
     return {
@@ -94,31 +95,31 @@ export let createRoomTool = SlateTool.create(
         createdOn: room.createdOn,
         updatedOn: room.updatedOn,
         type: room.type,
-        status: room.status,
+        status: room.status
       },
-      message: `Created room **${room.name}** (${room.id}).`,
+      message: `Created room **${room.name}** (${room.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateRoomTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Room',
-    key: 'update_room',
-    description: `Update a room's name or description.`,
-  }
-)
-  .input(z.object({
-    roomId: z.string().describe('ID of the room to update'),
-    name: z.string().optional().describe('New name for the room'),
-    description: z.string().optional().describe('New description for the room'),
-  }))
+export let updateRoomTool = SlateTool.create(spec, {
+  name: 'Update Room',
+  key: 'update_room',
+  description: `Update a room's name or description.`
+})
+  .input(
+    z.object({
+      roomId: z.string().describe('ID of the room to update'),
+      name: z.string().optional().describe('New name for the room'),
+      description: z.string().optional().describe('New description for the room')
+    })
+  )
   .output(roomOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let room = await client.updateRoom(ctx.input.roomId, {
       name: ctx.input.name,
-      description: ctx.input.description,
+      description: ctx.input.description
     });
 
     return {
@@ -130,35 +131,38 @@ export let updateRoomTool = SlateTool.create(
         createdOn: room.createdOn,
         updatedOn: room.updatedOn,
         type: room.type,
-        status: room.status,
+        status: room.status
       },
-      message: `Updated room **${room.name}**.`,
+      message: `Updated room **${room.name}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteRoomTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Room',
-    key: 'delete_room',
-    description: `Permanently delete a room and all its contents. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteRoomTool = SlateTool.create(spec, {
+  name: 'Delete Room',
+  key: 'delete_room',
+  description: `Permanently delete a room and all its contents. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    roomId: z.string().describe('ID of the room to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      roomId: z.string().describe('ID of the room to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteRoom(ctx.input.roomId);
 
     return {
       output: { deleted: true },
-      message: `Deleted room **${ctx.input.roomId}**.`,
+      message: `Deleted room **${ctx.input.roomId}**.`
     };
-  }).build();
+  })
+  .build();

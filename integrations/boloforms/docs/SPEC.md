@@ -22,6 +22,7 @@ Alternatively, the API key can be accessed directly at: `https://signature.bolof
 The API key is passed as a custom header `x-api-key` in all API requests. The base URL for the API is `https://sapi.boloforms.com/signature/`.
 
 Example header:
+
 ```
 x-api-key: YOUR_API_KEY
 Content-Type: application/json
@@ -32,10 +33,13 @@ There are no OAuth flows, scopes, or additional credentials required beyond the 
 ## Features
 
 ### Document Management
+
 Retrieve a list of documents with optional filtering. Supports PDF documents, form-based documents, and templates. Documents can be filtered by type (PDFs, forms, templates).
 
 ### Send Templates for Signing
+
 Send documents with pre-filled fields and create templates for future use. You can dispatch a PDF or form template for signing by specifying:
+
 - **Signing type**: PDF template or form template.
 - **Receivers list**: An array of recipients with name, email, subject, and message for each.
 - **Mail data**: Custom subject and message for the signing email.
@@ -43,15 +47,19 @@ Send documents with pre-filled fields and create templates for future use. You c
 - You can batch up to 100 recipients in one request.
 
 ### Retrieve Template Respondents
+
 Fetch information about who has responded to a specific template-based document, including signer details and status.
 
 ### Retrieve Form Responses
+
 BoloForms handles form submissions without the need for a server. With the API, you can dynamically process, store, and manage form submissions. Retrieve form responses with optional filtering for specific forms.
 
 ### Download Signed Documents
+
 Download signed documents via URLs provided by the API. Completed documents include a finished PDF URL in the response data.
 
 ### Embeddable Signing
+
 BoloSign provides embed documentation allowing you to embed signing workflows directly into your application.
 
 ## Events
@@ -59,22 +67,29 @@ BoloSign provides embed documentation allowing you to embed signing workflows di
 BoloForms supports webhooks for real-time event notifications. Webhooks are configured in the BoloForms dashboard by providing a webhook URL, selecting an event type, and choosing specific documents to track. Webhook payloads are sent as HTTP POST requests in JSON format. Webhook authenticity can be verified using HMAC SHA-256 signatures via the `x-signature` and `x-timestamp` headers.
 
 ### Form Response
+
 Triggered when a user completes and submits a form. The payload includes form fields, responses, respondent email, and a URL to the finished PDF.
 
 ### Signature Completed (PDF)
+
 Triggered when all signers have completed signing a PDF document. The payload includes document details, signer statuses, and a link to the finished signed PDF.
 
 ### Individual Document Viewed
+
 Triggered when an individual signer views a signature PDF document. Includes information about which signer viewed the document and when.
 
 ### Individual Document Signed
+
 Triggered when an individual signer completes their signature on a PDF document (before all signers have completed). Includes signer details and signing order information.
 
 ### Template Response Completed
+
 Triggered when all responses/signatures are collected for a template-based document. Includes document name, signers with role titles, and a finished PDF URL.
 
 ### Individual Template Viewed
+
 Triggered when an individual signer views a template-based document. Includes the viewer's role title and viewing timestamp.
 
 ### Individual Template Signed
+
 Triggered when an individual signer completes their signature on a template-based document. Includes signer role title and signing order details.

@@ -22,10 +22,16 @@ export let percentEncode = (str: string): string => {
 };
 
 // Create the OAuth signature base string
-let createSignatureBaseString = (method: string, url: string, params: Record<string, string>): string => {
+let createSignatureBaseString = (
+  method: string,
+  url: string,
+  params: Record<string, string>
+): string => {
   // Sort parameters alphabetically by key
   let sortedKeys = Object.keys(params).sort();
-  let paramString = sortedKeys.map(k => `${percentEncode(k)}=${percentEncode(params[k]!)}`).join('&');
+  let paramString = sortedKeys
+    .map(k => `${percentEncode(k)}=${percentEncode(params[k]!)}`)
+    .join('&');
   return `${method.toUpperCase()}&${percentEncode(url)}&${percentEncode(paramString)}`;
 };
 
@@ -72,7 +78,9 @@ export let parseOAuthResponse = (body: string): Record<string, string> => {
   for (let pair of pairs) {
     let idx = pair.indexOf('=');
     if (idx >= 0) {
-      params[decodeURIComponent(pair.substring(0, idx))] = decodeURIComponent(pair.substring(idx + 1));
+      params[decodeURIComponent(pair.substring(0, idx))] = decodeURIComponent(
+        pair.substring(idx + 1)
+      );
     }
   }
   return params;
@@ -100,7 +108,7 @@ export let requestToken = async (
     oauth_timestamp: timestamp,
     oauth_nonce: nonce,
     oauth_callback: callbackUrl,
-    oauth_version: '1.0',
+    oauth_version: '1.0'
   };
 
   let signature = await signOAuthRequest('GET', oauthUrl, params, consumerSecret);
@@ -111,13 +119,13 @@ export let requestToken = async (
     .join('&');
 
   let response = await axios.get(`${oauthUrl}?${queryString}`, {
-    responseType: 'text',
+    responseType: 'text'
   });
 
   let parsed = parseOAuthResponse(response.data);
   return {
     oauthToken: parsed.oauth_token || '',
-    oauthTokenSecret: parsed.oauth_token_secret || '',
+    oauthTokenSecret: parsed.oauth_token_secret || ''
   };
 };
 
@@ -148,10 +156,16 @@ export let exchangeToken = async (
     oauth_timestamp: timestamp,
     oauth_nonce: nonce,
     oauth_verifier: oauthVerifier,
-    oauth_version: '1.0',
+    oauth_version: '1.0'
   };
 
-  let signature = await signOAuthRequest('GET', oauthUrl, params, consumerSecret, oauthTokenSecret);
+  let signature = await signOAuthRequest(
+    'GET',
+    oauthUrl,
+    params,
+    consumerSecret,
+    oauthTokenSecret
+  );
   params.oauth_signature = signature;
 
   let queryString = Object.entries(params)
@@ -159,7 +173,7 @@ export let exchangeToken = async (
     .join('&');
 
   let response = await axios.get(`${oauthUrl}?${queryString}`, {
-    responseType: 'text',
+    responseType: 'text'
   });
 
   let parsed = parseOAuthResponse(response.data);
@@ -169,6 +183,6 @@ export let exchangeToken = async (
     webApiUrlPrefix: parsed.edam_webApiUrlPrefix || '',
     userId: parsed.edam_userId || '',
     shardId: parsed.edam_shard || '',
-    expires: parsed.edam_expires || '',
+    expires: parsed.edam_expires || ''
   };
 };

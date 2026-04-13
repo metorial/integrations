@@ -3,58 +3,60 @@ import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let queryCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Query Completed',
-    key: 'query_completed',
-    description: 'Triggers when SQL queries complete execution in the Snowflake account. Polls the query history to detect newly completed queries including both successful and failed executions.',
-  }
-)
-  .input(z.object({
-    queryId: z.string().describe('Unique query identifier'),
-    queryText: z.string().describe('The SQL statement that was executed'),
-    status: z.string().describe('Execution status (e.g. SUCCESS, FAILED_WITH_ERROR)'),
-    errorCode: z.string().optional().describe('Error code if the query failed'),
-    errorMessage: z.string().optional().describe('Error message if the query failed'),
-    warehouseName: z.string().optional().describe('Warehouse that executed the query'),
-    databaseName: z.string().optional().describe('Database context of the query'),
-    schemaName: z.string().optional().describe('Schema context of the query'),
-    userName: z.string().optional().describe('User who submitted the query'),
-    roleName: z.string().optional().describe('Role used to execute the query'),
-    executionStartedAt: z.string().optional().describe('Timestamp when execution started'),
-    executionEndedAt: z.string().optional().describe('Timestamp when execution ended'),
-    totalElapsedMs: z.number().optional().describe('Total elapsed time in milliseconds'),
-    rowsProduced: z.number().optional().describe('Number of rows produced by the query'),
-    bytesScanned: z.number().optional().describe('Number of bytes scanned by the query'),
-  }))
-  .output(z.object({
-    queryId: z.string().describe('Unique query identifier'),
-    queryText: z.string().describe('SQL statement that was executed'),
-    status: z.string().describe('Execution result status'),
-    errorCode: z.string().optional().describe('Error code if failed'),
-    errorMessage: z.string().optional().describe('Error message if failed'),
-    warehouseName: z.string().optional().describe('Warehouse used'),
-    databaseName: z.string().optional().describe('Database context'),
-    schemaName: z.string().optional().describe('Schema context'),
-    userName: z.string().optional().describe('User who ran the query'),
-    roleName: z.string().optional().describe('Role used'),
-    executionStartedAt: z.string().optional().describe('When execution started'),
-    executionEndedAt: z.string().optional().describe('When execution ended'),
-    totalElapsedMs: z.number().optional().describe('Elapsed time in milliseconds'),
-    rowsProduced: z.number().optional().describe('Rows produced'),
-    bytesScanned: z.number().optional().describe('Bytes scanned'),
-  }))
+export let queryCompleted = SlateTrigger.create(spec, {
+  name: 'Query Completed',
+  key: 'query_completed',
+  description:
+    'Triggers when SQL queries complete execution in the Snowflake account. Polls the query history to detect newly completed queries including both successful and failed executions.'
+})
+  .input(
+    z.object({
+      queryId: z.string().describe('Unique query identifier'),
+      queryText: z.string().describe('The SQL statement that was executed'),
+      status: z.string().describe('Execution status (e.g. SUCCESS, FAILED_WITH_ERROR)'),
+      errorCode: z.string().optional().describe('Error code if the query failed'),
+      errorMessage: z.string().optional().describe('Error message if the query failed'),
+      warehouseName: z.string().optional().describe('Warehouse that executed the query'),
+      databaseName: z.string().optional().describe('Database context of the query'),
+      schemaName: z.string().optional().describe('Schema context of the query'),
+      userName: z.string().optional().describe('User who submitted the query'),
+      roleName: z.string().optional().describe('Role used to execute the query'),
+      executionStartedAt: z.string().optional().describe('Timestamp when execution started'),
+      executionEndedAt: z.string().optional().describe('Timestamp when execution ended'),
+      totalElapsedMs: z.number().optional().describe('Total elapsed time in milliseconds'),
+      rowsProduced: z.number().optional().describe('Number of rows produced by the query'),
+      bytesScanned: z.number().optional().describe('Number of bytes scanned by the query')
+    })
+  )
+  .output(
+    z.object({
+      queryId: z.string().describe('Unique query identifier'),
+      queryText: z.string().describe('SQL statement that was executed'),
+      status: z.string().describe('Execution result status'),
+      errorCode: z.string().optional().describe('Error code if failed'),
+      errorMessage: z.string().optional().describe('Error message if failed'),
+      warehouseName: z.string().optional().describe('Warehouse used'),
+      databaseName: z.string().optional().describe('Database context'),
+      schemaName: z.string().optional().describe('Schema context'),
+      userName: z.string().optional().describe('User who ran the query'),
+      roleName: z.string().optional().describe('Role used'),
+      executionStartedAt: z.string().optional().describe('When execution started'),
+      executionEndedAt: z.string().optional().describe('When execution ended'),
+      totalElapsedMs: z.number().optional().describe('Elapsed time in milliseconds'),
+      rowsProduced: z.number().optional().describe('Rows produced'),
+      bytesScanned: z.number().optional().describe('Bytes scanned')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SnowflakeClient({
         accountIdentifier: ctx.config.accountIdentifier,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let lastPollTime = (ctx.state as any)?.lastPollTime as string | undefined;
@@ -76,7 +78,7 @@ export let queryCompleted = SlateTrigger.create(
       let result = await client.executeStatement({
         statement,
         warehouse: ctx.config.warehouse,
-        role: ctx.config.role,
+        role: ctx.config.role
       });
 
       let inputs = (result.data || []).map(row => ({
@@ -94,22 +96,23 @@ export let queryCompleted = SlateTrigger.create(
         executionEndedAt: row[11] || undefined,
         totalElapsedMs: row[12] ? parseInt(row[12], 10) : undefined,
         rowsProduced: row[13] ? parseInt(row[13], 10) : undefined,
-        bytesScanned: row[14] ? parseInt(row[14], 10) : undefined,
+        bytesScanned: row[14] ? parseInt(row[14], 10) : undefined
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollTime: now,
-        },
+          lastPollTime: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusLower = (ctx.input.status || '').toLowerCase();
-      let eventType = statusLower.includes('fail') || statusLower.includes('error')
-        ? 'query.failed'
-        : 'query.completed';
+      let eventType =
+        statusLower.includes('fail') || statusLower.includes('error')
+          ? 'query.failed'
+          : 'query.completed';
 
       return {
         type: eventType,
@@ -129,9 +132,9 @@ export let queryCompleted = SlateTrigger.create(
           executionEndedAt: ctx.input.executionEndedAt,
           totalElapsedMs: ctx.input.totalElapsedMs,
           rowsProduced: ctx.input.rowsProduced,
-          bytesScanned: ctx.input.bytesScanned,
-        },
+          bytesScanned: ctx.input.bytesScanned
+        }
       };
-    },
+    }
   })
   .build();

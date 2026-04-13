@@ -4,7 +4,9 @@
 let generateCnonce = (): string => {
   let array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  return Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(array)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 };
 
 let md5 = async (input: string): Promise<string> => {
@@ -46,7 +48,7 @@ export let parseDigestChallenge = (header: string): DigestChallenge | null => {
     nonce: params['nonce'],
     qop: params['qop'],
     opaque: params['opaque'],
-    algorithm: params['algorithm'],
+    algorithm: params['algorithm']
   };
 };
 
@@ -75,7 +77,7 @@ export let buildDigestHeader = async (
     `realm="${challenge.realm}"`,
     `nonce="${challenge.nonce}"`,
     `uri="${uri}"`,
-    `response="${response}"`,
+    `response="${response}"`
   ];
 
   if (challenge.qop) {

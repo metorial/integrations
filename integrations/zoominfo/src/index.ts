@@ -13,7 +13,7 @@ import {
   getUsage,
   enrichCorporateHierarchy,
   enrichTechnographics,
-  complianceCheck,
+  complianceCheck
 } from './tools';
 import { recordUpdated } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     getUsage,
     enrichCorporateHierarchy,
     enrichTechnographics,
-    complianceCheck,
+    complianceCheck
   ],
-  triggers: [
-    recordUpdated,
-  ],
+  triggers: [recordUpdated]
 });

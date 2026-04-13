@@ -114,7 +114,7 @@ let eventTypeMap: Record<number, string> = {
   2302: 'service_account.group_added',
   2303: 'service_account.group_removed',
   2304: 'service_account.created',
-  2305: 'service_account.deleted',
+  2305: 'service_account.deleted'
 };
 
 export let getEventTypeName = (eventTypeCode: number): string => {

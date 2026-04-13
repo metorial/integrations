@@ -25,48 +25,63 @@ Auth0's Management API uses OAuth 2.0 Client Credentials flow for authentication
 ## Features
 
 ### User Management
+
 Create, read, update, and delete users across identity connections. Manage user profiles and metadata, link multiple identity provider accounts to a single user, assign roles and permissions, and search users by various attributes. Users must be associated with a connection (e.g., `Username-Password-Authentication`).
 
 ### Connections
+
 Configure identity provider connections such as databases, social logins (Google, Facebook, etc.), enterprise connections (SAML, OIDC, AD/LDAP), and passwordless options (SMS, email). Each connection defines how users authenticate.
 
 ### Applications (Clients)
+
 Register and manage applications that use Auth0 for authentication. Configure application types (native, SPA, regular web, machine-to-machine), allowed callback URLs, origins, and authentication methods.
 
 ### Roles and Permissions (RBAC)
+
 Define roles with associated permissions and assign them to users. Permissions are scoped to specific APIs (Resource Servers). Supports role-based access control for fine-grained authorization.
 
 ### Organizations
+
 Manage multi-tenant B2B scenarios by grouping users into organizations. Configure organization-specific connections, branding, and member roles. Invite users to organizations.
 
 ### Multi-Factor Authentication (MFA)
+
 Configure and manage MFA factors for users including SMS, email, TOTP (authenticator apps), WebAuthn (security keys), and push notifications via Auth0 Guardian. Enroll, update, and remove authentication methods per user.
 
 ### Actions
+
 Create and manage serverless functions (Actions) that execute during specific Auth0 flows such as login, registration, and password changes. Actions allow custom logic to be inserted into the authentication pipeline.
 
 ### Custom Domains
+
 Configure and verify custom domains to white-label the Auth0 authentication experience under your own domain.
 
 ### Email Templates
+
 Manage email templates for verification emails, password resets, welcome emails, and other identity-related communications.
 
 ### Logs
+
 Retrieve tenant log events for authentication activity, user actions, and administrative operations. Useful for auditing and debugging.
 
 ### API Resource Servers
+
 Register and manage APIs (Resource Servers) that Auth0 protects. Define scopes/permissions for each API and configure token settings such as signing algorithm and lifetime.
 
 ### Branding
+
 Customize the look and feel of the Universal Login page, including colors, logos, and templates.
 
 ### Client Grants
+
 Manage which applications are authorized to request access tokens for specific APIs, along with the permitted scopes.
 
 ### Jobs (Bulk Operations)
+
 Import or export users in bulk using background jobs. Useful for migration scenarios or generating user data exports.
 
 ### Attack Protection
+
 Configure protections such as brute-force detection, breached password detection, and suspicious IP throttling.
 
 ## Events
@@ -76,24 +91,31 @@ Auth0 supports event streaming via **Log Streams**, which deliver tenant log eve
 You can filter your log streams so only select logs and log categories are delivered. The following event categories are available as filters:
 
 ### Authentication Events
+
 Covers the full authentication lifecycle including login (success/failure/notification), logout (success/failure), signup (success/failure), silent authentication (success/failure), and token exchange (success/failure). These track user authentication attempts across all connection types.
 
 ### Actions Events
+
 Tracks execution of Auth0 Actions, specifically failed Action executions.
 
 ### Management API Events
+
 Captures successful and failed Management API operations, including API calls that return secrets.
 
 ### System Events
+
 Notifications about system-level occurrences such as Auth0 updates, AD/LDAP connector status changes, rate limit alerts, failed user imports, and deprecation notices.
 
 ### User/Behavioral Events
+
 Tracks user account changes and MFA-related activity. Includes password changes, email/phone/username changes, user deletions, MFA enrollment and unenrollment, refresh token revocations, email verification, and anomaly detection blocks (success/failure/notification).
 
 ### SCIM Events
+
 Tracks successful and failed SCIM provisioning operations.
 
 **Configuration options:**
+
 - You can only subscribe one payload URL per webhook configuration, but you can use the same URL for multiple streams.
 - Payload format options: JSON Lines, JSON Array, or JSON Object.
 - An authorization header value can be configured for webhook authentication.

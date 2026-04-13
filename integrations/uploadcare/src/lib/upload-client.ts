@@ -9,7 +9,7 @@ export class UploadClient {
 
   private getAxios() {
     return createAxios({
-      baseURL: 'https://upload.uploadcare.com/',
+      baseURL: 'https://upload.uploadcare.com/'
     });
   }
 
@@ -24,12 +24,14 @@ export class UploadClient {
     let axios = this.getAxios();
     let body: Record<string, any> = {
       pub_key: this.publicKey,
-      source_url: params.sourceUrl,
+      source_url: params.sourceUrl
     };
     if (params.store !== undefined) body.store = params.store;
     if (params.filename !== undefined) body.filename = params.filename;
-    if (params.checkUrlDuplicates !== undefined) body.check_URL_duplicates = params.checkUrlDuplicates ? '1' : '0';
-    if (params.saveUrlDuplicates !== undefined) body.save_URL_duplicates = params.saveUrlDuplicates ? '1' : '0';
+    if (params.checkUrlDuplicates !== undefined)
+      body.check_URL_duplicates = params.checkUrlDuplicates ? '1' : '0';
+    if (params.saveUrlDuplicates !== undefined)
+      body.save_URL_duplicates = params.saveUrlDuplicates ? '1' : '0';
     if (params.metadata) {
       for (let [key, value] of Object.entries(params.metadata)) {
         body[`metadata[${key}]`] = value;
@@ -37,7 +39,7 @@ export class UploadClient {
     }
 
     let response = await axios.post('/from_url/', body, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -58,7 +60,7 @@ export class UploadClient {
   }> {
     let axios = this.getAxios();
     let response = await axios.get('/from_url/status/', {
-      params: { token },
+      params: { token }
     });
     return response.data;
   }
@@ -79,7 +81,7 @@ export class UploadClient {
     }
 
     let response = await axios.post('/group/', params.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }

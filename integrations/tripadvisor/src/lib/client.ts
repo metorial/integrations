@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 
 let contentApi = createAxios({
-  baseURL: 'https://api.content.tripadvisor.com/api/v1',
+  baseURL: 'https://api.content.tripadvisor.com/api/v1'
 });
 
 let partnerApi = createAxios({
-  baseURL: 'https://api.tripadvisor.com/api/partner/2.0',
+  baseURL: 'https://api.tripadvisor.com/api/partner/2.0'
 });
 
 let reviewExpressApi = createAxios({
-  baseURL: 'https://api.tripadvisor.com/api/partner/1.0',
+  baseURL: 'https://api.tripadvisor.com/api/partner/1.0'
 });
 
 export interface ClientConfig {
@@ -78,8 +78,8 @@ export class ContentClient {
         latLong: params.latLong,
         radius: params.radius,
         radiusUnit: params.radiusUnit,
-        language: params.language || this.language,
-      },
+        language: params.language || this.language
+      }
     });
     return response.data;
   }
@@ -94,8 +94,8 @@ export class ContentClient {
         address: params.address,
         radius: params.radius,
         radiusUnit: params.radiusUnit,
-        language: params.language || this.language,
-      },
+        language: params.language || this.language
+      }
     });
     return response.data;
   }
@@ -105,46 +105,60 @@ export class ContentClient {
       params: {
         key: this.token,
         language: language || this.language,
-        currency: currency || this.currency,
-      },
+        currency: currency || this.currency
+      }
     });
     return response.data;
   }
 
-  async getLocationReviews(locationId: string, language?: string, limit?: number, offset?: number) {
+  async getLocationReviews(
+    locationId: string,
+    language?: string,
+    limit?: number,
+    offset?: number
+  ) {
     let response = await contentApi.get(`/location/${locationId}/reviews`, {
       params: {
         key: this.token,
         language: language || this.language,
         limit,
-        offset,
-      },
+        offset
+      }
     });
     return response.data;
   }
 
-  async getLocationPhotos(locationId: string, language?: string, limit?: number, offset?: number, source?: string) {
+  async getLocationPhotos(
+    locationId: string,
+    language?: string,
+    limit?: number,
+    offset?: number,
+    source?: string
+  ) {
     let response = await contentApi.get(`/location/${locationId}/photos`, {
       params: {
         key: this.token,
         language: language || this.language,
         limit,
         offset,
-        source,
-      },
+        source
+      }
     });
     return response.data;
   }
 
   async mapLocation(params: LocationMapperParams) {
     let mapperKey = `${this.token}-mapper`;
-    let response = await partnerApi.get(`/location_mapper/${params.latitude},${params.longitude}`, {
-      params: {
-        key: mapperKey,
-        q: params.query,
-        category: params.category,
-      },
-    });
+    let response = await partnerApi.get(
+      `/location_mapper/${params.latitude},${params.longitude}`,
+      {
+        params: {
+          key: mapperKey,
+          q: params.query,
+          category: params.category
+        }
+      }
+    );
     return response.data;
   }
 }
@@ -157,21 +171,21 @@ export class ReviewExpressClient {
   }
 
   async createEmailRequest(requests: ReviewExpressRequest[]) {
-    let body = requests.map((req) => ({
+    let body = requests.map(req => ({
       location_id: req.locationId,
       partner_request_id: req.partnerRequestId,
       recipient: req.recipient,
       checkin: req.checkin,
       checkout: req.checkout,
       language: req.language,
-      country: req.country,
+      country: req.country
     }));
 
     let response = await reviewExpressApi.post('/email_requests', body, {
       headers: {
         'X-TripAdvisor-API-Key': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -184,14 +198,14 @@ export class ReviewExpressClient {
       checkin: updates.checkin,
       checkout: updates.checkout,
       language: updates.language,
-      country: updates.country,
+      country: updates.country
     };
 
     let response = await reviewExpressApi.put(`/email_requests/${requestId}`, body, {
       headers: {
         'X-TripAdvisor-API-Key': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -199,8 +213,8 @@ export class ReviewExpressClient {
   async cancelEmailRequest(requestId: number) {
     let response = await reviewExpressApi.delete(`/email_requests/${requestId}`, {
       headers: {
-        'X-TripAdvisor-API-Key': this.token,
-      },
+        'X-TripAdvisor-API-Key': this.token
+      }
     });
     return response.data;
   }
@@ -208,11 +222,11 @@ export class ReviewExpressClient {
   async checkOptInStatus(locationIds: string[]) {
     let response = await reviewExpressApi.get('/email_requests/opt_in_status', {
       params: {
-        location_ids: locationIds.join(','),
+        location_ids: locationIds.join(',')
       },
       headers: {
-        'X-TripAdvisor-API-Key': this.token,
-      },
+        'X-TripAdvisor-API-Key': this.token
+      }
     });
     return response.data;
   }

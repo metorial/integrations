@@ -3,32 +3,46 @@ import { NpmRegistryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDistTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Dist-Tags',
-    key: 'manage_dist_tags',
-    description: `List, add, or remove distribution tags on an npm package. Dist-tags are labels that point to specific versions (e.g. "latest", "next", "beta").
+export let manageDistTags = SlateTool.create(spec, {
+  name: 'Manage Dist-Tags',
+  key: 'manage_dist_tags',
+  description: `List, add, or remove distribution tags on an npm package. Dist-tags are labels that point to specific versions (e.g. "latest", "next", "beta").
 Use "list" to see all current tags, "add" to create or update a tag pointing to a version, or "remove" to delete a tag.`,
-    instructions: [
-      'The "latest" tag is automatically set when publishing and should generally not be removed.',
-      'Adding a tag that already exists will update it to point to the new version.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'The "latest" tag is automatically set when publishing and should generally not be removed.',
+    'Adding a tag that already exists will update it to point to the new version.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    packageName: z.string().describe('Full package name (e.g. "react" or "@scope/package")'),
-    action: z.enum(['list', 'add', 'remove']).describe('Action to perform: "list" to view tags, "add" to set a tag, "remove" to delete a tag'),
-    tag: z.string().optional().describe('Tag name (required for "add" and "remove" actions)'),
-    version: z.string().optional().describe('Semver version the tag should point to (required for "add" action)'),
-  }))
-  .output(z.object({
-    distTags: z.record(z.string(), z.string()).optional().describe('Current dist-tags after the operation (tag name → version)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      packageName: z.string().describe('Full package name (e.g. "react" or "@scope/package")'),
+      action: z
+        .enum(['list', 'add', 'remove'])
+        .describe(
+          'Action to perform: "list" to view tags, "add" to set a tag, "remove" to delete a tag'
+        ),
+      tag: z
+        .string()
+        .optional()
+        .describe('Tag name (required for "add" and "remove" actions)'),
+      version: z
+        .string()
+        .optional()
+        .describe('Semver version the tag should point to (required for "add" action)')
+    })
+  )
+  .output(
+    z.object({
+      distTags: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Current dist-tags after the operation (tag name → version)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NpmRegistryClient({ token: ctx.auth.token || undefined });
 
     if (ctx.input.action === 'list') {
@@ -36,7 +50,7 @@ Use "list" to see all current tags, "add" to create or update a tag pointing to 
       let tagEntries = Object.entries(tags);
       return {
         output: { distTags: tags },
-        message: `**${ctx.input.packageName}** has **${tagEntries.length}** dist-tag(s): ${tagEntries.map(([t, v]) => `\`${t}\` → ${v}`).join(', ')}.`,
+        message: `**${ctx.input.packageName}** has **${tagEntries.length}** dist-tag(s): ${tagEntries.map(([t, v]) => `\`${t}\` → ${v}`).join(', ')}.`
       };
     }
 
@@ -48,7 +62,7 @@ Use "list" to see all current tags, "add" to create or update a tag pointing to 
       let tags = await client.getDistTags(ctx.input.packageName);
       return {
         output: { distTags: tags },
-        message: `Set dist-tag \`${ctx.input.tag}\` → **${ctx.input.version}** on **${ctx.input.packageName}**.`,
+        message: `Set dist-tag \`${ctx.input.tag}\` → **${ctx.input.version}** on **${ctx.input.packageName}**.`
       };
     }
 
@@ -59,9 +73,10 @@ Use "list" to see all current tags, "add" to create or update a tag pointing to 
       let tags = await client.getDistTags(ctx.input.packageName);
       return {
         output: { distTags: tags },
-        message: `Removed dist-tag \`${ctx.input.tag}\` from **${ctx.input.packageName}**.`,
+        message: `Removed dist-tag \`${ctx.input.tag}\` from **${ctx.input.packageName}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

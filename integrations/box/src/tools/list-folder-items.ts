@@ -3,36 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listFolderItems = SlateTool.create(
-  spec,
-  {
-    name: 'List Folder Items',
-    key: 'list_folder_items',
-    description: `List the files, folders, and web links contained within a Box folder. Returns item metadata including names, types, sizes, and modification dates. Supports pagination.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let listFolderItems = SlateTool.create(spec, {
+  name: 'List Folder Items',
+  key: 'list_folder_items',
+  description: `List the files, folders, and web links contained within a Box folder. Returns item metadata including names, types, sizes, and modification dates. Supports pagination.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    folderId: z.string().describe('The ID of the folder to list (use "0" for the root folder)'),
-    limit: z.number().optional().describe('Maximum number of items to return (default 100, max 1000)'),
-    offset: z.number().optional().describe('Offset for pagination')
-  }))
-  .output(z.object({
-    folderId: z.string().describe('The folder ID that was listed'),
-    folderName: z.string().optional().describe('Name of the folder'),
-    totalCount: z.number().describe('Total number of items in the folder'),
-    items: z.array(z.object({
-      itemId: z.string().describe('ID of the item'),
-      type: z.string().describe('Item type: file, folder, or web_link'),
-      name: z.string().describe('Name of the item'),
-      size: z.number().optional().describe('Size in bytes (files only)'),
-      modifiedAt: z.string().optional().describe('ISO 8601 last modification timestamp')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      folderId: z
+        .string()
+        .describe('The ID of the folder to list (use "0" for the root folder)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of items to return (default 100, max 1000)'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      folderId: z.string().describe('The folder ID that was listed'),
+      folderName: z.string().optional().describe('Name of the folder'),
+      totalCount: z.number().describe('Total number of items in the folder'),
+      items: z.array(
+        z.object({
+          itemId: z.string().describe('ID of the item'),
+          type: z.string().describe('Item type: file, folder, or web_link'),
+          name: z.string().describe('Name of the item'),
+          size: z.number().optional().describe('Size in bytes (files only)'),
+          modifiedAt: z.string().optional().describe('ISO 8601 last modification timestamp')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let [folderInfo, items] = await Promise.all([

@@ -15,24 +15,25 @@ let creativeSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listCreatives = SlateTool.create(
-  spec,
-  {
-    name: 'List Creatives',
-    key: 'list_creatives',
-    description: `List all creatives under a Snapchat ad account. Returns creative IDs, names, types, headlines, and media associations.`,
-    tags: {
-      readOnly: true
-    }
+export let listCreatives = SlateTool.create(spec, {
+  name: 'List Creatives',
+  key: 'list_creatives',
+  description: `List all creatives under a Snapchat ad account. Returns creative IDs, names, types, headlines, and media associations.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    adAccountId: z.string().describe('Ad account ID to list creatives for')
-  }))
-  .output(z.object({
-    creatives: z.array(creativeSchema).describe('List of creatives')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      adAccountId: z.string().describe('Ad account ID to list creatives for')
+    })
+  )
+  .output(
+    z.object({
+      creatives: z.array(creativeSchema).describe('List of creatives')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let results = await client.listCreatives(ctx.input.adAccountId);
 

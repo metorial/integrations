@@ -57,6 +57,7 @@ Send notifications to any topic via simple HTTP PUT/POST requests. Topics don't 
 ### Attachments
 
 Send files along with notifications in two ways:
+
 - **Local file upload**: Send a file as the PUT request body. Max attachment size defaults to 15 MB.
 - **External URL**: Reference a remotely hosted file via the `Attach` header. No size or expiry limits apply for external URLs.
 
@@ -65,6 +66,7 @@ Attachments from local uploads expire after 3 hours by default.
 ### Action Buttons
 
 Add up to three interactive action buttons to notifications:
+
 - **View**: Opens a URL (website, app deep link, etc.).
 - **HTTP**: Sends an HTTP request (e.g., to trigger a REST API) with configurable method, headers, and body.
 - **Broadcast**: Sends an Android broadcast intent for integration with automation apps (Tasker, MacroDroid).
@@ -77,6 +79,7 @@ Delay message delivery by specifying a future time via the `Delay` header. Suppo
 ### Updating and Deleting Notifications
 
 Update previously delivered notifications by publishing with the same sequence ID. Supports:
+
 - **Update**: Replace the content of an existing notification.
 - **Clear**: Mark as read and dismiss from notification drawer.
 - **Delete**: Remove entirely from clients.
@@ -86,6 +89,7 @@ Useful for progress updates, replacing outdated alerts, or implementing dead man
 ### Message Templating
 
 Format incoming JSON webhook payloads into human-readable notifications using Go templates. Supports:
+
 - **Pre-defined templates**: Built-in templates for GitHub, Grafana, and Alertmanager webhooks.
 - **Custom templates**: YAML template files placed on the server.
 - **Inline templating**: Go template expressions directly in message/title/priority fields.
@@ -120,6 +124,7 @@ Subscribe to one or more topics and receive messages in real time as they are pu
 - **WebSocket** (`<topic>/ws`): Full WebSocket connection for bidirectional communication.
 
 **Parameters:**
+
 - Subscribe to multiple topics at once using comma-separated topic names (e.g., `topic1,topic2/json`).
 - **`since`**: Fetch cached/missed messages since a given timestamp, duration, message ID, or `all`.
 - **`poll=1`**: Return cached messages immediately and close the connection (no streaming).
@@ -127,6 +132,7 @@ Subscribe to one or more topics and receive messages in real time as they are pu
 - **Filters**: Filter returned messages by `id`, `message`, `title`, `priority` (logical OR), and `tags` (logical AND).
 
 **Event types** received on the stream include:
+
 - `open`: Connection established.
 - `message`: A new message was published.
 - `message_clear`: A notification was marked as read/dismissed.

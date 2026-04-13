@@ -3,42 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLinkTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Scheduling Link',
-    key: 'manage_link',
-    description: `Create, update, or delete a SavvyCal scheduling link. Use the **action** field to specify the operation:
+export let manageLinkTool = SlateTool.create(spec, {
+  name: 'Manage Scheduling Link',
+  key: 'manage_link',
+  description: `Create, update, or delete a SavvyCal scheduling link. Use the **action** field to specify the operation:
 - **create**: Create a new personal scheduling link
 - **update**: Update an existing link's properties
 - **delete**: Delete a scheduling link
 - **duplicate**: Duplicate an existing link`,
-    tags: {
-      destructive: false
-    }
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'duplicate']).describe('The action to perform'),
-    linkId: z.string().optional().describe('Link ID (required for update, delete, and duplicate)'),
-    name: z.string().optional().describe('Public link name (required for create)'),
-    slug: z.string().optional().describe('URL slug for the link'),
-    privateName: z.string().optional().describe('Private name visible only to the owner'),
-    description: z.string().optional().describe('Link description'),
-    defaultDuration: z.number().optional().describe('Default meeting duration in minutes'),
-    durations: z.array(z.number()).optional().describe('Available duration options in minutes'),
-    increment: z.number().optional().describe('Time slot increment in minutes'),
-    state: z.enum(['active', 'pending', 'disabled']).optional().describe('Link state')
-  }))
-  .output(z.object({
-    linkId: z.string().describe('Link identifier'),
-    name: z.string().optional().describe('Public link name'),
-    slug: z.string().optional().describe('URL slug'),
-    state: z.string().optional().describe('Link state'),
-    defaultDuration: z.number().optional().describe('Default duration in minutes'),
-    deleted: z.boolean().optional().describe('True if the link was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'duplicate'])
+        .describe('The action to perform'),
+      linkId: z
+        .string()
+        .optional()
+        .describe('Link ID (required for update, delete, and duplicate)'),
+      name: z.string().optional().describe('Public link name (required for create)'),
+      slug: z.string().optional().describe('URL slug for the link'),
+      privateName: z.string().optional().describe('Private name visible only to the owner'),
+      description: z.string().optional().describe('Link description'),
+      defaultDuration: z.number().optional().describe('Default meeting duration in minutes'),
+      durations: z
+        .array(z.number())
+        .optional()
+        .describe('Available duration options in minutes'),
+      increment: z.number().optional().describe('Time slot increment in minutes'),
+      state: z.enum(['active', 'pending', 'disabled']).optional().describe('Link state')
+    })
+  )
+  .output(
+    z.object({
+      linkId: z.string().describe('Link identifier'),
+      name: z.string().optional().describe('Public link name'),
+      slug: z.string().optional().describe('URL slug'),
+      state: z.string().optional().describe('Link state'),
+      defaultDuration: z.number().optional().describe('Default duration in minutes'),
+      deleted: z.boolean().optional().describe('True if the link was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, linkId } = ctx.input;
 
@@ -68,7 +77,8 @@ export let manageLinkTool = SlateTool.create(
       };
     }
 
-    if (!linkId) throw new Error('Link ID is required for update, delete, and duplicate actions');
+    if (!linkId)
+      throw new Error('Link ID is required for update, delete, and duplicate actions');
 
     if (action === 'update') {
       let l = await client.updateLink(linkId, {

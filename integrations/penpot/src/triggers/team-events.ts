@@ -3,30 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let teamEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Team Events',
-    key: 'team_events',
-    description: 'Receives webhook notifications for all events in a Penpot team, including file creation/renaming, comments, and project changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the event (e.g., create-file, rename-file, create-comment-thread)'),
-    eventPayload: z.any().describe('Raw event payload from the webhook'),
-  }))
-  .output(z.object({
-    teamId: z.string().optional().describe('ID of the team the event belongs to'),
-    fileId: z.string().optional().describe('ID of the affected file'),
-    fileName: z.string().optional().describe('Name of the affected file'),
-    projectId: z.string().optional().describe('ID of the affected project'),
-    commentThreadId: z.string().optional().describe('ID of the comment thread (for comment events)'),
-    content: z.string().optional().describe('Content of the comment (for comment events)'),
-    triggeredBy: z.string().optional().describe('ID of the user who triggered the event'),
-    raw: z.any().optional().describe('Full raw event data'),
-  }))
+export let teamEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Team Events',
+  key: 'team_events',
+  description:
+    'Receives webhook notifications for all events in a Penpot team, including file creation/renaming, comments, and project changes.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Type of the event (e.g., create-file, rename-file, create-comment-thread)'),
+      eventPayload: z.any().describe('Raw event payload from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      teamId: z.string().optional().describe('ID of the team the event belongs to'),
+      fileId: z.string().optional().describe('ID of the affected file'),
+      fileName: z.string().optional().describe('Name of the affected file'),
+      projectId: z.string().optional().describe('ID of the affected project'),
+      commentThreadId: z
+        .string()
+        .optional()
+        .describe('ID of the comment thread (for comment events)'),
+      content: z.string().optional().describe('Content of the comment (for comment events)'),
+      triggeredBy: z.string().optional().describe('ID of the user who triggered the event'),
+      raw: z.any().optional().describe('Full raw event data')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
 
       let teams = await client.getTeams();
@@ -35,7 +42,11 @@ export let teamEventsTrigger = SlateTrigger.create(
       for (let team of teams) {
         let teamId = team.id;
         try {
-          let webhook = await client.createWebhook(teamId, ctx.input.webhookBaseUrl, 'application/json');
+          let webhook = await client.createWebhook(
+            teamId,
+            ctx.input.webhookBaseUrl,
+            'application/json'
+          );
           results.push({ webhookId: webhook.id, teamId });
         } catch (e) {
           // If webhook creation fails for a team, continue with others
@@ -43,13 +54,15 @@ export let teamEventsTrigger = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { webhooks: results },
+        registrationDetails: { webhooks: results }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: string; teamId: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: string; teamId: string }>;
+      };
 
       if (details?.webhooks) {
         for (let wh of details.webhooks) {
@@ -62,7 +75,7 @@ export let teamEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
 
       // Penpot may send a single event or an array
@@ -70,13 +83,13 @@ export let teamEventsTrigger = SlateTrigger.create(
 
       let inputs = events.map((event: any) => ({
         eventType: event.type ?? event['~:type'] ?? 'unknown',
-        eventPayload: event,
+        eventPayload: event
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, eventPayload } = ctx.input;
       let payload = eventPayload.props ?? eventPayload;
 
@@ -89,7 +102,9 @@ export let teamEventsTrigger = SlateTrigger.create(
       let triggeredBy = payload['profile-id'] ?? payload.profileId;
 
       let normalizedType = eventType.replace(/^~:/, '').replace(/:/g, '.').toLowerCase();
-      let eventId = payload.id ?? `${normalizedType}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+      let eventId =
+        payload.id ??
+        `${normalizedType}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
       return {
         type: normalizedType,
@@ -102,8 +117,9 @@ export let teamEventsTrigger = SlateTrigger.create(
           commentThreadId,
           content,
           triggeredBy,
-          raw: eventPayload,
-        },
+          raw: eventPayload
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

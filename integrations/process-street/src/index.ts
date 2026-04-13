@@ -15,12 +15,9 @@ import {
   manageFormFields,
   listDataSets,
   manageDataSetRecords,
-  listUsers,
+  listUsers
 } from './tools';
-import {
-  workflowRunEvents,
-  dataSetEvents,
-} from './triggers';
+import { workflowRunEvents, dataSetEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     manageFormFields,
     listDataSets,
     manageDataSetRecords,
-    listUsers,
+    listUsers
   ],
-  triggers: [
-    workflowRunEvents,
-    dataSetEvents,
-  ],
+  triggers: [workflowRunEvents, dataSetEvents]
 });

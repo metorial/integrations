@@ -3,33 +3,40 @@ import { FirmaoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createTimeEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Create Time Entry',
-    key: 'create_time_entry',
-    description: `Create a work time entry in Firmao. Entries can have start-only (clock in), end-only (clock out), or both start and end times. Each entry is linked to a user and can optionally be linked to a task.`,
-  }
-)
-  .input(z.object({
-    userId: z.number().describe('ID of the user for this time entry'),
-    dateTimeFrom: z.string().optional().describe('Start time (ISO 8601). Omit for end-only entry.'),
-    dateTimeTo: z.string().optional().describe('End time (ISO 8601). Omit for start-only entry.'),
-    taskId: z.number().optional().describe('Task ID to link this entry to'),
-    description: z.string().optional().describe('Description of work performed'),
-    type: z.string().optional().describe('Entry type (e.g., TASK, LEAVE)'),
-  }))
-  .output(z.object({
-    timeEntryId: z.number().describe('ID of the created time entry'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createTimeEntry = SlateTool.create(spec, {
+  name: 'Create Time Entry',
+  key: 'create_time_entry',
+  description: `Create a work time entry in Firmao. Entries can have start-only (clock in), end-only (clock out), or both start and end times. Each entry is linked to a user and can optionally be linked to a task.`
+})
+  .input(
+    z.object({
+      userId: z.number().describe('ID of the user for this time entry'),
+      dateTimeFrom: z
+        .string()
+        .optional()
+        .describe('Start time (ISO 8601). Omit for end-only entry.'),
+      dateTimeTo: z
+        .string()
+        .optional()
+        .describe('End time (ISO 8601). Omit for start-only entry.'),
+      taskId: z.number().optional().describe('Task ID to link this entry to'),
+      description: z.string().optional().describe('Description of work performed'),
+      type: z.string().optional().describe('Entry type (e.g., TASK, LEAVE)')
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.number().describe('ID of the created time entry')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FirmaoClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let body: Record<string, any> = {
-      user: ctx.input.userId,
+      user: ctx.input.userId
     };
 
     if (ctx.input.dateTimeFrom) body.dateTimeFrom = ctx.input.dateTimeFrom;
@@ -43,9 +50,9 @@ export let createTimeEntry = SlateTool.create(
 
     return {
       output: {
-        timeEntryId: createdId,
+        timeEntryId: createdId
       },
-      message: `Created time entry (ID: ${createdId}) for user ${ctx.input.userId}.`,
+      message: `Created time entry (ID: ${createdId}) for user ${ctx.input.userId}.`
     };
   })
   .build();

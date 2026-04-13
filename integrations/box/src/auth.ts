@@ -6,11 +6,13 @@ let authAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -54,7 +56,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -71,18 +73,22 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await authAxios.post('/oauth2/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await authAxios.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -96,21 +102,25 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await authAxios.post('/oauth2/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await authAxios.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -152,7 +162,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Box Developer Token or App Token')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

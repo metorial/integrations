@@ -10,7 +10,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/vnd.api+json'
       }
     });
@@ -67,9 +67,12 @@ export class Client {
     };
     if (payload.description !== undefined) attributes['description'] = payload.description;
     if (payload.autoApply !== undefined) attributes['auto-apply'] = payload.autoApply;
-    if (payload.executionMode !== undefined) attributes['execution-mode'] = payload.executionMode;
-    if (payload.terraformVersion !== undefined) attributes['terraform-version'] = payload.terraformVersion;
-    if (payload.workingDirectory !== undefined) attributes['working-directory'] = payload.workingDirectory;
+    if (payload.executionMode !== undefined)
+      attributes['execution-mode'] = payload.executionMode;
+    if (payload.terraformVersion !== undefined)
+      attributes['terraform-version'] = payload.terraformVersion;
+    if (payload.workingDirectory !== undefined)
+      attributes['working-directory'] = payload.workingDirectory;
     if (payload.vcsRepo) {
       attributes['vcs-repo'] = {
         identifier: payload.vcsRepo.identifier,
@@ -98,21 +101,27 @@ export class Client {
     return response.data;
   }
 
-  async updateWorkspace(workspaceId: string, payload: {
-    name?: string;
-    description?: string;
-    autoApply?: boolean;
-    executionMode?: string;
-    terraformVersion?: string;
-    workingDirectory?: string;
-  }) {
+  async updateWorkspace(
+    workspaceId: string,
+    payload: {
+      name?: string;
+      description?: string;
+      autoApply?: boolean;
+      executionMode?: string;
+      terraformVersion?: string;
+      workingDirectory?: string;
+    }
+  ) {
     let attributes: Record<string, any> = {};
     if (payload.name !== undefined) attributes['name'] = payload.name;
     if (payload.description !== undefined) attributes['description'] = payload.description;
     if (payload.autoApply !== undefined) attributes['auto-apply'] = payload.autoApply;
-    if (payload.executionMode !== undefined) attributes['execution-mode'] = payload.executionMode;
-    if (payload.terraformVersion !== undefined) attributes['terraform-version'] = payload.terraformVersion;
-    if (payload.workingDirectory !== undefined) attributes['working-directory'] = payload.workingDirectory;
+    if (payload.executionMode !== undefined)
+      attributes['execution-mode'] = payload.executionMode;
+    if (payload.terraformVersion !== undefined)
+      attributes['terraform-version'] = payload.terraformVersion;
+    if (payload.workingDirectory !== undefined)
+      attributes['working-directory'] = payload.workingDirectory;
 
     let response = await this.axios.patch(`/workspaces/${workspaceId}`, {
       data: {
@@ -146,19 +155,20 @@ export class Client {
 
   // ── Runs ──
 
-  async listRuns(workspaceId: string, params?: {
-    pageNumber?: number;
-    pageSize?: number;
-    status?: string;
-  }) {
+  async listRuns(
+    workspaceId: string,
+    params?: {
+      pageNumber?: number;
+      pageSize?: number;
+      status?: string;
+    }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber) query.set('page[number]', String(params.pageNumber));
     if (params?.pageSize) query.set('page[size]', String(params.pageSize));
     if (params?.status) query.set('filter[status]', params.status);
 
-    let response = await this.axios.get(
-      `/workspaces/${workspaceId}/runs?${query.toString()}`
-    );
+    let response = await this.axios.get(`/workspaces/${workspaceId}/runs?${query.toString()}`);
     return response.data;
   }
 
@@ -244,14 +254,17 @@ export class Client {
     return response.data;
   }
 
-  async createVariable(workspaceId: string, payload: {
-    key: string;
-    value: string;
-    description?: string;
-    category: 'terraform' | 'env';
-    hcl?: boolean;
-    sensitive?: boolean;
-  }) {
+  async createVariable(
+    workspaceId: string,
+    payload: {
+      key: string;
+      value: string;
+      description?: string;
+      category: 'terraform' | 'env';
+      hcl?: boolean;
+      sensitive?: boolean;
+    }
+  ) {
     let attributes: Record<string, any> = {
       key: payload.key,
       value: payload.value,
@@ -270,13 +283,17 @@ export class Client {
     return response.data;
   }
 
-  async updateVariable(workspaceId: string, variableId: string, payload: {
-    key?: string;
-    value?: string;
-    description?: string;
-    hcl?: boolean;
-    sensitive?: boolean;
-  }) {
+  async updateVariable(
+    workspaceId: string,
+    variableId: string,
+    payload: {
+      key?: string;
+      value?: string;
+      description?: string;
+      hcl?: boolean;
+      sensitive?: boolean;
+    }
+  ) {
     let attributes: Record<string, any> = {};
     if (payload.key !== undefined) attributes['key'] = payload.key;
     if (payload.value !== undefined) attributes['value'] = payload.value;
@@ -341,16 +358,13 @@ export class Client {
       };
     }
 
-    let response = await this.axios.post(
-      `/organizations/${this.organizationName}/varsets`,
-      {
-        data: {
-          type: 'varsets',
-          attributes,
-          ...(Object.keys(relationships).length > 0 ? { relationships } : {})
-        }
+    let response = await this.axios.post(`/organizations/${this.organizationName}/varsets`, {
+      data: {
+        type: 'varsets',
+        attributes,
+        ...(Object.keys(relationships).length > 0 ? { relationships } : {})
       }
-    );
+    });
     return response.data;
   }
 
@@ -381,15 +395,12 @@ export class Client {
     let attributes: Record<string, any> = { name: payload.name };
     if (payload.description !== undefined) attributes['description'] = payload.description;
 
-    let response = await this.axios.post(
-      `/organizations/${this.organizationName}/projects`,
-      {
-        data: {
-          type: 'projects',
-          attributes
-        }
+    let response = await this.axios.post(`/organizations/${this.organizationName}/projects`, {
+      data: {
+        type: 'projects',
+        attributes
       }
-    );
+    });
     return response.data;
   }
 
@@ -450,8 +461,10 @@ export class Client {
       let orgAccess: Record<string, any> = {};
       let oa = payload.organizationAccess;
       if (oa.managePolicies !== undefined) orgAccess['manage-policies'] = oa.managePolicies;
-      if (oa.manageWorkspaces !== undefined) orgAccess['manage-workspaces'] = oa.manageWorkspaces;
-      if (oa.manageVcsSettings !== undefined) orgAccess['manage-vcs-settings'] = oa.manageVcsSettings;
+      if (oa.manageWorkspaces !== undefined)
+        orgAccess['manage-workspaces'] = oa.manageWorkspaces;
+      if (oa.manageVcsSettings !== undefined)
+        orgAccess['manage-vcs-settings'] = oa.manageVcsSettings;
       if (oa.manageProviders !== undefined) orgAccess['manage-providers'] = oa.manageProviders;
       if (oa.manageModules !== undefined) orgAccess['manage-modules'] = oa.manageModules;
       if (oa.manageRuns !== undefined) orgAccess['manage-runs'] = oa.manageRuns;
@@ -461,15 +474,12 @@ export class Client {
       attributes['organization-access'] = orgAccess;
     }
 
-    let response = await this.axios.post(
-      `/organizations/${this.organizationName}/teams`,
-      {
-        data: {
-          type: 'teams',
-          attributes
-        }
+    let response = await this.axios.post(`/organizations/${this.organizationName}/teams`, {
+      data: {
+        type: 'teams',
+        attributes
       }
-    );
+    });
     return response.data;
   }
 
@@ -510,12 +520,18 @@ export class Client {
     let attributes: Record<string, any> = { access: payload.access };
     if (payload.access === 'custom') {
       if (payload.runsPermission !== undefined) attributes['runs'] = payload.runsPermission;
-      if (payload.variablesPermission !== undefined) attributes['variables'] = payload.variablesPermission;
-      if (payload.stateVersionsPermission !== undefined) attributes['state-versions'] = payload.stateVersionsPermission;
-      if (payload.planOutputsPermission !== undefined) attributes['plan-outputs'] = payload.planOutputsPermission;
-      if (payload.sentinelMocksPermission !== undefined) attributes['sentinel-mocks'] = payload.sentinelMocksPermission;
-      if (payload.workspaceLockingPermission !== undefined) attributes['workspace-locking'] = payload.workspaceLockingPermission;
-      if (payload.runTasksPermission !== undefined) attributes['run-tasks'] = payload.runTasksPermission;
+      if (payload.variablesPermission !== undefined)
+        attributes['variables'] = payload.variablesPermission;
+      if (payload.stateVersionsPermission !== undefined)
+        attributes['state-versions'] = payload.stateVersionsPermission;
+      if (payload.planOutputsPermission !== undefined)
+        attributes['plan-outputs'] = payload.planOutputsPermission;
+      if (payload.sentinelMocksPermission !== undefined)
+        attributes['sentinel-mocks'] = payload.sentinelMocksPermission;
+      if (payload.workspaceLockingPermission !== undefined)
+        attributes['workspace-locking'] = payload.workspaceLockingPermission;
+      if (payload.runTasksPermission !== undefined)
+        attributes['run-tasks'] = payload.runTasksPermission;
     }
 
     let response = await this.axios.post('/team-workspaces', {
@@ -533,10 +549,13 @@ export class Client {
 
   // ── State Versions ──
 
-  async listStateVersions(workspaceId: string, params?: {
-    pageNumber?: number;
-    pageSize?: number;
-  }) {
+  async listStateVersions(
+    workspaceId: string,
+    params?: {
+      pageNumber?: number;
+      pageSize?: number;
+    }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber) query.set('page[number]', String(params.pageNumber));
     if (params?.pageSize) query.set('page[size]', String(params.pageSize));
@@ -548,9 +567,7 @@ export class Client {
   }
 
   async getCurrentStateVersion(workspaceId: string) {
-    let response = await this.axios.get(
-      `/workspaces/${workspaceId}/current-state-version`
-    );
+    let response = await this.axios.get(`/workspaces/${workspaceId}/current-state-version`);
     return response.data;
   }
 
@@ -608,7 +625,9 @@ export class Client {
         identifier: payload.vcsRepo.identifier,
         'oauth-token-id': payload.vcsRepo.oauthTokenId,
         ...(payload.vcsRepo.branch ? { branch: payload.vcsRepo.branch } : {}),
-        ...(payload.vcsRepo.ingressSubmodules !== undefined ? { 'ingress-submodules': payload.vcsRepo.ingressSubmodules } : {})
+        ...(payload.vcsRepo.ingressSubmodules !== undefined
+          ? { 'ingress-submodules': payload.vcsRepo.ingressSubmodules }
+          : {})
       };
     }
 
@@ -657,16 +676,19 @@ export class Client {
     return response.data;
   }
 
-  async createNotificationConfiguration(workspaceId: string, payload: {
-    name: string;
-    destinationType: 'generic' | 'slack' | 'microsoft-teams' | 'email';
-    url?: string;
-    token?: string;
-    enabled?: boolean;
-    triggers: string[];
-    emailAddresses?: string[];
-    emailUserIds?: string[];
-  }) {
+  async createNotificationConfiguration(
+    workspaceId: string,
+    payload: {
+      name: string;
+      destinationType: 'generic' | 'slack' | 'microsoft-teams' | 'email';
+      url?: string;
+      token?: string;
+      enabled?: boolean;
+      triggers: string[];
+      emailAddresses?: string[];
+      emailUserIds?: string[];
+    }
+  ) {
     let attributes: Record<string, any> = {
       name: payload.name,
       'destination-type': payload.destinationType,
@@ -697,13 +719,16 @@ export class Client {
     return response.data;
   }
 
-  async updateNotificationConfiguration(notificationConfigId: string, payload: {
-    name?: string;
-    url?: string;
-    token?: string;
-    enabled?: boolean;
-    triggers?: string[];
-  }) {
+  async updateNotificationConfiguration(
+    notificationConfigId: string,
+    payload: {
+      name?: string;
+      url?: string;
+      token?: string;
+      enabled?: boolean;
+      triggers?: string[];
+    }
+  ) {
     let attributes: Record<string, any> = {};
     if (payload.name !== undefined) attributes['name'] = payload.name;
     if (payload.url !== undefined) attributes['url'] = payload.url;
@@ -765,15 +790,12 @@ export class Client {
     if (payload.enabled !== undefined) attributes['enabled'] = payload.enabled;
     if (payload.description !== undefined) attributes['description'] = payload.description;
 
-    let response = await this.axios.post(
-      `/organizations/${this.organizationName}/tasks`,
-      {
-        data: {
-          type: 'tasks',
-          attributes
-        }
+    let response = await this.axios.post(`/organizations/${this.organizationName}/tasks`, {
+      data: {
+        type: 'tasks',
+        attributes
       }
-    );
+    });
     return response.data;
   }
 
@@ -784,25 +806,20 @@ export class Client {
   // ── Run Triggers ──
 
   async listRunTriggers(workspaceId: string) {
-    let response = await this.axios.get(
-      `/workspaces/${workspaceId}/run-triggers`
-    );
+    let response = await this.axios.get(`/workspaces/${workspaceId}/run-triggers`);
     return response.data;
   }
 
   async createRunTrigger(workspaceId: string, sourceWorkspaceId: string) {
-    let response = await this.axios.post(
-      `/workspaces/${workspaceId}/run-triggers`,
-      {
-        data: {
-          relationships: {
-            'sourceable': {
-              data: { id: sourceWorkspaceId, type: 'workspaces' }
-            }
+    let response = await this.axios.post(`/workspaces/${workspaceId}/run-triggers`, {
+      data: {
+        relationships: {
+          sourceable: {
+            data: { id: sourceWorkspaceId, type: 'workspaces' }
           }
         }
       }
-    );
+    });
     return response.data;
   }
 

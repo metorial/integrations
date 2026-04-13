@@ -3,44 +3,50 @@ import { OmnisendClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Changes',
-    key: 'contact_changes',
-    description: 'Triggers when contacts are created or updated in Omnisend. Polls for recently modified contacts and detects new and updated records.',
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('Omnisend contact ID'),
-    changeType: z.enum(['created', 'updated']).describe('Whether the contact was created or updated'),
-    email: z.string().optional().describe('Contact email'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    phone: z.array(z.string()).optional().describe('Phone numbers'),
-    status: z.string().optional().describe('Subscription status'),
-    tags: z.array(z.string()).optional().describe('Contact tags'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('Omnisend contact ID'),
-    changeType: z.enum(['created', 'updated']).describe('Whether the contact was created or updated'),
-    email: z.string().optional().describe('Contact email'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    phone: z.array(z.string()).optional().describe('Phone numbers'),
-    status: z.string().optional().describe('Subscription status'),
-    tags: z.array(z.string()).optional().describe('Contact tags'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
+export let contactChanges = SlateTrigger.create(spec, {
+  name: 'Contact Changes',
+  key: 'contact_changes',
+  description:
+    'Triggers when contacts are created or updated in Omnisend. Polls for recently modified contacts and detects new and updated records.'
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('Omnisend contact ID'),
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the contact was created or updated'),
+      email: z.string().optional().describe('Contact email'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      phone: z.array(z.string()).optional().describe('Phone numbers'),
+      status: z.string().optional().describe('Subscription status'),
+      tags: z.array(z.string()).optional().describe('Contact tags'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('Omnisend contact ID'),
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the contact was created or updated'),
+      email: z.string().optional().describe('Contact email'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      phone: z.array(z.string()).optional().describe('Phone numbers'),
+      status: z.string().optional().describe('Subscription status'),
+      tags: z.array(z.string()).optional().describe('Contact tags'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new OmnisendClient(ctx.auth.token);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
 
@@ -70,11 +76,11 @@ export let contactChanges = SlateTrigger.create(
         let updatedAt = contact.updatedAt || '';
         let createdAt = contact.createdAt || '';
 
-        let isNew = !lastPollTime || (
-          createdAt &&
-          createdAt >= lastPollTime &&
-          Math.abs(new Date(createdAt).getTime() - new Date(updatedAt).getTime()) < 5000
-        );
+        let isNew =
+          !lastPollTime ||
+          (createdAt &&
+            createdAt >= lastPollTime &&
+            Math.abs(new Date(createdAt).getTime() - new Date(updatedAt).getTime()) < 5000);
 
         inputs.push({
           contactId: contact.contactID,
@@ -86,7 +92,7 @@ export let contactChanges = SlateTrigger.create(
           status: contact.status,
           tags: contact.tags,
           createdAt,
-          updatedAt,
+          updatedAt
         });
 
         if (!newLastPollTime || updatedAt > newLastPollTime) {
@@ -101,12 +107,12 @@ export let contactChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastPollTime: newLastPollTime || new Date().toISOString(),
-        },
+          lastPollTime: newLastPollTime || new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `contact.${ctx.input.changeType}`,
         id: `contact-${ctx.input.contactId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,
@@ -120,8 +126,9 @@ export let contactChanges = SlateTrigger.create(
           status: ctx.input.status,
           tags: ctx.input.tags,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

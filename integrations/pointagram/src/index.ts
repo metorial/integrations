@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createPlayer,
@@ -11,11 +10,9 @@ import {
   addScore,
   listScoreSeries,
   listScoreHistory,
-  listCompetitions,
+  listCompetitions
 } from './tools';
-import { newPlayer,
-  inboundWebhook,
-} from './triggers';
+import { newPlayer, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     addScore,
     listScoreSeries,
     listScoreHistory,
-    listCompetitions,
+    listCompetitions
   ],
-  triggers: [
-    inboundWebhook,
-    newPlayer,
-  ],
+  triggers: [inboundWebhook, newPlayer]
 });

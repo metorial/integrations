@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact's information in CalendarHero. Only the fields you provide will be updated.`,
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact to update'),
-    name: z.string().optional().describe('Updated full name'),
-    title: z.string().optional().describe('Updated job title'),
-    organization: z.string().optional().describe('Updated organization name'),
-    emails: z.array(z.string()).optional().describe('Updated email addresses'),
-    phoneNumbers: z.array(z.string()).optional().describe('Updated phone numbers')
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('Contact ID'),
-    name: z.string().optional().describe('Updated name'),
-    email: z.string().optional().describe('Primary email'),
-    raw: z.any().optional().describe('Full updated contact response')
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact's information in CalendarHero. Only the fields you provide will be updated.`
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact to update'),
+      name: z.string().optional().describe('Updated full name'),
+      title: z.string().optional().describe('Updated job title'),
+      organization: z.string().optional().describe('Updated organization name'),
+      emails: z.array(z.string()).optional().describe('Updated email addresses'),
+      phoneNumbers: z.array(z.string()).optional().describe('Updated phone numbers')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('Contact ID'),
+      name: z.string().optional().describe('Updated name'),
+      email: z.string().optional().describe('Primary email'),
+      raw: z.any().optional().describe('Full updated contact response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let updateData: any = {};

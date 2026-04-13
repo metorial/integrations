@@ -53,9 +53,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://www.happyscribe.com/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -63,7 +63,7 @@ export class Client {
 
   async getSignedUploadUrl(filename: string): Promise<{ signedUrl: string }> {
     let response = await this.axios.get('/uploads/new', {
-      params: { filename },
+      params: { filename }
     });
     return response.data;
   }
@@ -74,7 +74,7 @@ export class Client {
     let body: Record<string, any> = {
       url: params.url,
       language: params.language,
-      organization_id: params.organizationId,
+      organization_id: params.organizationId
     };
 
     if (params.service !== undefined) body.service = params.service;
@@ -96,7 +96,7 @@ export class Client {
   async createTranslationOrder(params: CreateTranslationOrderParams): Promise<any> {
     let body: Record<string, any> = {
       source_transcription_id: params.sourceTranscriptionId,
-      target_languages: params.targetLanguages,
+      target_languages: params.targetLanguages
     };
 
     if (params.service !== undefined) body.service = params.service;
@@ -123,7 +123,7 @@ export class Client {
 
   async listTranscriptions(params: ListTranscriptionsParams): Promise<any> {
     let queryParams: Record<string, any> = {
-      organization_id: params.organizationId,
+      organization_id: params.organizationId
     };
 
     if (params.folderId !== undefined) queryParams.folder_id = params.folderId;
@@ -131,7 +131,7 @@ export class Client {
     if (params.tags !== undefined) queryParams.tags = params.tags;
 
     let response = await this.axios.get('/transcriptions', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -141,9 +141,12 @@ export class Client {
     return response.data;
   }
 
-  async deleteTranscription(transcriptionId: string, permanent: boolean = false): Promise<void> {
+  async deleteTranscription(
+    transcriptionId: string,
+    permanent: boolean = false
+  ): Promise<void> {
     await this.axios.delete(`/transcriptions/${transcriptionId}`, {
-      params: permanent ? { permanent: true } : undefined,
+      params: permanent ? { permanent: true } : undefined
     });
   }
 
@@ -152,15 +155,17 @@ export class Client {
   async createExport(params: CreateExportParams): Promise<any> {
     let body: Record<string, any> = {
       format: params.format,
-      transcription_ids: params.transcriptionIds,
+      transcription_ids: params.transcriptionIds
     };
 
     if (params.showTimestamps !== undefined) body.show_timestamps = params.showTimestamps;
-    if (params.timestampsFrequency !== undefined) body.timestamps_frequency = params.timestampsFrequency;
+    if (params.timestampsFrequency !== undefined)
+      body.timestamps_frequency = params.timestampsFrequency;
     if (params.showSpeakers !== undefined) body.show_speakers = params.showSpeakers;
     if (params.showComments !== undefined) body.show_comments = params.showComments;
     if (params.showHighlights !== undefined) body.show_highlights = params.showHighlights;
-    if (params.showHighlightsOnly !== undefined) body.show_highlights_only = params.showHighlightsOnly;
+    if (params.showHighlightsOnly !== undefined)
+      body.show_highlights_only = params.showHighlightsOnly;
 
     let response = await this.axios.post('/exports', body);
     return response.data;
@@ -175,7 +180,7 @@ export class Client {
 
   async listGlossaries(organizationId: string): Promise<any> {
     let response = await this.axios.get('/glossaries', {
-      params: { organization_id: organizationId },
+      params: { organization_id: organizationId }
     });
     return response.data;
   }
@@ -184,7 +189,7 @@ export class Client {
 
   async listStyleGuides(organizationId: string): Promise<any> {
     let response = await this.axios.get('/style_guides', {
-      params: { organization_id: organizationId },
+      params: { organization_id: organizationId }
     });
     return response.data;
   }

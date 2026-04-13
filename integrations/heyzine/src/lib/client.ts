@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://heyzine.com/api1',
+  baseURL: 'https://heyzine.com/api1'
 });
 
 export interface FlipbookConversionOptions {
@@ -92,10 +92,12 @@ export class HeyzineClient {
 
   // --- Flipbook Conversion ---
 
-  async createFlipbookSync(options: FlipbookConversionOptions): Promise<FlipbookConversionResponse> {
+  async createFlipbookSync(
+    options: FlipbookConversionOptions
+  ): Promise<FlipbookConversionResponse> {
     let params: Record<string, string> = {
       pdf: options.pdfUrl,
-      k: options.clientId || this.clientId,
+      k: options.clientId || this.clientId
     };
 
     if (options.title) params.t = options.title;
@@ -104,19 +106,23 @@ export class HeyzineClient {
     if (options.templateFlipbookId) params.tpl = options.templateFlipbookId;
     if (options.logoUrl) params.logo = options.logoUrl;
     if (options.backgroundColor) params.bg = options.backgroundColor;
-    if (options.downloadButton !== undefined) params.download = options.downloadButton ? '1' : '0';
+    if (options.downloadButton !== undefined)
+      params.download = options.downloadButton ? '1' : '0';
     if (options.fullscreen !== undefined) params.fullscreen = options.fullscreen ? '1' : '0';
     if (options.share !== undefined) params.share = options.share ? '1' : '0';
-    if (options.navigationButtons !== undefined) params.nav = options.navigationButtons ? '1' : '0';
+    if (options.navigationButtons !== undefined)
+      params.nav = options.navigationButtons ? '1' : '0';
 
     let response = await api.get('/rest', { params });
     return response.data;
   }
 
-  async createFlipbookAsync(options: FlipbookConversionOptions): Promise<FlipbookConversionResponse> {
+  async createFlipbookAsync(
+    options: FlipbookConversionOptions
+  ): Promise<FlipbookConversionResponse> {
     let params: Record<string, string> = {
       pdf: options.pdfUrl,
-      k: options.clientId || this.clientId,
+      k: options.clientId || this.clientId
     };
 
     if (options.title) params.t = options.title;
@@ -125,10 +131,12 @@ export class HeyzineClient {
     if (options.templateFlipbookId) params.tpl = options.templateFlipbookId;
     if (options.logoUrl) params.logo = options.logoUrl;
     if (options.backgroundColor) params.bg = options.backgroundColor;
-    if (options.downloadButton !== undefined) params.download = options.downloadButton ? '1' : '0';
+    if (options.downloadButton !== undefined)
+      params.download = options.downloadButton ? '1' : '0';
     if (options.fullscreen !== undefined) params.fullscreen = options.fullscreen ? '1' : '0';
     if (options.share !== undefined) params.share = options.share ? '1' : '0';
-    if (options.navigationButtons !== undefined) params.nav = options.navigationButtons ? '1' : '0';
+    if (options.navigationButtons !== undefined)
+      params.nav = options.navigationButtons ? '1' : '0';
 
     let response = await api.get('/async', { params });
     return response.data;
@@ -138,7 +146,7 @@ export class HeyzineClient {
 
   private bearerHeaders() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
@@ -149,7 +157,7 @@ export class HeyzineClient {
 
     let response = await api.get('/flipbook-list', {
       headers: this.bearerHeaders(),
-      params,
+      params
     });
     return response.data;
   }
@@ -157,26 +165,36 @@ export class HeyzineClient {
   async getFlipbookDetails(flipbookId: string): Promise<FlipbookInfo> {
     let response = await api.get('/flipbook-details', {
       headers: this.bearerHeaders(),
-      params: { id: flipbookId },
+      params: { id: flipbookId }
     });
     return response.data;
   }
 
-  async deleteFlipbook(flipbookId: string): Promise<{ success: boolean; code: number; msg: string }> {
-    let response = await api.post('/flipbook-delete', { id: flipbookId }, {
-      headers: this.bearerHeaders(),
-    });
+  async deleteFlipbook(
+    flipbookId: string
+  ): Promise<{ success: boolean; code: number; msg: string }> {
+    let response = await api.post(
+      '/flipbook-delete',
+      { id: flipbookId },
+      {
+        headers: this.bearerHeaders()
+      }
+    );
     return response.data;
   }
 
-  async getEmbedCode(flipbookId: string, maxWidth?: number, maxHeight?: number): Promise<{ html: string }> {
+  async getEmbedCode(
+    flipbookId: string,
+    maxWidth?: number,
+    maxHeight?: number
+  ): Promise<{ html: string }> {
     let params: Record<string, string | number> = { id: flipbookId };
     if (maxWidth) params.maxwidth = maxWidth;
     if (maxHeight) params.maxheight = maxHeight;
 
     let response = await api.get('/embed-code', {
       headers: this.bearerHeaders(),
-      params,
+      params
     });
     return response.data;
   }
@@ -185,7 +203,7 @@ export class HeyzineClient {
 
   async listBookshelves(): Promise<BookshelfInfo[]> {
     let response = await api.get('/bookshelf-list', {
-      headers: this.bearerHeaders(),
+      headers: this.bearerHeaders()
     });
     return response.data;
   }
@@ -193,53 +211,69 @@ export class HeyzineClient {
   async listBookshelfFlipbooks(bookshelfId: string): Promise<FlipbookInfo[]> {
     let response = await api.get('/bookshelf-flipbooks', {
       headers: this.bearerHeaders(),
-      params: { id: bookshelfId },
+      params: { id: bookshelfId }
     });
     return response.data;
   }
 
-  async addFlipbookToBookshelf(bookshelfId: string, flipbookId: string, position?: number): Promise<any> {
+  async addFlipbookToBookshelf(
+    bookshelfId: string,
+    flipbookId: string,
+    position?: number
+  ): Promise<any> {
     let body: Record<string, any> = {
       id: bookshelfId,
-      flipbook_id: flipbookId,
+      flipbook_id: flipbookId
     };
     if (position !== undefined) body.position = position;
 
     let response = await api.post('/bookshelf-add', body, {
-      headers: this.bearerHeaders(),
+      headers: this.bearerHeaders()
     });
     return response.data;
   }
 
   async removeFlipbookFromBookshelf(bookshelfId: string, flipbookId: string): Promise<any> {
-    let response = await api.post('/bookshelf-remove', {
-      id: bookshelfId,
-      flipbook_id: flipbookId,
-    }, {
-      headers: this.bearerHeaders(),
-    });
+    let response = await api.post(
+      '/bookshelf-remove',
+      {
+        id: bookshelfId,
+        flipbook_id: flipbookId
+      },
+      {
+        headers: this.bearerHeaders()
+      }
+    );
     return response.data;
   }
 
   // --- Social Metadata ---
 
   async updateFlipbookSocial(flipbookId: string, metadata: SocialMetadata): Promise<any> {
-    let response = await api.post('/flipbook-social', {
-      id: flipbookId,
-      ...metadata,
-    }, {
-      headers: this.bearerHeaders(),
-    });
+    let response = await api.post(
+      '/flipbook-social',
+      {
+        id: flipbookId,
+        ...metadata
+      },
+      {
+        headers: this.bearerHeaders()
+      }
+    );
     return response.data;
   }
 
   async updateBookshelfSocial(bookshelfId: string, metadata: SocialMetadata): Promise<any> {
-    let response = await api.post('/bookshelf-social', {
-      id: bookshelfId,
-      ...metadata,
-    }, {
-      headers: this.bearerHeaders(),
-    });
+    let response = await api.post(
+      '/bookshelf-social',
+      {
+        id: bookshelfId,
+        ...metadata
+      },
+      {
+        headers: this.bearerHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -248,14 +282,14 @@ export class HeyzineClient {
   async updatePasswordProtection(options: PasswordProtectionOptions): Promise<any> {
     let body: Record<string, any> = {
       id: options.flipbookId,
-      mode: options.mode,
+      mode: options.mode
     };
     if (options.password) body.password = options.password;
     if (options.usernameLabel) body.username_label = options.usernameLabel;
     if (options.passwordLabel) body.password_label = options.passwordLabel;
 
     let response = await api.post('/update-password', body, {
-      headers: this.bearerHeaders(),
+      headers: this.bearerHeaders()
     });
     return response.data;
   }
@@ -266,14 +300,18 @@ export class HeyzineClient {
     users: AccessListUser[],
     action: 'add' | 'remove' = 'add'
   ): Promise<any> {
-    let response = await api.post('/access-list', {
-      id: flipbookId,
-      access_type: accessType,
-      action,
-      users,
-    }, {
-      headers: this.bearerHeaders(),
-    });
+    let response = await api.post(
+      '/access-list',
+      {
+        id: flipbookId,
+        access_type: accessType,
+        action,
+        users
+      },
+      {
+        headers: this.bearerHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -282,7 +320,7 @@ export class HeyzineClient {
   async getOEmbed(url: string, maxWidth?: number, maxHeight?: number): Promise<OEmbedData> {
     let params: Record<string, string | number> = {
       url,
-      format: 'json',
+      format: 'json'
     };
     if (maxWidth) params.maxwidth = maxWidth;
     if (maxHeight) params.maxheight = maxHeight;
@@ -295,7 +333,7 @@ export class HeyzineClient {
 
   async getApiLimits(): Promise<any> {
     let response = await api.get('/limits', {
-      headers: this.bearerHeaders(),
+      headers: this.bearerHeaders()
     });
     return response.data;
   }

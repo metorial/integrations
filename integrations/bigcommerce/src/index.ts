@@ -20,7 +20,7 @@ import {
   getStoreInformation,
   manageSubscriber,
   listChannels,
-  managePriceList,
+  managePriceList
 } from './tools';
 import {
   orderEvents,
@@ -28,7 +28,7 @@ import {
   customerEvents,
   cartEvents,
   shipmentEvents,
-  inventoryEvents,
+  inventoryEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -53,7 +53,7 @@ export let provider = Slate.create({
     getStoreInformation,
     manageSubscriber,
     listChannels,
-    managePriceList,
+    managePriceList
   ],
   triggers: [
     orderEvents,
@@ -61,6 +61,6 @@ export let provider = Slate.create({
     customerEvents,
     cartEvents,
     shipmentEvents,
-    inventoryEvents,
-  ],
+    inventoryEvents
+  ]
 });

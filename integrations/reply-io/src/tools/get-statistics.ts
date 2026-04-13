@@ -3,25 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getStatistics = SlateTool.create(
-  spec,
-  {
-    name: 'Get Statistics',
-    key: 'get_statistics',
-    description: `Retrieve performance statistics for sequences, including email metrics (sent, opened, clicked, replied, bounced) and contact engagement data. Can fetch stats for a specific sequence or across all sequences.`,
-    tags: {
-      readOnly: true,
-    },
+export let getStatistics = SlateTool.create(spec, {
+  name: 'Get Statistics',
+  key: 'get_statistics',
+  description: `Retrieve performance statistics for sequences, including email metrics (sent, opened, clicked, replied, bounced) and contact engagement data. Can fetch stats for a specific sequence or across all sequences.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sequenceId: z.number().optional().describe('Sequence ID to get statistics for. Omit to get stats for all sequences.'),
-    reportType: z.enum(['overview', 'emails', 'contacts']).optional().describe('Type of statistics report to retrieve (default: overview)'),
-  }))
-  .output(z.object({
-    statistics: z.record(z.string(), z.any()).describe('Statistics data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sequenceId: z
+        .number()
+        .optional()
+        .describe('Sequence ID to get statistics for. Omit to get stats for all sequences.'),
+      reportType: z
+        .enum(['overview', 'emails', 'contacts'])
+        .optional()
+        .describe('Type of statistics report to retrieve (default: overview)')
+    })
+  )
+  .output(
+    z.object({
+      statistics: z.record(z.string(), z.any()).describe('Statistics data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { sequenceId, reportType } = ctx.input;
     let type = reportType ?? 'overview';
@@ -39,6 +46,7 @@ export let getStatistics = SlateTool.create(
 
     return {
       output: { statistics },
-      message: `Retrieved **${type}** statistics${sequenceId ? ` for sequence **${sequenceId}**` : ' across all sequences'}.`,
+      message: `Retrieved **${type}** statistics${sequenceId ? ` for sequence **${sequenceId}**` : ' across all sequences'}.`
     };
-  }).build();
+  })
+  .build();

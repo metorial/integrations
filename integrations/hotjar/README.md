@@ -5,12 +5,15 @@ Export survey response data and manage user data for privacy compliance. List su
 ## Tools
 
 ### Get Survey Responses
+
 Retrieve responses for a specific Hotjar survey. Returns response data including answers, user metadata, device information, and sentiment analysis. Responses are sorted by creation date (newest first). Supports pagination for surveys with many responses.
 
 ### List Surveys
+
 List surveys for a Hotjar site. Returns survey metadata including name, type, status, and optionally the survey questions. Supports pagination for sites with many surveys.
 
 ### User Lookup & Deletion
+
 Look up or delete a user's data in Hotjar for GDPR and privacy compliance. Searches by email address and/or site-specific user IDs. Can either generate a data report (sent via email) or immediately delete all matching data.
 
 ## License

@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'HeyGen OAuth',
@@ -16,11 +18,11 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Full API access based on account permissions',
-        scope: 'full_access',
-      },
+        scope: 'full_access'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let codeVerifier = generateCodeVerifier();
       let codeChallenge = await generateCodeChallenge(codeVerifier);
 
@@ -30,20 +32,20 @@ export let auth = SlateAuth.create()
         redirect_uri: ctx.redirectUri,
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
-        response_type: 'code',
+        response_type: 'code'
       });
 
       return {
         url: `https://app.heygen.com/oauth/authorize?${params.toString()}`,
-        input: { codeVerifier },
+        input: { codeVerifier }
       };
     },
 
     inputSchema: z.object({
-      codeVerifier: z.string().optional(),
+      codeVerifier: z.string().optional()
     }),
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let client = createAxios({ baseURL: 'https://api2.heygen.com' });
 
       let response = await client.post('/v1/oauth/token', {
@@ -51,7 +53,7 @@ export let auth = SlateAuth.create()
         client_id: ctx.clientId,
         grant_type: 'authorization_code',
         redirect_uri: ctx.redirectUri,
-        code_verifier: ctx.input.codeVerifier,
+        code_verifier: ctx.input.codeVerifier
       });
 
       let data = response.data as {
@@ -65,7 +67,9 @@ export let auth = SlateAuth.create()
 
       let tokenData = data.data;
       if (!tokenData?.access_token) {
-        throw new Error(`HeyGen OAuth error: ${data.error || 'Failed to obtain access token'}`);
+        throw new Error(
+          `HeyGen OAuth error: ${data.error || 'Failed to obtain access token'}`
+        );
       }
 
       let expiresAt: string | undefined;
@@ -77,12 +81,12 @@ export let auth = SlateAuth.create()
         output: {
           token: tokenData.access_token,
           refreshToken: tokenData.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -92,7 +96,7 @@ export let auth = SlateAuth.create()
       let response = await client.post('/v1/oauth/refresh_token', {
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
+        client_id: ctx.clientId
       });
 
       let data = response.data as {
@@ -106,7 +110,9 @@ export let auth = SlateAuth.create()
 
       let tokenData = data.data;
       if (!tokenData?.access_token) {
-        throw new Error(`HeyGen token refresh error: ${data.error || 'Failed to refresh token'}`);
+        throw new Error(
+          `HeyGen token refresh error: ${data.error || 'Failed to refresh token'}`
+        );
       }
 
       let expiresAt: string | undefined;
@@ -118,10 +124,10 @@ export let auth = SlateAuth.create()
         output: {
           token: tokenData.access_token,
           refreshToken: tokenData.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -129,14 +135,16 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('HeyGen API key from Settings > API in your HeyGen dashboard'),
+      apiKey: z
+        .string()
+        .describe('HeyGen API key from Settings > API in your HeyGen dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -144,7 +152,7 @@ export let auth = SlateAuth.create()
       let client = createAxios({ baseURL: 'https://api.heygen.com' });
 
       let response = await client.get('/v2/user/remaining_quota', {
-        headers: { 'X-Api-Key': ctx.output.token },
+        headers: { 'X-Api-Key': ctx.output.token }
       });
 
       let data = response.data as {
@@ -155,16 +163,16 @@ export let auth = SlateAuth.create()
 
       return {
         profile: {
-          remainingCredits: data.data?.remaining_quota,
-        },
+          remainingCredits: data.data?.remaining_quota
+        }
       };
-    },
+    }
   });
 
 let generateCodeVerifier = (): string => {
   let array = new Uint8Array(32);
   crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 };
 
 let generateCodeChallenge = async (verifier: string): Promise<string> => {

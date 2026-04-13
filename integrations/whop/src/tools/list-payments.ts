@@ -19,40 +19,58 @@ let paymentSchema = z.object({
   productId: z.string().nullable().describe('Product ID'),
   productTitle: z.string().nullable().describe('Product title'),
   membershipId: z.string().nullable().describe('Membership ID'),
-  paymentMethodType: z.string().nullable().describe('Payment method type (card, paypal, etc.)'),
+  paymentMethodType: z
+    .string()
+    .nullable()
+    .describe('Payment method type (card, paypal, etc.)'),
   cardLast4: z.string().nullable().describe('Last 4 digits of card'),
   paidAt: z.string().nullable().describe('ISO 8601 payment timestamp'),
-  createdAt: z.string().describe('ISO 8601 creation timestamp'),
+  createdAt: z.string().describe('ISO 8601 creation timestamp')
 });
 
-export let listPayments = SlateTool.create(
-  spec,
-  {
-    name: 'List Payments',
-    key: 'list_payments',
-    description: `List payments in your Whop company. Filter by product, status, billing reason, or search by user. Supports pagination.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPayments = SlateTool.create(spec, {
+  name: 'List Payments',
+  key: 'list_payments',
+  description: `List payments in your Whop company. Filter by product, status, billing reason, or search by user. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    companyId: z.string().optional().describe('Company ID. Uses config companyId if not provided.'),
-    productIds: z.array(z.string()).optional().describe('Filter by product IDs'),
-    statuses: z.array(z.enum(['draft', 'open', 'paid', 'pending', 'uncollectible', 'unresolved', 'void'])).optional().describe('Filter by payment status'),
-    billingReasons: z.array(z.enum(['subscription_create', 'subscription_cycle', 'one_time', 'manual'])).optional().describe('Filter by billing reason'),
-    query: z.string().optional().describe('Search by user ID, email, name, or username'),
-    order: z.enum(['final_amount', 'created_at', 'paid_at']).optional().describe('Sort field'),
-    direction: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    limit: z.number().optional().describe('Number of results (max 100)'),
-  }))
-  .output(z.object({
-    payments: z.array(paymentSchema),
-    hasNextPage: z.boolean().describe('Whether more results are available'),
-    endCursor: z.string().nullable().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      companyId: z
+        .string()
+        .optional()
+        .describe('Company ID. Uses config companyId if not provided.'),
+      productIds: z.array(z.string()).optional().describe('Filter by product IDs'),
+      statuses: z
+        .array(
+          z.enum(['draft', 'open', 'paid', 'pending', 'uncollectible', 'unresolved', 'void'])
+        )
+        .optional()
+        .describe('Filter by payment status'),
+      billingReasons: z
+        .array(z.enum(['subscription_create', 'subscription_cycle', 'one_time', 'manual']))
+        .optional()
+        .describe('Filter by billing reason'),
+      query: z.string().optional().describe('Search by user ID, email, name, or username'),
+      order: z
+        .enum(['final_amount', 'created_at', 'paid_at'])
+        .optional()
+        .describe('Sort field'),
+      direction: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      limit: z.number().optional().describe('Number of results (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      payments: z.array(paymentSchema),
+      hasNextPage: z.boolean().describe('Whether more results are available'),
+      endCursor: z.string().nullable().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let companyId = ctx.input.companyId || ctx.config.companyId;
 
     let client = new WhopClient(ctx.auth.token);
@@ -65,7 +83,7 @@ export let listPayments = SlateTool.create(
       order: ctx.input.order,
       direction: ctx.input.direction,
       after: ctx.input.cursor,
-      first: ctx.input.limit,
+      first: ctx.input.limit
     });
 
     let payments = (result.data || []).map((p: any) => ({
@@ -87,15 +105,16 @@ export let listPayments = SlateTool.create(
       paymentMethodType: p.payment_method_type || null,
       cardLast4: p.card_last4 || null,
       paidAt: p.paid_at || null,
-      createdAt: p.created_at,
+      createdAt: p.created_at
     }));
 
     return {
       output: {
         payments,
         hasNextPage: result.page_info?.has_next_page || false,
-        endCursor: result.page_info?.end_cursor || null,
+        endCursor: result.page_info?.end_cursor || null
       },
-      message: `Found **${payments.length}** payments.${result.page_info?.has_next_page ? ' More results available.' : ''}`,
+      message: `Found **${payments.length}** payments.${result.page_info?.has_next_page ? ' More results available.' : ''}`
     };
-  }).build();
+  })
+  .build();

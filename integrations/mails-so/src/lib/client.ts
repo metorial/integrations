@@ -47,14 +47,14 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.mails.so/v1',
       headers: {
-        'x-mails-api-key': config.token,
-      },
+        'x-mails-api-key': config.token
+      }
     });
   }
 
   async validateEmail(email: string): Promise<SingleValidationResponse> {
     let response = await this.http.get('/validate', {
-      params: { email },
+      params: { email }
     });
     return response.data;
   }

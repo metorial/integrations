@@ -3,42 +3,48 @@ import { RedditAdsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'List Campaigns',
-    key: 'list_campaigns',
-    description: `Retrieve all advertising campaigns for the configured Reddit Ads account. Returns campaign details including name, objective, status, budget, and scheduling information.`,
-    tags: {
-      readOnly: true,
-    },
+export let listCampaigns = SlateTool.create(spec, {
+  name: 'List Campaigns',
+  key: 'list_campaigns',
+  description: `Retrieve all advertising campaigns for the configured Reddit Ads account. Returns campaign details including name, objective, status, budget, and scheduling information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.enum(['ACTIVE', 'PAUSED', 'COMPLETED', 'DRAFT']).optional().describe('Filter campaigns by status'),
-  }))
-  .output(z.object({
-    campaigns: z.array(z.object({
-      campaignId: z.string().optional(),
-      name: z.string().optional(),
-      objective: z.string().optional(),
-      status: z.string().optional(),
-      budgetCents: z.number().optional(),
-      budgetType: z.string().optional(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      isProcessing: z.boolean().optional(),
-      raw: z.any().optional(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['ACTIVE', 'PAUSED', 'COMPLETED', 'DRAFT'])
+        .optional()
+        .describe('Filter campaigns by status')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(
+        z.object({
+          campaignId: z.string().optional(),
+          name: z.string().optional(),
+          objective: z.string().optional(),
+          status: z.string().optional(),
+          budgetCents: z.number().optional(),
+          budgetType: z.string().optional(),
+          startDate: z.string().optional(),
+          endDate: z.string().optional(),
+          isProcessing: z.boolean().optional(),
+          raw: z.any().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedditAdsClient({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     let campaigns = await client.listCampaigns({
-      status: ctx.input.status,
+      status: ctx.input.status
     });
 
     let mapped = (Array.isArray(campaigns) ? campaigns : []).map((c: any) => ({
@@ -51,12 +57,12 @@ export let listCampaigns = SlateTool.create(
       startDate: c.start_date,
       endDate: c.end_date,
       isProcessing: c.is_processing,
-      raw: c,
+      raw: c
     }));
 
     return {
       output: { campaigns: mapped },
-      message: `Found **${mapped.length}** campaign(s).`,
+      message: `Found **${mapped.length}** campaign(s).`
     };
   })
   .build();

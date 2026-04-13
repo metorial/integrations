@@ -3,45 +3,50 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve detailed information about a specific GitLab project by its ID or URL-encoded path (e.g. "my-group/my-project").`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve detailed information about a specific GitLab project by its ID or URL-encoded path (e.g. "my-group/my-project").`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project ID or URL-encoded path (e.g. "my-group/my-project")')
-  }))
-  .output(z.object({
-    projectId: z.number().describe('Unique project ID'),
-    name: z.string().describe('Project name'),
-    nameWithNamespace: z.string().describe('Full project name including namespace'),
-    pathWithNamespace: z.string().describe('Full project path including namespace'),
-    description: z.string().nullable().describe('Project description'),
-    visibility: z.string().describe('Project visibility level'),
-    webUrl: z.string().describe('URL to the project'),
-    defaultBranch: z.string().nullable().describe('Default branch name'),
-    archived: z.boolean().describe('Whether the project is archived'),
-    starCount: z.number().describe('Number of stars'),
-    forksCount: z.number().describe('Number of forks'),
-    openIssuesCount: z.number().describe('Number of open issues'),
-    createdAt: z.string().describe('Project creation timestamp'),
-    lastActivityAt: z.string().describe('Last activity timestamp'),
-    creatorId: z.number().nullable().describe('Creator user ID'),
-    namespace: z.object({
-      namespaceId: z.number().describe('Namespace ID'),
-      name: z.string().describe('Namespace name'),
-      path: z.string().describe('Namespace path'),
-      kind: z.string().describe('Namespace kind (user or group)')
-    }).describe('Project namespace')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z
+        .string()
+        .describe('Project ID or URL-encoded path (e.g. "my-group/my-project")')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('Unique project ID'),
+      name: z.string().describe('Project name'),
+      nameWithNamespace: z.string().describe('Full project name including namespace'),
+      pathWithNamespace: z.string().describe('Full project path including namespace'),
+      description: z.string().nullable().describe('Project description'),
+      visibility: z.string().describe('Project visibility level'),
+      webUrl: z.string().describe('URL to the project'),
+      defaultBranch: z.string().nullable().describe('Default branch name'),
+      archived: z.boolean().describe('Whether the project is archived'),
+      starCount: z.number().describe('Number of stars'),
+      forksCount: z.number().describe('Number of forks'),
+      openIssuesCount: z.number().describe('Number of open issues'),
+      createdAt: z.string().describe('Project creation timestamp'),
+      lastActivityAt: z.string().describe('Last activity timestamp'),
+      creatorId: z.number().nullable().describe('Creator user ID'),
+      namespace: z
+        .object({
+          namespaceId: z.number().describe('Namespace ID'),
+          name: z.string().describe('Namespace name'),
+          path: z.string().describe('Namespace path'),
+          kind: z.string().describe('Namespace kind (user or group)')
+        })
+        .describe('Project namespace')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl

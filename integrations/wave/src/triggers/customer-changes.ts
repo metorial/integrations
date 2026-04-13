@@ -3,42 +3,46 @@ import { WaveClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let customerChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Changes',
-    key: 'customer_changes',
-    description: 'Triggers when customers are created or modified in a Wave business. Detects new customers and changes to existing customer records by polling.'
-  }
-)
-  .input(z.object({
-    customerId: z.string().describe('ID of the customer'),
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    customer: z.any().describe('Full customer data from Wave')
-  }))
-  .output(z.object({
-    customerId: z.string().describe('Unique identifier of the customer'),
-    name: z.string().describe('Customer/company name'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    mobile: z.string().optional().describe('Mobile number'),
-    website: z.string().optional().describe('Website URL'),
-    currencyCode: z.string().optional().describe('Currency code'),
-    city: z.string().optional().describe('City from address'),
-    countryName: z.string().optional().describe('Country name from address'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    modifiedAt: z.string().optional().describe('Last modification timestamp')
-  }))
+export let customerChanges = SlateTrigger.create(spec, {
+  name: 'Customer Changes',
+  key: 'customer_changes',
+  description:
+    'Triggers when customers are created or modified in a Wave business. Detects new customers and changes to existing customer records by polling.'
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('ID of the customer'),
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      customer: z.any().describe('Full customer data from Wave')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().describe('Unique identifier of the customer'),
+      name: z.string().describe('Customer/company name'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      mobile: z.string().optional().describe('Mobile number'),
+      website: z.string().optional().describe('Website URL'),
+      currencyCode: z.string().optional().describe('Currency code'),
+      city: z.string().optional().describe('City from address'),
+      countryName: z.string().optional().describe('Country name from address'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      modifiedAt: z.string().optional().describe('Last modification timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new WaveClient(ctx.auth.token);
-      let state = ctx.state as { businessId?: string; knownCustomers?: Record<string, string> } | undefined;
+      let state = ctx.state as
+        | { businessId?: string; knownCustomers?: Record<string, string> }
+        | undefined;
 
       let businessId = state?.businessId;
       if (!businessId) {
@@ -50,7 +54,11 @@ export let customerChanges = SlateTrigger.create(
       }
 
       let knownCustomers: Record<string, string> = state?.knownCustomers || {};
-      let inputs: Array<{ customerId: string; changeType: 'created' | 'updated'; customer: any }> = [];
+      let inputs: Array<{
+        customerId: string;
+        changeType: 'created' | 'updated';
+        customer: any;
+      }> = [];
 
       let result = await client.listCustomers(businessId, 1, 50);
 
@@ -86,7 +94,7 @@ export let customerChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let cust = ctx.input.customer;
       return {
         type: `customer.${ctx.input.changeType}`,

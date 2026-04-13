@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listVideos,
@@ -20,11 +19,9 @@ import {
   manageVideoComments,
   manageTagSessionNotes,
   managePortfolio,
-  listPortfolios,
+  listPortfolios
 } from './tools';
-import { newVideo,
-  inboundWebhook,
-} from './triggers';
+import { newVideo, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +44,7 @@ export let provider = Slate.create({
     manageVideoComments,
     manageTagSessionNotes,
     managePortfolio,
-    listPortfolios,
+    listPortfolios
   ],
-  triggers: [
-    inboundWebhook,
-    newVideo,
-  ],
+  triggers: [inboundWebhook, newVideo]
 });

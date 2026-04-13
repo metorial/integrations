@@ -39,29 +39,36 @@ let mapCompany = (c: any) => ({
   updatedAt: c.updated_at
 });
 
-export let listCompanies = SlateTool.create(
-  spec,
-  {
-    name: 'List Companies',
-    key: 'list_companies',
-    description: `Retrieve a list of companies (customers, suppliers, or organizations). Supports filtering by type, tags, and search term.`,
-    tags: {
-      readOnly: true
-    }
+export let listCompanies = SlateTool.create(spec, {
+  name: 'List Companies',
+  key: 'list_companies',
+  description: `Retrieve a list of companies (customers, suppliers, or organizations). Supports filtering by type, tags, and search term.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    type: z.enum(['customer', 'supplier', 'organization']).optional().describe('Filter by company type'),
-    tags: z.string().optional().describe('Comma-separated list of tags to filter by'),
-    term: z.string().optional().describe('Full-text search term'),
-    identifier: z.string().optional().describe('Filter by company identifier'),
-    includeArchived: z.boolean().optional().describe('Include archived companies'),
-    updatedAfter: z.string().optional().describe('Filter by last updated timestamp (ISO 8601)')
-  }))
-  .output(z.object({
-    companies: z.array(companyOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      type: z
+        .enum(['customer', 'supplier', 'organization'])
+        .optional()
+        .describe('Filter by company type'),
+      tags: z.string().optional().describe('Comma-separated list of tags to filter by'),
+      term: z.string().optional().describe('Full-text search term'),
+      identifier: z.string().optional().describe('Filter by company identifier'),
+      includeArchived: z.boolean().optional().describe('Include archived companies'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter by last updated timestamp (ISO 8601)')
+    })
+  )
+  .output(
+    z.object({
+      companies: z.array(companyOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -79,24 +86,24 @@ export let listCompanies = SlateTool.create(
       output: { companies },
       message: `Found **${companies.length}** companies.`
     };
-  }).build();
+  })
+  .build();
 
-export let getCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Get Company',
-    key: 'get_company',
-    description: `Retrieve detailed information about a specific company, including contact details, type, and custom properties.`,
-    tags: {
-      readOnly: true
-    }
+export let getCompany = SlateTool.create(spec, {
+  name: 'Get Company',
+  key: 'get_company',
+  description: `Retrieve detailed information about a specific company, including contact details, type, and custom properties.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    companyId: z.number().describe('The ID of the company to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      companyId: z.number().describe('The ID of the company to retrieve')
+    })
+  )
   .output(companyOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let c = await client.getCompany(ctx.input.companyId);
 
@@ -104,33 +111,33 @@ export let getCompany = SlateTool.create(
       output: mapCompany(c),
       message: `Retrieved company **${c.name}** (ID: ${c.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Create Company',
-    key: 'create_company',
-    description: `Create a new company in MOCO. Specify name and type (customer, supplier, or organization). Customers also require a currency.`,
-    tags: {
-      destructive: false
-    }
+export let createCompany = SlateTool.create(spec, {
+  name: 'Create Company',
+  key: 'create_company',
+  description: `Create a new company in MOCO. Specify name and type (customer, supplier, or organization). Customers also require a currency.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Company name'),
-    type: z.enum(['customer', 'supplier', 'organization']).describe('Company type'),
-    currency: z.string().optional().describe('Currency code (required for customers)'),
-    website: z.string().optional().describe('Company website URL'),
-    email: z.string().optional().describe('Company email address'),
-    phone: z.string().optional().describe('Company phone number'),
-    address: z.string().optional().describe('Company address'),
-    identifier: z.string().optional().describe('Company identifier'),
-    tags: z.array(z.string()).optional().describe('Company tags'),
-    info: z.string().optional().describe('Additional notes')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Company name'),
+      type: z.enum(['customer', 'supplier', 'organization']).describe('Company type'),
+      currency: z.string().optional().describe('Currency code (required for customers)'),
+      website: z.string().optional().describe('Company website URL'),
+      email: z.string().optional().describe('Company email address'),
+      phone: z.string().optional().describe('Company phone number'),
+      address: z.string().optional().describe('Company address'),
+      identifier: z.string().optional().describe('Company identifier'),
+      tags: z.array(z.string()).optional().describe('Company tags'),
+      info: z.string().optional().describe('Additional notes')
+    })
+  )
   .output(companyOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -153,32 +160,36 @@ export let createCompany = SlateTool.create(
       output: mapCompany(c),
       message: `Created company **${c.name}** (ID: ${c.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Update Company',
-    key: 'update_company',
-    description: `Update an existing company's properties. Can also archive or unarchive companies by setting the action field.`,
-    tags: {
-      destructive: false
-    }
+export let updateCompany = SlateTool.create(spec, {
+  name: 'Update Company',
+  key: 'update_company',
+  description: `Update an existing company's properties. Can also archive or unarchive companies by setting the action field.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    companyId: z.number().describe('The ID of the company to update'),
-    action: z.enum(['update', 'archive', 'unarchive']).optional().default('update').describe('Action: update fields, archive, or unarchive'),
-    name: z.string().optional().describe('New company name'),
-    website: z.string().optional().describe('New website URL'),
-    email: z.string().optional().describe('New email address'),
-    phone: z.string().optional().describe('New phone number'),
-    address: z.string().optional().describe('New address'),
-    tags: z.array(z.string()).optional().describe('Updated tags'),
-    info: z.string().optional().describe('Updated notes')
-  }))
+})
+  .input(
+    z.object({
+      companyId: z.number().describe('The ID of the company to update'),
+      action: z
+        .enum(['update', 'archive', 'unarchive'])
+        .optional()
+        .default('update')
+        .describe('Action: update fields, archive, or unarchive'),
+      name: z.string().optional().describe('New company name'),
+      website: z.string().optional().describe('New website URL'),
+      email: z.string().optional().describe('New email address'),
+      phone: z.string().optional().describe('New phone number'),
+      address: z.string().optional().describe('New address'),
+      tags: z.array(z.string()).optional().describe('Updated tags'),
+      info: z.string().optional().describe('Updated notes')
+    })
+  )
   .output(companyOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     if (ctx.input.action === 'archive') {
@@ -212,26 +223,28 @@ export let updateCompany = SlateTool.create(
       output: mapCompany(c),
       message: `Updated company **${c.name}** (ID: ${c.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Company',
-    key: 'delete_company',
-    description: `Permanently delete a company from MOCO.`,
-    tags: {
-      destructive: true
-    }
+export let deleteCompany = SlateTool.create(spec, {
+  name: 'Delete Company',
+  key: 'delete_company',
+  description: `Permanently delete a company from MOCO.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    companyId: z.number().describe('The ID of the company to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      companyId: z.number().describe('The ID of the company to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     await client.deleteCompany(ctx.input.companyId);
 
@@ -239,4 +252,5 @@ export let deleteCompany = SlateTool.create(
       output: { success: true },
       message: `Deleted company **${ctx.input.companyId}**.`
     };
-  }).build();
+  })
+  .build();

@@ -12,7 +12,7 @@ import {
   checkSubgraph,
   listSubgraphs,
   getSchema,
-  executeGraphQL,
+  executeGraphQL
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     checkSubgraph,
     listSubgraphs,
     getSchema,
-    executeGraphQL,
+    executeGraphQL
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

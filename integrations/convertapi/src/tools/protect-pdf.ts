@@ -3,46 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let fileSourceSchema = z.object({
-  url: z.string().optional().describe('Public URL of the PDF file'),
-  fileId: z.string().optional().describe('ConvertAPI file ID of a previously uploaded PDF'),
-  base64Data: z.string().optional().describe('Base64-encoded PDF content'),
-  fileName: z.string().optional().describe('File name (required when using base64Data)'),
-}).describe('PDF file source — provide exactly one of: url, fileId, or base64Data (with fileName)');
+let fileSourceSchema = z
+  .object({
+    url: z.string().optional().describe('Public URL of the PDF file'),
+    fileId: z.string().optional().describe('ConvertAPI file ID of a previously uploaded PDF'),
+    base64Data: z.string().optional().describe('Base64-encoded PDF content'),
+    fileName: z.string().optional().describe('File name (required when using base64Data)')
+  })
+  .describe(
+    'PDF file source — provide exactly one of: url, fileId, or base64Data (with fileName)'
+  );
 
-export let protectPdf = SlateTool.create(
-  spec,
-  {
-    name: 'Protect PDF',
-    key: 'protect_pdf',
-    description: `Encrypt and password-protect a PDF document with AES 256-bit encryption.
+export let protectPdf = SlateTool.create(spec, {
+  name: 'Protect PDF',
+  key: 'protect_pdf',
+  description: `Encrypt and password-protect a PDF document with AES 256-bit encryption.
 Set user and owner passwords, and control permissions for printing, copying, and editing.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    file: fileSourceSchema,
-    userPassword: z.string().optional().describe('Password required to open the PDF'),
-    ownerPassword: z.string().optional().describe('Password for full document control (editing, printing permissions)'),
-    allowPrinting: z.boolean().optional().describe('Allow printing the document'),
-    allowCopying: z.boolean().optional().describe('Allow copying text from the document'),
-    storeFile: z.boolean().optional().default(true).describe('Store encrypted file on ConvertAPI server for download'),
-  }))
-  .output(z.object({
-    conversionCost: z.number().describe('Number of conversion credits consumed'),
-    conversionTime: z.number().describe('Encryption duration in seconds'),
-    fileName: z.string().describe('Name of the encrypted PDF'),
-    fileSize: z.number().describe('Size of the encrypted PDF in bytes'),
-    fileId: z.string().nullable().describe('ConvertAPI file ID'),
-    url: z.string().nullable().describe('Download URL for the encrypted PDF'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      file: fileSourceSchema,
+      userPassword: z.string().optional().describe('Password required to open the PDF'),
+      ownerPassword: z
+        .string()
+        .optional()
+        .describe('Password for full document control (editing, printing permissions)'),
+      allowPrinting: z.boolean().optional().describe('Allow printing the document'),
+      allowCopying: z.boolean().optional().describe('Allow copying text from the document'),
+      storeFile: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Store encrypted file on ConvertAPI server for download')
+    })
+  )
+  .output(
+    z.object({
+      conversionCost: z.number().describe('Number of conversion credits consumed'),
+      conversionTime: z.number().describe('Encryption duration in seconds'),
+      fileName: z.string().describe('Name of the encrypted PDF'),
+      fileSize: z.number().describe('Size of the encrypted PDF in bytes'),
+      fileId: z.string().nullable().describe('ConvertAPI file ID'),
+      url: z.string().nullable().describe('Download URL for the encrypted PDF')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let fileSource = buildFileSource(ctx.input.file);
@@ -66,7 +78,7 @@ Set user and owner passwords, and control permissions for printing, copying, and
       destinationFormat: 'encrypt',
       files: [fileSource],
       storeFile: ctx.input.storeFile,
-      parameters,
+      parameters
     });
 
     let encrypted = result.files[0]!;
@@ -77,14 +89,19 @@ Set user and owner passwords, and control permissions for printing, copying, and
         fileName: encrypted.fileName,
         fileSize: encrypted.fileSize,
         fileId: encrypted.fileId,
-        url: encrypted.url,
+        url: encrypted.url
       },
-      message: `Encrypted PDF as \`${encrypted.fileName}\` (${formatBytes(encrypted.fileSize)}) in ${result.conversionTime}s.`,
+      message: `Encrypted PDF as \`${encrypted.fileName}\` (${formatBytes(encrypted.fileSize)}) in ${result.conversionTime}s.`
     };
   })
   .build();
 
-function buildFileSource(file: { url?: string; fileId?: string; base64Data?: string; fileName?: string }) {
+function buildFileSource(file: {
+  url?: string;
+  fileId?: string;
+  base64Data?: string;
+  fileName?: string;
+}) {
   if (file.url) {
     return { type: 'url' as const, url: file.url };
   }

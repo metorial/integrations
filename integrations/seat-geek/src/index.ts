@@ -7,7 +7,7 @@ import {
   getTaxonomies,
   getRecommendations,
   getEventDetails,
-  getPerformerDetails,
+  getPerformerDetails
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     getTaxonomies,
     getRecommendations,
     getEventDetails,
-    getPerformerDetails,
+    getPerformerDetails
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

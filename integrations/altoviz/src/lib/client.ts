@@ -62,8 +62,8 @@ export class Client {
       baseURL: this.baseURL,
       headers: {
         'X-API-KEY': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -105,7 +105,9 @@ export class Client {
 
   async listCustomers(params?: ListCustomersParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/Customers', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/Customers', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 
@@ -156,7 +158,9 @@ export class Client {
 
   async listContacts(params?: PaginationParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/Contacts', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/Contacts', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 
@@ -233,7 +237,7 @@ export class Client {
     let response = await axios.post(`/SaleInvoices/Pay/${params.invoiceId}`, {
       date: params.date,
       paymentMethod: params.paymentMethod,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return response.data;
   }
@@ -247,7 +251,7 @@ export class Client {
   async downloadSaleInvoice(invoiceId: number): Promise<any> {
     let axios = this.getAxios();
     let response = await axios.get(`/SaleInvoices/Download/${invoiceId}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -256,7 +260,9 @@ export class Client {
 
   async listSaleQuotes(params?: ListQuotesParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/SaleQuotes', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/SaleQuotes', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 
@@ -293,7 +299,9 @@ export class Client {
 
   async listSaleCredits(params?: ListCreditsParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/SaleCredits', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/SaleCredits', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 
@@ -324,7 +332,9 @@ export class Client {
 
   async listPurchaseInvoices(params?: PaginationParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/PurchaseInvoices', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/PurchaseInvoices', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 
@@ -335,8 +345,8 @@ export class Client {
     formData.append('file', blob, fileName);
     let response = await axios.post('/PurchaseInvoices/File', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }
@@ -344,7 +354,7 @@ export class Client {
   async downloadPurchaseInvoice(invoiceId: number): Promise<any> {
     let axios = this.getAxios();
     let response = await axios.get(`/PurchaseInvoices/Download/${invoiceId}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -392,7 +402,9 @@ export class Client {
 
   async listSuppliers(params?: ListSuppliersParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/Suppliers', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/Suppliers', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 
@@ -423,7 +435,9 @@ export class Client {
 
   async listReceipts(params?: ListReceiptsParams): Promise<any[]> {
     let axios = this.getAxios();
-    let response = await axios.get('/Receipts', { params: this.buildPaginationParams(params) });
+    let response = await axios.get('/Receipts', {
+      params: this.buildPaginationParams(params)
+    });
     return response.data;
   }
 

@@ -254,14 +254,20 @@ export class WaveClient {
     return body.data;
   }
 
-  private extractEdges<T>(connection: { pageInfo: PageInfo; edges: Array<{ node: T }> }): PaginatedResult<T> {
+  private extractEdges<T>(connection: {
+    pageInfo: PageInfo;
+    edges: Array<{ node: T }>;
+  }): PaginatedResult<T> {
     return {
       pageInfo: connection.pageInfo,
       items: connection.edges.map(e => e.node)
     };
   }
 
-  private handleMutationResult<T>(result: { didSucceed: boolean; inputErrors: any[]; [key: string]: any }, dataKey: string): MutationResult<T> {
+  private handleMutationResult<T>(
+    result: { didSucceed: boolean; inputErrors: any[]; [key: string]: any },
+    dataKey: string
+  ): MutationResult<T> {
     return {
       didSucceed: result.didSucceed,
       inputErrors: result.inputErrors || [],
@@ -271,8 +277,14 @@ export class WaveClient {
 
   // --- Business Queries ---
 
-  async listBusinesses(page: number = 1, pageSize: number = 20): Promise<PaginatedResult<any>> {
-    let data = await this.query<{ businesses: any }>(gql.LIST_BUSINESSES_QUERY, { page, pageSize });
+  async listBusinesses(
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<PaginatedResult<any>> {
+    let data = await this.query<{ businesses: any }>(gql.LIST_BUSINESSES_QUERY, {
+      page,
+      pageSize
+    });
     return this.extractEdges(data.businesses);
   }
 
@@ -283,23 +295,37 @@ export class WaveClient {
 
   // --- Customer Operations ---
 
-  async listCustomers(businessId: string, page: number = 1, pageSize: number = 20): Promise<PaginatedResult<any>> {
-    let data = await this.query<{ business: { customers: any } }>(gql.LIST_CUSTOMERS_QUERY, { businessId, page, pageSize });
+  async listCustomers(
+    businessId: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<PaginatedResult<any>> {
+    let data = await this.query<{ business: { customers: any } }>(gql.LIST_CUSTOMERS_QUERY, {
+      businessId,
+      page,
+      pageSize
+    });
     return this.extractEdges(data.business.customers);
   }
 
   async createCustomer(input: CustomerCreateInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ customerCreate: any }>(gql.CREATE_CUSTOMER_MUTATION, { input });
+    let data = await this.query<{ customerCreate: any }>(gql.CREATE_CUSTOMER_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.customerCreate, 'customer');
   }
 
   async patchCustomer(input: CustomerPatchInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ customerPatch: any }>(gql.PATCH_CUSTOMER_MUTATION, { input });
+    let data = await this.query<{ customerPatch: any }>(gql.PATCH_CUSTOMER_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.customerPatch, 'customer');
   }
 
   async deleteCustomer(customerId: string): Promise<MutationResult<null>> {
-    let data = await this.query<{ customerDelete: any }>(gql.DELETE_CUSTOMER_MUTATION, { input: { id: customerId } });
+    let data = await this.query<{ customerDelete: any }>(gql.DELETE_CUSTOMER_MUTATION, {
+      input: { id: customerId }
+    });
     return {
       didSucceed: data.customerDelete.didSucceed,
       inputErrors: data.customerDelete.inputErrors || [],
@@ -309,13 +335,23 @@ export class WaveClient {
 
   // --- Account Operations ---
 
-  async listAccounts(businessId: string, page: number = 1, pageSize: number = 20): Promise<PaginatedResult<any>> {
-    let data = await this.query<{ business: { accounts: any } }>(gql.LIST_ACCOUNTS_QUERY, { businessId, page, pageSize });
+  async listAccounts(
+    businessId: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<PaginatedResult<any>> {
+    let data = await this.query<{ business: { accounts: any } }>(gql.LIST_ACCOUNTS_QUERY, {
+      businessId,
+      page,
+      pageSize
+    });
     return this.extractEdges(data.business.accounts);
   }
 
   async createAccount(input: AccountCreateInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ accountCreate: any }>(gql.CREATE_ACCOUNT_MUTATION, { input });
+    let data = await this.query<{ accountCreate: any }>(gql.CREATE_ACCOUNT_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.accountCreate, 'account');
   }
 
@@ -325,7 +361,9 @@ export class WaveClient {
   }
 
   async archiveAccount(accountId: string): Promise<MutationResult<null>> {
-    let data = await this.query<{ accountArchive: any }>(gql.ARCHIVE_ACCOUNT_MUTATION, { input: { id: accountId } });
+    let data = await this.query<{ accountArchive: any }>(gql.ARCHIVE_ACCOUNT_MUTATION, {
+      input: { id: accountId }
+    });
     return {
       didSucceed: data.accountArchive.didSucceed,
       inputErrors: data.accountArchive.inputErrors || [],
@@ -335,13 +373,23 @@ export class WaveClient {
 
   // --- Product Operations ---
 
-  async listProducts(businessId: string, page: number = 1, pageSize: number = 20): Promise<PaginatedResult<any>> {
-    let data = await this.query<{ business: { products: any } }>(gql.LIST_PRODUCTS_QUERY, { businessId, page, pageSize });
+  async listProducts(
+    businessId: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<PaginatedResult<any>> {
+    let data = await this.query<{ business: { products: any } }>(gql.LIST_PRODUCTS_QUERY, {
+      businessId,
+      page,
+      pageSize
+    });
     return this.extractEdges(data.business.products);
   }
 
   async createProduct(input: ProductCreateInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ productCreate: any }>(gql.CREATE_PRODUCT_MUTATION, { input });
+    let data = await this.query<{ productCreate: any }>(gql.CREATE_PRODUCT_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.productCreate, 'product');
   }
 
@@ -351,7 +399,9 @@ export class WaveClient {
   }
 
   async archiveProduct(productId: string): Promise<MutationResult<any>> {
-    let data = await this.query<{ productArchive: any }>(gql.ARCHIVE_PRODUCT_MUTATION, { input: { id: productId } });
+    let data = await this.query<{ productArchive: any }>(gql.ARCHIVE_PRODUCT_MUTATION, {
+      input: { id: productId }
+    });
     return {
       didSucceed: data.productArchive.didSucceed,
       inputErrors: data.productArchive.inputErrors || [],
@@ -361,23 +411,36 @@ export class WaveClient {
 
   // --- Sales Tax Operations ---
 
-  async listSalesTaxes(businessId: string, page: number = 1, pageSize: number = 20): Promise<PaginatedResult<any>> {
-    let data = await this.query<{ business: { salesTaxes: any } }>(gql.LIST_SALES_TAXES_QUERY, { businessId, page, pageSize });
+  async listSalesTaxes(
+    businessId: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<PaginatedResult<any>> {
+    let data = await this.query<{ business: { salesTaxes: any } }>(
+      gql.LIST_SALES_TAXES_QUERY,
+      { businessId, page, pageSize }
+    );
     return this.extractEdges(data.business.salesTaxes);
   }
 
   async createSalesTax(input: SalesTaxCreateInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ salesTaxCreate: any }>(gql.CREATE_SALES_TAX_MUTATION, { input });
+    let data = await this.query<{ salesTaxCreate: any }>(gql.CREATE_SALES_TAX_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.salesTaxCreate, 'salesTax');
   }
 
   async patchSalesTax(input: SalesTaxPatchInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ salesTaxPatch: any }>(gql.PATCH_SALES_TAX_MUTATION, { input });
+    let data = await this.query<{ salesTaxPatch: any }>(gql.PATCH_SALES_TAX_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.salesTaxPatch, 'salesTax');
   }
 
   async archiveSalesTax(salesTaxId: string): Promise<MutationResult<any>> {
-    let data = await this.query<{ salesTaxArchive: any }>(gql.ARCHIVE_SALES_TAX_MUTATION, { input: { id: salesTaxId } });
+    let data = await this.query<{ salesTaxArchive: any }>(gql.ARCHIVE_SALES_TAX_MUTATION, {
+      input: { id: salesTaxId }
+    });
     return {
       didSucceed: data.salesTaxArchive.didSucceed,
       inputErrors: data.salesTaxArchive.inputErrors || [],
@@ -387,17 +450,31 @@ export class WaveClient {
 
   // --- Invoice Operations ---
 
-  async listInvoices(businessId: string, page: number = 1, pageSize: number = 20, customerId?: string): Promise<PaginatedResult<any>> {
+  async listInvoices(
+    businessId: string,
+    page: number = 1,
+    pageSize: number = 20,
+    customerId?: string
+  ): Promise<PaginatedResult<any>> {
     if (customerId) {
-      let data = await this.query<{ business: { invoices: any } }>(gql.LIST_INVOICES_BY_CUSTOMER_QUERY, { businessId, page, pageSize, customerId });
+      let data = await this.query<{ business: { invoices: any } }>(
+        gql.LIST_INVOICES_BY_CUSTOMER_QUERY,
+        { businessId, page, pageSize, customerId }
+      );
       return this.extractEdges(data.business.invoices);
     }
-    let data = await this.query<{ business: { invoices: any } }>(gql.LIST_INVOICES_QUERY, { businessId, page, pageSize });
+    let data = await this.query<{ business: { invoices: any } }>(gql.LIST_INVOICES_QUERY, {
+      businessId,
+      page,
+      pageSize
+    });
     return this.extractEdges(data.business.invoices);
   }
 
   async createInvoice(input: InvoiceCreateInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ invoiceCreate: any }>(gql.CREATE_INVOICE_MUTATION, { input });
+    let data = await this.query<{ invoiceCreate: any }>(gql.CREATE_INVOICE_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.invoiceCreate, 'invoice');
   }
 
@@ -407,7 +484,9 @@ export class WaveClient {
   }
 
   async deleteInvoice(invoiceId: string): Promise<MutationResult<null>> {
-    let data = await this.query<{ invoiceDelete: any }>(gql.DELETE_INVOICE_MUTATION, { input: { id: invoiceId } });
+    let data = await this.query<{ invoiceDelete: any }>(gql.DELETE_INVOICE_MUTATION, {
+      input: { id: invoiceId }
+    });
     return {
       didSucceed: data.invoiceDelete.didSucceed,
       inputErrors: data.invoiceDelete.inputErrors || [],
@@ -415,7 +494,13 @@ export class WaveClient {
     };
   }
 
-  async sendInvoice(invoiceId: string, to?: string[], subject?: string, message?: string, attachPdf?: boolean): Promise<MutationResult<null>> {
+  async sendInvoice(
+    invoiceId: string,
+    to?: string[],
+    subject?: string,
+    message?: string,
+    attachPdf?: boolean
+  ): Promise<MutationResult<null>> {
     let input: any = { invoiceId };
     if (to) input.to = to;
     if (subject) input.subject = subject;
@@ -431,7 +516,9 @@ export class WaveClient {
   }
 
   async approveInvoice(invoiceId: string): Promise<MutationResult<any>> {
-    let data = await this.query<{ invoiceApprove: any }>(gql.APPROVE_INVOICE_MUTATION, { input: { invoiceId } });
+    let data = await this.query<{ invoiceApprove: any }>(gql.APPROVE_INVOICE_MUTATION, {
+      input: { invoiceId }
+    });
     return this.handleMutationResult(data.invoiceApprove, 'invoice');
   }
 
@@ -439,26 +526,43 @@ export class WaveClient {
     let input: any = { invoiceId };
     if (sentAt) input.sentAt = sentAt;
 
-    let data = await this.query<{ invoiceMarkSent: any }>(gql.MARK_INVOICE_SENT_MUTATION, { input });
+    let data = await this.query<{ invoiceMarkSent: any }>(gql.MARK_INVOICE_SENT_MUTATION, {
+      input
+    });
     return this.handleMutationResult(data.invoiceMarkSent, 'invoice');
   }
 
   async cloneInvoice(invoiceId: string): Promise<MutationResult<any>> {
-    let data = await this.query<{ invoiceClone: any }>(gql.CLONE_INVOICE_MUTATION, { input: { invoiceId } });
+    let data = await this.query<{ invoiceClone: any }>(gql.CLONE_INVOICE_MUTATION, {
+      input: { invoiceId }
+    });
     return this.handleMutationResult(data.invoiceClone, 'invoice');
   }
 
   // --- Money Transaction Operations ---
 
-  async createMoneyTransaction(input: MoneyTransactionCreateInput): Promise<MutationResult<any>> {
-    let data = await this.query<{ moneyTransactionCreate: any }>(gql.CREATE_MONEY_TRANSACTION_MUTATION, { input });
+  async createMoneyTransaction(
+    input: MoneyTransactionCreateInput
+  ): Promise<MutationResult<any>> {
+    let data = await this.query<{ moneyTransactionCreate: any }>(
+      gql.CREATE_MONEY_TRANSACTION_MUTATION,
+      { input }
+    );
     return this.handleMutationResult(data.moneyTransactionCreate, 'transaction');
   }
 
   // --- Vendor Operations ---
 
-  async listVendors(businessId: string, page: number = 1, pageSize: number = 20): Promise<PaginatedResult<any>> {
-    let data = await this.query<{ business: { vendors: any } }>(gql.LIST_VENDORS_QUERY, { businessId, page, pageSize });
+  async listVendors(
+    businessId: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<PaginatedResult<any>> {
+    let data = await this.query<{ business: { vendors: any } }>(gql.LIST_VENDORS_QUERY, {
+      businessId,
+      page,
+      pageSize
+    });
     return this.extractEdges(data.business.vendors);
   }
 

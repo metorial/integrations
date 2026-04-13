@@ -20,12 +20,14 @@ let packageSchema = z.object({
     value: z.number().describe('Weight value'),
     unit: z.enum(['pound', 'ounce', 'gram', 'kilogram']).describe('Weight unit')
   }),
-  dimensions: z.object({
-    length: z.number().describe('Length'),
-    width: z.number().describe('Width'),
-    height: z.number().describe('Height'),
-    unit: z.enum(['inch', 'centimeter']).describe('Dimension unit')
-  }).optional(),
+  dimensions: z
+    .object({
+      length: z.number().describe('Length'),
+      width: z.number().describe('Width'),
+      height: z.number().describe('Height'),
+      unit: z.enum(['inch', 'centimeter']).describe('Dimension unit')
+    })
+    .optional(),
   packageCode: z.string().optional().describe('Carrier-specific package type code')
 });
 
@@ -45,53 +47,57 @@ let shipmentOutputSchema = z.object({
   tags: z.array(z.string()).describe('Tags assigned to the shipment')
 });
 
-export let createShipment = SlateTool.create(
-  spec,
-  {
-    name: 'Create Shipment',
-    key: 'create_shipment',
-    description: `Create a new shipment with origin/destination addresses, package details, and optional carrier/service selection. The shipment can later be used to get rates or create labels.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let createShipment = SlateTool.create(spec, {
+  name: 'Create Shipment',
+  key: 'create_shipment',
+  description: `Create a new shipment with origin/destination addresses, package details, and optional carrier/service selection. The shipment can later be used to get rates or create labels.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    carrierId: z.string().optional().describe('Carrier ID'),
-    serviceCode: z.string().optional().describe('Service code'),
-    shipFrom: addressSchema.describe('Origin address'),
-    shipTo: addressSchema.describe('Destination address'),
-    packages: z.array(packageSchema).min(1).describe('Packages in the shipment'),
-    shipDate: z.string().optional().describe('Ship date in YYYY-MM-DD format'),
-    externalShipmentId: z.string().optional().describe('Your external reference ID'),
-    warehouseId: z.string().optional().describe('Warehouse to ship from'),
-    confirmation: z.enum(['none', 'delivery', 'signature', 'adult_signature', 'direct_signature']).optional().describe('Delivery confirmation type'),
-    tags: z.array(z.string()).optional().describe('Tags to assign to the shipment')
-  }))
+})
+  .input(
+    z.object({
+      carrierId: z.string().optional().describe('Carrier ID'),
+      serviceCode: z.string().optional().describe('Service code'),
+      shipFrom: addressSchema.describe('Origin address'),
+      shipTo: addressSchema.describe('Destination address'),
+      packages: z.array(packageSchema).min(1).describe('Packages in the shipment'),
+      shipDate: z.string().optional().describe('Ship date in YYYY-MM-DD format'),
+      externalShipmentId: z.string().optional().describe('Your external reference ID'),
+      warehouseId: z.string().optional().describe('Warehouse to ship from'),
+      confirmation: z
+        .enum(['none', 'delivery', 'signature', 'adult_signature', 'direct_signature'])
+        .optional()
+        .describe('Delivery confirmation type'),
+      tags: z.array(z.string()).optional().describe('Tags to assign to the shipment')
+    })
+  )
   .output(shipmentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
     });
 
-    let result = await client.createShipments([{
-      carrier_id: ctx.input.carrierId,
-      service_code: ctx.input.serviceCode,
-      ship_from: mapAddressToApi(ctx.input.shipFrom),
-      ship_to: mapAddressToApi(ctx.input.shipTo),
-      packages: ctx.input.packages.map((p) => ({
-        weight: p.weight,
-        dimensions: p.dimensions,
-        package_code: p.packageCode
-      })),
-      ship_date: ctx.input.shipDate,
-      external_shipment_id: ctx.input.externalShipmentId,
-      warehouse_id: ctx.input.warehouseId,
-      confirmation: ctx.input.confirmation,
-      tags: ctx.input.tags?.map((t) => ({ name: t }))
-    }]);
+    let result = await client.createShipments([
+      {
+        carrier_id: ctx.input.carrierId,
+        service_code: ctx.input.serviceCode,
+        ship_from: mapAddressToApi(ctx.input.shipFrom),
+        ship_to: mapAddressToApi(ctx.input.shipTo),
+        packages: ctx.input.packages.map(p => ({
+          weight: p.weight,
+          dimensions: p.dimensions,
+          package_code: p.packageCode
+        })),
+        ship_date: ctx.input.shipDate,
+        external_shipment_id: ctx.input.externalShipmentId,
+        warehouse_id: ctx.input.warehouseId,
+        confirmation: ctx.input.confirmation,
+        tags: ctx.input.tags?.map(t => ({ name: t }))
+      }
+    ]);
 
     let shipment = result.shipments[0]!;
 
@@ -99,31 +105,31 @@ export let createShipment = SlateTool.create(
       output: mapShipmentOutput(shipment),
       message: `Created shipment **${shipment.shipment_id}** (status: ${shipment.shipment_status}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateShipment = SlateTool.create(
-  spec,
-  {
-    name: 'Update Shipment',
-    key: 'update_shipment',
-    description: `Update an existing shipment's details such as addresses, packages, carrier, or service. Only provided fields will be updated.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let updateShipment = SlateTool.create(spec, {
+  name: 'Update Shipment',
+  key: 'update_shipment',
+  description: `Update an existing shipment's details such as addresses, packages, carrier, or service. Only provided fields will be updated.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    shipmentId: z.string().describe('ID of the shipment to update'),
-    carrierId: z.string().optional().describe('New carrier ID'),
-    serviceCode: z.string().optional().describe('New service code'),
-    shipFrom: addressSchema.optional().describe('Updated origin address'),
-    shipTo: addressSchema.optional().describe('Updated destination address'),
-    packages: z.array(packageSchema).optional().describe('Updated packages'),
-    shipDate: z.string().optional().describe('Updated ship date')
-  }))
+})
+  .input(
+    z.object({
+      shipmentId: z.string().describe('ID of the shipment to update'),
+      carrierId: z.string().optional().describe('New carrier ID'),
+      serviceCode: z.string().optional().describe('New service code'),
+      shipFrom: addressSchema.optional().describe('Updated origin address'),
+      shipTo: addressSchema.optional().describe('Updated destination address'),
+      packages: z.array(packageSchema).optional().describe('Updated packages'),
+      shipDate: z.string().optional().describe('Updated ship date')
+    })
+  )
   .output(shipmentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -134,11 +140,12 @@ export let updateShipment = SlateTool.create(
     if (ctx.input.serviceCode) update.service_code = ctx.input.serviceCode;
     if (ctx.input.shipFrom) update.ship_from = mapAddressToApi(ctx.input.shipFrom);
     if (ctx.input.shipTo) update.ship_to = mapAddressToApi(ctx.input.shipTo);
-    if (ctx.input.packages) update.packages = ctx.input.packages.map((p) => ({
-      weight: p.weight,
-      dimensions: p.dimensions,
-      package_code: p.packageCode
-    }));
+    if (ctx.input.packages)
+      update.packages = ctx.input.packages.map(p => ({
+        weight: p.weight,
+        dimensions: p.dimensions,
+        package_code: p.packageCode
+      }));
     if (ctx.input.shipDate) update.ship_date = ctx.input.shipDate;
 
     let shipment = await client.updateShipment(ctx.input.shipmentId, update);
@@ -147,27 +154,29 @@ export let updateShipment = SlateTool.create(
       output: mapShipmentOutput(shipment),
       message: `Updated shipment **${shipment.shipment_id}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let cancelShipment = SlateTool.create(
-  spec,
-  {
-    name: 'Cancel Shipment',
-    key: 'cancel_shipment',
-    description: `Cancel an existing shipment by its ID. This removes the shipment from ShipEngine.`,
-    tags: {
-      readOnly: false,
-      destructive: true
-    }
+export let cancelShipment = SlateTool.create(spec, {
+  name: 'Cancel Shipment',
+  key: 'cancel_shipment',
+  description: `Cancel an existing shipment by its ID. This removes the shipment from ShipEngine.`,
+  tags: {
+    readOnly: false,
+    destructive: true
   }
-)
-  .input(z.object({
-    shipmentId: z.string().describe('ID of the shipment to cancel')
-  }))
-  .output(z.object({
-    cancelled: z.boolean().describe('Whether the shipment was cancelled')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      shipmentId: z.string().describe('ID of the shipment to cancel')
+    })
+  )
+  .output(
+    z.object({
+      cancelled: z.boolean().describe('Whether the shipment was cancelled')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -179,7 +188,8 @@ export let cancelShipment = SlateTool.create(
       output: { cancelled: true },
       message: `Cancelled shipment **${ctx.input.shipmentId}**.`
     };
-  }).build();
+  })
+  .build();
 
 let mapAddressToApi = (addr: any) => ({
   name: addr.name,

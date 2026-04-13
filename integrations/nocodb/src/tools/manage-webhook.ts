@@ -3,49 +3,85 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWebhook = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Webhook',
-    key: 'manage_webhook',
-    description: `Create, update, delete, or list webhooks on a NocoDB table. Webhooks notify external services when record events occur (insert, update, delete).
+export let manageWebhook = SlateTool.create(spec, {
+  name: 'Manage Webhook',
+  key: 'manage_webhook',
+  description: `Create, update, delete, or list webhooks on a NocoDB table. Webhooks notify external services when record events occur (insert, update, delete).
 - **list**: List all webhooks for a table.
 - **create**: Create a new webhook on a table.
 - **update**: Update an existing webhook.
 - **delete**: Delete a webhook.`,
-    instructions: [
-      'Supported events: after.insert, after.update, after.delete',
-      'The notification type for URL-based webhooks is "URL".',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    tableId: z.string().optional().describe('Table ID (required for list and create)'),
-    hookId: z.string().optional().describe('Webhook/hook ID (required for update and delete)'),
-    title: z.string().optional().describe('Webhook title (for create/update)'),
-    event: z.enum(['after.insert', 'after.update', 'after.delete']).optional().describe('Event type to trigger on (for create/update)'),
-    notificationUrl: z.string().optional().describe('URL to call when webhook fires (for create/update)'),
-    notificationMethod: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional().describe('HTTP method for the webhook call (default POST)'),
-    headers: z.array(z.object({
-      name: z.string(),
-      value: z.string(),
-    })).optional().describe('Custom headers to send with webhook request'),
-    active: z.boolean().optional().describe('Whether the webhook is active (for create/update)'),
-  }))
-  .output(z.object({
-    webhooks: z.array(z.object({
-      hookId: z.string().describe('Webhook ID'),
-      title: z.string().optional(),
-      event: z.string().optional(),
-      active: z.boolean().optional(),
-    })).optional().describe('List of webhooks (for list action)'),
-    hookId: z.string().optional().describe('ID of the created/updated/deleted webhook'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Supported events: after.insert, after.update, after.delete',
+    'The notification type for URL-based webhooks is "URL".'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      tableId: z.string().optional().describe('Table ID (required for list and create)'),
+      hookId: z
+        .string()
+        .optional()
+        .describe('Webhook/hook ID (required for update and delete)'),
+      title: z.string().optional().describe('Webhook title (for create/update)'),
+      event: z
+        .enum(['after.insert', 'after.update', 'after.delete'])
+        .optional()
+        .describe('Event type to trigger on (for create/update)'),
+      notificationUrl: z
+        .string()
+        .optional()
+        .describe('URL to call when webhook fires (for create/update)'),
+      notificationMethod: z
+        .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+        .optional()
+        .describe('HTTP method for the webhook call (default POST)'),
+      headers: z
+        .array(
+          z.object({
+            name: z.string(),
+            value: z.string()
+          })
+        )
+        .optional()
+        .describe('Custom headers to send with webhook request'),
+      active: z
+        .boolean()
+        .optional()
+        .describe('Whether the webhook is active (for create/update)')
+    })
+  )
+  .output(
+    z.object({
+      webhooks: z
+        .array(
+          z.object({
+            hookId: z.string().describe('Webhook ID'),
+            title: z.string().optional(),
+            event: z.string().optional(),
+            active: z.boolean().optional()
+          })
+        )
+        .optional()
+        .describe('List of webhooks (for list action)'),
+      hookId: z.string().optional().describe('ID of the created/updated/deleted webhook'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
-    let { action, tableId, hookId, title, event, notificationUrl, notificationMethod, headers, active } = ctx.input;
+    let {
+      action,
+      tableId,
+      hookId,
+      title,
+      event,
+      notificationUrl,
+      notificationMethod,
+      headers,
+      active
+    } = ctx.input;
 
     if (action === 'list') {
       if (!tableId) throw new Error('tableId is required for listing webhooks');
@@ -55,11 +91,11 @@ export let manageWebhook = SlateTool.create(
         hookId: h.id,
         title: h.title,
         event: h.event,
-        active: h.active,
+        active: h.active
       }));
       return {
         output: { webhooks, success: true },
-        message: `Found **${webhooks.length}** webhook(s) for table \`${tableId}\`.`,
+        message: `Found **${webhooks.length}** webhook(s) for table \`${tableId}\`.`
       };
     }
 
@@ -77,14 +113,14 @@ export let manageWebhook = SlateTool.create(
             method: notificationMethod ?? 'POST',
             body: '{{ json data }}',
             url: notificationUrl,
-            headers: headers ? JSON.stringify(headers) : undefined,
-          },
-        },
+            headers: headers ? JSON.stringify(headers) : undefined
+          }
+        }
       };
       let result = await client.createWebhook(tableId, data);
       return {
         output: { hookId: result.id, success: true },
-        message: `Created webhook **${title ?? 'Webhook'}** (\`${result.id}\`) on table \`${tableId}\`.`,
+        message: `Created webhook **${title ?? 'Webhook'}** (\`${result.id}\`) on table \`${tableId}\`.`
       };
     }
 
@@ -104,14 +140,14 @@ export let manageWebhook = SlateTool.create(
           payload: {
             ...(notificationUrl ? { url: notificationUrl } : {}),
             ...(notificationMethod ? { method: notificationMethod } : {}),
-            ...(headers ? { headers: JSON.stringify(headers) } : {}),
-          },
+            ...(headers ? { headers: JSON.stringify(headers) } : {})
+          }
         };
       }
       await client.updateWebhook(hookId, data);
       return {
         output: { hookId, success: true },
-        message: `Updated webhook \`${hookId}\`.`,
+        message: `Updated webhook \`${hookId}\`.`
       };
     }
 
@@ -120,7 +156,7 @@ export let manageWebhook = SlateTool.create(
       await client.deleteWebhook(hookId);
       return {
         output: { hookId, success: true },
-        message: `Deleted webhook \`${hookId}\`.`,
+        message: `Deleted webhook \`${hookId}\`.`
       };
     }
 

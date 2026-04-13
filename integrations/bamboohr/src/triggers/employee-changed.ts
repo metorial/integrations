@@ -3,28 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let employeeChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Employee Data Changed',
-    key: 'employee_changed',
-    description: 'Triggers when employee data is created, updated, or deleted in BambooHR. Uses webhooks registered via the Permissioned Webhooks API to receive real-time notifications about employee changes.'
-  }
-)
-  .input(z.object({
-    action: z.enum(['Created', 'Updated', 'Deleted']).describe('The type of change that occurred'),
-    employeeId: z.string().describe('The employee ID that was changed'),
-    changedFields: z.record(z.string(), z.any()).optional().describe('Fields that changed and their new values (for Updated action)'),
-    employeeFields: z.record(z.string(), z.any()).optional().describe('Employee fields included in the webhook payload')
-  }))
-  .output(z.object({
-    employeeId: z.string().describe('The employee ID that was affected'),
-    action: z.string().describe('The action that triggered the event: created, updated, or deleted'),
-    changedFields: z.record(z.string(), z.any()).optional().describe('Fields that were changed (for updates)'),
-    employeeFields: z.record(z.string(), z.any()).optional().describe('Current employee field values from the webhook')
-  }))
+export let employeeChanged = SlateTrigger.create(spec, {
+  name: 'Employee Data Changed',
+  key: 'employee_changed',
+  description:
+    'Triggers when employee data is created, updated, or deleted in BambooHR. Uses webhooks registered via the Permissioned Webhooks API to receive real-time notifications about employee changes.'
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['Created', 'Updated', 'Deleted'])
+        .describe('The type of change that occurred'),
+      employeeId: z.string().describe('The employee ID that was changed'),
+      changedFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Fields that changed and their new values (for Updated action)'),
+      employeeFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Employee fields included in the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      employeeId: z.string().describe('The employee ID that was affected'),
+      action: z
+        .string()
+        .describe('The action that triggered the event: created, updated, or deleted'),
+      changedFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Fields that were changed (for updates)'),
+      employeeFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Current employee field values from the webhook')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         companyDomain: ctx.config.companyDomain
@@ -44,9 +62,17 @@ export let employeeChanged = SlateTrigger.create(
       // If we couldn't discover fields, use common defaults
       if (monitorFields.length === 0) {
         monitorFields = [
-          'firstName', 'lastName', 'workEmail', 'jobTitle',
-          'department', 'division', 'location', 'status',
-          'hireDate', 'terminationDate', 'supervisorEId'
+          'firstName',
+          'lastName',
+          'workEmail',
+          'jobTitle',
+          'department',
+          'division',
+          'location',
+          'status',
+          'hireDate',
+          'terminationDate',
+          'supervisorEId'
         ];
       }
 
@@ -73,7 +99,7 @@ export let employeeChanged = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         companyDomain: ctx.config.companyDomain
@@ -85,7 +111,7 @@ export let employeeChanged = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -124,7 +150,7 @@ export let employeeChanged = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let actionLower = ctx.input.action.toLowerCase();
       let eventId = `employee_${ctx.input.employeeId}_${actionLower}_${Date.now()}`;
 
@@ -139,4 +165,5 @@ export let employeeChanged = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

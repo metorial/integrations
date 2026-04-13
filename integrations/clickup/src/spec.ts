@@ -5,7 +5,8 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'clickup',
   name: 'ClickUp',
-  description: 'Project management and productivity platform with tasks, docs, goals, time tracking, and customizable workflows.',
+  description:
+    'Project management and productivity platform with tasks, docs, goals, time tracking, and customizable workflows.',
   metadata: {},
   config,
   auth

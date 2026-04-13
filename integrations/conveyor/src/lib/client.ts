@@ -17,11 +17,7 @@ export class ConveyorClient {
 
   // ─── Analytics: Connections ───
 
-  async listConnections(params?: {
-    domain?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listConnections(params?: { domain?: string; page?: number; perPage?: number }) {
     let response = await this.http.get('/exchange/connections', {
       params: {
         domain: params?.domain,
@@ -77,13 +73,16 @@ export class ConveyorClient {
     return response.data;
   }
 
-  async listInteractionsByConnection(connectionId: string, params?: {
-    type?: string;
-    createdAtStart?: string;
-    createdAtEnd?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listInteractionsByConnection(
+    connectionId: string,
+    params?: {
+      type?: string;
+      createdAtStart?: string;
+      createdAtEnd?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.http.get(`/interactions/connections/${connectionId}`, {
       params: {
         type: params?.type,
@@ -96,12 +95,15 @@ export class ConveyorClient {
     return response.data;
   }
 
-  async listInteractionsByDocument(documentId: string, params?: {
-    createdAtStart?: string;
-    createdAtEnd?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listInteractionsByDocument(
+    documentId: string,
+    params?: {
+      createdAtStart?: string;
+      createdAtEnd?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.http.get(`/interactions/documents/${documentId}`, {
       params: {
         created_at_start: params?.createdAtStart,
@@ -113,12 +115,15 @@ export class ConveyorClient {
     return response.data;
   }
 
-  async listInteractionsByQuestion(questionId: string, params?: {
-    createdAtStart?: string;
-    createdAtEnd?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listInteractionsByQuestion(
+    questionId: string,
+    params?: {
+      createdAtStart?: string;
+      createdAtEnd?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.http.get(`/interactions/questions/${questionId}`, {
       params: {
         created_at_start: params?.createdAtStart,
@@ -132,10 +137,7 @@ export class ConveyorClient {
 
   // ─── Portal: Authorization Requests ───
 
-  async listAuthorizationRequests(params?: {
-    status?: string;
-    email?: string;
-  }) {
+  async listAuthorizationRequests(params?: { status?: string; email?: string }) {
     let response = await this.http.get('/exchange/authorization_requests', {
       params: {
         status: params?.status,
@@ -146,26 +148,29 @@ export class ConveyorClient {
   }
 
   async getAuthorizationRequest(authorizationRequestId: string) {
-    let response = await this.http.get(`/exchange/authorization_requests/${authorizationRequestId}`);
+    let response = await this.http.get(
+      `/exchange/authorization_requests/${authorizationRequestId}`
+    );
     return response.data;
   }
 
   async ignoreAuthorizationRequest(authorizationRequestId: string, reviewerEmail: string) {
-    let response = await this.http.patch(`/exchange/authorization_requests/${authorizationRequestId}`, null, {
-      params: {
-        status: 'ignored',
-        reviewer_email: reviewerEmail
+    let response = await this.http.patch(
+      `/exchange/authorization_requests/${authorizationRequestId}`,
+      null,
+      {
+        params: {
+          status: 'ignored',
+          reviewer_email: reviewerEmail
+        }
       }
-    });
+    );
     return response.data;
   }
 
   // ─── Portal: Authorizations ───
 
-  async listAuthorizations(params?: {
-    status?: string;
-    email?: string;
-  }) {
+  async listAuthorizations(params?: { status?: string; email?: string }) {
     let response = await this.http.get('/exchange/authorizations', {
       params: {
         status: params?.status,
@@ -194,10 +199,13 @@ export class ConveyorClient {
     return response.data;
   }
 
-  async updateAuthorization(authorizationId: string, params: {
-    accessGroupIds?: string[];
-    status?: string;
-  }) {
+  async updateAuthorization(
+    authorizationId: string,
+    params: {
+      accessGroupIds?: string[];
+      status?: string;
+    }
+  ) {
     let response = await this.http.patch(`/exchange/authorizations/${authorizationId}`, null, {
       params: {
         access_group_ids: params.accessGroupIds,
@@ -262,8 +270,10 @@ export class ConveyorClient {
     if (params.accessLevel) formData.append('access_level', params.accessLevel);
     if (params.productLineIds) formData.append('product_line_ids', params.productLineIds);
     if (params.accessGroupIds) formData.append('access_group_ids', params.accessGroupIds);
-    if (params.disableDownloads !== undefined) formData.append('disable_downloads', String(params.disableDownloads));
-    if (params.useForQuestionAnswering !== undefined) formData.append('use_for_question_answering', String(params.useForQuestionAnswering));
+    if (params.disableDownloads !== undefined)
+      formData.append('disable_downloads', String(params.disableDownloads));
+    if (params.useForQuestionAnswering !== undefined)
+      formData.append('use_for_question_answering', String(params.useForQuestionAnswering));
 
     let response = await this.http.post('/exchange/documents', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
@@ -271,19 +281,22 @@ export class ConveyorClient {
     return response.data;
   }
 
-  async updateDocument(documentId: string, params: {
-    name?: string;
-    description?: string;
-    certification?: string;
-    featured?: boolean;
-    folderId?: string;
-    accessLevel?: string;
-    productLineIds?: string;
-    accessGroupIds?: string;
-    disableDownloads?: boolean;
-    useForQuestionAnswering?: boolean;
-    file?: any;
-  }) {
+  async updateDocument(
+    documentId: string,
+    params: {
+      name?: string;
+      description?: string;
+      certification?: string;
+      featured?: boolean;
+      folderId?: string;
+      accessLevel?: string;
+      productLineIds?: string;
+      accessGroupIds?: string;
+      disableDownloads?: boolean;
+      useForQuestionAnswering?: boolean;
+      file?: any;
+    }
+  ) {
     let formData = new FormData();
     if (params.name) formData.append('name', params.name);
     if (params.description) formData.append('description', params.description);
@@ -293,8 +306,10 @@ export class ConveyorClient {
     if (params.accessLevel) formData.append('access_level', params.accessLevel);
     if (params.productLineIds) formData.append('product_line_ids', params.productLineIds);
     if (params.accessGroupIds) formData.append('access_group_ids', params.accessGroupIds);
-    if (params.disableDownloads !== undefined) formData.append('disable_downloads', String(params.disableDownloads));
-    if (params.useForQuestionAnswering !== undefined) formData.append('use_for_question_answering', String(params.useForQuestionAnswering));
+    if (params.disableDownloads !== undefined)
+      formData.append('disable_downloads', String(params.disableDownloads));
+    if (params.useForQuestionAnswering !== undefined)
+      formData.append('use_for_question_answering', String(params.useForQuestionAnswering));
     if (params.file) formData.append('file', params.file);
 
     let response = await this.http.patch(`/exchange/documents/${documentId}`, formData, {
@@ -352,7 +367,8 @@ export class ConveyorClient {
     formData.append('domain', params.domain);
     formData.append('email', params.email);
     formData.append('original_format', params.originalFormat);
-    if (params.questionnaireType) formData.append('questionnaire_type', params.questionnaireType);
+    if (params.questionnaireType)
+      formData.append('questionnaire_type', params.questionnaireType);
     if (params.dueAt) formData.append('due_at', params.dueAt);
     if (params.productLineIds) formData.append('product_line_ids', params.productLineIds);
     if (params.portalUrl) formData.append('portal_url', params.portalUrl);
@@ -360,7 +376,8 @@ export class ConveyorClient {
     if (params.file) formData.append('file', params.file);
     if (params.customerName) formData.append('customer_name', params.customerName);
     if (params.crmId) formData.append('crm_id', params.crmId);
-    if (params.crmAmount !== undefined) formData.append('crm_amount', String(params.crmAmount));
+    if (params.crmAmount !== undefined)
+      formData.append('crm_amount', String(params.crmAmount));
 
     let response = await this.http.post('/questionnaires', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
@@ -382,8 +399,10 @@ export class ConveyorClient {
   }) {
     let formData = new FormData();
     if (params.submitterEmail) formData.append('submitter_email', params.submitterEmail);
-    if (params.submitterExternalId) formData.append('submitter_external_id', params.submitterExternalId);
-    if (params.submitterExternalName) formData.append('submitter_external_name', params.submitterExternalName);
+    if (params.submitterExternalId)
+      formData.append('submitter_external_id', params.submitterExternalId);
+    if (params.submitterExternalName)
+      formData.append('submitter_external_name', params.submitterExternalName);
     if (params.externalId) formData.append('external_id', params.externalId);
     if (params.caseIds) formData.append('case_ids', params.caseIds);
     if (params.rawData) formData.append('raw_data', params.rawData);

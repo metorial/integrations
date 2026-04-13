@@ -3,37 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listOccurrences = SlateTool.create(
-  spec,
-  {
-    name: 'List Occurrences',
-    key: 'list_occurrences',
-    description: `List individual occurrences (instances) of errors/messages. Can list all occurrences in a project or only those belonging to a specific item.`,
-    tags: {
-      readOnly: true,
-    },
+export let listOccurrences = SlateTool.create(spec, {
+  name: 'List Occurrences',
+  key: 'list_occurrences',
+  description: `List individual occurrences (instances) of errors/messages. Can list all occurrences in a project or only those belonging to a specific item.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    itemId: z.number().optional().describe('Filter occurrences to a specific item ID. If omitted, returns occurrences across all items.'),
-    page: z.number().optional().describe('Page number for pagination'),
-  }))
-  .output(z.object({
-    occurrences: z.array(z.object({
-      occurrenceId: z.string().describe('Unique occurrence ID'),
-      itemId: z.number().optional().describe('Parent item ID'),
-      timestamp: z.number().optional().describe('Unix timestamp of the occurrence'),
-      level: z.string().optional().describe('Severity level'),
-      environment: z.string().optional().describe('Environment name'),
-      framework: z.string().optional().describe('Framework'),
-      platform: z.string().optional().describe('Platform'),
-      language: z.string().optional().describe('Programming language'),
-      server: z.any().optional().describe('Server information'),
-      body: z.any().optional().describe('Occurrence body with error/message details'),
-    })).describe('List of occurrences'),
-    page: z.number().describe('Current page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      itemId: z
+        .number()
+        .optional()
+        .describe(
+          'Filter occurrences to a specific item ID. If omitted, returns occurrences across all items.'
+        ),
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      occurrences: z
+        .array(
+          z.object({
+            occurrenceId: z.string().describe('Unique occurrence ID'),
+            itemId: z.number().optional().describe('Parent item ID'),
+            timestamp: z.number().optional().describe('Unix timestamp of the occurrence'),
+            level: z.string().optional().describe('Severity level'),
+            environment: z.string().optional().describe('Environment name'),
+            framework: z.string().optional().describe('Framework'),
+            platform: z.string().optional().describe('Platform'),
+            language: z.string().optional().describe('Programming language'),
+            server: z.any().optional().describe('Server information'),
+            body: z.any().optional().describe('Occurrence body with error/message details')
+          })
+        )
+        .describe('List of occurrences'),
+      page: z.number().describe('Current page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result: any;
@@ -54,15 +64,15 @@ export let listOccurrences = SlateTool.create(
       platform: occ.data?.platform,
       language: occ.data?.language,
       server: occ.data?.server,
-      body: occ.data?.body,
+      body: occ.data?.body
     }));
 
     return {
       output: {
         occurrences,
-        page: ctx.input.page || 1,
+        page: ctx.input.page || 1
       },
-      message: `Found **${occurrences.length}** occurrences${ctx.input.itemId ? ` for item ${ctx.input.itemId}` : ''}.`,
+      message: `Found **${occurrences.length}** occurrences${ctx.input.itemId ? ` for item ${ctx.input.itemId}` : ''}.`
     };
   })
   .build();

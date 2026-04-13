@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   calculateTax,
@@ -22,13 +21,9 @@ import {
   deleteCustomer,
   listNexusRegions,
   validateAddress,
-  listSummarizedRates,
+  listSummarizedRates
 } from './tools';
-import {
-  newOrderTrigger,
-  newRefundTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newOrderTrigger, newRefundTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,11 +48,7 @@ export let provider = Slate.create({
     deleteCustomer,
     listNexusRegions,
     validateAddress,
-    listSummarizedRates,
+    listSummarizedRates
   ],
-  triggers: [
-    inboundWebhook,
-    newOrderTrigger,
-    newRefundTrigger,
-  ],
+  triggers: [inboundWebhook, newOrderTrigger, newRefundTrigger]
 });

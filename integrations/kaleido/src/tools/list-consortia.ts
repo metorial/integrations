@@ -9,26 +9,35 @@ export let listConsortia = SlateTool.create(spec, {
   description: `List all consortia in your Kaleido organization. A consortium represents a business network that groups memberships, environments, and blockchain resources.
 Use this to discover available consortia, their current state, and associated metadata.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
   .input(z.object({}))
-  .output(z.object({
-    consortia: z.array(z.object({
-      consortiumId: z.string().describe('Unique consortium identifier'),
-      name: z.string().describe('Consortium name'),
-      description: z.string().optional().describe('Consortium description'),
-      mode: z.string().optional().describe('Consortium mode (single-org or decentralized)'),
-      state: z.string().optional().describe('Current state of the consortium'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-      owner: z.string().optional().describe('Owning organization ID'),
-    })).describe('List of consortia'),
-    count: z.number().describe('Number of consortia'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      consortia: z
+        .array(
+          z.object({
+            consortiumId: z.string().describe('Unique consortium identifier'),
+            name: z.string().describe('Consortium name'),
+            description: z.string().optional().describe('Consortium description'),
+            mode: z
+              .string()
+              .optional()
+              .describe('Consortium mode (single-org or decentralized)'),
+            state: z.string().optional().describe('Current state of the consortium'),
+            createdAt: z.string().optional().describe('Creation timestamp'),
+            owner: z.string().optional().describe('Owning organization ID')
+          })
+        )
+        .describe('List of consortia'),
+      count: z.number().describe('Number of consortia')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new KaleidoClient({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let consortia = await client.listConsortia();
@@ -40,15 +49,15 @@ Use this to discover available consortia, their current state, and associated me
       mode: c.mode || undefined,
       state: c.state || undefined,
       createdAt: c.created_at || undefined,
-      owner: c.owner || undefined,
+      owner: c.owner || undefined
     }));
 
     return {
       output: {
         consortia: mapped,
-        count: mapped.length,
+        count: mapped.length
       },
-      message: `Found **${mapped.length}** consortium/consortia.${mapped.length > 0 ? ' ' + mapped.map(c => `**${c.name}** (${c.state || 'unknown'})`).join(', ') : ''}`,
+      message: `Found **${mapped.length}** consortium/consortia.${mapped.length > 0 ? ' ' + mapped.map(c => `**${c.name}** (${c.state || 'unknown'})`).join(', ') : ''}`
     };
   })
   .build();

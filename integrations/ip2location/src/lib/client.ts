@@ -174,12 +174,17 @@ export class Client {
       params
     });
     if (response.data?.error) {
-      throw new Error(`IP2Location API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`);
+      throw new Error(
+        `IP2Location API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`
+      );
     }
     return response.data;
   }
 
-  async getBulkGeolocation(ips: string[], language?: string): Promise<Record<string, GeolocationResult>> {
+  async getBulkGeolocation(
+    ips: string[],
+    language?: string
+  ): Promise<Record<string, GeolocationResult>> {
     let params: Record<string, string> = { format: 'json' };
     if (language && language !== 'en') {
       params.lang = language;
@@ -192,7 +197,9 @@ export class Client {
       params
     });
     if (response.data?.error) {
-      throw new Error(`IP2Location Bulk API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`);
+      throw new Error(
+        `IP2Location Bulk API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`
+      );
     }
     return response.data;
   }
@@ -203,7 +210,9 @@ export class Client {
       params: { domain, format: 'json' }
     });
     if (response.data?.error) {
-      throw new Error(`IP2WHOIS API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`);
+      throw new Error(
+        `IP2WHOIS API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`
+      );
     }
     return response.data;
   }
@@ -218,7 +227,9 @@ export class Client {
       params
     });
     if (response.data?.error) {
-      throw new Error(`Hosted Domains API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`);
+      throw new Error(
+        `Hosted Domains API error: ${response.data.error.error_message} (code: ${response.data.error.error_code})`
+      );
     }
     return response.data;
   }

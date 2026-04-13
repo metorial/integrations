@@ -193,24 +193,28 @@ export class Client {
   // --- Tasks ---
 
   async createTask(params: CreateTaskParams): Promise<Task> {
-    let response = await api.post('/tasks', {
-      item: {
-        title: params.title,
-        dartboard: params.dartboard,
-        description: params.description,
-        status: params.status,
-        type: params.type,
-        assignee: params.assignee,
-        assignees: params.assignees,
-        priority: params.priority,
-        tags: params.tags,
-        startAt: params.startAt,
-        dueAt: params.dueAt,
-        size: params.size,
-        parentId: params.parentId,
-        customProperties: params.customProperties
-      }
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/tasks',
+      {
+        item: {
+          title: params.title,
+          dartboard: params.dartboard,
+          description: params.description,
+          status: params.status,
+          type: params.type,
+          assignee: params.assignee,
+          assignees: params.assignees,
+          priority: params.priority,
+          tags: params.tags,
+          startAt: params.startAt,
+          dueAt: params.dueAt,
+          size: params.size,
+          parentId: params.parentId,
+          customProperties: params.customProperties
+        }
+      },
+      { headers: this.headers }
+    );
     return mapTask(response.data.item);
   }
 
@@ -235,7 +239,8 @@ export class Client {
     if (params.size !== undefined) item.size = params.size;
     if (params.parentId !== undefined) item.parentId = params.parentId;
     if (params.customProperties !== undefined) item.customProperties = params.customProperties;
-    if (params.taskRelationships !== undefined) item.taskRelationships = params.taskRelationships;
+    if (params.taskRelationships !== undefined)
+      item.taskRelationships = params.taskRelationships;
 
     let response = await api.put(`/tasks/${taskId}`, { item }, { headers: this.headers });
     return mapTask(response.data.item);
@@ -280,13 +285,17 @@ export class Client {
   // --- Comments ---
 
   async createComment(params: CreateCommentParams): Promise<Comment> {
-    let response = await api.post('/comments', {
-      item: {
-        taskId: params.taskId,
-        text: params.text,
-        parentId: params.parentId
-      }
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/comments',
+      {
+        item: {
+          taskId: params.taskId,
+          text: params.text,
+          parentId: params.parentId
+        }
+      },
+      { headers: this.headers }
+    );
     return mapComment(response.data.item);
   }
 
@@ -311,13 +320,17 @@ export class Client {
   // --- Documents ---
 
   async createDoc(params: CreateDocParams): Promise<Doc> {
-    let response = await api.post('/docs', {
-      item: {
-        title: params.title,
-        folder: params.folder,
-        text: params.text
-      }
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/docs',
+      {
+        item: {
+          title: params.title,
+          folder: params.folder,
+          text: params.text
+        }
+      },
+      { headers: this.headers }
+    );
     return mapDoc(response.data.item);
   }
 
@@ -374,7 +387,10 @@ export class Client {
       folders: data.folders ?? [],
       types: data.types ?? [],
       statuses: data.statuses ?? [],
-      assignees: (data.assignees ?? []).map((a: any) => ({ name: a.name ?? '', email: a.email ?? '' })),
+      assignees: (data.assignees ?? []).map((a: any) => ({
+        name: a.name ?? '',
+        email: a.email ?? ''
+      })),
       tags: data.tags ?? [],
       priorities: data.priorities ?? [],
       sizes: data.sizes ?? [],

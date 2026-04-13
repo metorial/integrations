@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getOrders,
@@ -15,11 +14,9 @@ import {
   manageCourierShipments,
   getCouriers,
   manageOrderReturns,
-  getExternalStorages,
+  getExternalStorages
 } from './tools';
-import { orderEvents,
-  inboundWebhook,
-} from './triggers';
+import { orderEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     manageCourierShipments,
     getCouriers,
     manageOrderReturns,
-    getExternalStorages,
+    getExternalStorages
   ],
-  triggers: [
-    inboundWebhook,
-    orderEvents,
-  ],
+  triggers: [inboundWebhook, orderEvents]
 });

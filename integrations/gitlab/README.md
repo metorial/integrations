@@ -5,54 +5,71 @@ Manage Git repositories, issues, merge requests, and CI/CD pipelines. Create, li
 ## Tools
 
 ### Add Comment
+
 Add a comment (note) to an issue or merge request. Supports Markdown formatting. Can also list existing comments on an issue or merge request.
 
 ### Browse Repository
+
 Browse a project's repository tree, read file contents, or compare branches. Use "tree" to list directory contents, "file" to read a specific file, or "compare" to view the diff between two refs (branches, tags, or SHAs).
 
 ### Create Release
+
 Create a new release for a project, or list existing releases. Releases are associated with a Git tag and can include release notes and milestone associations.
 
 ### Get Pipeline Jobs
+
 List all jobs in a CI/CD pipeline, or get details and logs for a specific job. Use this to inspect job statuses, view build logs, retry failed jobs, or cancel running jobs.
 
 ### Get Project
+
 Retrieve detailed information about a specific GitLab project by its ID or URL-encoded path (e.g. "my-group/my-project").
 
 ### List Groups
+
 List GitLab groups accessible to the authenticated user. Filter by search term or ownership.
 
 ### List Issues
+
 List GitLab issues filtered by project, state, labels, milestone, assignee, author, or search term. Can list issues globally or within a specific project. Supports pagination.
 
 ### List Merge Requests
+
 List GitLab merge requests, optionally scoped to a project. Filter by state, labels, source/target branch, author, assignee, or reviewer. Supports pagination.
 
 ### List Pipelines
+
 List CI/CD pipelines for a project. Filter by status, ref (branch/tag), SHA, or source. Useful for monitoring build and deployment status.
 
 ### List Projects
+
 List GitLab projects accessible to the authenticated user. Filter by search term, ownership, membership, visibility, and archived status. Supports pagination for large result sets.
 
 ### Manage Branch
+
 List, create, or delete branches in a project repository. Use "list" to search existing branches, "create" to create a new branch from a ref, or "delete" to remove a branch.
 
 ### Manage Repository File
+
 Create, update, or delete a file in a GitLab repository. Each operation creates a commit. Provide file content and a commit message. For binary files, use base64 encoding.
 
 ### Manage Issue
+
 Create, update, close, reopen, or delete a GitLab issue. Supports setting title, description, labels, assignees, milestone, due date, weight, and confidentiality. Use **stateEvent** to close or reopen an existing issue.
 
 ### Manage Merge Request
+
 Create, update, or merge a GitLab merge request. Create MRs with source/target branches, reviewers, and labels. Update MR properties, close/reopen, or accept and merge. Use **action** "merge" to accept and merge the MR.
 
 ### Manage Pipeline
+
 Trigger, retry, or cancel a CI/CD pipeline. Use "create" to trigger a new pipeline on a given ref (branch/tag). Use "retry" or "cancel" to manage an existing pipeline by its ID. Optionally pass CI/CD variables when triggering.
 
 ### Manage Project
+
 Create, update, fork, or delete a GitLab project. Use the **action** field to specify the operation. For creating, provide a name and optional settings. For updating, provide the project ID and fields to change. For forking, provide the source project ID.
 
 ### Search
+
 Search across GitLab for projects, issues, merge requests, milestones, code (blobs), commits, wiki content, and users. Can search globally, within a group, or within a specific project.
 
 ## License

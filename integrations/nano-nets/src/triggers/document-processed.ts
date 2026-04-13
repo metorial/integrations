@@ -5,16 +5,22 @@ import { z } from 'zod';
 let predictionSchema = z.object({
   label: z.string().describe('Field or table header name'),
   extractedText: z.string().describe('Extracted/predicted value'),
-  status: z.string().optional().describe('Prediction status (e.g., "moderated", "correctly_predicted")'),
+  status: z
+    .string()
+    .optional()
+    .describe('Prediction status (e.g., "moderated", "correctly_predicted")'),
   type: z.string().optional().describe('Type: "field" or "table"'),
   validationStatus: z.string().optional().describe('Validation status'),
   page: z.number().optional().describe('0-indexed page number'),
-  boundingBox: z.object({
-    xmin: z.number(),
-    ymin: z.number(),
-    xmax: z.number(),
-    ymax: z.number()
-  }).optional().describe('Bounding box coordinates')
+  boundingBox: z
+    .object({
+      xmin: z.number(),
+      ymin: z.number(),
+      xmax: z.number(),
+      ymax: z.number()
+    })
+    .optional()
+    .describe('Bounding box coordinates')
 });
 
 let webhookInputSchema = z.object({
@@ -29,27 +35,33 @@ let webhookInputSchema = z.object({
   rawPayload: z.any().optional().describe('Raw webhook payload')
 });
 
-export let documentProcessed = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Processed',
-    key: 'document_processed',
-    description: 'Triggers when a document is processed, approved, rejected, or assigned in a Nanonets workflow. Configure webhooks in the Nanonets dashboard under Workflow > Export > Webhooks.'
-  }
-)
+export let documentProcessed = SlateTrigger.create(spec, {
+  name: 'Document Processed',
+  key: 'document_processed',
+  description:
+    'Triggers when a document is processed, approved, rejected, or assigned in a Nanonets workflow. Configure webhooks in the Nanonets dashboard under Workflow > Export > Webhooks.'
+})
   .input(webhookInputSchema)
-  .output(z.object({
-    fileId: z.string().describe('Unique identifier of the processed file'),
-    modelId: z.string().optional().describe('Model ID that processed the file'),
-    fileName: z.string().optional().describe('Original file name'),
-    approvalStatus: z.string().optional().describe('Approval status (approved, rejected, or empty)'),
-    isModerated: z.boolean().optional().describe('Whether the file has been manually reviewed'),
-    predictions: z.array(predictionSchema).optional().describe('Extracted predictions'),
-    fileUrl: z.string().optional().describe('URL to access the file')
-  }))
+  .output(
+    z.object({
+      fileId: z.string().describe('Unique identifier of the processed file'),
+      modelId: z.string().optional().describe('Model ID that processed the file'),
+      fileName: z.string().optional().describe('Original file name'),
+      approvalStatus: z
+        .string()
+        .optional()
+        .describe('Approval status (approved, rejected, or empty)'),
+      isModerated: z
+        .boolean()
+        .optional()
+        .describe('Whether the file has been manually reviewed'),
+      predictions: z.array(predictionSchema).optional().describe('Extracted predictions'),
+      fileUrl: z.string().optional().describe('URL to access the file')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let inputs: Array<z.infer<typeof webhookInputSchema>> = [];
 
@@ -78,7 +90,7 @@ export let documentProcessed = SlateTrigger.create(
         for (let pageGroup of resultData) {
           let pages = pageGroup.result || [pageGroup];
 
-          for (let page of (Array.isArray(pages) ? pages : [pages])) {
+          for (let page of Array.isArray(pages) ? pages : [pages]) {
             let eventType = determineEventType(page);
             let predictions = extractPredictions(page);
 
@@ -108,7 +120,7 @@ export let documentProcessed = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.fileId,
@@ -151,11 +163,14 @@ let extractPredictions = (data: any): Array<z.infer<typeof predictionSchema>> =>
     type: p.type,
     validationStatus: p.validation_status,
     page: p.page,
-    boundingBox: (p.xmin != null) ? {
-      xmin: p.xmin,
-      ymin: p.ymin,
-      xmax: p.xmax,
-      ymax: p.ymax
-    } : undefined
+    boundingBox:
+      p.xmin != null
+        ? {
+            xmin: p.xmin,
+            ymin: p.ymin,
+            xmax: p.xmax,
+            ymax: p.ymax
+          }
+        : undefined
   }));
 };

@@ -8,40 +8,56 @@ let lineItemSchema = z.object({
   variantId: z.string().optional().describe('Product variant ID'),
   name: z.string().optional().describe('Item name'),
   quantity: z.number().optional().describe('Quantity'),
-  price: z.number().optional().describe('Unit price'),
+  price: z.number().optional().describe('Unit price')
 });
 
-export let manageOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Manage E-Commerce Order',
-    key: 'manage_order',
-    description: `Create or update an e-commerce order in Gist. Orders track financial status, fulfillment, and line items. Status changes automatically update contact lifetime value (LTV) and trigger timeline events.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update']).describe('Create a new order or update an existing one'),
-    orderId: z.string().optional().describe('Order ID (required for update)'),
-    storeId: z.string().optional().describe('Store ID'),
-    customerId: z.string().optional().describe('E-commerce customer ID'),
-    orderNumber: z.string().optional().describe('External order number'),
-    financialStatus: z.enum(['pending', 'paid', 'refunded', 'cancelled', 'partially_refunded', 'partially_paid']).optional().describe('Financial status'),
-    fulfillmentStatus: z.enum(['fulfilled', 'unfulfilled', 'partial']).optional().describe('Fulfillment status'),
-    totalPrice: z.number().optional().describe('Total order price'),
-    currency: z.string().optional().describe('Currency code'),
-    lineItems: z.array(lineItemSchema).optional().describe('Order line items'),
-    trackingNumber: z.string().optional().describe('Shipping tracking number'),
-    trackingUrl: z.string().optional().describe('Shipping tracking URL'),
-    cancelledAt: z.string().optional().describe('Cancellation timestamp'),
-    processedAt: z.string().optional().describe('Processing timestamp'),
-  }))
-  .output(z.object({
-    orderId: z.string().describe('Order ID'),
-    orderNumber: z.string().optional(),
-    financialStatus: z.string().optional(),
-    fulfillmentStatus: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageOrder = SlateTool.create(spec, {
+  name: 'Manage E-Commerce Order',
+  key: 'manage_order',
+  description: `Create or update an e-commerce order in Gist. Orders track financial status, fulfillment, and line items. Status changes automatically update contact lifetime value (LTV) and trigger timeline events.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update'])
+        .describe('Create a new order or update an existing one'),
+      orderId: z.string().optional().describe('Order ID (required for update)'),
+      storeId: z.string().optional().describe('Store ID'),
+      customerId: z.string().optional().describe('E-commerce customer ID'),
+      orderNumber: z.string().optional().describe('External order number'),
+      financialStatus: z
+        .enum([
+          'pending',
+          'paid',
+          'refunded',
+          'cancelled',
+          'partially_refunded',
+          'partially_paid'
+        ])
+        .optional()
+        .describe('Financial status'),
+      fulfillmentStatus: z
+        .enum(['fulfilled', 'unfulfilled', 'partial'])
+        .optional()
+        .describe('Fulfillment status'),
+      totalPrice: z.number().optional().describe('Total order price'),
+      currency: z.string().optional().describe('Currency code'),
+      lineItems: z.array(lineItemSchema).optional().describe('Order line items'),
+      trackingNumber: z.string().optional().describe('Shipping tracking number'),
+      trackingUrl: z.string().optional().describe('Shipping tracking URL'),
+      cancelledAt: z.string().optional().describe('Cancellation timestamp'),
+      processedAt: z.string().optional().describe('Processing timestamp')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string().describe('Order ID'),
+      orderNumber: z.string().optional(),
+      financialStatus: z.string().optional(),
+      fulfillmentStatus: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -62,7 +78,7 @@ export let manageOrder = SlateTool.create(
         variant_id: li.variantId,
         name: li.name,
         quantity: li.quantity,
-        price: li.price,
+        price: li.price
       }));
     }
 
@@ -81,10 +97,12 @@ export let manageOrder = SlateTool.create(
         orderId: String(order.id),
         orderNumber: order.order_number,
         financialStatus: order.financial_status,
-        fulfillmentStatus: order.fulfillment_status,
+        fulfillmentStatus: order.fulfillment_status
       },
-      message: ctx.input.action === 'create'
-        ? `Created order **${order.order_number || order.id}**.`
-        : `Updated order **${ctx.input.orderId}**.`,
+      message:
+        ctx.input.action === 'create'
+          ? `Created order **${order.order_number || order.id}**.`
+          : `Updated order **${ctx.input.orderId}**.`
     };
-  }).build();
+  })
+  .build();

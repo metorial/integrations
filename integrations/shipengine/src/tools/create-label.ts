@@ -20,12 +20,14 @@ let packageSchema = z.object({
     value: z.number().describe('Weight value'),
     unit: z.enum(['pound', 'ounce', 'gram', 'kilogram']).describe('Weight unit')
   }),
-  dimensions: z.object({
-    length: z.number().describe('Length'),
-    width: z.number().describe('Width'),
-    height: z.number().describe('Height'),
-    unit: z.enum(['inch', 'centimeter']).describe('Dimension unit')
-  }).optional(),
+  dimensions: z
+    .object({
+      length: z.number().describe('Length'),
+      width: z.number().describe('Width'),
+      height: z.number().describe('Height'),
+      unit: z.enum(['inch', 'centimeter']).describe('Dimension unit')
+    })
+    .optional(),
   packageCode: z.string().optional().describe('Carrier-specific package type code'),
   contentDescription: z.string().optional().describe('Description of package contents')
 });
@@ -63,43 +65,61 @@ let labelOutputSchema = z.object({
   labelDownloadUrl: z.string().describe('URL to download the label')
 });
 
-export let createLabel = SlateTool.create(
-  spec,
-  {
-    name: 'Create Shipping Label',
-    key: 'create_label',
-    description: `Create a shipping label. Provide either full shipment details (addresses, packages, carrier/service) to create a label directly, or a **rateId** from a previous rate lookup, or a **shipmentId** from an existing shipment. The label can be downloaded as PDF, PNG, or ZPL.`,
-    instructions: [
-      'Provide rateId to create from a previously quoted rate, or shipmentId to create from an existing shipment, or full shipment details for a new label.',
-      'When using rateId, shipment details are not required.'
-    ],
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let createLabel = SlateTool.create(spec, {
+  name: 'Create Shipping Label',
+  key: 'create_label',
+  description: `Create a shipping label. Provide either full shipment details (addresses, packages, carrier/service) to create a label directly, or a **rateId** from a previous rate lookup, or a **shipmentId** from an existing shipment. The label can be downloaded as PDF, PNG, or ZPL.`,
+  instructions: [
+    'Provide rateId to create from a previously quoted rate, or shipmentId to create from an existing shipment, or full shipment details for a new label.',
+    'When using rateId, shipment details are not required.'
+  ],
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    rateId: z.string().optional().describe('Create label from a previously quoted rate ID'),
-    shipmentId: z.string().optional().describe('Create label from an existing shipment ID'),
-    carrierId: z.string().optional().describe('Carrier ID (required for direct label creation)'),
-    serviceCode: z.string().optional().describe('Service code (required for direct label creation)'),
-    shipFrom: addressSchema.optional().describe('Origin address'),
-    shipTo: addressSchema.optional().describe('Destination address'),
-    packages: z.array(packageSchema).optional().describe('Packages in the shipment'),
-    labelFormat: z.enum(['pdf', 'png', 'zpl']).optional().describe('Label format'),
-    labelLayout: z.enum(['4x6', 'letter']).optional().describe('Label layout size'),
-    externalShipmentId: z.string().optional().describe('External reference ID for the shipment'),
-    warehouseId: z.string().optional().describe('Warehouse to ship from'),
-    confirmation: z.enum(['none', 'delivery', 'signature', 'adult_signature', 'direct_signature']).optional().describe('Delivery confirmation type'),
-    customs: z.object({
-      contents: z.enum(['merchandise', 'gift', 'returned_goods', 'documents', 'sample']).describe('Contents type'),
-      nonDelivery: z.enum(['treat_as_abandoned', 'return_to_sender']).describe('Non-delivery handling'),
-      items: z.array(customsItemSchema).describe('Customs items')
-    }).optional().describe('Customs information for international shipments')
-  }))
+})
+  .input(
+    z.object({
+      rateId: z.string().optional().describe('Create label from a previously quoted rate ID'),
+      shipmentId: z.string().optional().describe('Create label from an existing shipment ID'),
+      carrierId: z
+        .string()
+        .optional()
+        .describe('Carrier ID (required for direct label creation)'),
+      serviceCode: z
+        .string()
+        .optional()
+        .describe('Service code (required for direct label creation)'),
+      shipFrom: addressSchema.optional().describe('Origin address'),
+      shipTo: addressSchema.optional().describe('Destination address'),
+      packages: z.array(packageSchema).optional().describe('Packages in the shipment'),
+      labelFormat: z.enum(['pdf', 'png', 'zpl']).optional().describe('Label format'),
+      labelLayout: z.enum(['4x6', 'letter']).optional().describe('Label layout size'),
+      externalShipmentId: z
+        .string()
+        .optional()
+        .describe('External reference ID for the shipment'),
+      warehouseId: z.string().optional().describe('Warehouse to ship from'),
+      confirmation: z
+        .enum(['none', 'delivery', 'signature', 'adult_signature', 'direct_signature'])
+        .optional()
+        .describe('Delivery confirmation type'),
+      customs: z
+        .object({
+          contents: z
+            .enum(['merchandise', 'gift', 'returned_goods', 'documents', 'sample'])
+            .describe('Contents type'),
+          nonDelivery: z
+            .enum(['treat_as_abandoned', 'return_to_sender'])
+            .describe('Non-delivery handling'),
+          items: z.array(customsItemSchema).describe('Customs items')
+        })
+        .optional()
+        .describe('Customs information for international shipments')
+    })
+  )
   .output(labelOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -118,8 +138,16 @@ export let createLabel = SlateTool.create(
         label_layout: ctx.input.labelLayout
       });
     } else {
-      if (!ctx.input.carrierId || !ctx.input.serviceCode || !ctx.input.shipFrom || !ctx.input.shipTo || !ctx.input.packages) {
-        throw new Error('When creating a label directly, carrierId, serviceCode, shipFrom, shipTo, and packages are required.');
+      if (
+        !ctx.input.carrierId ||
+        !ctx.input.serviceCode ||
+        !ctx.input.shipFrom ||
+        !ctx.input.shipTo ||
+        !ctx.input.packages
+      ) {
+        throw new Error(
+          'When creating a label directly, carrierId, serviceCode, shipFrom, shipTo, and packages are required.'
+        );
       }
 
       label = await client.createLabel({
@@ -128,7 +156,7 @@ export let createLabel = SlateTool.create(
           service_code: ctx.input.serviceCode,
           ship_from: mapAddressToApi(ctx.input.shipFrom),
           ship_to: mapAddressToApi(ctx.input.shipTo),
-          packages: ctx.input.packages.map((p) => ({
+          packages: ctx.input.packages.map(p => ({
             weight: p.weight,
             dimensions: p.dimensions,
             package_code: p.packageCode,
@@ -137,18 +165,20 @@ export let createLabel = SlateTool.create(
           confirmation: ctx.input.confirmation,
           external_shipment_id: ctx.input.externalShipmentId,
           warehouse_id: ctx.input.warehouseId,
-          customs: ctx.input.customs ? {
-            contents: ctx.input.customs.contents,
-            non_delivery: ctx.input.customs.nonDelivery,
-            customs_items: ctx.input.customs.items.map((item) => ({
-              description: item.description,
-              quantity: item.quantity,
-              value: item.value,
-              harmonized_tariff_code: item.harmonizedTariffCode,
-              country_of_origin: item.countryOfOrigin,
-              sku: item.sku
-            }))
-          } : undefined
+          customs: ctx.input.customs
+            ? {
+                contents: ctx.input.customs.contents,
+                non_delivery: ctx.input.customs.nonDelivery,
+                customs_items: ctx.input.customs.items.map(item => ({
+                  description: item.description,
+                  quantity: item.quantity,
+                  value: item.value,
+                  harmonized_tariff_code: item.harmonizedTariffCode,
+                  country_of_origin: item.countryOfOrigin,
+                  sku: item.sku
+                }))
+              }
+            : undefined
         },
         label_format: ctx.input.labelFormat,
         label_layout: ctx.input.labelLayout
@@ -161,7 +191,8 @@ export let createLabel = SlateTool.create(
       output,
       message: `Created label **${label.label_id}** via **${label.carrier_code}** (${label.service_code}). Tracking: **${label.tracking_number}**. Cost: **${label.shipment_cost.currency} ${label.shipment_cost.amount.toFixed(2)}**.`
     };
-  }).build();
+  })
+  .build();
 
 let mapAddressToApi = (addr: any) => ({
   name: addr.name,

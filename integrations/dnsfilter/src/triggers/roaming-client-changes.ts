@@ -3,31 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let roamingClientChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Roaming Client Changes',
-    key: 'roaming_client_changes',
-    description: 'Triggers when roaming clients (agents) are added or removed. Monitors the agent roster for changes between polling intervals.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['added', 'removed']).describe('Whether the client was added or removed'),
-    roamingClientId: z.string().describe('Roaming client ID'),
-    hostname: z.string().describe('Hostname of the client'),
-    clientData: z.record(z.string(), z.any()).describe('Full roaming client data'),
-  }))
-  .output(z.object({
-    roamingClientId: z.string().describe('Roaming client ID'),
-    hostname: z.string().describe('Hostname of the client'),
-    eventType: z.string().describe('Type of change'),
-    roamingClient: z.record(z.string(), z.any()).describe('Full roaming client data'),
-  }))
+export let roamingClientChanges = SlateTrigger.create(spec, {
+  name: 'Roaming Client Changes',
+  key: 'roaming_client_changes',
+  description:
+    'Triggers when roaming clients (agents) are added or removed. Monitors the agent roster for changes between polling intervals.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['added', 'removed'])
+        .describe('Whether the client was added or removed'),
+      roamingClientId: z.string().describe('Roaming client ID'),
+      hostname: z.string().describe('Hostname of the client'),
+      clientData: z.record(z.string(), z.any()).describe('Full roaming client data')
+    })
+  )
+  .output(
+    z.object({
+      roamingClientId: z.string().describe('Roaming client ID'),
+      hostname: z.string().describe('Hostname of the client'),
+      eventType: z.string().describe('Type of change'),
+      roamingClient: z.record(z.string(), z.any()).describe('Full roaming client data')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth.token);
       let result = await client.listRoamingClients();
       let currentClients: any[] = result?.data ?? result ?? [];
@@ -49,7 +53,7 @@ export let roamingClientChanges = SlateTrigger.create(
             eventType: 'added',
             roamingClientId: rcId,
             hostname: rc.hostname ?? '',
-            clientData: rc,
+            clientData: rc
           });
         }
       }
@@ -60,7 +64,7 @@ export let roamingClientChanges = SlateTrigger.create(
             eventType: 'removed',
             roamingClientId: prevId,
             hostname: '',
-            clientData: { id: prevId },
+            clientData: { id: prevId }
           });
         }
       }
@@ -68,11 +72,11 @@ export let roamingClientChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          clientIds: Array.from(currentClientIds),
-        },
+          clientIds: Array.from(currentClientIds)
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `roaming_client.${ctx.input.eventType}`,
         id: `rc-${ctx.input.roamingClientId}-${ctx.input.eventType}-${Date.now()}`,
@@ -80,8 +84,9 @@ export let roamingClientChanges = SlateTrigger.create(
           roamingClientId: ctx.input.roamingClientId,
           hostname: ctx.input.hostname,
           eventType: ctx.input.eventType,
-          roamingClient: ctx.input.clientData,
-        },
+          roamingClient: ctx.input.clientData
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

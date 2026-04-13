@@ -83,7 +83,12 @@ export interface UpscaleTaskResult {
   image_url?: string;
 }
 
-export type TaskResult = ImagineTaskResult | VariationsTaskResult | BlendTaskResult | DescribeTaskResult | UpscaleTaskResult;
+export type TaskResult =
+  | ImagineTaskResult
+  | VariationsTaskResult
+  | BlendTaskResult
+  | DescribeTaskResult
+  | UpscaleTaskResult;
 
 export interface FetchTaskResponse {
   task_id: string;

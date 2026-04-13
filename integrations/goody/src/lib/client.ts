@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.ongoody.com',
-  sandbox: 'https://api.sandbox.ongoody.com',
+  sandbox: 'https://api.sandbox.ongoody.com'
 };
 
 export interface GoodyClientConfig {
@@ -78,8 +78,8 @@ export class GoodyClient {
       baseURL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -97,8 +97,8 @@ export class GoodyClient {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        country_code: params?.countryCode,
-      },
+        country_code: params?.countryCode
+      }
     });
     return response.data;
   }
@@ -114,8 +114,8 @@ export class GoodyClient {
     let response = await this.axios.get('/v1/cards', {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -131,8 +131,8 @@ export class GoodyClient {
     let response = await this.axios.get('/v1/order_batches', {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -146,8 +146,8 @@ export class GoodyClient {
     let response = await this.axios.get(`/v1/order_batches/${orderBatchId}/orders`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -162,7 +162,7 @@ export class GoodyClient {
   async listOrders(params?: ListOrdersParams): Promise<any> {
     let queryParams: Record<string, any> = {
       page: params?.page,
-      per_page: params?.perPage,
+      per_page: params?.perPage
     };
     if (params?.createdAtAfter) {
       queryParams['created_at[after]'] = params.createdAtAfter;
@@ -186,7 +186,7 @@ export class GoodyClient {
 
   async updateOrderExpiration(orderId: string, expiresAt: string): Promise<any> {
     let response = await this.axios.post(`/v1/orders/${orderId}/update_expiration`, {
-      expires_at: expiresAt,
+      expires_at: expiresAt
     });
     return response.data;
   }
@@ -211,8 +211,8 @@ export class GoodyClient {
     let response = await this.axios.get('/v1/order_activities', {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }

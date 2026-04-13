@@ -3,43 +3,55 @@ import { HelpScoutClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `List all users (agents/staff) in the Help Scout account. Optionally retrieve details for a specific user by ID or get the authenticated user's profile.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    userId: z.number().optional().describe('Get a specific user by ID. Omit to list all users.'),
-    me: z.boolean().optional().describe('If true, return the authenticated user profile'),
-    page: z.number().optional().describe('Page number (1-based)'),
-  }))
-  .output(z.object({
-    users: z.array(z.object({
-      userId: z.number().describe('User ID'),
-      firstName: z.string().nullable().describe('First name'),
-      lastName: z.string().nullable().describe('Last name'),
-      email: z.string().describe('Email address'),
-      role: z.string().optional().describe('User role'),
-      type: z.string().optional().describe('User type'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-      photoUrl: z.string().nullable().optional().describe('Profile photo URL'),
-    })).optional().describe('List of users'),
-    user: z.object({
-      userId: z.number(),
-      firstName: z.string().nullable(),
-      lastName: z.string().nullable(),
-      email: z.string(),
-      role: z.string().optional(),
-      type: z.string().optional(),
-      createdAt: z.string().optional(),
-      photoUrl: z.string().nullable().optional(),
-    }).optional().describe('Single user details'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `List all users (agents/staff) in the Help Scout account. Optionally retrieve details for a specific user by ID or get the authenticated user's profile.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userId: z
+        .number()
+        .optional()
+        .describe('Get a specific user by ID. Omit to list all users.'),
+      me: z.boolean().optional().describe('If true, return the authenticated user profile'),
+      page: z.number().optional().describe('Page number (1-based)')
+    })
+  )
+  .output(
+    z.object({
+      users: z
+        .array(
+          z.object({
+            userId: z.number().describe('User ID'),
+            firstName: z.string().nullable().describe('First name'),
+            lastName: z.string().nullable().describe('Last name'),
+            email: z.string().describe('Email address'),
+            role: z.string().optional().describe('User role'),
+            type: z.string().optional().describe('User type'),
+            createdAt: z.string().optional().describe('Creation timestamp'),
+            photoUrl: z.string().nullable().optional().describe('Profile photo URL')
+          })
+        )
+        .optional()
+        .describe('List of users'),
+      user: z
+        .object({
+          userId: z.number(),
+          firstName: z.string().nullable(),
+          lastName: z.string().nullable(),
+          email: z.string(),
+          role: z.string().optional(),
+          type: z.string().optional(),
+          createdAt: z.string().optional(),
+          photoUrl: z.string().nullable().optional()
+        })
+        .optional()
+        .describe('Single user details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HelpScoutClient(ctx.auth.token);
 
     if (ctx.input.me) {
@@ -52,11 +64,11 @@ export let listUsers = SlateTool.create(
         role: data.role,
         type: data.type,
         createdAt: data.createdAt,
-        photoUrl: data.photoUrl ?? null,
+        photoUrl: data.photoUrl ?? null
       };
       return {
         output: { user },
-        message: `Authenticated user: **${[data.firstName, data.lastName].filter(Boolean).join(' ')}** (${data.email}).`,
+        message: `Authenticated user: **${[data.firstName, data.lastName].filter(Boolean).join(' ')}** (${data.email}).`
       };
     }
 
@@ -70,11 +82,11 @@ export let listUsers = SlateTool.create(
         role: data.role,
         type: data.type,
         createdAt: data.createdAt,
-        photoUrl: data.photoUrl ?? null,
+        photoUrl: data.photoUrl ?? null
       };
       return {
         output: { user },
-        message: `User **${[data.firstName, data.lastName].filter(Boolean).join(' ')}** (${data.email}).`,
+        message: `User **${[data.firstName, data.lastName].filter(Boolean).join(' ')}** (${data.email}).`
       };
     }
 
@@ -88,11 +100,12 @@ export let listUsers = SlateTool.create(
       role: u.role,
       type: u.type,
       createdAt: u.createdAt,
-      photoUrl: u.photoUrl ?? null,
+      photoUrl: u.photoUrl ?? null
     }));
 
     return {
       output: { users },
-      message: `Found **${users.length}** users.`,
+      message: `Found **${users.length}** users.`
     };
-  }).build();
+  })
+  .build();

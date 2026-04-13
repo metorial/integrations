@@ -14,7 +14,10 @@ let addressSchema = z.object({
   stateProvince: z.string().optional().describe('State or province'),
   postalCode: z.string().optional().describe('Postal or ZIP code'),
   countryCode: z.string().describe('Two-letter ISO country code (e.g. US, CA, GB)'),
-  residential: z.enum(['unknown', 'yes', 'no']).optional().describe('Whether the address is residential')
+  residential: z
+    .enum(['unknown', 'yes', 'no'])
+    .optional()
+    .describe('Whether the address is residential')
 });
 
 let validationMessageSchema = z.object({
@@ -24,36 +27,45 @@ let validationMessageSchema = z.object({
   detailCode: z.string().describe('Detailed message code')
 });
 
-export let validateAddress = SlateTool.create(
-  spec,
-  {
-    name: 'Validate Address',
-    key: 'validate_address',
-    description: `Validate one or more shipping addresses to ensure they are accurate and deliverable. Supports addresses in over 160 countries. Returns a validation status, the matched/corrected address, and any warning or error messages. Use this before creating labels to avoid address correction surcharges.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let validateAddress = SlateTool.create(spec, {
+  name: 'Validate Address',
+  key: 'validate_address',
+  description: `Validate one or more shipping addresses to ensure they are accurate and deliverable. Supports addresses in over 160 countries. Returns a validation status, the matched/corrected address, and any warning or error messages. Use this before creating labels to avoid address correction surcharges.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    addresses: z.array(addressSchema).min(1).describe('One or more addresses to validate')
-  }))
-  .output(z.object({
-    results: z.array(z.object({
-      status: z.enum(['verified', 'unverified', 'warning', 'error']).describe('Validation status'),
-      originalAddress: addressSchema.describe('The original address as submitted'),
-      matchedAddress: addressSchema.nullable().describe('The corrected/matched address, or null if not matched'),
-      messages: z.array(validationMessageSchema).describe('Validation messages with warnings or errors')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      addresses: z.array(addressSchema).min(1).describe('One or more addresses to validate')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(
+        z.object({
+          status: z
+            .enum(['verified', 'unverified', 'warning', 'error'])
+            .describe('Validation status'),
+          originalAddress: addressSchema.describe('The original address as submitted'),
+          matchedAddress: addressSchema
+            .nullable()
+            .describe('The corrected/matched address, or null if not matched'),
+          messages: z
+            .array(validationMessageSchema)
+            .describe('Validation messages with warnings or errors')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
     });
 
-    let apiAddresses = ctx.input.addresses.map((addr) => ({
+    let apiAddresses = ctx.input.addresses.map(addr => ({
       name: addr.name,
       company_name: addr.companyName,
       phone: addr.phone,
@@ -69,11 +81,11 @@ export let validateAddress = SlateTool.create(
 
     let results = await client.validateAddresses(apiAddresses);
 
-    let mapped = results.map((r) => ({
+    let mapped = results.map(r => ({
       status: r.status,
       originalAddress: mapAddress(r.original_address),
       matchedAddress: r.matched_address ? mapAddress(r.matched_address) : null,
-      messages: r.messages.map((m) => ({
+      messages: r.messages.map(m => ({
         code: m.code,
         message: m.message,
         type: m.type,
@@ -81,14 +93,15 @@ export let validateAddress = SlateTool.create(
       }))
     }));
 
-    let verified = mapped.filter((r) => r.status === 'verified').length;
-    let failed = mapped.filter((r) => r.status === 'error' || r.status === 'unverified').length;
+    let verified = mapped.filter(r => r.status === 'verified').length;
+    let failed = mapped.filter(r => r.status === 'error' || r.status === 'unverified').length;
 
     return {
       output: { results: mapped },
       message: `Validated ${mapped.length} address(es): **${verified}** verified, **${failed}** failed.`
     };
-  }).build();
+  })
+  .build();
 
 let mapAddress = (addr: any) => ({
   name: addr.name,

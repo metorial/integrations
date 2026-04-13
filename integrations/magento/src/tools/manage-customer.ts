@@ -14,8 +14,14 @@ let customerAddressSchema = z.object({
   countryId: z.string().optional().describe('Country code (e.g. US, GB)'),
   telephone: z.string().optional().describe('Phone number'),
   company: z.string().optional().describe('Company name'),
-  defaultShipping: z.boolean().optional().describe('Whether this is the default shipping address'),
-  defaultBilling: z.boolean().optional().describe('Whether this is the default billing address'),
+  defaultShipping: z
+    .boolean()
+    .optional()
+    .describe('Whether this is the default shipping address'),
+  defaultBilling: z
+    .boolean()
+    .optional()
+    .describe('Whether this is the default billing address')
 });
 
 let customerOutputSchema = z.object({
@@ -29,7 +35,7 @@ let customerOutputSchema = z.object({
   websiteId: z.number().optional().describe('Website ID'),
   createdAt: z.string().optional().describe('Account creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
-  addresses: z.array(customerAddressSchema).optional().describe('Customer addresses'),
+  addresses: z.array(customerAddressSchema).optional().describe('Customer addresses')
 });
 
 let mapCustomer = (c: any) => ({
@@ -55,50 +61,54 @@ let mapCustomer = (c: any) => ({
     telephone: a.telephone,
     company: a.company,
     defaultShipping: a.default_shipping,
-    defaultBilling: a.default_billing,
-  })),
+    defaultBilling: a.default_billing
+  }))
 });
 
-export let manageCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Customer',
-    key: 'manage_customer',
-    description: `Create, update, retrieve, or delete customer accounts in Magento. Manage customer profiles including names, email, group, and addresses.`,
-    instructions: [
-      'To **get** a customer, provide the customerId.',
-      'To **create**, set action to "create" and provide email, firstname, lastname, and websiteId.',
-      'To **update**, set action to "update" with the customerId and fields to change.',
-      'To **delete**, set action to "delete" with the customerId.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageCustomer = SlateTool.create(spec, {
+  name: 'Manage Customer',
+  key: 'manage_customer',
+  description: `Create, update, retrieve, or delete customer accounts in Magento. Manage customer profiles including names, email, group, and addresses.`,
+  instructions: [
+    'To **get** a customer, provide the customerId.',
+    'To **create**, set action to "create" and provide email, firstname, lastname, and websiteId.',
+    'To **update**, set action to "update" with the customerId and fields to change.',
+    'To **delete**, set action to "delete" with the customerId.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    customerId: z.number().optional().describe('Customer ID (required for get, update, delete)'),
-    email: z.string().optional().describe('Customer email'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    middlename: z.string().optional().describe('Middle name'),
-    groupId: z.number().optional().describe('Customer group ID'),
-    websiteId: z.number().optional().describe('Website ID (required for create)'),
-    storeId: z.number().optional().describe('Store ID'),
-    password: z.string().optional().describe('Password (for create action only)'),
-    addresses: z.array(customerAddressSchema).optional().describe('Customer addresses'),
-  }))
-  .output(z.object({
-    customer: customerOutputSchema.optional().describe('Customer details'),
-    deleted: z.boolean().optional().describe('Whether the customer was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'create', 'update', 'delete']).describe('Operation to perform'),
+      customerId: z
+        .number()
+        .optional()
+        .describe('Customer ID (required for get, update, delete)'),
+      email: z.string().optional().describe('Customer email'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      middlename: z.string().optional().describe('Middle name'),
+      groupId: z.number().optional().describe('Customer group ID'),
+      websiteId: z.number().optional().describe('Website ID (required for create)'),
+      storeId: z.number().optional().describe('Store ID'),
+      password: z.string().optional().describe('Password (for create action only)'),
+      addresses: z.array(customerAddressSchema).optional().describe('Customer addresses')
+    })
+  )
+  .output(
+    z.object({
+      customer: customerOutputSchema.optional().describe('Customer details'),
+      deleted: z.boolean().optional().describe('Whether the customer was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MagentoClient({
       storeUrl: ctx.config.storeUrl,
       storeCode: ctx.config.storeCode,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     if (ctx.input.action === 'get') {
@@ -106,7 +116,7 @@ export let manageCustomer = SlateTool.create(
       let customer = await client.getCustomer(ctx.input.customerId);
       return {
         output: { customer: mapCustomer(customer) },
-        message: `Retrieved customer **${customer.firstname} ${customer.lastname}** (${customer.email}).`,
+        message: `Retrieved customer **${customer.firstname} ${customer.lastname}** (${customer.email}).`
       };
     }
 
@@ -115,7 +125,7 @@ export let manageCustomer = SlateTool.create(
       await client.deleteCustomer(ctx.input.customerId);
       return {
         output: { deleted: true },
-        message: `Deleted customer \`${ctx.input.customerId}\`.`,
+        message: `Deleted customer \`${ctx.input.customerId}\`.`
       };
     }
 
@@ -150,7 +160,7 @@ export let manageCustomer = SlateTool.create(
       let customer = await client.createCustomer(customerData, ctx.input.password);
       return {
         output: { customer: mapCustomer(customer) },
-        message: `Created customer **${customer.firstname} ${customer.lastname}** (ID: ${customer.id}).`,
+        message: `Created customer **${customer.firstname} ${customer.lastname}** (ID: ${customer.id}).`
       };
     }
 
@@ -160,7 +170,7 @@ export let manageCustomer = SlateTool.create(
     let customer = await client.updateCustomer(ctx.input.customerId, customerData);
     return {
       output: { customer: mapCustomer(customer) },
-      message: `Updated customer **${customer.firstname} ${customer.lastname}**.`,
+      message: `Updated customer **${customer.firstname} ${customer.lastname}**.`
     };
   })
   .build();

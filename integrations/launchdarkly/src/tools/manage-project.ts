@@ -3,40 +3,46 @@ import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProject = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Create a new project or update an existing one in LaunchDarkly. When creating, provide a key and name. When updating, provide the project key and the fields to change (name, tags). To delete a project, use the delete action.`,
-    instructions: [
-      'To create a project, set action to "create" and provide projectKey and name.',
-      'To update a project, set action to "update" and provide projectKey plus fields to change.',
-      'To delete a project, set action to "delete" and provide projectKey.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageProject = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Create a new project or update an existing one in LaunchDarkly. When creating, provide a key and name. When updating, provide the project key and the fields to change (name, tags). To delete a project, use the delete action.`,
+  instructions: [
+    'To create a project, set action to "create" and provide projectKey and name.',
+    'To update a project, set action to "update" and provide projectKey plus fields to change.',
+    'To delete a project, set action to "delete" and provide projectKey.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    projectKey: z.string().describe('Project key'),
-    name: z.string().optional().describe('Project name (required for create)'),
-    tags: z.array(z.string()).optional().describe('Project tags'),
-    environments: z.array(z.object({
-      key: z.string().describe('Environment key'),
-      name: z.string().describe('Environment name'),
-      color: z.string().describe('Environment color hex code (e.g., "417505")'),
-    })).optional().describe('Initial environments (only for create)'),
-  }))
-  .output(z.object({
-    projectKey: z.string().describe('Project key'),
-    name: z.string().optional().describe('Project name'),
-    deleted: z.boolean().optional().describe('Whether the project was deleted'),
-    environmentCount: z.number().optional().describe('Number of environments'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      projectKey: z.string().describe('Project key'),
+      name: z.string().optional().describe('Project name (required for create)'),
+      tags: z.array(z.string()).optional().describe('Project tags'),
+      environments: z
+        .array(
+          z.object({
+            key: z.string().describe('Environment key'),
+            name: z.string().describe('Environment name'),
+            color: z.string().describe('Environment color hex code (e.g., "417505")')
+          })
+        )
+        .optional()
+        .describe('Initial environments (only for create)')
+    })
+  )
+  .output(
+    z.object({
+      projectKey: z.string().describe('Project key'),
+      name: z.string().optional().describe('Project name'),
+      deleted: z.boolean().optional().describe('Whether the project was deleted'),
+      environmentCount: z.number().optional().describe('Number of environments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LaunchDarklyClient(ctx.auth.token);
     let { action, projectKey } = ctx.input;
 
@@ -48,16 +54,16 @@ export let manageProject = SlateTool.create(
         key: projectKey,
         name: ctx.input.name,
         tags: ctx.input.tags,
-        environments: ctx.input.environments,
+        environments: ctx.input.environments
       });
 
       return {
         output: {
           projectKey: project.key,
           name: project.name,
-          environmentCount: (project.environments ?? []).length,
+          environmentCount: (project.environments ?? []).length
         },
-        message: `Created project **${project.name}** (\`${project.key}\`).`,
+        message: `Created project **${project.name}** (\`${project.key}\`).`
       };
     }
 
@@ -79,9 +85,9 @@ export let manageProject = SlateTool.create(
         output: {
           projectKey: project.key,
           name: project.name,
-          environmentCount: (project.environments ?? []).length,
+          environmentCount: (project.environments ?? []).length
         },
-        message: `Updated project **${project.name}** (\`${project.key}\`).`,
+        message: `Updated project **${project.name}** (\`${project.key}\`).`
       };
     }
 
@@ -90,8 +96,9 @@ export let manageProject = SlateTool.create(
     return {
       output: {
         projectKey,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted project \`${projectKey}\`.`,
+      message: `Deleted project \`${projectKey}\`.`
     };
-  }).build();
+  })
+  .build();

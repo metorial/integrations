@@ -15,19 +15,23 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.stack-ai.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Flow Execution ──
 
-  async runFlow(flowId: string, inputs: Record<string, unknown>, options?: {
-    userId?: string;
-    version?: number;
-    verbose?: boolean;
-  }): Promise<Record<string, unknown>> {
+  async runFlow(
+    flowId: string,
+    inputs: Record<string, unknown>,
+    options?: {
+      userId?: string;
+      version?: number;
+      verbose?: boolean;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { ...inputs };
     if (options?.userId) {
       body['user_id'] = options.userId;
@@ -41,27 +45,28 @@ export class Client {
       params['verbose'] = options.verbose;
     }
 
-    let response = await this.axios.post(
-      `/inference/v0/run/${this.orgId}/${flowId}`,
-      body,
-      { params }
-    );
+    let response = await this.axios.post(`/inference/v0/run/${this.orgId}/${flowId}`, body, {
+      params
+    });
     return response.data;
   }
 
   async getRunMetadata(flowId: string, runId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(
-      `/inference/v0/run/${this.orgId}/${flowId}/metadata`,
-      { params: { run_id: runId } }
-    );
+    let response = await this.axios.get(`/inference/v0/run/${this.orgId}/${flowId}/metadata`, {
+      params: { run_id: runId }
+    });
     return response.data;
   }
 
-  async giveFeedback(flowId: string, runId: string, feedback: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(
-      `/inference/v0/feedback/${this.orgId}/${flowId}`,
-      { run_id: runId, feedback }
-    );
+  async giveFeedback(
+    flowId: string,
+    runId: string,
+    feedback: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.post(`/inference/v0/feedback/${this.orgId}/${flowId}`, {
+      run_id: runId,
+      feedback
+    });
     return response.data;
   }
 
@@ -74,7 +79,12 @@ export class Client {
     return response.data;
   }
 
-  async deleteDocument(flowId: string, nodeId: string, userId: string, filename: string): Promise<Record<string, unknown>> {
+  async deleteDocument(
+    flowId: string,
+    nodeId: string,
+    userId: string,
+    filename: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.delete(
       `/documents/${this.orgId}/${flowId}/${nodeId}/${userId}`,
       { params: { filename } }
@@ -84,7 +94,10 @@ export class Client {
 
   // ── Knowledge Bases ──
 
-  async listKnowledgeBases(cursor?: string, pageSize?: number): Promise<{
+  async listKnowledgeBases(
+    cursor?: string,
+    pageSize?: number
+  ): Promise<{
     data: Record<string, unknown>[];
     cursor?: string;
     has_more?: boolean;
@@ -119,11 +132,14 @@ export class Client {
     return response.data;
   }
 
-  async updateKnowledgeBase(knowledgeBaseId: string, data: {
-    name?: string;
-    description?: string;
-    indexingParams?: Record<string, unknown>;
-  }): Promise<Record<string, unknown>> {
+  async updateKnowledgeBase(
+    knowledgeBaseId: string,
+    data: {
+      name?: string;
+      description?: string;
+      indexingParams?: Record<string, unknown>;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
     if (data.name !== undefined) body['name'] = data.name;
     if (data.description !== undefined) body['description'] = data.description;
@@ -144,7 +160,11 @@ export class Client {
 
   // ── Knowledge Base Resources ──
 
-  async listKnowledgeBaseResources(knowledgeBaseId: string, cursor?: string, pageSize?: number): Promise<{
+  async listKnowledgeBaseResources(
+    knowledgeBaseId: string,
+    cursor?: string,
+    pageSize?: number
+  ): Promise<{
     data: Record<string, unknown>[];
     cursor?: string;
     has_more?: boolean;
@@ -153,16 +173,26 @@ export class Client {
     if (cursor) params['cursor'] = cursor;
     if (pageSize) params['page_size'] = pageSize;
 
-    let response = await this.axios.get(`/v1/knowledge-bases/${knowledgeBaseId}/resources`, { params });
+    let response = await this.axios.get(`/v1/knowledge-bases/${knowledgeBaseId}/resources`, {
+      params
+    });
     return response.data;
   }
 
-  async getKnowledgeBaseResource(knowledgeBaseId: string, resourceId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/v1/knowledge-bases/${knowledgeBaseId}/resources/${resourceId}`);
+  async getKnowledgeBaseResource(
+    knowledgeBaseId: string,
+    resourceId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/v1/knowledge-bases/${knowledgeBaseId}/resources/${resourceId}`
+    );
     return response.data;
   }
 
-  async deleteKnowledgeBaseResource(knowledgeBaseId: string, resourceId: string): Promise<void> {
+  async deleteKnowledgeBaseResource(
+    knowledgeBaseId: string,
+    resourceId: string
+  ): Promise<void> {
     await this.axios.delete(`/v1/knowledge-bases/${knowledgeBaseId}/resources/${resourceId}`);
   }
 
@@ -196,31 +226,36 @@ export class Client {
     return response.data;
   }
 
-  async searchConnectionResources(connectionId: string, query: string): Promise<Record<string, unknown>[]> {
+  async searchConnectionResources(
+    connectionId: string,
+    query: string
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(`/connections/${connectionId}/resources/search`, {
-      params: { query },
+      params: { query }
     });
     return response.data;
   }
 
   // ── Analytics ──
 
-  async getProjectAnalytics(flowId: string, options?: {
-    page?: number;
-    pageSize?: number;
-    startDate?: string;
-    endDate?: string;
-  }): Promise<Record<string, unknown>[]> {
+  async getProjectAnalytics(
+    flowId: string,
+    options?: {
+      page?: number;
+      pageSize?: number;
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<Record<string, unknown>[]> {
     let params: Record<string, unknown> = {};
     if (options?.page !== undefined) params['page'] = options.page;
     if (options?.pageSize !== undefined) params['page_size'] = options.pageSize;
     if (options?.startDate) params['start_date'] = options.startDate;
     if (options?.endDate) params['end_date'] = options.endDate;
 
-    let response = await this.axios.get(
-      `/analytics/org/${this.orgId}/flows/${flowId}`,
-      { params }
-    );
+    let response = await this.axios.get(`/analytics/org/${this.orgId}/flows/${flowId}`, {
+      params
+    });
     return response.data;
   }
 
@@ -236,7 +271,9 @@ export class Client {
     if (options?.startDate) params['start_date'] = options.startDate;
     if (options?.endDate) params['end_date'] = options.endDate;
 
-    let response = await this.axios.get('/organizations/analytics/projects-run-summary', { params });
+    let response = await this.axios.get('/organizations/analytics/projects-run-summary', {
+      params
+    });
     return response.data;
   }
 
@@ -247,38 +284,54 @@ export class Client {
 
   // ── Conversations ──
 
-  async getConversations(projectId: string, userId: string): Promise<{
+  async getConversations(
+    projectId: string,
+    userId: string
+  ): Promise<{
     data: Record<string, unknown>[];
     has_more: boolean;
     first_id?: string;
     last_id?: string;
   }> {
     let response = await this.axios.get(`/projects/${projectId}/conversations`, {
-      headers: { 'X-User-Id': userId },
+      headers: { 'X-User-Id': userId }
     });
     return response.data;
   }
 
-  async archiveConversation(projectId: string, conversationId: string, userId: string, isArchived: boolean = true): Promise<Record<string, unknown>> {
+  async archiveConversation(
+    projectId: string,
+    conversationId: string,
+    userId: string,
+    isArchived: boolean = true
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
       `/projects/${projectId}/conversations/${conversationId}/archive`,
       null,
       {
         params: { is_archived: isArchived },
-        headers: { 'X-User-Id': userId },
+        headers: { 'X-User-Id': userId }
       }
     );
     return response.data;
   }
 
-  async deleteConversation(projectId: string, conversationId: string, userId: string): Promise<void> {
-    await this.axios.delete(
-      `/projects/${projectId}/conversations/${conversationId}`,
-      { headers: { 'X-User-Id': userId } }
-    );
+  async deleteConversation(
+    projectId: string,
+    conversationId: string,
+    userId: string
+  ): Promise<void> {
+    await this.axios.delete(`/projects/${projectId}/conversations/${conversationId}`, {
+      headers: { 'X-User-Id': userId }
+    });
   }
 
-  async renameConversation(projectId: string, conversationId: string, userId: string, title: string): Promise<Record<string, unknown>> {
+  async renameConversation(
+    projectId: string,
+    conversationId: string,
+    userId: string,
+    title: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
       `/projects/${projectId}/conversations/${conversationId}/rename`,
       { title },
@@ -325,7 +378,10 @@ export class Client {
     return response.data;
   }
 
-  async updateFolder(folderId: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateFolder(
+    folderId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.patch(`/folders/${folderId}`, data);
     return response.data;
   }
@@ -368,17 +424,31 @@ export class Client {
     return response.data;
   }
 
-  async getActionInputSchema(providerId: string, actionId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/tools/stackai/providers/${providerId}/actions/${actionId}/inputs`);
+  async getActionInputSchema(
+    providerId: string,
+    actionId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/tools/stackai/providers/${providerId}/actions/${actionId}/inputs`
+    );
     return response.data;
   }
 
-  async getActionOutputSchema(providerId: string, actionId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/tools/stackai/providers/${providerId}/actions/${actionId}/outputs`);
+  async getActionOutputSchema(
+    providerId: string,
+    actionId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/tools/stackai/providers/${providerId}/actions/${actionId}/outputs`
+    );
     return response.data;
   }
 
-  async runAction(providerId: string, actionId: string, inputs: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async runAction(
+    providerId: string,
+    actionId: string,
+    inputs: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
       `/tools/stackai/providers/${providerId}/actions/${actionId}/run`,
       inputs

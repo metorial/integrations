@@ -49,12 +49,12 @@ let mapComparison = (data: any): ComparisonResponse => ({
   left: {
     fileType: data.left?.file_type ?? '',
     sourceUrl: data.left?.source_url ?? null,
-    displayName: data.left?.display_name ?? null,
+    displayName: data.left?.display_name ?? null
   },
   right: {
     fileType: data.right?.file_type ?? '',
     sourceUrl: data.right?.source_url ?? null,
-    displayName: data.right?.display_name ?? null,
+    displayName: data.right?.display_name ?? null
   },
   isPublic: data.public ?? false,
   creationTime: data.creation_time ?? '',
@@ -62,7 +62,7 @@ let mapComparison = (data: any): ComparisonResponse => ({
   ready: data.ready ?? false,
   readyTime: data.ready_time ?? null,
   failed: data.failed ?? null,
-  errorMessage: data.error_message ?? null,
+  errorMessage: data.error_message ?? null
 });
 
 let mapExport = (data: any): ExportResponse => ({
@@ -72,7 +72,7 @@ let mapExport = (data: any): ExportResponse => ({
   url: data.url ?? null,
   ready: data.ready ?? false,
   failed: data.failed ?? false,
-  errorMessage: data.error_message ?? null,
+  errorMessage: data.error_message ?? null
 });
 
 export class Client {
@@ -88,8 +88,8 @@ export class Client {
     return createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'Authorization': `Token ${this.token}`,
-      },
+        Authorization: `Token ${this.token}`
+      }
     });
   }
 
@@ -106,13 +106,13 @@ export class Client {
       left: {
         file_type: params.left.fileType,
         ...(params.left.sourceUrl ? { source_url: params.left.sourceUrl } : {}),
-        ...(params.left.displayName ? { display_name: params.left.displayName } : {}),
+        ...(params.left.displayName ? { display_name: params.left.displayName } : {})
       },
       right: {
         file_type: params.right.fileType,
         ...(params.right.sourceUrl ? { source_url: params.right.sourceUrl } : {}),
-        ...(params.right.displayName ? { display_name: params.right.displayName } : {}),
-      },
+        ...(params.right.displayName ? { display_name: params.right.displayName } : {})
+      }
     };
 
     if (params.identifier) {
@@ -127,8 +127,8 @@ export class Client {
 
     let response = await axios.post('/comparisons', body, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     return mapComparison(response.data);
@@ -140,7 +140,10 @@ export class Client {
     return mapComparison(response.data);
   }
 
-  async listComparisons(params?: { limit?: number; offset?: number }): Promise<ListComparisonsResponse> {
+  async listComparisons(params?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<ListComparisonsResponse> {
     let axios = this.getAxios();
     let queryParams: Record<string, any> = {};
     if (params?.limit !== undefined) {
@@ -153,7 +156,7 @@ export class Client {
     let response = await axios.get('/comparisons', { params: queryParams });
     return {
       count: response.data.count ?? response.data.results?.length ?? 0,
-      results: (response.data.results ?? []).map(mapComparison),
+      results: (response.data.results ?? []).map(mapComparison)
     };
   }
 
@@ -177,7 +180,7 @@ export class Client {
 
     let body: Record<string, any> = {
       comparison: params.comparisonIdentifier,
-      kind: params.kind,
+      kind: params.kind
     };
 
     if (params.includeCoverPage !== undefined) {
@@ -186,8 +189,8 @@ export class Client {
 
     let response = await axios.post('/exports', body, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     return mapExport(response.data);

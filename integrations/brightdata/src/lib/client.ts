@@ -7,9 +7,9 @@ export class BrightDataClient {
     this.axios = createAxios({
       baseURL: 'https://api.brightdata.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,7 +25,7 @@ export class BrightDataClient {
     let body: Record<string, string> = {
       zone: params.zone,
       url: params.url,
-      format: params.format || 'raw',
+      format: params.format || 'raw'
     };
 
     if (params.country) {
@@ -38,8 +38,9 @@ export class BrightDataClient {
 
     let response = await this.axios.post('/request', body);
     return {
-      content: typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
-      statusCode: response.status,
+      content:
+        typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+      statusCode: response.status
     };
   }
 
@@ -54,7 +55,7 @@ export class BrightDataClient {
     let body: Record<string, string> = {
       zone: params.zone,
       url: params.url,
-      format: params.format || 'raw',
+      format: params.format || 'raw'
     };
 
     if (params.country) {
@@ -63,8 +64,9 @@ export class BrightDataClient {
 
     let response = await this.axios.post('/request', body);
     return {
-      content: typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
-      statusCode: response.status,
+      content:
+        typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+      statusCode: response.status
     };
   }
 
@@ -84,16 +86,19 @@ export class BrightDataClient {
     discoverBy?: string;
   }): Promise<{ snapshotId: string }> {
     let queryParams: Record<string, string> = {
-      dataset_id: params.datasetId,
+      dataset_id: params.datasetId
     };
 
     if (params.format) queryParams['format'] = params.format;
     if (params.notify) queryParams['notify'] = params.notify;
     if (params.endpoint) queryParams['endpoint'] = params.endpoint;
     if (params.authHeader) queryParams['auth_header'] = params.authHeader;
-    if (params.limitPerInput !== undefined) queryParams['limit_per_input'] = String(params.limitPerInput);
-    if (params.includeErrors !== undefined) queryParams['include_errors'] = String(params.includeErrors);
-    if (params.uncompressedWebhook !== undefined) queryParams['uncompressed_webhook'] = String(params.uncompressedWebhook);
+    if (params.limitPerInput !== undefined)
+      queryParams['limit_per_input'] = String(params.limitPerInput);
+    if (params.includeErrors !== undefined)
+      queryParams['include_errors'] = String(params.includeErrors);
+    if (params.uncompressedWebhook !== undefined)
+      queryParams['uncompressed_webhook'] = String(params.uncompressedWebhook);
     if (params.type) queryParams['type'] = params.type;
     if (params.discoverBy) queryParams['discover_by'] = params.discoverBy;
 
@@ -101,10 +106,7 @@ export class BrightDataClient {
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join('&');
 
-    let response = await this.axios.post(
-      `/datasets/v3/trigger?${queryString}`,
-      params.inputs,
-    );
+    let response = await this.axios.post(`/datasets/v3/trigger?${queryString}`, params.inputs);
 
     let data = response.data as { snapshot_id: string };
     return { snapshotId: data.snapshot_id };
@@ -115,22 +117,24 @@ export class BrightDataClient {
     inputs: Array<Record<string, string>>;
     format?: string;
     includeErrors?: boolean;
-  }): Promise<{ records: Array<Record<string, unknown>>; snapshotId?: string; inProgress: boolean }> {
+  }): Promise<{
+    records: Array<Record<string, unknown>>;
+    snapshotId?: string;
+    inProgress: boolean;
+  }> {
     let queryParams: Record<string, string> = {
-      dataset_id: params.datasetId,
+      dataset_id: params.datasetId
     };
 
     if (params.format) queryParams['format'] = params.format;
-    if (params.includeErrors !== undefined) queryParams['include_errors'] = String(params.includeErrors);
+    if (params.includeErrors !== undefined)
+      queryParams['include_errors'] = String(params.includeErrors);
 
     let queryString = Object.entries(queryParams)
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join('&');
 
-    let response = await this.axios.post(
-      `/datasets/v3/scrape?${queryString}`,
-      params.inputs,
-    );
+    let response = await this.axios.post(`/datasets/v3/scrape?${queryString}`, params.inputs);
 
     if (response.status === 202) {
       let data = response.data as { snapshot_id?: string };
@@ -153,7 +157,7 @@ export class BrightDataClient {
     return {
       snapshotId: data.snapshot_id,
       datasetId: data.dataset_id,
-      status: data.status,
+      status: data.status
     };
   }
 
@@ -200,7 +204,7 @@ export class BrightDataClient {
       customerId: data.customer,
       canMakeRequests: data.can_make_requests,
       authFailReason: data.auth_fail_reason,
-      ip: data.ip,
+      ip: data.ip
     };
   }
 
@@ -209,7 +213,7 @@ export class BrightDataClient {
     let data = response.data as { balance: number; pending_balance: number };
     return {
       balance: data.balance,
-      pendingBalance: data.pending_balance,
+      pendingBalance: data.pending_balance
     };
   }
 
@@ -232,7 +236,9 @@ export class BrightDataClient {
   }
 
   async getZonePasswords(zoneName: string): Promise<Array<string>> {
-    let response = await this.axios.get(`/zone/passwords?zone=${encodeURIComponent(zoneName)}`);
+    let response = await this.axios.get(
+      `/zone/passwords?zone=${encodeURIComponent(zoneName)}`
+    );
     let data = response.data;
     return Array.isArray(data) ? data : [data];
   }
@@ -244,7 +250,7 @@ export class BrightDataClient {
   }): Promise<{ message: string }> {
     let body: Record<string, unknown> = {
       zone: { name: params.name },
-      plan: params.plan,
+      plan: params.plan
     };
 
     if (params.type) {
@@ -270,13 +276,17 @@ export class BrightDataClient {
   // ── Scraping Job History ──────────────────────────────────────────
 
   async getSnapshotHistory(datasetId: string): Promise<Array<Record<string, unknown>>> {
-    let response = await this.axios.get(`/datasets/v3/snapshots?dataset_id=${encodeURIComponent(datasetId)}`);
+    let response = await this.axios.get(
+      `/datasets/v3/snapshots?dataset_id=${encodeURIComponent(datasetId)}`
+    );
     let data = response.data;
     return Array.isArray(data) ? data : [];
   }
 
   async cancelCollection(snapshotId: string): Promise<string> {
-    let response = await this.axios.post(`/datasets/v3/cancel?snapshot_id=${encodeURIComponent(snapshotId)}`);
+    let response = await this.axios.post(
+      `/datasets/v3/cancel?snapshot_id=${encodeURIComponent(snapshotId)}`
+    );
     return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
   }
 }

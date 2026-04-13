@@ -15,6 +15,7 @@ You can find this key under **Profile > Integrations > PersistIQ API** in the Pe
 The API key must be passed as an `x-api-key` HTTP header with every request. The authentication method is Header Token.
 
 Example:
+
 ```
 GET /v1/leads HTTP/1.1
 Host: api.persistiq.com

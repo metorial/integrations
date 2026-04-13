@@ -14,70 +14,72 @@ let documentWebhookEvents = [
   'documents.unarchive',
   'documents.restore',
   'documents.move',
-  'documents.title_change',
+  'documents.title_change'
 ] as const;
 
-export let documentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Events',
-    key: 'document_events',
-    description: 'Triggers when documents are created, updated, published, archived, deleted, moved, or otherwise modified in the workspace.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of document event'),
-    deliveryId: z.string().describe('Unique delivery ID from webhook'),
-    actorId: z.string().describe('User ID who triggered the event'),
-    documentId: z.string().describe('ID of the affected document'),
-    model: z.any().describe('Document model data from webhook payload'),
-  }))
-  .output(z.object({
-    documentId: z.string(),
-    title: z.string(),
-    emoji: z.string().optional(),
-    collectionId: z.string().optional(),
-    parentDocumentId: z.string().optional(),
-    template: z.boolean().optional(),
-    publishedAt: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    archivedAt: z.string().optional(),
-    revision: z.number().optional(),
-    actorId: z.string(),
-  }))
+export let documentEvents = SlateTrigger.create(spec, {
+  name: 'Document Events',
+  key: 'document_events',
+  description:
+    'Triggers when documents are created, updated, published, archived, deleted, moved, or otherwise modified in the workspace.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of document event'),
+      deliveryId: z.string().describe('Unique delivery ID from webhook'),
+      actorId: z.string().describe('User ID who triggered the event'),
+      documentId: z.string().describe('ID of the affected document'),
+      model: z.any().describe('Document model data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string(),
+      title: z.string(),
+      emoji: z.string().optional(),
+      collectionId: z.string().optional(),
+      parentDocumentId: z.string().optional(),
+      template: z.boolean().optional(),
+      publishedAt: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      archivedAt: z.string().optional(),
+      revision: z.number().optional(),
+      actorId: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let subscription = await client.createWebhookSubscription({
         name: 'Slates - Document Events',
         url: ctx.input.webhookBaseUrl,
-        events: [...documentWebhookEvents],
+        events: [...documentWebhookEvents]
       });
 
       return {
         registrationDetails: {
-          webhookSubscriptionId: subscription.id,
-        },
+          webhookSubscriptionId: subscription.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let details = ctx.input.registrationDetails as { webhookSubscriptionId: string };
       await client.deleteWebhookSubscription(details.webhookSubscriptionId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as {
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as {
         id: string;
         event: string;
         actorId: string;
@@ -94,13 +96,13 @@ export let documentEvents = SlateTrigger.create(
             deliveryId: body.id,
             actorId: body.actorId,
             documentId: body.payload?.id,
-            model: body.payload?.model,
-          },
-        ],
+            model: body.payload?.model
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let model = ctx.input.model || {};
 
       return {
@@ -118,9 +120,9 @@ export let documentEvents = SlateTrigger.create(
           updatedAt: model.updatedAt,
           archivedAt: model.archivedAt,
           revision: model.revision,
-          actorId: ctx.input.actorId,
-        },
+          actorId: ctx.input.actorId
+        }
       };
-    },
+    }
   })
   .build();

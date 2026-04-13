@@ -3,31 +3,44 @@ import { companySchema } from '../lib/types';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let companyEnriched = SlateTrigger.create(
-  spec,
-  {
-    name: 'Company Enriched',
-    key: 'company_enriched',
-    description: 'Triggers when an asynchronous company enrichment lookup completes. Receives webhook notifications from BigPicture when company data becomes available after a 202 (processing) response.',
-  }
-)
-  .input(z.object({
-    webhookEventId: z.string().nullable().optional().describe('Correlation ID from the original webhookId parameter'),
-    status: z.number().describe('Result status: 200 (found) or 404 (not found)'),
-    resourceType: z.string().describe('Resource type (e.g. "company")'),
-    company: companySchema.nullable().optional().describe('The enriched company profile, present when status is 200'),
-  }))
-  .output(z.object({
-    webhookEventId: z.string().nullable().optional().describe('Correlation ID from the original request'),
-    status: z.number().describe('Result status: 200 (found) or 404 (not found)'),
-    found: z.boolean().describe('Whether the company was found'),
-    companyName: z.string().nullable().optional().describe('Company name'),
-    domain: z.string().nullable().optional().describe('Company domain'),
-    company: companySchema.nullable().optional().describe('Full company profile data'),
-  }))
+export let companyEnriched = SlateTrigger.create(spec, {
+  name: 'Company Enriched',
+  key: 'company_enriched',
+  description:
+    'Triggers when an asynchronous company enrichment lookup completes. Receives webhook notifications from BigPicture when company data becomes available after a 202 (processing) response.'
+})
+  .input(
+    z.object({
+      webhookEventId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Correlation ID from the original webhookId parameter'),
+      status: z.number().describe('Result status: 200 (found) or 404 (not found)'),
+      resourceType: z.string().describe('Resource type (e.g. "company")'),
+      company: companySchema
+        .nullable()
+        .optional()
+        .describe('The enriched company profile, present when status is 200')
+    })
+  )
+  .output(
+    z.object({
+      webhookEventId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Correlation ID from the original request'),
+      status: z.number().describe('Result status: 200 (found) or 404 (not found)'),
+      found: z.boolean().describe('Whether the company was found'),
+      companyName: z.string().nullable().optional().describe('Company name'),
+      domain: z.string().nullable().optional().describe('Company domain'),
+      company: companySchema.nullable().optional().describe('Full company profile data')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let company = data.body ?? null;
 
@@ -43,13 +56,13 @@ export let companyEnriched = SlateTrigger.create(
             webhookEventId: data.id ?? null,
             status: data.status,
             resourceType: data.type ?? 'company',
-            company,
-          },
-        ],
+            company
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let found = ctx.input.status === 200;
       let domain = ctx.input.company?.domain ?? 'unknown';
       let eventId = ctx.input.webhookEventId ?? `company-${domain}-${Date.now()}`;
@@ -63,9 +76,9 @@ export let companyEnriched = SlateTrigger.create(
           found,
           companyName: ctx.input.company?.name ?? null,
           domain: ctx.input.company?.domain ?? null,
-          company: found ? ctx.input.company ?? null : null,
-        },
+          company: found ? (ctx.input.company ?? null) : null
+        }
       };
-    },
+    }
   })
   .build();

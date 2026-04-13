@@ -23,7 +23,5 @@ export let provider = Slate.create({
     decodeL2Batch,
     getBlob
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

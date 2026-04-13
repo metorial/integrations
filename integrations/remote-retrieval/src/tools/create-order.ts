@@ -12,7 +12,7 @@ let employeeInfoSchema = z.object({
   state: z.string().describe('Employee state (2-letter code, e.g. TX)'),
   country: z.string().describe('Employee country (e.g. United States)'),
   zip: z.string().describe('Employee ZIP/postal code'),
-  phone: z.string().describe('Employee phone number (digits only, e.g. 1231231234)'),
+  phone: z.string().describe('Employee phone number (digits only, e.g. 1231231234)')
 });
 
 let companyInfoSchema = z.object({
@@ -25,7 +25,7 @@ let companyInfoSchema = z.object({
   returnCountry: z.string().describe('Company return country'),
   returnZip: z.string().describe('Company return ZIP/postal code'),
   email: z.string().describe('Company contact email'),
-  phone: z.string().describe('Company contact phone number'),
+  phone: z.string().describe('Company contact phone number')
 });
 
 let newEmployeeInfoSchema = z.object({
@@ -38,53 +38,79 @@ let newEmployeeInfoSchema = z.object({
   state: z.string().describe('New employee state'),
   zip: z.string().describe('New employee ZIP/postal code'),
   country: z.string().describe('New employee country'),
-  welcomeMessage: z.string().optional().describe('Optional welcome message for the new employee'),
+  welcomeMessage: z
+    .string()
+    .optional()
+    .describe('Optional welcome message for the new employee')
 });
 
 let orderSchema = z.object({
-  equipmentType: z.enum(['Laptop', 'Monitor', 'Cell Phone', 'Tablet']).describe('Type of equipment to return'),
-  orderType: z.enum(['Return To Company', 'Recycle with Data Destruction']).describe('Type of return order'),
-  additionalService: z.enum(['data_destruction_return', 'data_destruction_forward']).optional()
-    .describe('Additional service for "Return To Company" orders: "data_destruction_return" wipes data and returns to company, "data_destruction_forward" wipes data and ships to a new employee'),
-  insuranceActive: z.boolean().optional().describe('Whether to enable insurance for this order'),
-  insuranceAmount: z.number().optional().describe('Insurance value amount (required when insurance is active)'),
-  employeeInfo: employeeInfoSchema.describe('Information about the employee returning the equipment'),
+  equipmentType: z
+    .enum(['Laptop', 'Monitor', 'Cell Phone', 'Tablet'])
+    .describe('Type of equipment to return'),
+  orderType: z
+    .enum(['Return To Company', 'Recycle with Data Destruction'])
+    .describe('Type of return order'),
+  additionalService: z
+    .enum(['data_destruction_return', 'data_destruction_forward'])
+    .optional()
+    .describe(
+      'Additional service for "Return To Company" orders: "data_destruction_return" wipes data and returns to company, "data_destruction_forward" wipes data and ships to a new employee'
+    ),
+  insuranceActive: z
+    .boolean()
+    .optional()
+    .describe('Whether to enable insurance for this order'),
+  insuranceAmount: z
+    .number()
+    .optional()
+    .describe('Insurance value amount (required when insurance is active)'),
+  employeeInfo: employeeInfoSchema.describe(
+    'Information about the employee returning the equipment'
+  ),
   companyInfo: companyInfoSchema.describe('Company return address and contact information'),
-  newEmployeeInfo: newEmployeeInfoSchema.optional()
-    .describe('Required when additionalService is "data_destruction_forward" — info for the new employee receiving the device'),
+  newEmployeeInfo: newEmployeeInfoSchema
+    .optional()
+    .describe(
+      'Required when additionalService is "data_destruction_forward" — info for the new employee receiving the device'
+    )
 });
 
-export let createOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Create Return Order',
-    key: 'create_return_order',
-    description: `Create one or more equipment return orders for remote employees. Supports returning laptops, monitors, cell phones, and tablets.
+export let createOrder = SlateTool.create(spec, {
+  name: 'Create Return Order',
+  key: 'create_return_order',
+  description: `Create one or more equipment return orders for remote employees. Supports returning laptops, monitors, cell phones, and tablets.
 Orders can be either "Return To Company" (with optional data destruction services) or "Recycle with Data Destruction".
 When using "Return To Company", you can optionally add data destruction with return to company, or data destruction with forwarding to a new employee.`,
-    instructions: [
-      'When additionalService is "data_destruction_forward", newEmployeeInfo is required for each order using that service.',
-      'Insurance requires both insuranceActive=true and a positive insuranceAmount.',
-      'additionalService is only applicable when orderType is "Return To Company".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'When additionalService is "data_destruction_forward", newEmployeeInfo is required for each order using that service.',
+    'Insurance requires both insuranceActive=true and a positive insuranceAmount.',
+    'additionalService is only applicable when orderType is "Return To Company".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    orders: z.array(orderSchema).min(1).describe('One or more equipment return orders to create'),
-  }))
-  .output(z.object({
-    orderId: z.string().describe('The created order ID'),
-    message: z.string().describe('Confirmation message from the API'),
-    status: z.string().describe('Response status'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      orders: z
+        .array(orderSchema)
+        .min(1)
+        .describe('One or more equipment return orders to create')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string().describe('The created order ID'),
+      message: z.string().describe('Confirmation message from the API'),
+      status: z.string().describe('Response status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let payloadOrders = ctx.input.orders.map((order) => {
+    let payloadOrders = ctx.input.orders.map(order => {
       let additionalServiceValue: 1 | 2 | undefined;
       if (order.additionalService === 'data_destruction_return') {
         additionalServiceValue = 1;
@@ -104,7 +130,7 @@ When using "Return To Company", you can optionally add data destruction with ret
           address_state: order.employeeInfo.state,
           address_country: order.employeeInfo.country,
           address_zip: order.employeeInfo.zip,
-          phone: order.employeeInfo.phone,
+          phone: order.employeeInfo.phone
         },
         company_info: {
           return_person_name: order.companyInfo.returnPersonName,
@@ -116,8 +142,8 @@ When using "Return To Company", you can optionally add data destruction with ret
           return_address_country: order.companyInfo.returnCountry,
           return_address_zip: order.companyInfo.returnZip,
           email: order.companyInfo.email,
-          phone: order.companyInfo.phone,
-        },
+          phone: order.companyInfo.phone
+        }
       };
 
       if (additionalServiceValue !== undefined) {
@@ -142,7 +168,7 @@ When using "Return To Company", you can optionally add data destruction with ret
           address_state: order.newEmployeeInfo.state,
           address_zip: order.newEmployeeInfo.zip,
           address_country: order.newEmployeeInfo.country,
-          newemp_msg: order.newEmployeeInfo.welcomeMessage || '',
+          newemp_msg: order.newEmployeeInfo.welcomeMessage || ''
         };
       }
 
@@ -155,9 +181,9 @@ When using "Return To Company", you can optionally add data destruction with ret
       output: {
         orderId: String(result.order),
         message: result.message,
-        status: result.status,
+        status: result.status
       },
-      message: `Successfully created order **#${result.order}** for ${ctx.input.orders.length} device(s).`,
+      message: `Successfully created order **#${result.order}** for ${ctx.input.orders.length} device(s).`
     };
   })
   .build();

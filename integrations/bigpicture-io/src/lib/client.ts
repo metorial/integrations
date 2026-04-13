@@ -2,21 +2,19 @@ import { createAxios } from 'slates';
 import type { Company, IpCompanyResponse } from './types';
 
 let companyAxios = createAxios({
-  baseURL: 'https://company.bigpicture.io',
+  baseURL: 'https://company.bigpicture.io'
 });
 
 let ipAxios = createAxios({
-  baseURL: 'https://ip.bigpicture.io',
+  baseURL: 'https://ip.bigpicture.io'
 });
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   private get headers() {
     return {
-      Authorization: this.config.token,
+      Authorization: this.config.token
     };
   }
 
@@ -27,7 +25,7 @@ export class Client {
     stream?: boolean;
   }): Promise<{ company: Company | null; status: number }> {
     let queryParams: Record<string, string> = {
-      domain: params.domain,
+      domain: params.domain
     };
     if (params.webhookUrl) {
       queryParams.webhookUrl = params.webhookUrl;
@@ -36,14 +34,12 @@ export class Client {
       queryParams.webhookId = params.webhookId;
     }
 
-    let path = params.stream
-      ? '/v1/companies/find/stream'
-      : '/v1/companies/find';
+    let path = params.stream ? '/v1/companies/find/stream' : '/v1/companies/find';
 
     let response = await companyAxios.get(path, {
       params: queryParams,
       headers: this.headers,
-      validateStatus: (status: number) => status < 500,
+      validateStatus: (status: number) => status < 500
     });
 
     if (response.status === 200) {
@@ -59,14 +55,16 @@ export class Client {
       return { company: null, status: 404 };
     }
 
-    throw new Error(`Unexpected response status: ${response.status} - ${JSON.stringify(response.data)}`);
+    throw new Error(
+      `Unexpected response status: ${response.status} - ${JSON.stringify(response.data)}`
+    );
   }
 
   async findCompanyByIp(ip: string): Promise<IpCompanyResponse | null> {
     let response = await ipAxios.get('/v2/companies/ip', {
       params: { ip },
       headers: this.headers,
-      validateStatus: (status: number) => status < 500,
+      validateStatus: (status: number) => status < 500
     });
 
     if (response.status === 200) {
@@ -81,7 +79,9 @@ export class Client {
       return null;
     }
 
-    throw new Error(`Unexpected response status: ${response.status} - ${JSON.stringify(response.data)}`);
+    throw new Error(
+      `Unexpected response status: ${response.status} - ${JSON.stringify(response.data)}`
+    );
   }
 }
 

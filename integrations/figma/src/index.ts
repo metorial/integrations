@@ -19,12 +19,7 @@ import {
   createDevResource,
   deleteDevResource
 } from './tools';
-import {
-  fileEvents,
-  commentEvents,
-  libraryPublish,
-  devModeStatusEvents
-} from './triggers';
+import { fileEvents, commentEvents, libraryPublish, devModeStatusEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +42,5 @@ export let provider = Slate.create({
     createDevResource,
     deleteDevResource
   ],
-  triggers: [
-    fileEvents,
-    commentEvents,
-    libraryPublish,
-    devModeStatusEvents
-  ]
+  triggers: [fileEvents, commentEvents, libraryPublish, devModeStatusEvents]
 });

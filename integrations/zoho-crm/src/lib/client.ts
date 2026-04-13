@@ -48,8 +48,8 @@ export class Client {
     this.http = createAxios({
       baseURL: `${config.apiBaseUrl}/crm/v7`,
       headers: {
-        Authorization: `Zoho-oauthtoken ${config.token}`,
-      },
+        Authorization: `Zoho-oauthtoken ${config.token}`
+      }
     });
   }
 
@@ -76,7 +76,11 @@ export class Client {
     return response.data;
   }
 
-  async createRecords(module: string, records: RecordData[], triggers?: string[]): Promise<any> {
+  async createRecords(
+    module: string,
+    records: RecordData[],
+    triggers?: string[]
+  ): Promise<any> {
     let body: Record<string, any> = { data: records };
     if (triggers?.length) body.trigger = triggers;
 
@@ -84,7 +88,11 @@ export class Client {
     return response.data;
   }
 
-  async updateRecords(module: string, records: Array<RecordData & { id: string }>, triggers?: string[]): Promise<any> {
+  async updateRecords(
+    module: string,
+    records: Array<RecordData & { id: string }>,
+    triggers?: string[]
+  ): Promise<any> {
     let body: Record<string, any> = { data: records };
     if (triggers?.length) body.trigger = triggers;
 
@@ -92,7 +100,12 @@ export class Client {
     return response.data;
   }
 
-  async updateRecord(module: string, recordId: string, record: RecordData, triggers?: string[]): Promise<any> {
+  async updateRecord(
+    module: string,
+    recordId: string,
+    record: RecordData,
+    triggers?: string[]
+  ): Promise<any> {
     let body: Record<string, any> = { data: [record] };
     if (triggers?.length) body.trigger = triggers;
 
@@ -102,7 +115,7 @@ export class Client {
 
   async deleteRecords(module: string, recordIds: string[]): Promise<any> {
     let response = await this.http.delete(`/${module}`, {
-      params: { ids: recordIds.join(',') },
+      params: { ids: recordIds.join(',') }
     });
     return response.data;
   }
@@ -163,7 +176,12 @@ export class Client {
 
   // --- Notes ---
 
-  async getNotes(module: string, recordId: string, page?: number, perPage?: number): Promise<any> {
+  async getNotes(
+    module: string,
+    recordId: string,
+    page?: number,
+    perPage?: number
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (page) params.page = String(page);
     if (perPage) params.per_page = String(perPage);
@@ -172,9 +190,14 @@ export class Client {
     return response.data;
   }
 
-  async createNote(module: string, recordId: string, noteTitle: string, noteContent: string): Promise<any> {
+  async createNote(
+    module: string,
+    recordId: string,
+    noteTitle: string,
+    noteContent: string
+  ): Promise<any> {
     let response = await this.http.post(`/${module}/${recordId}/Notes`, {
-      data: [{ Note_Title: noteTitle, Note_Content: noteContent }],
+      data: [{ Note_Title: noteTitle, Note_Content: noteContent }]
     });
     return response.data;
   }
@@ -191,25 +214,39 @@ export class Client {
     return response.data;
   }
 
-  async addTagsToRecords(module: string, recordIds: string[], tagNames: string[]): Promise<any> {
+  async addTagsToRecords(
+    module: string,
+    recordIds: string[],
+    tagNames: string[]
+  ): Promise<any> {
     let response = await this.http.post(`/${module}/actions/add_tags`, {
       ids: recordIds,
-      tags: tagNames.map(name => ({ name })),
+      tags: tagNames.map(name => ({ name }))
     });
     return response.data;
   }
 
-  async removeTagsFromRecords(module: string, recordIds: string[], tagNames: string[]): Promise<any> {
+  async removeTagsFromRecords(
+    module: string,
+    recordIds: string[],
+    tagNames: string[]
+  ): Promise<any> {
     let response = await this.http.post(`/${module}/actions/remove_tags`, {
       ids: recordIds,
-      tags: tagNames.map(name => ({ name })),
+      tags: tagNames.map(name => ({ name }))
     });
     return response.data;
   }
 
   // --- Related Records ---
 
-  async getRelatedRecords(module: string, recordId: string, relatedModule: string, page?: number, perPage?: number): Promise<any> {
+  async getRelatedRecords(
+    module: string,
+    recordId: string,
+    relatedModule: string,
+    page?: number,
+    perPage?: number
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (page) params.page = String(page);
     if (perPage) params.per_page = String(perPage);
@@ -231,9 +268,9 @@ export class Client {
         notification_condition: w.notificationCondition?.map(c => ({
           field_name: c.fieldName,
           value: c.value,
-          operation: c.operation,
-        })),
-      })),
+          operation: c.operation
+        }))
+      }))
     });
     return response.data;
   }
@@ -248,7 +285,7 @@ export class Client {
 
   async disableNotifications(channelIds: string[]): Promise<any> {
     let response = await this.http.patch('/actions/watch', {
-      watch: channelIds.map(id => ({ channel_id: id, _delete_events: true })),
+      watch: channelIds.map(id => ({ channel_id: id, _delete_events: true }))
     });
     return response.data;
   }
@@ -262,21 +299,27 @@ export class Client {
 
   // --- Emails ---
 
-  async sendEmail(module: string, recordId: string, emailData: {
-    from: { userName: string; email: string };
-    to: Array<{ userName?: string; email: string }>;
-    subject: string;
-    content: string;
-    mailFormat?: 'text' | 'html';
-  }): Promise<any> {
+  async sendEmail(
+    module: string,
+    recordId: string,
+    emailData: {
+      from: { userName: string; email: string };
+      to: Array<{ userName?: string; email: string }>;
+      subject: string;
+      content: string;
+      mailFormat?: 'text' | 'html';
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/${module}/${recordId}/actions/send_mail`, {
-      data: [{
-        from: { user_name: emailData.from.userName, email: emailData.from.email },
-        to: emailData.to.map(t => ({ user_name: t.userName, email: t.email })),
-        subject: emailData.subject,
-        content: emailData.content,
-        mail_format: emailData.mailFormat || 'html',
-      }],
+      data: [
+        {
+          from: { user_name: emailData.from.userName, email: emailData.from.email },
+          to: emailData.to.map(t => ({ user_name: t.userName, email: t.email })),
+          subject: emailData.subject,
+          content: emailData.content,
+          mail_format: emailData.mailFormat || 'html'
+        }
+      ]
     });
     return response.data;
   }

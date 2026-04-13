@@ -6,45 +6,59 @@ import { z } from 'zod';
 export let productEvents = SlateTrigger.create(spec, {
   name: 'Product Events',
   key: 'product_events',
-  description: 'Triggers when a product is created, updated, deleted, or restored in the store.',
+  description:
+    'Triggers when a product is created, updated, deleted, or restored in the store.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Type of product event'),
-    webhookId: z.number().describe('WooCommerce webhook ID'),
-    product: z.any().describe('Raw product data from WooCommerce'),
-  }))
-  .output(z.object({
-    productId: z.number(),
-    name: z.string(),
-    slug: z.string(),
-    type: z.string(),
-    status: z.string(),
-    sku: z.string(),
-    price: z.string(),
-    regularPrice: z.string(),
-    salePrice: z.string(),
-    onSale: z.boolean(),
-    stockStatus: z.string(),
-    stockQuantity: z.number().nullable(),
-    categories: z.array(z.object({
-      categoryId: z.number(),
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of product event'),
+      webhookId: z.number().describe('WooCommerce webhook ID'),
+      product: z.any().describe('Raw product data from WooCommerce')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.number(),
       name: z.string(),
       slug: z.string(),
-    })),
-    tags: z.array(z.object({
-      tagId: z.number(),
-      name: z.string(),
-      slug: z.string(),
-    })),
-    permalink: z.string(),
-    dateCreated: z.string(),
-    dateModified: z.string(),
-  }))
+      type: z.string(),
+      status: z.string(),
+      sku: z.string(),
+      price: z.string(),
+      regularPrice: z.string(),
+      salePrice: z.string(),
+      onSale: z.boolean(),
+      stockStatus: z.string(),
+      stockQuantity: z.number().nullable(),
+      categories: z.array(
+        z.object({
+          categoryId: z.number(),
+          name: z.string(),
+          slug: z.string()
+        })
+      ),
+      tags: z.array(
+        z.object({
+          tagId: z.number(),
+          name: z.string(),
+          slug: z.string()
+        })
+      ),
+      permalink: z.string(),
+      dateCreated: z.string(),
+      dateModified: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
-      let topics = ['product.created', 'product.updated', 'product.deleted', 'product.restored'];
+      let topics = [
+        'product.created',
+        'product.updated',
+        'product.deleted',
+        'product.restored'
+      ];
       let registeredWebhooks: Array<{ webhookId: number; topic: string }> = [];
 
       for (let topic of topics) {
@@ -52,17 +66,17 @@ export let productEvents = SlateTrigger.create(spec, {
           name: `Slates - ${topic}`,
           topic,
           delivery_url: ctx.input.webhookBaseUrl,
-          status: 'active',
+          status: 'active'
         });
         registeredWebhooks.push({ webhookId: webhook.id, topic });
       }
 
       return {
-        registrationDetails: { webhooks: registeredWebhooks },
+        registrationDetails: { webhooks: registeredWebhooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhooks = ctx.input.registrationDetails?.webhooks || [];
 
@@ -75,8 +89,8 @@ export let productEvents = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let topic = ctx.request.headers.get('x-wc-webhook-topic') || '';
       let webhookId = parseInt(ctx.request.headers.get('x-wc-webhook-id') || '0', 10);
@@ -86,15 +100,17 @@ export let productEvents = SlateTrigger.create(spec, {
       }
 
       return {
-        inputs: [{
-          eventType: topic || 'product.updated',
-          webhookId,
-          product: body,
-        }],
+        inputs: [
+          {
+            eventType: topic || 'product.updated',
+            webhookId,
+            product: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.product;
 
       return {
@@ -116,18 +132,18 @@ export let productEvents = SlateTrigger.create(spec, {
           categories: (p.categories || []).map((c: any) => ({
             categoryId: c.id,
             name: c.name || '',
-            slug: c.slug || '',
+            slug: c.slug || ''
           })),
           tags: (p.tags || []).map((t: any) => ({
             tagId: t.id,
             name: t.name || '',
-            slug: t.slug || '',
+            slug: t.slug || ''
           })),
           permalink: p.permalink || '',
           dateCreated: p.date_created || '',
-          dateModified: p.date_modified || '',
-        },
+          dateModified: p.date_modified || ''
+        }
       };
-    },
+    }
   })
   .build();

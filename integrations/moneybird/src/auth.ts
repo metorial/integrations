@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -14,42 +16,44 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Sales Invoices',
-        description: 'Access to sales invoices, recurring invoices, and external sales invoices',
-        scope: 'sales_invoices',
+        description:
+          'Access to sales invoices, recurring invoices, and external sales invoices',
+        scope: 'sales_invoices'
       },
       {
         title: 'Documents',
         description: 'Access to purchase invoices, receipts, and other documents',
-        scope: 'documents',
+        scope: 'documents'
       },
       {
         title: 'Estimates',
         description: 'Access to quotes and estimates',
-        scope: 'estimates',
+        scope: 'estimates'
       },
       {
         title: 'Bank',
         description: 'Access to financial accounts, statements, and mutations',
-        scope: 'bank',
+        scope: 'bank'
       },
       {
         title: 'Time Entries',
         description: 'Access to time tracking entries and projects',
-        scope: 'time_entries',
+        scope: 'time_entries'
       },
       {
         title: 'Settings',
-        description: 'Access to administration settings, workflows, tax rates, ledger accounts, and products',
-        scope: 'settings',
-      },
+        description:
+          'Access to administration settings, workflows, tax rates, ledger accounts, and products',
+        scope: 'settings'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       if (ctx.scopes.length > 0) {
@@ -57,11 +61,11 @@ export let auth = SlateAuth.create()
       }
 
       return {
-        url: `https://moneybird.com/oauth/authorize?${params.toString()}`,
+        url: `https://moneybird.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
       let response = await http.post('https://moneybird.com/oauth/token', {
@@ -69,18 +73,18 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret,
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
+        grant_type: 'authorization_code'
       });
 
       return {
         output: {
           token: response.data.access_token,
-          refreshToken: response.data.refresh_token,
-        },
+          refreshToken: response.data.refresh_token
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -91,14 +95,14 @@ export let auth = SlateAuth.create()
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         refresh_token: ctx.output.refreshToken,
-        grant_type: 'refresh_token',
+        grant_type: 'refresh_token'
       });
 
       return {
         output: {
           token: response.data.access_token,
-          refreshToken: response.data.refresh_token || ctx.output.refreshToken,
-        },
+          refreshToken: response.data.refresh_token || ctx.output.refreshToken
+        }
       };
     },
 
@@ -106,8 +110,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://moneybird.com/api/v2',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/administrations.json');
@@ -117,15 +121,15 @@ export let auth = SlateAuth.create()
         return {
           profile: {
             id: String(administrations[0].id),
-            name: administrations[0].name,
-          },
+            name: administrations[0].name
+          }
         };
       }
 
       return {
-        profile: {},
+        profile: {}
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -133,14 +137,18 @@ export let auth = SlateAuth.create()
     key: 'personal_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal API token generated at https://moneybird.com/user/applications/new'),
+      token: z
+        .string()
+        .describe(
+          'Personal API token generated at https://moneybird.com/user/applications/new'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -148,8 +156,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://moneybird.com/api/v2',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/administrations.json');
@@ -159,13 +167,13 @@ export let auth = SlateAuth.create()
         return {
           profile: {
             id: String(administrations[0].id),
-            name: administrations[0].name,
-          },
+            name: administrations[0].name
+          }
         };
       }
 
       return {
-        profile: {},
+        profile: {}
       };
-    },
+    }
   });

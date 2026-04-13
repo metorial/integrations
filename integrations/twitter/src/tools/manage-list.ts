@@ -4,49 +4,74 @@ import { listSchema, userSchema, postSchema, mapList, mapUser, mapPost } from '.
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageList = SlateTool.create(
-  spec,
-  {
-    name: 'Manage List',
-    key: 'manage_list',
-    description: `Create, update, delete Twitter/X lists, manage list members, or retrieve list details, members, and posts. A single tool for all list operations.`,
-    instructions: [
-      '**create**: Create a new list with a name and optional description/privacy setting.',
-      '**update**: Update a list\'s name, description, or privacy.',
-      '**delete**: Delete a list by ID.',
-      '**get**: Get list details by ID.',
-      '**list_owned**: Get lists owned by a user.',
-      '**add_member** / **remove_member**: Add or remove a user from a list.',
-      '**list_members**: Get members of a list.',
-      '**list_posts**: Get recent posts from list members.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageList = SlateTool.create(spec, {
+  name: 'Manage List',
+  key: 'manage_list',
+  description: `Create, update, delete Twitter/X lists, manage list members, or retrieve list details, members, and posts. A single tool for all list operations.`,
+  instructions: [
+    '**create**: Create a new list with a name and optional description/privacy setting.',
+    "**update**: Update a list's name, description, or privacy.",
+    '**delete**: Delete a list by ID.',
+    '**get**: Get list details by ID.',
+    '**list_owned**: Get lists owned by a user.',
+    '**add_member** / **remove_member**: Add or remove a user from a list.',
+    '**list_members**: Get members of a list.',
+    '**list_posts**: Get recent posts from list members.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'get', 'list_owned', 'add_member', 'remove_member', 'list_members', 'list_posts']).describe('Action to perform'),
-    listId: z.string().optional().describe('List ID (required for update, delete, get, add/remove member, list members/posts)'),
-    userId: z.string().optional().describe('User ID (required for list_owned, add/remove member)'),
-    name: z.string().optional().describe('List name (required for create, optional for update)'),
-    description: z.string().optional().describe('List description'),
-    isPrivate: z.boolean().optional().describe('Whether the list is private'),
-    maxResults: z.number().optional().describe('Number of results for list actions'),
-    paginationToken: z.string().optional().describe('Pagination token')
-  }))
-  .output(z.object({
-    list: listSchema.optional().describe('List details'),
-    lists: z.array(listSchema).optional().describe('Multiple lists'),
-    users: z.array(userSchema).optional().describe('List members'),
-    posts: z.array(postSchema).optional().describe('Posts from list'),
-    success: z.boolean().optional().describe('Whether the action was successful'),
-    nextToken: z.string().optional().describe('Pagination token for next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'create',
+          'update',
+          'delete',
+          'get',
+          'list_owned',
+          'add_member',
+          'remove_member',
+          'list_members',
+          'list_posts'
+        ])
+        .describe('Action to perform'),
+      listId: z
+        .string()
+        .optional()
+        .describe(
+          'List ID (required for update, delete, get, add/remove member, list members/posts)'
+        ),
+      userId: z
+        .string()
+        .optional()
+        .describe('User ID (required for list_owned, add/remove member)'),
+      name: z
+        .string()
+        .optional()
+        .describe('List name (required for create, optional for update)'),
+      description: z.string().optional().describe('List description'),
+      isPrivate: z.boolean().optional().describe('Whether the list is private'),
+      maxResults: z.number().optional().describe('Number of results for list actions'),
+      paginationToken: z.string().optional().describe('Pagination token')
+    })
+  )
+  .output(
+    z.object({
+      list: listSchema.optional().describe('List details'),
+      lists: z.array(listSchema).optional().describe('Multiple lists'),
+      users: z.array(userSchema).optional().describe('List members'),
+      posts: z.array(postSchema).optional().describe('Posts from list'),
+      success: z.boolean().optional().describe('Whether the action was successful'),
+      nextToken: z.string().optional().describe('Pagination token for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwitterClient(ctx.auth.token);
-    let { action, listId, userId, name, description, isPrivate, maxResults, paginationToken } = ctx.input;
+    let { action, listId, userId, name, description, isPrivate, maxResults, paginationToken } =
+      ctx.input;
 
     if (action === 'create') {
       if (!name) throw new Error('name is required to create a list.');
@@ -97,7 +122,8 @@ export let manageList = SlateTool.create(
     }
 
     if (action === 'add_member') {
-      if (!listId || !userId) throw new Error('listId and userId are required to add a member.');
+      if (!listId || !userId)
+        throw new Error('listId and userId are required to add a member.');
       await client.addListMember(listId, userId);
       return {
         output: { success: true },
@@ -106,7 +132,8 @@ export let manageList = SlateTool.create(
     }
 
     if (action === 'remove_member') {
-      if (!listId || !userId) throw new Error('listId and userId are required to remove a member.');
+      if (!listId || !userId)
+        throw new Error('listId and userId are required to remove a member.');
       await client.removeListMember(listId, userId);
       return {
         output: { success: true },
@@ -135,4 +162,5 @@ export let manageList = SlateTool.create(
     }
 
     throw new Error('Invalid action.');
-  }).build();
+  })
+  .build();

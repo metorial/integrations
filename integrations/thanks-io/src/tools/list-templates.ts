@@ -3,30 +3,40 @@ import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTemplates = SlateTool.create(
-  spec,
-  {
-    name: 'List Templates',
-    key: 'list_templates',
-    description: `Retrieve saved image templates and/or message templates. Image templates are used for the front/exterior of mail pieces. Message templates store handwritten message content, handwriting style, font settings, QR code URLs, and gift card configuration.
+export let listTemplates = SlateTool.create(spec, {
+  name: 'List Templates',
+  key: 'list_templates',
+  description: `Retrieve saved image templates and/or message templates. Image templates are used for the front/exterior of mail pieces. Message templates store handwritten message content, handwriting style, font settings, QR code URLs, and gift card configuration.
 Templates are managed through the Thanks.io dashboard and referenced by ID when sending mail.`,
-    instructions: [
-      'Set templateType to "image", "message", or "both" to choose which templates to retrieve.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  instructions: [
+    'Set templateType to "image", "message", or "both" to choose which templates to retrieve.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    templateType: z.enum(['image', 'message', 'both']).default('both').describe('Type of templates to retrieve'),
-  }))
-  .output(z.object({
-    imageTemplates: z.array(z.record(z.string(), z.unknown())).optional().describe('List of image templates'),
-    messageTemplates: z.array(z.record(z.string(), z.unknown())).optional().describe('List of message templates'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      templateType: z
+        .enum(['image', 'message', 'both'])
+        .default('both')
+        .describe('Type of templates to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      imageTemplates: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of image templates'),
+      messageTemplates: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of message templates')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ThanksIoClient({ token: ctx.auth.token });
     let { templateType } = ctx.input;
 
@@ -35,12 +45,16 @@ Templates are managed through the Thanks.io dashboard and referenced by ID when 
 
     if (templateType === 'image' || templateType === 'both') {
       let result = await client.listImageTemplates();
-      imageTemplates = (Array.isArray(result) ? result : result.data || []) as Array<Record<string, unknown>>;
+      imageTemplates = (Array.isArray(result) ? result : result.data || []) as Array<
+        Record<string, unknown>
+      >;
     }
 
     if (templateType === 'message' || templateType === 'both') {
       let result = await client.listMessageTemplates();
-      messageTemplates = (Array.isArray(result) ? result : result.data || []) as Array<Record<string, unknown>>;
+      messageTemplates = (Array.isArray(result) ? result : result.data || []) as Array<
+        Record<string, unknown>
+      >;
     }
 
     let parts: string[] = [];
@@ -50,8 +64,9 @@ Templates are managed through the Thanks.io dashboard and referenced by ID when 
     return {
       output: {
         imageTemplates,
-        messageTemplates,
+        messageTemplates
       },
-      message: `Retrieved ${parts.join(' and ')}.`,
+      message: `Retrieved ${parts.join(' and ')}.`
     };
-  }).build();
+  })
+  .build();

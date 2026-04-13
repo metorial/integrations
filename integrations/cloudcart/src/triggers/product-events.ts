@@ -5,50 +5,54 @@ import { z } from 'zod';
 
 let productEventTypes = ['product.created', 'product.updated', 'product.deleted'] as const;
 
-export let productEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Product Events',
-    key: 'product_events',
-    description: 'Triggers when a product is created, updated, or deleted in the CloudCart store.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(productEventTypes).describe('The type of product event'),
-    productId: z.string().describe('ID of the affected product'),
-    productAttributes: z.record(z.string(), z.any()).describe('Product attributes from the webhook payload'),
-  }))
-  .output(z.object({
-    productId: z.string(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    priceFrom: z.any().optional(),
-    priceTo: z.any().optional(),
-    active: z.any().optional(),
-    draft: z.any().optional(),
-    urlHandle: z.string().optional(),
-    dateAdded: z.string().optional(),
-    dateModified: z.string().optional(),
-  }))
+export let productEvents = SlateTrigger.create(spec, {
+  name: 'Product Events',
+  key: 'product_events',
+  description:
+    'Triggers when a product is created, updated, or deleted in the CloudCart store.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(productEventTypes).describe('The type of product event'),
+      productId: z.string().describe('ID of the affected product'),
+      productAttributes: z
+        .record(z.string(), z.any())
+        .describe('Product attributes from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      priceFrom: z.any().optional(),
+      priceTo: z.any().optional(),
+      active: z.any().optional(),
+      draft: z.any().optional(),
+      urlHandle: z.string().optional(),
+      dateAdded: z.string().optional(),
+      dateModified: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
       let webhookIds: string[] = [];
       for (let event of productEventTypes) {
         let res = await client.createWebhook({
           url: ctx.input.webhookBaseUrl,
-          event,
+          event
         });
         webhookIds.push(res.data.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
@@ -61,8 +65,8 @@ export let productEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
 
       let data = body.data;
       if (!data) {
@@ -80,15 +84,17 @@ export let productEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType: eventType as typeof productEventTypes[number],
-          productId: String(resource.id || ''),
-          productAttributes: (resource.attributes || resource) as Record<string, any>,
-        }],
+        inputs: [
+          {
+            eventType: eventType as (typeof productEventTypes)[number],
+            productId: String(resource.id || ''),
+            productAttributes: (resource.attributes || resource) as Record<string, any>
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let attrs = ctx.input.productAttributes as Record<string, any>;
 
       return {
@@ -104,9 +110,9 @@ export let productEvents = SlateTrigger.create(
           draft: attrs.draft,
           urlHandle: attrs.url_handle as string | undefined,
           dateAdded: attrs.date_added as string | undefined,
-          dateModified: attrs.date_modified as string | undefined,
-        },
+          dateModified: attrs.date_modified as string | undefined
+        }
       };
-    },
+    }
   })
   .build();

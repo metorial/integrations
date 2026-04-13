@@ -15,8 +15,8 @@ export class WorkatoClient {
       baseURL: getApiBaseUrl(this.dataCenter),
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,8 +25,8 @@ export class WorkatoClient {
       baseURL: getDataTablesBaseUrl(this.dataCenter),
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,8 +35,8 @@ export class WorkatoClient {
       baseURL: getEventStreamsBaseUrl(this.dataCenter),
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -59,8 +59,8 @@ export class WorkatoClient {
         per_page: params?.perPage ?? 100,
         updated_after: params?.updatedAfter,
         adapter_names_any: params?.adapterNamesAny,
-        order: params?.order,
-      },
+        order: params?.order
+      }
     });
     return response.data;
   }
@@ -83,25 +83,28 @@ export class WorkatoClient {
         code: recipe.code,
         config: recipe.config,
         folder_id: recipe.folderId,
-        description: recipe.description,
-      },
+        description: recipe.description
+      }
     });
     return response.data;
   }
 
-  async updateRecipe(recipeId: string, recipe: {
-    name?: string;
-    code?: string;
-    config?: string;
-    description?: string;
-  }) {
+  async updateRecipe(
+    recipeId: string,
+    recipe: {
+      name?: string;
+      code?: string;
+      config?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.put(`/recipes/${recipeId}`, {
       recipe: {
         name: recipe.name,
         code: recipe.code,
         config: recipe.config,
-        description: recipe.description,
-      },
+        description: recipe.description
+      }
     });
     return response.data;
   }
@@ -123,7 +126,7 @@ export class WorkatoClient {
 
   async copyRecipe(recipeId: string, folderId: string) {
     let response = await this.api.post(`/recipes/${recipeId}/copy`, {
-      folder_id: folderId,
+      folder_id: folderId
     });
     return response.data;
   }
@@ -136,7 +139,7 @@ export class WorkatoClient {
   async updateRecipeConnection(recipeId: string, adapterName: string, connectionId: number) {
     let response = await this.api.put(`/recipes/${recipeId}/connect`, {
       adapter_name: adapterName,
-      connection_id: connectionId,
+      connection_id: connectionId
     });
     return response.data;
   }
@@ -145,8 +148,8 @@ export class WorkatoClient {
     let response = await this.api.get(`/recipes/${recipeId}/versions`, {
       params: {
         page: params?.page ?? 1,
-        per_page: params?.perPage ?? 100,
-      },
+        per_page: params?.perPage ?? 100
+      }
     });
     return response.data;
   }
@@ -162,8 +165,8 @@ export class WorkatoClient {
       params: {
         folder_id: params?.folderId,
         project_id: params?.projectId,
-        updated_after: params?.updatedAfter,
-      },
+        updated_after: params?.updatedAfter
+      }
     });
     return response.data;
   }
@@ -178,22 +181,25 @@ export class WorkatoClient {
       name: connection.name,
       provider: connection.provider,
       folder_id: connection.folderId,
-      input: connection.input,
+      input: connection.input
     });
     return response.data;
   }
 
-  async updateConnection(connectionId: string, connection: {
-    name?: string;
-    input?: Record<string, unknown>;
-  }) {
+  async updateConnection(
+    connectionId: string,
+    connection: {
+      name?: string;
+      input?: Record<string, unknown>;
+    }
+  ) {
     let response = await this.api.put(`/connections/${connectionId}`, connection);
     return response.data;
   }
 
   async disconnectConnection(connectionId: string, force?: boolean) {
     let response = await this.api.post(`/connections/${connectionId}/disconnect`, {
-      force: force ?? false,
+      force: force ?? false
     });
     return response.data;
   }
@@ -205,17 +211,20 @@ export class WorkatoClient {
 
   // ──────────────── Jobs ────────────────
 
-  async listJobs(recipeId: string, params?: {
-    status?: string;
-    rerunOnly?: boolean;
-    offsetJobId?: string;
-  }) {
+  async listJobs(
+    recipeId: string,
+    params?: {
+      status?: string;
+      rerunOnly?: boolean;
+      offsetJobId?: string;
+    }
+  ) {
     let response = await this.api.get(`/recipes/${recipeId}/jobs`, {
       params: {
         status: params?.status,
         rerun_only: params?.rerunOnly,
-        offset_job_id: params?.offsetJobId,
-      },
+        offset_job_id: params?.offsetJobId
+      }
     });
     return response.data;
   }
@@ -231,16 +240,19 @@ export class WorkatoClient {
     let response = await this.api.get('/projects', {
       params: {
         page: params?.page ?? 1,
-        per_page: params?.perPage ?? 100,
-      },
+        per_page: params?.perPage ?? 100
+      }
     });
     return response.data;
   }
 
-  async updateProject(projectId: string, project: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateProject(
+    projectId: string,
+    project: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.put(`/projects/${projectId}`, project);
     return response.data;
   }
@@ -252,17 +264,13 @@ export class WorkatoClient {
 
   // ──────────────── Folders ────────────────
 
-  async listFolders(params?: {
-    parentId?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listFolders(params?: { parentId?: string; page?: number; perPage?: number }) {
     let response = await this.api.get('/folders', {
       params: {
         parent_id: params?.parentId,
         page: params?.page ?? 1,
-        per_page: params?.perPage ?? 100,
-      },
+        per_page: params?.perPage ?? 100
+      }
     });
     return response.data;
   }
@@ -270,7 +278,7 @@ export class WorkatoClient {
   async createFolder(name: string, parentId?: string) {
     let response = await this.api.post('/folders', {
       name,
-      parent_id: parentId,
+      parent_id: parentId
     });
     return response.data;
   }
@@ -278,14 +286,14 @@ export class WorkatoClient {
   async updateFolder(folderId: string, data: { name?: string; parentId?: string }) {
     let response = await this.api.put(`/folders/${folderId}`, {
       name: data.name,
-      parent_id: data.parentId,
+      parent_id: data.parentId
     });
     return response.data;
   }
 
   async deleteFolder(folderId: string, force?: boolean) {
     let response = await this.api.delete(`/folders/${folderId}`, {
-      params: { force },
+      params: { force }
     });
     return response.data;
   }
@@ -295,7 +303,7 @@ export class WorkatoClient {
   async buildProject(projectId: string, description?: string) {
     let response = await this.api.post(`/projects/${projectId}/build`, {
       description,
-      include_tags: true,
+      include_tags: true
     });
     return response.data;
   }
@@ -305,30 +313,36 @@ export class WorkatoClient {
     return response.data;
   }
 
-  async deployProjectBuild(buildId: string, params: {
-    environmentType: string;
-    title?: string;
-    description?: string;
-  }) {
+  async deployProjectBuild(
+    buildId: string,
+    params: {
+      environmentType: string;
+      title?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/project_builds/${buildId}/deploy`, {
       environment_type: params.environmentType,
       title: params.title,
       description: params.description,
-      include_tags: true,
+      include_tags: true
     });
     return response.data;
   }
 
-  async deployProject(projectId: string, params: {
-    environmentType: string;
-    title?: string;
-    description?: string;
-  }) {
+  async deployProject(
+    projectId: string,
+    params: {
+      environmentType: string;
+      title?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/projects/${projectId}/deploy`, {
       environment_type: params.environmentType,
       title: params.title,
       description: params.description,
-      include_tags: true,
+      include_tags: true
     });
     return response.data;
   }
@@ -347,8 +361,8 @@ export class WorkatoClient {
       params: {
         project_id: params?.projectId,
         environment_type: params?.environmentType,
-        state: params?.state,
-      },
+        state: params?.state
+      }
     });
     return response.data;
   }
@@ -367,8 +381,8 @@ export class WorkatoClient {
         folder_id: params.folderId,
         auto_generate_assets: params.autoGenerateAssets ?? true,
         auto_run: params.autoRun ?? true,
-        include_tags: true,
-      },
+        include_tags: true
+      }
     });
     return response.data;
   }
@@ -394,8 +408,8 @@ export class WorkatoClient {
     let response = await this.api.get('/lookup_tables', {
       params: {
         page: params?.page ?? 1,
-        per_page: params?.perPage ?? 100,
-      },
+        per_page: params?.perPage ?? 100
+      }
     });
     return response.data;
   }
@@ -409,20 +423,23 @@ export class WorkatoClient {
       lookup_table: {
         name: params.name,
         project_id: params.projectId,
-        schema: params.schema,
-      },
+        schema: params.schema
+      }
     });
     return response.data;
   }
 
-  async listLookupTableRows(tableId: string, params?: {
-    page?: number;
-    perPage?: number;
-    filter?: Record<string, string>;
-  }) {
+  async listLookupTableRows(
+    tableId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      filter?: Record<string, string>;
+    }
+  ) {
     let queryParams: Record<string, unknown> = {
       page: params?.page ?? 1,
-      per_page: params?.perPage ?? 100,
+      per_page: params?.perPage ?? 100
     };
     if (params?.filter) {
       for (let [key, value] of Object.entries(params.filter)) {
@@ -430,7 +447,7 @@ export class WorkatoClient {
       }
     }
     let response = await this.api.get(`/lookup_tables/${tableId}/rows`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -441,7 +458,7 @@ export class WorkatoClient {
       queryParams[`by[${key}]`] = value;
     }
     let response = await this.api.get(`/lookup_tables/${tableId}/lookup`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -465,7 +482,7 @@ export class WorkatoClient {
 
   async listTopics(params?: { name?: string }) {
     let response = await this.api.get('/event_streams/topics', {
-      params: { name: params?.name },
+      params: { name: params?.name }
     });
     return response.data;
   }
@@ -485,11 +502,14 @@ export class WorkatoClient {
     return response.data;
   }
 
-  async updateTopic(topicId: string, params: {
-    name?: string;
-    description?: string;
-    retention?: number;
-  }) {
+  async updateTopic(
+    topicId: string,
+    params: {
+      name?: string;
+      description?: string;
+      retention?: number;
+    }
+  ) {
     let response = await this.api.put(`/event_streams/topics/${topicId}`, params);
     return response.data;
   }
@@ -500,32 +520,43 @@ export class WorkatoClient {
   }
 
   async publishMessage(topicId: string, payload: Record<string, unknown>) {
-    let response = await this.eventStreamsApi.post(`/api/v1/topics/${topicId}/publish`, payload, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    let response = await this.eventStreamsApi.post(
+      `/api/v1/topics/${topicId}/publish`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
-  async consumeMessages(topicId: string, params?: {
-    afterMessageId?: string;
-    sinceTime?: string;
-    batchSize?: number;
-    timeoutSecs?: number;
-  }) {
-    let response = await this.eventStreamsApi.post(`/api/v1/topics/${topicId}/consume`, {
-      after_message_id: params?.afterMessageId,
-      since_time: params?.sinceTime,
-      batch_size: params?.batchSize ?? 50,
-      timeout_secs: params?.timeoutSecs,
-    }, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
+  async consumeMessages(
+    topicId: string,
+    params?: {
+      afterMessageId?: string;
+      sinceTime?: string;
+      batchSize?: number;
+      timeoutSecs?: number;
+    }
+  ) {
+    let response = await this.eventStreamsApi.post(
+      `/api/v1/topics/${topicId}/consume`,
+      {
+        after_message_id: params?.afterMessageId,
+        since_time: params?.sinceTime,
+        batch_size: params?.batchSize ?? 50,
+        timeout_secs: params?.timeoutSecs
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -533,7 +564,7 @@ export class WorkatoClient {
 
   async listProperties(prefix?: string) {
     let response = await this.api.get('/properties', {
-      params: { prefix },
+      params: { prefix }
     });
     return response.data;
   }
@@ -559,7 +590,7 @@ export class WorkatoClient {
 
   async listApiEndpoints(collectionId?: string) {
     let response = await this.api.get('/api_endpoints', {
-      params: { api_collection_id: collectionId },
+      params: { api_collection_id: collectionId }
     });
     return response.data;
   }
@@ -580,8 +611,8 @@ export class WorkatoClient {
     let response = await this.api.get('/data_tables', {
       params: {
         page: params?.page ?? 1,
-        per_page: params?.perPage ?? 100,
-      },
+        per_page: params?.perPage ?? 100
+      }
     });
     return response.data;
   }
@@ -599,7 +630,7 @@ export class WorkatoClient {
     let response = await this.api.post('/data_tables', {
       name: params.name,
       folder_id: params.folderId,
-      schema: params.schema,
+      schema: params.schema
     });
     return response.data;
   }
@@ -609,58 +640,80 @@ export class WorkatoClient {
     return response.data;
   }
 
-  async queryDataTableRecords(tableId: string, params?: {
-    select?: string[];
-    where?: Record<string, unknown>;
-    order?: string;
-    limit?: number;
-    continuationToken?: string;
-  }) {
-    let response = await this.dataTablesApi.post(`/api/v1/tables/${tableId}/query`, {
-      select: params?.select,
-      where: params?.where,
-      order: params?.order,
-      limit: params?.limit ?? 100,
-      continuation_token: params?.continuationToken,
-    }, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
+  async queryDataTableRecords(
+    tableId: string,
+    params?: {
+      select?: string[];
+      where?: Record<string, unknown>;
+      order?: string;
+      limit?: number;
+      continuationToken?: string;
+    }
+  ) {
+    let response = await this.dataTablesApi.post(
+      `/api/v1/tables/${tableId}/query`,
+      {
+        select: params?.select,
+        where: params?.where,
+        order: params?.order,
+        limit: params?.limit ?? 100,
+        continuation_token: params?.continuationToken
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
   async createDataTableRecord(tableId: string, document: Record<string, unknown>) {
-    let response = await this.dataTablesApi.post(`/api/v1/tables/${tableId}/records`, {
-      document,
-    }, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
+    let response = await this.dataTablesApi.post(
+      `/api/v1/tables/${tableId}/records`,
+      {
+        document
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
-  async updateDataTableRecord(tableId: string, recordId: string, document: Record<string, unknown>) {
-    let response = await this.dataTablesApi.put(`/api/v1/tables/${tableId}/records/${recordId}`, {
-      document,
-    }, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
+  async updateDataTableRecord(
+    tableId: string,
+    recordId: string,
+    document: Record<string, unknown>
+  ) {
+    let response = await this.dataTablesApi.put(
+      `/api/v1/tables/${tableId}/records/${recordId}`,
+      {
+        document
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
   async deleteDataTableRecord(tableId: string, recordId: string) {
-    let response = await this.dataTablesApi.delete(`/api/v1/tables/${tableId}/records/${recordId}`, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
+    let response = await this.dataTablesApi.delete(
+      `/api/v1/tables/${tableId}/records/${recordId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }
+    );
     return response.data;
   }
 

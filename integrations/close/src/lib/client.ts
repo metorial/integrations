@@ -20,7 +20,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.close.com/api/v1',
       headers: {
-        'Authorization': authHeader,
+        Authorization: authHeader,
         'Content-Type': 'application/json'
       }
     });
@@ -169,7 +169,8 @@ export class Client {
     if (params?.skip) queryParams['_skip'] = String(params.skip);
     if (params?.leadId) queryParams['lead_id'] = params.leadId;
     if (params?.assignedTo) queryParams['_assigned_to'] = params.assignedTo;
-    if (params?.isComplete !== undefined) queryParams['is_complete'] = String(params.isComplete);
+    if (params?.isComplete !== undefined)
+      queryParams['is_complete'] = String(params.isComplete);
     if (params?.type) queryParams['_type'] = params.type;
 
     let response = await this.axios.get('/task/', { params: queryParams });
@@ -286,11 +287,7 @@ export class Client {
 
   // ---- SMS ----
 
-  async listSms(params?: {
-    limit?: number;
-    skip?: number;
-    leadId?: string;
-  }): Promise<any> {
+  async listSms(params?: { limit?: number; skip?: number; leadId?: string }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams['_limit'] = String(params.limit);
     if (params?.skip) queryParams['_skip'] = String(params.skip);
@@ -302,9 +299,7 @@ export class Client {
 
   // ---- Smart Views ----
 
-  async listSmartViews(params?: {
-    type?: string;
-  }): Promise<any> {
+  async listSmartViews(params?: { type?: string }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.type) queryParams['type'] = params.type;
 
@@ -333,18 +328,21 @@ export class Client {
 
   // ---- Search / Advanced Filtering ----
 
-  async searchLeads(query: Record<string, any>, params?: {
-    limit?: number;
-    skip?: number;
-    fields?: string[];
-    sort?: any[];
-  }): Promise<any> {
+  async searchLeads(
+    query: Record<string, any>,
+    params?: {
+      limit?: number;
+      skip?: number;
+      fields?: string[];
+      sort?: any[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       query,
-      ...params?.limit ? { _limit: params.limit } : {},
-      ...params?.skip ? { _skip: params.skip } : {},
-      ...params?.fields?.length ? { _fields: params.fields } : {},
-      ...params?.sort?.length ? { sort: params.sort } : {},
+      ...(params?.limit ? { _limit: params.limit } : {}),
+      ...(params?.skip ? { _skip: params.skip } : {}),
+      ...(params?.fields?.length ? { _fields: params.fields } : {}),
+      ...(params?.sort?.length ? { sort: params.sort } : {})
     };
 
     let response = await this.axios.post('/data/search/', body);
@@ -361,7 +359,8 @@ export class Client {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams['_limit'] = String(params.limit);
     if (params?.skip) queryParams['_skip'] = String(params.skip);
-    if (params?.isArchived !== undefined) queryParams['is_archived'] = String(params.isArchived);
+    if (params?.isArchived !== undefined)
+      queryParams['is_archived'] = String(params.isArchived);
 
     let response = await this.axios.get('/email_template/', { params: queryParams });
     return response.data;
@@ -410,10 +409,7 @@ export class Client {
     return response.data;
   }
 
-  async listUsers(params?: {
-    limit?: number;
-    skip?: number;
-  }): Promise<any> {
+  async listUsers(params?: { limit?: number; skip?: number }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams['_limit'] = String(params.limit);
     if (params?.skip) queryParams['_skip'] = String(params.skip);
@@ -492,7 +488,11 @@ export class Client {
     return response.data;
   }
 
-  async updateCustomField(objectType: string, fieldId: string, data: Record<string, any>): Promise<any> {
+  async updateCustomField(
+    objectType: string,
+    fieldId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/custom_field/${objectType}/${fieldId}/`, data);
     return response.data;
   }

@@ -143,7 +143,9 @@ export class ConfluenceClient {
     } else if (clientConfig.baseUrl) {
       baseURL = clientConfig.baseUrl.replace(/\/$/, '');
     } else {
-      throw new Error('Either cloudId (for Cloud) or baseUrl (for Data Center) must be provided.');
+      throw new Error(
+        'Either cloudId (for Cloud) or baseUrl (for Data Center) must be provided.'
+      );
     }
 
     let headers: Record<string, string> = {};
@@ -163,14 +165,16 @@ export class ConfluenceClient {
 
   // ── Pages (v2 API) ──
 
-  async getPages(params: {
-    spaceId?: string;
-    title?: string;
-    status?: string;
-    limit?: number;
-    cursor?: string;
-    sort?: string;
-  } = {}): Promise<V2PaginatedResponse<ConfluencePage>> {
+  async getPages(
+    params: {
+      spaceId?: string;
+      title?: string;
+      status?: string;
+      limit?: number;
+      cursor?: string;
+      sort?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluencePage>> {
     let queryParams: Record<string, string> = {};
     if (params.spaceId) queryParams['space-id'] = params.spaceId;
     if (params.title) queryParams['title'] = params.title;
@@ -216,13 +220,16 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async updatePage(pageId: string, data: {
-    title?: string;
-    body?: string;
-    version: number;
-    status?: string;
-    message?: string;
-  }): Promise<ConfluencePage> {
+  async updatePage(
+    pageId: string,
+    data: {
+      title?: string;
+      body?: string;
+      version: number;
+      status?: string;
+      message?: string;
+    }
+  ): Promise<ConfluencePage> {
     let payload: any = {
       id: pageId,
       status: data.status || 'current',
@@ -248,28 +255,35 @@ export class ConfluenceClient {
     await this.ax.delete(`/api/v2/pages/${pageId}`);
   }
 
-  async getPageChildren(pageId: string, params: {
-    limit?: number;
-    cursor?: string;
-  } = {}): Promise<V2PaginatedResponse<ConfluencePage>> {
+  async getPageChildren(
+    pageId: string,
+    params: {
+      limit?: number;
+      cursor?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluencePage>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/children`, { params: queryParams });
+    let response = await this.ax.get(`/api/v2/pages/${pageId}/children`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Blog Posts (v2 API) ──
 
-  async getBlogPosts(params: {
-    spaceId?: string;
-    title?: string;
-    status?: string;
-    limit?: number;
-    cursor?: string;
-    sort?: string;
-  } = {}): Promise<V2PaginatedResponse<ConfluenceBlogPost>> {
+  async getBlogPosts(
+    params: {
+      spaceId?: string;
+      title?: string;
+      status?: string;
+      limit?: number;
+      cursor?: string;
+      sort?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluenceBlogPost>> {
     let queryParams: Record<string, string> = {};
     if (params.spaceId) queryParams['space-id'] = params.spaceId;
     if (params.title) queryParams['title'] = params.title;
@@ -282,7 +296,10 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async getBlogPostById(blogPostId: string, includeBody: boolean = false): Promise<ConfluenceBlogPost> {
+  async getBlogPostById(
+    blogPostId: string,
+    includeBody: boolean = false
+  ): Promise<ConfluenceBlogPost> {
     let params: Record<string, string> = {};
     if (includeBody) params['body-format'] = 'storage';
 
@@ -308,12 +325,15 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async updateBlogPost(blogPostId: string, data: {
-    title?: string;
-    body?: string;
-    version: number;
-    status?: string;
-  }): Promise<ConfluenceBlogPost> {
+  async updateBlogPost(
+    blogPostId: string,
+    data: {
+      title?: string;
+      body?: string;
+      version: number;
+      status?: string;
+    }
+  ): Promise<ConfluenceBlogPost> {
     let payload: any = {
       id: blogPostId,
       status: data.status || 'current',
@@ -340,14 +360,16 @@ export class ConfluenceClient {
 
   // ── Spaces (v2 API) ──
 
-  async getSpaces(params: {
-    keys?: string[];
-    type?: string;
-    status?: string;
-    limit?: number;
-    cursor?: string;
-    sort?: string;
-  } = {}): Promise<V2PaginatedResponse<ConfluenceSpace>> {
+  async getSpaces(
+    params: {
+      keys?: string[];
+      type?: string;
+      status?: string;
+      limit?: number;
+      cursor?: string;
+      sort?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluenceSpace>> {
     let queryParams: Record<string, string> = {};
     if (params.keys && params.keys.length > 0) queryParams['keys'] = params.keys.join(',');
     if (params.type) queryParams['type'] = params.type;
@@ -367,15 +389,20 @@ export class ConfluenceClient {
 
   // ── Comments (v2 API) ──
 
-  async getPageFooterComments(pageId: string, params: {
-    limit?: number;
-    cursor?: string;
-  } = {}): Promise<V2PaginatedResponse<ConfluenceComment>> {
+  async getPageFooterComments(
+    pageId: string,
+    params: {
+      limit?: number;
+      cursor?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluenceComment>> {
     let queryParams: Record<string, string> = { 'body-format': 'storage' };
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/footer-comments`, { params: queryParams });
+    let response = await this.ax.get(`/api/v2/pages/${pageId}/footer-comments`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -389,7 +416,10 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async createBlogPostFooterComment(blogPostId: string, body: string): Promise<ConfluenceComment> {
+  async createBlogPostFooterComment(
+    blogPostId: string,
+    body: string
+  ): Promise<ConfluenceComment> {
     let response = await this.ax.post(`/api/v2/blogposts/${blogPostId}/footer-comments`, {
       body: {
         representation: 'storage',
@@ -421,7 +451,9 @@ export class ConfluenceClient {
   }
 
   async removeContentLabel(contentId: string, label: string): Promise<void> {
-    await this.ax.delete(`/wiki/rest/api/content/${contentId}/label/${encodeURIComponent(label)}`);
+    await this.ax.delete(
+      `/wiki/rest/api/content/${contentId}/label/${encodeURIComponent(label)}`
+    );
   }
 
   // ── Search (v1 API with CQL) ──
@@ -461,7 +493,13 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async updatePageProperty(pageId: string, propertyId: string, key: string, value: any, version: number): Promise<ContentProperty> {
+  async updatePageProperty(
+    pageId: string,
+    propertyId: string,
+    key: string,
+    value: any,
+    version: number
+  ): Promise<ContentProperty> {
     let response = await this.ax.put(`/api/v2/pages/${pageId}/properties/${propertyId}`, {
       key,
       value,
@@ -476,15 +514,20 @@ export class ConfluenceClient {
 
   // ── Attachments (v2 API) ──
 
-  async getPageAttachments(pageId: string, params: {
-    limit?: number;
-    cursor?: string;
-  } = {}): Promise<V2PaginatedResponse<ConfluenceAttachment>> {
+  async getPageAttachments(
+    pageId: string,
+    params: {
+      limit?: number;
+      cursor?: string;
+    } = {}
+  ): Promise<V2PaginatedResponse<ConfluenceAttachment>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
 
-    let response = await this.ax.get(`/api/v2/pages/${pageId}/attachments`, { params: queryParams });
+    let response = await this.ax.get(`/api/v2/pages/${pageId}/attachments`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -495,11 +538,14 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async updateContentRestrictions(contentId: string, restrictions: Array<{
-    operation: 'read' | 'update';
-    users?: string[];
-    groups?: string[];
-  }>): Promise<any> {
+  async updateContentRestrictions(
+    contentId: string,
+    restrictions: Array<{
+      operation: 'read' | 'update';
+      users?: string[];
+      groups?: string[];
+    }>
+  ): Promise<any> {
     let payload = restrictions.map(r => ({
       operation: r.operation,
       restrictions: {
@@ -508,7 +554,10 @@ export class ConfluenceClient {
       }
     }));
 
-    let response = await this.ax.put(`/wiki/rest/api/content/${contentId}/restriction`, payload);
+    let response = await this.ax.put(
+      `/wiki/rest/api/content/${contentId}/restriction`,
+      payload
+    );
     return response.data;
   }
 
@@ -528,10 +577,12 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async getGroups(params: {
-    limit?: number;
-    start?: number;
-  } = {}): Promise<V1PaginatedResponse<ConfluenceGroup>> {
+  async getGroups(
+    params: {
+      limit?: number;
+      start?: number;
+    } = {}
+  ): Promise<V1PaginatedResponse<ConfluenceGroup>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.start) queryParams['start'] = String(params.start);
@@ -540,29 +591,40 @@ export class ConfluenceClient {
     return response.data;
   }
 
-  async getGroupMembers(groupName: string, params: {
-    limit?: number;
-    start?: number;
-  } = {}): Promise<V1PaginatedResponse<ConfluenceUser>> {
+  async getGroupMembers(
+    groupName: string,
+    params: {
+      limit?: number;
+      start?: number;
+    } = {}
+  ): Promise<V1PaginatedResponse<ConfluenceUser>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.start) queryParams['start'] = String(params.start);
 
-    let response = await this.ax.get(`/wiki/rest/api/group/${encodeURIComponent(groupName)}/member`, { params: queryParams });
+    let response = await this.ax.get(
+      `/wiki/rest/api/group/${encodeURIComponent(groupName)}/member`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
   // ── Content Version History (v1 API) ──
 
-  async getContentVersions(contentId: string, params: {
-    limit?: number;
-    start?: number;
-  } = {}): Promise<V1PaginatedResponse<any>> {
+  async getContentVersions(
+    contentId: string,
+    params: {
+      limit?: number;
+      start?: number;
+    } = {}
+  ): Promise<V1PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.start) queryParams['start'] = String(params.start);
 
-    let response = await this.ax.get(`/wiki/rest/api/content/${contentId}/version`, { params: queryParams });
+    let response = await this.ax.get(`/wiki/rest/api/content/${contentId}/version`, {
+      params: queryParams
+    });
     return response.data;
   }
 

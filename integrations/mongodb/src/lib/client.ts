@@ -6,15 +6,17 @@ let ACCEPT_HEADER = `application/vnd.atlas.${ATLAS_API_VERSION}+json`;
 export class AtlasClient {
   private axios;
 
-  constructor(private authConfig: {
-    token: string;
-    authMethod: string;
-    publicKey?: string;
-    privateKey?: string;
-  }) {
+  constructor(
+    private authConfig: {
+      token: string;
+      authMethod: string;
+      publicKey?: string;
+      privateKey?: string;
+    }
+  ) {
     let headers: Record<string, string> = {
-      'Accept': ACCEPT_HEADER,
-      'Content-Type': 'application/json',
+      Accept: ACCEPT_HEADER,
+      'Content-Type': 'application/json'
     };
 
     if (authConfig.authMethod === 'oauth') {
@@ -25,7 +27,7 @@ export class AtlasClient {
 
     this.axios = createAxios({
       baseURL: 'https://cloud.mongodb.com/api/atlas/v2',
-      headers,
+      headers
     });
   }
 
@@ -48,7 +50,10 @@ export class AtlasClient {
     return response.data;
   }
 
-  async listOrganizationProjects(orgId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
+  async listOrganizationProjects(
+    orgId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/orgs/${orgId}/groups`, { params });
     return response.data;
   }
@@ -90,7 +95,10 @@ export class AtlasClient {
   }
 
   async updateCluster(projectId: string, clusterName: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/groups/${projectId}/clusters/${clusterName}`, data);
+    let response = await this.axios.patch(
+      `/groups/${projectId}/clusters/${clusterName}`,
+      data
+    );
     return response.data;
   }
 
@@ -113,72 +121,103 @@ export class AtlasClient {
 
   // ==================== Database Users ====================
 
-  async listDatabaseUsers(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
+  async listDatabaseUsers(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/databaseUsers`, { params });
     return response.data;
   }
 
   async getDatabaseUser(projectId: string, authDb: string, username: string) {
-    let response = await this.axios.get(`/groups/${projectId}/databaseUsers/${authDb}/${username}`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/databaseUsers/${authDb}/${username}`
+    );
     return response.data;
   }
 
-  async createDatabaseUser(projectId: string, data: {
-    databaseName: string;
-    username: string;
-    password?: string;
-    roles: Array<{ databaseName: string; roleName: string; collectionName?: string }>;
-    scopes?: Array<{ name: string; type: string }>;
-    awsIAMType?: string;
-    x509Type?: string;
-    ldapAuthType?: string;
-    deleteAfterDate?: string;
-  }) {
+  async createDatabaseUser(
+    projectId: string,
+    data: {
+      databaseName: string;
+      username: string;
+      password?: string;
+      roles: Array<{ databaseName: string; roleName: string; collectionName?: string }>;
+      scopes?: Array<{ name: string; type: string }>;
+      awsIAMType?: string;
+      x509Type?: string;
+      ldapAuthType?: string;
+      deleteAfterDate?: string;
+    }
+  ) {
     let response = await this.axios.post(`/groups/${projectId}/databaseUsers`, data);
     return response.data;
   }
 
-  async updateDatabaseUser(projectId: string, authDb: string, username: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/groups/${projectId}/databaseUsers/${authDb}/${username}`, data);
+  async updateDatabaseUser(
+    projectId: string,
+    authDb: string,
+    username: string,
+    data: Record<string, any>
+  ) {
+    let response = await this.axios.patch(
+      `/groups/${projectId}/databaseUsers/${authDb}/${username}`,
+      data
+    );
     return response.data;
   }
 
   async deleteDatabaseUser(projectId: string, authDb: string, username: string) {
-    let response = await this.axios.delete(`/groups/${projectId}/databaseUsers/${authDb}/${username}`);
+    let response = await this.axios.delete(
+      `/groups/${projectId}/databaseUsers/${authDb}/${username}`
+    );
     return response.data;
   }
 
   // ==================== IP Access List ====================
 
-  async listIpAccessList(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
+  async listIpAccessList(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/accessList`, { params });
     return response.data;
   }
 
   async getIpAccessListEntry(projectId: string, entryValue: string) {
-    let response = await this.axios.get(`/groups/${projectId}/accessList/${encodeURIComponent(entryValue)}`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/accessList/${encodeURIComponent(entryValue)}`
+    );
     return response.data;
   }
 
-  async addIpAccessListEntries(projectId: string, entries: Array<{
-    ipAddress?: string;
-    cidrBlock?: string;
-    awsSecurityGroup?: string;
-    comment?: string;
-    deleteAfterDate?: string;
-  }>) {
+  async addIpAccessListEntries(
+    projectId: string,
+    entries: Array<{
+      ipAddress?: string;
+      cidrBlock?: string;
+      awsSecurityGroup?: string;
+      comment?: string;
+      deleteAfterDate?: string;
+    }>
+  ) {
     let response = await this.axios.post(`/groups/${projectId}/accessList`, entries);
     return response.data;
   }
 
   async deleteIpAccessListEntry(projectId: string, entryValue: string) {
-    let response = await this.axios.delete(`/groups/${projectId}/accessList/${encodeURIComponent(entryValue)}`);
+    let response = await this.axios.delete(
+      `/groups/${projectId}/accessList/${encodeURIComponent(entryValue)}`
+    );
     return response.data;
   }
 
   // ==================== Alerts ====================
 
-  async listAlerts(projectId: string, params?: { status?: string; itemsPerPage?: number; pageNum?: number }) {
+  async listAlerts(
+    projectId: string,
+    params?: { status?: string; itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/alerts`, { params });
     return response.data;
   }
@@ -188,17 +227,24 @@ export class AtlasClient {
     return response.data;
   }
 
-  async acknowledgeAlert(projectId: string, alertId: string, data: {
-    acknowledgedUntil: string;
-    acknowledgementComment?: string;
-  }) {
+  async acknowledgeAlert(
+    projectId: string,
+    alertId: string,
+    data: {
+      acknowledgedUntil: string;
+      acknowledgementComment?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/groups/${projectId}/alerts/${alertId}`, data);
     return response.data;
   }
 
   // ==================== Alert Configurations ====================
 
-  async listAlertConfigurations(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
+  async listAlertConfigurations(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/alertConfigs`, { params });
     return response.data;
   }
@@ -213,84 +259,138 @@ export class AtlasClient {
     return response.data;
   }
 
-  async updateAlertConfiguration(projectId: string, alertConfigId: string, data: Record<string, any>) {
-    let response = await this.axios.put(`/groups/${projectId}/alertConfigs/${alertConfigId}`, data);
+  async updateAlertConfiguration(
+    projectId: string,
+    alertConfigId: string,
+    data: Record<string, any>
+  ) {
+    let response = await this.axios.put(
+      `/groups/${projectId}/alertConfigs/${alertConfigId}`,
+      data
+    );
     return response.data;
   }
 
   async deleteAlertConfiguration(projectId: string, alertConfigId: string) {
-    let response = await this.axios.delete(`/groups/${projectId}/alertConfigs/${alertConfigId}`);
+    let response = await this.axios.delete(
+      `/groups/${projectId}/alertConfigs/${alertConfigId}`
+    );
     return response.data;
   }
 
   // ==================== Cloud Backups ====================
 
-  async listBackupSnapshots(projectId: string, clusterName: string, params?: { itemsPerPage?: number; pageNum?: number }) {
-    let response = await this.axios.get(`/groups/${projectId}/clusters/${clusterName}/backup/snapshots`, { params });
+  async listBackupSnapshots(
+    projectId: string,
+    clusterName: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
+    let response = await this.axios.get(
+      `/groups/${projectId}/clusters/${clusterName}/backup/snapshots`,
+      { params }
+    );
     return response.data;
   }
 
   async getBackupSnapshot(projectId: string, clusterName: string, snapshotId: string) {
-    let response = await this.axios.get(`/groups/${projectId}/clusters/${clusterName}/backup/snapshots/${snapshotId}`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/clusters/${clusterName}/backup/snapshots/${snapshotId}`
+    );
     return response.data;
   }
 
-  async createOnDemandSnapshot(projectId: string, clusterName: string, data: {
-    description?: string;
-    retentionInDays?: number;
-  }) {
-    let response = await this.axios.post(`/groups/${projectId}/clusters/${clusterName}/backup/snapshots`, data);
+  async createOnDemandSnapshot(
+    projectId: string,
+    clusterName: string,
+    data: {
+      description?: string;
+      retentionInDays?: number;
+    }
+  ) {
+    let response = await this.axios.post(
+      `/groups/${projectId}/clusters/${clusterName}/backup/snapshots`,
+      data
+    );
     return response.data;
   }
 
-  async listBackupRestoreJobs(projectId: string, clusterName: string, params?: { itemsPerPage?: number; pageNum?: number }) {
-    let response = await this.axios.get(`/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`, { params });
+  async listBackupRestoreJobs(
+    projectId: string,
+    clusterName: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
+    let response = await this.axios.get(
+      `/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`,
+      { params }
+    );
     return response.data;
   }
 
-  async createRestoreJob(projectId: string, clusterName: string, data: {
-    deliveryType: string;
-    snapshotId?: string;
-    targetClusterName?: string;
-    targetGroupId?: string;
-    pointInTimeUTCSeconds?: number;
-    oplogTs?: number;
-    oplogInc?: number;
-  }) {
-    let response = await this.axios.post(`/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`, data);
+  async createRestoreJob(
+    projectId: string,
+    clusterName: string,
+    data: {
+      deliveryType: string;
+      snapshotId?: string;
+      targetClusterName?: string;
+      targetGroupId?: string;
+      pointInTimeUTCSeconds?: number;
+      oplogTs?: number;
+      oplogInc?: number;
+    }
+  ) {
+    let response = await this.axios.post(
+      `/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`,
+      data
+    );
     return response.data;
   }
 
   async getBackupSchedule(projectId: string, clusterName: string) {
-    let response = await this.axios.get(`/groups/${projectId}/clusters/${clusterName}/backup/schedule`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/clusters/${clusterName}/backup/schedule`
+    );
     return response.data;
   }
 
-  async updateBackupSchedule(projectId: string, clusterName: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/groups/${projectId}/clusters/${clusterName}/backup/schedule`, data);
+  async updateBackupSchedule(
+    projectId: string,
+    clusterName: string,
+    data: Record<string, any>
+  ) {
+    let response = await this.axios.patch(
+      `/groups/${projectId}/clusters/${clusterName}/backup/schedule`,
+      data
+    );
     return response.data;
   }
 
   // ==================== Events / Activity Feed ====================
 
-  async listProjectEvents(projectId: string, params?: {
-    eventType?: string[];
-    minDate?: string;
-    maxDate?: string;
-    itemsPerPage?: number;
-    pageNum?: number;
-  }) {
+  async listProjectEvents(
+    projectId: string,
+    params?: {
+      eventType?: string[];
+      minDate?: string;
+      maxDate?: string;
+      itemsPerPage?: number;
+      pageNum?: number;
+    }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/events`, { params });
     return response.data;
   }
 
-  async listOrganizationEvents(orgId: string, params?: {
-    eventType?: string[];
-    minDate?: string;
-    maxDate?: string;
-    itemsPerPage?: number;
-    pageNum?: number;
-  }) {
+  async listOrganizationEvents(
+    orgId: string,
+    params?: {
+      eventType?: string[];
+      minDate?: string;
+      maxDate?: string;
+      itemsPerPage?: number;
+      pageNum?: number;
+    }
+  ) {
     let response = await this.axios.get(`/orgs/${orgId}/events`, { params });
     return response.data;
   }
@@ -308,29 +408,39 @@ export class AtlasClient {
   }
 
   async getThirdPartyIntegration(projectId: string, integrationType: string) {
-    let response = await this.axios.get(`/groups/${projectId}/integrations/${integrationType}`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/integrations/${integrationType}`
+    );
     return response.data;
   }
 
-  async configureWebhookIntegration(projectId: string, data: {
-    url: string;
-    secret?: string;
-  }) {
+  async configureWebhookIntegration(
+    projectId: string,
+    data: {
+      url: string;
+      secret?: string;
+    }
+  ) {
     let response = await this.axios.post(`/groups/${projectId}/integrations/WEBHOOK`, {
       type: 'WEBHOOK',
-      ...data,
+      ...data
     });
     return response.data;
   }
 
   async deleteThirdPartyIntegration(projectId: string, integrationType: string) {
-    let response = await this.axios.delete(`/groups/${projectId}/integrations/${integrationType}`);
+    let response = await this.axios.delete(
+      `/groups/${projectId}/integrations/${integrationType}`
+    );
     return response.data;
   }
 
   // ==================== Network Peering ====================
 
-  async listNetworkPeeringConnections(projectId: string, params?: { providerName?: string; itemsPerPage?: number; pageNum?: number }) {
+  async listNetworkPeeringConnections(
+    projectId: string,
+    params?: { providerName?: string; itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/peers`, { params });
     return response.data;
   }
@@ -343,13 +453,20 @@ export class AtlasClient {
   // ==================== Private Endpoints ====================
 
   async listPrivateEndpoints(projectId: string, cloudProvider: string) {
-    let response = await this.axios.get(`/groups/${projectId}/privateEndpoint/${cloudProvider}/endpointService`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/privateEndpoint/${cloudProvider}/endpointService`
+    );
     return response.data;
   }
 
   // ==================== Atlas Search ====================
 
-  async listSearchIndexes(projectId: string, clusterName: string, dbName: string, collectionName: string) {
+  async listSearchIndexes(
+    projectId: string,
+    clusterName: string,
+    dbName: string,
+    collectionName: string
+  ) {
     let response = await this.axios.get(
       `/groups/${projectId}/clusters/${clusterName}/search/indexes/${dbName}/${collectionName}`
     );
@@ -357,17 +474,23 @@ export class AtlasClient {
   }
 
   async getSearchIndex(projectId: string, clusterName: string, indexId: string) {
-    let response = await this.axios.get(`/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`
+    );
     return response.data;
   }
 
-  async createSearchIndex(projectId: string, clusterName: string, data: {
-    collectionName: string;
-    database: string;
-    name: string;
-    type?: string;
-    definition?: Record<string, any>;
-  }) {
+  async createSearchIndex(
+    projectId: string,
+    clusterName: string,
+    data: {
+      collectionName: string;
+      database: string;
+      name: string;
+      type?: string;
+      definition?: Record<string, any>;
+    }
+  ) {
     let response = await this.axios.post(
       `/groups/${projectId}/clusters/${clusterName}/search/indexes`,
       data
@@ -375,7 +498,12 @@ export class AtlasClient {
     return response.data;
   }
 
-  async updateSearchIndex(projectId: string, clusterName: string, indexId: string, data: Record<string, any>) {
+  async updateSearchIndex(
+    projectId: string,
+    clusterName: string,
+    indexId: string,
+    data: Record<string, any>
+  ) {
     let response = await this.axios.patch(
       `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`,
       data
@@ -398,49 +526,74 @@ export class AtlasClient {
   }
 
   async getCustomDatabaseRole(projectId: string, roleName: string) {
-    let response = await this.axios.get(`/groups/${projectId}/customDBRoles/roles/${roleName}`);
+    let response = await this.axios.get(
+      `/groups/${projectId}/customDBRoles/roles/${roleName}`
+    );
     return response.data;
   }
 
-  async createCustomDatabaseRole(projectId: string, data: {
-    roleName: string;
-    actions?: Array<{ action: string; resources: Array<{ collection?: string; db?: string }> }>;
-    inheritedRoles?: Array<{ db: string; role: string }>;
-  }) {
+  async createCustomDatabaseRole(
+    projectId: string,
+    data: {
+      roleName: string;
+      actions?: Array<{
+        action: string;
+        resources: Array<{ collection?: string; db?: string }>;
+      }>;
+      inheritedRoles?: Array<{ db: string; role: string }>;
+    }
+  ) {
     let response = await this.axios.post(`/groups/${projectId}/customDBRoles/roles`, data);
     return response.data;
   }
 
   async deleteCustomDatabaseRole(projectId: string, roleName: string) {
-    let response = await this.axios.delete(`/groups/${projectId}/customDBRoles/roles/${roleName}`);
+    let response = await this.axios.delete(
+      `/groups/${projectId}/customDBRoles/roles/${roleName}`
+    );
     return response.data;
   }
 
   // ==================== Monitoring ====================
 
-  async listProcesses(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
+  async listProcesses(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/groups/${projectId}/processes`, { params });
     return response.data;
   }
 
-  async getProcessMeasurements(projectId: string, processId: string, params: {
-    granularity: string;
-    period?: string;
-    start?: string;
-    end?: string;
-    m?: string[];
-  }) {
-    let response = await this.axios.get(`/groups/${projectId}/processes/${processId}/measurements`, { params });
+  async getProcessMeasurements(
+    projectId: string,
+    processId: string,
+    params: {
+      granularity: string;
+      period?: string;
+      start?: string;
+      end?: string;
+      m?: string[];
+    }
+  ) {
+    let response = await this.axios.get(
+      `/groups/${projectId}/processes/${processId}/measurements`,
+      { params }
+    );
     return response.data;
   }
 
-  async getProcessDiskMeasurements(projectId: string, processId: string, partitionName: string, params: {
-    granularity: string;
-    period?: string;
-    start?: string;
-    end?: string;
-    m?: string[];
-  }) {
+  async getProcessDiskMeasurements(
+    projectId: string,
+    processId: string,
+    partitionName: string,
+    params: {
+      granularity: string;
+      period?: string;
+      start?: string;
+      end?: string;
+      m?: string[];
+    }
+  ) {
     let response = await this.axios.get(
       `/groups/${projectId}/processes/${processId}/disks/${partitionName}/measurements`,
       { params }
@@ -448,8 +601,15 @@ export class AtlasClient {
     return response.data;
   }
 
-  async getProcessDatabases(projectId: string, processId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
-    let response = await this.axios.get(`/groups/${projectId}/processes/${processId}/databases`, { params });
+  async getProcessDatabases(
+    projectId: string,
+    processId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
+    let response = await this.axios.get(
+      `/groups/${projectId}/processes/${processId}/databases`,
+      { params }
+    );
     return response.data;
   }
 
@@ -460,11 +620,14 @@ export class AtlasClient {
     return response.data;
   }
 
-  async updateMaintenanceWindow(projectId: string, data: {
-    dayOfWeek: number;
-    hourOfDay: number;
-    autoDeferOnceEnabled?: boolean;
-  }) {
+  async updateMaintenanceWindow(
+    projectId: string,
+    data: {
+      dayOfWeek: number;
+      hourOfDay: number;
+      autoDeferOnceEnabled?: boolean;
+    }
+  ) {
     let response = await this.axios.patch(`/groups/${projectId}/maintenanceWindow`, data);
     return response.data;
   }
@@ -478,7 +641,10 @@ export class AtlasClient {
 
   // ==================== Invoices ====================
 
-  async listOrganizationInvoices(orgId: string, params?: { itemsPerPage?: number; pageNum?: number }) {
+  async listOrganizationInvoices(
+    orgId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ) {
     let response = await this.axios.get(`/orgs/${orgId}/invoices`, { params });
     return response.data;
   }

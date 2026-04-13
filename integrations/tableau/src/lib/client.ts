@@ -21,7 +21,7 @@ export class TableauClient {
       headers: {
         'X-Tableau-Auth': config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     });
   }
@@ -40,7 +40,9 @@ export class TableauClient {
     if (params?.filter) queryParams['filter'] = params.filter;
     if (params?.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.http.get(`/sites/${this.siteId}/workbooks`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/workbooks`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -49,13 +51,16 @@ export class TableauClient {
     return response.data.workbook;
   }
 
-  async updateWorkbook(workbookId: string, updates: {
-    name?: string;
-    description?: string;
-    projectId?: string;
-    ownerUserId?: string;
-    showTabs?: boolean;
-  }): Promise<any> {
+  async updateWorkbook(
+    workbookId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      projectId?: string;
+      ownerUserId?: string;
+      showTabs?: boolean;
+    }
+  ): Promise<any> {
     let workbook: Record<string, any> = {};
     if (updates.name !== undefined) workbook.name = updates.name;
     if (updates.description !== undefined) workbook.description = updates.description;
@@ -63,7 +68,9 @@ export class TableauClient {
     if (updates.projectId) workbook.project = { id: updates.projectId };
     if (updates.ownerUserId) workbook.owner = { id: updates.ownerUserId };
 
-    let response = await this.http.put(`/sites/${this.siteId}/workbooks/${workbookId}`, { workbook });
+    let response = await this.http.put(`/sites/${this.siteId}/workbooks/${workbookId}`, {
+      workbook
+    });
     return response.data.workbook;
   }
 
@@ -72,7 +79,9 @@ export class TableauClient {
   }
 
   async getWorkbookConnections(workbookId: string): Promise<any> {
-    let response = await this.http.get(`/sites/${this.siteId}/workbooks/${workbookId}/connections`);
+    let response = await this.http.get(
+      `/sites/${this.siteId}/workbooks/${workbookId}/connections`
+    );
     return response.data;
   }
 
@@ -106,7 +115,9 @@ export class TableauClient {
     if (params?.filter) queryParams['filter'] = params.filter;
     if (params?.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.http.get(`/sites/${this.siteId}/datasources`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/datasources`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -115,23 +126,29 @@ export class TableauClient {
     return response.data.datasource;
   }
 
-  async updateDatasource(datasourceId: string, updates: {
-    name?: string;
-    description?: string;
-    projectId?: string;
-    ownerUserId?: string;
-    isCertified?: boolean;
-    certificationNote?: string;
-  }): Promise<any> {
+  async updateDatasource(
+    datasourceId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      projectId?: string;
+      ownerUserId?: string;
+      isCertified?: boolean;
+      certificationNote?: string;
+    }
+  ): Promise<any> {
     let datasource: Record<string, any> = {};
     if (updates.name !== undefined) datasource.name = updates.name;
     if (updates.description !== undefined) datasource.description = updates.description;
     if (updates.isCertified !== undefined) datasource.isCertified = updates.isCertified;
-    if (updates.certificationNote !== undefined) datasource.certificationNote = updates.certificationNote;
+    if (updates.certificationNote !== undefined)
+      datasource.certificationNote = updates.certificationNote;
     if (updates.projectId) datasource.project = { id: updates.projectId };
     if (updates.ownerUserId) datasource.owner = { id: updates.ownerUserId };
 
-    let response = await this.http.put(`/sites/${this.siteId}/datasources/${datasourceId}`, { datasource });
+    let response = await this.http.put(`/sites/${this.siteId}/datasources/${datasourceId}`, {
+      datasource
+    });
     return response.data.datasource;
   }
 
@@ -140,12 +157,17 @@ export class TableauClient {
   }
 
   async getDatasourceConnections(datasourceId: string): Promise<any> {
-    let response = await this.http.get(`/sites/${this.siteId}/datasources/${datasourceId}/connections`);
+    let response = await this.http.get(
+      `/sites/${this.siteId}/datasources/${datasourceId}/connections`
+    );
     return response.data;
   }
 
   async refreshDatasource(datasourceId: string): Promise<any> {
-    let response = await this.http.post(`/sites/${this.siteId}/datasources/${datasourceId}/refresh`, {});
+    let response = await this.http.post(
+      `/sites/${this.siteId}/datasources/${datasourceId}/refresh`,
+      {}
+    );
     return response.data.job;
   }
 
@@ -169,7 +191,7 @@ export class TableauClient {
 
   async getViewData(viewId: string): Promise<string> {
     let response = await this.http.get(`/sites/${this.siteId}/views/${viewId}/data`, {
-      headers: { 'Accept': 'text/csv' }
+      headers: { Accept: 'text/csv' }
     });
     return response.data;
   }
@@ -186,15 +208,20 @@ export class TableauClient {
     return response.data.customView;
   }
 
-  async updateCustomView(customViewId: string, updates: {
-    name?: string;
-    ownerUserId?: string;
-  }): Promise<any> {
+  async updateCustomView(
+    customViewId: string,
+    updates: {
+      name?: string;
+      ownerUserId?: string;
+    }
+  ): Promise<any> {
     let customView: Record<string, any> = {};
     if (updates.name !== undefined) customView.name = updates.name;
     if (updates.ownerUserId) customView.owner = { id: updates.ownerUserId };
 
-    let response = await this.http.put(`/sites/${this.siteId}/customviews/${customViewId}`, { customView });
+    let response = await this.http.put(`/sites/${this.siteId}/customviews/${customViewId}`, {
+      customView
+    });
     return response.data.customView;
   }
 
@@ -233,12 +260,15 @@ export class TableauClient {
     return response.data.user;
   }
 
-  async updateUser(userId: string, updates: {
-    fullName?: string;
-    email?: string;
-    siteRole?: string;
-    authSetting?: string;
-  }): Promise<any> {
+  async updateUser(
+    userId: string,
+    updates: {
+      fullName?: string;
+      email?: string;
+      siteRole?: string;
+      authSetting?: string;
+    }
+  ): Promise<any> {
     let user: Record<string, any> = {};
     if (updates.fullName !== undefined) user.fullName = updates.fullName;
     if (updates.email !== undefined) user.email = updates.email;
@@ -267,7 +297,9 @@ export class TableauClient {
     if (params?.filter) queryParams['filter'] = params.filter;
     if (params?.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.http.get(`/sites/${this.siteId}/groups`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/groups`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -279,10 +311,13 @@ export class TableauClient {
     return response.data.group;
   }
 
-  async updateGroup(groupId: string, updates: {
-    name?: string;
-    minimumSiteRole?: string;
-  }): Promise<any> {
+  async updateGroup(
+    groupId: string,
+    updates: {
+      name?: string;
+      minimumSiteRole?: string;
+    }
+  ): Promise<any> {
     let group: Record<string, any> = {};
     if (updates.name !== undefined) group.name = updates.name;
     if (updates.minimumSiteRole !== undefined) group.minimumSiteRole = updates.minimumSiteRole;
@@ -306,15 +341,20 @@ export class TableauClient {
     await this.http.delete(`/sites/${this.siteId}/groups/${groupId}/users/${userId}`);
   }
 
-  async getUsersInGroup(groupId: string, params?: {
-    pageSize?: number;
-    pageNumber?: number;
-  }): Promise<any> {
+  async getUsersInGroup(
+    groupId: string,
+    params?: {
+      pageSize?: number;
+      pageNumber?: number;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
 
-    let response = await this.http.get(`/sites/${this.siteId}/groups/${groupId}/users`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/groups/${groupId}/users`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -332,15 +372,20 @@ export class TableauClient {
     if (params?.filter) queryParams['filter'] = params.filter;
     if (params?.sort) queryParams['sort'] = params.sort;
 
-    let response = await this.http.get(`/sites/${this.siteId}/projects`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/projects`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async createProject(name: string, opts?: {
-    description?: string;
-    parentProjectId?: string;
-    contentPermissions?: string;
-  }): Promise<any> {
+  async createProject(
+    name: string,
+    opts?: {
+      description?: string;
+      parentProjectId?: string;
+      contentPermissions?: string;
+    }
+  ): Promise<any> {
     let project: Record<string, any> = { name };
     if (opts?.description) project.description = opts.description;
     if (opts?.parentProjectId) project.parentProjectId = opts.parentProjectId;
@@ -350,19 +395,26 @@ export class TableauClient {
     return response.data.project;
   }
 
-  async updateProject(projectId: string, updates: {
-    name?: string;
-    description?: string;
-    parentProjectId?: string;
-    contentPermissions?: string;
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      parentProjectId?: string;
+      contentPermissions?: string;
+    }
+  ): Promise<any> {
     let project: Record<string, any> = {};
     if (updates.name !== undefined) project.name = updates.name;
     if (updates.description !== undefined) project.description = updates.description;
-    if (updates.parentProjectId !== undefined) project.parentProjectId = updates.parentProjectId;
-    if (updates.contentPermissions !== undefined) project.contentPermissions = updates.contentPermissions;
+    if (updates.parentProjectId !== undefined)
+      project.parentProjectId = updates.parentProjectId;
+    if (updates.contentPermissions !== undefined)
+      project.contentPermissions = updates.contentPermissions;
 
-    let response = await this.http.put(`/sites/${this.siteId}/projects/${projectId}`, { project });
+    let response = await this.http.put(`/sites/${this.siteId}/projects/${projectId}`, {
+      project
+    });
     return response.data.project;
   }
 
@@ -373,19 +425,26 @@ export class TableauClient {
   // --- Permissions ---
 
   async queryPermissions(resourceType: string, resourceId: string): Promise<any> {
-    let response = await this.http.get(`/sites/${this.siteId}/${resourceType}/${resourceId}/permissions`);
+    let response = await this.http.get(
+      `/sites/${this.siteId}/${resourceType}/${resourceId}/permissions`
+    );
     return response.data.permissions;
   }
 
-  async addPermissions(resourceType: string, resourceId: string, permissions: {
-    granteeType: 'user' | 'group';
-    granteeId: string;
-    capabilities: { name: string; mode: 'Allow' | 'Deny' }[];
-  }[]): Promise<any> {
+  async addPermissions(
+    resourceType: string,
+    resourceId: string,
+    permissions: {
+      granteeType: 'user' | 'group';
+      granteeId: string;
+      capabilities: { name: string; mode: 'Allow' | 'Deny' }[];
+    }[]
+  ): Promise<any> {
     let granteeCapabilities = permissions.map(p => {
-      let grantee = p.granteeType === 'user'
-        ? { user: { id: p.granteeId } }
-        : { group: { id: p.granteeId } };
+      let grantee =
+        p.granteeType === 'user'
+          ? { user: { id: p.granteeId } }
+          : { group: { id: p.granteeId } };
 
       return {
         ...grantee,
@@ -395,9 +454,12 @@ export class TableauClient {
       };
     });
 
-    let response = await this.http.put(`/sites/${this.siteId}/${resourceType}/${resourceId}/permissions`, {
-      permissions: { granteeCapabilities }
-    });
+    let response = await this.http.put(
+      `/sites/${this.siteId}/${resourceType}/${resourceId}/permissions`,
+      {
+        permissions: { granteeCapabilities }
+      }
+    );
     return response.data.permissions;
   }
 
@@ -448,7 +510,12 @@ export class TableauClient {
 
   // --- Favorites ---
 
-  async addFavorite(userId: string, favoriteType: string, resourceId: string, label: string): Promise<any> {
+  async addFavorite(
+    userId: string,
+    favoriteType: string,
+    resourceId: string,
+    label: string
+  ): Promise<any> {
     let favorite: Record<string, any> = { label };
     favorite[favoriteType] = { id: resourceId };
 
@@ -458,8 +525,14 @@ export class TableauClient {
     return response.data;
   }
 
-  async deleteFavorite(userId: string, favoriteType: string, resourceId: string): Promise<void> {
-    await this.http.delete(`/sites/${this.siteId}/favorites/${userId}/${favoriteType}/${resourceId}`);
+  async deleteFavorite(
+    userId: string,
+    favoriteType: string,
+    resourceId: string
+  ): Promise<void> {
+    await this.http.delete(
+      `/sites/${this.siteId}/favorites/${userId}/${favoriteType}/${resourceId}`
+    );
   }
 
   async getFavorites(userId: string): Promise<any> {
@@ -490,12 +563,15 @@ export class TableauClient {
     return response.data.flow;
   }
 
-  async updateFlow(flowId: string, updates: {
-    name?: string;
-    description?: string;
-    projectId?: string;
-    ownerUserId?: string;
-  }): Promise<any> {
+  async updateFlow(
+    flowId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      projectId?: string;
+      ownerUserId?: string;
+    }
+  ): Promise<any> {
     let flow: Record<string, any> = {};
     if (updates.name !== undefined) flow.name = updates.name;
     if (updates.description !== undefined) flow.description = updates.description;
@@ -518,7 +594,10 @@ export class TableauClient {
   // --- Extract Refresh ---
 
   async refreshWorkbook(workbookId: string): Promise<any> {
-    let response = await this.http.post(`/sites/${this.siteId}/workbooks/${workbookId}/refresh`, {});
+    let response = await this.http.post(
+      `/sites/${this.siteId}/workbooks/${workbookId}/refresh`,
+      {}
+    );
     return response.data.job;
   }
 
@@ -556,15 +635,14 @@ export class TableauClient {
 
   // --- Data-Driven Alerts ---
 
-  async queryAlerts(params?: {
-    pageSize?: number;
-    pageNumber?: number;
-  }): Promise<any> {
+  async queryAlerts(params?: { pageSize?: number; pageNumber?: number }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
 
-    let response = await this.http.get(`/sites/${this.siteId}/dataAlerts`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/dataAlerts`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -589,15 +667,14 @@ export class TableauClient {
 
   // --- Collections ---
 
-  async queryCollections(params?: {
-    pageSize?: number;
-    pageNumber?: number;
-  }): Promise<any> {
+  async queryCollections(params?: { pageSize?: number; pageNumber?: number }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
 
-    let response = await this.http.get(`/sites/${this.siteId}/collections`, { params: queryParams });
+    let response = await this.http.get(`/sites/${this.siteId}/collections`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -609,15 +686,20 @@ export class TableauClient {
     return response.data.collection;
   }
 
-  async updateCollection(collectionId: string, updates: {
-    name?: string;
-    description?: string;
-  }): Promise<any> {
+  async updateCollection(
+    collectionId: string,
+    updates: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<any> {
     let collection: Record<string, any> = {};
     if (updates.name !== undefined) collection.name = updates.name;
     if (updates.description !== undefined) collection.description = updates.description;
 
-    let response = await this.http.put(`/sites/${this.siteId}/collections/${collectionId}`, { collection });
+    let response = await this.http.put(`/sites/${this.siteId}/collections/${collectionId}`, {
+      collection
+    });
     return response.data.collection;
   }
 

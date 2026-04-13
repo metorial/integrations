@@ -19,35 +19,45 @@ let optionContractSchema = z.object({
   gamma: z.string().optional().describe('Gamma greek'),
   theta: z.string().optional().describe('Theta greek'),
   vega: z.string().optional().describe('Vega greek'),
-  rho: z.string().optional().describe('Rho greek'),
+  rho: z.string().optional().describe('Rho greek')
 });
 
-export let getOptionsChain = SlateTool.create(
-  spec,
-  {
-    name: 'Get Options Chain',
-    key: 'get_options_chain',
-    description: `Retrieve current or historical options chain data for a US-listed equity. Returns calls and puts with strike prices, premiums, volume, open interest, implied volatility, and optionally Greeks (delta, gamma, theta, vega, rho).`,
-    constraints: [
-      'Historical options data may require a premium API key.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    symbol: z.string().describe('Underlying stock ticker symbol, e.g. "AAPL"'),
-    mode: z.enum(['realtime', 'historical']).optional().default('realtime').describe('Whether to get current or historical options data'),
-    date: z.string().optional().describe('Specific date for historical options data in YYYY-MM-DD format'),
-    contract: z.string().optional().describe('Filter to a specific contract ID'),
-    includeGreeks: z.boolean().optional().default(false).describe('Whether to include Greeks in the response (realtime only)'),
-  }))
-  .output(z.object({
-    symbol: z.string().describe('Underlying ticker symbol'),
-    contracts: z.array(optionContractSchema).describe('Options contracts'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getOptionsChain = SlateTool.create(spec, {
+  name: 'Get Options Chain',
+  key: 'get_options_chain',
+  description: `Retrieve current or historical options chain data for a US-listed equity. Returns calls and puts with strike prices, premiums, volume, open interest, implied volatility, and optionally Greeks (delta, gamma, theta, vega, rho).`,
+  constraints: ['Historical options data may require a premium API key.'],
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      symbol: z.string().describe('Underlying stock ticker symbol, e.g. "AAPL"'),
+      mode: z
+        .enum(['realtime', 'historical'])
+        .optional()
+        .default('realtime')
+        .describe('Whether to get current or historical options data'),
+      date: z
+        .string()
+        .optional()
+        .describe('Specific date for historical options data in YYYY-MM-DD format'),
+      contract: z.string().optional().describe('Filter to a specific contract ID'),
+      includeGreeks: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to include Greeks in the response (realtime only)')
+    })
+  )
+  .output(
+    z.object({
+      symbol: z.string().describe('Underlying ticker symbol'),
+      contracts: z.array(optionContractSchema).describe('Options contracts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { symbol, mode, date, contract, includeGreeks } = ctx.input;
 
@@ -72,7 +82,7 @@ export let getOptionsChain = SlateTool.create(
         ask: c['ask'] || '',
         volume: c['volume'] || '',
         openInterest: c['open_interest'] || '',
-        impliedVolatility: c['implied_volatility'] || '',
+        impliedVolatility: c['implied_volatility'] || ''
       };
 
       if (includeGreeks || mode === 'historical') {
@@ -88,7 +98,7 @@ export let getOptionsChain = SlateTool.create(
 
     return {
       output: { symbol, contracts },
-      message: `Retrieved ${contracts.length} options contract(s) for **${symbol}**.`,
+      message: `Retrieved ${contracts.length} options contract(s) for **${symbol}**.`
     };
   })
   .build();

@@ -8,7 +8,7 @@ import type {
   ListPostsParams,
   CreateScheduleSlotParams,
   PaginatedResponse,
-  PostJob,
+  PostJob
 } from './types';
 
 let DEFAULT_BASE_URL = 'https://api.crowterminal.com/v1';
@@ -21,8 +21,8 @@ export class CrowTerminalClient {
       baseURL: config.baseUrl || DEFAULT_BASE_URL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,7 +35,7 @@ export class CrowTerminalClient {
       text: params.text,
       media_urls: params.mediaUrls || [],
       scheduled_at: params.scheduledAt || null,
-      idempotency_key: params.idempotencyKey || null,
+      idempotency_key: params.idempotencyKey || null
     });
     return mapPost(response.data);
   }
@@ -58,7 +58,7 @@ export class CrowTerminalClient {
       items: (response.data.items || []).map(mapPost),
       total: response.data.total,
       limit: response.data.limit,
-      offset: response.data.offset,
+      offset: response.data.offset
     };
   }
 
@@ -108,7 +108,7 @@ export class CrowTerminalClient {
       day_of_week: params.dayOfWeek,
       time: params.time,
       platform: params.platform,
-      account_id: params.accountId,
+      account_id: params.accountId
     });
     return mapScheduleSlot(response.data);
   }
@@ -138,7 +138,7 @@ let mapPost = (data: Record<string, unknown>): Post => ({
   failureReason: (data.failure_reason as string) || null,
   platformPostId: (data.platform_post_id as string) || null,
   platformPostUrl: (data.platform_post_url as string) || null,
-  accountId: String(data.account_id || ''),
+  accountId: String(data.account_id || '')
 });
 
 let mapAccount = (data: Record<string, unknown>): Account => ({
@@ -147,7 +147,7 @@ let mapAccount = (data: Record<string, unknown>): Account => ({
   username: String(data.username || ''),
   displayName: String(data.display_name || ''),
   connected: Boolean(data.connected),
-  createdAt: String(data.created_at || ''),
+  createdAt: String(data.created_at || '')
 });
 
 let mapScheduleSlot = (data: Record<string, unknown>): ScheduleSlot => ({
@@ -156,7 +156,7 @@ let mapScheduleSlot = (data: Record<string, unknown>): ScheduleSlot => ({
   time: String(data.time || ''),
   platform: String(data.platform || '') as ScheduleSlot['platform'],
   accountId: String(data.account_id || ''),
-  enabled: Boolean(data.enabled),
+  enabled: Boolean(data.enabled)
 });
 
 let mapPostJob = (data: Record<string, unknown>): PostJob => ({
@@ -165,5 +165,5 @@ let mapPostJob = (data: Record<string, unknown>): PostJob => ({
   status: String(data.status || '') as PostJob['status'],
   createdAt: String(data.created_at || ''),
   completedAt: (data.completed_at as string) || null,
-  failureReason: (data.failure_reason as string) || null,
+  failureReason: (data.failure_reason as string) || null
 });

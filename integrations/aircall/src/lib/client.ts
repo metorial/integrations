@@ -27,14 +27,13 @@ export class Client {
   private http: AxiosInstance;
 
   constructor(private auth: AircallAuth) {
-    let authHeader = auth.authType === 'bearer'
-      ? `Bearer ${auth.token}`
-      : `Basic ${auth.token}`;
+    let authHeader =
+      auth.authType === 'bearer' ? `Bearer ${auth.token}` : `Basic ${auth.token}`;
 
     this.http = createAxios({
       baseURL: 'https://api.aircall.io/v1',
       headers: {
-        'Authorization': authHeader,
+        Authorization: authHeader,
         'Content-Type': 'application/json'
       }
     });
@@ -42,12 +41,14 @@ export class Client {
 
   // ─── Calls ───
 
-  async listCalls(params?: PaginationParams & {
-    from?: number;
-    to?: number;
-    order?: 'asc' | 'desc';
-    fetchContact?: boolean;
-  }): Promise<PaginatedResponse<any>> {
+  async listCalls(
+    params?: PaginationParams & {
+      from?: number;
+      to?: number;
+      order?: 'asc' | 'desc';
+      fetchContact?: boolean;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.http.get('/calls', {
       params: {
         page: params?.page,
@@ -101,12 +102,15 @@ export class Client {
     return this.mapPaginatedResponse(response.data, 'calls');
   }
 
-  async transferCall(callId: number, target: {
-    userId?: number;
-    teamId?: number;
-    number?: string;
-    dispatchingStrategy?: 'simultaneous' | 'random' | 'longest_idle';
-  }): Promise<void> {
+  async transferCall(
+    callId: number,
+    target: {
+      userId?: number;
+      teamId?: number;
+      number?: string;
+      dispatchingStrategy?: 'simultaneous' | 'random' | 'longest_idle';
+    }
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (target.userId) body.user_id = target.userId;
     if (target.teamId) body.team_id = target.teamId;
@@ -154,22 +158,27 @@ export class Client {
 
   // ─── Insight Cards ───
 
-  async createInsightCard(callId: number, contents: Array<{
-    type: 'title' | 'shortText';
-    text: string;
-    label?: string;
-    link?: string;
-  }>): Promise<void> {
+  async createInsightCard(
+    callId: number,
+    contents: Array<{
+      type: 'title' | 'shortText';
+      text: string;
+      label?: string;
+      link?: string;
+    }>
+  ): Promise<void> {
     await this.http.post(`/calls/${callId}/insight_cards`, { contents });
   }
 
   // ─── Users ───
 
-  async listUsers(params?: PaginationParams & {
-    from?: number;
-    to?: number;
-    order?: 'asc' | 'desc';
-  }): Promise<PaginatedResponse<any>> {
+  async listUsers(
+    params?: PaginationParams & {
+      from?: number;
+      to?: number;
+      order?: 'asc' | 'desc';
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.http.get('/users', {
       params: {
         page: params?.page,
@@ -206,14 +215,17 @@ export class Client {
     return response.data.user;
   }
 
-  async updateUser(userId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    availabilityStatus?: string;
-    substatus?: string;
-    roleIds?: string[];
-    wrapUpTime?: number;
-  }): Promise<any> {
+  async updateUser(
+    userId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      availabilityStatus?: string;
+      substatus?: string;
+      roleIds?: string[];
+      wrapUpTime?: number;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/users/${userId}`, {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -248,11 +260,13 @@ export class Client {
 
   // ─── Contacts ───
 
-  async listContacts(params?: PaginationParams & {
-    from?: number;
-    to?: number;
-    order?: 'asc' | 'desc';
-  }): Promise<PaginatedResponse<any>> {
+  async listContacts(
+    params?: PaginationParams & {
+      from?: number;
+      to?: number;
+      order?: 'asc' | 'desc';
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.http.get('/contacts', {
       params: {
         page: params?.page,
@@ -308,12 +322,15 @@ export class Client {
     return response.data.contact;
   }
 
-  async updateContact(contactId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    companyName?: string;
-    information?: string;
-  }): Promise<any> {
+  async updateContact(
+    contactId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      companyName?: string;
+      information?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/contacts/${contactId}`, {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -328,12 +345,23 @@ export class Client {
   }
 
   async addContactPhoneNumber(contactId: number, label: string, value: string): Promise<any> {
-    let response = await this.http.post(`/contacts/${contactId}/phone_numbers`, { label, value });
+    let response = await this.http.post(`/contacts/${contactId}/phone_numbers`, {
+      label,
+      value
+    });
     return response.data.contact;
   }
 
-  async updateContactPhoneNumber(contactId: number, phoneId: number, label: string, value: string): Promise<any> {
-    let response = await this.http.put(`/contacts/${contactId}/phone_numbers/${phoneId}`, { label, value });
+  async updateContactPhoneNumber(
+    contactId: number,
+    phoneId: number,
+    label: string,
+    value: string
+  ): Promise<any> {
+    let response = await this.http.put(`/contacts/${contactId}/phone_numbers/${phoneId}`, {
+      label,
+      value
+    });
     return response.data.contact;
   }
 
@@ -347,8 +375,16 @@ export class Client {
     return response.data.contact;
   }
 
-  async updateContactEmail(contactId: number, emailId: number, label: string, value: string): Promise<any> {
-    let response = await this.http.put(`/contacts/${contactId}/emails/${emailId}`, { label, value });
+  async updateContactEmail(
+    contactId: number,
+    emailId: number,
+    label: string,
+    value: string
+  ): Promise<any> {
+    let response = await this.http.put(`/contacts/${contactId}/emails/${emailId}`, {
+      label,
+      value
+    });
     return response.data.contact;
   }
 
@@ -374,12 +410,15 @@ export class Client {
     return response.data.number;
   }
 
-  async updateNumber(numberId: number, data: {
-    name?: string;
-    open?: boolean;
-    timeZone?: string;
-    priority?: number | null;
-  }): Promise<any> {
+  async updateNumber(
+    numberId: number,
+    data: {
+      name?: string;
+      open?: boolean;
+      timeZone?: string;
+      priority?: number | null;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/numbers/${numberId}`, {
       name: data.name,
       open: data.open,
@@ -474,11 +513,14 @@ export class Client {
     return response.data.webhook;
   }
 
-  async updateWebhook(webhookId: number, data: {
-    url?: string;
-    events?: string[];
-    customName?: string;
-  }): Promise<any> {
+  async updateWebhook(
+    webhookId: number,
+    data: {
+      url?: string;
+      events?: string[];
+      customName?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.url) body.url = data.url;
     if (data.events) body.events = data.events;

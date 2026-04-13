@@ -6,11 +6,13 @@ let api = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -74,7 +76,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -88,18 +90,22 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await api.post('/oauth/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code'
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await api.post(
+        '/oauth/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data as {
         access_token: string;
@@ -120,17 +126,21 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
-      let response = await api.post('/oauth/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken ?? ''
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleTokenRefresh: async ctx => {
+      let response = await api.post(
+        '/oauth/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken ?? ''
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data as {
         access_token: string;
@@ -151,7 +161,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await api.get('/oauth/userinfo', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
@@ -184,7 +198,7 @@ export let auth = SlateAuth.create()
       apiKey: z.string().describe('Dub API key (starts with dub_)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey

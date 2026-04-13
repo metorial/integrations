@@ -21,6 +21,7 @@ To generate an API token, see Managing API tokens. You can create a custom API t
 API clients should transmit this token using the Authorization request header field and the Bearer authentication scheme.
 
 Example:
+
 ```
 GET /v1/tokenInfo HTTP/1.1
 Host: api.integrator.io/v1

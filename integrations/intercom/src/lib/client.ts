@@ -14,9 +14,9 @@ export class Client {
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Intercom-Version': '2.11'
       }
     });
@@ -39,7 +39,9 @@ export class Client {
   }
 
   async getContactByExternalId(externalId: string) {
-    let response = await this.http.get(`/contacts?external_id=${encodeURIComponent(externalId)}`);
+    let response = await this.http.get(
+      `/contacts?external_id=${encodeURIComponent(externalId)}`
+    );
     return response.data;
   }
 
@@ -63,28 +65,34 @@ export class Client {
     if (data.phone) body.phone = data.phone;
     if (data.name) body.name = data.name;
     if (data.avatar) body.avatar = data.avatar;
-    if (data.signedUpAt) body.signed_up_at = Math.floor(new Date(data.signedUpAt).getTime() / 1000);
-    if (data.lastSeenAt) body.last_seen_at = Math.floor(new Date(data.lastSeenAt).getTime() / 1000);
+    if (data.signedUpAt)
+      body.signed_up_at = Math.floor(new Date(data.signedUpAt).getTime() / 1000);
+    if (data.lastSeenAt)
+      body.last_seen_at = Math.floor(new Date(data.lastSeenAt).getTime() / 1000);
     if (data.ownerId) body.owner_id = data.ownerId;
-    if (data.unsubscribedFromEmails !== undefined) body.unsubscribed_from_emails = data.unsubscribedFromEmails;
+    if (data.unsubscribedFromEmails !== undefined)
+      body.unsubscribed_from_emails = data.unsubscribedFromEmails;
     if (data.customAttributes) body.custom_attributes = data.customAttributes;
     let response = await this.http.post('/contacts', body);
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    role?: string;
-    externalId?: string;
-    email?: string;
-    phone?: string;
-    name?: string;
-    avatar?: string;
-    signedUpAt?: string;
-    lastSeenAt?: string;
-    ownerId?: string;
-    unsubscribedFromEmails?: boolean;
-    customAttributes?: Record<string, any>;
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      role?: string;
+      externalId?: string;
+      email?: string;
+      phone?: string;
+      name?: string;
+      avatar?: string;
+      signedUpAt?: string;
+      lastSeenAt?: string;
+      ownerId?: string;
+      unsubscribedFromEmails?: boolean;
+      customAttributes?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.role) body.role = data.role;
     if (data.externalId) body.external_id = data.externalId;
@@ -92,10 +100,13 @@ export class Client {
     if (data.phone) body.phone = data.phone;
     if (data.name) body.name = data.name;
     if (data.avatar) body.avatar = data.avatar;
-    if (data.signedUpAt) body.signed_up_at = Math.floor(new Date(data.signedUpAt).getTime() / 1000);
-    if (data.lastSeenAt) body.last_seen_at = Math.floor(new Date(data.lastSeenAt).getTime() / 1000);
+    if (data.signedUpAt)
+      body.signed_up_at = Math.floor(new Date(data.signedUpAt).getTime() / 1000);
+    if (data.lastSeenAt)
+      body.last_seen_at = Math.floor(new Date(data.lastSeenAt).getTime() / 1000);
     if (data.ownerId) body.owner_id = data.ownerId;
-    if (data.unsubscribedFromEmails !== undefined) body.unsubscribed_from_emails = data.unsubscribedFromEmails;
+    if (data.unsubscribedFromEmails !== undefined)
+      body.unsubscribed_from_emails = data.unsubscribedFromEmails;
     if (data.customAttributes) body.custom_attributes = data.customAttributes;
     let response = await this.http.put(`/contacts/${contactId}`, body);
     return response.data;
@@ -119,7 +130,8 @@ export class Client {
   async searchContacts(query: any, paginationCursor?: string, perPage?: number) {
     let body: Record<string, any> = { query };
     if (perPage) body.pagination = { ...(body.pagination || {}), per_page: perPage };
-    if (paginationCursor) body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
+    if (paginationCursor)
+      body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
     let response = await this.http.post('/contacts/search', body);
     return response.data;
   }
@@ -168,7 +180,8 @@ export class Client {
     if (data.website) body.website = data.website;
     if (data.industry) body.industry = data.industry;
     if (data.monthlySpend !== undefined) body.monthly_spend = data.monthlySpend;
-    if (data.remoteCreatedAt) body.remote_created_at = Math.floor(new Date(data.remoteCreatedAt).getTime() / 1000);
+    if (data.remoteCreatedAt)
+      body.remote_created_at = Math.floor(new Date(data.remoteCreatedAt).getTime() / 1000);
     if (data.customAttributes) body.custom_attributes = data.customAttributes;
     let response = await this.http.post('/companies', body);
     return response.data;
@@ -182,7 +195,8 @@ export class Client {
   async searchCompanies(query: any, paginationCursor?: string, perPage?: number) {
     let body: Record<string, any> = { query };
     if (perPage) body.pagination = { ...(body.pagination || {}), per_page: perPage };
-    if (paginationCursor) body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
+    if (paginationCursor)
+      body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
     let response = await this.http.post('/companies/search', body);
     return response.data;
   }
@@ -215,10 +229,7 @@ export class Client {
     return response.data;
   }
 
-  async createConversation(data: {
-    from: { type: string; id: string };
-    body: string;
-  }) {
+  async createConversation(data: { from: { type: string; id: string }; body: string }) {
     let response = await this.http.post('/conversations', {
       from: data.from,
       body: data.body
@@ -226,15 +237,18 @@ export class Client {
     return response.data;
   }
 
-  async replyToConversation(conversationId: string, data: {
-    messageType: string;
-    type: string;
-    body: string;
-    adminId?: string;
-    intercomUserId?: string;
-    email?: string;
-    attachmentUrls?: string[];
-  }) {
+  async replyToConversation(
+    conversationId: string,
+    data: {
+      messageType: string;
+      type: string;
+      body: string;
+      adminId?: string;
+      intercomUserId?: string;
+      email?: string;
+      attachmentUrls?: string[];
+    }
+  ) {
     let body: Record<string, any> = {
       message_type: data.messageType,
       type: data.type,
@@ -248,12 +262,15 @@ export class Client {
     return response.data;
   }
 
-  async assignConversation(conversationId: string, data: {
-    adminId: string;
-    assigneeId: string;
-    body?: string;
-    type: string;
-  }) {
+  async assignConversation(
+    conversationId: string,
+    data: {
+      adminId: string;
+      assigneeId: string;
+      body?: string;
+      type: string;
+    }
+  ) {
     let response = await this.http.post(`/conversations/${conversationId}/parts`, {
       message_type: 'assignment',
       admin_id: data.adminId,
@@ -306,7 +323,8 @@ export class Client {
   async searchConversations(query: any, paginationCursor?: string, perPage?: number) {
     let body: Record<string, any> = { query };
     if (perPage) body.pagination = { ...(body.pagination || {}), per_page: perPage };
-    if (paginationCursor) body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
+    if (paginationCursor)
+      body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
     let response = await this.http.post('/conversations/search', body);
     return response.data;
   }
@@ -351,21 +369,25 @@ export class Client {
     return response.data;
   }
 
-  async updateTicket(ticketId: string, data: {
-    ticketAttributes?: Record<string, any>;
-    state?: string;
-    open?: boolean;
-    isShared?: boolean;
-    snoozedUntil?: string;
-    assignmentAdminId?: string;
-    assignmentTeamId?: string;
-  }) {
+  async updateTicket(
+    ticketId: string,
+    data: {
+      ticketAttributes?: Record<string, any>;
+      state?: string;
+      open?: boolean;
+      isShared?: boolean;
+      snoozedUntil?: string;
+      assignmentAdminId?: string;
+      assignmentTeamId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.ticketAttributes) body.ticket_attributes = data.ticketAttributes;
     if (data.state) body.state = data.state;
     if (data.open !== undefined) body.open = data.open;
     if (data.isShared !== undefined) body.is_shared = data.isShared;
-    if (data.snoozedUntil) body.snoozed_until = Math.floor(new Date(data.snoozedUntil).getTime() / 1000);
+    if (data.snoozedUntil)
+      body.snoozed_until = Math.floor(new Date(data.snoozedUntil).getTime() / 1000);
     if (data.assignmentAdminId || data.assignmentTeamId) {
       body.assignment = {};
       if (data.assignmentAdminId) body.assignment.admin_id = data.assignmentAdminId;
@@ -375,13 +397,16 @@ export class Client {
     return response.data;
   }
 
-  async replyToTicket(ticketId: string, data: {
-    messageType: string;
-    type: string;
-    body: string;
-    adminId?: string;
-    intercomUserId?: string;
-  }) {
+  async replyToTicket(
+    ticketId: string,
+    data: {
+      messageType: string;
+      type: string;
+      body: string;
+      adminId?: string;
+      intercomUserId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       message_type: data.messageType,
       type: data.type,
@@ -396,7 +421,8 @@ export class Client {
   async searchTickets(query: any, paginationCursor?: string, perPage?: number) {
     let body: Record<string, any> = { query };
     if (perPage) body.pagination = { ...(body.pagination || {}), per_page: perPage };
-    if (paginationCursor) body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
+    if (paginationCursor)
+      body.pagination = { ...(body.pagination || {}), starting_after: paginationCursor };
     let response = await this.http.post('/tickets/search', body);
     return response.data;
   }
@@ -446,16 +472,19 @@ export class Client {
     return response.data;
   }
 
-  async updateArticle(articleId: string, data: {
-    title?: string;
-    authorId?: string;
-    body?: string;
-    description?: string;
-    state?: string;
-    parentId?: string;
-    parentType?: string;
-    translatedContent?: Record<string, any>;
-  }) {
+  async updateArticle(
+    articleId: string,
+    data: {
+      title?: string;
+      authorId?: string;
+      body?: string;
+      description?: string;
+      state?: string;
+      parentId?: string;
+      parentType?: string;
+      translatedContent?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.title) body.title = data.title;
     if (data.authorId) body.author_id = data.authorId;
@@ -474,7 +503,12 @@ export class Client {
     return response.data;
   }
 
-  async searchArticles(phrase: string, helpCenterId?: string, highlightTag?: string, state?: string) {
+  async searchArticles(
+    phrase: string,
+    helpCenterId?: string,
+    highlightTag?: string,
+    state?: string
+  ) {
     let query = new URLSearchParams();
     query.set('phrase', phrase);
     if (helpCenterId) query.set('help_center_id', helpCenterId);
@@ -543,7 +577,14 @@ export class Client {
     return response.data;
   }
 
-  async listEvents(params: { type: string; intercomUserId?: string; email?: string; userId?: string; perPage?: number; summary?: boolean }) {
+  async listEvents(params: {
+    type: string;
+    intercomUserId?: string;
+    email?: string;
+    userId?: string;
+    perPage?: number;
+    summary?: boolean;
+  }) {
     let query = new URLSearchParams();
     query.set('type', params.type);
     if (params.intercomUserId) query.set('intercom_user_id', params.intercomUserId);
@@ -578,7 +619,8 @@ export class Client {
     if (data.to.id) body.to.id = data.to.id;
     if (data.to.email) body.to.email = data.to.email;
     if (data.to.userId) body.to.user_id = data.to.userId;
-    if (data.createContactOnMissing !== undefined) body.create_contact_on_missing = data.createContactOnMissing;
+    if (data.createContactOnMissing !== undefined)
+      body.create_contact_on_missing = data.createContactOnMissing;
     let response = await this.http.post('/messages', body);
     return response.data;
   }
@@ -643,11 +685,14 @@ export class Client {
     return response.data;
   }
 
-  async updateDataAttribute(attributeId: string, data: {
-    description?: string;
-    options?: string[];
-    archived?: boolean;
-  }) {
+  async updateDataAttribute(
+    attributeId: string,
+    data: {
+      description?: string;
+      options?: string[];
+      archived?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description) body.description = data.description;
     if (data.options) body.options = data.options;

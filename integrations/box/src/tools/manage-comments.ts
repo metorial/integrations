@@ -3,39 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageComments = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Comments',
-    key: 'manage_comments',
-    description: `Add, list, update, or delete comments on a Box file. Use tagged messages to @mention users in comments.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageComments = SlateTool.create(spec, {
+  name: 'Manage Comments',
+  key: 'manage_comments',
+  description: `Add, list, update, or delete comments on a Box file. Use tagged messages to @mention users in comments.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'update', 'delete']).describe('The comment operation to perform'),
-    fileId: z.string().optional().describe('File ID (required for create and list)'),
-    commentId: z.string().optional().describe('Comment ID (required for update and delete)'),
-    message: z.string().optional().describe('Comment message text (for create and update)'),
-    taggedMessage: z.string().optional().describe('Comment with @mentions using format @[user_id:user_name] (for create)')
-  }))
-  .output(z.object({
-    commentId: z.string().optional().describe('ID of the created/updated comment'),
-    message: z.string().optional().describe('Comment message text'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-    createdBy: z.string().optional().describe('Name of the comment author'),
-    deleted: z.boolean().optional().describe('True if the comment was deleted'),
-    comments: z.array(z.object({
-      commentId: z.string(),
-      message: z.string().optional(),
-      createdAt: z.string().optional(),
-      createdBy: z.string().optional()
-    })).optional().describe('List of comments on the file')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'update', 'delete'])
+        .describe('The comment operation to perform'),
+      fileId: z.string().optional().describe('File ID (required for create and list)'),
+      commentId: z.string().optional().describe('Comment ID (required for update and delete)'),
+      message: z.string().optional().describe('Comment message text (for create and update)'),
+      taggedMessage: z
+        .string()
+        .optional()
+        .describe('Comment with @mentions using format @[user_id:user_name] (for create)')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().optional().describe('ID of the created/updated comment'),
+      message: z.string().optional().describe('Comment message text'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
+      createdBy: z.string().optional().describe('Name of the comment author'),
+      deleted: z.boolean().optional().describe('True if the comment was deleted'),
+      comments: z
+        .array(
+          z.object({
+            commentId: z.string(),
+            message: z.string().optional(),
+            createdAt: z.string().optional(),
+            createdBy: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of comments on the file')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, fileId, commentId, message: msg, taggedMessage } = ctx.input;
 
@@ -56,7 +67,8 @@ export let manageComments = SlateTool.create(
 
     if (action === 'create') {
       if (!fileId) throw new Error('fileId is required for create action');
-      if (!msg && !taggedMessage) throw new Error('message or taggedMessage is required for create action');
+      if (!msg && !taggedMessage)
+        throw new Error('message or taggedMessage is required for create action');
       let comment = await client.addComment(fileId, msg || '', taggedMessage);
       return {
         output: {

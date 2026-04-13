@@ -4,14 +4,13 @@ export class CultsClient {
   private authHeader: string;
 
   constructor(config: { token: string; username: string }) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let basicToken = Buffer.from(`${config.username}:${config.token}`).toString('base64');
     this.authHeader = `Basic ${basicToken}`;
   }
 
   async query<T = any>(graphqlQuery: string, variables?: Record<string, any>): Promise<T> {
     let axios = createAxios({
-      baseURL: 'https://cults3d.com',
+      baseURL: 'https://cults3d.com'
     });
 
     let body: Record<string, any> = { query: graphqlQuery };
@@ -21,9 +20,9 @@ export class CultsClient {
 
     let response = await axios.post('/graphql', body, {
       headers: {
-        'Authorization': this.authHeader,
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.authHeader,
+        'Content-Type': 'application/json'
+      }
     });
 
     let data = response.data;
@@ -37,11 +36,7 @@ export class CultsClient {
 
   // === Creations ===
 
-  async searchCreations(params: {
-    searchQuery: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async searchCreations(params: { searchQuery: string; limit?: number; offset?: number }) {
     let query = `
       query SearchCreations($query: String!, $limit: Int, $offset: Int) {
         creationsSearchBatch(query: $query, limit: $limit, offset: $offset) {
@@ -81,7 +76,7 @@ export class CultsClient {
     }>(query, {
       query: params.searchQuery,
       limit: params.limit ?? 20,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
 
     return result.creationsSearchBatch;
@@ -102,16 +97,46 @@ export class CultsClient {
     let args: string[] = [];
     let varDefs: string[] = [];
 
-    if (params.limit !== undefined) { varDefs.push('$limit: Int'); args.push('limit: $limit'); }
-    if (params.offset !== undefined) { varDefs.push('$offset: Int'); args.push('offset: $offset'); }
-    if (params.sort !== undefined) { varDefs.push('$sort: CreationSort'); args.push('sort: $sort'); }
-    if (params.direction !== undefined) { varDefs.push('$direction: SortDirection'); args.push('direction: $direction'); }
-    if (params.onlyFree !== undefined) { varDefs.push('$onlyFree: Boolean'); args.push('onlyFree: $onlyFree'); }
-    if (params.onlyPriced !== undefined) { varDefs.push('$onlyPriced: Boolean'); args.push('onlyPriced: $onlyPriced'); }
-    if (params.onlyDiscounted !== undefined) { varDefs.push('$onlyDiscounted: Boolean'); args.push('onlyDiscounted: $onlyDiscounted'); }
-    if (params.submittedAfter !== undefined) { varDefs.push('$submittedAfter: DateTime'); args.push('submittedAfter: $submittedAfter'); }
-    if (params.submittedBefore !== undefined) { varDefs.push('$submittedBefore: DateTime'); args.push('submittedBefore: $submittedBefore'); }
-    if (params.madeWithAi !== undefined) { varDefs.push('$madeWithAi: Boolean'); args.push('madeWithAi: $madeWithAi'); }
+    if (params.limit !== undefined) {
+      varDefs.push('$limit: Int');
+      args.push('limit: $limit');
+    }
+    if (params.offset !== undefined) {
+      varDefs.push('$offset: Int');
+      args.push('offset: $offset');
+    }
+    if (params.sort !== undefined) {
+      varDefs.push('$sort: CreationSort');
+      args.push('sort: $sort');
+    }
+    if (params.direction !== undefined) {
+      varDefs.push('$direction: SortDirection');
+      args.push('direction: $direction');
+    }
+    if (params.onlyFree !== undefined) {
+      varDefs.push('$onlyFree: Boolean');
+      args.push('onlyFree: $onlyFree');
+    }
+    if (params.onlyPriced !== undefined) {
+      varDefs.push('$onlyPriced: Boolean');
+      args.push('onlyPriced: $onlyPriced');
+    }
+    if (params.onlyDiscounted !== undefined) {
+      varDefs.push('$onlyDiscounted: Boolean');
+      args.push('onlyDiscounted: $onlyDiscounted');
+    }
+    if (params.submittedAfter !== undefined) {
+      varDefs.push('$submittedAfter: DateTime');
+      args.push('submittedAfter: $submittedAfter');
+    }
+    if (params.submittedBefore !== undefined) {
+      varDefs.push('$submittedBefore: DateTime');
+      args.push('submittedBefore: $submittedBefore');
+    }
+    if (params.madeWithAi !== undefined) {
+      varDefs.push('$madeWithAi: Boolean');
+      args.push('madeWithAi: $madeWithAi');
+    }
 
     let varDefsStr = varDefs.length > 0 ? `(${varDefs.join(', ')})` : '';
     let argsStr = args.length > 0 ? `(${args.join(', ')})` : '';
@@ -160,7 +185,8 @@ export class CultsClient {
     if (params.onlyPriced !== undefined) variables.onlyPriced = params.onlyPriced;
     if (params.onlyDiscounted !== undefined) variables.onlyDiscounted = params.onlyDiscounted;
     if (params.submittedAfter !== undefined) variables.submittedAfter = params.submittedAfter;
-    if (params.submittedBefore !== undefined) variables.submittedBefore = params.submittedBefore;
+    if (params.submittedBefore !== undefined)
+      variables.submittedBefore = params.submittedBefore;
     if (params.madeWithAi !== undefined) variables.madeWithAi = params.madeWithAi;
 
     let result = await this.query<{
@@ -327,7 +353,7 @@ export class CultsClient {
       };
     }>(query, {
       limit: params.limit ?? 20,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
 
     return result.myself.creationsBatch;
@@ -335,11 +361,7 @@ export class CultsClient {
 
   // === Sales ===
 
-  async getMySales(params: {
-    limit?: number;
-    offset?: number;
-    currency?: string;
-  }) {
+  async getMySales(params: { limit?: number; offset?: number; currency?: string }) {
     let currency = params.currency ?? 'USD';
 
     let query = `
@@ -381,7 +403,7 @@ export class CultsClient {
       };
     }>(query, {
       limit: params.limit ?? 20,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
 
     return result.myself.salesBatch;
@@ -389,10 +411,7 @@ export class CultsClient {
 
   // === Orders ===
 
-  async getMyOrders(params: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async getMyOrders(params: { limit?: number; offset?: number }) {
     let query = `
       query MyOrders($limit: Int, $offset: Int) {
         myself {
@@ -425,7 +444,7 @@ export class CultsClient {
       };
     }>(query, {
       limit: params.limit ?? 20,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
 
     return result.myself.ordersBatch;
@@ -490,20 +509,49 @@ export class CultsClient {
     let argParts: string[] = [];
     let varDefs: string[] = [];
 
-    varDefs.push('$name: String!'); argParts.push('name: $name');
-    varDefs.push('$description: String!'); argParts.push('description: $description');
-    varDefs.push('$imageUrls: [String!]!'); argParts.push('imageUrls: $imageUrls');
-    varDefs.push('$fileUrls: [String!]!'); argParts.push('fileUrls: $fileUrls');
-    varDefs.push('$categoryId: ID!'); argParts.push('categoryId: $categoryId');
+    varDefs.push('$name: String!');
+    argParts.push('name: $name');
+    varDefs.push('$description: String!');
+    argParts.push('description: $description');
+    varDefs.push('$imageUrls: [String!]!');
+    argParts.push('imageUrls: $imageUrls');
+    varDefs.push('$fileUrls: [String!]!');
+    argParts.push('fileUrls: $fileUrls');
+    varDefs.push('$categoryId: ID!');
+    argParts.push('categoryId: $categoryId');
 
-    if (params.subCategoryIds !== undefined) { varDefs.push('$subCategoryIds: [ID!]'); argParts.push('subCategoryIds: $subCategoryIds'); }
-    if (params.downloadPrice !== undefined) { varDefs.push('$downloadPrice: Float'); argParts.push('downloadPrice: $downloadPrice'); }
-    if (params.currency !== undefined) { varDefs.push('$currency: Currency'); argParts.push('currency: $currency'); }
-    if (params.locale !== undefined) { varDefs.push('$locale: Locale'); argParts.push('locale: $locale'); }
-    if (params.licenseCode !== undefined) { varDefs.push('$licenseCode: String'); argParts.push('licenseCode: $licenseCode'); }
-    if (params.tagNames !== undefined) { varDefs.push('$tagNames: [String!]'); argParts.push('tagNames: $tagNames'); }
-    if (params.metaTags !== undefined) { varDefs.push('$metaTags: [String!]'); argParts.push('metaTags: $metaTags'); }
-    if (params.madeWithAi !== undefined) { varDefs.push('$madeWithAi: Boolean'); argParts.push('madeWithAi: $madeWithAi'); }
+    if (params.subCategoryIds !== undefined) {
+      varDefs.push('$subCategoryIds: [ID!]');
+      argParts.push('subCategoryIds: $subCategoryIds');
+    }
+    if (params.downloadPrice !== undefined) {
+      varDefs.push('$downloadPrice: Float');
+      argParts.push('downloadPrice: $downloadPrice');
+    }
+    if (params.currency !== undefined) {
+      varDefs.push('$currency: Currency');
+      argParts.push('currency: $currency');
+    }
+    if (params.locale !== undefined) {
+      varDefs.push('$locale: Locale');
+      argParts.push('locale: $locale');
+    }
+    if (params.licenseCode !== undefined) {
+      varDefs.push('$licenseCode: String');
+      argParts.push('licenseCode: $licenseCode');
+    }
+    if (params.tagNames !== undefined) {
+      varDefs.push('$tagNames: [String!]');
+      argParts.push('tagNames: $tagNames');
+    }
+    if (params.metaTags !== undefined) {
+      varDefs.push('$metaTags: [String!]');
+      argParts.push('metaTags: $metaTags');
+    }
+    if (params.madeWithAi !== undefined) {
+      varDefs.push('$madeWithAi: Boolean');
+      argParts.push('madeWithAi: $madeWithAi');
+    }
 
     let query = `
       mutation CreateCreation(${varDefs.join(', ')}) {
@@ -524,7 +572,7 @@ export class CultsClient {
       description: params.description,
       imageUrls: params.imageUrls,
       fileUrls: params.fileUrls,
-      categoryId: params.categoryId,
+      categoryId: params.categoryId
     };
 
     if (params.subCategoryIds !== undefined) variables.subCategoryIds = params.subCategoryIds;
@@ -536,7 +584,10 @@ export class CultsClient {
     if (params.metaTags !== undefined) variables.metaTags = params.metaTags;
     if (params.madeWithAi !== undefined) variables.madeWithAi = params.madeWithAi;
 
-    let result = await this.query<{ createCreation: { creation: any; errors: string[] } }>(query, variables);
+    let result = await this.query<{ createCreation: { creation: any; errors: string[] } }>(
+      query,
+      variables
+    );
 
     if (result.createCreation.errors && result.createCreation.errors.length > 0) {
       throw new Error(`Failed to create creation: ${result.createCreation.errors.join(', ')}`);
@@ -559,16 +610,41 @@ export class CultsClient {
     let argParts: string[] = [];
     let varDefs: string[] = [];
 
-    varDefs.push('$id: ID!'); argParts.push('id: $id');
+    varDefs.push('$id: ID!');
+    argParts.push('id: $id');
 
-    if (params.name !== undefined) { varDefs.push('$name: String'); argParts.push('name: $name'); }
-    if (params.description !== undefined) { varDefs.push('$description: String'); argParts.push('description: $description'); }
-    if (params.downloadPrice !== undefined) { varDefs.push('$downloadPrice: Float'); argParts.push('downloadPrice: $downloadPrice'); }
-    if (params.currency !== undefined) { varDefs.push('$currency: Currency'); argParts.push('currency: $currency'); }
-    if (params.licenseCode !== undefined) { varDefs.push('$licenseCode: String'); argParts.push('licenseCode: $licenseCode'); }
-    if (params.tagNames !== undefined) { varDefs.push('$tagNames: [String!]'); argParts.push('tagNames: $tagNames'); }
-    if (params.metaTags !== undefined) { varDefs.push('$metaTags: [String!]'); argParts.push('metaTags: $metaTags'); }
-    if (params.madeWithAi !== undefined) { varDefs.push('$madeWithAi: Boolean'); argParts.push('madeWithAi: $madeWithAi'); }
+    if (params.name !== undefined) {
+      varDefs.push('$name: String');
+      argParts.push('name: $name');
+    }
+    if (params.description !== undefined) {
+      varDefs.push('$description: String');
+      argParts.push('description: $description');
+    }
+    if (params.downloadPrice !== undefined) {
+      varDefs.push('$downloadPrice: Float');
+      argParts.push('downloadPrice: $downloadPrice');
+    }
+    if (params.currency !== undefined) {
+      varDefs.push('$currency: Currency');
+      argParts.push('currency: $currency');
+    }
+    if (params.licenseCode !== undefined) {
+      varDefs.push('$licenseCode: String');
+      argParts.push('licenseCode: $licenseCode');
+    }
+    if (params.tagNames !== undefined) {
+      varDefs.push('$tagNames: [String!]');
+      argParts.push('tagNames: $tagNames');
+    }
+    if (params.metaTags !== undefined) {
+      varDefs.push('$metaTags: [String!]');
+      argParts.push('metaTags: $metaTags');
+    }
+    if (params.madeWithAi !== undefined) {
+      varDefs.push('$madeWithAi: Boolean');
+      argParts.push('madeWithAi: $madeWithAi');
+    }
 
     let query = `
       mutation UpdateCreation(${varDefs.join(', ')}) {
@@ -591,7 +667,7 @@ export class CultsClient {
     `;
 
     let variables: Record<string, any> = {
-      id: params.creationId,
+      id: params.creationId
     };
 
     if (params.name !== undefined) variables.name = params.name;
@@ -603,7 +679,10 @@ export class CultsClient {
     if (params.metaTags !== undefined) variables.metaTags = params.metaTags;
     if (params.madeWithAi !== undefined) variables.madeWithAi = params.madeWithAi;
 
-    let result = await this.query<{ updateCreation: { creation: any; errors: string[] } }>(query, variables);
+    let result = await this.query<{ updateCreation: { creation: any; errors: string[] } }>(
+      query,
+      variables
+    );
 
     if (result.updateCreation.errors && result.updateCreation.errors.length > 0) {
       throw new Error(`Failed to update creation: ${result.updateCreation.errors.join(', ')}`);
@@ -614,10 +693,7 @@ export class CultsClient {
 
   // === Printlists ===
 
-  async getMyPrintlists(params: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async getMyPrintlists(params: { limit?: number; offset?: number }) {
     let query = `
       query MyPrintlists($limit: Int, $offset: Int) {
         myself {
@@ -650,7 +726,7 @@ export class CultsClient {
       };
     }>(query, {
       limit: params.limit ?? 20,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
 
     return result.myself.printlistsBatch;
@@ -671,13 +747,18 @@ export class CultsClient {
       }
     `;
 
-    let result = await this.query<{ createPrintlist: { printlist: any; errors: string[] } }>(query, {
-      name: params.name,
-      public: params.isPublic,
-    });
+    let result = await this.query<{ createPrintlist: { printlist: any; errors: string[] } }>(
+      query,
+      {
+        name: params.name,
+        public: params.isPublic
+      }
+    );
 
     if (result.createPrintlist.errors && result.createPrintlist.errors.length > 0) {
-      throw new Error(`Failed to create printlist: ${result.createPrintlist.errors.join(', ')}`);
+      throw new Error(
+        `Failed to create printlist: ${result.createPrintlist.errors.join(', ')}`
+      );
     }
 
     return result.createPrintlist.printlist;
@@ -698,14 +779,19 @@ export class CultsClient {
       }
     `;
 
-    let result = await this.query<{ updatePrintlist: { printlist: any; errors: string[] } }>(query, {
-      id: params.printlistId,
-      name: params.name,
-      public: params.isPublic,
-    });
+    let result = await this.query<{ updatePrintlist: { printlist: any; errors: string[] } }>(
+      query,
+      {
+        id: params.printlistId,
+        name: params.name,
+        public: params.isPublic
+      }
+    );
 
     if (result.updatePrintlist.errors && result.updatePrintlist.errors.length > 0) {
-      throw new Error(`Failed to update printlist: ${result.updatePrintlist.errors.join(', ')}`);
+      throw new Error(
+        `Failed to update printlist: ${result.updatePrintlist.errors.join(', ')}`
+      );
     }
 
     return result.updatePrintlist.printlist;
@@ -720,10 +806,14 @@ export class CultsClient {
       }
     `;
 
-    let result = await this.query<{ destroyPrintlist: { errors: string[] } }>(query, { id: printlistId });
+    let result = await this.query<{ destroyPrintlist: { errors: string[] } }>(query, {
+      id: printlistId
+    });
 
     if (result.destroyPrintlist.errors && result.destroyPrintlist.errors.length > 0) {
-      throw new Error(`Failed to destroy printlist: ${result.destroyPrintlist.errors.join(', ')}`);
+      throw new Error(
+        `Failed to destroy printlist: ${result.destroyPrintlist.errors.join(', ')}`
+      );
     }
   }
 
@@ -738,11 +828,16 @@ export class CultsClient {
 
     let result = await this.query<{ addCreationToPrintlist: { errors: string[] } }>(query, {
       creationId: params.creationId,
-      printlistId: params.printlistId,
+      printlistId: params.printlistId
     });
 
-    if (result.addCreationToPrintlist.errors && result.addCreationToPrintlist.errors.length > 0) {
-      throw new Error(`Failed to add creation to printlist: ${result.addCreationToPrintlist.errors.join(', ')}`);
+    if (
+      result.addCreationToPrintlist.errors &&
+      result.addCreationToPrintlist.errors.length > 0
+    ) {
+      throw new Error(
+        `Failed to add creation to printlist: ${result.addCreationToPrintlist.errors.join(', ')}`
+      );
     }
   }
 
@@ -755,13 +850,21 @@ export class CultsClient {
       }
     `;
 
-    let result = await this.query<{ removeCreationFromPrintlist: { errors: string[] } }>(query, {
-      creationId: params.creationId,
-      printlistId: params.printlistId,
-    });
+    let result = await this.query<{ removeCreationFromPrintlist: { errors: string[] } }>(
+      query,
+      {
+        creationId: params.creationId,
+        printlistId: params.printlistId
+      }
+    );
 
-    if (result.removeCreationFromPrintlist.errors && result.removeCreationFromPrintlist.errors.length > 0) {
-      throw new Error(`Failed to remove creation from printlist: ${result.removeCreationFromPrintlist.errors.join(', ')}`);
+    if (
+      result.removeCreationFromPrintlist.errors &&
+      result.removeCreationFromPrintlist.errors.length > 0
+    ) {
+      throw new Error(
+        `Failed to remove creation from printlist: ${result.removeCreationFromPrintlist.errors.join(', ')}`
+      );
     }
   }
 
@@ -788,11 +891,14 @@ export class CultsClient {
       }
     `;
 
-    let result = await this.query<{ createDiscount: { creation: any; errors: string[] } }>(query, {
-      creationId: params.creationId,
-      discountPercentage: params.discountPercentage,
-      discountEndAt: params.discountEndAt,
-    });
+    let result = await this.query<{ createDiscount: { creation: any; errors: string[] } }>(
+      query,
+      {
+        creationId: params.creationId,
+        discountPercentage: params.discountPercentage,
+        discountEndAt: params.discountEndAt
+      }
+    );
 
     if (result.createDiscount.errors && result.createDiscount.errors.length > 0) {
       throw new Error(`Failed to create discount: ${result.createDiscount.errors.join(', ')}`);
@@ -803,10 +909,7 @@ export class CultsClient {
 
   // === Notifications ===
 
-  async createChangeNotification(params: {
-    creationId: string;
-    text: string;
-  }) {
+  async createChangeNotification(params: { creationId: string; text: string }) {
     let query = `
       mutation CreateChangeNotification($creationId: ID!, $text: String!) {
         createChangeNotification(creationId: $creationId, text: $text) {
@@ -817,11 +920,16 @@ export class CultsClient {
 
     let result = await this.query<{ createChangeNotification: { errors: string[] } }>(query, {
       creationId: params.creationId,
-      text: params.text,
+      text: params.text
     });
 
-    if (result.createChangeNotification.errors && result.createChangeNotification.errors.length > 0) {
-      throw new Error(`Failed to create notification: ${result.createChangeNotification.errors.join(', ')}`);
+    if (
+      result.createChangeNotification.errors &&
+      result.createChangeNotification.errors.length > 0
+    ) {
+      throw new Error(
+        `Failed to create notification: ${result.createChangeNotification.errors.join(', ')}`
+      );
     }
   }
 }

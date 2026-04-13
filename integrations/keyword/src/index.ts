@@ -13,7 +13,7 @@ import {
   getAiSearchTerms,
   getAiMetrics,
   getAiSentiment,
-  getAiCitations,
+  getAiCitations
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     getAiSearchTerms,
     getAiMetrics,
     getAiSentiment,
-    getAiCitations,
+    getAiCitations
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

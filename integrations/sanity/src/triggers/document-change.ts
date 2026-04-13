@@ -3,37 +3,47 @@ import { SanityClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let documentChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Change',
-    key: 'document_change',
-    description: 'Triggers when a document in the Content Lake is created, updated, or deleted. Supports GROQ-based filtering for specific document types or conditions.',
-  },
-)
-  .input(z.object({
-    documentId: z.string().describe('The ID of the affected document.'),
-    eventType: z.enum(['create', 'update', 'delete']).describe('The type of change that occurred.'),
-    documentType: z.string().optional().describe('The _type of the affected document.'),
-    document: z.any().optional().describe('The document after the change (not present for deletes).'),
-    transactionId: z.string().optional().describe('The transaction ID that caused the change.'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('The ID of the affected document.'),
-    documentType: z.string().optional().describe('The _type of the affected document.'),
-    revision: z.string().optional().describe('The revision ID after the change.'),
-    title: z.string().optional().describe('The title of the document, if available.'),
-    createdAt: z.string().optional().describe('When the document was created.'),
-    updatedAt: z.string().optional().describe('When the document was last updated.'),
-    document: z.any().optional().describe('The full document after the change.'),
-  }))
+export let documentChange = SlateTrigger.create(spec, {
+  name: 'Document Change',
+  key: 'document_change',
+  description:
+    'Triggers when a document in the Content Lake is created, updated, or deleted. Supports GROQ-based filtering for specific document types or conditions.'
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('The ID of the affected document.'),
+      eventType: z
+        .enum(['create', 'update', 'delete'])
+        .describe('The type of change that occurred.'),
+      documentType: z.string().optional().describe('The _type of the affected document.'),
+      document: z
+        .any()
+        .optional()
+        .describe('The document after the change (not present for deletes).'),
+      transactionId: z
+        .string()
+        .optional()
+        .describe('The transaction ID that caused the change.')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('The ID of the affected document.'),
+      documentType: z.string().optional().describe('The _type of the affected document.'),
+      revision: z.string().optional().describe('The revision ID after the change.'),
+      title: z.string().optional().describe('The title of the document, if available.'),
+      createdAt: z.string().optional().describe('When the document was created.'),
+      updatedAt: z.string().optional().describe('When the document was last updated.'),
+      document: z.any().optional().describe('The full document after the change.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new SanityClient({
         token: ctx.auth.token,
         projectId: ctx.config.projectId,
         dataset: ctx.config.dataset,
-        apiVersion: ctx.config.apiVersion,
+        apiVersion: ctx.config.apiVersion
       });
 
       let result = await client.createWebhook({
@@ -42,30 +52,30 @@ export let documentChange = SlateTrigger.create(
         dataset: ctx.config.dataset,
         apiVersion: ctx.config.apiVersion,
         rule: {
-          on: ['create', 'update', 'delete'],
+          on: ['create', 'update', 'delete']
         },
-        httpMethod: 'POST',
+        httpMethod: 'POST'
       });
 
       return {
         registrationDetails: {
-          webhookId: result.id,
-        },
+          webhookId: result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new SanityClient({
         token: ctx.auth.token,
         projectId: ctx.config.projectId,
         dataset: ctx.config.dataset,
-        apiVersion: ctx.config.apiVersion,
+        apiVersion: ctx.config.apiVersion
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let request = ctx.input.request;
       let body: any;
       try {
@@ -112,13 +122,13 @@ export let documentChange = SlateTrigger.create(
             eventType,
             documentType,
             document: body,
-            transactionId: transactionId || transitionHeader || undefined,
-          },
-        ],
+            transactionId: transactionId || transitionHeader || undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let doc = ctx.input.document || {};
 
       return {
@@ -131,9 +141,9 @@ export let documentChange = SlateTrigger.create(
           title: doc.title || doc.name,
           createdAt: doc._createdAt,
           updatedAt: doc._updatedAt,
-          document: doc,
-        },
+          document: doc
+        }
       };
-    },
+    }
   })
   .build();

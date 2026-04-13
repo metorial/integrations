@@ -16,7 +16,7 @@ import {
   listAnnotationJobsTool,
   createAnnotationJobTool,
   exportDatasetTool,
-  uploadAnnotationTool,
+  uploadAnnotationTool
 } from './tools';
 import { batchWebhookTrigger } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     listAnnotationJobsTool,
     createAnnotationJobTool,
     exportDatasetTool,
-    uploadAnnotationTool,
+    uploadAnnotationTool
   ],
-  triggers: [
-    batchWebhookTrigger,
-  ],
+  triggers: [batchWebhookTrigger]
 });

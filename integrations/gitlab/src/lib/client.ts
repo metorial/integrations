@@ -10,7 +10,7 @@ export class GitLabClient {
   private baseUrl: string;
 
   constructor(private config: GitLabClientConfig) {
-    this.baseUrl = (config.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com');
+    this.baseUrl = config.instanceUrl?.replace(/\/+$/, '') || 'https://gitlab.com';
     this.api = createAxios({
       baseURL: `${this.baseUrl}/api/v4`
     });
@@ -18,26 +18,28 @@ export class GitLabClient {
 
   private headers() {
     return {
-      'Authorization': `Bearer ${this.config.token}`,
+      Authorization: `Bearer ${this.config.token}`,
       'Content-Type': 'application/json'
     };
   }
 
   // ── Projects ──────────────────────────────────────────────
 
-  async listProjects(params: {
-    search?: string;
-    owned?: boolean;
-    membership?: boolean;
-    visibility?: string;
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-    withIssuesEnabled?: boolean;
-    withMergeRequestsEnabled?: boolean;
-    archived?: boolean;
-  } = {}): Promise<{ projects: any[]; totalPages: number }> {
+  async listProjects(
+    params: {
+      search?: string;
+      owned?: boolean;
+      membership?: boolean;
+      visibility?: string;
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+      withIssuesEnabled?: boolean;
+      withMergeRequestsEnabled?: boolean;
+      archived?: boolean;
+    } = {}
+  ): Promise<{ projects: any[]; totalPages: number }> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.owned !== undefined) queryParams.owned = params.owned;
@@ -47,8 +49,10 @@ export class GitLabClient {
     if (params.sort) queryParams.sort = params.sort;
     if (params.perPage) queryParams.per_page = params.perPage;
     if (params.page) queryParams.page = params.page;
-    if (params.withIssuesEnabled !== undefined) queryParams.with_issues_enabled = params.withIssuesEnabled;
-    if (params.withMergeRequestsEnabled !== undefined) queryParams.with_merge_requests_enabled = params.withMergeRequestsEnabled;
+    if (params.withIssuesEnabled !== undefined)
+      queryParams.with_issues_enabled = params.withIssuesEnabled;
+    if (params.withMergeRequestsEnabled !== undefined)
+      queryParams.with_merge_requests_enabled = params.withMergeRequestsEnabled;
     if (params.archived !== undefined) queryParams.archived = params.archived;
 
     let response = await this.api.get('/projects', {
@@ -82,7 +86,8 @@ export class GitLabClient {
     if (params.path) body.path = params.path;
     if (params.description) body.description = params.description;
     if (params.visibility) body.visibility = params.visibility;
-    if (params.initializeWithReadme !== undefined) body.initialize_with_readme = params.initializeWithReadme;
+    if (params.initializeWithReadme !== undefined)
+      body.initialize_with_readme = params.initializeWithReadme;
     if (params.namespaceId) body.namespace_id = params.namespaceId;
     if (params.defaultBranch) body.default_branch = params.defaultBranch;
 
@@ -92,13 +97,16 @@ export class GitLabClient {
     return response.data;
   }
 
-  async updateProject(projectId: string | number, params: {
-    name?: string;
-    description?: string;
-    visibility?: string;
-    defaultBranch?: string;
-    archived?: boolean;
-  }): Promise<any> {
+  async updateProject(
+    projectId: string | number,
+    params: {
+      name?: string;
+      description?: string;
+      visibility?: string;
+      defaultBranch?: string;
+      archived?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name) body.name = params.name;
     if (params.description !== undefined) body.description = params.description;
@@ -106,9 +114,13 @@ export class GitLabClient {
     if (params.defaultBranch) body.default_branch = params.defaultBranch;
     if (params.archived !== undefined) body.archived = params.archived;
 
-    let response = await this.api.put(`/projects/${encodeURIComponent(String(projectId))}`, body, {
-      headers: this.headers()
-    });
+    let response = await this.api.put(
+      `/projects/${encodeURIComponent(String(projectId))}`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
@@ -118,33 +130,43 @@ export class GitLabClient {
     });
   }
 
-  async forkProject(projectId: string | number, params?: {
-    namespace?: string;
-    namespaceId?: number;
-    name?: string;
-    path?: string;
-  }): Promise<any> {
+  async forkProject(
+    projectId: string | number,
+    params?: {
+      namespace?: string;
+      namespaceId?: number;
+      name?: string;
+      path?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params?.namespace) body.namespace = params.namespace;
     if (params?.namespaceId) body.namespace_id = params.namespaceId;
     if (params?.name) body.name = params.name;
     if (params?.path) body.path = params.path;
 
-    let response = await this.api.post(`/projects/${encodeURIComponent(String(projectId))}/fork`, body, {
-      headers: this.headers()
-    });
+    let response = await this.api.post(
+      `/projects/${encodeURIComponent(String(projectId))}/fork`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   // ── Repository ────────────────────────────────────────────
 
-  async getRepositoryTree(projectId: string | number, params: {
-    path?: string;
-    ref?: string;
-    recursive?: boolean;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async getRepositoryTree(
+    projectId: string | number,
+    params: {
+      path?: string;
+      ref?: string;
+      recursive?: boolean;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.path) queryParams.path = params.path;
     if (params.ref) queryParams.ref = params.ref;
@@ -152,31 +174,45 @@ export class GitLabClient {
     if (params.perPage) queryParams.per_page = params.perPage;
     if (params.page) queryParams.page = params.page;
 
-    let response = await this.api.get(`/projects/${encodeURIComponent(String(projectId))}/repository/tree`, {
-      params: queryParams,
-      headers: this.headers()
-    });
+    let response = await this.api.get(
+      `/projects/${encodeURIComponent(String(projectId))}/repository/tree`,
+      {
+        params: queryParams,
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async getFileContent(projectId: string | number, filePath: string, ref?: string): Promise<any> {
+  async getFileContent(
+    projectId: string | number,
+    filePath: string,
+    ref?: string
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (ref) queryParams.ref = ref;
 
-    let response = await this.api.get(`/projects/${encodeURIComponent(String(projectId))}/repository/files/${encodeURIComponent(filePath)}`, {
-      params: queryParams,
-      headers: this.headers()
-    });
+    let response = await this.api.get(
+      `/projects/${encodeURIComponent(String(projectId))}/repository/files/${encodeURIComponent(filePath)}`,
+      {
+        params: queryParams,
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async createOrUpdateFile(projectId: string | number, filePath: string, params: {
-    branch: string;
-    content: string;
-    commitMessage: string;
-    encoding?: string;
-    startBranch?: string;
-  }): Promise<any> {
+  async createOrUpdateFile(
+    projectId: string | number,
+    filePath: string,
+    params: {
+      branch: string;
+      content: string;
+      commitMessage: string;
+      encoding?: string;
+      startBranch?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       branch: params.branch,
       content: params.content,
@@ -205,10 +241,14 @@ export class GitLabClient {
     }
   }
 
-  async deleteFile(projectId: string | number, filePath: string, params: {
-    branch: string;
-    commitMessage: string;
-  }): Promise<void> {
+  async deleteFile(
+    projectId: string | number,
+    filePath: string,
+    params: {
+      branch: string;
+      commitMessage: string;
+    }
+  ): Promise<void> {
     await this.api.delete(
       `/projects/${encodeURIComponent(String(projectId))}/repository/files/${encodeURIComponent(filePath)}`,
       {
@@ -222,66 +262,88 @@ export class GitLabClient {
   }
 
   async compareBranches(projectId: string | number, from: string, to: string): Promise<any> {
-    let response = await this.api.get(`/projects/${encodeURIComponent(String(projectId))}/repository/compare`, {
-      params: { from, to },
-      headers: this.headers()
-    });
+    let response = await this.api.get(
+      `/projects/${encodeURIComponent(String(projectId))}/repository/compare`,
+      {
+        params: { from, to },
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   // ── Branches ──────────────────────────────────────────────
 
-  async listBranches(projectId: string | number, params: {
-    search?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listBranches(
+    projectId: string | number,
+    params: {
+      search?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.perPage) queryParams.per_page = params.perPage;
     if (params.page) queryParams.page = params.page;
 
-    let response = await this.api.get(`/projects/${encodeURIComponent(String(projectId))}/repository/branches`, {
-      params: queryParams,
-      headers: this.headers()
-    });
+    let response = await this.api.get(
+      `/projects/${encodeURIComponent(String(projectId))}/repository/branches`,
+      {
+        params: queryParams,
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async createBranch(projectId: string | number, branchName: string, ref: string): Promise<any> {
-    let response = await this.api.post(`/projects/${encodeURIComponent(String(projectId))}/repository/branches`, {
-      branch: branchName,
-      ref
-    }, {
-      headers: this.headers()
-    });
+  async createBranch(
+    projectId: string | number,
+    branchName: string,
+    ref: string
+  ): Promise<any> {
+    let response = await this.api.post(
+      `/projects/${encodeURIComponent(String(projectId))}/repository/branches`,
+      {
+        branch: branchName,
+        ref
+      },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
   async deleteBranch(projectId: string | number, branchName: string): Promise<void> {
-    await this.api.delete(`/projects/${encodeURIComponent(String(projectId))}/repository/branches/${encodeURIComponent(branchName)}`, {
-      headers: this.headers()
-    });
+    await this.api.delete(
+      `/projects/${encodeURIComponent(String(projectId))}/repository/branches/${encodeURIComponent(branchName)}`,
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   // ── Issues ────────────────────────────────────────────────
 
-  async listIssues(params: {
-    projectId?: string | number;
-    state?: string;
-    labels?: string;
-    milestone?: string;
-    assigneeId?: number;
-    authorId?: number;
-    search?: string;
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-    scope?: string;
-    createdAfter?: string;
-    updatedAfter?: string;
-  } = {}): Promise<{ issues: any[]; totalPages: number }> {
+  async listIssues(
+    params: {
+      projectId?: string | number;
+      state?: string;
+      labels?: string;
+      milestone?: string;
+      assigneeId?: number;
+      authorId?: number;
+      search?: string;
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+      scope?: string;
+      createdAfter?: string;
+      updatedAfter?: string;
+    } = {}
+  ): Promise<{ issues: any[]; totalPages: number }> {
     let queryParams: Record<string, any> = {};
     if (params.state) queryParams.state = params.state;
     if (params.labels) queryParams.labels = params.labels;
@@ -318,16 +380,19 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createIssue(projectId: string | number, params: {
-    title: string;
-    description?: string;
-    assigneeIds?: number[];
-    milestoneId?: number;
-    labels?: string;
-    dueDate?: string;
-    confidential?: boolean;
-    weight?: number;
-  }): Promise<any> {
+  async createIssue(
+    projectId: string | number,
+    params: {
+      title: string;
+      description?: string;
+      assigneeIds?: number[];
+      milestoneId?: number;
+      labels?: string;
+      dueDate?: string;
+      confidential?: boolean;
+      weight?: number;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { title: params.title };
     if (params.description) body.description = params.description;
     if (params.assigneeIds) body.assignee_ids = params.assigneeIds;
@@ -345,17 +410,21 @@ export class GitLabClient {
     return response.data;
   }
 
-  async updateIssue(projectId: string | number, issueIid: number, params: {
-    title?: string;
-    description?: string;
-    assigneeIds?: number[];
-    milestoneId?: number;
-    labels?: string;
-    stateEvent?: string;
-    dueDate?: string;
-    confidential?: boolean;
-    weight?: number;
-  }): Promise<any> {
+  async updateIssue(
+    projectId: string | number,
+    issueIid: number,
+    params: {
+      title?: string;
+      description?: string;
+      assigneeIds?: number[];
+      milestoneId?: number;
+      labels?: string;
+      stateEvent?: string;
+      dueDate?: string;
+      confidential?: boolean;
+      weight?: number;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.title) body.title = params.title;
     if (params.description !== undefined) body.description = params.description;
@@ -384,25 +453,27 @@ export class GitLabClient {
 
   // ── Merge Requests ────────────────────────────────────────
 
-  async listMergeRequests(params: {
-    projectId?: string | number;
-    state?: string;
-    labels?: string;
-    milestone?: string;
-    authorId?: number;
-    assigneeId?: number;
-    reviewerId?: number;
-    sourceBranch?: string;
-    targetBranch?: string;
-    search?: string;
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-    scope?: string;
-    createdAfter?: string;
-    updatedAfter?: string;
-  } = {}): Promise<{ mergeRequests: any[]; totalPages: number }> {
+  async listMergeRequests(
+    params: {
+      projectId?: string | number;
+      state?: string;
+      labels?: string;
+      milestone?: string;
+      authorId?: number;
+      assigneeId?: number;
+      reviewerId?: number;
+      sourceBranch?: string;
+      targetBranch?: string;
+      search?: string;
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+      scope?: string;
+      createdAfter?: string;
+      updatedAfter?: string;
+    } = {}
+  ): Promise<{ mergeRequests: any[]; totalPages: number }> {
     let queryParams: Record<string, any> = {};
     if (params.state) queryParams.state = params.state;
     if (params.labels) queryParams.labels = params.labels;
@@ -442,19 +513,22 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createMergeRequest(projectId: string | number, params: {
-    sourceBranch: string;
-    targetBranch: string;
-    title: string;
-    description?: string;
-    assigneeIds?: number[];
-    reviewerIds?: number[];
-    labels?: string;
-    milestoneId?: number;
-    squash?: boolean;
-    removeSourceBranch?: boolean;
-    allowCollaboration?: boolean;
-  }): Promise<any> {
+  async createMergeRequest(
+    projectId: string | number,
+    params: {
+      sourceBranch: string;
+      targetBranch: string;
+      title: string;
+      description?: string;
+      assigneeIds?: number[];
+      reviewerIds?: number[];
+      labels?: string;
+      milestoneId?: number;
+      squash?: boolean;
+      removeSourceBranch?: boolean;
+      allowCollaboration?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       source_branch: params.sourceBranch,
       target_branch: params.targetBranch,
@@ -466,8 +540,10 @@ export class GitLabClient {
     if (params.labels) body.labels = params.labels;
     if (params.milestoneId) body.milestone_id = params.milestoneId;
     if (params.squash !== undefined) body.squash = params.squash;
-    if (params.removeSourceBranch !== undefined) body.remove_source_branch = params.removeSourceBranch;
-    if (params.allowCollaboration !== undefined) body.allow_collaboration = params.allowCollaboration;
+    if (params.removeSourceBranch !== undefined)
+      body.remove_source_branch = params.removeSourceBranch;
+    if (params.allowCollaboration !== undefined)
+      body.allow_collaboration = params.allowCollaboration;
 
     let response = await this.api.post(
       `/projects/${encodeURIComponent(String(projectId))}/merge_requests`,
@@ -477,18 +553,22 @@ export class GitLabClient {
     return response.data;
   }
 
-  async updateMergeRequest(projectId: string | number, mrIid: number, params: {
-    title?: string;
-    description?: string;
-    assigneeIds?: number[];
-    reviewerIds?: number[];
-    labels?: string;
-    milestoneId?: number;
-    stateEvent?: string;
-    targetBranch?: string;
-    squash?: boolean;
-    removeSourceBranch?: boolean;
-  }): Promise<any> {
+  async updateMergeRequest(
+    projectId: string | number,
+    mrIid: number,
+    params: {
+      title?: string;
+      description?: string;
+      assigneeIds?: number[];
+      reviewerIds?: number[];
+      labels?: string;
+      milestoneId?: number;
+      stateEvent?: string;
+      targetBranch?: string;
+      squash?: boolean;
+      removeSourceBranch?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.title) body.title = params.title;
     if (params.description !== undefined) body.description = params.description;
@@ -499,7 +579,8 @@ export class GitLabClient {
     if (params.stateEvent) body.state_event = params.stateEvent;
     if (params.targetBranch) body.target_branch = params.targetBranch;
     if (params.squash !== undefined) body.squash = params.squash;
-    if (params.removeSourceBranch !== undefined) body.remove_source_branch = params.removeSourceBranch;
+    if (params.removeSourceBranch !== undefined)
+      body.remove_source_branch = params.removeSourceBranch;
 
     let response = await this.api.put(
       `/projects/${encodeURIComponent(String(projectId))}/merge_requests/${mrIid}`,
@@ -509,18 +590,23 @@ export class GitLabClient {
     return response.data;
   }
 
-  async mergeMergeRequest(projectId: string | number, mrIid: number, params?: {
-    mergeCommitMessage?: string;
-    squashCommitMessage?: string;
-    squash?: boolean;
-    shouldRemoveSourceBranch?: boolean;
-    sha?: string;
-  }): Promise<any> {
+  async mergeMergeRequest(
+    projectId: string | number,
+    mrIid: number,
+    params?: {
+      mergeCommitMessage?: string;
+      squashCommitMessage?: string;
+      squash?: boolean;
+      shouldRemoveSourceBranch?: boolean;
+      sha?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params?.mergeCommitMessage) body.merge_commit_message = params.mergeCommitMessage;
     if (params?.squashCommitMessage) body.squash_commit_message = params.squashCommitMessage;
     if (params?.squash !== undefined) body.squash = params.squash;
-    if (params?.shouldRemoveSourceBranch !== undefined) body.should_remove_source_branch = params.shouldRemoveSourceBranch;
+    if (params?.shouldRemoveSourceBranch !== undefined)
+      body.should_remove_source_branch = params.shouldRemoveSourceBranch;
     if (params?.sha) body.sha = params.sha;
 
     let response = await this.api.put(
@@ -550,17 +636,20 @@ export class GitLabClient {
 
   // ── Pipelines ─────────────────────────────────────────────
 
-  async listPipelines(projectId: string | number, params: {
-    status?: string;
-    ref?: string;
-    sha?: string;
-    source?: string;
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-    updatedAfter?: string;
-  } = {}): Promise<{ pipelines: any[]; totalPages: number }> {
+  async listPipelines(
+    projectId: string | number,
+    params: {
+      status?: string;
+      ref?: string;
+      sha?: string;
+      source?: string;
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+      updatedAfter?: string;
+    } = {}
+  ): Promise<{ pipelines: any[]; totalPages: number }> {
     let queryParams: Record<string, any> = {};
     if (params.status) queryParams.status = params.status;
     if (params.ref) queryParams.ref = params.ref;
@@ -589,7 +678,11 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createPipeline(projectId: string | number, ref: string, variables?: Array<{ key: string; value: string; variableType?: string }>): Promise<any> {
+  async createPipeline(
+    projectId: string | number,
+    ref: string,
+    variables?: Array<{ key: string; value: string; variableType?: string }>
+  ): Promise<any> {
     let body: Record<string, any> = { ref };
     if (variables) body.variables = variables;
 
@@ -621,11 +714,15 @@ export class GitLabClient {
 
   // ── Jobs ──────────────────────────────────────────────────
 
-  async listPipelineJobs(projectId: string | number, pipelineId: number, params: {
-    scope?: string[];
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listPipelineJobs(
+    projectId: string | number,
+    pipelineId: number,
+    params: {
+      scope?: string[];
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.scope) queryParams.scope = params.scope;
     if (params.perPage) queryParams.per_page = params.perPage;
@@ -674,12 +771,16 @@ export class GitLabClient {
 
   // ── Notes (Comments) ─────────────────────────────────────
 
-  async listIssueNotes(projectId: string | number, issueIid: number, params: {
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listIssueNotes(
+    projectId: string | number,
+    issueIid: number,
+    params: {
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.orderBy) queryParams.order_by = params.orderBy;
     if (params.sort) queryParams.sort = params.sort;
@@ -693,7 +794,12 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createIssueNote(projectId: string | number, issueIid: number, body: string, confidential?: boolean): Promise<any> {
+  async createIssueNote(
+    projectId: string | number,
+    issueIid: number,
+    body: string,
+    confidential?: boolean
+  ): Promise<any> {
     let reqBody: Record<string, any> = { body };
     if (confidential !== undefined) reqBody.confidential = confidential;
 
@@ -705,12 +811,16 @@ export class GitLabClient {
     return response.data;
   }
 
-  async listMergeRequestNotes(projectId: string | number, mrIid: number, params: {
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listMergeRequestNotes(
+    projectId: string | number,
+    mrIid: number,
+    params: {
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.orderBy) queryParams.order_by = params.orderBy;
     if (params.sort) queryParams.sort = params.sort;
@@ -724,7 +834,11 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createMergeRequestNote(projectId: string | number, mrIid: number, body: string): Promise<any> {
+  async createMergeRequestNote(
+    projectId: string | number,
+    mrIid: number,
+    body: string
+  ): Promise<any> {
     let response = await this.api.post(
       `/projects/${encodeURIComponent(String(projectId))}/merge_requests/${mrIid}/notes`,
       { body },
@@ -735,11 +849,14 @@ export class GitLabClient {
 
   // ── Labels ────────────────────────────────────────────────
 
-  async listLabels(projectId: string | number, params: {
-    search?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listLabels(
+    projectId: string | number,
+    params: {
+      search?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.perPage) queryParams.per_page = params.perPage;
@@ -752,12 +869,15 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createLabel(projectId: string | number, params: {
-    name: string;
-    color: string;
-    description?: string;
-    priority?: number;
-  }): Promise<any> {
+  async createLabel(
+    projectId: string | number,
+    params: {
+      name: string;
+      color: string;
+      description?: string;
+      priority?: number;
+    }
+  ): Promise<any> {
     let response = await this.api.post(
       `/projects/${encodeURIComponent(String(projectId))}/labels`,
       params,
@@ -768,12 +888,15 @@ export class GitLabClient {
 
   // ── Milestones ────────────────────────────────────────────
 
-  async listMilestones(projectId: string | number, params: {
-    state?: string;
-    search?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listMilestones(
+    projectId: string | number,
+    params: {
+      state?: string;
+      search?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.state) queryParams.state = params.state;
     if (params.search) queryParams.search = params.search;
@@ -789,14 +912,16 @@ export class GitLabClient {
 
   // ── Groups ────────────────────────────────────────────────
 
-  async listGroups(params: {
-    search?: string;
-    owned?: boolean;
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listGroups(
+    params: {
+      search?: string;
+      owned?: boolean;
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.owned !== undefined) queryParams.owned = params.owned;
@@ -821,11 +946,14 @@ export class GitLabClient {
 
   // ── Members ───────────────────────────────────────────────
 
-  async listProjectMembers(projectId: string | number, params: {
-    query?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listProjectMembers(
+    projectId: string | number,
+    params: {
+      query?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.query) queryParams.query = params.query;
     if (params.perPage) queryParams.per_page = params.perPage;
@@ -838,7 +966,12 @@ export class GitLabClient {
     return response.data;
   }
 
-  async addProjectMember(projectId: string | number, userId: number, accessLevel: number, expiresAt?: string): Promise<any> {
+  async addProjectMember(
+    projectId: string | number,
+    userId: number,
+    accessLevel: number,
+    expiresAt?: string
+  ): Promise<any> {
     let body: Record<string, any> = {
       user_id: userId,
       access_level: accessLevel
@@ -855,12 +988,15 @@ export class GitLabClient {
 
   // ── Releases ──────────────────────────────────────────────
 
-  async listReleases(projectId: string | number, params: {
-    perPage?: number;
-    page?: number;
-    orderBy?: string;
-    sort?: string;
-  } = {}): Promise<any[]> {
+  async listReleases(
+    projectId: string | number,
+    params: {
+      perPage?: number;
+      page?: number;
+      orderBy?: string;
+      sort?: string;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.perPage) queryParams.per_page = params.perPage;
     if (params.page) queryParams.page = params.page;
@@ -874,14 +1010,17 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createRelease(projectId: string | number, params: {
-    tagName: string;
-    name?: string;
-    description?: string;
-    ref?: string;
-    milestones?: string[];
-    releasedAt?: string;
-  }): Promise<any> {
+  async createRelease(
+    projectId: string | number,
+    params: {
+      tagName: string;
+      name?: string;
+      description?: string;
+      ref?: string;
+      milestones?: string[];
+      releasedAt?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       tag_name: params.tagName
     };
@@ -928,36 +1067,43 @@ export class GitLabClient {
 
   // ── Webhooks ──────────────────────────────────────────────
 
-  async createProjectWebhook(projectId: string | number, params: {
-    url: string;
-    token?: string;
-    pushEvents?: boolean;
-    tagPushEvents?: boolean;
-    mergeRequestsEvents?: boolean;
-    issuesEvents?: boolean;
-    noteEvents?: boolean;
-    pipelineEvents?: boolean;
-    jobEvents?: boolean;
-    deploymentEvents?: boolean;
-    wikiPageEvents?: boolean;
-    releasesEvents?: boolean;
-    confidentialIssuesEvents?: boolean;
-    confidentialNoteEvents?: boolean;
-  }): Promise<any> {
+  async createProjectWebhook(
+    projectId: string | number,
+    params: {
+      url: string;
+      token?: string;
+      pushEvents?: boolean;
+      tagPushEvents?: boolean;
+      mergeRequestsEvents?: boolean;
+      issuesEvents?: boolean;
+      noteEvents?: boolean;
+      pipelineEvents?: boolean;
+      jobEvents?: boolean;
+      deploymentEvents?: boolean;
+      wikiPageEvents?: boolean;
+      releasesEvents?: boolean;
+      confidentialIssuesEvents?: boolean;
+      confidentialNoteEvents?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { url: params.url };
     if (params.token) body.token = params.token;
     if (params.pushEvents !== undefined) body.push_events = params.pushEvents;
     if (params.tagPushEvents !== undefined) body.tag_push_events = params.tagPushEvents;
-    if (params.mergeRequestsEvents !== undefined) body.merge_requests_events = params.mergeRequestsEvents;
+    if (params.mergeRequestsEvents !== undefined)
+      body.merge_requests_events = params.mergeRequestsEvents;
     if (params.issuesEvents !== undefined) body.issues_events = params.issuesEvents;
     if (params.noteEvents !== undefined) body.note_events = params.noteEvents;
     if (params.pipelineEvents !== undefined) body.pipeline_events = params.pipelineEvents;
     if (params.jobEvents !== undefined) body.job_events = params.jobEvents;
-    if (params.deploymentEvents !== undefined) body.deployment_events = params.deploymentEvents;
+    if (params.deploymentEvents !== undefined)
+      body.deployment_events = params.deploymentEvents;
     if (params.wikiPageEvents !== undefined) body.wiki_page_events = params.wikiPageEvents;
     if (params.releasesEvents !== undefined) body.releases_events = params.releasesEvents;
-    if (params.confidentialIssuesEvents !== undefined) body.confidential_issues_events = params.confidentialIssuesEvents;
-    if (params.confidentialNoteEvents !== undefined) body.confidential_note_events = params.confidentialNoteEvents;
+    if (params.confidentialIssuesEvents !== undefined)
+      body.confidential_issues_events = params.confidentialIssuesEvents;
+    if (params.confidentialNoteEvents !== undefined)
+      body.confidential_note_events = params.confidentialNoteEvents;
 
     let response = await this.api.post(
       `/projects/${encodeURIComponent(String(projectId))}/hooks`,
@@ -983,13 +1129,15 @@ export class GitLabClient {
     return response.data;
   }
 
-  async listUsers(params: {
-    search?: string;
-    username?: string;
-    active?: boolean;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listUsers(
+    params: {
+      search?: string;
+      username?: string;
+      active?: boolean;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.username) queryParams.username = params.username;
@@ -1006,13 +1154,16 @@ export class GitLabClient {
 
   // ── Environments ──────────────────────────────────────────
 
-  async listEnvironments(projectId: string | number, params: {
-    name?: string;
-    search?: string;
-    states?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listEnvironments(
+    projectId: string | number,
+    params: {
+      name?: string;
+      search?: string;
+      states?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.name) queryParams.name = params.name;
     if (params.search) queryParams.search = params.search;
@@ -1037,14 +1188,17 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createProjectVariable(projectId: string | number, params: {
-    key: string;
-    value: string;
-    variableType?: string;
-    protected?: boolean;
-    masked?: boolean;
-    environmentScope?: string;
-  }): Promise<any> {
+  async createProjectVariable(
+    projectId: string | number,
+    params: {
+      key: string;
+      value: string;
+      variableType?: string;
+      protected?: boolean;
+      masked?: boolean;
+      environmentScope?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       key: params.key,
       value: params.value
@@ -1064,13 +1218,16 @@ export class GitLabClient {
 
   // ── Tags ──────────────────────────────────────────────────
 
-  async listTags(projectId: string | number, params: {
-    search?: string;
-    orderBy?: string;
-    sort?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listTags(
+    projectId: string | number,
+    params: {
+      search?: string;
+      orderBy?: string;
+      sort?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.orderBy) queryParams.order_by = params.orderBy;
@@ -1085,12 +1242,15 @@ export class GitLabClient {
     return response.data;
   }
 
-  async createTag(projectId: string | number, params: {
-    tagName: string;
-    ref: string;
-    message?: string;
-    releaseDescription?: string;
-  }): Promise<any> {
+  async createTag(
+    projectId: string | number,
+    params: {
+      tagName: string;
+      ref: string;
+      message?: string;
+      releaseDescription?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       tag_name: params.tagName,
       ref: params.ref

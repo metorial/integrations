@@ -94,9 +94,9 @@ export class ConnectClient {
     this.http = createAxios({
       baseURL: config.serverUrl.replace(/\/+$/, '') + '/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -138,7 +138,11 @@ export class ConnectClient {
     return res.data;
   }
 
-  async patchItem(vaultId: string, itemId: string, operations: PatchOperation[]): Promise<FullItem> {
+  async patchItem(
+    vaultId: string,
+    itemId: string,
+    operations: PatchOperation[]
+  ): Promise<FullItem> {
     let res = await this.http.patch(`/vaults/${vaultId}/items/${itemId}`, operations);
     return res.data;
   }
@@ -150,9 +154,12 @@ export class ConnectClient {
   // ---- Files ----
 
   async getFileContent(vaultId: string, itemId: string, fileId: string): Promise<string> {
-    let res = await this.http.get(`/vaults/${vaultId}/items/${itemId}/files/${fileId}/content`, {
-      responseType: 'text',
-    });
+    let res = await this.http.get(
+      `/vaults/${vaultId}/items/${itemId}/files/${fileId}/content`,
+      {
+        responseType: 'text'
+      }
+    );
     return res.data;
   }
 

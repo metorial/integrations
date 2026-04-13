@@ -3,48 +3,68 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `List and search contacts in Zoho Invoice. Supports filtering by name, company, email, phone, and status. Returns paginated results with outstanding receivable information.`,
-    tags: {
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `List and search contacts in Zoho Invoice. Supports filtering by name, company, email, phone, and status. Returns paginated results with outstanding receivable information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactName: z.string().optional().describe('Filter by contact display name'),
-    companyName: z.string().optional().describe('Filter by company name'),
-    email: z.string().optional().describe('Filter by email address'),
-    phone: z.string().optional().describe('Filter by phone number'),
-    status: z.enum(['active', 'inactive', 'crm', 'all']).optional().describe('Filter by contact status'),
-    searchText: z.string().optional().describe('Search contacts by text across multiple fields'),
-    sortColumn: z.string().optional().describe('Column to sort results by (e.g. "contact_name", "created_time")'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    perPage: z.number().optional().describe('Number of contacts per page (max 200)'),
-  }))
-  .output(z.object({
-    contacts: z.array(z.object({
-      contactId: z.string().describe('Unique contact ID'),
-      contactName: z.string().describe('Display name of the contact'),
-      companyName: z.string().optional().describe('Company name'),
-      email: z.string().optional().describe('Primary email address'),
-      phone: z.string().optional().describe('Phone number'),
-      status: z.string().optional().describe('Contact status'),
-      outstandingReceivableAmount: z.number().optional().describe('Outstanding receivable amount'),
-      createdTime: z.string().optional().describe('ISO timestamp when the contact was created'),
-    })).describe('Array of contacts matching the query'),
-    page: z.number().describe('Current page number'),
-    perPage: z.number().describe('Number of results per page'),
-    hasMorePages: z.boolean().describe('Whether additional pages of results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactName: z.string().optional().describe('Filter by contact display name'),
+      companyName: z.string().optional().describe('Filter by company name'),
+      email: z.string().optional().describe('Filter by email address'),
+      phone: z.string().optional().describe('Filter by phone number'),
+      status: z
+        .enum(['active', 'inactive', 'crm', 'all'])
+        .optional()
+        .describe('Filter by contact status'),
+      searchText: z
+        .string()
+        .optional()
+        .describe('Search contacts by text across multiple fields'),
+      sortColumn: z
+        .string()
+        .optional()
+        .describe('Column to sort results by (e.g. "contact_name", "created_time")'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      perPage: z.number().optional().describe('Number of contacts per page (max 200)')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z
+        .array(
+          z.object({
+            contactId: z.string().describe('Unique contact ID'),
+            contactName: z.string().describe('Display name of the contact'),
+            companyName: z.string().optional().describe('Company name'),
+            email: z.string().optional().describe('Primary email address'),
+            phone: z.string().optional().describe('Phone number'),
+            status: z.string().optional().describe('Contact status'),
+            outstandingReceivableAmount: z
+              .number()
+              .optional()
+              .describe('Outstanding receivable amount'),
+            createdTime: z
+              .string()
+              .optional()
+              .describe('ISO timestamp when the contact was created')
+          })
+        )
+        .describe('Array of contacts matching the query'),
+      page: z.number().describe('Current page number'),
+      perPage: z.number().describe('Number of results per page'),
+      hasMorePages: z.boolean().describe('Whether additional pages of results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       organizationId: ctx.config.organizationId,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let params: Record<string, any> = {};
@@ -68,7 +88,7 @@ export let listContacts = SlateTool.create(
       phone: c.phone,
       status: c.status,
       outstandingReceivableAmount: c.outstanding_receivable_amount,
-      createdTime: c.created_time,
+      createdTime: c.created_time
     }));
 
     let pageContext = result.pageContext || {};
@@ -78,8 +98,9 @@ export let listContacts = SlateTool.create(
         contacts,
         page: pageContext.page || 1,
         perPage: pageContext.per_page || 25,
-        hasMorePages: pageContext.has_more_page || false,
+        hasMorePages: pageContext.has_more_page || false
       },
-      message: `Found **${contacts.length}** contact(s) (page ${pageContext.page || 1}).${pageContext.has_more_page ? ' More pages available.' : ''}`,
+      message: `Found **${contacts.length}** contact(s) (page ${pageContext.page || 1}).${pageContext.has_more_page ? ' More pages available.' : ''}`
     };
-  }).build();
+  })
+  .build();

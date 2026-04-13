@@ -3,40 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignStatusChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Status Change',
-    key: 'campaign_status_change',
-    description: 'Triggers when a campaign changes status (e.g. from draft to scheduled, or shipping to shipped). Polls campaigns for status updates.',
-  }
-)
-  .input(z.object({
-    campaignId: z.number().describe('Campaign ID'),
-    name: z.string().describe('Campaign name'),
-    subject: z.string().describe('Campaign subject'),
-    fromName: z.string().describe('Sender name'),
-    fromEmail: z.string().describe('Sender email'),
-    previousStatus: z.string().describe('Previous campaign status'),
-    currentStatus: z.string().describe('Current campaign status'),
-  }))
-  .output(z.object({
-    campaignId: z.number().describe('Campaign ID'),
-    name: z.string().describe('Campaign name'),
-    subject: z.string().describe('Campaign subject'),
-    fromName: z.string().describe('Sender name'),
-    fromEmail: z.string().describe('Sender email'),
-    previousStatus: z.string().describe('Previous campaign status'),
-    currentStatus: z.string().describe('Current campaign status'),
-  }))
+export let campaignStatusChange = SlateTrigger.create(spec, {
+  name: 'Campaign Status Change',
+  key: 'campaign_status_change',
+  description:
+    'Triggers when a campaign changes status (e.g. from draft to scheduled, or shipping to shipped). Polls campaigns for status updates.'
+})
+  .input(
+    z.object({
+      campaignId: z.number().describe('Campaign ID'),
+      name: z.string().describe('Campaign name'),
+      subject: z.string().describe('Campaign subject'),
+      fromName: z.string().describe('Sender name'),
+      fromEmail: z.string().describe('Sender email'),
+      previousStatus: z.string().describe('Previous campaign status'),
+      currentStatus: z.string().describe('Current campaign status')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.number().describe('Campaign ID'),
+      name: z.string().describe('Campaign name'),
+      subject: z.string().describe('Campaign subject'),
+      fromName: z.string().describe('Sender name'),
+      fromEmail: z.string().describe('Sender email'),
+      previousStatus: z.string().describe('Previous campaign status'),
+      currentStatus: z.string().describe('Current campaign status')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountEmail: ctx.config.accountEmail,
+        accountEmail: ctx.config.accountEmail
       });
 
       let state = ctx.state as { campaignStatuses?: Record<string, string> } | null;
@@ -70,7 +72,7 @@ export let campaignStatusChange = SlateTrigger.create(
             fromName: campaign.fromName,
             fromEmail: campaign.fromEmail,
             previousStatus: prevStatus,
-            currentStatus: campaign.status,
+            currentStatus: campaign.status
           });
         }
       }
@@ -78,11 +80,11 @@ export let campaignStatusChange = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          campaignStatuses: updatedStatuses,
-        },
+          campaignStatuses: updatedStatuses
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `campaign.${ctx.input.currentStatus}`,
         id: `${ctx.input.campaignId}-${ctx.input.previousStatus}-${ctx.input.currentStatus}`,
@@ -93,9 +95,9 @@ export let campaignStatusChange = SlateTrigger.create(
           fromName: ctx.input.fromName,
           fromEmail: ctx.input.fromEmail,
           previousStatus: ctx.input.previousStatus,
-          currentStatus: ctx.input.currentStatus,
-        },
+          currentStatus: ctx.input.currentStatus
+        }
       };
-    },
+    }
   })
   .build();

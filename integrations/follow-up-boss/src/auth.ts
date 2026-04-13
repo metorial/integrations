@@ -2,20 +2,24 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.followupboss.com/v1',
+  baseURL: 'https://api.followupboss.com/v1'
 });
 
 let oauthAxios = createAxios({
-  baseURL: 'https://app.followupboss.com',
+  baseURL: 'https://app.followupboss.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    authMethod: z.enum(['oauth', 'api_key']).describe('Which authentication method is being used'),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      authMethod: z
+        .enum(['oauth', 'api_key'])
+        .describe('Which authentication method is being used')
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -25,39 +29,39 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Full access to Follow Up Boss on behalf of the user',
-        scope: 'full_access',
-      },
+        scope: 'full_access'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'auth_code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        prompt: 'login',
+        prompt: 'login'
       });
 
       return {
-        url: `https://app.followupboss.com/oauth/authorize?${params.toString()}`,
+        url: `https://app.followupboss.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+    handleCallback: async ctx => {
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await oauthAxios.post('/oauth/token',
+      let response = await oauthAxios.post(
+        '/oauth/token',
         new URLSearchParams({
           grant_type: 'authorization_code',
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: ctx.redirectUri
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -71,25 +75,25 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          authMethod: 'oauth' as const,
-        },
+          authMethod: 'oauth' as const
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+    handleTokenRefresh: async ctx => {
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await oauthAxios.post('/oauth/token',
+      let response = await oauthAxios.post(
+        '/oauth/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken || '',
+          refresh_token: ctx.output.refreshToken || ''
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -103,16 +107,16 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          authMethod: 'oauth' as const,
-        },
+          authMethod: 'oauth' as const
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let response = await apiAxios.get('/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data;
@@ -121,10 +125,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id),
           email: user.email,
-          name: [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined,
-        },
+          name: [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -132,26 +136,25 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Follow Up Boss API Key (found in Admin -> API)'),
+      token: z.string().describe('Your Follow Up Boss API Key (found in Admin -> API)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
-          authMethod: 'api_key' as const,
-        },
+          authMethod: 'api_key' as const
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let basicAuth = Buffer.from(`${ctx.output.token}:`).toString('base64');
 
       let response = await apiAxios.get('/me', {
         headers: {
-          'Authorization': `Basic ${basicAuth}`,
-        },
+          Authorization: `Basic ${basicAuth}`
+        }
       });
 
       let user = response.data;
@@ -160,8 +163,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id),
           email: user.email,
-          name: [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined,
-        },
+          name: [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined
+        }
       };
-    },
+    }
   });

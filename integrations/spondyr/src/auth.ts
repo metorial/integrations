@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    applicationToken: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      applicationToken: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -14,15 +16,17 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       apiKey: z.string().describe('Your Spondyr API Key, found in the Spondyr dashboard'),
-      applicationToken: z.string().describe('Your Spondyr Application Token, found in the Spondyr dashboard'),
+      applicationToken: z
+        .string()
+        .describe('Your Spondyr Application Token, found in the Spondyr dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,
-          applicationToken: ctx.input.applicationToken,
-        },
+          applicationToken: ctx.input.applicationToken
+        }
       };
-    },
+    }
   });

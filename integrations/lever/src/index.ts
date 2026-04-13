@@ -14,12 +14,12 @@ import {
   getPipelineMetadataTool,
   getOpportunityActivityTool,
   manageRequisitionTool,
-  updateContactTool,
+  updateContactTool
 } from './tools';
 import {
   opportunityEventsTrigger,
   interviewEventsTrigger,
-  contactEventsTrigger,
+  contactEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -38,11 +38,7 @@ export let provider = Slate.create({
     getPipelineMetadataTool,
     getOpportunityActivityTool,
     manageRequisitionTool,
-    updateContactTool,
+    updateContactTool
   ],
-  triggers: [
-    opportunityEventsTrigger,
-    interviewEventsTrigger,
-    contactEventsTrigger,
-  ],
+  triggers: [opportunityEventsTrigger, interviewEventsTrigger, contactEventsTrigger]
 });

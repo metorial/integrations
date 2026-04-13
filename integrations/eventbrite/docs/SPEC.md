@@ -71,6 +71,7 @@ Eventbrite supports webhooks that deliver real-time notifications via HTTP POST 
 ### Event Lifecycle
 
 Notifications for changes to events on the platform:
+
 - **Event Created** (`event.created`): Triggered when an event is created in your Eventbrite account.
 - **Event Updated** (`event.updated`): Triggered when an event is updated in your Eventbrite account.
 - **Event Published** (`event.published`): Triggered when an event is published in your Eventbrite account.
@@ -79,12 +80,14 @@ Notifications for changes to events on the platform:
 ### Orders
 
 Notifications related to ticket orders:
+
 - **Order Placed** (`order.placed`): Triggered when a new order is placed for tickets to an event.
 - **Order Updated** (`order.updated`): Triggered when an order is updated.
 
 ### Attendees
 
 Notifications related to attendee activity:
+
 - **Attendee Updated** (`attendee.updated`): Triggered when an attendee updates.
 - **Attendee Checked In** (`barcode.checked_in`): Triggered when an attendee's barcode is scanned in.
 - **Attendee Checked Out** (`barcode.un_checked_in`): Triggered when an attendee's barcode is scanned out.

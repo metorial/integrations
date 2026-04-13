@@ -1,18 +1,27 @@
 import { createAxios } from 'slates';
 
 let extractApi = createAxios({
-  baseURL: 'https://api.diffbot.com',
+  baseURL: 'https://api.diffbot.com'
 });
 
 let kgApi = createAxios({
-  baseURL: 'https://kg.diffbot.com',
+  baseURL: 'https://kg.diffbot.com'
 });
 
 let nlApi = createAxios({
-  baseURL: 'https://nl.diffbot.com',
+  baseURL: 'https://nl.diffbot.com'
 });
 
-export type ExtractType = 'analyze' | 'article' | 'product' | 'discussion' | 'image' | 'video' | 'list' | 'event' | 'job';
+export type ExtractType =
+  | 'analyze'
+  | 'article'
+  | 'product'
+  | 'discussion'
+  | 'image'
+  | 'video'
+  | 'list'
+  | 'event'
+  | 'job';
 
 export interface ExtractOptions {
   url: string;
@@ -88,7 +97,7 @@ export class DiffbotClient {
     let endpoint = `/v3/${options.type}`;
     let params: Record<string, any> = {
       token: this.token,
-      url: options.url,
+      url: options.url
     };
 
     if (options.fields) params['fields'] = options.fields;
@@ -100,8 +109,8 @@ export class DiffbotClient {
       let response = await extractApi.post(endpoint, options.body, {
         params,
         headers: {
-          'Content-Type': options.contentType || 'text/html',
-        },
+          'Content-Type': options.contentType || 'text/html'
+        }
       });
       return response.data;
     }
@@ -113,7 +122,7 @@ export class DiffbotClient {
   async searchKnowledgeGraph(options: KnowledgeGraphSearchOptions): Promise<any> {
     let params: Record<string, any> = {
       token: this.token,
-      query: options.query,
+      query: options.query
     };
 
     if (options.size !== undefined) params['size'] = options.size;
@@ -128,7 +137,7 @@ export class DiffbotClient {
   async enhanceEntity(options: EnhanceOptions): Promise<any> {
     let params: Record<string, any> = {
       token: this.token,
-      type: options.entityType === 'organization' ? 'Organization' : 'Person',
+      type: options.entityType === 'organization' ? 'Organization' : 'Person'
     };
 
     if (options.name) params['name'] = options.name;
@@ -148,7 +157,7 @@ export class DiffbotClient {
   async enhanceCombine(options: EnhanceOptions): Promise<any> {
     let params: Record<string, any> = {
       token: this.token,
-      type: options.entityType === 'organization' ? 'Organization' : 'Person',
+      type: options.entityType === 'organization' ? 'Organization' : 'Person'
     };
 
     if (options.name) params['name'] = options.name;
@@ -165,7 +174,7 @@ export class DiffbotClient {
 
   async analyzeText(options: NaturalLanguageOptions): Promise<any> {
     let params: Record<string, any> = {
-      token: this.token,
+      token: this.token
     };
 
     if (options.lang) params['lang'] = options.lang;
@@ -174,8 +183,8 @@ export class DiffbotClient {
     let response = await nlApi.post('/v1/', options.content, {
       params,
       headers: {
-        'Content-Type': 'text/plain',
-      },
+        'Content-Type': 'text/plain'
+      }
     });
     return response.data;
   }
@@ -184,7 +193,7 @@ export class DiffbotClient {
     let params: Record<string, any> = {
       token: this.token,
       name: options.name,
-      seeds: options.seeds.join(' '),
+      seeds: options.seeds.join(' ')
     };
 
     if (options.apiType) params['apiUrl'] = `https://api.diffbot.com/v3/${options.apiType}`;
@@ -194,9 +203,11 @@ export class DiffbotClient {
     if (options.urlCrawlPattern) params['urlCrawlPattern'] = options.urlCrawlPattern;
     if (options.urlProcessPattern) params['urlProcessPattern'] = options.urlProcessPattern;
     if (options.repeat !== undefined) params['repeat'] = options.repeat;
-    if (options.repeatFrequency !== undefined) params['repeatFrequency'] = options.repeatFrequency;
+    if (options.repeatFrequency !== undefined)
+      params['repeatFrequency'] = options.repeatFrequency;
     if (options.notifyWebhook) params['notifyWebhook'] = options.notifyWebhook;
-    if (options.onlyProcessIfNew !== undefined) params['onlyProcessIfNew'] = options.onlyProcessIfNew ? 1 : 0;
+    if (options.onlyProcessIfNew !== undefined)
+      params['onlyProcessIfNew'] = options.onlyProcessIfNew ? 1 : 0;
 
     let response = await extractApi.post('/v3/crawl', null, { params });
     return response.data;
@@ -206,8 +217,8 @@ export class DiffbotClient {
     let response = await extractApi.get('/v3/crawl', {
       params: {
         token: this.token,
-        name: crawlName,
-      },
+        name: crawlName
+      }
     });
     return response.data;
   }
@@ -215,8 +226,8 @@ export class DiffbotClient {
   async listCrawls(): Promise<any> {
     let response = await extractApi.get('/v3/crawl', {
       params: {
-        token: this.token,
-      },
+        token: this.token
+      }
     });
     return response.data;
   }
@@ -225,8 +236,8 @@ export class DiffbotClient {
     let response = await extractApi.delete('/v3/crawl', {
       params: {
         token: this.token,
-        name: crawlName,
-      },
+        name: crawlName
+      }
     });
     return response.data;
   }
@@ -236,8 +247,8 @@ export class DiffbotClient {
       params: {
         token: this.token,
         name: crawlName,
-        pause: 1,
-      },
+        pause: 1
+      }
     });
     return response.data;
   }
@@ -247,8 +258,8 @@ export class DiffbotClient {
       params: {
         token: this.token,
         name: crawlName,
-        pause: 0,
-      },
+        pause: 0
+      }
     });
     return response.data;
   }
@@ -258,8 +269,8 @@ export class DiffbotClient {
       params: {
         token: this.token,
         name: crawlName,
-        restart: 1,
-      },
+        restart: 1
+      }
     });
     return response.data;
   }
@@ -267,7 +278,7 @@ export class DiffbotClient {
   async getCrawlResults(crawlName: string, format?: string, num?: number): Promise<any> {
     let params: Record<string, any> = {
       token: this.token,
-      name: crawlName,
+      name: crawlName
     };
     if (format) params['format'] = format;
     if (num !== undefined) params['num'] = num;
@@ -280,7 +291,7 @@ export class DiffbotClient {
     let params: Record<string, any> = {
       token: this.token,
       name: options.name,
-      urls: options.urls.join(' '),
+      urls: options.urls.join(' ')
     };
 
     if (options.apiType) params['apiUrl'] = `https://api.diffbot.com/v3/${options.apiType}`;
@@ -294,8 +305,8 @@ export class DiffbotClient {
     let response = await extractApi.get('/v3/bulk', {
       params: {
         token: this.token,
-        name: jobName,
-      },
+        name: jobName
+      }
     });
     return response.data;
   }
@@ -303,8 +314,8 @@ export class DiffbotClient {
   async listBulkJobs(): Promise<any> {
     let response = await extractApi.get('/v3/bulk', {
       params: {
-        token: this.token,
-      },
+        token: this.token
+      }
     });
     return response.data;
   }
@@ -313,8 +324,8 @@ export class DiffbotClient {
     let response = await extractApi.delete('/v3/bulk', {
       params: {
         token: this.token,
-        name: jobName,
-      },
+        name: jobName
+      }
     });
     return response.data;
   }
@@ -322,7 +333,7 @@ export class DiffbotClient {
   async getBulkJobResults(jobName: string, format?: string, num?: number): Promise<any> {
     let params: Record<string, any> = {
       token: this.token,
-      name: jobName,
+      name: jobName
     };
     if (format) params['format'] = format;
     if (num !== undefined) params['num'] = num;

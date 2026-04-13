@@ -38,8 +38,8 @@ export class LeverlyClient {
     this.axios = createAxios({
       baseURL: LEVERLY_BASE_URL,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
   }
 
@@ -67,13 +67,9 @@ export class LeverlyClient {
     if (params.callDelay !== undefined) formData.append('callDelay', String(params.callDelay));
     if (params.groupId) formData.append('groupId', params.groupId);
 
-    let response = await this.axios.post(
-      `/main/ingestor/process`,
-      formData.toString(),
-      {
-        params: { AccountID: this.accountId },
-      }
-    );
+    let response = await this.axios.post(`/main/ingestor/process`, formData.toString(), {
+      params: { AccountID: this.accountId }
+    });
 
     return response.data;
   }
@@ -83,13 +79,9 @@ export class LeverlyClient {
     formData.append('Phone1', params.phone);
     formData.append('stopReattempts', '1');
 
-    let response = await this.axios.post(
-      `/main/ingestor/process`,
-      formData.toString(),
-      {
-        params: { AccountID: this.accountId },
-      }
-    );
+    let response = await this.axios.post(`/main/ingestor/process`, formData.toString(), {
+      params: { AccountID: this.accountId }
+    });
 
     return response.data;
   }

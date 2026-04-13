@@ -23,79 +23,118 @@ export class AlgoliaClient {
     let headers = {
       'x-algolia-application-id': config.applicationId,
       'x-algolia-api-key': config.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     this.searchClient = createAxios({
       baseURL: `https://${config.applicationId}.algolia.net`,
-      headers,
+      headers
     });
 
     this.analyticsClient = createAxios({
       baseURL: `https://analytics.${region}.algolia.com`,
-      headers,
+      headers
     });
 
     this.insightsClient = createAxios({
       baseURL: `https://insights.${region}.algolia.io`,
-      headers,
+      headers
     });
 
     this.monitoringClient = createAxios({
       baseURL: `https://status.algolia.com`,
-      headers,
+      headers
     });
   }
 
   // ============ Search ============
 
   async search(indexName: string, params: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/query`, params);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/query`,
+      params
+    );
     return res.data;
   }
 
-  async searchMultiIndex(requests: Array<{ indexName: string; params?: Record<string, any> }>): Promise<any> {
+  async searchMultiIndex(
+    requests: Array<{ indexName: string; params?: Record<string, any> }>
+  ): Promise<any> {
     let res = await this.searchClient.post('/1/indexes/*/queries', { requests });
     return res.data;
   }
 
-  async searchForFacetValues(indexName: string, facetName: string, params: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/facets/${encodeURIComponent(facetName)}/query`, params);
+  async searchForFacetValues(
+    indexName: string,
+    facetName: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/facets/${encodeURIComponent(facetName)}/query`,
+      params
+    );
     return res.data;
   }
 
   async browse(indexName: string, params: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/browse`, params);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/browse`,
+      params
+    );
     return res.data;
   }
 
   // ============ Records (Objects) ============
 
-  async getRecord(indexName: string, objectId: string, attributesToRetrieve?: string[]): Promise<any> {
+  async getRecord(
+    indexName: string,
+    objectId: string,
+    attributesToRetrieve?: string[]
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (attributesToRetrieve && attributesToRetrieve.length > 0) {
       params['attributesToRetrieve'] = attributesToRetrieve.join(',');
     }
-    let res = await this.searchClient.get(`/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`, { params });
+    let res = await this.searchClient.get(
+      `/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`,
+      { params }
+    );
     return res.data;
   }
 
-  async getRecords(requests: Array<{ indexName: string; objectID: string; attributesToRetrieve?: string[] }>): Promise<any> {
+  async getRecords(
+    requests: Array<{ indexName: string; objectID: string; attributesToRetrieve?: string[] }>
+  ): Promise<any> {
     let res = await this.searchClient.post('/1/indexes/*/objects', { requests });
     return res.data;
   }
 
   async addRecord(indexName: string, body: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}`, body);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}`,
+      body
+    );
     return res.data;
   }
 
-  async updateRecord(indexName: string, objectId: string, body: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.put(`/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`, body);
+  async updateRecord(
+    indexName: string,
+    objectId: string,
+    body: Record<string, any>
+  ): Promise<any> {
+    let res = await this.searchClient.put(
+      `/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`,
+      body
+    );
     return res.data;
   }
 
-  async partialUpdateRecord(indexName: string, objectId: string, body: Record<string, any>, createIfNotExists: boolean = true): Promise<any> {
+  async partialUpdateRecord(
+    indexName: string,
+    objectId: string,
+    body: Record<string, any>,
+    createIfNotExists: boolean = true
+  ): Promise<any> {
     let res = await this.searchClient.post(
       `/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}/partial`,
       body,
@@ -105,27 +144,42 @@ export class AlgoliaClient {
   }
 
   async deleteRecord(indexName: string, objectId: string): Promise<any> {
-    let res = await this.searchClient.delete(`/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`);
+    let res = await this.searchClient.delete(
+      `/1/indexes/${encodeURIComponent(indexName)}/${encodeURIComponent(objectId)}`
+    );
     return res.data;
   }
 
-  async batch(indexName: string, requests: Array<{ action: string; body: Record<string, any> }>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/batch`, { requests });
+  async batch(
+    indexName: string,
+    requests: Array<{ action: string; body: Record<string, any> }>
+  ): Promise<any> {
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/batch`,
+      { requests }
+    );
     return res.data;
   }
 
-  async multipleBatch(requests: Array<{ action: string; indexName: string; body: Record<string, any> }>): Promise<any> {
+  async multipleBatch(
+    requests: Array<{ action: string; indexName: string; body: Record<string, any> }>
+  ): Promise<any> {
     let res = await this.searchClient.post('/1/indexes/*/batch', { requests });
     return res.data;
   }
 
   async deleteBy(indexName: string, params: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/deleteByQuery`, params);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/deleteByQuery`,
+      params
+    );
     return res.data;
   }
 
   async clearRecords(indexName: string): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/clear`);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/clear`
+    );
     return res.data;
   }
 
@@ -144,48 +198,78 @@ export class AlgoliaClient {
     return res.data;
   }
 
-  async copyIndex(srcIndexName: string, destIndexName: string, scope?: string[]): Promise<any> {
+  async copyIndex(
+    srcIndexName: string,
+    destIndexName: string,
+    scope?: string[]
+  ): Promise<any> {
     let body: Record<string, any> = { operation: 'copy', destination: destIndexName };
     if (scope) body['scope'] = scope;
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(srcIndexName)}/operation`, body);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(srcIndexName)}/operation`,
+      body
+    );
     return res.data;
   }
 
   async moveIndex(srcIndexName: string, destIndexName: string): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(srcIndexName)}/operation`, {
-      operation: 'move',
-      destination: destIndexName,
-    });
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(srcIndexName)}/operation`,
+      {
+        operation: 'move',
+        destination: destIndexName
+      }
+    );
     return res.data;
   }
 
   // ============ Settings ============
 
   async getSettings(indexName: string): Promise<any> {
-    let res = await this.searchClient.get(`/1/indexes/${encodeURIComponent(indexName)}/settings`);
+    let res = await this.searchClient.get(
+      `/1/indexes/${encodeURIComponent(indexName)}/settings`
+    );
     return res.data;
   }
 
-  async setSettings(indexName: string, settings: Record<string, any>, forwardToReplicas?: boolean): Promise<any> {
+  async setSettings(
+    indexName: string,
+    settings: Record<string, any>,
+    forwardToReplicas?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
-    let res = await this.searchClient.put(`/1/indexes/${encodeURIComponent(indexName)}/settings`, settings, { params });
+    let res = await this.searchClient.put(
+      `/1/indexes/${encodeURIComponent(indexName)}/settings`,
+      settings,
+      { params }
+    );
     return res.data;
   }
 
   // ============ Synonyms ============
 
   async getSynonym(indexName: string, objectId: string): Promise<any> {
-    let res = await this.searchClient.get(`/1/indexes/${encodeURIComponent(indexName)}/synonyms/${encodeURIComponent(objectId)}`);
+    let res = await this.searchClient.get(
+      `/1/indexes/${encodeURIComponent(indexName)}/synonyms/${encodeURIComponent(objectId)}`
+    );
     return res.data;
   }
 
   async searchSynonyms(indexName: string, params: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/synonyms/search`, params);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/synonyms/search`,
+      params
+    );
     return res.data;
   }
 
-  async saveSynonym(indexName: string, objectId: string, synonym: Record<string, any>, forwardToReplicas?: boolean): Promise<any> {
+  async saveSynonym(
+    indexName: string,
+    objectId: string,
+    synonym: Record<string, any>,
+    forwardToReplicas?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
     let res = await this.searchClient.put(
@@ -196,15 +280,29 @@ export class AlgoliaClient {
     return res.data;
   }
 
-  async saveSynonyms(indexName: string, synonyms: Array<Record<string, any>>, forwardToReplicas?: boolean, replaceExistingSynonyms?: boolean): Promise<any> {
+  async saveSynonyms(
+    indexName: string,
+    synonyms: Array<Record<string, any>>,
+    forwardToReplicas?: boolean,
+    replaceExistingSynonyms?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
-    if (replaceExistingSynonyms !== undefined) params['replaceExistingSynonyms'] = replaceExistingSynonyms;
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/synonyms/batch`, synonyms, { params });
+    if (replaceExistingSynonyms !== undefined)
+      params['replaceExistingSynonyms'] = replaceExistingSynonyms;
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/synonyms/batch`,
+      synonyms,
+      { params }
+    );
     return res.data;
   }
 
-  async deleteSynonym(indexName: string, objectId: string, forwardToReplicas?: boolean): Promise<any> {
+  async deleteSynonym(
+    indexName: string,
+    objectId: string,
+    forwardToReplicas?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
     let res = await this.searchClient.delete(
@@ -217,23 +315,37 @@ export class AlgoliaClient {
   async clearSynonyms(indexName: string, forwardToReplicas?: boolean): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/synonyms/clear`, {}, { params });
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/synonyms/clear`,
+      {},
+      { params }
+    );
     return res.data;
   }
 
   // ============ Rules ============
 
   async getRule(indexName: string, objectId: string): Promise<any> {
-    let res = await this.searchClient.get(`/1/indexes/${encodeURIComponent(indexName)}/rules/${encodeURIComponent(objectId)}`);
+    let res = await this.searchClient.get(
+      `/1/indexes/${encodeURIComponent(indexName)}/rules/${encodeURIComponent(objectId)}`
+    );
     return res.data;
   }
 
   async searchRules(indexName: string, params: Record<string, any>): Promise<any> {
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/rules/search`, params);
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/rules/search`,
+      params
+    );
     return res.data;
   }
 
-  async saveRule(indexName: string, objectId: string, rule: Record<string, any>, forwardToReplicas?: boolean): Promise<any> {
+  async saveRule(
+    indexName: string,
+    objectId: string,
+    rule: Record<string, any>,
+    forwardToReplicas?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
     let res = await this.searchClient.put(
@@ -244,15 +356,28 @@ export class AlgoliaClient {
     return res.data;
   }
 
-  async saveRules(indexName: string, rules: Array<Record<string, any>>, forwardToReplicas?: boolean, clearExistingRules?: boolean): Promise<any> {
+  async saveRules(
+    indexName: string,
+    rules: Array<Record<string, any>>,
+    forwardToReplicas?: boolean,
+    clearExistingRules?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
     if (clearExistingRules !== undefined) params['clearExistingRules'] = clearExistingRules;
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/rules/batch`, rules, { params });
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/rules/batch`,
+      rules,
+      { params }
+    );
     return res.data;
   }
 
-  async deleteRule(indexName: string, objectId: string, forwardToReplicas?: boolean): Promise<any> {
+  async deleteRule(
+    indexName: string,
+    objectId: string,
+    forwardToReplicas?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
     let res = await this.searchClient.delete(
@@ -265,7 +390,11 @@ export class AlgoliaClient {
   async clearRules(indexName: string, forwardToReplicas?: boolean): Promise<any> {
     let params: Record<string, any> = {};
     if (forwardToReplicas !== undefined) params['forwardToReplicas'] = forwardToReplicas;
-    let res = await this.searchClient.post(`/1/indexes/${encodeURIComponent(indexName)}/rules/clear`, {}, { params });
+    let res = await this.searchClient.post(
+      `/1/indexes/${encodeURIComponent(indexName)}/rules/clear`,
+      {},
+      { params }
+    );
     return res.data;
   }
 
@@ -341,7 +470,9 @@ export class AlgoliaClient {
 
   async getConversionRate(indexName: string, params?: Record<string, any>): Promise<any> {
     let queryParams: Record<string, any> = { index: indexName, ...params };
-    let res = await this.analyticsClient.get('/2/conversions/conversionRate', { params: queryParams });
+    let res = await this.analyticsClient.get('/2/conversions/conversionRate', {
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -414,14 +545,18 @@ export class AlgoliaClient {
   }
 
   async getInfrastructure(params?: Record<string, any>): Promise<any> {
-    let res = await this.monitoringClient.get(`/1/infrastructure/${this.applicationId}`, { params });
+    let res = await this.monitoringClient.get(`/1/infrastructure/${this.applicationId}`, {
+      params
+    });
     return res.data;
   }
 
   // ============ Tasks ============
 
   async getTask(indexName: string, taskId: number): Promise<any> {
-    let res = await this.searchClient.get(`/1/indexes/${encodeURIComponent(indexName)}/task/${taskId}`);
+    let res = await this.searchClient.get(
+      `/1/indexes/${encodeURIComponent(indexName)}/task/${taskId}`
+    );
     return res.data;
   }
 }

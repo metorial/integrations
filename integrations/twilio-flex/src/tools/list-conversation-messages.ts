@@ -14,29 +14,34 @@ let messageSchema = z.object({
   dateUpdated: z.string().optional().describe('Date updated')
 });
 
-export let listConversationMessagesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Conversation Messages',
-    key: 'list_conversation_messages',
-    description: `List messages in a Twilio Conversation. Returns the message history for a given conversation, including author, body, and timestamps. Use order parameter to sort ascending or descending.`,
-    tags: {
-      readOnly: true
-    }
+export let listConversationMessagesTool = SlateTool.create(spec, {
+  name: 'List Conversation Messages',
+  key: 'list_conversation_messages',
+  description: `List messages in a Twilio Conversation. Returns the message history for a given conversation, including author, body, and timestamps. Use order parameter to sort ascending or descending.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    conversationSid: z.string().describe('Conversation SID'),
-    order: z.enum(['asc', 'desc']).optional().describe('Sort order by date (asc or desc)'),
-    pageSize: z.number().optional().describe('Number of messages to return (max 100)')
-  }))
-  .output(z.object({
-    messages: z.array(messageSchema).describe('Message records')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conversationSid: z.string().describe('Conversation SID'),
+      order: z.enum(['asc', 'desc']).optional().describe('Sort order by date (asc or desc)'),
+      pageSize: z.number().optional().describe('Number of messages to return (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      messages: z.array(messageSchema).describe('Message records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConversationsClient(ctx.auth.token);
 
-    let result = await client.listMessages(ctx.input.conversationSid, ctx.input.pageSize, ctx.input.order);
+    let result = await client.listMessages(
+      ctx.input.conversationSid,
+      ctx.input.pageSize,
+      ctx.input.order
+    );
     let messages = (result.messages || []).map((m: any) => ({
       messageSid: m.sid,
       conversationSid: m.conversation_sid,
@@ -52,4 +57,5 @@ export let listConversationMessagesTool = SlateTool.create(
       output: { messages },
       message: `Found **${messages.length}** messages in conversation **${ctx.input.conversationSid}**.`
     };
-  }).build();
+  })
+  .build();

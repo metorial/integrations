@@ -12,7 +12,7 @@ let attendeeSchema = z.object({
   isOrganizer: z.boolean().describe('Whether this is the organizer'),
   responseStatus: z.string().describe('Response status'),
   timeZone: z.string().describe('Time zone'),
-  phoneNumber: z.string().nullable().optional().describe('Phone number'),
+  phoneNumber: z.string().nullable().optional().describe('Phone number')
 });
 
 let eventOutputSchema = z.object({
@@ -28,40 +28,51 @@ let eventOutputSchema = z.object({
   attendees: z.array(attendeeSchema).describe('Event attendees'),
   organizer: attendeeSchema.nullable().optional().describe('Organizer'),
   scheduler: attendeeSchema.nullable().optional().describe('Scheduler'),
-  conferencing: z.object({
-    type: z.string().nullable().optional(),
-    joinUrl: z.string().nullable().optional(),
-    meetingId: z.string().nullable().optional(),
-  }).nullable().optional().describe('Conferencing info'),
+  conferencing: z
+    .object({
+      type: z.string().nullable().optional(),
+      joinUrl: z.string().nullable().optional(),
+      meetingId: z.string().nullable().optional()
+    })
+    .nullable()
+    .optional()
+    .describe('Conferencing info'),
   location: z.string().nullable().optional().describe('Location'),
   linkId: z.string().nullable().optional().describe('Scheduling link ID'),
   linkName: z.string().nullable().optional().describe('Scheduling link name'),
   metadata: z.record(z.string(), z.any()).optional().describe('Custom metadata'),
   isGroupSession: z.boolean().optional().describe('Whether this is a group session'),
-  payment: z.object({
-    amountTotal: z.number().optional(),
-    state: z.string().optional(),
-    url: z.string().nullable().optional()
-  }).nullable().optional().describe('Payment details'),
+  payment: z
+    .object({
+      amountTotal: z.number().optional(),
+      state: z.string().optional(),
+      url: z.string().nullable().optional()
+    })
+    .nullable()
+    .optional()
+    .describe('Payment details'),
   cancelReason: z.string().nullable().optional().describe('Cancellation reason'),
   canceledAt: z.string().nullable().optional().describe('Cancellation timestamp'),
   rescheduleReason: z.string().nullable().optional().describe('Reschedule reason'),
   rescheduledAt: z.string().nullable().optional().describe('Reschedule timestamp'),
   originalStartAt: z.string().nullable().optional().describe('Original start if rescheduled'),
-  originalEndAt: z.string().nullable().optional().describe('Original end if rescheduled'),
+  originalEndAt: z.string().nullable().optional().describe('Original end if rescheduled')
 });
 
-let mapAttendee = (a: any) => a ? ({
-  attendeeId: a.id,
-  displayName: a.display_name,
-  email: a.email,
-  firstName: a.first_name,
-  lastName: a.last_name,
-  isOrganizer: a.is_organizer,
-  responseStatus: a.response_status,
-  timeZone: a.time_zone,
-  phoneNumber: a.phone_number,
-}) : null;
+let mapAttendee = (a: any) =>
+  a
+    ? {
+        attendeeId: a.id,
+        displayName: a.display_name,
+        email: a.email,
+        firstName: a.first_name,
+        lastName: a.last_name,
+        isOrganizer: a.is_organizer,
+        responseStatus: a.response_status,
+        timeZone: a.time_zone,
+        phoneNumber: a.phone_number
+      }
+    : null;
 
 let mapEvent = (e: any) => ({
   eventId: e.id,
@@ -76,46 +87,50 @@ let mapEvent = (e: any) => ({
   attendees: (e.attendees ?? []).map(mapAttendee),
   organizer: mapAttendee(e.organizer),
   scheduler: mapAttendee(e.scheduler),
-  conferencing: e.conferencing ? {
-    type: e.conferencing.type,
-    joinUrl: e.conferencing.join_url,
-    meetingId: e.conferencing.meeting_id,
-  } : null,
+  conferencing: e.conferencing
+    ? {
+        type: e.conferencing.type,
+        joinUrl: e.conferencing.join_url,
+        meetingId: e.conferencing.meeting_id
+      }
+    : null,
   location: e.location,
   linkId: e.link?.id,
   linkName: e.link?.name,
   metadata: e.metadata,
   isGroupSession: e.is_group_session,
-  payment: e.payment ? {
-    amountTotal: e.payment.amount_total,
-    state: e.payment.state,
-    url: e.payment.url
-  } : null,
+  payment: e.payment
+    ? {
+        amountTotal: e.payment.amount_total,
+        state: e.payment.state,
+        url: e.payment.url
+      }
+    : null,
   cancelReason: e.cancel_reason,
   canceledAt: e.canceled_at,
   rescheduleReason: e.reschedule_reason,
   rescheduledAt: e.rescheduled_at,
   originalStartAt: e.original_start_at,
-  originalEndAt: e.original_end_at,
+  originalEndAt: e.original_end_at
 });
 
-export let eventLifecycleTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Lifecycle',
-    key: 'event_lifecycle',
-    description: 'Triggers when an event is created, requested, approved, declined, rescheduled, changed, or canceled in SavvyCal.',
-  }
-)
-  .input(z.object({
-    webhookEventType: z.string().describe('Webhook event type'),
-    webhookEventId: z.string().describe('Webhook payload ID'),
-    occurredAt: z.string().describe('When the event occurred'),
-    eventPayload: z.any().describe('Raw event payload')
-  }))
+export let eventLifecycleTrigger = SlateTrigger.create(spec, {
+  name: 'Event Lifecycle',
+  key: 'event_lifecycle',
+  description:
+    'Triggers when an event is created, requested, approved, declined, rescheduled, changed, or canceled in SavvyCal.'
+})
+  .input(
+    z.object({
+      webhookEventType: z.string().describe('Webhook event type'),
+      webhookEventId: z.string().describe('Webhook payload ID'),
+      occurredAt: z.string().describe('When the event occurred'),
+      eventPayload: z.any().describe('Raw event payload')
+    })
+  )
   .output(eventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let webhook = await client.createWebhook({ url: ctx.input.webhookBaseUrl });
 
@@ -127,13 +142,13 @@ export let eventLifecycleTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventTypes = [
         'event.created',
@@ -150,16 +165,18 @@ export let eventLifecycleTrigger = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          webhookEventType: data.type,
-          webhookEventId: data.id,
-          occurredAt: data.occurred_at,
-          eventPayload: data.payload
-        }]
+        inputs: [
+          {
+            webhookEventType: data.type,
+            webhookEventId: data.id,
+            occurredAt: data.occurred_at,
+            eventPayload: data.payload
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let event = mapEvent(ctx.input.eventPayload);
 
       return {

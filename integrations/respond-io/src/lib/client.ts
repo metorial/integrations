@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.respond.io/v2',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -20,13 +20,27 @@ export class Client {
     return response.data;
   }
 
-  async createContact(identifierType: string, identifierValue: string, fields: Record<string, any>) {
-    let response = await this.axios.post(`/contact/${identifierType}:${identifierValue}`, fields);
+  async createContact(
+    identifierType: string,
+    identifierValue: string,
+    fields: Record<string, any>
+  ) {
+    let response = await this.axios.post(
+      `/contact/${identifierType}:${identifierValue}`,
+      fields
+    );
     return response.data;
   }
 
-  async updateContact(identifierType: string, identifierValue: string, fields: Record<string, any>) {
-    let response = await this.axios.put(`/contact/${identifierType}:${identifierValue}`, fields);
+  async updateContact(
+    identifierType: string,
+    identifierValue: string,
+    fields: Record<string, any>
+  ) {
+    let response = await this.axios.put(
+      `/contact/${identifierType}:${identifierValue}`,
+      fields
+    );
     return response.data;
   }
 
@@ -46,7 +60,7 @@ export class Client {
   async mergeContacts(primaryContactId: string, secondaryContactId: string) {
     let response = await this.axios.post('/contact/merge', {
       primaryContactId,
-      secondaryContactId,
+      secondaryContactId
     });
     return response.data;
   }
@@ -94,7 +108,7 @@ export class Client {
 
   async openConversation(contactId: string) {
     let response = await this.axios.post(`/contact/${contactId}/conversation`, {
-      status: 'open',
+      status: 'open'
     });
     return response.data;
   }
@@ -109,14 +123,14 @@ export class Client {
 
   async assignConversation(contactId: string, assigneeId: number) {
     let response = await this.axios.post(`/contact/${contactId}/assignee`, {
-      assignee: { id: assigneeId },
+      assignee: { id: assigneeId }
     });
     return response.data;
   }
 
   async unassignConversation(contactId: string) {
     let response = await this.axios.post(`/contact/${contactId}/assignee`, {
-      assignee: null,
+      assignee: null
     });
     return response.data;
   }

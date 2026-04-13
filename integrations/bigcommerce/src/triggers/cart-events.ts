@@ -3,28 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let cartEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Cart Events',
-    key: 'cart_events',
-    description: 'Triggers when carts are created, updated, deleted, abandoned, or converted to an order. Also fires for cart line item changes.',
-  }
-)
-  .input(z.object({
-    scope: z.string().describe('The webhook scope (e.g., store/cart/created)'),
-    cartId: z.string().describe('The cart ID from the webhook payload'),
-    webhookEventHash: z.string().describe('Unique hash for the webhook event'),
-  }))
-  .output(z.object({
-    cartId: z.string().describe('The cart ID'),
-    cartDetails: z.any().optional().describe('Full cart object from the API (if still available)'),
-  }))
+export let cartEvents = SlateTrigger.create(spec, {
+  name: 'Cart Events',
+  key: 'cart_events',
+  description:
+    'Triggers when carts are created, updated, deleted, abandoned, or converted to an order. Also fires for cart line item changes.'
+})
+  .input(
+    z.object({
+      scope: z.string().describe('The webhook scope (e.g., store/cart/created)'),
+      cartId: z.string().describe('The cart ID from the webhook payload'),
+      webhookEventHash: z.string().describe('Unique hash for the webhook event')
+    })
+  )
+  .output(
+    z.object({
+      cartId: z.string().describe('The cart ID'),
+      cartDetails: z
+        .any()
+        .optional()
+        .describe('Full cart object from the API (if still available)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let scopes = [
@@ -36,7 +41,7 @@ export let cartEvents = SlateTrigger.create(
         'store/cart/couponApplied',
         'store/cart/lineItem/created',
         'store/cart/lineItem/updated',
-        'store/cart/lineItem/deleted',
+        'store/cart/lineItem/deleted'
       ];
 
       let webhookIds: number[] = [];
@@ -44,20 +49,20 @@ export let cartEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           scope,
           destination: ctx.input.webhookBaseUrl,
-          is_active: true,
+          is_active: true
         });
         webhookIds.push(result.data.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let { webhookIds } = ctx.input.registrationDetails as { webhookIds: number[] };
@@ -70,26 +75,28 @@ export let cartEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let scope = body.scope as string;
       let cartId = String(body.data?.id || '');
-      let hash = body.hash as string || `${scope}-${cartId}-${Date.now()}`;
+      let hash = (body.hash as string) || `${scope}-${cartId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          scope,
-          cartId,
-          webhookEventHash: hash,
-        }],
+        inputs: [
+          {
+            scope,
+            cartId,
+            webhookEventHash: hash
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let scopeParts = ctx.input.scope.replace('store/cart/', '');
@@ -110,9 +117,9 @@ export let cartEvents = SlateTrigger.create(
         id: ctx.input.webhookEventHash,
         output: {
           cartId: ctx.input.cartId,
-          cartDetails,
-        },
+          cartDetails
+        }
       };
-    },
+    }
   })
   .build();

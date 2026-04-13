@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    serverUrl: z.string(),
-    email: z.string(),
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      serverUrl: z.string(),
+      email: z.string(),
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -14,12 +16,20 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      serverUrl: z.string().describe('The base URL of your Zulip server (e.g., https://your-org.zulipchat.com for Zulip Cloud, or your self-hosted domain)'),
+      serverUrl: z
+        .string()
+        .describe(
+          'The base URL of your Zulip server (e.g., https://your-org.zulipchat.com for Zulip Cloud, or your self-hosted domain)'
+        ),
       email: z.string().describe('Your Zulip email address'),
-      apiKey: z.string().describe('Your Zulip API key (found in Personal settings > Account & privacy > API Key)')
+      apiKey: z
+        .string()
+        .describe(
+          'Your Zulip API key (found in Personal settings > Account & privacy > API Key)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let serverUrl = ctx.input.serverUrl.replace(/\/+$/, '');
       return {
         output: {
@@ -30,7 +40,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { serverUrl: string; email: string; token: string }; input: { serverUrl: string; email: string; apiKey: string } }) => {
+    getProfile: async (ctx: {
+      output: { serverUrl: string; email: string; token: string };
+      input: { serverUrl: string; email: string; apiKey: string };
+    }) => {
       let axios = createAxios({
         baseURL: ctx.output.serverUrl
       });

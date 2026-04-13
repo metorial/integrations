@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listBucketsTool,
@@ -14,9 +13,7 @@ import {
   getBucketInfoTool,
   listObjectVersionsTool
 } from './tools';
-import { objectChangesTrigger,
-  inboundWebhook,
-} from './triggers';
+import { objectChangesTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,8 +30,5 @@ export let provider = Slate.create({
     getBucketInfoTool,
     listObjectVersionsTool
   ],
-  triggers: [
-    inboundWebhook,
-    objectChangesTrigger
-  ]
+  triggers: [inboundWebhook, objectChangesTrigger]
 });

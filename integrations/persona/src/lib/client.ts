@@ -10,11 +10,11 @@ export class PersonaClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${opts.token}`,
+        Authorization: `Bearer ${opts.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Key-Inflection': 'snake',
-      },
+        Accept: 'application/json',
+        'Key-Inflection': 'snake'
+      }
     });
   }
 
@@ -58,8 +58,8 @@ export class PersonaClient {
 
     let res = await this.axios.post('/inquiries', {
       data: {
-        attributes,
-      },
+        attributes
+      }
     });
     return res.data;
   }
@@ -71,7 +71,7 @@ export class PersonaClient {
 
   async updateInquiry(inquiryId: string, attributes: Record<string, any>): Promise<any> {
     let res = await this.axios.patch(`/inquiries/${inquiryId}`, {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
@@ -102,28 +102,29 @@ export class PersonaClient {
 
   async generateInquiryLink(inquiryId: string, expiresIn?: number): Promise<any> {
     let body: Record<string, any> = {};
-    if (expiresIn) body.meta = { 'auto-create-account-reference-id': undefined, 'expires-in': expiresIn };
+    if (expiresIn)
+      body.meta = { 'auto-create-account-reference-id': undefined, 'expires-in': expiresIn };
     let res = await this.axios.post(`/inquiries/${inquiryId}/generate-one-time-link`, body);
     return res.data;
   }
 
   async addInquiryTag(inquiryId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/inquiries/${inquiryId}/add-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
 
   async removeInquiryTag(inquiryId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/inquiries/${inquiryId}/remove-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
 
   async setInquiryTags(inquiryId: string, tags: string[]): Promise<any> {
     let res = await this.axios.post(`/inquiries/${inquiryId}/set-tags`, {
-      meta: { 'tag-name': tags },
+      meta: { 'tag-name': tags }
     });
     return res.data;
   }
@@ -163,7 +164,7 @@ export class PersonaClient {
     if (attributes.tags) apiAttrs['tags'] = attributes.tags;
 
     let res = await this.axios.post('/accounts', {
-      data: { attributes: apiAttrs },
+      data: { attributes: apiAttrs }
     });
     return res.data;
   }
@@ -175,7 +176,7 @@ export class PersonaClient {
 
   async updateAccount(accountId: string, attributes: Record<string, any>): Promise<any> {
     let res = await this.axios.patch(`/accounts/${accountId}`, {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
@@ -185,32 +186,35 @@ export class PersonaClient {
     return res.data;
   }
 
-  async consolidateAccounts(primaryAccountId: string, secondaryAccountIds: string[]): Promise<any> {
+  async consolidateAccounts(
+    primaryAccountId: string,
+    secondaryAccountIds: string[]
+  ): Promise<any> {
     let res = await this.axios.post(`/accounts/${primaryAccountId}/consolidate`, {
       meta: {
-        'account-ids': secondaryAccountIds,
-      },
+        'account-ids': secondaryAccountIds
+      }
     });
     return res.data;
   }
 
   async addAccountTag(accountId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/accounts/${accountId}/add-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
 
   async removeAccountTag(accountId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/accounts/${accountId}/remove-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
 
   async setAccountTags(accountId: string, tags: string[]): Promise<any> {
     let res = await this.axios.post(`/accounts/${accountId}/set-tags`, {
-      meta: { 'tag-name': tags },
+      meta: { 'tag-name': tags }
     });
     return res.data;
   }
@@ -259,7 +263,8 @@ export class PersonaClient {
     if (params?.pageAfter) query['page[after]'] = params.pageAfter;
     if (params?.pageBefore) query['page[before]'] = params.pageBefore;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
-    if (params?.filterReportTemplateId) query['filter[report-template-id]'] = params.filterReportTemplateId;
+    if (params?.filterReportTemplateId)
+      query['filter[report-template-id]'] = params.filterReportTemplateId;
     if (params?.filterReferenceId) query['filter[reference-id]'] = params.filterReferenceId;
     if (params?.filterAccountId) query['filter[account-id]'] = params.filterAccountId;
     if (params?.filterStatus) query['filter[status]'] = params.filterStatus;
@@ -272,9 +277,9 @@ export class PersonaClient {
       data: {
         attributes: {
           'report-template-id': reportTemplateId,
-          ...attributes,
-        },
-      },
+          ...attributes
+        }
+      }
     });
     return res.data;
   }
@@ -310,7 +315,7 @@ export class PersonaClient {
 
   async createTransaction(attributes: Record<string, any>): Promise<any> {
     let res = await this.axios.post('/transactions', {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
@@ -320,9 +325,12 @@ export class PersonaClient {
     return res.data;
   }
 
-  async updateTransaction(transactionId: string, attributes: Record<string, any>): Promise<any> {
+  async updateTransaction(
+    transactionId: string,
+    attributes: Record<string, any>
+  ): Promise<any> {
     let res = await this.axios.patch(`/transactions/${transactionId}`, {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
@@ -334,14 +342,14 @@ export class PersonaClient {
 
   async addTransactionTag(transactionId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/transactions/${transactionId}/add-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
 
   async removeTransactionTag(transactionId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/transactions/${transactionId}/remove-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
@@ -370,7 +378,7 @@ export class PersonaClient {
     [key: string]: any;
   }): Promise<any> {
     let res = await this.axios.post('/cases', {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
@@ -382,35 +390,35 @@ export class PersonaClient {
 
   async updateCase(caseId: string, attributes: Record<string, any>): Promise<any> {
     let res = await this.axios.patch(`/cases/${caseId}`, {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
 
   async setCaseStatus(caseId: string, status: string): Promise<any> {
     let res = await this.axios.patch(`/cases/${caseId}/set-status`, {
-      meta: { status },
+      meta: { status }
     });
     return res.data;
   }
 
   async assignCase(caseId: string, assigneeId: string): Promise<any> {
     let res = await this.axios.post(`/cases/${caseId}/assign`, {
-      meta: { 'assignee-id': assigneeId },
+      meta: { 'assignee-id': assigneeId }
     });
     return res.data;
   }
 
   async addCaseTag(caseId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/cases/${caseId}/add-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
 
   async removeCaseTag(caseId: string, tag: string): Promise<any> {
     let res = await this.axios.post(`/cases/${caseId}/remove-tag`, {
-      meta: { 'tag-name': tag },
+      meta: { 'tag-name': tag }
     });
     return res.data;
   }
@@ -442,36 +450,42 @@ export class PersonaClient {
     return res.data;
   }
 
-  async createList(listType: string, attributes: {
-    name: string;
-    [key: string]: any;
-  }): Promise<any> {
+  async createList(
+    listType: string,
+    attributes: {
+      name: string;
+      [key: string]: any;
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/lists/${listType}`, {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
 
   async archiveList(listId: string): Promise<any> {
     let res = await this.axios.patch(`/lists/${listId}`, {
-      data: { attributes: { status: 'archived' } },
+      data: { attributes: { status: 'archived' } }
     });
     return res.data;
   }
 
   // ── List Items ───────────────────────────────────────────
 
-  async listListItems(listId: string, params?: {
-    pageAfter?: string;
-    pageBefore?: string;
-    pageSize?: number;
-  }): Promise<any> {
+  async listListItems(
+    listId: string,
+    params?: {
+      pageAfter?: string;
+      pageBefore?: string;
+      pageSize?: number;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.pageAfter) query['page[after]'] = params.pageAfter;
     if (params?.pageBefore) query['page[before]'] = params.pageBefore;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
     let res = await this.axios.get(`/list-items`, {
-      params: { ...query, 'filter[list-id]': listId },
+      params: { ...query, 'filter[list-id]': listId }
     });
     return res.data;
   }
@@ -481,9 +495,9 @@ export class PersonaClient {
       data: {
         attributes: {
           'list-id': listId,
-          ...attributes,
-        },
-      },
+          ...attributes
+        }
+      }
     });
     return res.data;
   }
@@ -495,14 +509,14 @@ export class PersonaClient {
 
   async updateListItem(listItemId: string, attributes: Record<string, any>): Promise<any> {
     let res = await this.axios.patch(`/list-items/${listItemId}`, {
-      data: { attributes },
+      data: { attributes }
     });
     return res.data;
   }
 
   async archiveListItem(listItemId: string): Promise<any> {
     let res = await this.axios.patch(`/list-items/${listItemId}`, {
-      data: { attributes: { status: 'archived' } },
+      data: { attributes: { status: 'archived' } }
     });
     return res.data;
   }
@@ -542,9 +556,9 @@ export class PersonaClient {
         attributes: {
           url: attributes.url,
           'enabled-events': attributes.enabledEvents,
-          'api-key-inflection': attributes.apiKeyInflection || 'snake',
-        },
-      },
+          'api-key-inflection': attributes.apiKeyInflection || 'snake'
+        }
+      }
     });
     return res.data;
   }

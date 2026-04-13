@@ -14,7 +14,7 @@ let addressInputSchema = z.object({
   postcode: z.string().optional(),
   country: z.string().optional(),
   email: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().optional()
 });
 
 export let createOrder = SlateTool.create(spec, {
@@ -23,51 +23,93 @@ export let createOrder = SlateTool.create(spec, {
   description: `Create a new order in the store. Add line items, set billing/shipping addresses, apply coupons, and configure shipping and fees. Use setPaid to immediately mark the order as paid.`,
   instructions: [
     'Setting setPaid to true will set the order status to "processing" and reduce stock for items.',
-    'Line items require either a productId or a custom name and price.',
+    'Line items require either a productId or a custom name and price.'
   ],
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    status: z.enum(['pending', 'processing', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed']).optional().describe('Order status (default: pending)'),
-    customerId: z.number().optional().describe('Assign to existing customer ID (0 for guest)'),
-    customerNote: z.string().optional().describe('Note from the customer'),
-    billing: addressInputSchema.optional().describe('Billing address'),
-    shipping: addressInputSchema.optional().describe('Shipping address'),
-    lineItems: z.array(z.object({
-      productId: z.number().optional().describe('Product ID'),
-      variationId: z.number().optional().describe('Variation ID'),
-      quantity: z.number().describe('Quantity'),
-      name: z.string().optional().describe('Custom item name (if no productId)'),
-      total: z.string().optional().describe('Custom line total'),
-    })).optional().describe('Order line items'),
-    shippingLines: z.array(z.object({
-      methodId: z.string().describe('Shipping method ID'),
-      methodTitle: z.string().describe('Shipping method title'),
-      total: z.string().describe('Shipping total'),
-    })).optional().describe('Shipping lines'),
-    feeLines: z.array(z.object({
-      name: z.string().describe('Fee name'),
-      total: z.string().describe('Fee total'),
-    })).optional().describe('Fee lines'),
-    couponLines: z.array(z.object({
-      code: z.string().describe('Coupon code'),
-    })).optional().describe('Applied coupon codes'),
-    paymentMethod: z.string().optional().describe('Payment method ID'),
-    paymentMethodTitle: z.string().optional().describe('Payment method display title'),
-    setPaid: z.boolean().optional().default(false).describe('Mark order as paid on creation'),
-    currency: z.string().optional().describe('Currency code (e.g., USD)'),
-  }))
-  .output(z.object({
-    orderId: z.number(),
-    orderNumber: z.string(),
-    status: z.string(),
-    total: z.string(),
-    currency: z.string(),
-    dateCreated: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      status: z
+        .enum([
+          'pending',
+          'processing',
+          'on-hold',
+          'completed',
+          'cancelled',
+          'refunded',
+          'failed'
+        ])
+        .optional()
+        .describe('Order status (default: pending)'),
+      customerId: z
+        .number()
+        .optional()
+        .describe('Assign to existing customer ID (0 for guest)'),
+      customerNote: z.string().optional().describe('Note from the customer'),
+      billing: addressInputSchema.optional().describe('Billing address'),
+      shipping: addressInputSchema.optional().describe('Shipping address'),
+      lineItems: z
+        .array(
+          z.object({
+            productId: z.number().optional().describe('Product ID'),
+            variationId: z.number().optional().describe('Variation ID'),
+            quantity: z.number().describe('Quantity'),
+            name: z.string().optional().describe('Custom item name (if no productId)'),
+            total: z.string().optional().describe('Custom line total')
+          })
+        )
+        .optional()
+        .describe('Order line items'),
+      shippingLines: z
+        .array(
+          z.object({
+            methodId: z.string().describe('Shipping method ID'),
+            methodTitle: z.string().describe('Shipping method title'),
+            total: z.string().describe('Shipping total')
+          })
+        )
+        .optional()
+        .describe('Shipping lines'),
+      feeLines: z
+        .array(
+          z.object({
+            name: z.string().describe('Fee name'),
+            total: z.string().describe('Fee total')
+          })
+        )
+        .optional()
+        .describe('Fee lines'),
+      couponLines: z
+        .array(
+          z.object({
+            code: z.string().describe('Coupon code')
+          })
+        )
+        .optional()
+        .describe('Applied coupon codes'),
+      paymentMethod: z.string().optional().describe('Payment method ID'),
+      paymentMethodTitle: z.string().optional().describe('Payment method display title'),
+      setPaid: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Mark order as paid on creation'),
+      currency: z.string().optional().describe('Currency code (e.g., USD)')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number(),
+      orderNumber: z.string(),
+      status: z.string(),
+      total: z.string(),
+      currency: z.string(),
+      dateCreated: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -114,20 +156,20 @@ export let createOrder = SlateTool.create(spec, {
       data.shipping_lines = input.shippingLines.map(sl => ({
         method_id: sl.methodId,
         method_title: sl.methodTitle,
-        total: sl.total,
+        total: sl.total
       }));
     }
 
     if (input.feeLines) {
       data.fee_lines = input.feeLines.map(fl => ({
         name: fl.name,
-        total: fl.total,
+        total: fl.total
       }));
     }
 
     if (input.couponLines) {
       data.coupon_lines = input.couponLines.map(cl => ({
-        code: cl.code,
+        code: cl.code
       }));
     }
 
@@ -140,9 +182,9 @@ export let createOrder = SlateTool.create(spec, {
         status: order.status,
         total: order.total || '0',
         currency: order.currency || '',
-        dateCreated: order.date_created || '',
+        dateCreated: order.date_created || ''
       },
-      message: `Created order **#${order.number || order.id}** (status: ${order.status}, total: ${order.total}).`,
+      message: `Created order **#${order.number || order.id}** (status: ${order.status}, total: ${order.total}).`
     };
   })
   .build();

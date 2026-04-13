@@ -3,34 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updatePresence = SlateTool.create(
-  spec,
-  {
-    name: 'Update Presence',
-    key: 'update_presence',
-    description: `Updates the presence and availability status for a RingCentral user. Supports changing the user status (Available, Busy, Offline) and Do Not Disturb mode (TakeAllCalls, DoNotAcceptAnyCalls, DoNotAcceptDepartmentCalls, TakeDepartmentCallsOnly).`,
-    instructions: [
-      'Omit extensionId or pass "~" to update the current user\'s presence.',
-      'Only include fields you want to change.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updatePresence = SlateTool.create(spec, {
+  name: 'Update Presence',
+  key: 'update_presence',
+  description: `Updates the presence and availability status for a RingCentral user. Supports changing the user status (Available, Busy, Offline) and Do Not Disturb mode (TakeAllCalls, DoNotAcceptAnyCalls, DoNotAcceptDepartmentCalls, TakeDepartmentCallsOnly).`,
+  instructions: [
+    'Omit extensionId or pass "~" to update the current user\'s presence.',
+    'Only include fields you want to change.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    extensionId: z.string().optional().describe('Extension ID of the user to update. Defaults to "~" (current user).'),
-    userStatus: z.enum(['Offline', 'Busy', 'Available']).optional().describe('User availability status'),
-    dndStatus: z.enum(['TakeAllCalls', 'DoNotAcceptAnyCalls', 'DoNotAcceptDepartmentCalls', 'TakeDepartmentCallsOnly']).optional().describe('Do Not Disturb status'),
-  }))
-  .output(z.object({
-    userStatus: z.string().describe('Current user availability status'),
-    dndStatus: z.string().describe('Current Do Not Disturb status'),
-    presenceStatus: z.string().describe('Aggregated presence status'),
-    telephonyStatus: z.string().describe('Telephony status of the user'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      extensionId: z
+        .string()
+        .optional()
+        .describe('Extension ID of the user to update. Defaults to "~" (current user).'),
+      userStatus: z
+        .enum(['Offline', 'Busy', 'Available'])
+        .optional()
+        .describe('User availability status'),
+      dndStatus: z
+        .enum([
+          'TakeAllCalls',
+          'DoNotAcceptAnyCalls',
+          'DoNotAcceptDepartmentCalls',
+          'TakeDepartmentCallsOnly'
+        ])
+        .optional()
+        .describe('Do Not Disturb status')
+    })
+  )
+  .output(
+    z.object({
+      userStatus: z.string().describe('Current user availability status'),
+      dndStatus: z.string().describe('Current Do Not Disturb status'),
+      presenceStatus: z.string().describe('Aggregated presence status'),
+      telephonyStatus: z.string().describe('Telephony status of the user')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
     let extensionId = ctx.input.extensionId || '~';
 
@@ -44,7 +59,7 @@ export let updatePresence = SlateTool.create(
       userStatus: result.userStatus,
       dndStatus: result.dndStatus,
       presenceStatus: result.presenceStatus,
-      telephonyStatus: result.telephonyStatus,
+      telephonyStatus: result.telephonyStatus
     };
 
     let parts: string[] = [];
@@ -54,7 +69,7 @@ export let updatePresence = SlateTool.create(
 
     return {
       output,
-      message: `Updated ${summary} for extension \`${extensionId}\`.`,
+      message: `Updated ${summary} for extension \`${extensionId}\`.`
     };
   })
   .build();

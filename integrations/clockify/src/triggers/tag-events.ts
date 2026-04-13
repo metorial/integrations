@@ -3,38 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let tagEventTypes = [
-  'NEW_TAG',
-  'TAG_UPDATED',
-  'TAG_DELETED'
-] as const;
+let tagEventTypes = ['NEW_TAG', 'TAG_UPDATED', 'TAG_DELETED'] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'NEW_TAG': 'tag.created',
-  'TAG_UPDATED': 'tag.updated',
-  'TAG_DELETED': 'tag.deleted'
+  NEW_TAG: 'tag.created',
+  TAG_UPDATED: 'tag.updated',
+  TAG_DELETED: 'tag.deleted'
 };
 
-export let tagEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Tag Events',
-    key: 'tag_events',
-    description: 'Triggered when tags are created, updated, or deleted.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    tag: z.any().describe('Tag data from webhook payload')
-  }))
-  .output(z.object({
-    tagId: z.string(),
-    name: z.string().optional(),
-    archived: z.boolean().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let tagEvents = SlateTrigger.create(spec, {
+  name: 'Tag Events',
+  key: 'tag_events',
+  description: 'Triggered when tags are created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      tag: z.any().describe('Tag data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      tagId: z.string(),
+      name: z.string().optional(),
+      archived: z.boolean().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -56,7 +53,7 @@ export let tagEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -73,21 +70,24 @@ export let tagEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          tag: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            tag: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let tag = ctx.input.tag;
       let tagId = tag.id || tag.tagId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `tag.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `tag.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

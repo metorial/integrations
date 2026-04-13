@@ -2,7 +2,7 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let api = createAxios({
-  baseURL: 'https://airtable.com',
+  baseURL: 'https://airtable.com'
 });
 
 let generateCodeVerifier = (): string => {
@@ -29,11 +29,13 @@ let sha256Base64Url = async (plain: string): Promise<string> => {
 };
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -43,46 +45,46 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Records',
         description: 'Read records in tables',
-        scope: 'data.records:read',
+        scope: 'data.records:read'
       },
       {
         title: 'Write Records',
         description: 'Create, update, and delete records in tables',
-        scope: 'data.records:write',
+        scope: 'data.records:write'
       },
       {
         title: 'Read Comments',
         description: 'Read comments on records',
-        scope: 'data.recordComments:read',
+        scope: 'data.recordComments:read'
       },
       {
         title: 'Write Comments',
         description: 'Create, update, and delete comments on records',
-        scope: 'data.recordComments:write',
+        scope: 'data.recordComments:write'
       },
       {
         title: 'Read Schema',
         description: 'Read base schema (tables, fields, views)',
-        scope: 'schema.bases:read',
+        scope: 'schema.bases:read'
       },
       {
         title: 'Write Schema',
         description: 'Create and modify tables and fields',
-        scope: 'schema.bases:write',
+        scope: 'schema.bases:write'
       },
       {
         title: 'Manage Webhooks',
         description: 'Create and manage webhooks for real-time notifications',
-        scope: 'webhook:manage',
+        scope: 'webhook:manage'
       },
       {
         title: 'Read User Email',
         description: 'Read the authenticated user email address',
-        scope: 'user.email:read',
-      },
+        scope: 'user.email:read'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let codeVerifier = generateCodeVerifier();
       let codeChallenge = await sha256Base64Url(codeVerifier);
 
@@ -93,30 +95,30 @@ export let auth = SlateAuth.create()
         state: ctx.state,
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
         url: `https://airtable.com/oauth2/v1/authorize?${params.toString()}`,
-        callbackState: { codeVerifier },
+        callbackState: { codeVerifier }
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
       let params = new URLSearchParams({
         grant_type: 'authorization_code',
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
-        code_verifier: ctx.callbackState.codeVerifier,
+        code_verifier: ctx.callbackState.codeVerifier
       });
 
       let response = await api.post('/oauth2/v1/token', params.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`,
-        },
+          Authorization: `Basic ${credentials}`
+        }
       });
 
       let data = response.data;
@@ -126,24 +128,24 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
       let params = new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken || '',
+        refresh_token: ctx.output.refreshToken || ''
       });
 
       let response = await api.post('/oauth2/v1/token', params.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`,
-        },
+          Authorization: `Basic ${credentials}`
+        }
       });
 
       let data = response.data;
@@ -153,8 +155,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -162,8 +164,8 @@ export let auth = SlateAuth.create()
       let apiClient = createAxios({
         baseURL: 'https://api.airtable.com/v0',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await apiClient.get('/meta/whoami');
@@ -173,10 +175,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: data.id,
           email: data.email,
-          name: data.email,
-        },
+          name: data.email
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -184,14 +186,14 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Airtable Personal Access Token (starts with pat...)'),
+      token: z.string().describe('Airtable Personal Access Token (starts with pat...)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -199,8 +201,8 @@ export let auth = SlateAuth.create()
       let apiClient = createAxios({
         baseURL: 'https://api.airtable.com/v0',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await apiClient.get('/meta/whoami');
@@ -210,8 +212,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: data.id,
           email: data.email,
-          name: data.email,
-        },
+          name: data.email
+        }
       };
-    },
+    }
   });

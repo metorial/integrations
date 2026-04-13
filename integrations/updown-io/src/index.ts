@@ -15,7 +15,7 @@ import {
   createStatusPage,
   updateStatusPage,
   deleteStatusPage,
-  listNodes,
+  listNodes
 } from './tools';
 import { monitoringEvents } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     createStatusPage,
     updateStatusPage,
     deleteStatusPage,
-    listNodes,
+    listNodes
   ],
-  triggers: [
-    monitoringEvents,
-  ],
+  triggers: [monitoringEvents]
 });

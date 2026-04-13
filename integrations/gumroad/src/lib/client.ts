@@ -7,7 +7,7 @@ export class GumroadClient {
     this.axios = createAxios({
       baseURL: 'https://api.gumroad.com/v2',
       headers: {
-        Authorization: `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`
       }
     });
   }
@@ -57,13 +57,16 @@ export class GumroadClient {
     return response.data.offer_code;
   }
 
-  async createOfferCode(productId: string, params: {
-    name: string;
-    amountOff: number;
-    offerType?: string;
-    maxPurchaseCount?: number;
-    universal?: boolean;
-  }): Promise<any> {
+  async createOfferCode(
+    productId: string,
+    params: {
+      name: string;
+      amountOff: number;
+      offerType?: string;
+      maxPurchaseCount?: number;
+      universal?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/products/${productId}/offer_codes`, {
       name: params.name,
       amount_off: params.amountOff,
@@ -74,9 +77,13 @@ export class GumroadClient {
     return response.data.offer_code;
   }
 
-  async updateOfferCode(productId: string, offerCodeId: string, params: {
-    maxPurchaseCount?: number;
-  }): Promise<any> {
+  async updateOfferCode(
+    productId: string,
+    offerCodeId: string,
+    params: {
+      maxPurchaseCount?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/products/${productId}/offer_codes/${offerCodeId}`, {
       max_purchase_count: params.maxPurchaseCount
     });
@@ -95,17 +102,28 @@ export class GumroadClient {
   }
 
   async getVariantCategory(productId: string, variantCategoryId: string): Promise<any> {
-    let response = await this.axios.get(`/products/${productId}/variant_categories/${variantCategoryId}`);
+    let response = await this.axios.get(
+      `/products/${productId}/variant_categories/${variantCategoryId}`
+    );
     return response.data.variant_category;
   }
 
   async createVariantCategory(productId: string, title: string): Promise<any> {
-    let response = await this.axios.post(`/products/${productId}/variant_categories`, { title });
+    let response = await this.axios.post(`/products/${productId}/variant_categories`, {
+      title
+    });
     return response.data.variant_category;
   }
 
-  async updateVariantCategory(productId: string, variantCategoryId: string, title: string): Promise<any> {
-    let response = await this.axios.put(`/products/${productId}/variant_categories/${variantCategoryId}`, { title });
+  async updateVariantCategory(
+    productId: string,
+    variantCategoryId: string,
+    title: string
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/products/${productId}/variant_categories/${variantCategoryId}`,
+      { title }
+    );
     return response.data.variant_category;
   }
 
@@ -116,44 +134,75 @@ export class GumroadClient {
   // ── Variants ──────────────────────────────────────────────
 
   async listVariants(productId: string, variantCategoryId: string): Promise<any[]> {
-    let response = await this.axios.get(`/products/${productId}/variant_categories/${variantCategoryId}/variants`);
+    let response = await this.axios.get(
+      `/products/${productId}/variant_categories/${variantCategoryId}/variants`
+    );
     return response.data.variants || [];
   }
 
-  async getVariant(productId: string, variantCategoryId: string, variantId: string): Promise<any> {
-    let response = await this.axios.get(`/products/${productId}/variant_categories/${variantCategoryId}/variants/${variantId}`);
+  async getVariant(
+    productId: string,
+    variantCategoryId: string,
+    variantId: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/products/${productId}/variant_categories/${variantCategoryId}/variants/${variantId}`
+    );
     return response.data.variant;
   }
 
-  async createVariant(productId: string, variantCategoryId: string, params: {
-    name: string;
-    priceDifferenceCents?: number;
-    maxPurchaseCount?: number;
-  }): Promise<any> {
-    let response = await this.axios.post(`/products/${productId}/variant_categories/${variantCategoryId}/variants`, {
-      name: params.name,
-      price_difference_cents: params.priceDifferenceCents || 0,
-      max_purchase_count: params.maxPurchaseCount || 0
-    });
+  async createVariant(
+    productId: string,
+    variantCategoryId: string,
+    params: {
+      name: string;
+      priceDifferenceCents?: number;
+      maxPurchaseCount?: number;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/products/${productId}/variant_categories/${variantCategoryId}/variants`,
+      {
+        name: params.name,
+        price_difference_cents: params.priceDifferenceCents || 0,
+        max_purchase_count: params.maxPurchaseCount || 0
+      }
+    );
     return response.data.variant;
   }
 
-  async updateVariant(productId: string, variantCategoryId: string, variantId: string, params: {
-    name?: string;
-    priceDifferenceCents?: number;
-    maxPurchaseCount?: number;
-  }): Promise<any> {
+  async updateVariant(
+    productId: string,
+    variantCategoryId: string,
+    variantId: string,
+    params: {
+      name?: string;
+      priceDifferenceCents?: number;
+      maxPurchaseCount?: number;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
-    if (params.priceDifferenceCents !== undefined) body.price_difference_cents = params.priceDifferenceCents;
-    if (params.maxPurchaseCount !== undefined) body.max_purchase_count = params.maxPurchaseCount;
+    if (params.priceDifferenceCents !== undefined)
+      body.price_difference_cents = params.priceDifferenceCents;
+    if (params.maxPurchaseCount !== undefined)
+      body.max_purchase_count = params.maxPurchaseCount;
 
-    let response = await this.axios.put(`/products/${productId}/variant_categories/${variantCategoryId}/variants/${variantId}`, body);
+    let response = await this.axios.put(
+      `/products/${productId}/variant_categories/${variantCategoryId}/variants/${variantId}`,
+      body
+    );
     return response.data.variant;
   }
 
-  async deleteVariant(productId: string, variantCategoryId: string, variantId: string): Promise<void> {
-    await this.axios.delete(`/products/${productId}/variant_categories/${variantCategoryId}/variants/${variantId}`);
+  async deleteVariant(
+    productId: string,
+    variantCategoryId: string,
+    variantId: string
+  ): Promise<void> {
+    await this.axios.delete(
+      `/products/${productId}/variant_categories/${variantCategoryId}/variants/${variantId}`
+    );
   }
 
   // ── Custom Fields ─────────────────────────────────────────
@@ -163,10 +212,13 @@ export class GumroadClient {
     return response.data.custom_fields || [];
   }
 
-  async createCustomField(productId: string, params: {
-    name: string;
-    required?: boolean;
-  }): Promise<any> {
+  async createCustomField(
+    productId: string,
+    params: {
+      name: string;
+      required?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/products/${productId}/custom_fields`, {
       name: params.name,
       required: params.required ? 'true' : 'false'
@@ -174,17 +226,26 @@ export class GumroadClient {
     return response.data.custom_field;
   }
 
-  async updateCustomField(productId: string, customFieldName: string, params: {
-    required?: boolean;
-  }): Promise<any> {
-    let response = await this.axios.put(`/products/${productId}/custom_fields/${encodeURIComponent(customFieldName)}`, {
-      required: params.required ? 'true' : 'false'
-    });
+  async updateCustomField(
+    productId: string,
+    customFieldName: string,
+    params: {
+      required?: boolean;
+    }
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/products/${productId}/custom_fields/${encodeURIComponent(customFieldName)}`,
+      {
+        required: params.required ? 'true' : 'false'
+      }
+    );
     return response.data.custom_field;
   }
 
   async deleteCustomField(productId: string, customFieldName: string): Promise<void> {
-    await this.axios.delete(`/products/${productId}/custom_fields/${encodeURIComponent(customFieldName)}`);
+    await this.axios.delete(
+      `/products/${productId}/custom_fields/${encodeURIComponent(customFieldName)}`
+    );
   }
 
   // ── Sales ─────────────────────────────────────────────────
@@ -235,13 +296,18 @@ export class GumroadClient {
 
   // ── Subscribers ───────────────────────────────────────────
 
-  async listSubscribers(productId: string, params?: {
-    email?: string;
-  }): Promise<any[]> {
+  async listSubscribers(
+    productId: string,
+    params?: {
+      email?: string;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, string> = { product_id: productId };
     if (params?.email) queryParams.email = params.email;
 
-    let response = await this.axios.get(`/products/${productId}/subscribers`, { params: queryParams });
+    let response = await this.axios.get(`/products/${productId}/subscribers`, {
+      params: queryParams
+    });
     return response.data.subscribers || [];
   }
 
@@ -252,7 +318,11 @@ export class GumroadClient {
 
   // ── Licenses ──────────────────────────────────────────────
 
-  async verifyLicense(productPermalink: string, licenseKey: string, incrementUsesCount?: boolean): Promise<any> {
+  async verifyLicense(
+    productPermalink: string,
+    licenseKey: string,
+    incrementUsesCount?: boolean
+  ): Promise<any> {
     let response = await this.axios.post('/licenses/verify', {
       product_permalink: productPermalink,
       license_key: licenseKey,

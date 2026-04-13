@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listBusinesses,
@@ -22,13 +21,9 @@ import {
   getGoogleQA,
   getFacebookRecommendations,
   configureAutoFeedback,
-  createUser,
+  createUser
 } from './tools';
-import {
-  newFeedback,
-  newOnlineReview,
-  inboundWebhook,
-} from './triggers';
+import { newFeedback, newOnlineReview, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,11 +48,7 @@ export let provider = Slate.create({
     getGoogleQA,
     getFacebookRecommendations,
     configureAutoFeedback,
-    createUser,
+    createUser
   ],
-  triggers: [
-    inboundWebhook,
-    newFeedback,
-    newOnlineReview,
-  ],
+  triggers: [inboundWebhook, newFeedback, newOnlineReview]
 });

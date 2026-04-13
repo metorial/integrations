@@ -15,7 +15,7 @@ import type {
   ReplyParams,
   CreateDraftParams,
   SendResult,
-  SendAttachment,
+  SendAttachment
 } from './types';
 
 let toSnakeAttachment = (a: SendAttachment) => ({
@@ -24,7 +24,7 @@ let toSnakeAttachment = (a: SendAttachment) => ({
   content_disposition: a.contentDisposition,
   content_id: a.contentId,
   content: a.content,
-  url: a.url,
+  url: a.url
 });
 
 export class Client {
@@ -35,12 +35,14 @@ export class Client {
       baseURL: 'https://api.agentmail.to/v0',
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  private paginationQuery(params?: PaginationParams): Record<string, string | number | boolean> {
+  private paginationQuery(
+    params?: PaginationParams
+  ): Record<string, string | number | boolean> {
     let query: Record<string, string | number | boolean> = {};
     if (params?.limit) query['limit'] = params.limit;
     if (params?.pageToken) query['page_token'] = params.pageToken;
@@ -48,8 +50,11 @@ export class Client {
     return query;
   }
 
-  private messageFilterQuery(params?: MessageFilterParams): Record<string, string | number | boolean | string[]> {
-    let query: Record<string, string | number | boolean | string[]> = this.paginationQuery(params);
+  private messageFilterQuery(
+    params?: MessageFilterParams
+  ): Record<string, string | number | boolean | string[]> {
+    let query: Record<string, string | number | boolean | string[]> =
+      this.paginationQuery(params);
     if (params?.labels?.length) query['labels'] = params.labels;
     if (params?.before) query['before'] = params.before;
     if (params?.after) query['after'] = params.after;
@@ -61,21 +66,28 @@ export class Client {
 
   // --- Inboxes ---
 
-  async listInboxes(params?: PaginationParams): Promise<{ count: number; nextPageToken?: string; inboxes: Inbox[] }> {
+  async listInboxes(
+    params?: PaginationParams
+  ): Promise<{ count: number; nextPageToken?: string; inboxes: Inbox[] }> {
     let res = await this.axios.get('/inboxes', { params: this.paginationQuery(params) });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      inboxes: res.data.inboxes,
+      inboxes: res.data.inboxes
     };
   }
 
-  async createInbox(params?: { username?: string; domain?: string; displayName?: string; clientId?: string }): Promise<Inbox> {
+  async createInbox(params?: {
+    username?: string;
+    domain?: string;
+    displayName?: string;
+    clientId?: string;
+  }): Promise<Inbox> {
     let res = await this.axios.post('/inboxes', {
       username: params?.username,
       domain: params?.domain,
       display_name: params?.displayName,
-      client_id: params?.clientId,
+      client_id: params?.clientId
     });
     return res.data;
   }
@@ -96,12 +108,17 @@ export class Client {
 
   // --- Messages ---
 
-  async listMessages(inboxId: string, params?: MessageFilterParams): Promise<{ count: number; nextPageToken?: string; messages: Message[] }> {
-    let res = await this.axios.get(`/inboxes/${inboxId}/messages`, { params: this.messageFilterQuery(params) });
+  async listMessages(
+    inboxId: string,
+    params?: MessageFilterParams
+  ): Promise<{ count: number; nextPageToken?: string; messages: Message[] }> {
+    let res = await this.axios.get(`/inboxes/${inboxId}/messages`, {
+      params: this.messageFilterQuery(params)
+    });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      messages: res.data.messages,
+      messages: res.data.messages
     };
   }
 
@@ -121,12 +138,16 @@ export class Client {
       html: params.html,
       labels: params.labels,
       attachments: params.attachments?.map(toSnakeAttachment),
-      headers: params.headers,
+      headers: params.headers
     });
     return res.data;
   }
 
-  async replyToMessage(inboxId: string, messageId: string, params: ReplyParams): Promise<SendResult> {
+  async replyToMessage(
+    inboxId: string,
+    messageId: string,
+    params: ReplyParams
+  ): Promise<SendResult> {
     let endpoint = params.replyAll
       ? `/inboxes/${inboxId}/messages/${messageId}/reply-all`
       : `/inboxes/${inboxId}/messages/${messageId}/reply`;
@@ -140,12 +161,16 @@ export class Client {
       reply_to: params.replyTo,
       attachments: params.attachments?.map(toSnakeAttachment),
       headers: params.headers,
-      labels: params.labels,
+      labels: params.labels
     });
     return res.data;
   }
 
-  async forwardMessage(inboxId: string, messageId: string, params: SendMessageParams): Promise<SendResult> {
+  async forwardMessage(
+    inboxId: string,
+    messageId: string,
+    params: SendMessageParams
+  ): Promise<SendResult> {
     let res = await this.axios.post(`/inboxes/${inboxId}/messages/${messageId}/forward`, {
       to: params.to,
       cc: params.cc,
@@ -156,27 +181,37 @@ export class Client {
       html: params.html,
       labels: params.labels,
       attachments: params.attachments?.map(toSnakeAttachment),
-      headers: params.headers,
+      headers: params.headers
     });
     return res.data;
   }
 
-  async updateMessageLabels(inboxId: string, messageId: string, addLabels?: string[], removeLabels?: string[]): Promise<Message> {
+  async updateMessageLabels(
+    inboxId: string,
+    messageId: string,
+    addLabels?: string[],
+    removeLabels?: string[]
+  ): Promise<Message> {
     let res = await this.axios.patch(`/inboxes/${inboxId}/messages/${messageId}`, {
       add_labels: addLabels,
-      remove_labels: removeLabels,
+      remove_labels: removeLabels
     });
     return res.data;
   }
 
   // --- Threads ---
 
-  async listThreads(inboxId: string, params?: MessageFilterParams): Promise<{ count: number; nextPageToken?: string; threads: Thread[] }> {
-    let res = await this.axios.get(`/inboxes/${inboxId}/threads`, { params: this.messageFilterQuery(params) });
+  async listThreads(
+    inboxId: string,
+    params?: MessageFilterParams
+  ): Promise<{ count: number; nextPageToken?: string; threads: Thread[] }> {
+    let res = await this.axios.get(`/inboxes/${inboxId}/threads`, {
+      params: this.messageFilterQuery(params)
+    });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      threads: res.data.threads,
+      threads: res.data.threads
     };
   }
 
@@ -191,12 +226,17 @@ export class Client {
 
   // --- Drafts ---
 
-  async listDrafts(inboxId: string, params?: PaginationParams): Promise<{ count: number; nextPageToken?: string; drafts: Draft[] }> {
-    let res = await this.axios.get(`/inboxes/${inboxId}/drafts`, { params: this.paginationQuery(params) });
+  async listDrafts(
+    inboxId: string,
+    params?: PaginationParams
+  ): Promise<{ count: number; nextPageToken?: string; drafts: Draft[] }> {
+    let res = await this.axios.get(`/inboxes/${inboxId}/drafts`, {
+      params: this.paginationQuery(params)
+    });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      drafts: res.data.drafts,
+      drafts: res.data.drafts
     };
   }
 
@@ -213,7 +253,7 @@ export class Client {
       attachments: params.attachments?.map(toSnakeAttachment),
       in_reply_to: params.inReplyTo,
       send_at: params.sendAt,
-      client_id: params.clientId,
+      client_id: params.clientId
     });
     return res.data;
   }
@@ -223,7 +263,11 @@ export class Client {
     return res.data;
   }
 
-  async updateDraft(inboxId: string, draftId: string, params: Partial<CreateDraftParams>): Promise<Draft> {
+  async updateDraft(
+    inboxId: string,
+    draftId: string,
+    params: Partial<CreateDraftParams>
+  ): Promise<Draft> {
     let res = await this.axios.patch(`/inboxes/${inboxId}/drafts/${draftId}`, {
       to: params.to,
       cc: params.cc,
@@ -236,7 +280,7 @@ export class Client {
       attachments: params.attachments?.map(toSnakeAttachment),
       in_reply_to: params.inReplyTo,
       send_at: params.sendAt,
-      client_id: params.clientId,
+      client_id: params.clientId
     });
     return res.data;
   }
@@ -245,34 +289,53 @@ export class Client {
     await this.axios.delete(`/inboxes/${inboxId}/drafts/${draftId}`);
   }
 
-  async sendDraft(inboxId: string, draftId: string, addLabels?: string[], removeLabels?: string[]): Promise<SendResult> {
+  async sendDraft(
+    inboxId: string,
+    draftId: string,
+    addLabels?: string[],
+    removeLabels?: string[]
+  ): Promise<SendResult> {
     let res = await this.axios.post(`/inboxes/${inboxId}/drafts/${draftId}/send`, {
       add_labels: addLabels,
-      remove_labels: removeLabels,
+      remove_labels: removeLabels
     });
     return res.data;
   }
 
   // --- Attachments ---
 
-  async getMessageAttachment(inboxId: string, messageId: string, attachmentId: string): Promise<AttachmentResponse> {
-    let res = await this.axios.get(`/inboxes/${inboxId}/messages/${messageId}/attachments/${attachmentId}`);
+  async getMessageAttachment(
+    inboxId: string,
+    messageId: string,
+    attachmentId: string
+  ): Promise<AttachmentResponse> {
+    let res = await this.axios.get(
+      `/inboxes/${inboxId}/messages/${messageId}/attachments/${attachmentId}`
+    );
     return res.data;
   }
 
-  async getThreadAttachment(inboxId: string, threadId: string, attachmentId: string): Promise<AttachmentResponse> {
-    let res = await this.axios.get(`/inboxes/${inboxId}/threads/${threadId}/attachments/${attachmentId}`);
+  async getThreadAttachment(
+    inboxId: string,
+    threadId: string,
+    attachmentId: string
+  ): Promise<AttachmentResponse> {
+    let res = await this.axios.get(
+      `/inboxes/${inboxId}/threads/${threadId}/attachments/${attachmentId}`
+    );
     return res.data;
   }
 
   // --- Domains ---
 
-  async listDomains(params?: PaginationParams): Promise<{ count: number; nextPageToken?: string; domains: Domain[] }> {
+  async listDomains(
+    params?: PaginationParams
+  ): Promise<{ count: number; nextPageToken?: string; domains: Domain[] }> {
     let res = await this.axios.get('/domains', { params: this.paginationQuery(params) });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      domains: res.data.domains,
+      domains: res.data.domains
     };
   }
 
@@ -297,12 +360,14 @@ export class Client {
 
   // --- Pods ---
 
-  async listPods(params?: PaginationParams): Promise<{ count: number; nextPageToken?: string; pods: Pod[] }> {
+  async listPods(
+    params?: PaginationParams
+  ): Promise<{ count: number; nextPageToken?: string; pods: Pod[] }> {
     let res = await this.axios.get('/pods', { params: this.paginationQuery(params) });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      pods: res.data.pods,
+      pods: res.data.pods
     };
   }
 
@@ -322,22 +387,30 @@ export class Client {
 
   // --- Webhooks ---
 
-  async listWebhooks(params?: PaginationParams): Promise<{ count: number; nextPageToken?: string; webhooks: Webhook[] }> {
+  async listWebhooks(
+    params?: PaginationParams
+  ): Promise<{ count: number; nextPageToken?: string; webhooks: Webhook[] }> {
     let res = await this.axios.get('/webhooks', { params: this.paginationQuery(params) });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      webhooks: res.data.webhooks,
+      webhooks: res.data.webhooks
     };
   }
 
-  async createWebhook(url: string, eventTypes: string[], podIds?: string[], inboxIds?: string[], clientId?: string): Promise<Webhook> {
+  async createWebhook(
+    url: string,
+    eventTypes: string[],
+    podIds?: string[],
+    inboxIds?: string[],
+    clientId?: string
+  ): Promise<Webhook> {
     let res = await this.axios.post('/webhooks', {
       url,
       event_types: eventTypes,
       pod_ids: podIds,
       inbox_ids: inboxIds,
-      client_id: clientId,
+      client_id: clientId
     });
     return res.data;
   }
@@ -347,13 +420,22 @@ export class Client {
     return res.data;
   }
 
-  async updateWebhook(webhookId: string, params: { url?: string; eventTypes?: string[]; podIds?: string[]; inboxIds?: string[]; enabled?: boolean }): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      url?: string;
+      eventTypes?: string[];
+      podIds?: string[];
+      inboxIds?: string[];
+      enabled?: boolean;
+    }
+  ): Promise<Webhook> {
     let res = await this.axios.patch(`/webhooks/${webhookId}`, {
       url: params.url,
       event_types: params.eventTypes,
       pod_ids: params.podIds,
       inbox_ids: params.inboxIds,
-      enabled: params.enabled,
+      enabled: params.enabled
     });
     return res.data;
   }
@@ -364,16 +446,27 @@ export class Client {
 
   // --- Lists ---
 
-  async listEntries(direction: string, listType: string, params?: PaginationParams): Promise<{ count: number; nextPageToken?: string; entries: ListEntry[] }> {
-    let res = await this.axios.get(`/lists/${direction}/${listType}`, { params: this.paginationQuery(params) });
+  async listEntries(
+    direction: string,
+    listType: string,
+    params?: PaginationParams
+  ): Promise<{ count: number; nextPageToken?: string; entries: ListEntry[] }> {
+    let res = await this.axios.get(`/lists/${direction}/${listType}`, {
+      params: this.paginationQuery(params)
+    });
     return {
       count: res.data.count,
       nextPageToken: res.data.next_page_token,
-      entries: res.data.entries,
+      entries: res.data.entries
     };
   }
 
-  async createListEntry(direction: string, listType: string, entry: string, reason?: string): Promise<ListEntry> {
+  async createListEntry(
+    direction: string,
+    listType: string,
+    entry: string,
+    reason?: string
+  ): Promise<ListEntry> {
     let res = await this.axios.post(`/lists/${direction}/${listType}`, { entry, reason });
     return res.data;
   }

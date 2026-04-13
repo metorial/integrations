@@ -6,9 +6,11 @@ let identityAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -37,7 +39,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -51,19 +53,23 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await identityAxios.post('/v1/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`
+      let response = await identityAxios.post(
+        '/v1/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
         }
-      });
+      );
 
       return {
         output: {
@@ -75,7 +81,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
       let response = await identityAxios.get('/v1/userinfo', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -83,7 +89,9 @@ export let auth = SlateAuth.create()
         profile: {
           id: response.data.sub,
           email: response.data.email,
-          name: [response.data.given_name, response.data.family_name].filter(Boolean).join(' ') || undefined
+          name:
+            [response.data.given_name, response.data.family_name].filter(Boolean).join(' ') ||
+            undefined
         }
       };
     }
@@ -94,10 +102,14 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      apiToken: z.string().describe('Your Sprout Social API token. Generate one under Settings > Global Features > API > API Token Management.')
+      apiToken: z
+        .string()
+        .describe(
+          'Your Sprout Social API token. Generate one under Settings > Global Features > API > API Token Management.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiToken

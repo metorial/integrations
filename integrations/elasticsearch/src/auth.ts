@@ -2,37 +2,43 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    baseUrl: z.string(),
-    authHeader: z.string(),
-  }))
+  .output(
+    z.object({
+      baseUrl: z.string(),
+      authHeader: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Basic Authentication',
     key: 'basic_auth',
 
     inputSchema: z.object({
-      elasticsearchUrl: z.string().describe('Base URL of your Elasticsearch cluster (e.g., https://my-cluster.es.cloud:9243)'),
+      elasticsearchUrl: z
+        .string()
+        .describe(
+          'Base URL of your Elasticsearch cluster (e.g., https://my-cluster.es.cloud:9243)'
+        ),
       username: z.string().describe('Elasticsearch username'),
-      password: z.string().describe('Elasticsearch password'),
+      password: z.string().describe('Elasticsearch password')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let credentials = btoa(`${ctx.input.username}:${ctx.input.password}`);
       let baseUrl = ctx.input.elasticsearchUrl.replace(/\/+$/, '');
 
       let ax = createAxios({ baseURL: baseUrl });
       await ax.get('/', {
         headers: {
-          'Authorization': `Basic ${credentials}`,
-        },
+          Authorization: `Basic ${credentials}`
+        }
       });
 
       return {
         output: {
           baseUrl,
-          authHeader: `Basic ${credentials}`,
-        },
+          authHeader: `Basic ${credentials}`
+        }
       };
     },
 
@@ -40,18 +46,18 @@ export let auth = SlateAuth.create()
       let ax = createAxios({ baseURL: ctx.output.baseUrl });
       let response = await ax.get('/_security/_authenticate', {
         headers: {
-          'Authorization': ctx.output.authHeader,
-        },
+          Authorization: ctx.output.authHeader
+        }
       });
 
       return {
         profile: {
           id: response.data.username,
           name: response.data.full_name || response.data.username,
-          email: response.data.email,
-        },
+          email: response.data.email
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -59,25 +65,33 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      elasticsearchUrl: z.string().describe('Base URL of your Elasticsearch cluster (e.g., https://my-cluster.es.cloud:9243)'),
-      token: z.string().describe('Base64-encoded API key (the "encoded" value returned when the API key was created)'),
+      elasticsearchUrl: z
+        .string()
+        .describe(
+          'Base URL of your Elasticsearch cluster (e.g., https://my-cluster.es.cloud:9243)'
+        ),
+      token: z
+        .string()
+        .describe(
+          'Base64-encoded API key (the "encoded" value returned when the API key was created)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = ctx.input.elasticsearchUrl.replace(/\/+$/, '');
 
       let ax = createAxios({ baseURL: baseUrl });
       await ax.get('/', {
         headers: {
-          'Authorization': `ApiKey ${ctx.input.token}`,
-        },
+          Authorization: `ApiKey ${ctx.input.token}`
+        }
       });
 
       return {
         output: {
           baseUrl,
-          authHeader: `ApiKey ${ctx.input.token}`,
-        },
+          authHeader: `ApiKey ${ctx.input.token}`
+        }
       };
     },
 
@@ -85,18 +99,18 @@ export let auth = SlateAuth.create()
       let ax = createAxios({ baseURL: ctx.output.baseUrl });
       let response = await ax.get('/_security/_authenticate', {
         headers: {
-          'Authorization': ctx.output.authHeader,
-        },
+          Authorization: ctx.output.authHeader
+        }
       });
 
       return {
         profile: {
           id: response.data.username,
           name: response.data.full_name || response.data.username,
-          email: response.data.email,
-        },
+          email: response.data.email
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -104,25 +118,31 @@ export let auth = SlateAuth.create()
     key: 'bearer_token',
 
     inputSchema: z.object({
-      elasticsearchUrl: z.string().describe('Base URL of your Elasticsearch cluster (e.g., https://my-cluster.es.cloud:9243)'),
-      token: z.string().describe('OAuth2 access token obtained from the /_security/oauth2/token endpoint'),
+      elasticsearchUrl: z
+        .string()
+        .describe(
+          'Base URL of your Elasticsearch cluster (e.g., https://my-cluster.es.cloud:9243)'
+        ),
+      token: z
+        .string()
+        .describe('OAuth2 access token obtained from the /_security/oauth2/token endpoint')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = ctx.input.elasticsearchUrl.replace(/\/+$/, '');
 
       let ax = createAxios({ baseURL: baseUrl });
       await ax.get('/', {
         headers: {
-          'Authorization': `Bearer ${ctx.input.token}`,
-        },
+          Authorization: `Bearer ${ctx.input.token}`
+        }
       });
 
       return {
         output: {
           baseUrl,
-          authHeader: `Bearer ${ctx.input.token}`,
-        },
+          authHeader: `Bearer ${ctx.input.token}`
+        }
       };
     },
 
@@ -130,16 +150,16 @@ export let auth = SlateAuth.create()
       let ax = createAxios({ baseURL: ctx.output.baseUrl });
       let response = await ax.get('/_security/_authenticate', {
         headers: {
-          'Authorization': ctx.output.authHeader,
-        },
+          Authorization: ctx.output.authHeader
+        }
       });
 
       return {
         profile: {
           id: response.data.username,
           name: response.data.full_name || response.data.username,
-          email: response.data.email,
-        },
+          email: response.data.email
+        }
       };
-    },
+    }
   });

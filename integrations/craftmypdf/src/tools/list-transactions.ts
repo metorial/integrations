@@ -3,21 +3,21 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'List Transactions',
-    key: 'list_transactions',
-    description: `List PDF generation transactions for tracking and auditing. Returns transaction history including credits consumed, operations performed, and file URLs.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTransactions = SlateTool.create(spec, {
+  name: 'List Transactions',
+  key: 'list_transactions',
+  description: `List PDF generation transactions for tracking and auditing. Returns transaction history including credits consumed, operations performed, and file URLs.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
-      limit: z.number().optional().describe('Maximum number of transactions to return per page. Default is 300.'),
-      offset: z.number().optional().describe('Number of transactions to skip for pagination.'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of transactions to return per page. Default is 300.'),
+      offset: z.number().optional().describe('Number of transactions to skip for pagination.')
     })
   )
   .output(
@@ -30,35 +30,35 @@ export let listTransactions = SlateTool.create(
             credits: z.number().describe('Credits consumed by this transaction.'),
             createdAt: z.string().describe('Timestamp when the transaction occurred.'),
             operation: z.string().describe('Type of operation performed.'),
-            fileUrl: z.string().describe('URL to the generated file.'),
+            fileUrl: z.string().describe('URL to the generated file.')
           })
         )
-        .describe('List of transactions.'),
+        .describe('List of transactions.')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let result = await client.listTransactions({
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
-    let transactions = (result.transactions || []).map((t) => ({
+    let transactions = (result.transactions || []).map(t => ({
       transactionRef: t.transaction_ref,
       templateId: t.template_id || '',
       credits: t.credits,
       createdAt: t.created_at,
       operation: t.operation || '',
-      fileUrl: t.file || '',
+      fileUrl: t.file || ''
     }));
 
     return {
       output: { transactions },
-      message: `Found **${transactions.length}** transaction(s).`,
+      message: `Found **${transactions.length}** transaction(s).`
     };
   })
   .build();

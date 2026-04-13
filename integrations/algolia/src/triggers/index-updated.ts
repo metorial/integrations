@@ -3,47 +3,51 @@ import { AlgoliaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let indexUpdated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Index Updated',
-    key: 'index_updated',
-    description: 'Detects when Algolia indices are created, updated, or deleted by polling the list of indices and comparing with previous state.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of index change detected'),
-    indexName: z.string().describe('Name of the affected index'),
-    entries: z.number().optional().describe('Number of records in the index'),
-    updatedAt: z.string().optional().describe('Timestamp when the index was last updated'),
-    previousUpdatedAt: z.string().optional().describe('Previous known update timestamp'),
-  }))
-  .output(z.object({
-    indexName: z.string().describe('Name of the affected index'),
-    entries: z.number().optional().describe('Current number of records in the index'),
-    updatedAt: z.string().optional().describe('Timestamp of the latest update'),
-    dataSize: z.number().optional().describe('Size of the index data in bytes'),
-  }))
+export let indexUpdated = SlateTrigger.create(spec, {
+  name: 'Index Updated',
+  key: 'index_updated',
+  description:
+    'Detects when Algolia indices are created, updated, or deleted by polling the list of indices and comparing with previous state.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of index change detected'),
+      indexName: z.string().describe('Name of the affected index'),
+      entries: z.number().optional().describe('Number of records in the index'),
+      updatedAt: z.string().optional().describe('Timestamp when the index was last updated'),
+      previousUpdatedAt: z.string().optional().describe('Previous known update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      indexName: z.string().describe('Name of the affected index'),
+      entries: z.number().optional().describe('Current number of records in the index'),
+      updatedAt: z.string().optional().describe('Timestamp of the latest update'),
+      dataSize: z.number().optional().describe('Size of the index data in bytes')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new AlgoliaClient({
         applicationId: ctx.auth.applicationId,
         token: ctx.auth.token,
-        analyticsRegion: ctx.config.analyticsRegion,
+        analyticsRegion: ctx.config.analyticsRegion
       });
 
       let result = await client.listIndices();
       let currentIndices: Record<string, any> = {};
 
-      for (let item of (result.items || [])) {
+      for (let item of result.items || []) {
         currentIndices[item.name] = {
           entries: item.entries,
           updatedAt: item.updatedAt,
-          dataSize: item.dataSize,
+          dataSize: item.dataSize
         };
       }
 
@@ -64,7 +68,7 @@ export let indexUpdated = SlateTrigger.create(
             changeType: 'created',
             indexName: name,
             entries: data.entries,
-            updatedAt: data.updatedAt,
+            updatedAt: data.updatedAt
           });
         } else if (prev.updatedAt !== data.updatedAt) {
           inputs.push({
@@ -72,7 +76,7 @@ export let indexUpdated = SlateTrigger.create(
             indexName: name,
             entries: data.entries,
             updatedAt: data.updatedAt,
-            previousUpdatedAt: prev.updatedAt,
+            previousUpdatedAt: prev.updatedAt
           });
         }
       }
@@ -82,7 +86,7 @@ export let indexUpdated = SlateTrigger.create(
         if (!currentIndices[name]) {
           inputs.push({
             changeType: 'deleted',
-            indexName: name,
+            indexName: name
           });
         }
       }
@@ -90,12 +94,12 @@ export let indexUpdated = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          indices: currentIndices,
-        },
+          indices: currentIndices
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `index.${ctx.input.changeType}`,
         id: `${ctx.input.indexName}-${ctx.input.updatedAt || ctx.input.changeType}-${Date.now()}`,
@@ -103,9 +107,9 @@ export let indexUpdated = SlateTrigger.create(
           indexName: ctx.input.indexName,
           entries: ctx.input.entries,
           updatedAt: ctx.input.updatedAt,
-          dataSize: undefined,
-        },
+          dataSize: undefined
+        }
       };
-    },
+    }
   })
   .build();

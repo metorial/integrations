@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchCoins,
@@ -9,11 +8,9 @@ import {
   getCoinPriceHistory,
   getTrendingCoins,
   getGlobalStats,
-  listReferenceCurrencies,
+  listReferenceCurrencies
 } from './tools';
-import { coinPriceChangeTrigger,
-  inboundWebhook,
-} from './triggers';
+import { coinPriceChangeTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -25,10 +22,7 @@ export let provider = Slate.create({
     getCoinPriceHistory,
     getTrendingCoins,
     getGlobalStats,
-    listReferenceCurrencies,
+    listReferenceCurrencies
   ],
-  triggers: [
-    inboundWebhook,
-    coinPriceChangeTrigger,
-  ],
+  triggers: [inboundWebhook, coinPriceChangeTrigger]
 });

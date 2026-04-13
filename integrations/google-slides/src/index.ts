@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createPresentation,
@@ -14,9 +13,7 @@ import {
   batchUpdate,
   deleteElement
 } from './tools';
-import { presentationChanged,
-  inboundWebhook,
-} from './triggers';
+import { presentationChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,8 +30,5 @@ export let provider = Slate.create({
     batchUpdate,
     deleteElement
   ],
-  triggers: [
-    inboundWebhook,
-    presentationChanged
-  ]
+  triggers: [inboundWebhook, presentationChanged]
 });

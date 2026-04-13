@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listConversations,
@@ -19,14 +18,14 @@ import {
   listOperators,
   getWebsiteAvailability,
   batchConversationActions,
-  manageWebsiteSettings,
+  manageWebsiteSettings
 } from './tools';
 import {
   newConversation,
   conversationStateChanged,
   newMessage,
   peopleProfileChanged,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -49,13 +48,13 @@ export let provider = Slate.create({
     listOperators,
     getWebsiteAvailability,
     batchConversationActions,
-    manageWebsiteSettings,
+    manageWebsiteSettings
   ],
   triggers: [
     inboundWebhook,
     newConversation,
     conversationStateChanged,
     newMessage,
-    peopleProfileChanged,
-  ],
+    peopleProfileChanged
+  ]
 });

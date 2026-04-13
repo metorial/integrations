@@ -17,11 +17,7 @@ import {
   sendInBulk,
   listUsers
 } from './tools';
-import {
-  agreementEvents,
-  webFormEvents,
-  megaSignEvents
-} from './triggers';
+import { agreementEvents, webFormEvents, megaSignEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,9 +38,5 @@ export let provider = Slate.create({
     sendInBulk,
     listUsers
   ] as any,
-  triggers: [
-    agreementEvents,
-    webFormEvents,
-    megaSignEvents
-  ] as any
+  triggers: [agreementEvents, webFormEvents, megaSignEvents] as any
 });

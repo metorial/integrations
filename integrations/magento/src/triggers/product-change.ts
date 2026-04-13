@@ -3,55 +3,65 @@ import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let productChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Product Change',
-    key: 'product_change',
-    description: 'Triggers when a product is created or updated in the catalog. Polls the product list and detects changes based on the updated_at timestamp.',
-  }
-)
-  .input(z.object({
-    productId: z.number().describe('Product entity ID'),
-    sku: z.string().describe('Product SKU'),
-    name: z.string().optional().describe('Product name'),
-    price: z.number().optional().describe('Product price'),
-    status: z.number().optional().describe('Product status'),
-    typeId: z.string().optional().describe('Product type'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    isNew: z.boolean().describe('Whether this is a newly created product'),
-  }))
-  .output(z.object({
-    productId: z.number().describe('Product entity ID'),
-    sku: z.string().describe('Product SKU'),
-    name: z.string().optional().describe('Product name'),
-    price: z.number().optional().describe('Product price'),
-    status: z.number().optional().describe('Product status (1=enabled, 2=disabled)'),
-    visibility: z.number().optional().describe('Product visibility'),
-    typeId: z.string().optional().describe('Product type'),
-    weight: z.number().optional().describe('Product weight'),
-    attributeSetId: z.number().optional().describe('Attribute set ID'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    customAttributes: z.array(z.object({
-      attributeCode: z.string().describe('Attribute code'),
-      value: z.any().describe('Attribute value'),
-    })).optional().describe('Custom product attributes'),
-  }))
+export let productChange = SlateTrigger.create(spec, {
+  name: 'Product Change',
+  key: 'product_change',
+  description:
+    'Triggers when a product is created or updated in the catalog. Polls the product list and detects changes based on the updated_at timestamp.'
+})
+  .input(
+    z.object({
+      productId: z.number().describe('Product entity ID'),
+      sku: z.string().describe('Product SKU'),
+      name: z.string().optional().describe('Product name'),
+      price: z.number().optional().describe('Product price'),
+      status: z.number().optional().describe('Product status'),
+      typeId: z.string().optional().describe('Product type'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      isNew: z.boolean().describe('Whether this is a newly created product')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.number().describe('Product entity ID'),
+      sku: z.string().describe('Product SKU'),
+      name: z.string().optional().describe('Product name'),
+      price: z.number().optional().describe('Product price'),
+      status: z.number().optional().describe('Product status (1=enabled, 2=disabled)'),
+      visibility: z.number().optional().describe('Product visibility'),
+      typeId: z.string().optional().describe('Product type'),
+      weight: z.number().optional().describe('Product weight'),
+      attributeSetId: z.number().optional().describe('Attribute set ID'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      customAttributes: z
+        .array(
+          z.object({
+            attributeCode: z.string().describe('Attribute code'),
+            value: z.any().describe('Attribute value')
+          })
+        )
+        .optional()
+        .describe('Custom product attributes')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MagentoClient({
         storeUrl: ctx.config.storeUrl,
         storeCode: ctx.config.storeCode,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
-      let state = ctx.state as { lastUpdatedAt?: string; knownProducts?: Record<string, string> } | null;
+      let state = ctx.state as {
+        lastUpdatedAt?: string;
+        knownProducts?: Record<string, string>;
+      } | null;
       let lastUpdatedAt = state?.lastUpdatedAt;
       let knownProducts = state?.knownProducts || {};
 
@@ -64,7 +74,7 @@ export let productChange = SlateTrigger.create(
         filters,
         sortField: 'updated_at',
         sortDirection: 'ASC',
-        pageSize: 50,
+        pageSize: 50
       });
 
       let inputs: Array<{
@@ -100,11 +110,14 @@ export let productChange = SlateTrigger.create(
           typeId: product.type_id,
           createdAt: product.created_at,
           updatedAt: product.updated_at,
-          isNew,
+          isNew
         });
 
         updatedKnown[productIdStr] = product.updated_at || '';
-        if (product.updated_at && (!newLastUpdatedAt || product.updated_at > newLastUpdatedAt)) {
+        if (
+          product.updated_at &&
+          (!newLastUpdatedAt || product.updated_at > newLastUpdatedAt)
+        ) {
           newLastUpdatedAt = product.updated_at;
         }
       }
@@ -113,16 +126,16 @@ export let productChange = SlateTrigger.create(
         inputs,
         updatedState: {
           lastUpdatedAt: newLastUpdatedAt,
-          knownProducts: updatedKnown,
-        },
+          knownProducts: updatedKnown
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new MagentoClient({
         storeUrl: ctx.config.storeUrl,
         storeCode: ctx.config.storeCode,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let fullProduct: any = {};
@@ -151,10 +164,10 @@ export let productChange = SlateTrigger.create(
           updatedAt: ctx.input.updatedAt || fullProduct.updated_at,
           customAttributes: fullProduct.custom_attributes?.map((a: any) => ({
             attributeCode: a.attribute_code,
-            value: a.value,
-          })),
-        },
+            value: a.value
+          }))
+        }
       };
-    },
+    }
   })
   .build();

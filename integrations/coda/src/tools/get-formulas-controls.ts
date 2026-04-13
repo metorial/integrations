@@ -3,36 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFormulasControlsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Formulas and Controls',
-    key: 'get_formulas_controls',
-    description: `Retrieve named formulas and interactive controls (sliders, checkboxes, select boxes, etc.) from a Coda doc, including their current computed values.`,
-    tags: {
-      readOnly: true,
-    },
+export let getFormulasControlsTool = SlateTool.create(spec, {
+  name: 'Get Formulas and Controls',
+  key: 'get_formulas_controls',
+  description: `Retrieve named formulas and interactive controls (sliders, checkboxes, select boxes, etc.) from a Coda doc, including their current computed values.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    docId: z.string().describe('ID of the doc'),
-    includeFormulas: z.boolean().optional().default(true).describe('Whether to include named formulas'),
-    includeControls: z.boolean().optional().default(true).describe('Whether to include controls'),
-  }))
-  .output(z.object({
-    formulas: z.array(z.object({
-      formulaId: z.string().describe('ID of the formula'),
-      name: z.string().describe('Name of the formula'),
-      value: z.any().optional().describe('Current computed value of the formula'),
-    })).optional(),
-    controls: z.array(z.object({
-      controlId: z.string().describe('ID of the control'),
-      name: z.string().describe('Name of the control'),
-      controlType: z.string().optional().describe('Type of control (e.g. slider, checkbox)'),
-      value: z.any().optional().describe('Current value of the control'),
-    })).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      docId: z.string().describe('ID of the doc'),
+      includeFormulas: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Whether to include named formulas'),
+      includeControls: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Whether to include controls')
+    })
+  )
+  .output(
+    z.object({
+      formulas: z
+        .array(
+          z.object({
+            formulaId: z.string().describe('ID of the formula'),
+            name: z.string().describe('Name of the formula'),
+            value: z.any().optional().describe('Current computed value of the formula')
+          })
+        )
+        .optional(),
+      controls: z
+        .array(
+          z.object({
+            controlId: z.string().describe('ID of the control'),
+            name: z.string().describe('Name of the control'),
+            controlType: z
+              .string()
+              .optional()
+              .describe('Type of control (e.g. slider, checkbox)'),
+            value: z.any().optional().describe('Current value of the control')
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let formulas: any[] | undefined;
@@ -43,7 +63,7 @@ export let getFormulasControlsTool = SlateTool.create(
       formulas = (formulaResult.items || []).map((f: any) => ({
         formulaId: f.id,
         name: f.name,
-        value: f.value,
+        value: f.value
       }));
     }
 
@@ -53,7 +73,7 @@ export let getFormulasControlsTool = SlateTool.create(
         controlId: c.id,
         name: c.name,
         controlType: c.controlType,
-        value: c.value,
+        value: c.value
       }));
     }
 
@@ -64,9 +84,9 @@ export let getFormulasControlsTool = SlateTool.create(
     return {
       output: {
         formulas,
-        controls,
+        controls
       },
-      message: `Found ${counts.join(' and ')} in the doc.`,
+      message: `Found ${counts.join(' and ')} in the doc.`
     };
   })
   .build();

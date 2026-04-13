@@ -9,34 +9,38 @@ export let manageDatasource = SlateTool.create(spec, {
   description: `Get details, update, delete, or trigger extract refresh for a data source. Use the **action** field to select the operation.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    action: z.enum(['get', 'update', 'delete', 'refresh']).describe('Operation to perform'),
-    datasourceId: z.string().describe('LUID of the data source'),
-    name: z.string().optional().describe('New name (for update)'),
-    description: z.string().optional().describe('New description (for update)'),
-    projectId: z.string().optional().describe('New project LUID (for update)'),
-    ownerUserId: z.string().optional().describe('New owner LUID (for update)'),
-    isCertified: z.boolean().optional().describe('Certification status (for update)'),
-    certificationNote: z.string().optional().describe('Certification note (for update)')
-  }))
-  .output(z.object({
-    datasourceId: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    contentUrl: z.string().optional(),
-    type: z.string().optional(),
-    isCertified: z.boolean().optional(),
-    certificationNote: z.string().optional(),
-    projectId: z.string().optional(),
-    projectName: z.string().optional(),
-    ownerId: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    connections: z.array(z.any()).optional(),
-    jobId: z.string().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z.enum(['get', 'update', 'delete', 'refresh']).describe('Operation to perform'),
+      datasourceId: z.string().describe('LUID of the data source'),
+      name: z.string().optional().describe('New name (for update)'),
+      description: z.string().optional().describe('New description (for update)'),
+      projectId: z.string().optional().describe('New project LUID (for update)'),
+      ownerUserId: z.string().optional().describe('New owner LUID (for update)'),
+      isCertified: z.boolean().optional().describe('Certification status (for update)'),
+      certificationNote: z.string().optional().describe('Certification note (for update)')
+    })
+  )
+  .output(
+    z.object({
+      datasourceId: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      contentUrl: z.string().optional(),
+      type: z.string().optional(),
+      isCertified: z.boolean().optional(),
+      certificationNote: z.string().optional(),
+      projectId: z.string().optional(),
+      projectName: z.string().optional(),
+      ownerId: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      connections: z.array(z.any()).optional(),
+      jobId: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action, datasourceId } = ctx.input;
 
@@ -112,4 +116,5 @@ export let manageDatasource = SlateTool.create(spec, {
       output: { datasourceId },
       message: `Unknown action: ${action}`
     };
-  }).build();
+  })
+  .build();

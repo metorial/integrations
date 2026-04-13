@@ -58,7 +58,5 @@ export let provider = Slate.create({
     upsertVoiceMessage,
     resetVoiceMessage
   ],
-  triggers: [
-    callEvents
-  ]
+  triggers: [callEvents]
 });

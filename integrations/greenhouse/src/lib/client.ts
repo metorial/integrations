@@ -13,8 +13,8 @@ export class GreenhouseClient {
 
   private getAxios(write: boolean = false) {
     let headers: Record<string, string> = {
-      'Authorization': `Basic ${btoa(this.token + ':')}`,
-      'Content-Type': 'application/json',
+      Authorization: `Basic ${btoa(this.token + ':')}`,
+      'Content-Type': 'application/json'
     };
     if (write && this.onBehalfOf) {
       headers['On-Behalf-Of'] = this.onBehalfOf;
@@ -66,7 +66,7 @@ export class GreenhouseClient {
       created_before: params?.createdBefore,
       updated_after: params?.updatedAfter,
       updated_before: params?.updatedBefore,
-      job_id: params?.jobId,
+      job_id: params?.jobId
     });
   }
 
@@ -98,22 +98,25 @@ export class GreenhouseClient {
       website_addresses: data.websiteAddresses,
       social_media_addresses: data.socialMediaAddresses,
       tags: data.tags,
-      applications: data.applications?.map(a => ({ job_id: a.jobId })),
+      applications: data.applications?.map(a => ({ job_id: a.jobId }))
     });
   }
 
-  async updateCandidate(candidateId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    company?: string;
-    title?: string;
-    phoneNumbers?: Array<{ value: string; type: string }>;
-    addresses?: Array<{ value: string; type: string }>;
-    emailAddresses?: Array<{ value: string; type: string }>;
-    websiteAddresses?: Array<{ value: string; type: string }>;
-    socialMediaAddresses?: Array<{ value: string; type: string }>;
-    tags?: string[];
-  }): Promise<any> {
+  async updateCandidate(
+    candidateId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      company?: string;
+      title?: string;
+      phoneNumbers?: Array<{ value: string; type: string }>;
+      addresses?: Array<{ value: string; type: string }>;
+      emailAddresses?: Array<{ value: string; type: string }>;
+      websiteAddresses?: Array<{ value: string; type: string }>;
+      socialMediaAddresses?: Array<{ value: string; type: string }>;
+      tags?: string[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -123,20 +126,24 @@ export class GreenhouseClient {
     if (data.addresses !== undefined) body.addresses = data.addresses;
     if (data.emailAddresses !== undefined) body.email_addresses = data.emailAddresses;
     if (data.websiteAddresses !== undefined) body.website_addresses = data.websiteAddresses;
-    if (data.socialMediaAddresses !== undefined) body.social_media_addresses = data.socialMediaAddresses;
+    if (data.socialMediaAddresses !== undefined)
+      body.social_media_addresses = data.socialMediaAddresses;
     if (data.tags !== undefined) body.tags = data.tags;
     return this.patch(`/candidates/${candidateId}`, body);
   }
 
-  async addCandidateNote(candidateId: number, data: {
-    userId: number;
-    body: string;
-    visibility: string;
-  }): Promise<any> {
+  async addCandidateNote(
+    candidateId: number,
+    data: {
+      userId: number;
+      body: string;
+      visibility: string;
+    }
+  ): Promise<any> {
     return this.post(`/candidates/${candidateId}/activity_feed/notes`, {
       user_id: data.userId,
       body: data.body,
-      visibility: data.visibility,
+      visibility: data.visibility
     });
   }
 
@@ -146,7 +153,9 @@ export class GreenhouseClient {
 
   async removeCandidateTag(candidateId: number, tagName: string): Promise<any> {
     let client = this.getAxios(true);
-    let response = await client.delete(`/candidates/${candidateId}/tags/${encodeURIComponent(tagName)}`);
+    let response = await client.delete(
+      `/candidates/${candidateId}/tags/${encodeURIComponent(tagName)}`
+    );
     return response.data;
   }
 
@@ -177,7 +186,7 @@ export class GreenhouseClient {
       created_after: params?.createdAfter,
       created_before: params?.createdBefore,
       updated_after: params?.updatedAfter,
-      updated_before: params?.updatedBefore,
+      updated_before: params?.updatedBefore
     });
   }
 
@@ -191,28 +200,36 @@ export class GreenhouseClient {
     return this.post(`/applications/${applicationId}/advance`, body);
   }
 
-  async moveApplication(applicationId: number, fromStageId: number, toStageId: number): Promise<any> {
+  async moveApplication(
+    applicationId: number,
+    fromStageId: number,
+    toStageId: number
+  ): Promise<any> {
     return this.post(`/applications/${applicationId}/move`, {
       from_stage_id: fromStageId,
-      to_stage_id: toStageId,
+      to_stage_id: toStageId
     });
   }
 
-  async rejectApplication(applicationId: number, data?: {
-    rejectionReasonId?: number;
-    notes?: string;
-    rejectionEmail?: {
-      sendEmailAt?: string;
-      emailTemplateId?: number;
-    };
-  }): Promise<any> {
+  async rejectApplication(
+    applicationId: number,
+    data?: {
+      rejectionReasonId?: number;
+      notes?: string;
+      rejectionEmail?: {
+        sendEmailAt?: string;
+        emailTemplateId?: number;
+      };
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
-    if (data?.rejectionReasonId !== undefined) body.rejection_reason_id = data.rejectionReasonId;
+    if (data?.rejectionReasonId !== undefined)
+      body.rejection_reason_id = data.rejectionReasonId;
     if (data?.notes !== undefined) body.notes = data.notes;
     if (data?.rejectionEmail) {
       body.rejection_email = {
         send_email_at: data.rejectionEmail.sendEmailAt,
-        email_template_id: data.rejectionEmail.emailTemplateId,
+        email_template_id: data.rejectionEmail.emailTemplateId
       };
     }
     return this.post(`/applications/${applicationId}/reject`, body);
@@ -236,7 +253,7 @@ export class GreenhouseClient {
       per_page: params?.perPage || 50,
       status: params?.status,
       department_id: params?.departmentId,
-      office_id: params?.officeId,
+      office_id: params?.officeId
     });
   }
 
@@ -254,7 +271,7 @@ export class GreenhouseClient {
     openingIds?: string[];
   }): Promise<any> {
     let body: Record<string, any> = {
-      template_job_id: data.templateJobId,
+      template_job_id: data.templateJobId
     };
     if (data.numberOfOpenings !== undefined) body.number_of_openings = data.numberOfOpenings;
     if (data.jobPostName !== undefined) body.job_post_name = data.jobPostName;
@@ -287,7 +304,7 @@ export class GreenhouseClient {
       created_after: params?.createdAfter,
       created_before: params?.createdBefore,
       updated_after: params?.updatedAfter,
-      updated_before: params?.updatedBefore,
+      updated_before: params?.updatedBefore
     });
   }
 
@@ -321,7 +338,7 @@ export class GreenhouseClient {
       created_after: params?.createdAfter,
       created_before: params?.createdBefore,
       updated_after: params?.updatedAfter,
-      updated_before: params?.updatedBefore,
+      updated_before: params?.updatedBefore
     });
   }
 
@@ -331,25 +348,19 @@ export class GreenhouseClient {
 
   // ---- Departments ----
 
-  async listDepartments(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listDepartments(params?: { page?: number; perPage?: number }): Promise<any[]> {
     return this.get('/departments', {
       page: params?.page,
-      per_page: params?.perPage || 50,
+      per_page: params?.perPage || 50
     });
   }
 
   // ---- Offices ----
 
-  async listOffices(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listOffices(params?: { page?: number; perPage?: number }): Promise<any[]> {
     return this.get('/offices', {
       page: params?.page,
-      per_page: params?.perPage || 50,
+      per_page: params?.perPage || 50
     });
   }
 
@@ -371,31 +382,25 @@ export class GreenhouseClient {
       created_after: params?.createdAfter,
       created_before: params?.createdBefore,
       updated_after: params?.updatedAfter,
-      updated_before: params?.updatedBefore,
+      updated_before: params?.updatedBefore
     });
   }
 
   // ---- Rejection Reasons ----
 
-  async listRejectionReasons(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listRejectionReasons(params?: { page?: number; perPage?: number }): Promise<any[]> {
     return this.get('/rejection_reasons', {
       page: params?.page,
-      per_page: params?.perPage || 100,
+      per_page: params?.perPage || 100
     });
   }
 
   // ---- Sources ----
 
-  async listSources(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listSources(params?: { page?: number; perPage?: number }): Promise<any[]> {
     return this.get('/sources', {
       page: params?.page,
-      per_page: params?.perPage || 100,
+      per_page: params?.perPage || 100
     });
   }
 
@@ -407,13 +412,10 @@ export class GreenhouseClient {
 
   // ---- Tags ----
 
-  async listCandidateTags(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listCandidateTags(params?: { page?: number; perPage?: number }): Promise<any[]> {
     return this.get('/tags/candidate', {
       page: params?.page,
-      per_page: params?.perPage || 100,
+      per_page: params?.perPage || 100
     });
   }
 }

@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'pipedrive',
   name: 'Pipedrive',
-  description: 'Cloud-based CRM platform for managing sales pipelines, deals, contacts, activities, and products.',
+  description:
+    'Cloud-based CRM platform for managing sales pipelines, deals, contacts, activities, and products.',
   metadata: {},
   config,
-  auth,
+  auth
 });

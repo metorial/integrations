@@ -16,14 +16,9 @@ import {
   callAction,
   manageMessagingProfile,
   manageSimCard,
-  getBalance,
+  getBalance
 } from './tools';
-import {
-  messagingEvents,
-  callEvents,
-  faxEvents,
-  verifyEvents,
-} from './triggers';
+import { messagingEvents, callEvents, faxEvents, verifyEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,12 +38,7 @@ export let provider = Slate.create({
     callAction,
     manageMessagingProfile,
     manageSimCard,
-    getBalance,
+    getBalance
   ],
-  triggers: [
-    messagingEvents,
-    callEvents,
-    faxEvents,
-    verifyEvents,
-  ],
+  triggers: [messagingEvents, callEvents, faxEvents, verifyEvents]
 });

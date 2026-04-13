@@ -6,7 +6,7 @@ import { z } from 'zod';
 let serviceEndpointSchema = z.object({
   protocol: z.string().optional(),
   host: z.string().optional(),
-  port: z.number().optional(),
+  port: z.number().optional()
 });
 
 let serviceSummarySchema = z.object({
@@ -21,30 +21,34 @@ let serviceSummarySchema = z.object({
   maxReplicaMemoryGb: z.number().optional().describe('Maximum replica memory in GB'),
   idleScaling: z.boolean().optional().describe('Whether idle scaling is enabled'),
   endpoints: z.array(serviceEndpointSchema).optional().describe('Service endpoints'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let listServices = SlateTool.create(
-  spec,
-  {
-    name: 'List Services',
-    key: 'list_services',
-    description: `List all ClickHouse services in the organization. Optionally filter services by tags. Returns service names, states, cloud provider, region, scaling configuration, and endpoints.`,
-    tags: {
-      readOnly: true,
-    },
+export let listServices = SlateTool.create(spec, {
+  name: 'List Services',
+  key: 'list_services',
+  description: `List all ClickHouse services in the organization. Optionally filter services by tags. Returns service names, states, cloud provider, region, scaling configuration, and endpoints.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    filter: z.array(z.string()).optional().describe('Tag-based filter strings (e.g., "tag:env=production")'),
-  }))
-  .output(z.object({
-    services: z.array(serviceSummarySchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      filter: z
+        .array(z.string())
+        .optional()
+        .describe('Tag-based filter strings (e.g., "tag:env=production")')
+    })
+  )
+  .output(
+    z.object({
+      services: z.array(serviceSummarySchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClickHouseClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let services = await client.listServices(ctx.input.filter);
@@ -64,10 +68,10 @@ export let listServices = SlateTool.create(
           maxReplicaMemoryGb: s.maxReplicaMemoryGb,
           idleScaling: s.idleScaling,
           endpoints: s.endpoints,
-          createdAt: s.createdAt,
-        })),
+          createdAt: s.createdAt
+        }))
       },
-      message: `Found **${items.length}** services.`,
+      message: `Found **${items.length}** services.`
     };
   })
   .build();

@@ -3,43 +3,47 @@ import { MotionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskUpdates = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Updates',
-    key: 'task_updates',
-    description: 'Polls for new and updated tasks across workspaces. Detects task creation and updates by comparing against previously seen task states.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'completed']).describe('Type of change detected'),
-    taskId: z.string().describe('ID of the affected task'),
-    task: z.any().describe('Full task data from the API'),
-  }))
-  .output(z.object({
-    taskId: z.string().describe('Unique identifier of the task'),
-    name: z.string().describe('Title of the task'),
-    description: z.string().optional().describe('HTML description'),
-    dueDate: z.string().optional().describe('ISO 8601 due date'),
-    priority: z.string().optional().describe('Priority level'),
-    status: z.any().optional().describe('Current status'),
-    completed: z.boolean().optional().describe('Whether the task is completed'),
-    assignees: z.array(z.any()).optional().describe('Assigned users'),
-    labels: z.array(z.any()).optional().describe('Labels'),
-    projectId: z.string().optional().describe('Associated project ID'),
-    workspaceId: z.string().optional().describe('Workspace ID'),
-    scheduledStart: z.string().optional().describe('Auto-scheduled start time'),
-    scheduledEnd: z.string().optional().describe('Auto-scheduled end time'),
-    schedulingIssue: z.boolean().optional().describe('Whether scheduling failed'),
-    createdTime: z.string().optional().describe('When the task was created'),
-    updatedTime: z.string().optional().describe('When the task was last updated'),
-  }))
+export let taskUpdates = SlateTrigger.create(spec, {
+  name: 'Task Updates',
+  key: 'task_updates',
+  description:
+    'Polls for new and updated tasks across workspaces. Detects task creation and updates by comparing against previously seen task states.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'completed'])
+        .describe('Type of change detected'),
+      taskId: z.string().describe('ID of the affected task'),
+      task: z.any().describe('Full task data from the API')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('Unique identifier of the task'),
+      name: z.string().describe('Title of the task'),
+      description: z.string().optional().describe('HTML description'),
+      dueDate: z.string().optional().describe('ISO 8601 due date'),
+      priority: z.string().optional().describe('Priority level'),
+      status: z.any().optional().describe('Current status'),
+      completed: z.boolean().optional().describe('Whether the task is completed'),
+      assignees: z.array(z.any()).optional().describe('Assigned users'),
+      labels: z.array(z.any()).optional().describe('Labels'),
+      projectId: z.string().optional().describe('Associated project ID'),
+      workspaceId: z.string().optional().describe('Workspace ID'),
+      scheduledStart: z.string().optional().describe('Auto-scheduled start time'),
+      scheduledEnd: z.string().optional().describe('Auto-scheduled end time'),
+      schedulingIssue: z.boolean().optional().describe('Whether scheduling failed'),
+      createdTime: z.string().optional().describe('When the task was created'),
+      updatedTime: z.string().optional().describe('When the task was last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MotionClient({ token: ctx.auth.token });
 
       let previousTaskMap: Record<string, string> = ctx.state?.taskUpdatedTimes || {};
@@ -53,7 +57,7 @@ export let taskUpdates = SlateTrigger.create(
       do {
         let result = await client.listTasks({
           includeAllStatuses: true,
-          cursor,
+          cursor
         });
         allTasks = allTasks.concat(result.tasks || []);
         cursor = result.meta?.nextCursor;
@@ -88,21 +92,21 @@ export let taskUpdates = SlateTrigger.create(
           inputs.push({
             eventType: 'created',
             taskId,
-            task,
+            task
           });
         } else if (isCompleted && !previousCompletedSet[taskId]) {
           // Task just completed
           inputs.push({
             eventType: 'completed',
             taskId,
-            task,
+            task
           });
         } else if (updatedTime && updatedTime !== previousUpdatedTime) {
           // Task updated
           inputs.push({
             eventType: 'updated',
             taskId,
-            task,
+            task
           });
         }
       }
@@ -112,12 +116,12 @@ export let taskUpdates = SlateTrigger.create(
         updatedState: {
           initialized: true,
           taskUpdatedTimes: newTaskMap,
-          completedTasks: newCompletedSet,
-        },
+          completedTasks: newCompletedSet
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let task = ctx.input.task;
 
       return {
@@ -139,8 +143,9 @@ export let taskUpdates = SlateTrigger.create(
           scheduledEnd: task.scheduledEnd,
           schedulingIssue: task.schedulingIssue,
           createdTime: task.createdTime,
-          updatedTime: task.updatedTime,
-        },
+          updatedTime: task.updatedTime
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

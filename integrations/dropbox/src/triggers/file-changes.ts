@@ -3,44 +3,55 @@ import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fileChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'File Changes',
-    key: 'file_changes',
-    description: 'Triggers when files or folders are created, modified, deleted, or moved in Dropbox. Uses cursor-based polling to detect changes.'
-  }
-)
-  .input(z.object({
-    changeType: z.string().describe('Type of change: file, folder, or deleted'),
-    name: z.string().describe('Name of the changed entry'),
-    pathDisplay: z.string().optional().describe('Display path of the changed entry'),
-    pathLower: z.string().optional().describe('Lowercased path of the changed entry'),
-    entryId: z.string().optional().describe('Unique ID of the changed entry'),
-    rev: z.string().optional().describe('File revision (files only)'),
-    size: z.number().optional().describe('File size in bytes (files only)'),
-    serverModified: z.string().optional().describe('Server modification timestamp (files only)'),
-    clientModified: z.string().optional().describe('Client modification timestamp (files only)'),
-    isDownloadable: z.boolean().optional().describe('Whether the file is downloadable (files only)')
-  }))
-  .output(z.object({
-    entryType: z.string().describe('Type of entry: file, folder, or deleted'),
-    name: z.string().describe('Name of the changed entry'),
-    pathDisplay: z.string().optional().describe('Display path'),
-    pathLower: z.string().optional().describe('Lowercased path'),
-    entryId: z.string().optional().describe('Unique ID'),
-    rev: z.string().optional().describe('File revision'),
-    size: z.number().optional().describe('File size in bytes'),
-    serverModified: z.string().optional().describe('Server modification timestamp'),
-    clientModified: z.string().optional().describe('Client modification timestamp'),
-    isDownloadable: z.boolean().optional().describe('Whether the file is downloadable')
-  }))
+export let fileChanges = SlateTrigger.create(spec, {
+  name: 'File Changes',
+  key: 'file_changes',
+  description:
+    'Triggers when files or folders are created, modified, deleted, or moved in Dropbox. Uses cursor-based polling to detect changes.'
+})
+  .input(
+    z.object({
+      changeType: z.string().describe('Type of change: file, folder, or deleted'),
+      name: z.string().describe('Name of the changed entry'),
+      pathDisplay: z.string().optional().describe('Display path of the changed entry'),
+      pathLower: z.string().optional().describe('Lowercased path of the changed entry'),
+      entryId: z.string().optional().describe('Unique ID of the changed entry'),
+      rev: z.string().optional().describe('File revision (files only)'),
+      size: z.number().optional().describe('File size in bytes (files only)'),
+      serverModified: z
+        .string()
+        .optional()
+        .describe('Server modification timestamp (files only)'),
+      clientModified: z
+        .string()
+        .optional()
+        .describe('Client modification timestamp (files only)'),
+      isDownloadable: z
+        .boolean()
+        .optional()
+        .describe('Whether the file is downloadable (files only)')
+    })
+  )
+  .output(
+    z.object({
+      entryType: z.string().describe('Type of entry: file, folder, or deleted'),
+      name: z.string().describe('Name of the changed entry'),
+      pathDisplay: z.string().optional().describe('Display path'),
+      pathLower: z.string().optional().describe('Lowercased path'),
+      entryId: z.string().optional().describe('Unique ID'),
+      rev: z.string().optional().describe('File revision'),
+      size: z.number().optional().describe('File size in bytes'),
+      serverModified: z.string().optional().describe('Server modification timestamp'),
+      clientModified: z.string().optional().describe('Client modification timestamp'),
+      isDownloadable: z.boolean().optional().describe('Whether the file is downloadable')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DropboxClient(ctx.auth.token);
       let cursor = ctx.state?.cursor as string | undefined;
 
@@ -83,9 +94,10 @@ export let fileChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let changeType = ctx.input.changeType;
-      let eventType = changeType === 'deleted' ? 'deleted' : (changeType === 'folder' ? 'folder' : 'file');
+      let eventType =
+        changeType === 'deleted' ? 'deleted' : changeType === 'folder' ? 'folder' : 'file';
       let entryId = ctx.input.entryId || ctx.input.pathLower || ctx.input.name;
       let deduplicationId = `${entryId}:${ctx.input.rev || ctx.input.serverModified || Date.now()}`;
 
@@ -106,4 +118,5 @@ export let fileChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

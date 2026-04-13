@@ -16,16 +16,24 @@ export let sendCustomEventTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
-  .input(z.object({
-    eventType: z.string().describe('Custom event type (e.g., "search/performed", "booking/created")'),
-    email: z.string().optional().describe('Associated contact email address'),
-    properties: z.record(z.string(), z.unknown()).describe('Custom event properties as key-value pairs')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the event was sent successfully'),
-    eventType: z.string().describe('The event type that was sent')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Custom event type (e.g., "search/performed", "booking/created")'),
+      email: z.string().optional().describe('Associated contact email address'),
+      properties: z
+        .record(z.string(), z.unknown())
+        .describe('Custom event properties as key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the event was sent successfully'),
+      eventType: z.string().describe('The event type that was sent')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RemarketyClient({
       token: ctx.auth.token,
       storeId: ctx.auth.storeId,

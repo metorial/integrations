@@ -19,6 +19,7 @@ kf-api-key: <your-api-key>
 The Klipfolio API is accessed over HTTPS from the `https://app.klipfolio.com/api/1.0/*` domain.
 
 Example request:
+
 ```
 curl https://app.klipfolio.com/api/1.0/profile \
   --header "kf-api-key: YOUR_API_KEY"
@@ -43,6 +44,7 @@ Create, view, update, and delete Klips — the individual data visualization com
 ### Data Source Management
 
 Create and manage data sources that feed data into Klips. Supports various connector types including REST/URL, file uploads, and pre-built service connectors. You can:
+
 - Create data sources using different connectors (e.g., Facebook, REST/URL).
 - Upload or replace data in data source instances.
 - Refresh data sources on demand.

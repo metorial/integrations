@@ -11,6 +11,7 @@ Heyy (heyy.io) is a customer messaging and communication platform that unifies i
 Heyy uses API keys for authentication.
 
 To obtain an API key:
+
 1. Log in to the Heyy Hub (https://hub.heyy.io/).
 2. Navigate to **Settings**, then under the **Developers** section, click on **API Keys**, and click **Create API Key**.
 
@@ -25,32 +26,39 @@ The base URL for the API is `https://api.hey-y.io/api/v2.0/`.
 ## Features
 
 ### Business Information
+
 - Retrieve details about your business account on Heyy.
 - Used to verify API connectivity and access business-level configuration.
 
 ### Contact Management
+
 - Create new contacts for the business.
 - Update the details of existing contacts.
 - Contacts represent customers or leads that your business communicates with across channels.
 
 ### Messaging
+
 - Send WhatsApp messages to contacts.
 - Messages are sent to contacts already registered in your business account.
 - Heyy supports communication across WhatsApp, Instagram, Messenger, and website chat.
 
 ### File Uploads
+
 - Upload files to be used within conversations or associated with contacts.
 - Supported formats and file path configuration may be required.
 
 ### Campaigns
+
 - Run campaigns for lead nurturing and client communication.
 - The platform supports marketing outreach and re-engagement campaigns across connected channels.
 
 ### AI Employees
+
 - AI Employees are digital, customizable AI entities that handle tasks like customer support, sales, onboarding, or internal operations — virtual team members that can chat with customers, answer FAQs, qualify leads, or integrate with tools.
 - Automatically route complex queries to humans with full conversation context and sentiment awareness.
 
 ### Automations & Workflows
+
 - Connect Heyy to CRM, ticketing, e-commerce, and internal tools — or build custom actions via API/webhooks.
 - Build automated response flows, escalation paths, and backend workflows.
 
@@ -59,6 +67,7 @@ The base URL for the API is `https://api.hey-y.io/api/v2.0/`.
 Heyy supports webhooks for real-time event notifications.
 
 ### Incoming Messages
+
 - Emit new event when a business gets a new incoming message.
 - Can be scoped to a specific channel ID.
 - Useful for triggering external workflows whenever a customer sends a message through any connected channel (WhatsApp, Instagram, Messenger, web chat).

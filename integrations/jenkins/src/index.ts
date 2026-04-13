@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listJobs,
@@ -19,11 +18,7 @@ import {
   executeScript,
   getSystemInfo
 } from './tools';
-import {
-  buildEvent,
-  jobStatusChange,
-  inboundWebhook,
-} from './triggers';
+import { buildEvent, jobStatusChange, inboundWebhook } from './triggers';
 
 export let jenkins = Slate.create({
   spec,
@@ -45,9 +40,5 @@ export let jenkins = Slate.create({
     executeScript,
     getSystemInfo
   ],
-  triggers: [
-    inboundWebhook,
-    buildEvent,
-    jobStatusChange
-  ]
+  triggers: [inboundWebhook, buildEvent, jobStatusChange]
 });

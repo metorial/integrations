@@ -3,42 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let sprintEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sprint Events',
-    key: 'sprint_events',
-    description: 'Triggered when sprints are created, started, completed, or deleted in a Leiga project.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type (e.g. Sprint.Create, Sprint.Start, Sprint.Complete, Sprint.Delete)'),
-    eventTimestamp: z.number().describe('Event timestamp'),
-    sprintData: z.any().describe('Full sprint payload'),
-    triggerUser: z.any().optional().describe('User who triggered the event'),
-    tenantId: z.number().optional().describe('Tenant ID'),
-  }))
-  .output(z.object({
-    sprintId: z.number().optional().describe('Sprint ID'),
-    sprintName: z.string().optional().describe('Sprint name'),
-    sprintGoal: z.string().optional().describe('Sprint goal'),
-    startDate: z.string().optional().describe('Sprint start date'),
-    endDate: z.string().optional().describe('Sprint end date'),
-    status: z.string().optional().describe('Sprint status'),
-    projectId: z.number().optional().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    assigneeName: z.string().optional().describe('Sprint assignee name'),
-    triggeredByName: z.string().optional().describe('User who triggered the event'),
-    triggeredByEmail: z.string().optional().describe('Email of user who triggered the event'),
-  }))
+export let sprintEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Sprint Events',
+  key: 'sprint_events',
+  description:
+    'Triggered when sprints are created, started, completed, or deleted in a Leiga project.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Event type (e.g. Sprint.Create, Sprint.Start, Sprint.Complete, Sprint.Delete)'
+        ),
+      eventTimestamp: z.number().describe('Event timestamp'),
+      sprintData: z.any().describe('Full sprint payload'),
+      triggerUser: z.any().optional().describe('User who triggered the event'),
+      tenantId: z.number().optional().describe('Tenant ID')
+    })
+  )
+  .output(
+    z.object({
+      sprintId: z.number().optional().describe('Sprint ID'),
+      sprintName: z.string().optional().describe('Sprint name'),
+      sprintGoal: z.string().optional().describe('Sprint goal'),
+      startDate: z.string().optional().describe('Sprint start date'),
+      endDate: z.string().optional().describe('Sprint end date'),
+      status: z.string().optional().describe('Sprint status'),
+      projectId: z.number().optional().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      assigneeName: z.string().optional().describe('Sprint assignee name'),
+      triggeredByName: z.string().optional().describe('User who triggered the event'),
+      triggeredByEmail: z.string().optional().describe('Email of user who triggered the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let projects = await client.listProjects();
       let registrations: Array<{ projectId: number; webhookId: number }> = [];
 
-      for (let project of (projects.data || [])) {
+      for (let project of projects.data || []) {
         let eventsResponse = await client.listWebhookEvents(project.id);
         let events = eventsResponse.data || [];
 
@@ -54,23 +60,23 @@ export let sprintEventsTrigger = SlateTrigger.create(
           type: 'ligaAI',
           projectId: project.id,
           eventIds: sprintEventIds,
-          url: ctx.input.webhookBaseUrl,
+          url: ctx.input.webhookBaseUrl
         });
 
         if (webhookResponse.data?.webhookId) {
           registrations.push({
             projectId: project.id,
-            webhookId: webhookResponse.data.webhookId,
+            webhookId: webhookResponse.data.webhookId
           });
         }
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations || [];
 
@@ -83,8 +89,8 @@ export let sprintEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
@@ -93,13 +99,13 @@ export let sprintEventsTrigger = SlateTrigger.create(
             eventTimestamp: data.date || Date.now(),
             sprintData: data.data?.sprint || data.data,
             triggerUser: data.trigger?.user,
-            tenantId: data.tenant?.id,
-          },
-        ],
+            tenantId: data.tenant?.id
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let sprint = ctx.input.sprintData;
       let eventType = ctx.input.eventType;
 
@@ -108,7 +114,7 @@ export let sprintEventsTrigger = SlateTrigger.create(
         'Sprint.Start': 'sprint.started',
         'Sprint.Restart': 'sprint.restarted',
         'Sprint.Complete': 'sprint.completed',
-        'Sprint.Delete': 'sprint.deleted',
+        'Sprint.Delete': 'sprint.deleted'
       };
 
       return {
@@ -125,9 +131,9 @@ export let sprintEventsTrigger = SlateTrigger.create(
           projectName: sprint?.project?.name,
           assigneeName: sprint?.assignee?.name,
           triggeredByName: ctx.input.triggerUser?.name,
-          triggeredByEmail: ctx.input.triggerUser?.email,
-        },
+          triggeredByEmail: ctx.input.triggerUser?.email
+        }
       };
-    },
+    }
   })
   .build();

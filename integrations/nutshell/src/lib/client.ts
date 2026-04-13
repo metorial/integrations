@@ -20,7 +20,7 @@ export class NutshellClient {
 
   constructor(private credentials: { username: string; token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://app.nutshell.com/api/v1/json',
+      baseURL: 'https://app.nutshell.com/api/v1/json'
     });
   }
 
@@ -32,18 +32,22 @@ export class NutshellClient {
   private getAuth() {
     return {
       username: this.credentials.username,
-      password: this.credentials.token,
+      password: this.credentials.token
     };
   }
 
   async rpc(method: string, params: Record<string, any> = {}): Promise<any> {
-    let response = await this.axios.post('', {
-      id: this.nextId(),
-      method,
-      params,
-    }, {
-      auth: this.getAuth(),
-    });
+    let response = await this.axios.post(
+      '',
+      {
+        id: this.nextId(),
+        method,
+        params
+      },
+      {
+        auth: this.getAuth()
+      }
+    );
 
     let data = response.data;
 
@@ -66,7 +70,11 @@ export class NutshellClient {
     return this.rpc('newContact', { contact });
   }
 
-  async editContact(contactId: number, rev: string, contact: Record<string, any>): Promise<any> {
+  async editContact(
+    contactId: number,
+    rev: string,
+    contact: Record<string, any>
+  ): Promise<any> {
     return this.rpc('editContact', { contactId, rev, contact });
   }
 
@@ -90,7 +98,11 @@ export class NutshellClient {
     return this.rpc('newAccount', { account });
   }
 
-  async editAccount(accountId: number, rev: string, account: Record<string, any>): Promise<any> {
+  async editAccount(
+    accountId: number,
+    rev: string,
+    account: Record<string, any>
+  ): Promise<any> {
     return this.rpc('editAccount', { accountId, rev, account });
   }
 
@@ -138,7 +150,11 @@ export class NutshellClient {
     return this.rpc('newActivity', { activity });
   }
 
-  async editActivity(activityId: number, rev: string, activity: Record<string, any>): Promise<any> {
+  async editActivity(
+    activityId: number,
+    rev: string,
+    activity: Record<string, any>
+  ): Promise<any> {
     return this.rpc('editActivity', { activityId, rev, activity });
   }
 

@@ -20,9 +20,9 @@ export class Client {
       baseURL: 'https://api.humanitix.com/v1',
       headers: {
         'x-api-key': config.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -62,22 +62,25 @@ export class Client {
   }
 
   async getAllEvents(): Promise<any[]> {
-    return this.paginate((page) => this.getEvents({ page, pageSize: 100 }), 'events');
+    return this.paginate(page => this.getEvents({ page, pageSize: 100 }), 'events');
   }
 
   async getAllOrders(eventId: string): Promise<any[]> {
-    return this.paginate((page) => this.getOrders(eventId, { page, pageSize: 100 }), 'orders');
+    return this.paginate(page => this.getOrders(eventId, { page, pageSize: 100 }), 'orders');
   }
 
   async getAllTickets(eventId: string): Promise<any[]> {
-    return this.paginate((page) => this.getTickets(eventId, { page, pageSize: 100 }), 'tickets');
+    return this.paginate(page => this.getTickets(eventId, { page, pageSize: 100 }), 'tickets');
   }
 
   async getAllTags(): Promise<any[]> {
-    return this.paginate((page) => this.getTags({ page, pageSize: 100 }), 'tags');
+    return this.paginate(page => this.getTags({ page, pageSize: 100 }), 'tags');
   }
 
-  private async paginate(fetchPage: (page: number) => Promise<any>, key: string): Promise<any[]> {
+  private async paginate(
+    fetchPage: (page: number) => Promise<any>,
+    key: string
+  ): Promise<any[]> {
     let allItems: any[] = [];
     let page = 1;
     let hasMore = true;

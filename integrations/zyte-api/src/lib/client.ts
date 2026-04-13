@@ -58,7 +58,18 @@ export interface ExtractionOptions {
 }
 
 export interface BrowserAction {
-  action: 'click' | 'type' | 'scroll' | 'scrollBottom' | 'waitForSelector' | 'waitForTimeout' | 'waitForRequest' | 'waitForResponse' | 'evaluate' | 'select' | 'setInputFiles';
+  action:
+    | 'click'
+    | 'type'
+    | 'scroll'
+    | 'scrollBottom'
+    | 'waitForSelector'
+    | 'waitForTimeout'
+    | 'waitForRequest'
+    | 'waitForResponse'
+    | 'evaluate'
+    | 'select'
+    | 'setInputFiles';
   selector?: ActionSelector;
   text?: string;
   timeout?: number;
@@ -125,7 +136,6 @@ export class Client {
   }
 
   private getAuthHeader(): string {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let encoded = Buffer.from(`${this.token}:`).toString('base64');
     return `Basic ${encoded}`;
   }
@@ -134,10 +144,10 @@ export class Client {
     return createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': this.getAuthHeader(),
+        Authorization: this.getAuthHeader(),
         'Content-Type': 'application/json',
-        'Accept-Encoding': 'gzip',
-      },
+        'Accept-Encoding': 'gzip'
+      }
     });
   }
 

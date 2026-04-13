@@ -25,6 +25,7 @@ With a collection access key you can securely grant other users read-only access
 **Base URL:** `https://api.postman.com`
 
 **Example request:**
+
 ```
 GET https://api.postman.com/collections
 X-API-Key: PMAK-your-api-key-here

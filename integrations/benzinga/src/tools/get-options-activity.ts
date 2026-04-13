@@ -20,34 +20,38 @@ let optionActivitySchema = z.object({
   openInterest: z.number().optional().describe('Open interest'),
   costBasis: z.string().optional().describe('Total cost basis'),
   underlyingPrice: z.number().optional().describe('Underlying stock price'),
-  updated: z.number().optional().describe('Last updated timestamp'),
+  updated: z.number().optional().describe('Last updated timestamp')
 });
 
-export let getOptionsActivityTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Options Activity',
-    key: 'get_options_activity',
-    description: `Retrieve unusual options activity signals. Includes option type, strike price, expiration, volume, sentiment, and more. Useful for identifying potential market-moving trades.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getOptionsActivityTool = SlateTool.create(spec, {
+  name: 'Get Options Activity',
+  key: 'get_options_activity',
+  description: `Retrieve unusual options activity signals. Includes option type, strike price, expiration, volume, sentiment, and more. Useful for identifying potential market-moving trades.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    tickers: z.string().optional().describe('Comma-separated ticker symbols to filter (max 50)'),
-    date: z.string().optional().describe('Specific date (YYYY-MM-DD)'),
-    dateFrom: z.string().optional().describe('Start date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('End date (YYYY-MM-DD)'),
-    page: z.number().optional().default(0).describe('Page offset'),
-    pageSize: z.number().optional().default(50).describe('Results per page (max 1000)'),
-  }))
-  .output(z.object({
-    signals: z.array(optionActivitySchema).describe('Unusual options activity signals'),
-    count: z.number().describe('Number of signals returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tickers: z
+        .string()
+        .optional()
+        .describe('Comma-separated ticker symbols to filter (max 50)'),
+      date: z.string().optional().describe('Specific date (YYYY-MM-DD)'),
+      dateFrom: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('End date (YYYY-MM-DD)'),
+      page: z.number().optional().default(0).describe('Page offset'),
+      pageSize: z.number().optional().default(50).describe('Results per page (max 1000)')
+    })
+  )
+  .output(
+    z.object({
+      signals: z.array(optionActivitySchema).describe('Unusual options activity signals'),
+      count: z.number().describe('Number of signals returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BenzingaClient({ token: ctx.auth.token });
 
     let data = await client.getOptionActivity({
@@ -56,7 +60,7 @@ export let getOptionsActivityTool = SlateTool.create(
       dateFrom: ctx.input.dateFrom,
       dateTo: ctx.input.dateTo,
       page: ctx.input.page,
-      pageSize: ctx.input.pageSize,
+      pageSize: ctx.input.pageSize
     });
 
     let items = Array.isArray(data) ? data : [];
@@ -77,14 +81,15 @@ export let getOptionsActivityTool = SlateTool.create(
       openInterest: item.open_interest ? Number(item.open_interest) : undefined,
       costBasis: item.cost_basis,
       underlyingPrice: item.underlying_price ? Number(item.underlying_price) : undefined,
-      updated: item.updated,
+      updated: item.updated
     }));
 
     return {
       output: {
         signals,
-        count: signals.length,
+        count: signals.length
       },
-      message: `Found **${signals.length}** unusual options activity signal(s)${ctx.input.tickers ? ` for: ${ctx.input.tickers}` : ''}.`,
+      message: `Found **${signals.length}** unusual options activity signal(s)${ctx.input.tickers ? ` for: ${ctx.input.tickers}` : ''}.`
     };
-  }).build();
+  })
+  .build();

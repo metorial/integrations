@@ -3,35 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Changes',
-    key: 'user_changes',
-    description: 'Detects changes to users in the Retool organization by polling the user list and comparing with previous snapshots. Triggers on new users, deactivated users, and reactivated users.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['user_added', 'user_deactivated', 'user_reactivated']).describe('Type of user change detected'),
-    userId: z.string().describe('ID of the affected user'),
-    email: z.string().describe('Email of the affected user'),
-    firstName: z.string().describe('First name of the affected user'),
-    lastName: z.string().describe('Last name of the affected user'),
-    active: z.boolean().describe('Current active status of the user'),
-  }))
-  .output(z.object({
-    userId: z.string(),
-    email: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-    active: z.boolean(),
-  }))
+export let userChanges = SlateTrigger.create(spec, {
+  name: 'User Changes',
+  key: 'user_changes',
+  description:
+    'Detects changes to users in the Retool organization by polling the user list and comparing with previous snapshots. Triggers on new users, deactivated users, and reactivated users.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['user_added', 'user_deactivated', 'user_reactivated'])
+        .describe('Type of user change detected'),
+      userId: z.string().describe('ID of the affected user'),
+      email: z.string().describe('Email of the affected user'),
+      firstName: z.string().describe('First name of the affected user'),
+      lastName: z.string().describe('Last name of the affected user'),
+      active: z.boolean().describe('Current active status of the user')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string(),
+      email: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      active: z.boolean()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
       let previousUserMap: Record<string, { active: boolean }> = ctx.state?.userMap ?? {};
@@ -62,7 +66,7 @@ export let userChanges = SlateTrigger.create(
               email: user.email,
               firstName: user.first_name,
               lastName: user.last_name,
-              active: user.active,
+              active: user.active
             });
           } else if (prev.active && !user.active) {
             inputs.push({
@@ -71,7 +75,7 @@ export let userChanges = SlateTrigger.create(
               email: user.email,
               firstName: user.first_name,
               lastName: user.last_name,
-              active: user.active,
+              active: user.active
             });
           } else if (!prev.active && user.active) {
             inputs.push({
@@ -80,7 +84,7 @@ export let userChanges = SlateTrigger.create(
               email: user.email,
               firstName: user.first_name,
               lastName: user.last_name,
-              active: user.active,
+              active: user.active
             });
           }
         }
@@ -94,12 +98,12 @@ export let userChanges = SlateTrigger.create(
       return {
         inputs: isInitialPoll ? [] : inputs,
         updatedState: {
-          userMap: currentUserMap,
-        },
+          userMap: currentUserMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `user.${ctx.input.changeType}`,
         id: `${ctx.input.userId}-${ctx.input.changeType}-${Date.now()}`,
@@ -108,8 +112,9 @@ export let userChanges = SlateTrigger.create(
           email: ctx.input.email,
           firstName: ctx.input.firstName,
           lastName: ctx.input.lastName,
-          active: ctx.input.active,
-        },
+          active: ctx.input.active
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

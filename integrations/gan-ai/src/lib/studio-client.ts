@@ -8,8 +8,8 @@ export class StudioClient {
     this.axios = createAxios({
       baseURL: 'https://api.gan.ai',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -51,8 +51,8 @@ export class StudioClient {
   }> {
     let response = await this.axios.get('/projects/v2', {
       headers: {
-        'x-workspace-id': workspaceId,
-      },
+        'x-workspace-id': workspaceId
+      }
     });
     return response.data;
   }
@@ -63,23 +63,25 @@ export class StudioClient {
     workspaceId: string;
     projectId: string;
     videos: Array<Record<string, string>>;
-  }): Promise<Array<{
-    video_url: string;
-    audio_url: string;
-    inference_id: string;
-    project_id: string;
-    unique_id: string;
-    smart_url: string;
-    permalink: string;
-    thumbnail_url: string;
-  }>> {
+  }): Promise<
+    Array<{
+      video_url: string;
+      audio_url: string;
+      inference_id: string;
+      project_id: string;
+      unique_id: string;
+      smart_url: string;
+      permalink: string;
+      thumbnail_url: string;
+    }>
+  > {
     let response = await this.axios.post('/create_video/bulk', params.videos, {
       params: {
-        project_id: params.projectId,
+        project_id: params.projectId
       },
       headers: {
-        'x-workspace-id': params.workspaceId,
-      },
+        'x-workspace-id': params.workspaceId
+      }
     });
     return response.data;
   }
@@ -102,8 +104,8 @@ export class StudioClient {
       `/projects/${params.projectId}/inference/${params.inferenceId}/video_status`,
       {
         headers: {
-          'x-workspace-id': params.workspaceId,
-        },
+          'x-workspace-id': params.workspaceId
+        }
       }
     );
     return response.data;
@@ -125,7 +127,7 @@ export class StudioClient {
     let response = await this.axios.post(`/projects/${params.projectId}/webhook`, {
       enable: params.enable ?? true,
       url: params.url,
-      ...(params.authorization ? { Authorization: params.authorization } : {}),
+      ...(params.authorization ? { Authorization: params.authorization } : {})
     });
     return response.data;
   }
@@ -137,7 +139,7 @@ export class StudioClient {
   }> {
     let response = await this.axios.post(`/projects/${projectId}/webhook`, {
       enable: false,
-      url: '',
+      url: ''
     });
     return response.data;
   }

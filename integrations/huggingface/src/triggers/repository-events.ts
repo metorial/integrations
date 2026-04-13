@@ -5,7 +5,9 @@ import { z } from 'zod';
 
 let webhookInputSchema = z.object({
   eventAction: z.string().describe('Event action (create, update, delete, move)'),
-  eventScope: z.string().describe('Event scope (repo, repo.content, repo.config, discussion, discussion.comment)'),
+  eventScope: z
+    .string()
+    .describe('Event scope (repo, repo.content, repo.config, discussion, discussion.comment)'),
   webhookId: z.string().describe('Webhook ID'),
   repoType: z.string().describe('Repository type (model, dataset, space)'),
   repoName: z.string().describe('Full repository name'),
@@ -13,12 +15,20 @@ let webhookInputSchema = z.object({
   repoPrivate: z.boolean().describe('Whether the repo is private'),
   repoUrl: z.string().optional().describe('Web URL of the repository'),
   headSha: z.string().optional().describe('Head commit SHA'),
-  updatedRefs: z.array(z.object({
-    ref: z.string().describe('Reference name'),
-    oldSha: z.string().nullable().describe('Previous SHA'),
-    newSha: z.string().nullable().describe('New SHA')
-  })).optional().describe('Updated references (for repo.content events)'),
-  updatedConfig: z.record(z.string(), z.any()).optional().describe('Updated config fields (for repo.config events)'),
+  updatedRefs: z
+    .array(
+      z.object({
+        ref: z.string().describe('Reference name'),
+        oldSha: z.string().nullable().describe('Previous SHA'),
+        newSha: z.string().nullable().describe('New SHA')
+      })
+    )
+    .optional()
+    .describe('Updated references (for repo.content events)'),
+  updatedConfig: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Updated config fields (for repo.config events)'),
   discussionNum: z.number().optional().describe('Discussion number (for discussion events)'),
   discussionTitle: z.string().optional().describe('Discussion title'),
   discussionStatus: z.string().optional().describe('Discussion status'),
@@ -27,52 +37,61 @@ let webhookInputSchema = z.object({
   commentId: z.string().optional().describe('Comment ID (for comment events)'),
   commentContent: z.string().optional().describe('Comment content'),
   commentAuthorId: z.string().optional().describe('Comment author ID'),
-  commentHidden: z.boolean().optional().describe('Whether the comment is hidden'),
+  commentHidden: z.boolean().optional().describe('Whether the comment is hidden')
 });
 
-export let repositoryEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Repository Events',
-    key: 'repository_events',
-    description: 'Triggered when events occur on watched Hugging Face repositories, including content changes, config updates, discussions, and comments.',
-  }
-)
+export let repositoryEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Repository Events',
+  key: 'repository_events',
+  description:
+    'Triggered when events occur on watched Hugging Face repositories, including content changes, config updates, discussions, and comments.'
+})
   .input(webhookInputSchema)
-  .output(z.object({
-    repoName: z.string().describe('Full repository name (owner/repo)'),
-    repoType: z.string().describe('Repository type (model, dataset, space)'),
-    repoId: z.string().describe('Repository ID'),
-    repoUrl: z.string().optional().describe('Web URL of the repository'),
-    repoPrivate: z.boolean().describe('Whether the repo is private'),
-    eventAction: z.string().describe('Event action (create, update, delete, move)'),
-    eventScope: z.string().describe('Event scope'),
-    headSha: z.string().optional().describe('Head commit SHA'),
-    updatedRefs: z.array(z.object({
-      ref: z.string().describe('Reference name'),
-      oldSha: z.string().nullable().describe('Previous SHA'),
-      newSha: z.string().nullable().describe('New SHA')
-    })).optional().describe('Updated references'),
-    updatedConfig: z.record(z.string(), z.any()).optional().describe('Updated config fields'),
-    discussionNum: z.number().optional().describe('Discussion number'),
-    discussionTitle: z.string().optional().describe('Discussion title'),
-    discussionStatus: z.string().optional().describe('Discussion status'),
-    isPullRequest: z.boolean().optional().describe('Whether the discussion is a pull request'),
-    commentId: z.string().optional().describe('Comment ID'),
-    commentContent: z.string().optional().describe('Comment content'),
-    commentHidden: z.boolean().optional().describe('Whether the comment is hidden'),
-  }))
+  .output(
+    z.object({
+      repoName: z.string().describe('Full repository name (owner/repo)'),
+      repoType: z.string().describe('Repository type (model, dataset, space)'),
+      repoId: z.string().describe('Repository ID'),
+      repoUrl: z.string().optional().describe('Web URL of the repository'),
+      repoPrivate: z.boolean().describe('Whether the repo is private'),
+      eventAction: z.string().describe('Event action (create, update, delete, move)'),
+      eventScope: z.string().describe('Event scope'),
+      headSha: z.string().optional().describe('Head commit SHA'),
+      updatedRefs: z
+        .array(
+          z.object({
+            ref: z.string().describe('Reference name'),
+            oldSha: z.string().nullable().describe('Previous SHA'),
+            newSha: z.string().nullable().describe('New SHA')
+          })
+        )
+        .optional()
+        .describe('Updated references'),
+      updatedConfig: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Updated config fields'),
+      discussionNum: z.number().optional().describe('Discussion number'),
+      discussionTitle: z.string().optional().describe('Discussion title'),
+      discussionStatus: z.string().optional().describe('Discussion status'),
+      isPullRequest: z
+        .boolean()
+        .optional()
+        .describe('Whether the discussion is a pull request'),
+      commentId: z.string().optional().describe('Comment ID'),
+      commentContent: z.string().optional().describe('Comment content'),
+      commentHidden: z.boolean().optional().describe('Whether the comment is hidden')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new HubClient({ token: ctx.auth.token });
 
       // Get the authenticated user info to watch all their repos
       let userInfo = await client.whoami();
       let username = userInfo.name;
 
-      let watched: { type: string; name: string }[] = [
-        { type: 'user', name: username }
-      ];
+      let watched: { type: string; name: string }[] = [{ type: 'user', name: username }];
 
       // Also watch all user's organizations
       if (userInfo.orgs && Array.isArray(userInfo.orgs)) {
@@ -84,25 +103,25 @@ export let repositoryEventsTrigger = SlateTrigger.create(
       let webhook = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
         watched,
-        domains: ['repo', 'discussion'],
+        domains: ['repo', 'discussion']
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
+          webhookId: webhook.id
         }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new HubClient({ token: ctx.auth.token });
       await client.deleteWebhook({
         webhookId: ctx.input.registrationDetails.webhookId
       });
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let event = data.event || {};
       let repo = data.repo || {};
@@ -120,7 +139,7 @@ export let repositoryEventsTrigger = SlateTrigger.create(
         repoUrl: repo.url?.web,
         headSha: repo.headSha,
         updatedRefs: data.updatedRefs,
-        updatedConfig: data.updatedConfig,
+        updatedConfig: data.updatedConfig
       };
 
       if (discussion) {
@@ -143,7 +162,7 @@ export let repositoryEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let scope = ctx.input.eventScope;
       let action = ctx.input.eventAction;
       let eventType = `${scope}.${action}`;
@@ -182,8 +201,9 @@ export let repositoryEventsTrigger = SlateTrigger.create(
           isPullRequest: ctx.input.isPullRequest,
           commentId: ctx.input.commentId,
           commentContent: ctx.input.commentContent,
-          commentHidden: ctx.input.commentHidden,
+          commentHidden: ctx.input.commentHidden
         }
       };
     }
-  }).build();
+  })
+  .build();

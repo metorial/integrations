@@ -3,30 +3,37 @@ import { HNClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Retrieve a Hacker News user profile by username. Returns karma, creation date, bio, and recent submission IDs.
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Retrieve a Hacker News user profile by username. Returns karma, creation date, bio, and recent submission IDs.
 Usernames are case-sensitive.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    username: z.string().describe('Case-sensitive Hacker News username'),
-  }))
-  .output(z.object({
-    username: z.string().describe('The user\'s username'),
-    createdAt: z.string().optional().describe('ISO 8601 timestamp when the account was created'),
-    karma: z.number().describe('User\'s karma score'),
-    about: z.string().optional().describe('User\'s self-description (HTML)'),
-    submittedIds: z.array(z.number()).optional().describe('IDs of the user\'s submitted items (stories, comments, etc.)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      username: z.string().describe('Case-sensitive Hacker News username')
+    })
+  )
+  .output(
+    z.object({
+      username: z.string().describe("The user's username"),
+      createdAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp when the account was created'),
+      karma: z.number().describe("User's karma score"),
+      about: z.string().optional().describe("User's self-description (HTML)"),
+      submittedIds: z
+        .array(z.number())
+        .optional()
+        .describe("IDs of the user's submitted items (stories, comments, etc.)")
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HNClient();
     let user = await client.getUser(ctx.input.username);
 
@@ -34,9 +41,9 @@ Usernames are case-sensitive.`,
       return {
         output: {
           username: ctx.input.username,
-          karma: 0,
+          karma: 0
         },
-        message: `User **${ctx.input.username}** was not found.`,
+        message: `User **${ctx.input.username}** was not found.`
       };
     }
 
@@ -48,8 +55,9 @@ Usernames are case-sensitive.`,
         createdAt,
         karma: user.karma,
         about: user.about,
-        submittedIds: user.submitted,
+        submittedIds: user.submitted
       },
-      message: `Retrieved profile for **${user.id}** with **${user.karma}** karma${user.submitted ? ` and ${user.submitted.length} submissions` : ''}.`,
+      message: `Retrieved profile for **${user.id}** with **${user.karma}** karma${user.submitted ? ` and ${user.submitted.length} submissions` : ''}.`
     };
-  }).build();
+  })
+  .build();

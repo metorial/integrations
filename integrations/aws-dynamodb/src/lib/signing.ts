@@ -34,7 +34,10 @@ let getDateStamp = (date: string): string => {
 
 let getAmzDate = (): string => {
   let now = new Date();
-  return now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  return now
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}/, '');
 };
 
 let buildCanonicalRequest = (
@@ -51,7 +54,7 @@ let buildCanonicalRequest = (
     canonicalQueryString,
     canonicalHeaders,
     signedHeaders,
-    payloadHash,
+    payloadHash
   ].join('\n');
 };
 
@@ -69,7 +72,17 @@ let deriveSigningKey = (
 };
 
 export let signRequest = (params: AwsSignatureParams): Record<string, string> => {
-  let { method, url, headers, body, accessKeyId, secretAccessKey, sessionToken, region, service } = params;
+  let {
+    method,
+    url,
+    headers,
+    body,
+    accessKeyId,
+    secretAccessKey,
+    sessionToken,
+    region,
+    service
+  } = params;
 
   let amzDate = getAmzDate();
   let dateStamp = getDateStamp(amzDate);
@@ -89,7 +102,7 @@ export let signRequest = (params: AwsSignatureParams): Record<string, string> =>
   let allHeaders: Record<string, string> = {
     ...headers,
     host: parsedUrl.host,
-    'x-amz-date': amzDate,
+    'x-amz-date': amzDate
   };
 
   if (sessionToken) {
@@ -100,9 +113,13 @@ export let signRequest = (params: AwsSignatureParams): Record<string, string> =>
     .map(k => k.toLowerCase())
     .sort();
 
-  let canonicalHeaders = headerKeys
-    .map(k => `${k}:${allHeaders[Object.keys(allHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`)
-    .join('\n') + '\n';
+  let canonicalHeaders =
+    headerKeys
+      .map(
+        k =>
+          `${k}:${allHeaders[Object.keys(allHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
+      )
+      .join('\n') + '\n';
 
   let signedHeaders = headerKeys.join(';');
 
@@ -123,7 +140,7 @@ export let signRequest = (params: AwsSignatureParams): Record<string, string> =>
     'AWS4-HMAC-SHA256',
     amzDate,
     credentialScope,
-    sha256(canonicalRequest),
+    sha256(canonicalRequest)
   ].join('\n');
 
   let signingKey = deriveSigningKey(secretAccessKey, dateStamp, region, service);
@@ -133,7 +150,7 @@ export let signRequest = (params: AwsSignatureParams): Record<string, string> =>
 
   let signedRequestHeaders: Record<string, string> = {
     ...allHeaders,
-    'Authorization': authorizationHeader,
+    Authorization: authorizationHeader
   };
 
   return signedRequestHeaders;

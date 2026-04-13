@@ -23,7 +23,7 @@ import {
   createWebhook,
   updateWebhook,
   deleteWebhook,
-  listAttachments,
+  listAttachments
 } from './tools';
 import { rowChanges } from './triggers';
 
@@ -52,9 +52,7 @@ export let provider = Slate.create({
     createWebhook,
     updateWebhook,
     deleteWebhook,
-    listAttachments,
+    listAttachments
   ],
-  triggers: [
-    rowChanges,
-  ],
+  triggers: [rowChanges]
 });

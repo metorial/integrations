@@ -16,24 +16,22 @@ export class JiraClient {
     let agileBaseURL = `https://api.atlassian.com/ex/jira/${config.cloudId}/rest/agile/1.0`;
 
     // Determine auth type based on whether refreshToken exists (OAuth) or not (Basic/API token)
-    let authHeader = config.refreshToken
-      ? `Bearer ${config.token}`
-      : `Basic ${config.token}`;
+    let authHeader = config.refreshToken ? `Bearer ${config.token}` : `Basic ${config.token}`;
 
     this.api = createAxios({
       baseURL,
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     this.agileApi = createAxios({
       baseURL: agileBaseURL,
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -44,7 +42,10 @@ export class JiraClient {
     return response.data;
   }
 
-  async getIssue(issueIdOrKey: string, params?: { fields?: string[]; expand?: string[] }): Promise<any> {
+  async getIssue(
+    issueIdOrKey: string,
+    params?: { fields?: string[]; expand?: string[] }
+  ): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.fields) queryParams.fields = params.fields.join(',');
     if (params?.expand) queryParams.expand = params.expand.join(',');
@@ -53,7 +54,11 @@ export class JiraClient {
     return response.data;
   }
 
-  async updateIssue(issueIdOrKey: string, fields: Record<string, any>, update?: Record<string, any>): Promise<void> {
+  async updateIssue(
+    issueIdOrKey: string,
+    fields: Record<string, any>,
+    update?: Record<string, any>
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (fields && Object.keys(fields).length > 0) body.fields = fields;
     if (update && Object.keys(update).length > 0) body.update = update;
@@ -62,13 +67,17 @@ export class JiraClient {
 
   async deleteIssue(issueIdOrKey: string, deleteSubtasks?: boolean): Promise<void> {
     await this.api.delete(`/issue/${issueIdOrKey}`, {
-      params: deleteSubtasks ? { deleteSubtasks: 'true' } : undefined,
+      params: deleteSubtasks ? { deleteSubtasks: 'true' } : undefined
     });
   }
 
-  async transitionIssue(issueIdOrKey: string, transitionId: string, fields?: Record<string, any>): Promise<void> {
+  async transitionIssue(
+    issueIdOrKey: string,
+    transitionId: string,
+    fields?: Record<string, any>
+  ): Promise<void> {
     let body: Record<string, any> = {
-      transition: { id: transitionId },
+      transition: { id: transitionId }
     };
     if (fields) body.fields = fields;
     await this.api.post(`/issue/${issueIdOrKey}/transitions`, body);
@@ -81,44 +90,51 @@ export class JiraClient {
 
   async assignIssue(issueIdOrKey: string, accountId: string | null): Promise<void> {
     await this.api.put(`/issue/${issueIdOrKey}/assignee`, {
-      accountId,
+      accountId
     });
   }
 
   // ---- Search ----
 
-  async searchIssues(jql: string, params?: {
-    startAt?: number;
-    maxResults?: number;
-    fields?: string[];
-    expand?: string[];
-  }): Promise<any> {
+  async searchIssues(
+    jql: string,
+    params?: {
+      startAt?: number;
+      maxResults?: number;
+      fields?: string[];
+      expand?: string[];
+    }
+  ): Promise<any> {
     let response = await this.api.post('/search', {
       jql,
       startAt: params?.startAt ?? 0,
       maxResults: params?.maxResults ?? 50,
       fields: params?.fields,
-      expand: params?.expand,
+      expand: params?.expand
     });
     return response.data;
   }
 
   // ---- Projects ----
 
-  async getProjects(params?: { startAt?: number; maxResults?: number; expand?: string[] }): Promise<any> {
+  async getProjects(params?: {
+    startAt?: number;
+    maxResults?: number;
+    expand?: string[];
+  }): Promise<any> {
     let response = await this.api.get('/project/search', {
       params: {
         startAt: params?.startAt ?? 0,
         maxResults: params?.maxResults ?? 50,
-        expand: params?.expand?.join(','),
-      },
+        expand: params?.expand?.join(',')
+      }
     });
     return response.data;
   }
 
   async getProject(projectIdOrKey: string, expand?: string[]): Promise<any> {
     let response = await this.api.get(`/project/${projectIdOrKey}`, {
-      params: expand ? { expand: expand.join(',') } : undefined,
+      params: expand ? { expand: expand.join(',') } : undefined
     });
     return response.data;
   }
@@ -130,12 +146,15 @@ export class JiraClient {
 
   // ---- Comments ----
 
-  async getComments(issueIdOrKey: string, params?: { startAt?: number; maxResults?: number }): Promise<any> {
+  async getComments(
+    issueIdOrKey: string,
+    params?: { startAt?: number; maxResults?: number }
+  ): Promise<any> {
     let response = await this.api.get(`/issue/${issueIdOrKey}/comment`, {
       params: {
         startAt: params?.startAt ?? 0,
-        maxResults: params?.maxResults ?? 50,
-      },
+        maxResults: params?.maxResults ?? 50
+      }
     });
     return response.data;
   }
@@ -156,22 +175,28 @@ export class JiraClient {
 
   // ---- Worklogs ----
 
-  async addWorklog(issueIdOrKey: string, worklog: {
-    timeSpentSeconds?: number;
-    timeSpent?: string;
-    started?: string;
-    comment?: any;
-  }): Promise<any> {
+  async addWorklog(
+    issueIdOrKey: string,
+    worklog: {
+      timeSpentSeconds?: number;
+      timeSpent?: string;
+      started?: string;
+      comment?: any;
+    }
+  ): Promise<any> {
     let response = await this.api.post(`/issue/${issueIdOrKey}/worklog`, worklog);
     return response.data;
   }
 
-  async getWorklogs(issueIdOrKey: string, params?: { startAt?: number; maxResults?: number }): Promise<any> {
+  async getWorklogs(
+    issueIdOrKey: string,
+    params?: { startAt?: number; maxResults?: number }
+  ): Promise<any> {
     let response = await this.api.get(`/issue/${issueIdOrKey}/worklog`, {
       params: {
         startAt: params?.startAt ?? 0,
-        maxResults: params?.maxResults ?? 50,
-      },
+        maxResults: params?.maxResults ?? 50
+      }
     });
     return response.data;
   }
@@ -182,20 +207,23 @@ export class JiraClient {
 
   // ---- Users ----
 
-  async searchUsers(query: string, params?: { startAt?: number; maxResults?: number }): Promise<any[]> {
+  async searchUsers(
+    query: string,
+    params?: { startAt?: number; maxResults?: number }
+  ): Promise<any[]> {
     let response = await this.api.get('/user/search', {
       params: {
         query,
         startAt: params?.startAt ?? 0,
-        maxResults: params?.maxResults ?? 50,
-      },
+        maxResults: params?.maxResults ?? 50
+      }
     });
     return response.data;
   }
 
   async getUser(accountId: string): Promise<any> {
     let response = await this.api.get('/user', {
-      params: { accountId },
+      params: { accountId }
     });
     return response.data;
   }
@@ -207,14 +235,19 @@ export class JiraClient {
 
   // ---- Boards (Agile) ----
 
-  async getBoards(params?: { startAt?: number; maxResults?: number; type?: string; projectKeyOrId?: string }): Promise<any> {
+  async getBoards(params?: {
+    startAt?: number;
+    maxResults?: number;
+    type?: string;
+    projectKeyOrId?: string;
+  }): Promise<any> {
     let response = await this.agileApi.get('/board', {
       params: {
         startAt: params?.startAt ?? 0,
         maxResults: params?.maxResults ?? 50,
         type: params?.type,
-        projectKeyOrId: params?.projectKeyOrId,
-      },
+        projectKeyOrId: params?.projectKeyOrId
+      }
     });
     return response.data;
   }
@@ -226,13 +259,16 @@ export class JiraClient {
 
   // ---- Sprints (Agile) ----
 
-  async getSprints(boardId: number, params?: { startAt?: number; maxResults?: number; state?: string }): Promise<any> {
+  async getSprints(
+    boardId: number,
+    params?: { startAt?: number; maxResults?: number; state?: string }
+  ): Promise<any> {
     let response = await this.agileApi.get(`/board/${boardId}/sprint`, {
       params: {
         startAt: params?.startAt ?? 0,
         maxResults: params?.maxResults ?? 50,
-        state: params?.state,
-      },
+        state: params?.state
+      }
     });
     return response.data;
   }
@@ -242,7 +278,13 @@ export class JiraClient {
     return response.data;
   }
 
-  async createSprint(sprint: { name: string; boardId: number; startDate?: string; endDate?: string; goal?: string }): Promise<any> {
+  async createSprint(sprint: {
+    name: string;
+    boardId: number;
+    startDate?: string;
+    endDate?: string;
+    goal?: string;
+  }): Promise<any> {
     let response = await this.agileApi.post('/sprint', sprint);
     return response.data;
   }
@@ -254,17 +296,20 @@ export class JiraClient {
 
   async moveIssuesToSprint(sprintId: number, issueKeys: string[]): Promise<void> {
     await this.agileApi.post(`/sprint/${sprintId}/issue`, {
-      issues: issueKeys,
+      issues: issueKeys
     });
   }
 
-  async getSprintIssues(sprintId: number, params?: { startAt?: number; maxResults?: number; fields?: string[] }): Promise<any> {
+  async getSprintIssues(
+    sprintId: number,
+    params?: { startAt?: number; maxResults?: number; fields?: string[] }
+  ): Promise<any> {
     let response = await this.agileApi.get(`/sprint/${sprintId}/issue`, {
       params: {
         startAt: params?.startAt ?? 0,
         maxResults: params?.maxResults ?? 50,
-        fields: params?.fields?.join(','),
-      },
+        fields: params?.fields?.join(',')
+      }
     });
     return response.data;
   }
@@ -278,18 +323,21 @@ export class JiraClient {
 
   async moveIssuesToEpic(epicIdOrKey: string, issueKeys: string[]): Promise<void> {
     await this.agileApi.post(`/epic/${epicIdOrKey}/issue`, {
-      issues: issueKeys,
+      issues: issueKeys
     });
   }
 
   // ---- Versions / Releases ----
 
-  async getProjectVersions(projectIdOrKey: string, params?: { startAt?: number; maxResults?: number }): Promise<any> {
+  async getProjectVersions(
+    projectIdOrKey: string,
+    params?: { startAt?: number; maxResults?: number }
+  ): Promise<any> {
     let response = await this.api.get(`/project/${projectIdOrKey}/version`, {
       params: {
         startAt: params?.startAt ?? 0,
-        maxResults: params?.maxResults ?? 50,
-      },
+        maxResults: params?.maxResults ?? 50
+      }
     });
     return response.data;
   }
@@ -304,12 +352,15 @@ export class JiraClient {
     return response.data;
   }
 
-  async deleteVersion(versionId: string, params?: { moveFixIssuesTo?: string; moveAffectedIssuesTo?: string }): Promise<void> {
+  async deleteVersion(
+    versionId: string,
+    params?: { moveFixIssuesTo?: string; moveAffectedIssuesTo?: string }
+  ): Promise<void> {
     await this.api.delete(`/version/${versionId}`, {
       params: {
         moveFixIssuesTo: params?.moveFixIssuesTo,
-        moveAffectedIssuesTo: params?.moveAffectedIssuesTo,
-      },
+        moveAffectedIssuesTo: params?.moveAffectedIssuesTo
+      }
     });
   }
 
@@ -340,7 +391,12 @@ export class JiraClient {
     return response.data;
   }
 
-  async createFilter(filter: { name: string; jql: string; description?: string; favourite?: boolean }): Promise<any> {
+  async createFilter(filter: {
+    name: string;
+    jql: string;
+    description?: string;
+    favourite?: boolean;
+  }): Promise<any> {
     let response = await this.api.post('/filter', filter);
     return response.data;
   }
@@ -392,17 +448,19 @@ export class JiraClient {
   async registerWebhook(url: string, events: string[], jqlFilter?: string): Promise<any> {
     let response = await this.api.post('/webhook', {
       url,
-      webhooks: [{
-        events,
-        jqlFilter: jqlFilter ?? '',
-      }],
+      webhooks: [
+        {
+          events,
+          jqlFilter: jqlFilter ?? ''
+        }
+      ]
     });
     return response.data;
   }
 
   async deleteWebhook(webhookIds: number[]): Promise<void> {
     await this.api.delete('/webhook', {
-      data: { webhookIds },
+      data: { webhookIds }
     });
   }
 
@@ -415,7 +473,7 @@ export class JiraClient {
 
   async bulkCreateIssues(issues: Array<{ fields: Record<string, any> }>): Promise<any> {
     let response = await this.api.post('/issue/bulk', {
-      issueUpdates: issues.map(i => ({ fields: i.fields })),
+      issueUpdates: issues.map(i => ({ fields: i.fields }))
     });
     return response.data;
   }
@@ -449,8 +507,8 @@ export class JiraClient {
     let response = await this.api.get('/label', {
       params: {
         startAt: params?.startAt ?? 0,
-        maxResults: params?.maxResults ?? 1000,
-      },
+        maxResults: params?.maxResults ?? 1000
+      }
     });
     return response.data;
   }
@@ -459,7 +517,7 @@ export class JiraClient {
 
   async moveIssuesToBacklog(issueKeys: string[]): Promise<void> {
     await this.agileApi.post('/backlog/issue', {
-      issues: issueKeys,
+      issues: issueKeys
     });
   }
 

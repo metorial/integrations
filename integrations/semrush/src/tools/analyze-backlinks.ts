@@ -4,40 +4,49 @@ import { transformResults } from '../lib/csv-parser';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let analyzeBacklinks = SlateTool.create(
-  spec,
-  {
-    name: 'Analyze Backlinks',
-    key: 'analyze_backlinks',
-    description: `Analyze the backlink profile of a domain, subdomain, or URL. Retrieve backlink overview metrics, individual backlinks, referring domains, anchor text distribution, and backlink competitors.
+export let analyzeBacklinks = SlateTool.create(spec, {
+  name: 'Analyze Backlinks',
+  key: 'analyze_backlinks',
+  description: `Analyze the backlink profile of a domain, subdomain, or URL. Retrieve backlink overview metrics, individual backlinks, referring domains, anchor text distribution, and backlink competitors.
 Use this for link building research, competitor backlink analysis, and assessing a site's authority.`,
-    instructions: [
-      'Set targetType to "root_domain" for the full domain, "domain" for a specific subdomain, or "url" for a specific page.',
-      'Use reportType to choose which backlink data to retrieve.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    target: z.string().describe('Domain, subdomain, or URL to analyze'),
-    targetType: z.enum(['root_domain', 'domain', 'url']).default('root_domain').describe('Scope of analysis'),
-    reportType: z.enum(['overview', 'backlinks', 'referring_domains', 'anchors', 'competitors']).default('overview').describe('Type of backlink report'),
-    limit: z.number().optional().default(50).describe('Maximum number of results to return'),
-    offset: z.number().optional().describe('Number of results to skip for pagination'),
-    sortBy: z.string().optional().describe('Sort field and order'),
-    filter: z.string().optional().describe('Filter expression'),
-  }))
-  .output(z.object({
-    backlinks: z.array(z.record(z.string(), z.unknown())).describe('Backlink data matching the requested report type'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Set targetType to "root_domain" for the full domain, "domain" for a specific subdomain, or "url" for a specific page.',
+    'Use reportType to choose which backlink data to retrieve.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      target: z.string().describe('Domain, subdomain, or URL to analyze'),
+      targetType: z
+        .enum(['root_domain', 'domain', 'url'])
+        .default('root_domain')
+        .describe('Scope of analysis'),
+      reportType: z
+        .enum(['overview', 'backlinks', 'referring_domains', 'anchors', 'competitors'])
+        .default('overview')
+        .describe('Type of backlink report'),
+      limit: z.number().optional().default(50).describe('Maximum number of results to return'),
+      offset: z.number().optional().describe('Number of results to skip for pagination'),
+      sortBy: z.string().optional().describe('Sort field and order'),
+      filter: z.string().optional().describe('Filter expression')
+    })
+  )
+  .output(
+    z.object({
+      backlinks: z
+        .array(z.record(z.string(), z.unknown()))
+        .describe('Backlink data matching the requested report type')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SemrushAnalyticsClient({
       token: ctx.auth.token,
       authType: ctx.auth.authType,
-      database: ctx.config.database,
+      database: ctx.config.database
     });
 
     let results: Record<string, unknown>[];
@@ -46,7 +55,7 @@ Use this for link building research, competitor backlink analysis, and assessing
       case 'overview':
         results = await client.getBacklinksOverview({
           target: ctx.input.target,
-          targetType: ctx.input.targetType,
+          targetType: ctx.input.targetType
         });
         break;
 
@@ -57,7 +66,7 @@ Use this for link building research, competitor backlink analysis, and assessing
           displayLimit: ctx.input.limit,
           displayOffset: ctx.input.offset,
           displaySort: ctx.input.sortBy,
-          displayFilter: ctx.input.filter,
+          displayFilter: ctx.input.filter
         });
         break;
 
@@ -68,7 +77,7 @@ Use this for link building research, competitor backlink analysis, and assessing
           displayLimit: ctx.input.limit,
           displayOffset: ctx.input.offset,
           displaySort: ctx.input.sortBy,
-          displayFilter: ctx.input.filter,
+          displayFilter: ctx.input.filter
         });
         break;
 
@@ -77,7 +86,7 @@ Use this for link building research, competitor backlink analysis, and assessing
           target: ctx.input.target,
           targetType: ctx.input.targetType,
           displayLimit: ctx.input.limit,
-          displayOffset: ctx.input.offset,
+          displayOffset: ctx.input.offset
         });
         break;
 
@@ -86,7 +95,7 @@ Use this for link building research, competitor backlink analysis, and assessing
           target: ctx.input.target,
           targetType: ctx.input.targetType,
           displayLimit: ctx.input.limit,
-          displayOffset: ctx.input.offset,
+          displayOffset: ctx.input.offset
         });
         break;
 
@@ -98,8 +107,9 @@ Use this for link building research, competitor backlink analysis, and assessing
 
     return {
       output: {
-        backlinks,
+        backlinks
       },
-      message: `Retrieved ${ctx.input.reportType} report for **${ctx.input.target}** (${ctx.input.targetType}): ${backlinks.length} results.`,
+      message: `Retrieved ${ctx.input.reportType} report for **${ctx.input.target}** (${ctx.input.targetType}): ${backlinks.length} results.`
     };
-  }).build();
+  })
+  .build();

@@ -3,27 +3,47 @@ import { GigasheetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let shareFile = SlateTool.create(
-  spec,
-  {
-    name: 'Share File',
-    key: 'share_file',
-    description: `Share a Gigasheet file with other users via email, or create a live share link that produces CSV data. Supports setting permissions and managing live shares.`,
-  }
-)
-  .input(z.object({
-    sheetHandle: z.string().describe('Handle of the file to share'),
-    action: z.enum(['share_with_users', 'create_live_share', 'list_live_shares', 'delete_live_share']).describe('Sharing action to perform'),
-    emails: z.array(z.string()).optional().describe('Email addresses to share with (for share_with_users)'),
-    permission: z.string().optional().describe('Permission level to grant (for share_with_users)'),
-    shareMessage: z.string().optional().describe('Optional message to include with the share invitation'),
-    liveShareId: z.string().optional().describe('Live share ID to delete (for delete_live_share)'),
-  }))
-  .output(z.object({
-    result: z.unknown().describe('Sharing operation result'),
-    success: z.boolean().describe('Whether the operation completed'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let shareFile = SlateTool.create(spec, {
+  name: 'Share File',
+  key: 'share_file',
+  description: `Share a Gigasheet file with other users via email, or create a live share link that produces CSV data. Supports setting permissions and managing live shares.`
+})
+  .input(
+    z.object({
+      sheetHandle: z.string().describe('Handle of the file to share'),
+      action: z
+        .enum([
+          'share_with_users',
+          'create_live_share',
+          'list_live_shares',
+          'delete_live_share'
+        ])
+        .describe('Sharing action to perform'),
+      emails: z
+        .array(z.string())
+        .optional()
+        .describe('Email addresses to share with (for share_with_users)'),
+      permission: z
+        .string()
+        .optional()
+        .describe('Permission level to grant (for share_with_users)'),
+      shareMessage: z
+        .string()
+        .optional()
+        .describe('Optional message to include with the share invitation'),
+      liveShareId: z
+        .string()
+        .optional()
+        .describe('Live share ID to delete (for delete_live_share)')
+    })
+  )
+  .output(
+    z.object({
+      result: z.unknown().describe('Sharing operation result'),
+      success: z.boolean().describe('Whether the operation completed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GigasheetClient({ token: ctx.auth.token });
     let result: unknown;
 
@@ -35,7 +55,7 @@ export let shareFile = SlateTool.create(
         result = await client.shareFile(ctx.input.sheetHandle, {
           emails: ctx.input.emails,
           permission: ctx.input.permission,
-          message: ctx.input.shareMessage,
+          message: ctx.input.shareMessage
         });
         break;
 
@@ -59,9 +79,9 @@ export let shareFile = SlateTool.create(
     return {
       output: {
         result,
-        success: true,
+        success: true
       },
-      message: `Successfully performed **${ctx.input.action}** sharing action.`,
+      message: `Successfully performed **${ctx.input.action}** sharing action.`
     };
   })
   .build();

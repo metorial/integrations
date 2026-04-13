@@ -5,7 +5,7 @@ let REGION_BASE_URLS: Record<string, string> = {
   default: 'https://api.craftmypdf.com/v1',
   us: 'https://api-us.craftmypdf.com/v1',
   eu: 'https://api-de.craftmypdf.com/v1',
-  au: 'https://api-au.craftmypdf.com/v1',
+  au: 'https://api-au.craftmypdf.com/v1'
 };
 
 export interface CreatePdfParams {
@@ -139,14 +139,14 @@ export class Client {
       baseURL,
       headers: {
         'X-API-KEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async createPdf(params: CreatePdfParams) {
     let body: Record<string, unknown> = {
-      template_id: params.templateId,
+      template_id: params.templateId
     };
     if (params.data !== undefined) body.data = params.data;
     if (params.loadDataFrom) body.load_data_from = params.loadDataFrom;
@@ -154,9 +154,11 @@ export class Client {
     if (params.exportType) body.export_type = params.exportType;
     if (params.expiration !== undefined) body.expiration = params.expiration;
     if (params.outputFile) body.output_file = params.outputFile;
-    if (params.imageResampleRes !== undefined) body.image_resample_res = params.imageResampleRes;
+    if (params.imageResampleRes !== undefined)
+      body.image_resample_res = params.imageResampleRes;
     if (params.cloudStorage !== undefined) body.cloud_storage = params.cloudStorage;
-    if (params.passwordProtected !== undefined) body.password_protected = params.passwordProtected;
+    if (params.passwordProtected !== undefined)
+      body.password_protected = params.passwordProtected;
     if (params.password) body.password = params.password;
     if (params.pdfVersion) body.pdf_version = params.pdfVersion;
     if (params.resizeImages !== undefined) body.resize_images = params.resizeImages;
@@ -176,7 +178,7 @@ export class Client {
   async createAsyncPdf(params: CreateAsyncPdfParams) {
     let body: Record<string, unknown> = {
       template_id: params.templateId,
-      webhook_url: params.webhookUrl,
+      webhook_url: params.webhookUrl
     };
     if (params.data !== undefined) body.data = params.data;
     if (params.loadDataFrom) body.load_data_from = params.loadDataFrom;
@@ -184,9 +186,11 @@ export class Client {
     if (params.exportType) body.export_type = params.exportType;
     if (params.expiration !== undefined) body.expiration = params.expiration;
     if (params.outputFile) body.output_file = params.outputFile;
-    if (params.imageResampleRes !== undefined) body.image_resample_res = params.imageResampleRes;
+    if (params.imageResampleRes !== undefined)
+      body.image_resample_res = params.imageResampleRes;
     if (params.cloudStorage !== undefined) body.cloud_storage = params.cloudStorage;
-    if (params.passwordProtected !== undefined) body.password_protected = params.passwordProtected;
+    if (params.passwordProtected !== undefined)
+      body.password_protected = params.passwordProtected;
     if (params.password) body.password = params.password;
     if (params.pdfVersion) body.pdf_version = params.pdfVersion;
     if (params.resizeImages !== undefined) body.resize_images = params.resizeImages;
@@ -204,7 +208,7 @@ export class Client {
 
   async createImage(params: CreateImageParams) {
     let body: Record<string, unknown> = {
-      template_id: params.templateId,
+      template_id: params.templateId
     };
     if (params.data !== undefined) body.data = params.data;
     if (params.loadDataFrom) body.load_data_from = params.loadDataFrom;
@@ -224,10 +228,10 @@ export class Client {
 
   async createMerge(params: MergeTemplatesParams) {
     let body: Record<string, unknown> = {
-      templates: params.templates.map((t) => ({
+      templates: params.templates.map(t => ({
         template_id: t.templateId,
-        ...(t.data ? { data: t.data } : {}),
-      })),
+        ...(t.data ? { data: t.data } : {})
+      }))
     };
     if (params.data !== undefined) body.data = params.data;
     if (params.paging) body.paging = params.paging;
@@ -245,7 +249,7 @@ export class Client {
 
   async mergePdfUrls(params: MergePdfUrlsParams) {
     let body: Record<string, unknown> = {
-      urls: params.urls,
+      urls: params.urls
     };
     if (params.expiration !== undefined) body.expiration = params.expiration;
     if (params.outputFile) body.output_file = params.outputFile;
@@ -261,7 +265,7 @@ export class Client {
   async addWatermark(params: WatermarkParams) {
     let body: Record<string, unknown> = {
       url: params.url,
-      text: params.text,
+      text: params.text
     };
     if (params.fontSize !== undefined) body.font_size = params.fontSize;
     if (params.opacity !== undefined) body.opacity = params.opacity;
@@ -281,9 +285,9 @@ export class Client {
   async addTextToPdf(params: AddTextToPdfParams) {
     let body: Record<string, unknown> = {
       url: params.url,
-      textSettings: params.textSettings.map((ts) => {
+      textSettings: params.textSettings.map(ts => {
         let setting: Record<string, unknown> = {
-          text: ts.text,
+          text: ts.text
         };
         if (ts.pageSelector) setting.page_selector = ts.pageSelector;
         if (ts.position) setting.position = ts.position;
@@ -295,7 +299,7 @@ export class Client {
         if (ts.opacity !== undefined) setting.opacity = ts.opacity;
         if (ts.rotation !== undefined) setting.rotation = ts.rotation;
         return setting;
-      }),
+      })
     };
     if (params.expiration !== undefined) body.expiration = params.expiration;
 
@@ -310,15 +314,15 @@ export class Client {
   async updatePdfFields(params: UpdatePdfFieldsParams) {
     let body: Record<string, unknown> = {
       url: params.url,
-      fields: params.fields.map((f) => {
+      fields: params.fields.map(f => {
         let field: Record<string, unknown> = {
           id: f.fieldName,
-          value: f.value,
+          value: f.value
         };
         if (f.readOnly !== undefined) field.readOnly = f.readOnly;
         if (f.fontSize !== undefined) field.fontSize = f.fontSize;
         return field;
-      }),
+      })
     };
     if (params.expiration !== undefined) body.expiration = params.expiration;
 
@@ -333,7 +337,7 @@ export class Client {
 
   async getPdfInfo(url: string) {
     let response = await this.http.get('/get-pdf-info', {
-      params: { url },
+      params: { url }
     });
     return response.data as {
       status: string;
@@ -379,7 +383,7 @@ export class Client {
 
   async createTemplate(params: NewTemplateParams) {
     let body: Record<string, unknown> = {
-      template_id: params.templateId,
+      template_id: params.templateId
     };
     if (params.name) body.name = params.name;
     if (params.version !== undefined) body.version = params.version;
@@ -395,7 +399,7 @@ export class Client {
 
   async updateTemplate(params: UpdateTemplateParams) {
     let body: Record<string, unknown> = {
-      template_id: params.templateId,
+      template_id: params.templateId
     };
     if (params.name) body.name = params.name;
     if (params.json) body.json = params.json;
@@ -408,7 +412,7 @@ export class Client {
 
   async deleteTemplate(templateId: string) {
     let response = await this.http.get('/delete-template', {
-      params: { template_id: templateId },
+      params: { template_id: templateId }
     });
     return response.data as {
       status: string;
@@ -417,7 +421,7 @@ export class Client {
 
   async createEditorSession(params: CreateEditorSessionParams) {
     let body: Record<string, unknown> = {
-      template_id: params.templateId,
+      template_id: params.templateId
     };
     if (params.expiration !== undefined) body.expiration = params.expiration;
     if (params.canSave !== undefined) body.canSave = params.canSave;
@@ -427,11 +431,14 @@ export class Client {
     if (params.canEditJSON !== undefined) body.canEditJSON = params.canEditJSON;
     if (params.canShowHeader !== undefined) body.canShowHeader = params.canShowHeader;
     if (params.canShowLayers !== undefined) body.canShowLayers = params.canShowLayers;
-    if (params.canShowPropertyPanel !== undefined) body.canShowPropertyPanel = params.canShowPropertyPanel;
+    if (params.canShowPropertyPanel !== undefined)
+      body.canShowPropertyPanel = params.canShowPropertyPanel;
     if (params.canShowHelp !== undefined) body.canShowHelp = params.canShowHelp;
     if (params.canShowData !== undefined) body.canShowData = params.canShowData;
-    if (params.canShowExpressionDoc !== undefined) body.canShowExpressionDoc = params.canShowExpressionDoc;
-    if (params.canShowPropertyBinding !== undefined) body.canShowPropertyBinding = params.canShowPropertyBinding;
+    if (params.canShowExpressionDoc !== undefined)
+      body.canShowExpressionDoc = params.canShowExpressionDoc;
+    if (params.canShowPropertyBinding !== undefined)
+      body.canShowPropertyBinding = params.canShowPropertyBinding;
     if (params.canShowBackURL !== undefined) body.canShowBackURL = params.canShowBackURL;
     if (params.jsonMode !== undefined) body.jsonMode = params.jsonMode;
     if (params.backURL) body.backURL = params.backURL;
@@ -446,7 +453,7 @@ export class Client {
 
   async deactivateEditorSession(tokenUuid: string) {
     let response = await this.http.post('/deactivate-editor-session', {
-      token_uuid: tokenUuid,
+      token_uuid: tokenUuid
     });
     return response.data as {
       status: string;

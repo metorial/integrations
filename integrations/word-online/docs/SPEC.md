@@ -11,6 +11,7 @@ Word Online is Microsoft's browser-based word processing application, part of Mi
 Word Online is accessed via the Microsoft Graph API, which uses OAuth 2.0 for authentication. Before your app can be authorized to call any Microsoft Graph API, the Microsoft identity platform must first be aware of it, requiring app registration in Microsoft Entra ID (Azure AD).
 
 **App Registration Requirements:**
+
 - Register the app in the Microsoft Entra admin center to establish configuration information including: Application ID (a unique identifier assigned by the Microsoft identity platform) and Redirect URI/URL (one or more endpoints at which your app receives responses from the Microsoft identity platform).
 - A client secret or certificate credential is also required for confidential clients.
 - You must have information of tenant ID, client ID, and client secret of the registered application through Azure Active Directory.
@@ -27,6 +28,7 @@ Word Online is accessed via the Microsoft Graph API, which uses OAuth 2.0 for au
    - Scope: `https://graph.microsoft.com/.default`
 
 **Relevant Scopes (Permissions):**
+
 - `Files.Read` — Read the signed-in user's files
 - `Files.ReadWrite` — Read and write the signed-in user's files
 - `Files.Read.All` — Read all files the user can access

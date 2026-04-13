@@ -3,42 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let verifyMemberLogin = SlateTool.create(
-  spec,
-  {
-    name: 'Verify Member Login',
-    key: 'verify_member_login',
-    description: `Verify a member's login credentials. Useful for SSO integrations or custom authentication flows.
+export let verifyMemberLogin = SlateTool.create(spec, {
+  name: 'Verify Member Login',
+  key: 'verify_member_login',
+  description: `Verify a member's login credentials. Useful for SSO integrations or custom authentication flows.
 Returns whether the credentials are valid.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().describe('The email address of the member.'),
-    password: z.string().describe('The password to verify.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    loginResult: z.any().describe('The verification result.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().describe('The email address of the member.'),
+      password: z.string().describe('The password to verify.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      loginResult: z.any().describe('The verification result.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let result = await client.verifyUserLogin({
       email: ctx.input.email,
-      password: ctx.input.password,
+      password: ctx.input.password
     });
 
     return {
       output: {
         status: result.status,
-        loginResult: result.message,
+        loginResult: result.message
       },
-      message: `Login verification completed with status: **${result.status}**.`,
+      message: `Login verification completed with status: **${result.status}**.`
     };
-  }).build();
+  })
+  .build();

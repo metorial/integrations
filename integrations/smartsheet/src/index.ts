@@ -56,7 +56,5 @@ export let provider = Slate.create({
     listDashboards,
     createUpdateRequest
   ],
-  triggers: [
-    sheetChanges
-  ]
+  triggers: [sheetChanges]
 });

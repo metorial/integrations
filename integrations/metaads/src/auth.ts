@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -45,7 +47,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -59,7 +61,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios({ baseURL: 'https://graph.facebook.com' });
 
       let response = await axios.get('/oauth/access_token', {
@@ -97,7 +99,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let axios = createAxios({ baseURL: 'https://graph.facebook.com' });
 
       // Meta long-lived tokens can be refreshed by exchanging again
@@ -124,7 +126,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let axios = createAxios({ baseURL: 'https://graph.facebook.com' });
 
       let response = await axios.get('/me', {
@@ -149,10 +155,14 @@ export let auth = SlateAuth.create()
     key: 'system_user_token',
 
     inputSchema: z.object({
-      apiToken: z.string().describe('System User access token generated from Business Manager. These tokens do not expire.')
+      apiToken: z
+        .string()
+        .describe(
+          'System User access token generated from Business Manager. These tokens do not expire.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiToken
@@ -160,7 +170,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { apiToken: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { apiToken: string };
+    }) => {
       let axios = createAxios({ baseURL: 'https://graph.facebook.com' });
 
       let response = await axios.get('/me', {

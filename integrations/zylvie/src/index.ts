@@ -12,14 +12,14 @@ import {
   redeemLicenseKey,
   refundLicenseKey,
   verifySubscription,
-  getAccount,
+  getAccount
 } from './tools';
 import {
   newSaleTrigger,
   newLeadTrigger,
   newAffiliateTrigger,
   newSubscriptionTrigger,
-  subscriptionCancellationTrigger,
+  subscriptionCancellationTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -36,13 +36,13 @@ export let provider = Slate.create({
     redeemLicenseKey,
     refundLicenseKey,
     verifySubscription,
-    getAccount,
+    getAccount
   ],
   triggers: [
     newSaleTrigger,
     newLeadTrigger,
     newAffiliateTrigger,
     newSubscriptionTrigger,
-    subscriptionCancellationTrigger,
-  ],
+    subscriptionCancellationTrigger
+  ]
 });

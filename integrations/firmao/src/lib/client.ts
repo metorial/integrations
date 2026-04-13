@@ -4,16 +4,18 @@ import type { FirmaoListParams, FirmaoListResponse } from './types';
 export class FirmaoClient {
   private axios;
 
-  constructor(private params: {
-    token: string;
-    organizationId: string;
-  }) {
+  constructor(
+    private params: {
+      token: string;
+      organizationId: string;
+    }
+  ) {
     this.axios = createAxios({
       baseURL: `https://system.firmao.net/${params.organizationId}/svc/v1`,
       headers: {
-        'Authorization': `Basic ${params.token}`,
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+        Authorization: `Basic ${params.token}`,
+        'Content-Type': 'application/json; charset=UTF-8'
+      }
     });
   }
 
@@ -35,14 +37,17 @@ export class FirmaoClient {
     return parts.length > 0 ? `?${parts.join('&')}` : '';
   }
 
-  async list<T = any>(resource: string, params?: FirmaoListParams): Promise<FirmaoListResponse<T>> {
+  async list<T = any>(
+    resource: string,
+    params?: FirmaoListParams
+  ): Promise<FirmaoListResponse<T>> {
     let query = this.buildQueryString(params);
     let response = await this.axios.get(`/${resource}${query}`);
     let data = response.data;
 
     return {
       data: data.data ?? data ?? [],
-      totalSize: data.totalSize ?? 0,
+      totalSize: data.totalSize ?? 0
     };
   }
 
@@ -56,7 +61,11 @@ export class FirmaoClient {
     return response.data;
   }
 
-  async update<T = any>(resource: string, id: number | string, body: Record<string, any>): Promise<T> {
+  async update<T = any>(
+    resource: string,
+    id: number | string,
+    body: Record<string, any>
+  ): Promise<T> {
     let response = await this.axios.put(`/${resource}/${id}`, body);
     return response.data;
   }
@@ -69,7 +78,13 @@ export class FirmaoClient {
     await this.axios.delete(`/${resource}/${id}`);
   }
 
-  async uploadFile(objectType: string, objectId: number | string, fileName: string, fileContent: string, description?: string): Promise<any> {
+  async uploadFile(
+    objectType: string,
+    objectId: number | string,
+    fileName: string,
+    fileContent: string,
+    description?: string
+  ): Promise<any> {
     let boundary = '----FormBoundary' + Math.random().toString(36).substring(2);
     let body = '';
 
@@ -85,23 +100,24 @@ export class FirmaoClient {
     body += `${fileContent}\r\n`;
     body += `--${boundary}--\r\n`;
 
-    let response = await this.axios.post(
-      `/${objectType}/${objectId}/documentsUpload`,
-      body,
-      {
-        headers: {
-          'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        },
+    let response = await this.axios.post(`/${objectType}/${objectId}/documentsUpload`, body, {
+      headers: {
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
       }
-    );
+    });
     return response.data;
   }
 
-  async getNextNumber(objectClass: string, type: string, mode: string, seriesId?: number): Promise<any> {
+  async getNextNumber(
+    objectClass: string,
+    type: string,
+    mode: string,
+    seriesId?: number
+  ): Promise<any> {
     let params = [
       `objectClass=${encodeURIComponent(objectClass)}`,
       `type=${encodeURIComponent(type)}`,
-      `mode=${encodeURIComponent(mode)}`,
+      `mode=${encodeURIComponent(mode)}`
     ];
     if (seriesId !== undefined) {
       params.push(`id=${seriesId}`);

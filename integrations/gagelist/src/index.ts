@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createGage,
@@ -22,14 +21,9 @@ import {
   updateAccountSettings,
   getCustomFields,
   getCustomFieldValues,
-  updateCustomFieldValues,
+  updateCustomFieldValues
 } from './tools';
-import {
-  newGage,
-  newCalibration,
-  newManufacturer,
-  inboundWebhook,
-} from './triggers';
+import { newGage, newCalibration, newManufacturer, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -54,12 +48,7 @@ export let provider = Slate.create({
     updateAccountSettings,
     getCustomFields,
     getCustomFieldValues,
-    updateCustomFieldValues,
+    updateCustomFieldValues
   ],
-  triggers: [
-    inboundWebhook,
-    newGage,
-    newCalibration,
-    newManufacturer,
-  ],
+  triggers: [inboundWebhook, newGage, newCalibration, newManufacturer]
 });

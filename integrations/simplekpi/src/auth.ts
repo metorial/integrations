@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    email: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      email: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -17,7 +19,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Your API token from Settings > Developer API')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -26,7 +28,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; email: string }; input: { email: string; token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; email: string };
+      input: { email: string; token: string };
+    }) => {
       return {
         profile: {
           email: ctx.output.email

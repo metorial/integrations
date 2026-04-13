@@ -3,40 +3,47 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Creates a new contact in Freshdesk. Contacts represent customers who submit support tickets. Supports email, phone, company association, tags, and custom fields.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Creates a new contact in Freshdesk. Contacts represent customers who submit support tickets. Supports email, phone, company association, tags, and custom fields.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Full name of the contact'),
-    email: z.string().optional().describe('Primary email address'),
-    phone: z.string().optional().describe('Phone number'),
-    mobile: z.string().optional().describe('Mobile number'),
-    twitterId: z.string().optional().describe('Twitter handle'),
-    address: z.string().optional().describe('Physical address'),
-    companyId: z.number().optional().describe('ID of the associated company'),
-    description: z.string().optional().describe('Description/bio of the contact'),
-    jobTitle: z.string().optional().describe('Job title'),
-    language: z.string().optional().describe('Language preference (e.g., "en")'),
-    timezone: z.string().optional().describe('Timezone (e.g., "Eastern Time (US & Canada)")'),
-    tags: z.array(z.string()).optional().describe('Tags to associate with the contact'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field key-value pairs')
-  }))
-  .output(z.object({
-    contactId: z.number().describe('ID of the created contact'),
-    name: z.string().describe('Name of the contact'),
-    email: z.string().nullable().describe('Email address'),
-    createdAt: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Full name of the contact'),
+      email: z.string().optional().describe('Primary email address'),
+      phone: z.string().optional().describe('Phone number'),
+      mobile: z.string().optional().describe('Mobile number'),
+      twitterId: z.string().optional().describe('Twitter handle'),
+      address: z.string().optional().describe('Physical address'),
+      companyId: z.number().optional().describe('ID of the associated company'),
+      description: z.string().optional().describe('Description/bio of the contact'),
+      jobTitle: z.string().optional().describe('Job title'),
+      language: z.string().optional().describe('Language preference (e.g., "en")'),
+      timezone: z
+        .string()
+        .optional()
+        .describe('Timezone (e.g., "Eastern Time (US & Canada)")'),
+      tags: z.array(z.string()).optional().describe('Tags to associate with the contact'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('ID of the created contact'),
+      name: z.string().describe('Name of the contact'),
+      email: z.string().nullable().describe('Email address'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -70,4 +77,5 @@ export let createContact = SlateTool.create(
       },
       message: `Created contact **${contact.name}** (ID: ${contact.id})`
     };
-  }).build();
+  })
+  .build();

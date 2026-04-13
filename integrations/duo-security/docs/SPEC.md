@@ -40,38 +40,50 @@ Each API request must include an `Authorization` header (Base64-encoded `integra
 ## Features
 
 ### User Management
+
 Create, retrieve, update, and delete users, phones, hardware tokens, admins, and integrations. Users can be associated with groups, phones, hardware tokens, WebAuthn credentials, and desktop authenticators. User statuses include Active, Bypass, Disabled, and Locked Out.
 
 ### Group Management
+
 Manage groups of users for applying policies and controlling access. Users can be associated with or disassociated from groups. Groups can be used to scope access policies per application.
 
 ### Two-Factor Authentication
+
 Integrate with Duo's platform to verify service connectivity, retrieve available authentication devices for a user, and perform authentication. Supports Duo Push notifications, phone call verification, SMS passcodes, hardware token passcodes, and WebAuthn/FIDO2 security keys. Can be used to add MFA to custom applications.
 
 ### Phone and Device Management
+
 Manage phones and devices associated with users for MFA purposes. Register, activate, and remove phones. Send activation links for Duo Mobile. Manage trusted endpoints to ensure only known devices can access protected services.
 
 ### Administrator Management
+
 Create and manage Duo administrator accounts with various roles (Owner, Administrator, User Manager, Security Analyst, Application Manager, Read-only, Billing). Custom admin roles with granular permissions can also be created.
 
 ### Application (Integration) Management
+
 Manage Duo-protected applications/integrations. Configure application-level policies, new user behavior, and access settings.
 
 ### Policy Management
+
 Define access policies by user group and per application. Manage policies centrally and apply them globally, to specific user groups, or to specific applications. Policies control authentication methods, device trust requirements, remembered devices, and network-based access rules.
 
 ### Logs and Reporting
+
 Programmatically read authentication logs, administrator logs, and telephony logs; read or update account settings; and retrieve reports. The v2 authentication logs endpoint supports filtering on users, groups, applications, authentication results, factors, and time ranges. Five log types are available: authentication events, administrator actions, telephony logs, user activity, and offline enrollment data.
+
 - Authentication logs have a two-minute delay before events become available.
 - Logs are retrievable for up to 180 days.
 
 ### Account Settings
+
 Read and update global account settings, including lockout thresholds, enrollment options, and notification preferences.
 
 ### MSP Account Management (Accounts API)
+
 The Accounts API allows Duo MSP partners to create, update, and delete managed Duo Security customer accounts. Manage child account editions and telephony credits.
 
 ### Directory Sync
+
 Configure and trigger user directory synchronization with external identity providers.
 
 ## Events

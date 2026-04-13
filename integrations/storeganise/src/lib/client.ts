@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${params.subdomain}.storeganise.com/api/v1`,
       headers: {
-        'Authorization': `ApiKey ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `ApiKey ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -22,7 +22,7 @@ export class Client {
 
   async getSite(siteIdOrCode: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/sites/${siteIdOrCode}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -44,7 +44,7 @@ export class Client {
 
   async getUnit(unitId: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/units/${unitId}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -70,7 +70,7 @@ export class Client {
 
   async getUser(userIdOrEmail: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/users/${userIdOrEmail}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -101,7 +101,7 @@ export class Client {
 
   async getInvoice(invoiceId: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/invoices/${invoiceId}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -147,7 +147,7 @@ export class Client {
 
   async getUnitRental(rentalId: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/unit-rentals/${rentalId}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -172,7 +172,7 @@ export class Client {
 
   async getMoveInJob(jobId: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/jobs/unit-move-ins/${jobId}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -212,7 +212,7 @@ export class Client {
 
   async getMoveOutJob(jobId: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/jobs/unit-move-outs/${jobId}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -247,7 +247,7 @@ export class Client {
 
   async getValetOrder(orderId: string, include?: string): Promise<any> {
     let response = await this.axios.get(`/admin/valet-orders/${orderId}`, {
-      params: include ? { include } : undefined,
+      params: include ? { include } : undefined
     });
     return response.data;
   }
@@ -257,8 +257,15 @@ export class Client {
     return response.data;
   }
 
-  async updateValetOrderStep(orderId: string, stepId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/admin/valet-orders/${orderId}/steps/${stepId}`, data);
+  async updateValetOrderStep(
+    orderId: string,
+    stepId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/admin/valet-orders/${orderId}/steps/${stepId}`,
+      data
+    );
     return response.data;
   }
 
@@ -298,7 +305,11 @@ export class Client {
 
   // ---- Items (Valet) ----
 
-  async updateItems(data: { command: string; itemSids: string[]; data: Record<string, any> }): Promise<any> {
+  async updateItems(data: {
+    command: string;
+    itemSids: string[];
+    data: Record<string, any>;
+  }): Promise<any> {
     let response = await this.axios.put('/admin/items', data);
     return response.data;
   }

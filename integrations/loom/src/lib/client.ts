@@ -40,7 +40,10 @@ export let normalizeToShareUrl = (url: string): string => {
   return `https://www.loom.com/share/${videoId}`;
 };
 
-export let fetchOEmbed = async (loomUrl: string, options?: OEmbedOptions): Promise<OEmbedResponse> => {
+export let fetchOEmbed = async (
+  loomUrl: string,
+  options?: OEmbedOptions
+): Promise<OEmbedResponse> => {
   let http = createAxios({ baseURL: 'https://www.loom.com' });
   let shareUrl = normalizeToShareUrl(loomUrl);
 
@@ -67,11 +70,14 @@ export let fetchOEmbed = async (loomUrl: string, options?: OEmbedOptions): Promi
   };
 };
 
-export let buildEmbedUrl = (videoId: string, options?: {
-  hideTopBar?: boolean;
-  autoplay?: boolean;
-  startTime?: string;
-}): string => {
+export let buildEmbedUrl = (
+  videoId: string,
+  options?: {
+    hideTopBar?: boolean;
+    autoplay?: boolean;
+    startTime?: string;
+  }
+): string => {
   let url = `https://www.loom.com/embed/${videoId}`;
   let params: string[] = [];
 
@@ -86,13 +92,16 @@ export let buildEmbedUrl = (videoId: string, options?: {
   return url;
 };
 
-export let buildEmbedIframe = (videoId: string, options?: {
-  width?: number;
-  height?: number;
-  hideTopBar?: boolean;
-  autoplay?: boolean;
-  startTime?: string;
-}): string => {
+export let buildEmbedIframe = (
+  videoId: string,
+  options?: {
+    width?: number;
+    height?: number;
+    hideTopBar?: boolean;
+    autoplay?: boolean;
+    startTime?: string;
+  }
+): string => {
   let embedUrl = buildEmbedUrl(videoId, options);
 
   if (!options?.width && !options?.height) {

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.similarweb.com',
+  baseURL: 'https://api.similarweb.com'
 });
 
 export interface GlobalRankEntry {
@@ -56,9 +56,7 @@ export interface CapabilitiesResponse {
 }
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   async getGlobalRank(params: {
     domain: string;
@@ -68,15 +66,16 @@ export class Client {
   }): Promise<GlobalRankResponse> {
     let queryParams: Record<string, string> = {
       api_key: this.config.token,
-      format: 'json',
+      format: 'json'
     };
 
     if (params.startDate) queryParams['start_date'] = params.startDate;
     if (params.endDate) queryParams['end_date'] = params.endDate;
-    if (params.mainDomainOnly !== undefined) queryParams['main_domain_only'] = String(params.mainDomainOnly);
+    if (params.mainDomainOnly !== undefined)
+      queryParams['main_domain_only'] = String(params.mainDomainOnly);
 
     let response = await http.get(`/v1/website/${params.domain}/global-rank/global-rank`, {
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data as any;
@@ -85,12 +84,12 @@ export class Client {
       meta: {
         request: data.meta?.request ?? {},
         status: data.meta?.status ?? '',
-        lastUpdated: data.meta?.last_updated ?? '',
+        lastUpdated: data.meta?.last_updated ?? ''
       },
       globalRank: (data.global_rank ?? []).map((entry: any) => ({
         date: entry.date,
-        globalRank: entry.global_rank,
-      })),
+        globalRank: entry.global_rank
+      }))
     };
   }
 
@@ -104,15 +103,16 @@ export class Client {
     let queryParams: Record<string, string> = {
       api_key: this.config.token,
       format: 'json',
-      country: params.country,
+      country: params.country
     };
 
     if (params.startDate) queryParams['start_date'] = params.startDate;
     if (params.endDate) queryParams['end_date'] = params.endDate;
-    if (params.mainDomainOnly !== undefined) queryParams['main_domain_only'] = String(params.mainDomainOnly);
+    if (params.mainDomainOnly !== undefined)
+      queryParams['main_domain_only'] = String(params.mainDomainOnly);
 
     let response = await http.get(`/v1/website/${params.domain}/country-rank/country-rank`, {
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data as any;
@@ -121,23 +121,21 @@ export class Client {
       meta: {
         request: data.meta?.request ?? {},
         status: data.meta?.status ?? '',
-        lastUpdated: data.meta?.last_updated ?? '',
+        lastUpdated: data.meta?.last_updated ?? ''
       },
       countryRank: (data.country_rank ?? []).map((entry: any) => ({
         date: entry.date,
-        countryRank: entry.country_rank,
-      })),
+        countryRank: entry.country_rank
+      }))
     };
   }
 
-  async getCategoryRank(params: {
-    domain: string;
-  }): Promise<CategoryRankResponse> {
+  async getCategoryRank(params: { domain: string }): Promise<CategoryRankResponse> {
     let response = await http.get(`/v1/website/${params.domain}/category-rank/category-rank`, {
       params: {
         api_key: this.config.token,
-        format: 'json',
-      },
+        format: 'json'
+      }
     });
 
     let data = response.data as any;
@@ -145,32 +143,30 @@ export class Client {
     return {
       meta: {
         request: data.meta?.request ?? {},
-        status: data.meta?.status ?? '',
+        status: data.meta?.status ?? ''
       },
       category: data.category ?? '',
-      rank: data.rank ?? 0,
+      rank: data.rank ?? 0
     };
   }
 
-  async getTopSites(params: {
-    limit?: number;
-  }): Promise<TopSitesResponse> {
+  async getTopSites(params: { limit?: number }): Promise<TopSitesResponse> {
     let queryParams: Record<string, string> = {
       api_key: this.config.token,
-      format: 'json',
+      format: 'json'
     };
 
     if (params.limit !== undefined) queryParams['limit'] = String(params.limit);
 
     let response = await http.get('/v1/TopSites', {
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data as any;
 
     let sites: TopSiteEntry[] = (data.top_sites ?? data ?? []).map((entry: any) => ({
       rank: entry.Rank ?? entry.rank,
-      domain: entry.Site ?? entry.Domain ?? entry.domain ?? entry.site,
+      domain: entry.Site ?? entry.Domain ?? entry.domain ?? entry.site
     }));
 
     return { topSites: sites };
@@ -179,15 +175,15 @@ export class Client {
   async getCapabilities(): Promise<CapabilitiesResponse> {
     let response = await http.get('/user-capabilities', {
       params: {
-        api_key: this.config.token,
-      },
+        api_key: this.config.token
+      }
     });
 
     let data = response.data as any;
 
     return {
       remainingHits: data.remaining_hits ?? 0,
-      ...data,
+      ...data
     };
   }
 }

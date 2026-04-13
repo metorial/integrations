@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve detailed information about a specific project by its ID. Returns the project's name, description, dates, progress, assigned users and teams, and billing information.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve detailed information about a specific project by its ID. Returns the project's name, description, dates, progress, assigned users and teams, and billing information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('The ID of the project to retrieve'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    description: z.string().optional().describe('Project description'),
-    startDate: z.string().optional().describe('Project start date'),
-    dueDate: z.string().optional().describe('Project due date'),
-    clientId: z.string().optional().describe('Associated client ID'),
-    progress: z.number().optional().describe('Project progress percentage'),
-    billableHours: z.number().optional().describe('Total billable hours'),
-    users: z.array(z.any()).optional().describe('Assigned users'),
-    teams: z.array(z.any()).optional().describe('Assigned teams'),
-    dateCreated: z.string().optional().describe('Date the project was created'),
-    dateModified: z.string().optional().describe('Date the project was last modified'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('The ID of the project to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      description: z.string().optional().describe('Project description'),
+      startDate: z.string().optional().describe('Project start date'),
+      dueDate: z.string().optional().describe('Project due date'),
+      clientId: z.string().optional().describe('Associated client ID'),
+      progress: z.number().optional().describe('Project progress percentage'),
+      billableHours: z.number().optional().describe('Total billable hours'),
+      users: z.array(z.any()).optional().describe('Assigned users'),
+      teams: z.array(z.any()).optional().describe('Assigned teams'),
+      dateCreated: z.string().optional().describe('Date the project was created'),
+      dateModified: z.string().optional().describe('Date the project was last modified')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.domain,
+      domain: ctx.config.domain
     });
 
     let result = await client.getProjects({ projectId: ctx.input.projectId });
@@ -53,8 +54,9 @@ export let getProject = SlateTool.create(
         users: p.users || undefined,
         teams: p.teams || undefined,
         dateCreated: p.date_created || undefined,
-        dateModified: p.date_modified || undefined,
+        dateModified: p.date_modified || undefined
       },
-      message: `Retrieved project **${p.project_name}**.`,
+      message: `Retrieved project **${p.project_name}**.`
     };
-  }).build();
+  })
+  .build();

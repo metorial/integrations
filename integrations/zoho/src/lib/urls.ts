@@ -6,7 +6,7 @@ let accountsUrls: Record<Datacenter, string> = {
   in: 'https://accounts.zoho.in',
   au: 'https://accounts.zoho.com.au',
   jp: 'https://accounts.zoho.jp',
-  ca: 'https://accounts.zoho.ca',
+  ca: 'https://accounts.zoho.ca'
 };
 
 let apiBaseUrls: Record<Datacenter, string> = {
@@ -15,7 +15,7 @@ let apiBaseUrls: Record<Datacenter, string> = {
   in: 'https://www.zohoapis.in',
   au: 'https://www.zohoapis.com.au',
   jp: 'https://www.zohoapis.jp',
-  ca: 'https://www.zohoapis.ca',
+  ca: 'https://www.zohoapis.ca'
 };
 
 let deskBaseUrls: Record<Datacenter, string> = {
@@ -24,7 +24,7 @@ let deskBaseUrls: Record<Datacenter, string> = {
   in: 'https://desk.zoho.in',
   au: 'https://desk.zoho.com.au',
   jp: 'https://desk.zoho.jp',
-  ca: 'https://desk.zoho.ca',
+  ca: 'https://desk.zoho.ca'
 };
 
 let peopleBaseUrls: Record<Datacenter, string> = {
@@ -33,7 +33,7 @@ let peopleBaseUrls: Record<Datacenter, string> = {
   in: 'https://people.zoho.in',
   au: 'https://people.zoho.com.au',
   jp: 'https://people.zoho.jp',
-  ca: 'https://people.zoho.ca',
+  ca: 'https://people.zoho.ca'
 };
 
 let projectsBaseUrls: Record<Datacenter, string> = {
@@ -42,7 +42,7 @@ let projectsBaseUrls: Record<Datacenter, string> = {
   in: 'https://projectsapi.zoho.in',
   au: 'https://projectsapi.zoho.com.au',
   jp: 'https://projectsapi.zoho.jp',
-  ca: 'https://projectsapi.zoho.ca',
+  ca: 'https://projectsapi.zoho.ca'
 };
 
 let locationToDatacenter: Record<string, Datacenter> = {
@@ -51,7 +51,7 @@ let locationToDatacenter: Record<string, Datacenter> = {
   in: 'in',
   au: 'au',
   jp: 'jp',
-  ca: 'ca',
+  ca: 'ca'
 };
 
 export let getAccountsUrl = (dc: Datacenter): string => accountsUrls[dc];

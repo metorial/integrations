@@ -3,38 +3,50 @@ import { ShortPixelClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let generateCdnUrl = SlateTool.create(
-  spec,
-  {
-    name: 'Generate CDN URL',
-    key: 'generate_cdn_url',
-    description: `Generate a ShortPixel CDN URL that will serve an optimized, resized, and/or converted version of an image on-the-fly.
+export let generateCdnUrl = SlateTool.create(spec, {
+  name: 'Generate CDN URL',
+  key: 'generate_cdn_url',
+  description: `Generate a ShortPixel CDN URL that will serve an optimized, resized, and/or converted version of an image on-the-fly.
 The generated URL can be used directly in HTML, CSS, or any context where an image URL is needed. Images are processed and cached by ShortPixel's CDN automatically.`,
-    instructions: [
-      'The original image URL must be publicly accessible.',
-      'The domain of the original image should be associated with your API key for free CDN delivery.',
-      'If using a different CDN, point to no-cdn.shortpixel.ai and image optimization credits will be used.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  instructions: [
+    'The original image URL must be publicly accessible.',
+    'The domain of the original image should be associated with your API key for free CDN delivery.',
+    'If using a different CDN, point to no-cdn.shortpixel.ai and image optimization credits will be used.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    originalUrl: z.string().describe('The full URL of the original image to optimize via CDN'),
-    width: z.number().optional().describe('Desired width in pixels'),
-    height: z.number().optional().describe('Desired height in pixels'),
-    crop: z.enum(['smart', 'top', 'bottom', 'left', 'right', 'center']).optional().describe('Crop style when resizing. "smart" uses AI-based cropping'),
-    quality: z.enum(['lossy', 'glossy', 'lossless', 'lqip']).optional().describe('Compression quality. "lqip" generates a low-quality image placeholder'),
-    format: z.enum(['webp', 'avif', 'auto']).optional().describe('Output format. "auto" selects the best format based on browser support'),
-  }))
-  .output(z.object({
-    cdnUrl: z.string().describe('The generated ShortPixel CDN URL for the optimized image'),
-    originalUrl: z.string().describe('The original image URL that was provided'),
-    parameters: z.string().describe('The CDN parameter string used in the URL'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      originalUrl: z
+        .string()
+        .describe('The full URL of the original image to optimize via CDN'),
+      width: z.number().optional().describe('Desired width in pixels'),
+      height: z.number().optional().describe('Desired height in pixels'),
+      crop: z
+        .enum(['smart', 'top', 'bottom', 'left', 'right', 'center'])
+        .optional()
+        .describe('Crop style when resizing. "smart" uses AI-based cropping'),
+      quality: z
+        .enum(['lossy', 'glossy', 'lossless', 'lqip'])
+        .optional()
+        .describe('Compression quality. "lqip" generates a low-quality image placeholder'),
+      format: z
+        .enum(['webp', 'avif', 'auto'])
+        .optional()
+        .describe('Output format. "auto" selects the best format based on browser support')
+    })
+  )
+  .output(
+    z.object({
+      cdnUrl: z.string().describe('The generated ShortPixel CDN URL for the optimized image'),
+      originalUrl: z.string().describe('The original image URL that was provided'),
+      parameters: z.string().describe('The CDN parameter string used in the URL')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShortPixelClient({ token: ctx.auth.token });
 
     let cdnUrl = client.buildCdnUrl({
@@ -43,7 +55,7 @@ The generated URL can be used directly in HTML, CSS, or any context where an ima
       height: ctx.input.height,
       crop: ctx.input.crop,
       quality: ctx.input.quality,
-      format: ctx.input.format,
+      format: ctx.input.format
     });
 
     let paramParts: string[] = [];
@@ -58,9 +70,9 @@ The generated URL can be used directly in HTML, CSS, or any context where an ima
       output: {
         cdnUrl,
         originalUrl: ctx.input.originalUrl,
-        parameters,
+        parameters
       },
-      message: `Generated CDN URL:\n\`${cdnUrl}\``,
+      message: `Generated CDN URL:\n\`${cdnUrl}\``
     };
   })
   .build();

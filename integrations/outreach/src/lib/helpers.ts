@@ -4,14 +4,14 @@ export let flattenResource = (resource: JsonApiResource): Record<string, any> =>
   let result: Record<string, any> = {
     id: resource.id,
     type: resource.type,
-    ...resource.attributes,
+    ...resource.attributes
   };
 
   if (resource.relationships) {
     for (let [key, rel] of Object.entries(resource.relationships)) {
       if (rel.data) {
         if (Array.isArray(rel.data)) {
-          result[key] = rel.data.map((r) => ({ id: r.id, type: r.type }));
+          result[key] = rel.data.map(r => ({ id: r.id, type: r.type }));
         } else {
           result[`${key}Id`] = rel.data.id;
         }
@@ -22,7 +22,9 @@ export let flattenResource = (resource: JsonApiResource): Record<string, any> =>
   return result;
 };
 
-export let buildFilterParams = (filters: Record<string, string | undefined>): Record<string, string> => {
+export let buildFilterParams = (
+  filters: Record<string, string | undefined>
+): Record<string, string> => {
   let params: Record<string, string> = {};
   for (let [key, value] of Object.entries(filters)) {
     if (value !== undefined && value !== '') {
@@ -32,7 +34,10 @@ export let buildFilterParams = (filters: Record<string, string | undefined>): Re
   return params;
 };
 
-export let buildRelationship = (type: string, id: string | undefined): Record<string, any> | undefined => {
+export let buildRelationship = (
+  type: string,
+  id: string | undefined
+): Record<string, any> | undefined => {
   if (!id) return undefined;
   return {
     [type]: {
@@ -41,7 +46,9 @@ export let buildRelationship = (type: string, id: string | undefined): Record<st
   };
 };
 
-export let mergeRelationships = (...relationships: (Record<string, any> | undefined)[]): Record<string, any> | undefined => {
+export let mergeRelationships = (
+  ...relationships: (Record<string, any> | undefined)[]
+): Record<string, any> | undefined => {
   let merged: Record<string, any> = {};
   let hasAny = false;
   for (let rel of relationships) {

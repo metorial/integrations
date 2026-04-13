@@ -4,56 +4,63 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let filterSchema = z.object({
-  filterId: z.string().describe('Filter identifier (e.g., country, currentCompanyTechnologies, jobTitle, industry)'),
+  filterId: z
+    .string()
+    .describe(
+      'Filter identifier (e.g., country, currentCompanyTechnologies, jobTitle, industry)'
+    ),
   include: z.array(z.string()).optional().describe('Values to include in the filter'),
   exclude: z.array(z.string()).optional().describe('Values to exclude from the filter')
 });
 
-export let searchPeopleDatabase = SlateTool.create(
-  spec,
-  {
-    name: 'Search People Database',
-    key: 'search_people_database',
-    description: `Search the Lemlist people database to find prospects by criteria such as job title, company, location, industry, and technologies. Returns matching people with their professional details. Useful for building targeted lead lists.`,
-    instructions: [
-      'Use filters to narrow results. Common filter IDs: country, jobTitle, currentCompanyTechnologies, industry, companySize, seniority.',
-      'Use "search" for free text queries.',
-      'Results are paginated - use page and size to navigate.'
-    ],
-    constraints: [
-      'Maximum page size is 25 for people search.',
-      'Searching consumes credits depending on your plan.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let searchPeopleDatabase = SlateTool.create(spec, {
+  name: 'Search People Database',
+  key: 'search_people_database',
+  description: `Search the Lemlist people database to find prospects by criteria such as job title, company, location, industry, and technologies. Returns matching people with their professional details. Useful for building targeted lead lists.`,
+  instructions: [
+    'Use filters to narrow results. Common filter IDs: country, jobTitle, currentCompanyTechnologies, industry, companySize, seniority.',
+    'Use "search" for free text queries.',
+    'Results are paginated - use page and size to navigate.'
+  ],
+  constraints: [
+    'Maximum page size is 25 for people search.',
+    'Searching consumes credits depending on your plan.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    filters: z.array(filterSchema).optional().describe('Array of search filters'),
-    search: z.string().optional().describe('Free text search query'),
-    page: z.number().optional().describe('Page number (starts at 1)'),
-    size: z.number().optional().describe('Results per page (max 25)')
-  }))
-  .output(z.object({
-    total: z.number().optional(),
-    page: z.number().optional(),
-    size: z.number().optional(),
-    results: z.array(z.object({
-      personId: z.string().optional(),
-      fullName: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      country: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      currentJobTitle: z.string().optional(),
-      currentCompanyName: z.string().optional(),
-      currentCompanyDomain: z.string().optional(),
-      currentCompanyIndustry: z.string().optional(),
-      currentCompanySize: z.string().optional()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      filters: z.array(filterSchema).optional().describe('Array of search filters'),
+      search: z.string().optional().describe('Free text search query'),
+      page: z.number().optional().describe('Page number (starts at 1)'),
+      size: z.number().optional().describe('Results per page (max 25)')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().optional(),
+      page: z.number().optional(),
+      size: z.number().optional(),
+      results: z.array(
+        z.object({
+          personId: z.string().optional(),
+          fullName: z.string().optional(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          country: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          currentJobTitle: z.string().optional(),
+          currentCompanyName: z.string().optional(),
+          currentCompanyDomain: z.string().optional(),
+          currentCompanyIndustry: z.string().optional(),
+          currentCompanySize: z.string().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let apiFilters = ctx.input.filters?.map(f => ({
@@ -92,4 +99,5 @@ export let searchPeopleDatabase = SlateTool.create(
       },
       message: `Found **${data.total ?? results.length}** people matching your search. Showing page ${data.page ?? 1} with ${results.length} result(s).`
     };
-  }).build();
+  })
+  .build();

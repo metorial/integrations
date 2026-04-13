@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.jigsawstack.com/v1',
+  baseURL: 'https://api.jigsawstack.com/v1'
 });
 
 export class Client {
@@ -14,7 +14,7 @@ export class Client {
   private get headers() {
     return {
       'x-api-key': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -73,7 +73,11 @@ export class Client {
 
   // Sentiment Analysis
   async analyzeSentiment(params: { text: string }) {
-    let response = await api.post('/ai/sentiment', { text: params.text }, { headers: this.headers });
+    let response = await api.post(
+      '/ai/sentiment',
+      { text: params.text },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -85,7 +89,7 @@ export class Client {
   }) {
     let body: Record<string, unknown> = {
       text: params.text,
-      target_language: params.targetLanguage,
+      target_language: params.targetLanguage
     };
     if (params.currentLanguage) body.current_language = params.currentLanguage;
 
@@ -182,7 +186,7 @@ export class Client {
       body.advance_config = {
         negative_prompt: params.advanceConfig.negativePompt,
         guidance: params.advanceConfig.guidance,
-        seed: params.advanceConfig.seed,
+        seed: params.advanceConfig.seed
       };
     }
 
@@ -207,10 +211,7 @@ export class Client {
   }
 
   // Spell Check
-  async checkSpelling(params: {
-    text: string;
-    languageCode?: string;
-  }) {
+  async checkSpelling(params: { text: string; languageCode?: string }) {
     let body: Record<string, unknown> = { text: params.text };
     if (params.languageCode) body.language_code = params.languageCode;
 
@@ -219,10 +220,7 @@ export class Client {
   }
 
   // Profanity Check
-  async checkProfanity(params: {
-    text: string;
-    censorReplacement?: string;
-  }) {
+  async checkProfanity(params: { text: string; censorReplacement?: string }) {
     let body: Record<string, unknown> = { text: params.text };
     if (params.censorReplacement) body.censor_replacement = params.censorReplacement;
 
@@ -232,15 +230,16 @@ export class Client {
 
   // Spam Check
   async checkSpam(params: { text: string | string[] }) {
-    let response = await api.post('/validate/spam_check', { text: params.text }, { headers: this.headers });
+    let response = await api.post(
+      '/validate/spam_check',
+      { text: params.text },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   // NSFW Detection
-  async detectNsfw(params: {
-    url?: string;
-    fileStoreKey?: string;
-  }) {
+  async detectNsfw(params: { url?: string; fileStoreKey?: string }) {
     let body: Record<string, unknown> = {};
     if (params.url) body.url = params.url;
     if (params.fileStoreKey) body.file_store_key = params.fileStoreKey;
@@ -341,7 +340,7 @@ export class Client {
 
     let response = await api.get('/geo/search', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -350,26 +349,22 @@ export class Client {
   async getSearchSuggestions(params: { query: string }) {
     let response = await api.get('/web/search/suggest', {
       headers: this.headers,
-      params: { query: params.query },
+      params: { query: params.query }
     });
     return response.data;
   }
 
   // File Upload
-  async uploadFile(params: {
-    file: unknown;
-    key?: string;
-    overwrite?: boolean;
-  }) {
+  async uploadFile(params: { file: unknown; key?: string; overwrite?: boolean }) {
     let queryParams: Record<string, string> = {};
     if (params.key) queryParams.key = params.key;
     if (params.overwrite !== undefined) queryParams.overwrite = String(params.overwrite);
 
     let response = await api.post('/store/file', params.file, {
       headers: {
-        'x-api-key': this.token,
+        'x-api-key': this.token
       },
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -378,7 +373,7 @@ export class Client {
   async getFile(params: { key: string }) {
     let response = await api.get(`/store/file/read/${encodeURIComponent(params.key)}`, {
       headers: this.headers,
-      params: { key: params.key },
+      params: { key: params.key }
     });
     return response.data;
   }
@@ -387,7 +382,7 @@ export class Client {
   async deleteFile(params: { key: string }) {
     let response = await api.delete(`/store/file/read/${encodeURIComponent(params.key)}`, {
       headers: this.headers,
-      params: { key: params.key },
+      params: { key: params.key }
     });
     return response.data;
   }

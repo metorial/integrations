@@ -23,9 +23,11 @@ Two credentials are required:
 2. **RapidAPI Key** (`x-rapidapi-key`): Obtained by subscribing to the PageXCRM API on [RapidAPI](https://rapidapi.com/thunderhurt/api/pagexcrm). This key is sent as a request header.
 
 Additionally, the following header must be included in all requests:
+
 - `x-rapidapi-host`: `pagexcrm.p.rapidapi.com`
 
 **Example request headers:**
+
 ```
 x-rapidapi-key: <your-rapidapi-key>
 x-rapidapi-host: pagexcrm.p.rapidapi.com
@@ -50,6 +52,7 @@ Submit new leads into the PageXCRM system from external sources such as websites
 This is the primary (and currently the only publicly documented) API capability. The API is designed as a one-way lead ingestion mechanism — it accepts lead data to be stored and managed within the PageXCRM platform.
 
 **Limitations:**
+
 - The API is very limited in scope — it does not expose endpoints for reading, updating, or deleting leads or other CRM data.
 - There are no documented endpoints for retrieving contacts, managing pipelines, or accessing analytics via the API.
 - All API interactions go through RapidAPI, so a RapidAPI subscription is required.

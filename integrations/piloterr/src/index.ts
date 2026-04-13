@@ -63,7 +63,5 @@ export let provider = Slate.create({
     screenshotWebpage,
     checkUsage
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

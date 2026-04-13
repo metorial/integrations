@@ -3,38 +3,42 @@ import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let candidateEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Candidate Events',
-    key: 'candidate_events',
-    description: 'Triggered when a candidate is created or moves to a different pipeline stage. Delivers the full candidate object at the time of the event.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['candidate_created', 'candidate_moved']).describe('Type of candidate event'),
-    candidate: z.any().describe('Full candidate payload from the webhook'),
-    jobShortcode: z.string().optional().describe('Job shortcode'),
-    stage: z.string().optional().describe('Stage the candidate is in or moved to')
-  }))
-  .output(z.object({
-    candidateId: z.string().describe('Candidate ID'),
-    name: z.string().describe('Candidate full name'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    headline: z.string().optional().describe('Candidate headline'),
-    stage: z.string().optional().describe('Current pipeline stage'),
-    jobShortcode: z.string().optional().describe('Job shortcode'),
-    jobTitle: z.string().optional().describe('Job title'),
-    disqualified: z.boolean().optional().describe('Whether the candidate is disqualified'),
-    profileUrl: z.string().optional().describe('Workable profile URL'),
-    tags: z.array(z.string()).optional().describe('Candidate tags'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp')
-  }))
+export let candidateEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Candidate Events',
+  key: 'candidate_events',
+  description:
+    'Triggered when a candidate is created or moves to a different pipeline stage. Delivers the full candidate object at the time of the event.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['candidate_created', 'candidate_moved'])
+        .describe('Type of candidate event'),
+      candidate: z.any().describe('Full candidate payload from the webhook'),
+      jobShortcode: z.string().optional().describe('Job shortcode'),
+      stage: z.string().optional().describe('Stage the candidate is in or moved to')
+    })
+  )
+  .output(
+    z.object({
+      candidateId: z.string().describe('Candidate ID'),
+      name: z.string().describe('Candidate full name'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      headline: z.string().optional().describe('Candidate headline'),
+      stage: z.string().optional().describe('Current pipeline stage'),
+      jobShortcode: z.string().optional().describe('Job shortcode'),
+      jobTitle: z.string().optional().describe('Job title'),
+      disqualified: z.boolean().optional().describe('Whether the candidate is disqualified'),
+      profileUrl: z.string().optional().describe('Workable profile URL'),
+      tags: z.array(z.string()).optional().describe('Candidate tags'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WorkableClient({
         token: ctx.auth.token,
         subdomain: ctx.config.subdomain
@@ -58,7 +62,7 @@ export let candidateEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WorkableClient({
         token: ctx.auth.token,
         subdomain: ctx.config.subdomain
@@ -74,8 +78,8 @@ export let candidateEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.event || data.type;
       let candidate = data.data || data.candidate || data;
@@ -92,7 +96,7 @@ export let candidateEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let c = ctx.input.candidate;
 
       return {
@@ -116,4 +120,5 @@ export let candidateEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

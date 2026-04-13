@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   sendPush,
@@ -14,13 +13,9 @@ import {
   manageSubscription,
   getChannelInfo,
   sendClipboard,
-  requestFileUpload,
+  requestFileUpload
 } from './tools';
-import {
-  newPush,
-  deviceChanged,
-  inboundWebhook,
-} from './triggers';
+import { newPush, deviceChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,11 +32,7 @@ export let provider = Slate.create({
     manageSubscription,
     getChannelInfo,
     sendClipboard,
-    requestFileUpload,
+    requestFileUpload
   ],
-  triggers: [
-    inboundWebhook,
-    newPush,
-    deviceChanged,
-  ],
+  triggers: [inboundWebhook, newPush, deviceChanged]
 });

@@ -13,31 +13,33 @@ let clusterSchema = z.object({
   numWorkers: z.number().optional().describe('Fixed number of workers'),
   autoscaleMinWorkers: z.number().optional().describe('Minimum workers when autoscaling'),
   autoscaleMaxWorkers: z.number().optional().describe('Maximum workers when autoscaling'),
-  autoterminationMinutes: z.number().optional().describe('Minutes of inactivity before auto-termination'),
+  autoterminationMinutes: z
+    .number()
+    .optional()
+    .describe('Minutes of inactivity before auto-termination'),
   creatorUserName: z.string().optional().describe('User who created the cluster'),
   startTime: z.string().optional().describe('Cluster start time in epoch ms'),
-  clusterSource: z.string().optional().describe('Source of the cluster (UI, API, JOB)'),
+  clusterSource: z.string().optional().describe('Source of the cluster (UI, API, JOB)')
 });
 
-export let listClusters = SlateTool.create(
-  spec,
-  {
-    name: 'List Clusters',
-    key: 'list_clusters',
-    description: `List all available Apache Spark clusters in the workspace. Returns cluster details including state, configuration, and scaling settings.`,
-    tags: {
-      readOnly: true,
-    },
+export let listClusters = SlateTool.create(spec, {
+  name: 'List Clusters',
+  key: 'list_clusters',
+  description: `List all available Apache Spark clusters in the workspace. Returns cluster details including state, configuration, and scaling settings.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    clusters: z.array(clusterSchema).describe('List of clusters in the workspace'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      clusters: z.array(clusterSchema).describe('List of clusters in the workspace')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DatabricksClient({
       workspaceUrl: ctx.config.workspaceUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let clusters = await client.listClusters();
@@ -55,12 +57,12 @@ export let listClusters = SlateTool.create(
       autoterminationMinutes: c.autotermination_minutes,
       creatorUserName: c.creator_user_name,
       startTime: c.start_time ? String(c.start_time) : undefined,
-      clusterSource: c.cluster_source,
+      clusterSource: c.cluster_source
     }));
 
     return {
       output: { clusters: mapped },
-      message: `Found **${mapped.length}** cluster(s). ${mapped.filter((c: any) => c.state === 'RUNNING').length} running.`,
+      message: `Found **${mapped.length}** cluster(s). ${mapped.filter((c: any) => c.state === 'RUNNING').length} running.`
     };
   })
   .build();

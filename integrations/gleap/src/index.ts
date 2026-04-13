@@ -21,10 +21,7 @@ import {
   manageTeam,
   manageAiContent
 } from './tools';
-import {
-  feedbackWebhook,
-  ticketUpdated
-} from './triggers';
+import { feedbackWebhook, ticketUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,8 +46,5 @@ export let provider = Slate.create({
     manageTeam,
     manageAiContent
   ],
-  triggers: [
-    feedbackWebhook,
-    ticketUpdated
-  ]
+  triggers: [feedbackWebhook, ticketUpdated]
 });

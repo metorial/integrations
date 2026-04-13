@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'activetrail',
   name: 'ActiveTrail',
-  description: 'Marketing automation platform for Email, SMS, WhatsApp, and Push Notification campaigns with contact management, automation workflows, and reporting.',
+  description:
+    'Marketing automation platform for Email, SMS, WhatsApp, and Push Notification campaigns with contact management, automation workflows, and reporting.',
   metadata: {},
   config,
-  auth,
+  auth
 });

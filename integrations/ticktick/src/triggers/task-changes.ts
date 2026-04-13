@@ -4,30 +4,33 @@ import { spec } from '../spec';
 import { taskOutputSchema, mapTask } from '../lib/schemas';
 import { z } from 'zod';
 
-export let taskChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Changes',
-    key: 'task_changes',
-    description: 'Detects new, updated, and completed tasks across all projects by polling. Tracks changes based on task modification timestamps.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'completed']).describe('Type of change detected'),
-    taskId: z.string().describe('ID of the affected task'),
-    projectId: z.string().describe('Project the task belongs to'),
-    task: z.any().describe('Full task data'),
-  }))
+export let taskChanges = SlateTrigger.create(spec, {
+  name: 'Task Changes',
+  key: 'task_changes',
+  description:
+    'Detects new, updated, and completed tasks across all projects by polling. Tracks changes based on task modification timestamps.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'completed'])
+        .describe('Type of change detected'),
+      taskId: z.string().describe('ID of the affected task'),
+      projectId: z.string().describe('Project the task belongs to'),
+      task: z.any().describe('Full task data')
+    })
+  )
   .output(taskOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
-      let previousTaskMap: Record<string, { modifiedTime: string; status: number }> = ctx.state?.taskMap ?? {};
+      let previousTaskMap: Record<string, { modifiedTime: string; status: number }> =
+        ctx.state?.taskMap ?? {};
       let now = new Date().toISOString();
 
       let projects = await client.listProjects();
@@ -54,7 +57,7 @@ export let taskChanges = SlateTrigger.create(
       for (let task of allTasks) {
         newTaskMap[task.id] = {
           modifiedTime: task.modifiedTime ?? now,
-          status: task.status ?? 0,
+          status: task.status ?? 0
         };
 
         let previous = previousTaskMap[task.id];
@@ -65,7 +68,7 @@ export let taskChanges = SlateTrigger.create(
             eventType: 'created',
             taskId: task.id,
             projectId: task.projectId,
-            task,
+            task
           });
         } else if (task.status === 2 && previous.status !== 2) {
           // Task was completed
@@ -73,15 +76,19 @@ export let taskChanges = SlateTrigger.create(
             eventType: 'completed',
             taskId: task.id,
             projectId: task.projectId,
-            task,
+            task
           });
-        } else if (task.modifiedTime && previous.modifiedTime && task.modifiedTime !== previous.modifiedTime) {
+        } else if (
+          task.modifiedTime &&
+          previous.modifiedTime &&
+          task.modifiedTime !== previous.modifiedTime
+        ) {
           // Task was updated
           inputs.push({
             eventType: 'updated',
             taskId: task.id,
             projectId: task.projectId,
-            task,
+            task
           });
         }
       }
@@ -90,19 +97,19 @@ export let taskChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           taskMap: newTaskMap,
-          lastPollTime: now,
-        },
+          lastPollTime: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let dedupId = `${ctx.input.taskId}-${ctx.input.eventType}-${ctx.input.task.modifiedTime ?? Date.now()}`;
 
       return {
         type: `task.${ctx.input.eventType}`,
         id: dedupId,
-        output: mapTask(ctx.input.task),
+        output: mapTask(ctx.input.task)
       };
-    },
+    }
   })
   .build();

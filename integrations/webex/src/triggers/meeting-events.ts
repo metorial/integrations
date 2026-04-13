@@ -3,32 +3,36 @@ import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let meetingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Meeting Events',
-    key: 'meeting_events',
-    description: 'Triggers when meetings are created, updated, deleted, started, or ended in Webex.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'deleted', 'started', 'ended']).describe('Type of meeting event'),
-    webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
-  }))
-  .output(z.object({
-    meetingId: z.string().describe('ID of the meeting'),
-    meetingNumber: z.string().optional().describe('Meeting number'),
-    title: z.string().optional().describe('Meeting title'),
-    start: z.string().optional().describe('Scheduled start time'),
-    end: z.string().optional().describe('Scheduled end time'),
-    hostEmail: z.string().optional().describe('Host email'),
-    hostDisplayName: z.string().optional().describe('Host display name'),
-    webLink: z.string().optional().describe('Meeting join URL'),
-    state: z.string().optional().describe('Meeting state'),
-    meetingType: z.string().optional().describe('Type of meeting')
-  }))
+export let meetingEvents = SlateTrigger.create(spec, {
+  name: 'Meeting Events',
+  key: 'meeting_events',
+  description:
+    'Triggers when meetings are created, updated, deleted, started, or ended in Webex.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'deleted', 'started', 'ended'])
+        .describe('Type of meeting event'),
+      webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
+    })
+  )
+  .output(
+    z.object({
+      meetingId: z.string().describe('ID of the meeting'),
+      meetingNumber: z.string().optional().describe('Meeting number'),
+      title: z.string().optional().describe('Meeting title'),
+      start: z.string().optional().describe('Scheduled start time'),
+      end: z.string().optional().describe('Scheduled end time'),
+      hostEmail: z.string().optional().describe('Host email'),
+      hostDisplayName: z.string().optional().describe('Host display name'),
+      webLink: z.string().optional().describe('Meeting join URL'),
+      state: z.string().optional().describe('Meeting state'),
+      meetingType: z.string().optional().describe('Type of meeting')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
 
       let events = ['created', 'updated', 'deleted', 'started', 'ended'];
@@ -49,11 +53,11 @@ export let meetingEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
+      for (let webhookId of details.webhookIds || []) {
         try {
           await client.deleteWebhook(webhookId);
         } catch {
@@ -62,8 +66,8 @@ export let meetingEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
@@ -75,7 +79,7 @@ export let meetingEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.webhookPayload;
       let resourceData = payload.data || {};
 

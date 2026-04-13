@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let axiosInstance = createAxios({
-  baseURL: 'https://api.scrapingant.com/v2',
+  baseURL: 'https://api.scrapingant.com/v2'
 });
 
 export type ProxyType = 'datacenter' | 'residential';
@@ -75,7 +75,7 @@ export class Client {
   private buildParams(options: ScrapeOptions): Record<string, string> {
     let params: Record<string, string> = {
       'x-api-key': this.token,
-      url: options.url,
+      url: options.url
     };
 
     if (options.browser !== undefined) {
@@ -117,7 +117,7 @@ export class Client {
     if (!blockResources || blockResources.length === 0) {
       return '';
     }
-    return blockResources.map((r) => `&block_resource=${encodeURIComponent(r)}`).join('');
+    return blockResources.map(r => `&block_resource=${encodeURIComponent(r)}`).join('');
   }
 
   private buildCustomHeaders(customHeaders?: Record<string, string>): Record<string, string> {
@@ -139,7 +139,7 @@ export class Client {
 
     let response = await axiosInstance.get(`/general?${queryString}`, {
       headers,
-      responseType: 'text',
+      responseType: 'text'
     });
 
     return response.data as string;
@@ -153,14 +153,14 @@ export class Client {
     let queryString = new URLSearchParams(params).toString() + blockResourceQuery;
 
     let response = await axiosInstance.get(`/markdown?${queryString}`, {
-      headers,
+      headers
     });
 
     let data = response.data as { url: string; markdown: string };
 
     return {
       url: data.url,
-      markdown: data.markdown,
+      markdown: data.markdown
     };
   }
 
@@ -172,7 +172,7 @@ export class Client {
     let queryString = new URLSearchParams(params).toString() + blockResourceQuery;
 
     let response = await axiosInstance.get(`/extended?${queryString}`, {
-      headers,
+      headers
     });
 
     let data = response.data as {
@@ -198,15 +198,15 @@ export class Client {
       cookies: data.cookies,
       statusCode: data.status_code,
       headers: data.headers,
-      xhrs: (data.xhrs || []).map((xhr) => ({
+      xhrs: (data.xhrs || []).map(xhr => ({
         url: xhr.url,
         status: xhr.status,
         method: xhr.method,
         headers: xhr.headers,
         requestBody: xhr.request_body,
-        body: xhr.body,
+        body: xhr.body
       })),
-      iframes: data.iframes || [],
+      iframes: data.iframes || []
     };
   }
 
@@ -221,7 +221,7 @@ export class Client {
     let queryString = new URLSearchParams(params).toString() + blockResourceQuery;
 
     let response = await axiosInstance.get(`/extract?${queryString}`, {
-      headers,
+      headers
     });
 
     return response.data as Record<string, unknown>;
@@ -230,8 +230,8 @@ export class Client {
   async getUsage(): Promise<UsageResponse> {
     let response = await axiosInstance.get('/usage', {
       params: {
-        'x-api-key': this.token,
-      },
+        'x-api-key': this.token
+      }
     });
 
     let data = response.data as {
@@ -247,7 +247,7 @@ export class Client {
       startDate: data.start_date,
       endDate: data.end_date,
       planTotalCredits: data.plan_total_credits,
-      remainedCredits: data.remained_credits,
+      remainedCredits: data.remained_credits
     };
   }
 }

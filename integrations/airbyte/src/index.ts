@@ -32,13 +32,10 @@ import {
   listTagsTool,
   createTagTool,
   updateTagTool,
-  deleteTagTool,
+  deleteTagTool
 } from './tools';
 
-import {
-  syncNotificationTrigger,
-  jobCompletedTrigger,
-} from './triggers';
+import { syncNotificationTrigger, jobCompletedTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -73,10 +70,7 @@ export let provider = Slate.create({
     listTagsTool,
     createTagTool,
     updateTagTool,
-    deleteTagTool,
+    deleteTagTool
   ],
-  triggers: [
-    syncNotificationTrigger,
-    jobCompletedTrigger,
-  ],
+  triggers: [syncNotificationTrigger, jobCompletedTrigger]
 });

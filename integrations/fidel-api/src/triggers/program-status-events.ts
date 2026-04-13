@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let programStatusEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Program Status Events',
-    key: 'program_status_events',
-    description: 'Triggers when a program status changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.literal('program.status').describe('Event type'),
-    programId: z.string().describe('Unique identifier of the program'),
-    rawEvent: z.any().describe('Raw event payload from Fidel API'),
-  }))
-  .output(z.object({
-    programId: z.string().describe('Unique identifier of the program'),
-    name: z.string().optional().describe('Name of the program'),
-    accountId: z.string().optional().describe('Account ID'),
-    status: z.string().optional().describe('Current status of the program'),
-    live: z.boolean().optional().describe('Whether the program is in live mode'),
-    activeCard: z.boolean().optional().describe('Whether the program has an active card'),
-    created: z.string().optional().describe('ISO 8601 creation timestamp'),
-    updated: z.string().optional().describe('ISO 8601 update timestamp'),
-  }))
+export let programStatusEvents = SlateTrigger.create(spec, {
+  name: 'Program Status Events',
+  key: 'program_status_events',
+  description: 'Triggers when a program status changes.'
+})
+  .input(
+    z.object({
+      eventType: z.literal('program.status').describe('Event type'),
+      programId: z.string().describe('Unique identifier of the program'),
+      rawEvent: z.any().describe('Raw event payload from Fidel API')
+    })
+  )
+  .output(
+    z.object({
+      programId: z.string().describe('Unique identifier of the program'),
+      name: z.string().optional().describe('Name of the program'),
+      accountId: z.string().optional().describe('Account ID'),
+      status: z.string().optional().describe('Current status of the program'),
+      live: z.boolean().optional().describe('Whether the program is in live mode'),
+      activeCard: z.boolean().optional().describe('Whether the program has an active card'),
+      created: z.string().optional().describe('ISO 8601 creation timestamp'),
+      updated: z.string().optional().describe('ISO 8601 update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ webhookId: string; programId: string; event: string }> = [];
 
@@ -38,12 +39,12 @@ export let programStatusEvents = SlateTrigger.create(
         try {
           let webhook = await client.createWebhook(program.id, {
             event: 'program.status',
-            url: ctx.input.webhookBaseUrl,
+            url: ctx.input.webhookBaseUrl
           });
           registrations.push({
             webhookId: webhook.id,
             programId: program.id,
-            event: 'program.status',
+            event: 'program.status'
           });
         } catch {
           // Continue on error
@@ -51,11 +52,11 @@ export let programStatusEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations ?? [];
 
@@ -68,21 +69,21 @@ export let programStatusEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
           {
             eventType: 'program.status' as const,
             programId: data?.id ?? '',
-            rawEvent: data,
-          },
-        ],
+            rawEvent: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let program = ctx.input.rawEvent;
 
       return {
@@ -96,9 +97,9 @@ export let programStatusEvents = SlateTrigger.create(
           live: program.live,
           activeCard: program.activeCard,
           created: program.created,
-          updated: program.updated,
-        },
+          updated: program.updated
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listApplications,
@@ -11,11 +10,9 @@ import {
   cancelBuild,
   createArtifactUrl,
   manageCaches,
-  addVariables,
+  addVariables
 } from './tools';
-import { buildStatusTrigger,
-  inboundWebhook,
-} from './triggers';
+import { buildStatusTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     cancelBuild,
     createArtifactUrl,
     manageCaches,
-    addVariables,
+    addVariables
   ],
-  triggers: [
-    inboundWebhook,
-    buildStatusTrigger,
-  ],
+  triggers: [inboundWebhook, buildStatusTrigger]
 });

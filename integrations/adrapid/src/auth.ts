@@ -2,17 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('Your Adrapid API token. Found in your account page → API section.')
+      token: z
+        .string()
+        .describe('Your Adrapid API token. Found in your account page → API section.')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -23,7 +27,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://api.adrapid.com',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'Content-Type': 'application/json'
         }
       });

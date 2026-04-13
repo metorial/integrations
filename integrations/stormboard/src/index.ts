@@ -14,13 +14,9 @@ import {
   manageTags,
   manageChat,
   manageParticipants,
-  getUserProfile,
+  getUserProfile
 } from './tools';
-import {
-  ideaEvents,
-  commentEvents,
-  legendEvents,
-} from './triggers';
+import { ideaEvents, commentEvents, legendEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,11 +34,7 @@ export let provider = Slate.create({
     manageTags,
     manageChat,
     manageParticipants,
-    getUserProfile,
+    getUserProfile
   ],
-  triggers: [
-    ideaEvents,
-    commentEvents,
-    legendEvents,
-  ],
+  triggers: [ideaEvents, commentEvents, legendEvents]
 });

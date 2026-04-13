@@ -59,29 +59,39 @@ MemberVault's "Actions" feature allows sending outbound webhook calls (HTTP POST
 MemberVault supports outbound webhooks through its **Actions** system, which can call external webhook URLs when specific events occur. Additionally, MemberVault has a Zapier integration with instant triggers for the following event categories:
 
 ### User Added to Product
+
 Fires when a user signs up for a specified product. Requires selecting a specific product to watch.
+
 - Note: Manually adding users to a product from the admin panel does not trigger this event.
 
 ### Lesson Completed
+
 Fires when a user completes a specific lesson. Requires selecting the lesson to monitor.
 
 ### Module Completed
+
 Fires when a user completes a specific module. Requires selecting the module to monitor.
 
 ### Engagement Points (EP) Threshold Reached
+
 Fires when a user reaches a configured EP number. Requires specifying the EP threshold.
 
 ### Hot Lead Detection
+
 Fires when a user becomes a "Hot Lead" based on product view activity. Requires configuring the number of views that qualifies a user as a hot lead.
 
 ### User Email Consent
+
 Fires when a user approves or denies email consent. Can be filtered by consent status (given or not given).
 
 ### User Completes an Action
+
 Fires when a user completes a specified action within a product. Requires selecting both the action and the product.
 
 ### Account Created
+
 Fires when a new user account is created in the MemberVault instance.
 
 ### First Login
+
 Fires when a user logs in to the platform for the first time.

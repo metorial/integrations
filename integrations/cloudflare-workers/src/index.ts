@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listScripts,
@@ -29,13 +28,9 @@ import {
   listTails,
   deleteTail,
   queryTelemetry,
-  listTelemetryKeys,
+  listTelemetryKeys
 } from './tools';
-import {
-  scriptChanges,
-  deploymentChanges,
-  inboundWebhook,
-} from './triggers';
+import { scriptChanges, deploymentChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -67,11 +62,7 @@ export let provider = Slate.create({
     listTails,
     deleteTail,
     queryTelemetry,
-    listTelemetryKeys,
+    listTelemetryKeys
   ],
-  triggers: [
-    inboundWebhook,
-    scriptChanges,
-    deploymentChanges,
-  ],
+  triggers: [inboundWebhook, scriptChanges, deploymentChanges]
 });

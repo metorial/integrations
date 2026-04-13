@@ -11,7 +11,7 @@ import {
   manageCustomPropertiesTool,
   enableChapterAccessTool,
   getExamResultsTool,
-  getLoginTokenTool,
+  getLoginTokenTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     manageCustomPropertiesTool,
     enableChapterAccessTool,
     getExamResultsTool,
-    getLoginTokenTool,
+    getLoginTokenTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

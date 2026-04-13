@@ -13,8 +13,8 @@ export class AdvancedTradeClient {
       baseURL: 'https://api.coinbase.com/api/v3/brokerage',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -47,14 +47,14 @@ export class AdvancedTradeClient {
       client_order_id: params.clientOrderId,
       product_id: params.productId,
       side: params.side,
-      order_configuration: params.orderConfiguration,
+      order_configuration: params.orderConfiguration
     });
     return response.data;
   }
 
   async cancelOrders(orderIds: string[]): Promise<any> {
     let response = await this.api.post('/orders/batch_cancel', {
-      order_ids: orderIds,
+      order_ids: orderIds
     });
     return response.data;
   }
@@ -111,15 +111,18 @@ export class AdvancedTradeClient {
     return response.data;
   }
 
-  async getProductCandles(productId: string, params: {
-    start: string;
-    end: string;
-    granularity: string;
-  }): Promise<any> {
+  async getProductCandles(
+    productId: string,
+    params: {
+      start: string;
+      end: string;
+      granularity: string;
+    }
+  ): Promise<any> {
     let query = new URLSearchParams({
       start: params.start,
       end: params.end,
-      granularity: params.granularity,
+      granularity: params.granularity
     }).toString();
     let response = await this.api.get(`/products/${productId}/candles?${query}`);
     return response.data;

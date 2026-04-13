@@ -43,10 +43,10 @@ export class TypesApiClient {
     return createAxios({
       baseURL: 'https://customtypes.prismic.io',
       headers: {
-        'Authorization': `Bearer ${this.writeToken}`,
-        'repository': this.repositoryName,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.writeToken}`,
+        repository: this.repositoryName,
+        'Content-Type': 'application/json'
+      }
     });
   }
 

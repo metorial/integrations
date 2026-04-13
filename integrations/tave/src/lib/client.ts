@@ -6,15 +6,15 @@ export class TavePublicClient {
 
   constructor(private token: string) {
     this.axios = createAxios({
-      baseURL: 'https://tave.io/v2',
+      baseURL: 'https://tave.io/v2'
     });
   }
 
   private get headers() {
     return {
-      'Authorization': `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json'
     };
   }
 
@@ -35,31 +35,34 @@ export class TavePublicClient {
 
     let response = await this.axios.get('/contacts', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getContact(contactId: string) {
     let response = await this.axios.get(`/contacts/${contactId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createContact(data: Record<string, unknown>) {
     let response = await this.axios.post('/contacts', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async searchContacts(query: string, params?: {
-    contactKind?: string;
-    brand?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async searchContacts(
+    query: string,
+    params?: {
+      contactKind?: string;
+      brand?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let queryParams: Record<string, string> = { q: query };
     if (params?.contactKind) queryParams['contact_kind'] = params.contactKind;
     if (params?.brand) queryParams['brand'] = params.brand;
@@ -68,7 +71,7 @@ export class TavePublicClient {
 
     let response = await this.axios.get('/contacts', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -88,21 +91,21 @@ export class TavePublicClient {
 
     let response = await this.axios.get('/jobs', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getJob(jobId: string) {
     let response = await this.axios.get(`/jobs/${jobId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createJob(data: Record<string, unknown>) {
     let response = await this.axios.post('/jobs', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -124,14 +127,14 @@ export class TavePublicClient {
 
     let response = await this.axios.get('/orders', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getOrder(orderId: string) {
     let response = await this.axios.get(`/orders/${orderId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -153,14 +156,14 @@ export class TavePublicClient {
 
     let response = await this.axios.get('/payments', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getPayment(paymentId: string) {
     let response = await this.axios.get(`/payments/${paymentId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -168,7 +171,7 @@ export class TavePublicClient {
   // Brands
   async listBrands() {
     let response = await this.axios.get('/brands', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -179,24 +182,24 @@ export class TaveLeadClient {
 
   constructor(
     private secretKey: string,
-    private studioId: string,
+    private studioId: string
   ) {
     this.axios = createAxios({
-      baseURL: 'https://tave.com/app/webservice',
+      baseURL: 'https://tave.com/app/webservice'
     });
   }
 
   async createLead(data: Record<string, unknown>) {
     let payload = {
       SecretKey: this.secretKey,
-      ...data,
+      ...data
     };
 
     let response = await this.axios.post(`/create-lead/${this.studioId}`, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }

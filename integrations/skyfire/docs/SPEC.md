@@ -15,6 +15,7 @@ Skyfire uses **API key authentication**. Agent accounts are accessed programmati
 The base API URL is `https://api.skyfire.xyz`. The JWKS endpoint for token verification is available at `https://app.skyfire.xyz/.well-known/jwks.json`.
 
 To get started:
+
 1. Create an account at `app.skyfire.xyz` using your email address (passwordless login via email link).
 2. Upon signup, your Buyer Agent account is created automatically, along with a pre-funded wallet.
 3. Generate an API key from the Dashboard.

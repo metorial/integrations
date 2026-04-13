@@ -1,11 +1,11 @@
 import { createAxios, axios } from 'slates';
 
 let placesAxios = createAxios({
-  baseURL: 'https://api.yelp.com/v3',
+  baseURL: 'https://api.yelp.com/v3'
 });
 
 let aiAxios = createAxios({
-  baseURL: 'https://api.yelp.com/ai',
+  baseURL: 'https://api.yelp.com/ai'
 });
 
 export interface BusinessSearchParams {
@@ -58,7 +58,7 @@ export class Client {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
@@ -79,8 +79,8 @@ export class Client {
         price: params.price,
         open_now: params.openNow,
         open_at: params.openAt,
-        attributes: params.attributes,
-      },
+        attributes: params.attributes
+      }
     });
     return response.data;
   }
@@ -90,69 +90,84 @@ export class Client {
       headers: this.headers,
       params: {
         phone,
-        locale,
-      },
+        locale
+      }
     });
     return response.data;
   }
 
-  async searchTransactions(transactionType: string, params: {
-    location?: string;
-    latitude?: number;
-    longitude?: number;
-  }) {
+  async searchTransactions(
+    transactionType: string,
+    params: {
+      location?: string;
+      latitude?: number;
+      longitude?: number;
+    }
+  ) {
     let response = await placesAxios.get(`/transactions/${transactionType}/search`, {
       headers: this.headers,
       params: {
         location: params.location,
         latitude: params.latitude,
-        longitude: params.longitude,
-      },
+        longitude: params.longitude
+      }
     });
     return response.data;
   }
 
   async getBusinessDetails(businessIdOrAlias: string, locale?: string) {
-    let response = await placesAxios.get(`/businesses/${encodeURIComponent(businessIdOrAlias)}`, {
-      headers: this.headers,
-      params: {
-        locale,
-      },
-    });
+    let response = await placesAxios.get(
+      `/businesses/${encodeURIComponent(businessIdOrAlias)}`,
+      {
+        headers: this.headers,
+        params: {
+          locale
+        }
+      }
+    );
     return response.data;
   }
 
-  async getBusinessReviews(businessIdOrAlias: string, params?: {
-    locale?: string;
-    sortBy?: string;
-    limit?: number;
-    offset?: number;
-  }) {
-    let response = await placesAxios.get(`/businesses/${encodeURIComponent(businessIdOrAlias)}/reviews`, {
-      headers: this.headers,
-      params: {
-        locale: params?.locale,
-        sort_by: params?.sortBy,
-        limit: params?.limit,
-        offset: params?.offset,
-      },
-    });
+  async getBusinessReviews(
+    businessIdOrAlias: string,
+    params?: {
+      locale?: string;
+      sortBy?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
+    let response = await placesAxios.get(
+      `/businesses/${encodeURIComponent(businessIdOrAlias)}/reviews`,
+      {
+        headers: this.headers,
+        params: {
+          locale: params?.locale,
+          sort_by: params?.sortBy,
+          limit: params?.limit,
+          offset: params?.offset
+        }
+      }
+    );
     return response.data;
   }
 
-  async autocomplete(text: string, params?: {
-    latitude?: number;
-    longitude?: number;
-    locale?: string;
-  }) {
+  async autocomplete(
+    text: string,
+    params?: {
+      latitude?: number;
+      longitude?: number;
+      locale?: string;
+    }
+  ) {
     let response = await placesAxios.get('/autocomplete', {
       headers: this.headers,
       params: {
         text,
         latitude: params?.latitude,
         longitude: params?.longitude,
-        locale: params?.locale,
-      },
+        locale: params?.locale
+      }
     });
     return response.data;
   }
@@ -173,15 +188,15 @@ export class Client {
         latitude: params.latitude,
         longitude: params.longitude,
         limit: params.limit,
-        match_threshold: params.matchThreshold,
-      },
+        match_threshold: params.matchThreshold
+      }
     });
     return response.data;
   }
 
   async aiChat(params: AiChatParams) {
     let body: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
 
     if (params.chatId) {
@@ -198,7 +213,7 @@ export class Client {
     }
 
     let response = await aiAxios.post('/chat/v2', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

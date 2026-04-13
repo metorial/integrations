@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchCreations,
@@ -20,13 +19,9 @@ import {
   addCreationToPrintlist,
   removeCreationFromPrintlist,
   createDiscount,
-  notifyDownloaders,
+  notifyDownloaders
 } from './tools';
-import {
-  newSaleTrigger,
-  newOrderTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newSaleTrigger, newOrderTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,11 +44,7 @@ export let provider = Slate.create({
     addCreationToPrintlist,
     removeCreationFromPrintlist,
     createDiscount,
-    notifyDownloaders,
+    notifyDownloaders
   ],
-  triggers: [
-    inboundWebhook,
-    newSaleTrigger,
-    newOrderTrigger,
-  ],
+  triggers: [inboundWebhook, newSaleTrigger, newOrderTrigger]
 });

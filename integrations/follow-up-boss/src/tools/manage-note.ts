@@ -3,48 +3,52 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let manageNote = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Note',
-    key: 'manage_note',
-    description: `Create, update, retrieve, or delete a note on a contact in Follow Up Boss. Notes are used for recording information and team collaboration.`,
-    instructions: [
-      'To create a note, provide personId and body.',
-      'To update, provide the noteId and updated body.',
-      'To retrieve, provide only the noteId.',
-      'To delete, set "delete" to true with a noteId.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageNote = SlateTool.create(spec, {
+  name: 'Manage Note',
+  key: 'manage_note',
+  description: `Create, update, retrieve, or delete a note on a contact in Follow Up Boss. Notes are used for recording information and team collaboration.`,
+  instructions: [
+    'To create a note, provide personId and body.',
+    'To update, provide the noteId and updated body.',
+    'To retrieve, provide only the noteId.',
+    'To delete, set "delete" to true with a noteId.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    noteId: z.number().optional().describe('ID of an existing note to update, retrieve, or delete'),
-    personId: z.number().optional().describe('Contact ID to create the note on'),
-    subject: z.string().optional().describe('Note subject'),
-    body: z.string().optional().describe('Note body content'),
-    isHtml: z.boolean().optional().describe('Whether the body is HTML formatted'),
-    delete: z.boolean().optional().describe('Set to true to delete the note'),
-  }))
-  .output(z.object({
-    noteId: z.number().optional(),
-    personId: z.number().optional(),
-    subject: z.string().optional(),
-    body: z.string().optional(),
-    created: z.string().optional(),
-    updated: z.string().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      noteId: z
+        .number()
+        .optional()
+        .describe('ID of an existing note to update, retrieve, or delete'),
+      personId: z.number().optional().describe('Contact ID to create the note on'),
+      subject: z.string().optional().describe('Note subject'),
+      body: z.string().optional().describe('Note body content'),
+      isHtml: z.boolean().optional().describe('Whether the body is HTML formatted'),
+      delete: z.boolean().optional().describe('Set to true to delete the note')
+    })
+  )
+  .output(
+    z.object({
+      noteId: z.number().optional(),
+      personId: z.number().optional(),
+      subject: z.string().optional(),
+      body: z.string().optional(),
+      created: z.string().optional(),
+      updated: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.delete && ctx.input.noteId) {
       await client.deleteNote(ctx.input.noteId);
       return {
         output: { noteId: ctx.input.noteId, deleted: true },
-        message: `Deleted note **${ctx.input.noteId}**.`,
+        message: `Deleted note **${ctx.input.noteId}**.`
       };
     }
 
@@ -57,9 +61,9 @@ export let manageNote = SlateTool.create(
           subject: note.subject,
           body: note.body,
           created: note.created,
-          updated: note.updated,
+          updated: note.updated
         },
-        message: `Retrieved note **${ctx.input.noteId}**.`,
+        message: `Retrieved note **${ctx.input.noteId}**.`
       };
     }
 
@@ -78,7 +82,7 @@ export let manageNote = SlateTool.create(
         personId: ctx.input.personId!,
         body: ctx.input.body!,
         subject: ctx.input.subject,
-        isHtml: ctx.input.isHtml,
+        isHtml: ctx.input.isHtml
       });
       action = 'Created';
     }
@@ -90,8 +94,9 @@ export let manageNote = SlateTool.create(
         subject: note.subject,
         body: note.body,
         created: note.created,
-        updated: note.updated,
+        updated: note.updated
       },
-      message: `${action} note **${note.id}** on contact **${note.personId}**.`,
+      message: `${action} note **${note.id}** on contact **${note.personId}**.`
     };
-  }).build();
+  })
+  .build();

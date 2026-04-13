@@ -3,35 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let CONTACT_EVENT_TYPES = [
-  'contact.created',
-  'contact.changed',
-  'contact.deleted',
-] as const;
+let CONTACT_EVENT_TYPES = ['contact.created', 'contact.changed', 'contact.deleted'] as const;
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when contacts are created, changed, or deleted in Lexoffice.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The Lexoffice event type (e.g. contact.created)'),
-    resourceId: z.string().describe('The contact resource ID'),
-    organizationId: z.string().describe('The organization ID'),
-    eventDate: z.string().describe('ISO timestamp of the event'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('The contact ID'),
-    eventType: z.string().describe('The event type that occurred'),
-    name: z.string().optional().describe('Company name or person name'),
-    email: z.string().optional().describe('First email address found'),
-    roles: z.any().optional().describe('Contact roles (customer, vendor)'),
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description: 'Triggers when contacts are created, changed, or deleted in Lexoffice.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The Lexoffice event type (e.g. contact.created)'),
+      resourceId: z.string().describe('The contact resource ID'),
+      organizationId: z.string().describe('The organization ID'),
+      eventDate: z.string().describe('ISO timestamp of the event')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('The contact ID'),
+      eventType: z.string().describe('The event type that occurred'),
+      name: z.string().optional().describe('Company name or person name'),
+      email: z.string().optional().describe('First email address found'),
+      roles: z.any().optional().describe('Contact roles (customer, vendor)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subscriptions: { subscriptionId: string; eventType: string }[] = [];
 
@@ -41,11 +38,11 @@ export let contactEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptions },
+        registrationDetails: { subscriptions }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subs = ctx.input.registrationDetails?.subscriptions ?? [];
 
@@ -58,20 +55,22 @@ export let contactEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType,
-          resourceId: body.resourceId,
-          organizationId: body.organizationId,
-          eventDate: body.eventDate,
-        }],
+        inputs: [
+          {
+            eventType: body.eventType,
+            resourceId: body.resourceId,
+            organizationId: body.organizationId,
+            eventDate: body.eventDate
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let isDeleted = ctx.input.eventType === 'contact.deleted';
 
@@ -82,8 +81,16 @@ export let contactEvents = SlateTrigger.create(
       if (!isDeleted) {
         try {
           let contact = await client.getContact(ctx.input.resourceId);
-          name = contact.company?.name || [contact.person?.firstName, contact.person?.lastName].filter(Boolean).join(' ') || undefined;
-          let emailAddresses = contact.emailAddresses?.business ?? contact.emailAddresses?.office ?? contact.emailAddresses?.private ?? contact.emailAddresses?.other ?? [];
+          name =
+            contact.company?.name ||
+            [contact.person?.firstName, contact.person?.lastName].filter(Boolean).join(' ') ||
+            undefined;
+          let emailAddresses =
+            contact.emailAddresses?.business ??
+            contact.emailAddresses?.office ??
+            contact.emailAddresses?.private ??
+            contact.emailAddresses?.other ??
+            [];
           email = emailAddresses[0] || undefined;
           roles = contact.roles;
         } catch (e) {
@@ -99,8 +106,9 @@ export let contactEvents = SlateTrigger.create(
           eventType: ctx.input.eventType,
           name,
           email,
-          roles,
-        },
+          roles
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -24,12 +24,12 @@ export class Client {
 
   async takeScreenshot(options: TakeScreenshotOptions): Promise<ScreenshotResponse> {
     let axios = createAxios({
-      baseURL: 'https://screenshot.fyi/api',
+      baseURL: 'https://screenshot.fyi/api'
     });
 
     let params: Record<string, string | number | boolean> = {
       accessKey: this.token,
-      url: options.url,
+      url: options.url
     };
 
     if (options.fullPage !== undefined) {

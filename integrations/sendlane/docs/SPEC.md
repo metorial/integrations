@@ -69,9 +69,11 @@ An automation is a series of scheduled actions and communications triggered by a
 Using a combination of JavaScript and Server-Side APIs, you can bring your eCommerce store's key metrics, like customer behavior and transaction history, into Sendlane for segmentation and targeting.
 
 **JavaScript Tracking API** (client-side):
+
 - Active on Site (contact visits website after clicking a Sendlane email link), Identify (contact visits in identifiable state), Product Viewed, Added to Cart, and Checkout Started.
 
 **Server-Side API** (transactional data):
+
 - Placed Order, Ordered Product, and Fulfilled Order events.
 - From the order_placed event, ordered product events execute based on line_items. When an order's status changes to fulfilled, refunded, or canceled, other product events are triggered.
 - If the same combination of event and ID are sent more than once, Sendlane will record the first and skip subsequent duplicates.

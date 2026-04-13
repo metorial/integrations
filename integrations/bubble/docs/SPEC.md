@@ -11,12 +11,14 @@ Bubble is a no-code platform that allows users to build web applications with a 
 Bubble uses bearer token authentication for its API. There are three authentication modes:
 
 ### 1. Admin API Token (Full Access)
+
 - Navigate to Settings → API in the Bubble editor and generate a new API token.
 - When you authenticate with such an API Token, the call is run in the context of an admin user of the app, who has access to all data.
 - An admin token is valid until it is revoked.
 - Include the token in the `Authorization` header as: `Authorization: Bearer <token>`
 
 ### 2. User Token (Scoped Access)
+
 - If you log a user in with an action in an API Workflow, Bubble will respond with a token that can be used to authenticate the client in subsequent requests.
 - Obtain a user token by calling a login or signup API workflow endpoint, which returns a `token`, `user_id`, and `expires` value.
 - If you set "Keep the user logged in" to "yes", the token has a validity of 1 month. If you set it to "no", the token has a validity of 24 hours.
@@ -24,9 +26,11 @@ Bubble uses bearer token authentication for its API. There are three authenticat
 - Include the token in the `Authorization` header as: `Authorization: Bearer <token>`
 
 ### 3. No Authentication
+
 - In some cases, you may want to enable calls that aren't authenticated. To enable this, check the box "This workflow can be run without authentication" at the workflow level. When a workflow is run under such circumstances, the privacy rules that apply are the ones for 'everyone.'
 
 ### Prerequisites
+
 - The Data API is disabled by default. To enable it, go to Settings → API and check the box "This app exposes a Data API". This allows you to select one-by-one which data types are exposed in the Data API.
 - The Workflow API must also be enabled under Settings → API.
 - The base URL follows the pattern: `https://appname.bubbleapps.io/api/1.1/` or `https://yourdomain.com/api/1.1/` if using a custom domain.
@@ -34,6 +38,7 @@ Bubble uses bearer token authentication for its API. There are three authenticat
 ## Features
 
 ### Data Management (Data API)
+
 The Data API allows other systems to search for, read, create, modify and delete data in your application's database via a RESTful interface.
 
 - Operates on data types (tables) that the app owner has explicitly exposed via Settings → API.
@@ -42,6 +47,7 @@ The Data API allows other systems to search for, read, create, modify and delete
 - Each data type is exposed at its own endpoint: `/obj/{data_type_name}`.
 
 ### Workflow Execution (Workflow API)
+
 The Workflow API lets you set up server-side workflows that can be scheduled in your app or triggered from an external application.
 
 - API workflows are server-side workflows that you can schedule/trigger in your application and/or expose to be triggered from an external application or system through an API request.
@@ -52,10 +58,12 @@ The Workflow API lets you set up server-side workflows that can be scheduled in 
 - Each workflow can be individually configured for authentication requirements (admin-only, user token, or no authentication).
 
 ### User Authentication Management
+
 - External systems can sign up and log in users through API workflows.
 - Using a Sign up or Log the user in action in your workflow generates a response that includes a user_id, token, and expires value. These facilitate the authentication of ensuing calls as the user who has just registered or logged in.
 
 ### API Specification (Swagger/OpenAPI)
+
 - The Swagger file is generated automatically by Bubble and is dynamic in that it will update according to your app's settings. The Swagger file is disabled by default but you can enable it under Settings → API. Available at `/api/1.1/meta/swagger.json`.
 
 ## Events
@@ -63,6 +71,7 @@ The Workflow API lets you set up server-side workflows that can be scheduled in 
 Bubble supports receiving webhooks from external services and has internal database trigger events, but does not provide an outbound webhook subscription system where external consumers register to receive event notifications about changes in a Bubble app.
 
 ### Incoming Webhooks (Receiving Events)
+
 Whenever an event occurs in an external app and the application sends an HTTP request to your app, this is often described as a webhook. This allows you to start a process in your application, such as sending a welcome email or adding the user to a newsletter list.
 
 - Bubble can receive webhooks from any external service via its Workflow API endpoints.
@@ -70,6 +79,7 @@ Whenever an event occurs in an external app and the application sends an HTTP re
 - Not a built-in event subscription system; rather, external services must be configured to POST to Bubble's workflow URLs.
 
 ### Database Trigger Events (Internal Only)
+
 Database trigger events are a type of backend event that trigger whenever some specific data in the database changes. Whenever something is created, changed or deleted, the event will trigger.
 
 - These are internal server-side events and are not exposed externally. They cannot be subscribed to by external systems.

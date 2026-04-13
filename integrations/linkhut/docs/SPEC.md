@@ -19,6 +19,7 @@ For third-party applications, Linkhut supports the standard OAuth 2.0 authorizat
 **Registration:** Register an OAuth application at `https://ln.ht/_/oauth/register` to obtain a **client ID** and **client secret**.
 
 **Authorization URL:**
+
 ```
 https://ln.ht/_/oauth/authorize?response_type=code&client_id=<CLIENT_ID>&scope=<SCOPES>&redirect_uri=<REDIRECT_URI>
 ```

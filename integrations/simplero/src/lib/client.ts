@@ -9,12 +9,12 @@ export class SimpleroClient {
       baseURL: 'https://simplero.com/api/v1',
       auth: {
         username: params.token,
-        password: '',
+        password: ''
       },
       headers: {
         'User-Agent': params.userAgent,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -46,7 +46,11 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async findContact(identifier: { email?: string; contactId?: string; contactToken?: string }): Promise<Record<string, unknown>> {
+  async findContact(identifier: {
+    email?: string;
+    contactId?: string;
+    contactToken?: string;
+  }): Promise<Record<string, unknown>> {
     let body: Record<string, string> = {};
     if (identifier.email) body.email = identifier.email;
     if (identifier.contactId) body.id = identifier.contactId;
@@ -82,7 +86,8 @@ export class SimpleroClient {
     if (data.ref !== undefined) body.ref = data.ref;
     if (data.track !== undefined) body.track = data.track;
     if (data.firstActivatedAt !== undefined) body.first_activated_at = data.firstActivatedAt;
-    if (data.autoResponderStartAt !== undefined) body.auto_responder_start_at = data.autoResponderStartAt;
+    if (data.autoResponderStartAt !== undefined)
+      body.auto_responder_start_at = data.autoResponderStartAt;
     if (data.landingPageId !== undefined) body.landing_page_id = data.landingPageId;
     if (data.tags !== undefined) body.tags = data.tags;
     if (data.note !== undefined) body.note = data.note;
@@ -118,7 +123,10 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async addTagToContact(identifier: { email?: string; contactId?: string; contactToken?: string }, tag: string): Promise<Record<string, unknown>> {
+  async addTagToContact(
+    identifier: { email?: string; contactId?: string; contactToken?: string },
+    tag: string
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, string> = { tag };
     if (identifier.email) body.email = identifier.email;
     if (identifier.contactId) body.id = identifier.contactId;
@@ -127,7 +135,10 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async removeTagFromContact(identifier: { email?: string; contactId?: string; contactToken?: string }, tag: string): Promise<Record<string, unknown>> {
+  async removeTagFromContact(
+    identifier: { email?: string; contactId?: string; contactToken?: string },
+    tag: string
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, string> = { tag };
     if (identifier.email) body.email = identifier.email;
     if (identifier.contactId) body.id = identifier.contactId;
@@ -136,7 +147,11 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async getCourseCompletions(identifier: { email?: string; contactId?: string; contactToken?: string }): Promise<Record<string, unknown>> {
+  async getCourseCompletions(identifier: {
+    email?: string;
+    contactId?: string;
+    contactToken?: string;
+  }): Promise<Record<string, unknown>> {
     let body: Record<string, string> = {};
     if (identifier.email) body.email = identifier.email;
     if (identifier.contactId) body.id = identifier.contactId;
@@ -155,7 +170,7 @@ export class SimpleroClient {
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       point_type_id: data.pointTypeId,
-      amount: data.amount,
+      amount: data.amount
     };
     if (data.email) body.email = data.email;
     if (data.contactId) body.id = data.contactId;
@@ -167,7 +182,10 @@ export class SimpleroClient {
 
   // ---- Tags ----
 
-  async listTags(params?: { page?: number; perPage?: number }): Promise<Array<Record<string, unknown>>> {
+  async listTags(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<Array<Record<string, unknown>>> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -180,7 +198,10 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async tagContactById(tagId: string, identifier: { email?: string; contactId?: string; contactToken?: string }): Promise<Record<string, unknown>> {
+  async tagContactById(
+    tagId: string,
+    identifier: { email?: string; contactId?: string; contactToken?: string }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, string> = {};
     if (identifier.email) body.email = identifier.email;
     if (identifier.contactId) body.id = identifier.contactId;
@@ -189,7 +210,10 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async untagContactById(tagId: string, identifier: { email?: string; contactId?: string; contactToken?: string }): Promise<Record<string, unknown>> {
+  async untagContactById(
+    tagId: string,
+    identifier: { email?: string; contactId?: string; contactToken?: string }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, string> = {};
     if (identifier.email) body.email = identifier.email;
     if (identifier.contactId) body.id = identifier.contactId;
@@ -205,21 +229,24 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async subscribeToList(listId: string, data: {
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    ipAddress?: string;
-    referrer?: string;
-    ref?: string;
-    track?: string;
-    firstActivatedAt?: string;
-    autoResponderStartAt?: string;
-    landingPageId?: number;
-    tags?: string[];
-    phone?: string;
-    gdprConsent?: boolean;
-  }): Promise<Record<string, unknown>> {
+  async subscribeToList(
+    listId: string,
+    data: {
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      ipAddress?: string;
+      referrer?: string;
+      ref?: string;
+      track?: string;
+      firstActivatedAt?: string;
+      autoResponderStartAt?: string;
+      landingPageId?: number;
+      tags?: string[];
+      phone?: string;
+      gdprConsent?: boolean;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { email: data.email };
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -228,7 +255,8 @@ export class SimpleroClient {
     if (data.ref !== undefined) body.ref = data.ref;
     if (data.track !== undefined) body.track = data.track;
     if (data.firstActivatedAt !== undefined) body.first_activated_at = data.firstActivatedAt;
-    if (data.autoResponderStartAt !== undefined) body.auto_responder_start_at = data.autoResponderStartAt;
+    if (data.autoResponderStartAt !== undefined)
+      body.auto_responder_start_at = data.autoResponderStartAt;
     if (data.landingPageId !== undefined) body.landing_page_id = data.landingPageId;
     if (data.tags !== undefined) body.tags = data.tags;
     if (data.phone !== undefined) body.phone = data.phone;
@@ -237,18 +265,23 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async bulkSubscribeToList(listId: string, subscribers: Array<{
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  }>): Promise<{ token: string }> {
-    let subscriberData = subscribers.map((s) => {
+  async bulkSubscribeToList(
+    listId: string,
+    subscribers: Array<{
+      email: string;
+      firstName?: string;
+      lastName?: string;
+    }>
+  ): Promise<{ token: string }> {
+    let subscriberData = subscribers.map(s => {
       let entry: Record<string, string> = { email: s.email };
       if (s.firstName) entry.first_name = s.firstName;
       if (s.lastName) entry.last_name = s.lastName;
       return entry;
     });
-    let response = await this.axios.post(`/lists/${listId}/bulk_subscribe.json`, { subscriber_data: subscriberData });
+    let response = await this.axios.post(`/lists/${listId}/bulk_subscribe.json`, {
+      subscriber_data: subscriberData
+    });
     return response.data;
   }
 
@@ -257,8 +290,13 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async findSubscription(listId: string, email: string): Promise<Array<Record<string, unknown>>> {
-    let response = await this.axios.post(`/lists/${listId}/subscriptions/find.json`, { email });
+  async findSubscription(
+    listId: string,
+    email: string
+  ): Promise<Array<Record<string, unknown>>> {
+    let response = await this.axios.post(`/lists/${listId}/subscriptions/find.json`, {
+      email
+    });
     return response.data;
   }
 
@@ -283,7 +321,10 @@ export class SimpleroClient {
 
   // ---- Products ----
 
-  async listProducts(params?: { page?: number; perPage?: number }): Promise<Array<Record<string, unknown>>> {
+  async listProducts(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<Array<Record<string, unknown>>> {
     let query: Record<string, string> = {};
     if (params?.page !== undefined) query.page = String(params.page);
     if (params?.perPage !== undefined) query.per_page = String(params.perPage);
@@ -298,12 +339,15 @@ export class SimpleroClient {
 
   // ---- Purchases ----
 
-  async createFreePurchase(productId: string, data: {
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    skipContract?: boolean;
-  }): Promise<Record<string, unknown>> {
+  async createFreePurchase(
+    productId: string,
+    data: {
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      skipContract?: boolean;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { email: data.email };
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -312,11 +356,14 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async findPurchase(productId: string, identifier: {
-    email?: string;
-    purchaseId?: string;
-    purchaseToken?: string;
-  }): Promise<unknown> {
+  async findPurchase(
+    productId: string,
+    identifier: {
+      email?: string;
+      purchaseId?: string;
+      purchaseToken?: string;
+    }
+  ): Promise<unknown> {
     let body: Record<string, string> = {};
     if (identifier.email) body.email = identifier.email;
     if (identifier.purchaseId) body.id = identifier.purchaseId;
@@ -342,8 +389,11 @@ export class SimpleroClient {
     if (params?.state) query['filters[state]'] = params.state;
     if (params?.createdStartAt) query['filters[created][start_at]'] = params.createdStartAt;
     if (params?.createdEndAt) query['filters[created][end_at]'] = params.createdEndAt;
-    if (params?.firstSuccessfulChargeStartAt) query['filters[first_successful_charge][start_at]'] = params.firstSuccessfulChargeStartAt;
-    if (params?.firstSuccessfulChargeEndAt) query['filters[first_successful_charge][end_at]'] = params.firstSuccessfulChargeEndAt;
+    if (params?.firstSuccessfulChargeStartAt)
+      query['filters[first_successful_charge][start_at]'] =
+        params.firstSuccessfulChargeStartAt;
+    if (params?.firstSuccessfulChargeEndAt)
+      query['filters[first_successful_charge][end_at]'] = params.firstSuccessfulChargeEndAt;
     let response = await this.axios.get('/purchases/search.json', { params: query });
     return response.data;
   }
@@ -402,7 +452,7 @@ export class SimpleroClient {
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       email: data.email,
-      admin_role_id: data.adminRoleId,
+      admin_role_id: data.adminRoleId
     };
     if (data.ticketAssignee !== undefined) body.ticket_assignee = data.ticketAssignee;
     if (data.showOnTicket !== undefined) body.show_on_ticket = data.showOnTicket;
@@ -471,8 +521,13 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async sendTestBroadcast(broadcastId: string, email: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/broadcasts/${broadcastId}/send_test.json`, { email });
+  async sendTestBroadcast(
+    broadcastId: string,
+    email: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.post(`/broadcasts/${broadcastId}/send_test.json`, {
+      email
+    });
     return response.data;
   }
 
@@ -490,7 +545,10 @@ export class SimpleroClient {
     return response.data;
   }
 
-  async startAutomation(automationId: string, email: string): Promise<Record<string, unknown>> {
+  async startAutomation(
+    automationId: string,
+    email: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/automations/${automationId}/start.json`, { email });
     return response.data;
   }
@@ -530,7 +588,7 @@ export class SimpleroClient {
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       event: data.event,
-      target_url: data.targetUrl,
+      target_url: data.targetUrl
     };
     if (data.targetId !== undefined) body.target_id = data.targetId;
     let response = await this.axios.post('/zapier_subscriptions.json', body);

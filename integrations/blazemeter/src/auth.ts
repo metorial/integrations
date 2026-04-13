@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    apiKeyId: z.string().optional(),
-    apiKeySecret: z.string().optional(),
-    runscopeToken: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      apiKeyId: z.string().optional(),
+      apiKeySecret: z.string().optional(),
+      runscopeToken: z.string().optional()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key (Basic Auth)',
@@ -15,27 +17,31 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       apiKeyId: z.string().describe('BlazeMeter API Key ID'),
-      apiKeySecret: z.string().describe('BlazeMeter API Key Secret'),
+      apiKeySecret: z.string().describe('BlazeMeter API Key Secret')
     }),
 
-    getOutput: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let token = Buffer.from(`${ctx.input.apiKeyId}:${ctx.input.apiKeySecret}`).toString('base64');
+    getOutput: async ctx => {
+      let token = Buffer.from(`${ctx.input.apiKeyId}:${ctx.input.apiKeySecret}`).toString(
+        'base64'
+      );
       return {
         output: {
           token,
           apiKeyId: ctx.input.apiKeyId,
-          apiKeySecret: ctx.input.apiKeySecret,
-        },
+          apiKeySecret: ctx.input.apiKeySecret
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { apiKeyId: string; apiKeySecret: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { apiKeyId: string; apiKeySecret: string };
+    }) => {
       let client = createAxios({
         baseURL: 'https://a.blazemeter.com/api/v4',
         headers: {
-          Authorization: `Basic ${ctx.output.token}`,
-        },
+          Authorization: `Basic ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/user');
@@ -51,10 +57,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: data.result?.id?.toString(),
           email: data.result?.email,
-          name: data.result?.displayName,
-        },
+          name: data.result?.displayName
+        }
       };
-    },
+    }
   })
   .addOauth({
     type: 'auth.oauth',
@@ -64,31 +70,32 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Read Access',
-        description: 'Read access to account information including message streams and buckets',
-        scope: 'api:read',
+        description:
+          'Read access to account information including message streams and buckets',
+        scope: 'api:read'
       },
       {
         title: 'Write Messages',
         description: 'Write access to messages',
-        scope: 'message:write',
-      },
+        scope: 'message:write'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         scope: ctx.scopes.join(' '),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://www.runscope.com/signin/oauth/authorize?${params.toString()}`,
+        url: `https://www.runscope.com/signin/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let client = createAxios({ baseURL: 'https://www.runscope.com' });
 
       let response = await client.post('/signin/oauth/access_token', {
@@ -96,7 +103,7 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret,
         code: ctx.code,
         grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let data = response.data as {
@@ -112,8 +119,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          runscopeToken: data.access_token,
-        },
+          runscopeToken: data.access_token
+        }
       };
     },
 
@@ -122,8 +129,8 @@ export let auth = SlateAuth.create()
 
       let response = await client.get('/account', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data as {
@@ -138,8 +145,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: data.data?.id,
           name: data.data?.name,
-          email: data.data?.email,
-        },
+          email: data.data?.email
+        }
       };
-    },
+    }
   });

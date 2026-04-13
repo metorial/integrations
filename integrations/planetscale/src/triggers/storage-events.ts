@@ -3,34 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let storageEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Storage Events',
-    key: 'storage_events',
-    description: 'Triggers when a database crosses a storage threshold (60%, 75%, 85%, 90%, 95%). Covers both PostgreSQL cluster storage and Vitess keyspace storage events.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of storage event (cluster.storage or keyspace.storage)'),
-    eventId: z.string().describe('Unique event identifier'),
-    databaseName: z.string().describe('Name of the database'),
-    rawPayload: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    databaseName: z.string(),
-    resourceType: z.string().describe('Type of resource: cluster or keyspace'),
-    resourceName: z.string().optional(),
-    threshold: z.number().optional().describe('Storage threshold percentage crossed'),
-    currentUsage: z.number().optional().describe('Current storage usage in bytes'),
-    totalCapacity: z.number().optional().describe('Total storage capacity in bytes'),
-  }))
+export let storageEvents = SlateTrigger.create(spec, {
+  name: 'Storage Events',
+  key: 'storage_events',
+  description:
+    'Triggers when a database crosses a storage threshold (60%, 75%, 85%, 90%, 95%). Covers both PostgreSQL cluster storage and Vitess keyspace storage events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Type of storage event (cluster.storage or keyspace.storage)'),
+      eventId: z.string().describe('Unique event identifier'),
+      databaseName: z.string().describe('Name of the database'),
+      rawPayload: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      databaseName: z.string(),
+      resourceType: z.string().describe('Type of resource: cluster or keyspace'),
+      resourceName: z.string().optional(),
+      threshold: z.number().optional().describe('Storage threshold percentage crossed'),
+      currentUsage: z.number().optional().describe('Current storage usage in bytes'),
+      totalCapacity: z.number().optional().describe('Total storage capacity in bytes')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let databases = await client.listDatabases({ perPage: 100 });
@@ -41,7 +45,7 @@ export let storageEvents = SlateTrigger.create(
           let webhook = await client.createWebhook(db.name, {
             url: ctx.input.webhookBaseUrl,
             enabled: true,
-            events: ['cluster.storage', 'keyspace.storage'],
+            events: ['cluster.storage', 'keyspace.storage']
           });
           registrations.push({ databaseName: db.name, webhookId: webhook.id });
         } catch (e) {
@@ -50,18 +54,20 @@ export let storageEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
-      let details = ctx.input.registrationDetails as { registrations: Array<{ databaseName: string; webhookId: string }> };
+      let details = ctx.input.registrationDetails as {
+        registrations: Array<{ databaseName: string; webhookId: string }>;
+      };
       for (let reg of details.registrations) {
         try {
           await client.deleteWebhook(reg.databaseName, reg.webhookId);
@@ -71,8 +77,8 @@ export let storageEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventType = body.event || body.type || '';
       if (eventType !== 'cluster.storage' && eventType !== 'keyspace.storage') {
@@ -83,16 +89,18 @@ export let storageEvents = SlateTrigger.create(
       let eventId = body.id || `${eventType}-${databaseName}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          databaseName,
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            databaseName,
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { rawPayload, eventType } = ctx.input;
       let resource = rawPayload.resource || rawPayload.cluster || rawPayload.keyspace || {};
       let resourceType = eventType.startsWith('cluster') ? 'cluster' : 'keyspace';
@@ -106,8 +114,8 @@ export let storageEvents = SlateTrigger.create(
           resourceName: resource.name,
           threshold: rawPayload.threshold || resource.threshold,
           currentUsage: rawPayload.current_usage || resource.current_usage,
-          totalCapacity: rawPayload.total_capacity || resource.total_capacity,
-        },
+          totalCapacity: rawPayload.total_capacity || resource.total_capacity
+        }
       };
-    },
+    }
   });

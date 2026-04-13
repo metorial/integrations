@@ -3,39 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let subscriberEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Subscriber Event',
-    key: 'subscriber_event',
-    description: 'Triggers when a subscriber is subscribed, modified, or deactivated on a Laposta mailing list. Covers subscribe/resubscribe, data modifications, and deactivation (unsubscribe, delete, hardbounce) events.',
-  },
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type: subscribed, modified, or deactivated'),
-    eventReason: z.string().optional().describe('Additional context for the event (e.g. subscribed, resubscribed, unsubscribed, deleted, hardbounce)'),
-    memberId: z.string().describe('ID of the affected subscriber'),
-    listId: z.string().describe('ID of the list the subscriber belongs to'),
-    email: z.string().describe('Email address of the subscriber'),
-    state: z.string().describe('Current state of the subscriber'),
-    signupDate: z.string().describe('Signup date of the subscriber'),
-    ip: z.string().describe('IP address at signup'),
-    sourceUrl: z.string().describe('Source URL at signup'),
-    customFields: z.record(z.string(), z.string()).describe('Custom field values'),
-  }))
-  .output(z.object({
-    memberId: z.string().describe('ID of the affected subscriber'),
-    listId: z.string().describe('ID of the list'),
-    email: z.string().describe('Email address of the subscriber'),
-    state: z.string().describe('Current state of the subscriber'),
-    signupDate: z.string().describe('Signup date'),
-    ip: z.string().describe('IP address at signup'),
-    sourceUrl: z.string().describe('Source URL at signup'),
-    customFields: z.record(z.string(), z.string()).describe('Custom field values'),
-    eventReason: z.string().optional().describe('Specific reason for the event'),
-  }))
+export let subscriberEvent = SlateTrigger.create(spec, {
+  name: 'Subscriber Event',
+  key: 'subscriber_event',
+  description:
+    'Triggers when a subscriber is subscribed, modified, or deactivated on a Laposta mailing list. Covers subscribe/resubscribe, data modifications, and deactivation (unsubscribe, delete, hardbounce) events.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type: subscribed, modified, or deactivated'),
+      eventReason: z
+        .string()
+        .optional()
+        .describe(
+          'Additional context for the event (e.g. subscribed, resubscribed, unsubscribed, deleted, hardbounce)'
+        ),
+      memberId: z.string().describe('ID of the affected subscriber'),
+      listId: z.string().describe('ID of the list the subscriber belongs to'),
+      email: z.string().describe('Email address of the subscriber'),
+      state: z.string().describe('Current state of the subscriber'),
+      signupDate: z.string().describe('Signup date of the subscriber'),
+      ip: z.string().describe('IP address at signup'),
+      sourceUrl: z.string().describe('Source URL at signup'),
+      customFields: z.record(z.string(), z.string()).describe('Custom field values')
+    })
+  )
+  .output(
+    z.object({
+      memberId: z.string().describe('ID of the affected subscriber'),
+      listId: z.string().describe('ID of the list'),
+      email: z.string().describe('Email address of the subscriber'),
+      state: z.string().describe('Current state of the subscriber'),
+      signupDate: z.string().describe('Signup date'),
+      ip: z.string().describe('IP address at signup'),
+      sourceUrl: z.string().describe('Source URL at signup'),
+      customFields: z.record(z.string(), z.string()).describe('Custom field values'),
+      eventReason: z.string().optional().describe('Specific reason for the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // Laposta webhooks are per-list per-event, so we need to retrieve all lists
@@ -52,24 +59,26 @@ export let subscriberEvent = SlateTrigger.create(
             listId,
             event,
             url: ctx.input.webhookBaseUrl,
-            blocked: false,
+            blocked: false
           });
           registrations.push({
             webhookId: result.webhook.webhook_id,
             listId,
-            event,
+            event
           });
         }
       }
 
       return {
-        registrationDetails: { webhooks: registrations },
+        registrationDetails: { webhooks: registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: string; listId: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: string; listId: string }>;
+      };
 
       for (let webhook of details.webhooks) {
         try {
@@ -80,11 +89,15 @@ export let subscriberEvent = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // Laposta bundles events in an array under the "data" key
-      let events: Array<any> = Array.isArray(body.data) ? body.data : (body.data ? [body.data] : [body]);
+      let events: Array<any> = Array.isArray(body.data)
+        ? body.data
+        : body.data
+          ? [body.data]
+          : [body];
 
       let inputs = events.map((event: any) => {
         let member = event.member ?? event;
@@ -98,14 +111,14 @@ export let subscriberEvent = SlateTrigger.create(
           signupDate: member.signup_date ?? '',
           ip: member.ip ?? '',
           sourceUrl: member.source_url ?? '',
-          customFields: member.custom_fields ?? {},
+          customFields: member.custom_fields ?? {}
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `subscriber.${ctx.input.eventType}`,
         id: `${ctx.input.memberId}-${ctx.input.eventType}-${Date.now()}`,
@@ -118,8 +131,9 @@ export let subscriberEvent = SlateTrigger.create(
           ip: ctx.input.ip,
           sourceUrl: ctx.input.sourceUrl,
           customFields: ctx.input.customFields,
-          eventReason: ctx.input.eventReason,
-        },
+          eventReason: ctx.input.eventReason
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

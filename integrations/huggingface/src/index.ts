@@ -66,7 +66,5 @@ export let provider = Slate.create({
     runInferenceTool,
     getUserInfoTool
   ],
-  triggers: [
-    repositoryEventsTrigger
-  ]
+  triggers: [repositoryEventsTrigger]
 });

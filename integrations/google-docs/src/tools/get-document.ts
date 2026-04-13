@@ -1,5 +1,10 @@
 import { SlateTool } from 'slates';
-import { GoogleDocsClient, Document, StructuralElement, ParagraphElement } from '../lib/client';
+import {
+  GoogleDocsClient,
+  Document,
+  StructuralElement,
+  ParagraphElement
+} from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
@@ -35,36 +40,49 @@ let extractPlainText = (doc: Document): string => {
   return text;
 };
 
-export let getDocument = SlateTool.create(
-  spec,
-  {
-    name: 'Get Document',
-    key: 'get_document',
-    description: `Retrieves a Google Docs document by its ID. Returns the document metadata and optionally the full content as both structured JSON and plain text.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getDocument = SlateTool.create(spec, {
+  name: 'Get Document',
+  key: 'get_document',
+  description: `Retrieves a Google Docs document by its ID. Returns the document metadata and optionally the full content as both structured JSON and plain text.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the document to retrieve'),
-    includeContent: z.boolean().optional().default(true).describe('Whether to include the document content in the response')
-  }))
-  .output(z.object({
-    documentId: z.string().describe('Unique identifier of the document'),
-    title: z.string().describe('Title of the document'),
-    revisionId: z.string().optional().describe('Current revision ID of the document'),
-    plainText: z.string().optional().describe('Plain text content of the document'),
-    namedRanges: z.array(z.object({
-      namedRangeId: z.string().optional(),
-      name: z.string().optional(),
-      startIndex: z.number().optional(),
-      endIndex: z.number().optional()
-    })).optional().describe('Named ranges defined in the document'),
-    bodyEndIndex: z.number().optional().describe('End index of the document body, useful for appending content')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the document to retrieve'),
+      includeContent: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Whether to include the document content in the response')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('Unique identifier of the document'),
+      title: z.string().describe('Title of the document'),
+      revisionId: z.string().optional().describe('Current revision ID of the document'),
+      plainText: z.string().optional().describe('Plain text content of the document'),
+      namedRanges: z
+        .array(
+          z.object({
+            namedRangeId: z.string().optional(),
+            name: z.string().optional(),
+            startIndex: z.number().optional(),
+            endIndex: z.number().optional()
+          })
+        )
+        .optional()
+        .describe('Named ranges defined in the document'),
+      bodyEndIndex: z
+        .number()
+        .optional()
+        .describe('End index of the document body, useful for appending content')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleDocsClient({
       token: ctx.auth.token
     });

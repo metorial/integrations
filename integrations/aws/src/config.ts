@@ -3,6 +3,6 @@ import { z } from 'zod';
 
 export let config = SlateConfig.create(
   z.object({
-    region: z.string().default('us-east-1').describe('AWS region (e.g. us-east-1, eu-west-1)'),
+    region: z.string().default('us-east-1').describe('AWS region (e.g. us-east-1, eu-west-1)')
   })
 );

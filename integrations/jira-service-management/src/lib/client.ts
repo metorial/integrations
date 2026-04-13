@@ -18,8 +18,8 @@ export class JiraClient {
       headers: {
         Authorization: authHeader,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     this.serviceDesk = createAxios({
@@ -28,8 +28,8 @@ export class JiraClient {
         Authorization: authHeader,
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'X-ExperimentalApi': 'opt-in',
-      },
+        'X-ExperimentalApi': 'opt-in'
+      }
     });
   }
 
@@ -59,22 +59,29 @@ export class JiraClient {
     await this.jira.delete(`/issue/${issueIdOrKey}`, { params });
   }
 
-  async transitionIssue(issueIdOrKey: string, transitionId: string, fields?: any, comment?: string): Promise<void> {
+  async transitionIssue(
+    issueIdOrKey: string,
+    transitionId: string,
+    fields?: any,
+    comment?: string
+  ): Promise<void> {
     let body: any = {
-      transition: { id: transitionId },
+      transition: { id: transitionId }
     };
     if (fields) body.fields = fields;
     if (comment) {
       body.update = {
-        comment: [{
-          add: {
-            body: {
-              type: 'doc',
-              version: 1,
-              content: [{ type: 'paragraph', content: [{ type: 'text', text: comment }] }],
-            },
-          },
-        }],
+        comment: [
+          {
+            add: {
+              body: {
+                type: 'doc',
+                version: 1,
+                content: [{ type: 'paragraph', content: [{ type: 'text', text: comment }] }]
+              }
+            }
+          }
+        ]
       };
     }
     await this.jira.post(`/issue/${issueIdOrKey}/transitions`, body);
@@ -87,23 +94,42 @@ export class JiraClient {
 
   async assignIssue(issueIdOrKey: string, accountId: string | null): Promise<void> {
     await this.jira.put(`/issue/${issueIdOrKey}/assignee`, {
-      accountId,
+      accountId
     });
   }
 
-  async searchIssues(jql: string, fields?: string[], maxResults?: number, startAt?: number): Promise<any> {
+  async searchIssues(
+    jql: string,
+    fields?: string[],
+    maxResults?: number,
+    startAt?: number
+  ): Promise<any> {
     let response = await this.jira.post('/search', {
       jql,
-      fields: fields || ['summary', 'status', 'assignee', 'reporter', 'priority', 'issuetype', 'project', 'created', 'updated'],
+      fields: fields || [
+        'summary',
+        'status',
+        'assignee',
+        'reporter',
+        'priority',
+        'issuetype',
+        'project',
+        'created',
+        'updated'
+      ],
       maxResults: maxResults || 50,
-      startAt: startAt || 0,
+      startAt: startAt || 0
     });
     return response.data;
   }
 
   // ─── Comments ──────────────────────────────────────────────────────
 
-  async getComments(issueIdOrKey: string, startAt?: number, maxResults?: number): Promise<any> {
+  async getComments(
+    issueIdOrKey: string,
+    startAt?: number,
+    maxResults?: number
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (startAt !== undefined) params.startAt = String(startAt);
     if (maxResults !== undefined) params.maxResults = String(maxResults);
@@ -117,14 +143,16 @@ export class JiraClient {
       body: {
         type: 'doc',
         version: 1,
-        content: [{ type: 'paragraph', content: [{ type: 'text', text: body }] }],
-      },
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: body }] }]
+      }
     };
     if (isInternal !== undefined) {
-      commentBody.properties = [{
-        key: 'sd.public.comment',
-        value: { internal: isInternal },
-      }];
+      commentBody.properties = [
+        {
+          key: 'sd.public.comment',
+          value: { internal: isInternal }
+        }
+      ];
     }
 
     let response = await this.jira.post(`/issue/${issueIdOrKey}/comment`, commentBody);
@@ -190,10 +218,14 @@ export class JiraClient {
     return response.data;
   }
 
-  async addRequestComment(issueIdOrKey: string, body: string, isPublic: boolean): Promise<any> {
+  async addRequestComment(
+    issueIdOrKey: string,
+    body: string,
+    isPublic: boolean
+  ): Promise<any> {
     let response = await this.serviceDesk.post(`/request/${issueIdOrKey}/comment`, {
       body,
-      public: isPublic,
+      public: isPublic
     });
     return response.data;
   }
@@ -205,12 +237,16 @@ export class JiraClient {
     if (start !== undefined) params.start = String(start);
     if (limit !== undefined) params.limit = String(limit);
 
-    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/requesttype`, { params });
+    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/requesttype`, {
+      params
+    });
     return response.data;
   }
 
   async getRequestTypeFields(serviceDeskId: string, requestTypeId: string): Promise<any> {
-    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/requesttype/${requestTypeId}/field`);
+    let response = await this.serviceDesk.get(
+      `/servicedesk/${serviceDeskId}/requesttype/${requestTypeId}/field`
+    );
     return response.data;
   }
 
@@ -221,10 +257,17 @@ export class JiraClient {
     return response.data;
   }
 
-  async answerApproval(issueIdOrKey: string, approvalId: string, decision: 'approve' | 'decline'): Promise<any> {
-    let response = await this.serviceDesk.post(`/request/${issueIdOrKey}/approval/${approvalId}`, {
-      decision,
-    });
+  async answerApproval(
+    issueIdOrKey: string,
+    approvalId: string,
+    decision: 'approve' | 'decline'
+  ): Promise<any> {
+    let response = await this.serviceDesk.post(
+      `/request/${issueIdOrKey}/approval/${approvalId}`,
+      {
+        decision
+      }
+    );
     return response.data;
   }
 
@@ -242,16 +285,26 @@ export class JiraClient {
     if (start !== undefined) params.start = String(start);
     if (limit !== undefined) params.limit = String(limit);
 
-    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/queue`, { params });
+    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/queue`, {
+      params
+    });
     return response.data;
   }
 
-  async getQueueIssues(serviceDeskId: string, queueId: string, start?: number, limit?: number): Promise<any> {
+  async getQueueIssues(
+    serviceDeskId: string,
+    queueId: string,
+    start?: number,
+    limit?: number
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (start !== undefined) params.start = String(start);
     if (limit !== undefined) params.limit = String(limit);
 
-    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/queue/${queueId}/issue`, { params });
+    let response = await this.serviceDesk.get(
+      `/servicedesk/${serviceDeskId}/queue/${queueId}/issue`,
+      { params }
+    );
     return response.data;
   }
 
@@ -260,30 +313,40 @@ export class JiraClient {
   async createCustomer(email: string, displayName: string): Promise<any> {
     let response = await this.serviceDesk.post('/customer', {
       email,
-      displayName,
+      displayName
     });
     return response.data;
   }
 
-  async getServiceDeskCustomers(serviceDeskId: string, query?: string, start?: number, limit?: number): Promise<any> {
+  async getServiceDeskCustomers(
+    serviceDeskId: string,
+    query?: string,
+    start?: number,
+    limit?: number
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (query) params.query = query;
     if (start !== undefined) params.start = String(start);
     if (limit !== undefined) params.limit = String(limit);
 
-    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/customer`, { params });
+    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/customer`, {
+      params
+    });
     return response.data;
   }
 
   async addCustomersToServiceDesk(serviceDeskId: string, accountIds: string[]): Promise<void> {
     await this.serviceDesk.post(`/servicedesk/${serviceDeskId}/customer`, {
-      accountIds,
+      accountIds
     });
   }
 
-  async removeCustomersFromServiceDesk(serviceDeskId: string, accountIds: string[]): Promise<void> {
+  async removeCustomersFromServiceDesk(
+    serviceDeskId: string,
+    accountIds: string[]
+  ): Promise<void> {
     await this.serviceDesk.delete(`/servicedesk/${serviceDeskId}/customer`, {
-      data: { accountIds },
+      data: { accountIds }
     });
   }
 
@@ -312,36 +375,54 @@ export class JiraClient {
     await this.serviceDesk.delete(`/organization/${organizationId}`);
   }
 
-  async getOrganizationUsers(organizationId: string, start?: number, limit?: number): Promise<any> {
+  async getOrganizationUsers(
+    organizationId: string,
+    start?: number,
+    limit?: number
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (start !== undefined) params.start = String(start);
     if (limit !== undefined) params.limit = String(limit);
 
-    let response = await this.serviceDesk.get(`/organization/${organizationId}/user`, { params });
+    let response = await this.serviceDesk.get(`/organization/${organizationId}/user`, {
+      params
+    });
     return response.data;
   }
 
   async addUsersToOrganization(organizationId: string, accountIds: string[]): Promise<void> {
     await this.serviceDesk.post(`/organization/${organizationId}/user`, {
-      accountIds,
+      accountIds
     });
   }
 
-  async removeUsersFromOrganization(organizationId: string, accountIds: string[]): Promise<void> {
+  async removeUsersFromOrganization(
+    organizationId: string,
+    accountIds: string[]
+  ): Promise<void> {
     await this.serviceDesk.delete(`/organization/${organizationId}/user`, {
-      data: { accountIds },
+      data: { accountIds }
     });
   }
 
   // ─── Knowledge Base ───────────────────────────────────────────────
 
-  async searchKnowledgeBase(serviceDeskId: string, query: string, highlight?: boolean, start?: number, limit?: number): Promise<any> {
+  async searchKnowledgeBase(
+    serviceDeskId: string,
+    query: string,
+    highlight?: boolean,
+    start?: number,
+    limit?: number
+  ): Promise<any> {
     let params: Record<string, any> = { query };
     if (highlight !== undefined) params.highlight = highlight;
     if (start !== undefined) params.start = start;
     if (limit !== undefined) params.limit = limit;
 
-    let response = await this.serviceDesk.get(`/servicedesk/${serviceDeskId}/knowledgebase/article`, { params });
+    let response = await this.serviceDesk.get(
+      `/servicedesk/${serviceDeskId}/knowledgebase/article`,
+      { params }
+    );
     return response.data;
   }
 
@@ -364,24 +445,26 @@ export class JiraClient {
 
   async registerWebhook(url: string, events: string[], jqlFilter?: string): Promise<any> {
     let response = await this.jira.post('/webhook', {
-      webhooks: [{
-        url,
-        events,
-        jqlFilter: jqlFilter || '',
-      }],
+      webhooks: [
+        {
+          url,
+          events,
+          jqlFilter: jqlFilter || ''
+        }
+      ]
     });
     return response.data;
   }
 
   async deleteWebhook(webhookIds: number[]): Promise<void> {
     await this.jira.delete('/webhook', {
-      data: { webhookIds },
+      data: { webhookIds }
     });
   }
 
   async refreshWebhooks(webhookIds: number[]): Promise<any> {
     let response = await this.jira.put('/webhook/refresh', {
-      webhookIds,
+      webhookIds
     });
     return response.data;
   }
@@ -395,14 +478,14 @@ export class JiraClient {
 
   async addRequestParticipants(issueIdOrKey: string, accountIds: string[]): Promise<any> {
     let response = await this.serviceDesk.post(`/request/${issueIdOrKey}/participant`, {
-      accountIds,
+      accountIds
     });
     return response.data;
   }
 
   async removeRequestParticipants(issueIdOrKey: string, accountIds: string[]): Promise<any> {
     let response = await this.serviceDesk.delete(`/request/${issueIdOrKey}/participant`, {
-      data: { accountIds },
+      data: { accountIds }
     });
     return response.data;
   }

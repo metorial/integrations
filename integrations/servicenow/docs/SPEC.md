@@ -17,10 +17,12 @@ Basic Authentication consists of a combination of username and password. Credent
 For inbound OAuth, ServiceNow supports the following grant types: Resource Owner Password Credentials (Password) and Authorization Code. The Client Credentials grant type requires the Washington DC release or later and must be explicitly enabled by setting the system property `glide.oauth.inbound.client.credential.grant_type.enabled` to `true`.
 
 **Setup:**
+
 1. In ServiceNow, navigate to System OAuth > Application Registry > New and then select "Create an OAuth API endpoint for external clients."
 2. The Client ID and Client Secret will populate when the app is saved.
 
 **Endpoints:**
+
 - Authorization URL: `https://{instance-name}.service-now.com/oauth_auth.do`
 - Token URL: `https://{instance-name}.service-now.com/oauth_token.do`
 

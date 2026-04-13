@@ -2,10 +2,7 @@
   "name": "@atlassian/trello",
   "version": "0.1.1",
   "description": "Create, read, update, and delete boards, lists, and cards for project management. Manage checklists, labels, custom fields, attachments, and comments on cards. Search across boards, cards, members, and organizations. Assign members to cards and boards, manage workspace memberships, and configure board settings and preferences. Track activity history via actions and manage member notifications. Set up webhooks to receive real-time notifications when boards, cards, lists, or other models change.",
-  "categories": [
-    "email-and-messaging",
-    "task-and-project-management"
-  ],
+  "categories": ["email-and-messaging", "task-and-project-management"],
   "skills": [
     "manage boards and lists",
     "create and update cards",

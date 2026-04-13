@@ -1,5 +1,10 @@
 import { createAxios } from 'slates';
-import type { BrandResponse, SearchResult, TransactionRequest, TransactionResponse } from './types';
+import type {
+  BrandResponse,
+  SearchResult,
+  TransactionRequest,
+  TransactionResponse
+} from './types';
 
 export class BrandApiClient {
   private axios;
@@ -8,8 +13,8 @@ export class BrandApiClient {
     this.axios = createAxios({
       baseURL: 'https://api.brandfetch.io/v2',
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -18,7 +23,10 @@ export class BrandApiClient {
     return response.data;
   }
 
-  async getBrandByType(type: 'domain' | 'ticker' | 'isin' | 'crypto', identifier: string): Promise<BrandResponse> {
+  async getBrandByType(
+    type: 'domain' | 'ticker' | 'isin' | 'crypto',
+    identifier: string
+  ): Promise<BrandResponse> {
     let response = await this.axios.get(`/brands/${type}/${encodeURIComponent(identifier)}`);
     return response.data;
   }
@@ -34,13 +42,13 @@ export class SearchClient {
 
   constructor(private clientId: string) {
     this.axios = createAxios({
-      baseURL: 'https://api.brandfetch.io/v2',
+      baseURL: 'https://api.brandfetch.io/v2'
     });
   }
 
   async searchBrands(query: string): Promise<SearchResult[]> {
     let response = await this.axios.get(`/search/${encodeURIComponent(query)}`, {
-      params: { c: this.clientId },
+      params: { c: this.clientId }
     });
     return response.data;
   }

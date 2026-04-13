@@ -13,7 +13,7 @@ let geoResultSchema = z.object({
   longitude: z.string().optional().describe('Longitude coordinate'),
   areaCode: z.string().optional().describe('Area code (USA only)'),
   timezone: z.string().optional().describe('Timezone'),
-  dst: z.string().optional().describe('Whether DST is active'),
+  dst: z.string().optional().describe('Whether DST is active')
 });
 
 let mapResult = (raw: Record<string, string>) => ({
@@ -26,28 +26,29 @@ let mapResult = (raw: Record<string, string>) => ({
   longitude: raw.longitude,
   areaCode: raw.areacode,
   timezone: raw.timezone,
-  dst: raw.dst,
+  dst: raw.dst
 });
 
-export let ipGeolocation = SlateTool.create(
-  spec,
-  {
-    name: 'IP Geolocation',
-    key: 'ip_geolocation',
-    description: `Geolocate IP addresses to find their physical location anywhere in the world. Returns city, state, country, ZIP code, latitude, longitude, area code, timezone, and DST information. Useful for fraud detection, content targeting, and traffic analysis.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let ipGeolocation = SlateTool.create(spec, {
+  name: 'IP Geolocation',
+  key: 'ip_geolocation',
+  description: `Geolocate IP addresses to find their physical location anywhere in the world. Returns city, state, country, ZIP code, latitude, longitude, area code, timezone, and DST information. Useful for fraud detection, content targeting, and traffic analysis.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    ipAddresses: z.array(z.string()).min(1).max(100).describe('IP addresses to geolocate'),
-  }))
-  .output(z.object({
-    results: z.array(geoResultSchema).describe('Geolocation data for each IP address'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ipAddresses: z.array(z.string()).min(1).max(100).describe('IP addresses to geolocate')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(geoResultSchema).describe('Geolocation data for each IP address')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { ipAddresses } = ctx.input;
 
@@ -64,7 +65,7 @@ export let ipGeolocation = SlateTool.create(
 
     return {
       output: { results: mapped },
-      message: `Geolocated **${ipAddresses.length}** IP address(es).`,
+      message: `Geolocated **${ipAddresses.length}** IP address(es).`
     };
   })
   .build();

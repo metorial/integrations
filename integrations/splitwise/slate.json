@@ -2,9 +2,7 @@
   "name": "@metorial/splitwise",
   "version": "0.1.1",
   "description": "Split bills and manage shared expenses among friends and groups. Create, update, and delete expenses with equal or custom splits. Manage groups for households, trips, or other shared-cost scenarios. Track balances and debts between friends across multiple currencies. Add and remove friends, comment on expenses, and retrieve account notifications. Access supported currencies and hierarchical expense categories.",
-  "categories": [
-    "financial-data-and-stock-market"
-  ],
+  "categories": ["financial-data-and-stock-market"],
   "skills": [
     "create and split expenses",
     "manage expense groups",

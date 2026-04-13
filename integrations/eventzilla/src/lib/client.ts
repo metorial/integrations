@@ -7,8 +7,8 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://www.eventzillaapi.net/api/v2',
       headers: {
-        'x-api-key': config.token,
-      },
+        'x-api-key': config.token
+      }
     });
   }
 
@@ -39,7 +39,7 @@ export class Client {
   async toggleSales(eventId: number, status: boolean): Promise<any> {
     let response = await this.http.post('/events/togglesales', {
       eventid: eventId,
-      status,
+      status
     });
     return response.data;
   }
@@ -53,10 +53,13 @@ export class Client {
 
   // ── Attendees ──
 
-  async listEventAttendees(eventId: string, params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any> {
+  async listEventAttendees(
+    eventId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<any> {
     let response = await this.http.get(`/events/${eventId}/attendees`, { params });
     return response.data;
   }
@@ -69,17 +72,20 @@ export class Client {
   async checkinAttendee(barcode: string, eventcheckin: boolean): Promise<any> {
     let response = await this.http.post('/attendees/checkin', {
       barcode,
-      eventcheckin,
+      eventcheckin
     });
     return response.data;
   }
 
   // ── Transactions ──
 
-  async listEventTransactions(eventId: string, params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any> {
+  async listEventTransactions(
+    eventId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<any> {
     let response = await this.http.get(`/events/${eventId}/transactions`, { params });
     return response.data;
   }
@@ -101,7 +107,7 @@ export class Client {
       checkout_id: params.checkoutId,
       eventid: params.eventId,
       comments: params.comments,
-      ...(params.sendEmail !== undefined ? { sendemail: params.sendEmail } : {}),
+      ...(params.sendEmail !== undefined ? { sendemail: params.sendEmail } : {})
     });
     return response.data;
   }
@@ -114,7 +120,7 @@ export class Client {
     let response = await this.http.post('/events/order/cancel', {
       checkout_id: params.checkoutId,
       eventid: params.eventId,
-      comments: params.comments,
+      comments: params.comments
     });
     return response.data;
   }
@@ -135,11 +141,11 @@ export class Client {
     let response = await this.http.post('/checkout/create', {
       eventid: params.eventId,
       eventdateid: params.eventDateId,
-      ticket_types: params.ticketTypes.map((t) => ({
+      ticket_types: params.ticketTypes.map(t => ({
         ticket_type_id: t.ticketTypeId,
-        quantity: t.quantity,
+        quantity: t.quantity
       })),
-      ...(params.discountCode ? { discount_code: params.discountCode } : {}),
+      ...(params.discountCode ? { discount_code: params.discountCode } : {})
     });
     return response.data;
   }
@@ -170,24 +176,24 @@ export class Client {
         {
           buyer_firstname: params.buyerDetails.firstName,
           buyer_lastname: params.buyerDetails.lastName,
-          buyer_email: params.buyerDetails.email,
-        },
+          buyer_email: params.buyerDetails.email
+        }
       ],
-      tickets: params.tickets.map((t) => ({
+      tickets: params.tickets.map(t => ({
         ticket_price_id: t.ticketPriceId,
         first_name: t.firstName,
         last_name: t.lastName,
         email: t.email,
         ...(t.answers
           ? {
-              answers: t.answers.map((a) => ({
+              answers: t.answers.map(a => ({
                 question_id: a.questionId,
-                answer_text: a.answerText,
-              })),
+                answer_text: a.answerText
+              }))
             }
-          : {}),
+          : {})
       })),
-      payment_id: params.paymentId,
+      payment_id: params.paymentId
     });
     return response.data;
   }
@@ -206,17 +212,14 @@ export class Client {
       checkout_id: params.checkoutId,
       payment_status: params.paymentStatus,
       comments: params.comments,
-      ...(params.sendEmail !== undefined ? { sendemail: params.sendEmail } : {}),
+      ...(params.sendEmail !== undefined ? { sendemail: params.sendEmail } : {})
     });
     return response.data;
   }
 
   // ── Users ──
 
-  async listUsers(params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any> {
+  async listUsers(params?: { offset?: number; limit?: number }): Promise<any> {
     let response = await this.http.get('/users/', { params });
     return response.data;
   }

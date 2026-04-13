@@ -3,32 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let rowChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Row Changes',
-    key: 'row_changes',
-    description: 'Triggers when rows are added, updated, or removed in a Coda doc table. Receives webhook notifications for row-level changes. Configure the webhook URL in your Coda doc settings.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['rowAdded', 'rowUpdated', 'rowRemoved']).describe('Type of row change event'),
-    docId: z.string().describe('ID of the doc where the event occurred'),
-    tableId: z.string().optional().describe('ID of the table where the event occurred'),
-    rowId: z.string().optional().describe('ID of the affected row'),
-    eventId: z.string().describe('Unique ID for deduplication'),
-    webhookPayload: z.any().describe('Raw event payload from Coda'),
-  }))
-  .output(z.object({
-    docId: z.string().describe('ID of the doc'),
-    tableId: z.string().optional().describe('ID of the table'),
-    rowId: z.string().optional().describe('ID of the affected row'),
-    rowName: z.string().optional().describe('Name of the affected row'),
-    cells: z.record(z.string(), z.any()).optional().describe('Cell values for the affected row (when available)'),
-    browserLink: z.string().optional().describe('URL to the affected row'),
-  }))
+export let rowChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Row Changes',
+  key: 'row_changes',
+  description:
+    'Triggers when rows are added, updated, or removed in a Coda doc table. Receives webhook notifications for row-level changes. Configure the webhook URL in your Coda doc settings.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['rowAdded', 'rowUpdated', 'rowRemoved'])
+        .describe('Type of row change event'),
+      docId: z.string().describe('ID of the doc where the event occurred'),
+      tableId: z.string().optional().describe('ID of the table where the event occurred'),
+      rowId: z.string().optional().describe('ID of the affected row'),
+      eventId: z.string().describe('Unique ID for deduplication'),
+      webhookPayload: z.any().describe('Raw event payload from Coda')
+    })
+  )
+  .output(
+    z.object({
+      docId: z.string().describe('ID of the doc'),
+      tableId: z.string().optional().describe('ID of the table'),
+      rowId: z.string().optional().describe('ID of the affected row'),
+      rowName: z.string().optional().describe('Name of the affected row'),
+      cells: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Cell values for the affected row (when available)'),
+      browserLink: z.string().optional().describe('URL to the affected row')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.input.request.json();
@@ -46,22 +53,28 @@ export let rowChangesTrigger = SlateTrigger.create(
           docId: event.docId || '',
           tableId: event.tableId,
           rowId: event.rowId,
-          eventId: event.id || `${event.docId}-${event.type}-${event.rowId || index}-${Date.now()}`,
-          webhookPayload: event,
+          eventId:
+            event.id || `${event.docId}-${event.type}-${event.rowId || index}-${Date.now()}`,
+          webhookPayload: event
         }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let row: any = null;
 
       // For rowAdded and rowUpdated, try to fetch the full row data
-      if (ctx.input.eventType !== 'rowRemoved' && ctx.input.docId && ctx.input.tableId && ctx.input.rowId) {
+      if (
+        ctx.input.eventType !== 'rowRemoved' &&
+        ctx.input.docId &&
+        ctx.input.tableId &&
+        ctx.input.rowId
+      ) {
         try {
           let client = new Client({ token: ctx.auth.token });
           row = await client.getRow(ctx.input.docId, ctx.input.tableId, ctx.input.rowId, {
-            useColumnNames: true,
+            useColumnNames: true
           });
         } catch {
           // Row may not be accessible or may have been deleted since the event
@@ -77,9 +90,9 @@ export let rowChangesTrigger = SlateTrigger.create(
           rowId: ctx.input.rowId,
           rowName: row?.name,
           cells: row?.values,
-          browserLink: row?.browserLink,
-        },
+          browserLink: row?.browserLink
+        }
       };
-    },
+    }
   })
   .build();

@@ -3,34 +3,38 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let stringEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Source String Events',
-    key: 'string_events',
-    description: 'Triggered when source strings are added, updated, or deleted in a Crowdin project.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The event type (string.added, string.updated, string.deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    stringId: z.string().optional().describe('Source string ID'),
-    stringText: z.string().optional().describe('Source string text'),
-    stringIdentifier: z.string().optional().describe('Source string key/identifier'),
-    fileId: z.string().optional().describe('File ID'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    stringId: z.string().optional().describe('Source string ID'),
-    stringText: z.string().optional().describe('Source string text'),
-    stringIdentifier: z.string().optional().describe('Source string key/identifier'),
-    fileId: z.string().optional().describe('File ID'),
-  }))
+export let stringEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Source String Events',
+  key: 'string_events',
+  description:
+    'Triggered when source strings are added, updated, or deleted in a Crowdin project.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The event type (string.added, string.updated, string.deleted)'),
+      eventId: z.string().describe('Unique event identifier'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      stringId: z.string().optional().describe('Source string ID'),
+      stringText: z.string().optional().describe('Source string text'),
+      stringIdentifier: z.string().optional().describe('Source string key/identifier'),
+      fileId: z.string().optional().describe('File ID')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      stringId: z.string().optional().describe('Source string ID'),
+      stringText: z.string().optional().describe('Source string text'),
+      stringIdentifier: z.string().optional().describe('Source string key/identifier'),
+      fileId: z.string().optional().describe('File ID')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let projects = await client.listProjects({ limit: 500 });
@@ -45,7 +49,7 @@ export let stringEventsTrigger = SlateTrigger.create(
             events: ['string.added', 'string.updated', 'string.deleted'],
             requestType: 'POST',
             contentType: 'application/json',
-            isActive: true,
+            isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
         } catch (e) {
@@ -56,7 +60,7 @@ export let stringEventsTrigger = SlateTrigger.create(
       return { registrationDetails: { registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let registrations = ctx.input.registrationDetails?.registrations || [];
 
@@ -69,8 +73,8 @@ export let stringEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = data.events ? data.events : [data];
 
       let inputs = events
@@ -88,14 +92,18 @@ export let stringEventsTrigger = SlateTrigger.create(
             stringId,
             stringText: evt.string?.text || undefined,
             stringIdentifier: evt.string?.identifier || undefined,
-            fileId: evt.file_id ? String(evt.file_id) : (evt.string?.fileId ? String(evt.string.fileId) : undefined),
+            fileId: evt.file_id
+              ? String(evt.file_id)
+              : evt.string?.fileId
+                ? String(evt.string.fileId)
+                : undefined
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -105,9 +113,9 @@ export let stringEventsTrigger = SlateTrigger.create(
           stringId: ctx.input.stringId,
           stringText: ctx.input.stringText,
           stringIdentifier: ctx.input.stringIdentifier,
-          fileId: ctx.input.fileId,
-        },
+          fileId: ctx.input.fileId
+        }
       };
-    },
+    }
   })
   .build();

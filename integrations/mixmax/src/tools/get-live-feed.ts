@@ -17,38 +17,39 @@ let liveFeedMessageSchema = z.object({
   wasBounced: z.boolean().optional().describe('Whether the email bounced'),
   lastEventType: z.string().optional().describe('Type of the last event'),
   lastEventAt: z.number().optional().describe('Timestamp of the last event (ms)'),
-  permalink: z.string().optional().describe('Permalink to the message'),
+  permalink: z.string().optional().describe('Permalink to the message')
 });
 
-export let getLiveFeed = SlateTool.create(
-  spec,
-  {
-    name: 'Get Live Feed',
-    key: 'get_live_feed',
-    description: `Retrieve the live feed of email activity. Shows sent messages with engagement data including opens, clicks, downloads, replies, and bounces. Supports filtering by search query.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLiveFeed = SlateTool.create(spec, {
+  name: 'Get Live Feed',
+  key: 'get_live_feed',
+  description: `Retrieve the live feed of email activity. Shows sent messages with engagement data including opens, clicks, downloads, replies, and bounces. Supports filtering by search query.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query to filter the feed'),
-    timezone: z.string().optional().describe('Timezone for dates (default: UTC)'),
-    limit: z.number().optional().describe('Maximum results (default: 50, max: 10000)'),
-    offset: z.number().optional().describe('Pagination offset'),
-  }))
-  .output(z.object({
-    messages: z.array(liveFeedMessageSchema).describe('Live feed messages'),
-    stats: z.any().optional().describe('Aggregate statistics'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search query to filter the feed'),
+      timezone: z.string().optional().describe('Timezone for dates (default: UTC)'),
+      limit: z.number().optional().describe('Maximum results (default: 50, max: 10000)'),
+      offset: z.number().optional().describe('Pagination offset')
+    })
+  )
+  .output(
+    z.object({
+      messages: z.array(liveFeedMessageSchema).describe('Live feed messages'),
+      stats: z.any().optional().describe('Aggregate statistics')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.getLiveFeed({
       query: ctx.input.query,
       timezone: ctx.input.timezone,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let results = data.results || data.messages || data || [];
@@ -68,14 +69,15 @@ export let getLiveFeed = SlateTool.create(
       wasBounced: m.wasBounced,
       lastEventType: m.lastEventType,
       lastEventAt: m.lastEventAt,
-      permalink: m.permalink,
+      permalink: m.permalink
     }));
 
     return {
       output: {
         messages,
-        stats: data.stats,
+        stats: data.stats
       },
-      message: `Retrieved ${messages.length} live feed message(s).`,
+      message: `Retrieved ${messages.length} live feed message(s).`
     };
-  }).build();
+  })
+  .build();

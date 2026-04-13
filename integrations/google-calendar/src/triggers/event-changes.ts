@@ -3,51 +3,55 @@ import { GoogleCalendarClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let eventChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Changes',
-    key: 'event_changes',
-    description: 'Triggers when events on a specified calendar are created, updated, or deleted. Uses Google Calendar push notifications (webhooks) with automatic sync token-based change detection.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('The type of change detected'),
-    eventId: z.string().describe('The event ID that changed'),
-    calendarId: z.string().describe('The calendar ID where the change occurred'),
-    summary: z.string().optional().describe('Event title'),
-    description: z.string().optional().describe('Event description'),
-    location: z.string().optional().describe('Event location'),
-    start: z.any().optional().describe('Event start time'),
-    end: z.any().optional().describe('Event end time'),
-    status: z.string().optional().describe('Event status'),
-    htmlLink: z.string().optional().describe('URL to view the event'),
-    hangoutLink: z.string().optional().describe('Google Meet link'),
-    creator: z.any().optional().describe('Event creator'),
-    organizer: z.any().optional().describe('Event organizer'),
-    attendees: z.array(z.any()).optional().describe('Event attendees'),
-    updated: z.string().optional().describe('Last modification timestamp'),
-    eventType: z.string().optional().describe('Event type')
-  }))
-  .output(z.object({
-    eventId: z.string().describe('The event ID that changed'),
-    calendarId: z.string().describe('The calendar ID'),
-    summary: z.string().optional().describe('Event title'),
-    description: z.string().optional().describe('Event description'),
-    location: z.string().optional().describe('Event location'),
-    start: z.any().optional().describe('Event start time'),
-    end: z.any().optional().describe('Event end time'),
-    status: z.string().optional().describe('Event status'),
-    htmlLink: z.string().optional().describe('URL to view the event'),
-    hangoutLink: z.string().optional().describe('Google Meet link'),
-    creator: z.any().optional().describe('Event creator'),
-    organizer: z.any().optional().describe('Event organizer'),
-    attendees: z.array(z.any()).optional().describe('Event attendees'),
-    updated: z.string().optional().describe('Last modification timestamp'),
-    eventType: z.string().optional().describe('Event type')
-  }))
+export let eventChanges = SlateTrigger.create(spec, {
+  name: 'Event Changes',
+  key: 'event_changes',
+  description:
+    'Triggers when events on a specified calendar are created, updated, or deleted. Uses Google Calendar push notifications (webhooks) with automatic sync token-based change detection.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('The type of change detected'),
+      eventId: z.string().describe('The event ID that changed'),
+      calendarId: z.string().describe('The calendar ID where the change occurred'),
+      summary: z.string().optional().describe('Event title'),
+      description: z.string().optional().describe('Event description'),
+      location: z.string().optional().describe('Event location'),
+      start: z.any().optional().describe('Event start time'),
+      end: z.any().optional().describe('Event end time'),
+      status: z.string().optional().describe('Event status'),
+      htmlLink: z.string().optional().describe('URL to view the event'),
+      hangoutLink: z.string().optional().describe('Google Meet link'),
+      creator: z.any().optional().describe('Event creator'),
+      organizer: z.any().optional().describe('Event organizer'),
+      attendees: z.array(z.any()).optional().describe('Event attendees'),
+      updated: z.string().optional().describe('Last modification timestamp'),
+      eventType: z.string().optional().describe('Event type')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('The event ID that changed'),
+      calendarId: z.string().describe('The calendar ID'),
+      summary: z.string().optional().describe('Event title'),
+      description: z.string().optional().describe('Event description'),
+      location: z.string().optional().describe('Event location'),
+      start: z.any().optional().describe('Event start time'),
+      end: z.any().optional().describe('Event end time'),
+      status: z.string().optional().describe('Event status'),
+      htmlLink: z.string().optional().describe('URL to view the event'),
+      hangoutLink: z.string().optional().describe('Google Meet link'),
+      creator: z.any().optional().describe('Event creator'),
+      organizer: z.any().optional().describe('Event organizer'),
+      attendees: z.array(z.any()).optional().describe('Event attendees'),
+      updated: z.string().optional().describe('Last modification timestamp'),
+      eventType: z.string().optional().describe('Event type')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GoogleCalendarClient(ctx.auth.token);
 
       let channelId = `slates-events-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -76,7 +80,7 @@ export let eventChanges = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GoogleCalendarClient(ctx.auth.token);
       let details = ctx.input.registrationDetails;
 
@@ -85,7 +89,7 @@ export let eventChanges = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let channelId = ctx.request.headers.get('x-goog-channel-id');
       let resourceState = ctx.request.headers.get('x-goog-resource-state');
 
@@ -136,7 +140,7 @@ export let eventChanges = SlateTrigger.create(
         let result = await client.listEvents(listParams);
         let newSyncToken = result.nextSyncToken;
 
-        for (let event of (result.items || [])) {
+        for (let event of result.items || []) {
           if (!event.id) continue;
 
           let changeType: 'created' | 'updated' | 'deleted' = 'updated';
@@ -195,7 +199,7 @@ export let eventChanges = SlateTrigger.create(
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `event.${ctx.input.changeType}`,
         id: `${ctx.input.eventId}-${ctx.input.updated || Date.now()}`,
@@ -218,4 +222,5 @@ export let eventChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -3,31 +3,32 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let deleteNote = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Note',
-    key: 'delete_note',
-    description: `Delete a note from Salesmate by its ID. This action is permanent.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteNote = SlateTool.create(spec, {
+  name: 'Delete Note',
+  key: 'delete_note',
+  description: `Delete a note from Salesmate by its ID. This action is permanent.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    noteId: z.string().describe('ID of the note to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      noteId: z.string().describe('ID of the note to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     await client.deleteNote(ctx.input.noteId);
 
     return {
       output: { success: true },
-      message: `Note \`${ctx.input.noteId}\` deleted.`,
+      message: `Note \`${ctx.input.noteId}\` deleted.`
     };
   })
   .build();

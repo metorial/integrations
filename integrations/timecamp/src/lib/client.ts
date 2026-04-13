@@ -5,14 +5,12 @@ let BASE_URL = 'https://www.timecamp.com/third_party/api';
 export class Client {
   private axios;
 
-  constructor(
-    private config: { token: string }
-  ) {
+  constructor(private config: { token: string }) {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        Authorization: config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -31,8 +29,8 @@ export class Client {
         to: params.to,
         task_ids: params.taskIds,
         user_ids: params.userIds,
-        with_subtasks: params.withSubtasks,
-      },
+        with_subtasks: params.withSubtasks
+      }
     });
     return response.data as TimeEntry[];
   }
@@ -53,7 +51,7 @@ export class Client {
       duration: entry.duration,
       note: entry.note,
       task_id: entry.taskId,
-      billable: entry.billable,
+      billable: entry.billable
     });
     return response.data;
   }
@@ -76,14 +74,14 @@ export class Client {
       end_time: entry.endTime,
       note: entry.note,
       task_id: entry.taskId,
-      billable: entry.billable,
+      billable: entry.billable
     });
     return response.data;
   }
 
   async deleteTimeEntry(entryId: number) {
     let response = await this.axios.delete('/entries', {
-      params: { id: entryId },
+      params: { id: entryId }
     });
     return response.data;
   }
@@ -92,7 +90,7 @@ export class Client {
 
   async getTasks(taskId?: number) {
     let response = await this.axios.get('/tasks', {
-      params: taskId ? { task_id: taskId } : undefined,
+      params: taskId ? { task_id: taskId } : undefined
     });
     let data = response.data;
     if (data && typeof data === 'object' && !Array.isArray(data)) {
@@ -127,7 +125,7 @@ export class Client {
       external_task_id: task.externalTaskId,
       external_parent_id: task.externalParentId,
       user_ids: task.userIds,
-      role: task.role,
+      role: task.role
     });
     return response.data;
   }
@@ -160,14 +158,14 @@ export class Client {
       external_task_id: task.externalTaskId,
       external_parent_id: task.externalParentId,
       user_ids: task.userIds,
-      role: task.role,
+      role: task.role
     });
     return response.data;
   }
 
   async deleteTask(taskId: number) {
     let response = await this.axios.delete('/tasks', {
-      params: { task_id: taskId },
+      params: { task_id: taskId }
     });
     return response.data;
   }
@@ -176,7 +174,7 @@ export class Client {
 
   async getTimerStatus() {
     let response = await this.axios.get('/timer', {
-      params: { action: 'status' },
+      params: { action: 'status' }
     });
     return response.data;
   }
@@ -184,7 +182,7 @@ export class Client {
   async startTimer(taskId?: number) {
     let response = await this.axios.post('/timer', {
       action: 'start',
-      task_id: taskId,
+      task_id: taskId
     });
     return response.data;
   }
@@ -192,7 +190,7 @@ export class Client {
   async stopTimer(timerId?: number) {
     let response = await this.axios.put('/timer', {
       action: 'stop',
-      timer_id: timerId,
+      timer_id: timerId
     });
     return response.data;
   }
@@ -220,15 +218,11 @@ export class Client {
     return response.data as TimeCampClient[];
   }
 
-  async createClient(client: {
-    name: string;
-    address?: string;
-    currencyId?: number;
-  }) {
+  async createClient(client: { name: string; address?: string; currencyId?: number }) {
     let response = await this.axios.post('/clients', {
       name: client.name,
       address: client.address,
-      currency_id: client.currencyId,
+      currency_id: client.currencyId
     });
     return response.data;
   }
@@ -243,7 +237,7 @@ export class Client {
       client_id: client.clientId,
       name: client.name,
       address: client.address,
-      currency_id: client.currencyId,
+      currency_id: client.currencyId
     });
     return response.data;
   }
@@ -257,7 +251,7 @@ export class Client {
 
   async createTag(name: string) {
     let response = await this.axios.post('/tags', {
-      name,
+      name
     });
     return response.data;
   }
@@ -265,37 +259,31 @@ export class Client {
   async updateTag(tagId: number, name: string) {
     let response = await this.axios.put('/tags', {
       tag_id: tagId,
-      name,
+      name
     });
     return response.data;
   }
 
   // ---- Attendance ----
 
-  async getAttendance(params: {
-    date?: string;
-    userId?: number;
-  }) {
+  async getAttendance(params: { date?: string; userId?: number }) {
     let response = await this.axios.get('/attendance', {
       params: {
         date: params.date,
-        user_id: params.userId,
-      },
+        user_id: params.userId
+      }
     });
     return response.data;
   }
 
   // ---- Away Time ----
 
-  async getAwayTime(params: {
-    date?: string;
-    userId?: number;
-  }) {
+  async getAwayTime(params: { date?: string; userId?: number }) {
     let response = await this.axios.get('/away_time', {
       params: {
         date: params.date,
-        user_id: params.userId,
-      },
+        user_id: params.userId
+      }
     });
     return response.data;
   }
@@ -317,7 +305,7 @@ export class Client {
       client_id: invoice.clientId,
       date: invoice.date,
       currency_id: invoice.currencyId,
-      note: invoice.note,
+      note: invoice.note
     });
     return response.data;
   }

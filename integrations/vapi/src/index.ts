@@ -14,11 +14,7 @@ import {
   manageCampaign,
   listFiles
 } from './tools';
-import {
-  callEvent,
-  assistantRequest,
-  toolCallRequest
-} from './triggers';
+import { callEvent, assistantRequest, toolCallRequest } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,9 +32,5 @@ export let provider = Slate.create({
     manageCampaign,
     listFiles
   ],
-  triggers: [
-    callEvent,
-    assistantRequest,
-    toolCallRequest
-  ]
+  triggers: [callEvent, assistantRequest, toolCallRequest]
 });

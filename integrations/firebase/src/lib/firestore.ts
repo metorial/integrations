@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let firestoreAxios = createAxios({
-  baseURL: 'https://firestore.googleapis.com/v1',
+  baseURL: 'https://firestore.googleapis.com/v1'
 });
 
 export interface FirestoreDocument {
@@ -87,7 +87,9 @@ export let decodeFirestoreDocument = (doc: FirestoreDocument): Record<string, an
   return result;
 };
 
-export let encodeFirestoreFields = (data: Record<string, any>): Record<string, FirestoreValue> => {
+export let encodeFirestoreFields = (
+  data: Record<string, any>
+): Record<string, FirestoreValue> => {
   let fields: Record<string, FirestoreValue> = {};
   for (let key of Object.keys(data)) {
     fields[key] = encodeFirestoreValue(data[key]);
@@ -112,30 +114,40 @@ export class FirestoreClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
-  async getDocument(collectionPath: string, documentId: string): Promise<{
+  async getDocument(
+    collectionPath: string,
+    documentId: string
+  ): Promise<{
     documentPath: string;
     fields: Record<string, any>;
     createTime: string;
     updateTime: string;
   }> {
-    let response = await firestoreAxios.get(`${this.basePath}/${collectionPath}/${documentId}`, {
-      headers: this.headers,
-    });
+    let response = await firestoreAxios.get(
+      `${this.basePath}/${collectionPath}/${documentId}`,
+      {
+        headers: this.headers
+      }
+    );
 
     let doc = response.data as FirestoreDocument;
     return {
       documentPath: doc.name || '',
       fields: decodeFirestoreDocument(doc),
       createTime: doc.createTime || '',
-      updateTime: doc.updateTime || '',
+      updateTime: doc.updateTime || ''
     };
   }
 
-  async createDocument(collectionPath: string, documentId: string | undefined, fields: Record<string, any>): Promise<{
+  async createDocument(
+    collectionPath: string,
+    documentId: string | undefined,
+    fields: Record<string, any>
+  ): Promise<{
     documentPath: string;
     documentId: string;
     fields: Record<string, any>;
@@ -147,12 +159,16 @@ export class FirestoreClient {
       params['documentId'] = documentId;
     }
 
-    let response = await firestoreAxios.post(`${this.basePath}/${collectionPath}`, {
-      fields: encodeFirestoreFields(fields),
-    }, {
-      headers: this.headers,
-      params,
-    });
+    let response = await firestoreAxios.post(
+      `${this.basePath}/${collectionPath}`,
+      {
+        fields: encodeFirestoreFields(fields)
+      },
+      {
+        headers: this.headers,
+        params
+      }
+    );
 
     let doc = response.data as FirestoreDocument;
     let name = doc.name || '';
@@ -164,11 +180,16 @@ export class FirestoreClient {
       documentId: createdDocId,
       fields: decodeFirestoreDocument(doc),
       createTime: doc.createTime || '',
-      updateTime: doc.updateTime || '',
+      updateTime: doc.updateTime || ''
     };
   }
 
-  async updateDocument(collectionPath: string, documentId: string, fields: Record<string, any>, updateMask?: string[]): Promise<{
+  async updateDocument(
+    collectionPath: string,
+    documentId: string,
+    fields: Record<string, any>,
+    updateMask?: string[]
+  ): Promise<{
     documentPath: string;
     fields: Record<string, any>;
     updateTime: string;
@@ -178,32 +199,39 @@ export class FirestoreClient {
       params['updateMask.fieldPaths'] = updateMask;
     }
 
-    let response = await firestoreAxios.patch(`${this.basePath}/${collectionPath}/${documentId}`, {
-      fields: encodeFirestoreFields(fields),
-    }, {
-      headers: this.headers,
-      params,
-    });
+    let response = await firestoreAxios.patch(
+      `${this.basePath}/${collectionPath}/${documentId}`,
+      {
+        fields: encodeFirestoreFields(fields)
+      },
+      {
+        headers: this.headers,
+        params
+      }
+    );
 
     let doc = response.data as FirestoreDocument;
     return {
       documentPath: doc.name || '',
       fields: decodeFirestoreDocument(doc),
-      updateTime: doc.updateTime || '',
+      updateTime: doc.updateTime || ''
     };
   }
 
   async deleteDocument(collectionPath: string, documentId: string): Promise<void> {
     await firestoreAxios.delete(`${this.basePath}/${collectionPath}/${documentId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
-  async listDocuments(collectionPath: string, params?: {
-    pageSize?: number;
-    pageToken?: string;
-    orderBy?: string;
-  }): Promise<{
+  async listDocuments(
+    collectionPath: string,
+    params?: {
+      pageSize?: number;
+      pageToken?: string;
+      orderBy?: string;
+    }
+  ): Promise<{
     documents: Array<{
       documentPath: string;
       documentId: string;
@@ -218,8 +246,8 @@ export class FirestoreClient {
       params: {
         pageSize: params?.pageSize || 20,
         pageToken: params?.pageToken,
-        orderBy: params?.orderBy,
-      },
+        orderBy: params?.orderBy
+      }
     });
 
     let documents = (response.data.documents || []).map((doc: FirestoreDocument) => {
@@ -231,37 +259,42 @@ export class FirestoreClient {
         documentId: docId,
         fields: decodeFirestoreDocument(doc),
         createTime: doc.createTime || '',
-        updateTime: doc.updateTime || '',
+        updateTime: doc.updateTime || ''
       };
     });
 
     return {
       documents,
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
-  async queryDocuments(collectionPath: string, query: {
-    where?: Array<{
-      field: string;
-      op: string;
-      value: any;
-    }>;
-    orderBy?: Array<{
-      field: string;
-      direction?: 'ASCENDING' | 'DESCENDING';
-    }>;
-    limit?: number;
-    offset?: number;
-  }): Promise<Array<{
-    documentPath: string;
-    documentId: string;
-    fields: Record<string, any>;
-    createTime: string;
-    updateTime: string;
-  }>> {
+  async queryDocuments(
+    collectionPath: string,
+    query: {
+      where?: Array<{
+        field: string;
+        op: string;
+        value: any;
+      }>;
+      orderBy?: Array<{
+        field: string;
+        direction?: 'ASCENDING' | 'DESCENDING';
+      }>;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<
+    Array<{
+      documentPath: string;
+      documentId: string;
+      fields: Record<string, any>;
+      createTime: string;
+      updateTime: string;
+    }>
+  > {
     let structuredQuery: any = {
-      from: [{ collectionId: collectionPath.split('/').pop() }],
+      from: [{ collectionId: collectionPath.split('/').pop() }]
     };
 
     if (query.where && query.where.length > 0) {
@@ -271,29 +304,29 @@ export class FirestoreClient {
           fieldFilter: {
             field: { fieldPath: w.field },
             op: w.op,
-            value: encodeFirestoreValue(w.value),
-          },
+            value: encodeFirestoreValue(w.value)
+          }
         };
       } else {
         structuredQuery.where = {
           compositeFilter: {
             op: 'AND',
-            filters: query.where.map((w) => ({
+            filters: query.where.map(w => ({
               fieldFilter: {
                 field: { fieldPath: w.field },
                 op: w.op,
-                value: encodeFirestoreValue(w.value),
-              },
-            })),
-          },
+                value: encodeFirestoreValue(w.value)
+              }
+            }))
+          }
         };
       }
     }
 
     if (query.orderBy && query.orderBy.length > 0) {
-      structuredQuery.orderBy = query.orderBy.map((o) => ({
+      structuredQuery.orderBy = query.orderBy.map(o => ({
         field: { fieldPath: o.field },
-        direction: o.direction || 'ASCENDING',
+        direction: o.direction || 'ASCENDING'
       }));
     }
 
@@ -309,11 +342,15 @@ export class FirestoreClient {
       ? `${this.basePath}/${collectionPath.split('/').slice(0, -1).join('/')}`
       : this.basePath;
 
-    let response = await firestoreAxios.post(`${parentPath}:runQuery`, {
-      structuredQuery,
-    }, {
-      headers: this.headers,
-    });
+    let response = await firestoreAxios.post(
+      `${parentPath}:runQuery`,
+      {
+        structuredQuery
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return (response.data || [])
       .filter((r: any) => r.document)
@@ -327,7 +364,7 @@ export class FirestoreClient {
           documentId: docId,
           fields: decodeFirestoreDocument(doc),
           createTime: doc.createTime || '',
-          updateTime: doc.updateTime || '',
+          updateTime: doc.updateTime || ''
         };
       });
   }

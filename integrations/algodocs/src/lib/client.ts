@@ -3,9 +3,7 @@ import { createAxios } from 'slates';
 export class Client {
   private axios;
 
-  constructor(
-    private credentials: { token: string; email?: string }
-  ) {
+  constructor(private credentials: { token: string; email?: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.algodocs.com/v1'
     });
@@ -13,9 +11,10 @@ export class Client {
 
   private getAuthHeaders(): Record<string, string> {
     if (this.credentials.email) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let encoded = Buffer.from(`${this.credentials.email}:${this.credentials.token}`).toString('base64');
-      return { 'Authorization': `Basic ${encoded}` };
+      let encoded = Buffer.from(
+        `${this.credentials.email}:${this.credentials.token}`
+      ).toString('base64');
+      return { Authorization: `Basic ${encoded}` };
     }
     return { 'x-api-key': this.credentials.token };
   }

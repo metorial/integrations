@@ -3,34 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newContact = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Contact',
-    key: 'new_contact',
-    description: 'Triggers when a new contact is created in SendFox.',
-  }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the contact'),
-    email: z.string().describe('Email address'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    createdAt: z.string().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    contactId: z.number().describe('Contact ID'),
-    email: z.string().describe('Email address'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    createdAt: z.string().describe('Creation timestamp'),
-  }))
+export let newContact = SlateTrigger.create(spec, {
+  name: 'New Contact',
+  key: 'new_contact',
+  description: 'Triggers when a new contact is created in SendFox.'
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the contact'),
+      email: z.string().describe('Email address'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('Contact ID'),
+      email: z.string().describe('Email address'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastSeenId: number | null = ctx.state?.lastSeenId ?? null;
@@ -66,7 +67,7 @@ export let newContact = SlateTrigger.create(
             email: contact.email,
             firstName: contact.first_name,
             lastName: contact.last_name,
-            createdAt: contact.created_at,
+            createdAt: contact.created_at
           });
         }
 
@@ -81,17 +82,17 @@ export let newContact = SlateTrigger.create(
       if (lastSeenId === null) {
         return {
           inputs: [],
-          updatedState: { lastSeenId: newLastSeenId },
+          updatedState: { lastSeenId: newLastSeenId }
         };
       }
 
       return {
         inputs,
-        updatedState: { lastSeenId: newLastSeenId ?? lastSeenId },
+        updatedState: { lastSeenId: newLastSeenId ?? lastSeenId }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'contact.created',
         id: String(ctx.input.contactId),
@@ -100,8 +101,9 @@ export let newContact = SlateTrigger.create(
           email: ctx.input.email,
           firstName: ctx.input.firstName,
           lastName: ctx.input.lastName,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

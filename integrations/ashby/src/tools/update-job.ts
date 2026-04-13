@@ -3,39 +3,46 @@ import { AshbyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateJob = SlateTool.create(
-  spec,
-  {
-    name: 'Update Job',
-    key: 'update_job',
-    description: `Updates a job's details, status, or compensation. Supports changing the title, location, department, status, and compensation in a single call.`,
-    instructions: [
-      'Only include fields you want to change.',
-      'Status changes use a separate endpoint and can be combined with other updates.',
-      'Compensation updates are also handled separately and can be combined with other field changes.',
-    ],
-    tags: {
-      readOnly: false
-    }
+export let updateJob = SlateTool.create(spec, {
+  name: 'Update Job',
+  key: 'update_job',
+  description: `Updates a job's details, status, or compensation. Supports changing the title, location, department, status, and compensation in a single call.`,
+  instructions: [
+    'Only include fields you want to change.',
+    'Status changes use a separate endpoint and can be combined with other updates.',
+    'Compensation updates are also handled separately and can be combined with other field changes.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    jobId: z.string().describe('The ID of the job to update'),
-    title: z.string().optional().describe('New job title'),
-    status: z.enum(['Open', 'Closed', 'Archived', 'Draft']).optional().describe('New job status'),
-    locationId: z.string().optional().describe('New location ID'),
-    departmentId: z.string().optional().describe('New department ID'),
-    compensation: z.record(z.string(), z.any()).optional().describe('Compensation details to update'),
-  }))
-  .output(z.object({
-    jobId: z.string(),
-    title: z.string(),
-    status: z.string(),
-    locationId: z.string().optional(),
-    departmentId: z.string().optional(),
-    updatedAt: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('The ID of the job to update'),
+      title: z.string().optional().describe('New job title'),
+      status: z
+        .enum(['Open', 'Closed', 'Archived', 'Draft'])
+        .optional()
+        .describe('New job status'),
+      locationId: z.string().optional().describe('New location ID'),
+      departmentId: z.string().optional().describe('New department ID'),
+      compensation: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Compensation details to update')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string(),
+      title: z.string(),
+      status: z.string(),
+      locationId: z.string().optional(),
+      departmentId: z.string().optional(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AshbyClient({ token: ctx.auth.token });
     let { jobId, title, status, locationId, departmentId, compensation } = ctx.input;
 
@@ -66,8 +73,9 @@ export let updateJob = SlateTool.create(
         status: job.status,
         ...(job.locationId ? { locationId: job.locationId } : {}),
         ...(job.departmentId ? { departmentId: job.departmentId } : {}),
-        updatedAt: job.updatedAt,
+        updatedAt: job.updatedAt
       },
-      message: `Updated job **${job.title}** (\`${job.id}\`).`,
+      message: `Updated job **${job.title}** (\`${job.id}\`).`
     };
-  }).build();
+  })
+  .build();

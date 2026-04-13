@@ -8,10 +8,10 @@ export class ProAbonoClient {
     this.axios = createAxios({
       baseURL: `${baseURL}/v1`,
       headers: {
-        'Authorization': `Basic ${config.token}`,
+        Authorization: `Basic ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -67,19 +67,27 @@ export class ProAbonoClient {
   }
 
   async suspendCustomer(referenceCustomer: string) {
-    return this.post('/Customer/Suspension', undefined, { ReferenceCustomer: referenceCustomer });
+    return this.post('/Customer/Suspension', undefined, {
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   async anonymizeCustomer(referenceCustomer: string) {
-    return this.post('/Customer/Anonymization', undefined, { ReferenceCustomer: referenceCustomer });
+    return this.post('/Customer/Anonymization', undefined, {
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   async revokeCustomerLinks(referenceCustomer: string) {
-    return this.post('/Customer/LinksRevokation', undefined, { ReferenceCustomer: referenceCustomer });
+    return this.post('/Customer/LinksRevokation', undefined, {
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   async invalidateCustomer(referenceCustomer: string) {
-    return this.post('/Customer/Invalidation', undefined, { ReferenceCustomer: referenceCustomer });
+    return this.post('/Customer/Invalidation', undefined, {
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   // ========== Billing Address ==========
@@ -88,20 +96,25 @@ export class ProAbonoClient {
     return this.get('/CustomerBillingAddress', { ReferenceCustomer: referenceCustomer });
   }
 
-  async updateBillingAddress(referenceCustomer: string, data: {
-    Company?: string;
-    FirstName?: string;
-    LastName?: string;
-    AddressLine1?: string;
-    AddressLine2?: string;
-    ZipCode?: string;
-    City?: string;
-    Country?: string;
-    Region?: string;
-    Phone?: string;
-    TaxInformation?: string;
-  }) {
-    return this.post('/CustomerBillingAddress', data, { ReferenceCustomer: referenceCustomer });
+  async updateBillingAddress(
+    referenceCustomer: string,
+    data: {
+      Company?: string;
+      FirstName?: string;
+      LastName?: string;
+      AddressLine1?: string;
+      AddressLine2?: string;
+      ZipCode?: string;
+      City?: string;
+      Country?: string;
+      Region?: string;
+      Phone?: string;
+      TaxInformation?: string;
+    }
+  ) {
+    return this.post('/CustomerBillingAddress', data, {
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   // ========== Payment Settings ==========
@@ -110,14 +123,19 @@ export class ProAbonoClient {
     return this.get('/CustomerSettingsPayment', { ReferenceCustomer: referenceCustomer });
   }
 
-  async updatePaymentSettings(referenceCustomer: string, data: {
-    IsAutoBilling?: boolean;
-    IsGreyListed?: boolean;
-    NoteInvoice?: string;
-    DateNextBilling?: string;
-    TypePayment?: string;
-  }) {
-    return this.post('/CustomerSettingsPayment', data, { ReferenceCustomer: referenceCustomer });
+  async updatePaymentSettings(
+    referenceCustomer: string,
+    data: {
+      IsAutoBilling?: boolean;
+      IsGreyListed?: boolean;
+      NoteInvoice?: string;
+      DateNextBilling?: string;
+      TypePayment?: string;
+    }
+  ) {
+    return this.post('/CustomerSettingsPayment', data, {
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   // ========== Subscriptions ==========
@@ -184,7 +202,10 @@ export class ProAbonoClient {
   // ========== Usages ==========
 
   async getUsage(referenceFeature: string, referenceCustomer: string) {
-    return this.get('/Usage', { ReferenceFeature: referenceFeature, ReferenceCustomer: referenceCustomer });
+    return this.get('/Usage', {
+      ReferenceFeature: referenceFeature,
+      ReferenceCustomer: referenceCustomer
+    });
   }
 
   async listUsages(params: {
@@ -209,15 +230,17 @@ export class ProAbonoClient {
     return this.post('/Usage', data);
   }
 
-  async batchUpdateUsages(items: Array<{
-    ReferenceFeature: string;
-    ReferenceCustomer?: string;
-    IdSubscription?: number;
-    Increment?: number;
-    QuantityCurrent?: number;
-    IsEnabled?: boolean;
-    DateStamp?: string;
-  }>) {
+  async batchUpdateUsages(
+    items: Array<{
+      ReferenceFeature: string;
+      ReferenceCustomer?: string;
+      IdSubscription?: number;
+      Increment?: number;
+      QuantityCurrent?: number;
+      IsEnabled?: boolean;
+      DateStamp?: string;
+    }>
+  ) {
     return this.post('/Usages', items);
   }
 

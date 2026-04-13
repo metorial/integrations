@@ -2,10 +2,7 @@
   "name": "@metorial/opencage",
   "version": "0.1.1",
   "description": "Convert addresses and place names to geographic coordinates (forward geocoding) and coordinates to addresses (reverse geocoding) using open data worldwide. Retrieve location annotations including timezone, currency, sunrise/sunset times, driving side, road info, and alternative coordinate formats (geohash, what3words, Maidenhead, Mercator). Filter results by country code, bounding box, proximity, language, and confidence level. Perform autosuggest/geosearch for type-ahead location lookups. Batch geocode spreadsheets and CSV files. Supports JSON, GeoJSON, and XML output formats.",
-  "categories": [
-    "apis-and-http-requests",
-    "web-search"
-  ],
+  "categories": ["apis-and-http-requests", "web-search"],
   "skills": [
     "forward geocode addresses",
     "reverse geocode coordinates",

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://www.parsehub.com/api/v2',
+  baseURL: 'https://www.parsehub.com/api/v2'
 });
 
 export interface ParseHubProject {
@@ -42,35 +42,45 @@ export class Client {
     this.token = config.token;
   }
 
-  async listProjects(params?: { offset?: number; limit?: number; includeOptions?: boolean }): Promise<ListProjectsResponse> {
+  async listProjects(params?: {
+    offset?: number;
+    limit?: number;
+    includeOptions?: boolean;
+  }): Promise<ListProjectsResponse> {
     let response = await http.get('/projects', {
       params: {
         api_key: this.token,
         offset: params?.offset,
         limit: params?.limit,
-        include_options: params?.includeOptions ? 1 : undefined,
-      },
+        include_options: params?.includeOptions ? 1 : undefined
+      }
     });
     return response.data;
   }
 
-  async getProject(projectToken: string, params?: { offset?: number; includeOptions?: boolean }): Promise<ParseHubProject> {
+  async getProject(
+    projectToken: string,
+    params?: { offset?: number; includeOptions?: boolean }
+  ): Promise<ParseHubProject> {
     let response = await http.get(`/projects/${projectToken}`, {
       params: {
         api_key: this.token,
         offset: params?.offset,
-        include_options: params?.includeOptions ? 1 : undefined,
-      },
+        include_options: params?.includeOptions ? 1 : undefined
+      }
     });
     return response.data;
   }
 
-  async runProject(projectToken: string, params?: {
-    startUrl?: string;
-    startTemplate?: string;
-    startValueOverride?: string;
-    sendEmail?: boolean;
-  }): Promise<ParseHubRun> {
+  async runProject(
+    projectToken: string,
+    params?: {
+      startUrl?: string;
+      startTemplate?: string;
+      startValueOverride?: string;
+      sendEmail?: boolean;
+    }
+  ): Promise<ParseHubRun> {
     let formData = new URLSearchParams();
     formData.append('api_key', this.token);
 
@@ -89,8 +99,8 @@ export class Client {
 
     let response = await http.post(`/projects/${projectToken}/run`, formData.toString(), {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
     return response.data;
   }
@@ -98,8 +108,8 @@ export class Client {
   async getRun(runToken: string): Promise<ParseHubRun> {
     let response = await http.get(`/runs/${runToken}`, {
       params: {
-        api_key: this.token,
-      },
+        api_key: this.token
+      }
     });
     return response.data;
   }
@@ -108,8 +118,8 @@ export class Client {
     let response = await http.get(`/runs/${runToken}/data`, {
       params: {
         api_key: this.token,
-        format: format || 'json',
-      },
+        format: format || 'json'
+      }
       // ParseHub returns gzip-compressed data; axios should decompress automatically
     });
     return response.data;
@@ -119,8 +129,8 @@ export class Client {
     let response = await http.get(`/projects/${projectToken}/last_ready_run/data`, {
       params: {
         api_key: this.token,
-        format: format || 'json',
-      },
+        format: format || 'json'
+      }
     });
     return response.data;
   }
@@ -131,8 +141,8 @@ export class Client {
 
     let response = await http.post(`/runs/${runToken}/cancel`, formData.toString(), {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
     return response.data;
   }
@@ -140,8 +150,8 @@ export class Client {
   async deleteRun(runToken: string): Promise<{ run_token: string }> {
     let response = await http.delete(`/runs/${runToken}`, {
       params: {
-        api_key: this.token,
-      },
+        api_key: this.token
+      }
     });
     return response.data;
   }

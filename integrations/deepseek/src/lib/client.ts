@@ -5,7 +5,7 @@ import type {
   FimCompletionRequest,
   FimCompletionResponse,
   ListModelsResponse,
-  GetBalanceResponse,
+  GetBalanceResponse
 } from './types';
 
 export class DeepSeekClient {
@@ -15,9 +15,9 @@ export class DeepSeekClient {
     this.axios = createAxios({
       baseURL: params.baseUrl,
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,14 +25,16 @@ export class DeepSeekClient {
     let body: Record<string, unknown> = {
       model: request.model,
       messages: request.messages,
-      stream: false,
+      stream: false
     };
 
     if (request.temperature !== undefined) body.temperature = request.temperature;
     if (request.top_p !== undefined) body.top_p = request.top_p;
     if (request.max_tokens !== undefined) body.max_tokens = request.max_tokens;
-    if (request.frequency_penalty !== undefined) body.frequency_penalty = request.frequency_penalty;
-    if (request.presence_penalty !== undefined) body.presence_penalty = request.presence_penalty;
+    if (request.frequency_penalty !== undefined)
+      body.frequency_penalty = request.frequency_penalty;
+    if (request.presence_penalty !== undefined)
+      body.presence_penalty = request.presence_penalty;
     if (request.stop !== undefined) body.stop = request.stop;
     if (request.response_format !== undefined) body.response_format = request.response_format;
     if (request.tools !== undefined) body.tools = request.tools;
@@ -49,15 +51,15 @@ export class DeepSeekClient {
     let betaAxios = createAxios({
       baseURL: 'https://api.deepseek.com/beta',
       headers: {
-        'Authorization': `Bearer ${this.params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
 
     let body: Record<string, unknown> = {
       model: request.model,
       prompt: request.prompt,
-      stream: false,
+      stream: false
     };
 
     if (request.suffix !== undefined) body.suffix = request.suffix;
@@ -65,8 +67,10 @@ export class DeepSeekClient {
     if (request.max_tokens !== undefined) body.max_tokens = request.max_tokens;
     if (request.temperature !== undefined) body.temperature = request.temperature;
     if (request.top_p !== undefined) body.top_p = request.top_p;
-    if (request.frequency_penalty !== undefined) body.frequency_penalty = request.frequency_penalty;
-    if (request.presence_penalty !== undefined) body.presence_penalty = request.presence_penalty;
+    if (request.frequency_penalty !== undefined)
+      body.frequency_penalty = request.frequency_penalty;
+    if (request.presence_penalty !== undefined)
+      body.presence_penalty = request.presence_penalty;
     if (request.stop !== undefined) body.stop = request.stop;
     if (request.logprobs !== undefined) body.logprobs = request.logprobs;
 

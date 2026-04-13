@@ -5,9 +5,7 @@ let axios = createAxios({
 });
 
 export class Client {
-  constructor(
-    private token: string
-  ) {}
+  constructor(private token: string) {}
 
   private get headers() {
     return {
@@ -42,10 +40,13 @@ export class Client {
     return response.data;
   }
 
-  async getTemplate(templateId: string, params?: {
-    includeLayers?: boolean;
-    includePages?: boolean;
-  }) {
+  async getTemplate(
+    templateId: string,
+    params?: {
+      includeLayers?: boolean;
+      includePages?: boolean;
+    }
+  ) {
     let response = await axios.get(`/template/${templateId}`, {
       headers: this.headers,
       params
@@ -67,14 +68,18 @@ export class Client {
     return response.data;
   }
 
-  async updateTemplate(templateId: string, body: {
-    name?: string;
-    width?: number;
-    height?: number;
-    description?: string;
-    layers?: any[];
-    pages?: any[];
-  }, replaceLayers?: boolean) {
+  async updateTemplate(
+    templateId: string,
+    body: {
+      name?: string;
+      width?: number;
+      height?: number;
+      description?: string;
+      layers?: any[];
+      pages?: any[];
+    },
+    replaceLayers?: boolean
+  ) {
     let response = await axios.put(`/template/${templateId}`, body, {
       headers: { ...this.headers, 'Content-Type': 'application/json' },
       params: replaceLayers !== undefined ? { replaceLayers } : undefined
@@ -87,16 +92,24 @@ export class Client {
   }
 
   async duplicateTemplate(templateId: string, name?: string) {
-    let response = await axios.post(`/template/${templateId}/duplicate`, name ? { name } : {}, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await axios.post(
+      `/template/${templateId}/duplicate`,
+      name ? { name } : {},
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async cloneTemplate(templateId: string) {
-    let response = await axios.post(`/template/${templateId}/clone`, {}, {
-      headers: this.headers
-    });
+    let response = await axios.post(
+      `/template/${templateId}/clone`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -206,17 +219,17 @@ export class Client {
   }
 
   async duplicateRender(renderId: string) {
-    let response = await axios.post(`/render/${renderId}/duplicate`, {}, {
-      headers: this.headers
-    });
+    let response = await axios.post(
+      `/render/${renderId}/duplicate`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
-  async mergeRenders(body: {
-    ids: string[];
-    urls?: string[];
-    host?: boolean;
-  }) {
+  async mergeRenders(body: { ids: string[]; urls?: string[]; host?: boolean }) {
     let response = await axios.post('/render/merge', body, {
       headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
@@ -225,11 +238,7 @@ export class Client {
 
   // ==================== Folders ====================
 
-  async listFolders(params?: {
-    query?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  async listFolders(params?: { query?: string; page?: number; limit?: number }) {
     let response = await axios.get('/folders', {
       headers: this.headers,
       params
@@ -238,16 +247,24 @@ export class Client {
   }
 
   async createFolder(name: string) {
-    let response = await axios.post('/folder', { name }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await axios.post(
+      '/folder',
+      { name },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async updateFolder(folderId: string, name: string) {
-    let response = await axios.put(`/folder/${folderId}`, { name }, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' }
-    });
+    let response = await axios.put(
+      `/folder/${folderId}`,
+      { name },
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -256,26 +273,37 @@ export class Client {
   }
 
   async moveTemplateToFolder(folderId: string, templateId: string) {
-    await axios.put(`/folder/${folderId}/template/${templateId}`, {}, {
-      headers: this.headers
-    });
+    await axios.put(
+      `/folder/${folderId}/template/${templateId}`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
   }
 
   async moveRenderToFolder(folderId: string, renderId: string) {
-    await axios.put(`/folder/${folderId}/render/${renderId}`, {}, {
-      headers: this.headers
-    });
+    await axios.put(
+      `/folder/${folderId}/render/${renderId}`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
   }
 
-  async listFolderTemplates(folderId: string, params?: {
-    query?: string;
-    page?: number;
-    limit?: number;
-    width?: number;
-    height?: number;
-    tags?: string;
-    includeLayers?: boolean;
-  }) {
+  async listFolderTemplates(
+    folderId: string,
+    params?: {
+      query?: string;
+      page?: number;
+      limit?: number;
+      width?: number;
+      height?: number;
+      tags?: string;
+      includeLayers?: boolean;
+    }
+  ) {
     let response = await axios.get(`/folder/${folderId}/templates`, {
       headers: this.headers,
       params
@@ -283,10 +311,13 @@ export class Client {
     return response.data;
   }
 
-  async listFolderRenders(folderId: string, params?: {
-    page?: number;
-    limit?: number;
-  }) {
+  async listFolderRenders(
+    folderId: string,
+    params?: {
+      page?: number;
+      limit?: number;
+    }
+  ) {
     let response = await axios.get(`/folder/${folderId}/renders`, {
       headers: this.headers,
       params

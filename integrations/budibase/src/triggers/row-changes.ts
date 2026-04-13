@@ -3,38 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let rowChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Row Changes',
-    key: 'row_changes',
-    description: 'Detects new and updated rows in a Budibase table by polling. Compares row data between polls to identify created and updated rows.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['row.created', 'row.updated']).describe('Type of row change event'),
-    rowId: z.string().describe('ID of the affected row'),
-    tableId: z.string().describe('ID of the table the row belongs to'),
-    appId: z.string().describe('ID of the application'),
-    row: z.record(z.string(), z.any()).describe('Full row data'),
-  }))
-  .output(z.object({
-    rowId: z.string().describe('ID of the affected row'),
-    tableId: z.string().describe('ID of the table'),
-    appId: z.string().describe('ID of the application'),
-    row: z.record(z.string(), z.any()).describe('Full row data including all fields'),
-  }))
+export let rowChanges = SlateTrigger.create(spec, {
+  name: 'Row Changes',
+  key: 'row_changes',
+  description:
+    'Detects new and updated rows in a Budibase table by polling. Compares row data between polls to identify created and updated rows.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['row.created', 'row.updated']).describe('Type of row change event'),
+      rowId: z.string().describe('ID of the affected row'),
+      tableId: z.string().describe('ID of the table the row belongs to'),
+      appId: z.string().describe('ID of the application'),
+      row: z.record(z.string(), z.any()).describe('Full row data')
+    })
+  )
+  .output(
+    z.object({
+      rowId: z.string().describe('ID of the affected row'),
+      tableId: z.string().describe('ID of the table'),
+      appId: z.string().describe('ID of the application'),
+      row: z.record(z.string(), z.any()).describe('Full row data including all fields')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let input = ctx.input as any;
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl,
-        appId: input.appId,
+        appId: input.appId
       });
 
       let allRows: any[] = [];
@@ -45,7 +47,7 @@ export let rowChanges = SlateTrigger.create(
         let result = await client.searchRows(input.tableId, {
           paginate: true,
           limit: 500,
-          bookmark,
+          bookmark
         });
         allRows.push(...result.rows);
         bookmark = result.bookmark;
@@ -76,7 +78,7 @@ export let rowChanges = SlateTrigger.create(
               rowId,
               tableId: input.tableId,
               appId: input.appId,
-              row,
+              row
             });
           }
         } else if (previousRowMap[rowId] !== hash) {
@@ -85,7 +87,7 @@ export let rowChanges = SlateTrigger.create(
             rowId,
             tableId: input.tableId,
             appId: input.appId,
-            row,
+            row
           });
         }
       }
@@ -94,12 +96,12 @@ export let rowChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           rowHashes: currentRowMap,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.eventType}:${ctx.input.rowId}:${Date.now()}`,
@@ -107,9 +109,9 @@ export let rowChanges = SlateTrigger.create(
           rowId: ctx.input.rowId,
           tableId: ctx.input.tableId,
           appId: ctx.input.appId,
-          row: ctx.input.row,
-        },
+          row: ctx.input.row
+        }
       };
-    },
+    }
   })
   .build();

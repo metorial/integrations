@@ -7,32 +7,34 @@ let INVOICE_EVENT_TYPES = [
   'invoice.created',
   'invoice.changed',
   'invoice.deleted',
-  'invoice.status.changed',
+  'invoice.status.changed'
 ] as const;
 
-export let invoiceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Events',
-    key: 'invoice_events',
-    description: 'Triggers when invoices are created, changed, deleted, or when their status changes in Lexoffice.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The Lexoffice event type (e.g. invoice.created)'),
-    resourceId: z.string().describe('The invoice resource ID'),
-    organizationId: z.string().describe('The organization ID'),
-    eventDate: z.string().describe('ISO timestamp of the event'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('The invoice ID'),
-    eventType: z.string().describe('The event type that occurred'),
-    voucherNumber: z.string().optional().describe('The voucher/invoice number'),
-    voucherStatus: z.string().optional().describe('The current voucher status'),
-    totalAmount: z.number().optional().describe('Total gross amount of the invoice'),
-  }))
+export let invoiceEvents = SlateTrigger.create(spec, {
+  name: 'Invoice Events',
+  key: 'invoice_events',
+  description:
+    'Triggers when invoices are created, changed, deleted, or when their status changes in Lexoffice.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The Lexoffice event type (e.g. invoice.created)'),
+      resourceId: z.string().describe('The invoice resource ID'),
+      organizationId: z.string().describe('The organization ID'),
+      eventDate: z.string().describe('ISO timestamp of the event')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('The invoice ID'),
+      eventType: z.string().describe('The event type that occurred'),
+      voucherNumber: z.string().optional().describe('The voucher/invoice number'),
+      voucherStatus: z.string().optional().describe('The current voucher status'),
+      totalAmount: z.number().optional().describe('Total gross amount of the invoice')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subscriptions: { subscriptionId: string; eventType: string }[] = [];
 
@@ -42,11 +44,11 @@ export let invoiceEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptions },
+        registrationDetails: { subscriptions }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subs = ctx.input.registrationDetails?.subscriptions ?? [];
 
@@ -59,20 +61,22 @@ export let invoiceEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType,
-          resourceId: body.resourceId,
-          organizationId: body.organizationId,
-          eventDate: body.eventDate,
-        }],
+        inputs: [
+          {
+            eventType: body.eventType,
+            resourceId: body.resourceId,
+            organizationId: body.organizationId,
+            eventDate: body.eventDate
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let isDeleted = ctx.input.eventType === 'invoice.deleted';
 
@@ -99,8 +103,9 @@ export let invoiceEvents = SlateTrigger.create(
           eventType: ctx.input.eventType,
           voucherNumber,
           voucherStatus,
-          totalAmount,
-        },
+          totalAmount
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

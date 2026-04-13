@@ -8,8 +8,12 @@ let webhookSchema = z.object({
   name: z.string().nullable().optional().describe('Webhook name'),
   channelId: z.string().nullable().optional().describe('Channel ID the webhook belongs to'),
   guildId: z.string().nullable().optional().describe('Guild ID the webhook belongs to'),
-  webhookToken: z.string().nullable().optional().describe('Webhook token (used for executing)'),
-  webhookUrl: z.string().nullable().optional().describe('Full webhook URL for execution'),
+  webhookToken: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Webhook token (used for executing)'),
+  webhookUrl: z.string().nullable().optional().describe('Full webhook URL for execution')
 });
 
 let embedSchema = z.object({
@@ -17,69 +21,125 @@ let embedSchema = z.object({
   description: z.string().optional().describe('Embed description'),
   url: z.string().optional().describe('Embed URL'),
   color: z.number().optional().describe('Embed color as decimal integer'),
-  footer: z.object({
-    text: z.string(),
-    icon_url: z.string().optional(),
-  }).optional().describe('Embed footer'),
-  image: z.object({
-    url: z.string(),
-  }).optional().describe('Embed image'),
-  thumbnail: z.object({
-    url: z.string(),
-  }).optional().describe('Embed thumbnail'),
-  author: z.object({
-    name: z.string(),
-    url: z.string().optional(),
-    icon_url: z.string().optional(),
-  }).optional().describe('Embed author'),
-  fields: z.array(z.object({
-    name: z.string(),
-    value: z.string(),
-    inline: z.boolean().optional(),
-  })).optional().describe('Embed fields'),
+  footer: z
+    .object({
+      text: z.string(),
+      icon_url: z.string().optional()
+    })
+    .optional()
+    .describe('Embed footer'),
+  image: z
+    .object({
+      url: z.string()
+    })
+    .optional()
+    .describe('Embed image'),
+  thumbnail: z
+    .object({
+      url: z.string()
+    })
+    .optional()
+    .describe('Embed thumbnail'),
+  author: z
+    .object({
+      name: z.string(),
+      url: z.string().optional(),
+      icon_url: z.string().optional()
+    })
+    .optional()
+    .describe('Embed author'),
+  fields: z
+    .array(
+      z.object({
+        name: z.string(),
+        value: z.string(),
+        inline: z.boolean().optional()
+      })
+    )
+    .optional()
+    .describe('Embed fields')
 });
 
-export let manageWebhooks = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Webhooks',
-    key: 'manage_webhooks',
-    description: `List, create, update, delete, or execute webhooks in a Discord channel or guild. Webhooks allow external services to send messages to Discord channels without a bot user.`,
-    instructions: [
-      'To **list webhooks for a channel**, set action to "list_channel" and provide the channelId.',
-      'To **list webhooks for a guild**, set action to "list_guild" and provide the guildId.',
-      'To **create** a webhook, set action to "create" and provide the channelId and a name.',
-      'To **update** a webhook, set action to "update" and provide the webhookId plus fields to change (name, avatar, channelId).',
-      'To **delete** a webhook, set action to "delete" and provide the webhookId.',
-      'To **execute** a webhook (send a message), set action to "execute" and provide the webhookId, webhookToken, and message content or embeds.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageWebhooks = SlateTool.create(spec, {
+  name: 'Manage Webhooks',
+  key: 'manage_webhooks',
+  description: `List, create, update, delete, or execute webhooks in a Discord channel or guild. Webhooks allow external services to send messages to Discord channels without a bot user.`,
+  instructions: [
+    'To **list webhooks for a channel**, set action to "list_channel" and provide the channelId.',
+    'To **list webhooks for a guild**, set action to "list_guild" and provide the guildId.',
+    'To **create** a webhook, set action to "create" and provide the channelId and a name.',
+    'To **update** a webhook, set action to "update" and provide the webhookId plus fields to change (name, avatar, channelId).',
+    'To **delete** a webhook, set action to "delete" and provide the webhookId.',
+    'To **execute** a webhook (send a message), set action to "execute" and provide the webhookId, webhookToken, and message content or embeds.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list_channel', 'list_guild', 'create', 'update', 'delete', 'execute']).describe('The webhook action to perform'),
-    channelId: z.string().optional().describe('Channel ID (required for list_channel and create; optional for update to move webhook)'),
-    guildId: z.string().optional().describe('Guild ID (required for list_guild)'),
-    webhookId: z.string().optional().describe('Webhook ID (required for update, delete, execute)'),
-    webhookToken: z.string().optional().describe('Webhook token (required for execute)'),
-    name: z.string().optional().describe('Webhook name (required for create, optional for update)'),
-    avatar: z.string().optional().describe('Base64-encoded image data URI for the webhook avatar (for create or update)'),
-    content: z.string().optional().describe('Message content to send (for execute)'),
-    username: z.string().optional().describe('Override the webhook display name (for execute)'),
-    avatarUrl: z.string().optional().describe('Override the webhook avatar URL (for execute)'),
-    tts: z.boolean().optional().describe('Whether the message is text-to-speech (for execute)'),
-    embeds: z.array(embedSchema).optional().describe('Array of embed objects to send (for execute)'),
-  }))
-  .output(z.object({
-    webhook: webhookSchema.optional().describe('Webhook details (for create/update actions)'),
-    webhooks: z.array(webhookSchema).optional().describe('List of webhooks (for list actions)'),
-    deleted: z.boolean().optional().describe('Whether the webhook was deleted (for delete action)'),
-    messageId: z.string().optional().describe('ID of the message sent (for execute action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list_channel', 'list_guild', 'create', 'update', 'delete', 'execute'])
+        .describe('The webhook action to perform'),
+      channelId: z
+        .string()
+        .optional()
+        .describe(
+          'Channel ID (required for list_channel and create; optional for update to move webhook)'
+        ),
+      guildId: z.string().optional().describe('Guild ID (required for list_guild)'),
+      webhookId: z
+        .string()
+        .optional()
+        .describe('Webhook ID (required for update, delete, execute)'),
+      webhookToken: z.string().optional().describe('Webhook token (required for execute)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Webhook name (required for create, optional for update)'),
+      avatar: z
+        .string()
+        .optional()
+        .describe(
+          'Base64-encoded image data URI for the webhook avatar (for create or update)'
+        ),
+      content: z.string().optional().describe('Message content to send (for execute)'),
+      username: z
+        .string()
+        .optional()
+        .describe('Override the webhook display name (for execute)'),
+      avatarUrl: z
+        .string()
+        .optional()
+        .describe('Override the webhook avatar URL (for execute)'),
+      tts: z
+        .boolean()
+        .optional()
+        .describe('Whether the message is text-to-speech (for execute)'),
+      embeds: z
+        .array(embedSchema)
+        .optional()
+        .describe('Array of embed objects to send (for execute)')
+    })
+  )
+  .output(
+    z.object({
+      webhook: webhookSchema
+        .optional()
+        .describe('Webhook details (for create/update actions)'),
+      webhooks: z
+        .array(webhookSchema)
+        .optional()
+        .describe('List of webhooks (for list actions)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the webhook was deleted (for delete action)'),
+      messageId: z.string().optional().describe('ID of the message sent (for execute action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DiscordClient({ token: ctx.auth.token, tokenType: ctx.auth.tokenType });
     let { action } = ctx.input;
 
@@ -89,18 +149,19 @@ export let manageWebhooks = SlateTool.create(
       channelId: w.channel_id ?? null,
       guildId: w.guild_id ?? null,
       webhookToken: w.token ?? null,
-      webhookUrl: w.token ? `https://discord.com/api/webhooks/${w.id}/${w.token}` : null,
+      webhookUrl: w.token ? `https://discord.com/api/webhooks/${w.id}/${w.token}` : null
     });
 
     if (action === 'list_channel') {
-      if (!ctx.input.channelId) throw new Error('channelId is required for list_channel action');
+      if (!ctx.input.channelId)
+        throw new Error('channelId is required for list_channel action');
 
       let webhooks = await client.getChannelWebhooks(ctx.input.channelId);
       let mapped = webhooks.map(mapWebhook);
 
       return {
         output: { webhooks: mapped },
-        message: `Found **${mapped.length}** webhook(s) in channel \`${ctx.input.channelId}\`.`,
+        message: `Found **${mapped.length}** webhook(s) in channel \`${ctx.input.channelId}\`.`
       };
     }
 
@@ -112,7 +173,7 @@ export let manageWebhooks = SlateTool.create(
 
       return {
         output: { webhooks: mapped },
-        message: `Found **${mapped.length}** webhook(s) in guild \`${ctx.input.guildId}\`.`,
+        message: `Found **${mapped.length}** webhook(s) in guild \`${ctx.input.guildId}\`.`
       };
     }
 
@@ -122,12 +183,12 @@ export let manageWebhooks = SlateTool.create(
 
       let webhook = await client.createWebhook(ctx.input.channelId, {
         name: ctx.input.name,
-        avatar: ctx.input.avatar,
+        avatar: ctx.input.avatar
       });
 
       return {
         output: { webhook: mapWebhook(webhook) },
-        message: `Created webhook **${ctx.input.name}** in channel \`${ctx.input.channelId}\`.`,
+        message: `Created webhook **${ctx.input.name}** in channel \`${ctx.input.channelId}\`.`
       };
     }
 
@@ -143,7 +204,7 @@ export let manageWebhooks = SlateTool.create(
 
       return {
         output: { webhook: mapWebhook(webhook) },
-        message: `Updated webhook \`${ctx.input.webhookId}\`${ctx.input.name ? ` (renamed to **${ctx.input.name}**)` : ''}.`,
+        message: `Updated webhook \`${ctx.input.webhookId}\`${ctx.input.name ? ` (renamed to **${ctx.input.name}**)` : ''}.`
       };
     }
 
@@ -154,13 +215,14 @@ export let manageWebhooks = SlateTool.create(
 
       return {
         output: { deleted: true },
-        message: `Deleted webhook \`${ctx.input.webhookId}\`.`,
+        message: `Deleted webhook \`${ctx.input.webhookId}\`.`
       };
     }
 
     // action === 'execute'
     if (!ctx.input.webhookId) throw new Error('webhookId is required for execute action');
-    if (!ctx.input.webhookToken) throw new Error('webhookToken is required for execute action');
+    if (!ctx.input.webhookToken)
+      throw new Error('webhookToken is required for execute action');
     if (!ctx.input.content && !ctx.input.embeds?.length) {
       throw new Error('content or embeds is required for execute action');
     }
@@ -172,11 +234,15 @@ export let manageWebhooks = SlateTool.create(
     if (ctx.input.tts !== undefined) executeData.tts = ctx.input.tts;
     if (ctx.input.embeds !== undefined) executeData.embeds = ctx.input.embeds;
 
-    let result = await client.executeWebhook(ctx.input.webhookId, ctx.input.webhookToken, executeData);
+    let result = await client.executeWebhook(
+      ctx.input.webhookId,
+      ctx.input.webhookToken,
+      executeData
+    );
 
     return {
       output: { messageId: result.id },
-      message: `Executed webhook \`${ctx.input.webhookId}\` — message \`${result.id}\` sent.`,
+      message: `Executed webhook \`${ctx.input.webhookId}\` — message \`${result.id}\` sent.`
     };
   })
   .build();

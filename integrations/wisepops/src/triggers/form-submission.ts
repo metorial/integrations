@@ -3,61 +3,77 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let formSubmission = SlateTrigger.create(
-  spec,
-  {
-    name: 'Form Submission',
-    key: 'form_submission',
-    description: 'Triggers when a form is submitted in a Wisepops campaign. Covers email sign-up, phone, and survey block submissions.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['email', 'phone', 'survey']).describe('The type of form submission event.'),
-    collectedAt: z.string().describe('ISO 8601 timestamp when the submission was collected.'),
-    wisepopId: z.number().describe('ID of the campaign that collected this submission.'),
-    formSession: z.string().describe('UUID identifying the form session.'),
-    ip: z.string().describe('IP address of the visitor.'),
-    countryCode: z.string().describe('ISO country code of the visitor.'),
-    fields: z.record(z.string(), z.string()).describe('Form fields submitted by the visitor.'),
-  }))
-  .output(z.object({
-    wisepopId: z.number().describe('ID of the campaign that collected the submission.'),
-    formSession: z.string().describe('UUID identifying the form session, useful for merging multi-step submissions.'),
-    collectedAt: z.string().describe('ISO 8601 timestamp when the submission was collected.'),
-    ip: z.string().describe('IP address of the visitor.'),
-    countryCode: z.string().describe('ISO country code of the visitor.'),
-    fields: z.record(z.string(), z.string()).describe('Form fields submitted by the visitor (e.g. email, name, custom fields).'),
-  }))
+export let formSubmission = SlateTrigger.create(spec, {
+  name: 'Form Submission',
+  key: 'form_submission',
+  description:
+    'Triggers when a form is submitted in a Wisepops campaign. Covers email sign-up, phone, and survey block submissions.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['email', 'phone', 'survey'])
+        .describe('The type of form submission event.'),
+      collectedAt: z
+        .string()
+        .describe('ISO 8601 timestamp when the submission was collected.'),
+      wisepopId: z.number().describe('ID of the campaign that collected this submission.'),
+      formSession: z.string().describe('UUID identifying the form session.'),
+      ip: z.string().describe('IP address of the visitor.'),
+      countryCode: z.string().describe('ISO country code of the visitor.'),
+      fields: z
+        .record(z.string(), z.string())
+        .describe('Form fields submitted by the visitor.')
+    })
+  )
+  .output(
+    z.object({
+      wisepopId: z.number().describe('ID of the campaign that collected the submission.'),
+      formSession: z
+        .string()
+        .describe(
+          'UUID identifying the form session, useful for merging multi-step submissions.'
+        ),
+      collectedAt: z
+        .string()
+        .describe('ISO 8601 timestamp when the submission was collected.'),
+      ip: z.string().describe('IP address of the visitor.'),
+      countryCode: z.string().describe('ISO country code of the visitor.'),
+      fields: z
+        .record(z.string(), z.string())
+        .describe('Form fields submitted by the visitor (e.g. email, name, custom fields).')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
 
       // Register hooks for all three event types so we capture everything
       let emailHook = await client.createHook({
         event: 'email',
-        targetUrl: `${ctx.input.webhookBaseUrl}/email`,
+        targetUrl: `${ctx.input.webhookBaseUrl}/email`
       });
 
       let phoneHook = await client.createHook({
         event: 'phone',
-        targetUrl: `${ctx.input.webhookBaseUrl}/phone`,
+        targetUrl: `${ctx.input.webhookBaseUrl}/phone`
       });
 
       let surveyHook = await client.createHook({
         event: 'survey',
-        targetUrl: `${ctx.input.webhookBaseUrl}/survey`,
+        targetUrl: `${ctx.input.webhookBaseUrl}/survey`
       });
 
       return {
         registrationDetails: {
           emailHookId: emailHook.id,
           phoneHookId: phoneHook.id,
-          surveyHookId: surveyHook.id,
-        },
+          surveyHookId: surveyHook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
       let details = ctx.input.registrationDetails as {
         emailHookId: number;
@@ -70,8 +86,8 @@ export let formSubmission = SlateTrigger.create(
       await client.deleteHook(details.surveyHookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Array<{
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Array<{
         collected_at: string;
         wisepop_id: number;
         form_session: string;
@@ -94,19 +110,19 @@ export let formSubmission = SlateTrigger.create(
       let contacts = Array.isArray(body) ? body : [body];
 
       return {
-        inputs: contacts.map((contact) => ({
+        inputs: contacts.map(contact => ({
           eventType,
           collectedAt: contact.collected_at,
           wisepopId: contact.wisepop_id,
           formSession: contact.form_session,
           ip: contact.ip,
           countryCode: contact.country_code,
-          fields: contact.fields,
-        })),
+          fields: contact.fields
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `form.${ctx.input.eventType}`,
         id: `${ctx.input.formSession}-${ctx.input.collectedAt}`,
@@ -116,9 +132,9 @@ export let formSubmission = SlateTrigger.create(
           collectedAt: ctx.input.collectedAt,
           ip: ctx.input.ip,
           countryCode: ctx.input.countryCode,
-          fields: ctx.input.fields,
-        },
+          fields: ctx.input.fields
+        }
       };
-    },
+    }
   })
   .build();

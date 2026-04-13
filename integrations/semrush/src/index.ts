@@ -12,7 +12,7 @@ import {
   managePositionTracking,
   manageSiteAudit,
   manageListing,
-  getMapRankings,
+  getMapRankings
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     managePositionTracking,
     manageSiteAudit,
     manageListing,
-    getMapRankings,
+    getMapRankings
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

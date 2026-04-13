@@ -7,7 +7,10 @@ let messageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant', 'tool']).describe('Role of the message sender'),
   content: z.string().describe('Content of the message'),
   name: z.string().optional().describe('Name of the participant'),
-  toolCallId: z.string().optional().describe('ID of the tool call this message responds to (for tool role)')
+  toolCallId: z
+    .string()
+    .optional()
+    .describe('ID of the tool call this message responds to (for tool role)')
 });
 
 let toolDefinitionSchema = z.object({
@@ -44,44 +47,81 @@ let usageSchema = z.object({
   totalTokens: z.number().describe('Total tokens used')
 });
 
-export let chatCompletionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Chat Completion',
-    key: 'chat_completion',
-    description: `Generate a chat completion using Mistral AI models. Supports multi-turn conversations with system, user, assistant, and tool messages. Can use function calling, structured JSON output, and safety prompts.`,
-    instructions: [
-      'Use models like "mistral-large-latest", "mistral-small-latest", or "mistral-medium-latest" for general chat.',
-      'For reasoning tasks, use "magistral-medium-latest" or "magistral-small-latest".',
-      'Set responseFormat to {"type":"json_object"} for JSON output, or {"type":"json_schema","json_schema":{"name":"...","schema":{...}}} for structured output.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let chatCompletionTool = SlateTool.create(spec, {
+  name: 'Chat Completion',
+  key: 'chat_completion',
+  description: `Generate a chat completion using Mistral AI models. Supports multi-turn conversations with system, user, assistant, and tool messages. Can use function calling, structured JSON output, and safety prompts.`,
+  instructions: [
+    'Use models like "mistral-large-latest", "mistral-small-latest", or "mistral-medium-latest" for general chat.',
+    'For reasoning tasks, use "magistral-medium-latest" or "magistral-small-latest".',
+    'Set responseFormat to {"type":"json_object"} for JSON output, or {"type":"json_schema","json_schema":{"name":"...","schema":{...}}} for structured output.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    model: z.string().describe('Model ID to use (e.g., "mistral-large-latest", "mistral-small-latest")'),
-    messages: z.array(messageSchema).describe('Conversation messages'),
-    temperature: z.number().min(0).max(2).optional().describe('Sampling temperature (0.0-2.0)'),
-    topP: z.number().min(0).max(1).optional().describe('Nucleus sampling threshold (0.0-1.0)'),
-    maxTokens: z.number().optional().describe('Maximum tokens to generate'),
-    stop: z.union([z.string(), z.array(z.string())]).optional().describe('Stop sequence(s)'),
-    randomSeed: z.number().optional().describe('Seed for deterministic output'),
-    presencePenalty: z.number().min(-2).max(2).optional().describe('Presence penalty (-2.0 to 2.0)'),
-    frequencyPenalty: z.number().min(-2).max(2).optional().describe('Frequency penalty (-2.0 to 2.0)'),
-    responseFormat: z.any().optional().describe('Response format: {"type":"text"}, {"type":"json_object"}, or {"type":"json_schema","json_schema":{...}}'),
-    tools: z.array(toolDefinitionSchema).optional().describe('Tool/function definitions available to the model'),
-    toolChoice: z.union([z.enum(['none', 'auto', 'any', 'required']), z.any()]).optional().describe('Tool selection strategy'),
-    safePrompt: z.boolean().optional().describe('Inject safety system prompt')
-  }))
-  .output(z.object({
-    completionId: z.string().describe('Unique completion ID'),
-    model: z.string().describe('Model used'),
-    choices: z.array(choiceSchema).describe('Generated completions'),
-    usage: usageSchema.describe('Token usage statistics')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      model: z
+        .string()
+        .describe('Model ID to use (e.g., "mistral-large-latest", "mistral-small-latest")'),
+      messages: z.array(messageSchema).describe('Conversation messages'),
+      temperature: z
+        .number()
+        .min(0)
+        .max(2)
+        .optional()
+        .describe('Sampling temperature (0.0-2.0)'),
+      topP: z
+        .number()
+        .min(0)
+        .max(1)
+        .optional()
+        .describe('Nucleus sampling threshold (0.0-1.0)'),
+      maxTokens: z.number().optional().describe('Maximum tokens to generate'),
+      stop: z
+        .union([z.string(), z.array(z.string())])
+        .optional()
+        .describe('Stop sequence(s)'),
+      randomSeed: z.number().optional().describe('Seed for deterministic output'),
+      presencePenalty: z
+        .number()
+        .min(-2)
+        .max(2)
+        .optional()
+        .describe('Presence penalty (-2.0 to 2.0)'),
+      frequencyPenalty: z
+        .number()
+        .min(-2)
+        .max(2)
+        .optional()
+        .describe('Frequency penalty (-2.0 to 2.0)'),
+      responseFormat: z
+        .any()
+        .optional()
+        .describe(
+          'Response format: {"type":"text"}, {"type":"json_object"}, or {"type":"json_schema","json_schema":{...}}'
+        ),
+      tools: z
+        .array(toolDefinitionSchema)
+        .optional()
+        .describe('Tool/function definitions available to the model'),
+      toolChoice: z
+        .union([z.enum(['none', 'auto', 'any', 'required']), z.any()])
+        .optional()
+        .describe('Tool selection strategy'),
+      safePrompt: z.boolean().optional().describe('Inject safety system prompt')
+    })
+  )
+  .output(
+    z.object({
+      completionId: z.string().describe('Unique completion ID'),
+      model: z.string().describe('Model used'),
+      choices: z.array(choiceSchema).describe('Generated completions'),
+      usage: usageSchema.describe('Token usage statistics')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MistralClient(ctx.auth.token);
 
     let result = await client.chatCompletion({

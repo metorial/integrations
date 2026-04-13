@@ -3,22 +3,25 @@ import { GistClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getConversationCounts = SlateTool.create(
-  spec,
-  {
-    name: 'Get Conversation Counts',
-    key: 'get_conversation_counts',
-    description: `Get conversation counts globally, per team, or per teammate. Useful for monitoring workload and queue sizes.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    scope: z.enum(['global', 'teams', 'teammates']).describe('Scope of the count: global, by teams, or by teammates'),
-  }))
-  .output(z.object({
-    counts: z.any().describe('Conversation count data'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getConversationCounts = SlateTool.create(spec, {
+  name: 'Get Conversation Counts',
+  key: 'get_conversation_counts',
+  description: `Get conversation counts globally, per team, or per teammate. Useful for monitoring workload and queue sizes.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      scope: z
+        .enum(['global', 'teams', 'teammates'])
+        .describe('Scope of the count: global, by teams, or by teammates')
+    })
+  )
+  .output(
+    z.object({
+      counts: z.any().describe('Conversation count data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
 
     let data: any;
@@ -36,6 +39,7 @@ export let getConversationCounts = SlateTool.create(
 
     return {
       output: { counts: data },
-      message: `Retrieved **${ctx.input.scope}** conversation counts.`,
+      message: `Retrieved **${ctx.input.scope}** conversation counts.`
     };
-  }).build();
+  })
+  .build();

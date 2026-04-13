@@ -6,5 +6,5 @@ import { membervaultEvent } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [listProducts, addUserToProduct, removeUserFromProduct, deleteUser],
-  triggers: [membervaultEvent],
+  triggers: [membervaultEvent]
 });

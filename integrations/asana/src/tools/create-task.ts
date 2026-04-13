@@ -3,43 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createTask = SlateTool.create(
-  spec,
-  {
-    name: 'Create Task',
-    key: 'create_task',
-    description: `Create a new task in a project or workspace. Supports setting name, notes, assignee, dates, project/section placement, tags, followers, parent task, and custom field values.`,
-    instructions: [
-      'Either projectId or workspaceId must be provided.',
-      'To place a task in a section, provide both projectId and sectionId.',
-      'Custom field values should be a map of custom field GID to value.',
-    ],
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Task name'),
-    workspaceId: z.string().optional().describe('Workspace GID (required if no projectId)'),
-    projectId: z.string().optional().describe('Project GID to add the task to'),
-    sectionId: z.string().optional().describe('Section GID to place the task in'),
-    notes: z.string().optional().describe('Plain-text task description'),
-    htmlNotes: z.string().optional().describe('HTML task description (overrides notes if both provided)'),
-    assigneeId: z.string().optional().describe('Assignee user GID or "me"'),
-    dueOn: z.string().optional().describe('Due date in YYYY-MM-DD format'),
-    dueAt: z.string().optional().describe('Due date-time in ISO 8601 format'),
-    startOn: z.string().optional().describe('Start date in YYYY-MM-DD format'),
-    startAt: z.string().optional().describe('Start date-time in ISO 8601 format'),
-    completed: z.boolean().optional().describe('Whether the task is completed'),
-    parentId: z.string().optional().describe('Parent task GID to create as subtask'),
-    tagIds: z.array(z.string()).optional().describe('Tag GIDs to add to the task'),
-    followerIds: z.array(z.string()).optional().describe('User GIDs to add as followers'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Map of custom field GID to value'),
-    resourceSubtype: z.enum(['default_task', 'milestone', 'section', 'approval']).optional().describe('Task type'),
-  }))
-  .output(z.object({
-    taskId: z.string(),
-    name: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createTask = SlateTool.create(spec, {
+  name: 'Create Task',
+  key: 'create_task',
+  description: `Create a new task in a project or workspace. Supports setting name, notes, assignee, dates, project/section placement, tags, followers, parent task, and custom field values.`,
+  instructions: [
+    'Either projectId or workspaceId must be provided.',
+    'To place a task in a section, provide both projectId and sectionId.',
+    'Custom field values should be a map of custom field GID to value.'
+  ]
+})
+  .input(
+    z.object({
+      name: z.string().describe('Task name'),
+      workspaceId: z.string().optional().describe('Workspace GID (required if no projectId)'),
+      projectId: z.string().optional().describe('Project GID to add the task to'),
+      sectionId: z.string().optional().describe('Section GID to place the task in'),
+      notes: z.string().optional().describe('Plain-text task description'),
+      htmlNotes: z
+        .string()
+        .optional()
+        .describe('HTML task description (overrides notes if both provided)'),
+      assigneeId: z.string().optional().describe('Assignee user GID or "me"'),
+      dueOn: z.string().optional().describe('Due date in YYYY-MM-DD format'),
+      dueAt: z.string().optional().describe('Due date-time in ISO 8601 format'),
+      startOn: z.string().optional().describe('Start date in YYYY-MM-DD format'),
+      startAt: z.string().optional().describe('Start date-time in ISO 8601 format'),
+      completed: z.boolean().optional().describe('Whether the task is completed'),
+      parentId: z.string().optional().describe('Parent task GID to create as subtask'),
+      tagIds: z.array(z.string()).optional().describe('Tag GIDs to add to the task'),
+      followerIds: z.array(z.string()).optional().describe('User GIDs to add as followers'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Map of custom field GID to value'),
+      resourceSubtype: z
+        .enum(['default_task', 'milestone', 'section', 'approval'])
+        .optional()
+        .describe('Task type')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string(),
+      name: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = { name: ctx.input.name };
@@ -70,8 +80,9 @@ export let createTask = SlateTool.create(
     return {
       output: {
         taskId: task.gid,
-        name: task.name,
+        name: task.name
       },
-      message: `Created task **${task.name}** (${task.gid}).`,
+      message: `Created task **${task.name}** (${task.gid}).`
     };
-  }).build();
+  })
+  .build();

@@ -1,6 +1,12 @@
 export type AuthMethod = 'api_key' | 'oauth';
 
-export type Likelihood = 'UNKNOWN' | 'VERY_UNLIKELY' | 'UNLIKELY' | 'POSSIBLE' | 'LIKELY' | 'VERY_LIKELY';
+export type Likelihood =
+  | 'UNKNOWN'
+  | 'VERY_UNLIKELY'
+  | 'UNLIKELY'
+  | 'POSSIBLE'
+  | 'LIKELY'
+  | 'VERY_LIKELY';
 
 export type FeatureType =
   | 'LABEL_DETECTION'

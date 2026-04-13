@@ -11,35 +11,37 @@ let customerWebhookTopics = [
   'customers/disable'
 ] as const;
 
-export let customerEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Events',
-    key: 'customer_events',
-    description: 'Triggers when customers are created, updated, deleted, enabled, or disabled in the Shopify store.'
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic that fired'),
-    customerId: z.string().describe('Shopify customer ID'),
-    payload: z.any().describe('Raw customer payload from Shopify')
-  }))
-  .output(z.object({
-    customerId: z.string(),
-    email: z.string().nullable(),
-    firstName: z.string().nullable(),
-    lastName: z.string().nullable(),
-    phone: z.string().nullable(),
-    ordersCount: z.number(),
-    totalSpent: z.string(),
-    state: z.string(),
-    tags: z.string(),
-    verifiedEmail: z.boolean(),
-    createdAt: z.string(),
-    updatedAt: z.string()
-  }))
+export let customerEvents = SlateTrigger.create(spec, {
+  name: 'Customer Events',
+  key: 'customer_events',
+  description:
+    'Triggers when customers are created, updated, deleted, enabled, or disabled in the Shopify store.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic that fired'),
+      customerId: z.string().describe('Shopify customer ID'),
+      payload: z.any().describe('Raw customer payload from Shopify')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string(),
+      email: z.string().nullable(),
+      firstName: z.string().nullable(),
+      lastName: z.string().nullable(),
+      phone: z.string().nullable(),
+      ordersCount: z.number(),
+      totalSpent: z.string(),
+      state: z.string(),
+      tags: z.string(),
+      verifiedEmail: z.boolean(),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -60,7 +62,7 @@ export let customerEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -77,24 +79,37 @@ export let customerEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let topic = ctx.request.headers.get('x-shopify-topic') || 'customers/update';
 
       return {
-        inputs: [{
-          topic,
-          customerId: String(body.id),
-          payload: body
-        }]
+        inputs: [
+          {
+            topic,
+            customerId: String(body.id),
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let c = ctx.input.payload;
       let topicParts = ctx.input.topic.split('/');
       let eventType = topicParts[1] || 'update';
-      let normalizedType = eventType === 'update' ? 'updated' : eventType === 'create' ? 'created' : eventType === 'delete' ? 'deleted' : eventType === 'enable' ? 'enabled' : eventType === 'disable' ? 'disabled' : eventType;
+      let normalizedType =
+        eventType === 'update'
+          ? 'updated'
+          : eventType === 'create'
+            ? 'created'
+            : eventType === 'delete'
+              ? 'deleted'
+              : eventType === 'enable'
+                ? 'enabled'
+                : eventType === 'disable'
+                  ? 'disabled'
+                  : eventType;
 
       return {
         type: `customer.${normalizedType}`,
@@ -115,4 +130,5 @@ export let customerEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

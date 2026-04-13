@@ -18,7 +18,7 @@ export class Client {
     return createAxios({
       baseURL: BASE_URLS[this.region] || BASE_URLS.us,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -52,7 +52,10 @@ export class Client {
     return response.data;
   }
 
-  async updateConnection(connectionId: string, connectionData: Record<string, any>): Promise<any> {
+  async updateConnection(
+    connectionId: string,
+    connectionData: Record<string, any>
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.put(`/connections/${connectionId}`, connectionData);
     return response.data;
@@ -224,7 +227,10 @@ export class Client {
     return response.data;
   }
 
-  async updateIntegration(integrationId: string, integrationData: Record<string, any>): Promise<any> {
+  async updateIntegration(
+    integrationId: string,
+    integrationData: Record<string, any>
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.put(`/integrations/${integrationId}`, integrationData);
     return response.data;
@@ -243,7 +249,11 @@ export class Client {
 
   // ---- Errors ----
 
-  async getFlowErrors(flowId: string, processorId: string, params?: Record<string, string>): Promise<any> {
+  async getFlowErrors(
+    flowId: string,
+    processorId: string,
+    params?: Record<string, string>
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.get(`/flows/${flowId}/${processorId}/errors`, { params });
     return response.data;
@@ -251,11 +261,17 @@ export class Client {
 
   async resolveErrors(flowId: string, processorId: string, errorIds: string[]): Promise<any> {
     let ax = this.getAxios();
-    let response = await ax.put(`/flows/${flowId}/${processorId}/resolved`, { errors: errorIds });
+    let response = await ax.put(`/flows/${flowId}/${processorId}/resolved`, {
+      errors: errorIds
+    });
     return response.data;
   }
 
-  async retryErrors(flowId: string, processorId: string, retryDataKeys: string[]): Promise<any> {
+  async retryErrors(
+    flowId: string,
+    processorId: string,
+    retryDataKeys: string[]
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.post(`/flows/${flowId}/${processorId}/retry`, { retryDataKeys });
     return response.data;
@@ -348,13 +364,22 @@ export class Client {
     return response.data;
   }
 
-  async setResourceState(resourceType: string, resourceId: string, key: string, value: Record<string, any>): Promise<any> {
+  async setResourceState(
+    resourceType: string,
+    resourceId: string,
+    key: string,
+    value: Record<string, any>
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.put(`/${resourceType}/${resourceId}/state/${key}`, value);
     return response.data;
   }
 
-  async deleteResourceState(resourceType: string, resourceId: string, key: string): Promise<void> {
+  async deleteResourceState(
+    resourceType: string,
+    resourceId: string,
+    key: string
+  ): Promise<void> {
     let ax = this.getAxios();
     await ax.delete(`/${resourceType}/${resourceId}/state/${key}`);
   }

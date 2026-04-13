@@ -14,12 +14,14 @@ There are two types of API keys, each granting access to different APIs:
 2. **Sites API Key**: Provides access to manage sites, goals, custom properties, shared links, and guest access (Site Provisioning API). Only available on Enterprise plans.
 
 To create an API key:
+
 1. Log in to your Plausible Analytics account.
 2. Click on your account name in the top-right menu and go to **Settings**.
 3. Navigate to the **API Keys** section in the left-hand sidebar.
 4. Click **New API Key**, choose either **Stats API** or **Sites API**, and save the key (it is only shown once).
 
 Authenticate requests by including the key in the `Authorization` header:
+
 ```
 Authorization: Bearer YOUR-KEY
 ```

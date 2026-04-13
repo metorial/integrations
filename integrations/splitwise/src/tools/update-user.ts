@@ -3,34 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUser = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update the current authenticated user's profile settings. Supports changing name, email, locale, and default currency.`,
-    tags: {
-      destructive: false,
-    },
+export let updateUser = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update the current authenticated user's profile settings. Supports changing name, email, locale, and default currency.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    userId: z.number().describe('The user ID to update (must be the authenticated user)'),
-    firstName: z.string().optional().describe('New first name'),
-    lastName: z.string().optional().describe('New last name'),
-    email: z.string().optional().describe('New email address'),
-    locale: z.string().optional().describe('New locale (e.g., "en")'),
-    defaultCurrency: z.string().optional().describe('New default currency code (e.g., "USD")'),
-  }))
-  .output(z.object({
-    userId: z.number().describe('Updated user ID'),
-    firstName: z.string().describe('Updated first name'),
-    lastName: z.string().nullable().describe('Updated last name'),
-    email: z.string().describe('Updated email address'),
-    defaultCurrency: z.string().optional().describe('Updated default currency code'),
-    locale: z.string().optional().describe('Updated locale'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.number().describe('The user ID to update (must be the authenticated user)'),
+      firstName: z.string().optional().describe('New first name'),
+      lastName: z.string().optional().describe('New last name'),
+      email: z.string().optional().describe('New email address'),
+      locale: z.string().optional().describe('New locale (e.g., "en")'),
+      defaultCurrency: z
+        .string()
+        .optional()
+        .describe('New default currency code (e.g., "USD")')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('Updated user ID'),
+      firstName: z.string().describe('Updated first name'),
+      lastName: z.string().nullable().describe('Updated last name'),
+      email: z.string().describe('Updated email address'),
+      defaultCurrency: z.string().optional().describe('Updated default currency code'),
+      locale: z.string().optional().describe('Updated locale')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let params: Record<string, string> = {};
@@ -49,9 +53,9 @@ export let updateUser = SlateTool.create(
         lastName: user.last_name ?? null,
         email: user.email,
         defaultCurrency: user.default_currency,
-        locale: user.locale,
+        locale: user.locale
       },
-      message: `Updated profile for **${user.first_name} ${user.last_name || ''}**`,
+      message: `Updated profile for **${user.first_name} ${user.last_name || ''}**`
     };
   })
   .build();

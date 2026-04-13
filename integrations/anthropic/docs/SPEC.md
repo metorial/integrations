@@ -9,12 +9,14 @@ Anthropic is an AI research company that provides access to the Claude family of
 Anthropic uses **API key authentication**. There are two types of API keys:
 
 ### Standard API Key
+
 - In the Anthropic Console, open Settings > API Keys to create a key.
 - Copy your key and store it in a safe location. You won't be able to re-access the key in the future.
 - The API key is passed via the `x-api-key` header on every request.
 - An `anthropic-version` header (e.g., `2023-06-01`) is also required on all requests.
 
 Example:
+
 ```
 curl https://api.anthropic.com/v1/messages \
   --header "x-api-key: $ANTHROPIC_API_KEY" \
@@ -24,6 +26,7 @@ curl https://api.anthropic.com/v1/messages \
 ```
 
 ### Admin API Key
+
 - The Admin API requires a special Admin API key (starting with `sk-ant-admin...`) that differs from standard API keys. Only organization members with the admin role can provision Admin API keys through the Claude Console.
 - Used exclusively for organization administration tasks (managing members, workspaces, API keys).
 - Passed via the same `x-api-key` header.

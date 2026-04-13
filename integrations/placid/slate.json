@@ -2,10 +2,7 @@
   "name": "@metorial/placid",
   "version": "0.1.1",
   "description": "Generate images, PDFs, and videos from reusable design templates populated with dynamic data. Create and manage templates and collections, configure dynamic layers (text, images, shapes, barcodes, QR codes, ratings, browser screenshots), and produce visuals at scale. Upload media files for use in generations, generate images on the fly via URL-based rendering, and transfer outputs to Amazon S3-compatible storage. Supports webhook callbacks for asynchronous generation completion notifications.",
-  "categories": [
-    "crm-and-sales-tools",
-    "document-processing"
-  ],
+  "categories": ["crm-and-sales-tools", "document-processing"],
   "skills": [
     "generate images from templates",
     "generate PDFs from templates",

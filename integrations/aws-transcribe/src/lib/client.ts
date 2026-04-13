@@ -24,7 +24,7 @@ export class TranscribeClient {
 
     let headers: Record<string, string> = {
       'Content-Type': 'application/x-amz-json-1.1',
-      'X-Amz-Target': `Transcribe.${target}`,
+      'X-Amz-Target': `Transcribe.${target}`
     };
 
     let sigHeaders = signRequest({
@@ -34,14 +34,14 @@ export class TranscribeClient {
       body,
       credentials: this.credentials,
       region: this.region,
-      service: 'transcribe',
+      service: 'transcribe'
     });
 
     let response = await ax.post(url, body, {
       headers: {
         ...headers,
-        ...sigHeaders,
-      },
+        ...sigHeaders
+      }
     });
 
     return response.data;
@@ -52,29 +52,40 @@ export class TranscribeClient {
   async startTranscriptionJob(params: StartTranscriptionJobParams): Promise<any> {
     let payload: Record<string, any> = {
       TranscriptionJobName: params.jobName,
-      Media: { MediaFileUri: params.mediaFileUri },
+      Media: { MediaFileUri: params.mediaFileUri }
     };
 
     if (params.languageCode) payload.LanguageCode = params.languageCode;
     if (params.identifyLanguage) payload.IdentifyLanguage = params.identifyLanguage;
-    if (params.identifyMultipleLanguages) payload.IdentifyMultipleLanguages = params.identifyMultipleLanguages;
+    if (params.identifyMultipleLanguages)
+      payload.IdentifyMultipleLanguages = params.identifyMultipleLanguages;
     if (params.languageOptions) payload.LanguageOptions = params.languageOptions;
     if (params.mediaFormat) payload.MediaFormat = params.mediaFormat;
-    if (params.mediaSampleRateHertz) payload.MediaSampleRateHertz = params.mediaSampleRateHertz;
+    if (params.mediaSampleRateHertz)
+      payload.MediaSampleRateHertz = params.mediaSampleRateHertz;
     if (params.outputBucketName) payload.OutputBucketName = params.outputBucketName;
     if (params.outputKey) payload.OutputKey = params.outputKey;
-    if (params.outputEncryptionKmsKeyId) payload.OutputEncryptionKMSKeyId = params.outputEncryptionKmsKeyId;
+    if (params.outputEncryptionKmsKeyId)
+      payload.OutputEncryptionKMSKeyId = params.outputEncryptionKmsKeyId;
 
     if (params.settings) {
       let settings: Record<string, any> = {};
-      if (params.settings.vocabularyName) settings.VocabularyName = params.settings.vocabularyName;
-      if (params.settings.showSpeakerLabels !== undefined) settings.ShowSpeakerLabels = params.settings.showSpeakerLabels;
-      if (params.settings.maxSpeakerLabels) settings.MaxSpeakerLabels = params.settings.maxSpeakerLabels;
-      if (params.settings.channelIdentification !== undefined) settings.ChannelIdentification = params.settings.channelIdentification;
-      if (params.settings.showAlternatives !== undefined) settings.ShowAlternatives = params.settings.showAlternatives;
-      if (params.settings.maxAlternatives) settings.MaxAlternatives = params.settings.maxAlternatives;
-      if (params.settings.vocabularyFilterName) settings.VocabularyFilterName = params.settings.vocabularyFilterName;
-      if (params.settings.vocabularyFilterMethod) settings.VocabularyFilterMethod = params.settings.vocabularyFilterMethod;
+      if (params.settings.vocabularyName)
+        settings.VocabularyName = params.settings.vocabularyName;
+      if (params.settings.showSpeakerLabels !== undefined)
+        settings.ShowSpeakerLabels = params.settings.showSpeakerLabels;
+      if (params.settings.maxSpeakerLabels)
+        settings.MaxSpeakerLabels = params.settings.maxSpeakerLabels;
+      if (params.settings.channelIdentification !== undefined)
+        settings.ChannelIdentification = params.settings.channelIdentification;
+      if (params.settings.showAlternatives !== undefined)
+        settings.ShowAlternatives = params.settings.showAlternatives;
+      if (params.settings.maxAlternatives)
+        settings.MaxAlternatives = params.settings.maxAlternatives;
+      if (params.settings.vocabularyFilterName)
+        settings.VocabularyFilterName = params.settings.vocabularyFilterName;
+      if (params.settings.vocabularyFilterMethod)
+        settings.VocabularyFilterMethod = params.settings.vocabularyFilterMethod;
       payload.Settings = settings;
     }
 
@@ -85,7 +96,7 @@ export class TranscribeClient {
     if (params.contentRedaction) {
       let redaction: Record<string, any> = {
         RedactionType: params.contentRedaction.redactionType,
-        RedactionOutput: params.contentRedaction.redactionOutput,
+        RedactionOutput: params.contentRedaction.redactionOutput
       };
       if (params.contentRedaction.piiEntityTypes) {
         redaction.PiiEntityTypes = params.contentRedaction.piiEntityTypes;
@@ -96,7 +107,8 @@ export class TranscribeClient {
     if (params.subtitles) {
       let subs: Record<string, any> = {};
       if (params.subtitles.formats) subs.Formats = params.subtitles.formats;
-      if (params.subtitles.outputStartIndex !== undefined) subs.OutputStartIndex = params.subtitles.outputStartIndex;
+      if (params.subtitles.outputStartIndex !== undefined)
+        subs.OutputStartIndex = params.subtitles.outputStartIndex;
       payload.Subtitles = subs;
     }
 
@@ -107,7 +119,7 @@ export class TranscribeClient {
     if (params.jobExecutionSettings) {
       payload.JobExecutionSettings = {
         AllowDeferredExecution: params.jobExecutionSettings.allowDeferredExecution,
-        DataAccessRoleArn: params.jobExecutionSettings.dataAccessRoleArn,
+        DataAccessRoleArn: params.jobExecutionSettings.dataAccessRoleArn
       };
     }
 
@@ -120,7 +132,7 @@ export class TranscribeClient {
 
   async getTranscriptionJob(jobName: string): Promise<any> {
     return this.request('GetTranscriptionJob', {
-      TranscriptionJobName: jobName,
+      TranscriptionJobName: jobName
     });
   }
 
@@ -135,7 +147,7 @@ export class TranscribeClient {
 
   async deleteTranscriptionJob(jobName: string): Promise<any> {
     return this.request('DeleteTranscriptionJob', {
-      TranscriptionJobName: jobName,
+      TranscriptionJobName: jobName
     });
   }
 
@@ -144,37 +156,44 @@ export class TranscribeClient {
   async startCallAnalyticsJob(params: StartCallAnalyticsJobParams): Promise<any> {
     let payload: Record<string, any> = {
       CallAnalyticsJobName: params.jobName,
-      Media: { MediaFileUri: params.mediaFileUri },
+      Media: { MediaFileUri: params.mediaFileUri }
     };
 
     if (params.dataAccessRoleArn) payload.DataAccessRoleArn = params.dataAccessRoleArn;
     if (params.outputLocation) payload.OutputLocation = params.outputLocation;
-    if (params.outputEncryptionKmsKeyId) payload.OutputEncryptionKMSKeyId = params.outputEncryptionKmsKeyId;
+    if (params.outputEncryptionKmsKeyId)
+      payload.OutputEncryptionKMSKeyId = params.outputEncryptionKmsKeyId;
 
     if (params.channelDefinitions) {
       payload.ChannelDefinitions = params.channelDefinitions.map(ch => ({
         ChannelId: ch.channelId,
-        ParticipantRole: ch.participantRole,
+        ParticipantRole: ch.participantRole
       }));
     }
 
     if (params.settings) {
       let settings: Record<string, any> = {};
-      if (params.settings.vocabularyName) settings.VocabularyName = params.settings.vocabularyName;
-      if (params.settings.vocabularyFilterName) settings.VocabularyFilterName = params.settings.vocabularyFilterName;
-      if (params.settings.vocabularyFilterMethod) settings.VocabularyFilterMethod = params.settings.vocabularyFilterMethod;
-      if (params.settings.languageModelName) settings.LanguageModelName = params.settings.languageModelName;
-      if (params.settings.languageOptions) settings.LanguageOptions = params.settings.languageOptions;
+      if (params.settings.vocabularyName)
+        settings.VocabularyName = params.settings.vocabularyName;
+      if (params.settings.vocabularyFilterName)
+        settings.VocabularyFilterName = params.settings.vocabularyFilterName;
+      if (params.settings.vocabularyFilterMethod)
+        settings.VocabularyFilterMethod = params.settings.vocabularyFilterMethod;
+      if (params.settings.languageModelName)
+        settings.LanguageModelName = params.settings.languageModelName;
+      if (params.settings.languageOptions)
+        settings.LanguageOptions = params.settings.languageOptions;
       if (params.settings.summarization !== undefined) {
         settings.Summarization = { GenerateAbstractiveSummary: params.settings.summarization };
       }
       if (params.settings.contentRedaction) {
         settings.ContentRedaction = {
           RedactionType: params.settings.contentRedaction.redactionType,
-          RedactionOutput: params.settings.contentRedaction.redactionOutput,
+          RedactionOutput: params.settings.contentRedaction.redactionOutput
         };
         if (params.settings.contentRedaction.piiEntityTypes) {
-          settings.ContentRedaction.PiiEntityTypes = params.settings.contentRedaction.piiEntityTypes;
+          settings.ContentRedaction.PiiEntityTypes =
+            params.settings.contentRedaction.piiEntityTypes;
         }
       }
       payload.Settings = settings;
@@ -189,7 +208,7 @@ export class TranscribeClient {
 
   async getCallAnalyticsJob(jobName: string): Promise<any> {
     return this.request('GetCallAnalyticsJob', {
-      CallAnalyticsJobName: jobName,
+      CallAnalyticsJobName: jobName
     });
   }
 
@@ -204,35 +223,45 @@ export class TranscribeClient {
 
   async deleteCallAnalyticsJob(jobName: string): Promise<any> {
     return this.request('DeleteCallAnalyticsJob', {
-      CallAnalyticsJobName: jobName,
+      CallAnalyticsJobName: jobName
     });
   }
 
   // ---- Medical Transcription Jobs ----
 
-  async startMedicalTranscriptionJob(params: StartMedicalTranscriptionJobParams): Promise<any> {
+  async startMedicalTranscriptionJob(
+    params: StartMedicalTranscriptionJobParams
+  ): Promise<any> {
     let payload: Record<string, any> = {
       MedicalTranscriptionJobName: params.jobName,
       Media: { MediaFileUri: params.mediaFileUri },
       LanguageCode: params.languageCode,
       Specialty: params.specialty,
       Type: params.type,
-      OutputBucketName: params.outputBucketName,
+      OutputBucketName: params.outputBucketName
     };
 
     if (params.outputKey) payload.OutputKey = params.outputKey;
-    if (params.outputEncryptionKmsKeyId) payload.OutputEncryptionKMSKeyId = params.outputEncryptionKmsKeyId;
+    if (params.outputEncryptionKmsKeyId)
+      payload.OutputEncryptionKMSKeyId = params.outputEncryptionKmsKeyId;
     if (params.mediaFormat) payload.MediaFormat = params.mediaFormat;
-    if (params.mediaSampleRateHertz) payload.MediaSampleRateHertz = params.mediaSampleRateHertz;
+    if (params.mediaSampleRateHertz)
+      payload.MediaSampleRateHertz = params.mediaSampleRateHertz;
 
     if (params.settings) {
       let settings: Record<string, any> = {};
-      if (params.settings.showSpeakerLabels !== undefined) settings.ShowSpeakerLabels = params.settings.showSpeakerLabels;
-      if (params.settings.maxSpeakerLabels) settings.MaxSpeakerLabels = params.settings.maxSpeakerLabels;
-      if (params.settings.channelIdentification !== undefined) settings.ChannelIdentification = params.settings.channelIdentification;
-      if (params.settings.showAlternatives !== undefined) settings.ShowAlternatives = params.settings.showAlternatives;
-      if (params.settings.maxAlternatives) settings.MaxAlternatives = params.settings.maxAlternatives;
-      if (params.settings.vocabularyName) settings.VocabularyName = params.settings.vocabularyName;
+      if (params.settings.showSpeakerLabels !== undefined)
+        settings.ShowSpeakerLabels = params.settings.showSpeakerLabels;
+      if (params.settings.maxSpeakerLabels)
+        settings.MaxSpeakerLabels = params.settings.maxSpeakerLabels;
+      if (params.settings.channelIdentification !== undefined)
+        settings.ChannelIdentification = params.settings.channelIdentification;
+      if (params.settings.showAlternatives !== undefined)
+        settings.ShowAlternatives = params.settings.showAlternatives;
+      if (params.settings.maxAlternatives)
+        settings.MaxAlternatives = params.settings.maxAlternatives;
+      if (params.settings.vocabularyName)
+        settings.VocabularyName = params.settings.vocabularyName;
       payload.Settings = settings;
     }
 
@@ -249,11 +278,13 @@ export class TranscribeClient {
 
   async getMedicalTranscriptionJob(jobName: string): Promise<any> {
     return this.request('GetMedicalTranscriptionJob', {
-      MedicalTranscriptionJobName: jobName,
+      MedicalTranscriptionJobName: jobName
     });
   }
 
-  async listMedicalTranscriptionJobs(params?: ListMedicalTranscriptionJobsParams): Promise<any> {
+  async listMedicalTranscriptionJobs(
+    params?: ListMedicalTranscriptionJobsParams
+  ): Promise<any> {
     let payload: Record<string, any> = {};
     if (params?.status) payload.Status = params.status;
     if (params?.jobNameContains) payload.JobNameContains = params.jobNameContains;
@@ -264,7 +295,7 @@ export class TranscribeClient {
 
   async deleteMedicalTranscriptionJob(jobName: string): Promise<any> {
     return this.request('DeleteMedicalTranscriptionJob', {
-      MedicalTranscriptionJobName: jobName,
+      MedicalTranscriptionJobName: jobName
     });
   }
 
@@ -273,7 +304,7 @@ export class TranscribeClient {
   async createVocabulary(params: CreateVocabularyParams): Promise<any> {
     let payload: Record<string, any> = {
       VocabularyName: params.vocabularyName,
-      LanguageCode: params.languageCode,
+      LanguageCode: params.languageCode
     };
     if (params.phrases) payload.Phrases = params.phrases;
     if (params.vocabularyFileUri) payload.VocabularyFileUri = params.vocabularyFileUri;
@@ -285,14 +316,14 @@ export class TranscribeClient {
 
   async getVocabulary(vocabularyName: string): Promise<any> {
     return this.request('GetVocabulary', {
-      VocabularyName: vocabularyName,
+      VocabularyName: vocabularyName
     });
   }
 
   async updateVocabulary(params: UpdateVocabularyParams): Promise<any> {
     let payload: Record<string, any> = {
       VocabularyName: params.vocabularyName,
-      LanguageCode: params.languageCode,
+      LanguageCode: params.languageCode
     };
     if (params.phrases) payload.Phrases = params.phrases;
     if (params.vocabularyFileUri) payload.VocabularyFileUri = params.vocabularyFileUri;
@@ -301,7 +332,7 @@ export class TranscribeClient {
 
   async deleteVocabulary(vocabularyName: string): Promise<any> {
     return this.request('DeleteVocabulary', {
-      VocabularyName: vocabularyName,
+      VocabularyName: vocabularyName
     });
   }
 
@@ -319,10 +350,11 @@ export class TranscribeClient {
   async createVocabularyFilter(params: CreateVocabularyFilterParams): Promise<any> {
     let payload: Record<string, any> = {
       VocabularyFilterName: params.vocabularyFilterName,
-      LanguageCode: params.languageCode,
+      LanguageCode: params.languageCode
     };
     if (params.words) payload.Words = params.words;
-    if (params.vocabularyFilterFileUri) payload.VocabularyFilterFileUri = params.vocabularyFilterFileUri;
+    if (params.vocabularyFilterFileUri)
+      payload.VocabularyFilterFileUri = params.vocabularyFilterFileUri;
     if (params.tags) {
       payload.Tags = params.tags.map(t => ({ Key: t.key, Value: t.value }));
     }
@@ -331,22 +363,23 @@ export class TranscribeClient {
 
   async getVocabularyFilter(vocabularyFilterName: string): Promise<any> {
     return this.request('GetVocabularyFilter', {
-      VocabularyFilterName: vocabularyFilterName,
+      VocabularyFilterName: vocabularyFilterName
     });
   }
 
   async updateVocabularyFilter(params: UpdateVocabularyFilterParams): Promise<any> {
     let payload: Record<string, any> = {
-      VocabularyFilterName: params.vocabularyFilterName,
+      VocabularyFilterName: params.vocabularyFilterName
     };
     if (params.words) payload.Words = params.words;
-    if (params.vocabularyFilterFileUri) payload.VocabularyFilterFileUri = params.vocabularyFilterFileUri;
+    if (params.vocabularyFilterFileUri)
+      payload.VocabularyFilterFileUri = params.vocabularyFilterFileUri;
     return this.request('UpdateVocabularyFilter', payload);
   }
 
   async deleteVocabularyFilter(vocabularyFilterName: string): Promise<any> {
     return this.request('DeleteVocabularyFilter', {
-      VocabularyFilterName: vocabularyFilterName,
+      VocabularyFilterName: vocabularyFilterName
     });
   }
 
@@ -371,7 +404,7 @@ export class TranscribeClient {
 
   async describeLanguageModel(modelName: string): Promise<any> {
     return this.request('DescribeLanguageModel', {
-      ModelName: modelName,
+      ModelName: modelName
     });
   }
 
@@ -379,7 +412,7 @@ export class TranscribeClient {
 
   async listTagsForResource(resourceArn: string): Promise<any> {
     return this.request('ListTagsForResource', {
-      ResourceArn: resourceArn,
+      ResourceArn: resourceArn
     });
   }
 }

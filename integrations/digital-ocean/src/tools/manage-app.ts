@@ -15,25 +15,26 @@ let appSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listApps = SlateTool.create(
-  spec,
-  {
-    name: 'List Apps',
-    key: 'list_apps',
-    description: `List all App Platform applications. Returns app names, URLs, regions, and deployment status.`,
-    tags: {
-      readOnly: true
-    }
+export let listApps = SlateTool.create(spec, {
+  name: 'List Apps',
+  key: 'list_apps',
+  description: `List all App Platform applications. Returns app names, URLs, regions, and deployment status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number'),
-    perPage: z.number().optional().describe('Results per page')
-  }))
-  .output(z.object({
-    apps: z.array(appSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number'),
+      perPage: z.number().optional().describe('Results per page')
+    })
+  )
+  .output(
+    z.object({
+      apps: z.array(appSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listApps({
       page: ctx.input.page,
@@ -59,34 +60,35 @@ export let listApps = SlateTool.create(
   })
   .build();
 
-export let getApp = SlateTool.create(
-  spec,
-  {
-    name: 'Get App',
-    key: 'get_app',
-    description: `Get detailed information about an App Platform application, including its full specification, deployment status, and URLs.`,
-    tags: {
-      readOnly: true
-    }
+export let getApp = SlateTool.create(spec, {
+  name: 'Get App',
+  key: 'get_app',
+  description: `Get detailed information about an App Platform application, including its full specification, deployment status, and URLs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    appId: z.string().describe('App ID')
-  }))
-  .output(z.object({
-    appId: z.string().describe('App ID'),
-    name: z.string().describe('App name'),
-    defaultIngress: z.string().optional().describe('Default app URL'),
-    liveUrl: z.string().optional().describe('Live URL'),
-    region: z.string().optional().describe('Region slug'),
-    tierSlug: z.string().optional().describe('Pricing tier'),
-    activeDeploymentId: z.string().optional().describe('Current deployment ID'),
-    activeDeploymentPhase: z.string().optional().describe('Current deployment phase'),
-    appSpec: z.any().optional().describe('Full app specification'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      appId: z.string().describe('App ID')
+    })
+  )
+  .output(
+    z.object({
+      appId: z.string().describe('App ID'),
+      name: z.string().describe('App name'),
+      defaultIngress: z.string().optional().describe('Default app URL'),
+      liveUrl: z.string().optional().describe('Live URL'),
+      region: z.string().optional().describe('Region slug'),
+      tierSlug: z.string().optional().describe('Pricing tier'),
+      activeDeploymentId: z.string().optional().describe('Current deployment ID'),
+      activeDeploymentPhase: z.string().optional().describe('Current deployment phase'),
+      appSpec: z.any().optional().describe('Full app specification'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let a = await client.getApp(ctx.input.appId);
 
@@ -109,23 +111,24 @@ export let getApp = SlateTool.create(
   })
   .build();
 
-export let deployApp = SlateTool.create(
-  spec,
-  {
-    name: 'Deploy App',
-    key: 'deploy_app',
-    description: `Trigger a new deployment for an App Platform application. This rebuilds and redeploys all components from the latest source.`,
-  }
-)
-  .input(z.object({
-    appId: z.string().describe('App ID to deploy')
-  }))
-  .output(z.object({
-    deploymentId: z.string().describe('ID of the new deployment'),
-    phase: z.string().optional().describe('Initial deployment phase'),
-    createdAt: z.string().describe('Deployment creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+export let deployApp = SlateTool.create(spec, {
+  name: 'Deploy App',
+  key: 'deploy_app',
+  description: `Trigger a new deployment for an App Platform application. This rebuilds and redeploys all components from the latest source.`
+})
+  .input(
+    z.object({
+      appId: z.string().describe('App ID to deploy')
+    })
+  )
+  .output(
+    z.object({
+      deploymentId: z.string().describe('ID of the new deployment'),
+      phase: z.string().optional().describe('Initial deployment phase'),
+      createdAt: z.string().describe('Deployment creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let deployment = await client.createAppDeployment(ctx.input.appId);
 
@@ -140,24 +143,25 @@ export let deployApp = SlateTool.create(
   })
   .build();
 
-export let deleteApp = SlateTool.create(
-  spec,
-  {
-    name: 'Delete App',
-    key: 'delete_app',
-    description: `Permanently delete an App Platform application and all its components and deployments.`,
-    tags: {
-      destructive: true
-    }
+export let deleteApp = SlateTool.create(spec, {
+  name: 'Delete App',
+  key: 'delete_app',
+  description: `Permanently delete an App Platform application and all its components and deployments.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    appId: z.string().describe('App ID to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the app was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      appId: z.string().describe('App ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the app was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteApp(ctx.input.appId);
 

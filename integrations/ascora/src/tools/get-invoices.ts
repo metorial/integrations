@@ -9,7 +9,7 @@ let invoiceLineSchema = z.object({
   quantity: z.number().optional().describe('Quantity of items'),
   unitPriceExTax: z.number().optional().describe('Unit price excluding tax'),
   amountExTax: z.number().optional().describe('Line total excluding tax'),
-  tax: z.number().optional().describe('Tax amount for this line'),
+  tax: z.number().optional().describe('Tax amount for this line')
 });
 
 let invoiceSchema = z.object({
@@ -31,50 +31,59 @@ let invoiceSchema = z.object({
   jobNumber: z.string().optional().describe('Associated job number'),
   leadSource: z.string().optional().describe('Lead source'),
   purchaseOrderNumber: z.string().optional().describe('Purchase order reference'),
-  invoiceLines: z.array(invoiceLineSchema).optional().describe('Invoice line items'),
+  invoiceLines: z.array(invoiceLineSchema).optional().describe('Invoice line items')
 });
 
-export let getInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'Get Invoices',
-    key: 'get_invoices',
-    description: `Retrieves invoices from the Ascora Accounting API that have not yet been marked as sent to an accounting system. Optionally filter by date and company.
+export let getInvoices = SlateTool.create(spec, {
+  name: 'Get Invoices',
+  key: 'get_invoices',
+  description: `Retrieves invoices from the Ascora Accounting API that have not yet been marked as sent to an accounting system. Optionally filter by date and company.
 
 Returns full invoice details including header information, customer data, and line items. Use **Mark Invoices** after processing to prevent re-retrieval.`,
-    instructions: [
-      'Requires Basic Authentication (Accounting API credentials).',
-      'After successfully processing invoices, use the Mark Invoices tool to mark them as sent.',
-      'Unmarked invoices will continue to be returned in subsequent requests.',
-    ],
-    constraints: [
-      'Only returns invoices not yet marked as sent to accounts.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  instructions: [
+    'Requires Basic Authentication (Accounting API credentials).',
+    'After successfully processing invoices, use the Mark Invoices tool to mark them as sent.',
+    'Unmarked invoices will continue to be returned in subsequent requests.'
+  ],
+  constraints: ['Only returns invoices not yet marked as sent to accounts.'],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    invoicesPriorToDate: z.string().optional().describe('Retrieve invoices created before this date (ISO 8601 format, e.g. "2024-12-31")'),
-    companyId: z.string().optional().describe('Filter invoices by a specific company ID'),
-  }))
-  .output(z.object({
-    invoices: z.array(invoiceSchema).describe('List of invoice records'),
-    count: z.number().describe('Number of invoices returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      invoicesPriorToDate: z
+        .string()
+        .optional()
+        .describe(
+          'Retrieve invoices created before this date (ISO 8601 format, e.g. "2024-12-31")'
+        ),
+      companyId: z.string().optional().describe('Filter invoices by a specific company ID')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(invoiceSchema).describe('List of invoice records'),
+      count: z.number().describe('Number of invoices returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     if (!ctx.auth.username || !ctx.auth.password) {
-      throw new Error('Basic Authentication credentials (username and password) are required for the Accounting API. Please use the Basic Authentication method.');
+      throw new Error(
+        'Basic Authentication credentials (username and password) are required for the Accounting API. Please use the Basic Authentication method.'
+      );
     }
 
     let client = new AscoraAccountingClient({
       username: ctx.auth.username,
-      password: ctx.auth.password,
+      password: ctx.auth.password
     });
 
-    let rawInvoices = await client.getInvoices(ctx.input.invoicesPriorToDate, ctx.input.companyId);
+    let rawInvoices = await client.getInvoices(
+      ctx.input.invoicesPriorToDate,
+      ctx.input.companyId
+    );
 
     let invoices = rawInvoices.map((inv: any) => ({
       invoiceId: inv.Id ?? inv.id,
@@ -101,16 +110,16 @@ Returns full invoice details including header information, customer data, and li
         quantity: line.Quantity ?? line.quantity,
         unitPriceExTax: line.UnitPriceExTax ?? line.unitPriceExTax,
         amountExTax: line.AmountExTax ?? line.amountExTax,
-        tax: line.Tax ?? line.tax,
-      })),
+        tax: line.Tax ?? line.tax
+      }))
     }));
 
     return {
       output: {
         invoices,
-        count: invoices.length,
+        count: invoices.length
       },
-      message: `Retrieved **${invoices.length}** unsent invoice(s)${ctx.input.invoicesPriorToDate ? ` prior to ${ctx.input.invoicesPriorToDate}` : ''}.`,
+      message: `Retrieved **${invoices.length}** unsent invoice(s)${ctx.input.invoicesPriorToDate ? ` prior to ${ctx.input.invoicesPriorToDate}` : ''}.`
     };
   })
   .build();

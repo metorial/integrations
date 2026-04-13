@@ -3,37 +3,49 @@ import { AblyControlClient } from '../lib/control-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageKeys = SlateTool.create(
-  spec,
-  {
-    name: 'Manage API Keys',
-    key: 'manage_keys',
-    description: `List, create, update, or revoke Ably API keys using the Control API.
+export let manageKeys = SlateTool.create(spec, {
+  name: 'Manage API Keys',
+  key: 'manage_keys',
+  description: `List, create, update, or revoke Ably API keys using the Control API.
 Keys can be created with channel-specific capabilities, allowing fine-grained access control per channel.`,
-    instructions: [
-      'Requires Control API Token authentication.',
-      'App ID is required for all operations (from config or input).',
-      'Capabilities map channel names/patterns to arrays of operations: publish, subscribe, presence, history, push-subscribe, push-admin, channel-metadata, statistics.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Requires Control API Token authentication.',
+    'App ID is required for all operations (from config or input).',
+    'Capabilities map channel names/patterns to arrays of operations: publish, subscribe, presence, history, push-subscribe, push-admin, channel-metadata, statistics.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'revoke']).describe('Operation to perform'),
-    appId: z.string().optional().describe('App ID. Overrides config value if provided.'),
-    keyId: z.string().optional().describe('Key ID. Required for update and revoke operations.'),
-    name: z.string().optional().describe('Key name. Required for create, optional for update.'),
-    capability: z.record(z.string(), z.array(z.string())).optional().describe('Capabilities map: channel name/pattern -> array of operations. Required for create.'),
-  }))
-  .output(z.object({
-    keys: z.array(z.any()).optional().describe('List of API keys (list action)'),
-    key: z.any().optional().describe('Created or updated key details'),
-    revoked: z.boolean().optional().describe('Whether the key was revoked'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'revoke']).describe('Operation to perform'),
+      appId: z.string().optional().describe('App ID. Overrides config value if provided.'),
+      keyId: z
+        .string()
+        .optional()
+        .describe('Key ID. Required for update and revoke operations.'),
+      name: z
+        .string()
+        .optional()
+        .describe('Key name. Required for create, optional for update.'),
+      capability: z
+        .record(z.string(), z.array(z.string()))
+        .optional()
+        .describe(
+          'Capabilities map: channel name/pattern -> array of operations. Required for create.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      keys: z.array(z.any()).optional().describe('List of API keys (list action)'),
+      key: z.any().optional().describe('Created or updated key details'),
+      revoked: z.boolean().optional().describe('Whether the key was revoked')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AblyControlClient(ctx.auth.token);
     let appId = ctx.input.appId || ctx.config.appId;
     if (!appId) throw new Error('appId is required. Set it in config or input.');
@@ -42,7 +54,7 @@ Keys can be created with channel-specific capabilities, allowing fine-grained ac
       let keys = await client.listKeys(appId);
       return {
         output: { keys },
-        message: `Found **${keys.length}** API key(s) for app **${appId}**.`,
+        message: `Found **${keys.length}** API key(s) for app **${appId}**.`
       };
     }
 
@@ -51,11 +63,11 @@ Keys can be created with channel-specific capabilities, allowing fine-grained ac
       if (!ctx.input.capability) throw new Error('capability is required for creating a key.');
       let key = await client.createKey(appId, {
         name: ctx.input.name,
-        capability: ctx.input.capability,
+        capability: ctx.input.capability
       });
       return {
         output: { key },
-        message: `Created API key **${key.name}** (ID: ${key.id}).`,
+        message: `Created API key **${key.name}** (ID: ${key.id}).`
       };
     }
 
@@ -63,11 +75,11 @@ Keys can be created with channel-specific capabilities, allowing fine-grained ac
       if (!ctx.input.keyId) throw new Error('keyId is required for updating a key.');
       let key = await client.updateKey(appId, ctx.input.keyId, {
         name: ctx.input.name,
-        capability: ctx.input.capability,
+        capability: ctx.input.capability
       });
       return {
         output: { key },
-        message: `Updated API key **${key.name}** (ID: ${key.id}).`,
+        message: `Updated API key **${key.name}** (ID: ${key.id}).`
       };
     }
 
@@ -76,7 +88,7 @@ Keys can be created with channel-specific capabilities, allowing fine-grained ac
       await client.revokeKey(appId, ctx.input.keyId);
       return {
         output: { revoked: true },
-        message: `Revoked API key **${ctx.input.keyId}** for app **${appId}**.`,
+        message: `Revoked API key **${ctx.input.keyId}** for app **${appId}**.`
       };
     }
 

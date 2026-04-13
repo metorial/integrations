@@ -11,21 +11,25 @@ export class Client {
 
   private getAxios() {
     return createAxios({
-      baseURL: 'https://gql.hashnode.com',
+      baseURL: 'https://gql.hashnode.com'
     });
   }
 
   async graphql<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
     let ax = this.getAxios();
-    let response = await ax.post('/', {
-      query,
-      variables,
-    }, {
-      headers: {
-        Authorization: this.token,
-        'Content-Type': 'application/json',
+    let response = await ax.post(
+      '/',
+      {
+        query,
+        variables
       },
-    });
+      {
+        headers: {
+          Authorization: this.token,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     let body = response.data;
     if (body.errors && body.errors.length > 0) {
@@ -38,7 +42,8 @@ export class Client {
   // ─── Publication ───────────────────────────────────────────────
 
   async getPublication() {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query Publication($host: String!) {
         publication(host: $host) {
           id
@@ -59,7 +64,9 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost });
+    `,
+      { host: this.publicationHost }
+    );
     return data.publication;
   }
 
@@ -74,7 +81,8 @@ export class Client {
     let { first = 10, after, tagSlugs } = options;
     let filter = tagSlugs && tagSlugs.length > 0 ? { tagSlugs } : undefined;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query PostsByPublication($host: String!, $first: Int!, $after: String, $filter: PublicationPostConnectionFilter) {
         publication(host: $host) {
           posts(first: $first, after: $after, filter: $filter) {
@@ -110,18 +118,21 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, first, after, filter });
+    `,
+      { host: this.publicationHost, first, after, filter }
+    );
 
     let connection = data.publication?.posts;
     return {
       posts: (connection?.edges || []).map((e: any) => e.node),
       pageInfo: connection?.pageInfo,
-      totalDocuments: connection?.totalDocuments,
+      totalDocuments: connection?.totalDocuments
     };
   }
 
   async getPost(postId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query Post($id: ID!) {
         post(id: $id) {
           id
@@ -149,12 +160,15 @@ export class Client {
           ogMetaData { image }
         }
       }
-    `, { id: postId });
+    `,
+      { id: postId }
+    );
     return data.post;
   }
 
   async getPostBySlug(slug: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query PostBySlug($host: String!, $slug: String!) {
         publication(host: $host) {
           post(slug: $slug) {
@@ -184,7 +198,9 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, slug });
+    `,
+      { host: this.publicationHost, slug }
+    );
     return data.publication?.post;
   }
 
@@ -206,21 +222,26 @@ export class Client {
     let publishInput: Record<string, any> = {
       publicationId,
       title: input.title,
-      contentMarkdown: input.contentMarkdown,
+      contentMarkdown: input.contentMarkdown
     };
 
     if (input.subtitle) publishInput.subtitle = input.subtitle;
     if (input.slug) publishInput.slug = input.slug;
     if (input.tags) publishInput.tags = input.tags;
-    if (input.coverImageURL) publishInput.coverImageOptions = { coverImageURL: input.coverImageURL };
+    if (input.coverImageURL)
+      publishInput.coverImageOptions = { coverImageURL: input.coverImageURL };
     if (input.originalArticleURL) publishInput.originalArticleURL = input.originalArticleURL;
     if (input.seriesId) publishInput.seriesId = input.seriesId;
-    if (input.disableComments !== undefined) publishInput.disableComments = input.disableComments;
-    if (input.enableTableOfContent !== undefined) publishInput.enableTableOfContent = input.enableTableOfContent;
-    if (input.isNewsletterActivated !== undefined) publishInput.isNewsletterActivated = input.isNewsletterActivated;
+    if (input.disableComments !== undefined)
+      publishInput.disableComments = input.disableComments;
+    if (input.enableTableOfContent !== undefined)
+      publishInput.enableTableOfContent = input.enableTableOfContent;
+    if (input.isNewsletterActivated !== undefined)
+      publishInput.isNewsletterActivated = input.isNewsletterActivated;
     if (input.publishedAt) publishInput.publishedAt = input.publishedAt;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation PublishPost($input: PublishPostInput!) {
         publishPost(input: $input) {
           post {
@@ -231,39 +252,50 @@ export class Client {
           }
         }
       }
-    `, { input: publishInput });
+    `,
+      { input: publishInput }
+    );
 
     return data.publishPost?.post;
   }
 
-  async updatePost(postId: string, input: {
-    title?: string;
-    contentMarkdown?: string;
-    subtitle?: string;
-    slug?: string;
-    tags?: { id?: string; name?: string; slug?: string }[];
-    coverImageURL?: string;
-    originalArticleURL?: string;
-    seriesId?: string;
-    disableComments?: boolean;
-    enableTableOfContent?: boolean;
-    publishedAt?: string;
-  }) {
+  async updatePost(
+    postId: string,
+    input: {
+      title?: string;
+      contentMarkdown?: string;
+      subtitle?: string;
+      slug?: string;
+      tags?: { id?: string; name?: string; slug?: string }[];
+      coverImageURL?: string;
+      originalArticleURL?: string;
+      seriesId?: string;
+      disableComments?: boolean;
+      enableTableOfContent?: boolean;
+      publishedAt?: string;
+    }
+  ) {
     let updateInput: Record<string, any> = { id: postId };
 
     if (input.title !== undefined) updateInput.title = input.title;
-    if (input.contentMarkdown !== undefined) updateInput.contentMarkdown = input.contentMarkdown;
+    if (input.contentMarkdown !== undefined)
+      updateInput.contentMarkdown = input.contentMarkdown;
     if (input.subtitle !== undefined) updateInput.subtitle = input.subtitle;
     if (input.slug !== undefined) updateInput.slug = input.slug;
     if (input.tags !== undefined) updateInput.tags = input.tags;
-    if (input.coverImageURL !== undefined) updateInput.coverImageOptions = { coverImageURL: input.coverImageURL };
-    if (input.originalArticleURL !== undefined) updateInput.originalArticleURL = input.originalArticleURL;
+    if (input.coverImageURL !== undefined)
+      updateInput.coverImageOptions = { coverImageURL: input.coverImageURL };
+    if (input.originalArticleURL !== undefined)
+      updateInput.originalArticleURL = input.originalArticleURL;
     if (input.seriesId !== undefined) updateInput.seriesId = input.seriesId;
-    if (input.disableComments !== undefined) updateInput.disableComments = input.disableComments;
-    if (input.enableTableOfContent !== undefined) updateInput.enableTableOfContent = input.enableTableOfContent;
+    if (input.disableComments !== undefined)
+      updateInput.disableComments = input.disableComments;
+    if (input.enableTableOfContent !== undefined)
+      updateInput.enableTableOfContent = input.enableTableOfContent;
     if (input.publishedAt !== undefined) updateInput.publishedAt = input.publishedAt;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation UpdatePost($input: UpdatePostInput!) {
         updatePost(input: $input) {
           post {
@@ -274,13 +306,16 @@ export class Client {
           }
         }
       }
-    `, { input: updateInput });
+    `,
+      { input: updateInput }
+    );
 
     return data.updatePost?.post;
   }
 
   async removePost(postId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation RemovePost($input: RemovePostInput!) {
         removePost(input: $input) {
           post {
@@ -288,7 +323,9 @@ export class Client {
           }
         }
       }
-    `, { input: { id: postId } });
+    `,
+      { input: { id: postId } }
+    );
 
     return data.removePost?.post;
   }
@@ -298,7 +335,8 @@ export class Client {
   async listDrafts(options: { first?: number; after?: string } = {}) {
     let { first = 10, after } = options;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query Drafts($host: String!, $first: Int!, $after: String) {
         publication(host: $host) {
           drafts(first: $first, after: $after) {
@@ -324,17 +362,20 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, first, after });
+    `,
+      { host: this.publicationHost, first, after }
+    );
 
     let connection = data.publication?.drafts;
     return {
       drafts: (connection?.edges || []).map((e: any) => e.node),
-      pageInfo: connection?.pageInfo,
+      pageInfo: connection?.pageInfo
     };
   }
 
   async getDraft(draftId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query Draft($id: ObjectId!) {
         draft(id: $id) {
           id
@@ -350,7 +391,9 @@ export class Client {
           tags { id name slug }
         }
       }
-    `, { id: draftId });
+    `,
+      { id: draftId }
+    );
     return data.draft;
   }
 
@@ -366,15 +409,17 @@ export class Client {
     let draftInput: Record<string, any> = {
       publicationId,
       title: input.title,
-      contentMarkdown: input.contentMarkdown,
+      contentMarkdown: input.contentMarkdown
     };
 
     if (input.subtitle) draftInput.subtitle = input.subtitle;
     if (input.slug) draftInput.slug = input.slug;
     if (input.tags) draftInput.tags = input.tags;
-    if (input.coverImageURL) draftInput.coverImageOptions = { coverImageURL: input.coverImageURL };
+    if (input.coverImageURL)
+      draftInput.coverImageOptions = { coverImageURL: input.coverImageURL };
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation CreateDraft($input: CreateDraftInput!) {
         createDraft(input: $input) {
           draft {
@@ -384,13 +429,16 @@ export class Client {
           }
         }
       }
-    `, { input: draftInput });
+    `,
+      { input: draftInput }
+    );
 
     return data.createDraft?.draft;
   }
 
   async publishDraft(draftId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation PublishDraft($input: PublishDraftInput!) {
         publishDraft(input: $input) {
           post {
@@ -401,7 +449,9 @@ export class Client {
           }
         }
       }
-    `, { input: { draftId } });
+    `,
+      { input: { draftId } }
+    );
 
     return data.publishDraft?.post;
   }
@@ -411,7 +461,8 @@ export class Client {
   async listSeries(options: { first?: number; after?: string } = {}) {
     let { first = 10, after } = options;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query SeriesList($host: String!, $first: Int!, $after: String) {
         publication(host: $host) {
           seriesList(first: $first, after: $after) {
@@ -439,18 +490,21 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, first, after });
+    `,
+      { host: this.publicationHost, first, after }
+    );
 
     let connection = data.publication?.seriesList;
     return {
       series: (connection?.edges || []).map((e: any) => e.node),
       pageInfo: connection?.pageInfo,
-      totalDocuments: connection?.totalDocuments,
+      totalDocuments: connection?.totalDocuments
     };
   }
 
   async getSeriesBySlug(slug: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query SeriesBySlug($host: String!, $slug: String!) {
         publication(host: $host) {
           series(slug: $slug) {
@@ -480,7 +534,9 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, slug });
+    `,
+      { host: this.publicationHost, slug }
+    );
     return data.publication?.series;
   }
 
@@ -494,7 +550,7 @@ export class Client {
     let publicationId = await this.getPublicationId();
     let seriesInput: Record<string, any> = {
       publicationId,
-      name: input.name,
+      name: input.name
     };
 
     if (input.slug) seriesInput.slug = input.slug;
@@ -502,7 +558,8 @@ export class Client {
     if (input.coverImage) seriesInput.coverImage = input.coverImage;
     if (input.sortOrder) seriesInput.sortOrder = input.sortOrder;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation CreateSeries($input: CreateSeriesInput!) {
         createSeries(input: $input) {
           series {
@@ -513,27 +570,34 @@ export class Client {
           }
         }
       }
-    `, { input: seriesInput });
+    `,
+      { input: seriesInput }
+    );
 
     return data.createSeries?.series;
   }
 
-  async updateSeries(seriesId: string, input: {
-    name?: string;
-    slug?: string;
-    description?: string;
-    coverImage?: string;
-    sortOrder?: string;
-  }) {
+  async updateSeries(
+    seriesId: string,
+    input: {
+      name?: string;
+      slug?: string;
+      description?: string;
+      coverImage?: string;
+      sortOrder?: string;
+    }
+  ) {
     let seriesInput: Record<string, any> = { id: seriesId };
 
     if (input.name !== undefined) seriesInput.name = input.name;
     if (input.slug !== undefined) seriesInput.slug = input.slug;
-    if (input.description !== undefined) seriesInput.description = { markdown: input.description };
+    if (input.description !== undefined)
+      seriesInput.description = { markdown: input.description };
     if (input.coverImage !== undefined) seriesInput.coverImage = input.coverImage;
     if (input.sortOrder !== undefined) seriesInput.sortOrder = input.sortOrder;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation UpdateSeries($input: UpdateSeriesInput!) {
         updateSeries(input: $input) {
           series {
@@ -543,13 +607,16 @@ export class Client {
           }
         }
       }
-    `, { input: seriesInput });
+    `,
+      { input: seriesInput }
+    );
 
     return data.updateSeries?.series;
   }
 
   async removeSeries(seriesId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation RemoveSeries($input: RemoveSeriesInput!) {
         removeSeries(input: $input) {
           series {
@@ -557,7 +624,9 @@ export class Client {
           }
         }
       }
-    `, { input: { id: seriesId } });
+    `,
+      { input: { id: seriesId } }
+    );
 
     return data.removeSeries?.series;
   }
@@ -567,7 +636,8 @@ export class Client {
   async getComments(postId: string, options: { first?: number; after?: string } = {}) {
     let { first = 10, after } = options;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query Post($id: ID!, $first: Int!, $after: String) {
         post(id: $id) {
           comments(first: $first, after: $after) {
@@ -609,21 +679,24 @@ export class Client {
           }
         }
       }
-    `, { id: postId, first, after });
+    `,
+      { id: postId, first, after }
+    );
 
     let connection = data.post?.comments;
     return {
       comments: (connection?.edges || []).map((e: any) => ({
         ...e.node,
-        replies: (e.node.replies?.edges || []).map((r: any) => r.node),
+        replies: (e.node.replies?.edges || []).map((r: any) => r.node)
       })),
       pageInfo: connection?.pageInfo,
-      totalDocuments: connection?.totalDocuments,
+      totalDocuments: connection?.totalDocuments
     };
   }
 
   async addComment(postId: string, contentMarkdown: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation AddComment($input: AddCommentInput!) {
         addComment(input: $input) {
           comment {
@@ -638,13 +711,16 @@ export class Client {
           }
         }
       }
-    `, { input: { postId, contentMarkdown } });
+    `,
+      { input: { postId, contentMarkdown } }
+    );
 
     return data.addComment?.comment;
   }
 
   async addReply(commentId: string, contentMarkdown: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation AddReply($input: AddReplyInput!) {
         addReply(input: $input) {
           reply {
@@ -659,13 +735,16 @@ export class Client {
           }
         }
       }
-    `, { input: { commentId, contentMarkdown } });
+    `,
+      { input: { commentId, contentMarkdown } }
+    );
 
     return data.addReply?.reply;
   }
 
   async removeComment(commentId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation RemoveComment($input: RemoveCommentInput!) {
         removeComment(input: $input) {
           comment {
@@ -673,13 +752,16 @@ export class Client {
           }
         }
       }
-    `, { input: { id: commentId } });
+    `,
+      { input: { id: commentId } }
+    );
 
     return data.removeComment?.comment;
   }
 
   async removeReply(commentId: string, replyId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation RemoveReply($input: RemoveReplyInput!) {
         removeReply(input: $input) {
           reply {
@@ -687,7 +769,9 @@ export class Client {
           }
         }
       }
-    `, { input: { commentId, replyId } });
+    `,
+      { input: { commentId, replyId } }
+    );
 
     return data.removeReply?.reply;
   }
@@ -697,7 +781,8 @@ export class Client {
   async listStaticPages(options: { first?: number; after?: string } = {}) {
     let { first = 10, after } = options;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query StaticPages($host: String!, $first: Int!, $after: String) {
         publication(host: $host) {
           staticPages(first: $first, after: $after) {
@@ -717,12 +802,14 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, first, after });
+    `,
+      { host: this.publicationHost, first, after }
+    );
 
     let connection = data.publication?.staticPages;
     return {
       staticPages: (connection?.edges || []).map((e: any) => e.node),
-      pageInfo: connection?.pageInfo,
+      pageInfo: connection?.pageInfo
     };
   }
 
@@ -734,7 +821,8 @@ export class Client {
   }
 
   async getStaticPageBySlug(slug: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query StaticPage($host: String!, $slug: String!) {
         publication(host: $host) {
           staticPage(slug: $slug) {
@@ -746,7 +834,9 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, slug });
+    `,
+      { host: this.publicationHost, slug }
+    );
 
     return data.publication?.staticPage;
   }
@@ -754,7 +844,8 @@ export class Client {
   // ─── User ─────────────────────────────────────────────────────
 
   async getUser(username: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query User($username: String!) {
         user(username: $username) {
           id
@@ -780,7 +871,9 @@ export class Client {
           }
         }
       }
-    `, { username });
+    `,
+      { username }
+    );
 
     return data.user;
   }
@@ -823,27 +916,27 @@ export class Client {
   async subscribeToNewsletter(email: string) {
     let publicationId = await this.getPublicationId();
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation SubscribeToNewsletter($input: SubscribeToNewsletterInput!) {
         subscribeToNewsletter(input: $input) {
           status
         }
       }
-    `, { input: { publicationId, email } });
+    `,
+      { input: { publicationId, email } }
+    );
 
     return data.subscribeToNewsletter;
   }
 
   // ─── Webhooks ──────────────────────────────────────────────────
 
-  async createWebhook(input: {
-    url: string;
-    events: string[];
-    secret: string;
-  }) {
+  async createWebhook(input: { url: string; events: string[]; secret: string }) {
     let publicationId = await this.getPublicationId();
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation CreateWebhook($input: CreateWebhookInput!) {
         createWebhook(input: $input) {
           webhook {
@@ -855,20 +948,23 @@ export class Client {
           }
         }
       }
-    `, {
-      input: {
-        publicationId,
-        url: input.url,
-        events: input.events,
-        secret: input.secret,
-      },
-    });
+    `,
+      {
+        input: {
+          publicationId,
+          url: input.url,
+          events: input.events,
+          secret: input.secret
+        }
+      }
+    );
 
     return data.createWebhook?.webhook;
   }
 
   async deleteWebhook(webhookId: string) {
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       mutation DeleteWebhook($id: ID!) {
         deleteWebhook(id: $id) {
           webhook {
@@ -876,7 +972,9 @@ export class Client {
           }
         }
       }
-    `, { id: webhookId });
+    `,
+      { id: webhookId }
+    );
 
     return data.deleteWebhook?.webhook;
   }
@@ -886,7 +984,8 @@ export class Client {
   async searchPosts(query: string, options: { first?: number; after?: string } = {}) {
     let { first = 10, after } = options;
 
-    let data = await this.graphql(`
+    let data = await this.graphql(
+      `
       query SearchPosts($host: String!, $first: Int!, $after: String, $filter: SearchPostsOfPublicationFilter!) {
         publication(host: $host) {
           searchPostsOfPublication(first: $first, after: $after, filter: $filter) {
@@ -914,12 +1013,14 @@ export class Client {
           }
         }
       }
-    `, { host: this.publicationHost, first, after, filter: { query } });
+    `,
+      { host: this.publicationHost, first, after, filter: { query } }
+    );
 
     let connection = data.publication?.searchPostsOfPublication;
     return {
       posts: (connection?.edges || []).map((e: any) => e.node),
-      pageInfo: connection?.pageInfo,
+      pageInfo: connection?.pageInfo
     };
   }
 }

@@ -13,7 +13,7 @@ import {
   updateLibrary,
   deleteLibrary,
   listLibraryVersions,
-  publish,
+  publish
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     updateLibrary,
     deleteLibrary,
     listLibraryVersions,
-    publish,
+    publish
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

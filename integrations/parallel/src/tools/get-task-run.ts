@@ -3,30 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTaskRun = SlateTool.create(
-  spec,
-  {
-    name: 'Get Task Run',
-    key: 'get_task_run',
-    description: `Check the status of a deep research task run and optionally retrieve its results when complete.
+export let getTaskRun = SlateTool.create(spec, {
+  name: 'Get Task Run',
+  key: 'get_task_run',
+  description: `Check the status of a deep research task run and optionally retrieve its results when complete.
 Use the run ID returned by the **Deep Research** tool.`,
-    instructions: [
-      'Set includeResult to true to retrieve the full results when the run is completed.',
-      'If the run is not yet complete and includeResult is true, this will wait (long-poll) until the run finishes.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+  instructions: [
+    'Set includeResult to true to retrieve the full results when the run is completed.',
+    'If the run is not yet complete and includeResult is true, this will wait (long-poll) until the run finishes.'
+  ],
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       runId: z.string().describe('Task run ID from the Deep Research tool'),
       includeResult: z
         .boolean()
         .optional()
-        .describe('If true, fetch the full result (blocks until the run completes). Defaults to false.'),
-    }),
+        .describe(
+          'If true, fetch the full result (blocks until the run completes). Defaults to false.'
+        )
+    })
   )
   .output(
     z.object({
@@ -48,21 +47,21 @@ Use the run ID returned by the **Deep Research** tool.`,
                   .array(
                     z.object({
                       url: z.string().describe('Source URL'),
-                      excerpts: z.array(z.string()).describe('Relevant excerpts'),
-                    }),
+                      excerpts: z.array(z.string()).describe('Relevant excerpts')
+                    })
                   )
                   .describe('Citations supporting this field'),
                 reasoning: z.string().describe('Reasoning for the field value'),
-                confidence: z.string().describe('Confidence level: high, medium, or low'),
-              }),
+                confidence: z.string().describe('Confidence level: high, medium, or low')
+              })
             )
-            .describe('Per-field citations, reasoning, and confidence'),
+            .describe('Per-field citations, reasoning, and confidence')
         })
         .nullable()
-        .describe('Research results (null if not requested or run not complete)'),
-    }),
+        .describe('Research results (null if not requested or run not complete)')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let run = await client.getTaskRun(ctx.input.runId);
@@ -84,9 +83,9 @@ Use the run ID returned by the **Deep Research** tool.`,
         metadata: run.metadata,
         createdAt: run.createdAt,
         modifiedAt: run.modifiedAt,
-        result,
+        result
       },
-      message: `Task run **${run.runId}** status: **${run.status}**${result ? ' — results retrieved.' : '.'}`,
+      message: `Task run **${run.runId}** status: **${run.status}**${result ? ' — results retrieved.' : '.'}`
     };
   })
   .build();

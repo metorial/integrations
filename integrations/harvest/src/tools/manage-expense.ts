@@ -3,44 +3,51 @@ import { HarvestClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageExpense = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Expense',
-    key: 'manage_expense',
-    description: `Create, update, or delete an expense in Harvest. Expenses are associated with projects and expense categories, and can be marked as billable.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageExpense = SlateTool.create(spec, {
+  name: 'Manage Expense',
+  key: 'manage_expense',
+  description: `Create, update, or delete an expense in Harvest. Expenses are associated with projects and expense categories, and can be marked as billable.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    expenseId: z.number().optional().describe('Expense ID (required for update/delete)'),
-    projectId: z.number().optional().describe('Project ID (required for create)'),
-    expenseCategoryId: z.number().optional().describe('Expense category ID (required for create)'),
-    spentDate: z.string().optional().describe('Date the expense was incurred (YYYY-MM-DD, required for create)'),
-    userId: z.number().optional().describe('User ID (defaults to current user)'),
-    totalCost: z.number().optional().describe('Total cost of the expense'),
-    units: z.number().optional().describe('Number of units (for unit-based categories)'),
-    notes: z.string().optional().describe('Expense notes'),
-    billable: z.boolean().optional().describe('Whether the expense is billable'),
-  }))
-  .output(z.object({
-    expenseId: z.number().optional().describe('ID of the expense'),
-    projectName: z.string().optional().describe('Project name'),
-    expenseCategoryName: z.string().optional().describe('Expense category name'),
-    spentDate: z.string().optional().describe('Date incurred'),
-    totalCost: z.number().optional().describe('Total cost'),
-    notes: z.string().optional().nullable().describe('Notes'),
-    billable: z.boolean().optional().describe('Whether billable'),
-    deleted: z.boolean().optional().describe('Whether the expense was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      expenseId: z.number().optional().describe('Expense ID (required for update/delete)'),
+      projectId: z.number().optional().describe('Project ID (required for create)'),
+      expenseCategoryId: z
+        .number()
+        .optional()
+        .describe('Expense category ID (required for create)'),
+      spentDate: z
+        .string()
+        .optional()
+        .describe('Date the expense was incurred (YYYY-MM-DD, required for create)'),
+      userId: z.number().optional().describe('User ID (defaults to current user)'),
+      totalCost: z.number().optional().describe('Total cost of the expense'),
+      units: z.number().optional().describe('Number of units (for unit-based categories)'),
+      notes: z.string().optional().describe('Expense notes'),
+      billable: z.boolean().optional().describe('Whether the expense is billable')
+    })
+  )
+  .output(
+    z.object({
+      expenseId: z.number().optional().describe('ID of the expense'),
+      projectName: z.string().optional().describe('Project name'),
+      expenseCategoryName: z.string().optional().describe('Expense category name'),
+      spentDate: z.string().optional().describe('Date incurred'),
+      totalCost: z.number().optional().describe('Total cost'),
+      notes: z.string().optional().nullable().describe('Notes'),
+      billable: z.boolean().optional().describe('Whether billable'),
+      deleted: z.boolean().optional().describe('Whether the expense was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HarvestClient({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     if (ctx.input.action === 'delete') {
@@ -48,7 +55,7 @@ export let manageExpense = SlateTool.create(
       await client.deleteExpense(ctx.input.expenseId);
       return {
         output: { expenseId: ctx.input.expenseId, deleted: true },
-        message: `Deleted expense **#${ctx.input.expenseId}**.`,
+        message: `Deleted expense **#${ctx.input.expenseId}**.`
       };
     }
 
@@ -64,7 +71,7 @@ export let manageExpense = SlateTool.create(
         totalCost: ctx.input.totalCost,
         units: ctx.input.units,
         notes: ctx.input.notes,
-        billable: ctx.input.billable,
+        billable: ctx.input.billable
       });
       return {
         output: {
@@ -74,9 +81,9 @@ export let manageExpense = SlateTool.create(
           spentDate: exp.spent_date,
           totalCost: exp.total_cost,
           notes: exp.notes,
-          billable: exp.billable,
+          billable: exp.billable
         },
-        message: `Created expense **#${exp.id}** for ${exp.total_cost} on ${exp.spent_date}.`,
+        message: `Created expense **#${exp.id}** for ${exp.total_cost} on ${exp.spent_date}.`
       };
     }
 
@@ -89,7 +96,7 @@ export let manageExpense = SlateTool.create(
       totalCost: ctx.input.totalCost,
       units: ctx.input.units,
       notes: ctx.input.notes,
-      billable: ctx.input.billable,
+      billable: ctx.input.billable
     });
     return {
       output: {
@@ -99,8 +106,9 @@ export let manageExpense = SlateTool.create(
         spentDate: exp.spent_date,
         totalCost: exp.total_cost,
         notes: exp.notes,
-        billable: exp.billable,
+        billable: exp.billable
       },
-      message: `Updated expense **#${exp.id}** — ${exp.total_cost} on ${exp.spent_date}.`,
+      message: `Updated expense **#${exp.id}** — ${exp.total_cost} on ${exp.spent_date}.`
     };
-  }).build();
+  })
+  .build();

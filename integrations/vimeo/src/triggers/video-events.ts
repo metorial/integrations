@@ -4,25 +4,27 @@ import { videoSchema, mapVideo } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let videoEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Video Events',
-    key: 'video_events',
-    description: 'Receive real-time notifications when videos are uploaded, played, or have status changes on Vimeo.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of video event'),
-    eventId: z.string().describe('Unique event identifier'),
-    video: z.any().optional().describe('Video data from the event payload'),
-    rawPayload: z.any().describe('Full raw webhook payload')
-  }))
-  .output(videoSchema.partial().extend({
-    videoId: z.string().describe('Vimeo video ID')
-  }))
+export let videoEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Video Events',
+  key: 'video_events',
+  description:
+    'Receive real-time notifications when videos are uploaded, played, or have status changes on Vimeo.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of video event'),
+      eventId: z.string().describe('Unique event identifier'),
+      video: z.any().optional().describe('Video data from the event payload'),
+      rawPayload: z.any().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    videoSchema.partial().extend({
+      videoId: z.string().describe('Vimeo video ID')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new VimeoClient(ctx.auth.token);
       let webhook = await client.createWebhook(ctx.input.webhookBaseUrl, [
         'video.upload.complete',
@@ -39,13 +41,13 @@ export let videoEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new VimeoClient(ctx.auth.token);
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -59,28 +61,32 @@ export let videoEventsTrigger = SlateTrigger.create(
       let eventId = `${eventType}-${videoId}-${data.created_time ?? Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          video,
-          rawPayload: data
-        }]
+        inputs: [
+          {
+            eventType,
+            eventId,
+            video,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let video = ctx.input.video;
-      let mapped = video ? mapVideo(video) : {
-        videoId: '',
-        uri: '',
-        name: '',
-        description: null,
-        link: '',
-        duration: 0,
-        createdTime: '',
-        modifiedTime: '',
-        status: 'unknown'
-      };
+      let mapped = video
+        ? mapVideo(video)
+        : {
+            videoId: '',
+            uri: '',
+            name: '',
+            description: null,
+            link: '',
+            duration: 0,
+            createdTime: '',
+            modifiedTime: '',
+            status: 'unknown'
+          };
 
       // If minimal data came with the webhook, try to fetch full video details
       if (video && (!mapped.name || mapped.name === '') && mapped.videoId) {
@@ -99,4 +105,5 @@ export let videoEventsTrigger = SlateTrigger.create(
         output: mapped
       };
     }
-  }).build();
+  })
+  .build();

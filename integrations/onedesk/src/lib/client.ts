@@ -29,15 +29,15 @@ export class Client {
         baseURL: 'https://app.onedesk.com/rest/public',
         headers: {
           'OD-Public-API-Key': config.token,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
     } else {
       this.http = createAxios({
         baseURL: 'https://app.onedesk.com/rest/2.0',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
     }
   }
@@ -56,7 +56,10 @@ export class Client {
       let response = await this.http.get('/organization/profileAndPolicy');
       return response.data;
     } else {
-      let response = await this.http.post('/organization/getProfileAndPolicy', this.addLegacyToken({}));
+      let response = await this.http.post(
+        '/organization/getProfileAndPolicy',
+        this.addLegacyToken({})
+      );
       return response.data?.data || response.data;
     }
   }
@@ -90,14 +93,17 @@ export class Client {
       let response = await this.http.post('/items/', data);
       return response.data;
     } else {
-      let response = await this.http.post('/workitem/createWorkItem', this.addLegacyToken({
-        name: data.name,
-        type: data.type,
-        description: data.description,
-        spaceId: data.projectExternalId,
-        priority: data.priority,
-        customFields: data.customFields,
-      }));
+      let response = await this.http.post(
+        '/workitem/createWorkItem',
+        this.addLegacyToken({
+          name: data.name,
+          type: data.type,
+          description: data.description,
+          spaceId: data.projectExternalId,
+          priority: data.priority,
+          customFields: data.customFields
+        })
+      );
       return response.data?.data || response.data;
     }
   }
@@ -107,7 +113,10 @@ export class Client {
       let response = await this.http.get(`/items/id/${itemId}`);
       return response.data;
     } else {
-      let response = await this.http.post('/workitem/getItemById', this.addLegacyToken({ id: itemId }));
+      let response = await this.http.post(
+        '/workitem/getItemById',
+        this.addLegacyToken({ id: itemId })
+      );
       return response.data?.data || response.data;
     }
   }
@@ -117,21 +126,27 @@ export class Client {
     return response.data;
   }
 
-  async updateItemById(itemId: string, data: {
-    name?: string;
-    description?: string;
-    priority?: number;
-    percentComplete?: number;
-    customFields?: Record<string, any>;
-  }): Promise<any> {
+  async updateItemById(
+    itemId: string,
+    data: {
+      name?: string;
+      description?: string;
+      priority?: number;
+      percentComplete?: number;
+      customFields?: Record<string, any>;
+    }
+  ): Promise<any> {
     if (this.authMethod === 'api_key') {
       let response = await this.http.post(`/items/id/${itemId}`, data);
       return response.data;
     } else {
-      let response = await this.http.post('/workitem/updateWorkItem', this.addLegacyToken({
-        id: itemId,
-        ...data,
-      }));
+      let response = await this.http.post(
+        '/workitem/updateWorkItem',
+        this.addLegacyToken({
+          id: itemId,
+          ...data
+        })
+      );
       return response.data?.data || response.data;
     }
   }
@@ -141,19 +156,26 @@ export class Client {
       let response = await this.http.post('/items/filter/details', filter);
       return response.data?.data || response.data || [];
     } else {
-      let response = await this.http.post('/workitem/search', this.addLegacyToken({
-        properties: filter.properties,
-        isAsc: filter.isAsc,
-      }));
+      let response = await this.http.post(
+        '/workitem/search',
+        this.addLegacyToken({
+          properties: filter.properties,
+          isAsc: filter.isAsc
+        })
+      );
       return response.data?.data || response.data || [];
     }
   }
 
-  async searchItemsPaginated(filter: FilterRequest, limit: number = 50, offset: number = 0): Promise<any[]> {
+  async searchItemsPaginated(
+    filter: FilterRequest,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<any[]> {
     let response = await this.http.post('/items/filter/details', {
       ...filter,
       limit,
-      offset,
+      offset
     });
     return response.data?.data || response.data || [];
   }
@@ -170,12 +192,15 @@ export class Client {
       let response = await this.http.post('/projects/', data);
       return response.data;
     } else {
-      let response = await this.http.post('/space/create', this.addLegacyToken({
-        name: data.name,
-        containerType: data.type,
-        description: data.description,
-        parentIds: data.parentPortfolioExternalIds,
-      }));
+      let response = await this.http.post(
+        '/space/create',
+        this.addLegacyToken({
+          name: data.name,
+          containerType: data.type,
+          description: data.description,
+          parentIds: data.parentPortfolioExternalIds
+        })
+      );
       return response.data?.data || response.data;
     }
   }
@@ -185,19 +210,26 @@ export class Client {
       let response = await this.http.post('/projects/filter/details', filter);
       return response.data?.data || response.data || [];
     } else {
-      let response = await this.http.post('/space/search', this.addLegacyToken({
-        properties: filter.properties,
-        isAsc: filter.isAsc,
-      }));
+      let response = await this.http.post(
+        '/space/search',
+        this.addLegacyToken({
+          properties: filter.properties,
+          isAsc: filter.isAsc
+        })
+      );
       return response.data?.data || response.data || [];
     }
   }
 
-  async searchProjectsPaginated(filter: FilterRequest, limit: number = 50, offset: number = 0): Promise<any[]> {
+  async searchProjectsPaginated(
+    filter: FilterRequest,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<any[]> {
     let response = await this.http.post('/projects/filter/details', {
       ...filter,
       limit,
-      offset,
+      offset
     });
     return response.data?.data || response.data || [];
   }

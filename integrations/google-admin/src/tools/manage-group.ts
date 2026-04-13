@@ -3,35 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group',
-    key: 'manage_group',
-    description: `Create, update, or delete a Google Workspace group. Groups can be used for email distribution, collaboration, and access control. Supports updating group name, description, and email.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageGroup = SlateTool.create(spec, {
+  name: 'Manage Group',
+  key: 'manage_group',
+  description: `Create, update, or delete a Google Workspace group. Groups can be used for email distribution, collaboration, and access control. Supports updating group name, description, and email.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('Action to perform on the group'),
-    groupKey: z.string().optional().describe('Group email or ID (required for get, update, and delete)'),
-    email: z.string().optional().describe('Email address for the group (required for create)'),
-    name: z.string().optional().describe('Display name of the group'),
-    description: z.string().optional().describe('Description of the group')
-  }))
-  .output(z.object({
-    groupId: z.string().optional(),
-    email: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    directMembersCount: z.string().optional(),
-    adminCreated: z.boolean().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete'])
+        .describe('Action to perform on the group'),
+      groupKey: z
+        .string()
+        .optional()
+        .describe('Group email or ID (required for get, update, and delete)'),
+      email: z
+        .string()
+        .optional()
+        .describe('Email address for the group (required for create)'),
+      name: z.string().optional().describe('Display name of the group'),
+      description: z.string().optional().describe('Description of the group')
+    })
+  )
+  .output(
+    z.object({
+      groupId: z.string().optional(),
+      email: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      directMembersCount: z.string().optional(),
+      adminCreated: z.boolean().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,

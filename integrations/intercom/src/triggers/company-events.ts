@@ -2,58 +2,66 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let companyEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Company Events',
-    key: 'company_events',
-    description: 'Triggers when companies are created, updated, deleted, or when contacts are attached to or detached from companies.'
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic'),
-    eventId: z.string().describe('Unique event identifier'),
-    company: z.any().describe('Company data from webhook payload')
-  }))
-  .output(z.object({
-    intercomCompanyId: z.string().describe('Intercom company ID'),
-    companyId: z.string().optional().describe('External company ID'),
-    name: z.string().optional().describe('Company name'),
-    plan: z.string().optional().describe('Company plan'),
-    size: z.number().optional().describe('Company size'),
-    website: z.string().optional().describe('Company website'),
-    industry: z.string().optional().describe('Company industry'),
-    monthlySpend: z.number().optional().describe('Monthly spend'),
-    userCount: z.number().optional().describe('Number of users'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    customAttributes: z.record(z.string(), z.any()).optional().describe('Custom attributes')
-  }))
+export let companyEvents = SlateTrigger.create(spec, {
+  name: 'Company Events',
+  key: 'company_events',
+  description:
+    'Triggers when companies are created, updated, deleted, or when contacts are attached to or detached from companies.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic'),
+      eventId: z.string().describe('Unique event identifier'),
+      company: z.any().describe('Company data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      intercomCompanyId: z.string().describe('Intercom company ID'),
+      companyId: z.string().optional().describe('External company ID'),
+      name: z.string().optional().describe('Company name'),
+      plan: z.string().optional().describe('Company plan'),
+      size: z.number().optional().describe('Company size'),
+      website: z.string().optional().describe('Company website'),
+      industry: z.string().optional().describe('Company industry'),
+      monthlySpend: z.number().optional().describe('Monthly spend'),
+      userCount: z.number().optional().describe('Number of users'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      customAttributes: z.record(z.string(), z.any()).optional().describe('Custom attributes')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let topic = data.topic || '';
       let companyTopics = [
-        'company.created', 'company.updated', 'company.deleted',
-        'company.contact.attached', 'company.contact.detached'
+        'company.created',
+        'company.updated',
+        'company.deleted',
+        'company.contact.attached',
+        'company.contact.detached'
       ];
 
       if (!companyTopics.includes(topic)) {
         return { inputs: [] };
       }
 
-      let eventId = data.id || `${topic}-${data.data?.item?.id || ''}-${data.created_at || Date.now()}`;
+      let eventId =
+        data.id || `${topic}-${data.data?.item?.id || ''}-${data.created_at || Date.now()}`;
 
       return {
-        inputs: [{
-          topic,
-          eventId,
-          company: data.data?.item
-        }]
+        inputs: [
+          {
+            topic,
+            eventId,
+            company: data.data?.item
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let company = ctx.input.company || {};
 
       return {
@@ -75,4 +83,5 @@ export let companyEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -3,30 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteImages = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Images',
-    key: 'delete_images',
-    description: `Permanently delete one or more generated images. Removes the images from servers and clears CDN caching. This action **cannot be undone**.`,
-    constraints: [
-      'Deletion is permanent and cannot be undone.',
-      'Deleted image URLs will no longer be accessible.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteImages = SlateTool.create(spec, {
+  name: 'Delete Images',
+  key: 'delete_images',
+  description: `Permanently delete one or more generated images. Removes the images from servers and clears CDN caching. This action **cannot be undone**.`,
+  constraints: [
+    'Deletion is permanent and cannot be undone.',
+    'Deleted image URLs will no longer be accessible.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    imageIds: z.array(z.string()).min(1).describe('One or more image IDs to delete')
-  }))
-  .output(z.object({
-    deletedCount: z.number().describe('Number of images deleted'),
-    deletedImageIds: z.array(z.string()).describe('IDs of the deleted images')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      imageIds: z.array(z.string()).min(1).describe('One or more image IDs to delete')
+    })
+  )
+  .output(
+    z.object({
+      deletedCount: z.number().describe('Number of images deleted'),
+      deletedImageIds: z.array(z.string()).describe('IDs of the deleted images')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       userId: ctx.auth.userId,
       token: ctx.auth.token
@@ -45,4 +46,5 @@ export let deleteImages = SlateTool.create(
       },
       message: `Permanently deleted **${ctx.input.imageIds.length}** image(s).`
     };
-  }).build();
+  })
+  .build();

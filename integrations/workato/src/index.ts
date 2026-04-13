@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listRecipesTool,
@@ -20,13 +19,13 @@ import {
   manageDataTableTool,
   manageEnvironmentPropertiesTool,
   manageApiEndpointsTool,
-  getWorkspaceInfoTool,
+  getWorkspaceInfoTool
 } from './tools';
 import {
   recipeChangesTrigger,
   newJobTrigger,
   eventStreamMessagesTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -50,12 +49,12 @@ export let provider = Slate.create({
     manageDataTableTool.build(),
     manageEnvironmentPropertiesTool.build(),
     manageApiEndpointsTool.build(),
-    getWorkspaceInfoTool.build(),
+    getWorkspaceInfoTool.build()
   ],
   triggers: [
     inboundWebhook,
     recipeChangesTrigger.build(),
     newJobTrigger.build(),
-    eventStreamMessagesTrigger.build(),
-  ],
+    eventStreamMessagesTrigger.build()
+  ]
 });

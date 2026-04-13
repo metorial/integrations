@@ -16,6 +16,7 @@ To find the API key, log into the dashboard at `https://app.pdfless.com`, click 
 The API key can be provided in one of two ways:
 
 1. **HTTP Header:** Pass the key in the `apikey` header:
+
    ```
    -H "apikey: <api_key>"
    ```

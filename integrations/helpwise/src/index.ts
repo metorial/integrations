@@ -16,12 +16,9 @@ import {
   listTeams,
   listUsers,
   manageTemplate,
-  manageWebhook,
+  manageWebhook
 } from './tools';
-import {
-  conversationEvents,
-  messageEvents,
-} from './triggers';
+import { conversationEvents, messageEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,10 +38,7 @@ export let provider = Slate.create({
     listTeams,
     listUsers,
     manageTemplate,
-    manageWebhook,
+    manageWebhook
   ],
-  triggers: [
-    conversationEvents,
-    messageEvents,
-  ],
+  triggers: [conversationEvents, messageEvents]
 });

@@ -10,47 +10,61 @@ let watchSchema = z.object({
   createTime: z.string().optional().describe('When the watch was created (ISO 8601)'),
   expireTime: z.string().optional().describe('When the watch expires (ISO 8601)'),
   state: z.string().optional().describe('Watch state: ACTIVE or SUSPENDED'),
-  errorType: z.string().optional().describe('Error type if the watch is in an error state'),
+  errorType: z.string().optional().describe('Error type if the watch is in an error state')
 });
 
-export let manageWatches = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Watches',
-    key: 'manage_watches',
-    description: `Creates, lists, renews, or deletes push notification watches on a Google Form. Watches deliver notifications to a Google Cloud Pub/Sub topic when form events occur.
+export let manageWatches = SlateTool.create(spec, {
+  name: 'Manage Watches',
+  key: 'manage_watches',
+  description: `Creates, lists, renews, or deletes push notification watches on a Google Form. Watches deliver notifications to a Google Cloud Pub/Sub topic when form events occur.
 
 Supports two event types: **SCHEMA** (form structure/settings changes) and **RESPONSES** (new or updated response submissions).`,
-    instructions: [
-      'Set action to "create" to subscribe to events. Requires a Cloud Pub/Sub topic name and event type.',
-      'Set action to "list" to see all watches on a form.',
-      'Set action to "renew" to extend a watch for another 7 days before it expires.',
-      'Set action to "delete" to remove a watch.',
-    ],
-    constraints: [
-      'Watches expire after 7 days and must be renewed.',
-      'Each form is limited to one watch per event type per Cloud Console project.',
-      'The Cloud Pub/Sub topic must grant publish permissions to the Google Forms service account.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Set action to "create" to subscribe to events. Requires a Cloud Pub/Sub topic name and event type.',
+    'Set action to "list" to see all watches on a form.',
+    'Set action to "renew" to extend a watch for another 7 days before it expires.',
+    'Set action to "delete" to remove a watch.'
+  ],
+  constraints: [
+    'Watches expire after 7 days and must be renewed.',
+    'Each form is limited to one watch per event type per Cloud Console project.',
+    'The Cloud Pub/Sub topic must grant publish permissions to the Google Forms service account.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    formId: z.string().describe('The ID of the Google Form'),
-    action: z.enum(['create', 'list', 'renew', 'delete']).describe('The watch operation to perform'),
-    eventType: z.enum(['SCHEMA', 'RESPONSES']).optional().describe('Event type for creating a watch (required for "create")'),
-    topicName: z.string().optional().describe('Full Cloud Pub/Sub topic name, e.g. "projects/my-project/topics/my-topic" (required for "create")'),
-    watchId: z.string().optional().describe('The watch ID (required for "renew" and "delete")'),
-  }))
-  .output(z.object({
-    watch: watchSchema.optional().describe('The created, renewed, or deleted watch'),
-    watches: z.array(watchSchema).optional().describe('List of watches (for "list" action)'),
-    action: z.string().describe('The action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      formId: z.string().describe('The ID of the Google Form'),
+      action: z
+        .enum(['create', 'list', 'renew', 'delete'])
+        .describe('The watch operation to perform'),
+      eventType: z
+        .enum(['SCHEMA', 'RESPONSES'])
+        .optional()
+        .describe('Event type for creating a watch (required for "create")'),
+      topicName: z
+        .string()
+        .optional()
+        .describe(
+          'Full Cloud Pub/Sub topic name, e.g. "projects/my-project/topics/my-topic" (required for "create")'
+        ),
+      watchId: z
+        .string()
+        .optional()
+        .describe('The watch ID (required for "renew" and "delete")')
+    })
+  )
+  .output(
+    z.object({
+      watch: watchSchema.optional().describe('The created, renewed, or deleted watch'),
+      watches: z.array(watchSchema).optional().describe('List of watches (for "list" action)'),
+      action: z.string().describe('The action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleFormsClient(ctx.auth.token);
     let { formId, action, eventType, topicName, watchId } = ctx.input;
 
@@ -61,7 +75,7 @@ Supports two event types: **SCHEMA** (form structure/settings changes) and **RES
       createTime: w.createTime,
       expireTime: w.expireTime,
       state: w.state,
-      errorType: w.errorType,
+      errorType: w.errorType
     });
 
     if (action === 'create') {
@@ -73,9 +87,9 @@ Supports two event types: **SCHEMA** (form structure/settings changes) and **RES
       return {
         output: {
           watch: mapWatch(watch),
-          action: 'create',
+          action: 'create'
         },
-        message: `Created **${eventType}** watch on form \`${formId}\` delivering to \`${topicName}\`. Expires at ${watch.expireTime || 'unknown'}.`,
+        message: `Created **${eventType}** watch on form \`${formId}\` delivering to \`${topicName}\`. Expires at ${watch.expireTime || 'unknown'}.`
       };
     }
 
@@ -85,9 +99,9 @@ Supports two event types: **SCHEMA** (form structure/settings changes) and **RES
       return {
         output: {
           watches: watches.map(mapWatch),
-          action: 'list',
+          action: 'list'
         },
-        message: `Found ${watches.length} watch(es) on form \`${formId}\`.`,
+        message: `Found ${watches.length} watch(es) on form \`${formId}\`.`
       };
     }
 
@@ -99,9 +113,9 @@ Supports two event types: **SCHEMA** (form structure/settings changes) and **RES
       return {
         output: {
           watch: mapWatch(watch),
-          action: 'renew',
+          action: 'renew'
         },
-        message: `Renewed watch \`${watchId}\` on form \`${formId}\`. New expiration: ${watch.expireTime || 'unknown'}.`,
+        message: `Renewed watch \`${watchId}\` on form \`${formId}\`. New expiration: ${watch.expireTime || 'unknown'}.`
       };
     }
 
@@ -113,9 +127,9 @@ Supports two event types: **SCHEMA** (form structure/settings changes) and **RES
       return {
         output: {
           watch: { watchId },
-          action: 'delete',
+          action: 'delete'
         },
-        message: `Deleted watch \`${watchId}\` from form \`${formId}\`.`,
+        message: `Deleted watch \`${watchId}\` from form \`${formId}\`.`
       };
     }
 

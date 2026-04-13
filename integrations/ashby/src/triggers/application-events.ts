@@ -3,39 +3,42 @@ import { AshbyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let webhookTypes = [
-  'applicationSubmit',
-  'applicationUpdate',
-] as const;
+let webhookTypes = ['applicationSubmit', 'applicationUpdate'] as const;
 
-export let applicationEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Application Events',
-    key: 'application_events',
-    description: 'Triggers when an application is submitted or updated.',
-  }
-)
-  .input(z.object({
-    webhookType: z.string().describe('The type of webhook event'),
-    webhookActionId: z.string().describe('Unique ID grouping related webhook events from the same action'),
-    applicationId: z.string().describe('The application ID'),
-    rawPayload: z.any().describe('The full webhook payload'),
-  }))
-  .output(z.object({
-    applicationId: z.string().describe('The application ID'),
-    status: z.string().optional().describe('Application status (Hired, Archived, Active, Lead)'),
-    candidateId: z.string().optional().describe('The candidate ID'),
-    candidateName: z.string().optional().describe('The candidate name'),
-    jobId: z.string().optional().describe('The job ID'),
-    jobTitle: z.string().optional().describe('The job title'),
-    currentStageId: z.string().optional().describe('Current interview stage ID'),
-    currentStageTitle: z.string().optional().describe('Current interview stage title'),
-    sourceId: z.string().optional().describe('Source ID'),
-    sourceTitle: z.string().optional().describe('Source title'),
-  }))
+export let applicationEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Application Events',
+  key: 'application_events',
+  description: 'Triggers when an application is submitted or updated.'
+})
+  .input(
+    z.object({
+      webhookType: z.string().describe('The type of webhook event'),
+      webhookActionId: z
+        .string()
+        .describe('Unique ID grouping related webhook events from the same action'),
+      applicationId: z.string().describe('The application ID'),
+      rawPayload: z.any().describe('The full webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      applicationId: z.string().describe('The application ID'),
+      status: z
+        .string()
+        .optional()
+        .describe('Application status (Hired, Archived, Active, Lead)'),
+      candidateId: z.string().optional().describe('The candidate ID'),
+      candidateName: z.string().optional().describe('The candidate name'),
+      jobId: z.string().optional().describe('The job ID'),
+      jobTitle: z.string().optional().describe('The job title'),
+      currentStageId: z.string().optional().describe('Current interview stage ID'),
+      currentStageTitle: z.string().optional().describe('Current interview stage title'),
+      sourceId: z.string().optional().describe('Source ID'),
+      sourceTitle: z.string().optional().describe('Source title')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
       let secretToken = crypto.randomUUID();
       let registrations: Array<{ webhookId: string; webhookType: string }> = [];
@@ -44,33 +47,35 @@ export let applicationEventsTrigger = SlateTrigger.create(
         let response = await client.createWebhook({
           webhookType,
           requestUrl: ctx.input.webhookBaseUrl,
-          secretToken,
+          secretToken
         });
         registrations.push({
           webhookId: response.results.id,
-          webhookType,
+          webhookType
         });
       }
 
       return {
         registrationDetails: {
           webhookIds: registrations,
-          secretToken,
-        },
+          secretToken
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { webhookIds: Array<{ webhookId: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhookIds: Array<{ webhookId: string }>;
+      };
 
       for (let registration of details.webhookIds) {
         await client.deleteWebhook(registration.webhookId);
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
       let applicationId = data.data?.application?.id || data.data?.applicationId || '';
 
@@ -80,13 +85,13 @@ export let applicationEventsTrigger = SlateTrigger.create(
             webhookType: data.action || 'unknown',
             webhookActionId: data.webhookActionId || crypto.randomUUID(),
             applicationId,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
       let payload = ctx.input.rawPayload;
       let applicationData = payload.data?.application || {};
@@ -121,7 +126,7 @@ export let applicationEventsTrigger = SlateTrigger.create(
 
       let eventTypeMap: Record<string, string> = {
         applicationSubmit: 'application.submitted',
-        applicationUpdate: 'application.updated',
+        applicationUpdate: 'application.updated'
       };
 
       return {
@@ -137,8 +142,9 @@ export let applicationEventsTrigger = SlateTrigger.create(
           currentStageId,
           currentStageTitle,
           sourceId,
-          sourceTitle,
-        },
+          sourceTitle
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

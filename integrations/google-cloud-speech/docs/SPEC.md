@@ -19,10 +19,12 @@ Google Cloud Speech APIs support multiple authentication methods:
 **Required OAuth Scope**: `https://www.googleapis.com/auth/cloud-platform`
 
 **Prerequisites**:
+
 - A Google Cloud project with the Speech-to-Text API and/or Text-to-Speech API enabled.
 - A billing account linked to the project.
 
 **REST Base URLs**:
+
 - Speech-to-Text: `https://speech.googleapis.com/v2/` (v2) or `https://speech.googleapis.com/v1/` (v1)
 - Text-to-Speech: `https://texttospeech.googleapis.com/v1/`
 

@@ -15,6 +15,7 @@ Hystruct uses API key authentication. All API requests must include the API key 
 - **Limitation:** Only a single API key per account is supported.
 
 Example header:
+
 ```
 "headers": {
   "x-api-key": "YOUR-HYSTRUCT-API-KEY"

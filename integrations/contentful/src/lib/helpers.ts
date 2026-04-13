@@ -1,6 +1,9 @@
 import { ContentfulClient, ClientConfig } from './client';
 
-export let createClient = (config: { spaceId: string; environmentId: string; region: 'us' | 'eu' }, auth: { token: string }): ContentfulClient => {
+export let createClient = (
+  config: { spaceId: string; environmentId: string; region: 'us' | 'eu' },
+  auth: { token: string }
+): ContentfulClient => {
   return new ContentfulClient({
     token: auth.token,
     spaceId: config.spaceId,

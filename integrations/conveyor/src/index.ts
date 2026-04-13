@@ -52,7 +52,5 @@ export let provider = Slate.create({
     updateQuestionnaireRequest,
     askQuestion
   ],
-  triggers: [
-    accessRequested
-  ]
+  triggers: [accessRequested]
 });

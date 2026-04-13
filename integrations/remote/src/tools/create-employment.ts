@@ -3,38 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createEmployment = SlateTool.create(
-  spec,
-  {
-    name: 'Create Employment',
-    key: 'create_employment',
-    description: `Create a new employment record in Remote for onboarding an employee. Requires country-specific fields which vary by country (use the country form schema tool to discover required fields). After creation, the employee can be invited to complete self-enrollment.`,
-    instructions: [
-      'Country-specific fields are required and vary by country. Use the "Get Country Form Schema" tool first to discover required fields for the target country.',
-      'The basicInformation object must include country_code, full_name, job_title, and provisional_start_date at minimum.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let createEmployment = SlateTool.create(spec, {
+  name: 'Create Employment',
+  key: 'create_employment',
+  description: `Create a new employment record in Remote for onboarding an employee. Requires country-specific fields which vary by country (use the country form schema tool to discover required fields). After creation, the employee can be invited to complete self-enrollment.`,
+  instructions: [
+    'Country-specific fields are required and vary by country. Use the "Get Country Form Schema" tool first to discover required fields for the target country.',
+    'The basicInformation object must include country_code, full_name, job_title, and provisional_start_date at minimum.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    countryCode: z.string().describe('ISO country code for the employment (e.g., GBR, DEU)'),
-    fullName: z.string().describe('Full legal name of the employee'),
-    jobTitle: z.string().describe('Job title for the employment'),
-    provisionalStartDate: z.string().describe('Planned start date (YYYY-MM-DD)'),
-    basicInformation: z.record(z.string(), z.any()).optional().describe('Additional country-specific basic information fields'),
-    companyId: z.string().optional().describe('Company ID if managing multiple companies'),
-    type: z.string().optional().describe('Employment type (e.g., employee, contractor)'),
-    seniorityDate: z.string().optional().describe('Seniority date (YYYY-MM-DD)'),
-  }))
-  .output(z.object({
-    employment: z.record(z.string(), z.any()).describe('Created employment record'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      countryCode: z.string().describe('ISO country code for the employment (e.g., GBR, DEU)'),
+      fullName: z.string().describe('Full legal name of the employee'),
+      jobTitle: z.string().describe('Job title for the employment'),
+      provisionalStartDate: z.string().describe('Planned start date (YYYY-MM-DD)'),
+      basicInformation: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Additional country-specific basic information fields'),
+      companyId: z.string().optional().describe('Company ID if managing multiple companies'),
+      type: z.string().optional().describe('Employment type (e.g., employee, contractor)'),
+      seniorityDate: z.string().optional().describe('Seniority date (YYYY-MM-DD)')
+    })
+  )
+  .output(
+    z.object({
+      employment: z.record(z.string(), z.any()).describe('Created employment record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment ?? 'production',
+      environment: ctx.config.environment ?? 'production'
     });
 
     let data: Record<string, any> = {
@@ -43,8 +47,8 @@ export let createEmployment = SlateTool.create(
         full_name: ctx.input.fullName,
         job_title: ctx.input.jobTitle,
         provisional_start_date: ctx.input.provisionalStartDate,
-        ...ctx.input.basicInformation,
-      },
+        ...ctx.input.basicInformation
+      }
     };
 
     if (ctx.input.companyId) data.company_id = ctx.input.companyId;
@@ -56,8 +60,8 @@ export let createEmployment = SlateTool.create(
 
     return {
       output: {
-        employment,
+        employment
       },
-      message: `Created employment for **${ctx.input.fullName}** in ${ctx.input.countryCode}.`,
+      message: `Created employment for **${ctx.input.fullName}** in ${ctx.input.countryCode}.`
     };
   });

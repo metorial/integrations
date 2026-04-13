@@ -70,6 +70,7 @@ Chameleon supports both incoming and outgoing webhooks for real-time data exchan
 Outgoing Webhooks can be used to send data from Chameleon to other services, and are available for the following "topics" (fired whenever the associated event occurs):
 
 **Tour Events:**
+
 - Tour started – Fired when a user begins a tour.
 - Tour completed – Fired when a user finishes all steps of a tour.
 - Tour exited – Fired when a user dismisses/closes a tour before completing it.
@@ -77,6 +78,7 @@ Outgoing Webhooks can be used to send data from Chameleon to other services, and
 - Tour Button clicked – Fired when a user clicks a button within a tour step.
 
 **Microsurvey Events:**
+
 - Microsurvey submitted – Fired when a user submits a microsurvey response. Available on all plans.
 - Microsurvey started – Fired when a user begins a microsurvey.
 - Microsurvey completed – Fired when a user finishes a microsurvey.
@@ -85,6 +87,7 @@ Outgoing Webhooks can be used to send data from Chameleon to other services, and
 - Microsurvey Button clicked – Fired when a user clicks a button in a microsurvey.
 
 **HelpBar Events:**
+
 - HelpBar search – Fired when a user performs a search query in the HelpBar.
 - HelpBar answer – Fired when the AI provides an answer in the HelpBar.
 - HelpBar item action – Fired when a user accesses a resource in the HelpBar.

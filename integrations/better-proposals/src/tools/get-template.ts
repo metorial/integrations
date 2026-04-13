@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTemplate = SlateTool.create(
-  spec,
-  {
-    name: 'Get Template',
-    key: 'get_template',
-    description: `Retrieves detailed information about a specific template by its ID. Use this to inspect template contents before creating a proposal.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getTemplate = SlateTool.create(spec, {
+  name: 'Get Template',
+  key: 'get_template',
+  description: `Retrieves detailed information about a specific template by its ID. Use this to inspect template contents before creating a proposal.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    templateId: z.string().describe('The unique ID of the template to retrieve'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API'),
-    template: z.any().describe('Full template details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      templateId: z.string().describe('The unique ID of the template to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API'),
+      template: z.any().describe('Full template details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getTemplate(ctx.input.templateId);
@@ -30,9 +31,9 @@ export let getTemplate = SlateTool.create(
     return {
       output: {
         status: result.status ?? 'success',
-        template: result.data,
+        template: result.data
       },
-      message: `Retrieved template **${ctx.input.templateId}**.`,
+      message: `Retrieved template **${ctx.input.templateId}**.`
     };
   })
   .build();

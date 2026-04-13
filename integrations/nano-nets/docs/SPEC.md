@@ -16,6 +16,7 @@ The Basic HTTP Authentication Scheme is used for authorization through the Autho
 - The `Authorization` header value is `Basic <base64_encoded_string>`, where `<base64_encoded_string>` is the Base64 encoding of `<api_key>:` (API key followed by a colon, with no password).
 
 **Example (curl):**
+
 ```
 curl -u "YOUR_API_KEY:" https://app.nanonets.com/api/v2/OCR/Models/
 ```
@@ -28,6 +29,7 @@ Navigate to the left panel of the "Extract Data" screen and click on "Account In
 ## Features
 
 ### Workflow Management
+
 Create and manage document processing workflows (also called models). Nanonets provides an AI-driven Intelligent Document Processing API that transforms unstructured documents into structured data. Workflows can be configured as "instant learning" (zero-shot, no training needed) or custom-trained models. You define the fields and table headers you want extracted from documents.
 
 - **Workflow types:** Instant learning (default) and custom-trained models.
@@ -35,6 +37,7 @@ Create and manage document processing workflows (also called models). Nanonets p
 - Pre-built models are available for common document types like invoices, receipts, purchase orders, bank statements, bills of lading, passports, and driver's licenses.
 
 ### Document Processing & Data Extraction
+
 Upload documents (PDFs, images) to a workflow and receive extracted structured data including fields and tables with bounding box coordinates and confidence scores.
 
 - Extract structured data from various document types (invoices, receipts, forms, etc.)
@@ -44,18 +47,21 @@ Upload documents (PDFs, images) to a workflow and receive extracted structured d
 - Selective page processing is supported (e.g., process only specific pages of a PDF).
 
 ### Image Classification
+
 Create models that classify images into predefined categories. The models that can be built are Image Classification, Multi-label Classification, Object Detection, and OCR.
 
 - Define categories, upload labeled training images (minimum 25 per category), and train a model.
 - Run predictions on images via file upload or URL to get category labels with probability scores.
 
 ### Object Detection
+
 Create models that detect and locate objects within images, returning bounding box coordinates for each detected object.
 
 - Upload images with bounding box annotations for training.
 - Run predictions to get object locations and classifications within images.
 
 ### Model Training & Management
+
 Train custom AI models with your own labeled data and manage their lifecycle.
 
 - Upload training data (images with annotations) via files or URLs.
@@ -64,6 +70,7 @@ Train custom AI models with your own labeled data and manage their lifecycle.
 - Retrain models with additional data to improve accuracy.
 
 ### File Review & Approval
+
 Manage a human-in-the-loop review process for extracted data.
 
 - Approve, reject, or moderate extracted predictions.
@@ -72,6 +79,7 @@ Manage a human-in-the-loop review process for extracted data.
 - Configure multi-stage approval workflows with user groups and delegation.
 
 ### Data Actions & Post-Processing
+
 Apply transformations and validations to extracted data within workflows.
 
 - Formatting operations: date formatting, currency detection, find & replace, regex matching, case changes, number formatting, etc.
@@ -80,6 +88,7 @@ Apply transformations and validations to extracted data within workflows.
 - Custom Python post-processing scripts.
 
 ### Document Import & Export
+
 Import documents from various sources and export processed data to external platforms.
 
 - Nanonets supports multiple import options. You can set up an import block to automatically upload files based on specific triggers. Sources include email, Dropbox, Google Drive, OneDrive, SharePoint, and Zapier.
@@ -90,6 +99,7 @@ Import documents from various sources and export processed data to external plat
 Nanonets supports webhook-based event notifications for document processing workflows.
 
 ### Document Processing Events
+
 By setting up a Webhook, you can configure Nanonets to send notifications directly to a URL of your choice. This feature ensures that you receive real-time updates whenever a file is processed or approved.
 
 Supported webhook triggers:
@@ -101,6 +111,7 @@ Supported webhook triggers:
 - **On Rejection:** Fires when a file is manually rejected.
 
 **Configuration options:**
+
 - Export granularity can be set to document level or page level.
 - Conditional exports can be configured based on extracted data fields, combining conditions using 'AND' and 'OR' operators.
 - The webhook payload includes extracted fields, predicted bounding boxes, moderated boxes, raw OCR data, approval status, and file metadata.

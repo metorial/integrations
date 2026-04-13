@@ -31,6 +31,7 @@ For scenarios without a user present, JWT Grant provides high security, though d
 ### Scopes
 
 Key scopes include:
+
 - `signature` — Access to the eSignature REST API
 - `impersonation` — Required for JWT Grant to act on behalf of a user
 - `extended` — Extends refresh token lifetime
@@ -113,6 +114,7 @@ Enable a user to be granted permissions to send or manage envelopes on another u
 DocuSign provides webhooks through its **Connect** notification service. DocuSign offers account-wide webhooks via Connect Custom configurations (subscriptions) and envelope-specific webhooks via the Envelopes:create `eventNotification` attribute.
 
 Webhooks can be configured at two levels:
+
 - Account webhooks can notify your app anytime any envelope in your account has a status change.
 - Envelope webhooks are set per envelope. The envelope is typically created by an API request, by including the webhook configuration information as an `eventNotification` section of the request.
 

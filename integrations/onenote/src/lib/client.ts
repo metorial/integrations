@@ -74,7 +74,7 @@ let mapNotebook = (nb: any): NotebookResponse => ({
   sectionGroupsUrl: nb.sectionGroupsUrl ?? '',
   selfUrl: nb.self ?? '',
   createdBy: nb.createdBy ?? {},
-  lastModifiedBy: nb.lastModifiedBy ?? {},
+  lastModifiedBy: nb.lastModifiedBy ?? {}
 });
 
 let mapSection = (s: any): SectionResponse => ({
@@ -86,7 +86,7 @@ let mapSection = (s: any): SectionResponse => ({
   pagesUrl: s.pagesUrl ?? '',
   selfUrl: s.self ?? '',
   parentNotebookId: s.parentNotebook?.id,
-  parentSectionGroupId: s.parentSectionGroup?.id,
+  parentSectionGroupId: s.parentSectionGroup?.id
 });
 
 let mapSectionGroup = (sg: any): SectionGroupResponse => ({
@@ -98,7 +98,7 @@ let mapSectionGroup = (sg: any): SectionGroupResponse => ({
   sectionGroupsUrl: sg.sectionGroupsUrl ?? '',
   selfUrl: sg.self ?? '',
   parentNotebookId: sg.parentNotebook?.id,
-  parentSectionGroupId: sg.parentSectionGroup?.id,
+  parentSectionGroupId: sg.parentSectionGroup?.id
 });
 
 let mapPage = (p: any): PageResponse => ({
@@ -110,7 +110,7 @@ let mapPage = (p: any): PageResponse => ({
   selfUrl: p.self ?? '',
   parentSectionId: p.parentSection?.id,
   level: p.level ?? 0,
-  order: p.order ?? 0,
+  order: p.order ?? 0
 });
 
 export class Client {
@@ -120,8 +120,8 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -146,7 +146,7 @@ export class Client {
 
     return {
       notebooks: (data.value ?? []).map(mapNotebook),
-      nextLink: data['@odata.nextLink'],
+      nextLink: data['@odata.nextLink']
     };
   }
 
@@ -160,32 +160,41 @@ export class Client {
     return mapNotebook(response.data);
   }
 
-  async copyNotebook(notebookId: string, params: {
-    groupId?: string;
-    renameAs?: string;
-    siteCollectionId?: string;
-    siteId?: string;
-  }): Promise<CopyOperationResponse> {
-    let response = await this.http.post(`/me/onenote/notebooks/${notebookId}/copyNotebook`, params);
+  async copyNotebook(
+    notebookId: string,
+    params: {
+      groupId?: string;
+      renameAs?: string;
+      siteCollectionId?: string;
+      siteId?: string;
+    }
+  ): Promise<CopyOperationResponse> {
+    let response = await this.http.post(
+      `/me/onenote/notebooks/${notebookId}/copyNotebook`,
+      params
+    );
     let op = response.data;
     return {
       operationId: op.id ?? '',
       status: op.status ?? 'unknown',
       resourceLocation: op.resourceLocation,
       percentComplete: op.percentComplete,
-      createdDateTime: op.createdDateTime ?? new Date().toISOString(),
+      createdDateTime: op.createdDateTime ?? new Date().toISOString()
     };
   }
 
   // --- Sections ---
 
-  async listSections(notebookId: string, params?: {
-    filter?: string;
-    orderBy?: string;
-    top?: number;
-    skip?: number;
-    select?: string;
-  }): Promise<{ sections: SectionResponse[]; nextLink?: string }> {
+  async listSections(
+    notebookId: string,
+    params?: {
+      filter?: string;
+      orderBy?: string;
+      top?: number;
+      skip?: number;
+      select?: string;
+    }
+  ): Promise<{ sections: SectionResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
     if (params?.filter) queryParams['$filter'] = params.filter;
     if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
@@ -193,12 +202,14 @@ export class Client {
     if (params?.skip) queryParams['$skip'] = String(params.skip);
     if (params?.select) queryParams['$select'] = params.select;
 
-    let response = await this.http.get(`/me/onenote/notebooks/${notebookId}/sections`, { params: queryParams });
+    let response = await this.http.get(`/me/onenote/notebooks/${notebookId}/sections`, {
+      params: queryParams
+    });
     let data = response.data;
 
     return {
       sections: (data.value ?? []).map(mapSection),
-      nextLink: data['@odata.nextLink'],
+      nextLink: data['@odata.nextLink']
     };
   }
 
@@ -208,23 +219,34 @@ export class Client {
   }
 
   async createSection(notebookId: string, displayName: string): Promise<SectionResponse> {
-    let response = await this.http.post(`/me/onenote/notebooks/${notebookId}/sections`, { displayName });
+    let response = await this.http.post(`/me/onenote/notebooks/${notebookId}/sections`, {
+      displayName
+    });
     return mapSection(response.data);
   }
 
-  async createSectionInGroup(sectionGroupId: string, displayName: string): Promise<SectionResponse> {
-    let response = await this.http.post(`/me/onenote/sectionGroups/${sectionGroupId}/sections`, { displayName });
+  async createSectionInGroup(
+    sectionGroupId: string,
+    displayName: string
+  ): Promise<SectionResponse> {
+    let response = await this.http.post(
+      `/me/onenote/sectionGroups/${sectionGroupId}/sections`,
+      { displayName }
+    );
     return mapSection(response.data);
   }
 
-  async copySection(sectionId: string, params: {
-    destinationNotebookId?: string;
-    destinationSectionGroupId?: string;
-    renameAs?: string;
-    siteCollectionId?: string;
-    siteId?: string;
-    groupId?: string;
-  }): Promise<CopyOperationResponse> {
+  async copySection(
+    sectionId: string,
+    params: {
+      destinationNotebookId?: string;
+      destinationSectionGroupId?: string;
+      renameAs?: string;
+      siteCollectionId?: string;
+      siteId?: string;
+      groupId?: string;
+    }
+  ): Promise<CopyOperationResponse> {
     let body: Record<string, string> = {};
     if (params.destinationNotebookId) body['id'] = params.destinationNotebookId;
     if (params.destinationSectionGroupId) body['id'] = params.destinationSectionGroupId;
@@ -233,37 +255,45 @@ export class Client {
     if (params.siteId) body['siteId'] = params.siteId;
     if (params.groupId) body['groupId'] = params.groupId;
 
-    let response = await this.http.post(`/me/onenote/sections/${sectionId}/copyToNotebook`, body);
+    let response = await this.http.post(
+      `/me/onenote/sections/${sectionId}/copyToNotebook`,
+      body
+    );
     let op = response.data;
     return {
       operationId: op.id ?? '',
       status: op.status ?? 'unknown',
       resourceLocation: op.resourceLocation,
       percentComplete: op.percentComplete,
-      createdDateTime: op.createdDateTime ?? new Date().toISOString(),
+      createdDateTime: op.createdDateTime ?? new Date().toISOString()
     };
   }
 
   // --- Section Groups ---
 
-  async listSectionGroups(notebookId: string, params?: {
-    filter?: string;
-    orderBy?: string;
-    top?: number;
-    skip?: number;
-  }): Promise<{ sectionGroups: SectionGroupResponse[]; nextLink?: string }> {
+  async listSectionGroups(
+    notebookId: string,
+    params?: {
+      filter?: string;
+      orderBy?: string;
+      top?: number;
+      skip?: number;
+    }
+  ): Promise<{ sectionGroups: SectionGroupResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
     if (params?.filter) queryParams['$filter'] = params.filter;
     if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
     if (params?.top) queryParams['$top'] = String(params.top);
     if (params?.skip) queryParams['$skip'] = String(params.skip);
 
-    let response = await this.http.get(`/me/onenote/notebooks/${notebookId}/sectionGroups`, { params: queryParams });
+    let response = await this.http.get(`/me/onenote/notebooks/${notebookId}/sectionGroups`, {
+      params: queryParams
+    });
     let data = response.data;
 
     return {
       sectionGroups: (data.value ?? []).map(mapSectionGroup),
-      nextLink: data['@odata.nextLink'],
+      nextLink: data['@odata.nextLink']
     };
   }
 
@@ -272,26 +302,40 @@ export class Client {
     return mapSectionGroup(response.data);
   }
 
-  async createSectionGroup(notebookId: string, displayName: string): Promise<SectionGroupResponse> {
-    let response = await this.http.post(`/me/onenote/notebooks/${notebookId}/sectionGroups`, { displayName });
+  async createSectionGroup(
+    notebookId: string,
+    displayName: string
+  ): Promise<SectionGroupResponse> {
+    let response = await this.http.post(`/me/onenote/notebooks/${notebookId}/sectionGroups`, {
+      displayName
+    });
     return mapSectionGroup(response.data);
   }
 
-  async createNestedSectionGroup(parentSectionGroupId: string, displayName: string): Promise<SectionGroupResponse> {
-    let response = await this.http.post(`/me/onenote/sectionGroups/${parentSectionGroupId}/sectionGroups`, { displayName });
+  async createNestedSectionGroup(
+    parentSectionGroupId: string,
+    displayName: string
+  ): Promise<SectionGroupResponse> {
+    let response = await this.http.post(
+      `/me/onenote/sectionGroups/${parentSectionGroupId}/sectionGroups`,
+      { displayName }
+    );
     return mapSectionGroup(response.data);
   }
 
   // --- Pages ---
 
-  async listPages(sectionId: string, params?: {
-    filter?: string;
-    orderBy?: string;
-    top?: number;
-    skip?: number;
-    select?: string;
-    search?: string;
-  }): Promise<{ pages: PageResponse[]; nextLink?: string }> {
+  async listPages(
+    sectionId: string,
+    params?: {
+      filter?: string;
+      orderBy?: string;
+      top?: number;
+      skip?: number;
+      select?: string;
+      search?: string;
+    }
+  ): Promise<{ pages: PageResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
     if (params?.filter) queryParams['$filter'] = params.filter;
     if (params?.orderBy) queryParams['$orderby'] = params.orderBy;
@@ -300,12 +344,14 @@ export class Client {
     if (params?.select) queryParams['$select'] = params.select;
     if (params?.search) queryParams['$search'] = params.search;
 
-    let response = await this.http.get(`/me/onenote/sections/${sectionId}/pages`, { params: queryParams });
+    let response = await this.http.get(`/me/onenote/sections/${sectionId}/pages`, {
+      params: queryParams
+    });
     let data = response.data;
 
     return {
       pages: (data.value ?? []).map(mapPage),
-      nextLink: data['@odata.nextLink'],
+      nextLink: data['@odata.nextLink']
     };
   }
 
@@ -317,7 +363,7 @@ export class Client {
   async getPageContent(pageId: string): Promise<string> {
     let response = await this.http.get(`/me/onenote/pages/${pageId}/content`, {
       headers: { Accept: 'text/html' },
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
@@ -325,7 +371,7 @@ export class Client {
   async getPagePreview(pageId: string): Promise<PagePreviewResponse> {
     let response = await this.http.get(`/me/onenote/pages/${pageId}/preview`);
     return {
-      previewText: response.data.previewText ?? '',
+      previewText: response.data.previewText ?? ''
     };
   }
 
@@ -335,25 +381,34 @@ export class Client {
       htmlContent,
       {
         headers: {
-          'Content-Type': 'text/html',
-        },
+          'Content-Type': 'text/html'
+        }
       }
     );
     return mapPage(response.data);
   }
 
-  async updatePageContent(pageId: string, operations: Array<{
-    target: string;
-    action: 'replace' | 'append' | 'delete' | 'insert' | 'prepend';
-    content?: string;
-    position?: 'after' | 'before';
-  }>): Promise<void> {
+  async updatePageContent(
+    pageId: string,
+    operations: Array<{
+      target: string;
+      action: 'replace' | 'append' | 'delete' | 'insert' | 'prepend';
+      content?: string;
+      position?: 'after' | 'before';
+    }>
+  ): Promise<void> {
     await this.http.patch(`/me/onenote/pages/${pageId}/content`, operations);
   }
 
-  async copyPageToSection(pageId: string, destinationSectionId: string, groupId?: string, siteCollectionId?: string, siteId?: string): Promise<CopyOperationResponse> {
+  async copyPageToSection(
+    pageId: string,
+    destinationSectionId: string,
+    groupId?: string,
+    siteCollectionId?: string,
+    siteId?: string
+  ): Promise<CopyOperationResponse> {
     let body: Record<string, string> = {
-      id: destinationSectionId,
+      id: destinationSectionId
     };
     if (groupId) body['groupId'] = groupId;
     if (siteCollectionId) body['siteCollectionId'] = siteCollectionId;
@@ -366,7 +421,7 @@ export class Client {
       status: op.status ?? 'unknown',
       resourceLocation: op.resourceLocation,
       percentComplete: op.percentComplete,
-      createdDateTime: op.createdDateTime ?? new Date().toISOString(),
+      createdDateTime: op.createdDateTime ?? new Date().toISOString()
     };
   }
 
@@ -376,11 +431,14 @@ export class Client {
 
   // --- Search ---
 
-  async searchPages(query: string, params?: {
-    top?: number;
-    skip?: number;
-    filter?: string;
-  }): Promise<{ pages: PageResponse[]; nextLink?: string }> {
+  async searchPages(
+    query: string,
+    params?: {
+      top?: number;
+      skip?: number;
+      filter?: string;
+    }
+  ): Promise<{ pages: PageResponse[]; nextLink?: string }> {
     let queryParams: Record<string, string> = {};
     if (params?.filter) queryParams['$filter'] = params.filter;
     if (params?.top) queryParams['$top'] = String(params.top);
@@ -392,24 +450,30 @@ export class Client {
 
     return {
       pages: (data.value ?? []).map(mapPage),
-      nextLink: data['@odata.nextLink'],
+      nextLink: data['@odata.nextLink']
     };
   }
 
   // --- Recent Notebooks ---
 
-  async getRecentNotebooks(includePersonalNotebooks: boolean = true): Promise<Array<{
-    displayName: string;
-    lastAccessedTime: string;
-    sourceService: string;
-    notebookUrl: string;
-  }>> {
-    let response = await this.http.get('/me/onenote/notebooks/getRecentNotebooks(includePersonalNotebooks=' + includePersonalNotebooks + ')');
+  async getRecentNotebooks(includePersonalNotebooks: boolean = true): Promise<
+    Array<{
+      displayName: string;
+      lastAccessedTime: string;
+      sourceService: string;
+      notebookUrl: string;
+    }>
+  > {
+    let response = await this.http.get(
+      '/me/onenote/notebooks/getRecentNotebooks(includePersonalNotebooks=' +
+        includePersonalNotebooks +
+        ')'
+    );
     return (response.data.value ?? []).map((nb: any) => ({
       displayName: nb.displayName,
       lastAccessedTime: nb.lastAccessedTime ?? '',
       sourceService: nb.sourceService ?? '',
-      notebookUrl: nb.links?.oneNoteWebUrl?.href ?? '',
+      notebookUrl: nb.links?.oneNoteWebUrl?.href ?? ''
     }));
   }
 }

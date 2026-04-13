@@ -13,7 +13,7 @@ import {
   getSuiteRun,
   listSuiteRuns,
   stopSuiteRun,
-  listProfiles,
+  listProfiles
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     getSuiteRun,
     listSuiteRuns,
     stopSuiteRun,
-    listProfiles,
+    listProfiles
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

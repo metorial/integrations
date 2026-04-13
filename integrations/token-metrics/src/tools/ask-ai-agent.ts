@@ -3,25 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let askAiAgent = SlateTool.create(
-  spec,
-  {
-    name: 'Ask AI Agent',
-    key: 'ask_ai_agent',
-    description: `Ask questions to Token Metrics' AI chatbot in plain English and receive crypto market insights, token analyses, or instant dashboards on demand. Supports conversational interaction with message history for follow-up questions.`,
-    tags: {
-      readOnly: true,
-    },
+export let askAiAgent = SlateTool.create(spec, {
+  name: 'Ask AI Agent',
+  key: 'ask_ai_agent',
+  description: `Ask questions to Token Metrics' AI chatbot in plain English and receive crypto market insights, token analyses, or instant dashboards on demand. Supports conversational interaction with message history for follow-up questions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    question: z.string().describe('The question to ask the AI agent in plain English'),
-    previousMessages: z.array(z.string()).optional().describe('Previous questions in the conversation for context'),
-  }))
-  .output(z.object({
-    answer: z.string().describe('The AI agent response'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      question: z.string().describe('The question to ask the AI agent in plain English'),
+      previousMessages: z
+        .array(z.string())
+        .optional()
+        .describe('Previous questions in the conversation for context')
+    })
+  )
+  .output(
+    z.object({
+      answer: z.string().describe('The AI agent response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let messages: Array<{ user: string }> = [];
@@ -37,6 +41,7 @@ export let askAiAgent = SlateTool.create(
 
     return {
       output: { answer },
-      message: `AI Agent responded to: "${ctx.input.question}"`,
+      message: `AI Agent responded to: "${ctx.input.question}"`
     };
-  }).build();
+  })
+  .build();

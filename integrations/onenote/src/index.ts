@@ -14,7 +14,7 @@ import {
   updatePageContent,
   deletePage,
   searchPages,
-  copyContent,
+  copyContent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     updatePageContent,
     deletePage,
     searchPages,
-    copyContent,
+    copyContent
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

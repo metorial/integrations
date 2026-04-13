@@ -13,32 +13,39 @@ let cartItemSchema = z.object({
   categories: z.array(z.string()).optional().describe('Item categories'),
   imageUrl: z.string().optional().describe('URL of the item image'),
   url: z.string().optional().describe('URL of the item page'),
-  itemFields: z.record(z.string(), z.any()).optional().describe('Additional custom fields for this item')
+  itemFields: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Additional custom fields for this item')
 });
 
-export let updateCart = SlateTool.create(
-  spec,
-  {
-    name: 'Update Cart',
-    key: 'update_cart',
-    description: `Updates the shopping cart for a user in Iterable. Replaces the user's current cart contents with the provided items. Used for cart abandonment campaigns and commerce workflows.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateCart = SlateTool.create(spec, {
+  name: 'Update Cart',
+  key: 'update_cart',
+  description: `Updates the shopping cart for a user in Iterable. Replaces the user's current cart contents with the provided items. Used for cart abandonment campaigns and commerce workflows.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Email of the user'),
-    userId: z.string().optional().describe('User ID'),
-    items: z.array(cartItemSchema).describe('Current cart items (replaces the entire cart)'),
-    createNewFields: z.boolean().optional().describe('If true, creates new fields that do not already exist')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the cart was updated'),
-    message: z.string().describe('Response message')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Email of the user'),
+      userId: z.string().optional().describe('User ID'),
+      items: z.array(cartItemSchema).describe('Current cart items (replaces the entire cart)'),
+      createNewFields: z
+        .boolean()
+        .optional()
+        .describe('If true, creates new fields that do not already exist')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the cart was updated'),
+      message: z.string().describe('Response message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new IterableClient({
       token: ctx.auth.token,
       dataCenter: ctx.config.dataCenter
@@ -71,4 +78,5 @@ export let updateCart = SlateTool.create(
       },
       message: `Updated cart with **${ctx.input.items.length}** item(s) for user **${ctx.input.email || ctx.input.userId}**.`
     };
-  }).build();
+  })
+  .build();

@@ -13,7 +13,7 @@ export class Client {
     return createAxios({
       baseURL: `https://${this.domain}.mocoapp.com/api/v1`,
       headers: {
-        'Authorization': `Token token=${this.token}`,
+        Authorization: `Token token=${this.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -134,7 +134,11 @@ export class Client {
     return response.data;
   }
 
-  async updateProjectContract(projectId: number, contractId: number, data: Record<string, any>) {
+  async updateProjectContract(
+    projectId: number,
+    contractId: number,
+    data: Record<string, any>
+  ) {
     let response = await this.http.put(`/projects/${projectId}/contracts/${contractId}`, data);
     return response.data;
   }
@@ -291,7 +295,10 @@ export class Client {
   }
 
   async createInvoicePayment(invoiceId: number, data: Record<string, any>) {
-    let response = await this.http.post(`/invoices/${invoiceId}/payments`, { ...data, invoice_id: invoiceId });
+    let response = await this.http.post(`/invoices/${invoiceId}/payments`, {
+      ...data,
+      invoice_id: invoiceId
+    });
     return response.data;
   }
 

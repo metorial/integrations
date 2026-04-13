@@ -13,7 +13,7 @@ import {
   upsertUser,
   listProducts,
   managePost,
-  sendMessage,
+  sendMessage
 } from './tools';
 import {
   donationEvents,
@@ -21,7 +21,7 @@ import {
   profileEvents,
   userEvents,
   orderEvents,
-  postEvents,
+  postEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -39,7 +39,7 @@ export let provider = Slate.create({
     upsertUser,
     listProducts,
     managePost,
-    sendMessage,
+    sendMessage
   ],
   triggers: [
     donationEvents,
@@ -47,6 +47,6 @@ export let provider = Slate.create({
     profileEvents,
     userEvents,
     orderEvents,
-    postEvents,
-  ],
+    postEvents
+  ]
 });

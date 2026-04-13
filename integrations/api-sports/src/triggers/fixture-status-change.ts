@@ -3,51 +3,63 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fixtureStatusChangeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Fixture Status Change',
-    key: 'fixture_status_change',
-    description: 'Triggers when a fixture starts, finishes, or changes status (e.g., halftime, extra time). Polls for live fixtures and detects status transitions. Covers football and other supported sports.',
-  }
-)
-  .input(z.object({
-    fixtureId: z.number().describe('Fixture ID'),
-    homeTeamName: z.string().nullable().describe('Home team name'),
-    awayTeamName: z.string().nullable().describe('Away team name'),
-    homeTeamId: z.number().nullable().describe('Home team ID'),
-    awayTeamId: z.number().nullable().describe('Away team ID'),
-    leagueName: z.string().nullable().describe('League name'),
-    leagueId: z.number().nullable().describe('League ID'),
-    statusShort: z.string().describe('Short status code'),
-    statusLong: z.string().nullable().describe('Full status description'),
-    homeScore: z.number().nullable().describe('Home team score'),
-    awayScore: z.number().nullable().describe('Away team score'),
-    elapsed: z.number().nullable().describe('Elapsed minutes'),
-    date: z.string().nullable().describe('Fixture date'),
-    changeType: z.enum(['started', 'halftime', 'second_half', 'extra_time', 'penalties', 'finished', 'status_changed']).describe('Type of status change'),
-  }))
-  .output(z.object({
-    fixtureId: z.number().describe('Fixture ID'),
-    homeTeamName: z.string().nullable().describe('Home team name'),
-    awayTeamName: z.string().nullable().describe('Away team name'),
-    homeTeamId: z.number().nullable().describe('Home team ID'),
-    awayTeamId: z.number().nullable().describe('Away team ID'),
-    leagueName: z.string().nullable().describe('League name'),
-    leagueId: z.number().nullable().describe('League ID'),
-    statusShort: z.string().describe('Current short status code'),
-    statusLong: z.string().nullable().describe('Current full status description'),
-    homeScore: z.number().nullable().describe('Current home team score'),
-    awayScore: z.number().nullable().describe('Current away team score'),
-    elapsed: z.number().nullable().describe('Elapsed minutes'),
-    date: z.string().nullable().describe('Fixture date'),
-  }))
+export let fixtureStatusChangeTrigger = SlateTrigger.create(spec, {
+  name: 'Fixture Status Change',
+  key: 'fixture_status_change',
+  description:
+    'Triggers when a fixture starts, finishes, or changes status (e.g., halftime, extra time). Polls for live fixtures and detects status transitions. Covers football and other supported sports.'
+})
+  .input(
+    z.object({
+      fixtureId: z.number().describe('Fixture ID'),
+      homeTeamName: z.string().nullable().describe('Home team name'),
+      awayTeamName: z.string().nullable().describe('Away team name'),
+      homeTeamId: z.number().nullable().describe('Home team ID'),
+      awayTeamId: z.number().nullable().describe('Away team ID'),
+      leagueName: z.string().nullable().describe('League name'),
+      leagueId: z.number().nullable().describe('League ID'),
+      statusShort: z.string().describe('Short status code'),
+      statusLong: z.string().nullable().describe('Full status description'),
+      homeScore: z.number().nullable().describe('Home team score'),
+      awayScore: z.number().nullable().describe('Away team score'),
+      elapsed: z.number().nullable().describe('Elapsed minutes'),
+      date: z.string().nullable().describe('Fixture date'),
+      changeType: z
+        .enum([
+          'started',
+          'halftime',
+          'second_half',
+          'extra_time',
+          'penalties',
+          'finished',
+          'status_changed'
+        ])
+        .describe('Type of status change')
+    })
+  )
+  .output(
+    z.object({
+      fixtureId: z.number().describe('Fixture ID'),
+      homeTeamName: z.string().nullable().describe('Home team name'),
+      awayTeamName: z.string().nullable().describe('Away team name'),
+      homeTeamId: z.number().nullable().describe('Home team ID'),
+      awayTeamId: z.number().nullable().describe('Away team ID'),
+      leagueName: z.string().nullable().describe('League name'),
+      leagueId: z.number().nullable().describe('League ID'),
+      statusShort: z.string().describe('Current short status code'),
+      statusLong: z.string().nullable().describe('Current full status description'),
+      homeScore: z.number().nullable().describe('Current home team score'),
+      awayScore: z.number().nullable().describe('Current away team score'),
+      elapsed: z.number().nullable().describe('Elapsed minutes'),
+      date: z.string().nullable().describe('Fixture date')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let sport = ctx.config.sport;
       let client = new Client({ token: ctx.auth.token, sport });
 
@@ -114,11 +126,17 @@ export let fixtureStatusChangeTrigger = SlateTrigger.create(
             leagueId: isFootball ? (item.league?.id ?? null) : (item.league?.id ?? null),
             statusShort,
             statusLong,
-            homeScore: isFootball ? (goals.home ?? null) : (goals.home?.total ?? goals.home ?? null),
-            awayScore: isFootball ? (goals.away ?? null) : (goals.away?.total ?? goals.away ?? null),
-            elapsed: isFootball ? (item.fixture?.status?.elapsed ?? null) : (item.status?.timer ?? null),
+            homeScore: isFootball
+              ? (goals.home ?? null)
+              : (goals.home?.total ?? goals.home ?? null),
+            awayScore: isFootball
+              ? (goals.away ?? null)
+              : (goals.away?.total ?? goals.away ?? null),
+            elapsed: isFootball
+              ? (item.fixture?.status?.elapsed ?? null)
+              : (item.status?.timer ?? null),
             date: isFootball ? (item.fixture?.date ?? null) : (item.date ?? null),
-            changeType,
+            changeType
           });
         }
       }
@@ -137,12 +155,12 @@ export let fixtureStatusChangeTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           fixtureStatuses: { ...currentStatuses },
-          previouslyLive: { ...currentlyLive },
-        },
+          previouslyLive: { ...currentlyLive }
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       return {
         type: `fixture.${input.changeType}`,
@@ -160,8 +178,9 @@ export let fixtureStatusChangeTrigger = SlateTrigger.create(
           homeScore: input.homeScore,
           awayScore: input.awayScore,
           elapsed: input.elapsed,
-          date: input.date,
-        },
+          date: input.date
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

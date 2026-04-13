@@ -1,7 +1,7 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 // @ts-ignore -- Buffer import required for Function Bay ncc build environment
-import { Buffer } from 'node:buffer';
+import { Buffer } from 'buffer';
 
 let BASE_URLS: Record<string, string> = {
   global: 'https://api.affinda.com/v3',
@@ -59,11 +59,14 @@ export class Client {
     if (params.customIdentifier) data.custom_identifier = params.customIdentifier;
     if (params.fileName) data.file_name = params.fileName;
     if (params.language) data.language = params.language;
-    if (params.rejectDuplicates !== undefined) data.reject_duplicates = params.rejectDuplicates;
+    if (params.rejectDuplicates !== undefined)
+      data.reject_duplicates = params.rejectDuplicates;
     if (params.lowPriority !== undefined) data.low_priority = params.lowPriority;
     if (params.compact !== undefined) data.compact = params.compact;
-    if (params.deleteAfterParse !== undefined) data.delete_after_parse = params.deleteAfterParse;
-    if (params.enableValidationTool !== undefined) data.enable_validation_tool = params.enableValidationTool;
+    if (params.deleteAfterParse !== undefined)
+      data.delete_after_parse = params.deleteAfterParse;
+    if (params.enableValidationTool !== undefined)
+      data.enable_validation_tool = params.enableValidationTool;
 
     if (params.file) {
       let buffer = Buffer.from(params.file.data, 'base64');
@@ -81,7 +84,10 @@ export class Client {
     return response.data;
   }
 
-  async getDocument(identifier: string, params?: { format?: string; compact?: boolean }): Promise<any> {
+  async getDocument(
+    identifier: string,
+    params?: { format?: string; compact?: boolean }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.format) queryParams.format = params.format;
     if (params?.compact !== undefined) queryParams.compact = params.compact;
@@ -138,27 +144,37 @@ export class Client {
     await this.axios.delete(`/documents/${identifier}`);
   }
 
-  async getRedactedDocument(identifier: string, params?: {
-    redactHeadshot?: boolean;
-    redactPersonalDetails?: boolean;
-    redactWorkDetails?: boolean;
-    redactEducationDetails?: boolean;
-    redactReferees?: boolean;
-    redactLocations?: boolean;
-    redactDates?: boolean;
-    redactGender?: boolean;
-    redactPdfMetadata?: boolean;
-  }): Promise<string> {
+  async getRedactedDocument(
+    identifier: string,
+    params?: {
+      redactHeadshot?: boolean;
+      redactPersonalDetails?: boolean;
+      redactWorkDetails?: boolean;
+      redactEducationDetails?: boolean;
+      redactReferees?: boolean;
+      redactLocations?: boolean;
+      redactDates?: boolean;
+      redactGender?: boolean;
+      redactPdfMetadata?: boolean;
+    }
+  ): Promise<string> {
     let queryParams: Record<string, any> = {};
-    if (params?.redactHeadshot !== undefined) queryParams.redact_headshot = params.redactHeadshot;
-    if (params?.redactPersonalDetails !== undefined) queryParams.redact_personal_details = params.redactPersonalDetails;
-    if (params?.redactWorkDetails !== undefined) queryParams.redact_work_details = params.redactWorkDetails;
-    if (params?.redactEducationDetails !== undefined) queryParams.redact_education_details = params.redactEducationDetails;
-    if (params?.redactReferees !== undefined) queryParams.redact_referees = params.redactReferees;
-    if (params?.redactLocations !== undefined) queryParams.redact_locations = params.redactLocations;
+    if (params?.redactHeadshot !== undefined)
+      queryParams.redact_headshot = params.redactHeadshot;
+    if (params?.redactPersonalDetails !== undefined)
+      queryParams.redact_personal_details = params.redactPersonalDetails;
+    if (params?.redactWorkDetails !== undefined)
+      queryParams.redact_work_details = params.redactWorkDetails;
+    if (params?.redactEducationDetails !== undefined)
+      queryParams.redact_education_details = params.redactEducationDetails;
+    if (params?.redactReferees !== undefined)
+      queryParams.redact_referees = params.redactReferees;
+    if (params?.redactLocations !== undefined)
+      queryParams.redact_locations = params.redactLocations;
     if (params?.redactDates !== undefined) queryParams.redact_dates = params.redactDates;
     if (params?.redactGender !== undefined) queryParams.redact_gender = params.redactGender;
-    if (params?.redactPdfMetadata !== undefined) queryParams.redact_pdf_metadata = params.redactPdfMetadata;
+    if (params?.redactPdfMetadata !== undefined)
+      queryParams.redact_pdf_metadata = params.redactPdfMetadata;
 
     let response = await this.axios.get(`/documents/${identifier}/redacted`, {
       params: queryParams,
@@ -210,7 +226,10 @@ export class Client {
 
   // ---- Document Types ----
 
-  async listDocumentTypes(params?: { organization?: string; workspace?: string }): Promise<any> {
+  async listDocumentTypes(params?: {
+    organization?: string;
+    workspace?: string;
+  }): Promise<any> {
     let response = await this.axios.get('/document_types', { params });
     return response.data;
   }
@@ -223,7 +242,9 @@ export class Client {
   // ---- Annotations ----
 
   async listAnnotations(documentIdentifier: string): Promise<any> {
-    let response = await this.axios.get('/annotations', { params: { document: documentIdentifier } });
+    let response = await this.axios.get('/annotations', {
+      params: { document: documentIdentifier }
+    });
     return response.data;
   }
 
@@ -250,7 +271,9 @@ export class Client {
   // ---- Validation Results ----
 
   async listValidationResults(documentIdentifier: string): Promise<any> {
-    let response = await this.axios.get('/validation_results', { params: { document: documentIdentifier } });
+    let response = await this.axios.get('/validation_results', {
+      params: { document: documentIdentifier }
+    });
     return response.data;
   }
 
@@ -299,7 +322,11 @@ export class Client {
     return response.data;
   }
 
-  async matchResumeToJob(resumeIdentifier: string, jobDescriptionIdentifier: string, params?: Record<string, any>): Promise<any> {
+  async matchResumeToJob(
+    resumeIdentifier: string,
+    jobDescriptionIdentifier: string,
+    params?: Record<string, any>
+  ): Promise<any> {
     let queryParams: Record<string, any> = {
       resume: resumeIdentifier,
       job_description: jobDescriptionIdentifier,

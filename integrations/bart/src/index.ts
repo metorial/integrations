@@ -8,7 +8,7 @@ import {
   getRouteInfo,
   getServiceAdvisories,
   getSystemStatus,
-  getSchedule,
+  getSchedule
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getRouteInfo,
     getServiceAdvisories,
     getSystemStatus,
-    getSchedule,
+    getSchedule
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

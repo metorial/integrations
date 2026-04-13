@@ -3,46 +3,51 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let listExpensesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Expenses',
-    key: 'list_expenses',
-    description: `Search and list expenses with filtering by status, date range, category, and vendor.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    status: z.enum(['unbilled', 'invoiced', 'reimbursed', 'non-billable']).optional(),
-    searchText: z.string().optional(),
-    dateFrom: z.string().optional().describe('Filter from date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('Filter to date (YYYY-MM-DD)'),
-    customerId: z.string().optional().describe('Filter by customer ID'),
-    vendorId: z.string().optional().describe('Filter by vendor ID'),
-    page: z.number().optional().default(1),
-    perPage: z.number().optional().default(200)
-  }))
-  .output(z.object({
-    expenses: z.array(z.object({
-      expenseId: z.string(),
-      date: z.string().optional(),
-      accountName: z.string().optional(),
-      description: z.string().optional(),
-      currencyCode: z.string().optional(),
-      total: z.number().optional(),
-      customerName: z.string().optional(),
-      vendorName: z.string().optional(),
-      status: z.string().optional(),
-      isBillable: z.boolean().optional(),
-      createdTime: z.string().optional()
-    })),
-    pageContext: z.object({
-      page: z.number(),
-      perPage: z.number(),
-      hasMorePage: z.boolean()
-    }).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listExpensesTool = SlateTool.create(spec, {
+  name: 'List Expenses',
+  key: 'list_expenses',
+  description: `Search and list expenses with filtering by status, date range, category, and vendor.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      status: z.enum(['unbilled', 'invoiced', 'reimbursed', 'non-billable']).optional(),
+      searchText: z.string().optional(),
+      dateFrom: z.string().optional().describe('Filter from date (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('Filter to date (YYYY-MM-DD)'),
+      customerId: z.string().optional().describe('Filter by customer ID'),
+      vendorId: z.string().optional().describe('Filter by vendor ID'),
+      page: z.number().optional().default(1),
+      perPage: z.number().optional().default(200)
+    })
+  )
+  .output(
+    z.object({
+      expenses: z.array(
+        z.object({
+          expenseId: z.string(),
+          date: z.string().optional(),
+          accountName: z.string().optional(),
+          description: z.string().optional(),
+          currencyCode: z.string().optional(),
+          total: z.number().optional(),
+          customerName: z.string().optional(),
+          vendorName: z.string().optional(),
+          status: z.string().optional(),
+          isBillable: z.boolean().optional(),
+          createdTime: z.string().optional()
+        })
+      ),
+      pageContext: z
+        .object({
+          page: z.number(),
+          perPage: z.number(),
+          hasMorePage: z.boolean()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let query: Record<string, any> = { page: ctx.input.page, per_page: ctx.input.perPage };
     if (ctx.input.status) query.status = ctx.input.status;
@@ -67,53 +72,57 @@ export let listExpensesTool = SlateTool.create(
       createdTime: e.created_time
     }));
 
-    let pageContext = resp.page_context ? {
-      page: resp.page_context.page,
-      perPage: resp.page_context.per_page,
-      hasMorePage: resp.page_context.has_more_page
-    } : undefined;
+    let pageContext = resp.page_context
+      ? {
+          page: resp.page_context.page,
+          perPage: resp.page_context.per_page,
+          hasMorePage: resp.page_context.has_more_page
+        }
+      : undefined;
 
     return {
       output: { expenses, pageContext },
       message: `Found **${expenses.length}** expense(s) on page ${ctx.input.page}.`
     };
-  }).build();
+  })
+  .build();
 
-export let createExpenseTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Expense',
-    key: 'create_expense',
-    description: `Record a new expense with category, amount, vendor, and optional customer billing.`,
-    instructions: [
-      'Provide an accountId (expense category account) and amount.',
-      'Set isBillable to true and provide a customerId to bill the expense to a customer.'
-    ]
-  }
-)
-  .input(z.object({
-    accountId: z.string().describe('Expense account/category ID'),
-    date: z.string().optional().describe('Expense date (YYYY-MM-DD), defaults to today'),
-    amount: z.number().describe('Expense amount'),
-    customerId: z.string().optional().describe('Customer to bill this expense to'),
-    vendorId: z.string().optional().describe('Vendor associated with expense'),
-    isBillable: z.boolean().optional().default(false),
-    referenceNumber: z.string().optional(),
-    description: z.string().optional(),
-    currencyId: z.string().optional(),
-    taxId: z.string().optional(),
-    projectId: z.string().optional().describe('Link expense to a project')
-  }))
-  .output(z.object({
-    expenseId: z.string(),
-    date: z.string().optional(),
-    accountName: z.string().optional(),
-    total: z.number().optional(),
-    status: z.string().optional(),
-    currencyCode: z.string().optional(),
-    createdTime: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let createExpenseTool = SlateTool.create(spec, {
+  name: 'Create Expense',
+  key: 'create_expense',
+  description: `Record a new expense with category, amount, vendor, and optional customer billing.`,
+  instructions: [
+    'Provide an accountId (expense category account) and amount.',
+    'Set isBillable to true and provide a customerId to bill the expense to a customer.'
+  ]
+})
+  .input(
+    z.object({
+      accountId: z.string().describe('Expense account/category ID'),
+      date: z.string().optional().describe('Expense date (YYYY-MM-DD), defaults to today'),
+      amount: z.number().describe('Expense amount'),
+      customerId: z.string().optional().describe('Customer to bill this expense to'),
+      vendorId: z.string().optional().describe('Vendor associated with expense'),
+      isBillable: z.boolean().optional().default(false),
+      referenceNumber: z.string().optional(),
+      description: z.string().optional(),
+      currencyId: z.string().optional(),
+      taxId: z.string().optional(),
+      projectId: z.string().optional().describe('Link expense to a project')
+    })
+  )
+  .output(
+    z.object({
+      expenseId: z.string(),
+      date: z.string().optional(),
+      accountName: z.string().optional(),
+      total: z.number().optional(),
+      status: z.string().optional(),
+      currencyCode: z.string().optional(),
+      createdTime: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -147,4 +156,5 @@ export let createExpenseTool = SlateTool.create(
       },
       message: `Created expense of **${exp.currency_code} ${exp.total}** on ${exp.date}.`
     };
-  }).build();
+  })
+  .build();

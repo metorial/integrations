@@ -16,13 +16,9 @@ import {
   listPhoneNumbers,
   exportAnalytics,
   manageSubaccount,
-  runSimulation,
+  runSimulation
 } from './tools';
-import {
-  postCallWebhook,
-  inboundCallWebhook,
-  callCompletedPolling,
-} from './triggers';
+import { postCallWebhook, inboundCallWebhook, callCompletedPolling } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,11 +38,7 @@ export let provider = Slate.create({
     listPhoneNumbers,
     exportAnalytics,
     manageSubaccount,
-    runSimulation,
+    runSimulation
   ],
-  triggers: [
-    postCallWebhook,
-    inboundCallWebhook,
-    callCompletedPolling,
-  ],
+  triggers: [postCallWebhook, inboundCallWebhook, callCompletedPolling]
 });

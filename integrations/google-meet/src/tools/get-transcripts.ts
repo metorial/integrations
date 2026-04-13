@@ -12,28 +12,31 @@ let transcriptSchema = z.object({
   docsUri: z.string().optional().describe('URI to view the transcript document')
 });
 
-export let listTranscriptsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Transcripts',
-    key: 'list_transcripts',
-    description: `List transcripts from a conference record. Returns metadata including state, timestamps, and Google Docs references. Transcripts are saved as Google Docs in the organizer's Drive.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listTranscriptsTool = SlateTool.create(spec, {
+  name: 'List Transcripts',
+  key: 'list_transcripts',
+  description: `List transcripts from a conference record. Returns metadata including state, timestamps, and Google Docs references. Transcripts are saved as Google Docs in the organizer's Drive.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name (e.g., "conferenceRecords/abc123")'),
-    pageSize: z.number().optional().describe('Maximum number of transcripts to return'),
-    pageToken: z.string().optional().describe('Page token for pagination')
-  }))
-  .output(z.object({
-    transcripts: z.array(transcriptSchema),
-    nextPageToken: z.string().optional().describe('Token for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conferenceRecordName: z
+        .string()
+        .describe('Conference record resource name (e.g., "conferenceRecords/abc123")'),
+      pageSize: z.number().optional().describe('Maximum number of transcripts to return'),
+      pageToken: z.string().optional().describe('Page token for pagination')
+    })
+  )
+  .output(
+    z.object({
+      transcripts: z.array(transcriptSchema),
+      nextPageToken: z.string().optional().describe('Token for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
 
     let result = await client.listTranscripts(
@@ -58,25 +61,29 @@ export let listTranscriptsTool = SlateTool.create(
       },
       message: `Found **${transcripts.length}** transcript(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let getTranscriptTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Transcript',
-    key: 'get_transcript',
-    description: `Retrieve metadata for a specific transcript including its state and Google Docs location.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getTranscriptTool = SlateTool.create(spec, {
+  name: 'Get Transcript',
+  key: 'get_transcript',
+  description: `Retrieve metadata for a specific transcript including its state and Google Docs location.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    transcriptName: z.string().describe('Transcript resource name (e.g., "conferenceRecords/abc123/transcripts/def456")')
-  }))
+})
+  .input(
+    z.object({
+      transcriptName: z
+        .string()
+        .describe(
+          'Transcript resource name (e.g., "conferenceRecords/abc123/transcripts/def456")'
+        )
+    })
+  )
   .output(transcriptSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
     let t = await client.getTranscript(ctx.input.transcriptName);
 
@@ -91,37 +98,48 @@ export let getTranscriptTool = SlateTool.create(
       },
       message: `Retrieved transcript **${t.name}** (state: ${t.state}).`
     };
-  }).build();
+  })
+  .build();
 
-export let listTranscriptEntriesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Transcript Entries',
-    key: 'list_transcript_entries',
-    description: `List individual transcript entries from a transcript. Each entry contains the spoken text, the speaker's participant reference, language code, and timestamps. Useful for analyzing meeting conversations.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listTranscriptEntriesTool = SlateTool.create(spec, {
+  name: 'List Transcript Entries',
+  key: 'list_transcript_entries',
+  description: `List individual transcript entries from a transcript. Each entry contains the spoken text, the speaker's participant reference, language code, and timestamps. Useful for analyzing meeting conversations.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    transcriptName: z.string().describe('Transcript resource name (e.g., "conferenceRecords/abc123/transcripts/def456")'),
-    pageSize: z.number().optional().describe('Maximum number of entries to return'),
-    pageToken: z.string().optional().describe('Page token for pagination')
-  }))
-  .output(z.object({
-    entries: z.array(z.object({
-      entryName: z.string().describe('Resource name of the entry'),
-      participantName: z.string().optional().describe('Resource name of the speaking participant'),
-      text: z.string().optional().describe('Transcribed text'),
-      languageCode: z.string().optional().describe('Language code (e.g., "en-US")'),
-      startTime: z.string().optional().describe('When the entry started'),
-      endTime: z.string().optional().describe('When the entry ended')
-    })),
-    nextPageToken: z.string().optional().describe('Token for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      transcriptName: z
+        .string()
+        .describe(
+          'Transcript resource name (e.g., "conferenceRecords/abc123/transcripts/def456")'
+        ),
+      pageSize: z.number().optional().describe('Maximum number of entries to return'),
+      pageToken: z.string().optional().describe('Page token for pagination')
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(
+        z.object({
+          entryName: z.string().describe('Resource name of the entry'),
+          participantName: z
+            .string()
+            .optional()
+            .describe('Resource name of the speaking participant'),
+          text: z.string().optional().describe('Transcribed text'),
+          languageCode: z.string().optional().describe('Language code (e.g., "en-US")'),
+          startTime: z.string().optional().describe('When the entry started'),
+          endTime: z.string().optional().describe('When the entry ended')
+        })
+      ),
+      nextPageToken: z.string().optional().describe('Token for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
 
     let result = await client.listTranscriptEntries(
@@ -146,4 +164,5 @@ export let listTranscriptEntriesTool = SlateTool.create(
       },
       message: `Found **${entries.length}** transcript entry/entries.${result.nextPageToken ? ' More results available.' : ''}`
     };
-  }).build();
+  })
+  .build();

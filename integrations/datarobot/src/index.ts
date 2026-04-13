@@ -18,13 +18,9 @@ import {
   makePredictions,
   getDeploymentMonitoring,
   listModelPackages,
-  registerModel,
+  registerModel
 } from './tools';
-import {
-  deploymentEvents,
-  projectEvents,
-  datasetEvents,
-} from './triggers';
+import { deploymentEvents, projectEvents, datasetEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -46,11 +42,7 @@ export let provider = Slate.create({
     makePredictions,
     getDeploymentMonitoring,
     listModelPackages,
-    registerModel,
+    registerModel
   ],
-  triggers: [
-    deploymentEvents,
-    projectEvents,
-    datasetEvents,
-  ],
+  triggers: [deploymentEvents, projectEvents, datasetEvents]
 });

@@ -3,38 +3,40 @@ import { AhaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let featureChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Feature Changes',
-    key: 'feature_changes',
-    description: 'Triggers when features are created or updated in Aha!. Polls for recently modified features across all products.',
-  }
-)
-  .input(z.object({
-    featureId: z.string().describe('Feature ID'),
-    referenceNum: z.string().describe('Feature reference number'),
-    name: z.string().describe('Feature name'),
-    status: z.string().optional().describe('Workflow status name'),
-    assignee: z.string().optional().describe('Assigned user name'),
-    url: z.string().optional().describe('Feature URL'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
-  .output(z.object({
-    featureId: z.string().describe('Feature ID'),
-    referenceNum: z.string().describe('Feature reference number'),
-    name: z.string().describe('Feature name'),
-    status: z.string().optional().describe('Workflow status name'),
-    assignee: z.string().optional().describe('Assigned user name'),
-    url: z.string().optional().describe('Feature URL'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let featureChanges = SlateTrigger.create(spec, {
+  name: 'Feature Changes',
+  key: 'feature_changes',
+  description:
+    'Triggers when features are created or updated in Aha!. Polls for recently modified features across all products.'
+})
+  .input(
+    z.object({
+      featureId: z.string().describe('Feature ID'),
+      referenceNum: z.string().describe('Feature reference number'),
+      name: z.string().describe('Feature name'),
+      status: z.string().optional().describe('Workflow status name'),
+      assignee: z.string().optional().describe('Assigned user name'),
+      url: z.string().optional().describe('Feature URL'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      featureId: z.string().describe('Feature ID'),
+      referenceNum: z.string().describe('Feature reference number'),
+      name: z.string().describe('Feature name'),
+      status: z.string().optional().describe('Workflow status name'),
+      assignee: z.string().optional().describe('Assigned user name'),
+      url: z.string().optional().describe('Feature URL'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new AhaClient(ctx.config.subdomain, ctx.auth.token);
       let state = ctx.state as { lastPollTime?: string } | null;
 
@@ -44,7 +46,7 @@ export let featureChanges = SlateTrigger.create(
       try {
         let result = await client.listFeatures({
           updatedSince,
-          perPage: 100,
+          perPage: 100
         });
 
         let inputs = result.features.map(f => ({
@@ -54,26 +56,26 @@ export let featureChanges = SlateTrigger.create(
           status: f.workflow_status?.name,
           assignee: f.assigned_to_user?.name,
           url: f.url,
-          updatedAt: f.updated_at,
+          updatedAt: f.updated_at
         }));
 
         return {
           inputs,
           updatedState: {
-            lastPollTime: now,
-          },
+            lastPollTime: now
+          }
         };
       } catch {
         return {
           inputs: [],
           updatedState: {
-            lastPollTime: updatedSince || now,
-          },
+            lastPollTime: updatedSince || now
+          }
         };
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'feature.updated',
         id: `feature-${ctx.input.featureId}-${ctx.input.updatedAt || Date.now()}`,
@@ -84,9 +86,9 @@ export let featureChanges = SlateTrigger.create(
           status: ctx.input.status,
           assignee: ctx.input.assignee,
           url: ctx.input.url,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

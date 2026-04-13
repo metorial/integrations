@@ -1,42 +1,51 @@
 import { SlateTool } from 'slates';
 import { Client } from '../lib/client';
-import { flattenResource, cleanAttributes, buildRelationship, mergeRelationships } from '../lib/helpers';
+import {
+  flattenResource,
+  cleanAttributes,
+  buildRelationship,
+  mergeRelationships
+} from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTemplate = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Template',
-    key: 'manage_template',
-    description: `Create or update an email template in Outreach.
+export let manageTemplate = SlateTool.create(spec, {
+  name: 'Manage Template',
+  key: 'manage_template',
+  description: `Create or update an email template in Outreach.
 Templates are reusable email content used in sequences and one-off emails. They support subject, body, and personalization.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update']).describe('Action to perform'),
-    templateId: z.string().optional().describe('Template ID (required for update)'),
-    name: z.string().optional().describe('Template name'),
-    subject: z.string().optional().describe('Email subject line'),
-    bodyHtml: z.string().optional().describe('HTML body content'),
-    bodyText: z.string().optional().describe('Plain text body content'),
-    shareType: z.enum(['private', 'read_only', 'shared']).optional().describe('Sharing level'),
-    tags: z.array(z.string()).optional().describe('Tags'),
-    ownerId: z.string().optional().describe('Owner user ID'),
-  }))
-  .output(z.object({
-    templateId: z.string(),
-    name: z.string().optional(),
-    subject: z.string().optional(),
-    shareType: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update']).describe('Action to perform'),
+      templateId: z.string().optional().describe('Template ID (required for update)'),
+      name: z.string().optional().describe('Template name'),
+      subject: z.string().optional().describe('Email subject line'),
+      bodyHtml: z.string().optional().describe('HTML body content'),
+      bodyText: z.string().optional().describe('Plain text body content'),
+      shareType: z
+        .enum(['private', 'read_only', 'shared'])
+        .optional()
+        .describe('Sharing level'),
+      tags: z.array(z.string()).optional().describe('Tags'),
+      ownerId: z.string().optional().describe('Owner user ID')
+    })
+  )
+  .output(
+    z.object({
+      templateId: z.string(),
+      name: z.string().optional(),
+      subject: z.string().optional(),
+      shareType: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let attributes = cleanAttributes({
@@ -45,12 +54,10 @@ Templates are reusable email content used in sequences and one-off emails. They 
       bodyHtml: ctx.input.bodyHtml,
       bodyText: ctx.input.bodyText,
       shareType: ctx.input.shareType,
-      tags: ctx.input.tags,
+      tags: ctx.input.tags
     });
 
-    let relationships = mergeRelationships(
-      buildRelationship('owner', ctx.input.ownerId),
-    );
+    let relationships = mergeRelationships(buildRelationship('owner', ctx.input.ownerId));
 
     if (ctx.input.action === 'create') {
       let resource = await client.createTemplate(attributes, relationships);
@@ -62,9 +69,9 @@ Templates are reusable email content used in sequences and one-off emails. They 
           subject: flat.subject,
           shareType: flat.shareType,
           createdAt: flat.createdAt,
-          updatedAt: flat.updatedAt,
+          updatedAt: flat.updatedAt
         },
-        message: `Template **${flat.name}** created with ID ${flat.id}.`,
+        message: `Template **${flat.name}** created with ID ${flat.id}.`
       };
     }
 
@@ -78,9 +85,9 @@ Templates are reusable email content used in sequences and one-off emails. They 
         subject: flat.subject,
         shareType: flat.shareType,
         createdAt: flat.createdAt,
-        updatedAt: flat.updatedAt,
+        updatedAt: flat.updatedAt
       },
-      message: `Template **${flat.name}** (${flat.id}) updated successfully.`,
+      message: `Template **${flat.name}** (${flat.id}) updated successfully.`
     };
   })
   .build();

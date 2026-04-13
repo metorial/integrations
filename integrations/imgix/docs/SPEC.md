@@ -41,6 +41,7 @@ Asset Manager operations are usually tied to a specific Source, specified by sou
 The Rendering API can optimize your images and make it easy to create responsive designs. By adding parameters to your image URLs, you can enhance, resize and crop images, compress them and change format for better performance, create complex compositions, and extract useful metadata. These operations can be applied programmatically in real time across entire image libraries.
 
 Key transformation categories include:
+
 - **Size and Crop:** Resize, crop, fit modes, focal point cropping, face detection-based cropping.
 - **Format and Compression:** Output format selection (JPEG, PNG, WebP, AVIF, etc.), quality control, auto-format.
 - **Adjustments:** Brightness, contrast, saturation, hue, sharpening, blur, and enhancement.

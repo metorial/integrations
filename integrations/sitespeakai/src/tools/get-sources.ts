@@ -13,28 +13,29 @@ let sourceSchema = z.object({
   syncFrequency: z.string().nullable().describe('How often the source is re-synced.'),
   trainedAt: z.string().nullable().describe('Last training timestamp.'),
   createdAt: z.string().nullable().describe('Source creation timestamp.'),
-  updatedAt: z.string().nullable().describe('Source last update timestamp.'),
+  updatedAt: z.string().nullable().describe('Source last update timestamp.')
 });
 
-export let getSources = SlateTool.create(
-  spec,
-  {
-    name: 'Get Training Sources',
-    key: 'get_sources',
-    description: `Retrieve the list of content sources used to train a chatbot. Includes each source's type, URL, training status, sync frequency, and timestamps. Useful for auditing what content the chatbot has been trained on.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getSources = SlateTool.create(spec, {
+  name: 'Get Training Sources',
+  key: 'get_sources',
+  description: `Retrieve the list of content sources used to train a chatbot. Includes each source's type, URL, training status, sync frequency, and timestamps. Useful for auditing what content the chatbot has been trained on.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    chatbotId: z.string().describe('The ID of the chatbot.'),
-  }))
-  .output(z.object({
-    sources: z.array(sourceSchema).describe('List of training sources.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      chatbotId: z.string().describe('The ID of the chatbot.')
+    })
+  )
+  .output(
+    z.object({
+      sources: z.array(sourceSchema).describe('List of training sources.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.getSources(ctx.input.chatbotId);
@@ -51,14 +52,14 @@ export let getSources = SlateTool.create(
       syncFrequency: s.sync_frequency ?? null,
       trainedAt: s.trained_at ?? null,
       createdAt: s.created_at ?? null,
-      updatedAt: s.updated_at ?? null,
+      updatedAt: s.updated_at ?? null
     }));
 
     return {
       output: {
-        sources: mapped,
+        sources: mapped
       },
-      message: `Retrieved ${mapped.length} training source(s).`,
+      message: `Retrieved ${mapped.length} training source(s).`
     };
   })
   .build();

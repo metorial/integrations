@@ -3,41 +3,43 @@ import { PayhereClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let paymentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Payment Events',
-    key: 'payment_events',
-    description: 'Triggers when a payment succeeds. Includes payment amount, customer, and plan data.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type'),
-    eventId: z.string().describe('Unique event identifier'),
-    paymentId: z.number().describe('Payment ID'),
-    amount: z.number().describe('Payment amount'),
-    status: z.string().describe('Payment status'),
-    currency: z.string().describe('Currency code'),
-    customerName: z.string().nullable().describe('Customer name'),
-    customerEmail: z.string().nullable().describe('Customer email'),
-    planName: z.string().nullable().describe('Plan name'),
-    planId: z.number().nullable().describe('Plan ID'),
-    customFields: z.any().nullable().describe('Custom fields from the payment')
-  }))
-  .output(z.object({
-    paymentId: z.number().describe('Payment identifier'),
-    amount: z.number().describe('Payment amount'),
-    status: z.string().describe('Payment status'),
-    currency: z.string().describe('Currency code'),
-    customerName: z.string().nullable().describe('Customer name'),
-    customerEmail: z.string().nullable().describe('Customer email'),
-    customerId: z.number().nullable().describe('Customer ID'),
-    planName: z.string().nullable().describe('Associated plan name'),
-    planId: z.number().nullable().describe('Associated plan ID'),
-    customFields: z.any().nullable().describe('Custom fields from the payment')
-  }))
+export let paymentEvents = SlateTrigger.create(spec, {
+  name: 'Payment Events',
+  key: 'payment_events',
+  description:
+    'Triggers when a payment succeeds. Includes payment amount, customer, and plan data.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type'),
+      eventId: z.string().describe('Unique event identifier'),
+      paymentId: z.number().describe('Payment ID'),
+      amount: z.number().describe('Payment amount'),
+      status: z.string().describe('Payment status'),
+      currency: z.string().describe('Currency code'),
+      customerName: z.string().nullable().describe('Customer name'),
+      customerEmail: z.string().nullable().describe('Customer email'),
+      planName: z.string().nullable().describe('Plan name'),
+      planId: z.number().nullable().describe('Plan ID'),
+      customFields: z.any().nullable().describe('Custom fields from the payment')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.number().describe('Payment identifier'),
+      amount: z.number().describe('Payment amount'),
+      status: z.string().describe('Payment status'),
+      currency: z.string().describe('Currency code'),
+      customerName: z.string().nullable().describe('Customer name'),
+      customerEmail: z.string().nullable().describe('Customer email'),
+      customerId: z.number().nullable().describe('Customer ID'),
+      planName: z.string().nullable().describe('Associated plan name'),
+      planId: z.number().nullable().describe('Associated plan ID'),
+      customFields: z.any().nullable().describe('Custom fields from the payment')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new PayhereClient({ token: ctx.auth.token });
 
       let hook = await client.createHook({
@@ -53,14 +55,14 @@ export let paymentEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new PayhereClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { hookId: number };
       await client.deleteHook(details.hookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let payment = body.data?.payment || body.data || {};
       let customer = body.data?.customer || payment.customer || {};
@@ -85,8 +87,10 @@ export let paymentEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
-      let customer = ctx.input.customerEmail ? { name: ctx.input.customerName, email: ctx.input.customerEmail } : null;
+    handleEvent: async ctx => {
+      let customer = ctx.input.customerEmail
+        ? { name: ctx.input.customerName, email: ctx.input.customerEmail }
+        : null;
 
       return {
         type: 'payment.received',

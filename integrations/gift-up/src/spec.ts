@@ -8,5 +8,5 @@ export let spec = SlateSpecification.create({
   description: 'Digital gift card platform for selling, managing, and redeeming gift cards.',
   metadata: {},
   config,
-  auth,
+  auth
 });

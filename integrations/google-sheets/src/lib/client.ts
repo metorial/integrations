@@ -8,28 +8,24 @@ export class SheetsClient {
     this.axios = createAxios({
       baseURL: 'https://sheets.googleapis.com/v4',
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
   // --- Spreadsheet Management ---
 
-  async createSpreadsheet(params: {
-    title: string;
-    locale?: string;
-    sheetTitles?: string[];
-  }) {
+  async createSpreadsheet(params: { title: string; locale?: string; sheetTitles?: string[] }) {
     let sheets = params.sheetTitles?.map((title, index) => ({
-      properties: { title, sheetId: index, index },
+      properties: { title, sheetId: index, index }
     }));
 
     let response = await this.axios.post('/spreadsheets', {
       properties: {
         title: params.title,
-        locale: params.locale,
+        locale: params.locale
       },
-      sheets,
+      sheets
     });
 
     return response.data;
@@ -37,7 +33,7 @@ export class SheetsClient {
 
   async getSpreadsheet(spreadsheetId: string, includeGridData?: boolean) {
     let response = await this.axios.get(`/spreadsheets/${spreadsheetId}`, {
-      params: { includeGridData: includeGridData ?? false },
+      params: { includeGridData: includeGridData ?? false }
     });
     return response.data;
   }
@@ -52,10 +48,10 @@ export class SheetsClient {
         {
           updateSpreadsheetProperties: {
             properties,
-            fields,
-          },
-        },
-      ],
+            fields
+          }
+        }
+      ]
     });
     return response.data;
   }
@@ -87,15 +83,12 @@ export class SheetsClient {
       dateTimeRenderOption?: 'SERIAL_NUMBER' | 'FORMATTED_STRING';
     }
   ) {
-    let response = await this.axios.get(
-      `/spreadsheets/${spreadsheetId}/values:batchGet`,
-      {
-        params: {
-          ranges,
-          ...options,
-        },
+    let response = await this.axios.get(`/spreadsheets/${spreadsheetId}/values:batchGet`, {
+      params: {
+        ranges,
+        ...options
       }
-    );
+    });
     return response.data;
   }
 
@@ -117,13 +110,13 @@ export class SheetsClient {
       {
         range,
         majorDimension: options?.majorDimension ?? 'ROWS',
-        values,
+        values
       },
       {
         params: {
           valueInputOption,
-          includeValuesInResponse: options?.includeValuesInResponse,
-        },
+          includeValuesInResponse: options?.includeValuesInResponse
+        }
       }
     );
     return response.data;
@@ -138,18 +131,15 @@ export class SheetsClient {
     }
   ) {
     let valueInputOption = options?.valueInputOption ?? 'USER_ENTERED';
-    let response = await this.axios.post(
-      `/spreadsheets/${spreadsheetId}/values:batchUpdate`,
-      {
-        valueInputOption,
-        data: data.map((d) => ({
-          range: d.range,
-          majorDimension: 'ROWS',
-          values: d.values,
-        })),
-        includeValuesInResponse: options?.includeValuesInResponse,
-      }
-    );
+    let response = await this.axios.post(`/spreadsheets/${spreadsheetId}/values:batchUpdate`, {
+      valueInputOption,
+      data: data.map(d => ({
+        range: d.range,
+        majorDimension: 'ROWS',
+        values: d.values
+      })),
+      includeValuesInResponse: options?.includeValuesInResponse
+    });
     return response.data;
   }
 
@@ -169,14 +159,14 @@ export class SheetsClient {
       {
         range,
         majorDimension: 'ROWS',
-        values,
+        values
       },
       {
         params: {
           valueInputOption,
           insertDataOption: options?.insertDataOption ?? 'INSERT_ROWS',
-          includeValuesInResponse: options?.includeValuesInResponse,
-        },
+          includeValuesInResponse: options?.includeValuesInResponse
+        }
       }
     );
     return response.data;
@@ -192,25 +182,20 @@ export class SheetsClient {
   // --- Batch Update (for formatting, sheet management, charts, etc.) ---
 
   async batchUpdate(spreadsheetId: string, requests: any[]) {
-    let response = await this.axios.post(
-      `/spreadsheets/${spreadsheetId}:batchUpdate`,
-      { requests }
-    );
+    let response = await this.axios.post(`/spreadsheets/${spreadsheetId}:batchUpdate`, {
+      requests
+    });
     return response.data;
   }
 
   // --- Sheet Management helpers ---
 
   async addSheet(spreadsheetId: string, properties: Record<string, any>) {
-    return this.batchUpdate(spreadsheetId, [
-      { addSheet: { properties } },
-    ]);
+    return this.batchUpdate(spreadsheetId, [{ addSheet: { properties } }]);
   }
 
   async deleteSheet(spreadsheetId: string, sheetId: number) {
-    return this.batchUpdate(spreadsheetId, [
-      { deleteSheet: { sheetId } },
-    ]);
+    return this.batchUpdate(spreadsheetId, [{ deleteSheet: { sheetId } }]);
   }
 
   async duplicateSheet(
@@ -224,9 +209,9 @@ export class SheetsClient {
         duplicateSheet: {
           sourceSheetId,
           insertSheetIndex,
-          newSheetName,
-        },
-      },
+          newSheetName
+        }
+      }
     ]);
   }
 
@@ -239,9 +224,9 @@ export class SheetsClient {
       {
         updateSheetProperties: {
           properties,
-          fields,
-        },
-      },
+          fields
+        }
+      }
     ]);
   }
 }

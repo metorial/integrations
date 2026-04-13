@@ -2,11 +2,7 @@
   "name": "@metorial/anonyflow",
   "version": "0.1.1",
   "description": "Anonymize and deanonymize sensitive data (PII) using encryption-based protection. Encrypt specific fields in data objects via single-value or batch anonymization endpoints. Decrypt previously protected data back to its original form. Share encrypted data securely with colleagues or third parties. Handle personal data deletion requests for \"Right to be Forgotten\" compliance. Redact PII from PDF documents using AI-powered detection. Supports GDPR, CCPA, and HIPAA compliance workflows.",
-  "categories": [
-    "document-processing",
-    "legal-and-compliance",
-    "security"
-  ],
+  "categories": ["document-processing", "legal-and-compliance", "security"],
   "skills": [
     "encrypt sensitive data fields",
     "decrypt anonymized data",

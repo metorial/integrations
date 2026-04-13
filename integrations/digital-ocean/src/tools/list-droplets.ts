@@ -19,27 +19,31 @@ let dropletSchema = z.object({
   createdAt: z.string().describe('Creation timestamp')
 });
 
-export let listDroplets = SlateTool.create(
-  spec,
-  {
-    name: 'List Droplets',
-    key: 'list_droplets',
-    description: `List Droplets (virtual machines) in your DigitalOcean account. Optionally filter by tag name. Returns key details including status, IP addresses, region, and resource allocation.`,
-    tags: {
-      readOnly: true
-    }
+export let listDroplets = SlateTool.create(spec, {
+  name: 'List Droplets',
+  key: 'list_droplets',
+  description: `List Droplets (virtual machines) in your DigitalOcean account. Optionally filter by tag name. Returns key details including status, IP addresses, region, and resource allocation.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    tagName: z.string().optional().describe('Filter Droplets by this tag name'),
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    perPage: z.number().optional().describe('Number of results per page (default: 20, max: 200)')
-  }))
-  .output(z.object({
-    droplets: z.array(dropletSchema),
-    totalCount: z.number().describe('Total number of Droplets matching the query')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tagName: z.string().optional().describe('Filter Droplets by this tag name'),
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      perPage: z
+        .number()
+        .optional()
+        .describe('Number of results per page (default: 20, max: 200)')
+    })
+  )
+  .output(
+    z.object({
+      droplets: z.array(dropletSchema),
+      totalCount: z.number().describe('Total number of Droplets matching the query')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listDroplets({

@@ -3,48 +3,80 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let addWatermark = SlateTool.create(
-  spec,
-  {
-    name: 'Add Watermark',
-    key: 'add_watermark',
-    description: `Add a text or image watermark/stamp to a PDF document. Control position, size, transparency, rotation, and more.
+export let addWatermark = SlateTool.create(spec, {
+  name: 'Add Watermark',
+  key: 'add_watermark',
+  description: `Add a text or image watermark/stamp to a PDF document. Control position, size, transparency, rotation, and more.
 Use text watermarks for labels like "DRAFT" or "CONFIDENTIAL", or image watermarks for logos and signatures.`,
-    tags: {
-      readOnly: false,
-    },
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    fileContent: z.string().describe('Base64-encoded PDF file content'),
-    fileName: z.string().describe('PDF file name with extension'),
-    watermarkType: z.enum(['text', 'image']).describe('Type of watermark to add'),
-    pages: z.string().default('all').describe('Pages to apply the watermark (e.g. "1,2,3" or "all")'),
-    alignX: z.enum(['Left', 'Center', 'Right']).default('Center').describe('Horizontal alignment'),
-    alignY: z.enum(['Top', 'Middle', 'Bottom']).default('Middle').describe('Vertical alignment'),
-    text: z.string().optional().describe('Watermark text (required for text watermarks)'),
-    fontSize: z.number().optional().describe('Font size for text watermark'),
-    fontColor: z.string().optional().describe('Font color for text watermark (e.g. "#FF0000")'),
-    isBold: z.boolean().optional().describe('Bold text'),
-    isItalics: z.boolean().optional().describe('Italic text'),
-    underline: z.boolean().optional().describe('Underline text'),
-    rotate: z.number().optional().describe('Rotation angle in degrees (0-360)'),
-    transverse: z.boolean().optional().describe('Set text diagonally across the page'),
-    fitTextOverPage: z.boolean().optional().describe('Scale text to fit the entire page'),
-    imageContent: z.string().optional().describe('Base64-encoded image content (required for image watermarks)'),
-    imageName: z.string().optional().describe('Image file name with extension (required for image watermarks)'),
-    heightInMM: z.string().optional().default('0').describe('Watermark height in mm ("0" for auto)'),
-    widthInMM: z.string().optional().default('0').describe('Watermark width in mm ("0" for auto)'),
-    marginXInMM: z.string().optional().default('0').describe('Horizontal margin in mm'),
-    marginYInMM: z.string().optional().default('0').describe('Vertical margin in mm'),
-    opacity: z.number().min(0).max(100).default(100).describe('Transparency: 0 (invisible) to 100 (fully opaque)'),
-    showOnlyInPrint: z.boolean().optional().describe('Show watermark only when printing'),
-  }))
-  .output(z.object({
-    fileContent: z.string().describe('Base64-encoded PDF with watermark'),
-    fileName: z.string().describe('Output file name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileContent: z.string().describe('Base64-encoded PDF file content'),
+      fileName: z.string().describe('PDF file name with extension'),
+      watermarkType: z.enum(['text', 'image']).describe('Type of watermark to add'),
+      pages: z
+        .string()
+        .default('all')
+        .describe('Pages to apply the watermark (e.g. "1,2,3" or "all")'),
+      alignX: z
+        .enum(['Left', 'Center', 'Right'])
+        .default('Center')
+        .describe('Horizontal alignment'),
+      alignY: z
+        .enum(['Top', 'Middle', 'Bottom'])
+        .default('Middle')
+        .describe('Vertical alignment'),
+      text: z.string().optional().describe('Watermark text (required for text watermarks)'),
+      fontSize: z.number().optional().describe('Font size for text watermark'),
+      fontColor: z
+        .string()
+        .optional()
+        .describe('Font color for text watermark (e.g. "#FF0000")'),
+      isBold: z.boolean().optional().describe('Bold text'),
+      isItalics: z.boolean().optional().describe('Italic text'),
+      underline: z.boolean().optional().describe('Underline text'),
+      rotate: z.number().optional().describe('Rotation angle in degrees (0-360)'),
+      transverse: z.boolean().optional().describe('Set text diagonally across the page'),
+      fitTextOverPage: z.boolean().optional().describe('Scale text to fit the entire page'),
+      imageContent: z
+        .string()
+        .optional()
+        .describe('Base64-encoded image content (required for image watermarks)'),
+      imageName: z
+        .string()
+        .optional()
+        .describe('Image file name with extension (required for image watermarks)'),
+      heightInMM: z
+        .string()
+        .optional()
+        .default('0')
+        .describe('Watermark height in mm ("0" for auto)'),
+      widthInMM: z
+        .string()
+        .optional()
+        .default('0')
+        .describe('Watermark width in mm ("0" for auto)'),
+      marginXInMM: z.string().optional().default('0').describe('Horizontal margin in mm'),
+      marginYInMM: z.string().optional().default('0').describe('Vertical margin in mm'),
+      opacity: z
+        .number()
+        .min(0)
+        .max(100)
+        .default(100)
+        .describe('Transparency: 0 (invisible) to 100 (fully opaque)'),
+      showOnlyInPrint: z.boolean().optional().describe('Show watermark only when printing')
+    })
+  )
+  .output(
+    z.object({
+      fileContent: z.string().describe('Base64-encoded PDF with watermark'),
+      fileName: z.string().describe('Output file name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result: { fileContent: string; fileName: string };
@@ -66,7 +98,7 @@ Use text watermarks for labels like "DRAFT" or "CONFIDENTIAL", or image watermar
         marginXInMM: ctx.input.marginXInMM ?? '0',
         marginYInMM: ctx.input.marginYInMM ?? '0',
         opacity: ctx.input.opacity,
-        showOnlyInPrint: ctx.input.showOnlyInPrint,
+        showOnlyInPrint: ctx.input.showOnlyInPrint
       });
     } else {
       if (!ctx.input.text) {
@@ -90,12 +122,13 @@ Use text watermarks for labels like "DRAFT" or "CONFIDENTIAL", or image watermar
         rotate: ctx.input.rotate,
         showOnlyInPrint: ctx.input.showOnlyInPrint,
         transverse: ctx.input.transverse,
-        fitTextOverPage: ctx.input.fitTextOverPage,
+        fitTextOverPage: ctx.input.fitTextOverPage
       });
     }
 
     return {
       output: result,
-      message: `Successfully added ${ctx.input.watermarkType} watermark to **${result.fileName}**`,
+      message: `Successfully added ${ctx.input.watermarkType} watermark to **${result.fileName}**`
     };
-  }).build();
+  })
+  .build();

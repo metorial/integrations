@@ -3,6 +3,7 @@
 ## Base Information
 
 ### Base URLs
+
 - **Primary**: `https://api.agentmail.to`
 - **Alternative endpoints**:
   - `https://x402.api.agentmail.to`
@@ -10,15 +11,18 @@
   - `https://api.agentmail.eu`
 
 ### API Version
+
 - Current version: `v0`
 - All endpoints are prefixed with `/v0/`
 
 ### Authentication
+
 - **Method**: Bearer token authentication
 - **Header**: `Authorization: Bearer <api_key>`
 - Uses API keys (no complex OAuth flows)
 
 ### Rate Limiting
+
 - High-volume ready with no restrictive rate or sending limits mentioned
 - Specific thresholds not documented
 
@@ -27,6 +31,7 @@
 ## Core Data Models
 
 ### Inbox
+
 ```typescript
 {
   inbox_id: string;           // Required - Unique identifier
@@ -39,6 +44,7 @@
 ```
 
 ### Message
+
 ```typescript
 {
   message_id: string;              // Required - Unique identifier
@@ -68,6 +74,7 @@
 ```
 
 ### Thread
+
 ```typescript
 {
   thread_id: string;               // Required - Unique identifier
@@ -91,6 +98,7 @@
 ```
 
 ### Draft
+
 ```typescript
 {
   draft_id: string;                // Required - Unique identifier
@@ -116,6 +124,7 @@
 ```
 
 ### Attachment
+
 ```typescript
 {
   attachment_id: string;                      // Required - Unique identifier
@@ -128,6 +137,7 @@
 ```
 
 ### AttachmentResponse (extends Attachment)
+
 ```typescript
 {
   attachment_id: string;
@@ -142,6 +152,7 @@
 ```
 
 ### Domain
+
 ```typescript
 {
   domain_id: string;             // Required - Unique identifier
@@ -175,6 +186,7 @@ type DnsRecord = {
 ```
 
 ### Pod
+
 ```typescript
 {
   pod_id: string;                // Required - Unique identifier
@@ -186,6 +198,7 @@ type DnsRecord = {
 ```
 
 ### Webhook
+
 ```typescript
 {
   webhook_id: string;            // Required - Unique identifier
@@ -202,6 +215,7 @@ type DnsRecord = {
 ```
 
 ### ListEntry
+
 ```typescript
 {
   entry: string;                           // Required - Email or domain
@@ -215,6 +229,7 @@ type DnsRecord = {
 ```
 
 ### ApiKey
+
 ```typescript
 {
   api_key_id: string;            // Required - Unique identifier
@@ -234,16 +249,19 @@ type DnsRecord = {
 ### Inboxes
 
 #### List Inboxes
+
 ```
 GET /v0/inboxes
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -254,11 +272,13 @@ GET /v0/inboxes
 ```
 
 #### Create Inbox
+
 ```
 POST /v0/inboxes
 ```
 
 **Request Body:**
+
 ```typescript
 {
   username?: string;      // Auto-generated if omitted
@@ -271,6 +291,7 @@ POST /v0/inboxes
 **Response (200):** `Inbox` object
 
 #### Get Inbox
+
 ```
 GET /v0/inboxes/{inbox_id}
 ```
@@ -278,20 +299,23 @@ GET /v0/inboxes/{inbox_id}
 **Response (200):** `Inbox` object
 
 #### Update Inbox
+
 ```
 PATCH /v0/inboxes/{inbox_id}
 ```
 
 **Request Body:**
+
 ```typescript
 {
-  display_name: string;  // Required - "Display Name <username@domain.com>"
+  display_name: string; // Required - "Display Name <username@domain.com>"
 }
 ```
 
 **Response (200):** `Inbox` object
 
 #### Delete Inbox
+
 ```
 DELETE /v0/inboxes/{inbox_id}
 ```
@@ -303,11 +327,13 @@ DELETE /v0/inboxes/{inbox_id}
 ### Messages
 
 #### List Messages
+
 ```
 GET /v0/inboxes/{inbox_id}/messages
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `labels` (string[], optional) - Filter by labels
@@ -319,6 +345,7 @@ GET /v0/inboxes/{inbox_id}/messages
 - `include_trash` (boolean, optional) - Include trash messages
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -329,6 +356,7 @@ GET /v0/inboxes/{inbox_id}/messages
 ```
 
 #### Get Message
+
 ```
 GET /v0/inboxes/{inbox_id}/messages/{message_id}
 ```
@@ -336,11 +364,13 @@ GET /v0/inboxes/{inbox_id}/messages/{message_id}
 **Response (200):** `Message` object
 
 #### Send Message
+
 ```
 POST /v0/inboxes/{inbox_id}/messages/send
 ```
 
 **Request Body:**
+
 ```typescript
 {
   to: string | string[];           // Required - Recipients
@@ -364,6 +394,7 @@ POST /v0/inboxes/{inbox_id}/messages/send
 ```
 
 **Response (200):**
+
 ```typescript
 {
   message_id: string;
@@ -372,11 +403,13 @@ POST /v0/inboxes/{inbox_id}/messages/send
 ```
 
 #### Reply to Message
+
 ```
 POST /v0/inboxes/{inbox_id}/messages/{message_id}/reply
 ```
 
 **Request Body:**
+
 ```typescript
 {
   text?: string;                   // Optional - Plain text body
@@ -393,6 +426,7 @@ POST /v0/inboxes/{inbox_id}/messages/{message_id}/reply
 ```
 
 **Response (200):**
+
 ```typescript
 {
   message_id: string;
@@ -401,6 +435,7 @@ POST /v0/inboxes/{inbox_id}/messages/{message_id}/reply
 ```
 
 #### Reply All to Message
+
 ```
 POST /v0/inboxes/{inbox_id}/messages/{message_id}/reply-all
 ```
@@ -408,6 +443,7 @@ POST /v0/inboxes/{inbox_id}/messages/{message_id}/reply-all
 Same request/response as Reply to Message.
 
 #### Forward Message
+
 ```
 POST /v0/inboxes/{inbox_id}/messages/{message_id}/forward
 ```
@@ -415,6 +451,7 @@ POST /v0/inboxes/{inbox_id}/messages/{message_id}/forward
 Similar request body structure as Send Message.
 
 **Response (200):**
+
 ```typescript
 {
   message_id: string;
@@ -423,11 +460,13 @@ Similar request body structure as Send Message.
 ```
 
 #### Update Message
+
 ```
 PATCH /v0/inboxes/{inbox_id}/messages/{message_id}
 ```
 
 **Request Body:**
+
 ```typescript
 {
   add_labels?: string[];     // Optional - Labels to add
@@ -438,6 +477,7 @@ PATCH /v0/inboxes/{inbox_id}/messages/{message_id}
 **Response (200):** `Message` object
 
 #### Get Message Raw
+
 ```
 GET /v0/inboxes/{inbox_id}/messages/{message_id}/raw
 ```
@@ -449,11 +489,13 @@ Downloads raw .eml file.
 ### Threads
 
 #### List Threads
+
 ```
 GET /v0/inboxes/{inbox_id}/threads
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `labels` (string[], optional) - Filter by labels
@@ -465,6 +507,7 @@ GET /v0/inboxes/{inbox_id}/threads
 - `include_trash` (boolean, optional) - Include trash threads
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -475,6 +518,7 @@ GET /v0/inboxes/{inbox_id}/threads
 ```
 
 #### Get Thread
+
 ```
 GET /v0/inboxes/{inbox_id}/threads/{thread_id}
 ```
@@ -482,6 +526,7 @@ GET /v0/inboxes/{inbox_id}/threads/{thread_id}
 **Response (200):** `Thread` object with full `messages` array ordered by timestamp ascending
 
 #### Delete Thread
+
 ```
 DELETE /v0/inboxes/{inbox_id}/threads/{thread_id}
 ```
@@ -493,16 +538,19 @@ Deletes thread (moves to trash or permanently deletes).
 ### Drafts
 
 #### List Drafts
+
 ```
 GET /v0/inboxes/{inbox_id}/drafts
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -513,11 +561,13 @@ GET /v0/inboxes/{inbox_id}/drafts
 ```
 
 #### Create Draft
+
 ```
 POST /v0/inboxes/{inbox_id}/drafts
 ```
 
 **Request Body:**
+
 ```typescript
 {
   labels?: string[];               // Optional - Draft labels
@@ -545,6 +595,7 @@ POST /v0/inboxes/{inbox_id}/drafts
 **Response (200):** `Draft` object
 
 #### Get Draft
+
 ```
 GET /v0/inboxes/{inbox_id}/drafts/{draft_id}
 ```
@@ -552,6 +603,7 @@ GET /v0/inboxes/{inbox_id}/drafts/{draft_id}
 **Response (200):** `Draft` object
 
 #### Update Draft
+
 ```
 PATCH /v0/inboxes/{inbox_id}/drafts/{draft_id}
 ```
@@ -561,6 +613,7 @@ Same request body as Create Draft.
 **Response (200):** `Draft` object
 
 #### Delete Draft
+
 ```
 DELETE /v0/inboxes/{inbox_id}/drafts/{draft_id}
 ```
@@ -568,11 +621,13 @@ DELETE /v0/inboxes/{inbox_id}/drafts/{draft_id}
 **Response (200):** Success
 
 #### Send Draft
+
 ```
 POST /v0/inboxes/{inbox_id}/drafts/{draft_id}/send
 ```
 
 **Request Body:**
+
 ```typescript
 {
   add_labels?: string[];     // Optional - Labels to add
@@ -581,6 +636,7 @@ POST /v0/inboxes/{inbox_id}/drafts/{draft_id}/send
 ```
 
 **Response (200):**
+
 ```typescript
 {
   message_id: string;
@@ -593,6 +649,7 @@ POST /v0/inboxes/{inbox_id}/drafts/{draft_id}/send
 ### Attachments
 
 #### Get Message Attachment
+
 ```
 GET /v0/inboxes/{inbox_id}/messages/{message_id}/attachments/{attachment_id}
 ```
@@ -600,6 +657,7 @@ GET /v0/inboxes/{inbox_id}/messages/{message_id}/attachments/{attachment_id}
 **Response (200):** `AttachmentResponse` object with presigned download URL
 
 #### Get Thread Attachment
+
 ```
 GET /v0/inboxes/{inbox_id}/threads/{thread_id}/attachments/{attachment_id}
 ```
@@ -611,16 +669,19 @@ GET /v0/inboxes/{inbox_id}/threads/{thread_id}/attachments/{attachment_id}
 ### Domains
 
 #### List Domains
+
 ```
 GET /v0/domains
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -631,21 +692,24 @@ GET /v0/domains
 ```
 
 #### Create Domain
+
 ```
 POST /v0/domains
 ```
 
 **Request Body:**
+
 ```typescript
 {
-  domain: string;              // Required - Domain name (e.g., "example.com")
-  feedback_enabled: boolean;   // Required - Enable bounce/complaint notifications
+  domain: string; // Required - Domain name (e.g., "example.com")
+  feedback_enabled: boolean; // Required - Enable bounce/complaint notifications
 }
 ```
 
 **Response (200):** `Domain` object
 
 #### Get Domain
+
 ```
 GET /v0/domains/{domain_id}
 ```
@@ -653,6 +717,7 @@ GET /v0/domains/{domain_id}
 **Response (200):** `Domain` object
 
 #### Update Domain
+
 ```
 PATCH /v0/domains/{domain_id}
 ```
@@ -662,6 +727,7 @@ PATCH /v0/domains/{domain_id}
 **Response (200):** `Domain` object
 
 #### Delete Domain
+
 ```
 DELETE /v0/domains/{domain_id}
 ```
@@ -669,6 +735,7 @@ DELETE /v0/domains/{domain_id}
 **Response (200):** Success
 
 #### Get Zone File
+
 ```
 GET /v0/domains/{domain_id}/zone-file
 ```
@@ -676,6 +743,7 @@ GET /v0/domains/{domain_id}/zone-file
 Returns DNS zone file in binary format.
 
 #### Verify Domain
+
 ```
 POST /v0/domains/{domain_id}/verify
 ```
@@ -689,20 +757,24 @@ Triggers domain verification process.
 ### Lists (Allowlist/Blocklist)
 
 #### List Entries
+
 ```
 GET /v0/lists/{direction}/{type}
 ```
 
 **Path Parameters:**
+
 - `direction`: `"send"` | `"receive"` - Email flow direction
 - `type`: `"allow"` | `"block"` - List type
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -713,15 +785,18 @@ GET /v0/lists/{direction}/{type}
 ```
 
 #### Create List Entry
+
 ```
 POST /v0/lists/{direction}/{type}
 ```
 
 **Path Parameters:**
+
 - `direction`: `"send"` | `"receive"`
 - `type`: `"allow"` | `"block"`
 
 **Request Body:**
+
 ```typescript
 {
   entry: string;     // Required - Email address or domain
@@ -732,6 +807,7 @@ POST /v0/lists/{direction}/{type}
 **Response (200):** `ListEntry` object
 
 #### Get List Entry
+
 ```
 GET /v0/lists/{direction}/{type}/{entry}
 ```
@@ -739,6 +815,7 @@ GET /v0/lists/{direction}/{type}/{entry}
 **Response (200):** `ListEntry` object
 
 #### Delete List Entry
+
 ```
 DELETE /v0/lists/{direction}/{type}/{entry}
 ```
@@ -750,16 +827,19 @@ DELETE /v0/lists/{direction}/{type}/{entry}
 ### Pods
 
 #### List Pods
+
 ```
 GET /v0/pods
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -770,11 +850,13 @@ GET /v0/pods
 ```
 
 #### Create Pod
+
 ```
 POST /v0/pods
 ```
 
 **Request Body:**
+
 ```typescript
 {
   name?: string;       // Optional - Pod name
@@ -785,6 +867,7 @@ POST /v0/pods
 **Response (200):** `Pod` object
 
 #### Get Pod
+
 ```
 GET /v0/pods/{pod_id}
 ```
@@ -792,6 +875,7 @@ GET /v0/pods/{pod_id}
 **Response (200):** `Pod` object
 
 #### Delete Pod
+
 ```
 DELETE /v0/pods/{pod_id}
 ```
@@ -820,16 +904,19 @@ The endpoint structure and parameters remain the same.
 ### Webhooks
 
 #### List Webhooks
+
 ```
 GET /v0/webhooks
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -840,11 +927,13 @@ GET /v0/webhooks
 ```
 
 #### Create Webhook
+
 ```
 POST /v0/webhooks
 ```
 
 **Request Body:**
+
 ```typescript
 {
   url: string;                // Required - Webhook endpoint URL
@@ -856,6 +945,7 @@ POST /v0/webhooks
 ```
 
 **Available Event Types:**
+
 - `"message.received"`
 - `"message.sent"`
 - `"message.delivered"`
@@ -867,6 +957,7 @@ POST /v0/webhooks
 **Response (200):** `Webhook` object (includes `secret` for signature verification)
 
 #### Get Webhook
+
 ```
 GET /v0/webhooks/{webhook_id}
 ```
@@ -874,6 +965,7 @@ GET /v0/webhooks/{webhook_id}
 **Response (200):** `Webhook` object
 
 #### Update Webhook
+
 ```
 PATCH /v0/webhooks/{webhook_id}
 ```
@@ -883,6 +975,7 @@ PATCH /v0/webhooks/{webhook_id}
 **Response (200):** `Webhook` object
 
 #### Delete Webhook
+
 ```
 DELETE /v0/webhooks/{webhook_id}
 ```
@@ -896,6 +989,7 @@ DELETE /v0/webhooks/{webhook_id}
 #### Event Structure
 
 All webhook events are sent with these HTTP headers:
+
 - `svix-id`: Webhook message identifier
 - `svix-signature`: Message signature for verification
 - `svix-timestamp`: ISO 8601 timestamp of webhook dispatch
@@ -903,13 +997,14 @@ All webhook events are sent with these HTTP headers:
 #### Message Received Event
 
 **Payload:**
+
 ```typescript
 {
-  type: "event";
-  event_type: "message.received";
+  type: 'event';
+  event_type: 'message.received';
   event_id: string;
-  message: Message;    // Full message object
-  thread: Thread;      // Thread context (without messages array)
+  message: Message; // Full message object
+  thread: Thread; // Thread context (without messages array)
 }
 ```
 
@@ -920,21 +1015,25 @@ Other event types (message.sent, message.delivered, etc.) follow a similar struc
 ### Metrics
 
 #### Query Account Metrics
+
 ```
 GET /v0/metrics
 ```
 
 #### Query Inbox Metrics
+
 ```
 GET /v0/inboxes/{inbox_id}/metrics
 ```
 
 #### Query Pod Metrics
+
 ```
 GET /v0/pods/{pod_id}/metrics
 ```
 
 **Query Parameters:**
+
 - `event_types` (string[], optional) - Filter by event types
 - `start` (datetime, optional) - Query window start
 - `end` (datetime, optional) - Query window end
@@ -943,6 +1042,7 @@ GET /v0/pods/{pod_id}/metrics
 - `descending` (boolean, optional) - Sort order
 
 **Available Event Types:**
+
 - `"message.sent"`
 - `"message.delivered"`
 - `"message.bounced"`
@@ -952,6 +1052,7 @@ GET /v0/pods/{pod_id}/metrics
 - `"message.received"`
 
 **Response (200):**
+
 ```typescript
 {
   [event_type: string]: {
@@ -966,16 +1067,19 @@ GET /v0/pods/{pod_id}/metrics
 ### API Keys
 
 #### List API Keys
+
 ```
 GET /v0/api-keys
 ```
 
 **Query Parameters:**
+
 - `limit` (integer, optional) - Items per page
 - `page_token` (string, optional) - Pagination cursor
 - `ascending` (boolean, optional) - Sort direction
 
 **Response (200):**
+
 ```typescript
 {
   count: number;
@@ -986,20 +1090,23 @@ GET /v0/api-keys
 ```
 
 #### Create API Key
+
 ```
 POST /v0/api-keys
 ```
 
 **Request Body:**
+
 ```typescript
 {
-  name: string;  // Required - Human-readable name
+  name: string; // Required - Human-readable name
 }
 ```
 
 **Response (200):** `ApiKey` object (includes `api_key` field only on creation)
 
 #### Delete API Key
+
 ```
 DELETE /v0/api-keys/{api_key}
 ```
@@ -1011,6 +1118,7 @@ DELETE /v0/api-keys/{api_key}
 ### Organization
 
 #### Get Current Organization
+
 ```
 GET /v0/organizations
 ```
@@ -1022,17 +1130,20 @@ GET /v0/organizations
 ## Common Response Patterns
 
 ### Success Response (200)
+
 Returns the requested resource object or list response.
 
 ### Validation Error (400)
+
 ```typescript
 {
   name: string;
-  errors: any;  // Validation error details
+  errors: any; // Validation error details
 }
 ```
 
 ### Forbidden (403)
+
 ```typescript
 {
   name: string;
@@ -1041,6 +1152,7 @@ Returns the requested resource object or list response.
 ```
 
 ### Not Found (404)
+
 ```typescript
 {
   name: string;
@@ -1049,6 +1161,7 @@ Returns the requested resource object or list response.
 ```
 
 ### List Response Pattern
+
 ```typescript
 {
   count: number;              // Items returned in current page
@@ -1070,6 +1183,7 @@ All list endpoints support cursor-based pagination:
 4. **End**: When `next_page_token` is absent, you've reached the last page
 
 **Sorting:**
+
 - Default: Descending order (newest first)
 - Use `ascending=true` to reverse order
 
@@ -1091,6 +1205,7 @@ Message and Thread list endpoints support:
 ## Email Address Format
 
 Email addresses can be in two formats:
+
 - Simple: `"user@example.com"`
 - Display: `"Display Name <user@example.com>"`
 
@@ -1105,6 +1220,7 @@ Both formats are accepted in all `to`, `cc`, `bcc`, `from`, and `reply_to` field
 When sending messages or creating drafts, attachments can be provided in two ways:
 
 1. **Base64 Content:**
+
 ```typescript
 {
   filename: "document.pdf",
@@ -1115,6 +1231,7 @@ When sending messages or creating drafts, attachments can be provided in two way
 ```
 
 2. **URL Reference:**
+
 ```typescript
 {
   filename: "image.jpg",
@@ -1138,15 +1255,18 @@ Attachment metadata is included in Message and Thread objects. To download:
 ## Labels
 
 Labels are used for:
+
 - Message/thread organization
 - Filtering and searching
 - State management
 - Campaign tracking
 
 **System Labels** (commonly used, though full list not documented):
+
 - Likely include: INBOX, SENT, TRASH, SPAM, DRAFT
 
 **Custom Labels:**
+
 - User-defined strings
 - Added/removed via `add_labels` and `remove_labels` operations
 - Can be applied to messages and threads
@@ -1163,6 +1283,7 @@ Pods provide multi-tenant isolation:
 4. **Manage independently** - each pod can have its own inboxes, domains, API keys, etc.
 
 **Pod-scoped endpoints** follow the pattern:
+
 ```
 /v0/pods/{pod_id}/[resource]
 ```
@@ -1182,6 +1303,7 @@ Pods provide multi-tenant isolation:
 ### DNS Records
 
 Domain creation returns records array with:
+
 - **type**: Record type (TXT, MX, CNAME)
 - **name**: Record name
 - **value**: Record value
@@ -1199,6 +1321,7 @@ Get complete DNS zone file: `GET /v0/domains/{domain_id}/zone-file`
 Webhooks use Svix for signature verification:
 
 **Headers:**
+
 - `svix-id`: Message ID
 - `svix-signature`: HMAC signature
 - `svix-timestamp`: Timestamp
@@ -1224,6 +1347,7 @@ Use the `secret` from webhook creation to verify signatures. See Svix documentat
 ## SDK Support
 
 Official SDKs available:
+
 - **TypeScript/Node.js** - GitHub
 - **Python** - GitHub
 

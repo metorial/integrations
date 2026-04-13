@@ -74,11 +74,16 @@ export class Client {
   }
 
   async getSessionRegistrations(roomId: string, sessionId: string) {
-    let response = await this.axios.get(`/conferences/${roomId}/sessions/${sessionId}/registrations`);
+    let response = await this.axios.get(
+      `/conferences/${roomId}/sessions/${sessionId}/registrations`
+    );
     return response.data;
   }
 
-  async registerAttendee(roomId: string, registration: { firstName: string; lastName: string; email: string }) {
+  async registerAttendee(
+    roomId: string,
+    registration: { firstName: string; lastName: string; email: string }
+  ) {
     let response = await this.axios.post(`/conferences/${roomId}/registration`, {
       registration: {
         1: registration.firstName,
@@ -102,12 +107,16 @@ export class Client {
   }
 
   async getSessionAttendees(roomId: string, sessionId: string) {
-    let response = await this.axios.get(`/conferences/${roomId}/sessions/${sessionId}/attendees`);
+    let response = await this.axios.get(
+      `/conferences/${roomId}/sessions/${sessionId}/attendees`
+    );
     return response.data;
   }
 
   async generateSessionPdf(roomId: string, sessionId: string, lang: string = 'en') {
-    let response = await this.axios.get(`/conferences/${roomId}/sessions/${sessionId}/generate-pdf/${lang}`);
+    let response = await this.axios.get(
+      `/conferences/${roomId}/sessions/${sessionId}/generate-pdf/${lang}`
+    );
     return response.data;
   }
 
@@ -122,7 +131,10 @@ export class Client {
 
   // ──────────────────────────── Auto-login URLs ────────────────────────────
 
-  async generateAutologinHash(roomId: string, params: { email: string; nickname?: string; role: string }) {
+  async generateAutologinHash(
+    roomId: string,
+    params: { email: string; nickname?: string; role: string }
+  ) {
     let response = await this.axios.post(`/conferences/${roomId}/room/autologin_hash`, params);
     return response.data;
   }
@@ -173,7 +185,13 @@ export class Client {
 
   // ──────────────────────────── Contacts ────────────────────────────
 
-  async addContact(params: { email: string; firstname?: string; lastname?: string; phone?: string; company?: string }) {
+  async addContact(params: {
+    email: string;
+    firstname?: string;
+    lastname?: string;
+    phone?: string;
+    company?: string;
+  }) {
     let response = await this.axios.post('/contacts', params);
     return response.data;
   }

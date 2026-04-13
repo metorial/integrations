@@ -42,30 +42,37 @@ let userSchema = z.object({
   countryCode: z.string().nullable().describe('User country code')
 });
 
-export let searchTracks = SlateTool.create(
-  spec,
-  {
-    name: 'Search Tracks',
-    key: 'search_tracks',
-    description: `Search for tracks on SoundCloud by keyword, genre, BPM range, or duration. Results can be filtered by access level to only include streamable tracks.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    limit: z.number().optional().describe('Maximum number of results to return (default 20, max 200)'),
-    access: z.enum(['playable', 'preview', 'blocked']).optional().describe('Filter by access level'),
-    genres: z.string().optional().describe('Filter by genre'),
-    bpmFrom: z.number().optional().describe('Minimum BPM'),
-    bpmTo: z.number().optional().describe('Maximum BPM'),
-    durationFrom: z.number().optional().describe('Minimum duration in milliseconds'),
-    durationTo: z.number().optional().describe('Maximum duration in milliseconds')
-  }))
-  .output(z.object({
-    tracks: z.array(trackSchema).describe('List of matching tracks'),
-    hasMore: z.boolean().describe('Whether more results are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchTracks = SlateTool.create(spec, {
+  name: 'Search Tracks',
+  key: 'search_tracks',
+  description: `Search for tracks on SoundCloud by keyword, genre, BPM range, or duration. Results can be filtered by access level to only include streamable tracks.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return (default 20, max 200)'),
+      access: z
+        .enum(['playable', 'preview', 'blocked'])
+        .optional()
+        .describe('Filter by access level'),
+      genres: z.string().optional().describe('Filter by genre'),
+      bpmFrom: z.number().optional().describe('Minimum BPM'),
+      bpmTo: z.number().optional().describe('Maximum BPM'),
+      durationFrom: z.number().optional().describe('Minimum duration in milliseconds'),
+      durationTo: z.number().optional().describe('Maximum duration in milliseconds')
+    })
+  )
+  .output(
+    z.object({
+      tracks: z.array(trackSchema).describe('List of matching tracks'),
+      hasMore: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchTracks(ctx.input.query, {
@@ -100,24 +107,28 @@ export let searchTracks = SlateTool.create(
   })
   .build();
 
-export let searchPlaylists = SlateTool.create(
-  spec,
-  {
-    name: 'Search Playlists',
-    key: 'search_playlists',
-    description: `Search for playlists (sets) on SoundCloud by keyword. Returns playlist metadata including track count, duration, and creator info.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    limit: z.number().optional().describe('Maximum number of results to return (default 20, max 200)')
-  }))
-  .output(z.object({
-    playlists: z.array(playlistSchema).describe('List of matching playlists'),
-    hasMore: z.boolean().describe('Whether more results are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchPlaylists = SlateTool.create(spec, {
+  name: 'Search Playlists',
+  key: 'search_playlists',
+  description: `Search for playlists (sets) on SoundCloud by keyword. Returns playlist metadata including track count, duration, and creator info.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return (default 20, max 200)')
+    })
+  )
+  .output(
+    z.object({
+      playlists: z.array(playlistSchema).describe('List of matching playlists'),
+      hasMore: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchPlaylists(ctx.input.query, {
@@ -143,24 +154,28 @@ export let searchPlaylists = SlateTool.create(
   })
   .build();
 
-export let searchUsers = SlateTool.create(
-  spec,
-  {
-    name: 'Search Users',
-    key: 'search_users',
-    description: `Search for users on SoundCloud by keyword. Returns user profiles including follower count, track count, and location.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    limit: z.number().optional().describe('Maximum number of results to return (default 20, max 200)')
-  }))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of matching users'),
-    hasMore: z.boolean().describe('Whether more results are available')
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchUsers = SlateTool.create(spec, {
+  name: 'Search Users',
+  key: 'search_users',
+  description: `Search for users on SoundCloud by keyword. Returns user profiles including follower count, track count, and location.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return (default 20, max 200)')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of matching users'),
+      hasMore: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchUsers(ctx.input.query, {

@@ -13,7 +13,7 @@
 Each service account has a service account token that you can provide as an environment variable for authentication. You can choose which vaults and Environments the service account can access and its permissions in each vault.
 
 - Token is provided via the `OP_SERVICE_ACCOUNT_TOKEN` environment variable.
-- The format uses "ops_" as the token prefix.
+- The format uses "ops\_" as the token prefix.
 - Available permissions: read_items, write_items (requires read_items), share_items (requires read_items). You can also include the ability to create vaults.
 - Service account permissions, vault access, and Environment access are immutable. To change them, you must create a new service account.
 - Service accounts can't access your built-in Personal, Private, or Employee vault.

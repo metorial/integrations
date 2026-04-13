@@ -24,25 +24,26 @@ let contactSchema = z.object({
   segments: z.array(z.any()).optional().describe('Segments the contact belongs to'),
   customProperties: z.record(z.string(), z.any()).optional().describe('Custom properties'),
   locationData: z.any().optional().describe('Location information'),
-  socialProfiles: z.any().optional().describe('Social profile links'),
+  socialProfiles: z.any().optional().describe('Social profile links')
 });
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve a single contact from Gist by their ID, email address, or user ID. Returns the full contact profile including tags, segments, custom properties, and location data.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    contactId: z.string().optional().describe('Gist contact ID'),
-    email: z.string().optional().describe('Contact email address'),
-    userId: z.string().optional().describe('External user ID'),
-  }).describe('Provide one of contactId, email, or userId'))
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve a single contact from Gist by their ID, email address, or user ID. Returns the full contact profile including tags, segments, custom properties, and location data.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z
+      .object({
+        contactId: z.string().optional().describe('Gist contact ID'),
+        email: z.string().optional().describe('Contact email address'),
+        userId: z.string().optional().describe('External user ID')
+      })
+      .describe('Provide one of contactId, email, or userId')
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
     let data: any;
 
@@ -69,7 +70,9 @@ export let getContact = SlateTool.create(
         createdAt: contact.created_at ? String(contact.created_at) : undefined,
         signedUpAt: contact.signed_up_at ? String(contact.signed_up_at) : undefined,
         lastSeenAt: contact.last_seen_at ? String(contact.last_seen_at) : undefined,
-        lastContactedAt: contact.last_contacted_at ? String(contact.last_contacted_at) : undefined,
+        lastContactedAt: contact.last_contacted_at
+          ? String(contact.last_contacted_at)
+          : undefined,
         updatedAt: contact.updated_at ? String(contact.updated_at) : undefined,
         sessionCount: contact.session_count,
         avatar: contact.avatar,
@@ -80,8 +83,9 @@ export let getContact = SlateTool.create(
         segments: contact.segments,
         customProperties: contact.custom_properties,
         locationData: contact.location_data,
-        socialProfiles: contact.social_profiles,
+        socialProfiles: contact.social_profiles
       },
-      message: `Retrieved contact **${contact.name || contact.email || contact.id}** (${contact.type || 'unknown type'}).`,
+      message: `Retrieved contact **${contact.name || contact.email || contact.id}** (${contact.type || 'unknown type'}).`
     };
-  }).build();
+  })
+  .build();

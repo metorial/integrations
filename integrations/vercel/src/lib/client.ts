@@ -10,8 +10,8 @@ export class Client {
       baseURL: 'https://api.vercel.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -37,15 +37,15 @@ export class Client {
       params: this.teamParams({
         search: options?.search,
         limit: options?.limit?.toString(),
-        from: options?.from,
-      }),
+        from: options?.from
+      })
     });
     return response.data;
   }
 
   async getProject(idOrName: string) {
     let response = await this.axios.get(`/v9/projects/${encodeURIComponent(idOrName)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
@@ -60,25 +60,34 @@ export class Client {
     rootDirectory?: string;
     publicSource?: boolean;
     serverlessFunctionRegion?: string;
-    environmentVariables?: Array<{ key: string; value: string; target: string[]; type?: string }>;
+    environmentVariables?: Array<{
+      key: string;
+      value: string;
+      target: string[];
+      type?: string;
+    }>;
     gitRepository?: { type: string; repo: string };
   }) {
     let response = await this.axios.post('/v11/projects', data, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async updateProject(idOrName: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/v9/projects/${encodeURIComponent(idOrName)}`, data, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.patch(
+      `/v9/projects/${encodeURIComponent(idOrName)}`,
+      data,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async deleteProject(idOrName: string) {
     await this.axios.delete(`/v9/projects/${encodeURIComponent(idOrName)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
   }
 
@@ -99,15 +108,15 @@ export class Client {
         state: options?.state,
         limit: options?.limit?.toString(),
         since: options?.since?.toString(),
-        until: options?.until?.toString(),
-      }),
+        until: options?.until?.toString()
+      })
     });
     return response.data;
   }
 
   async getDeployment(idOrUrl: string) {
     let response = await this.axios.get(`/v13/deployments/${encodeURIComponent(idOrUrl)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
@@ -122,21 +131,25 @@ export class Client {
     projectSettings?: Record<string, any>;
   }) {
     let response = await this.axios.post('/v13/deployments', data, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async cancelDeployment(deploymentId: string) {
-    let response = await this.axios.patch(`/v12/deployments/${encodeURIComponent(deploymentId)}/cancel`, {}, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.patch(
+      `/v12/deployments/${encodeURIComponent(deploymentId)}/cancel`,
+      {},
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async deleteDeployment(deploymentId: string) {
     await this.axios.delete(`/v13/deployments/${encodeURIComponent(deploymentId)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
   }
 
@@ -147,35 +160,39 @@ export class Client {
       params: this.teamParams({
         limit: options?.limit?.toString(),
         since: options?.since?.toString(),
-        until: options?.until?.toString(),
-      }),
+        until: options?.until?.toString()
+      })
     });
     return response.data;
   }
 
   async getDomain(name: string) {
     let response = await this.axios.get(`/v5/domains/${encodeURIComponent(name)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async addDomain(name: string) {
-    let response = await this.axios.post('/v5/domains', { name }, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.post(
+      '/v5/domains',
+      { name },
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async removeDomain(name: string) {
     await this.axios.delete(`/v6/domains/${encodeURIComponent(name)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
   }
 
   async getDomainConfig(name: string) {
     let response = await this.axios.get(`/v6/domains/${encodeURIComponent(name)}/config`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
@@ -183,32 +200,50 @@ export class Client {
   // ─── Project Domains ──────────────────────────────────────
 
   async listProjectDomains(projectId: string) {
-    let response = await this.axios.get(`/v9/projects/${encodeURIComponent(projectId)}/domains`, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.get(
+      `/v9/projects/${encodeURIComponent(projectId)}/domains`,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
-  async addProjectDomain(projectId: string, domain: string, options?: { redirect?: string; redirectStatusCode?: number; gitBranch?: string }) {
-    let response = await this.axios.post(`/v10/projects/${encodeURIComponent(projectId)}/domains`, {
-      name: domain,
-      ...options,
-    }, {
-      params: this.teamParams(),
-    });
+  async addProjectDomain(
+    projectId: string,
+    domain: string,
+    options?: { redirect?: string; redirectStatusCode?: number; gitBranch?: string }
+  ) {
+    let response = await this.axios.post(
+      `/v10/projects/${encodeURIComponent(projectId)}/domains`,
+      {
+        name: domain,
+        ...options
+      },
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async removeProjectDomain(projectId: string, domain: string) {
-    await this.axios.delete(`/v9/projects/${encodeURIComponent(projectId)}/domains/${encodeURIComponent(domain)}`, {
-      params: this.teamParams(),
-    });
+    await this.axios.delete(
+      `/v9/projects/${encodeURIComponent(projectId)}/domains/${encodeURIComponent(domain)}`,
+      {
+        params: this.teamParams()
+      }
+    );
   }
 
   async verifyProjectDomain(projectId: string, domain: string) {
-    let response = await this.axios.post(`/v9/projects/${encodeURIComponent(projectId)}/domains/${encodeURIComponent(domain)}/verify`, {}, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.post(
+      `/v9/projects/${encodeURIComponent(projectId)}/domains/${encodeURIComponent(domain)}/verify`,
+      {},
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
@@ -216,44 +251,63 @@ export class Client {
 
   async listEnvVars(projectId: string) {
     let response = await this.axios.get(`/v9/projects/${encodeURIComponent(projectId)}/env`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
-  async createEnvVar(projectId: string, envVar: {
-    key: string;
-    value: string;
-    target: string[];
-    type?: string;
-    gitBranch?: string;
-    comment?: string;
-  }, upsert?: boolean) {
-    let response = await this.axios.post(`/v10/projects/${encodeURIComponent(projectId)}/env`, envVar, {
-      params: this.teamParams({
-        upsert: upsert ? 'true' : undefined,
-      }),
-    });
+  async createEnvVar(
+    projectId: string,
+    envVar: {
+      key: string;
+      value: string;
+      target: string[];
+      type?: string;
+      gitBranch?: string;
+      comment?: string;
+    },
+    upsert?: boolean
+  ) {
+    let response = await this.axios.post(
+      `/v10/projects/${encodeURIComponent(projectId)}/env`,
+      envVar,
+      {
+        params: this.teamParams({
+          upsert: upsert ? 'true' : undefined
+        })
+      }
+    );
     return response.data;
   }
 
-  async updateEnvVar(projectId: string, envVarId: string, data: {
-    value?: string;
-    target?: string[];
-    type?: string;
-    gitBranch?: string;
-    comment?: string;
-  }) {
-    let response = await this.axios.patch(`/v9/projects/${encodeURIComponent(projectId)}/env/${encodeURIComponent(envVarId)}`, data, {
-      params: this.teamParams(),
-    });
+  async updateEnvVar(
+    projectId: string,
+    envVarId: string,
+    data: {
+      value?: string;
+      target?: string[];
+      type?: string;
+      gitBranch?: string;
+      comment?: string;
+    }
+  ) {
+    let response = await this.axios.patch(
+      `/v9/projects/${encodeURIComponent(projectId)}/env/${encodeURIComponent(envVarId)}`,
+      data,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async deleteEnvVar(projectId: string, envVarId: string) {
-    await this.axios.delete(`/v9/projects/${encodeURIComponent(projectId)}/env/${encodeURIComponent(envVarId)}`, {
-      params: this.teamParams(),
-    });
+    await this.axios.delete(
+      `/v9/projects/${encodeURIComponent(projectId)}/env/${encodeURIComponent(envVarId)}`,
+      {
+        params: this.teamParams()
+      }
+    );
   }
 
   // ─── DNS Records ──────────────────────────────────────────
@@ -261,37 +315,51 @@ export class Client {
   async listDnsRecords(domain: string, options?: { limit?: number }) {
     let response = await this.axios.get(`/v4/domains/${encodeURIComponent(domain)}/records`, {
       params: this.teamParams({
-        limit: options?.limit?.toString(),
-      }),
+        limit: options?.limit?.toString()
+      })
     });
     return response.data;
   }
 
-  async createDnsRecord(domain: string, record: {
-    name: string;
-    type: string;
-    value: string;
-    ttl?: number;
-    mxPriority?: number;
-    srv?: { priority: number; weight: number; port: number; target: string };
-  }) {
-    let response = await this.axios.post(`/v2/domains/${encodeURIComponent(domain)}/records`, record, {
-      params: this.teamParams(),
-    });
+  async createDnsRecord(
+    domain: string,
+    record: {
+      name: string;
+      type: string;
+      value: string;
+      ttl?: number;
+      mxPriority?: number;
+      srv?: { priority: number; weight: number; port: number; target: string };
+    }
+  ) {
+    let response = await this.axios.post(
+      `/v2/domains/${encodeURIComponent(domain)}/records`,
+      record,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async updateDnsRecord(recordId: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/v1/domains/records/${encodeURIComponent(recordId)}`, data, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.patch(
+      `/v1/domains/records/${encodeURIComponent(recordId)}`,
+      data,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async deleteDnsRecord(domain: string, recordId: string) {
-    await this.axios.delete(`/v2/domains/${encodeURIComponent(domain)}/records/${encodeURIComponent(recordId)}`, {
-      params: this.teamParams(),
-    });
+    await this.axios.delete(
+      `/v2/domains/${encodeURIComponent(domain)}/records/${encodeURIComponent(recordId)}`,
+      {
+        params: this.teamParams()
+      }
+    );
   }
 
   // ─── Teams ─────────────────────────────────────────────────
@@ -301,8 +369,8 @@ export class Client {
       params: {
         limit: options?.limit?.toString(),
         since: options?.since?.toString(),
-        until: options?.until?.toString(),
-      },
+        until: options?.until?.toString()
+      }
     });
     return response.data;
   }
@@ -312,14 +380,17 @@ export class Client {
     return response.data;
   }
 
-  async listTeamMembers(teamId: string, options?: { limit?: number; since?: number; role?: string; search?: string }) {
+  async listTeamMembers(
+    teamId: string,
+    options?: { limit?: number; since?: number; role?: string; search?: string }
+  ) {
     let response = await this.axios.get(`/v2/teams/${encodeURIComponent(teamId)}/members`, {
       params: {
         limit: options?.limit?.toString(),
         since: options?.since?.toString(),
         role: options?.role,
-        search: options?.search,
-      },
+        search: options?.search
+      }
     });
     return response.data;
   }
@@ -327,55 +398,70 @@ export class Client {
   async inviteTeamMember(teamId: string, email: string, role?: string) {
     let response = await this.axios.post(`/v1/teams/${encodeURIComponent(teamId)}/members`, {
       email,
-      role: role || 'MEMBER',
+      role: role || 'MEMBER'
     });
     return response.data;
   }
 
   async removeTeamMember(teamId: string, userId: string) {
-    await this.axios.delete(`/v1/teams/${encodeURIComponent(teamId)}/members/${encodeURIComponent(userId)}`);
+    await this.axios.delete(
+      `/v1/teams/${encodeURIComponent(teamId)}/members/${encodeURIComponent(userId)}`
+    );
   }
 
   // ─── Edge Config ───────────────────────────────────────────
 
   async listEdgeConfigs() {
     let response = await this.axios.get('/v1/edge-config', {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async getEdgeConfig(edgeConfigId: string) {
-    let response = await this.axios.get(`/v1/edge-config/${encodeURIComponent(edgeConfigId)}`, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.get(
+      `/v1/edge-config/${encodeURIComponent(edgeConfigId)}`,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
   async createEdgeConfig(data: { slug: string }) {
     let response = await this.axios.post('/v1/edge-config', data, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async deleteEdgeConfig(edgeConfigId: string) {
     await this.axios.delete(`/v1/edge-config/${encodeURIComponent(edgeConfigId)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
   }
 
   async getEdgeConfigItems(edgeConfigId: string) {
-    let response = await this.axios.get(`/v1/edge-config/${encodeURIComponent(edgeConfigId)}/items`, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.get(
+      `/v1/edge-config/${encodeURIComponent(edgeConfigId)}/items`,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
-  async updateEdgeConfigItems(edgeConfigId: string, items: Array<{ operation: string; key: string; value?: any }>) {
-    let response = await this.axios.patch(`/v1/edge-config/${encodeURIComponent(edgeConfigId)}/items`, { items }, {
-      params: this.teamParams(),
-    });
+  async updateEdgeConfigItems(
+    edgeConfigId: string,
+    items: Array<{ operation: string; key: string; value?: any }>
+  ) {
+    let response = await this.axios.patch(
+      `/v1/edge-config/${encodeURIComponent(edgeConfigId)}/items`,
+      { items },
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
@@ -386,7 +472,7 @@ export class Client {
       ? `/v1/projects/${encodeURIComponent(projectId)}/log-drains`
       : '/v1/log-drains';
     let response = await this.axios.get(path, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
@@ -401,14 +487,14 @@ export class Client {
     environments?: string[];
   }) {
     let response = await this.axios.post('/v1/log-drains', data, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async deleteLogDrain(logDrainId: string) {
     await this.axios.delete(`/v1/log-drains/${encodeURIComponent(logDrainId)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
   }
 
@@ -416,30 +502,34 @@ export class Client {
 
   async listWebhooks() {
     let response = await this.axios.get('/v1/webhooks', {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async createWebhook(data: { url: string; events: string[]; projectIds?: string[] }) {
     let response = await this.axios.post('/v1/webhooks', data, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
     return response.data;
   }
 
   async deleteWebhook(webhookId: string) {
     await this.axios.delete(`/v1/webhooks/${encodeURIComponent(webhookId)}`, {
-      params: this.teamParams(),
+      params: this.teamParams()
     });
   }
 
   // ─── Deploy Hooks ─────────────────────────────────────────
 
   async createDeployHook(projectId: string, data: { name: string; ref: string }) {
-    let response = await this.axios.post(`/v1/projects/${encodeURIComponent(projectId)}/deploy-hooks`, data, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.post(
+      `/v1/projects/${encodeURIComponent(projectId)}/deploy-hooks`,
+      data,
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 
@@ -449,9 +539,12 @@ export class Client {
   }
 
   async deleteDeployHook(projectId: string, hookId: string) {
-    await this.axios.delete(`/v1/projects/${encodeURIComponent(projectId)}/deploy-hooks/${encodeURIComponent(hookId)}`, {
-      params: this.teamParams(),
-    });
+    await this.axios.delete(
+      `/v1/projects/${encodeURIComponent(projectId)}/deploy-hooks/${encodeURIComponent(hookId)}`,
+      {
+        params: this.teamParams()
+      }
+    );
   }
 
   // ─── User ─────────────────────────────────────────────────
@@ -464,9 +557,13 @@ export class Client {
   // ─── Promote / Rollback ───────────────────────────────────
 
   async promoteDeployment(projectId: string, deploymentId: string) {
-    let response = await this.axios.post(`/v10/projects/${encodeURIComponent(projectId)}/promote/${encodeURIComponent(deploymentId)}`, {}, {
-      params: this.teamParams(),
-    });
+    let response = await this.axios.post(
+      `/v10/projects/${encodeURIComponent(projectId)}/promote/${encodeURIComponent(deploymentId)}`,
+      {},
+      {
+        params: this.teamParams()
+      }
+    );
     return response.data;
   }
 }

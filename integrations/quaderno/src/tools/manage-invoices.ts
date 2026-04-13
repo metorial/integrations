@@ -1,28 +1,37 @@
 import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
-import { lineItemInputSchema, documentOutputSchema, mapLineItemInput, mapDocumentOutput } from '../lib/schemas';
+import {
+  lineItemInputSchema,
+  documentOutputSchema,
+  mapLineItemInput,
+  mapDocumentOutput
+} from '../lib/schemas';
 import { z } from 'zod';
 
-export let listInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'List Invoices',
-    key: 'list_invoices',
-    description: `Retrieve a list of invoices from Quaderno. Supports filtering by search query, date, and state.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query to filter invoices'),
-    date: z.string().optional().describe('Filter by date (YYYY-MM-DD format)'),
-    state: z.string().optional().describe('Filter by state (e.g., "outstanding", "late", "paid")'),
-    page: z.number().optional().describe('Page number for pagination')
-  }))
-  .output(z.object({
-    invoices: z.array(documentOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+export let listInvoices = SlateTool.create(spec, {
+  name: 'List Invoices',
+  key: 'list_invoices',
+  description: `Retrieve a list of invoices from Quaderno. Supports filtering by search query, date, and state.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search query to filter invoices'),
+      date: z.string().optional().describe('Filter by date (YYYY-MM-DD format)'),
+      state: z
+        .string()
+        .optional()
+        .describe('Filter by state (e.g., "outstanding", "late", "paid")'),
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(documentOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let result = await client.listInvoices({
       q: ctx.input.query,
@@ -37,22 +46,22 @@ export let listInvoices = SlateTool.create(
       output: { invoices },
       message: `Found **${invoices.length}** invoice(s)`
     };
-  }).build();
+  })
+  .build();
 
-export let getInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Get Invoice',
-    key: 'get_invoice',
-    description: `Retrieve a single invoice by ID from Quaderno, including all line items, amounts, and contact details.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('ID of the invoice to retrieve')
-  }))
+export let getInvoice = SlateTool.create(spec, {
+  name: 'Get Invoice',
+  key: 'get_invoice',
+  description: `Retrieve a single invoice by ID from Quaderno, including all line items, amounts, and contact details.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('ID of the invoice to retrieve')
+    })
+  )
   .output(documentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let doc = await client.getInvoice(ctx.input.invoiceId);
 
@@ -60,33 +69,33 @@ export let getInvoice = SlateTool.create(
       output: mapDocumentOutput(doc),
       message: `Retrieved invoice **#${doc.number || doc.id}** — Total: ${doc.total} ${doc.currency || ''}`
     };
-  }).build();
+  })
+  .build();
 
-export let createInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Create Invoice',
-    key: 'create_invoice',
-    description: `Create a new invoice in Quaderno. Requires a contact and at least one line item. Invoices cannot be deleted; use credit notes for refunds.`,
-    constraints: [
-      'Invoices cannot be deleted for tax compliance. Use credit notes for corrections or refunds.'
-    ],
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact (customer) to invoice'),
-    currency: z.string().optional().describe('Currency code (e.g., "USD", "EUR")'),
-    issueDate: z.string().optional().describe('Issue date in YYYY-MM-DD format'),
-    dueDate: z.string().optional().describe('Due date in YYYY-MM-DD format'),
-    subject: z.string().optional().describe('Subject line for the invoice'),
-    notes: z.string().optional().describe('Notes to include on the invoice'),
-    poNumber: z.string().optional().describe('Purchase order number'),
-    tag: z.string().optional().describe('Tag for categorization'),
-    items: z.array(lineItemInputSchema).min(1).describe('Line items for the invoice')
-  }))
+export let createInvoice = SlateTool.create(spec, {
+  name: 'Create Invoice',
+  key: 'create_invoice',
+  description: `Create a new invoice in Quaderno. Requires a contact and at least one line item. Invoices cannot be deleted; use credit notes for refunds.`,
+  constraints: [
+    'Invoices cannot be deleted for tax compliance. Use credit notes for corrections or refunds.'
+  ],
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact (customer) to invoice'),
+      currency: z.string().optional().describe('Currency code (e.g., "USD", "EUR")'),
+      issueDate: z.string().optional().describe('Issue date in YYYY-MM-DD format'),
+      dueDate: z.string().optional().describe('Due date in YYYY-MM-DD format'),
+      subject: z.string().optional().describe('Subject line for the invoice'),
+      notes: z.string().optional().describe('Notes to include on the invoice'),
+      poNumber: z.string().optional().describe('Purchase order number'),
+      tag: z.string().optional().describe('Tag for categorization'),
+      items: z.array(lineItemInputSchema).min(1).describe('Line items for the invoice')
+    })
+  )
   .output(documentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let data: Record<string, any> = {
@@ -108,30 +117,30 @@ export let createInvoice = SlateTool.create(
       output: mapDocumentOutput(doc),
       message: `Created invoice **#${doc.number || doc.id}** for ${doc.total} ${doc.currency || ''}`
     };
-  }).build();
+  })
+  .build();
 
-export let updateInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Update Invoice',
-    key: 'update_invoice',
-    description: `Update an existing invoice in Quaderno. Only the provided fields will be updated.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('ID of the invoice to update'),
-    contactId: z.string().optional().describe('New contact ID'),
-    currency: z.string().optional().describe('Currency code'),
-    issueDate: z.string().optional().describe('Issue date in YYYY-MM-DD format'),
-    dueDate: z.string().optional().describe('Due date in YYYY-MM-DD format'),
-    subject: z.string().optional().describe('Subject line'),
-    notes: z.string().optional().describe('Notes'),
-    poNumber: z.string().optional().describe('Purchase order number'),
-    tag: z.string().optional().describe('Tag for categorization')
-  }))
+export let updateInvoice = SlateTool.create(spec, {
+  name: 'Update Invoice',
+  key: 'update_invoice',
+  description: `Update an existing invoice in Quaderno. Only the provided fields will be updated.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('ID of the invoice to update'),
+      contactId: z.string().optional().describe('New contact ID'),
+      currency: z.string().optional().describe('Currency code'),
+      issueDate: z.string().optional().describe('Issue date in YYYY-MM-DD format'),
+      dueDate: z.string().optional().describe('Due date in YYYY-MM-DD format'),
+      subject: z.string().optional().describe('Subject line'),
+      notes: z.string().optional().describe('Notes'),
+      poNumber: z.string().optional().describe('Purchase order number'),
+      tag: z.string().optional().describe('Tag for categorization')
+    })
+  )
   .output(documentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let data: Record<string, any> = {};
@@ -150,24 +159,26 @@ export let updateInvoice = SlateTool.create(
       output: mapDocumentOutput(doc),
       message: `Updated invoice **#${doc.number || doc.id}**`
     };
-  }).build();
+  })
+  .build();
 
-export let deliverInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Deliver Invoice',
-    key: 'deliver_invoice',
-    description: `Send an invoice to the customer via email. The invoice will be delivered in the customer's preferred language and format.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('ID of the invoice to deliver')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the delivery was initiated')
-  }))
-  .handleInvocation(async (ctx) => {
+export let deliverInvoice = SlateTool.create(spec, {
+  name: 'Deliver Invoice',
+  key: 'deliver_invoice',
+  description: `Send an invoice to the customer via email. The invoice will be delivered in the customer's preferred language and format.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('ID of the invoice to deliver')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the delivery was initiated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     await client.deliverInvoice(ctx.input.invoiceId);
 
@@ -175,4 +186,5 @@ export let deliverInvoice = SlateTool.create(
       output: { success: true },
       message: `Delivered invoice **${ctx.input.invoiceId}** to customer`
     };
-  }).build();
+  })
+  .build();

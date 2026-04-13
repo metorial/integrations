@@ -18,10 +18,7 @@ import {
   getAccountTool,
   listDedicatedNumbersTool
 } from './tools';
-import {
-  inboundSmsTrigger,
-  smsDeliveryReceiptTrigger
-} from './triggers';
+import { inboundSmsTrigger, smsDeliveryReceiptTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,8 +40,5 @@ export let provider = Slate.create({
     getAccountTool,
     listDedicatedNumbersTool
   ],
-  triggers: [
-    inboundSmsTrigger,
-    smsDeliveryReceiptTrigger
-  ]
+  triggers: [inboundSmsTrigger, smsDeliveryReceiptTrigger]
 });

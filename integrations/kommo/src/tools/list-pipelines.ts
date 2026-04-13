@@ -9,7 +9,7 @@ let stageSchema = z.object({
   sort: z.number().describe('Sort order'),
   color: z.string().optional().describe('Stage color'),
   isEditable: z.boolean().optional().describe('Whether the stage can be edited'),
-  pipelineId: z.number().optional().describe('Parent pipeline ID'),
+  pipelineId: z.number().optional().describe('Parent pipeline ID')
 });
 
 let pipelineSchema = z.object({
@@ -18,28 +18,32 @@ let pipelineSchema = z.object({
   sort: z.number().optional().describe('Sort order'),
   isMain: z.boolean().optional().describe('Whether this is the main pipeline'),
   isArchive: z.boolean().optional().describe('Whether this is an archive pipeline'),
-  stages: z.array(stageSchema).optional().describe('Pipeline stages/statuses'),
+  stages: z.array(stageSchema).optional().describe('Pipeline stages/statuses')
 });
 
-export let listPipelinesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Pipelines',
-    key: 'list_pipelines',
-    description: `List all sales pipelines and their stages. Each pipeline contains ordered stages that represent steps in the sales process. Use this to discover available pipelines and stage IDs for creating or moving leads.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    pipelineId: z.number().optional().describe('Get a specific pipeline by ID. If omitted, returns all pipelines.'),
-  }))
-  .output(z.object({
-    pipelines: z.array(pipelineSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listPipelinesTool = SlateTool.create(spec, {
+  name: 'List Pipelines',
+  key: 'list_pipelines',
+  description: `List all sales pipelines and their stages. Each pipeline contains ordered stages that represent steps in the sales process. Use this to discover available pipelines and stage IDs for creating or moving leads.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      pipelineId: z
+        .number()
+        .optional()
+        .describe('Get a specific pipeline by ID. If omitted, returns all pipelines.')
+    })
+  )
+  .output(
+    z.object({
+      pipelines: z.array(pipelineSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new KommoClient({
       token: ctx.auth.token,
-      subdomain: ctx.config.subdomain,
+      subdomain: ctx.config.subdomain
     });
 
     let pipelines: any[];
@@ -63,12 +67,13 @@ export let listPipelinesTool = SlateTool.create(
         sort: s.sort,
         color: s.color,
         isEditable: s.is_editable,
-        pipelineId: s.pipeline_id,
-      })),
+        pipelineId: s.pipeline_id
+      }))
     }));
 
     return {
       output: { pipelines: mapped },
-      message: `Found **${mapped.length}** pipeline(s).`,
+      message: `Found **${mapped.length}** pipeline(s).`
     };
-  }).build();
+  })
+  .build();

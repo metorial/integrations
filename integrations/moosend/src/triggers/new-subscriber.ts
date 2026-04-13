@@ -6,38 +6,53 @@ import { z } from 'zod';
 export let newSubscriber = SlateTrigger.create(spec, {
   name: 'New Subscriber',
   key: 'new_subscriber',
-  description: 'Triggers when a new subscriber is added to a mailing list or when an existing subscriber is updated.',
+  description:
+    'Triggers when a new subscriber is added to a mailing list or when an existing subscriber is updated.'
 })
-  .input(z.object({
-    subscriberId: z.string().describe('Subscriber ID'),
-    email: z.string().describe('Subscriber email address'),
-    name: z.string().optional().describe('Subscriber name'),
-    mailingListId: z.string().describe('ID of the mailing list'),
-    createdOn: z.string().optional().describe('Subscription timestamp'),
-    updatedOn: z.string().optional().describe('Last update timestamp'),
-    customFields: z.array(z.object({
-      fieldName: z.string().optional().describe('Custom field name'),
-      fieldValue: z.string().optional().describe('Custom field value'),
-    })).optional().describe('Custom field values'),
-  }))
-  .output(z.object({
-    subscriberId: z.string().describe('Subscriber ID'),
-    email: z.string().describe('Subscriber email address'),
-    name: z.string().optional().describe('Subscriber name'),
-    mailingListId: z.string().describe('ID of the mailing list'),
-    createdOn: z.string().optional().describe('Subscription timestamp'),
-    updatedOn: z.string().optional().describe('Last update timestamp'),
-    customFields: z.array(z.object({
-      fieldName: z.string().optional().describe('Custom field name'),
-      fieldValue: z.string().optional().describe('Custom field value'),
-    })).optional().describe('Custom field values'),
-  }))
+  .input(
+    z.object({
+      subscriberId: z.string().describe('Subscriber ID'),
+      email: z.string().describe('Subscriber email address'),
+      name: z.string().optional().describe('Subscriber name'),
+      mailingListId: z.string().describe('ID of the mailing list'),
+      createdOn: z.string().optional().describe('Subscription timestamp'),
+      updatedOn: z.string().optional().describe('Last update timestamp'),
+      customFields: z
+        .array(
+          z.object({
+            fieldName: z.string().optional().describe('Custom field name'),
+            fieldValue: z.string().optional().describe('Custom field value')
+          })
+        )
+        .optional()
+        .describe('Custom field values')
+    })
+  )
+  .output(
+    z.object({
+      subscriberId: z.string().describe('Subscriber ID'),
+      email: z.string().describe('Subscriber email address'),
+      name: z.string().optional().describe('Subscriber name'),
+      mailingListId: z.string().describe('ID of the mailing list'),
+      createdOn: z.string().optional().describe('Subscription timestamp'),
+      updatedOn: z.string().optional().describe('Last update timestamp'),
+      customFields: z
+        .array(
+          z.object({
+            fieldName: z.string().optional().describe('Custom field name'),
+            fieldValue: z.string().optional().describe('Custom field value')
+          })
+        )
+        .optional()
+        .describe('Custom field values')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MoosendClient({ token: ctx.auth.token });
       let state = ctx.state ?? {};
       let lastPollTime = state.lastPollTime as string | undefined;
@@ -61,14 +76,20 @@ export let newSubscriber = SlateTrigger.create(spec, {
         if (!listId) continue;
 
         try {
-          let result = await client.getSubscribersByStatus(listId, 'Subscribed', 1, 100, lastPollTime);
+          let result = await client.getSubscribersByStatus(
+            listId,
+            'Subscribed',
+            1,
+            100,
+            lastPollTime
+          );
           let subscribers = (result?.Subscribers as Record<string, unknown>[]) ?? [];
 
           for (let sub of subscribers) {
             let customFields = Array.isArray(sub?.CustomFields)
               ? (sub.CustomFields as Record<string, unknown>[]).map(cf => ({
                   fieldName: cf?.Name ? String(cf.Name) : undefined,
-                  fieldValue: cf?.Value ? String(cf.Value) : undefined,
+                  fieldValue: cf?.Value ? String(cf.Value) : undefined
                 }))
               : undefined;
 
@@ -79,7 +100,7 @@ export let newSubscriber = SlateTrigger.create(spec, {
               mailingListId: listId,
               createdOn: sub?.CreatedOn ? String(sub.CreatedOn) : undefined,
               updatedOn: sub?.UpdatedOn ? String(sub.UpdatedOn) : undefined,
-              customFields,
+              customFields
             });
           }
         } catch (e) {
@@ -90,12 +111,12 @@ export let newSubscriber = SlateTrigger.create(spec, {
       return {
         inputs,
         updatedState: {
-          lastPollTime: new Date().toISOString(),
-        },
+          lastPollTime: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'subscriber.added',
         id: `${ctx.input.mailingListId}-${ctx.input.subscriberId}`,
@@ -106,9 +127,9 @@ export let newSubscriber = SlateTrigger.create(spec, {
           mailingListId: ctx.input.mailingListId,
           createdOn: ctx.input.createdOn,
           updatedOn: ctx.input.updatedOn,
-          customFields: ctx.input.customFields,
-        },
+          customFields: ctx.input.customFields
+        }
       };
-    },
+    }
   })
   .build();

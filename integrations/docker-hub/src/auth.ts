@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    username: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      username: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Username & Password',
@@ -13,32 +15,35 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       username: z.string().describe('Docker Hub username'),
-      password: z.string().describe('Docker Hub password'),
+      password: z.string().describe('Docker Hub password')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios({ baseURL: 'https://hub.docker.com' });
 
       let response = await http.post('/v2/users/login', {
         username: ctx.input.username,
-        password: ctx.input.password,
+        password: ctx.input.password
       });
 
       return {
         output: {
           token: response.data.token as string,
-          username: ctx.input.username,
-        },
+          username: ctx.input.username
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; username: string }; input: { username: string; password: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; username: string };
+      input: { username: string; password: string };
+    }) => {
       let http = createAxios({ baseURL: 'https://hub.docker.com' });
 
       let response = await http.get(`/v2/user/`, {
         headers: {
-          Authorization: `JWT ${ctx.output.token}`,
-        },
+          Authorization: `JWT ${ctx.output.token}`
+        }
       });
 
       return {
@@ -46,10 +51,10 @@ export let auth = SlateAuth.create()
           id: response.data.id,
           name: response.data.full_name || response.data.username,
           email: response.data.email,
-          imageUrl: response.data.gravatar_url,
-        },
+          imageUrl: response.data.gravatar_url
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -58,32 +63,35 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       username: z.string().describe('Docker Hub username'),
-      token: z.string().describe('Docker Hub Personal Access Token (PAT)'),
+      token: z.string().describe('Docker Hub Personal Access Token (PAT)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios({ baseURL: 'https://hub.docker.com' });
 
       let response = await http.post('/v2/users/login', {
         username: ctx.input.username,
-        password: ctx.input.token,
+        password: ctx.input.token
       });
 
       return {
         output: {
           token: response.data.token as string,
-          username: ctx.input.username,
-        },
+          username: ctx.input.username
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; username: string }; input: { username: string; token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; username: string };
+      input: { username: string; token: string };
+    }) => {
       let http = createAxios({ baseURL: 'https://hub.docker.com' });
 
       let response = await http.get(`/v2/user/`, {
         headers: {
-          Authorization: `JWT ${ctx.output.token}`,
-        },
+          Authorization: `JWT ${ctx.output.token}`
+        }
       });
 
       return {
@@ -91,8 +99,8 @@ export let auth = SlateAuth.create()
           id: response.data.id,
           name: response.data.full_name || response.data.username,
           email: response.data.email,
-          imageUrl: response.data.gravatar_url,
-        },
+          imageUrl: response.data.gravatar_url
+        }
       };
-    },
+    }
   });

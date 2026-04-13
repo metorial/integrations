@@ -72,10 +72,12 @@ export class Client {
 
   // --- Events ---
 
-  async listEvents(params?: PaginationParams & {
-    state?: string;
-    period?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listEvents(
+    params?: PaginationParams & {
+      state?: string;
+      period?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let query: Record<string, string> = {};
     if (params?.limit) query['limit'] = String(params.limit);
     if (params?.after) query['after'] = params.after;
@@ -163,7 +165,8 @@ export class Client {
     if (params.slug !== undefined) body['slug'] = params.slug;
     if (params.privateName !== undefined) body['private_name'] = params.privateName;
     if (params.description !== undefined) body['description'] = params.description;
-    if (params.defaultDuration !== undefined) body['default_duration'] = params.defaultDuration;
+    if (params.defaultDuration !== undefined)
+      body['default_duration'] = params.defaultDuration;
     if (params.durations !== undefined) body['durations'] = params.durations;
     if (params.increment !== undefined) body['increment'] = params.increment;
     if (params.state !== undefined) body['state'] = params.state;

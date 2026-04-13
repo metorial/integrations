@@ -14,7 +14,7 @@ import {
   manageUsers,
   manageCollaborators,
   manageRoles,
-  encryptValue,
+  encryptValue
 } from './tools';
 import { buildEvents } from './triggers';
 
@@ -34,9 +34,7 @@ export let provider = Slate.create({
     manageUsers,
     manageCollaborators,
     manageRoles,
-    encryptValue,
+    encryptValue
   ],
-  triggers: [
-    buildEvents,
-  ],
+  triggers: [buildEvents]
 });

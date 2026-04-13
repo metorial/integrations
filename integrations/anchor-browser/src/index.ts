@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createSession,
@@ -20,11 +19,9 @@ import {
   manageApplication,
   manageIdentity,
   manageIntegration,
-  manageAgent,
+  manageAgent
 } from './tools';
-import { sessionStatusChange,
-  inboundWebhook,
-} from './triggers';
+import { sessionStatusChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +44,7 @@ export let provider = Slate.create({
     manageApplication,
     manageIdentity,
     manageIntegration,
-    manageAgent,
+    manageAgent
   ],
-  triggers: [
-    inboundWebhook,
-    sessionStatusChange,
-  ],
+  triggers: [inboundWebhook, sessionStatusChange]
 });

@@ -1,17 +1,16 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export class NanonetsClient {
   private axiosV2: AxiosInstance;
 
   constructor(token: string) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let authHeader = 'Basic ' + Buffer.from(token + ':').toString('base64');
 
     this.axiosV2 = createAxios({
       baseURL: 'https://app.nanonets.com/api/v2',
       headers: {
-        'Authorization': authHeader
+        Authorization: authHeader
       }
     });
   }
@@ -37,7 +36,11 @@ export class NanonetsClient {
   // OCR Prediction (Sync & Async)
   // ───────────────────────────────────────────────
 
-  async predictByUrl(modelId: string, urls: string[], asyncMode: boolean = false): Promise<any> {
+  async predictByUrl(
+    modelId: string,
+    urls: string[],
+    asyncMode: boolean = false
+  ): Promise<any> {
     let url = `/OCR/Model/${modelId}/LabelUrls/`;
     if (asyncMode) {
       url += '?async=true';
@@ -64,9 +67,14 @@ export class NanonetsClient {
     return response.data;
   }
 
-  async getAllPredictions(modelId: string, startDayInterval: number, currentBatchDay: number): Promise<any> {
+  async getAllPredictions(
+    modelId: string,
+    startDayInterval: number,
+    currentBatchDay: number
+  ): Promise<any> {
     let response = await this.axiosV2.get(
-      `/Inferences/Model/${modelId}/ImageLevelInferences`, {
+      `/Inferences/Model/${modelId}/ImageLevelInferences`,
+      {
         params: {
           start_day_interval: startDayInterval,
           current_batch_day: currentBatchDay
@@ -93,7 +101,11 @@ export class NanonetsClient {
   // Training
   // ───────────────────────────────────────────────
 
-  async uploadTrainingUrls(modelId: string, urls: string[], annotations?: string): Promise<any> {
+  async uploadTrainingUrls(
+    modelId: string,
+    urls: string[],
+    annotations?: string
+  ): Promise<any> {
     let body: Record<string, any> = { urls };
     if (annotations) {
       body['data'] = annotations;
@@ -178,7 +190,11 @@ export class NanonetsClient {
     return response.data;
   }
 
-  async uploadClassificationTrainingUrls(modelId: string, category: string, urls: string[]): Promise<any> {
+  async uploadClassificationTrainingUrls(
+    modelId: string,
+    category: string,
+    urls: string[]
+  ): Promise<any> {
     let formData = new FormData();
     formData.append('modelId', modelId);
     formData.append('category', category);
@@ -206,7 +222,10 @@ export class NanonetsClient {
     for (let url of urls) {
       formData.append('urls', url);
     }
-    let response = await this.axiosV2.post(`/ObjectDetection/Model/${modelId}/LabelUrls/`, formData);
+    let response = await this.axiosV2.post(
+      `/ObjectDetection/Model/${modelId}/LabelUrls/`,
+      formData
+    );
     return response.data;
   }
 
@@ -215,9 +234,16 @@ export class NanonetsClient {
     return response.data;
   }
 
-  async uploadObjectDetectionTrainingUrls(modelId: string, urls: string[], annotations: string): Promise<any> {
+  async uploadObjectDetectionTrainingUrls(
+    modelId: string,
+    urls: string[],
+    annotations: string
+  ): Promise<any> {
     let body = { urls, data: annotations };
-    let response = await this.axiosV2.post(`/ObjectDetection/Model/${modelId}/UploadUrls/`, body);
+    let response = await this.axiosV2.post(
+      `/ObjectDetection/Model/${modelId}/UploadUrls/`,
+      body
+    );
     return response.data;
   }
 }

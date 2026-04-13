@@ -19,54 +19,59 @@ let documentEventTypes = [
   'contract.updated',
   'contract.confirmed',
   'contract.signed',
-  'contract.archived',
+  'contract.archived'
 ] as const;
 
-export let documentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Events',
-    key: 'document_events',
-    description: 'Triggers when an invoice, quote, or contract is created, updated, finalized, confirmed, signed, revised, or archived.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of document event'),
-    webhookId: z.string().describe('The webhook delivery ID'),
-    documentId: z.string().describe('The affected document ID'),
-    payload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('The document ID'),
-    documentType: z.string().optional().describe('Type of document (invoice, quote, contract)'),
-    documentNumber: z.string().optional().describe('Document number'),
-    orderId: z.string().optional().describe('Associated order ID'),
-    status: z.string().optional().describe('Document status'),
-    totalInCents: z.number().optional().describe('Document total in cents'),
-    archived: z.boolean().optional().describe('Whether the document is archived'),
-    createdAt: z.string().optional().describe('Document creation timestamp'),
-    updatedAt: z.string().optional().describe('Document last updated timestamp'),
-  }))
+export let documentEvents = SlateTrigger.create(spec, {
+  name: 'Document Events',
+  key: 'document_events',
+  description:
+    'Triggers when an invoice, quote, or contract is created, updated, finalized, confirmed, signed, revised, or archived.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of document event'),
+      webhookId: z.string().describe('The webhook delivery ID'),
+      documentId: z.string().describe('The affected document ID'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('The document ID'),
+      documentType: z
+        .string()
+        .optional()
+        .describe('Type of document (invoice, quote, contract)'),
+      documentNumber: z.string().optional().describe('Document number'),
+      orderId: z.string().optional().describe('Associated order ID'),
+      status: z.string().optional().describe('Document status'),
+      totalInCents: z.number().optional().describe('Document total in cents'),
+      archived: z.boolean().optional().describe('Whether the document is archived'),
+      createdAt: z.string().optional().describe('Document creation timestamp'),
+      updatedAt: z.string().optional().describe('Document last updated timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(buildClientConfig(ctx));
 
       let response = await client.createWebhookEndpoint({
         url: ctx.input.webhookBaseUrl,
         events: [...documentEventTypes],
-        version: 4,
+        version: 4
       });
 
       let endpointId = response?.data?.id;
 
       return {
         registrationDetails: {
-          webhookEndpointId: endpointId,
-        },
+          webhookEndpointId: endpointId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(buildClientConfig(ctx));
       let endpointId = ctx.input.registrationDetails?.webhookEndpointId;
       if (endpointId) {
@@ -74,8 +79,8 @@ export let documentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data?.event || data?.type || 'invoice.updated';
       let documentId = data?.data?.id || data?.document_id || data?.id || '';
@@ -87,14 +92,18 @@ export let documentEvents = SlateTrigger.create(
             eventType: String(eventType),
             webhookId: String(webhookId),
             documentId: String(documentId),
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let attrs = ctx.input.payload?.data?.attributes || ctx.input.payload?.document || ctx.input.payload || {};
+    handleEvent: async ctx => {
+      let attrs =
+        ctx.input.payload?.data?.attributes ||
+        ctx.input.payload?.document ||
+        ctx.input.payload ||
+        {};
 
       return {
         type: ctx.input.eventType,
@@ -108,8 +117,9 @@ export let documentEvents = SlateTrigger.create(
           totalInCents: attrs.grand_total_in_cents || attrs.total_in_cents,
           archived: attrs.archived,
           createdAt: attrs.created_at,
-          updatedAt: attrs.updated_at,
-        },
+          updatedAt: attrs.updated_at
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -13,38 +13,44 @@ let searchResultSchema = z.object({
   lastModifiedDateTime: z.string().describe('ISO 8601 last modified timestamp'),
   lastModifiedByName: z.string().optional().describe('Display name of last modifier'),
   parentPath: z.string().optional().describe('Path of the parent folder'),
-  driveId: z.string().optional().describe('ID of the drive containing this item'),
+  driveId: z.string().optional().describe('ID of the drive containing this item')
 });
 
-export let searchFilesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Search Files',
-    key: 'search_files',
-    description: `Searches for files and folders in OneDrive or SharePoint by name, content, or metadata. Results include items from the user's own drive as well as items shared with them.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchFilesTool = SlateTool.create(spec, {
+  name: 'Search Files',
+  key: 'search_files',
+  description: `Searches for files and folders in OneDrive or SharePoint by name, content, or metadata. Results include items from the user's own drive as well as items shared with them.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string. Matches file names, content, and metadata.'),
-    driveId: z.string().optional().describe('ID of the drive to search. Defaults to the user\'s personal OneDrive.'),
-    pageSize: z.number().optional().describe('Maximum number of results to return'),
-    pageToken: z.string().optional().describe('Pagination token from a previous response'),
-  }))
-  .output(z.object({
-    results: z.array(searchResultSchema).describe('Search results'),
-    nextPageToken: z.string().optional().describe('Token to fetch the next page of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .describe('Search query string. Matches file names, content, and metadata.'),
+      driveId: z
+        .string()
+        .optional()
+        .describe("ID of the drive to search. Defaults to the user's personal OneDrive."),
+      pageSize: z.number().optional().describe('Maximum number of results to return'),
+      pageToken: z.string().optional().describe('Pagination token from a previous response')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(searchResultSchema).describe('Search results'),
+      nextPageToken: z.string().optional().describe('Token to fetch the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.search({
       driveId: ctx.input.driveId,
       query: ctx.input.query,
       top: ctx.input.pageSize,
-      skipToken: ctx.input.pageToken,
+      skipToken: ctx.input.pageToken
     });
 
     let results = result.items.map(item => ({
@@ -57,7 +63,7 @@ export let searchFilesTool = SlateTool.create(
       lastModifiedDateTime: item.lastModifiedDateTime,
       lastModifiedByName: item.lastModifiedBy?.user?.displayName,
       parentPath: item.parentReference?.path,
-      driveId: item.parentReference?.driveId,
+      driveId: item.parentReference?.driveId
     }));
 
     let nextPageToken: string | undefined;
@@ -68,7 +74,7 @@ export let searchFilesTool = SlateTool.create(
 
     return {
       output: { results, nextPageToken },
-      message: `Found **${results.length}** result(s) for "${ctx.input.query}".${nextPageToken ? ' More results available.' : ''}`,
+      message: `Found **${results.length}** result(s) for "${ctx.input.query}".${nextPageToken ? ' More results available.' : ''}`
     };
   })
   .build();

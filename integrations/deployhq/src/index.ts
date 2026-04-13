@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listProjects,
@@ -20,11 +19,9 @@ import {
   deleteConfigFile,
   listSshCommands,
   createSshCommand,
-  deleteSshCommand,
+  deleteSshCommand
 } from './tools';
-import { deploymentEvents,
-  inboundWebhook,
-} from './triggers';
+import { deploymentEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +44,7 @@ export let provider = Slate.create({
     deleteConfigFile,
     listSshCommands,
     createSshCommand,
-    deleteSshCommand,
+    deleteSshCommand
   ],
-  triggers: [
-    inboundWebhook,
-    deploymentEvents,
-  ],
+  triggers: [inboundWebhook, deploymentEvents]
 });

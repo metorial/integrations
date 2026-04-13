@@ -17,19 +17,24 @@ export class Client {
       baseURL: config.baseUrl,
       headers: {
         Authorization: `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Buckets ───
 
-  async listBuckets(params?: { name?: string; limit?: number; offset?: number; after?: string }) {
+  async listBuckets(params?: {
+    name?: string;
+    limit?: number;
+    offset?: number;
+    after?: string;
+  }) {
     let response = await this.axios.get('/api/v2/buckets', {
       params: {
         orgID: this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -39,11 +44,7 @@ export class Client {
     return response.data;
   }
 
-  async createBucket(data: {
-    name: string;
-    description?: string;
-    retentionSeconds?: number;
-  }) {
+  async createBucket(data: { name: string; description?: string; retentionSeconds?: number }) {
     let retentionRules = data.retentionSeconds
       ? [{ type: 'expire' as const, everySeconds: data.retentionSeconds }]
       : [];
@@ -52,16 +53,19 @@ export class Client {
       orgID: this.orgId,
       name: data.name,
       description: data.description,
-      retentionRules,
+      retentionRules
     });
     return response.data;
   }
 
-  async updateBucket(bucketId: string, data: {
-    name?: string;
-    description?: string;
-    retentionSeconds?: number;
-  }) {
+  async updateBucket(
+    bucketId: string,
+    data: {
+      name?: string;
+      description?: string;
+      retentionSeconds?: number;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -88,68 +92,73 @@ export class Client {
       params: {
         org: this.orgId,
         bucket: data.bucket,
-        precision: data.precision || 'ns',
+        precision: data.precision || 'ns'
       },
       headers: {
-        'Content-Type': 'text/plain',
-      },
+        'Content-Type': 'text/plain'
+      }
     });
   }
 
   // ─── Query ───
 
-  async queryData(data: {
-    query: string;
-    type?: 'flux';
-  }) {
-    let response = await this.axios.post('/api/v2/query', {
-      query: data.query,
-      type: data.type || 'flux',
-      dialect: {
-        header: true,
-        delimiter: ',',
-        annotations: ['datatype', 'group', 'default'],
+  async queryData(data: { query: string; type?: 'flux' }) {
+    let response = await this.axios.post(
+      '/api/v2/query',
+      {
+        query: data.query,
+        type: data.type || 'flux',
+        dialect: {
+          header: true,
+          delimiter: ',',
+          annotations: ['datatype', 'group', 'default']
+        }
       },
-    }, {
-      params: {
-        orgID: this.orgId,
-      },
-      headers: {
-        Accept: 'application/csv',
-        'Content-Type': 'application/json',
-      },
-    });
+      {
+        params: {
+          orgID: this.orgId
+        },
+        headers: {
+          Accept: 'application/csv',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
   // ─── Delete ───
 
-  async deleteData(data: {
-    bucket: string;
-    start: string;
-    stop: string;
-    predicate?: string;
-  }) {
-    await this.axios.post('/api/v2/delete', {
-      start: data.start,
-      stop: data.stop,
-      predicate: data.predicate,
-    }, {
-      params: {
-        org: this.orgId,
-        bucket: data.bucket,
+  async deleteData(data: { bucket: string; start: string; stop: string; predicate?: string }) {
+    await this.axios.post(
+      '/api/v2/delete',
+      {
+        start: data.start,
+        stop: data.stop,
+        predicate: data.predicate
       },
-    });
+      {
+        params: {
+          org: this.orgId,
+          bucket: data.bucket
+        }
+      }
+    );
   }
 
   // ─── Tasks ───
 
-  async listTasks(params?: { name?: string; limit?: number; offset?: number; status?: string }) {
+  async listTasks(params?: {
+    name?: string;
+    limit?: number;
+    offset?: number;
+    status?: string;
+  }) {
     let response = await this.axios.get('/api/v2/tasks', {
       params: {
         orgID: this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -176,20 +185,23 @@ export class Client {
       status: data.status || 'active',
       every: data.every,
       cron: data.cron,
-      offset: data.offset,
+      offset: data.offset
     });
     return response.data;
   }
 
-  async updateTask(taskId: string, data: {
-    name?: string;
-    description?: string;
-    flux?: string;
-    status?: 'active' | 'inactive';
-    every?: string;
-    cron?: string;
-    offset?: string;
-  }) {
+  async updateTask(
+    taskId: string,
+    data: {
+      name?: string;
+      description?: string;
+      flux?: string;
+      status?: 'active' | 'inactive';
+      every?: string;
+      cron?: string;
+      offset?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/api/v2/tasks/${taskId}`, data);
     return response.data;
   }
@@ -198,14 +210,17 @@ export class Client {
     await this.axios.delete(`/api/v2/tasks/${taskId}`);
   }
 
-  async getTaskRuns(taskId: string, params?: { limit?: number; afterTime?: string; beforeTime?: string }) {
+  async getTaskRuns(
+    taskId: string,
+    params?: { limit?: number; afterTime?: string; beforeTime?: string }
+  ) {
     let response = await this.axios.get(`/api/v2/tasks/${taskId}/runs`, { params });
     return response.data;
   }
 
   async runTask(taskId: string, scheduledFor?: string) {
     let response = await this.axios.post(`/api/v2/tasks/${taskId}/runs`, {
-      scheduledFor,
+      scheduledFor
     });
     return response.data;
   }
@@ -233,8 +248,8 @@ export class Client {
     let response = await this.axios.get('/api/v2/authorizations', {
       params: {
         orgID: params?.orgID || this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -260,15 +275,18 @@ export class Client {
       orgID: this.orgId,
       description: data.description,
       permissions: data.permissions,
-      status: data.status || 'active',
+      status: data.status || 'active'
     });
     return response.data;
   }
 
-  async updateAuthorization(authId: string, data: {
-    description?: string;
-    status?: 'active' | 'inactive';
-  }) {
+  async updateAuthorization(
+    authId: string,
+    data: {
+      description?: string;
+      status?: 'active' | 'inactive';
+    }
+  ) {
     let response = await this.axios.patch(`/api/v2/authorizations/${authId}`, data);
     return response.data;
   }
@@ -281,38 +299,37 @@ export class Client {
 
   async listLabels() {
     let response = await this.axios.get('/api/v2/labels', {
-      params: { orgID: this.orgId },
+      params: { orgID: this.orgId }
     });
     return response.data;
   }
 
-  async createLabel(data: {
-    name: string;
-    color?: string;
-    description?: string;
-  }) {
+  async createLabel(data: { name: string; color?: string; description?: string }) {
     let response = await this.axios.post('/api/v2/labels', {
       orgID: this.orgId,
       name: data.name,
       properties: {
         color: data.color,
-        description: data.description,
-      },
+        description: data.description
+      }
     });
     return response.data;
   }
 
-  async updateLabel(labelId: string, data: {
-    name?: string;
-    color?: string;
-    description?: string;
-  }) {
+  async updateLabel(
+    labelId: string,
+    data: {
+      name?: string;
+      color?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/api/v2/labels/${labelId}`, {
       name: data.name,
       properties: {
         color: data.color,
-        description: data.description,
-      },
+        description: data.description
+      }
     });
     return response.data;
   }
@@ -327,8 +344,8 @@ export class Client {
     let response = await this.axios.get('/api/v2/checks', {
       params: {
         orgID: this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -348,8 +365,8 @@ export class Client {
     let response = await this.axios.get('/api/v2/notificationEndpoints', {
       params: {
         orgID: this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -369,8 +386,8 @@ export class Client {
     let response = await this.axios.get('/api/v2/notificationRules', {
       params: {
         orgID: this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -390,8 +407,8 @@ export class Client {
     let response = await this.axios.get('/api/v2/dashboards', {
       params: {
         orgID: this.orgId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
@@ -401,22 +418,22 @@ export class Client {
     return response.data;
   }
 
-  async createDashboard(data: {
-    name: string;
-    description?: string;
-  }) {
+  async createDashboard(data: { name: string; description?: string }) {
     let response = await this.axios.post('/api/v2/dashboards', {
       orgID: this.orgId,
       name: data.name,
-      description: data.description,
+      description: data.description
     });
     return response.data;
   }
 
-  async updateDashboard(dashboardId: string, data: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateDashboard(
+    dashboardId: string,
+    data: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/api/v2/dashboards/${dashboardId}`, data);
     return response.data;
   }
@@ -438,7 +455,7 @@ export class Client {
 
   async deleteSecrets(keys: string[]) {
     await this.axios.post(`/api/v2/orgs/${this.orgId}/secrets/delete`, {
-      secrets: keys,
+      secrets: keys
     });
   }
 
@@ -446,7 +463,7 @@ export class Client {
 
   async listTelegrafs() {
     let response = await this.axios.get('/api/v2/telegrafs', {
-      params: { orgID: this.orgId },
+      params: { orgID: this.orgId }
     });
     return response.data;
   }
@@ -456,28 +473,27 @@ export class Client {
     return response.data;
   }
 
-  async createTelegraf(data: {
-    name: string;
-    description?: string;
-    config: string;
-  }) {
+  async createTelegraf(data: { name: string; description?: string; config: string }) {
     let response = await this.axios.post('/api/v2/telegrafs', {
       orgID: this.orgId,
       name: data.name,
       description: data.description,
-      config: data.config,
+      config: data.config
     });
     return response.data;
   }
 
-  async updateTelegraf(telegrafId: string, data: {
-    name?: string;
-    description?: string;
-    config?: string;
-  }) {
+  async updateTelegraf(
+    telegrafId: string,
+    data: {
+      name?: string;
+      description?: string;
+      config?: string;
+    }
+  ) {
     let response = await this.axios.put(`/api/v2/telegrafs/${telegrafId}`, {
       orgID: this.orgId,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -490,7 +506,7 @@ export class Client {
 
   async listDBRPs() {
     let response = await this.axios.get('/api/v2/dbrps', {
-      params: { orgID: this.orgId },
+      params: { orgID: this.orgId }
     });
     return response.data;
   }
@@ -506,14 +522,14 @@ export class Client {
       bucketID: data.bucketId,
       database: data.database,
       retention_policy: data.retentionPolicy,
-      default: data.isDefault ?? false,
+      default: data.isDefault ?? false
     });
     return response.data;
   }
 
   async deleteDBRP(dbrpId: string) {
     await this.axios.delete(`/api/v2/dbrps/${dbrpId}`, {
-      params: { orgID: this.orgId },
+      params: { orgID: this.orgId }
     });
   }
 

@@ -12,54 +12,72 @@ let logEventSchema = z.object({
   actorId: z.string().describe('ID of the actor who triggered the event'),
   actorType: z.string().describe('Type of actor (User, SystemPrincipal, etc.)'),
   actorDisplayName: z.string().optional(),
-  actorAlternateId: z.string().optional().describe('Actor alternate ID (typically email or login)'),
+  actorAlternateId: z
+    .string()
+    .optional()
+    .describe('Actor alternate ID (typically email or login)'),
   outcomeResult: z.string().describe('Outcome (SUCCESS, FAILURE, SKIPPED, UNKNOWN)'),
   outcomeReason: z.string().optional(),
-  targets: z.array(z.object({
-    targetId: z.string(),
-    targetType: z.string(),
-    displayName: z.string().optional(),
-    alternateId: z.string().optional(),
-  })).optional().describe('Resources affected by the event'),
+  targets: z
+    .array(
+      z.object({
+        targetId: z.string(),
+        targetType: z.string(),
+        displayName: z.string().optional(),
+        alternateId: z.string().optional()
+      })
+    )
+    .optional()
+    .describe('Resources affected by the event'),
   clientIpAddress: z.string().optional(),
   clientDevice: z.string().optional(),
   clientCity: z.string().optional(),
-  clientCountry: z.string().optional(),
+  clientCountry: z.string().optional()
 });
 
-export let querySystemLogTool = SlateTool.create(
-  spec,
-  {
-    name: 'Query System Log',
-    key: 'query_system_log',
-    description: `Query the Okta System Log for audit events. Supports filtering by time range, event type, keyword search, and Okta filter expressions. Useful for auditing, security monitoring, and troubleshooting.`,
-    instructions: [
-      'Filter examples: `eventType eq "user.session.start"`, `actor.id eq "00u1234"`, `outcome.result eq "FAILURE"`.',
-      'Use "since" and "until" with ISO 8601 timestamps for time-bounded queries.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let querySystemLogTool = SlateTool.create(spec, {
+  name: 'Query System Log',
+  key: 'query_system_log',
+  description: `Query the Okta System Log for audit events. Supports filtering by time range, event type, keyword search, and Okta filter expressions. Useful for auditing, security monitoring, and troubleshooting.`,
+  instructions: [
+    'Filter examples: `eventType eq "user.session.start"`, `actor.id eq "00u1234"`, `outcome.result eq "FAILURE"`.',
+    'Use "since" and "until" with ISO 8601 timestamps for time-bounded queries.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    since: z.string().optional().describe('Start date/time in ISO 8601 format (e.g. 2024-01-01T00:00:00Z)'),
-    until: z.string().optional().describe('End date/time in ISO 8601 format'),
-    filter: z.string().optional().describe('Okta SCIM filter expression'),
-    query: z.string().optional().describe('Keyword search across event fields'),
-    sortOrder: z.enum(['ASCENDING', 'DESCENDING']).optional().describe('Sort order by published timestamp (default ASCENDING)'),
-    limit: z.number().optional().describe('Maximum events to return (default 100, max 1000)'),
-    after: z.string().optional().describe('Pagination cursor'),
-  }))
-  .output(z.object({
-    events: z.array(logEventSchema),
-    nextCursor: z.string().optional(),
-    hasMore: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      since: z
+        .string()
+        .optional()
+        .describe('Start date/time in ISO 8601 format (e.g. 2024-01-01T00:00:00Z)'),
+      until: z.string().optional().describe('End date/time in ISO 8601 format'),
+      filter: z.string().optional().describe('Okta SCIM filter expression'),
+      query: z.string().optional().describe('Keyword search across event fields'),
+      sortOrder: z
+        .enum(['ASCENDING', 'DESCENDING'])
+        .optional()
+        .describe('Sort order by published timestamp (default ASCENDING)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum events to return (default 100, max 1000)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(logEventSchema),
+      nextCursor: z.string().optional(),
+      hasMore: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OktaClient({
       domain: ctx.config.domain,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let result = await client.getSystemLogs({
@@ -69,7 +87,7 @@ export let querySystemLogTool = SlateTool.create(
       query: ctx.input.query,
       sortOrder: ctx.input.sortOrder,
       limit: ctx.input.limit,
-      after: ctx.input.after,
+      after: ctx.input.after
     });
 
     let events = result.items.map(e => ({
@@ -88,12 +106,12 @@ export let querySystemLogTool = SlateTool.create(
         targetId: t.id,
         targetType: t.type,
         displayName: t.displayName,
-        alternateId: t.alternateId,
+        alternateId: t.alternateId
       })),
       clientIpAddress: e.client?.ipAddress,
       clientDevice: e.client?.device,
       clientCity: e.client?.geographicalContext?.city,
-      clientCountry: e.client?.geographicalContext?.country,
+      clientCountry: e.client?.geographicalContext?.country
     }));
 
     let nextCursor: string | undefined;
@@ -106,8 +124,9 @@ export let querySystemLogTool = SlateTool.create(
       output: {
         events,
         nextCursor,
-        hasMore: !!result.nextUrl,
+        hasMore: !!result.nextUrl
       },
-      message: `Retrieved **${events.length}** log event(s)${result.nextUrl ? ' (more available)' : ''}.`,
+      message: `Retrieved **${events.length}** log event(s)${result.nextUrl ? ' (more available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

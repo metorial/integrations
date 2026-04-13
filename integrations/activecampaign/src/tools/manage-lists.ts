@@ -3,45 +3,69 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLists = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Lists',
-    key: 'manage_lists',
-    description: `Creates, updates, deletes, or retrieves mailing lists. Lists are used for organizing contacts and sending campaigns. To subscribe/unsubscribe contacts from lists, use the Manage List Subscription tool.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageLists = SlateTool.create(spec, {
+  name: 'Manage Lists',
+  key: 'manage_lists',
+  description: `Creates, updates, deletes, or retrieves mailing lists. Lists are used for organizing contacts and sending campaigns. To subscribe/unsubscribe contacts from lists, use the Manage List Subscription tool.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'get', 'list']).describe('Action to perform'),
-    listId: z.string().optional().describe('ID of the list (required for get, update, delete)'),
-    name: z.string().optional().describe('Name of the list (required for create)'),
-    stringId: z.string().optional().describe('URL-safe unique identifier for the list (required for create)'),
-    senderUrl: z.string().optional().describe('URL of the sender for CAN-SPAM compliance (required for create)'),
-    senderReminder: z.string().optional().describe('Reminder text for CAN-SPAM compliance (required for create)'),
-    filterName: z.string().optional().describe('Filter lists by name (for list action)'),
-    limit: z.number().optional().describe('Maximum number of lists to return (for list action)'),
-    offset: z.number().optional().describe('Pagination offset (for list action)')
-  }))
-  .output(z.object({
-    list: z.object({
-      listId: z.string(),
-      name: z.string(),
-      stringId: z.string().optional(),
-      subscriberCount: z.number().optional()
-    }).optional(),
-    lists: z.array(z.object({
-      listId: z.string(),
-      name: z.string(),
-      stringId: z.string().optional(),
-      subscriberCount: z.number().optional()
-    })).optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'get', 'list'])
+        .describe('Action to perform'),
+      listId: z
+        .string()
+        .optional()
+        .describe('ID of the list (required for get, update, delete)'),
+      name: z.string().optional().describe('Name of the list (required for create)'),
+      stringId: z
+        .string()
+        .optional()
+        .describe('URL-safe unique identifier for the list (required for create)'),
+      senderUrl: z
+        .string()
+        .optional()
+        .describe('URL of the sender for CAN-SPAM compliance (required for create)'),
+      senderReminder: z
+        .string()
+        .optional()
+        .describe('Reminder text for CAN-SPAM compliance (required for create)'),
+      filterName: z.string().optional().describe('Filter lists by name (for list action)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of lists to return (for list action)'),
+      offset: z.number().optional().describe('Pagination offset (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      list: z
+        .object({
+          listId: z.string(),
+          name: z.string(),
+          stringId: z.string().optional(),
+          subscriberCount: z.number().optional()
+        })
+        .optional(),
+      lists: z
+        .array(
+          z.object({
+            listId: z.string(),
+            name: z.string(),
+            stringId: z.string().optional(),
+            subscriberCount: z.number().optional()
+          })
+        )
+        .optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -49,8 +73,15 @@ export let manageLists = SlateTool.create(
 
     switch (ctx.input.action) {
       case 'create': {
-        if (!ctx.input.name || !ctx.input.stringId || !ctx.input.senderUrl || !ctx.input.senderReminder) {
-          throw new Error('name, stringId, senderUrl, and senderReminder are required for creating a list');
+        if (
+          !ctx.input.name ||
+          !ctx.input.stringId ||
+          !ctx.input.senderUrl ||
+          !ctx.input.senderReminder
+        ) {
+          throw new Error(
+            'name, stringId, senderUrl, and senderReminder are required for creating a list'
+          );
         }
         let result = await client.createList({
           name: ctx.input.name,
@@ -65,7 +96,9 @@ export let manageLists = SlateTool.create(
               listId: list.id,
               name: list.name,
               stringId: list.stringid || undefined,
-              subscriberCount: list.subscriber_count ? Number(list.subscriber_count) : undefined
+              subscriberCount: list.subscriber_count
+                ? Number(list.subscriber_count)
+                : undefined
             }
           },
           message: `List **${list.name}** (ID: ${list.id}) created.`
@@ -110,7 +143,9 @@ export let manageLists = SlateTool.create(
               listId: list.id,
               name: list.name,
               stringId: list.stringid || undefined,
-              subscriberCount: list.subscriber_count ? Number(list.subscriber_count) : undefined
+              subscriberCount: list.subscriber_count
+                ? Number(list.subscriber_count)
+                : undefined
             }
           },
           message: `Retrieved list **${list.name}** (ID: ${list.id}).`
@@ -135,4 +170,5 @@ export let manageLists = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Event',
-    key: 'manage_event',
-    description: `Create, update, or delete an event in Hub Planner. Events are schedulable items similar to projects but for non-project activities.
+export let manageEvent = SlateTool.create(spec, {
+  name: 'Manage Event',
+  key: 'manage_event',
+  description: `Create, update, or delete an event in Hub Planner. Events are schedulable items similar to projects but for non-project activities.
 When creating, **name** is required.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    eventId: z.string().optional().describe('Event ID, required for update and delete'),
-    name: z.string().optional().describe('Event name, required for create'),
-    eventCode: z.string().optional().describe('Unique event code'),
-    backgroundColor: z.string().optional().describe('Hex color code'),
-    metadata: z.string().optional().describe('Custom metadata'),
-  }))
-  .output(z.object({
-    eventId: z.string().optional().describe('Event ID'),
-    name: z.string().optional().describe('Event name'),
-    eventCode: z.string().optional().describe('Event code'),
-    backgroundColor: z.string().optional().describe('Background color'),
-    createdDate: z.string().optional().describe('Creation timestamp'),
-    updatedDate: z.string().optional().describe('Last update timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      eventId: z.string().optional().describe('Event ID, required for update and delete'),
+      name: z.string().optional().describe('Event name, required for create'),
+      eventCode: z.string().optional().describe('Unique event code'),
+      backgroundColor: z.string().optional().describe('Hex color code'),
+      metadata: z.string().optional().describe('Custom metadata')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().optional().describe('Event ID'),
+      name: z.string().optional().describe('Event name'),
+      eventCode: z.string().optional().describe('Event code'),
+      backgroundColor: z.string().optional().describe('Background color'),
+      createdDate: z.string().optional().describe('Creation timestamp'),
+      updatedDate: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, eventId, ...fields } = ctx.input;
 
@@ -45,9 +46,9 @@ When creating, **name** is required.`,
           eventCode: result.eventCode,
           backgroundColor: result.backgroundColor,
           createdDate: result.createdDate,
-          updatedDate: result.updatedDate,
+          updatedDate: result.updatedDate
         },
-        message: `Created event **${result.name}** (ID: \`${result._id}\`).`,
+        message: `Created event **${result.name}** (ID: \`${result._id}\`).`
       };
     }
 
@@ -62,9 +63,9 @@ When creating, **name** is required.`,
           eventCode: result.eventCode,
           backgroundColor: result.backgroundColor,
           createdDate: result.createdDate,
-          updatedDate: result.updatedDate,
+          updatedDate: result.updatedDate
         },
-        message: `Updated event **${result.name}** (ID: \`${result._id}\`).`,
+        message: `Updated event **${result.name}** (ID: \`${result._id}\`).`
       };
     }
 
@@ -72,7 +73,7 @@ When creating, **name** is required.`,
     await client.deleteEvent(eventId);
     return {
       output: { eventId },
-      message: `Deleted event \`${eventId}\`.`,
+      message: `Deleted event \`${eventId}\`.`
     };
   })
   .build();

@@ -3,48 +3,57 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProducts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Products',
-    key: 'manage_products',
-    description: `Create, update, or delete products in the Pipedrive product catalog. Products can be attached to deals with pricing and quantities.
+export let manageProducts = SlateTool.create(spec, {
+  name: 'Manage Products',
+  key: 'manage_products',
+  description: `Create, update, or delete products in the Pipedrive product catalog. Products can be attached to deals with pricing and quantities.
 Supports setting name, code, unit, tax, prices, and custom fields.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    productId: z.number().optional().describe('Product ID (required for update and delete)'),
-    name: z.string().optional().describe('Product name (required for create)'),
-    code: z.string().optional().describe('Product code/SKU'),
-    unit: z.string().optional().describe('Unit of measurement'),
-    tax: z.number().optional().describe('Tax percentage'),
-    activeFlag: z.boolean().optional().describe('Whether the product is active'),
-    visibleTo: z.enum(['1', '3', '5', '7']).optional().describe('Visibility setting'),
-    prices: z.array(z.object({
-      price: z.number().describe('Price value'),
-      currency: z.string().describe('Currency code'),
-      cost: z.number().optional().describe('Cost/wholesale price'),
-      overheadCost: z.number().optional().describe('Overhead cost'),
-    })).optional().describe('Product pricing for different currencies'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values keyed by field API key'),
-  }))
-  .output(z.object({
-    productId: z.number().describe('Product ID'),
-    name: z.string().optional().describe('Product name'),
-    code: z.string().optional().nullable().describe('Product code'),
-    unit: z.string().optional().nullable().describe('Unit of measurement'),
-    tax: z.number().optional().describe('Tax percentage'),
-    activeFlag: z.boolean().optional().describe('Whether active'),
-    addTime: z.string().optional().describe('Creation timestamp'),
-    updateTime: z.string().optional().nullable().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the product was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      productId: z.number().optional().describe('Product ID (required for update and delete)'),
+      name: z.string().optional().describe('Product name (required for create)'),
+      code: z.string().optional().describe('Product code/SKU'),
+      unit: z.string().optional().describe('Unit of measurement'),
+      tax: z.number().optional().describe('Tax percentage'),
+      activeFlag: z.boolean().optional().describe('Whether the product is active'),
+      visibleTo: z.enum(['1', '3', '5', '7']).optional().describe('Visibility setting'),
+      prices: z
+        .array(
+          z.object({
+            price: z.number().describe('Price value'),
+            currency: z.string().describe('Currency code'),
+            cost: z.number().optional().describe('Cost/wholesale price'),
+            overheadCost: z.number().optional().describe('Overhead cost')
+          })
+        )
+        .optional()
+        .describe('Product pricing for different currencies'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values keyed by field API key')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.number().describe('Product ID'),
+      name: z.string().optional().describe('Product name'),
+      code: z.string().optional().nullable().describe('Product code'),
+      unit: z.string().optional().nullable().describe('Unit of measurement'),
+      tax: z.number().optional().describe('Tax percentage'),
+      activeFlag: z.boolean().optional().describe('Whether active'),
+      addTime: z.string().optional().describe('Creation timestamp'),
+      updateTime: z.string().optional().nullable().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the product was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
@@ -52,7 +61,7 @@ Supports setting name, code, unit, tax, prices, and custom fields.`,
       await client.deleteProduct(ctx.input.productId);
       return {
         output: { productId: ctx.input.productId, deleted: true },
-        message: `Product **#${ctx.input.productId}** has been deleted.`,
+        message: `Product **#${ctx.input.productId}** has been deleted.`
       };
     }
 
@@ -68,7 +77,7 @@ Supports setting name, code, unit, tax, prices, and custom fields.`,
         price: p.price,
         currency: p.currency,
         cost: p.cost,
-        overhead_cost: p.overheadCost,
+        overhead_cost: p.overheadCost
       }));
     }
     if (ctx.input.customFields) {
@@ -95,8 +104,8 @@ Supports setting name, code, unit, tax, prices, and custom fields.`,
         tax: product?.tax,
         activeFlag: product?.active_flag,
         addTime: product?.add_time,
-        updateTime: product?.update_time,
+        updateTime: product?.update_time
       },
-      message: `Product **"${product?.name}"** (ID: ${product?.id}) has been ${action}.`,
+      message: `Product **"${product?.name}"** (ID: ${product?.id}) has been ${action}.`
     };
   });

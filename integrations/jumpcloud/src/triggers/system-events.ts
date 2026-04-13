@@ -3,46 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let systemEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'System & MDM Events',
-    key: 'system_events',
-    description: 'Polls JumpCloud Directory Insights for system-level and MDM events including agent activity, policy application results, command execution, device enrollment, and software changes.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    service: z.string().describe('Service category (systems or mdm)'),
-    initiatedById: z.string().optional().describe('Actor ID'),
-    initiatedByType: z.string().optional().describe('Actor type'),
-    resourceId: z.string().optional().describe('Affected system ID'),
-    resourceType: z.string().optional().describe('Resource type'),
-    organization: z.string().optional().describe('Organization ID'),
-    rawEvent: z.any().describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    service: z.string().describe('Service category'),
-    systemId: z.string().optional().describe('Affected system ID'),
-    initiatedById: z.string().optional().describe('Actor ID'),
-    initiatedByType: z.string().optional().describe('Actor type'),
-    organization: z.string().optional().describe('Organization ID'),
-    success: z.boolean().optional().describe('Whether the operation succeeded'),
-    message: z.string().optional().describe('Human-readable event description'),
-  }))
+export let systemEvents = SlateTrigger.create(spec, {
+  name: 'System & MDM Events',
+  key: 'system_events',
+  description:
+    'Polls JumpCloud Directory Insights for system-level and MDM events including agent activity, policy application results, command execution, device enrollment, and software changes.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      service: z.string().describe('Service category (systems or mdm)'),
+      initiatedById: z.string().optional().describe('Actor ID'),
+      initiatedByType: z.string().optional().describe('Actor type'),
+      resourceId: z.string().optional().describe('Affected system ID'),
+      resourceType: z.string().optional().describe('Resource type'),
+      organization: z.string().optional().describe('Organization ID'),
+      rawEvent: z.any().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      service: z.string().describe('Service category'),
+      systemId: z.string().optional().describe('Affected system ID'),
+      initiatedById: z.string().optional().describe('Actor ID'),
+      initiatedByType: z.string().optional().describe('Actor type'),
+      organization: z.string().optional().describe('Organization ID'),
+      success: z.boolean().optional().describe('Whether the operation succeeded'),
+      message: z.string().optional().describe('Human-readable event description')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        orgId: ctx.config.orgId,
+        orgId: ctx.config.orgId
       });
 
       let lastTimestamp = ctx.state?.lastTimestamp as string | undefined;
@@ -52,7 +54,7 @@ export let systemEvents = SlateTrigger.create(
         service: ['systems', 'mdm', 'software'],
         startTime,
         limit: 100,
-        sort: 'ASC',
+        sort: 'ASC'
       });
 
       let newLastTimestamp = startTime;
@@ -62,7 +64,7 @@ export let systemEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: result.events.map((e) => ({
+        inputs: result.events.map(e => ({
           eventId: e.id ?? `${e.timestamp}-${e.event_type}`,
           eventType: e.event_type ?? 'unknown',
           timestamp: e.timestamp ?? new Date().toISOString(),
@@ -72,14 +74,14 @@ export let systemEvents = SlateTrigger.create(
           resourceId: e.resource?.id,
           resourceType: e.resource?.type,
           organization: e.organization,
-          rawEvent: e,
+          rawEvent: e
         })),
         updatedState: {
-          lastTimestamp: newLastTimestamp,
-        },
+          lastTimestamp: newLastTimestamp
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.rawEvent ?? {};
       let success = raw.success !== undefined ? raw.success : undefined;
 
@@ -104,8 +106,9 @@ export let systemEvents = SlateTrigger.create(
           initiatedByType: ctx.input.initiatedByType,
           organization: ctx.input.organization,
           success,
-          message: description,
-        },
+          message: description
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

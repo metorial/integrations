@@ -20,7 +20,7 @@ import {
   deduplicateRows,
   enrichData,
   getActivity,
-  manageSavedFilters,
+  manageSavedFilters
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -47,9 +47,7 @@ export let provider = Slate.create({
     deduplicateRows,
     enrichData,
     getActivity,
-    manageSavedFilters,
+    manageSavedFilters
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

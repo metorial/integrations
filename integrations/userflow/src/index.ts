@@ -14,13 +14,9 @@ import {
   listEventDefinitions,
   listContent,
   getContent,
-  manageWebhookSubscription,
+  manageWebhookSubscription
 } from './tools';
-import {
-  userEvents,
-  groupEvents,
-  eventTracked,
-} from './triggers';
+import { userEvents, groupEvents, eventTracked } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,11 +34,7 @@ export let provider = Slate.create({
     listEventDefinitions,
     listContent,
     getContent,
-    manageWebhookSubscription,
+    manageWebhookSubscription
   ],
-  triggers: [
-    userEvents,
-    groupEvents,
-    eventTracked,
-  ],
+  triggers: [userEvents, groupEvents, eventTracked]
 });

@@ -8,7 +8,7 @@ import {
   searchJournalists,
   searchSources,
   searchTopics,
-  searchWikipedia,
+  searchWikipedia
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     searchJournalists,
     searchSources,
     searchTopics,
-    searchWikipedia,
+    searchWikipedia
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

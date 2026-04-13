@@ -17,12 +17,9 @@ import {
   deleteCampaign,
   getCampaignReport,
   listAutomations,
-  listForms,
+  listForms
 } from './tools';
-import {
-  subscriberEvents,
-  campaignEvents,
-} from './triggers';
+import { subscriberEvents, campaignEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,10 +40,7 @@ export let provider = Slate.create({
     deleteCampaign,
     getCampaignReport,
     listAutomations,
-    listForms,
+    listForms
   ],
-  triggers: [
-    subscriberEvents,
-    campaignEvents,
-  ],
+  triggers: [subscriberEvents, campaignEvents]
 });

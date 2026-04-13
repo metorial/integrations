@@ -76,7 +76,14 @@ export interface ProposeEditBody {
 }
 
 export interface FlagPlaceBody {
-  problem: 'mislocated' | 'closed' | 'duplicate' | 'inappropriate' | 'doesnt_exist' | 'private' | 'event_over';
+  problem:
+    | 'mislocated'
+    | 'closed'
+    | 'duplicate'
+    | 'inappropriate'
+    | 'doesnt_exist'
+    | 'private'
+    | 'event_over';
   duplicate_fsq_id?: string;
   comment?: string;
   latitude?: number;
@@ -90,9 +97,9 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.foursquare.com/v3',
       headers: {
-        'Authorization': config.token,
-        'Accept': 'application/json',
-      },
+        Authorization: config.token,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -116,7 +123,10 @@ export class Client {
     return response.data;
   }
 
-  async getNearbyPlaces(ll: string, params?: { hacc?: number; altitude?: number; limit?: number; fields?: string }) {
+  async getNearbyPlaces(
+    ll: string,
+    params?: { hacc?: number; altitude?: number; limit?: number; fields?: string }
+  ) {
     let response = await this.api.get('/places/nearby', { params: { ll, ...params } });
     return response.data;
   }

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://pdf-api.io/api',
+  baseURL: 'https://pdf-api.io/api'
 });
 
 export interface TemplateVariable {
@@ -46,20 +46,20 @@ export class Client {
     return {
       Authorization: `Bearer ${this.token}`,
       'Content-Type': 'application/json',
-      ...extra,
+      ...extra
     };
   }
 
   async listTemplates(): Promise<Template[]> {
     let response = await http.get('/templates', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getTemplate(templateId: string): Promise<Template> {
     let response = await http.get(`/templates/${templateId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -74,15 +74,11 @@ export class Client {
       body.output = 'url';
     }
 
-    let response = await http.post<JsonPdfResponse>(
-      `/templates/${templateId}/pdf`,
-      body,
-      {
-        headers: this.headers({
-          Accept: 'application/json',
-        }),
-      }
-    );
+    let response = await http.post<JsonPdfResponse>(`/templates/${templateId}/pdf`, body, {
+      headers: this.headers({
+        Accept: 'application/json'
+      })
+    });
 
     if (options?.output === 'url') {
       return { url: response.data.data };
@@ -100,15 +96,11 @@ export class Client {
       body.output = 'url';
     }
 
-    let response = await http.post<JsonPdfResponse>(
-      '/templates/merge',
-      body,
-      {
-        headers: this.headers({
-          Accept: 'application/json',
-        }),
-      }
-    );
+    let response = await http.post<JsonPdfResponse>('/templates/merge', body, {
+      headers: this.headers({
+        Accept: 'application/json'
+      })
+    });
 
     if (options?.output === 'url') {
       return { url: response.data.data };

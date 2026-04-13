@@ -3,55 +3,60 @@ import { FirmaoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Get Customer',
-    key: 'get_customer',
-    description: `Retrieve full details of a specific customer (counterparty) record by ID, including addresses, contact info, bank details, custom fields, and associated groups.`,
-    tags: {
-      readOnly: true,
-    },
+export let getCustomer = SlateTool.create(spec, {
+  name: 'Get Customer',
+  key: 'get_customer',
+  description: `Retrieve full details of a specific customer (counterparty) record by ID, including addresses, contact info, bank details, custom fields, and associated groups.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    customerId: z.number().describe('ID of the customer to retrieve'),
-  }))
-  .output(z.object({
-    customerId: z.number(),
-    name: z.string(),
-    label: z.string().optional(),
-    customerType: z.string().optional(),
-    nipNumber: z.string().optional(),
-    bankAccountNumber: z.string().optional(),
-    emails: z.array(z.string()).optional(),
-    phones: z.array(z.string()).optional(),
-    website: z.string().optional(),
-    description: z.string().optional(),
-    ownership: z.string().optional(),
-    employeesNumber: z.number().optional(),
-    industry: z.string().optional(),
-    officeAddress: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      postCode: z.string().optional(),
-      country: z.string().optional(),
-    }).optional(),
-    correspondenceAddress: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      postCode: z.string().optional(),
-      country: z.string().optional(),
-    }).optional(),
-    tags: z.array(z.string()).optional(),
-    customFields: z.record(z.string(), z.string()).optional(),
-    creationDate: z.string().optional(),
-    lastModificationDate: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      customerId: z.number().describe('ID of the customer to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.number(),
+      name: z.string(),
+      label: z.string().optional(),
+      customerType: z.string().optional(),
+      nipNumber: z.string().optional(),
+      bankAccountNumber: z.string().optional(),
+      emails: z.array(z.string()).optional(),
+      phones: z.array(z.string()).optional(),
+      website: z.string().optional(),
+      description: z.string().optional(),
+      ownership: z.string().optional(),
+      employeesNumber: z.number().optional(),
+      industry: z.string().optional(),
+      officeAddress: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          postCode: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional(),
+      correspondenceAddress: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          postCode: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional(),
+      tags: z.array(z.string()).optional(),
+      customFields: z.record(z.string(), z.string()).optional(),
+      creationDate: z.string().optional(),
+      lastModificationDate: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FirmaoClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let c = await client.getById('customers', ctx.input.customerId);
@@ -76,9 +81,9 @@ export let getCustomer = SlateTool.create(
         tags: c.tags?.map((t: any) => t.name ?? t),
         customFields: c.customFields,
         creationDate: c.creationDate,
-        lastModificationDate: c.lastModificationDate,
+        lastModificationDate: c.lastModificationDate
       },
-      message: `Retrieved customer **${c.name}** (ID: ${c.id}).`,
+      message: `Retrieved customer **${c.name}** (ID: ${c.id}).`
     };
   })
   .build();

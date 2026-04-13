@@ -9,13 +9,17 @@ export let deletePage = SlateTool.create(spec, {
   description: `Delete a Confluence page by ID. The page is moved to trash and can be restored later.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    pageId: z.string().describe('The ID of the page to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the page was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageId: z.string().describe('The ID of the page to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the page was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     await client.deletePage(ctx.input.pageId);
 

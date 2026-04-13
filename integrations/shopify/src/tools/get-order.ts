@@ -3,77 +3,86 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Get Order',
-    key: 'get_order',
-    description: `Retrieve full details of a single order including line items, shipping address, billing address, customer info, transactions, fulfillments, and discount information.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    orderId: z.string().describe('Shopify order ID')
-  }))
-  .output(z.object({
-    orderId: z.string(),
-    orderNumber: z.number(),
-    name: z.string(),
-    email: z.string().nullable(),
-    phone: z.string().nullable(),
-    totalPrice: z.string(),
-    subtotalPrice: z.string(),
-    totalTax: z.string(),
-    totalDiscounts: z.string(),
-    currency: z.string(),
-    financialStatus: z.string().nullable(),
-    fulfillmentStatus: z.string().nullable(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    cancelledAt: z.string().nullable(),
-    closedAt: z.string().nullable(),
-    cancelReason: z.string().nullable(),
-    note: z.string().nullable(),
-    tags: z.string(),
-    lineItems: z.array(z.object({
-      lineItemId: z.string(),
-      title: z.string(),
-      quantity: z.number(),
-      price: z.string(),
-      sku: z.string().nullable(),
-      variantId: z.string().nullable(),
-      productId: z.string().nullable(),
-      variantTitle: z.string().nullable(),
-      fulfillmentStatus: z.string().nullable()
-    })),
-    shippingAddress: z.object({
-      name: z.string().nullable(),
-      address1: z.string().nullable(),
-      address2: z.string().nullable(),
-      city: z.string().nullable(),
-      province: z.string().nullable(),
-      country: z.string().nullable(),
-      zip: z.string().nullable(),
-      phone: z.string().nullable()
-    }).nullable(),
-    billingAddress: z.object({
-      name: z.string().nullable(),
-      address1: z.string().nullable(),
-      address2: z.string().nullable(),
-      city: z.string().nullable(),
-      province: z.string().nullable(),
-      country: z.string().nullable(),
-      zip: z.string().nullable(),
-      phone: z.string().nullable()
-    }).nullable(),
-    customer: z.object({
-      customerId: z.string(),
+export let getOrder = SlateTool.create(spec, {
+  name: 'Get Order',
+  key: 'get_order',
+  description: `Retrieve full details of a single order including line items, shipping address, billing address, customer info, transactions, fulfillments, and discount information.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      orderId: z.string().describe('Shopify order ID')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string(),
+      orderNumber: z.number(),
+      name: z.string(),
       email: z.string().nullable(),
-      firstName: z.string().nullable(),
-      lastName: z.string().nullable()
-    }).nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+      phone: z.string().nullable(),
+      totalPrice: z.string(),
+      subtotalPrice: z.string(),
+      totalTax: z.string(),
+      totalDiscounts: z.string(),
+      currency: z.string(),
+      financialStatus: z.string().nullable(),
+      fulfillmentStatus: z.string().nullable(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      cancelledAt: z.string().nullable(),
+      closedAt: z.string().nullable(),
+      cancelReason: z.string().nullable(),
+      note: z.string().nullable(),
+      tags: z.string(),
+      lineItems: z.array(
+        z.object({
+          lineItemId: z.string(),
+          title: z.string(),
+          quantity: z.number(),
+          price: z.string(),
+          sku: z.string().nullable(),
+          variantId: z.string().nullable(),
+          productId: z.string().nullable(),
+          variantTitle: z.string().nullable(),
+          fulfillmentStatus: z.string().nullable()
+        })
+      ),
+      shippingAddress: z
+        .object({
+          name: z.string().nullable(),
+          address1: z.string().nullable(),
+          address2: z.string().nullable(),
+          city: z.string().nullable(),
+          province: z.string().nullable(),
+          country: z.string().nullable(),
+          zip: z.string().nullable(),
+          phone: z.string().nullable()
+        })
+        .nullable(),
+      billingAddress: z
+        .object({
+          name: z.string().nullable(),
+          address1: z.string().nullable(),
+          address2: z.string().nullable(),
+          city: z.string().nullable(),
+          province: z.string().nullable(),
+          country: z.string().nullable(),
+          zip: z.string().nullable(),
+          phone: z.string().nullable()
+        })
+        .nullable(),
+      customer: z
+        .object({
+          customerId: z.string(),
+          email: z.string().nullable(),
+          firstName: z.string().nullable(),
+          lastName: z.string().nullable()
+        })
+        .nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -82,16 +91,19 @@ export let getOrder = SlateTool.create(
 
     let o = await client.getOrder(ctx.input.orderId);
 
-    let mapAddress = (addr: any) => addr ? {
-      name: addr.name || null,
-      address1: addr.address1 || null,
-      address2: addr.address2 || null,
-      city: addr.city || null,
-      province: addr.province || null,
-      country: addr.country || null,
-      zip: addr.zip || null,
-      phone: addr.phone || null
-    } : null;
+    let mapAddress = (addr: any) =>
+      addr
+        ? {
+            name: addr.name || null,
+            address1: addr.address1 || null,
+            address2: addr.address2 || null,
+            city: addr.city || null,
+            province: addr.province || null,
+            country: addr.country || null,
+            zip: addr.zip || null,
+            phone: addr.phone || null
+          }
+        : null;
 
     return {
       output: {
@@ -127,13 +139,16 @@ export let getOrder = SlateTool.create(
         })),
         shippingAddress: mapAddress(o.shipping_address),
         billingAddress: mapAddress(o.billing_address),
-        customer: o.customer ? {
-          customerId: String(o.customer.id),
-          email: o.customer.email,
-          firstName: o.customer.first_name,
-          lastName: o.customer.last_name
-        } : null
+        customer: o.customer
+          ? {
+              customerId: String(o.customer.id),
+              email: o.customer.email,
+              firstName: o.customer.first_name,
+              lastName: o.customer.last_name
+            }
+          : null
       },
       message: `Retrieved order **${o.name}** — ${o.financial_status}, ${o.fulfillment_status || 'unfulfilled'}, total: ${o.total_price} ${o.currency}.`
     };
-  }).build();
+  })
+  .build();

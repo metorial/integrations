@@ -25,11 +25,7 @@ import {
   deleteDependency,
   listAttachments
 } from './tools';
-import {
-  taskEvents,
-  folderEvents,
-  approvalEvents
-} from './triggers';
+import { taskEvents, folderEvents, approvalEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -58,9 +54,5 @@ export let provider = Slate.create({
     deleteDependency,
     listAttachments
   ],
-  triggers: [
-    taskEvents,
-    folderEvents,
-    approvalEvents
-  ]
+  triggers: [taskEvents, folderEvents, approvalEvents]
 });

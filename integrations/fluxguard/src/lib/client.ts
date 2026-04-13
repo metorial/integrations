@@ -8,8 +8,8 @@ export class FluxguardClient {
       baseURL: 'https://api.fluxguard.com',
       headers: {
         'x-api-key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -49,7 +49,9 @@ export class FluxguardClient {
   }
 
   async deletePage(siteId: string, sessionId: string, pageId: string) {
-    let response = await this.http.delete(`/site/${siteId}/session/${sessionId}/page/${pageId}`);
+    let response = await this.http.delete(
+      `/site/${siteId}/session/${sessionId}/page/${pageId}`
+    );
     return response.data;
   }
 

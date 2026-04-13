@@ -3,45 +3,47 @@ import { TaskRouterClient } from '../lib/taskrouter-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Events',
-    key: 'task_events',
-    description: '[Polling fallback] Polls for new or updated tasks in a TaskRouter workspace. Detects task creation, assignment, completion, and cancellation.'
-  }
-)
-  .input(z.object({
-    taskSid: z.string().describe('Task SID'),
-    assignmentStatus: z.string().describe('Current assignment status'),
-    previousStatus: z.string().optional().describe('Previous assignment status'),
-    attributes: z.string().optional().describe('Task attributes as JSON string'),
-    priority: z.number().optional().describe('Task priority'),
-    taskQueueFriendlyName: z.string().optional().describe('Task queue friendly name'),
-    workerName: z.string().optional().describe('Assigned worker name'),
-    workflowFriendlyName: z.string().optional().describe('Workflow friendly name'),
-    age: z.number().optional().describe('Task age in seconds'),
-    dateCreated: z.string().optional().describe('Date created'),
-    dateUpdated: z.string().optional().describe('Date last updated')
-  }))
-  .output(z.object({
-    taskSid: z.string().describe('Task SID'),
-    assignmentStatus: z.string().describe('Current assignment status'),
-    attributes: z.string().optional().describe('Task attributes as JSON string'),
-    priority: z.number().optional().describe('Task priority'),
-    taskQueueFriendlyName: z.string().optional().describe('Task queue friendly name'),
-    workerName: z.string().optional().describe('Assigned worker name'),
-    workflowFriendlyName: z.string().optional().describe('Workflow friendly name'),
-    age: z.number().optional().describe('Task age in seconds'),
-    dateCreated: z.string().optional().describe('Date created'),
-    dateUpdated: z.string().optional().describe('Date last updated')
-  }))
+export let taskEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Task Events',
+  key: 'task_events',
+  description:
+    '[Polling fallback] Polls for new or updated tasks in a TaskRouter workspace. Detects task creation, assignment, completion, and cancellation.'
+})
+  .input(
+    z.object({
+      taskSid: z.string().describe('Task SID'),
+      assignmentStatus: z.string().describe('Current assignment status'),
+      previousStatus: z.string().optional().describe('Previous assignment status'),
+      attributes: z.string().optional().describe('Task attributes as JSON string'),
+      priority: z.number().optional().describe('Task priority'),
+      taskQueueFriendlyName: z.string().optional().describe('Task queue friendly name'),
+      workerName: z.string().optional().describe('Assigned worker name'),
+      workflowFriendlyName: z.string().optional().describe('Workflow friendly name'),
+      age: z.number().optional().describe('Task age in seconds'),
+      dateCreated: z.string().optional().describe('Date created'),
+      dateUpdated: z.string().optional().describe('Date last updated')
+    })
+  )
+  .output(
+    z.object({
+      taskSid: z.string().describe('Task SID'),
+      assignmentStatus: z.string().describe('Current assignment status'),
+      attributes: z.string().optional().describe('Task attributes as JSON string'),
+      priority: z.number().optional().describe('Task priority'),
+      taskQueueFriendlyName: z.string().optional().describe('Task queue friendly name'),
+      workerName: z.string().optional().describe('Assigned worker name'),
+      workflowFriendlyName: z.string().optional().describe('Workflow friendly name'),
+      age: z.number().optional().describe('Task age in seconds'),
+      dateCreated: z.string().optional().describe('Date created'),
+      dateUpdated: z.string().optional().describe('Date last updated')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let workspaceSid = ctx.config.workspaceSid;
       if (!workspaceSid) {
         ctx.warn('No workspaceSid configured — cannot poll for task events');
@@ -86,7 +88,7 @@ export let taskEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.previousStatus
         ? `task.${ctx.input.assignmentStatus}`
         : 'task.created';
@@ -108,4 +110,5 @@ export let taskEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -6,51 +6,53 @@ import { z } from 'zod';
 let rowCountsSchema = z.object({
   addedCount: z.number().describe('Number of rows added'),
   changedCount: z.number().describe('Number of rows changed'),
-  removedCount: z.number().describe('Number of rows removed'),
+  removedCount: z.number().describe('Number of rows removed')
 });
 
-export let syncRunCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sync Run Completed',
-    key: 'sync_run_completed',
-    description: 'Triggers when a sync run finishes (successfully, with failure, or aborted). Polls the sync run history for new completed runs.',
-  }
-)
-  .input(z.object({
-    syncId: z.number().describe('ID of the sync'),
-    runId: z.number().describe('ID of the sync run'),
-    status: z.string().describe('Status of the sync run'),
-    completionRatio: z.number().describe('Completion ratio'),
-    querySize: z.number().describe('Number of rows in the query'),
-    plannedRows: rowCountsSchema.describe('Planned row counts'),
-    successfulRows: rowCountsSchema.describe('Successful row counts'),
-    failedRows: rowCountsSchema.describe('Failed row counts'),
-    error: z.string().nullable().optional().describe('Error message if the run failed'),
-    createdAt: z.string().describe('ISO timestamp when the run was created'),
-    startedAt: z.string().describe('ISO timestamp when the run started'),
-    finishedAt: z.string().describe('ISO timestamp when the run finished'),
-  }))
-  .output(z.object({
-    syncId: z.number().describe('ID of the sync that ran'),
-    runId: z.number().describe('ID of the sync run'),
-    status: z.string().describe('Final status of the run (e.g. success, failed, aborted)'),
-    completionRatio: z.number().describe('Completion ratio (0 to 1)'),
-    querySize: z.number().describe('Number of rows returned by the query'),
-    plannedRows: rowCountsSchema.describe('Rows planned for syncing'),
-    successfulRows: rowCountsSchema.describe('Rows successfully synced'),
-    failedRows: rowCountsSchema.describe('Rows that failed to sync'),
-    error: z.string().nullable().optional().describe('Error message if the run failed'),
-    createdAt: z.string().describe('ISO timestamp when the run was created'),
-    startedAt: z.string().describe('ISO timestamp when the run started'),
-    finishedAt: z.string().describe('ISO timestamp when the run finished'),
-  }))
+export let syncRunCompleted = SlateTrigger.create(spec, {
+  name: 'Sync Run Completed',
+  key: 'sync_run_completed',
+  description:
+    'Triggers when a sync run finishes (successfully, with failure, or aborted). Polls the sync run history for new completed runs.'
+})
+  .input(
+    z.object({
+      syncId: z.number().describe('ID of the sync'),
+      runId: z.number().describe('ID of the sync run'),
+      status: z.string().describe('Status of the sync run'),
+      completionRatio: z.number().describe('Completion ratio'),
+      querySize: z.number().describe('Number of rows in the query'),
+      plannedRows: rowCountsSchema.describe('Planned row counts'),
+      successfulRows: rowCountsSchema.describe('Successful row counts'),
+      failedRows: rowCountsSchema.describe('Failed row counts'),
+      error: z.string().nullable().optional().describe('Error message if the run failed'),
+      createdAt: z.string().describe('ISO timestamp when the run was created'),
+      startedAt: z.string().describe('ISO timestamp when the run started'),
+      finishedAt: z.string().describe('ISO timestamp when the run finished')
+    })
+  )
+  .output(
+    z.object({
+      syncId: z.number().describe('ID of the sync that ran'),
+      runId: z.number().describe('ID of the sync run'),
+      status: z.string().describe('Final status of the run (e.g. success, failed, aborted)'),
+      completionRatio: z.number().describe('Completion ratio (0 to 1)'),
+      querySize: z.number().describe('Number of rows returned by the query'),
+      plannedRows: rowCountsSchema.describe('Rows planned for syncing'),
+      successfulRows: rowCountsSchema.describe('Rows successfully synced'),
+      failedRows: rowCountsSchema.describe('Rows that failed to sync'),
+      error: z.string().nullable().optional().describe('Error message if the run failed'),
+      createdAt: z.string().describe('ISO timestamp when the run was created'),
+      startedAt: z.string().describe('ISO timestamp when the run started'),
+      finishedAt: z.string().describe('ISO timestamp when the run finished')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -79,7 +81,7 @@ export let syncRunCompleted = SlateTrigger.create(
         try {
           let params: any = {
             limit: 50,
-            orderBy: 'id',
+            orderBy: 'id'
           };
 
           if (lastPolledAt) {
@@ -107,7 +109,7 @@ export let syncRunCompleted = SlateTrigger.create(
                 error: run.error ?? null,
                 createdAt: run.createdAt,
                 startedAt: run.startedAt,
-                finishedAt: run.finishedAt,
+                finishedAt: run.finishedAt
               });
             }
           }
@@ -121,18 +123,18 @@ export let syncRunCompleted = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPolledAt: now,
-          syncIds,
-        },
+          syncIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusMap: Record<string, string> = {
         success: 'sync_run.succeeded',
         failed: 'sync_run.failed',
         aborted: 'sync_run.aborted',
         interrupted: 'sync_run.interrupted',
-        warning: 'sync_run.warning',
+        warning: 'sync_run.warning'
       };
 
       let type = statusMap[ctx.input.status] ?? `sync_run.${ctx.input.status}`;
@@ -152,8 +154,9 @@ export let syncRunCompleted = SlateTrigger.create(
           error: ctx.input.error,
           createdAt: ctx.input.createdAt,
           startedAt: ctx.input.startedAt,
-          finishedAt: ctx.input.finishedAt,
-        },
+          finishedAt: ctx.input.finishedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

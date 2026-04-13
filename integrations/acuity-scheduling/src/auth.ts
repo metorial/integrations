@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    userId: z.string().optional(),
-    authMethod: z.enum(['oauth', 'basic']),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      userId: z.string().optional(),
+      authMethod: z.enum(['oauth', 'basic'])
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth2',
@@ -16,25 +18,25 @@ export let auth = SlateAuth.create()
       {
         title: 'API Access',
         description: 'Full access to the Acuity Scheduling API',
-        scope: 'api-v1',
-      },
+        scope: 'api-v1'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         scope: ctx.scopes.join(' '),
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://acuityscheduling.com/oauth2/authorize?${params.toString()}`,
+        url: `https://acuityscheduling.com/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post('https://acuityscheduling.com/oauth2/token', {
@@ -42,14 +44,14 @@ export let auth = SlateAuth.create()
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       return {
         output: {
           token: response.data.access_token,
-          authMethod: 'oauth' as const,
-        },
+          authMethod: 'oauth' as const
+        }
       };
     },
 
@@ -57,8 +59,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://acuityscheduling.com/api/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/me');
@@ -67,10 +69,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(response.data.id),
           name: response.data.name,
-          email: response.data.email,
-        },
+          email: response.data.email
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -79,18 +81,18 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       userId: z.string().describe('Your numeric Acuity User ID'),
-      token: z.string().describe('Your Acuity API Key'),
+      token: z.string().describe('Your Acuity API Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let basicToken = btoa(`${ctx.input.userId}:${ctx.input.token}`);
 
       return {
         output: {
           token: basicToken,
           userId: ctx.input.userId,
-          authMethod: 'basic' as const,
-        },
+          authMethod: 'basic' as const
+        }
       };
     },
 
@@ -98,8 +100,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://acuityscheduling.com/api/v1',
         headers: {
-          Authorization: `Basic ${ctx.output.token}`,
-        },
+          Authorization: `Basic ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/me');
@@ -108,8 +110,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(response.data.id),
           name: response.data.name,
-          email: response.data.email,
-        },
+          email: response.data.email
+        }
       };
-    },
+    }
   });

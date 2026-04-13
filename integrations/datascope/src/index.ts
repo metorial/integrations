@@ -13,7 +13,7 @@ import {
   bulkUpdateListElements,
   assignTask,
   getNotifications,
-  getGeneratedFiles,
+  getGeneratedFiles
 } from './tools';
 import { formSubmission } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     bulkUpdateListElements,
     assignTask,
     getNotifications,
-    getGeneratedFiles,
+    getGeneratedFiles
   ],
-  triggers: [
-    formSubmission,
-  ],
+  triggers: [formSubmission]
 });

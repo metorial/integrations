@@ -88,8 +88,8 @@ export class Client {
       baseURL: 'https://api.tinyurl.com',
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -106,19 +106,23 @@ export class Client {
   }
 
   async getTinyUrl(domain: string, alias: string): Promise<TinyUrlData> {
-    let response = await this.axios.get<ApiResponse<TinyUrlData>>(`/alias/${encodeURIComponent(domain)}/${encodeURIComponent(alias)}`);
+    let response = await this.axios.get<ApiResponse<TinyUrlData>>(
+      `/alias/${encodeURIComponent(domain)}/${encodeURIComponent(alias)}`
+    );
     return response.data.data;
   }
 
   async deleteTinyUrl(domain: string, alias: string): Promise<TinyUrlData> {
-    let response = await this.axios.delete<ApiResponse<TinyUrlData>>(`/alias/${encodeURIComponent(domain)}/${encodeURIComponent(alias)}`);
+    let response = await this.axios.delete<ApiResponse<TinyUrlData>>(
+      `/alias/${encodeURIComponent(domain)}/${encodeURIComponent(alias)}`
+    );
     return response.data.data;
   }
 
   async updateTinyUrl(params: UpdateTinyUrlParams): Promise<TinyUrlData> {
     let body: Record<string, unknown> = {
       domain: params.domain,
-      alias: params.alias,
+      alias: params.alias
     };
     if (params.newDomain !== undefined) body.new_domain = params.newDomain;
     if (params.newAlias !== undefined) body.new_alias = params.newAlias;
@@ -135,7 +139,7 @@ export class Client {
     let response = await this.axios.patch<ApiResponse<TinyUrlData>>('/change', {
       domain: params.domain,
       alias: params.alias,
-      url: params.url,
+      url: params.url
     });
     return response.data.data;
   }
@@ -143,7 +147,7 @@ export class Client {
   async archiveTinyUrl(domain: string, alias: string): Promise<TinyUrlData> {
     let response = await this.axios.patch<ApiResponse<TinyUrlData>>('/archive', {
       domain,
-      alias,
+      alias
     });
     return response.data.data;
   }
@@ -155,7 +159,7 @@ export class Client {
     if (params.search) queryParams.search = params.search;
 
     let response = await this.axios.get<ApiResponse<TinyUrlData[]>>(`/urls/${params.type}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data.data;
   }
@@ -166,9 +170,12 @@ export class Client {
     if (params.to) queryParams.to = params.to;
     if (params.search) queryParams.search = params.search;
 
-    let response = await this.axios.get<ApiResponse<{ count: number }>>(`/urls/${params.type}/count`, {
-      params: queryParams,
-    });
+    let response = await this.axios.get<ApiResponse<{ count: number }>>(
+      `/urls/${params.type}/count`,
+      {
+        params: queryParams
+      }
+    );
     return response.data.data.count;
   }
 
@@ -176,14 +183,14 @@ export class Client {
     let response = await this.axios.patch<ApiResponse<TinyUrlData>>('/analytics/status', {
       domain: params.domain,
       alias: params.alias,
-      enabled: params.enabled,
+      enabled: params.enabled
     });
     return response.data.data;
   }
 
   async getGeneralAnalytics(params: AnalyticsParams): Promise<unknown> {
     let response = await this.axios.get<ApiResponse<unknown>>('/analytics/general', {
-      params: this.buildAnalyticsQuery(params),
+      params: this.buildAnalyticsQuery(params)
     });
     return response.data.data;
   }
@@ -193,49 +200,55 @@ export class Client {
     if (params.interval) queryParams.interval = params.interval;
 
     let response = await this.axios.get<ApiResponse<unknown>>('/analytics/timeline', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data.data;
   }
 
   async getTopSources(params: AnalyticsParams): Promise<unknown> {
     let response = await this.axios.get<ApiResponse<unknown>>('/analytics/sources/top', {
-      params: this.buildAnalyticsQuery(params),
+      params: this.buildAnalyticsQuery(params)
     });
     return response.data.data;
   }
 
   async getTopLanguages(params: AnalyticsParams): Promise<unknown> {
     let response = await this.axios.get<ApiResponse<unknown>>('/analytics/languages/top', {
-      params: this.buildAnalyticsQuery(params),
+      params: this.buildAnalyticsQuery(params)
     });
     return response.data.data;
   }
 
   async getLocationAnalytics(region: string, params: AnalyticsParams): Promise<unknown> {
-    let response = await this.axios.get<ApiResponse<unknown>>(`/analytics/location/${encodeURIComponent(region)}`, {
-      params: this.buildAnalyticsQuery(params),
-    });
+    let response = await this.axios.get<ApiResponse<unknown>>(
+      `/analytics/location/${encodeURIComponent(region)}`,
+      {
+        params: this.buildAnalyticsQuery(params)
+      }
+    );
     return response.data.data;
   }
 
   async getWeekdayPopularity(params: AnalyticsParams): Promise<unknown> {
-    let response = await this.axios.get<ApiResponse<unknown>>('/analytics/popularity/weekday', {
-      params: this.buildAnalyticsQuery(params),
-    });
+    let response = await this.axios.get<ApiResponse<unknown>>(
+      '/analytics/popularity/weekday',
+      {
+        params: this.buildAnalyticsQuery(params)
+      }
+    );
     return response.data.data;
   }
 
   async getHourPopularity(params: AnalyticsParams): Promise<unknown> {
     let response = await this.axios.get<ApiResponse<unknown>>('/analytics/popularity/hour', {
-      params: this.buildAnalyticsQuery(params),
+      params: this.buildAnalyticsQuery(params)
     });
     return response.data.data;
   }
 
   async getRawAnalytics(params: AnalyticsParams): Promise<unknown> {
     let response = await this.axios.get<ApiResponse<unknown>>('/analytics/raw/json', {
-      params: this.buildAnalyticsQuery(params),
+      params: this.buildAnalyticsQuery(params)
     });
     return response.data.data;
   }

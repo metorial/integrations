@@ -14,42 +14,55 @@ let assetSchema = z.object({
   categories: z.array(z.string()).optional().describe('Asset categories'),
   tags: z.array(z.string()).optional().describe('Asset tags'),
   colors: z.record(z.string(), z.any()).optional().describe('Detected colors in the asset'),
-  customFields: z.record(z.string(), z.string()).optional().describe('Custom metadata fields'),
+  customFields: z.record(z.string(), z.string()).optional().describe('Custom metadata fields')
 });
 
-export let listAssets = SlateTool.create(
-  spec,
-  {
-    name: 'List Assets',
-    key: 'list_assets',
-    description: `Browse and search assets within an Imgix source. Supports filtering by keyword, path, media type, categories, and tags. Returns asset metadata including dimensions, file size, and custom fields. Use cursor-based pagination for large result sets.`,
-    constraints: [
-      'Maximum 1,001 total records returned per listing.',
-      'Some asset detail features are restricted to Enterprise/Premium plans.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let listAssets = SlateTool.create(spec, {
+  name: 'List Assets',
+  key: 'list_assets',
+  description: `Browse and search assets within an Imgix source. Supports filtering by keyword, path, media type, categories, and tags. Returns asset metadata including dimensions, file size, and custom fields. Use cursor-based pagination for large result sets.`,
+  constraints: [
+    'Maximum 1,001 total records returned per listing.',
+    'Some asset detail features are restricted to Enterprise/Premium plans.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sourceId: z.string().describe('ID of the source to list assets from'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-    limit: z.number().optional().describe('Number of assets per page (default varies by plan)'),
-    sort: z.string().optional().describe('Sort field. Use - prefix for descending.'),
-    filterOriginPath: z.string().optional().describe('Filter by origin path prefix'),
-    filterMediaKind: z.enum(['IMAGE', 'ANIMATION', 'DOCUMENT', 'VECTOR']).optional().describe('Filter by media type'),
-    filterKeyword: z.string().optional().describe('Search keyword to filter assets'),
-    filterCategories: z.string().optional().describe('Comma-separated categories to filter by (AND logic)'),
-    filterTags: z.string().optional().describe('Comma-separated tags to filter by (AND logic)'),
-  }))
-  .output(z.object({
-    assets: z.array(assetSchema).describe('List of assets'),
-    nextCursor: z.string().optional().describe('Cursor for the next page of results'),
-    hasMore: z.boolean().describe('Whether more results are available'),
-    totalRecords: z.number().optional().describe('Total number of matching records'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sourceId: z.string().describe('ID of the source to list assets from'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of assets per page (default varies by plan)'),
+      sort: z.string().optional().describe('Sort field. Use - prefix for descending.'),
+      filterOriginPath: z.string().optional().describe('Filter by origin path prefix'),
+      filterMediaKind: z
+        .enum(['IMAGE', 'ANIMATION', 'DOCUMENT', 'VECTOR'])
+        .optional()
+        .describe('Filter by media type'),
+      filterKeyword: z.string().optional().describe('Search keyword to filter assets'),
+      filterCategories: z
+        .string()
+        .optional()
+        .describe('Comma-separated categories to filter by (AND logic)'),
+      filterTags: z
+        .string()
+        .optional()
+        .describe('Comma-separated tags to filter by (AND logic)')
+    })
+  )
+  .output(
+    z.object({
+      assets: z.array(assetSchema).describe('List of assets'),
+      nextCursor: z.string().optional().describe('Cursor for the next page of results'),
+      hasMore: z.boolean().describe('Whether more results are available'),
+      totalRecords: z.number().optional().describe('Total number of matching records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ImgixClient(ctx.auth.token);
 
     let result = await client.listAssets(ctx.input.sourceId, {
@@ -60,7 +73,7 @@ export let listAssets = SlateTool.create(
       filterMediaKind: ctx.input.filterMediaKind,
       filterKeyword: ctx.input.filterKeyword,
       filterCategories: ctx.input.filterCategories,
-      filterTags: ctx.input.filterTags,
+      filterTags: ctx.input.filterTags
     });
 
     let assets = (result.data || []).map((a: any) => ({
@@ -74,7 +87,7 @@ export let listAssets = SlateTool.create(
       categories: a.attributes?.categories,
       tags: a.attributes?.tags,
       colors: a.attributes?.colors,
-      customFields: a.attributes?.custom_fields,
+      customFields: a.attributes?.custom_fields
     }));
 
     let cursor = result.meta?.cursor;
@@ -84,8 +97,9 @@ export let listAssets = SlateTool.create(
         assets,
         nextCursor: cursor?.next,
         hasMore: cursor?.hasMore ?? false,
-        totalRecords: cursor?.totalRecords,
+        totalRecords: cursor?.totalRecords
       },
-      message: `Found **${assets.length}** asset(s)${cursor?.hasMore ? ' (more available)' : ''}.`,
+      message: `Found **${assets.length}** asset(s)${cursor?.hasMore ? ' (more available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

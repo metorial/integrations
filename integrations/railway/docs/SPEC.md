@@ -34,17 +34,17 @@ Login with Railway allows third-party applications to authenticate users with th
 
 **Available OAuth Scopes:**
 
-| Scope | Description |
-|-------|-------------|
-| `openid` | Required for all requests |
-| `email` | Access user's email address |
-| `profile` | Access user's name and picture |
-| `offline_access` | Receive refresh tokens (requires `prompt=consent`) |
-| `workspace:viewer` | Viewer access to user-selected workspaces |
-| `workspace:member` | Member access to user-selected workspaces |
-| `workspace:admin` | Admin access to user-selected workspaces |
-| `project:viewer` | Viewer access to user-selected projects |
-| `project:member` | Member access to user-selected projects |
+| Scope              | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| `openid`           | Required for all requests                          |
+| `email`            | Access user's email address                        |
+| `profile`          | Access user's name and picture                     |
+| `offline_access`   | Receive refresh tokens (requires `prompt=consent`) |
+| `workspace:viewer` | Viewer access to user-selected workspaces          |
+| `workspace:member` | Member access to user-selected workspaces          |
+| `workspace:admin`  | Admin access to user-selected workspaces           |
+| `project:viewer`   | Viewer access to user-selected projects            |
+| `project:member`   | Member access to user-selected projects            |
 
 Workspace and project scopes grant access to Railway resources. These are selective: the user chooses which specific workspaces or projects to share during consent.
 

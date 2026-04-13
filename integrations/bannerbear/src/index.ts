@@ -15,12 +15,9 @@ import {
   joinPdfs,
   rasterizePdf,
   diagnoseImage,
-  getAccount,
+  getAccount
 } from './tools';
-import {
-  templateEvent,
-  mediaEvent,
-} from './triggers';
+import { templateEvent, mediaEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     joinPdfs,
     rasterizePdf,
     diagnoseImage,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    templateEvent,
-    mediaEvent,
-  ],
+  triggers: [templateEvent, mediaEvent]
 });

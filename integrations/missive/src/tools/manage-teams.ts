@@ -9,36 +9,40 @@ let teamOutputSchema = z.object({
   emoji: z.string().optional().describe('Team emoji'),
   organizationId: z.string().optional().describe('Organization ID'),
   activeMembers: z.array(z.string()).optional().describe('Active member user IDs'),
-  observers: z.array(z.string()).optional().describe('Observer user IDs'),
+  observers: z.array(z.string()).optional().describe('Observer user IDs')
 });
 
-export let manageTeams = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Teams',
-    key: 'manage_teams',
-    description: `List, create, or update teams within organizations. Configure team membership, observers, and mention notification behavior.`,
-    tags: {
-      destructive: false,
-    },
+export let manageTeams = SlateTool.create(spec, {
+  name: 'Manage Teams',
+  key: 'manage_teams',
+  description: `List, create, or update teams within organizations. Configure team membership, observers, and mention notification behavior.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update']).describe('Action to perform'),
-    teamId: z.string().optional().describe('Team ID (required for update)'),
-    organizationId: z.string().optional().describe('Organization ID (required for create)'),
-    name: z.string().optional().describe('Team name'),
-    emoji: z.string().optional().describe('Team emoji'),
-    activeMembers: z.array(z.string()).optional().describe('Active member user IDs'),
-    observers: z.array(z.string()).optional().describe('Observer user IDs'),
-    mentionNotification: z.enum(['all_members', 'only_active_members']).optional().describe('Who gets notified on team mention'),
-    limit: z.number().min(1).max(200).optional().describe('Max teams to return (list only)'),
-    offset: z.number().optional().describe('Pagination offset (list only)'),
-  }))
-  .output(z.object({
-    teams: z.array(teamOutputSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update']).describe('Action to perform'),
+      teamId: z.string().optional().describe('Team ID (required for update)'),
+      organizationId: z.string().optional().describe('Organization ID (required for create)'),
+      name: z.string().optional().describe('Team name'),
+      emoji: z.string().optional().describe('Team emoji'),
+      activeMembers: z.array(z.string()).optional().describe('Active member user IDs'),
+      observers: z.array(z.string()).optional().describe('Observer user IDs'),
+      mentionNotification: z
+        .enum(['all_members', 'only_active_members'])
+        .optional()
+        .describe('Who gets notified on team mention'),
+      limit: z.number().min(1).max(200).optional().describe('Max teams to return (list only)'),
+      offset: z.number().optional().describe('Pagination offset (list only)')
+    })
+  )
+  .output(
+    z.object({
+      teams: z.array(teamOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -52,13 +56,13 @@ export let manageTeams = SlateTool.create(
         name: t.name,
         emoji: t.emoji,
         organizationId: t.organization?.id,
-        activeMembers: t.active_members?.map((m: any) => typeof m === 'string' ? m : m.id),
-        observers: t.observers?.map((o: any) => typeof o === 'string' ? o : o.id),
+        activeMembers: t.active_members?.map((m: any) => (typeof m === 'string' ? m : m.id)),
+        observers: t.observers?.map((o: any) => (typeof o === 'string' ? o : o.id))
       }));
 
       return {
         output: { teams },
-        message: `Retrieved **${teams.length}** teams.`,
+        message: `Retrieved **${teams.length}** teams.`
       };
     }
 
@@ -67,10 +71,12 @@ export let manageTeams = SlateTool.create(
     if (ctx.input.emoji) fields.emoji = ctx.input.emoji;
     if (ctx.input.activeMembers) fields.active_members = ctx.input.activeMembers;
     if (ctx.input.observers) fields.observers = ctx.input.observers;
-    if (ctx.input.mentionNotification) fields.mention_notification = ctx.input.mentionNotification;
+    if (ctx.input.mentionNotification)
+      fields.mention_notification = ctx.input.mentionNotification;
 
     if (ctx.input.action === 'create') {
-      if (!ctx.input.organizationId) throw new Error('organizationId is required for creating teams');
+      if (!ctx.input.organizationId)
+        throw new Error('organizationId is required for creating teams');
       if (!ctx.input.name) throw new Error('name is required for creating teams');
       fields.organization = ctx.input.organizationId;
       let data = await client.createTeams(fields);
@@ -82,11 +88,13 @@ export let manageTeams = SlateTool.create(
             name: t.name,
             emoji: t.emoji,
             organizationId: t.organization?.id,
-            activeMembers: t.active_members?.map((m: any) => typeof m === 'string' ? m : m.id),
-            observers: t.observers?.map((o: any) => typeof o === 'string' ? o : o.id),
-          })),
+            activeMembers: t.active_members?.map((m: any) =>
+              typeof m === 'string' ? m : m.id
+            ),
+            observers: t.observers?.map((o: any) => (typeof o === 'string' ? o : o.id))
+          }))
         },
-        message: `Created team **${ctx.input.name}**.`,
+        message: `Created team **${ctx.input.name}**.`
       };
     }
 
@@ -101,11 +109,11 @@ export let manageTeams = SlateTool.create(
           name: t.name,
           emoji: t.emoji,
           organizationId: t.organization?.id,
-          activeMembers: t.active_members?.map((m: any) => typeof m === 'string' ? m : m.id),
-          observers: t.observers?.map((o: any) => typeof o === 'string' ? o : o.id),
-        })),
+          activeMembers: t.active_members?.map((m: any) => (typeof m === 'string' ? m : m.id)),
+          observers: t.observers?.map((o: any) => (typeof o === 'string' ? o : o.id))
+        }))
       },
-      message: `Updated team **${ctx.input.teamId}**.`,
+      message: `Updated team **${ctx.input.teamId}**.`
     };
   })
   .build();

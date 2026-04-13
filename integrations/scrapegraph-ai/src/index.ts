@@ -1,6 +1,16 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { smartScrape, webSearch, crawlWebsite, markdownify, rawScrape, discoverSitemap, agenticScrape, getCredits, getRequestStatus } from './tools';
+import {
+  smartScrape,
+  webSearch,
+  crawlWebsite,
+  markdownify,
+  rawScrape,
+  discoverSitemap,
+  agenticScrape,
+  getCredits,
+  getRequestStatus
+} from './tools';
 import { crawlCompleted } from './triggers';
 
 export let provider = Slate.create({
@@ -14,9 +24,7 @@ export let provider = Slate.create({
     discoverSitemap,
     agenticScrape,
     getCredits,
-    getRequestStatus,
+    getRequestStatus
   ],
-  triggers: [
-    crawlCompleted,
-  ],
+  triggers: [crawlCompleted]
 });

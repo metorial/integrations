@@ -16,10 +16,10 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.servicem8.com/api_1.0',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 

@@ -6,10 +6,12 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    publicKey: z.string(),
-    signatureToken: z.string()
-  }))
+  .output(
+    z.object({
+      publicKey: z.string(),
+      signatureToken: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Keys',
@@ -20,14 +22,16 @@ export let auth = SlateAuth.create()
       privateKey: z.string()
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       // Retrieve the signature token from the API using Basic Auth with public_key:private_key
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let credentials = Buffer.from(`${ctx.input.publicKey}:${ctx.input.privateKey}`).toString('base64');
+
+      let credentials = Buffer.from(`${ctx.input.publicKey}:${ctx.input.privateKey}`).toString(
+        'base64'
+      );
 
       let response = await apiAxios.get('/token', {
         headers: {
-          'Authorization': `Basic ${credentials}`
+          Authorization: `Basic ${credentials}`
         }
       });
 

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let graphAxios = createAxios({
-  baseURL: 'https://graph.microsoft.com/v1.0',
+  baseURL: 'https://graph.microsoft.com/v1.0'
 });
 
 export interface GraphListResponse<T> {
@@ -25,27 +25,28 @@ export class GraphClient {
 
   async listJoinedTeams(): Promise<any[]> {
     let response = await graphAxios.get<GraphListResponse<any>>('/me/joinedTeams', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data.value;
   }
 
   async getTeam(teamId: string): Promise<any> {
     let response = await graphAxios.get(`/teams/${teamId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createTeam(body: any): Promise<any> {
     let response = await graphAxios.post('/teams', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     // Teams creation returns 202 with a Location header containing the async operation URL
     let locationHeader = response.headers?.['location'] || response.headers?.['Location'];
     let teamId: string | undefined;
     // Try to extract team ID from Content-Location header
-    let contentLocation = response.headers?.['content-location'] || response.headers?.['Content-Location'];
+    let contentLocation =
+      response.headers?.['content-location'] || response.headers?.['Content-Location'];
     if (contentLocation) {
       let match = contentLocation.match(/teams\('([^']+)'\)/);
       if (match) teamId = match[1];
@@ -55,25 +56,25 @@ export class GraphClient {
 
   async updateTeam(teamId: string, body: any): Promise<void> {
     await graphAxios.patch(`/teams/${teamId}`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
   }
 
   async archiveTeam(teamId: string): Promise<void> {
     await graphAxios.post(`/teams/${teamId}/archive`, null, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
   async unarchiveTeam(teamId: string): Promise<void> {
     await graphAxios.post(`/teams/${teamId}/unarchive`, null, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
   async deleteTeam(teamId: string): Promise<void> {
     await graphAxios.delete(`/groups/${teamId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -81,34 +82,34 @@ export class GraphClient {
 
   async listChannels(teamId: string): Promise<any[]> {
     let response = await graphAxios.get<GraphListResponse<any>>(`/teams/${teamId}/channels`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data.value;
   }
 
   async getChannel(teamId: string, channelId: string): Promise<any> {
     let response = await graphAxios.get(`/teams/${teamId}/channels/${channelId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createChannel(teamId: string, body: any): Promise<any> {
     let response = await graphAxios.post(`/teams/${teamId}/channels`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async updateChannel(teamId: string, channelId: string, body: any): Promise<void> {
     await graphAxios.patch(`/teams/${teamId}/channels/${channelId}`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
   }
 
   async deleteChannel(teamId: string, channelId: string): Promise<void> {
     await graphAxios.delete(`/teams/${teamId}/channels/${channelId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -141,7 +142,12 @@ export class GraphClient {
     return response.data;
   }
 
-  async replyToChannelMessage(teamId: string, channelId: string, messageId: string, body: any): Promise<any> {
+  async replyToChannelMessage(
+    teamId: string,
+    channelId: string,
+    messageId: string,
+    body: any
+  ): Promise<any> {
     let response = await graphAxios.post(
       `/teams/${teamId}/channels/${channelId}/messages/${messageId}/replies`,
       body,
@@ -150,7 +156,11 @@ export class GraphClient {
     return response.data;
   }
 
-  async listMessageReplies(teamId: string, channelId: string, messageId: string): Promise<any[]> {
+  async listMessageReplies(
+    teamId: string,
+    channelId: string,
+    messageId: string
+  ): Promise<any[]> {
     let response = await graphAxios.get<GraphListResponse<any>>(
       `/teams/${teamId}/channels/${channelId}/messages/${messageId}/replies`,
       { headers: this.headers }
@@ -165,21 +175,21 @@ export class GraphClient {
     if (top) params['$top'] = String(top);
     let response = await graphAxios.get<GraphListResponse<any>>('/me/chats', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data.value;
   }
 
   async getChat(chatId: string): Promise<any> {
     let response = await graphAxios.get(`/chats/${chatId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createChat(body: any): Promise<any> {
     let response = await graphAxios.post('/chats', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -189,14 +199,14 @@ export class GraphClient {
     if (top) params['$top'] = String(top);
     let response = await graphAxios.get<GraphListResponse<any>>(`/chats/${chatId}/messages`, {
       headers: this.headers,
-      params,
+      params
     });
     return response.data.value;
   }
 
   async sendChatMessage(chatId: string, body: any): Promise<any> {
     let response = await graphAxios.post(`/chats/${chatId}/messages`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -205,21 +215,21 @@ export class GraphClient {
 
   async listTeamMembers(teamId: string): Promise<any[]> {
     let response = await graphAxios.get<GraphListResponse<any>>(`/teams/${teamId}/members`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data.value;
   }
 
   async addTeamMember(teamId: string, body: any): Promise<any> {
     let response = await graphAxios.post(`/teams/${teamId}/members`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async removeTeamMember(teamId: string, membershipId: string): Promise<void> {
     await graphAxios.delete(`/teams/${teamId}/members/${membershipId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -240,45 +250,48 @@ export class GraphClient {
     return response.data;
   }
 
-  async removeChannelMember(teamId: string, channelId: string, membershipId: string): Promise<void> {
-    await graphAxios.delete(
-      `/teams/${teamId}/channels/${channelId}/members/${membershipId}`,
-      { headers: this.headers }
-    );
+  async removeChannelMember(
+    teamId: string,
+    channelId: string,
+    membershipId: string
+  ): Promise<void> {
+    await graphAxios.delete(`/teams/${teamId}/channels/${channelId}/members/${membershipId}`, {
+      headers: this.headers
+    });
   }
 
   // ─── Online Meetings ───────────────────────────────────────────────
 
   async createOnlineMeeting(body: any): Promise<any> {
     let response = await graphAxios.post('/me/onlineMeetings', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async getOnlineMeeting(meetingId: string): Promise<any> {
     let response = await graphAxios.get(`/me/onlineMeetings/${meetingId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async listOnlineMeetings(): Promise<any[]> {
     let response = await graphAxios.get<GraphListResponse<any>>('/me/onlineMeetings', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data.value;
   }
 
   async deleteOnlineMeeting(meetingId: string): Promise<void> {
     await graphAxios.delete(`/me/onlineMeetings/${meetingId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
   async updateOnlineMeeting(meetingId: string, body: any): Promise<any> {
     let response = await graphAxios.patch(`/me/onlineMeetings/${meetingId}`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -287,7 +300,7 @@ export class GraphClient {
 
   async getPresence(userId: string): Promise<any> {
     let response = await graphAxios.get(`/users/${userId}/presence`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -303,7 +316,7 @@ export class GraphClient {
 
   async getMyPresence(): Promise<any> {
     let response = await graphAxios.get('/me/presence', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -312,34 +325,34 @@ export class GraphClient {
 
   async listTags(teamId: string): Promise<any[]> {
     let response = await graphAxios.get<GraphListResponse<any>>(`/teams/${teamId}/tags`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data.value;
   }
 
   async getTag(teamId: string, tagId: string): Promise<any> {
     let response = await graphAxios.get(`/teams/${teamId}/tags/${tagId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createTag(teamId: string, body: any): Promise<any> {
     let response = await graphAxios.post(`/teams/${teamId}/tags`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async updateTag(teamId: string, tagId: string, body: any): Promise<void> {
     await graphAxios.patch(`/teams/${teamId}/tags/${tagId}`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
   }
 
   async deleteTag(teamId: string, tagId: string): Promise<void> {
     await graphAxios.delete(`/teams/${teamId}/tags/${tagId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -361,23 +374,22 @@ export class GraphClient {
   }
 
   async removeTagMember(teamId: string, tagId: string, tagMemberId: string): Promise<void> {
-    await graphAxios.delete(
-      `/teams/${teamId}/tags/${tagId}/members/${tagMemberId}`,
-      { headers: this.headers }
-    );
+    await graphAxios.delete(`/teams/${teamId}/tags/${tagId}/members/${tagMemberId}`, {
+      headers: this.headers
+    });
   }
 
   // ─── Activity Feed Notifications ──────────────────────────────────
 
   async sendActivityNotification(teamId: string, body: any): Promise<void> {
     await graphAxios.post(`/teams/${teamId}/sendActivityNotification`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
   }
 
   async sendUserActivityNotification(userId: string, body: any): Promise<void> {
     await graphAxios.post(`/users/${userId}/teamwork/sendActivityNotification`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
   }
 
@@ -385,14 +397,14 @@ export class GraphClient {
 
   async createSubscription(body: any): Promise<any> {
     let response = await graphAxios.post('/subscriptions', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async deleteSubscription(subscriptionId: string): Promise<void> {
     await graphAxios.delete(`/subscriptions/${subscriptionId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -409,14 +421,14 @@ export class GraphClient {
 
   async getMe(): Promise<any> {
     let response = await graphAxios.get('/me', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getUser(userId: string): Promise<any> {
     let response = await graphAxios.get(`/users/${userId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -432,19 +444,16 @@ export class GraphClient {
   }
 
   async addTab(teamId: string, channelId: string, body: any): Promise<any> {
-    let response = await graphAxios.post(
-      `/teams/${teamId}/channels/${channelId}/tabs`,
-      body,
-      { headers: { ...this.headers, 'Content-Type': 'application/json' } }
-    );
+    let response = await graphAxios.post(`/teams/${teamId}/channels/${channelId}/tabs`, body, {
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
+    });
     return response.data;
   }
 
   async removeTab(teamId: string, channelId: string, tabId: string): Promise<void> {
-    await graphAxios.delete(
-      `/teams/${teamId}/channels/${channelId}/tabs/${tabId}`,
-      { headers: this.headers }
-    );
+    await graphAxios.delete(`/teams/${teamId}/channels/${channelId}/tabs/${tabId}`, {
+      headers: this.headers
+    });
   }
 
   // ─── Installed Apps ──────────────────────────────────────────────
@@ -461,14 +470,14 @@ export class GraphClient {
 
   async getSchedule(teamId: string): Promise<any> {
     let response = await graphAxios.get(`/teams/${teamId}/schedule`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createOrReplaceSchedule(teamId: string, body: any): Promise<any> {
     let response = await graphAxios.put(`/teams/${teamId}/schedule`, body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json' },
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -482,18 +491,15 @@ export class GraphClient {
   }
 
   async createShift(teamId: string, body: any): Promise<any> {
-    let response = await graphAxios.post(
-      `/teams/${teamId}/schedule/shifts`,
-      body,
-      { headers: { ...this.headers, 'Content-Type': 'application/json' } }
-    );
+    let response = await graphAxios.post(`/teams/${teamId}/schedule/shifts`, body, {
+      headers: { ...this.headers, 'Content-Type': 'application/json' }
+    });
     return response.data;
   }
 
   async deleteShift(teamId: string, shiftId: string): Promise<void> {
-    await graphAxios.delete(
-      `/teams/${teamId}/schedule/shifts/${shiftId}`,
-      { headers: this.headers }
-    );
+    await graphAxios.delete(`/teams/${teamId}/schedule/shifts/${shiftId}`, {
+      headers: this.headers
+    });
   }
 }

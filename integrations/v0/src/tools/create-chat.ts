@@ -15,32 +15,46 @@ let chatOutputSchema = z.object({
   apiUrl: z.string().describe('API endpoint URL'),
   latestVersionId: z.string().optional().describe('ID of the latest generated version'),
   latestVersionStatus: z.string().optional().describe('Status of the latest version'),
-  demoUrl: z.string().optional().describe('Demo URL for the latest version'),
+  demoUrl: z.string().optional().describe('Demo URL for the latest version')
 });
 
-export let createChatTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Chat',
-    key: 'create_chat',
-    description: `Start a new AI code generation session by sending a natural language prompt to V0. The AI will generate web application code based on your message. Optionally provide system context, associate with a project, or configure privacy settings.`,
-    instructions: [
-      'The response includes the generated chat with its latest version containing the AI-generated code.',
-      'Use the demoUrl to preview the generated application in an iframe.',
-    ],
-  }
-)
-  .input(z.object({
-    message: z.string().describe('The prompt describing what to generate'),
-    system: z.string().optional().describe('System-level context for frameworks, tools, or coding style'),
-    projectId: z.string().optional().describe('Associate chat with an existing project'),
-    chatPrivacy: z.enum(['public', 'private', 'team-edit', 'team', 'unlisted']).optional().describe('Chat visibility setting'),
-    responseMode: z.enum(['sync', 'async']).optional().describe('Whether to wait for the AI response (sync) or return immediately (async)'),
-    designSystemId: z.string().optional().describe('Design system to apply to the generated UI'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Custom key-value metadata (max 50 pairs)'),
-  }))
+export let createChatTool = SlateTool.create(spec, {
+  name: 'Create Chat',
+  key: 'create_chat',
+  description: `Start a new AI code generation session by sending a natural language prompt to V0. The AI will generate web application code based on your message. Optionally provide system context, associate with a project, or configure privacy settings.`,
+  instructions: [
+    'The response includes the generated chat with its latest version containing the AI-generated code.',
+    'Use the demoUrl to preview the generated application in an iframe.'
+  ]
+})
+  .input(
+    z.object({
+      message: z.string().describe('The prompt describing what to generate'),
+      system: z
+        .string()
+        .optional()
+        .describe('System-level context for frameworks, tools, or coding style'),
+      projectId: z.string().optional().describe('Associate chat with an existing project'),
+      chatPrivacy: z
+        .enum(['public', 'private', 'team-edit', 'team', 'unlisted'])
+        .optional()
+        .describe('Chat visibility setting'),
+      responseMode: z
+        .enum(['sync', 'async'])
+        .optional()
+        .describe('Whether to wait for the AI response (sync) or return immediately (async)'),
+      designSystemId: z
+        .string()
+        .optional()
+        .describe('Design system to apply to the generated UI'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom key-value metadata (max 50 pairs)')
+    })
+  )
   .output(chatOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new V0Client(ctx.auth.token);
     let result = await client.createChat({
       message: ctx.input.message,
@@ -49,7 +63,7 @@ export let createChatTool = SlateTool.create(
       chatPrivacy: ctx.input.chatPrivacy,
       responseMode: ctx.input.responseMode,
       designSystemId: ctx.input.designSystemId,
-      metadata: ctx.input.metadata as Record<string, string> | undefined,
+      metadata: ctx.input.metadata as Record<string, string> | undefined
     });
 
     return {
@@ -65,45 +79,61 @@ export let createChatTool = SlateTool.create(
         apiUrl: result.apiUrl,
         latestVersionId: result.latestVersion?.id,
         latestVersionStatus: result.latestVersion?.status,
-        demoUrl: result.latestVersion?.demoUrl,
+        demoUrl: result.latestVersion?.demoUrl
       },
-      message: `Created chat **${result.name || result.id}**. ${result.latestVersion?.demoUrl ? `[Preview](${result.latestVersion.demoUrl})` : ''}`,
+      message: `Created chat **${result.name || result.id}**. ${result.latestVersion?.demoUrl ? `[Preview](${result.latestVersion.demoUrl})` : ''}`
     };
   })
   .build();
 
-export let initChatTool = SlateTool.create(
-  spec,
-  {
-    name: 'Initialize Chat',
-    key: 'init_chat',
-    description: `Initialize a new chat from existing source content such as files, a GitHub repository, a component registry, or a zip archive. This enables context-rich AI conversations based on your existing code.`,
-    instructions: [
-      'Set type to "files" when providing inline file content, "repo" for GitHub repos, "registry" for component registries, or "zip" for zip archives.',
-      'When using type "repo", provide the repo.url field with the GitHub repository URL.',
-    ],
-  }
-)
-  .input(z.object({
-    type: z.enum(['files', 'repo', 'registry', 'zip']).optional().describe('Source content type'),
-    name: z.string().optional().describe('Name for the chat session'),
-    chatPrivacy: z.enum(['public', 'private', 'team-edit', 'team', 'unlisted']).optional().describe('Chat visibility setting'),
-    projectId: z.string().optional().describe('Associate with an existing project'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Custom key-value metadata'),
-    files: z.array(z.object({
-      name: z.string().describe('File path (e.g., app/globals.css)'),
-      content: z.string().describe('File content'),
-      locked: z.boolean().optional().describe('Prevent AI from modifying this file'),
-    })).optional().describe('Inline files (when type is "files")'),
-    repoUrl: z.string().optional().describe('GitHub repository URL (when type is "repo")'),
-    repoBranch: z.string().optional().describe('Git branch name (when type is "repo")'),
-    registryUrl: z.string().optional().describe('Component registry URL (when type is "registry")'),
-    zipUrl: z.string().optional().describe('ZIP archive URL (when type is "zip")'),
-    lockAllFiles: z.boolean().optional().describe('Prevent AI from modifying all files'),
-    templateId: z.string().optional().describe('Template ID from V0 system'),
-  }))
+export let initChatTool = SlateTool.create(spec, {
+  name: 'Initialize Chat',
+  key: 'init_chat',
+  description: `Initialize a new chat from existing source content such as files, a GitHub repository, a component registry, or a zip archive. This enables context-rich AI conversations based on your existing code.`,
+  instructions: [
+    'Set type to "files" when providing inline file content, "repo" for GitHub repos, "registry" for component registries, or "zip" for zip archives.',
+    'When using type "repo", provide the repo.url field with the GitHub repository URL.'
+  ]
+})
+  .input(
+    z.object({
+      type: z
+        .enum(['files', 'repo', 'registry', 'zip'])
+        .optional()
+        .describe('Source content type'),
+      name: z.string().optional().describe('Name for the chat session'),
+      chatPrivacy: z
+        .enum(['public', 'private', 'team-edit', 'team', 'unlisted'])
+        .optional()
+        .describe('Chat visibility setting'),
+      projectId: z.string().optional().describe('Associate with an existing project'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom key-value metadata'),
+      files: z
+        .array(
+          z.object({
+            name: z.string().describe('File path (e.g., app/globals.css)'),
+            content: z.string().describe('File content'),
+            locked: z.boolean().optional().describe('Prevent AI from modifying this file')
+          })
+        )
+        .optional()
+        .describe('Inline files (when type is "files")'),
+      repoUrl: z.string().optional().describe('GitHub repository URL (when type is "repo")'),
+      repoBranch: z.string().optional().describe('Git branch name (when type is "repo")'),
+      registryUrl: z
+        .string()
+        .optional()
+        .describe('Component registry URL (when type is "registry")'),
+      zipUrl: z.string().optional().describe('ZIP archive URL (when type is "zip")'),
+      lockAllFiles: z.boolean().optional().describe('Prevent AI from modifying all files'),
+      templateId: z.string().optional().describe('Template ID from V0 system')
+    })
+  )
   .output(chatOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new V0Client(ctx.auth.token);
 
     let params: any = {
@@ -114,7 +144,7 @@ export let initChatTool = SlateTool.create(
       metadata: ctx.input.metadata,
       files: ctx.input.files,
       lockAllFiles: ctx.input.lockAllFiles,
-      templateId: ctx.input.templateId,
+      templateId: ctx.input.templateId
     };
 
     if (ctx.input.repoUrl) {
@@ -142,9 +172,9 @@ export let initChatTool = SlateTool.create(
         apiUrl: result.apiUrl,
         latestVersionId: result.latestVersion?.id,
         latestVersionStatus: result.latestVersion?.status,
-        demoUrl: result.latestVersion?.demoUrl,
+        demoUrl: result.latestVersion?.demoUrl
       },
-      message: `Initialized chat **${result.name || result.id}** from ${ctx.input.type || 'source'} content.`,
+      message: `Initialized chat **${result.name || result.id}** from ${ctx.input.type || 'source'} content.`
     };
   })
   .build();

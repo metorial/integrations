@@ -3,84 +3,88 @@ import { LeadfeederClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newLeads = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Leads',
-    key: 'new_leads',
-    description: 'Triggers when new company leads are identified visiting your website. Polls for leads with a first visit date after the last known lead.',
-  }
-)
-  .input(z.object({
-    leadId: z.string(),
-    name: z.string(),
-    industry: z.string(),
-    industries: z.array(z.string()),
-    firstVisitDate: z.string(),
-    lastVisitDate: z.string(),
-    status: z.string(),
-    websiteUrl: z.string(),
-    phone: z.string(),
-    linkedinUrl: z.string(),
-    twitterHandle: z.string(),
-    facebookUrl: z.string(),
-    employeeCount: z.number(),
-    employeesRange: z.object({ min: z.number(), max: z.number() }).nullable(),
-    crmLeadId: z.string(),
-    crmOrganizationId: z.string(),
-    tags: z.array(z.string()),
-    logoUrl: z.string(),
-    assignee: z.string(),
-    businessId: z.string(),
-    revenue: z.string(),
-    visits: z.number(),
-    quality: z.number(),
-    viewInLeadfeeder: z.string(),
-    location: z.object({
+export let newLeads = SlateTrigger.create(spec, {
+  name: 'New Leads',
+  key: 'new_leads',
+  description:
+    'Triggers when new company leads are identified visiting your website. Polls for leads with a first visit date after the last known lead.'
+})
+  .input(
+    z.object({
+      leadId: z.string(),
+      name: z.string(),
+      industry: z.string(),
+      industries: z.array(z.string()),
+      firstVisitDate: z.string(),
+      lastVisitDate: z.string(),
+      status: z.string(),
+      websiteUrl: z.string(),
+      phone: z.string(),
+      linkedinUrl: z.string(),
+      twitterHandle: z.string(),
+      facebookUrl: z.string(),
+      employeeCount: z.number(),
+      employeesRange: z.object({ min: z.number(), max: z.number() }).nullable(),
+      crmLeadId: z.string(),
+      crmOrganizationId: z.string(),
+      tags: z.array(z.string()),
+      logoUrl: z.string(),
+      assignee: z.string(),
+      businessId: z.string(),
+      revenue: z.string(),
+      visits: z.number(),
+      quality: z.number(),
+      viewInLeadfeeder: z.string(),
+      location: z
+        .object({
+          country: z.string(),
+          countryCode: z.string(),
+          region: z.string(),
+          regionCode: z.string(),
+          city: z.string(),
+          stateCode: z.string()
+        })
+        .nullable()
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('Unique identifier for the lead'),
+      name: z.string().describe('Company name'),
+      industry: z.string().describe('Primary industry'),
+      industries: z.array(z.string()).describe('All associated industries'),
+      firstVisitDate: z.string().describe('Date of the first visit'),
+      lastVisitDate: z.string().describe('Date of the most recent visit'),
+      status: z.string(),
+      websiteUrl: z.string().describe('Company website URL'),
+      phone: z.string(),
+      linkedinUrl: z.string(),
+      twitterHandle: z.string(),
+      facebookUrl: z.string(),
+      employeeCount: z.number(),
+      employeesRange: z.object({ min: z.number(), max: z.number() }).nullable(),
+      crmLeadId: z.string(),
+      crmOrganizationId: z.string(),
+      tags: z.array(z.string()),
+      logoUrl: z.string(),
+      assignee: z.string(),
+      businessId: z.string(),
+      revenue: z.string(),
+      visits: z.number().describe('Total number of visits'),
+      quality: z.number().describe('Lead quality score (0-10)'),
+      viewInLeadfeeder: z.string().describe('Direct link to view this lead in Leadfeeder'),
       country: z.string(),
       countryCode: z.string(),
       region: z.string(),
-      regionCode: z.string(),
-      city: z.string(),
-      stateCode: z.string(),
-    }).nullable(),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('Unique identifier for the lead'),
-    name: z.string().describe('Company name'),
-    industry: z.string().describe('Primary industry'),
-    industries: z.array(z.string()).describe('All associated industries'),
-    firstVisitDate: z.string().describe('Date of the first visit'),
-    lastVisitDate: z.string().describe('Date of the most recent visit'),
-    status: z.string(),
-    websiteUrl: z.string().describe('Company website URL'),
-    phone: z.string(),
-    linkedinUrl: z.string(),
-    twitterHandle: z.string(),
-    facebookUrl: z.string(),
-    employeeCount: z.number(),
-    employeesRange: z.object({ min: z.number(), max: z.number() }).nullable(),
-    crmLeadId: z.string(),
-    crmOrganizationId: z.string(),
-    tags: z.array(z.string()),
-    logoUrl: z.string(),
-    assignee: z.string(),
-    businessId: z.string(),
-    revenue: z.string(),
-    visits: z.number().describe('Total number of visits'),
-    quality: z.number().describe('Lead quality score (0-10)'),
-    viewInLeadfeeder: z.string().describe('Direct link to view this lead in Leadfeeder'),
-    country: z.string(),
-    countryCode: z.string(),
-    region: z.string(),
-    city: z.string(),
-  }))
+      city: z.string()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new LeadfeederClient(ctx.auth.token);
 
       let accountId = ctx.config.accountId;
@@ -95,14 +99,16 @@ export let newLeads = SlateTrigger.create(
 
       // Look back 7 days on first poll, or use the last known date
       let lastKnownDate = ctx.state?.lastSeenDate as string | undefined;
-      let startDate = lastKnownDate ?? new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!;
+      let startDate =
+        lastKnownDate ??
+        new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!;
 
       let seenIds = (ctx.state?.seenLeadIds as string[] | undefined) ?? [];
 
       let result = await client.getLeads(accountId, {
         startDate,
         endDate,
-        pageSize: 100,
+        pageSize: 100
       });
 
       let newLeads = result.items.filter(lead => !seenIds.includes(lead.leadId));
@@ -113,12 +119,12 @@ export let newLeads = SlateTrigger.create(
         inputs: newLeads,
         updatedState: {
           lastSeenDate: endDate,
-          seenLeadIds: updatedSeenIds,
-        },
+          seenLeadIds: updatedSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let lead = ctx.input;
 
       return {
@@ -152,9 +158,9 @@ export let newLeads = SlateTrigger.create(
           country: lead.location?.country ?? '',
           countryCode: lead.location?.countryCode ?? '',
           region: lead.location?.region ?? '',
-          city: lead.location?.city ?? '',
-        },
+          city: lead.location?.city ?? ''
+        }
       };
-    },
+    }
   })
   .build();

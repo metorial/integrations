@@ -11,6 +11,6 @@ export let createClient = (ctx: OdooContext): OdooClient => {
     database: ctx.config.database,
     uid: ctx.auth.uid,
     username: ctx.auth.username,
-    token: ctx.auth.token,
+    token: ctx.auth.token
   });
 };

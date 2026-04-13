@@ -13,8 +13,8 @@ export class Client {
     this.ax = createAxios({
       baseURL: `https://${config.subdomain}.nocrm.io/api/v2`,
       headers: {
-        'X-API-KEY': config.token,
-      },
+        'X-API-KEY': config.token
+      }
     });
   }
 
@@ -57,14 +57,14 @@ export class Client {
         offset: params?.offset,
         order: params?.order,
         direction: params?.direction,
-        include_unassigned: params?.includeUnassigned,
-      },
+        include_unassigned: params?.includeUnassigned
+      }
     });
     return {
       leads: response.data as any[],
       totalCount: response.headers['x-total-count']
         ? parseInt(response.headers['x-total-count'], 10)
-        : undefined,
+        : undefined
     };
   }
 
@@ -87,24 +87,27 @@ export class Client {
       user_id: data.userId,
       tags: data.tags,
       step: data.step,
-      created_at: data.createdAt,
+      created_at: data.createdAt
     });
     return response.data;
   }
 
-  async updateLead(leadId: number, data: {
-    title?: string;
-    description?: string;
-    status?: string;
-    remindDate?: string;
-    remindTime?: string;
-    amount?: number;
-    probability?: number;
-    step?: string;
-    estimatedClosingDate?: string;
-    tags?: string[];
-    clientFolderId?: number;
-  }) {
+  async updateLead(
+    leadId: number,
+    data: {
+      title?: string;
+      description?: string;
+      status?: string;
+      remindDate?: string;
+      remindTime?: string;
+      amount?: number;
+      probability?: number;
+      step?: string;
+      estimatedClosingDate?: string;
+      tags?: string[];
+      clientFolderId?: number;
+    }
+  ) {
     let response = await this.ax.put(`/leads/${leadId}`, {
       title: data.title,
       description: data.description,
@@ -116,7 +119,7 @@ export class Client {
       step: data.step,
       estimated_closing_date: data.estimatedClosingDate,
       tags: data.tags,
-      client_folder_id: data.clientFolderId,
+      client_folder_id: data.clientFolderId
     });
     return response.data;
   }
@@ -128,14 +131,14 @@ export class Client {
 
   async duplicateLead(leadId: number, step?: string) {
     let response = await this.ax.post(`/leads/${leadId}/duplicate_lead`, {
-      step,
+      step
     });
     return response.data;
   }
 
   async assignLead(leadId: number, userId: number) {
     let response = await this.ax.post(`/leads/${leadId}/assign`, {
-      user_id: userId,
+      user_id: userId
     });
     return response.data;
   }
@@ -150,19 +153,22 @@ export class Client {
     return response.data as any[];
   }
 
-  async getLeadActionHistory(leadId: number, params?: {
-    startDate?: string;
-    endDate?: string;
-    actionType?: string;
-    userId?: number;
-  }) {
+  async getLeadActionHistory(
+    leadId: number,
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      actionType?: string;
+      userId?: number;
+    }
+  ) {
     let response = await this.ax.get(`/leads/${leadId}/action_histories`, {
       params: {
         start_date: params?.startDate,
         end_date: params?.endDate,
         action_type: params?.actionType,
-        user_id: params?.userId,
-      },
+        user_id: params?.userId
+      }
     });
     return response.data as any[];
   }
@@ -174,20 +180,23 @@ export class Client {
     return response.data as any[];
   }
 
-  async createLeadComment(leadId: number, data: {
-    comment: string;
-    activityId?: number;
-  }) {
+  async createLeadComment(
+    leadId: number,
+    data: {
+      comment: string;
+      activityId?: number;
+    }
+  ) {
     let response = await this.ax.post(`/leads/${leadId}/comments`, {
       comment: data.comment,
-      activity_id: data.activityId,
+      activity_id: data.activityId
     });
     return response.data;
   }
 
   async updateLeadComment(leadId: number, commentId: number, comment: string) {
     let response = await this.ax.put(`/leads/${leadId}/comments/${commentId}`, {
-      comment,
+      comment
     });
     return response.data;
   }
@@ -206,26 +215,32 @@ export class Client {
 
   // ── Lead Emails ──
 
-  async sendLeadEmail(leadId: number, data: {
-    templateId: number;
-    userId?: number;
-  }) {
+  async sendLeadEmail(
+    leadId: number,
+    data: {
+      templateId: number;
+      userId?: number;
+    }
+  ) {
     let response = await this.ax.post(`/leads/${leadId}/send_email`, {
       template_id: data.templateId,
-      user_id: data.userId,
+      user_id: data.userId
     });
     return response.data;
   }
 
-  async sendLeadCustomEmail(leadId: number, data: {
-    subject: string;
-    body: string;
-    userId?: number;
-  }) {
+  async sendLeadCustomEmail(
+    leadId: number,
+    data: {
+      subject: string;
+      body: string;
+      userId?: number;
+    }
+  ) {
     let response = await this.ax.post(`/leads/${leadId}/send_custom_email`, {
       subject: data.subject,
       body: data.body,
-      user_id: data.userId,
+      user_id: data.userId
     });
     return response.data;
   }
@@ -239,7 +254,7 @@ export class Client {
 
   async listSteps(direction?: string) {
     let response = await this.ax.get('/steps', {
-      params: { direction },
+      params: { direction }
     });
     return response.data as any[];
   }
@@ -251,12 +266,9 @@ export class Client {
 
   // ── Client Folders ──
 
-  async listClientFolders(params?: {
-    direction?: string;
-    order?: string;
-  }) {
+  async listClientFolders(params?: { direction?: string; order?: string }) {
     let response = await this.ax.get('/clients', {
-      params,
+      params
     });
     return response.data as any[];
   }
@@ -266,28 +278,27 @@ export class Client {
     return response.data;
   }
 
-  async createClientFolder(data: {
-    name: string;
-    description?: string;
-    userId?: number;
-  }) {
+  async createClientFolder(data: { name: string; description?: string; userId?: number }) {
     let response = await this.ax.post('/clients', {
       name: data.name,
       description: data.description,
-      user_id: data.userId,
+      user_id: data.userId
     });
     return response.data;
   }
 
-  async updateClientFolder(clientId: number, data: {
-    name?: string;
-    description?: string;
-    isActive?: boolean;
-  }) {
+  async updateClientFolder(
+    clientId: number,
+    data: {
+      name?: string;
+      description?: string;
+      isActive?: boolean;
+    }
+  ) {
     let response = await this.ax.put(`/clients/${clientId}`, {
       name: data.name,
       description: data.description,
-      is_active: data.isActive,
+      is_active: data.isActive
     });
     return response.data;
   }
@@ -323,7 +334,7 @@ export class Client {
       lastname: data.lastname,
       locale: data.locale,
       time_zone: data.timeZone,
-      is_admin: data.isAdmin,
+      is_admin: data.isAdmin
     });
     return response.data;
   }
@@ -362,14 +373,14 @@ export class Client {
 
   async addTeamMember(teamId: number, userId: number) {
     let response = await this.ax.post(`/teams/${teamId}/add_member`, {
-      user_id: userId,
+      user_id: userId
     });
     return response.data;
   }
 
   async removeTeamMember(teamId: number, userId: number) {
     let response = await this.ax.delete(`/teams/${teamId}/remove_member`, {
-      data: { user_id: userId },
+      data: { user_id: userId }
     });
     return response.data;
   }
@@ -385,7 +396,7 @@ export class Client {
 
   async listCategories(includeTags?: boolean) {
     let response = await this.ax.get('/categories', {
-      params: { include_tags: includeTags },
+      params: { include_tags: includeTags }
     });
     return response.data as any[];
   }
@@ -403,7 +414,7 @@ export class Client {
   async createPredefinedTag(name: string, categoryId: number) {
     let response = await this.ax.post('/predefined_tags', {
       name,
-      category_id: categoryId,
+      category_id: categoryId
     });
     return response.data;
   }
@@ -412,7 +423,7 @@ export class Client {
 
   async listFields(type?: string) {
     let response = await this.ax.get('/fields', {
-      params: { type },
+      params: { type }
     });
     return response.data as any[];
   }
@@ -427,7 +438,7 @@ export class Client {
       name: data.name,
       parent_type: data.parentType,
       type: data.type,
-      is_key: data.isKey,
+      is_key: data.isKey
     });
     return response.data;
   }
@@ -444,61 +455,59 @@ export class Client {
     return response.data;
   }
 
-  async createProspectingList(data: {
-    name: string;
-    description?: string;
-  }) {
+  async createProspectingList(data: { name: string; description?: string }) {
     let response = await this.ax.post('/prospecting_lists', {
       name: data.name,
-      description: data.description,
+      description: data.description
     });
     return response.data;
   }
 
   async assignProspectingList(listId: number, userId: number) {
     let response = await this.ax.post(`/prospecting_lists/${listId}/assign`, {
-      user_id: userId,
+      user_id: userId
     });
     return response.data;
   }
 
   async addProspects(listId: number, prospects: Record<string, any>[]) {
     let response = await this.ax.post(`/prospecting_lists/${listId}/prospects`, {
-      prospects,
+      prospects
     });
     return response.data;
   }
 
   async updateProspect(listId: number, prospectId: number, fields: Record<string, any>) {
     let response = await this.ax.put(`/prospecting_lists/${listId}/prospects/${prospectId}`, {
-      fields,
+      fields
     });
     return response.data;
   }
 
   async deleteProspect(listId: number, prospectId: number) {
-    let response = await this.ax.delete(`/prospecting_lists/${listId}/prospects/${prospectId}`);
+    let response = await this.ax.delete(
+      `/prospecting_lists/${listId}/prospects/${prospectId}`
+    );
     return response.data;
   }
 
   async convertProspectToLead(listId: number, prospectId: number, userId?: number) {
-    let response = await this.ax.post(`/prospecting_lists/${listId}/prospects/${prospectId}/create_lead`, {
-      user_id: userId,
-    });
+    let response = await this.ax.post(
+      `/prospecting_lists/${listId}/prospects/${prospectId}/create_lead`,
+      {
+        user_id: userId
+      }
+    );
     return response.data;
   }
 
-  async findProspects(params: {
-    email?: string;
-    fieldName?: string;
-    fieldValue?: string;
-  }) {
+  async findProspects(params: { email?: string; fieldName?: string; fieldValue?: string }) {
     let response = await this.ax.get('/prospecting_lists/find_prospects', {
       params: {
         email: params.email,
         field_name: params.fieldName,
-        field_value: params.fieldValue,
-      },
+        field_value: params.fieldValue
+      }
     });
     return response.data as any[];
   }

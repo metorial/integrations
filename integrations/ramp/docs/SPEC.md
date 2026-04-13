@@ -45,25 +45,33 @@ All authenticated API requests use Bearer token authentication via the `Authoriz
 ## Features
 
 ### Transaction Management
+
 Retrieve and manage card transactions including details such as amount, currency, merchant, category, and accounting fields. You can query by date range, merchant, or status. Transactions can be filtered by sync status, spend limit, entity, and more.
 
 ### Card Management
+
 The Limits API allows you to create, edit, and view virtual cards with additional functionality such as linking virtual card limits to physical cards and spend programs. Issue both virtual and physical cards with configurable spending restrictions including amount limits, merchant category restrictions, and spend intervals. Cards can be updated, suspended, and terminated.
 
 ### Spend Programs and Limits (Funds)
+
 Spend Programs group funds, users, and cards under shared policies. They can enforce consistent spending rules across multiple funds and enable automated fund provisioning based on employee attributes. Limits represent individual spending budgets that can be associated with cards and reimbursements.
 
 ### Bill Pay (Accounts Payable)
+
 Bills represent an obligation to pay a vendor for goods or services. They serve as a foundational element for accounts payable processes, ensuring accurate tracking of payments, due dates, and vendor relationships. Create, list, update, and archive bills. Upload invoice attachments. Bills created via API are automatically approved and skip the draft phase. For bills that require manual review, see Draft Bills which represent the intermediate state before approval.
 
 ### Reimbursements
+
 Manage employee reimbursements for out-of-pocket expenses and mileage. Reimbursements support accounting field coding, receipt attachment, line items, and mileage tracking. They can be filtered by state, approval status, entity, trip, and sync status.
 
 ### User Management
+
 Save hours on manual setup by programmatically inviting users and managing permissions. Users connect to departments, entities, cards, and transactions. Users can be created, updated, deactivated, and reactivated. Roles include Admin, Cardholder, and Bookkeeper.
 
 ### Accounting Integration
+
 Build ERP integrations with the accounting API. Capabilities include:
+
 - Fetch ready-to-sync transactions from Ramp, import to your ERP, and mark as synced.
 - Fetch bills and bill payments from Ramp, import to your ERP, and mark as synced.
 - Fetch reimbursements from Ramp, import to your ERP, and mark as synced.
@@ -72,27 +80,35 @@ Build ERP integrations with the accounting API. Capabilities include:
 - Report sync failures back to users in Ramp.
 
 ### Organizational Structure
+
 Manage departments, locations, and entities (for multi-entity businesses). These are used to organize users, cards, and transactions for reporting and policy enforcement.
 
 ### Vendor Management
+
 Retrieve and manage vendor information including contacts, bank accounts, and categorization. Vendors are linked to bills and transactions.
 
 ### Merchants
+
 Access merchant data associated with card transactions including merchant names, categories, and identifiers.
 
 ### Receipts
+
 Upload and manage receipts attached to transactions and reimbursements. Supports OCR processing for automatic data extraction.
 
 ### Transfers and Statements
+
 View bank transfers and card statement data including statement payments and cashback redemptions.
 
 ### Purchase Orders
+
 Manage purchase orders as part of procurement workflows.
 
 ### Business Information
+
 Retrieve information about the connected Ramp business account.
 
 ### Custom Records
+
 Configure and manage custom tables and native table extensions for tracking additional data alongside bills, transactions, and reimbursements.
 
 ## Events
@@ -100,13 +116,17 @@ Configure and manage custom tables and native table extensions for tracking addi
 Ramp supports webhooks for real-time event notifications. You can use webhooks to receive real-time notifications when objects become ready to sync. This eliminates the need for frequent polling and provides immediate notifications. Webhooks are configured via the API and deliver HTTP POST requests to your specified endpoint URL.
 
 ### Transaction Events
+
 Real-time notifications for transaction lifecycle changes, such as when transactions are created or their status changes. Set up webhooks for real-time transaction notifications.
 
 ### Bill Events
+
 Get real-time notifications for bill lifecycle events. Covers bill creation, approval, payment, and sync-readiness.
 
 ### Reimbursement Events
+
 Get real-time notifications for reimbursement events. Covers reimbursement creation, approval, payment, and sync-readiness.
 
 ### Accounting Sync Events
+
 Notifications when objects (transactions, bills, reimbursements, statements, cashbacks) become ready to sync to external accounting systems, enabling event-driven ERP integrations rather than polling.

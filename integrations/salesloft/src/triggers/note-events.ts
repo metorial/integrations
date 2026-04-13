@@ -5,36 +5,48 @@ import { z } from 'zod';
 
 let EVENT_TYPES = ['note_created', 'note_updated', 'note_deleted'] as const;
 
-export let noteEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Note Events',
-    key: 'note_events',
-    description: 'Triggers when a note is created, updated, or deleted in SalesLoft.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(EVENT_TYPES).describe('Type of note event'),
-    eventId: z.string().describe('Unique event identifier'),
-    note: z.any().describe('Note data from webhook payload')
-  }))
-  .output(z.object({
-    noteId: z.number().describe('SalesLoft note ID'),
-    content: z.string().nullable().optional().describe('Note content'),
-    associatedWithType: z.string().nullable().optional().describe('Type of associated resource'),
-    associatedWithId: z.number().nullable().optional().describe('ID of the associated resource'),
-    userId: z.number().nullable().optional().describe('Author user ID'),
-    callId: z.number().nullable().optional().describe('Associated call ID'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp')
-  }))
+export let noteEvents = SlateTrigger.create(spec, {
+  name: 'Note Events',
+  key: 'note_events',
+  description: 'Triggers when a note is created, updated, or deleted in SalesLoft.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(EVENT_TYPES).describe('Type of note event'),
+      eventId: z.string().describe('Unique event identifier'),
+      note: z.any().describe('Note data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      noteId: z.number().describe('SalesLoft note ID'),
+      content: z.string().nullable().optional().describe('Note content'),
+      associatedWithType: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Type of associated resource'),
+      associatedWithId: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('ID of the associated resource'),
+      userId: z.number().nullable().optional().describe('Author user ID'),
+      callId: z.number().nullable().optional().describe('Associated call ID'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ subscriptionId: number; eventType: string }> = [];
 
       for (let eventType of EVENT_TYPES) {
-        let subscription = await client.createWebhookSubscription(ctx.input.webhookBaseUrl, eventType);
+        let subscription = await client.createWebhookSubscription(
+          ctx.input.webhookBaseUrl,
+          eventType
+        );
         registrations.push({
           subscriptionId: subscription.id,
           eventType
@@ -46,9 +58,11 @@ export let noteEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registrations: Array<{ subscriptionId: number }> };
+      let details = ctx.input.registrationDetails as {
+        registrations: Array<{ subscriptionId: number }>;
+      };
 
       for (let reg of details.registrations) {
         try {
@@ -59,20 +73,22 @@ export let noteEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventType = ctx.request.headers.get('x-salesloft-event') || 'note_updated';
 
       return {
-        inputs: [{
-          eventType: eventType as typeof EVENT_TYPES[number],
-          eventId: `${eventType}_${body?.id || Date.now()}`,
-          note: body
-        }]
+        inputs: [
+          {
+            eventType: eventType as (typeof EVENT_TYPES)[number],
+            eventId: `${eventType}_${body?.id || Date.now()}`,
+            note: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.note;
 
       return {
@@ -90,4 +106,5 @@ export let noteEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

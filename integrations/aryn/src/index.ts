@@ -16,7 +16,7 @@ import {
   deleteProperties,
   suggestProperties,
   runQuery,
-  generateQueryPlan,
+  generateQueryPlan
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -39,9 +39,7 @@ export let provider = Slate.create({
     deleteProperties,
     suggestProperties,
     runQuery,
-    generateQueryPlan,
+    generateQueryPlan
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

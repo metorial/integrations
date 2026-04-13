@@ -3,39 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Changes',
-    key: 'user_changes',
-    description: 'Fires when users are created, updated, or deleted in the account. Covers new registrations, profile updates, and user removals.',
-  }
-)
-  .input(z.object({
-    event: z.string().describe('Event type (e.g. new, change, delete)'),
-    role: z.string().optional().describe('Role of the actor'),
-    userId: z.string().optional().describe('User ID'),
-    name: z.string().optional().describe('Username'),
-    fullName: z.string().optional().describe('Full name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    mobile: z.string().optional().describe('Mobile number'),
-    country: z.string().optional().describe('Country'),
-    createdOn: z.string().optional().describe('UTC creation timestamp'),
-    rawPayload: z.any().optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('User ID'),
-    name: z.string().optional().describe('Username'),
-    fullName: z.string().optional().describe('Full name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    mobile: z.string().optional().describe('Mobile number'),
-    country: z.string().optional().describe('Country'),
-    createdOn: z.string().optional().describe('UTC creation timestamp'),
-  }))
+export let userChangesTrigger = SlateTrigger.create(spec, {
+  name: 'User Changes',
+  key: 'user_changes',
+  description:
+    'Fires when users are created, updated, or deleted in the account. Covers new registrations, profile updates, and user removals.'
+})
+  .input(
+    z.object({
+      event: z.string().describe('Event type (e.g. new, change, delete)'),
+      role: z.string().optional().describe('Role of the actor'),
+      userId: z.string().optional().describe('User ID'),
+      name: z.string().optional().describe('Username'),
+      fullName: z.string().optional().describe('Full name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      mobile: z.string().optional().describe('Mobile number'),
+      country: z.string().optional().describe('Country'),
+      createdOn: z.string().optional().describe('UTC creation timestamp'),
+      rawPayload: z.any().optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('User ID'),
+      name: z.string().optional().describe('Username'),
+      fullName: z.string().optional().describe('Full name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      mobile: z.string().optional().describe('Mobile number'),
+      country: z.string().optional().describe('Country'),
+      createdOn: z.string().optional().describe('UTC creation timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
 
       // For user events, parent_id must be the Account ID
@@ -46,15 +48,19 @@ export let userChangesTrigger = SlateTrigger.create(
       // The account ID is typically needed; try using the account name as parent_id
       // Per SuperSaaS docs, for user events parent_id should be the Account ID from Account Info page
       // Since we may not have this directly, we'll need to try common approaches
-      let result = await client.createWebhook('M', ctx.auth.accountName, ctx.input.webhookBaseUrl);
+      let result = await client.createWebhook(
+        'M',
+        ctx.auth.accountName,
+        ctx.input.webhookBaseUrl
+      );
       let webhookId = result?.id ? String(result.id) : '';
 
       return {
-        registrationDetails: { webhookId, parentId: ctx.auth.accountName },
+        registrationDetails: { webhookId, parentId: ctx.auth.accountName }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
       let details = ctx.input.registrationDetails as { webhookId: string; parentId: string };
 
@@ -67,8 +73,8 @@ export let userChangesTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events.map((item: any) => ({
@@ -82,13 +88,13 @@ export let userChangesTrigger = SlateTrigger.create(
         mobile: item.mobile ?? undefined,
         country: item.country ?? undefined,
         createdOn: item.created_on ?? undefined,
-        rawPayload: item,
+        rawPayload: item
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.event || 'unknown';
       let userId = ctx.input.userId || `unknown-${Date.now()}`;
 
@@ -103,8 +109,9 @@ export let userChangesTrigger = SlateTrigger.create(
           phone: ctx.input.phone,
           mobile: ctx.input.mobile,
           country: ctx.input.country,
-          createdOn: ctx.input.createdOn,
-        },
+          createdOn: ctx.input.createdOn
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

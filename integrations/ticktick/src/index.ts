@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createTask,
@@ -13,11 +12,9 @@ import {
   updateProject,
   deleteProject,
   batchTasks,
-  getUser,
+  getUser
 } from './tools';
-import { taskChanges,
-  inboundWebhook,
-} from './triggers';
+import { taskChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     updateProject,
     deleteProject,
     batchTasks,
-    getUser,
+    getUser
   ],
-  triggers: [
-    inboundWebhook,
-    taskChanges,
-  ],
+  triggers: [inboundWebhook, taskChanges]
 });

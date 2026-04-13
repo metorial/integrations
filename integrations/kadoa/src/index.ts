@@ -9,7 +9,7 @@ import {
   startCrawl,
   getCrawlResults,
   adhocExtraction,
-  getDataChanges,
+  getDataChanges
 } from './tools';
 import { kadoaEvents } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     startCrawl,
     getCrawlResults,
     adhocExtraction,
-    getDataChanges,
+    getDataChanges
   ],
-  triggers: [
-    kadoaEvents,
-  ],
+  triggers: [kadoaEvents]
 });

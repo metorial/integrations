@@ -21,13 +21,9 @@ import {
   manageTickets,
   manageGlobals,
   getWorkspace,
-  listChannels,
+  listChannels
 } from './tools';
-import {
-  resthookEvent,
-  newMessage,
-  newFlowRun,
-} from './triggers';
+import { resthookEvent, newMessage, newFlowRun } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -52,11 +48,7 @@ export let provider = Slate.create({
     manageTickets,
     manageGlobals,
     getWorkspace,
-    listChannels,
+    listChannels
   ],
-  triggers: [
-    resthookEvent,
-    newMessage,
-    newFlowRun,
-  ],
+  triggers: [resthookEvent, newMessage, newFlowRun]
 });

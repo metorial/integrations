@@ -7,7 +7,7 @@ export class ProcFuClient {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.http = createAxios({
-      baseURL: 'https://procfu.com',
+      baseURL: 'https://procfu.com'
     });
   }
 
@@ -21,13 +21,16 @@ export class ProcFuClient {
     return parts.join('&');
   }
 
-  private async callFunction(scriptName: string, params: Record<string, string | undefined> = {}): Promise<any> {
+  private async callFunction(
+    scriptName: string,
+    params: Record<string, string | undefined> = {}
+  ): Promise<any> {
     let body = this.buildFormData(params);
     let response = await this.http.post(`/exe/${scriptName}`, body, {
       headers: {
-        'Authorization': `Basic ${this.token}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        Authorization: `Basic ${this.token}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
     return response.data;
   }
@@ -60,7 +63,7 @@ export class ProcFuClient {
   async getItemField(podioItemId: string, fieldId: string): Promise<any> {
     return this.callFunction('podio_item_field_get.pf', {
       podio_item_id: podioItemId,
-      field_id: fieldId,
+      field_id: fieldId
     });
   }
 
@@ -68,21 +71,31 @@ export class ProcFuClient {
     return this.callFunction('podio_item_fields_get.pf', { podio_item_id: podioItemId });
   }
 
-  async createItem(appId: string, fields: string, hook?: boolean, silent?: boolean): Promise<any> {
+  async createItem(
+    appId: string,
+    fields: string,
+    hook?: boolean,
+    silent?: boolean
+  ): Promise<any> {
     return this.callFunction('podio_item_create.pf', {
       app_id: appId,
       fields,
       hook: hook !== undefined ? String(hook) : undefined,
-      silent: silent !== undefined ? String(silent) : undefined,
+      silent: silent !== undefined ? String(silent) : undefined
     });
   }
 
-  async updateItemFields(podioItemId: string, values: string, hook?: boolean, silent?: boolean): Promise<any> {
+  async updateItemFields(
+    podioItemId: string,
+    values: string,
+    hook?: boolean,
+    silent?: boolean
+  ): Promise<any> {
     return this.callFunction('podio_item_fields_update.pf', {
       podio_item_id: podioItemId,
       values,
       hook: hook !== undefined ? String(hook) : undefined,
-      silent: silent !== undefined ? String(silent) : undefined,
+      silent: silent !== undefined ? String(silent) : undefined
     });
   }
 
@@ -104,32 +117,44 @@ export class ProcFuClient {
 
   // ──── Podio Search & Filter ────
 
-  async searchApp(appId: string, fieldId: string, searchVal: string, condition: string, maxResults?: number, simplified?: boolean): Promise<any> {
+  async searchApp(
+    appId: string,
+    fieldId: string,
+    searchVal: string,
+    condition: string,
+    maxResults?: number,
+    simplified?: boolean
+  ): Promise<any> {
     return this.callFunction('podio_app_search.pf', {
       app_id: appId,
       field_id: fieldId,
       search_val: searchVal,
       condition,
       max_results: maxResults !== undefined ? String(maxResults) : undefined,
-      simplified: simplified ? '1' : undefined,
+      simplified: simplified ? '1' : undefined
     });
   }
 
   async filterItems(podioAppId: string, filter: string): Promise<any> {
     return this.callFunction('podio_item_filter.pf', {
       podio_app_id: podioAppId,
-      filter,
+      filter
     });
   }
 
   // ──── Podio Comments ────
 
-  async createComment(podioItemId: string, value: string, hook?: boolean, silent?: boolean): Promise<any> {
+  async createComment(
+    podioItemId: string,
+    value: string,
+    hook?: boolean,
+    silent?: boolean
+  ): Promise<any> {
     return this.callFunction('podio_comment_create.pf', {
       podio_item_id: podioItemId,
       value,
       hook: hook !== undefined ? String(hook) : undefined,
-      silent: silent !== undefined ? String(silent) : undefined,
+      silent: silent !== undefined ? String(silent) : undefined
     });
   }
 
@@ -142,7 +167,9 @@ export class ProcFuClient {
   }
 
   async getMostRecentComment(podioItemId: string): Promise<any> {
-    return this.callFunction('podio_item_comments_most_recent.pf', { podio_item_id: podioItemId });
+    return this.callFunction('podio_item_comments_most_recent.pf', {
+      podio_item_id: podioItemId
+    });
   }
 
   // ──── Podio Apps ────
@@ -158,7 +185,7 @@ export class ProcFuClient {
   async getAppFieldCategories(appId: string, fieldId: string): Promise<any> {
     return this.callFunction('podio_app_field_get_categories.pf', {
       app_id: appId,
-      field_id: fieldId,
+      field_id: fieldId
     });
   }
 
@@ -208,13 +235,13 @@ export class ProcFuClient {
         podio_item_id: params.podioItemId,
         text: params.text,
         responsible: params.responsible,
-        due_date: params.dueDate,
+        due_date: params.dueDate
       });
     }
     return this.callFunction('podio_task_create.pf', {
       text: params.text,
       responsible: params.responsible,
-      due_date: params.dueDate,
+      due_date: params.dueDate
     });
   }
 
@@ -245,14 +272,14 @@ export class ProcFuClient {
   async callProcScript(scriptname: string, payload?: string): Promise<any> {
     return this.callFunction('call_procscript.pf', {
       scriptname,
-      payload,
+      payload
     });
   }
 
   async callProcScriptBackground(scriptname: string, payload?: string): Promise<any> {
     return this.callFunction('call_procscript_bg.pf', {
       scriptname,
-      payload,
+      payload
     });
   }
 
@@ -263,7 +290,7 @@ export class ProcFuClient {
       flow_id: flowId,
       podio_item_id: podioItemId,
       c,
-      p,
+      p
     });
   }
 
@@ -289,7 +316,7 @@ export class ProcFuClient {
     return this.callFunction('mysql_query.pf', {
       sql,
       params,
-      conn_name: connName,
+      conn_name: connName
     });
   }
 
@@ -297,7 +324,7 @@ export class ProcFuClient {
     return this.callFunction('mysql_array.pf', {
       sql,
       params,
-      conn_name: connName,
+      conn_name: connName
     });
   }
 
@@ -305,18 +332,23 @@ export class ProcFuClient {
     return this.callFunction('mysql_command.pf', {
       sql,
       params,
-      conn_name: connName,
+      conn_name: connName
     });
   }
 
   // ──── Raw API Calls ────
 
-  async podioRawCurl(url: string, method: string, options?: string, attributes?: string): Promise<any> {
+  async podioRawCurl(
+    url: string,
+    method: string,
+    options?: string,
+    attributes?: string
+  ): Promise<any> {
     return this.callFunction('podio_api_raw_curl.pf', {
       url,
       method,
       options,
-      attributes,
+      attributes
     });
   }
 
@@ -328,7 +360,7 @@ export class ProcFuClient {
     requestUrl: string,
     method: string,
     headers?: string,
-    body?: string,
+    body?: string
   ): Promise<any> {
     return this.callFunction('api_request_send.pf', {
       api_service: apiService,
@@ -336,14 +368,14 @@ export class ProcFuClient {
       request_url: requestUrl,
       method,
       headers,
-      body,
+      body
     });
   }
 
   async getApiUserTokenStatus(apiService: string, userId: string): Promise<any> {
     return this.callFunction('api_user_token_status.pf', {
       api_service: apiService,
-      user_id: userId,
+      user_id: userId
     });
   }
 
@@ -388,7 +420,7 @@ export class ProcFuClient {
   async notionTableQuery(databaseId: string, filter?: string): Promise<any> {
     return this.callFunction('notion_table_query.pf', {
       database_id: databaseId,
-      filter,
+      filter
     });
   }
 
@@ -397,7 +429,7 @@ export class ProcFuClient {
   async tapeAppQuery(appId: string, filter?: string): Promise<any> {
     return this.callFunction('tape_app_query.pf', {
       app_id: appId,
-      filter,
+      filter
     });
   }
 
@@ -408,14 +440,14 @@ export class ProcFuClient {
   async tapeRecordCreate(appId: string, fields: string): Promise<any> {
     return this.callFunction('tape_app_record_create.pf', {
       app_id: appId,
-      fields,
+      fields
     });
   }
 
   async tapeRecordUpdate(recordId: string, fields: string): Promise<any> {
     return this.callFunction('tape_app_record_update.pf', {
       record_id: recordId,
-      fields,
+      fields
     });
   }
 
@@ -439,16 +471,21 @@ export class ProcFuClient {
     return this.callFunction('flow_view_fetch.pf', {
       view_id: viewId,
       offset,
-      limit,
+      limit
     });
   }
 
-  async flowAppFilter(appId: string, filter?: string, offset?: string, limit?: string): Promise<any> {
+  async flowAppFilter(
+    appId: string,
+    filter?: string,
+    offset?: string,
+    limit?: string
+  ): Promise<any> {
     return this.callFunction('flow_app_filter.pf', {
       app_id: appId,
       filter,
       offset,
-      limit,
+      limit
     });
   }
 }

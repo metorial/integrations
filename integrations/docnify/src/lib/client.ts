@@ -51,7 +51,7 @@ export class Client {
     return createAxios({
       baseURL: `${this.instanceUrl}/api/v1`,
       headers: {
-        'Authorization': this.token,
+        Authorization: this.token,
         'Content-Type': 'application/json'
       }
     });
@@ -69,13 +69,18 @@ export class Client {
     return response.data;
   }
 
-  async createDocumentFromTemplate(params: CreateDocumentFromTemplateParams): Promise<DocnifyDocument> {
+  async createDocumentFromTemplate(
+    params: CreateDocumentFromTemplateParams
+  ): Promise<DocnifyDocument> {
     let http = this.getAxios();
     let response = await http.post('/documents', params);
     return response.data;
   }
 
-  async addRecipient(documentId: string, recipient: AddRecipientParams): Promise<DocnifyRecipient> {
+  async addRecipient(
+    documentId: string,
+    recipient: AddRecipientParams
+  ): Promise<DocnifyRecipient> {
     let http = this.getAxios();
     let response = await http.post(`/documents/${documentId}/recipients`, recipient);
     return response.data;
@@ -87,7 +92,10 @@ export class Client {
     return response.data;
   }
 
-  async listDocumentsSince(updatedSince: string | null, limit: number = 100): Promise<DocnifyDocument[]> {
+  async listDocumentsSince(
+    updatedSince: string | null,
+    limit: number = 100
+  ): Promise<DocnifyDocument[]> {
     let http = this.getAxios();
     let params: Record<string, string | number> = {
       limit,

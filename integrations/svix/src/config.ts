@@ -3,6 +3,9 @@ import { z } from 'zod';
 
 export let config = SlateConfig.create(
   z.object({
-    region: z.enum(['us', 'eu']).default('us').describe('The Svix API region. Determines the base URL for API requests.'),
+    region: z
+      .enum(['us', 'eu'])
+      .default('us')
+      .describe('The Svix API region. Determines the base URL for API requests.')
   })
 );

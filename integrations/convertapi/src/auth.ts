@@ -2,29 +2,35 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('ConvertAPI API Token. Create and manage tokens at https://www.convertapi.com/a/api-tokens'),
+      token: z
+        .string()
+        .describe(
+          'ConvertAPI API Token. Create and manage tokens at https://www.convertapi.com/a/api-tokens'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let client = createAxios({
         baseURL: 'https://v2.convertapi.com',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/user');
@@ -34,8 +40,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.ApiKey),
           name: user.FullName,
-          email: user.Email,
-        },
+          email: user.Email
+        }
       };
-    },
+    }
   });

@@ -3,43 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectRunCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Run Completed',
-    key: 'project_run_completed',
-    description: 'Triggers when a Hex project run finishes with a terminal status (COMPLETED, ERRORED, or KILLED).',
-  }
-)
-  .input(z.object({
-    projectId: z.string(),
-    runId: z.string(),
-    status: z.string(),
-    runUrl: z.string(),
-    startTime: z.string().nullable(),
-    endTime: z.string().nullable(),
-    elapsedTime: z.number().nullable(),
-    traceId: z.string().nullable(),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('UUID of the project that was run'),
-    runId: z.string().describe('UUID of the completed run'),
-    status: z.string().describe('Final run status (COMPLETED, ERRORED, or KILLED)'),
-    runUrl: z.string().describe('URL to view the run in Hex'),
-    startTime: z.string().nullable().describe('When the run started'),
-    endTime: z.string().nullable().describe('When the run finished'),
-    elapsedTime: z.number().nullable().describe('Total run duration in milliseconds'),
-    traceId: z.string().nullable().describe('Trace ID for debugging'),
-  }))
+export let projectRunCompleted = SlateTrigger.create(spec, {
+  name: 'Project Run Completed',
+  key: 'project_run_completed',
+  description:
+    'Triggers when a Hex project run finishes with a terminal status (COMPLETED, ERRORED, or KILLED).'
+})
+  .input(
+    z.object({
+      projectId: z.string(),
+      runId: z.string(),
+      status: z.string(),
+      runUrl: z.string(),
+      startTime: z.string().nullable(),
+      endTime: z.string().nullable(),
+      elapsedTime: z.number().nullable(),
+      traceId: z.string().nullable()
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('UUID of the project that was run'),
+      runId: z.string().describe('UUID of the completed run'),
+      status: z.string().describe('Final run status (COMPLETED, ERRORED, or KILLED)'),
+      runUrl: z.string().describe('URL to view the run in Hex'),
+      startTime: z.string().nullable().describe('When the run started'),
+      endTime: z.string().nullable().describe('When the run finished'),
+      elapsedTime: z.number().nullable().describe('Total run duration in milliseconds'),
+      traceId: z.string().nullable().describe('Trace ID for debugging')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
-      let state = ctx.state as { seenRunIds?: Record<string, boolean>; projectIds?: string[] } | null;
+      let state = ctx.state as {
+        seenRunIds?: Record<string, boolean>;
+        projectIds?: string[];
+      } | null;
       let seenRunIds: Record<string, boolean> = state?.seenRunIds ?? {};
 
       // Fetch all projects to monitor
@@ -62,7 +67,7 @@ export let projectRunCompleted = SlateTrigger.create(
       for (let project of projects) {
         try {
           let runsData = await client.getProjectRuns(project.projectId, { limit: 10 });
-          let runs = Array.isArray(runsData) ? runsData : (runsData as any).values ?? [];
+          let runs = Array.isArray(runsData) ? runsData : ((runsData as any).values ?? []);
 
           for (let run of runs) {
             if (terminalStatuses.includes(run.status) && !seenRunIds[run.runId]) {
@@ -75,7 +80,7 @@ export let projectRunCompleted = SlateTrigger.create(
                 startTime: run.startTime,
                 endTime: run.endTime,
                 elapsedTime: run.elapsedTime,
-                traceId: run.traceId,
+                traceId: run.traceId
               });
             }
           }
@@ -95,11 +100,11 @@ export let projectRunCompleted = SlateTrigger.create(
 
       return {
         inputs,
-        updatedState: { seenRunIds },
+        updatedState: { seenRunIds }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `project_run.${ctx.input.status.toLowerCase()}`,
         id: ctx.input.runId,
@@ -111,9 +116,9 @@ export let projectRunCompleted = SlateTrigger.create(
           startTime: ctx.input.startTime,
           endTime: ctx.input.endTime,
           elapsedTime: ctx.input.elapsedTime,
-          traceId: ctx.input.traceId,
-        },
+          traceId: ctx.input.traceId
+        }
       };
-    },
+    }
   })
   .build();

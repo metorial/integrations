@@ -3,43 +3,50 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageIssue = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Issue',
-    key: 'manage_issue',
-    description: `Create, update, close, reopen, or delete a GitLab issue. Supports setting title, description, labels, assignees, milestone, due date, weight, and confidentiality. Use **stateEvent** to close or reopen an existing issue.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageIssue = SlateTool.create(spec, {
+  name: 'Manage Issue',
+  key: 'manage_issue',
+  description: `Create, update, close, reopen, or delete a GitLab issue. Supports setting title, description, labels, assignees, milestone, due date, weight, and confidentiality. Use **stateEvent** to close or reopen an existing issue.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    projectId: z.string().describe('Project ID or URL-encoded path'),
-    issueIid: z.number().optional().describe('Issue IID within the project (required for update/delete)'),
-    title: z.string().optional().describe('Issue title (required for create)'),
-    description: z.string().optional().describe('Issue description (Markdown supported)'),
-    assigneeIds: z.array(z.number()).optional().describe('User IDs to assign'),
-    milestoneId: z.number().optional().describe('Milestone ID to associate'),
-    labels: z.string().optional().describe('Comma-separated list of labels'),
-    dueDate: z.string().optional().describe('Due date (YYYY-MM-DD format)'),
-    confidential: z.boolean().optional().describe('Whether the issue is confidential'),
-    weight: z.number().optional().describe('Issue weight (0-9)'),
-    stateEvent: z.enum(['close', 'reopen']).optional().describe('State transition: close or reopen the issue (update only)')
-  }))
-  .output(z.object({
-    issueId: z.number().describe('Global issue ID'),
-    issueIid: z.number().describe('Issue IID within the project'),
-    title: z.string().describe('Issue title'),
-    state: z.string().describe('Issue state (opened/closed)'),
-    webUrl: z.string().describe('URL to the issue'),
-    labels: z.array(z.string()).describe('Applied labels'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      projectId: z.string().describe('Project ID or URL-encoded path'),
+      issueIid: z
+        .number()
+        .optional()
+        .describe('Issue IID within the project (required for update/delete)'),
+      title: z.string().optional().describe('Issue title (required for create)'),
+      description: z.string().optional().describe('Issue description (Markdown supported)'),
+      assigneeIds: z.array(z.number()).optional().describe('User IDs to assign'),
+      milestoneId: z.number().optional().describe('Milestone ID to associate'),
+      labels: z.string().optional().describe('Comma-separated list of labels'),
+      dueDate: z.string().optional().describe('Due date (YYYY-MM-DD format)'),
+      confidential: z.boolean().optional().describe('Whether the issue is confidential'),
+      weight: z.number().optional().describe('Issue weight (0-9)'),
+      stateEvent: z
+        .enum(['close', 'reopen'])
+        .optional()
+        .describe('State transition: close or reopen the issue (update only)')
+    })
+  )
+  .output(
+    z.object({
+      issueId: z.number().describe('Global issue ID'),
+      issueIid: z.number().describe('Issue IID within the project'),
+      title: z.string().describe('Issue title'),
+      state: z.string().describe('Issue state (opened/closed)'),
+      webUrl: z.string().describe('URL to the issue'),
+      labels: z.array(z.string()).describe('Applied labels'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl

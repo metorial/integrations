@@ -66,7 +66,7 @@ export interface CreditsBalanceResponse {
 let mapContactToApi = (contact: ContactInput) => {
   let mapped: Record<string, unknown> = {
     first_name: contact.firstName,
-    last_name: contact.lastName,
+    last_name: contact.lastName
   };
 
   if (contact.company) {
@@ -86,17 +86,18 @@ let mapContactToApi = (contact: ContactInput) => {
 };
 
 let mapEnrichedContact = (data: Record<string, unknown>): EnrichedContact => ({
-  enriched: data.enriched as boolean ?? false,
+  enriched: (data.enriched as boolean) ?? false,
   emailProvider: (data.email_provider as string) ?? null,
   phoneProvider: (data.phone_provider as string) ?? null,
   contactFirstName: (data.contact_first_name as string) ?? '',
   contactLastName: (data.contact_last_name as string) ?? '',
   contactEmailAddress: (data.contact_email_address as string) ?? null,
   contactEmailAddressStatus: (data.contact_email_address_status as string) ?? null,
-  contactPhoneNumber: (data.contact_phone_number as string) ?? (data.contact_mobile_phone as string) ?? null,
+  contactPhoneNumber:
+    (data.contact_phone_number as string) ?? (data.contact_mobile_phone as string) ?? null,
   contactGender: (data.contact_gender as string) ?? null,
   contactJobTitle: (data.contact_job_title as string) ?? null,
-  customFields: (data.custom_fields as Record<string, string>) ?? null,
+  customFields: (data.custom_fields as Record<string, string>) ?? null
 });
 
 export class Client {
@@ -107,8 +108,8 @@ export class Client {
       baseURL: 'https://app.bettercontact.rocks/api/v2',
       headers: {
         'X-API-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -116,7 +117,7 @@ export class Client {
     let body: Record<string, unknown> = {
       data: request.contacts.map(mapContactToApi),
       enrich_email_address: request.enrichEmailAddress,
-      enrich_phone_number: request.enrichPhoneNumber,
+      enrich_phone_number: request.enrichPhoneNumber
     };
 
     if (request.webhook) {
@@ -131,7 +132,7 @@ export class Client {
     return {
       success: response.data.success,
       requestId: response.data.id,
-      message: response.data.message,
+      message: response.data.message
     };
   }
 
@@ -151,9 +152,9 @@ export class Client {
         catchAllSafe: data.summary?.catch_all_safe ?? 0,
         catchAllNotSafe: data.summary?.catch_all_not_safe ?? 0,
         undeliverable: data.summary?.undeliverable ?? 0,
-        notFound: data.summary?.not_found ?? 0,
+        notFound: data.summary?.not_found ?? 0
       },
-      contacts: (data.data as Record<string, unknown>[])?.map(mapEnrichedContact) ?? [],
+      contacts: (data.data as Record<string, unknown>[])?.map(mapEnrichedContact) ?? []
     };
   }
 
@@ -163,7 +164,7 @@ export class Client {
     return {
       success: response.data.success,
       creditsLeft: response.data.credits_left,
-      email: response.data.email,
+      email: response.data.email
     };
   }
 }

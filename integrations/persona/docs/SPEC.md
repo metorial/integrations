@@ -52,6 +52,7 @@ Verifications are broken up into Verification Types that focus on answering diff
 ### Reports
 
 Reports provide background checks and risk intelligence on individuals and businesses. Report types include:
+
 - **Address Lookup** – validates address information.
 - **Adverse Media** – screens against adverse media sources.
 - **Business Adverse Media** – screens businesses against adverse media.

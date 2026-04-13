@@ -19,7 +19,16 @@ export interface GenerateParams {
     language?: string;
   };
   imageOptions?: {
-    source?: 'aiGenerated' | 'pictographic' | 'pexels' | 'giphy' | 'webAllImages' | 'webFreeToUse' | 'webFreeToUseCommercially' | 'placeholder' | 'noImages';
+    source?:
+      | 'aiGenerated'
+      | 'pictographic'
+      | 'pexels'
+      | 'giphy'
+      | 'webAllImages'
+      | 'webFreeToUse'
+      | 'webFreeToUseCommercially'
+      | 'placeholder'
+      | 'noImages';
     model?: string;
     style?: string;
   };
@@ -122,8 +131,8 @@ export class GammaClient {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -142,12 +151,20 @@ export class GammaClient {
     return response.data as GenerationStatus;
   }
 
-  async listThemes(params?: { query?: string; limit?: number; after?: string }): Promise<PaginatedResponse<Theme>> {
+  async listThemes(params?: {
+    query?: string;
+    limit?: number;
+    after?: string;
+  }): Promise<PaginatedResponse<Theme>> {
     let response = await this.axios.get('/themes', { params });
     return response.data as PaginatedResponse<Theme>;
   }
 
-  async listFolders(params?: { query?: string; limit?: number; after?: string }): Promise<PaginatedResponse<Folder>> {
+  async listFolders(params?: {
+    query?: string;
+    limit?: number;
+    after?: string;
+  }): Promise<PaginatedResponse<Folder>> {
     let response = await this.axios.get('/folders', { params });
     return response.data as PaginatedResponse<Folder>;
   }

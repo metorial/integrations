@@ -28,54 +28,80 @@ export class DiscoveryClient {
     return params;
   }
 
-  async searchEvents(params: {
-    keyword?: string;
-    attractionId?: string;
-    venueId?: string;
-    promoterId?: string;
-    classificationName?: string;
-    classificationId?: string;
-    segmentId?: string;
-    segmentName?: string;
-    genreId?: string;
-    subGenreId?: string;
-    countryCode?: string;
-    stateCode?: string;
-    city?: string;
-    postalCode?: string;
-    dmaId?: string;
-    latlong?: string;
-    radius?: string;
-    unit?: string;
-    startDateTime?: string;
-    endDateTime?: string;
-    localStartDateTime?: string;
-    localEndDateTime?: string;
-    onsaleStartDateTime?: string;
-    onsaleEndDateTime?: string;
-    onsaleOnStartDate?: string;
-    onsaleOnAfterStartDate?: string;
-    source?: string;
-    includeFamily?: string;
-    includeTBA?: string;
-    includeTBD?: string;
-    includeTest?: string;
-    sort?: string;
-    size?: number;
-    page?: number;
-  } = {}): Promise<any> {
+  async searchEvents(
+    params: {
+      keyword?: string;
+      attractionId?: string;
+      venueId?: string;
+      promoterId?: string;
+      classificationName?: string;
+      classificationId?: string;
+      segmentId?: string;
+      segmentName?: string;
+      genreId?: string;
+      subGenreId?: string;
+      countryCode?: string;
+      stateCode?: string;
+      city?: string;
+      postalCode?: string;
+      dmaId?: string;
+      latlong?: string;
+      radius?: string;
+      unit?: string;
+      startDateTime?: string;
+      endDateTime?: string;
+      localStartDateTime?: string;
+      localEndDateTime?: string;
+      onsaleStartDateTime?: string;
+      onsaleEndDateTime?: string;
+      onsaleOnStartDate?: string;
+      onsaleOnAfterStartDate?: string;
+      source?: string;
+      includeFamily?: string;
+      includeTBA?: string;
+      includeTBD?: string;
+      includeTest?: string;
+      sort?: string;
+      size?: number;
+      page?: number;
+    } = {}
+  ): Promise<any> {
     let queryParams: Record<string, string> = { ...this.defaultParams() };
 
     if (params.countryCode) queryParams.countryCode = params.countryCode;
 
     let stringFields = [
-      'keyword', 'attractionId', 'venueId', 'promoterId',
-      'classificationName', 'classificationId', 'segmentId', 'segmentName',
-      'genreId', 'subGenreId', 'stateCode', 'city', 'postalCode',
-      'dmaId', 'latlong', 'radius', 'unit',
-      'startDateTime', 'endDateTime', 'localStartDateTime', 'localEndDateTime',
-      'onsaleStartDateTime', 'onsaleEndDateTime', 'onsaleOnStartDate', 'onsaleOnAfterStartDate',
-      'source', 'includeFamily', 'includeTBA', 'includeTBD', 'includeTest', 'sort'
+      'keyword',
+      'attractionId',
+      'venueId',
+      'promoterId',
+      'classificationName',
+      'classificationId',
+      'segmentId',
+      'segmentName',
+      'genreId',
+      'subGenreId',
+      'stateCode',
+      'city',
+      'postalCode',
+      'dmaId',
+      'latlong',
+      'radius',
+      'unit',
+      'startDateTime',
+      'endDateTime',
+      'localStartDateTime',
+      'localEndDateTime',
+      'onsaleStartDateTime',
+      'onsaleEndDateTime',
+      'onsaleOnStartDate',
+      'onsaleOnAfterStartDate',
+      'source',
+      'includeFamily',
+      'includeTBA',
+      'includeTBD',
+      'includeTest',
+      'sort'
     ] as const;
 
     for (let field of stringFields) {
@@ -96,27 +122,37 @@ export class DiscoveryClient {
     return response.data;
   }
 
-  async searchAttractions(params: {
-    keyword?: string;
-    classificationName?: string;
-    classificationId?: string;
-    segmentId?: string;
-    segmentName?: string;
-    genreId?: string;
-    subGenreId?: string;
-    source?: string;
-    includeFamily?: string;
-    includeTest?: string;
-    sort?: string;
-    size?: number;
-    page?: number;
-  } = {}): Promise<any> {
+  async searchAttractions(
+    params: {
+      keyword?: string;
+      classificationName?: string;
+      classificationId?: string;
+      segmentId?: string;
+      segmentName?: string;
+      genreId?: string;
+      subGenreId?: string;
+      source?: string;
+      includeFamily?: string;
+      includeTest?: string;
+      sort?: string;
+      size?: number;
+      page?: number;
+    } = {}
+  ): Promise<any> {
     let queryParams: Record<string, string> = { ...this.defaultParams() };
 
     let stringFields = [
-      'keyword', 'classificationName', 'classificationId', 'segmentId',
-      'segmentName', 'genreId', 'subGenreId', 'source',
-      'includeFamily', 'includeTest', 'sort'
+      'keyword',
+      'classificationName',
+      'classificationId',
+      'segmentId',
+      'segmentName',
+      'genreId',
+      'subGenreId',
+      'source',
+      'includeFamily',
+      'includeTest',
+      'sort'
     ] as const;
 
     for (let field of stringFields) {
@@ -137,28 +173,38 @@ export class DiscoveryClient {
     return response.data;
   }
 
-  async searchVenues(params: {
-    keyword?: string;
-    countryCode?: string;
-    stateCode?: string;
-    city?: string;
-    postalCode?: string;
-    latlong?: string;
-    radius?: string;
-    unit?: string;
-    source?: string;
-    includeTest?: string;
-    sort?: string;
-    size?: number;
-    page?: number;
-  } = {}): Promise<any> {
+  async searchVenues(
+    params: {
+      keyword?: string;
+      countryCode?: string;
+      stateCode?: string;
+      city?: string;
+      postalCode?: string;
+      latlong?: string;
+      radius?: string;
+      unit?: string;
+      source?: string;
+      includeTest?: string;
+      sort?: string;
+      size?: number;
+      page?: number;
+    } = {}
+  ): Promise<any> {
     let queryParams: Record<string, string> = { ...this.defaultParams() };
 
     if (params.countryCode) queryParams.countryCode = params.countryCode;
 
     let stringFields = [
-      'keyword', 'stateCode', 'city', 'postalCode',
-      'latlong', 'radius', 'unit', 'source', 'includeTest', 'sort'
+      'keyword',
+      'stateCode',
+      'city',
+      'postalCode',
+      'latlong',
+      'radius',
+      'unit',
+      'source',
+      'includeTest',
+      'sort'
     ] as const;
 
     for (let field of stringFields) {
@@ -179,12 +225,14 @@ export class DiscoveryClient {
     return response.data;
   }
 
-  async searchClassifications(params: {
-    keyword?: string;
-    sort?: string;
-    size?: number;
-    page?: number;
-  } = {}): Promise<any> {
+  async searchClassifications(
+    params: {
+      keyword?: string;
+      sort?: string;
+      size?: number;
+      page?: number;
+    } = {}
+  ): Promise<any> {
     let queryParams: Record<string, string> = { ...this.defaultParams() };
 
     if (params.keyword) queryParams.keyword = params.keyword;

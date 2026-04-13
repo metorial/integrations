@@ -13,7 +13,7 @@ import {
   deleteItemTool,
   searchFilesTool,
   shareItemTool,
-  managePermissionsTool,
+  managePermissionsTool
 } from './tools';
 import { driveItemChangesTrigger } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     deleteItemTool,
     searchFilesTool,
     shareItemTool,
-    managePermissionsTool,
+    managePermissionsTool
   ],
-  triggers: [
-    driveItemChangesTrigger,
-  ],
+  triggers: [driveItemChangesTrigger]
 });

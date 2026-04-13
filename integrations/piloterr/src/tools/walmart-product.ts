@@ -3,35 +3,36 @@ import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let walmartProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Walmart Product',
-    key: 'walmart_product',
-    description: `Extract product data from a Walmart product page. Returns product name, brand, model, pricing, availability, images, description, and aggregate ratings.`,
-    tags: {
-      readOnly: true
-    }
+export let walmartProduct = SlateTool.create(spec, {
+  name: 'Walmart Product',
+  key: 'walmart_product',
+  description: `Extract product data from a Walmart product page. Returns product name, brand, model, pricing, availability, images, description, and aggregate ratings.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    productUrl: z.string().describe('Full Walmart product URL')
-  }))
-  .output(z.object({
-    sku: z.string().optional(),
-    name: z.string().optional(),
-    brand: z.string().optional(),
-    model: z.string().optional(),
-    image: z.string().optional(),
-    gtin13: z.string().optional(),
-    description: z.string().optional(),
-    price: z.any().optional(),
-    availability: z.string().optional(),
-    currency: z.string().optional(),
-    aggregateRating: z.any().optional(),
-    raw: z.any().describe('Full raw response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productUrl: z.string().describe('Full Walmart product URL')
+    })
+  )
+  .output(
+    z.object({
+      sku: z.string().optional(),
+      name: z.string().optional(),
+      brand: z.string().optional(),
+      model: z.string().optional(),
+      image: z.string().optional(),
+      gtin13: z.string().optional(),
+      description: z.string().optional(),
+      price: z.any().optional(),
+      availability: z.string().optional(),
+      currency: z.string().optional(),
+      aggregateRating: z.any().optional(),
+      raw: z.any().describe('Full raw response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.getWalmartProduct({ url: ctx.input.productUrl });
 

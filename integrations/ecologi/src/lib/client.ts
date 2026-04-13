@@ -53,9 +53,7 @@ export class EcologiClient {
   constructor(token?: string) {
     this.axios = createAxios({
       baseURL: BASE_URL,
-      headers: token
-        ? { Authorization: `Bearer ${token}` }
-        : {},
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
   }
 
@@ -70,17 +68,23 @@ export class EcologiClient {
   }
 
   async getTrees(username: string): Promise<TreesResponse> {
-    let response = await this.axios.get<TreesResponse>(`/users/${encodeURIComponent(username)}/trees`);
+    let response = await this.axios.get<TreesResponse>(
+      `/users/${encodeURIComponent(username)}/trees`
+    );
     return response.data;
   }
 
   async getCarbonOffset(username: string): Promise<CarbonOffsetResponse> {
-    let response = await this.axios.get<CarbonOffsetResponse>(`/users/${encodeURIComponent(username)}/carbon-offset`);
+    let response = await this.axios.get<CarbonOffsetResponse>(
+      `/users/${encodeURIComponent(username)}/carbon-offset`
+    );
     return response.data;
   }
 
   async getImpact(username: string): Promise<ImpactResponse> {
-    let response = await this.axios.get<ImpactResponse>(`/users/${encodeURIComponent(username)}/impact`);
+    let response = await this.axios.get<ImpactResponse>(
+      `/users/${encodeURIComponent(username)}/impact`
+    );
     return response.data;
   }
 }

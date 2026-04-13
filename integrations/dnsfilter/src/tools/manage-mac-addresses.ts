@@ -3,31 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMacAddresses = SlateTool.create(
-  spec,
-  {
-    name: 'Manage MAC Addresses',
-    key: 'manage_mac_addresses',
-    description: `List, create, update, or delete MAC addresses associated with organizations for device-level identification.
+export let manageMacAddresses = SlateTool.create(spec, {
+  name: 'Manage MAC Addresses',
+  key: 'manage_mac_addresses',
+  description: `List, create, update, or delete MAC addresses associated with organizations for device-level identification.
 - **list**: Get all registered MAC addresses.
 - **create**: Register a new MAC address.
 - **update**: Modify an existing MAC address entry.
-- **delete**: Remove a MAC address.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
-    macAddressId: z.string().optional().describe('MAC address record ID (required for update/delete)'),
-    macAddress: z.string().optional().describe('MAC address value (for create/update)'),
-    organizationId: z.string().optional().describe('Organization ID (for create)'),
-    attributes: z.record(z.string(), z.any()).optional().describe('Additional attributes'),
-  }))
-  .output(z.object({
-    macAddresses: z.array(z.record(z.string(), z.any())).optional().describe('List of MAC address records (for list)'),
-    macAddress: z.record(z.string(), z.any()).optional().describe('MAC address details (for create/update)'),
-    deleted: z.boolean().optional().describe('Whether the MAC address was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+- **delete**: Remove a MAC address.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
+      macAddressId: z
+        .string()
+        .optional()
+        .describe('MAC address record ID (required for update/delete)'),
+      macAddress: z.string().optional().describe('MAC address value (for create/update)'),
+      organizationId: z.string().optional().describe('Organization ID (for create)'),
+      attributes: z.record(z.string(), z.any()).optional().describe('Additional attributes')
+    })
+  )
+  .output(
+    z.object({
+      macAddresses: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of MAC address records (for list)'),
+      macAddress: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('MAC address details (for create/update)'),
+      deleted: z.boolean().optional().describe('Whether the MAC address was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -35,7 +45,7 @@ export let manageMacAddresses = SlateTool.create(
       let macAddresses = await client.listMacAddresses();
       return {
         output: { macAddresses },
-        message: `Found **${macAddresses.length}** MAC address(es).`,
+        message: `Found **${macAddresses.length}** MAC address(es).`
       };
     }
 
@@ -44,7 +54,7 @@ export let manageMacAddresses = SlateTool.create(
       await client.deleteMacAddress(ctx.input.macAddressId);
       return {
         output: { deleted: true },
-        message: `Deleted MAC address **${ctx.input.macAddressId}**.`,
+        message: `Deleted MAC address **${ctx.input.macAddressId}**.`
       };
     }
 
@@ -57,7 +67,7 @@ export let manageMacAddresses = SlateTool.create(
       let macAddress = await client.createMacAddress(params);
       return {
         output: { macAddress },
-        message: `Created MAC address **${ctx.input.macAddress ?? ''}**.`,
+        message: `Created MAC address **${ctx.input.macAddress ?? ''}**.`
       };
     }
 
@@ -65,6 +75,7 @@ export let manageMacAddresses = SlateTool.create(
     let macAddress = await client.updateMacAddress(ctx.input.macAddressId, params);
     return {
       output: { macAddress },
-      message: `Updated MAC address **${ctx.input.macAddressId}**.`,
+      message: `Updated MAC address **${ctx.input.macAddressId}**.`
     };
-  }).build();
+  })
+  .build();

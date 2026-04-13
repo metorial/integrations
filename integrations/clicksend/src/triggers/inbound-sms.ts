@@ -3,31 +3,36 @@ import { ClickSendClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let inboundSmsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Inbound SMS Received',
-    key: 'inbound_sms',
-    description: 'Triggers when an SMS is received on one of your dedicated numbers. Registers an inbound automation rule that forwards incoming messages to a webhook URL.',
-  }
-)
-  .input(z.object({
-    from: z.string().optional().describe('Sender phone number'),
-    to: z.string().optional().describe('Recipient dedicated number'),
-    messageId: z.string().optional().describe('Unique message identifier'),
-    body: z.string().optional().describe('SMS message body'),
-    timestamp: z.number().optional().describe('Unix timestamp of when the message was received'),
-    originalMessage: z.any().optional().describe('Full raw message payload')
-  }))
-  .output(z.object({
-    smsMessageId: z.string().describe('Unique identifier of the inbound SMS'),
-    from: z.string().describe('Sender phone number'),
-    to: z.string().describe('Receiving dedicated number'),
-    body: z.string().describe('SMS message body'),
-    timestamp: z.number().describe('Unix timestamp when the message was received')
-  }))
+export let inboundSmsTrigger = SlateTrigger.create(spec, {
+  name: 'Inbound SMS Received',
+  key: 'inbound_sms',
+  description:
+    'Triggers when an SMS is received on one of your dedicated numbers. Registers an inbound automation rule that forwards incoming messages to a webhook URL.'
+})
+  .input(
+    z.object({
+      from: z.string().optional().describe('Sender phone number'),
+      to: z.string().optional().describe('Recipient dedicated number'),
+      messageId: z.string().optional().describe('Unique message identifier'),
+      body: z.string().optional().describe('SMS message body'),
+      timestamp: z
+        .number()
+        .optional()
+        .describe('Unix timestamp of when the message was received'),
+      originalMessage: z.any().optional().describe('Full raw message payload')
+    })
+  )
+  .output(
+    z.object({
+      smsMessageId: z.string().describe('Unique identifier of the inbound SMS'),
+      from: z.string().describe('Sender phone number'),
+      to: z.string().describe('Receiving dedicated number'),
+      body: z.string().describe('SMS message body'),
+      timestamp: z.number().describe('Unix timestamp when the message was received')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ClickSendClient({
         username: ctx.auth.username,
         token: ctx.auth.token
@@ -51,7 +56,7 @@ export let inboundSmsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ClickSendClient({
         username: ctx.auth.username,
         token: ctx.auth.token
@@ -62,7 +67,7 @@ export let inboundSmsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
 
       let contentType = ctx.request.headers.get('content-type') || '';
@@ -97,15 +102,21 @@ export let inboundSmsTrigger = SlateTrigger.create(
         inputs: messages.map((msg: any) => ({
           from: msg.from || msg.from_number || '',
           to: msg.to || msg.to_number || msg.dedicated_number || '',
-          messageId: msg.message_id || msg.messageid || `inbound-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          messageId:
+            msg.message_id ||
+            msg.messageid ||
+            `inbound-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           body: msg.body || msg.message || '',
-          timestamp: msg.timestamp || msg.date ? parseInt(msg.date || msg.timestamp) : Math.floor(Date.now() / 1000),
+          timestamp:
+            msg.timestamp || msg.date
+              ? parseInt(msg.date || msg.timestamp)
+              : Math.floor(Date.now() / 1000),
           originalMessage: msg
         }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'sms.received',
         id: ctx.input.messageId || `inbound-${Date.now()}`,
@@ -118,4 +129,5 @@ export let inboundSmsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

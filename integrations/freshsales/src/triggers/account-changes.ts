@@ -3,47 +3,50 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let accountChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Changes',
-    key: 'account_changes',
-    description: 'Triggers when accounts (companies) are created or updated in Freshsales. Monitors accounts via the default or first available view.',
-  }
-)
-  .input(z.object({
-    accountId: z.number().describe('ID of the account'),
-    name: z.string().nullable().optional(),
-    website: z.string().nullable().optional(),
-    phone: z.string().nullable().optional(),
-    city: z.string().nullable().optional(),
-    country: z.string().nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-    isNew: z.boolean().describe('Whether this account is newly created since last poll'),
-  }))
-  .output(z.object({
-    accountId: z.number().describe('ID of the account'),
-    name: z.string().nullable().optional(),
-    website: z.string().nullable().optional(),
-    phone: z.string().nullable().optional(),
-    city: z.string().nullable().optional(),
-    country: z.string().nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-  }))
+export let accountChanges = SlateTrigger.create(spec, {
+  name: 'Account Changes',
+  key: 'account_changes',
+  description:
+    'Triggers when accounts (companies) are created or updated in Freshsales. Monitors accounts via the default or first available view.'
+})
+  .input(
+    z.object({
+      accountId: z.number().describe('ID of the account'),
+      name: z.string().nullable().optional(),
+      website: z.string().nullable().optional(),
+      phone: z.string().nullable().optional(),
+      city: z.string().nullable().optional(),
+      country: z.string().nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional(),
+      isNew: z.boolean().describe('Whether this account is newly created since last poll')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.number().describe('ID of the account'),
+      name: z.string().nullable().optional(),
+      website: z.string().nullable().optional(),
+      phone: z.string().nullable().optional(),
+      city: z.string().nullable().optional(),
+      country: z.string().nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let viewId = ctx.state?.viewId;
       if (!viewId) {
         let filters = await client.getAccountFilters();
-        let defaultFilter = filters.find((f: Record<string, any>) => f.is_default) || filters[0];
+        let defaultFilter =
+          filters.find((f: Record<string, any>) => f.is_default) || filters[0];
         if (!defaultFilter) {
           return { inputs: [], updatedState: ctx.state || {} };
         }
@@ -54,7 +57,7 @@ export let accountChanges = SlateTrigger.create(
       let result = await client.listAccounts(viewId, {
         sort: 'updated_at',
         sortType: 'desc',
-        page: 1,
+        page: 1
       });
 
       let accounts = result.salesAccounts || [];
@@ -74,24 +77,23 @@ export let accountChanges = SlateTrigger.create(
           country: account.country,
           createdAt: account.created_at,
           updatedAt: account.updated_at,
-          isNew,
+          isNew
         });
       }
 
-      let updatedLastPolledAt = (accounts.length > 0 && accounts[0]?.updated_at)
-        ? accounts[0].updated_at
-        : lastPolledAt;
+      let updatedLastPolledAt =
+        accounts.length > 0 && accounts[0]?.updated_at ? accounts[0].updated_at : lastPolledAt;
 
       return {
         inputs: newInputs,
         updatedState: {
           viewId,
-          lastPolledAt: updatedLastPolledAt,
-        },
+          lastPolledAt: updatedLastPolledAt
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNew ? 'account.created' : 'account.updated';
       return {
         type: eventType,
@@ -104,8 +106,9 @@ export let accountChanges = SlateTrigger.create(
           city: ctx.input.city,
           country: ctx.input.country,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

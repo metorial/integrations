@@ -170,7 +170,8 @@ export let auth = SlateAuth.create()
 
       {
         title: 'Search Workspace',
-        description: 'Search messages and files (`search.messages` / `search.files`); add under User Token Scopes in the Slack app',
+        description:
+          'Search messages and files (`search.messages` / `search.files`); add under User Token Scopes in the Slack app',
         scope: 'search:read'
       }
     ],

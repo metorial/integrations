@@ -16,13 +16,9 @@ import {
   listAgents,
   stopAgent,
   listArtifacts,
-  createAnnotation,
+  createAnnotation
 } from './tools';
-import {
-  buildEvents,
-  jobEvents,
-  agentEvents,
-} from './triggers';
+import { buildEvents, jobEvents, agentEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,11 +38,7 @@ export let provider = Slate.create({
     listAgents.build(),
     stopAgent.build(),
     listArtifacts.build(),
-    createAnnotation.build(),
+    createAnnotation.build()
   ],
-  triggers: [
-    buildEvents.build(),
-    jobEvents.build(),
-    agentEvents.build(),
-  ],
+  triggers: [buildEvents.build(), jobEvents.build(), agentEvents.build()]
 });

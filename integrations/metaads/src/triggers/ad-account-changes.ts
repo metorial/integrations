@@ -2,29 +2,31 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let adAccountChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Ad Account Changes',
-    key: 'ad_account_changes',
-    description: 'Receives webhook notifications when campaigns, ad sets, or ads change status (e.g., approved, rejected, delivery issues). Configure this webhook in Meta Developer App settings under Webhooks > Ad Account.'
-  }
-)
-  .input(z.object({
-    entryId: z.string().describe('Ad account ID from the webhook entry'),
-    changeType: z.string().describe('Type of change (e.g., campaigns, adsets, ads)'),
-    changeValue: z.record(z.string(), z.any()).describe('Change details from Meta'),
-    timestamp: z.string().describe('Timestamp of the change')
-  }))
-  .output(z.object({
-    adAccountId: z.string().describe('Ad account ID'),
-    resourceType: z.string().describe('Type of resource that changed (campaign, adset, ad)'),
-    resourceId: z.string().optional().describe('ID of the changed resource'),
-    changedFields: z.array(z.string()).optional().describe('List of fields that changed'),
-    changeValue: z.record(z.string(), z.any()).optional().describe('Details of the change')
-  }))
+export let adAccountChanges = SlateTrigger.create(spec, {
+  name: 'Ad Account Changes',
+  key: 'ad_account_changes',
+  description:
+    'Receives webhook notifications when campaigns, ad sets, or ads change status (e.g., approved, rejected, delivery issues). Configure this webhook in Meta Developer App settings under Webhooks > Ad Account.'
+})
+  .input(
+    z.object({
+      entryId: z.string().describe('Ad account ID from the webhook entry'),
+      changeType: z.string().describe('Type of change (e.g., campaigns, adsets, ads)'),
+      changeValue: z.record(z.string(), z.any()).describe('Change details from Meta'),
+      timestamp: z.string().describe('Timestamp of the change')
+    })
+  )
+  .output(
+    z.object({
+      adAccountId: z.string().describe('Ad account ID'),
+      resourceType: z.string().describe('Type of resource that changed (campaign, adset, ad)'),
+      resourceId: z.string().optional().describe('ID of the changed resource'),
+      changedFields: z.array(z.string()).optional().describe('List of fields that changed'),
+      changeValue: z.record(z.string(), z.any()).optional().describe('Details of the change')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let method = ctx.request.method;
 
       // Handle Meta webhook verification challenge
@@ -49,7 +51,7 @@ export let adAccountChanges = SlateTrigger.create(
       }
 
       // Handle actual webhook events
-      let body = await ctx.request.json() as any;
+      let body = (await ctx.request.json()) as any;
 
       if (body.object !== 'ad_account') {
         return { inputs: [] };
@@ -62,8 +64,8 @@ export let adAccountChanges = SlateTrigger.create(
         timestamp: string;
       }> = [];
 
-      for (let entry of (body.entry || [])) {
-        for (let change of (entry.changes || [])) {
+      for (let entry of body.entry || []) {
+        for (let change of entry.changes || []) {
           inputs.push({
             entryId: entry.id || '',
             changeType: change.field || 'unknown',
@@ -76,9 +78,13 @@ export let adAccountChanges = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resourceType = ctx.input.changeType;
-      let resourceId = ctx.input.changeValue?.id || ctx.input.changeValue?.campaign_id || ctx.input.changeValue?.adset_id || ctx.input.changeValue?.ad_id;
+      let resourceId =
+        ctx.input.changeValue?.id ||
+        ctx.input.changeValue?.campaign_id ||
+        ctx.input.changeValue?.adset_id ||
+        ctx.input.changeValue?.ad_id;
 
       return {
         type: `ad_account.${resourceType}`,
@@ -92,4 +98,5 @@ export let adAccountChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

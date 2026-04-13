@@ -50,8 +50,8 @@ export class Client {
       baseURL: 'https://api.docparser.com/v1',
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
@@ -64,7 +64,7 @@ export class Client {
     let response = await this.axios.get('/parsers');
     return (response.data || []).map((p: any) => ({
       parserId: p.id,
-      label: p.label,
+      label: p.label
     }));
   }
 
@@ -73,7 +73,7 @@ export class Client {
     return (response.data || []).map((l: any) => ({
       layoutId: l.id,
       label: l.label,
-      ...l,
+      ...l
     }));
   }
 
@@ -84,7 +84,6 @@ export class Client {
     remoteId?: string
   ): Promise<ImportResult> {
     let formData = new FormData();
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let blob = new Blob([Buffer.from(fileContent, 'base64')]);
     formData.append('file', blob, fileName);
     if (remoteId) {
@@ -93,8 +92,8 @@ export class Client {
 
     let response = await this.axios.post(`/document/upload/${parserId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
     return this.mapImportResult(response.data);
@@ -107,7 +106,7 @@ export class Client {
     remoteId?: string
   ): Promise<ImportResult> {
     let body: Record<string, string> = {
-      file_content: fileContent,
+      file_content: fileContent
     };
     if (fileName) {
       body.file_name = fileName;
@@ -126,7 +125,7 @@ export class Client {
     remoteId?: string
   ): Promise<ImportResult> {
     let body: Record<string, string> = {
-      url: fileUrl,
+      url: fileUrl
     };
     if (remoteId) {
       body.remote_id = remoteId;
@@ -148,7 +147,7 @@ export class Client {
       parsedAt: data.parsed_at || '',
       webhookAt: data.webhook_at || '',
       failedJobs: data.failed_jobs || [],
-      ...data,
+      ...data
     };
   }
 
@@ -166,10 +165,7 @@ export class Client {
     return Array.isArray(response.data) ? response.data : [response.data];
   }
 
-  async getParsedDataByParser(
-    parserId: string,
-    options?: ParsedDataOptions
-  ): Promise<any[]> {
+  async getParsedDataByParser(parserId: string, options?: ParsedDataOptions): Promise<any[]> {
     let params: Record<string, string | number | boolean> = {};
     if (options?.format) params.format = options.format;
     if (options?.list) params.list = options.list;
@@ -185,14 +181,14 @@ export class Client {
 
   async reparseDocuments(parserId: string, documentIds: string[]): Promise<any> {
     let response = await this.axios.post(`/document/reparse/${parserId}`, {
-      document_ids: documentIds,
+      document_ids: documentIds
     });
     return response.data;
   }
 
   async reintegrateDocuments(parserId: string, documentIds: string[]): Promise<any> {
     let response = await this.axios.post(`/document/reintegrate/${parserId}`, {
-      document_ids: documentIds,
+      document_ids: documentIds
     });
     return response.data;
   }
@@ -204,7 +200,7 @@ export class Client {
       uploadDuration: data.upload_duration ?? 0,
       quotaUsed: data.quota_used ?? 0,
       quotaLeft: data.quota_left ?? 0,
-      quotaRefill: data.quota_refill || '',
+      quotaRefill: data.quota_refill || ''
     };
   }
 }

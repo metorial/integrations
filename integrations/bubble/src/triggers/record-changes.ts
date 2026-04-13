@@ -3,36 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Detects new and modified records across all exposed Bubble data types by polling. Discovers exposed data types from the Swagger spec and tracks changes based on the Modified Date field.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Whether the record was newly created or updated since last poll.'),
-    dataType: z.string().describe('The Bubble data type name this record belongs to.'),
-    record: z.record(z.string(), z.any()).describe('The full record data from Bubble.'),
-  }))
-  .output(z.object({
-    recordId: z.string().describe('Unique ID of the changed record.'),
-    recordType: z.string().describe('The Bubble data type name of the record.'),
-    changeType: z.enum(['created', 'updated']).describe('Whether the record was newly created or modified.'),
-    createdDate: z.string().describe('ISO timestamp when the record was originally created.'),
-    modifiedDate: z.string().describe('ISO timestamp when the record was last modified.'),
-    fields: z.record(z.string(), z.any()).describe('All field values of the record.'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Detects new and modified records across all exposed Bubble data types by polling. Discovers exposed data types from the Swagger spec and tracks changes based on the Modified Date field.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the record was newly created or updated since last poll.'),
+      dataType: z.string().describe('The Bubble data type name this record belongs to.'),
+      record: z.record(z.string(), z.any()).describe('The full record data from Bubble.')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('Unique ID of the changed record.'),
+      recordType: z.string().describe('The Bubble data type name of the record.'),
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the record was newly created or modified.'),
+      createdDate: z
+        .string()
+        .describe('ISO timestamp when the record was originally created.'),
+      modifiedDate: z.string().describe('ISO timestamp when the record was last modified.'),
+      fields: z.record(z.string(), z.any()).describe('All field values of the record.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         baseUrl: ctx.config.appBaseUrl,
-        token: ctx.auth?.token,
+        token: ctx.auth?.token
       });
 
       let state = (ctx.state ?? {}) as {
@@ -62,7 +70,11 @@ export let recordChanges = SlateTrigger.create(
         }
       }
 
-      let allInputs: { changeType: 'created' | 'updated'; dataType: string; record: Record<string, any> }[] = [];
+      let allInputs: {
+        changeType: 'created' | 'updated';
+        dataType: string;
+        record: Record<string, any>;
+      }[] = [];
       let knownSet = new Set(knownRecordIds);
       let updatedPollTimes = { ...lastPollTimes };
 
@@ -74,7 +86,7 @@ export let recordChanges = SlateTrigger.create(
           constraints.push({
             key: 'Modified Date',
             constraint_type: 'greater than',
-            value: lastPollTime,
+            value: lastPollTime
           });
         }
 
@@ -83,7 +95,7 @@ export let recordChanges = SlateTrigger.create(
             constraints: constraints.length > 0 ? constraints : undefined,
             sortField: 'Modified Date',
             descending: true,
-            limit: 100,
+            limit: 100
           });
 
           if (result.results.length > 0 && result.results[0]) {
@@ -95,7 +107,7 @@ export let recordChanges = SlateTrigger.create(
             allInputs.push({
               changeType: isNew ? 'created' : 'updated',
               dataType,
-              record,
+              record
             });
             knownSet.add(record._id);
           }
@@ -114,12 +126,12 @@ export let recordChanges = SlateTrigger.create(
         updatedState: {
           lastPollTimes: updatedPollTimes,
           knownRecordIds: updatedKnownIds,
-          dataTypes,
-        },
+          dataTypes
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let record = ctx.input.record;
 
       return {
@@ -131,9 +143,9 @@ export let recordChanges = SlateTrigger.create(
           changeType: ctx.input.changeType,
           createdDate: record['Created Date'] || '',
           modifiedDate: record['Modified Date'] || '',
-          fields: record,
-        },
+          fields: record
+        }
       };
-    },
+    }
   })
   .build();

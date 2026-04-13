@@ -3,38 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let templateEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Template Events',
-    key: 'template_events',
-    description: 'Triggers when template-related events occur, such as when a template is created or encounters an error.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of event (template_created or template_error)'),
-    eventTime: z.string().describe('Unix timestamp when the event occurred'),
-    eventHash: z.string().describe('HMAC hash for event verification'),
-    reportedForAccountId: z.string().optional().describe('Account ID this event is reported for'),
-    template: z.any().describe('Template object from the event payload'),
-  }))
-  .output(z.object({
-    templateId: z.string().describe('ID of the template'),
-    title: z.string().optional().describe('Title of the template'),
-    message: z.string().optional().describe('Template message'),
-    signerRoles: z.array(z.object({
-      name: z.string().describe('Role name'),
-      order: z.number().optional().describe('Signing order'),
-    })).optional().describe('Defined signer roles'),
-    ccRoles: z.array(z.object({
-      name: z.string().describe('CC role name'),
-    })).optional().describe('Defined CC roles'),
-  }))
+export let templateEvents = SlateTrigger.create(spec, {
+  name: 'Template Events',
+  key: 'template_events',
+  description:
+    'Triggers when template-related events occur, such as when a template is created or encounters an error.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of event (template_created or template_error)'),
+      eventTime: z.string().describe('Unix timestamp when the event occurred'),
+      eventHash: z.string().describe('HMAC hash for event verification'),
+      reportedForAccountId: z
+        .string()
+        .optional()
+        .describe('Account ID this event is reported for'),
+      template: z.any().describe('Template object from the event payload')
+    })
+  )
+  .output(
+    z.object({
+      templateId: z.string().describe('ID of the template'),
+      title: z.string().optional().describe('Title of the template'),
+      message: z.string().optional().describe('Template message'),
+      signerRoles: z
+        .array(
+          z.object({
+            name: z.string().describe('Role name'),
+            order: z.number().optional().describe('Signing order')
+          })
+        )
+        .optional()
+        .describe('Defined signer roles'),
+      ccRoles: z
+        .array(
+          z.object({
+            name: z.string().describe('CC role name')
+          })
+        )
+        .optional()
+        .describe('Defined CC roles')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        authMethod: ctx.auth.authMethod,
+        authMethod: ctx.auth.authMethod
       });
 
       let account = await client.getAccount();
@@ -44,22 +59,22 @@ export let templateEvents = SlateTrigger.create(
 
       return {
         registrationDetails: {
-          previousCallbackUrl,
-        },
+          previousCallbackUrl
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        authMethod: ctx.auth.authMethod,
+        authMethod: ctx.auth.authMethod
       });
 
       let previousUrl = ctx.input.registrationDetails?.previousCallbackUrl || '';
       await client.updateAccount({ callbackUrl: previousUrl });
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let rawData: any;
 
       let contentType = ctx.request.headers.get('content-type') || '';
@@ -99,26 +114,28 @@ export let templateEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          eventTime: String(event.event_time),
-          eventHash: event.event_hash,
-          reportedForAccountId: event.event_metadata?.reported_for_account_id,
-          template,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventTime: String(event.event_time),
+            eventHash: event.event_hash,
+            reportedForAccountId: event.event_metadata?.reported_for_account_id,
+            template
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let t = ctx.input.template;
 
       let signerRoles = (t.signer_roles || []).map((r: any) => ({
         name: r.name,
-        order: r.order,
+        order: r.order
       }));
 
       let ccRoles = (t.cc_roles || []).map((r: any) => ({
-        name: r.name,
+        name: r.name
       }));
 
       return {
@@ -129,8 +146,9 @@ export let templateEvents = SlateTrigger.create(
           title: t.title || undefined,
           message: t.message || undefined,
           signerRoles,
-          ccRoles,
-        },
+          ccRoles
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

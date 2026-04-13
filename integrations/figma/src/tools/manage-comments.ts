@@ -11,31 +11,35 @@ let commentSchema = z.object({
   createdAt: z.string().describe('When the comment was created'),
   resolvedAt: z.string().nullable().optional().describe('When the comment was resolved'),
   orderId: z.string().optional().describe('Order ID for comment threading'),
-  user: z.object({
-    userId: z.string().describe('User ID of the commenter'),
-    handle: z.string().describe('Display name of the commenter'),
-    imageUrl: z.string().optional().describe('Avatar URL of the commenter')
-  }).optional().describe('User who posted the comment')
+  user: z
+    .object({
+      userId: z.string().describe('User ID of the commenter'),
+      handle: z.string().describe('Display name of the commenter'),
+      imageUrl: z.string().optional().describe('Avatar URL of the commenter')
+    })
+    .optional()
+    .describe('User who posted the comment')
 });
 
-export let listComments = SlateTool.create(
-  spec,
-  {
-    name: 'List Comments',
-    key: 'list_comments',
-    description: `Retrieve all comments on a Figma file, including replies and resolution status.`,
-    tags: {
-      readOnly: true
-    }
+export let listComments = SlateTool.create(spec, {
+  name: 'List Comments',
+  key: 'list_comments',
+  description: `Retrieve all comments on a Figma file, including replies and resolution status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    fileKey: z.string().describe('The key of the Figma file')
-  }))
-  .output(z.object({
-    comments: z.array(commentSchema).describe('List of comments on the file')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileKey: z.string().describe('The key of the Figma file')
+    })
+  )
+  .output(
+    z.object({
+      comments: z.array(commentSchema).describe('List of comments on the file')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
     let result = await client.getComments(ctx.input.fileKey);
 
@@ -47,11 +51,13 @@ export let listComments = SlateTool.create(
       createdAt: c.created_at,
       resolvedAt: c.resolved_at,
       orderId: c.order_id,
-      user: c.user ? {
-        userId: c.user.id,
-        handle: c.user.handle,
-        imageUrl: c.user.img_url
-      } : undefined
+      user: c.user
+        ? {
+            userId: c.user.id,
+            handle: c.user.handle,
+            imageUrl: c.user.img_url
+          }
+        : undefined
     }));
 
     return {
@@ -61,33 +67,41 @@ export let listComments = SlateTool.create(
   })
   .build();
 
-export let postComment = SlateTool.create(
-  spec,
-  {
-    name: 'Post Comment',
-    key: 'post_comment',
-    description: `Add a new comment or reply to an existing comment on a Figma file. Optionally pin the comment to a specific location or node.`,
-    tags: {
-      destructive: false
-    }
+export let postComment = SlateTool.create(spec, {
+  name: 'Post Comment',
+  key: 'post_comment',
+  description: `Add a new comment or reply to an existing comment on a Figma file. Optionally pin the comment to a specific location or node.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    fileKey: z.string().describe('The key of the Figma file'),
-    message: z.string().describe('The comment text to post'),
-    replyToCommentId: z.string().optional().describe('Comment ID to reply to, if posting a reply'),
-    position: z.object({
-      x: z.number().describe('X coordinate'),
-      y: z.number().describe('Y coordinate')
-    }).optional().describe('Canvas position to pin the comment to'),
-    nodeId: z.string().optional().describe('Node ID to attach the comment to'),
-    nodeOffset: z.object({
-      x: z.number().describe('X offset from node'),
-      y: z.number().describe('Y offset from node')
-    }).optional().describe('Offset from the node position')
-  }))
+})
+  .input(
+    z.object({
+      fileKey: z.string().describe('The key of the Figma file'),
+      message: z.string().describe('The comment text to post'),
+      replyToCommentId: z
+        .string()
+        .optional()
+        .describe('Comment ID to reply to, if posting a reply'),
+      position: z
+        .object({
+          x: z.number().describe('X coordinate'),
+          y: z.number().describe('Y coordinate')
+        })
+        .optional()
+        .describe('Canvas position to pin the comment to'),
+      nodeId: z.string().optional().describe('Node ID to attach the comment to'),
+      nodeOffset: z
+        .object({
+          x: z.number().describe('X offset from node'),
+          y: z.number().describe('Y offset from node')
+        })
+        .optional()
+        .describe('Offset from the node position')
+    })
+  )
   .output(commentSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
 
     let clientMeta: any;
@@ -115,11 +129,13 @@ export let postComment = SlateTool.create(
         createdAt: result.created_at,
         resolvedAt: result.resolved_at,
         orderId: result.order_id,
-        user: result.user ? {
-          userId: result.user.id,
-          handle: result.user.handle,
-          imageUrl: result.user.img_url
-        } : undefined
+        user: result.user
+          ? {
+              userId: result.user.id,
+              handle: result.user.handle,
+              imageUrl: result.user.img_url
+            }
+          : undefined
       },
       message: ctx.input.replyToCommentId
         ? `Replied to comment **${ctx.input.replyToCommentId}**`
@@ -128,25 +144,26 @@ export let postComment = SlateTool.create(
   })
   .build();
 
-export let deleteComment = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Comment',
-    key: 'delete_comment',
-    description: `Delete a comment from a Figma file. Only the comment author or file owner can delete comments.`,
-    tags: {
-      destructive: true
-    }
+export let deleteComment = SlateTool.create(spec, {
+  name: 'Delete Comment',
+  key: 'delete_comment',
+  description: `Delete a comment from a Figma file. Only the comment author or file owner can delete comments.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    fileKey: z.string().describe('The key of the Figma file'),
-    commentId: z.string().describe('The ID of the comment to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the comment was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileKey: z.string().describe('The key of the Figma file'),
+      commentId: z.string().describe('The ID of the comment to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the comment was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
     await client.deleteComment(ctx.input.fileKey, ctx.input.commentId);
 

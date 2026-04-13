@@ -3,33 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Get Customer',
-    key: 'get_customer',
-    description: `Retrieve detailed information about a specific customer by ID. Optionally include the customer's policies and tasks in a single request. Returns the full customer record with all available fields.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    customerId: z.string().describe('Unique identifier of the customer to retrieve'),
-    includePolicies: z.boolean().optional().describe('Whether to include the customer\'s policies in the response'),
-    includeTasks: z.boolean().optional().describe('Whether to include the customer\'s tasks in the response'),
-  }))
-  .output(z.object({
-    customer: z.record(z.string(), z.any()).describe('Full customer record with all available fields'),
-    policies: z.array(z.record(z.string(), z.any())).optional().describe('Array of policies associated with the customer (included when includePolicies is true)'),
-    tasks: z.array(z.record(z.string(), z.any())).optional().describe('Array of tasks associated with the customer (included when includeTasks is true)'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getCustomer = SlateTool.create(spec, {
+  name: 'Get Customer',
+  key: 'get_customer',
+  description: `Retrieve detailed information about a specific customer by ID. Optionally include the customer's policies and tasks in a single request. Returns the full customer record with all available fields.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('Unique identifier of the customer to retrieve'),
+      includePolicies: z
+        .boolean()
+        .optional()
+        .describe("Whether to include the customer's policies in the response"),
+      includeTasks: z
+        .boolean()
+        .optional()
+        .describe("Whether to include the customer's tasks in the response")
+    })
+  )
+  .output(
+    z.object({
+      customer: z
+        .record(z.string(), z.any())
+        .describe('Full customer record with all available fields'),
+      policies: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe(
+          'Array of policies associated with the customer (included when includePolicies is true)'
+        ),
+      tasks: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe(
+          'Array of tasks associated with the customer (included when includeTasks is true)'
+        )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let customer = await client.getCustomer(ctx.input.customerId);
@@ -52,15 +71,17 @@ export let getCustomer = SlateTool.create(
       extras.push(`${tasks.length} task(s)`);
     }
 
-    let customerName = `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || ctx.input.customerId;
+    let customerName =
+      `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || ctx.input.customerId;
     let extrasMsg = extras.length > 0 ? ` Including ${extras.join(' and ')}.` : '';
 
     return {
       output: {
         customer,
         policies,
-        tasks,
+        tasks
       },
-      message: `Retrieved customer **${customerName}**.${extrasMsg}`,
+      message: `Retrieved customer **${customerName}**.${extrasMsg}`
     };
-  }).build();
+  })
+  .build();

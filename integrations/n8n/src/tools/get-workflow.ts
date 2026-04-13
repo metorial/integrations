@@ -3,33 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getWorkflow = SlateTool.create(
-  spec,
-  {
-    name: 'Get Workflow',
-    key: 'get_workflow',
-    description: `Retrieve a specific workflow by ID, including its full definition with nodes, connections, and settings. Optionally retrieve a specific historical version of the workflow.`,
-    tags: {
-      readOnly: true
-    }
+export let getWorkflow = SlateTool.create(spec, {
+  name: 'Get Workflow',
+  key: 'get_workflow',
+  description: `Retrieve a specific workflow by ID, including its full definition with nodes, connections, and settings. Optionally retrieve a specific historical version of the workflow.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workflowId: z.string().describe('ID of the workflow to retrieve'),
-    versionId: z.string().optional().describe('Specific version ID to retrieve. If omitted, returns the current version.')
-  }))
-  .output(z.object({
-    workflowId: z.string().describe('Workflow ID'),
-    name: z.string().describe('Workflow name'),
-    active: z.boolean().describe('Whether the workflow is active'),
-    nodes: z.array(z.any()).describe('Array of workflow nodes'),
-    connections: z.any().describe('Node connections mapping'),
-    settings: z.any().optional().describe('Workflow settings'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    tags: z.array(z.any()).optional().describe('Tags associated with the workflow')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workflowId: z.string().describe('ID of the workflow to retrieve'),
+      versionId: z
+        .string()
+        .optional()
+        .describe('Specific version ID to retrieve. If omitted, returns the current version.')
+    })
+  )
+  .output(
+    z.object({
+      workflowId: z.string().describe('Workflow ID'),
+      name: z.string().describe('Workflow name'),
+      active: z.boolean().describe('Whether the workflow is active'),
+      nodes: z.array(z.any()).describe('Array of workflow nodes'),
+      connections: z.any().describe('Node connections mapping'),
+      settings: z.any().optional().describe('Workflow settings'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      tags: z.array(z.any()).optional().describe('Tags associated with the workflow')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
       token: ctx.auth.token

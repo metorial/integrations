@@ -50,11 +50,9 @@ import {
   updateWebhook,
   deleteWebhook,
   getAccountInfo,
-  getExecutiveReport,
+  getExecutiveReport
 } from './tools';
-import {
-  contactChangeTrigger,
-} from './triggers';
+import { contactChangeTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -108,9 +106,7 @@ export let provider = Slate.create({
     updateWebhook,
     deleteWebhook,
     getAccountInfo,
-    getExecutiveReport,
+    getExecutiveReport
   ],
-  triggers: [
-    contactChangeTrigger,
-  ],
+  triggers: [contactChangeTrigger]
 });

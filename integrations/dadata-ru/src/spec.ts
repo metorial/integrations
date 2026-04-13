@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'dadataru',
   name: 'DaData.ru',
-  description: 'Russian SaaS platform for standardization, validation, enrichment, and autocomplete of contact and business data.',
+  description:
+    'Russian SaaS platform for standardization, validation, enrichment, and autocomplete of contact and business data.',
   metadata: {},
   config,
-  auth,
+  auth
 });

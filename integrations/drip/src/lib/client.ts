@@ -26,8 +26,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authHeader,
-      },
+        Authorization: authHeader
+      }
     });
   }
 
@@ -74,7 +74,7 @@ export class Client {
   async createOrUpdateSubscriber(subscriber: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v2('/subscribers'), {
-      subscribers: [subscriber],
+      subscribers: [subscriber]
     });
     return response.data;
   }
@@ -86,21 +86,28 @@ export class Client {
 
   async unsubscribeFromAllMailings(idOrEmail: string) {
     let ax = this.getAxios();
-    let response = await ax.post(this.v2(`/subscribers/${encodeURIComponent(idOrEmail)}/unsubscribe_all`));
+    let response = await ax.post(
+      this.v2(`/subscribers/${encodeURIComponent(idOrEmail)}/unsubscribe_all`)
+    );
     return response.data;
   }
 
   async removeFromCampaign(idOrEmail: string, campaignId: string) {
     let ax = this.getAxios();
-    let response = await ax.post(this.v2(`/subscribers/${encodeURIComponent(idOrEmail)}/remove`), {
-      campaign_id: campaignId,
-    });
+    let response = await ax.post(
+      this.v2(`/subscribers/${encodeURIComponent(idOrEmail)}/remove`),
+      {
+        campaign_id: campaignId
+      }
+    );
     return response.data;
   }
 
   async getSubscriberCampaignSubscriptions(subscriberId: string) {
     let ax = this.getAxios();
-    let response = await ax.get(this.v2(`/subscribers/${encodeURIComponent(subscriberId)}/campaign_subscriptions`));
+    let response = await ax.get(
+      this.v2(`/subscribers/${encodeURIComponent(subscriberId)}/campaign_subscriptions`)
+    );
     return response.data;
   }
 
@@ -115,19 +122,27 @@ export class Client {
   async applyTagToSubscriber(email: string, tag: string) {
     let ax = this.getAxios();
     let response = await ax.post(this.v2('/tags'), {
-      tags: [{ email, tag }],
+      tags: [{ email, tag }]
     });
     return response.data;
   }
 
   async removeTagFromSubscriber(email: string, tag: string) {
     let ax = this.getAxios();
-    await ax.delete(this.v2(`/subscribers/${encodeURIComponent(email)}/tags/${encodeURIComponent(tag)}`));
+    await ax.delete(
+      this.v2(`/subscribers/${encodeURIComponent(email)}/tags/${encodeURIComponent(tag)}`)
+    );
   }
 
   // ---- Campaigns (Email Series) ----
 
-  async listCampaigns(params?: { status?: string; page?: number; perPage?: number; sortBy?: string; sortDirection?: string }) {
+  async listCampaigns(params?: {
+    status?: string;
+    page?: number;
+    perPage?: number;
+    sortBy?: string;
+    sortDirection?: string;
+  }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
     if (params?.status) query['status'] = params.status;
@@ -157,28 +172,39 @@ export class Client {
     return response.data;
   }
 
-  async listCampaignSubscribers(campaignId: string, params?: { page?: number; perPage?: number; sortBy?: string; sortDirection?: string }) {
+  async listCampaignSubscribers(
+    campaignId: string,
+    params?: { page?: number; perPage?: number; sortBy?: string; sortDirection?: string }
+  ) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
     if (params?.page) query['page'] = String(params.page);
     if (params?.perPage) query['per_page'] = String(params.perPage);
     if (params?.sortBy) query['sort_by'] = params.sortBy;
     if (params?.sortDirection) query['sort_direction'] = params.sortDirection;
-    let response = await ax.get(this.v2(`/campaigns/${campaignId}/subscribers`), { params: query });
+    let response = await ax.get(this.v2(`/campaigns/${campaignId}/subscribers`), {
+      params: query
+    });
     return response.data;
   }
 
   async subscribeToCampaign(campaignId: string, subscriber: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v2(`/campaigns/${campaignId}/subscribers`), {
-      subscribers: [subscriber],
+      subscribers: [subscriber]
     });
     return response.data;
   }
 
   // ---- Broadcasts ----
 
-  async listBroadcasts(params?: { status?: string; page?: number; perPage?: number; sortBy?: string; sortDirection?: string }) {
+  async listBroadcasts(params?: {
+    status?: string;
+    page?: number;
+    perPage?: number;
+    sortBy?: string;
+    sortDirection?: string;
+  }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
     if (params?.status) query['status'] = params.status;
@@ -198,7 +224,13 @@ export class Client {
 
   // ---- Workflows ----
 
-  async listWorkflows(params?: { status?: string; page?: number; perPage?: number; sortBy?: string; sortDirection?: string }) {
+  async listWorkflows(params?: {
+    status?: string;
+    page?: number;
+    perPage?: number;
+    sortBy?: string;
+    sortDirection?: string;
+  }) {
     let ax = this.getAxios();
     let query: Record<string, string> = {};
     if (params?.status) query['status'] = params.status;
@@ -231,14 +263,16 @@ export class Client {
   async startOnWorkflow(workflowId: string, subscriber: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v2(`/workflows/${workflowId}/subscribers`), {
-      subscribers: [subscriber],
+      subscribers: [subscriber]
     });
     return response.data;
   }
 
   async removeFromWorkflow(workflowId: string, subscriberId: string) {
     let ax = this.getAxios();
-    await ax.delete(this.v2(`/workflows/${workflowId}/subscribers/${encodeURIComponent(subscriberId)}`));
+    await ax.delete(
+      this.v2(`/workflows/${workflowId}/subscribers/${encodeURIComponent(subscriberId)}`)
+    );
   }
 
   // ---- Events ----
@@ -246,7 +280,7 @@ export class Client {
   async recordEvent(event: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v2('/events'), {
-      events: [event],
+      events: [event]
     });
     return response.data;
   }
@@ -265,7 +299,7 @@ export class Client {
   async createOrUpdateOrder(order: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v3('/shopper_activity/order/batch'), {
-      orders: [order],
+      orders: [order]
     });
     return response.data;
   }
@@ -275,7 +309,7 @@ export class Client {
   async createOrUpdateCart(cart: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v3('/shopper_activity/cart/batch'), {
-      carts: [cart],
+      carts: [cart]
     });
     return response.data;
   }
@@ -285,7 +319,7 @@ export class Client {
   async createOrUpdateProduct(product: Record<string, any>) {
     let ax = this.getAxios();
     let response = await ax.post(this.v3('/shopper_activity/product/batch'), {
-      products: [product],
+      products: [product]
     });
     return response.data;
   }
@@ -369,9 +403,10 @@ export class Client {
     let ax = this.getAxios();
     let webhook: Record<string, any> = { post_url: postUrl };
     if (events) webhook['events'] = events;
-    if (includeReceivedEmail !== undefined) webhook['include_received_email'] = includeReceivedEmail;
+    if (includeReceivedEmail !== undefined)
+      webhook['include_received_email'] = includeReceivedEmail;
     let response = await ax.post(this.v2('/webhooks'), {
-      webhooks: [webhook],
+      webhooks: [webhook]
     });
     return response.data;
   }

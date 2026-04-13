@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getActor,
@@ -26,12 +25,9 @@ import {
   listProcesses,
   getProcess,
   listSnapshots,
-  getSnapshot,
+  getSnapshot
 } from './tools';
-import {
-  processActivity,
-  inboundWebhook,
-} from './triggers';
+import { processActivity, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -60,10 +56,7 @@ export let provider = Slate.create({
     listProcesses,
     getProcess,
     listSnapshots,
-    getSnapshot,
+    getSnapshot
   ],
-  triggers: [
-    inboundWebhook,
-    processActivity,
-  ],
+  triggers: [inboundWebhook, processActivity]
 });

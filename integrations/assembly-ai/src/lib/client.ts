@@ -84,9 +84,9 @@ export class Client {
     return createAxios({
       baseURL: getBaseUrl(this.region),
       headers: {
-        'Authorization': this.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -94,51 +94,60 @@ export class Client {
     return createAxios({
       baseURL: getStreamingBaseUrl(this.region),
       headers: {
-        'Authorization': this.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async submitTranscription(params: TranscribeParams): Promise<any> {
     let body: Record<string, any> = {
-      audio_url: params.audioUrl,
+      audio_url: params.audioUrl
     };
 
     if (params.languageCode !== undefined) body.language_code = params.languageCode;
     if (params.languageCodes !== undefined) body.language_codes = params.languageCodes;
-    if (params.languageDetection !== undefined) body.language_detection = params.languageDetection;
-    if (params.languageConfidenceThreshold !== undefined) body.language_confidence_threshold = params.languageConfidenceThreshold;
+    if (params.languageDetection !== undefined)
+      body.language_detection = params.languageDetection;
+    if (params.languageConfidenceThreshold !== undefined)
+      body.language_confidence_threshold = params.languageConfidenceThreshold;
     if (params.speechModel !== undefined) body.speech_model = params.speechModel;
     if (params.punctuate !== undefined) body.punctuate = params.punctuate;
     if (params.formatText !== undefined) body.format_text = params.formatText;
     if (params.disfluencies !== undefined) body.disfluencies = params.disfluencies;
     if (params.filterProfanity !== undefined) body.filter_profanity = params.filterProfanity;
     if (params.speakerLabels !== undefined) body.speaker_labels = params.speakerLabels;
-    if (params.speakersExpected !== undefined) body.speakers_expected = params.speakersExpected;
+    if (params.speakersExpected !== undefined)
+      body.speakers_expected = params.speakersExpected;
     if (params.multichannel !== undefined) body.multichannel = params.multichannel;
     if (params.webhookUrl !== undefined) body.webhook_url = params.webhookUrl;
-    if (params.webhookAuthHeaderName !== undefined) body.webhook_auth_header_name = params.webhookAuthHeaderName;
-    if (params.webhookAuthHeaderValue !== undefined) body.webhook_auth_header_value = params.webhookAuthHeaderValue;
+    if (params.webhookAuthHeaderName !== undefined)
+      body.webhook_auth_header_name = params.webhookAuthHeaderName;
+    if (params.webhookAuthHeaderValue !== undefined)
+      body.webhook_auth_header_value = params.webhookAuthHeaderValue;
     if (params.autoHighlights !== undefined) body.auto_highlights = params.autoHighlights;
     if (params.autoChapters !== undefined) body.auto_chapters = params.autoChapters;
     if (params.entityDetection !== undefined) body.entity_detection = params.entityDetection;
-    if (params.sentimentAnalysis !== undefined) body.sentiment_analysis = params.sentimentAnalysis;
+    if (params.sentimentAnalysis !== undefined)
+      body.sentiment_analysis = params.sentimentAnalysis;
     if (params.contentSafety !== undefined) body.content_safety = params.contentSafety;
-    if (params.contentSafetyConfidence !== undefined) body.content_safety_confidence = params.contentSafetyConfidence;
+    if (params.contentSafetyConfidence !== undefined)
+      body.content_safety_confidence = params.contentSafetyConfidence;
     if (params.iabCategories !== undefined) body.iab_categories = params.iabCategories;
     if (params.summarization !== undefined) body.summarization = params.summarization;
     if (params.summaryModel !== undefined) body.summary_model = params.summaryModel;
     if (params.summaryType !== undefined) body.summary_type = params.summaryType;
     if (params.redactPii !== undefined) body.redact_pii = params.redactPii;
     if (params.redactPiiAudio !== undefined) body.redact_pii_audio = params.redactPiiAudio;
-    if (params.redactPiiAudioQuality !== undefined) body.redact_pii_audio_quality = params.redactPiiAudioQuality;
-    if (params.redactPiiPolicies !== undefined) body.redact_pii_policies = params.redactPiiPolicies;
+    if (params.redactPiiAudioQuality !== undefined)
+      body.redact_pii_audio_quality = params.redactPiiAudioQuality;
+    if (params.redactPiiPolicies !== undefined)
+      body.redact_pii_policies = params.redactPiiPolicies;
     if (params.redactPiiSub !== undefined) body.redact_pii_sub = params.redactPiiSub;
     if (params.customSpelling !== undefined) {
-      body.custom_spelling = params.customSpelling.map((s) => ({
+      body.custom_spelling = params.customSpelling.map(s => ({
         from: s.from,
-        to: s.to,
+        to: s.to
       }));
     }
     if (params.audioStartFrom !== undefined) body.audio_start_from = params.audioStartFrom;
@@ -183,16 +192,22 @@ export class Client {
     return response.data;
   }
 
-  async getSubtitles(transcriptId: string, format: 'srt' | 'vtt', charsPerCaption?: number): Promise<any> {
+  async getSubtitles(
+    transcriptId: string,
+    format: 'srt' | 'vtt',
+    charsPerCaption?: number
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (charsPerCaption !== undefined) params.chars_per_caption = charsPerCaption;
-    let response = await this.axios.get(`/v2/transcript/${transcriptId}/${format}`, { params });
+    let response = await this.axios.get(`/v2/transcript/${transcriptId}/${format}`, {
+      params
+    });
     return response.data;
   }
 
   async wordSearch(transcriptId: string, words: string[]): Promise<any> {
     let response = await this.axios.get(`/v2/transcript/${transcriptId}/word-search`, {
-      params: { words: words.join(',') },
+      params: { words: words.join(',') }
     });
     return response.data;
   }
@@ -204,7 +219,7 @@ export class Client {
 
   async lemurTask(params: LemurTaskParams): Promise<any> {
     let body: Record<string, any> = {
-      prompt: params.prompt,
+      prompt: params.prompt
     };
     if (params.transcriptIds !== undefined) body.transcript_ids = params.transcriptIds;
     if (params.inputText !== undefined) body.input_text = params.inputText;
@@ -221,9 +236,12 @@ export class Client {
     return response.data;
   }
 
-  async createStreamingToken(expiresInSeconds: number, maxSessionDurationSeconds?: number): Promise<any> {
+  async createStreamingToken(
+    expiresInSeconds: number,
+    maxSessionDurationSeconds?: number
+  ): Promise<any> {
     let params: Record<string, any> = {
-      expires_in_seconds: expiresInSeconds,
+      expires_in_seconds: expiresInSeconds
     };
     if (maxSessionDurationSeconds !== undefined) {
       params.max_session_duration_seconds = maxSessionDurationSeconds;

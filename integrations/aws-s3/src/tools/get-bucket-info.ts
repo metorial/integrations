@@ -3,33 +3,45 @@ import { S3Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getBucketInfoTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Bucket Info',
-    key: 'get_bucket_info',
-    description: `Retrieve configuration details about an S3 bucket including its location, versioning status, tags, and bucket policy.
+export let getBucketInfoTool = SlateTool.create(spec, {
+  name: 'Get Bucket Info',
+  key: 'get_bucket_info',
+  description: `Retrieve configuration details about an S3 bucket including its location, versioning status, tags, and bucket policy.
 Select which details to include using the **include** parameter.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    bucketName: z.string().describe('Name of the S3 bucket'),
-    include: z.array(z.enum(['location', 'versioning', 'tags', 'policy'])).optional().describe('Which details to include (defaults to all)')
-  }))
-  .output(z.object({
-    bucketName: z.string().describe('Name of the bucket'),
-    location: z.string().optional().describe('AWS region where the bucket is located'),
-    versioningStatus: z.string().optional().describe('Versioning status: Enabled, Suspended, or Disabled'),
-    tags: z.array(z.object({
-      key: z.string().describe('Tag key'),
-      value: z.string().describe('Tag value')
-    })).optional().describe('Bucket tags'),
-    policy: z.string().optional().describe('Bucket policy as JSON string')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      bucketName: z.string().describe('Name of the S3 bucket'),
+      include: z
+        .array(z.enum(['location', 'versioning', 'tags', 'policy']))
+        .optional()
+        .describe('Which details to include (defaults to all)')
+    })
+  )
+  .output(
+    z.object({
+      bucketName: z.string().describe('Name of the bucket'),
+      location: z.string().optional().describe('AWS region where the bucket is located'),
+      versioningStatus: z
+        .string()
+        .optional()
+        .describe('Versioning status: Enabled, Suspended, or Disabled'),
+      tags: z
+        .array(
+          z.object({
+            key: z.string().describe('Tag key'),
+            value: z.string().describe('Tag value')
+          })
+        )
+        .optional()
+        .describe('Bucket tags'),
+      policy: z.string().optional().describe('Bucket policy as JSON string')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new S3Client({
       accessKeyId: ctx.auth.accessKeyId,
       secretAccessKey: ctx.auth.secretAccessKey,
@@ -93,4 +105,5 @@ Select which details to include using the **include** parameter.`,
       output,
       message: `Bucket \`${bucketName}\`: ${details.join(', ')}.`
     };
-  }).build();
+  })
+  .build();

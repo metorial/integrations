@@ -20,7 +20,7 @@ import {
   listTemplates,
   createTemplate,
   manageTemplate,
-  getBilling,
+  getBilling
 } from './tools';
 import { serverlessJobCompleted } from './triggers';
 
@@ -46,9 +46,7 @@ export let provider = Slate.create({
     listTemplates,
     createTemplate,
     manageTemplate,
-    getBilling,
+    getBilling
   ],
-  triggers: [
-    serverlessJobCompleted,
-  ],
+  triggers: [serverlessJobCompleted]
 });

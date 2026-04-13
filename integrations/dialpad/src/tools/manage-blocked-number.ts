@@ -3,33 +3,42 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBlockedNumberTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Blocked Number',
-    key: 'manage_blocked_number',
-    description: `List, add, or remove blocked phone numbers at the company level. Blocked numbers are prevented from calling into your Dialpad organization.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'block', 'unblock']).describe('Action to perform'),
-    phoneNumber: z.string().optional().describe('Phone number to block (for block action)'),
-    blockedNumberId: z.string().optional().describe('Blocked number ID to remove (for unblock action)'),
-    cursor: z.string().optional().describe('Pagination cursor (for list action)'),
-  }))
-  .output(z.object({
-    blockedNumbers: z.array(z.object({
-      blockedNumberId: z.string().optional(),
-      phoneNumber: z.string().optional(),
-    })).optional().describe('List of blocked numbers (for list action)'),
-    nextCursor: z.string().optional(),
-    success: z.boolean().optional(),
-    actionPerformed: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageBlockedNumberTool = SlateTool.create(spec, {
+  name: 'Manage Blocked Number',
+  key: 'manage_blocked_number',
+  description: `List, add, or remove blocked phone numbers at the company level. Blocked numbers are prevented from calling into your Dialpad organization.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'block', 'unblock']).describe('Action to perform'),
+      phoneNumber: z.string().optional().describe('Phone number to block (for block action)'),
+      blockedNumberId: z
+        .string()
+        .optional()
+        .describe('Blocked number ID to remove (for unblock action)'),
+      cursor: z.string().optional().describe('Pagination cursor (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      blockedNumbers: z
+        .array(
+          z.object({
+            blockedNumberId: z.string().optional(),
+            phoneNumber: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of blocked numbers (for list action)'),
+      nextCursor: z.string().optional(),
+      success: z.boolean().optional(),
+      actionPerformed: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action } = ctx.input;
@@ -39,16 +48,16 @@ export let manageBlockedNumberTool = SlateTool.create(
 
       let blockedNumbers = (result.items || []).map((n: any) => ({
         blockedNumberId: String(n.id),
-        phoneNumber: n.phone_number || n.number,
+        phoneNumber: n.phone_number || n.number
       }));
 
       return {
         output: {
           blockedNumbers,
           nextCursor: result.cursor || undefined,
-          actionPerformed: 'list',
+          actionPerformed: 'list'
         },
-        message: `Found **${blockedNumbers.length}** blocked number(s)`,
+        message: `Found **${blockedNumbers.length}** blocked number(s)`
       };
     }
 
@@ -59,18 +68,19 @@ export let manageBlockedNumberTool = SlateTool.create(
 
       return {
         output: { success: true, actionPerformed: 'block' },
-        message: `Blocked number **${ctx.input.phoneNumber}**`,
+        message: `Blocked number **${ctx.input.phoneNumber}**`
       };
     }
 
     if (action === 'unblock') {
-      if (!ctx.input.blockedNumberId) throw new Error('Blocked number ID is required to unblock');
+      if (!ctx.input.blockedNumberId)
+        throw new Error('Blocked number ID is required to unblock');
 
       await client.unblockNumber(ctx.input.blockedNumberId);
 
       return {
         output: { success: true, actionPerformed: 'unblock' },
-        message: `Unblocked number **${ctx.input.blockedNumberId}**`,
+        message: `Unblocked number **${ctx.input.blockedNumberId}**`
       };
     }
 

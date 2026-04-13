@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.docsautomator.co',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -48,7 +48,7 @@ export class Client {
 
   async getAutomation(docId: string) {
     let response = await this.axios.get('/automation', {
-      params: { docId },
+      params: { docId }
     });
     return response.data;
   }
@@ -64,21 +64,21 @@ export class Client {
 
   async updateAutomation(docId: string, params: Record<string, unknown>) {
     let response = await this.axios.put('/updateAutomation', params, {
-      params: { docId },
+      params: { docId }
     });
     return response.data;
   }
 
   async deleteAutomation(docId: string) {
     let response = await this.axios.delete('/deleteAutomation', {
-      params: { docId },
+      params: { docId }
     });
     return response.data;
   }
 
   async duplicateAutomation(automationId: string) {
     let response = await this.axios.post('/duplicateAutomation', null, {
-      params: { automationId },
+      params: { automationId }
     });
     return response.data;
   }
@@ -87,14 +87,14 @@ export class Client {
 
   async listPlaceholders(automationId: string) {
     let response = await this.axios.get('/listPlaceholdersV2', {
-      params: { automationId },
+      params: { automationId }
     });
     return response.data;
   }
 
   async duplicateGoogleDocTemplate(automationId: string) {
     let response = await this.axios.post('/duplicateGoogleDocTemplate', null, {
-      params: { automationId },
+      params: { automationId }
     });
     return response.data;
   }
@@ -108,7 +108,7 @@ export class Client {
     email?: string;
   }) {
     let response = await this.axios.get('/esign/sessions', {
-      params,
+      params
     });
     return response.data;
   }
@@ -130,7 +130,7 @@ export class Client {
 
   async cancelEsignSession(sessionId: string, reason?: string) {
     let response = await this.axios.post(`/esign/sessions/${sessionId}/cancel`, {
-      reason,
+      reason
     });
     return response.data;
   }

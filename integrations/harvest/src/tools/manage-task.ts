@@ -3,43 +3,42 @@ import { HarvestClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTask = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Task',
-    key: 'manage_task',
-    description: `Create, update, or delete a task type in Harvest. Tasks are reusable categories that can be assigned to projects. They can have default hourly rates and billable settings.`,
-    constraints: [
-      'Tasks cannot be deleted if they have associated time entries.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageTask = SlateTool.create(spec, {
+  name: 'Manage Task',
+  key: 'manage_task',
+  description: `Create, update, or delete a task type in Harvest. Tasks are reusable categories that can be assigned to projects. They can have default hourly rates and billable settings.`,
+  constraints: ['Tasks cannot be deleted if they have associated time entries.'],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    taskId: z.number().optional().describe('Task ID (required for update/delete)'),
-    name: z.string().optional().describe('Task name (required for create)'),
-    billableByDefault: z.boolean().optional().describe('Whether billable by default'),
-    defaultHourlyRate: z.number().optional().describe('Default hourly rate'),
-    isDefault: z.boolean().optional().describe('Whether added to new projects by default'),
-    isActive: z.boolean().optional().describe('Whether the task is active'),
-  }))
-  .output(z.object({
-    taskId: z.number().optional().describe('ID of the task'),
-    name: z.string().optional().describe('Task name'),
-    billableByDefault: z.boolean().optional().describe('Whether billable by default'),
-    defaultHourlyRate: z.number().optional().nullable().describe('Default hourly rate'),
-    isDefault: z.boolean().optional().describe('Whether added to new projects by default'),
-    isActive: z.boolean().optional().describe('Whether active'),
-    deleted: z.boolean().optional().describe('Whether the task was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      taskId: z.number().optional().describe('Task ID (required for update/delete)'),
+      name: z.string().optional().describe('Task name (required for create)'),
+      billableByDefault: z.boolean().optional().describe('Whether billable by default'),
+      defaultHourlyRate: z.number().optional().describe('Default hourly rate'),
+      isDefault: z.boolean().optional().describe('Whether added to new projects by default'),
+      isActive: z.boolean().optional().describe('Whether the task is active')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number().optional().describe('ID of the task'),
+      name: z.string().optional().describe('Task name'),
+      billableByDefault: z.boolean().optional().describe('Whether billable by default'),
+      defaultHourlyRate: z.number().optional().nullable().describe('Default hourly rate'),
+      isDefault: z.boolean().optional().describe('Whether added to new projects by default'),
+      isActive: z.boolean().optional().describe('Whether active'),
+      deleted: z.boolean().optional().describe('Whether the task was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HarvestClient({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     if (ctx.input.action === 'delete') {
@@ -47,7 +46,7 @@ export let manageTask = SlateTool.create(
       await client.deleteTask(ctx.input.taskId);
       return {
         output: { taskId: ctx.input.taskId, deleted: true },
-        message: `Deleted task **#${ctx.input.taskId}**.`,
+        message: `Deleted task **#${ctx.input.taskId}**.`
       };
     }
 
@@ -58,7 +57,7 @@ export let manageTask = SlateTool.create(
         billableByDefault: ctx.input.billableByDefault,
         defaultHourlyRate: ctx.input.defaultHourlyRate,
         isDefault: ctx.input.isDefault,
-        isActive: ctx.input.isActive,
+        isActive: ctx.input.isActive
       });
       return {
         output: {
@@ -67,9 +66,9 @@ export let manageTask = SlateTool.create(
           billableByDefault: t.billable_by_default,
           defaultHourlyRate: t.default_hourly_rate,
           isDefault: t.is_default,
-          isActive: t.is_active,
+          isActive: t.is_active
         },
-        message: `Created task **${t.name}** (#${t.id}).`,
+        message: `Created task **${t.name}** (#${t.id}).`
       };
     }
 
@@ -80,7 +79,7 @@ export let manageTask = SlateTool.create(
       billableByDefault: ctx.input.billableByDefault,
       defaultHourlyRate: ctx.input.defaultHourlyRate,
       isDefault: ctx.input.isDefault,
-      isActive: ctx.input.isActive,
+      isActive: ctx.input.isActive
     });
     return {
       output: {
@@ -89,8 +88,9 @@ export let manageTask = SlateTool.create(
         billableByDefault: t.billable_by_default,
         defaultHourlyRate: t.default_hourly_rate,
         isDefault: t.is_default,
-        isActive: t.is_active,
+        isActive: t.is_active
       },
-      message: `Updated task **${t.name}** (#${t.id}).`,
+      message: `Updated task **${t.name}** (#${t.id}).`
     };
-  }).build();
+  })
+  .build();

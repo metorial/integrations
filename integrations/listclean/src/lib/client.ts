@@ -60,9 +60,15 @@ export class ListcleanClient {
     return res.data;
   }
 
-  async uploadBulkList(fileName: string, fileContent: string, fileType: 'csv' | 'txt'): Promise<BulkUploadResult> {
+  async uploadBulkList(
+    fileName: string,
+    fileContent: string,
+    fileType: 'csv' | 'txt'
+  ): Promise<BulkUploadResult> {
     let formData = new FormData();
-    let blob = new Blob([fileContent], { type: fileType === 'csv' ? 'text/csv' : 'text/plain' });
+    let blob = new Blob([fileContent], {
+      type: fileType === 'csv' ? 'text/csv' : 'text/plain'
+    });
     formData.append('file', blob, fileName);
 
     let res = await this.axios.post('/bulk/upload/', formData, {
@@ -83,7 +89,10 @@ export class ListcleanClient {
     return res.data?.results || res.data || [];
   }
 
-  async downloadBulkResults(listId: string, filter: 'all' | 'clean' | 'dirty' = 'all'): Promise<string> {
+  async downloadBulkResults(
+    listId: string,
+    filter: 'all' | 'clean' | 'dirty' = 'all'
+  ): Promise<string> {
     let filterParam = filter === 'clean' ? 'ok' : filter === 'dirty' ? 'bad' : 'all';
     let res = await this.axios.get(`/bulk/list/${encodeURIComponent(listId)}/download/`, {
       params: { filter: filterParam },

@@ -3,48 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newInsights = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Insights',
-    key: 'new_insights',
-    description: 'Triggers when new insights are created in the Dovetail workspace.',
-  }
-)
-  .input(z.object({
-    insightId: z.string(),
-    title: z.string(),
-    previewText: z.string().nullable().optional(),
-    projectId: z.string().nullable().optional(),
-    projectTitle: z.string().nullable().optional(),
-    authorId: z.string().nullable().optional(),
-    published: z.boolean().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  }))
-  .output(z.object({
-    insightId: z.string().describe('ID of the new insight'),
-    title: z.string().describe('Title of the insight'),
-    previewText: z.string().nullable().optional().describe('Preview text of the insight'),
-    projectId: z.string().nullable().optional().describe('Associated project ID'),
-    projectTitle: z.string().nullable().optional().describe('Associated project title'),
-    authorId: z.string().nullable().optional().describe('Author user ID'),
-    published: z.boolean().optional().describe('Whether the insight is published'),
-    createdAt: z.string().describe('Insight creation timestamp'),
-    updatedAt: z.string().describe('Insight last updated timestamp'),
-  }))
+export let newInsights = SlateTrigger.create(spec, {
+  name: 'New Insights',
+  key: 'new_insights',
+  description: 'Triggers when new insights are created in the Dovetail workspace.'
+})
+  .input(
+    z.object({
+      insightId: z.string(),
+      title: z.string(),
+      previewText: z.string().nullable().optional(),
+      projectId: z.string().nullable().optional(),
+      projectTitle: z.string().nullable().optional(),
+      authorId: z.string().nullable().optional(),
+      published: z.boolean().optional(),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .output(
+    z.object({
+      insightId: z.string().describe('ID of the new insight'),
+      title: z.string().describe('Title of the insight'),
+      previewText: z.string().nullable().optional().describe('Preview text of the insight'),
+      projectId: z.string().nullable().optional().describe('Associated project ID'),
+      projectTitle: z.string().nullable().optional().describe('Associated project title'),
+      authorId: z.string().nullable().optional().describe('Author user ID'),
+      published: z.boolean().optional().describe('Whether the insight is published'),
+      createdAt: z.string().describe('Insight creation timestamp'),
+      updatedAt: z.string().describe('Insight last updated timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let state = ctx.state as { lastSeenAt?: string } | null;
 
       let result = await client.listInsights({
         sort: 'created_at:desc',
-        limit: 50,
+        limit: 50
       });
 
       let insights = result.data;
@@ -56,14 +57,14 @@ export let newInsights = SlateTrigger.create(
       if (!state?.lastSeenAt) {
         return {
           inputs: [],
-          updatedState: { lastSeenAt: newLastSeenAt },
+          updatedState: { lastSeenAt: newLastSeenAt }
         };
       }
 
       // Filter to only new insights
-      let newInsights = insights.filter((i) => i.created_at > state!.lastSeenAt!);
+      let newInsights = insights.filter(i => i.created_at > state!.lastSeenAt!);
 
-      let inputs = newInsights.map((i) => ({
+      let inputs = newInsights.map(i => ({
         insightId: i.id,
         title: i.title,
         previewText: i.preview_text ?? null,
@@ -72,16 +73,16 @@ export let newInsights = SlateTrigger.create(
         authorId: i.author_id ?? null,
         published: i.published,
         createdAt: i.created_at,
-        updatedAt: i.updated_at,
+        updatedAt: i.updated_at
       }));
 
       return {
         inputs,
-        updatedState: { lastSeenAt: newLastSeenAt },
+        updatedState: { lastSeenAt: newLastSeenAt }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'insight.created',
         id: ctx.input.insightId,
@@ -94,9 +95,9 @@ export let newInsights = SlateTrigger.create(
           authorId: ctx.input.authorId,
           published: ctx.input.published,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

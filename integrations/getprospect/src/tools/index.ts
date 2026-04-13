@@ -10,8 +10,17 @@ export { searchCompanies } from './search-companies';
 export { createCompany } from './create-company';
 export { updateCompany } from './update-company';
 export { deleteCompany } from './delete-company';
-export { getSequence, createSequence, updateSequence, deleteSequence } from './manage-sequence';
-export { createSequenceStep, updateSequenceStep, deleteSequenceStep } from './manage-sequence-step';
+export {
+  getSequence,
+  createSequence,
+  updateSequence,
+  deleteSequence
+} from './manage-sequence';
+export {
+  createSequenceStep,
+  updateSequenceStep,
+  deleteSequenceStep
+} from './manage-sequence-step';
 export { listTags, createTag, updateTag, deleteTag } from './manage-tags';
 export { getNote, createNote, updateNote, deleteNote } from './manage-notes';
 export { getDomains, createDomain, deleteDomain } from './manage-domains';

@@ -28,33 +28,43 @@ An example of a restricted query is getting drafts inside any blog — it can on
 ## Features
 
 ### Post Management
+
 Create, read, update, and delete blog posts within a publication. The API uses a two-step publish flow: you create a draft first, then publish it. Posts support Markdown content, cover images, tags, canonical URLs, and SEO metadata. You can also publish posts directly using the `publishPost` mutation.
 
 ### Draft Management
+
 Create and manage drafts before publishing. Drafts can only be queried by the publication owner with valid authentication. Drafts can be scheduled for future publication, and scheduled drafts can be cancelled.
 
 ### Publication Management
+
 Query publication details including title, description, domain configuration, authors, and integrations. Publications are identified by their host (e.g., `yourblog.hashnode.dev`) or by ID. You can also manage publication members and their roles (e.g., changing roles or privacy states).
 
 ### Series Management
+
 A "Series" allows you to group related articles on Hashnode, enabling your readers to view them in chronological order. You can create, update, and delete series, and query posts belonging to a specific series.
 
 ### Static Pages
+
 You can create static pages in Hashnode from your admin dashboard. This feature is ideal for creating pages like an About page, a collaboration page, etc. Static pages can be queried via the API by their slug, returning title and content in Markdown or HTML.
 
 ### Comments and Replies
+
 The GraphQL API lets you CRUD all aspects of your Hashnode blog, such as posts and their metadata, comments, or static pages. You can add comments to posts and add replies to existing comments.
 
 ### User Profiles
+
 Query user details including username, bio, profile picture, social media links, followers/following counts, tags followed, and published posts. Some user fields (like email) require authentication.
 
 ### Newsletter Subscriptions
+
 With the newsletter feature, you can allow readers to subscribe to your blog, and it also sends an email automatically each time you publish a new blog article. The API supports subscribing to newsletters programmatically.
 
 ### Analytics
+
 Analytics data is integrated into the GraphQL API. The system offers filtering by individual posts, series, or page IDs. Enhanced grouping options let you sort by factors like country, device, host, and region.
 
 ### Headless CMS Usage
+
 The APIs are the starting point for using Hashnode as a Content Management System (CMS). You can use Hashnode to create your content. However, how it is displayed and shown is completely up to you. This enables building custom blog frontends with frameworks like Next.js or Astro.
 
 ## Events
@@ -64,7 +74,9 @@ The webhooks feature in Hashnode provides a powerful way to receive notification
 Webhooks are configured per publication through the blog dashboard. Each webhook is configured with a destination URL and a selection of event types. Hashnode sends a signature with each request that can be used to verify the sender and prevent replay attacks. The signature is sent in the `x-hashnode-signature` header.
 
 ### Post Events
+
 Triggered when blog posts are published, updated, or deleted within a publication. Event types:
+
 - `post_published` — A new post is published.
 - `post_updated` — An existing post is updated.
 - `post_deleted` — A post is deleted.
@@ -72,7 +84,9 @@ Triggered when blog posts are published, updated, or deleted within a publicatio
 The payload includes the publication ID, post ID, and event type. Full post content is not included in the webhook payload; use the GraphQL API to fetch post details.
 
 ### Static Page Events
+
 Triggered when static pages are published, edited, or deleted. Event types:
+
 - `static_page_published` — A new static page is created.
 - `static_page_edited` — A static page is updated.
 - `static_page_deleted` — A static page is deleted.

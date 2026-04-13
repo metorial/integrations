@@ -6,56 +6,78 @@ import { z } from 'zod';
 
 let pollOptionSchema = z.object({
   text: z.string().describe('Option text'),
-  voterCount: z.number().describe('Number of voters for this option'),
+  voterCount: z.number().describe('Number of voters for this option')
 });
 
-export let pollUpdatedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Poll Updated',
-    key: 'poll_updated',
-    description: 'Triggers when a poll state changes (stopped polls or polls sent by the bot) or when a user changes their answer in a non-anonymous poll.',
-  }
-)
-  .input(z.object({
-    updateId: z.number().describe('Unique update identifier'),
-    eventType: z.string().describe('Type of poll event'),
-    pollData: z.any().describe('Raw poll or poll_answer object'),
-  }))
-  .output(z.object({
-    pollId: z.string().describe('Unique poll identifier'),
-    question: z.string().optional().describe('Poll question (poll event only)'),
-    options: z.array(pollOptionSchema).optional().describe('Poll options with vote counts (poll event only)'),
-    totalVoterCount: z.number().optional().describe('Total number of voters (poll event only)'),
-    isClosed: z.boolean().optional().describe('Whether the poll is closed (poll event only)'),
-    isAnonymous: z.boolean().optional().describe('Whether the poll is anonymous (poll event only)'),
-    pollType: z.string().optional().describe('Poll type: regular or quiz (poll event only)'),
-    voterUserId: z.number().optional().describe('User ID of the voter (poll_answer only)'),
-    voterFirstName: z.string().optional().describe('First name of the voter (poll_answer only)'),
-    selectedOptionIds: z.array(z.number()).optional().describe('0-based indices of selected options (poll_answer only, empty if vote retracted)'),
-  }))
+export let pollUpdatedTrigger = SlateTrigger.create(spec, {
+  name: 'Poll Updated',
+  key: 'poll_updated',
+  description:
+    'Triggers when a poll state changes (stopped polls or polls sent by the bot) or when a user changes their answer in a non-anonymous poll.'
+})
+  .input(
+    z.object({
+      updateId: z.number().describe('Unique update identifier'),
+      eventType: z.string().describe('Type of poll event'),
+      pollData: z.any().describe('Raw poll or poll_answer object')
+    })
+  )
+  .output(
+    z.object({
+      pollId: z.string().describe('Unique poll identifier'),
+      question: z.string().optional().describe('Poll question (poll event only)'),
+      options: z
+        .array(pollOptionSchema)
+        .optional()
+        .describe('Poll options with vote counts (poll event only)'),
+      totalVoterCount: z
+        .number()
+        .optional()
+        .describe('Total number of voters (poll event only)'),
+      isClosed: z
+        .boolean()
+        .optional()
+        .describe('Whether the poll is closed (poll event only)'),
+      isAnonymous: z
+        .boolean()
+        .optional()
+        .describe('Whether the poll is anonymous (poll event only)'),
+      pollType: z.string().optional().describe('Poll type: regular or quiz (poll event only)'),
+      voterUserId: z.number().optional().describe('User ID of the voter (poll_answer only)'),
+      voterFirstName: z
+        .string()
+        .optional()
+        .describe('First name of the voter (poll_answer only)'),
+      selectedOptionIds: z
+        .array(z.number())
+        .optional()
+        .describe(
+          '0-based indices of selected options (poll_answer only, empty if vote retracted)'
+        )
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new TelegramClient(ctx.auth.token);
       let secretToken = generateSecretToken();
 
       await client.setWebhook({
         url: ctx.input.webhookBaseUrl,
         allowedUpdates: ['poll', 'poll_answer'],
-        secretToken,
+        secretToken
       });
 
       return {
-        registrationDetails: { secretToken },
+        registrationDetails: { secretToken }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new TelegramClient(ctx.auth.token);
       await client.deleteWebhook();
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let registrationDetails = ctx.state?.registrationDetails;
       if (registrationDetails?.secretToken) {
         if (!verifySecretToken(ctx.request, registrationDetails.secretToken)) {
@@ -63,19 +85,23 @@ export let pollUpdatedTrigger = SlateTrigger.create(
         }
       }
 
-      let data = await ctx.request.json() as any;
+      let data = (await ctx.request.json()) as any;
       let inputs: Array<{ updateId: number; eventType: string; pollData: any }> = [];
 
       if (data.poll) {
         inputs.push({ updateId: data.update_id, eventType: 'poll', pollData: data.poll });
       } else if (data.poll_answer) {
-        inputs.push({ updateId: data.update_id, eventType: 'poll_answer', pollData: data.poll_answer });
+        inputs.push({
+          updateId: data.update_id,
+          eventType: 'poll_answer',
+          pollData: data.poll_answer
+        });
       }
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let d = ctx.input.pollData;
       let isPollState = ctx.input.eventType === 'poll';
 
@@ -94,9 +120,9 @@ export let pollUpdatedTrigger = SlateTrigger.create(
           pollType: isPollState ? d.type : undefined,
           voterUserId: !isPollState ? d.user?.id : undefined,
           voterFirstName: !isPollState ? d.user?.first_name : undefined,
-          selectedOptionIds: !isPollState ? d.option_ids : undefined,
-        },
+          selectedOptionIds: !isPollState ? d.option_ids : undefined
+        }
       };
-    },
+    }
   })
   .build();

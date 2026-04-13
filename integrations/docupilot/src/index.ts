@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listTemplates,
@@ -22,11 +21,9 @@ import {
   listEnvelopes,
   getEnvelopeDetails,
   cancelEnvelope,
-  sendEnvelopeReminder,
+  sendEnvelopeReminder
 } from './tools';
-import { documentGenerated,
-  inboundWebhook,
-} from './triggers';
+import { documentGenerated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,10 +48,7 @@ export let provider = Slate.create({
     listEnvelopes,
     getEnvelopeDetails,
     cancelEnvelope,
-    sendEnvelopeReminder,
+    sendEnvelopeReminder
   ],
-  triggers: [
-    inboundWebhook,
-    documentGenerated,
-  ],
+  triggers: [inboundWebhook, documentGenerated]
 });

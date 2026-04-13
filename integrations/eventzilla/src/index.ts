@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listEventsTool,
@@ -17,13 +16,9 @@ import {
   fillOrderTool,
   confirmCheckoutTool,
   listUsersTool,
-  getCategoriesTool,
+  getCategoriesTool
 } from './tools';
-import {
-  newAttendeeTrigger,
-  newTransactionTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newAttendeeTrigger, newTransactionTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,11 +38,7 @@ export let provider = Slate.create({
     fillOrderTool,
     confirmCheckoutTool,
     listUsersTool,
-    getCategoriesTool,
+    getCategoriesTool
   ],
-  triggers: [
-    inboundWebhook,
-    newAttendeeTrigger,
-    newTransactionTrigger,
-  ],
+  triggers: [inboundWebhook, newAttendeeTrigger, newTransactionTrigger]
 });

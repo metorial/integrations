@@ -6,11 +6,7 @@ export class OpenWeatherClient {
   private lang: string;
   private axios;
 
-  constructor(config: {
-    apiKey: string;
-    units?: string;
-    lang?: string;
-  }) {
+  constructor(config: { apiKey: string; units?: string; lang?: string }) {
     this.apiKey = config.apiKey;
     this.units = config.units || 'metric';
     this.lang = config.lang || 'en';

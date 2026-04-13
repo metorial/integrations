@@ -3,30 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSettings = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Settings',
-    key: 'get_settings',
-    description: `Retrieves account settings, brand settings, and custom merge tags. Combine all three or select specific setting types to retrieve.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getSettings = SlateTool.create(spec, {
+  name: 'Get Account Settings',
+  key: 'get_settings',
+  description: `Retrieves account settings, brand settings, and custom merge tags. Combine all three or select specific setting types to retrieve.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    include: z.array(z.enum(['account', 'brand', 'mergeTags']))
-      .optional()
-      .default(['account', 'brand', 'mergeTags'])
-      .describe('Which settings to include. Defaults to all.'),
-  }))
-  .output(z.object({
-    accountSettings: z.any().optional().describe('General account settings'),
-    brandSettings: z.any().optional().describe('Brand-specific settings'),
-    mergeTags: z.any().optional().describe('Custom merge tags for dynamic content'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      include: z
+        .array(z.enum(['account', 'brand', 'mergeTags']))
+        .optional()
+        .default(['account', 'brand', 'mergeTags'])
+        .describe('Which settings to include. Defaults to all.')
+    })
+  )
+  .output(
+    z.object({
+      accountSettings: z.any().optional().describe('General account settings'),
+      brandSettings: z.any().optional().describe('Brand-specific settings'),
+      mergeTags: z.any().optional().describe('Custom merge tags for dynamic content')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let include = ctx.input.include;
 
@@ -51,9 +53,9 @@ export let getSettings = SlateTool.create(
       output: {
         accountSettings,
         brandSettings,
-        mergeTags,
+        mergeTags
       },
-      message: `Retrieved settings: ${include.join(', ')}.`,
+      message: `Retrieved settings: ${include.join(', ')}.`
     };
   })
   .build();

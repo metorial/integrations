@@ -34,7 +34,5 @@ export let provider = Slate.create({
     manageAlert,
     managePublicLink
   ],
-  triggers: [
-    alertWebhook
-  ]
+  triggers: [alertWebhook]
 });

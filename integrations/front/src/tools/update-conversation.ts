@@ -3,37 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateConversation = SlateTool.create(
-  spec,
-  {
-    name: 'Update Conversation',
-    key: 'update_conversation',
-    description: `Update a conversation's properties including status, assignee, tags, followers, and inbox. Supports assigning/unassigning teammates, archiving, reopening, trashing, restoring, adding/removing tags, and managing followers — all in a single flexible operation.`,
-    instructions: [
-      'To unassign a conversation, set assigneeId to an empty string.',
-      'Use addTagIds/removeTagIds to manage tags without replacing existing ones.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let updateConversation = SlateTool.create(spec, {
+  name: 'Update Conversation',
+  key: 'update_conversation',
+  description: `Update a conversation's properties including status, assignee, tags, followers, and inbox. Supports assigning/unassigning teammates, archiving, reopening, trashing, restoring, adding/removing tags, and managing followers — all in a single flexible operation.`,
+  instructions: [
+    'To unassign a conversation, set assigneeId to an empty string.',
+    'Use addTagIds/removeTagIds to manage tags without replacing existing ones.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    conversationId: z.string().describe('ID of the conversation to update'),
-    status: z.enum(['archived', 'open', 'deleted', 'spam']).optional().describe('New status for the conversation'),
-    assigneeId: z.string().optional().describe('Teammate ID to assign to, or empty string to unassign'),
-    subject: z.string().optional().describe('New subject line'),
-    inboxId: z.string().optional().describe('Inbox ID to move the conversation to'),
-    addTagIds: z.array(z.string()).optional().describe('Tag IDs to add to the conversation'),
-    removeTagIds: z.array(z.string()).optional().describe('Tag IDs to remove from the conversation'),
-    addFollowerIds: z.array(z.string()).optional().describe('Teammate IDs to add as followers'),
-    removeFollowerIds: z.array(z.string()).optional().describe('Teammate IDs to remove as followers'),
-  }))
-  .output(z.object({
-    conversationId: z.string(),
-    updated: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conversationId: z.string().describe('ID of the conversation to update'),
+      status: z
+        .enum(['archived', 'open', 'deleted', 'spam'])
+        .optional()
+        .describe('New status for the conversation'),
+      assigneeId: z
+        .string()
+        .optional()
+        .describe('Teammate ID to assign to, or empty string to unassign'),
+      subject: z.string().optional().describe('New subject line'),
+      inboxId: z.string().optional().describe('Inbox ID to move the conversation to'),
+      addTagIds: z.array(z.string()).optional().describe('Tag IDs to add to the conversation'),
+      removeTagIds: z
+        .array(z.string())
+        .optional()
+        .describe('Tag IDs to remove from the conversation'),
+      addFollowerIds: z
+        .array(z.string())
+        .optional()
+        .describe('Teammate IDs to add as followers'),
+      removeFollowerIds: z
+        .array(z.string())
+        .optional()
+        .describe('Teammate IDs to remove as followers')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string(),
+      updated: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let input = ctx.input;
     let actions: string[] = [];
@@ -88,10 +104,11 @@ export let updateConversation = SlateTool.create(
     return {
       output: {
         conversationId: input.conversationId,
-        updated: actions.length > 0,
+        updated: actions.length > 0
       },
-      message: actions.length > 0
-        ? `Updated conversation ${input.conversationId}: ${actions.join(', ')}.`
-        : `No changes made to conversation ${input.conversationId}.`,
+      message:
+        actions.length > 0
+          ? `Updated conversation ${input.conversationId}: ${actions.join(', ')}.`
+          : `No changes made to conversation ${input.conversationId}.`
     };
   });

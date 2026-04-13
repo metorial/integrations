@@ -12,7 +12,7 @@ import {
   searchModels,
   getModelDetails,
   manageModel,
-  manageModelVariation,
+  manageModelVariation
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     searchModels,
     getModelDetails,
     manageModel,
-    manageModelVariation,
+    manageModelVariation
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

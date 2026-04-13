@@ -3,31 +3,40 @@ import { HelpScoutClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `List, create, update, or delete tags. Tags are used to categorize and organize conversations. Use "list" to see all tags, or create/update/delete individual tags.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    tagId: z.number().optional().describe('Tag ID (required for update and delete)'),
-    name: z.string().optional().describe('Tag name (required for create and update)'),
-    page: z.number().optional().describe('Page number for list action'),
-  }))
-  .output(z.object({
-    tags: z.array(z.object({
-      tagId: z.number().describe('Tag ID'),
-      name: z.string().describe('Tag name'),
-      color: z.string().nullable().optional().describe('Tag color'),
-      ticketCount: z.number().optional().describe('Number of conversations with this tag'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of tags (for list action)'),
-    success: z.boolean().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `List, create, update, or delete tags. Tags are used to categorize and organize conversations. Use "list" to see all tags, or create/update/delete individual tags.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      tagId: z.number().optional().describe('Tag ID (required for update and delete)'),
+      name: z.string().optional().describe('Tag name (required for create and update)'),
+      page: z.number().optional().describe('Page number for list action')
+    })
+  )
+  .output(
+    z.object({
+      tags: z
+        .array(
+          z.object({
+            tagId: z.number().describe('Tag ID'),
+            name: z.string().describe('Tag name'),
+            color: z.string().nullable().optional().describe('Tag color'),
+            ticketCount: z
+              .number()
+              .optional()
+              .describe('Number of conversations with this tag'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of tags (for list action)'),
+      success: z.boolean().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HelpScoutClient(ctx.auth.token);
 
     if (ctx.input.action === 'list') {
@@ -38,12 +47,12 @@ export let manageTags = SlateTool.create(
         name: t.name ?? t.tag,
         color: t.color ?? null,
         ticketCount: t.ticketCount,
-        createdAt: t.createdAt,
+        createdAt: t.createdAt
       }));
 
       return {
         output: { tags, success: true },
-        message: `Found **${tags.length}** tags.`,
+        message: `Found **${tags.length}** tags.`
       };
     }
 
@@ -52,7 +61,7 @@ export let manageTags = SlateTool.create(
       await client.createTag(ctx.input.name);
       return {
         output: { success: true },
-        message: `Created tag **"${ctx.input.name}"**.`,
+        message: `Created tag **"${ctx.input.name}"**.`
       };
     }
 
@@ -62,7 +71,7 @@ export let manageTags = SlateTool.create(
       await client.updateTag(ctx.input.tagId, ctx.input.name);
       return {
         output: { success: true },
-        message: `Updated tag **#${ctx.input.tagId}** to "${ctx.input.name}".`,
+        message: `Updated tag **#${ctx.input.tagId}** to "${ctx.input.name}".`
       };
     }
 
@@ -71,9 +80,10 @@ export let manageTags = SlateTool.create(
       await client.deleteTag(ctx.input.tagId);
       return {
         output: { success: true },
-        message: `Deleted tag **#${ctx.input.tagId}**.`,
+        message: `Deleted tag **#${ctx.input.tagId}**.`
       };
     }
 
     return { output: { success: false }, message: 'Unknown action.' };
-  }).build();
+  })
+  .build();

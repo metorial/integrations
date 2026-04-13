@@ -32,6 +32,7 @@ Usage: Include the token as `Authorization: Bearer <token>` in HTTP requests.
 The DigitalOcean OAuth API lets you obtain limited access to DigitalOcean teams by delegating authentication to DigitalOcean. It supports the authorization code flow meant for web applications running on a server. It also supports the implicit authorization flow, useful for client-side applications such as mobile or desktop clients where the client secret should not be stored on the user's device.
 
 **Endpoints:**
+
 - Authorization: `https://cloud.digitalocean.com/v1/oauth/authorize`
 - Token exchange: `https://cloud.digitalocean.com/v1/oauth/token`
 - Token refresh: `https://cloud.digitalocean.com/v1/oauth/refresh`

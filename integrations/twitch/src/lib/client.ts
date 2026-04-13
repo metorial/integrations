@@ -17,19 +17,22 @@ import type {
   TwitchChatSettings,
   TwitchResponse,
   TwitchCharityCampaign,
-  TwitchGoal,
+  TwitchGoal
 } from './types';
 
 export class TwitchClient {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private token: string, private clientId: string) {
+  constructor(
+    private token: string,
+    private clientId: string
+  ) {
     this.axios = createAxios({
       baseURL: 'https://api.twitch.tv/helix',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Client-Id': clientId,
-      },
+        Authorization: `Bearer ${token}`,
+        'Client-Id': clientId
+      }
     });
   }
 
@@ -65,23 +68,29 @@ export class TwitchClient {
     return data.data;
   }
 
-  async updateChannelInfo(broadcasterId: string, params: {
-    gameId?: string;
-    broadcasterLanguage?: string;
-    title?: string;
-    delay?: number;
-    tags?: string[];
-    contentClassificationLabels?: Array<{ id: string; is_enabled: boolean }>;
-    isBrandedContent?: boolean;
-  }): Promise<void> {
+  async updateChannelInfo(
+    broadcasterId: string,
+    params: {
+      gameId?: string;
+      broadcasterLanguage?: string;
+      title?: string;
+      delay?: number;
+      tags?: string[];
+      contentClassificationLabels?: Array<{ id: string; is_enabled: boolean }>;
+      isBrandedContent?: boolean;
+    }
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (params.gameId !== undefined) body.game_id = params.gameId;
-    if (params.broadcasterLanguage !== undefined) body.broadcaster_language = params.broadcasterLanguage;
+    if (params.broadcasterLanguage !== undefined)
+      body.broadcaster_language = params.broadcasterLanguage;
     if (params.title !== undefined) body.title = params.title;
     if (params.delay !== undefined) body.delay = params.delay;
     if (params.tags !== undefined) body.tags = params.tags;
-    if (params.contentClassificationLabels !== undefined) body.content_classification_labels = params.contentClassificationLabels;
-    if (params.isBrandedContent !== undefined) body.is_branded_content = params.isBrandedContent;
+    if (params.contentClassificationLabels !== undefined)
+      body.content_classification_labels = params.contentClassificationLabels;
+    if (params.isBrandedContent !== undefined)
+      body.is_branded_content = params.isBrandedContent;
 
     await this.axios.patch(`/channels?broadcaster_id=${broadcasterId}`, body);
   }
@@ -117,11 +126,14 @@ export class TwitchClient {
 
   // ─── Subscriptions ──────────────────────────────────────────
 
-  async getSubscriptions(broadcasterId: string, params?: {
-    userIds?: string[];
-    first?: number;
-    after?: string;
-  }): Promise<{ subscriptions: TwitchSubscription[]; total: number; cursor?: string }> {
+  async getSubscriptions(
+    broadcasterId: string,
+    params?: {
+      userIds?: string[];
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ subscriptions: TwitchSubscription[]; total: number; cursor?: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.userIds) {
       for (let id of params.userIds) query.append('user_id', id);
@@ -134,17 +146,20 @@ export class TwitchClient {
     return {
       subscriptions: data.data,
       total: data.total || 0,
-      cursor: data.pagination?.cursor,
+      cursor: data.pagination?.cursor
     };
   }
 
   // ─── Followers ──────────────────────────────────────────────
 
-  async getFollowers(broadcasterId: string, params?: {
-    userId?: string;
-    first?: number;
-    after?: string;
-  }): Promise<{ followers: TwitchFollower[]; total: number; cursor?: string }> {
+  async getFollowers(
+    broadcasterId: string,
+    params?: {
+      userId?: string;
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ followers: TwitchFollower[]; total: number; cursor?: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.userId) query.set('user_id', params.userId);
     if (params?.first) query.set('first', params.first.toString());
@@ -155,13 +170,16 @@ export class TwitchClient {
     return {
       followers: data.data,
       total: data.total || 0,
-      cursor: data.pagination?.cursor,
+      cursor: data.pagination?.cursor
     };
   }
 
   // ─── Clips ──────────────────────────────────────────────────
 
-  async createClip(broadcasterId: string, hasDelay?: boolean): Promise<{ clipId: string; editUrl: string }> {
+  async createClip(
+    broadcasterId: string,
+    hasDelay?: boolean
+  ): Promise<{ clipId: string; editUrl: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (hasDelay !== undefined) query.set('has_delay', hasDelay.toString());
 
@@ -234,19 +252,23 @@ export class TwitchClient {
 
   // ─── Moderation ─────────────────────────────────────────────
 
-  async banUser(broadcasterId: string, moderatorId: string, params: {
-    userId: string;
-    duration?: number;
-    reason?: string;
-  }): Promise<TwitchBannedUser> {
+  async banUser(
+    broadcasterId: string,
+    moderatorId: string,
+    params: {
+      userId: string;
+      duration?: number;
+      reason?: string;
+    }
+  ): Promise<TwitchBannedUser> {
     let response = await this.axios.post(
       `/moderation/bans?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}`,
       {
         data: {
           user_id: params.userId,
           duration: params.duration,
-          reason: params.reason,
-        },
+          reason: params.reason
+        }
       }
     );
     let data = response.data as TwitchResponse<TwitchBannedUser>;
@@ -260,11 +282,14 @@ export class TwitchClient {
     );
   }
 
-  async getBannedUsers(broadcasterId: string, params?: {
-    userIds?: string[];
-    first?: number;
-    after?: string;
-  }): Promise<{ users: TwitchBannedUser[]; cursor?: string }> {
+  async getBannedUsers(
+    broadcasterId: string,
+    params?: {
+      userIds?: string[];
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ users: TwitchBannedUser[]; cursor?: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.userIds) {
       for (let id of params.userIds) query.append('user_id', id);
@@ -277,7 +302,11 @@ export class TwitchClient {
     return { users: data.data, cursor: data.pagination?.cursor };
   }
 
-  async deleteChatMessage(broadcasterId: string, moderatorId: string, messageId: string): Promise<void> {
+  async deleteChatMessage(
+    broadcasterId: string,
+    moderatorId: string,
+    messageId: string
+  ): Promise<void> {
     await this.axios.delete(
       `/moderation/chat?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}&message_id=${messageId}`
     );
@@ -285,15 +314,21 @@ export class TwitchClient {
 
   // ─── Chat ───────────────────────────────────────────────────
 
-  async sendChatMessage(broadcasterId: string, senderId: string, message: string, params?: {
-    replyParentMessageId?: string;
-  }): Promise<{ messageId: string; isSent: boolean }> {
+  async sendChatMessage(
+    broadcasterId: string,
+    senderId: string,
+    message: string,
+    params?: {
+      replyParentMessageId?: string;
+    }
+  ): Promise<{ messageId: string; isSent: boolean }> {
     let body: Record<string, any> = {
       broadcaster_id: broadcasterId,
       sender_id: senderId,
-      message,
+      message
     };
-    if (params?.replyParentMessageId) body.reply_parent_message_id = params.replyParentMessageId;
+    if (params?.replyParentMessageId)
+      body.reply_parent_message_id = params.replyParentMessageId;
 
     let response = await this.axios.post('/chat/messages', body);
     let data = response.data as { data: Array<{ message_id: string; is_sent: boolean }> };
@@ -302,7 +337,10 @@ export class TwitchClient {
     return { messageId: result.message_id, isSent: result.is_sent };
   }
 
-  async getChatSettings(broadcasterId: string, moderatorId?: string): Promise<TwitchChatSettings> {
+  async getChatSettings(
+    broadcasterId: string,
+    moderatorId?: string
+  ): Promise<TwitchChatSettings> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (moderatorId) query.set('moderator_id', moderatorId);
 
@@ -312,27 +350,35 @@ export class TwitchClient {
     return data.data[0];
   }
 
-  async updateChatSettings(broadcasterId: string, moderatorId: string, params: {
-    emoteMode?: boolean;
-    followerMode?: boolean;
-    followerModeDuration?: number;
-    slowMode?: boolean;
-    slowModeWaitTime?: number;
-    subscriberMode?: boolean;
-    uniqueChatMode?: boolean;
-    nonModeratorChatDelay?: boolean;
-    nonModeratorChatDelayDuration?: number;
-  }): Promise<TwitchChatSettings> {
+  async updateChatSettings(
+    broadcasterId: string,
+    moderatorId: string,
+    params: {
+      emoteMode?: boolean;
+      followerMode?: boolean;
+      followerModeDuration?: number;
+      slowMode?: boolean;
+      slowModeWaitTime?: number;
+      subscriberMode?: boolean;
+      uniqueChatMode?: boolean;
+      nonModeratorChatDelay?: boolean;
+      nonModeratorChatDelayDuration?: number;
+    }
+  ): Promise<TwitchChatSettings> {
     let body: Record<string, any> = {};
     if (params.emoteMode !== undefined) body.emote_mode = params.emoteMode;
     if (params.followerMode !== undefined) body.follower_mode = params.followerMode;
-    if (params.followerModeDuration !== undefined) body.follower_mode_duration = params.followerModeDuration;
+    if (params.followerModeDuration !== undefined)
+      body.follower_mode_duration = params.followerModeDuration;
     if (params.slowMode !== undefined) body.slow_mode = params.slowMode;
-    if (params.slowModeWaitTime !== undefined) body.slow_mode_wait_time = params.slowModeWaitTime;
+    if (params.slowModeWaitTime !== undefined)
+      body.slow_mode_wait_time = params.slowModeWaitTime;
     if (params.subscriberMode !== undefined) body.subscriber_mode = params.subscriberMode;
     if (params.uniqueChatMode !== undefined) body.unique_chat_mode = params.uniqueChatMode;
-    if (params.nonModeratorChatDelay !== undefined) body.non_moderator_chat_delay = params.nonModeratorChatDelay;
-    if (params.nonModeratorChatDelayDuration !== undefined) body.non_moderator_chat_delay_duration = params.nonModeratorChatDelayDuration;
+    if (params.nonModeratorChatDelay !== undefined)
+      body.non_moderator_chat_delay = params.nonModeratorChatDelay;
+    if (params.nonModeratorChatDelayDuration !== undefined)
+      body.non_moderator_chat_delay_duration = params.nonModeratorChatDelayDuration;
 
     let response = await this.axios.patch(
       `/chat/settings?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}`,
@@ -343,39 +389,59 @@ export class TwitchClient {
     return data.data[0];
   }
 
-  async sendChatAnnouncement(broadcasterId: string, moderatorId: string, message: string, color?: string): Promise<void> {
+  async sendChatAnnouncement(
+    broadcasterId: string,
+    moderatorId: string,
+    message: string,
+    color?: string
+  ): Promise<void> {
     await this.axios.post(
       `/chat/announcements?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}`,
       { message, color }
     );
   }
 
-  async getChatters(broadcasterId: string, moderatorId: string, params?: {
-    first?: number;
-    after?: string;
-  }): Promise<{ chatters: Array<{ user_id: string; user_login: string; user_name: string }>; total: number; cursor?: string }> {
+  async getChatters(
+    broadcasterId: string,
+    moderatorId: string,
+    params?: {
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{
+    chatters: Array<{ user_id: string; user_login: string; user_name: string }>;
+    total: number;
+    cursor?: string;
+  }> {
     let query = new URLSearchParams({
       broadcaster_id: broadcasterId,
-      moderator_id: moderatorId,
+      moderator_id: moderatorId
     });
     if (params?.first) query.set('first', params.first.toString());
     if (params?.after) query.set('after', params.after);
 
     let response = await this.axios.get(`/chat/chatters?${query.toString()}`);
-    let data = response.data as TwitchResponse<{ user_id: string; user_login: string; user_name: string }> & { total: number };
+    let data = response.data as TwitchResponse<{
+      user_id: string;
+      user_login: string;
+      user_name: string;
+    }> & { total: number };
     return {
       chatters: data.data,
       total: data.total || 0,
-      cursor: data.pagination?.cursor,
+      cursor: data.pagination?.cursor
     };
   }
 
   // ─── Channel Points ─────────────────────────────────────────
 
-  async getCustomRewards(broadcasterId: string, params?: {
-    rewardIds?: string[];
-    onlyManageableRewards?: boolean;
-  }): Promise<TwitchCustomReward[]> {
+  async getCustomRewards(
+    broadcasterId: string,
+    params?: {
+      rewardIds?: string[];
+      onlyManageableRewards?: boolean;
+    }
+  ): Promise<TwitchCustomReward[]> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.rewardIds) {
       for (let id of params.rewardIds) query.append('id', id);
@@ -389,36 +455,46 @@ export class TwitchClient {
     return data.data;
   }
 
-  async createCustomReward(broadcasterId: string, params: {
-    title: string;
-    cost: number;
-    prompt?: string;
-    isEnabled?: boolean;
-    backgroundColor?: string;
-    isUserInputRequired?: boolean;
-    isMaxPerStreamEnabled?: boolean;
-    maxPerStream?: number;
-    isMaxPerUserPerStreamEnabled?: boolean;
-    maxPerUserPerStream?: number;
-    isGlobalCooldownEnabled?: boolean;
-    globalCooldownSeconds?: number;
-    shouldRedemptionsSkipRequestQueue?: boolean;
-  }): Promise<TwitchCustomReward> {
+  async createCustomReward(
+    broadcasterId: string,
+    params: {
+      title: string;
+      cost: number;
+      prompt?: string;
+      isEnabled?: boolean;
+      backgroundColor?: string;
+      isUserInputRequired?: boolean;
+      isMaxPerStreamEnabled?: boolean;
+      maxPerStream?: number;
+      isMaxPerUserPerStreamEnabled?: boolean;
+      maxPerUserPerStream?: number;
+      isGlobalCooldownEnabled?: boolean;
+      globalCooldownSeconds?: number;
+      shouldRedemptionsSkipRequestQueue?: boolean;
+    }
+  ): Promise<TwitchCustomReward> {
     let body: Record<string, any> = {
       title: params.title,
-      cost: params.cost,
+      cost: params.cost
     };
     if (params.prompt !== undefined) body.prompt = params.prompt;
     if (params.isEnabled !== undefined) body.is_enabled = params.isEnabled;
     if (params.backgroundColor !== undefined) body.background_color = params.backgroundColor;
-    if (params.isUserInputRequired !== undefined) body.is_user_input_required = params.isUserInputRequired;
-    if (params.isMaxPerStreamEnabled !== undefined) body.is_max_per_stream_enabled = params.isMaxPerStreamEnabled;
+    if (params.isUserInputRequired !== undefined)
+      body.is_user_input_required = params.isUserInputRequired;
+    if (params.isMaxPerStreamEnabled !== undefined)
+      body.is_max_per_stream_enabled = params.isMaxPerStreamEnabled;
     if (params.maxPerStream !== undefined) body.max_per_stream = params.maxPerStream;
-    if (params.isMaxPerUserPerStreamEnabled !== undefined) body.is_max_per_user_per_stream_enabled = params.isMaxPerUserPerStreamEnabled;
-    if (params.maxPerUserPerStream !== undefined) body.max_per_user_per_stream = params.maxPerUserPerStream;
-    if (params.isGlobalCooldownEnabled !== undefined) body.is_global_cooldown_enabled = params.isGlobalCooldownEnabled;
-    if (params.globalCooldownSeconds !== undefined) body.global_cooldown_seconds = params.globalCooldownSeconds;
-    if (params.shouldRedemptionsSkipRequestQueue !== undefined) body.should_redemptions_skip_request_queue = params.shouldRedemptionsSkipRequestQueue;
+    if (params.isMaxPerUserPerStreamEnabled !== undefined)
+      body.is_max_per_user_per_stream_enabled = params.isMaxPerUserPerStreamEnabled;
+    if (params.maxPerUserPerStream !== undefined)
+      body.max_per_user_per_stream = params.maxPerUserPerStream;
+    if (params.isGlobalCooldownEnabled !== undefined)
+      body.is_global_cooldown_enabled = params.isGlobalCooldownEnabled;
+    if (params.globalCooldownSeconds !== undefined)
+      body.global_cooldown_seconds = params.globalCooldownSeconds;
+    if (params.shouldRedemptionsSkipRequestQueue !== undefined)
+      body.should_redemptions_skip_request_queue = params.shouldRedemptionsSkipRequestQueue;
 
     let response = await this.axios.post(
       `/channel_points/custom_rewards?broadcaster_id=${broadcasterId}`,
@@ -429,37 +505,48 @@ export class TwitchClient {
     return data.data[0];
   }
 
-  async updateCustomReward(broadcasterId: string, rewardId: string, params: {
-    title?: string;
-    cost?: number;
-    prompt?: string;
-    isEnabled?: boolean;
-    backgroundColor?: string;
-    isUserInputRequired?: boolean;
-    isPaused?: boolean;
-    isMaxPerStreamEnabled?: boolean;
-    maxPerStream?: number;
-    isMaxPerUserPerStreamEnabled?: boolean;
-    maxPerUserPerStream?: number;
-    isGlobalCooldownEnabled?: boolean;
-    globalCooldownSeconds?: number;
-    shouldRedemptionsSkipRequestQueue?: boolean;
-  }): Promise<TwitchCustomReward> {
+  async updateCustomReward(
+    broadcasterId: string,
+    rewardId: string,
+    params: {
+      title?: string;
+      cost?: number;
+      prompt?: string;
+      isEnabled?: boolean;
+      backgroundColor?: string;
+      isUserInputRequired?: boolean;
+      isPaused?: boolean;
+      isMaxPerStreamEnabled?: boolean;
+      maxPerStream?: number;
+      isMaxPerUserPerStreamEnabled?: boolean;
+      maxPerUserPerStream?: number;
+      isGlobalCooldownEnabled?: boolean;
+      globalCooldownSeconds?: number;
+      shouldRedemptionsSkipRequestQueue?: boolean;
+    }
+  ): Promise<TwitchCustomReward> {
     let body: Record<string, any> = {};
     if (params.title !== undefined) body.title = params.title;
     if (params.cost !== undefined) body.cost = params.cost;
     if (params.prompt !== undefined) body.prompt = params.prompt;
     if (params.isEnabled !== undefined) body.is_enabled = params.isEnabled;
     if (params.backgroundColor !== undefined) body.background_color = params.backgroundColor;
-    if (params.isUserInputRequired !== undefined) body.is_user_input_required = params.isUserInputRequired;
+    if (params.isUserInputRequired !== undefined)
+      body.is_user_input_required = params.isUserInputRequired;
     if (params.isPaused !== undefined) body.is_paused = params.isPaused;
-    if (params.isMaxPerStreamEnabled !== undefined) body.is_max_per_stream_enabled = params.isMaxPerStreamEnabled;
+    if (params.isMaxPerStreamEnabled !== undefined)
+      body.is_max_per_stream_enabled = params.isMaxPerStreamEnabled;
     if (params.maxPerStream !== undefined) body.max_per_stream = params.maxPerStream;
-    if (params.isMaxPerUserPerStreamEnabled !== undefined) body.is_max_per_user_per_stream_enabled = params.isMaxPerUserPerStreamEnabled;
-    if (params.maxPerUserPerStream !== undefined) body.max_per_user_per_stream = params.maxPerUserPerStream;
-    if (params.isGlobalCooldownEnabled !== undefined) body.is_global_cooldown_enabled = params.isGlobalCooldownEnabled;
-    if (params.globalCooldownSeconds !== undefined) body.global_cooldown_seconds = params.globalCooldownSeconds;
-    if (params.shouldRedemptionsSkipRequestQueue !== undefined) body.should_redemptions_skip_request_queue = params.shouldRedemptionsSkipRequestQueue;
+    if (params.isMaxPerUserPerStreamEnabled !== undefined)
+      body.is_max_per_user_per_stream_enabled = params.isMaxPerUserPerStreamEnabled;
+    if (params.maxPerUserPerStream !== undefined)
+      body.max_per_user_per_stream = params.maxPerUserPerStream;
+    if (params.isGlobalCooldownEnabled !== undefined)
+      body.is_global_cooldown_enabled = params.isGlobalCooldownEnabled;
+    if (params.globalCooldownSeconds !== undefined)
+      body.global_cooldown_seconds = params.globalCooldownSeconds;
+    if (params.shouldRedemptionsSkipRequestQueue !== undefined)
+      body.should_redemptions_skip_request_queue = params.shouldRedemptionsSkipRequestQueue;
 
     let response = await this.axios.patch(
       `/channel_points/custom_rewards?broadcaster_id=${broadcasterId}&id=${rewardId}`,
@@ -476,30 +563,41 @@ export class TwitchClient {
     );
   }
 
-  async getRedemptions(broadcasterId: string, rewardId: string, params?: {
-    status?: string;
-    sort?: string;
-    first?: number;
-    after?: string;
-  }): Promise<{ redemptions: TwitchRedemption[]; cursor?: string }> {
+  async getRedemptions(
+    broadcasterId: string,
+    rewardId: string,
+    params?: {
+      status?: string;
+      sort?: string;
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ redemptions: TwitchRedemption[]; cursor?: string }> {
     let query = new URLSearchParams({
       broadcaster_id: broadcasterId,
-      reward_id: rewardId,
+      reward_id: rewardId
     });
     if (params?.status) query.set('status', params.status);
     if (params?.sort) query.set('sort', params.sort);
     if (params?.first) query.set('first', params.first.toString());
     if (params?.after) query.set('after', params.after);
 
-    let response = await this.axios.get(`/channel_points/custom_rewards/redemptions?${query.toString()}`);
+    let response = await this.axios.get(
+      `/channel_points/custom_rewards/redemptions?${query.toString()}`
+    );
     let data = response.data as TwitchResponse<TwitchRedemption>;
     return { redemptions: data.data, cursor: data.pagination?.cursor };
   }
 
-  async updateRedemptionStatus(broadcasterId: string, rewardId: string, redemptionIds: string[], status: string): Promise<TwitchRedemption[]> {
+  async updateRedemptionStatus(
+    broadcasterId: string,
+    rewardId: string,
+    redemptionIds: string[],
+    status: string
+  ): Promise<TwitchRedemption[]> {
     let query = new URLSearchParams({
       broadcaster_id: broadcasterId,
-      reward_id: rewardId,
+      reward_id: rewardId
     });
     for (let id of redemptionIds) query.append('id', id);
 
@@ -513,21 +611,26 @@ export class TwitchClient {
 
   // ─── Polls ──────────────────────────────────────────────────
 
-  async createPoll(broadcasterId: string, params: {
-    title: string;
-    choices: string[];
-    duration: number;
-    channelPointsVotingEnabled?: boolean;
-    channelPointsPerVote?: number;
-  }): Promise<TwitchPoll> {
+  async createPoll(
+    broadcasterId: string,
+    params: {
+      title: string;
+      choices: string[];
+      duration: number;
+      channelPointsVotingEnabled?: boolean;
+      channelPointsPerVote?: number;
+    }
+  ): Promise<TwitchPoll> {
     let body: Record<string, any> = {
       broadcaster_id: broadcasterId,
       title: params.title,
       choices: params.choices.map(c => ({ title: c })),
-      duration: params.duration,
+      duration: params.duration
     };
-    if (params.channelPointsVotingEnabled !== undefined) body.channel_points_voting_enabled = params.channelPointsVotingEnabled;
-    if (params.channelPointsPerVote !== undefined) body.channel_points_per_vote = params.channelPointsPerVote;
+    if (params.channelPointsVotingEnabled !== undefined)
+      body.channel_points_voting_enabled = params.channelPointsVotingEnabled;
+    if (params.channelPointsPerVote !== undefined)
+      body.channel_points_per_vote = params.channelPointsPerVote;
 
     let response = await this.axios.post('/polls', body);
     let data = response.data as TwitchResponse<TwitchPoll>;
@@ -535,22 +638,29 @@ export class TwitchClient {
     return data.data[0];
   }
 
-  async endPoll(broadcasterId: string, pollId: string, status: 'TERMINATED' | 'ARCHIVED'): Promise<TwitchPoll> {
+  async endPoll(
+    broadcasterId: string,
+    pollId: string,
+    status: 'TERMINATED' | 'ARCHIVED'
+  ): Promise<TwitchPoll> {
     let response = await this.axios.patch('/polls', {
       broadcaster_id: broadcasterId,
       id: pollId,
-      status,
+      status
     });
     let data = response.data as TwitchResponse<TwitchPoll>;
     if (!data.data?.[0]) throw new Error('Failed to end poll');
     return data.data[0];
   }
 
-  async getPolls(broadcasterId: string, params?: {
-    pollIds?: string[];
-    first?: number;
-    after?: string;
-  }): Promise<{ polls: TwitchPoll[]; cursor?: string }> {
+  async getPolls(
+    broadcasterId: string,
+    params?: {
+      pollIds?: string[];
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ polls: TwitchPoll[]; cursor?: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.pollIds) {
       for (let id of params.pollIds) query.append('id', id);
@@ -565,27 +675,35 @@ export class TwitchClient {
 
   // ─── Predictions ────────────────────────────────────────────
 
-  async createPrediction(broadcasterId: string, params: {
-    title: string;
-    outcomes: string[];
-    predictionWindow: number;
-  }): Promise<TwitchPrediction> {
+  async createPrediction(
+    broadcasterId: string,
+    params: {
+      title: string;
+      outcomes: string[];
+      predictionWindow: number;
+    }
+  ): Promise<TwitchPrediction> {
     let response = await this.axios.post('/predictions', {
       broadcaster_id: broadcasterId,
       title: params.title,
       outcomes: params.outcomes.map(o => ({ title: o })),
-      prediction_window: params.predictionWindow,
+      prediction_window: params.predictionWindow
     });
     let data = response.data as TwitchResponse<TwitchPrediction>;
     if (!data.data?.[0]) throw new Error('Failed to create prediction');
     return data.data[0];
   }
 
-  async endPrediction(broadcasterId: string, predictionId: string, status: 'RESOLVED' | 'CANCELED' | 'LOCKED', winningOutcomeId?: string): Promise<TwitchPrediction> {
+  async endPrediction(
+    broadcasterId: string,
+    predictionId: string,
+    status: 'RESOLVED' | 'CANCELED' | 'LOCKED',
+    winningOutcomeId?: string
+  ): Promise<TwitchPrediction> {
     let body: Record<string, any> = {
       broadcaster_id: broadcasterId,
       id: predictionId,
-      status,
+      status
     };
     if (winningOutcomeId) body.winning_outcome_id = winningOutcomeId;
 
@@ -595,11 +713,14 @@ export class TwitchClient {
     return data.data[0];
   }
 
-  async getPredictions(broadcasterId: string, params?: {
-    predictionIds?: string[];
-    first?: number;
-    after?: string;
-  }): Promise<{ predictions: TwitchPrediction[]; cursor?: string }> {
+  async getPredictions(
+    broadcasterId: string,
+    params?: {
+      predictionIds?: string[];
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ predictions: TwitchPrediction[]; cursor?: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.predictionIds) {
       for (let id of params.predictionIds) query.append('id', id);
@@ -614,7 +735,10 @@ export class TwitchClient {
 
   // ─── Raids ──────────────────────────────────────────────────
 
-  async startRaid(fromBroadcasterId: string, toBroadcasterId: string): Promise<{ createdAt: string; isMature: boolean }> {
+  async startRaid(
+    fromBroadcasterId: string,
+    toBroadcasterId: string
+  ): Promise<{ createdAt: string; isMature: boolean }> {
     let response = await this.axios.post(
       `/raids?from_broadcaster_id=${fromBroadcasterId}&to_broadcaster_id=${toBroadcasterId}`
     );
@@ -630,12 +754,15 @@ export class TwitchClient {
 
   // ─── Schedule ───────────────────────────────────────────────
 
-  async getSchedule(broadcasterId: string, params?: {
-    segmentIds?: string[];
-    startTime?: string;
-    first?: number;
-    after?: string;
-  }): Promise<{ schedule: TwitchSchedule; cursor?: string }> {
+  async getSchedule(
+    broadcasterId: string,
+    params?: {
+      segmentIds?: string[];
+      startTime?: string;
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{ schedule: TwitchSchedule; cursor?: string }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.segmentIds) {
       for (let id of params.segmentIds) query.append('id', id);
@@ -649,18 +776,21 @@ export class TwitchClient {
     return { schedule: data.data, cursor: data.pagination?.cursor };
   }
 
-  async createScheduleSegment(broadcasterId: string, params: {
-    startTime: string;
-    timezone: string;
-    duration: number;
-    isRecurring?: boolean;
-    categoryId?: string;
-    title?: string;
-  }): Promise<TwitchScheduleSegment> {
+  async createScheduleSegment(
+    broadcasterId: string,
+    params: {
+      startTime: string;
+      timezone: string;
+      duration: number;
+      isRecurring?: boolean;
+      categoryId?: string;
+      title?: string;
+    }
+  ): Promise<TwitchScheduleSegment> {
     let body: Record<string, any> = {
       start_time: params.startTime,
       timezone: params.timezone,
-      duration: params.duration.toString(),
+      duration: params.duration.toString()
     };
     if (params.isRecurring !== undefined) body.is_recurring = params.isRecurring;
     if (params.categoryId) body.category_id = params.categoryId;
@@ -683,12 +813,17 @@ export class TwitchClient {
 
   // ─── Commercial ─────────────────────────────────────────────
 
-  async startCommercial(broadcasterId: string, length: number): Promise<{ length: number; message: string; retryAfter: number }> {
+  async startCommercial(
+    broadcasterId: string,
+    length: number
+  ): Promise<{ length: number; message: string; retryAfter: number }> {
     let response = await this.axios.post('/channels/commercial', {
       broadcaster_id: broadcasterId,
-      length,
+      length
     });
-    let data = response.data as { data: Array<{ length: number; message: string; retry_after: number }> };
+    let data = response.data as {
+      data: Array<{ length: number; message: string; retry_after: number }>;
+    };
     let result = data.data?.[0];
     if (!result) throw new Error('Failed to start commercial');
     return { length: result.length, message: result.message, retryAfter: result.retry_after };
@@ -696,7 +831,11 @@ export class TwitchClient {
 
   // ─── Shoutouts ──────────────────────────────────────────────
 
-  async sendShoutout(fromBroadcasterId: string, toBroadcasterId: string, moderatorId: string): Promise<void> {
+  async sendShoutout(
+    fromBroadcasterId: string,
+    toBroadcasterId: string,
+    moderatorId: string
+  ): Promise<void> {
     await this.axios.post(
       `/chat/shoutouts?from_broadcaster_id=${fromBroadcasterId}&to_broadcaster_id=${toBroadcasterId}&moderator_id=${moderatorId}`
     );
@@ -705,10 +844,9 @@ export class TwitchClient {
   // ─── Whispers ───────────────────────────────────────────────
 
   async sendWhisper(fromUserId: string, toUserId: string, message: string): Promise<void> {
-    await this.axios.post(
-      `/whispers?from_user_id=${fromUserId}&to_user_id=${toUserId}`,
-      { message }
-    );
+    await this.axios.post(`/whispers?from_user_id=${fromUserId}&to_user_id=${toUserId}`, {
+      message
+    });
   }
 
   // ─── Charity ────────────────────────────────────────────────
@@ -729,11 +867,28 @@ export class TwitchClient {
 
   // ─── Shield Mode ────────────────────────────────────────────
 
-  async getShieldModeStatus(broadcasterId: string, moderatorId: string): Promise<{ isActive: boolean; moderatorId: string; moderatorName: string; moderatorLogin: string; lastActivatedAt: string }> {
+  async getShieldModeStatus(
+    broadcasterId: string,
+    moderatorId: string
+  ): Promise<{
+    isActive: boolean;
+    moderatorId: string;
+    moderatorName: string;
+    moderatorLogin: string;
+    lastActivatedAt: string;
+  }> {
     let response = await this.axios.get(
       `/moderation/shield_mode?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}`
     );
-    let data = response.data as { data: Array<{ is_active: boolean; moderator_id: string; moderator_name: string; moderator_login: string; last_activated_at: string }> };
+    let data = response.data as {
+      data: Array<{
+        is_active: boolean;
+        moderator_id: string;
+        moderator_name: string;
+        moderator_login: string;
+        last_activated_at: string;
+      }>;
+    };
     let result = data.data?.[0];
     if (!result) throw new Error('Failed to get shield mode status');
     return {
@@ -741,11 +896,15 @@ export class TwitchClient {
       moderatorId: result.moderator_id,
       moderatorName: result.moderator_name,
       moderatorLogin: result.moderator_login,
-      lastActivatedAt: result.last_activated_at,
+      lastActivatedAt: result.last_activated_at
     };
   }
 
-  async updateShieldMode(broadcasterId: string, moderatorId: string, isActive: boolean): Promise<void> {
+  async updateShieldMode(
+    broadcasterId: string,
+    moderatorId: string,
+    isActive: boolean
+  ): Promise<void> {
     await this.axios.put(
       `/moderation/shield_mode?broadcaster_id=${broadcasterId}&moderator_id=${moderatorId}`,
       { is_active: isActive }
@@ -755,18 +914,28 @@ export class TwitchClient {
   // ─── VIPs & Moderators ─────────────────────────────────────
 
   async addModerator(broadcasterId: string, userId: string): Promise<void> {
-    await this.axios.post(`/moderation/moderators?broadcaster_id=${broadcasterId}&user_id=${userId}`);
+    await this.axios.post(
+      `/moderation/moderators?broadcaster_id=${broadcasterId}&user_id=${userId}`
+    );
   }
 
   async removeModerator(broadcasterId: string, userId: string): Promise<void> {
-    await this.axios.delete(`/moderation/moderators?broadcaster_id=${broadcasterId}&user_id=${userId}`);
+    await this.axios.delete(
+      `/moderation/moderators?broadcaster_id=${broadcasterId}&user_id=${userId}`
+    );
   }
 
-  async getModerators(broadcasterId: string, params?: {
-    userIds?: string[];
-    first?: number;
-    after?: string;
-  }): Promise<{ moderators: Array<{ user_id: string; user_login: string; user_name: string }>; cursor?: string }> {
+  async getModerators(
+    broadcasterId: string,
+    params?: {
+      userIds?: string[];
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{
+    moderators: Array<{ user_id: string; user_login: string; user_name: string }>;
+    cursor?: string;
+  }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.userIds) {
       for (let id of params.userIds) query.append('user_id', id);
@@ -775,7 +944,11 @@ export class TwitchClient {
     if (params?.after) query.set('after', params.after);
 
     let response = await this.axios.get(`/moderation/moderators?${query.toString()}`);
-    let data = response.data as TwitchResponse<{ user_id: string; user_login: string; user_name: string }>;
+    let data = response.data as TwitchResponse<{
+      user_id: string;
+      user_login: string;
+      user_name: string;
+    }>;
     return { moderators: data.data, cursor: data.pagination?.cursor };
   }
 
@@ -784,14 +957,22 @@ export class TwitchClient {
   }
 
   async removeVip(broadcasterId: string, userId: string): Promise<void> {
-    await this.axios.delete(`/channels/vips?broadcaster_id=${broadcasterId}&user_id=${userId}`);
+    await this.axios.delete(
+      `/channels/vips?broadcaster_id=${broadcasterId}&user_id=${userId}`
+    );
   }
 
-  async getVips(broadcasterId: string, params?: {
-    userIds?: string[];
-    first?: number;
-    after?: string;
-  }): Promise<{ vips: Array<{ user_id: string; user_login: string; user_name: string }>; cursor?: string }> {
+  async getVips(
+    broadcasterId: string,
+    params?: {
+      userIds?: string[];
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{
+    vips: Array<{ user_id: string; user_login: string; user_name: string }>;
+    cursor?: string;
+  }> {
     let query = new URLSearchParams({ broadcaster_id: broadcasterId });
     if (params?.userIds) {
       for (let id of params.userIds) query.append('user_id', id);
@@ -800,43 +981,60 @@ export class TwitchClient {
     if (params?.after) query.set('after', params.after);
 
     let response = await this.axios.get(`/channels/vips?${query.toString()}`);
-    let data = response.data as TwitchResponse<{ user_id: string; user_login: string; user_name: string }>;
+    let data = response.data as TwitchResponse<{
+      user_id: string;
+      user_login: string;
+      user_name: string;
+    }>;
     return { vips: data.data, cursor: data.pagination?.cursor };
   }
 
   // ─── Search ─────────────────────────────────────────────────
 
-  async searchChannels(query: string, params?: {
-    first?: number;
-    after?: string;
-    liveOnly?: boolean;
-  }): Promise<{ channels: Array<{
-    broadcaster_language: string;
-    broadcaster_login: string;
-    display_name: string;
-    game_id: string;
-    game_name: string;
-    id: string;
-    is_live: boolean;
-    tags: string[];
-    thumbnail_url: string;
-    title: string;
-    started_at: string;
-  }>; cursor?: string }> {
+  async searchChannels(
+    query: string,
+    params?: {
+      first?: number;
+      after?: string;
+      liveOnly?: boolean;
+    }
+  ): Promise<{
+    channels: Array<{
+      broadcaster_language: string;
+      broadcaster_login: string;
+      display_name: string;
+      game_id: string;
+      game_name: string;
+      id: string;
+      is_live: boolean;
+      tags: string[];
+      thumbnail_url: string;
+      title: string;
+      started_at: string;
+    }>;
+    cursor?: string;
+  }> {
     let searchParams = new URLSearchParams({ query });
     if (params?.first) searchParams.set('first', params.first.toString());
     if (params?.after) searchParams.set('after', params.after);
-    if (params?.liveOnly !== undefined) searchParams.set('live_only', params.liveOnly.toString());
+    if (params?.liveOnly !== undefined)
+      searchParams.set('live_only', params.liveOnly.toString());
 
     let response = await this.axios.get(`/search/channels?${searchParams.toString()}`);
     let data = response.data as any;
     return { channels: data.data, cursor: data.pagination?.cursor };
   }
 
-  async searchCategories(query: string, params?: {
-    first?: number;
-    after?: string;
-  }): Promise<{ categories: Array<{ id: string; name: string; box_art_url: string }>; cursor?: string }> {
+  async searchCategories(
+    query: string,
+    params?: {
+      first?: number;
+      after?: string;
+    }
+  ): Promise<{
+    categories: Array<{ id: string; name: string; box_art_url: string }>;
+    cursor?: string;
+  }> {
     let searchParams = new URLSearchParams({ query });
     if (params?.first) searchParams.set('first', params.first.toString());
     if (params?.after) searchParams.set('after', params.after);
@@ -853,7 +1051,17 @@ export class TwitchClient {
     period?: string;
     startedAt?: string;
     userId?: string;
-  }): Promise<{ entries: Array<{ user_id: string; user_login: string; user_name: string; rank: number; score: number }>; dateRange: { started_at: string; ended_at: string }; total: number }> {
+  }): Promise<{
+    entries: Array<{
+      user_id: string;
+      user_login: string;
+      user_name: string;
+      rank: number;
+      score: number;
+    }>;
+    dateRange: { started_at: string; ended_at: string };
+    total: number;
+  }> {
     let query = new URLSearchParams();
     if (params?.count) query.set('count', params.count.toString());
     if (params?.period) query.set('period', params.period);
@@ -865,7 +1073,7 @@ export class TwitchClient {
     return {
       entries: data.data,
       dateRange: data.date_range,
-      total: data.total,
+      total: data.total
     };
   }
 }

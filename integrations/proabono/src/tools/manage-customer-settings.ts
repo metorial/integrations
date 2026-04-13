@@ -14,7 +14,7 @@ let billingAddressSchema = z.object({
   country: z.string().optional().describe('Country (ISO 3166-1 alpha-2)'),
   region: z.string().optional().describe('Region (ISO 3166-2)'),
   phone: z.string().optional().describe('Phone number'),
-  taxInformation: z.string().optional().describe('Tax identification number'),
+  taxInformation: z.string().optional().describe('Tax identification number')
 });
 
 let paymentSettingsSchema = z.object({
@@ -22,47 +22,65 @@ let paymentSettingsSchema = z.object({
   isAutoBilling: z.boolean().optional().describe('Whether auto-billing is enabled'),
   isGreyListed: z.boolean().optional().describe('Suspicious activity flag'),
   noteInvoice: z.string().optional().describe('Custom invoice note'),
-  dateNextBilling: z.string().optional().describe('Next billing date'),
+  dateNextBilling: z.string().optional().describe('Next billing date')
 });
 
-export let manageCustomerSettings = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Customer Settings',
-    key: 'manage_customer_settings',
-    description: `Get or update a customer's billing address and payment settings.
+export let manageCustomerSettings = SlateTool.create(spec, {
+  name: 'Manage Customer Settings',
+  key: 'manage_customer_settings',
+  description: `Get or update a customer's billing address and payment settings.
 Billing address includes company info, address, phone, and tax information.
 Payment settings control auto-billing, grey list status, invoice notes, and payment method.`,
-    instructions: [
-      'Use "get_billing_address" or "update_billing_address" to manage the billing address.',
-      'Use "get_payment_settings" or "update_payment_settings" to manage payment configuration.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Use "get_billing_address" or "update_billing_address" to manage the billing address.',
+    'Use "get_payment_settings" or "update_payment_settings" to manage payment configuration.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['get_billing_address', 'update_billing_address', 'get_payment_settings', 'update_payment_settings']).describe('Action to perform'),
-    referenceCustomer: z.string().describe('Customer reference'),
-    billingAddress: billingAddressSchema.optional().describe('Billing address fields to update'),
-    paymentSettings: z.object({
-      isAutoBilling: z.boolean().optional().describe('Enable/disable auto-billing'),
-      isGreyListed: z.boolean().optional().describe('Set grey list flag'),
-      noteInvoice: z.string().optional().describe('Invoice footer note'),
-      dateNextBilling: z.string().optional().describe('Next billing date (ISO 8601)'),
-      typePayment: z.string().optional().describe('Payment type (ExternalBank, ExternalCash, ExternalCheck, ExternalOther)'),
-    }).optional().describe('Payment settings to update'),
-  }))
-  .output(z.object({
-    billingAddress: billingAddressSchema.optional().describe('Current billing address'),
-    paymentSettings: paymentSettingsSchema.optional().describe('Current payment settings'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'get_billing_address',
+          'update_billing_address',
+          'get_payment_settings',
+          'update_payment_settings'
+        ])
+        .describe('Action to perform'),
+      referenceCustomer: z.string().describe('Customer reference'),
+      billingAddress: billingAddressSchema
+        .optional()
+        .describe('Billing address fields to update'),
+      paymentSettings: z
+        .object({
+          isAutoBilling: z.boolean().optional().describe('Enable/disable auto-billing'),
+          isGreyListed: z.boolean().optional().describe('Set grey list flag'),
+          noteInvoice: z.string().optional().describe('Invoice footer note'),
+          dateNextBilling: z.string().optional().describe('Next billing date (ISO 8601)'),
+          typePayment: z
+            .string()
+            .optional()
+            .describe(
+              'Payment type (ExternalBank, ExternalCash, ExternalCheck, ExternalOther)'
+            )
+        })
+        .optional()
+        .describe('Payment settings to update')
+    })
+  )
+  .output(
+    z.object({
+      billingAddress: billingAddressSchema.optional().describe('Current billing address'),
+      paymentSettings: paymentSettingsSchema.optional().describe('Current payment settings')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ProAbonoClient({
       token: ctx.auth.token,
-      apiEndpoint: ctx.config.apiEndpoint,
+      apiEndpoint: ctx.config.apiEndpoint
     });
 
     let { action, referenceCustomer } = ctx.input;
@@ -72,7 +90,7 @@ Payment settings control auto-billing, grey list status, invoice notes, and paym
       let billingAddress = mapBillingAddress(result);
       return {
         output: { billingAddress },
-        message: `Retrieved billing address for customer **${referenceCustomer}**`,
+        message: `Retrieved billing address for customer **${referenceCustomer}**`
       };
     }
 
@@ -90,12 +108,12 @@ Payment settings control auto-billing, grey list status, invoice notes, and paym
         Country: addr.country,
         Region: addr.region,
         Phone: addr.phone,
-        TaxInformation: addr.taxInformation,
+        TaxInformation: addr.taxInformation
       });
       let billingAddress = mapBillingAddress(result);
       return {
         output: { billingAddress },
-        message: `Updated billing address for customer **${referenceCustomer}**`,
+        message: `Updated billing address for customer **${referenceCustomer}**`
       };
     }
 
@@ -104,29 +122,31 @@ Payment settings control auto-billing, grey list status, invoice notes, and paym
       let paymentSettings = mapPaymentSettings(result);
       return {
         output: { paymentSettings },
-        message: `Retrieved payment settings for customer **${referenceCustomer}** — auto-billing: ${paymentSettings.isAutoBilling ?? 'n/a'}`,
+        message: `Retrieved payment settings for customer **${referenceCustomer}** — auto-billing: ${paymentSettings.isAutoBilling ?? 'n/a'}`
       };
     }
 
     if (action === 'update_payment_settings') {
-      if (!ctx.input.paymentSettings) throw new Error('paymentSettings is required for update');
+      if (!ctx.input.paymentSettings)
+        throw new Error('paymentSettings is required for update');
       let ps = ctx.input.paymentSettings;
       let result = await client.updatePaymentSettings(referenceCustomer, {
         IsAutoBilling: ps.isAutoBilling,
         IsGreyListed: ps.isGreyListed,
         NoteInvoice: ps.noteInvoice,
         DateNextBilling: ps.dateNextBilling,
-        TypePayment: ps.typePayment,
+        TypePayment: ps.typePayment
       });
       let paymentSettings = mapPaymentSettings(result);
       return {
         output: { paymentSettings },
-        message: `Updated payment settings for customer **${referenceCustomer}**`,
+        message: `Updated payment settings for customer **${referenceCustomer}**`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let mapBillingAddress = (raw: any) => ({
   company: raw?.Company,
@@ -139,7 +159,7 @@ let mapBillingAddress = (raw: any) => ({
   country: raw?.Country,
   region: raw?.Region,
   phone: raw?.Phone,
-  taxInformation: raw?.TaxInformation,
+  taxInformation: raw?.TaxInformation
 });
 
 let mapPaymentSettings = (raw: any) => ({
@@ -147,5 +167,5 @@ let mapPaymentSettings = (raw: any) => ({
   isAutoBilling: raw?.IsAutoBilling,
   isGreyListed: raw?.IsGreyListed,
   noteInvoice: raw?.NoteInvoice,
-  dateNextBilling: raw?.DateNextBilling,
+  dateNextBilling: raw?.DateNextBilling
 });

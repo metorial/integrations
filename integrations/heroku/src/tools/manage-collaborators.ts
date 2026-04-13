@@ -3,31 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCollaborators = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Collaborators',
-    key: 'manage_collaborators',
-    description: `List, add, or remove collaborators who have access to a Heroku app. Collaborators can deploy and manage the app based on their permissions.`,
-  }
-)
-  .input(z.object({
-    appIdOrName: z.string().describe('App name or unique identifier'),
-    action: z.enum(['list', 'add', 'remove']).describe('Operation to perform'),
-    userEmail: z.string().optional().describe('Email of the collaborator (required for "add" and "remove")'),
-    silent: z.boolean().optional().describe('Suppress invitation email when adding a collaborator')
-  }))
-  .output(z.object({
-    collaborators: z.array(z.object({
-      collaboratorId: z.string().describe('Unique identifier of the collaborator entry'),
-      userEmail: z.string().describe('Email of the collaborator'),
-      userId: z.string().describe('User ID of the collaborator'),
-      role: z.string().nullable().describe('Role of the collaborator'),
-      createdAt: z.string().describe('When the collaborator was added')
-    })).optional(),
-    removed: z.boolean().optional().describe('Whether the collaborator was removed')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageCollaborators = SlateTool.create(spec, {
+  name: 'Manage Collaborators',
+  key: 'manage_collaborators',
+  description: `List, add, or remove collaborators who have access to a Heroku app. Collaborators can deploy and manage the app based on their permissions.`
+})
+  .input(
+    z.object({
+      appIdOrName: z.string().describe('App name or unique identifier'),
+      action: z.enum(['list', 'add', 'remove']).describe('Operation to perform'),
+      userEmail: z
+        .string()
+        .optional()
+        .describe('Email of the collaborator (required for "add" and "remove")'),
+      silent: z
+        .boolean()
+        .optional()
+        .describe('Suppress invitation email when adding a collaborator')
+    })
+  )
+  .output(
+    z.object({
+      collaborators: z
+        .array(
+          z.object({
+            collaboratorId: z.string().describe('Unique identifier of the collaborator entry'),
+            userEmail: z.string().describe('Email of the collaborator'),
+            userId: z.string().describe('User ID of the collaborator'),
+            role: z.string().nullable().describe('Role of the collaborator'),
+            createdAt: z.string().describe('When the collaborator was added')
+          })
+        )
+        .optional(),
+      removed: z.boolean().optional().describe('Whether the collaborator was removed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { appIdOrName, action } = ctx.input;
 

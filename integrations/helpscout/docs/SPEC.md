@@ -43,43 +43,57 @@ API keys can be generated under Your Profile > Authentication > API Keys in the 
 ## Features
 
 ### Conversation Management
+
 Create, read, update, and delete support conversations across mailboxes. Conversations can be of various types including email, chat, and phone. You can manage conversation status (active, pending, closed, spam), assign conversations to users or teams, merge conversations, move them between mailboxes, and perform bulk updates on tags and custom fields.
 
 ### Thread Management
+
 Add replies, notes, and other thread types to conversations. Agent replies send actual emails to customers. Notes are internal-only communications not visible to the customer. You can also manage attachments on threads.
 
 ### Customer Management
+
 Create and manage customer profiles including their contact information (emails, phone numbers, addresses, social profiles, chat handles, and websites). Customers can have custom properties. You can search and list customers and manage their associated organizations.
 
 ### Organization Management
+
 Create and manage company/organization records. Organizations can be associated with multiple customers and can have custom properties.
 
 ### Mailbox Management
+
 Read mailbox configuration including folders and custom fields. Mailboxes represent shared inboxes where conversations are received and managed.
 
 ### Tags
+
 Create, update, and delete tags used to categorize and organize conversations.
 
 ### Teams
+
 List and manage teams of users within the Help Scout account.
 
 ### User Management
+
 List and retrieve users (agents/staff) in the account. View user information and current availability status.
 
 ### Workflows
+
 List, activate, deactivate, and manually run workflows (automation rules). Workflows can be applied to specific sets of conversations.
 
 ### Knowledge Base (Docs API)
+
 Manage Docs sites, collections, categories, and articles. Create, update, and delete help articles. Manage the structure and organization of your knowledge base content.
+
 - Uses a separate API (`https://docsapi.helpscout.net/v1/`) with its own authentication (API key via Basic Auth).
 
 ### Reporting
+
 Access various reports and metrics including company-level statistics, user productivity stats, conversation volume and response time metrics, and customer satisfaction ratings. Reports can be filtered by date ranges and other parameters.
 
 ### Chat (Beacon)
+
 Manage chat conversations initiated through the Beacon widget. Retrieve chat history and details.
 
 ### Satisfaction Ratings
+
 Access customer satisfaction ratings associated with conversations.
 
 ## Events
@@ -87,7 +101,9 @@ Access customer satisfaction ratings associated with conversations.
 Webhooks enable Help Scout to call a script on your server when one or more events have happened. Configuring webhooks can be done through the Help Scout user interface or programmatically via the Inbox API. Each webhook requires a callback URL and a secret key used for HMAC-SHA1 signature verification via the `X-HelpScout-Signature` header. Webhooks support payload version V2.
 
 ### Conversation Events
+
 Triggered when conversations are modified. Available events include:
+
 - **Assigned** (`convo.assigned`) — a conversation is assigned to a user.
 - **Created** (`convo.created`) — a new conversation is created.
 - **Created via AI Answers** (`convo.ai-answers.created`) — a conversation is created through AI Answers.
@@ -102,30 +118,38 @@ Triggered when conversations are modified. Available events include:
 - **Note Created** (`convo.note.created`) — an internal note is added to a conversation.
 
 ### Customer Events
+
 Triggered when customer records change:
+
 - **Created** (`customer.created`) — a new customer is created. The customer.created webhook event is not filterable across specific inboxes, and will trigger on all customers created globally.
 - **Updated** (`customer.updated`) — a customer record is updated.
 - **Deleted** (`customer.deleted`) — a customer is deleted.
 
 ### Satisfaction Rating Events
+
 - **Rating Received** (`satisfaction.ratings`) — a customer submits a satisfaction rating.
 
 ### Beacon Chat Events
+
 - **Chat Created** (`beacon.chat.created`) — a new Beacon chat is started.
 - **Customer Replied** (`beacon.chat.customer.replied`) — a customer sends a message in a Beacon chat.
 
 ### Tag Events
+
 - **Created** (`tag.created`) — a new tag is created.
 - **Updated** (`tag.updated`) — a tag is updated.
 - **Deleted** (`tag.deleted`) — a tag is deleted.
 
 ### Organization Events
+
 - **Created** (`organization.created`) — a new organization is created.
 - **Updated** (`organization.updated`) — an organization is updated.
 - **Deleted** (`organization.deleted`) — an organization is deleted.
 
 ### User Status Events
+
 - **User Status Changed** (`user.status.changed`) — a user's availability status changes.
 
 ### Survey Response Events
+
 - **Survey Response Received** (`message.survey.response.received`) — a survey response is submitted.

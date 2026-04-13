@@ -47,7 +47,5 @@ export let provider = Slate.create({
     getAiCredits.build(),
     listPinterestBoards.build()
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

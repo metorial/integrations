@@ -22,14 +22,14 @@ import {
   listPayments,
   createPayment,
   manageCoupons,
-  sendEmail,
+  sendEmail
 } from './tools';
 import {
   orderEvents,
   customerEvents,
   productEvents,
   documentEvents,
-  paymentEvents,
+  paymentEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -56,13 +56,7 @@ export let provider = Slate.create({
     listPayments,
     createPayment,
     manageCoupons,
-    sendEmail,
+    sendEmail
   ],
-  triggers: [
-    orderEvents,
-    customerEvents,
-    productEvents,
-    documentEvents,
-    paymentEvents,
-  ],
+  triggers: [orderEvents, customerEvents, productEvents, documentEvents, paymentEvents]
 });

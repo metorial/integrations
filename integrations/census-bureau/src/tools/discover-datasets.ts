@@ -9,34 +9,48 @@ let datasetSchema = z.object({
   datasetPath: z.string().describe('Dataset path to use in queries (e.g., "acs/acs5")'),
   vintage: z.string().optional().describe('Vintage year of the dataset'),
   modified: z.string().optional().describe('Last modified date'),
-  distribution: z.array(z.object({
-    accessURL: z.string().optional().describe('API access URL'),
-    format: z.string().optional().describe('Distribution format')
-  })).optional().describe('Available distribution endpoints')
+  distribution: z
+    .array(
+      z.object({
+        accessURL: z.string().optional().describe('API access URL'),
+        format: z.string().optional().describe('Distribution format')
+      })
+    )
+    .optional()
+    .describe('Available distribution endpoints')
 });
 
-export let discoverDatasets = SlateTool.create(
-  spec,
-  {
-    name: 'Discover Datasets',
-    key: 'discover_datasets',
-    description: `Search and browse available Census Bureau datasets. Returns dataset metadata including titles, descriptions, paths, and vintage years.
+export let discoverDatasets = SlateTool.create(spec, {
+  name: 'Discover Datasets',
+  key: 'discover_datasets',
+  description: `Search and browse available Census Bureau datasets. Returns dataset metadata including titles, descriptions, paths, and vintage years.
 
 Use this tool to find the correct dataset path and vintage year before querying data. You can filter by vintage year and/or keyword to narrow results.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    vintage: z.string().optional().describe('Filter datasets by vintage year (e.g., "2022")'),
-    keyword: z.string().optional().describe('Search keyword to filter datasets by title or description (e.g., "population", "income", "housing")')
-  }))
-  .output(z.object({
-    datasets: z.array(datasetSchema).describe('List of matching datasets'),
-    totalFound: z.number().describe('Total number of datasets found')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      vintage: z
+        .string()
+        .optional()
+        .describe('Filter datasets by vintage year (e.g., "2022")'),
+      keyword: z
+        .string()
+        .optional()
+        .describe(
+          'Search keyword to filter datasets by title or description (e.g., "population", "income", "housing")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      datasets: z.array(datasetSchema).describe('List of matching datasets'),
+      totalFound: z.number().describe('Total number of datasets found')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CensusDataClient(ctx.auth.token);
 
     let datasets = await client.listDatasets({
@@ -67,4 +81,5 @@ Use this tool to find the correct dataset path and vintage year before querying 
       },
       message: `Found **${datasets.length}** datasets${filterDesc.length ? ` matching ${filterDesc.join(' and ')}` : ''}. Showing up to 100 results.`
     };
-  }).build();
+  })
+  .build();

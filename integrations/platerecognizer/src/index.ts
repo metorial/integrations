@@ -8,7 +8,7 @@ import {
   recognizeUsdot,
   recognizeContainer,
   recognizeBoat,
-  getUsage,
+  getUsage
 } from './tools';
 import { plateRecognized } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     recognizeUsdot,
     recognizeContainer,
     recognizeBoat,
-    getUsage,
+    getUsage
   ],
-  triggers: [
-    plateRecognized,
-  ],
+  triggers: [plateRecognized]
 });

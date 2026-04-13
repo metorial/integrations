@@ -2,37 +2,38 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Events',
-    key: 'invoice_events',
-    description: 'Triggers on invoice lifecycle events: created, updated, or payment failed.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Paystack event type'),
-    eventId: z.string().describe('Unique event identifier'),
-    invoiceCode: z.string().describe('Invoice/payment request code'),
-    amount: z.number().describe('Invoice amount'),
-    currency: z.string().describe('Currency'),
-    status: z.string().describe('Invoice status'),
-    description: z.string().nullable().describe('Invoice description'),
-    customerEmail: z.string().describe('Customer email'),
-    dueDate: z.string().nullable().describe('Due date'),
-  }))
-  .output(z.object({
-    invoiceCode: z.string().describe('Invoice/payment request code'),
-    amount: z.number().describe('Invoice amount'),
-    currency: z.string().describe('Currency'),
-    status: z.string().describe('Invoice status'),
-    description: z.string().nullable().describe('Invoice description'),
-    customerEmail: z.string().describe('Customer email'),
-    dueDate: z.string().nullable().describe('Due date'),
-  }))
+export let invoiceEvents = SlateTrigger.create(spec, {
+  name: 'Invoice Events',
+  key: 'invoice_events',
+  description: 'Triggers on invoice lifecycle events: created, updated, or payment failed.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Paystack event type'),
+      eventId: z.string().describe('Unique event identifier'),
+      invoiceCode: z.string().describe('Invoice/payment request code'),
+      amount: z.number().describe('Invoice amount'),
+      currency: z.string().describe('Currency'),
+      status: z.string().describe('Invoice status'),
+      description: z.string().nullable().describe('Invoice description'),
+      customerEmail: z.string().describe('Customer email'),
+      dueDate: z.string().nullable().describe('Due date')
+    })
+  )
+  .output(
+    z.object({
+      invoiceCode: z.string().describe('Invoice/payment request code'),
+      amount: z.number().describe('Invoice amount'),
+      currency: z.string().describe('Currency'),
+      status: z.string().describe('Invoice status'),
+      description: z.string().nullable().describe('Invoice description'),
+      customerEmail: z.string().describe('Customer email'),
+      dueDate: z.string().nullable().describe('Due date')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
       let event = body.event as string;
 
       if (!event.startsWith('invoice.') && !event.startsWith('paymentrequest.')) {
@@ -53,19 +54,19 @@ export let invoiceEvents = SlateTrigger.create(
             status: inv.status ?? '',
             description: inv.description ?? null,
             customerEmail: customer.email ?? '',
-            dueDate: inv.due_date ?? null,
-          },
-        ],
+            dueDate: inv.due_date ?? null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
         'invoice.create': 'invoice.created',
         'invoice.update': 'invoice.updated',
         'invoice.payment_failed': 'invoice.payment_failed',
         'paymentrequest.pending': 'payment_request.pending',
-        'paymentrequest.success': 'payment_request.successful',
+        'paymentrequest.success': 'payment_request.successful'
       };
 
       return {
@@ -78,9 +79,9 @@ export let invoiceEvents = SlateTrigger.create(
           status: ctx.input.status,
           description: ctx.input.description,
           customerEmail: ctx.input.customerEmail,
-          dueDate: ctx.input.dueDate,
-        },
+          dueDate: ctx.input.dueDate
+        }
       };
-    },
+    }
   })
   .build();

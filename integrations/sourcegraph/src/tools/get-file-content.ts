@@ -3,37 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFileContent = SlateTool.create(
-  spec,
-  {
-    name: 'Get File Content',
-    key: 'get_file_content',
-    description: `Read the content of a file or list directory entries from a repository on Sourcegraph.
+export let getFileContent = SlateTool.create(spec, {
+  name: 'Get File Content',
+  key: 'get_file_content',
+  description: `Read the content of a file or list directory entries from a repository on Sourcegraph.
 Provide the full repository name (e.g., \`github.com/owner/repo\`) and file path.
 Optionally specify a revision (branch, tag, or commit SHA).`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    repositoryName: z.string().describe('Full repository name (e.g., github.com/owner/repo)'),
-    filePath: z.string().describe('Path to the file or directory within the repository'),
-    revision: z.string().optional().describe('Branch name, tag, or commit SHA. Defaults to HEAD.')
-  }))
-  .output(z.object({
-    path: z.string().describe('Path of the file or directory'),
-    content: z.string().optional().describe('File content (for files)'),
-    isBinary: z.boolean().optional().describe('Whether the file is binary'),
-    byteSize: z.number().optional().describe('File size in bytes'),
-    entries: z.array(z.object({
-      name: z.string(),
-      path: z.string(),
-      isDirectory: z.boolean()
-    })).optional().describe('Directory entries (for directories)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      repositoryName: z
+        .string()
+        .describe('Full repository name (e.g., github.com/owner/repo)'),
+      filePath: z.string().describe('Path to the file or directory within the repository'),
+      revision: z
+        .string()
+        .optional()
+        .describe('Branch name, tag, or commit SHA. Defaults to HEAD.')
+    })
+  )
+  .output(
+    z.object({
+      path: z.string().describe('Path of the file or directory'),
+      content: z.string().optional().describe('File content (for files)'),
+      isBinary: z.boolean().optional().describe('Whether the file is binary'),
+      byteSize: z.number().optional().describe('File size in bytes'),
+      entries: z
+        .array(
+          z.object({
+            name: z.string(),
+            path: z.string(),
+            isDirectory: z.boolean()
+          })
+        )
+        .optional()
+        .describe('Directory entries (for directories)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -86,4 +97,5 @@ Optionally specify a revision (branch, tag, or commit SHA).`,
     }
 
     throw new Error(`Path not found: ${ctx.input.filePath} in ${ctx.input.repositoryName}`);
-  }).build();
+  })
+  .build();

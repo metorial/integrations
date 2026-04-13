@@ -10,11 +10,13 @@ let apiClient = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -28,7 +30,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let codeVerifier = generateCodeVerifier();
       let codeChallenge = await generateCodeChallenge(codeVerifier);
 
@@ -48,21 +50,25 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let codeVerifier = ctx.callbackState?.codeVerifier as string;
 
-      let response = await tokenClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        code: ctx.code,
-        code_verifier: codeVerifier
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await tokenClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          code: ctx.code,
+          code_verifier: codeVerifier
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -76,21 +82,25 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await tokenClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await tokenClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -104,7 +114,9 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+    }) => {
       let response = await apiClient.get('/me', {
         headers: {
           Authorization: `OAuth ${ctx.output.token}`
@@ -133,17 +145,21 @@ export let auth = SlateAuth.create()
       clientSecret: z.string().describe('SoundCloud application Client Secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let response = await tokenClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'client_credentials'
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${credentials}`
+      let response = await tokenClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'client_credentials'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();

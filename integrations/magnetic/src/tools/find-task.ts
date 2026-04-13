@@ -18,27 +18,30 @@ let taskSchema = z.object({
   groupingName: z.string().optional().describe('Name of the linked opportunity/job')
 });
 
-export let findTask = SlateTool.create(
-  spec,
-  {
-    name: 'Find Tasks',
-    key: 'find_task',
-    description: `Search for tasks by name or description. Returns matching tasks with their details including status, time tracking, and linked opportunity/job.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let findTask = SlateTool.create(spec, {
+  name: 'Find Tasks',
+  key: 'find_task',
+  description: `Search for tasks by name or description. Returns matching tasks with their details including status, time tracking, and linked opportunity/job.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    searchField: z.enum(['name', 'description']).describe('Field to search by: "name" or "description"'),
-    searchValue: z.string().describe('Text to search for')
-  }))
-  .output(z.object({
-    tasks: z.array(taskSchema).describe('List of matching tasks'),
-    totalCount: z.number().describe('Number of tasks found')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      searchField: z
+        .enum(['name', 'description'])
+        .describe('Field to search by: "name" or "description"'),
+      searchValue: z.string().describe('Text to search for')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskSchema).describe('List of matching tasks'),
+      totalCount: z.number().describe('Number of tasks found')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MagneticClient({ token: ctx.auth.token });
 
     let apiSearchField = ctx.input.searchField === 'name' ? 'task' : 'description';

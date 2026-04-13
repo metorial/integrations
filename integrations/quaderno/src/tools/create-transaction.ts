@@ -19,50 +19,66 @@ let evidenceSchema = z.object({
   bankCountry: z.string().optional().describe('Country from bank details')
 });
 
-export let createTransaction = SlateTool.create(
-  spec,
-  {
-    name: 'Create Transaction',
-    key: 'create_transaction',
-    description: `Record a sale or refund transaction in Quaderno. Quaderno uses this data for invoices, tax reports, and compliance alerts. Location evidence is used to determine the correct tax treatment.`,
-    instructions: [
-      'Use type "sale" for new sales and "refund" for refunds',
-      'Provide location evidence (billing country, IP, bank country) for accurate tax calculation'
-    ],
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    type: z.enum(['sale', 'refund']).describe('Transaction type'),
-    currency: z.string().optional().describe('Currency code (e.g., "USD", "EUR")'),
-    contactId: z.string().optional().describe('Existing contact ID'),
-    contactFirstName: z.string().optional().describe('Customer first name (if creating new contact)'),
-    contactLastName: z.string().optional().describe('Customer last name'),
-    contactEmail: z.string().optional().describe('Customer email'),
-    contactTaxId: z.string().optional().describe('Customer tax ID'),
-    contactCountry: z.string().optional().describe('Customer country code'),
-    contactPostalCode: z.string().optional().describe('Customer postal code'),
-    contactCity: z.string().optional().describe('Customer city'),
-    contactStreetLine1: z.string().optional().describe('Customer street address'),
-    items: z.array(transactionItemSchema).min(1).describe('Transaction line items'),
-    evidence: evidenceSchema.optional().describe('Location evidence for tax calculation'),
-    paymentMethod: z.string().optional().describe('Payment method (e.g., "credit_card", "paypal", "wire_transfer")'),
-    paymentProcessorId: z.string().optional().describe('ID from payment processor (e.g., Stripe charge ID)'),
-    paymentProcessor: z.string().optional().describe('Payment processor name (e.g., "stripe", "paypal")'),
-    notes: z.string().optional().describe('Transaction notes'),
-    tag: z.string().optional().describe('Tag for categorization'),
-    customMetadata: z.record(z.string(), z.string()).optional().describe('Custom metadata key-value pairs')
-  }))
-  .output(z.object({
-    transactionId: z.string().optional().describe('Transaction document ID'),
-    number: z.string().optional().describe('Document number'),
-    type: z.string().optional().describe('Transaction type'),
-    currency: z.string().optional().describe('Currency'),
-    total: z.string().optional().describe('Total amount'),
-    state: z.string().optional().describe('Document state'),
-    permalink: z.string().optional().describe('Public permalink')
-  }))
-  .handleInvocation(async (ctx) => {
+export let createTransaction = SlateTool.create(spec, {
+  name: 'Create Transaction',
+  key: 'create_transaction',
+  description: `Record a sale or refund transaction in Quaderno. Quaderno uses this data for invoices, tax reports, and compliance alerts. Location evidence is used to determine the correct tax treatment.`,
+  instructions: [
+    'Use type "sale" for new sales and "refund" for refunds',
+    'Provide location evidence (billing country, IP, bank country) for accurate tax calculation'
+  ],
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      type: z.enum(['sale', 'refund']).describe('Transaction type'),
+      currency: z.string().optional().describe('Currency code (e.g., "USD", "EUR")'),
+      contactId: z.string().optional().describe('Existing contact ID'),
+      contactFirstName: z
+        .string()
+        .optional()
+        .describe('Customer first name (if creating new contact)'),
+      contactLastName: z.string().optional().describe('Customer last name'),
+      contactEmail: z.string().optional().describe('Customer email'),
+      contactTaxId: z.string().optional().describe('Customer tax ID'),
+      contactCountry: z.string().optional().describe('Customer country code'),
+      contactPostalCode: z.string().optional().describe('Customer postal code'),
+      contactCity: z.string().optional().describe('Customer city'),
+      contactStreetLine1: z.string().optional().describe('Customer street address'),
+      items: z.array(transactionItemSchema).min(1).describe('Transaction line items'),
+      evidence: evidenceSchema.optional().describe('Location evidence for tax calculation'),
+      paymentMethod: z
+        .string()
+        .optional()
+        .describe('Payment method (e.g., "credit_card", "paypal", "wire_transfer")'),
+      paymentProcessorId: z
+        .string()
+        .optional()
+        .describe('ID from payment processor (e.g., Stripe charge ID)'),
+      paymentProcessor: z
+        .string()
+        .optional()
+        .describe('Payment processor name (e.g., "stripe", "paypal")'),
+      notes: z.string().optional().describe('Transaction notes'),
+      tag: z.string().optional().describe('Tag for categorization'),
+      customMetadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom metadata key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().optional().describe('Transaction document ID'),
+      number: z.string().optional().describe('Document number'),
+      type: z.string().optional().describe('Transaction type'),
+      currency: z.string().optional().describe('Currency'),
+      total: z.string().optional().describe('Total amount'),
+      state: z.string().optional().describe('Document state'),
+      permalink: z.string().optional().describe('Public permalink')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let data: Record<string, any> = {
@@ -94,7 +110,8 @@ export let createTransaction = SlateTool.create(
     if (ctx.input.contactCountry) data.contact_country = ctx.input.contactCountry;
     if (ctx.input.contactPostalCode) data.contact_postal_code = ctx.input.contactPostalCode;
     if (ctx.input.contactCity) data.contact_city = ctx.input.contactCity;
-    if (ctx.input.contactStreetLine1) data.contact_street_line_1 = ctx.input.contactStreetLine1;
+    if (ctx.input.contactStreetLine1)
+      data.contact_street_line_1 = ctx.input.contactStreetLine1;
 
     // Payment details
     if (ctx.input.paymentMethod) data.payment_method = ctx.input.paymentMethod;
@@ -123,4 +140,5 @@ export let createTransaction = SlateTool.create(
       },
       message: `Created ${ctx.input.type} transaction **#${result.number || result.id}** for ${result.total} ${result.currency || ''}`
     };
-  }).build();
+  })
+  .build();

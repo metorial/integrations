@@ -11,28 +11,54 @@ export let campaignAnalytics = SlateTool.create(spec, {
     'Use reportType "summary" for an overview of campaign performance.',
     'Use reportType "ab_summary" for A/B test campaign results.',
     'Use reportType "stats" with a statsType to get detailed breakdowns by opens, clicks, bounces, unsubscribes, etc.',
-    'Sent stats are retained for 90 days; opened/clicked stats for 180 days.',
+    'Sent stats are retained for 90 days; opened/clicked stats for 180 days.'
   ],
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    campaignId: z.string().describe('ID of the campaign to analyze'),
-    reportType: z.enum(['summary', 'ab_summary', 'stats', 'links', 'locations']).describe('Type of analytics report to retrieve'),
-    statsType: z.enum(['Sent', 'Opened', 'LinkClicked', 'Forward', 'Unsubscribed', 'Bounced', 'Complained']).optional().describe('Specific stat type (required when reportType is "stats")'),
-    page: z.number().optional().default(1).describe('Page number for paginated stats'),
-    pageSize: z.number().optional().default(50).describe('Items per page for paginated stats'),
-    fromDate: z.string().optional().describe('Start date filter for stats (e.g. "2024-01-01")'),
-    toDate: z.string().optional().describe('End date filter for stats (e.g. "2024-12-31")'),
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    reportType: z.string().describe('Type of report returned'),
-    analytics: z.record(z.string(), z.unknown()).describe('Analytics data returned by the API'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      campaignId: z.string().describe('ID of the campaign to analyze'),
+      reportType: z
+        .enum(['summary', 'ab_summary', 'stats', 'links', 'locations'])
+        .describe('Type of analytics report to retrieve'),
+      statsType: z
+        .enum([
+          'Sent',
+          'Opened',
+          'LinkClicked',
+          'Forward',
+          'Unsubscribed',
+          'Bounced',
+          'Complained'
+        ])
+        .optional()
+        .describe('Specific stat type (required when reportType is "stats")'),
+      page: z.number().optional().default(1).describe('Page number for paginated stats'),
+      pageSize: z
+        .number()
+        .optional()
+        .default(50)
+        .describe('Items per page for paginated stats'),
+      fromDate: z
+        .string()
+        .optional()
+        .describe('Start date filter for stats (e.g. "2024-01-01")'),
+      toDate: z.string().optional().describe('End date filter for stats (e.g. "2024-12-31")')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      reportType: z.string().describe('Type of report returned'),
+      analytics: z
+        .record(z.string(), z.unknown())
+        .describe('Analytics data returned by the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MoosendClient({ token: ctx.auth.token });
     let { campaignId, reportType } = ctx.input;
     let analytics: Record<string, unknown>;
@@ -54,7 +80,7 @@ export let campaignAnalytics = SlateTool.create(spec, {
           ctx.input.page,
           ctx.input.pageSize,
           ctx.input.fromDate,
-          ctx.input.toDate,
+          ctx.input.toDate
         );
         break;
       case 'links':
@@ -69,9 +95,9 @@ export let campaignAnalytics = SlateTool.create(spec, {
       output: {
         campaignId,
         reportType,
-        analytics: analytics!,
+        analytics: analytics!
       },
-      message: `Retrieved **${reportType}** analytics for campaign ${campaignId}.`,
+      message: `Retrieved **${reportType}** analytics for campaign ${campaignId}.`
     };
   })
   .build();

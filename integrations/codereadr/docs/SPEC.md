@@ -13,6 +13,7 @@ CodeREADr uses API keys for authentication. All API requests are made to a singl
 The API key is passed as a parameter (`api_key`) in each request. Requests include the `api_key` parameter along with `section` and `action` parameters to specify what operation to perform.
 
 For example, to retrieve users:
+
 ```
 POST https://api.codereadr.com/api/
   section=users

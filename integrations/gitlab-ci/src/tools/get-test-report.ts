@@ -3,53 +3,71 @@ import { spec } from '../spec';
 import { createClient, resolveProjectId } from '../lib/helpers';
 import { z } from 'zod';
 
-export let getTestReport = SlateTool.create(
-  spec,
-  {
-    name: 'Get Test Report',
-    key: 'get_test_report',
-    description: `Retrieve the unit test report for a pipeline, including total counts, success/failure breakdowns, test suites, and individual test case details. Use "summary" mode for a quick overview or "full" mode for detailed test case information.`,
-    tags: {
-      readOnly: true
-    }
+export let getTestReport = SlateTool.create(spec, {
+  name: 'Get Test Report',
+  key: 'get_test_report',
+  description: `Retrieve the unit test report for a pipeline, including total counts, success/failure breakdowns, test suites, and individual test case details. Use "summary" mode for a quick overview or "full" mode for detailed test case information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().optional().describe('Project ID or URL-encoded path. Falls back to config default.'),
-    pipelineId: z.number().describe('The pipeline ID to get the test report for'),
-    mode: z.enum(['summary', 'full']).default('summary').describe('Level of detail: summary for counts only, full for test cases')
-  }))
-  .output(z.object({
-    totalTime: z.number().optional(),
-    totalCount: z.number().optional(),
-    successCount: z.number().optional(),
-    failedCount: z.number().optional(),
-    skippedCount: z.number().optional(),
-    errorCount: z.number().optional(),
-    testSuites: z.array(z.object({
-      name: z.string(),
+})
+  .input(
+    z.object({
+      projectId: z
+        .string()
+        .optional()
+        .describe('Project ID or URL-encoded path. Falls back to config default.'),
+      pipelineId: z.number().describe('The pipeline ID to get the test report for'),
+      mode: z
+        .enum(['summary', 'full'])
+        .default('summary')
+        .describe('Level of detail: summary for counts only, full for test cases')
+    })
+  )
+  .output(
+    z.object({
       totalTime: z.number().optional(),
       totalCount: z.number().optional(),
       successCount: z.number().optional(),
       failedCount: z.number().optional(),
       skippedCount: z.number().optional(),
       errorCount: z.number().optional(),
-      testCases: z.array(z.object({
-        name: z.string(),
-        classname: z.string().optional(),
-        status: z.string(),
-        executionTime: z.number().optional().nullable(),
-        systemOutput: z.string().optional().nullable(),
-        stackTrace: z.string().optional().nullable()
-      })).optional()
-    })).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+      testSuites: z
+        .array(
+          z.object({
+            name: z.string(),
+            totalTime: z.number().optional(),
+            totalCount: z.number().optional(),
+            successCount: z.number().optional(),
+            failedCount: z.number().optional(),
+            skippedCount: z.number().optional(),
+            errorCount: z.number().optional(),
+            testCases: z
+              .array(
+                z.object({
+                  name: z.string(),
+                  classname: z.string().optional(),
+                  status: z.string(),
+                  executionTime: z.number().optional().nullable(),
+                  systemOutput: z.string().optional().nullable(),
+                  stackTrace: z.string().optional().nullable()
+                })
+              )
+              .optional()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let projectId = resolveProjectId(ctx.input.projectId, ctx.config.projectId);
 
     if (ctx.input.mode === 'summary') {
-      let r = await client.getPipelineTestReportSummary(projectId, ctx.input.pipelineId) as any;
+      let r = (await client.getPipelineTestReportSummary(
+        projectId,
+        ctx.input.pipelineId
+      )) as any;
       let total = r.total || {};
       return {
         output: {
@@ -73,7 +91,7 @@ export let getTestReport = SlateTool.create(
       };
     }
 
-    let r = await client.getPipelineTestReport(projectId, ctx.input.pipelineId) as any;
+    let r = (await client.getPipelineTestReport(projectId, ctx.input.pipelineId)) as any;
     return {
       output: {
         totalTime: r.total_time,

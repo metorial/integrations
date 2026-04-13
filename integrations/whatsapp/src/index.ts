@@ -16,10 +16,7 @@ import {
   registerPhoneNumber,
   markMessageRead
 } from './tools';
-import {
-  messageReceived,
-  messageStatus
-} from './triggers';
+import { messageReceived, messageStatus } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,8 +36,5 @@ export let provider = Slate.create({
     registerPhoneNumber,
     markMessageRead
   ],
-  triggers: [
-    messageReceived,
-    messageStatus
-  ]
+  triggers: [messageReceived, messageStatus]
 });

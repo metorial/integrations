@@ -3,55 +3,68 @@ import { DuoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Retrieve detailed information about a specific Duo user, including associated phones, tokens, groups, and WebAuthn credentials.`,
-    tags: {
-      readOnly: true,
-    },
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Retrieve detailed information about a specific Duo user, including associated phones, tokens, groups, and WebAuthn credentials.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.string().describe('The Duo user ID to retrieve'),
-  }))
-  .output(z.object({
-    userId: z.string(),
-    username: z.string(),
-    email: z.string().optional(),
-    realname: z.string().optional(),
-    firstname: z.string().optional(),
-    lastname: z.string().optional(),
-    status: z.string(),
-    isEnrolled: z.boolean(),
-    lastLogin: z.number().nullable().optional(),
-    created: z.number().optional(),
-    notes: z.string().optional(),
-    phones: z.array(z.object({
-      phoneId: z.string(),
-      number: z.string().optional(),
-      name: z.string().optional(),
-      type: z.string().optional(),
-      platform: z.string().optional(),
-      activated: z.boolean().optional(),
-    })).optional(),
-    groups: z.array(z.object({
-      groupId: z.string(),
-      name: z.string(),
-    })).optional(),
-    tokens: z.array(z.object({
-      tokenId: z.string(),
-      serial: z.string().optional(),
-      type: z.string().optional(),
-    })).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('The Duo user ID to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string(),
+      username: z.string(),
+      email: z.string().optional(),
+      realname: z.string().optional(),
+      firstname: z.string().optional(),
+      lastname: z.string().optional(),
+      status: z.string(),
+      isEnrolled: z.boolean(),
+      lastLogin: z.number().nullable().optional(),
+      created: z.number().optional(),
+      notes: z.string().optional(),
+      phones: z
+        .array(
+          z.object({
+            phoneId: z.string(),
+            number: z.string().optional(),
+            name: z.string().optional(),
+            type: z.string().optional(),
+            platform: z.string().optional(),
+            activated: z.boolean().optional()
+          })
+        )
+        .optional(),
+      groups: z
+        .array(
+          z.object({
+            groupId: z.string(),
+            name: z.string()
+          })
+        )
+        .optional(),
+      tokens: z
+        .array(
+          z.object({
+            tokenId: z.string(),
+            serial: z.string().optional(),
+            type: z.string().optional()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DuoClient({
       integrationKey: ctx.auth.integrationKey,
       secretKey: ctx.auth.secretKey,
-      apiHostname: ctx.auth.apiHostname,
+      apiHostname: ctx.auth.apiHostname
     });
 
     let result = await client.getUser(ctx.input.userId);
@@ -63,18 +76,18 @@ export let getUser = SlateTool.create(
       name: p.name || undefined,
       type: p.type || undefined,
       platform: p.platform || undefined,
-      activated: p.activated,
+      activated: p.activated
     }));
 
     let groups = (u.groups || []).map((g: any) => ({
       groupId: g.group_id,
-      name: g.name,
+      name: g.name
     }));
 
     let tokens = (u.tokens || []).map((t: any) => ({
       tokenId: t.token_id,
       serial: t.serial || undefined,
-      type: t.type || undefined,
+      type: t.type || undefined
     }));
 
     return {
@@ -92,8 +105,9 @@ export let getUser = SlateTool.create(
         notes: u.notes || undefined,
         phones,
         groups,
-        tokens,
+        tokens
       },
-      message: `Retrieved user **${u.username}** (status: ${u.status}, enrolled: ${u.is_enrolled}).`,
+      message: `Retrieved user **${u.username}** (status: ${u.status}, enrolled: ${u.is_enrolled}).`
     };
-  }).build();
+  })
+  .build();

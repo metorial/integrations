@@ -16,29 +16,33 @@ let connectionSchema = z.object({
   latestActivityAt: z.string().nullable().optional().describe('Timestamp of last activity')
 });
 
-export let listConnections = SlateTool.create(
-  spec,
-  {
-    name: 'List Connections',
-    key: 'list_connections',
-    description: `Retrieve Trust Center connections (organizations/users who have accessed your Trust Center). Useful for analytics, CRM synchronization, and monitoring who is engaging with your security documentation. Supports filtering by domain and pagination.`,
-    tags: {
-      readOnly: true
-    }
+export let listConnections = SlateTool.create(spec, {
+  name: 'List Connections',
+  key: 'list_connections',
+  description: `Retrieve Trust Center connections (organizations/users who have accessed your Trust Center). Useful for analytics, CRM synchronization, and monitoring who is engaging with your security documentation. Supports filtering by domain and pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().optional().describe('Filter by domain (e.g., "acme.com" without https or www)'),
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 100)')
-  }))
-  .output(z.object({
-    connections: z.array(connectionSchema).describe('List of connections'),
-    page: z.number().describe('Current page number'),
-    perPage: z.number().describe('Results per page'),
-    totalPages: z.number().describe('Total number of pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z
+        .string()
+        .optional()
+        .describe('Filter by domain (e.g., "acme.com" without https or www)'),
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 100)')
+    })
+  )
+  .output(
+    z.object({
+      connections: z.array(connectionSchema).describe('List of connections'),
+      page: z.number().describe('Current page number'),
+      perPage: z.number().describe('Results per page'),
+      totalPages: z.number().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConveyorClient({ token: ctx.auth.token });
 
     let data = await client.listConnections({
@@ -69,4 +73,5 @@ export let listConnections = SlateTool.create(
       },
       message: `Found **${connections.length}** connections${ctx.input.domain ? ` for domain "${ctx.input.domain}"` : ''} (page ${data.page} of ${data.total_pages}).`
     };
-  }).build();
+  })
+  .build();

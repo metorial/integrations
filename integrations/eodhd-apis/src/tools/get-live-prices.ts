@@ -17,29 +17,35 @@ let livePriceSchema = z.object({
   change_p: z.number().describe('Price change percentage')
 });
 
-export let getLivePrices = SlateTool.create(
-  spec,
-  {
-    name: 'Get Live Prices',
-    key: 'get_live_prices',
-    description: `Retrieve current/delayed OHLCV prices for stocks, forex, and crypto. US market data has ~15 min delay for global exchanges. Supports fetching multiple tickers in a single request (up to 15-20 recommended).`,
-    instructions: [
-      'Provide the primary ticker and optionally additional tickers to fetch multiple prices at once',
-      'Ticker format: SYMBOL.EXCHANGE (e.g., AAPL.US, EUR.FOREX, BTC-USD.CC)'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getLivePrices = SlateTool.create(spec, {
+  name: 'Get Live Prices',
+  key: 'get_live_prices',
+  description: `Retrieve current/delayed OHLCV prices for stocks, forex, and crypto. US market data has ~15 min delay for global exchanges. Supports fetching multiple tickers in a single request (up to 15-20 recommended).`,
+  instructions: [
+    'Provide the primary ticker and optionally additional tickers to fetch multiple prices at once',
+    'Ticker format: SYMBOL.EXCHANGE (e.g., AAPL.US, EUR.FOREX, BTC-USD.CC)'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ticker: z.string().describe('Primary ticker symbol, e.g., AAPL.US'),
-    additionalTickers: z.array(z.string()).optional().describe('Additional tickers to fetch in the same request, e.g., ["TSLA.US", "MSFT.US"]')
-  }))
-  .output(z.object({
-    prices: z.array(livePriceSchema).describe('Live price data for requested tickers')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticker: z.string().describe('Primary ticker symbol, e.g., AAPL.US'),
+      additionalTickers: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Additional tickers to fetch in the same request, e.g., ["TSLA.US", "MSFT.US"]'
+        )
+    })
+  )
+  .output(
+    z.object({
+      prices: z.array(livePriceSchema).describe('Live price data for requested tickers')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EodhdClient({ token: ctx.auth.token });
 
     let result = await client.getLivePrices(ctx.input.ticker, ctx.input.additionalTickers);
@@ -52,4 +58,5 @@ export let getLivePrices = SlateTool.create(
       },
       message: `Retrieved live prices for **${prices.length}** ticker(s): ${prices.map((p: { code: string; close: number }) => `${p.code}: ${p.close}`).join(', ')}.`
     };
-  }).build();
+  })
+  .build();

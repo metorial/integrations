@@ -3,29 +3,28 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOrganizationTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Organization',
-    key: 'get_organization',
-    description: `Retrieve details about the configured Sentry organization, including quotas, settings, features, and member/project counts.`,
-    tags: {
-      readOnly: true
-    }
+export let getOrganizationTool = SlateTool.create(spec, {
+  name: 'Get Organization',
+  key: 'get_organization',
+  description: `Retrieve details about the configured Sentry organization, including quotas, settings, features, and member/project counts.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    organizationId: z.string(),
-    organizationSlug: z.string(),
-    name: z.string(),
-    dateCreated: z.string().optional(),
-    isDefault: z.boolean().optional(),
-    status: z.any().optional(),
-    features: z.array(z.string()).optional(),
-    quota: z.any().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      organizationId: z.string(),
+      organizationSlug: z.string(),
+      name: z.string(),
+      dateCreated: z.string().optional(),
+      isDefault: z.boolean().optional(),
+      status: z.any().optional(),
+      features: z.array(z.string()).optional(),
+      quota: z.any().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let org = await client.getOrganization();
@@ -43,4 +42,5 @@ export let getOrganizationTool = SlateTool.create(
       },
       message: `Retrieved organization **${org.name}** (${org.slug}).`
     };
-  }).build();
+  })
+  .build();

@@ -38,13 +38,9 @@ import {
   createSubaccount,
   editSubaccount,
   closeSubaccount,
-  reopenSubaccount,
+  reopenSubaccount
 } from './tools';
-import {
-  emailEventsTrigger,
-  smsEventsTrigger,
-  emailActivityTrigger,
-} from './triggers';
+import { emailEventsTrigger, smsEventsTrigger, emailActivityTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -86,11 +82,7 @@ export let provider = Slate.create({
     createSubaccount,
     editSubaccount,
     closeSubaccount,
-    reopenSubaccount,
+    reopenSubaccount
   ],
-  triggers: [
-    emailEventsTrigger,
-    smsEventsTrigger,
-    emailActivityTrigger,
-  ],
+  triggers: [emailEventsTrigger, smsEventsTrigger, emailActivityTrigger]
 });

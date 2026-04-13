@@ -9,8 +9,8 @@ export class Client {
       baseURL: `${params.baseUrl}/api/v1`,
       headers: {
         'x-api-key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -51,7 +51,10 @@ export class Client {
   }
 
   // Responses
-  async listResponses(surveyId: string, params?: { limit?: number; offset?: number }): Promise<any[]> {
+  async listResponses(
+    surveyId: string,
+    params?: { limit?: number; offset?: number }
+  ): Promise<any[]> {
     let query = new URLSearchParams();
     query.set('surveyId', surveyId);
     if (params?.limit) query.set('limit', String(params.limit));
@@ -86,7 +89,9 @@ export class Client {
     if (params?.limit) query.set('limit', String(params.limit));
     if (params?.offset) query.set('offset', String(params.offset));
     let queryStr = query.toString();
-    let response = await this.http.get(`/management/contacts${queryStr ? `?${queryStr}` : ''}`);
+    let response = await this.http.get(
+      `/management/contacts${queryStr ? `?${queryStr}` : ''}`
+    );
     return response.data?.data ?? [];
   }
 
@@ -158,7 +163,11 @@ export class Client {
     return response.data?.data;
   }
 
-  async createWebhook(data: { url: string; triggers: string[]; surveyIds?: string[] }): Promise<any> {
+  async createWebhook(data: {
+    url: string;
+    triggers: string[];
+    surveyIds?: string[];
+  }): Promise<any> {
     let response = await this.http.post('/webhooks', data);
     return response.data?.data;
   }

@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let archiveCardTool = SlateTool.create(
-  spec,
-  {
-    name: 'Archive or Unarchive Card',
-    key: 'archive_card',
-    description: `Archive or unarchive a card. Archived cards are hidden from active views but can be restored later. Use this instead of deleting when you want to preserve the card's history.`,
-  }
-)
-  .input(z.object({
-    cardId: z.number().describe('ID of the card to archive or unarchive'),
-    archive: z.boolean().describe('Set to true to archive, false to unarchive'),
-  }))
-  .output(z.object({
-    cardId: z.number().describe('Card ID'),
-    archived: z.boolean().describe('Whether the card is now archived'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let archiveCardTool = SlateTool.create(spec, {
+  name: 'Archive or Unarchive Card',
+  key: 'archive_card',
+  description: `Archive or unarchive a card. Archived cards are hidden from active views but can be restored later. Use this instead of deleting when you want to preserve the card's history.`
+})
+  .input(
+    z.object({
+      cardId: z.number().describe('ID of the card to archive or unarchive'),
+      archive: z.boolean().describe('Set to true to archive, false to unarchive')
+    })
+  )
+  .output(
+    z.object({
+      cardId: z.number().describe('Card ID'),
+      archived: z.boolean().describe('Whether the card is now archived')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.auth.subdomain,
+      subdomain: ctx.auth.subdomain
     });
 
     if (ctx.input.archive) {
@@ -34,10 +35,11 @@ export let archiveCardTool = SlateTool.create(
     return {
       output: {
         cardId: ctx.input.cardId,
-        archived: ctx.input.archive,
+        archived: ctx.input.archive
       },
       message: ctx.input.archive
         ? `Archived card **${ctx.input.cardId}**.`
-        : `Unarchived card **${ctx.input.cardId}**.`,
+        : `Unarchived card **${ctx.input.cardId}**.`
     };
-  }).build();
+  })
+  .build();

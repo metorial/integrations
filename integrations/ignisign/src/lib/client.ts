@@ -12,9 +12,9 @@ export class IgnisignClient {
     this.http = createAxios({
       baseURL: 'https://api.ignisign.io',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -37,7 +37,9 @@ export class IgnisignClient {
   }
 
   async getSignatureProfile(signatureProfileId: string): Promise<any> {
-    let response = await this.http.get(`${this.basePath}/signature-profiles/${signatureProfileId}`);
+    let response = await this.http.get(
+      `${this.basePath}/signature-profiles/${signatureProfileId}`
+    );
     return response.data;
   }
 
@@ -54,7 +56,9 @@ export class IgnisignClient {
   }
 
   async getSignerProfileInputsNeeded(signerProfileId: string): Promise<any> {
-    let response = await this.http.get(`${this.basePath}/signer-profiles/${signerProfileId}/inputs-needed`);
+    let response = await this.http.get(
+      `${this.basePath}/signer-profiles/${signerProfileId}/inputs-needed`
+    );
     return response.data;
   }
 
@@ -91,15 +95,19 @@ export class IgnisignClient {
   }
 
   async searchSigners(filter?: string): Promise<any> {
-    let response = await this.http.post(`${this.basePath}/signers-search`, {}, {
-      params: filter ? { filter } : undefined,
-    });
+    let response = await this.http.post(
+      `${this.basePath}/signers-search`,
+      {},
+      {
+        params: filter ? { filter } : undefined
+      }
+    );
     return response.data;
   }
 
   async paginateSigners(page?: number): Promise<any> {
     let response = await this.http.get(`${this.basePath}/signers-paginate`, {
-      params: page !== undefined ? { page } : undefined,
+      params: page !== undefined ? { page } : undefined
     });
     return response.data;
   }
@@ -122,23 +130,28 @@ export class IgnisignClient {
     return response.data;
   }
 
-  async updateSignatureRequest(signatureRequestId: string, data: {
-    title?: string;
-    description?: string;
-    externalId?: string;
-    documentIds?: string[];
-    signerIds?: string[];
-    language?: string;
-    expirationDate?: string;
-    expirationDateIsActivated?: boolean;
-    diffusionMode?: string;
-  }): Promise<any> {
+  async updateSignatureRequest(
+    signatureRequestId: string,
+    data: {
+      title?: string;
+      description?: string;
+      externalId?: string;
+      documentIds?: string[];
+      signerIds?: string[];
+      language?: string;
+      expirationDate?: string;
+      expirationDateIsActivated?: boolean;
+      diffusionMode?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.put(`/v4/signature-requests/${signatureRequestId}`, data);
     return response.data;
   }
 
   async publishSignatureRequest(signatureRequestId: string): Promise<any> {
-    let response = await this.http.post(`/v4/signature-requests/${signatureRequestId}/publish`);
+    let response = await this.http.post(
+      `/v4/signature-requests/${signatureRequestId}/publish`
+    );
     return response.data;
   }
 
@@ -149,7 +162,7 @@ export class IgnisignClient {
 
   async listSignatureRequests(page?: number): Promise<any> {
     let response = await this.http.get(`${this.basePath}/signature-requests`, {
-      params: page !== undefined ? { page } : undefined,
+      params: page !== undefined ? { page } : undefined
     });
     return response.data;
   }
@@ -186,12 +199,17 @@ export class IgnisignClient {
     return response.data;
   }
 
-  async uploadDocumentFile(documentId: string, fileContent: string, fileName: string, contentType: string): Promise<any> {
+  async uploadDocumentFile(
+    documentId: string,
+    fileContent: string,
+    fileName: string,
+    contentType: string
+  ): Promise<any> {
     let response = await this.http.post(`/v4/documents/${documentId}/file`, fileContent, {
       headers: {
         'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${fileName}"`,
-      },
+        'Content-Disposition': `attachment; filename="${fileName}"`
+      }
     });
     return response.data;
   }
@@ -205,7 +223,7 @@ export class IgnisignClient {
 
   async getSignatureProof(documentId: string): Promise<any> {
     let response = await this.http.get(`/v4/documents/${documentId}/signature-proof`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -215,10 +233,17 @@ export class IgnisignClient {
     return response.data;
   }
 
-  async getLowLevelSignatureProof(documentId: string, signatureType: string, signerId: string): Promise<any> {
-    let response = await this.http.get(`/v4/documents/${documentId}/signatures/${signatureType}/signers/${signerId}`, {
-      responseType: 'arraybuffer',
-    });
+  async getLowLevelSignatureProof(
+    documentId: string,
+    signatureType: string,
+    signerId: string
+  ): Promise<any> {
+    let response = await this.http.get(
+      `/v4/documents/${documentId}/signatures/${signatureType}/signers/${signerId}`,
+      {
+        responseType: 'arraybuffer'
+      }
+    );
     return response.data;
   }
 
@@ -234,7 +259,10 @@ export class IgnisignClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: { url?: string; description?: string }): Promise<any> {
+  async updateWebhook(
+    webhookId: string,
+    data: { url?: string; description?: string }
+  ): Promise<any> {
     let response = await this.http.put(`/v4/webhooks/${webhookId}`, data);
     return response.data;
   }
@@ -246,7 +274,7 @@ export class IgnisignClient {
 
   async listWebhookEvents(webhookId: string, page?: number, filter?: string): Promise<any> {
     let response = await this.http.get(`/v4/webhooks/${webhookId}/events`, {
-      params: { ...(page !== undefined ? { page } : {}), ...(filter ? { filter } : {}) },
+      params: { ...(page !== undefined ? { page } : {}), ...(filter ? { filter } : {}) }
     });
     return response.data;
   }

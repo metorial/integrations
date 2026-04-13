@@ -14,7 +14,7 @@ import {
   verifyAddress,
   verifyInternationalAddress,
   autocompleteAddress,
-  autocompleteInternationalAddress,
+  autocompleteInternationalAddress
 } from './tools';
 import { mailOrderEvents } from './triggers';
 
@@ -34,9 +34,7 @@ export let provider = Slate.create({
     verifyAddress,
     verifyInternationalAddress,
     autocompleteAddress,
-    autocompleteInternationalAddress,
+    autocompleteInternationalAddress
   ],
-  triggers: [
-    mailOrderEvents,
-  ],
+  triggers: [mailOrderEvents]
 });

@@ -9,6 +9,7 @@ Chaser (chaserhq.com) is an accounts receivable automation platform that helps b
 Chaser uses API keys for authentication. Specifically, the API uses **HTTP Basic Authentication**.
 
 To obtain credentials:
+
 1. Log in to Chaser, create a new organization, select API from the list of available accounting systems, click Connect with API, enter your organization name, and then go to Organization Settings > Integrations and create a new API key/secret.
 
 To authenticate API requests, provide an `Authorization` header with the word `Basic` followed by the Base64-encoded string of `API_KEY:API_SECRET`:

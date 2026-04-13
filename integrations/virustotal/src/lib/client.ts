@@ -80,7 +80,12 @@ export class Client {
     return response.data?.data;
   }
 
-  async getDomainRelationships(domain: string, relationship: string, limit: number = 10, cursor?: string) {
+  async getDomainRelationships(
+    domain: string,
+    relationship: string,
+    limit: number = 10,
+    cursor?: string
+  ) {
     let params: Record<string, string | number> = { limit };
     if (cursor) params['cursor'] = cursor;
     let response = await http.get(`/domains/${domain}/${relationship}`, {
@@ -99,7 +104,12 @@ export class Client {
     return response.data?.data;
   }
 
-  async getIpRelationships(ip: string, relationship: string, limit: number = 10, cursor?: string) {
+  async getIpRelationships(
+    ip: string,
+    relationship: string,
+    limit: number = 10,
+    cursor?: string
+  ) {
     let params: Record<string, string | number> = { limit };
     if (cursor) params['cursor'] = cursor;
     let response = await http.get(`/ip_addresses/${ip}/${relationship}`, {
@@ -120,7 +130,12 @@ export class Client {
 
   // ── Comments ──
 
-  async getComments(resourceType: string, resourceId: string, limit: number = 10, cursor?: string) {
+  async getComments(
+    resourceType: string,
+    resourceId: string,
+    limit: number = 10,
+    cursor?: string
+  ) {
     let params: Record<string, string | number> = { limit };
     if (cursor) params['cursor'] = cursor;
     let response = await http.get(`/${resourceType}/${resourceId}/comments`, {
@@ -131,28 +146,36 @@ export class Client {
   }
 
   async addComment(resourceType: string, resourceId: string, text: string) {
-    let response = await http.post(`/${resourceType}/${resourceId}/comments`, {
-      data: {
-        type: 'comment',
-        attributes: { text }
+    let response = await http.post(
+      `/${resourceType}/${resourceId}/comments`,
+      {
+        data: {
+          type: 'comment',
+          attributes: { text }
+        }
+      },
+      {
+        headers: this.headers()
       }
-    }, {
-      headers: this.headers()
-    });
+    );
     return response.data?.data;
   }
 
   // ── Votes ──
 
   async addVote(resourceType: string, resourceId: string, verdict: 'malicious' | 'harmless') {
-    let response = await http.post(`/${resourceType}/${resourceId}/votes`, {
-      data: {
-        type: 'vote',
-        attributes: { verdict }
+    let response = await http.post(
+      `/${resourceType}/${resourceId}/votes`,
+      {
+        data: {
+          type: 'vote',
+          attributes: { verdict }
+        }
+      },
+      {
+        headers: this.headers()
       }
-    }, {
-      headers: this.headers()
-    });
+    );
     return response.data?.data;
   }
 
@@ -166,7 +189,12 @@ export class Client {
 
   // ── Relationships (generic) ──
 
-  async getFileRelationships(fileHash: string, relationship: string, limit: number = 10, cursor?: string) {
+  async getFileRelationships(
+    fileHash: string,
+    relationship: string,
+    limit: number = 10,
+    cursor?: string
+  ) {
     let params: Record<string, string | number> = { limit };
     if (cursor) params['cursor'] = cursor;
     let response = await http.get(`/files/${fileHash}/${relationship}`, {
@@ -176,7 +204,12 @@ export class Client {
     return response.data;
   }
 
-  async getUrlRelationships(urlId: string, relationship: string, limit: number = 10, cursor?: string) {
+  async getUrlRelationships(
+    urlId: string,
+    relationship: string,
+    limit: number = 10,
+    cursor?: string
+  ) {
     let params: Record<string, string | number> = { limit };
     if (cursor) params['cursor'] = cursor;
     let response = await http.get(`/urls/${urlId}/${relationship}`, {
@@ -188,7 +221,13 @@ export class Client {
 
   // ── Intelligence Search (Premium) ──
 
-  async searchIntelligence(query: string, limit: number = 10, cursor?: string, order?: string, descriptorsOnly?: boolean) {
+  async searchIntelligence(
+    query: string,
+    limit: number = 10,
+    cursor?: string,
+    order?: string,
+    descriptorsOnly?: boolean
+  ) {
     let params: Record<string, string | number | boolean> = { query, limit };
     if (cursor) params['cursor'] = cursor;
     if (order) params['order'] = order;
@@ -219,42 +258,60 @@ export class Client {
     return response.data?.data;
   }
 
-  async createLivehuntRuleset(name: string, rules: string, enabled: boolean, limit?: number, notificationEmails?: string[]) {
+  async createLivehuntRuleset(
+    name: string,
+    rules: string,
+    enabled: boolean,
+    limit?: number,
+    notificationEmails?: string[]
+  ) {
     let attributes: Record<string, unknown> = { name, rules, enabled };
     if (limit !== undefined) attributes['limit'] = limit;
     if (notificationEmails) attributes['notification_emails'] = notificationEmails;
-    let response = await http.post('/intelligence/hunting_rulesets', {
-      data: {
-        type: 'hunting_ruleset',
-        attributes
+    let response = await http.post(
+      '/intelligence/hunting_rulesets',
+      {
+        data: {
+          type: 'hunting_ruleset',
+          attributes
+        }
+      },
+      {
+        headers: this.headers()
       }
-    }, {
-      headers: this.headers()
-    });
+    );
     return response.data?.data;
   }
 
-  async updateLivehuntRuleset(rulesetId: string, updates: {
-    name?: string;
-    rules?: string;
-    enabled?: boolean;
-    limit?: number;
-    notificationEmails?: string[];
-  }) {
+  async updateLivehuntRuleset(
+    rulesetId: string,
+    updates: {
+      name?: string;
+      rules?: string;
+      enabled?: boolean;
+      limit?: number;
+      notificationEmails?: string[];
+    }
+  ) {
     let attributes: Record<string, unknown> = {};
     if (updates.name !== undefined) attributes['name'] = updates.name;
     if (updates.rules !== undefined) attributes['rules'] = updates.rules;
     if (updates.enabled !== undefined) attributes['enabled'] = updates.enabled;
     if (updates.limit !== undefined) attributes['limit'] = updates.limit;
-    if (updates.notificationEmails !== undefined) attributes['notification_emails'] = updates.notificationEmails;
-    let response = await http.patch(`/intelligence/hunting_rulesets/${rulesetId}`, {
-      data: {
-        type: 'hunting_ruleset',
-        attributes
+    if (updates.notificationEmails !== undefined)
+      attributes['notification_emails'] = updates.notificationEmails;
+    let response = await http.patch(
+      `/intelligence/hunting_rulesets/${rulesetId}`,
+      {
+        data: {
+          type: 'hunting_ruleset',
+          attributes
+        }
+      },
+      {
+        headers: this.headers()
       }
-    }, {
-      headers: this.headers()
-    });
+    );
     return response.data?.data;
   }
 
@@ -270,14 +327,18 @@ export class Client {
     let attributes: Record<string, unknown> = { rules };
     if (corpus) attributes['corpus'] = corpus;
     if (notificationEmail) attributes['notification_email'] = notificationEmail;
-    let response = await http.post('/intelligence/retrohunt_jobs', {
-      data: {
-        type: 'retrohunt_job',
-        attributes
+    let response = await http.post(
+      '/intelligence/retrohunt_jobs',
+      {
+        data: {
+          type: 'retrohunt_job',
+          attributes
+        }
+      },
+      {
+        headers: this.headers()
       }
-    }, {
-      headers: this.headers()
-    });
+    );
     return response.data?.data;
   }
 

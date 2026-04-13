@@ -18,33 +18,45 @@ let candidateSummarySchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listCandidatesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Candidates',
-    key: 'list_candidates',
-    description: `List candidates across all jobs or filtered by a specific job. Optionally filter by pipeline stage or candidate state. Use this to browse applicants, review pipeline status, or find specific candidates.`,
-    tags: {
-      readOnly: true
-    }
+export let listCandidatesTool = SlateTool.create(spec, {
+  name: 'List Candidates',
+  key: 'list_candidates',
+  description: `List candidates across all jobs or filtered by a specific job. Optionally filter by pipeline stage or candidate state. Use this to browse applicants, review pipeline status, or find specific candidates.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    jobShortcode: z.string().optional().describe('Filter by job shortcode'),
-    stage: z.string().optional().describe('Filter by pipeline stage slug'),
-    state: z.string().optional().describe('Filter by candidate state'),
-    limit: z.number().optional().describe('Maximum number of candidates to return'),
-    sinceId: z.string().optional().describe('Return candidates after this ID for pagination'),
-    createdAfter: z.string().optional().describe('ISO 8601 date — only return candidates created after this date'),
-    updatedAfter: z.string().optional().describe('ISO 8601 date — only return candidates updated after this date')
-  }))
-  .output(z.object({
-    candidates: z.array(candidateSummarySchema).describe('List of candidates'),
-    paging: z.object({
-      next: z.string().optional().describe('URL for the next page of results')
-    }).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobShortcode: z.string().optional().describe('Filter by job shortcode'),
+      stage: z.string().optional().describe('Filter by pipeline stage slug'),
+      state: z.string().optional().describe('Filter by candidate state'),
+      limit: z.number().optional().describe('Maximum number of candidates to return'),
+      sinceId: z
+        .string()
+        .optional()
+        .describe('Return candidates after this ID for pagination'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('ISO 8601 date — only return candidates created after this date'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('ISO 8601 date — only return candidates updated after this date')
+    })
+  )
+  .output(
+    z.object({
+      candidates: z.array(candidateSummarySchema).describe('List of candidates'),
+      paging: z
+        .object({
+          next: z.string().optional().describe('URL for the next page of results')
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WorkableClient({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain
@@ -82,4 +94,5 @@ export let listCandidatesTool = SlateTool.create(
       },
       message: `Found **${candidates.length}** candidate(s)${ctx.input.jobShortcode ? ` for job ${ctx.input.jobShortcode}` : ''}${ctx.input.stage ? ` in stage "${ctx.input.stage}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

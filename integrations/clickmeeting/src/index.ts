@@ -51,7 +51,5 @@ export let provider = Slate.create({
     getTimezones,
     getPhoneGateways
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

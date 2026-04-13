@@ -15,14 +15,17 @@ Evernote supports two authentication methods:
 The OAuth flow is the process a user goes through to authorize your application to access their Evernote account on their behalf. Evernote uses **OAuth 1.0a** (not OAuth 2.0, despite some third-party sources claiming otherwise). Evernote uses OAuth 1.0 for its authentication workflow.
 
 **Credentials required:**
+
 - **Consumer Key** and **Consumer Secret** (collectively called an "API Key"), obtained by submitting a request to Evernote's developer support team.
 
 **Endpoints:**
+
 - Request Token URL: `https://www.evernote.com/oauth`
 - Authorization URL: `https://www.evernote.com/OAuth.action`
 - Access Token URL: `https://www.evernote.com/oauth`
 
 **Flow:**
+
 1. Retrieve a request token from the Evernote Cloud API. This token is used to request an authentication token. Using the request token, send the user to the Evernote site where they will authenticate.
 2. After approval is granted, Evernote will redirect the user back to your application along with the information required to retrieve an access token.
 3. Exchange the temporary token and `oauth_verifier` for a permanent access token.
@@ -84,6 +87,7 @@ Notifications are delivered in real-time. Notifications are sent for all users w
 The notification includes the numeric user ID, the GUID of the affected notebook, and the reason for notification. For operations relating to individual notes, the GUID of the note is also included.
 
 **Reason codes include:**
+
 - `create` — a note was created
 - `update` — a note was updated
 - `business_create` — a Business note was created
@@ -94,6 +98,7 @@ The notification includes the numeric user ID, the GUID of the affected notebook
 **Registration:** To register for webhooks, open a developer support ticket and provide your API consumer key, the notification URL, and an optional filter. Webhook registration is not self-service; it requires manual setup by Evernote's team.
 
 **Limitations:**
+
 - The webhook payload does not include full change data. You must call the API to retrieve the actual note content after receiving a notification.
 - For Evernote Business, third parties will only be notified of changes made to Business data by users who have authorized the integration.
 - The filter is set at the API key level and applies to all users.

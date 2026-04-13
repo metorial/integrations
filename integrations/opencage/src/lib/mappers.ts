@@ -70,18 +70,22 @@ export interface MappedGeocodeResult {
 
 export let mapAnnotations = (ann: ResultAnnotations): MappedAnnotations => {
   return {
-    timezone: ann.timezone ? {
-      name: ann.timezone.name,
-      offsetSec: ann.timezone.offset_sec,
-      offsetString: ann.timezone.offset_string,
-      shortName: ann.timezone.short_name,
-      nowInDst: ann.timezone.now_in_dst === 1,
-    } : undefined,
-    currency: ann.currency ? {
-      name: ann.currency.name,
-      isoCode: ann.currency.iso_code,
-      symbol: ann.currency.symbol,
-    } : undefined,
+    timezone: ann.timezone
+      ? {
+          name: ann.timezone.name,
+          offsetSec: ann.timezone.offset_sec,
+          offsetString: ann.timezone.offset_string,
+          shortName: ann.timezone.short_name,
+          nowInDst: ann.timezone.now_in_dst === 1
+        }
+      : undefined,
+    currency: ann.currency
+      ? {
+          name: ann.currency.name,
+          isoCode: ann.currency.iso_code,
+          symbol: ann.currency.symbol
+        }
+      : undefined,
     callingCode: ann.callingcode,
     flag: ann.flag,
     geohash: ann.geohash,
@@ -92,17 +96,21 @@ export let mapAnnotations = (ann: ResultAnnotations): MappedAnnotations => {
     maidenhead: ann.Maidenhead,
     mercator: ann.Mercator ? { x: ann.Mercator.x, y: ann.Mercator.y } : undefined,
     sun: ann.sun ? { rise: ann.sun.rise, set: ann.sun.set } : undefined,
-    roadinfo: ann.roadinfo ? {
-      driveOn: ann.roadinfo.drive_on,
-      road: ann.roadinfo.road,
-      roadType: ann.roadinfo.road_type,
-      speedIn: ann.roadinfo.speed_in,
-    } : undefined,
-    osm: ann.OSM ? {
-      editUrl: ann.OSM.edit_url,
-      noteUrl: ann.OSM.note_url,
-      url: ann.OSM.url,
-    } : undefined,
+    roadinfo: ann.roadinfo
+      ? {
+          driveOn: ann.roadinfo.drive_on,
+          road: ann.roadinfo.road,
+          roadType: ann.roadinfo.road_type,
+          speedIn: ann.roadinfo.speed_in
+        }
+      : undefined,
+    osm: ann.OSM
+      ? {
+          editUrl: ann.OSM.edit_url,
+          noteUrl: ann.OSM.note_url,
+          url: ann.OSM.url
+        }
+      : undefined
   };
 };
 
@@ -114,6 +122,6 @@ export let mapGeocodeResult = (r: GeocodeResult): MappedGeocodeResult => {
     confidence: r.confidence,
     components: r.components,
     bounds: r.bounds,
-    annotations: r.annotations ? mapAnnotations(r.annotations) : undefined,
+    annotations: r.annotations ? mapAnnotations(r.annotations) : undefined
   };
 };

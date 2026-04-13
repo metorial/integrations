@@ -2,23 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Stannp API key, found at the bottom of your account settings page'),
+      token: z
+        .string()
+        .describe('Your Stannp API key, found at the bottom of your account settings page')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,8 +31,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api-us1.stannp.com/v1/',
         auth: {
           username: ctx.output.token,
-          password: '',
-        },
+          password: ''
+        }
       });
 
       let response = await axios.get('/user/info');
@@ -38,8 +42,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: data?.id?.toString(),
           email: data?.email,
-          name: data?.firstname ? `${data.firstname} ${data.lastname || ''}`.trim() : undefined,
-        },
+          name: data?.firstname ? `${data.firstname} ${data.lastname || ''}`.trim() : undefined
+        }
       };
-    },
+    }
   });

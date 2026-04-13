@@ -11,12 +11,14 @@ Fidel API uses **API key authentication**.
 Fidel API accounts have test mode and live mode API keys. To change modes just use the appropriate key to get a live or test object.
 
 There are two types of keys:
+
 - **Public keys**: Used with client-side SDKs (Web, iOS, Android) for secure card enrollment. Prefixed with `pk_test_` or `pk_live_`.
 - **Secret keys**: Used for server-side API requests. Prefixed with `sk_test_` or `sk_live_`.
 
 You can find your API keys in the account page of your Fidel dashboard. Authenticate your API requests by including your secret test or live API key in the request header. Create an HTTP header named `fidel-key` and set your secret key as the value. Use the public keys on the SDKs and the secret keys to authenticate API requests.
 
 Example header:
+
 ```
 fidel-key: sk_test_50ea90b6-2a3b-4a56-814d-1bc592ba4d63
 ```

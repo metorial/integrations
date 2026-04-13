@@ -3,39 +3,46 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listProjectsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List all projects in the Sentry organization. Returns project slugs, names, platforms, and team assignments.`,
-    tags: {
-      readOnly: true
-    }
+export let listProjectsTool = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List all projects in the Sentry organization. Returns project slugs, names, platforms, and team assignments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cursor: z.string().optional().describe('Pagination cursor for fetching next page')
-  }))
-  .output(z.object({
-    projects: z.array(z.object({
-      projectId: z.string(),
-      projectSlug: z.string(),
-      name: z.string(),
-      platform: z.string().optional(),
-      dateCreated: z.string().optional(),
-      isBookmarked: z.boolean().optional(),
-      isMember: z.boolean().optional(),
-      hasAccess: z.boolean().optional(),
-      teams: z.array(z.object({
-        teamId: z.string(),
-        teamSlug: z.string(),
-        name: z.string()
-      })).optional(),
-      features: z.array(z.string()).optional()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cursor: z.string().optional().describe('Pagination cursor for fetching next page')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(
+        z.object({
+          projectId: z.string(),
+          projectSlug: z.string(),
+          name: z.string(),
+          platform: z.string().optional(),
+          dateCreated: z.string().optional(),
+          isBookmarked: z.boolean().optional(),
+          isMember: z.boolean().optional(),
+          hasAccess: z.boolean().optional(),
+          teams: z
+            .array(
+              z.object({
+                teamId: z.string(),
+                teamSlug: z.string(),
+                name: z.string()
+              })
+            )
+            .optional(),
+          features: z.array(z.string()).optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let projects = await client.listProjects({ cursor: ctx.input.cursor });
@@ -61,4 +68,5 @@ export let listProjectsTool = SlateTool.create(
       output: { projects: mapped },
       message: `Found **${mapped.length}** projects in the organization.`
     };
-  }).build();
+  })
+  .build();

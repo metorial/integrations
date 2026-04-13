@@ -11,50 +11,68 @@ let journalistSchema = z.object({
   twitterHandle: z.string().describe('Twitter/X handle'),
   location: z.string().describe('Location'),
   avgMonthlyPosts: z.number().describe('Average number of articles per month'),
-  topSources: z.array(z.object({
-    name: z.string(),
-    domain: z.string(),
-    count: z.number(),
-  })).describe('Most frequent publications'),
-  topCategories: z.array(z.object({
-    name: z.string(),
-    count: z.number(),
-  })).describe('Most covered categories'),
-  topTopics: z.array(z.object({
-    name: z.string(),
-    count: z.number(),
-  })).describe('Most covered topics'),
-  topCountries: z.array(z.object({
-    name: z.string(),
-    count: z.number(),
-  })).describe('Most covered countries'),
+  topSources: z
+    .array(
+      z.object({
+        name: z.string(),
+        domain: z.string(),
+        count: z.number()
+      })
+    )
+    .describe('Most frequent publications'),
+  topCategories: z
+    .array(
+      z.object({
+        name: z.string(),
+        count: z.number()
+      })
+    )
+    .describe('Most covered categories'),
+  topTopics: z
+    .array(
+      z.object({
+        name: z.string(),
+        count: z.number()
+      })
+    )
+    .describe('Most covered topics'),
+  topCountries: z
+    .array(
+      z.object({
+        name: z.string(),
+        count: z.number()
+      })
+    )
+    .describe('Most covered countries')
 });
 
-export let searchJournalists = SlateTool.create(
-  spec,
-  {
-    name: 'Search Journalists',
-    key: 'search_journalists',
-    description: `Search Perigon's database of 230,000+ journalist and reporter profiles. Returns journalist details including bio, publications, coverage areas, and publishing activity. Use this to find journalists covering specific topics or writing for specific publications.`,
-    instructions: [
-      'The journalistId can be found in article responses under matchedAuthors',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let searchJournalists = SlateTool.create(spec, {
+  name: 'Search Journalists',
+  key: 'search_journalists',
+  description: `Search Perigon's database of 230,000+ journalist and reporter profiles. Returns journalist details including bio, publications, coverage areas, and publishing activity. Use this to find journalists covering specific topics or writing for specific publications.`,
+  instructions: ['The journalistId can be found in article responses under matchedAuthors'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Journalist name to search'),
-    journalistId: z.string().optional().describe('Look up a specific journalist by their UUID (from article matchedAuthors)'),
-    page: z.number().optional().describe('Page number (zero-based)'),
-    size: z.number().optional().describe('Results per page'),
-  }))
-  .output(z.object({
-    numResults: z.number().describe('Total number of matching journalists'),
-    journalists: z.array(journalistSchema).describe('List of matching journalists'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Journalist name to search'),
+      journalistId: z
+        .string()
+        .optional()
+        .describe('Look up a specific journalist by their UUID (from article matchedAuthors)'),
+      page: z.number().optional().describe('Page number (zero-based)'),
+      size: z.number().optional().describe('Results per page')
+    })
+  )
+  .output(
+    z.object({
+      numResults: z.number().describe('Total number of matching journalists'),
+      journalists: z.array(journalistSchema).describe('List of matching journalists')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PerigonClient(ctx.auth.token);
 
     // If a specific journalist ID is provided, fetch directly
@@ -71,25 +89,25 @@ export let searchJournalists = SlateTool.create(
         topSources: detail.topSources || [],
         topCategories: detail.topCategories || [],
         topTopics: detail.topTopics || [],
-        topCountries: detail.topCountries || [],
+        topCountries: detail.topCountries || []
       };
 
       return {
         output: {
           numResults: 1,
-          journalists: [journalist],
+          journalists: [journalist]
         },
-        message: `Found journalist **${journalist.name}**.`,
+        message: `Found journalist **${journalist.name}**.`
       };
     }
 
     let result = await client.searchJournalists({
       name: ctx.input.name,
       page: ctx.input.page,
-      size: ctx.input.size,
+      size: ctx.input.size
     });
 
-    let journalists = (result.results || []).map((j) => ({
+    let journalists = (result.results || []).map(j => ({
       journalistId: j.id || '',
       name: j.name || '',
       title: j.title || '',
@@ -100,15 +118,15 @@ export let searchJournalists = SlateTool.create(
       topSources: j.topSources || [],
       topCategories: j.topCategories || [],
       topTopics: j.topTopics || [],
-      topCountries: j.topCountries || [],
+      topCountries: j.topCountries || []
     }));
 
     return {
       output: {
         numResults: result.numResults || 0,
-        journalists,
+        journalists
       },
-      message: `Found **${result.numResults || 0}** journalists (showing ${journalists.length}).`,
+      message: `Found **${result.numResults || 0}** journalists (showing ${journalists.length}).`
     };
   })
   .build();

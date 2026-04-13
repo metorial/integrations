@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let shopSchema = z.object({
-  shopUuid: z.string().describe('UUID of the shop'),
-  name: z.string().optional().describe('Shop name'),
-  shopType: z.string().optional().describe('Shop type (physical or web)'),
-  reference: z.string().optional().describe('External reference for the shop'),
-}).passthrough();
+let shopSchema = z
+  .object({
+    shopUuid: z.string().describe('UUID of the shop'),
+    name: z.string().optional().describe('Shop name'),
+    shopType: z.string().optional().describe('Shop type (physical or web)'),
+    reference: z.string().optional().describe('External reference for the shop')
+  })
+  .passthrough();
 
-export let listShops = SlateTool.create(
-  spec,
-  {
-    name: 'List Shops',
-    key: 'list_shops',
-    description: `List all shops connected to the account. Shops represent physical locations or web shops and are required for many operations like awarding credits, redeeming vouchers, and gift card transactions.`,
-    tags: {
-      readOnly: true,
-    },
+export let listShops = SlateTool.create(spec, {
+  name: 'List Shops',
+  key: 'list_shops',
+  description: `List all shops connected to the account. Shops represent physical locations or web shops and are required for many operations like awarding credits, redeeming vouchers, and gift card transactions.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    shops: z.array(shopSchema).describe('List of shops'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      shops: z.array(shopSchema).describe('List of shops')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listShops();
@@ -34,12 +35,12 @@ export let listShops = SlateTool.create(
       name: s.name,
       shopType: s.type,
       reference: s.reference,
-      ...s,
+      ...s
     }));
 
     return {
       output: { shops },
-      message: `Retrieved **${shops.length}** shop(s).`,
+      message: `Retrieved **${shops.length}** shop(s).`
     };
   })
   .build();

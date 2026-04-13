@@ -7,7 +7,11 @@ let answerSchema = z.object({
   fieldId: z.string().describe('ID of the answered field'),
   fieldType: z.string().describe('Type of the answered field'),
   fieldRef: z.string().optional().describe('Reference of the answered field'),
-  type: z.string().describe('Answer type (text, email, number, boolean, choice, choices, date, file_url, url, payment)'),
+  type: z
+    .string()
+    .describe(
+      'Answer type (text, email, number, boolean, choice, choices, date, file_url, url, payment)'
+    ),
   text: z.string().optional().describe('Text answer value'),
   email: z.string().optional().describe('Email answer value'),
   number: z.number().optional().describe('Number answer value'),
@@ -16,7 +20,10 @@ let answerSchema = z.object({
   url: z.string().optional().describe('URL answer value'),
   fileUrl: z.string().optional().describe('File upload URL'),
   choiceLabel: z.string().optional().describe('Selected choice label'),
-  choiceLabels: z.array(z.string()).optional().describe('Selected choice labels for multi-select'),
+  choiceLabels: z
+    .array(z.string())
+    .optional()
+    .describe('Selected choice labels for multi-select')
 });
 
 let responseSchema = z.object({
@@ -27,60 +34,79 @@ let responseSchema = z.object({
   answers: z.array(answerSchema).describe('Array of answers'),
   hiddenFields: z.record(z.string(), z.string()).optional().describe('Hidden field values'),
   calculatedScore: z.number().optional().describe('Calculated quiz score'),
-  variables: z.array(z.object({
-    key: z.string().describe('Variable key'),
-    type: z.string().describe('Variable type'),
-    numberValue: z.number().optional().describe('Numeric value'),
-    textValue: z.string().optional().describe('Text value'),
-  })).optional().describe('Response variables'),
-  metadata: z.object({
-    userAgent: z.string().optional().describe('Browser user agent'),
-    platform: z.string().optional().describe('Platform (e.g. desktop, mobile)'),
-    referer: z.string().optional().describe('Referrer URL'),
-    networkId: z.string().optional().describe('Network identifier'),
-    browser: z.string().optional().describe('Browser name'),
-  }).optional().describe('Response metadata'),
+  variables: z
+    .array(
+      z.object({
+        key: z.string().describe('Variable key'),
+        type: z.string().describe('Variable type'),
+        numberValue: z.number().optional().describe('Numeric value'),
+        textValue: z.string().optional().describe('Text value')
+      })
+    )
+    .optional()
+    .describe('Response variables'),
+  metadata: z
+    .object({
+      userAgent: z.string().optional().describe('Browser user agent'),
+      platform: z.string().optional().describe('Platform (e.g. desktop, mobile)'),
+      referer: z.string().optional().describe('Referrer URL'),
+      networkId: z.string().optional().describe('Network identifier'),
+      browser: z.string().optional().describe('Browser name')
+    })
+    .optional()
+    .describe('Response metadata')
 });
 
-export let getResponses = SlateTool.create(
-  spec,
-  {
-    name: 'Get Responses',
-    key: 'get_responses',
-    description: `Retrieve submission responses for a typeform. Supports filtering by date range, search query, completion status, and pagination. Returns structured answer data for each response.`,
-    instructions: [
-      'Use **since** and **until** to filter by date range (ISO 8601 format or Unix timestamp).',
-      'Use **after** and **before** with response tokens for cursor-based pagination.',
-      'Set **responseType** to "completed" or "partial" to filter by completion status.',
-    ],
-    constraints: [
-      'Maximum page size is 1000 responses per request.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getResponses = SlateTool.create(spec, {
+  name: 'Get Responses',
+  key: 'get_responses',
+  description: `Retrieve submission responses for a typeform. Supports filtering by date range, search query, completion status, and pagination. Returns structured answer data for each response.`,
+  instructions: [
+    'Use **since** and **until** to filter by date range (ISO 8601 format or Unix timestamp).',
+    'Use **after** and **before** with response tokens for cursor-based pagination.',
+    'Set **responseType** to "completed" or "partial" to filter by completion status.'
+  ],
+  constraints: ['Maximum page size is 1000 responses per request.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    formId: z.string().describe('ID of the form to retrieve responses for'),
-    pageSize: z.number().optional().describe('Number of responses per page (default 25, max 1000)'),
-    since: z.string().optional().describe('Filter responses submitted after this date (ISO 8601 or Unix timestamp)'),
-    until: z.string().optional().describe('Filter responses submitted before this date (ISO 8601 or Unix timestamp)'),
-    after: z.string().optional().describe('Response token for forward pagination'),
-    before: z.string().optional().describe('Response token for backward pagination'),
-    sort: z.string().optional().describe('Sort order, e.g. "submitted_at,desc"'),
-    query: z.string().optional().describe('Search responses for text matches'),
-    responseType: z.enum(['completed', 'partial', 'started']).optional().describe('Filter by response completion status'),
-  }))
-  .output(z.object({
-    totalItems: z.number().describe('Total number of responses'),
-    pageCount: z.number().describe('Number of pages available'),
-    responses: z.array(responseSchema).describe('Array of form responses'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      formId: z.string().describe('ID of the form to retrieve responses for'),
+      pageSize: z
+        .number()
+        .optional()
+        .describe('Number of responses per page (default 25, max 1000)'),
+      since: z
+        .string()
+        .optional()
+        .describe('Filter responses submitted after this date (ISO 8601 or Unix timestamp)'),
+      until: z
+        .string()
+        .optional()
+        .describe('Filter responses submitted before this date (ISO 8601 or Unix timestamp)'),
+      after: z.string().optional().describe('Response token for forward pagination'),
+      before: z.string().optional().describe('Response token for backward pagination'),
+      sort: z.string().optional().describe('Sort order, e.g. "submitted_at,desc"'),
+      query: z.string().optional().describe('Search responses for text matches'),
+      responseType: z
+        .enum(['completed', 'partial', 'started'])
+        .optional()
+        .describe('Filter by response completion status')
+    })
+  )
+  .output(
+    z.object({
+      totalItems: z.number().describe('Total number of responses'),
+      pageCount: z.number().describe('Number of pages available'),
+      responses: z.array(responseSchema).describe('Array of form responses')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TypeformClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let result = await client.getResponses(ctx.input.formId, {
@@ -91,7 +117,7 @@ export let getResponses = SlateTool.create(
       before: ctx.input.before,
       sort: ctx.input.sort,
       query: ctx.input.query,
-      responseType: ctx.input.responseType,
+      responseType: ctx.input.responseType
     });
 
     let responses = (result.items || []).map((r: any) => {
@@ -100,7 +126,7 @@ export let getResponses = SlateTool.create(
           fieldId: a.field?.id,
           fieldType: a.field?.type,
           fieldRef: a.field?.ref,
-          type: a.type,
+          type: a.type
         };
         if (a.text !== undefined) answer.text = a.text;
         if (a.email !== undefined) answer.email = a.email;
@@ -118,7 +144,7 @@ export let getResponses = SlateTool.create(
         key: v.key,
         type: v.type,
         numberValue: v.number,
-        textValue: v.text,
+        textValue: v.text
       }));
 
       return {
@@ -130,13 +156,15 @@ export let getResponses = SlateTool.create(
         hiddenFields: r.hidden,
         calculatedScore: r.calculated?.score,
         variables,
-        metadata: r.metadata ? {
-          userAgent: r.metadata.user_agent,
-          platform: r.metadata.platform,
-          referer: r.metadata.referer,
-          networkId: r.metadata.network_id,
-          browser: r.metadata.browser,
-        } : undefined,
+        metadata: r.metadata
+          ? {
+              userAgent: r.metadata.user_agent,
+              platform: r.metadata.platform,
+              referer: r.metadata.referer,
+              networkId: r.metadata.network_id,
+              browser: r.metadata.browser
+            }
+          : undefined
       };
     });
 
@@ -144,8 +172,9 @@ export let getResponses = SlateTool.create(
       output: {
         totalItems: result.total_items || 0,
         pageCount: result.page_count || 0,
-        responses,
+        responses
       },
-      message: `Retrieved **${responses.length}** of **${result.total_items || 0}** total responses for form \`${ctx.input.formId}\`.`,
+      message: `Retrieved **${responses.length}** of **${result.total_items || 0}** total responses for form \`${ctx.input.formId}\`.`
     };
-  }).build();
+  })
+  .build();

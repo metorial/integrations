@@ -12,13 +12,9 @@ import {
   getNFTOwners,
   getLogs,
   sendRawTransaction,
-  callContract,
+  callContract
 } from './tools';
-import {
-  addressActivity,
-  nftActivity,
-  customWebhook,
-} from './triggers';
+import { addressActivity, nftActivity, customWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -34,11 +30,7 @@ export let provider = Slate.create({
     getNFTOwners,
     getLogs,
     sendRawTransaction,
-    callContract,
+    callContract
   ],
-  triggers: [
-    addressActivity,
-    nftActivity,
-    customWebhook,
-  ],
+  triggers: [addressActivity, nftActivity, customWebhook]
 });

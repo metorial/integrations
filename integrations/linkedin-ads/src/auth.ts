@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'LinkedIn OAuth',
@@ -16,100 +18,102 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Ads',
         description: 'Retrieve advertising accounts and their data',
-        scope: 'r_ads',
+        scope: 'r_ads'
       },
       {
         title: 'Read Ads Reporting',
         description: 'Retrieve reporting data for advertising accounts',
-        scope: 'r_ads_reporting',
+        scope: 'r_ads_reporting'
       },
       {
         title: 'Read/Write Ads',
-        description: 'Manage and read an authenticated member\'s ad accounts',
-        scope: 'rw_ads',
+        description: "Manage and read an authenticated member's ad accounts",
+        scope: 'rw_ads'
       },
       {
         title: 'Read Basic Profile',
         description: 'Access basic profile information (name, photo, headline)',
-        scope: 'r_basicprofile',
+        scope: 'r_basicprofile'
       },
       {
         title: 'Read Organization Admin',
         description: 'Retrieve organization pages and reporting data',
-        scope: 'r_organization_admin',
+        scope: 'r_organization_admin'
       },
       {
         title: 'Read Organization Social',
         description: 'Retrieve organization posts and engagement data',
-        scope: 'r_organization_social',
+        scope: 'r_organization_social'
       },
       {
         title: 'Read/Write Organization Admin',
         description: 'Manage organization pages and retrieve reporting data',
-        scope: 'rw_organization_admin',
+        scope: 'rw_organization_admin'
       },
       {
         title: 'Write Member Social',
-        description: 'Post, comment, and like posts on the member\'s behalf',
-        scope: 'w_member_social',
+        description: "Post, comment, and like posts on the member's behalf",
+        scope: 'w_member_social'
       },
       {
         title: 'Write Organization Social',
-        description: 'Post, comment, and like posts on the organization\'s behalf',
-        scope: 'w_organization_social',
+        description: "Post, comment, and like posts on the organization's behalf",
+        scope: 'w_organization_social'
       },
       {
         title: 'Read 1st Connections Size',
         description: 'Retrieve the number of 1st-degree connections',
-        scope: 'r_1st_connections_size',
+        scope: 'r_1st_connections_size'
       },
       {
         title: 'Read/Write DMP Segments',
         description: 'Manage matched audiences and DMP segments (requires separate approval)',
-        scope: 'rw_dmp_segments',
+        scope: 'rw_dmp_segments'
       },
       {
         title: 'Read/Write Conversions',
-        description: 'Manage conversion rules and send conversion events (requires separate approval)',
-        scope: 'rw_conversions',
+        description:
+          'Manage conversion rules and send conversion events (requires separate approval)',
+        scope: 'rw_conversions'
       },
       {
         title: 'Read Marketing Lead Gen Automation',
-        description: 'Access Lead Sync API for lead gen form submissions (requires separate approval)',
-        scope: 'r_marketing_leadgen_automation',
+        description:
+          'Access Lead Sync API for lead gen form submissions (requires separate approval)',
+        scope: 'r_marketing_leadgen_automation'
       },
       {
         title: 'OpenID',
         description: 'OpenID Connect for user profile access',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Profile',
         description: 'Access user profile information',
-        scope: 'profile',
+        scope: 'profile'
       },
       {
         title: 'Email',
         description: 'Access user email address',
-        scope: 'email',
-      },
+        scope: 'email'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
-        url: `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`,
+        url: `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios({});
 
       let response = await axios.post(
@@ -119,12 +123,12 @@ export let auth = SlateAuth.create()
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
+          client_secret: ctx.clientSecret
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -141,12 +145,12 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -159,12 +163,12 @@ export let auth = SlateAuth.create()
           grant_type: 'refresh_token',
           refresh_token: ctx.output.refreshToken,
           client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
+          client_secret: ctx.clientSecret
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -181,20 +185,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let axios = createAxios({
-        baseURL: 'https://api.linkedin.com',
+        baseURL: 'https://api.linkedin.com'
       });
 
       let response = await axios.get('/v2/userinfo', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data as {
@@ -209,8 +213,8 @@ export let auth = SlateAuth.create()
           id: data.sub,
           name: data.name,
           email: data.email,
-          imageUrl: data.picture,
-        },
+          imageUrl: data.picture
+        }
       };
-    },
+    }
   });

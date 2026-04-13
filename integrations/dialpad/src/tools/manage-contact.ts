@@ -3,43 +3,60 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContactTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact',
-    key: 'manage_contact',
-    description: `Create, update, upsert, or delete a Dialpad contact. The **upsert** action uses an external unique identifier to create-or-update, which is useful for syncing contacts from external systems.`,
-    tags: {
-      destructive: true,
-    },
+export let manageContactTool = SlateTool.create(spec, {
+  name: 'Manage Contact',
+  key: 'manage_contact',
+  description: `Create, update, upsert, or delete a Dialpad contact. The **upsert** action uses an external unique identifier to create-or-update, which is useful for syncing contacts from external systems.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'upsert', 'delete']).describe('Action to perform. "upsert" creates or updates based on the externalUid.'),
-    contactId: z.string().optional().describe('Contact ID (required for update and delete)'),
-    externalUid: z.string().optional().describe('External unique identifier for upsert operations'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    phones: z.array(z.string()).optional().describe('Phone numbers'),
-    emails: z.array(z.string()).optional().describe('Email addresses'),
-    companyName: z.string().optional().describe('Company name'),
-    jobTitle: z.string().optional().describe('Job title'),
-    urls: z.array(z.string()).optional().describe('URLs associated with the contact'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('Contact ID'),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    displayName: z.string().optional(),
-    deleted: z.boolean().optional().describe('True if the contact was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'upsert', 'delete'])
+        .describe('Action to perform. "upsert" creates or updates based on the externalUid.'),
+      contactId: z.string().optional().describe('Contact ID (required for update and delete)'),
+      externalUid: z
+        .string()
+        .optional()
+        .describe('External unique identifier for upsert operations'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      phones: z.array(z.string()).optional().describe('Phone numbers'),
+      emails: z.array(z.string()).optional().describe('Email addresses'),
+      companyName: z.string().optional().describe('Company name'),
+      jobTitle: z.string().optional().describe('Job title'),
+      urls: z.array(z.string()).optional().describe('URLs associated with the contact')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('Contact ID'),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      displayName: z.string().optional(),
+      deleted: z.boolean().optional().describe('True if the contact was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
-    let { action, contactId, externalUid, firstName, lastName, phones, emails, companyName, jobTitle, urls } = ctx.input;
+    let {
+      action,
+      contactId,
+      externalUid,
+      firstName,
+      lastName,
+      phones,
+      emails,
+      companyName,
+      jobTitle,
+      urls
+    } = ctx.input;
 
     if (action === 'create') {
       let contact = await client.createContact({
@@ -50,7 +67,7 @@ export let manageContactTool = SlateTool.create(
         company_name: companyName,
         job_title: jobTitle,
         urls,
-        uid: externalUid,
+        uid: externalUid
       });
 
       return {
@@ -58,9 +75,9 @@ export let manageContactTool = SlateTool.create(
           contactId: String(contact.id),
           firstName: contact.first_name,
           lastName: contact.last_name,
-          displayName: contact.display_name,
+          displayName: contact.display_name
         },
-        message: `Created contact **${contact.display_name || contact.first_name || contact.id}**`,
+        message: `Created contact **${contact.display_name || contact.first_name || contact.id}**`
       };
     }
 
@@ -83,9 +100,9 @@ export let manageContactTool = SlateTool.create(
           contactId: String(contact.id),
           firstName: contact.first_name,
           lastName: contact.last_name,
-          displayName: contact.display_name,
+          displayName: contact.display_name
         },
-        message: `Updated contact **${contact.display_name || contactId}**`,
+        message: `Updated contact **${contact.display_name || contactId}**`
       };
     }
 
@@ -100,7 +117,7 @@ export let manageContactTool = SlateTool.create(
         emails,
         company_name: companyName,
         job_title: jobTitle,
-        urls,
+        urls
       });
 
       return {
@@ -108,9 +125,9 @@ export let manageContactTool = SlateTool.create(
           contactId: String(contact.id),
           firstName: contact.first_name,
           lastName: contact.last_name,
-          displayName: contact.display_name,
+          displayName: contact.display_name
         },
-        message: `Upserted contact **${contact.display_name || externalUid}**`,
+        message: `Upserted contact **${contact.display_name || externalUid}**`
       };
     }
 
@@ -122,9 +139,9 @@ export let manageContactTool = SlateTool.create(
       return {
         output: {
           contactId,
-          deleted: true,
+          deleted: true
         },
-        message: `Deleted contact **${contactId}**`,
+        message: `Deleted contact **${contactId}**`
       };
     }
 

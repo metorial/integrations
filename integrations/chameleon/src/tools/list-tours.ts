@@ -13,14 +13,17 @@ let tourSchema = z.object({
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
   tagIds: z.array(z.string()).optional().describe('Associated tag IDs'),
-  stats: z.object({
-    startedCount: z.number().optional(),
-    completedCount: z.number().optional(),
-    exitedCount: z.number().optional(),
-    lastStartedAt: z.string().nullable().optional(),
-    lastCompletedAt: z.string().nullable().optional(),
-    lastExitedAt: z.string().nullable().optional(),
-  }).optional().describe('Tour interaction statistics'),
+  stats: z
+    .object({
+      startedCount: z.number().optional(),
+      completedCount: z.number().optional(),
+      exitedCount: z.number().optional(),
+      lastStartedAt: z.string().nullable().optional(),
+      lastCompletedAt: z.string().nullable().optional(),
+      lastExitedAt: z.string().nullable().optional()
+    })
+    .optional()
+    .describe('Tour interaction statistics')
 });
 
 let mapTour = (tour: Record<string, unknown>) => ({
@@ -33,62 +36,88 @@ let mapTour = (tour: Record<string, unknown>) => ({
   createdAt: tour.created_at as string | undefined,
   updatedAt: tour.updated_at as string | undefined,
   tagIds: tour.tag_ids as string[] | undefined,
-  stats: tour.stats ? {
-    startedCount: (tour.stats as Record<string, unknown>).started_count as number | undefined,
-    completedCount: (tour.stats as Record<string, unknown>).completed_count as number | undefined,
-    exitedCount: (tour.stats as Record<string, unknown>).exited_count as number | undefined,
-    lastStartedAt: (tour.stats as Record<string, unknown>).last_started_at as string | null | undefined,
-    lastCompletedAt: (tour.stats as Record<string, unknown>).last_completed_at as string | null | undefined,
-    lastExitedAt: (tour.stats as Record<string, unknown>).last_exited_at as string | null | undefined,
-  } : undefined,
+  stats: tour.stats
+    ? {
+        startedCount: (tour.stats as Record<string, unknown>).started_count as
+          | number
+          | undefined,
+        completedCount: (tour.stats as Record<string, unknown>).completed_count as
+          | number
+          | undefined,
+        exitedCount: (tour.stats as Record<string, unknown>).exited_count as
+          | number
+          | undefined,
+        lastStartedAt: (tour.stats as Record<string, unknown>).last_started_at as
+          | string
+          | null
+          | undefined,
+        lastCompletedAt: (tour.stats as Record<string, unknown>).last_completed_at as
+          | string
+          | null
+          | undefined,
+        lastExitedAt: (tour.stats as Record<string, unknown>).last_exited_at as
+          | string
+          | null
+          | undefined
+      }
+    : undefined
 });
 
-export let listTours = SlateTool.create(
-  spec,
-  {
-    name: 'List Tours',
-    key: 'list_tours',
-    description: `List all product tours in your Chameleon account, or retrieve a specific tour by ID.
+export let listTours = SlateTool.create(spec, {
+  name: 'List Tours',
+  key: 'list_tours',
+  description: `List all product tours in your Chameleon account, or retrieve a specific tour by ID.
 Returns tour details including name, status, segment targeting, and interaction statistics.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    tourId: z.string().optional().describe('Chameleon tour ID to retrieve a specific tour'),
-    limit: z.number().min(1).max(500).optional().describe('Number of tours to return (1-500, default 50)'),
-    before: z.string().optional().describe('Pagination cursor for older items'),
-    after: z.string().optional().describe('Pagination cursor for newer items'),
-  }))
-  .output(z.object({
-    tour: tourSchema.optional().describe('Single tour (when fetching by ID)'),
-    tours: z.array(tourSchema).optional().describe('Array of tours'),
-    cursor: z.object({
-      limit: z.number().optional(),
-      before: z.string().optional(),
-    }).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tourId: z.string().optional().describe('Chameleon tour ID to retrieve a specific tour'),
+      limit: z
+        .number()
+        .min(1)
+        .max(500)
+        .optional()
+        .describe('Number of tours to return (1-500, default 50)'),
+      before: z.string().optional().describe('Pagination cursor for older items'),
+      after: z.string().optional().describe('Pagination cursor for newer items')
+    })
+  )
+  .output(
+    z.object({
+      tour: tourSchema.optional().describe('Single tour (when fetching by ID)'),
+      tours: z.array(tourSchema).optional().describe('Array of tours'),
+      cursor: z
+        .object({
+          limit: z.number().optional(),
+          before: z.string().optional()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ChameleonClient(ctx.auth.token);
 
     if (ctx.input.tourId) {
       let result = await client.getTour(ctx.input.tourId);
       return {
         output: { tour: mapTour(result) },
-        message: `Retrieved tour **${result.name || result.id}**.`,
+        message: `Retrieved tour **${result.name || result.id}**.`
       };
     }
 
     let result = await client.listTours({
       limit: ctx.input.limit,
       before: ctx.input.before,
-      after: ctx.input.after,
+      after: ctx.input.after
     });
 
     let tours = (result.tours || []).map(mapTour);
     return {
       output: { tours, cursor: result.cursor },
-      message: `Returned **${tours.length}** tours.`,
+      message: `Returned **${tours.length}** tours.`
     };
-  }).build();
+  })
+  .build();

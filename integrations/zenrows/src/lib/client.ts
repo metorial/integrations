@@ -1,19 +1,19 @@
 import { createAxios } from 'slates';
 
 let universalAxios = createAxios({
-  baseURL: 'https://api.zenrows.com/v1/',
+  baseURL: 'https://api.zenrows.com/v1/'
 });
 
 let ecommerceAxios = createAxios({
-  baseURL: 'https://ecommerce.api.zenrows.com/v1/',
+  baseURL: 'https://ecommerce.api.zenrows.com/v1/'
 });
 
 let realestateAxios = createAxios({
-  baseURL: 'https://realestate.api.zenrows.com/v1/',
+  baseURL: 'https://realestate.api.zenrows.com/v1/'
 });
 
 let serpAxios = createAxios({
-  baseURL: 'https://serp.api.zenrows.com/v1/',
+  baseURL: 'https://serp.api.zenrows.com/v1/'
 });
 
 export interface ScrapeUrlParams {
@@ -108,7 +108,7 @@ export class Client {
   async scrapeUrl(params: ScrapeUrlParams): Promise<ScrapeUrlResult> {
     let queryParams: Record<string, string | number | boolean> = {
       apikey: this.token,
-      url: params.url,
+      url: params.url
     };
 
     if (params.mode) queryParams.mode = params.mode;
@@ -120,7 +120,8 @@ export class Client {
     if (params.device) queryParams.device = params.device;
     if (params.customHeaders) queryParams.custom_headers = true;
     if (params.originalStatus) queryParams.original_status = true;
-    if (params.allowedStatusCodes) queryParams.allowed_status_codes = params.allowedStatusCodes;
+    if (params.allowedStatusCodes)
+      queryParams.allowed_status_codes = params.allowedStatusCodes;
     if (params.waitFor) queryParams.wait_for = params.waitFor;
     if (params.wait) queryParams.wait = params.wait;
     if (params.blockResources) queryParams.block_resources = params.blockResources;
@@ -132,13 +133,14 @@ export class Client {
     if (params.screenshotFullpage) queryParams.screenshot_fullpage = true;
     if (params.screenshotSelector) queryParams.screenshot_selector = params.screenshotSelector;
     if (params.screenshotFormat) queryParams.screenshot_format = params.screenshotFormat;
-    if (params.screenshotQuality !== undefined) queryParams.screenshot_quality = params.screenshotQuality;
+    if (params.screenshotQuality !== undefined)
+      queryParams.screenshot_quality = params.screenshotQuality;
     if (params.outputs) queryParams.outputs = params.outputs;
 
     let method = params.method || 'GET';
     let axiosConfig: Record<string, unknown> = {
       params: queryParams,
-      transformResponse: [(data: unknown) => data],
+      transformResponse: [(data: unknown) => data]
     };
 
     let headers: Record<string, string> = {};
@@ -169,8 +171,9 @@ export class Client {
 
     return {
       statusCode: response.status,
-      content: typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
-      headers: responseHeaders,
+      content:
+        typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+      headers: responseHeaders
     };
   }
 
@@ -240,7 +243,9 @@ export class Client {
     return response.data;
   }
 
-  async getIdealistaProperty(params: IdealistaPropertyParams): Promise<Record<string, unknown>> {
+  async getIdealistaProperty(
+    params: IdealistaPropertyParams
+  ): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = { apikey: this.token };
     if (params.tld) queryParams.tld = params.tld;
     if (params.lang) queryParams.lang = params.lang;
@@ -267,8 +272,8 @@ export class Client {
   async getUsage(): Promise<UsageDetails> {
     let response = await universalAxios.get('subscriptions/self/details', {
       headers: {
-        'X-API-Key': this.token,
-      },
+        'X-API-Key': this.token
+      }
     });
     return response.data;
   }

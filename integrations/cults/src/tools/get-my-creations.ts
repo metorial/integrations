@@ -18,37 +18,47 @@ let myCreationSchema = z.object({
   tags: z.array(z.string()).nullable().describe('Tags'),
   totalSalesAmountUsd: z.number().nullable().describe('Total sales in USD'),
   priceUsd: z.number().nullable().describe('Price in USD'),
-  categoryName: z.string().nullable().describe('Category name'),
+  categoryName: z.string().nullable().describe('Category name')
 });
 
-export let getMyCreations = SlateTool.create(
-  spec,
-  {
-    name: 'Get My Creations',
-    key: 'get_my_creations',
-    description: `List your own published 3D designs on Cults3D. Returns creations with visibility status, sales totals, download counts, and other stats. Supports pagination.`,
-    tags: {
-      readOnly: true,
-    },
+export let getMyCreations = SlateTool.create(spec, {
+  name: 'Get My Creations',
+  key: 'get_my_creations',
+  description: `List your own published 3D designs on Cults3D. Returns creations with visibility status, sales totals, download counts, and other stats. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of creations (default 20)'),
-    offset: z.number().min(0).optional().describe('Number of creations to skip for pagination'),
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of your creations'),
-    creations: z.array(myCreationSchema).describe('List of your creations'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of creations (default 20)'),
+      offset: z
+        .number()
+        .min(0)
+        .optional()
+        .describe('Number of creations to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of your creations'),
+      creations: z.array(myCreationSchema).describe('List of your creations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CultsClient({
       token: ctx.auth.token,
-      username: ctx.auth.username,
+      username: ctx.auth.username
     });
 
     let result = await client.getMyCreations({
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let creations = result.results.map((c: any) => ({
@@ -66,15 +76,15 @@ export let getMyCreations = SlateTool.create(
       tags: c.tags,
       totalSalesAmountUsd: c.totalSalesAmount?.value ?? null,
       priceUsd: c.price?.value ?? null,
-      categoryName: c.category?.name ?? null,
+      categoryName: c.category?.name ?? null
     }));
 
     return {
       output: {
         total: result.total,
-        creations,
+        creations
       },
-      message: `You have **${result.total}** creations. Returned ${creations.length} results.`,
+      message: `You have **${result.total}** creations. Returned ${creations.length} results.`
     };
   })
   .build();

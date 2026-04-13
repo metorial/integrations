@@ -18,12 +18,9 @@ import {
   manageSegmentMembers,
   listTags,
   getJobStatus,
-  exportEvents,
+  exportEvents
 } from './tools';
-import {
-  experienceEvent,
-  workflowEvent,
-} from './triggers';
+import { experienceEvent, workflowEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,10 +42,7 @@ export let provider = Slate.create({
     manageSegmentMembers,
     listTags,
     getJobStatus,
-    exportEvents,
+    exportEvents
   ],
-  triggers: [
-    experienceEvent,
-    workflowEvent,
-  ],
+  triggers: [experienceEvent, workflowEvent]
 });

@@ -19,11 +19,16 @@ let userSchema = z.object({
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp'),
   url: z.string().describe('User profile URL'),
-  roles: z.array(z.object({
-    roleId: z.string(),
-    name: z.string(),
-    description: z.string(),
-  })).optional().describe('User roles'),
+  roles: z
+    .array(
+      z.object({
+        roleId: z.string(),
+        name: z.string(),
+        description: z.string()
+      })
+    )
+    .optional()
+    .describe('User roles')
 });
 
 let paginationSchema = z.object({
@@ -32,37 +37,41 @@ let paginationSchema = z.object({
   pages: z.number(),
   total: z.number(),
   next: z.number().nullable(),
-  prev: z.number().nullable(),
+  prev: z.number().nullable()
 });
 
-export let browseUsers = SlateTool.create(
-  spec,
-  {
-    name: 'Browse Users',
-    key: 'browse_users',
-    description: `List staff users of your Ghost site. Users are staff members with role-based permissions (Contributor, Author, Editor, Administrator, Owner). This is a read-only view of staff data.`,
-    instructions: [
-      'Use **include** with `roles` to see each user\'s role.',
-      'Use **include** with `count.posts` to see how many posts each user has.',
-    ],
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    include: z.string().optional().describe('Comma-separated includes (e.g., "roles", "count.posts")'),
-    filter: z.string().optional().describe('Ghost NQL filter expression'),
-    limit: z.number().optional().describe('Number of users per page'),
-    page: z.number().optional().describe('Page number'),
-    order: z.string().optional().describe('Sort order'),
-  }))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of staff users'),
-    pagination: paginationSchema,
-  }))
-  .handleInvocation(async (ctx) => {
+export let browseUsers = SlateTool.create(spec, {
+  name: 'Browse Users',
+  key: 'browse_users',
+  description: `List staff users of your Ghost site. Users are staff members with role-based permissions (Contributor, Author, Editor, Administrator, Owner). This is a read-only view of staff data.`,
+  instructions: [
+    "Use **include** with `roles` to see each user's role.",
+    'Use **include** with `count.posts` to see how many posts each user has.'
+  ],
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      include: z
+        .string()
+        .optional()
+        .describe('Comma-separated includes (e.g., "roles", "count.posts")'),
+      filter: z.string().optional().describe('Ghost NQL filter expression'),
+      limit: z.number().optional().describe('Number of users per page'),
+      page: z.number().optional().describe('Page number'),
+      order: z.string().optional().describe('Sort order')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of staff users'),
+      pagination: paginationSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let result = await client.browseUsers({
@@ -70,7 +79,7 @@ export let browseUsers = SlateTool.create(
       filter: ctx.input.filter,
       limit: ctx.input.limit,
       page: ctx.input.page,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
     let users = (result.users ?? []).map((u: any) => ({
@@ -92,16 +101,22 @@ export let browseUsers = SlateTool.create(
       roles: u.roles?.map((r: any) => ({
         roleId: r.id,
         name: r.name,
-        description: r.description,
-      })),
+        description: r.description
+      }))
     }));
 
     let pagination = result.meta?.pagination ?? {
-      page: 1, limit: 15, pages: 1, total: users.length, next: null, prev: null,
+      page: 1,
+      limit: 15,
+      pages: 1,
+      total: users.length,
+      next: null,
+      prev: null
     };
 
     return {
       output: { users, pagination },
-      message: `Found **${pagination.total}** staff users.`,
+      message: `Found **${pagination.total}** staff users.`
     };
-  }).build();
+  })
+  .build();

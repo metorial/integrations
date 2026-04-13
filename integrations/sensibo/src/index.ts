@@ -9,7 +9,7 @@ import {
   manageScheduleTool,
   manageClimateReactTool,
   getDeviceEventsTool,
-  getDoorSensorEventsTool,
+  getDoorSensorEventsTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     manageScheduleTool,
     manageClimateReactTool,
     getDeviceEventsTool,
-    getDoorSensorEventsTool,
+    getDoorSensorEventsTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

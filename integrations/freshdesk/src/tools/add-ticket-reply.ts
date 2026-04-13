@@ -3,32 +3,44 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let addTicketReply = SlateTool.create(
-  spec,
-  {
-    name: 'Add Ticket Reply',
-    key: 'add_ticket_reply',
-    description: `Sends a reply on a ticket visible to the requester. Can also add internal notes for agent-only collaboration. Use \`private\` to create an internal note instead of a customer-facing reply.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let addTicketReply = SlateTool.create(spec, {
+  name: 'Add Ticket Reply',
+  key: 'add_ticket_reply',
+  description: `Sends a reply on a ticket visible to the requester. Can also add internal notes for agent-only collaboration. Use \`private\` to create an internal note instead of a customer-facing reply.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    ticketId: z.number().describe('ID of the ticket to reply to'),
-    body: z.string().describe('HTML content of the reply or note'),
-    private: z.boolean().optional().describe('If true, creates a private note instead of a public reply. Defaults to false.'),
-    ccEmails: z.array(z.string()).optional().describe('Email addresses to CC (only for replies, not notes)'),
-    bccEmails: z.array(z.string()).optional().describe('Email addresses to BCC (only for replies)')
-  }))
-  .output(z.object({
-    conversationId: z.number().describe('ID of the created conversation'),
-    ticketId: z.number().describe('ID of the parent ticket'),
-    isPrivate: z.boolean().describe('Whether this is a private note'),
-    createdAt: z.string().describe('Timestamp when the conversation was created')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticketId: z.number().describe('ID of the ticket to reply to'),
+      body: z.string().describe('HTML content of the reply or note'),
+      private: z
+        .boolean()
+        .optional()
+        .describe(
+          'If true, creates a private note instead of a public reply. Defaults to false.'
+        ),
+      ccEmails: z
+        .array(z.string())
+        .optional()
+        .describe('Email addresses to CC (only for replies, not notes)'),
+      bccEmails: z
+        .array(z.string())
+        .optional()
+        .describe('Email addresses to BCC (only for replies)')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.number().describe('ID of the created conversation'),
+      ticketId: z.number().describe('ID of the parent ticket'),
+      isPrivate: z.boolean().describe('Whether this is a private note'),
+      createdAt: z.string().describe('Timestamp when the conversation was created')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -61,4 +73,5 @@ export let addTicketReply = SlateTool.create(
         ? `Added private note to ticket **#${ctx.input.ticketId}**`
         : `Sent reply on ticket **#${ctx.input.ticketId}**`
     };
-  }).build();
+  })
+  .build();

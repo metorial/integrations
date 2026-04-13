@@ -4,12 +4,12 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
 let eventNameMap: Record<string, string> = {
-  'WorkbookCreated': 'workbook.created',
-  'WorkbookUpdated': 'workbook.updated',
-  'WorkbookDeleted': 'workbook.deleted',
-  'WorkbookRefreshStarted': 'workbook.refresh_started',
-  'WorkbookRefreshSucceeded': 'workbook.refresh_succeeded',
-  'WorkbookRefreshFailed': 'workbook.refresh_failed'
+  WorkbookCreated: 'workbook.created',
+  WorkbookUpdated: 'workbook.updated',
+  WorkbookDeleted: 'workbook.deleted',
+  WorkbookRefreshStarted: 'workbook.refresh_started',
+  WorkbookRefreshSucceeded: 'workbook.refresh_succeeded',
+  WorkbookRefreshFailed: 'workbook.refresh_failed'
 };
 
 let webhookEventNames = [
@@ -24,23 +24,28 @@ let webhookEventNames = [
 export let workbookEvents = SlateTrigger.create(spec, {
   name: 'Workbook Events',
   key: 'workbook_events',
-  description: 'Triggers when a workbook is created, updated, deleted, or when an extract refresh starts, succeeds, or fails.'
+  description:
+    'Triggers when a workbook is created, updated, deleted, or when an extract refresh starts, succeeds, or fails.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Tableau webhook event type'),
-    resourceId: z.string().describe('LUID of the affected workbook'),
-    resourceName: z.string().describe('Name of the affected workbook'),
-    siteId: z.string().describe('LUID of the site'),
-    timestamp: z.string().describe('Event timestamp')
-  }))
-  .output(z.object({
-    workbookId: z.string().describe('LUID of the affected workbook'),
-    workbookName: z.string().describe('Name of the workbook'),
-    siteId: z.string().describe('LUID of the site'),
-    timestamp: z.string().describe('When the event occurred')
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Tableau webhook event type'),
+      resourceId: z.string().describe('LUID of the affected workbook'),
+      resourceName: z.string().describe('Name of the affected workbook'),
+      siteId: z.string().describe('LUID of the site'),
+      timestamp: z.string().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      workbookId: z.string().describe('LUID of the affected workbook'),
+      workbookName: z.string().describe('Name of the workbook'),
+      siteId: z.string().describe('LUID of the site'),
+      timestamp: z.string().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       let webhookIds: Record<string, string> = {};
 
@@ -56,7 +61,7 @@ export let workbookEvents = SlateTrigger.create(spec, {
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       let webhookIds = ctx.input.registrationDetails?.webhookIds || {};
 
@@ -69,21 +74,23 @@ export let workbookEvents = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType || body['webhook-source-event-name'] || 'unknown',
-          resourceId: body.resource_luid || body.resourceId || '',
-          resourceName: body.resource_name || body.resourceName || '',
-          siteId: body.site_luid || body.siteId || '',
-          timestamp: body.created_at || body.timestamp || new Date().toISOString()
-        }]
+        inputs: [
+          {
+            eventType: body.eventType || body['webhook-source-event-name'] || 'unknown',
+            resourceId: body.resource_luid || body.resourceId || '',
+            resourceName: body.resource_name || body.resourceName || '',
+            siteId: body.site_luid || body.siteId || '',
+            timestamp: body.created_at || body.timestamp || new Date().toISOString()
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let mappedType = eventNameMap[ctx.input.eventType] || `workbook.${ctx.input.eventType}`;
 
       return {
@@ -97,4 +104,5 @@ export let workbookEvents = SlateTrigger.create(spec, {
         }
       };
     }
-  }).build();
+  })
+  .build();

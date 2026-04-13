@@ -3,49 +3,60 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createRelease = SlateTool.create(
-  spec,
-  {
-    name: 'Create Release',
-    key: 'create_release',
-    description: `Create a new release for a project, or list existing releases. Releases are associated with a Git tag and can include release notes and milestone associations.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createRelease = SlateTool.create(spec, {
+  name: 'Create Release',
+  key: 'create_release',
+  description: `Create a new release for a project, or list existing releases. Releases are associated with a Git tag and can include release notes and milestone associations.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list']).describe('Create a new release or list existing ones'),
-    projectId: z.string().describe('Project ID or URL-encoded path'),
-    tagName: z.string().optional().describe('Git tag for the release (required for create)'),
-    name: z.string().optional().describe('Release title'),
-    description: z.string().optional().describe('Release notes (Markdown supported)'),
-    ref: z.string().optional().describe('If the tag doesn\'t exist, create it from this ref'),
-    milestones: z.array(z.string()).optional().describe('Milestone titles to associate'),
-    releasedAt: z.string().optional().describe('Release date (ISO 8601 format)'),
-    perPage: z.number().optional().describe('Results per page (list only)'),
-    page: z.number().optional().describe('Page number (list only)')
-  }))
-  .output(z.object({
-    release: z.object({
-      tagName: z.string().describe('Git tag name'),
-      name: z.string().describe('Release title'),
-      description: z.string().nullable().describe('Release notes'),
-      createdAt: z.string().describe('Creation timestamp'),
-      releasedAt: z.string().describe('Release date'),
-      authorUsername: z.string().nullable().describe('Author username')
-    }).optional().describe('Created release'),
-    releases: z.array(z.object({
-      tagName: z.string().describe('Git tag name'),
-      name: z.string().describe('Release title'),
-      description: z.string().nullable().describe('Release notes'),
-      createdAt: z.string().describe('Creation timestamp'),
-      releasedAt: z.string().describe('Release date'),
-      authorUsername: z.string().nullable().describe('Author username')
-    })).optional().describe('List of releases')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list'])
+        .describe('Create a new release or list existing ones'),
+      projectId: z.string().describe('Project ID or URL-encoded path'),
+      tagName: z.string().optional().describe('Git tag for the release (required for create)'),
+      name: z.string().optional().describe('Release title'),
+      description: z.string().optional().describe('Release notes (Markdown supported)'),
+      ref: z.string().optional().describe("If the tag doesn't exist, create it from this ref"),
+      milestones: z.array(z.string()).optional().describe('Milestone titles to associate'),
+      releasedAt: z.string().optional().describe('Release date (ISO 8601 format)'),
+      perPage: z.number().optional().describe('Results per page (list only)'),
+      page: z.number().optional().describe('Page number (list only)')
+    })
+  )
+  .output(
+    z.object({
+      release: z
+        .object({
+          tagName: z.string().describe('Git tag name'),
+          name: z.string().describe('Release title'),
+          description: z.string().nullable().describe('Release notes'),
+          createdAt: z.string().describe('Creation timestamp'),
+          releasedAt: z.string().describe('Release date'),
+          authorUsername: z.string().nullable().describe('Author username')
+        })
+        .optional()
+        .describe('Created release'),
+      releases: z
+        .array(
+          z.object({
+            tagName: z.string().describe('Git tag name'),
+            name: z.string().describe('Release title'),
+            description: z.string().nullable().describe('Release notes'),
+            createdAt: z.string().describe('Creation timestamp'),
+            releasedAt: z.string().describe('Release date'),
+            authorUsername: z.string().nullable().describe('Author username')
+          })
+        )
+        .optional()
+        .describe('List of releases')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl

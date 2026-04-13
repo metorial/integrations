@@ -11,13 +11,9 @@ import {
   updateCookies,
   listWebhooks,
   createWebhook,
-  deleteWebhook,
+  deleteWebhook
 } from './tools';
-import {
-  taskCompleted,
-  dataChanged,
-  tableExportCompleted,
-} from './triggers';
+import { taskCompleted, dataChanged, tableExportCompleted } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,11 +28,7 @@ export let provider = Slate.create({
     updateCookies,
     listWebhooks,
     createWebhook,
-    deleteWebhook,
+    deleteWebhook
   ],
-  triggers: [
-    taskCompleted,
-    dataChanged,
-    tableExportCompleted,
-  ],
+  triggers: [taskCompleted, dataChanged, tableExportCompleted]
 });

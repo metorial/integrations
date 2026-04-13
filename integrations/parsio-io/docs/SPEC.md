@@ -14,6 +14,7 @@ Parsio.io uses **API key** authentication.
 - Base URL: `https://api.parsio.io`
 
 Example:
+
 ```
 curl -X GET https://api.parsio.io/mailboxes/ -H "X-API-Key: <YOUR_API_KEY>"
 ```
@@ -27,6 +28,7 @@ Mailboxes are the core organizational unit in Parsio. Each mailbox has a unique 
 ### Document Submission and Parsing
 
 Submit documents for parsing in two ways:
+
 - **File upload**: Upload files (PDF, HTML, CSV, TXT, DOCX, RTF, XML) to a mailbox for parsing. Supported formats include PDF, HTML, CSV, TXT, DOCX, RTF, or XML, with a max file size of 20MB.
 - **HTML/Text submission**: Send HTML or text content directly via API, optionally including email metadata (from, to, subject). If both HTML and text are provided, HTML takes priority.
 
@@ -53,16 +55,21 @@ Create and manage webhooks to receive real-time notifications when documents are
 Parsio supports **webhooks** for real-time event notifications. Webhooks are configured with a trigger event per mailbox. The following event types are available:
 
 ### Document Parsed (`doc.parsed`)
+
 Fires when a document has been successfully parsed. The webhook payload contains the extracted structured data in a nested format.
 
 ### Document Parsed Flat (`doc.parsed.flat`)
+
 Fires when a document has been successfully parsed. The payload contains the extracted data in a flattened (non-nested) format, which can be easier to consume for simple integrations.
 
 ### Document Failed (`doc.fail`)
+
 Fires when a document fails to parse, allowing you to handle errors or trigger fallback workflows.
 
 ### Document Received (`doc.received`)
+
 Fires when a new document is received in the mailbox, before any parsing occurs.
 
 ### Table Parsed (`table.parsed`)
+
 Fires when tabular data within a document has been parsed. Requires specifying a `table_id` parameter to indicate which table field to listen to.

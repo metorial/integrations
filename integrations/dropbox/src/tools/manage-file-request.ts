@@ -14,32 +14,61 @@ let fileRequestSchema = z.object({
   deadline: z.string().optional().describe('Deadline for submissions')
 });
 
-export let manageFileRequest = SlateTool.create(
-  spec,
-  {
-    name: 'Manage File Request',
-    key: 'manage_file_request',
-    description: `Create, list, update, or delete Dropbox file requests. File requests allow others to upload files to your Dropbox. Use action "create" to make a new request, "list" to see all requests, "get" for a specific request, "update" to modify, or "delete" to remove requests.`,
-    tags: {
-      destructive: false
-    }
+export let manageFileRequest = SlateTool.create(spec, {
+  name: 'Manage File Request',
+  key: 'manage_file_request',
+  description: `Create, list, update, or delete Dropbox file requests. File requests allow others to upload files to your Dropbox. Use action "create" to make a new request, "list" to see all requests, "get" for a specific request, "update" to modify, or "delete" to remove requests.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'get', 'update', 'delete']).describe('Action to perform'),
-    fileRequestId: z.string().optional().describe('File request ID (required for "get", "update", "delete")'),
-    fileRequestIds: z.array(z.string()).optional().describe('File request IDs to delete (for "delete" with multiple)'),
-    title: z.string().optional().describe('Title for the file request (for "create" and "update")'),
-    destination: z.string().optional().describe('Destination folder path (for "create" and "update")'),
-    deadline: z.string().optional().nullable().describe('Deadline ISO timestamp. Set null to remove deadline (for "create" and "update")'),
-    open: z.boolean().optional().describe('Whether the file request accepts submissions (for "create" and "update")')
-  }))
-  .output(z.object({
-    fileRequest: fileRequestSchema.optional().describe('Single file request (for "create", "get", "update")'),
-    fileRequests: z.array(fileRequestSchema).optional().describe('List of file requests (for "list")'),
-    deleted: z.boolean().optional().describe('Whether deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'get', 'update', 'delete'])
+        .describe('Action to perform'),
+      fileRequestId: z
+        .string()
+        .optional()
+        .describe('File request ID (required for "get", "update", "delete")'),
+      fileRequestIds: z
+        .array(z.string())
+        .optional()
+        .describe('File request IDs to delete (for "delete" with multiple)'),
+      title: z
+        .string()
+        .optional()
+        .describe('Title for the file request (for "create" and "update")'),
+      destination: z
+        .string()
+        .optional()
+        .describe('Destination folder path (for "create" and "update")'),
+      deadline: z
+        .string()
+        .optional()
+        .nullable()
+        .describe(
+          'Deadline ISO timestamp. Set null to remove deadline (for "create" and "update")'
+        ),
+      open: z
+        .boolean()
+        .optional()
+        .describe('Whether the file request accepts submissions (for "create" and "update")')
+    })
+  )
+  .output(
+    z.object({
+      fileRequest: fileRequestSchema
+        .optional()
+        .describe('Single file request (for "create", "get", "update")'),
+      fileRequests: z
+        .array(fileRequestSchema)
+        .optional()
+        .describe('List of file requests (for "list")'),
+      deleted: z.boolean().optional().describe('Whether deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DropboxClient(ctx.auth.token);
 
     let mapRequest = (fr: any) => ({
@@ -55,7 +84,8 @@ export let manageFileRequest = SlateTool.create(
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.title) throw new Error('Title is required to create a file request');
-      if (!ctx.input.destination) throw new Error('Destination is required to create a file request');
+      if (!ctx.input.destination)
+        throw new Error('Destination is required to create a file request');
 
       let result = await client.createFileRequest(
         ctx.input.title,
@@ -107,12 +137,15 @@ export let manageFileRequest = SlateTool.create(
     }
 
     // delete
-    let ids = ctx.input.fileRequestIds || (ctx.input.fileRequestId ? [ctx.input.fileRequestId] : []);
-    if (ids.length === 0) throw new Error('At least one file request ID is required for deletion');
+    let ids =
+      ctx.input.fileRequestIds || (ctx.input.fileRequestId ? [ctx.input.fileRequestId] : []);
+    if (ids.length === 0)
+      throw new Error('At least one file request ID is required for deletion');
 
     await client.deleteFileRequests(ids);
     return {
       output: { deleted: true },
       message: `Deleted **${ids.length}** file request(s).`
     };
-  }).build();
+  })
+  .build();

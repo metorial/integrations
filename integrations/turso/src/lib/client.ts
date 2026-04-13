@@ -10,8 +10,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.turso.tech',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -42,12 +42,20 @@ export class Client {
   }
 
   async getDatabaseConfiguration(databaseName: string) {
-    let response = await this.axios.get(this.orgPath(`/databases/${databaseName}/configuration`));
+    let response = await this.axios.get(
+      this.orgPath(`/databases/${databaseName}/configuration`)
+    );
     return response.data as DatabaseConfiguration;
   }
 
-  async updateDatabaseConfiguration(databaseName: string, config: Partial<DatabaseConfiguration>) {
-    let response = await this.axios.patch(this.orgPath(`/databases/${databaseName}/configuration`), config);
+  async updateDatabaseConfiguration(
+    databaseName: string,
+    config: Partial<DatabaseConfiguration>
+  ) {
+    let response = await this.axios.patch(
+      this.orgPath(`/databases/${databaseName}/configuration`),
+      config
+    );
     return response.data as DatabaseConfiguration;
   }
 
@@ -55,7 +63,9 @@ export class Client {
     let params: Record<string, string> = {};
     if (from) params.from = from;
     if (to) params.to = to;
-    let response = await this.axios.get(this.orgPath(`/databases/${databaseName}/usage`), { params });
+    let response = await this.axios.get(this.orgPath(`/databases/${databaseName}/usage`), {
+      params
+    });
     return response.data as { database: DatabaseUsage };
   }
 
@@ -70,20 +80,31 @@ export class Client {
   }
 
   async getDatabaseInstance(databaseName: string, instanceName: string) {
-    let response = await this.axios.get(this.orgPath(`/databases/${databaseName}/instances/${instanceName}`));
+    let response = await this.axios.get(
+      this.orgPath(`/databases/${databaseName}/instances/${instanceName}`)
+    );
     return response.data as { instance: DatabaseInstance };
   }
 
-  async createDatabaseToken(databaseName: string, params?: { expiration?: string; authorization?: string }) {
+  async createDatabaseToken(
+    databaseName: string,
+    params?: { expiration?: string; authorization?: string }
+  ) {
     let queryParams: Record<string, string> = {};
     if (params?.expiration) queryParams.expiration = params.expiration;
     if (params?.authorization) queryParams.authorization = params.authorization;
-    let response = await this.axios.post(this.orgPath(`/databases/${databaseName}/auth/tokens`), {}, { params: queryParams });
+    let response = await this.axios.post(
+      this.orgPath(`/databases/${databaseName}/auth/tokens`),
+      {},
+      { params: queryParams }
+    );
     return response.data as { jwt: string };
   }
 
   async invalidateDatabaseTokens(databaseName: string) {
-    let response = await this.axios.post(this.orgPath(`/databases/${databaseName}/auth/rotate`));
+    let response = await this.axios.post(
+      this.orgPath(`/databases/${databaseName}/auth/rotate`)
+    );
     return response.data;
   }
 
@@ -110,20 +131,31 @@ export class Client {
   }
 
   async addGroupLocation(groupName: string, location: string) {
-    let response = await this.axios.post(this.orgPath(`/groups/${groupName}/locations/${location}`));
+    let response = await this.axios.post(
+      this.orgPath(`/groups/${groupName}/locations/${location}`)
+    );
     return response.data as { group: TursoGroup };
   }
 
   async removeGroupLocation(groupName: string, location: string) {
-    let response = await this.axios.delete(this.orgPath(`/groups/${groupName}/locations/${location}`));
+    let response = await this.axios.delete(
+      this.orgPath(`/groups/${groupName}/locations/${location}`)
+    );
     return response.data as { group: TursoGroup };
   }
 
-  async createGroupToken(groupName: string, params?: { expiration?: string; authorization?: string }) {
+  async createGroupToken(
+    groupName: string,
+    params?: { expiration?: string; authorization?: string }
+  ) {
     let queryParams: Record<string, string> = {};
     if (params?.expiration) queryParams.expiration = params.expiration;
     if (params?.authorization) queryParams.authorization = params.authorization;
-    let response = await this.axios.post(this.orgPath(`/groups/${groupName}/auth/tokens`), {}, { params: queryParams });
+    let response = await this.axios.post(
+      this.orgPath(`/groups/${groupName}/auth/tokens`),
+      {},
+      { params: queryParams }
+    );
     return response.data as { jwt: string };
   }
 
@@ -133,7 +165,9 @@ export class Client {
   }
 
   async transferGroup(groupName: string, targetOrganization: string) {
-    let response = await this.axios.post(this.orgPath(`/groups/${groupName}/transfer`), { organization: targetOrganization });
+    let response = await this.axios.post(this.orgPath(`/groups/${groupName}/transfer`), {
+      organization: targetOrganization
+    });
     return response.data;
   }
 
@@ -148,7 +182,10 @@ export class Client {
   }
 
   async updateGroupConfiguration(groupName: string, config: Record<string, unknown>) {
-    let response = await this.axios.patch(this.orgPath(`/groups/${groupName}/configuration`), config);
+    let response = await this.axios.patch(
+      this.orgPath(`/groups/${groupName}/configuration`),
+      config
+    );
     return response.data;
   }
 
@@ -177,7 +214,10 @@ export class Client {
   }
 
   async updateOrganization(params: { overages?: boolean }) {
-    let response = await this.axios.patch(`/v1/organizations/${this.organizationSlug}`, params);
+    let response = await this.axios.patch(
+      `/v1/organizations/${this.organizationSlug}`,
+      params
+    );
     return response.data as TursoOrganization;
   }
 

@@ -3,37 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let extractionCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Extraction Completed',
-    key: 'extraction_completed',
-    description: 'Triggered when a document extraction job completes. Receives the extracted text, confidence metadata, and line metadata via webhook callback from LLMWhisperer.',
-  },
-)
-  .input(z.object({
-    whisperHash: z.string().describe('Unique identifier for the extraction job.'),
-    status: z.string().describe('Extraction result status (e.g., "success", "error").'),
-    statusMessage: z.string().describe('Human-readable status message.'),
-    resultText: z.string().describe('The extracted text content.'),
-    lineMetadata: z.any().describe('Line-level position metadata for highlights.'),
-    confidenceMetadata: z.any().describe('Confidence scores for extracted text.'),
-    documentMetadata: z.any().describe('Additional document metadata.'),
-  }))
-  .output(z.object({
-    whisperHash: z.string().describe('Unique identifier for the extraction job.'),
-    status: z.string().describe('Extraction result status.'),
-    statusMessage: z.string().describe('Human-readable status message.'),
-    resultText: z.string().describe('The extracted text content from the document.'),
-    lineMetadata: z.any().describe('Line-level position metadata for highlights.'),
-    confidenceMetadata: z.any().describe('Confidence scores for extracted text.'),
-    documentMetadata: z.any().describe('Additional document metadata.'),
-  }))
+export let extractionCompleted = SlateTrigger.create(spec, {
+  name: 'Extraction Completed',
+  key: 'extraction_completed',
+  description:
+    'Triggered when a document extraction job completes. Receives the extracted text, confidence metadata, and line metadata via webhook callback from LLMWhisperer.'
+})
+  .input(
+    z.object({
+      whisperHash: z.string().describe('Unique identifier for the extraction job.'),
+      status: z.string().describe('Extraction result status (e.g., "success", "error").'),
+      statusMessage: z.string().describe('Human-readable status message.'),
+      resultText: z.string().describe('The extracted text content.'),
+      lineMetadata: z.any().describe('Line-level position metadata for highlights.'),
+      confidenceMetadata: z.any().describe('Confidence scores for extracted text.'),
+      documentMetadata: z.any().describe('Additional document metadata.')
+    })
+  )
+  .output(
+    z.object({
+      whisperHash: z.string().describe('Unique identifier for the extraction job.'),
+      status: z.string().describe('Extraction result status.'),
+      statusMessage: z.string().describe('Human-readable status message.'),
+      resultText: z.string().describe('The extracted text content from the document.'),
+      lineMetadata: z.any().describe('Line-level position metadata for highlights.'),
+      confidenceMetadata: z.any().describe('Confidence scores for extracted text.'),
+      documentMetadata: z.any().describe('Additional document metadata.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let webhookName = `slates_${Date.now()}`;
@@ -41,20 +43,20 @@ export let extractionCompleted = SlateTrigger.create(
       await client.registerWebhook({
         url: ctx.input.webhookBaseUrl,
         authToken: '',
-        webhookName,
+        webhookName
       });
 
       return {
         registrationDetails: {
-          webhookName,
-        },
+          webhookName
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let webhookName = ctx.input.registrationDetails?.webhookName;
@@ -63,8 +65,8 @@ export let extractionCompleted = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let payloadStatus = data.payload_status || {};
 
@@ -77,13 +79,13 @@ export let extractionCompleted = SlateTrigger.create(
             resultText: data.result_text || '',
             lineMetadata: data.line_metadata || null,
             confidenceMetadata: data.confidence_metadata || null,
-            documentMetadata: data.metadata || null,
-          },
-        ],
+            documentMetadata: data.metadata || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `extraction.${ctx.input.status === 'success' ? 'completed' : 'failed'}`,
         id: ctx.input.whisperHash,
@@ -94,8 +96,9 @@ export let extractionCompleted = SlateTrigger.create(
           resultText: ctx.input.resultText,
           lineMetadata: ctx.input.lineMetadata,
           confidenceMetadata: ctx.input.confidenceMetadata,
-          documentMetadata: ctx.input.documentMetadata,
-        },
+          documentMetadata: ctx.input.documentMetadata
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

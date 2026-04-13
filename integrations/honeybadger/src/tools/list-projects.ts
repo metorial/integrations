@@ -12,28 +12,29 @@ let projectSchema = z.object({
   createdAt: z.string().optional().describe('When the project was created'),
   environments: z.array(z.any()).optional().describe('Project environments'),
   teams: z.array(z.any()).optional().describe('Teams associated with the project'),
-  active: z.boolean().optional().describe('Whether the project is active'),
+  active: z.boolean().optional().describe('Whether the project is active')
 });
 
-export let listProjects = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List all Honeybadger projects accessible with your auth token. Optionally filter by account. Returns project details including name, language, fault count, and associated teams.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    accountId: z.string().optional().describe('Filter projects by account ID'),
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema).describe('List of projects'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listProjects = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List all Honeybadger projects accessible with your auth token. Optionally filter by account. Returns project details including name, language, fault count, and associated teams.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      accountId: z.string().optional().describe('Filter projects by account ID')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectSchema).describe('List of projects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HoneybadgerClient({ token: ctx.auth.token });
     let data = await client.listProjects({ accountId: ctx.input.accountId });
     let results = data.results || [];
@@ -47,12 +48,12 @@ export let listProjects = SlateTool.create(
       createdAt: p.created_at,
       environments: p.environments,
       teams: p.teams,
-      active: p.active,
+      active: p.active
     }));
 
     return {
       output: { projects },
-      message: `Found **${projects.length}** project(s).`,
+      message: `Found **${projects.length}** project(s).`
     };
   })
   .build();

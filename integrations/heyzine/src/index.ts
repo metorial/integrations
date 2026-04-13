@@ -9,7 +9,7 @@ import {
   managePasswordProtection,
   manageAccessList,
   manageBookshelf,
-  getOembed,
+  getOembed
 } from './tools';
 import { leadCollected } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     managePasswordProtection,
     manageAccessList,
     manageBookshelf,
-    getOembed,
+    getOembed
   ],
-  triggers: [
-    leadCollected,
-  ],
+  triggers: [leadCollected]
 });

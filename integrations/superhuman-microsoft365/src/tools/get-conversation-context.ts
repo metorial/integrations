@@ -15,8 +15,8 @@ let messageRowSchema = z.object({
     .array(
       z.object({
         address: z.string(),
-        name: z.string().optional(),
-      }),
+        name: z.string().optional()
+      })
     )
     .optional(),
   receivedDateTime: z.string().optional(),
@@ -28,43 +28,40 @@ let messageRowSchema = z.object({
   parentFolderId: z.string().optional(),
   webLink: z.string().optional(),
   categories: z.array(z.string()).optional(),
-  flagStatus: z.string().optional(),
+  flagStatus: z.string().optional()
 });
 
-export let getConversationContext = SlateTool.create(
-  spec,
-  {
-    name: 'Get Conversation Context',
-    key: 'get_conversation_context',
-    description:
-      'Load full thread context for a **conversationId**: every message in the thread (paginated server-side), ordered chronologically. Use after **Search Conversations** or when you already know the thread id.',
-    instructions: [
-      'Set **includeFullBody** to true when you need quoted history or HTML for drafting; otherwise previews are faster and smaller.',
-      'The newest message in a triage flow is often the last in the list (chronological ascending).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
+export let getConversationContext = SlateTool.create(spec, {
+  name: 'Get Conversation Context',
+  key: 'get_conversation_context',
+  description:
+    'Load full thread context for a **conversationId**: every message in the thread (paginated server-side), ordered chronologically. Use after **Search Conversations** or when you already know the thread id.',
+  instructions: [
+    'Set **includeFullBody** to true when you need quoted history or HTML for drafting; otherwise previews are faster and smaller.',
+    'The newest message in a triage flow is often the last in the list (chronological ascending).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
   .input(
     z.object({
       conversationId: z.string().describe('Microsoft Graph conversationId for the thread'),
       includeFullBody: z
         .boolean()
         .optional()
-        .describe('Include full body content (default false: bodyPreview only)'),
-    }),
+        .describe('Include full body content (default false: bodyPreview only)')
+    })
   )
   .output(
     z.object({
       conversationId: z.string(),
       messageCount: z.number(),
-      messages: z.array(messageRowSchema),
-    }),
+      messages: z.array(messageRowSchema)
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let select = ctx.input.includeFullBody
       ? [
@@ -83,7 +80,7 @@ export let getConversationContext = SlateTool.create(
           'parentFolderId',
           'webLink',
           'categories',
-          'flag',
+          'flag'
         ]
       : [
           'id',
@@ -100,18 +97,20 @@ export let getConversationContext = SlateTool.create(
           'parentFolderId',
           'webLink',
           'categories',
-          'flag',
+          'flag'
         ];
 
     let raw = await client.listMessagesByConversation(ctx.input.conversationId, {
       select,
-      orderby: 'receivedDateTime asc',
+      orderby: 'receivedDateTime asc'
     });
 
-    let mapRecipients = (recipients?: { emailAddress: { address: string; name?: string } }[]) =>
-      recipients?.map((r) => ({ address: r.emailAddress.address, name: r.emailAddress.name }));
+    let mapRecipients = (
+      recipients?: { emailAddress: { address: string; name?: string } }[]
+    ) =>
+      recipients?.map(r => ({ address: r.emailAddress.address, name: r.emailAddress.name }));
 
-    let messages = raw.map((msg) => ({
+    let messages = raw.map(msg => ({
       messageId: msg.id,
       subject: msg.subject,
       bodyPreview: msg.bodyPreview,
@@ -129,16 +128,16 @@ export let getConversationContext = SlateTool.create(
       parentFolderId: msg.parentFolderId,
       webLink: msg.webLink,
       categories: msg.categories,
-      flagStatus: msg.flag?.flagStatus,
+      flagStatus: msg.flag?.flagStatus
     }));
 
     return {
       output: {
         conversationId: ctx.input.conversationId,
         messageCount: messages.length,
-        messages,
+        messages
       },
-      message: `Loaded **${messages.length}** message(s) in conversation **${ctx.input.conversationId}**.`,
+      message: `Loaded **${messages.length}** message(s) in conversation **${ctx.input.conversationId}**.`
     };
   })
   .build();

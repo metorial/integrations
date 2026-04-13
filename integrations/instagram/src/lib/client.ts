@@ -14,71 +14,80 @@ export class InstagramClient {
     let version = config.apiVersion || 'v21.0';
     this.token = config.token;
     this.api = createAxios({
-      baseURL: `https://graph.facebook.com/${version}`,
+      baseURL: `https://graph.facebook.com/${version}`
     });
   }
 
   // ─── Profile ─────────────────────────────────────────────
 
   async getProfile(userId: string, fields?: string) {
-    let defaultFields = 'id,username,name,biography,profile_picture_url,followers_count,follows_count,media_count,website,ig_id';
+    let defaultFields =
+      'id,username,name,biography,profile_picture_url,followers_count,follows_count,media_count,website,ig_id';
     let response = await this.api.get(`/${userId}`, {
       params: {
         fields: fields || defaultFields,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   // ─── Media ───────────────────────────────────────────────
 
-  async listMedia(userId: string, options?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-    before?: string;
-  }) {
-    let defaultFields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,is_shared_to_feed';
+  async listMedia(
+    userId: string,
+    options?: {
+      fields?: string;
+      limit?: number;
+      after?: string;
+      before?: string;
+    }
+  ) {
+    let defaultFields =
+      'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,is_shared_to_feed';
     let response = await this.api.get(`/${userId}/media`, {
       params: {
         fields: options?.fields || defaultFields,
         limit: options?.limit || 25,
         after: options?.after,
         before: options?.before,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   async getMedia(mediaId: string, fields?: string) {
-    let defaultFields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,username,children{id,media_type,media_url,thumbnail_url}';
+    let defaultFields =
+      'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,username,children{id,media_type,media_url,thumbnail_url}';
     let response = await this.api.get(`/${mediaId}`, {
       params: {
         fields: fields || defaultFields,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   // ─── Publishing ──────────────────────────────────────────
 
-  async createMediaContainer(userId: string, params: {
-    imageUrl?: string;
-    videoUrl?: string;
-    caption?: string;
-    mediaType?: string;
-    isCarouselItem?: boolean;
-    locationId?: string;
-    userTags?: Array<{ username: string; x: number; y: number }>;
-    coverUrl?: string;
-    shareToFeed?: boolean;
-    children?: string[];
-  }) {
+  async createMediaContainer(
+    userId: string,
+    params: {
+      imageUrl?: string;
+      videoUrl?: string;
+      caption?: string;
+      mediaType?: string;
+      isCarouselItem?: boolean;
+      locationId?: string;
+      userTags?: Array<{ username: string; x: number; y: number }>;
+      coverUrl?: string;
+      shareToFeed?: boolean;
+      children?: string[];
+    }
+  ) {
     let body: Record<string, any> = {
-      access_token: this.token,
+      access_token: this.token
     };
 
     if (params.caption) body.caption = params.caption;
@@ -103,11 +112,13 @@ export class InstagramClient {
     if (params.isCarouselItem) body.is_carousel_item = true;
 
     if (params.userTags && params.userTags.length > 0) {
-      body.user_tags = JSON.stringify(params.userTags.map(t => ({
-        username: t.username,
-        x: t.x,
-        y: t.y,
-      })));
+      body.user_tags = JSON.stringify(
+        params.userTags.map(t => ({
+          username: t.username,
+          x: t.x,
+          y: t.y
+        }))
+      );
     }
 
     let response = await this.api.post(`/${userId}/media`, null, { params: body });
@@ -118,8 +129,8 @@ export class InstagramClient {
     let response = await this.api.get(`/${containerId}`, {
       params: {
         fields: 'status_code,status',
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -128,8 +139,8 @@ export class InstagramClient {
     let response = await this.api.post(`/${userId}/media_publish`, null, {
       params: {
         creation_id: creationId,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -142,8 +153,8 @@ export class InstagramClient {
         fields: 'id,text,timestamp,username,like_count,replies{id,text,timestamp,username}',
         limit: options?.limit || 50,
         after: options?.after,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -152,8 +163,8 @@ export class InstagramClient {
     let response = await this.api.post(`/${commentId}/replies`, null, {
       params: {
         message,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -161,8 +172,8 @@ export class InstagramClient {
   async deleteComment(commentId: string) {
     let response = await this.api.delete(`/${commentId}`, {
       params: {
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -171,8 +182,8 @@ export class InstagramClient {
     let response = await this.api.post(`/${commentId}`, null, {
       params: {
         hide,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -181,28 +192,31 @@ export class InstagramClient {
     let response = await this.api.post(`/${mediaId}`, null, {
       params: {
         comment_enabled: enabled,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   // ─── Insights ────────────────────────────────────────────
 
-  async getAccountInsights(userId: string, options: {
-    metrics: string[];
-    period: string;
-    since?: string;
-    until?: string;
-  }) {
+  async getAccountInsights(
+    userId: string,
+    options: {
+      metrics: string[];
+      period: string;
+      since?: string;
+      until?: string;
+    }
+  ) {
     let response = await this.api.get(`/${userId}/insights`, {
       params: {
         metric: options.metrics.join(','),
         period: options.period,
         since: options.since,
         until: options.until,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -211,8 +225,8 @@ export class InstagramClient {
     let response = await this.api.get(`/${mediaId}/insights`, {
       params: {
         metric: metrics.join(','),
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -224,32 +238,34 @@ export class InstagramClient {
       params: {
         q: hashtag,
         user_id: userId,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   async getHashtagRecentMedia(hashtagId: string, userId: string, fields?: string) {
-    let defaultFields = 'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count';
+    let defaultFields =
+      'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count';
     let response = await this.api.get(`/${hashtagId}/recent_media`, {
       params: {
         user_id: userId,
         fields: fields || defaultFields,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   async getHashtagTopMedia(hashtagId: string, userId: string, fields?: string) {
-    let defaultFields = 'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count';
+    let defaultFields =
+      'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count';
     let response = await this.api.get(`/${hashtagId}/top_media`, {
       params: {
         user_id: userId,
         fields: fields || defaultFields,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -257,12 +273,13 @@ export class InstagramClient {
   // ─── Business Discovery ──────────────────────────────────
 
   async businessDiscovery(userId: string, targetUsername: string, fields?: string) {
-    let defaultFields = 'username,name,biography,ig_id,followers_count,follows_count,media_count,profile_picture_url,website,media{id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count}';
+    let defaultFields =
+      'username,name,biography,ig_id,followers_count,follows_count,media_count,profile_picture_url,website,media{id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count}';
     let response = await this.api.get(`/${userId}`, {
       params: {
         fields: `business_discovery.username(${targetUsername}){${fields || defaultFields}}`,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data.business_discovery;
   }
@@ -275,8 +292,8 @@ export class InstagramClient {
         fields: 'id,caption,media_type,media_url,permalink,timestamp,username',
         limit: options?.limit || 25,
         after: options?.after,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -286,8 +303,8 @@ export class InstagramClient {
       params: {
         comment_id: commentId,
         fields: 'id,text,timestamp',
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -297,19 +314,23 @@ export class InstagramClient {
       params: {
         media_id: mediaId,
         fields: 'id,caption,media_type,media_url,permalink,timestamp',
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
 
   // ─── Messaging ───────────────────────────────────────────
 
-  async sendMessage(userId: string, recipientId: string, message: {
-    text?: string;
-    imageUrl?: string;
-    mediaId?: string;
-  }) {
+  async sendMessage(
+    userId: string,
+    recipientId: string,
+    message: {
+      text?: string;
+      imageUrl?: string;
+      mediaId?: string;
+    }
+  ) {
     let messagePayload: Record<string, any> = {};
 
     if (message.text) {
@@ -317,14 +338,14 @@ export class InstagramClient {
     } else if (message.imageUrl) {
       messagePayload.attachment = {
         type: 'image',
-        payload: { url: message.imageUrl },
+        payload: { url: message.imageUrl }
       };
     }
 
     let body: Record<string, any> = {
       recipient: { id: recipientId },
       message: messagePayload,
-      access_token: this.token,
+      access_token: this.token
     };
 
     let response = await this.api.post(`/${userId}/messages`, body);
@@ -335,7 +356,7 @@ export class InstagramClient {
     let response = await this.api.post(`/me/messages`, {
       recipient: { comment_id: commentId },
       message: { text: message },
-      access_token: this.token,
+      access_token: this.token
     });
     return response.data;
   }
@@ -346,8 +367,8 @@ export class InstagramClient {
     let response = await this.api.get(`/${userId}/stories`, {
       params: {
         fields: 'id,media_type,media_url,timestamp,permalink',
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }
@@ -360,8 +381,8 @@ export class InstagramClient {
         platform: 'instagram',
         fields: 'id,updated_time,participants,messages{id,message,from,to,created_time}',
         after: options?.after,
-        access_token: this.token,
-      },
+        access_token: this.token
+      }
     });
     return response.data;
   }

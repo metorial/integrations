@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMuralTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Mural',
-    key: 'new_mural',
-    description: 'Triggers when a new mural is created in a workspace.',
-  }
-)
-  .input(z.object({
-    muralId: z.string(),
-    title: z.string().optional(),
-    workspaceId: z.string().optional(),
-    roomId: z.string().optional(),
-    createdOn: z.string().optional(),
-    createdByName: z.string().optional(),
-  }))
-  .output(z.object({
-    muralId: z.string().describe('ID of the new mural'),
-    title: z.string().optional().describe('Title of the mural'),
-    workspaceId: z.string().optional().describe('Workspace the mural belongs to'),
-    roomId: z.string().optional().describe('Room the mural is in'),
-    createdOn: z.string().optional().describe('Mural creation timestamp'),
-    createdByName: z.string().optional().describe('Name of the user who created the mural'),
-  }))
+export let newMuralTrigger = SlateTrigger.create(spec, {
+  name: 'New Mural',
+  key: 'new_mural',
+  description: 'Triggers when a new mural is created in a workspace.'
+})
+  .input(
+    z.object({
+      muralId: z.string(),
+      title: z.string().optional(),
+      workspaceId: z.string().optional(),
+      roomId: z.string().optional(),
+      createdOn: z.string().optional(),
+      createdByName: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      muralId: z.string().describe('ID of the new mural'),
+      title: z.string().optional().describe('Title of the mural'),
+      workspaceId: z.string().optional().describe('Workspace the mural belongs to'),
+      roomId: z.string().optional().describe('Room the mural is in'),
+      createdOn: z.string().optional().describe('Mural creation timestamp'),
+      createdByName: z.string().optional().describe('Name of the user who created the mural')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let workspaceId = ctx.config.workspaceId;
@@ -46,16 +47,17 @@ export let newMuralTrigger = SlateTrigger.create(
       }
 
       let result = await client.listMuralsInWorkspace(workspaceId, { limit: 50 });
-      let knownMuralIds: string[] = (ctx.state && ctx.state.knownMuralIds) ? ctx.state.knownMuralIds : [];
+      let knownMuralIds: string[] =
+        ctx.state && ctx.state.knownMuralIds ? ctx.state.knownMuralIds : [];
       let isFirstRun = !(ctx.state && ctx.state.knownMuralIds);
 
       let newMurals = isFirstRun
         ? []
-        : result.value.filter((m) => !knownMuralIds.includes(m.id));
+        : result.value.filter(m => !knownMuralIds.includes(m.id));
 
-      let allIds = result.value.map((m) => m.id);
+      let allIds = result.value.map(m => m.id);
 
-      let inputs = newMurals.map((m) => ({
+      let inputs = newMurals.map(m => ({
         muralId: m.id,
         title: m.title,
         workspaceId: m.workspaceId,
@@ -63,19 +65,19 @@ export let newMuralTrigger = SlateTrigger.create(
         createdOn: m.createdOn,
         createdByName: m.createdBy
           ? `${m.createdBy.firstName || ''} ${m.createdBy.lastName || ''}`.trim()
-          : undefined,
+          : undefined
       }));
 
       return {
         inputs,
         updatedState: {
           knownMuralIds: allIds,
-          workspaceId,
-        },
+          workspaceId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'mural.created',
         id: ctx.input.muralId,
@@ -85,8 +87,9 @@ export let newMuralTrigger = SlateTrigger.create(
           workspaceId: ctx.input.workspaceId,
           roomId: ctx.input.roomId,
           createdOn: ctx.input.createdOn,
-          createdByName: ctx.input.createdByName,
-        },
+          createdByName: ctx.input.createdByName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

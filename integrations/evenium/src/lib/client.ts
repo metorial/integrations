@@ -121,7 +121,7 @@ export class Client {
       baseURL: 'https://secure.evenium.com/api/1',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       },
       params: {
         accessToken: token
@@ -131,7 +131,9 @@ export class Client {
 
   // Events
 
-  async listEvents(params?: ListEventsParams): Promise<{ events: EveniumEvent[]; totalCount: string }> {
+  async listEvents(
+    params?: ListEventsParams
+  ): Promise<{ events: EveniumEvent[]; totalCount: string }> {
     let response = await this.http.get('/events', { params });
     let data = response.data;
     let events: EveniumEvent[] = data.events ?? data.event ?? [];
@@ -154,7 +156,7 @@ export class Client {
       baseURL: 'https://secure.evenium.com/api/2',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       },
       params: {
         accessToken: this.http.defaults.params?.accessToken
@@ -166,7 +168,10 @@ export class Client {
 
   // Guests (Participants)
 
-  async listGuests(eventId: string, params?: ListGuestsParams): Promise<{ guests: EveniumGuest[]; totalCount: string }> {
+  async listGuests(
+    eventId: string,
+    params?: ListGuestsParams
+  ): Promise<{ guests: EveniumGuest[]; totalCount: string }> {
     let response = await this.http.get(`/events/${eventId}/guests`, { params });
     let data = response.data;
     let guests: EveniumGuest[] = data.guests ?? data.guest ?? [];
@@ -189,7 +194,11 @@ export class Client {
     return response.data;
   }
 
-  async updateGuest(eventId: string, contactId: string, params: Record<string, unknown>): Promise<EveniumGuest> {
+  async updateGuest(
+    eventId: string,
+    contactId: string,
+    params: Record<string, unknown>
+  ): Promise<EveniumGuest> {
     let response = await this.http.put(`/events/${eventId}/guests/${contactId}`, params);
     return response.data;
   }
@@ -199,14 +208,22 @@ export class Client {
     return response.data;
   }
 
-  async updateGuestStatus(eventId: string, contactId: string, status: string): Promise<{ status: string }> {
-    let response = await this.http.put(`/events/${eventId}/guests/${contactId}/status`, { status });
+  async updateGuestStatus(
+    eventId: string,
+    contactId: string,
+    status: string
+  ): Promise<{ status: string }> {
+    let response = await this.http.put(`/events/${eventId}/guests/${contactId}/status`, {
+      status
+    });
     return response.data;
   }
 
   // Contacts
 
-  async listContacts(params?: ListContactsParams): Promise<{ contacts: EveniumContact[]; totalCount: string }> {
+  async listContacts(
+    params?: ListContactsParams
+  ): Promise<{ contacts: EveniumContact[]; totalCount: string }> {
     let response = await this.http.get('/contacts', { params });
     let data = response.data;
     let contacts: EveniumContact[] = data.contacts ?? data.contact ?? [];
@@ -229,7 +246,10 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, params: UpdateContactParams): Promise<EveniumContact> {
+  async updateContact(
+    contactId: string,
+    params: UpdateContactParams
+  ): Promise<EveniumContact> {
     let response = await this.http.put(`/contacts/${contactId}`, params);
     return response.data;
   }

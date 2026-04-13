@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,26 +18,26 @@ export let auth = SlateAuth.create()
       {
         title: 'Full Access',
         description: 'Full read and write access to all YNAB data',
-        scope: 'full_access',
-      },
+        scope: 'full_access'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://app.ynab.com/oauth/authorize?${params.toString()}`,
+        url: `https://app.ynab.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({
-        baseURL: 'https://app.ynab.com',
+        baseURL: 'https://app.ynab.com'
       });
 
       let response = await http.post('/oauth/token', {
@@ -43,7 +45,7 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret,
         redirect_uri: ctx.redirectUri,
         grant_type: 'authorization_code',
-        code: ctx.code,
+        code: ctx.code
       });
 
       let data = response.data;
@@ -53,21 +55,21 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let http = createAxios({
-        baseURL: 'https://app.ynab.com',
+        baseURL: 'https://app.ynab.com'
       });
 
       let response = await http.post('/oauth/token', {
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
+        refresh_token: ctx.output.refreshToken
       });
 
       let data = response.data;
@@ -77,8 +79,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -86,8 +88,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.ynab.com/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/user');
@@ -95,10 +97,10 @@ export let auth = SlateAuth.create()
 
       return {
         profile: {
-          id: userId,
-        },
+          id: userId
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -106,14 +108,18 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal Access Token generated from YNAB Account Settings > Developer Settings'),
+      token: z
+        .string()
+        .describe(
+          'Personal Access Token generated from YNAB Account Settings > Developer Settings'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -121,8 +127,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.ynab.com/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/user');
@@ -130,8 +136,8 @@ export let auth = SlateAuth.create()
 
       return {
         profile: {
-          id: userId,
-        },
+          id: userId
+        }
       };
-    },
+    }
   });

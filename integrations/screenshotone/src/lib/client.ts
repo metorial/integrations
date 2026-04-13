@@ -159,7 +159,7 @@ export interface UsageResponse {
 }
 
 let camelToSnake = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 let buildParams = (params: Record<string, unknown>): Record<string, unknown> => {
@@ -197,7 +197,7 @@ export class Client {
     apiParams['response_type'] = 'json';
 
     let response = await http.post('/take', apiParams, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     let cacheUrl = response.headers?.['x-screenshotone-cache-url'] as string | undefined;
@@ -205,11 +205,13 @@ export class Client {
     let data = response.data as Record<string, unknown>;
     return {
       screenshotUrl: data.screenshot_url as string | undefined,
-      storeLocation: (data.store as Record<string, unknown> | undefined)?.location as string | undefined
-        ?? data.store_location as string | undefined,
+      storeLocation:
+        ((data.store as Record<string, unknown> | undefined)?.location as
+          | string
+          | undefined) ?? (data.store_location as string | undefined),
       metadata: data.metadata as Record<string, unknown> | undefined,
       cacheUrl,
-      statusCode: response.status,
+      statusCode: response.status
     };
   }
 
@@ -230,7 +232,7 @@ export class Client {
 
     let response = await http.post('/take', apiParams, {
       headers: { 'Content-Type': 'application/json' },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     let buffer = Buffer.from(response.data as ArrayBuffer);
@@ -241,7 +243,7 @@ export class Client {
     return {
       imageBase64: base64,
       contentType,
-      cacheUrl,
+      cacheUrl
     };
   }
 
@@ -249,7 +251,7 @@ export class Client {
     let http = createAxios({ baseURL: BASE_URL });
 
     let response = await http.get('/usage', {
-      params: { access_key: this.accessKey },
+      params: { access_key: this.accessKey }
     });
 
     return response.data as UsageResponse;

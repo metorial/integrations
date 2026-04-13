@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteSubmission = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Submission',
-    key: 'delete_submission',
-    description: `Permanently delete a form submission. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
-  },
-)
-  .input(z.object({
-    submissionId: z.number().describe('ID of the submission to delete.'),
-  }))
-  .output(z.object({
-    submissionId: z.number().describe('ID of the deleted submission.'),
-    deleted: z.boolean().describe('Whether the deletion was successful.'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteSubmission = SlateTool.create(spec, {
+  name: 'Delete Submission',
+  key: 'delete_submission',
+  description: `Permanently delete a form submission. This action cannot be undone.`,
+  tags: {
+    destructive: true
+  }
+})
+  .input(
+    z.object({
+      submissionId: z.number().describe('ID of the submission to delete.')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.number().describe('ID of the deleted submission.'),
+      deleted: z.boolean().describe('Whether the deletion was successful.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.deleteSubmission(ctx.input.submissionId);
@@ -29,9 +30,9 @@ export let deleteSubmission = SlateTool.create(
     return {
       output: {
         submissionId: ctx.input.submissionId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted submission **#${ctx.input.submissionId}**.`,
+      message: `Deleted submission **#${ctx.input.submissionId}**.`
     };
   })
   .build();

@@ -3,70 +3,77 @@ import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let signatureProofEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Signature Proof Events',
-    key: 'signature_proof_events',
-    description: 'Triggered when signature proof documents are generated or when generation fails, including standard and advanced proofs.',
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic'),
-    action: z.string().describe('Webhook action'),
-    msgNature: z.string().optional().describe('Message nature'),
-    appId: z.string().optional().describe('Application ID'),
-    appEnv: z.string().optional().describe('Application environment'),
-    verificationToken: z.string().optional().describe('Token for verification'),
-    content: z.any().describe('Event payload content'),
-  }))
-  .output(z.object({
-    signatureRequestId: z.string().describe('Signature request ID'),
-    action: z.string().describe('Event action (GENERATED or FAILED)'),
-    msgNature: z.string().optional().describe('Message nature'),
-    documents: z.array(z.object({
-      documentId: z.string().optional().describe('Document ID'),
-      name: z.string().optional().describe('Document name'),
-      documentProofUrl: z.string().optional().describe('Proof URL for this document'),
-    })).optional().describe('Documents with proof info'),
-    signatureProofUrl: z.string().optional().describe('Overall signature proof URL'),
-    externalId: z.string().optional().describe('External reference ID'),
-    appId: z.string().optional().describe('Application ID'),
-    appEnv: z.string().optional().describe('Application environment'),
-    content: z.any().optional().describe('Full event content'),
-  }))
+export let signatureProofEvents = SlateTrigger.create(spec, {
+  name: 'Signature Proof Events',
+  key: 'signature_proof_events',
+  description:
+    'Triggered when signature proof documents are generated or when generation fails, including standard and advanced proofs.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic'),
+      action: z.string().describe('Webhook action'),
+      msgNature: z.string().optional().describe('Message nature'),
+      appId: z.string().optional().describe('Application ID'),
+      appEnv: z.string().optional().describe('Application environment'),
+      verificationToken: z.string().optional().describe('Token for verification'),
+      content: z.any().describe('Event payload content')
+    })
+  )
+  .output(
+    z.object({
+      signatureRequestId: z.string().describe('Signature request ID'),
+      action: z.string().describe('Event action (GENERATED or FAILED)'),
+      msgNature: z.string().optional().describe('Message nature'),
+      documents: z
+        .array(
+          z.object({
+            documentId: z.string().optional().describe('Document ID'),
+            name: z.string().optional().describe('Document name'),
+            documentProofUrl: z.string().optional().describe('Proof URL for this document')
+          })
+        )
+        .optional()
+        .describe('Documents with proof info'),
+      signatureProofUrl: z.string().optional().describe('Overall signature proof URL'),
+      externalId: z.string().optional().describe('External reference ID'),
+      appId: z.string().optional().describe('Application ID'),
+      appEnv: z.string().optional().describe('Application environment'),
+      content: z.any().optional().describe('Full event content')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new IgnisignClient({
         token: ctx.auth.token,
         appId: ctx.config.appId,
-        appEnv: ctx.config.appEnv,
+        appEnv: ctx.config.appEnv
       });
 
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        description: 'Slates - Signature Proof Events',
+        description: 'Slates - Signature Proof Events'
       });
 
       return {
         registrationDetails: {
-          webhookId: result.webhookId || result._id,
-        },
+          webhookId: result.webhookId || result._id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new IgnisignClient({
         token: ctx.auth.token,
         appId: ctx.config.appId,
-        appEnv: ctx.config.appEnv,
+        appEnv: ctx.config.appEnv
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (data.topic !== 'SIGNATURE_PROOF') {
         return { inputs: [] };
@@ -81,19 +88,19 @@ export let signatureProofEvents = SlateTrigger.create(
             appId: data.appId,
             appEnv: data.appEnv,
             verificationToken: data.verificationToken,
-            content: data.content,
-          },
-        ],
+            content: data.content
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let content = ctx.input.content || {};
 
       let documents = (content.documents || []).map((doc: any) => ({
         documentId: doc.documentId,
         name: doc.name,
-        documentProofUrl: doc.documentProofUrl,
+        documentProofUrl: doc.documentProofUrl
       }));
 
       return {
@@ -108,8 +115,9 @@ export let signatureProofEvents = SlateTrigger.create(
           externalId: content.signatureRequestExternalId || content.externalId,
           appId: ctx.input.appId,
           appEnv: ctx.input.appEnv,
-          content,
-        },
+          content
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

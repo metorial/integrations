@@ -14,7 +14,7 @@ import type {
   MagentoInvoice,
   MagentoShipment,
   MagentoCreditMemo,
-  MagentoStoreConfig,
+  MagentoStoreConfig
 } from './types';
 
 export class MagentoClient {
@@ -28,8 +28,8 @@ export class MagentoClient {
       baseURL: `${baseURL}/rest/${storeCode}/V1`,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -48,7 +48,8 @@ export class MagentoClient {
       options.filters.forEach((filter, index) => {
         params[`searchCriteria[filterGroups][${index}][filters][0][field]`] = filter.field;
         params[`searchCriteria[filterGroups][${index}][filters][0][value]`] = filter.value;
-        params[`searchCriteria[filterGroups][${index}][filters][0][conditionType]`] = filter.conditionType || 'eq';
+        params[`searchCriteria[filterGroups][${index}][filters][0][conditionType]`] =
+          filter.conditionType || 'eq';
       });
     }
 
@@ -125,11 +126,16 @@ export class MagentoClient {
     return response.data as MagentoSearchResult<MagentoOrder>;
   }
 
-  async addOrderComment(orderId: number, comment: string, status?: string, isVisibleOnFront?: boolean): Promise<boolean> {
+  async addOrderComment(
+    orderId: number,
+    comment: string,
+    status?: string,
+    isVisibleOnFront?: boolean
+  ): Promise<boolean> {
     let statusHistory: Record<string, any> = {
       comment,
       is_customer_notified: 0,
-      is_visible_on_front: isVisibleOnFront ? 1 : 0,
+      is_visible_on_front: isVisibleOnFront ? 1 : 0
     };
     if (status) {
       statusHistory.status = status;
@@ -155,12 +161,15 @@ export class MagentoClient {
 
   // ─── Invoices ─────────────────────────────────────────────────
 
-  async createInvoice(orderId: number, params?: {
-    items?: Array<{ order_item_id: number; qty: number }>;
-    capture?: boolean;
-    notify?: boolean;
-    comment?: string;
-  }): Promise<number> {
+  async createInvoice(
+    orderId: number,
+    params?: {
+      items?: Array<{ order_item_id: number; qty: number }>;
+      capture?: boolean;
+      notify?: boolean;
+      comment?: string;
+    }
+  ): Promise<number> {
     let body: Record<string, any> = {};
     if (params?.items) {
       body.items = params.items;
@@ -185,12 +194,15 @@ export class MagentoClient {
 
   // ─── Shipments ────────────────────────────────────────────────
 
-  async createShipment(orderId: number, params?: {
-    items?: Array<{ order_item_id: number; qty: number }>;
-    tracks?: Array<{ track_number: string; title: string; carrier_code: string }>;
-    notify?: boolean;
-    comment?: string;
-  }): Promise<number> {
+  async createShipment(
+    orderId: number,
+    params?: {
+      items?: Array<{ order_item_id: number; qty: number }>;
+      tracks?: Array<{ track_number: string; title: string; carrier_code: string }>;
+      notify?: boolean;
+      comment?: string;
+    }
+  ): Promise<number> {
     let body: Record<string, any> = {};
     if (params?.items) {
       body.items = params.items;
@@ -215,14 +227,17 @@ export class MagentoClient {
 
   // ─── Credit Memos (Refunds) ───────────────────────────────────
 
-  async createCreditMemo(orderId: number, params?: {
-    items?: Array<{ order_item_id: number; qty: number }>;
-    notify?: boolean;
-    comment?: string;
-    adjustmentPositive?: number;
-    adjustmentNegative?: number;
-    shippingAmount?: number;
-  }): Promise<number> {
+  async createCreditMemo(
+    orderId: number,
+    params?: {
+      items?: Array<{ order_item_id: number; qty: number }>;
+      notify?: boolean;
+      comment?: string;
+      adjustmentPositive?: number;
+      adjustmentNegative?: number;
+      shippingAmount?: number;
+    }
+  ): Promise<number> {
     let body: Record<string, any> = {};
     if (params?.items) {
       body.items = params.items;
@@ -265,7 +280,10 @@ export class MagentoClient {
     return response.data as MagentoSearchResult<MagentoCustomer>;
   }
 
-  async createCustomer(customer: Partial<MagentoCustomer>, password?: string): Promise<MagentoCustomer> {
+  async createCustomer(
+    customer: Partial<MagentoCustomer>,
+    password?: string
+  ): Promise<MagentoCustomer> {
     let body: Record<string, any> = { customer };
     if (password) {
       body.password = password;
@@ -274,7 +292,10 @@ export class MagentoClient {
     return response.data as MagentoCustomer;
   }
 
-  async updateCustomer(customerId: number, customer: Partial<MagentoCustomer>): Promise<MagentoCustomer> {
+  async updateCustomer(
+    customerId: number,
+    customer: Partial<MagentoCustomer>
+  ): Promise<MagentoCustomer> {
     let response = await this.axios.put(`/customers/${customerId}`, { customer });
     return response.data as MagentoCustomer;
   }
@@ -301,7 +322,10 @@ export class MagentoClient {
     return response.data as MagentoCategory;
   }
 
-  async updateCategory(categoryId: number, category: Partial<MagentoCategory>): Promise<MagentoCategory> {
+  async updateCategory(
+    categoryId: number,
+    category: Partial<MagentoCategory>
+  ): Promise<MagentoCategory> {
     let response = await this.axios.put(`/categories/${categoryId}`, { category });
     return response.data as MagentoCategory;
   }
@@ -311,12 +335,16 @@ export class MagentoClient {
     return response.data as boolean;
   }
 
-  async assignProductToCategory(categoryId: number, productSku: string, position?: number): Promise<boolean> {
+  async assignProductToCategory(
+    categoryId: number,
+    productSku: string,
+    position?: number
+  ): Promise<boolean> {
     let body: Record<string, any> = {
       productLink: {
         sku: productSku,
-        category_id: String(categoryId),
-      },
+        category_id: String(categoryId)
+      }
     };
     if (position !== undefined) {
       body.productLink.position = position;
@@ -326,7 +354,9 @@ export class MagentoClient {
   }
 
   async removeProductFromCategory(categoryId: number, productSku: string): Promise<boolean> {
-    let response = await this.axios.delete(`/categories/${categoryId}/products/${encodeURIComponent(productSku)}`);
+    let response = await this.axios.delete(
+      `/categories/${categoryId}/products/${encodeURIComponent(productSku)}`
+    );
     return response.data as boolean;
   }
 
@@ -337,14 +367,21 @@ export class MagentoClient {
     return response.data;
   }
 
-  async updateStockItem(productSku: string, itemId: number, stockItem: Record<string, any>): Promise<number> {
-    let response = await this.axios.put(`/products/${encodeURIComponent(productSku)}/stockItems/${itemId}`, { stockItem });
+  async updateStockItem(
+    productSku: string,
+    itemId: number,
+    stockItem: Record<string, any>
+  ): Promise<number> {
+    let response = await this.axios.put(
+      `/products/${encodeURIComponent(productSku)}/stockItems/${itemId}`,
+      { stockItem }
+    );
     return response.data as number;
   }
 
   async getSourceItems(sku: string): Promise<MagentoSearchResult<MagentoInventorySourceItem>> {
     let params = this.buildSearchParams({
-      filters: [{ field: 'sku', value: sku, conditionType: 'eq' }],
+      filters: [{ field: 'sku', value: sku, conditionType: 'eq' }]
     });
     let response = await this.axios.get('/inventory/source-items', { params });
     return response.data as MagentoSearchResult<MagentoInventorySourceItem>;
@@ -355,7 +392,9 @@ export class MagentoClient {
   }
 
   async isProductSalable(sku: string, stockId: number): Promise<boolean> {
-    let response = await this.axios.get(`/inventory/is-product-salable/${encodeURIComponent(sku)}/${stockId}`);
+    let response = await this.axios.get(
+      `/inventory/is-product-salable/${encodeURIComponent(sku)}/${stockId}`
+    );
     return response.data as boolean;
   }
 
@@ -381,20 +420,27 @@ export class MagentoClient {
     return response.data as MagentoCart;
   }
 
-  async addCartItem(cartId: number, item: { sku: string; qty: number; quoteId?: number }): Promise<MagentoCartItem> {
+  async addCartItem(
+    cartId: number,
+    item: { sku: string; qty: number; quoteId?: number }
+  ): Promise<MagentoCartItem> {
     let cartItem: Record<string, any> = {
       sku: item.sku,
       qty: item.qty,
-      quote_id: item.quoteId || cartId,
+      quote_id: item.quoteId || cartId
     };
     let response = await this.axios.post(`/carts/${cartId}/items`, { cartItem });
     return response.data as MagentoCartItem;
   }
 
-  async updateCartItem(cartId: number, itemId: number, item: { qty: number }): Promise<MagentoCartItem> {
+  async updateCartItem(
+    cartId: number,
+    itemId: number,
+    item: { qty: number }
+  ): Promise<MagentoCartItem> {
     let cartItem = {
       qty: item.qty,
-      quote_id: cartId,
+      quote_id: cartId
     };
     let response = await this.axios.put(`/carts/${cartId}/items/${itemId}`, { cartItem });
     return response.data as MagentoCartItem;
@@ -405,13 +451,20 @@ export class MagentoClient {
     return response.data as boolean;
   }
 
-  async estimateShipping(cartId: number, address: Record<string, any>): Promise<MagentoShippingMethod[]> {
-    let response = await this.axios.post(`/carts/${cartId}/estimate-shipping-methods`, { address });
+  async estimateShipping(
+    cartId: number,
+    address: Record<string, any>
+  ): Promise<MagentoShippingMethod[]> {
+    let response = await this.axios.post(`/carts/${cartId}/estimate-shipping-methods`, {
+      address
+    });
     return response.data as MagentoShippingMethod[];
   }
 
   async applyCoupon(cartId: number, couponCode: string): Promise<boolean> {
-    let response = await this.axios.put(`/carts/${cartId}/coupons/${encodeURIComponent(couponCode)}`);
+    let response = await this.axios.put(
+      `/carts/${cartId}/coupons/${encodeURIComponent(couponCode)}`
+    );
     return response.data as boolean;
   }
 
@@ -472,7 +525,10 @@ export class MagentoClient {
     return response.data as MagentoCmsBlock;
   }
 
-  async updateCmsBlock(blockId: number, block: Partial<MagentoCmsBlock>): Promise<MagentoCmsBlock> {
+  async updateCmsBlock(
+    blockId: number,
+    block: Partial<MagentoCmsBlock>
+  ): Promise<MagentoCmsBlock> {
     let response = await this.axios.put(`/cmsBlock/${blockId}`, { block });
     return response.data as MagentoCmsBlock;
   }

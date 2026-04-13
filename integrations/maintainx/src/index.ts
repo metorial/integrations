@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createWorkOrder,
@@ -26,13 +25,13 @@ import {
   listUsers,
   listTeams,
   listCategories,
-  sendMessage,
+  sendMessage
 } from './tools';
 import {
   newWorkOrder,
   workOrderStatusChanged,
   newWorkRequest,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -62,12 +61,7 @@ export let provider = Slate.create({
     listUsers,
     listTeams,
     listCategories,
-    sendMessage,
+    sendMessage
   ],
-  triggers: [
-    inboundWebhook,
-    newWorkOrder,
-    workOrderStatusChanged,
-    newWorkRequest,
-  ],
+  triggers: [inboundWebhook, newWorkOrder, workOrderStatusChanged, newWorkRequest]
 });

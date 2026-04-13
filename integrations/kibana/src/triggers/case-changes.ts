@@ -3,49 +3,56 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let caseChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Case Changes',
-    key: 'case_changes',
-    description: 'Triggers when cases are created, updated, closed, or reopened. Polls the Kibana cases API to detect changes.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'closed', 'reopened']).describe('Type of change detected'),
-    caseId: z.string().describe('ID of the affected case'),
-    title: z.string().describe('Title of the case'),
-    status: z.string().describe('Current case status'),
-    severity: z.string().optional().describe('Case severity'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    tags: z.array(z.string()).describe('Case tags')
-  }))
-  .output(z.object({
-    caseId: z.string().describe('ID of the affected case'),
-    title: z.string().describe('Title of the case'),
-    description: z.string().optional().describe('Description of the case'),
-    status: z.string().describe('Current case status'),
-    severity: z.string().optional().describe('Case severity'),
-    tags: z.array(z.string()).describe('Case tags'),
-    owner: z.string().optional().describe('Owner application'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    createdBy: z.string().optional().describe('User who created the case'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    closedAt: z.string().optional().describe('Closure timestamp'),
-    totalComments: z.number().optional().describe('Total number of comments'),
-    totalAlerts: z.number().optional().describe('Total attached alerts')
-  }))
+export let caseChanges = SlateTrigger.create(spec, {
+  name: 'Case Changes',
+  key: 'case_changes',
+  description:
+    'Triggers when cases are created, updated, closed, or reopened. Polls the Kibana cases API to detect changes.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'closed', 'reopened'])
+        .describe('Type of change detected'),
+      caseId: z.string().describe('ID of the affected case'),
+      title: z.string().describe('Title of the case'),
+      status: z.string().describe('Current case status'),
+      severity: z.string().optional().describe('Case severity'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      tags: z.array(z.string()).describe('Case tags')
+    })
+  )
+  .output(
+    z.object({
+      caseId: z.string().describe('ID of the affected case'),
+      title: z.string().describe('Title of the case'),
+      description: z.string().optional().describe('Description of the case'),
+      status: z.string().describe('Current case status'),
+      severity: z.string().optional().describe('Case severity'),
+      tags: z.array(z.string()).describe('Case tags'),
+      owner: z.string().optional().describe('Owner application'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      createdBy: z.string().optional().describe('User who created the case'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      closedAt: z.string().optional().describe('Closure timestamp'),
+      totalComments: z.number().optional().describe('Total number of comments'),
+      totalAlerts: z.number().optional().describe('Total attached alerts')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let state = ctx.state ?? {};
       let lastPollTime = state.lastPollTime as string | undefined;
-      let knownCases = (state.knownCases ?? {}) as Record<string, { updatedAt: string; status: string }>;
+      let knownCases = (state.knownCases ?? {}) as Record<
+        string,
+        { updatedAt: string; status: string }
+      >;
 
       let result = await client.findCases({
         perPage: 100,
@@ -117,7 +124,7 @@ export let caseChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = createClient(ctx);
       let input = ctx.input;
 
@@ -148,4 +155,5 @@ export let caseChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

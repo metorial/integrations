@@ -23,7 +23,7 @@ import {
   listTasks,
   deleteTask,
   manageTimeEntry,
-  listDepartments,
+  listDepartments
 } from './tools';
 import {
   ticketEvents,
@@ -32,7 +32,7 @@ import {
   agentEvents,
   taskEvents,
   articleEvents,
-  activityEvents,
+  activityEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -60,7 +60,7 @@ export let provider = Slate.create({
     listTasks,
     deleteTask,
     manageTimeEntry,
-    listDepartments,
+    listDepartments
   ],
   triggers: [
     ticketEvents,
@@ -69,6 +69,6 @@ export let provider = Slate.create({
     agentEvents,
     taskEvents,
     articleEvents,
-    activityEvents,
-  ],
+    activityEvents
+  ]
 });

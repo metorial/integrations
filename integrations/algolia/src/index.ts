@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   search,
@@ -13,11 +12,9 @@ import {
   manageApiKeys,
   manageAbTests,
   getRecommendations,
-  monitoring,
+  monitoring
 } from './tools';
-import { indexUpdated,
-  inboundWebhook,
-} from './triggers';
+import { indexUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     manageApiKeys,
     manageAbTests,
     getRecommendations,
-    monitoring,
+    monitoring
   ],
-  triggers: [
-    inboundWebhook,
-    indexUpdated,
-  ],
+  triggers: [inboundWebhook, indexUpdated]
 });

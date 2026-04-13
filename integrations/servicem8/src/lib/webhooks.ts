@@ -11,9 +11,9 @@ export class WebhookClient {
     this.http = createAxios({
       baseURL: 'https://api.servicem8.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -26,13 +26,13 @@ export class WebhookClient {
     let body = new URLSearchParams({
       object: params.object,
       fields: params.fields,
-      callback_url: params.callbackUrl,
+      callback_url: params.callbackUrl
     });
     if (params.uniqueId) {
       body.append('unique_id', params.uniqueId);
     }
     let response = await this.http.post('/webhook_subscriptions/object', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -44,13 +44,13 @@ export class WebhookClient {
   }): Promise<{ success: boolean; message?: string }> {
     let body = new URLSearchParams({
       event: params.event,
-      callback_url: params.callbackUrl,
+      callback_url: params.callbackUrl
     });
     if (params.uniqueId) {
       body.append('unique_id', params.uniqueId);
     }
     let response = await this.http.post('/webhook_subscriptions/event', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -62,14 +62,14 @@ export class WebhookClient {
   }): Promise<void> {
     let body = new URLSearchParams({
       object: params.object,
-      callback_url: params.callbackUrl,
+      callback_url: params.callbackUrl
     });
     if (params.uniqueId) {
       body.append('unique_id', params.uniqueId);
     }
     await this.http.delete('/webhook_subscriptions/object', {
       data: body.toString(),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 
@@ -80,14 +80,14 @@ export class WebhookClient {
   }): Promise<void> {
     let body = new URLSearchParams({
       event: params.event,
-      callback_url: params.callbackUrl,
+      callback_url: params.callbackUrl
     });
     if (params.uniqueId) {
       body.append('unique_id', params.uniqueId);
     }
     await this.http.delete('/webhook_subscriptions/event', {
       data: body.toString(),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   }
 }

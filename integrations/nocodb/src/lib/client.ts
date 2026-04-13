@@ -9,8 +9,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: normalizedBase,
       headers: {
-        'xc-token': config.token,
-      },
+        'xc-token': config.token
+      }
     });
   }
 
@@ -26,12 +26,19 @@ export class Client {
     return res.data;
   }
 
-  async createBase(data: { title: string; description?: string; color?: string }): Promise<any> {
+  async createBase(data: {
+    title: string;
+    description?: string;
+    color?: string;
+  }): Promise<any> {
     let res = await this.axios.post('/api/v2/meta/bases/', data);
     return res.data;
   }
 
-  async updateBase(baseId: string, data: { title?: string; description?: string; color?: string; meta?: any }): Promise<any> {
+  async updateBase(
+    baseId: string,
+    data: { title?: string; description?: string; color?: string; meta?: any }
+  ): Promise<any> {
     let res = await this.axios.patch(`/api/v2/meta/bases/${baseId}`, data);
     return res.data;
   }
@@ -53,7 +60,10 @@ export class Client {
     return res.data;
   }
 
-  async createTable(baseId: string, data: { table_name: string; title?: string; columns?: any[] }): Promise<any> {
+  async createTable(
+    baseId: string,
+    data: { table_name: string; title?: string; columns?: any[] }
+  ): Promise<any> {
     let res = await this.axios.post(`/api/v2/meta/bases/${baseId}/tables`, data);
     return res.data;
   }
@@ -97,20 +107,29 @@ export class Client {
 
   // ── Records ──
 
-  async listRecords(tableId: string, params?: {
-    fields?: string;
-    where?: string;
-    sort?: string;
-    limit?: number;
-    offset?: number;
-    viewId?: string;
-  }): Promise<any> {
+  async listRecords(
+    tableId: string,
+    params?: {
+      fields?: string;
+      where?: string;
+      sort?: string;
+      limit?: number;
+      offset?: number;
+      viewId?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/api/v2/tables/${tableId}/records`, { params });
     return res.data;
   }
 
-  async getRecord(tableId: string, recordId: string, params?: { fields?: string }): Promise<any> {
-    let res = await this.axios.get(`/api/v2/tables/${tableId}/records/${recordId}`, { params });
+  async getRecord(
+    tableId: string,
+    recordId: string,
+    params?: { fields?: string }
+  ): Promise<any> {
+    let res = await this.axios.get(`/api/v2/tables/${tableId}/records/${recordId}`, {
+      params
+    });
     return res.data;
   }
 
@@ -131,10 +150,15 @@ export class Client {
 
   // ── Linked Records ──
 
-  async listLinkedRecords(tableId: string, linkFieldId: string, recordId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
+  async listLinkedRecords(
+    tableId: string,
+    linkFieldId: string,
+    recordId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(
       `/api/v2/tables/${tableId}/links/${linkFieldId}/records/${recordId}`,
       { params }
@@ -142,7 +166,12 @@ export class Client {
     return res.data;
   }
 
-  async linkRecords(tableId: string, linkFieldId: string, recordId: string, linkedRecordIds: { Id: number }[]): Promise<any> {
+  async linkRecords(
+    tableId: string,
+    linkFieldId: string,
+    recordId: string,
+    linkedRecordIds: { Id: number }[]
+  ): Promise<any> {
     let res = await this.axios.post(
       `/api/v2/tables/${tableId}/links/${linkFieldId}/records/${recordId}`,
       linkedRecordIds
@@ -150,7 +179,12 @@ export class Client {
     return res.data;
   }
 
-  async unlinkRecords(tableId: string, linkFieldId: string, recordId: string, linkedRecordIds: { Id: number }[]): Promise<any> {
+  async unlinkRecords(
+    tableId: string,
+    linkFieldId: string,
+    recordId: string,
+    linkedRecordIds: { Id: number }[]
+  ): Promise<any> {
     let res = await this.axios.delete(
       `/api/v2/tables/${tableId}/links/${linkFieldId}/records/${recordId}`,
       { data: linkedRecordIds }
@@ -170,7 +204,10 @@ export class Client {
     return res.data;
   }
 
-  async createView(tableId: string, data: { title: string; type?: number; copy_from_id?: string }): Promise<any> {
+  async createView(
+    tableId: string,
+    data: { title: string; type?: number; copy_from_id?: string }
+  ): Promise<any> {
     let res = await this.axios.post(`/api/v2/meta/tables/${tableId}/views`, data);
     return res.data;
   }
@@ -223,8 +260,8 @@ export class Client {
     let res = await this.axios.post('/api/v2/storage/upload', formData, {
       params,
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return res.data;
   }

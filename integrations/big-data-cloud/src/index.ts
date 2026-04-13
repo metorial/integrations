@@ -7,7 +7,7 @@ import {
   validatePhoneNumberTool,
   verifyEmailTool,
   lookupAsnTool,
-  lookupNetworkTool,
+  lookupNetworkTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     validatePhoneNumberTool,
     verifyEmailTool,
     lookupAsnTool,
-    lookupNetworkTool,
+    lookupNetworkTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

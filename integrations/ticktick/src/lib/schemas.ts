@@ -6,7 +6,7 @@ export let checklistItemSchema = z.object({
   isAllDay: z.boolean().optional().describe('Whether this is an all-day subtask'),
   startDate: z.string().optional().describe('Start date in ISO 8601 format'),
   timeZone: z.string().optional().describe('Timezone, e.g. "America/Los_Angeles"'),
-  sortOrder: z.number().optional().describe('Display order'),
+  sortOrder: z.number().optional().describe('Display order')
 });
 
 export let checklistItemOutputSchema = z.object({
@@ -17,7 +17,7 @@ export let checklistItemOutputSchema = z.object({
   isAllDay: z.boolean().optional(),
   sortOrder: z.number().optional(),
   startDate: z.string().optional(),
-  timeZone: z.string().optional(),
+  timeZone: z.string().optional()
 });
 
 export let taskOutputSchema = z.object({
@@ -31,7 +31,10 @@ export let taskOutputSchema = z.object({
   dueDate: z.string().optional().describe('Due date in ISO 8601 format'),
   timeZone: z.string().optional().describe('Timezone'),
   isFloating: z.boolean().optional().describe('Whether time is floating (no timezone)'),
-  reminders: z.array(z.string()).optional().describe('Reminder triggers in iCalendar TRIGGER format'),
+  reminders: z
+    .array(z.string())
+    .optional()
+    .describe('Reminder triggers in iCalendar TRIGGER format'),
   repeatFlag: z.string().optional().describe('Recurrence rule in RRULE format'),
   priority: z.number().describe('Priority: 0 = none, 1 = low, 3 = medium, 5 = high'),
   status: z.number().describe('0 = normal, 2 = completed'),
@@ -41,7 +44,7 @@ export let taskOutputSchema = z.object({
   modifiedTime: z.string().optional().describe('Last modified timestamp'),
   createdTime: z.string().optional().describe('Creation timestamp'),
   tags: z.array(z.string()).optional().describe('Tags attached to this task'),
-  kind: z.string().optional(),
+  kind: z.string().optional()
 });
 
 export let projectOutputSchema = z.object({
@@ -53,7 +56,7 @@ export let projectOutputSchema = z.object({
   groupId: z.string().optional().describe('Parent group/folder ID'),
   viewMode: z.string().optional().describe('View mode: list, kanban, or timeline'),
   permission: z.string().optional().describe('Permission level: read, write, or comment'),
-  kind: z.string().optional().describe('Project kind: TASK or NOTE'),
+  kind: z.string().optional().describe('Project kind: TASK or NOTE')
 });
 
 export let mapTask = (task: any) => ({
@@ -81,12 +84,12 @@ export let mapTask = (task: any) => ({
     isAllDay: item.isAllDay,
     sortOrder: item.sortOrder,
     startDate: item.startDate,
-    timeZone: item.timeZone,
+    timeZone: item.timeZone
   })),
   modifiedTime: task.modifiedTime,
   createdTime: task.createdTime,
   tags: task.tags,
-  kind: task.kind,
+  kind: task.kind
 });
 
 export let mapProject = (project: any) => ({
@@ -98,5 +101,5 @@ export let mapProject = (project: any) => ({
   groupId: project.groupId,
   viewMode: project.viewMode,
   permission: project.permission,
-  kind: project.kind,
+  kind: project.kind
 });

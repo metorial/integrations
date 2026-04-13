@@ -1,6 +1,9 @@
 import { WordPressClient } from './client';
 
-export let createClient = (config: { siteUrl: string; apiType: 'wpcom' | 'selfhosted' }, auth: { token: string; authMethod: 'oauth' | 'application_password' }) => {
+export let createClient = (
+  config: { siteUrl: string; apiType: 'wpcom' | 'selfhosted' },
+  auth: { token: string; authMethod: 'oauth' | 'application_password' }
+) => {
   return new WordPressClient({
     siteUrl: config.siteUrl,
     apiType: config.apiType,

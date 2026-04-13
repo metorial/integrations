@@ -4,33 +4,35 @@ import { normalizeDataSource } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dataSourceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Data Source Events',
-    key: 'data_source_events',
-    description: 'Triggered when a new database connection is added to the workspace. Configure the webhook in Mode Workspace Settings > Webhooks.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('The Mode event name'),
-    connectionUrl: z.string().optional().describe('API URL to the data source resource'),
-    dataSourceToken: z.string().optional().describe('Extracted data source token'),
-  }))
-  .output(z.object({
-    dataSourceToken: z.string().describe('Token of the data source'),
-    name: z.string().describe('Name of the data source'),
-    description: z.string().describe('Description'),
-    adapter: z.string().describe('Database adapter type'),
-    host: z.string().describe('Database host'),
-    database: z.string().describe('Database name'),
-    port: z.number().describe('Database port'),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  }))
+export let dataSourceEvents = SlateTrigger.create(spec, {
+  name: 'Data Source Events',
+  key: 'data_source_events',
+  description:
+    'Triggered when a new database connection is added to the workspace. Configure the webhook in Mode Workspace Settings > Webhooks.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('The Mode event name'),
+      connectionUrl: z.string().optional().describe('API URL to the data source resource'),
+      dataSourceToken: z.string().optional().describe('Extracted data source token')
+    })
+  )
+  .output(
+    z.object({
+      dataSourceToken: z.string().describe('Token of the data source'),
+      name: z.string().describe('Name of the data source'),
+      description: z.string().describe('Description'),
+      adapter: z.string().describe('Database adapter type'),
+      host: z.string().describe('Database host'),
+      database: z.string().describe('Database name'),
+      port: z.number().describe('Database port'),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventName = body.event || '';
 
       if (eventName !== 'new_database_connection') {
@@ -54,13 +56,13 @@ export let dataSourceEvents = SlateTrigger.create(
           {
             eventName,
             connectionUrl,
-            dataSourceToken,
-          },
-        ],
+            dataSourceToken
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { dataSourceToken } = ctx.input;
 
       if (dataSourceToken) {
@@ -68,14 +70,14 @@ export let dataSourceEvents = SlateTrigger.create(
           let client = new ModeClient({
             token: ctx.auth.token,
             secret: ctx.auth.secret,
-            workspaceName: ctx.config.workspaceName,
+            workspaceName: ctx.config.workspaceName
           });
           let raw = await client.getDataSource(dataSourceToken);
           let ds = normalizeDataSource(raw);
           return {
             type: 'data_source.created',
             id: `new_database_connection_${dataSourceToken}`,
-            output: ds,
+            output: ds
           };
         } catch {
           // Fall through
@@ -94,9 +96,9 @@ export let dataSourceEvents = SlateTrigger.create(
           database: '',
           port: 0,
           createdAt: '',
-          updatedAt: '',
-        },
+          updatedAt: ''
+        }
       };
-    },
+    }
   })
   .build();

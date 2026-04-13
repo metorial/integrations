@@ -3,36 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let schedulePickup = SlateTool.create(
-  spec,
-  {
-    name: 'Schedule Pickup',
-    key: 'schedule_pickup',
-    description: `Schedule a carrier pickup for one or more shipment labels. Provide label IDs, contact details, and a pickup time window. The carrier will arrange to pick up the packages at the specified location.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let schedulePickup = SlateTool.create(spec, {
+  name: 'Schedule Pickup',
+  key: 'schedule_pickup',
+  description: `Schedule a carrier pickup for one or more shipment labels. Provide label IDs, contact details, and a pickup time window. The carrier will arrange to pick up the packages at the specified location.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    labelIds: z.array(z.string()).min(1).describe('Label IDs for the packages to be picked up'),
-    contactName: z.string().describe('Contact person name'),
-    contactPhone: z.string().describe('Contact phone number'),
-    contactEmail: z.string().optional().describe('Contact email address'),
-    pickupNotes: z.string().optional().describe('Special instructions for the pickup'),
-    pickupWindowStart: z.string().describe('Pickup window start time (ISO 8601)'),
-    pickupWindowEnd: z.string().describe('Pickup window end time (ISO 8601)')
-  }))
-  .output(z.object({
-    pickupId: z.string().describe('Pickup ID'),
-    confirmationNumber: z.string().describe('Carrier confirmation number'),
-    carrierId: z.string().describe('Carrier ID'),
-    createdAt: z.string().describe('Creation timestamp'),
-    pickupWindowStart: z.string().describe('Pickup window start'),
-    pickupWindowEnd: z.string().describe('Pickup window end')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      labelIds: z
+        .array(z.string())
+        .min(1)
+        .describe('Label IDs for the packages to be picked up'),
+      contactName: z.string().describe('Contact person name'),
+      contactPhone: z.string().describe('Contact phone number'),
+      contactEmail: z.string().optional().describe('Contact email address'),
+      pickupNotes: z.string().optional().describe('Special instructions for the pickup'),
+      pickupWindowStart: z.string().describe('Pickup window start time (ISO 8601)'),
+      pickupWindowEnd: z.string().describe('Pickup window end time (ISO 8601)')
+    })
+  )
+  .output(
+    z.object({
+      pickupId: z.string().describe('Pickup ID'),
+      confirmationNumber: z.string().describe('Carrier confirmation number'),
+      carrierId: z.string().describe('Carrier ID'),
+      createdAt: z.string().describe('Creation timestamp'),
+      pickupWindowStart: z.string().describe('Pickup window start'),
+      pickupWindowEnd: z.string().describe('Pickup window end')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -63,27 +67,29 @@ export let schedulePickup = SlateTool.create(
       },
       message: `Scheduled pickup **${result.pickup_id}** (confirmation: ${result.confirmation_number}) for ${ctx.input.labelIds.length} label(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let cancelPickup = SlateTool.create(
-  spec,
-  {
-    name: 'Cancel Pickup',
-    key: 'cancel_pickup',
-    description: `Cancel a previously scheduled carrier pickup.`,
-    tags: {
-      readOnly: false,
-      destructive: true
-    }
+export let cancelPickup = SlateTool.create(spec, {
+  name: 'Cancel Pickup',
+  key: 'cancel_pickup',
+  description: `Cancel a previously scheduled carrier pickup.`,
+  tags: {
+    readOnly: false,
+    destructive: true
   }
-)
-  .input(z.object({
-    pickupId: z.string().describe('ID of the pickup to cancel')
-  }))
-  .output(z.object({
-    cancelled: z.boolean().describe('Whether the pickup was cancelled')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pickupId: z.string().describe('ID of the pickup to cancel')
+    })
+  )
+  .output(
+    z.object({
+      cancelled: z.boolean().describe('Whether the pickup was cancelled')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -95,4 +101,5 @@ export let cancelPickup = SlateTool.create(
       output: { cancelled: true },
       message: `Cancelled pickup **${ctx.input.pickupId}**.`
     };
-  }).build();
+  })
+  .build();

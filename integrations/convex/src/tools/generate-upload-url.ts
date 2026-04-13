@@ -3,29 +3,28 @@ import { ConvexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let generateUploadUrl = SlateTool.create(
-  spec,
-  {
-    name: 'Generate Upload URL',
-    key: 'generate_upload_url',
-    description: `Generate a temporary upload URL for uploading a file to Convex file storage.
+export let generateUploadUrl = SlateTool.create(spec, {
+  name: 'Generate Upload URL',
+  key: 'generate_upload_url',
+  description: `Generate a temporary upload URL for uploading a file to Convex file storage.
 The returned URL can be used to POST file content directly. After uploading, a storage ID is returned that can be referenced in documents.
 Requires deploy key authentication.`,
-    instructions: [
-      'The returned URL is temporary and should be used immediately',
-      'POST file content to the URL with the appropriate Content-Type header',
-      'The upload response will contain a storageId to reference the file in documents'
-    ],
-    tags: {
-      readOnly: false
-    }
+  instructions: [
+    'The returned URL is temporary and should be used immediately',
+    'POST file content to the URL with the appropriate Content-Type header',
+    'The upload response will contain a storageId to reference the file in documents'
+  ],
+  tags: {
+    readOnly: false
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    uploadUrl: z.string().describe('Temporary URL for uploading a file via POST')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      uploadUrl: z.string().describe('Temporary URL for uploading a file via POST')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConvexClient({
       deploymentUrl: ctx.config.deploymentUrl,
       token: ctx.auth.token,
@@ -41,4 +40,5 @@ Requires deploy key authentication.`,
       },
       message: `Upload URL generated. POST file content to the URL with the appropriate Content-Type header.`
     };
-  }).build();
+  })
+  .build();

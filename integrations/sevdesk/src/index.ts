@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createContact,
@@ -28,14 +27,9 @@ import {
   getReceiptGuidance,
   listCheckAccounts,
   addCommunicationWay,
-  manageAccountingContact,
+  manageAccountingContact
 } from './tools';
-import {
-  newContact,
-  newInvoice,
-  newVoucher,
-  inboundWebhook,
-} from './triggers';
+import { newContact, newInvoice, newVoucher, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -66,12 +60,7 @@ export let provider = Slate.create({
     getReceiptGuidance,
     listCheckAccounts,
     addCommunicationWay,
-    manageAccountingContact,
+    manageAccountingContact
   ],
-  triggers: [
-    inboundWebhook,
-    newContact,
-    newInvoice,
-    newVoucher,
-  ],
+  triggers: [inboundWebhook, newContact, newInvoice, newVoucher]
 });

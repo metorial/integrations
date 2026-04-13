@@ -15,8 +15,8 @@ export class CanvasClient {
       baseURL: `https://${this.domain}/api/v1`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,7 +35,7 @@ export class CanvasClient {
 
     while (url) {
       let response = await this.http.get(url, {
-        params: url === path ? queryParams : undefined,
+        params: url === path ? queryParams : undefined
       });
       let items = Array.isArray(response.data) ? response.data : [];
       allItems.push(...items);
@@ -88,7 +88,7 @@ export class CanvasClient {
 
   async deleteCourse(courseId: string, event: 'delete' | 'conclude'): Promise<any> {
     let response = await this.http.delete(`/courses/${courseId}`, {
-      params: { event },
+      params: { event }
     });
     return response.data;
   }
@@ -105,12 +105,15 @@ export class CanvasClient {
     return response.data;
   }
 
-  async listCourseUsers(courseId: string, params?: {
-    searchTerm?: string;
-    enrollmentType?: string[];
-    include?: string[];
-    perPage?: number;
-  }): Promise<any[]> {
+  async listCourseUsers(
+    courseId: string,
+    params?: {
+      searchTerm?: string;
+      enrollmentType?: string[];
+      include?: string[];
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params?.enrollmentType) queryParams['enrollment_type[]'] = params.enrollmentType;
@@ -121,12 +124,15 @@ export class CanvasClient {
 
   // ─── Enrollments ─────────────────────────────────────────
 
-  async listEnrollments(courseId: string, params?: {
-    type?: string[];
-    state?: string[];
-    include?: string[];
-    userId?: string;
-  }): Promise<any[]> {
+  async listEnrollments(
+    courseId: string,
+    params?: {
+      type?: string[];
+      state?: string[];
+      include?: string[];
+      userId?: string;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.type) queryParams['type[]'] = params.type;
     if (params?.state) queryParams['state[]'] = params.state;
@@ -135,16 +141,19 @@ export class CanvasClient {
     return this.fetchPaginated(`/courses/${courseId}/enrollments`, queryParams);
   }
 
-  async enrollUser(courseId: string, enrollment: {
-    userId: string;
-    type: string;
-    enrollmentState?: string;
-    courseSectionId?: string;
-    limitPrivilegesToCourseSection?: boolean;
-    notify?: boolean;
-    selfEnrollmentCode?: string;
-    role?: string;
-  }): Promise<any> {
+  async enrollUser(
+    courseId: string,
+    enrollment: {
+      userId: string;
+      type: string;
+      enrollmentState?: string;
+      courseSectionId?: string;
+      limitPrivilegesToCourseSection?: boolean;
+      notify?: boolean;
+      selfEnrollmentCode?: string;
+      role?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/courses/${courseId}/enrollments`, {
       enrollment: {
         user_id: enrollment.userId,
@@ -154,28 +163,35 @@ export class CanvasClient {
         limit_privileges_to_course_section: enrollment.limitPrivilegesToCourseSection,
         notify: enrollment.notify,
         self_enrollment_code: enrollment.selfEnrollmentCode,
-        role: enrollment.role,
-      },
+        role: enrollment.role
+      }
     });
     return response.data;
   }
 
-  async deleteEnrollment(courseId: string, enrollmentId: string, task: 'conclude' | 'delete' | 'inactivate' | 'deactivate'): Promise<any> {
+  async deleteEnrollment(
+    courseId: string,
+    enrollmentId: string,
+    task: 'conclude' | 'delete' | 'inactivate' | 'deactivate'
+  ): Promise<any> {
     let response = await this.http.delete(`/courses/${courseId}/enrollments/${enrollmentId}`, {
-      params: { task },
+      params: { task }
     });
     return response.data;
   }
 
   // ─── Assignments ─────────────────────────────────────────
 
-  async listAssignments(courseId: string, params?: {
-    searchTerm?: string;
-    include?: string[];
-    orderBy?: string;
-    bucket?: string;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listAssignments(
+    courseId: string,
+    params?: {
+      searchTerm?: string;
+      include?: string[];
+      orderBy?: string;
+      bucket?: string;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params?.include) queryParams['include[]'] = params.include;
@@ -185,10 +201,16 @@ export class CanvasClient {
     return this.fetchPaginated(`/courses/${courseId}/assignments`, queryParams);
   }
 
-  async getAssignment(courseId: string, assignmentId: string, include?: string[]): Promise<any> {
+  async getAssignment(
+    courseId: string,
+    assignmentId: string,
+    include?: string[]
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (include) params['include[]'] = include;
-    let response = await this.http.get(`/courses/${courseId}/assignments/${assignmentId}`, { params });
+    let response = await this.http.get(`/courses/${courseId}/assignments/${assignmentId}`, {
+      params
+    });
     return response.data;
   }
 
@@ -197,8 +219,14 @@ export class CanvasClient {
     return response.data;
   }
 
-  async updateAssignment(courseId: string, assignmentId: string, assignment: Record<string, any>): Promise<any> {
-    let response = await this.http.put(`/courses/${courseId}/assignments/${assignmentId}`, { assignment });
+  async updateAssignment(
+    courseId: string,
+    assignmentId: string,
+    assignment: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.put(`/courses/${courseId}/assignments/${assignmentId}`, {
+      assignment
+    });
     return response.data;
   }
 
@@ -209,43 +237,71 @@ export class CanvasClient {
 
   // ─── Submissions ─────────────────────────────────────────
 
-  async listSubmissions(courseId: string, assignmentId: string, params?: {
-    include?: string[];
-    perPage?: number;
-  }): Promise<any[]> {
+  async listSubmissions(
+    courseId: string,
+    assignmentId: string,
+    params?: {
+      include?: string[];
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.include) queryParams['include[]'] = params.include;
     if (params?.perPage) queryParams['per_page'] = params.perPage;
-    return this.fetchPaginated(`/courses/${courseId}/assignments/${assignmentId}/submissions`, queryParams);
+    return this.fetchPaginated(
+      `/courses/${courseId}/assignments/${assignmentId}/submissions`,
+      queryParams
+    );
   }
 
-  async getSubmission(courseId: string, assignmentId: string, userId: string, include?: string[]): Promise<any> {
+  async getSubmission(
+    courseId: string,
+    assignmentId: string,
+    userId: string,
+    include?: string[]
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (include) params['include[]'] = include;
-    let response = await this.http.get(`/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`, { params });
+    let response = await this.http.get(
+      `/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`,
+      { params }
+    );
     return response.data;
   }
 
-  async gradeSubmission(courseId: string, assignmentId: string, userId: string, data: {
-    postedGrade?: string;
-    excuse?: boolean;
-    comment?: string;
-  }): Promise<any> {
+  async gradeSubmission(
+    courseId: string,
+    assignmentId: string,
+    userId: string,
+    data: {
+      postedGrade?: string;
+      excuse?: boolean;
+      comment?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
-    if (data.postedGrade !== undefined) body['submission'] = { posted_grade: data.postedGrade };
-    if (data.excuse !== undefined) body['submission'] = { ...body['submission'], excuse: data.excuse };
+    if (data.postedGrade !== undefined)
+      body['submission'] = { posted_grade: data.postedGrade };
+    if (data.excuse !== undefined)
+      body['submission'] = { ...body['submission'], excuse: data.excuse };
     if (data.comment) body['comment'] = { text_comment: data.comment };
-    let response = await this.http.put(`/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`, body);
+    let response = await this.http.put(
+      `/courses/${courseId}/assignments/${assignmentId}/submissions/${userId}`,
+      body
+    );
     return response.data;
   }
 
   // ─── Modules ─────────────────────────────────────────────
 
-  async listModules(courseId: string, params?: {
-    searchTerm?: string;
-    include?: string[];
-    studentId?: string;
-  }): Promise<any[]> {
+  async listModules(
+    courseId: string,
+    params?: {
+      searchTerm?: string;
+      include?: string[];
+      studentId?: string;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params?.include) queryParams['include[]'] = params.include;
@@ -265,7 +321,11 @@ export class CanvasClient {
     return response.data;
   }
 
-  async updateModule(courseId: string, moduleId: string, module: Record<string, any>): Promise<any> {
+  async updateModule(
+    courseId: string,
+    moduleId: string,
+    module: Record<string, any>
+  ): Promise<any> {
     let response = await this.http.put(`/courses/${courseId}/modules/${moduleId}`, { module });
     return response.data;
   }
@@ -275,25 +335,38 @@ export class CanvasClient {
     return response.data;
   }
 
-  async listModuleItems(courseId: string, moduleId: string, include?: string[]): Promise<any[]> {
+  async listModuleItems(
+    courseId: string,
+    moduleId: string,
+    include?: string[]
+  ): Promise<any[]> {
     let params: Record<string, any> = {};
     if (include) params['include[]'] = include;
     return this.fetchPaginated(`/courses/${courseId}/modules/${moduleId}/items`, params);
   }
 
-  async createModuleItem(courseId: string, moduleId: string, moduleItem: Record<string, any>): Promise<any> {
-    let response = await this.http.post(`/courses/${courseId}/modules/${moduleId}/items`, { module_item: moduleItem });
+  async createModuleItem(
+    courseId: string,
+    moduleId: string,
+    moduleItem: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.post(`/courses/${courseId}/modules/${moduleId}/items`, {
+      module_item: moduleItem
+    });
     return response.data;
   }
 
   // ─── Discussion Topics ───────────────────────────────────
 
-  async listDiscussionTopics(courseId: string, params?: {
-    orderBy?: string;
-    searchTerm?: string;
-    filterBy?: string;
-    include?: string[];
-  }): Promise<any[]> {
+  async listDiscussionTopics(
+    courseId: string,
+    params?: {
+      orderBy?: string;
+      searchTerm?: string;
+      filterBy?: string;
+      include?: string[];
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.orderBy) queryParams['order_by'] = params.orderBy;
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
@@ -302,10 +375,16 @@ export class CanvasClient {
     return this.fetchPaginated(`/courses/${courseId}/discussion_topics`, queryParams);
   }
 
-  async getDiscussionTopic(courseId: string, topicId: string, include?: string[]): Promise<any> {
+  async getDiscussionTopic(
+    courseId: string,
+    topicId: string,
+    include?: string[]
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (include) params['include[]'] = include;
-    let response = await this.http.get(`/courses/${courseId}/discussion_topics/${topicId}`, { params });
+    let response = await this.http.get(`/courses/${courseId}/discussion_topics/${topicId}`, {
+      params
+    });
     return response.data;
   }
 
@@ -314,8 +393,15 @@ export class CanvasClient {
     return response.data;
   }
 
-  async updateDiscussionTopic(courseId: string, topicId: string, topic: Record<string, any>): Promise<any> {
-    let response = await this.http.put(`/courses/${courseId}/discussion_topics/${topicId}`, topic);
+  async updateDiscussionTopic(
+    courseId: string,
+    topicId: string,
+    topic: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.put(
+      `/courses/${courseId}/discussion_topics/${topicId}`,
+      topic
+    );
     return response.data;
   }
 
@@ -326,12 +412,15 @@ export class CanvasClient {
 
   // ─── Pages (Wiki) ────────────────────────────────────────
 
-  async listPages(courseId: string, params?: {
-    sort?: string;
-    order?: string;
-    searchTerm?: string;
-    published?: boolean;
-  }): Promise<any[]> {
+  async listPages(
+    courseId: string,
+    params?: {
+      sort?: string;
+      order?: string;
+      searchTerm?: string;
+      published?: boolean;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.sort) queryParams['sort'] = params.sort;
     if (params?.order) queryParams['order'] = params.order;
@@ -350,8 +439,14 @@ export class CanvasClient {
     return response.data;
   }
 
-  async updatePage(courseId: string, pageUrl: string, wikiPage: Record<string, any>): Promise<any> {
-    let response = await this.http.put(`/courses/${courseId}/pages/${pageUrl}`, { wiki_page: wikiPage });
+  async updatePage(
+    courseId: string,
+    pageUrl: string,
+    wikiPage: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.put(`/courses/${courseId}/pages/${pageUrl}`, {
+      wiki_page: wikiPage
+    });
     return response.data;
   }
 
@@ -362,12 +457,15 @@ export class CanvasClient {
 
   // ─── Files ───────────────────────────────────────────────
 
-  async listFiles(courseId: string, params?: {
-    searchTerm?: string;
-    contentTypes?: string[];
-    sort?: string;
-    order?: string;
-  }): Promise<any[]> {
+  async listFiles(
+    courseId: string,
+    params?: {
+      searchTerm?: string;
+      contentTypes?: string[];
+      sort?: string;
+      order?: string;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params?.contentTypes) queryParams['content_types[]'] = params.contentTypes;
@@ -406,8 +504,13 @@ export class CanvasClient {
     return response.data;
   }
 
-  async updateCalendarEvent(eventId: string, calendarEvent: Record<string, any>): Promise<any> {
-    let response = await this.http.put(`/calendar_events/${eventId}`, { calendar_event: calendarEvent });
+  async updateCalendarEvent(
+    eventId: string,
+    calendarEvent: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.put(`/calendar_events/${eventId}`, {
+      calendar_event: calendarEvent
+    });
     return response.data;
   }
 
@@ -453,17 +556,20 @@ export class CanvasClient {
       group_conversation: conversation.groupConversation,
       context_code: conversation.contextCode,
       media_comment_id: conversation.mediaCommentId,
-      media_comment_type: conversation.mediaCommentType,
+      media_comment_type: conversation.mediaCommentType
     });
     return response.data;
   }
 
   // ─── Quizzes ─────────────────────────────────────────────
 
-  async listQuizzes(courseId: string, params?: {
-    searchTerm?: string;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listQuizzes(
+    courseId: string,
+    params?: {
+      searchTerm?: string;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params?.perPage) queryParams['per_page'] = params.perPage;
@@ -477,14 +583,19 @@ export class CanvasClient {
 
   // ─── Groups ──────────────────────────────────────────────
 
-  async listGroups(contextType: 'course' | 'account', contextId: string, params?: {
-    include?: string[];
-  }): Promise<any[]> {
+  async listGroups(
+    contextType: 'course' | 'account',
+    contextId: string,
+    params?: {
+      include?: string[];
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params?.include) queryParams['include[]'] = params.include;
-    let path = contextType === 'course'
-      ? `/courses/${contextId}/groups`
-      : `/accounts/${contextId}/groups`;
+    let path =
+      contextType === 'course'
+        ? `/courses/${contextId}/groups`
+        : `/accounts/${contextId}/groups`;
     return this.fetchPaginated(path, queryParams);
   }
 
@@ -501,14 +612,20 @@ export class CanvasClient {
     return this.fetchPaginated(`/courses/${courseId}/rubrics`);
   }
 
-  async getRubric(courseId: string, rubricId: string, params?: {
-    include?: string[];
-    style?: string;
-  }): Promise<any> {
+  async getRubric(
+    courseId: string,
+    rubricId: string,
+    params?: {
+      include?: string[];
+      style?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.include) queryParams['include[]'] = params.include;
     if (params?.style) queryParams['style'] = params.style;
-    let response = await this.http.get(`/courses/${courseId}/rubrics/${rubricId}`, { params: queryParams });
+    let response = await this.http.get(`/courses/${courseId}/rubrics/${rubricId}`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -524,20 +641,23 @@ export class CanvasClient {
 
   async getCourseTotalGrades(courseId: string): Promise<any[]> {
     return this.listEnrollments(courseId, {
-      include: ['current_points', 'total_scores'],
+      include: ['current_points', 'total_scores']
     });
   }
 
   // ─── Announcements ──────────────────────────────────────
 
-  async listAnnouncements(contextCodes: string[], params?: {
-    startDate?: string;
-    endDate?: string;
-    activeOnly?: boolean;
-    latestOnly?: boolean;
-  }): Promise<any[]> {
+  async listAnnouncements(
+    contextCodes: string[],
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      activeOnly?: boolean;
+      latestOnly?: boolean;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {
-      'context_codes[]': contextCodes,
+      'context_codes[]': contextCodes
     };
     if (params?.startDate) queryParams['start_date'] = params.startDate;
     if (params?.endDate) queryParams['end_date'] = params.endDate;
@@ -549,13 +669,18 @@ export class CanvasClient {
   // ─── Activity Stream ─────────────────────────────────────
 
   async getActivityStream(): Promise<any[]> {
-    let response = await this.http.get('/users/self/activity_stream', { params: { per_page: 50 } });
+    let response = await this.http.get('/users/self/activity_stream', {
+      params: { per_page: 50 }
+    });
     return Array.isArray(response.data) ? response.data : [];
   }
 
   // ─── Course Analytics ────────────────────────────────────
 
-  async getCourseAnalytics(courseId: string, type: 'activity' | 'assignments' | 'student_summaries'): Promise<any> {
+  async getCourseAnalytics(
+    courseId: string,
+    type: 'activity' | 'assignments' | 'student_summaries'
+  ): Promise<any> {
     let response = await this.http.get(`/courses/${courseId}/analytics/${type}`);
     return response.data;
   }

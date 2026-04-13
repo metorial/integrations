@@ -13,6 +13,7 @@ Brandfetch uses two authentication methods depending on the API product:
 Authentication is done by passing your API key as a Bearer Authentication. The API key is obtained by creating an account on the [Developer Portal](https://developers.brandfetch.com/register).
 
 Example:
+
 ```
 Authorization: Bearer <your-api-key>
 ```
@@ -24,6 +25,7 @@ This method is used for the Brand API (`api.brandfetch.io/v2/brands/...`), the T
 To use Brand Search API, you must include your `clientId` with every request. Adding your `clientId` provides reliable access, supports fair usage, and keeps consistent performance across all requests.
 
 The client ID is passed as the `c` query parameter. The same client ID is used for both Logo API and Brand Search API. Example:
+
 ```
 https://api.brandfetch.io/v2/search/nike?c=BRANDFETCH_CLIENT_ID
 https://cdn.brandfetch.io/nike.com?c=BRANDFETCH_CLIENT_ID

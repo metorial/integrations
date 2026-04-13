@@ -3,47 +3,88 @@ import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageNode = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Node',
-    key: 'manage_node',
-    description: `List, get, create, delete, or toggle online/offline status of Jenkins nodes (agents).
+export let manageNode = SlateTool.create(spec, {
+  name: 'Manage Node',
+  key: 'manage_node',
+  description: `List, get, create, delete, or toggle online/offline status of Jenkins nodes (agents).
 Nodes are the machines on which build agents run. Jenkins monitors each node for disk space, free temp space, free swap, clock time/sync, and response time.`,
-    tags: {
-      destructive: false
-    }
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'delete', 'set_offline', 'set_online']).describe('Action to perform'),
-    nodeName: z.string().optional().describe('Name of the node. Use "master" for the built-in node. Required for all except "list".'),
-    description: z.string().optional().describe('Description for a new node (for "create")'),
-    remoteFs: z.string().optional().describe('Remote root directory for a new node (for "create")'),
-    numExecutors: z.number().optional().describe('Number of executors for a new node (for "create")'),
-    labels: z.string().optional().describe('Space-separated labels for a new node (for "create")'),
-    offlineMessage: z.string().optional().describe('Reason message when taking a node offline (for "set_offline")')
-  }))
-  .output(z.object({
-    nodes: z.array(z.object({
-      nodeName: z.string().describe('Name of the node'),
-      offline: z.boolean().optional().describe('Whether the node is offline'),
-      temporarilyOffline: z.boolean().optional().describe('Whether the node is temporarily offline'),
-      idle: z.boolean().optional().describe('Whether the node is idle'),
-      numExecutors: z.number().optional().describe('Number of executors')
-    })).optional().describe('List of nodes (for "list" action)'),
-    node: z.object({
-      nodeName: z.string().describe('Name of the node'),
-      offline: z.boolean().optional().describe('Whether the node is offline'),
-      temporarilyOffline: z.boolean().optional().describe('Whether the node is temporarily offline'),
-      idle: z.boolean().optional().describe('Whether the node is idle'),
-      numExecutors: z.number().optional().describe('Number of executors'),
-      offlineCauseReason: z.string().optional().nullable().describe('Reason for being offline'),
-      monitorData: z.any().optional().describe('Monitor data including disk space, response time, etc.')
-    }).optional().describe('Node details (for "get" action)'),
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'delete', 'set_offline', 'set_online'])
+        .describe('Action to perform'),
+      nodeName: z
+        .string()
+        .optional()
+        .describe(
+          'Name of the node. Use "master" for the built-in node. Required for all except "list".'
+        ),
+      description: z.string().optional().describe('Description for a new node (for "create")'),
+      remoteFs: z
+        .string()
+        .optional()
+        .describe('Remote root directory for a new node (for "create")'),
+      numExecutors: z
+        .number()
+        .optional()
+        .describe('Number of executors for a new node (for "create")'),
+      labels: z
+        .string()
+        .optional()
+        .describe('Space-separated labels for a new node (for "create")'),
+      offlineMessage: z
+        .string()
+        .optional()
+        .describe('Reason message when taking a node offline (for "set_offline")')
+    })
+  )
+  .output(
+    z.object({
+      nodes: z
+        .array(
+          z.object({
+            nodeName: z.string().describe('Name of the node'),
+            offline: z.boolean().optional().describe('Whether the node is offline'),
+            temporarilyOffline: z
+              .boolean()
+              .optional()
+              .describe('Whether the node is temporarily offline'),
+            idle: z.boolean().optional().describe('Whether the node is idle'),
+            numExecutors: z.number().optional().describe('Number of executors')
+          })
+        )
+        .optional()
+        .describe('List of nodes (for "list" action)'),
+      node: z
+        .object({
+          nodeName: z.string().describe('Name of the node'),
+          offline: z.boolean().optional().describe('Whether the node is offline'),
+          temporarilyOffline: z
+            .boolean()
+            .optional()
+            .describe('Whether the node is temporarily offline'),
+          idle: z.boolean().optional().describe('Whether the node is idle'),
+          numExecutors: z.number().optional().describe('Number of executors'),
+          offlineCauseReason: z
+            .string()
+            .optional()
+            .nullable()
+            .describe('Reason for being offline'),
+          monitorData: z
+            .any()
+            .optional()
+            .describe('Monitor data including disk space, response time, etc.')
+        })
+        .optional()
+        .describe('Node details (for "get" action)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new JenkinsClient({
       instanceUrl: ctx.config.instanceUrl,
       username: ctx.auth.username,
@@ -126,4 +167,5 @@ Nodes are the machines on which build agents run. Jenkins monitors each node for
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

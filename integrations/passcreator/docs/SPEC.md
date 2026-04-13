@@ -11,6 +11,7 @@ The API key must be submitted in the HTTP `Authorization` header on every reques
 **Method:** API Key
 
 **How to obtain an API key:**
+
 1. Log in to Passcreator at `https://app.passcreator.com/en/login`.
 2. Navigate to **Integrations → API Keys** (or visit `https://app.passcreator.com/customeruser/apikeys`).
 3. Click the button to create a new API Key, enter a friendly name, and click **Create**.

@@ -6,7 +6,7 @@ import { z } from 'zod';
 let serviceSchema = z.object({
   name: z.string().describe('Service provider name'),
   prod: z.boolean().describe('Whether the service is in production mode'),
-  status: z.boolean().describe('Whether the service is enabled'),
+  status: z.boolean().describe('Whether the service is enabled')
 });
 
 let estimateSchema = z.object({
@@ -19,7 +19,7 @@ let estimateSchema = z.object({
   deliveryDurationMinutes: z.number().optional().describe('Delivery duration in minutes'),
   hasError: z.boolean().optional().describe('Whether an error occurred'),
   errorCode: z.string().optional().describe('Error code if applicable'),
-  errorMessage: z.string().optional().describe('Error message if applicable'),
+  errorMessage: z.string().optional().describe('Error message if applicable')
 });
 
 let assignmentSchema = z.object({
@@ -34,47 +34,60 @@ let assignmentSchema = z.object({
   driverLatitude: z.number().optional().describe('Driver latitude'),
   driverLongitude: z.number().optional().describe('Driver longitude'),
   trackingUrl: z.string().optional().describe('Tracking URL'),
-  tip: z.number().optional().describe('Tip amount'),
+  tip: z.number().optional().describe('Tip amount')
 });
 
-export let onDemandDelivery = SlateTool.create(
-  spec,
-  {
-    name: 'On-Demand Delivery',
-    key: 'on_demand_delivery',
-    description: `Manage third-party on-demand delivery services (e.g., DoorDash, Uber). List available services, get cost/time estimates, assign an order to a provider, get assignment details, or cancel an assignment.`,
-    instructions: [
-      'Use action "services" to list available third-party delivery providers.',
-      'Use action "estimate" with an orderId to get pricing and timing estimates.',
-      'Use action "assign" with orderId and providerName to assign an order to a provider.',
-      'Use action "details" with an orderId to get assignment details.',
-      'Use action "cancel" with an orderId to cancel an on-demand assignment.',
-    ],
-    constraints: [
-      'Requires Professional plan, US location, and valid credit card on file.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let onDemandDelivery = SlateTool.create(spec, {
+  name: 'On-Demand Delivery',
+  key: 'on_demand_delivery',
+  description: `Manage third-party on-demand delivery services (e.g., DoorDash, Uber). List available services, get cost/time estimates, assign an order to a provider, get assignment details, or cancel an assignment.`,
+  instructions: [
+    'Use action "services" to list available third-party delivery providers.',
+    'Use action "estimate" with an orderId to get pricing and timing estimates.',
+    'Use action "assign" with orderId and providerName to assign an order to a provider.',
+    'Use action "details" with an orderId to get assignment details.',
+    'Use action "cancel" with an orderId to cancel an on-demand assignment.'
+  ],
+  constraints: ['Requires Professional plan, US location, and valid credit card on file.'],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['services', 'estimate', 'assign', 'details', 'cancel']).describe('Action to perform'),
-    orderId: z.number().optional().describe('Order ID (required for estimate, assign, details, cancel)'),
-    providerName: z.string().optional().describe('Third-party provider name (required for assign)'),
-    tip: z.number().optional().describe('Tip amount (for assign)'),
-    estimateReference: z.string().optional().describe('Estimate reference ID (for assign)'),
-    contactlessDelivery: z.boolean().optional().describe('Request contactless delivery (for assign)'),
-    proofOfDeliveryType: z.enum(['PHOTO', 'SIGNATURE', 'PIN', 'NONE']).optional().describe('Proof of delivery type (for assign)'),
-  }))
-  .output(z.object({
-    services: z.array(serviceSchema).optional().describe('Available delivery services'),
-    estimate: estimateSchema.optional().describe('Delivery estimate'),
-    assignment: assignmentSchema.optional().describe('Assignment details'),
-    cancelled: z.boolean().optional().describe('Whether cancellation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['services', 'estimate', 'assign', 'details', 'cancel'])
+        .describe('Action to perform'),
+      orderId: z
+        .number()
+        .optional()
+        .describe('Order ID (required for estimate, assign, details, cancel)'),
+      providerName: z
+        .string()
+        .optional()
+        .describe('Third-party provider name (required for assign)'),
+      tip: z.number().optional().describe('Tip amount (for assign)'),
+      estimateReference: z.string().optional().describe('Estimate reference ID (for assign)'),
+      contactlessDelivery: z
+        .boolean()
+        .optional()
+        .describe('Request contactless delivery (for assign)'),
+      proofOfDeliveryType: z
+        .enum(['PHOTO', 'SIGNATURE', 'PIN', 'NONE'])
+        .optional()
+        .describe('Proof of delivery type (for assign)')
+    })
+  )
+  .output(
+    z.object({
+      services: z.array(serviceSchema).optional().describe('Available delivery services'),
+      estimate: estimateSchema.optional().describe('Delivery estimate'),
+      assignment: assignmentSchema.optional().describe('Assignment details'),
+      cancelled: z.boolean().optional().describe('Whether cancellation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShipdayClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'services') {
@@ -82,7 +95,7 @@ export let onDemandDelivery = SlateTool.create(
       let services = Array.isArray(result) ? result : [];
       return {
         output: { services },
-        message: `Found **${services.length}** on-demand delivery service(s): ${services.map((s: Record<string, unknown>) => s.name).join(', ')}.`,
+        message: `Found **${services.length}** on-demand delivery service(s): ${services.map((s: Record<string, unknown>) => s.name).join(', ')}.`
       };
     }
 
@@ -99,11 +112,11 @@ export let onDemandDelivery = SlateTool.create(
         deliveryDurationMinutes: result.deliveryDuration,
         hasError: result.error,
         errorCode: result.errorCode,
-        errorMessage: result.errorMessage,
+        errorMessage: result.errorMessage
       };
       return {
         output: { estimate },
-        message: `Estimate from **${estimate.providerName}**: $${estimate.fee} fee, pickup in ${estimate.pickupDurationMinutes}min, delivery in ${estimate.deliveryDurationMinutes}min.`,
+        message: `Estimate from **${estimate.providerName}**: $${estimate.fee} fee, pickup in ${estimate.pickupDurationMinutes}min, delivery in ${estimate.deliveryDurationMinutes}min.`
       };
     }
 
@@ -120,11 +133,12 @@ export let onDemandDelivery = SlateTool.create(
         podType?: string;
       } = {
         orderId: ctx.input.orderId,
-        name: ctx.input.providerName,
+        name: ctx.input.providerName
       };
       if (ctx.input.tip !== undefined) params.tip = ctx.input.tip;
       if (ctx.input.estimateReference) params.estimateReference = ctx.input.estimateReference;
-      if (ctx.input.contactlessDelivery !== undefined) params.contactlessDelivery = ctx.input.contactlessDelivery;
+      if (ctx.input.contactlessDelivery !== undefined)
+        params.contactlessDelivery = ctx.input.contactlessDelivery;
       if (ctx.input.proofOfDeliveryType) params.podType = ctx.input.proofOfDeliveryType;
 
       let result = await client.assignOnDemandDelivery(params);
@@ -140,11 +154,11 @@ export let onDemandDelivery = SlateTool.create(
         driverLatitude: result.driverLat,
         driverLongitude: result.driverLng,
         trackingUrl: result.trackingUrl,
-        tip: result.tip,
+        tip: result.tip
       };
       return {
         output: { assignment },
-        message: `Assigned order **${ctx.input.orderId}** to **${ctx.input.providerName}**. Status: ${assignment.status}.`,
+        message: `Assigned order **${ctx.input.orderId}** to **${ctx.input.providerName}**. Status: ${assignment.status}.`
       };
     }
 
@@ -163,11 +177,11 @@ export let onDemandDelivery = SlateTool.create(
         driverLatitude: result.driverLat,
         driverLongitude: result.driverLng,
         trackingUrl: result.trackingUrl,
-        tip: result.tip,
+        tip: result.tip
       };
       return {
         output: { assignment },
-        message: `On-demand delivery for order **${ctx.input.orderId}** via **${assignment.thirdPartyName}**: Status **${assignment.status}**.`,
+        message: `On-demand delivery for order **${ctx.input.orderId}** via **${assignment.thirdPartyName}**: Status **${assignment.status}**.`
       };
     }
 
@@ -176,9 +190,10 @@ export let onDemandDelivery = SlateTool.create(
       let result = await client.cancelOnDemandDelivery(ctx.input.orderId);
       return {
         output: { cancelled: result.success ?? true },
-        message: `Cancelled on-demand delivery for order **${ctx.input.orderId}**.`,
+        message: `Cancelled on-demand delivery for order **${ctx.input.orderId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

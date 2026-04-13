@@ -2,35 +2,41 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Everhour API token. Found in Settings > My Profile > Application Access.'),
+      token: z
+        .string()
+        .describe(
+          'Your Everhour API token. Found in Settings > My Profile > Application Access.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let client = createAxios({
-        baseURL: 'https://api.everhour.com',
+        baseURL: 'https://api.everhour.com'
       });
 
       let response = await client.get('/users/me', {
         headers: {
-          'X-Api-Key': ctx.output.token,
-        },
+          'X-Api-Key': ctx.output.token
+        }
       });
 
       let user = response.data;
@@ -39,8 +45,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id),
           name: user.name,
-          imageUrl: user.avatarUrl,
-        },
+          imageUrl: user.avatarUrl
+        }
       };
-    },
+    }
   });

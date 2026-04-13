@@ -16,6 +16,7 @@ The Database API handles all vector/collection operations and is accessed via yo
 Qdrant supports a simple form of client authentication using a static API key. Qdrant offers API key-based authentication, including both regular API keys and read-only API keys. Regular API keys grant full access to read, write, and delete operations, while read-only keys restrict access to data retrieval operations only, preventing write actions.
 
 The API key is passed via the `api-key` header or as a Bearer token in the `Authorization` header:
+
 - Header: `api-key: <YOUR_API_KEY>`
 - Bearer: `Authorization: Bearer <YOUR_API_KEY>`
 

@@ -24,7 +24,5 @@ export let provider = Slate.create({
     getWeatherOverview,
     getWeatherMapTile
   ],
-  triggers: [
-    weatherAlerts
-  ]
+  triggers: [weatherAlerts]
 });

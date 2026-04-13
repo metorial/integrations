@@ -13,7 +13,7 @@ import {
   searchPresentations,
   versionHistory,
   getThumbnails,
-  createFolder,
+  createFolder
 } from './tools';
 import { driveItemChanges } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     searchPresentations,
     versionHistory,
     getThumbnails,
-    createFolder,
+    createFolder
   ],
-  triggers: [
-    driveItemChanges,
-  ],
+  triggers: [driveItemChanges]
 });

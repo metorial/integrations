@@ -27,6 +27,7 @@ The API base URL depends on how Grist is deployed:
 The full API base URL follows the pattern: `https://<host>/api`
 
 **Required inputs:**
+
 - **API Key:** Generated from Profile Settings in the Grist UI.
 - **Server URL:** The base URL of the Grist instance (e.g., `https://docs.getgrist.com`, `https://myteam.getgrist.com`, or a self-hosted URL).
 
@@ -98,6 +99,7 @@ Triggers when existing rows are modified in a specified table.
 - **Ready Column (optional):** A boolean column that gates when the webhook fires.
 
 **General webhook configuration options:**
+
 - **URL:** The endpoint to receive the POST payload.
 - **Name / Memo:** Descriptive labels for the webhook.
 - **Enabled state:** Webhooks can be enabled or disabled.

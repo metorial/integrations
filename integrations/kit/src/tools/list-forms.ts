@@ -3,32 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listForms = SlateTool.create(
-  spec,
-  {
-    name: 'List Forms',
-    key: 'list_forms',
-    description: `List sign-up forms and landing pages in your Kit account. Filter by type (embed, hosted, modal) and status (active, archived, trashed, all).`,
-    tags: {
-      readOnly: true
-    }
+export let listForms = SlateTool.create(spec, {
+  name: 'List Forms',
+  key: 'list_forms',
+  description: `List sign-up forms and landing pages in your Kit account. Filter by type (embed, hosted, modal) and status (active, archived, trashed, all).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    type: z.enum(['embed', 'hosted', 'modal']).optional().describe('Filter by form type'),
-    status: z.enum(['active', 'archived', 'trashed', 'all']).optional().describe('Filter by form status')
-  }))
-  .output(z.object({
-    forms: z.array(z.object({
-      formId: z.number().describe('Unique form ID'),
-      name: z.string().describe('Form name'),
-      type: z.string().describe('Form type (embed, hosted, modal)'),
-      format: z.string().describe('Form format'),
-      archived: z.boolean().describe('Whether the form is archived'),
-      createdAt: z.string().describe('When the form was created')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      type: z.enum(['embed', 'hosted', 'modal']).optional().describe('Filter by form type'),
+      status: z
+        .enum(['active', 'archived', 'trashed', 'all'])
+        .optional()
+        .describe('Filter by form status')
+    })
+  )
+  .output(
+    z.object({
+      forms: z.array(
+        z.object({
+          formId: z.number().describe('Unique form ID'),
+          name: z.string().describe('Form name'),
+          type: z.string().describe('Form type (embed, hosted, modal)'),
+          format: z.string().describe('Form format'),
+          archived: z.boolean().describe('Whether the form is archived'),
+          createdAt: z.string().describe('When the form was created')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listForms({
       type: ctx.input.type,
@@ -48,4 +54,5 @@ export let listForms = SlateTool.create(
       output: { forms },
       message: `Found **${forms.length}** forms.`
     };
-  }).build();
+  })
+  .build();

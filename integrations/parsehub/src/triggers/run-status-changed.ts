@@ -5,58 +5,83 @@ import { z } from 'zod';
 let runSchema = z.object({
   projectToken: z.string().describe('Token of the project this run belongs to'),
   runToken: z.string().describe('Unique token identifying this run'),
-  status: z.string().describe('Current status: initialized, running, cancelled, complete, or error'),
-  dataReady: z.number().describe('Whether extracted data is available (1 = ready, 0 = not ready)'),
+  status: z
+    .string()
+    .describe('Current status: initialized, running, cancelled, complete, or error'),
+  dataReady: z
+    .number()
+    .describe('Whether extracted data is available (1 = ready, 0 = not ready)'),
   startTime: z.string().describe('When the run started'),
   endTime: z.string().describe('When the run ended'),
   pages: z.number().describe('Number of pages scraped'),
   md5sum: z.string().describe('MD5 checksum of the extracted data'),
   startUrl: z.string().describe('URL the run started scraping from'),
   startTemplate: z.string().describe('Template used as the entry point'),
-  startValue: z.string().describe('Value passed to the project'),
+  startValue: z.string().describe('Value passed to the project')
 });
 
-export let runStatusChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Run Status Changed',
-    key: 'run_status_changed',
-    description: `Triggers when a scraping run's status or data readiness changes. Fires on status transitions (e.g., initialized → running → complete) and when extracted data becomes available. Webhooks must be configured per project in the ParseHub client's Settings tab.`,
-  }
-)
-  .input(z.object({
-    projectToken: z.string().describe('Token of the project this run belongs to'),
-    runToken: z.string().describe('Unique token identifying this run'),
-    status: z.string().describe('Current status of the run'),
-    dataReady: z.number().describe('Whether extracted data is available'),
-    startTime: z.string().optional().describe('When the run started'),
-    endTime: z.string().optional().describe('When the run ended'),
-    pages: z.number().optional().describe('Number of pages scraped'),
-    md5sum: z.string().optional().describe('MD5 checksum of the extracted data'),
-    startUrl: z.string().optional().describe('URL the run started scraping from'),
-    startTemplate: z.string().optional().describe('Template used as the entry point'),
-    startValue: z.string().optional().describe('Value passed to the project'),
-    newRunToken: z.string().optional().describe('If the run errored and was retried, the token of the new run'),
-    newRunUrl: z.string().optional().describe('If the run errored and was retried, the URL of the new run'),
-  }))
-  .output(z.object({
-    projectToken: z.string().describe('Token of the project this run belongs to'),
-    runToken: z.string().describe('Unique token identifying this run'),
-    status: z.string().describe('Current status: initialized, running, cancelled, complete, or error'),
-    dataReady: z.number().describe('Whether extracted data is available (1 = ready, 0 = not ready)'),
-    startTime: z.string().optional().describe('When the run started'),
-    endTime: z.string().optional().describe('When the run ended'),
-    pages: z.number().optional().describe('Number of pages scraped'),
-    md5sum: z.string().optional().describe('MD5 checksum of the extracted data'),
-    startUrl: z.string().optional().describe('URL the run started scraping from'),
-    startTemplate: z.string().optional().describe('Template used as the entry point'),
-    startValue: z.string().optional().describe('Value passed to the project'),
-    newRunToken: z.string().optional().describe('Token of the retried run (only present if status is error and a retry was triggered)'),
-    newRunUrl: z.string().optional().describe('URL of the retried run (only present if status is error and a retry was triggered)'),
-  }))
+export let runStatusChanged = SlateTrigger.create(spec, {
+  name: 'Run Status Changed',
+  key: 'run_status_changed',
+  description: `Triggers when a scraping run's status or data readiness changes. Fires on status transitions (e.g., initialized → running → complete) and when extracted data becomes available. Webhooks must be configured per project in the ParseHub client's Settings tab.`
+})
+  .input(
+    z.object({
+      projectToken: z.string().describe('Token of the project this run belongs to'),
+      runToken: z.string().describe('Unique token identifying this run'),
+      status: z.string().describe('Current status of the run'),
+      dataReady: z.number().describe('Whether extracted data is available'),
+      startTime: z.string().optional().describe('When the run started'),
+      endTime: z.string().optional().describe('When the run ended'),
+      pages: z.number().optional().describe('Number of pages scraped'),
+      md5sum: z.string().optional().describe('MD5 checksum of the extracted data'),
+      startUrl: z.string().optional().describe('URL the run started scraping from'),
+      startTemplate: z.string().optional().describe('Template used as the entry point'),
+      startValue: z.string().optional().describe('Value passed to the project'),
+      newRunToken: z
+        .string()
+        .optional()
+        .describe('If the run errored and was retried, the token of the new run'),
+      newRunUrl: z
+        .string()
+        .optional()
+        .describe('If the run errored and was retried, the URL of the new run')
+    })
+  )
+  .output(
+    z.object({
+      projectToken: z.string().describe('Token of the project this run belongs to'),
+      runToken: z.string().describe('Unique token identifying this run'),
+      status: z
+        .string()
+        .describe('Current status: initialized, running, cancelled, complete, or error'),
+      dataReady: z
+        .number()
+        .describe('Whether extracted data is available (1 = ready, 0 = not ready)'),
+      startTime: z.string().optional().describe('When the run started'),
+      endTime: z.string().optional().describe('When the run ended'),
+      pages: z.number().optional().describe('Number of pages scraped'),
+      md5sum: z.string().optional().describe('MD5 checksum of the extracted data'),
+      startUrl: z.string().optional().describe('URL the run started scraping from'),
+      startTemplate: z.string().optional().describe('Template used as the entry point'),
+      startValue: z.string().optional().describe('Value passed to the project'),
+      newRunToken: z
+        .string()
+        .optional()
+        .describe(
+          'Token of the retried run (only present if status is error and a retry was triggered)'
+        ),
+      newRunUrl: z
+        .string()
+        .optional()
+        .describe(
+          'URL of the retried run (only present if status is error and a retry was triggered)'
+        )
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // ParseHub sends the run object as the POST body
       // If the run errored and was retried, there may be a new_run field
@@ -77,13 +102,13 @@ export let runStatusChanged = SlateTrigger.create(
             startTemplate: body.start_template,
             startValue: body.start_value,
             newRunToken: newRun?.run_token,
-            newRunUrl: newRun?.start_url,
-          },
-        ],
+            newRunUrl: newRun?.start_url
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { status, runToken } = ctx.input;
 
       let eventType = `run.${status}`;
@@ -107,9 +132,9 @@ export let runStatusChanged = SlateTrigger.create(
           startTemplate: ctx.input.startTemplate,
           startValue: ctx.input.startValue,
           newRunToken: ctx.input.newRunToken,
-          newRunUrl: ctx.input.newRunUrl,
-        },
+          newRunUrl: ctx.input.newRunUrl
+        }
       };
-    },
+    }
   })
   .build();

@@ -3,41 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContact = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact',
-    key: 'manage_contact',
-    description: `Create, update, or delete a contact. Contacts represent messaging channel users (WhatsApp, Instagram, Telegram, Messenger). Supports profile details, stage management, and custom fields.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageContact = SlateTool.create(spec, {
+  name: 'Manage Contact',
+  key: 'manage_contact',
+  description: `Create, update, or delete a contact. Contacts represent messaging channel users (WhatsApp, Instagram, Telegram, Messenger). Supports profile details, stage management, and custom fields.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    contactId: z.string().optional().describe('Contact ID (required for update and delete)'),
-    name: z.string().optional().describe('Contact name'),
-    phoneNumber: z.string().optional().describe('Phone number (for WhatsApp contacts)'),
-    countryCode: z.string().optional().describe('Country code (e.g., +1)'),
-    channel: z.enum(['whatsapp', 'instagram', 'telegram', 'messenger']).optional().describe('Messaging channel'),
-    username: z.string().optional().describe('Username (for Instagram/Telegram)'),
-    stage: z.string().optional().describe('Sales funnel stage (e.g., Subscriber, Lead)'),
-    notes: z.string().optional().describe('Internal notes'),
-    locationId: z.string().optional().describe('Location ID'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom fields as key-value pairs'),
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('ID of the contact'),
-    name: z.string().optional().describe('Contact name'),
-    channel: z.string().optional().describe('Messaging channel'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      contactId: z.string().optional().describe('Contact ID (required for update and delete)'),
+      name: z.string().optional().describe('Contact name'),
+      phoneNumber: z.string().optional().describe('Phone number (for WhatsApp contacts)'),
+      countryCode: z.string().optional().describe('Country code (e.g., +1)'),
+      channel: z
+        .enum(['whatsapp', 'instagram', 'telegram', 'messenger'])
+        .optional()
+        .describe('Messaging channel'),
+      username: z.string().optional().describe('Username (for Instagram/Telegram)'),
+      stage: z.string().optional().describe('Sales funnel stage (e.g., Subscriber, Lead)'),
+      notes: z.string().optional().describe('Internal notes'),
+      locationId: z.string().optional().describe('Location ID'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom fields as key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('ID of the contact'),
+      name: z.string().optional().describe('Contact name'),
+      channel: z.string().optional().describe('Messaging channel'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      apiHost: ctx.config.apiHost,
+      apiHost: ctx.config.apiHost
     });
 
     let { action, contactId, ...fields } = ctx.input;
@@ -49,9 +56,9 @@ export let manageContact = SlateTool.create(
           contactId: result.id || result._id,
           name: result.name,
           channel: result.channel,
-          success: true,
+          success: true
         },
-        message: `Created contact **${result.name || ''}** on ${result.channel || 'unknown channel'}.`,
+        message: `Created contact **${result.name || ''}** on ${result.channel || 'unknown channel'}.`
       };
     }
 
@@ -63,9 +70,9 @@ export let manageContact = SlateTool.create(
           contactId: result.id || result._id || contactId,
           name: result.name,
           channel: result.channel,
-          success: true,
+          success: true
         },
-        message: `Updated contact **${contactId}**.`,
+        message: `Updated contact **${contactId}**.`
       };
     }
 
@@ -75,11 +82,12 @@ export let manageContact = SlateTool.create(
       return {
         output: {
           contactId,
-          success: true,
+          success: true
         },
-        message: `Deleted contact **${contactId}**.`,
+        message: `Deleted contact **${contactId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

@@ -5,7 +5,7 @@ import type {
   TranscriptionResponse,
   TranscriptionRequestParams,
   LiveSessionInitResponse,
-  LiveSessionRequestParams,
+  LiveSessionRequestParams
 } from './types';
 
 export class Client {
@@ -16,19 +16,21 @@ export class Client {
       baseURL: 'https://api.gladia.io',
       headers: {
         'x-gladia-key': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async uploadAudioFromUrl(audioUrl: string): Promise<UploadResponse> {
     let response = await this.axios.post('/v2/upload', {
-      audio_url: audioUrl,
+      audio_url: audioUrl
     });
     return response.data;
   }
 
-  async initiateTranscription(params: TranscriptionRequestParams): Promise<TranscriptionInitResponse> {
+  async initiateTranscription(
+    params: TranscriptionRequestParams
+  ): Promise<TranscriptionInitResponse> {
     let response = await this.axios.post('/v2/pre-recorded', params);
     return response.data;
   }
@@ -42,7 +44,9 @@ export class Client {
     await this.axios.delete(`/v2/pre-recorded/${transcriptionId}`);
   }
 
-  async initiateLiveSession(params: LiveSessionRequestParams): Promise<LiveSessionInitResponse> {
+  async initiateLiveSession(
+    params: LiveSessionRequestParams
+  ): Promise<LiveSessionInitResponse> {
     let response = await this.axios.post('/v2/live', params);
     return response.data;
   }
@@ -52,14 +56,20 @@ export class Client {
     return response.data;
   }
 
-  async pollTranscriptionUntilDone(transcriptionId: string, maxAttempts: number = 60, intervalMs: number = 5000): Promise<TranscriptionResponse> {
+  async pollTranscriptionUntilDone(
+    transcriptionId: string,
+    maxAttempts: number = 60,
+    intervalMs: number = 5000
+  ): Promise<TranscriptionResponse> {
     for (let i = 0; i < maxAttempts; i++) {
       let result = await this.getTranscription(transcriptionId);
       if (result.status === 'done' || result.status === 'error') {
         return result;
       }
-      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
-    throw new Error(`Transcription ${transcriptionId} did not complete within the maximum polling time`);
+    throw new Error(
+      `Transcription ${transcriptionId} did not complete within the maximum polling time`
+    );
   }
 }

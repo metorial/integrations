@@ -12,7 +12,7 @@ import {
   domainAvailability,
   domainDiscovery,
   sslCertificateLookup,
-  ipGeolocation,
+  ipGeolocation
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     domainAvailability,
     domainDiscovery,
     sslCertificateLookup,
-    ipGeolocation,
+    ipGeolocation
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    username: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      username: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Username & Password',
@@ -13,18 +15,18 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       username: z.string().describe('NetLicensing vendor account username'),
-      password: z.string().describe('NetLicensing vendor account password'),
+      password: z.string().describe('NetLicensing vendor account password')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let encoded = btoa(`${ctx.input.username}:${ctx.input.password}`);
       return {
         output: {
           token: encoded,
-          username: ctx.input.username,
-        },
+          username: ctx.input.username
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -32,16 +34,16 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('NetLicensing API Key'),
+      apiKey: z.string().describe('NetLicensing API Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let encoded = btoa(`apiKey:${ctx.input.apiKey}`);
       return {
         output: {
           token: encoded,
-          username: 'apiKey',
-        },
+          username: 'apiKey'
+        }
       };
-    },
+    }
   });

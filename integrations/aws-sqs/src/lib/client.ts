@@ -83,9 +83,9 @@ export class SqsClient {
       credentials: this.credentials,
       headers: {
         'Content-Type': 'application/x-amz-json-1.0',
-        'X-Amz-Target': `AmazonSQS.${action}`,
+        'X-Amz-Target': `AmazonSQS.${action}`
       },
-      body: jsonBody,
+      body: jsonBody
     });
 
     let ax = createAxios({ baseURL: endpoint });
@@ -95,7 +95,7 @@ export class SqsClient {
 
   async createQueue(params: CreateQueueParams): Promise<{ queueUrl: string }> {
     let body: Record<string, unknown> = {
-      QueueName: params.queueName,
+      QueueName: params.queueName
     };
     if (params.attributes) {
       body.Attributes = params.attributes;
@@ -112,7 +112,11 @@ export class SqsClient {
     await this.request<Record<string, never>>('DeleteQueue', { QueueUrl: queueUrl });
   }
 
-  async listQueues(params?: { queueNamePrefix?: string; maxResults?: number; nextToken?: string }): Promise<{ queueUrls: string[]; nextToken?: string }> {
+  async listQueues(params?: {
+    queueNamePrefix?: string;
+    maxResults?: number;
+    nextToken?: string;
+  }): Promise<{ queueUrls: string[]; nextToken?: string }> {
     let body: Record<string, unknown> = {};
     if (params?.queueNamePrefix) {
       body.QueueNamePrefix = params.queueNamePrefix;
@@ -124,10 +128,13 @@ export class SqsClient {
       body.NextToken = params.nextToken;
     }
 
-    let result = await this.request<{ QueueUrls?: string[]; NextToken?: string }>('ListQueues', body);
+    let result = await this.request<{ QueueUrls?: string[]; NextToken?: string }>(
+      'ListQueues',
+      body
+    );
     return {
       queueUrls: result.QueueUrls ?? [],
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 
@@ -141,27 +148,38 @@ export class SqsClient {
     return result.QueueUrl;
   }
 
-  async getQueueAttributes(queueUrl: string, attributeNames?: string[]): Promise<QueueAttributes> {
+  async getQueueAttributes(
+    queueUrl: string,
+    attributeNames?: string[]
+  ): Promise<QueueAttributes> {
     let body: Record<string, unknown> = {
       QueueUrl: queueUrl,
-      AttributeNames: attributeNames ?? ['All'],
+      AttributeNames: attributeNames ?? ['All']
     };
 
-    let result = await this.request<{ Attributes?: Record<string, string> }>('GetQueueAttributes', body);
+    let result = await this.request<{ Attributes?: Record<string, string> }>(
+      'GetQueueAttributes',
+      body
+    );
     return result.Attributes ?? {};
   }
 
-  async setQueueAttributes(queueUrl: string, attributes: Record<string, string>): Promise<void> {
+  async setQueueAttributes(
+    queueUrl: string,
+    attributes: Record<string, string>
+  ): Promise<void> {
     await this.request<Record<string, never>>('SetQueueAttributes', {
       QueueUrl: queueUrl,
-      Attributes: attributes,
+      Attributes: attributes
     });
   }
 
-  async sendMessage(params: SendMessageParams): Promise<{ messageId: string; md5OfMessageBody: string; sequenceNumber?: string }> {
+  async sendMessage(
+    params: SendMessageParams
+  ): Promise<{ messageId: string; md5OfMessageBody: string; sequenceNumber?: string }> {
     let body: Record<string, unknown> = {
       QueueUrl: params.queueUrl,
-      MessageBody: params.messageBody,
+      MessageBody: params.messageBody
     };
 
     if (params.delaySeconds !== undefined) {
@@ -181,16 +199,28 @@ export class SqsClient {
       body.MessageDeduplicationId = params.messageDeduplicationId;
     }
 
-    let result = await this.request<{ MessageId: string; MD5OfMessageBody: string; SequenceNumber?: string }>('SendMessage', body);
+    let result = await this.request<{
+      MessageId: string;
+      MD5OfMessageBody: string;
+      SequenceNumber?: string;
+    }>('SendMessage', body);
     return {
       messageId: result.MessageId,
       md5OfMessageBody: result.MD5OfMessageBody,
-      sequenceNumber: result.SequenceNumber,
+      sequenceNumber: result.SequenceNumber
     };
   }
 
-  async sendMessageBatch(queueUrl: string, entries: SendMessageBatchEntry[]): Promise<{
-    successful: { messageId: string; sqsMessageId: string; md5OfMessageBody: string; sequenceNumber?: string }[];
+  async sendMessageBatch(
+    queueUrl: string,
+    entries: SendMessageBatchEntry[]
+  ): Promise<{
+    successful: {
+      messageId: string;
+      sqsMessageId: string;
+      md5OfMessageBody: string;
+      sequenceNumber?: string;
+    }[];
     failed: { messageId: string; senderFault: boolean; code: string; message?: string }[];
   }> {
     let body: Record<string, unknown> = {
@@ -198,7 +228,7 @@ export class SqsClient {
       Entries: entries.map(entry => {
         let e: Record<string, unknown> = {
           Id: entry.messageId,
-          MessageBody: entry.messageBody,
+          MessageBody: entry.messageBody
         };
         if (entry.delaySeconds !== undefined) {
           e.DelaySeconds = entry.delaySeconds;
@@ -217,11 +247,16 @@ export class SqsClient {
           e.MessageDeduplicationId = entry.messageDeduplicationId;
         }
         return e;
-      }),
+      })
     };
 
     let result = await this.request<{
-      Successful?: { Id: string; MessageId: string; MD5OfMessageBody: string; SequenceNumber?: string }[];
+      Successful?: {
+        Id: string;
+        MessageId: string;
+        MD5OfMessageBody: string;
+        SequenceNumber?: string;
+      }[];
       Failed?: { Id: string; SenderFault: boolean; Code: string; Message?: string }[];
     }>('SendMessageBatch', body);
 
@@ -230,20 +265,20 @@ export class SqsClient {
         messageId: s.Id,
         sqsMessageId: s.MessageId,
         md5OfMessageBody: s.MD5OfMessageBody,
-        sequenceNumber: s.SequenceNumber,
+        sequenceNumber: s.SequenceNumber
       })),
       failed: (result.Failed ?? []).map(f => ({
         messageId: f.Id,
         senderFault: f.SenderFault,
         code: f.Code,
-        message: f.Message,
-      })),
+        message: f.Message
+      }))
     };
   }
 
   async receiveMessages(params: ReceiveMessagesParams): Promise<SqsMessage[]> {
     let body: Record<string, unknown> = {
-      QueueUrl: params.queueUrl,
+      QueueUrl: params.queueUrl
     };
 
     if (params.maxNumberOfMessages !== undefined) {
@@ -280,21 +315,29 @@ export class SqsClient {
       body: m.Body,
       md5OfBody: m.MD5OfBody,
       attributes: m.Attributes,
-      messageAttributes: m.MessageAttributes ? Object.fromEntries(
-        Object.entries(m.MessageAttributes).map(([k, v]) => [k, { dataType: v.DataType, stringValue: v.StringValue }])
-      ) : undefined,
-      md5OfMessageAttributes: m.MD5OfMessageAttributes,
+      messageAttributes: m.MessageAttributes
+        ? Object.fromEntries(
+            Object.entries(m.MessageAttributes).map(([k, v]) => [
+              k,
+              { dataType: v.DataType, stringValue: v.StringValue }
+            ])
+          )
+        : undefined,
+      md5OfMessageAttributes: m.MD5OfMessageAttributes
     }));
   }
 
   async deleteMessage(queueUrl: string, receiptHandle: string): Promise<void> {
     await this.request<Record<string, never>>('DeleteMessage', {
       QueueUrl: queueUrl,
-      ReceiptHandle: receiptHandle,
+      ReceiptHandle: receiptHandle
     });
   }
 
-  async deleteMessageBatch(queueUrl: string, entries: { receiptHandle: string; entryId: string }[]): Promise<{
+  async deleteMessageBatch(
+    queueUrl: string,
+    entries: { receiptHandle: string; entryId: string }[]
+  ): Promise<{
     successful: string[];
     failed: { entryId: string; code: string; message?: string; senderFault: boolean }[];
   }> {
@@ -305,8 +348,8 @@ export class SqsClient {
       QueueUrl: queueUrl,
       Entries: entries.map(e => ({
         Id: e.entryId,
-        ReceiptHandle: e.receiptHandle,
-      })),
+        ReceiptHandle: e.receiptHandle
+      }))
     });
 
     return {
@@ -315,16 +358,20 @@ export class SqsClient {
         entryId: f.Id,
         code: f.Code,
         message: f.Message,
-        senderFault: f.SenderFault,
-      })),
+        senderFault: f.SenderFault
+      }))
     };
   }
 
-  async changeMessageVisibility(queueUrl: string, receiptHandle: string, visibilityTimeout: number): Promise<void> {
+  async changeMessageVisibility(
+    queueUrl: string,
+    receiptHandle: string,
+    visibilityTimeout: number
+  ): Promise<void> {
     await this.request<Record<string, never>>('ChangeMessageVisibility', {
       QueueUrl: queueUrl,
       ReceiptHandle: receiptHandle,
-      VisibilityTimeout: visibilityTimeout,
+      VisibilityTimeout: visibilityTimeout
     });
   }
 
@@ -335,43 +382,52 @@ export class SqsClient {
   async tagQueue(queueUrl: string, tags: Record<string, string>): Promise<void> {
     await this.request<Record<string, never>>('TagQueue', {
       QueueUrl: queueUrl,
-      Tags: tags,
+      Tags: tags
     });
   }
 
   async untagQueue(queueUrl: string, tagKeys: string[]): Promise<void> {
     await this.request<Record<string, never>>('UntagQueue', {
       QueueUrl: queueUrl,
-      TagKeys: tagKeys,
+      TagKeys: tagKeys
     });
   }
 
   async listQueueTags(queueUrl: string): Promise<Record<string, string>> {
     let result = await this.request<{ Tags?: Record<string, string> }>('ListQueueTags', {
-      QueueUrl: queueUrl,
+      QueueUrl: queueUrl
     });
     return result.Tags ?? {};
   }
 
-  async addPermission(queueUrl: string, label: string, awsAccountIds: string[], actions: string[]): Promise<void> {
+  async addPermission(
+    queueUrl: string,
+    label: string,
+    awsAccountIds: string[],
+    actions: string[]
+  ): Promise<void> {
     await this.request<Record<string, never>>('AddPermission', {
       QueueUrl: queueUrl,
       Label: label,
       AWSAccountIds: awsAccountIds,
-      Actions: actions,
+      Actions: actions
     });
   }
 
   async removePermission(queueUrl: string, label: string): Promise<void> {
     await this.request<Record<string, never>>('RemovePermission', {
       QueueUrl: queueUrl,
-      Label: label,
+      Label: label
     });
   }
 
-  async startMessageMoveTask(sourceArn: string, destinationArn?: string, maxNumberOfMessagesPerSecond?: number): Promise<{ taskHandle: string }> {
+  async startMessageMoveTask(
+    sourceArn: string,
+    destinationArn?: string,
+    maxNumberOfMessagesPerSecond?: number
+  ): Promise<{ taskHandle: string }> {
     let body: Record<string, unknown> = {
-      SourceArn: sourceArn,
+      SourceArn: sourceArn
     };
     if (destinationArn) {
       body.DestinationArn = destinationArn;
@@ -384,7 +440,10 @@ export class SqsClient {
     return { taskHandle: result.TaskHandle };
   }
 
-  async listMessageMoveTasks(sourceArn: string, maxResults?: number): Promise<{
+  async listMessageMoveTasks(
+    sourceArn: string,
+    maxResults?: number
+  ): Promise<{
     results: {
       taskHandle?: string;
       status?: string;
@@ -423,19 +482,28 @@ export class SqsClient {
         approximateNumberOfMessagesMoved: r.ApproximateNumberOfMessagesMoved,
         approximateNumberOfMessagesToMove: r.ApproximateNumberOfMessagesToMove,
         startedTimestamp: r.StartedTimestamp,
-        failureReason: r.FailureReason,
-      })),
+        failureReason: r.FailureReason
+      }))
     };
   }
 
-  async cancelMessageMoveTask(taskHandle: string): Promise<{ approximateNumberOfMessagesMoved: number }> {
-    let result = await this.request<{ ApproximateNumberOfMessagesMoved: number }>('CancelMessageMoveTask', {
-      TaskHandle: taskHandle,
-    });
+  async cancelMessageMoveTask(
+    taskHandle: string
+  ): Promise<{ approximateNumberOfMessagesMoved: number }> {
+    let result = await this.request<{ ApproximateNumberOfMessagesMoved: number }>(
+      'CancelMessageMoveTask',
+      {
+        TaskHandle: taskHandle
+      }
+    );
     return { approximateNumberOfMessagesMoved: result.ApproximateNumberOfMessagesMoved };
   }
 
-  async listDeadLetterSourceQueues(queueUrl: string, maxResults?: number, nextToken?: string): Promise<{ queueUrls: string[]; nextToken?: string }> {
+  async listDeadLetterSourceQueues(
+    queueUrl: string,
+    maxResults?: number,
+    nextToken?: string
+  ): Promise<{ queueUrls: string[]; nextToken?: string }> {
     let body: Record<string, unknown> = { QueueUrl: queueUrl };
     if (maxResults !== undefined) {
       body.MaxResults = maxResults;
@@ -444,10 +512,13 @@ export class SqsClient {
       body.NextToken = nextToken;
     }
 
-    let result = await this.request<{ queueUrls?: string[]; NextToken?: string }>('ListDeadLetterSourceQueues', body);
+    let result = await this.request<{ queueUrls?: string[]; NextToken?: string }>(
+      'ListDeadLetterSourceQueues',
+      body
+    );
     return {
       queueUrls: result.queueUrls ?? [],
-      nextToken: result.NextToken,
+      nextToken: result.NextToken
     };
   }
 }

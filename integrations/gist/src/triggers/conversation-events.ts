@@ -2,43 +2,48 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let conversationEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conversation Events',
-    key: 'conversation_events',
-    description: 'Triggers when conversation-related events occur: contact initiated conversation, conversation assigned/opened/closed, conversation rated, message from contact, teammate replied, or note added.',
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    contactId: z.string().optional().describe('Contact ID'),
-    assigneeId: z.string().optional().describe('Assigned teammate ID'),
-    teamId: z.string().optional().describe('Assigned team ID'),
-    messageBody: z.string().optional().describe('Message body if applicable'),
-    messageAuthorId: z.string().optional().describe('Message author ID'),
-    messageAuthorType: z.string().optional().describe('Message author type (contact or teammate)'),
-    rating: z.number().optional().describe('Conversation rating (1-5)'),
-    ratingRemark: z.string().optional().describe('Rating remark text'),
-    raw: z.any().optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    conversationId: z.string().optional().describe('Conversation ID'),
-    contactId: z.string().optional().describe('Contact ID'),
-    assigneeId: z.string().optional().describe('Assigned teammate ID'),
-    teamId: z.string().optional().describe('Assigned team ID'),
-    messageBody: z.string().optional().describe('Message body if applicable'),
-    messageAuthorId: z.string().optional().describe('Message author ID'),
-    messageAuthorType: z.string().optional().describe('Author type'),
-    rating: z.number().optional().describe('Conversation rating (1-5)'),
-    ratingRemark: z.string().optional().describe('Rating remark text'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-  }))
+export let conversationEvents = SlateTrigger.create(spec, {
+  name: 'Conversation Events',
+  key: 'conversation_events',
+  description:
+    'Triggers when conversation-related events occur: contact initiated conversation, conversation assigned/opened/closed, conversation rated, message from contact, teammate replied, or note added.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic'),
+      timestamp: z.string().optional().describe('Event timestamp'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      contactId: z.string().optional().describe('Contact ID'),
+      assigneeId: z.string().optional().describe('Assigned teammate ID'),
+      teamId: z.string().optional().describe('Assigned team ID'),
+      messageBody: z.string().optional().describe('Message body if applicable'),
+      messageAuthorId: z.string().optional().describe('Message author ID'),
+      messageAuthorType: z
+        .string()
+        .optional()
+        .describe('Message author type (contact or teammate)'),
+      rating: z.number().optional().describe('Conversation rating (1-5)'),
+      ratingRemark: z.string().optional().describe('Rating remark text'),
+      raw: z.any().optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string().optional().describe('Conversation ID'),
+      contactId: z.string().optional().describe('Contact ID'),
+      assigneeId: z.string().optional().describe('Assigned teammate ID'),
+      teamId: z.string().optional().describe('Assigned team ID'),
+      messageBody: z.string().optional().describe('Message body if applicable'),
+      messageAuthorId: z.string().optional().describe('Message author ID'),
+      messageAuthorType: z.string().optional().describe('Author type'),
+      rating: z.number().optional().describe('Conversation rating (1-5)'),
+      ratingRemark: z.string().optional().describe('Rating remark text'),
+      timestamp: z.string().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let topic = data.topic || '';
       let conversation = data.conversation || data.data?.conversation || {};
@@ -51,10 +56,14 @@ export let conversationEvents = SlateTrigger.create(
         contactId: conversation.contact_id ? String(conversation.contact_id) : undefined,
         assigneeId: conversation.assignee_id ? String(conversation.assignee_id) : undefined,
         teamId: conversation.team_id ? String(conversation.team_id) : undefined,
-        raw: data,
+        raw: data
       };
 
-      if (topic === 'message.from_contact' || topic === 'teammate.replied' || topic === 'note.added') {
+      if (
+        topic === 'message.from_contact' ||
+        topic === 'teammate.replied' ||
+        topic === 'note.added'
+      ) {
         input.messageBody = message.body;
         input.messageAuthorId = message.author_id ? String(message.author_id) : undefined;
         input.messageAuthorType = message.author_type;
@@ -67,11 +76,11 @@ export let conversationEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [input],
+        inputs: [input]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let topicMap: Record<string, string> = {
         'contact.initiated_conversation': 'conversation.initiated',
         'conversation.assigned': 'conversation.assigned',
@@ -80,7 +89,7 @@ export let conversationEvents = SlateTrigger.create(
         'conversation.rating': 'conversation.rated',
         'message.from_contact': 'conversation.message_from_contact',
         'teammate.replied': 'conversation.teammate_replied',
-        'note.added': 'conversation.note_added',
+        'note.added': 'conversation.note_added'
       };
 
       let type = topicMap[ctx.input.topic] || ctx.input.topic;
@@ -99,8 +108,9 @@ export let conversationEvents = SlateTrigger.create(
           messageAuthorType: ctx.input.messageAuthorType,
           rating: ctx.input.rating,
           ratingRemark: ctx.input.ratingRemark,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

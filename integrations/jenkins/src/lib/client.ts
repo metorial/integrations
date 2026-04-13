@@ -9,7 +9,7 @@ export class JenkinsClient {
     this.axios = createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'Authorization': `Basic ${btoa(`${config.username}:${config.token}`)}`
+        Authorization: `Basic ${btoa(`${config.username}:${config.token}`)}`
       }
     });
   }
@@ -104,7 +104,10 @@ export class JenkinsClient {
 
   // ==================== Builds ====================
 
-  async triggerBuild(jobPath: string, parameters?: Record<string, string>): Promise<{ queueUrl: string | null }> {
+  async triggerBuild(
+    jobPath: string,
+    parameters?: Record<string, string>
+  ): Promise<{ queueUrl: string | null }> {
     let endpoint: string;
     let data: string | undefined;
     let headers: Record<string, string> = {};
@@ -155,7 +158,9 @@ export class JenkinsClient {
 
   async getBuildTestResults(jobPath: string, buildNumber: number | string): Promise<any> {
     try {
-      let response = await this.axios.get(`${this.jobPath(jobPath)}/${buildNumber}/testReport/api/json`);
+      let response = await this.axios.get(
+        `${this.jobPath(jobPath)}/${buildNumber}/testReport/api/json`
+      );
       return response.data;
     } catch {
       return null;
@@ -289,7 +294,11 @@ export class JenkinsClient {
     await this.postWithCrumb(`/computer/${encodeURIComponent(nodeName)}/doDelete`);
   }
 
-  async toggleNodeOffline(nodeName: string, offline: boolean, message?: string): Promise<void> {
+  async toggleNodeOffline(
+    nodeName: string,
+    offline: boolean,
+    message?: string
+  ): Promise<void> {
     let name = nodeName === 'master' || nodeName === '(master)' ? '(master)' : nodeName;
     let endpoint = offline ? 'toggleOffline' : 'toggleOffline';
     await this.postWithCrumb(`/computer/${encodeURIComponent(name)}/${endpoint}`, null, {
@@ -325,7 +334,11 @@ export class JenkinsClient {
     return response.data;
   }
 
-  async getCredential(credentialId: string, domain?: string, folderPath?: string): Promise<any> {
+  async getCredential(
+    credentialId: string,
+    domain?: string,
+    folderPath?: string
+  ): Promise<any> {
     let basePath = folderPath ? this.jobPath(folderPath) : '';
     let domainPath = domain || '_';
     let response = await this.axios.get(
@@ -334,7 +347,11 @@ export class JenkinsClient {
     return response.data;
   }
 
-  async getCredentialConfig(credentialId: string, domain?: string, folderPath?: string): Promise<string> {
+  async getCredentialConfig(
+    credentialId: string,
+    domain?: string,
+    folderPath?: string
+  ): Promise<string> {
     let basePath = folderPath ? this.jobPath(folderPath) : '';
     let domainPath = domain || '_';
     let response = await this.axios.get(
@@ -343,7 +360,11 @@ export class JenkinsClient {
     return response.data;
   }
 
-  async createCredential(xmlConfig: string, domain?: string, folderPath?: string): Promise<void> {
+  async createCredential(
+    xmlConfig: string,
+    domain?: string,
+    folderPath?: string
+  ): Promise<void> {
     let basePath = folderPath ? this.jobPath(folderPath) : '';
     let domainPath = domain || '_';
     await this.postWithCrumb(
@@ -353,7 +374,12 @@ export class JenkinsClient {
     );
   }
 
-  async updateCredential(credentialId: string, xmlConfig: string, domain?: string, folderPath?: string): Promise<void> {
+  async updateCredential(
+    credentialId: string,
+    xmlConfig: string,
+    domain?: string,
+    folderPath?: string
+  ): Promise<void> {
     let basePath = folderPath ? this.jobPath(folderPath) : '';
     let domainPath = domain || '_';
     await this.postWithCrumb(
@@ -363,7 +389,11 @@ export class JenkinsClient {
     );
   }
 
-  async deleteCredential(credentialId: string, domain?: string, folderPath?: string): Promise<void> {
+  async deleteCredential(
+    credentialId: string,
+    domain?: string,
+    folderPath?: string
+  ): Promise<void> {
     let basePath = folderPath ? this.jobPath(folderPath) : '';
     let domainPath = domain || '_';
     await this.postWithCrumb(
@@ -403,7 +433,10 @@ export class JenkinsClient {
     formData.append('name', name);
     formData.append('mode', 'com.cloudbees.hudson.plugins.folder.Folder');
     formData.append('from', '');
-    formData.append('json', JSON.stringify({ name, mode: 'com.cloudbees.hudson.plugins.folder.Folder', from: '' }));
+    formData.append(
+      'json',
+      JSON.stringify({ name, mode: 'com.cloudbees.hudson.plugins.folder.Folder', from: '' })
+    );
     await this.postWithCrumb(`${path}/createItem`, formData.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });

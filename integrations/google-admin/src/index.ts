@@ -23,10 +23,7 @@ import {
   transferData,
   getCustomerInfo
 } from './tools';
-import {
-  userChanges,
-  activityEvents
-} from './triggers';
+import { userChanges, activityEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,8 +50,5 @@ export let provider = Slate.create({
     transferData,
     getCustomerInfo
   ],
-  triggers: [
-    userChanges,
-    activityEvents
-  ]
+  triggers: [userChanges, activityEvents]
 });

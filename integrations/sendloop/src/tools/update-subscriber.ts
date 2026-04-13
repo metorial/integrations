@@ -3,28 +3,36 @@ import { SendloopClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateSubscriber = SlateTool.create(
-  spec,
-  {
-    name: 'Update Subscriber',
-    key: 'update_subscriber',
-    description: `Update a subscriber's custom field values within a specific list. Identify the subscriber by their ID or email address and provide the custom fields to update as a map of field IDs to new values.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateSubscriber = SlateTool.create(spec, {
+  name: 'Update Subscriber',
+  key: 'update_subscriber',
+  description: `Update a subscriber's custom field values within a specific list. Identify the subscriber by their ID or email address and provide the custom fields to update as a map of field IDs to new values.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    listId: z.string().describe('ID of the subscriber list'),
-    subscriberId: z.string().optional().describe('ID of the subscriber to update'),
-    emailAddress: z.string().optional().describe('Email address of the subscriber to update (alternative to subscriberId)'),
-    fields: z.record(z.string(), z.string()).describe('Custom field values to update as a map of field ID to value (e.g., {"11": "Jane", "12": "Smith"})')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      listId: z.string().describe('ID of the subscriber list'),
+      subscriberId: z.string().optional().describe('ID of the subscriber to update'),
+      emailAddress: z
+        .string()
+        .optional()
+        .describe('Email address of the subscriber to update (alternative to subscriberId)'),
+      fields: z
+        .record(z.string(), z.string())
+        .describe(
+          'Custom field values to update as a map of field ID to value (e.g., {"11": "Jane", "12": "Smith"})'
+        )
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SendloopClient({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain

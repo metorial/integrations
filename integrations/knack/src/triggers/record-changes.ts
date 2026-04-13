@@ -3,35 +3,37 @@ import { KnackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Triggers when records are created or updated in a Knack object. Polls the object for records sorted by modification date to detect changes.',
-  }
-)
-  .input(z.object({
-    recordId: z.string().describe('ID of the changed record'),
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    objectKey: z.string().describe('Object key the record belongs to'),
-    fields: z.record(z.string(), z.any()).describe('All field values of the record'),
-    dateCreated: z.string().optional().describe('Record creation timestamp'),
-    dateModified: z.string().optional().describe('Record last modification timestamp'),
-  }))
-  .output(z.object({
-    recordId: z.string().describe('ID of the changed record'),
-    objectKey: z.string().describe('Object key the record belongs to'),
-    fields: z.record(z.string(), z.any()).describe('All field values of the record'),
-    dateCreated: z.string().optional().describe('Record creation timestamp'),
-    dateModified: z.string().optional().describe('Record last modification timestamp'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Triggers when records are created or updated in a Knack object. Polls the object for records sorted by modification date to detect changes.'
+})
+  .input(
+    z.object({
+      recordId: z.string().describe('ID of the changed record'),
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      objectKey: z.string().describe('Object key the record belongs to'),
+      fields: z.record(z.string(), z.any()).describe('All field values of the record'),
+      dateCreated: z.string().optional().describe('Record creation timestamp'),
+      dateModified: z.string().optional().describe('Record last modification timestamp')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('ID of the changed record'),
+      objectKey: z.string().describe('Object key the record belongs to'),
+      fields: z.record(z.string(), z.any()).describe('All field values of the record'),
+      dateCreated: z.string().optional().describe('Record creation timestamp'),
+      dateModified: z.string().optional().describe('Record last modification timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let state = ctx.state as {
         knownRecordIds?: string[];
         lastModifiedTimestamps?: Record<string, string>;
@@ -41,7 +43,7 @@ export let recordChanges = SlateTrigger.create(
       let client = new KnackClient({
         applicationId: ctx.config.applicationId,
         token: ctx.auth.token,
-        authMode: ctx.auth.authMode,
+        authMode: ctx.auth.authMode
       });
 
       // Discover objects from metadata to know which object to poll
@@ -64,7 +66,7 @@ export let recordChanges = SlateTrigger.create(
       let result = await client.listObjectRecords(objectKey, {
         rowsPerPage: 100,
         sortField: 'date_modified' as any,
-        sortOrder: 'desc',
+        sortOrder: 'desc'
       });
 
       let inputs: Array<{
@@ -101,16 +103,19 @@ export let recordChanges = SlateTrigger.create(
             objectKey,
             fields: record,
             dateCreated,
-            dateModified,
+            dateModified
           });
-        } else if (lastModifiedTimestamps[recordId] && lastModifiedTimestamps[recordId] !== dateModified) {
+        } else if (
+          lastModifiedTimestamps[recordId] &&
+          lastModifiedTimestamps[recordId] !== dateModified
+        ) {
           inputs.push({
             recordId,
             changeType: 'updated',
             objectKey,
             fields: record,
             dateCreated,
-            dateModified,
+            dateModified
           });
         }
       }
@@ -120,12 +125,12 @@ export let recordChanges = SlateTrigger.create(
         updatedState: {
           knownRecordIds: newKnownIds,
           lastModifiedTimestamps: newTimestamps,
-          objectKey,
-        },
+          objectKey
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `record.${ctx.input.changeType}`,
         id: `${ctx.input.objectKey}-${ctx.input.recordId}-${ctx.input.dateModified || Date.now()}`,
@@ -134,9 +139,9 @@ export let recordChanges = SlateTrigger.create(
           objectKey: ctx.input.objectKey,
           fields: ctx.input.fields,
           dateCreated: ctx.input.dateCreated,
-          dateModified: ctx.input.dateModified,
-        },
+          dateModified: ctx.input.dateModified
+        }
       };
-    },
+    }
   })
   .build();

@@ -21,7 +21,7 @@ let couponSchema = z.object({
   excludedProductIds: z.array(z.number()),
   productCategories: z.array(z.number()),
   excludedProductCategories: z.array(z.number()),
-  dateCreated: z.string(),
+  dateCreated: z.string()
 });
 
 export let manageCoupons = SlateTool.create(spec, {
@@ -29,46 +29,67 @@ export let manageCoupons = SlateTool.create(spec, {
   key: 'manage_coupons',
   description: `List, get, create, update, or delete discount coupons. Configure discount types (percentage, fixed cart, fixed product), usage limits, product/category restrictions, and expiration.`,
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    couponId: z.number().optional().describe('Coupon ID (required for get/update/delete)'),
-    page: z.number().optional().default(1).describe('Page number for list'),
-    perPage: z.number().optional().default(10).describe('Results per page for list'),
-    search: z.string().optional().describe('Search term for list'),
-    code: z.string().optional().describe('Coupon code (required for create)'),
-    discountType: z.enum(['percent', 'fixed_cart', 'fixed_product']).optional().describe('Discount type'),
-    amount: z.string().optional().describe('Discount amount'),
-    description: z.string().optional().describe('Coupon description'),
-    dateExpires: z.string().optional().describe('Expiration date (ISO 8601)'),
-    individualUse: z.boolean().optional().describe('Whether this coupon can only be used alone'),
-    freeShipping: z.boolean().optional().describe('Whether coupon grants free shipping'),
-    usageLimit: z.number().optional().describe('Total usage limit'),
-    usageLimitPerUser: z.number().optional().describe('Usage limit per customer'),
-    minimumAmount: z.string().optional().describe('Minimum order total required'),
-    maximumAmount: z.string().optional().describe('Maximum order total allowed'),
-    productIds: z.array(z.number()).optional().describe('Product IDs coupon applies to'),
-    excludedProductIds: z.array(z.number()).optional().describe('Product IDs excluded from coupon'),
-    productCategories: z.array(z.number()).optional().describe('Category IDs coupon applies to'),
-    excludedProductCategories: z.array(z.number()).optional().describe('Category IDs excluded from coupon'),
-    excludeSaleItems: z.boolean().optional().describe('Whether to exclude sale items'),
-    force: z.boolean().optional().default(false).describe('Force permanent deletion'),
-  }))
-  .output(z.object({
-    coupons: z.array(couponSchema).optional(),
-    coupon: couponSchema.optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Operation to perform'),
+      couponId: z.number().optional().describe('Coupon ID (required for get/update/delete)'),
+      page: z.number().optional().default(1).describe('Page number for list'),
+      perPage: z.number().optional().default(10).describe('Results per page for list'),
+      search: z.string().optional().describe('Search term for list'),
+      code: z.string().optional().describe('Coupon code (required for create)'),
+      discountType: z
+        .enum(['percent', 'fixed_cart', 'fixed_product'])
+        .optional()
+        .describe('Discount type'),
+      amount: z.string().optional().describe('Discount amount'),
+      description: z.string().optional().describe('Coupon description'),
+      dateExpires: z.string().optional().describe('Expiration date (ISO 8601)'),
+      individualUse: z
+        .boolean()
+        .optional()
+        .describe('Whether this coupon can only be used alone'),
+      freeShipping: z.boolean().optional().describe('Whether coupon grants free shipping'),
+      usageLimit: z.number().optional().describe('Total usage limit'),
+      usageLimitPerUser: z.number().optional().describe('Usage limit per customer'),
+      minimumAmount: z.string().optional().describe('Minimum order total required'),
+      maximumAmount: z.string().optional().describe('Maximum order total allowed'),
+      productIds: z.array(z.number()).optional().describe('Product IDs coupon applies to'),
+      excludedProductIds: z
+        .array(z.number())
+        .optional()
+        .describe('Product IDs excluded from coupon'),
+      productCategories: z
+        .array(z.number())
+        .optional()
+        .describe('Category IDs coupon applies to'),
+      excludedProductCategories: z
+        .array(z.number())
+        .optional()
+        .describe('Category IDs excluded from coupon'),
+      excludeSaleItems: z.boolean().optional().describe('Whether to exclude sale items'),
+      force: z.boolean().optional().default(false).describe('Force permanent deletion')
+    })
+  )
+  .output(
+    z.object({
+      coupons: z.array(couponSchema).optional(),
+      coupon: couponSchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action } = ctx.input;
 
     if (action === 'list') {
       let params: Record<string, any> = {
         page: ctx.input.page,
-        per_page: ctx.input.perPage,
+        per_page: ctx.input.perPage
       };
       if (ctx.input.search) params.search = ctx.input.search;
 
@@ -77,7 +98,7 @@ export let manageCoupons = SlateTool.create(spec, {
 
       return {
         output: { coupons: mapped },
-        message: `Found **${mapped.length}** coupons.`,
+        message: `Found **${mapped.length}** coupons.`
       };
     }
 
@@ -87,7 +108,7 @@ export let manageCoupons = SlateTool.create(spec, {
 
       return {
         output: { coupon: mapCoupon(coupon) },
-        message: `Retrieved coupon **"${coupon.code}"** (ID: ${coupon.id}).`,
+        message: `Retrieved coupon **"${coupon.code}"** (ID: ${coupon.id}).`
       };
     }
 
@@ -101,7 +122,7 @@ export let manageCoupons = SlateTool.create(spec, {
 
       return {
         output: { coupon: mapCoupon(coupon) },
-        message: `Created coupon **"${coupon.code}"** (ID: ${coupon.id}, type: ${coupon.discount_type}, amount: ${coupon.amount}).`,
+        message: `Created coupon **"${coupon.code}"** (ID: ${coupon.id}, type: ${coupon.discount_type}, amount: ${coupon.amount}).`
       };
     }
 
@@ -115,7 +136,7 @@ export let manageCoupons = SlateTool.create(spec, {
 
       return {
         output: { coupon: mapCoupon(coupon) },
-        message: `Updated coupon **"${coupon.code}"** (ID: ${coupon.id}).`,
+        message: `Updated coupon **"${coupon.code}"** (ID: ${coupon.id}).`
       };
     }
 
@@ -126,7 +147,7 @@ export let manageCoupons = SlateTool.create(spec, {
 
       return {
         output: { deleted: true },
-        message: `Deleted coupon (ID: ${ctx.input.couponId}).`,
+        message: `Deleted coupon (ID: ${ctx.input.couponId}).`
       };
     }
 
@@ -144,13 +165,15 @@ let buildCouponData = (input: any) => {
   if (input.individualUse !== undefined) data.individual_use = input.individualUse;
   if (input.freeShipping !== undefined) data.free_shipping = input.freeShipping;
   if (input.usageLimit !== undefined) data.usage_limit = input.usageLimit;
-  if (input.usageLimitPerUser !== undefined) data.usage_limit_per_user = input.usageLimitPerUser;
+  if (input.usageLimitPerUser !== undefined)
+    data.usage_limit_per_user = input.usageLimitPerUser;
   if (input.minimumAmount) data.minimum_amount = input.minimumAmount;
   if (input.maximumAmount) data.maximum_amount = input.maximumAmount;
   if (input.productIds) data.product_ids = input.productIds;
   if (input.excludedProductIds) data.excluded_product_ids = input.excludedProductIds;
   if (input.productCategories) data.product_categories = input.productCategories;
-  if (input.excludedProductCategories) data.excluded_product_categories = input.excludedProductCategories;
+  if (input.excludedProductCategories)
+    data.excluded_product_categories = input.excludedProductCategories;
   if (input.excludeSaleItems !== undefined) data.exclude_sale_items = input.excludeSaleItems;
 
   return data;
@@ -174,5 +197,5 @@ let mapCoupon = (c: any) => ({
   excludedProductIds: c.excluded_product_ids || [],
   productCategories: c.product_categories || [],
   excludedProductCategories: c.excluded_product_categories || [],
-  dateCreated: c.date_created || '',
+  dateCreated: c.date_created || ''
 });

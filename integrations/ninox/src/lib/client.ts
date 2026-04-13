@@ -96,9 +96,9 @@ export class Client {
     return createAxios({
       baseURL: `${this.baseUrl}/v1`,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -146,7 +146,12 @@ export class Client {
 
   // --- Records ---
 
-  async listRecords(teamId: string, databaseId: string, tableId: string, params?: ListRecordsParams): Promise<NinoxRecord[]> {
+  async listRecords(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    params?: ListRecordsParams
+  ): Promise<NinoxRecord[]> {
     let ax = this.createAxios();
     let queryParams: Record<string, any> = {};
 
@@ -164,79 +169,157 @@ export class Client {
       if (params.filters !== undefined) queryParams.filters = JSON.stringify(params.filters);
     }
 
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`, { params: queryParams });
+    let response = await ax.get(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
-  async getRecord(teamId: string, databaseId: string, tableId: string, recordId: number, params?: { choiceStyle?: 'ids' | 'names'; ids?: boolean }): Promise<NinoxRecord> {
+  async getRecord(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordId: number,
+    params?: { choiceStyle?: 'ids' | 'names'; ids?: boolean }
+  ): Promise<NinoxRecord> {
     let ax = this.createAxios();
     let queryParams: Record<string, any> = {};
     if (params?.choiceStyle) queryParams.choiceStyle = params.choiceStyle;
     if (params?.ids) queryParams.ids = params.ids;
 
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}`, { params: queryParams });
+    let response = await ax.get(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}`,
+      { params: queryParams }
+    );
     return response.data;
   }
 
-  async createRecords(teamId: string, databaseId: string, tableId: string, records: Array<{ fields: Record<string, any> }>): Promise<NinoxRecord[]> {
+  async createRecords(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    records: Array<{ fields: Record<string, any> }>
+  ): Promise<NinoxRecord[]> {
     let ax = this.createAxios();
-    let response = await ax.post(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`, records);
+    let response = await ax.post(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`,
+      records
+    );
     return response.data;
   }
 
-  async updateRecord(teamId: string, databaseId: string, tableId: string, recordId: number, fields: Record<string, any>): Promise<NinoxRecord> {
+  async updateRecord(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordId: number,
+    fields: Record<string, any>
+  ): Promise<NinoxRecord> {
     let ax = this.createAxios();
-    let response = await ax.put(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}`, { fields });
+    let response = await ax.put(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}`,
+      { fields }
+    );
     return response.data;
   }
 
-  async upsertRecords(teamId: string, databaseId: string, tableId: string, records: Array<Record<string, any>>): Promise<any[]> {
+  async upsertRecords(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    records: Array<Record<string, any>>
+  ): Promise<any[]> {
     let ax = this.createAxios();
-    let response = await ax.post(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`, records);
+    let response = await ax.post(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`,
+      records
+    );
     return response.data;
   }
 
-  async deleteRecord(teamId: string, databaseId: string, tableId: string, recordId: number): Promise<void> {
+  async deleteRecord(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordId: number
+  ): Promise<void> {
     let ax = this.createAxios();
-    await ax.delete(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}`);
+    await ax.delete(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}`
+    );
   }
 
-  async deleteRecords(teamId: string, databaseId: string, tableId: string, recordIds: number[]): Promise<void> {
+  async deleteRecords(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordIds: number[]
+  ): Promise<void> {
     let ax = this.createAxios();
-    await ax.delete(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`, { data: recordIds });
+    await ax.delete(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records`, {
+      data: recordIds
+    });
   }
 
   // --- Query & Exec ---
 
   async query(teamId: string, databaseId: string, queryStr: string): Promise<any> {
     let ax = this.createAxios();
-    let response = await ax.post(`/teams/${teamId}/databases/${databaseId}/query`, { query: queryStr });
+    let response = await ax.post(`/teams/${teamId}/databases/${databaseId}/query`, {
+      query: queryStr
+    });
     return response.data;
   }
 
   async exec(teamId: string, databaseId: string, queryStr: string): Promise<any> {
     let ax = this.createAxios();
-    let response = await ax.post(`/teams/${teamId}/databases/${databaseId}/exec`, { query: queryStr });
+    let response = await ax.post(`/teams/${teamId}/databases/${databaseId}/exec`, {
+      query: queryStr
+    });
     return response.data;
   }
 
   // --- Files ---
 
-  async listFiles(teamId: string, databaseId: string, tableId: string, recordId: number): Promise<NinoxFileMetadata[]> {
+  async listFiles(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordId: number
+  ): Promise<NinoxFileMetadata[]> {
     let ax = this.createAxios();
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}/files`);
+    let response = await ax.get(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}/files`
+    );
     return response.data;
   }
 
-  async getFileMetadata(teamId: string, databaseId: string, tableId: string, recordId: number, fileName: string): Promise<NinoxFileMetadata> {
+  async getFileMetadata(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordId: number,
+    fileName: string
+  ): Promise<NinoxFileMetadata> {
     let ax = this.createAxios();
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}/files/${encodeURIComponent(fileName)}/metadata`);
+    let response = await ax.get(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}/files/${encodeURIComponent(fileName)}/metadata`
+    );
     return response.data;
   }
 
-  async deleteFile(teamId: string, databaseId: string, tableId: string, recordId: number, fileName: string): Promise<void> {
+  async deleteFile(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    recordId: number,
+    fileName: string
+  ): Promise<void> {
     let ax = this.createAxios();
-    await ax.delete(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}/files/${encodeURIComponent(fileName)}`);
+    await ax.delete(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/records/${recordId}/files/${encodeURIComponent(fileName)}`
+    );
   }
 
   // --- Views ---
@@ -247,23 +330,43 @@ export class Client {
     return response.data;
   }
 
-  async listTableViews(teamId: string, databaseId: string, tableId: string): Promise<NinoxView[]> {
+  async listTableViews(
+    teamId: string,
+    databaseId: string,
+    tableId: string
+  ): Promise<NinoxView[]> {
     let ax = this.createAxios();
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/views`);
+    let response = await ax.get(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/views`
+    );
     return response.data;
   }
 
   // --- Changes ---
 
-  async getDatabaseChanges(teamId: string, databaseId: string, sinceSq: number): Promise<NinoxChanges> {
+  async getDatabaseChanges(
+    teamId: string,
+    databaseId: string,
+    sinceSq: number
+  ): Promise<NinoxChanges> {
     let ax = this.createAxios();
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/changes`, { params: { sinceSq } });
+    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/changes`, {
+      params: { sinceSq }
+    });
     return response.data;
   }
 
-  async getTableChanges(teamId: string, databaseId: string, tableId: string, sinceSq: number): Promise<NinoxChanges> {
+  async getTableChanges(
+    teamId: string,
+    databaseId: string,
+    tableId: string,
+    sinceSq: number
+  ): Promise<NinoxChanges> {
     let ax = this.createAxios();
-    let response = await ax.get(`/teams/${teamId}/databases/${databaseId}/tables/${tableId}/changes`, { params: { sinceSq } });
+    let response = await ax.get(
+      `/teams/${teamId}/databases/${databaseId}/tables/${tableId}/changes`,
+      { params: { sinceSq } }
+    );
     return response.data;
   }
 }

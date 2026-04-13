@@ -12,15 +12,15 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     this.webhooksApi = createAxios({
       baseURL: WEBHOOKS_BASE_URL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -61,11 +61,7 @@ export class Client {
     return response.data;
   }
 
-  async searchJobs(data: {
-    query?: string;
-    pageSize?: number;
-    pageStartIndex?: number;
-  }) {
+  async searchJobs(data: { query?: string; pageSize?: number; pageStartIndex?: number }) {
     let response = await this.api.post('/jobs/search', data);
     return response.data;
   }
@@ -130,7 +126,15 @@ export class Client {
     return response.data;
   }
 
-  async setJobInsurance(jobId: string, data: { insuranceCompanyId: string; claimNumber?: string; policyNumber?: string; dateOfLoss?: string }) {
+  async setJobInsurance(
+    jobId: string,
+    data: {
+      insuranceCompanyId: string;
+      claimNumber?: string;
+      policyNumber?: string;
+      dateOfLoss?: string;
+    }
+  ) {
     let response = await this.api.put(`/jobs/${jobId}/insurance`, data);
     return response.data;
   }
@@ -154,10 +158,7 @@ export class Client {
 
   // --- Contacts ---
 
-  async getContacts(params?: {
-    pageSize?: number;
-    pageStartIndex?: number;
-  }) {
+  async getContacts(params?: { pageSize?: number; pageStartIndex?: number }) {
     let response = await this.api.get('/contacts', { params });
     return response.data;
   }
@@ -186,11 +187,7 @@ export class Client {
     return response.data;
   }
 
-  async searchContacts(data: {
-    query?: string;
-    pageSize?: number;
-    pageStartIndex?: number;
-  }) {
+  async searchContacts(data: { query?: string; pageSize?: number; pageStartIndex?: number }) {
     let response = await this.api.post('/contacts/search', data);
     return response.data;
   }
@@ -210,21 +207,21 @@ export class Client {
     return response.data;
   }
 
-  async createContactLog(contactId: string, data: {
-    type?: string;
-    date?: string;
-    description?: string;
-  }) {
+  async createContactLog(
+    contactId: string,
+    data: {
+      type?: string;
+      date?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/contacts/${contactId}/logs`, data);
     return response.data;
   }
 
   // --- Estimates ---
 
-  async getEstimates(params?: {
-    pageSize?: number;
-    pageStartIndex?: number;
-  }) {
+  async getEstimates(params?: { pageSize?: number; pageStartIndex?: number }) {
     let response = await this.api.get('/estimates', { params });
     return response.data;
   }
@@ -283,8 +280,15 @@ export class Client {
     return response.data;
   }
 
-  async createWorksheetItem(financialId: string, worksheetId: string, data: Record<string, any>) {
-    let response = await this.api.post(`/financials/${financialId}/worksheets/${worksheetId}/items`, data);
+  async createWorksheetItem(
+    financialId: string,
+    worksheetId: string,
+    data: Record<string, any>
+  ) {
+    let response = await this.api.post(
+      `/financials/${financialId}/worksheets/${worksheetId}/items`,
+      data
+    );
     return response.data;
   }
 
@@ -337,36 +341,45 @@ export class Client {
     return response.data;
   }
 
-  async createReceivedPayment(jobId: string, data: {
-    amount: number;
-    date?: string;
-    paymentMethod?: string;
-    referenceNumber?: string;
-    accountTypeId?: string;
-    description?: string;
-  }) {
+  async createReceivedPayment(
+    jobId: string,
+    data: {
+      amount: number;
+      date?: string;
+      paymentMethod?: string;
+      referenceNumber?: string;
+      accountTypeId?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/payments/received`, data);
     return response.data;
   }
 
-  async createPaidPayment(jobId: string, data: {
-    amount: number;
-    date?: string;
-    paymentMethod?: string;
-    referenceNumber?: string;
-    accountTypeId?: string;
-    description?: string;
-  }) {
+  async createPaidPayment(
+    jobId: string,
+    data: {
+      amount: number;
+      date?: string;
+      paymentMethod?: string;
+      referenceNumber?: string;
+      accountTypeId?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/payments/paid`, data);
     return response.data;
   }
 
-  async createAdditionalExpense(jobId: string, data: {
-    amount: number;
-    date?: string;
-    description?: string;
-    accountTypeId?: string;
-  }) {
+  async createAdditionalExpense(
+    jobId: string,
+    data: {
+      amount: number;
+      date?: string;
+      description?: string;
+      accountTypeId?: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/payments/additional-expenses`, data);
     return response.data;
   }
@@ -378,18 +391,23 @@ export class Client {
     return response.data;
   }
 
-  async getAppointments(calendarId: string, params?: {
-    startDate?: string;
-    endDate?: string;
-    pageSize?: number;
-    pageStartIndex?: number;
-  }) {
+  async getAppointments(
+    calendarId: string,
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      pageSize?: number;
+      pageStartIndex?: number;
+    }
+  ) {
     let response = await this.api.get(`/calendars/${calendarId}/appointments`, { params });
     return response.data;
   }
 
   async getAppointment(calendarId: string, appointmentId: string) {
-    let response = await this.api.get(`/calendars/${calendarId}/appointments/${appointmentId}`);
+    let response = await this.api.get(
+      `/calendars/${calendarId}/appointments/${appointmentId}`
+    );
     return response.data;
   }
 
@@ -398,12 +416,15 @@ export class Client {
     return response.data;
   }
 
-  async setJobInitialAppointment(jobId: string, data: {
-    startDateTime?: string;
-    endDateTime?: string;
-    calendarId?: string;
-    description?: string;
-  }) {
+  async setJobInitialAppointment(
+    jobId: string,
+    data: {
+      startDateTime?: string;
+      endDateTime?: string;
+      calendarId?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.put(`/jobs/${jobId}/appointments/initial`, data);
     return response.data;
   }
@@ -422,39 +443,52 @@ export class Client {
 
   // --- Documents & Media ---
 
-  async uploadDocument(jobId: string, data: {
-    fileName: string;
-    fileContent: string;
-    folderId?: string;
-    description?: string;
-  }) {
+  async uploadDocument(
+    jobId: string,
+    data: {
+      fileName: string;
+      fileContent: string;
+      folderId?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/documents`, data);
     return response.data;
   }
 
-  async uploadPhotoVideo(jobId: string, data: {
-    fileName: string;
-    fileContent: string;
-    tagId?: string;
-    description?: string;
-  }) {
+  async uploadPhotoVideo(
+    jobId: string,
+    data: {
+      fileName: string;
+      fileContent: string;
+      tagId?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/photos-videos`, data);
     return response.data;
   }
 
   // --- Messages ---
 
-  async createJobMessage(jobId: string, data: {
-    subject?: string;
-    body: string;
-  }) {
+  async createJobMessage(
+    jobId: string,
+    data: {
+      subject?: string;
+      body: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/messages`, data);
     return response.data;
   }
 
-  async replyToJobMessage(jobId: string, messageId: string, data: {
-    body: string;
-  }) {
+  async replyToJobMessage(
+    jobId: string,
+    messageId: string,
+    data: {
+      body: string;
+    }
+  ) {
     let response = await this.api.post(`/jobs/${jobId}/messages/${messageId}/replies`, data);
     return response.data;
   }
@@ -479,7 +513,9 @@ export class Client {
   }
 
   async getInsuranceCompanies() {
-    let response = await this.api.get('/company-settings/job-file-settings/insurance-companies');
+    let response = await this.api.get(
+      '/company-settings/job-file-settings/insurance-companies'
+    );
     return response.data;
   }
 
@@ -524,7 +560,9 @@ export class Client {
   }
 
   async getLocationStates(countryId: string) {
-    let response = await this.api.get(`/company-settings/location-settings/countries/${countryId}/states`);
+    let response = await this.api.get(
+      `/company-settings/location-settings/countries/${countryId}/states`
+    );
     return response.data;
   }
 
@@ -605,10 +643,13 @@ export class Client {
     return response.data;
   }
 
-  async updateSubscription(subscriptionId: string, data: {
-    techContact?: string;
-    topicNames?: string[];
-  }) {
+  async updateSubscription(
+    subscriptionId: string,
+    data: {
+      techContact?: string;
+      topicNames?: string[];
+    }
+  ) {
     let response = await this.webhooksApi.put(`/subscriptions/${subscriptionId}`, data);
     return response.data;
   }

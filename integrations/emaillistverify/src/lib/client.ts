@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://apps.emaillistverify.com/api',
+  baseURL: 'https://apps.emaillistverify.com/api'
 });
 
 export interface VerifyEmailResult {
@@ -40,21 +40,20 @@ export interface BulkFileStatus {
 }
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   async verifyEmail(email: string, timeout?: number): Promise<VerifyEmailResult> {
     let params: Record<string, string | number> = {
       secret: this.config.token,
-      email,
+      email
     };
     if (timeout !== undefined) {
       params.timeout = timeout;
     }
 
     let response = await http.get('/verifyEmail', { params });
-    let status = typeof response.data === 'string' ? response.data.trim() : String(response.data).trim();
+    let status =
+      typeof response.data === 'string' ? response.data.trim() : String(response.data).trim();
 
     return { status };
   }
@@ -62,7 +61,7 @@ export class Client {
   async verifyEmailDetailed(email: string, timeout?: number): Promise<EnrichEmailResult> {
     let params: Record<string, string | number> = {
       secret: this.config.token,
-      email,
+      email
     };
     if (timeout !== undefined) {
       params.timeout = timeout;
@@ -82,7 +81,7 @@ export class Client {
           gender: null,
           esp: null,
           free: null,
-          noreply: null,
+          noreply: null
         };
       }
     }
@@ -94,7 +93,7 @@ export class Client {
       gender: data.gender ?? null,
       esp: data.esp ?? data.ESP ?? null,
       free: data.free ?? null,
-      noreply: data.noreply ?? data.no_reply ?? null,
+      noreply: data.noreply ?? data.no_reply ?? null
     };
   }
 
@@ -108,8 +107,8 @@ export class Client {
         secret: this.config.token,
         first_name: params.firstName,
         last_name: params.lastName,
-        domain: params.domain,
-      },
+        domain: params.domain
+      }
     });
 
     let data = response.data;
@@ -127,7 +126,7 @@ export class Client {
 
     return data.map((item: any) => ({
       email: item.email ?? '',
-      confidence: item.confidence ?? 'unknown',
+      confidence: item.confidence ?? 'unknown'
     }));
   }
 
@@ -135,8 +134,8 @@ export class Client {
     let response = await http.post('/find-contact', null, {
       params: {
         secret: this.config.token,
-        domain,
-      },
+        domain
+      }
     });
 
     let data = response.data;
@@ -154,7 +153,7 @@ export class Client {
 
     return data.map((item: any) => ({
       email: item.email ?? '',
-      confidence: item.confidence ?? 'unknown',
+      confidence: item.confidence ?? 'unknown'
     }));
   }
 
@@ -166,14 +165,15 @@ export class Client {
     let response = await http.post('/verifApiFile', formData, {
       params: {
         secret: this.config.token,
-        filename,
+        filename
       },
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
-    let data = typeof response.data === 'string' ? response.data.trim() : String(response.data).trim();
+    let data =
+      typeof response.data === 'string' ? response.data.trim() : String(response.data).trim();
 
     if (data === 'no_credit') {
       throw new Error('Account balance is zero. Please add credits to continue.');
@@ -195,11 +195,12 @@ export class Client {
     let response = await http.get('/getApiFileInfo', {
       params: {
         secret: this.config.token,
-        id: fileId,
-      },
+        id: fileId
+      }
     });
 
-    let data = typeof response.data === 'string' ? response.data.trim() : String(response.data).trim();
+    let data =
+      typeof response.data === 'string' ? response.data.trim() : String(response.data).trim();
 
     if (data === 'error_file_not_exists') {
       throw new Error('File does not exist under your account.');
@@ -222,7 +223,7 @@ export class Client {
       status: parts[5] ?? 'unknown',
       timestamp: parts[6] ?? '',
       linkAll: parts[7] ?? '',
-      linkOk: parts[8] ?? '',
+      linkOk: parts[8] ?? ''
     };
   }
 }

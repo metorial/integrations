@@ -3,21 +3,18 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fillOrderTool = SlateTool.create(
-  spec,
-  {
-    name: 'Fill Order',
-    key: 'fill_order',
-    description: `Submit buyer details, attendee information, and answers to custom registration questions for an existing checkout session. This is the second step in the checkout flow after "Create Checkout" and before "Confirm Checkout".`,
-    instructions: [
-      'Use ticket price IDs from the "Create Checkout" response.',
-      'Question IDs come from the "Prepare Checkout" response.',
-    ],
-    tags: {
-      destructive: false,
-    },
-  },
-)
+export let fillOrderTool = SlateTool.create(spec, {
+  name: 'Fill Order',
+  key: 'fill_order',
+  description: `Submit buyer details, attendee information, and answers to custom registration questions for an existing checkout session. This is the second step in the checkout flow after "Create Checkout" and before "Confirm Checkout".`,
+  instructions: [
+    'Use ticket price IDs from the "Create Checkout" response.',
+    'Question IDs come from the "Prepare Checkout" response.'
+  ],
+  tags: {
+    destructive: false
+  }
+})
   .input(
     z.object({
       eventId: z.number().describe('The event ID'),
@@ -37,16 +34,16 @@ export let fillOrderTool = SlateTool.create(
               .array(
                 z.object({
                   questionId: z.number().describe('Question ID'),
-                  answerText: z.string().describe('Answer text'),
-                }),
+                  answerText: z.string().describe('Answer text')
+                })
               )
               .optional()
-              .describe('Answers to custom registration questions'),
-          }),
+              .describe('Answers to custom registration questions')
+          })
         )
         .describe('Attendee details for each ticket'),
-      paymentId: z.number().describe('Payment option ID from "Prepare Checkout"'),
-    }),
+      paymentId: z.number().describe('Payment option ID from "Prepare Checkout"')
+    })
   )
   .output(
     z.object({
@@ -57,10 +54,10 @@ export let fillOrderTool = SlateTool.create(
       transactionDiscount: z.number().optional().describe('Discount amount'),
       transactionStatus: z.string().optional().describe('Transaction status'),
       eventzillaFee: z.number().optional().describe('Service fee'),
-      currency: z.string().optional().describe('Currency symbol'),
-    }),
+      currency: z.string().optional().describe('Currency symbol')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.fillOrder({
@@ -70,10 +67,10 @@ export let fillOrderTool = SlateTool.create(
       buyerDetails: {
         firstName: ctx.input.buyerFirstName,
         lastName: ctx.input.buyerLastName,
-        email: ctx.input.buyerEmail,
+        email: ctx.input.buyerEmail
       },
       tickets: ctx.input.tickets,
-      paymentId: ctx.input.paymentId,
+      paymentId: ctx.input.paymentId
     });
 
     return {
@@ -85,8 +82,9 @@ export let fillOrderTool = SlateTool.create(
         transactionDiscount: data.transaction_discount,
         transactionStatus: data.transaction_status,
         eventzillaFee: data.eventzilla_fee,
-        currency: data.currency,
+        currency: data.currency
       },
-      message: `Order filled for checkout **${data.checkout_id}**. Status: ${data.transaction_status}. Use "Confirm Checkout" to finalize.`,
+      message: `Order filled for checkout **${data.checkout_id}**. Status: ${data.transaction_status}. Use "Confirm Checkout" to finalize.`
     };
-  }).build();
+  })
+  .build();

@@ -105,9 +105,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${config.region}.recall.ai/api/v1`,
       headers: {
-        'Authorization': `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -125,7 +125,7 @@ export class Client {
     autoRecordOnJoin?: boolean;
   }): Promise<Bot> {
     let body: Record<string, unknown> = {
-      meeting_url: params.meetingUrl,
+      meeting_url: params.meetingUrl
     };
     if (params.botName) body.bot_name = params.botName;
     if (params.joinAt) body.join_at = params.joinAt;
@@ -134,7 +134,8 @@ export class Client {
     if (params.chatMessages) body.chat_messages = params.chatMessages;
     if (params.metadata) body.metadata = params.metadata;
     if (params.automaticLeave) body.automatic_leave = params.automaticLeave;
-    if (params.autoRecordOnJoin !== undefined) body.auto_record_on_join = params.autoRecordOnJoin;
+    if (params.autoRecordOnJoin !== undefined)
+      body.auto_record_on_join = params.autoRecordOnJoin;
 
     let response = await this.axios.post('/bot/', body);
     return this.mapBot(response.data);
@@ -163,7 +164,7 @@ export class Client {
       count: response.data.count,
       next: response.data.next,
       previous: response.data.previous,
-      results: response.data.results.map((bot: Record<string, unknown>) => this.mapBot(bot)),
+      results: response.data.results.map((bot: Record<string, unknown>) => this.mapBot(bot))
     };
   }
 
@@ -172,15 +173,18 @@ export class Client {
     return this.mapBot(response.data);
   }
 
-  async updateBot(botId: string, params: {
-    meetingUrl?: string;
-    botName?: string;
-    joinAt?: string;
-    recordingConfig?: Record<string, unknown>;
-    transcriptionOptions?: Record<string, unknown>;
-    metadata?: Record<string, unknown>;
-    automaticLeave?: Record<string, unknown>;
-  }): Promise<Bot> {
+  async updateBot(
+    botId: string,
+    params: {
+      meetingUrl?: string;
+      botName?: string;
+      joinAt?: string;
+      recordingConfig?: Record<string, unknown>;
+      transcriptionOptions?: Record<string, unknown>;
+      metadata?: Record<string, unknown>;
+      automaticLeave?: Record<string, unknown>;
+    }
+  ): Promise<Bot> {
     let body: Record<string, unknown> = {};
     if (params.meetingUrl) body.meeting_url = params.meetingUrl;
     if (params.botName) body.bot_name = params.botName;
@@ -206,7 +210,7 @@ export class Client {
 
   async getBotTranscript(botId: string): Promise<TranscriptEntry[]> {
     let response = await this.axios.get(`/bot/${botId}/transcript/`);
-    let entries = Array.isArray(response.data) ? response.data : (response.data.results || []);
+    let entries = Array.isArray(response.data) ? response.data : response.data.results || [];
     return entries.map((entry: Record<string, unknown>) => this.mapTranscriptEntry(entry));
   }
 
@@ -218,13 +222,16 @@ export class Client {
 
   // ---- Output Media ----
 
-  async outputMedia(botId: string, params: {
-    kind: string;
-    data: Record<string, unknown>;
-  }): Promise<Record<string, unknown>> {
+  async outputMedia(
+    botId: string,
+    params: {
+      kind: string;
+      data: Record<string, unknown>;
+    }
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/bot/${botId}/output_media/`, {
       kind: params.kind,
-      data: params.data,
+      data: params.data
     });
     return response.data;
   }
@@ -237,7 +244,7 @@ export class Client {
   }): Promise<Calendar> {
     let response = await this.axios.post('/calendars/', {
       platform: params.platform,
-      oauth_token: params.oauthToken,
+      oauth_token: params.oauthToken
     });
     return this.mapCalendar(response.data);
   }
@@ -255,7 +262,9 @@ export class Client {
       count: response.data.count,
       next: response.data.next,
       previous: response.data.previous,
-      results: response.data.results.map((cal: Record<string, unknown>) => this.mapCalendar(cal)),
+      results: response.data.results.map((cal: Record<string, unknown>) =>
+        this.mapCalendar(cal)
+      )
     };
   }
 
@@ -291,7 +300,9 @@ export class Client {
       count: response.data.count,
       next: response.data.next,
       previous: response.data.previous,
-      results: response.data.results.map((evt: Record<string, unknown>) => this.mapCalendarEvent(evt)),
+      results: response.data.results.map((evt: Record<string, unknown>) =>
+        this.mapCalendarEvent(evt)
+      )
     };
   }
 
@@ -300,9 +311,12 @@ export class Client {
     return this.mapCalendarEvent(response.data);
   }
 
-  async scheduleBotForCalendarEvent(eventId: string, params?: {
-    botConfig?: Record<string, unknown>;
-  }): Promise<Record<string, unknown>> {
+  async scheduleBotForCalendarEvent(
+    eventId: string,
+    params?: {
+      botConfig?: Record<string, unknown>;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
     if (params?.botConfig) body.bot_config = params.botConfig;
 
@@ -331,7 +345,9 @@ export class Client {
       count: response.data.count,
       next: response.data.next,
       previous: response.data.previous,
-      results: response.data.results.map((rec: Record<string, unknown>) => this.mapRecording(rec)),
+      results: response.data.results.map((rec: Record<string, unknown>) =>
+        this.mapRecording(rec)
+      )
     };
   }
 
@@ -344,7 +360,9 @@ export class Client {
 
   private mapBot(data: Record<string, unknown>): Bot {
     let statusChanges = Array.isArray(data.status_changes) ? data.status_changes : [];
-    let meetingParticipants = Array.isArray(data.meeting_participants) ? data.meeting_participants : [];
+    let meetingParticipants = Array.isArray(data.meeting_participants)
+      ? data.meeting_participants
+      : [];
 
     return {
       id: String(data.id || ''),
@@ -356,21 +374,23 @@ export class Client {
         code: String(sc.code || ''),
         message: sc.message ? String(sc.message) : null,
         createdAt: String(sc.created_at || ''),
-        subCode: sc.sub_code ? String(sc.sub_code) : null,
+        subCode: sc.sub_code ? String(sc.sub_code) : null
       })),
       meetingParticipants: meetingParticipants.map((mp: Record<string, unknown>) => ({
         participantId: Number(mp.id || mp.participant_id || 0),
         name: String(mp.name || ''),
-        events: Array.isArray(mp.events) ? mp.events.map((e: Record<string, unknown>) => ({
-          code: String(e.code || ''),
-          createdAt: String(e.created_at || ''),
-        })) : [],
+        events: Array.isArray(mp.events)
+          ? mp.events.map((e: Record<string, unknown>) => ({
+              code: String(e.code || ''),
+              createdAt: String(e.created_at || '')
+            }))
+          : []
       })),
       meetingMetadata: (data.meeting_metadata as Record<string, unknown>) || null,
       videoUrl: data.video_url ? String(data.video_url) : null,
       recordingConfig: (data.recording_config as Record<string, unknown>) || null,
       createdAt: String(data.created_at || ''),
-      mediaRetentionEnd: data.media_retention_end ? String(data.media_retention_end) : null,
+      mediaRetentionEnd: data.media_retention_end ? String(data.media_retention_end) : null
     };
   }
 
@@ -383,10 +403,11 @@ export class Client {
       words: words.map((w: Record<string, unknown>) => ({
         text: String(w.text || ''),
         startTime: Number(w.start_time || 0),
-        endTime: Number(w.end_time || 0),
+        endTime: Number(w.end_time || 0)
       })),
       language: data.language ? String(data.language) : null,
-      original_transcript_id: data.original_transcript_id != null ? Number(data.original_transcript_id) : null,
+      original_transcript_id:
+        data.original_transcript_id != null ? Number(data.original_transcript_id) : null
     };
   }
 
@@ -399,9 +420,9 @@ export class Client {
       status: String(data.status || ''),
       statusChanges: statusChanges.map((sc: Record<string, unknown>) => ({
         code: String(sc.code || ''),
-        createdAt: String(sc.created_at || ''),
+        createdAt: String(sc.created_at || '')
       })),
-      createdAt: String(data.created_at || ''),
+      createdAt: String(data.created_at || '')
     };
   }
 
@@ -417,7 +438,7 @@ export class Client {
       isDeleted: Boolean(data.is_deleted),
       raw: (data.raw as Record<string, unknown>) || {},
       updatedAt: String(data.updated_at || ''),
-      createdAt: String(data.created_at || ''),
+      createdAt: String(data.created_at || '')
     };
   }
 
@@ -431,9 +452,9 @@ export class Client {
         id: String(mo.id || ''),
         status: String(mo.status || ''),
         url: mo.url ? String(mo.url) : null,
-        createdAt: String(mo.created_at || ''),
+        createdAt: String(mo.created_at || '')
       })),
-      createdAt: String(data.created_at || ''),
+      createdAt: String(data.created_at || '')
     };
   }
 }

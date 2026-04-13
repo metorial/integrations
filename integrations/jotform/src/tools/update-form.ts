@@ -38,7 +38,7 @@ export let updateFormTool = SlateTool.create(spec, {
       questionDeleted: z.boolean().describe('Whether a question was deleted')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain
@@ -75,9 +75,10 @@ export let updateFormTool = SlateTool.create(spec, {
         questionAdded,
         questionDeleted
       },
-      message: actions.length > 0
-        ? `Form ${ctx.input.formId}: ${actions.join(', ')}.`
-        : `No changes made to form ${ctx.input.formId}.`
+      message:
+        actions.length > 0
+          ? `Form ${ctx.input.formId}: ${actions.join(', ')}.`
+          : `No changes made to form ${ctx.input.formId}.`
     };
   })
   .build();

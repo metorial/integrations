@@ -52,7 +52,5 @@ export let provider = Slate.create({
     getServerInfo,
     listFiredAlerts
   ],
-  triggers: [
-    alertFired
-  ]
+  triggers: [alertFired]
 });

@@ -6,7 +6,16 @@ export interface KrakenAuth {
 export interface KrakenResizeOptions {
   width?: number;
   height?: number;
-  strategy: 'exact' | 'portrait' | 'landscape' | 'auto' | 'crop' | 'square' | 'fit' | 'fill' | 'none';
+  strategy:
+    | 'exact'
+    | 'portrait'
+    | 'landscape'
+    | 'auto'
+    | 'crop'
+    | 'square'
+    | 'fit'
+    | 'fill'
+    | 'none';
   enhance?: boolean;
   crop_mode?: string;
   background?: string;

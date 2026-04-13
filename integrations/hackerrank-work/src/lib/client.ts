@@ -27,12 +27,12 @@ export class Client {
       baseURL: BASE_URL,
       auth: {
         username: params.token,
-        password: '',
+        password: ''
       },
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -43,8 +43,8 @@ export class Client {
       params: {
         limit: params?.limit ?? 100,
         offset: params?.offset ?? 0,
-        ...(params?.fields ? { fields: params.fields } : {}),
-      },
+        ...(params?.fields ? { fields: params.fields } : {})
+      }
     });
     return response.data;
   }
@@ -89,13 +89,16 @@ export class Client {
   // ---- Candidates ----
 
   async listCandidates(testId: string, params?: PaginationParams & { fields?: string }) {
-    let response = await this.axios.get<PaginatedResponse<any>>(`/tests/${testId}/candidates`, {
-      params: {
-        limit: params?.limit ?? 100,
-        offset: params?.offset ?? 0,
-        ...(params?.fields ? { fields: params.fields } : {}),
-      },
-    });
+    let response = await this.axios.get<PaginatedResponse<any>>(
+      `/tests/${testId}/candidates`,
+      {
+        params: {
+          limit: params?.limit ?? 100,
+          offset: params?.offset ?? 0,
+          ...(params?.fields ? { fields: params.fields } : {})
+        }
+      }
+    );
     return response.data;
   }
 
@@ -104,27 +107,36 @@ export class Client {
     return response.data;
   }
 
-  async inviteCandidate(testId: string, data: {
-    email: string;
-    full_name?: string;
-    force?: boolean;
-    send_email?: boolean;
-    tags?: string[];
-    accommodate?: Record<string, any>;
-  }) {
+  async inviteCandidate(
+    testId: string,
+    data: {
+      email: string;
+      full_name?: string;
+      force?: boolean;
+      send_email?: boolean;
+      tags?: string[];
+      accommodate?: Record<string, any>;
+    }
+  ) {
     let response = await this.axios.post<any>(`/tests/${testId}/candidates`, data);
     return response.data;
   }
 
   async updateCandidate(testId: string, candidateId: string, data: Record<string, any>) {
-    let response = await this.axios.put<any>(`/tests/${testId}/candidates/${candidateId}`, data);
+    let response = await this.axios.put<any>(
+      `/tests/${testId}/candidates/${candidateId}`,
+      data
+    );
     return response.data;
   }
 
   async getCandidateReportUrl(testId: string, candidateId: string) {
-    let response = await this.axios.get<any>(`/tests/${testId}/candidates/${candidateId}/pdf`, {
-      params: { format: 'url' },
-    });
+    let response = await this.axios.get<any>(
+      `/tests/${testId}/candidates/${candidateId}/pdf`,
+      {
+        params: { format: 'url' }
+      }
+    );
     return response.data;
   }
 
@@ -135,8 +147,8 @@ export class Client {
       params: {
         limit: params?.limit ?? 100,
         offset: params?.offset ?? 0,
-        ...(params?.fields ? { fields: params.fields } : {}),
-      },
+        ...(params?.fields ? { fields: params.fields } : {})
+      }
     });
     return response.data;
   }
@@ -184,8 +196,8 @@ export class Client {
       params: {
         limit: params?.limit ?? 100,
         offset: params?.offset ?? 0,
-        ...(params?.fields ? { fields: params.fields } : {}),
-      },
+        ...(params?.fields ? { fields: params.fields } : {})
+      }
     });
     return response.data;
   }
@@ -223,8 +235,8 @@ export class Client {
       params: {
         search: query,
         limit: params?.limit ?? 100,
-        offset: params?.offset ?? 0,
-      },
+        offset: params?.offset ?? 0
+      }
     });
     return response.data;
   }
@@ -236,8 +248,8 @@ export class Client {
       params: {
         limit: params?.limit ?? 100,
         offset: params?.offset ?? 0,
-        ...(params?.fields ? { fields: params.fields } : {}),
-      },
+        ...(params?.fields ? { fields: params.fields } : {})
+      }
     });
     return response.data;
   }
@@ -266,8 +278,8 @@ export class Client {
     let response = await this.axios.get<PaginatedResponse<any>>(`/teams/${teamId}/users`, {
       params: {
         limit: params?.limit ?? 100,
-        offset: params?.offset ?? 0,
-      },
+        offset: params?.offset ?? 0
+      }
     });
     return response.data;
   }
@@ -280,8 +292,8 @@ export class Client {
         limit: params?.limit ?? 100,
         offset: params?.offset ?? 0,
         ...(params?.fields ? { fields: params.fields } : {}),
-        ...(params?.type ? { type: params.type } : {}),
-      },
+        ...(params?.type ? { type: params.type } : {})
+      }
     });
     return response.data;
   }
@@ -315,8 +327,8 @@ export class Client {
       params: {
         limit: params?.limit ?? 100,
         offset: params?.offset ?? 0,
-        ...(params?.userId ? { user_id: params.userId } : {}),
-      },
+        ...(params?.userId ? { user_id: params.userId } : {})
+      }
     });
     return response.data;
   }

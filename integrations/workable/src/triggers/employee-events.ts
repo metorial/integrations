@@ -3,39 +3,53 @@ import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let employeeEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Employee Events',
-    key: 'employee_events',
-    description: 'Triggered when an employee record is created, updated, published, or when onboarding is completed.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['employee_created', 'employee_updated', 'employee_published', 'onboarding_completed']).describe('Type of employee event'),
-    employee: z.any().describe('Employee payload from the webhook')
-  }))
-  .output(z.object({
-    employeeId: z.string().describe('Employee ID'),
-    name: z.string().optional().describe('Employee full name'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Personal email'),
-    workEmail: z.string().optional().describe('Work email'),
-    department: z.string().optional().describe('Department'),
-    jobTitle: z.string().optional().describe('Job title'),
-    status: z.string().optional().describe('Employee status'),
-    startDate: z.string().optional().describe('Start date')
-  }))
+export let employeeEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Employee Events',
+  key: 'employee_events',
+  description:
+    'Triggered when an employee record is created, updated, published, or when onboarding is completed.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum([
+          'employee_created',
+          'employee_updated',
+          'employee_published',
+          'onboarding_completed'
+        ])
+        .describe('Type of employee event'),
+      employee: z.any().describe('Employee payload from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      employeeId: z.string().describe('Employee ID'),
+      name: z.string().optional().describe('Employee full name'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Personal email'),
+      workEmail: z.string().optional().describe('Work email'),
+      department: z.string().optional().describe('Department'),
+      jobTitle: z.string().optional().describe('Job title'),
+      status: z.string().optional().describe('Employee status'),
+      startDate: z.string().optional().describe('Start date')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WorkableClient({
         token: ctx.auth.token,
         subdomain: ctx.config.subdomain
       });
 
       let subscriptionIds: string[] = [];
-      let events = ['employee_created', 'employee_updated', 'employee_published', 'onboarding_completed'];
+      let events = [
+        'employee_created',
+        'employee_updated',
+        'employee_published',
+        'onboarding_completed'
+      ];
 
       for (let event of events) {
         let result = await client.createSubscription({
@@ -52,7 +66,7 @@ export let employeeEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WorkableClient({
         token: ctx.auth.token,
         subdomain: ctx.config.subdomain
@@ -68,8 +82,8 @@ export let employeeEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.event || data.type;
       let employee = data.data || data.employee || data;
@@ -84,7 +98,7 @@ export let employeeEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let e = ctx.input.employee;
       let eventSuffix = ctx.input.eventType.replace('employee_', '');
       if (ctx.input.eventType === 'onboarding_completed') {
@@ -108,4 +122,5 @@ export let employeeEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

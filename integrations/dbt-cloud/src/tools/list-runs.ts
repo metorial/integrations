@@ -12,47 +12,64 @@ let runStatusDescriptions: Record<number, string> = {
   30: 'Cancelled'
 };
 
-export let listRunsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Runs',
-    key: 'list_runs',
-    description: `List dbt Cloud job runs with optional filters for job, project, environment, or status. Returns run IDs, statuses, timing, and duration. Useful for monitoring recent execution history and identifying failed or long-running jobs.`,
-    instructions: [
-      'Status codes: 1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled.',
-      'Use orderBy="-id" to get the most recent runs first.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listRunsTool = SlateTool.create(spec, {
+  name: 'List Runs',
+  key: 'list_runs',
+  description: `List dbt Cloud job runs with optional filters for job, project, environment, or status. Returns run IDs, statuses, timing, and duration. Useful for monitoring recent execution history and identifying failed or long-running jobs.`,
+  instructions: [
+    'Status codes: 1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled.',
+    'Use orderBy="-id" to get the most recent runs first.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    jobId: z.string().optional().describe('Filter runs by job ID'),
-    projectId: z.string().optional().describe('Filter runs by project ID'),
-    environmentId: z.string().optional().describe('Filter runs by environment ID'),
-    status: z.number().optional().describe('Filter by status code (1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled)'),
-    orderBy: z.string().optional().describe('Order results by field (prefix with - for descending, e.g., "-id")'),
-    limit: z.number().optional().describe('Maximum number of runs to return (max 100)'),
-    offset: z.number().optional().describe('Number of runs to skip for pagination')
-  }))
-  .output(z.object({
-    runs: z.array(z.object({
-      runId: z.number().describe('Unique run identifier'),
-      jobId: z.number().describe('Job that produced this run'),
-      projectId: z.number().describe('Project the run belongs to'),
-      environmentId: z.number().describe('Environment the run executed in'),
-      status: z.number().describe('Run status code'),
-      statusHumanized: z.string().optional().describe('Human-readable status'),
-      startedAt: z.string().nullable().optional().describe('Run start timestamp'),
-      finishedAt: z.string().nullable().optional().describe('Run finish timestamp'),
-      durationHumanized: z.string().optional().describe('Human-readable run duration'),
-      gitSha: z.string().nullable().optional().describe('Git SHA used for this run'),
-      gitBranch: z.string().nullable().optional().describe('Git branch used for this run'),
-      createdAt: z.string().optional().describe('Run creation timestamp')
-    })).describe('List of runs')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z.string().optional().describe('Filter runs by job ID'),
+      projectId: z.string().optional().describe('Filter runs by project ID'),
+      environmentId: z.string().optional().describe('Filter runs by environment ID'),
+      status: z
+        .number()
+        .optional()
+        .describe(
+          'Filter by status code (1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled)'
+        ),
+      orderBy: z
+        .string()
+        .optional()
+        .describe('Order results by field (prefix with - for descending, e.g., "-id")'),
+      limit: z.number().optional().describe('Maximum number of runs to return (max 100)'),
+      offset: z.number().optional().describe('Number of runs to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      runs: z
+        .array(
+          z.object({
+            runId: z.number().describe('Unique run identifier'),
+            jobId: z.number().describe('Job that produced this run'),
+            projectId: z.number().describe('Project the run belongs to'),
+            environmentId: z.number().describe('Environment the run executed in'),
+            status: z.number().describe('Run status code'),
+            statusHumanized: z.string().optional().describe('Human-readable status'),
+            startedAt: z.string().nullable().optional().describe('Run start timestamp'),
+            finishedAt: z.string().nullable().optional().describe('Run finish timestamp'),
+            durationHumanized: z.string().optional().describe('Human-readable run duration'),
+            gitSha: z.string().nullable().optional().describe('Git SHA used for this run'),
+            gitBranch: z
+              .string()
+              .nullable()
+              .optional()
+              .describe('Git branch used for this run'),
+            createdAt: z.string().optional().describe('Run creation timestamp')
+          })
+        )
+        .describe('List of runs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
@@ -88,4 +105,5 @@ export let listRunsTool = SlateTool.create(
       output: { runs: mapped },
       message: `Found **${mapped.length}** run(s).`
     };
-  }).build();
+  })
+  .build();

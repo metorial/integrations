@@ -3,30 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getShareUrisTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Album Share URIs',
-    key: 'get_album_share_uris',
-    description: `Retrieve sharing URIs for a SmugMug album. Returns URLs that can be used to share the gallery with others, including direct links and embed codes.`,
-    tags: {
-      readOnly: true,
-    },
+export let getShareUrisTool = SlateTool.create(spec, {
+  name: 'Get Album Share URIs',
+  key: 'get_album_share_uris',
+  description: `Retrieve sharing URIs for a SmugMug album. Returns URLs that can be used to share the gallery with others, including direct links and embed codes.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    albumKey: z.string().describe('Album key to get share URIs for'),
-  }))
-  .output(z.object({
-    albumKey: z.string().describe('Album key'),
-    shareUris: z.record(z.string(), z.string()).optional().describe('Map of share URI types to URLs'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      albumKey: z.string().describe('Album key to get share URIs for')
+    })
+  )
+  .output(
+    z.object({
+      albumKey: z.string().describe('Album key'),
+      shareUris: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Map of share URI types to URLs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       tokenSecret: ctx.auth.tokenSecret,
       consumerKey: ctx.auth.consumerKey,
-      consumerSecret: ctx.auth.consumerSecret,
+      consumerSecret: ctx.auth.consumerSecret
     });
 
     let shareUris = await client.getAlbumShareUris(ctx.input.albumKey);
@@ -45,8 +49,9 @@ export let getShareUrisTool = SlateTool.create(
     return {
       output: {
         albumKey: ctx.input.albumKey,
-        shareUris: uriMap,
+        shareUris: uriMap
       },
-      message: `Retrieved share URIs for album **${ctx.input.albumKey}**`,
+      message: `Retrieved share URIs for album **${ctx.input.albumKey}**`
     };
-  }).build();
+  })
+  .build();

@@ -9,29 +9,30 @@ let memberSchema = z.object({
   nickname: z.string().optional().describe('Member nickname in the server'),
   roles: z.array(z.string()).describe('Role IDs assigned to the member'),
   joinedAt: z.string().describe('ISO 8601 timestamp when the member joined'),
-  timeout: z.string().optional().describe('ISO 8601 timestamp when the timeout expires'),
+  timeout: z.string().optional().describe('ISO 8601 timestamp when the timeout expires')
 });
 
-export let fetchMembers = SlateTool.create(
-  spec,
-  {
-    name: 'Fetch Server Members',
-    key: 'fetch_members',
-    description: `Fetch members of a Revolt server. Can fetch all members or a specific member by user ID.`,
-    tags: {
-      readOnly: true,
-    },
+export let fetchMembers = SlateTool.create(spec, {
+  name: 'Fetch Server Members',
+  key: 'fetch_members',
+  description: `Fetch members of a Revolt server. Can fetch all members or a specific member by user ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    serverId: z.string().describe('ID of the server'),
-    userId: z.string().optional().describe('Fetch a specific member by user ID'),
-    excludeOffline: z.boolean().optional().describe('Exclude offline members from the list'),
-  }))
-  .output(z.object({
-    members: z.array(memberSchema).describe('List of server members'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      serverId: z.string().describe('ID of the server'),
+      userId: z.string().optional().describe('Fetch a specific member by user ID'),
+      excludeOffline: z.boolean().optional().describe('Exclude offline members from the list')
+    })
+  )
+  .output(
+    z.object({
+      members: z.array(memberSchema).describe('List of server members')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.userId) {
@@ -39,16 +40,18 @@ export let fetchMembers = SlateTool.create(
       let member = result.member ?? result;
       return {
         output: {
-          members: [{
-            serverId: member._id?.server ?? ctx.input.serverId,
-            userId: member._id?.user ?? ctx.input.userId,
-            nickname: member.nickname ?? undefined,
-            roles: member.roles ?? [],
-            joinedAt: member.joined_at,
-            timeout: member.timeout ?? undefined,
-          }],
+          members: [
+            {
+              serverId: member._id?.server ?? ctx.input.serverId,
+              userId: member._id?.user ?? ctx.input.userId,
+              nickname: member.nickname ?? undefined,
+              roles: member.roles ?? [],
+              joinedAt: member.joined_at,
+              timeout: member.timeout ?? undefined
+            }
+          ]
         },
-        message: `Fetched member \`${ctx.input.userId}\` from server \`${ctx.input.serverId}\``,
+        message: `Fetched member \`${ctx.input.userId}\` from server \`${ctx.input.serverId}\``
       };
     }
 
@@ -61,43 +64,54 @@ export let fetchMembers = SlateTool.create(
       nickname: m.nickname ?? undefined,
       roles: m.roles ?? [],
       joinedAt: m.joined_at,
-      timeout: m.timeout ?? undefined,
+      timeout: m.timeout ?? undefined
     }));
 
     return {
       output: { members },
-      message: `Fetched ${members.length} member(s) from server \`${ctx.input.serverId}\``,
+      message: `Fetched ${members.length} member(s) from server \`${ctx.input.serverId}\``
     };
-  }).build();
+  })
+  .build();
 
-export let editMember = SlateTool.create(
-  spec,
-  {
-    name: 'Edit Server Member',
-    key: 'edit_member',
-    description: `Edit a server member's properties including nickname, roles, avatar, and timeout. Use this to assign roles, set nicknames, or timeout members.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let editMember = SlateTool.create(spec, {
+  name: 'Edit Server Member',
+  key: 'edit_member',
+  description: `Edit a server member's properties including nickname, roles, avatar, and timeout. Use this to assign roles, set nicknames, or timeout members.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    serverId: z.string().describe('ID of the server'),
-    userId: z.string().describe('User ID of the member to edit'),
-    nickname: z.string().optional().describe('New nickname for the member'),
-    avatarId: z.string().optional().describe('Uploaded file ID for member avatar'),
-    roles: z.array(z.string()).optional().describe('Role IDs to assign (replaces all current roles)'),
-    timeout: z.string().optional().describe('ISO 8601 timestamp for timeout expiration (set to past to clear)'),
-    removeFields: z.array(z.enum(['Nickname', 'Avatar', 'Roles', 'Timeout'])).optional().describe('Fields to remove/clear'),
-  }))
-  .output(z.object({
-    serverId: z.string().describe('ID of the server'),
-    userId: z.string().describe('User ID of the edited member'),
-    nickname: z.string().optional().describe('Updated nickname'),
-    roles: z.array(z.string()).describe('Updated role IDs'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      serverId: z.string().describe('ID of the server'),
+      userId: z.string().describe('User ID of the member to edit'),
+      nickname: z.string().optional().describe('New nickname for the member'),
+      avatarId: z.string().optional().describe('Uploaded file ID for member avatar'),
+      roles: z
+        .array(z.string())
+        .optional()
+        .describe('Role IDs to assign (replaces all current roles)'),
+      timeout: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp for timeout expiration (set to past to clear)'),
+      removeFields: z
+        .array(z.enum(['Nickname', 'Avatar', 'Roles', 'Timeout']))
+        .optional()
+        .describe('Fields to remove/clear')
+    })
+  )
+  .output(
+    z.object({
+      serverId: z.string().describe('ID of the server'),
+      userId: z.string().describe('User ID of the edited member'),
+      nickname: z.string().optional().describe('Updated nickname'),
+      roles: z.array(z.string()).describe('Updated role IDs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result = await client.editMember(ctx.input.serverId, ctx.input.userId, {
@@ -105,7 +119,7 @@ export let editMember = SlateTool.create(
       avatar: ctx.input.avatarId,
       roles: ctx.input.roles,
       timeout: ctx.input.timeout,
-      remove: ctx.input.removeFields,
+      remove: ctx.input.removeFields
     });
 
     return {
@@ -113,68 +127,80 @@ export let editMember = SlateTool.create(
         serverId: result._id?.server ?? ctx.input.serverId,
         userId: result._id?.user ?? ctx.input.userId,
         nickname: result.nickname ?? undefined,
-        roles: result.roles ?? [],
+        roles: result.roles ?? []
       },
-      message: `Updated member \`${ctx.input.userId}\` in server \`${ctx.input.serverId}\``,
+      message: `Updated member \`${ctx.input.userId}\` in server \`${ctx.input.serverId}\``
     };
-  }).build();
+  })
+  .build();
 
-export let kickMember = SlateTool.create(
-  spec,
-  {
-    name: 'Kick Member',
-    key: 'kick_member',
-    description: `Kick a member from a Revolt server. The member can rejoin if they have an invite.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let kickMember = SlateTool.create(spec, {
+  name: 'Kick Member',
+  key: 'kick_member',
+  description: `Kick a member from a Revolt server. The member can rejoin if they have an invite.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    serverId: z.string().describe('ID of the server'),
-    userId: z.string().describe('User ID of the member to kick'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the kick was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      serverId: z.string().describe('ID of the server'),
+      userId: z.string().describe('User ID of the member to kick')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the kick was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     await client.kickMember(ctx.input.serverId, ctx.input.userId);
 
     return {
       output: { success: true },
-      message: `Kicked member \`${ctx.input.userId}\` from server \`${ctx.input.serverId}\``,
+      message: `Kicked member \`${ctx.input.userId}\` from server \`${ctx.input.serverId}\``
     };
-  }).build();
+  })
+  .build();
 
-export let manageBan = SlateTool.create(
-  spec,
-  {
-    name: 'Ban / Unban Member',
-    key: 'manage_ban',
-    description: `Ban or unban a user from a Revolt server. Banning prevents the user from rejoining. Can also list all bans for a server.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageBan = SlateTool.create(spec, {
+  name: 'Ban / Unban Member',
+  key: 'manage_ban',
+  description: `Ban or unban a user from a Revolt server. Banning prevents the user from rejoining. Can also list all bans for a server.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    serverId: z.string().describe('ID of the server'),
-    action: z.enum(['ban', 'unban', 'list']).describe('Action to perform'),
-    userId: z.string().optional().describe('User ID to ban or unban (required for ban/unban)'),
-    reason: z.string().optional().describe('Reason for the ban (only for ban action)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    bans: z.array(z.object({
-      userId: z.string().describe('Banned user ID'),
-      reason: z.string().optional().describe('Ban reason'),
-    })).optional().describe('List of bans (only for list action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      serverId: z.string().describe('ID of the server'),
+      action: z.enum(['ban', 'unban', 'list']).describe('Action to perform'),
+      userId: z
+        .string()
+        .optional()
+        .describe('User ID to ban or unban (required for ban/unban)'),
+      reason: z.string().optional().describe('Reason for the ban (only for ban action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      bans: z
+        .array(
+          z.object({
+            userId: z.string().describe('Banned user ID'),
+            reason: z.string().optional().describe('Ban reason')
+          })
+        )
+        .optional()
+        .describe('List of bans (only for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'list') {
@@ -182,11 +208,11 @@ export let manageBan = SlateTool.create(
       let bansArray = result.bans ?? result;
       let bans = bansArray.map((b: any) => ({
         userId: b._id?.user ?? b.user?._id ?? b.id,
-        reason: b.reason ?? undefined,
+        reason: b.reason ?? undefined
       }));
       return {
         output: { success: true, bans },
-        message: `Found ${bans.length} ban(s) in server \`${ctx.input.serverId}\``,
+        message: `Found ${bans.length} ban(s) in server \`${ctx.input.serverId}\``
       };
     }
 
@@ -200,6 +226,7 @@ export let manageBan = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `${ctx.input.action === 'ban' ? 'Banned' : 'Unbanned'} user \`${ctx.input.userId}\` in server \`${ctx.input.serverId}\``,
+      message: `${ctx.input.action === 'ban' ? 'Banned' : 'Unbanned'} user \`${ctx.input.userId}\` in server \`${ctx.input.serverId}\``
     };
-  }).build();
+  })
+  .build();

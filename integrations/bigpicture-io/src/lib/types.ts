@@ -9,7 +9,7 @@ export let geoSchema = z.object({
   postalCode: z.string().nullable().optional().describe('Postal or ZIP code'),
   stateCode: z.string().nullable().optional().describe('State abbreviation code'),
   country: z.string().nullable().optional().describe('Country name'),
-  countryCode: z.string().nullable().optional().describe('ISO country code'),
+  countryCode: z.string().nullable().optional().describe('ISO country code')
 });
 
 export let metricsSchema = z.object({
@@ -19,9 +19,17 @@ export let metricsSchema = z.object({
   trancoRank: z.number().nullable().optional().describe('Tranco website ranking'),
   alexaUsRank: z.number().nullable().optional().describe('Alexa US ranking'),
   annualRevenue: z.number().nullable().optional().describe('Annual revenue in USD'),
-  employeesRange: z.string().nullable().optional().describe('Employee count range (e.g. "1001-5000")'),
+  employeesRange: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Employee count range (e.g. "1001-5000")'),
   alexaGlobalRank: z.number().nullable().optional().describe('Alexa global ranking'),
-  estimatedAnnualRevenue: z.string().nullable().optional().describe('Estimated annual revenue range'),
+  estimatedAnnualRevenue: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Estimated annual revenue range')
 });
 
 export let categorySchema = z.object({
@@ -29,7 +37,7 @@ export let categorySchema = z.object({
   industryGroup: z.string().nullable().optional().describe('Industry group'),
   industry: z.string().nullable().optional().describe('Industry classification'),
   subIndustry: z.string().nullable().optional().describe('Sub-industry classification'),
-  naicsCode: z.string().nullable().optional().describe('NAICS industry code'),
+  naicsCode: z.string().nullable().optional().describe('NAICS industry code')
 });
 
 export let twitterSchema = z.object({
@@ -40,7 +48,7 @@ export let twitterSchema = z.object({
   following: z.number().nullable().optional().describe('Following count'),
   location: z.string().nullable().optional().describe('Twitter profile location'),
   site: z.string().nullable().optional().describe('Website URL from Twitter profile'),
-  avatar: z.string().nullable().optional().describe('Twitter avatar URL'),
+  avatar: z.string().nullable().optional().describe('Twitter avatar URL')
 });
 
 export let companySchema = z.object({
@@ -50,32 +58,64 @@ export let companySchema = z.object({
   domain: z.string().nullable().optional().describe('Primary domain'),
   url: z.string().nullable().optional().describe('Company website URL'),
   logo: z.string().nullable().optional().describe('Company logo URL'),
-  type: z.string().nullable().optional().describe('Company type: public, private, nonprofit, or government'),
+  type: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Company type: public, private, nonprofit, or government'),
   phone: z.string().nullable().optional().describe('Phone number'),
   ticker: z.string().nullable().optional().describe('Stock ticker symbol'),
   tags: z.array(z.string()).nullable().optional().describe('Descriptive tags'),
-  tech: z.array(z.string()).nullable().optional().describe('Technologies detected on the website'),
+  tech: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .describe('Technologies detected on the website'),
   aliases: z.array(z.string()).nullable().optional().describe('Known aliases'),
   description: z.string().nullable().optional().describe('Company description'),
   foundedYear: z.number().nullable().optional().describe('Year the company was founded'),
-  domainAliases: z.array(z.string()).nullable().optional().describe('Alternative domain names'),
-  emailProvider: z.boolean().nullable().optional().describe('Whether the domain is an email provider'),
+  domainAliases: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .describe('Alternative domain names'),
+  emailProvider: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the domain is an email provider'),
   location: z.string().nullable().optional().describe('Formatted location string'),
   metrics: metricsSchema.nullable().optional().describe('Business metrics'),
   category: categorySchema.nullable().optional().describe('Industry classification'),
   geo: geoSchema.nullable().optional().describe('Geographic location details'),
-  facebook: z.object({
-    handle: z.string().nullable().optional().describe('Facebook page handle'),
-  }).nullable().optional().describe('Facebook profile'),
-  linkedin: z.object({
-    handle: z.string().nullable().optional().describe('LinkedIn page handle'),
-    industry: z.string().nullable().optional().describe('LinkedIn industry'),
-  }).nullable().optional().describe('LinkedIn profile'),
+  facebook: z
+    .object({
+      handle: z.string().nullable().optional().describe('Facebook page handle')
+    })
+    .nullable()
+    .optional()
+    .describe('Facebook profile'),
+  linkedin: z
+    .object({
+      handle: z.string().nullable().optional().describe('LinkedIn page handle'),
+      industry: z.string().nullable().optional().describe('LinkedIn industry')
+    })
+    .nullable()
+    .optional()
+    .describe('LinkedIn profile'),
   twitter: twitterSchema.nullable().optional().describe('Twitter profile'),
-  crunchbase: z.object({
-    handle: z.string().nullable().optional().describe('Crunchbase handle'),
-  }).nullable().optional().describe('Crunchbase profile'),
-  indexedAt: z.string().nullable().optional().describe('When this data was last indexed (ISO 8601)'),
+  crunchbase: z
+    .object({
+      handle: z.string().nullable().optional().describe('Crunchbase handle')
+    })
+    .nullable()
+    .optional()
+    .describe('Crunchbase profile'),
+  indexedAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('When this data was last indexed (ISO 8601)')
 });
 
 export let ipGeoSchema = z.object({
@@ -86,18 +126,18 @@ export let ipGeoSchema = z.object({
   countryCode: z.string().nullable().optional().describe('ISO country code'),
   continent: z.string().nullable().optional().describe('Continent name'),
   continentCode: z.string().nullable().optional().describe('Continent code'),
-  isEU: z.boolean().nullable().optional().describe('Whether the location is in the EU'),
+  isEU: z.boolean().nullable().optional().describe('Whether the location is in the EU')
 });
 
 export let whoisSchema = z.object({
   domain: z.string().nullable().optional().describe('WHOIS registered domain'),
-  name: z.string().nullable().optional().describe('WHOIS registrant name'),
+  name: z.string().nullable().optional().describe('WHOIS registrant name')
 });
 
 export let asnSchema = z.object({
   asn: z.string().nullable().optional().describe('Autonomous System Number'),
   name: z.string().nullable().optional().describe('ASN organization name'),
-  route: z.string().nullable().optional().describe('IP route/CIDR block'),
+  route: z.string().nullable().optional().describe('IP route/CIDR block')
 });
 
 export let ipCompanyResponseSchema = z.object({
@@ -108,14 +148,18 @@ export let ipCompanyResponseSchema = z.object({
   geo: ipGeoSchema.nullable().optional().describe('IP geolocation data'),
   company: companySchema.nullable().optional().describe('Matched company profile'),
   whois: whoisSchema.nullable().optional().describe('WHOIS registration data'),
-  asn: asnSchema.nullable().optional().describe('Autonomous System Number data'),
+  asn: asnSchema.nullable().optional().describe('Autonomous System Number data')
 });
 
 export let webhookPayloadSchema = z.object({
-  webhookEventId: z.string().nullable().optional().describe('Correlation ID from webhookId parameter'),
+  webhookEventId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Correlation ID from webhookId parameter'),
   status: z.number().describe('HTTP status code: 200 (success) or 404 (not found)'),
   type: z.string().describe('Resource type (e.g. "company")'),
-  body: companySchema.nullable().optional().describe('Full company profile data'),
+  body: companySchema.nullable().optional().describe('Full company profile data')
 });
 
 export type Company = z.infer<typeof companySchema>;

@@ -3,28 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let findEmail = SlateTool.create(
-  spec,
-  {
-    name: 'Find Email',
-    key: 'find_email',
-    description: `Find the business email address of a prospect using their first name, last name, and company domain. Returns the email along with a confidence score indicating verification status: **1.0** = confirmed, **0.5** = server accepts all (may be correct), **0.1** = unsure.`,
-    constraints: [
-      'Each API call consumes 1 credit from your AeroLeads account.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let findEmail = SlateTool.create(spec, {
+  name: 'Find Email',
+  key: 'find_email',
+  description: `Find the business email address of a prospect using their first name, last name, and company domain. Returns the email along with a confidence score indicating verification status: **1.0** = confirmed, **0.5** = server accepts all (may be correct), **0.1** = unsure.`,
+  constraints: ['Each API call consumes 1 credit from your AeroLeads account.'],
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       firstName: z.string().describe('First name of the prospect.'),
       lastName: z.string().describe('Last name of the prospect.'),
       companyDomain: z
         .string()
-        .describe('The company domain (e.g. "example.com"). Do not include "https://" or "www." prefixes.'),
-    }),
+        .describe(
+          'The company domain (e.g. "example.com"). Do not include "https://" or "www." prefixes.'
+        )
+    })
   )
   .output(
     z.object({
@@ -32,17 +29,22 @@ export let findEmail = SlateTool.create(
       confidence: z
         .number()
         .optional()
-        .describe('Confidence score: 1.0 = confirmed, 0.5 = server accepts all pings, 0.1 = unsure.'),
-      rawResponse: z.any().optional().describe('Full raw response from the API for additional fields.'),
-    }),
+        .describe(
+          'Confidence score: 1.0 = confirmed, 0.5 = server accepts all pings, 0.1 = unsure.'
+        ),
+      rawResponse: z
+        .any()
+        .optional()
+        .describe('Full raw response from the API for additional fields.')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getCompanyEmail(
       ctx.input.firstName,
       ctx.input.lastName,
-      ctx.input.companyDomain,
+      ctx.input.companyDomain
     );
 
     let email = result.email || undefined;
@@ -51,7 +53,7 @@ export let findEmail = SlateTool.create(
     let output = {
       email,
       confidence,
-      rawResponse: result,
+      rawResponse: result
     };
 
     let confidenceLabel = 'unknown';
@@ -66,7 +68,7 @@ export let findEmail = SlateTool.create(
 
     return {
       output,
-      message,
+      message
     };
   })
   .build();

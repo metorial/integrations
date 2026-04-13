@@ -3,45 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Campaign',
-    key: 'manage_campaign',
-    description: `Create, update, retrieve, or delete outbound call campaigns for bulk calling. Campaigns link to an assistant or workflow and target a list of customers.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageCampaign = SlateTool.create(spec, {
+  name: 'Manage Campaign',
+  key: 'manage_campaign',
+  description: `Create, update, retrieve, or delete outbound call campaigns for bulk calling. Campaigns link to an assistant or workflow and target a list of customers.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
-    campaignId: z.string().optional().describe('Campaign ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Name of the campaign'),
-    assistantId: z.string().optional().describe('Assistant ID to use for campaign calls'),
-    workflowId: z.string().optional().describe('Workflow ID to use for campaign calls'),
-    phoneNumberId: z.string().optional().describe('Phone number ID to call from'),
-    customers: z.array(z.object({
-      number: z.string().optional().describe('Customer phone number in E.164 format'),
-      name: z.string().optional().describe('Customer name'),
-      extension: z.string().optional().describe('Phone extension')
-    })).optional().describe('List of customers to call'),
-    maxConcurrentCalls: z.number().optional().describe('Maximum concurrent calls'),
-    scheduledAt: z.string().optional().describe('ISO 8601 timestamp to schedule the campaign')
-  }))
-  .output(z.object({
-    campaignId: z.string().optional().describe('ID of the campaign'),
-    name: z.string().optional().describe('Name of the campaign'),
-    status: z.string().optional().describe('Campaign status'),
-    assistantId: z.string().optional().describe('Assistant ID used'),
-    workflowId: z.string().optional().describe('Workflow ID used'),
-    phoneNumberId: z.string().optional().describe('Phone number ID used'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the campaign was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
+      campaignId: z
+        .string()
+        .optional()
+        .describe('Campaign ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Name of the campaign'),
+      assistantId: z.string().optional().describe('Assistant ID to use for campaign calls'),
+      workflowId: z.string().optional().describe('Workflow ID to use for campaign calls'),
+      phoneNumberId: z.string().optional().describe('Phone number ID to call from'),
+      customers: z
+        .array(
+          z.object({
+            number: z.string().optional().describe('Customer phone number in E.164 format'),
+            name: z.string().optional().describe('Customer name'),
+            extension: z.string().optional().describe('Phone extension')
+          })
+        )
+        .optional()
+        .describe('List of customers to call'),
+      maxConcurrentCalls: z.number().optional().describe('Maximum concurrent calls'),
+      scheduledAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp to schedule the campaign')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().optional().describe('ID of the campaign'),
+      name: z.string().optional().describe('Name of the campaign'),
+      status: z.string().optional().describe('Campaign status'),
+      assistantId: z.string().optional().describe('Assistant ID used'),
+      workflowId: z.string().optional().describe('Workflow ID used'),
+      phoneNumberId: z.string().optional().describe('Phone number ID used'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the campaign was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, campaignId } = ctx.input;
 
@@ -78,7 +90,8 @@ export let manageCampaign = SlateTool.create(
     if (ctx.input.workflowId) body.workflowId = ctx.input.workflowId;
     if (ctx.input.phoneNumberId) body.phoneNumberId = ctx.input.phoneNumberId;
     if (ctx.input.customers) body.customers = ctx.input.customers;
-    if (ctx.input.maxConcurrentCalls !== undefined) body.maxConcurrentCalls = ctx.input.maxConcurrentCalls;
+    if (ctx.input.maxConcurrentCalls !== undefined)
+      body.maxConcurrentCalls = ctx.input.maxConcurrentCalls;
     if (ctx.input.scheduledAt) body.scheduledAt = ctx.input.scheduledAt;
 
     if (action === 'create') {

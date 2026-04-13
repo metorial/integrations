@@ -3,31 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProfileTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Profile',
-    key: 'get_user_profile',
-    description: `Retrieve the authenticated user's Exist profile including username, timezone, and measurement unit preferences (imperial vs metric for distance, weight, energy, liquid, temperature).`,
-    tags: {
-      readOnly: true,
-    },
+export let getProfileTool = SlateTool.create(spec, {
+  name: 'Get User Profile',
+  key: 'get_user_profile',
+  description: `Retrieve the authenticated user's Exist profile including username, timezone, and measurement unit preferences (imperial vs metric for distance, weight, energy, liquid, temperature).`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    username: z.string().describe('Exist username'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    avatarUrl: z.string().describe('URL to the user avatar image'),
-    timezone: z.string().describe('User timezone'),
-    imperialDistance: z.boolean().describe('Whether the user prefers imperial distance units'),
-    imperialWeight: z.boolean().describe('Whether the user prefers imperial weight units'),
-    imperialEnergy: z.boolean().describe('Whether the user prefers imperial energy units'),
-    imperialLiquid: z.boolean().describe('Whether the user prefers imperial liquid units'),
-    imperialTemperature: z.boolean().describe('Whether the user prefers imperial temperature units'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      username: z.string().describe('Exist username'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      avatarUrl: z.string().describe('URL to the user avatar image'),
+      timezone: z.string().describe('User timezone'),
+      imperialDistance: z
+        .boolean()
+        .describe('Whether the user prefers imperial distance units'),
+      imperialWeight: z.boolean().describe('Whether the user prefers imperial weight units'),
+      imperialEnergy: z.boolean().describe('Whether the user prefers imperial energy units'),
+      imperialLiquid: z.boolean().describe('Whether the user prefers imperial liquid units'),
+      imperialTemperature: z
+        .boolean()
+        .describe('Whether the user prefers imperial temperature units')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
     let profile = await client.getProfile();
 
@@ -42,8 +45,9 @@ export let getProfileTool = SlateTool.create(
         imperialWeight: profile.imperial_weight,
         imperialEnergy: profile.imperial_energy,
         imperialLiquid: profile.imperial_liquid,
-        imperialTemperature: profile.imperial_temperature,
+        imperialTemperature: profile.imperial_temperature
       },
-      message: `Retrieved profile for **${profile.username}** (timezone: ${profile.timezone}).`,
+      message: `Retrieved profile for **${profile.username}** (timezone: ${profile.timezone}).`
     };
-  }).build();
+  })
+  .build();

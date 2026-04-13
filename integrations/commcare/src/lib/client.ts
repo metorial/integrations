@@ -162,7 +162,10 @@ export interface CaseUpdatePayload {
   owner_id?: string;
   case_name?: string;
   close?: boolean;
-  indices?: Record<string, { case_type: string; case_id: string; relationship?: string } | null>;
+  indices?: Record<
+    string,
+    { case_type: string; case_id: string; relationship?: string } | null
+  >;
 }
 
 export interface BulkCasePayload {
@@ -172,7 +175,10 @@ export interface BulkCasePayload {
   external_id?: string;
   case_id?: string;
   properties?: Record<string, any>;
-  indices?: Record<string, { case_type: string; case_id: string; relationship?: string } | null>;
+  indices?: Record<
+    string,
+    { case_type: string; case_id: string; relationship?: string } | null
+  >;
   close?: boolean;
 }
 
@@ -185,10 +191,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://www.commcarehq.org/a/${config.domain}/api`,
       headers: {
-        'Authorization': `ApiKey ${config.username}:${config.token}`,
+        Authorization: `ApiKey ${config.username}:${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -198,11 +204,14 @@ export class Client {
     let queryParams: Record<string, any> = {};
     if (params.caseType) queryParams['type'] = params.caseType;
     if (params.ownerId) queryParams['owner_id'] = params.ownerId;
-    if (params.dateModifiedStart) queryParams['date_modified_start'] = params.dateModifiedStart;
+    if (params.dateModifiedStart)
+      queryParams['date_modified_start'] = params.dateModifiedStart;
     if (params.dateModifiedEnd) queryParams['date_modified_end'] = params.dateModifiedEnd;
     if (params.closed !== undefined) queryParams['closed'] = params.closed;
-    if (params.serverDateModifiedStart) queryParams['server_date_modified_start'] = params.serverDateModifiedStart;
-    if (params.serverDateModifiedEnd) queryParams['server_date_modified_end'] = params.serverDateModifiedEnd;
+    if (params.serverDateModifiedStart)
+      queryParams['server_date_modified_start'] = params.serverDateModifiedStart;
+    if (params.serverDateModifiedEnd)
+      queryParams['server_date_modified_end'] = params.serverDateModifiedEnd;
     if (params.externalId) queryParams['external_id'] = params.externalId;
     if (params.caseName) queryParams['case_name'] = params.caseName;
     if (params.indexCaseId) queryParams['index.case_id'] = params.indexCaseId;
@@ -256,7 +265,9 @@ export class Client {
 
   // === Mobile Workers ===
 
-  async listMobileWorkers(params: ListUsersParams = {}): Promise<PaginatedResponse<MobileWorker>> {
+  async listMobileWorkers(
+    params: ListUsersParams = {}
+  ): Promise<PaginatedResponse<MobileWorker>> {
     let queryParams: Record<string, any> = {};
     queryParams['limit'] = params.limit ?? 20;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -284,15 +295,18 @@ export class Client {
     return response.data;
   }
 
-  async updateMobileWorker(userId: string, data: {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    phone_numbers?: string[];
-    groups?: string[];
-    user_data?: Record<string, any>;
-    password?: string;
-  }): Promise<MobileWorker> {
+  async updateMobileWorker(
+    userId: string,
+    data: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      phone_numbers?: string[];
+      groups?: string[];
+      user_data?: Record<string, any>;
+      password?: string;
+    }
+  ): Promise<MobileWorker> {
     let response = await this.axios.put(`/v0.5/user/${userId}/`, data);
     return response.data;
   }
@@ -335,20 +349,25 @@ export class Client {
     return response.data;
   }
 
-  async updateGroup(groupId: string, data: {
-    name?: string;
-    case_sharing?: boolean;
-    reporting?: boolean;
-    users?: string[];
-    metadata?: Record<string, any>;
-  }): Promise<UserGroup> {
+  async updateGroup(
+    groupId: string,
+    data: {
+      name?: string;
+      case_sharing?: boolean;
+      reporting?: boolean;
+      users?: string[];
+      metadata?: Record<string, any>;
+    }
+  ): Promise<UserGroup> {
     let response = await this.axios.put(`/v0.5/group/${groupId}/`, data);
     return response.data;
   }
 
   // === Applications ===
 
-  async listApplications(params: ListApplicationsParams = {}): Promise<PaginatedResponse<Application>> {
+  async listApplications(
+    params: ListApplicationsParams = {}
+  ): Promise<PaginatedResponse<Application>> {
     let queryParams: Record<string, any> = {};
     queryParams['limit'] = params.limit ?? 20;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -364,7 +383,9 @@ export class Client {
 
   // === Lookup Tables (Fixtures) ===
 
-  async listLookupTables(params: ListUsersParams = {}): Promise<PaginatedResponse<LookupTable>> {
+  async listLookupTables(
+    params: ListUsersParams = {}
+  ): Promise<PaginatedResponse<LookupTable>> {
     let queryParams: Record<string, any> = {};
     queryParams['limit'] = params.limit ?? 20;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -380,18 +401,17 @@ export class Client {
 
   // === SMS ===
 
-  async sendSms(data: {
-    phone_number: string;
-    message: string;
-  }): Promise<any> {
+  async sendSms(data: { phone_number: string; message: string }): Promise<any> {
     let response = await this.axios.post('/v0.5/sms/', data);
     return response.data;
   }
 
-  async listSmsMessages(params: {
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listSmsMessages(
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, any> = {};
     queryParams['limit'] = params.limit ?? 20;
     if (params.offset) queryParams['offset'] = params.offset;

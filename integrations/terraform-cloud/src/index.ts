@@ -40,10 +40,7 @@ import {
   createRunTriggerTool,
   deleteRunTriggerTool
 } from './tools';
-import {
-  runEventsTrigger,
-  workspaceRunsTrigger
-} from './triggers';
+import { runEventsTrigger, workspaceRunsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -87,8 +84,5 @@ export let provider = Slate.create({
     createRunTriggerTool,
     deleteRunTriggerTool
   ],
-  triggers: [
-    runEventsTrigger,
-    workspaceRunsTrigger
-  ]
+  triggers: [runEventsTrigger, workspaceRunsTrigger]
 });

@@ -191,7 +191,7 @@ let COMMON_FRAGMENTS = [
   FRAGMENT_MUTATION_ERROR,
   FRAGMENT_CUSTOMER_GROUP,
   FRAGMENT_CUSTOMER_EVENT,
-  FRAGMENT_THREAD_EVENT,
+  FRAGMENT_THREAD_EVENT
 ].join('\n');
 
 export class Client {
@@ -202,8 +202,8 @@ export class Client {
       baseURL: API_BASE,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${opts.token}`,
-      },
+        Authorization: `Bearer ${opts.token}`
+      }
     });
   }
 
@@ -211,7 +211,7 @@ export class Client {
     let fullQuery = query + '\n' + COMMON_FRAGMENTS;
     let res = await this.http.post('', {
       query: fullQuery,
-      variables,
+      variables
     });
     let body = res.data as any;
     if (body.errors && body.errors.length > 0) {
@@ -309,7 +309,9 @@ export class Client {
       { input }
     );
     if (data.updateCustomerCompany.error) {
-      throw new Error(`Update customer company failed: ${data.updateCustomerCompany.error.message}`);
+      throw new Error(
+        `Update customer company failed: ${data.updateCustomerCompany.error.message}`
+      );
     }
     return data.updateCustomerCompany;
   }
@@ -358,7 +360,9 @@ export class Client {
       { input }
     );
     if (data.addCustomerToTenants.error) {
-      throw new Error(`Add customer to tenants failed: ${data.addCustomerToTenants.error.message}`);
+      throw new Error(
+        `Add customer to tenants failed: ${data.addCustomerToTenants.error.message}`
+      );
     }
     return data.addCustomerToTenants;
   }
@@ -371,7 +375,9 @@ export class Client {
       { input }
     );
     if (data.removeCustomerFromTenants.error) {
-      throw new Error(`Remove customer from tenants failed: ${data.removeCustomerFromTenants.error.message}`);
+      throw new Error(
+        `Remove customer from tenants failed: ${data.removeCustomerFromTenants.error.message}`
+      );
     }
     return data.removeCustomerFromTenants;
   }
@@ -498,7 +504,9 @@ export class Client {
       { input: { threadId, priority } }
     );
     if (data.changeThreadPriority.error) {
-      throw new Error(`Change thread priority failed: ${data.changeThreadPriority.error.message}`);
+      throw new Error(
+        `Change thread priority failed: ${data.changeThreadPriority.error.message}`
+      );
     }
     return data.changeThreadPriority;
   }
@@ -554,7 +562,9 @@ export class Client {
       { input }
     );
     if (data.createCustomerEvent.error) {
-      throw new Error(`Create customer event failed: ${data.createCustomerEvent.error.message}`);
+      throw new Error(
+        `Create customer event failed: ${data.createCustomerEvent.error.message}`
+      );
     }
     return data.createCustomerEvent;
   }
@@ -664,7 +674,9 @@ export class Client {
       { input }
     );
     if (data.addCustomerToCustomerGroups.error) {
-      throw new Error(`Add customer to groups failed: ${data.addCustomerToCustomerGroups.error.message}`);
+      throw new Error(
+        `Add customer to groups failed: ${data.addCustomerToCustomerGroups.error.message}`
+      );
     }
     return data.addCustomerToCustomerGroups;
   }
@@ -677,7 +689,9 @@ export class Client {
       { input }
     );
     if (data.removeCustomerFromCustomerGroups.error) {
-      throw new Error(`Remove customer from groups failed: ${data.removeCustomerFromCustomerGroups.error.message}`);
+      throw new Error(
+        `Remove customer from groups failed: ${data.removeCustomerFromCustomerGroups.error.message}`
+      );
     }
     return data.removeCustomerFromCustomerGroups;
   }

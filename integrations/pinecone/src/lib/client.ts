@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let controlPlaneAxios = createAxios({
-  baseURL: 'https://api.pinecone.io',
+  baseURL: 'https://api.pinecone.io'
 });
 
 export interface IndexSpec {
@@ -68,20 +68,20 @@ export class PineconeControlPlaneClient {
     return {
       'Api-Key': this.token,
       'Content-Type': 'application/json',
-      'X-Pinecone-Api-Version': '2025-04',
+      'X-Pinecone-Api-Version': '2025-04'
     };
   }
 
   async listIndexes(): Promise<{ indexes: IndexModel[] }> {
     let response = await controlPlaneAxios.get('/indexes', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async describeIndex(indexName: string): Promise<IndexModel> {
     let response = await controlPlaneAxios.get(`/indexes/${indexName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -96,45 +96,48 @@ export class PineconeControlPlaneClient {
     tags?: Record<string, string>;
   }): Promise<IndexModel> {
     let response = await controlPlaneAxios.post('/indexes', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async configureIndex(indexName: string, params: {
-    spec?: { pod?: { pod_type?: string; replicas?: number } };
-    deletion_protection?: string;
-    tags?: Record<string, string>;
-  }): Promise<IndexModel> {
+  async configureIndex(
+    indexName: string,
+    params: {
+      spec?: { pod?: { pod_type?: string; replicas?: number } };
+      deletion_protection?: string;
+      tags?: Record<string, string>;
+    }
+  ): Promise<IndexModel> {
     let response = await controlPlaneAxios.patch(`/indexes/${indexName}`, params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteIndex(indexName: string): Promise<void> {
     await controlPlaneAxios.delete(`/indexes/${indexName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async listCollections(): Promise<{ collections: any[] }> {
     let response = await controlPlaneAxios.get('/collections', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async createCollection(params: { name: string; source: string }): Promise<any> {
     let response = await controlPlaneAxios.post('/collections', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteCollection(collectionName: string): Promise<void> {
     await controlPlaneAxios.delete(`/collections/${collectionName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -150,7 +153,7 @@ export class PineconeControlPlaneClient {
     usage: { total_tokens: number };
   }> {
     let response = await controlPlaneAxios.post('/embed', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -169,7 +172,7 @@ export class PineconeControlPlaneClient {
     usage: { rerank_units: number };
   }> {
     let response = await controlPlaneAxios.post('/rerank', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -177,7 +180,7 @@ export class PineconeControlPlaneClient {
   // Assistant endpoints
   async listAssistants(): Promise<{ assistants: AssistantModel[] }> {
     let response = await controlPlaneAxios.get('/assistant/assistants', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -189,21 +192,21 @@ export class PineconeControlPlaneClient {
     region?: string;
   }): Promise<AssistantModel> {
     let response = await controlPlaneAxios.post('/assistant/assistants', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async describeAssistant(assistantName: string): Promise<AssistantModel> {
     let response = await controlPlaneAxios.get(`/assistant/assistants/${assistantName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteAssistant(assistantName: string): Promise<void> {
     await controlPlaneAxios.delete(`/assistant/assistants/${assistantName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 }
@@ -221,7 +224,7 @@ export class PineconeDataPlaneClient {
     return {
       'Api-Key': this.token,
       'Content-Type': 'application/json',
-      'X-Pinecone-Api-Version': '2025-04',
+      'X-Pinecone-Api-Version': '2025-04'
     };
   }
 
@@ -234,12 +237,17 @@ export class PineconeDataPlaneClient {
   }
 
   async upsertVectors(params: {
-    vectors: { id: string; values?: number[]; sparseValues?: { indices: number[]; values: number[] }; metadata?: Record<string, any> }[];
+    vectors: {
+      id: string;
+      values?: number[];
+      sparseValues?: { indices: number[]; values: number[] };
+      metadata?: Record<string, any>;
+    }[];
     namespace?: string;
   }): Promise<{ upsertedCount: number }> {
     let axios = createAxios({ baseURL: this.baseUrl() });
     let response = await axios.post('/vectors/upsert', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -260,15 +268,12 @@ export class PineconeDataPlaneClient {
   }> {
     let axios = createAxios({ baseURL: this.baseUrl() });
     let response = await axios.post('/query', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async fetchVectors(params: {
-    ids: string[];
-    namespace?: string;
-  }): Promise<{
+  async fetchVectors(params: { ids: string[]; namespace?: string }): Promise<{
     vectors: Record<string, VectorRecord>;
     namespace: string;
     usage?: { readUnits: number };
@@ -282,7 +287,7 @@ export class PineconeDataPlaneClient {
       queryParams.append('namespace', params.namespace);
     }
     let response = await axios.get(`/vectors/fetch?${queryParams.toString()}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -296,7 +301,7 @@ export class PineconeDataPlaneClient {
   }): Promise<void> {
     let axios = createAxios({ baseURL: this.baseUrl() });
     await axios.post('/vectors/update', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -308,7 +313,7 @@ export class PineconeDataPlaneClient {
   }): Promise<void> {
     let axios = createAxios({ baseURL: this.baseUrl() });
     await axios.post('/vectors/delete', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -330,14 +335,12 @@ export class PineconeDataPlaneClient {
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.paginationToken) queryParams.append('paginationToken', params.paginationToken);
     let response = await axios.get(`/vectors/list?${queryParams.toString()}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
-  async describeIndexStats(params?: {
-    filter?: Record<string, any>;
-  }): Promise<{
+  async describeIndexStats(params?: { filter?: Record<string, any> }): Promise<{
     namespaces: Record<string, { vectorCount: number }>;
     dimension: number;
     indexFullness: number;
@@ -347,7 +350,7 @@ export class PineconeDataPlaneClient {
   }> {
     let axios = createAxios({ baseURL: this.baseUrl() });
     let response = await axios.post('/describe_index_stats', params || {}, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
@@ -365,7 +368,7 @@ export class PineconeAssistantClient {
   private headers() {
     return {
       'Api-Key': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -377,13 +380,16 @@ export class PineconeAssistantClient {
     return host;
   }
 
-  async chat(assistantName: string, params: {
-    messages: { role: string; content: string }[];
-    model?: string;
-    filter?: Record<string, any>;
-    json_response?: boolean;
-    include_highlights?: boolean;
-  }): Promise<{
+  async chat(
+    assistantName: string,
+    params: {
+      messages: { role: string; content: string }[];
+      model?: string;
+      filter?: Record<string, any>;
+      json_response?: boolean;
+      include_highlights?: boolean;
+    }
+  ): Promise<{
     chatId: string;
     finish_reason: string;
     message: { role: string; content: string };
@@ -392,22 +398,29 @@ export class PineconeAssistantClient {
     usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   }> {
     let axios = createAxios({ baseURL: this.baseUrl() });
-    let response = await axios.post(`/chat/${assistantName}`, {
-      ...params,
-      stream: false,
-    }, {
-      headers: this.headers(),
-    });
+    let response = await axios.post(
+      `/chat/${assistantName}`,
+      {
+        ...params,
+        stream: false
+      },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
-  async getContext(assistantName: string, params: {
-    messages: { role: string; content: string }[];
-    filter?: Record<string, any>;
-  }): Promise<any> {
+  async getContext(
+    assistantName: string,
+    params: {
+      messages: { role: string; content: string }[];
+      filter?: Record<string, any>;
+    }
+  ): Promise<any> {
     let axios = createAxios({ baseURL: this.baseUrl() });
     let response = await axios.post(`/context/${assistantName}`, params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }

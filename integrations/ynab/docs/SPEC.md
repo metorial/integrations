@@ -37,6 +37,7 @@ List, retrieve, and create financial accounts within a budget. Supported account
 ### Transaction Management
 
 Full CRUD operations on transactions within a budget. Transactions can be created individually or in bulk, updated by ID or `import_id`, and deleted. Transactions support:
+
 - Split transactions via subtransactions.
 - Filtering by account, category, payee, month, date, or type (`uncategorized`, `unapproved`).
 - An `import_id` field for deduplication when importing transactions programmatically.

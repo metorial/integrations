@@ -18,28 +18,31 @@ Google Photos APIs use OAuth 2.0 to handle authorization. Service accounts are n
 4. Some application types include additional steps, such as using refresh tokens to acquire new access tokens.
 
 **OAuth 2.0 Endpoints:**
+
 - Authorization endpoint: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token endpoint: `https://oauth2.googleapis.com/token`
 
 **Credentials Required:**
+
 - Client ID
 - Client Secret
 
 **Picker API Scopes:**
 
-| Scope | Description |
-|---|---|
+| Scope                                                              | Description                                                                              |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
 | `https://www.googleapis.com/auth/photospicker.mediaitems.readonly` | Access to create, get, and delete picker sessions, and to list media items for sessions. |
 
 **Library API Scopes:**
 
-| Scope | Description |
-|---|---|
-| `https://www.googleapis.com/auth/photoslibrary.appendonly` | Upload media items and create albums. Only allows new media to be created in the user's library and in albums created by the app. |
-| `https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata` | Read access to media items and albums created by the app. Intended to be used together with `photoslibrary.appendonly`. |
-| `https://www.googleapis.com/auth/photoslibrary.edit.appcreateddata` | Edit access to albums and media items created by the app, including organizing items in albums, changing album titles/cover photos, and media item descriptions. |
+| Scope                                                                   | Description                                                                                                                                                      |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/photoslibrary.appendonly`              | Upload media items and create albums. Only allows new media to be created in the user's library and in albums created by the app.                                |
+| `https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata` | Read access to media items and albums created by the app. Intended to be used together with `photoslibrary.appendonly`.                                          |
+| `https://www.googleapis.com/auth/photoslibrary.edit.appcreateddata`     | Edit access to albums and media items created by the app, including organizing items in albums, changing album titles/cover photos, and media item descriptions. |
 
 **Important Notes:**
+
 - Applications must pass the OAuth verification review. An "unverified app" message appears until verification is complete.
 - The `photoslibrary.readonly`, `photoslibrary.sharing`, and `photoslibrary` scopes were removed on April 1, 2025. The Library API can now only access content created by the app itself.
 

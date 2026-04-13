@@ -3,27 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUserTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_user',
-    description: `Retrieve information about the currently authenticated SavvyCal user. Returns profile details such as name, email, and avatar.`,
-    tags: {
-      readOnly: true
-    }
+export let getUserTool = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_user',
+  description: `Retrieve information about the currently authenticated SavvyCal user. Returns profile details such as name, email, and avatar.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string().describe('Unique user identifier'),
-    displayName: z.string().optional().describe('Display name'),
-    email: z.string().optional().describe('Email address'),
-    avatarUrl: z.string().nullable().optional().describe('Avatar image URL'),
-    timeZone: z.string().optional().describe('User time zone'),
-    slug: z.string().optional().describe('User profile slug')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string().describe('Unique user identifier'),
+      displayName: z.string().optional().describe('Display name'),
+      email: z.string().optional().describe('Email address'),
+      avatarUrl: z.string().nullable().optional().describe('Avatar image URL'),
+      timeZone: z.string().optional().describe('User time zone'),
+      slug: z.string().optional().describe('User profile slug')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let user = await client.getMe();
 

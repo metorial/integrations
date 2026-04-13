@@ -13,13 +13,13 @@ import {
   updateRates,
   getQuote,
   managePaymentLink,
-  sendMessage,
+  sendMessage
 } from './tools';
 import {
   bookingChanges,
   availabilityChanges,
   rateChanges,
-  guestMessageReceived,
+  guestMessageReceived
 } from './triggers';
 
 export let provider = Slate.create({
@@ -37,12 +37,7 @@ export let provider = Slate.create({
     updateRates,
     getQuote,
     managePaymentLink,
-    sendMessage,
+    sendMessage
   ],
-  triggers: [
-    bookingChanges,
-    availabilityChanges,
-    rateChanges,
-    guestMessageReceived,
-  ],
+  triggers: [bookingChanges, availabilityChanges, rateChanges, guestMessageReceived]
 });

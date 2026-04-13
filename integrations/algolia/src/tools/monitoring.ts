@@ -3,35 +3,48 @@ import { AlgoliaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let monitoring = SlateTool.create(
-  spec,
-  {
-    name: 'Monitoring',
-    key: 'monitoring',
-    description: `Check the operational status and performance metrics of Algolia infrastructure. Supports multiple metric types:
+export let monitoring = SlateTool.create(spec, {
+  name: 'Monitoring',
+  key: 'monitoring',
+  description: `Check the operational status and performance metrics of Algolia infrastructure. Supports multiple metric types:
 - **status**: Current operational status of all Algolia clusters and servers.
 - **incidents**: Recent and ongoing incidents affecting Algolia services.
 - **latency**: Search latency metrics for your application's clusters.
 - **indexingTime**: Time taken to process indexing operations for your application.
 - **reachability**: Probe results indicating whether your application's servers are reachable from various locations.
 - **infrastructure**: Detailed infrastructure metrics (CPU, RAM, etc.) for your application's clusters. Supports an optional period parameter to control granularity.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    metric: z.enum(['status', 'incidents', 'latency', 'indexingTime', 'reachability', 'infrastructure'])
-      .describe('The type of monitoring metric to retrieve. Use "status" for cluster health, "incidents" for ongoing/past issues, "latency" for search response times, "indexingTime" for indexing durations, "reachability" for server probe results, or "infrastructure" for detailed server metrics.'),
-    period: z.string().optional()
-      .describe('Time period granularity for infrastructure metrics (e.g., "minute", "hour", "day", "week", "month"). Only used when metric is "infrastructure".'),
-  }))
+})
+  .input(
+    z.object({
+      metric: z
+        .enum([
+          'status',
+          'incidents',
+          'latency',
+          'indexingTime',
+          'reachability',
+          'infrastructure'
+        ])
+        .describe(
+          'The type of monitoring metric to retrieve. Use "status" for cluster health, "incidents" for ongoing/past issues, "latency" for search response times, "indexingTime" for indexing durations, "reachability" for server probe results, or "infrastructure" for detailed server metrics.'
+        ),
+      period: z
+        .string()
+        .optional()
+        .describe(
+          'Time period granularity for infrastructure metrics (e.g., "minute", "hour", "day", "week", "month"). Only used when metric is "infrastructure".'
+        )
+    })
+  )
   .output(z.any())
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new AlgoliaClient({
       applicationId: ctx.auth.applicationId,
       token: ctx.auth.token,
-      analyticsRegion: ctx.config.analyticsRegion,
+      analyticsRegion: ctx.config.analyticsRegion
     });
 
     let { metric, period } = ctx.input;
@@ -78,6 +91,7 @@ export let monitoring = SlateTool.create(
 
     return {
       output: result,
-      message,
+      message
     };
-  }).build();
+  })
+  .build();

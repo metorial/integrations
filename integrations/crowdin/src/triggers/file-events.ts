@@ -3,34 +3,43 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fileEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'File Events',
-    key: 'file_events',
-    description: 'Triggered when files in a Crowdin project change state: fully translated, fully approved, added, updated, reverted, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The event type (e.g. file.translated, file.approved, file.added, file.updated, file.reverted, file.deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    fileId: z.string().optional().describe('File ID'),
-    fileName: z.string().optional().describe('File name'),
-    filePath: z.string().optional().describe('File path'),
-    targetLanguageId: z.string().optional().describe('Target language (for translated/approved events)'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    fileId: z.string().optional().describe('File ID'),
-    fileName: z.string().optional().describe('File name'),
-    filePath: z.string().optional().describe('File path'),
-    targetLanguageId: z.string().optional().describe('Target language'),
-  }))
+export let fileEventsTrigger = SlateTrigger.create(spec, {
+  name: 'File Events',
+  key: 'file_events',
+  description:
+    'Triggered when files in a Crowdin project change state: fully translated, fully approved, added, updated, reverted, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The event type (e.g. file.translated, file.approved, file.added, file.updated, file.reverted, file.deleted)'
+        ),
+      eventId: z.string().describe('Unique event identifier'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      fileId: z.string().optional().describe('File ID'),
+      fileName: z.string().optional().describe('File name'),
+      filePath: z.string().optional().describe('File path'),
+      targetLanguageId: z
+        .string()
+        .optional()
+        .describe('Target language (for translated/approved events)')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      fileId: z.string().optional().describe('File ID'),
+      fileName: z.string().optional().describe('File name'),
+      filePath: z.string().optional().describe('File path'),
+      targetLanguageId: z.string().optional().describe('Target language')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let projects = await client.listProjects({ limit: 500 });
@@ -42,10 +51,17 @@ export let fileEventsTrigger = SlateTrigger.create(
           let webhook = await client.createWebhook(projectId, {
             name: 'Slates File Events',
             url: ctx.input.webhookBaseUrl,
-            events: ['file.translated', 'file.approved', 'file.added', 'file.updated', 'file.reverted', 'file.deleted'],
+            events: [
+              'file.translated',
+              'file.approved',
+              'file.added',
+              'file.updated',
+              'file.reverted',
+              'file.deleted'
+            ],
             requestType: 'POST',
             contentType: 'application/json',
-            isActive: true,
+            isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
         } catch (e) {
@@ -56,7 +72,7 @@ export let fileEventsTrigger = SlateTrigger.create(
       return { registrationDetails: { registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let registrations = ctx.input.registrationDetails?.registrations || [];
 
@@ -69,8 +85,8 @@ export let fileEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       // Handle batched events
       let events = data.events ? data.events : [data];
@@ -93,14 +109,14 @@ export let fileEventsTrigger = SlateTrigger.create(
             fileId,
             fileName: typeof fileName === 'string' ? fileName : undefined,
             filePath,
-            targetLanguageId,
+            targetLanguageId
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -110,9 +126,9 @@ export let fileEventsTrigger = SlateTrigger.create(
           fileId: ctx.input.fileId,
           fileName: ctx.input.fileName,
           filePath: ctx.input.filePath,
-          targetLanguageId: ctx.input.targetLanguageId,
-        },
+          targetLanguageId: ctx.input.targetLanguageId
+        }
       };
-    },
+    }
   })
   .build();

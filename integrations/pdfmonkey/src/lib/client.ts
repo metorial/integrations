@@ -67,9 +67,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.pdfmonkey.io/api/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -82,7 +82,9 @@ export class Client {
 
   // === Documents ===
 
-  async listDocuments(params?: ListDocumentsParams): Promise<{ documents: Record<string, unknown>[]; meta: Record<string, unknown> }> {
+  async listDocuments(
+    params?: ListDocumentsParams
+  ): Promise<{ documents: Record<string, unknown>[]; meta: Record<string, unknown> }> {
     let queryParams: Record<string, string> = {};
 
     if (params?.page) {
@@ -101,7 +103,7 @@ export class Client {
     let response = await this.axios.get('/document_cards', { params: queryParams });
     return {
       documents: response.data.document_cards,
-      meta: response.data.meta,
+      meta: response.data.meta
     };
   }
 
@@ -119,20 +121,18 @@ export class Client {
     let body: Record<string, unknown> = {
       document: {
         document_template_id: params.templateId,
-        status: params.status || 'pending',
-      },
+        status: params.status || 'pending'
+      }
     };
 
     if (params.payload !== undefined) {
-      (body.document as Record<string, unknown>).payload = typeof params.payload === 'string'
-        ? params.payload
-        : JSON.stringify(params.payload);
+      (body.document as Record<string, unknown>).payload =
+        typeof params.payload === 'string' ? params.payload : JSON.stringify(params.payload);
     }
 
     if (params.meta !== undefined) {
-      (body.document as Record<string, unknown>).meta = typeof params.meta === 'string'
-        ? params.meta
-        : JSON.stringify(params.meta);
+      (body.document as Record<string, unknown>).meta =
+        typeof params.meta === 'string' ? params.meta : JSON.stringify(params.meta);
     }
 
     let response = await this.axios.post('/documents', body);
@@ -143,27 +143,28 @@ export class Client {
     let body: Record<string, unknown> = {
       document: {
         document_template_id: params.templateId,
-        status: params.status || 'pending',
-      },
+        status: params.status || 'pending'
+      }
     };
 
     if (params.payload !== undefined) {
-      (body.document as Record<string, unknown>).payload = typeof params.payload === 'string'
-        ? params.payload
-        : JSON.stringify(params.payload);
+      (body.document as Record<string, unknown>).payload =
+        typeof params.payload === 'string' ? params.payload : JSON.stringify(params.payload);
     }
 
     if (params.meta !== undefined) {
-      (body.document as Record<string, unknown>).meta = typeof params.meta === 'string'
-        ? params.meta
-        : JSON.stringify(params.meta);
+      (body.document as Record<string, unknown>).meta =
+        typeof params.meta === 'string' ? params.meta : JSON.stringify(params.meta);
     }
 
     let response = await this.axios.post('/documents/sync', body);
     return response.data.document_card;
   }
 
-  async updateDocument(documentId: string, params: DocumentUpdateParams): Promise<Record<string, unknown>> {
+  async updateDocument(
+    documentId: string,
+    params: DocumentUpdateParams
+  ): Promise<Record<string, unknown>> {
     let docData: Record<string, unknown> = {};
 
     if (params.status !== undefined) {
@@ -173,14 +174,12 @@ export class Client {
       docData.document_template_id = params.templateId;
     }
     if (params.payload !== undefined) {
-      docData.payload = typeof params.payload === 'string'
-        ? params.payload
-        : JSON.stringify(params.payload);
+      docData.payload =
+        typeof params.payload === 'string' ? params.payload : JSON.stringify(params.payload);
     }
     if (params.meta !== undefined) {
-      docData.meta = typeof params.meta === 'string'
-        ? params.meta
-        : JSON.stringify(params.meta);
+      docData.meta =
+        typeof params.meta === 'string' ? params.meta : JSON.stringify(params.meta);
     }
 
     let response = await this.axios.put(`/documents/${documentId}`, { document: docData });
@@ -193,9 +192,11 @@ export class Client {
 
   // === Templates ===
 
-  async listTemplates(params: ListTemplatesParams): Promise<{ templates: Record<string, unknown>[]; meta: Record<string, unknown> }> {
+  async listTemplates(
+    params: ListTemplatesParams
+  ): Promise<{ templates: Record<string, unknown>[]; meta: Record<string, unknown> }> {
     let queryParams: Record<string, string> = {
-      'q[workspaceId]': params.workspaceId,
+      'q[workspaceId]': params.workspaceId
     };
 
     if (params.page) {
@@ -211,7 +212,7 @@ export class Client {
     let response = await this.axios.get('/document_template_cards', { params: queryParams });
     return {
       templates: response.data.document_template_cards,
-      meta: response.data.meta,
+      meta: response.data.meta
     };
   }
 
@@ -223,26 +224,34 @@ export class Client {
   async createTemplate(params: TemplateCreateParams): Promise<Record<string, unknown>> {
     let templateData: Record<string, unknown> = {
       app_id: params.workspaceId,
-      identifier: params.identifier,
+      identifier: params.identifier
     };
 
     if (params.editionMode !== undefined) templateData.edition_mode = params.editionMode;
     if (params.body !== undefined) templateData.body = params.body;
     if (params.bodyDraft !== undefined) templateData.body_draft = params.bodyDraft;
     if (params.scssStyle !== undefined) templateData.scss_style = params.scssStyle;
-    if (params.scssStyleDraft !== undefined) templateData.scss_style_draft = params.scssStyleDraft;
+    if (params.scssStyleDraft !== undefined)
+      templateData.scss_style_draft = params.scssStyleDraft;
     if (params.sampleData !== undefined) templateData.sample_data = params.sampleData;
-    if (params.sampleDataDraft !== undefined) templateData.sample_data_draft = params.sampleDataDraft;
+    if (params.sampleDataDraft !== undefined)
+      templateData.sample_data_draft = params.sampleDataDraft;
     if (params.settings !== undefined) templateData.settings = params.settings;
     if (params.settingsDraft !== undefined) templateData.settings_draft = params.settingsDraft;
-    if (params.templateFolderId !== undefined) templateData.template_folder_id = params.templateFolderId;
+    if (params.templateFolderId !== undefined)
+      templateData.template_folder_id = params.templateFolderId;
     if (params.documentTtl !== undefined) templateData.document_ttl = params.documentTtl;
 
-    let response = await this.axios.post('/document_templates', { document_template: templateData });
+    let response = await this.axios.post('/document_templates', {
+      document_template: templateData
+    });
     return response.data.document_template;
   }
 
-  async updateTemplate(templateId: string, params: TemplateUpdateParams): Promise<Record<string, unknown>> {
+  async updateTemplate(
+    templateId: string,
+    params: TemplateUpdateParams
+  ): Promise<Record<string, unknown>> {
     let templateData: Record<string, unknown> = {};
 
     if (params.identifier !== undefined) templateData.identifier = params.identifier;
@@ -250,15 +259,20 @@ export class Client {
     if (params.body !== undefined) templateData.body = params.body;
     if (params.bodyDraft !== undefined) templateData.body_draft = params.bodyDraft;
     if (params.scssStyle !== undefined) templateData.scss_style = params.scssStyle;
-    if (params.scssStyleDraft !== undefined) templateData.scss_style_draft = params.scssStyleDraft;
+    if (params.scssStyleDraft !== undefined)
+      templateData.scss_style_draft = params.scssStyleDraft;
     if (params.sampleData !== undefined) templateData.sample_data = params.sampleData;
-    if (params.sampleDataDraft !== undefined) templateData.sample_data_draft = params.sampleDataDraft;
+    if (params.sampleDataDraft !== undefined)
+      templateData.sample_data_draft = params.sampleDataDraft;
     if (params.settings !== undefined) templateData.settings = params.settings;
     if (params.settingsDraft !== undefined) templateData.settings_draft = params.settingsDraft;
-    if (params.templateFolderId !== undefined) templateData.template_folder_id = params.templateFolderId;
+    if (params.templateFolderId !== undefined)
+      templateData.template_folder_id = params.templateFolderId;
     if (params.documentTtl !== undefined) templateData.document_ttl = params.documentTtl;
 
-    let response = await this.axios.put(`/document_templates/${templateId}`, { document_template: templateData });
+    let response = await this.axios.put(`/document_templates/${templateId}`, {
+      document_template: templateData
+    });
     return response.data.document_template;
   }
 

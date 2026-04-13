@@ -16,6 +16,7 @@ All endpoints start with `https://[[your-domain]].mailcoach.app/api`. This means
 - **Domain**: Your Mailcoach subdomain (the `your-domain` portion of `your-domain.mailcoach.app`).
 
 Example request:
+
 ```
 curl https://<your-domain>.mailcoach.app/api/user \
   -H "Authorization: Bearer YOUR_API_TOKEN" \

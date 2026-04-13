@@ -3,36 +3,40 @@ import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Retrieve a GitHub user's profile. Provide a username to look up any user, or omit it to get the authenticated user's profile.`,
-    tags: {
-      readOnly: true,
-    },
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Retrieve a GitHub user's profile. Provide a username to look up any user, or omit it to get the authenticated user's profile.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    username: z.string().optional().describe('GitHub username to look up. Omit to get the authenticated user.'),
-  }))
-  .output(z.object({
-    userId: z.number().describe('User ID'),
-    login: z.string().describe('Username'),
-    name: z.string().nullable().describe('Display name'),
-    email: z.string().nullable().describe('Public email'),
-    bio: z.string().nullable().describe('User bio'),
-    company: z.string().nullable().describe('Company'),
-    location: z.string().nullable().describe('Location'),
-    htmlUrl: z.string().describe('Profile URL'),
-    avatarUrl: z.string().describe('Avatar URL'),
-    publicRepos: z.number().describe('Number of public repositories'),
-    followers: z.number().describe('Number of followers'),
-    following: z.number().describe('Number of users following'),
-    createdAt: z.string().describe('Account creation timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      username: z
+        .string()
+        .optional()
+        .describe('GitHub username to look up. Omit to get the authenticated user.')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('User ID'),
+      login: z.string().describe('Username'),
+      name: z.string().nullable().describe('Display name'),
+      email: z.string().nullable().describe('Public email'),
+      bio: z.string().nullable().describe('User bio'),
+      company: z.string().nullable().describe('Company'),
+      location: z.string().nullable().describe('Location'),
+      htmlUrl: z.string().describe('Profile URL'),
+      avatarUrl: z.string().describe('Avatar URL'),
+      publicRepos: z.number().describe('Number of public repositories'),
+      followers: z.number().describe('Number of followers'),
+      following: z.number().describe('Number of users following'),
+      createdAt: z.string().describe('Account creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitHubClient(ctx.auth.token);
     let user = ctx.input.username
       ? await client.getUser(ctx.input.username)
@@ -52,8 +56,9 @@ export let getUser = SlateTool.create(
         publicRepos: user.public_repos,
         followers: user.followers,
         following: user.following,
-        createdAt: user.created_at,
+        createdAt: user.created_at
       },
-      message: `User **${user.login}**${user.name ? ` (${user.name})` : ''} — ${user.public_repos} public repos, ${user.followers} followers.`,
+      message: `User **${user.login}**${user.name ? ` (${user.name})` : ''} — ${user.public_repos} public repos, ${user.followers} followers.`
     };
-  }).build();
+  })
+  .build();

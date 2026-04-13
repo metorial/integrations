@@ -17,31 +17,38 @@ let projectSchema = z.object({
   team: z.any().optional().describe('Assigned team'),
   stage: z.any().optional().describe('Current board stage'),
   tags: z.array(z.any()).optional().describe('Associated tags'),
-  fields: z.array(z.any()).optional().describe('Custom fields'),
+  fields: z.array(z.any()).optional().describe('Custom fields')
 });
 
-export let listProjects = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `List projects (formerly cases) from Capsule CRM with pagination. Optionally filter by modification date or by party.`,
-    tags: {
-      readOnly: true,
-    },
+export let listProjects = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `List projects (formerly cases) from Capsule CRM with pagination. Optionally filter by modification date or by party.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    partyId: z.number().optional().describe('Filter projects by party ID'),
-    since: z.string().optional().describe('ISO 8601 date to filter projects modified after this date'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
-    embed: z.array(z.enum(['tags', 'fields', 'party', 'opportunity', 'missingImportantFields'])).optional().describe('Additional data to embed'),
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema).describe('List of projects'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      partyId: z.number().optional().describe('Filter projects by party ID'),
+      since: z
+        .string()
+        .optional()
+        .describe('ISO 8601 date to filter projects modified after this date'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
+      embed: z
+        .array(z.enum(['tags', 'fields', 'party', 'opportunity', 'missingImportantFields']))
+        .optional()
+        .describe('Additional data to embed')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectSchema).describe('List of projects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
     let result;
@@ -49,14 +56,14 @@ export let listProjects = SlateTool.create(
       result = await client.listProjectsByParty(ctx.input.partyId, {
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        embed: ctx.input.embed,
+        embed: ctx.input.embed
       });
     } else {
       result = await client.listProjects({
         since: ctx.input.since,
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        embed: ctx.input.embed,
+        embed: ctx.input.embed
       });
     }
 
@@ -74,11 +81,12 @@ export let listProjects = SlateTool.create(
       team: k.team,
       stage: k.stage,
       tags: k.tags,
-      fields: k.fields,
+      fields: k.fields
     }));
 
     return {
       output: { projects },
-      message: `Retrieved **${projects.length}** projects.`,
+      message: `Retrieved **${projects.length}** projects.`
     };
-  }).build();
+  })
+  .build();

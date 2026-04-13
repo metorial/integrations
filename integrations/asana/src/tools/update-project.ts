@@ -3,30 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateProject = SlateTool.create(
-  spec,
-  {
-    name: 'Update Project',
-    key: 'update_project',
-    description: `Update an existing project's name, notes, dates, color, layout, archived status, or privacy setting.`,
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project GID to update'),
-    name: z.string().optional().describe('New project name'),
-    notes: z.string().optional().describe('New project notes/description'),
-    color: z.string().optional().describe('New project color'),
-    defaultView: z.enum(['list', 'board', 'calendar', 'timeline']).optional().describe('New default view'),
-    dueOn: z.string().nullable().optional().describe('New due date (YYYY-MM-DD) or null to clear'),
-    startOn: z.string().nullable().optional().describe('New start date (YYYY-MM-DD) or null to clear'),
-    archived: z.boolean().optional().describe('Set archived status'),
-    isPublic: z.boolean().optional().describe('Set visibility'),
-  }))
-  .output(z.object({
-    projectId: z.string(),
-    name: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateProject = SlateTool.create(spec, {
+  name: 'Update Project',
+  key: 'update_project',
+  description: `Update an existing project's name, notes, dates, color, layout, archived status, or privacy setting.`
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project GID to update'),
+      name: z.string().optional().describe('New project name'),
+      notes: z.string().optional().describe('New project notes/description'),
+      color: z.string().optional().describe('New project color'),
+      defaultView: z
+        .enum(['list', 'board', 'calendar', 'timeline'])
+        .optional()
+        .describe('New default view'),
+      dueOn: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New due date (YYYY-MM-DD) or null to clear'),
+      startOn: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New start date (YYYY-MM-DD) or null to clear'),
+      archived: z.boolean().optional().describe('Set archived status'),
+      isPublic: z.boolean().optional().describe('Set visibility')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string(),
+      name: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = {};
@@ -44,8 +56,9 @@ export let updateProject = SlateTool.create(
     return {
       output: {
         projectId: project.gid,
-        name: project.name,
+        name: project.name
       },
-      message: `Updated project **${project.name}** (${project.gid}).`,
+      message: `Updated project **${project.name}** (${project.gid}).`
     };
-  }).build();
+  })
+  .build();

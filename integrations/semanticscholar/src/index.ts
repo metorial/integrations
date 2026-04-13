@@ -9,7 +9,7 @@ import {
   getAuthorPapers,
   recommendPapers,
   autocompletePapers,
-  getDatasets,
+  getDatasets
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     getAuthorPapers,
     recommendPapers,
     autocompletePapers,
-    getDatasets,
+    getDatasets
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

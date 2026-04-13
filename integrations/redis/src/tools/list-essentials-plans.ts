@@ -13,25 +13,24 @@ let planSchema = z.object({
   pricePeriod: z.string().optional().describe('Billing period'),
   maximumDatabases: z.number().optional().describe('Maximum number of databases'),
   maximumMemoryGb: z.number().optional().describe('Maximum memory in GB'),
-  highAvailability: z.boolean().optional().describe('Whether high availability is included'),
+  highAvailability: z.boolean().optional().describe('Whether high availability is included')
 });
 
-export let listEssentialsPlans = SlateTool.create(
-  spec,
-  {
-    name: 'List Essentials Plans',
-    key: 'list_essentials_plans',
-    description: `List available Redis Cloud Essentials plans. Use plan IDs when creating Essentials subscriptions. Plans define the cloud provider, region, pricing, and resource limits.`,
-    tags: {
-      readOnly: true,
-    },
+export let listEssentialsPlans = SlateTool.create(spec, {
+  name: 'List Essentials Plans',
+  key: 'list_essentials_plans',
+  description: `List available Redis Cloud Essentials plans. Use plan IDs when creating Essentials subscriptions. Plans define the cloud provider, region, pricing, and resource limits.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    plans: z.array(planSchema).describe('Available Essentials plans'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      plans: z.array(planSchema).describe('Available Essentials plans')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedisCloudClient(ctx.auth);
     let data = await client.listEssentialsPlans();
     let rawPlans = data?.plans || data || [];
@@ -47,11 +46,12 @@ export let listEssentialsPlans = SlateTool.create(
       pricePeriod: p.pricePeriod,
       maximumDatabases: p.maximumDatabases,
       maximumMemoryGb: p.maximumMemoryGb,
-      highAvailability: p.highAvailability,
+      highAvailability: p.highAvailability
     }));
 
     return {
       output: { plans },
-      message: `Found **${plans.length}** Essentials plan(s).`,
+      message: `Found **${plans.length}** Essentials plan(s).`
     };
-  }).build();
+  })
+  .build();

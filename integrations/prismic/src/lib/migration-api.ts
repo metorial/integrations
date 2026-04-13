@@ -36,11 +36,11 @@ export class MigrationApiClient {
     return createAxios({
       baseURL: 'https://migration.prismic.io',
       headers: {
-        'Authorization': `Bearer ${this.migrationToken}`,
+        Authorization: `Bearer ${this.migrationToken}`,
         'x-api-key': this.migrationToken,
-        'repository': this.repositoryName,
-        'Content-Type': 'application/json',
-      },
+        repository: this.repositoryName,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -50,7 +50,10 @@ export class MigrationApiClient {
     return response.data as MigrationDocumentResponse;
   }
 
-  async updateDocument(documentId: string, document: MigrationDocument): Promise<MigrationDocumentResponse> {
+  async updateDocument(
+    documentId: string,
+    document: MigrationDocument
+  ): Promise<MigrationDocumentResponse> {
     let axios = this.getAxios();
     let response = await axios.put(`/documents/${documentId}`, document);
     return response.data as MigrationDocumentResponse;

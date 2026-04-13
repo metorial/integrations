@@ -12,31 +12,32 @@ let subscriberSchema = z.object({
   status: z.string().optional().describe('Subscription status'),
   createdAt: z.string().optional().describe('Subscription creation timestamp'),
   endedAt: z.string().optional().describe('Subscription end timestamp'),
-  licenseKey: z.string().optional().describe('License key'),
+  licenseKey: z.string().optional().describe('License key')
 });
 
-export let listSubscribers = SlateTool.create(
-  spec,
-  {
-    name: 'List Subscribers',
-    key: 'list_subscribers',
-    description: `Retrieve active subscribers for a specific Gumroad product. Optionally filter by email address.`,
-    tags: {
-      readOnly: true,
-    },
+export let listSubscribers = SlateTool.create(spec, {
+  name: 'List Subscribers',
+  key: 'list_subscribers',
+  description: `Retrieve active subscribers for a specific Gumroad product. Optionally filter by email address.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    productId: z.string().describe('The product ID to list subscribers for'),
-    email: z.string().optional().describe('Filter subscribers by email address'),
-  }))
-  .output(z.object({
-    subscribers: z.array(subscriberSchema).describe('List of subscribers'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productId: z.string().describe('The product ID to list subscribers for'),
+      email: z.string().optional().describe('Filter subscribers by email address')
+    })
+  )
+  .output(
+    z.object({
+      subscribers: z.array(subscriberSchema).describe('List of subscribers')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GumroadClient({ token: ctx.auth.token });
     let subscribers = await client.listSubscribers(ctx.input.productId, {
-      email: ctx.input.email,
+      email: ctx.input.email
     });
 
     let mapped = subscribers.map((s: any) => ({
@@ -48,7 +49,7 @@ export let listSubscribers = SlateTool.create(
       status: s.status || undefined,
       createdAt: s.created_at || undefined,
       endedAt: s.ended_at || undefined,
-      licenseKey: s.license_key || undefined,
+      licenseKey: s.license_key || undefined
     }));
 
     return {

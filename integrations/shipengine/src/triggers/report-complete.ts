@@ -3,29 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reportCompleteTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Report Complete',
-    key: 'report_complete',
-    description: 'Fires when a requested report has finished generating and is ready for download.'
-  }
-)
-  .input(z.object({
-    resourceUrl: z.string().optional().describe('URL to the report resource'),
-    reportId: z.string().optional().describe('Report ID'),
-    reportType: z.string().optional().describe('Report type'),
-    status: z.string().optional().describe('Report status'),
-    rawPayload: z.any().optional().describe('Raw event payload')
-  }))
-  .output(z.object({
-    reportId: z.string().describe('Report ID'),
-    reportType: z.string().optional().describe('Type of report'),
-    status: z.string().describe('Report status'),
-    downloadUrl: z.string().optional().describe('URL to download the report')
-  }))
+export let reportCompleteTrigger = SlateTrigger.create(spec, {
+  name: 'Report Complete',
+  key: 'report_complete',
+  description:
+    'Fires when a requested report has finished generating and is ready for download.'
+})
+  .input(
+    z.object({
+      resourceUrl: z.string().optional().describe('URL to the report resource'),
+      reportId: z.string().optional().describe('Report ID'),
+      reportType: z.string().optional().describe('Report type'),
+      status: z.string().optional().describe('Report status'),
+      rawPayload: z.any().optional().describe('Raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      reportId: z.string().describe('Report ID'),
+      reportType: z.string().optional().describe('Type of report'),
+      status: z.string().describe('Report status'),
+      downloadUrl: z.string().optional().describe('URL to download the report')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -43,7 +45,7 @@ export let reportCompleteTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -52,23 +54,25 @@ export let reportCompleteTrigger = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let reportData = data?.data ?? data ?? {};
 
       return {
-        inputs: [{
-          resourceUrl: data?.resource_url ?? '',
-          reportId: reportData.report_id ?? reportData.id ?? '',
-          reportType: reportData.report_type ?? reportData.type,
-          status: reportData.status ?? 'complete',
-          rawPayload: data
-        }]
+        inputs: [
+          {
+            resourceUrl: data?.resource_url ?? '',
+            reportId: reportData.report_id ?? reportData.id ?? '',
+            reportType: reportData.report_type ?? reportData.type,
+            status: reportData.status ?? 'complete',
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'report.complete',
         id: `report-${ctx.input.reportId ?? ''}-${Date.now()}`,
@@ -80,4 +84,5 @@ export let reportCompleteTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

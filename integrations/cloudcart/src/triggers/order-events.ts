@@ -5,34 +5,37 @@ import { z } from 'zod';
 
 let orderEventTypes = ['order.created', 'order.updated', 'order.deleted'] as const;
 
-export let orderEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Order Events',
-    key: 'order_events',
-    description: 'Triggers when an order is created, updated, or deleted in the CloudCart store.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(orderEventTypes).describe('The type of order event'),
-    orderId: z.string().describe('ID of the affected order'),
-    orderAttributes: z.record(z.string(), z.any()).describe('Order attributes from the webhook payload'),
-  }))
-  .output(z.object({
-    orderId: z.string(),
-    customerEmail: z.string().optional(),
-    customerFirstName: z.string().optional(),
-    customerLastName: z.string().optional(),
-    status: z.string().optional(),
-    statusFulfillment: z.string().optional(),
-    priceTotal: z.any().optional(),
-    currency: z.string().optional(),
-    quantity: z.any().optional(),
-    dateAdded: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
+export let orderEvents = SlateTrigger.create(spec, {
+  name: 'Order Events',
+  key: 'order_events',
+  description: 'Triggers when an order is created, updated, or deleted in the CloudCart store.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(orderEventTypes).describe('The type of order event'),
+      orderId: z.string().describe('ID of the affected order'),
+      orderAttributes: z
+        .record(z.string(), z.any())
+        .describe('Order attributes from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string(),
+      customerEmail: z.string().optional(),
+      customerFirstName: z.string().optional(),
+      customerLastName: z.string().optional(),
+      status: z.string().optional(),
+      statusFulfillment: z.string().optional(),
+      priceTotal: z.any().optional(),
+      currency: z.string().optional(),
+      quantity: z.any().optional(),
+      dateAdded: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
       let webhookIds: string[] = [];
@@ -40,17 +43,17 @@ export let orderEvents = SlateTrigger.create(
         let res = await client.createWebhook({
           url: ctx.input.webhookBaseUrl,
           event,
-          new_version: 1,
+          new_version: 1
         });
         webhookIds.push(res.data.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
@@ -63,8 +66,8 @@ export let orderEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
 
       let data = body.data;
       if (!data) {
@@ -82,15 +85,17 @@ export let orderEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType: eventType as typeof orderEventTypes[number],
-          orderId: String(resource.id || ''),
-          orderAttributes: (resource.attributes || resource) as Record<string, any>,
-        }],
+        inputs: [
+          {
+            eventType: eventType as (typeof orderEventTypes)[number],
+            orderId: String(resource.id || ''),
+            orderAttributes: (resource.attributes || resource) as Record<string, any>
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let attrs = ctx.input.orderAttributes as Record<string, any>;
 
       return {
@@ -107,9 +112,9 @@ export let orderEvents = SlateTrigger.create(
           currency: attrs.currency as string | undefined,
           quantity: attrs.quantity,
           dateAdded: attrs.date_added as string | undefined,
-          updatedAt: attrs.updated_at as string | undefined,
-        },
+          updatedAt: attrs.updated_at as string | undefined
+        }
       };
-    },
+    }
   })
   .build();

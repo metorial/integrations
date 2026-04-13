@@ -25,12 +25,9 @@ import {
   listContentLibrary,
   listDocumentFolders,
   createDocumentFolder,
-  moveDocumentToFolder,
+  moveDocumentToFolder
 } from './tools';
-import {
-  documentEvents,
-  templateEvents,
-} from './triggers';
+import { documentEvents, templateEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,10 +56,7 @@ export let provider = Slate.create({
     listContentLibrary,
     listDocumentFolders,
     createDocumentFolder,
-    moveDocumentToFolder,
+    moveDocumentToFolder
   ],
-  triggers: [
-    documentEvents,
-    templateEvents,
-  ],
+  triggers: [documentEvents, templateEvents]
 });

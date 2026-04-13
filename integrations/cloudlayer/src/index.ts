@@ -11,7 +11,7 @@ import {
   listJobs,
   getAsset,
   listAssets,
-  getAccountStatus,
+  getAccountStatus
 } from './tools';
 import { jobCompleted } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     listJobs,
     getAsset,
     listAssets,
-    getAccountStatus,
+    getAccountStatus
   ],
-  triggers: [
-    jobCompleted,
-  ],
+  triggers: [jobCompleted]
 });

@@ -3,45 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let activityEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Events',
-    key: 'activity_events',
-    description: '[Polling fallback] Poll for new audit activity events including admin actions, user logins, Drive activity, mobile device events, OAuth token grants, and other application activities.'
-  }
-)
-  .input(z.object({
-    activityId: z.string().describe('Unique identifier for the activity event'),
-    actorEmail: z.string().optional().describe('Email of the actor who triggered the event'),
-    ipAddress: z.string().optional().describe('IP address of the actor'),
-    time: z.string().optional().describe('Time of the activity event'),
-    applicationName: z.string().optional().describe('Application that generated the event'),
-    eventName: z.string().optional().describe('Name of the event'),
-    eventType: z.string().optional().describe('Type of the event'),
-    parameters: z.array(z.object({
-      name: z.string().optional(),
-      value: z.string().optional()
-    })).optional().describe('Event parameters')
-  }))
-  .output(z.object({
-    actorEmail: z.string().optional().describe('Email of the actor who triggered the event'),
-    ipAddress: z.string().optional().describe('IP address of the actor'),
-    time: z.string().optional().describe('Time the event occurred'),
-    applicationName: z.string().optional().describe('Application that generated the event'),
-    eventName: z.string().optional().describe('Name of the event'),
-    eventType: z.string().optional().describe('Type of the event'),
-    parameters: z.array(z.object({
-      name: z.string().optional(),
-      value: z.string().optional()
-    })).optional().describe('Additional event parameters')
-  }))
+export let activityEvents = SlateTrigger.create(spec, {
+  name: 'Activity Events',
+  key: 'activity_events',
+  description:
+    '[Polling fallback] Poll for new audit activity events including admin actions, user logins, Drive activity, mobile device events, OAuth token grants, and other application activities.'
+})
+  .input(
+    z.object({
+      activityId: z.string().describe('Unique identifier for the activity event'),
+      actorEmail: z.string().optional().describe('Email of the actor who triggered the event'),
+      ipAddress: z.string().optional().describe('IP address of the actor'),
+      time: z.string().optional().describe('Time of the activity event'),
+      applicationName: z.string().optional().describe('Application that generated the event'),
+      eventName: z.string().optional().describe('Name of the event'),
+      eventType: z.string().optional().describe('Type of the event'),
+      parameters: z
+        .array(
+          z.object({
+            name: z.string().optional(),
+            value: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Event parameters')
+    })
+  )
+  .output(
+    z.object({
+      actorEmail: z.string().optional().describe('Email of the actor who triggered the event'),
+      ipAddress: z.string().optional().describe('IP address of the actor'),
+      time: z.string().optional().describe('Time the event occurred'),
+      applicationName: z.string().optional().describe('Application that generated the event'),
+      eventName: z.string().optional().describe('Name of the event'),
+      eventType: z.string().optional().describe('Type of the event'),
+      parameters: z
+        .array(
+          z.object({
+            name: z.string().optional(),
+            value: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Additional event parameters')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         customerId: ctx.config.customerId,
@@ -93,7 +105,10 @@ export let activityEvents = SlateTrigger.create(
                 eventType: event.type,
                 parameters: (event.parameters || []).map((p: any) => ({
                   name: p.name,
-                  value: p.value || (p.intValue ? String(p.intValue) : undefined) || (p.boolValue !== undefined ? String(p.boolValue) : undefined)
+                  value:
+                    p.value ||
+                    (p.intValue ? String(p.intValue) : undefined) ||
+                    (p.boolValue !== undefined ? String(p.boolValue) : undefined)
                 }))
               });
             }
@@ -111,7 +126,7 @@ export let activityEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = `${ctx.input.applicationName || 'unknown'}.${ctx.input.eventName || 'unknown'}`;
 
       return {

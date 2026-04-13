@@ -26,13 +26,20 @@ export let taskSchema = z.object({
   assignee: z.string().nullable().describe('Primary assignee name or email'),
   assignees: z.array(z.string()).nullable().describe('All assignees'),
   tags: z.array(z.string()).describe('Tags'),
-  priority: z.enum(['Critical', 'High', 'Medium', 'Low']).nullable().describe('Priority level'),
+  priority: z
+    .enum(['Critical', 'High', 'Medium', 'Low'])
+    .nullable()
+    .describe('Priority level'),
   startAt: z.string().nullable().describe('Start date (YYYY-MM-DD)'),
   dueAt: z.string().nullable().describe('Due date (YYYY-MM-DD)'),
   size: z.union([z.string(), z.number()]).nullable().describe('Size/estimate'),
   timeTracking: z.string().optional().describe('Time tracked (HH:MM:SS)'),
   attachments: z.array(attachmentSchema).optional().describe('File attachments'),
-  customProperties: z.record(z.string(), z.any()).nullable().optional().describe('Custom property values keyed by property name'),
+  customProperties: z
+    .record(z.string(), z.any())
+    .nullable()
+    .optional()
+    .describe('Custom property values keyed by property name'),
   taskRelationships: taskRelationshipsSchema.nullable().optional().describe('Related tasks'),
   createdBy: z.string().nullable().optional().describe('Creator name or email'),
   createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)'),
@@ -51,7 +58,11 @@ export let conciseTaskSchema = z.object({
   assignee: z.string().nullable().optional().describe('Primary assignee'),
   assignees: z.array(z.string()).nullable().optional().describe('All assignees'),
   tags: z.array(z.string()).optional().describe('Tags'),
-  priority: z.enum(['Critical', 'High', 'Medium', 'Low']).nullable().optional().describe('Priority'),
+  priority: z
+    .enum(['Critical', 'High', 'Medium', 'Low'])
+    .nullable()
+    .optional()
+    .describe('Priority'),
   startAt: z.string().nullable().optional().describe('Start date'),
   dueAt: z.string().nullable().optional().describe('Due date'),
   size: z.union([z.string(), z.number()]).nullable().optional().describe('Size/estimate'),
@@ -61,7 +72,11 @@ export let conciseTaskSchema = z.object({
 
 export let commentSchema = z.object({
   commentId: z.string().describe('Comment ID'),
-  parentId: z.string().nullable().optional().describe('Parent comment ID for threaded replies'),
+  parentId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Parent comment ID for threaded replies'),
   htmlUrl: z.string().optional().describe('Link to comment in Dart'),
   author: z.string().describe('Author name or email'),
   taskId: z.string().describe('Associated task ID'),
@@ -90,7 +105,11 @@ export let assigneeSchema = z.object({
 
 export let customPropertySchema = z.object({
   name: z.string().describe('Property name'),
-  type: z.string().describe('Property type (Checkbox, Dates, Multiselect, Number, Select, Status, Text, Time tracking, User)'),
+  type: z
+    .string()
+    .describe(
+      'Property type (Checkbox, Dates, Multiselect, Number, Select, Status, Text, Time tracking, User)'
+    ),
   options: z.array(z.string()).optional().describe('Available options for select/multiselect'),
   format: z.string().optional().describe('Number format (Dollars, Integer, Percentage)'),
   isRange: z.boolean().optional().describe('Whether dates are a range'),

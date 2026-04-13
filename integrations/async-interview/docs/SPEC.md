@@ -27,22 +27,29 @@ Authorization: Bearer YOUR_API_TOKEN
 ## Features
 
 ### Job Management
+
 Manage interview jobs (positions) through the API. The Async Interview API enables automation around video interview processes. With this API, you can manipulate interview data, initiate new interviews, and respond to events within the Async Interview platform. You can list and retrieve jobs, which represent interview campaigns tied to open positions.
 
 ### Interview Responses
+
 Access and retrieve candidate interview responses. Responses contain candidate-submitted video, audio, or text answers to interview questions. Applicants have the flexibility to respond to your interview at their convenience, aligning with your set deadlines, utilizing video, audio, or text responses. You can list interview responses to analyze candidate submissions programmatically.
 
 ### Candidate Invitations
+
 Invite candidates to participate in interviews. Effortlessly invite candidates in bulk. You can upload a CSV file, send individual invitations, or share the link on a job board.
 
 ### AI Transcription
+
 Experience seamless transcription with AI. Say goodbye to manual transcriptions & save time while ensuring the accuracy and efficiency you need. Transcription data may be accessible through the API alongside interview responses.
 
 ### Branding & Customization
+
 Make a lasting impression with your brand's identity. Comprehensive customization options allow you to tailor the look and feel of your interviews.
+
 - Customizable interview pages with company branding.
 
 ### File Attachments
+
 Looking for CVs, pitch decks, or portfolios? The platform supports collecting file-based submissions from candidates in addition to video/audio responses.
 
 ## Events
@@ -50,6 +57,7 @@ Looking for CVs, pitch decks, or portfolios? The platform supports collecting fi
 The platform offers API with Webhooks so that you can use the platform in whatever way you want.
 
 ### Interview Response Received
+
 Triggered when a candidate submits a new interview response. Emit new event when a new interview response is received. This can be used to automate follow-up workflows such as notifying hiring managers, pushing data to an ATS, or triggering candidate evaluation processes.
 
 **Note:** While the platform advertises webhook support, the publicly available integration implementations (e.g., on Pipedream) use a polling mechanism to check for new interview responses rather than native webhook delivery. The exact webhook configuration options and supported event types beyond interview responses are not publicly documented in detail.

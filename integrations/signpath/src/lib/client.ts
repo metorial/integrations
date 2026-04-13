@@ -145,8 +145,13 @@ export class SignPathClient {
     return response.data;
   }
 
-  async getCertificateForSigningPolicy(projectSlug: string, signingPolicySlug: string): Promise<CertificateInfo> {
-    let response = await this.axios.get(`/Projects/${projectSlug}/SigningPolicies/${signingPolicySlug}/Certificate`);
+  async getCertificateForSigningPolicy(
+    projectSlug: string,
+    signingPolicySlug: string
+  ): Promise<CertificateInfo> {
+    let response = await this.axios.get(
+      `/Projects/${projectSlug}/SigningPolicies/${signingPolicySlug}/Certificate`
+    );
     return response.data;
   }
 
@@ -160,7 +165,9 @@ export class SignPathClient {
     if (params?.projectSlug) queryParams['projectSlug'] = params.projectSlug;
     if (params?.signingPolicySlug) queryParams['signingPolicySlug'] = params.signingPolicySlug;
 
-    let response = await this.axios.get('/Cryptoki/MySigningPolicies', { params: queryParams });
+    let response = await this.axios.get('/Cryptoki/MySigningPolicies', {
+      params: queryParams
+    });
     return Array.isArray(response.data) ? response.data : [response.data];
   }
 

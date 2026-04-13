@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   queryRecords,
@@ -14,13 +13,9 @@ import {
   manageKnowledgeArticle,
   browseServiceCatalog,
   manageAttachment,
-  importData,
+  importData
 } from './tools';
-import {
-  recordChanges,
-  incidentUpdates,
-  inboundWebhook,
-} from './triggers';
+import { recordChanges, incidentUpdates, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,11 +32,7 @@ export let provider = Slate.create({
     manageKnowledgeArticle,
     browseServiceCatalog,
     manageAttachment,
-    importData,
+    importData
   ],
-  triggers: [
-    inboundWebhook,
-    recordChanges,
-    incidentUpdates,
-  ],
+  triggers: [inboundWebhook, recordChanges, incidentUpdates]
 });

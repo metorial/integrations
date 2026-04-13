@@ -13,6 +13,7 @@ Parallel uses API key authentication. You can generate an API key from the [Para
 The API key is passed in request headers. Depending on the API endpoint, it uses one of two header formats:
 
 - **Most endpoints (Search, Extract, Task, FindAll, Monitor):** Pass the key via the `x-api-key` header:
+
   ```
   x-api-key: YOUR_PARALLEL_API_KEY
   ```
@@ -29,30 +30,40 @@ Parallel also offers an MCP server at `https://search-mcp.parallel.ai/mcp`, whic
 ## Features
 
 ### Web Search
+
 Perform AI-optimized web searches with natural language objectives and optional keyword queries. Supports multiple modes: `one-shot` returns more comprehensive results, `agentic` returns concise token-efficient results for use in agentic loops, and `fast` trades some quality for lower latency. You provide an objective (natural language description of what to find) and/or keyword search queries, and receive ranked results with excerpts and source URLs.
+
 - Configurable maximum number of results and excerpt length.
 - The objective may include guidance about preferred sources or freshness. At least one of `objective` or `search_queries` must be provided.
 
 ### Content Extraction
+
 Extract and retrieve content from specific URLs. You provide one or more URLs along with an objective describing what information to extract. Returns excerpts or full content from the target pages.
+
 - Can be directed with an objective to extract only relevant information.
 - Options for excerpts-only or full content retrieval.
 
 ### Deep Research (Task API)
+
 Run complex, multi-step web research tasks that autonomously search, retrieve, reason, and synthesize information. Users declare what information and insights they need, and the API orchestrates querying, ranking, retrieval, reasoning, validation, and synthesis to deliver structured outputs.
+
 - Multiple processor tiers available (`base`, `core`, `ultra`, and higher multipliers like `ultra2x`, `ultra4x`, `ultra8x`) that trade cost for thoroughness and accuracy.
 - Supports structured JSON output schemas to get results in a specific format with defined fields.
 - Supports authenticated page access, allowing research across both public and private sources within a single workflow.
 - Task Groups allow organizing and managing multiple related task runs.
 
 ### Chat Completions
+
 An OpenAI-compatible chat completions endpoint that provides web-grounded conversational AI. The Chat API offers two modes: the `speed` model for low-latency responses, and a research mode for deeper queries.
+
 - Supports streaming responses.
 - Supports structured output via JSON schema in `response_format`.
 - Compatible with OpenAI client libraries by changing the base URL and API key.
 
 ### FindAll (Entity Discovery)
+
 Unlike traditional search APIs that return a fixed set of results, FindAll generates candidates from web data, validates them against your criteria, and optionally enriches matches with additional structured information—all from a single natural language query.
+
 - Accepts natural language objectives which are parsed into entity types and match conditions via an ingest step.
 - Offers multiple tiers: Base is cost-effective for broad queries, Core balances cost and thoroughness, and Pro provides the most comprehensive search for highly specific queries.
 - Configurable `match_limit` to control how many entities to discover.
@@ -60,7 +71,9 @@ Unlike traditional search APIs that return a fixed set of results, FindAll gener
 - Asynchronous processing: you start a run, poll for completion, then retrieve results.
 
 ### Web Monitoring (Monitor API)
+
 The Monitor API lets you continuously track the web for changes relevant to a query, on a schedule you control. It flips the model from pull to push — you create queries that themselves trigger notifications when new information is published to the web.
+
 - Supports scheduling with configurable frequency (e.g., `1h`, `1d`, `1w`) between 1 hour and 30 days.
 - Supports structured output schemas so each detected event returns data in a consistent, machine-readable format.
 - Currently in public alpha; endpoints and formats are subject to change.
@@ -71,12 +84,16 @@ The Monitor API lets you continuously track the web for changes relevant to a qu
 Parallel supports webhooks for both the Task API and the Monitor API.
 
 ### Task Run Events
+
 Webhooks are available for all Task Runs on the Parallel Task API, including Deep Research. Get notified when tasks complete instead of continuously checking their status.
+
 - Event type: `task_run.status` — fires when a task run completes or changes status.
 - Configured per-request by including a `webhook` object with a `url` and `event_types` array.
 
 ### Monitor Events
+
 Webhooks allow you to receive real-time notifications when a Monitor execution completes, fails, or when material events are detected.
+
 - Event types:
   - `monitor.event.detected` — fired when new relevant information is discovered on the web.
   - `monitor.execution.completed` — fired when a scheduled monitor run finishes.
@@ -85,4 +102,5 @@ Webhooks allow you to receive real-time notifications when a Monitor execution c
 - When a webhook fires with a `monitor.event.detected` event, it returns an `event_group_id` that you use to retrieve the complete set of results.
 
 ### Webhook Security
+
 Webhooks follow standard webhook conventions. Go to Settings → Webhooks to view your account webhook secret, which is needed to verify webhook signatures. Signatures use HMAC verification and are included in the `webhook-signature` header.

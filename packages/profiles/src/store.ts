@@ -1,7 +1,7 @@
-import { execFileSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { execFileSync } from 'child_process';
+import { randomUUID } from 'crypto';
+import { mkdir, readFile, writeFile } from 'fs/promises';
+import path from 'path';
 import {
   SlatesCliStoreData,
   SlatesProfileRecord,

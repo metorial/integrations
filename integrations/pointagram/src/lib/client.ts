@@ -11,15 +11,15 @@ export class PointagramClient {
     this.token = config.token;
     this.apiUser = config.apiUser;
     this.http = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
   private getHeaders() {
     return {
-      'api_key': this.token,
-      'api_user': this.apiUser,
-      'Content-Type': 'application/json',
+      api_key: this.token,
+      api_user: this.apiUser,
+      'Content-Type': 'application/json'
     };
   }
 
@@ -32,21 +32,21 @@ export class PointagramClient {
     offline?: boolean;
   }) {
     let body: Record<string, unknown> = {
-      player_name: params.playerName,
+      player_name: params.playerName
     };
     if (params.playerEmail) body.player_email = params.playerEmail;
     if (params.playerExternalId) body.player_external_id = params.playerExternalId;
     if (params.offline !== undefined) body.offline = params.offline ? 1 : 0;
 
     let response = await this.http.post('/create_player', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async listPlayers() {
     let response = await this.http.get('/list_players', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -62,33 +62,29 @@ export class PointagramClient {
     if (params.playerExternalId) body.player_external_id = params.playerExternalId;
 
     let response = await this.http.post('/remove_player', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   // ── Teams ────────────────────────────────────────────────
 
-  async createTeam(params: {
-    teamName: string;
-    icon: string;
-    filterIgnore?: boolean;
-  }) {
+  async createTeam(params: { teamName: string; icon: string; filterIgnore?: boolean }) {
     let body: Record<string, unknown> = {
       team_name: params.teamName,
-      icon: params.icon,
+      icon: params.icon
     };
     if (params.filterIgnore !== undefined) body.filter_ignore = params.filterIgnore ? 1 : 0;
 
     let response = await this.http.post('/add_team', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async listTeams() {
     let response = await this.http.get('/list_teams', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -101,7 +97,7 @@ export class PointagramClient {
     playerId?: string;
   }) {
     let body: Record<string, unknown> = {
-      team_id: params.teamId,
+      team_id: params.teamId
     };
     if (params.playerName) body.player_name = params.playerName;
     if (params.playerEmail) body.player_email = params.playerEmail;
@@ -109,7 +105,7 @@ export class PointagramClient {
     if (params.playerId) body.playerid = params.playerId;
 
     let response = await this.http.post('/add_to_team', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -122,7 +118,7 @@ export class PointagramClient {
     playerId?: string;
   }) {
     let body: Record<string, unknown> = {
-      team_id: params.teamId,
+      team_id: params.teamId
     };
     if (params.playerName) body.player_name = params.playerName;
     if (params.playerEmail) body.player_email = params.playerEmail;
@@ -130,7 +126,7 @@ export class PointagramClient {
     if (params.playerId) body.playerid = params.playerId;
 
     let response = await this.http.post('/remove_from_team', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -169,14 +165,14 @@ export class PointagramClient {
     if (params.createPlayer) body.create_player = 1;
 
     let response = await this.http.post('/add_score', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async listScoreSeries() {
     let response = await this.http.get('/list_score_series', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -184,7 +180,7 @@ export class PointagramClient {
   async listScoreSeriesPointTypes(scoreseriesId: string) {
     let response = await this.http.get('/list_score_series_point_types', {
       headers: this.getHeaders(),
-      params: { scoreseries: scoreseriesId },
+      params: { scoreseries: scoreseriesId }
     });
     return response.data;
   }
@@ -199,7 +195,7 @@ export class PointagramClient {
     offsetId?: string;
   }) {
     let queryParams: Record<string, string> = {
-      scoreseriesid: params.scoreseriesId,
+      scoreseriesid: params.scoreseriesId
     };
     if (params.tagsFilter) queryParams.tags_filter = params.tagsFilter;
     if (params.teamsFilter) queryParams.teams_filter = params.teamsFilter;
@@ -210,7 +206,7 @@ export class PointagramClient {
 
     let response = await this.http.get('/list_score_series_history', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -233,7 +229,7 @@ export class PointagramClient {
 
     let response = await this.http.get('/list_competitions', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -252,7 +248,7 @@ export class PointagramClient {
 
     let response = await this.http.get('/list_competition_players', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }

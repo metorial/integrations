@@ -16,12 +16,9 @@ import {
   listTasks,
   manageResponses,
   createAnalyticsReport,
-  listOrganizationsAndUsers,
+  listOrganizationsAndUsers
 } from './tools';
-import {
-  incomingMessage,
-  newComment,
-} from './triggers';
+import { incomingMessage, newComment } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,10 +38,7 @@ export let provider = Slate.create({
     listTasks,
     manageResponses,
     createAnalyticsReport,
-    listOrganizationsAndUsers,
+    listOrganizationsAndUsers
   ],
-  triggers: [
-    incomingMessage,
-    newComment,
-  ],
+  triggers: [incomingMessage, newComment]
 });

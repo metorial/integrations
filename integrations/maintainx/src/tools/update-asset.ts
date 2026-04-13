@@ -3,40 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateAsset = SlateTool.create(
-  spec,
-  {
-    name: 'Update Asset',
-    key: 'update_asset',
-    description: `Updates an existing asset in MaintainX. Can modify name, description, metadata, location, and associations. Only provided fields will be updated.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let updateAsset = SlateTool.create(spec, {
+  name: 'Update Asset',
+  key: 'update_asset',
+  description: `Updates an existing asset in MaintainX. Can modify name, description, metadata, location, and associations. Only provided fields will be updated.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    assetId: z.number().describe('ID of the asset to update'),
-    name: z.string().optional().describe('New name'),
-    description: z.string().optional().describe('New description'),
-    barcode: z.string().optional().describe('New barcode'),
-    serialNumber: z.string().optional().describe('New serial number'),
-    manufacturer: z.string().optional().describe('New manufacturer'),
-    model: z.string().optional().describe('New model'),
-    locationId: z.number().optional().describe('New location ID'),
-    parentId: z.number().optional().describe('New parent asset ID'),
-    teamIds: z.array(z.number()).optional().describe('New team IDs'),
-    assetTypes: z.array(z.string()).optional().describe('New asset type classifications'),
-    vendorIds: z.array(z.number()).optional().describe('New vendor IDs'),
-  }))
-  .output(z.object({
-    assetId: z.number().describe('ID of the updated asset'),
-    name: z.string().optional().describe('Name of the asset'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      assetId: z.number().describe('ID of the asset to update'),
+      name: z.string().optional().describe('New name'),
+      description: z.string().optional().describe('New description'),
+      barcode: z.string().optional().describe('New barcode'),
+      serialNumber: z.string().optional().describe('New serial number'),
+      manufacturer: z.string().optional().describe('New manufacturer'),
+      model: z.string().optional().describe('New model'),
+      locationId: z.number().optional().describe('New location ID'),
+      parentId: z.number().optional().describe('New parent asset ID'),
+      teamIds: z.array(z.number()).optional().describe('New team IDs'),
+      assetTypes: z.array(z.string()).optional().describe('New asset type classifications'),
+      vendorIds: z.array(z.number()).optional().describe('New vendor IDs')
+    })
+  )
+  .output(
+    z.object({
+      assetId: z.number().describe('ID of the updated asset'),
+      name: z.string().optional().describe('Name of the asset')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let updateData: Record<string, any> = {};
@@ -58,8 +59,9 @@ export let updateAsset = SlateTool.create(
     return {
       output: {
         assetId: asset.id ?? ctx.input.assetId,
-        name: asset.name ?? ctx.input.name,
+        name: asset.name ?? ctx.input.name
       },
-      message: `Updated asset **#${ctx.input.assetId}**${ctx.input.name ? ` — name set to "${ctx.input.name}"` : ''}.`,
+      message: `Updated asset **#${ctx.input.assetId}**${ctx.input.name ? ` — name set to "${ctx.input.name}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

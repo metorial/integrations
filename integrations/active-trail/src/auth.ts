@@ -2,21 +2,25 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('ActiveTrail API access token. Found under Settings > API Apps.'),
+      token: z
+        .string()
+        .describe('ActiveTrail API access token. Found under Settings > API Apps.')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   });

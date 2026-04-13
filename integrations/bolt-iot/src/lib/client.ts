@@ -24,7 +24,10 @@ export class Client {
     });
   }
 
-  private async request(command: string, params?: Record<string, string>): Promise<BoltResponse> {
+  private async request(
+    command: string,
+    params?: Record<string, string>
+  ): Promise<BoltResponse> {
     let queryParams = new URLSearchParams();
     if (params) {
       for (let [key, value] of Object.entries(params)) {
@@ -77,7 +80,10 @@ export class Client {
   }
 
   async digitalMultiWrite(pins: string[], states: string[]): Promise<BoltResponse> {
-    return this.request('digitalMultiWrite', { pins: pins.join(','), states: states.join(',') });
+    return this.request('digitalMultiWrite', {
+      pins: pins.join(','),
+      states: states.join(',')
+    });
   }
 
   // Analog I/O

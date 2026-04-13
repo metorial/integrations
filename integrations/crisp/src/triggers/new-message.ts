@@ -3,45 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMessage = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Message',
-    key: 'new_message',
-    description: 'Triggers when a new message is sent or received in any conversation. Polls recently updated conversations and checks for new messages since the last poll.',
-  }
-)
-  .input(z.object({
-    sessionId: z.string(),
-    fingerprint: z.string(),
-    type: z.string(),
-    from: z.string(),
-    origin: z.string().optional(),
-    content: z.any(),
-    timestamp: z.number(),
-    senderNickname: z.string().optional(),
-  }))
-  .output(z.object({
-    sessionId: z.string().describe('Session ID of the conversation'),
-    fingerprint: z.string().describe('Unique message fingerprint'),
-    type: z.string().describe('Message type (text, note, file, etc.)'),
-    from: z.string().describe('Sender: operator or user'),
-    origin: z.string().optional().describe('Origin channel'),
-    content: z.any().describe('Message content'),
-    timestamp: z.number().describe('Message timestamp in milliseconds'),
-    senderNickname: z.string().optional().describe('Sender display name'),
-  }))
+export let newMessage = SlateTrigger.create(spec, {
+  name: 'New Message',
+  key: 'new_message',
+  description:
+    'Triggers when a new message is sent or received in any conversation. Polls recently updated conversations and checks for new messages since the last poll.'
+})
+  .input(
+    z.object({
+      sessionId: z.string(),
+      fingerprint: z.string(),
+      type: z.string(),
+      from: z.string(),
+      origin: z.string().optional(),
+      content: z.any(),
+      timestamp: z.number(),
+      senderNickname: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      sessionId: z.string().describe('Session ID of the conversation'),
+      fingerprint: z.string().describe('Unique message fingerprint'),
+      type: z.string().describe('Message type (text, note, file, etc.)'),
+      from: z.string().describe('Sender: operator or user'),
+      origin: z.string().optional().describe('Origin channel'),
+      content: z.any().describe('Message content'),
+      timestamp: z.number().describe('Message timestamp in milliseconds'),
+      senderNickname: z.string().optional().describe('Sender display name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
 
       let conversations = await client.listConversations({
         pageNumber: 1,
-        orderDateUpdated: 'desc',
+        orderDateUpdated: 'desc'
       });
 
       let lastSeenTimestamp = ctx.state?.lastSeenTimestamp as number | undefined;
@@ -52,7 +54,7 @@ export let newMessage = SlateTrigger.create(
         try {
           let messages = await client.getMessagesInConversation(c.session_id);
 
-          for (let m of (messages || [])) {
+          for (let m of messages || []) {
             if (lastSeenTimestamp && m.timestamp <= lastSeenTimestamp) {
               continue;
             }
@@ -65,7 +67,7 @@ export let newMessage = SlateTrigger.create(
               origin: m.origin,
               content: m.content,
               timestamp: m.timestamp,
-              senderNickname: m.user?.nickname,
+              senderNickname: m.user?.nickname
             });
 
             if (m.timestamp > newestTimestamp) {
@@ -80,12 +82,12 @@ export let newMessage = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastSeenTimestamp: newestTimestamp || lastSeenTimestamp,
-        },
+          lastSeenTimestamp: newestTimestamp || lastSeenTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `message.${ctx.input.from === 'operator' ? 'sent' : 'received'}`,
         id: ctx.input.fingerprint,
@@ -97,9 +99,9 @@ export let newMessage = SlateTrigger.create(
           origin: ctx.input.origin,
           content: ctx.input.content,
           timestamp: ctx.input.timestamp,
-          senderNickname: ctx.input.senderNickname,
-        },
+          senderNickname: ctx.input.senderNickname
+        }
       };
-    },
+    }
   })
   .build();

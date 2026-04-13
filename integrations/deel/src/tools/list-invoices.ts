@@ -3,25 +3,26 @@ import { createClient } from '../lib/utils';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'List Invoices',
-    key: 'list_invoices',
-    description: `Retrieve billing invoices from Deel for accounting and financial integration. Returns invoice details including amounts, dates, and statuses.`,
-    tags: {
-      readOnly: true,
-    },
+export let listInvoices = SlateTool.create(spec, {
+  name: 'List Invoices',
+  key: 'list_invoices',
+  description: `Retrieve billing invoices from Deel for accounting and financial integration. Returns invoice details including amounts, dates, and statuses.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Number of results to return'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    invoices: z.array(z.record(z.string(), z.any())).describe('List of invoices'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Number of results to return'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(z.record(z.string(), z.any())).describe('List of invoices')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let params: Record<string, any> = {};
@@ -33,6 +34,7 @@ export let listInvoices = SlateTool.create(
 
     return {
       output: { invoices },
-      message: `Found ${invoices.length} invoice(s).`,
+      message: `Found ${invoices.length} invoice(s).`
     };
-  }).build();
+  })
+  .build();

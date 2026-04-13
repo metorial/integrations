@@ -13,7 +13,7 @@ import {
   deleteBlock,
   addDailyNote,
   searchBlocks,
-  batchActions,
+  batchActions
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     deleteBlock,
     addDailyNote,
     searchBlocks,
-    batchActions,
+    batchActions
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

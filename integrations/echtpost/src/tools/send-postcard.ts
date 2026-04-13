@@ -11,55 +11,71 @@ let contactSchema = z.object({
   street: z.string().describe('Street address'),
   zip: z.string().describe('ZIP / postal code'),
   city: z.string().describe('City'),
-  countryCode: z.string().optional().describe('Two-letter country code, e.g. "DE"'),
+  countryCode: z.string().optional().describe('Two-letter country code, e.g. "DE"')
 });
 
-export let sendPostcard = SlateTool.create(
-  spec,
-  {
-    name: 'Send Postcard',
-    key: 'send_postcard',
-    description: `Schedule a real physical postcard for delivery using a pre-designed template. Recipients can be specified inline with address details, by referencing existing contact IDs, or by targeting an entire recipient group. Optional email notifications can be configured to alert before or after sending.`,
-    instructions: [
-      'A template must be created in the EchtPost web interface before using this tool.',
-      'Provide recipients using exactly one method: inline contacts, existing contact IDs, or a group ID.',
-      'The deliver_at date should be in YYYY-MM-DD format.',
-    ],
-    constraints: [
-      'Postcard text cannot be customized via the API — it is defined in the template.',
-      'Requires sufficient prepaid account balance; returns an error if balance is insufficient.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let sendPostcard = SlateTool.create(spec, {
+  name: 'Send Postcard',
+  key: 'send_postcard',
+  description: `Schedule a real physical postcard for delivery using a pre-designed template. Recipients can be specified inline with address details, by referencing existing contact IDs, or by targeting an entire recipient group. Optional email notifications can be configured to alert before or after sending.`,
+  instructions: [
+    'A template must be created in the EchtPost web interface before using this tool.',
+    'Provide recipients using exactly one method: inline contacts, existing contact IDs, or a group ID.',
+    'The deliver_at date should be in YYYY-MM-DD format.'
+  ],
+  constraints: [
+    'Postcard text cannot be customized via the API — it is defined in the template.',
+    'Requires sufficient prepaid account balance; returns an error if balance is insufficient.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    templateId: z.string().describe('ID of the pre-designed postcard template'),
-    deliverAt: z.string().describe('Scheduled delivery date in YYYY-MM-DD format'),
-    contacts: z.array(contactSchema).optional().describe('Inline recipient contacts with address details'),
-    contactIds: z.array(z.string()).optional().describe('IDs of existing contacts to send to'),
-    groupId: z.string().optional().describe('ID of a recipient group to send to'),
-    notificationType: z.enum(['before_send', 'after_send']).optional().describe('When to send email notification'),
-    notificationDate: z.string().optional().describe('Date for the notification in YYYY-MM-DD format'),
-    notificationEmail: z.string().optional().describe('Email address to send notification to'),
-  }))
-  .output(z.object({
-    cardId: z.string().optional().describe('ID of the created postcard'),
-    status: z.string().optional().describe('Status of the postcard'),
-    response: z.any().describe('Full response from the EchtPost API'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      templateId: z.string().describe('ID of the pre-designed postcard template'),
+      deliverAt: z.string().describe('Scheduled delivery date in YYYY-MM-DD format'),
+      contacts: z
+        .array(contactSchema)
+        .optional()
+        .describe('Inline recipient contacts with address details'),
+      contactIds: z
+        .array(z.string())
+        .optional()
+        .describe('IDs of existing contacts to send to'),
+      groupId: z.string().optional().describe('ID of a recipient group to send to'),
+      notificationType: z
+        .enum(['before_send', 'after_send'])
+        .optional()
+        .describe('When to send email notification'),
+      notificationDate: z
+        .string()
+        .optional()
+        .describe('Date for the notification in YYYY-MM-DD format'),
+      notificationEmail: z
+        .string()
+        .optional()
+        .describe('Email address to send notification to')
+    })
+  )
+  .output(
+    z.object({
+      cardId: z.string().optional().describe('ID of the created postcard'),
+      status: z.string().optional().describe('Status of the postcard'),
+      response: z.any().describe('Full response from the EchtPost API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let params: any = {
       template_id: ctx.input.templateId,
-      deliver_at: ctx.input.deliverAt,
+      deliver_at: ctx.input.deliverAt
     };
 
     if (ctx.input.contacts && ctx.input.contacts.length > 0) {
-      params.contacts_attributes = ctx.input.contacts.map((c) => ({
+      params.contacts_attributes = ctx.input.contacts.map(c => ({
         title: c.title,
         company_name: c.companyName,
         first: c.firstName,
@@ -67,7 +83,7 @@ export let sendPostcard = SlateTool.create(
         street: c.street,
         zip: c.zip,
         city: c.city,
-        country_code: c.countryCode,
+        country_code: c.countryCode
       }));
     } else if (ctx.input.contactIds && ctx.input.contactIds.length > 0) {
       if (ctx.input.contactIds.length === 1) {
@@ -89,7 +105,11 @@ export let sendPostcard = SlateTool.create(
       params.notification_email = ctx.input.notificationEmail;
     }
 
-    ctx.info({ message: 'Scheduling postcard for delivery', templateId: ctx.input.templateId, deliverAt: ctx.input.deliverAt });
+    ctx.info({
+      message: 'Scheduling postcard for delivery',
+      templateId: ctx.input.templateId,
+      deliverAt: ctx.input.deliverAt
+    });
 
     let result = await client.createCard(params);
 
@@ -99,9 +119,9 @@ export let sendPostcard = SlateTool.create(
       output: {
         cardId,
         status: result?.status,
-        response: result,
+        response: result
       },
-      message: `Postcard scheduled for delivery on **${ctx.input.deliverAt}** using template \`${ctx.input.templateId}\`.`,
+      message: `Postcard scheduled for delivery on **${ctx.input.deliverAt}** using template \`${ctx.input.templateId}\`.`
     };
   })
   .build();

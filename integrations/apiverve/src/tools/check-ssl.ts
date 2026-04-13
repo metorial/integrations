@@ -3,33 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let checkSsl = SlateTool.create(
-  spec,
-  {
-    name: 'Check SSL Certificate',
-    key: 'check_ssl',
-    description: `Inspect the SSL/TLS certificate of a domain. Returns certificate details including issuer, validity dates, key strength, and subject alternative names. Useful for security auditing and monitoring certificate expiration.`,
-    tags: {
-      readOnly: true,
-    },
+export let checkSsl = SlateTool.create(spec, {
+  name: 'Check SSL Certificate',
+  key: 'check_ssl',
+  description: `Inspect the SSL/TLS certificate of a domain. Returns certificate details including issuer, validity dates, key strength, and subject alternative names. Useful for security auditing and monitoring certificate expiration.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().describe('The domain to check the SSL certificate for (e.g. "example.com")'),
-  }))
-  .output(z.object({
-    domain: z.string().describe('The checked domain'),
-    issuerOrganization: z.string().describe('Certificate issuer organization'),
-    issuerCommonName: z.string().describe('Certificate issuer common name'),
-    subjectCommonName: z.string().describe('Certificate subject common name'),
-    validFrom: z.string().describe('Certificate validity start date'),
-    validTo: z.string().describe('Certificate validity end date'),
-    keyBits: z.number().describe('Key strength in bits'),
-    isCa: z.boolean().describe('Whether this is a CA certificate'),
-    serialNumber: z.string().describe('Certificate serial number'),
-    subjectAltNames: z.string().optional().describe('Subject alternative names'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z
+        .string()
+        .describe('The domain to check the SSL certificate for (e.g. "example.com")')
+    })
+  )
+  .output(
+    z.object({
+      domain: z.string().describe('The checked domain'),
+      issuerOrganization: z.string().describe('Certificate issuer organization'),
+      issuerCommonName: z.string().describe('Certificate issuer common name'),
+      subjectCommonName: z.string().describe('Certificate subject common name'),
+      validFrom: z.string().describe('Certificate validity start date'),
+      validTo: z.string().describe('Certificate validity end date'),
+      keyBits: z.number().describe('Key strength in bits'),
+      isCa: z.boolean().describe('Whether this is a CA certificate'),
+      serialNumber: z.string().describe('Certificate serial number'),
+      subjectAltNames: z.string().optional().describe('Subject alternative names')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.checkSsl(ctx.input.domain);
 
@@ -48,12 +51,12 @@ export let checkSsl = SlateTool.create(
       keyBits: data.bits,
       isCa: data.ca,
       serialNumber: data.serialNumber,
-      subjectAltNames: data.subjectaltname,
+      subjectAltNames: data.subjectaltname
     };
 
     return {
       output,
-      message: `SSL certificate for **${data.domain}**: issued by ${data.issuer?.O ?? 'unknown'}, valid until ${data.valid_to}, ${data.bits}-bit key.`,
+      message: `SSL certificate for **${data.domain}**: issued by ${data.issuer?.O ?? 'unknown'}, valid until ${data.valid_to}, ${data.bits}-bit key.`
     };
   })
   .build();

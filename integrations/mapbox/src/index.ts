@@ -15,7 +15,7 @@ import {
   manageTokensTool,
   manageTilesetsTool,
   manageUploadsTool,
-  listFontsTool,
+  listFontsTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     manageTokensTool.build(),
     manageTilesetsTool.build(),
     manageUploadsTool.build(),
-    listFontsTool.build(),
+    listFontsTool.build()
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

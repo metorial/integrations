@@ -3,36 +3,52 @@ import { ManagementClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSecrets = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Secrets',
-    key: 'manage_secrets',
-    description: `List, create, or delete secrets (environment variables) for a Supabase project. Secrets are typically used by Edge Functions and other server-side code.`,
-    tags: {
-      destructive: true,
-    },
+export let manageSecrets = SlateTool.create(spec, {
+  name: 'Manage Secrets',
+  key: 'manage_secrets',
+  description: `List, create, or delete secrets (environment variables) for a Supabase project. Secrets are typically used by Edge Functions and other server-side code.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    projectRef: z.string().optional().describe('Project reference ID (uses config.projectRef if not provided)'),
-    action: z.enum(['list', 'create', 'delete']).describe('Action to perform'),
-    secrets: z.array(z.object({
-      name: z.string().describe('Secret name'),
-      value: z.string().optional().describe('Secret value (required for create)'),
-    })).optional().describe('Secrets to create or names to delete'),
-  }))
-  .output(z.object({
-    secrets: z.array(z.object({
-      name: z.string().describe('Secret name'),
-    })).optional().describe('List of secret names'),
-    created: z.boolean().optional().describe('Whether secrets were created'),
-    deleted: z.boolean().optional().describe('Whether secrets were deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectRef: z
+        .string()
+        .optional()
+        .describe('Project reference ID (uses config.projectRef if not provided)'),
+      action: z.enum(['list', 'create', 'delete']).describe('Action to perform'),
+      secrets: z
+        .array(
+          z.object({
+            name: z.string().describe('Secret name'),
+            value: z.string().optional().describe('Secret value (required for create)')
+          })
+        )
+        .optional()
+        .describe('Secrets to create or names to delete')
+    })
+  )
+  .output(
+    z.object({
+      secrets: z
+        .array(
+          z.object({
+            name: z.string().describe('Secret name')
+          })
+        )
+        .optional()
+        .describe('List of secret names'),
+      created: z.boolean().optional().describe('Whether secrets were created'),
+      deleted: z.boolean().optional().describe('Whether secrets were deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let projectRef = ctx.input.projectRef ?? ctx.config.projectRef;
     if (!projectRef) {
-      throw new Error('projectRef is required — provide it as input or set it in the configuration');
+      throw new Error(
+        'projectRef is required — provide it as input or set it in the configuration'
+      );
     }
 
     let client = new ManagementClient(ctx.auth.token);
@@ -41,12 +57,12 @@ export let manageSecrets = SlateTool.create(
     if (action === 'list') {
       let data = await client.listSecrets(projectRef);
       let secrets = (Array.isArray(data) ? data : []).map((s: any) => ({
-        name: s.name ?? '',
+        name: s.name ?? ''
       }));
 
       return {
         output: { secrets },
-        message: `Found **${secrets.length}** secrets in project **${projectRef}**.`,
+        message: `Found **${secrets.length}** secrets in project **${projectRef}**.`
       };
     }
 
@@ -56,12 +72,12 @@ export let manageSecrets = SlateTool.create(
       }
       let secretsToCreate = ctx.input.secrets.map(s => ({
         name: s.name,
-        value: s.value ?? '',
+        value: s.value ?? ''
       }));
       await client.createSecrets(projectRef, secretsToCreate);
       return {
         output: { created: true },
-        message: `Created **${secretsToCreate.length}** secrets in project **${projectRef}**.`,
+        message: `Created **${secretsToCreate.length}** secrets in project **${projectRef}**.`
       };
     }
 
@@ -73,6 +89,7 @@ export let manageSecrets = SlateTool.create(
     await client.deleteSecrets(projectRef, names);
     return {
       output: { deleted: true },
-      message: `Deleted **${names.length}** secrets from project **${projectRef}**.`,
+      message: `Deleted **${names.length}** secrets from project **${projectRef}**.`
     };
-  }).build();
+  })
+  .build();

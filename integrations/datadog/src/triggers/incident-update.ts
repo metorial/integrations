@@ -3,40 +3,42 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let incidentUpdateTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incident Update',
-    key: 'incident_update',
-    description: 'Triggers when a Datadog incident is created or updated. Polls incidents for changes in state, severity, or other attributes.'
-  }
-)
-  .input(z.object({
-    incidentId: z.string().describe('Incident ID'),
-    title: z.string().optional().describe('Incident title'),
-    severity: z.string().optional().describe('Incident severity'),
-    state: z.string().optional().describe('Incident state'),
-    customerImpacted: z.boolean().optional().describe('Whether customers are impacted'),
-    created: z.string().optional().describe('Creation timestamp'),
-    modified: z.string().optional().describe('Last modification timestamp'),
-    resolved: z.string().optional().describe('Resolution timestamp')
-  }))
-  .output(z.object({
-    incidentId: z.string().describe('Incident ID'),
-    title: z.string().optional().describe('Incident title'),
-    severity: z.string().optional().describe('Incident severity'),
-    state: z.string().optional().describe('Incident state'),
-    customerImpacted: z.boolean().optional().describe('Whether customers are impacted'),
-    created: z.string().optional().describe('Creation timestamp'),
-    modified: z.string().optional().describe('Last modification timestamp'),
-    resolved: z.string().optional().describe('Resolution timestamp')
-  }))
+export let incidentUpdateTrigger = SlateTrigger.create(spec, {
+  name: 'Incident Update',
+  key: 'incident_update',
+  description:
+    'Triggers when a Datadog incident is created or updated. Polls incidents for changes in state, severity, or other attributes.'
+})
+  .input(
+    z.object({
+      incidentId: z.string().describe('Incident ID'),
+      title: z.string().optional().describe('Incident title'),
+      severity: z.string().optional().describe('Incident severity'),
+      state: z.string().optional().describe('Incident state'),
+      customerImpacted: z.boolean().optional().describe('Whether customers are impacted'),
+      created: z.string().optional().describe('Creation timestamp'),
+      modified: z.string().optional().describe('Last modification timestamp'),
+      resolved: z.string().optional().describe('Resolution timestamp')
+    })
+  )
+  .output(
+    z.object({
+      incidentId: z.string().describe('Incident ID'),
+      title: z.string().optional().describe('Incident title'),
+      severity: z.string().optional().describe('Incident severity'),
+      state: z.string().optional().describe('Incident state'),
+      customerImpacted: z.boolean().optional().describe('Whether customers are impacted'),
+      created: z.string().optional().describe('Creation timestamp'),
+      modified: z.string().optional().describe('Last modification timestamp'),
+      resolved: z.string().optional().describe('Resolution timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.auth, ctx.config);
       let state = ctx.state as { incidentModifiedTimes?: Record<string, string> } | null;
       let previousModifiedTimes = state?.incidentModifiedTimes || {};
@@ -85,7 +87,7 @@ export let incidentUpdateTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let state = ctx.input.state || 'active';
       return {
         type: `incident.${state.toLowerCase()}`,

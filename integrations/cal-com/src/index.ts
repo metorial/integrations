@@ -13,15 +13,9 @@ import {
   getAvailableSlots,
   getProfile,
   listCalendars,
-  getBusyTimes,
+  getBusyTimes
 } from './tools';
-import {
-  bookingEvents,
-  meetingEvents,
-  noShowEvents,
-  formEvents,
-  oooEvents,
-} from './triggers';
+import { bookingEvents, meetingEvents, noShowEvents, formEvents, oooEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,13 +32,7 @@ export let provider = Slate.create({
     getAvailableSlots,
     getProfile,
     listCalendars,
-    getBusyTimes,
+    getBusyTimes
   ],
-  triggers: [
-    bookingEvents,
-    meetingEvents,
-    noShowEvents,
-    formEvents,
-    oooEvents,
-  ],
+  triggers: [bookingEvents, meetingEvents, noShowEvents, formEvents, oooEvents]
 });

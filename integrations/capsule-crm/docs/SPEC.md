@@ -19,12 +19,14 @@ Capsule implements the authorization code grant defined by RFC 6749. This is the
 - **Token Revocation URL:** `https://api.capsulecrm.com/oauth/token/revoke`
 
 **Setup:**
+
 1. Register an application at the Capsule developer portal. Fill in the application details, including the redirect URI and scopes you require (e.g., `read`, `write`). After creating the application, note down the Client ID and Client Secret.
 2. Redirect the user to the authorisation URL with `client_id`, `redirect_uri`, `response_type=code`, and `state` parameters.
 3. After the user approves your application, Capsule will redirect to the URL provided in the request with a temporary code in the `code` parameter as well as the `state` you provided.
 4. Exchange the code for an access token via a POST to the token exchange URL.
 
 **Token details:**
+
 - The token response includes `refresh_token`, `access_token`, `expires_in` (604799 seconds / ~7 days), `token_type` ("bearer"), `scope` ("read write"), and `subdomain`.
 - After the access token expires, you can use the refresh token to obtain a new access token.
 
@@ -107,25 +109,36 @@ Retrieve site/account information. Access reference data for countries and curre
 Capsule CRM supports webhooks through a mechanism called **REST Hooks**. REST Hooks allow you to subscribe to certain events in Capsule. When those events are triggered, Capsule will send a JSON payload to a URL that you specify, informing you of the change.
 
 **Requirements:**
+
 - You can subscribe to a maximum of 20 REST hooks per account, and to use them, you need to register a client application and set up OAuth authentication.
 - Managing hooks requires that the user has an Administrator role on the account.
 
 ### Party Events
+
 Triggered when a contact (person or organisation) is created, updated, or deleted.
+
 - Events: `party/created`, `party/updated`, `party/deleted`
 
 ### Opportunity Events
+
 Triggered when a sales opportunity is created, updated, deleted, closed, or moved to a different milestone.
+
 - Events: `opportunity/created`, `opportunity/updated`, `opportunity/deleted`, `opportunity/closed`, `opportunity/moved`
 
 ### Project (Case) Events
+
 Triggered when a project is created, updated, deleted, closed, or moved to a different stage.
+
 - Events: `kase/created`, `kase/updated`, `kase/deleted`, `kase/closed`, `kase/moved`
 
 ### Task Events
+
 Triggered when a task is created, updated, or completed.
+
 - Events: `task/created`, `task/updated`, `task/completed`
 
 ### User Events
+
 Triggered when a user is created, updated, or deleted.
+
 - Events: `user/created`, `user/updated`, `user/deleted`

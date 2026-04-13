@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
 
@@ -12,14 +14,18 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your PDFMonkey API Secret Key, available on the My Account page in the PDFMonkey dashboard.'),
+      apiKey: z
+        .string()
+        .describe(
+          'Your PDFMonkey API Secret Key, available on the My Account page in the PDFMonkey dashboard.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -27,8 +33,8 @@ export let auth = SlateAuth.create()
       let axiosInstance = createAxios({
         baseURL: 'https://api.pdfmonkey.io/api/v1',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axiosInstance.get('/current_user');
@@ -38,8 +44,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           email: user.email,
-          name: user.desired_name,
-        },
+          name: user.desired_name
+        }
       };
-    },
+    }
   });

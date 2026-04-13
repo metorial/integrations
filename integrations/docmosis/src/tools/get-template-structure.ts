@@ -3,27 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTemplateStructure = SlateTool.create(
-  spec,
-  {
-    name: 'Get Template Structure',
-    key: 'get_template_structure',
-    description: `Analyze a template to retrieve its field structure, sections, and conditions. Also returns sample data showing the expected data shape for rendering.
+export let getTemplateStructure = SlateTool.create(spec, {
+  name: 'Get Template Structure',
+  key: 'get_template_structure',
+  description: `Analyze a template to retrieve its field structure, sections, and conditions. Also returns sample data showing the expected data shape for rendering.
 Use this to understand what data a template expects before calling the render endpoint.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    templateName: z.string().describe('Path to the template in Docmosis Cloud (e.g., "/invoices/invoice-template.docx")')
-  }))
-  .output(z.object({
-    succeeded: z.boolean().describe('Whether the operation succeeded'),
-    structure: z.record(z.string(), z.any()).optional().describe('Template structure including fields, sections, and conditions'),
-    sampleData: z.record(z.string(), z.any()).optional().describe('Sample data object showing the expected data shape for this template')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      templateName: z
+        .string()
+        .describe(
+          'Path to the template in Docmosis Cloud (e.g., "/invoices/invoice-template.docx")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      succeeded: z.boolean().describe('Whether the operation succeeded'),
+      structure: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Template structure including fields, sections, and conditions'),
+      sampleData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Sample data object showing the expected data shape for this template')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       region: ctx.config.region

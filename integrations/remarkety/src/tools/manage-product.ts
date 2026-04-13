@@ -17,16 +17,28 @@ export let manageProductTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The action to perform on the product'),
-  }).merge(productSchema.partial().merge(z.object({
-    productId: z.string().describe('Unique product ID')
-  }))))
-  .output(z.object({
-    success: z.boolean().describe('Whether the event was sent successfully'),
-    eventType: z.string().describe('The event type that was sent')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z
+      .object({
+        action: z
+          .enum(['create', 'update', 'delete'])
+          .describe('The action to perform on the product')
+      })
+      .merge(
+        productSchema.partial().merge(
+          z.object({
+            productId: z.string().describe('Unique product ID')
+          })
+        )
+      )
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the event was sent successfully'),
+      eventType: z.string().describe('The event type that was sent')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RemarketyClient({
       token: ctx.auth.token,
       storeId: ctx.auth.storeId,
@@ -35,7 +47,10 @@ export let manageProductTool = SlateTool.create(spec, {
     });
 
     let { action, ...productData } = ctx.input;
-    let eventType = `products/${action}` as 'products/create' | 'products/update' | 'products/delete';
+    let eventType = `products/${action}` as
+      | 'products/create'
+      | 'products/update'
+      | 'products/delete';
     let payload = formatProductPayload(productData as unknown as Record<string, unknown>);
 
     ctx.info(`Sending ${eventType} event for product ${ctx.input.productId}`);

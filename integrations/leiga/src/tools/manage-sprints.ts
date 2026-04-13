@@ -3,24 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listSprintsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Sprints',
-    key: 'list_sprints',
-    description: `List all sprints for a project. Returns sprint names, goals, dates, and statuses.`,
-    tags: {
-      readOnly: true,
-    },
+export let listSprintsTool = SlateTool.create(spec, {
+  name: 'List Sprints',
+  key: 'list_sprints',
+  description: `List all sprints for a project. Returns sprint names, goals, dates, and statuses.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('The project ID to list sprints for'),
-  }))
-  .output(z.object({
-    sprints: z.array(z.any()).describe('List of sprints'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The project ID to list sprints for')
+    })
+  )
+  .output(
+    z.object({
+      sprints: z.array(z.any()).describe('List of sprints')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let response = await client.listSprints(ctx.input.projectId);
 
@@ -28,32 +29,33 @@ export let listSprintsTool = SlateTool.create(
 
     return {
       output: { sprints },
-      message: `Found **${sprints.length}** sprint(s).`,
+      message: `Found **${sprints.length}** sprint(s).`
     };
   })
   .build();
 
-export let createSprintTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Sprint',
-    key: 'create_sprint',
-    description: `Create a new sprint in a Leiga project. Set the sprint name, goal, date range, and assignee.`,
-  }
-)
-  .input(z.object({
-    projectId: z.number().describe('The project ID'),
-    name: z.string().describe('Sprint name'),
-    goal: z.string().optional().describe('Sprint goal description'),
-    startDate: z.string().optional().describe('Sprint start date (ISO 8601)'),
-    endDate: z.string().optional().describe('Sprint end date (ISO 8601)'),
-    assigneeId: z.number().optional().describe('User ID to assign as sprint lead'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the sprint was created'),
-    raw: z.any().optional().describe('Full response data'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createSprintTool = SlateTool.create(spec, {
+  name: 'Create Sprint',
+  key: 'create_sprint',
+  description: `Create a new sprint in a Leiga project. Set the sprint name, goal, date range, and assignee.`
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The project ID'),
+      name: z.string().describe('Sprint name'),
+      goal: z.string().optional().describe('Sprint goal description'),
+      startDate: z.string().optional().describe('Sprint start date (ISO 8601)'),
+      endDate: z.string().optional().describe('Sprint end date (ISO 8601)'),
+      assigneeId: z.number().optional().describe('User ID to assign as sprint lead')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the sprint was created'),
+      raw: z.any().optional().describe('Full response data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.createSprint({
@@ -62,7 +64,7 @@ export let createSprintTool = SlateTool.create(
       goal: ctx.input.goal,
       startDate: ctx.input.startDate,
       endDate: ctx.input.endDate,
-      assigneeId: ctx.input.assigneeId,
+      assigneeId: ctx.input.assigneeId
     });
 
     if (response.code !== '0') {
@@ -71,31 +73,32 @@ export let createSprintTool = SlateTool.create(
 
     return {
       output: { success: true, raw: response.data },
-      message: `Created sprint **"${ctx.input.name}"**.`,
+      message: `Created sprint **"${ctx.input.name}"**.`
     };
   })
   .build();
 
-export let updateSprintTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Sprint',
-    key: 'update_sprint',
-    description: `Update an existing sprint's name, goal, dates, or assignee.`,
-  }
-)
-  .input(z.object({
-    sprintId: z.number().describe('The sprint ID to update'),
-    name: z.string().optional().describe('New sprint name'),
-    goal: z.string().optional().describe('New sprint goal'),
-    startDate: z.string().optional().describe('New start date (ISO 8601)'),
-    endDate: z.string().optional().describe('New end date (ISO 8601)'),
-    assigneeId: z.number().optional().describe('New assignee user ID'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateSprintTool = SlateTool.create(spec, {
+  name: 'Update Sprint',
+  key: 'update_sprint',
+  description: `Update an existing sprint's name, goal, dates, or assignee.`
+})
+  .input(
+    z.object({
+      sprintId: z.number().describe('The sprint ID to update'),
+      name: z.string().optional().describe('New sprint name'),
+      goal: z.string().optional().describe('New sprint goal'),
+      startDate: z.string().optional().describe('New start date (ISO 8601)'),
+      endDate: z.string().optional().describe('New end date (ISO 8601)'),
+      assigneeId: z.number().optional().describe('New assignee user ID')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.updateSprint({
@@ -104,7 +107,7 @@ export let updateSprintTool = SlateTool.create(
       goal: ctx.input.goal,
       startDate: ctx.input.startDate,
       endDate: ctx.input.endDate,
-      assigneeId: ctx.input.assigneeId,
+      assigneeId: ctx.input.assigneeId
     });
 
     if (response.code !== '0') {
@@ -113,29 +116,30 @@ export let updateSprintTool = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Updated sprint **#${ctx.input.sprintId}**.`,
+      message: `Updated sprint **#${ctx.input.sprintId}**.`
     };
   })
   .build();
 
-export let deleteSprintTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Sprint',
-    key: 'delete_sprint',
-    description: `Delete a sprint from a project.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteSprintTool = SlateTool.create(spec, {
+  name: 'Delete Sprint',
+  key: 'delete_sprint',
+  description: `Delete a sprint from a project.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    sprintId: z.number().describe('The sprint ID to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sprintId: z.number().describe('The sprint ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.deleteSprint(ctx.input.sprintId);
@@ -146,7 +150,7 @@ export let deleteSprintTool = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Deleted sprint **#${ctx.input.sprintId}**.`,
+      message: `Deleted sprint **#${ctx.input.sprintId}**.`
     };
   })
   .build();

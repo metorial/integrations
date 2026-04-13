@@ -16,7 +16,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://graph.facebook.com/${config.apiVersion}`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -44,7 +44,10 @@ export class Client {
     });
   }
 
-  async sendImageMessage(to: string, image: { link?: string; mediaId?: string; caption?: string }): Promise<any> {
+  async sendImageMessage(
+    to: string,
+    image: { link?: string; mediaId?: string; caption?: string }
+  ): Promise<any> {
     let imagePayload: Record<string, any> = {};
     if (image.link) imagePayload.link = image.link;
     if (image.mediaId) imagePayload.id = image.mediaId;
@@ -57,7 +60,10 @@ export class Client {
     });
   }
 
-  async sendVideoMessage(to: string, video: { link?: string; mediaId?: string; caption?: string }): Promise<any> {
+  async sendVideoMessage(
+    to: string,
+    video: { link?: string; mediaId?: string; caption?: string }
+  ): Promise<any> {
     let videoPayload: Record<string, any> = {};
     if (video.link) videoPayload.link = video.link;
     if (video.mediaId) videoPayload.id = video.mediaId;
@@ -70,7 +76,10 @@ export class Client {
     });
   }
 
-  async sendAudioMessage(to: string, audio: { link?: string; mediaId?: string }): Promise<any> {
+  async sendAudioMessage(
+    to: string,
+    audio: { link?: string; mediaId?: string }
+  ): Promise<any> {
     let audioPayload: Record<string, any> = {};
     if (audio.link) audioPayload.link = audio.link;
     if (audio.mediaId) audioPayload.id = audio.mediaId;
@@ -82,7 +91,10 @@ export class Client {
     });
   }
 
-  async sendDocumentMessage(to: string, document: { link?: string; mediaId?: string; filename?: string; caption?: string }): Promise<any> {
+  async sendDocumentMessage(
+    to: string,
+    document: { link?: string; mediaId?: string; filename?: string; caption?: string }
+  ): Promise<any> {
     let docPayload: Record<string, any> = {};
     if (document.link) docPayload.link = document.link;
     if (document.mediaId) docPayload.id = document.mediaId;
@@ -96,7 +108,10 @@ export class Client {
     });
   }
 
-  async sendLocationMessage(to: string, location: { latitude: number; longitude: number; name?: string; address?: string }): Promise<any> {
+  async sendLocationMessage(
+    to: string,
+    location: { latitude: number; longitude: number; name?: string; address?: string }
+  ): Promise<any> {
     return this.sendMessage({
       to,
       type: 'location',
@@ -112,7 +127,10 @@ export class Client {
     });
   }
 
-  async sendStickerMessage(to: string, sticker: { link?: string; mediaId?: string }): Promise<any> {
+  async sendStickerMessage(
+    to: string,
+    sticker: { link?: string; mediaId?: string }
+  ): Promise<any> {
     let stickerPayload: Record<string, any> = {};
     if (sticker.link) stickerPayload.link = sticker.link;
     if (sticker.mediaId) stickerPayload.id = sticker.mediaId;
@@ -135,12 +153,15 @@ export class Client {
     });
   }
 
-  async sendInteractiveButtonsMessage(to: string, interactive: {
-    header?: { type: string; text?: string };
-    body: string;
-    footer?: string;
-    buttons: Array<{ id: string; title: string }>;
-  }): Promise<any> {
+  async sendInteractiveButtonsMessage(
+    to: string,
+    interactive: {
+      header?: { type: string; text?: string };
+      body: string;
+      footer?: string;
+      buttons: Array<{ id: string; title: string }>;
+    }
+  ): Promise<any> {
     let payload: Record<string, any> = {
       type: 'button',
       body: { text: interactive.body },
@@ -161,16 +182,19 @@ export class Client {
     });
   }
 
-  async sendInteractiveListMessage(to: string, interactive: {
-    header?: { type: string; text?: string };
-    body: string;
-    footer?: string;
-    buttonText: string;
-    sections: Array<{
-      title: string;
-      rows: Array<{ id: string; title: string; description?: string }>;
-    }>;
-  }): Promise<any> {
+  async sendInteractiveListMessage(
+    to: string,
+    interactive: {
+      header?: { type: string; text?: string };
+      body: string;
+      footer?: string;
+      buttonText: string;
+      sections: Array<{
+        title: string;
+        rows: Array<{ id: string; title: string; description?: string }>;
+      }>;
+    }
+  ): Promise<any> {
     let payload: Record<string, any> = {
       type: 'list',
       body: { text: interactive.body },
@@ -189,11 +213,14 @@ export class Client {
     });
   }
 
-  async sendTemplateMessage(to: string, template: {
-    name: string;
-    languageCode: string;
-    components?: any[];
-  }): Promise<any> {
+  async sendTemplateMessage(
+    to: string,
+    template: {
+      name: string;
+      languageCode: string;
+      components?: any[];
+    }
+  ): Promise<any> {
     let templatePayload: Record<string, any> = {
       name: template.name,
       language: { code: template.languageCode }
@@ -220,13 +247,19 @@ export class Client {
 
   // ── Message Templates ──
 
-  async listTemplates(params?: { limit?: number; after?: string; fields?: string }): Promise<any> {
+  async listTemplates(params?: {
+    limit?: number;
+    after?: string;
+    fields?: string;
+  }): Promise<any> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.after) queryParams.after = params.after;
     queryParams.fields = params?.fields || 'name,status,category,language,components,id';
 
-    let response = await this.axios.get(`/${this.wabaId}/message_templates`, { params: queryParams });
+    let response = await this.axios.get(`/${this.wabaId}/message_templates`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -306,9 +339,13 @@ export class Client {
     if (profile.email !== undefined) payload.email = profile.email;
     if (profile.websites !== undefined) payload.websites = profile.websites;
     if (profile.vertical !== undefined) payload.vertical = profile.vertical;
-    if (profile.profilePictureHandle !== undefined) payload.profile_picture_handle = profile.profilePictureHandle;
+    if (profile.profilePictureHandle !== undefined)
+      payload.profile_picture_handle = profile.profilePictureHandle;
 
-    let response = await this.axios.post(`/${this.phoneNumberId}/whatsapp_business_profile`, payload);
+    let response = await this.axios.post(
+      `/${this.phoneNumberId}/whatsapp_business_profile`,
+      payload
+    );
     return response.data;
   }
 
@@ -337,7 +374,11 @@ export class Client {
     return response.data;
   }
 
-  async requestVerificationCode(phoneNumberId: string, codeMethod: string, language: string): Promise<any> {
+  async requestVerificationCode(
+    phoneNumberId: string,
+    codeMethod: string,
+    language: string
+  ): Promise<any> {
     let response = await this.axios.post(`/${phoneNumberId}/request_code`, {
       code_method: codeMethod,
       language

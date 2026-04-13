@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   executeSqlQuery,
@@ -8,14 +7,9 @@ import {
   manageDirectories,
   sendEmail,
   manageNewsletterContacts,
-  getFailedEmails,
+  getFailedEmails
 } from './tools';
-import {
-  newFormSubmission,
-  newOrder,
-  orderStatusUpdated,
-  inboundWebhook,
-} from './triggers';
+import { newFormSubmission, newOrder, orderStatusUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -26,12 +20,7 @@ export let provider = Slate.create({
     manageDirectories,
     sendEmail,
     manageNewsletterContacts,
-    getFailedEmails,
+    getFailedEmails
   ],
-  triggers: [
-    inboundWebhook,
-    newFormSubmission,
-    newOrder,
-    orderStatusUpdated,
-  ],
+  triggers: [inboundWebhook, newFormSubmission, newOrder, orderStatusUpdated]
 });

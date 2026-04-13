@@ -2,7 +2,10 @@
 import { CognitoClient } from './client';
 import { CognitoIdentityClient } from './identity-client';
 
-export let createCognitoClient = (ctx: { config: { region: string }; auth: { accessKeyId: string; secretAccessKey: string; sessionToken?: string } }) => {
+export let createCognitoClient = (ctx: {
+  config: { region: string };
+  auth: { accessKeyId: string; secretAccessKey: string; sessionToken?: string };
+}) => {
   return new CognitoClient({
     region: ctx.config.region,
     accessKeyId: ctx.auth.accessKeyId,
@@ -11,7 +14,10 @@ export let createCognitoClient = (ctx: { config: { region: string }; auth: { acc
   });
 };
 
-export let createIdentityClient = (ctx: { config: { region: string }; auth: { accessKeyId: string; secretAccessKey: string; sessionToken?: string } }) => {
+export let createIdentityClient = (ctx: {
+  config: { region: string };
+  auth: { accessKeyId: string; secretAccessKey: string; sessionToken?: string };
+}) => {
   return new CognitoIdentityClient({
     region: ctx.config.region,
     accessKeyId: ctx.auth.accessKeyId,
@@ -20,7 +26,9 @@ export let createIdentityClient = (ctx: { config: { region: string }; auth: { ac
   });
 };
 
-export let formatAttributes = (attrs: Array<{ Name: string; Value: string }>): Record<string, string> => {
+export let formatAttributes = (
+  attrs: Array<{ Name: string; Value: string }>
+): Record<string, string> => {
   let result: Record<string, string> = {};
   for (let attr of attrs) {
     result[attr.Name] = attr.Value;
@@ -28,6 +36,8 @@ export let formatAttributes = (attrs: Array<{ Name: string; Value: string }>): R
   return result;
 };
 
-export let toAttributeList = (attrs: Record<string, string>): Array<{ Name: string; Value: string }> => {
+export let toAttributeList = (
+  attrs: Record<string, string>
+): Array<{ Name: string; Value: string }> => {
   return Object.entries(attrs).map(([Name, Value]) => ({ Name, Value }));
 };

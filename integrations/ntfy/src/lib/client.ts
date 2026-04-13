@@ -98,12 +98,13 @@ export class Client {
 
   private getAuthHeaders(): Record<string, string> {
     if (this.auth.token) {
-      return { 'Authorization': `Bearer ${this.auth.token}` };
+      return { Authorization: `Bearer ${this.auth.token}` };
     }
     if (this.auth.username && this.auth.password) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let encoded = Buffer.from(`${this.auth.username}:${this.auth.password}`).toString('base64');
-      return { 'Authorization': `Basic ${encoded}` };
+      let encoded = Buffer.from(`${this.auth.username}:${this.auth.password}`).toString(
+        'base64'
+      );
+      return { Authorization: `Basic ${encoded}` };
     }
     return {};
   }
@@ -111,7 +112,7 @@ export class Client {
   private createAxiosInstance() {
     return createAxios({
       baseURL: this.serverUrl,
-      headers: this.getAuthHeaders(),
+      headers: this.getAuthHeaders()
     });
   }
 
@@ -119,7 +120,7 @@ export class Client {
     let http = this.createAxiosInstance();
 
     let payload: Record<string, unknown> = {
-      topic: options.topic,
+      topic: options.topic
     };
 
     if (options.message !== undefined) payload.message = options.message;
@@ -138,10 +139,10 @@ export class Client {
     if (options.firebaseDisabled) payload.firebase = 'no';
 
     if (options.actions && options.actions.length > 0) {
-      payload.actions = options.actions.map((a) => {
+      payload.actions = options.actions.map(a => {
         let action: Record<string, unknown> = {
           action: a.action,
-          label: a.label,
+          label: a.label
         };
         if (a.url !== undefined) action.url = a.url;
         if (a.method !== undefined) action.method = a.method;
@@ -156,7 +157,7 @@ export class Client {
     }
 
     let response = await http.post('/', payload, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return mapMessage(response.data);
@@ -168,7 +169,7 @@ export class Client {
     let payload: Record<string, unknown> = {
       topic: options.topic,
       event: options.eventType,
-      id: options.messageId,
+      id: options.messageId
     };
 
     if (options.message !== undefined) payload.message = options.message;
@@ -178,7 +179,7 @@ export class Client {
     if (options.markdown !== undefined) payload.markdown = options.markdown;
 
     let response = await http.post('/', payload, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return mapMessage(response.data);
@@ -188,7 +189,7 @@ export class Client {
     let http = this.createAxiosInstance();
 
     let params: Record<string, string> = {
-      poll: '1',
+      poll: '1'
     };
 
     if (options.since) params.since = options.since;
@@ -200,11 +201,15 @@ export class Client {
     if (options.filterTags) params.tags = options.filterTags;
 
     let response = await http.get(`/${encodeURIComponent(options.topic)}/json`, {
-      params,
+      params
     });
 
-    let text = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-    let lines = text.trim().split('\n').filter((line: string) => line.trim().length > 0);
+    let text =
+      typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+    let lines = text
+      .trim()
+      .split('\n')
+      .filter((line: string) => line.trim().length > 0);
     let messages: NtfyMessage[] = [];
 
     for (let line of lines) {
@@ -238,12 +243,14 @@ export let mapMessage = (data: Record<string, unknown>): NtfyMessage => {
     clickUrl: data.click as string | undefined,
     iconUrl: data.icon as string | undefined,
     actions: data.actions as ActionButton[] | undefined,
-    attachment: attachment ? {
-      name: attachment.name as string,
-      url: attachment.url as string,
-      type: attachment.type as string | undefined,
-      size: attachment.size as number | undefined,
-      expires: attachment.expires as number | undefined,
-    } : undefined,
+    attachment: attachment
+      ? {
+          name: attachment.name as string,
+          url: attachment.url as string,
+          type: attachment.type as string | undefined,
+          size: attachment.size as number | undefined,
+          expires: attachment.expires as number | undefined
+        }
+      : undefined
   };
 };

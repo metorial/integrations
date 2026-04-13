@@ -9,65 +9,71 @@ let attemptSchema = z.object({
   videoUrl: z.string().describe('URL of the recorded video'),
   thumbnailUrl: z.string().describe('URL of the video thumbnail'),
   streamingVideoUrl: z.string().describe('URL for streaming the video'),
-  recordedAt: z.string().describe('Timestamp when the attempt was recorded'),
+  recordedAt: z.string().describe('Timestamp when the attempt was recorded')
 });
 
-export let newInterviewResponse = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Interview Response',
-    key: 'new_interview_response',
-    description: 'Triggers when a candidate submits a new interview response. Useful for automating follow-up workflows such as notifying hiring managers, pushing data to an ATS, or triggering candidate evaluation.',
-  }
-)
-  .input(z.object({
-    responseId: z.number().describe('Unique identifier of the interview response'),
-    candidateName: z.string().describe('Full name of the candidate'),
-    candidateEmail: z.string().describe('Email address of the candidate'),
-    candidatePhone: z.string().describe('Phone number of the candidate'),
-    jobId: z.number().describe('Identifier of the associated job'),
-    jobTitle: z.string().describe('Title of the associated job position'),
-    interviewTitle: z.string().describe('Title of the interview stage'),
-    stageId: z.number().describe('Identifier of the interview stage'),
-    date: z.string().describe('Date of the response submission'),
-    time: z.string().describe('Time of the response submission'),
-    datetime: z.string().describe('Full ISO datetime of the response submission'),
-    shareUrl: z.string().describe('Public shareable URL for the response'),
-    internalUrl: z.string().describe('Internal URL for viewing the response'),
-    textQuestionsAnswers: z.record(z.string(), z.unknown()).describe('Answers to text-based interview questions'),
-    videoUrl: z.string().describe('URL of the primary video recording'),
-    audioUrl: z.string().describe('URL of the audio recording'),
-    thumbnailUrl: z.string().describe('URL of the video thumbnail'),
-    durationSeconds: z.number().describe('Total duration of the response in seconds'),
-    attempts: z.array(attemptSchema).describe('List of recording attempts'),
-  }))
-  .output(z.object({
-    responseId: z.number().describe('Unique identifier of the interview response'),
-    candidateName: z.string().describe('Full name of the candidate'),
-    candidateEmail: z.string().describe('Email address of the candidate'),
-    candidatePhone: z.string().describe('Phone number of the candidate'),
-    jobId: z.number().describe('Identifier of the associated job'),
-    jobTitle: z.string().describe('Title of the associated job position'),
-    interviewTitle: z.string().describe('Title of the interview stage'),
-    stageId: z.number().describe('Identifier of the interview stage'),
-    date: z.string().describe('Date of the response submission'),
-    time: z.string().describe('Time of the response submission'),
-    datetime: z.string().describe('Full ISO datetime of the response submission'),
-    shareUrl: z.string().describe('Public shareable URL for the response'),
-    internalUrl: z.string().describe('Internal URL for viewing the response'),
-    textQuestionsAnswers: z.record(z.string(), z.unknown()).describe('Answers to text-based interview questions'),
-    videoUrl: z.string().describe('URL of the primary video recording'),
-    audioUrl: z.string().describe('URL of the audio recording'),
-    thumbnailUrl: z.string().describe('URL of the video thumbnail'),
-    durationSeconds: z.number().describe('Total duration of the response in seconds'),
-    attempts: z.array(attemptSchema).describe('List of recording attempts'),
-  }))
+export let newInterviewResponse = SlateTrigger.create(spec, {
+  name: 'New Interview Response',
+  key: 'new_interview_response',
+  description:
+    'Triggers when a candidate submits a new interview response. Useful for automating follow-up workflows such as notifying hiring managers, pushing data to an ATS, or triggering candidate evaluation.'
+})
+  .input(
+    z.object({
+      responseId: z.number().describe('Unique identifier of the interview response'),
+      candidateName: z.string().describe('Full name of the candidate'),
+      candidateEmail: z.string().describe('Email address of the candidate'),
+      candidatePhone: z.string().describe('Phone number of the candidate'),
+      jobId: z.number().describe('Identifier of the associated job'),
+      jobTitle: z.string().describe('Title of the associated job position'),
+      interviewTitle: z.string().describe('Title of the interview stage'),
+      stageId: z.number().describe('Identifier of the interview stage'),
+      date: z.string().describe('Date of the response submission'),
+      time: z.string().describe('Time of the response submission'),
+      datetime: z.string().describe('Full ISO datetime of the response submission'),
+      shareUrl: z.string().describe('Public shareable URL for the response'),
+      internalUrl: z.string().describe('Internal URL for viewing the response'),
+      textQuestionsAnswers: z
+        .record(z.string(), z.unknown())
+        .describe('Answers to text-based interview questions'),
+      videoUrl: z.string().describe('URL of the primary video recording'),
+      audioUrl: z.string().describe('URL of the audio recording'),
+      thumbnailUrl: z.string().describe('URL of the video thumbnail'),
+      durationSeconds: z.number().describe('Total duration of the response in seconds'),
+      attempts: z.array(attemptSchema).describe('List of recording attempts')
+    })
+  )
+  .output(
+    z.object({
+      responseId: z.number().describe('Unique identifier of the interview response'),
+      candidateName: z.string().describe('Full name of the candidate'),
+      candidateEmail: z.string().describe('Email address of the candidate'),
+      candidatePhone: z.string().describe('Phone number of the candidate'),
+      jobId: z.number().describe('Identifier of the associated job'),
+      jobTitle: z.string().describe('Title of the associated job position'),
+      interviewTitle: z.string().describe('Title of the interview stage'),
+      stageId: z.number().describe('Identifier of the interview stage'),
+      date: z.string().describe('Date of the response submission'),
+      time: z.string().describe('Time of the response submission'),
+      datetime: z.string().describe('Full ISO datetime of the response submission'),
+      shareUrl: z.string().describe('Public shareable URL for the response'),
+      internalUrl: z.string().describe('Internal URL for viewing the response'),
+      textQuestionsAnswers: z
+        .record(z.string(), z.unknown())
+        .describe('Answers to text-based interview questions'),
+      videoUrl: z.string().describe('URL of the primary video recording'),
+      audioUrl: z.string().describe('URL of the audio recording'),
+      thumbnailUrl: z.string().describe('URL of the video thumbnail'),
+      durationSeconds: z.number().describe('Total duration of the response in seconds'),
+      attempts: z.array(attemptSchema).describe('List of recording attempts')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let state = ctx.state as { lastResponseId?: number } | null;
@@ -76,10 +82,10 @@ export let newInterviewResponse = SlateTrigger.create(
       let rawResponses = await client.listInterviewResponses();
 
       let newResponses = rawResponses
-        .filter((r) => r.id > lastResponseId)
+        .filter(r => r.id > lastResponseId)
         .sort((a, b) => a.id - b.id);
 
-      let inputs = newResponses.map((r) => {
+      let inputs = newResponses.map(r => {
         let mapped = client.mapInterviewResponse(r);
         return mapped;
       });
@@ -90,12 +96,12 @@ export let newInterviewResponse = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastResponseId: updatedLastId,
-        },
+          lastResponseId: updatedLastId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'interview_response.received',
         id: String(ctx.input.responseId),
@@ -118,9 +124,9 @@ export let newInterviewResponse = SlateTrigger.create(
           audioUrl: ctx.input.audioUrl,
           thumbnailUrl: ctx.input.thumbnailUrl,
           durationSeconds: ctx.input.durationSeconds,
-          attempts: ctx.input.attempts,
-        },
+          attempts: ctx.input.attempts
+        }
       };
-    },
+    }
   })
   .build();

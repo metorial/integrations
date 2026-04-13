@@ -4,7 +4,9 @@ let BASE_URL = 'https://api.groq.com/openai/v1';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
-  content: string | Array<{ type: string; text?: string; image_url?: { url: string; detail?: string } }>;
+  content:
+    | string
+    | Array<{ type: string; text?: string; image_url?: { url: string; detail?: string } }>;
   name?: string;
   tool_call_id?: string;
   tool_calls?: Array<{
@@ -158,21 +160,22 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async createChatCompletion(req: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     let body: Record<string, unknown> = {
       model: req.model,
-      messages: req.messages,
+      messages: req.messages
     };
 
     if (req.temperature !== undefined) body.temperature = req.temperature;
     if (req.topP !== undefined) body.top_p = req.topP;
-    if (req.maxCompletionTokens !== undefined) body.max_completion_tokens = req.maxCompletionTokens;
+    if (req.maxCompletionTokens !== undefined)
+      body.max_completion_tokens = req.maxCompletionTokens;
     if (req.stop !== undefined) body.stop = req.stop;
     if (req.stream !== undefined) body.stream = req.stream;
     if (req.tools !== undefined) body.tools = req.tools;
@@ -197,26 +200,31 @@ export class Client {
     return response.data;
   }
 
-  async transcribeAudio(req: TranscriptionRequest): Promise<{ text: string; [key: string]: unknown }> {
+  async transcribeAudio(
+    req: TranscriptionRequest
+  ): Promise<{ text: string; [key: string]: unknown }> {
     let body: Record<string, unknown> = {
       model: req.model,
-      url: req.fileUrl,
+      url: req.fileUrl
     };
 
     if (req.language) body.language = req.language;
     if (req.prompt) body.prompt = req.prompt;
     if (req.responseFormat) body.response_format = req.responseFormat;
     if (req.temperature !== undefined) body.temperature = req.temperature;
-    if (req.timestampGranularities) body['timestamp_granularities[]'] = req.timestampGranularities;
+    if (req.timestampGranularities)
+      body['timestamp_granularities[]'] = req.timestampGranularities;
 
     let response = await this.axios.post('/audio/transcriptions', body);
     return response.data;
   }
 
-  async translateAudio(req: TranslationRequest): Promise<{ text: string; [key: string]: unknown }> {
+  async translateAudio(
+    req: TranslationRequest
+  ): Promise<{ text: string; [key: string]: unknown }> {
     let body: Record<string, unknown> = {
       model: req.model,
-      url: req.fileUrl,
+      url: req.fileUrl
     };
 
     if (req.prompt) body.prompt = req.prompt;
@@ -231,7 +239,7 @@ export class Client {
     let body: Record<string, unknown> = {
       model: req.model,
       input: req.input,
-      voice: req.voice,
+      voice: req.voice
     };
 
     if (req.responseFormat) body.response_format = req.responseFormat;
@@ -239,11 +247,11 @@ export class Client {
     if (req.speed !== undefined) body.speed = req.speed;
 
     let response = await this.axios.post('/audio/speech', body, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     // Return base64 encoded audio
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     let buffer = Buffer.from(response.data);
     return buffer.toString('base64');
   }
@@ -252,7 +260,7 @@ export class Client {
     let body: Record<string, unknown> = {
       input_file_id: req.inputFileId,
       endpoint: req.endpoint,
-      completion_window: req.completionWindow,
+      completion_window: req.completionWindow
     };
 
     if (req.metadata) body.metadata = req.metadata;
@@ -276,7 +284,17 @@ export class Client {
     return response.data;
   }
 
-  async uploadFile(content: string, filename: string): Promise<{ id: string; object: string; bytes: number; created_at: number; filename: string; purpose: string }> {
+  async uploadFile(
+    content: string,
+    filename: string
+  ): Promise<{
+    id: string;
+    object: string;
+    bytes: number;
+    created_at: number;
+    filename: string;
+    purpose: string;
+  }> {
     // For batch files, we send as multipart form data
     let boundary = `----SlatesBoundary${Date.now()}`;
     let body = [
@@ -289,14 +307,14 @@ export class Client {
       'Content-Type: application/jsonl',
       '',
       content,
-      `--${boundary}--`,
+      `--${boundary}--`
     ].join('\r\n');
 
     let response = await this.axios.post('/files', body, {
       headers: {
         'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        'Authorization': `Bearer ${this.token}`,
-      },
+        Authorization: `Bearer ${this.token}`
+      }
     });
     return response.data;
   }

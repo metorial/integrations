@@ -13,27 +13,31 @@ let profileOutputSchema = z.object({
   about: z.string().optional().describe('Bio/about text'),
   city: z.string().optional().describe('City'),
   country: z.string().optional().describe('Country'),
-  accountCount: z.number().optional().describe('Number of connected accounts'),
+  accountCount: z.number().optional().describe('Number of connected accounts')
 });
 
-export let getProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Get Profile',
-    key: 'get_profile',
-    description: `Retrieve the user profile for the authenticated artist or a specific user by ID. Returns profile details including display name, email, avatar, location, and account type.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProfile = SlateTool.create(spec, {
+  name: 'Get Profile',
+  key: 'get_profile',
+  description: `Retrieve the user profile for the authenticated artist or a specific user by ID. Returns profile details including display name, email, avatar, location, and account type.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.number().optional().describe('Specific user ID to look up. Omit to get the authenticated profile.'),
-  }))
-  .output(z.object({
-    profile: profileOutputSchema.describe('User profile details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z
+        .number()
+        .optional()
+        .describe('Specific user ID to look up. Omit to get the authenticated profile.')
+    })
+  )
+  .output(
+    z.object({
+      profile: profileOutputSchema.describe('User profile details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ToneDenClient({ token: ctx.auth.token });
     let user = ctx.input.userId
       ? await client.getUser(ctx.input.userId)
@@ -51,9 +55,10 @@ export let getProfile = SlateTool.create(
           about: user.about,
           city: user.city,
           country: user.country,
-          accountCount: user.account_count,
-        },
+          accountCount: user.account_count
+        }
       },
-      message: `Retrieved profile for **${user.display_name || user.username}** (ID: ${user.id}).`,
+      message: `Retrieved profile for **${user.display_name || user.username}** (ID: ${user.id}).`
     };
-  }).build();
+  })
+  .build();

@@ -8,7 +8,7 @@ import {
   lookupGoogleShoppingAds,
   searchTikTokAds,
   getTikTokAdDetails,
-  analyzeKeywords,
+  analyzeKeywords
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     lookupGoogleShoppingAds,
     searchTikTokAds,
     getTikTokAdDetails,
-    analyzeKeywords,
+    analyzeKeywords
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -18,21 +18,23 @@ let mapContact = (c: any) => ({
   emails: c.emails,
   phones: c.phones,
   urls: c.urls,
-  address: c.address ? {
-    address: c.address.address,
-    city: c.address.city,
-    state: c.address.state,
-    zipCode: c.address.zip_code,
-    countryCode: c.address.country_code,
-  } : undefined,
+  address: c.address
+    ? {
+        address: c.address.address,
+        city: c.address.city,
+        state: c.address.state,
+        zipCode: c.address.zip_code,
+        countryCode: c.address.country_code
+      }
+    : undefined,
   tags: c.tags,
   starValue: c.star_value,
   customFields: c.custom_fields?.map((cf: any) => ({
     customFieldId: cf.custom_field?.id ?? cf.id,
-    value: cf.custom_field?.value ?? cf.value,
+    value: cf.custom_field?.value ?? cf.value
   })),
   createdAt: c.created_at,
-  modifiedAt: c.modified_at,
+  modifiedAt: c.modified_at
 });
 
 let mapCompany = (c: any) => ({
@@ -41,19 +43,21 @@ let mapCompany = (c: any) => ({
   description: c.description,
   phone: c.phone,
   url: c.url,
-  address: c.address ? {
-    address: c.address.address,
-    city: c.address.city,
-    state: c.address.state,
-    zipCode: c.address.zip_code,
-    countryCode: c.address.country_code,
-  } : undefined,
+  address: c.address
+    ? {
+        address: c.address.address,
+        city: c.address.city,
+        state: c.address.state,
+        zipCode: c.address.zip_code,
+        countryCode: c.address.country_code
+      }
+    : undefined,
   customFields: c.custom_fields?.map((cf: any) => ({
     customFieldId: cf.custom_field?.id ?? cf.id,
-    value: cf.custom_field?.value ?? cf.value,
+    value: cf.custom_field?.value ?? cf.value
   })),
   createdAt: c.created_at,
-  modifiedAt: c.modified_at,
+  modifiedAt: c.modified_at
 });
 
 let mapDeal = (d: any) => ({
@@ -71,10 +75,10 @@ let mapDeal = (d: any) => ({
   text: d.text,
   customFields: d.custom_fields?.map((cf: any) => ({
     customFieldId: cf.custom_field?.id ?? cf.id,
-    value: cf.custom_field?.value ?? cf.value,
+    value: cf.custom_field?.value ?? cf.value
   })),
   createdAt: d.created_at,
-  modifiedAt: d.modified_at,
+  modifiedAt: d.modified_at
 });
 
 let mapAction = (a: any) => ({
@@ -87,7 +91,7 @@ let mapAction = (a: any) => ({
   status: a.status,
   done: a.done,
   createdAt: a.created_at,
-  modifiedAt: a.modified_at,
+  modifiedAt: a.modified_at
 });
 
 let mapNote = (n: any) => ({
@@ -98,7 +102,7 @@ let mapNote = (n: any) => ({
   linkedDealId: n.linked_deal_id,
   date: n.date,
   createdAt: n.created_at,
-  modifiedAt: n.modified_at,
+  modifiedAt: n.modified_at
 });
 
 let mapCall = (c: any) => ({
@@ -112,7 +116,7 @@ let mapCall = (c: any) => ({
   via: c.via,
   recordingLink: c.recording_link,
   createdAt: c.created_at,
-  modifiedAt: c.modified_at,
+  modifiedAt: c.modified_at
 });
 
 let mapMeeting = (m: any) => ({
@@ -123,7 +127,7 @@ let mapMeeting = (m: any) => ({
   meetingTime: m.meeting_time_int ? String(m.meeting_time_int) : m.time,
   place: m.place,
   createdAt: m.created_at,
-  modifiedAt: m.modified_at,
+  modifiedAt: m.modified_at
 });
 
 let mapPredefinedItem = (i: any) => ({
@@ -132,7 +136,7 @@ let mapPredefinedItem = (i: any) => ({
   description: i.description,
   cost: i.cost,
   price: i.price,
-  amount: i.amount,
+  amount: i.amount
 });
 
 let mapStatus = (s: any) => ({
@@ -140,13 +144,13 @@ let mapStatus = (s: any) => ({
   text: s.text,
   description: s.description,
   color: s.color,
-  count: s.count ?? s.counts,
+  count: s.count ?? s.counts
 });
 
 let mapLeadSource = (ls: any) => ({
   leadSourceId: ls.id,
   text: ls.text,
-  count: ls.count ?? ls.counts,
+  count: ls.count ?? ls.counts
 });
 
 // Helper to build address for API (camelCase -> snake_case)
@@ -157,7 +161,7 @@ let buildAddress = (addr: any) => {
     city: addr.city,
     state: addr.state,
     zip_code: addr.zipCode,
-    country_code: addr.countryCode,
+    country_code: addr.countryCode
   };
 };
 
@@ -165,9 +169,9 @@ let buildCustomFields = (fields?: any[]) => {
   if (!fields) return undefined;
   return fields.map((f: any) => ({
     custom_field: {
-      id: f.customFieldId,
+      id: f.customFieldId
     },
-    value: f.value,
+    value: f.value
   }));
 };
 
@@ -179,25 +183,27 @@ export class Client {
       baseURL: BASE_URL,
       auth: {
         username: auth.userId,
-        password: auth.token,
-      },
+        password: auth.token
+      }
     });
   }
 
   // ---------- Contacts ----------
 
-  async listContacts(params: {
-    page?: number;
-    perPage?: number;
-    modifiedSince?: string;
-    letter?: string;
-    search?: string;
-    statusId?: string;
-    leadSourceId?: string;
-    tag?: string;
-    sortBy?: string;
-    order?: string;
-  } = {}) {
+  async listContacts(
+    params: {
+      page?: number;
+      perPage?: number;
+      modifiedSince?: string;
+      letter?: string;
+      search?: string;
+      statusId?: string;
+      leadSourceId?: string;
+      tag?: string;
+      sortBy?: string;
+      order?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/contacts.json', {
       params: {
         page: params.page ?? 1,
@@ -209,15 +215,16 @@ export class Client {
         lead_source_id: params.leadSourceId,
         tag: params.tag,
         sort_by: params.sortBy,
-        order: params.order,
-      },
+        order: params.order
+      }
     });
     let contacts = response.data?.data?.contacts ?? [];
     return {
       contacts: contacts.map((item: any) => mapContact(item.contact ?? item)),
-      totalCount: response.data?.data?.total_count ?? response.data?.data?.contacts?.length ?? 0,
+      totalCount:
+        response.data?.data?.total_count ?? response.data?.data?.contacts?.length ?? 0,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -259,34 +266,39 @@ export class Client {
       address: buildAddress(data.address),
       tags: data.tags,
       star_value: data.starValue,
-      custom_fields: buildCustomFields(data.customFields),
+      custom_fields: buildCustomFields(data.customFields)
     };
 
     // Remove undefined values
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.post('/contacts.json', body);
     let c = response.data?.data?.contact ?? response.data?.data;
     return mapContact(c);
   }
 
-  async updateContact(contactId: string, data: {
-    firstName?: string;
-    lastName?: string;
-    companyName?: string;
-    jobTitle?: string;
-    background?: string;
-    statusId?: string;
-    leadSourceId?: string;
-    ownerId?: string;
-    emails?: { type: string; value: string }[];
-    phones?: { type: string; value: string }[];
-    urls?: { type: string; value: string }[];
-    address?: any;
-    tags?: string[];
-    starValue?: number;
-    customFields?: any[];
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      companyName?: string;
+      jobTitle?: string;
+      background?: string;
+      statusId?: string;
+      leadSourceId?: string;
+      ownerId?: string;
+      emails?: { type: string; value: string }[];
+      phones?: { type: string; value: string }[];
+      urls?: { type: string; value: string }[];
+      address?: any;
+      tags?: string[];
+      starValue?: number;
+      customFields?: any[];
+    }
+  ) {
     let body: any = {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -302,13 +314,15 @@ export class Client {
       address: buildAddress(data.address),
       tags: data.tags,
       star_value: data.starValue,
-      custom_fields: buildCustomFields(data.customFields),
+      custom_fields: buildCustomFields(data.customFields)
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.put(`/contacts/${contactId}.json`, body, {
-      params: { partial: true },
+      params: { partial: true }
     });
     let c = response.data?.data?.contact ?? response.data?.data;
     return mapContact(c);
@@ -320,14 +334,16 @@ export class Client {
 
   // ---------- Companies ----------
 
-  async listCompanies(params: {
-    page?: number;
-    perPage?: number;
-    search?: string;
-    sortBy?: string;
-    order?: string;
-    modifiedSince?: string;
-  } = {}) {
+  async listCompanies(
+    params: {
+      page?: number;
+      perPage?: number;
+      search?: string;
+      sortBy?: string;
+      order?: string;
+      modifiedSince?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/companies.json', {
       params: {
         page: params.page ?? 1,
@@ -335,15 +351,15 @@ export class Client {
         search: params.search,
         sort_by: params.sortBy,
         order: params.order,
-        modified_since: params.modifiedSince,
-      },
+        modified_since: params.modifiedSince
+      }
     });
     let companies = response.data?.data?.companies ?? [];
     return {
       companies: companies.map((item: any) => mapCompany(item.company ?? item)),
       totalCount: response.data?.data?.total_count ?? companies.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -353,27 +369,32 @@ export class Client {
     return mapCompany(c);
   }
 
-  async updateCompany(companyId: string, data: {
-    name?: string;
-    description?: string;
-    phone?: string;
-    url?: string;
-    address?: any;
-    customFields?: any[];
-  }) {
+  async updateCompany(
+    companyId: string,
+    data: {
+      name?: string;
+      description?: string;
+      phone?: string;
+      url?: string;
+      address?: any;
+      customFields?: any[];
+    }
+  ) {
     let body: any = {
       name: data.name,
       description: data.description,
       phone: data.phone,
       url: data.url,
       address: buildAddress(data.address),
-      custom_fields: buildCustomFields(data.customFields),
+      custom_fields: buildCustomFields(data.customFields)
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.put(`/companies/${companyId}.json`, body, {
-      params: { partial: true },
+      params: { partial: true }
     });
     let c = response.data?.data?.company ?? response.data?.data;
     return mapCompany(c);
@@ -381,16 +402,18 @@ export class Client {
 
   // ---------- Deals ----------
 
-  async listDeals(params: {
-    page?: number;
-    perPage?: number;
-    contactId?: string;
-    companyId?: string;
-    status?: string;
-    sortBy?: string;
-    order?: string;
-    modifiedSince?: string;
-  } = {}) {
+  async listDeals(
+    params: {
+      page?: number;
+      perPage?: number;
+      contactId?: string;
+      companyId?: string;
+      status?: string;
+      sortBy?: string;
+      order?: string;
+      modifiedSince?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/deals.json', {
       params: {
         page: params.page ?? 1,
@@ -400,15 +423,15 @@ export class Client {
         status: params.status,
         sort_by: params.sortBy,
         order: params.order,
-        modified_since: params.modifiedSince,
-      },
+        modified_since: params.modifiedSince
+      }
     });
     let deals = response.data?.data?.deals ?? [];
     return {
       deals: deals.map((item: any) => mapDeal(item.deal ?? item)),
       totalCount: response.data?.data?.total_count ?? deals.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -442,29 +465,34 @@ export class Client {
       close_date: data.closeDate,
       text: data.text,
       owner_id: data.ownerId,
-      custom_fields: buildCustomFields(data.customFields),
+      custom_fields: buildCustomFields(data.customFields)
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.post('/deals.json', body);
     let d = response.data?.data?.deal ?? response.data?.data;
     return mapDeal(d);
   }
 
-  async updateDeal(dealId: string, data: {
-    name?: string;
-    amount?: number;
-    months?: number;
-    status?: string;
-    stage?: number;
-    expectedCloseDate?: string;
-    closeDate?: string;
-    text?: string;
-    ownerId?: string;
-    contactId?: string;
-    customFields?: any[];
-  }) {
+  async updateDeal(
+    dealId: string,
+    data: {
+      name?: string;
+      amount?: number;
+      months?: number;
+      status?: string;
+      stage?: number;
+      expectedCloseDate?: string;
+      closeDate?: string;
+      text?: string;
+      ownerId?: string;
+      contactId?: string;
+      customFields?: any[];
+    }
+  ) {
     let body: any = {
       name: data.name,
       amount: data.amount,
@@ -476,13 +504,15 @@ export class Client {
       text: data.text,
       owner_id: data.ownerId,
       contact_id: data.contactId,
-      custom_fields: buildCustomFields(data.customFields),
+      custom_fields: buildCustomFields(data.customFields)
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.put(`/deals/${dealId}.json`, body, {
-      params: { partial: true },
+      params: { partial: true }
     });
     let d = response.data?.data?.deal ?? response.data?.data;
     return mapDeal(d);
@@ -494,14 +524,16 @@ export class Client {
 
   // ---------- Actions ----------
 
-  async listActions(params: {
-    page?: number;
-    perPage?: number;
-    contactId?: string;
-    assigneeId?: string;
-    status?: string;
-    modifiedSince?: string;
-  } = {}) {
+  async listActions(
+    params: {
+      page?: number;
+      perPage?: number;
+      contactId?: string;
+      assigneeId?: string;
+      status?: string;
+      modifiedSince?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/actions.json', {
       params: {
         page: params.page ?? 1,
@@ -509,15 +541,15 @@ export class Client {
         contact_id: params.contactId,
         assignee_id: params.assigneeId,
         status: params.status,
-        modified_since: params.modifiedSince,
-      },
+        modified_since: params.modifiedSince
+      }
     });
     let actions = response.data?.data?.actions ?? [];
     return {
       actions: actions.map((item: any) => mapAction(item.action ?? item)),
       totalCount: response.data?.data?.total_count ?? actions.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -541,35 +573,42 @@ export class Client {
       assignee_id: data.assigneeId,
       date: data.date,
       exact_time: data.exactTime,
-      status: data.status,
+      status: data.status
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.post('/actions.json', body);
     let a = response.data?.data?.action ?? response.data?.data;
     return mapAction(a);
   }
 
-  async updateAction(actionId: string, data: {
-    text?: string;
-    assigneeId?: string;
-    date?: string;
-    exactTime?: number;
-    status?: string;
-  }) {
+  async updateAction(
+    actionId: string,
+    data: {
+      text?: string;
+      assigneeId?: string;
+      date?: string;
+      exactTime?: number;
+      status?: string;
+    }
+  ) {
     let body: any = {
       text: data.text,
       assignee_id: data.assigneeId,
       date: data.date,
       exact_time: data.exactTime,
-      status: data.status,
+      status: data.status
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.put(`/actions/${actionId}.json`, body, {
-      params: { partial: true },
+      params: { partial: true }
     });
     let a = response.data?.data?.action ?? response.data?.data;
     return mapAction(a);
@@ -593,28 +632,30 @@ export class Client {
 
   // ---------- Notes ----------
 
-  async listNotes(params: {
-    page?: number;
-    perPage?: number;
-    contactId?: string;
-    companyId?: string;
-    modifiedSince?: string;
-  } = {}) {
+  async listNotes(
+    params: {
+      page?: number;
+      perPage?: number;
+      contactId?: string;
+      companyId?: string;
+      modifiedSince?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/notes.json', {
       params: {
         page: params.page ?? 1,
         per_page: params.perPage ?? 10,
         contact_id: params.contactId,
         company_id: params.companyId,
-        modified_since: params.modifiedSince,
-      },
+        modified_since: params.modifiedSince
+      }
     });
     let notes = response.data?.data?.notes ?? [];
     return {
       notes: notes.map((item: any) => mapNote(item.note ?? item)),
       totalCount: response.data?.data?.total_count ?? notes.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -634,31 +675,38 @@ export class Client {
       contact_id: data.contactId,
       text: data.text,
       linked_deal_id: data.linkedDealId,
-      date: data.date,
+      date: data.date
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.post('/notes.json', body);
     let n = response.data?.data?.note ?? response.data?.data;
     return mapNote(n);
   }
 
-  async updateNote(noteId: string, data: {
-    text?: string;
-    linkedDealId?: string;
-    date?: string;
-  }) {
+  async updateNote(
+    noteId: string,
+    data: {
+      text?: string;
+      linkedDealId?: string;
+      date?: string;
+    }
+  ) {
     let body: any = {
       text: data.text,
       linked_deal_id: data.linkedDealId,
-      date: data.date,
+      date: data.date
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.put(`/notes/${noteId}.json`, body, {
-      params: { partial: true },
+      params: { partial: true }
     });
     let n = response.data?.data?.note ?? response.data?.data;
     return mapNote(n);
@@ -670,28 +718,30 @@ export class Client {
 
   // ---------- Calls ----------
 
-  async listCalls(params: {
-    page?: number;
-    perPage?: number;
-    contactId?: string;
-    companyId?: string;
-    modifiedSince?: string;
-  } = {}) {
+  async listCalls(
+    params: {
+      page?: number;
+      perPage?: number;
+      contactId?: string;
+      companyId?: string;
+      modifiedSince?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/calls.json', {
       params: {
         page: params.page ?? 1,
         per_page: params.perPage ?? 10,
         contact_id: params.contactId,
         company_id: params.companyId,
-        modified_since: params.modifiedSince,
-      },
+        modified_since: params.modifiedSince
+      }
     });
     let calls = response.data?.data?.calls ?? [];
     return {
       calls: calls.map((item: any) => mapCall(item.call ?? item)),
       totalCount: response.data?.data?.total_count ?? calls.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -711,10 +761,12 @@ export class Client {
       call_result: data.callResult,
       call_time_int: data.callTimeInt,
       via: data.via,
-      recording_link: data.recordingLink,
+      recording_link: data.recordingLink
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.post('/calls.json', body);
     let c = response.data?.data?.call ?? response.data?.data;
@@ -727,28 +779,30 @@ export class Client {
 
   // ---------- Meetings ----------
 
-  async listMeetings(params: {
-    page?: number;
-    perPage?: number;
-    contactId?: string;
-    companyId?: string;
-    modifiedSince?: string;
-  } = {}) {
+  async listMeetings(
+    params: {
+      page?: number;
+      perPage?: number;
+      contactId?: string;
+      companyId?: string;
+      modifiedSince?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/meetings.json', {
       params: {
         page: params.page ?? 1,
         per_page: params.perPage ?? 10,
         contact_id: params.contactId,
         company_id: params.companyId,
-        modified_since: params.modifiedSince,
-      },
+        modified_since: params.modifiedSince
+      }
     });
     let meetings = response.data?.data?.meetings ?? [];
     return {
       meetings: meetings.map((item: any) => mapMeeting(item.meeting ?? item)),
       totalCount: response.data?.data?.total_count ?? meetings.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 
@@ -762,10 +816,12 @@ export class Client {
       contact_id: data.contactId,
       text: data.text,
       meeting_time_int: data.meetingTimeInt,
-      place: data.place,
+      place: data.place
     };
 
-    Object.keys(body).forEach(k => { if (body[k] === undefined) delete body[k]; });
+    Object.keys(body).forEach(k => {
+      if (body[k] === undefined) delete body[k];
+    });
 
     let response = await this.axios.post('/meetings.json', body);
     let m = response.data?.data?.meeting ?? response.data?.data;
@@ -802,15 +858,17 @@ export class Client {
 
   // ---------- Action Stream ----------
 
-  async getActionStream(params: {
-    page?: number;
-    perPage?: number;
-  } = {}) {
+  async getActionStream(
+    params: {
+      page?: number;
+      perPage?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/action_stream.json', {
       params: {
         page: params.page ?? 1,
-        per_page: params.perPage ?? 10,
-      },
+        per_page: params.perPage ?? 10
+      }
     });
     let contacts = response.data?.data?.contacts ?? [];
     return {
@@ -818,12 +876,12 @@ export class Client {
         let contact = item.contact ?? item;
         return {
           ...mapContact(contact),
-          nextAction: contact.next_action ? mapAction(contact.next_action) : undefined,
+          nextAction: contact.next_action ? mapAction(contact.next_action) : undefined
         };
       }),
       totalCount: response.data?.data?.total_count ?? contacts.length,
       page: response.data?.data?.page ?? params.page ?? 1,
-      perPage: response.data?.data?.per_page ?? params.perPage ?? 10,
+      perPage: response.data?.data?.per_page ?? params.perPage ?? 10
     };
   }
 

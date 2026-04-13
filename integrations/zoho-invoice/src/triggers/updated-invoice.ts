@@ -14,29 +14,27 @@ let invoiceSchema = z.object({
   total: z.number().optional(),
   balance: z.number().optional(),
   currencyCode: z.string().optional(),
-  lastModifiedTime: z.string(),
+  lastModifiedTime: z.string()
 });
 
-export let updatedInvoice = SlateTrigger.create(
-  spec,
-  {
-    name: 'Updated Invoice',
-    key: 'updated_invoice',
-    description: 'Triggers when an invoice is updated in Zoho Invoice. Polls for recently modified invoices.',
-  }
-)
+export let updatedInvoice = SlateTrigger.create(spec, {
+  name: 'Updated Invoice',
+  key: 'updated_invoice',
+  description:
+    'Triggers when an invoice is updated in Zoho Invoice. Polls for recently modified invoices.'
+})
   .input(invoiceSchema)
   .output(invoiceSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         organizationId: ctx.config.organizationId,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let state = ctx.state as { lastModifiedTime?: string } | null;
@@ -45,7 +43,7 @@ export let updatedInvoice = SlateTrigger.create(
       let result = await client.listInvoices({
         sort_column: 'last_modified_time',
         sort_order: 'D',
-        per_page: 25,
+        per_page: 25
       });
 
       let invoices = result.invoices ?? [];
@@ -68,7 +66,7 @@ export let updatedInvoice = SlateTrigger.create(
           total: inv.total,
           balance: inv.balance,
           currencyCode: inv.currency_code,
-          lastModifiedTime: modifiedTime,
+          lastModifiedTime: modifiedTime
         });
 
         if (!newestModifiedTime || modifiedTime > newestModifiedTime) {
@@ -79,12 +77,12 @@ export let updatedInvoice = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastModifiedTime: newestModifiedTime || lastModifiedTime,
-        },
+          lastModifiedTime: newestModifiedTime || lastModifiedTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'invoice.updated',
         id: `${ctx.input.invoiceId}-${ctx.input.lastModifiedTime}`,
@@ -99,8 +97,9 @@ export let updatedInvoice = SlateTrigger.create(
           total: ctx.input.total,
           balance: ctx.input.balance,
           currencyCode: ctx.input.currencyCode,
-          lastModifiedTime: ctx.input.lastModifiedTime,
-        },
+          lastModifiedTime: ctx.input.lastModifiedTime
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

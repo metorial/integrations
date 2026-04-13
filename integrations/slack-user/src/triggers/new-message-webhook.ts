@@ -14,21 +14,18 @@ let slackEventBody = z.object({
       ts: z.string().optional(),
       thread_ts: z.string().optional(),
       subtype: z.string().optional(),
-      bot_id: z.string().optional(),
+      bot_id: z.string().optional()
     })
     .passthrough()
-    .optional(),
+    .optional()
 });
 
-export let newMessageWebhook = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Message (Events API)',
-    key: 'new_message_webhook',
-    description:
-      'Triggers when Slack sends a `message` event to the Metorial Events URL. Use with Slack Event Subscriptions and hub route POST /slates-hub/slack/events. Complements the polling “New Message” trigger.',
-  }
-)
+export let newMessageWebhook = SlateTrigger.create(spec, {
+  name: 'New Message (Events API)',
+  key: 'new_message_webhook',
+  description:
+    'Triggers when Slack sends a `message` event to the Metorial Events URL. Use with Slack Event Subscriptions and hub route POST /slates-hub/slack/events. Complements the polling “New Message” trigger.'
+})
   .input(
     z.object({
       messageTs: z.string().describe('Message timestamp'),
@@ -37,7 +34,7 @@ export let newMessageWebhook = SlateTrigger.create(
       userId: z.string().optional().describe('User ID of the message author'),
       threadTs: z.string().optional().describe('Thread parent timestamp'),
       subtype: z.string().optional().describe('Message subtype'),
-      botId: z.string().optional().describe('Bot ID if from a bot'),
+      botId: z.string().optional().describe('Bot ID if from a bot')
     })
   )
   .output(
@@ -49,11 +46,11 @@ export let newMessageWebhook = SlateTrigger.create(
       threadTs: z.string().optional().describe('Thread parent timestamp if a thread reply'),
       subtype: z.string().optional().describe('Message subtype'),
       botId: z.string().optional().describe('Bot ID if posted by a bot'),
-      isThread: z.boolean().describe('Whether this message is a thread reply'),
+      isThread: z.boolean().describe('Whether this message is a thread reply')
     })
   )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let raw = await ctx.request.text();
       let parsed: unknown;
       try {
@@ -89,13 +86,13 @@ export let newMessageWebhook = SlateTrigger.create(
             userId: ev.user,
             threadTs: ev.thread_ts,
             subtype: ev.subtype,
-            botId: ev.bot_id,
-          },
-        ],
+            botId: ev.bot_id
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.subtype ? `message.${ctx.input.subtype}` : 'message.new',
         id: `${ctx.input.channelId}-${ctx.input.messageTs}`,
@@ -107,9 +104,9 @@ export let newMessageWebhook = SlateTrigger.create(
           threadTs: ctx.input.threadTs,
           subtype: ctx.input.subtype,
           botId: ctx.input.botId,
-          isThread: !!ctx.input.threadTs,
-        },
+          isThread: !!ctx.input.threadTs
+        }
       };
-    },
+    }
   })
   .build();

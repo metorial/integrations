@@ -6,9 +6,11 @@ let oauthAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Ahrefs Connect (OAuth)',
@@ -22,7 +24,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -36,25 +38,29 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await oauthAxios.post('/oauth/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await oauthAxios.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       return {
         output: {
-          token: response.data.access_token,
+          token: response.data.access_token
         }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -62,14 +68,16 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Ahrefs API key (Bearer token). Create one in Account Settings > API keys.')
+      token: z
+        .string()
+        .describe('Ahrefs API key (Bearer token). Create one in Account Settings > API keys.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
-    },
+    }
   });

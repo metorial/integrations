@@ -3,37 +3,51 @@ import { ProfileClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccountInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account_info',
-    description: `Retrieves DaData account information including current balance, daily usage statistics, and data freshness versions for all reference directories.
+export let getAccountInfo = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account_info',
+  description: `Retrieves DaData account information including current balance, daily usage statistics, and data freshness versions for all reference directories.
 Useful for monitoring API consumption and checking that reference data is up to date.`,
-    constraints: [
-      'Requires both API Key and Secret Key.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  constraints: ['Requires both API Key and Secret Key.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    include: z.array(z.enum(['balance', 'stats', 'versions'])).optional().describe('Which data to include (default: all)'),
-  }))
-  .output(z.object({
-    balance: z.number().nullable().describe('Account balance in rubles'),
-    stats: z.object({
-      date: z.string().nullable().describe('Stats date'),
-      servicesUsed: z.record(z.string(), z.number()).nullable().describe('Requests consumed today per service'),
-      servicesRemaining: z.record(z.string(), z.number()).nullable().describe('Estimated remaining requests per service'),
-    }).nullable().describe('Daily usage statistics'),
-    versions: z.record(z.string(), z.unknown()).nullable().describe('Data freshness versions for reference directories'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      include: z
+        .array(z.enum(['balance', 'stats', 'versions']))
+        .optional()
+        .describe('Which data to include (default: all)')
+    })
+  )
+  .output(
+    z.object({
+      balance: z.number().nullable().describe('Account balance in rubles'),
+      stats: z
+        .object({
+          date: z.string().nullable().describe('Stats date'),
+          servicesUsed: z
+            .record(z.string(), z.number())
+            .nullable()
+            .describe('Requests consumed today per service'),
+          servicesRemaining: z
+            .record(z.string(), z.number())
+            .nullable()
+            .describe('Estimated remaining requests per service')
+        })
+        .nullable()
+        .describe('Daily usage statistics'),
+      versions: z
+        .record(z.string(), z.unknown())
+        .nullable()
+        .describe('Data freshness versions for reference directories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ProfileClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let include = ctx.input.include || ['balance', 'stats', 'versions'];
@@ -45,7 +59,7 @@ Useful for monitoring API consumption and checking that reference data is up to 
 
     if (include.includes('balance')) {
       promises.push(
-        client.getBalance().then((data) => {
+        client.getBalance().then(data => {
           balance = data.balance ?? null;
         })
       );
@@ -53,11 +67,11 @@ Useful for monitoring API consumption and checking that reference data is up to 
 
     if (include.includes('stats')) {
       promises.push(
-        client.getDailyStats().then((data) => {
+        client.getDailyStats().then(data => {
           stats = {
             date: data.date ?? null,
             servicesUsed: data.services ?? null,
-            servicesRemaining: data.remaining ?? null,
+            servicesRemaining: data.remaining ?? null
           };
         })
       );
@@ -65,7 +79,7 @@ Useful for monitoring API consumption and checking that reference data is up to 
 
     if (include.includes('versions')) {
       promises.push(
-        client.getVersions().then((data) => {
+        client.getVersions().then(data => {
           versions = data ?? null;
         })
       );
@@ -79,6 +93,7 @@ Useful for monitoring API consumption and checking that reference data is up to 
 
     return {
       output: { balance, stats, versions },
-      message: messageParts.length > 0 ? messageParts.join('. ') : 'Account info retrieved.',
+      message: messageParts.length > 0 ? messageParts.join('. ') : 'Account info retrieved.'
     };
-  }).build();
+  })
+  .build();

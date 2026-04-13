@@ -3,30 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let brandConsentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Brand Consent Events',
-    key: 'brand_consent_events',
-    description: 'Triggers when a brand consent status changes, indicating whether a brand has given or revoked consent for transaction tracking.',
-  }
-)
-  .input(z.object({
-    eventType: z.literal('brand.consent').describe('Event type'),
-    brandId: z.string().describe('Unique identifier of the brand'),
-    rawEvent: z.any().describe('Raw event payload from Fidel API'),
-  }))
-  .output(z.object({
-    brandId: z.string().describe('Unique identifier of the brand'),
-    name: z.string().optional().describe('Name of the brand'),
-    accountId: z.string().optional().describe('Account ID'),
-    consent: z.boolean().optional().describe('Whether the brand has given consent'),
-    live: z.boolean().optional().describe('Whether the brand is in live mode'),
-    created: z.string().optional().describe('ISO 8601 creation timestamp'),
-    updated: z.string().optional().describe('ISO 8601 update timestamp'),
-  }))
+export let brandConsentEvents = SlateTrigger.create(spec, {
+  name: 'Brand Consent Events',
+  key: 'brand_consent_events',
+  description:
+    'Triggers when a brand consent status changes, indicating whether a brand has given or revoked consent for transaction tracking.'
+})
+  .input(
+    z.object({
+      eventType: z.literal('brand.consent').describe('Event type'),
+      brandId: z.string().describe('Unique identifier of the brand'),
+      rawEvent: z.any().describe('Raw event payload from Fidel API')
+    })
+  )
+  .output(
+    z.object({
+      brandId: z.string().describe('Unique identifier of the brand'),
+      name: z.string().optional().describe('Name of the brand'),
+      accountId: z.string().optional().describe('Account ID'),
+      consent: z.boolean().optional().describe('Whether the brand has given consent'),
+      live: z.boolean().optional().describe('Whether the brand is in live mode'),
+      created: z.string().optional().describe('ISO 8601 creation timestamp'),
+      updated: z.string().optional().describe('ISO 8601 update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ webhookId: string; programId: string; event: string }> = [];
 
@@ -37,12 +39,12 @@ export let brandConsentEvents = SlateTrigger.create(
         try {
           let webhook = await client.createWebhook(program.id, {
             event: 'brand.consent',
-            url: ctx.input.webhookBaseUrl,
+            url: ctx.input.webhookBaseUrl
           });
           registrations.push({
             webhookId: webhook.id,
             programId: program.id,
-            event: 'brand.consent',
+            event: 'brand.consent'
           });
         } catch {
           // Continue on error
@@ -50,11 +52,11 @@ export let brandConsentEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations ?? [];
 
@@ -67,21 +69,21 @@ export let brandConsentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
           {
             eventType: 'brand.consent' as const,
             brandId: data?.id ?? '',
-            rawEvent: data,
-          },
-        ],
+            rawEvent: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let brand = ctx.input.rawEvent;
 
       return {
@@ -94,9 +96,9 @@ export let brandConsentEvents = SlateTrigger.create(
           consent: brand.consent,
           live: brand.live,
           created: brand.created,
-          updated: brand.updated,
-        },
+          updated: brand.updated
+        }
       };
-    },
+    }
   })
   .build();

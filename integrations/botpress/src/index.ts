@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listBotsTool,
@@ -16,13 +15,9 @@ import {
   getBotAnalyticsTool,
   getBotLogsTool,
   listBotIssuesTool,
-  listIntegrationsTool,
+  listIntegrationsTool
 } from './tools';
-import {
-  incomingEventTrigger,
-  newMessageTrigger,
-  inboundWebhook,
-} from './triggers';
+import { incomingEventTrigger, newMessageTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,11 +36,7 @@ export let provider = Slate.create({
     getBotAnalyticsTool,
     getBotLogsTool,
     listBotIssuesTool,
-    listIntegrationsTool,
+    listIntegrationsTool
   ],
-  triggers: [
-    inboundWebhook,
-    incomingEventTrigger,
-    newMessageTrigger,
-  ],
+  triggers: [inboundWebhook, incomingEventTrigger, newMessageTrigger]
 });

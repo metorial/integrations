@@ -76,6 +76,7 @@ AI/ML API supports **webhooks** for asynchronous operations, following the same 
 ### Response Events
 
 Triggered when background (asynchronous) responses complete or fail. The SDK supports unwrapping webhook payloads and verifying that the webhook was sent from AI/ML API. Event types include:
+
 - `response.completed` — A background response has been completed.
 - `response.failed` — A background response has failed.
 

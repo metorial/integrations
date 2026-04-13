@@ -25,68 +25,77 @@ let venueSchema = z.object({
   accessibleSeatingDetail: z.string(),
   generalInfo: z.object({
     generalRule: z.string(),
-    childRule: z.string(),
+    childRule: z.string()
   }),
   boxOfficeInfo: z.object({
     phoneNumberDetail: z.string(),
     openHoursDetail: z.string(),
     acceptedPaymentDetail: z.string(),
-    willCallDetail: z.string(),
+    willCallDetail: z.string()
   }),
   upcomingEvents: z.record(z.string(), z.any()),
-  images: z.array(z.object({
-    url: z.string(),
-    width: z.number().nullable(),
-    height: z.number().nullable(),
-    ratio: z.string(),
-  })),
+  images: z.array(
+    z.object({
+      url: z.string(),
+      width: z.number().nullable(),
+      height: z.number().nullable(),
+      ratio: z.string()
+    })
+  ),
   dmas: z.array(z.object({ dmaId: z.string() })),
-  social: z.record(z.string(), z.any()),
+  social: z.record(z.string(), z.any())
 });
 
-export let searchVenuesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Search Venues',
-    key: 'search_venues',
-    description: `Search for venues on Ticketmaster. Filter by keyword, location (country, state, city, postal code), or geographic coordinates. Returns venue details including address, box office info, general rules, and upcoming event counts.`,
-    instructions: [
-      'Use latlong with radius for proximity search (e.g., latlong "40.7128,-74.0060" with radius "25" unit "miles")',
-      'Sort options: name,asc | name,desc | relevance,asc | relevance,desc | distance,asc | distance,desc',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let searchVenuesTool = SlateTool.create(spec, {
+  name: 'Search Venues',
+  key: 'search_venues',
+  description: `Search for venues on Ticketmaster. Filter by keyword, location (country, state, city, postal code), or geographic coordinates. Returns venue details including address, box office info, general rules, and upcoming event counts.`,
+  instructions: [
+    'Use latlong with radius for proximity search (e.g., latlong "40.7128,-74.0060" with radius "25" unit "miles")',
+    'Sort options: name,asc | name,desc | relevance,asc | relevance,desc | distance,asc | distance,desc'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    keyword: z.string().optional().describe('Search keyword to match against venue name'),
-    countryCode: z.string().optional().describe('ISO country code (e.g., US, CA, GB)'),
-    stateCode: z.string().optional().describe('State/province code (e.g., CA, NY, ON)'),
-    city: z.string().optional().describe('City name'),
-    postalCode: z.string().optional().describe('Postal/zip code'),
-    latlong: z.string().optional().describe('Latitude,longitude for geo search (e.g., "40.7128,-74.0060")'),
-    radius: z.string().optional().describe('Radius for geo search'),
-    unit: z.string().optional().describe('Unit for radius: "miles" or "km"'),
-    source: z.string().optional().describe('Source platform: ticketmaster, universe, frontgate, tmr'),
-    sort: z.string().optional().describe('Sort order'),
-    size: z.number().optional().describe('Number of results per page (default 20, max 200)'),
-    page: z.number().optional().describe('Page number (0-indexed)'),
-  }))
-  .output(z.object({
-    venues: z.array(venueSchema),
-    pagination: z.object({
-      totalElements: z.number(),
-      totalPages: z.number(),
-      currentPage: z.number(),
-      pageSize: z.number(),
-    }),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      keyword: z.string().optional().describe('Search keyword to match against venue name'),
+      countryCode: z.string().optional().describe('ISO country code (e.g., US, CA, GB)'),
+      stateCode: z.string().optional().describe('State/province code (e.g., CA, NY, ON)'),
+      city: z.string().optional().describe('City name'),
+      postalCode: z.string().optional().describe('Postal/zip code'),
+      latlong: z
+        .string()
+        .optional()
+        .describe('Latitude,longitude for geo search (e.g., "40.7128,-74.0060")'),
+      radius: z.string().optional().describe('Radius for geo search'),
+      unit: z.string().optional().describe('Unit for radius: "miles" or "km"'),
+      source: z
+        .string()
+        .optional()
+        .describe('Source platform: ticketmaster, universe, frontgate, tmr'),
+      sort: z.string().optional().describe('Sort order'),
+      size: z.number().optional().describe('Number of results per page (default 20, max 200)'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      venues: z.array(venueSchema),
+      pagination: z.object({
+        totalElements: z.number(),
+        totalPages: z.number(),
+        currentPage: z.number(),
+        pageSize: z.number()
+      })
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DiscoveryClient({
       token: ctx.auth.token,
       countryCode: ctx.config.countryCode,
-      locale: ctx.config.locale,
+      locale: ctx.config.locale
     });
 
     let response = await client.searchVenues({
@@ -101,7 +110,7 @@ export let searchVenuesTool = SlateTool.create(
       source: ctx.input.source,
       sort: ctx.input.sort,
       size: ctx.input.size,
-      page: ctx.input.page,
+      page: ctx.input.page
     });
 
     let rawVenues = response?._embedded?.venues || [];
@@ -110,6 +119,7 @@ export let searchVenuesTool = SlateTool.create(
 
     return {
       output: { venues, pagination },
-      message: `Found **${pagination.totalElements}** venues (showing page ${pagination.currentPage + 1} of ${pagination.totalPages}).`,
+      message: `Found **${pagination.totalElements}** venues (showing page ${pagination.currentPage + 1} of ${pagination.totalPages}).`
     };
-  }).build();
+  })
+  .build();

@@ -38,10 +38,10 @@ export class Client {
     return createAxios({
       baseURL: 'https://api.elorus.com/v1.2/',
       headers: {
-        'Authorization': `Token ${this.token}`,
+        Authorization: `Token ${this.token}`,
         'X-Elorus-Organization': this.organizationId,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -65,11 +65,26 @@ export class Client {
 
     // Pass through any extra params (e.g., status, draft, client, supplier, etc.)
     for (let [key, value] of Object.entries(params)) {
-      if (value !== undefined && !queryParams[key] && ![
-        'page', 'pageSize', 'search', 'searchFields', 'ordering',
-        'periodFrom', 'periodTo', 'period', 'createdAfter', 'createdBefore',
-        'modifiedAfter', 'modifiedBefore', 'currencyCode', 'customId',
-      ].includes(key)) {
+      if (
+        value !== undefined &&
+        !queryParams[key] &&
+        ![
+          'page',
+          'pageSize',
+          'search',
+          'searchFields',
+          'ordering',
+          'periodFrom',
+          'periodTo',
+          'period',
+          'createdAfter',
+          'createdBefore',
+          'modifiedAfter',
+          'modifiedBefore',
+          'currencyCode',
+          'customId'
+        ].includes(key)
+      ) {
         queryParams[key] = String(value);
       }
     }
@@ -79,14 +94,17 @@ export class Client {
 
   // --- Contacts ---
 
-  async listContacts(params: ListParams & {
-    isClient?: boolean;
-    isSupplier?: boolean;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listContacts(
+    params: ListParams & {
+      isClient?: boolean;
+      isSupplier?: boolean;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.isClient !== undefined) queryParams['is_client'] = params.isClient ? '1' : '0';
-    if (params.isSupplier !== undefined) queryParams['is_supplier'] = params.isSupplier ? '1' : '0';
+    if (params.isSupplier !== undefined)
+      queryParams['is_supplier'] = params.isSupplier ? '1' : '0';
     let response = await axios.get('/contacts/', { params: queryParams });
     return response.data;
   }
@@ -118,15 +136,17 @@ export class Client {
 
   // --- Invoices ---
 
-  async listInvoices(params: ListParams & {
-    status?: string;
-    draft?: string;
-    client?: string;
-    documenttype?: string;
-    fpaid?: string;
-    isVoid?: string;
-    overdue?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listInvoices(
+    params: ListParams & {
+      status?: string;
+      draft?: string;
+      client?: string;
+      documenttype?: string;
+      fpaid?: string;
+      isVoid?: string;
+      overdue?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.status) queryParams['status'] = params.status;
@@ -185,12 +205,14 @@ export class Client {
 
   // --- Credit Notes ---
 
-  async listCreditNotes(params: ListParams & {
-    status?: string;
-    draft?: string;
-    client?: string;
-    documenttype?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listCreditNotes(
+    params: ListParams & {
+      status?: string;
+      draft?: string;
+      client?: string;
+      documenttype?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.status) queryParams['status'] = params.status;
@@ -213,7 +235,11 @@ export class Client {
     return response.data;
   }
 
-  async updateCreditNote(creditNoteId: string, data: any, partial: boolean = true): Promise<any> {
+  async updateCreditNote(
+    creditNoteId: string,
+    data: any,
+    partial: boolean = true
+  ): Promise<any> {
     let axios = this.getAxios();
     let response = partial
       ? await axios.patch(`/creditnotes/${creditNoteId}/`, data)
@@ -228,11 +254,13 @@ export class Client {
 
   // --- Estimates ---
 
-  async listEstimates(params: ListParams & {
-    status?: string;
-    client?: string;
-    documenttype?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listEstimates(
+    params: ListParams & {
+      status?: string;
+      client?: string;
+      documenttype?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.status) queryParams['status'] = params.status;
@@ -275,13 +303,15 @@ export class Client {
 
   // --- Bills (Expenses from suppliers) ---
 
-  async listBills(params: ListParams & {
-    status?: string;
-    draft?: string;
-    supplier?: string;
-    documenttype?: string;
-    selfBilled?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listBills(
+    params: ListParams & {
+      status?: string;
+      draft?: string;
+      supplier?: string;
+      documenttype?: string;
+      selfBilled?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.status) queryParams['status'] = params.status;
@@ -352,10 +382,12 @@ export class Client {
 
   // --- Cash Receipts (Payments Received) ---
 
-  async listCashReceipts(params: ListParams & {
-    transactionType?: string;
-    contact?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listCashReceipts(
+    params: ListParams & {
+      transactionType?: string;
+      contact?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.transactionType) queryParams['transaction_type'] = params.transactionType;
@@ -389,10 +421,12 @@ export class Client {
 
   // --- Cash Payments (Payments Sent) ---
 
-  async listCashPayments(params: ListParams & {
-    transactionType?: string;
-    contact?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listCashPayments(
+    params: ListParams & {
+      transactionType?: string;
+      contact?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.transactionType) queryParams['transaction_type'] = params.transactionType;
@@ -492,12 +526,14 @@ export class Client {
 
   // --- Time Entries ---
 
-  async listTimeEntries(params: ListParams & {
-    project?: string;
-    task?: string;
-    billable?: string;
-    billed?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listTimeEntries(
+    params: ListParams & {
+      project?: string;
+      task?: string;
+      billable?: string;
+      billed?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let axios = this.getAxios();
     let queryParams = this.buildListParams(params);
     if (params.project) queryParams['project'] = params.project;

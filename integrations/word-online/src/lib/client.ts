@@ -65,7 +65,7 @@ let mapDriveItem = (item: any): DriveItem => ({
   parentPath: item.parentReference?.path,
   parentId: item.parentReference?.id,
   isFolder: !!item.folder,
-  downloadUrl: item['@microsoft.graph.downloadUrl'],
+  downloadUrl: item['@microsoft.graph.downloadUrl']
 });
 
 export class Client {
@@ -79,8 +79,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -125,22 +125,34 @@ export class Client {
   }
 
   async searchFiles(query: string): Promise<DriveItem[]> {
-    let response = await this.axios.get(`${this.drivePath}/root/search(q='${encodeURIComponent(query)}')`);
+    let response = await this.axios.get(
+      `${this.drivePath}/root/search(q='${encodeURIComponent(query)}')`
+    );
     return (response.data.value || []).map(mapDriveItem);
   }
 
-  async uploadSmallFile(parentId: string, fileName: string, content: string, contentType: string = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'): Promise<DriveItem> {
+  async uploadSmallFile(
+    parentId: string,
+    fileName: string,
+    content: string,
+    contentType: string = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ): Promise<DriveItem> {
     let response = await this.axios.put(
       `${this.drivePath}/items/${parentId}:/${fileName}:/content`,
       content,
       {
-        headers: { 'Content-Type': contentType },
+        headers: { 'Content-Type': contentType }
       }
     );
     return mapDriveItem(response.data);
   }
 
-  async uploadSmallFileByPath(folderPath: string, fileName: string, content: string, contentType: string = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'): Promise<DriveItem> {
+  async uploadSmallFileByPath(
+    folderPath: string,
+    fileName: string,
+    content: string,
+    contentType: string = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ): Promise<DriveItem> {
     let path = folderPath.endsWith('/') ? folderPath : `${folderPath}/`;
     let fullPath = `${path}${fileName}`;
     let encodedPath = fullPath.startsWith('/') ? fullPath : `/${fullPath}`;
@@ -148,20 +160,23 @@ export class Client {
       `${this.drivePath}/root:${encodedPath}:/content`,
       content,
       {
-        headers: { 'Content-Type': contentType },
+        headers: { 'Content-Type': contentType }
       }
     );
     return mapDriveItem(response.data);
   }
 
-  async createUploadSession(parentId: string, fileName: string): Promise<{ uploadUrl: string }> {
+  async createUploadSession(
+    parentId: string,
+    fileName: string
+  ): Promise<{ uploadUrl: string }> {
     let response = await this.axios.post(
       `${this.drivePath}/items/${parentId}:/${fileName}:/createUploadSession`,
       {
         item: {
           '@microsoft.graph.conflictBehavior': 'rename',
-          name: fileName,
-        },
+          name: fileName
+        }
       }
     );
     return { uploadUrl: response.data.uploadUrl };
@@ -169,7 +184,7 @@ export class Client {
 
   async getDownloadUrl(itemId: string): Promise<string> {
     let response = await this.axios.get(`${this.drivePath}/items/${itemId}`, {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json' }
     });
     return response.data['@microsoft.graph.downloadUrl'];
   }
@@ -195,14 +210,14 @@ export class Client {
 
   async renameItem(itemId: string, newName: string): Promise<DriveItem> {
     let response = await this.axios.patch(`${this.drivePath}/items/${itemId}`, {
-      name: newName,
+      name: newName
     });
     return mapDriveItem(response.data);
   }
 
   async moveItem(itemId: string, newParentId: string, newName?: string): Promise<DriveItem> {
     let body: any = {
-      parentReference: { id: newParentId },
+      parentReference: { id: newParentId }
     };
     if (newName) {
       body.name = newName;
@@ -213,7 +228,7 @@ export class Client {
 
   async copyItem(itemId: string, newParentId: string, newName?: string): Promise<string> {
     let body: any = {
-      parentReference: { driveId: this.driveId, id: newParentId },
+      parentReference: { driveId: this.driveId, id: newParentId }
     };
     if (newName) {
       body.name = newName;
@@ -230,45 +245,58 @@ export class Client {
     let response = await this.axios.post(endpoint, {
       name: folderName,
       folder: {},
-      '@microsoft.graph.conflictBehavior': 'rename',
+      '@microsoft.graph.conflictBehavior': 'rename'
     });
     return mapDriveItem(response.data);
   }
 
   // === Sharing & Permissions ===
 
-  async createSharingLink(itemId: string, linkType: 'view' | 'edit', scope: 'anonymous' | 'organization' = 'anonymous'): Promise<Permission> {
+  async createSharingLink(
+    itemId: string,
+    linkType: 'view' | 'edit',
+    scope: 'anonymous' | 'organization' = 'anonymous'
+  ): Promise<Permission> {
     let response = await this.axios.post(`${this.drivePath}/items/${itemId}/createLink`, {
       type: linkType,
-      scope,
+      scope
     });
     let perm = response.data;
     return {
       permissionId: perm.id,
       roles: perm.roles || [],
-      link: perm.link ? {
-        type: perm.link.type,
-        scope: perm.link.scope,
-        webUrl: perm.link.webUrl,
-      } : undefined,
+      link: perm.link
+        ? {
+            type: perm.link.type,
+            scope: perm.link.scope,
+            webUrl: perm.link.webUrl
+          }
+        : undefined
     };
   }
 
-  async inviteUser(itemId: string, email: string, roles: string[], message?: string): Promise<Permission[]> {
+  async inviteUser(
+    itemId: string,
+    email: string,
+    roles: string[],
+    message?: string
+  ): Promise<Permission[]> {
     let response = await this.axios.post(`${this.drivePath}/items/${itemId}/invite`, {
       recipients: [{ email }],
       roles,
       requireSignIn: true,
       sendInvitation: true,
-      message: message || undefined,
+      message: message || undefined
     });
     return (response.data.value || []).map((perm: any) => ({
       permissionId: perm.id,
       roles: perm.roles || [],
-      grantedTo: perm.grantedTo?.user ? {
-        displayName: perm.grantedTo.user.displayName,
-        email: perm.grantedTo.user.email,
-      } : undefined,
+      grantedTo: perm.grantedTo?.user
+        ? {
+            displayName: perm.grantedTo.user.displayName,
+            email: perm.grantedTo.user.email
+          }
+        : undefined
     }));
   }
 
@@ -277,15 +305,19 @@ export class Client {
     return (response.data.value || []).map((perm: any) => ({
       permissionId: perm.id,
       roles: perm.roles || [],
-      link: perm.link ? {
-        type: perm.link.type,
-        scope: perm.link.scope,
-        webUrl: perm.link.webUrl,
-      } : undefined,
-      grantedTo: perm.grantedTo?.user ? {
-        displayName: perm.grantedTo.user.displayName,
-        email: perm.grantedTo.user.email,
-      } : undefined,
+      link: perm.link
+        ? {
+            type: perm.link.type,
+            scope: perm.link.scope,
+            webUrl: perm.link.webUrl
+          }
+        : undefined,
+      grantedTo: perm.grantedTo?.user
+        ? {
+            displayName: perm.grantedTo.user.displayName,
+            email: perm.grantedTo.user.email
+          }
+        : undefined
     }));
   }
 
@@ -301,12 +333,14 @@ export class Client {
       versionId: v.id,
       modifiedAt: v.lastModifiedDateTime,
       modifiedBy: v.lastModifiedBy?.user?.displayName,
-      size: v.size,
+      size: v.size
     }));
   }
 
   async restoreVersion(itemId: string, versionId: string): Promise<void> {
-    await this.axios.post(`${this.drivePath}/items/${itemId}/versions/${versionId}/restoreVersion`);
+    await this.axios.post(
+      `${this.drivePath}/items/${itemId}/versions/${versionId}/restoreVersion`
+    );
   }
 
   // === Preview ===
@@ -315,7 +349,7 @@ export class Client {
     let response = await this.axios.post(`${this.drivePath}/items/${itemId}/preview`, {});
     return {
       getUrl: response.data.getUrl || '',
-      postUrl: response.data.postUrl || '',
+      postUrl: response.data.postUrl || ''
     };
   }
 
@@ -327,7 +361,7 @@ export class Client {
 
   async checkIn(itemId: string, comment?: string): Promise<void> {
     await this.axios.post(`${this.drivePath}/items/${itemId}/checkin`, {
-      comment: comment || '',
+      comment: comment || ''
     });
   }
 
@@ -363,14 +397,22 @@ export class Client {
 
   // === Subscriptions (Webhooks) ===
 
-  async createSubscription(notificationUrl: string, resource: string, changeType: string, expirationMinutes: number = 4230, clientState?: string): Promise<Subscription> {
-    let expirationDateTime = new Date(Date.now() + expirationMinutes * 60 * 1000).toISOString();
+  async createSubscription(
+    notificationUrl: string,
+    resource: string,
+    changeType: string,
+    expirationMinutes: number = 4230,
+    clientState?: string
+  ): Promise<Subscription> {
+    let expirationDateTime = new Date(
+      Date.now() + expirationMinutes * 60 * 1000
+    ).toISOString();
     let response = await this.axios.post('/subscriptions', {
       changeType,
       notificationUrl,
       resource,
       expirationDateTime,
-      clientState: clientState || undefined,
+      clientState: clientState || undefined
     });
     let sub = response.data;
     return {
@@ -379,7 +421,7 @@ export class Client {
       changeType: sub.changeType,
       notificationUrl: sub.notificationUrl,
       expirationDateTime: sub.expirationDateTime,
-      clientState: sub.clientState,
+      clientState: sub.clientState
     };
   }
 
@@ -387,10 +429,15 @@ export class Client {
     await this.axios.delete(`/subscriptions/${subscriptionId}`);
   }
 
-  async renewSubscription(subscriptionId: string, expirationMinutes: number = 4230): Promise<Subscription> {
-    let expirationDateTime = new Date(Date.now() + expirationMinutes * 60 * 1000).toISOString();
+  async renewSubscription(
+    subscriptionId: string,
+    expirationMinutes: number = 4230
+  ): Promise<Subscription> {
+    let expirationDateTime = new Date(
+      Date.now() + expirationMinutes * 60 * 1000
+    ).toISOString();
     let response = await this.axios.patch(`/subscriptions/${subscriptionId}`, {
-      expirationDateTime,
+      expirationDateTime
     });
     let sub = response.data;
     return {
@@ -399,7 +446,7 @@ export class Client {
       changeType: sub.changeType,
       notificationUrl: sub.notificationUrl,
       expirationDateTime: sub.expirationDateTime,
-      clientState: sub.clientState,
+      clientState: sub.clientState
     };
   }
 }

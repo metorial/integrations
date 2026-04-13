@@ -3,58 +3,84 @@ import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTasks = SlateTool.create(
-  spec,
-  {
-    name: 'List Tasks',
-    key: 'list_tasks',
-    description: `List and search tasks in Wrike. Can retrieve tasks from a specific folder/project, by task IDs, or all tasks in the account. Supports filtering by status, importance, assignees, date ranges, and custom statuses.`,
-    tags: {
-      readOnly: true
-    }
+export let listTasks = SlateTool.create(spec, {
+  name: 'List Tasks',
+  key: 'list_tasks',
+  description: `List and search tasks in Wrike. Can retrieve tasks from a specific folder/project, by task IDs, or all tasks in the account. Supports filtering by status, importance, assignees, date ranges, and custom statuses.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    folderId: z.string().optional().describe('Folder or project ID to list tasks from'),
-    taskIds: z.array(z.string()).optional().describe('Specific task IDs to retrieve'),
-    title: z.string().optional().describe('Filter tasks by title (partial match)'),
-    status: z.string().optional().describe('Filter by status: Active, Completed, Deferred, Cancelled'),
-    importance: z.string().optional().describe('Filter by importance: High, Normal, Low'),
-    responsibles: z.array(z.string()).optional().describe('Filter by assignee contact IDs'),
-    customStatuses: z.array(z.string()).optional().describe('Filter by custom status IDs'),
-    updatedAfter: z.string().optional().describe('Filter tasks updated after this date (ISO 8601)'),
-    createdAfter: z.string().optional().describe('Filter tasks created after this date (ISO 8601)'),
-    limit: z.number().optional().describe('Maximum number of tasks to return (default 100, max 1000)'),
-    fields: z.array(z.string()).optional().describe('Additional fields to include: description, briefDescription, customFields, dependencyIds, metadata, etc.')
-  }))
-  .output(z.object({
-    tasks: z.array(z.object({
-      taskId: z.string(),
-      title: z.string(),
-      status: z.string(),
-      importance: z.string(),
-      createdDate: z.string(),
-      updatedDate: z.string(),
-      completedDate: z.string().optional(),
-      parentIds: z.array(z.string()),
-      responsibleIds: z.array(z.string()).optional(),
-      permalink: z.string().optional(),
-      customStatusId: z.string().optional(),
-      dates: z.object({
-        type: z.string(),
-        start: z.string().optional(),
-        due: z.string().optional(),
-        duration: z.number().optional()
-      }).optional(),
-      description: z.string().optional(),
-      customFields: z.array(z.object({
-        fieldId: z.string(),
-        value: z.string()
-      })).optional()
-    })),
-    count: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      folderId: z.string().optional().describe('Folder or project ID to list tasks from'),
+      taskIds: z.array(z.string()).optional().describe('Specific task IDs to retrieve'),
+      title: z.string().optional().describe('Filter tasks by title (partial match)'),
+      status: z
+        .string()
+        .optional()
+        .describe('Filter by status: Active, Completed, Deferred, Cancelled'),
+      importance: z.string().optional().describe('Filter by importance: High, Normal, Low'),
+      responsibles: z.array(z.string()).optional().describe('Filter by assignee contact IDs'),
+      customStatuses: z.array(z.string()).optional().describe('Filter by custom status IDs'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter tasks updated after this date (ISO 8601)'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter tasks created after this date (ISO 8601)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of tasks to return (default 100, max 1000)'),
+      fields: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Additional fields to include: description, briefDescription, customFields, dependencyIds, metadata, etc.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(
+        z.object({
+          taskId: z.string(),
+          title: z.string(),
+          status: z.string(),
+          importance: z.string(),
+          createdDate: z.string(),
+          updatedDate: z.string(),
+          completedDate: z.string().optional(),
+          parentIds: z.array(z.string()),
+          responsibleIds: z.array(z.string()).optional(),
+          permalink: z.string().optional(),
+          customStatusId: z.string().optional(),
+          dates: z
+            .object({
+              type: z.string(),
+              start: z.string().optional(),
+              due: z.string().optional(),
+              duration: z.number().optional()
+            })
+            .optional(),
+          description: z.string().optional(),
+          customFields: z
+            .array(
+              z.object({
+                fieldId: z.string(),
+                value: z.string()
+              })
+            )
+            .optional()
+        })
+      ),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WrikeClient({
       token: ctx.auth.token,
       host: ctx.auth.host
@@ -86,12 +112,14 @@ export let listTasks = SlateTool.create(
       responsibleIds: t.responsibleIds,
       permalink: t.permalink,
       customStatusId: t.customStatusId,
-      dates: t.dates ? {
-        type: t.dates.type,
-        start: t.dates.start,
-        due: t.dates.due,
-        duration: t.dates.duration
-      } : undefined,
+      dates: t.dates
+        ? {
+            type: t.dates.type,
+            start: t.dates.start,
+            due: t.dates.due,
+            duration: t.dates.duration
+          }
+        : undefined,
       description: t.description,
       customFields: t.customFields?.map(cf => ({
         fieldId: cf.id,
@@ -103,4 +131,5 @@ export let listTasks = SlateTool.create(
       output: { tasks, count: tasks.length },
       message: `Found **${tasks.length}** task(s).`
     };
-  }).build();
+  })
+  .build();

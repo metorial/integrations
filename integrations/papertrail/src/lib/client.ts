@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://papertrailapp.com/api/v1',
       headers: {
         'X-Papertrail-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -62,8 +62,8 @@ export class Client {
   }) {
     let payload: Record<string, any> = {
       system: {
-        name: params.name,
-      },
+        name: params.name
+      }
     };
 
     if (params.hostname) payload.system.hostname = params.hostname;
@@ -75,11 +75,14 @@ export class Client {
     return response.data;
   }
 
-  async updateSystem(systemId: number, params: {
-    name?: string;
-    hostname?: string;
-    ipAddress?: string;
-  }) {
+  async updateSystem(
+    systemId: number,
+    params: {
+      name?: string;
+      hostname?: string;
+      ipAddress?: string;
+    }
+  ) {
     let payload: Record<string, any> = { system: {} };
 
     if (params.name) payload.system.name = params.name;
@@ -96,14 +99,14 @@ export class Client {
 
   async joinGroup(systemId: number, groupId: number) {
     let response = await this.axios.post(`/systems/${systemId}/join.json`, {
-      group_id: groupId,
+      group_id: groupId
     });
     return response.data;
   }
 
   async leaveGroup(systemId: number, groupId: number) {
     let response = await this.axios.post(`/systems/${systemId}/leave.json`, {
-      group_id: groupId,
+      group_id: groupId
     });
     return response.data;
   }
@@ -120,15 +123,11 @@ export class Client {
     return response.data;
   }
 
-  async createGroup(params: {
-    name: string;
-    systemWildcard?: string;
-    systemIds?: number[];
-  }) {
+  async createGroup(params: { name: string; systemWildcard?: string; systemIds?: number[] }) {
     let payload: Record<string, any> = {
       group: {
-        name: params.name,
-      },
+        name: params.name
+      }
     };
 
     if (params.systemWildcard) payload.group.system_wildcard = params.systemWildcard;
@@ -140,14 +139,18 @@ export class Client {
     return response.data;
   }
 
-  async updateGroup(groupId: number, params: {
-    name?: string;
-    systemWildcard?: string;
-  }) {
+  async updateGroup(
+    groupId: number,
+    params: {
+      name?: string;
+      systemWildcard?: string;
+    }
+  ) {
     let payload: Record<string, any> = { group: {} };
 
     if (params.name) payload.group.name = params.name;
-    if (params.systemWildcard !== undefined) payload.group.system_wildcard = params.systemWildcard;
+    if (params.systemWildcard !== undefined)
+      payload.group.system_wildcard = params.systemWildcard;
 
     let response = await this.axios.put(`/groups/${groupId}.json`, payload);
     return response.data;
@@ -169,16 +172,12 @@ export class Client {
     return response.data;
   }
 
-  async createSavedSearch(params: {
-    name: string;
-    query: string;
-    groupId?: number;
-  }) {
+  async createSavedSearch(params: { name: string; query: string; groupId?: number }) {
     let payload: Record<string, any> = {
       search: {
         name: params.name,
-        query: params.query,
-      },
+        query: params.query
+      }
     };
 
     if (params.groupId) payload.search.group_id = params.groupId;
@@ -187,11 +186,14 @@ export class Client {
     return response.data;
   }
 
-  async updateSavedSearch(searchId: number, params: {
-    name?: string;
-    query?: string;
-    groupId?: number;
-  }) {
+  async updateSavedSearch(
+    searchId: number,
+    params: {
+      name?: string;
+      query?: string;
+      groupId?: number;
+    }
+  ) {
     let payload: Record<string, any> = { search: {} };
 
     if (params.name) payload.search.name = params.name;
@@ -224,15 +226,16 @@ export class Client {
   }) {
     let payload: Record<string, any> = {
       user: {
-        email: params.email,
-      },
+        email: params.email
+      }
     };
 
     if (params.readOnly !== undefined) payload.user.read_only = params.readOnly;
     if (params.manageMembers !== undefined) payload.user.manage_members = params.manageMembers;
     if (params.manageBilling !== undefined) payload.user.manage_billing = params.manageBilling;
     if (params.purgeLogs !== undefined) payload.user.purge_logs = params.purgeLogs;
-    if (params.canAccessAllGroups !== undefined) payload.user.can_access_all_groups = params.canAccessAllGroups;
+    if (params.canAccessAllGroups !== undefined)
+      payload.user.can_access_all_groups = params.canAccessAllGroups;
     if (params.groupIds && params.groupIds.length > 0) {
       payload.user.group_ids = params.groupIds;
     }

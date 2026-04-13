@@ -93,7 +93,5 @@ export let provider = Slate.create({
     manageContainerRegistry,
     manageTags
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

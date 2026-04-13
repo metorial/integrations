@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listAgents,
@@ -19,11 +18,9 @@ import {
   captureScreenshot,
   generatePdf,
   getPageContent,
-  extractStructuredData,
+  extractStructuredData
 } from './tools';
-import { jobCompleted,
-  inboundWebhook,
-} from './triggers';
+import { jobCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,10 +42,7 @@ export let provider = Slate.create({
     captureScreenshot,
     generatePdf,
     getPageContent,
-    extractStructuredData,
+    extractStructuredData
   ],
-  triggers: [
-    inboundWebhook,
-    jobCompleted,
-  ],
+  triggers: [inboundWebhook, jobCompleted]
 });

@@ -3,40 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createMeetingRequest = SlateTool.create(
-  spec,
-  {
-    name: 'Create Meeting Request',
-    key: 'create_meeting_request',
-    description: `Send a meeting request to one or more contacts. CalendarHero will automatically find the best available time within the specified timeframe based on calendar availability. The contacts will receive an invitation to accept the meeting.`,
-    instructions: [
-      'Provide at least one contact with an email address.',
-      'The dateStart and dateEnd define the window in which CalendarHero should find availability, not the exact meeting time.'
-    ]
-  }
-)
-  .input(z.object({
-    contacts: z.array(z.object({
-      email: z.string().describe('Contact email address'),
-      name: z.string().optional().describe('Contact display name')
-    })).min(1).describe('Contacts to invite to the meeting'),
-    subject: z.string().optional().describe('Meeting subject line'),
-    dateStart: z.string().describe('Start of availability window (ISO 8601 date string)'),
-    dateEnd: z.string().describe('End of availability window (ISO 8601 date string)'),
-    meetingLength: z.number().optional().describe('Meeting duration in minutes (e.g. 30, 60)'),
-    type: z.string().optional().describe('Meeting type slug to use for this request'),
-    locations: z.array(z.string()).optional().describe('Preferred meeting locations or video providers'),
-    capacity: z.number().optional().describe('Maximum number of attendees')
-  }))
-  .output(z.object({
-    requestId: z.string().optional().describe('Created meeting request ID'),
-    subject: z.string().optional().describe('Meeting subject'),
-    dateStart: z.string().optional().describe('Availability window start'),
-    dateEnd: z.string().optional().describe('Availability window end'),
-    status: z.string().optional().describe('Request status'),
-    raw: z.any().optional().describe('Full meeting request response')
-  }))
-  .handleInvocation(async (ctx) => {
+export let createMeetingRequest = SlateTool.create(spec, {
+  name: 'Create Meeting Request',
+  key: 'create_meeting_request',
+  description: `Send a meeting request to one or more contacts. CalendarHero will automatically find the best available time within the specified timeframe based on calendar availability. The contacts will receive an invitation to accept the meeting.`,
+  instructions: [
+    'Provide at least one contact with an email address.',
+    'The dateStart and dateEnd define the window in which CalendarHero should find availability, not the exact meeting time.'
+  ]
+})
+  .input(
+    z.object({
+      contacts: z
+        .array(
+          z.object({
+            email: z.string().describe('Contact email address'),
+            name: z.string().optional().describe('Contact display name')
+          })
+        )
+        .min(1)
+        .describe('Contacts to invite to the meeting'),
+      subject: z.string().optional().describe('Meeting subject line'),
+      dateStart: z.string().describe('Start of availability window (ISO 8601 date string)'),
+      dateEnd: z.string().describe('End of availability window (ISO 8601 date string)'),
+      meetingLength: z
+        .number()
+        .optional()
+        .describe('Meeting duration in minutes (e.g. 30, 60)'),
+      type: z.string().optional().describe('Meeting type slug to use for this request'),
+      locations: z
+        .array(z.string())
+        .optional()
+        .describe('Preferred meeting locations or video providers'),
+      capacity: z.number().optional().describe('Maximum number of attendees')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().optional().describe('Created meeting request ID'),
+      subject: z.string().optional().describe('Meeting subject'),
+      dateStart: z.string().optional().describe('Availability window start'),
+      dateEnd: z.string().optional().describe('Availability window end'),
+      status: z.string().optional().describe('Request status'),
+      raw: z.any().optional().describe('Full meeting request response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result = await client.createMeetingRequest({
       contacts: ctx.input.contacts,

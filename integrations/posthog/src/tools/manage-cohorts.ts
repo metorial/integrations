@@ -9,34 +9,38 @@ let cohortOutput = z.object({
   description: z.string().optional().describe('Cohort description'),
   count: z.number().optional().describe('Number of users in the cohort'),
   isStatic: z.boolean().optional().describe('Whether this is a static cohort (vs dynamic)'),
-  isCalculating: z.boolean().optional().describe('Whether the cohort is currently being calculated'),
+  isCalculating: z
+    .boolean()
+    .optional()
+    .describe('Whether the cohort is currently being calculated'),
   groups: z.array(z.record(z.string(), z.any())).optional().describe('Cohort filter groups'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let listCohortsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Cohorts',
-    key: 'list_cohorts',
-    description: `List all cohorts in the project. Cohorts are groups of users that match specific criteria.
+export let listCohortsTool = SlateTool.create(spec, {
+  name: 'List Cohorts',
+  key: 'list_cohorts',
+  description: `List all cohorts in the project. Cohorts are groups of users that match specific criteria.
 Static cohorts are manually managed lists, while dynamic cohorts are automatically updated every 24 hours.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Pagination offset'),
-  }))
-  .output(z.object({
-    cohorts: z.array(cohortOutput),
-    hasMore: z.boolean().describe('Whether there are more results'),
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Pagination offset')
+    })
+  )
+  .output(
+    z.object({
+      cohorts: z.array(cohortOutput),
+      hasMore: z.boolean().describe('Whether there are more results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let data = await client.listCohorts({
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let cohorts = (data.results || []).map((c: any) => ({
@@ -47,30 +51,29 @@ Static cohorts are manually managed lists, while dynamic cohorts are automatical
       isStatic: c.is_static,
       isCalculating: c.is_calculating,
       groups: c.groups,
-      createdAt: c.created_at,
+      createdAt: c.created_at
     }));
 
     return {
       output: { cohorts, hasMore: !!data.next },
-      message: `Found **${cohorts.length}** cohort(s).`,
+      message: `Found **${cohorts.length}** cohort(s).`
     };
   })
   .build();
 
-export let getCohortTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Cohort',
-    key: 'get_cohort',
-    description: `Retrieve detailed information about a specific cohort by its ID.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    cohortId: z.string().describe('Cohort ID'),
-  }))
+export let getCohortTool = SlateTool.create(spec, {
+  name: 'Get Cohort',
+  key: 'get_cohort',
+  description: `Retrieve detailed information about a specific cohort by its ID.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      cohortId: z.string().describe('Cohort ID')
+    })
+  )
   .output(cohortOutput)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let c = await client.getCohort(ctx.input.cohortId);
 
@@ -83,30 +86,35 @@ export let getCohortTool = SlateTool.create(
         isStatic: c.is_static,
         isCalculating: c.is_calculating,
         groups: c.groups,
-        createdAt: c.created_at,
+        createdAt: c.created_at
       },
-      message: `Retrieved cohort **${c.name}** with ${c.count ?? 'unknown'} users.`,
+      message: `Retrieved cohort **${c.name}** with ${c.count ?? 'unknown'} users.`
     };
   })
   .build();
 
-export let createCohortTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Cohort',
-    key: 'create_cohort',
-    description: `Create a new cohort. Static cohorts are manually managed user lists; dynamic cohorts automatically include users matching specified criteria.`,
-    tags: { destructive: false },
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Cohort name'),
-    description: z.string().optional().describe('Cohort description'),
-    isStatic: z.boolean().optional().describe('Whether this is a static cohort (default false = dynamic)'),
-    groups: z.array(z.record(z.string(), z.any())).optional().describe('Filter groups defining who is included in the cohort'),
-  }))
+export let createCohortTool = SlateTool.create(spec, {
+  name: 'Create Cohort',
+  key: 'create_cohort',
+  description: `Create a new cohort. Static cohorts are manually managed user lists; dynamic cohorts automatically include users matching specified criteria.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      name: z.string().describe('Cohort name'),
+      description: z.string().optional().describe('Cohort description'),
+      isStatic: z
+        .boolean()
+        .optional()
+        .describe('Whether this is a static cohort (default false = dynamic)'),
+      groups: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Filter groups defining who is included in the cohort')
+    })
+  )
   .output(cohortOutput)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let payload: Record<string, any> = { name: ctx.input.name };
     if (ctx.input.description !== undefined) payload.description = ctx.input.description;
@@ -124,9 +132,9 @@ export let createCohortTool = SlateTool.create(
         isStatic: c.is_static,
         isCalculating: c.is_calculating,
         groups: c.groups,
-        createdAt: c.created_at,
+        createdAt: c.created_at
       },
-      message: `Created cohort **${c.name}** (ID: ${c.id}).`,
+      message: `Created cohort **${c.name}** (ID: ${c.id}).`
     };
   })
   .build();

@@ -4,51 +4,58 @@ import { getBaseUrl } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContractor = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contractor',
-    key: 'manage_contractor',
-    description: `Create, retrieve, or update a contractor (1099 worker).
+export let manageContractor = SlateTool.create(spec, {
+  name: 'Manage Contractor',
+  key: 'manage_contractor',
+  description: `Create, retrieve, or update a contractor (1099 worker).
 - To **create**: provide companyId, type, and contractor details.
 - To **get**: provide contractorId.
 - To **update**: provide contractorId and fields to change.`,
-    instructions: [
-      'For individual contractors, provide firstName and lastName.',
-      'For business contractors, provide businessName.',
-      'The version field is required for updates (optimistic locking).',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update']).describe('The action to perform'),
-    companyId: z.string().optional().describe('Company UUID (required for create)'),
-    contractorId: z.string().optional().describe('Contractor UUID (required for get/update)'),
-    version: z.string().optional().describe('Resource version for optimistic locking (required for update)'),
-    type: z.enum(['Individual', 'Business']).optional().describe('Contractor type'),
-    firstName: z.string().optional().describe('First name (individual contractors)'),
-    lastName: z.string().optional().describe('Last name (individual contractors)'),
-    businessName: z.string().optional().describe('Business name (business contractors)'),
-    email: z.string().optional().describe('Email address'),
-    wageType: z.enum(['Fixed', 'Hourly']).optional().describe('Wage type'),
-    startDate: z.string().optional().describe('Start date (YYYY-MM-DD)'),
-    ssn: z.string().optional().describe('SSN or EIN for the contractor'),
-  }))
-  .output(z.object({
-    contractorId: z.string().describe('UUID of the contractor'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    businessName: z.string().optional().describe('Business name'),
-    email: z.string().optional().describe('Email address'),
-    type: z.string().optional().describe('Contractor type'),
-    wageType: z.string().optional().describe('Wage type'),
-    isActive: z.boolean().optional().describe('Whether the contractor is active'),
-    version: z.string().optional().describe('Current resource version'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'For individual contractors, provide firstName and lastName.',
+    'For business contractors, provide businessName.',
+    'The version field is required for updates (optimistic locking).'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'update']).describe('The action to perform'),
+      companyId: z.string().optional().describe('Company UUID (required for create)'),
+      contractorId: z
+        .string()
+        .optional()
+        .describe('Contractor UUID (required for get/update)'),
+      version: z
+        .string()
+        .optional()
+        .describe('Resource version for optimistic locking (required for update)'),
+      type: z.enum(['Individual', 'Business']).optional().describe('Contractor type'),
+      firstName: z.string().optional().describe('First name (individual contractors)'),
+      lastName: z.string().optional().describe('Last name (individual contractors)'),
+      businessName: z.string().optional().describe('Business name (business contractors)'),
+      email: z.string().optional().describe('Email address'),
+      wageType: z.enum(['Fixed', 'Hourly']).optional().describe('Wage type'),
+      startDate: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+      ssn: z.string().optional().describe('SSN or EIN for the contractor')
+    })
+  )
+  .output(
+    z.object({
+      contractorId: z.string().describe('UUID of the contractor'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      businessName: z.string().optional().describe('Business name'),
+      email: z.string().optional().describe('Email address'),
+      type: z.string().optional().describe('Contractor type'),
+      wageType: z.string().optional().describe('Wage type'),
+      isActive: z.boolean().optional().describe('Whether the contractor is active'),
+      version: z.string().optional().describe('Current resource version')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: getBaseUrl(ctx.config.environment),
+      baseUrl: getBaseUrl(ctx.config.environment)
     });
 
     let result: any;
@@ -56,12 +63,13 @@ export let manageContractor = SlateTool.create(
 
     switch (ctx.input.action) {
       case 'create': {
-        if (!ctx.input.companyId) throw new Error('companyId is required to create a contractor');
+        if (!ctx.input.companyId)
+          throw new Error('companyId is required to create a contractor');
         let data: Record<string, any> = {
           type: ctx.input.type,
           wage_type: ctx.input.wageType,
           start_date: ctx.input.startDate,
-          email: ctx.input.email,
+          email: ctx.input.email
         };
         if (ctx.input.type === 'Individual') {
           data.first_name = ctx.input.firstName;
@@ -106,8 +114,9 @@ export let manageContractor = SlateTool.create(
         type: result.type,
         wageType: result.wage_type,
         isActive: result.is_active,
-        version: result.version,
+        version: result.version
       },
-      message: actionMessage,
+      message: actionMessage
     };
-  }).build();
+  })
+  .build();

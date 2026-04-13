@@ -12,12 +12,14 @@ TelTel uses API key authentication for its RESTful API.
 - **Providing the API Key**: You can use one of two ways to specify an API Key in an HTTP request: specify the key in an HTTP query string parameter named `apikey`, or specify the key in an HTTP header named `X-API-KEY`.
 
 Example using header:
+
 ```
 GET https://api.teltel.io/v2/autodialers
 X-API-KEY: your-api-key
 ```
 
 Example using query parameter:
+
 ```
 GET https://api.teltel.io/v2/autodialers?apikey=your-api-key
 ```

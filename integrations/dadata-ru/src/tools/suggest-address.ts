@@ -23,53 +23,82 @@ let addressSuggestionSchema = z.object({
   fiasId: z.string().nullable().describe('FIAS identifier'),
   kladrId: z.string().nullable().describe('KLADR identifier'),
   timezone: z.string().nullable().describe('Timezone, e.g. UTC+3'),
-  qualityGeo: z.string().nullable().describe('Coordinate quality code: 0=exact, 1=nearest house, 2=street, 3=settlement, 4=city, 5=unknown'),
+  qualityGeo: z
+    .string()
+    .nullable()
+    .describe(
+      'Coordinate quality code: 0=exact, 1=nearest house, 2=street, 3=settlement, 4=city, 5=unknown'
+    )
 });
 
-export let suggestAddress = SlateTool.create(
-  spec,
-  {
-    name: 'Suggest Address',
-    key: 'suggest_address',
-    description: `Provides type-ahead address autocomplete suggestions as the user types. Returns structured address data including coordinates, FIAS/KLADR identifiers, and quality codes.
+export let suggestAddress = SlateTool.create(spec, {
+  name: 'Suggest Address',
+  key: 'suggest_address',
+  description: `Provides type-ahead address autocomplete suggestions as the user types. Returns structured address data including coordinates, FIAS/KLADR identifiers, and quality codes.
 Results can be constrained by region, geographic coordinates/radius, or bounded to specific granularity levels (region, city, street, house). Supports both Russian and English language output.`,
-    instructions: [
-      'Use fromBound and toBound to limit suggestion granularity (e.g., fromBound="city", toBound="street" to suggest only streets within cities).',
-      'Use locations to restrict results to specific regions by KLADR or FIAS ID.',
-      'Use locationsBoost to prioritize (but not restrict) results from specific cities.',
-    ],
-    constraints: [
-      'Maximum 20 results per request.',
-      'Query string limited to 300 characters.',
-      'Rate limit: 30 requests/sec per IP.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Use fromBound and toBound to limit suggestion granularity (e.g., fromBound="city", toBound="street" to suggest only streets within cities).',
+    'Use locations to restrict results to specific regions by KLADR or FIAS ID.',
+    'Use locationsBoost to prioritize (but not restrict) results from specific cities.'
+  ],
+  constraints: [
+    'Maximum 20 results per request.',
+    'Query string limited to 300 characters.',
+    'Rate limit: 30 requests/sec per IP.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Address search text (max 300 characters)'),
-    count: z.number().optional().describe('Number of results to return (max 20, default 10)'),
-    language: z.enum(['ru', 'en']).optional().describe('Response language'),
-    fromBound: z.enum(['country', 'region', 'area', 'city', 'settlement', 'street', 'house']).optional().describe('Lower granularity bound for suggestions'),
-    toBound: z.enum(['country', 'region', 'area', 'city', 'settlement', 'street', 'house']).optional().describe('Upper granularity bound for suggestions'),
-    locations: z.array(z.record(z.string(), z.unknown())).optional().describe('Region constraints (e.g., [{"kladr_id": "77"}] for Moscow)'),
-    locationsGeo: z.array(z.object({
-      lat: z.number().describe('Latitude'),
-      lon: z.number().describe('Longitude'),
-      radiusMeters: z.number().describe('Search radius in meters'),
-    })).optional().describe('Geographic coordinate constraints'),
-    locationsBoost: z.array(z.record(z.string(), z.unknown())).optional().describe('Boost priority for specific cities/regions'),
-    restrictValue: z.boolean().optional().describe('Hide restriction scope in the suggestion value'),
-  }))
-  .output(z.object({
-    suggestions: z.array(addressSuggestionSchema).describe('List of address suggestions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Address search text (max 300 characters)'),
+      count: z
+        .number()
+        .optional()
+        .describe('Number of results to return (max 20, default 10)'),
+      language: z.enum(['ru', 'en']).optional().describe('Response language'),
+      fromBound: z
+        .enum(['country', 'region', 'area', 'city', 'settlement', 'street', 'house'])
+        .optional()
+        .describe('Lower granularity bound for suggestions'),
+      toBound: z
+        .enum(['country', 'region', 'area', 'city', 'settlement', 'street', 'house'])
+        .optional()
+        .describe('Upper granularity bound for suggestions'),
+      locations: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Region constraints (e.g., [{"kladr_id": "77"}] for Moscow)'),
+      locationsGeo: z
+        .array(
+          z.object({
+            lat: z.number().describe('Latitude'),
+            lon: z.number().describe('Longitude'),
+            radiusMeters: z.number().describe('Search radius in meters')
+          })
+        )
+        .optional()
+        .describe('Geographic coordinate constraints'),
+      locationsBoost: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Boost priority for specific cities/regions'),
+      restrictValue: z
+        .boolean()
+        .optional()
+        .describe('Hide restriction scope in the suggestion value')
+    })
+  )
+  .output(
+    z.object({
+      suggestions: z.array(addressSuggestionSchema).describe('List of address suggestions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SuggestionsClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let data = await client.suggestAddress({
@@ -81,7 +110,7 @@ Results can be constrained by region, geographic coordinates/radius, or bounded 
       locationsBoost: ctx.input.locationsBoost,
       fromBound: ctx.input.fromBound,
       toBound: ctx.input.toBound,
-      restrictValue: ctx.input.restrictValue,
+      restrictValue: ctx.input.restrictValue
     });
 
     let suggestions = (data.suggestions || []).map((s: any) => ({
@@ -104,11 +133,12 @@ Results can be constrained by region, geographic coordinates/radius, or bounded 
       fiasId: s.data?.fias_id ?? null,
       kladrId: s.data?.kladr_id ?? null,
       timezone: s.data?.timezone ?? null,
-      qualityGeo: s.data?.qc_geo != null ? String(s.data.qc_geo) : null,
+      qualityGeo: s.data?.qc_geo != null ? String(s.data.qc_geo) : null
     }));
 
     return {
       output: { suggestions },
-      message: `Found **${suggestions.length}** address suggestion(s) for "${ctx.input.query}".`,
+      message: `Found **${suggestions.length}** address suggestion(s) for "${ctx.input.query}".`
     };
-  }).build();
+  })
+  .build();

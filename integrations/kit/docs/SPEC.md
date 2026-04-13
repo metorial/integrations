@@ -91,56 +91,68 @@ Kit supports webhooks through its V4 API. Webhooks are automations that will rec
 Webhooks are created via the API by specifying a `target_url` and an event name. Available event types are:
 
 ### Subscriber Activation
+
 - **Event:** `subscriber.subscriber_activate`
 - Fires when a subscriber is confirmed/activated in your account.
 
 ### Subscriber Unsubscribe
+
 - **Event:** `subscriber.subscriber_unsubscribe`
 - Fires when a subscriber unsubscribes from your emails.
 
 ### Subscriber Bounce
+
 - **Event:** `subscriber.subscriber_bounce`
 - Fires when an email to a subscriber bounces.
 
 ### Subscriber Complaint
+
 - **Event:** `subscriber.subscriber_complain`
 - Fires when a subscriber marks your email as spam.
 
 ### Form Subscription
+
 - **Event:** `subscriber.form_subscribe`
 - Fires when a subscriber is added to a specific form.
 - Requires: `form_id` parameter.
 
 ### Sequence Subscription
+
 - **Event:** `subscriber.course_subscribe`
 - Fires when a subscriber is added to a specific sequence.
 - Requires: `sequence_id` parameter.
 
 ### Sequence Completion
+
 - **Event:** `subscriber.course_complete`
 - Fires when a subscriber completes a specific sequence.
 - Requires: `sequence_id` parameter.
 
 ### Link Click
+
 - **Event:** `subscriber.link_click`
 - Fires when a subscriber clicks a specific link.
 - Requires: `initiator_value` parameter (the link URL).
 
 ### Product Purchase
+
 - **Event:** `subscriber.product_purchase`
 - Fires when a subscriber purchases a specific product.
 - Requires: `product_id` parameter.
 
 ### Tag Added
+
 - **Event:** `subscriber.tag_add`
 - Fires when a specific tag is added to a subscriber.
 - Requires: `tag_id` parameter.
 
 ### Tag Removed
+
 - **Event:** `subscriber.tag_remove`
 - Fires when a specific tag is removed from a subscriber.
 - Requires: `tag_id` parameter.
 
 ### Purchase Created
+
 - **Event:** `purchase.purchase_create`
 - Fires when a new purchase record is created.

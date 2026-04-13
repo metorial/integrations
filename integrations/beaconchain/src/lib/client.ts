@@ -20,9 +20,9 @@ export class BeaconchainClient {
     this.axios = createAxios({
       baseURL: 'https://beaconcha.in',
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -31,7 +31,7 @@ export class BeaconchainClient {
   private async v2Post(path: string, body: Record<string, unknown> = {}): Promise<any> {
     let response = await this.axios.post(`/api/v2/ethereum${path}`, {
       chain: this.params.chain,
-      ...body,
+      ...body
     });
     return response.data;
   }
@@ -79,19 +79,19 @@ export class BeaconchainClient {
 
   async getValidatorOverview(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
   async getValidatorApyRoi(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators/apy-roi', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
   async getValidatorBalances(selector: ValidatorSelector, epoch?: number): Promise<any> {
     let body: Record<string, unknown> = {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     };
     if (epoch !== undefined) body.epoch = epoch;
     return this.v2Post('/validators/balances', body);
@@ -99,14 +99,18 @@ export class BeaconchainClient {
 
   async getValidatorPerformanceAggregate(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators/performance-aggregate', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
-  async getValidatorPerformanceList(selector: ValidatorSelector, epoch?: number, pagination?: PaginationParams): Promise<any> {
+  async getValidatorPerformanceList(
+    selector: ValidatorSelector,
+    epoch?: number,
+    pagination?: PaginationParams
+  ): Promise<any> {
     let body: Record<string, unknown> = {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     };
     if (epoch !== undefined) body.epoch = epoch;
     return this.v2Post('/validators/performance-list', body);
@@ -114,10 +118,14 @@ export class BeaconchainClient {
 
   // ── Rewards ──────────────────────────────────────────────────────
 
-  async getValidatorRewardsList(selector: ValidatorSelector, epoch?: number, pagination?: PaginationParams): Promise<any> {
+  async getValidatorRewardsList(
+    selector: ValidatorSelector,
+    epoch?: number,
+    pagination?: PaginationParams
+  ): Promise<any> {
     let body: Record<string, unknown> = {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     };
     if (epoch !== undefined) body.epoch = epoch;
     return this.v2Post('/validators/rewards-list', body);
@@ -125,7 +133,7 @@ export class BeaconchainClient {
 
   async getValidatorRewardsAggregate(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators/rewards-aggregate', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
@@ -133,54 +141,69 @@ export class BeaconchainClient {
 
   async getValidatorUpcomingDutySlots(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators/upcoming-duty-slots', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
-  async getValidatorProposalSlots(selector: ValidatorSelector, pagination?: PaginationParams): Promise<any> {
+  async getValidatorProposalSlots(
+    selector: ValidatorSelector,
+    pagination?: PaginationParams
+  ): Promise<any> {
     return this.v2Post('/validators/proposal-slots', {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
-  async getValidatorAttestationSlots(selector: ValidatorSelector, pagination?: PaginationParams): Promise<any> {
+  async getValidatorAttestationSlots(
+    selector: ValidatorSelector,
+    pagination?: PaginationParams
+  ): Promise<any> {
     return this.v2Post('/validators/attestation-slots', {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
-  async getValidatorSyncCommitteePeriods(selector: ValidatorSelector, pagination?: PaginationParams): Promise<any> {
+  async getValidatorSyncCommitteePeriods(
+    selector: ValidatorSelector,
+    pagination?: PaginationParams
+  ): Promise<any> {
     return this.v2Post('/validators/sync-committee-periods', {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
-  async getValidatorDepositSlots(selector: ValidatorSelector, pagination?: PaginationParams): Promise<any> {
+  async getValidatorDepositSlots(
+    selector: ValidatorSelector,
+    pagination?: PaginationParams
+  ): Promise<any> {
     return this.v2Post('/validators/deposit-slots', {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
-  async getValidatorWithdrawalSlots(selector: ValidatorSelector, pagination?: PaginationParams): Promise<any> {
+  async getValidatorWithdrawalSlots(
+    selector: ValidatorSelector,
+    pagination?: PaginationParams
+  ): Promise<any> {
     return this.v2Post('/validators/withdrawal-slots', {
       ...this.buildValidatorSelector(selector),
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
   async getValidatorStakingQueues(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators/queues', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
   async getValidatorBestMaintenanceWindow(selector: ValidatorSelector): Promise<any> {
     return this.v2Post('/validators/best-maintenance-window', {
-      ...this.buildValidatorSelector(selector),
+      ...this.buildValidatorSelector(selector)
     });
   }
 
@@ -193,14 +216,14 @@ export class BeaconchainClient {
   async getSlotSyncCommitteeDuties(slot: number, pagination?: PaginationParams): Promise<any> {
     return this.v2Post('/slot/sync-committee-duties', {
       slot,
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
   async getSlotAttestationDuties(slot: number, pagination?: PaginationParams): Promise<any> {
     return this.v2Post('/slot/attestation-duties', {
       slot,
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
@@ -228,10 +251,13 @@ export class BeaconchainClient {
     return this.v2Post('/sync-committee', { period });
   }
 
-  async getSyncCommitteeValidators(period: number, pagination?: PaginationParams): Promise<any> {
+  async getSyncCommitteeValidators(
+    period: number,
+    pagination?: PaginationParams
+  ): Promise<any> {
     return this.v2Post('/sync-committee/validators', {
       period,
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
@@ -239,37 +265,52 @@ export class BeaconchainClient {
 
   async getEntities(pagination?: PaginationParams): Promise<any> {
     return this.v2Post('/entities', {
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
   async getSubEntities(entity: string, pagination?: PaginationParams): Promise<any> {
     return this.v2Post('/entity/sub-entities', {
       entity,
-      ...this.buildPagination(pagination),
+      ...this.buildPagination(pagination)
     });
   }
 
   // ── Validator Dashboard Management ──────────────────────────────
 
-  async addValidatorsToDashboard(dashboardId: number, validators: (string | number)[], groupId?: number): Promise<any> {
+  async addValidatorsToDashboard(
+    dashboardId: number,
+    validators: (string | number)[],
+    groupId?: number
+  ): Promise<any> {
     let body: Record<string, unknown> = {
-      validators: validators,
+      validators: validators
     };
     if (groupId !== undefined) body.group_id = groupId;
-    let response = await this.axios.post(`/api/v2/validator-dashboards/${dashboardId}/validators`, body);
+    let response = await this.axios.post(
+      `/api/v2/validator-dashboards/${dashboardId}/validators`,
+      body
+    );
     return response.data;
   }
 
-  async removeValidatorsFromDashboard(dashboardId: number, validators: (string | number)[]): Promise<any> {
-    let response = await this.axios.post(`/api/v2/validator-dashboards/${dashboardId}/validators/bulk-deletions`, {
-      validators: validators,
-    });
+  async removeValidatorsFromDashboard(
+    dashboardId: number,
+    validators: (string | number)[]
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/api/v2/validator-dashboards/${dashboardId}/validators/bulk-deletions`,
+      {
+        validators: validators
+      }
+    );
     return response.data;
   }
 
   async removeValidatorsFromGroup(dashboardId: number, groupId: number): Promise<any> {
-    let response = await this.axios.delete(`/api/v2/validator-dashboards/${dashboardId}/groups/${groupId}/validators`);
+    let response = await this.axios.delete(
+      `/api/v2/validator-dashboards/${dashboardId}/groups/${groupId}/validators`
+    );
     return response.data;
   }
 
@@ -288,7 +329,11 @@ export class BeaconchainClient {
     return this.v1Get(`/execution/address/${address}`);
   }
 
-  async getExecutionAddressTokens(address: string, offset?: number, limit?: number): Promise<any> {
+  async getExecutionAddressTokens(
+    address: string,
+    offset?: number,
+    limit?: number
+  ): Promise<any> {
     let params: string[] = [];
     if (offset !== undefined) params.push(`offset=${offset}`);
     if (limit !== undefined) params.push(`limit=${limit}`);

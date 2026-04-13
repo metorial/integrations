@@ -17,19 +17,22 @@ export class LightroomClient {
     return response.data;
   }
 
-  async listAssets(catalogId: string, params?: {
-    limit?: number;
-    capturedAfter?: string;
-    capturedBefore?: string;
-    subtype?: string;
-  }) {
+  async listAssets(
+    catalogId: string,
+    params?: {
+      limit?: number;
+      capturedAfter?: string;
+      capturedBefore?: string;
+      subtype?: string;
+    }
+  ) {
     let response = await this.http.get(`/v2/catalogs/${catalogId}/assets`, {
       params: {
         limit: params?.limit || 50,
         ...(params?.capturedAfter ? { captured_after: params.capturedAfter } : {}),
         ...(params?.capturedBefore ? { captured_before: params.capturedBefore } : {}),
-        ...(params?.subtype ? { subtype: params.subtype } : {}),
-      },
+        ...(params?.subtype ? { subtype: params.subtype } : {})
+      }
     });
     return response.data;
   }
@@ -42,8 +45,8 @@ export class LightroomClient {
   async listAlbums(catalogId: string, params?: { limit?: number }) {
     let response = await this.http.get(`/v2/catalogs/${catalogId}/albums`, {
       params: {
-        limit: params?.limit || 50,
-      },
+        limit: params?.limit || 50
+      }
     });
     return response.data;
   }
@@ -59,8 +62,8 @@ export class LightroomClient {
       payload: {
         name,
         userCreated: new Date().toISOString(),
-        userUpdated: new Date().toISOString(),
-      },
+        userUpdated: new Date().toISOString()
+      }
     };
     if (parentAlbumId) {
       payload.payload.parent = { id: parentAlbumId };
@@ -72,8 +75,8 @@ export class LightroomClient {
   async listAlbumAssets(catalogId: string, albumId: string, params?: { limit?: number }) {
     let response = await this.http.get(`/v2/catalogs/${catalogId}/albums/${albumId}/assets`, {
       params: {
-        limit: params?.limit || 50,
-      },
+        limit: params?.limit || 50
+      }
     });
     return response.data;
   }
@@ -84,7 +87,7 @@ export class LightroomClient {
       resources[id] = {};
     }
     let response = await this.http.put(`/v2/catalogs/${catalogId}/albums/${albumId}/assets`, {
-      resources,
+      resources
     });
     return response.data;
   }
@@ -97,32 +100,45 @@ export class LightroomClient {
     return response.data;
   }
 
-  async applyPreset(input: { href: string; storage: string }, output: { href: string; storage: string }, presetXmp: string) {
+  async applyPreset(
+    input: { href: string; storage: string },
+    output: { href: string; storage: string },
+    presetXmp: string
+  ) {
     let response = await this.editHttp.post('/lrService/presets', {
       inputs: input,
       outputs: [output],
       options: {
-        presets: [{
-          presetXmp,
-        }],
-      },
+        presets: [
+          {
+            presetXmp
+          }
+        ]
+      }
     });
     return response.data;
   }
 
-  async autoTone(input: { href: string; storage: string }, output: { href: string; storage: string }) {
+  async autoTone(
+    input: { href: string; storage: string },
+    output: { href: string; storage: string }
+  ) {
     let response = await this.editHttp.post('/lrService/autoTone', {
       inputs: input,
-      outputs: [output],
+      outputs: [output]
     });
     return response.data;
   }
 
-  async applyEdits(input: { href: string; storage: string }, output: { href: string; storage: string }, settings: Record<string, any>) {
+  async applyEdits(
+    input: { href: string; storage: string },
+    output: { href: string; storage: string },
+    settings: Record<string, any>
+  ) {
     let response = await this.editHttp.post('/lrService/edit', {
       inputs: input,
       outputs: [output],
-      options: settings,
+      options: settings
     });
     return response.data;
   }

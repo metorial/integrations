@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.e2b.app',
+  baseURL: 'https://api.e2b.app'
 });
 
 export interface CreateSandboxParams {
@@ -113,7 +113,7 @@ export class E2BClient {
   private headers() {
     return {
       'X-API-Key': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -128,7 +128,7 @@ export class E2BClient {
     if (params.envVars) body.envVars = params.envVars;
 
     let response = await api.post('/sandboxes', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     let data = response.data;
@@ -142,7 +142,7 @@ export class E2BClient {
       cpuCount: data.cpuCount,
       memoryMb: data.memoryMB || data.memoryMb,
       metadata: data.metadata,
-      state: data.state,
+      state: data.state
     };
   }
 
@@ -166,10 +166,12 @@ export class E2BClient {
 
     let response = await api.get('/sandboxes', {
       headers: this.headers(),
-      params,
+      params
     });
 
-    let items = Array.isArray(response.data) ? response.data : (response.data?.sandboxes || response.data?.items || []);
+    let items = Array.isArray(response.data)
+      ? response.data
+      : response.data?.sandboxes || response.data?.items || [];
 
     return {
       sandboxes: items.map((s: any) => ({
@@ -182,15 +184,15 @@ export class E2BClient {
         cpuCount: s.cpuCount,
         memoryMb: s.memoryMB || s.memoryMb,
         metadata: s.metadata,
-        state: s.state,
+        state: s.state
       })),
-      nextToken: response.data?.nextToken,
+      nextToken: response.data?.nextToken
     };
   }
 
   async getSandbox(sandboxId: string): Promise<SandboxInfo> {
     let response = await api.get(`/sandboxes/${sandboxId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     let s = response.data;
     return {
@@ -203,20 +205,24 @@ export class E2BClient {
       cpuCount: s.cpuCount,
       memoryMb: s.memoryMB || s.memoryMb,
       metadata: s.metadata,
-      state: s.state,
+      state: s.state
     };
   }
 
   async killSandbox(sandboxId: string): Promise<void> {
     await api.delete(`/sandboxes/${sandboxId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async pauseSandbox(sandboxId: string): Promise<void> {
-    await api.post(`/sandboxes/${sandboxId}/pause`, {}, {
-      headers: this.headers(),
-    });
+    await api.post(
+      `/sandboxes/${sandboxId}/pause`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   async resumeSandbox(sandboxId: string, timeout?: number): Promise<SandboxInfo> {
@@ -224,7 +230,7 @@ export class E2BClient {
     if (timeout !== undefined) body.timeout = timeout;
 
     let response = await api.post(`/sandboxes/${sandboxId}/connect`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     let s = response.data;
     return {
@@ -237,29 +243,37 @@ export class E2BClient {
       cpuCount: s.cpuCount,
       memoryMb: s.memoryMB || s.memoryMb,
       metadata: s.metadata,
-      state: s.state,
+      state: s.state
     };
   }
 
   async setSandboxTimeout(sandboxId: string, timeout: number): Promise<void> {
-    await api.post(`/sandboxes/${sandboxId}/timeout`, { timeout }, {
-      headers: this.headers(),
-    });
+    await api.post(
+      `/sandboxes/${sandboxId}/timeout`,
+      { timeout },
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   // ─── Snapshots ───
 
   async createSnapshot(sandboxId: string): Promise<SnapshotInfo> {
-    let response = await api.post(`/sandboxes/${sandboxId}/snapshots`, {}, {
-      headers: this.headers(),
-    });
+    let response = await api.post(
+      `/sandboxes/${sandboxId}/snapshots`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     let d = response.data;
     return {
       snapshotId: d.snapshotID || d.snapshotId || d.id,
       sandboxId: d.sandboxID || d.sandboxId || sandboxId,
       templateId: d.templateID || d.templateId || '',
       createdAt: d.createdAt || '',
-      metadata: d.metadata,
+      metadata: d.metadata
     };
   }
 
@@ -277,10 +291,12 @@ export class E2BClient {
 
     let response = await api.get('/snapshots', {
       headers: this.headers(),
-      params,
+      params
     });
 
-    let items = Array.isArray(response.data) ? response.data : (response.data?.snapshots || response.data?.items || []);
+    let items = Array.isArray(response.data)
+      ? response.data
+      : response.data?.snapshots || response.data?.items || [];
 
     return {
       snapshots: items.map((d: any) => ({
@@ -288,9 +304,9 @@ export class E2BClient {
         sandboxId: d.sandboxID || d.sandboxId || '',
         templateId: d.templateID || d.templateId || '',
         createdAt: d.createdAt || '',
-        metadata: d.metadata,
+        metadata: d.metadata
       })),
-      nextToken: response.data?.nextToken,
+      nextToken: response.data?.nextToken
     };
   }
 
@@ -298,9 +314,11 @@ export class E2BClient {
 
   async listTemplates(): Promise<TemplateInfo[]> {
     let response = await api.get('/templates', {
-      headers: this.headers(),
+      headers: this.headers()
     });
-    let items = Array.isArray(response.data) ? response.data : (response.data?.templates || response.data?.items || []);
+    let items = Array.isArray(response.data)
+      ? response.data
+      : response.data?.templates || response.data?.items || [];
     return items.map((t: any) => ({
       templateId: t.templateID || t.templateId,
       buildId: t.buildID || t.buildId || '',
@@ -311,23 +329,26 @@ export class E2BClient {
       aliases: t.aliases || [],
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
-      buildStatus: t.buildStatus,
+      buildStatus: t.buildStatus
     }));
   }
 
-  async getTemplateBuildStatus(templateId: string, buildId: string): Promise<{ status: string; logs?: string[] }> {
+  async getTemplateBuildStatus(
+    templateId: string,
+    buildId: string
+  ): Promise<{ status: string; logs?: string[] }> {
     let response = await api.get(`/templates/${templateId}/builds/${buildId}/status`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return {
       status: response.data.status,
-      logs: response.data.logs,
+      logs: response.data.logs
     };
   }
 
   async deleteTemplate(templateId: string): Promise<void> {
     await api.delete(`/templates/${templateId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -344,16 +365,14 @@ export class E2BClient {
     if (opts?.limit !== undefined) params.limit = opts.limit;
     if (opts?.orderAsc !== undefined) params.orderAsc = opts.orderAsc;
 
-    let path = opts?.sandboxId
-      ? `/events/sandboxes/${opts.sandboxId}`
-      : '/events/sandboxes';
+    let path = opts?.sandboxId ? `/events/sandboxes/${opts.sandboxId}` : '/events/sandboxes';
 
     let response = await api.get(path, {
       headers: this.headers(),
-      params,
+      params
     });
 
-    let items = Array.isArray(response.data) ? response.data : (response.data?.events || []);
+    let items = Array.isArray(response.data) ? response.data : response.data?.events || [];
     return items.map((e: any) => ({
       version: e.version || '',
       eventId: e.id || '',
@@ -364,7 +383,7 @@ export class E2BClient {
       sandboxExecutionId: e.sandboxExecutionId || e.sandboxExecutionID || '',
       sandboxTeamId: e.sandboxTeamId || e.sandboxTeamID || '',
       sandboxTemplateId: e.sandboxTemplateId || e.sandboxTemplateID || '',
-      timestamp: e.timestamp || '',
+      timestamp: e.timestamp || ''
     }));
   }
 
@@ -372,7 +391,7 @@ export class E2BClient {
 
   async createWebhook(params: CreateWebhookParams): Promise<WebhookConfig> {
     let response = await api.post('/events/webhooks', params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     let d = response.data;
     return {
@@ -382,15 +401,15 @@ export class E2BClient {
       createdAt: d.createdAt || '',
       enabled: d.enabled ?? true,
       url: d.url || '',
-      events: d.events || [],
+      events: d.events || []
     };
   }
 
   async listWebhooks(): Promise<WebhookConfig[]> {
     let response = await api.get('/events/webhooks', {
-      headers: this.headers(),
+      headers: this.headers()
     });
-    let items = Array.isArray(response.data) ? response.data : (response.data?.webhooks || []);
+    let items = Array.isArray(response.data) ? response.data : response.data?.webhooks || [];
     return items.map((d: any) => ({
       webhookId: d.id || d.webhookId || d.webhookID,
       teamId: d.teamID || d.teamId || '',
@@ -398,13 +417,13 @@ export class E2BClient {
       createdAt: d.createdAt || '',
       enabled: d.enabled ?? true,
       url: d.url || '',
-      events: d.events || [],
+      events: d.events || []
     }));
   }
 
   async getWebhook(webhookId: string): Promise<WebhookConfig> {
     let response = await api.get(`/events/webhooks/${webhookId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     let d = response.data;
     return {
@@ -414,13 +433,13 @@ export class E2BClient {
       createdAt: d.createdAt || '',
       enabled: d.enabled ?? true,
       url: d.url || '',
-      events: d.events || [],
+      events: d.events || []
     };
   }
 
   async updateWebhook(webhookId: string, params: UpdateWebhookParams): Promise<WebhookConfig> {
     let response = await api.patch(`/events/webhooks/${webhookId}`, params, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     let d = response.data;
     return {
@@ -430,13 +449,13 @@ export class E2BClient {
       createdAt: d.createdAt || '',
       enabled: d.enabled ?? true,
       url: d.url || '',
-      events: d.events || [],
+      events: d.events || []
     };
   }
 
   async deleteWebhook(webhookId: string): Promise<void> {
     await api.delete(`/events/webhooks/${webhookId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -444,29 +463,33 @@ export class E2BClient {
 
   async listVolumes(): Promise<VolumeInfo[]> {
     let response = await api.get('/volumes', {
-      headers: this.headers(),
+      headers: this.headers()
     });
-    let items = Array.isArray(response.data) ? response.data : (response.data?.volumes || []);
+    let items = Array.isArray(response.data) ? response.data : response.data?.volumes || [];
     return items.map((v: any) => ({
       volumeId: v.volumeID || v.volumeId || v.id,
-      name: v.name || '',
+      name: v.name || ''
     }));
   }
 
   async createVolume(name: string): Promise<VolumeInfo> {
-    let response = await api.post('/volumes', { name }, {
-      headers: this.headers(),
-    });
+    let response = await api.post(
+      '/volumes',
+      { name },
+      {
+        headers: this.headers()
+      }
+    );
     let v = response.data;
     return {
       volumeId: v.volumeID || v.volumeId || v.id,
-      name: v.name || '',
+      name: v.name || ''
     };
   }
 
   async deleteVolume(volumeId: string): Promise<void> {
     await api.delete(`/volumes/${volumeId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 }

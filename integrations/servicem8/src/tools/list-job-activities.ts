@@ -10,32 +10,33 @@ let activitySchema = z.object({
   startDate: z.string().optional().describe('Activity start date/time'),
   endDate: z.string().optional().describe('Activity end date/time'),
   active: z.number().optional().describe('1 = active, 0 = deleted'),
-  editDate: z.string().optional().describe('Last modified timestamp'),
+  editDate: z.string().optional().describe('Last modified timestamp')
 });
 
-export let listJobActivities = SlateTool.create(
-  spec,
-  {
-    name: 'List Job Activities',
-    key: 'list_job_activities',
-    description: `List scheduled bookings and recorded time entries (job activities) from ServiceM8. Filter by job UUID, staff UUID, or date range to find specific schedule entries.`,
-    instructions: [
-      'Filter by job: "job_uuid eq \'<uuid>\'"',
-      'Filter by staff: "staff_uuid eq \'<uuid>\'"',
-      'Combine with "and" for multiple conditions',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let listJobActivities = SlateTool.create(spec, {
+  name: 'List Job Activities',
+  key: 'list_job_activities',
+  description: `List scheduled bookings and recorded time entries (job activities) from ServiceM8. Filter by job UUID, staff UUID, or date range to find specific schedule entries.`,
+  instructions: [
+    'Filter by job: "job_uuid eq \'<uuid>\'"',
+    'Filter by staff: "staff_uuid eq \'<uuid>\'"',
+    'Combine with "and" for multiple conditions'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    filter: z.string().optional().describe('OData-style filter expression'),
-  }))
-  .output(z.object({
-    activities: z.array(activitySchema).describe('List of job activities/schedule entries'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      filter: z.string().optional().describe('OData-style filter expression')
+    })
+  )
+  .output(
+    z.object({
+      activities: z.array(activitySchema).describe('List of job activities/schedule entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let activities = await client.listJobActivities({ filter: ctx.input.filter });
 
@@ -46,11 +47,12 @@ export let listJobActivities = SlateTool.create(
       startDate: a.start_date,
       endDate: a.end_date,
       active: a.active,
-      editDate: a.edit_date,
+      editDate: a.edit_date
     }));
 
     return {
       output: { activities: mapped },
-      message: `Found **${mapped.length}** job activity/schedule entry(ies).`,
+      message: `Found **${mapped.length}** job activity/schedule entry(ies).`
     };
-  }).build();
+  })
+  .build();

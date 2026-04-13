@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   executeSql,
@@ -12,13 +11,9 @@ import {
   manageUser,
   manageRole,
   manageTask,
-  manageGrant,
+  manageGrant
 } from './tools';
-import {
-  queryCompleted,
-  taskRunCompleted,
-  inboundWebhook,
-} from './triggers';
+import { queryCompleted, taskRunCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,11 +28,7 @@ export let provider = Slate.create({
     manageUser,
     manageRole,
     manageTask,
-    manageGrant,
+    manageGrant
   ],
-  triggers: [
-    inboundWebhook,
-    queryCompleted,
-    taskRunCompleted,
-  ],
+  triggers: [inboundWebhook, queryCompleted, taskRunCompleted]
 });

@@ -13,14 +13,9 @@ import {
   listUsers,
   listComments,
   manageComment,
-  manageGroup,
+  manageGroup
 } from './tools';
-import {
-  documentEvents,
-  collectionEvents,
-  commentEvents,
-  userEvents,
-} from './triggers';
+import { documentEvents, collectionEvents, commentEvents, userEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,12 +32,7 @@ export let provider = Slate.create({
     listUsers,
     listComments,
     manageComment,
-    manageGroup,
+    manageGroup
   ],
-  triggers: [
-    documentEvents,
-    collectionEvents,
-    commentEvents,
-    userEvents,
-  ],
+  triggers: [documentEvents, collectionEvents, commentEvents, userEvents]
 });

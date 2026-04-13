@@ -9,8 +9,8 @@ export class Client {
       baseURL: 'https://api.incident.io',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -34,7 +34,8 @@ export class Client {
     if (params?.sortBy) query['sort_by'] = params.sortBy;
     if (params?.status) query['status[one_of]'] = params.status.join(',');
     if (params?.severity) query['severity[one_of]'] = params.severity.join(',');
-    if (params?.statusCategory) query['status_category[one_of]'] = params.statusCategory.join(',');
+    if (params?.statusCategory)
+      query['status_category[one_of]'] = params.statusCategory.join(',');
     if (params?.incidentType) query['incident_type[one_of]'] = params.incidentType.join(',');
     if (params?.mode) query['mode[one_of]'] = params.mode.join(',');
     if (params?.createdAtGte) query['created_at[gte]'] = params.createdAtGte;
@@ -58,13 +59,23 @@ export class Client {
     incidentStatusId?: string;
     incidentTypeId?: string;
     mode?: string;
-    customFieldEntries?: Array<{ custom_field_id: string; values: Array<{ value_link?: string; value_catalog_entry_id?: string; value_literal?: string }> }>;
-    incidentRoleAssignments?: Array<{ incident_role_id: string; assignee: { email?: string; id?: string; slack_user_id?: string } }>;
+    customFieldEntries?: Array<{
+      custom_field_id: string;
+      values: Array<{
+        value_link?: string;
+        value_catalog_entry_id?: string;
+        value_literal?: string;
+      }>;
+    }>;
+    incidentRoleAssignments?: Array<{
+      incident_role_id: string;
+      assignee: { email?: string; id?: string; slack_user_id?: string };
+    }>;
     incidentTimestampValues?: Array<{ incident_timestamp_id: string; value: string }>;
   }): Promise<{ incident: any }> {
     let body: Record<string, any> = {
       idempotency_key: data.idempotencyKey,
-      visibility: data.visibility,
+      visibility: data.visibility
     };
     if (data.name) body.name = data.name;
     if (data.summary) body.summary = data.summary;
@@ -73,40 +84,58 @@ export class Client {
     if (data.incidentTypeId) body.incident_type_id = data.incidentTypeId;
     if (data.mode) body.mode = data.mode;
     if (data.customFieldEntries) body.custom_field_entries = data.customFieldEntries;
-    if (data.incidentRoleAssignments) body.incident_role_assignments = data.incidentRoleAssignments;
-    if (data.incidentTimestampValues) body.incident_timestamp_values = data.incidentTimestampValues;
+    if (data.incidentRoleAssignments)
+      body.incident_role_assignments = data.incidentRoleAssignments;
+    if (data.incidentTimestampValues)
+      body.incident_timestamp_values = data.incidentTimestampValues;
 
     let response = await this.axios.post('/v2/incidents', body);
     return response.data;
   }
 
-  async editIncident(incidentId: string, data: {
-    notifyIncidentChannel: boolean;
-    incident: {
-      name?: string;
-      summary?: string;
-      callUrl?: string;
-      severityId?: string;
-      incidentStatusId?: string;
-      customFieldEntries?: Array<{ custom_field_id: string; values: Array<{ value_link?: string; value_catalog_entry_id?: string; value_literal?: string }> }>;
-      incidentRoleAssignments?: Array<{ incident_role_id: string; assignee: { email?: string; id?: string; slack_user_id?: string } }>;
-      incidentTimestampValues?: Array<{ incident_timestamp_id: string; value: string }>;
-    };
-  }): Promise<{ incident: any }> {
+  async editIncident(
+    incidentId: string,
+    data: {
+      notifyIncidentChannel: boolean;
+      incident: {
+        name?: string;
+        summary?: string;
+        callUrl?: string;
+        severityId?: string;
+        incidentStatusId?: string;
+        customFieldEntries?: Array<{
+          custom_field_id: string;
+          values: Array<{
+            value_link?: string;
+            value_catalog_entry_id?: string;
+            value_literal?: string;
+          }>;
+        }>;
+        incidentRoleAssignments?: Array<{
+          incident_role_id: string;
+          assignee: { email?: string; id?: string; slack_user_id?: string };
+        }>;
+        incidentTimestampValues?: Array<{ incident_timestamp_id: string; value: string }>;
+      };
+    }
+  ): Promise<{ incident: any }> {
     let incidentBody: Record<string, any> = {};
     let inc = data.incident;
     if (inc.name !== undefined) incidentBody.name = inc.name;
     if (inc.summary !== undefined) incidentBody.summary = inc.summary;
     if (inc.callUrl !== undefined) incidentBody.call_url = inc.callUrl;
     if (inc.severityId !== undefined) incidentBody.severity_id = inc.severityId;
-    if (inc.incidentStatusId !== undefined) incidentBody.incident_status_id = inc.incidentStatusId;
+    if (inc.incidentStatusId !== undefined)
+      incidentBody.incident_status_id = inc.incidentStatusId;
     if (inc.customFieldEntries) incidentBody.custom_field_entries = inc.customFieldEntries;
-    if (inc.incidentRoleAssignments) incidentBody.incident_role_assignments = inc.incidentRoleAssignments;
-    if (inc.incidentTimestampValues) incidentBody.incident_timestamp_values = inc.incidentTimestampValues;
+    if (inc.incidentRoleAssignments)
+      incidentBody.incident_role_assignments = inc.incidentRoleAssignments;
+    if (inc.incidentTimestampValues)
+      incidentBody.incident_timestamp_values = inc.incidentTimestampValues;
 
     let response = await this.axios.post(`/v2/incidents/${incidentId}/actions/edit`, {
       incident: incidentBody,
-      notify_incident_channel: data.notifyIncidentChannel,
+      notify_incident_channel: data.notifyIncidentChannel
     });
     return response.data;
   }
@@ -146,17 +175,20 @@ export class Client {
     return response.data;
   }
 
-  async createAlertEvent(alertSourceConfigId: string, data: {
-    title: string;
-    status: 'firing' | 'resolved';
-    description?: string;
-    deduplicationKey?: string;
-    metadata?: Record<string, string>;
-    sourceUrl?: string;
-  }): Promise<any> {
+  async createAlertEvent(
+    alertSourceConfigId: string,
+    data: {
+      title: string;
+      status: 'firing' | 'resolved';
+      description?: string;
+      deduplicationKey?: string;
+      metadata?: Record<string, string>;
+      sourceUrl?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       title: data.title,
-      status: data.status,
+      status: data.status
     };
     if (data.description) body.description = data.description;
     if (data.deduplicationKey) body.deduplication_key = data.deduplicationKey;
@@ -194,10 +226,13 @@ export class Client {
     return response.data;
   }
 
-  async updateEscalationPath(escalationPathId: string, data: {
-    name: string;
-    path: any[];
-  }): Promise<{ escalation_path: any }> {
+  async updateEscalationPath(
+    escalationPathId: string,
+    data: {
+      name: string;
+      path: any[];
+    }
+  ): Promise<{ escalation_path: any }> {
     let response = await this.axios.put(`/v2/escalation_paths/${escalationPathId}`, data);
     return response.data;
   }
@@ -222,7 +257,7 @@ export class Client {
     idempotencyKey: string;
   }): Promise<{ escalation: any }> {
     let body: Record<string, any> = {
-      idempotency_key: data.idempotencyKey,
+      idempotency_key: data.idempotencyKey
     };
     if (data.escalationPathId) body.escalation_path_id = data.escalationPathId;
     if (data.title) body.title = data.title;
@@ -259,8 +294,8 @@ export class Client {
       params: {
         schedule_id: params.scheduleId,
         entry_window_start: params.entryWindowStart,
-        entry_window_end: params.entryWindowEnd,
-      },
+        entry_window_end: params.entryWindowEnd
+      }
     });
     return response.data;
   }
@@ -278,7 +313,7 @@ export class Client {
       start_at: data.startAt,
       end_at: data.endAt,
       rotation_id: data.rotationId,
-      layer_id: data.layerId,
+      layer_id: data.layerId
     };
     if (data.userId) body.user_id = data.userId;
 
@@ -298,12 +333,15 @@ export class Client {
     return response.data;
   }
 
-  async listCatalogEntries(catalogTypeId: string, params?: {
-    pageSize?: number;
-    after?: string;
-  }): Promise<{ catalog_entries: any[]; pagination_meta: any }> {
+  async listCatalogEntries(
+    catalogTypeId: string,
+    params?: {
+      pageSize?: number;
+      after?: string;
+    }
+  ): Promise<{ catalog_entries: any[]; pagination_meta: any }> {
     let query: Record<string, any> = {
-      catalog_type_id: catalogTypeId,
+      catalog_type_id: catalogTypeId
     };
     if (params?.pageSize) query['page_size'] = params.pageSize;
     if (params?.after) query['after'] = params.after;
@@ -322,11 +360,14 @@ export class Client {
     name: string;
     externalId?: string;
     aliases?: string[];
-    attributeValues?: Record<string, { value: { literal?: string; catalog_entry_id?: string } }>;
+    attributeValues?: Record<
+      string,
+      { value: { literal?: string; catalog_entry_id?: string } }
+    >;
   }): Promise<{ catalog_entry: any }> {
     let body: Record<string, any> = {
       catalog_type_id: data.catalogTypeId,
-      name: data.name,
+      name: data.name
     };
     if (data.externalId) body.external_id = data.externalId;
     if (data.aliases) body.aliases = data.aliases;
@@ -336,12 +377,18 @@ export class Client {
     return response.data;
   }
 
-  async updateCatalogEntry(catalogEntryId: string, data: {
-    name?: string;
-    externalId?: string;
-    aliases?: string[];
-    attributeValues?: Record<string, { value: { literal?: string; catalog_entry_id?: string } }>;
-  }): Promise<{ catalog_entry: any }> {
+  async updateCatalogEntry(
+    catalogEntryId: string,
+    data: {
+      name?: string;
+      externalId?: string;
+      aliases?: string[];
+      attributeValues?: Record<
+        string,
+        { value: { literal?: string; catalog_entry_id?: string } }
+      >;
+    }
+  ): Promise<{ catalog_entry: any }> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.externalId !== undefined) body.external_id = data.externalId;
@@ -443,7 +490,7 @@ export class Client {
       name: data.name,
       incident_status: data.incidentStatus,
       message: data.message,
-      idempotency_key: data.idempotencyKey,
+      idempotency_key: data.idempotencyKey
     };
     if (data.notifySubscribers !== undefined) body.notify_subscribers = data.notifySubscribers;
     if (data.componentStatuses) body.component_statuses = data.componentStatuses;
@@ -452,34 +499,46 @@ export class Client {
     return response.data;
   }
 
-  async updateStatusPageIncident(statusPageIncidentId: string, data: {
-    incidentStatus?: string;
-    message?: string;
-    name?: string;
-    componentStatuses?: Array<{ component_id: string; status: string }>;
-  }): Promise<{ status_page_incident: any }> {
+  async updateStatusPageIncident(
+    statusPageIncidentId: string,
+    data: {
+      incidentStatus?: string;
+      message?: string;
+      name?: string;
+      componentStatuses?: Array<{ component_id: string; status: string }>;
+    }
+  ): Promise<{ status_page_incident: any }> {
     let body: Record<string, any> = {};
     if (data.incidentStatus !== undefined) body.incident_status = data.incidentStatus;
     if (data.message !== undefined) body.message = data.message;
     if (data.name !== undefined) body.name = data.name;
     if (data.componentStatuses) body.component_statuses = data.componentStatuses;
 
-    let response = await this.axios.patch(`/v2/status_pages/incidents/${statusPageIncidentId}`, body);
+    let response = await this.axios.patch(
+      `/v2/status_pages/incidents/${statusPageIncidentId}`,
+      body
+    );
     return response.data;
   }
 
-  async postStatusPageIncidentUpdate(statusPageIncidentId: string, data: {
-    message: string;
-    incidentStatus?: string;
-    componentStatuses?: Array<{ component_id: string; status: string }>;
-  }): Promise<any> {
+  async postStatusPageIncidentUpdate(
+    statusPageIncidentId: string,
+    data: {
+      message: string;
+      incidentStatus?: string;
+      componentStatuses?: Array<{ component_id: string; status: string }>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      message: data.message,
+      message: data.message
     };
     if (data.incidentStatus) body.incident_status = data.incidentStatus;
     if (data.componentStatuses) body.component_statuses = data.componentStatuses;
 
-    let response = await this.axios.post(`/v2/status_pages/incidents/${statusPageIncidentId}/updates`, body);
+    let response = await this.axios.post(
+      `/v2/status_pages/incidents/${statusPageIncidentId}/updates`,
+      body
+    );
     return response.data;
   }
 

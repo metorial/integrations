@@ -3,34 +3,47 @@ import { CincopaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let galleryItems = SlateTool.create(
-  spec,
-  {
-    name: 'Gallery Items',
-    key: 'gallery_items',
-    description: `Get, add, or remove media items from a Cincopa gallery. Use "list" to retrieve all assets in a gallery, "add" to add an existing asset to a gallery, or "remove" to remove an asset from a gallery.`,
-    instructions: [
-      'Use action "list" to retrieve items in a gallery with pagination.',
-      'Use action "add" to add an existing asset (by rid) to a gallery.',
-      'Use action "remove" to remove an asset from a gallery. Optionally set deleteAsset to permanently delete it.'
-    ]
-  }
-)
-  .input(z.object({
-    galleryId: z.string().describe('Gallery ID (fid) to operate on'),
-    action: z.enum(['list', 'add', 'remove']).describe('Action to perform'),
-    assetId: z.string().optional().describe('Asset ID (rid) - required for add and remove actions'),
-    insertPosition: z.enum(['top', 'bottom']).optional().describe('Where to insert the asset (for add action)'),
-    deleteAsset: z.boolean().optional().describe('Permanently delete the asset when removing (for remove action)'),
-    page: z.number().optional().describe('Page number for pagination (for list action)'),
-    pageSize: z.number().optional().describe('Number of items per page (for list action)')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    items: z.array(z.record(z.string(), z.any())).optional().describe('Gallery items (for list action)'),
-    totalCount: z.number().optional().describe('Total number of items in the gallery')
-  }))
-  .handleInvocation(async (ctx) => {
+export let galleryItems = SlateTool.create(spec, {
+  name: 'Gallery Items',
+  key: 'gallery_items',
+  description: `Get, add, or remove media items from a Cincopa gallery. Use "list" to retrieve all assets in a gallery, "add" to add an existing asset to a gallery, or "remove" to remove an asset from a gallery.`,
+  instructions: [
+    'Use action "list" to retrieve items in a gallery with pagination.',
+    'Use action "add" to add an existing asset (by rid) to a gallery.',
+    'Use action "remove" to remove an asset from a gallery. Optionally set deleteAsset to permanently delete it.'
+  ]
+})
+  .input(
+    z.object({
+      galleryId: z.string().describe('Gallery ID (fid) to operate on'),
+      action: z.enum(['list', 'add', 'remove']).describe('Action to perform'),
+      assetId: z
+        .string()
+        .optional()
+        .describe('Asset ID (rid) - required for add and remove actions'),
+      insertPosition: z
+        .enum(['top', 'bottom'])
+        .optional()
+        .describe('Where to insert the asset (for add action)'),
+      deleteAsset: z
+        .boolean()
+        .optional()
+        .describe('Permanently delete the asset when removing (for remove action)'),
+      page: z.number().optional().describe('Page number for pagination (for list action)'),
+      pageSize: z.number().optional().describe('Number of items per page (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      items: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Gallery items (for list action)'),
+      totalCount: z.number().optional().describe('Total number of items in the gallery')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CincopaClient({ token: ctx.auth.token });
     let { action, galleryId } = ctx.input;
 
@@ -83,4 +96,5 @@ export let galleryItems = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

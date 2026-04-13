@@ -72,26 +72,32 @@ export class TinifyClient {
   private axios;
 
   constructor(private token: string) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let authString = Buffer.from(`api:${token}`).toString('base64');
     this.axios = createAxios({
       baseURL: 'https://api.tinify.com',
       headers: {
-        'Authorization': `Basic ${authString}`,
-      },
+        Authorization: `Basic ${authString}`
+      }
     });
   }
 
   async compressFromUrl(sourceUrl: string): Promise<CompressResult> {
-    let response = await this.axios.post('/shrink', {
-      source: { url: sourceUrl },
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      '/shrink',
+      {
+        source: { url: sourceUrl }
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
 
     let data = response.data;
     let outputUrl = response.headers['location'] || response.headers['Location'] || '';
-    let compressionCount = parseInt(response.headers['compression-count'] || response.headers['Compression-Count'] || '0', 10);
+    let compressionCount = parseInt(
+      response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
+      10
+    );
 
     return {
       inputSize: data.input?.size ?? 0,
@@ -102,19 +108,21 @@ export class TinifyClient {
       outputHeight: data.output?.height ?? 0,
       outputRatio: data.output?.ratio ?? 0,
       outputUrl,
-      compressionCount,
+      compressionCount
     };
   }
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
   async compressFromBuffer(imageData: Buffer, contentType: string): Promise<CompressResult> {
     let response = await this.axios.post('/shrink', imageData, {
-      headers: { 'Content-Type': contentType },
+      headers: { 'Content-Type': contentType }
     });
 
     let data = response.data;
     let outputUrl = response.headers['location'] || response.headers['Location'] || '';
-    let compressionCount = parseInt(response.headers['compression-count'] || response.headers['Compression-Count'] || '0', 10);
+    let compressionCount = parseInt(
+      response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
+      10
+    );
 
     return {
       inputSize: data.input?.size ?? 0,
@@ -125,39 +133,59 @@ export class TinifyClient {
       outputHeight: data.output?.height ?? 0,
       outputRatio: data.output?.ratio ?? 0,
       outputUrl,
-      compressionCount,
+      compressionCount
     };
   }
 
   async postToOutput(outputUrl: string, body: OutputRequestBody): Promise<OutputResult> {
     let response = await this.axios.post(outputUrl, body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
-    let compressionCount = parseInt(response.headers['compression-count'] || response.headers['Compression-Count'] || '0', 10);
+    let compressionCount = parseInt(
+      response.headers['compression-count'] || response.headers['Compression-Count'] || '0',
+      10
+    );
     let locationHeader = response.headers['location'] || response.headers['Location'];
 
     return {
       outputUrl: locationHeader || undefined,
       storageUrl: locationHeader || undefined,
-      width: parseInt(response.headers['image-width'] || response.headers['Image-Width'] || '0', 10) || undefined,
-      height: parseInt(response.headers['image-height'] || response.headers['Image-Height'] || '0', 10) || undefined,
-      contentType: response.headers['content-type'] || response.headers['Content-Type'] || undefined,
-      contentLength: parseInt(response.headers['content-length'] || response.headers['Content-Length'] || '0', 10) || undefined,
-      compressionCount,
+      width:
+        parseInt(
+          response.headers['image-width'] || response.headers['Image-Width'] || '0',
+          10
+        ) || undefined,
+      height:
+        parseInt(
+          response.headers['image-height'] || response.headers['Image-Height'] || '0',
+          10
+        ) || undefined,
+      contentType:
+        response.headers['content-type'] || response.headers['Content-Type'] || undefined,
+      contentLength:
+        parseInt(
+          response.headers['content-length'] || response.headers['Content-Length'] || '0',
+          10
+        ) || undefined,
+      compressionCount
     };
   }
 
-  async resizeImage(outputUrl: string, resize: ResizeOptions, options?: {
-    preserve?: string[];
-    convert?: ConvertOptions;
-  }): Promise<OutputResult> {
+  async resizeImage(
+    outputUrl: string,
+    resize: ResizeOptions,
+    options?: {
+      preserve?: string[];
+      convert?: ConvertOptions;
+    }
+  ): Promise<OutputResult> {
     let body: OutputRequestBody = {
       resize: {
         method: resize.method,
         ...(resize.width !== undefined ? { width: resize.width } : {}),
-        ...(resize.height !== undefined ? { height: resize.height } : {}),
-      },
+        ...(resize.height !== undefined ? { height: resize.height } : {})
+      }
     };
 
     if (options?.preserve && options.preserve.length > 0) {
@@ -174,11 +202,15 @@ export class TinifyClient {
     return this.postToOutput(outputUrl, body);
   }
 
-  async convertImage(outputUrl: string, convert: ConvertOptions, options?: {
-    preserve?: string[];
-  }): Promise<OutputResult> {
+  async convertImage(
+    outputUrl: string,
+    convert: ConvertOptions,
+    options?: {
+      preserve?: string[];
+    }
+  ): Promise<OutputResult> {
     let body: OutputRequestBody = {
-      convert: { type: convert.type },
+      convert: { type: convert.type }
     };
 
     if (convert.background) {
@@ -192,11 +224,15 @@ export class TinifyClient {
     return this.postToOutput(outputUrl, body);
   }
 
-  async storeToCloud(outputUrl: string, store: StoreOptions, options?: {
-    resize?: ResizeOptions;
-    convert?: ConvertOptions;
-    preserve?: string[];
-  }): Promise<OutputResult> {
+  async storeToCloud(
+    outputUrl: string,
+    store: StoreOptions,
+    options?: {
+      resize?: ResizeOptions;
+      convert?: ConvertOptions;
+      preserve?: string[];
+    }
+  ): Promise<OutputResult> {
     let storePayload: Record<string, unknown> = {};
 
     if (store.service === 's3') {
@@ -207,14 +243,14 @@ export class TinifyClient {
         region: store.region,
         path: store.path,
         ...(store.acl ? { acl: store.acl } : {}),
-        ...(store.headers ? { headers: store.headers } : {}),
+        ...(store.headers ? { headers: store.headers } : {})
       };
     } else {
       storePayload = {
         service: 'gcs',
         gcp_access_token: store.gcpAccessToken,
         path: store.path,
-        ...(store.headers ? { headers: store.headers } : {}),
+        ...(store.headers ? { headers: store.headers } : {})
       };
     }
 
@@ -224,7 +260,7 @@ export class TinifyClient {
       body.resize = {
         method: options.resize.method,
         ...(options.resize.width !== undefined ? { width: options.resize.width } : {}),
-        ...(options.resize.height !== undefined ? { height: options.resize.height } : {}),
+        ...(options.resize.height !== undefined ? { height: options.resize.height } : {})
       };
     }
 
@@ -243,10 +279,14 @@ export class TinifyClient {
   }
 
   async getCompressionCount(): Promise<number> {
-    let response = await this.axios.post('/shrink', {}, {
-      headers: { 'Content-Type': 'application/json' },
-      validateStatus: () => true,
-    });
+    let response = await this.axios.post(
+      '/shrink',
+      {},
+      {
+        headers: { 'Content-Type': 'application/json' },
+        validateStatus: () => true
+      }
+    );
 
     let compressionCount = parseInt(
       response.headers['compression-count'] || response.headers['Compression-Count'] || '0',

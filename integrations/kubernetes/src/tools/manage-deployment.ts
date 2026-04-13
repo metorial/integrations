@@ -3,50 +3,75 @@ import { createKubeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDeployment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Deployment',
-    key: 'manage_deployment',
-    description: `Create, update, scale, or restart a Kubernetes Deployment. Combine multiple operations in one call — for example, update the image and scale replicas simultaneously.
+export let manageDeployment = SlateTool.create(spec, {
+  name: 'Manage Deployment',
+  key: 'manage_deployment',
+  description: `Create, update, scale, or restart a Kubernetes Deployment. Combine multiple operations in one call — for example, update the image and scale replicas simultaneously.
 Also supports StatefulSets and DaemonSets for similar workload management.`,
-    instructions: [
-      'To restart a deployment, set action to "restart". This performs a rolling restart by updating the pod template annotation.',
-      'To scale, provide the desired replicas count. Scaling is supported for Deployments, StatefulSets, and ReplicaSets.',
-      'When updating the container image, provide containerName and the new image tag.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'To restart a deployment, set action to "restart". This performs a rolling restart by updating the pod template annotation.',
+    'To scale, provide the desired replicas count. Scaling is supported for Deployments, StatefulSets, and ReplicaSets.',
+    'When updating the container image, provide containerName and the new image tag.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'scale', 'restart']).describe('Action to perform on the deployment'),
-    workloadType: z.enum(['deployments', 'statefulsets', 'daemonsets']).default('deployments').describe('Type of workload to manage'),
-    deploymentName: z.string().describe('Name of the deployment/workload'),
-    namespace: z.string().optional().describe('Namespace of the deployment'),
-    replicas: z.number().optional().describe('Desired number of replicas (for scale action or create/update)'),
-    containerName: z.string().optional().describe('Name of the container to update'),
-    image: z.string().optional().describe('New container image (e.g. "nginx:1.25")'),
-    labels: z.record(z.string(), z.string()).optional().describe('Labels to set on the deployment'),
-    annotations: z.record(z.string(), z.string()).optional().describe('Annotations to set on the deployment'),
-    manifest: z.any().optional().describe('Full Kubernetes manifest for create action. When provided, other fields (except action and namespace) are ignored.'),
-  }))
-  .output(z.object({
-    deploymentName: z.string().describe('Name of the deployment'),
-    deploymentNamespace: z.string().optional().describe('Namespace of the deployment'),
-    action: z.string().describe('Action that was performed'),
-    replicas: z.number().optional().describe('Current desired replicas'),
-    readyReplicas: z.number().optional().describe('Number of ready replicas'),
-    updatedReplicas: z.number().optional().describe('Number of updated replicas'),
-    conditions: z.array(z.object({
-      conditionType: z.string(),
-      conditionStatus: z.string(),
-      reason: z.string().optional(),
-      message: z.string().optional(),
-    })).optional().describe('Deployment conditions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'scale', 'restart'])
+        .describe('Action to perform on the deployment'),
+      workloadType: z
+        .enum(['deployments', 'statefulsets', 'daemonsets'])
+        .default('deployments')
+        .describe('Type of workload to manage'),
+      deploymentName: z.string().describe('Name of the deployment/workload'),
+      namespace: z.string().optional().describe('Namespace of the deployment'),
+      replicas: z
+        .number()
+        .optional()
+        .describe('Desired number of replicas (for scale action or create/update)'),
+      containerName: z.string().optional().describe('Name of the container to update'),
+      image: z.string().optional().describe('New container image (e.g. "nginx:1.25")'),
+      labels: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Labels to set on the deployment'),
+      annotations: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Annotations to set on the deployment'),
+      manifest: z
+        .any()
+        .optional()
+        .describe(
+          'Full Kubernetes manifest for create action. When provided, other fields (except action and namespace) are ignored.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      deploymentName: z.string().describe('Name of the deployment'),
+      deploymentNamespace: z.string().optional().describe('Namespace of the deployment'),
+      action: z.string().describe('Action that was performed'),
+      replicas: z.number().optional().describe('Current desired replicas'),
+      readyReplicas: z.number().optional().describe('Number of ready replicas'),
+      updatedReplicas: z.number().optional().describe('Number of updated replicas'),
+      conditions: z
+        .array(
+          z.object({
+            conditionType: z.string(),
+            conditionStatus: z.string(),
+            reason: z.string().optional(),
+            message: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Deployment conditions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createKubeClient(ctx.config, ctx.auth);
     let { action, workloadType, deploymentName, namespace } = ctx.input;
     let result: any;
@@ -57,29 +82,38 @@ Also supports StatefulSets and DaemonSets for similar workload management.`,
       } else {
         let body: any = {
           apiVersion: workloadType === 'deployments' ? 'apps/v1' : 'apps/v1',
-          kind: workloadType === 'deployments' ? 'Deployment' : workloadType === 'statefulsets' ? 'StatefulSet' : 'DaemonSet',
+          kind:
+            workloadType === 'deployments'
+              ? 'Deployment'
+              : workloadType === 'statefulsets'
+                ? 'StatefulSet'
+                : 'DaemonSet',
           metadata: {
             name: deploymentName,
             labels: ctx.input.labels,
-            annotations: ctx.input.annotations,
+            annotations: ctx.input.annotations
           },
           spec: {
             replicas: ctx.input.replicas ?? 1,
             selector: {
-              matchLabels: ctx.input.labels || { app: deploymentName },
+              matchLabels: ctx.input.labels || { app: deploymentName }
             },
             template: {
               metadata: {
-                labels: ctx.input.labels || { app: deploymentName },
+                labels: ctx.input.labels || { app: deploymentName }
               },
               spec: {
-                containers: ctx.input.image ? [{
-                  name: ctx.input.containerName || deploymentName,
-                  image: ctx.input.image,
-                }] : [],
-              },
-            },
-          },
+                containers: ctx.input.image
+                  ? [
+                      {
+                        name: ctx.input.containerName || deploymentName,
+                        image: ctx.input.image
+                      }
+                    ]
+                  : []
+              }
+            }
+          }
         };
         result = await client.createResource(workloadType, body, namespace);
       }
@@ -87,24 +121,35 @@ Also supports StatefulSets and DaemonSets for similar workload management.`,
       if (ctx.input.replicas === undefined) {
         throw new Error('replicas is required for scale action');
       }
-      let scaleResult = await client.setResourceScale(workloadType, deploymentName, ctx.input.replicas, namespace);
+      let scaleResult = await client.setResourceScale(
+        workloadType,
+        deploymentName,
+        ctx.input.replicas,
+        namespace
+      );
       result = await client.getResource(workloadType, deploymentName, namespace);
     } else if (action === 'restart') {
       if (workloadType === 'deployments') {
         result = await client.restartDeployment(deploymentName, namespace);
       } else {
         // Restart via annotation patch for statefulsets/daemonsets
-        result = await client.patchResource(workloadType, deploymentName, {
-          spec: {
-            template: {
-              metadata: {
-                annotations: {
-                  'kubectl.kubernetes.io/restartedAt': new Date().toISOString(),
-                },
-              },
-            },
+        result = await client.patchResource(
+          workloadType,
+          deploymentName,
+          {
+            spec: {
+              template: {
+                metadata: {
+                  annotations: {
+                    'kubectl.kubernetes.io/restartedAt': new Date().toISOString()
+                  }
+                }
+              }
+            }
           },
-        }, namespace, 'strategic');
+          namespace,
+          'strategic'
+        );
       }
     } else {
       // update
@@ -113,12 +158,14 @@ Also supports StatefulSets and DaemonSets for similar workload management.`,
         patch.spec = {
           template: {
             spec: {
-              containers: [{
-                name: ctx.input.containerName,
-                image: ctx.input.image,
-              }],
-            },
-          },
+              containers: [
+                {
+                  name: ctx.input.containerName,
+                  image: ctx.input.image
+                }
+              ]
+            }
+          }
         };
       }
       if (ctx.input.replicas !== undefined) {
@@ -134,14 +181,20 @@ Also supports StatefulSets and DaemonSets for similar workload management.`,
         patch.metadata.annotations = ctx.input.annotations;
       }
 
-      result = await client.patchResource(workloadType, deploymentName, patch, namespace, 'strategic');
+      result = await client.patchResource(
+        workloadType,
+        deploymentName,
+        patch,
+        namespace,
+        'strategic'
+      );
     }
 
     let conditions = result.status?.conditions?.map((c: any) => ({
       conditionType: c.type,
       conditionStatus: c.status,
       reason: c.reason,
-      message: c.message,
+      message: c.message
     }));
 
     return {
@@ -152,8 +205,9 @@ Also supports StatefulSets and DaemonSets for similar workload management.`,
         replicas: result.spec?.replicas,
         readyReplicas: result.status?.readyReplicas,
         updatedReplicas: result.status?.updatedReplicas,
-        conditions,
+        conditions
       },
-      message: `Successfully performed **${action}** on ${workloadType.slice(0, -1)} **${result.metadata.name}**${result.metadata.namespace ? ` in namespace **${result.metadata.namespace}**` : ''}.${ctx.input.replicas !== undefined ? ` Replicas: ${result.spec?.replicas}` : ''}`,
+      message: `Successfully performed **${action}** on ${workloadType.slice(0, -1)} **${result.metadata.name}**${result.metadata.namespace ? ` in namespace **${result.metadata.namespace}**` : ''}.${ctx.input.replicas !== undefined ? ` Replicas: ${result.spec?.replicas}` : ''}`
     };
-  }).build();
+  })
+  .build();

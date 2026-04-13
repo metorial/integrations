@@ -3,39 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve full details for a project including members, followers, custom fields, and settings.`,
-    tags: {
-      readOnly: true,
-    },
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve full details for a project including members, followers, custom fields, and settings.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project GID'),
-  }))
-  .output(z.object({
-    projectId: z.string(),
-    name: z.string(),
-    archived: z.boolean().optional(),
-    color: z.string().nullable().optional(),
-    createdAt: z.string().optional(),
-    dueOn: z.string().nullable().optional(),
-    startOn: z.string().nullable().optional(),
-    modifiedAt: z.string().optional(),
-    notes: z.string().optional(),
-    defaultView: z.string().optional(),
-    isPublic: z.boolean().optional(),
-    owner: z.any().optional(),
-    team: z.any().optional(),
-    members: z.array(z.any()).optional(),
-    followers: z.array(z.any()).optional(),
-    customFields: z.array(z.any()).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project GID')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string(),
+      name: z.string(),
+      archived: z.boolean().optional(),
+      color: z.string().nullable().optional(),
+      createdAt: z.string().optional(),
+      dueOn: z.string().nullable().optional(),
+      startOn: z.string().nullable().optional(),
+      modifiedAt: z.string().optional(),
+      notes: z.string().optional(),
+      defaultView: z.string().optional(),
+      isPublic: z.boolean().optional(),
+      owner: z.any().optional(),
+      team: z.any().optional(),
+      members: z.array(z.any()).optional(),
+      followers: z.array(z.any()).optional(),
+      customFields: z.array(z.any()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let p = await client.getProject(ctx.input.projectId);
 
@@ -55,11 +56,12 @@ export let getProject = SlateTool.create(
       team: p.team,
       members: p.members,
       followers: p.followers,
-      customFields: p.custom_fields,
+      customFields: p.custom_fields
     };
 
     return {
       output,
-      message: `Retrieved project **${p.name}** (${p.gid}).`,
+      message: `Retrieved project **${p.name}** (${p.gid}).`
     };
-  }).build();
+  })
+  .build();

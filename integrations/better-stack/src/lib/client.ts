@@ -19,8 +19,8 @@ export class UptimeClient {
       baseURL: 'https://uptime.betterstack.com/api/v2',
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     if (params.teamName) {
       this.axios.defaults.headers.common['X-Team-Name'] = params.teamName;
@@ -48,8 +48,8 @@ export class UptimeClient {
         monitor_type: params?.monitorType,
         paused: params?.paused,
         sort: params?.sort,
-        monitor_group_id: params?.monitorGroupId,
-      },
+        monitor_group_id: params?.monitorGroupId
+      }
     });
     return response.data;
   }
@@ -75,18 +75,24 @@ export class UptimeClient {
 
   // ---- Monitor Groups ----
 
-  async listMonitorGroups(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listMonitorGroups(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/monitor-groups', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   // ---- Heartbeats ----
 
-  async listHeartbeats(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listHeartbeats(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/heartbeats', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -131,8 +137,8 @@ export class UptimeClient {
         monitor_id: params?.monitorId,
         heartbeat_id: params?.heartbeatId,
         resolved: params?.resolved,
-        acknowledged: params?.acknowledged,
-      },
+        acknowledged: params?.acknowledged
+      }
     });
     return response.data;
   }
@@ -169,18 +175,24 @@ export class UptimeClient {
     await this.axios.delete(`/incidents/${incidentId}`);
   }
 
-  async getIncidentTimeline(incidentId: string, params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async getIncidentTimeline(
+    incidentId: string,
+    params?: { page?: number; perPage?: number }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get(`/incidents/${incidentId}/timeline`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   // ---- Status Pages ----
 
-  async listStatusPages(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listStatusPages(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/status-pages', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -206,14 +218,20 @@ export class UptimeClient {
 
   // ---- Status Page Resources ----
 
-  async listStatusPageResources(statusPageId: string, params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listStatusPageResources(
+    statusPageId: string,
+    params?: { page?: number; perPage?: number }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get(`/status-pages/${statusPageId}/resources`, {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
-  async createStatusPageResource(statusPageId: string, data: Record<string, any>): Promise<any> {
+  async createStatusPageResource(
+    statusPageId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.post(`/status-pages/${statusPageId}/resources`, data);
     return response.data;
   }
@@ -231,9 +249,12 @@ export class UptimeClient {
 
   // ---- On-Call Calendars ----
 
-  async listOnCallCalendars(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listOnCallCalendars(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/on-calls', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -259,9 +280,12 @@ export class UptimeClient {
 
   // ---- Escalation Policies ----
 
-  async listEscalationPolicies(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listEscalationPolicies(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/policies', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -287,9 +311,12 @@ export class UptimeClient {
 
   // ---- Incoming Webhooks ----
 
-  async listIncomingWebhooks(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listIncomingWebhooks(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/incoming-webhooks', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }

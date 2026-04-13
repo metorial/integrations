@@ -30,7 +30,7 @@ import {
   getIngestionStatus,
   suspendIngestion,
   resumeIngestion,
-  getUsage,
+  getUsage
 } from './tools';
 import { alertWebhook } from './triggers';
 
@@ -66,9 +66,7 @@ export let provider = Slate.create({
     getIngestionStatus,
     suspendIngestion,
     resumeIngestion,
-    getUsage,
+    getUsage
   ],
-  triggers: [
-    alertWebhook,
-  ],
+  triggers: [alertWebhook]
 });

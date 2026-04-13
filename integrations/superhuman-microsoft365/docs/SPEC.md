@@ -23,14 +23,14 @@ Loads **all messages** for a `conversationId` using `$filter=conversationId eq '
 
 Applies one **action** to **every message** in the thread:
 
-| Action | Behavior |
-|--------|----------|
-| `archive` | `move` each message to well-known folder `archive` |
-| `move` | `move` to `destinationFolderId` (id or well-known name) |
-| `mark_read` / `mark_unread` | Patch `isRead` |
-| `flag` / `unflag` | Patch `flag.flagStatus` |
-| `categorize` | Replace `categories` array on each message |
-| `delete` | Delete each message |
+| Action                      | Behavior                                                |
+| --------------------------- | ------------------------------------------------------- |
+| `archive`                   | `move` each message to well-known folder `archive`      |
+| `move`                      | `move` to `destinationFolderId` (id or well-known name) |
+| `mark_read` / `mark_unread` | Patch `isRead`                                          |
+| `flag` / `unflag`           | Patch `flag.flagStatus`                                 |
+| `categorize`                | Replace `categories` array on each message              |
+| `delete`                    | Delete each message                                     |
 
 Large threads imply **many sequential Graph calls** (no batching in this package).
 

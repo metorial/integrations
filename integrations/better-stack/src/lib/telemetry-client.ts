@@ -10,8 +10,8 @@ export class TelemetryClient {
       baseURL: 'https://telemetry.betterstack.com/api/v2',
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     if (params.teamName) {
       this.axios.defaults.headers.common['X-Team-Name'] = params.teamName;
@@ -31,8 +31,8 @@ export class TelemetryClient {
         page: params?.page,
         per_page: params?.perPage,
         name: params?.name,
-        platform: params?.platform,
-      },
+        platform: params?.platform
+      }
     });
     return response.data;
   }
@@ -58,9 +58,12 @@ export class TelemetryClient {
 
   // ---- Dashboards ----
 
-  async listDashboards(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listDashboards(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/dashboards', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -72,9 +75,12 @@ export class TelemetryClient {
 
   // ---- Alerts ----
 
-  async listAlerts(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listAlerts(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/alerts', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
@@ -100,18 +106,24 @@ export class TelemetryClient {
 
   // ---- Source Groups ----
 
-  async listSourceGroups(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listSourceGroups(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/sources-groups', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }
 
   // ---- Connections (Query API credentials) ----
 
-  async listConnections(params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<any>> {
+  async listConnections(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/connections', {
-      params: { page: params?.page, per_page: params?.perPage },
+      params: { page: params?.page, per_page: params?.perPage }
     });
     return response.data;
   }

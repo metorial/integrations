@@ -3,48 +3,53 @@ import { TavePublicClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactCreated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Created',
-    key: 'contact_created',
-    description: 'Fires when a new contact is created in Tave. Can be filtered by contact kind and brand.',
-  },
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    firstName: z.string().optional().describe('First name of the contact'),
-    lastName: z.string().optional().describe('Last name of the contact'),
-    email: z.string().optional().describe('Email of the contact'),
-    phone: z.string().optional().describe('Phone number of the contact'),
-    contactKind: z.string().optional().describe('Kind of contact'),
-    brand: z.string().optional().describe('Brand of the contact'),
-    createdAt: z.string().optional().describe('When the contact was created'),
-    raw: z.any().optional().describe('Full contact record'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the created contact'),
-    firstName: z.string().optional().describe('First name of the contact'),
-    lastName: z.string().optional().describe('Last name of the contact'),
-    email: z.string().optional().describe('Email address of the contact'),
-    phone: z.string().optional().describe('Phone number of the contact'),
-    contactKind: z.string().optional().describe('Kind of contact (e.g., individual, business)'),
-    brand: z.string().optional().describe('Brand associated with the contact'),
-    createdAt: z.string().optional().describe('Timestamp when the contact was created'),
-  }))
+export let contactCreated = SlateTrigger.create(spec, {
+  name: 'Contact Created',
+  key: 'contact_created',
+  description:
+    'Fires when a new contact is created in Tave. Can be filtered by contact kind and brand.'
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      firstName: z.string().optional().describe('First name of the contact'),
+      lastName: z.string().optional().describe('Last name of the contact'),
+      email: z.string().optional().describe('Email of the contact'),
+      phone: z.string().optional().describe('Phone number of the contact'),
+      contactKind: z.string().optional().describe('Kind of contact'),
+      brand: z.string().optional().describe('Brand of the contact'),
+      createdAt: z.string().optional().describe('When the contact was created'),
+      raw: z.any().optional().describe('Full contact record')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the created contact'),
+      firstName: z.string().optional().describe('First name of the contact'),
+      lastName: z.string().optional().describe('Last name of the contact'),
+      email: z.string().optional().describe('Email address of the contact'),
+      phone: z.string().optional().describe('Phone number of the contact'),
+      contactKind: z
+        .string()
+        .optional()
+        .describe('Kind of contact (e.g., individual, business)'),
+      brand: z.string().optional().describe('Brand associated with the contact'),
+      createdAt: z.string().optional().describe('Timestamp when the contact was created')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TavePublicClient(ctx.auth.token);
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
       let knownIds = (ctx.state?.knownIds as string[] | undefined) ?? [];
 
       let params: { since?: string; page?: number; perPage?: number } = {
-        perPage: 50,
+        perPage: 50
       };
 
       if (lastPolledAt) {
@@ -71,19 +76,19 @@ export let contactCreated = SlateTrigger.create(
         contactKind: c.contact_kind ?? c.contactKind ?? undefined,
         brand: c.brand ?? undefined,
         createdAt: c.created_at ?? c.created ?? undefined,
-        raw: c,
+        raw: c
       }));
 
       return {
         inputs,
         updatedState: {
           lastPolledAt: new Date().toISOString(),
-          knownIds: updatedKnownIds,
-        },
+          knownIds: updatedKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'contact.created',
         id: ctx.input.contactId,
@@ -95,9 +100,9 @@ export let contactCreated = SlateTrigger.create(
           phone: ctx.input.phone,
           contactKind: ctx.input.contactKind,
           brand: ctx.input.brand,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

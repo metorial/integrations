@@ -2,19 +2,30 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Authentication token (Database Token or JWT)'),
-    authType: z.enum(['database_token', 'jwt']).describe('The type of authentication being used'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Authentication token (Database Token or JWT)'),
+      authType: z
+        .enum(['database_token', 'jwt'])
+        .describe('The type of authentication being used')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Database Token',
     key: 'database_token',
     inputSchema: z.object({
-      token: z.string().describe('Your Baserow Database Token. Create one in Settings > Database Tokens in the Baserow UI.'),
-      baseUrl: z.string().optional().describe('Base URL of your Baserow instance (e.g. https://api.baserow.io)')
+      token: z
+        .string()
+        .describe(
+          'Your Baserow Database Token. Create one in Settings > Database Tokens in the Baserow UI.'
+        ),
+      baseUrl: z
+        .string()
+        .optional()
+        .describe('Base URL of your Baserow instance (e.g. https://api.baserow.io)')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -38,9 +49,12 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       email: z.string().describe('Your Baserow account email address'),
       password: z.string().describe('Your Baserow account password'),
-      baseUrl: z.string().optional().describe('Base URL of your Baserow instance (e.g. https://api.baserow.io)')
+      baseUrl: z
+        .string()
+        .optional()
+        .describe('Base URL of your Baserow instance (e.g. https://api.baserow.io)')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = ctx.input.baseUrl || 'https://api.baserow.io';
       let httpClient = createAxios({ baseURL: baseUrl });
 

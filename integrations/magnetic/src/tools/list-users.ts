@@ -10,24 +10,23 @@ let userSchema = z.object({
   role: z.string().optional().describe('Role of the user in the account')
 });
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve all users in your Magnetic account. Returns user details including name, email, and role. Useful for looking up user IDs to assign as task owners or opportunity owners.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve all users in your Magnetic account. Returns user details including name, email, and role. Useful for looking up user IDs to assign as task owners or opportunity owners.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of users in the account'),
-    totalCount: z.number().describe('Number of users')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of users in the account'),
+      totalCount: z.number().describe('Number of users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MagneticClient({ token: ctx.auth.token });
 
     let results = await client.listUsers();

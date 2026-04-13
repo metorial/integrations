@@ -5,27 +5,35 @@ Create, manage, and export graphic designs programmatically. Upload and manage a
 ## Tools
 
 ### List Brand Templates
+
 List brand templates available to the user. Supports searching by query, filtering by ownership, and pagination. Requires the user to be a member of a Canva Enterprise organization.
 
 ### Export Design
+
 Export a Canva design to a downloadable file. Supports PDF, JPG, PNG, GIF, PPTX, and MP4 formats. This starts an asynchronous export job. If the job completes immediately, download URLs are returned; otherwise use the job ID to poll for completion.
 
 ### Get User Profile
+
 Retrieve the authenticated user's profile information including user ID, team ID, and display name.
 
 ### Import Design
+
 Import an external file as a new Canva design from a URL. Supports various file formats including PDF, Adobe Creative Suite files (.ai, .psd), Microsoft Office documents, Apple productivity apps, and OpenOffice formats. This starts an asynchronous import job.
 
 ### Get Asset
+
 Retrieve metadata for an asset (image or video) in the user's Canva library, including name, tags, timestamps, and thumbnail info.
 
 ### Create Comment
+
 Create a new comment thread on a design, or reply to an existing comment thread. To create a top-level comment, provide a designId and message. To reply, also provide a threadId.
 
 ### List Designs
+
 List and search designs in the user's Canva account. Supports filtering by search query, ownership, and sorting. Returns paginated results.
 
 ### Get Folder
+
 Retrieve metadata for a specific folder in the user's Canva projects.
 
 ## License

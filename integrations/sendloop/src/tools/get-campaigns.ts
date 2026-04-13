@@ -3,31 +3,37 @@ import { SendloopClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'Get Campaigns',
-    key: 'get_campaigns',
-    description: `Retrieve email campaigns with optional status filters, or fetch a specific campaign by ID. Use status filters to narrow down results to only drafts, sending, sent, etc.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getCampaigns = SlateTool.create(spec, {
+  name: 'Get Campaigns',
+  key: 'get_campaigns',
+  description: `Retrieve email campaigns with optional status filters, or fetch a specific campaign by ID. Use status filters to narrow down results to only drafts, sending, sent, etc.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    campaignId: z.string().optional().describe('Specific campaign ID to retrieve. If omitted, returns a filtered list of campaigns.'),
-    ignoreDrafts: z.boolean().optional().describe('Exclude draft campaigns from results'),
-    ignoreSending: z.boolean().optional().describe('Exclude currently sending campaigns'),
-    ignorePaused: z.boolean().optional().describe('Exclude paused campaigns'),
-    ignoreSent: z.boolean().optional().describe('Exclude already sent campaigns'),
-    ignoreFailed: z.boolean().optional().describe('Exclude failed campaigns'),
-    ignoreApproval: z.boolean().optional().describe('Exclude campaigns pending approval')
-  }))
-  .output(z.object({
-    campaigns: z.array(z.record(z.string(), z.any())).describe('Array of campaign objects')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z
+        .string()
+        .optional()
+        .describe(
+          'Specific campaign ID to retrieve. If omitted, returns a filtered list of campaigns.'
+        ),
+      ignoreDrafts: z.boolean().optional().describe('Exclude draft campaigns from results'),
+      ignoreSending: z.boolean().optional().describe('Exclude currently sending campaigns'),
+      ignorePaused: z.boolean().optional().describe('Exclude paused campaigns'),
+      ignoreSent: z.boolean().optional().describe('Exclude already sent campaigns'),
+      ignoreFailed: z.boolean().optional().describe('Exclude failed campaigns'),
+      ignoreApproval: z.boolean().optional().describe('Exclude campaigns pending approval')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(z.record(z.string(), z.any())).describe('Array of campaign objects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SendloopClient({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain

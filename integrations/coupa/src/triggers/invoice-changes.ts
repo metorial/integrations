@@ -3,43 +3,45 @@ import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Changes',
-    key: 'invoice_changes',
-    description: 'Triggers when invoices are created, approved, disputed, or otherwise updated in Coupa. Polls for changes based on the updated_at timestamp.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('Invoice ID'),
-    invoiceNumber: z.string().nullable().optional().describe('Invoice number'),
-    status: z.string().nullable().optional().describe('Current invoice status'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    rawData: z.any().describe('Full invoice data'),
-  }))
-  .output(z.object({
-    invoiceId: z.number().describe('Coupa invoice ID'),
-    invoiceNumber: z.string().nullable().optional().describe('Invoice number'),
-    status: z.string().nullable().optional().describe('Current invoice status'),
-    invoiceDate: z.string().nullable().optional().describe('Invoice date'),
-    supplier: z.any().nullable().optional().describe('Supplier object'),
-    totalAmount: z.any().nullable().optional().describe('Invoice total'),
-    currency: z.any().nullable().optional().describe('Currency'),
-    invoiceLines: z.array(z.any()).nullable().optional().describe('Invoice line items'),
-    documentType: z.string().nullable().optional().describe('Document type'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  }))
+export let invoiceChanges = SlateTrigger.create(spec, {
+  name: 'Invoice Changes',
+  key: 'invoice_changes',
+  description:
+    'Triggers when invoices are created, approved, disputed, or otherwise updated in Coupa. Polls for changes based on the updated_at timestamp.'
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('Invoice ID'),
+      invoiceNumber: z.string().nullable().optional().describe('Invoice number'),
+      status: z.string().nullable().optional().describe('Current invoice status'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      rawData: z.any().describe('Full invoice data')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.number().describe('Coupa invoice ID'),
+      invoiceNumber: z.string().nullable().optional().describe('Invoice number'),
+      status: z.string().nullable().optional().describe('Current invoice status'),
+      invoiceDate: z.string().nullable().optional().describe('Invoice date'),
+      supplier: z.any().nullable().optional().describe('Supplier object'),
+      totalAmount: z.any().nullable().optional().describe('Invoice total'),
+      currency: z.any().nullable().optional().describe('Currency'),
+      invoiceLines: z.array(z.any()).nullable().optional().describe('Invoice line items'),
+      documentType: z.string().nullable().optional().describe('Document type'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CoupaClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -53,7 +55,7 @@ export let invoiceChanges = SlateTrigger.create(
         filters,
         orderBy: 'updated_at',
         dir: 'asc',
-        limit: 50,
+        limit: 50
       });
 
       let invoices = Array.isArray(results) ? results : [];
@@ -70,15 +72,15 @@ export let invoiceChanges = SlateTrigger.create(
           invoiceNumber: inv['invoice-number'] ?? inv.invoice_number ?? null,
           status: inv.status ?? null,
           updatedAt: inv['updated-at'] ?? inv.updated_at ?? '',
-          rawData: inv,
+          rawData: inv
         })),
         updatedState: {
-          lastPollTime: newLastPollTime ?? new Date().toISOString(),
-        },
+          lastPollTime: newLastPollTime ?? new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let inv = ctx.input.rawData;
 
       return {
@@ -95,9 +97,9 @@ export let invoiceChanges = SlateTrigger.create(
           invoiceLines: inv['invoice-lines'] ?? inv.invoice_lines ?? null,
           documentType: inv['document-type'] ?? inv.document_type ?? null,
           createdAt: inv['created-at'] ?? inv.created_at ?? null,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

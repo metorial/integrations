@@ -3,44 +3,47 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let mergeRequestEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Merge Request Events',
-    key: 'merge_request_events',
-    description: 'Triggered on merge request actions (open, close, merge, update, approve, unapprove). Useful for tracking MR-related CI activity and triggering MR pipelines.'
-  }
-)
-  .input(z.object({
-    eventType: z.string(),
-    mergeRequestId: z.number(),
-    payload: z.any()
-  }))
-  .output(z.object({
-    mergeRequestId: z.number(),
-    mergeRequestIid: z.number(),
-    action: z.string(),
-    state: z.string(),
-    title: z.string(),
-    sourceBranch: z.string(),
-    targetBranch: z.string(),
-    mergeStatus: z.string().optional(),
-    draft: z.boolean().optional(),
-    url: z.string().optional(),
-    authorName: z.string().optional(),
-    assigneeName: z.string().optional().nullable(),
-    projectId: z.number().optional(),
-    projectName: z.string().optional(),
-    lastCommitSha: z.string().optional(),
-    lastCommitMessage: z.string().optional()
-  }))
+export let mergeRequestEvents = SlateTrigger.create(spec, {
+  name: 'Merge Request Events',
+  key: 'merge_request_events',
+  description:
+    'Triggered on merge request actions (open, close, merge, update, approve, unapprove). Useful for tracking MR-related CI activity and triggering MR pipelines.'
+})
+  .input(
+    z.object({
+      eventType: z.string(),
+      mergeRequestId: z.number(),
+      payload: z.any()
+    })
+  )
+  .output(
+    z.object({
+      mergeRequestId: z.number(),
+      mergeRequestIid: z.number(),
+      action: z.string(),
+      state: z.string(),
+      title: z.string(),
+      sourceBranch: z.string(),
+      targetBranch: z.string(),
+      mergeStatus: z.string().optional(),
+      draft: z.boolean().optional(),
+      url: z.string().optional(),
+      authorName: z.string().optional(),
+      assigneeName: z.string().optional().nullable(),
+      projectId: z.number().optional(),
+      projectName: z.string().optional(),
+      lastCommitSha: z.string().optional(),
+      lastCommitMessage: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx.auth, ctx.config);
       let projectId = ctx.config.projectId;
-      if (!projectId) throw new Error('projectId is required in config for webhook registration');
+      if (!projectId)
+        throw new Error('projectId is required in config for webhook registration');
 
-      let webhook = await client.createProjectWebhook(projectId, {
+      let webhook = (await client.createProjectWebhook(projectId, {
         url: ctx.input.webhookBaseUrl,
         merge_requests_events: true,
         push_events: false,
@@ -50,7 +53,7 @@ export let mergeRequestEvents = SlateTrigger.create(
         deployment_events: false,
         releases_events: false,
         enable_ssl_verification: true
-      }) as any;
+      })) as any;
 
       return {
         registrationDetails: {
@@ -60,31 +63,36 @@ export let mergeRequestEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx.auth, ctx.config);
-      let { hookId, projectId } = ctx.input.registrationDetails as { hookId: number; projectId: string };
+      let { hookId, projectId } = ctx.input.registrationDetails as {
+        hookId: number;
+        projectId: string;
+      };
       await client.deleteProjectWebhook(projectId, hookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let eventHeader = ctx.request.headers.get('x-gitlab-event');
       if (eventHeader !== 'Merge Request Hook') {
         return { inputs: [] };
       }
 
-      let data = await ctx.request.json() as any;
+      let data = (await ctx.request.json()) as any;
       let mr = data.object_attributes;
 
       return {
-        inputs: [{
-          eventType: `merge_request.${mr.action}`,
-          mergeRequestId: mr.id,
-          payload: data
-        }]
+        inputs: [
+          {
+            eventType: `merge_request.${mr.action}`,
+            mergeRequestId: mr.id,
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.payload;
       let mr = data.object_attributes;
 

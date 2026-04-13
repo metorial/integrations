@@ -67,11 +67,11 @@ export class SnowflakeClient {
     this.http = createAxios({
       baseURL: `https://${config.accountIdentifier}.snowflakecomputing.com`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-Snowflake-Authorization-Token-Type': this.tokenType,
-      },
+        Accept: 'application/json',
+        'X-Snowflake-Authorization-Token-Type': this.tokenType
+      }
     });
   }
 
@@ -79,7 +79,7 @@ export class SnowflakeClient {
 
   async executeStatement(options: SqlExecutionOptions): Promise<StatementResult> {
     let body: Record<string, any> = {
-      statement: options.statement,
+      statement: options.statement
     };
 
     if (options.database) body.database = options.database;
@@ -97,13 +97,16 @@ export class SnowflakeClient {
 
     let response = await this.http.post('/api/v2/statements', body, {
       params,
-      validateStatus: (status: number) => status === 200 || status === 202,
+      validateStatus: (status: number) => status === 200 || status === 202
     });
 
     return response.data;
   }
 
-  async getStatementStatus(statementHandle: string, partition?: number): Promise<StatementResult> {
+  async getStatementStatus(
+    statementHandle: string,
+    partition?: number
+  ): Promise<StatementResult> {
     let params: Record<string, any> = {};
     if (partition !== undefined) {
       params.partition = partition;
@@ -111,7 +114,7 @@ export class SnowflakeClient {
 
     let response = await this.http.get(`/api/v2/statements/${statementHandle}`, {
       params,
-      validateStatus: (status: number) => status === 200 || status === 202,
+      validateStatus: (status: number) => status === 200 || status === 202
     });
 
     return response.data;
@@ -146,27 +149,42 @@ export class SnowflakeClient {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/databases/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(`/api/v2/databases/${encodeURIComponent(name)}`, {
+      params
+    });
     return response.data;
   }
 
   // --- Schema Management ---
 
   async listSchemas(database: string, params?: ListParams): Promise<any[]> {
-    let response = await this.http.get(`/api/v2/databases/${encodeURIComponent(database)}/schemas`, { params });
+    let response = await this.http.get(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas`,
+      { params }
+    );
     return response.data || [];
   }
 
   async getSchema(database: string, name: string): Promise<any> {
-    let response = await this.http.get(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(name)}`);
+    let response = await this.http.get(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(name)}`
+    );
     return response.data;
   }
 
-  async createSchema(database: string, body: Record<string, any>, createMode?: string): Promise<any> {
+  async createSchema(
+    database: string,
+    body: Record<string, any>,
+    createMode?: string
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (createMode) params.createMode = createMode;
 
-    let response = await this.http.post(`/api/v2/databases/${encodeURIComponent(database)}/schemas`, body, { params });
+    let response = await this.http.post(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas`,
+      body,
+      { params }
+    );
     return response.data;
   }
 
@@ -174,35 +192,60 @@ export class SnowflakeClient {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(name)}`,
+      { params }
+    );
     return response.data;
   }
 
   // --- Table Management ---
 
   async listTables(database: string, schema: string, params?: ListParams): Promise<any[]> {
-    let response = await this.http.get(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables`, { params });
+    let response = await this.http.get(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables`,
+      { params }
+    );
     return response.data || [];
   }
 
   async getTable(database: string, schema: string, name: string): Promise<any> {
-    let response = await this.http.get(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables/${encodeURIComponent(name)}`);
+    let response = await this.http.get(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables/${encodeURIComponent(name)}`
+    );
     return response.data;
   }
 
-  async createTable(database: string, schema: string, body: Record<string, any>, createMode?: string): Promise<any> {
+  async createTable(
+    database: string,
+    schema: string,
+    body: Record<string, any>,
+    createMode?: string
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (createMode) params.createMode = createMode;
 
-    let response = await this.http.post(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables`, body, { params });
+    let response = await this.http.post(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables`,
+      body,
+      { params }
+    );
     return response.data;
   }
 
-  async deleteTable(database: string, schema: string, name: string, ifExists?: boolean): Promise<any> {
+  async deleteTable(
+    database: string,
+    schema: string,
+    name: string,
+    ifExists?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables/${encodeURIComponent(name)}`,
+      { params }
+    );
     return response.data;
   }
 
@@ -230,22 +273,30 @@ export class SnowflakeClient {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/warehouses/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(`/api/v2/warehouses/${encodeURIComponent(name)}`, {
+      params
+    });
     return response.data;
   }
 
   async resumeWarehouse(name: string): Promise<any> {
-    let response = await this.http.post(`/api/v2/warehouses/${encodeURIComponent(name)}:resume`);
+    let response = await this.http.post(
+      `/api/v2/warehouses/${encodeURIComponent(name)}:resume`
+    );
     return response.data;
   }
 
   async suspendWarehouse(name: string): Promise<any> {
-    let response = await this.http.post(`/api/v2/warehouses/${encodeURIComponent(name)}:suspend`);
+    let response = await this.http.post(
+      `/api/v2/warehouses/${encodeURIComponent(name)}:suspend`
+    );
     return response.data;
   }
 
   async abortWarehouseQueries(name: string): Promise<any> {
-    let response = await this.http.post(`/api/v2/warehouses/${encodeURIComponent(name)}:abort`);
+    let response = await this.http.post(
+      `/api/v2/warehouses/${encodeURIComponent(name)}:abort`
+    );
     return response.data;
   }
 
@@ -273,7 +324,9 @@ export class SnowflakeClient {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/users/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(`/api/v2/users/${encodeURIComponent(name)}`, {
+      params
+    });
     return response.data;
   }
 
@@ -301,7 +354,9 @@ export class SnowflakeClient {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/roles/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(`/api/v2/roles/${encodeURIComponent(name)}`, {
+      params
+    });
     return response.data;
   }
 
@@ -320,33 +375,57 @@ export class SnowflakeClient {
   // --- Task Management ---
 
   async listTasks(database: string, schema: string, params?: ListParams): Promise<any[]> {
-    let response = await this.http.get(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks`, { params });
+    let response = await this.http.get(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks`,
+      { params }
+    );
     return response.data || [];
   }
 
   async getTask(database: string, schema: string, name: string): Promise<any> {
-    let response = await this.http.get(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks/${encodeURIComponent(name)}`);
+    let response = await this.http.get(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks/${encodeURIComponent(name)}`
+    );
     return response.data;
   }
 
-  async createTask(database: string, schema: string, body: Record<string, any>, createMode?: string): Promise<any> {
+  async createTask(
+    database: string,
+    schema: string,
+    body: Record<string, any>,
+    createMode?: string
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (createMode) params.createMode = createMode;
 
-    let response = await this.http.post(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks`, body, { params });
+    let response = await this.http.post(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks`,
+      body,
+      { params }
+    );
     return response.data;
   }
 
   async executeTask(database: string, schema: string, name: string): Promise<any> {
-    let response = await this.http.post(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks/${encodeURIComponent(name)}:execute`);
+    let response = await this.http.post(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks/${encodeURIComponent(name)}:execute`
+    );
     return response.data;
   }
 
-  async deleteTask(database: string, schema: string, name: string, ifExists?: boolean): Promise<any> {
+  async deleteTask(
+    database: string,
+    schema: string,
+    name: string,
+    ifExists?: boolean
+  ): Promise<any> {
     let params: Record<string, any> = {};
     if (ifExists) params.ifExists = true;
 
-    let response = await this.http.delete(`/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.delete(
+      `/api/v2/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tasks/${encodeURIComponent(name)}`,
+      { params }
+    );
     return response.data;
   }
 }

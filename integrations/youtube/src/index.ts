@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchContent,
@@ -18,11 +17,7 @@ import {
   listCaptions,
   listActivities
 } from './tools';
-import {
-  channelActivity,
-  newVideo,
-  inboundWebhook,
-} from './triggers';
+import { channelActivity, newVideo, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,9 +38,5 @@ export let provider = Slate.create({
     listCaptions,
     listActivities
   ],
-  triggers: [
-    inboundWebhook,
-    channelActivity,
-    newVideo
-  ]
+  triggers: [inboundWebhook, channelActivity, newVideo]
 });

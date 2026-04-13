@@ -3,38 +3,56 @@ import { SendloopClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Campaigns',
-    key: 'manage_campaigns',
-    description: `Create, update, or delete email campaigns. Supports setting campaign name, sender info, subject, HTML/plain text content, target lists, and scheduling. Use this to prepare campaigns before sending.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageCampaigns = SlateTool.create(spec, {
+  name: 'Manage Campaigns',
+  key: 'manage_campaigns',
+  description: `Create, update, or delete email campaigns. Supports setting campaign name, sender info, subject, HTML/plain text content, target lists, and scheduling. Use this to prepare campaigns before sending.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform on the campaign'),
-    campaignId: z.string().optional().describe('Campaign ID (required for update and delete)'),
-    campaignName: z.string().optional().describe('Name of the campaign (required for create)'),
-    fromName: z.string().optional().describe('Sender name displayed in the email (required for create)'),
-    fromEmail: z.string().optional().describe('Sender email address (required for create)'),
-    replyToName: z.string().optional().describe('Reply-to name'),
-    replyToEmail: z.string().optional().describe('Reply-to email address'),
-    subject: z.string().optional().describe('Email subject line (required for create)'),
-    htmlContent: z.string().optional().describe('HTML content of the email'),
-    plainTextContent: z.string().optional().describe('Plain text content of the email'),
-    targetListIds: z.string().optional().describe('Comma-separated list of target subscriber list IDs'),
-    scheduleType: z.string().optional().describe('Schedule type for the campaign'),
-    scheduleDateTime: z.string().optional().describe('Scheduled date/time to send the campaign (ISO 8601 format)')
-  }))
-  .output(z.object({
-    campaignId: z.string().optional().describe('ID of the campaign'),
-    success: z.boolean().describe('Whether the operation was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('Operation to perform on the campaign'),
+      campaignId: z
+        .string()
+        .optional()
+        .describe('Campaign ID (required for update and delete)'),
+      campaignName: z
+        .string()
+        .optional()
+        .describe('Name of the campaign (required for create)'),
+      fromName: z
+        .string()
+        .optional()
+        .describe('Sender name displayed in the email (required for create)'),
+      fromEmail: z.string().optional().describe('Sender email address (required for create)'),
+      replyToName: z.string().optional().describe('Reply-to name'),
+      replyToEmail: z.string().optional().describe('Reply-to email address'),
+      subject: z.string().optional().describe('Email subject line (required for create)'),
+      htmlContent: z.string().optional().describe('HTML content of the email'),
+      plainTextContent: z.string().optional().describe('Plain text content of the email'),
+      targetListIds: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of target subscriber list IDs'),
+      scheduleType: z.string().optional().describe('Schedule type for the campaign'),
+      scheduleDateTime: z
+        .string()
+        .optional()
+        .describe('Scheduled date/time to send the campaign (ISO 8601 format)')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().optional().describe('ID of the campaign'),
+      success: z.boolean().describe('Whether the operation was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SendloopClient({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain
@@ -43,8 +61,15 @@ export let manageCampaigns = SlateTool.create(
     let { action, campaignId } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.campaignName || !ctx.input.fromName || !ctx.input.fromEmail || !ctx.input.subject) {
-        throw new Error('campaignName, fromName, fromEmail, and subject are required for creating a campaign');
+      if (
+        !ctx.input.campaignName ||
+        !ctx.input.fromName ||
+        !ctx.input.fromEmail ||
+        !ctx.input.subject
+      ) {
+        throw new Error(
+          'campaignName, fromName, fromEmail, and subject are required for creating a campaign'
+        );
       }
 
       let result = await client.createCampaign({

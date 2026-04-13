@@ -2,28 +2,33 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let customerEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Events',
-    key: 'customer_events',
-    description: 'Triggered when a customer is created or their status changes. Configure the webhook URL in the Tapfiliate dashboard under Settings > Trigger emails & webhooks.',
-  },
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of customer event'),
-    customerId: z.string().describe('ID of the customer'),
-    customer: z.any().describe('Full customer data from the webhook payload'),
-  }))
-  .output(z.object({
-    customerId: z.string().describe('Unique customer identifier'),
-    status: z.string().optional().describe('Customer status (trial, lead, new, paying, canceled)'),
-    affiliateId: z.string().optional().describe('ID of the referring affiliate'),
-    programId: z.string().optional().describe('ID of the associated program'),
-  }))
+export let customerEvents = SlateTrigger.create(spec, {
+  name: 'Customer Events',
+  key: 'customer_events',
+  description:
+    'Triggered when a customer is created or their status changes. Configure the webhook URL in the Tapfiliate dashboard under Settings > Trigger emails & webhooks.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of customer event'),
+      customerId: z.string().describe('ID of the customer'),
+      customer: z.any().describe('Full customer data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().describe('Unique customer identifier'),
+      status: z
+        .string()
+        .optional()
+        .describe('Customer status (trial, lead, new, paying, canceled)'),
+      affiliateId: z.string().optional().describe('ID of the referring affiliate'),
+      programId: z.string().optional().describe('ID of the associated program')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = 'customer.created';
       if (data.event === 'customer-updated' || data.event === 'customer_updated') {
@@ -40,13 +45,13 @@ export let customerEvents = SlateTrigger.create(
           {
             eventType,
             customerId: customer.customer_id || customer.id || data.id,
-            customer,
-          },
-        ],
+            customer
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let customer = ctx.input.customer || {};
 
       return {
@@ -56,9 +61,9 @@ export let customerEvents = SlateTrigger.create(
           customerId: ctx.input.customerId,
           status: customer.status,
           affiliateId: customer.affiliate?.id,
-          programId: customer.program?.id,
-        },
+          programId: customer.program?.id
+        }
       };
-    },
+    }
   })
   .build();

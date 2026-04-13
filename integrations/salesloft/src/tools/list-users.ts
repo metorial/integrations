@@ -32,26 +32,27 @@ let paginationOutputSchema = z.object({
   prevPage: z.number().nullable().describe('Previous page number')
 });
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `List team members/users in SalesLoft. Non-admin users see only their own profile; admins see all team members.`,
-    tags: {
-      readOnly: true
-    }
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `List team members/users in SalesLoft. Non-admin users see only their own profile; admins see all team members.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (1-100, default: 25)')
-  }))
-  .output(z.object({
-    users: z.array(userOutputSchema).describe('List of users'),
-    paging: paginationOutputSchema
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (1-100, default: 25)')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userOutputSchema).describe('List of users'),
+      paging: paginationOutputSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listUsers(ctx.input);
     let users = result.data.map(mapUser);
@@ -63,22 +64,20 @@ export let listUsers = SlateTool.create(
       },
       message: `Found **${users.length}** users (page ${result.metadata.paging.currentPage}).`
     };
-  }).build();
+  })
+  .build();
 
-export let getMe = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_current_user',
-    description: `Fetch the currently authenticated user's profile from SalesLoft. Returns the user's name, email, role, and active status.`,
-    tags: {
-      readOnly: true
-    }
+export let getMe = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_current_user',
+  description: `Fetch the currently authenticated user's profile from SalesLoft. Returns the user's name, email, role, and active status.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
   .output(userOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let user = await client.getMe();
     let output = mapUser(user);
@@ -87,4 +86,5 @@ export let getMe = SlateTool.create(
       output,
       message: `Current user: **${output.name}** (${output.email}).`
     };
-  }).build();
+  })
+  .build();

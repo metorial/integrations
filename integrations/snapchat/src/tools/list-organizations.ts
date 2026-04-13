@@ -12,22 +12,21 @@ let organizationSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listOrganizations = SlateTool.create(
-  spec,
-  {
-    name: 'List Organizations',
-    key: 'list_organizations',
-    description: `List all Snapchat organizations accessible to the authenticated user. Returns organization IDs, names, and statuses. Use this to discover available organizations before managing ad accounts or campaigns.`,
-    tags: {
-      readOnly: true
-    }
+export let listOrganizations = SlateTool.create(spec, {
+  name: 'List Organizations',
+  key: 'list_organizations',
+  description: `List all Snapchat organizations accessible to the authenticated user. Returns organization IDs, names, and statuses. Use this to discover available organizations before managing ad accounts or campaigns.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    organizations: z.array(organizationSchema).describe('List of organizations')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      organizations: z.array(organizationSchema).describe('List of organizations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let orgs = await client.listOrganizations();
 

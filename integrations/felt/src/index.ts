@@ -19,7 +19,7 @@ import {
   listSources,
   manageSource,
   createEmbedToken,
-  getCurrentUser,
+  getCurrentUser
 } from './tools';
 import { mapUpdated } from './triggers';
 
@@ -44,9 +44,7 @@ export let provider = Slate.create({
     listSources,
     manageSource,
     createEmbedToken,
-    getCurrentUser,
+    getCurrentUser
   ],
-  triggers: [
-    mapUpdated,
-  ],
+  triggers: [mapUpdated]
 });

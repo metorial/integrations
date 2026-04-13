@@ -46,6 +46,7 @@ You can check your current account balance via the API.
 ### Residential Proxy Service
 
 2Captcha also provides residential and rotating proxy services with a separate API. Through this API you can:
+
 - Retrieve account status and traffic usage.
 - Check proxy balance.
 - Browse available proxy locations by country, region, city, and ASN (autonomous system/ISP).

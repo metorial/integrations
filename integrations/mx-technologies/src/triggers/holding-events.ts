@@ -2,46 +2,49 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let holdingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Holding Events',
-    key: 'holding_events',
-    description: 'Triggered when investment holdings data changes for a user.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('Event action (created, updated, deleted)'),
-    userGuid: z.string().describe('GUID of the user'),
-    holdingGuid: z.string().describe('GUID of the holding'),
-    payload: z.any().optional().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    userGuid: z.string().describe('GUID of the user'),
-    holdingGuid: z.string().describe('GUID of the holding'),
-    accountGuid: z.string().optional().nullable().describe('GUID of the account'),
-    symbol: z.string().optional().nullable().describe('Ticker symbol'),
-    quantity: z.number().optional().nullable().describe('Number of units'),
-    marketValue: z.number().optional().nullable().describe('Current market value'),
-    currentPrice: z.number().optional().nullable().describe('Current price per unit'),
-    version: z.number().optional().nullable().describe('Object version for change detection'),
-  }))
+export let holdingEvents = SlateTrigger.create(spec, {
+  name: 'Holding Events',
+  key: 'holding_events',
+  description: 'Triggered when investment holdings data changes for a user.'
+})
+  .input(
+    z.object({
+      action: z.string().describe('Event action (created, updated, deleted)'),
+      userGuid: z.string().describe('GUID of the user'),
+      holdingGuid: z.string().describe('GUID of the holding'),
+      payload: z.any().optional().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      userGuid: z.string().describe('GUID of the user'),
+      holdingGuid: z.string().describe('GUID of the holding'),
+      accountGuid: z.string().optional().nullable().describe('GUID of the account'),
+      symbol: z.string().optional().nullable().describe('Ticker symbol'),
+      quantity: z.number().optional().nullable().describe('Number of units'),
+      marketValue: z.number().optional().nullable().describe('Current market value'),
+      currentPrice: z.number().optional().nullable().describe('Current price per unit'),
+      version: z.number().optional().nullable().describe('Object version for change detection')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let action = data.action || 'updated';
 
       return {
-        inputs: [{
-          action,
-          userGuid: data.user_guid || data.holding?.user_guid || '',
-          holdingGuid: data.holding_guid || data.holding?.guid || '',
-          payload: data,
-        }],
+        inputs: [
+          {
+            action,
+            userGuid: data.user_guid || data.holding?.user_guid || '',
+            holdingGuid: data.holding_guid || data.holding?.guid || '',
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let holding = ctx.input.payload?.holding || {};
 
       return {
@@ -55,8 +58,9 @@ export let holdingEvents = SlateTrigger.create(
           quantity: holding.quantity,
           marketValue: holding.market_value,
           currentPrice: holding.current_price,
-          version: holding.version,
-        },
+          version: holding.version
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -10,7 +10,7 @@ let simplifiedArtistSchema = z.object({
   popularity: z.number(),
   imageUrl: z.string().nullable(),
   spotifyUrl: z.string(),
-  followers: z.number(),
+  followers: z.number()
 });
 
 let simplifiedAlbumSchema = z.object({
@@ -19,12 +19,14 @@ let simplifiedAlbumSchema = z.object({
   albumType: z.string(),
   totalTracks: z.number(),
   releaseDate: z.string(),
-  artists: z.array(z.object({
-    artistId: z.string(),
-    name: z.string(),
-  })),
+  artists: z.array(
+    z.object({
+      artistId: z.string(),
+      name: z.string()
+    })
+  ),
   imageUrl: z.string().nullable(),
-  spotifyUrl: z.string(),
+  spotifyUrl: z.string()
 });
 
 let simplifiedTrackSchema = z.object({
@@ -33,17 +35,19 @@ let simplifiedTrackSchema = z.object({
   durationMs: z.number(),
   explicit: z.boolean(),
   popularity: z.number(),
-  artists: z.array(z.object({
-    artistId: z.string(),
-    name: z.string(),
-  })),
+  artists: z.array(
+    z.object({
+      artistId: z.string(),
+      name: z.string()
+    })
+  ),
   album: z.object({
     albumId: z.string(),
-    name: z.string(),
+    name: z.string()
   }),
   spotifyUrl: z.string(),
   previewUrl: z.string().nullable(),
-  uri: z.string(),
+  uri: z.string()
 });
 
 let simplifiedPlaylistSchema = z.object({
@@ -54,37 +58,48 @@ let simplifiedPlaylistSchema = z.object({
   totalTracks: z.number(),
   ownerName: z.string().nullable(),
   imageUrl: z.string().nullable(),
-  spotifyUrl: z.string(),
+  spotifyUrl: z.string()
 });
 
-export let searchCatalog = SlateTool.create(
-  spec,
-  {
-    name: 'Search Catalog',
-    key: 'search_catalog',
-    description: `Search across Spotify's catalog for tracks, artists, albums, and playlists using keyword queries. Results can be filtered by content type and market. Useful for finding specific music content or discovering new items matching a search term.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchCatalog = SlateTool.create(spec, {
+  name: 'Search Catalog',
+  key: 'search_catalog',
+  description: `Search across Spotify's catalog for tracks, artists, albums, and playlists using keyword queries. Results can be filtered by content type and market. Useful for finding specific music content or discovering new items matching a search term.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query (keywords, artist name, track name, etc.)'),
-    types: z.array(z.enum(['track', 'artist', 'album', 'playlist'])).describe('Content types to search for'),
-    market: z.string().optional().describe('ISO 3166-1 alpha-2 country code to filter results'),
-    limit: z.number().min(1).max(50).optional().describe('Maximum number of results per type (default 20, max 50)'),
-    offset: z.number().min(0).optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    tracks: z.array(simplifiedTrackSchema).optional(),
-    artists: z.array(simplifiedArtistSchema).optional(),
-    albums: z.array(simplifiedAlbumSchema).optional(),
-    playlists: z.array(simplifiedPlaylistSchema).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query (keywords, artist name, track name, etc.)'),
+      types: z
+        .array(z.enum(['track', 'artist', 'album', 'playlist']))
+        .describe('Content types to search for'),
+      market: z
+        .string()
+        .optional()
+        .describe('ISO 3166-1 alpha-2 country code to filter results'),
+      limit: z
+        .number()
+        .min(1)
+        .max(50)
+        .optional()
+        .describe('Maximum number of results per type (default 20, max 50)'),
+      offset: z.number().min(0).optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      tracks: z.array(simplifiedTrackSchema).optional(),
+      artists: z.array(simplifiedArtistSchema).optional(),
+      albums: z.array(simplifiedAlbumSchema).optional(),
+      playlists: z.array(simplifiedPlaylistSchema).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SpotifyClient({
       token: ctx.auth.token,
-      market: ctx.config.market,
+      market: ctx.config.market
     });
 
     let result = await client.search({
@@ -92,7 +107,7 @@ export let searchCatalog = SlateTool.create(
       types: ctx.input.types,
       market: ctx.input.market,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let output: Record<string, any> = {};
@@ -108,7 +123,7 @@ export let searchCatalog = SlateTool.create(
         album: { albumId: t.album.id, name: t.album.name },
         spotifyUrl: t.external_urls.spotify,
         previewUrl: t.preview_url,
-        uri: t.uri,
+        uri: t.uri
       }));
     }
 
@@ -120,7 +135,7 @@ export let searchCatalog = SlateTool.create(
         popularity: a.popularity,
         imageUrl: a.images?.[0]?.url ?? null,
         spotifyUrl: a.external_urls.spotify,
-        followers: a.followers.total,
+        followers: a.followers.total
       }));
     }
 
@@ -133,7 +148,7 @@ export let searchCatalog = SlateTool.create(
         releaseDate: a.release_date,
         artists: a.artists.map(ar => ({ artistId: ar.id, name: ar.name })),
         imageUrl: a.images?.[0]?.url ?? null,
-        spotifyUrl: a.external_urls.spotify,
+        spotifyUrl: a.external_urls.spotify
       }));
     }
 
@@ -146,18 +161,27 @@ export let searchCatalog = SlateTool.create(
         totalTracks: p.tracks.total,
         ownerName: p.owner.display_name,
         imageUrl: p.images?.[0]?.url ?? null,
-        spotifyUrl: p.external_urls.spotify,
+        spotifyUrl: p.external_urls.spotify
       }));
     }
 
-    let counts = ctx.input.types.map(t => {
-      let key = t === 'track' ? 'tracks' : t === 'artist' ? 'artists' : t === 'album' ? 'albums' : 'playlists';
-      let items = output[key];
-      return `${items?.length ?? 0} ${key}`;
-    }).join(', ');
+    let counts = ctx.input.types
+      .map(t => {
+        let key =
+          t === 'track'
+            ? 'tracks'
+            : t === 'artist'
+              ? 'artists'
+              : t === 'album'
+                ? 'albums'
+                : 'playlists';
+        let items = output[key];
+        return `${items?.length ?? 0} ${key}`;
+      })
+      .join(', ');
 
     return {
       output,
-      message: `Found ${counts} for query "${ctx.input.query}".`,
+      message: `Found ${counts} for query "${ctx.input.query}".`
     };
   });

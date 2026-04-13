@@ -22,19 +22,21 @@ export class InDesignClient {
       assets: [
         {
           source: params.templateSource,
-          type: 'template',
+          type: 'template'
         },
         {
           source: params.dataSource,
-          type: 'data',
-        },
+          type: 'data'
+        }
       ],
-      outputs: [{
-        ...params.output,
-      }],
+      outputs: [
+        {
+          ...params.output
+        }
+      ],
       params: {
-        ...(params.options || {}),
-      },
+        ...(params.options || {})
+      }
     });
     return response.data;
   }
@@ -47,13 +49,15 @@ export class InDesignClient {
     };
   }) {
     let response = await this.http.post('/api/v1/capability/pdf/create', {
-      assets: [{
-        source: params.source,
-      }],
+      assets: [
+        {
+          source: params.source
+        }
+      ],
       outputs: [params.output],
       params: {
-        ...(params.options || {}),
-      },
+        ...(params.options || {})
+      }
     });
     return response.data;
   }

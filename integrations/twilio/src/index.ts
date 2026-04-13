@@ -13,14 +13,9 @@ import {
   managePhoneNumber,
   manageConversation,
   conversationParticipants,
-  sendConversationMessage,
+  sendConversationMessage
 } from './tools';
-import {
-  incomingMessage,
-  messageStatus,
-  incomingCall,
-  callStatus,
-} from './triggers';
+import { incomingMessage, messageStatus, incomingCall, callStatus } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,12 +32,7 @@ export let provider = Slate.create({
     managePhoneNumber,
     manageConversation,
     conversationParticipants,
-    sendConversationMessage,
+    sendConversationMessage
   ],
-  triggers: [
-    incomingMessage,
-    messageStatus,
-    incomingCall,
-    callStatus,
-  ],
+  triggers: [incomingMessage, messageStatus, incomingCall, callStatus]
 });

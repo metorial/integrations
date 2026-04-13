@@ -28,7 +28,7 @@ export let buildCanonicalString = (
     method.toUpperCase(),
     host.toLowerCase(),
     path,
-    canonicalizeParams(params),
+    canonicalizeParams(params)
   ].join('\n');
 };
 
@@ -47,15 +47,30 @@ export let hmacSha1Hex = async (key: string, message: string): Promise<string> =
 
   let signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
   let bytes = new Uint8Array(signature);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 };
 
 export let getRfc2822Date = (): string => {
   let now = new Date();
   let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  let months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
 
-  let pad = (n: number): string => n < 10 ? `0${n}` : `${n}`;
+  let pad = (n: number): string => (n < 10 ? `0${n}` : `${n}`);
 
   let dayName = days[now.getUTCDay()];
   let day = pad(now.getUTCDate());

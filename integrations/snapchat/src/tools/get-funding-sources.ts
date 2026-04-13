@@ -5,7 +5,10 @@ import { z } from 'zod';
 
 let fundingSourceSchema = z.object({
   fundingSourceId: z.string().describe('Unique ID of the funding source'),
-  type: z.string().optional().describe('Funding source type (e.g., CREDIT_CARD, LINE_OF_CREDIT)'),
+  type: z
+    .string()
+    .optional()
+    .describe('Funding source type (e.g., CREDIT_CARD, LINE_OF_CREDIT)'),
   status: z.string().optional().describe('Funding source status'),
   currency: z.string().optional().describe('Currency of the funding source'),
   totalBudgetMicro: z.number().optional().describe('Total budget in micro-currency'),
@@ -16,24 +19,25 @@ let fundingSourceSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let getFundingSources = SlateTool.create(
-  spec,
-  {
-    name: 'Get Funding Sources',
-    key: 'get_funding_sources',
-    description: `List all funding sources for a Snapchat organization. Returns payment methods, credit lines, and their available balances.`,
-    tags: {
-      readOnly: true
-    }
+export let getFundingSources = SlateTool.create(spec, {
+  name: 'Get Funding Sources',
+  key: 'get_funding_sources',
+  description: `List all funding sources for a Snapchat organization. Returns payment methods, credit lines, and their available balances.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    organizationId: z.string().describe('Organization ID to list funding sources for')
-  }))
-  .output(z.object({
-    fundingSources: z.array(fundingSourceSchema).describe('List of funding sources')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      organizationId: z.string().describe('Organization ID to list funding sources for')
+    })
+  )
+  .output(
+    z.object({
+      fundingSources: z.array(fundingSourceSchema).describe('List of funding sources')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let results = await client.listFundingSources(ctx.input.organizationId);
 

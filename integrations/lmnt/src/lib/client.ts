@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface SpeechParams {
   voice: string;
@@ -61,15 +61,15 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.lmnt.com',
       headers: {
-        'X-API-Key': params.token,
-      },
+        'X-API-Key': params.token
+      }
     });
   }
 
   async synthesizeSpeech(params: SpeechParams): Promise<{ audio: string; format: string }> {
     let body: Record<string, unknown> = {
       voice: params.voice,
-      text: params.text,
+      text: params.text
     };
 
     if (params.model !== undefined) body.model = params.model;
@@ -84,18 +84,18 @@ export class Client {
     let response = await this.axios.post('/v1/ai/speech/bytes', body, {
       responseType: 'arraybuffer',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     let outputFormat = params.format || 'mp3';
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     let audioBuffer = Buffer.from(response.data);
     let base64Audio = audioBuffer.toString('base64');
 
     return {
       audio: base64Audio,
-      format: outputFormat,
+      format: outputFormat
     };
   }
 
@@ -123,8 +123,8 @@ export class Client {
 
     let response = await this.axios.put(`/v1/ai/voice/${voiceId}`, body, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data.voice ?? response.data;
   }

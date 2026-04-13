@@ -3,41 +3,46 @@ import { TrayGraphqlClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let solutionInstanceChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Solution Instance Changes',
-    key: 'solution_instance_changes',
-    description: '[Polling fallback] Polls for changes to solution instances (new instances created, instances enabled/disabled, or instances removed). Detects differences by comparing the current state against the previous snapshot.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    eventId: z.string().describe('Unique event identifier'),
-    solutionInstanceId: z.string().describe('ID of the affected solution instance'),
-    instanceName: z.string().describe('Name of the solution instance'),
-    enabled: z.boolean().describe('Current enabled state'),
-  }))
-  .output(z.object({
-    solutionInstanceId: z.string().describe('ID of the affected solution instance'),
-    instanceName: z.string().describe('Name of the solution instance'),
-    enabled: z.boolean().describe('Current enabled state'),
-    changeType: z.string().describe('Type of change: created, updated, or deleted'),
-  }))
+export let solutionInstanceChanges = SlateTrigger.create(spec, {
+  name: 'Solution Instance Changes',
+  key: 'solution_instance_changes',
+  description:
+    '[Polling fallback] Polls for changes to solution instances (new instances created, instances enabled/disabled, or instances removed). Detects differences by comparing the current state against the previous snapshot.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      eventId: z.string().describe('Unique event identifier'),
+      solutionInstanceId: z.string().describe('ID of the affected solution instance'),
+      instanceName: z.string().describe('Name of the solution instance'),
+      enabled: z.boolean().describe('Current enabled state')
+    })
+  )
+  .output(
+    z.object({
+      solutionInstanceId: z.string().describe('ID of the affected solution instance'),
+      instanceName: z.string().describe('Name of the solution instance'),
+      enabled: z.boolean().describe('Current enabled state'),
+      changeType: z.string().describe('Type of change: created, updated, or deleted')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TrayGraphqlClient({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let currentInstances = await client.listSolutionInstances();
 
-      let previousMap: Record<string, { name: string; enabled: boolean }> = (ctx.state as any)?.instanceMap || {};
+      let previousMap: Record<string, { name: string; enabled: boolean }> =
+        (ctx.state as any)?.instanceMap || {};
       let currentMap: Record<string, { name: string; enabled: boolean }> = {};
       let inputs: Array<{
         changeType: 'created' | 'updated' | 'deleted';
@@ -59,7 +64,7 @@ export let solutionInstanceChanges = SlateTrigger.create(
               eventId: `si_created_${inst.solutionInstanceId}_${Date.now()}`,
               solutionInstanceId: inst.solutionInstanceId,
               instanceName: inst.name,
-              enabled: inst.enabled,
+              enabled: inst.enabled
             });
           }
         } else if (prev.name !== inst.name || prev.enabled !== inst.enabled) {
@@ -68,7 +73,7 @@ export let solutionInstanceChanges = SlateTrigger.create(
             eventId: `si_updated_${inst.solutionInstanceId}_${Date.now()}`,
             solutionInstanceId: inst.solutionInstanceId,
             instanceName: inst.name,
-            enabled: inst.enabled,
+            enabled: inst.enabled
           });
         }
       }
@@ -82,7 +87,7 @@ export let solutionInstanceChanges = SlateTrigger.create(
               eventId: `si_deleted_${prevId}_${Date.now()}`,
               solutionInstanceId: prevId,
               instanceName: previousMap[prevId]?.name || '',
-              enabled: false,
+              enabled: false
             });
           }
         }
@@ -91,12 +96,12 @@ export let solutionInstanceChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          instanceMap: currentMap,
-        },
+          instanceMap: currentMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `solution_instance.${ctx.input.changeType}`,
         id: ctx.input.eventId,
@@ -104,9 +109,9 @@ export let solutionInstanceChanges = SlateTrigger.create(
           solutionInstanceId: ctx.input.solutionInstanceId,
           instanceName: ctx.input.instanceName,
           enabled: ctx.input.enabled,
-          changeType: ctx.input.changeType,
-        },
+          changeType: ctx.input.changeType
+        }
       };
-    },
+    }
   })
   .build();

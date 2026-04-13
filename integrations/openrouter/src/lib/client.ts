@@ -12,8 +12,8 @@ export class Client {
 
   constructor(private config: ClientConfig) {
     let headers: Record<string, string> = {
-      'Authorization': `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.token}`,
+      'Content-Type': 'application/json'
     };
 
     if (config.siteUrl) {
@@ -25,7 +25,7 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: 'https://openrouter.ai/api/v1',
-      headers,
+      headers
     });
   }
 
@@ -63,22 +63,24 @@ export class Client {
       messages: params.messages.map(m => {
         let msg: Record<string, unknown> = {
           role: m.role,
-          content: m.content,
+          content: m.content
         };
         if (m.name !== undefined) msg.name = m.name;
         if (m.toolCallId !== undefined) msg.tool_call_id = m.toolCallId;
         if (m.toolCalls !== undefined) msg.tool_calls = m.toolCalls;
         return msg;
-      }),
+      })
     };
 
     if (params.temperature !== undefined) body.temperature = params.temperature;
     if (params.maxTokens !== undefined) body.max_tokens = params.maxTokens;
     if (params.topP !== undefined) body.top_p = params.topP;
     if (params.topK !== undefined) body.top_k = params.topK;
-    if (params.frequencyPenalty !== undefined) body.frequency_penalty = params.frequencyPenalty;
+    if (params.frequencyPenalty !== undefined)
+      body.frequency_penalty = params.frequencyPenalty;
     if (params.presencePenalty !== undefined) body.presence_penalty = params.presencePenalty;
-    if (params.repetitionPenalty !== undefined) body.repetition_penalty = params.repetitionPenalty;
+    if (params.repetitionPenalty !== undefined)
+      body.repetition_penalty = params.repetitionPenalty;
     if (params.stop !== undefined) body.stop = params.stop;
     if (params.seed !== undefined) body.seed = params.seed;
     if (params.tools !== undefined) body.tools = params.tools;
@@ -102,7 +104,7 @@ export class Client {
   }): Promise<Record<string, unknown>> {
     let body = {
       model: params.model,
-      input: params.input,
+      input: params.input
     };
 
     let response = await this.axios.post('/embeddings', body);
@@ -142,7 +144,7 @@ export class Client {
     let data = response.data?.data || response.data;
     return {
       totalCredits: data?.total_credits ?? 0,
-      totalUsage: data?.total_usage ?? 0,
+      totalUsage: data?.total_usage ?? 0
     };
   }
 
@@ -161,7 +163,7 @@ export class Client {
     disabled?: boolean;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      name: params.name,
+      name: params.name
     };
     if (params.limit !== undefined) body.limit = params.limit;
     if (params.disabled !== undefined) body.disabled = params.disabled;
@@ -192,14 +194,17 @@ export class Client {
     zdr?: boolean;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      name: params.name,
+      name: params.name
     };
     if (params.budgetLimit !== undefined) body.budget_limit = params.budgetLimit;
-    if (params.budgetResetInterval !== undefined) body.budget_reset_interval = params.budgetResetInterval;
+    if (params.budgetResetInterval !== undefined)
+      body.budget_reset_interval = params.budgetResetInterval;
     if (params.modelAllowlist !== undefined) body.model_allowlist = params.modelAllowlist;
     if (params.modelDenylist !== undefined) body.model_denylist = params.modelDenylist;
-    if (params.providerAllowlist !== undefined) body.provider_allowlist = params.providerAllowlist;
-    if (params.providerDenylist !== undefined) body.provider_denylist = params.providerDenylist;
+    if (params.providerAllowlist !== undefined)
+      body.provider_allowlist = params.providerAllowlist;
+    if (params.providerDenylist !== undefined)
+      body.provider_denylist = params.providerDenylist;
     if (params.zdr !== undefined) body.zdr = params.zdr;
 
     let response = await this.axios.post('/guardrails', body);
@@ -216,27 +221,36 @@ export class Client {
     return response.data?.data || response.data;
   }
 
-  async updateGuardrail(guardrailId: string, params: {
-    name?: string;
-    budgetLimit?: number;
-    budgetResetInterval?: string;
-    modelAllowlist?: string[];
-    modelDenylist?: string[];
-    providerAllowlist?: string[];
-    providerDenylist?: string[];
-    zdr?: boolean;
-  }): Promise<Record<string, unknown>> {
+  async updateGuardrail(
+    guardrailId: string,
+    params: {
+      name?: string;
+      budgetLimit?: number;
+      budgetResetInterval?: string;
+      modelAllowlist?: string[];
+      modelDenylist?: string[];
+      providerAllowlist?: string[];
+      providerDenylist?: string[];
+      zdr?: boolean;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.budgetLimit !== undefined) body.budget_limit = params.budgetLimit;
-    if (params.budgetResetInterval !== undefined) body.budget_reset_interval = params.budgetResetInterval;
+    if (params.budgetResetInterval !== undefined)
+      body.budget_reset_interval = params.budgetResetInterval;
     if (params.modelAllowlist !== undefined) body.model_allowlist = params.modelAllowlist;
     if (params.modelDenylist !== undefined) body.model_denylist = params.modelDenylist;
-    if (params.providerAllowlist !== undefined) body.provider_allowlist = params.providerAllowlist;
-    if (params.providerDenylist !== undefined) body.provider_denylist = params.providerDenylist;
+    if (params.providerAllowlist !== undefined)
+      body.provider_allowlist = params.providerAllowlist;
+    if (params.providerDenylist !== undefined)
+      body.provider_denylist = params.providerDenylist;
     if (params.zdr !== undefined) body.zdr = params.zdr;
 
-    let response = await this.axios.put(`/guardrails/${encodeURIComponent(guardrailId)}`, body);
+    let response = await this.axios.put(
+      `/guardrails/${encodeURIComponent(guardrailId)}`,
+      body
+    );
     return response.data;
   }
 

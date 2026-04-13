@@ -18,14 +18,22 @@ export let upsertCartTool = SlateTool.create(spec, {
     readOnly: false
   }
 })
-  .input(z.object({
-    action: z.enum(['create', 'update']).describe('Whether to create a new cart or update an existing one'),
-  }).merge(cartSchema))
-  .output(z.object({
-    success: z.boolean().describe('Whether the event was sent successfully'),
-    eventType: z.string().describe('The event type that was sent')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z
+      .object({
+        action: z
+          .enum(['create', 'update'])
+          .describe('Whether to create a new cart or update an existing one')
+      })
+      .merge(cartSchema)
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the event was sent successfully'),
+      eventType: z.string().describe('The event type that was sent')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RemarketyClient({
       token: ctx.auth.token,
       storeId: ctx.auth.storeId,

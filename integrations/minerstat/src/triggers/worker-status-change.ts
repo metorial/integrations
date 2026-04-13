@@ -3,47 +3,55 @@ import { MonitoringClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workerStatusChangeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Worker Status Change',
-    key: 'worker_status_change',
-    description: 'Fires when a worker changes status (e.g. online to offline, offline to online, or becomes idle). Polls all workers and detects status transitions.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['worker.online', 'worker.offline', 'worker.idle', 'worker.status_changed']).describe('Type of status change event'),
-    eventId: z.string().describe('Unique event identifier'),
-    workerName: z.string().describe('Name of the worker'),
-    previousStatus: z.string().describe('Previous worker status'),
-    currentStatus: z.string().describe('Current worker status'),
-    workerData: z.record(z.string(), z.any()).describe('Full worker data at time of event')
-  }))
-  .output(z.object({
-    workerName: z.string().describe('Name of the affected worker'),
-    previousStatus: z.string().describe('Previous worker status'),
-    currentStatus: z.string().describe('Current worker status'),
-    workerType: z.string().describe('Worker type (nvidia, amd, asic)'),
-    system: z.string().describe('Worker operating system'),
-    groups: z.string().describe('Assigned groups'),
-    mainCoin: z.string().describe('Main coin being mined'),
-    mainHashrate: z.number().describe('Current main coin hashrate'),
-    mainHashrateUnit: z.string().describe('Hashrate unit'),
-    totalConsumption: z.number().describe('Total power consumption in watts'),
-    deviceCount: z.number().describe('Number of devices in the rig')
-  }))
+export let workerStatusChangeTrigger = SlateTrigger.create(spec, {
+  name: 'Worker Status Change',
+  key: 'worker_status_change',
+  description:
+    'Fires when a worker changes status (e.g. online to offline, offline to online, or becomes idle). Polls all workers and detects status transitions.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['worker.online', 'worker.offline', 'worker.idle', 'worker.status_changed'])
+        .describe('Type of status change event'),
+      eventId: z.string().describe('Unique event identifier'),
+      workerName: z.string().describe('Name of the worker'),
+      previousStatus: z.string().describe('Previous worker status'),
+      currentStatus: z.string().describe('Current worker status'),
+      workerData: z.record(z.string(), z.any()).describe('Full worker data at time of event')
+    })
+  )
+  .output(
+    z.object({
+      workerName: z.string().describe('Name of the affected worker'),
+      previousStatus: z.string().describe('Previous worker status'),
+      currentStatus: z.string().describe('Current worker status'),
+      workerType: z.string().describe('Worker type (nvidia, amd, asic)'),
+      system: z.string().describe('Worker operating system'),
+      groups: z.string().describe('Assigned groups'),
+      mainCoin: z.string().describe('Main coin being mined'),
+      mainHashrate: z.number().describe('Current main coin hashrate'),
+      mainHashrateUnit: z.string().describe('Hashrate unit'),
+      totalConsumption: z.number().describe('Total power consumption in watts'),
+      deviceCount: z.number().describe('Number of devices in the rig')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MonitoringClient({ accessKey: ctx.auth.accessKey });
       let workers = await client.listWorkers();
 
       let previousStatuses: Record<string, string> = ctx.state?.workerStatuses ?? {};
       let inputs: Array<{
-        eventType: 'worker.online' | 'worker.offline' | 'worker.idle' | 'worker.status_changed';
+        eventType:
+          | 'worker.online'
+          | 'worker.offline'
+          | 'worker.idle'
+          | 'worker.status_changed';
         eventId: string;
         workerName: string;
         previousStatus: string;
@@ -60,7 +68,11 @@ export let workerStatusChangeTrigger = SlateTrigger.create(
         let previousStatus = previousStatuses[name];
 
         if (previousStatus !== undefined && previousStatus !== currentStatus) {
-          let eventType: 'worker.online' | 'worker.offline' | 'worker.idle' | 'worker.status_changed';
+          let eventType:
+            | 'worker.online'
+            | 'worker.offline'
+            | 'worker.idle'
+            | 'worker.status_changed';
           if (currentStatus === 'online') {
             eventType = 'worker.online';
           } else if (currentStatus === 'offline') {
@@ -90,7 +102,7 @@ export let workerStatusChangeTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let w = ctx.input.workerData;
       return {
         type: ctx.input.eventType,
@@ -110,4 +122,5 @@ export let workerStatusChangeTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

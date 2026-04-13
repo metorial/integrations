@@ -3,26 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let checkCredits = SlateTool.create(
-  spec,
-  {
-    name: 'Check Credits',
-    key: 'check_credits',
-    description: `Check the remaining credit balance on your Wiza account. Returns email credits, phone credits, export credits, and API credits. Credit values can be a number or "unlimited".`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let checkCredits = SlateTool.create(spec, {
+  name: 'Check Credits',
+  key: 'check_credits',
+  description: `Check the remaining credit balance on your Wiza account. Returns email credits, phone credits, export credits, and API credits. Credit values can be a number or "unlimited".`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    emailCredits: z.union([z.number(), z.string()]).describe('Remaining email credits (number or "unlimited").'),
-    phoneCredits: z.union([z.number(), z.string()]).describe('Remaining phone credits (number or "unlimited").'),
-    exportCredits: z.union([z.number(), z.string()]).describe('Remaining export credits (number or "unlimited").'),
-    apiCredits: z.union([z.number(), z.string()]).describe('Remaining API credits (number or "unlimited").'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      emailCredits: z
+        .union([z.number(), z.string()])
+        .describe('Remaining email credits (number or "unlimited").'),
+      phoneCredits: z
+        .union([z.number(), z.string()])
+        .describe('Remaining phone credits (number or "unlimited").'),
+      exportCredits: z
+        .union([z.number(), z.string()])
+        .describe('Remaining export credits (number or "unlimited").'),
+      apiCredits: z
+        .union([z.number(), z.string()])
+        .describe('Remaining API credits (number or "unlimited").')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getCredits();
@@ -34,7 +41,7 @@ export let checkCredits = SlateTool.create(
       emailCredits: c.email_credits,
       phoneCredits: c.phone_credits,
       exportCredits: c.export_credits,
-      apiCredits: c.api_credits,
+      apiCredits: c.api_credits
     };
 
     let parts = ['**Credit Balance:**'];
@@ -45,7 +52,7 @@ export let checkCredits = SlateTool.create(
 
     return {
       output,
-      message: parts.join('\n'),
+      message: parts.join('\n')
     };
   })
   .build();

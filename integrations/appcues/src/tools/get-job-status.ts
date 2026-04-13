@@ -3,33 +3,34 @@ import { AppcuesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getJobStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Job Status',
-    key: 'get_job_status',
-    description: `Check the status of an asynchronous job in Appcues. Many operations like bulk imports, exports, segment membership changes, and user deletions are processed asynchronously and return a job ID. Use this tool to monitor job progress and completion.`,
-    tags: {
-      readOnly: true,
-    },
+export let getJobStatus = SlateTool.create(spec, {
+  name: 'Get Job Status',
+  key: 'get_job_status',
+  description: `Check the status of an asynchronous job in Appcues. Many operations like bulk imports, exports, segment membership changes, and user deletions are processed asynchronously and return a job ID. Use this tool to monitor job progress and completion.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    jobId: z.string().describe('The ID of the job to check'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('The job ID'),
-    name: z.string().optional().describe('Name/type of the job'),
-    status: z.string().optional().describe('Current status of the job'),
-    startedAt: z.string().optional().describe('When the job started'),
-    url: z.string().optional().describe('URL for retrieving job results'),
-    events: z.array(z.any()).optional().describe('Detailed progress events for the job'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('The ID of the job to check')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('The job ID'),
+      name: z.string().optional().describe('Name/type of the job'),
+      status: z.string().optional().describe('Current status of the job'),
+      startedAt: z.string().optional().describe('When the job started'),
+      url: z.string().optional().describe('URL for retrieving job results'),
+      events: z.array(z.any()).optional().describe('Detailed progress events for the job')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AppcuesClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let job = await client.getJob(ctx.input.jobId);
@@ -41,9 +42,9 @@ export let getJobStatus = SlateTool.create(
         status: job.status || undefined,
         startedAt: job.started_at || undefined,
         url: job.url || undefined,
-        events: job.events || undefined,
+        events: job.events || undefined
       },
-      message: `Job \`${ctx.input.jobId}\`: **${job.status || 'unknown'}**${job.name ? ` (${job.name})` : ''}.`,
+      message: `Job \`${ctx.input.jobId}\`: **${job.status || 'unknown'}**${job.name ? ` (${job.name})` : ''}.`
     };
   })
   .build();

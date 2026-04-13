@@ -3,51 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transcriptionCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transcription Completed',
-    key: 'transcription_completed',
-    description: 'Triggers when a transcription job completes or fails. Polls for new completed/failed transcripts and returns their results.',
-  }
-)
-  .input(z.object({
-    transcriptId: z.string().describe('The transcript ID.'),
-    status: z.string().describe('The transcript status (completed or error).'),
-    audioUrl: z.string().describe('The audio URL that was transcribed.'),
-    created: z.string().describe('Creation timestamp.'),
-    completed: z.string().optional().nullable().describe('Completion timestamp.'),
-    error: z.string().optional().nullable().describe('Error message if failed.'),
-    resourceUrl: z.string().describe('URL to retrieve the full transcript.'),
-  }))
-  .output(z.object({
-    transcriptId: z.string().describe('Unique transcript identifier.'),
-    status: z.string().describe('Transcript status: completed or error.'),
-    audioUrl: z.string().describe('The audio URL that was transcribed.'),
-    text: z.string().optional().nullable().describe('Full transcript text (null if error).'),
-    confidence: z.number().optional().nullable().describe('Overall confidence score.'),
-    audioDuration: z.number().optional().nullable().describe('Audio duration in seconds.'),
-    languageCode: z.string().optional().nullable().describe('Detected or specified language code.'),
-    error: z.string().optional().nullable().describe('Error message if the transcript failed.'),
-    created: z.string().describe('Creation timestamp.'),
-    completed: z.string().optional().nullable().describe('Completion timestamp.'),
-  }))
+export let transcriptionCompleted = SlateTrigger.create(spec, {
+  name: 'Transcription Completed',
+  key: 'transcription_completed',
+  description:
+    'Triggers when a transcription job completes or fails. Polls for new completed/failed transcripts and returns their results.'
+})
+  .input(
+    z.object({
+      transcriptId: z.string().describe('The transcript ID.'),
+      status: z.string().describe('The transcript status (completed or error).'),
+      audioUrl: z.string().describe('The audio URL that was transcribed.'),
+      created: z.string().describe('Creation timestamp.'),
+      completed: z.string().optional().nullable().describe('Completion timestamp.'),
+      error: z.string().optional().nullable().describe('Error message if failed.'),
+      resourceUrl: z.string().describe('URL to retrieve the full transcript.')
+    })
+  )
+  .output(
+    z.object({
+      transcriptId: z.string().describe('Unique transcript identifier.'),
+      status: z.string().describe('Transcript status: completed or error.'),
+      audioUrl: z.string().describe('The audio URL that was transcribed.'),
+      text: z.string().optional().nullable().describe('Full transcript text (null if error).'),
+      confidence: z.number().optional().nullable().describe('Overall confidence score.'),
+      audioDuration: z.number().optional().nullable().describe('Audio duration in seconds.'),
+      languageCode: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Detected or specified language code.'),
+      error: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Error message if the transcript failed.'),
+      created: z.string().describe('Creation timestamp.'),
+      completed: z.string().optional().nullable().describe('Completion timestamp.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let lastSeenId = ctx.input.state?.lastSeenId as string | undefined;
 
       let result = await client.listTranscripts({
         limit: 50,
-        afterId: lastSeenId,
+        afterId: lastSeenId
       });
 
       let transcripts = result.transcripts || [];
@@ -66,18 +76,18 @@ export let transcriptionCompleted = SlateTrigger.create(
           created: t.created,
           completed: t.completed ?? null,
           error: t.error ?? null,
-          resourceUrl: t.resource_url,
+          resourceUrl: t.resource_url
         })),
         updatedState: {
-          lastSeenId: newestId,
-        },
+          lastSeenId: newestId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let transcript: any = {};
@@ -100,9 +110,9 @@ export let transcriptionCompleted = SlateTrigger.create(
           languageCode: transcript.language_code ?? null,
           error: ctx.input.error ?? transcript.error ?? null,
           created: ctx.input.created,
-          completed: ctx.input.completed ?? null,
-        },
+          completed: ctx.input.completed ?? null
+        }
       };
-    },
+    }
   })
   .build();

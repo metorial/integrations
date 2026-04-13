@@ -3,35 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let ARTICLE_EVENT_TYPES = [
-  'article.created',
-  'article.changed',
-  'article.deleted',
-] as const;
+let ARTICLE_EVENT_TYPES = ['article.created', 'article.changed', 'article.deleted'] as const;
 
-export let articleEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Article Events',
-    key: 'article_events',
-    description: 'Triggers when articles are created, changed, or deleted in Lexoffice.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The Lexoffice event type (e.g. article.created)'),
-    resourceId: z.string().describe('The article resource ID'),
-    organizationId: z.string().describe('The organization ID'),
-    eventDate: z.string().describe('ISO timestamp of the event'),
-  }))
-  .output(z.object({
-    articleId: z.string().describe('The article ID'),
-    eventType: z.string().describe('The event type that occurred'),
-    title: z.string().optional().describe('Article title'),
-    articleNumber: z.string().optional().describe('Article number'),
-    articleType: z.string().optional().describe('Article type (PRODUCT or SERVICE)'),
-  }))
+export let articleEvents = SlateTrigger.create(spec, {
+  name: 'Article Events',
+  key: 'article_events',
+  description: 'Triggers when articles are created, changed, or deleted in Lexoffice.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The Lexoffice event type (e.g. article.created)'),
+      resourceId: z.string().describe('The article resource ID'),
+      organizationId: z.string().describe('The organization ID'),
+      eventDate: z.string().describe('ISO timestamp of the event')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.string().describe('The article ID'),
+      eventType: z.string().describe('The event type that occurred'),
+      title: z.string().optional().describe('Article title'),
+      articleNumber: z.string().optional().describe('Article number'),
+      articleType: z.string().optional().describe('Article type (PRODUCT or SERVICE)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subscriptions: { subscriptionId: string; eventType: string }[] = [];
 
@@ -41,11 +38,11 @@ export let articleEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptions },
+        registrationDetails: { subscriptions }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subs = ctx.input.registrationDetails?.subscriptions ?? [];
 
@@ -58,20 +55,22 @@ export let articleEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType,
-          resourceId: body.resourceId,
-          organizationId: body.organizationId,
-          eventDate: body.eventDate,
-        }],
+        inputs: [
+          {
+            eventType: body.eventType,
+            resourceId: body.resourceId,
+            organizationId: body.organizationId,
+            eventDate: body.eventDate
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let isDeleted = ctx.input.eventType === 'article.deleted';
 
@@ -98,8 +97,9 @@ export let articleEvents = SlateTrigger.create(
           eventType: ctx.input.eventType,
           title,
           articleNumber,
-          articleType,
-        },
+          articleType
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

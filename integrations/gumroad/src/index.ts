@@ -13,12 +13,9 @@ import {
   listSubscribers,
   getSubscriber,
   manageLicense,
-  getUser,
+  getUser
 } from './tools';
-import {
-  saleEvents,
-  subscriptionEvents,
-} from './triggers';
+import { saleEvents, subscriptionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     listSubscribers,
     getSubscriber,
     manageLicense,
-    getUser,
+    getUser
   ],
-  triggers: [
-    saleEvents,
-    subscriptionEvents,
-  ]
+  triggers: [saleEvents, subscriptionEvents]
 });

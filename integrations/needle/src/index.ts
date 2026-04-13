@@ -11,7 +11,7 @@ import {
   deleteFilesFromCollection,
   getFileUploadUrl,
   getFileDownloadUrl,
-  listConnectors,
+  listConnectors
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     deleteFilesFromCollection,
     getFileUploadUrl,
     getFileDownloadUrl,
-    listConnectors,
+    listConnectors
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -3,34 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPage = SlateTool.create(
-  spec,
-  {
-    name: 'Get Page',
-    key: 'get_page',
-    description: `Retrieve a OneNote page's metadata and optionally its HTML content or a short text preview. Use **includeContent** to fetch the full HTML body, or **includePreview** for a text snippet (up to 300 characters).`,
-    tags: {
-      readOnly: true,
-    },
+export let getPage = SlateTool.create(spec, {
+  name: 'Get Page',
+  key: 'get_page',
+  description: `Retrieve a OneNote page's metadata and optionally its HTML content or a short text preview. Use **includeContent** to fetch the full HTML body, or **includePreview** for a text snippet (up to 300 characters).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    pageId: z.string().describe('The ID of the page to retrieve'),
-    includeContent: z.boolean().optional().describe('Set to true to include the full HTML content of the page'),
-    includePreview: z.boolean().optional().describe('Set to true to include a short text preview snippet'),
-  }))
-  .output(z.object({
-    pageId: z.string(),
-    title: z.string(),
-    createdDateTime: z.string(),
-    lastModifiedDateTime: z.string(),
-    parentSectionId: z.string().optional(),
-    level: z.number(),
-    order: z.number(),
-    htmlContent: z.string().optional(),
-    previewText: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pageId: z.string().describe('The ID of the page to retrieve'),
+      includeContent: z
+        .boolean()
+        .optional()
+        .describe('Set to true to include the full HTML content of the page'),
+      includePreview: z
+        .boolean()
+        .optional()
+        .describe('Set to true to include a short text preview snippet')
+    })
+  )
+  .output(
+    z.object({
+      pageId: z.string(),
+      title: z.string(),
+      createdDateTime: z.string(),
+      lastModifiedDateTime: z.string(),
+      parentSectionId: z.string().optional(),
+      level: z.number(),
+      order: z.number(),
+      htmlContent: z.string().optional(),
+      previewText: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let page = await client.getPage(ctx.input.pageId);
@@ -57,8 +64,9 @@ export let getPage = SlateTool.create(
         level: page.level,
         order: page.order,
         htmlContent,
-        previewText,
+        previewText
       },
-      message: `Retrieved page **${page.title}**.${htmlContent ? ' Includes HTML content.' : ''}${previewText ? ` Preview: "${previewText.slice(0, 100)}..."` : ''}`,
+      message: `Retrieved page **${page.title}**.${htmlContent ? ' Includes HTML content.' : ''}${previewText ? ` Preview: "${previewText.slice(0, 100)}..."` : ''}`
     };
-  }).build();
+  })
+  .build();

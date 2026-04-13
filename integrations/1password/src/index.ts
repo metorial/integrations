@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listVaults,
@@ -11,13 +10,13 @@ import {
   deleteItem,
   generatePassword,
   getFileContent,
-  getServerHealth,
+  getServerHealth
 } from './tools';
 import {
   auditEventsTrigger,
   itemUsageEventsTrigger,
   signInAttemptEventsTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -32,12 +31,12 @@ export let provider = Slate.create({
     deleteItem,
     generatePassword,
     getFileContent,
-    getServerHealth,
+    getServerHealth
   ],
   triggers: [
     inboundWebhook,
     auditEventsTrigger,
     itemUsageEventsTrigger,
-    signInAttemptEventsTrigger,
-  ],
+    signInAttemptEventsTrigger
+  ]
 });

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listDashboards,
@@ -24,14 +23,9 @@ import {
   manageGroup,
   listPublishedLinks,
   managePublishedLink,
-  getProfile,
+  getProfile
 } from './tools';
-import {
-  dashboardChanges,
-  userChanges,
-  datasourceChanges,
-  inboundWebhook,
-} from './triggers';
+import { dashboardChanges, userChanges, datasourceChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -58,12 +52,7 @@ export let provider = Slate.create({
     manageGroup,
     listPublishedLinks,
     managePublishedLink,
-    getProfile,
+    getProfile
   ],
-  triggers: [
-    inboundWebhook,
-    dashboardChanges,
-    userChanges,
-    datasourceChanges,
-  ],
+  triggers: [inboundWebhook, dashboardChanges, userChanges, datasourceChanges]
 });

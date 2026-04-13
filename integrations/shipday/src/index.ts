@@ -8,7 +8,7 @@ import {
   managePickupOrder,
   manageCarriers,
   trackDelivery,
-  onDemandDelivery,
+  onDemandDelivery
 } from './tools';
 import { orderStatusUpdate } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     managePickupOrder,
     manageCarriers,
     trackDelivery,
-    onDemandDelivery,
+    onDemandDelivery
   ],
-  triggers: [
-    orderStatusUpdate,
-  ],
+  triggers: [orderStatusUpdate]
 });

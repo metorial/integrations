@@ -97,6 +97,7 @@ ClickUp supports webhooks via its API. Webhooks are registered per Workspace and
 ### Task Events
 
 Covers the full lifecycle and updates to tasks:
+
 - Task created, updated, deleted
 - Priority, status, assignee, due date, and tag changes
 - Task moved to a new List

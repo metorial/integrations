@@ -30,10 +30,7 @@ import {
   listLeadForms,
   getLeads
 } from './tools';
-import {
-  adAccountChanges,
-  leadSubmitted
-} from './triggers';
+import { adAccountChanges, leadSubmitted } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -67,8 +64,5 @@ export let provider = Slate.create({
     listLeadForms,
     getLeads
   ],
-  triggers: [
-    adAccountChanges,
-    leadSubmitted
-  ]
+  triggers: [adAccountChanges, leadSubmitted]
 });

@@ -13,7 +13,7 @@ import {
   youtubeSearch,
   autocomplete,
   lookupLocations,
-  getAccount,
+  getAccount
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     youtubeSearch,
     autocomplete,
     lookupLocations,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

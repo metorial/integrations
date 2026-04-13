@@ -3,37 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fileEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'File Events',
-    key: 'file_events',
-    description: 'Triggered when files are uploaded, stored, deleted, infected, or have their info updated in your Uploadcare project.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type (e.g. file.uploaded, file.stored, file.deleted, file.infected, file.info_updated)'),
-    hookId: z.number().describe('Webhook ID that fired this event'),
-    fileId: z.string().describe('UUID of the affected file'),
-    fileData: z.any().describe('Full file data from the webhook payload'),
-    initiator: z.any().nullable().describe('Source/cause of the event'),
-  }))
-  .output(z.object({
-    fileId: z.string().describe('UUID of the affected file'),
-    originalFilename: z.string().describe('Original filename'),
-    size: z.number().describe('File size in bytes'),
-    mimeType: z.string().describe('MIME type of the file'),
-    isImage: z.boolean().describe('Whether the file is an image'),
-    isReady: z.boolean().describe('Whether the file is fully processed'),
-    datetimeUploaded: z.string().describe('ISO 8601 upload timestamp'),
-    datetimeStored: z.string().nullable().describe('ISO 8601 store timestamp'),
-    datetimeRemoved: z.string().nullable().describe('ISO 8601 removal timestamp'),
-    originalFileUrl: z.string().nullable().describe('CDN URL of the original file'),
-    metadata: z.record(z.string(), z.string()).optional().describe('User-defined metadata'),
-    initiatorType: z.string().optional().describe('What triggered the event (e.g. api, addon, system)'),
-  }))
+export let fileEvents = SlateTrigger.create(spec, {
+  name: 'File Events',
+  key: 'file_events',
+  description:
+    'Triggered when files are uploaded, stored, deleted, infected, or have their info updated in your Uploadcare project.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Event type (e.g. file.uploaded, file.stored, file.deleted, file.infected, file.info_updated)'
+        ),
+      hookId: z.number().describe('Webhook ID that fired this event'),
+      fileId: z.string().describe('UUID of the affected file'),
+      fileData: z.any().describe('Full file data from the webhook payload'),
+      initiator: z.any().nullable().describe('Source/cause of the event')
+    })
+  )
+  .output(
+    z.object({
+      fileId: z.string().describe('UUID of the affected file'),
+      originalFilename: z.string().describe('Original filename'),
+      size: z.number().describe('File size in bytes'),
+      mimeType: z.string().describe('MIME type of the file'),
+      isImage: z.boolean().describe('Whether the file is an image'),
+      isReady: z.boolean().describe('Whether the file is fully processed'),
+      datetimeUploaded: z.string().describe('ISO 8601 upload timestamp'),
+      datetimeStored: z.string().nullable().describe('ISO 8601 store timestamp'),
+      datetimeRemoved: z.string().nullable().describe('ISO 8601 removal timestamp'),
+      originalFileUrl: z.string().nullable().describe('CDN URL of the original file'),
+      metadata: z.record(z.string(), z.string()).optional().describe('User-defined metadata'),
+      initiatorType: z
+        .string()
+        .optional()
+        .describe('What triggered the event (e.g. api, addon, system)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
 
       let events = [
@@ -41,7 +50,7 @@ export let fileEvents = SlateTrigger.create(
         'file.stored',
         'file.deleted',
         'file.infected',
-        'file.info_updated',
+        'file.info_updated'
       ];
 
       let registeredWebhooks: Array<{ webhookId: number; event: string }> = [];
@@ -50,19 +59,21 @@ export let fileEvents = SlateTrigger.create(
         let webhook = await client.createWebhook({
           targetUrl: ctx.input.webhookBaseUrl,
           event,
-          isActive: true,
+          isActive: true
         });
         registeredWebhooks.push({ webhookId: webhook.id, event: webhook.event });
       }
 
       return {
-        registrationDetails: { webhooks: registeredWebhooks },
+        registrationDetails: { webhooks: registeredWebhooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: number; event: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: number; event: string }>;
+      };
 
       if (details?.webhooks) {
         // Delete using target_url which removes all webhooks pointed at this URL
@@ -70,8 +81,8 @@ export let fileEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.hook?.event || 'unknown';
       let hookId = data.hook?.id || 0;
@@ -85,13 +96,13 @@ export let fileEvents = SlateTrigger.create(
             hookId,
             fileId,
             fileData,
-            initiator: data.initiator || null,
-          },
-        ],
+            initiator: data.initiator || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let file = ctx.input.fileData;
 
       return {
@@ -109,8 +120,9 @@ export let fileEvents = SlateTrigger.create(
           datetimeRemoved: file.datetime_removed || null,
           originalFileUrl: file.original_file_url || null,
           metadata: file.metadata || undefined,
-          initiatorType: ctx.input.initiator?.type || undefined,
-        },
+          initiatorType: ctx.input.initiator?.type || undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

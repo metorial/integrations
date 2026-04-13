@@ -2,9 +2,13 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Headout API key (prefixed with pk_ for production or tk_ for sandbox)')
-  }))
+  .output(
+    z.object({
+      token: z
+        .string()
+        .describe('Headout API key (prefixed with pk_ for production or tk_ for sandbox)')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -12,7 +16,7 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       token: z.string().describe('Headout API key provided by Headout partnerships team')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

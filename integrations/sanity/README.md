@@ -5,24 +5,31 @@ Query, create, update, and delete structured content documents in Sanity's Conte
 ## Tools
 
 ### Get Document
+
 Retrieve one or more documents by ID directly from the Content Lake. This endpoint bypasses caching and indexing to return the freshest version. Optionally retrieve a historical revision at a specific point in time.
 
 ### List Projects
+
 List all Sanity projects you are a member of. Returns project metadata including name, ID, organization, members, and datasets. Optionally fetch detailed information for a specific project.
 
 ### Manage Datasets
+
 List, create, or delete datasets in a Sanity project. Datasets are collections of JSON documents that hold your content. Each project can have multiple datasets (e.g., "production", "staging").
 
 ### Manage Webhooks
+
 List, create, or delete GROQ-powered webhooks in a Sanity project. Webhooks fire HTTP requests when content in the Content Lake changes. Supports GROQ-based filtering and custom projections for webhook payloads.
 
 ### Mutate Documents
+
 Create, update, patch, or delete documents in a Sanity dataset. Supports multiple mutations in a single atomic transaction. Each mutation in the array can be a create, createOrReplace, createIfNotExists, delete, or patch operation.
 
 ### Query Documents
+
 Query documents from Sanity's Content Lake using GROQ (Graph-Relational Object Queries). Supports filtering, projections, ordering, slicing, and references across documents within a dataset. Use parameters to safely pass dynamic values into queries.
 
 ### Upload Asset
+
 Upload an image or file asset to Sanity's Content Lake. Assets are stored alongside structured content and can be referenced from documents. Images support on-the-fly transformations (resizing, cropping, format conversion) via the CDN.
 
 ## License

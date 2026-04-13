@@ -4,8 +4,8 @@ let createApiClient = (token: string) => {
   return createAxios({
     baseURL: 'https://api.textrazor.com',
     headers: {
-      'X-TextRazor-Key': token,
-    },
+      'X-TextRazor-Key': token
+    }
   });
 };
 
@@ -194,8 +194,8 @@ export class Client {
 
     let response = await http.post('/', formData.toString(), {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     let data = response.data;
@@ -217,11 +217,13 @@ export class Client {
       nounPhrases: data.response?.nounPhrases,
       properties: data.response?.properties,
       customAnnotationOutput: data.response?.customAnnotationOutput,
-      matchingRules: data.response?.matchingRules,
+      matchingRules: data.response?.matchingRules
     };
 
     if (!result.ok && result.error) {
-      throw new Error(`TextRazor analysis failed: ${result.error}${result.message ? ' - ' + result.message : ''}`);
+      throw new Error(
+        `TextRazor analysis failed: ${result.error}${result.message ? ' - ' + result.message : ''}`
+      );
     }
 
     return result;
@@ -234,14 +236,17 @@ export class Client {
   }
 
   // Dictionary management
-  async createDictionary(dictionaryId: string, options?: {
-    matchType?: 'stem' | 'token';
-    caseInsensitive?: boolean;
-    language?: string;
-  }): Promise<void> {
+  async createDictionary(
+    dictionaryId: string,
+    options?: {
+      matchType?: 'stem' | 'token';
+      caseInsensitive?: boolean;
+      language?: string;
+    }
+  ): Promise<void> {
     let http = createApiClient(this.token);
     await http.put(`/entities/${encodeURIComponent(dictionaryId)}`, options ?? {}, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -263,40 +268,51 @@ export class Client {
   }
 
   // Dictionary entry management
-  async listDictionaryEntries(dictionaryId: string, limit: number = 20, offset: number = 0): Promise<{ entries: DictionaryEntry[]; total: number }> {
+  async listDictionaryEntries(
+    dictionaryId: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{ entries: DictionaryEntry[]; total: number }> {
     let http = createApiClient(this.token);
     let response = await http.get(`/entities/${encodeURIComponent(dictionaryId)}/_all`, {
-      params: { limit, offset },
+      params: { limit, offset }
     });
     return {
       entries: response.data.entries ?? [],
-      total: response.data.total ?? 0,
+      total: response.data.total ?? 0
     };
   }
 
   async addDictionaryEntries(dictionaryId: string, entries: DictionaryEntry[]): Promise<void> {
     let http = createApiClient(this.token);
     await http.post(`/entities/${encodeURIComponent(dictionaryId)}/`, entries, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
   async getDictionaryEntry(dictionaryId: string, entryId: string): Promise<DictionaryEntry> {
     let http = createApiClient(this.token);
-    let response = await http.get(`/entities/${encodeURIComponent(dictionaryId)}/${encodeURIComponent(entryId)}`);
+    let response = await http.get(
+      `/entities/${encodeURIComponent(dictionaryId)}/${encodeURIComponent(entryId)}`
+    );
     return response.data;
   }
 
   async deleteDictionaryEntry(dictionaryId: string, entryId: string): Promise<void> {
     let http = createApiClient(this.token);
-    await http.delete(`/entities/${encodeURIComponent(dictionaryId)}/${encodeURIComponent(entryId)}`);
+    await http.delete(
+      `/entities/${encodeURIComponent(dictionaryId)}/${encodeURIComponent(entryId)}`
+    );
   }
 
   // Classifier management
-  async createClassifier(classifierId: string, categories: ClassifierCategory[]): Promise<void> {
+  async createClassifier(
+    classifierId: string,
+    categories: ClassifierCategory[]
+  ): Promise<void> {
     let http = createApiClient(this.token);
     await http.put(`/categories/${encodeURIComponent(classifierId)}`, categories, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -305,25 +321,36 @@ export class Client {
     await http.delete(`/categories/${encodeURIComponent(classifierId)}`);
   }
 
-  async listClassifierCategories(classifierId: string, limit: number = 20, offset: number = 0): Promise<{ categories: ClassifierCategory[]; total: number }> {
+  async listClassifierCategories(
+    classifierId: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{ categories: ClassifierCategory[]; total: number }> {
     let http = createApiClient(this.token);
     let response = await http.get(`/categories/${encodeURIComponent(classifierId)}/_all`, {
-      params: { limit, offset },
+      params: { limit, offset }
     });
     return {
       categories: response.data.categories ?? [],
-      total: response.data.total ?? 0,
+      total: response.data.total ?? 0
     };
   }
 
-  async getClassifierCategory(classifierId: string, categoryId: string): Promise<ClassifierCategory> {
+  async getClassifierCategory(
+    classifierId: string,
+    categoryId: string
+  ): Promise<ClassifierCategory> {
     let http = createApiClient(this.token);
-    let response = await http.get(`/categories/${encodeURIComponent(classifierId)}/${encodeURIComponent(categoryId)}`);
+    let response = await http.get(
+      `/categories/${encodeURIComponent(classifierId)}/${encodeURIComponent(categoryId)}`
+    );
     return response.data;
   }
 
   async deleteClassifierCategory(classifierId: string, categoryId: string): Promise<void> {
     let http = createApiClient(this.token);
-    await http.delete(`/categories/${encodeURIComponent(classifierId)}/${encodeURIComponent(categoryId)}`);
+    await http.delete(
+      `/categories/${encodeURIComponent(classifierId)}/${encodeURIComponent(categoryId)}`
+    );
   }
 }

@@ -12,28 +12,55 @@ export let managePermissions = SlateTool.create(spec, {
     'For delete, granteeType must be "users" or "groups" (plural).'
   ]
 })
-  .input(z.object({
-    action: z.enum(['query', 'add', 'delete']).describe('Operation to perform'),
-    resourceType: z.string().describe('Resource type path: "workbooks", "datasources", "projects", "views", or "flows"'),
-    resourceId: z.string().describe('LUID of the resource'),
-    permissions: z.array(z.object({
-      granteeType: z.enum(['user', 'group']).describe('Whether the grantee is a user or group'),
-      granteeId: z.string().describe('LUID of the user or group'),
-      capabilities: z.array(z.object({
-        name: z.string().describe('Capability name (e.g., "Read", "Write", "ExportData")'),
-        mode: z.enum(['Allow', 'Deny']).describe('Permission mode')
-      })).describe('Capabilities to grant')
-    })).optional().describe('Permissions to add (for add action)'),
-    granteeType: z.enum(['users', 'groups']).optional().describe('Grantee type plural (for delete)'),
-    granteeId: z.string().optional().describe('LUID of user or group (for delete)'),
-    capabilityName: z.string().optional().describe('Capability name to delete (for delete)'),
-    capabilityMode: z.enum(['Allow', 'Deny']).optional().describe('Capability mode to delete (for delete)')
-  }))
-  .output(z.object({
-    permissions: z.any().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z.enum(['query', 'add', 'delete']).describe('Operation to perform'),
+      resourceType: z
+        .string()
+        .describe(
+          'Resource type path: "workbooks", "datasources", "projects", "views", or "flows"'
+        ),
+      resourceId: z.string().describe('LUID of the resource'),
+      permissions: z
+        .array(
+          z.object({
+            granteeType: z
+              .enum(['user', 'group'])
+              .describe('Whether the grantee is a user or group'),
+            granteeId: z.string().describe('LUID of the user or group'),
+            capabilities: z
+              .array(
+                z.object({
+                  name: z
+                    .string()
+                    .describe('Capability name (e.g., "Read", "Write", "ExportData")'),
+                  mode: z.enum(['Allow', 'Deny']).describe('Permission mode')
+                })
+              )
+              .describe('Capabilities to grant')
+          })
+        )
+        .optional()
+        .describe('Permissions to add (for add action)'),
+      granteeType: z
+        .enum(['users', 'groups'])
+        .optional()
+        .describe('Grantee type plural (for delete)'),
+      granteeId: z.string().optional().describe('LUID of user or group (for delete)'),
+      capabilityName: z.string().optional().describe('Capability name to delete (for delete)'),
+      capabilityMode: z
+        .enum(['Allow', 'Deny'])
+        .optional()
+        .describe('Capability mode to delete (for delete)')
+    })
+  )
+  .output(
+    z.object({
+      permissions: z.any().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action, resourceType, resourceId } = ctx.input;
 
@@ -46,7 +73,11 @@ export let managePermissions = SlateTool.create(spec, {
     }
 
     if (action === 'add') {
-      let perms = await client.addPermissions(resourceType, resourceId, ctx.input.permissions!);
+      let perms = await client.addPermissions(
+        resourceType,
+        resourceId,
+        ctx.input.permissions!
+      );
       return {
         output: { permissions: perms },
         message: `Added permissions to ${resourceType} \`${resourceId}\`.`
@@ -55,9 +86,12 @@ export let managePermissions = SlateTool.create(spec, {
 
     if (action === 'delete') {
       await client.deletePermission(
-        resourceType, resourceId,
-        ctx.input.granteeType!, ctx.input.granteeId!,
-        ctx.input.capabilityName!, ctx.input.capabilityMode!
+        resourceType,
+        resourceId,
+        ctx.input.granteeType!,
+        ctx.input.granteeId!,
+        ctx.input.capabilityName!,
+        ctx.input.capabilityMode!
       );
       return {
         output: { deleted: true },
@@ -66,4 +100,5 @@ export let managePermissions = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

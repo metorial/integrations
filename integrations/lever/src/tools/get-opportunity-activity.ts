@@ -3,35 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOpportunityActivityTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Opportunity Activity',
-    key: 'get_opportunity_activity',
-    description: `Retrieve activity for a specific opportunity including notes, feedback, interviews, offers, applications, resumes, and referrals. Select which types of activity to fetch.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    opportunityId: z.string().describe('ID of the opportunity'),
-    include: z.array(z.enum(['notes', 'feedback', 'interviews', 'offers', 'applications', 'resumes', 'files', 'referrals'])).describe('Types of activity to include'),
-  }))
-  .output(z.object({
-    notes: z.array(z.any()).optional().describe('Notes on the opportunity'),
-    feedback: z.array(z.any()).optional().describe('Feedback forms'),
-    interviews: z.array(z.any()).optional().describe('Interviews'),
-    offers: z.array(z.any()).optional().describe('Offers'),
-    applications: z.array(z.any()).optional().describe('Applications'),
-    resumes: z.array(z.any()).optional().describe('Resumes'),
-    files: z.array(z.any()).optional().describe('Files'),
-    referrals: z.array(z.any()).optional().describe('Referrals'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getOpportunityActivityTool = SlateTool.create(spec, {
+  name: 'Get Opportunity Activity',
+  key: 'get_opportunity_activity',
+  description: `Retrieve activity for a specific opportunity including notes, feedback, interviews, offers, applications, resumes, and referrals. Select which types of activity to fetch.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      opportunityId: z.string().describe('ID of the opportunity'),
+      include: z
+        .array(
+          z.enum([
+            'notes',
+            'feedback',
+            'interviews',
+            'offers',
+            'applications',
+            'resumes',
+            'files',
+            'referrals'
+          ])
+        )
+        .describe('Types of activity to include')
+    })
+  )
+  .output(
+    z.object({
+      notes: z.array(z.any()).optional().describe('Notes on the opportunity'),
+      feedback: z.array(z.any()).optional().describe('Feedback forms'),
+      interviews: z.array(z.any()).optional().describe('Interviews'),
+      offers: z.array(z.any()).optional().describe('Offers'),
+      applications: z.array(z.any()).optional().describe('Applications'),
+      resumes: z.array(z.any()).optional().describe('Resumes'),
+      files: z.array(z.any()).optional().describe('Files'),
+      referrals: z.array(z.any()).optional().describe('Referrals')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
     let output: Record<string, any> = {};
     let parts: string[] = [];
 
-    let fetches = ctx.input.include.map(async (type) => {
+    let fetches = ctx.input.include.map(async type => {
       if (type === 'notes') {
         let result = await client.listOpportunityNotes(ctx.input.opportunityId);
         output.notes = result.data || [];
@@ -71,7 +85,7 @@ export let getOpportunityActivityTool = SlateTool.create(
 
     return {
       output: output as any,
-      message: `Retrieved activity for opportunity **${ctx.input.opportunityId}**: ${parts.join(', ')}.`,
+      message: `Retrieved activity for opportunity **${ctx.input.opportunityId}**: ${parts.join(', ')}.`
     };
   })
   .build();

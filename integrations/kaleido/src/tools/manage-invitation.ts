@@ -9,34 +9,49 @@ export let manageInvitation = SlateTool.create(spec, {
   description: `Create, list, or delete invitations for a consortium. Invitations allow you to invite external organizations to join your blockchain network.
 When an invitation is accepted, a new membership is created for the invited organization.`,
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    action: z.enum(['create', 'list', 'delete']).describe('Action to perform'),
-    consortiumId: z.string().describe('Consortium ID'),
-    invitationId: z.string().optional().describe('Invitation ID (required for delete)'),
-    orgName: z.string().optional().describe('Organization name to invite (required for create)'),
-    email: z.string().optional().describe('Email address of the invitee (required for create)'),
-  }))
-  .output(z.object({
-    invitations: z.array(z.object({
-      invitationId: z.string().describe('Invitation ID'),
+  .input(
+    z.object({
+      action: z.enum(['create', 'list', 'delete']).describe('Action to perform'),
+      consortiumId: z.string().describe('Consortium ID'),
+      invitationId: z.string().optional().describe('Invitation ID (required for delete)'),
+      orgName: z
+        .string()
+        .optional()
+        .describe('Organization name to invite (required for create)'),
+      email: z
+        .string()
+        .optional()
+        .describe('Email address of the invitee (required for create)')
+    })
+  )
+  .output(
+    z.object({
+      invitations: z
+        .array(
+          z.object({
+            invitationId: z.string().describe('Invitation ID'),
+            orgName: z.string().optional().describe('Invited organization name'),
+            email: z.string().optional().describe('Invitee email'),
+            state: z.string().optional().describe('Invitation state'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of invitations (for list action)'),
+      invitationId: z.string().optional().describe('Invitation ID'),
       orgName: z.string().optional().describe('Invited organization name'),
       email: z.string().optional().describe('Invitee email'),
       state: z.string().optional().describe('Invitation state'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of invitations (for list action)'),
-    invitationId: z.string().optional().describe('Invitation ID'),
-    orgName: z.string().optional().describe('Invited organization name'),
-    email: z.string().optional().describe('Invitee email'),
-    state: z.string().optional().describe('Invitation state'),
-    deleted: z.boolean().optional().describe('Whether the invitation was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+      deleted: z.boolean().optional().describe('Whether the invitation was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new KaleidoClient({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     if (ctx.input.action === 'list') {
@@ -46,12 +61,12 @@ When an invitation is accepted, a new membership is created for the invited orga
         orgName: i.org_name || undefined,
         email: i.email || undefined,
         state: i.state || undefined,
-        createdAt: i.created_at || undefined,
+        createdAt: i.created_at || undefined
       }));
 
       return {
         output: { invitations: mapped },
-        message: `Found **${mapped.length}** invitation(s).`,
+        message: `Found **${mapped.length}** invitation(s).`
       };
     }
 
@@ -61,7 +76,7 @@ When an invitation is accepted, a new membership is created for the invited orga
 
       let result = await client.createInvitation(ctx.input.consortiumId, {
         org_name: ctx.input.orgName,
-        email: ctx.input.email,
+        email: ctx.input.email
       });
 
       return {
@@ -69,9 +84,9 @@ When an invitation is accepted, a new membership is created for the invited orga
           invitationId: result._id,
           orgName: result.org_name,
           email: result.email,
-          state: result.state,
+          state: result.state
         },
-        message: `Sent invitation to **${result.org_name}** (${result.email}).`,
+        message: `Sent invitation to **${result.org_name}** (${result.email}).`
       };
     }
 
@@ -81,9 +96,9 @@ When an invitation is accepted, a new membership is created for the invited orga
     return {
       output: {
         invitationId: ctx.input.invitationId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted invitation \`${ctx.input.invitationId}\`.`,
+      message: `Deleted invitation \`${ctx.input.invitationId}\`.`
     };
   })
   .build();

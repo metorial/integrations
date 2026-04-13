@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newContact = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Contact',
-    key: 'new_contact',
-    description: 'Triggers when a new contact is added to any list in your Campayn account.',
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    email: z.string().describe('Email address of the contact'),
-    firstName: z.string().nullable().describe('First name'),
-    lastName: z.string().nullable().describe('Last name'),
-    imageUrl: z.string().describe('Profile image URL'),
-    listId: z.string().describe('ID of the list the contact belongs to'),
-    listName: z.string().describe('Name of the list'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the new contact'),
-    email: z.string().describe('Email address of the contact'),
-    firstName: z.string().nullable().describe('First name'),
-    lastName: z.string().nullable().describe('Last name'),
-    imageUrl: z.string().describe('Profile image URL'),
-    listId: z.string().describe('ID of the list the contact was added to'),
-    listName: z.string().describe('Name of the list'),
-  }))
+export let newContact = SlateTrigger.create(spec, {
+  name: 'New Contact',
+  key: 'new_contact',
+  description: 'Triggers when a new contact is added to any list in your Campayn account.'
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      email: z.string().describe('Email address of the contact'),
+      firstName: z.string().nullable().describe('First name'),
+      lastName: z.string().nullable().describe('Last name'),
+      imageUrl: z.string().describe('Profile image URL'),
+      listId: z.string().describe('ID of the list the contact belongs to'),
+      listName: z.string().describe('Name of the list')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the new contact'),
+      email: z.string().describe('Email address of the contact'),
+      firstName: z.string().nullable().describe('First name'),
+      lastName: z.string().nullable().describe('Last name'),
+      imageUrl: z.string().describe('Profile image URL'),
+      listId: z.string().describe('ID of the list the contact was added to'),
+      listName: z.string().describe('Name of the list')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let lists = await client.getLists();
 
@@ -65,7 +66,7 @@ export let newContact = SlateTrigger.create(
               lastName: contact.last_name,
               imageUrl: contact.image_url,
               listId: list.id,
-              listName: list.list_name,
+              listName: list.list_name
             });
           }
         }
@@ -74,12 +75,12 @@ export let newContact = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          knownContactKeys: currentKeys,
-        },
+          knownContactKeys: currentKeys
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'contact.created',
         id: `${ctx.input.listId}:${ctx.input.contactId}`,
@@ -90,9 +91,9 @@ export let newContact = SlateTrigger.create(
           lastName: ctx.input.lastName,
           imageUrl: ctx.input.imageUrl,
           listId: ctx.input.listId,
-          listName: ctx.input.listName,
-        },
+          listName: ctx.input.listName
+        }
       };
-    },
+    }
   })
   .build();

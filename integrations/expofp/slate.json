@@ -2,11 +2,7 @@
   "name": "@metorial/expofp",
   "version": "0.1.1",
   "description": "Manage interactive floor plans and booth information for exhibitions, trade shows, and events. Create and update event floor plans, manage exhibitor booths and their details, retrieve booth assignments, and access event layout data. Supports querying exhibitor information, managing booth availability, and integrating expo floor plan data into event workflows.",
-  "categories": [
-    "apis-and-http-requests",
-    "document-processing",
-    "scheduling-and-calendars"
-  ],
+  "categories": ["apis-and-http-requests", "document-processing", "scheduling-and-calendars"],
   "skills": [
     "manage event floor plans",
     "retrieve booth information",

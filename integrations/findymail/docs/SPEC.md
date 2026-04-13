@@ -23,33 +23,44 @@ No OAuth or additional scopes are required. A single API key provides access to 
 ## Features
 
 ### Email Finder
+
 Find someone's verified email from their name and company. You provide a full name and a company domain (or company name), and Findymail returns a verified email address. Email Finder works from names, domains, or social profile URLs, and every email is automatically verified as it is found.
+
 - Duplicate searches are free.
 - It doesn't return risky or invalid catch-all emails — only safe, verified results.
 
 ### Email Verification
+
 Verify any email address for deliverability. Returns verification status and email provider. Email Verifier is for checking lists you already have — data you bought elsewhere or exported from your CRM. Upload your list and it will tell you which emails are safe to use.
 
 ### Reverse Email Lookup
+
 Find a LinkedIn profile from an email address. Uses 1 credit without profile data, 2 credits with full profile enrichment. Returns details such as full name, headline, job title, and company name. The `with_profile` parameter controls whether full profile enrichment is included.
 
 ### Phone Number Finder
+
 Find direct phone numbers from LinkedIn profiles. Requires a LinkedIn profile URL as input. GDPR compliant — excludes EU citizens.
 
 ### Company Enrichment
+
 Get company information from LinkedIn URL, domain, or name. Returns data such as company name, domain, company size, and industry.
 
 ### Employee Search
+
 Find employees at a company by website and job title. Returns LinkedIn profiles.
 
 ### AI-Powered Lead Search (IntelliMatch)
+
 Find companies and contacts using natural language queries. Build targeted lead lists automatically. You can provide a plain-English query (e.g., "SaaS companies in US") along with configuration options to also find contacts and their emails in the same request.
+
 - Configurable options include `find_contact` and `find_email` flags and a `limit` parameter.
 
 ### Contact Lists Management
+
 Get a list of all contact lists in Findymail. The API allows you to manage and retrieve saved contacts and lists within your Findymail account.
 
 ### Credits Balance
+
 The API exposes an endpoint (`/api/credits`) to check your current account credit balance programmatically.
 
 ## Events

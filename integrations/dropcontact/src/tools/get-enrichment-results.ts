@@ -5,7 +5,9 @@ import { z } from 'zod';
 
 let emailResultSchema = z.object({
   email: z.string().describe('The email address'),
-  qualification: z.string().describe('Email qualification (e.g. "nominative@pro", "catch_all@pro")'),
+  qualification: z
+    .string()
+    .describe('Email qualification (e.g. "nominative@pro", "catch_all@pro")')
 });
 
 let enrichedContactSchema = z.object({
@@ -35,53 +37,66 @@ let enrichedContactSchema = z.object({
   jobTitle: z.string().optional().describe('Job title'),
   jobLevel: z.string().optional().describe('Job level'),
   jobFunction: z.string().optional().describe('Job function'),
-  customFields: z.record(z.string(), z.string()).optional().describe('Custom fields from the original request'),
+  customFields: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe('Custom fields from the original request')
 });
 
-export let getEnrichmentResults = SlateTool.create(
-  spec,
-  {
-    name: 'Get Enrichment Results',
-    key: 'get_enrichment_results',
-    description: `Retrieve the results of a previously submitted enrichment request using its request ID.
+export let getEnrichmentResults = SlateTool.create(spec, {
+  name: 'Get Enrichment Results',
+  key: 'get_enrichment_results',
+  description: `Retrieve the results of a previously submitted enrichment request using its request ID.
 Enrichment is asynchronous — if processing is not yet complete, the response will indicate the request is not ready.
 Use **forceResults** to retrieve partial results before all contacts are fully processed.`,
-    instructions: [
-      'Use the requestId returned by the Enrich Contacts tool.',
-      'If results are not ready, wait ~30 seconds and try again.',
-      'Enable forceResults to get partial results for contacts already processed.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  instructions: [
+    'Use the requestId returned by the Enrich Contacts tool.',
+    'If results are not ready, wait ~30 seconds and try again.',
+    'Enable forceResults to get partial results for contacts already processed.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    requestId: z.string().describe('The request ID returned by the Enrich Contacts tool'),
-    forceResults: z.boolean().optional().describe('Set to true to retrieve partial results before all contacts are processed'),
-  }))
-  .output(z.object({
-    ready: z.boolean().describe('Whether the enrichment results are fully processed'),
-    reason: z.string().optional().describe('Reason if results are not ready yet'),
-    contacts: z.array(enrichedContactSchema).optional().describe('Array of enriched contact data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      requestId: z.string().describe('The request ID returned by the Enrich Contacts tool'),
+      forceResults: z
+        .boolean()
+        .optional()
+        .describe('Set to true to retrieve partial results before all contacts are processed')
+    })
+  )
+  .output(
+    z.object({
+      ready: z.boolean().describe('Whether the enrichment results are fully processed'),
+      reason: z.string().optional().describe('Reason if results are not ready yet'),
+      contacts: z
+        .array(enrichedContactSchema)
+        .optional()
+        .describe('Array of enriched contact data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let response = await client.getEnrichmentResults(ctx.input.requestId, ctx.input.forceResults);
+    let response = await client.getEnrichmentResults(
+      ctx.input.requestId,
+      ctx.input.forceResults
+    );
 
     if (!response.success && response.reason) {
       return {
         output: {
           ready: false,
-          reason: response.reason,
+          reason: response.reason
         },
-        message: `Results not ready yet: ${response.reason}`,
+        message: `Results not ready yet: ${response.reason}`
       };
     }
 
-    let contacts = (response.data || []).map((c) => ({
+    let contacts = (response.data || []).map(c => ({
       civility: c.civility,
       firstName: c.first_name,
       lastName: c.last_name,
@@ -108,7 +123,7 @@ Use **forceResults** to retrieve partial results before all contacts are fully p
       jobTitle: c.job,
       jobLevel: c.job_level,
       jobFunction: c.job_function,
-      customFields: c.custom_fields,
+      customFields: c.custom_fields
     }));
 
     let emailCount = contacts.reduce((sum, c) => sum + (c.emails?.length || 0), 0);
@@ -116,9 +131,9 @@ Use **forceResults** to retrieve partial results before all contacts are fully p
     return {
       output: {
         ready: true,
-        contacts,
+        contacts
       },
-      message: `Enrichment complete for **${contacts.length}** contact(s). Found **${emailCount}** email address(es).`,
+      message: `Enrichment complete for **${contacts.length}** contact(s). Found **${emailCount}** email address(es).`
     };
   })
   .build();

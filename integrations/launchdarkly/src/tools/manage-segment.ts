@@ -3,37 +3,44 @@ import { LaunchDarklyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSegment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Segment',
-    key: 'manage_segment',
-    description: `Create, update, or delete a user segment in a LaunchDarkly environment. Segments group contexts for bulk flag targeting. Use semantic patch instructions to add/remove included or excluded context keys.`,
-    instructions: [
-      'To create, set action to "create" with segmentKey, name, and optionally description and tags.',
-      'To update, set action to "update" with semantic patch instructions like "addIncludedTargets", "removeIncludedTargets", "addExcludedTargets", "removeExcludedTargets", "updateName".',
-      'To delete, set action to "delete" with the segmentKey.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    projectKey: z.string().optional().describe('Project key. Falls back to config default.'),
-    environmentKey: z.string().optional().describe('Environment key. Falls back to config default.'),
-    segmentKey: z.string().describe('Segment key'),
-    name: z.string().optional().describe('Segment name (required for create)'),
-    description: z.string().optional().describe('Segment description'),
-    tags: z.array(z.string()).optional().describe('Segment tags'),
-    instructions: z.array(z.record(z.string(), z.any())).optional().describe('Semantic patch instructions for updating the segment'),
-  }))
-  .output(z.object({
-    segmentKey: z.string().describe('Segment key'),
-    name: z.string().optional().describe('Segment name'),
-    deleted: z.boolean().optional().describe('Whether the segment was deleted'),
-    includedCount: z.number().optional().describe('Number of included targets'),
-    excludedCount: z.number().optional().describe('Number of excluded targets'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSegment = SlateTool.create(spec, {
+  name: 'Manage Segment',
+  key: 'manage_segment',
+  description: `Create, update, or delete a user segment in a LaunchDarkly environment. Segments group contexts for bulk flag targeting. Use semantic patch instructions to add/remove included or excluded context keys.`,
+  instructions: [
+    'To create, set action to "create" with segmentKey, name, and optionally description and tags.',
+    'To update, set action to "update" with semantic patch instructions like "addIncludedTargets", "removeIncludedTargets", "addExcludedTargets", "removeExcludedTargets", "updateName".',
+    'To delete, set action to "delete" with the segmentKey.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      projectKey: z.string().optional().describe('Project key. Falls back to config default.'),
+      environmentKey: z
+        .string()
+        .optional()
+        .describe('Environment key. Falls back to config default.'),
+      segmentKey: z.string().describe('Segment key'),
+      name: z.string().optional().describe('Segment name (required for create)'),
+      description: z.string().optional().describe('Segment description'),
+      tags: z.array(z.string()).optional().describe('Segment tags'),
+      instructions: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Semantic patch instructions for updating the segment')
+    })
+  )
+  .output(
+    z.object({
+      segmentKey: z.string().describe('Segment key'),
+      name: z.string().optional().describe('Segment name'),
+      deleted: z.boolean().optional().describe('Whether the segment was deleted'),
+      includedCount: z.number().optional().describe('Number of included targets'),
+      excludedCount: z.number().optional().describe('Number of excluded targets')
+    })
+  )
+  .handleInvocation(async ctx => {
     let projectKey = ctx.input.projectKey ?? ctx.config.projectKey;
     if (!projectKey) {
       throw new Error('projectKey is required.');
@@ -54,7 +61,7 @@ export let manageSegment = SlateTool.create(
         key: segmentKey,
         name: ctx.input.name,
         description: ctx.input.description,
-        tags: ctx.input.tags,
+        tags: ctx.input.tags
       });
 
       return {
@@ -62,9 +69,9 @@ export let manageSegment = SlateTool.create(
           segmentKey: segment.key,
           name: segment.name,
           includedCount: (segment.included ?? []).length,
-          excludedCount: (segment.excluded ?? []).length,
+          excludedCount: (segment.excluded ?? []).length
         },
-        message: `Created segment **${segment.name}** (\`${segment.key}\`) in \`${envKey}\`.`,
+        message: `Created segment **${segment.name}** (\`${segment.key}\`) in \`${envKey}\`.`
       };
     }
 
@@ -72,16 +79,21 @@ export let manageSegment = SlateTool.create(
       if (!ctx.input.instructions || ctx.input.instructions.length === 0) {
         throw new Error('instructions are required when updating a segment.');
       }
-      let segment = await client.updateSegment(projectKey, envKey, segmentKey, ctx.input.instructions);
+      let segment = await client.updateSegment(
+        projectKey,
+        envKey,
+        segmentKey,
+        ctx.input.instructions
+      );
 
       return {
         output: {
           segmentKey: segment.key,
           name: segment.name,
           includedCount: (segment.included ?? []).length,
-          excludedCount: (segment.excluded ?? []).length,
+          excludedCount: (segment.excluded ?? []).length
         },
-        message: `Updated segment **${segment.name}** (\`${segment.key}\`) in \`${envKey}\`.`,
+        message: `Updated segment **${segment.name}** (\`${segment.key}\`) in \`${envKey}\`.`
       };
     }
 
@@ -90,8 +102,9 @@ export let manageSegment = SlateTool.create(
     return {
       output: {
         segmentKey,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted segment \`${segmentKey}\` from \`${envKey}\`.`,
+      message: `Deleted segment \`${segmentKey}\` from \`${envKey}\`.`
     };
-  }).build();
+  })
+  .build();

@@ -10,13 +10,15 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    userUri: z.string().optional(),
-    organizationUri: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      userUri: z.string().optional(),
+      organizationUri: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -30,7 +32,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -43,7 +45,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await authAxios.post('/oauth/token', {
         grant_type: 'authorization_code',
         client_id: ctx.clientId,
@@ -74,7 +76,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -126,10 +128,12 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal access token from Calendly Integrations page (API & Webhooks)')
+      token: z
+        .string()
+        .describe('Personal access token from Calendly Integrations page (API & Webhooks)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let response = await apiAxios.get('/users/me', {
         headers: {
           Authorization: `Bearer ${ctx.input.token}`

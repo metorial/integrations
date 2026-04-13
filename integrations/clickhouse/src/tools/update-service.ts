@@ -3,44 +3,68 @@ import { ClickHouseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateService = SlateTool.create(
-  spec,
-  {
-    name: 'Update Service',
-    key: 'update_service',
-    description: `Update a ClickHouse service's configuration, including its name, IP access list, tags, release channel, and endpoint settings. Use separate tools for scaling and state changes.`,
-  }
-)
-  .input(z.object({
-    serviceId: z.string().describe('ID of the service to update'),
-    name: z.string().optional().describe('New name for the service'),
-    ipAccessListAdd: z.array(z.object({
-      source: z.string(),
-      description: z.string().optional(),
-    })).optional().describe('IP access list entries to add'),
-    ipAccessListRemove: z.array(z.object({
-      source: z.string(),
-      description: z.string().optional(),
-    })).optional().describe('IP access list entries to remove'),
-    releaseChannel: z.enum(['slow', 'default', 'fast']).optional().describe('Release channel for updates'),
-    tagsAdd: z.array(z.object({
-      key: z.string(),
-      value: z.string(),
-    })).optional().describe('Tags to add'),
-    tagsRemove: z.array(z.object({
-      key: z.string(),
-      value: z.string(),
-    })).optional().describe('Tags to remove'),
-  }))
-  .output(z.object({
-    serviceId: z.string(),
-    name: z.string().optional(),
-    state: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateService = SlateTool.create(spec, {
+  name: 'Update Service',
+  key: 'update_service',
+  description: `Update a ClickHouse service's configuration, including its name, IP access list, tags, release channel, and endpoint settings. Use separate tools for scaling and state changes.`
+})
+  .input(
+    z.object({
+      serviceId: z.string().describe('ID of the service to update'),
+      name: z.string().optional().describe('New name for the service'),
+      ipAccessListAdd: z
+        .array(
+          z.object({
+            source: z.string(),
+            description: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('IP access list entries to add'),
+      ipAccessListRemove: z
+        .array(
+          z.object({
+            source: z.string(),
+            description: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('IP access list entries to remove'),
+      releaseChannel: z
+        .enum(['slow', 'default', 'fast'])
+        .optional()
+        .describe('Release channel for updates'),
+      tagsAdd: z
+        .array(
+          z.object({
+            key: z.string(),
+            value: z.string()
+          })
+        )
+        .optional()
+        .describe('Tags to add'),
+      tagsRemove: z
+        .array(
+          z.object({
+            key: z.string(),
+            value: z.string()
+          })
+        )
+        .optional()
+        .describe('Tags to remove')
+    })
+  )
+  .output(
+    z.object({
+      serviceId: z.string(),
+      name: z.string().optional(),
+      state: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClickHouseClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let body: Record<string, any> = {};
@@ -51,7 +75,8 @@ export let updateService = SlateTool.create(
     if (ctx.input.ipAccessListAdd || ctx.input.ipAccessListRemove) {
       body.ipAccessList = {};
       if (ctx.input.ipAccessListAdd) body.ipAccessList.add = ctx.input.ipAccessListAdd;
-      if (ctx.input.ipAccessListRemove) body.ipAccessList.remove = ctx.input.ipAccessListRemove;
+      if (ctx.input.ipAccessListRemove)
+        body.ipAccessList.remove = ctx.input.ipAccessListRemove;
     }
 
     if (ctx.input.tagsAdd || ctx.input.tagsRemove) {
@@ -66,9 +91,9 @@ export let updateService = SlateTool.create(
       output: {
         serviceId: result.id || ctx.input.serviceId,
         name: result.name,
-        state: result.state,
+        state: result.state
       },
-      message: `Service **${result.name || ctx.input.serviceId}** updated successfully.`,
+      message: `Service **${result.name || ctx.input.serviceId}** updated successfully.`
     };
   })
   .build();

@@ -15,12 +15,9 @@ import {
   listEsignSessions,
   getEsignSession,
   cancelEsignSession,
-  resendEsignInvitation,
+  resendEsignInvitation
 } from './tools';
-import {
-  esignEvent,
-  documentGenerated,
-} from './triggers';
+import { esignEvent, documentGenerated } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     listEsignSessions,
     getEsignSession,
     cancelEsignSession,
-    resendEsignInvitation,
+    resendEsignInvitation
   ],
-  triggers: [
-    esignEvent,
-    documentGenerated,
-  ],
+  triggers: [esignEvent, documentGenerated]
 });

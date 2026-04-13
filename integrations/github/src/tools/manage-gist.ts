@@ -3,60 +3,84 @@ import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGist = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Gist',
-    key: 'manage_gist',
-    description: `Create, read, update, or delete GitHub Gists (code snippets).
+export let manageGist = SlateTool.create(spec, {
+  name: 'Manage Gist',
+  key: 'manage_gist',
+  description: `Create, read, update, or delete GitHub Gists (code snippets).
 - **create**: Create a new gist with one or more files.
 - **get**: Retrieve a gist by ID.
 - **update**: Update a gist's description or files.
 - **delete**: Delete a gist.
-- **list**: List gists for the authenticated user.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('Action to perform'),
-    gistId: z.string().optional().describe('Gist ID (required for get, update, delete)'),
-    description: z.string().optional().describe('Gist description (for create/update)'),
-    public: z.boolean().optional().describe('Whether the gist is public (for create, default: false)'),
-    files: z.record(z.string(), z.object({
-      content: z.string().optional().describe('File content'),
-      filename: z.string().optional().describe('New filename (for rename)'),
-    })).optional().describe('Files to include. For create, content is required. For update, set value to null to delete a file.'),
-    perPage: z.number().optional().describe('Results per page (for list)'),
-    page: z.number().optional().describe('Page number (for list)'),
-  }))
-  .output(z.object({
-    gistId: z.string().optional().describe('Gist ID'),
-    htmlUrl: z.string().optional().describe('URL to the gist'),
-    description: z.string().nullable().optional().describe('Gist description'),
-    public: z.boolean().optional().describe('Whether the gist is public'),
-    files: z.array(z.object({
-      filename: z.string(),
-      language: z.string().nullable(),
-      size: z.number(),
-    })).optional().describe('Files in the gist'),
-    gists: z.array(z.object({
-      gistId: z.string(),
-      htmlUrl: z.string(),
-      description: z.string().nullable(),
-      public: z.boolean(),
-      fileCount: z.number(),
-      createdAt: z.string(),
-      updatedAt: z.string(),
-    })).optional().describe('List of gists'),
-    deleted: z.boolean().optional().describe('Whether the gist was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+- **list**: List gists for the authenticated user.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('Action to perform'),
+      gistId: z.string().optional().describe('Gist ID (required for get, update, delete)'),
+      description: z.string().optional().describe('Gist description (for create/update)'),
+      public: z
+        .boolean()
+        .optional()
+        .describe('Whether the gist is public (for create, default: false)'),
+      files: z
+        .record(
+          z.string(),
+          z.object({
+            content: z.string().optional().describe('File content'),
+            filename: z.string().optional().describe('New filename (for rename)')
+          })
+        )
+        .optional()
+        .describe(
+          'Files to include. For create, content is required. For update, set value to null to delete a file.'
+        ),
+      perPage: z.number().optional().describe('Results per page (for list)'),
+      page: z.number().optional().describe('Page number (for list)')
+    })
+  )
+  .output(
+    z.object({
+      gistId: z.string().optional().describe('Gist ID'),
+      htmlUrl: z.string().optional().describe('URL to the gist'),
+      description: z.string().nullable().optional().describe('Gist description'),
+      public: z.boolean().optional().describe('Whether the gist is public'),
+      files: z
+        .array(
+          z.object({
+            filename: z.string(),
+            language: z.string().nullable(),
+            size: z.number()
+          })
+        )
+        .optional()
+        .describe('Files in the gist'),
+      gists: z
+        .array(
+          z.object({
+            gistId: z.string(),
+            htmlUrl: z.string(),
+            description: z.string().nullable(),
+            public: z.boolean(),
+            fileCount: z.number(),
+            createdAt: z.string(),
+            updatedAt: z.string()
+          })
+        )
+        .optional()
+        .describe('List of gists'),
+      deleted: z.boolean().optional().describe('Whether the gist was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitHubClient(ctx.auth.token);
     let { action, gistId } = ctx.input;
 
     if (action === 'list') {
       let gists = await client.listGists({
         perPage: ctx.input.perPage,
-        page: ctx.input.page,
+        page: ctx.input.page
       });
       return {
         output: {
@@ -67,10 +91,10 @@ export let manageGist = SlateTool.create(
             public: g.public,
             fileCount: Object.keys(g.files).length,
             createdAt: g.created_at,
-            updatedAt: g.updated_at,
-          })),
+            updatedAt: g.updated_at
+          }))
         },
-        message: `Found **${gists.length}** gists.`,
+        message: `Found **${gists.length}** gists.`
       };
     }
 
@@ -86,10 +110,10 @@ export let manageGist = SlateTool.create(
           files: Object.values(gist.files).map((f: any) => ({
             filename: f.filename,
             language: f.language,
-            size: f.size,
-          })),
+            size: f.size
+          }))
         },
-        message: `Retrieved gist **${gist.id}** — ${gist.html_url}`,
+        message: `Retrieved gist **${gist.id}** — ${gist.html_url}`
       };
     }
 
@@ -105,7 +129,7 @@ export let manageGist = SlateTool.create(
       let gist = await client.createGist({
         description: ctx.input.description,
         public: ctx.input.public,
-        files: filesPayload,
+        files: filesPayload
       });
       return {
         output: {
@@ -116,10 +140,10 @@ export let manageGist = SlateTool.create(
           files: Object.values(gist.files).map((f: any) => ({
             filename: f.filename,
             language: f.language,
-            size: f.size,
-          })),
+            size: f.size
+          }))
         },
-        message: `Created gist **${gist.id}** — ${gist.html_url}`,
+        message: `Created gist **${gist.id}** — ${gist.html_url}`
       };
     }
 
@@ -127,7 +151,7 @@ export let manageGist = SlateTool.create(
       if (!gistId) throw new Error('gistId is required for update action.');
       let gist = await client.updateGist(gistId, {
         description: ctx.input.description,
-        files: ctx.input.files as any,
+        files: ctx.input.files as any
       });
       return {
         output: {
@@ -138,10 +162,10 @@ export let manageGist = SlateTool.create(
           files: Object.values(gist.files).map((f: any) => ({
             filename: f.filename,
             language: f.language,
-            size: f.size,
-          })),
+            size: f.size
+          }))
         },
-        message: `Updated gist **${gist.id}** — ${gist.html_url}`,
+        message: `Updated gist **${gist.id}** — ${gist.html_url}`
       };
     }
 
@@ -150,9 +174,10 @@ export let manageGist = SlateTool.create(
       await client.deleteGist(gistId);
       return {
         output: { deleted: true },
-        message: `Deleted gist **${gistId}**.`,
+        message: `Deleted gist **${gistId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

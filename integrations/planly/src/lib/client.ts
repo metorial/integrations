@@ -94,7 +94,11 @@ export class Client {
 
   // ── Schedule Groups ────────────────────────────────────────────────
 
-  async createScheduleGroups(teamId: string, scheduleGroups: ScheduleGroupInput[], validateOnly?: boolean) {
+  async createScheduleGroups(
+    teamId: string,
+    scheduleGroups: ScheduleGroupInput[],
+    validateOnly?: boolean
+  ) {
     let res = await this.axios.post('/v2/schedule-groups/create', {
       teamId,
       scheduleGroups,
@@ -118,7 +122,12 @@ export class Client {
 
   // ── Media ──────────────────────────────────────────────────────────
 
-  async startUpload(teamId: string, contentLength: number, contentType?: string, fileName?: string) {
+  async startUpload(
+    teamId: string,
+    contentLength: number,
+    contentType?: string,
+    fileName?: string
+  ) {
     let res = await this.axios.post('/v2/media/start-upload', {
       teamId,
       contentLength,

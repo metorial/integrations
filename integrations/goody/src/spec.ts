@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'goody',
   name: 'Goody',
-  description: 'Corporate gifting platform for sending physical products and gifts programmatically without needing recipient addresses.',
+  description:
+    'Corporate gifting platform for sending physical products and gifts programmatically without needing recipient addresses.',
   metadata: {},
   config,
-  auth,
+  auth
 });

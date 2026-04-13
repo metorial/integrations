@@ -20,13 +20,9 @@ import {
   listPromotionsTool,
   getPromotionTool,
   duplicatePromotionTool,
-  getRecentChangesTool,
+  getRecentChangesTool
 } from './tools';
-import {
-  appointmentChangesTrigger,
-  userChangesTrigger,
-  formChangesTrigger,
-} from './triggers';
+import { appointmentChangesTrigger, userChangesTrigger, formChangesTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -50,11 +46,7 @@ export let provider = Slate.create({
     listPromotionsTool,
     getPromotionTool,
     duplicatePromotionTool,
-    getRecentChangesTool,
+    getRecentChangesTool
   ],
-  triggers: [
-    appointmentChangesTrigger,
-    userChangesTrigger,
-    formChangesTrigger,
-  ],
+  triggers: [appointmentChangesTrigger, userChangesTrigger, formChangesTrigger]
 });

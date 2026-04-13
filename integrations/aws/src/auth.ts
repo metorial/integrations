@@ -2,11 +2,16 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    accessKeyId: z.string().describe('AWS Access Key ID'),
-    secretAccessKey: z.string().describe('AWS Secret Access Key'),
-    sessionToken: z.string().optional().describe('AWS Session Token (for temporary credentials)'),
-  }))
+  .output(
+    z.object({
+      accessKeyId: z.string().describe('AWS Access Key ID'),
+      secretAccessKey: z.string().describe('AWS Secret Access Key'),
+      sessionToken: z
+        .string()
+        .optional()
+        .describe('AWS Session Token (for temporary credentials)')
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'AWS Access Keys',
@@ -14,15 +19,15 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       accessKeyId: z.string().describe('AWS Access Key ID (e.g. AKIAIOSFODNN7EXAMPLE)'),
-      secretAccessKey: z.string().describe('AWS Secret Access Key'),
+      secretAccessKey: z.string().describe('AWS Secret Access Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           accessKeyId: ctx.input.accessKeyId,
-          secretAccessKey: ctx.input.secretAccessKey,
-        },
+          secretAccessKey: ctx.input.secretAccessKey
+        }
       };
     },
 
@@ -38,15 +43,15 @@ export let auth = SlateAuth.create()
           credentials: {
             accessKeyId: ctx.output.accessKeyId,
             secretAccessKey: ctx.output.secretAccessKey,
-            sessionToken: ctx.output.sessionToken,
+            sessionToken: ctx.output.sessionToken
           },
           region: 'us-east-1',
-          service: 'sts',
+          service: 'sts'
         });
 
         let response = await ax.get('https://sts.amazonaws.com/', {
           headers: signed.headers,
-          params: signed.params,
+          params: signed.params
         });
 
         let body = response.data as string;
@@ -58,18 +63,18 @@ export let auth = SlateAuth.create()
           profile: {
             id: userIdMatch?.[1] ?? ctx.output.accessKeyId,
             name: arnMatch?.[1] ?? ctx.output.accessKeyId,
-            accountId: accountMatch?.[1],
-          },
+            accountId: accountMatch?.[1]
+          }
         };
       } catch {
         return {
           profile: {
             id: ctx.output.accessKeyId,
-            name: ctx.output.accessKeyId,
-          },
+            name: ctx.output.accessKeyId
+          }
         };
       }
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -79,16 +84,16 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       accessKeyId: z.string().describe('Temporary AWS Access Key ID'),
       secretAccessKey: z.string().describe('Temporary AWS Secret Access Key'),
-      sessionToken: z.string().describe('AWS Session Token'),
+      sessionToken: z.string().describe('AWS Session Token')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           accessKeyId: ctx.input.accessKeyId,
           secretAccessKey: ctx.input.secretAccessKey,
-          sessionToken: ctx.input.sessionToken,
-        },
+          sessionToken: ctx.input.sessionToken
+        }
       };
     },
 
@@ -104,15 +109,15 @@ export let auth = SlateAuth.create()
           credentials: {
             accessKeyId: ctx.output.accessKeyId,
             secretAccessKey: ctx.output.secretAccessKey,
-            sessionToken: ctx.output.sessionToken,
+            sessionToken: ctx.output.sessionToken
           },
           region: 'us-east-1',
-          service: 'sts',
+          service: 'sts'
         });
 
         let response = await ax.get('https://sts.amazonaws.com/', {
           headers: signed.headers,
-          params: signed.params,
+          params: signed.params
         });
 
         let body = response.data as string;
@@ -124,16 +129,16 @@ export let auth = SlateAuth.create()
           profile: {
             id: userIdMatch?.[1] ?? ctx.output.accessKeyId,
             name: arnMatch?.[1] ?? ctx.output.accessKeyId,
-            accountId: accountMatch?.[1],
-          },
+            accountId: accountMatch?.[1]
+          }
         };
       } catch {
         return {
           profile: {
             id: ctx.output.accessKeyId,
-            name: ctx.output.accessKeyId,
-          },
+            name: ctx.output.accessKeyId
+          }
         };
       }
-    },
+    }
   });

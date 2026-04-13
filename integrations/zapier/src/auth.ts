@@ -2,15 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let http = createAxios({
-  baseURL: 'https://zapier.com',
+  baseURL: 'https://zapier.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -20,63 +22,67 @@ export let auth = SlateAuth.create()
       {
         title: 'Zaps (Read)',
         description: 'Read access to Zaps and apps',
-        scope: 'zap',
+        scope: 'zap'
       },
       {
         title: 'Zaps (All)',
         description: 'Read access to all Zaps across the account',
-        scope: 'zap:all',
+        scope: 'zap:all'
       },
       {
         title: 'Zaps (Write)',
         description: 'Create and modify Zaps and workflow steps',
-        scope: 'zap:write',
+        scope: 'zap:write'
       },
       {
         title: 'Authentications (Read)',
         description: 'Read access to authentications',
-        scope: 'authentication',
+        scope: 'authentication'
       },
       {
         title: 'Authentications (Write)',
         description: 'Create new authentications',
-        scope: 'authentication:write',
+        scope: 'authentication:write'
       },
       {
         title: 'Zap Runs',
         description: 'Read access to Zap run history',
-        scope: 'zap:runs',
-      },
+        scope: 'zap:runs'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         scope: ctx.scopes.join(' '),
         response_mode: 'query',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://api.zapier.com/v2/authorize?${params.toString()}`,
+        url: `https://api.zapier.com/v2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await http.post('/oauth/token/', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        '/oauth/token/',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -87,27 +93,31 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await http.post('/oauth/token/', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        '/oauth/token/',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -118,8 +128,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
-    },
+    }
   });

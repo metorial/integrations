@@ -3,35 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let uploadDocument = SlateTool.create(
-  spec,
-  {
-    name: 'Upload Document',
-    key: 'upload_document',
-    description: `Uploads a document to Algodocs for data extraction. Supports uploading via a public URL or a base64-encoded file. The document will be processed by the specified extractor, and extracted data can be retrieved later using the document ID.`,
-    instructions: [
-      'Provide either a **url** or both **fileBase64** and **filename** — not both methods at once.',
-      'Accepted file types: PDF, PNG, JPG/JPEG, Word (.doc, .docx), Excel (.xls, .xlsx).'
-    ],
-    tags: {
-      destructive: false
-    }
+export let uploadDocument = SlateTool.create(spec, {
+  name: 'Upload Document',
+  key: 'upload_document',
+  description: `Uploads a document to Algodocs for data extraction. Supports uploading via a public URL or a base64-encoded file. The document will be processed by the specified extractor, and extracted data can be retrieved later using the document ID.`,
+  instructions: [
+    'Provide either a **url** or both **fileBase64** and **filename** — not both methods at once.',
+    'Accepted file types: PDF, PNG, JPG/JPEG, Word (.doc, .docx), Excel (.xls, .xlsx).'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    extractorId: z.string().describe('ID of the extractor to process the document with'),
-    folderId: z.string().describe('ID of the folder to upload the document into'),
-    url: z.string().optional().describe('Publicly accessible URL of the file to upload'),
-    fileBase64: z.string().optional().describe('Base64-encoded content of the file to upload'),
-    filename: z.string().optional().describe('Filename for the base64-encoded file (required when using fileBase64)')
-  }))
-  .output(z.object({
-    documentId: z.string().describe('Unique identifier of the uploaded document'),
-    fileSize: z.number().describe('Size of the uploaded file in bytes'),
-    fileMd5Checksum: z.string().describe('MD5 checksum of the uploaded file'),
-    uploadedAt: z.string().describe('Timestamp when the document was uploaded (ISO 8601)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      extractorId: z.string().describe('ID of the extractor to process the document with'),
+      folderId: z.string().describe('ID of the folder to upload the document into'),
+      url: z.string().optional().describe('Publicly accessible URL of the file to upload'),
+      fileBase64: z
+        .string()
+        .optional()
+        .describe('Base64-encoded content of the file to upload'),
+      filename: z
+        .string()
+        .optional()
+        .describe('Filename for the base64-encoded file (required when using fileBase64)')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('Unique identifier of the uploaded document'),
+      fileSize: z.number().describe('Size of the uploaded file in bytes'),
+      fileMd5Checksum: z.string().describe('MD5 checksum of the uploaded file'),
+      uploadedAt: z.string().describe('Timestamp when the document was uploaded (ISO 8601)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       email: ctx.auth.email

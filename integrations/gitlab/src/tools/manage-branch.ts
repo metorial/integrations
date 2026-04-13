@@ -3,45 +3,57 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBranch = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Branch',
-    key: 'manage_branch',
-    description: `List, create, or delete branches in a project repository. Use "list" to search existing branches, "create" to create a new branch from a ref, or "delete" to remove a branch.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageBranch = SlateTool.create(spec, {
+  name: 'Manage Branch',
+  key: 'manage_branch',
+  description: `List, create, or delete branches in a project repository. Use "list" to search existing branches, "create" to create a new branch from a ref, or "delete" to remove a branch.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete']).describe('Operation to perform'),
-    projectId: z.string().describe('Project ID or URL-encoded path'),
-    branchName: z.string().optional().describe('Branch name (required for create/delete)'),
-    ref: z.string().optional().describe('Source ref to create branch from (required for create)'),
-    search: z.string().optional().describe('Search term to filter branches (list only)'),
-    perPage: z.number().optional().describe('Results per page (list only)'),
-    page: z.number().optional().describe('Page number (list only)')
-  }))
-  .output(z.object({
-    branches: z.array(z.object({
-      branchName: z.string().describe('Branch name'),
-      commitSha: z.string().describe('Latest commit SHA'),
-      commitMessage: z.string().describe('Latest commit message'),
-      isProtected: z.boolean().describe('Whether the branch is protected'),
-      isDefault: z.boolean().describe('Whether this is the default branch'),
-      webUrl: z.string().nullable().describe('URL to the branch')
-    })).optional().describe('List of branches (list action)'),
-    branch: z.object({
-      branchName: z.string().describe('Branch name'),
-      commitSha: z.string().describe('Latest commit SHA'),
-      commitMessage: z.string().describe('Latest commit message'),
-      isProtected: z.boolean().describe('Whether the branch is protected'),
-      isDefault: z.boolean().describe('Whether this is the default branch')
-    }).optional().describe('Created or deleted branch')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'delete']).describe('Operation to perform'),
+      projectId: z.string().describe('Project ID or URL-encoded path'),
+      branchName: z.string().optional().describe('Branch name (required for create/delete)'),
+      ref: z
+        .string()
+        .optional()
+        .describe('Source ref to create branch from (required for create)'),
+      search: z.string().optional().describe('Search term to filter branches (list only)'),
+      perPage: z.number().optional().describe('Results per page (list only)'),
+      page: z.number().optional().describe('Page number (list only)')
+    })
+  )
+  .output(
+    z.object({
+      branches: z
+        .array(
+          z.object({
+            branchName: z.string().describe('Branch name'),
+            commitSha: z.string().describe('Latest commit SHA'),
+            commitMessage: z.string().describe('Latest commit message'),
+            isProtected: z.boolean().describe('Whether the branch is protected'),
+            isDefault: z.boolean().describe('Whether this is the default branch'),
+            webUrl: z.string().nullable().describe('URL to the branch')
+          })
+        )
+        .optional()
+        .describe('List of branches (list action)'),
+      branch: z
+        .object({
+          branchName: z.string().describe('Branch name'),
+          commitSha: z.string().describe('Latest commit SHA'),
+          commitMessage: z.string().describe('Latest commit message'),
+          isProtected: z.boolean().describe('Whether the branch is protected'),
+          isDefault: z.boolean().describe('Whether this is the default branch')
+        })
+        .optional()
+        .describe('Created or deleted branch')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -72,7 +84,11 @@ export let manageBranch = SlateTool.create(
       case 'create': {
         if (!ctx.input.branchName) throw new Error('Branch name is required');
         if (!ctx.input.ref) throw new Error('Source ref is required to create a branch');
-        let branch = await client.createBranch(ctx.input.projectId, ctx.input.branchName, ctx.input.ref);
+        let branch = await client.createBranch(
+          ctx.input.projectId,
+          ctx.input.branchName,
+          ctx.input.ref
+        );
         return {
           output: {
             branch: {

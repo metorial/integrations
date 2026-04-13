@@ -13,57 +13,86 @@ let announcementSchema = z.object({
   updateTime: z.string().optional().describe('When the announcement was last updated'),
   creatorUserId: z.string().optional().describe('User ID of the creator'),
   scheduledTime: z.string().optional().describe('Scheduled publication time'),
-  assigneeMode: z.string().optional().describe('Assignee mode'),
+  assigneeMode: z.string().optional().describe('Assignee mode')
 });
 
-export let manageAnnouncements = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Announcements',
-    key: 'manage_announcements',
-    description: `Create, list, update, or delete announcements in a Google Classroom course. Announcements appear at the top of the Stream page and can include materials and be targeted to specific students.`,
-    tags: {
-      destructive: false,
-    },
+export let manageAnnouncements = SlateTool.create(spec, {
+  name: 'Manage Announcements',
+  key: 'manage_announcements',
+  description: `Create, list, update, or delete announcements in a Google Classroom course. Announcements appear at the top of the Stream page and can include materials and be targeted to specific students.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    courseId: z.string().describe('ID of the course'),
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('The action to perform'),
-    announcementId: z.string().optional().describe('Announcement ID (required for get, update, delete)'),
-    text: z.string().optional().describe('Text content of the announcement (for create/update)'),
-    state: z.enum(['PUBLISHED', 'DRAFT']).optional().describe('State of the announcement (for create/update)'),
-    materials: z.array(z.object({
-      link: z.object({
-        url: z.string().describe('URL of the link'),
-        title: z.string().optional().describe('Title for the link'),
-      }).optional(),
-      driveFile: z.object({
-        driveFile: z.object({
-          driveId: z.string().describe('Drive file ID'),
-        }),
-        shareMode: z.enum(['STUDENT_COPY', 'VIEW', 'EDIT']).optional(),
-      }).optional(),
-      youtubeVideo: z.object({
-        id: z.string().describe('YouTube video ID'),
-      }).optional(),
-    })).optional().describe('Materials to attach (for create/update)'),
-    assigneeMode: z.enum(['ALL_STUDENTS', 'INDIVIDUAL_STUDENTS']).optional()
-      .describe('Whether to target all students or specific students'),
-    individualStudentIds: z.array(z.string()).optional()
-      .describe('Student IDs to target (when assigneeMode is INDIVIDUAL_STUDENTS)'),
-    announcementStates: z.array(z.enum(['PUBLISHED', 'DRAFT', 'DELETED'])).optional()
-      .describe('Filter by states (for list)'),
-    pageSize: z.number().optional().describe('Maximum results to return (for list)'),
-    pageToken: z.string().optional().describe('Token for next page (for list)'),
-  }))
-  .output(z.object({
-    announcement: announcementSchema.optional().describe('The announcement'),
-    announcements: z.array(announcementSchema).optional().describe('List of announcements'),
-    nextPageToken: z.string().optional().describe('Token for the next page'),
-    success: z.boolean().optional().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      courseId: z.string().describe('ID of the course'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('The action to perform'),
+      announcementId: z
+        .string()
+        .optional()
+        .describe('Announcement ID (required for get, update, delete)'),
+      text: z
+        .string()
+        .optional()
+        .describe('Text content of the announcement (for create/update)'),
+      state: z
+        .enum(['PUBLISHED', 'DRAFT'])
+        .optional()
+        .describe('State of the announcement (for create/update)'),
+      materials: z
+        .array(
+          z.object({
+            link: z
+              .object({
+                url: z.string().describe('URL of the link'),
+                title: z.string().optional().describe('Title for the link')
+              })
+              .optional(),
+            driveFile: z
+              .object({
+                driveFile: z.object({
+                  driveId: z.string().describe('Drive file ID')
+                }),
+                shareMode: z.enum(['STUDENT_COPY', 'VIEW', 'EDIT']).optional()
+              })
+              .optional(),
+            youtubeVideo: z
+              .object({
+                id: z.string().describe('YouTube video ID')
+              })
+              .optional()
+          })
+        )
+        .optional()
+        .describe('Materials to attach (for create/update)'),
+      assigneeMode: z
+        .enum(['ALL_STUDENTS', 'INDIVIDUAL_STUDENTS'])
+        .optional()
+        .describe('Whether to target all students or specific students'),
+      individualStudentIds: z
+        .array(z.string())
+        .optional()
+        .describe('Student IDs to target (when assigneeMode is INDIVIDUAL_STUDENTS)'),
+      announcementStates: z
+        .array(z.enum(['PUBLISHED', 'DRAFT', 'DELETED']))
+        .optional()
+        .describe('Filter by states (for list)'),
+      pageSize: z.number().optional().describe('Maximum results to return (for list)'),
+      pageToken: z.string().optional().describe('Token for next page (for list)')
+    })
+  )
+  .output(
+    z.object({
+      announcement: announcementSchema.optional().describe('The announcement'),
+      announcements: z.array(announcementSchema).optional().describe('List of announcements'),
+      nextPageToken: z.string().optional().describe('Token for the next page'),
+      success: z.boolean().optional().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClassroomClient({ token: ctx.auth.token });
     let { courseId, action, announcementId } = ctx.input;
 
@@ -77,19 +106,19 @@ export let manageAnnouncements = SlateTool.create(
       updateTime: a.updateTime,
       creatorUserId: a.creatorUserId,
       scheduledTime: a.scheduledTime,
-      assigneeMode: a.assigneeMode,
+      assigneeMode: a.assigneeMode
     });
 
     if (action === 'list') {
       let result = await client.listAnnouncements(courseId, {
         announcementStates: ctx.input.announcementStates,
         pageSize: ctx.input.pageSize,
-        pageToken: ctx.input.pageToken,
+        pageToken: ctx.input.pageToken
       });
       let announcements = (result.announcements || []).map(mapAnnouncement);
       return {
         output: { announcements, nextPageToken: result.nextPageToken, success: true },
-        message: `Found **${announcements.length}** announcement(s).`,
+        message: `Found **${announcements.length}** announcement(s).`
       };
     }
 
@@ -98,7 +127,7 @@ export let manageAnnouncements = SlateTool.create(
       let result = await client.getAnnouncement(courseId, announcementId);
       return {
         output: { announcement: mapAnnouncement(result), success: true },
-        message: `Retrieved announcement \`${announcementId}\`.`,
+        message: `Retrieved announcement \`${announcementId}\`.`
       };
     }
 
@@ -109,14 +138,17 @@ export let manageAnnouncements = SlateTool.create(
       if (ctx.input.materials) body.materials = ctx.input.materials;
       if (ctx.input.assigneeMode) {
         body.assigneeMode = ctx.input.assigneeMode;
-        if (ctx.input.assigneeMode === 'INDIVIDUAL_STUDENTS' && ctx.input.individualStudentIds) {
+        if (
+          ctx.input.assigneeMode === 'INDIVIDUAL_STUDENTS' &&
+          ctx.input.individualStudentIds
+        ) {
           body.individualStudentsOptions = { studentIds: ctx.input.individualStudentIds };
         }
       }
       let result = await client.createAnnouncement(courseId, body);
       return {
         output: { announcement: mapAnnouncement(result), success: true },
-        message: `Created announcement (${result.state}).`,
+        message: `Created announcement (${result.state}).`
       };
     }
 
@@ -124,21 +156,40 @@ export let manageAnnouncements = SlateTool.create(
       if (!announcementId) throw new Error('announcementId is required');
       let updateFields: Record<string, any> = {};
       let maskParts: string[] = [];
-      if (ctx.input.text !== undefined) { updateFields.text = ctx.input.text; maskParts.push('text'); }
-      if (ctx.input.state !== undefined) { updateFields.state = ctx.input.state; maskParts.push('state'); }
-      if (ctx.input.materials !== undefined) { updateFields.materials = ctx.input.materials; maskParts.push('materials'); }
+      if (ctx.input.text !== undefined) {
+        updateFields.text = ctx.input.text;
+        maskParts.push('text');
+      }
+      if (ctx.input.state !== undefined) {
+        updateFields.state = ctx.input.state;
+        maskParts.push('state');
+      }
+      if (ctx.input.materials !== undefined) {
+        updateFields.materials = ctx.input.materials;
+        maskParts.push('materials');
+      }
       if (ctx.input.assigneeMode !== undefined) {
         updateFields.assigneeMode = ctx.input.assigneeMode;
         maskParts.push('assigneeMode');
-        if (ctx.input.assigneeMode === 'INDIVIDUAL_STUDENTS' && ctx.input.individualStudentIds) {
-          updateFields.individualStudentsOptions = { studentIds: ctx.input.individualStudentIds };
+        if (
+          ctx.input.assigneeMode === 'INDIVIDUAL_STUDENTS' &&
+          ctx.input.individualStudentIds
+        ) {
+          updateFields.individualStudentsOptions = {
+            studentIds: ctx.input.individualStudentIds
+          };
           maskParts.push('individualStudentsOptions.studentIds');
         }
       }
-      let result = await client.updateAnnouncement(courseId, announcementId, updateFields, maskParts.join(','));
+      let result = await client.updateAnnouncement(
+        courseId,
+        announcementId,
+        updateFields,
+        maskParts.join(',')
+      );
       return {
         output: { announcement: mapAnnouncement(result), success: true },
-        message: `Updated announcement \`${announcementId}\`.`,
+        message: `Updated announcement \`${announcementId}\`.`
       };
     }
 
@@ -147,7 +198,7 @@ export let manageAnnouncements = SlateTool.create(
       await client.deleteAnnouncement(courseId, announcementId);
       return {
         output: { success: true },
-        message: `Deleted announcement \`${announcementId}\`.`,
+        message: `Deleted announcement \`${announcementId}\`.`
       };
     }
 

@@ -2,28 +2,29 @@ import { SlateTool } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getLogo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Company Logo',
-    key: 'get_logo',
-    description: `Get a company's logo URL by its domain. Returns a direct URL to the company's logo image in the specified size and format. The logo is served from Clearbit's CDN.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLogo = SlateTool.create(spec, {
+  name: 'Get Company Logo',
+  key: 'get_logo',
+  description: `Get a company's logo URL by its domain. Returns a direct URL to the company's logo image in the specified size and format. The logo is served from Clearbit's CDN.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().describe('Company domain (e.g., "clearbit.com")'),
-    size: z.number().optional().describe('Image dimensions in pixels (default: 128)'),
-    format: z.enum(['png', 'jpg']).optional().describe('Image format (default: "png")'),
-    greyscale: z.boolean().optional().describe('Return greyscale image (default: false)'),
-  }))
-  .output(z.object({
-    logoUrl: z.string().describe('Direct URL to the company logo image'),
-    domain: z.string().describe('The domain used for lookup'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z.string().describe('Company domain (e.g., "clearbit.com")'),
+      size: z.number().optional().describe('Image dimensions in pixels (default: 128)'),
+      format: z.enum(['png', 'jpg']).optional().describe('Image format (default: "png")'),
+      greyscale: z.boolean().optional().describe('Return greyscale image (default: false)')
+    })
+  )
+  .output(
+    z.object({
+      logoUrl: z.string().describe('Direct URL to the company logo image'),
+      domain: z.string().describe('The domain used for lookup')
+    })
+  )
+  .handleInvocation(async ctx => {
     let params: string[] = [];
     if (ctx.input.size !== undefined) params.push(`size=${ctx.input.size}`);
     if (ctx.input.format) params.push(`format=${ctx.input.format}`);
@@ -35,9 +36,9 @@ export let getLogo = SlateTool.create(
     return {
       output: {
         logoUrl,
-        domain: ctx.input.domain,
+        domain: ctx.input.domain
       },
-      message: `Logo URL for \`${ctx.input.domain}\`: ${logoUrl}`,
+      message: `Logo URL for \`${ctx.input.domain}\`: ${logoUrl}`
     };
   })
   .build();

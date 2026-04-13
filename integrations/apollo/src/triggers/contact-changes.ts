@@ -3,48 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Changes',
-    key: 'contact_changes',
-    description: 'Polls for new or updated contacts in your Apollo account. Detects contacts that have been created or modified since the last check.'
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('Apollo contact ID'),
-    eventType: z.enum(['created', 'updated']).describe('Whether the contact was newly created or updated'),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    email: z.string().optional(),
-    title: z.string().optional(),
-    organizationName: z.string().optional(),
-    accountId: z.string().optional(),
-    ownerId: z.string().optional(),
-    contactStageId: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .output(z.object({
-    contactId: z.string().describe('Apollo contact ID'),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    name: z.string().optional(),
-    email: z.string().optional(),
-    title: z.string().optional(),
-    organizationName: z.string().optional(),
-    accountId: z.string().optional(),
-    ownerId: z.string().optional(),
-    contactStageId: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
+export let contactChanges = SlateTrigger.create(spec, {
+  name: 'Contact Changes',
+  key: 'contact_changes',
+  description:
+    'Polls for new or updated contacts in your Apollo account. Detects contacts that have been created or modified since the last check.'
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('Apollo contact ID'),
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the contact was newly created or updated'),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      email: z.string().optional(),
+      title: z.string().optional(),
+      organizationName: z.string().optional(),
+      accountId: z.string().optional(),
+      ownerId: z.string().optional(),
+      contactStageId: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('Apollo contact ID'),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      name: z.string().optional(),
+      email: z.string().optional(),
+      title: z.string().optional(),
+      organizationName: z.string().optional(),
+      accountId: z.string().optional(),
+      ownerId: z.string().optional(),
+      contactStageId: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -128,7 +132,7 @@ export let contactChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `contact.${ctx.input.eventType}`,
         id: `${ctx.input.contactId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,
@@ -136,7 +140,8 @@ export let contactChanges = SlateTrigger.create(
           contactId: ctx.input.contactId,
           firstName: ctx.input.firstName,
           lastName: ctx.input.lastName,
-          name: [ctx.input.firstName, ctx.input.lastName].filter(Boolean).join(' ') || undefined,
+          name:
+            [ctx.input.firstName, ctx.input.lastName].filter(Boolean).join(' ') || undefined,
           email: ctx.input.email,
           title: ctx.input.title,
           organizationName: ctx.input.organizationName,

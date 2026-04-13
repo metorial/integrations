@@ -18,7 +18,7 @@ let orderProductSchema = z.object({
   priceBrutto: z.number().describe('Single item gross price'),
   taxRate: z.number().describe('VAT tax rate'),
   quantity: z.number().describe('Quantity of pieces'),
-  weight: z.number().describe('Single item weight'),
+  weight: z.number().describe('Single item weight')
 });
 
 let orderSchema = z.object({
@@ -64,36 +64,55 @@ let orderSchema = z.object({
   orderPage: z.string().describe('Order information page URL'),
   pickState: z.number().describe('Product collection status (1=collected, 0=not)'),
   packState: z.number().describe('Product packing status (1=packed, 0=not)'),
-  products: z.array(orderProductSchema).describe('Order product items'),
+  products: z.array(orderProductSchema).describe('Order product items')
 });
 
-export let getOrders = SlateTool.create(
-  spec,
-  {
-    name: 'Get Orders',
-    key: 'get_orders',
-    description: `Retrieve orders from BaseLinker. Supports filtering by order ID, date range, status, email, and order source. Returns up to 100 orders per request with full order details including products, delivery, and invoice information. Use \`idFrom\` for pagination through large result sets.`,
-    tags: {
-      readOnly: true,
-    },
+export let getOrders = SlateTool.create(spec, {
+  name: 'Get Orders',
+  key: 'get_orders',
+  description: `Retrieve orders from BaseLinker. Supports filtering by order ID, date range, status, email, and order source. Returns up to 100 orders per request with full order details including products, delivery, and invoice information. Use \`idFrom\` for pagination through large result sets.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    orderId: z.number().optional().describe('Fetch a single specific order by its ID'),
-    dateConfirmedFrom: z.number().optional().describe('Fetch orders confirmed after this unix timestamp'),
-    dateFrom: z.number().optional().describe('Fetch orders created after this unix timestamp'),
-    idFrom: z.number().optional().describe('Fetch orders with ID greater than this value (for pagination)'),
-    getUnconfirmedOrders: z.boolean().optional().describe('Include unconfirmed orders in results'),
-    statusId: z.number().optional().describe('Filter by order status ID'),
-    filterEmail: z.string().optional().describe('Filter by buyer email address'),
-    filterOrderSource: z.string().optional().describe('Filter by order source, e.g. "ebay", "amazon"'),
-    filterOrderSourceId: z.number().optional().describe('Filter by order source identifier'),
-    includeCustomExtraFields: z.boolean().optional().describe('Include custom extra field values'),
-  }))
-  .output(z.object({
-    orders: z.array(orderSchema).describe('List of orders matching the filter criteria'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      orderId: z.number().optional().describe('Fetch a single specific order by its ID'),
+      dateConfirmedFrom: z
+        .number()
+        .optional()
+        .describe('Fetch orders confirmed after this unix timestamp'),
+      dateFrom: z
+        .number()
+        .optional()
+        .describe('Fetch orders created after this unix timestamp'),
+      idFrom: z
+        .number()
+        .optional()
+        .describe('Fetch orders with ID greater than this value (for pagination)'),
+      getUnconfirmedOrders: z
+        .boolean()
+        .optional()
+        .describe('Include unconfirmed orders in results'),
+      statusId: z.number().optional().describe('Filter by order status ID'),
+      filterEmail: z.string().optional().describe('Filter by buyer email address'),
+      filterOrderSource: z
+        .string()
+        .optional()
+        .describe('Filter by order source, e.g. "ebay", "amazon"'),
+      filterOrderSourceId: z.number().optional().describe('Filter by order source identifier'),
+      includeCustomExtraFields: z
+        .boolean()
+        .optional()
+        .describe('Include custom extra field values')
+    })
+  )
+  .output(
+    z.object({
+      orders: z.array(orderSchema).describe('List of orders matching the filter criteria')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BaseLinkerClient({ token: ctx.auth.token });
 
     let result = await client.getOrders({
@@ -106,7 +125,7 @@ export let getOrders = SlateTool.create(
       filterEmail: ctx.input.filterEmail,
       filterOrderSource: ctx.input.filterOrderSource,
       filterOrderSourceId: ctx.input.filterOrderSourceId,
-      includeCustomExtraFields: ctx.input.includeCustomExtraFields,
+      includeCustomExtraFields: ctx.input.includeCustomExtraFields
     });
 
     let orders = (result.orders || []).map((o: any) => ({
@@ -167,13 +186,14 @@ export let getOrders = SlateTool.create(
         priceBrutto: p.price_brutto || 0,
         taxRate: p.tax_rate || 0,
         quantity: p.quantity || 0,
-        weight: p.weight || 0,
-      })),
+        weight: p.weight || 0
+      }))
     }));
 
     let count = orders.length;
     return {
       output: { orders },
-      message: `Retrieved **${count}** order${count !== 1 ? 's' : ''}${ctx.input.orderId ? ` (order #${ctx.input.orderId})` : ''}.`,
+      message: `Retrieved **${count}** order${count !== 1 ? 's' : ''}${ctx.input.orderId ? ` (order #${ctx.input.orderId})` : ''}.`
     };
-  }).build();
+  })
+  .build();

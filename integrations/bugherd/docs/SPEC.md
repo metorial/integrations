@@ -21,15 +21,18 @@ There is no OAuth support or token-based authentication. Only API key authentica
 ## Features
 
 ### Organization Management
+
 Retrieve details about your BugHerd account/organization, including account-level information.
 
 ### User Management
+
 - List all users (members and clients/guests) in your organization.
 - View tasks assigned to or created by a specific user.
 - View projects a specific user has access to.
 - Filter user tasks by date, priority, tag, or assignee.
 
 ### Project Management
+
 - Create, update, and delete projects. Projects are associated with a website URL.
 - List all projects or only active ones.
 - Add members (team users) and guests/clients to projects.
@@ -37,6 +40,7 @@ Retrieve details about your BugHerd account/organization, including account-leve
 - **Consideration:** Deleting a project permanently removes all associated data and cannot be undone.
 
 ### Task Management
+
 - Create, update, and list tasks (bugs/feedback) within projects.
 - Tasks support properties including description, priority (critical, important, normal, minor), status, tags, assignee, requester, and an external ID for cross-system tracking.
 - List tasks by category: all tasks, feedback-only, archived, or taskboard view.
@@ -45,15 +49,18 @@ Retrieve details about your BugHerd account/organization, including account-leve
 - **Consideration:** Projects with custom columns extend the default status values (backlog, todo, doing, done, closed) with custom column names. Integrations must handle dynamic status values.
 
 ### Custom Columns (Kanban Board)
+
 - Create, update, list, and view custom columns on a project's task board.
 - Allows customizing the workflow beyond the default columns.
 
 ### Comments
+
 - List and create comments on tasks.
 - Comments can be posted on behalf of a specific user (by user ID or email).
 - Comments can be marked as private (members only) or visible to everyone.
 
 ### Attachments
+
 - List, view, create, upload, and delete file attachments on tasks.
 - Attachments can be added via URL or direct file upload.
 - **Consideration:** Direct uploads must be reasonably small (roughly within a 30-second request window). For larger files, host externally and attach via URL.
@@ -63,21 +70,27 @@ Retrieve details about your BugHerd account/organization, including account-leve
 BugHerd supports webhooks for real-time event notifications. When installing a webhook, specify an event you wish to hook into. Choose from: "project_create", "task_create", "task_update", "comment" or "task_destroy".
 
 ### Project Created
+
 Fires when a new project is created in BugHerd.
 
 ### Task Created
+
 Fires when a new task (bug/feedback item) is created within a project.
 
 ### Task Updated
+
 Fires when an existing task is modified (e.g., status change, reassignment, priority change).
 
 ### Task Destroyed
+
 Fires when a task is deleted.
 
 ### Comment Created
+
 Fires when a new comment is added to a task.
 
 **Configuration options:**
+
 - **project_id** (optional): Scope the webhook to a specific project. If omitted, the webhook fires for activity across all projects in the organization.
 - **target_url** (required): The URL that BugHerd will POST event data to.
 - Each webhook subscription covers a single event type. To listen to multiple events, create a separate webhook for each.

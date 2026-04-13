@@ -10,37 +10,58 @@ let inventoryLevelSchema = z.object({
   updatedAt: z.string()
 });
 
-export let manageInventory = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Inventory',
-    key: 'manage_inventory',
-    description: `View and adjust inventory levels across locations. Supports:
+export let manageInventory = SlateTool.create(spec, {
+  name: 'Manage Inventory',
+  key: 'manage_inventory',
+  description: `View and adjust inventory levels across locations. Supports:
 - **list**: Query inventory levels by item IDs or location IDs
 - **set**: Set absolute inventory quantity for an item at a location
 - **adjust**: Increment or decrement inventory by a relative amount`,
-    instructions: [
-      'To find inventory item IDs, use Get Product — each variant includes its inventoryItemId.',
-      'To find location IDs, use List Locations.'
-    ],
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'set', 'adjust']).describe('Operation to perform'),
-    inventoryItemIds: z.string().optional().describe('Comma-separated inventory item IDs (for list action)'),
-    locationIds: z.string().optional().describe('Comma-separated location IDs (for list action)'),
-    inventoryItemId: z.string().optional().describe('Single inventory item ID (for set/adjust actions)'),
-    locationId: z.string().optional().describe('Single location ID (for set/adjust actions)'),
-    available: z.number().optional().describe('Absolute quantity to set (for set action)'),
-    adjustment: z.number().optional().describe('Relative quantity change, positive or negative (for adjust action)'),
-    limit: z.number().min(1).max(250).optional().describe('Number of results to return (for list action)')
-  }))
-  .output(z.object({
-    inventoryLevels: z.array(inventoryLevelSchema).optional(),
-    inventoryLevel: inventoryLevelSchema.optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'To find inventory item IDs, use Get Product — each variant includes its inventoryItemId.',
+    'To find location IDs, use List Locations.'
+  ],
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'set', 'adjust']).describe('Operation to perform'),
+      inventoryItemIds: z
+        .string()
+        .optional()
+        .describe('Comma-separated inventory item IDs (for list action)'),
+      locationIds: z
+        .string()
+        .optional()
+        .describe('Comma-separated location IDs (for list action)'),
+      inventoryItemId: z
+        .string()
+        .optional()
+        .describe('Single inventory item ID (for set/adjust actions)'),
+      locationId: z
+        .string()
+        .optional()
+        .describe('Single location ID (for set/adjust actions)'),
+      available: z.number().optional().describe('Absolute quantity to set (for set action)'),
+      adjustment: z
+        .number()
+        .optional()
+        .describe('Relative quantity change, positive or negative (for adjust action)'),
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of results to return (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      inventoryLevels: z.array(inventoryLevelSchema).optional(),
+      inventoryLevel: inventoryLevelSchema.optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -83,9 +104,11 @@ export let manageInventory = SlateTool.create(
     }
 
     if (ctx.input.action === 'adjust') {
-      if (!ctx.input.inventoryItemId) throw new Error('inventoryItemId is required for adjust');
+      if (!ctx.input.inventoryItemId)
+        throw new Error('inventoryItemId is required for adjust');
       if (!ctx.input.locationId) throw new Error('locationId is required for adjust');
-      if (ctx.input.adjustment === undefined) throw new Error('adjustment is required for adjust');
+      if (ctx.input.adjustment === undefined)
+        throw new Error('adjustment is required for adjust');
 
       let level = await client.adjustInventoryLevel({
         inventoryItemId: ctx.input.inventoryItemId,
@@ -99,4 +122,5 @@ export let manageInventory = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

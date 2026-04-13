@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    clientId: z.string(),
-    clientSecret: z.string(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      clientId: z.string(),
+      clientSecret: z.string(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Credentials',
@@ -15,12 +17,14 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('Client ID from Hotjar API credentials (Settings > API)'),
-      clientSecret: z.string().describe('Client Secret from Hotjar API credentials (Settings > API)'),
+      clientSecret: z
+        .string()
+        .describe('Client Secret from Hotjar API credentials (Settings > API)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios({
-        baseURL: 'https://api.hotjar.io',
+        baseURL: 'https://api.hotjar.io'
       });
 
       let params = new URLSearchParams();
@@ -30,19 +34,19 @@ export let auth = SlateAuth.create()
 
       let response = await http.post('/v1/oauth/token', params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
-      let expiresAt = new Date(Date.now() + (response.data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
 
       return {
         output: {
           token: response.data.access_token,
           clientId: ctx.input.clientId,
           clientSecret: ctx.input.clientSecret,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
-    },
+    }
   });

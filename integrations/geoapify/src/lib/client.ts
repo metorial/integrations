@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.geoapify.com',
+  baseURL: 'https://api.geoapify.com'
 });
 
 export class GeoapifyClient {
@@ -32,8 +32,8 @@ export class GeoapifyClient {
       params: {
         ...params,
         format: 'json',
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -49,8 +49,8 @@ export class GeoapifyClient {
       params: {
         ...params,
         format: 'json',
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -67,8 +67,8 @@ export class GeoapifyClient {
       params: {
         ...params,
         format: 'json',
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -97,8 +97,8 @@ export class GeoapifyClient {
         details: params.details,
         traffic: params.traffic,
         max_speed: params.maxSpeed,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -114,22 +114,26 @@ export class GeoapifyClient {
     maxSpeed?: number;
     units?: string;
   }) {
-    let response = await http.post('/v1/routematrix', {
-      mode: body.mode,
-      sources: body.sources,
-      targets: body.targets,
-      type: body.type,
-      traffic: body.traffic,
-      max_speed: body.maxSpeed,
-      units: body.units,
-    }, {
-      params: {
-        apiKey: this.apiKey,
+    let response = await http.post(
+      '/v1/routematrix',
+      {
+        mode: body.mode,
+        sources: body.sources,
+        targets: body.targets,
+        type: body.type,
+        traffic: body.traffic,
+        max_speed: body.maxSpeed,
+        units: body.units
       },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+      {
+        params: {
+          apiKey: this.apiKey
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -148,8 +152,8 @@ export class GeoapifyClient {
     let response = await http.get('/v2/places', {
       params: {
         ...params,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -170,8 +174,8 @@ export class GeoapifyClient {
         lon: params.lon,
         features: params.features,
         lang: params.lang,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -202,8 +206,8 @@ export class GeoapifyClient {
         route_type: params.routeType,
         max_speed: params.maxSpeed,
         units: params.units,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -214,8 +218,8 @@ export class GeoapifyClient {
     let response = await http.get('/v1/ipinfo', {
       params: {
         ip: params.ip,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -234,8 +238,8 @@ export class GeoapifyClient {
         lon: params.lon,
         id: params.placeId,
         geometry: params.geometry,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -250,8 +254,8 @@ export class GeoapifyClient {
         id: params.placeId,
         geometry: params.geometry,
         level: params.level,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -268,8 +272,8 @@ export class GeoapifyClient {
         postcode: params.postcode,
         countrycode: params.countryCode,
         geometry: params.geometry,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -288,8 +292,8 @@ export class GeoapifyClient {
         limit: params.limit,
         offset: params.offset,
         geometry: params.geometry,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return response.data;
   }
@@ -306,11 +310,11 @@ export class GeoapifyClient {
   }) {
     let response = await http.post('/v1/mapmatching', body, {
       params: {
-        apiKey: this.apiKey,
+        apiKey: this.apiKey
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -332,11 +336,11 @@ export class GeoapifyClient {
         limit: params.limit,
         filter: params.filter,
         bias: params.bias,
-        apiKey: this.apiKey,
+        apiKey: this.apiKey
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -345,8 +349,8 @@ export class GeoapifyClient {
     let response = await http.get('/v1/batch/geocode/search', {
       params: {
         id: jobId,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return { data: response.data, status: response.status };
   }
@@ -362,11 +366,11 @@ export class GeoapifyClient {
         type: params.type,
         lang: params.lang,
         limit: params.limit,
-        apiKey: this.apiKey,
+        apiKey: this.apiKey
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -375,8 +379,8 @@ export class GeoapifyClient {
     let response = await http.get('/v1/batch/geocode/reverse', {
       params: {
         id: jobId,
-        apiKey: this.apiKey,
-      },
+        apiKey: this.apiKey
+      }
     });
     return { data: response.data, status: response.status };
   }

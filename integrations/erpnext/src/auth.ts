@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -26,10 +28,12 @@ export let auth = SlateAuth.create()
     ],
 
     inputSchema: z.object({
-      siteUrl: z.string().describe('Full ERPNext site URL (e.g., https://yoursite.erpnext.com)')
+      siteUrl: z
+        .string()
+        .describe('Full ERPNext site URL (e.g., https://yoursite.erpnext.com)')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let baseUrl = ctx.input.siteUrl.replace(/\/+$/, '');
       let params = new URLSearchParams({
         client_id: ctx.clientId,
@@ -45,21 +49,25 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let baseUrl = ctx.input.siteUrl.replace(/\/+$/, '');
       let http = createAxios({ baseURL: baseUrl });
 
-      let response = await http.post('/api/method/frappe.integrations.oauth2.get_token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await http.post(
+        '/api/method/frappe.integrations.oauth2.get_token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -76,20 +84,24 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let baseUrl = ctx.input.siteUrl.replace(/\/+$/, '');
       let http = createAxios({ baseURL: baseUrl });
 
-      let response = await http.post('/api/method/frappe.integrations.oauth2.get_token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken || '',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await http.post(
+        '/api/method/frappe.integrations.oauth2.get_token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken || '',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -106,13 +118,17 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { siteUrl: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { siteUrl: string };
+      scopes: string[];
+    }) => {
       let baseUrl = ctx.input.siteUrl.replace(/\/+$/, '');
       let http = createAxios({ baseURL: baseUrl });
 
       let response = await http.get('/api/method/frappe.auth.get_logged_user', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -136,7 +152,7 @@ export let auth = SlateAuth.create()
       apiSecret: z.string().describe('ERPNext API Secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: `${ctx.input.apiKey}:${ctx.input.apiSecret}`
@@ -144,7 +160,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { apiKey: string; apiSecret: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { apiKey: string; apiSecret: string };
+    }) => {
       return {
         profile: {
           name: 'API Token User'
@@ -158,12 +177,14 @@ export let auth = SlateAuth.create()
     key: 'password',
 
     inputSchema: z.object({
-      siteUrl: z.string().describe('Full ERPNext site URL (e.g., https://yoursite.erpnext.com)'),
+      siteUrl: z
+        .string()
+        .describe('Full ERPNext site URL (e.g., https://yoursite.erpnext.com)'),
       username: z.string().describe('ERPNext username/email'),
       password: z.string().describe('ERPNext password')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = ctx.input.siteUrl.replace(/\/+$/, '');
       let http = createAxios({ baseURL: baseUrl });
 
@@ -192,7 +213,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { siteUrl: string; username: string; password: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { siteUrl: string; username: string; password: string };
+    }) => {
       return {
         profile: {
           name: 'Session User'

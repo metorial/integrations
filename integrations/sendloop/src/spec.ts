@@ -1,7 +1,7 @@
 import { SlateSpecification } from 'slates';
 import { auth } from './auth';
 import { config } from './config';
-    
+
 export let spec = SlateSpecification.create({
   key: 'sendloop',
   name: 'Sendloop',
@@ -9,4 +9,4 @@ export let spec = SlateSpecification.create({
   metadata: {},
   config,
   auth
-})
+});

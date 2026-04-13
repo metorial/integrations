@@ -8,30 +8,42 @@ let datasetSchema = z.object({
   name: z.string().describe('Display name of the dataset'),
   configuredBy: z.string().optional().describe('User who configured the dataset'),
   isRefreshable: z.boolean().optional().describe('Whether the dataset can be refreshed'),
-  isEffectiveIdentityRequired: z.boolean().optional().describe('Whether effective identity is required for row-level security'),
-  isEffectiveIdentityRolesRequired: z.boolean().optional().describe('Whether effective identity roles are required'),
+  isEffectiveIdentityRequired: z
+    .boolean()
+    .optional()
+    .describe('Whether effective identity is required for row-level security'),
+  isEffectiveIdentityRolesRequired: z
+    .boolean()
+    .optional()
+    .describe('Whether effective identity roles are required'),
   webUrl: z.string().optional().describe('Web URL for the dataset'),
   createdDate: z.string().optional().describe('Date the dataset was created')
 });
 
-export let listDatasets = SlateTool.create(
-  spec,
-  {
-    name: 'List Datasets',
-    key: 'list_datasets',
-    description: `List all Power BI datasets. Optionally filter by workspace. Returns dataset names, IDs, configuration details, and refresh capabilities.`,
-    tags: {
-      readOnly: true
-    }
+export let listDatasets = SlateTool.create(spec, {
+  name: 'List Datasets',
+  key: 'list_datasets',
+  description: `List all Power BI datasets. Optionally filter by workspace. Returns dataset names, IDs, configuration details, and refresh capabilities.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID to filter datasets. If omitted, lists datasets from "My Workspace".')
-  }))
-  .output(z.object({
-    datasets: z.array(datasetSchema).describe('List of datasets')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe(
+          'Workspace ID to filter datasets. If omitted, lists datasets from "My Workspace".'
+        )
+    })
+  )
+  .output(
+    z.object({
+      datasets: z.array(datasetSchema).describe('List of datasets')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let datasets = await client.listDatasets(ctx.input.workspaceId);
 

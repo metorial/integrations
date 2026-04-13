@@ -15,13 +15,13 @@ import {
   voteFeatureRequestTool,
   getUnreadCountTool,
   checkNpsTool,
-  listNpsResponsesTool,
+  listNpsResponsesTool
 } from './tools';
 import {
   newPostTrigger,
   newCommentTrigger,
   newReactionTrigger,
-  newNpsScoreTrigger,
+  newNpsScoreTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -41,12 +41,7 @@ export let provider = Slate.create({
     voteFeatureRequestTool,
     getUnreadCountTool,
     checkNpsTool,
-    listNpsResponsesTool,
+    listNpsResponsesTool
   ],
-  triggers: [
-    newPostTrigger,
-    newCommentTrigger,
-    newReactionTrigger,
-    newNpsScoreTrigger,
-  ],
+  triggers: [newPostTrigger, newCommentTrigger, newReactionTrigger, newNpsScoreTrigger]
 });

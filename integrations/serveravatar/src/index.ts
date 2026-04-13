@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listOrganizations,
@@ -18,13 +17,9 @@ import {
   manageFirewall,
   manageCronJobs,
   listBackups,
-  manageSystemUsers,
+  manageSystemUsers
 } from './tools';
-import {
-  serverChanges,
-  applicationChanges,
-  inboundWebhook,
-} from './triggers';
+import { serverChanges, applicationChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,11 +40,7 @@ export let provider = Slate.create({
     manageFirewall,
     manageCronJobs,
     listBackups,
-    manageSystemUsers,
+    manageSystemUsers
   ],
-  triggers: [
-    inboundWebhook,
-    serverChanges,
-    applicationChanges,
-  ],
+  triggers: [inboundWebhook, serverChanges, applicationChanges]
 });

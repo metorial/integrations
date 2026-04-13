@@ -3,32 +3,46 @@ import { GistClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `Create, delete, or list tags. Also apply or remove tags from contacts in bulk. Tag names are case-insensitive and automatically de-duplicated.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete', 'tag_contacts', 'untag_contacts']).describe('Action to perform'),
-    tagName: z.string().optional().describe('Tag name (for create, tag_contacts, untag_contacts)'),
-    tagId: z.string().optional().describe('Tag ID (for delete)'),
-    contactIds: z.array(z.string()).optional().describe('Contact IDs to tag/untag'),
-  }))
-  .output(z.object({
-    tags: z.array(z.object({
-      tagId: z.string(),
-      tagName: z.string(),
-    })).optional().describe('List of tags (for list action)'),
-    tag: z.object({
-      tagId: z.string(),
-      tagName: z.string(),
-    }).optional().describe('Created or modified tag'),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `Create, delete, or list tags. Also apply or remove tags from contacts in bulk. Tag names are case-insensitive and automatically de-duplicated.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'delete', 'tag_contacts', 'untag_contacts'])
+        .describe('Action to perform'),
+      tagName: z
+        .string()
+        .optional()
+        .describe('Tag name (for create, tag_contacts, untag_contacts)'),
+      tagId: z.string().optional().describe('Tag ID (for delete)'),
+      contactIds: z.array(z.string()).optional().describe('Contact IDs to tag/untag')
+    })
+  )
+  .output(
+    z.object({
+      tags: z
+        .array(
+          z.object({
+            tagId: z.string(),
+            tagName: z.string()
+          })
+        )
+        .optional()
+        .describe('List of tags (for list action)'),
+      tag: z
+        .object({
+          tagId: z.string(),
+          tagName: z.string()
+        })
+        .optional()
+        .describe('Created or modified tag'),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
 
     switch (ctx.input.action) {
@@ -36,11 +50,11 @@ export let manageTags = SlateTool.create(
         let data = await client.listTags();
         let tags = (data.tags || []).map((t: any) => ({
           tagId: String(t.id),
-          tagName: t.name,
+          tagName: t.name
         }));
         return {
           output: { tags },
-          message: `Found **${tags.length}** tags.`,
+          message: `Found **${tags.length}** tags.`
         };
       }
 
@@ -50,9 +64,9 @@ export let manageTags = SlateTool.create(
         let tag = data.tag || data;
         return {
           output: {
-            tag: { tagId: String(tag.id), tagName: tag.name },
+            tag: { tagId: String(tag.id), tagName: tag.name }
           },
-          message: `Created tag **${tag.name}**.`,
+          message: `Created tag **${tag.name}**.`
         };
       }
 
@@ -61,7 +75,7 @@ export let manageTags = SlateTool.create(
         await client.deleteTag(ctx.input.tagId);
         return {
           output: { deleted: true },
-          message: `Deleted tag **${ctx.input.tagId}**.`,
+          message: `Deleted tag **${ctx.input.tagId}**.`
         };
       }
 
@@ -72,9 +86,9 @@ export let manageTags = SlateTool.create(
         let tag = data.tag || data;
         return {
           output: {
-            tag: { tagId: String(tag.id), tagName: tag.name },
+            tag: { tagId: String(tag.id), tagName: tag.name }
           },
-          message: `Applied tag **${ctx.input.tagName}** to ${ctx.input.contactIds.length} contact(s).`,
+          message: `Applied tag **${ctx.input.tagName}** to ${ctx.input.contactIds.length} contact(s).`
         };
       }
 
@@ -85,10 +99,11 @@ export let manageTags = SlateTool.create(
         let tag = data.tag || data;
         return {
           output: {
-            tag: { tagId: String(tag.id), tagName: tag.name },
+            tag: { tagId: String(tag.id), tagName: tag.name }
           },
-          message: `Removed tag **${ctx.input.tagName}** from ${ctx.input.contactIds.length} contact(s).`,
+          message: `Removed tag **${ctx.input.tagName}** from ${ctx.input.contactIds.length} contact(s).`
         };
       }
     }
-  }).build();
+  })
+  .build();

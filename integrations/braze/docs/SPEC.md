@@ -31,45 +31,59 @@ Each API key can be scoped to specific endpoint categories such as: Campaigns, C
 ## Features
 
 ### User Data Management
+
 Track and manage user profiles by logging attributes, custom events, and purchases from external systems. Create, update, merge, and delete user profiles. Users can be identified by external ID, Braze ID, user alias, email, or phone number.
 
 ### Messaging
+
 Send messages across multiple channels (email, push, in-app, SMS, Content Cards, webhooks) either immediately or on a schedule. Supports one-off sends, API-triggered delivery for campaigns and Canvases, and transactional emails. Messages can be scheduled, updated, or cancelled.
 
 ### Campaigns & Canvas Management
+
 Export campaign and Canvas metadata, analytics, and time series data. Trigger API-triggered campaigns and Canvases programmatically. Canvas is Braze's multi-step journey builder.
 
 ### Audience Segmentation
+
 Export segment lists, retrieve segment details and estimated sizes over time. Export users within a segment or Global Control Group.
 
 ### Catalogs
+
 Create and manage product catalogs for use in personalization. Supports CRUD operations on catalogs, catalog items, fields, and selections.
 
 ### Subscription Groups
+
 Manage user subscription states for email and SMS. Query and update subscription group membership in bulk.
 
 ### Email Management
+
 Manage email spam lists, hard bounce lists, and invalid email addresses. Query and remove addresses from blocklists.
 
 ### SMS Management
+
 Query and manage invalid phone numbers.
 
 ### Content Blocks & Templates
+
 Create, list, and update reusable email Content Blocks and email templates.
 
 ### Preference Centers
+
 Create and manage email preference centers that allow end users to control their notification preferences.
 
 ### Data Export & Analytics
+
 Export KPIs, session data, custom event analytics, and campaign/Canvas performance metrics. Export user profiles individually or by segment.
 
 ### Media Library
+
 Upload assets to the Braze media library.
 
 ### Dashboard User Provisioning (SCIM)
+
 The SCIM specification is designed to make managing user identities in cloud-based applications and services easier. Use the Braze SCIM endpoints to manage automated user provisioning. Create, read, update, and delete dashboard user accounts. Available on Pro/Enterprise plans only.
 
 ### Outbound Webhooks
+
 A webhook is an automated message from one system to another after a certain criteria has been met. In Braze, this criteria is usually the triggering of a custom event. At its core, a webhook is an event-based method for two separate systems to take effective action based on data transmitted in real time. Webhooks in Braze are configured as outbound messages within campaigns or Canvases to send data to external systems when specific user actions or conditions are met.
 
 ## Events
@@ -77,12 +91,14 @@ A webhook is an automated message from one system to another after a certain cri
 Braze supports real-time event streaming through **Braze Currents**, a dedicated data streaming product.
 
 ### Currents – Message Engagement Events
+
 Events associated with messages sent via Braze, such as Email Clicks, Mobile Push Opens, In-App Message Impressions, and much more. Covers delivery, open, click, bounce, spam complaint, and unsubscribe events across all messaging channels (email, push, SMS, in-app messages, Content Cards, webhooks).
 
 - Events are streamed to a configured partner/destination (data warehouses like S3, GCS, Azure Blob Storage, or analytics partners like Segment, mParticle, Amplitude, etc.).
 - You can select which specific message engagement event types to include.
 
 ### Currents – Customer Behavior Events
+
 User Behavior Events: events associated with customer behavior, such as Sessions, Custom Events, and Purchases. These track how users interact with your app or website, including app sessions, custom event occurrences, and purchase events.
 
 - You can select which specific behavior event types to include.

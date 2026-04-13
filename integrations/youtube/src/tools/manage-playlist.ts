@@ -3,36 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePlaylist = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Playlist',
-    key: 'manage_playlist',
-    description: `Create, update, or delete a YouTube playlist. When creating, provide a title and optional description, privacy, and tags. When updating, provide the playlist ID and fields to change. When deleting, provide only the playlist ID.`,
-    instructions: [
-      'For creating: set action to "create" and provide title.',
-      'For updating: set action to "update" and provide playlistId plus fields to change.',
-      'For deleting: set action to "delete" and provide playlistId.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    playlistId: z.string().optional().describe('Playlist ID (required for update and delete)'),
-    title: z.string().optional().describe('Playlist title (required for create)'),
-    description: z.string().optional().describe('Playlist description'),
-    privacyStatus: z.enum(['private', 'public', 'unlisted']).optional().describe('Privacy status'),
-    defaultLanguage: z.string().optional().describe('Default language (ISO 639-1 code)'),
-    tags: z.array(z.string()).optional().describe('Tags for the playlist (create only)')
-  }))
-  .output(z.object({
-    playlistId: z.string().optional(),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    privacyStatus: z.string().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let managePlaylist = SlateTool.create(spec, {
+  name: 'Manage Playlist',
+  key: 'manage_playlist',
+  description: `Create, update, or delete a YouTube playlist. When creating, provide a title and optional description, privacy, and tags. When updating, provide the playlist ID and fields to change. When deleting, provide only the playlist ID.`,
+  instructions: [
+    'For creating: set action to "create" and provide title.',
+    'For updating: set action to "update" and provide playlistId plus fields to change.',
+    'For deleting: set action to "delete" and provide playlistId.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      playlistId: z
+        .string()
+        .optional()
+        .describe('Playlist ID (required for update and delete)'),
+      title: z.string().optional().describe('Playlist title (required for create)'),
+      description: z.string().optional().describe('Playlist description'),
+      privacyStatus: z
+        .enum(['private', 'public', 'unlisted'])
+        .optional()
+        .describe('Privacy status'),
+      defaultLanguage: z.string().optional().describe('Default language (ISO 639-1 code)'),
+      tags: z.array(z.string()).optional().describe('Tags for the playlist (create only)')
+    })
+  )
+  .output(
+    z.object({
+      playlistId: z.string().optional(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      privacyStatus: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
@@ -93,4 +100,5 @@ export let managePlaylist = SlateTool.create(
         message: `Deleted playlist \`${ctx.input.playlistId}\`.`
       };
     }
-  }).build();
+  })
+  .build();

@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Product',
-    key: 'delete_product',
-    description: `Permanently delete a product from the BigCommerce catalog by its ID. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteProduct = SlateTool.create(spec, {
+  name: 'Delete Product',
+  key: 'delete_product',
+  description: `Permanently delete a product from the BigCommerce catalog by its ID. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    productId: z.number().describe('The ID of the product to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the product was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productId: z.number().describe('The ID of the product to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the product was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      storeHash: ctx.config.storeHash,
+      storeHash: ctx.config.storeHash
     });
 
     await client.deleteProduct(ctx.input.productId);
 
     return {
       output: {
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted product with ID ${ctx.input.productId}.`,
+      message: `Deleted product with ID ${ctx.input.productId}.`
     };
   })
   .build();

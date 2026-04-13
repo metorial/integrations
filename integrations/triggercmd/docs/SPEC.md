@@ -22,6 +22,7 @@ TRIGGERcmd uses OAuth authentication. This is the standard method used by third-
 For direct REST API usage, TRIGGERcmd supports authentication via a personal Bearer token. You will need your user token, which can be found at the bottom of your TRIGGERcmd profile page or the instructions page.
 
 The token is passed as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer <your_token>
 ```
@@ -33,6 +34,7 @@ Alternatively, for some endpoints (like the IFTTT webhook), the token can be pas
 ### Remote Command Execution
 
 The core feature of TRIGGERcmd. TRIGGERcmd allows you to execute commands on your computers remotely through a REST API. A trigger request requires:
+
 - **computer** (required): The name of a computer in your TRIGGERcmd account.
 - **trigger** (required): The name of a command configured on that computer.
 - **params** (optional): Parameters to pass to the command.

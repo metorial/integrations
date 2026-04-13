@@ -56,8 +56,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.parsio.io',
       headers: {
-        'X-API-Key': config.token,
-      },
+        'X-API-Key': config.token
+      }
     });
   }
 
@@ -75,7 +75,7 @@ export class Client {
 
   async createMailbox(params: MailboxCreateParams): Promise<any> {
     let response = await this.axios.post('/mailboxes/create', {
-      name: params.name,
+      name: params.name
     });
     return response.data;
   }
@@ -84,7 +84,8 @@ export class Client {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.emailPrefix !== undefined) body.email_prefix = params.emailPrefix;
-    if (params.processAttachments !== undefined) body.process_attachments = params.processAttachments;
+    if (params.processAttachments !== undefined)
+      body.process_attachments = params.processAttachments;
     if (params.collectEmails !== undefined) body.collect_emails = params.collectEmails;
     if (params.alertEmailH !== undefined) body.alert_email_h = params.alertEmailH;
 
@@ -113,7 +114,9 @@ export class Client {
     if (params?.q) queryParams.q = params.q;
     if (params?.status) queryParams.status = params.status;
 
-    let response = await this.axios.get(`/mailboxes/${mailboxId}/docs`, { params: queryParams });
+    let response = await this.axios.get(`/mailboxes/${mailboxId}/docs`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -143,7 +146,7 @@ export class Client {
 
   async skipDocuments(mailboxId: string, documentIds: string[]): Promise<any> {
     let response = await this.axios.post(`/mailboxes/${mailboxId}/docs/skip`, {
-      ids: documentIds,
+      ids: documentIds
     });
     return response.data;
   }
@@ -162,21 +165,21 @@ export class Client {
 
   async enableTemplates(templateIds: string[]): Promise<any> {
     let response = await this.axios.post('/templates/enable_many', {
-      ids: templateIds,
+      ids: templateIds
     });
     return response.data;
   }
 
   async disableTemplates(templateIds: string[]): Promise<any> {
     let response = await this.axios.post('/templates/disable_many', {
-      ids: templateIds,
+      ids: templateIds
     });
     return response.data;
   }
 
   async deleteTemplates(templateIds: string[]): Promise<any> {
     let response = await this.axios.delete('/templates', {
-      data: { ids: templateIds },
+      data: { ids: templateIds }
     });
     return response.data;
   }
@@ -196,7 +199,7 @@ export class Client {
   async createWebhook(params: WebhookCreateParams): Promise<any> {
     let body: Record<string, unknown> = {
       url: params.url,
-      event: params.event,
+      event: params.event
     };
     if (params.tableId !== undefined) body.table_id = params.tableId;
 
@@ -216,7 +219,7 @@ export class Client {
 
   async deleteWebhooks(webhookIds: string[]): Promise<any> {
     let response = await this.axios.delete('/webhooks', {
-      data: { ids: webhookIds },
+      data: { ids: webhookIds }
     });
     return response.data;
   }
@@ -228,7 +231,9 @@ export class Client {
     if (params?.from) queryParams.from = params.from;
     if (params?.to) queryParams.to = params.to;
 
-    let response = await this.axios.get(`/mailboxes/${mailboxId}/parsed`, { params: queryParams });
+    let response = await this.axios.get(`/mailboxes/${mailboxId}/parsed`, {
+      params: queryParams
+    });
     return response.data;
   }
 

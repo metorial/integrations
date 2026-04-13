@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    applicationKey: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      applicationKey: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -13,16 +15,24 @@ export let auth = SlateAuth.create()
     key: 'api_keys',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('API Key from your AmbientWeather.net account page. Grants access to your device data.'),
-      applicationKey: z.string().describe('Application Key from your AmbientWeather.net account page. Identifies your application.'),
+      apiKey: z
+        .string()
+        .describe(
+          'API Key from your AmbientWeather.net account page. Grants access to your device data.'
+        ),
+      applicationKey: z
+        .string()
+        .describe(
+          'Application Key from your AmbientWeather.net account page. Identifies your application.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,
-          applicationKey: ctx.input.applicationKey,
-        },
+          applicationKey: ctx.input.applicationKey
+        }
       };
-    },
+    }
   });

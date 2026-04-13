@@ -9,7 +9,7 @@ export class SerpApiClient {
 
   private getAxios() {
     return createAxios({
-      baseURL: 'https://serpapi.com',
+      baseURL: 'https://serpapi.com'
     });
   }
 
@@ -18,8 +18,8 @@ export class SerpApiClient {
     let response = await axios.get('/search.json', {
       params: {
         ...params,
-        api_key: this.apiKey,
-      },
+        api_key: this.apiKey
+      }
     });
     return response.data;
   }
@@ -28,8 +28,8 @@ export class SerpApiClient {
     let axios = this.getAxios();
     let response = await axios.get('/account.json', {
       params: {
-        api_key: this.apiKey,
-      },
+        api_key: this.apiKey
+      }
     });
     return response.data;
   }

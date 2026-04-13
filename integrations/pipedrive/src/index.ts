@@ -18,7 +18,7 @@ import {
   getPipelines,
   searchPipedrive,
   manageDealProducts,
-  getUsers,
+  getUsers
 } from './tools';
 import {
   dealEvents,
@@ -28,7 +28,7 @@ import {
   activityEvents,
   productEvents,
   noteEvents,
-  pipelineEvents,
+  pipelineEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -51,7 +51,7 @@ export let provider = Slate.create({
     getPipelines.build(),
     searchPipedrive.build(),
     manageDealProducts.build(),
-    getUsers.build(),
+    getUsers.build()
   ],
   triggers: [
     dealEvents.build(),
@@ -61,6 +61,6 @@ export let provider = Slate.create({
     activityEvents.build(),
     productEvents.build(),
     noteEvents.build(),
-    pipelineEvents.build(),
-  ],
+    pipelineEvents.build()
+  ]
 });

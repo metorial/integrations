@@ -33,7 +33,7 @@ import {
   updateVariable,
   deleteVariable,
   getUpsertHistory,
-  ping,
+  ping
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -73,9 +73,7 @@ export let provider = Slate.create({
     updateVariable,
     deleteVariable,
     getUpsertHistory,
-    ping,
+    ping
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -3,49 +3,57 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let updateInvoiceTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Invoice',
-    key: 'update_invoice',
-    description: `Update an existing invoice's details, line items, or status. Supports marking invoices as sent, void, or writing them off.`,
-    instructions: [
-      'Use statusAction to change the invoice lifecycle state (e.g. mark as sent, void, write off).',
-      'To update line items, provide the full set of line items — partial updates are not supported by the API.'
-    ]
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('ID of the invoice to update'),
-    statusAction: z.enum(['mark_sent', 'mark_void', 'write_off', 'cancel_write_off']).optional().describe('Change the invoice status'),
-    customerId: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    paymentTerms: z.number().optional(),
-    lineItems: z.array(z.object({
-      lineItemId: z.string().optional().describe('Existing line item ID (for updates)'),
-      itemId: z.string().optional(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      quantity: z.number().optional(),
-      rate: z.number().optional(),
-      taxId: z.string().optional(),
-      discount: z.number().optional()
-    })).optional(),
-    discount: z.number().optional(),
-    notes: z.string().optional(),
-    terms: z.string().optional(),
-    referenceNumber: z.string().optional()
-  }))
-  .output(z.object({
-    invoiceId: z.string(),
-    invoiceNumber: z.string().optional(),
-    status: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateInvoiceTool = SlateTool.create(spec, {
+  name: 'Update Invoice',
+  key: 'update_invoice',
+  description: `Update an existing invoice's details, line items, or status. Supports marking invoices as sent, void, or writing them off.`,
+  instructions: [
+    'Use statusAction to change the invoice lifecycle state (e.g. mark as sent, void, write off).',
+    'To update line items, provide the full set of line items — partial updates are not supported by the API.'
+  ]
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('ID of the invoice to update'),
+      statusAction: z
+        .enum(['mark_sent', 'mark_void', 'write_off', 'cancel_write_off'])
+        .optional()
+        .describe('Change the invoice status'),
+      customerId: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      paymentTerms: z.number().optional(),
+      lineItems: z
+        .array(
+          z.object({
+            lineItemId: z.string().optional().describe('Existing line item ID (for updates)'),
+            itemId: z.string().optional(),
+            name: z.string().optional(),
+            description: z.string().optional(),
+            quantity: z.number().optional(),
+            rate: z.number().optional(),
+            taxId: z.string().optional(),
+            discount: z.number().optional()
+          })
+        )
+        .optional(),
+      discount: z.number().optional(),
+      notes: z.string().optional(),
+      terms: z.string().optional(),
+      referenceNumber: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string(),
+      invoiceNumber: z.string().optional(),
+      status: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
     let invoiceId = input.invoiceId;
@@ -54,7 +62,8 @@ export let updateInvoiceTool = SlateTool.create(
       if (input.statusAction === 'mark_sent') await client.markInvoiceSent(invoiceId);
       else if (input.statusAction === 'mark_void') await client.markInvoiceVoid(invoiceId);
       else if (input.statusAction === 'write_off') await client.writeOffInvoice(invoiceId);
-      else if (input.statusAction === 'cancel_write_off') await client.cancelWriteOff(invoiceId);
+      else if (input.statusAction === 'cancel_write_off')
+        await client.cancelWriteOff(invoiceId);
     }
 
     let payload: Record<string, any> = {};
@@ -67,7 +76,7 @@ export let updateInvoiceTool = SlateTool.create(
     if (input.terms) payload.terms = input.terms;
     if (input.referenceNumber) payload.reference_number = input.referenceNumber;
     if (input.lineItems) {
-      payload.line_items = input.lineItems.map((li) => ({
+      payload.line_items = input.lineItems.map(li => ({
         line_item_id: li.lineItemId,
         item_id: li.itemId,
         name: li.name,
@@ -99,4 +108,5 @@ export let updateInvoiceTool = SlateTool.create(
       },
       message: `Updated invoice **${inv.invoice_number}** — Status: ${inv.status}.${input.statusAction ? ` Applied action: ${input.statusAction}.` : ''}`
     };
-  }).build();
+  })
+  .build();

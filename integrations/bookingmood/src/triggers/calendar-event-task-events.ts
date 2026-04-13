@@ -3,64 +3,70 @@ import { BookingmoodClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let calendarEventTaskEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Calendar Event Task Events',
-    key: 'calendar_event_task_events',
-    description: 'Triggers when a task linked to a calendar event is created, updated, or completed.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event ID'),
-    eventType: z.string().describe('Event type: calendar_event_tasks.created, updated, or completed'),
-    taskNew: z.any().describe('New task data'),
-    taskOld: z.any().nullable().describe('Previous task data'),
-  }))
-  .output(z.object({
-    taskId: z.string().describe('UUID of the task'),
-    calendarEventId: z.string().describe('UUID of the related calendar event'),
-    taskTemplateId: z.string().nullable().describe('UUID of the task template'),
-    label: z.string().describe('Task label'),
-    schedule: z.string().describe('Task schedule: manual, arrival, or departure'),
-    dueAt: z.string().nullable().describe('Task deadline'),
-    completedAt: z.string().nullable().describe('Completion timestamp'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp'),
-  }))
+export let calendarEventTaskEvents = SlateTrigger.create(spec, {
+  name: 'Calendar Event Task Events',
+  key: 'calendar_event_task_events',
+  description:
+    'Triggers when a task linked to a calendar event is created, updated, or completed.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event ID'),
+      eventType: z
+        .string()
+        .describe('Event type: calendar_event_tasks.created, updated, or completed'),
+      taskNew: z.any().describe('New task data'),
+      taskOld: z.any().nullable().describe('Previous task data')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('UUID of the task'),
+      calendarEventId: z.string().describe('UUID of the related calendar event'),
+      taskTemplateId: z.string().nullable().describe('UUID of the task template'),
+      label: z.string().describe('Task label'),
+      schedule: z.string().describe('Task schedule: manual, arrival, or departure'),
+      dueAt: z.string().nullable().describe('Task deadline'),
+      completedAt: z.string().nullable().describe('Completion timestamp'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new BookingmoodClient(ctx.auth.token);
       let webhook = await client.createWebhook({
         endpoint: ctx.input.webhookBaseUrl,
         events: [
           'calendar_event_tasks.created',
           'calendar_event_tasks.updated',
-          'calendar_event_tasks.completed',
+          'calendar_event_tasks.completed'
         ],
-        description: 'Slates: Calendar Event Task Events',
+        description: 'Slates: Calendar Event Task Events'
       });
       return { registrationDetails: { webhookId: webhook.id } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new BookingmoodClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
       return {
-        inputs: [{
-          eventId: data.id,
-          eventType: data.event_type,
-          taskNew: data.payload?.new ?? null,
-          taskOld: data.payload?.old ?? null,
-        }],
+        inputs: [
+          {
+            eventId: data.id,
+            eventType: data.event_type,
+            taskNew: data.payload?.new ?? null,
+            taskOld: data.payload?.old ?? null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let task = ctx.input.taskNew;
 
       return {
@@ -75,9 +81,9 @@ export let calendarEventTaskEvents = SlateTrigger.create(
           dueAt: task.due_at ?? null,
           completedAt: task.completed_at ?? null,
           createdAt: task.created_at,
-          updatedAt: task.updated_at,
-        },
+          updatedAt: task.updated_at
+        }
       };
-    },
+    }
   })
   .build();

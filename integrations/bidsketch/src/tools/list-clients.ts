@@ -23,25 +23,26 @@ let clientSchema = z.object({
   updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listClients = SlateTool.create(
-  spec,
-  {
-    name: 'List Clients',
-    key: 'list_clients',
-    description: `Retrieve a list of all clients in the Bidsketch account. Supports pagination for large client lists. Returns contact details including name, email, phone, address, and notes.`,
-    tags: {
-      readOnly: true
-    }
+export let listClients = SlateTool.create(spec, {
+  name: 'List Clients',
+  key: 'list_clients',
+  description: `Retrieve a list of all clients in the Bidsketch account. Supports pagination for large client lists. Returns contact details including name, email, phone, address, and notes.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of clients per page (max 100)')
-  }))
-  .output(z.object({
-    clients: z.array(clientSchema).describe('List of clients')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of clients per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      clients: z.array(clientSchema).describe('List of clients')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
     let data = await client.listClients(ctx.input.page, ctx.input.perPage);
 

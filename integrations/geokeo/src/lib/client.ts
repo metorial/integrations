@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://geokeo.com/geocode/v1',
+  baseURL: 'https://geokeo.com/geocode/v1'
 });
 
 export interface GeokeoAddressComponents {
@@ -45,17 +45,12 @@ export interface GeokeoResponse {
 }
 
 export class Client {
-  constructor(
-    private token: string
-  ) {}
+  constructor(private token: string) {}
 
-  async forwardGeocode(params: {
-    query: string;
-    country?: string;
-  }): Promise<GeokeoResponse> {
+  async forwardGeocode(params: { query: string; country?: string }): Promise<GeokeoResponse> {
     let queryParams: Record<string, string> = {
       q: params.query,
-      api: this.token,
+      api: this.token
     };
 
     if (params.country) {
@@ -63,22 +58,19 @@ export class Client {
     }
 
     let response = await http.get<GeokeoResponse>('/search.php', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async reverseGeocode(params: {
-    lat: number;
-    lng: number;
-  }): Promise<GeokeoResponse> {
+  async reverseGeocode(params: { lat: number; lng: number }): Promise<GeokeoResponse> {
     let response = await http.get<GeokeoResponse>('/reverse.php', {
       params: {
         lat: params.lat.toString(),
         lng: params.lng.toString(),
-        api: this.token,
-      },
+        api: this.token
+      }
     });
 
     return response.data;

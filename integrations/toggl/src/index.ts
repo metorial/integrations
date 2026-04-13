@@ -18,7 +18,7 @@ import {
   getWorkspace,
   listWorkspaceUsers,
   getMe,
-  getReport,
+  getReport
 } from './tools';
 import {
   timeEntryEventsTrigger,
@@ -26,7 +26,7 @@ import {
   clientEventsTrigger,
   tagEventsTrigger,
   taskEventsTrigger,
-  workspaceUserEventsTrigger,
+  workspaceUserEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -49,7 +49,7 @@ export let provider = Slate.create({
     getWorkspace,
     listWorkspaceUsers,
     getMe,
-    getReport,
+    getReport
   ],
   triggers: [
     timeEntryEventsTrigger,
@@ -57,6 +57,6 @@ export let provider = Slate.create({
     clientEventsTrigger,
     tagEventsTrigger,
     taskEventsTrigger,
-    workspaceUserEventsTrigger,
-  ],
+    workspaceUserEventsTrigger
+  ]
 });

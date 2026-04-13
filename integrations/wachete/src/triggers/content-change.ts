@@ -3,43 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contentChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Content Change',
-    key: 'content_change',
-    description: 'Triggers when a monitored web page content changes or a monitoring error occurs.',
-  }
-)
-  .input(z.object({
-    notificationId: z.string().describe('Notification ID'),
-    alertType: z.string().describe('Alert type (e.g., NotEq, Error)'),
-    current: z.string().optional().describe('Current content value'),
-    comparand: z.string().optional().describe('Previous content value'),
-    error: z.string().optional().describe('Error message if applicable'),
-    timestamp: z.string().describe('When the notification was generated'),
-    serverTime: z.string().describe('Server timestamp'),
-    wachetId: z.string().describe('Monitor ID'),
-    wachetName: z.string().optional().describe('Monitor name'),
-    url: z.string().optional().describe('Monitored URL'),
-  }))
-  .output(z.object({
-    notificationId: z.string().describe('Notification ID'),
-    alertType: z.string().describe('Alert type (e.g., NotEq, Error)'),
-    current: z.string().optional().describe('Current content value'),
-    comparand: z.string().optional().describe('Previous content value for comparison'),
-    error: z.string().optional().describe('Error message if applicable'),
-    timestamp: z.string().describe('When the change was detected'),
-    wachetId: z.string().describe('Monitor ID that detected the change'),
-    wachetName: z.string().optional().describe('Name of the monitor'),
-    url: z.string().optional().describe('URL of the monitored page'),
-  }))
+export let contentChange = SlateTrigger.create(spec, {
+  name: 'Content Change',
+  key: 'content_change',
+  description:
+    'Triggers when a monitored web page content changes or a monitoring error occurs.'
+})
+  .input(
+    z.object({
+      notificationId: z.string().describe('Notification ID'),
+      alertType: z.string().describe('Alert type (e.g., NotEq, Error)'),
+      current: z.string().optional().describe('Current content value'),
+      comparand: z.string().optional().describe('Previous content value'),
+      error: z.string().optional().describe('Error message if applicable'),
+      timestamp: z.string().describe('When the notification was generated'),
+      serverTime: z.string().describe('Server timestamp'),
+      wachetId: z.string().describe('Monitor ID'),
+      wachetName: z.string().optional().describe('Monitor name'),
+      url: z.string().optional().describe('Monitored URL')
+    })
+  )
+  .output(
+    z.object({
+      notificationId: z.string().describe('Notification ID'),
+      alertType: z.string().describe('Alert type (e.g., NotEq, Error)'),
+      current: z.string().optional().describe('Current content value'),
+      comparand: z.string().optional().describe('Previous content value for comparison'),
+      error: z.string().optional().describe('Error message if applicable'),
+      timestamp: z.string().describe('When the change was detected'),
+      wachetId: z.string().describe('Monitor ID that detected the change'),
+      wachetName: z.string().optional().describe('Name of the monitor'),
+      url: z.string().optional().describe('URL of the monitored page')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastTimestamp = ctx.state?.lastTimestamp as string | undefined;
@@ -48,7 +50,7 @@ export let contentChange = SlateTrigger.create(
         from?: string;
         count?: number;
       } = {
-        count: 100,
+        count: 100
       };
 
       if (lastTimestamp) {
@@ -67,8 +69,8 @@ export let contentChange = SlateTrigger.create(
       let newLastTimestamp = lastTimestamp;
       if (notifications.length > 0) {
         // Find the most recent timestamp
-        let maxTimestamp = notifications.reduce((max, n) =>
-          n.timestamp > max ? n.timestamp : max,
+        let maxTimestamp = notifications.reduce(
+          (max, n) => (n.timestamp > max ? n.timestamp : max),
           notifications[0]!.timestamp
         );
         newLastTimestamp = maxTimestamp;
@@ -85,15 +87,15 @@ export let contentChange = SlateTrigger.create(
           serverTime: n.serverTime,
           wachetId: n.taskId,
           wachetName: n.taskName,
-          url: n.url,
+          url: n.url
         })),
         updatedState: {
-          lastTimestamp: newLastTimestamp,
-        },
+          lastTimestamp: newLastTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let alertType = ctx.input.alertType?.toLowerCase() ?? 'change';
       return {
         type: `content.${alertType}`,
@@ -107,9 +109,9 @@ export let contentChange = SlateTrigger.create(
           timestamp: ctx.input.timestamp,
           wachetId: ctx.input.wachetId,
           wachetName: ctx.input.wachetName,
-          url: ctx.input.url,
-        },
+          url: ctx.input.url
+        }
       };
-    },
+    }
   })
   .build();

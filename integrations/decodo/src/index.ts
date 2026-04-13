@@ -13,7 +13,7 @@ import {
   addWhitelistedIps,
   removeWhitelistedIp,
   getSubscriptions,
-  getProxyEndpoints,
+  getProxyEndpoints
 } from './tools';
 import { accountEvents } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     addWhitelistedIps,
     removeWhitelistedIp,
     getSubscriptions,
-    getProxyEndpoints,
+    getProxyEndpoints
   ],
-  triggers: [
-    accountEvents,
-  ],
+  triggers: [accountEvents]
 });

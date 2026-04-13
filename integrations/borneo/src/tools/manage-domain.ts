@@ -3,34 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDomain = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Domain',
-    key: 'manage_domain',
-    description: `Create, list, update, or delete domains with configurable polling frequencies. Domains represent connected systems or applications with automatic polling capabilities.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageDomain = SlateTool.create(spec, {
+  name: 'Manage Domain',
+  key: 'manage_domain',
+  description: `Create, list, update, or delete domains with configurable polling frequencies. Domains represent connected systems or applications with automatic polling capabilities.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'update', 'delete']).describe('Action to perform'),
-    domainId: z.string().optional().describe('Domain ID (required for update, delete)'),
-    name: z.string().optional().describe('Domain name'),
-    frequency: z.enum(['6h', '12h', '1d', '1w', '30d', 'manual']).optional().describe('Polling frequency'),
-    page: z.number().optional().describe('Page number for listing'),
-    size: z.number().optional().describe('Page size for listing'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction')
-  }))
-  .output(z.object({
-    domain: z.any().optional().describe('Domain record'),
-    domains: z.array(z.any()).optional().describe('List of domains'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'list', 'update', 'delete']).describe('Action to perform'),
+      domainId: z.string().optional().describe('Domain ID (required for update, delete)'),
+      name: z.string().optional().describe('Domain name'),
+      frequency: z
+        .enum(['6h', '12h', '1d', '1w', '30d', 'manual'])
+        .optional()
+        .describe('Polling frequency'),
+      page: z.number().optional().describe('Page number for listing'),
+      size: z.number().optional().describe('Page size for listing'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z
+      .object({
+        domain: z.any().optional().describe('Domain record'),
+        domains: z.array(z.any()).optional().describe('List of domains'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -61,7 +67,7 @@ export let manageDomain = SlateTool.create(
           sortOrder: ctx.input.sortOrder
         });
         let data = result?.data ?? result;
-        let domains = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+        let domains = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
         return {
           output: { domains, success: true },
           message: `Found **${domains.length}** domain(s).`
@@ -89,4 +95,5 @@ export let manageDomain = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

@@ -10,7 +10,7 @@ import type {
   AzureReviewer,
   AzureBranchStats,
   AzureListResponse,
-  AzureServiceHookSubscription,
+  AzureServiceHookSubscription
 } from './types';
 
 export interface ClientConfig {
@@ -31,16 +31,14 @@ export class Client {
     // For PAT tokens, the token itself is a PAT string; for OAuth it's a bearer token.
     // Detect based on token format: OAuth tokens from Entra ID are typically JWTs (contain dots).
     let isPat = !config.token.includes('.');
-    let authHeader = isPat
-      ? `Basic ${btoa(`:${config.token}`)}`
-      : `Bearer ${config.token}`;
+    let authHeader = isPat ? `Basic ${btoa(`:${config.token}`)}` : `Bearer ${config.token}`;
 
     this.http = createAxios({
       baseURL: `https://dev.azure.com/${config.organization}`,
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -60,14 +58,17 @@ export class Client {
     return response.data as AzureRepository;
   }
 
-  async createRepository(name: string, options?: {
-    parentRepositoryId?: string;
-    parentProjectId?: string;
-    sourceRef?: string;
-  }): Promise<AzureRepository> {
+  async createRepository(
+    name: string,
+    options?: {
+      parentRepositoryId?: string;
+      parentProjectId?: string;
+      sourceRef?: string;
+    }
+  ): Promise<AzureRepository> {
     let body: Record<string, any> = {
       name,
-      project: { id: this.project },
+      project: { id: this.project }
     };
 
     if (options?.parentRepositoryId) {
@@ -86,11 +87,14 @@ export class Client {
     return response.data as AzureRepository;
   }
 
-  async updateRepository(repositoryId: string, updates: {
-    name?: string;
-    defaultBranch?: string;
-    isDisabled?: boolean;
-  }): Promise<AzureRepository> {
+  async updateRepository(
+    repositoryId: string,
+    updates: {
+      name?: string;
+      defaultBranch?: string;
+      isDisabled?: boolean;
+    }
+  ): Promise<AzureRepository> {
     let response = await this.http.patch(
       `/${this.project}/_apis/git/repositories/${repositoryId}?api-version=7.1`,
       updates
@@ -115,11 +119,14 @@ export class Client {
     return (response.data as AzureListResponse<AzureRef>).value;
   }
 
-  async updateRefs(repositoryId: string, refUpdates: Array<{
-    name: string;
-    oldObjectId: string;
-    newObjectId: string;
-  }>): Promise<AzureRef[]> {
+  async updateRefs(
+    repositoryId: string,
+    refUpdates: Array<{
+      name: string;
+      oldObjectId: string;
+      newObjectId: string;
+    }>
+  ): Promise<AzureRef[]> {
     let response = await this.http.post(
       `/${this.project}/_apis/git/repositories/${repositoryId}/refs?api-version=7.1`,
       refUpdates
@@ -127,7 +134,11 @@ export class Client {
     return (response.data as AzureListResponse<AzureRef>).value;
   }
 
-  async getBranchStats(repositoryId: string, branchName?: string, baseVersion?: string): Promise<AzureBranchStats[]> {
+  async getBranchStats(
+    repositoryId: string,
+    branchName?: string,
+    baseVersion?: string
+  ): Promise<AzureBranchStats[]> {
     let url = `/${this.project}/_apis/git/repositories/${repositoryId}/stats/branches?api-version=7.1`;
     if (branchName) {
       url += `&name=${encodeURIComponent(branchName)}`;
@@ -141,21 +152,26 @@ export class Client {
 
   // --- Pull Requests ---
 
-  async listPullRequests(repositoryId: string, options?: {
-    status?: string;
-    creatorId?: string;
-    reviewerId?: string;
-    sourceRefName?: string;
-    targetRefName?: string;
-    top?: number;
-    skip?: number;
-  }): Promise<AzurePullRequest[]> {
+  async listPullRequests(
+    repositoryId: string,
+    options?: {
+      status?: string;
+      creatorId?: string;
+      reviewerId?: string;
+      sourceRefName?: string;
+      targetRefName?: string;
+      top?: number;
+      skip?: number;
+    }
+  ): Promise<AzurePullRequest[]> {
     let params = new URLSearchParams({ 'api-version': '7.1' });
     if (options?.status) params.set('searchCriteria.status', options.status);
     if (options?.creatorId) params.set('searchCriteria.creatorId', options.creatorId);
     if (options?.reviewerId) params.set('searchCriteria.reviewerId', options.reviewerId);
-    if (options?.sourceRefName) params.set('searchCriteria.sourceRefName', options.sourceRefName);
-    if (options?.targetRefName) params.set('searchCriteria.targetRefName', options.targetRefName);
+    if (options?.sourceRefName)
+      params.set('searchCriteria.sourceRefName', options.sourceRefName);
+    if (options?.targetRefName)
+      params.set('searchCriteria.targetRefName', options.targetRefName);
     if (options?.top) params.set('$top', options.top.toString());
     if (options?.skip) params.set('$skip', options.skip.toString());
 
@@ -165,28 +181,34 @@ export class Client {
     return (response.data as AzureListResponse<AzurePullRequest>).value;
   }
 
-  async getPullRequest(repositoryId: string, pullRequestId: number): Promise<AzurePullRequest> {
+  async getPullRequest(
+    repositoryId: string,
+    pullRequestId: number
+  ): Promise<AzurePullRequest> {
     let response = await this.http.get(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}?api-version=7.1`
     );
     return response.data as AzurePullRequest;
   }
 
-  async createPullRequest(repositoryId: string, params: {
-    title: string;
-    description?: string;
-    sourceRefName: string;
-    targetRefName: string;
-    isDraft?: boolean;
-    reviewers?: Array<{ id: string }>;
-    autoCompleteSetBy?: { id: string };
-    completionOptions?: {
-      mergeStrategy?: string;
-      deleteSourceBranch?: boolean;
-      squashMerge?: boolean;
-      mergeCommitMessage?: string;
-    };
-  }): Promise<AzurePullRequest> {
+  async createPullRequest(
+    repositoryId: string,
+    params: {
+      title: string;
+      description?: string;
+      sourceRefName: string;
+      targetRefName: string;
+      isDraft?: boolean;
+      reviewers?: Array<{ id: string }>;
+      autoCompleteSetBy?: { id: string };
+      completionOptions?: {
+        mergeStrategy?: string;
+        deleteSourceBranch?: boolean;
+        squashMerge?: boolean;
+        mergeCommitMessage?: string;
+      };
+    }
+  ): Promise<AzurePullRequest> {
     let response = await this.http.post(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests?api-version=7.1`,
       params
@@ -194,20 +216,24 @@ export class Client {
     return response.data as AzurePullRequest;
   }
 
-  async updatePullRequest(repositoryId: string, pullRequestId: number, updates: {
-    title?: string;
-    description?: string;
-    status?: string;
-    targetRefName?: string;
-    isDraft?: boolean;
-    autoCompleteSetBy?: { id: string } | null;
-    completionOptions?: {
-      mergeStrategy?: string;
-      deleteSourceBranch?: boolean;
-      squashMerge?: boolean;
-      mergeCommitMessage?: string;
-    };
-  }): Promise<AzurePullRequest> {
+  async updatePullRequest(
+    repositoryId: string,
+    pullRequestId: number,
+    updates: {
+      title?: string;
+      description?: string;
+      status?: string;
+      targetRefName?: string;
+      isDraft?: boolean;
+      autoCompleteSetBy?: { id: string } | null;
+      completionOptions?: {
+        mergeStrategy?: string;
+        deleteSourceBranch?: boolean;
+        squashMerge?: boolean;
+        mergeCommitMessage?: string;
+      };
+    }
+  ): Promise<AzurePullRequest> {
     let response = await this.http.patch(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}?api-version=7.1`,
       updates
@@ -217,17 +243,25 @@ export class Client {
 
   // --- PR Reviewers ---
 
-  async listPullRequestReviewers(repositoryId: string, pullRequestId: number): Promise<AzureReviewer[]> {
+  async listPullRequestReviewers(
+    repositoryId: string,
+    pullRequestId: number
+  ): Promise<AzureReviewer[]> {
     let response = await this.http.get(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/reviewers?api-version=7.1`
     );
     return (response.data as AzureListResponse<AzureReviewer>).value;
   }
 
-  async addPullRequestReviewer(repositoryId: string, pullRequestId: number, reviewerId: string, options?: {
-    vote?: number;
-    isRequired?: boolean;
-  }): Promise<AzureReviewer> {
+  async addPullRequestReviewer(
+    repositoryId: string,
+    pullRequestId: number,
+    reviewerId: string,
+    options?: {
+      vote?: number;
+      isRequired?: boolean;
+    }
+  ): Promise<AzureReviewer> {
     let response = await this.http.put(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/reviewers/${reviewerId}?api-version=7.1`,
       { id: reviewerId, vote: options?.vote ?? 0, isRequired: options?.isRequired }
@@ -235,7 +269,11 @@ export class Client {
     return response.data as AzureReviewer;
   }
 
-  async removePullRequestReviewer(repositoryId: string, pullRequestId: number, reviewerId: string): Promise<void> {
+  async removePullRequestReviewer(
+    repositoryId: string,
+    pullRequestId: number,
+    reviewerId: string
+  ): Promise<void> {
     await this.http.delete(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/reviewers/${reviewerId}?api-version=7.1`
     );
@@ -243,22 +281,29 @@ export class Client {
 
   // --- PR Comment Threads ---
 
-  async listCommentThreads(repositoryId: string, pullRequestId: number): Promise<AzureCommentThread[]> {
+  async listCommentThreads(
+    repositoryId: string,
+    pullRequestId: number
+  ): Promise<AzureCommentThread[]> {
     let response = await this.http.get(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/threads?api-version=7.1`
     );
     return (response.data as AzureListResponse<AzureCommentThread>).value;
   }
 
-  async createCommentThread(repositoryId: string, pullRequestId: number, params: {
-    comments: Array<{ content: string; parentCommentId?: number; commentType?: string }>;
-    status?: string;
-    threadContext?: {
-      filePath: string;
-      rightFileStart?: { line: number; offset: number };
-      rightFileEnd?: { line: number; offset: number };
-    };
-  }): Promise<AzureCommentThread> {
+  async createCommentThread(
+    repositoryId: string,
+    pullRequestId: number,
+    params: {
+      comments: Array<{ content: string; parentCommentId?: number; commentType?: string }>;
+      status?: string;
+      threadContext?: {
+        filePath: string;
+        rightFileStart?: { line: number; offset: number };
+        rightFileEnd?: { line: number; offset: number };
+      };
+    }
+  ): Promise<AzureCommentThread> {
     let response = await this.http.post(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/threads?api-version=7.1`,
       params
@@ -266,9 +311,14 @@ export class Client {
     return response.data as AzureCommentThread;
   }
 
-  async updateCommentThread(repositoryId: string, pullRequestId: number, threadId: number, updates: {
-    status?: string;
-  }): Promise<AzureCommentThread> {
+  async updateCommentThread(
+    repositoryId: string,
+    pullRequestId: number,
+    threadId: number,
+    updates: {
+      status?: string;
+    }
+  ): Promise<AzureCommentThread> {
     let response = await this.http.patch(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/threads/${threadId}?api-version=7.1`,
       updates
@@ -276,7 +326,13 @@ export class Client {
     return response.data as AzureCommentThread;
   }
 
-  async createComment(repositoryId: string, pullRequestId: number, threadId: number, content: string, parentCommentId?: number): Promise<AzureCommentThread> {
+  async createComment(
+    repositoryId: string,
+    pullRequestId: number,
+    threadId: number,
+    content: string,
+    parentCommentId?: number
+  ): Promise<AzureCommentThread> {
     let response = await this.http.post(
       `/${this.project}/_apis/git/repositories/${repositoryId}/pullrequests/${pullRequestId}/threads/${threadId}/comments?api-version=7.1`,
       { content, parentCommentId }
@@ -286,15 +342,18 @@ export class Client {
 
   // --- Commits ---
 
-  async listCommits(repositoryId: string, options?: {
-    branch?: string;
-    author?: string;
-    fromDate?: string;
-    toDate?: string;
-    itemPath?: string;
-    top?: number;
-    skip?: number;
-  }): Promise<AzureCommit[]> {
+  async listCommits(
+    repositoryId: string,
+    options?: {
+      branch?: string;
+      author?: string;
+      fromDate?: string;
+      toDate?: string;
+      itemPath?: string;
+      top?: number;
+      skip?: number;
+    }
+  ): Promise<AzureCommit[]> {
     let params = new URLSearchParams({ 'api-version': '7.1' });
     if (options?.branch) params.set('searchCriteria.itemVersion.version', options.branch);
     if (options?.author) params.set('searchCriteria.author', options.author);
@@ -319,14 +378,17 @@ export class Client {
 
   // --- Pushes ---
 
-  async listPushes(repositoryId: string, options?: {
-    top?: number;
-    skip?: number;
-    refName?: string;
-    pusherId?: string;
-    fromDate?: string;
-    toDate?: string;
-  }): Promise<AzurePush[]> {
+  async listPushes(
+    repositoryId: string,
+    options?: {
+      top?: number;
+      skip?: number;
+      refName?: string;
+      pusherId?: string;
+      fromDate?: string;
+      toDate?: string;
+    }
+  ): Promise<AzurePush[]> {
     let params = new URLSearchParams({ 'api-version': '7.1' });
     if (options?.top) params.set('$top', options.top.toString());
     if (options?.skip) params.set('$skip', options.skip.toString());
@@ -343,15 +405,19 @@ export class Client {
 
   // --- Items (Files/Folders) ---
 
-  async getItem(repositoryId: string, path: string, options?: {
-    version?: string;
-    versionType?: string;
-    includeContent?: boolean;
-    format?: string;
-  }): Promise<AzureItem> {
+  async getItem(
+    repositoryId: string,
+    path: string,
+    options?: {
+      version?: string;
+      versionType?: string;
+      includeContent?: boolean;
+      format?: string;
+    }
+  ): Promise<AzureItem> {
     let params = new URLSearchParams({
       'api-version': '7.1',
-      path,
+      path
     });
     if (options?.version) params.set('versionDescriptor.version', options.version);
     if (options?.versionType) params.set('versionDescriptor.versionType', options.versionType);
@@ -364,11 +430,15 @@ export class Client {
     return response.data as AzureItem;
   }
 
-  async getItems(repositoryId: string, scopePath?: string, options?: {
-    version?: string;
-    versionType?: string;
-    recursionLevel?: string;
-  }): Promise<AzureItem[]> {
+  async getItems(
+    repositoryId: string,
+    scopePath?: string,
+    options?: {
+      version?: string;
+      versionType?: string;
+      recursionLevel?: string;
+    }
+  ): Promise<AzureItem[]> {
     let params = new URLSearchParams({ 'api-version': '7.1' });
     if (scopePath) params.set('scopePath', scopePath);
     if (options?.version) params.set('versionDescriptor.version', options.version);
@@ -383,14 +453,17 @@ export class Client {
 
   // --- Code Search ---
 
-  async searchCode(searchText: string, options?: {
-    repositoryName?: string;
-    branch?: string;
-    path?: string;
-    fileExtension?: string;
-    top?: number;
-    skip?: number;
-  }): Promise<{
+  async searchCode(
+    searchText: string,
+    options?: {
+      repositoryName?: string;
+      branch?: string;
+      path?: string;
+      fileExtension?: string;
+      top?: number;
+      skip?: number;
+    }
+  ): Promise<{
     count: number;
     results: Array<{
       fileName: string;
@@ -403,11 +476,11 @@ export class Client {
   }> {
     let searchHttp = createAxios({
       baseURL: `https://almsearch.dev.azure.com/${this.organization}`,
-      headers: this.http.defaults.headers as Record<string, string>,
+      headers: this.http.defaults.headers as Record<string, string>
     });
 
     let filters: Record<string, string[]> = {
-      Project: [this.project],
+      Project: [this.project]
     };
     if (options?.repositoryName) filters['Repository'] = [options.repositoryName];
     if (options?.branch) filters['Branch'] = [options.branch];
@@ -420,7 +493,7 @@ export class Client {
         searchText,
         $skip: options?.skip ?? 0,
         $top: options?.top ?? 25,
-        filters,
+        filters
       }
     );
 
@@ -441,10 +514,12 @@ export class Client {
 
   // --- Service Hooks ---
 
-  async createServiceHookSubscription(subscription: AzureServiceHookSubscription): Promise<AzureServiceHookSubscription> {
+  async createServiceHookSubscription(
+    subscription: AzureServiceHookSubscription
+  ): Promise<AzureServiceHookSubscription> {
     let hooksHttp = createAxios({
       baseURL: `https://dev.azure.com/${this.organization}`,
-      headers: this.http.defaults.headers as Record<string, string>,
+      headers: this.http.defaults.headers as Record<string, string>
     });
 
     let response = await hooksHttp.post(
@@ -457,11 +532,9 @@ export class Client {
   async deleteServiceHookSubscription(subscriptionId: string): Promise<void> {
     let hooksHttp = createAxios({
       baseURL: `https://dev.azure.com/${this.organization}`,
-      headers: this.http.defaults.headers as Record<string, string>,
+      headers: this.http.defaults.headers as Record<string, string>
     });
 
-    await hooksHttp.delete(
-      `/_apis/hooks/subscriptions/${subscriptionId}?api-version=7.1`
-    );
+    await hooksHttp.delete(`/_apis/hooks/subscriptions/${subscriptionId}?api-version=7.1`);
   }
 }

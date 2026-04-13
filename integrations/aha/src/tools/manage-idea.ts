@@ -14,38 +14,46 @@ let ideaOutputSchema = z.object({
   url: z.string().optional().describe('Aha! URL'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
-  deleted: z.boolean().optional().describe('True if the idea was deleted'),
+  deleted: z.boolean().optional().describe('True if the idea was deleted')
 });
 
-export let manageIdea = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Idea',
-    key: 'manage_idea',
-    description: `Create, update, or delete an idea in Aha!. Ideas represent customer feedback and feature requests. They can be tagged, categorized, and eventually promoted to features.`,
-    instructions: [
-      'To **create** an idea, set action to "create" and provide a productId plus at least a name.',
-      'To **update** an idea, set action to "update" and provide the ideaId plus the fields to change.',
-      'To **delete** an idea, set action to "delete" and provide the ideaId.',
-      'Set **skipPortal** to true when creating to avoid submitting the idea to any portal.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageIdea = SlateTool.create(spec, {
+  name: 'Manage Idea',
+  key: 'manage_idea',
+  description: `Create, update, or delete an idea in Aha!. Ideas represent customer feedback and feature requests. They can be tagged, categorized, and eventually promoted to features.`,
+  instructions: [
+    'To **create** an idea, set action to "create" and provide a productId plus at least a name.',
+    'To **update** an idea, set action to "update" and provide the ideaId plus the fields to change.',
+    'To **delete** an idea, set action to "delete" and provide the ideaId.',
+    'Set **skipPortal** to true when creating to avoid submitting the idea to any portal.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    ideaId: z.string().optional().describe('Idea ID or reference number (required for update/delete)'),
-    productId: z.string().optional().describe('Product ID or reference prefix (required for create)'),
-    name: z.string().optional().describe('Idea name/title'),
-    description: z.string().optional().describe('Idea description (HTML supported)'),
-    tags: z.array(z.string()).optional().describe('Tags to set'),
-    workflowStatus: z.string().optional().describe('Workflow status name'),
-    skipPortal: z.boolean().optional().describe('Skip submitting to idea portal (create only)'),
-  }))
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      ideaId: z
+        .string()
+        .optional()
+        .describe('Idea ID or reference number (required for update/delete)'),
+      productId: z
+        .string()
+        .optional()
+        .describe('Product ID or reference prefix (required for create)'),
+      name: z.string().optional().describe('Idea name/title'),
+      description: z.string().optional().describe('Idea description (HTML supported)'),
+      tags: z.array(z.string()).optional().describe('Tags to set'),
+      workflowStatus: z.string().optional().describe('Workflow status name'),
+      skipPortal: z
+        .boolean()
+        .optional()
+        .describe('Skip submitting to idea portal (create only)')
+    })
+  )
   .output(ideaOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new AhaClient(ctx.config.subdomain, ctx.auth.token);
     let { action } = ctx.input;
 
@@ -58,7 +66,7 @@ export let manageIdea = SlateTool.create(
         description: ctx.input.description,
         tags: ctx.input.tags,
         workflowStatus: ctx.input.workflowStatus,
-        skipPortal: ctx.input.skipPortal,
+        skipPortal: ctx.input.skipPortal
       });
 
       return {
@@ -72,9 +80,9 @@ export let manageIdea = SlateTool.create(
           tags: idea.tags,
           url: idea.url,
           createdAt: idea.created_at,
-          updatedAt: idea.updated_at,
+          updatedAt: idea.updated_at
         },
-        message: `Created idea **${idea.reference_num}** — ${idea.name}.`,
+        message: `Created idea **${idea.reference_num}** — ${idea.name}.`
       };
     }
 
@@ -84,7 +92,7 @@ export let manageIdea = SlateTool.create(
       await client.deleteIdea(ctx.input.ideaId);
       return {
         output: { ideaId: ctx.input.ideaId, deleted: true },
-        message: `Deleted idea \`${ctx.input.ideaId}\`.`,
+        message: `Deleted idea \`${ctx.input.ideaId}\`.`
       };
     }
 
@@ -93,7 +101,7 @@ export let manageIdea = SlateTool.create(
       name: ctx.input.name,
       description: ctx.input.description,
       tags: ctx.input.tags,
-      workflowStatus: ctx.input.workflowStatus,
+      workflowStatus: ctx.input.workflowStatus
     });
 
     return {
@@ -107,9 +115,9 @@ export let manageIdea = SlateTool.create(
         tags: idea.tags,
         url: idea.url,
         createdAt: idea.created_at,
-        updatedAt: idea.updated_at,
+        updatedAt: idea.updated_at
       },
-      message: `Updated idea **${idea.reference_num}** — ${idea.name}.`,
+      message: `Updated idea **${idea.reference_num}** — ${idea.name}.`
     };
   })
   .build();

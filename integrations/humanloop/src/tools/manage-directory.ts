@@ -3,38 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDirectory = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Directory',
-    key: 'manage_directory',
-    description: `Create, update, retrieve, list, or delete directories. Directories organize Prompts, Evaluators, Datasets, Flows, and Tools into a hierarchical file structure. Retrieve a directory to see its contents including subdirectories and files.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageDirectory = SlateTool.create(spec, {
+  name: 'Manage Directory',
+  key: 'manage_directory',
+  description: `Create, update, retrieve, list, or delete directories. Directories organize Prompts, Evaluators, Datasets, Flows, and Tools into a hierarchical file structure. Retrieve a directory to see its contents including subdirectories and files.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'list', 'delete']).describe('Action to perform'),
-    directoryId: z.string().optional().describe('Directory ID (required for get, update, delete)'),
-    path: z.string().optional().describe('Path for the directory (used for create)'),
-    parentId: z.string().optional().describe('Parent directory ID (for create or move)'),
-    name: z.string().optional().describe('New name for the directory (for update)'),
-  }))
-  .output(z.object({
-    directory: z.any().optional().describe('Directory details with subdirectories and files'),
-    directories: z.array(z.any()).optional().describe('List of all directories'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'get', 'list', 'delete'])
+        .describe('Action to perform'),
+      directoryId: z
+        .string()
+        .optional()
+        .describe('Directory ID (required for get, update, delete)'),
+      path: z.string().optional().describe('Path for the directory (used for create)'),
+      parentId: z.string().optional().describe('Parent directory ID (for create or move)'),
+      name: z.string().optional().describe('New name for the directory (for update)')
+    })
+  )
+  .output(
+    z.object({
+      directory: z
+        .any()
+        .optional()
+        .describe('Directory details with subdirectories and files'),
+      directories: z.array(z.any()).optional().describe('List of all directories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
       let directories = await client.listDirectories();
-      let dirArray = Array.isArray(directories) ? directories : (directories.records || []);
+      let dirArray = Array.isArray(directories) ? directories : directories.records || [];
       return {
         output: { directories: dirArray },
-        message: `Found **${dirArray.length}** directories.`,
+        message: `Found **${dirArray.length}** directories.`
       };
     }
 
@@ -43,7 +52,7 @@ export let manageDirectory = SlateTool.create(
       let directory = await client.getDirectory(ctx.input.directoryId);
       return {
         output: { directory },
-        message: `Retrieved directory **${directory.name || directory.path || ctx.input.directoryId}**.`,
+        message: `Retrieved directory **${directory.name || directory.path || ctx.input.directoryId}**.`
       };
     }
 
@@ -54,7 +63,7 @@ export let manageDirectory = SlateTool.create(
       let directory = await client.createDirectory(body);
       return {
         output: { directory },
-        message: `Created directory **${directory.name || directory.path}**.`,
+        message: `Created directory **${directory.name || directory.path}**.`
       };
     }
 
@@ -66,7 +75,7 @@ export let manageDirectory = SlateTool.create(
       let directory = await client.updateDirectory(ctx.input.directoryId, body);
       return {
         output: { directory },
-        message: `Updated directory **${directory.name || directory.path || ctx.input.directoryId}**.`,
+        message: `Updated directory **${directory.name || directory.path || ctx.input.directoryId}**.`
       };
     }
 
@@ -75,7 +84,7 @@ export let manageDirectory = SlateTool.create(
       await client.deleteDirectory(ctx.input.directoryId);
       return {
         output: {},
-        message: `Deleted directory **${ctx.input.directoryId}**.`,
+        message: `Deleted directory **${ctx.input.directoryId}**.`
       };
     }
 

@@ -42,13 +42,10 @@ import {
   createAnalyticsReport,
   listKnowledgeBases,
   getKnowledgeBaseContent,
-  listEvents,
+  listEvents
 } from './tools';
 
-import {
-  conversationEvent,
-  webhookEvent,
-} from './triggers';
+import { conversationEvent, webhookEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -93,10 +90,7 @@ export let provider = Slate.create({
     createAnalyticsReport.build(),
     listKnowledgeBases.build(),
     getKnowledgeBaseContent.build(),
-    listEvents.build(),
+    listEvents.build()
   ],
-  triggers: [
-    conversationEvent.build(),
-    webhookEvent.build(),
-  ],
+  triggers: [conversationEvent.build(), webhookEvent.build()]
 });

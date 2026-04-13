@@ -7,7 +7,7 @@ import {
   generateFashionModel,
   generateVideo,
   manageStorage,
-  getJobStatus,
+  getJobStatus
 } from './tools';
 import { asyncJobCompleted } from './triggers';
 
@@ -20,9 +20,7 @@ export let provider = Slate.create({
     generateFashionModel,
     generateVideo,
     manageStorage,
-    getJobStatus,
+    getJobStatus
   ],
-  triggers: [
-    asyncJobCompleted,
-  ],
+  triggers: [asyncJobCompleted]
 });

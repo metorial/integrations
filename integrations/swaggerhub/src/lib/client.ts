@@ -13,8 +13,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        Authorization: config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -37,12 +37,15 @@ export class Client {
 
   // ─── APIs ─────────────────────────────────────────────
 
-  async getOwnerApis(owner: string, params?: {
-    page?: number;
-    limit?: number;
-    sort?: 'NAME' | 'UPDATED' | 'CREATED' | 'OWNER';
-    order?: 'ASC' | 'DESC';
-  }) {
+  async getOwnerApis(
+    owner: string,
+    params?: {
+      page?: number;
+      limit?: number;
+      sort?: 'NAME' | 'UPDATED' | 'CREATED' | 'OWNER';
+      order?: 'ASC' | 'DESC';
+    }
+  ) {
     let response = await this.axios.get(`/apis/${owner}`, { params });
     return response.data;
   }
@@ -52,13 +55,18 @@ export class Client {
     return response.data;
   }
 
-  async getApiDefinition(owner: string, api: string, version: string, params?: {
-    resolved?: boolean;
-    flatten?: boolean;
-  }) {
+  async getApiDefinition(
+    owner: string,
+    api: string,
+    version: string,
+    params?: {
+      resolved?: boolean;
+      flatten?: boolean;
+    }
+  ) {
     let response = await this.axios.get(`/apis/${owner}/${api}/${version}`, {
       params,
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json' }
     });
     return response.data;
   }
@@ -66,26 +74,30 @@ export class Client {
   async getApiDefinitionYaml(owner: string, api: string, version: string) {
     let response = await this.axios.get(`/apis/${owner}/${api}/${version}/swagger.yaml`, {
       headers: { Accept: 'application/yaml' },
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
 
-  async saveApiDefinition(owner: string, api: string, params: {
-    definition: string;
-    version?: string;
-    isPrivate?: boolean;
-    oas?: string;
-    force?: boolean;
-  }) {
+  async saveApiDefinition(
+    owner: string,
+    api: string,
+    params: {
+      definition: string;
+      version?: string;
+      isPrivate?: boolean;
+      oas?: string;
+      force?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/apis/${owner}/${api}`, params.definition, {
       headers: { 'Content-Type': 'application/yaml' },
       params: {
         version: params.version,
         isPrivate: params.isPrivate,
         oas: params.oas,
-        force: params.force,
-      },
+        force: params.force
+      }
     });
     return response.data;
   }
@@ -122,8 +134,16 @@ export class Client {
     return response.data;
   }
 
-  async setApiVersionLifecycle(owner: string, api: string, version: string, published: boolean) {
-    let response = await this.axios.put(`/apis/${owner}/${api}/${version}/settings/lifecycle`, { published });
+  async setApiVersionLifecycle(
+    owner: string,
+    api: string,
+    version: string,
+    published: boolean
+  ) {
+    let response = await this.axios.put(
+      `/apis/${owner}/${api}/${version}/settings/lifecycle`,
+      { published }
+    );
     return response.data;
   }
 
@@ -132,19 +152,29 @@ export class Client {
     return response.data;
   }
 
-  async setApiVersionVisibility(owner: string, api: string, version: string, isPrivate: boolean) {
-    let response = await this.axios.put(`/apis/${owner}/${api}/${version}/settings/private`, { private: isPrivate });
+  async setApiVersionVisibility(
+    owner: string,
+    api: string,
+    version: string,
+    isPrivate: boolean
+  ) {
+    let response = await this.axios.put(`/apis/${owner}/${api}/${version}/settings/private`, {
+      private: isPrivate
+    });
     return response.data;
   }
 
   // ─── Domains ──────────────────────────────────────────
 
-  async getOwnerDomains(owner: string, params?: {
-    page?: number;
-    limit?: number;
-    sort?: 'NAME' | 'UPDATED' | 'CREATED' | 'OWNER';
-    order?: 'ASC' | 'DESC';
-  }) {
+  async getOwnerDomains(
+    owner: string,
+    params?: {
+      page?: number;
+      limit?: number;
+      sort?: 'NAME' | 'UPDATED' | 'CREATED' | 'OWNER';
+      order?: 'ASC' | 'DESC';
+    }
+  ) {
     let response = await this.axios.get(`/domains/${owner}`, { params });
     return response.data;
   }
@@ -156,7 +186,7 @@ export class Client {
 
   async getDomainDefinition(owner: string, domain: string, version: string) {
     let response = await this.axios.get(`/domains/${owner}/${domain}/${version}`, {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json' }
     });
     return response.data;
   }
@@ -164,24 +194,28 @@ export class Client {
   async getDomainDefinitionYaml(owner: string, domain: string, version: string) {
     let response = await this.axios.get(`/domains/${owner}/${domain}/${version}/domain.yaml`, {
       headers: { Accept: 'application/yaml' },
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
 
-  async saveDomainDefinition(owner: string, domain: string, params: {
-    definition: string;
-    version?: string;
-    isPrivate?: boolean;
-    force?: boolean;
-  }) {
+  async saveDomainDefinition(
+    owner: string,
+    domain: string,
+    params: {
+      definition: string;
+      version?: string;
+      isPrivate?: boolean;
+      force?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/domains/${owner}/${domain}`, params.definition, {
       headers: { 'Content-Type': 'application/yaml' },
       params: {
         version: params.version,
         isPrivate: params.isPrivate,
-        force: params.force,
-      },
+        force: params.force
+      }
     });
     return response.data;
   }
@@ -203,13 +237,29 @@ export class Client {
 
   // ─── Domain Settings ──────────────────────────────────
 
-  async setDomainVersionLifecycle(owner: string, domain: string, version: string, published: boolean) {
-    let response = await this.axios.put(`/domains/${owner}/${domain}/${version}/settings/lifecycle`, { published });
+  async setDomainVersionLifecycle(
+    owner: string,
+    domain: string,
+    version: string,
+    published: boolean
+  ) {
+    let response = await this.axios.put(
+      `/domains/${owner}/${domain}/${version}/settings/lifecycle`,
+      { published }
+    );
     return response.data;
   }
 
-  async setDomainVersionVisibility(owner: string, domain: string, version: string, isPrivate: boolean) {
-    let response = await this.axios.put(`/domains/${owner}/${domain}/${version}/settings/private`, { private: isPrivate });
+  async setDomainVersionVisibility(
+    owner: string,
+    domain: string,
+    version: string,
+    isPrivate: boolean
+  ) {
+    let response = await this.axios.put(
+      `/domains/${owner}/${domain}/${version}/settings/private`,
+      { private: isPrivate }
+    );
     return response.data;
   }
 
@@ -232,28 +282,61 @@ export class Client {
     return response.data;
   }
 
-  async createApiIntegration(owner: string, api: string, version: string, integration: Record<string, unknown>) {
-    let response = await this.axios.post(`/apis/${owner}/${api}/${version}/integrations`, integration);
+  async createApiIntegration(
+    owner: string,
+    api: string,
+    version: string,
+    integration: Record<string, unknown>
+  ) {
+    let response = await this.axios.post(
+      `/apis/${owner}/${api}/${version}/integrations`,
+      integration
+    );
     return response.data;
   }
 
   async getApiIntegration(owner: string, api: string, version: string, integrationId: string) {
-    let response = await this.axios.get(`/apis/${owner}/${api}/${version}/integrations/${integrationId}`);
+    let response = await this.axios.get(
+      `/apis/${owner}/${api}/${version}/integrations/${integrationId}`
+    );
     return response.data;
   }
 
-  async updateApiIntegration(owner: string, api: string, version: string, integrationId: string, integration: Record<string, unknown>) {
-    let response = await this.axios.put(`/apis/${owner}/${api}/${version}/integrations/${integrationId}`, integration);
+  async updateApiIntegration(
+    owner: string,
+    api: string,
+    version: string,
+    integrationId: string,
+    integration: Record<string, unknown>
+  ) {
+    let response = await this.axios.put(
+      `/apis/${owner}/${api}/${version}/integrations/${integrationId}`,
+      integration
+    );
     return response.data;
   }
 
-  async deleteApiIntegration(owner: string, api: string, version: string, integrationId: string) {
-    let response = await this.axios.delete(`/apis/${owner}/${api}/${version}/integrations/${integrationId}`);
+  async deleteApiIntegration(
+    owner: string,
+    api: string,
+    version: string,
+    integrationId: string
+  ) {
+    let response = await this.axios.delete(
+      `/apis/${owner}/${api}/${version}/integrations/${integrationId}`
+    );
     return response.data;
   }
 
-  async executeApiIntegration(owner: string, api: string, version: string, integrationId: string) {
-    let response = await this.axios.post(`/apis/${owner}/${api}/${version}/integrations/${integrationId}/execute`);
+  async executeApiIntegration(
+    owner: string,
+    api: string,
+    version: string,
+    integrationId: string
+  ) {
+    let response = await this.axios.post(
+      `/apis/${owner}/${api}/${version}/integrations/${integrationId}/execute`
+    );
     return response.data;
   }
 
@@ -274,7 +357,11 @@ export class Client {
     return response.data;
   }
 
-  async updateProject(owner: string, projectId: string, project: { name?: string; description?: string }) {
+  async updateProject(
+    owner: string,
+    projectId: string,
+    project: { name?: string; description?: string }
+  ) {
     let response = await this.axios.put(`/projects/${owner}/${projectId}`, project);
     return response.data;
   }
@@ -284,7 +371,12 @@ export class Client {
     return response.data;
   }
 
-  async addToProject(owner: string, projectId: string, specType: 'apis' | 'domains', name: string) {
+  async addToProject(
+    owner: string,
+    projectId: string,
+    specType: 'apis' | 'domains',
+    name: string
+  ) {
     let response = await this.axios.put(`/projects/${owner}/${projectId}/${specType}/${name}`);
     return response.data;
   }

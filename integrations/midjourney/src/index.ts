@@ -6,7 +6,7 @@ import {
   upscaleImage,
   blendImages,
   describeImage,
-  fetchTask,
+  fetchTask
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     upscaleImage,
     blendImages,
     describeImage,
-    fetchTask,
+    fetchTask
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

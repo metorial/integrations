@@ -10,7 +10,7 @@ let instanceStateInputSchema = z.object({
   currentState: z.string().describe('Current instance state'),
   instanceType: z.string().optional().describe('Instance type'),
   availabilityZone: z.string().optional().describe('Availability zone'),
-  timestamp: z.string().describe('When the state change was detected'),
+  timestamp: z.string().describe('When the state change was detected')
 });
 
 let instanceStateOutputSchema = z.object({
@@ -19,22 +19,23 @@ let instanceStateOutputSchema = z.object({
   currentState: z.string().describe('Current instance state'),
   instanceType: z.string().optional().describe('Instance type'),
   availabilityZone: z.string().optional().describe('Availability zone'),
-  timestamp: z.string().describe('When the state change was detected'),
+  timestamp: z.string().describe('When the state change was detected')
 });
 
 export let ec2InstanceStateChangesTrigger = SlateTrigger.create(spec, {
   name: 'EC2 Instance State Changes',
   key: 'ec2_instance_state_changes',
-  description: 'Polls for EC2 instance state changes. Detects when instances transition between pending, running, stopping, stopped, shutting-down, and terminated states.',
+  description:
+    'Polls for EC2 instance state changes. Detects when instances transition between pending, running, stopping, stopped, shutting-down, and terminated states.'
 })
   .input(instanceStateInputSchema)
   .output(instanceStateOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = clientFromContext(ctx);
       let previousStates: Record<string, string> = (ctx.state as Record<string, string>) ?? {};
 
@@ -42,7 +43,7 @@ export let ec2InstanceStateChangesTrigger = SlateTrigger.create(spec, {
         service: 'ec2',
         action: 'DescribeInstances',
         version: '2016-11-15',
-        params: {},
+        params: {}
       });
 
       let xml = typeof response === 'string' ? response : String(response);
@@ -67,14 +68,16 @@ export let ec2InstanceStateChangesTrigger = SlateTrigger.create(spec, {
               let stateName = stateBlock ? extractXmlValue(stateBlock, 'name') : undefined;
               let instanceType = extractXmlValue(instanceBlock, 'instanceType');
               let placementBlock = extractXmlBlocks(instanceBlock, 'placement')[0];
-              let availabilityZone = placementBlock ? extractXmlValue(placementBlock, 'availabilityZone') : undefined;
+              let availabilityZone = placementBlock
+                ? extractXmlValue(placementBlock, 'availabilityZone')
+                : undefined;
 
               if (instanceId && stateName) {
                 currentInstances.push({
                   instanceId,
                   state: stateName,
                   instanceType,
-                  availabilityZone,
+                  availabilityZone
                 });
               }
             }
@@ -97,18 +100,18 @@ export let ec2InstanceStateChangesTrigger = SlateTrigger.create(spec, {
             currentState: instance.state,
             instanceType: instance.instanceType,
             availabilityZone: instance.availabilityZone,
-            timestamp: now,
+            timestamp: now
           });
         }
       }
 
       return {
         inputs,
-        updatedState: newStates,
+        updatedState: newStates
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let event = ctx.input;
       let eventType = `instance.${event.currentState}`;
 
@@ -121,8 +124,9 @@ export let ec2InstanceStateChangesTrigger = SlateTrigger.create(spec, {
           currentState: event.currentState,
           instanceType: event.instanceType,
           availabilityZone: event.availabilityZone,
-          timestamp: event.timestamp,
-        },
+          timestamp: event.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

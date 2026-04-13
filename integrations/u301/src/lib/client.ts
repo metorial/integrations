@@ -61,8 +61,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json'
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json'
       }
     });
   }
@@ -102,7 +102,7 @@ export class Client {
 
     let response = await this.axios.get('/qrcode', {
       params: queryParams,
-      headers: { 'Accept': 'application/xml' },
+      headers: { Accept: 'application/xml' },
       responseType: 'text'
     });
     return response.data;

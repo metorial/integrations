@@ -25,68 +25,79 @@ let LOG_TYPE_LABELS: Record<number, string> = {
   19: 'order.return_created',
   20: 'order.unmerged',
   21: 'order.proforma_invoice_issued',
-  22: 'order.correction_invoice_issued',
+  22: 'order.correction_invoice_issued'
 };
 
-export let orderEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Order Events',
-    key: 'order_events',
-    description: 'Polls the BaseLinker order journal for events such as order creation, status changes, removals, payments, shipments, and more. Events are available for the last 3 days. Must be enabled in BaseLinker API settings.',
-  }
-)
-  .input(z.object({
-    logId: z.number().describe('Journal log entry ID'),
-    logType: z.number().describe('Event type number'),
-    orderId: z.number().describe('Associated order ID'),
-    objectId: z.number().describe('Context-dependent object ID (e.g. merged order ID, invoice ID, parcel ID)'),
-    timestamp: z.number().describe('Event timestamp as unix time'),
-  }))
-  .output(z.object({
-    orderId: z.number().describe('Associated order ID'),
-    logType: z.number().describe('Event type number'),
-    logTypeLabel: z.string().describe('Human-readable event type label'),
-    objectId: z.number().describe('Context-dependent object ID'),
-    timestamp: z.number().describe('Event timestamp as unix time'),
-  }))
+export let orderEvents = SlateTrigger.create(spec, {
+  name: 'Order Events',
+  key: 'order_events',
+  description:
+    'Polls the BaseLinker order journal for events such as order creation, status changes, removals, payments, shipments, and more. Events are available for the last 3 days. Must be enabled in BaseLinker API settings.'
+})
+  .input(
+    z.object({
+      logId: z.number().describe('Journal log entry ID'),
+      logType: z.number().describe('Event type number'),
+      orderId: z.number().describe('Associated order ID'),
+      objectId: z
+        .number()
+        .describe('Context-dependent object ID (e.g. merged order ID, invoice ID, parcel ID)'),
+      timestamp: z.number().describe('Event timestamp as unix time')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number().describe('Associated order ID'),
+      logType: z.number().describe('Event type number'),
+      logTypeLabel: z.string().describe('Human-readable event type label'),
+      objectId: z.number().describe('Context-dependent object ID'),
+      timestamp: z.number().describe('Event timestamp as unix time')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BaseLinkerClient({ token: ctx.auth.token });
 
       let lastLogId = (ctx.state as any)?.lastLogId as number | undefined;
 
       let result = await client.getJournalList({
-        lastLogId: lastLogId || 0,
+        lastLogId: lastLogId || 0
       });
 
-      let logs: Array<{ id: number; order_id: number; log_type: number; object_id: number; date: number }> = result.logs || [];
+      let logs: Array<{
+        id: number;
+        order_id: number;
+        log_type: number;
+        object_id: number;
+        date: number;
+      }> = result.logs || [];
 
       let newLastLogId = lastLogId || 0;
       if (logs.length > 0) {
-        newLastLogId = Math.max(...logs.map((l) => l.id));
+        newLastLogId = Math.max(...logs.map(l => l.id));
       }
 
       return {
-        inputs: logs.map((log) => ({
+        inputs: logs.map(log => ({
           logId: log.id,
           logType: log.log_type,
           orderId: log.order_id,
           objectId: log.object_id,
-          timestamp: log.date,
+          timestamp: log.date
         })),
         updatedState: {
-          lastLogId: newLastLogId,
-        },
+          lastLogId: newLastLogId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
-      let logTypeLabel = LOG_TYPE_LABELS[ctx.input.logType] || `order.unknown_${ctx.input.logType}`;
+    handleEvent: async ctx => {
+      let logTypeLabel =
+        LOG_TYPE_LABELS[ctx.input.logType] || `order.unknown_${ctx.input.logType}`;
 
       return {
         type: logTypeLabel,
@@ -96,8 +107,9 @@ export let orderEvents = SlateTrigger.create(
           logType: ctx.input.logType,
           logTypeLabel,
           objectId: ctx.input.objectId,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

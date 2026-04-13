@@ -3,37 +3,45 @@ import { StartonClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'Get Transactions',
-    key: 'get_transactions',
-    description: `Retrieve transaction details from your Starton project. Get a specific transaction by ID or list recent transactions with optional network filtering.`,
-    tags: {
-      readOnly: true,
-    },
+export let getTransactions = SlateTool.create(spec, {
+  name: 'Get Transactions',
+  key: 'get_transactions',
+  description: `Retrieve transaction details from your Starton project. Get a specific transaction by ID or list recent transactions with optional network filtering.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    transactionId: z.string().optional().describe('Specific transaction ID to retrieve'),
-    network: z.string().optional().describe('Filter transactions by blockchain network'),
-    limit: z.number().default(20).describe('Number of transactions to return'),
-    page: z.number().default(0).describe('Page number for pagination'),
-  }))
-  .output(z.object({
-    transactions: z.array(z.object({
-      transactionId: z.string().describe('Starton transaction identifier'),
-      transactionHash: z.string().optional().describe('On-chain transaction hash'),
-      network: z.string().optional().describe('Blockchain network'),
-      state: z.string().optional().describe('Transaction state (e.g., mined, pending, error)'),
-      from: z.string().optional().describe('Sender address'),
-      to: z.string().optional().describe('Recipient address'),
-      value: z.string().optional().describe('Transaction value'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).describe('Transaction details'),
-    totalCount: z.number().optional().describe('Total number of transactions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      transactionId: z.string().optional().describe('Specific transaction ID to retrieve'),
+      network: z.string().optional().describe('Filter transactions by blockchain network'),
+      limit: z.number().default(20).describe('Number of transactions to return'),
+      page: z.number().default(0).describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      transactions: z
+        .array(
+          z.object({
+            transactionId: z.string().describe('Starton transaction identifier'),
+            transactionHash: z.string().optional().describe('On-chain transaction hash'),
+            network: z.string().optional().describe('Blockchain network'),
+            state: z
+              .string()
+              .optional()
+              .describe('Transaction state (e.g., mined, pending, error)'),
+            from: z.string().optional().describe('Sender address'),
+            to: z.string().optional().describe('Recipient address'),
+            value: z.string().optional().describe('Transaction value'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .describe('Transaction details'),
+      totalCount: z.number().optional().describe('Total number of transactions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StartonClient({ token: ctx.auth.token });
 
     if (ctx.input.transactionId) {
@@ -41,26 +49,28 @@ export let getTransactions = SlateTool.create(
 
       return {
         output: {
-          transactions: [{
-            transactionId: tx.id || ctx.input.transactionId,
-            transactionHash: tx.transactionHash,
-            network: tx.network,
-            state: tx.state,
-            from: tx.from,
-            to: tx.to,
-            value: tx.value,
-            createdAt: tx.createdAt,
-          }],
-          totalCount: 1,
+          transactions: [
+            {
+              transactionId: tx.id || ctx.input.transactionId,
+              transactionHash: tx.transactionHash,
+              network: tx.network,
+              state: tx.state,
+              from: tx.from,
+              to: tx.to,
+              value: tx.value,
+              createdAt: tx.createdAt
+            }
+          ],
+          totalCount: 1
         },
-        message: `Transaction \`${tx.transactionHash || ctx.input.transactionId}\` is **${tx.state}** on ${tx.network}.`,
+        message: `Transaction \`${tx.transactionHash || ctx.input.transactionId}\` is **${tx.state}** on ${tx.network}.`
       };
     }
 
     let result = await client.listTransactions({
       limit: ctx.input.limit,
       page: ctx.input.page,
-      network: ctx.input.network,
+      network: ctx.input.network
     });
 
     let items = result.items || result || [];
@@ -75,11 +85,11 @@ export let getTransactions = SlateTool.create(
           from: tx.from,
           to: tx.to,
           value: tx.value,
-          createdAt: tx.createdAt,
+          createdAt: tx.createdAt
         })),
-        totalCount: result.meta?.totalCount || items.length,
+        totalCount: result.meta?.totalCount || items.length
       },
-      message: `Found **${items.length}** transactions${ctx.input.network ? ` on ${ctx.input.network}` : ''}.`,
+      message: `Found **${items.length}** transactions${ctx.input.network ? ` on ${ctx.input.network}` : ''}.`
     };
   })
   .build();

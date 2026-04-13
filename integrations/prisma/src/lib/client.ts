@@ -105,8 +105,8 @@ export class PrismaClient {
       baseURL: 'https://api.prisma.io/v1',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -122,14 +122,17 @@ export class PrismaClient {
   async createProject(params: CreateProjectParams): Promise<Project> {
     let response = await this.http.post('/projects', {
       name: params.name,
-      region: params.region,
+      region: params.region
     });
     return response.data;
   }
 
-  async createProjectInWorkspace(workspaceId: string, params: CreateProjectParams): Promise<Project> {
+  async createProjectInWorkspace(
+    workspaceId: string,
+    params: CreateProjectParams
+  ): Promise<Project> {
     let response = await this.http.post(`/workspaces/${workspaceId}/projects`, {
-      name: params.name,
+      name: params.name
     });
     return response.data;
   }
@@ -141,7 +144,7 @@ export class PrismaClient {
 
   async transferProject(params: TransferProjectParams): Promise<unknown> {
     let response = await this.http.post(`/projects/${params.projectId}/transfer`, {
-      recipientAccessToken: params.recipientAccessToken,
+      recipientAccessToken: params.recipientAccessToken
     });
     return response.data;
   }
@@ -162,7 +165,7 @@ export class PrismaClient {
     let response = await this.http.post(`/projects/${projectId}/databases`, {
       name: params.name,
       region: params.region,
-      isDefault: params.isDefault,
+      isDefault: params.isDefault
     });
     return response.data;
   }

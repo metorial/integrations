@@ -54,32 +54,42 @@ Two scopes, Create/Modify Responses and Create/Modify Surveys, require SurveyMon
 ## Features
 
 ### Survey Management
+
 Create, read, update, and delete surveys. Retrieve a list of surveys owned or shared with the authenticated user. Surveys contain pages and questions with various question types (multiple choice, matrix, open-ended, etc.). Surveys can be organized into folders, support multiple languages, and include custom variables. You can also access the survey template/question bank library.
 
 ### Survey Distribution (Collectors)
+
 Collectors allow you to collect survey responses with a link to your survey. Many types of collectors are available through the API such as SMS, weblink, email, and general popup collectors. Weblink collectors give you a survey URL, email invitation collectors and SMS invitation collectors send survey invite messages via the messages endpoints, and popup collectors let you embed surveys on your website.
+
 - Configure collector settings like close date, redirect URL, anonymity, response limits, and whether to allow multiple responses.
 - Create/Modify Collectors requires a paid SurveyMonkey plan to create any collector that is not a weblink collector.
 
 ### Response Management
+
 Retrieve a list of responses, create responses programmatically, or delete all responses from a collector. Retrieve full expanded responses including answers to all questions. Responses can be filtered by date, status, and other criteria.
 
 ### Contact Management
+
 If your application is using email collectors or SMS collectors to collect survey responses, the contacts endpoints let you create contacts and contact lists to send survey invite messages to. You can create, update, delete, copy, and merge contact lists, as well as manage individual contacts within them.
 
 ### Invite Messages
+
 Compose and send email or SMS invitation messages to contacts through collectors. Manage message recipients, customize message content and templates, and schedule sends.
 
 ### Results Sharing
+
 Share survey results publicly or with specific users. Configure sharing options including summary/trends views, password protection, and branding.
 
 ### Team & Group Management
+
 Retrieve a list of groups (teams). View group members and manage team-level settings. Requires a team/enterprise plan.
 
 ### Workgroups
+
 Workgroups help organize team members collaborating on survey projects. Retrieve a list of all workgroups, and add shared resources to workgroups. Manage workgroup members, roles, and survey sharing privileges.
 
 ### User Information
+
 Retrieve details about the authenticated user, including account type, plan details, available and granted scopes, and supported question types.
 
 ## Events
@@ -87,6 +97,7 @@ Retrieve details about the authenticated user, including account type, plan deta
 SurveyMonkey supports webhooks for real-time event notifications.
 
 ### Response Events
+
 Create webhooks that subscribe to various events in SurveyMonkey. You can create a webhook to POST a callback when a survey response is completed (`response_completed`) or a survey response is disqualified (`response_disqualified`). Additionally, the `response_updated` event type is available.
 
 - You can specify one or more survey IDs to be included.

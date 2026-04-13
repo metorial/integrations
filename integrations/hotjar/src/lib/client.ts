@@ -67,17 +67,20 @@ export class Client {
     return createAxios({
       baseURL: 'https://api.hotjar.io',
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json; charset=utf-8',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     });
   }
 
-  async listSurveys(siteId: string, options?: {
-    withQuestions?: boolean;
-    limit?: number;
-    cursor?: string;
-  }): Promise<PaginatedResponse<HotjarSurvey>> {
+  async listSurveys(
+    siteId: string,
+    options?: {
+      withQuestions?: boolean;
+      limit?: number;
+      cursor?: string;
+    }
+  ): Promise<PaginatedResponse<HotjarSurvey>> {
     let http = this.createHttp();
     let params: Record<string, string> = {};
 
@@ -101,10 +104,14 @@ export class Client {
     return response.data;
   }
 
-  async listSurveyResponses(siteId: string, surveyId: string, options?: {
-    limit?: number;
-    cursor?: string;
-  }): Promise<PaginatedResponse<HotjarSurveyResponse>> {
+  async listSurveyResponses(
+    siteId: string,
+    surveyId: string,
+    options?: {
+      limit?: number;
+      cursor?: string;
+    }
+  ): Promise<PaginatedResponse<HotjarSurveyResponse>> {
     let http = this.createHttp();
     let params: Record<string, string> = {};
 
@@ -115,7 +122,9 @@ export class Client {
       params.cursor = options.cursor;
     }
 
-    let response = await http.get(`/v1/sites/${siteId}/surveys/${surveyId}/responses`, { params });
+    let response = await http.get(`/v1/sites/${siteId}/surveys/${surveyId}/responses`, {
+      params
+    });
     return response.data;
   }
 

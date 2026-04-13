@@ -38,7 +38,7 @@ export class Client {
     this.auth = auth;
     this.baseUrl = `https://${auth.accountId}.suitetalk.api.netsuite.com/services/rest`;
     this.httpClient = createAxios({
-      baseURL: this.baseUrl,
+      baseURL: this.baseUrl
     });
   }
 
@@ -49,15 +49,15 @@ export class Client {
         consumerKey: this.auth.consumerKey!,
         consumerSecret: this.auth.consumerSecret!,
         tokenId: this.auth.tokenId!,
-        tokenSecret: this.auth.tokenSecret!,
+        tokenSecret: this.auth.tokenSecret!
       };
       return {
-        'Authorization': buildOAuth1Header(method, fullUrl, credentials),
+        Authorization: buildOAuth1Header(method, fullUrl, credentials)
       };
     }
 
     return {
-      'Authorization': `Bearer ${this.auth.token}`,
+      Authorization: `Bearer ${this.auth.token}`
     };
   }
 
@@ -90,9 +90,9 @@ export class Client {
       headers: {
         'Content-Type': 'application/json',
         ...authHeaders,
-        ...options?.headers,
+        ...options?.headers
       },
-      data: options?.data,
+      data: options?.data
     };
 
     let response = await this.httpClient.request(config);
@@ -101,10 +101,14 @@ export class Client {
 
   // --- Record CRUD Operations ---
 
-  async getRecord(recordType: string, recordId: string, options?: {
-    expandSubResources?: boolean;
-    fields?: string[];
-  }): Promise<Record<string, any>> {
+  async getRecord(
+    recordType: string,
+    recordId: string,
+    options?: {
+      expandSubResources?: boolean;
+      fields?: string[];
+    }
+  ): Promise<Record<string, any>> {
     let params: Record<string, string | undefined> = {};
     if (options?.expandSubResources) {
       params['expandSubResources'] = 'true';
@@ -115,17 +119,20 @@ export class Client {
     return this.request('GET', `/record/v1/${recordType}/${recordId}`, { params });
   }
 
-  async createRecord(recordType: string, data: Record<string, any>): Promise<Record<string, any>> {
+  async createRecord(
+    recordType: string,
+    data: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.httpClient.request({
       method: 'POST',
       url: `/record/v1/${recordType}`,
       data,
       headers: {
         'Content-Type': 'application/json',
-        ...this.getAuthHeaders('POST', `${this.baseUrl}/record/v1/${recordType}`),
+        ...this.getAuthHeaders('POST', `${this.baseUrl}/record/v1/${recordType}`)
       },
       // NetSuite returns 204 with Location header on create
-      validateStatus: (status) => status >= 200 && status < 300,
+      validateStatus: status => status >= 200 && status < 300
     });
 
     // If 204, extract the ID from the Location header
@@ -139,16 +146,20 @@ export class Client {
     return response.data;
   }
 
-  async updateRecord(recordType: string, recordId: string, data: Record<string, any>): Promise<Record<string, any>> {
+  async updateRecord(
+    recordType: string,
+    recordId: string,
+    data: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.httpClient.request({
       method: 'PATCH',
       url: `/record/v1/${recordType}/${recordId}`,
       data,
       headers: {
         'Content-Type': 'application/json',
-        ...this.getAuthHeaders('PATCH', `${this.baseUrl}/record/v1/${recordType}/${recordId}`),
+        ...this.getAuthHeaders('PATCH', `${this.baseUrl}/record/v1/${recordType}/${recordId}`)
       },
-      validateStatus: (status) => status >= 200 && status < 300,
+      validateStatus: status => status >= 200 && status < 300
     });
 
     if (response.status === 204) {
@@ -158,16 +169,20 @@ export class Client {
     return response.data;
   }
 
-  async upsertRecord(recordType: string, externalId: string, data: Record<string, any>): Promise<Record<string, any>> {
+  async upsertRecord(
+    recordType: string,
+    externalId: string,
+    data: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.httpClient.request({
       method: 'PUT',
       url: `/record/v1/${recordType}/${externalId}`,
       data,
       headers: {
         'Content-Type': 'application/json',
-        ...this.getAuthHeaders('PUT', `${this.baseUrl}/record/v1/${recordType}/${externalId}`),
+        ...this.getAuthHeaders('PUT', `${this.baseUrl}/record/v1/${recordType}/${externalId}`)
       },
-      validateStatus: (status) => status >= 200 && status < 300,
+      validateStatus: status => status >= 200 && status < 300
     });
 
     if (response.status === 204) {
@@ -186,12 +201,15 @@ export class Client {
 
   // --- Record Collection / List ---
 
-  async listRecords(recordType: string, options?: {
-    limit?: number;
-    offset?: number;
-    query?: string;
-    fields?: string[];
-  }): Promise<RecordListResponse> {
+  async listRecords(
+    recordType: string,
+    options?: {
+      limit?: number;
+      offset?: number;
+      query?: string;
+      fields?: string[];
+    }
+  ): Promise<RecordListResponse> {
     let params: Record<string, string | number | undefined> = {};
     if (options?.limit !== undefined) params['limit'] = options.limit;
     if (options?.offset !== undefined) params['offset'] = options.offset;
@@ -204,16 +222,24 @@ export class Client {
 
   // --- Record Transformation ---
 
-  async transformRecord(sourceType: string, sourceId: string, targetType: string, body?: Record<string, any>): Promise<Record<string, any>> {
+  async transformRecord(
+    sourceType: string,
+    sourceId: string,
+    targetType: string,
+    body?: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.httpClient.request({
       method: 'POST',
       url: `/record/v1/${sourceType}/${sourceId}/!transform/${targetType}`,
       data: body || {},
       headers: {
         'Content-Type': 'application/json',
-        ...this.getAuthHeaders('POST', `${this.baseUrl}/record/v1/${sourceType}/${sourceId}/!transform/${targetType}`),
+        ...this.getAuthHeaders(
+          'POST',
+          `${this.baseUrl}/record/v1/${sourceType}/${sourceId}/!transform/${targetType}`
+        )
       },
-      validateStatus: (status) => status >= 200 && status < 300,
+      validateStatus: status => status >= 200 && status < 300
     });
 
     if (response.status === 204) {
@@ -228,10 +254,13 @@ export class Client {
 
   // --- SuiteQL ---
 
-  async executeSuiteQL(query: string, options?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<SuiteQLResponse> {
+  async executeSuiteQL(
+    query: string,
+    options?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<SuiteQLResponse> {
     let params: Record<string, string | number | undefined> = {};
     if (options?.limit !== undefined) params['limit'] = options.limit;
     if (options?.offset !== undefined) params['offset'] = options.offset;
@@ -240,8 +269,8 @@ export class Client {
       data: { q: query },
       params,
       headers: {
-        'Prefer': 'transient',
-      },
+        Prefer: 'transient'
+      }
     });
   }
 

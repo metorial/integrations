@@ -144,13 +144,15 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://wiza.co/api',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  async startIndividualReveal(request: IndividualRevealRequest): Promise<IndividualRevealResponse> {
+  async startIndividualReveal(
+    request: IndividualRevealRequest
+  ): Promise<IndividualRevealResponse> {
     let individualReveal: Record<string, unknown> = {};
 
     if (request.profileUrl) {
@@ -168,7 +170,7 @@ export class Client {
     }
 
     let body: Record<string, unknown> = {
-      individual_reveal: individualReveal,
+      individual_reveal: individualReveal
     };
 
     if (request.enrichmentLevel) {

@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'productboard',
   name: 'Productboard',
-  description: 'Product management platform for collecting feedback, prioritizing features, and planning roadmaps.',
+  description:
+    'Product management platform for collecting feedback, prioritizing features, and planning roadmaps.',
   metadata: {},
   config,
-  auth,
+  auth
 });

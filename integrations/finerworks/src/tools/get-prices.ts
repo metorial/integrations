@@ -3,47 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPrices = SlateTool.create(
-  spec,
-  {
-    name: 'Get Prices',
-    key: 'get_prices',
-    description: `Retrieve pricing breakdowns for products by their SKU or product code. Submit up to 50 items at once with quantities to get per-item and total prices including any framing, matting, glazing, and color correction add-ons.`,
-    constraints: [
-      'Maximum of 50 items per request',
-      'Quantity must be between 1 and 999',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getPrices = SlateTool.create(spec, {
+  name: 'Get Prices',
+  key: 'get_prices',
+  description: `Retrieve pricing breakdowns for products by their SKU or product code. Submit up to 50 items at once with quantities to get per-item and total prices including any framing, matting, glazing, and color correction add-ons.`,
+  constraints: ['Maximum of 50 items per request', 'Quantity must be between 1 and 999'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    items: z.array(z.object({
-      productSku: z.string().describe('Virtual inventory SKU or product code'),
-      productQty: z.number().int().min(1).max(999).describe('Quantity to price'),
-    })).min(1).max(50).describe('Products and quantities to price'),
-  }))
-  .output(z.object({
-    prices: z.array(z.object({
-      productSku: z.string().describe('Requested SKU'),
-      productCode: z.string().optional().describe('Resolved product code'),
-      productQty: z.number().describe('Quantity priced'),
-      productPrice: z.number().describe('Base per-unit price'),
-      addFramePrice: z.number().optional().describe('Frame add-on price'),
-      addMat1Price: z.number().optional().describe('Mat 1 add-on price'),
-      addMat2Price: z.number().optional().describe('Mat 2 add-on price'),
-      addGlazingPrice: z.number().optional().describe('Glazing add-on price'),
-      addColorCorrectPrice: z.number().optional().describe('Color correction add-on price'),
-      totalPrice: z.number().describe('Total price for the quantity'),
-      info: z.string().optional().describe('Additional pricing information'),
-    })).describe('Pricing results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      items: z
+        .array(
+          z.object({
+            productSku: z.string().describe('Virtual inventory SKU or product code'),
+            productQty: z.number().int().min(1).max(999).describe('Quantity to price')
+          })
+        )
+        .min(1)
+        .max(50)
+        .describe('Products and quantities to price')
+    })
+  )
+  .output(
+    z.object({
+      prices: z
+        .array(
+          z.object({
+            productSku: z.string().describe('Requested SKU'),
+            productCode: z.string().optional().describe('Resolved product code'),
+            productQty: z.number().describe('Quantity priced'),
+            productPrice: z.number().describe('Base per-unit price'),
+            addFramePrice: z.number().optional().describe('Frame add-on price'),
+            addMat1Price: z.number().optional().describe('Mat 1 add-on price'),
+            addMat2Price: z.number().optional().describe('Mat 2 add-on price'),
+            addGlazingPrice: z.number().optional().describe('Glazing add-on price'),
+            addColorCorrectPrice: z
+              .number()
+              .optional()
+              .describe('Color correction add-on price'),
+            totalPrice: z.number().describe('Total price for the quantity'),
+            info: z.string().optional().describe('Additional pricing information')
+          })
+        )
+        .describe('Pricing results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       webApiKey: ctx.auth.webApiKey,
       appKey: ctx.auth.appKey,
-      testMode: ctx.config.testMode,
+      testMode: ctx.config.testMode
     });
 
     let data = await client.getPrices(ctx.input.items);
@@ -63,11 +74,12 @@ export let getPrices = SlateTool.create(
       addGlazingPrice: p.add_glazing_price || undefined,
       addColorCorrectPrice: p.add_color_correct_price || undefined,
       totalPrice: p.total_price ?? 0,
-      info: p.info || undefined,
+      info: p.info || undefined
     }));
 
     return {
       output: { prices },
-      message: `Priced **${prices.length}** item(s). ${prices.map((p: any) => `\`${p.productSku}\` × ${p.productQty}: $${p.totalPrice.toFixed(2)}`).join(', ')}`,
+      message: `Priced **${prices.length}** item(s). ${prices.map((p: any) => `\`${p.productSku}\` × ${p.productQty}: $${p.totalPrice.toFixed(2)}`).join(', ')}`
     };
-  }).build();
+  })
+  .build();

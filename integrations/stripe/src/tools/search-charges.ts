@@ -3,54 +3,64 @@ import { StripeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchCharges = SlateTool.create(
-  spec,
-  {
-    name: 'Search Charges',
-    key: 'search_charges',
-    description: `Retrieve a specific charge or list charges with optional filters. Charges represent completed or attempted payment transactions. Use this to inspect payment details, outcomes, and related metadata.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let searchCharges = SlateTool.create(spec, {
+  name: 'Search Charges',
+  key: 'search_charges',
+  description: `Retrieve a specific charge or list charges with optional filters. Charges represent completed or attempted payment transactions. Use this to inspect payment details, outcomes, and related metadata.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'list']).describe('Operation to perform'),
-    chargeId: z.string().optional().describe('Charge ID (for get)'),
-    customerId: z.string().optional().describe('Filter by customer ID'),
-    paymentIntentId: z.string().optional().describe('Filter by PaymentIntent ID'),
-    limit: z.number().optional().describe('Max results (for list)'),
-    startingAfter: z.string().optional().describe('Cursor for pagination'),
-  }))
-  .output(z.object({
-    chargeId: z.string().optional().describe('Charge ID'),
-    amount: z.number().optional().describe('Charge amount'),
-    currency: z.string().optional().describe('Currency code'),
-    status: z.string().optional().describe('Charge status (succeeded, pending, failed)'),
-    paid: z.boolean().optional().describe('Whether the charge was paid'),
-    refunded: z.boolean().optional().describe('Whether the charge was refunded'),
-    amountRefunded: z.number().optional().describe('Amount refunded'),
-    customerId: z.string().optional().nullable().describe('Associated customer ID'),
-    paymentIntentId: z.string().optional().nullable().describe('Associated PaymentIntent ID'),
-    receiptUrl: z.string().optional().nullable().describe('URL for the charge receipt'),
-    description: z.string().optional().nullable().describe('Charge description'),
-    created: z.number().optional().describe('Creation timestamp'),
-    charges: z.array(z.object({
-      chargeId: z.string(),
-      amount: z.number(),
-      currency: z.string(),
-      status: z.string(),
-      paid: z.boolean(),
-      customerId: z.string().nullable(),
-      created: z.number(),
-    })).optional().describe('List of charges'),
-    hasMore: z.boolean().optional().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'list']).describe('Operation to perform'),
+      chargeId: z.string().optional().describe('Charge ID (for get)'),
+      customerId: z.string().optional().describe('Filter by customer ID'),
+      paymentIntentId: z.string().optional().describe('Filter by PaymentIntent ID'),
+      limit: z.number().optional().describe('Max results (for list)'),
+      startingAfter: z.string().optional().describe('Cursor for pagination')
+    })
+  )
+  .output(
+    z.object({
+      chargeId: z.string().optional().describe('Charge ID'),
+      amount: z.number().optional().describe('Charge amount'),
+      currency: z.string().optional().describe('Currency code'),
+      status: z.string().optional().describe('Charge status (succeeded, pending, failed)'),
+      paid: z.boolean().optional().describe('Whether the charge was paid'),
+      refunded: z.boolean().optional().describe('Whether the charge was refunded'),
+      amountRefunded: z.number().optional().describe('Amount refunded'),
+      customerId: z.string().optional().nullable().describe('Associated customer ID'),
+      paymentIntentId: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Associated PaymentIntent ID'),
+      receiptUrl: z.string().optional().nullable().describe('URL for the charge receipt'),
+      description: z.string().optional().nullable().describe('Charge description'),
+      created: z.number().optional().describe('Creation timestamp'),
+      charges: z
+        .array(
+          z.object({
+            chargeId: z.string(),
+            amount: z.number(),
+            currency: z.string(),
+            status: z.string(),
+            paid: z.boolean(),
+            customerId: z.string().nullable(),
+            created: z.number()
+          })
+        )
+        .optional()
+        .describe('List of charges'),
+      hasMore: z.boolean().optional().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StripeClient({
       token: ctx.auth.token,
-      stripeAccountId: ctx.config.stripeAccountId,
+      stripeAccountId: ctx.config.stripeAccountId
     });
 
     let { action } = ctx.input;
@@ -71,9 +81,9 @@ export let searchCharges = SlateTool.create(
           paymentIntentId: charge.payment_intent,
           receiptUrl: charge.receipt_url,
           description: charge.description,
-          created: charge.created,
+          created: charge.created
         },
-        message: `Charge **${charge.id}**: ${charge.amount} ${charge.currency.toUpperCase()} — ${charge.status}${charge.refunded ? ' (refunded)' : ''}`,
+        message: `Charge **${charge.id}**: ${charge.amount} ${charge.currency.toUpperCase()} — ${charge.status}${charge.refunded ? ' (refunded)' : ''}`
       };
     }
 
@@ -94,10 +104,11 @@ export let searchCharges = SlateTool.create(
           status: c.status,
           paid: c.paid,
           customerId: c.customer,
-          created: c.created,
+          created: c.created
         })),
-        hasMore: result.has_more,
+        hasMore: result.has_more
       },
-      message: `Found **${result.data.length}** charge(s)${result.has_more ? ' (more available)' : ''}`,
+      message: `Found **${result.data.length}** charge(s)${result.has_more ? ' (more available)' : ''}`
     };
-  }).build();
+  })
+  .build();

@@ -9,8 +9,8 @@ export class WhopClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -31,8 +31,8 @@ export class WhopClient {
         first: params.first,
         'visibilities[]': params.visibilities,
         order: params.order,
-        direction: params.direction,
-      },
+        direction: params.direction
+      }
     });
     return response.data;
   }
@@ -62,21 +62,24 @@ export class WhopClient {
       route: data.route,
       redirect_purchase_url: data.redirectPurchaseUrl,
       collect_shipping_address: data.collectShippingAddress,
-      send_welcome_message: data.sendWelcomeMessage,
+      send_welcome_message: data.sendWelcomeMessage
     });
     return response.data;
   }
 
-  async updateProduct(productId: string, data: {
-    title?: string;
-    description?: string;
-    headline?: string;
-    visibility?: string;
-    route?: string;
-    redirectPurchaseUrl?: string;
-    collectShippingAddress?: boolean;
-    sendWelcomeMessage?: boolean;
-  }) {
+  async updateProduct(
+    productId: string,
+    data: {
+      title?: string;
+      description?: string;
+      headline?: string;
+      visibility?: string;
+      route?: string;
+      redirectPurchaseUrl?: string;
+      collectShippingAddress?: boolean;
+      sendWelcomeMessage?: boolean;
+    }
+  ) {
     let response = await this.axios.patch(`/products/${productId}`, {
       title: data.title,
       description: data.description,
@@ -85,7 +88,7 @@ export class WhopClient {
       route: data.route,
       redirect_purchase_url: data.redirectPurchaseUrl,
       collect_shipping_address: data.collectShippingAddress,
-      send_welcome_message: data.sendWelcomeMessage,
+      send_welcome_message: data.sendWelcomeMessage
     });
     return response.data;
   }
@@ -118,8 +121,8 @@ export class WhopClient {
         'plan_types[]': params.planTypes,
         'release_methods[]': params.releaseMethods,
         direction: params.direction,
-        order: params.order,
-      },
+        order: params.order
+      }
     });
     return response.data;
   }
@@ -163,25 +166,28 @@ export class WhopClient {
       release_method: data.releaseMethod,
       stock: data.stock,
       unlimited_stock: data.unlimitedStock,
-      internal_notes: data.internalNotes,
+      internal_notes: data.internalNotes
     });
     return response.data;
   }
 
-  async updatePlan(planId: string, data: {
-    title?: string;
-    description?: string;
-    billingPeriod?: number;
-    initialPrice?: number;
-    renewalPrice?: number;
-    trialPeriodDays?: number;
-    expirationDays?: number;
-    currency?: string;
-    visibility?: string;
-    stock?: number;
-    unlimitedStock?: boolean;
-    internalNotes?: string;
-  }) {
+  async updatePlan(
+    planId: string,
+    data: {
+      title?: string;
+      description?: string;
+      billingPeriod?: number;
+      initialPrice?: number;
+      renewalPrice?: number;
+      trialPeriodDays?: number;
+      expirationDays?: number;
+      currency?: string;
+      visibility?: string;
+      stock?: number;
+      unlimitedStock?: boolean;
+      internalNotes?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/plans/${planId}`, {
       title: data.title,
       description: data.description,
@@ -194,7 +200,7 @@ export class WhopClient {
       visibility: data.visibility,
       stock: data.stock,
       unlimited_stock: data.unlimitedStock,
-      internal_notes: data.internalNotes,
+      internal_notes: data.internalNotes
     });
     return response.data;
   }
@@ -227,8 +233,8 @@ export class WhopClient {
         'plan_ids[]': params.planIds,
         'user_ids[]': params.userIds,
         order: params.order,
-        direction: params.direction,
-      },
+        direction: params.direction
+      }
     });
     return response.data;
   }
@@ -240,14 +246,14 @@ export class WhopClient {
 
   async updateMembership(membershipId: string, metadata: Record<string, string>) {
     let response = await this.axios.patch(`/memberships/${membershipId}`, {
-      metadata,
+      metadata
     });
     return response.data;
   }
 
   async cancelMembership(membershipId: string, cancellationMode?: string) {
     let response = await this.axios.post(`/memberships/${membershipId}/cancel`, {
-      cancellation_mode: cancellationMode,
+      cancellation_mode: cancellationMode
     });
     return response.data;
   }
@@ -259,7 +265,7 @@ export class WhopClient {
 
   async pauseMembership(membershipId: string, voidPayments?: boolean) {
     let response = await this.axios.post(`/memberships/${membershipId}/pause`, {
-      void_payments: voidPayments,
+      void_payments: voidPayments
     });
     return response.data;
   }
@@ -292,8 +298,8 @@ export class WhopClient {
         access_level: params.accessLevel,
         'product_ids[]': params.productIds,
         order: params.order,
-        direction: params.direction,
-      },
+        direction: params.direction
+      }
     });
     return response.data;
   }
@@ -326,8 +332,8 @@ export class WhopClient {
         'billing_reasons[]': params.billingReasons,
         order: params.order,
         direction: params.direction,
-        query: params.query,
-      },
+        query: params.query
+      }
     });
     return response.data;
   }
@@ -363,8 +369,8 @@ export class WhopClient {
         first: params.first,
         'product_ids[]': params.productIds,
         'plan_ids[]': params.planIds,
-        status: params.status,
-      },
+        status: params.status
+      }
     });
     return response.data;
   }
@@ -406,7 +412,7 @@ export class WhopClient {
       expires_at: data.expiresAt,
       one_per_customer: data.onePerCustomer,
       churned_users_only: data.churnedUsersOnly,
-      existing_memberships_only: data.existingMembershipsOnly,
+      existing_memberships_only: data.existingMembershipsOnly
     });
     return response.data;
   }
@@ -442,7 +448,7 @@ export class WhopClient {
       redirect_url: data.redirectUrl,
       metadata: data.metadata,
       currency: data.currency,
-      affiliate_code: data.affiliateCode,
+      affiliate_code: data.affiliateCode
     };
 
     if (data.mode === 'setup') {
@@ -458,7 +464,7 @@ export class WhopClient {
         renewal_price: data.plan.renewalPrice,
         billing_period: data.plan.billingPeriod,
         plan_type: data.plan.planType,
-        trial_period_days: data.plan.trialPeriodDays,
+        trial_period_days: data.plan.trialPeriodDays
       };
     }
 
@@ -482,8 +488,8 @@ export class WhopClient {
         company_id: params.companyId,
         after: params.after,
         first: params.first,
-        plan_id: params.planId,
-      },
+        plan_id: params.planId
+      }
     });
     return response.data;
   }
@@ -507,8 +513,8 @@ export class WhopClient {
         'statuses[]': params.statuses,
         'product_ids[]': params.productIds,
         order: params.order,
-        direction: params.direction,
-      },
+        direction: params.direction
+      }
     });
     return response.data;
   }
@@ -538,23 +544,19 @@ export class WhopClient {
         company_id: params.companyId,
         after: params.after,
         first: params.first,
-        'product_ids[]': params.productIds,
-      },
+        'product_ids[]': params.productIds
+      }
     });
     return response.data;
   }
 
   // ── Webhooks ──────────────────────────────────────────────
 
-  async createWebhook(data: {
-    url: string;
-    events?: string[];
-    enabled?: boolean;
-  }) {
+  async createWebhook(data: { url: string; events?: string[]; enabled?: boolean }) {
     let response = await this.axios.post('/webhooks', {
       url: data.url,
       events: data.events,
-      enabled: data.enabled,
+      enabled: data.enabled
     });
     return response.data;
   }

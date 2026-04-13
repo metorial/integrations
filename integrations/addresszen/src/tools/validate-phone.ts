@@ -3,33 +3,44 @@ import { AddressZenClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let validatePhone = SlateTool.create(
-  spec,
-  {
-    name: 'Validate Phone Number',
-    key: 'validate_phone',
-    description: `Validate a phone number for correctness and obtain carrier information. Checks format, validity, and returns details about the phone number including type and carrier.`,
-    tags: {
-      readOnly: true
-    }
+export let validatePhone = SlateTool.create(spec, {
+  name: 'Validate Phone Number',
+  key: 'validate_phone',
+  description: `Validate a phone number for correctness and obtain carrier information. Checks format, validity, and returns details about the phone number including type and carrier.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    phoneNumber: z.string().describe('Phone number to validate (include country code for international numbers, e.g., "+14155552671")')
-  }))
-  .output(z.object({
-    valid: z.boolean().optional().describe('Whether the phone number is valid'),
-    phoneNumber: z.string().optional().describe('The validated phone number'),
-    localFormat: z.string().optional().describe('Phone number in local format'),
-    internationalFormat: z.string().optional().describe('Phone number in international format'),
-    countryCode: z.string().optional().describe('Country calling code'),
-    countryIso: z.string().optional().describe('ISO country code'),
-    lineType: z.string().optional().describe('Type of phone line (e.g., mobile, landline, voip)'),
-    carrier: z.string().optional().describe('Phone carrier/operator name'),
-    location: z.string().optional().describe('Geographic location of the phone number'),
-    code: z.number().optional().describe('API response code')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      phoneNumber: z
+        .string()
+        .describe(
+          'Phone number to validate (include country code for international numbers, e.g., "+14155552671")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      valid: z.boolean().optional().describe('Whether the phone number is valid'),
+      phoneNumber: z.string().optional().describe('The validated phone number'),
+      localFormat: z.string().optional().describe('Phone number in local format'),
+      internationalFormat: z
+        .string()
+        .optional()
+        .describe('Phone number in international format'),
+      countryCode: z.string().optional().describe('Country calling code'),
+      countryIso: z.string().optional().describe('ISO country code'),
+      lineType: z
+        .string()
+        .optional()
+        .describe('Type of phone line (e.g., mobile, landline, voip)'),
+      carrier: z.string().optional().describe('Phone carrier/operator name'),
+      location: z.string().optional().describe('Geographic location of the phone number'),
+      code: z.number().optional().describe('API response code')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AddressZenClient({ token: ctx.auth.token });
 
     let result = await client.validatePhoneNumber(ctx.input.phoneNumber);
@@ -48,7 +59,8 @@ export let validatePhone = SlateTool.create(
       code: result.code
     };
 
-    let validStatus = output.valid === true ? 'valid' : output.valid === false ? 'invalid' : 'unknown';
+    let validStatus =
+      output.valid === true ? 'valid' : output.valid === false ? 'invalid' : 'unknown';
 
     return {
       output,

@@ -8,7 +8,7 @@ let careerEntrySchema = z.object({
   teamName: z.string().nullable().describe('Team name'),
   teamLogo: z.string().nullable().describe('Team logo URL'),
   start: z.string().nullable().describe('Start date'),
-  end: z.string().nullable().describe('End date'),
+  end: z.string().nullable().describe('End date')
 });
 
 let coachSchema = z.object({
@@ -21,36 +21,37 @@ let coachSchema = z.object({
   photo: z.string().nullable().describe('Coach photo URL'),
   teamId: z.number().nullable().describe('Current team ID'),
   teamName: z.string().nullable().describe('Current team name'),
-  career: z.array(careerEntrySchema).describe('Career history'),
+  career: z.array(careerEntrySchema).describe('Career history')
 });
 
-export let getCoachesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Coaches',
-    key: 'get_coaches',
-    description: `Retrieve football coach information including career history, photos, and biographical data. Search by name or filter by team to find coaching staff.`,
-    tags: {
-      readOnly: true,
-    },
+export let getCoachesTool = SlateTool.create(spec, {
+  name: 'Get Coaches',
+  key: 'get_coaches',
+  description: `Retrieve football coach information including career history, photos, and biographical data. Search by name or filter by team to find coaching staff.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    coachId: z.number().optional().describe('Get a specific coach by ID'),
-    team: z.number().optional().describe('Filter by team ID'),
-    search: z.string().optional().describe('Search by coach name (min 3 characters)'),
-  }))
-  .output(z.object({
-    coaches: z.array(coachSchema),
-    count: z.number().describe('Number of coaches returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      coachId: z.number().optional().describe('Get a specific coach by ID'),
+      team: z.number().optional().describe('Filter by team ID'),
+      search: z.string().optional().describe('Search by coach name (min 3 characters)')
+    })
+  )
+  .output(
+    z.object({
+      coaches: z.array(coachSchema),
+      count: z.number().describe('Number of coaches returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, sport: 'football' });
 
     let data = await client.getCoaches({
       coachId: ctx.input.coachId,
       team: ctx.input.team,
-      search: ctx.input.search,
+      search: ctx.input.search
     });
 
     let results = (data.response ?? []).map((item: any) => ({
@@ -68,15 +69,16 @@ export let getCoachesTool = SlateTool.create(
         teamName: c.team?.name ?? null,
         teamLogo: c.team?.logo ?? null,
         start: c.start ?? null,
-        end: c.end ?? null,
-      })),
+        end: c.end ?? null
+      }))
     }));
 
     return {
       output: {
         coaches: results,
-        count: results.length,
+        count: results.length
       },
-      message: `Found **${results.length}** coach(es)${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}.`,
+      message: `Found **${results.length}** coach(es)${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

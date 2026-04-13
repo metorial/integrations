@@ -9,7 +9,7 @@ let fieldSchema = z.object({
   type: z.string().describe('Field type (e.g., SINGLE_LINE_TEXT, NUMBER, EMAIL, etc.)'),
   description: z.string().nullable().optional().describe('Field description'),
   required: z.boolean().optional().describe('Whether the field is required'),
-  readonly: z.boolean().optional().describe('Whether the field is read-only'),
+  readonly: z.boolean().optional().describe('Whether the field is read-only')
 });
 
 let tableSchema = z.object({
@@ -20,28 +20,29 @@ let tableSchema = z.object({
   defaultViewId: z.string().describe('ID of the default view'),
   fields: z.array(fieldSchema).describe('Fields (columns) defined on the table'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listTables = SlateTool.create(
-  spec,
-  {
-    name: 'List Tables',
-    key: 'list_tables',
-    description: `Retrieve all tables in a specific Softr database, including their fields (schema). Useful for discovering available tables and understanding their structure before querying records.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listTables = SlateTool.create(spec, {
+  name: 'List Tables',
+  key: 'list_tables',
+  description: `Retrieve all tables in a specific Softr database, including their fields (schema). Useful for discovering available tables and understanding their structure before querying records.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    databaseId: z.string().describe('ID of the database to list tables from'),
-  }))
-  .output(z.object({
-    tables: z.array(tableSchema).describe('List of tables in the database'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      databaseId: z.string().describe('ID of the database to list tables from')
+    })
+  )
+  .output(
+    z.object({
+      tables: z.array(tableSchema).describe('List of tables in the database')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DatabaseClient({ token: ctx.auth.token });
 
     let result = await client.listTables(ctx.input.databaseId);
@@ -57,15 +58,15 @@ export let listTables = SlateTool.create(
         type: f.type,
         description: f.description ?? null,
         required: f.required,
-        readonly: f.readonly,
+        readonly: f.readonly
       })),
       createdAt: t.createdAt,
-      updatedAt: t.updatedAt,
+      updatedAt: t.updatedAt
     }));
 
     return {
       output: { tables },
-      message: `Found **${tables.length}** table(s) in database \`${ctx.input.databaseId}\`.`,
+      message: `Found **${tables.length}** table(s) in database \`${ctx.input.databaseId}\`.`
     };
   })
   .build();

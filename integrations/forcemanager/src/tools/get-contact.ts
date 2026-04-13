@@ -3,33 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieve one or more contact records from ForceManager.
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieve one or more contact records from ForceManager.
 Fetch a single contact by ID, or list/search contacts with filtering.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactId: z.number().optional().describe('Specific contact ID to retrieve'),
-    query: z.string().optional().describe('ForceManager query language filter'),
-    firstName: z.string().optional().describe('Search by first name (LIKE match)'),
-    lastName: z.string().optional().describe('Search by last name (LIKE match)'),
-    email: z.string().optional().describe('Search by email (LIKE match)'),
-    accountId: z.number().optional().describe('Filter contacts by account ID'),
-    page: z.number().optional().describe('Page number (0-indexed)')
-  }))
-  .output(z.object({
-    contacts: z.array(z.any()).describe('List of matching contact records'),
-    totalCount: z.number().describe('Number of records returned'),
-    nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.number().optional().describe('Specific contact ID to retrieve'),
+      query: z.string().optional().describe('ForceManager query language filter'),
+      firstName: z.string().optional().describe('Search by first name (LIKE match)'),
+      lastName: z.string().optional().describe('Search by last name (LIKE match)'),
+      email: z.string().optional().describe('Search by email (LIKE match)'),
+      accountId: z.number().optional().describe('Filter contacts by account ID'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(z.any()).describe('List of matching contact records'),
+      totalCount: z.number().describe('Number of records returned'),
+      nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.contactId) {
@@ -57,4 +58,5 @@ Fetch a single contact by ID, or list/search contacts with filtering.`,
       },
       message: `Found **${result.entityCount}** contact(s)${result.nextPage !== null ? ` (more pages available)` : ''}`
     };
-  }).build();
+  })
+  .build();

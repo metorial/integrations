@@ -29,31 +29,33 @@ let addressSchema = z.object({
   organisationName: z.string().optional().describe('Organisation name if a commercial address')
 });
 
-export let resolveAddress = SlateTool.create(
-  spec,
-  {
-    name: 'Resolve Address',
-    key: 'resolve_address',
-    description: `Resolve a full address from an autocomplete suggestion ID. This is step 2 of the address autocomplete process: first use **Search Addresses** to get suggestions, then use this tool with the suggestion's address ID to retrieve complete address details.
+export let resolveAddress = SlateTool.create(spec, {
+  name: 'Resolve Address',
+  key: 'resolve_address',
+  description: `Resolve a full address from an autocomplete suggestion ID. This is step 2 of the address autocomplete process: first use **Search Addresses** to get suggestions, then use this tool with the suggestion's address ID to retrieve complete address details.
 Returns standardized address components including street lines, city, state/county, postcode, and geographic coordinates.`,
-    instructions: [
-      'Use "usa" format for US addresses and "gbr" format for UK or international addresses.',
-      'This operation consumes a lookup from your balance.'
-    ],
-    constraints: [
-      'Each resolution decrements your lookup balance.'
-    ],
-    tags: {
-      readOnly: true
-    }
+  instructions: [
+    'Use "usa" format for US addresses and "gbr" format for UK or international addresses.',
+    'This operation consumes a lookup from your balance.'
+  ],
+  constraints: ['Each resolution decrements your lookup balance.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    addressId: z.string().describe('Address ID from an autocomplete suggestion'),
-    format: z.enum(['usa', 'gbr']).default('usa').describe('Address format: "usa" for US format (2 address lines, city, state, zip) or "gbr" for UK format (3 address lines, post town, postcode)')
-  }))
+})
+  .input(
+    z.object({
+      addressId: z.string().describe('Address ID from an autocomplete suggestion'),
+      format: z
+        .enum(['usa', 'gbr'])
+        .default('usa')
+        .describe(
+          'Address format: "usa" for US format (2 address lines, city, state, zip) or "gbr" for UK format (3 address lines, post town, postcode)'
+        )
+    })
+  )
   .output(addressSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new AddressZenClient({ token: ctx.auth.token });
 
     let result = await client.resolveAddress(ctx.input.addressId, ctx.input.format);
@@ -85,7 +87,9 @@ Returns standardized address components including street lines, city, state/coun
       organisationName: addr.organisation_name || undefined
     };
 
-    let addressLine = [output.line1, output.line2, output.city, output.state, output.postcode].filter(Boolean).join(', ');
+    let addressLine = [output.line1, output.line2, output.city, output.state, output.postcode]
+      .filter(Boolean)
+      .join(', ');
 
     return {
       output,

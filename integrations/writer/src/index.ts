@@ -18,7 +18,7 @@ import {
   invokeAgent,
   listAgents,
   getAgentDetails,
-  listModels,
+  listModels
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -43,9 +43,7 @@ export let provider = Slate.create({
     invokeAgent,
     listAgents,
     getAgentDetails,
-    listModels,
+    listModels
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -15,6 +15,7 @@ Authentication to the API is done via API Keys, which can be generated from the 
 You can create your API key by logging into your self-service dashboard.
 
 Example request header:
+
 ```
 apikey: your_api_key_here
 Content-Type: application/json

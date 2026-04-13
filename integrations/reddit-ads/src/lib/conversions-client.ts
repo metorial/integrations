@@ -41,15 +41,15 @@ export class ConversionsClient {
     this.ax = createAxios({
       baseURL: 'https://ads-api.reddit.com/api/v2.0',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async sendConversionEvents(events: ConversionEvent[]): Promise<any> {
     let response = await this.ax.post(`/conversions/events/${this.pixelId}`, {
-      events,
+      events
     });
     return response.data;
   }

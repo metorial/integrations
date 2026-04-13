@@ -23,6 +23,7 @@ Authorization: Bearer {API_TOKEN}
 **Base URL:** `https://rest.boxhero-app.com`
 
 **Additional details:**
+
 - Access may be limited based on plan level; a plan upgrade may be required for full API usage.
 - Certain API features (such as the location lookup API) may not be available depending on the team's mode (e.g., Basic Mode vs. Business Mode).
 - Each API token is scoped to a specific team. There are no configurable OAuth scopes.

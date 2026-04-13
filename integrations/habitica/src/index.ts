@@ -14,14 +14,9 @@ import {
   manageTags,
   manageQuest,
   manageInventory,
-  getContent,
+  getContent
 } from './tools';
-import {
-  taskActivity,
-  groupChatReceived,
-  userActivity,
-  questActivity,
-} from './triggers';
+import { taskActivity, groupChatReceived, userActivity, questActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,12 +34,7 @@ export let provider = Slate.create({
     manageTags,
     manageQuest,
     manageInventory,
-    getContent,
+    getContent
   ],
-  triggers: [
-    taskActivity,
-    groupChatReceived,
-    userActivity,
-    questActivity,
-  ],
+  triggers: [taskActivity, groupChatReceived, userActivity, questActivity]
 });

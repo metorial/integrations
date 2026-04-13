@@ -3,34 +3,37 @@ import { MetabaseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePublicLink = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Public Link',
-    key: 'manage_public_link',
-    description: `Generate or revoke public sharing links for questions and dashboards in Metabase.
+export let managePublicLink = SlateTool.create(spec, {
+  name: 'Manage Public Link',
+  key: 'manage_public_link',
+  description: `Generate or revoke public sharing links for questions and dashboards in Metabase.
 Public links allow anyone with the URL to view the question or dashboard without authentication.`,
-    constraints: [
-      'Requires superuser (admin) privileges.',
-      'Public sharing must be enabled in the instance settings.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  constraints: [
+    'Requires superuser (admin) privileges.',
+    'Public sharing must be enabled in the instance settings.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'revoke']).describe('Whether to create or revoke a public link'),
-    resourceType: z.enum(['question', 'dashboard']).describe('Type of resource to share'),
-    resourceId: z.number().describe('ID of the question or dashboard')
-  }))
-  .output(z.object({
-    uuid: z.string().optional().describe('The public link UUID'),
-    publicUrl: z.string().optional().describe('The full public sharing URL'),
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'revoke'])
+        .describe('Whether to create or revoke a public link'),
+      resourceType: z.enum(['question', 'dashboard']).describe('Type of resource to share'),
+      resourceId: z.number().describe('ID of the question or dashboard')
+    })
+  )
+  .output(
+    z.object({
+      uuid: z.string().optional().describe('The public link UUID'),
+      publicUrl: z.string().optional().describe('The full public sharing URL'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetabaseClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl

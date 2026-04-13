@@ -28,7 +28,7 @@ import {
   getWebhooks,
   createWebhook,
   updateWebhook,
-  deleteWebhook,
+  deleteWebhook
 } from './tools';
 import { subscriberEvent } from './triggers';
 
@@ -62,9 +62,7 @@ export let provider = Slate.create({
     getWebhooks,
     createWebhook,
     updateWebhook,
-    deleteWebhook,
+    deleteWebhook
   ],
-  triggers: [
-    subscriberEvent,
-  ],
+  triggers: [subscriberEvent]
 });

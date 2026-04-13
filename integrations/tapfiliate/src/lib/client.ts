@@ -10,8 +10,8 @@ export class TapfiliateClient {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-Key': config.token,
-      },
+        'X-Api-Key': config.token
+      }
     });
   }
 
@@ -34,8 +34,8 @@ export class TapfiliateClient {
         source_id: params?.sourceId,
         parent_id: params?.parentId,
         affiliate_group_id: params?.affiliateGroupId,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -64,7 +64,7 @@ export class TapfiliateClient {
     let body: Record<string, any> = {
       firstname: data.firstname,
       lastname: data.lastname,
-      email: data.email,
+      email: data.email
     };
     if (data.companyName) body.company = { name: data.companyName };
     if (data.password) body.password = data.password;
@@ -75,7 +75,7 @@ export class TapfiliateClient {
         postal_code: data.address.postalCode,
         city: data.address.city,
         state: data.address.state,
-        country: data.address.country,
+        country: data.address.country
       };
     }
     if (data.metaData) body.meta_data = data.metaData;
@@ -129,7 +129,7 @@ export class TapfiliateClient {
 
   async setMlmParent(affiliateId: string, parentAffiliateId: string) {
     let res = await this.http.put(`/affiliates/${affiliateId}/mlm/parent/`, {
-      parent_id: parentAffiliateId,
+      parent_id: parentAffiliateId
     });
     return res.data;
   }
@@ -162,15 +162,12 @@ export class TapfiliateClient {
 
   // ─── Affiliate Prospects ─────────────────────────────────────
 
-  async listAffiliateProspects(params?: {
-    programId?: string;
-    page?: number;
-  }) {
+  async listAffiliateProspects(params?: { programId?: string; page?: number }) {
     let res = await this.http.get('/affiliate-prospects/', {
       params: {
         program_id: params?.programId,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -190,7 +187,7 @@ export class TapfiliateClient {
     let body: Record<string, any> = {
       email: data.email,
       firstname: data.firstname,
-      lastname: data.lastname,
+      lastname: data.lastname
     };
     if (data.programId) body.program_id = data.programId;
     if (data.groupId) body.group_id = data.groupId;
@@ -207,7 +204,7 @@ export class TapfiliateClient {
 
   async listPrograms(params?: { page?: number }) {
     let res = await this.http.get('/programs/', {
-      params: { page: params?.page },
+      params: { page: params?.page }
     });
     return res.data;
   }
@@ -217,26 +214,32 @@ export class TapfiliateClient {
     return res.data;
   }
 
-  async listProgramAffiliates(programId: string, params?: {
-    affiliateId?: string;
-    page?: number;
-  }) {
+  async listProgramAffiliates(
+    programId: string,
+    params?: {
+      affiliateId?: string;
+      page?: number;
+    }
+  ) {
     let res = await this.http.get(`/programs/${programId}/affiliates/`, {
       params: {
         affiliate_id: params?.affiliateId,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
 
-  async addAffiliateToProgram(programId: string, data: {
-    affiliateId: string;
-    approved?: boolean;
-    coupon?: string;
-  }) {
+  async addAffiliateToProgram(
+    programId: string,
+    data: {
+      affiliateId: string;
+      approved?: boolean;
+      coupon?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      affiliate: { id: data.affiliateId },
+      affiliate: { id: data.affiliateId }
     };
     if (data.approved !== undefined) body.approved = data.approved;
     if (data.coupon) body.coupon = data.coupon;
@@ -245,21 +248,29 @@ export class TapfiliateClient {
     return res.data;
   }
 
-  async updateAffiliateInProgram(programId: string, affiliateId: string, data: {
-    coupon?: string;
-    approved?: boolean;
-  }) {
+  async updateAffiliateInProgram(
+    programId: string,
+    affiliateId: string,
+    data: {
+      coupon?: string;
+      approved?: boolean;
+    }
+  ) {
     let res = await this.http.patch(`/programs/${programId}/affiliates/${affiliateId}/`, data);
     return res.data;
   }
 
   async approveAffiliateForProgram(programId: string, affiliateId: string) {
-    let res = await this.http.put(`/programs/${programId}/affiliates/${affiliateId}/approval/`);
+    let res = await this.http.put(
+      `/programs/${programId}/affiliates/${affiliateId}/approval/`
+    );
     return res.data;
   }
 
   async disapproveAffiliateForProgram(programId: string, affiliateId: string) {
-    let res = await this.http.delete(`/programs/${programId}/affiliates/${affiliateId}/approval/`);
+    let res = await this.http.delete(
+      `/programs/${programId}/affiliates/${affiliateId}/approval/`
+    );
     return res.data;
   }
 
@@ -297,8 +308,8 @@ export class TapfiliateClient {
         pending: params?.pending,
         date_from: params?.dateFrom,
         date_to: params?.dateTo,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -338,10 +349,10 @@ export class TapfiliateClient {
     if (data.currency) body.currency = data.currency;
     if (data.commissionType) body.commission_type = data.commissionType;
     if (data.commissions) {
-      body.commissions = data.commissions.map((c) => ({
+      body.commissions = data.commissions.map(c => ({
         sub_amount: c.subAmount,
         commission_type: c.commissionType,
-        comment: c.comment,
+        comment: c.comment
       }));
     }
     if (data.programGroup) body.program_group = data.programGroup;
@@ -352,24 +363,28 @@ export class TapfiliateClient {
     if (data.metaData) body.meta_data = data.metaData;
 
     let res = await this.http.post('/conversions/', body, {
-      params: data.overrideMaxCookieTime ? { override_max_cookie_time: true } : undefined,
+      params: data.overrideMaxCookieTime ? { override_max_cookie_time: true } : undefined
     });
     return res.data;
   }
 
-  async updateConversion(conversionId: number, data: {
-    amount?: number;
-    externalId?: string;
-    metaData?: Record<string, any>;
-    recalculateCommissions?: boolean;
-  }) {
+  async updateConversion(
+    conversionId: number,
+    data: {
+      amount?: number;
+      externalId?: string;
+      metaData?: Record<string, any>;
+      recalculateCommissions?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.amount !== undefined) body.amount = data.amount;
     if (data.externalId) body.external_id = data.externalId;
     if (data.metaData) body.meta_data = data.metaData;
 
     let res = await this.http.patch(`/conversions/${conversionId}/`, body, {
-      params: data.recalculateCommissions === false ? { recalculate_commissions: false } : undefined,
+      params:
+        data.recalculateCommissions === false ? { recalculate_commissions: false } : undefined
     });
     return res.data;
   }
@@ -378,13 +393,16 @@ export class TapfiliateClient {
     await this.http.delete(`/conversions/${conversionId}/`);
   }
 
-  async addCommissionsToConversion(conversionId: number, data: {
-    conversionSubAmount: number;
-    commissionType?: string;
-    comment?: string;
-  }) {
+  async addCommissionsToConversion(
+    conversionId: number,
+    data: {
+      conversionSubAmount: number;
+      commissionType?: string;
+      comment?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      conversion_sub_amount: data.conversionSubAmount,
+      conversion_sub_amount: data.conversionSubAmount
     };
     if (data.commissionType) body.commission_type = data.commissionType;
     if (data.comment) body.comment = data.comment;
@@ -424,8 +442,8 @@ export class TapfiliateClient {
         pending: params?.pending,
         date_from: params?.dateFrom,
         date_to: params?.dateTo,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -435,10 +453,13 @@ export class TapfiliateClient {
     return res.data;
   }
 
-  async updateCommission(commissionId: number, data: {
-    amount?: number;
-    comment?: string;
-  }) {
+  async updateCommission(
+    commissionId: number,
+    data: {
+      amount?: number;
+      comment?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.amount !== undefined) body.amount = data.amount;
     if (data.comment) body.comment = data.comment;
@@ -474,8 +495,8 @@ export class TapfiliateClient {
         affiliate_id: params?.affiliateId,
         date_from: params?.dateFrom,
         date_to: params?.dateTo,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -500,7 +521,7 @@ export class TapfiliateClient {
     overrideMaxCookieTime?: boolean;
   }) {
     let body: Record<string, any> = {
-      customer_id: data.customerId,
+      customer_id: data.customerId
     };
     if (data.referralCode) body.referral_code = data.referralCode;
     if (data.trackingId) body.tracking_id = data.trackingId;
@@ -514,15 +535,18 @@ export class TapfiliateClient {
     if (data.metaData) body.meta_data = data.metaData;
 
     let res = await this.http.post('/customers/', body, {
-      params: data.overrideMaxCookieTime ? { override_max_cookie_time: true } : undefined,
+      params: data.overrideMaxCookieTime ? { override_max_cookie_time: true } : undefined
     });
     return res.data;
   }
 
-  async updateCustomer(customerId: string, data: {
-    customerId?: string;
-    metaData?: Record<string, any>;
-  }) {
+  async updateCustomer(
+    customerId: string,
+    data: {
+      customerId?: string;
+      metaData?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.customerId) body.customer_id = data.customerId;
     if (data.metaData) body.meta_data = data.metaData;
@@ -559,7 +583,7 @@ export class TapfiliateClient {
 
   async listBalances(params?: { affiliateId?: string }) {
     let res = await this.http.get('/payments/balances/', {
-      params: { affiliate_id: params?.affiliateId },
+      params: { affiliate_id: params?.affiliateId }
     });
     return res.data;
   }
@@ -575,8 +599,8 @@ export class TapfiliateClient {
         affiliate_id: params?.affiliateId,
         date_from: params?.dateFrom,
         date_to: params?.dateTo,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -614,8 +638,8 @@ export class TapfiliateClient {
         source_id: params?.sourceId,
         date_from: params?.dateFrom,
         date_to: params?.dateTo,
-        page: params?.page,
-      },
+        page: params?.page
+      }
     });
     return res.data;
   }
@@ -633,7 +657,7 @@ export class TapfiliateClient {
     ip?: string;
   }) {
     let body: Record<string, any> = {
-      referral_code: data.referralCode,
+      referral_code: data.referralCode
     };
     if (data.assetId) body.asset_id = data.assetId;
     if (data.sourceId) body.source_id = data.sourceId;

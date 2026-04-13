@@ -9,27 +9,33 @@ export let listSpaces = SlateTool.create(spec, {
   description: `List Confluence spaces with optional filtering by space key, type, or status. Returns space metadata including name, key, and type.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    keys: z.array(z.string()).optional().describe('Filter by specific space keys'),
-    type: z.string().optional().describe('Filter by space type (global, personal)'),
-    status: z.string().optional().describe('Filter by status (current, archived)'),
-    limit: z.number().optional().default(25).describe('Maximum number of spaces to return'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    sort: z.string().optional().describe('Sort order (e.g., "name", "-name")')
-  }))
-  .output(z.object({
-    spaces: z.array(z.object({
-      spaceId: z.string(),
-      spaceKey: z.string(),
-      name: z.string(),
-      type: z.string().optional(),
-      status: z.string().optional(),
-      homepageId: z.string().optional(),
-      webUrl: z.string().optional()
-    })),
-    nextCursor: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      keys: z.array(z.string()).optional().describe('Filter by specific space keys'),
+      type: z.string().optional().describe('Filter by space type (global, personal)'),
+      status: z.string().optional().describe('Filter by status (current, archived)'),
+      limit: z.number().optional().default(25).describe('Maximum number of spaces to return'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      sort: z.string().optional().describe('Sort order (e.g., "name", "-name")')
+    })
+  )
+  .output(
+    z.object({
+      spaces: z.array(
+        z.object({
+          spaceId: z.string(),
+          spaceKey: z.string(),
+          name: z.string(),
+          type: z.string().optional(),
+          status: z.string().optional(),
+          homepageId: z.string().optional(),
+          webUrl: z.string().optional()
+        })
+      ),
+      nextCursor: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getSpaces({
       keys: ctx.input.keys,
@@ -70,20 +76,24 @@ export let getSpace = SlateTool.create(spec, {
   description: `Retrieve a single Confluence space by its ID. Returns space metadata.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    spaceId: z.string().describe('The space ID to retrieve')
-  }))
-  .output(z.object({
-    spaceId: z.string(),
-    spaceKey: z.string(),
-    name: z.string(),
-    type: z.string().optional(),
-    status: z.string().optional(),
-    description: z.string().optional(),
-    homepageId: z.string().optional(),
-    webUrl: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      spaceId: z.string().describe('The space ID to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      spaceId: z.string(),
+      spaceKey: z.string(),
+      name: z.string(),
+      type: z.string().optional(),
+      status: z.string().optional(),
+      description: z.string().optional(),
+      homepageId: z.string().optional(),
+      webUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let space = await client.getSpaceById(ctx.input.spaceId);
 

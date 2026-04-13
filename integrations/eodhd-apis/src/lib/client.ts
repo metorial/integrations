@@ -17,12 +17,15 @@ export class EodhdClient {
 
   // ─── Historical End-of-Day ─────────────────────────────────────────
 
-  async getEndOfDayPrices(symbol: string, options?: {
-    from?: string;
-    to?: string;
-    period?: string;
-    order?: string;
-  }) {
+  async getEndOfDayPrices(
+    symbol: string,
+    options?: {
+      from?: string;
+      to?: string;
+      period?: string;
+      order?: string;
+    }
+  ) {
     let response = await this.http.get(`/eod/${symbol}`, {
       params: this.params({
         from: options?.from,
@@ -36,11 +39,14 @@ export class EodhdClient {
 
   // ─── Intraday Data ─────────────────────────────────────────────────
 
-  async getIntradayPrices(symbol: string, options?: {
-    interval?: string;
-    from?: number;
-    to?: number;
-  }) {
+  async getIntradayPrices(
+    symbol: string,
+    options?: {
+      interval?: string;
+      from?: number;
+      to?: number;
+    }
+  ) {
     let response = await this.http.get(`/intraday/${symbol}`, {
       params: this.params({
         interval: options?.interval,
@@ -64,9 +70,12 @@ export class EodhdClient {
 
   // ─── Fundamental Data ──────────────────────────────────────────────
 
-  async getFundamentals(symbol: string, options?: {
-    filter?: string;
-  }) {
+  async getFundamentals(
+    symbol: string,
+    options?: {
+      filter?: string;
+    }
+  ) {
     let response = await this.http.get(`/fundamentals/${symbol}`, {
       params: this.params({
         filter: options?.filter
@@ -77,12 +86,15 @@ export class EodhdClient {
 
   // ─── Search ────────────────────────────────────────────────────────
 
-  async searchInstruments(query: string, options?: {
-    limit?: number;
-    type?: string;
-    exchange?: string;
-    bondsOnly?: number;
-  }) {
+  async searchInstruments(
+    query: string,
+    options?: {
+      limit?: number;
+      type?: string;
+      exchange?: string;
+      bondsOnly?: number;
+    }
+  ) {
     let response = await this.http.get(`/search/${query}`, {
       params: this.params({
         limit: options?.limit,
@@ -119,10 +131,13 @@ export class EodhdClient {
 
   // ─── Sentiment ─────────────────────────────────────────────────────
 
-  async getSentiment(symbols: string, options?: {
-    from?: string;
-    to?: string;
-  }) {
+  async getSentiment(
+    symbols: string,
+    options?: {
+      from?: string;
+      to?: string;
+    }
+  ) {
     let response = await this.http.get('/sentiments', {
       params: this.params({
         s: symbols,
@@ -156,14 +171,17 @@ export class EodhdClient {
 
   // ─── Technical Indicators ──────────────────────────────────────────
 
-  async getTechnicalIndicator(symbol: string, options: {
-    function: string;
-    period?: number;
-    from?: string;
-    to?: string;
-    order?: string;
-    splitAdjustedOnly?: number;
-  }) {
+  async getTechnicalIndicator(
+    symbol: string,
+    options: {
+      function: string;
+      period?: number;
+      from?: string;
+      to?: string;
+      order?: string;
+      splitAdjustedOnly?: number;
+    }
+  ) {
     let response = await this.http.get(`/technical/${symbol}`, {
       params: this.params({
         function: options.function,
@@ -179,11 +197,7 @@ export class EodhdClient {
 
   // ─── Calendar ──────────────────────────────────────────────────────
 
-  async getEarningsCalendar(options?: {
-    from?: string;
-    to?: string;
-    symbols?: string;
-  }) {
+  async getEarningsCalendar(options?: { from?: string; to?: string; symbols?: string }) {
     let response = await this.http.get('/calendar/earnings', {
       params: this.params({
         from: options?.from,
@@ -194,10 +208,7 @@ export class EodhdClient {
     return response.data;
   }
 
-  async getIpoCalendar(options?: {
-    from?: string;
-    to?: string;
-  }) {
+  async getIpoCalendar(options?: { from?: string; to?: string }) {
     let response = await this.http.get('/calendar/ipos', {
       params: this.params({
         from: options?.from,
@@ -207,11 +218,7 @@ export class EodhdClient {
     return response.data;
   }
 
-  async getSplitsCalendar(options?: {
-    from?: string;
-    to?: string;
-    symbols?: string;
-  }) {
+  async getSplitsCalendar(options?: { from?: string; to?: string; symbols?: string }) {
     let response = await this.http.get('/calendar/splits', {
       params: this.params({
         from: options?.from,
@@ -224,10 +231,13 @@ export class EodhdClient {
 
   // ─── Dividends & Splits ────────────────────────────────────────────
 
-  async getDividends(symbol: string, options?: {
-    from?: string;
-    to?: string;
-  }) {
+  async getDividends(
+    symbol: string,
+    options?: {
+      from?: string;
+      to?: string;
+    }
+  ) {
     let response = await this.http.get(`/div/${symbol}`, {
       params: this.params({
         from: options?.from,
@@ -237,10 +247,13 @@ export class EodhdClient {
     return response.data;
   }
 
-  async getSplits(symbol: string, options?: {
-    from?: string;
-    to?: string;
-  }) {
+  async getSplits(
+    symbol: string,
+    options?: {
+      from?: string;
+      to?: string;
+    }
+  ) {
     let response = await this.http.get(`/splits/${symbol}`, {
       params: this.params({
         from: options?.from,
@@ -271,13 +284,16 @@ export class EodhdClient {
 
   // ─── Options ───────────────────────────────────────────────────────
 
-  async getOptionsChain(symbol: string, options?: {
-    from?: string;
-    to?: string;
-    tradeDateFrom?: string;
-    tradeDateTo?: string;
-    contractName?: string;
-  }) {
+  async getOptionsChain(
+    symbol: string,
+    options?: {
+      from?: string;
+      to?: string;
+      tradeDateFrom?: string;
+      tradeDateTo?: string;
+      contractName?: string;
+    }
+  ) {
     let response = await this.http.get(`/options/${symbol}`, {
       params: this.params({
         from: options?.from,
@@ -292,9 +308,12 @@ export class EodhdClient {
 
   // ─── Macro Indicators ──────────────────────────────────────────────
 
-  async getMacroIndicator(country: string, options?: {
-    indicator?: string;
-  }) {
+  async getMacroIndicator(
+    country: string,
+    options?: {
+      indicator?: string;
+    }
+  ) {
     let response = await this.http.get(`/macro-indicator/${country}`, {
       params: this.params({
         indicator: options?.indicator
@@ -312,10 +331,13 @@ export class EodhdClient {
     return response.data;
   }
 
-  async getExchangeSymbols(exchangeCode: string, options?: {
-    type?: string;
-    delisted?: number;
-  }) {
+  async getExchangeSymbols(
+    exchangeCode: string,
+    options?: {
+      type?: string;
+      delisted?: number;
+    }
+  ) {
     let response = await this.http.get(`/exchange-symbol-list/${exchangeCode}`, {
       params: this.params({
         type: options?.type,
@@ -327,12 +349,15 @@ export class EodhdClient {
 
   // ─── Bulk API ──────────────────────────────────────────────────────
 
-  async getBulkEod(exchangeCode: string, options?: {
-    type?: string;
-    date?: string;
-    symbols?: string;
-    filter?: string;
-  }) {
+  async getBulkEod(
+    exchangeCode: string,
+    options?: {
+      type?: string;
+      date?: string;
+      symbols?: string;
+      filter?: string;
+    }
+  ) {
     let response = await this.http.get(`/eod-bulk-last-day/${exchangeCode}`, {
       params: this.params({
         type: options?.type,

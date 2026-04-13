@@ -17,6 +17,7 @@ If you'd like to access spreadsheets on behalf of end users (including yourself)
 3. An OAuth consent screen configured with desired scopes.
 
 **OAuth Endpoints:**
+
 - Authorization: `https://accounts.google.com/o/oauth2/auth`
 - Token: `https://oauth2.googleapis.com/token`
 
@@ -77,6 +78,7 @@ Create and manage embedded charts within spreadsheets. Supports various chart ty
 ### Pivot Tables
 
 The Google Sheets API can create and update pivot tables through code. Pivot tables summarize large datasets without changing the original data, which helps with reporting and analysis. Configure row/column groupings, value aggregations (sum, count, average, etc.), and filters.
+
 - Updating a pivot table requires supplying the entire pivot table definition (it is replaced, not patched).
 
 ### Filter Views

@@ -11,17 +11,20 @@ Budibase is an open-source low-code platform for building internal business appl
 The Budibase API requires an API key be specified as a header, specifically the `x-budibase-api-key` header. Each user will have their own API key which can be generated through the Budibase portal, found in the user dropdown menu in the top right corner.
 
 **API Key Authentication:**
+
 - **Header name:** `x-budibase-api-key`
 - **Header value:** Your personal API key
 - The API key is generated per user through the Budibase portal. The "View API key" option allows generating a new API key (this will invalidate your old API key).
 - The API respects the RBAC system fully. Every user can generate an API key for Budibase and it will only allow users with access to resources to utilize the API.
 
 **Base URL:**
+
 - Budibase Cloud: `https://budibase.app/api/public/v1`
 - Self-hosted: `https://<your-host>/api/public/v1`
 - Ensure that `/api/public/v1` at the end of the URL is maintained, as this is required to access the Public API.
 
 **Additional Context:**
+
 - For self-hosted instances, the base URL should point to wherever the Budibase instance is hosted.
 - Some data endpoints also require the `x-budibase-app-id` header to specify which application context the request operates in.
 

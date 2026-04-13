@@ -3,54 +3,62 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let MESSAGE_EVENT_TYPES = [
-  'message_sent',
-  'message_failed',
-] as const;
+let MESSAGE_EVENT_TYPES = ['message_sent', 'message_failed'] as const;
 
-export let messageEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Events',
-    key: 'message_events',
-    description: 'Triggers when an email or SMS message is sent, delivered, or fails (bounced, skipped, spam, unsubscribed).',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(MESSAGE_EVENT_TYPES).describe('Type of message event'),
-    messageId: z.string().describe('Unique identifier of the message'),
-    channel: z.string().optional().describe('Delivery channel (email or sms)'),
-    recipient: z.string().optional().describe('Recipient address or phone number'),
-    status: z.string().optional().describe('Message status (sent, delivered, skipped, bounced, spam, unsubscribed)'),
-    subject: z.string().optional().describe('Email subject line'),
-    passInstanceId: z.string().optional().describe('Associated pass identifier'),
-    templateId: z.string().optional().describe('Associated template identifier'),
-    createdOn: z.string().optional().describe('Message creation timestamp'),
-    submittedOn: z.string().optional().describe('Message submission timestamp'),
-    statusDetails: z.object({
-      reason: z.string().optional(),
-      error: z.string().optional(),
-      errorRelatedTo: z.string().optional(),
-    }).optional().describe('Additional status details for failed messages'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Message identifier'),
-    channel: z.string().optional().describe('Delivery channel'),
-    recipient: z.string().optional().describe('Recipient'),
-    status: z.string().optional().describe('Delivery status'),
-    subject: z.string().optional().describe('Email subject'),
-    passInstanceId: z.string().optional().describe('Associated pass ID'),
-    templateId: z.string().optional().describe('Associated template ID'),
-    createdOn: z.string().optional().describe('Creation timestamp'),
-    submittedOn: z.string().optional().describe('Submission timestamp'),
-    statusDetails: z.object({
-      reason: z.string().optional(),
-      error: z.string().optional(),
-      errorRelatedTo: z.string().optional(),
-    }).optional().describe('Failure details'),
-  }))
+export let messageEvents = SlateTrigger.create(spec, {
+  name: 'Message Events',
+  key: 'message_events',
+  description:
+    'Triggers when an email or SMS message is sent, delivered, or fails (bounced, skipped, spam, unsubscribed).'
+})
+  .input(
+    z.object({
+      eventType: z.enum(MESSAGE_EVENT_TYPES).describe('Type of message event'),
+      messageId: z.string().describe('Unique identifier of the message'),
+      channel: z.string().optional().describe('Delivery channel (email or sms)'),
+      recipient: z.string().optional().describe('Recipient address or phone number'),
+      status: z
+        .string()
+        .optional()
+        .describe('Message status (sent, delivered, skipped, bounced, spam, unsubscribed)'),
+      subject: z.string().optional().describe('Email subject line'),
+      passInstanceId: z.string().optional().describe('Associated pass identifier'),
+      templateId: z.string().optional().describe('Associated template identifier'),
+      createdOn: z.string().optional().describe('Message creation timestamp'),
+      submittedOn: z.string().optional().describe('Message submission timestamp'),
+      statusDetails: z
+        .object({
+          reason: z.string().optional(),
+          error: z.string().optional(),
+          errorRelatedTo: z.string().optional()
+        })
+        .optional()
+        .describe('Additional status details for failed messages')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Message identifier'),
+      channel: z.string().optional().describe('Delivery channel'),
+      recipient: z.string().optional().describe('Recipient'),
+      status: z.string().optional().describe('Delivery status'),
+      subject: z.string().optional().describe('Email subject'),
+      passInstanceId: z.string().optional().describe('Associated pass ID'),
+      templateId: z.string().optional().describe('Associated template ID'),
+      createdOn: z.string().optional().describe('Creation timestamp'),
+      submittedOn: z.string().optional().describe('Submission timestamp'),
+      statusDetails: z
+        .object({
+          reason: z.string().optional(),
+          error: z.string().optional(),
+          errorRelatedTo: z.string().optional()
+        })
+        .optional()
+        .describe('Failure details')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let registeredUrls: Array<{ event: string; targetUrl: string }> = [];
@@ -62,13 +70,15 @@ export let messageEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registeredUrls },
+        registrationDetails: { registeredUrls }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registeredUrls: Array<{ event: string; targetUrl: string }> };
+      let details = ctx.input.registrationDetails as {
+        registeredUrls: Array<{ event: string; targetUrl: string }>;
+      };
 
       for (let entry of details.registeredUrls) {
         try {
@@ -79,8 +89,8 @@ export let messageEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
@@ -91,27 +101,31 @@ export let messageEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          messageId: body.messageId || '',
-          channel: body.channel,
-          recipient: body.recipient,
-          status: body.status,
-          subject: body.subject,
-          passInstanceId: body.passInstanceId || undefined,
-          templateId: body.templateId || undefined,
-          createdOn: body.createdOn,
-          submittedOn: body.submittedOn || undefined,
-          statusDetails: body.statusDetails ? {
-            reason: body.statusDetails.reason,
-            error: body.statusDetails.error,
-            errorRelatedTo: body.statusDetails.error_related_to,
-          } : undefined,
-        }],
+        inputs: [
+          {
+            eventType,
+            messageId: body.messageId || '',
+            channel: body.channel,
+            recipient: body.recipient,
+            status: body.status,
+            subject: body.subject,
+            passInstanceId: body.passInstanceId || undefined,
+            templateId: body.templateId || undefined,
+            createdOn: body.createdOn,
+            submittedOn: body.submittedOn || undefined,
+            statusDetails: body.statusDetails
+              ? {
+                  reason: body.statusDetails.reason,
+                  error: body.statusDetails.error,
+                  errorRelatedTo: body.statusDetails.error_related_to
+                }
+              : undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `message.${ctx.input.eventType === 'message_sent' ? 'sent' : 'failed'}`,
         id: `${ctx.input.messageId}-${ctx.input.eventType}`,
@@ -125,8 +139,9 @@ export let messageEvents = SlateTrigger.create(
           templateId: ctx.input.templateId,
           createdOn: ctx.input.createdOn,
           submittedOn: ctx.input.submittedOn,
-          statusDetails: ctx.input.statusDetails,
-        },
+          statusDetails: ctx.input.statusDetails
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

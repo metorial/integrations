@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   runFlow,
@@ -27,12 +26,9 @@ import {
   listFolders,
   manageFolder,
   listToolProviders,
-  runAction,
+  runAction
 } from './tools';
-import {
-  flowRunTrigger,
-  inboundWebhook,
-} from './triggers';
+import { flowRunTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -62,10 +58,7 @@ export let provider = Slate.create({
     listFolders,
     manageFolder,
     listToolProviders,
-    runAction,
+    runAction
   ],
-  triggers: [
-    inboundWebhook,
-    flowRunTrigger,
-  ],
+  triggers: [inboundWebhook, flowRunTrigger]
 });

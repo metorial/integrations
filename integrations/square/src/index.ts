@@ -24,7 +24,7 @@ import {
   getInvoice,
   createInvoice,
   manageInvoice,
-  listLocations,
+  listLocations
 } from './tools';
 import {
   paymentEvents,
@@ -37,7 +37,7 @@ import {
   bookingEvents,
   disputeEvents,
   subscriptionEvents,
-  loyaltyEvents,
+  loyaltyEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -66,7 +66,7 @@ export let provider = Slate.create({
     getInvoice,
     createInvoice,
     manageInvoice,
-    listLocations,
+    listLocations
   ],
   triggers: [
     paymentEvents,
@@ -79,6 +79,6 @@ export let provider = Slate.create({
     bookingEvents,
     disputeEvents,
     subscriptionEvents,
-    loyaltyEvents,
-  ],
+    loyaltyEvents
+  ]
 });

@@ -11,22 +11,22 @@ export class Client {
 
   constructor(private auth: CopperAuth) {
     this.axios = createAxios({
-      baseURL: 'https://api.copper.com/developer_api/v1',
+      baseURL: 'https://api.copper.com/developer_api/v1'
     });
   }
 
   private getHeaders(): Record<string, string> {
     if (this.auth.authMethod === 'oauth') {
       return {
-        'Authorization': `Bearer ${this.auth.token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.auth.token}`,
+        'Content-Type': 'application/json'
       };
     }
     return {
       'X-PW-AccessToken': this.auth.token,
       'X-PW-UserEmail': this.auth.userEmail || '',
       'X-PW-Application': 'developer_api',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -43,22 +43,32 @@ export class Client {
   }
 
   async updatePerson(personId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/people/${personId}`, data, { headers: this.getHeaders() });
+    let response = await this.axios.put(`/people/${personId}`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async deletePerson(personId: number): Promise<any> {
-    let response = await this.axios.delete(`/people/${personId}`, { headers: this.getHeaders() });
+    let response = await this.axios.delete(`/people/${personId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async searchPeople(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/people/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/people/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async lookupPersonByEmail(email: string): Promise<any> {
-    let response = await this.axios.post('/people/fetch_by_email', { email }, { headers: this.getHeaders() });
+    let response = await this.axios.post(
+      '/people/fetch_by_email',
+      { email },
+      { headers: this.getHeaders() }
+    );
     return response.data;
   }
 
@@ -70,22 +80,30 @@ export class Client {
   }
 
   async getCompany(companyId: number): Promise<any> {
-    let response = await this.axios.get(`/companies/${companyId}`, { headers: this.getHeaders() });
+    let response = await this.axios.get(`/companies/${companyId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async updateCompany(companyId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/companies/${companyId}`, data, { headers: this.getHeaders() });
+    let response = await this.axios.put(`/companies/${companyId}`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async deleteCompany(companyId: number): Promise<any> {
-    let response = await this.axios.delete(`/companies/${companyId}`, { headers: this.getHeaders() });
+    let response = await this.axios.delete(`/companies/${companyId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async searchCompanies(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/companies/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/companies/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -102,7 +120,9 @@ export class Client {
   }
 
   async updateLead(leadId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/leads/${leadId}`, data, { headers: this.getHeaders() });
+    let response = await this.axios.put(`/leads/${leadId}`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -112,39 +132,55 @@ export class Client {
   }
 
   async searchLeads(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/leads/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/leads/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async convertLead(leadId: number, details: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/leads/${leadId}/convert`, { details }, { headers: this.getHeaders() });
+    let response = await this.axios.post(
+      `/leads/${leadId}/convert`,
+      { details },
+      { headers: this.getHeaders() }
+    );
     return response.data;
   }
 
   // ========== Opportunities ==========
 
   async createOpportunity(data: Record<string, any>): Promise<any> {
-    let response = await this.axios.post('/opportunities', data, { headers: this.getHeaders() });
+    let response = await this.axios.post('/opportunities', data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async getOpportunity(opportunityId: number): Promise<any> {
-    let response = await this.axios.get(`/opportunities/${opportunityId}`, { headers: this.getHeaders() });
+    let response = await this.axios.get(`/opportunities/${opportunityId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async updateOpportunity(opportunityId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/opportunities/${opportunityId}`, data, { headers: this.getHeaders() });
+    let response = await this.axios.put(`/opportunities/${opportunityId}`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async deleteOpportunity(opportunityId: number): Promise<any> {
-    let response = await this.axios.delete(`/opportunities/${opportunityId}`, { headers: this.getHeaders() });
+    let response = await this.axios.delete(`/opportunities/${opportunityId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async searchOpportunities(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/opportunities/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/opportunities/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -161,7 +197,9 @@ export class Client {
   }
 
   async updateTask(taskId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/tasks/${taskId}`, data, { headers: this.getHeaders() });
+    let response = await this.axios.put(`/tasks/${taskId}`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -171,7 +209,9 @@ export class Client {
   }
 
   async searchTasks(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/tasks/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/tasks/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -183,22 +223,30 @@ export class Client {
   }
 
   async getProject(projectId: number): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectId}`, { headers: this.getHeaders() });
+    let response = await this.axios.get(`/projects/${projectId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async updateProject(projectId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/projects/${projectId}`, data, { headers: this.getHeaders() });
+    let response = await this.axios.put(`/projects/${projectId}`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async deleteProject(projectId: number): Promise<any> {
-    let response = await this.axios.delete(`/projects/${projectId}`, { headers: this.getHeaders() });
+    let response = await this.axios.delete(`/projects/${projectId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   async searchProjects(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/projects/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/projects/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -210,7 +258,9 @@ export class Client {
   }
 
   async searchActivities(params: Record<string, any>): Promise<any[]> {
-    let response = await this.axios.post('/activities/search', params, { headers: this.getHeaders() });
+    let response = await this.axios.post('/activities/search', params, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -227,14 +277,18 @@ export class Client {
   }
 
   async listPipelineStages(pipelineId: number): Promise<any[]> {
-    let response = await this.axios.get(`/pipeline_stages/pipeline/${pipelineId}`, { headers: this.getHeaders() });
+    let response = await this.axios.get(`/pipeline_stages/pipeline/${pipelineId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
   // ========== Custom Fields ==========
 
   async listCustomFieldDefinitions(): Promise<any[]> {
-    let response = await this.axios.get('/custom_field_definitions', { headers: this.getHeaders() });
+    let response = await this.axios.get('/custom_field_definitions', {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
@@ -248,19 +302,31 @@ export class Client {
   // ========== Related Items ==========
 
   async getRelatedItems(entityType: string, entityId: number): Promise<any> {
-    let response = await this.axios.get(`/${entityType}/${entityId}/related`, { headers: this.getHeaders() });
+    let response = await this.axios.get(`/${entityType}/${entityId}/related`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
-  async createRelatedItem(entityType: string, entityId: number, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/${entityType}/${entityId}/related`, data, { headers: this.getHeaders() });
+  async createRelatedItem(
+    entityType: string,
+    entityId: number,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.post(`/${entityType}/${entityId}/related`, data, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 
-  async deleteRelatedItem(entityType: string, entityId: number, data: Record<string, any>): Promise<any> {
+  async deleteRelatedItem(
+    entityType: string,
+    entityId: number,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.delete(`/${entityType}/${entityId}/related`, {
       headers: this.getHeaders(),
-      data,
+      data
     });
     return response.data;
   }
@@ -326,7 +392,9 @@ export class Client {
   }
 
   async deleteWebhook(webhookId: number): Promise<any> {
-    let response = await this.axios.delete(`/webhooks/${webhookId}`, { headers: this.getHeaders() });
+    let response = await this.axios.delete(`/webhooks/${webhookId}`, {
+      headers: this.getHeaders()
+    });
     return response.data;
   }
 

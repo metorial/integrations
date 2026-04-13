@@ -95,13 +95,13 @@ let normalizeOverlayWord = (word: RawTextOverlayWord): TextOverlayWord => ({
   left: word.Left,
   top: word.Top,
   height: word.Height,
-  width: word.Width,
+  width: word.Width
 });
 
 let normalizeOverlayLine = (line: RawTextOverlayLine): TextOverlayLine => ({
   words: (line.Words || []).map(normalizeOverlayWord),
   maxHeight: line.MaxHeight,
-  minTop: line.MinTop,
+  minTop: line.MinTop
 });
 
 let normalizeOverlay = (overlay: RawTextOverlay | null): TextOverlay | null => {
@@ -109,7 +109,7 @@ let normalizeOverlay = (overlay: RawTextOverlay | null): TextOverlay | null => {
   return {
     lines: (overlay.Lines || []).map(normalizeOverlayLine),
     hasOverlay: overlay.HasOverlay,
-    message: overlay.Message,
+    message: overlay.Message
   };
 };
 
@@ -118,7 +118,7 @@ let normalizeParsedResult = (result: RawParsedResult): ParsedResult => ({
   fileParseExitCode: result.FileParseExitCode,
   parsedText: result.ParsedText,
   errorMessage: result.ErrorMessage,
-  errorDetails: result.ErrorDetails,
+  errorDetails: result.ErrorDetails
 });
 
 let normalizeResponse = (raw: RawOcrResponse): OcrResponse => {
@@ -132,7 +132,7 @@ let normalizeResponse = (raw: RawOcrResponse): OcrResponse => {
     errorMessage: errorMessageStr,
     errorDetails: raw.ErrorDetails,
     searchablePdfUrl: raw.SearchablePDFURL || null,
-    processingTimeInMilliseconds: raw.ProcessingTimeInMilliseconds,
+    processingTimeInMilliseconds: raw.ProcessingTimeInMilliseconds
   };
 };
 
@@ -143,8 +143,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.ocr.space',
       headers: {
-        apikey: opts.token,
-      },
+        apikey: opts.token
+      }
     });
   }
 
@@ -182,7 +182,10 @@ export class Client {
       formData.append('isCreateSearchablePdf', String(options.isCreateSearchablePdf));
     }
     if (options.isSearchablePdfHideTextLayer !== undefined) {
-      formData.append('isSearchablePdfHideTextLayer', String(options.isSearchablePdfHideTextLayer));
+      formData.append(
+        'isSearchablePdfHideTextLayer',
+        String(options.isSearchablePdfHideTextLayer)
+      );
     }
 
     let response = await this.axios.post('/parse/image', formData);
@@ -190,7 +193,9 @@ export class Client {
 
     if (raw.IsErroredOnProcessing || raw.OCRExitCode === 3 || raw.OCRExitCode === 4) {
       let errorMsg = raw.ErrorMessage
-        ? (Array.isArray(raw.ErrorMessage) ? raw.ErrorMessage.join('; ') : raw.ErrorMessage)
+        ? Array.isArray(raw.ErrorMessage)
+          ? raw.ErrorMessage.join('; ')
+          : raw.ErrorMessage
         : 'OCR processing failed';
       throw new Error(errorMsg);
     }

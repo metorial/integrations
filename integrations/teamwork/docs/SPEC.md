@@ -35,54 +35,71 @@ If you are developing an application or integration for others to use, you shoul
 ## Features
 
 ### Project Management
+
 Create, update, archive, and delete projects. Projects support custom statuses, categories, tags, budgets, and can be organized by company. Projects can be copied and have their own settings for webhooks and permissions.
 
 ### Task & Task List Management
+
 Manage task lists and tasks within projects. Tasks support assignees, due dates, start dates, priorities, tags, dependencies, subtasks, estimated time, and custom fields. Task lists can be created from templates. Tasks can be completed, reopened, and moved between lists.
 
 ### Time Tracking & Timers
+
 Log time entries against projects, tasks, and allocations. Manage running timers — create, pause, resume, complete, and delete timers. Time entries support billable/non-billable flags, tags, and descriptions. Retrieve time totals aggregated by project or task.
 
 ### Milestones
+
 Create and manage milestones within projects. Milestones can be assigned to responsible parties, have deadlines, and can be tagged. They support completion and reopening.
 
 ### People & Companies
+
 Manage users and companies. Add people to projects, manage permissions, and organize contacts by company. Users can have different roles and access levels.
 
 ### Files & Documents
+
 Upload, manage, and organize files within projects. Files support tagging and versioning. Track file downloads.
 
 ### Messages & Comments
+
 Post messages (discussions) within projects and reply to them. Add comments to tasks, milestones, notebooks, and files. Messages support tagging.
 
 ### Notebooks
+
 Create and manage project notebooks (wiki-style documents). Notebooks support tagging and versioning.
 
 ### Calendar Events
+
 Create and manage calendar events visible across the site.
 
 ### Risks & Budgets
+
 Track project risks and manage project budgets.
 
 ### Invoices & Expenses
+
 Create, manage, and track invoices and expenses associated with projects. Invoices can be completed and reopened.
 
 ### Portfolio Boards
+
 Manage portfolio boards with columns and cards to track projects at a high level across the organization. Available at site level.
 
 ### Forms
+
 Create and publish forms that can be submitted to capture structured input.
 
 ### Custom Fields
+
 Define and manage custom fields to extend the data model for tasks, projects, and other entities.
 
 ### Tags & Categories
+
 Organize entities using tags and categories for filtering and grouping.
 
 ### Project Updates & Status
+
 Post project status updates, manage project health, and provide progress visibility.
 
 ### Roles & Teams
+
 Define roles and teams for organizing people and managing permissions.
 
 ## Events

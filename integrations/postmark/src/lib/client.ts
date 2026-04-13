@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let postmarkAxios = createAxios({
-  baseURL: 'https://api.postmarkapp.com',
+  baseURL: 'https://api.postmarkapp.com'
 });
 
 export interface PostmarkAttachment {
@@ -30,7 +30,12 @@ export interface SendEmailParams {
   trackLinks?: string;
   messageStream?: string;
   headers?: Array<{ name: string; value: string }>;
-  attachments?: Array<{ name: string; content: string; contentType: string; contentId?: string }>;
+  attachments?: Array<{
+    name: string;
+    content: string;
+    contentType: string;
+    contentId?: string;
+  }>;
   metadata?: Record<string, string>;
 }
 
@@ -56,7 +61,12 @@ export interface SendTemplateEmailParams {
   trackLinks?: string;
   messageStream?: string;
   headers?: Array<{ name: string; value: string }>;
-  attachments?: Array<{ name: string; content: string; contentType: string; contentId?: string }>;
+  attachments?: Array<{
+    name: string;
+    content: string;
+    contentType: string;
+    contentId?: string;
+  }>;
   metadata?: Record<string, string>;
 }
 
@@ -163,9 +173,9 @@ export class Client {
 
   private serverHeaders() {
     return {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'X-Postmark-Server-Token': this.serverToken,
+      'X-Postmark-Server-Token': this.serverToken
     };
   }
 
@@ -174,9 +184,9 @@ export class Client {
       throw new Error('Account API token is required for this operation');
     }
     return {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'X-Postmark-Account-Token': this.accountToken,
+      'X-Postmark-Account-Token': this.accountToken
     };
   }
 
@@ -186,7 +196,7 @@ export class Client {
     let body: Record<string, any> = {
       From: params.from,
       To: params.to,
-      Subject: params.subject,
+      Subject: params.subject
     };
 
     if (params.cc) body.Cc = params.cc;
@@ -209,12 +219,12 @@ export class Client {
         Name: a.name,
         Content: a.content,
         ContentType: a.contentType,
-        ...(a.contentId ? { ContentID: a.contentId } : {}),
+        ...(a.contentId ? { ContentID: a.contentId } : {})
       }));
     }
 
     let response = await postmarkAxios.post('/email', body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
 
     return response.data;
@@ -225,7 +235,7 @@ export class Client {
       let body: Record<string, any> = {
         From: params.from,
         To: params.to,
-        Subject: params.subject,
+        Subject: params.subject
       };
 
       if (params.cc) body.Cc = params.cc;
@@ -248,7 +258,7 @@ export class Client {
           Name: a.name,
           Content: a.content,
           ContentType: a.contentType,
-          ...(a.contentId ? { ContentID: a.contentId } : {}),
+          ...(a.contentId ? { ContentID: a.contentId } : {})
         }));
       }
 
@@ -256,7 +266,7 @@ export class Client {
     });
 
     let response = await postmarkAxios.post('/email/batch', bodies, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
 
     return response.data;
@@ -266,7 +276,7 @@ export class Client {
     let body: Record<string, any> = {
       From: params.from,
       To: params.to,
-      TemplateModel: params.templateModel,
+      TemplateModel: params.templateModel
     };
 
     if (params.templateId) body.TemplateId = params.templateId;
@@ -289,23 +299,25 @@ export class Client {
         Name: a.name,
         Content: a.content,
         ContentType: a.contentType,
-        ...(a.contentId ? { ContentID: a.contentId } : {}),
+        ...(a.contentId ? { ContentID: a.contentId } : {})
       }));
     }
 
     let response = await postmarkAxios.post('/email/withTemplate', body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
 
     return response.data;
   }
 
-  async sendBatchTemplateEmails(messages: SendTemplateEmailParams[]): Promise<SendEmailResponse[]> {
+  async sendBatchTemplateEmails(
+    messages: SendTemplateEmailParams[]
+  ): Promise<SendEmailResponse[]> {
     let bodies = messages.map(params => {
       let body: Record<string, any> = {
         From: params.from,
         To: params.to,
-        TemplateModel: params.templateModel,
+        TemplateModel: params.templateModel
       };
 
       if (params.templateId) body.TemplateId = params.templateId;
@@ -328,16 +340,20 @@ export class Client {
           Name: a.name,
           Content: a.content,
           ContentType: a.contentType,
-          ...(a.contentId ? { ContentID: a.contentId } : {}),
+          ...(a.contentId ? { ContentID: a.contentId } : {})
         }));
       }
 
       return body;
     });
 
-    let response = await postmarkAxios.post('/email/batchWithTemplates', { Messages: bodies }, {
-      headers: this.serverHeaders(),
-    });
+    let response = await postmarkAxios.post(
+      '/email/batchWithTemplates',
+      { Messages: bodies },
+      {
+        headers: this.serverHeaders()
+      }
+    );
 
     return response.data;
   }
@@ -349,7 +365,7 @@ export class Client {
     Bounces: Array<{ Type: string; Name: string; Count: number }>;
   }> {
     let response = await postmarkAxios.get('/deliverystats', {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -378,23 +394,27 @@ export class Client {
         messageID: params.messageID,
         fromdate: params.fromdate,
         todate: params.todate,
-        messagestream: params.messageStream,
-      },
+        messagestream: params.messageStream
+      }
     });
     return response.data;
   }
 
   async getBounce(bounceId: number): Promise<BounceRecord> {
     let response = await postmarkAxios.get(`/bounces/${bounceId}`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
   async activateBounce(bounceId: number): Promise<{ Message: string; Bounce: BounceRecord }> {
-    let response = await postmarkAxios.put(`/bounces/${bounceId}/activate`, {}, {
-      headers: this.serverHeaders(),
-    });
+    let response = await postmarkAxios.put(
+      `/bounces/${bounceId}/activate`,
+      {},
+      {
+        headers: this.serverHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -404,21 +424,30 @@ export class Client {
     count: number;
     offset: number;
     templateType?: string;
-  }): Promise<{ TotalCount: number; Templates: Array<{ TemplateId: number; Name: string; Active: boolean; Alias: string | null; TemplateType: string }> }> {
+  }): Promise<{
+    TotalCount: number;
+    Templates: Array<{
+      TemplateId: number;
+      Name: string;
+      Active: boolean;
+      Alias: string | null;
+      TemplateType: string;
+    }>;
+  }> {
     let response = await postmarkAxios.get('/templates', {
       headers: this.serverHeaders(),
       params: {
         Count: params.count,
         Offset: params.offset,
-        TemplateType: params.templateType,
-      },
+        TemplateType: params.templateType
+      }
     });
     return response.data;
   }
 
   async getTemplate(templateIdOrAlias: string | number): Promise<TemplateRecord> {
     let response = await postmarkAxios.get(`/templates/${templateIdOrAlias}`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -434,7 +463,7 @@ export class Client {
   }): Promise<TemplateRecord> {
     let body: Record<string, any> = {
       Name: params.name,
-      Subject: params.subject,
+      Subject: params.subject
     };
 
     if (params.htmlBody) body.HtmlBody = params.htmlBody;
@@ -444,19 +473,22 @@ export class Client {
     if (params.layoutTemplate) body.LayoutTemplate = params.layoutTemplate;
 
     let response = await postmarkAxios.post('/templates', body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
-  async updateTemplate(templateIdOrAlias: string | number, params: {
-    name?: string;
-    subject?: string;
-    htmlBody?: string;
-    textBody?: string;
-    alias?: string;
-    layoutTemplate?: string;
-  }): Promise<TemplateRecord> {
+  async updateTemplate(
+    templateIdOrAlias: string | number,
+    params: {
+      name?: string;
+      subject?: string;
+      htmlBody?: string;
+      textBody?: string;
+      alias?: string;
+      layoutTemplate?: string;
+    }
+  ): Promise<TemplateRecord> {
     let body: Record<string, any> = {};
 
     if (params.name !== undefined) body.Name = params.name;
@@ -467,14 +499,16 @@ export class Client {
     if (params.layoutTemplate !== undefined) body.LayoutTemplate = params.layoutTemplate;
 
     let response = await postmarkAxios.put(`/templates/${templateIdOrAlias}`, body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
-  async deleteTemplate(templateIdOrAlias: string | number): Promise<{ ErrorCode: number; Message: string }> {
+  async deleteTemplate(
+    templateIdOrAlias: string | number
+  ): Promise<{ ErrorCode: number; Message: string }> {
     let response = await postmarkAxios.delete(`/templates/${templateIdOrAlias}`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -486,7 +520,7 @@ export class Client {
     testRenderModel?: Record<string, any>;
   }): Promise<any> {
     let body: Record<string, any> = {
-      Subject: params.subject,
+      Subject: params.subject
     };
 
     if (params.htmlBody) body.HtmlBody = params.htmlBody;
@@ -494,7 +528,7 @@ export class Client {
     if (params.testRenderModel) body.TestRenderModel = params.testRenderModel;
 
     let response = await postmarkAxios.post('/templates/validate', body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -509,15 +543,15 @@ export class Client {
       headers: this.serverHeaders(),
       params: {
         MessageStreamType: params?.messageStreamType,
-        IncludeArchivedStreams: params?.includeArchivedStreams,
-      },
+        IncludeArchivedStreams: params?.includeArchivedStreams
+      }
     });
     return response.data;
   }
 
   async getMessageStream(streamId: string): Promise<MessageStreamRecord> {
     let response = await postmarkAxios.get(`/message-streams/${streamId}`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -531,55 +565,71 @@ export class Client {
     let body: Record<string, any> = {
       ID: params.id,
       Name: params.name,
-      MessageStreamType: params.messageStreamType,
+      MessageStreamType: params.messageStreamType
     };
 
     if (params.description) body.Description = params.description;
 
     let response = await postmarkAxios.post('/message-streams', body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
-  async updateMessageStream(streamId: string, params: {
-    name?: string;
-    description?: string;
-  }): Promise<MessageStreamRecord> {
+  async updateMessageStream(
+    streamId: string,
+    params: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<MessageStreamRecord> {
     let body: Record<string, any> = {};
 
     if (params.name !== undefined) body.Name = params.name;
     if (params.description !== undefined) body.Description = params.description;
 
     let response = await postmarkAxios.patch(`/message-streams/${streamId}`, body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
-  async archiveMessageStream(streamId: string): Promise<{ ID: string; ServerID: number; ExpectedPurgeDate: string }> {
-    let response = await postmarkAxios.post(`/message-streams/${streamId}/archive`, {}, {
-      headers: this.serverHeaders(),
-    });
+  async archiveMessageStream(
+    streamId: string
+  ): Promise<{ ID: string; ServerID: number; ExpectedPurgeDate: string }> {
+    let response = await postmarkAxios.post(
+      `/message-streams/${streamId}/archive`,
+      {},
+      {
+        headers: this.serverHeaders()
+      }
+    );
     return response.data;
   }
 
   async unarchiveMessageStream(streamId: string): Promise<MessageStreamRecord> {
-    let response = await postmarkAxios.post(`/message-streams/${streamId}/unarchive`, {}, {
-      headers: this.serverHeaders(),
-    });
+    let response = await postmarkAxios.post(
+      `/message-streams/${streamId}/unarchive`,
+      {},
+      {
+        headers: this.serverHeaders()
+      }
+    );
     return response.data;
   }
 
   // ── Suppressions ──
 
-  async getSuppressions(streamId: string, params?: {
-    suppressionReason?: string;
-    origin?: string;
-    fromDate?: string;
-    toDate?: string;
-    emailAddress?: string;
-  }): Promise<{ Suppressions: SuppressionRecord[] }> {
+  async getSuppressions(
+    streamId: string,
+    params?: {
+      suppressionReason?: string;
+      origin?: string;
+      fromDate?: string;
+      toDate?: string;
+      emailAddress?: string;
+    }
+  ): Promise<{ Suppressions: SuppressionRecord[] }> {
     let response = await postmarkAxios.get(`/message-streams/${streamId}/suppressions/dump`, {
       headers: this.serverHeaders(),
       params: {
@@ -587,31 +637,45 @@ export class Client {
         Origin: params?.origin,
         FromDate: params?.fromDate,
         ToDate: params?.toDate,
-        EmailAddress: params?.emailAddress,
+        EmailAddress: params?.emailAddress
+      }
+    });
+    return response.data;
+  }
+
+  async createSuppressions(
+    streamId: string,
+    emailAddresses: string[]
+  ): Promise<{
+    Suppressions: Array<{ EmailAddress: string; Status: string; Message: string }>;
+  }> {
+    let response = await postmarkAxios.post(
+      `/message-streams/${streamId}/suppressions`,
+      {
+        Suppressions: emailAddresses.map(email => ({ EmailAddress: email }))
       },
-    });
+      {
+        headers: this.serverHeaders()
+      }
+    );
     return response.data;
   }
 
-  async createSuppressions(streamId: string, emailAddresses: string[]): Promise<{
+  async deleteSuppressions(
+    streamId: string,
+    emailAddresses: string[]
+  ): Promise<{
     Suppressions: Array<{ EmailAddress: string; Status: string; Message: string }>;
   }> {
-    let response = await postmarkAxios.post(`/message-streams/${streamId}/suppressions`, {
-      Suppressions: emailAddresses.map(email => ({ EmailAddress: email })),
-    }, {
-      headers: this.serverHeaders(),
-    });
-    return response.data;
-  }
-
-  async deleteSuppressions(streamId: string, emailAddresses: string[]): Promise<{
-    Suppressions: Array<{ EmailAddress: string; Status: string; Message: string }>;
-  }> {
-    let response = await postmarkAxios.post(`/message-streams/${streamId}/suppressions/delete`, {
-      Suppressions: emailAddresses.map(email => ({ EmailAddress: email })),
-    }, {
-      headers: this.serverHeaders(),
-    });
+    let response = await postmarkAxios.post(
+      `/message-streams/${streamId}/suppressions/delete`,
+      {
+        Suppressions: emailAddresses.map(email => ({ EmailAddress: email }))
+      },
+      {
+        headers: this.serverHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -632,7 +696,7 @@ export class Client {
   }): Promise<{ TotalCount: number; Messages: OutboundMessageRecord[] }> {
     let queryParams: Record<string, any> = {
       count: params.count,
-      offset: params.offset,
+      offset: params.offset
     };
 
     if (params.recipient) queryParams.recipient = params.recipient;
@@ -647,14 +711,14 @@ export class Client {
 
     let response = await postmarkAxios.get('/messages/outbound', {
       headers: this.serverHeaders(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getOutboundMessageDetails(messageId: string): Promise<any> {
     let response = await postmarkAxios.get(`/messages/outbound/${messageId}/details`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -673,7 +737,7 @@ export class Client {
   }): Promise<{ TotalCount: number; InboundMessages: any[] }> {
     let queryParams: Record<string, any> = {
       count: params.count,
-      offset: params.offset,
+      offset: params.offset
     };
 
     if (params.recipient) queryParams.recipient = params.recipient;
@@ -687,14 +751,14 @@ export class Client {
 
     let response = await postmarkAxios.get('/messages/inbound', {
       headers: this.serverHeaders(),
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async getInboundMessageDetails(messageId: string): Promise<any> {
     let response = await postmarkAxios.get(`/messages/inbound/${messageId}/details`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -731,8 +795,8 @@ export class Client {
         tag: params?.tag,
         fromdate: params?.fromdate,
         todate: params?.todate,
-        messagestream: params?.messageStream,
-      },
+        messagestream: params?.messageStream
+      }
     });
     return response.data;
   }
@@ -749,8 +813,8 @@ export class Client {
         tag: params?.tag,
         fromdate: params?.fromdate,
         todate: params?.todate,
-        messagestream: params?.messageStream,
-      },
+        messagestream: params?.messageStream
+      }
     });
     return response.data;
   }
@@ -767,8 +831,8 @@ export class Client {
         tag: params?.tag,
         fromdate: params?.fromdate,
         todate: params?.todate,
-        messagestream: params?.messageStream,
-      },
+        messagestream: params?.messageStream
+      }
     });
     return response.data;
   }
@@ -785,8 +849,8 @@ export class Client {
         tag: params?.tag,
         fromdate: params?.fromdate,
         todate: params?.todate,
-        messagestream: params?.messageStream,
-      },
+        messagestream: params?.messageStream
+      }
     });
     return response.data;
   }
@@ -803,8 +867,8 @@ export class Client {
         tag: params?.tag,
         fromdate: params?.fromdate,
         todate: params?.todate,
-        messagestream: params?.messageStream,
-      },
+        messagestream: params?.messageStream
+      }
     });
     return response.data;
   }
@@ -821,8 +885,8 @@ export class Client {
         tag: params?.tag,
         fromdate: params?.fromdate,
         todate: params?.todate,
-        messagestream: params?.messageStream,
-      },
+        messagestream: params?.messageStream
+      }
     });
     return response.data;
   }
@@ -831,14 +895,14 @@ export class Client {
 
   async getServer(): Promise<any> {
     let response = await postmarkAxios.get('/server', {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
   async editServer(params: Record<string, any>): Promise<any> {
     let response = await postmarkAxios.put('/server', params, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -848,14 +912,14 @@ export class Client {
   async listWebhooks(messageStream?: string): Promise<{ Webhooks: WebhookRecord[] }> {
     let response = await postmarkAxios.get('/webhooks', {
       headers: this.serverHeaders(),
-      params: messageStream ? { MessageStream: messageStream } : {},
+      params: messageStream ? { MessageStream: messageStream } : {}
     });
     return response.data;
   }
 
   async getWebhook(webhookId: number): Promise<WebhookRecord> {
     let response = await postmarkAxios.get(`/webhooks/${webhookId}`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
@@ -875,7 +939,7 @@ export class Client {
     };
   }): Promise<WebhookRecord> {
     let body: Record<string, any> = {
-      Url: params.url,
+      Url: params.url
     };
 
     if (params.messageStream) body.MessageStream = params.messageStream;
@@ -883,7 +947,7 @@ export class Client {
     if (params.httpAuth) {
       body.HttpAuth = {
         Username: params.httpAuth.username,
-        Password: params.httpAuth.password,
+        Password: params.httpAuth.password
       };
     }
 
@@ -895,7 +959,7 @@ export class Client {
     if (params.triggers.open) {
       triggers.Open = {
         Enabled: params.triggers.open.enabled,
-        PostFirstOpenOnly: params.triggers.open.postFirstOpenOnly ?? false,
+        PostFirstOpenOnly: params.triggers.open.postFirstOpenOnly ?? false
       };
     }
     if (params.triggers.click) {
@@ -907,13 +971,13 @@ export class Client {
     if (params.triggers.bounce) {
       triggers.Bounce = {
         Enabled: params.triggers.bounce.enabled,
-        IncludeContent: params.triggers.bounce.includeContent ?? false,
+        IncludeContent: params.triggers.bounce.includeContent ?? false
       };
     }
     if (params.triggers.spamComplaint) {
       triggers.SpamComplaint = {
         Enabled: params.triggers.spamComplaint.enabled,
-        IncludeContent: params.triggers.spamComplaint.includeContent ?? false,
+        IncludeContent: params.triggers.spamComplaint.includeContent ?? false
       };
     }
     if (params.triggers.subscriptionChange) {
@@ -922,33 +986,38 @@ export class Client {
     body.Triggers = triggers;
 
     let response = await postmarkAxios.post('/webhooks', body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
-  async editWebhook(webhookId: number, params: {
-    url?: string;
-    httpAuth?: { username: string; password: string } | null;
-    httpHeaders?: Array<{ name: string; value: string }>;
-    triggers?: {
-      open?: { enabled: boolean; postFirstOpenOnly?: boolean };
-      click?: { enabled: boolean };
-      delivery?: { enabled: boolean };
-      bounce?: { enabled: boolean; includeContent?: boolean };
-      spamComplaint?: { enabled: boolean; includeContent?: boolean };
-      subscriptionChange?: { enabled: boolean };
-    };
-  }): Promise<WebhookRecord> {
+  async editWebhook(
+    webhookId: number,
+    params: {
+      url?: string;
+      httpAuth?: { username: string; password: string } | null;
+      httpHeaders?: Array<{ name: string; value: string }>;
+      triggers?: {
+        open?: { enabled: boolean; postFirstOpenOnly?: boolean };
+        click?: { enabled: boolean };
+        delivery?: { enabled: boolean };
+        bounce?: { enabled: boolean; includeContent?: boolean };
+        spamComplaint?: { enabled: boolean; includeContent?: boolean };
+        subscriptionChange?: { enabled: boolean };
+      };
+    }
+  ): Promise<WebhookRecord> {
     let body: Record<string, any> = {};
 
     if (params.url !== undefined) body.Url = params.url;
 
     if (params.httpAuth !== undefined) {
-      body.HttpAuth = params.httpAuth ? {
-        Username: params.httpAuth.username,
-        Password: params.httpAuth.password,
-      } : null;
+      body.HttpAuth = params.httpAuth
+        ? {
+            Username: params.httpAuth.username,
+            Password: params.httpAuth.password
+          }
+        : null;
     }
 
     if (params.httpHeaders) {
@@ -960,7 +1029,7 @@ export class Client {
       if (params.triggers.open) {
         triggers.Open = {
           Enabled: params.triggers.open.enabled,
-          PostFirstOpenOnly: params.triggers.open.postFirstOpenOnly ?? false,
+          PostFirstOpenOnly: params.triggers.open.postFirstOpenOnly ?? false
         };
       }
       if (params.triggers.click) {
@@ -972,13 +1041,13 @@ export class Client {
       if (params.triggers.bounce) {
         triggers.Bounce = {
           Enabled: params.triggers.bounce.enabled,
-          IncludeContent: params.triggers.bounce.includeContent ?? false,
+          IncludeContent: params.triggers.bounce.includeContent ?? false
         };
       }
       if (params.triggers.spamComplaint) {
         triggers.SpamComplaint = {
           Enabled: params.triggers.spamComplaint.enabled,
-          IncludeContent: params.triggers.spamComplaint.includeContent ?? false,
+          IncludeContent: params.triggers.spamComplaint.includeContent ?? false
         };
       }
       if (params.triggers.subscriptionChange) {
@@ -988,14 +1057,14 @@ export class Client {
     }
 
     let response = await postmarkAxios.put(`/webhooks/${webhookId}`, body, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }
 
   async deleteWebhook(webhookId: number): Promise<{ ErrorCode: number; Message: string }> {
     let response = await postmarkAxios.delete(`/webhooks/${webhookId}`, {
-      headers: this.serverHeaders(),
+      headers: this.serverHeaders()
     });
     return response.data;
   }

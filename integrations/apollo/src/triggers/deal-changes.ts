@@ -3,49 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dealChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Deal Changes',
-    key: 'deal_changes',
-    description: 'Polls for new or updated deals (opportunities) in your Apollo account. Detects deals that have been created or modified since the last check.'
-  }
-)
-  .input(z.object({
-    dealId: z.string().describe('Apollo deal/opportunity ID'),
-    eventType: z.enum(['created', 'updated']).describe('Whether the deal was newly created or updated'),
-    name: z.string().optional(),
-    amount: z.number().optional(),
-    closedDate: z.string().optional(),
-    ownerId: z.string().optional(),
-    accountId: z.string().optional(),
-    dealStageId: z.string().optional(),
-    stageName: z.string().optional(),
-    status: z.string().optional(),
-    source: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .output(z.object({
-    dealId: z.string().describe('Apollo deal/opportunity ID'),
-    name: z.string().optional(),
-    amount: z.number().optional(),
-    closedDate: z.string().optional(),
-    ownerId: z.string().optional(),
-    accountId: z.string().optional(),
-    dealStageId: z.string().optional(),
-    stageName: z.string().optional(),
-    status: z.string().optional(),
-    source: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
+export let dealChanges = SlateTrigger.create(spec, {
+  name: 'Deal Changes',
+  key: 'deal_changes',
+  description:
+    'Polls for new or updated deals (opportunities) in your Apollo account. Detects deals that have been created or modified since the last check.'
+})
+  .input(
+    z.object({
+      dealId: z.string().describe('Apollo deal/opportunity ID'),
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the deal was newly created or updated'),
+      name: z.string().optional(),
+      amount: z.number().optional(),
+      closedDate: z.string().optional(),
+      ownerId: z.string().optional(),
+      accountId: z.string().optional(),
+      dealStageId: z.string().optional(),
+      stageName: z.string().optional(),
+      status: z.string().optional(),
+      source: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.string().describe('Apollo deal/opportunity ID'),
+      name: z.string().optional(),
+      amount: z.number().optional(),
+      closedDate: z.string().optional(),
+      ownerId: z.string().optional(),
+      accountId: z.string().optional(),
+      dealStageId: z.string().optional(),
+      stageName: z.string().optional(),
+      status: z.string().optional(),
+      source: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -130,7 +134,7 @@ export let dealChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `deal.${ctx.input.eventType}`,
         id: `${ctx.input.dealId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,

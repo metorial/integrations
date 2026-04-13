@@ -13,8 +13,9 @@ Payhere uses **API key** authentication via Bearer tokens.
 - **API Key**: Found in the integrations section of the Payhere merchant admin at `https://app.payhere.co/merchants/integrations`.
 - **Base URL**: `https://api.payhere.co` (production) or use the sandbox environment for testing.
 - **Authorization**: Pass the API key in the `Authorization` header as `Bearer <api_key>`.
-  
+
   Example:
+
   ```
   Authorization: Bearer your_api_key_here
   ```
@@ -26,11 +27,13 @@ Payhere uses **API key** authentication via Bearer tokens.
 ## Features
 
 ### Company Management
+
 - View and update the current company profile, including name, legal name, currency, VAT settings, support email, website, and address.
 - Retrieve company statistics.
 - Shows connected payment provider status (Stripe, GoCardless).
 
 ### Plan Management
+
 - Create, update, and list payment plans (products/services) that customers can pay for.
 - Plans can be one-off payments or recurring subscriptions.
 - Configurable options include: name, description, price, currency, billing interval (week/month/year), setup fee, minimum billing cycles, auto-cancel after N payments, custom success URL, webhook URL, and pay button text.
@@ -39,23 +42,28 @@ Payhere uses **API key** authentication via Bearer tokens.
 - One-off plans can optionally show a quantity field.
 
 ### Payment Retrieval
+
 - List and view individual payments.
 - Payment records include amount, status, reference, card brand, custom fields, and timestamps.
 - The API is read-only for payments; payment collection happens through Payhere's embeddable checkout or payment links.
 
 ### Customer Management
+
 - List and view individual customer records.
 - Customer data includes name, email, IP address, and location.
 
 ### Subscription Management
+
 - List, view, and cancel subscriptions.
 - Subscription records include billing interval, status, next charge date, and associated plan and customer information.
 
 ### Refunds
+
 - Issue full or partial refunds for existing payments.
 - A reason must be provided: `requested_by_customer`, `duplicate`, or `fraudulent`.
 
 ### User Information
+
 - Retrieve the currently authenticated user's information.
 
 ## Events

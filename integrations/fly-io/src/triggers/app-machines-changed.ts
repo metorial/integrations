@@ -3,37 +3,41 @@ import { FlyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let appMachinesChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'App Machines Changed',
-    key: 'app_machines_changed',
-    description: 'Triggers when machines are added to or removed from a Fly App. Detects new machine creation and machine destruction events. Requires appName to be set in the configuration.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'destroyed']).describe('Whether a machine was created or destroyed'),
-    machineId: z.string().describe('Machine ID'),
-    machineName: z.string().describe('Machine name'),
-    appName: z.string().describe('App the machine belongs to'),
-    region: z.string().describe('Region of the machine'),
-    state: z.string().describe('Current state of the machine'),
-    detectedAt: z.string().describe('When the change was detected'),
-  }))
-  .output(z.object({
-    machineId: z.string().describe('Machine identifier'),
-    machineName: z.string().describe('Machine name'),
-    appName: z.string().describe('App the machine belongs to'),
-    region: z.string().describe('Region of the machine'),
-    state: z.string().describe('Current state of the machine'),
-    detectedAt: z.string().describe('When the change was detected'),
-  }))
+export let appMachinesChanged = SlateTrigger.create(spec, {
+  name: 'App Machines Changed',
+  key: 'app_machines_changed',
+  description:
+    'Triggers when machines are added to or removed from a Fly App. Detects new machine creation and machine destruction events. Requires appName to be set in the configuration.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'destroyed'])
+        .describe('Whether a machine was created or destroyed'),
+      machineId: z.string().describe('Machine ID'),
+      machineName: z.string().describe('Machine name'),
+      appName: z.string().describe('App the machine belongs to'),
+      region: z.string().describe('Region of the machine'),
+      state: z.string().describe('Current state of the machine'),
+      detectedAt: z.string().describe('When the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      machineId: z.string().describe('Machine identifier'),
+      machineName: z.string().describe('Machine name'),
+      appName: z.string().describe('App the machine belongs to'),
+      region: z.string().describe('Region of the machine'),
+      state: z.string().describe('Current state of the machine'),
+      detectedAt: z.string().describe('When the change was detected')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let appName = ctx.config.appName;
       if (!appName) {
         return { inputs: [] };
@@ -42,7 +46,7 @@ export let appMachinesChanged = SlateTrigger.create(
       let client = new FlyClient({
         token: ctx.auth.token,
         tokenScheme: ctx.auth.tokenScheme,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let machines = await client.listMachines(appName);
@@ -73,7 +77,7 @@ export let appMachinesChanged = SlateTrigger.create(
               appName,
               region: machine.region,
               state: machine.state,
-              detectedAt: now,
+              detectedAt: now
             });
           }
         }
@@ -87,7 +91,7 @@ export let appMachinesChanged = SlateTrigger.create(
               appName,
               region: '',
               state: 'destroyed',
-              detectedAt: now,
+              detectedAt: now
             });
           }
         }
@@ -97,12 +101,12 @@ export let appMachinesChanged = SlateTrigger.create(
         inputs,
         updatedState: {
           machineIds: currentMachineIds,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `machine.${ctx.input.eventType}`,
         id: `${ctx.input.machineId}-${ctx.input.eventType}-${ctx.input.detectedAt}`,
@@ -112,9 +116,9 @@ export let appMachinesChanged = SlateTrigger.create(
           appName: ctx.input.appName,
           region: ctx.input.region,
           state: ctx.input.state,
-          detectedAt: ctx.input.detectedAt,
-        },
+          detectedAt: ctx.input.detectedAt
+        }
       };
-    },
+    }
   })
   .build();

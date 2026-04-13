@@ -3,34 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFlow = SlateTool.create(
-  spec,
-  {
-    name: 'Get Flow',
-    key: 'get_flow',
-    description: `Retrieve details of a specific flow, including its page generators (exports), page processors (imports/lookups), schedule, and dependencies.`,
-    tags: {
-      readOnly: true
-    }
+export let getFlow = SlateTool.create(spec, {
+  name: 'Get Flow',
+  key: 'get_flow',
+  description: `Retrieve details of a specific flow, including its page generators (exports), page processors (imports/lookups), schedule, and dependencies.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    flowId: z.string().describe('ID of the flow to retrieve'),
-    includeDependencies: z.boolean().optional().default(false).describe('If true, also fetch the flow dependencies')
-  }))
-  .output(z.object({
-    flowId: z.string().describe('Unique flow identifier'),
-    name: z.string().optional().describe('Flow name'),
-    disabled: z.boolean().optional().describe('Whether the flow is disabled'),
-    integrationId: z.string().optional().describe('Parent integration ID'),
-    lastModified: z.string().optional().describe('Last modification timestamp'),
-    schedule: z.string().optional().describe('Cron schedule expression'),
-    pageGenerators: z.array(z.any()).optional().describe('Export components of the flow'),
-    pageProcessors: z.array(z.any()).optional().describe('Import/lookup components of the flow'),
-    dependencies: z.any().optional().describe('Flow dependencies, if requested'),
-    rawFlow: z.any().describe('Full flow object from the API')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      flowId: z.string().describe('ID of the flow to retrieve'),
+      includeDependencies: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('If true, also fetch the flow dependencies')
+    })
+  )
+  .output(
+    z.object({
+      flowId: z.string().describe('Unique flow identifier'),
+      name: z.string().optional().describe('Flow name'),
+      disabled: z.boolean().optional().describe('Whether the flow is disabled'),
+      integrationId: z.string().optional().describe('Parent integration ID'),
+      lastModified: z.string().optional().describe('Last modification timestamp'),
+      schedule: z.string().optional().describe('Cron schedule expression'),
+      pageGenerators: z.array(z.any()).optional().describe('Export components of the flow'),
+      pageProcessors: z
+        .array(z.any())
+        .optional()
+        .describe('Import/lookup components of the flow'),
+      dependencies: z.any().optional().describe('Flow dependencies, if requested'),
+      rawFlow: z.any().describe('Full flow object from the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       region: ctx.config.region

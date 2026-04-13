@@ -1,19 +1,18 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export class Client {
   private axios: AxiosInstance;
 
   constructor(config: { token: string }) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let basicToken = Buffer.from(`x:${config.token}`).toString('base64');
 
     this.axios = createAxios({
       baseURL: 'https://api.yespo.io/api',
       headers: {
-        'Authorization': `Basic ${basicToken}`,
+        Authorization: `Basic ${basicToken}`,
         'Content-Type': 'application/json; charset=UTF-8',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     });
   }
@@ -94,11 +93,17 @@ export class Client {
     return response.data;
   }
 
-  async attachContactsToSegment(segmentId: number, contacts: Array<{ contactId?: number; externalCustomerId?: string }>): Promise<void> {
+  async attachContactsToSegment(
+    segmentId: number,
+    contacts: Array<{ contactId?: number; externalCustomerId?: string }>
+  ): Promise<void> {
     await this.axios.post(`/v1/group/${segmentId}/contacts/attach`, contacts);
   }
 
-  async detachContactsFromSegment(segmentId: number, contacts: Array<{ contactId?: number; externalCustomerId?: string }>): Promise<void> {
+  async detachContactsFromSegment(
+    segmentId: number,
+    contacts: Array<{ contactId?: number; externalCustomerId?: string }>
+  ): Promise<void> {
     await this.axios.post(`/v1/group/${segmentId}/contacts/detach`, contacts);
   }
 
@@ -128,7 +133,11 @@ export class Client {
 
   // ── Events ───────────────────────────────────────────────
 
-  async generateEvent(payload: { eventTypeKey: string; keyValue?: string; params: Record<string, any> }): Promise<any> {
+  async generateEvent(payload: {
+    eventTypeKey: string;
+    keyValue?: string;
+    params: Record<string, any>;
+  }): Promise<any> {
     let response = await this.axios.post('/v3/event', payload);
     return response.data;
   }
@@ -154,7 +163,9 @@ export class Client {
   }
 
   async uploadPromoCodes(promoCodeId: number, codes: string[]): Promise<any> {
-    let response = await this.axios.post(`/v1/promocodes/${promoCodeId}`, { promoCodes: codes });
+    let response = await this.axios.post(`/v1/promocodes/${promoCodeId}`, {
+      promoCodes: codes
+    });
     return response.data;
   }
 

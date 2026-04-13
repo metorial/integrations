@@ -3,29 +3,35 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { StormboardClient } from '../lib/client';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `Create tags in a Storm and associate tag data with ideas. Use action "list" to view all tags, "create" to add a new tag, "tag_idea" to apply a tag to an idea, or "get_idea_tags" to retrieve tags for an idea.`,
-  }
-)
-  .input(z.object({
-    stormId: z.string().describe('ID of the Storm'),
-    action: z.enum(['list', 'create', 'tag_idea', 'get_idea_tags']).describe('Action to perform'),
-    tagName: z.string().optional().describe('Name of the tag (required for create)'),
-    ideaId: z.string().optional().describe('Idea ID (required for tag_idea and get_idea_tags)'),
-    tagId: z.string().optional().describe('Tag ID (required for tag_idea)'),
-    tagValue: z.string().optional().describe('Tag value to associate with the idea'),
-  }))
-  .output(z.object({
-    tags: z.array(z.any()).optional().describe('List of tags (for list action)'),
-    tag: z.any().optional().describe('Created tag or tag data'),
-    ideaTags: z.any().optional().describe('Tags associated with an idea'),
-    success: z.boolean().describe('Whether the action was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `Create tags in a Storm and associate tag data with ideas. Use action "list" to view all tags, "create" to add a new tag, "tag_idea" to apply a tag to an idea, or "get_idea_tags" to retrieve tags for an idea.`
+})
+  .input(
+    z.object({
+      stormId: z.string().describe('ID of the Storm'),
+      action: z
+        .enum(['list', 'create', 'tag_idea', 'get_idea_tags'])
+        .describe('Action to perform'),
+      tagName: z.string().optional().describe('Name of the tag (required for create)'),
+      ideaId: z
+        .string()
+        .optional()
+        .describe('Idea ID (required for tag_idea and get_idea_tags)'),
+      tagId: z.string().optional().describe('Tag ID (required for tag_idea)'),
+      tagValue: z.string().optional().describe('Tag value to associate with the idea')
+    })
+  )
+  .output(
+    z.object({
+      tags: z.array(z.any()).optional().describe('List of tags (for list action)'),
+      tag: z.any().optional().describe('Created tag or tag data'),
+      ideaTags: z.any().optional().describe('Tags associated with an idea'),
+      success: z.boolean().describe('Whether the action was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StormboardClient({ token: ctx.auth.token });
     let { stormId, action, tagName, ideaId, tagId, tagValue } = ctx.input;
 
@@ -34,7 +40,7 @@ export let manageTags = SlateTool.create(
       let list = Array.isArray(tags) ? tags : [];
       return {
         output: { tags: list, success: true },
-        message: `Found **${list.length}** tag(s) in Storm ${stormId}.`,
+        message: `Found **${list.length}** tag(s) in Storm ${stormId}.`
       };
     }
 
@@ -45,7 +51,7 @@ export let manageTags = SlateTool.create(
       let tag = await client.createTag(stormId, { name: tagName });
       return {
         output: { tag, success: true },
-        message: `Created tag **"${tagName}"** in Storm ${stormId}.`,
+        message: `Created tag **"${tagName}"** in Storm ${stormId}.`
       };
     }
 
@@ -55,11 +61,11 @@ export let manageTags = SlateTool.create(
       }
       let tag = await client.createIdeaTagData(stormId, ideaId, {
         tag_id: tagId,
-        value: tagValue,
+        value: tagValue
       });
       return {
         output: { tag, success: true },
-        message: `Tagged idea ${ideaId} with tag ${tagId}.`,
+        message: `Tagged idea ${ideaId} with tag ${tagId}.`
       };
     }
 
@@ -70,12 +76,13 @@ export let manageTags = SlateTool.create(
       let ideaTags = await client.getIdeaTagData(stormId, ideaId);
       return {
         output: { ideaTags, success: true },
-        message: `Retrieved tags for idea ${ideaId}.`,
+        message: `Retrieved tags for idea ${ideaId}.`
       };
     }
 
     return {
       output: { success: false },
-      message: 'Unknown action.',
+      message: 'Unknown action.'
     };
-  }).build();
+  })
+  .build();

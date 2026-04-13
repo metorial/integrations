@@ -5,21 +5,27 @@ Convert audio to text transcriptions and synthesize natural-sounding speech from
 ## Tools
 
 ### Batch Transcribe Audio
+
 Start an asynchronous batch transcription of one or more audio files stored in Google Cloud Storage. Returns a long-running operation that can be monitored using the Get Operation tool. Suitable for audio files longer than 1 minute (up to 8 hours). Results can be written to a GCS output location or returned inline when the operation completes.
 
 ### Get Operation
+
 Check the status and retrieve results of a long-running Speech-to-Text operation. Use this to monitor batch transcription jobs started with the Batch Transcribe Audio tool. Returns the current status, and when complete, the full transcription results or error details.
 
 ### List Voices
+
 List available Text-to-Speech voices. Optionally filter by language code to find voices for a specific language. Returns voice names, genders, supported languages, and native sample rates.
 
 ### Create Recognizer
+
 Create a named recognizer configuration for Speech-to-Text v2. A recognizer stores default settings like model, language, and recognition features so they don't need to be repeated in every transcription request.
 
 ### Synthesize Speech
+
 Convert text or SSML into natural-sounding speech audio using Google Cloud Text-to-Speech. Returns base64-encoded audio data in the requested format. Supports multiple voice types including Standard, WaveNet, Neural2, Studio, and Chirp 3 HD voices. Customize pitch, speaking rate, and volume.
 
 ### Transcribe Audio
+
 Transcribe audio to text using Google Cloud Speech-to-Text (synchronous recognition). Supports inline base64-encoded audio or audio files in Google Cloud Storage. Use for audio files up to 1 minute in duration. Configure language, model, punctuation, word-level details, speaker diarization, and speech adaptation hints.
 
 ## License

@@ -2,10 +2,7 @@
   "name": "@metorial/virustotal",
   "version": "0.1.2",
   "description": "Scan and analyze files, URLs, domains, and IP addresses for malware and security threats using 70+ antivirus engines and sandboxes. Retrieve threat reports by file hash, look up domain and IP reputation with passive DNS and WHOIS data, and explore IoC relationships to map threat infrastructure. Manage YARA Livehunt rulesets to monitor incoming submissions and run Retrohunt jobs against historical file collections. Add comments and votes to indicators, create visual relationship graphs of IoCs, search VirusTotal's dataset with advanced queries, and consume threat feeds. Download file samples and network traffic captures for offline analysis.",
-  "categories": [
-    "apis-and-http-requests",
-    "security"
-  ],
+  "categories": ["apis-and-http-requests", "security"],
   "skills": [
     "scan files for malware",
     "analyze URL reputation",

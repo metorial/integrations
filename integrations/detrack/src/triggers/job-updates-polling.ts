@@ -3,46 +3,50 @@ import { DetrackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobUpdatesPollingTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Updates (Polling)',
-    key: 'job_updates_polling',
-    description: '[Polling fallback] Polls Detrack for job updates on a regular interval. Detects new jobs and status changes by comparing against the previous poll. Useful when webhooks are not configured.',
-  }
-)
-  .input(z.object({
-    jobId: z.string().optional().describe('Detrack job ID'),
-    doNumber: z.string().describe('Delivery order number'),
-    date: z.string().describe('Job date'),
-    status: z.string().describe('Current job status'),
-    type: z.string().optional().describe('Job type'),
-    assignTo: z.string().optional().describe('Assigned driver/vehicle'),
-    address: z.string().optional().describe('Job address'),
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('Detrack job ID'),
-    doNumber: z.string().describe('Delivery order number'),
-    date: z.string().describe('Job date'),
-    status: z.string().describe('Current job status'),
-    type: z.string().optional().describe('Job type'),
-    assignTo: z.string().optional().describe('Assigned driver/vehicle'),
-    address: z.string().optional().describe('Job address'),
-  }))
+export let jobUpdatesPollingTrigger = SlateTrigger.create(spec, {
+  name: 'Job Updates (Polling)',
+  key: 'job_updates_polling',
+  description:
+    '[Polling fallback] Polls Detrack for job updates on a regular interval. Detects new jobs and status changes by comparing against the previous poll. Useful when webhooks are not configured.'
+})
+  .input(
+    z.object({
+      jobId: z.string().optional().describe('Detrack job ID'),
+      doNumber: z.string().describe('Delivery order number'),
+      date: z.string().describe('Job date'),
+      status: z.string().describe('Current job status'),
+      type: z.string().optional().describe('Job type'),
+      assignTo: z.string().optional().describe('Assigned driver/vehicle'),
+      address: z.string().optional().describe('Job address')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().optional().describe('Detrack job ID'),
+      doNumber: z.string().describe('Delivery order number'),
+      date: z.string().describe('Job date'),
+      status: z.string().describe('Current job status'),
+      type: z.string().optional().describe('Job type'),
+      assignTo: z.string().optional().describe('Assigned driver/vehicle'),
+      address: z.string().optional().describe('Job address')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DetrackClient(ctx.auth.token);
 
       // Get today's date in YYYY-MM-DD format
       let now = new Date();
       let today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-      let previousJobStates: Record<string, string> = (ctx.state as Record<string, unknown>)?.jobStates as Record<string, string> ?? {};
-      let lastDate: string = ((ctx.state as Record<string, unknown>)?.lastDate as string) ?? today;
+      let previousJobStates: Record<string, string> =
+        ((ctx.state as Record<string, unknown>)?.jobStates as Record<string, string>) ?? {};
+      let lastDate: string =
+        ((ctx.state as Record<string, unknown>)?.lastDate as string) ?? today;
 
       // Fetch jobs for today
       let result = await client.listJobs({ date: today, limit: 100 });
@@ -78,7 +82,7 @@ export let jobUpdatesPollingTrigger = SlateTrigger.create(
             status,
             type: job.type ? String(job.type) : undefined,
             assignTo: job.assign_to ? String(job.assign_to) : undefined,
-            address: job.address ? String(job.address) : undefined,
+            address: job.address ? String(job.address) : undefined
           });
         }
       }
@@ -87,12 +91,12 @@ export let jobUpdatesPollingTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           jobStates: newJobStates,
-          lastDate: today,
-        },
+          lastDate: today
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusNormalized = ctx.input.status.toLowerCase().replace(/\s+/g, '_');
       let eventType = `job.${statusNormalized}`;
 
@@ -106,8 +110,9 @@ export let jobUpdatesPollingTrigger = SlateTrigger.create(
           status: ctx.input.status,
           type: ctx.input.type,
           assignTo: ctx.input.assignTo,
-          address: ctx.input.address,
-        },
+          address: ctx.input.address
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

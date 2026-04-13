@@ -4,37 +4,42 @@ import { goalSchema, mapGoal } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGoal = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Goal',
-    key: 'manage_goal',
-    description: `Perform management actions on a goal: refresh autodata, ratchet (reduce safety buffer), short-circuit (instantly derail and charge), step down pledge, cancel a scheduled step-down, or cry uncle (instant derail for beemergency goals). Each action has specific preconditions.`,
-    instructions: [
-      'Use **refresh** to force a refetch of autodata for goals connected to automatic data sources.',
-      'Use **ratchet** to reduce the safety buffer. For Do More goals, specify days of buffer; for Do Less, specify a hard cap value.',
-      'Use **shortcircuit** to instantly derail, pay the pledge, and increase the pledge level.',
-      'Use **stepdown** to schedule a pledge reduction (subject to akrasia horizon).',
-      'Use **cancelStepdown** to cancel a previously scheduled pledge reduction.',
-      'Use **uncle** to instantly derail a goal that is currently in beemergency status.'
-    ],
-    constraints: [
-      'Uncle (instant derail) only works on goals currently in beemergency.',
-      'Stepdown is subject to the one-week akrasia horizon.'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageGoal = SlateTool.create(spec, {
+  name: 'Manage Goal',
+  key: 'manage_goal',
+  description: `Perform management actions on a goal: refresh autodata, ratchet (reduce safety buffer), short-circuit (instantly derail and charge), step down pledge, cancel a scheduled step-down, or cry uncle (instant derail for beemergency goals). Each action has specific preconditions.`,
+  instructions: [
+    'Use **refresh** to force a refetch of autodata for goals connected to automatic data sources.',
+    'Use **ratchet** to reduce the safety buffer. For Do More goals, specify days of buffer; for Do Less, specify a hard cap value.',
+    'Use **shortcircuit** to instantly derail, pay the pledge, and increase the pledge level.',
+    'Use **stepdown** to schedule a pledge reduction (subject to akrasia horizon).',
+    'Use **cancelStepdown** to cancel a previously scheduled pledge reduction.',
+    'Use **uncle** to instantly derail a goal that is currently in beemergency status.'
+  ],
+  constraints: [
+    'Uncle (instant derail) only works on goals currently in beemergency.',
+    'Stepdown is subject to the one-week akrasia horizon.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    goalSlug: z.string().describe('URL-friendly identifier of the goal'),
-    action: z.enum(['refresh', 'ratchet', 'shortcircuit', 'stepdown', 'cancelStepdown', 'uncle'])
-      .describe('Management action to perform'),
-    newSafety: z.number().optional().describe('For ratchet: target days of safety buffer (Do More) or hard cap value (Do Less)')
-  }))
+})
+  .input(
+    z.object({
+      goalSlug: z.string().describe('URL-friendly identifier of the goal'),
+      action: z
+        .enum(['refresh', 'ratchet', 'shortcircuit', 'stepdown', 'cancelStepdown', 'uncle'])
+        .describe('Management action to perform'),
+      newSafety: z
+        .number()
+        .optional()
+        .describe(
+          'For ratchet: target days of safety buffer (Do More) or hard cap value (Do Less)'
+        )
+    })
+  )
   .output(goalSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BeeminderClient({
       token: ctx.auth.token,
       username: ctx.auth.username

@@ -10,7 +10,7 @@ let memberSchema = z.object({
   name: z.string().nullable().describe('User name'),
   imageUrl: z.string().nullable().describe('User profile image URL'),
   role: z.string().describe('Role: ADMIN, USER, or VIEWER'),
-  createdAt: z.string().describe('Membership creation timestamp'),
+  createdAt: z.string().describe('Membership creation timestamp')
 });
 
 export let listUsers = SlateTool.create(spec, {
@@ -18,14 +18,16 @@ export let listUsers = SlateTool.create(spec, {
   key: 'list_users',
   description: `List all members of the current workspace, including their roles and profile information. Useful for finding assignee IDs when creating or updating threads.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
   .input(z.object({}))
-  .output(z.object({
-    members: z.array(memberSchema).describe('List of workspace members'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      members: z.array(memberSchema).describe('List of workspace members')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listUsers();
 
@@ -36,11 +38,12 @@ export let listUsers = SlateTool.create(spec, {
       name: m.user?.name ?? null,
       imageUrl: m.user?.imageUrl ?? null,
       role: m.role,
-      createdAt: m.createdAt,
+      createdAt: m.createdAt
     }));
 
     return {
       output: { members },
-      message: `Found **${members.length}** workspace members.`,
+      message: `Found **${members.length}** workspace members.`
     };
-  }).build();
+  })
+  .build();

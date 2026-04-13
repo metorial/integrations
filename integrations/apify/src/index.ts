@@ -13,12 +13,9 @@ import {
   manageKeyValueStore,
   manageSchedule,
   buildActor,
-  manageWebhook,
+  manageWebhook
 } from './tools';
-import {
-  actorRunEvent,
-  actorBuildEvent,
-} from './triggers';
+import { actorRunEvent, actorBuildEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     manageKeyValueStore,
     manageSchedule,
     buildActor,
-    manageWebhook,
+    manageWebhook
   ],
-  triggers: [
-    actorRunEvent,
-    actorBuildEvent,
-  ],
+  triggers: [actorRunEvent, actorBuildEvent]
 });

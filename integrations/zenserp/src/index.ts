@@ -9,7 +9,7 @@ import {
   shoppingProductDetails,
   mapsSearch,
   googleTrends,
-  accountStatus,
+  accountStatus
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     shoppingProductDetails,
     mapsSearch,
     googleTrends,
-    accountStatus,
+    accountStatus
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

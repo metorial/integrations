@@ -1,15 +1,15 @@
 import { createAxios } from 'slates';
 
 let graphApi = createAxios({
-  baseURL: 'https://api.semanticscholar.org/graph/v1',
+  baseURL: 'https://api.semanticscholar.org/graph/v1'
 });
 
 let recommendationsApi = createAxios({
-  baseURL: 'https://api.semanticscholar.org/recommendations/v1',
+  baseURL: 'https://api.semanticscholar.org/recommendations/v1'
 });
 
 let datasetsApi = createAxios({
-  baseURL: 'https://api.semanticscholar.org/datasets/v1',
+  baseURL: 'https://api.semanticscholar.org/datasets/v1'
 });
 
 export interface PaperSearchParams {
@@ -61,7 +61,7 @@ export class Client {
   async searchPapers(params: PaperSearchParams) {
     let res = await graphApi.get('/paper/search', {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
@@ -69,7 +69,7 @@ export class Client {
   async searchPapersBulk(params: PaperBulkSearchParams) {
     let res = await graphApi.get('/paper/search/bulk', {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
@@ -77,7 +77,7 @@ export class Client {
   async autocompletePapers(query: string) {
     let res = await graphApi.get('/paper/autocomplete', {
       headers: this.headers,
-      params: { query },
+      params: { query }
     });
     return res.data;
   }
@@ -87,16 +87,20 @@ export class Client {
   async getPaper(paperId: string, fields?: string) {
     let res = await graphApi.get(`/paper/${encodeURIComponent(paperId)}`, {
       headers: this.headers,
-      params: fields ? { fields } : {},
+      params: fields ? { fields } : {}
     });
     return res.data;
   }
 
   async getPapersBatch(ids: string[], fields?: string) {
-    let res = await graphApi.post('/paper/batch', { ids }, {
-      headers: this.headers,
-      params: fields ? { fields } : {},
-    });
+    let res = await graphApi.post(
+      '/paper/batch',
+      { ids },
+      {
+        headers: this.headers,
+        params: fields ? { fields } : {}
+      }
+    );
     return res.data;
   }
 
@@ -105,7 +109,7 @@ export class Client {
   async getPaperCitations(paperId: string, params?: PaginationParams) {
     let res = await graphApi.get(`/paper/${encodeURIComponent(paperId)}/citations`, {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
@@ -113,7 +117,7 @@ export class Client {
   async getPaperReferences(paperId: string, params?: PaginationParams) {
     let res = await graphApi.get(`/paper/${encodeURIComponent(paperId)}/references`, {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
@@ -123,7 +127,7 @@ export class Client {
   async searchAuthors(query: string, params?: PaginationParams) {
     let res = await graphApi.get('/author/search', {
       headers: this.headers,
-      params: { query, ...params },
+      params: { query, ...params }
     });
     return res.data;
   }
@@ -131,41 +135,54 @@ export class Client {
   async getAuthor(authorId: string, fields?: string) {
     let res = await graphApi.get(`/author/${encodeURIComponent(authorId)}`, {
       headers: this.headers,
-      params: fields ? { fields } : {},
+      params: fields ? { fields } : {}
     });
     return res.data;
   }
 
   async getAuthorsBatch(ids: string[], fields?: string) {
-    let res = await graphApi.post('/author/batch', { ids }, {
-      headers: this.headers,
-      params: fields ? { fields } : {},
-    });
+    let res = await graphApi.post(
+      '/author/batch',
+      { ids },
+      {
+        headers: this.headers,
+        params: fields ? { fields } : {}
+      }
+    );
     return res.data;
   }
 
-  async getAuthorPapers(authorId: string, params?: PaginationParams & { publicationDateOrYear?: string }) {
+  async getAuthorPapers(
+    authorId: string,
+    params?: PaginationParams & { publicationDateOrYear?: string }
+  ) {
     let res = await graphApi.get(`/author/${encodeURIComponent(authorId)}/papers`, {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
 
   // ── Recommendations ──
 
-  async getRecommendationsForPaper(paperId: string, params?: { from?: string; limit?: number; fields?: string }) {
+  async getRecommendationsForPaper(
+    paperId: string,
+    params?: { from?: string; limit?: number; fields?: string }
+  ) {
     let res = await recommendationsApi.get(`/papers/forpaper/${encodeURIComponent(paperId)}`, {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
 
-  async getRecommendationsFromList(body: { positivePaperIds: string[]; negativePaperIds?: string[] }, params?: { limit?: number; fields?: string }) {
+  async getRecommendationsFromList(
+    body: { positivePaperIds: string[]; negativePaperIds?: string[] },
+    params?: { limit?: number; fields?: string }
+  ) {
     let res = await recommendationsApi.post('/papers/', body, {
       headers: this.headers,
-      params,
+      params
     });
     return res.data;
   }
@@ -174,22 +191,25 @@ export class Client {
 
   async listReleases() {
     let res = await datasetsApi.get('/release/', {
-      headers: this.headers,
+      headers: this.headers
     });
     return res.data;
   }
 
   async getRelease(releaseId: string) {
     let res = await datasetsApi.get(`/release/${encodeURIComponent(releaseId)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return res.data;
   }
 
   async getDatasetDownloadLinks(releaseId: string, datasetName: string) {
-    let res = await datasetsApi.get(`/release/${encodeURIComponent(releaseId)}/dataset/${encodeURIComponent(datasetName)}`, {
-      headers: this.headers,
-    });
+    let res = await datasetsApi.get(
+      `/release/${encodeURIComponent(releaseId)}/dataset/${encodeURIComponent(datasetName)}`,
+      {
+        headers: this.headers
+      }
+    );
     return res.data;
   }
 }

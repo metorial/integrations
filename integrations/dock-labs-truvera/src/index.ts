@@ -14,14 +14,14 @@ import {
   createPresentation,
   manageProfile,
   sendMessage,
-  getJobStatus,
+  getJobStatus
 } from './tools';
 import {
   credentialEvents,
   didEvents,
   registryEvents,
   schemaEvents,
-  proofEvents,
+  proofEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -40,13 +40,7 @@ export let provider = Slate.create({
     createPresentation,
     manageProfile,
     sendMessage,
-    getJobStatus,
+    getJobStatus
   ],
-  triggers: [
-    credentialEvents,
-    didEvents,
-    registryEvents,
-    schemaEvents,
-    proofEvents,
-  ],
+  triggers: [credentialEvents, didEvents, registryEvents, schemaEvents, proofEvents]
 });

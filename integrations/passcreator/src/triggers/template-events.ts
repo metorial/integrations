@@ -3,34 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let TEMPLATE_EVENT_TYPES = [
-  'pass_template_created',
-  'pass_template_updated',
-] as const;
+let TEMPLATE_EVENT_TYPES = ['pass_template_created', 'pass_template_updated'] as const;
 
-export let templateEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Template Events',
-    key: 'template_events',
-    description: 'Triggers when a pass template is created or updated.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(TEMPLATE_EVENT_TYPES).describe('Type of template event'),
-    templateId: z.string().describe('Unique identifier of the template'),
-    name: z.string().optional().describe('Name of the template'),
-    activePasses: z.number().optional().describe('Number of active passes using this template'),
-    createdPasses: z.number().optional().describe('Total number of passes created from this template'),
-  }))
-  .output(z.object({
-    templateId: z.string().describe('Unique identifier of the template'),
-    name: z.string().optional().describe('Template name'),
-    activePasses: z.number().optional().describe('Active pass count'),
-    createdPasses: z.number().optional().describe('Total created pass count'),
-  }))
+export let templateEvents = SlateTrigger.create(spec, {
+  name: 'Template Events',
+  key: 'template_events',
+  description: 'Triggers when a pass template is created or updated.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(TEMPLATE_EVENT_TYPES).describe('Type of template event'),
+      templateId: z.string().describe('Unique identifier of the template'),
+      name: z.string().optional().describe('Name of the template'),
+      activePasses: z
+        .number()
+        .optional()
+        .describe('Number of active passes using this template'),
+      createdPasses: z
+        .number()
+        .optional()
+        .describe('Total number of passes created from this template')
+    })
+  )
+  .output(
+    z.object({
+      templateId: z.string().describe('Unique identifier of the template'),
+      name: z.string().optional().describe('Template name'),
+      activePasses: z.number().optional().describe('Active pass count'),
+      createdPasses: z.number().optional().describe('Total created pass count')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let registeredUrls: Array<{ event: string; targetUrl: string }> = [];
@@ -42,13 +46,15 @@ export let templateEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registeredUrls },
+        registrationDetails: { registeredUrls }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { registeredUrls: Array<{ event: string; targetUrl: string }> };
+      let details = ctx.input.registrationDetails as {
+        registeredUrls: Array<{ event: string; targetUrl: string }>;
+      };
 
       for (let entry of details.registeredUrls) {
         try {
@@ -59,8 +65,8 @@ export let templateEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
@@ -71,17 +77,19 @@ export let templateEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          templateId: body.uniqueIdentifier || '',
-          name: body.name,
-          activePasses: body.noOfActivePasses,
-          createdPasses: body.noOfCreatedPasses,
-        }],
+        inputs: [
+          {
+            eventType,
+            templateId: body.uniqueIdentifier || '',
+            name: body.name,
+            activePasses: body.noOfActivePasses,
+            createdPasses: body.noOfCreatedPasses
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `pass_template.${ctx.input.eventType === 'pass_template_created' ? 'created' : 'updated'}`,
         id: `${ctx.input.templateId}-${ctx.input.eventType}-${Date.now()}`,
@@ -89,8 +97,9 @@ export let templateEvents = SlateTrigger.create(
           templateId: ctx.input.templateId,
           name: ctx.input.name,
           activePasses: ctx.input.activePasses,
-          createdPasses: ctx.input.createdPasses,
-        },
+          createdPasses: ctx.input.createdPasses
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

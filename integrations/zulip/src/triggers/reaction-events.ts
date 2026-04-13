@@ -3,35 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reactionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Reaction Events',
-    key: 'reaction_events',
-    description: 'Triggers when emoji reactions are added to or removed from messages.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event ID'),
-    action: z.string().describe('Action: "add" or "remove"'),
-    messageId: z.number().describe('Message ID the reaction is on'),
-    userId: z.number().describe('User ID who added/removed the reaction'),
-    emojiName: z.string().describe('Emoji name'),
-    emojiCode: z.string().describe('Emoji code')
-  }))
-  .output(z.object({
-    messageId: z.number().describe('Message ID the reaction is on'),
-    userId: z.number().describe('User ID who added/removed the reaction'),
-    emojiName: z.string().describe('Emoji name'),
-    emojiCode: z.string().describe('Emoji code'),
-    action: z.string().describe('Action: "add" or "remove"')
-  }))
+export let reactionEvents = SlateTrigger.create(spec, {
+  name: 'Reaction Events',
+  key: 'reaction_events',
+  description: 'Triggers when emoji reactions are added to or removed from messages.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event ID'),
+      action: z.string().describe('Action: "add" or "remove"'),
+      messageId: z.number().describe('Message ID the reaction is on'),
+      userId: z.number().describe('User ID who added/removed the reaction'),
+      emojiName: z.string().describe('Emoji name'),
+      emojiCode: z.string().describe('Emoji code')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.number().describe('Message ID the reaction is on'),
+      userId: z.number().describe('User ID who added/removed the reaction'),
+      emojiName: z.string().describe('Emoji name'),
+      emojiCode: z.string().describe('Emoji code'),
+      action: z.string().describe('Action: "add" or "remove"')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         serverUrl: ctx.auth.serverUrl,
         email: ctx.auth.email,
@@ -66,9 +67,7 @@ export let reactionEvents = SlateTrigger.create(
         let events = eventsResult.events || [];
         let reactionEvents = events.filter((e: any) => e.type === 'reaction');
 
-        let newLastEventId = events.length > 0
-          ? events[events.length - 1].id
-          : lastEventId;
+        let newLastEventId = events.length > 0 ? events[events.length - 1].id : lastEventId;
 
         let inputs = reactionEvents.map((e: any) => ({
           eventId: String(e.id),
@@ -87,7 +86,10 @@ export let reactionEvents = SlateTrigger.create(
           }
         };
       } catch (err: any) {
-        if (err?.response?.status === 400 && err?.response?.data?.code === 'BAD_EVENT_QUEUE_ID') {
+        if (
+          err?.response?.status === 400 &&
+          err?.response?.data?.code === 'BAD_EVENT_QUEUE_ID'
+        ) {
           ctx.warn('Event queue expired, will re-register on next poll');
           return { inputs: [], updatedState: {} };
         }
@@ -95,7 +97,7 @@ export let reactionEvents = SlateTrigger.create(
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `reaction.${ctx.input.action}`,
         id: ctx.input.eventId,
@@ -108,4 +110,5 @@ export let reactionEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

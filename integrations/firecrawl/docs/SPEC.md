@@ -9,6 +9,7 @@ Firecrawl is a web data extraction platform that converts websites into clean ma
 Firecrawl uses API key-based authentication via a Bearer token in the `Authorization` header. The header should contain `Bearer fc-123456789`, where `fc-123456789` represents your API key.
 
 To obtain an API key:
+
 1. Navigate to firecrawl.dev and sign up for an account.
 2. Click on the dashboard button on the top navigation menu when logged in and you will find your API key in the main screen and under API Keys.
 

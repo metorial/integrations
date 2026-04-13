@@ -13,6 +13,7 @@ Postmark uses API token-based authentication via HTTP headers. There are three d
 Postmark has a **Server Token** used via the `X-Postmark-Server-Token` header for requests that require server-level privileges. This includes sending emails, managing templates, retrieving bounces, viewing messages, and managing webhooks. Each Postmark server has its own API token, allowing you to isolate access and data for each application that connects to Postmark. A server can have up to 3 API tokens associated with it.
 
 To use it, include the header in your request:
+
 ```
 X-Postmark-Server-Token: your-server-token
 ```
@@ -24,6 +25,7 @@ To find your Server API token in Postmark, visit the API Tokens tab within your 
 The Account API Token is required for API actions that only the Account Owner and Account Admin have access to, including creating new Servers and adding new Sender Signatures or Domains.
 
 Used via the `X-Postmark-Account-Token` header:
+
 ```
 X-Postmark-Account-Token: your-account-token
 ```

@@ -3,67 +3,92 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageChromeOsDevices = SlateTool.create(
-  spec,
-  {
-    name: 'Manage ChromeOS Devices',
-    key: 'manage_chromeos_devices',
-    description: `List, get, update, or perform actions on ChromeOS devices. Supports searching, moving between org units, and remote actions like disable or deprovision.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageChromeOsDevices = SlateTool.create(spec, {
+  name: 'Manage ChromeOS Devices',
+  key: 'manage_chromeos_devices',
+  description: `List, get, update, or perform actions on ChromeOS devices. Supports searching, moving between org units, and remote actions like disable or deprovision.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'update', 'device_action']).describe('Action to perform'),
-    deviceId: z.string().optional().describe('ChromeOS device ID (required for get, update, device_action)'),
-    query: z.string().optional().describe('Search query for listing devices'),
-    orgUnitPath: z.string().optional().describe('Filter by or move to org unit path'),
-    annotatedUser: z.string().optional().describe('Annotated user for the device (for update)'),
-    annotatedLocation: z.string().optional().describe('Annotated location (for update)'),
-    annotatedAssetId: z.string().optional().describe('Annotated asset ID (for update)'),
-    notes: z.string().optional().describe('Notes for the device (for update)'),
-    deviceAction: z.enum(['disable', 'reenable', 'deprovision']).optional().describe('Action to perform on the device (for device_action)'),
-    maxResults: z.number().optional(),
-    pageToken: z.string().optional(),
-    orderBy: z.enum(['annotatedLocation', 'annotatedUser', 'lastSync', 'notes', 'serialNumber', 'status']).optional()
-  }))
-  .output(z.object({
-    devices: z.array(z.object({
-      deviceId: z.string().optional(),
-      serialNumber: z.string().optional(),
-      status: z.string().optional(),
-      lastSync: z.string().optional(),
-      model: z.string().optional(),
-      osVersion: z.string().optional(),
-      orgUnitPath: z.string().optional(),
-      annotatedUser: z.string().optional(),
-      annotatedLocation: z.string().optional(),
-      annotatedAssetId: z.string().optional()
-    })).optional(),
-    device: z.object({
-      deviceId: z.string().optional(),
-      serialNumber: z.string().optional(),
-      status: z.string().optional(),
-      lastSync: z.string().optional(),
-      model: z.string().optional(),
-      osVersion: z.string().optional(),
-      platformVersion: z.string().optional(),
-      firmwareVersion: z.string().optional(),
-      macAddress: z.string().optional(),
-      orgUnitPath: z.string().optional(),
-      annotatedUser: z.string().optional(),
-      annotatedLocation: z.string().optional(),
-      annotatedAssetId: z.string().optional(),
-      notes: z.string().optional(),
-      bootMode: z.string().optional()
-    }).optional(),
-    nextPageToken: z.string().optional(),
-    actionPerformed: z.string().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'update', 'device_action']).describe('Action to perform'),
+      deviceId: z
+        .string()
+        .optional()
+        .describe('ChromeOS device ID (required for get, update, device_action)'),
+      query: z.string().optional().describe('Search query for listing devices'),
+      orgUnitPath: z.string().optional().describe('Filter by or move to org unit path'),
+      annotatedUser: z
+        .string()
+        .optional()
+        .describe('Annotated user for the device (for update)'),
+      annotatedLocation: z.string().optional().describe('Annotated location (for update)'),
+      annotatedAssetId: z.string().optional().describe('Annotated asset ID (for update)'),
+      notes: z.string().optional().describe('Notes for the device (for update)'),
+      deviceAction: z
+        .enum(['disable', 'reenable', 'deprovision'])
+        .optional()
+        .describe('Action to perform on the device (for device_action)'),
+      maxResults: z.number().optional(),
+      pageToken: z.string().optional(),
+      orderBy: z
+        .enum([
+          'annotatedLocation',
+          'annotatedUser',
+          'lastSync',
+          'notes',
+          'serialNumber',
+          'status'
+        ])
+        .optional()
+    })
+  )
+  .output(
+    z.object({
+      devices: z
+        .array(
+          z.object({
+            deviceId: z.string().optional(),
+            serialNumber: z.string().optional(),
+            status: z.string().optional(),
+            lastSync: z.string().optional(),
+            model: z.string().optional(),
+            osVersion: z.string().optional(),
+            orgUnitPath: z.string().optional(),
+            annotatedUser: z.string().optional(),
+            annotatedLocation: z.string().optional(),
+            annotatedAssetId: z.string().optional()
+          })
+        )
+        .optional(),
+      device: z
+        .object({
+          deviceId: z.string().optional(),
+          serialNumber: z.string().optional(),
+          status: z.string().optional(),
+          lastSync: z.string().optional(),
+          model: z.string().optional(),
+          osVersion: z.string().optional(),
+          platformVersion: z.string().optional(),
+          firmwareVersion: z.string().optional(),
+          macAddress: z.string().optional(),
+          orgUnitPath: z.string().optional(),
+          annotatedUser: z.string().optional(),
+          annotatedLocation: z.string().optional(),
+          annotatedAssetId: z.string().optional(),
+          notes: z.string().optional(),
+          bootMode: z.string().optional()
+        })
+        .optional(),
+      nextPageToken: z.string().optional(),
+      actionPerformed: z.string().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -131,7 +156,8 @@ export let manageChromeOsDevices = SlateTool.create(
       let updateData: Record<string, any> = {};
       if (ctx.input.orgUnitPath) updateData.orgUnitPath = ctx.input.orgUnitPath;
       if (ctx.input.annotatedUser) updateData.annotatedUser = ctx.input.annotatedUser;
-      if (ctx.input.annotatedLocation) updateData.annotatedLocation = ctx.input.annotatedLocation;
+      if (ctx.input.annotatedLocation)
+        updateData.annotatedLocation = ctx.input.annotatedLocation;
       if (ctx.input.annotatedAssetId) updateData.annotatedAssetId = ctx.input.annotatedAssetId;
       if (ctx.input.notes !== undefined) updateData.notes = ctx.input.notes;
 

@@ -14,43 +14,47 @@ let triageAction = z.enum([
   'remove_labels',
   'trash',
   'restore',
-  'delete',
+  'delete'
 ]);
 
-export let triageConversation = SlateTool.create(
-  spec,
-  {
-    name: 'Triage Conversation',
-    key: 'triage_conversation',
-    description:
-      'Apply a single high-level **triage** action to an entire Gmail **thread**: archive/unarchive, read/unread, star/unstar, add/remove labels, move to trash, restore from trash, or permanently delete.',
-    instructions: [
-      '**archive** removes INBOX; **unarchive** adds INBOX.',
-      '**mark_read** removes UNREAD; **mark_unread** adds UNREAD.',
-      '**star** / **unstar** use the STARRED system label.',
-      'For **apply_labels** / **remove_labels**, pass **labelIds** (custom label IDs or system IDs).',
-      '**delete** permanently removes the thread (requires full mail scope); prefer **trash** for reversible triage.',
-    ],
-    tags: {
-      readOnly: false,
-    },
+export let triageConversation = SlateTool.create(spec, {
+  name: 'Triage Conversation',
+  key: 'triage_conversation',
+  description:
+    'Apply a single high-level **triage** action to an entire Gmail **thread**: archive/unarchive, read/unread, star/unstar, add/remove labels, move to trash, restore from trash, or permanently delete.',
+  instructions: [
+    '**archive** removes INBOX; **unarchive** adds INBOX.',
+    '**mark_read** removes UNREAD; **mark_unread** adds UNREAD.',
+    '**star** / **unstar** use the STARRED system label.',
+    'For **apply_labels** / **remove_labels**, pass **labelIds** (custom label IDs or system IDs).',
+    '**delete** permanently removes the thread (requires full mail scope); prefer **trash** for reversible triage.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    threadId: z.string().describe('Thread to triage.'),
-    action: triageAction.describe('Triage operation to perform on the whole thread.'),
-    labelIds: z.array(z.string()).optional().describe('Label IDs for apply_labels / remove_labels.'),
-  }))
-  .output(z.object({
-    threadId: z.string().optional(),
-    snippet: z.string().optional(),
-    historyId: z.string().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      threadId: z.string().describe('Thread to triage.'),
+      action: triageAction.describe('Triage operation to perform on the whole thread.'),
+      labelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Label IDs for apply_labels / remove_labels.')
+    })
+  )
+  .output(
+    z.object({
+      threadId: z.string().optional(),
+      snippet: z.string().optional(),
+      historyId: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      userId: ctx.config.userId,
+      userId: ctx.config.userId
     });
 
     let { threadId, action } = ctx.input;
@@ -66,7 +70,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, undefined, ['INBOX']);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Archived thread **${threadId}** (removed from INBOX).`,
+        message: `Archived thread **${threadId}** (removed from INBOX).`
       };
     }
 
@@ -74,7 +78,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, ['INBOX'], undefined);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Moved thread **${threadId}** back to INBOX.`,
+        message: `Moved thread **${threadId}** back to INBOX.`
       };
     }
 
@@ -82,7 +86,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, undefined, ['UNREAD']);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Marked thread **${threadId}** as read.`,
+        message: `Marked thread **${threadId}** as read.`
       };
     }
 
@@ -90,7 +94,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, ['UNREAD'], undefined);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Marked thread **${threadId}** as unread.`,
+        message: `Marked thread **${threadId}** as unread.`
       };
     }
 
@@ -98,7 +102,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, ['STARRED'], undefined);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Starred thread **${threadId}**.`,
+        message: `Starred thread **${threadId}**.`
       };
     }
 
@@ -106,7 +110,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, undefined, ['STARRED']);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Removed star from thread **${threadId}**.`,
+        message: `Removed star from thread **${threadId}**.`
       };
     }
 
@@ -114,7 +118,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, ctx.input.labelIds, undefined);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Applied **${ctx.input.labelIds!.length}** label(s) to thread **${threadId}**.`,
+        message: `Applied **${ctx.input.labelIds!.length}** label(s) to thread **${threadId}**.`
       };
     }
 
@@ -122,7 +126,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.modifyThread(threadId, undefined, ctx.input.labelIds);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Removed **${ctx.input.labelIds!.length}** label(s) from thread **${threadId}**.`,
+        message: `Removed **${ctx.input.labelIds!.length}** label(s) from thread **${threadId}**.`
       };
     }
 
@@ -130,7 +134,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.trashThread(threadId);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Moved thread **${threadId}** to Trash.`,
+        message: `Moved thread **${threadId}** to Trash.`
       };
     }
 
@@ -138,7 +142,7 @@ export let triageConversation = SlateTool.create(
       let thread = await client.untrashThread(threadId);
       return {
         output: { threadId: thread.id, snippet: thread.snippet, historyId: thread.historyId },
-        message: `Restored thread **${threadId}** from Trash.`,
+        message: `Restored thread **${threadId}** from Trash.`
       };
     }
 
@@ -146,7 +150,7 @@ export let triageConversation = SlateTool.create(
       await client.deleteThread(threadId);
       return {
         output: { deleted: true },
-        message: `Permanently deleted thread **${threadId}**.`,
+        message: `Permanently deleted thread **${threadId}**.`
       };
     }
 

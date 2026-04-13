@@ -7,14 +7,14 @@ import {
   getConversation,
   updateConversation,
   searchUsers,
-  searchTags,
+  searchTags
 } from './tools';
 import {
   conversationUpdated,
   newEmail,
   newConversation,
   noteCreated,
-  csatReceived,
+  csatReceived
 } from './triggers';
 
 export let provider = Slate.create({
@@ -26,13 +26,13 @@ export let provider = Slate.create({
     getConversation.build(),
     updateConversation.build(),
     searchUsers.build(),
-    searchTags.build(),
+    searchTags.build()
   ],
   triggers: [
     conversationUpdated.build(),
     newEmail.build(),
     newConversation.build(),
     noteCreated.build(),
-    csatReceived.build(),
-  ],
+    csatReceived.build()
+  ]
 });

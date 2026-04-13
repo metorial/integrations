@@ -22,9 +22,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${config.companySlug}.booqable.com/api/4`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -71,31 +71,43 @@ export class Client {
 
   // ---- Generic resource methods ----
 
-  async listResource(resource: string, options?: {
-    pagination?: PaginationParams;
-    filters?: FilterParams;
-    include?: string[];
-    sort?: string;
-  }): Promise<any> {
+  async listResource(
+    resource: string,
+    options?: {
+      pagination?: PaginationParams;
+      filters?: FilterParams;
+      include?: string[];
+      sort?: string;
+    }
+  ): Promise<any> {
     let params = this.buildQueryParams(options);
     let response = await this.axios.get(`/${resource}`, { params });
     return response.data;
   }
 
-  async getResource(resource: string, resourceId: string, options?: {
-    include?: string[];
-  }): Promise<any> {
+  async getResource(
+    resource: string,
+    resourceId: string,
+    options?: {
+      include?: string[];
+    }
+  ): Promise<any> {
     let params = this.buildQueryParams({ include: options?.include });
     let response = await this.axios.get(`/${resource}/${resourceId}`, { params });
     return response.data;
   }
 
-  async createResource(resource: string, type: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<any> {
+  async createResource(
+    resource: string,
+    type: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<any> {
     let body: any = {
       data: {
         type,
-        attributes,
-      },
+        attributes
+      }
     };
     if (relationships) {
       body.data.relationships = relationships;
@@ -104,13 +116,19 @@ export class Client {
     return response.data;
   }
 
-  async updateResource(resource: string, resourceId: string, type: string, attributes: Record<string, any>, relationships?: Record<string, any>): Promise<any> {
+  async updateResource(
+    resource: string,
+    resourceId: string,
+    type: string,
+    attributes: Record<string, any>,
+    relationships?: Record<string, any>
+  ): Promise<any> {
     let body: any = {
       data: {
         id: resourceId,
         type,
-        attributes,
-      },
+        attributes
+      }
     };
     if (relationships) {
       body.data.relationships = relationships;
@@ -420,19 +438,13 @@ export class Client {
 
   // ---- Tags ----
 
-  async listTags(options?: {
-    pagination?: PaginationParams;
-    filters?: FilterParams;
-  }) {
+  async listTags(options?: { pagination?: PaginationParams; filters?: FilterParams }) {
     return this.listResource('tags', options);
   }
 
   // ---- Notes ----
 
-  async listNotes(options?: {
-    pagination?: PaginationParams;
-    filters?: FilterParams;
-  }) {
+  async listNotes(options?: { pagination?: PaginationParams; filters?: FilterParams }) {
     return this.listResource('notes', options);
   }
 
@@ -446,9 +458,7 @@ export class Client {
 
   // ---- Webhook Endpoints ----
 
-  async listWebhookEndpoints(options?: {
-    pagination?: PaginationParams;
-  }) {
+  async listWebhookEndpoints(options?: { pagination?: PaginationParams }) {
     return this.listResource('webhook_endpoints', options);
   }
 
@@ -457,7 +467,12 @@ export class Client {
   }
 
   async updateWebhookEndpoint(webhookEndpointId: string, attributes: Record<string, any>) {
-    return this.updateResource('webhook_endpoints', webhookEndpointId, 'webhook_endpoints', attributes);
+    return this.updateResource(
+      'webhook_endpoints',
+      webhookEndpointId,
+      'webhook_endpoints',
+      attributes
+    );
   }
 
   async deleteWebhookEndpoint(webhookEndpointId: string) {

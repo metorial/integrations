@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createOrder,
@@ -12,12 +11,9 @@ import {
   exportTranscription,
   getUploadUrl,
   listGlossaries,
-  listStyleGuides,
+  listStyleGuides
 } from './tools';
-import {
-  transcriptionUpdated,
-  inboundWebhook,
-} from './triggers';
+import { transcriptionUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,10 +28,7 @@ export let provider = Slate.create({
     exportTranscription,
     getUploadUrl,
     listGlossaries,
-    listStyleGuides,
+    listStyleGuides
   ],
-  triggers: [
-    inboundWebhook,
-    transcriptionUpdated,
-  ],
+  triggers: [inboundWebhook, transcriptionUpdated]
 });

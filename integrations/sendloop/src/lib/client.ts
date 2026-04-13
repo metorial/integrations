@@ -22,18 +22,15 @@ export class SendloopClient {
       ...params
     });
 
-    let response = await axios.post(
-      `${this.baseUrl}/${command}/json`,
-      formParams.toString(),
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }
-    );
+    let response = await axios.post(`${this.baseUrl}/${command}/json`, formParams.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
 
     let data = response.data;
 
     if (data && data.Success === false) {
-      let errorMessage = data.ErrorMessage || data.ErrorText || data.Error || 'Unknown Sendloop API error';
+      let errorMessage =
+        data.ErrorMessage || data.ErrorText || data.Error || 'Unknown Sendloop API error';
       throw new Error(`Sendloop API error: ${errorMessage}`);
     }
 
@@ -68,26 +65,31 @@ export class SendloopClient {
     };
     if (params.optInMode) requestParams.OptInMode = params.optInMode;
     if (params.notifyOnSubscribe) requestParams.NotifyOnSubscribe = params.notifyOnSubscribe;
-    if (params.notifyOnUnsubscribe) requestParams.NotifyOnUnsubscribe = params.notifyOnUnsubscribe;
+    if (params.notifyOnUnsubscribe)
+      requestParams.NotifyOnUnsubscribe = params.notifyOnUnsubscribe;
     if (params.notifyEmail) requestParams.NotifyEmailAddress = params.notifyEmail;
 
     return this.request('List.Create', requestParams);
   }
 
-  async updateList(listId: string, params: {
-    name?: string;
-    optInMode?: string;
-    notifyOnSubscribe?: string;
-    notifyOnUnsubscribe?: string;
-    notifyEmail?: string;
-  }): Promise<any> {
+  async updateList(
+    listId: string,
+    params: {
+      name?: string;
+      optInMode?: string;
+      notifyOnSubscribe?: string;
+      notifyOnUnsubscribe?: string;
+      notifyEmail?: string;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       ListID: listId
     };
     if (params.name) requestParams.ListName = params.name;
     if (params.optInMode) requestParams.OptInMode = params.optInMode;
     if (params.notifyOnSubscribe) requestParams.NotifyOnSubscribe = params.notifyOnSubscribe;
-    if (params.notifyOnUnsubscribe) requestParams.NotifyOnUnsubscribe = params.notifyOnUnsubscribe;
+    if (params.notifyOnUnsubscribe)
+      requestParams.NotifyOnUnsubscribe = params.notifyOnUnsubscribe;
     if (params.notifyEmail) requestParams.NotifyEmailAddress = params.notifyEmail;
 
     return this.request('List.Update', requestParams);
@@ -103,10 +105,13 @@ export class SendloopClient {
     return this.request('CustomField.GetList', { ListID: listId });
   }
 
-  async createCustomField(listId: string, params: {
-    fieldName: string;
-    fieldType?: string;
-  }): Promise<any> {
+  async createCustomField(
+    listId: string,
+    params: {
+      fieldName: string;
+      fieldType?: string;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       ListID: listId,
       FieldName: params.fieldName
@@ -125,10 +130,13 @@ export class SendloopClient {
 
   // ---- Subscribers ----
 
-  async getSubscriber(listId: string, params: {
-    subscriberId?: string;
-    emailAddress?: string;
-  }): Promise<any> {
+  async getSubscriber(
+    listId: string,
+    params: {
+      subscriberId?: string;
+      emailAddress?: string;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       ListID: listId
     };
@@ -142,10 +150,13 @@ export class SendloopClient {
     return this.request('Subscriber.Search', { EmailAddress: emailAddress });
   }
 
-  async browseSubscribers(listId: string, params?: {
-    segmentId?: string;
-    startIndex?: string;
-  }): Promise<any> {
+  async browseSubscribers(
+    listId: string,
+    params?: {
+      segmentId?: string;
+      startIndex?: string;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       ListID: listId
     };
@@ -188,11 +199,14 @@ export class SendloopClient {
     });
   }
 
-  async updateSubscriber(listId: string, params: {
-    subscriberId?: string;
-    emailAddress?: string;
-    fields?: Record<string, string>;
-  }): Promise<any> {
+  async updateSubscriber(
+    listId: string,
+    params: {
+      subscriberId?: string;
+      emailAddress?: string;
+      fields?: Record<string, string>;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       ListID: listId
     };
@@ -228,10 +242,13 @@ export class SendloopClient {
     return this.request('Segment.Get', { ListID: listId, SegmentID: segmentId });
   }
 
-  async createSegment(listId: string, params: {
-    segmentName: string;
-    rules?: string;
-  }): Promise<any> {
+  async createSegment(
+    listId: string,
+    params: {
+      segmentName: string;
+      rules?: string;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       ListID: listId,
       SegmentName: params.segmentName
@@ -300,17 +317,20 @@ export class SendloopClient {
     return this.request('Campaign.Create', requestParams);
   }
 
-  async updateCampaign(campaignId: string, params: {
-    campaignName?: string;
-    fromName?: string;
-    fromEmail?: string;
-    replyToName?: string;
-    replyToEmail?: string;
-    subject?: string;
-    htmlContent?: string;
-    plainTextContent?: string;
-    targetListIds?: string;
-  }): Promise<any> {
+  async updateCampaign(
+    campaignId: string,
+    params: {
+      campaignName?: string;
+      fromName?: string;
+      fromEmail?: string;
+      replyToName?: string;
+      replyToEmail?: string;
+      subject?: string;
+      htmlContent?: string;
+      plainTextContent?: string;
+      targetListIds?: string;
+    }
+  ): Promise<any> {
     let requestParams: Record<string, string> = {
       CampaignID: campaignId
     };

@@ -2,32 +2,42 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Fires when records are created, updated, or deleted in a Ragic sheet. Supports both minimal payloads (record IDs only) and full content payloads. Configure webhooks per sheet in Ragic under Tools > Sync > Webhook.',
-  },
-)
-  .input(z.object({
-    eventType: z.enum(['CREATE', 'UPDATE', 'DELETE', 'unknown']).describe('Type of change event'),
-    accountName: z.string().optional().describe('Ragic account name'),
-    sheetPath: z.string().optional().describe('Sheet path in the URL'),
-    sheetIndex: z.number().optional().describe('Sheet index number'),
-    recordId: z.string().describe('ID of the affected record'),
-    recordData: z.record(z.string(), z.any()).optional().describe('Full record data if full content was enabled'),
-  }))
-  .output(z.object({
-    recordId: z.string().describe('ID of the affected record'),
-    eventType: z.string().describe('Type of change: CREATE, UPDATE, or DELETE'),
-    accountName: z.string().optional().describe('Ragic account name'),
-    sheetPath: z.string().optional().describe('Sheet path'),
-    sheetIndex: z.number().optional().describe('Sheet index'),
-    recordData: z.record(z.string(), z.any()).optional().describe('Full record data if available'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Fires when records are created, updated, or deleted in a Ragic sheet. Supports both minimal payloads (record IDs only) and full content payloads. Configure webhooks per sheet in Ragic under Tools > Sync > Webhook.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['CREATE', 'UPDATE', 'DELETE', 'unknown'])
+        .describe('Type of change event'),
+      accountName: z.string().optional().describe('Ragic account name'),
+      sheetPath: z.string().optional().describe('Sheet path in the URL'),
+      sheetIndex: z.number().optional().describe('Sheet index number'),
+      recordId: z.string().describe('ID of the affected record'),
+      recordData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full record data if full content was enabled')
+    })
+  )
+  .output(
+    z.object({
+      recordId: z.string().describe('ID of the affected record'),
+      eventType: z.string().describe('Type of change: CREATE, UPDATE, or DELETE'),
+      accountName: z.string().optional().describe('Ragic account name'),
+      sheetPath: z.string().optional().describe('Sheet path'),
+      sheetIndex: z.number().optional().describe('Sheet index'),
+      recordData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full record data if available')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -44,9 +54,10 @@ export let recordChanges = SlateTrigger.create(
         let dataEntries = Array.isArray(body.data) ? body.data : [body.data];
 
         let inputs = dataEntries.map((entry: any) => {
-          let recordId = entry?._ragicId !== undefined
-            ? String(entry._ragicId)
-            : String(Object.keys(entry || {})[0] || 'unknown');
+          let recordId =
+            entry?._ragicId !== undefined
+              ? String(entry._ragicId)
+              : String(Object.keys(entry || {})[0] || 'unknown');
 
           return {
             eventType: eventType as 'CREATE' | 'UPDATE' | 'DELETE' | 'unknown',
@@ -54,7 +65,7 @@ export let recordChanges = SlateTrigger.create(
             sheetPath,
             sheetIndex,
             recordId,
-            recordData: entry,
+            recordData: entry
           };
         });
 
@@ -69,7 +80,7 @@ export let recordChanges = SlateTrigger.create(
           sheetPath: undefined,
           sheetIndex: undefined,
           recordId: String(id),
-          recordData: undefined,
+          recordData: undefined
         }));
 
         return { inputs };
@@ -78,7 +89,7 @@ export let recordChanges = SlateTrigger.create(
       return { inputs: [] };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventTypeLower = ctx.input.eventType.toLowerCase();
 
       return {
@@ -90,9 +101,9 @@ export let recordChanges = SlateTrigger.create(
           accountName: ctx.input.accountName,
           sheetPath: ctx.input.sheetPath,
           sheetIndex: ctx.input.sheetIndex,
-          recordData: ctx.input.recordData,
-        },
+          recordData: ctx.input.recordData
+        }
       };
-    },
+    }
   })
   .build();

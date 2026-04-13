@@ -3,44 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let weatherDataUpdated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Weather Data Updated',
-    key: 'weather_data_updated',
-    description: 'Triggers when any of the user\'s weather station devices reports new data. Emits the latest sensor readings for each device that has updated since the last poll.',
-  }
-)
-  .input(z.object({
-    macAddress: z.string().describe('MAC address of the device that reported new data'),
-    deviceName: z.string().optional().describe('User-assigned name of the device'),
-    timestamp: z.number().describe('UTC timestamp (ms) of the data reading'),
-    readings: z.record(z.string(), z.any()).describe('Sensor readings from the device'),
-  }))
-  .output(z.object({
-    macAddress: z.string().describe('MAC address of the device'),
-    deviceName: z.string().optional().describe('User-assigned name of the device'),
-    timestamp: z.string().optional().describe('ISO timestamp of the reading'),
-    temperatureF: z.number().optional().describe('Outdoor temperature (Fahrenheit)'),
-    humidity: z.number().optional().describe('Outdoor humidity (%)'),
-    windSpeedMph: z.number().optional().describe('Wind speed (mph)'),
-    windGustMph: z.number().optional().describe('Wind gust speed (mph)'),
-    windDirection: z.number().optional().describe('Wind direction (degrees)'),
-    baromRelativeInHg: z.number().optional().describe('Relative barometric pressure (inHg)'),
-    dailyRainIn: z.number().optional().describe('Daily rain accumulation (inches)'),
-    uvIndex: z.number().optional().describe('UV index'),
-    solarRadiation: z.number().optional().describe('Solar radiation (W/m^2)'),
-    readings: z.record(z.string(), z.any()).describe('Full sensor readings from the device'),
-  }))
+export let weatherDataUpdated = SlateTrigger.create(spec, {
+  name: 'Weather Data Updated',
+  key: 'weather_data_updated',
+  description:
+    "Triggers when any of the user's weather station devices reports new data. Emits the latest sensor readings for each device that has updated since the last poll."
+})
+  .input(
+    z.object({
+      macAddress: z.string().describe('MAC address of the device that reported new data'),
+      deviceName: z.string().optional().describe('User-assigned name of the device'),
+      timestamp: z.number().describe('UTC timestamp (ms) of the data reading'),
+      readings: z.record(z.string(), z.any()).describe('Sensor readings from the device')
+    })
+  )
+  .output(
+    z.object({
+      macAddress: z.string().describe('MAC address of the device'),
+      deviceName: z.string().optional().describe('User-assigned name of the device'),
+      timestamp: z.string().optional().describe('ISO timestamp of the reading'),
+      temperatureF: z.number().optional().describe('Outdoor temperature (Fahrenheit)'),
+      humidity: z.number().optional().describe('Outdoor humidity (%)'),
+      windSpeedMph: z.number().optional().describe('Wind speed (mph)'),
+      windGustMph: z.number().optional().describe('Wind gust speed (mph)'),
+      windDirection: z.number().optional().describe('Wind direction (degrees)'),
+      baromRelativeInHg: z.number().optional().describe('Relative barometric pressure (inHg)'),
+      dailyRainIn: z.number().optional().describe('Daily rain accumulation (inches)'),
+      uvIndex: z.number().optional().describe('UV index'),
+      solarRadiation: z.number().optional().describe('Solar radiation (W/m^2)'),
+      readings: z.record(z.string(), z.any()).describe('Full sensor readings from the device')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        applicationKey: ctx.auth.applicationKey,
+        applicationKey: ctx.auth.applicationKey
       });
 
       let devices = await client.listDevices();
@@ -65,7 +67,7 @@ export let weatherDataUpdated = SlateTrigger.create(
             macAddress: device.macAddress,
             deviceName: device.info?.name,
             timestamp: currentTimestamp,
-            readings: lastData,
+            readings: lastData
           });
           lastTimestamps[device.macAddress] = currentTimestamp;
         }
@@ -74,12 +76,12 @@ export let weatherDataUpdated = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastTimestamps,
-        },
+          lastTimestamps
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { macAddress, deviceName, timestamp, readings } = ctx.input;
 
       return {
@@ -98,9 +100,9 @@ export let weatherDataUpdated = SlateTrigger.create(
           dailyRainIn: readings.dailyrainin as number | undefined,
           uvIndex: readings.uv as number | undefined,
           solarRadiation: readings.solarradiation as number | undefined,
-          readings,
-        },
+          readings
+        }
       };
-    },
+    }
   })
   .build();

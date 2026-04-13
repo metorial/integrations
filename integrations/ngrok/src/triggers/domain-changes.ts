@@ -3,37 +3,43 @@ import { NgrokClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let domainChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Domain Changes',
-    key: 'domain_changes',
-    description: 'Triggers when reserved domains are added or removed. Polls for reserved domains and detects new or deleted domains between polling intervals.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'deleted']).describe('Type of change'),
-    domainId: z.string().describe('Domain ID'),
-    domain: z.string().describe('Hostname'),
-    createdAt: z.string().describe('Creation timestamp'),
-    description: z.string().describe('Description'),
-    metadata: z.string().describe('Metadata'),
-    cnameTarget: z.string().optional().nullable().describe('CNAME target')
-  }))
-  .output(z.object({
-    domainId: z.string().describe('Domain ID'),
-    domain: z.string().describe('Hostname'),
-    createdAt: z.string().describe('Creation timestamp'),
-    description: z.string().describe('Description'),
-    metadata: z.string().describe('Metadata'),
-    cnameTarget: z.string().optional().nullable().describe('CNAME target for DNS configuration')
-  }))
+export let domainChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Domain Changes',
+  key: 'domain_changes',
+  description:
+    'Triggers when reserved domains are added or removed. Polls for reserved domains and detects new or deleted domains between polling intervals.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'deleted']).describe('Type of change'),
+      domainId: z.string().describe('Domain ID'),
+      domain: z.string().describe('Hostname'),
+      createdAt: z.string().describe('Creation timestamp'),
+      description: z.string().describe('Description'),
+      metadata: z.string().describe('Metadata'),
+      cnameTarget: z.string().optional().nullable().describe('CNAME target')
+    })
+  )
+  .output(
+    z.object({
+      domainId: z.string().describe('Domain ID'),
+      domain: z.string().describe('Hostname'),
+      createdAt: z.string().describe('Creation timestamp'),
+      description: z.string().describe('Description'),
+      metadata: z.string().describe('Metadata'),
+      cnameTarget: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('CNAME target for DNS configuration')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new NgrokClient(ctx.auth.token);
       let result = await client.listDomains({ limit: 100 });
       let currentDomains = result.reserved_domains || [];
@@ -84,7 +90,7 @@ export let domainChangesTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `domain.${ctx.input.changeType}`,
         id: `${ctx.input.domainId}-${ctx.input.changeType}-${Date.now()}`,
@@ -98,4 +104,5 @@ export let domainChangesTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

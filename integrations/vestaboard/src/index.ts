@@ -7,7 +7,7 @@ import {
   getTransition,
   composeVbml,
   formatText,
-  listSubscriptions,
+  listSubscriptions
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     getTransition,
     composeVbml,
     formatText,
-    listSubscriptions,
+    listSubscriptions
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

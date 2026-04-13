@@ -16,12 +16,9 @@ import {
   sendReply,
   sendTestEmail,
   manageLinkedInScraper,
-  manageWebhooks,
+  manageWebhooks
 } from './tools';
-import {
-  campaignActivity,
-  scraperWebhook,
-} from './triggers';
+import { campaignActivity, scraperWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,10 +38,7 @@ export let provider = Slate.create({
     sendReply,
     sendTestEmail,
     manageLinkedInScraper,
-    manageWebhooks,
+    manageWebhooks
   ],
-  triggers: [
-    campaignActivity,
-    scraperWebhook,
-  ],
+  triggers: [campaignActivity, scraperWebhook]
 });

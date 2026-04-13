@@ -10,6 +10,6 @@ export let createClient = (ctx: SlateContext): PipedriveClient => {
 
   return new PipedriveClient({
     token: ctx.auth.token,
-    companyDomain,
+    companyDomain
   });
 };

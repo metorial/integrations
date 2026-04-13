@@ -10,32 +10,33 @@ let orderSchema = z.object({
   amount: z.number().optional().describe('Order amount'),
   status: z.string().optional().describe('Status of the order'),
   createdAt: z.string().optional().describe('When the order was created'),
-  raw: z.any().optional().describe('Full order record'),
+  raw: z.any().optional().describe('Full order record')
 });
 
-export let getOrders = SlateTool.create(
-  spec,
-  {
-    name: 'Get Orders',
-    key: 'get_orders',
-    description: `Retrieves orders from Tave, including both manually created orders and electronic bookings. Can filter by brand and job type. Requires the **API Key (Public API V2)** authentication method.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    brand: z.string().optional().describe('Filter orders by brand name'),
-    jobType: z.string().optional().describe('Filter orders by job type'),
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of results per page'),
-  }))
-  .output(z.object({
-    orders: z.array(orderSchema).describe('List of orders'),
-    totalCount: z.number().optional().describe('Total number of orders'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getOrders = SlateTool.create(spec, {
+  name: 'Get Orders',
+  key: 'get_orders',
+  description: `Retrieves orders from Tave, including both manually created orders and electronic bookings. Can filter by brand and job type. Requires the **API Key (Public API V2)** authentication method.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      brand: z.string().optional().describe('Filter orders by brand name'),
+      jobType: z.string().optional().describe('Filter orders by job type'),
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of results per page')
+    })
+  )
+  .output(
+    z.object({
+      orders: z.array(orderSchema).describe('List of orders'),
+      totalCount: z.number().optional().describe('Total number of orders')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TavePublicClient(ctx.auth.token);
 
     ctx.info('Fetching orders from Tave');
@@ -44,7 +45,7 @@ export let getOrders = SlateTool.create(
       brand: ctx.input.brand,
       jobType: ctx.input.jobType,
       page: ctx.input.page,
-      perPage: ctx.input.perPage,
+      perPage: ctx.input.perPage
     });
 
     let items = Array.isArray(result) ? result : (result?.data ?? result?.orders ?? []);
@@ -56,7 +57,7 @@ export let getOrders = SlateTool.create(
       amount: o.amount ?? o.total ?? undefined,
       status: o.status ?? undefined,
       createdAt: o.created_at ?? o.created ?? undefined,
-      raw: o,
+      raw: o
     }));
 
     let totalCount = result?.total ?? result?.meta?.total ?? orders.length;
@@ -64,9 +65,9 @@ export let getOrders = SlateTool.create(
     return {
       output: {
         orders,
-        totalCount,
+        totalCount
       },
-      message: `Retrieved **${orders.length}** order(s)${ctx.input.brand ? ' for brand "' + ctx.input.brand + '"' : ''}${ctx.input.jobType ? ' of type "' + ctx.input.jobType + '"' : ''}.`,
+      message: `Retrieved **${orders.length}** order(s)${ctx.input.brand ? ' for brand "' + ctx.input.brand + '"' : ''}${ctx.input.jobType ? ' of type "' + ctx.input.jobType + '"' : ''}.`
     };
   })
   .build();

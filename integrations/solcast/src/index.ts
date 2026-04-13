@@ -8,7 +8,7 @@ import {
   getGridAggregations,
   managePvPowerSite,
   listPvPowerSites,
-  getHorizonAngle,
+  getHorizonAngle
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getGridAggregations,
     managePvPowerSite,
     listPvPowerSites,
-    getHorizonAngle,
+    getHorizonAngle
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

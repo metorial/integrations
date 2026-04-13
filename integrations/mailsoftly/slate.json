@@ -2,10 +2,7 @@
   "name": "@metorial/mailsoftly",
   "version": "0.1.1",
   "description": "Create, manage, and search contacts for email marketing campaigns. Organize contacts into lists, apply tags, and send email campaigns with attachments. Create and manage contact lists, add contacts individually or in bulk, and retrieve contact details. Create email drafts, check draft status, and send campaigns. Supports custom contact fields, contact segmentation, and tag-based categorization.",
-  "categories": [
-    "crm-and-sales-tools",
-    "email-and-messaging"
-  ],
+  "categories": ["crm-and-sales-tools", "email-and-messaging"],
   "skills": [
     "create and update contacts",
     "search contacts",

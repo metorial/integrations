@@ -22,19 +22,21 @@ export class ChameleonClient {
       baseURL: 'https://api.chameleon.io/v3',
       headers: {
         'X-Account-Secret': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- User Profiles ----
 
-  async listProfiles(params: PaginationParams & {
-    segmentId?: string;
-    filters?: Record<string, unknown>[];
-    filtersOp?: 'and' | 'or';
-    expand?: { profile?: string; company?: string };
-  } = {}) {
+  async listProfiles(
+    params: PaginationParams & {
+      segmentId?: string;
+      filters?: Record<string, unknown>[];
+      filtersOp?: 'and' | 'or';
+      expand?: { profile?: string; company?: string };
+    } = {}
+  ) {
     let { segmentId, filters, filtersOp, expand, ...pagination } = params;
     let body: Record<string, unknown> = { ...pagination };
     if (segmentId) body.segment_id = segmentId;
@@ -45,11 +47,13 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async countProfiles(params: {
-    segmentId?: string;
-    filters?: Record<string, unknown>[];
-    filtersOp?: 'and' | 'or';
-  } = {}) {
+  async countProfiles(
+    params: {
+      segmentId?: string;
+      filters?: Record<string, unknown>[];
+      filtersOp?: 'and' | 'or';
+    } = {}
+  ) {
     let body: Record<string, unknown> = {};
     if (params.segmentId) body.segment_id = params.segmentId;
     if (params.filters) body.filters = params.filters;
@@ -93,10 +97,12 @@ export class ChameleonClient {
 
   // ---- Companies ----
 
-  async listCompanies(params: PaginationParams & {
-    filters?: Record<string, unknown>[];
-    expand?: { company?: string };
-  } = {}) {
+  async listCompanies(
+    params: PaginationParams & {
+      filters?: Record<string, unknown>[];
+      expand?: { company?: string };
+    } = {}
+  ) {
     let { filters, expand, ...pagination } = params;
     let body: Record<string, unknown> = { ...pagination };
     if (filters) body.filters = filters;
@@ -115,9 +121,7 @@ export class ChameleonClient {
   }
 
   async deleteCompany(params: { companyId?: string; uid?: string; cascade?: boolean }) {
-    let path = params.companyId
-      ? `/edit/companies/${params.companyId}`
-      : '/edit/company';
+    let path = params.companyId ? `/edit/companies/${params.companyId}` : '/edit/company';
     let query: Record<string, string> = {};
     if (!params.companyId && params.uid) query.uid = params.uid;
     if (params.cascade) query.cascade = 'profiles';
@@ -137,11 +141,14 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async updateTour(tourId: string, data: {
-    publishedAt?: string | null;
-    urlGroupId?: string;
-    tagId?: string;
-  }) {
+  async updateTour(
+    tourId: string,
+    data: {
+      publishedAt?: string | null;
+      urlGroupId?: string;
+      tagId?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.publishedAt !== undefined) body.published_at = data.publishedAt;
     if (data.urlGroupId) body.url_group_id = data.urlGroupId;
@@ -162,11 +169,14 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async updateSurvey(surveyId: string, data: {
-    publishedAt?: string | null;
-    urlGroupId?: string;
-    tagId?: string;
-  }) {
+  async updateSurvey(
+    surveyId: string,
+    data: {
+      publishedAt?: string | null;
+      urlGroupId?: string;
+      tagId?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.publishedAt !== undefined) body.published_at = data.publishedAt;
     if (data.urlGroupId) body.url_group_id = data.urlGroupId;
@@ -177,10 +187,13 @@ export class ChameleonClient {
 
   // ---- Microsurvey Responses ----
 
-  async listSurveyResponses(surveyId: string, params: PaginationParams & {
-    order?: string;
-    expand?: { profile?: string; company?: string };
-  } = {}) {
+  async listSurveyResponses(
+    surveyId: string,
+    params: PaginationParams & {
+      order?: string;
+      expand?: { profile?: string; company?: string };
+    } = {}
+  ) {
     let { expand, ...rest } = params;
     let query: Record<string, unknown> = { id: surveyId, ...rest };
     if (expand) query.expand = expand;
@@ -212,10 +225,13 @@ export class ChameleonClient {
 
   // ---- Tour Interactions ----
 
-  async listTourInteractions(tourId: string, params: PaginationParams & {
-    order?: string;
-    expand?: { profile?: string; company?: string };
-  } = {}) {
+  async listTourInteractions(
+    tourId: string,
+    params: PaginationParams & {
+      order?: string;
+      expand?: { profile?: string; company?: string };
+    } = {}
+  ) {
     let { expand, ...rest } = params;
     let query: Record<string, unknown> = { id: tourId, ...rest };
     if (expand) query.expand = expand;
@@ -235,11 +251,14 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async updateTooltip(tooltipId: string, data: {
-    publishedAt?: string | null;
-    urlGroupId?: string;
-    tagId?: string;
-  }) {
+  async updateTooltip(
+    tooltipId: string,
+    data: {
+      publishedAt?: string | null;
+      urlGroupId?: string;
+      tagId?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.publishedAt !== undefined) body.published_at = data.publishedAt;
     if (data.urlGroupId) body.url_group_id = data.urlGroupId;
@@ -260,11 +279,14 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async updateLauncher(launcherId: string, data: {
-    publishedAt?: string | null;
-    urlGroupId?: string;
-    tagId?: string;
-  }) {
+  async updateLauncher(
+    launcherId: string,
+    data: {
+      publishedAt?: string | null;
+      urlGroupId?: string;
+      tagId?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.publishedAt !== undefined) body.published_at = data.publishedAt;
     if (data.urlGroupId) body.url_group_id = data.urlGroupId;
@@ -275,10 +297,12 @@ export class ChameleonClient {
 
   // ---- Deliveries ----
 
-  async listDeliveries(params: PaginationParams & {
-    modelId?: string;
-    profileId?: string;
-  } = {}) {
+  async listDeliveries(
+    params: PaginationParams & {
+      modelId?: string;
+      profileId?: string;
+    } = {}
+  ) {
     let { modelId, profileId, ...pagination } = params;
     let query: Record<string, unknown> = { ...pagination };
     if (modelId) query.model_id = modelId;
@@ -304,7 +328,7 @@ export class ChameleonClient {
   }) {
     let body: Record<string, unknown> = {
       model_kind: data.modelKind,
-      model_id: data.modelId,
+      model_id: data.modelId
     };
     if (data.profileId) body.profile_id = data.profileId;
     if (data.uid) body.uid = data.uid;
@@ -350,11 +374,14 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async updateUrl(urlId: string, data: {
-    enabled?: boolean;
-    urlGroupId?: string;
-    archivedAt?: string | null;
-  }) {
+  async updateUrl(
+    urlId: string,
+    data: {
+      enabled?: boolean;
+      urlGroupId?: string;
+      archivedAt?: string | null;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.enabled !== undefined) body.enabled = data.enabled;
     if (data.urlGroupId) body.url_group_id = data.urlGroupId;
@@ -378,12 +405,15 @@ export class ChameleonClient {
     return response.data;
   }
 
-  async updateUrlGroup(groupId: string, data: {
-    name?: string;
-    description?: string;
-    shortName?: string;
-    archivedAt?: string | null;
-  }) {
+  async updateUrlGroup(
+    groupId: string,
+    data: {
+      name?: string;
+      description?: string;
+      shortName?: string;
+      archivedAt?: string | null;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.name) body.name = data.name;
     if (data.description) body.description = data.description;
@@ -409,7 +439,7 @@ export class ChameleonClient {
     let body: Record<string, unknown> = {
       kind: data.kind || 'webhook',
       url: data.url,
-      topics: data.topics,
+      topics: data.topics
     };
     if (data.experienceIds) body.experience_ids = data.experienceIds;
     let response = await this.axios.post('/edit/webhooks', body);

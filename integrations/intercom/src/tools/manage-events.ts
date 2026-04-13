@@ -3,46 +3,63 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEvents = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Data Events',
-    key: 'manage_events',
-    description: `Submit or list custom data events for contacts. Data events track user activity and can trigger automations or be used for segmentation.
+export let manageEvents = SlateTool.create(spec, {
+  name: 'Manage Data Events',
+  key: 'manage_events',
+  description: `Submit or list custom data events for contacts. Data events track user activity and can trigger automations or be used for segmentation.
 Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
-    instructions: [
-      'For "submit", provide an eventName and identify the contact by userId, email, or intercomUserId.',
-      'For "list", identify the contact by intercomUserId, email, or userId. Set summary to true for aggregated counts.',
-      'Metadata values support strings, numbers, booleans, and links (prefix with "http" or use rich_link format).'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'For "submit", provide an eventName and identify the contact by userId, email, or intercomUserId.',
+    'For "list", identify the contact by intercomUserId, email, or userId. Set summary to true for aggregated counts.',
+    'Metadata values support strings, numbers, booleans, and links (prefix with "http" or use rich_link format).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['submit', 'list']).describe('Whether to submit a new event or list existing events'),
-    eventName: z.string().optional().describe('Event name (required for submit)'),
-    userId: z.string().optional().describe('External user ID'),
-    email: z.string().optional().describe('Contact email'),
-    intercomUserId: z.string().optional().describe('Intercom user ID'),
-    createdAt: z.number().optional().describe('Unix timestamp for the event (for submit, defaults to now)'),
-    metadata: z.record(z.string(), z.any()).optional().describe('Event metadata as key-value pairs (for submit)'),
-    perPage: z.number().optional().describe('Results per page (for list)'),
-    summary: z.boolean().optional().describe('Return summarized/aggregated event data (for list)')
-  }))
-  .output(z.object({
-    submitted: z.boolean().optional().describe('Whether event was submitted successfully'),
-    events: z.array(z.object({
-      eventName: z.string().describe('Event name'),
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['submit', 'list'])
+        .describe('Whether to submit a new event or list existing events'),
+      eventName: z.string().optional().describe('Event name (required for submit)'),
+      userId: z.string().optional().describe('External user ID'),
+      email: z.string().optional().describe('Contact email'),
       intercomUserId: z.string().optional().describe('Intercom user ID'),
-      createdAt: z.number().optional().describe('Event timestamp'),
-      metadata: z.record(z.string(), z.any()).optional().describe('Event metadata')
-    })).optional().describe('List of events (for list action)'),
-    totalCount: z.number().optional().describe('Total number of events')
-  }))
-  .handleInvocation(async (ctx) => {
+      createdAt: z
+        .number()
+        .optional()
+        .describe('Unix timestamp for the event (for submit, defaults to now)'),
+      metadata: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Event metadata as key-value pairs (for submit)'),
+      perPage: z.number().optional().describe('Results per page (for list)'),
+      summary: z
+        .boolean()
+        .optional()
+        .describe('Return summarized/aggregated event data (for list)')
+    })
+  )
+  .output(
+    z.object({
+      submitted: z.boolean().optional().describe('Whether event was submitted successfully'),
+      events: z
+        .array(
+          z.object({
+            eventName: z.string().describe('Event name'),
+            intercomUserId: z.string().optional().describe('Intercom user ID'),
+            createdAt: z.number().optional().describe('Event timestamp'),
+            metadata: z.record(z.string(), z.any()).optional().describe('Event metadata')
+          })
+        )
+        .optional()
+        .describe('List of events (for list action)'),
+      totalCount: z.number().optional().describe('Total number of events')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
     let { action } = ctx.input;
 
@@ -67,7 +84,9 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
 
     if (action === 'list') {
       if (!ctx.input.intercomUserId && !ctx.input.email && !ctx.input.userId) {
-        throw new Error('At least one of intercomUserId, email, or userId is required for list');
+        throw new Error(
+          'At least one of intercomUserId, email, or userId is required for list'
+        );
       }
       let result = await client.listEvents({
         type: 'user',
@@ -90,4 +109,5 @@ Use "submit" to track a new event, or "list" to retrieve events for a contact.`,
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

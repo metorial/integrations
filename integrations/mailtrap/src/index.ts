@@ -13,7 +13,7 @@ import {
   getEmailStats,
   listEmailLogs,
   getEmailLog,
-  listAccounts,
+  listAccounts
 } from './tools';
 import { emailEvent } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     getEmailStats,
     listEmailLogs,
     getEmailLog,
-    listAccounts,
+    listAccounts
   ],
-  triggers: [
-    emailEvent,
-  ],
+  triggers: [emailEvent]
 });

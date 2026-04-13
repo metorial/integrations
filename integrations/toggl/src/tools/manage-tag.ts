@@ -3,33 +3,43 @@ import { TogglClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTag = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tag',
-    key: 'manage_tag',
-    description: `Create, update, or delete a tag in Toggl Track. Tags are used to label time entries for cross-project filtering and categorization.
+export let manageTag = SlateTool.create(spec, {
+  name: 'Manage Tag',
+  key: 'manage_tag',
+  description: `Create, update, or delete a tag in Toggl Track. Tags are used to label time entries for cross-project filtering and categorization.
 To **create**: provide a name. To **update**: provide a tagId and a new name. To **delete**: provide a tagId and set \`delete\` to true.`,
-    tags: {
-      destructive: false,
-    },
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID. Uses the configured default if not provided.'),
-    tagId: z.string().optional().describe('Tag ID (required for update/delete, omit for create)'),
-    delete: z.boolean().optional().describe('Set to true to delete the tag'),
-    name: z.string().optional().describe('Tag name (required for create and update)'),
-  }))
-  .output(z.object({
-    tag: z.object({
-      tagId: z.number().describe('Tag ID'),
-      name: z.string().describe('Tag name'),
-      workspaceId: z.number().describe('Workspace ID'),
-    }).nullable().describe('The created/updated tag, null if deleted'),
-    deleted: z.boolean().describe('Whether a tag was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe('Workspace ID. Uses the configured default if not provided.'),
+      tagId: z
+        .string()
+        .optional()
+        .describe('Tag ID (required for update/delete, omit for create)'),
+      delete: z.boolean().optional().describe('Set to true to delete the tag'),
+      name: z.string().optional().describe('Tag name (required for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      tag: z
+        .object({
+          tagId: z.number().describe('Tag ID'),
+          name: z.string().describe('Tag name'),
+          workspaceId: z.number().describe('Workspace ID')
+        })
+        .nullable()
+        .describe('The created/updated tag, null if deleted'),
+      deleted: z.boolean().describe('Whether a tag was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TogglClient(ctx.auth.token);
     let wsId = ctx.input.workspaceId ?? ctx.config.workspaceId;
 
@@ -37,7 +47,7 @@ To **create**: provide a name. To **update**: provide a tagId and a new name. To
       await client.deleteTag(wsId, ctx.input.tagId);
       return {
         output: { tag: null, deleted: true },
-        message: `Deleted tag **#${ctx.input.tagId}**`,
+        message: `Deleted tag **#${ctx.input.tagId}**`
       };
     }
 
@@ -55,12 +65,13 @@ To **create**: provide a name. To **update**: provide a tagId and a new name. To
         tag: {
           tagId: result.id,
           name: result.name,
-          workspaceId: result.workspace_id ?? result.wid,
+          workspaceId: result.workspace_id ?? result.wid
         },
-        deleted: false,
+        deleted: false
       },
       message: ctx.input.tagId
         ? `Updated tag to **${result.name}**`
-        : `Created tag **${result.name}**`,
+        : `Created tag **${result.name}**`
     };
-  }).build();
+  })
+  .build();

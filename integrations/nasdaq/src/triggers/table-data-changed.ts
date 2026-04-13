@@ -3,34 +3,36 @@ import { TablesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let tableDataChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Table Data Changed',
-    key: 'table_data_changed',
-    description: 'Triggers when recently refreshed tables (datatables) are detected. Polls the Nasdaq Data Link databases API to find databases with recently updated datasets.',
-  }
-)
-  .input(z.object({
-    databaseCode: z.string().describe('Database code that was updated.'),
-    databaseName: z.string().describe('Name of the database.'),
-    datasetsCount: z.number().describe('Number of datasets in the database.'),
-    premium: z.boolean().describe('Whether a subscription is required.'),
-  }))
-  .output(z.object({
-    databaseCode: z.string().describe('Database code.'),
-    databaseName: z.string().describe('Database name.'),
-    datasetsCount: z.number().describe('Number of datasets in the database.'),
-    downloads: z.number().describe('Total number of downloads.'),
-    premium: z.boolean().describe('Whether a subscription is required.'),
-    description: z.string().describe('Database description.'),
-  }))
+export let tableDataChanged = SlateTrigger.create(spec, {
+  name: 'Table Data Changed',
+  key: 'table_data_changed',
+  description:
+    'Triggers when recently refreshed tables (datatables) are detected. Polls the Nasdaq Data Link databases API to find databases with recently updated datasets.'
+})
+  .input(
+    z.object({
+      databaseCode: z.string().describe('Database code that was updated.'),
+      databaseName: z.string().describe('Name of the database.'),
+      datasetsCount: z.number().describe('Number of datasets in the database.'),
+      premium: z.boolean().describe('Whether a subscription is required.')
+    })
+  )
+  .output(
+    z.object({
+      databaseCode: z.string().describe('Database code.'),
+      databaseName: z.string().describe('Database name.'),
+      datasetsCount: z.number().describe('Number of datasets in the database.'),
+      downloads: z.number().describe('Total number of downloads.'),
+      premium: z.boolean().describe('Whether a subscription is required.'),
+      description: z.string().describe('Database description.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TablesClient({ apiKey: ctx.auth.token });
       let state = ctx.state || {};
       let seenDatabases: Record<string, number> = state.seenDatabases || {};
@@ -48,12 +50,15 @@ export let tableDataChanged = SlateTrigger.create(
         for (let db of response.databases) {
           let previousCount = seenDatabases[db.database_code];
 
-          if (!isFirstPoll && (previousCount === undefined || db.datasets_count !== previousCount)) {
+          if (
+            !isFirstPoll &&
+            (previousCount === undefined || db.datasets_count !== previousCount)
+          ) {
             inputs.push({
               databaseCode: db.database_code,
               databaseName: db.name,
               datasetsCount: db.datasets_count,
-              premium: db.premium,
+              premium: db.premium
             });
           }
 
@@ -67,12 +72,12 @@ export let tableDataChanged = SlateTrigger.create(
         inputs,
         updatedState: {
           seenDatabases,
-          isFirstPoll: false,
-        },
+          isFirstPoll: false
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new TablesClient({ apiKey: ctx.auth.token });
 
       let response = await client.getDatabaseMetadata(ctx.input.databaseCode);
@@ -87,8 +92,9 @@ export let tableDataChanged = SlateTrigger.create(
           datasetsCount: db.datasets_count,
           downloads: db.downloads,
           premium: db.premium,
-          description: db.description || '',
-        },
+          description: db.description || ''
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

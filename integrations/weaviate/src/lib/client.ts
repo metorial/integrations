@@ -5,14 +5,14 @@ export class WeaviateClient {
 
   constructor(config: { instanceUrl: string; token?: string }) {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
     if (config.token) {
       headers['Authorization'] = `Bearer ${config.token}`;
     }
     this.axios = createAxios({
       baseURL: config.instanceUrl.replace(/\/+$/, ''),
-      headers,
+      headers
     });
   }
 
@@ -88,7 +88,7 @@ export class WeaviateClient {
 
   async deleteTenants(collectionName: string, tenantNames: string[]): Promise<void> {
     await this.axios.delete(`/v1/schema/${collectionName}/tenants`, {
-      data: tenantNames,
+      data: tenantNames
     });
   }
 
@@ -108,10 +108,14 @@ export class WeaviateClient {
     return res.data;
   }
 
-  async getObject(collectionName: string, objectId: string, params?: {
-    include?: string;
-    tenant?: string;
-  }): Promise<any> {
+  async getObject(
+    collectionName: string,
+    objectId: string,
+    params?: {
+      include?: string;
+      tenant?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/v1/objects/${collectionName}/${objectId}`, { params });
     return res.data;
   }
@@ -127,33 +131,49 @@ export class WeaviateClient {
     return res.data;
   }
 
-  async updateObject(collectionName: string, objectId: string, object: {
-    class: string;
-    properties: Record<string, any>;
-    vector?: number[];
-    tenant?: string;
-  }): Promise<any> {
+  async updateObject(
+    collectionName: string,
+    objectId: string,
+    object: {
+      class: string;
+      properties: Record<string, any>;
+      vector?: number[];
+      tenant?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.put(`/v1/objects/${collectionName}/${objectId}`, object);
     return res.data;
   }
 
-  async patchObject(collectionName: string, objectId: string, patch: {
-    class: string;
-    properties: Record<string, any>;
-    tenant?: string;
-  }): Promise<void> {
+  async patchObject(
+    collectionName: string,
+    objectId: string,
+    patch: {
+      class: string;
+      properties: Record<string, any>;
+      tenant?: string;
+    }
+  ): Promise<void> {
     await this.axios.patch(`/v1/objects/${collectionName}/${objectId}`, patch);
   }
 
-  async deleteObject(collectionName: string, objectId: string, params?: {
-    tenant?: string;
-  }): Promise<void> {
+  async deleteObject(
+    collectionName: string,
+    objectId: string,
+    params?: {
+      tenant?: string;
+    }
+  ): Promise<void> {
     await this.axios.delete(`/v1/objects/${collectionName}/${objectId}`, { params });
   }
 
-  async checkObjectExists(collectionName: string, objectId: string, params?: {
-    tenant?: string;
-  }): Promise<boolean> {
+  async checkObjectExists(
+    collectionName: string,
+    objectId: string,
+    params?: {
+      tenant?: string;
+    }
+  ): Promise<boolean> {
     try {
       let res = await this.axios.head(`/v1/objects/${collectionName}/${objectId}`, { params });
       return res.status === 204;
@@ -169,36 +189,49 @@ export class WeaviateClient {
     return res.data as any[];
   }
 
-  async batchDeleteObjects(match: {
-    class: string;
-    where: any;
-  }, params?: {
-    dryRun?: boolean;
-    output?: string;
-    tenant?: string;
-  }): Promise<any> {
+  async batchDeleteObjects(
+    match: {
+      class: string;
+      where: any;
+    },
+    params?: {
+      dryRun?: boolean;
+      output?: string;
+      tenant?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.delete('/v1/batch/objects', {
-      data: { match, ...params },
+      data: { match, ...params }
     });
     return res.data;
   }
 
   // ── Cross-References ──
 
-  async addReference(collectionName: string, objectId: string, refProperty: string, ref: {
-    beacon: string;
-    tenant?: string;
-  }): Promise<void> {
+  async addReference(
+    collectionName: string,
+    objectId: string,
+    refProperty: string,
+    ref: {
+      beacon: string;
+      tenant?: string;
+    }
+  ): Promise<void> {
     await this.axios.post(
       `/v1/objects/${collectionName}/${objectId}/references/${refProperty}`,
       ref
     );
   }
 
-  async deleteReference(collectionName: string, objectId: string, refProperty: string, ref: {
-    beacon: string;
-    tenant?: string;
-  }): Promise<void> {
+  async deleteReference(
+    collectionName: string,
+    objectId: string,
+    refProperty: string,
+    ref: {
+      beacon: string;
+      tenant?: string;
+    }
+  ): Promise<void> {
     await this.axios.delete(
       `/v1/objects/${collectionName}/${objectId}/references/${refProperty}`,
       { data: ref }
@@ -218,11 +251,14 @@ export class WeaviateClient {
 
   // ── Backups ──
 
-  async createBackup(backend: string, body: {
-    id: string;
-    include?: string[];
-    exclude?: string[];
-  }): Promise<any> {
+  async createBackup(
+    backend: string,
+    body: {
+      id: string;
+      include?: string[];
+      exclude?: string[];
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/v1/backups/${backend}`, body);
     return res.data;
   }
@@ -232,10 +268,14 @@ export class WeaviateClient {
     return res.data;
   }
 
-  async restoreBackup(backend: string, backupId: string, body?: {
-    include?: string[];
-    exclude?: string[];
-  }): Promise<any> {
+  async restoreBackup(
+    backend: string,
+    backupId: string,
+    body?: {
+      include?: string[];
+      exclude?: string[];
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/v1/backups/${backend}/${backupId}/restore`, body || {});
     return res.data;
   }

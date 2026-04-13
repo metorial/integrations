@@ -16,44 +16,66 @@ let eventSchema = z.object({
   taker: z.string().nullable().describe('Address that fulfilled the action'),
   fromAddress: z.string().nullable().describe('Sender address for transfers'),
   toAddress: z.string().nullable().describe('Recipient address for transfers'),
-  paymentAmount: z.string().nullable().describe('Payment amount in the payment token\'s smallest unit'),
+  paymentAmount: z
+    .string()
+    .nullable()
+    .describe("Payment amount in the payment token's smallest unit"),
   paymentSymbol: z.string().nullable().describe('Symbol of the payment token'),
-  transactionHash: z.string().nullable().describe('On-chain transaction hash'),
+  transactionHash: z.string().nullable().describe('On-chain transaction hash')
 });
 
-export let getEvents = SlateTool.create(
-  spec,
-  {
-    name: 'Get Events',
-    key: 'get_events',
-    description: `Query marketplace events such as sales, transfers, listings, offers, and cancellations. Events can be retrieved by collection, by specific NFT, or by account. Supports filtering by event type and time range.`,
-    instructions: [
-      'Provide exactly one of: collectionSlug, nft (chain + contractAddress + tokenIdentifier), or accountAddress.',
-      'Time range filters (afterTimestamp, beforeTimestamp) use Unix timestamps in seconds.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getEvents = SlateTool.create(spec, {
+  name: 'Get Events',
+  key: 'get_events',
+  description: `Query marketplace events such as sales, transfers, listings, offers, and cancellations. Events can be retrieved by collection, by specific NFT, or by account. Supports filtering by event type and time range.`,
+  instructions: [
+    'Provide exactly one of: collectionSlug, nft (chain + contractAddress + tokenIdentifier), or accountAddress.',
+    'Time range filters (afterTimestamp, beforeTimestamp) use Unix timestamps in seconds.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    collectionSlug: z.string().optional().describe('Get events for a specific collection'),
-    accountAddress: z.string().optional().describe('Get events for a specific account/wallet'),
-    chain: z.string().optional().describe('Blockchain (required when querying by NFT)'),
-    contractAddress: z.string().optional().describe('Contract address (used with chain and tokenIdentifier to query by NFT)'),
-    tokenIdentifier: z.string().optional().describe('Token ID (used with chain and contractAddress to query by NFT)'),
-    eventType: z.enum(['sale', 'transfer', 'cancel', 'order', 'redemption']).optional().describe('Filter by event type'),
-    afterTimestamp: z.number().optional().describe('Only events after this Unix timestamp (seconds)'),
-    beforeTimestamp: z.number().optional().describe('Only events before this Unix timestamp (seconds)'),
-    limit: z.number().optional().describe('Number of results per page (max 200)'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-  }))
-  .output(z.object({
-    events: z.array(eventSchema).describe('List of events'),
-    nextCursor: z.string().nullable().describe('Cursor for fetching the next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      collectionSlug: z.string().optional().describe('Get events for a specific collection'),
+      accountAddress: z
+        .string()
+        .optional()
+        .describe('Get events for a specific account/wallet'),
+      chain: z.string().optional().describe('Blockchain (required when querying by NFT)'),
+      contractAddress: z
+        .string()
+        .optional()
+        .describe('Contract address (used with chain and tokenIdentifier to query by NFT)'),
+      tokenIdentifier: z
+        .string()
+        .optional()
+        .describe('Token ID (used with chain and contractAddress to query by NFT)'),
+      eventType: z
+        .enum(['sale', 'transfer', 'cancel', 'order', 'redemption'])
+        .optional()
+        .describe('Filter by event type'),
+      afterTimestamp: z
+        .number()
+        .optional()
+        .describe('Only events after this Unix timestamp (seconds)'),
+      beforeTimestamp: z
+        .number()
+        .optional()
+        .describe('Only events before this Unix timestamp (seconds)'),
+      limit: z.number().optional().describe('Number of results per page (max 200)'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(eventSchema).describe('List of events'),
+      nextCursor: z.string().nullable().describe('Cursor for fetching the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let chain = ctx.input.chain || ctx.config.chain || 'ethereum';
     let data: any;
@@ -62,17 +84,24 @@ export let getEvents = SlateTool.create(
       after: ctx.input.afterTimestamp,
       before: ctx.input.beforeTimestamp,
       limit: ctx.input.limit,
-      next: ctx.input.cursor,
+      next: ctx.input.cursor
     };
 
     if (ctx.input.contractAddress && ctx.input.tokenIdentifier) {
-      data = await client.getEventsByNft(chain, ctx.input.contractAddress, ctx.input.tokenIdentifier, params);
+      data = await client.getEventsByNft(
+        chain,
+        ctx.input.contractAddress,
+        ctx.input.tokenIdentifier,
+        params
+      );
     } else if (ctx.input.collectionSlug) {
       data = await client.getEventsByCollection(ctx.input.collectionSlug, params);
     } else if (ctx.input.accountAddress) {
       data = await client.getEventsByAccount(ctx.input.accountAddress, params);
     } else {
-      throw new Error('Provide at least one of: collectionSlug, accountAddress, or contractAddress + tokenIdentifier.');
+      throw new Error(
+        'Provide at least one of: collectionSlug, accountAddress, or contractAddress + tokenIdentifier.'
+      );
     }
 
     let events = (data.asset_events ?? []).map((e: any) => ({
@@ -90,15 +119,15 @@ export let getEvents = SlateTool.create(
       toAddress: e.to_address ?? null,
       paymentAmount: e.payment?.quantity ?? null,
       paymentSymbol: e.payment?.symbol ?? null,
-      transactionHash: e.transaction ?? null,
+      transactionHash: e.transaction ?? null
     }));
 
     return {
       output: {
         events,
-        nextCursor: data.next ?? null,
+        nextCursor: data.next ?? null
       },
-      message: `Found **${events.length}** event(s).${data.next ? ' More results available with the next cursor.' : ''}`,
+      message: `Found **${events.length}** event(s).${data.next ? ' More results available with the next cursor.' : ''}`
     };
   })
   .build();

@@ -3,28 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteCardTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Card',
-    key: 'delete_card',
-    description: `Permanently delete a card from Kanbanize. This action is **irreversible**. Consider using archive or discard instead if you may need the card later.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteCardTool = SlateTool.create(spec, {
+  name: 'Delete Card',
+  key: 'delete_card',
+  description: `Permanently delete a card from Kanbanize. This action is **irreversible**. Consider using archive or discard instead if you may need the card later.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    cardId: z.number().describe('ID of the card to permanently delete'),
-  }))
-  .output(z.object({
-    cardId: z.number().describe('ID of the deleted card'),
-    deleted: z.boolean().describe('Whether the card was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cardId: z.number().describe('ID of the card to permanently delete')
+    })
+  )
+  .output(
+    z.object({
+      cardId: z.number().describe('ID of the deleted card'),
+      deleted: z.boolean().describe('Whether the card was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.auth.subdomain,
+      subdomain: ctx.auth.subdomain
     });
 
     await client.deleteCard(ctx.input.cardId);
@@ -32,8 +33,9 @@ export let deleteCardTool = SlateTool.create(
     return {
       output: {
         cardId: ctx.input.cardId,
-        deleted: true,
+        deleted: true
       },
-      message: `Permanently deleted card **${ctx.input.cardId}**.`,
+      message: `Permanently deleted card **${ctx.input.cardId}**.`
     };
-  }).build();
+  })
+  .build();

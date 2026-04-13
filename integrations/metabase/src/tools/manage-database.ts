@@ -3,45 +3,67 @@ import { MetabaseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDatabase = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Database',
-    key: 'manage_database',
-    description: `List connected databases, retrieve database details and metadata, or trigger a sync/rescan.
+export let manageDatabase = SlateTool.create(spec, {
+  name: 'Manage Database',
+  key: 'manage_database',
+  description: `List connected databases, retrieve database details and metadata, or trigger a sync/rescan.
 Use the **metadata** action to get all tables, fields, and field values for a database.
 Use **sync** to trigger a manual schema metadata sync, or **rescan** to trigger a field value scan.`,
-    tags: {
-      readOnly: false
-    }
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'metadata', 'sync', 'rescan']).describe('The action to perform'),
-    databaseId: z.number().optional().describe('ID of the database (required for get, metadata, sync, rescan)'),
-    includeTables: z.boolean().optional().describe('Include tables in the list response (for list action)')
-  }))
-  .output(z.object({
-    databases: z.array(z.object({
-      databaseId: z.number().describe('ID of the database'),
-      name: z.string().describe('Name of the database'),
-      engine: z.string().describe('Database engine type (e.g., postgres, mysql, h2)'),
-      isFullSync: z.boolean().optional().describe('Whether full sync is enabled'),
-      createdAt: z.string().optional().describe('When the database was created')
-    })).optional().describe('List of databases (for list action)'),
-    databaseId: z.number().optional().describe('ID of the database'),
-    name: z.string().optional().describe('Name of the database'),
-    engine: z.string().optional().describe('Database engine type'),
-    tables: z.array(z.object({
-      tableId: z.number().describe('ID of the table'),
-      name: z.string().describe('Name of the table'),
-      displayName: z.string().optional().describe('Display name'),
-      schema: z.string().nullable().optional().describe('Schema name'),
-      entityType: z.string().optional().describe('Entity type')
-    })).optional().describe('Tables in the database (for metadata action)'),
-    success: z.boolean().optional().describe('Whether the sync/rescan was triggered successfully')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'metadata', 'sync', 'rescan'])
+        .describe('The action to perform'),
+      databaseId: z
+        .number()
+        .optional()
+        .describe('ID of the database (required for get, metadata, sync, rescan)'),
+      includeTables: z
+        .boolean()
+        .optional()
+        .describe('Include tables in the list response (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      databases: z
+        .array(
+          z.object({
+            databaseId: z.number().describe('ID of the database'),
+            name: z.string().describe('Name of the database'),
+            engine: z.string().describe('Database engine type (e.g., postgres, mysql, h2)'),
+            isFullSync: z.boolean().optional().describe('Whether full sync is enabled'),
+            createdAt: z.string().optional().describe('When the database was created')
+          })
+        )
+        .optional()
+        .describe('List of databases (for list action)'),
+      databaseId: z.number().optional().describe('ID of the database'),
+      name: z.string().optional().describe('Name of the database'),
+      engine: z.string().optional().describe('Database engine type'),
+      tables: z
+        .array(
+          z.object({
+            tableId: z.number().describe('ID of the table'),
+            name: z.string().describe('Name of the table'),
+            displayName: z.string().optional().describe('Display name'),
+            schema: z.string().nullable().optional().describe('Schema name'),
+            entityType: z.string().optional().describe('Entity type')
+          })
+        )
+        .optional()
+        .describe('Tables in the database (for metadata action)'),
+      success: z
+        .boolean()
+        .optional()
+        .describe('Whether the sync/rescan was triggered successfully')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetabaseClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl

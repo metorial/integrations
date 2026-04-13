@@ -23,7 +23,7 @@ import {
   updateAccessToken,
   deleteAccessToken,
   listAuditLogs,
-  listAuditLogActions,
+  listAuditLogActions
 } from './tools';
 import { imagePush } from './triggers';
 
@@ -52,9 +52,7 @@ export let provider = Slate.create({
     updateAccessToken,
     deleteAccessToken,
     listAuditLogs,
-    listAuditLogActions,
+    listAuditLogActions
   ],
-  triggers: [
-    imagePush,
-  ],
+  triggers: [imagePush]
 });

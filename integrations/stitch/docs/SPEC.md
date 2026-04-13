@@ -23,6 +23,7 @@ All requests must be made over HTTPS. There are two ways to obtain an access tok
    - Use an OAuth flow where the user is sent to Stitch from the partner application using the partner's `partner_id` as the client ID. The user authorizes the application and is redirected back with a token.
 
 **Header format:**
+
 ```
 Authorization: Bearer [ACCESS_TOKEN]
 ```
@@ -38,37 +39,49 @@ For some endpoints, you'll also need to include your Stitch client ID in the req
 ## Features
 
 ### Account Management
+
 The Connect API enables users to programmatically access and manage their Stitch accounts, or partners to integrate Stitch's data pipeline functionality into their own platforms. It allows you to programmatically provision Stitch accounts, create and modify data sources, and configure destination connections.
 
 ### Source (Integration) Management
+
 Create, update, delete, and list data sources (integrations) that Stitch extracts data from. Every data source available in the Connect API has a type, typically similar to `platform.<source-type>`. Sources go through a multi-step configuration process including form properties, OAuth (if applicable), and field selection. After field selection, the source becomes `fully_configured` and Stitch can begin replication using the schedule and stream/field selection data provided.
 
 ### Destination Management
+
 Configure destination objects representing the data warehouses into which Stitch writes data. Only a single destination is supported per Stitch client account. Supported destinations include Amazon Redshift, Google BigQuery, PostgreSQL, Snowflake, and others.
 
 ### Stream and Field Selection
+
 Select the streams (tables) and fields (columns) you want to replicate. At least one stream and one field in the stream must be selected to complete field selection. Stream and field metadata can be retrieved and updated to control what data is replicated.
 
 ### Replication Scheduling
+
 Configure how often data sources are replicated. Options include frequency-based scheduling (e.g., every 30 or 60 minutes), cron expressions, and anchor times.
 
 ### OAuth Configuration for Sources
+
 Configuring OAuth allows you to completely white label the source setup process. Your application handles the OAuth handshake and redirects, provides the required OAuth source properties to the Connect API, and Stitch manages OAuth and refresh tokens on an ongoing basis. Otherwise, Stitch will use its managed credentials to perform the OAuth handshake.
 
 ### Extraction and Load Monitoring
+
 Monitor the status of extraction jobs and data loading operations for your sources. This allows tracking of replication progress, identifying failures, and understanding when data was last loaded.
 
 ### Data Push (Import API)
+
 The Import API enables you to push arbitrary data from a source to Stitch. The Import API acts as a receiving point for data that is sent to Stitch. This allows you to push data from a source (including those Stitch doesn't currently have an integration for) and send it to Stitch.
+
 - Data is pushed in JSON format using a JSON Schema for validation and typing.
 - Stitch supports Upsert and Append-Only loading. Whether key_names specifies Primary Key fields determines the loading behavior. If Primary Keys aren't specified, data will be loaded using Append-Only loading.
 - Each record requires a sequence property to ensure correct ordering of updates.
 
 ### Incoming Webhooks
+
 Stitch's Incoming Webhooks integration provides a simple and flexible method to integrate dozens of webhook APIs with Stitch. If Stitch doesn't have a native integration for the webhook you want to integrate, then Stitch webhooks is your best bet.
+
 - The data sent by the webhook API must come to Stitch in JSON format, and the payload must come via a POST request.
 
 ### Notification Management
+
 Create, list, update, and delete custom email notifications and post-load webhook notifications via the Connect API. You can configure up to 10 post-load hooks.
 
 ## Events
@@ -76,6 +89,7 @@ Create, list, update, and delete custom email notifications and post-load webhoo
 Stitch supports **post-load webhook notifications** that fire when data loading completes.
 
 ### Post-Load Hooks
+
 Post-load hooks allow you to configure a webhook that fires each time data is loaded into your existing destination. Using post-load hooks, you can extend Stitch and automate dependent processes. For example: Trigger downstream processing in SQL, an Amazon Web Services Lambda function, Talend Cloud jobs, or any other system that can be controlled with an HTTP request.
 
 - Post-load hooks are sent on a per-integration, per-table basis to each configured post-load webhook URL.

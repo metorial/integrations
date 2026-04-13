@@ -77,7 +77,12 @@ export class CognitoClient {
 
   async listUsers(
     userPoolId: string,
-    options?: { limit?: number; paginationToken?: string; filter?: string; attributesToGet?: string[] }
+    options?: {
+      limit?: number;
+      paginationToken?: string;
+      filter?: string;
+      attributesToGet?: string[];
+    }
   ): Promise<any> {
     let body: Record<string, any> = { UserPoolId: userPoolId };
     if (options?.limit) body.Limit = options.limit;
@@ -124,10 +129,18 @@ export class CognitoClient {
   }
 
   async adminResetUserPassword(userPoolId: string, username: string): Promise<any> {
-    return this.request('AdminResetUserPassword', { UserPoolId: userPoolId, Username: username });
+    return this.request('AdminResetUserPassword', {
+      UserPoolId: userPoolId,
+      Username: username
+    });
   }
 
-  async adminSetUserPassword(userPoolId: string, username: string, password: string, permanent: boolean): Promise<any> {
+  async adminSetUserPassword(
+    userPoolId: string,
+    username: string,
+    password: string,
+    permanent: boolean
+  ): Promise<any> {
     return this.request('AdminSetUserPassword', {
       UserPoolId: userPoolId,
       Username: username,
@@ -161,7 +174,11 @@ export class CognitoClient {
     return this.request('DeleteGroup', { UserPoolId: userPoolId, GroupName: groupName });
   }
 
-  async adminAddUserToGroup(userPoolId: string, username: string, groupName: string): Promise<any> {
+  async adminAddUserToGroup(
+    userPoolId: string,
+    username: string,
+    groupName: string
+  ): Promise<any> {
     return this.request('AdminAddUserToGroup', {
       UserPoolId: userPoolId,
       Username: username,
@@ -169,7 +186,11 @@ export class CognitoClient {
     });
   }
 
-  async adminRemoveUserFromGroup(userPoolId: string, username: string, groupName: string): Promise<any> {
+  async adminRemoveUserFromGroup(
+    userPoolId: string,
+    username: string,
+    groupName: string
+  ): Promise<any> {
     return this.request('AdminRemoveUserFromGroup', {
       UserPoolId: userPoolId,
       Username: username,
@@ -203,7 +224,11 @@ export class CognitoClient {
 
   // ---- Identity Provider Operations ----
 
-  async listIdentityProviders(userPoolId: string, maxResults?: number, nextToken?: string): Promise<any> {
+  async listIdentityProviders(
+    userPoolId: string,
+    maxResults?: number,
+    nextToken?: string
+  ): Promise<any> {
     let body: Record<string, any> = { UserPoolId: userPoolId };
     if (maxResults) body.MaxResults = maxResults;
     if (nextToken) body.NextToken = nextToken;
@@ -234,7 +259,11 @@ export class CognitoClient {
 
   // ---- App Client Operations ----
 
-  async listUserPoolClients(userPoolId: string, maxResults?: number, nextToken?: string): Promise<any> {
+  async listUserPoolClients(
+    userPoolId: string,
+    maxResults?: number,
+    nextToken?: string
+  ): Promise<any> {
     let body: Record<string, any> = { UserPoolId: userPoolId };
     if (maxResults) body.MaxResults = maxResults;
     if (nextToken) body.NextToken = nextToken;
@@ -276,7 +305,11 @@ export class CognitoClient {
     });
   }
 
-  async listResourceServers(userPoolId: string, maxResults?: number, nextToken?: string): Promise<any> {
+  async listResourceServers(
+    userPoolId: string,
+    maxResults?: number,
+    nextToken?: string
+  ): Promise<any> {
     let body: Record<string, any> = { UserPoolId: userPoolId };
     if (maxResults) body.MaxResults = maxResults;
     if (nextToken) body.NextToken = nextToken;

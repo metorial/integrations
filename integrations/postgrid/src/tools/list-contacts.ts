@@ -13,31 +13,32 @@ let contactSchema = z.object({
   provinceOrState: z.string().optional().nullable().describe('Province or state'),
   postalOrZip: z.string().optional().nullable().describe('Postal or ZIP code'),
   country: z.string().optional().nullable().describe('Country code'),
-  addressStatus: z.string().optional().nullable().describe('Address verification status'),
+  addressStatus: z.string().optional().nullable().describe('Address verification status')
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `List and search contacts in PostGrid. Supports pagination and text search to find specific contacts.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `List and search contacts in PostGrid. Supports pagination and text search to find specific contacts.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Search query to filter contacts'),
-    skip: z.number().optional().describe('Number of records to skip for pagination'),
-    limit: z.number().optional().describe('Maximum number of records to return (default 10)'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema).describe('List of contacts'),
-    totalCount: z.number().describe('Total number of matching contacts'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Search query to filter contacts'),
+      skip: z.number().optional().describe('Number of records to skip for pagination'),
+      limit: z.number().optional().describe('Maximum number of records to return (default 10)')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSchema).describe('List of contacts'),
+      totalCount: z.number().describe('Total number of matching contacts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PrintMailClient(ctx.auth.token);
     let result = await client.listContacts(ctx.input);
 
@@ -51,15 +52,15 @@ export let listContacts = SlateTool.create(
       provinceOrState: c.provinceOrState,
       postalOrZip: c.postalOrZip,
       country: c.country,
-      addressStatus: c.addressStatus,
+      addressStatus: c.addressStatus
     }));
 
     return {
       output: {
         contacts,
-        totalCount: result.totalCount || 0,
+        totalCount: result.totalCount || 0
       },
-      message: `Found **${result.totalCount || 0}** contacts, returning ${contacts.length}.`,
+      message: `Found **${result.totalCount || 0}** contacts, returning ${contacts.length}.`
     };
   })
   .build();

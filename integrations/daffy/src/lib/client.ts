@@ -128,8 +128,8 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://public.daffy.org/v1',
       headers: {
-        'X-Api-Key': config.token,
-      },
+        'X-Api-Key': config.token
+      }
     });
   }
 
@@ -163,7 +163,7 @@ export class Client {
 
   async getContributions(page?: number): Promise<PaginatedResponse<DaffyContribution>> {
     let response = await this.http.get('/contributions', {
-      params: page ? { page } : undefined,
+      params: page ? { page } : undefined
     });
     return response.data;
   }
@@ -172,14 +172,17 @@ export class Client {
 
   async getDonations(page?: number): Promise<PaginatedResponse<DaffyDonation>> {
     let response = await this.http.get('/donations', {
-      params: page ? { page } : undefined,
+      params: page ? { page } : undefined
     });
     return response.data;
   }
 
-  async getUserDonations(userId: number, page?: number): Promise<PaginatedResponse<DaffyDonation>> {
+  async getUserDonations(
+    userId: number,
+    page?: number
+  ): Promise<PaginatedResponse<DaffyDonation>> {
     let response = await this.http.get(`/users/${userId}/donations`, {
-      params: page ? { page } : undefined,
+      params: page ? { page } : undefined
     });
     return response.data;
   }
@@ -199,7 +202,7 @@ export class Client {
       amount: params.amount,
       ein: params.ein,
       note: params.note,
-      private_memo: params.privateMemo,
+      private_memo: params.privateMemo
     });
     return response.data;
   }
@@ -212,7 +215,7 @@ export class Client {
 
   async getGifts(page?: number): Promise<PaginatedResponse<DaffyGift>> {
     let response = await this.http.get('/gifts', {
-      params: page ? { page } : undefined,
+      params: page ? { page } : undefined
     });
     return response.data;
   }
@@ -222,13 +225,10 @@ export class Client {
     return response.data;
   }
 
-  async createGift(params: {
-    name: string;
-    amount: number;
-  }): Promise<DaffyGift> {
+  async createGift(params: { name: string; amount: number }): Promise<DaffyGift> {
     let response = await this.http.post('/gifts', {
       name: params.name,
-      amount: params.amount,
+      amount: params.amount
     });
     return response.data;
   }

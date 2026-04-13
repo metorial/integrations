@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface FreshdeskClientConfig {
   subdomain: string;
@@ -10,12 +10,11 @@ export class FreshdeskClient {
   private axios: AxiosInstance;
 
   constructor(private config: FreshdeskClientConfig) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let encodedAuth = Buffer.from(`${config.token}:X`).toString('base64');
     this.axios = createAxios({
       baseURL: `https://${config.subdomain}.freshdesk.com/api/v2`,
       headers: {
-        'Authorization': `Basic ${encodedAuth}`,
+        Authorization: `Basic ${encodedAuth}`,
         'Content-Type': 'application/json'
       }
     });
@@ -65,7 +64,10 @@ export class FreshdeskClient {
     await this.axios.delete(`/tickets/${ticketId}`);
   }
 
-  async filterTickets(query: string, page?: number): Promise<{ results: any[]; total: number }> {
+  async filterTickets(
+    query: string,
+    page?: number
+  ): Promise<{ results: any[]; total: number }> {
     let params: Record<string, any> = { query: `"${query}"` };
     if (page) params['page'] = page;
     let response = await this.axios.get('/search/tickets', { params });
@@ -133,7 +135,10 @@ export class FreshdeskClient {
     await this.axios.delete(`/contacts/${contactId}`);
   }
 
-  async searchContacts(query: string, page?: number): Promise<{ results: any[]; total: number }> {
+  async searchContacts(
+    query: string,
+    page?: number
+  ): Promise<{ results: any[]; total: number }> {
     let params: Record<string, any> = { query: `"${query}"` };
     if (page) params['page'] = page;
     let response = await this.axios.get('/search/contacts', { params });
@@ -168,7 +173,10 @@ export class FreshdeskClient {
     await this.axios.delete(`/companies/${companyId}`);
   }
 
-  async searchCompanies(query: string, page?: number): Promise<{ results: any[]; total: number }> {
+  async searchCompanies(
+    query: string,
+    page?: number
+  ): Promise<{ results: any[]; total: number }> {
     let params: Record<string, any> = { query: `"${query}"` };
     if (page) params['page'] = page;
     let response = await this.axios.get('/search/companies', { params });
@@ -288,7 +296,9 @@ export class FreshdeskClient {
     if (params?.createdSince) queryParams['created_since'] = params.createdSince;
     if (params?.createdUntil) queryParams['created_until'] = params.createdUntil;
     if (params?.page) queryParams['page'] = params.page;
-    let response = await this.axios.get('/surveys/satisfaction_ratings', { params: queryParams });
+    let response = await this.axios.get('/surveys/satisfaction_ratings', {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -300,7 +310,9 @@ export class FreshdeskClient {
   }
 
   async listCannedResponses(folderId: number): Promise<any[]> {
-    let response = await this.axios.get(`/canned_response_folders/${folderId}/canned_responses`);
+    let response = await this.axios.get(
+      `/canned_response_folders/${folderId}/canned_responses`
+    );
     return response.data;
   }
 

@@ -2,19 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let googleAuth = createAxios({
-  baseURL: 'https://oauth2.googleapis.com',
+  baseURL: 'https://oauth2.googleapis.com'
 });
 
 let googleApi = createAxios({
-  baseURL: 'https://www.googleapis.com',
+  baseURL: 'https://www.googleapis.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -24,26 +26,26 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Only',
         description: 'Read data and list buckets',
-        scope: 'https://www.googleapis.com/auth/devstorage.read_only',
+        scope: 'https://www.googleapis.com/auth/devstorage.read_only'
       },
       {
         title: 'Read Write',
         description: 'Read and modify data, but not metadata like IAM policies',
-        scope: 'https://www.googleapis.com/auth/devstorage.read_write',
+        scope: 'https://www.googleapis.com/auth/devstorage.read_write'
       },
       {
         title: 'Full Control',
         description: 'Full control over data, including modifying IAM policies',
-        scope: 'https://www.googleapis.com/auth/devstorage.full_control',
+        scope: 'https://www.googleapis.com/auth/devstorage.full_control'
       },
       {
         title: 'Cloud Platform',
         description: 'View and manage data across all Google Cloud services',
-        scope: 'https://www.googleapis.com/auth/cloud-platform',
-      },
+        scope: 'https://www.googleapis.com/auth/cloud-platform'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -51,24 +53,28 @@ export let auth = SlateAuth.create()
         scope: ctx.scopes.join(' '),
         state: ctx.state,
         access_type: 'offline',
-        prompt: 'consent',
+        prompt: 'consent'
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/auth?${params.toString()}`,
+        url: `https://accounts.google.com/o/oauth2/auth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await googleAuth.post('/token', new URLSearchParams({
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+    handleCallback: async ctx => {
+      let response = await googleAuth.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
 
@@ -80,24 +86,28 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await googleAuth.post('/token', new URLSearchParams({
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      let response = await googleAuth.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
 
@@ -109,14 +119,14 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
       let response = await googleApi.get('/oauth2/v2/userinfo', {
-        headers: { Authorization: `Bearer ${ctx.output.token}` },
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let data = response.data;
@@ -126,10 +136,10 @@ export let auth = SlateAuth.create()
           id: data.id,
           email: data.email,
           name: data.name,
-          imageUrl: data.picture,
-        },
+          imageUrl: data.picture
+        }
       };
-    },
+    }
   })
   .addServiceAccountAuth({
     type: 'auth.service_account',
@@ -139,10 +149,13 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       clientEmail: z.string().describe('Service account client email'),
       privateKey: z.string().describe('Service account private key (PEM format)'),
-      scopes: z.string().optional().describe('Comma-separated list of OAuth scopes. Defaults to full-control scope.'),
+      scopes: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of OAuth scopes. Defaults to full-control scope.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let scopes = ctx.input.scopes
         ? ctx.input.scopes.split(',').map(s => s.trim())
         : ['https://www.googleapis.com/auth/devstorage.full_control'];
@@ -156,11 +169,17 @@ export let auth = SlateAuth.create()
         scope: scopes.join(' '),
         aud: 'https://oauth2.googleapis.com/token',
         iat: now,
-        exp: expiry,
+        exp: expiry
       };
 
-      let encodedHeader = btoa(JSON.stringify(header)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      let encodedPayload = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      let encodedHeader = btoa(JSON.stringify(header))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      let encodedPayload = btoa(JSON.stringify(payload))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
       let signingInput = `${encodedHeader}.${encodedPayload}`;
 
       let pemContent = ctx.input.privateKey
@@ -193,16 +212,23 @@ export let auth = SlateAuth.create()
       for (let i = 0; i < signatureArray.length; i++) {
         signatureBase64 += String.fromCharCode(signatureArray[i]!);
       }
-      signatureBase64 = btoa(signatureBase64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      signatureBase64 = btoa(signatureBase64)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
 
       let jwt = `${signingInput}.${signatureBase64}`;
 
-      let response = await googleAuth.post('/token', new URLSearchParams({
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion: jwt,
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      let response = await googleAuth.post(
+        '/token',
+        new URLSearchParams({
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          assertion: jwt
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
 
@@ -213,8 +239,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
-    },
+    }
   });

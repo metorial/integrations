@@ -9,8 +9,8 @@ export class Client {
       baseURL: 'https://clientapi.benchmarkemail.com',
       headers: {
         AuthToken: config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -66,8 +66,8 @@ export class Client {
     let response = await this.axios.post(`/Emails/${emailId}/Schedule`, {
       Data: {
         ScheduleDate: data.scheduleDate,
-        Zone: data.timezone,
-      },
+        Zone: data.timezone
+      }
     });
     return response.data?.Response;
   }
@@ -89,39 +89,59 @@ export class Client {
     return response.data?.Response;
   }
 
-  async getCampaignOpens(emailId: string, params?: { pageNumber?: number; pageSize?: number }) {
+  async getCampaignOpens(
+    emailId: string,
+    params?: { pageNumber?: number; pageSize?: number }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber !== undefined) query.set('PageNumber', String(params.pageNumber));
     if (params?.pageSize !== undefined) query.set('PageSize', String(params.pageSize));
     let qs = query.toString();
-    let response = await this.axios.get(`/Emails/${emailId}/Report/Opens${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/Emails/${emailId}/Report/Opens${qs ? `?${qs}` : ''}`
+    );
     return response.data?.Response;
   }
 
-  async getCampaignClicks(emailId: string, params?: { pageNumber?: number; pageSize?: number }) {
+  async getCampaignClicks(
+    emailId: string,
+    params?: { pageNumber?: number; pageSize?: number }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber !== undefined) query.set('PageNumber', String(params.pageNumber));
     if (params?.pageSize !== undefined) query.set('PageSize', String(params.pageSize));
     let qs = query.toString();
-    let response = await this.axios.get(`/Emails/${emailId}/Report/Clicks${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/Emails/${emailId}/Report/Clicks${qs ? `?${qs}` : ''}`
+    );
     return response.data?.Response;
   }
 
-  async getCampaignBounces(emailId: string, params?: { pageNumber?: number; pageSize?: number }) {
+  async getCampaignBounces(
+    emailId: string,
+    params?: { pageNumber?: number; pageSize?: number }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber !== undefined) query.set('PageNumber', String(params.pageNumber));
     if (params?.pageSize !== undefined) query.set('PageSize', String(params.pageSize));
     let qs = query.toString();
-    let response = await this.axios.get(`/Emails/${emailId}/Report/Bounces${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/Emails/${emailId}/Report/Bounces${qs ? `?${qs}` : ''}`
+    );
     return response.data?.Response;
   }
 
-  async getCampaignUnsubscribes(emailId: string, params?: { pageNumber?: number; pageSize?: number }) {
+  async getCampaignUnsubscribes(
+    emailId: string,
+    params?: { pageNumber?: number; pageSize?: number }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber !== undefined) query.set('PageNumber', String(params.pageNumber));
     if (params?.pageSize !== undefined) query.set('PageSize', String(params.pageSize));
     let qs = query.toString();
-    let response = await this.axios.get(`/Emails/${emailId}/Report/Unsubscribes${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/Emails/${emailId}/Report/Unsubscribes${qs ? `?${qs}` : ''}`
+    );
     return response.data?.Response;
   }
 
@@ -178,14 +198,17 @@ export class Client {
 
   // ───────────── Contacts ─────────────
 
-  async listContacts(listId: string, params?: {
-    pageNumber?: number;
-    pageSize?: number;
-    filter?: string;
-    searchFilter?: string;
-    orderBy?: string;
-    sortOrder?: string;
-  }) {
+  async listContacts(
+    listId: string,
+    params?: {
+      pageNumber?: number;
+      pageSize?: number;
+      filter?: string;
+      searchFilter?: string;
+      orderBy?: string;
+      sortOrder?: string;
+    }
+  ) {
     let query = new URLSearchParams();
     if (params?.pageNumber !== undefined) query.set('PageNumber', String(params.pageNumber));
     if (params?.pageSize !== undefined) query.set('PageSize', String(params.pageSize));
@@ -195,7 +218,9 @@ export class Client {
     if (params?.sortOrder) query.set('SortOrder', params.sortOrder);
 
     let qs = query.toString();
-    let response = await this.axios.get(`/Contact/${listId}/ContactDetails${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/Contact/${listId}/ContactDetails${qs ? `?${qs}` : ''}`
+    );
     return response.data?.Response;
   }
 
@@ -205,7 +230,9 @@ export class Client {
   }
 
   async updateContact(listId: string, contactId: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/Contact/${listId}/ContactDetails/${contactId}`, { Data: data });
+    let response = await this.axios.patch(`/Contact/${listId}/ContactDetails/${contactId}`, {
+      Data: data
+    });
     return response.data?.Response;
   }
 
@@ -226,14 +253,17 @@ export class Client {
     return response.data?.Response;
   }
 
-  async createWebhook(listId: string, data: {
-    clientUrl: string;
-    subscribes?: boolean;
-    unsubscribes?: boolean;
-    profileUpdates?: boolean;
-    cleanedAddress?: boolean;
-    emailChanged?: boolean;
-  }) {
+  async createWebhook(
+    listId: string,
+    data: {
+      clientUrl: string;
+      subscribes?: boolean;
+      unsubscribes?: boolean;
+      profileUpdates?: boolean;
+      cleanedAddress?: boolean;
+      emailChanged?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/Contact/${listId}/Webhooks`, {
       Data: {
         ContactMasterID: listId,
@@ -242,14 +272,16 @@ export class Client {
         Unsubscribes: data.unsubscribes ? '1' : '0',
         ProfileUpdates: data.profileUpdates ? '1' : '0',
         CleanedAddress: data.cleanedAddress ? '1' : '0',
-        EmailChanged: data.emailChanged ? '1' : '0',
-      },
+        EmailChanged: data.emailChanged ? '1' : '0'
+      }
     });
     return response.data?.Response;
   }
 
   async updateWebhook(listId: string, webhookId: string, data: Record<string, any>) {
-    let response = await this.axios.patch(`/Contact/${listId}/Webhooks/${webhookId}`, { Data: data });
+    let response = await this.axios.patch(`/Contact/${listId}/Webhooks/${webhookId}`, {
+      Data: data
+    });
     return response.data?.Response;
   }
 

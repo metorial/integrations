@@ -9,8 +9,8 @@ export class TikTokConsumerClient {
       baseURL: 'https://open.tiktokapis.com/v2',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,33 +28,24 @@ export class TikTokConsumerClient {
     cursor?: number;
     maxCount?: number;
   }): Promise<{ videos: TikTokVideo[]; cursor: number; hasMore: boolean }> {
-    let response = await this.axios.post(
-      `/video/list/?fields=${params.fields.join(',')}`,
-      {
-        cursor: params.cursor,
-        max_count: params.maxCount ?? 20,
-      }
-    );
+    let response = await this.axios.post(`/video/list/?fields=${params.fields.join(',')}`, {
+      cursor: params.cursor,
+      max_count: params.maxCount ?? 20
+    });
     let data = response.data?.data ?? {};
     return {
       videos: data.videos ?? [],
       cursor: data.cursor ?? 0,
-      hasMore: data.has_more ?? false,
+      hasMore: data.has_more ?? false
     };
   }
 
-  async queryVideos(params: {
-    videoIds: string[];
-    fields: string[];
-  }): Promise<TikTokVideo[]> {
-    let response = await this.axios.post(
-      `/video/query/?fields=${params.fields.join(',')}`,
-      {
-        filters: {
-          video_ids: params.videoIds,
-        },
+  async queryVideos(params: { videoIds: string[]; fields: string[] }): Promise<TikTokVideo[]> {
+    let response = await this.axios.post(`/video/query/?fields=${params.fields.join(',')}`, {
+      filters: {
+        video_ids: params.videoIds
       }
-    );
+    });
     return response.data?.data?.videos ?? [];
   }
 
@@ -95,20 +86,20 @@ export class TikTokConsumerClient {
         video_cover_timestamp_ms: params.postInfo.videoCoverTimestampMs,
         brand_content_toggle: params.postInfo.brandContentToggle,
         brand_organic_toggle: params.postInfo.brandOrganicToggle,
-        is_aigc: params.postInfo.isAigc,
+        is_aigc: params.postInfo.isAigc
       },
       source_info: {
         source: params.sourceInfo.source,
         video_url: params.sourceInfo.videoUrl,
         video_size: params.sourceInfo.videoSize,
         chunk_size: params.sourceInfo.chunkSize,
-        total_chunk_count: params.sourceInfo.totalChunkCount,
-      },
+        total_chunk_count: params.sourceInfo.totalChunkCount
+      }
     });
     let data = response.data?.data ?? {};
     return {
       publishId: data.publish_id,
-      uploadUrl: data.upload_url,
+      uploadUrl: data.upload_url
     };
   }
 
@@ -134,24 +125,24 @@ export class TikTokConsumerClient {
         disable_comment: params.postInfo.disableComment,
         brand_content_toggle: params.postInfo.brandContentToggle,
         brand_organic_toggle: params.postInfo.brandOrganicToggle,
-        is_aigc: params.postInfo.isAigc,
+        is_aigc: params.postInfo.isAigc
       },
       source_info: {
         source: params.sourceInfo.source,
         photo_images: params.sourceInfo.photoImages,
-        photo_cover_index: params.sourceInfo.photoCoverIndex,
+        photo_cover_index: params.sourceInfo.photoCoverIndex
       },
-      media_type: 'PHOTO',
+      media_type: 'PHOTO'
     });
     let data = response.data?.data ?? {};
     return {
-      publishId: data.publish_id,
+      publishId: data.publish_id
     };
   }
 
   async getPublishStatus(publishId: string): Promise<TikTokPublishStatus> {
     let response = await this.axios.post('/post/publish/status/fetch/', {
-      publish_id: publishId,
+      publish_id: publishId
     });
     return response.data?.data ?? {};
   }
@@ -165,8 +156,8 @@ export class TikTokBusinessClient {
       baseURL: 'https://business-api.tiktok.com/open_api/v1.3',
       headers: {
         'Access-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -187,13 +178,13 @@ export class TikTokBusinessClient {
         advertiser_id: params.advertiserId,
         filtering: JSON.stringify(filtering),
         page: params.page ?? 1,
-        page_size: params.pageSize ?? 20,
-      },
+        page_size: params.pageSize ?? 20
+      }
     });
     let data = response.data?.data ?? {};
     return {
       campaigns: (data.list ?? []).map(mapCampaign),
-      pageInfo: mapPageInfo(data.page_info),
+      pageInfo: mapPageInfo(data.page_info)
     };
   }
 
@@ -215,7 +206,7 @@ export class TikTokBusinessClient {
       budget: params.budget,
       operation_status: params.operationStatus,
       campaign_type: params.campaignType,
-      budget_optimize_on: params.budgetOptimizeOn,
+      budget_optimize_on: params.budgetOptimizeOn
     });
     let data = response.data?.data ?? {};
     return { campaignId: data.campaign_id };
@@ -235,7 +226,7 @@ export class TikTokBusinessClient {
       campaign_name: params.campaignName,
       budget: params.budget,
       budget_mode: params.budgetMode,
-      operation_status: params.operationStatus,
+      operation_status: params.operationStatus
     });
     let data = response.data?.data ?? {};
     return { campaignId: data.campaign_id };
@@ -249,7 +240,7 @@ export class TikTokBusinessClient {
     let response = await this.axios.post('/campaign/status/update/', {
       advertiser_id: params.advertiserId,
       campaign_ids: params.campaignIds,
-      opt_status: params.operationStatus,
+      opt_status: params.operationStatus
     });
     let data = response.data?.data ?? {};
     return { campaignIds: data.campaign_ids ?? [] };
@@ -276,13 +267,13 @@ export class TikTokBusinessClient {
         advertiser_id: params.advertiserId,
         filtering: JSON.stringify(filtering),
         page: params.page ?? 1,
-        page_size: params.pageSize ?? 20,
-      },
+        page_size: params.pageSize ?? 20
+      }
     });
     let data = response.data?.data ?? {};
     return {
       adGroups: (data.list ?? []).map(mapAdGroup),
-      pageInfo: mapPageInfo(data.page_info),
+      pageInfo: mapPageInfo(data.page_info)
     };
   }
 
@@ -324,7 +315,7 @@ export class TikTokBusinessClient {
       pacing: params.pacing,
       location: params.location,
       gender: params.gender,
-      age: params.age,
+      age: params.age
     });
     let data = response.data?.data ?? {};
     return { adGroupId: data.adgroup_id };
@@ -355,13 +346,13 @@ export class TikTokBusinessClient {
         advertiser_id: params.advertiserId,
         filtering: JSON.stringify(filtering),
         page: params.page ?? 1,
-        page_size: params.pageSize ?? 20,
-      },
+        page_size: params.pageSize ?? 20
+      }
     });
     let data = response.data?.data ?? {};
     return {
       ads: (data.list ?? []).map(mapAd),
-      pageInfo: mapPageInfo(data.page_info),
+      pageInfo: mapPageInfo(data.page_info)
     };
   }
 
@@ -390,13 +381,13 @@ export class TikTokBusinessClient {
         end_date: params.endDate,
         page: params.page ?? 1,
         page_size: params.pageSize ?? 20,
-        filtering: params.filters ? JSON.stringify(params.filters) : undefined,
-      },
+        filtering: params.filters ? JSON.stringify(params.filters) : undefined
+      }
     });
     let data = response.data?.data ?? {};
     return {
       rows: data.list ?? [],
-      pageInfo: mapPageInfo(data.page_info),
+      pageInfo: mapPageInfo(data.page_info)
     };
   }
 }
@@ -509,7 +500,7 @@ let mapCampaign = (raw: Record<string, any>): TikTokCampaign => ({
   operationStatus: raw.operation_status ?? raw.opt_status ?? '',
   campaignType: raw.campaign_type ?? '',
   createTime: raw.create_time ?? '',
-  modifyTime: raw.modify_time ?? '',
+  modifyTime: raw.modify_time ?? ''
 });
 
 let mapAdGroup = (raw: Record<string, any>): TikTokAdGroup => ({
@@ -522,7 +513,7 @@ let mapAdGroup = (raw: Record<string, any>): TikTokAdGroup => ({
   optimizeGoal: raw.optimize_goal ?? '',
   billingEvent: raw.billing_event ?? '',
   scheduleStartTime: raw.schedule_start_time ?? '',
-  scheduleEndTime: raw.schedule_end_time ?? '',
+  scheduleEndTime: raw.schedule_end_time ?? ''
 });
 
 let mapAd = (raw: Record<string, any>): TikTokAd => ({
@@ -532,12 +523,12 @@ let mapAd = (raw: Record<string, any>): TikTokAd => ({
   adName: raw.ad_name ?? '',
   operationStatus: raw.operation_status ?? raw.opt_status ?? '',
   createTime: raw.create_time ?? '',
-  modifyTime: raw.modify_time ?? '',
+  modifyTime: raw.modify_time ?? ''
 });
 
 let mapPageInfo = (raw?: Record<string, any>): TikTokPageInfo => ({
   page: raw?.page ?? 1,
   pageSize: raw?.page_size ?? 20,
   totalNumber: raw?.total_number ?? 0,
-  totalPage: raw?.total_page ?? 0,
+  totalPage: raw?.total_page ?? 0
 });

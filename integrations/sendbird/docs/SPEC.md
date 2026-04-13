@@ -45,6 +45,7 @@ Create, update, delete, and list users within your Sendbird application. Users c
 ### Channel Management
 
 Manage two types of channels:
+
 - **Group Channels**: Private or public channels for a defined set of members. Support features like distinct channels, super group channels, and ephemeral channels. Properties include name, cover image, custom type, and access code.
 - **Open Channels**: Public channels that any user can enter and participate in, suitable for large-scale broadcasts or live event chats.
 
@@ -57,6 +58,7 @@ You can send a text message, a file message, or an admin message to a specific c
 ### Moderation
 
 Sendbird's user moderation features allow you to block, mute, or ban users, or freeze channels, giving you control over who can participate in your community and what they can do.
+
 - **Blocking**: Users can block other users to stop receiving their messages.
 - **Muting**: Operators can silence specific users in a channel.
 - **Banning**: Users can be expelled from channels for a specified duration or indefinitely.
@@ -109,6 +111,7 @@ Based on the full list of available webhook categories:
 ### Calls Webhook Event Categories
 
 There are three webhook events for direct call:
+
 - **direct_call:dial** – When a call is initiated.
 - **direct_call:accept** – When a call is accepted.
 - **direct_call:end** – When a call ends.
@@ -116,6 +119,7 @@ There are three webhook events for direct call:
 ### Desk Webhook Event Categories
 
 Desk webhooks notify on customer support activities, including:
+
 - **Ticket Events**: Ticket creation, status changes, and closure.
 - **Transfer Events**: Ticket transfers between agents.
 

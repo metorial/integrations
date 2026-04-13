@@ -15,13 +15,9 @@ import {
   archiveSubmission,
   listSubmitters,
   getSubmitter,
-  updateSubmitter,
+  updateSubmitter
 } from './tools';
-import {
-  formEvent,
-  submissionEvent,
-  templateEvent,
-} from './triggers';
+import { formEvent, submissionEvent, templateEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,11 +36,7 @@ export let provider = Slate.create({
     archiveSubmission,
     listSubmitters,
     getSubmitter,
-    updateSubmitter,
+    updateSubmitter
   ],
-  triggers: [
-    formEvent,
-    submissionEvent,
-    templateEvent,
-  ],
+  triggers: [formEvent, submissionEvent, templateEvent]
 });

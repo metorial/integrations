@@ -7,13 +7,13 @@ import {
   startCrawl,
   getCrawlStatus,
   getCrawlResults,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
 import {
   scrapeCompleted,
   screenshotCompleted,
   extractionCompleted,
-  crawlerEvent,
+  crawlerEvent
 } from './triggers';
 
 export let provider = Slate.create({
@@ -25,12 +25,7 @@ export let provider = Slate.create({
     startCrawl,
     getCrawlStatus,
     getCrawlResults,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    scrapeCompleted,
-    screenshotCompleted,
-    extractionCompleted,
-    crawlerEvent,
-  ],
+  triggers: [scrapeCompleted, screenshotCompleted, extractionCompleted, crawlerEvent]
 });

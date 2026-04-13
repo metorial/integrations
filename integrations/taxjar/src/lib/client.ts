@@ -19,25 +19,21 @@ import type {
   NexusRegion,
   ValidateAddressParams,
   ValidatedAddress,
-  SummaryRate,
+  SummaryRate
 } from './types';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.taxjar.com/v2',
-  sandbox: 'https://api.sandbox.taxjar.com/v2',
+  sandbox: 'https://api.sandbox.taxjar.com/v2'
 };
 
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(config: {
-    token: string;
-    environment: string;
-    apiVersion?: string;
-  }) {
+  constructor(config: { token: string; environment: string; apiVersion?: string }) {
     let headers: Record<string, string> = {
       Authorization: `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.apiVersion) {
@@ -46,7 +42,7 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: BASE_URLS[config.environment] || BASE_URLS['production'],
-      headers,
+      headers
     });
   }
 
@@ -80,7 +76,7 @@ export class Client {
 
   async showOrder(transactionId: string, provider?: string): Promise<Order> {
     let response = await this.axios.get(`/transactions/orders/${transactionId}`, {
-      params: provider ? { provider } : undefined,
+      params: provider ? { provider } : undefined
     });
     return response.data.order;
   }
@@ -91,13 +87,16 @@ export class Client {
   }
 
   async updateOrder(params: UpdateOrderParams): Promise<Order> {
-    let response = await this.axios.put(`/transactions/orders/${params.transaction_id}`, params);
+    let response = await this.axios.put(
+      `/transactions/orders/${params.transaction_id}`,
+      params
+    );
     return response.data.order;
   }
 
   async deleteOrder(transactionId: string, provider?: string): Promise<Order> {
     let response = await this.axios.delete(`/transactions/orders/${transactionId}`, {
-      params: provider ? { provider } : undefined,
+      params: provider ? { provider } : undefined
     });
     return response.data.order;
   }
@@ -111,7 +110,7 @@ export class Client {
 
   async showRefund(transactionId: string, provider?: string): Promise<Refund> {
     let response = await this.axios.get(`/transactions/refunds/${transactionId}`, {
-      params: provider ? { provider } : undefined,
+      params: provider ? { provider } : undefined
     });
     return response.data.refund;
   }
@@ -122,13 +121,16 @@ export class Client {
   }
 
   async updateRefund(params: UpdateRefundParams): Promise<Refund> {
-    let response = await this.axios.put(`/transactions/refunds/${params.transaction_id}`, params);
+    let response = await this.axios.put(
+      `/transactions/refunds/${params.transaction_id}`,
+      params
+    );
     return response.data.refund;
   }
 
   async deleteRefund(transactionId: string, provider?: string): Promise<Refund> {
     let response = await this.axios.delete(`/transactions/refunds/${transactionId}`, {
-      params: provider ? { provider } : undefined,
+      params: provider ? { provider } : undefined
     });
     return response.data.refund;
   }

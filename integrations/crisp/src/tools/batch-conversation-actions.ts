@@ -3,29 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let batchConversationActions = SlateTool.create(
-  spec,
-  {
-    name: 'Batch Conversation Actions',
-    key: 'batch_conversation_actions',
-    description: `Perform bulk actions on multiple conversations at once. Resolve, mark as read, or remove multiple conversations in a single operation.`,
-    instructions: [
-      'Provide an array of session IDs and choose one action to apply to all of them.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let batchConversationActions = SlateTool.create(spec, {
+  name: 'Batch Conversation Actions',
+  key: 'batch_conversation_actions',
+  description: `Perform bulk actions on multiple conversations at once. Resolve, mark as read, or remove multiple conversations in a single operation.`,
+  instructions: [
+    'Provide an array of session IDs and choose one action to apply to all of them.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    sessionIds: z.array(z.string()).describe('List of conversation session IDs'),
-    action: z.enum(['resolve', 'read', 'remove']).describe('Action to perform: resolve, read, or remove'),
-  }))
-  .output(z.object({
-    action: z.string().describe('Action performed'),
-    count: z.number().describe('Number of conversations affected'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sessionIds: z.array(z.string()).describe('List of conversation session IDs'),
+      action: z
+        .enum(['resolve', 'read', 'remove'])
+        .describe('Action to perform: resolve, read, or remove')
+    })
+  )
+  .output(
+    z.object({
+      action: z.string().describe('Action performed'),
+      count: z.number().describe('Number of conversations affected')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
 
     if (ctx.input.action === 'resolve') {
@@ -39,9 +42,9 @@ export let batchConversationActions = SlateTool.create(
     return {
       output: {
         action: ctx.input.action,
-        count: ctx.input.sessionIds.length,
+        count: ctx.input.sessionIds.length
       },
-      message: `Performed **${ctx.input.action}** on **${ctx.input.sessionIds.length}** conversations.`,
+      message: `Performed **${ctx.input.action}** on **${ctx.input.sessionIds.length}** conversations.`
     };
   })
   .build();

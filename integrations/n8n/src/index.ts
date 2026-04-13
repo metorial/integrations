@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listWorkflows,
@@ -26,11 +25,7 @@ import {
   sourceControlPull,
   generateAudit
 } from './tools';
-import {
-  workflowChanges,
-  executionCompleted,
-  inboundWebhook,
-} from './triggers';
+import { workflowChanges, executionCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,9 +54,5 @@ export let provider = Slate.create({
     sourceControlPull,
     generateAudit
   ],
-  triggers: [
-    inboundWebhook,
-    workflowChanges,
-    executionCompleted
-  ]
+  triggers: [inboundWebhook, workflowChanges, executionCompleted]
 });

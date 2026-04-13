@@ -53,6 +53,7 @@ Generate vector embeddings from text using a specified model. Useful for semanti
 ### Model Management
 
 Manage models programmatically through the API:
+
 - **List models**: Retrieve all locally available models and currently running/loaded models.
 - **Pull models**: Download models from the Ollama library.
 - **Push models**: Upload custom models to the Ollama model library (requires an ollama.com account).

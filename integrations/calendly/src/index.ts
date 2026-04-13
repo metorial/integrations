@@ -13,10 +13,7 @@ import {
   listOrganizationMembers,
   listRoutingForms
 } from './tools';
-import {
-  inviteeEvents,
-  routingFormSubmission
-} from './triggers';
+import { inviteeEvents, routingFormSubmission } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,8 +30,5 @@ export let provider = Slate.create({
     listOrganizationMembers,
     listRoutingForms
   ],
-  triggers: [
-    inviteeEvents,
-    routingFormSubmission
-  ]
+  triggers: [inviteeEvents, routingFormSubmission]
 });

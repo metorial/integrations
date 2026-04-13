@@ -21,15 +21,19 @@ export class Client {
   async graphql<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
     let axios = createAxios();
 
-    let response = await axios.post(API_BASE_URL, {
-      query,
-      variables,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': this.getAuthHeader(),
+    let response = await axios.post(
+      API_BASE_URL,
+      {
+        query,
+        variables
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: this.getAuthHeader()
+        }
+      }
+    );
 
     if (response.data.errors && response.data.errors.length > 0) {
       let errorMessages = response.data.errors.map((e: any) => e.message).join('; ');
@@ -170,7 +174,10 @@ export class Client {
       }
     `;
 
-    let data = await this.graphql<{ updateModelAccessVisibility: any }>(query, { modelId, visibility });
+    let data = await this.graphql<{ updateModelAccessVisibility: any }>(query, {
+      modelId,
+      visibility
+    });
     return data.updateModelAccessVisibility;
   }
 
@@ -222,21 +229,24 @@ export class Client {
     return data.model.mattertags;
   }
 
-  async addTag(modelId: string, tag: {
-    floorId: string;
-    label?: string;
-    description?: string;
-    color?: string;
-    icon?: string;
-    keywords?: string[];
-    enabled?: boolean;
-    anchorPosition: { x: number; y: number; z: number };
-    stemNormal?: { x: number; y: number; z: number };
-    stemLength?: number;
-    stemEnabled?: boolean;
-    mediaType?: string;
-    mediaUrl?: string;
-  }) {
+  async addTag(
+    modelId: string,
+    tag: {
+      floorId: string;
+      label?: string;
+      description?: string;
+      color?: string;
+      icon?: string;
+      keywords?: string[];
+      enabled?: boolean;
+      anchorPosition: { x: number; y: number; z: number };
+      stemNormal?: { x: number; y: number; z: number };
+      stemLength?: number;
+      stemEnabled?: boolean;
+      mediaType?: string;
+      mediaUrl?: string;
+    }
+  ) {
     let query = `
       mutation addTag($modelId: ID!, $mattertag: MattertagDetails!) {
         addMattertag(modelId: $modelId, field: id, mattertag: $mattertag) {
@@ -248,7 +258,7 @@ export class Client {
     let mattertag: Record<string, any> = {
       floorId: tag.floorId,
       anchorPosition: tag.anchorPosition,
-      enabled: tag.enabled ?? true,
+      enabled: tag.enabled ?? true
     };
 
     if (tag.label !== undefined) mattertag.label = tag.label;
@@ -342,7 +352,9 @@ export class Client {
       }
     `;
 
-    let data = await this.graphql<{ model: { assets: { floorplans: any[] } } }>(query, { modelId });
+    let data = await this.graphql<{ model: { assets: { floorplans: any[] } } }>(query, {
+      modelId
+    });
     return data.model.assets.floorplans;
   }
 
@@ -366,7 +378,9 @@ export class Client {
       }
     `;
 
-    let data = await this.graphql<{ model: { assets: { bundles: any[] } } }>(query, { modelId });
+    let data = await this.graphql<{ model: { assets: { bundles: any[] } } }>(query, {
+      modelId
+    });
     return data.model.assets.bundles;
   }
 
@@ -490,7 +504,7 @@ export class Client {
     let url = new URL(callbackUrl);
     let scheme = url.protocol.replace(':', '');
     let host = url.hostname;
-    let port = url.port ? parseInt(url.port) : (scheme === 'https' ? 443 : 80);
+    let port = url.port ? parseInt(url.port) : scheme === 'https' ? 443 : 80;
     let path = url.pathname.replace(/^\//, '');
 
     let eventTypesStr = eventTypes.join(', ');

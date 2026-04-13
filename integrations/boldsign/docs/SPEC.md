@@ -31,6 +31,7 @@ BoldSign supports two authentication methods:
 - **PKCE** (Proof Key for Code Exchange with S256 challenge method) is supported and used in the Authorization Code flow.
 
 **Known OAuth Scopes:**
+
 - `openid`, `profile`, `email` — standard OIDC scopes
 - `offline_access` — for obtaining refresh tokens
 - `BoldSign.Documents.All` — access to document operations
@@ -41,42 +42,55 @@ BoldSign supports two authentication methods:
 ## Features
 
 ### Document Sending & Signing
+
 Send documents (PDF, Word, etc.) for electronic signature to one or more recipients. It is not mandatory for the signers to have a BoldSign account. The signer can sign a document sent by another user with or without a BoldSign account. Supports self-signing, signing order enforcement, expiry dates, automatic reminders, and CC recipients. Documents can also be sent on behalf of another user (useful for multi-tenant/SaaS use cases).
 
 ### Document Management
+
 List, search, and filter documents by status. Retrieve document details and history, download signed documents and audit trails, revoke in-progress documents, extend expiry, send reminders, delete documents, and manage document tags.
 
 ### Templates
+
 Create reusable document templates with predefined roles, form fields, and settings. When you need to send the same contracts out for signature to different groups of people repeatedly, you can use templates to save time. Once a template is created, sending contracts using that template takes less than a minute. Templates can be shared with teams, and documents can be created from single or multiple merged templates. Templates support tag management and editing.
 
 ### Form Fields & Text Tags
+
 Place signature fields, text boxes, checkboxes, radio buttons, dropdowns, date fields, images, attachments, hyperlinks, labels, and more on documents using coordinate-based positioning. Using the text tag feature, developers can put invisible text in the place of fields, and the BoldSign API will automatically convert those to actual fields before sending. Form fields support prefilling, conditional rules, validation, data syncing, collaborative editing, and custom fonts.
 
 ### Embedded Experiences
+
 Embed the document sending, signing, and template creation/editing processes directly within your application using iFrames or popup windows. This includes embedded signing links, embedded request creation (from scratch or from templates), and embedded template management. The embedded UI supports custom branding and locale settings.
 
 ### Signer Authentication
+
 Require signers to verify their identity before accessing documents. Supported authentication methods include access codes, Email OTP, and SMS OTP. Authentication can be added or removed after a document has been sent.
 
 ### Identity Verification
+
 Verify signer identities using ID document verification. Retrieve verification reports and images, and optionally prefill form fields using verified data. Supports an embedded manual verification flow and a sandbox mode for testing.
 
 ### Branding
+
 Customize the appearance for your signers by incorporating your brand's logo, colors, and legal terms. You can also add and manage multiple brands within a single account and select the appropriate brand before sending each document.
 
 ### Sender Identities
+
 Create and manage sender identities to send documents on behalf of other users. Identities require approval from the target user. You can list, update, delete, and resend invitations for identities.
 
 ### Users & Teams
+
 Create and manage users within your organization, assign roles, update metadata, transfer users between teams, and resend or cancel invitations. Create and manage teams with configurable settings.
 
 ### Contacts & Contact Groups
+
 Manage a contact book of signers and organize them into groups for easier document distribution.
 
 ### Custom Fields
+
 Create organization-level custom form fields that can be reused across documents and templates. Supports embedded creation via URL.
 
 ### Audit Trail
+
 Track every action taken on a document with a detailed, tamper-proof audit log for full transparency. Audit trails can be downloaded separately or combined with the signed document.
 
 ## Events
@@ -86,6 +100,7 @@ BoldSign supports webhooks for real-time event notifications. BoldSign supports 
 Optionally, you can enable "Listen to Team user's events" to receive notifications for events triggered by team members.
 
 ### Document Lifecycle Events
+
 - **Sent**: Triggered when a document has been successfully created and sent for signature.
 - **SendFailed**: Triggered when document sending fails during async processing.
 - **Signed**: Triggered when one of the signers has completed signing their portion.
@@ -98,13 +113,16 @@ Optionally, you can enable "Listen to Team user's events" to receive notificatio
 - **Edited**: Triggered when a document is edited.
 
 ### Authentication & Delivery Events
+
 - **Authentication Failed**: Triggered when a signer fails identity authentication when trying to access a document.
 - **Delivery Failed**: Triggered when email delivery fails for a recipient.
 
 ### Identity Verification Events
+
 - **Identity Verification Initiated**: Triggered when an identity verification process is started.
 
 ### Template Events
+
 - **TemplateCreated**: Triggered when a template is successfully created.
 - **TemplateCreateFailed**: Triggered when template creation fails during async processing.
 - **Template Edited**: Triggered when a template is edited.

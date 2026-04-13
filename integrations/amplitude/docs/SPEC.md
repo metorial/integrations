@@ -58,6 +58,7 @@ Use the Identify API to modify the user properties of a particular user without 
 ### Dashboard Analytics Queries
 
 Use the Dashboard REST API to get any data that dashboard graphs can display. This includes:
+
 - Active/new user counts over date ranges
 - Event segmentation with filters and group-bys
 - Funnel analysis
@@ -73,11 +74,13 @@ Export all events data for a given app that occurred within a specified range of
 ### User Profile Lookup
 
 The User Profile API serves Amplitude user profiles, which include user properties, computed user properties, a list of cohort IDs of cohorts that the user is in, and recommendations.
+
 - Not available for EU data region customers.
 
 ### Behavioral Cohorts
 
 Get all discoverable cohorts for an app. Use the id for each cohort returned in the response to get a single cohort. Generate a new cohort or update an existing cohort by uploading a set of User IDs or Amplitude IDs.
+
 - Maximum cohort size of 2 million users.
 
 ### Taxonomy Management
@@ -122,6 +125,7 @@ Two categories of data can be streamed:
 - **User Updates**: When enabled, users are sent to the webhook when an event is sent to Amplitude. Amplitude Identify API calls are also forwarded to the webhook.
 
 Configuration options:
+
 - Custom webhook URL endpoint
 - Up to five custom headers for authentication or routing
 - Event filtering to select specific event types

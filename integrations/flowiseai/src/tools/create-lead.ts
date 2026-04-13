@@ -3,38 +3,39 @@ import { FlowiseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createLead = SlateTool.create(
-  spec,
-  {
-    name: 'Create Lead',
-    key: 'create_lead',
-    description: `Capture a lead from a chatbot interaction. Stores contact details (name, email, phone) associated with a chatflow and chat conversation.`,
-    tags: {
-      readOnly: false,
-      destructive: false,
-    },
+export let createLead = SlateTool.create(spec, {
+  name: 'Create Lead',
+  key: 'create_lead',
+  description: `Capture a lead from a chatbot interaction. Stores contact details (name, email, phone) associated with a chatflow and chat conversation.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    chatflowId: z.string().describe('ID of the chatflow the lead is from'),
-    chatId: z.string().describe('Chat conversation ID'),
-    name: z.string().optional().describe('Lead contact name'),
-    email: z.string().optional().describe('Lead email address'),
-    phone: z.string().optional().describe('Lead phone number'),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('ID of the created lead'),
-    chatflowId: z.string().optional().describe('Associated chatflow ID'),
-    chatId: z.string().optional().describe('Associated chat conversation ID'),
-    name: z.string().optional().nullable().describe('Lead name'),
-    email: z.string().optional().nullable().describe('Lead email'),
-    phone: z.string().optional().nullable().describe('Lead phone'),
-    createdDate: z.string().optional().describe('ISO 8601 creation date'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      chatflowId: z.string().describe('ID of the chatflow the lead is from'),
+      chatId: z.string().describe('Chat conversation ID'),
+      name: z.string().optional().describe('Lead contact name'),
+      email: z.string().optional().describe('Lead email address'),
+      phone: z.string().optional().describe('Lead phone number')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('ID of the created lead'),
+      chatflowId: z.string().optional().describe('Associated chatflow ID'),
+      chatId: z.string().optional().describe('Associated chat conversation ID'),
+      name: z.string().optional().nullable().describe('Lead name'),
+      email: z.string().optional().nullable().describe('Lead email'),
+      phone: z.string().optional().nullable().describe('Lead phone'),
+      createdDate: z.string().optional().describe('ISO 8601 creation date')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FlowiseClient({
       baseUrl: ctx.config.baseUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let result = await client.createLead({
@@ -42,7 +43,7 @@ export let createLead = SlateTool.create(
       chatId: ctx.input.chatId,
       name: ctx.input.name,
       email: ctx.input.email,
-      phone: ctx.input.phone,
+      phone: ctx.input.phone
     });
 
     return {
@@ -53,9 +54,9 @@ export let createLead = SlateTool.create(
         name: result.name,
         email: result.email,
         phone: result.phone,
-        createdDate: result.createdDate,
+        createdDate: result.createdDate
       },
-      message: `Created lead \`${result.id}\`${result.email ? ` for ${result.email}` : ''}.`,
+      message: `Created lead \`${result.id}\`${result.email ? ` for ${result.email}` : ''}.`
     };
   })
   .build();

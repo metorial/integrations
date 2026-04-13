@@ -7,8 +7,8 @@ export class DeepgramClient {
     this.axios = createAxios({
       baseURL: 'https://api.deepgram.com',
       headers: {
-        'Authorization': `Token ${token}`,
-      },
+        Authorization: `Token ${token}`
+      }
     });
   }
 
@@ -37,11 +37,15 @@ export class DeepgramClient {
   }) {
     let queryParams = this.buildTranscriptionParams(params);
 
-    let response = await this.axios.post(`/v1/listen${queryParams}`, {
-      url: params.url,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      `/v1/listen${queryParams}`,
+      {
+        url: params.url
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
 
     return response.data;
   }
@@ -77,7 +81,7 @@ export class DeepgramClient {
     }
 
     let response = await this.axios.post(`/v1/listen${queryParams}`, bytes, {
-      headers: { 'Content-Type': params.mimetype },
+      headers: { 'Content-Type': params.mimetype }
     });
 
     return response.data;
@@ -168,20 +172,28 @@ export class DeepgramClient {
 
     // If callback is set, Deepgram returns JSON with request_id
     if (params.callback) {
-      let response = await this.axios.post(url, { text: params.text }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let response = await this.axios.post(
+        url,
+        { text: params.text },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
       return {
         contentType: 'application/json',
         audioBase64: '',
-        requestId: response.data.request_id,
+        requestId: response.data.request_id
       };
     }
 
-    let response = await this.axios.post(url, { text: params.text }, {
-      headers: { 'Content-Type': 'application/json' },
-      responseType: 'arraybuffer',
-    });
+    let response = await this.axios.post(
+      url,
+      { text: params.text },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        responseType: 'arraybuffer'
+      }
+    );
 
     let binary = '';
     let bytes = new Uint8Array(response.data);
@@ -193,7 +205,7 @@ export class DeepgramClient {
     return {
       contentType: response.headers['content-type'] || 'audio/mp3',
       audioBase64,
-      requestId: response.headers['dg-request-id'],
+      requestId: response.headers['dg-request-id']
     };
   }
 
@@ -218,9 +230,13 @@ export class DeepgramClient {
     let qs = searchParams.toString();
     let url = `/v1/read${qs ? `?${qs}` : ''}`;
 
-    let response = await this.axios.post(url, { text: params.text }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      url,
+      { text: params.text },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
 
     return response.data;
   }
@@ -239,7 +255,7 @@ export class DeepgramClient {
 
   async updateProject(projectId: string, params: { name?: string; company?: string }) {
     let response = await this.axios.patch(`/v1/projects/${projectId}`, params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -260,16 +276,22 @@ export class DeepgramClient {
   }
 
   async getMemberScopes(projectId: string, memberId: string) {
-    let response = await this.axios.get(`/v1/projects/${projectId}/members/${memberId}/scopes`);
+    let response = await this.axios.get(
+      `/v1/projects/${projectId}/members/${memberId}/scopes`
+    );
     return response.data;
   }
 
   async updateMemberScopes(projectId: string, memberId: string, scope: string) {
-    let response = await this.axios.put(`/v1/projects/${projectId}/members/${memberId}/scopes`, {
-      scope,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.put(
+      `/v1/projects/${projectId}/members/${memberId}/scopes`,
+      {
+        scope
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -281,12 +303,16 @@ export class DeepgramClient {
   }
 
   async sendInvitation(projectId: string, email: string, scope: string) {
-    let response = await this.axios.post(`/v1/projects/${projectId}/invites`, {
-      email,
-      scope,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      `/v1/projects/${projectId}/invites`,
+      {
+        email,
+        scope
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -306,15 +332,18 @@ export class DeepgramClient {
     return response.data;
   }
 
-  async createKey(projectId: string, params: {
-    comment: string;
-    scopes: string[];
-    tags?: string[];
-    expirationDate?: string;
-    timeToLiveInSeconds?: number;
-  }) {
+  async createKey(
+    projectId: string,
+    params: {
+      comment: string;
+      scopes: string[];
+      tags?: string[];
+      expirationDate?: string;
+      timeToLiveInSeconds?: number;
+    }
+  ) {
     let response = await this.axios.post(`/v1/projects/${projectId}/keys`, params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -325,14 +354,17 @@ export class DeepgramClient {
 
   // ─── Usage ────────────────────────────────────────────────────────────
 
-  async getUsage(projectId: string, params?: {
-    start?: string;
-    end?: string;
-    accessor?: string;
-    tag?: string;
-    method?: string;
-    model?: string;
-  }) {
+  async getUsage(
+    projectId: string,
+    params?: {
+      start?: string;
+      end?: string;
+      accessor?: string;
+      tag?: string;
+      method?: string;
+      model?: string;
+    }
+  ) {
     let searchParams = new URLSearchParams();
     if (params?.start) searchParams.set('start', params.start);
     if (params?.end) searchParams.set('end', params.end);
@@ -342,7 +374,9 @@ export class DeepgramClient {
     if (params?.model) searchParams.set('model', params.model);
 
     let qs = searchParams.toString();
-    let response = await this.axios.get(`/v1/projects/${projectId}/usage${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/v1/projects/${projectId}/usage${qs ? `?${qs}` : ''}`
+    );
     return response.data;
   }
 
@@ -352,7 +386,9 @@ export class DeepgramClient {
     if (params?.end) searchParams.set('end', params.end);
 
     let qs = searchParams.toString();
-    let response = await this.axios.get(`/v1/projects/${projectId}/usage/fields${qs ? `?${qs}` : ''}`);
+    let response = await this.axios.get(
+      `/v1/projects/${projectId}/usage/fields${qs ? `?${qs}` : ''}`
+    );
     return response.data;
   }
 

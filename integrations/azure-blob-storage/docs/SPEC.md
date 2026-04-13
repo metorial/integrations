@@ -13,12 +13,14 @@ Azure Blob Storage supports several authentication methods:
 Microsoft Entra ID is Microsoft's cloud-based identity and access management service, available for the Blob, File, Queue, and Table services. With Microsoft Entra ID, you can assign fine-grained access to users, groups, or applications via role-based access control (RBAC).
 
 To authenticate:
+
 - Register an application in your Microsoft Entra ID tenant (Azure AD) to obtain a **Client ID** and **Client Secret** (or use certificate-based auth).
 - Request tokens for Azure Storage by specifying the value `https://storage.azure.com/` for the resource ID.
 - Obtain an OAuth 2.0 token from the Microsoft identity platform token endpoint: `https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token`
 - Pass the access token in the `Authorization` header using the Bearer scheme, and specify a service version of `2017-11-09` or later.
 
 Key RBAC roles for Blob Storage:
+
 - **Storage Blob Data Contributor**: grants read/write/delete permissions to Blob storage resources.
 - **Storage Blob Data Reader**: grants read-only permissions to Blob storage resources.
 - **Storage Blob Data Owner**: full access including POSIX access control for Data Lake Storage Gen2.
@@ -36,6 +38,7 @@ Shared Key authorization relies on your account access keys and other parameters
 Shared access signatures delegate access to a particular resource in your account with specified permissions and over a specified time interval.
 
 There are three types of SAS:
+
 - **User Delegation SAS**: Secured with Microsoft Entra credentials instead of the account key, providing superior security. Supported for Blob Storage only.
 - **Service SAS**: Delegates access to a resource in just one of the storage services (Blob, Queue, Table, or Files). Signed with the storage account key.
 - **Account SAS**: Delegates access to resources in one or more of the storage services. Signed with the storage account key.

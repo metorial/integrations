@@ -34,6 +34,7 @@ Permissions are configured on the app registration in Microsoft Entra ID. There 
 - **Application permissions** (app roles): Allow the app to access data on its own, without a signed-in user.
 
 Key SharePoint-related scopes for Microsoft Graph include:
+
 - `Sites.Read.All`, `Sites.ReadWrite.All`, `Sites.Manage.All`, `Sites.FullControl.All`
 - `Files.Read.All`, `Files.ReadWrite.All`
 - `Lists.Read.All`, `Lists.ReadWrite.All`
@@ -48,21 +49,27 @@ For unattended (app-only) access, authentication can also be done using a certif
 ## Features
 
 ### Site Management
+
 The SharePoint API in Microsoft Graph supports access to SharePoint sites, lists, and drives (document libraries), with read-only support for site resources (no ability to create new sites) and read-write support for lists, listItems, and driveItems. You can retrieve site properties, search for sites, and access sites associated with Microsoft 365 groups or Teams.
 
 ### Lists and List Items
+
 Lists are the foundation for data storage in SharePoint. You can create lists to store a variety of business data, from a simple customer contact list to a custom business application. When you use columns to define your schema, SharePoint can protect the integrity of your data as well as enable rich indexing, querying, and search capabilities. The API supports full CRUD operations on lists and list items, including defining custom columns.
 
 ### Document Libraries and Files
+
 SharePoint stores files in a special list type called a document library. You can use the OneDrive API to work with a library as a drive, or the SharePoint API to work with it as a list. Just like a regular list, you can extend the schema of a Document Library to support your business needs with custom columns. This includes uploading, downloading, moving, copying, and versioning files.
 
 ### Search
+
 The Microsoft Search API in Microsoft Graph can search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites. Search supports filtering by entity type and using KQL query templates.
 
 ### Permissions Management
+
 SharePoint supports managing permissions at the site, list, and item level. Through the Graph API and the Selected permissions model, applications can be granted granular access to specific resources. OneDrive for Business and SharePoint support sending notifications of security events on a driveItem. You can subscribe to these events to receive notifications when the permissions on an item change.
 
 ### Content Types and Columns
+
 SharePoint allows defining reusable content types and site columns that govern the schema and metadata of lists and libraries. These can be managed via the API.
 
 ## Events
@@ -70,6 +77,7 @@ SharePoint allows defining reusable content types and site columns that govern t
 SharePoint supports webhooks through two mechanisms: native SharePoint webhooks and Microsoft Graph change notifications (subscriptions).
 
 ### SharePoint Native Webhooks (List/Library Changes)
+
 The SharePoint list webhooks cover the events corresponding to list item changes for a given SharePoint list or a document library. SharePoint webhooks only support asynchronous events. This means that webhooks are only fired after a change happened (similar to -ed events), and thus synchronous (-ing events) are not possible.
 
 - **Supported resources**: SharePoint lists and document libraries.
@@ -79,6 +87,7 @@ The SharePoint list webhooks cover the events corresponding to list item changes
 - Subscriptions require specifying a notification URL, and SharePoint validates the endpoint upon creation.
 
 ### Microsoft Graph Change Notifications (SharePoint Resources)
+
 Change notifications enable applications to receive alerts when a Microsoft Graph resource they're interested in changes (created, updated, or deleted). Microsoft Graph sends notifications to the specified client endpoint.
 
 - **Supported SharePoint resources**: Sites, lists, list items, and drives (document libraries via driveItem hierarchy).

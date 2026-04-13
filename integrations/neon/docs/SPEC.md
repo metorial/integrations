@@ -26,6 +26,7 @@ There are three types of API keys with different scopes:
 You'll need to create your first API key from the Neon Console, where you are already authenticated. You can then use that key to generate new keys from the API.
 
 Example request:
+
 ```
 curl 'https://console.neon.tech/api/v2/projects' \
   -H 'Accept: application/json' \

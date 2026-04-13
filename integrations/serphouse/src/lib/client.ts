@@ -12,7 +12,7 @@ import type {
   TrendsScheduleParams,
   LocationSearchParams,
   LanguageListParams,
-  AccountInfoResponse,
+  AccountInfoResponse
 } from './types';
 
 export class Client {
@@ -23,8 +23,8 @@ export class Client {
       baseURL: 'https://api.serphouse.com',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -32,7 +32,7 @@ export class Client {
 
   async liveSearch(params: LiveSearchParams): Promise<any> {
     let response = await this.axios.post('/serp/live', {
-      data: params,
+      data: params
     });
     return response.data;
   }
@@ -41,14 +41,14 @@ export class Client {
 
   async scheduleSearch(tasks: ScheduleSearchParams[]): Promise<ScheduleSearchResponse> {
     let response = await this.axios.post('/serp/schedule', {
-      data: tasks,
+      data: tasks
     });
     return response.data;
   }
 
   async checkSerpStatus(taskId: string): Promise<CheckStatusResponse> {
     let response = await this.axios.get('/serp/check', {
-      params: { id: taskId },
+      params: { id: taskId }
     });
     return response.data;
   }
@@ -57,8 +57,8 @@ export class Client {
     let response = await this.axios.get('/serp/get', {
       params: {
         id: params.taskId,
-        ...(params.responseType ? { responseType: params.responseType } : {}),
-      },
+        ...(params.responseType ? { responseType: params.responseType } : {})
+      }
     });
     return response.data;
   }
@@ -89,21 +89,21 @@ export class Client {
 
   async trendsSchedule(tasks: TrendsScheduleParams[]): Promise<ScheduleSearchResponse> {
     let response = await this.axios.post('/trends/schedule', {
-      data: tasks,
+      data: tasks
     });
     return response.data;
   }
 
   async checkTrendsStatus(taskId: string): Promise<CheckStatusResponse> {
     let response = await this.axios.get('/trends/check', {
-      params: { id: taskId },
+      params: { id: taskId }
     });
     return response.data;
   }
 
   async getTrendsResult(taskId: string): Promise<any> {
     let response = await this.axios.get('/trends/get', {
-      params: { id: taskId },
+      params: { id: taskId }
     });
     return response.data;
   }
@@ -114,8 +114,8 @@ export class Client {
     let response = await this.axios.get('/location/search', {
       params: {
         q: params.query,
-        type: params.searchEngine,
-      },
+        type: params.searchEngine
+      }
     });
     return response.data;
   }
@@ -123,8 +123,8 @@ export class Client {
   async listLanguages(params: LanguageListParams): Promise<any> {
     let response = await this.axios.get('/language/list', {
       params: {
-        type: params.searchEngine,
-      },
+        type: params.searchEngine
+      }
     });
     return response.data;
   }

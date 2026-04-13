@@ -3,62 +3,77 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFeedback = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Feedback',
-    key: 'new_feedback',
-    description: '[Polling fallback] Polls for new survey responses. Triggers when a new feedback response is received, providing the score, comment, customer details, and campaign info.'
-  }
-)
-  .input(z.object({
-    responseId: z.string().describe('Feedback response ID'),
-    email: z.string().optional().describe('Customer email'),
-    firstName: z.string().optional().describe('Customer first name'),
-    lastName: z.string().optional().describe('Customer last name'),
-    companyName: z.string().optional().describe('Customer company name'),
-    score: z.number().optional().describe('Survey score'),
-    comment: z.string().optional().describe('Feedback text'),
-    campaignName: z.string().optional().describe('Campaign name'),
-    campaignId: z.string().optional().describe('Campaign ID'),
-    metric: z.string().optional().describe('Survey metric type'),
-    channel: z.string().optional().describe('Delivery channel'),
-    ratingCategory: z.string().optional().describe('Rating category'),
-    createdDate: z.string().optional().describe('Response date'),
-    tags: z.array(z.string()).optional().describe('Customer tags'),
-    feedbackTopics: z.array(z.object({
-      name: z.string(),
-      sentiment: z.string()
-    })).optional().describe('Assigned topics'),
-    feedbackTags: z.array(z.string()).optional().describe('Assigned feedback tags')
-  }))
-  .output(z.object({
-    responseId: z.string().describe('Feedback response ID'),
-    email: z.string().optional().describe('Customer email'),
-    firstName: z.string().optional().describe('Customer first name'),
-    lastName: z.string().optional().describe('Customer last name'),
-    companyName: z.string().optional().describe('Customer company name'),
-    score: z.number().optional().describe('Survey score'),
-    comment: z.string().optional().describe('Feedback text'),
-    campaignName: z.string().optional().describe('Campaign name'),
-    campaignId: z.string().optional().describe('Campaign ID'),
-    metric: z.string().optional().describe('Survey metric type (NPS, CSAT, CES, STAR)'),
-    channel: z.string().optional().describe('Delivery channel'),
-    ratingCategory: z.string().optional().describe('Rating category (e.g., promoter, passive, detractor)'),
-    createdDate: z.string().optional().describe('When the response was submitted'),
-    tags: z.array(z.string()).optional().describe('Customer tags'),
-    feedbackTopics: z.array(z.object({
-      name: z.string(),
-      sentiment: z.string()
-    })).optional().describe('Assigned feedback topics with sentiment'),
-    feedbackTags: z.array(z.string()).optional().describe('Assigned feedback tags')
-  }))
+export let newFeedback = SlateTrigger.create(spec, {
+  name: 'New Feedback',
+  key: 'new_feedback',
+  description:
+    '[Polling fallback] Polls for new survey responses. Triggers when a new feedback response is received, providing the score, comment, customer details, and campaign info.'
+})
+  .input(
+    z.object({
+      responseId: z.string().describe('Feedback response ID'),
+      email: z.string().optional().describe('Customer email'),
+      firstName: z.string().optional().describe('Customer first name'),
+      lastName: z.string().optional().describe('Customer last name'),
+      companyName: z.string().optional().describe('Customer company name'),
+      score: z.number().optional().describe('Survey score'),
+      comment: z.string().optional().describe('Feedback text'),
+      campaignName: z.string().optional().describe('Campaign name'),
+      campaignId: z.string().optional().describe('Campaign ID'),
+      metric: z.string().optional().describe('Survey metric type'),
+      channel: z.string().optional().describe('Delivery channel'),
+      ratingCategory: z.string().optional().describe('Rating category'),
+      createdDate: z.string().optional().describe('Response date'),
+      tags: z.array(z.string()).optional().describe('Customer tags'),
+      feedbackTopics: z
+        .array(
+          z.object({
+            name: z.string(),
+            sentiment: z.string()
+          })
+        )
+        .optional()
+        .describe('Assigned topics'),
+      feedbackTags: z.array(z.string()).optional().describe('Assigned feedback tags')
+    })
+  )
+  .output(
+    z.object({
+      responseId: z.string().describe('Feedback response ID'),
+      email: z.string().optional().describe('Customer email'),
+      firstName: z.string().optional().describe('Customer first name'),
+      lastName: z.string().optional().describe('Customer last name'),
+      companyName: z.string().optional().describe('Customer company name'),
+      score: z.number().optional().describe('Survey score'),
+      comment: z.string().optional().describe('Feedback text'),
+      campaignName: z.string().optional().describe('Campaign name'),
+      campaignId: z.string().optional().describe('Campaign ID'),
+      metric: z.string().optional().describe('Survey metric type (NPS, CSAT, CES, STAR)'),
+      channel: z.string().optional().describe('Delivery channel'),
+      ratingCategory: z
+        .string()
+        .optional()
+        .describe('Rating category (e.g., promoter, passive, detractor)'),
+      createdDate: z.string().optional().describe('When the response was submitted'),
+      tags: z.array(z.string()).optional().describe('Customer tags'),
+      feedbackTopics: z
+        .array(
+          z.object({
+            name: z.string(),
+            sentiment: z.string()
+          })
+        )
+        .optional()
+        .describe('Assigned feedback topics with sentiment'),
+      feedbackTags: z.array(z.string()).optional().describe('Assigned feedback tags')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth.token);
 
       let lastPollDate = (ctx.state as any)?.lastPollDate as string | undefined;
@@ -117,7 +132,7 @@ export let newFeedback = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'response.created',
         id: ctx.input.responseId,

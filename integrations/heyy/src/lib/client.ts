@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.hey-y.io/api/v2.0',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -50,12 +50,15 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateContact(contactId: string, data: {
-    firstName?: string | null;
-    lastName?: string | null;
-    labels?: Array<{ name: string }>;
-    attributes?: Array<{ externalId: string; value: string }>;
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      firstName?: string | null;
+      lastName?: string | null;
+      labels?: Array<{ name: string }>;
+      attributes?: Array<{ externalId: string; value: string }>;
+    }
+  ) {
     let response = await this.axios.put(`/contacts/${contactId}`, data);
     return response.data?.data;
   }
@@ -89,15 +92,18 @@ export class Client {
 
   // === Messaging ===
 
-  async sendWhatsAppMessage(channelId: string, data: {
-    phoneNumber: string;
-    type: string;
-    bodyText?: string;
-    messageTemplateId?: string;
-    variables?: Array<{ name: string; value: string }>;
-    fileId?: string;
-    scheduledAt?: string;
-  }) {
+  async sendWhatsAppMessage(
+    channelId: string,
+    data: {
+      phoneNumber: string;
+      type: string;
+      bodyText?: string;
+      messageTemplateId?: string;
+      variables?: Array<{ name: string; value: string }>;
+      fileId?: string;
+      scheduledAt?: string;
+    }
+  ) {
     let response = await this.axios.post(`/${channelId}/whatsapp_messages/send`, data);
     return response.data?.data;
   }
@@ -111,8 +117,8 @@ export class Client {
 
     let response = await this.axios.post('/upload_file', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data?.data;
   }
@@ -126,17 +132,20 @@ export class Client {
 
   // === Broadcasts ===
 
-  async createBroadcast(channelId: string, data: {
-    name: string;
-    workflowId: string;
-    messageTemplateId?: string;
-    isScheduled?: boolean;
-    scheduledAt?: string;
-    isReoccurring?: boolean;
-    recurrenceRules?: string[];
-    contacts?: Array<Record<string, any>>;
-    variables?: Array<{ name: string; value: string }>;
-  }) {
+  async createBroadcast(
+    channelId: string,
+    data: {
+      name: string;
+      workflowId: string;
+      messageTemplateId?: string;
+      isScheduled?: boolean;
+      scheduledAt?: string;
+      isReoccurring?: boolean;
+      recurrenceRules?: string[];
+      contacts?: Array<Record<string, any>>;
+      variables?: Array<{ name: string; value: string }>;
+    }
+  ) {
     let response = await this.axios.post(`/${channelId}/broadcasts`, data);
     return response.data?.data;
   }
@@ -151,16 +160,20 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateBroadcast(channelId: string, broadcastId: string, data: {
-    name?: string;
-    workflowId?: string;
-    messageTemplateId?: string;
-    isScheduled?: boolean;
-    scheduledAt?: string;
-    isReoccurring?: boolean;
-    recurrenceRules?: string[];
-    variables?: Array<{ name: string; value: string }>;
-  }) {
+  async updateBroadcast(
+    channelId: string,
+    broadcastId: string,
+    data: {
+      name?: string;
+      workflowId?: string;
+      messageTemplateId?: string;
+      isScheduled?: boolean;
+      scheduledAt?: string;
+      isReoccurring?: boolean;
+      recurrenceRules?: string[];
+      variables?: Array<{ name: string; value: string }>;
+    }
+  ) {
     let response = await this.axios.put(`/${channelId}/broadcasts/${broadcastId}`, data);
     return response.data?.data;
   }
@@ -171,19 +184,31 @@ export class Client {
   }
 
   async startBroadcast(channelId: string, broadcastId: string, mediaId: string) {
-    let response = await this.axios.post(`/${channelId}/broadcasts/${broadcastId}/start`, { mediaId });
+    let response = await this.axios.post(`/${channelId}/broadcasts/${broadcastId}/start`, {
+      mediaId
+    });
     return response.data?.data;
   }
 
   async addBroadcastRecipients(channelId: string, broadcastId: string, contactsIds: string[]) {
-    let response = await this.axios.post(`/${channelId}/broadcasts/${broadcastId}/recipients`, { contactsIds });
+    let response = await this.axios.post(
+      `/${channelId}/broadcasts/${broadcastId}/recipients`,
+      { contactsIds }
+    );
     return response.data?.data;
   }
 
-  async removeBroadcastRecipients(channelId: string, broadcastId: string, contactsIds: string[]) {
-    let response = await this.axios.delete(`/${channelId}/broadcasts/${broadcastId}/recipients`, {
-      data: { contactsIds },
-    });
+  async removeBroadcastRecipients(
+    channelId: string,
+    broadcastId: string,
+    contactsIds: string[]
+  ) {
+    let response = await this.axios.delete(
+      `/${channelId}/broadcasts/${broadcastId}/recipients`,
+      {
+        data: { contactsIds }
+      }
+    );
     return response.data?.data;
   }
 
@@ -204,12 +229,16 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateChat(channelId: string, chatId: string, data: {
-    isUnread?: boolean;
-    status?: string;
-    assignedUserId?: string | null;
-    assignedTeamId?: string | null;
-  }) {
+  async updateChat(
+    channelId: string,
+    chatId: string,
+    data: {
+      isUnread?: boolean;
+      status?: string;
+      assignedUserId?: string | null;
+      assignedTeamId?: string | null;
+    }
+  ) {
     let response = await this.axios.put(`/${channelId}/chats/${chatId}`, data);
     return response.data?.data;
   }
@@ -221,11 +250,15 @@ export class Client {
     return response.data?.data;
   }
 
-  async triggerWorkflow(channelId: string, workflowId: string, data: {
-    phoneNumber: string;
-    variables?: Array<{ name: string; value: string }>;
-    scheduledAt?: string;
-  }) {
+  async triggerWorkflow(
+    channelId: string,
+    workflowId: string,
+    data: {
+      phoneNumber: string;
+      variables?: Array<{ name: string; value: string }>;
+      scheduledAt?: string;
+    }
+  ) {
     let response = await this.axios.post(`/${channelId}/workflows/${workflowId}`, data);
     return response.data?.data;
   }
@@ -281,11 +314,14 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateWebhook(webhookId: string, data: {
-    type?: string;
-    url?: string;
-    channelId?: string;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      type?: string;
+      url?: string;
+      channelId?: string;
+    }
+  ) {
     let response = await this.axios.put(`/api_webhooks/${webhookId}`, data);
     return response.data?.data;
   }

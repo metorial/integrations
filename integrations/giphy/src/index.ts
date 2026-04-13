@@ -9,7 +9,7 @@ import {
   animatedEmoji,
   searchSuggestions,
   uploadGif,
-  searchChannels,
+  searchChannels
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     animatedEmoji,
     searchSuggestions,
     uploadGif,
-    searchChannels,
+    searchChannels
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

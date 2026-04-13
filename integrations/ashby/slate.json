@@ -2,10 +2,7 @@
   "name": "@metorial/ashby",
   "version": "0.1.1",
   "description": "Manage the full recruiting lifecycle in an applicant tracking system. Create, update, search, and list candidates, applications, and jobs. Track applications through hiring pipeline stages, change stages and sources, and transfer between jobs. Schedule and manage interviews, interviewer pools, and interview plans. Create, update, and approve offers. Manage job postings (publish, unpublish, update content) and job boards. Create and track openings (headcount). Manage organizational structure including departments, locations, and users. Set custom fields, add tags, notes, and files to candidates. Upload resumes, anonymize candidates, and handle referrals. Generate reports, submit feedback, create survey requests, and add assessments. Receive webhooks for candidate hires, stage changes, application updates, interview schedules, job and offer changes, and more.",
-  "categories": [
-    "hr-and-recruiting",
-    "scheduling-and-calendars"
-  ],
+  "categories": ["hr-and-recruiting", "scheduling-and-calendars"],
   "skills": [
     "manage candidates and applications",
     "schedule and track interviews",

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchLeads,
@@ -31,13 +30,9 @@ import {
   createServiceTicket,
   updateServiceTicket,
   batchCreateContacts,
-  listReferenceData,
+  listReferenceData
 } from './tools';
-import {
-  newLeadTrigger,
-  serviceTicketUpdatedTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newLeadTrigger, serviceTicketUpdatedTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -71,11 +66,7 @@ export let provider = Slate.create({
     createServiceTicket,
     updateServiceTicket,
     batchCreateContacts,
-    listReferenceData,
+    listReferenceData
   ],
-  triggers: [
-    inboundWebhook,
-    newLeadTrigger,
-    serviceTicketUpdatedTrigger,
-  ]
+  triggers: [inboundWebhook, newLeadTrigger, serviceTicketUpdatedTrigger]
 });

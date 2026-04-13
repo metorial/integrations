@@ -27,7 +27,7 @@ export class PipedriveClient {
 
     return createAxios({
       baseURL: `https://${this.companyDomain}.pipedrive.com/api/v1`,
-      headers,
+      headers
     });
   }
 
@@ -78,7 +78,9 @@ export class PipedriveClient {
   }
 
   async addDealParticipant(dealId: number, personId: number) {
-    let response = await this.http.post(`/deals/${dealId}/participants`, { person_id: personId });
+    let response = await this.http.post(`/deals/${dealId}/participants`, {
+      person_id: personId
+    });
     return response.data;
   }
 
@@ -115,7 +117,9 @@ export class PipedriveClient {
     sort?: string;
     archivedStatus?: string;
   }) {
-    let response = await this.http.get('/leads', { params: { ...params, archived_status: params?.archivedStatus } });
+    let response = await this.http.get('/leads', {
+      params: { ...params, archived_status: params?.archivedStatus }
+    });
     return response.data;
   }
 
@@ -147,7 +151,9 @@ export class PipedriveClient {
     filterId?: number;
     sort?: string;
   }) {
-    let response = await this.http.get('/persons', { params: { ...params, filter_id: params?.filterId } });
+    let response = await this.http.get('/persons', {
+      params: { ...params, filter_id: params?.filterId }
+    });
     return response.data;
   }
 
@@ -189,7 +195,9 @@ export class PipedriveClient {
     filterId?: number;
     sort?: string;
   }) {
-    let response = await this.http.get('/organizations', { params: { ...params, filter_id: params?.filterId } });
+    let response = await this.http.get('/organizations', {
+      params: { ...params, filter_id: params?.filterId }
+    });
     return response.data;
   }
 
@@ -233,7 +241,9 @@ export class PipedriveClient {
     type?: string;
     done?: number;
   }) {
-    let response = await this.http.get('/activities', { params: { ...params, user_id: params?.userId, filter_id: params?.filterId } });
+    let response = await this.http.get('/activities', {
+      params: { ...params, user_id: params?.userId, filter_id: params?.filterId }
+    });
     return response.data;
   }
 
@@ -314,7 +324,9 @@ export class PipedriveClient {
   // ── Stages ──
 
   async getStages(pipelineId?: number) {
-    let response = await this.http.get('/stages', { params: pipelineId ? { pipeline_id: pipelineId } : undefined });
+    let response = await this.http.get('/stages', {
+      params: pipelineId ? { pipeline_id: pipelineId } : undefined
+    });
     return response.data;
   }
 
@@ -359,8 +371,8 @@ export class PipedriveClient {
         deal_id: params?.dealId,
         person_id: params?.personId,
         org_id: params?.orgId,
-        lead_id: params?.leadId,
-      },
+        lead_id: params?.leadId
+      }
     });
     return response.data;
   }
@@ -401,8 +413,15 @@ export class PipedriveClient {
 
   // ── Goals ──
 
-  async getGoals(params?: { is_active?: boolean; type_name?: string; period_start?: string; period_end?: string }) {
-    let response = await this.http.get('/goals/find', { params: { ...params, is_active: params?.is_active ? 1 : 0 } });
+  async getGoals(params?: {
+    is_active?: boolean;
+    type_name?: string;
+    period_start?: string;
+    period_end?: string;
+  }) {
+    let response = await this.http.get('/goals/find', {
+      params: { ...params, is_active: params?.is_active ? 1 : 0 }
+    });
     return response.data;
   }
 
@@ -527,7 +546,12 @@ export class PipedriveClient {
 
   // ── Recents ──
 
-  async getRecents(params: { since_timestamp: string; items?: string; start?: number; limit?: number }) {
+  async getRecents(params: {
+    since_timestamp: string;
+    items?: string;
+    start?: number;
+    limit?: number;
+  }) {
     let response = await this.http.get('/recents', { params });
     return response.data;
   }

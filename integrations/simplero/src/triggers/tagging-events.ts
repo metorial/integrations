@@ -3,56 +3,57 @@ import { SimpleroClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taggingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Tag Events',
-    key: 'tagging_events',
-    description: 'Triggers when a tag is added to or removed from a contact.',
-  },
-)
-  .input(z.object({
-    eventType: z.enum(['new_tagging', 'delete_tagging']).describe('Type of tagging event'),
-    contactId: z.string().describe('Contact ID'),
-    email: z.string().describe('Contact email'),
-    name: z.string().describe('Contact name'),
-    tagNames: z.string().describe('Comma-separated tag names'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('Contact ID'),
-    email: z.string().describe('Contact email address'),
-    name: z.string().describe('Contact full name'),
-    tagNames: z.string().describe('Current comma-separated tag names'),
-  }))
+export let taggingEvents = SlateTrigger.create(spec, {
+  name: 'Tag Events',
+  key: 'tagging_events',
+  description: 'Triggers when a tag is added to or removed from a contact.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['new_tagging', 'delete_tagging']).describe('Type of tagging event'),
+      contactId: z.string().describe('Contact ID'),
+      email: z.string().describe('Contact email'),
+      name: z.string().describe('Contact name'),
+      tagNames: z.string().describe('Comma-separated tag names')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('Contact ID'),
+      email: z.string().describe('Contact email address'),
+      name: z.string().describe('Contact full name'),
+      tagNames: z.string().describe('Current comma-separated tag names')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new SimpleroClient({
         token: ctx.auth.token,
-        userAgent: ctx.config.userAgent,
+        userAgent: ctx.config.userAgent
       });
 
       let newResult = await client.createZapierSubscription({
         event: 'new_tagging',
-        targetUrl: `${ctx.input.webhookBaseUrl}/new_tagging`,
+        targetUrl: `${ctx.input.webhookBaseUrl}/new_tagging`
       });
 
       let delResult = await client.createZapierSubscription({
         event: 'delete_tagging',
-        targetUrl: `${ctx.input.webhookBaseUrl}/delete_tagging`,
+        targetUrl: `${ctx.input.webhookBaseUrl}/delete_tagging`
       });
 
       return {
         registrationDetails: {
           newTaggingId: String(newResult.id),
-          deleteTaggingId: String(delResult.id),
-        },
+          deleteTaggingId: String(delResult.id)
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new SimpleroClient({
         token: ctx.auth.token,
-        userAgent: ctx.config.userAgent,
+        userAgent: ctx.config.userAgent
       });
 
       let details = ctx.input.registrationDetails as Record<string, string>;
@@ -64,8 +65,8 @@ export let taggingEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
       let url = ctx.request.url;
       let eventType: 'new_tagging' | 'delete_tagging' = 'new_tagging';
       if (url.includes('/delete_tagging')) {
@@ -80,17 +81,17 @@ export let taggingEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: items.map((item) => ({
+        inputs: items.map(item => ({
           eventType,
           contactId: String(item.id || ''),
           email: String(item.email || ''),
           name: String(item.name || ''),
-          tagNames: String(item.tag_names || ''),
-        })),
+          tagNames: String(item.tag_names || '')
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `tag.${ctx.input.eventType === 'new_tagging' ? 'added' : 'removed'}`,
         id: `${ctx.input.eventType}-${ctx.input.contactId}-${Date.now()}`,
@@ -98,8 +99,9 @@ export let taggingEvents = SlateTrigger.create(
           contactId: ctx.input.contactId,
           email: ctx.input.email,
           name: ctx.input.name,
-          tagNames: ctx.input.tagNames,
-        },
+          tagNames: ctx.input.tagNames
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

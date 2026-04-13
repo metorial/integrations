@@ -7,6 +7,6 @@ export let createClient = (ctx: {
   return new WooCommerceClient({
     storeUrl: ctx.config.storeUrl,
     consumerKey: ctx.auth.consumerKey,
-    consumerSecret: ctx.auth.consumerSecret,
+    consumerSecret: ctx.auth.consumerSecret
   });
 };

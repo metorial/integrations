@@ -1,16 +1,13 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchConversations,
   getConversationContext,
   triageConversation,
   manageReplyDraft,
-  sendReply,
+  sendReply
 } from './tools';
-import { conversationChanges,
-  inboundWebhook,
-} from './triggers';
+import { conversationChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -19,8 +16,7 @@ export let provider = Slate.create({
     getConversationContext.build(),
     triageConversation.build(),
     manageReplyDraft.build(),
-    sendReply.build(),
+    sendReply.build()
   ],
-  triggers: [
-    inboundWebhook,conversationChanges.build()],
+  triggers: [inboundWebhook, conversationChanges.build()]
 });

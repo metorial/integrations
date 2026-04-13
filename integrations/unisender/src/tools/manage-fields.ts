@@ -3,33 +3,37 @@ import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFields = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Custom Fields',
-    key: 'manage_fields',
-    description: `Create, update, or delete custom contact fields. Custom fields allow storing additional data on contacts (e.g., city, company, preferences). Fields are global across all lists.
+export let manageFields = SlateTool.create(spec, {
+  name: 'Manage Custom Fields',
+  key: 'manage_fields',
+  description: `Create, update, or delete custom contact fields. Custom fields allow storing additional data on contacts (e.g., city, company, preferences). Fields are global across all lists.
 Use **action** to specify the operation.`,
-    tags: {
-      destructive: true,
-    },
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    fieldId: z.number().optional().describe('Field ID (required for update and delete)'),
-    name: z.string().optional().describe('Internal field name (required for create)'),
-    publicName: z.string().optional().describe('Public display name for the field'),
-    fieldType: z.enum(['string', 'text', 'number', 'date', 'bool']).optional().describe('Field data type (only for create)'),
-  }))
-  .output(z.object({
-    fieldId: z.number().optional().describe('ID of the created or updated field'),
-    success: z.boolean().describe('Whether the operation was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      fieldId: z.number().optional().describe('Field ID (required for update and delete)'),
+      name: z.string().optional().describe('Internal field name (required for create)'),
+      publicName: z.string().optional().describe('Public display name for the field'),
+      fieldType: z
+        .enum(['string', 'text', 'number', 'date', 'bool'])
+        .optional()
+        .describe('Field data type (only for create)')
+    })
+  )
+  .output(
+    z.object({
+      fieldId: z.number().optional().describe('ID of the created or updated field'),
+      success: z.boolean().describe('Whether the operation was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new UnisenderClient({
       token: ctx.auth.token,
-      locale: ctx.config.locale,
+      locale: ctx.config.locale
     });
 
     let { action } = ctx.input;
@@ -39,11 +43,11 @@ Use **action** to specify the operation.`,
       let result = await client.createField({
         name: ctx.input.name,
         type: ctx.input.fieldType,
-        public_name: ctx.input.publicName,
+        public_name: ctx.input.publicName
       });
       return {
         output: { fieldId: result.id, success: true },
-        message: `Created field **"${ctx.input.name}"** with ID \`${result.id}\``,
+        message: `Created field **"${ctx.input.name}"** with ID \`${result.id}\``
       };
     }
 
@@ -52,11 +56,11 @@ Use **action** to specify the operation.`,
       await client.updateField({
         id: ctx.input.fieldId,
         name: ctx.input.name,
-        public_name: ctx.input.publicName,
+        public_name: ctx.input.publicName
       });
       return {
         output: { fieldId: ctx.input.fieldId, success: true },
-        message: `Updated field \`${ctx.input.fieldId}\``,
+        message: `Updated field \`${ctx.input.fieldId}\``
       };
     }
 
@@ -65,7 +69,7 @@ Use **action** to specify the operation.`,
       await client.deleteField(ctx.input.fieldId);
       return {
         output: { fieldId: ctx.input.fieldId, success: true },
-        message: `Deleted field \`${ctx.input.fieldId}\``,
+        message: `Deleted field \`${ctx.input.fieldId}\``
       };
     }
 

@@ -2,19 +2,23 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Freshdesk API key used for Basic Authentication')
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Freshdesk API key used for Basic Authentication')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Freshdesk API key. Find it under Profile Settings > View API key.')
+      token: z
+        .string()
+        .describe('Your Freshdesk API key. Find it under Profile Settings > View API key.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

@@ -21,18 +21,20 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.productboard.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'X-Version': '1',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- Features ----
 
-  async listFeatures(params?: PaginationParams & {
-    updatedSince?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listFeatures(
+    params?: PaginationParams & {
+      updatedSince?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
     if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
@@ -51,7 +53,11 @@ export class Client {
     name: string;
     description?: string;
     status?: { id: string };
-    parent?: { feature?: { id: string }; component?: { id: string }; product?: { id: string } };
+    parent?: {
+      feature?: { id: string };
+      component?: { id: string };
+      product?: { id: string };
+    };
     timeframe?: { startDate?: string; endDate?: string };
     assignee?: { email: string };
   }): Promise<any> {
@@ -59,14 +65,21 @@ export class Client {
     return response.data.data;
   }
 
-  async updateFeature(featureId: string, data: {
-    name?: string;
-    description?: string;
-    status?: { id: string };
-    parent?: { feature?: { id: string }; component?: { id: string }; product?: { id: string } };
-    timeframe?: { startDate?: string; endDate?: string };
-    assignee?: { email: string };
-  }): Promise<any> {
+  async updateFeature(
+    featureId: string,
+    data: {
+      name?: string;
+      description?: string;
+      status?: { id: string };
+      parent?: {
+        feature?: { id: string };
+        component?: { id: string };
+        product?: { id: string };
+      };
+      timeframe?: { startDate?: string; endDate?: string };
+      assignee?: { email: string };
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/features/${featureId}`, { data });
     return response.data.data;
   }
@@ -82,9 +95,11 @@ export class Client {
 
   // ---- Notes ----
 
-  async listNotes(params?: PaginationParams & {
-    updatedSince?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listNotes(
+    params?: PaginationParams & {
+      updatedSince?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
     if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
@@ -113,11 +128,14 @@ export class Client {
     return response.data.data;
   }
 
-  async updateNote(noteId: string, data: {
-    title?: string;
-    content?: string;
-    tags?: string[];
-  }): Promise<any> {
+  async updateNote(
+    noteId: string,
+    data: {
+      title?: string;
+      content?: string;
+      tags?: string[];
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/notes/${noteId}`, data);
     return response.data.data;
   }
@@ -168,11 +186,14 @@ export class Client {
     return response.data.data;
   }
 
-  async updateCompany(companyId: string, data: {
-    name?: string;
-    domain?: string;
-    customFields?: Record<string, any>;
-  }): Promise<any> {
+  async updateCompany(
+    companyId: string,
+    data: {
+      name?: string;
+      domain?: string;
+      customFields?: Record<string, any>;
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/companies/${companyId}`, { data });
     return response.data.data;
   }
@@ -198,11 +219,14 @@ export class Client {
     return response.data.data;
   }
 
-  async updateUser(userId: string, data: {
-    name?: string;
-    externalId?: string;
-    company?: { id: string };
-  }): Promise<any> {
+  async updateUser(
+    userId: string,
+    data: {
+      name?: string;
+      externalId?: string;
+      company?: { id: string };
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/users/${userId}`, { data });
     return response.data.data;
   }
@@ -227,7 +251,12 @@ export class Client {
     return response.data.data;
   }
 
-  async setCustomFieldValue(entityType: string, entityId: string, customFieldId: string, value: any): Promise<any> {
+  async setCustomFieldValue(
+    entityType: string,
+    entityId: string,
+    customFieldId: string,
+    value: any
+  ): Promise<any> {
     let response = await this.api.put(
       `/${entityType}/${entityId}/custom-fields/${customFieldId}`,
       { value }
@@ -235,7 +264,11 @@ export class Client {
     return response.data;
   }
 
-  async deleteCustomFieldValue(entityType: string, entityId: string, customFieldId: string): Promise<void> {
+  async deleteCustomFieldValue(
+    entityType: string,
+    entityId: string,
+    customFieldId: string
+  ): Promise<void> {
     await this.api.delete(`/${entityType}/${entityId}/custom-fields/${customFieldId}`);
   }
 
@@ -266,12 +299,15 @@ export class Client {
     return response.data.data;
   }
 
-  async updateRelease(releaseId: string, data: {
-    name?: string;
-    description?: string;
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async updateRelease(
+    releaseId: string,
+    data: {
+      name?: string;
+      description?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/releases/${releaseId}`, { data });
     return response.data.data;
   }
@@ -297,8 +333,8 @@ export class Client {
     let response = await this.api.post('/feature-release-assignments', {
       data: {
         feature: { id: featureId },
-        release: { id: releaseId },
-      },
+        release: { id: releaseId }
+      }
     });
     return response.data.data;
   }
@@ -308,9 +344,9 @@ export class Client {
       data: {
         data: {
           feature: { id: featureId },
-          release: { id: releaseId },
-        },
-      },
+          release: { id: releaseId }
+        }
+      }
     });
   }
 
@@ -340,12 +376,15 @@ export class Client {
     return response.data.data;
   }
 
-  async updateObjective(objectiveId: string, data: {
-    name?: string;
-    description?: string;
-    state?: string;
-    timeframe?: { startDate?: string; endDate?: string };
-  }): Promise<any> {
+  async updateObjective(
+    objectiveId: string,
+    data: {
+      name?: string;
+      description?: string;
+      state?: string;
+      timeframe?: { startDate?: string; endDate?: string };
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/objectives/${objectiveId}`, { data });
     return response.data.data;
   }
@@ -356,9 +395,11 @@ export class Client {
 
   // ---- Key Results ----
 
-  async listKeyResults(params?: PaginationParams & {
-    objectiveId?: string;
-  }): Promise<PaginatedResponse<any>> {
+  async listKeyResults(
+    params?: PaginationParams & {
+      objectiveId?: string;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let queryParams: Record<string, string> = {};
     if (params?.pageCursor) queryParams['pageCursor'] = params.pageCursor;
     if (params?.pageLimit) queryParams['pageLimit'] = String(params.pageLimit);
@@ -384,12 +425,15 @@ export class Client {
     return response.data.data;
   }
 
-  async updateKeyResult(keyResultId: string, data: {
-    name?: string;
-    description?: string;
-    targetValue?: number;
-    currentValue?: number;
-  }): Promise<any> {
+  async updateKeyResult(
+    keyResultId: string,
+    data: {
+      name?: string;
+      description?: string;
+      targetValue?: number;
+      currentValue?: number;
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/key-results/${keyResultId}`, { data });
     return response.data.data;
   }
@@ -424,12 +468,15 @@ export class Client {
     return response.data.data;
   }
 
-  async updateInitiative(initiativeId: string, data: {
-    name?: string;
-    description?: string;
-    state?: string;
-    timeframe?: { startDate?: string; endDate?: string };
-  }): Promise<any> {
+  async updateInitiative(
+    initiativeId: string,
+    data: {
+      name?: string;
+      description?: string;
+      state?: string;
+      timeframe?: { startDate?: string; endDate?: string };
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/initiatives/${initiativeId}`, { data });
     return response.data.data;
   }
@@ -449,10 +496,7 @@ export class Client {
     return response.data;
   }
 
-  async createWebhook(data: {
-    notificationUrl: string;
-    eventType: string;
-  }): Promise<any> {
+  async createWebhook(data: { notificationUrl: string; eventType: string }): Promise<any> {
     let response = await this.api.post('/webhooks', { data });
     return response.data.data;
   }

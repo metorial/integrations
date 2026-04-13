@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getHistoricalPrices,
@@ -23,7 +22,7 @@ import {
   newFinancialNews,
   earningsEvent,
   insiderTransactionAlert,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,10 +45,5 @@ export let provider = Slate.create({
     getExchangeInfo,
     getBulkEod
   ],
-  triggers: [
-    inboundWebhook,
-    newFinancialNews,
-    earningsEvent,
-    insiderTransactionAlert
-  ]
+  triggers: [inboundWebhook, newFinancialNews, earningsEvent, insiderTransactionAlert]
 });

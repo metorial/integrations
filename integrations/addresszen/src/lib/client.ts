@@ -41,7 +41,9 @@ export class AddressZenClient {
   }
 
   async resolveAddress(addressId: string, format: 'gbr' | 'usa' = 'usa'): Promise<any> {
-    let res = await this.axios.get(`/autocomplete/addresses/${encodeURIComponent(addressId)}/${format}`);
+    let res = await this.axios.get(
+      `/autocomplete/addresses/${encodeURIComponent(addressId)}/${format}`
+    );
     return res.data;
   }
 
@@ -94,14 +96,15 @@ export class AddressZenClient {
     return res.data;
   }
 
-  async cleanseAddress(params: {
-    query: string;
-    tags?: string;
-  }): Promise<any> {
+  async cleanseAddress(params: { query: string; tags?: string }): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params.tags) queryParams['tags'] = params.tags;
 
-    let res = await this.axios.post('/cleanse/addresses', { query: params.query }, { params: queryParams });
+    let res = await this.axios.post(
+      '/cleanse/addresses',
+      { query: params.query },
+      { params: queryParams }
+    );
     return res.data;
   }
 
@@ -130,31 +133,41 @@ export class AddressZenClient {
     return res.data;
   }
 
-  async getKeyUsage(key: string, params?: {
-    startDate?: string;
-    endDate?: string;
-    tags?: string;
-  }): Promise<any> {
+  async getKeyUsage(
+    key: string,
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      tags?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.startDate) queryParams['start'] = params.startDate;
     if (params?.endDate) queryParams['end'] = params.endDate;
     if (params?.tags) queryParams['tags'] = params.tags;
 
-    let res = await this.axios.get(`/keys/${encodeURIComponent(key)}/usage`, { params: queryParams });
+    let res = await this.axios.get(`/keys/${encodeURIComponent(key)}/usage`, {
+      params: queryParams
+    });
     return res.data;
   }
 
-  async getKeyLookups(key: string, params?: {
-    startDate?: string;
-    endDate?: string;
-    tags?: string;
-  }): Promise<any> {
+  async getKeyLookups(
+    key: string,
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      tags?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.startDate) queryParams['start'] = params.startDate;
     if (params?.endDate) queryParams['end'] = params.endDate;
     if (params?.tags) queryParams['tags'] = params.tags;
 
-    let res = await this.axios.get(`/keys/${encodeURIComponent(key)}/lookups`, { params: queryParams });
+    let res = await this.axios.get(`/keys/${encodeURIComponent(key)}/lookups`, {
+      params: queryParams
+    });
     return res.data;
   }
 }

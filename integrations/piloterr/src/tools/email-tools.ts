@@ -3,25 +3,29 @@ import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let verifyEmail = SlateTool.create(
-  spec,
-  {
-    name: 'Verify Email',
-    key: 'verify_email',
-    description: `Verify an email address via SMTP verification. Returns the email status indicating whether the email is valid, invalid, or unknown.`,
-    tags: {
-      readOnly: true
-    }
+export let verifyEmail = SlateTool.create(spec, {
+  name: 'Verify Email',
+  key: 'verify_email',
+  description: `Verify an email address via SMTP verification. Returns the email status indicating whether the email is valid, invalid, or unknown.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().describe('Email address to verify')
-  }))
-  .output(z.object({
-    email: z.string().optional().describe('Verified email address'),
-    status: z.string().optional().describe('Verification status (e.g., valid, invalid, unknown)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().describe('Email address to verify')
+    })
+  )
+  .output(
+    z.object({
+      email: z.string().optional().describe('Verified email address'),
+      status: z
+        .string()
+        .optional()
+        .describe('Verification status (e.g., valid, invalid, unknown)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.verifyEmail({ email: ctx.input.email });
 
@@ -35,30 +39,31 @@ export let verifyEmail = SlateTool.create(
   })
   .build();
 
-export let findEmail = SlateTool.create(
-  spec,
-  {
-    name: 'Find Email',
-    key: 'find_email',
-    description: `Find a person's professional email address by their full name and company. Provide at least a company domain or company name along with the person's full name.`,
-    tags: {
-      readOnly: true
-    }
+export let findEmail = SlateTool.create(spec, {
+  name: 'Find Email',
+  key: 'find_email',
+  description: `Find a person's professional email address by their full name and company. Provide at least a company domain or company name along with the person's full name.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    fullName: z.string().describe("Person's full name"),
-    companyDomain: z.string().optional().describe('Company domain (e.g., "google.com")'),
-    companyName: z.string().optional().describe('Company name (e.g., "Google")')
-  }))
-  .output(z.object({
-    email: z.string().optional().describe('Found email address'),
-    status: z.string().optional().describe('Email verification status'),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    companyDomain: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fullName: z.string().describe("Person's full name"),
+      companyDomain: z.string().optional().describe('Company domain (e.g., "google.com")'),
+      companyName: z.string().optional().describe('Company name (e.g., "Google")')
+    })
+  )
+  .output(
+    z.object({
+      email: z.string().optional().describe('Found email address'),
+      status: z.string().optional().describe('Email verification status'),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      companyDomain: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.findEmail({
       fullName: ctx.input.fullName,

@@ -16,38 +16,50 @@ let pollutantComponentsSchema = z.object({
 
 let airQualityEntrySchema = z.object({
   timestamp: z.string().describe('Data point time (ISO 8601)'),
-  airQualityIndex: z.number().describe('Air Quality Index (1=Good, 2=Fair, 3=Moderate, 4=Poor, 5=Very Poor)'),
+  airQualityIndex: z
+    .number()
+    .describe('Air Quality Index (1=Good, 2=Fair, 3=Moderate, 4=Poor, 5=Very Poor)'),
   components: pollutantComponentsSchema.describe('Pollutant concentrations')
 });
 
-export let getAirQuality = SlateTool.create(
-  spec,
-  {
-    name: 'Get Air Quality',
-    key: 'get_air_quality',
-    description: `Retrieve air pollution data for a location, including the Air Quality Index (AQI) and concentrations of polluting gases (CO, NO, NO2, O3, SO2, NH3, PM2.5, PM10). Supports current conditions, 4-day hourly forecast, and historical data from November 27, 2020.`,
-    instructions: [
-      'Set mode to "current" for latest air quality, "forecast" for 4-day hourly forecast, or "history" for a specific date range',
-      'For historical data, provide startTimestamp and endTimestamp as Unix timestamps (UTC)'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getAirQuality = SlateTool.create(spec, {
+  name: 'Get Air Quality',
+  key: 'get_air_quality',
+  description: `Retrieve air pollution data for a location, including the Air Quality Index (AQI) and concentrations of polluting gases (CO, NO, NO2, O3, SO2, NH3, PM2.5, PM10). Supports current conditions, 4-day hourly forecast, and historical data from November 27, 2020.`,
+  instructions: [
+    'Set mode to "current" for latest air quality, "forecast" for 4-day hourly forecast, or "history" for a specific date range',
+    'For historical data, provide startTimestamp and endTimestamp as Unix timestamps (UTC)'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    latitude: z.number().min(-90).max(90).describe('Latitude of the location'),
-    longitude: z.number().min(-180).max(180).describe('Longitude of the location'),
-    mode: z.enum(['current', 'forecast', 'history']).default('current').describe('Type of air quality data to retrieve'),
-    startTimestamp: z.number().optional().describe('Start Unix timestamp (UTC) for historical data'),
-    endTimestamp: z.number().optional().describe('End Unix timestamp (UTC) for historical data')
-  }))
-  .output(z.object({
-    latitude: z.number().describe('Latitude'),
-    longitude: z.number().describe('Longitude'),
-    entries: z.array(airQualityEntrySchema).describe('Air quality data entries')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      latitude: z.number().min(-90).max(90).describe('Latitude of the location'),
+      longitude: z.number().min(-180).max(180).describe('Longitude of the location'),
+      mode: z
+        .enum(['current', 'forecast', 'history'])
+        .default('current')
+        .describe('Type of air quality data to retrieve'),
+      startTimestamp: z
+        .number()
+        .optional()
+        .describe('Start Unix timestamp (UTC) for historical data'),
+      endTimestamp: z
+        .number()
+        .optional()
+        .describe('End Unix timestamp (UTC) for historical data')
+    })
+  )
+  .output(
+    z.object({
+      latitude: z.number().describe('Latitude'),
+      longitude: z.number().describe('Longitude'),
+      entries: z.array(airQualityEntrySchema).describe('Air quality data entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OpenWeatherClient({
       apiKey: ctx.auth.token
     });
@@ -58,9 +70,16 @@ export let getAirQuality = SlateTool.create(
       data = await client.getAirPollutionForecast(ctx.input.latitude, ctx.input.longitude);
     } else if (ctx.input.mode === 'history') {
       if (!ctx.input.startTimestamp || !ctx.input.endTimestamp) {
-        throw new Error('startTimestamp and endTimestamp are required for historical air quality data.');
+        throw new Error(
+          'startTimestamp and endTimestamp are required for historical air quality data.'
+        );
       }
-      data = await client.getAirPollutionHistory(ctx.input.latitude, ctx.input.longitude, ctx.input.startTimestamp, ctx.input.endTimestamp);
+      data = await client.getAirPollutionHistory(
+        ctx.input.latitude,
+        ctx.input.longitude,
+        ctx.input.startTimestamp,
+        ctx.input.endTimestamp
+      );
     } else {
       data = await client.getCurrentAirPollution(ctx.input.latitude, ctx.input.longitude);
     }
@@ -94,8 +113,16 @@ export let getAirQuality = SlateTool.create(
       entries
     };
 
-    let modeLabel = ctx.input.mode === 'forecast' ? 'forecast' : ctx.input.mode === 'history' ? 'historical' : 'current';
-    let aqiSummary = entries.length > 0 ? `AQI: ${entries[0].airQualityIndex} (${aqiLabels[entries[0].airQualityIndex] || 'Unknown'})` : 'No data';
+    let modeLabel =
+      ctx.input.mode === 'forecast'
+        ? 'forecast'
+        : ctx.input.mode === 'history'
+          ? 'historical'
+          : 'current';
+    let aqiSummary =
+      entries.length > 0
+        ? `AQI: ${entries[0].airQualityIndex} (${aqiLabels[entries[0].airQualityIndex] || 'Unknown'})`
+        : 'No data';
 
     return {
       output,

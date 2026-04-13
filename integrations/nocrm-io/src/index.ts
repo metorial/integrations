@@ -14,13 +14,9 @@ import {
   listUsers,
   manageTeams,
   manageProspecting,
-  listPipelinesSteps,
+  listPipelinesSteps
 } from './tools';
-import {
-  leadEvents,
-  prospectEvents,
-  taskEvents,
-} from './triggers';
+import { leadEvents, prospectEvents, taskEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,11 +34,7 @@ export let provider = Slate.create({
     listUsers,
     manageTeams,
     manageProspecting,
-    listPipelinesSteps,
+    listPipelinesSteps
   ],
-  triggers: [
-    leadEvents,
-    prospectEvents,
-    taskEvents,
-  ],
+  triggers: [leadEvents, prospectEvents, taskEvents]
 });

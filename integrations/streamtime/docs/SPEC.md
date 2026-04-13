@@ -22,30 +22,39 @@ There are no OAuth flows or scopes. A single API key provides access to all data
 ## Features
 
 ### Job Management
+
 Create, update, and search for jobs (projects). Jobs are the central entity in Streamtime, containing job plans with phases, line items, team member assignments, estimated hours, deadlines, and milestones. Jobs can be filtered by status (e.g., "In Play"), labels, company, and other attributes. You can also assign jobs to job groups and assign lead users to jobs.
 
 ### Contact and Company Management
+
 Create new contacts and new jobs in Streamtime. Search and retrieve companies and contacts, including associated details. Companies contain contacts, and contacts can be linked to jobs and invoices.
 
 ### To-Do / Time Tracking
+
 The platform uses to-do lists for time tracking, which are auto-populated directly from job plans. Through the API, you can create, update, and search to-do items. Time entries are logged when team members complete to-do items.
 
 ### Quoting and Invoicing
+
 Turn job plans into quotes and invoices; with everything, even expenses, rolled into one accurate bill. Quotes and invoices can be searched and managed through the API. Invoices can be created from job plans, quotes, or time and expenses.
 
 ### Expense Management
+
 Manage expenses associated with jobs, including linking supplier contacts to expenses and assigning expenses to job phases. Expenses can be synced with accounting integrations.
 
 ### Advanced Search and Filtering
+
 The API provides a powerful search system using "search views" for different data types (e.g., Jobs = searchView 7, Invoices = searchView 11). Filters can be combined using AND/OR logic through nested filter group collections. Available filters for each search view can be retrieved dynamically.
 
 ### Reporting and Statistics (v2)
+
 The v2 API introduces `column_series` and `time_series` requests for reporting, allowing you to specify which fields to aggregate, the calculation method (count, sum, average), and even combine statistics from multiple data sources (e.g., logged hours + invoice totals + quote totals) in a single request.
 
 ### User Management
+
 Retrieve user/team member information. Users are associated with jobs, to-dos, and scheduling.
 
 ### Custom API Calls
+
 The API supports arbitrary custom requests for any endpoint documented in the Swagger specification, allowing access to any resource not covered by pre-built modules.
 
 ## Events

@@ -3,40 +3,42 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let channelMessage = SlateTrigger.create(
-  spec,
-  {
-    name: 'Channel Message',
-    key: 'channel_message',
-    description: 'Triggers when a new message is sent in a specific Revolt channel. Monitor a single channel for new messages by providing its channel ID.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('ID of the new message'),
-    channelId: z.string().describe('ID of the channel'),
-    authorId: z.string().describe('ID of the message author'),
-    content: z.string().optional().describe('Text content of the message'),
-    hasAttachments: z.boolean().describe('Whether the message has attachments'),
-    hasEmbeds: z.boolean().describe('Whether the message has embeds'),
-    replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
-    mentions: z.array(z.string()).optional().describe('User IDs mentioned'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('ID of the message'),
-    channelId: z.string().describe('ID of the channel'),
-    authorId: z.string().describe('ID of the message author'),
-    content: z.string().optional().describe('Text content of the message'),
-    hasAttachments: z.boolean().describe('Whether the message has attachments'),
-    hasEmbeds: z.boolean().describe('Whether the message has embeds'),
-    replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
-    mentions: z.array(z.string()).optional().describe('User IDs mentioned in the message'),
-  }))
+export let channelMessage = SlateTrigger.create(spec, {
+  name: 'Channel Message',
+  key: 'channel_message',
+  description:
+    'Triggers when a new message is sent in a specific Revolt channel. Monitor a single channel for new messages by providing its channel ID.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('ID of the new message'),
+      channelId: z.string().describe('ID of the channel'),
+      authorId: z.string().describe('ID of the message author'),
+      content: z.string().optional().describe('Text content of the message'),
+      hasAttachments: z.boolean().describe('Whether the message has attachments'),
+      hasEmbeds: z.boolean().describe('Whether the message has embeds'),
+      replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
+      mentions: z.array(z.string()).optional().describe('User IDs mentioned')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('ID of the message'),
+      channelId: z.string().describe('ID of the channel'),
+      authorId: z.string().describe('ID of the message author'),
+      content: z.string().optional().describe('Text content of the message'),
+      hasAttachments: z.boolean().describe('Whether the message has attachments'),
+      hasEmbeds: z.boolean().describe('Whether the message has embeds'),
+      replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
+      mentions: z.array(z.string()).optional().describe('User IDs mentioned in the message')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let state = ctx.state ?? {};
       let channelId = state.channelId;
@@ -68,7 +70,7 @@ export let channelMessage = SlateTrigger.create(
 
         let newLastId = state.lastMessageId;
         if (messages.length > 0) {
-          let sorted = [...messages].sort((a: any, b: any) => a._id > b._id ? -1 : 1);
+          let sorted = [...messages].sort((a: any, b: any) => (a._id > b._id ? -1 : 1));
           newLastId = sorted[0]._id;
         }
 
@@ -76,7 +78,7 @@ export let channelMessage = SlateTrigger.create(
         if (!state.lastMessageId) {
           return {
             inputs: [],
-            updatedState: { channelId, lastMessageId: newLastId },
+            updatedState: { channelId, lastMessageId: newLastId }
           };
         }
 
@@ -88,19 +90,19 @@ export let channelMessage = SlateTrigger.create(
           hasAttachments: Array.isArray(msg.attachments) && msg.attachments.length > 0,
           hasEmbeds: Array.isArray(msg.embeds) && msg.embeds.length > 0,
           replies: (msg.replies ?? undefined) as string[] | undefined,
-          mentions: (msg.mentions ?? undefined) as string[] | undefined,
+          mentions: (msg.mentions ?? undefined) as string[] | undefined
         }));
 
         return {
           inputs,
-          updatedState: { channelId, lastMessageId: newLastId },
+          updatedState: { channelId, lastMessageId: newLastId }
         };
       } catch {
         return { inputs: [], updatedState: state };
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'message.created',
         id: ctx.input.messageId,
@@ -112,8 +114,9 @@ export let channelMessage = SlateTrigger.create(
           hasAttachments: ctx.input.hasAttachments,
           hasEmbeds: ctx.input.hasEmbeds,
           replies: ctx.input.replies,
-          mentions: ctx.input.mentions,
-        },
+          mentions: ctx.input.mentions
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

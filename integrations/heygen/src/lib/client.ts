@@ -9,8 +9,8 @@ export class HeyGenClient {
       baseURL: 'https://api.heygen.com',
       headers: {
         'X-Api-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -83,7 +83,7 @@ export class HeyGenClient {
     title?: string;
   }): Promise<{ videoId: string }> {
     let body: Record<string, any> = {
-      video_inputs: params.videoInputs.map((input) => {
+      video_inputs: params.videoInputs.map(input => {
         let scene: Record<string, any> = {};
 
         if (input.character) {
@@ -92,7 +92,7 @@ export class HeyGenClient {
             avatar_id: input.character.avatarId,
             avatar_style: input.character.avatarStyle,
             scale: input.character.scale,
-            offset: input.character.offset,
+            offset: input.character.offset
           };
         }
 
@@ -103,7 +103,7 @@ export class HeyGenClient {
             input_text: input.voice.inputText,
             input_audio: input.voice.inputAudio,
             speed: input.voice.speed,
-            emotion: input.voice.emotion,
+            emotion: input.voice.emotion
           };
         }
 
@@ -111,12 +111,12 @@ export class HeyGenClient {
           scene.background = {
             type: input.background.type,
             value: input.background.value,
-            url: input.background.url,
+            url: input.background.url
           };
         }
 
         return scene;
-      }),
+      })
     };
 
     if (params.dimension) body.dimension = params.dimension;
@@ -143,7 +143,7 @@ export class HeyGenClient {
     createdAt: number | null;
   }> {
     let response = await this.axios.get(`/v1/video_status.get`, {
-      params: { video_id: videoId },
+      params: { video_id: videoId }
     });
     let data = response.data.data;
     return {
@@ -156,14 +156,11 @@ export class HeyGenClient {
       caption: data.caption || null,
       error: data.error || null,
       callbackId: data.callback_id || null,
-      createdAt: data.created_at || null,
+      createdAt: data.created_at || null
     };
   }
 
-  async listVideos(params?: {
-    token?: string;
-    limit?: number;
-  }): Promise<{
+  async listVideos(params?: { token?: string; limit?: number }): Promise<{
     videos: Array<{
       videoId: string;
       title: string | null;
@@ -188,15 +185,15 @@ export class HeyGenClient {
         status: v.status,
         videoUrl: v.video_url || null,
         thumbnailUrl: v.thumbnail_url || null,
-        createdAt: v.created_at || null,
+        createdAt: v.created_at || null
       })),
-      token: data.token || null,
+      token: data.token || null
     };
   }
 
   async deleteVideo(videoId: string): Promise<void> {
     await this.axios.delete(`/v1/video.delete`, {
-      params: { video_id: videoId },
+      params: { video_id: videoId }
     });
   }
 
@@ -211,7 +208,7 @@ export class HeyGenClient {
     callbackUrl?: string;
   }): Promise<{ videoId: string }> {
     let body: Record<string, any> = {
-      prompt: params.prompt,
+      prompt: params.prompt
     };
 
     if (params.avatarId) body.avatar_id = params.avatarId;
@@ -240,8 +237,8 @@ export class HeyGenClient {
       templates: (data.templates || []).map((t: any) => ({
         templateId: t.template_id,
         name: t.name,
-        thumbnailImageUrl: t.thumbnail_image_url || null,
-      })),
+        thumbnailImageUrl: t.thumbnail_image_url || null
+      }))
     };
   }
 
@@ -256,7 +253,7 @@ export class HeyGenClient {
     return {
       templateId: data.template_id || templateId,
       name: data.name,
-      variables: data.variables || {},
+      variables: data.variables || {}
     };
   }
 
@@ -269,7 +266,7 @@ export class HeyGenClient {
   }): Promise<{ videoId: string }> {
     let body: Record<string, any> = {
       template_id: params.templateId,
-      variables: params.variables,
+      variables: params.variables
     };
 
     if (params.title) body.title = params.title;
@@ -290,7 +287,7 @@ export class HeyGenClient {
     callbackUrl?: string;
   }): Promise<{ videoTranslateId: string }> {
     let body: Record<string, any> = {
-      target_languages: params.targetLanguages,
+      target_languages: params.targetLanguages
     };
 
     if (params.videoUrl) body.video_url = params.videoUrl;
@@ -321,9 +318,9 @@ export class HeyGenClient {
       targetLanguages: (data.target_languages || []).map((l: any) => ({
         language: l.language,
         videoUrl: l.video_url || null,
-        status: l.status,
+        status: l.status
       })),
-      error: data.error || null,
+      error: data.error || null
     };
   }
 
@@ -337,7 +334,7 @@ export class HeyGenClient {
   }): Promise<{ audioUrl: string }> {
     let body: Record<string, any> = {
       text: params.text,
-      voice_id: params.voiceId,
+      voice_id: params.voiceId
     };
 
     if (params.speed !== undefined) body.speed = params.speed;
@@ -368,8 +365,8 @@ export class HeyGenClient {
       avatars: (data.avatars || []).map((a: any) => ({
         avatarId: a.avatar_id,
         avatarName: a.avatar_name,
-        previewImageUrl: a.preview_image_url || null,
-      })),
+        previewImageUrl: a.preview_image_url || null
+      }))
     };
   }
 
@@ -389,19 +386,16 @@ export class HeyGenClient {
       talkingPhotos: (data.talking_photos || []).map((p: any) => ({
         talkingPhotoId: p.talking_photo_id,
         talkingPhotoName: p.talking_photo_name,
-        previewImageUrl: p.preview_image_url || null,
-      })),
+        previewImageUrl: p.preview_image_url || null
+      }))
     };
   }
 
   // ---- Assets ----
 
-  async uploadAsset(params: {
-    url: string;
-    type?: string;
-  }): Promise<{ assetId: string }> {
+  async uploadAsset(params: { url: string; type?: string }): Promise<{ assetId: string }> {
     let body: Record<string, any> = {
-      url: params.url,
+      url: params.url
     };
     if (params.type) body.type = params.type;
 
@@ -409,9 +403,7 @@ export class HeyGenClient {
     return { assetId: response.data.data.asset_id };
   }
 
-  async listAssets(params?: {
-    type?: string;
-  }): Promise<{
+  async listAssets(params?: { type?: string }): Promise<{
     assets: Array<{
       assetId: string;
       name: string | null;
@@ -430,8 +422,8 @@ export class HeyGenClient {
         assetId: a.asset_id,
         name: a.name || null,
         type: a.type,
-        url: a.url || null,
-      })),
+        url: a.url || null
+      }))
     };
   }
 
@@ -450,16 +442,13 @@ export class HeyGenClient {
 
     return {
       remainingQuota: data.remaining_quota,
-      details: data,
+      details: data
     };
   }
 
   // ---- Webhooks ----
 
-  async addWebhookEndpoint(params: {
-    url: string;
-    events: string[];
-  }): Promise<{
+  async addWebhookEndpoint(params: { url: string; events: string[] }): Promise<{
     endpointId: string;
     secret: string;
     url: string;
@@ -467,7 +456,7 @@ export class HeyGenClient {
   }> {
     let response = await this.axios.post('/v1/webhook/endpoint.add', {
       url: params.url,
-      events: params.events,
+      events: params.events
     });
     let data = response.data.data;
 
@@ -475,7 +464,7 @@ export class HeyGenClient {
       endpointId: data.endpoint_id,
       secret: data.secret,
       url: data.url,
-      events: data.events,
+      events: data.events
     };
   }
 
@@ -493,14 +482,14 @@ export class HeyGenClient {
       endpoints: (data.endpoints || []).map((e: any) => ({
         endpointId: e.endpoint_id,
         url: e.url,
-        events: e.events,
-      })),
+        events: e.events
+      }))
     };
   }
 
   async deleteWebhookEndpoint(endpointId: string): Promise<void> {
     await this.axios.delete('/v1/webhook/endpoint.delete', {
-      data: { endpoint_id: endpointId },
+      data: { endpoint_id: endpointId }
     });
   }
 
@@ -515,7 +504,7 @@ export class HeyGenClient {
   }): Promise<{ contactId: string }> {
     let body: Record<string, any> = {
       project_id: params.projectId,
-      variables: params.variables,
+      variables: params.variables
     };
 
     if (params.firstName) body.first_name = params.firstName;

@@ -16,6 +16,6 @@ export let createClient = (ctx: ContextLike): Client => {
     token: ctx.auth.token,
     authMethod: ctx.auth.authMethod || 'api_key',
     xSystem: ctx.config.xSystem,
-    xSystemKey: ctx.config.xSystemKey,
+    xSystemKey: ctx.config.xSystemKey
   });
 };

@@ -30,8 +30,8 @@ export class Client {
       baseURL: 'https://push.techulus.com/api',
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -45,7 +45,10 @@ export class Client {
     return response.data;
   }
 
-  async sendGroupNotification(groupId: string, options: NotificationOptions): Promise<NotificationResponse> {
+  async sendGroupNotification(
+    groupId: string,
+    options: NotificationOptions
+  ): Promise<NotificationResponse> {
     let response = await this.axios.post(`/v1/notify/group/${groupId}`, options);
     return response.data;
   }
@@ -53,7 +56,7 @@ export class Client {
   async inviteTeamMember(teamApiKey: string, email: string): Promise<TeamManagementResponse> {
     let response = await this.axios.post('/management/v1/teams/invite', {
       team: teamApiKey,
-      email,
+      email
     });
     return response.data;
   }
@@ -62,8 +65,8 @@ export class Client {
     let response = await this.axios.delete('/management/v1/teams/invite', {
       data: {
         team: teamApiKey,
-        email,
-      },
+        email
+      }
     });
     return response.data;
   }

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   verifyEmail,
@@ -11,11 +10,9 @@ import {
   checkToxicity,
   getToxicityStatus,
   getToxicityResults,
-  checkCredits,
+  checkCredits
 } from './tools';
-import { batchCompleted,
-  inboundWebhook,
-} from './triggers';
+import { batchCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     checkToxicity,
     getToxicityStatus,
     getToxicityResults,
-    checkCredits,
+    checkCredits
   ],
-  triggers: [
-    inboundWebhook,
-    batchCompleted,
-  ],
+  triggers: [inboundWebhook, batchCompleted]
 });

@@ -17,37 +17,53 @@ let jobSchema = z.object({
   creationTime: z.number().optional().describe('Job creation time (Unix timestamp)'),
   duration: z.number().optional().describe('Job duration in seconds'),
   tags: z.array(z.string()).optional().describe('Job tags'),
-  error: z.string().nullable().optional().describe('Error message if the job errored'),
+  error: z.string().nullable().optional().describe('Error message if the job errored')
 });
 
-export let listJobs = SlateTool.create(
-  spec,
-  {
-    name: 'List Test Jobs',
-    key: 'list_jobs',
-    description: `Retrieve a list of test jobs from Sauce Labs. Supports both Virtual Device Cloud (VDC) and Real Device Cloud (RDC) jobs. Use this to browse recent test results, find jobs by time range, or paginate through job history.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    source: z.enum(['vdc', 'rdc']).default('vdc').describe('Device source: vdc (virtual devices/emulators) or rdc (real devices)'),
-    limit: z.number().optional().describe('Maximum number of jobs to return (default varies by source)'),
-    skip: z.number().optional().describe('Number of jobs to skip for pagination (VDC only)'),
-    offset: z.number().optional().describe('Offset for pagination (RDC only)'),
-    from: z.number().optional().describe('Only return jobs created after this Unix timestamp (VDC only)'),
-    to: z.number().optional().describe('Only return jobs created before this Unix timestamp (VDC only)'),
-  }))
-  .output(z.object({
-    jobs: z.array(jobSchema).describe('List of test jobs'),
-    totalCount: z.number().optional().describe('Total number of jobs matching the query (RDC only)'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listJobs = SlateTool.create(spec, {
+  name: 'List Test Jobs',
+  key: 'list_jobs',
+  description: `Retrieve a list of test jobs from Sauce Labs. Supports both Virtual Device Cloud (VDC) and Real Device Cloud (RDC) jobs. Use this to browse recent test results, find jobs by time range, or paginate through job history.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      source: z
+        .enum(['vdc', 'rdc'])
+        .default('vdc')
+        .describe('Device source: vdc (virtual devices/emulators) or rdc (real devices)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of jobs to return (default varies by source)'),
+      skip: z.number().optional().describe('Number of jobs to skip for pagination (VDC only)'),
+      offset: z.number().optional().describe('Offset for pagination (RDC only)'),
+      from: z
+        .number()
+        .optional()
+        .describe('Only return jobs created after this Unix timestamp (VDC only)'),
+      to: z
+        .number()
+        .optional()
+        .describe('Only return jobs created before this Unix timestamp (VDC only)')
+    })
+  )
+  .output(
+    z.object({
+      jobs: z.array(jobSchema).describe('List of test jobs'),
+      totalCount: z
+        .number()
+        .optional()
+        .describe('Total number of jobs matching the query (RDC only)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.source === 'rdc') {
       let result = await client.listRdcJobs({
         limit: ctx.input.limit,
-        offset: ctx.input.offset,
+        offset: ctx.input.offset
       });
 
       let entities = result.entities ?? [];
@@ -65,12 +81,12 @@ export let listJobs = SlateTool.create(
         creationTime: j.start_time,
         duration: j.end_time && j.start_time ? j.end_time - j.start_time : undefined,
         tags: j.tags,
-        error: j.error,
+        error: j.error
       }));
 
       return {
         output: { jobs, totalCount: result.metaData?.totalItemCount },
-        message: `Found **${jobs.length}** real device jobs.`,
+        message: `Found **${jobs.length}** real device jobs.`
       };
     }
 
@@ -78,7 +94,7 @@ export let listJobs = SlateTool.create(
       limit: ctx.input.limit,
       skip: ctx.input.skip,
       from: ctx.input.from,
-      to: ctx.input.to,
+      to: ctx.input.to
     });
 
     let jobsRaw = Array.isArray(result) ? result : [];
@@ -96,12 +112,12 @@ export let listJobs = SlateTool.create(
       creationTime: j.creation_time,
       duration: j.duration,
       tags: j.tags,
-      error: j.error,
+      error: j.error
     }));
 
     return {
       output: { jobs },
-      message: `Found **${jobs.length}** virtual device jobs.`,
+      message: `Found **${jobs.length}** virtual device jobs.`
     };
   })
   .build();

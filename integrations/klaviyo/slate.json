@@ -2,11 +2,7 @@
   "name": "@metorial/klaviyo",
   "version": "0.1.1",
   "description": "Manage email, SMS, and push notification marketing campaigns for eCommerce. Create and update customer profiles, manage lists and segments, build automated messaging flows, track events, and query performance reports. Supports product catalog management for recommendations and back-in-stock alerts, coupon creation, email template design, form management, and audience segmentation based on behavioral and predictive data. Subscribe and unsubscribe profiles from marketing channels, request data privacy deletions, and configure webhooks for real-time event forwarding.",
-  "categories": [
-    "crm-and-sales-tools",
-    "e-commerce-and-retail",
-    "email-and-messaging"
-  ],
+  "categories": ["crm-and-sales-tools", "e-commerce-and-retail", "email-and-messaging"],
   "skills": [
     "send email campaigns",
     "manage customer profiles",

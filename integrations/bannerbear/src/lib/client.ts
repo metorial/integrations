@@ -5,14 +5,14 @@ export class BannerbearClient {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.bannerbear.com/v2',
+      baseURL: 'https://api.bannerbear.com/v2'
     });
   }
 
   private get headers() {
     return {
       Authorization: `Bearer ${this.config.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -25,10 +25,15 @@ export class BannerbearClient {
 
   // ─── Templates ─────────────────────────────────────────────
 
-  async listTemplates(params?: { page?: number; limit?: number; tag?: string; name?: string }) {
+  async listTemplates(params?: {
+    page?: number;
+    limit?: number;
+    tag?: string;
+    name?: string;
+  }) {
     let response = await this.axios.get('/templates', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -36,33 +41,54 @@ export class BannerbearClient {
   async getTemplate(templateUid: string) {
     let response = await this.axios.get(`/templates/${templateUid}`, {
       headers: this.headers,
-      params: { extended: true },
+      params: { extended: true }
     });
     return response.data;
   }
 
-  async createTemplate(data: { name: string; width: number; height: number; tags?: string[]; metadata?: any }) {
+  async createTemplate(data: {
+    name: string;
+    width: number;
+    height: number;
+    tags?: string[];
+    metadata?: any;
+  }) {
     let response = await this.axios.post('/templates', data, { headers: this.headers });
     return response.data;
   }
 
-  async updateTemplate(templateUid: string, data: { name?: string; tags?: string[]; metadata?: any }) {
-    let response = await this.axios.patch(`/templates/${templateUid}`, data, { headers: this.headers });
+  async updateTemplate(
+    templateUid: string,
+    data: { name?: string; tags?: string[]; metadata?: any }
+  ) {
+    let response = await this.axios.patch(`/templates/${templateUid}`, data, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deleteTemplate(templateUid: string) {
-    let response = await this.axios.delete(`/templates/${templateUid}`, { headers: this.headers });
+    let response = await this.axios.delete(`/templates/${templateUid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async duplicateTemplate(sourceUid: string) {
-    let response = await this.axios.post(`/templates?source=${sourceUid}`, {}, { headers: this.headers });
+    let response = await this.axios.post(
+      `/templates?source=${sourceUid}`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async importTemplates(publications: string[]) {
-    let response = await this.axios.post('/templates/import', { publications }, { headers: this.headers });
+    let response = await this.axios.post(
+      '/templates/import',
+      { publications },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -71,7 +97,7 @@ export class BannerbearClient {
   async listTemplateSets(params?: { page?: number }) {
     let response = await this.axios.get('/template_sets', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -79,7 +105,7 @@ export class BannerbearClient {
   async getTemplateSet(templateSetUid: string) {
     let response = await this.axios.get(`/template_sets/${templateSetUid}`, {
       headers: this.headers,
-      params: { extended: true },
+      params: { extended: true }
     });
     return response.data;
   }
@@ -89,8 +115,13 @@ export class BannerbearClient {
     return response.data;
   }
 
-  async updateTemplateSet(templateSetUid: string, data: { name?: string; templates?: string[] }) {
-    let response = await this.axios.patch(`/template_sets/${templateSetUid}`, data, { headers: this.headers });
+  async updateTemplateSet(
+    templateSetUid: string,
+    data: { name?: string; templates?: string[] }
+  ) {
+    let response = await this.axios.patch(`/template_sets/${templateSetUid}`, data, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -118,7 +149,7 @@ export class BannerbearClient {
   async listImages(params?: { page?: number; limit?: number }) {
     let response = await this.axios.get('/images', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -153,14 +184,18 @@ export class BannerbearClient {
   }
 
   async updateVideo(videoUid: string, data: { transcription?: any[]; approved?: boolean }) {
-    let response = await this.axios.patch('/videos', { uid: videoUid, ...data }, { headers: this.headers });
+    let response = await this.axios.patch(
+      '/videos',
+      { uid: videoUid, ...data },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async listVideos(params?: { page?: number }) {
     let response = await this.axios.get('/videos', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -170,13 +205,15 @@ export class BannerbearClient {
   async listVideoTemplates(params?: { page?: number }) {
     let response = await this.axios.get('/video_templates', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
 
   async getVideoTemplate(videoTemplateUid: string) {
-    let response = await this.axios.get(`/video_templates/${videoTemplateUid}`, { headers: this.headers });
+    let response = await this.axios.get(`/video_templates/${videoTemplateUid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -205,14 +242,16 @@ export class BannerbearClient {
   }
 
   async getCollection(collectionUid: string) {
-    let response = await this.axios.get(`/collections/${collectionUid}`, { headers: this.headers });
+    let response = await this.axios.get(`/collections/${collectionUid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async listCollections(params?: { page?: number }) {
     let response = await this.axios.get('/collections', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -242,7 +281,7 @@ export class BannerbearClient {
   async listAnimatedGifs(params?: { page?: number }) {
     let response = await this.axios.get('/animated_gifs', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -275,7 +314,7 @@ export class BannerbearClient {
   async listMovies(params?: { page?: number }) {
     let response = await this.axios.get('/movies', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -297,14 +336,16 @@ export class BannerbearClient {
   }
 
   async getScreenshot(screenshotUid: string) {
-    let response = await this.axios.get(`/screenshots/${screenshotUid}`, { headers: this.headers });
+    let response = await this.axios.get(`/screenshots/${screenshotUid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async listScreenshots(params?: { page?: number }) {
     let response = await this.axios.get('/screenshots', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -329,7 +370,7 @@ export class BannerbearClient {
   async listSessions(params?: { page?: number }) {
     let response = await this.axios.get('/sessions', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -337,14 +378,18 @@ export class BannerbearClient {
   // ─── Signed URLs ───────────────────────────────────────────
 
   async createSignedBase(templateUid: string) {
-    let response = await this.axios.post(`/templates/${templateUid}/signed_bases`, {}, { headers: this.headers });
+    let response = await this.axios.post(
+      `/templates/${templateUid}/signed_bases`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async listSignedBases(templateUid: string, params?: { page?: number }) {
     let response = await this.axios.get(`/templates/${templateUid}/signed_bases`, {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -352,42 +397,48 @@ export class BannerbearClient {
   // ─── Diagnoses ─────────────────────────────────────────────
 
   async createDiagnosis(imageUid: string) {
-    let response = await this.axios.post('/diagnoses', { image_uid: imageUid }, { headers: this.headers });
+    let response = await this.axios.post(
+      '/diagnoses',
+      { image_uid: imageUid },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async getDiagnosis(diagnosisUid: string) {
-    let response = await this.axios.get(`/diagnoses/${diagnosisUid}`, { headers: this.headers });
+    let response = await this.axios.get(`/diagnoses/${diagnosisUid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   // ─── PDF Utilities ─────────────────────────────────────────
 
-  async joinPdfs(data: {
-    pdf_inputs: string[];
-    webhook_url?: string;
-    metadata?: any;
-  }) {
-    let response = await this.axios.post('/utilities/pdf/join', data, { headers: this.headers });
+  async joinPdfs(data: { pdf_inputs: string[]; webhook_url?: string; metadata?: any }) {
+    let response = await this.axios.post('/utilities/pdf/join', data, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getJoinedPdf(uid: string) {
-    let response = await this.axios.get(`/utilities/pdf/join/${uid}`, { headers: this.headers });
+    let response = await this.axios.get(`/utilities/pdf/join/${uid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async rasterizePdf(data: {
-    url: string;
-    dpi?: number;
-    webhook_url?: string;
-  }) {
-    let response = await this.axios.post('/utilities/pdf/rasterize', data, { headers: this.headers });
+  async rasterizePdf(data: { url: string; dpi?: number; webhook_url?: string }) {
+    let response = await this.axios.post('/utilities/pdf/rasterize', data, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getRasterizedPdf(uid: string) {
-    let response = await this.axios.get(`/utilities/pdf/rasterize/${uid}`, { headers: this.headers });
+    let response = await this.axios.get(`/utilities/pdf/rasterize/${uid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -404,7 +455,9 @@ export class BannerbearClient {
   }
 
   async deleteWebhook(webhookUid: string) {
-    let response = await this.axios.delete(`/webhooks/${webhookUid}`, { headers: this.headers });
+    let response = await this.axios.delete(`/webhooks/${webhookUid}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 

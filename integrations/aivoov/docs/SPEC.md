@@ -13,6 +13,7 @@ AiVOOV uses API key authentication.
 - The API is a premium feature and is available only with selected plans. You need to have an AiVOOV account with Characters Credit to be able to access the API.
 
 Example header:
+
 ```
 X-API-KEY: YOUR-API-KEY
 ```

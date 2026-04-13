@@ -18,29 +18,35 @@ let financialDocumentSchema = z.object({
   dateUpdated: z.number().optional().describe('Unix timestamp of last update')
 });
 
-export let listFinancialDocuments = SlateTool.create(
-  spec,
-  {
-    name: 'List Financial Documents',
-    key: 'list_financial_documents',
-    description: `List estimates and/or invoices from JobNimbus. Can filter by document type, status, and parent record. Returns paginated results.`,
-    tags: {
-      readOnly: true
-    }
+export let listFinancialDocuments = SlateTool.create(spec, {
+  name: 'List Financial Documents',
+  key: 'list_financial_documents',
+  description: `List estimates and/or invoices from JobNimbus. Can filter by document type, status, and parent record. Returns paginated results.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    documentType: z.enum(['estimate', 'invoice']).describe('Type of financial document to list'),
-    parentRecordId: z.string().optional().describe('Filter by parent contact or job ID'),
-    statusName: z.string().optional().describe('Filter by status name'),
-    from: z.number().optional().describe('Pagination offset (0-based). Defaults to 0.'),
-    size: z.number().optional().describe('Number of results per page. Defaults to 25. Max 200.')
-  }))
-  .output(z.object({
-    totalCount: z.number().describe('Total number of matching documents'),
-    documents: z.array(financialDocumentSchema).describe('List of financial documents')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentType: z
+        .enum(['estimate', 'invoice'])
+        .describe('Type of financial document to list'),
+      parentRecordId: z.string().optional().describe('Filter by parent contact or job ID'),
+      statusName: z.string().optional().describe('Filter by status name'),
+      from: z.number().optional().describe('Pagination offset (0-based). Defaults to 0.'),
+      size: z
+        .number()
+        .optional()
+        .describe('Number of results per page. Defaults to 25. Max 200.')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().describe('Total number of matching documents'),
+      documents: z.array(financialDocumentSchema).describe('List of financial documents')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let mustClauses: any[] = [];
@@ -55,9 +61,10 @@ export let listFinancialDocuments = SlateTool.create(
     let filter = mustClauses.length > 0 ? { must: mustClauses } : undefined;
     let params = { from: ctx.input.from, size: ctx.input.size, filter };
 
-    let result = ctx.input.documentType === 'estimate'
-      ? await client.listEstimates(params)
-      : await client.listInvoices(params);
+    let result =
+      ctx.input.documentType === 'estimate'
+        ? await client.listEstimates(params)
+        : await client.listInvoices(params);
 
     let documents = (result.results || []).map((d: any) => ({
       documentId: d.jnid,
@@ -81,4 +88,5 @@ export let listFinancialDocuments = SlateTool.create(
       },
       message: `Found **${result.count || 0}** ${ctx.input.documentType}s. Returned ${documents.length} results.`
     };
-  }).build();
+  })
+  .build();

@@ -21,13 +21,13 @@ import {
   deleteItemGroup,
   listTransactions,
   getCompany,
-  listLocations,
+  listLocations
 } from './tools';
 import {
   orderCreatedTrigger,
   giftCardCreatedTrigger,
   giftCardRedeemedTrigger,
-  giftCardUpdatedTrigger,
+  giftCardUpdatedTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -53,12 +53,12 @@ export let provider = Slate.create({
     deleteItemGroup,
     listTransactions,
     getCompany,
-    listLocations,
+    listLocations
   ],
   triggers: [
     orderCreatedTrigger,
     giftCardCreatedTrigger,
     giftCardRedeemedTrigger,
-    giftCardUpdatedTrigger,
-  ],
+    giftCardUpdatedTrigger
+  ]
 });

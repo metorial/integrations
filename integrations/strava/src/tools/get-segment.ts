@@ -3,42 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSegment = SlateTool.create(
-  spec,
-  {
-    name: 'Get Segment',
-    key: 'get_segment',
-    description: `Retrieve detailed information about a specific segment including its location, distance, elevation, climb category, and athlete-specific data such as personal records and star status.`,
-    tags: {
-      readOnly: true
-    }
+export let getSegment = SlateTool.create(spec, {
+  name: 'Get Segment',
+  key: 'get_segment',
+  description: `Retrieve detailed information about a specific segment including its location, distance, elevation, climb category, and athlete-specific data such as personal records and star status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    segmentId: z.number().describe('The segment identifier')
-  }))
-  .output(z.object({
-    segmentId: z.number().describe('Segment identifier'),
-    name: z.string().describe('Segment name'),
-    activityType: z.string().describe('Activity type (Ride or Run)'),
-    distance: z.number().describe('Distance in meters'),
-    averageGrade: z.number().describe('Average grade percentage'),
-    maximumGrade: z.number().describe('Maximum grade percentage'),
-    elevationHigh: z.number().describe('Highest elevation in meters'),
-    elevationLow: z.number().describe('Lowest elevation in meters'),
-    climbCategory: z.number().describe('Climb category (0=HC, 5=easiest)'),
-    city: z.string().nullable().optional().describe('City'),
-    state: z.string().nullable().optional().describe('State'),
-    country: z.string().nullable().optional().describe('Country'),
-    totalElevationGain: z.number().optional().describe('Total elevation gain in meters'),
-    effortCount: z.number().optional().describe('Total number of efforts'),
-    athleteCount: z.number().optional().describe('Total number of unique athletes'),
-    starCount: z.number().optional().describe('Number of stars'),
-    starred: z.boolean().optional().describe('Whether the authenticated athlete has starred this segment'),
-    startLatlng: z.array(z.number()).optional().describe('[latitude, longitude] of start'),
-    endLatlng: z.array(z.number()).optional().describe('[latitude, longitude] of end')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      segmentId: z.number().describe('The segment identifier')
+    })
+  )
+  .output(
+    z.object({
+      segmentId: z.number().describe('Segment identifier'),
+      name: z.string().describe('Segment name'),
+      activityType: z.string().describe('Activity type (Ride or Run)'),
+      distance: z.number().describe('Distance in meters'),
+      averageGrade: z.number().describe('Average grade percentage'),
+      maximumGrade: z.number().describe('Maximum grade percentage'),
+      elevationHigh: z.number().describe('Highest elevation in meters'),
+      elevationLow: z.number().describe('Lowest elevation in meters'),
+      climbCategory: z.number().describe('Climb category (0=HC, 5=easiest)'),
+      city: z.string().nullable().optional().describe('City'),
+      state: z.string().nullable().optional().describe('State'),
+      country: z.string().nullable().optional().describe('Country'),
+      totalElevationGain: z.number().optional().describe('Total elevation gain in meters'),
+      effortCount: z.number().optional().describe('Total number of efforts'),
+      athleteCount: z.number().optional().describe('Total number of unique athletes'),
+      starCount: z.number().optional().describe('Number of stars'),
+      starred: z
+        .boolean()
+        .optional()
+        .describe('Whether the authenticated athlete has starred this segment'),
+      startLatlng: z.array(z.number()).optional().describe('[latitude, longitude] of start'),
+      endLatlng: z.array(z.number()).optional().describe('[latitude, longitude] of end')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let segment = await client.getSegment(ctx.input.segmentId);
@@ -67,4 +71,5 @@ export let getSegment = SlateTool.create(
       },
       message: `Retrieved segment **${segment.name}** — ${(segment.distance / 1000).toFixed(2)} km, avg grade ${segment.average_grade}%.`
     };
-  }).build();
+  })
+  .build();

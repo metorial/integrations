@@ -2,60 +2,72 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let leadSchema = z.object({
-  leadPhone: z.string().optional().describe('Lead phone number'),
-  leadId: z.string().optional().describe('Lead identifier'),
-  source: z.string().optional().describe('Lead source URL or path'),
-  sitePath: z.string().optional().describe('Site path where lead was captured'),
-  referer: z.string().optional().describe('Referrer URL'),
-  ipAddress: z.string().optional().describe('Lead IP address'),
-  country: z.string().optional().describe('Lead country'),
-  customParams: z.record(z.string(), z.any()).optional().describe('Custom parameters attached to the lead'),
-}).describe('Lead information');
+let leadSchema = z
+  .object({
+    leadPhone: z.string().optional().describe('Lead phone number'),
+    leadId: z.string().optional().describe('Lead identifier'),
+    source: z.string().optional().describe('Lead source URL or path'),
+    sitePath: z.string().optional().describe('Site path where lead was captured'),
+    referer: z.string().optional().describe('Referrer URL'),
+    ipAddress: z.string().optional().describe('Lead IP address'),
+    country: z.string().optional().describe('Lead country'),
+    customParams: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe('Custom parameters attached to the lead')
+  })
+  .describe('Lead information');
 
-let agentSchema = z.object({
-  agentId: z.string().optional().describe('Agent identifier'),
-  agentPhone: z.string().optional().describe('Agent phone number'),
-  agentName: z.string().optional().describe('Agent name'),
-  agentEmail: z.string().optional().describe('Agent email'),
-}).describe('Agent information');
+let agentSchema = z
+  .object({
+    agentId: z.string().optional().describe('Agent identifier'),
+    agentPhone: z.string().optional().describe('Agent phone number'),
+    agentName: z.string().optional().describe('Agent name'),
+    agentEmail: z.string().optional().describe('Agent email')
+  })
+  .describe('Agent information');
 
-export let speedToLeadCallEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Speed To Lead Call Events',
-    key: 'speed_to_lead_call_events',
-    description: 'Triggers when a Speed To Lead call starts or ends. Receives webhook notifications for call initiation (start_call) and call completion (end_call) events. Webhooks must be configured in the Convolo dashboard under Convolo Leads > Widgets > Settings > Integrations tab.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type: start_call or end_call'),
-    callId: z.string().optional().describe('Unique call identifier'),
-    rawPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    callId: z.string().optional().describe('Unique call identifier'),
-    userId: z.string().optional().describe('User identifier'),
-    widgetKey: z.string().optional().describe('Widget key'),
-    widgetName: z.string().optional().describe('Widget name'),
-    callStatus: z.string().optional().describe('Call status (e.g., answered, no_answer)'),
-    isDelayedCall: z.boolean().optional().describe('Whether this was a delayed call'),
-    timezone: z.string().optional().describe('Call timezone'),
-    timeStarted: z.string().optional().describe('ISO timestamp when call started'),
-    timeAgentAnswered: z.string().optional().describe('ISO timestamp when agent answered'),
-    timeLeadAnswered: z.string().optional().describe('ISO timestamp when lead answered'),
-    timeEnded: z.string().optional().describe('ISO timestamp when call ended'),
-    answerDurationSec: z.number().optional().describe('Duration until answer in seconds'),
-    leadAnswerDurationSec: z.number().optional().describe('Duration until lead answered in seconds'),
-    talkDurationSec: z.number().optional().describe('Talk duration in seconds'),
-    totalDurationSec: z.number().optional().describe('Total call duration in seconds'),
-    disconnectedBy: z.string().optional().describe('Who disconnected the call'),
-    recordingLink: z.string().optional().describe('URL to the call recording'),
-    agent: agentSchema.optional(),
-    lead: leadSchema.optional(),
-  }))
+export let speedToLeadCallEvents = SlateTrigger.create(spec, {
+  name: 'Speed To Lead Call Events',
+  key: 'speed_to_lead_call_events',
+  description:
+    'Triggers when a Speed To Lead call starts or ends. Receives webhook notifications for call initiation (start_call) and call completion (end_call) events. Webhooks must be configured in the Convolo dashboard under Convolo Leads > Widgets > Settings > Integrations tab.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type: start_call or end_call'),
+      callId: z.string().optional().describe('Unique call identifier'),
+      rawPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      callId: z.string().optional().describe('Unique call identifier'),
+      userId: z.string().optional().describe('User identifier'),
+      widgetKey: z.string().optional().describe('Widget key'),
+      widgetName: z.string().optional().describe('Widget name'),
+      callStatus: z.string().optional().describe('Call status (e.g., answered, no_answer)'),
+      isDelayedCall: z.boolean().optional().describe('Whether this was a delayed call'),
+      timezone: z.string().optional().describe('Call timezone'),
+      timeStarted: z.string().optional().describe('ISO timestamp when call started'),
+      timeAgentAnswered: z.string().optional().describe('ISO timestamp when agent answered'),
+      timeLeadAnswered: z.string().optional().describe('ISO timestamp when lead answered'),
+      timeEnded: z.string().optional().describe('ISO timestamp when call ended'),
+      answerDurationSec: z.number().optional().describe('Duration until answer in seconds'),
+      leadAnswerDurationSec: z
+        .number()
+        .optional()
+        .describe('Duration until lead answered in seconds'),
+      talkDurationSec: z.number().optional().describe('Talk duration in seconds'),
+      totalDurationSec: z.number().optional().describe('Total call duration in seconds'),
+      disconnectedBy: z.string().optional().describe('Who disconnected the call'),
+      recordingLink: z.string().optional().describe('URL to the call recording'),
+      agent: agentSchema.optional(),
+      lead: leadSchema.optional()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let eventType = data.type || data.event_type || 'unknown';
@@ -66,13 +78,13 @@ export let speedToLeadCallEvents = SlateTrigger.create(
           {
             eventType,
             callId: String(callId),
-            rawPayload: data,
+            rawPayload: data
           }
-        ],
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.rawPayload;
       let eventType = ctx.input.eventType;
 
@@ -100,24 +112,28 @@ export let speedToLeadCallEvents = SlateTrigger.create(
           totalDurationSec: payload.total_duration_sec,
           disconnectedBy: payload.disconnected_by,
           recordingLink: payload.recording_link,
-          agent: agent ? {
-            agentId: agent.id,
-            agentPhone: agent.phone,
-            agentName: agent.name,
-            agentEmail: agent.email,
-          } : undefined,
-          lead: lead ? {
-            leadPhone: lead.phone || lead.lead_phone,
-            leadId: lead.lead_id,
-            source: lead.source,
-            sitePath: lead.site_path,
-            referer: lead.referer,
-            ipAddress: lead.ip_address,
-            country: lead.country,
-            customParams: lead.custom_params,
-          } : undefined,
-        },
+          agent: agent
+            ? {
+                agentId: agent.id,
+                agentPhone: agent.phone,
+                agentName: agent.name,
+                agentEmail: agent.email
+              }
+            : undefined,
+          lead: lead
+            ? {
+                leadPhone: lead.phone || lead.lead_phone,
+                leadId: lead.lead_id,
+                source: lead.source,
+                sitePath: lead.site_path,
+                referer: lead.referer,
+                ipAddress: lead.ip_address,
+                country: lead.country,
+                customParams: lead.custom_params
+              }
+            : undefined
+        }
       };
-    },
+    }
   })
   .build();

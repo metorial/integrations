@@ -4,32 +4,42 @@ import { userSchema, mapUser } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Look up Twitter/X user profiles. Retrieve by user ID, username, or get the authenticated user's own profile. Returns profile details, bio, metrics (followers, following, post count), and account status.`,
-    instructions: [
-      'Provide either a userId, a username, or set getMe to true to retrieve the authenticated user.',
-      'You can also look up multiple users by providing an array of usernames.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Look up Twitter/X user profiles. Retrieve by user ID, username, or get the authenticated user's own profile. Returns profile details, bio, metrics (followers, following, post count), and account status.`,
+  instructions: [
+    'Provide either a userId, a username, or set getMe to true to retrieve the authenticated user.',
+    'You can also look up multiple users by providing an array of usernames.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('User ID to look up'),
-    username: z.string().optional().describe('Username (handle) to look up, without the @ prefix'),
-    usernames: z.array(z.string()).optional().describe('Multiple usernames to look up at once'),
-    getMe: z.boolean().optional().describe('Set to true to retrieve the authenticated user profile')
-  }))
-  .output(z.object({
-    users: z.array(userSchema).describe('Retrieved user profiles')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().optional().describe('User ID to look up'),
+      username: z
+        .string()
+        .optional()
+        .describe('Username (handle) to look up, without the @ prefix'),
+      usernames: z
+        .array(z.string())
+        .optional()
+        .describe('Multiple usernames to look up at once'),
+      getMe: z
+        .boolean()
+        .optional()
+        .describe('Set to true to retrieve the authenticated user profile')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('Retrieved user profiles')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwitterClient(ctx.auth.token);
 
     if (ctx.input.getMe) {
@@ -69,4 +79,5 @@ export let getUser = SlateTool.create(
     }
 
     throw new Error('Provide a userId, username, usernames array, or set getMe to true.');
-  }).build();
+  })
+  .build();

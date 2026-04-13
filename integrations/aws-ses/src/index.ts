@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   sendEmail,
@@ -13,13 +12,9 @@ import {
   manageConfigurationSet,
   manageDedicatedIpPool,
   manageEventDestination,
-  getMessageInsights,
+  getMessageInsights
 } from './tools';
-import {
-  suppressionChanges,
-  identityChanges,
-  inboundWebhook,
-} from './triggers';
+import { suppressionChanges, identityChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,11 +30,7 @@ export let provider = Slate.create({
     manageConfigurationSet,
     manageDedicatedIpPool,
     manageEventDestination,
-    getMessageInsights,
+    getMessageInsights
   ],
-  triggers: [
-    inboundWebhook,
-    suppressionChanges,
-    identityChanges,
-  ],
+  triggers: [inboundWebhook, suppressionChanges, identityChanges]
 });

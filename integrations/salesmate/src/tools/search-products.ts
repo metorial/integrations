@@ -4,51 +4,66 @@ import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
 let searchRuleSchema = z.object({
-  fieldName: z.string().describe('Field name to filter on (e.g., "name", "unitPrice", "currency")'),
-  condition: z.string().describe('Filter condition (e.g., "EQUALS", "CONTAINS", "GREATER_THAN")'),
-  value: z.string().describe('Value to match against'),
+  fieldName: z
+    .string()
+    .describe('Field name to filter on (e.g., "name", "unitPrice", "currency")'),
+  condition: z
+    .string()
+    .describe('Filter condition (e.g., "EQUALS", "CONTAINS", "GREATER_THAN")'),
+  value: z.string().describe('Value to match against')
 });
 
-export let searchProducts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Products',
-    key: 'search_products',
-    description: `Search and list products in the Salesmate product catalog using filters. Supports pagination and sorting.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchProducts = SlateTool.create(spec, {
+  name: 'Search Products',
+  key: 'search_products',
+  description: `Search and list products in the Salesmate product catalog using filters. Supports pagination and sorting.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    fields: z.array(z.string()).describe('List of field names to return (e.g., ["name", "unitPrice", "currency"])'),
-    filters: z.array(searchRuleSchema).optional().describe('Filter rules to narrow results'),
-    filterOperator: z.enum(['AND', 'OR']).optional().describe('Logical operator between filter rules. Defaults to AND.'),
-    sortBy: z.string().optional().describe('Field name to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    page: z.number().optional().describe('Page number (1-based). Defaults to 1.'),
-    pageSize: z.number().optional().describe('Records per page (max 100). Defaults to 25.'),
-  }))
-  .output(z.object({
-    products: z.array(z.record(z.string(), z.unknown())).describe('Array of matching product records'),
-    totalCount: z.number().describe('Total number of matching products'),
-    totalPages: z.number().describe('Total number of pages'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fields: z
+        .array(z.string())
+        .describe('List of field names to return (e.g., ["name", "unitPrice", "currency"])'),
+      filters: z.array(searchRuleSchema).optional().describe('Filter rules to narrow results'),
+      filterOperator: z
+        .enum(['AND', 'OR'])
+        .optional()
+        .describe('Logical operator between filter rules. Defaults to AND.'),
+      sortBy: z.string().optional().describe('Field name to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      page: z.number().optional().describe('Page number (1-based). Defaults to 1.'),
+      pageSize: z.number().optional().describe('Records per page (max 100). Defaults to 25.')
+    })
+  )
+  .output(
+    z.object({
+      products: z
+        .array(z.record(z.string(), z.unknown()))
+        .describe('Array of matching product records'),
+      totalCount: z.number().describe('Total number of matching products'),
+      totalPages: z.number().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { fields, filters, filterOperator, sortBy, sortOrder, page, pageSize } = ctx.input;
 
-    let query = filters && filters.length > 0 ? {
-      group: {
-        operator: filterOperator ?? 'AND' as const,
-        rules: filters.map((f) => ({
-          moduleName: 'Product',
-          field: { fieldName: f.fieldName },
-          condition: f.condition,
-          data: f.value,
-        })),
-      },
-    } : undefined;
+    let query =
+      filters && filters.length > 0
+        ? {
+            group: {
+              operator: filterOperator ?? ('AND' as const),
+              rules: filters.map(f => ({
+                moduleName: 'Product',
+                field: { fieldName: f.fieldName },
+                condition: f.condition,
+                data: f.value
+              }))
+            }
+          }
+        : undefined;
 
     let result = await client.searchProducts({
       fields,
@@ -56,7 +71,7 @@ export let searchProducts = SlateTool.create(
       sortBy,
       sortOrder,
       pageNo: page,
-      rows: pageSize,
+      rows: pageSize
     });
 
     let data = result?.Data ?? {};
@@ -66,7 +81,7 @@ export let searchProducts = SlateTool.create(
 
     return {
       output: { products, totalCount, totalPages },
-      message: `Found **${totalCount}** products (page ${page ?? 1} of ${totalPages}).`,
+      message: `Found **${totalCount}** products (page ${page ?? 1} of ${totalPages}).`
     };
   })
   .build();

@@ -3,21 +3,18 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTransactionTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Transaction',
-    key: 'get_transaction',
-    description: `Look up a single transaction by checkout ID or order reference number. Returns detailed transaction data including tax, discount, and service fees.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getTransactionTool = SlateTool.create(spec, {
+  name: 'Get Transaction',
+  key: 'get_transaction',
+  description: `Look up a single transaction by checkout ID or order reference number. Returns detailed transaction data including tax, discount, and service fees.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
-      transactionIdOrRef: z.string().describe('Checkout ID or order reference number'),
-    }),
+      transactionIdOrRef: z.string().describe('Checkout ID or order reference number')
+    })
   )
   .output(
     z.object({
@@ -27,7 +24,10 @@ export let getTransactionTool = SlateTool.create(
       transactionAmount: z.string().optional().describe('Transaction amount'),
       ticketsInTransaction: z.string().optional().describe('Number of tickets'),
       eventDate: z.string().optional().describe('Event date'),
-      transactionStatus: z.string().optional().describe('Status: Confirmed, Pending, Cancelled, or Incomplete'),
+      transactionStatus: z
+        .string()
+        .optional()
+        .describe('Status: Confirmed, Pending, Cancelled, or Incomplete'),
       userId: z.number().optional().describe('User ID'),
       eventId: z.number().optional().describe('Event ID'),
       eventTitle: z.string().optional().describe('Event title'),
@@ -39,14 +39,18 @@ export let getTransactionTool = SlateTool.create(
       comments: z.string().optional().describe('Order comments'),
       transactionTax: z.string().optional().describe('Tax amount'),
       transactionDiscount: z.string().optional().describe('Discount amount'),
-      eventzillaFee: z.string().optional().describe('Eventzilla service fee'),
-    }),
+      eventzillaFee: z.string().optional().describe('Eventzilla service fee')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.getTransaction(ctx.input.transactionIdOrRef);
-    let t = Array.isArray(data?.transactions) ? data.transactions[0] : Array.isArray(data) ? data[0] : data;
+    let t = Array.isArray(data?.transactions)
+      ? data.transactions[0]
+      : Array.isArray(data)
+        ? data[0]
+        : data;
 
     let output = {
       transactionRef: t.refno ?? t.transaction_ref,
@@ -67,11 +71,12 @@ export let getTransactionTool = SlateTool.create(
       comments: t.comments,
       transactionTax: t.transaction_tax,
       transactionDiscount: t.transaction_discount,
-      eventzillaFee: t.eventzilla_fee,
+      eventzillaFee: t.eventzilla_fee
     };
 
     return {
       output,
-      message: `Retrieved transaction **${output.transactionRef}** (status: ${output.transactionStatus}, amount: ${output.transactionAmount}).`,
+      message: `Retrieved transaction **${output.transactionRef}** (status: ${output.transactionStatus}, amount: ${output.transactionAmount}).`
     };
-  }).build();
+  })
+  .build();

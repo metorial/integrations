@@ -3,45 +3,61 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTickets = SlateTool.create(
-  spec,
-  {
-    name: 'List Tickets',
-    key: 'list_tickets',
-    description: `Lists tickets from Freshdesk with optional filtering, ordering, and pagination. Can filter by updated timestamp and include related data. Returns up to 30 tickets per page.`,
-    constraints: [
-      'Returns a maximum of 30 tickets per page',
-      'Use the page parameter for pagination'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listTickets = SlateTool.create(spec, {
+  name: 'List Tickets',
+  key: 'list_tickets',
+  description: `Lists tickets from Freshdesk with optional filtering, ordering, and pagination. Can filter by updated timestamp and include related data. Returns up to 30 tickets per page.`,
+  constraints: [
+    'Returns a maximum of 30 tickets per page',
+    'Use the page parameter for pagination'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    orderBy: z.enum(['created_at', 'due_by', 'updated_at', 'status']).optional().describe('Field to order results by'),
-    orderType: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    perPage: z.number().optional().describe('Number of results per page (max 30)'),
-    updatedSince: z.string().optional().describe('Return tickets updated after this ISO 8601 timestamp'),
-    include: z.string().optional().describe('Include additional data: "requester", "stats", "company", or comma-separated combination')
-  }))
-  .output(z.object({
-    tickets: z.array(z.object({
-      ticketId: z.number().describe('Ticket ID'),
-      subject: z.string().describe('Ticket subject'),
-      status: z.number().describe('Ticket status'),
-      priority: z.number().describe('Ticket priority'),
-      requesterId: z.number().describe('Requester contact ID'),
-      responderId: z.number().nullable().describe('Assigned agent ID'),
-      groupId: z.number().nullable().describe('Assigned group ID'),
-      type: z.string().nullable().describe('Ticket type'),
-      tags: z.array(z.string()).describe('Ticket tags'),
-      createdAt: z.string().describe('Creation timestamp'),
-      updatedAt: z.string().describe('Last update timestamp')
-    })).describe('List of tickets')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      orderBy: z
+        .enum(['created_at', 'due_by', 'updated_at', 'status'])
+        .optional()
+        .describe('Field to order results by'),
+      orderType: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      perPage: z.number().optional().describe('Number of results per page (max 30)'),
+      updatedSince: z
+        .string()
+        .optional()
+        .describe('Return tickets updated after this ISO 8601 timestamp'),
+      include: z
+        .string()
+        .optional()
+        .describe(
+          'Include additional data: "requester", "stats", "company", or comma-separated combination'
+        )
+    })
+  )
+  .output(
+    z.object({
+      tickets: z
+        .array(
+          z.object({
+            ticketId: z.number().describe('Ticket ID'),
+            subject: z.string().describe('Ticket subject'),
+            status: z.number().describe('Ticket status'),
+            priority: z.number().describe('Ticket priority'),
+            requesterId: z.number().describe('Requester contact ID'),
+            responderId: z.number().nullable().describe('Assigned agent ID'),
+            groupId: z.number().nullable().describe('Assigned group ID'),
+            type: z.string().nullable().describe('Ticket type'),
+            tags: z.array(z.string()).describe('Ticket tags'),
+            createdAt: z.string().describe('Creation timestamp'),
+            updatedAt: z.string().describe('Last update timestamp')
+          })
+        )
+        .describe('List of tickets')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -74,4 +90,5 @@ export let listTickets = SlateTool.create(
       output: { tickets: mappedTickets },
       message: `Retrieved **${mappedTickets.length}** tickets`
     };
-  }).build();
+  })
+  .build();

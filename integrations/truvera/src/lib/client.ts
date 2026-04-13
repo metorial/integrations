@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.truvera.io',
-  test: 'https://api-testnet.truvera.io',
+  test: 'https://api-testnet.truvera.io'
 };
 
 export class Client {
@@ -14,8 +14,8 @@ export class Client {
       baseURL,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -55,7 +55,7 @@ export class Client {
 
   async getCredential(credentialId: string, password?: string) {
     let res = await this.axios.get(`/credentials/${encodeURIComponent(credentialId)}`, {
-      params: password ? { password } : undefined,
+      params: password ? { password } : undefined
     });
     return res.data;
   }
@@ -127,7 +127,7 @@ export class Client {
   async revokeCredentials(registryId: string, credentialIds: string[]) {
     let res = await this.axios.post(`/registries/${encodeURIComponent(registryId)}`, {
       action: 'revoke',
-      credentialIds,
+      credentialIds
     });
     return res.data;
   }
@@ -135,7 +135,7 @@ export class Client {
   async unrevokeCredentials(registryId: string, credentialIds: string[]) {
     let res = await this.axios.post(`/registries/${encodeURIComponent(registryId)}`, {
       action: 'unrevoke',
-      credentialIds,
+      credentialIds
     });
     return res.data;
   }
@@ -158,7 +158,10 @@ export class Client {
   }
 
   async updateProofTemplate(templateId: string, body: Record<string, any>) {
-    let res = await this.axios.patch(`/proof-templates/${encodeURIComponent(templateId)}`, body);
+    let res = await this.axios.patch(
+      `/proof-templates/${encodeURIComponent(templateId)}`,
+      body
+    );
     return res.data;
   }
 
@@ -185,7 +188,10 @@ export class Client {
   }
 
   async createProofRequestFromTemplate(templateId: string, body?: Record<string, any>) {
-    let res = await this.axios.post(`/proof-templates/${encodeURIComponent(templateId)}/request`, body || {});
+    let res = await this.axios.post(
+      `/proof-templates/${encodeURIComponent(templateId)}/request`,
+      body || {}
+    );
     return res.data;
   }
 
@@ -206,12 +212,20 @@ export class Client {
     return res.data;
   }
 
-  async createProfile(body: { did: string; name: string; logo?: string; description?: string }) {
+  async createProfile(body: {
+    did: string;
+    name: string;
+    logo?: string;
+    description?: string;
+  }) {
     let res = await this.axios.post('/profiles', body);
     return res.data;
   }
 
-  async updateProfile(did: string, body: { name?: string; logo?: string; description?: string }) {
+  async updateProfile(
+    did: string,
+    body: { name?: string; logo?: string; description?: string }
+  ) {
     let res = await this.axios.patch(`/profiles/${encodeURIComponent(did)}`, body);
     return res.data;
   }
@@ -235,7 +249,12 @@ export class Client {
     return res.data;
   }
 
-  async createWebhook(body: { url: string; events: string[]; description?: string; status?: number }) {
+  async createWebhook(body: {
+    url: string;
+    events: string[];
+    description?: string;
+    status?: number;
+  }) {
     let res = await this.axios.post('/webhooks', body);
     return res.data;
   }

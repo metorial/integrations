@@ -8,49 +8,70 @@ export let updateOrder = SlateTool.create(spec, {
   key: 'update_order',
   description: `Update an existing order's status, addresses, payment method, or customer note. Commonly used to change order status (e.g., mark as completed or on-hold).`,
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    orderId: z.number().describe('The order ID to update'),
-    status: z.enum(['pending', 'processing', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed']).optional().describe('New order status'),
-    customerNote: z.string().optional().describe('Customer note'),
-    billing: z.object({
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      company: z.string().optional(),
-      address1: z.string().optional(),
-      address2: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postcode: z.string().optional(),
-      country: z.string().optional(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
-    }).optional().describe('Updated billing address'),
-    shipping: z.object({
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      company: z.string().optional(),
-      address1: z.string().optional(),
-      address2: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postcode: z.string().optional(),
-      country: z.string().optional(),
-    }).optional().describe('Updated shipping address'),
-    paymentMethod: z.string().optional().describe('Payment method ID'),
-    paymentMethodTitle: z.string().optional().describe('Payment method title'),
-    transactionId: z.string().optional().describe('Transaction ID'),
-  }))
-  .output(z.object({
-    orderId: z.number(),
-    orderNumber: z.string(),
-    status: z.string(),
-    total: z.string(),
-    dateModified: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      orderId: z.number().describe('The order ID to update'),
+      status: z
+        .enum([
+          'pending',
+          'processing',
+          'on-hold',
+          'completed',
+          'cancelled',
+          'refunded',
+          'failed'
+        ])
+        .optional()
+        .describe('New order status'),
+      customerNote: z.string().optional().describe('Customer note'),
+      billing: z
+        .object({
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          company: z.string().optional(),
+          address1: z.string().optional(),
+          address2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postcode: z.string().optional(),
+          country: z.string().optional(),
+          email: z.string().optional(),
+          phone: z.string().optional()
+        })
+        .optional()
+        .describe('Updated billing address'),
+      shipping: z
+        .object({
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          company: z.string().optional(),
+          address1: z.string().optional(),
+          address2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postcode: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional()
+        .describe('Updated shipping address'),
+      paymentMethod: z.string().optional().describe('Payment method ID'),
+      paymentMethodTitle: z.string().optional().describe('Payment method title'),
+      transactionId: z.string().optional().describe('Transaction ID')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number(),
+      orderNumber: z.string(),
+      status: z.string(),
+      total: z.string(),
+      dateModified: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -88,9 +109,9 @@ export let updateOrder = SlateTool.create(spec, {
         orderNumber: order.number || String(order.id),
         status: order.status,
         total: order.total || '0',
-        dateModified: order.date_modified || '',
+        dateModified: order.date_modified || ''
       },
-      message: `Updated order **#${order.number || order.id}** (status: ${order.status}).`,
+      message: `Updated order **#${order.number || order.id}** (status: ${order.status}).`
     };
   })
   .build();

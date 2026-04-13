@@ -15,26 +15,25 @@ let membershipOutputSchema = z.object({
   created: z.string().optional().describe('Membership creation timestamp')
 });
 
-export let addMember = SlateTool.create(
-  spec,
-  {
-    name: 'Add Member to Space',
-    key: 'add_member',
-    description: `Add a person to a Webex space by their person ID or email address. Optionally grant moderator privileges. You must be a member of the space to add others.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let addMember = SlateTool.create(spec, {
+  name: 'Add Member to Space',
+  key: 'add_member',
+  description: `Add a person to a Webex space by their person ID or email address. Optionally grant moderator privileges. You must be a member of the space to add others.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    roomId: z.string().describe('ID of the space to add the person to'),
-    personId: z.string().optional().describe('Person ID to add'),
-    personEmail: z.string().optional().describe('Email address of the person to add'),
-    isModerator: z.boolean().optional().describe('Grant moderator role to the person')
-  }))
+})
+  .input(
+    z.object({
+      roomId: z.string().describe('ID of the space to add the person to'),
+      personId: z.string().optional().describe('Person ID to add'),
+      personEmail: z.string().optional().describe('Email address of the person to add'),
+      isModerator: z.boolean().optional().describe('Grant moderator role to the person')
+    })
+  )
   .output(membershipOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.createMembership({
@@ -61,25 +60,27 @@ export let addMember = SlateTool.create(
   })
   .build();
 
-export let updateMember = SlateTool.create(
-  spec,
-  {
-    name: 'Update Membership',
-    key: 'update_member',
-    description: `Update a membership in a Webex space. Can toggle moderator status or hide/show a direct space from the member's space list.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateMember = SlateTool.create(spec, {
+  name: 'Update Membership',
+  key: 'update_member',
+  description: `Update a membership in a Webex space. Can toggle moderator status or hide/show a direct space from the member's space list.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    membershipId: z.string().describe('ID of the membership to update'),
-    isModerator: z.boolean().optional().describe('Grant or revoke moderator role'),
-    isRoomHidden: z.boolean().optional().describe('Hide or show the space in the member\'s list')
-  }))
+})
+  .input(
+    z.object({
+      membershipId: z.string().describe('ID of the membership to update'),
+      isModerator: z.boolean().optional().describe('Grant or revoke moderator role'),
+      isRoomHidden: z
+        .boolean()
+        .optional()
+        .describe("Hide or show the space in the member's list")
+    })
+  )
   .output(membershipOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.updateMembership(ctx.input.membershipId, {
@@ -104,25 +105,26 @@ export let updateMember = SlateTool.create(
   })
   .build();
 
-export let removeMember = SlateTool.create(
-  spec,
-  {
-    name: 'Remove Member from Space',
-    key: 'remove_member',
-    description: `Remove a person from a Webex space by deleting their membership. The person will no longer be able to see the space or its messages.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let removeMember = SlateTool.create(spec, {
+  name: 'Remove Member from Space',
+  key: 'remove_member',
+  description: `Remove a person from a Webex space by deleting their membership. The person will no longer be able to see the space or its messages.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    membershipId: z.string().describe('ID of the membership to remove')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the membership was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      membershipId: z.string().describe('ID of the membership to remove')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the membership was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     await client.deleteMembership(ctx.input.membershipId);

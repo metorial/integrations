@@ -14,13 +14,9 @@ import {
   getGoals,
   getCompensation,
   getSuccessionPlanning,
-  queryOdataEntity,
+  queryOdataEntity
 } from './tools';
-import {
-  employeeLifecycle,
-  recruitingEvent,
-  timeOffEvent,
-} from './triggers';
+import { employeeLifecycle, recruitingEvent, timeOffEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,11 +34,7 @@ export let provider = Slate.create({
     getGoals,
     getCompensation,
     getSuccessionPlanning,
-    queryOdataEntity,
+    queryOdataEntity
   ],
-  triggers: [
-    employeeLifecycle,
-    recruitingEvent,
-    timeOffEvent,
-  ],
+  triggers: [employeeLifecycle, recruitingEvent, timeOffEvent]
 });

@@ -3,46 +3,48 @@ import { ApaleoWebhookClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let blockEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Block & Group Events',
-    key: 'block_events',
-    description: 'Triggers on block and group lifecycle events: created, changed, deleted, confirmed, released, washed, or cancelled.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type'),
-    eventId: z.string().describe('Unique event ID'),
-    entityId: z.string().describe('Block or group ID'),
-    entityType: z.string().describe('Entity type (Block or Group)'),
-    propertyId: z.string().optional(),
-    timestamp: z.string().optional(),
-    payload: z.any().optional(),
-  }))
-  .output(z.object({
-    entityId: z.string().describe('Affected block or group ID'),
-    entityType: z.string().describe('Block or Group'),
-    propertyId: z.string().optional(),
-    timestamp: z.string().optional(),
-  }))
+export let blockEvents = SlateTrigger.create(spec, {
+  name: 'Block & Group Events',
+  key: 'block_events',
+  description:
+    'Triggers on block and group lifecycle events: created, changed, deleted, confirmed, released, washed, or cancelled.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type'),
+      eventId: z.string().describe('Unique event ID'),
+      entityId: z.string().describe('Block or group ID'),
+      entityType: z.string().describe('Entity type (Block or Group)'),
+      propertyId: z.string().optional(),
+      timestamp: z.string().optional(),
+      payload: z.any().optional()
+    })
+  )
+  .output(
+    z.object({
+      entityId: z.string().describe('Affected block or group ID'),
+      entityType: z.string().describe('Block or Group'),
+      propertyId: z.string().optional(),
+      timestamp: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let webhookClient = new ApaleoWebhookClient(ctx.auth.token);
       let result = await webhookClient.createSubscription({
         endpointUrl: ctx.input.webhookBaseUrl,
-        topics: ['Block/*', 'Group/*'],
+        topics: ['Block/*', 'Group/*']
       });
       return { registrationDetails: { subscriptionId: result.id } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let webhookClient = new ApaleoWebhookClient(ctx.auth.token);
       await webhookClient.deleteSubscription(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events
@@ -56,14 +58,14 @@ export let blockEvents = SlateTrigger.create(
             entityType,
             propertyId: e.propertyId,
             timestamp: e.timestamp,
-            payload: e,
+            payload: e
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let topicPart = ctx.input.eventType.includes('/')
         ? ctx.input.eventType.split('/').pop() || ''
         : ctx.input.eventType;
@@ -82,9 +84,9 @@ export let blockEvents = SlateTrigger.create(
           entityId: ctx.input.entityId,
           entityType: ctx.input.entityType,
           propertyId: ctx.input.propertyId,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

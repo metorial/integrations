@@ -71,188 +71,326 @@ let fromDynamoDBItem = (item: Record<string, DynamoDBAttributeValue>): Record<st
 
 let keySchemaElementSchema = z.object({
   attributeName: z.string().describe('Name of the key attribute'),
-  keyType: z.enum(['HASH', 'RANGE']).describe('HASH for partition key, RANGE for sort key'),
+  keyType: z.enum(['HASH', 'RANGE']).describe('HASH for partition key, RANGE for sort key')
 });
 
 let attributeDefinitionSchema = z.object({
   attributeName: z.string().describe('Name of the attribute'),
-  attributeType: z.enum(['S', 'N', 'B']).describe('S for String, N for Number, B for Binary'),
+  attributeType: z.enum(['S', 'N', 'B']).describe('S for String, N for Number, B for Binary')
 });
 
 let projectionSchema = z.object({
   projectionType: z.enum(['ALL', 'KEYS_ONLY', 'INCLUDE']).describe('Type of index projection'),
-  nonKeyAttributes: z.array(z.string()).optional().describe('Non-key attributes to project (only for INCLUDE type)'),
+  nonKeyAttributes: z
+    .array(z.string())
+    .optional()
+    .describe('Non-key attributes to project (only for INCLUDE type)')
 });
 
 let globalSecondaryIndexSchema = z.object({
   indexName: z.string().describe('Name of the global secondary index'),
   keySchema: z.array(keySchemaElementSchema).describe('Key schema for the index'),
   projection: projectionSchema.describe('Projection settings for the index'),
-  provisionedThroughput: z.object({
-    readCapacityUnits: z.number().describe('Provisioned read capacity units'),
-    writeCapacityUnits: z.number().describe('Provisioned write capacity units'),
-  }).optional().describe('Required when table uses PROVISIONED billing mode'),
+  provisionedThroughput: z
+    .object({
+      readCapacityUnits: z.number().describe('Provisioned read capacity units'),
+      writeCapacityUnits: z.number().describe('Provisioned write capacity units')
+    })
+    .optional()
+    .describe('Required when table uses PROVISIONED billing mode')
 });
 
 let localSecondaryIndexSchema = z.object({
   indexName: z.string().describe('Name of the local secondary index'),
   keySchema: z.array(keySchemaElementSchema).describe('Key schema for the index'),
-  projection: projectionSchema.describe('Projection settings for the index'),
+  projection: projectionSchema.describe('Projection settings for the index')
 });
 
 // ---------------------------------------------------------------------------
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export let manageDynamoDbTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage DynamoDB',
-    key: 'manage_dynamodb',
-    description: `Manage AWS DynamoDB tables and items. Supports listing, describing, creating, and deleting tables, as well as putting, getting, querying, scanning, and deleting items.
+export let manageDynamoDbTool = SlateTool.create(spec, {
+  name: 'Manage DynamoDB',
+  key: 'manage_dynamodb',
+  description: `Manage AWS DynamoDB tables and items. Supports listing, describing, creating, and deleting tables, as well as putting, getting, querying, scanning, and deleting items.
 
 Accepts plain JSON objects for items and keys -- automatic conversion to/from DynamoDB attribute format is handled internally.`,
-    instructions: [
-      'For "list_tables", no additional parameters are required.',
-      'For "describe_table", provide "tableName".',
-      'For "create_table", provide "tableName", "keySchema", "attributeDefinitions", and optionally billing/index configuration.',
-      'For "delete_table", provide "tableName". This action is irreversible.',
-      'For "put_item", provide "tableName" and "item" as a plain JSON object.',
-      'For "get_item", provide "tableName" and "key" as a plain JSON object with the primary key attributes.',
-      'For "query", provide "tableName" and "keyConditionExpression" with "expressionAttributeValues" in plain JSON.',
-      'For "scan", provide "tableName" and optionally a "filterExpression".',
-      'For "delete_item", provide "tableName" and "key" as a plain JSON object with the primary key attributes.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'For "list_tables", no additional parameters are required.',
+    'For "describe_table", provide "tableName".',
+    'For "create_table", provide "tableName", "keySchema", "attributeDefinitions", and optionally billing/index configuration.',
+    'For "delete_table", provide "tableName". This action is irreversible.',
+    'For "put_item", provide "tableName" and "item" as a plain JSON object.',
+    'For "get_item", provide "tableName" and "key" as a plain JSON object with the primary key attributes.',
+    'For "query", provide "tableName" and "keyConditionExpression" with "expressionAttributeValues" in plain JSON.',
+    'For "scan", provide "tableName" and optionally a "filterExpression".',
+    'For "delete_item", provide "tableName" and "key" as a plain JSON object with the primary key attributes.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum([
-      'list_tables',
-      'describe_table',
-      'create_table',
-      'delete_table',
-      'put_item',
-      'get_item',
-      'query',
-      'scan',
-      'delete_item',
-    ]).describe('The DynamoDB operation to perform'),
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'list_tables',
+          'describe_table',
+          'create_table',
+          'delete_table',
+          'put_item',
+          'get_item',
+          'query',
+          'scan',
+          'delete_item'
+        ])
+        .describe('The DynamoDB operation to perform'),
 
-    // Common
-    tableName: z.string().optional().describe('Name of the DynamoDB table (required for all actions except list_tables)'),
+      // Common
+      tableName: z
+        .string()
+        .optional()
+        .describe('Name of the DynamoDB table (required for all actions except list_tables)'),
 
-    // list_tables
-    limit: z.number().optional().describe('Maximum number of table names to return (list_tables) or items to evaluate (query/scan)'),
-    exclusiveStartTableName: z.string().optional().describe('Table name to start listing after, for pagination (list_tables)'),
+      // list_tables
+      limit: z
+        .number()
+        .optional()
+        .describe(
+          'Maximum number of table names to return (list_tables) or items to evaluate (query/scan)'
+        ),
+      exclusiveStartTableName: z
+        .string()
+        .optional()
+        .describe('Table name to start listing after, for pagination (list_tables)'),
 
-    // create_table
-    keySchema: z.array(keySchemaElementSchema).optional().describe('Primary key schema: one HASH element and optionally one RANGE element (create_table)'),
-    attributeDefinitions: z.array(attributeDefinitionSchema).optional().describe('Attribute definitions for key schema attributes (create_table)'),
-    billingMode: z.enum(['PROVISIONED', 'PAY_PER_REQUEST']).optional().describe('Billing mode for the table (create_table). Defaults to PAY_PER_REQUEST'),
-    provisionedThroughput: z.object({
-      readCapacityUnits: z.number().describe('Provisioned read capacity units'),
-      writeCapacityUnits: z.number().describe('Provisioned write capacity units'),
-    }).optional().describe('Required when billingMode is PROVISIONED (create_table)'),
-    globalSecondaryIndexes: z.array(globalSecondaryIndexSchema).optional().describe('Global secondary indexes to create (create_table)'),
-    localSecondaryIndexes: z.array(localSecondaryIndexSchema).optional().describe('Local secondary indexes to create (create_table)'),
-    tags: z.array(z.object({
-      key: z.string().describe('Tag key'),
-      value: z.string().describe('Tag value'),
-    })).optional().describe('Tags to assign to the table (create_table)'),
+      // create_table
+      keySchema: z
+        .array(keySchemaElementSchema)
+        .optional()
+        .describe(
+          'Primary key schema: one HASH element and optionally one RANGE element (create_table)'
+        ),
+      attributeDefinitions: z
+        .array(attributeDefinitionSchema)
+        .optional()
+        .describe('Attribute definitions for key schema attributes (create_table)'),
+      billingMode: z
+        .enum(['PROVISIONED', 'PAY_PER_REQUEST'])
+        .optional()
+        .describe('Billing mode for the table (create_table). Defaults to PAY_PER_REQUEST'),
+      provisionedThroughput: z
+        .object({
+          readCapacityUnits: z.number().describe('Provisioned read capacity units'),
+          writeCapacityUnits: z.number().describe('Provisioned write capacity units')
+        })
+        .optional()
+        .describe('Required when billingMode is PROVISIONED (create_table)'),
+      globalSecondaryIndexes: z
+        .array(globalSecondaryIndexSchema)
+        .optional()
+        .describe('Global secondary indexes to create (create_table)'),
+      localSecondaryIndexes: z
+        .array(localSecondaryIndexSchema)
+        .optional()
+        .describe('Local secondary indexes to create (create_table)'),
+      tags: z
+        .array(
+          z.object({
+            key: z.string().describe('Tag key'),
+            value: z.string().describe('Tag value')
+          })
+        )
+        .optional()
+        .describe('Tags to assign to the table (create_table)'),
 
-    // put_item / get_item / delete_item
-    item: z.record(z.string(), z.any()).optional().describe('Plain JSON object representing the item to put (put_item)'),
-    key: z.record(z.string(), z.any()).optional().describe('Plain JSON object with primary key attributes (get_item, delete_item)'),
-    conditionExpression: z.string().optional().describe('Condition expression that must be satisfied (put_item, delete_item)'),
-    returnOldItem: z.boolean().optional().describe('Return the previous/deleted item if it existed (put_item, delete_item)'),
+      // put_item / get_item / delete_item
+      item: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Plain JSON object representing the item to put (put_item)'),
+      key: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Plain JSON object with primary key attributes (get_item, delete_item)'),
+      conditionExpression: z
+        .string()
+        .optional()
+        .describe('Condition expression that must be satisfied (put_item, delete_item)'),
+      returnOldItem: z
+        .boolean()
+        .optional()
+        .describe('Return the previous/deleted item if it existed (put_item, delete_item)'),
 
-    // get_item
-    consistentRead: z.boolean().optional().describe('Use strongly consistent read (get_item, query, scan)'),
+      // get_item
+      consistentRead: z
+        .boolean()
+        .optional()
+        .describe('Use strongly consistent read (get_item, query, scan)'),
 
-    // query / scan
-    indexName: z.string().optional().describe('Name of a secondary index to query or scan (query, scan)'),
-    keyConditionExpression: z.string().optional().describe('Key condition expression for the partition key and optionally sort key (query)'),
-    filterExpression: z.string().optional().describe('Filter expression applied after reading (query, scan)'),
-    projectionExpression: z.string().optional().describe('Comma-separated list of attributes to return (get_item, query, scan)'),
-    expressionAttributeNames: z.record(z.string(), z.string()).optional().describe('Substitution tokens for attribute names in expressions'),
-    expressionAttributeValues: z.record(z.string(), z.any()).optional().describe('Substitution tokens for attribute values in expressions as plain JSON'),
-    scanIndexForward: z.boolean().optional().describe('true for ascending sort key order, false for descending (query)'),
-    exclusiveStartKey: z.record(z.string(), z.any()).optional().describe('Pagination start key from a previous query/scan as plain JSON'),
-  }))
-  .output(z.object({
-    // list_tables
-    tableNames: z.array(z.string()).optional().describe('List of table names (list_tables)'),
-    lastEvaluatedTableName: z.string().optional().describe('Last table name for pagination (list_tables)'),
+      // query / scan
+      indexName: z
+        .string()
+        .optional()
+        .describe('Name of a secondary index to query or scan (query, scan)'),
+      keyConditionExpression: z
+        .string()
+        .optional()
+        .describe(
+          'Key condition expression for the partition key and optionally sort key (query)'
+        ),
+      filterExpression: z
+        .string()
+        .optional()
+        .describe('Filter expression applied after reading (query, scan)'),
+      projectionExpression: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of attributes to return (get_item, query, scan)'),
+      expressionAttributeNames: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Substitution tokens for attribute names in expressions'),
+      expressionAttributeValues: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Substitution tokens for attribute values in expressions as plain JSON'),
+      scanIndexForward: z
+        .boolean()
+        .optional()
+        .describe('true for ascending sort key order, false for descending (query)'),
+      exclusiveStartKey: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Pagination start key from a previous query/scan as plain JSON')
+    })
+  )
+  .output(
+    z.object({
+      // list_tables
+      tableNames: z.array(z.string()).optional().describe('List of table names (list_tables)'),
+      lastEvaluatedTableName: z
+        .string()
+        .optional()
+        .describe('Last table name for pagination (list_tables)'),
 
-    // describe_table
-    table: z.object({
-      tableName: z.string().describe('Name of the table'),
-      tableArn: z.string().describe('ARN of the table'),
-      tableStatus: z.string().describe('Current status of the table'),
-      tableId: z.string().optional().describe('Unique identifier of the table'),
-      creationDateTime: z.string().optional().describe('When the table was created'),
-      itemCount: z.number().optional().describe('Approximate number of items'),
-      tableSizeBytes: z.number().optional().describe('Table size in bytes'),
-      billingMode: z.string().optional().describe('Billing mode summary'),
-      keySchema: z.array(z.object({
-        attributeName: z.string().describe('Attribute name'),
-        keyType: z.string().describe('Key type'),
-      })).optional().describe('Primary key schema'),
-      attributeDefinitions: z.array(z.object({
-        attributeName: z.string().describe('Attribute name'),
-        attributeType: z.string().describe('Attribute type'),
-      })).optional().describe('Attribute definitions'),
-      provisionedThroughput: z.object({
-        readCapacityUnits: z.number().describe('Read capacity units'),
-        writeCapacityUnits: z.number().describe('Write capacity units'),
-      }).optional().describe('Provisioned throughput settings'),
-      globalSecondaryIndexes: z.array(z.object({
-        indexName: z.string().describe('Index name'),
-        indexStatus: z.string().optional().describe('Index status'),
-        keySchema: z.array(z.object({
-          attributeName: z.string().describe('Attribute name'),
-          keyType: z.string().describe('Key type'),
-        })).describe('Key schema'),
-        projectionType: z.string().describe('Projection type'),
-        itemCount: z.number().optional().describe('Approximate item count'),
-      })).optional().describe('Global secondary indexes'),
-      localSecondaryIndexes: z.array(z.object({
-        indexName: z.string().describe('Index name'),
-        keySchema: z.array(z.object({
-          attributeName: z.string().describe('Attribute name'),
-          keyType: z.string().describe('Key type'),
-        })).describe('Key schema'),
-        projectionType: z.string().describe('Projection type'),
-      })).optional().describe('Local secondary indexes'),
-      streamEnabled: z.boolean().optional().describe('Whether streams are enabled'),
-      streamViewType: z.string().optional().describe('Stream view type'),
-      latestStreamArn: z.string().optional().describe('ARN of the latest stream'),
-      tableClass: z.string().optional().describe('Table class'),
-    }).optional().describe('Table details (describe_table)'),
+      // describe_table
+      table: z
+        .object({
+          tableName: z.string().describe('Name of the table'),
+          tableArn: z.string().describe('ARN of the table'),
+          tableStatus: z.string().describe('Current status of the table'),
+          tableId: z.string().optional().describe('Unique identifier of the table'),
+          creationDateTime: z.string().optional().describe('When the table was created'),
+          itemCount: z.number().optional().describe('Approximate number of items'),
+          tableSizeBytes: z.number().optional().describe('Table size in bytes'),
+          billingMode: z.string().optional().describe('Billing mode summary'),
+          keySchema: z
+            .array(
+              z.object({
+                attributeName: z.string().describe('Attribute name'),
+                keyType: z.string().describe('Key type')
+              })
+            )
+            .optional()
+            .describe('Primary key schema'),
+          attributeDefinitions: z
+            .array(
+              z.object({
+                attributeName: z.string().describe('Attribute name'),
+                attributeType: z.string().describe('Attribute type')
+              })
+            )
+            .optional()
+            .describe('Attribute definitions'),
+          provisionedThroughput: z
+            .object({
+              readCapacityUnits: z.number().describe('Read capacity units'),
+              writeCapacityUnits: z.number().describe('Write capacity units')
+            })
+            .optional()
+            .describe('Provisioned throughput settings'),
+          globalSecondaryIndexes: z
+            .array(
+              z.object({
+                indexName: z.string().describe('Index name'),
+                indexStatus: z.string().optional().describe('Index status'),
+                keySchema: z
+                  .array(
+                    z.object({
+                      attributeName: z.string().describe('Attribute name'),
+                      keyType: z.string().describe('Key type')
+                    })
+                  )
+                  .describe('Key schema'),
+                projectionType: z.string().describe('Projection type'),
+                itemCount: z.number().optional().describe('Approximate item count')
+              })
+            )
+            .optional()
+            .describe('Global secondary indexes'),
+          localSecondaryIndexes: z
+            .array(
+              z.object({
+                indexName: z.string().describe('Index name'),
+                keySchema: z
+                  .array(
+                    z.object({
+                      attributeName: z.string().describe('Attribute name'),
+                      keyType: z.string().describe('Key type')
+                    })
+                  )
+                  .describe('Key schema'),
+                projectionType: z.string().describe('Projection type')
+              })
+            )
+            .optional()
+            .describe('Local secondary indexes'),
+          streamEnabled: z.boolean().optional().describe('Whether streams are enabled'),
+          streamViewType: z.string().optional().describe('Stream view type'),
+          latestStreamArn: z.string().optional().describe('ARN of the latest stream'),
+          tableClass: z.string().optional().describe('Table class')
+        })
+        .optional()
+        .describe('Table details (describe_table)'),
 
-    // create_table / delete_table
-    tableName: z.string().optional().describe('Name of the created or deleted table'),
-    tableArn: z.string().optional().describe('ARN of the created table'),
-    tableStatus: z.string().optional().describe('Status of the table after the operation'),
+      // create_table / delete_table
+      tableName: z.string().optional().describe('Name of the created or deleted table'),
+      tableArn: z.string().optional().describe('ARN of the created table'),
+      tableStatus: z.string().optional().describe('Status of the table after the operation'),
 
-    // put_item / delete_item
-    success: z.boolean().optional().describe('Whether the write/delete operation succeeded'),
-    oldItem: z.record(z.string(), z.any()).optional().describe('Previous item value if returnOldItem was true'),
+      // put_item / delete_item
+      success: z.boolean().optional().describe('Whether the write/delete operation succeeded'),
+      oldItem: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Previous item value if returnOldItem was true'),
 
-    // get_item
-    found: z.boolean().optional().describe('Whether the item was found (get_item)'),
-    item: z.record(z.string(), z.any()).optional().describe('Retrieved item as plain JSON (get_item)'),
+      // get_item
+      found: z.boolean().optional().describe('Whether the item was found (get_item)'),
+      item: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Retrieved item as plain JSON (get_item)'),
 
-    // query / scan
-    items: z.array(z.record(z.string(), z.any())).optional().describe('Retrieved items as plain JSON objects (query, scan)'),
-    count: z.number().optional().describe('Number of items returned (query, scan)'),
-    scannedCount: z.number().optional().describe('Number of items evaluated before filtering (query, scan)'),
-    lastEvaluatedKey: z.record(z.string(), z.any()).optional().describe('Pagination key for next page as plain JSON (query, scan)'),
-  }))
-  .handleInvocation(async (ctx) => {
+      // query / scan
+      items: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Retrieved items as plain JSON objects (query, scan)'),
+      count: z.number().optional().describe('Number of items returned (query, scan)'),
+      scannedCount: z
+        .number()
+        .optional()
+        .describe('Number of items evaluated before filtering (query, scan)'),
+      lastEvaluatedKey: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Pagination key for next page as plain JSON (query, scan)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = clientFromContext(ctx);
     let { action } = ctx.input;
     let region = ctx.config.region;
@@ -263,18 +401,22 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
         service: 'dynamodb',
         target: `DynamoDB_20120810.${target}`,
         payload,
-        region,
+        region
       });
     };
 
     // Convert user-supplied expressionAttributeValues to DynamoDB format
-    let marshalExprValues = (vals?: Record<string, any>): Record<string, DynamoDBAttributeValue> | undefined => {
+    let marshalExprValues = (
+      vals?: Record<string, any>
+    ): Record<string, DynamoDBAttributeValue> | undefined => {
       if (!vals) return undefined;
       return toDynamoDBItem(vals);
     };
 
     // Convert user-supplied key/exclusiveStartKey to DynamoDB format
-    let marshalKey = (key?: Record<string, any>): Record<string, DynamoDBAttributeValue> | undefined => {
+    let marshalKey = (
+      key?: Record<string, any>
+    ): Record<string, DynamoDBAttributeValue> | undefined => {
       if (!key) return undefined;
       return toDynamoDBItem(key);
     };
@@ -285,16 +427,17 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     if (action === 'list_tables') {
       let payload: Record<string, any> = {};
       if (ctx.input.limit !== undefined) payload.Limit = ctx.input.limit;
-      if (ctx.input.exclusiveStartTableName) payload.ExclusiveStartTableName = ctx.input.exclusiveStartTableName;
+      if (ctx.input.exclusiveStartTableName)
+        payload.ExclusiveStartTableName = ctx.input.exclusiveStartTableName;
 
       let result = await dynamo('ListTables', payload);
 
       return {
         output: {
           tableNames: result.TableNames ?? [],
-          lastEvaluatedTableName: result.LastEvaluatedTableName,
+          lastEvaluatedTableName: result.LastEvaluatedTableName
         },
-        message: `Found **${(result.TableNames ?? []).length}** table(s)${result.LastEvaluatedTableName ? ' (more available)' : ''}`,
+        message: `Found **${(result.TableNames ?? []).length}** table(s)${result.LastEvaluatedTableName ? ' (more available)' : ''}`
       };
     }
 
@@ -303,7 +446,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'describe_table') {
       let result = await dynamo('DescribeTable', {
-        TableName: ctx.input.tableName,
+        TableName: ctx.input.tableName
       });
       let t = result.Table;
 
@@ -320,41 +463,43 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
             billingMode: t.BillingModeSummary?.BillingMode,
             keySchema: (t.KeySchema ?? []).map((k: any) => ({
               attributeName: k.AttributeName,
-              keyType: k.KeyType,
+              keyType: k.KeyType
             })),
             attributeDefinitions: (t.AttributeDefinitions ?? []).map((a: any) => ({
               attributeName: a.AttributeName,
-              attributeType: a.AttributeType,
+              attributeType: a.AttributeType
             })),
-            provisionedThroughput: t.ProvisionedThroughput ? {
-              readCapacityUnits: t.ProvisionedThroughput.ReadCapacityUnits,
-              writeCapacityUnits: t.ProvisionedThroughput.WriteCapacityUnits,
-            } : undefined,
+            provisionedThroughput: t.ProvisionedThroughput
+              ? {
+                  readCapacityUnits: t.ProvisionedThroughput.ReadCapacityUnits,
+                  writeCapacityUnits: t.ProvisionedThroughput.WriteCapacityUnits
+                }
+              : undefined,
             globalSecondaryIndexes: t.GlobalSecondaryIndexes?.map((g: any) => ({
               indexName: g.IndexName,
               indexStatus: g.IndexStatus,
               keySchema: (g.KeySchema ?? []).map((k: any) => ({
                 attributeName: k.AttributeName,
-                keyType: k.KeyType,
+                keyType: k.KeyType
               })),
               projectionType: g.Projection?.ProjectionType,
-              itemCount: g.ItemCount,
+              itemCount: g.ItemCount
             })),
             localSecondaryIndexes: t.LocalSecondaryIndexes?.map((l: any) => ({
               indexName: l.IndexName,
               keySchema: (l.KeySchema ?? []).map((k: any) => ({
                 attributeName: k.AttributeName,
-                keyType: k.KeyType,
+                keyType: k.KeyType
               })),
-              projectionType: l.Projection?.ProjectionType,
+              projectionType: l.Projection?.ProjectionType
             })),
             streamEnabled: t.StreamSpecification?.StreamEnabled,
             streamViewType: t.StreamSpecification?.StreamViewType,
             latestStreamArn: t.LatestStreamArn,
-            tableClass: t.TableClassSummary?.TableClass,
-          },
+            tableClass: t.TableClassSummary?.TableClass
+          }
         },
-        message: `Table **${t.TableName}** is ${t.TableStatus} with ~${t.ItemCount ?? 0} items (${t.TableSizeBytes ?? 0} bytes)`,
+        message: `Table **${t.TableName}** is ${t.TableStatus} with ~${t.ItemCount ?? 0} items (${t.TableSizeBytes ?? 0} bytes)`
       };
     }
 
@@ -364,62 +509,68 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     if (action === 'create_table') {
       let payload: Record<string, any> = {
         TableName: ctx.input.tableName,
-        KeySchema: (ctx.input.keySchema ?? []).map((k) => ({
+        KeySchema: (ctx.input.keySchema ?? []).map(k => ({
           AttributeName: k.attributeName,
-          KeyType: k.keyType,
+          KeyType: k.keyType
         })),
-        AttributeDefinitions: (ctx.input.attributeDefinitions ?? []).map((a) => ({
+        AttributeDefinitions: (ctx.input.attributeDefinitions ?? []).map(a => ({
           AttributeName: a.attributeName,
-          AttributeType: a.attributeType,
+          AttributeType: a.attributeType
         })),
-        BillingMode: ctx.input.billingMode ?? 'PAY_PER_REQUEST',
+        BillingMode: ctx.input.billingMode ?? 'PAY_PER_REQUEST'
       };
 
       if (ctx.input.provisionedThroughput) {
         payload.ProvisionedThroughput = {
           ReadCapacityUnits: ctx.input.provisionedThroughput.readCapacityUnits,
-          WriteCapacityUnits: ctx.input.provisionedThroughput.writeCapacityUnits,
+          WriteCapacityUnits: ctx.input.provisionedThroughput.writeCapacityUnits
         };
       }
 
       if (ctx.input.globalSecondaryIndexes) {
-        payload.GlobalSecondaryIndexes = ctx.input.globalSecondaryIndexes.map((g) => ({
+        payload.GlobalSecondaryIndexes = ctx.input.globalSecondaryIndexes.map(g => ({
           IndexName: g.indexName,
-          KeySchema: g.keySchema.map((k) => ({
+          KeySchema: g.keySchema.map(k => ({
             AttributeName: k.attributeName,
-            KeyType: k.keyType,
+            KeyType: k.keyType
           })),
           Projection: {
             ProjectionType: g.projection.projectionType,
-            ...(g.projection.nonKeyAttributes ? { NonKeyAttributes: g.projection.nonKeyAttributes } : {}),
+            ...(g.projection.nonKeyAttributes
+              ? { NonKeyAttributes: g.projection.nonKeyAttributes }
+              : {})
           },
-          ...(g.provisionedThroughput ? {
-            ProvisionedThroughput: {
-              ReadCapacityUnits: g.provisionedThroughput.readCapacityUnits,
-              WriteCapacityUnits: g.provisionedThroughput.writeCapacityUnits,
-            },
-          } : {}),
+          ...(g.provisionedThroughput
+            ? {
+                ProvisionedThroughput: {
+                  ReadCapacityUnits: g.provisionedThroughput.readCapacityUnits,
+                  WriteCapacityUnits: g.provisionedThroughput.writeCapacityUnits
+                }
+              }
+            : {})
         }));
       }
 
       if (ctx.input.localSecondaryIndexes) {
-        payload.LocalSecondaryIndexes = ctx.input.localSecondaryIndexes.map((l) => ({
+        payload.LocalSecondaryIndexes = ctx.input.localSecondaryIndexes.map(l => ({
           IndexName: l.indexName,
-          KeySchema: l.keySchema.map((k) => ({
+          KeySchema: l.keySchema.map(k => ({
             AttributeName: k.attributeName,
-            KeyType: k.keyType,
+            KeyType: k.keyType
           })),
           Projection: {
             ProjectionType: l.projection.projectionType,
-            ...(l.projection.nonKeyAttributes ? { NonKeyAttributes: l.projection.nonKeyAttributes } : {}),
-          },
+            ...(l.projection.nonKeyAttributes
+              ? { NonKeyAttributes: l.projection.nonKeyAttributes }
+              : {})
+          }
         }));
       }
 
       if (ctx.input.tags) {
-        payload.Tags = ctx.input.tags.map((t) => ({
+        payload.Tags = ctx.input.tags.map(t => ({
           Key: t.key,
-          Value: t.value,
+          Value: t.value
         }));
       }
 
@@ -430,9 +581,9 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
         output: {
           tableName: tableDesc.TableName,
           tableArn: tableDesc.TableArn,
-          tableStatus: tableDesc.TableStatus,
+          tableStatus: tableDesc.TableStatus
         },
-        message: `Created table **${tableDesc.TableName}** (status: ${tableDesc.TableStatus})`,
+        message: `Created table **${tableDesc.TableName}** (status: ${tableDesc.TableStatus})`
       };
     }
 
@@ -441,16 +592,16 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'delete_table') {
       let result = await dynamo('DeleteTable', {
-        TableName: ctx.input.tableName,
+        TableName: ctx.input.tableName
       });
       let tableDesc = result.TableDescription;
 
       return {
         output: {
           tableName: tableDesc.TableName,
-          tableStatus: tableDesc.TableStatus,
+          tableStatus: tableDesc.TableStatus
         },
-        message: `Table **${tableDesc.TableName}** is being deleted (status: ${tableDesc.TableStatus})`,
+        message: `Table **${tableDesc.TableName}** is being deleted (status: ${tableDesc.TableStatus})`
       };
     }
 
@@ -460,7 +611,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     if (action === 'put_item') {
       let payload: Record<string, any> = {
         TableName: ctx.input.tableName,
-        Item: toDynamoDBItem(ctx.input.item ?? {}),
+        Item: toDynamoDBItem(ctx.input.item ?? {})
       };
 
       if (ctx.input.conditionExpression) {
@@ -470,7 +621,9 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
         payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
       }
       if (ctx.input.expressionAttributeValues) {
-        payload.ExpressionAttributeValues = marshalExprValues(ctx.input.expressionAttributeValues);
+        payload.ExpressionAttributeValues = marshalExprValues(
+          ctx.input.expressionAttributeValues
+        );
       }
       if (ctx.input.returnOldItem) {
         payload.ReturnValues = 'ALL_OLD';
@@ -482,9 +635,9 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
       return {
         output: {
           success: true,
-          oldItem,
+          oldItem
         },
-        message: `Successfully put item into **${ctx.input.tableName}**${oldItem ? ' (replaced existing item)' : ''}`,
+        message: `Successfully put item into **${ctx.input.tableName}**${oldItem ? ' (replaced existing item)' : ''}`
       };
     }
 
@@ -494,7 +647,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     if (action === 'get_item') {
       let payload: Record<string, any> = {
         TableName: ctx.input.tableName,
-        Key: marshalKey(ctx.input.key),
+        Key: marshalKey(ctx.input.key)
       };
 
       if (ctx.input.consistentRead) {
@@ -514,11 +667,11 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
       return {
         output: {
           found,
-          item,
+          item
         },
         message: found
           ? `Found item in **${ctx.input.tableName}**`
-          : `No item found in **${ctx.input.tableName}** for the given key`,
+          : `No item found in **${ctx.input.tableName}** for the given key`
       };
     }
 
@@ -528,31 +681,40 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     if (action === 'query') {
       let payload: Record<string, any> = {
         TableName: ctx.input.tableName,
-        KeyConditionExpression: ctx.input.keyConditionExpression,
+        KeyConditionExpression: ctx.input.keyConditionExpression
       };
 
       if (ctx.input.indexName) payload.IndexName = ctx.input.indexName;
       if (ctx.input.filterExpression) payload.FilterExpression = ctx.input.filterExpression;
-      if (ctx.input.projectionExpression) payload.ProjectionExpression = ctx.input.projectionExpression;
-      if (ctx.input.expressionAttributeNames) payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
-      if (ctx.input.expressionAttributeValues) payload.ExpressionAttributeValues = marshalExprValues(ctx.input.expressionAttributeValues);
+      if (ctx.input.projectionExpression)
+        payload.ProjectionExpression = ctx.input.projectionExpression;
+      if (ctx.input.expressionAttributeNames)
+        payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
+      if (ctx.input.expressionAttributeValues)
+        payload.ExpressionAttributeValues = marshalExprValues(
+          ctx.input.expressionAttributeValues
+        );
       if (ctx.input.limit !== undefined) payload.Limit = ctx.input.limit;
-      if (ctx.input.scanIndexForward !== undefined) payload.ScanIndexForward = ctx.input.scanIndexForward;
+      if (ctx.input.scanIndexForward !== undefined)
+        payload.ScanIndexForward = ctx.input.scanIndexForward;
       if (ctx.input.consistentRead) payload.ConsistentRead = ctx.input.consistentRead;
-      if (ctx.input.exclusiveStartKey) payload.ExclusiveStartKey = marshalKey(ctx.input.exclusiveStartKey);
+      if (ctx.input.exclusiveStartKey)
+        payload.ExclusiveStartKey = marshalKey(ctx.input.exclusiveStartKey);
 
       let result = await dynamo('Query', payload);
       let items = (result.Items ?? []).map(fromDynamoDBItem);
-      let lastEvaluatedKey = result.LastEvaluatedKey ? fromDynamoDBItem(result.LastEvaluatedKey) : undefined;
+      let lastEvaluatedKey = result.LastEvaluatedKey
+        ? fromDynamoDBItem(result.LastEvaluatedKey)
+        : undefined;
 
       return {
         output: {
           items,
           count: result.Count ?? 0,
           scannedCount: result.ScannedCount ?? 0,
-          lastEvaluatedKey,
+          lastEvaluatedKey
         },
-        message: `Query returned **${result.Count ?? 0}** items from **${ctx.input.tableName}**${ctx.input.indexName ? ` (index: ${ctx.input.indexName})` : ''}${lastEvaluatedKey ? ' (more pages available)' : ''}`,
+        message: `Query returned **${result.Count ?? 0}** items from **${ctx.input.tableName}**${ctx.input.indexName ? ` (index: ${ctx.input.indexName})` : ''}${lastEvaluatedKey ? ' (more pages available)' : ''}`
       };
     }
 
@@ -561,30 +723,38 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     // -----------------------------------------------------------------------
     if (action === 'scan') {
       let payload: Record<string, any> = {
-        TableName: ctx.input.tableName,
+        TableName: ctx.input.tableName
       };
 
       if (ctx.input.indexName) payload.IndexName = ctx.input.indexName;
       if (ctx.input.filterExpression) payload.FilterExpression = ctx.input.filterExpression;
-      if (ctx.input.projectionExpression) payload.ProjectionExpression = ctx.input.projectionExpression;
-      if (ctx.input.expressionAttributeNames) payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
-      if (ctx.input.expressionAttributeValues) payload.ExpressionAttributeValues = marshalExprValues(ctx.input.expressionAttributeValues);
+      if (ctx.input.projectionExpression)
+        payload.ProjectionExpression = ctx.input.projectionExpression;
+      if (ctx.input.expressionAttributeNames)
+        payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
+      if (ctx.input.expressionAttributeValues)
+        payload.ExpressionAttributeValues = marshalExprValues(
+          ctx.input.expressionAttributeValues
+        );
       if (ctx.input.limit !== undefined) payload.Limit = ctx.input.limit;
       if (ctx.input.consistentRead) payload.ConsistentRead = ctx.input.consistentRead;
-      if (ctx.input.exclusiveStartKey) payload.ExclusiveStartKey = marshalKey(ctx.input.exclusiveStartKey);
+      if (ctx.input.exclusiveStartKey)
+        payload.ExclusiveStartKey = marshalKey(ctx.input.exclusiveStartKey);
 
       let result = await dynamo('Scan', payload);
       let items = (result.Items ?? []).map(fromDynamoDBItem);
-      let lastEvaluatedKey = result.LastEvaluatedKey ? fromDynamoDBItem(result.LastEvaluatedKey) : undefined;
+      let lastEvaluatedKey = result.LastEvaluatedKey
+        ? fromDynamoDBItem(result.LastEvaluatedKey)
+        : undefined;
 
       return {
         output: {
           items,
           count: result.Count ?? 0,
           scannedCount: result.ScannedCount ?? 0,
-          lastEvaluatedKey,
+          lastEvaluatedKey
         },
-        message: `Scan returned **${result.Count ?? 0}** items from **${ctx.input.tableName}** (scanned ${result.ScannedCount ?? 0})${lastEvaluatedKey ? ' (more pages available)' : ''}`,
+        message: `Scan returned **${result.Count ?? 0}** items from **${ctx.input.tableName}** (scanned ${result.ScannedCount ?? 0})${lastEvaluatedKey ? ' (more pages available)' : ''}`
       };
     }
 
@@ -594,7 +764,7 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
     if (action === 'delete_item') {
       let payload: Record<string, any> = {
         TableName: ctx.input.tableName,
-        Key: marshalKey(ctx.input.key),
+        Key: marshalKey(ctx.input.key)
       };
 
       if (ctx.input.conditionExpression) {
@@ -604,7 +774,9 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
         payload.ExpressionAttributeNames = ctx.input.expressionAttributeNames;
       }
       if (ctx.input.expressionAttributeValues) {
-        payload.ExpressionAttributeValues = marshalExprValues(ctx.input.expressionAttributeValues);
+        payload.ExpressionAttributeValues = marshalExprValues(
+          ctx.input.expressionAttributeValues
+        );
       }
       if (ctx.input.returnOldItem) {
         payload.ReturnValues = 'ALL_OLD';
@@ -616,15 +788,15 @@ Accepts plain JSON objects for items and keys -- automatic conversion to/from Dy
       return {
         output: {
           success: true,
-          oldItem,
+          oldItem
         },
-        message: `Successfully deleted item from **${ctx.input.tableName}**`,
+        message: `Successfully deleted item from **${ctx.input.tableName}**`
       };
     }
 
     return {
       output: {},
-      message: 'No action performed.',
+      message: 'No action performed.'
     };
   })
   .build();

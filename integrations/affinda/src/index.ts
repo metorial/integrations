@@ -36,7 +36,5 @@ export let provider = Slate.create({
     listDocumentTypes,
     listOrganizations
   ],
-  triggers: [
-    documentEvents
-  ]
+  triggers: [documentEvents]
 });

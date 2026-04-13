@@ -3,47 +3,50 @@ import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let ticketUpdated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Ticket Updated',
-    key: 'ticket_updated',
-    description: '[Polling fallback] Polls for recently updated tickets. Detects new and modified tickets based on their last update timestamp.'
-  }
-)
-  .input(z.object({
-    ticketId: z.string().describe('ID of the updated ticket'),
-    title: z.string().optional().describe('Title of the ticket'),
-    type: z.string().optional().describe('Ticket type'),
-    status: z.string().optional().describe('Ticket status'),
-    priority: z.string().optional().describe('Ticket priority'),
-    updatedAt: z.string().optional().describe('When the ticket was last updated'),
-    ticket: z.record(z.string(), z.any()).describe('Full ticket object')
-  }))
-  .output(z.object({
-    ticketId: z.string().describe('ID of the updated ticket'),
-    title: z.string().optional().describe('Title of the ticket'),
-    type: z.string().optional().describe('Ticket type (e.g. BUG, FEATURE_REQUEST)'),
-    status: z.string().optional().describe('Current ticket status'),
-    priority: z.string().optional().describe('Ticket priority'),
-    processingUser: z.string().optional().describe('Assigned user ID'),
-    sessionId: z.string().optional().describe('Session ID of the reporter'),
-    createdAt: z.string().optional().describe('When the ticket was created'),
-    updatedAt: z.string().optional().describe('When the ticket was last updated'),
-    tags: z.array(z.string()).optional().describe('Ticket tags')
-  }))
+export let ticketUpdated = SlateTrigger.create(spec, {
+  name: 'Ticket Updated',
+  key: 'ticket_updated',
+  description:
+    '[Polling fallback] Polls for recently updated tickets. Detects new and modified tickets based on their last update timestamp.'
+})
+  .input(
+    z.object({
+      ticketId: z.string().describe('ID of the updated ticket'),
+      title: z.string().optional().describe('Title of the ticket'),
+      type: z.string().optional().describe('Ticket type'),
+      status: z.string().optional().describe('Ticket status'),
+      priority: z.string().optional().describe('Ticket priority'),
+      updatedAt: z.string().optional().describe('When the ticket was last updated'),
+      ticket: z.record(z.string(), z.any()).describe('Full ticket object')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.string().describe('ID of the updated ticket'),
+      title: z.string().optional().describe('Title of the ticket'),
+      type: z.string().optional().describe('Ticket type (e.g. BUG, FEATURE_REQUEST)'),
+      status: z.string().optional().describe('Current ticket status'),
+      priority: z.string().optional().describe('Ticket priority'),
+      processingUser: z.string().optional().describe('Assigned user ID'),
+      sessionId: z.string().optional().describe('Session ID of the reporter'),
+      createdAt: z.string().optional().describe('When the ticket was created'),
+      updatedAt: z.string().optional().describe('When the ticket was last updated'),
+      tags: z.array(z.string()).optional().describe('Ticket tags')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new GleapClient({
         token: ctx.auth.token,
         projectId: ctx.auth.projectId
       });
 
-      let lastPollTime = (ctx.state as any)?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      let lastPollTime =
+        (ctx.state as any)?.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
 
       let result = await client.listTickets({
         sort: '-updatedAt',
@@ -56,9 +59,10 @@ export let ticketUpdated = SlateTrigger.create(
         return ticketUpdatedAt && ticketUpdatedAt > lastPollTime;
       });
 
-      let newLastPollTime = newTickets.length > 0
-        ? (newTickets[0]!.updatedAt || newTickets[0]!.createdAt)
-        : lastPollTime;
+      let newLastPollTime =
+        newTickets.length > 0
+          ? newTickets[0]!.updatedAt || newTickets[0]!.createdAt
+          : lastPollTime;
 
       return {
         inputs: newTickets.map((t: any) => ({
@@ -76,7 +80,7 @@ export let ticketUpdated = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let ticket = ctx.input.ticket as Record<string, any>;
 
       return {
@@ -92,7 +96,7 @@ export let ticketUpdated = SlateTrigger.create(
           sessionId: String(ticket.session?._id || ticket.session || ''),
           createdAt: String(ticket.createdAt || ''),
           updatedAt: String(ticket.updatedAt || ''),
-          tags: Array.isArray(ticket.tags) ? ticket.tags as string[] : undefined
+          tags: Array.isArray(ticket.tags) ? (ticket.tags as string[]) : undefined
         }
       };
     }

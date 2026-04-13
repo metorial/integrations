@@ -19,6 +19,7 @@ To use the APIs, you need to get an API key from the API Keys section of your Do
 Most API calls also require a **Team ID** and **Bot ID** as path parameters. You can find your team ID in the dashboard API page.
 
 **Base URLs:**
+
 - Admin API: `https://docsbot.ai/api/`
 - Chat API: `https://api.docsbot.ai/`
 
@@ -41,6 +42,7 @@ You can add sources to train your bots. This could be a URL, a document file, a 
 ### Chat & Q/A (AI Agent Interaction)
 
 You can use the chat API endpoints to create your own Q/A and chat interfaces in your product. The recommended Chat Agent API supports:
+
 - Multi-turn conversations with conversation ID tracking
 - Streaming responses via SSE, where the answer is sent as a stream of events so you can display progress to the user as it's generated.
 - Multimodal inputs — newer AI models support both text and images via the `image_urls` parameter to provide additional context.

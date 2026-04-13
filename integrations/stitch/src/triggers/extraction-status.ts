@@ -3,43 +3,46 @@ import { StitchConnectClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let extractionStatusTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Extraction Job Status',
-    key: 'extraction_job_status',
-    description: '[Polling fallback] Polls for new or updated extraction jobs. Triggers when extraction jobs complete, fail, or change status. Requires the Stitch client ID in configuration.',
-  }
-)
-  .input(z.object({
-    jobName: z.string().describe('Extraction job name/ID'),
-    sourceId: z.number().nullable().describe('ID of the source being extracted'),
-    status: z.string().describe('Job status'),
-    startedAt: z.string().nullable().describe('ISO 8601 start timestamp'),
-    completedAt: z.string().nullable().describe('ISO 8601 completion timestamp'),
-    rawExtraction: z.any().describe('Full extraction job record'),
-  }))
-  .output(z.object({
-    jobName: z.string().describe('Extraction job name/ID'),
-    sourceId: z.number().nullable().describe('ID of the source'),
-    status: z.string().describe('Job status'),
-    startedAt: z.string().nullable().describe('ISO 8601 start timestamp'),
-    completedAt: z.string().nullable().describe('ISO 8601 completion timestamp'),
-  }))
+export let extractionStatusTrigger = SlateTrigger.create(spec, {
+  name: 'Extraction Job Status',
+  key: 'extraction_job_status',
+  description:
+    '[Polling fallback] Polls for new or updated extraction jobs. Triggers when extraction jobs complete, fail, or change status. Requires the Stitch client ID in configuration.'
+})
+  .input(
+    z.object({
+      jobName: z.string().describe('Extraction job name/ID'),
+      sourceId: z.number().nullable().describe('ID of the source being extracted'),
+      status: z.string().describe('Job status'),
+      startedAt: z.string().nullable().describe('ISO 8601 start timestamp'),
+      completedAt: z.string().nullable().describe('ISO 8601 completion timestamp'),
+      rawExtraction: z.any().describe('Full extraction job record')
+    })
+  )
+  .output(
+    z.object({
+      jobName: z.string().describe('Extraction job name/ID'),
+      sourceId: z.number().nullable().describe('ID of the source'),
+      status: z.string().describe('Job status'),
+      startedAt: z.string().nullable().describe('ISO 8601 start timestamp'),
+      completedAt: z.string().nullable().describe('ISO 8601 completion timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new StitchConnectClient({
         token: ctx.auth.token,
         region: ctx.config.region,
-        clientId: ctx.config.clientId,
+        clientId: ctx.config.clientId
       });
 
       let result = await client.listExtractions();
-      let extractions = result?.data || result?.extractions || (Array.isArray(result) ? result : []);
+      let extractions =
+        result?.data || result?.extractions || (Array.isArray(result) ? result : []);
 
       let lastPollTime = ctx.state?.lastPollTime || '1970-01-01T00:00:00Z';
 
@@ -64,15 +67,15 @@ export let extractionStatusTrigger = SlateTrigger.create(
           status: e.status || 'unknown',
           startedAt: e.started_at || e.start_time || null,
           completedAt: e.completed_at || e.completion_time || null,
-          rawExtraction: e,
+          rawExtraction: e
         })),
         updatedState: {
-          lastPollTime: latestTime,
-        },
+          lastPollTime: latestTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusSuffix = ctx.input.status.toLowerCase().replace(/\s+/g, '_');
 
       return {
@@ -83,8 +86,9 @@ export let extractionStatusTrigger = SlateTrigger.create(
           sourceId: ctx.input.sourceId,
           status: ctx.input.status,
           startedAt: ctx.input.startedAt,
-          completedAt: ctx.input.completedAt,
-        },
+          completedAt: ctx.input.completedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -2,10 +2,7 @@
   "name": "@metorial/n8n",
   "version": "0.1.1",
   "description": "Manage workflows, executions, credentials, users, and projects on an n8n workflow automation instance. Create, update, activate, deactivate, and delete workflows programmatically. List and retrieve execution history, retry failed executions, and filter by status or date range. Create and manage credentials for external service authentication, including retrieving credential schemas. Organize resources with tags and variables. Manage projects for access control. Pull and push workflow changes via source control integration with Git. Generate security audit reports for the instance.",
-  "categories": [
-    "apis-and-http-requests",
-    "task-and-project-management"
-  ],
+  "categories": ["apis-and-http-requests", "task-and-project-management"],
   "skills": [
     "manage workflows",
     "execute and retry workflows",

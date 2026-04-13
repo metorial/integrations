@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    docsApiKey: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      docsApiKey: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,38 +18,48 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Full Access',
-        description: 'Full access to Help Scout Inbox API (scopes are determined by user role)',
-        scope: 'full',
-      },
+        description:
+          'Full access to Help Scout Inbox API (scopes are determined by user role)',
+        scope: 'full'
+      }
     ],
 
     inputSchema: z.object({
-      docsApiKey: z.string().optional().describe('Help Scout Docs API key (optional, for knowledge base access). Found under Your Profile > Authentication > API Keys.'),
+      docsApiKey: z
+        .string()
+        .optional()
+        .describe(
+          'Help Scout Docs API key (optional, for knowledge base access). Found under Your Profile > Authentication > API Keys.'
+        )
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
         url: `https://secure.helpscout.net/authentication/authorizeClientApplication?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
-      let response = await http.post('https://api.helpscout.net/v2/oauth2/token', {
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let response = await http.post(
+        'https://api.helpscout.net/v2/oauth2/token',
+        {
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data;
 
@@ -61,27 +73,31 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          docsApiKey: ctx.input.docsApiKey || undefined,
+          docsApiKey: ctx.input.docsApiKey || undefined
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let http = createAxios();
 
-      let response = await http.post('https://api.helpscout.net/v2/oauth2/token', {
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let response = await http.post(
+        'https://api.helpscout.net/v2/oauth2/token',
+        {
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data;
 
@@ -95,8 +111,8 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
           expiresAt,
-          docsApiKey: ctx.output.docsApiKey,
-        },
+          docsApiKey: ctx.output.docsApiKey
+        }
       };
     },
 
@@ -104,8 +120,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.helpscout.net/v2',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/users/me');
@@ -116,10 +132,10 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email ?? undefined,
           name: [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined,
-          imageUrl: user.photoUrl ?? undefined,
-        },
+          imageUrl: user.photoUrl ?? undefined
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -129,19 +145,26 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       clientId: z.string().describe('Help Scout OAuth2 Application Client ID'),
       clientSecret: z.string().describe('Help Scout OAuth2 Application Client Secret'),
-      docsApiKey: z.string().optional().describe('Help Scout Docs API key (optional, for knowledge base access)'),
+      docsApiKey: z
+        .string()
+        .optional()
+        .describe('Help Scout Docs API key (optional, for knowledge base access)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios();
 
-      let response = await http.post('https://api.helpscout.net/v2/oauth2/token', {
-        grant_type: 'client_credentials',
-        client_id: ctx.input.clientId,
-        client_secret: ctx.input.clientSecret,
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let response = await http.post(
+        'https://api.helpscout.net/v2/oauth2/token',
+        {
+          grant_type: 'client_credentials',
+          client_id: ctx.input.clientId,
+          client_secret: ctx.input.clientSecret
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data;
 
@@ -155,8 +178,8 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: undefined,
           expiresAt,
-          docsApiKey: ctx.input.docsApiKey || undefined,
-        },
+          docsApiKey: ctx.input.docsApiKey || undefined
+        }
       };
     },
 
@@ -164,8 +187,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.helpscout.net/v2',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/users/me');
@@ -176,8 +199,8 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email ?? undefined,
           name: [user.firstName, user.lastName].filter(Boolean).join(' ') || undefined,
-          imageUrl: user.photoUrl ?? undefined,
-        },
+          imageUrl: user.photoUrl ?? undefined
+        }
       };
-    },
+    }
   });

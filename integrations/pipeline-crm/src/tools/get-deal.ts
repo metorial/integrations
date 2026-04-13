@@ -3,42 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Get Deal',
-    key: 'get_deal',
-    description: `Retrieve detailed information about a specific deal by its ID, including associated people, company, custom fields, and stage information.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getDeal = SlateTool.create(spec, {
+  name: 'Get Deal',
+  key: 'get_deal',
+  description: `Retrieve detailed information about a specific deal by its ID, including associated people, company, custom fields, and stage information.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    dealId: z.number().describe('ID of the deal to retrieve')
-  }))
-  .output(z.object({
-    dealId: z.number().describe('Unique deal ID'),
-    name: z.string().describe('Deal name'),
-    summary: z.string().nullable().optional().describe('Brief description'),
-    value: z.number().nullable().optional().describe('Monetary value'),
-    currency: z.string().nullable().optional().describe('Currency code'),
-    probability: z.number().nullable().optional().describe('Win probability percentage'),
-    expectedCloseDate: z.string().nullable().optional().describe('Expected close date'),
-    actualCloseDate: z.string().nullable().optional().describe('Actual close date'),
-    dealStageId: z.number().nullable().optional().describe('Current pipeline stage ID'),
-    status: z.any().nullable().optional().describe('Deal status'),
-    userId: z.number().nullable().optional().describe('Owner user ID'),
-    companyId: z.number().nullable().optional().describe('Associated company ID'),
-    companyName: z.string().nullable().optional().describe('Associated company name'),
-    primaryContactId: z.number().nullable().optional().describe('Primary contact person ID'),
-    sourceId: z.number().nullable().optional().describe('Lead source ID'),
-    customFields: z.record(z.string(), z.any()).nullable().optional().describe('Custom field values'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.number().describe('ID of the deal to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.number().describe('Unique deal ID'),
+      name: z.string().describe('Deal name'),
+      summary: z.string().nullable().optional().describe('Brief description'),
+      value: z.number().nullable().optional().describe('Monetary value'),
+      currency: z.string().nullable().optional().describe('Currency code'),
+      probability: z.number().nullable().optional().describe('Win probability percentage'),
+      expectedCloseDate: z.string().nullable().optional().describe('Expected close date'),
+      actualCloseDate: z.string().nullable().optional().describe('Actual close date'),
+      dealStageId: z.number().nullable().optional().describe('Current pipeline stage ID'),
+      status: z.any().nullable().optional().describe('Deal status'),
+      userId: z.number().nullable().optional().describe('Owner user ID'),
+      companyId: z.number().nullable().optional().describe('Associated company ID'),
+      companyName: z.string().nullable().optional().describe('Associated company name'),
+      primaryContactId: z.number().nullable().optional().describe('Primary contact person ID'),
+      sourceId: z.number().nullable().optional().describe('Lead source ID'),
+      customFields: z
+        .record(z.string(), z.any())
+        .nullable()
+        .optional()
+        .describe('Custom field values'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       appKey: ctx.auth.appKey
@@ -67,6 +72,8 @@ export let getDeal = SlateTool.create(
         createdAt: deal.created_at ?? null,
         updatedAt: deal.updated_at ?? null
       },
-      message: `Retrieved deal **${deal.name}**` + (deal.value ? ` (value: ${deal.value})` : '')
+      message:
+        `Retrieved deal **${deal.name}**` + (deal.value ? ` (value: ${deal.value})` : '')
     };
-  }).build();
+  })
+  .build();

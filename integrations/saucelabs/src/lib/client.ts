@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 let DATA_CENTER_URLS: Record<string, string> = {
   'us-west-1': 'https://api.us-west-1.saucelabs.com',
   'us-east-4': 'https://api.us-east-4.saucelabs.com',
-  'eu-central-1': 'https://api.eu-central-1.saucelabs.com',
+  'eu-central-1': 'https://api.eu-central-1.saucelabs.com'
 };
 
 export class SauceLabsClient {
@@ -18,39 +18,41 @@ export class SauceLabsClient {
       baseURL,
       auth: {
         username: opts.username,
-        password: opts.token,
+        password: opts.token
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ============ VDC Jobs ============
 
-  async listJobs(params?: {
-    limit?: number;
-    skip?: number;
-    from?: number;
-    to?: number;
-  }) {
-    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/jobs`, { params });
+  async listJobs(params?: { limit?: number; skip?: number; from?: number; to?: number }) {
+    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/jobs`, {
+      params
+    });
     return response.data;
   }
 
   async getJob(jobId: string) {
-    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}`);
+    let response = await this.http.get(
+      `/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}`
+    );
     return response.data;
   }
 
-  async updateJob(jobId: string, data: {
-    name?: string;
-    tags?: string[];
-    passed?: boolean;
-    build?: string;
-    public?: string;
-    customData?: Record<string, any>;
-  }) {
+  async updateJob(
+    jobId: string,
+    data: {
+      name?: string;
+      tags?: string[];
+      passed?: boolean;
+      build?: string;
+      public?: string;
+      customData?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.tags !== undefined) body.tags = data.tags;
@@ -59,12 +61,17 @@ export class SauceLabsClient {
     if (data.public !== undefined) body.public = data.public;
     if (data.customData !== undefined) body['custom-data'] = data.customData;
 
-    let response = await this.http.put(`/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}`, body);
+    let response = await this.http.put(
+      `/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}`,
+      body
+    );
     return response.data;
   }
 
   async stopJob(jobId: string) {
-    let response = await this.http.put(`/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}/stop`);
+    let response = await this.http.put(
+      `/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}/stop`
+    );
     return response.data;
   }
 
@@ -73,16 +80,15 @@ export class SauceLabsClient {
   }
 
   async listJobAssets(jobId: string) {
-    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}/assets`);
+    let response = await this.http.get(
+      `/rest/v1/${encodeURIComponent(this.username)}/jobs/${jobId}/assets`
+    );
     return response.data;
   }
 
   // ============ RDC Jobs ============
 
-  async listRdcJobs(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listRdcJobs(params?: { limit?: number; offset?: number }) {
     let response = await this.http.get('/v1/rdc/jobs', { params });
     return response.data;
   }
@@ -92,12 +98,15 @@ export class SauceLabsClient {
     return response.data;
   }
 
-  async updateRdcJob(jobId: string, data: {
-    name?: string;
-    passed?: boolean;
-    build?: string;
-    tags?: string[];
-  }) {
+  async updateRdcJob(
+    jobId: string,
+    data: {
+      name?: string;
+      passed?: boolean;
+      build?: string;
+      tags?: string[];
+    }
+  ) {
     let response = await this.http.put(`/v1/rdc/jobs/${jobId}`, data);
     return response.data;
   }
@@ -113,15 +122,18 @@ export class SauceLabsClient {
 
   // ============ Builds ============
 
-  async listBuilds(source: 'vdc' | 'rdc', params?: {
-    status?: string[];
-    start?: string;
-    end?: string;
-    limit?: number;
-    offset?: number;
-    name?: string;
-    sort?: 'asc' | 'desc';
-  }) {
+  async listBuilds(
+    source: 'vdc' | 'rdc',
+    params?: {
+      status?: string[];
+      start?: string;
+      end?: string;
+      limit?: number;
+      offset?: number;
+      name?: string;
+      sort?: 'asc' | 'desc';
+    }
+  ) {
     let response = await this.http.get(`/v2/builds/${source}/`, { params });
     return response.data;
   }
@@ -131,11 +143,15 @@ export class SauceLabsClient {
     return response.data;
   }
 
-  async listBuildJobs(source: 'vdc' | 'rdc', buildId: string, params?: {
-    limit?: number;
-    offset?: number;
-    modified_since?: string;
-  }) {
+  async listBuildJobs(
+    source: 'vdc' | 'rdc',
+    buildId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+      modified_since?: string;
+    }
+  ) {
     let response = await this.http.get(`/v2/builds/${source}/${buildId}/jobs/`, { params });
     return response.data;
   }
@@ -164,22 +180,31 @@ export class SauceLabsClient {
   // ============ Tunnels ============
 
   async listTunnels(params?: { full?: boolean; all?: boolean }) {
-    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/tunnels`, { params });
+    let response = await this.http.get(
+      `/rest/v1/${encodeURIComponent(this.username)}/tunnels`,
+      { params }
+    );
     return response.data;
   }
 
   async getTunnel(tunnelId: string) {
-    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/tunnels/${tunnelId}`);
+    let response = await this.http.get(
+      `/rest/v1/${encodeURIComponent(this.username)}/tunnels/${tunnelId}`
+    );
     return response.data;
   }
 
   async getTunnelJobCount(tunnelId: string) {
-    let response = await this.http.get(`/rest/v1/${encodeURIComponent(this.username)}/tunnels/${tunnelId}/num_jobs`);
+    let response = await this.http.get(
+      `/rest/v1/${encodeURIComponent(this.username)}/tunnels/${tunnelId}/num_jobs`
+    );
     return response.data;
   }
 
   async stopTunnel(tunnelId: string) {
-    let response = await this.http.delete(`/rest/v1/${encodeURIComponent(this.username)}/tunnels/${tunnelId}`);
+    let response = await this.http.delete(
+      `/rest/v1/${encodeURIComponent(this.username)}/tunnels/${tunnelId}`
+    );
     return response.data;
   }
 
@@ -243,7 +268,9 @@ export class SauceLabsClient {
   }
 
   async getUserConcurrency(username: string) {
-    let response = await this.http.get(`/rest/v1.2/users/${encodeURIComponent(username)}/concurrency`);
+    let response = await this.http.get(
+      `/rest/v1.2/users/${encodeURIComponent(username)}/concurrency`
+    );
     return response.data;
   }
 
@@ -318,14 +345,17 @@ export class SauceLabsClient {
     return response.data;
   }
 
-  async getInsightsTests(source: 'vdc' | 'rdc', params: {
-    start: string;
-    end: string;
-    scope?: string;
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async getInsightsTests(
+    source: 'vdc' | 'rdc',
+    params: {
+      start: string;
+      end: string;
+      scope?: string;
+      status?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let response = await this.http.get(`/v2/insights/${source}/tests`, { params });
     return response.data;
   }

@@ -8,7 +8,7 @@ import type {
   Workspace,
   Permission,
   StreamProperties,
-  Tag,
+  Tag
 } from './types';
 
 export class Client {
@@ -18,9 +18,9 @@ export class Client {
     this.http = createAxios({
       baseURL: params.baseUrl,
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -57,15 +57,18 @@ export class Client {
       name: data.name,
       workspaceId: data.workspaceId,
       sourceType: data.sourceType,
-      configuration: data.configuration,
+      configuration: data.configuration
     });
     return response.data;
   }
 
-  async updateSource(sourceId: string, data: {
-    name?: string;
-    configuration?: Record<string, any>;
-  }): Promise<Source> {
+  async updateSource(
+    sourceId: string,
+    data: {
+      name?: string;
+      configuration?: Record<string, any>;
+    }
+  ): Promise<Source> {
     let response = await this.http.patch(`/sources/${sourceId}`, data);
     return response.data;
   }
@@ -107,15 +110,18 @@ export class Client {
       name: data.name,
       workspaceId: data.workspaceId,
       destinationType: data.destinationType,
-      configuration: data.configuration,
+      configuration: data.configuration
     });
     return response.data;
   }
 
-  async updateDestination(destinationId: string, data: {
-    name?: string;
-    configuration?: Record<string, any>;
-  }): Promise<Destination> {
+  async updateDestination(
+    destinationId: string,
+    data: {
+      name?: string;
+      configuration?: Record<string, any>;
+    }
+  ): Promise<Destination> {
     let response = await this.http.patch(`/destinations/${destinationId}`, data);
     return response.data;
   }
@@ -174,27 +180,30 @@ export class Client {
     return response.data;
   }
 
-  async updateConnection(connectionId: string, data: {
-    name?: string;
-    status?: string;
-    schedule?: {
-      scheduleType: string;
-      cronExpression?: string;
-    };
-    dataResidency?: string;
-    namespaceDefinition?: string;
-    namespaceFormat?: string;
-    prefix?: string;
-    nonBreakingSchemaUpdatesBehavior?: string;
-    configurations?: {
-      streams?: Array<{
-        name: string;
-        syncMode?: string;
-        cursorField?: string[];
-        primaryKey?: string[][];
-      }>;
-    };
-  }): Promise<Connection> {
+  async updateConnection(
+    connectionId: string,
+    data: {
+      name?: string;
+      status?: string;
+      schedule?: {
+        scheduleType: string;
+        cronExpression?: string;
+      };
+      dataResidency?: string;
+      namespaceDefinition?: string;
+      namespaceFormat?: string;
+      prefix?: string;
+      nonBreakingSchemaUpdatesBehavior?: string;
+      configurations?: {
+        streams?: Array<{
+          name: string;
+          syncMode?: string;
+          cursorField?: string[];
+          primaryKey?: string[][];
+        }>;
+      };
+    }
+  ): Promise<Connection> {
     let response = await this.http.patch(`/connections/${connectionId}`, data);
     return response.data;
   }
@@ -282,10 +291,13 @@ export class Client {
     return response.data;
   }
 
-  async updateWorkspace(workspaceId: string, data: {
-    name?: string;
-    notifications?: Record<string, any>;
-  }): Promise<Workspace> {
+  async updateWorkspace(
+    workspaceId: string,
+    data: {
+      name?: string;
+      notifications?: Record<string, any>;
+    }
+  ): Promise<Workspace> {
     let response = await this.http.patch(`/workspaces/${workspaceId}`, data);
     return response.data;
   }
@@ -323,9 +335,12 @@ export class Client {
     return response.data;
   }
 
-  async updatePermission(permissionId: string, data: {
-    permissionType: string;
-  }): Promise<Permission> {
+  async updatePermission(
+    permissionId: string,
+    data: {
+      permissionType: string;
+    }
+  ): Promise<Permission> {
     let response = await this.http.patch(`/permissions/${permissionId}`, data);
     return response.data;
   }
@@ -336,10 +351,13 @@ export class Client {
 
   // --- Stream Properties ---
 
-  async getStreamProperties(sourceId: string, options?: {
-    destinationId?: string;
-    ignoreCache?: boolean;
-  }): Promise<StreamProperties[]> {
+  async getStreamProperties(
+    sourceId: string,
+    options?: {
+      destinationId?: string;
+      ignoreCache?: boolean;
+    }
+  ): Promise<StreamProperties[]> {
     let params: Record<string, any> = { sourceId };
     if (options?.destinationId) params.destinationId = options.destinationId;
     if (options?.ignoreCache !== undefined) params.ignoreCache = options.ignoreCache;
@@ -350,9 +368,7 @@ export class Client {
 
   // --- Tags ---
 
-  async listTags(options?: {
-    workspaceIds?: string[];
-  }): Promise<PaginatedResponse<Tag>> {
+  async listTags(options?: { workspaceIds?: string[] }): Promise<PaginatedResponse<Tag>> {
     let params: Record<string, any> = {};
     if (options?.workspaceIds?.length) params.workspaceIds = options.workspaceIds.join(',');
 
@@ -360,19 +376,18 @@ export class Client {
     return response.data;
   }
 
-  async createTag(data: {
-    name: string;
-    color: string;
-    workspaceId: string;
-  }): Promise<Tag> {
+  async createTag(data: { name: string; color: string; workspaceId: string }): Promise<Tag> {
     let response = await this.http.post('/tags', data);
     return response.data;
   }
 
-  async updateTag(tagId: string, data: {
-    name?: string;
-    color?: string;
-  }): Promise<Tag> {
+  async updateTag(
+    tagId: string,
+    data: {
+      name?: string;
+      color?: string;
+    }
+  ): Promise<Tag> {
     let response = await this.http.patch(`/tags/${tagId}`, data);
     return response.data;
   }

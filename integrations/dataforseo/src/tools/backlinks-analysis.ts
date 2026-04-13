@@ -3,65 +3,97 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let backlinkItemSchema = z.object({
-  type: z.string().optional().describe('Type of backlink (anchor, redirect, etc.)'),
-  domainFrom: z.string().optional().describe('Referring domain'),
-  urlFrom: z.string().optional().describe('Referring page URL'),
-  urlTo: z.string().optional().describe('Target page URL'),
-  anchor: z.string().optional().describe('Anchor text of the backlink'),
-  isLost: z.boolean().optional().describe('Whether the backlink is lost'),
-  dofollow: z.boolean().optional().describe('Whether the link is dofollow'),
-  pageFromRank: z.number().optional().describe('DataForSEO rank of the referring page'),
-  domainFromRank: z.number().optional().describe('DataForSEO rank of the referring domain'),
-  firstSeen: z.string().optional().describe('Date when the backlink was first discovered'),
-  lastSeen: z.string().optional().describe('Date when the backlink was last seen'),
-}).passthrough();
+let backlinkItemSchema = z
+  .object({
+    type: z.string().optional().describe('Type of backlink (anchor, redirect, etc.)'),
+    domainFrom: z.string().optional().describe('Referring domain'),
+    urlFrom: z.string().optional().describe('Referring page URL'),
+    urlTo: z.string().optional().describe('Target page URL'),
+    anchor: z.string().optional().describe('Anchor text of the backlink'),
+    isLost: z.boolean().optional().describe('Whether the backlink is lost'),
+    dofollow: z.boolean().optional().describe('Whether the link is dofollow'),
+    pageFromRank: z.number().optional().describe('DataForSEO rank of the referring page'),
+    domainFromRank: z.number().optional().describe('DataForSEO rank of the referring domain'),
+    firstSeen: z.string().optional().describe('Date when the backlink was first discovered'),
+    lastSeen: z.string().optional().describe('Date when the backlink was last seen')
+  })
+  .passthrough();
 
-export let backlinksAnalysis = SlateTool.create(
-  spec,
-  {
-    name: 'Backlinks Analysis',
-    key: 'backlinks_analysis',
-    description: `Analyze the backlink profile of any domain, subdomain, or URL. Retrieves a summary of backlink metrics (total backlinks, referring domains, rank, etc.) and optionally lists individual backlinks or referring domains. Useful for link building research, competitor analysis, and SEO auditing.`,
-    instructions: [
-      'Provide a target domain, subdomain, or URL to analyze its backlink profile.',
-      'Choose the mode: "summary" for aggregate metrics, "backlinks" for individual link listing, or "referring_domains" for domain-level analysis.',
-      'Use filters and ordering for the backlinks and referring_domains modes to narrow results.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    target: z.string().describe('Domain, subdomain, or URL to analyze (e.g., "example.com")'),
-    mode: z.enum(['summary', 'backlinks', 'referring_domains']).default('summary').describe('Analysis mode'),
-    includeSubdomains: z.boolean().optional().describe('Include subdomains in the analysis'),
-    includeIndirectLinks: z.boolean().optional().describe('Include indirect links in summary'),
-    limit: z.number().optional().describe('Maximum number of results to return (for backlinks and referring_domains modes)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-    backlinksFilters: z.array(z.string()).optional().describe('Filters for backlinks mode (e.g., ["dofollow","=","true"])'),
-    orderBy: z.array(z.string()).optional().describe('Order results (e.g., ["rank,desc"])'),
-  }))
-  .output(z.object({
-    target: z.string().describe('Analyzed target'),
-    totalBacklinks: z.number().optional().describe('Total number of backlinks'),
-    totalReferringDomains: z.number().optional().describe('Total referring domains'),
-    rank: z.number().optional().describe('DataForSEO rank of the target'),
-    brokenBacklinks: z.number().optional().describe('Number of broken backlinks'),
-    referringIps: z.number().optional().describe('Number of referring IPs'),
-    referringSubnets: z.number().optional().describe('Number of referring subnets'),
-    backlinks: z.array(backlinkItemSchema).optional().describe('Individual backlink items (when mode is backlinks)'),
-    referringDomains: z.array(z.object({
-      domain: z.string().optional().describe('Referring domain'),
-      rank: z.number().optional().describe('Domain rank'),
-      backlinks: z.number().optional().describe('Number of backlinks from this domain'),
-      firstSeen: z.string().optional().describe('Date first seen'),
-    }).passthrough()).optional().describe('Referring domain items (when mode is referring_domains)'),
-    cost: z.number().optional().describe('API cost'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let backlinksAnalysis = SlateTool.create(spec, {
+  name: 'Backlinks Analysis',
+  key: 'backlinks_analysis',
+  description: `Analyze the backlink profile of any domain, subdomain, or URL. Retrieves a summary of backlink metrics (total backlinks, referring domains, rank, etc.) and optionally lists individual backlinks or referring domains. Useful for link building research, competitor analysis, and SEO auditing.`,
+  instructions: [
+    'Provide a target domain, subdomain, or URL to analyze its backlink profile.',
+    'Choose the mode: "summary" for aggregate metrics, "backlinks" for individual link listing, or "referring_domains" for domain-level analysis.',
+    'Use filters and ordering for the backlinks and referring_domains modes to narrow results.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      target: z
+        .string()
+        .describe('Domain, subdomain, or URL to analyze (e.g., "example.com")'),
+      mode: z
+        .enum(['summary', 'backlinks', 'referring_domains'])
+        .default('summary')
+        .describe('Analysis mode'),
+      includeSubdomains: z.boolean().optional().describe('Include subdomains in the analysis'),
+      includeIndirectLinks: z
+        .boolean()
+        .optional()
+        .describe('Include indirect links in summary'),
+      limit: z
+        .number()
+        .optional()
+        .describe(
+          'Maximum number of results to return (for backlinks and referring_domains modes)'
+        ),
+      offset: z.number().optional().describe('Offset for pagination'),
+      backlinksFilters: z
+        .array(z.string())
+        .optional()
+        .describe('Filters for backlinks mode (e.g., ["dofollow","=","true"])'),
+      orderBy: z.array(z.string()).optional().describe('Order results (e.g., ["rank,desc"])')
+    })
+  )
+  .output(
+    z.object({
+      target: z.string().describe('Analyzed target'),
+      totalBacklinks: z.number().optional().describe('Total number of backlinks'),
+      totalReferringDomains: z.number().optional().describe('Total referring domains'),
+      rank: z.number().optional().describe('DataForSEO rank of the target'),
+      brokenBacklinks: z.number().optional().describe('Number of broken backlinks'),
+      referringIps: z.number().optional().describe('Number of referring IPs'),
+      referringSubnets: z.number().optional().describe('Number of referring subnets'),
+      backlinks: z
+        .array(backlinkItemSchema)
+        .optional()
+        .describe('Individual backlink items (when mode is backlinks)'),
+      referringDomains: z
+        .array(
+          z
+            .object({
+              domain: z.string().optional().describe('Referring domain'),
+              rank: z.number().optional().describe('Domain rank'),
+              backlinks: z
+                .number()
+                .optional()
+                .describe('Number of backlinks from this domain'),
+              firstSeen: z.string().optional().describe('Date first seen')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('Referring domain items (when mode is referring_domains)'),
+      cost: z.number().optional().describe('API cost')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { mode } = ctx.input;
 
@@ -69,7 +101,7 @@ export let backlinksAnalysis = SlateTool.create(
       let response = await client.backlinksSummaryLive({
         target: ctx.input.target,
         includeSubdomains: ctx.input.includeSubdomains,
-        includeIndirectLinks: ctx.input.includeIndirectLinks,
+        includeIndirectLinks: ctx.input.includeIndirectLinks
       });
 
       let result = client.extractFirstResult(response);
@@ -83,9 +115,9 @@ export let backlinksAnalysis = SlateTool.create(
           brokenBacklinks: result?.broken_backlinks,
           referringIps: result?.referring_ips,
           referringSubnets: result?.referring_subnets,
-          cost: response.cost,
+          cost: response.cost
         },
-        message: `Backlink summary for **${ctx.input.target}**: **${result?.backlinks ?? 0}** backlinks from **${result?.referring_domains ?? 0}** referring domains. Rank: **${result?.rank ?? 'N/A'}**.`,
+        message: `Backlink summary for **${ctx.input.target}**: **${result?.backlinks ?? 0}** backlinks from **${result?.referring_domains ?? 0}** referring domains. Rank: **${result?.rank ?? 'N/A'}**.`
       };
     } else if (mode === 'backlinks') {
       let response = await client.backlinksLive({
@@ -94,7 +126,7 @@ export let backlinksAnalysis = SlateTool.create(
         offset: ctx.input.offset,
         includeSubdomains: ctx.input.includeSubdomains,
         backlinksFilters: ctx.input.backlinksFilters,
-        orderBy: ctx.input.orderBy,
+        orderBy: ctx.input.orderBy
       });
 
       let result = client.extractFirstResult(response);
@@ -109,7 +141,7 @@ export let backlinksAnalysis = SlateTool.create(
         pageFromRank: item.page_from_rank,
         domainFromRank: item.domain_from_rank,
         firstSeen: item.first_seen,
-        lastSeen: item.last_seen,
+        lastSeen: item.last_seen
       }));
 
       return {
@@ -117,9 +149,9 @@ export let backlinksAnalysis = SlateTool.create(
           target: ctx.input.target,
           totalBacklinks: result?.total_count,
           backlinks: items,
-          cost: response.cost,
+          cost: response.cost
         },
-        message: `Found **${items.length}** backlinks for **${ctx.input.target}** (total: ${result?.total_count ?? 'unknown'}).`,
+        message: `Found **${items.length}** backlinks for **${ctx.input.target}** (total: ${result?.total_count ?? 'unknown'}).`
       };
     } else {
       let response = await client.backlinksReferringDomainsLive({
@@ -127,7 +159,7 @@ export let backlinksAnalysis = SlateTool.create(
         limit: ctx.input.limit,
         offset: ctx.input.offset,
         includeSubdomains: ctx.input.includeSubdomains,
-        orderBy: ctx.input.orderBy,
+        orderBy: ctx.input.orderBy
       });
 
       let result = client.extractFirstResult(response);
@@ -135,7 +167,7 @@ export let backlinksAnalysis = SlateTool.create(
         domain: item.domain,
         rank: item.rank,
         backlinks: item.backlinks,
-        firstSeen: item.first_seen,
+        firstSeen: item.first_seen
       }));
 
       return {
@@ -143,9 +175,10 @@ export let backlinksAnalysis = SlateTool.create(
           target: ctx.input.target,
           totalReferringDomains: result?.total_count,
           referringDomains: items,
-          cost: response.cost,
+          cost: response.cost
         },
-        message: `Found **${items.length}** referring domains for **${ctx.input.target}** (total: ${result?.total_count ?? 'unknown'}).`,
+        message: `Found **${items.length}** referring domains for **${ctx.input.target}** (total: ${result?.total_count ?? 'unknown'}).`
       };
     }
-  }).build();
+  })
+  .build();

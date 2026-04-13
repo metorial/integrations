@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    accountsUrl: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      accountsUrl: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Zoho OAuth',
@@ -172,12 +174,13 @@ export let auth = SlateAuth.create()
     ],
 
     inputSchema: z.object({
-      region: z.enum(['.com', '.eu', '.in', '.com.au', '.jp', '.ca', '.com.cn', '.sa'])
+      region: z
+        .enum(['.com', '.eu', '.in', '.com.au', '.jp', '.ca', '.com.cn', '.sa'])
         .default('.com')
         .describe('Zoho region domain suffix for your account')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let accountsUrl = `https://accounts.zoho${ctx.input.region}`;
       let params = new URLSearchParams({
         client_id: ctx.clientId,
@@ -195,7 +198,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let accountsUrl = `https://accounts.zoho${ctx.input.region}`;
       let httpClient = createAxios({ baseURL: accountsUrl });
 
@@ -222,7 +225,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let accountsUrl = ctx.output.accountsUrl || `https://accounts.zoho${ctx.input.region}`;
       let httpClient = createAxios({ baseURL: accountsUrl });
 
@@ -264,7 +267,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.ZUID?.toString(),
           email: user.Email,
-          name: user.Display_Name || `${user.First_Name || ''} ${user.Last_Name || ''}`.trim(),
+          name: user.Display_Name || `${user.First_Name || ''} ${user.Last_Name || ''}`.trim()
         }
       };
     }

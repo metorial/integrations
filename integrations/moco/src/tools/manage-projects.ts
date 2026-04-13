@@ -23,32 +23,42 @@ let projectOutputSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listProjects = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `Retrieve a list of projects from MOCO. Supports filtering by company, leader, tags, date range, and more. Returns project details including budgets, billing config, and assignments.`,
-    tags: {
-      readOnly: true
-    }
+export let listProjects = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `Retrieve a list of projects from MOCO. Supports filtering by company, leader, tags, date range, and more. Returns project details including budgets, billing config, and assignments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeArchived: z.boolean().optional().describe('Include archived projects'),
-    companyId: z.number().optional().describe('Filter by customer company ID'),
-    leaderId: z.number().optional().describe('Filter by project leader user ID'),
-    tags: z.string().optional().describe('Comma-separated list of tags to filter by'),
-    identifier: z.string().optional().describe('Filter by project identifier'),
-    retainer: z.boolean().optional().describe('Filter by retainer status'),
-    createdFrom: z.string().optional().describe('Filter projects created from this date (YYYY-MM-DD)'),
-    createdTo: z.string().optional().describe('Filter projects created until this date (YYYY-MM-DD)'),
-    updatedAfter: z.string().optional().describe('Filter by last updated timestamp (ISO 8601)')
-  }))
-  .output(z.object({
-    projects: z.array(projectOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeArchived: z.boolean().optional().describe('Include archived projects'),
+      companyId: z.number().optional().describe('Filter by customer company ID'),
+      leaderId: z.number().optional().describe('Filter by project leader user ID'),
+      tags: z.string().optional().describe('Comma-separated list of tags to filter by'),
+      identifier: z.string().optional().describe('Filter by project identifier'),
+      retainer: z.boolean().optional().describe('Filter by retainer status'),
+      createdFrom: z
+        .string()
+        .optional()
+        .describe('Filter projects created from this date (YYYY-MM-DD)'),
+      createdTo: z
+        .string()
+        .optional()
+        .describe('Filter projects created until this date (YYYY-MM-DD)'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter by last updated timestamp (ISO 8601)')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -88,24 +98,24 @@ export let listProjects = SlateTool.create(
       output: { projects },
       message: `Found **${projects.length}** projects.`
     };
-  }).build();
+  })
+  .build();
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve detailed information about a specific project, including its budget, billing configuration, tasks, and assignments.`,
-    tags: {
-      readOnly: true
-    }
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve detailed information about a specific project, including its budget, billing configuration, tasks, and assignments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('The ID of the project to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The ID of the project to retrieve')
+    })
+  )
   .output(projectOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let p = await client.getProject(ctx.input.projectId);
 
@@ -131,38 +141,38 @@ export let getProject = SlateTool.create(
       },
       message: `Retrieved project **${p.name}** (ID: ${p.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createProject = SlateTool.create(
-  spec,
-  {
-    name: 'Create Project',
-    key: 'create_project',
-    description: `Create a new project in MOCO. Requires project name, currency, dates, and customer assignment. Optionally configure billing, budgets, and tags.`,
-    tags: {
-      destructive: false
-    }
+export let createProject = SlateTool.create(spec, {
+  name: 'Create Project',
+  key: 'create_project',
+  description: `Create a new project in MOCO. Requires project name, currency, dates, and customer assignment. Optionally configure billing, budgets, and tags.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Project name'),
-    currency: z.string().describe('Currency code (e.g., "EUR", "USD")'),
-    startDate: z.string().describe('Project start date (YYYY-MM-DD)'),
-    finishDate: z.string().describe('Project end date (YYYY-MM-DD)'),
-    fixedPrice: z.boolean().describe('Whether this is a fixed-price project'),
-    retainer: z.boolean().optional().describe('Whether this is a retainer project'),
-    leaderId: z.number().describe('User ID of the project leader'),
-    customerId: z.number().describe('Company ID of the customer'),
-    identifier: z.string().optional().describe('Project identifier/code'),
-    billable: z.boolean().optional().describe('Whether the project is billable'),
-    budgetTotal: z.number().optional().describe('Total project budget'),
-    budgetMonthly: z.number().optional().describe('Monthly budget (for retainer projects)'),
-    hourlyRate: z.number().optional().describe('Default hourly rate'),
-    tags: z.array(z.string()).optional().describe('Project tags'),
-    info: z.string().optional().describe('Additional project information/notes')
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Project name'),
+      currency: z.string().describe('Currency code (e.g., "EUR", "USD")'),
+      startDate: z.string().describe('Project start date (YYYY-MM-DD)'),
+      finishDate: z.string().describe('Project end date (YYYY-MM-DD)'),
+      fixedPrice: z.boolean().describe('Whether this is a fixed-price project'),
+      retainer: z.boolean().optional().describe('Whether this is a retainer project'),
+      leaderId: z.number().describe('User ID of the project leader'),
+      customerId: z.number().describe('Company ID of the customer'),
+      identifier: z.string().optional().describe('Project identifier/code'),
+      billable: z.boolean().optional().describe('Whether the project is billable'),
+      budgetTotal: z.number().optional().describe('Total project budget'),
+      budgetMonthly: z.number().optional().describe('Monthly budget (for retainer projects)'),
+      hourlyRate: z.number().optional().describe('Default hourly rate'),
+      tags: z.array(z.string()).optional().describe('Project tags'),
+      info: z.string().optional().describe('Additional project information/notes')
+    })
+  )
   .output(projectOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -208,32 +218,36 @@ export let createProject = SlateTool.create(
       },
       message: `Created project **${p.name}** (ID: ${p.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateProject = SlateTool.create(
-  spec,
-  {
-    name: 'Update Project',
-    key: 'update_project',
-    description: `Update an existing project's properties. Can also archive or unarchive projects by setting the action field.`,
-    tags: {
-      destructive: false
-    }
+export let updateProject = SlateTool.create(spec, {
+  name: 'Update Project',
+  key: 'update_project',
+  description: `Update an existing project's properties. Can also archive or unarchive projects by setting the action field.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('The ID of the project to update'),
-    action: z.enum(['update', 'archive', 'unarchive']).optional().default('update').describe('Action to perform: update fields, archive, or unarchive'),
-    name: z.string().optional().describe('New project name'),
-    startDate: z.string().optional().describe('New start date (YYYY-MM-DD)'),
-    finishDate: z.string().optional().describe('New end date (YYYY-MM-DD)'),
-    budgetTotal: z.number().optional().describe('New total budget'),
-    tags: z.array(z.string()).optional().describe('Updated tags'),
-    billable: z.boolean().optional().describe('Whether the project is billable'),
-    hourlyRate: z.number().optional().describe('Default hourly rate')
-  }))
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The ID of the project to update'),
+      action: z
+        .enum(['update', 'archive', 'unarchive'])
+        .optional()
+        .default('update')
+        .describe('Action to perform: update fields, archive, or unarchive'),
+      name: z.string().optional().describe('New project name'),
+      startDate: z.string().optional().describe('New start date (YYYY-MM-DD)'),
+      finishDate: z.string().optional().describe('New end date (YYYY-MM-DD)'),
+      budgetTotal: z.number().optional().describe('New total budget'),
+      tags: z.array(z.string()).optional().describe('Updated tags'),
+      billable: z.boolean().optional().describe('Whether the project is billable'),
+      hourlyRate: z.number().optional().describe('Default hourly rate')
+    })
+  )
   .output(projectOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     if (ctx.input.action === 'archive') {
@@ -297,26 +311,28 @@ export let updateProject = SlateTool.create(
       },
       message: `Updated project **${p.name}** (ID: ${p.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteProject = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Project',
-    key: 'delete_project',
-    description: `Permanently delete a project. Only projects with no activities, invoices, offers, or expenses can be deleted.`,
-    tags: {
-      destructive: true
-    }
+export let deleteProject = SlateTool.create(spec, {
+  name: 'Delete Project',
+  key: 'delete_project',
+  description: `Permanently delete a project. Only projects with no activities, invoices, offers, or expenses can be deleted.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('The ID of the project to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The ID of the project to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     await client.deleteProject(ctx.input.projectId);
 
@@ -324,34 +340,36 @@ export let deleteProject = SlateTool.create(
       output: { success: true },
       message: `Deleted project with ID **${ctx.input.projectId}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let getProjectReport = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project Report',
-    key: 'get_project_report',
-    description: `Retrieve a project's business report with key indicators including budget progress, hours logged, invoiced amounts, and cost breakdowns.`,
-    tags: {
-      readOnly: true
-    }
+export let getProjectReport = SlateTool.create(spec, {
+  name: 'Get Project Report',
+  key: 'get_project_report',
+  description: `Retrieve a project's business report with key indicators including budget progress, hours logged, invoiced amounts, and cost breakdowns.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('The ID of the project')
-  }))
-  .output(z.object({
-    projectId: z.number().describe('Project ID'),
-    name: z.string().optional().describe('Project name'),
-    budgetTotal: z.number().optional().describe('Total budget'),
-    budgetProgress: z.number().optional().describe('Budget progress percentage'),
-    hoursTotal: z.number().optional().describe('Total hours logged'),
-    costTotal: z.number().optional().describe('Total costs'),
-    invoicedTotal: z.number().optional().describe('Total invoiced amount'),
-    currency: z.string().optional().describe('Currency code'),
-    report: z.any().describe('Full report data from MOCO')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('The ID of the project')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('Project ID'),
+      name: z.string().optional().describe('Project name'),
+      budgetTotal: z.number().optional().describe('Total budget'),
+      budgetProgress: z.number().optional().describe('Budget progress percentage'),
+      hoursTotal: z.number().optional().describe('Total hours logged'),
+      costTotal: z.number().optional().describe('Total costs'),
+      invoicedTotal: z.number().optional().describe('Total invoiced amount'),
+      currency: z.string().optional().describe('Currency code'),
+      report: z.any().describe('Full report data from MOCO')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let report = await client.getProjectReport(ctx.input.projectId);
 
@@ -369,4 +387,5 @@ export let getProjectReport = SlateTool.create(
       },
       message: `Retrieved report for project **${report.name || ctx.input.projectId}**.`
     };
-  }).build();
+  })
+  .build();

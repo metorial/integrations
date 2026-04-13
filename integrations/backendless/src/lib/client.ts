@@ -40,21 +40,31 @@ export class BackendlessClient {
 
   // ─── Data (Database) Operations ──────────────────────────────────────
 
-  async createObject(tableName: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async createObject(
+    tableName: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/data/${tableName}`, data);
     return response.data;
   }
 
-  async bulkCreateObjects(tableName: string, objects: Record<string, unknown>[]): Promise<string[]> {
+  async bulkCreateObjects(
+    tableName: string,
+    objects: Record<string, unknown>[]
+  ): Promise<string[]> {
     let response = await this.axios.post(`/data/bulk/${tableName}`, objects);
     return response.data;
   }
 
-  async getObjectById(tableName: string, objectId: string, options?: {
-    loadRelations?: string[];
-    relationsDepth?: number;
-    props?: string[];
-  }): Promise<Record<string, unknown>> {
+  async getObjectById(
+    tableName: string,
+    objectId: string,
+    options?: {
+      loadRelations?: string[];
+      relationsDepth?: number;
+      props?: string[];
+    }
+  ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
     if (options?.loadRelations?.length) params.loadRelations = options.loadRelations.join(',');
     if (options?.relationsDepth) params.relationsDepth = String(options.relationsDepth);
@@ -64,19 +74,22 @@ export class BackendlessClient {
     return response.data;
   }
 
-  async queryObjects(tableName: string, options?: {
-    where?: string;
-    sortBy?: string[];
-    props?: string[];
-    excludeProps?: string[];
-    loadRelations?: string[];
-    relationsDepth?: number;
-    pageSize?: number;
-    offset?: number;
-    groupBy?: string[];
-    having?: string;
-    distinct?: string;
-  }): Promise<Record<string, unknown>[]> {
+  async queryObjects(
+    tableName: string,
+    options?: {
+      where?: string;
+      sortBy?: string[];
+      props?: string[];
+      excludeProps?: string[];
+      loadRelations?: string[];
+      relationsDepth?: number;
+      pageSize?: number;
+      offset?: number;
+      groupBy?: string[];
+      having?: string;
+      distinct?: string;
+    }
+  ): Promise<Record<string, unknown>[]> {
     let params: Record<string, string> = {};
     if (options?.where) params.where = options.where;
     if (options?.sortBy?.length) params.sortBy = options.sortBy.join(',');
@@ -102,12 +115,20 @@ export class BackendlessClient {
     return response.data;
   }
 
-  async updateObject(tableName: string, objectId: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateObject(
+    tableName: string,
+    objectId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(`/data/${tableName}/${objectId}`, data);
     return response.data;
   }
 
-  async bulkUpdateObjects(tableName: string, where: string, data: Record<string, unknown>): Promise<number> {
+  async bulkUpdateObjects(
+    tableName: string,
+    where: string,
+    data: Record<string, unknown>
+  ): Promise<number> {
     let response = await this.axios.put(`/data/bulk/${tableName}`, data, {
       params: { where }
     });
@@ -175,18 +196,23 @@ export class BackendlessClient {
 
   // ─── File Operations ─────────────────────────────────────────────────
 
-  async listFiles(path: string, options?: {
-    pattern?: string;
-    recursive?: boolean;
-    pageSize?: number;
-    offset?: number;
-  }): Promise<Array<{
-    name: string;
-    createdOn: number;
-    publicUrl: string;
-    url: string;
-    size: number;
-  }>> {
+  async listFiles(
+    path: string,
+    options?: {
+      pattern?: string;
+      recursive?: boolean;
+      pageSize?: number;
+      offset?: number;
+    }
+  ): Promise<
+    Array<{
+      name: string;
+      createdOn: number;
+      publicUrl: string;
+      url: string;
+      size: number;
+    }>
+  > {
     let params: Record<string, string> = {};
     if (options?.pattern) params.pattern = options.pattern;
     if (options?.recursive) params.sub = 'true';
@@ -211,13 +237,17 @@ export class BackendlessClient {
 
   // ─── Messaging (Pub/Sub) ─────────────────────────────────────────────
 
-  async publishMessage(channelName: string, message: unknown, options?: {
-    publisherId?: string;
-    headers?: Record<string, string>;
-    publishAt?: number;
-    repeatEvery?: number;
-    repeatExpiresAt?: number;
-  }): Promise<{ status: string; messageId: string }> {
+  async publishMessage(
+    channelName: string,
+    message: unknown,
+    options?: {
+      publisherId?: string;
+      headers?: Record<string, string>;
+      publishAt?: number;
+      repeatEvery?: number;
+      repeatExpiresAt?: number;
+    }
+  ): Promise<{ status: string; messageId: string }> {
     let body: Record<string, unknown> = { message };
     if (options?.publisherId) body.publisherId = options.publisherId;
     if (options?.headers) body.headers = options.headers;

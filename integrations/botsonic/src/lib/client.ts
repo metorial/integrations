@@ -111,10 +111,10 @@ export class BusinessClient {
     this.http = createAxios({
       baseURL: 'https://api.botsonic.ai/v1/business',
       headers: {
-        'accept': 'application/json',
+        accept: 'application/json',
         'content-type': 'application/json',
-        'api_key_header_auth': token,
-      },
+        api_key_header_auth: token
+      }
     });
   }
 
@@ -136,19 +136,21 @@ export class BusinessClient {
       response_type: params.responseType,
       source: params.source,
       starter_question_id: params.starterQuestionId,
-      full_history: params.fullHistory,
+      full_history: params.fullHistory
     });
     return response.data;
   }
 
   // --- Bot Management ---
 
-  async listBots(params?: PaginationParams & {
-    searchQuery?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    workspaceId?: string;
-  }): Promise<PaginatedResponse<BotOutput>> {
+  async listBots(
+    params?: PaginationParams & {
+      searchQuery?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      workspaceId?: string;
+    }
+  ): Promise<PaginatedResponse<BotOutput>> {
     let response = await this.http.get('/bot/all', {
       params: {
         search_query: params?.searchQuery,
@@ -156,15 +158,15 @@ export class BusinessClient {
         sort_order: params?.sortOrder,
         workspace_id: params?.workspaceId,
         page: params?.page,
-        size: params?.size,
-      },
+        size: params?.size
+      }
     });
     return response.data;
   }
 
   async getBot(botId: string, workspaceId?: string): Promise<BotOutput> {
     let response = await this.http.get(`/bot/${botId}`, {
-      params: { workspace_id: workspaceId },
+      params: { workspace_id: workspaceId }
     });
     return response.data;
   }
@@ -176,7 +178,7 @@ export class BusinessClient {
 
   async deleteBot(botId: string, workspaceId?: string): Promise<BotOutput> {
     let response = await this.http.delete(`/bot/${botId}`, {
-      params: { workspace_id: workspaceId },
+      params: { workspace_id: workspaceId }
     });
     return response.data;
   }
@@ -188,19 +190,21 @@ export class BusinessClient {
 
   // --- Training Data Management ---
 
-  async listBotData(params?: PaginationParams & {
-    searchQuery?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }): Promise<PaginatedResponse<BotDataOutput>> {
+  async listBotData(
+    params?: PaginationParams & {
+      searchQuery?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    }
+  ): Promise<PaginatedResponse<BotDataOutput>> {
     let response = await this.http.get('/bot-data/all', {
       params: {
         search_query: params?.searchQuery,
         sort_by: params?.sortBy,
         sort_order: params?.sortOrder,
         page: params?.page,
-        size: params?.size,
-      },
+        size: params?.size
+      }
     });
     return response.data;
   }
@@ -215,7 +219,7 @@ export class BusinessClient {
       id: params.id,
       bot_id: params.botId,
       file_url: params.fileUrl,
-      file_name: params.fileName,
+      file_name: params.fileName
     });
     return response.data;
   }
@@ -230,7 +234,7 @@ export class BusinessClient {
       id: params.id,
       bot_id: params.botId,
       text: params.text,
-      title: params.title,
+      title: params.title
     });
     return response.data;
   }
@@ -245,7 +249,7 @@ export class BusinessClient {
       urls: params.urls,
       sitemap_id: params.sitemapId,
       is_sitemap: params.isSitemap,
-      sitemap_root: params.sitemapRoot,
+      sitemap_root: params.sitemapRoot
     });
     return response.data;
   }
@@ -257,27 +261,26 @@ export class BusinessClient {
 
   // --- FAQ Management ---
 
-  async listFaqs(params?: PaginationParams & {
-    searchQuery?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }): Promise<PaginatedResponse<FaqOutput>> {
+  async listFaqs(
+    params?: PaginationParams & {
+      searchQuery?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    }
+  ): Promise<PaginatedResponse<FaqOutput>> {
     let response = await this.http.get('/bot-faq/all', {
       params: {
         search_query: params?.searchQuery,
         sort_by: params?.sortBy,
         sort_order: params?.sortOrder,
         page: params?.page,
-        size: params?.size,
-      },
+        size: params?.size
+      }
     });
     return response.data;
   }
 
-  async createFaq(params: {
-    question: string;
-    answer: string;
-  }): Promise<FaqOutput> {
+  async createFaq(params: { question: string; answer: string }): Promise<FaqOutput> {
     let response = await this.http.post('/bot-faq', params);
     return response.data;
   }
@@ -289,19 +292,21 @@ export class BusinessClient {
 
   // --- Starter Questions ---
 
-  async listStarterQuestions(params?: PaginationParams & {
-    searchQuery?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }): Promise<PaginatedResponse<StarterQuestionOutput>> {
+  async listStarterQuestions(
+    params?: PaginationParams & {
+      searchQuery?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    }
+  ): Promise<PaginatedResponse<StarterQuestionOutput>> {
     let response = await this.http.get('/bot-starter-questions/all', {
       params: {
         search_query: params?.searchQuery,
         sort_by: params?.sortBy,
         sort_order: params?.sortOrder,
         page: params?.page,
-        size: params?.size,
-      },
+        size: params?.size
+      }
     });
     return response.data;
   }
@@ -315,12 +320,18 @@ export class BusinessClient {
     return response.data;
   }
 
-  async updateStarterQuestion(starterQuestionId: string, params: {
-    question?: string;
-    answer?: string;
-    order?: number;
-  }): Promise<StarterQuestionOutput> {
-    let response = await this.http.patch(`/bot-starter-questions/${starterQuestionId}`, params);
+  async updateStarterQuestion(
+    starterQuestionId: string,
+    params: {
+      question?: string;
+      answer?: string;
+      order?: number;
+    }
+  ): Promise<StarterQuestionOutput> {
+    let response = await this.http.patch(
+      `/bot-starter-questions/${starterQuestionId}`,
+      params
+    );
     return response.data;
   }
 
@@ -333,21 +344,23 @@ export class BusinessClient {
     let response = await this.http.get('/bot-starter-presets/all', {
       params: {
         page: params?.page,
-        size: params?.size,
-      },
+        size: params?.size
+      }
     });
     return response.data;
   }
 
   // --- Conversation History ---
 
-  async listConversations(params?: PaginationParams & {
-    searchQuery?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    updatedAfter?: string;
-    updatedBefore?: string;
-  }): Promise<PaginatedResponse<ConversationOutput>> {
+  async listConversations(
+    params?: PaginationParams & {
+      searchQuery?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      updatedAfter?: string;
+      updatedBefore?: string;
+    }
+  ): Promise<PaginatedResponse<ConversationOutput>> {
     let response = await this.http.get('/bot-data/conversations/all', {
       params: {
         search_query: params?.searchQuery,
@@ -356,8 +369,8 @@ export class BusinessClient {
         updated_after: params?.updatedAfter,
         updated_before: params?.updatedBefore,
         page: params?.page,
-        size: params?.size,
-      },
+        size: params?.size
+      }
     });
     return response.data;
   }
@@ -367,13 +380,16 @@ export class BusinessClient {
     return response.data;
   }
 
-  async endChat(chatId: string, params?: {
-    status?: string;
-    feedback?: string;
-  }): Promise<any> {
+  async endChat(
+    chatId: string,
+    params?: {
+      status?: string;
+      feedback?: string;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/bot-data/conversations/${chatId}/end-chat`, {
       status: params?.status || 'none',
-      feedback: params?.feedback,
+      feedback: params?.feedback
     });
     return response.data;
   }

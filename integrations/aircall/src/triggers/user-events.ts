@@ -4,34 +4,42 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let userEventTypes = [
-  'user.created', 'user.deleted', 'user.opened', 'user.closed',
-  'user.connected', 'user.disconnected', 'user.wut_start', 'user.wut_end'
+  'user.created',
+  'user.deleted',
+  'user.opened',
+  'user.closed',
+  'user.connected',
+  'user.disconnected',
+  'user.wut_start',
+  'user.wut_end'
 ] as const;
 
-export let userEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Events',
-    key: 'user_events',
-    description: 'Triggers when user events occur including creation, deletion, and online/offline status changes (opened/closed, connected/disconnected, wrap-up time start/end).'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of user event'),
-    timestamp: z.number().describe('Event timestamp as UNIX timestamp'),
-    webhookToken: z.string().describe('Webhook verification token'),
-    user: z.any().describe('The user data from the event payload')
-  }))
-  .output(z.object({
-    userId: z.number().describe('Unique user identifier'),
-    name: z.string().describe('Full name of the user'),
-    email: z.string().describe('Email address'),
-    available: z.boolean().describe('Whether the user is available'),
-    availabilityStatus: z.string().nullable().describe('Availability status'),
-    createdAt: z.string().nullable().describe('Creation date as ISO string')
-  }))
+export let userEvents = SlateTrigger.create(spec, {
+  name: 'User Events',
+  key: 'user_events',
+  description:
+    'Triggers when user events occur including creation, deletion, and online/offline status changes (opened/closed, connected/disconnected, wrap-up time start/end).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of user event'),
+      timestamp: z.number().describe('Event timestamp as UNIX timestamp'),
+      webhookToken: z.string().describe('Webhook verification token'),
+      user: z.any().describe('The user data from the event payload')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('Unique user identifier'),
+      name: z.string().describe('Full name of the user'),
+      email: z.string().describe('Email address'),
+      available: z.boolean().describe('Whether the user is available'),
+      availabilityStatus: z.string().nullable().describe('Availability status'),
+      createdAt: z.string().nullable().describe('Creation date as ISO string')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
       let webhook = await client.createWebhook(
         ctx.input.webhookBaseUrl,
@@ -46,30 +54,32 @@ export let userEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
       let details = ctx.input.registrationDetails as { webhookId: number };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (data.resource !== 'user') {
         return { inputs: [] };
       }
 
       return {
-        inputs: [{
-          eventType: data.event,
-          timestamp: data.timestamp,
-          webhookToken: data.token || '',
-          user: data.data
-        }]
+        inputs: [
+          {
+            eventType: data.event,
+            timestamp: data.timestamp,
+            webhookToken: data.token || '',
+            user: data.data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let user = ctx.input.user;
 
       return {
@@ -85,4 +95,5 @@ export let userEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -33,6 +33,7 @@ The Appcircle API also supports authentication with an API Key. API Keys are typ
 - Use the returned access token in the `Authorization` header for subsequent API calls.
 
 **Base URLs:**
+
 - Auth: `https://auth.appcircle.io`
 - API: `https://api.appcircle.io`
 - Self-hosted deployments use custom hostnames for both auth and API.
@@ -94,6 +95,7 @@ Webhooks are configured per organization under **My Organization > Notifications
 ### Build Events
 
 Notifications for key build lifecycle events:
+
 - Build started, succeeded, failed, canceled, timed out, completed with warnings.
 - Fetch started, test report created.
 - License retention policy updated.
@@ -101,6 +103,7 @@ Notifications for key build lifecycle events:
 ### Signing Identity Events
 
 Notifications related to certificate, keystore, and provisioning profile operations:
+
 - iOS certificate and provisioning profile added, deleted, or approaching expiration.
 - Android keystore created, uploaded, deleted, or approaching expiration.
 - Apple device registered, updated, unregistered, or provisioned.
@@ -109,12 +112,14 @@ Notifications related to certificate, keystore, and provisioning profile operati
 ### Testing Distribution Events
 
 Notifications for distribution-related activities:
+
 - New version added or uploaded for distribution.
 - App shared for testing distribution.
 
 ### Publish to Stores Events
 
 Notifications for the store publishing lifecycle:
+
 - Store status changed, new version deployed or uploaded.
 - Version rejected.
 - Publish step/flow starting, started, succeeded, failed, canceled, timed out, or restarting.
@@ -123,5 +128,6 @@ Notifications for the store publishing lifecycle:
 ### Enterprise App Store Events
 
 Notifications for Enterprise App Store activities:
+
 - New version deployed or uploaded to the Enterprise Store.
 - App shared on Enterprise Store.

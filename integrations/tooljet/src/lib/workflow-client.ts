@@ -7,8 +7,8 @@ export class WorkflowClient {
     this.axios = createAxios({
       baseURL: `${options.baseUrl.replace(/\/+$/, '')}/api/v2/webhooks/workflows`,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -22,8 +22,8 @@ export class WorkflowClient {
       parameters ?? {},
       {
         headers: {
-          'Authorization': `Bearer ${workflowToken}`,
-        },
+          Authorization: `Bearer ${workflowToken}`
+        }
       }
     );
     return response.data;

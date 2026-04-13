@@ -7,8 +7,8 @@ export class SensiboClient {
     this.http = createAxios({
       baseURL: 'https://home.sensibo.com/api/v2',
       params: {
-        apiKey: token,
-      },
+        apiKey: token
+      }
     });
   }
 
@@ -16,14 +16,14 @@ export class SensiboClient {
 
   async listDevices(fields: string = '*'): Promise<any[]> {
     let response = await this.http.get('/users/me/pods', {
-      params: { fields },
+      params: { fields }
     });
     return response.data.result;
   }
 
   async getDevice(deviceId: string, fields: string = '*'): Promise<any> {
     let response = await this.http.get(`/pods/${deviceId}`, {
-      params: { fields },
+      params: { fields }
     });
     return response.data.result;
   }
@@ -32,21 +32,21 @@ export class SensiboClient {
 
   async setAcState(deviceId: string, acState: Record<string, any>): Promise<any> {
     let response = await this.http.post(`/pods/${deviceId}/acStates`, {
-      acState,
+      acState
     });
     return response.data.result;
   }
 
   async setAcStateProperty(deviceId: string, property: string, value: any): Promise<any> {
     let response = await this.http.patch(`/pods/${deviceId}/acStates/${property}`, {
-      newValue: value,
+      newValue: value
     });
     return response.data.result;
   }
 
   async getAcStates(deviceId: string, limit: number = 10): Promise<any[]> {
     let response = await this.http.get(`/pods/${deviceId}/acStates`, {
-      params: { limit },
+      params: { limit }
     });
     return response.data.result;
   }
@@ -55,7 +55,7 @@ export class SensiboClient {
 
   async getHistoricalMeasurements(deviceId: string, days: number = 1): Promise<any[]> {
     let response = await this.http.get(`/pods/${deviceId}/historicalMeasurements`, {
-      params: { days },
+      params: { days }
     });
     return response.data.result;
   }
@@ -93,7 +93,11 @@ export class SensiboClient {
     return response.data.result;
   }
 
-  async updateSchedule(deviceId: string, scheduleId: string, schedule: Record<string, any>): Promise<any> {
+  async updateSchedule(
+    deviceId: string,
+    scheduleId: string,
+    schedule: Record<string, any>
+  ): Promise<any> {
     let response = await this.http.put(`/pods/${deviceId}/schedules/${scheduleId}`, schedule);
     return response.data.result;
   }
@@ -123,7 +127,7 @@ export class SensiboClient {
 
   async getDeviceEvents(deviceId: string, days: number = 1): Promise<any[]> {
     let response = await this.http.get(`/pods/${deviceId}/events`, {
-      params: { days },
+      params: { days }
     });
     return response.data.result;
   }
@@ -132,7 +136,7 @@ export class SensiboClient {
 
   async getDoorSensorEvents(deviceId: string, days: number = 1): Promise<any[]> {
     let response = await this.http.get(`/pods/${deviceId}/doorSensors/events`, {
-      params: { days },
+      params: { days }
     });
     return response.data.result;
   }

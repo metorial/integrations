@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTags = SlateTool.create(
-  spec,
-  {
-    name: 'List Tags',
-    key: 'list_tags',
-    description: `Retrieve all tags from TimeCamp. Tags can be assigned to tasks for categorizing tracked time.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTags = SlateTool.create(spec, {
+  name: 'List Tags',
+  key: 'list_tags',
+  description: `Retrieve all tags from TimeCamp. Tags can be assigned to tasks for categorizing tracked time.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    tags: z.array(z.object({
-      tagId: z.string().describe('Tag ID'),
-      name: z.string().describe('Tag name'),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      tags: z.array(
+        z.object({
+          tagId: z.string().describe('Tag ID'),
+          name: z.string().describe('Tag name')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let rawTags = await client.getTags();
@@ -35,14 +36,14 @@ export let listTags = SlateTool.create(
 
     let mapped = tagList.map((t: any) => ({
       tagId: String(t.tag_id || t.id || ''),
-      name: t.name || '',
+      name: t.name || ''
     }));
 
     return {
       output: {
-        tags: mapped,
+        tags: mapped
       },
-      message: `Retrieved **${mapped.length}** tags.`,
+      message: `Retrieved **${mapped.length}** tags.`
     };
   })
   .build();

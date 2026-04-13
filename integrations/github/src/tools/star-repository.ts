@@ -3,27 +3,28 @@ import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let starRepository = SlateTool.create(
-  spec,
-  {
-    name: 'Star Repository',
-    key: 'star_repository',
-    description: `Star or unstar a GitHub repository for the authenticated user.`,
-  }
-)
-  .input(z.object({
-    owner: z.string().describe('Repository owner'),
-    repo: z.string().describe('Repository name'),
-    action: z.enum(['star', 'unstar']).describe('Whether to star or unstar the repository'),
-  }))
-  .output(z.object({
-    owner: z.string().describe('Repository owner'),
-    repo: z.string().describe('Repository name'),
-    fullName: z.string().describe('Repository full name'),
-    htmlUrl: z.string().describe('Repository URL'),
-    starred: z.boolean().describe('Whether the repository is starred after this action'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let starRepository = SlateTool.create(spec, {
+  name: 'Star Repository',
+  key: 'star_repository',
+  description: `Star or unstar a GitHub repository for the authenticated user.`
+})
+  .input(
+    z.object({
+      owner: z.string().describe('Repository owner'),
+      repo: z.string().describe('Repository name'),
+      action: z.enum(['star', 'unstar']).describe('Whether to star or unstar the repository')
+    })
+  )
+  .output(
+    z.object({
+      owner: z.string().describe('Repository owner'),
+      repo: z.string().describe('Repository name'),
+      fullName: z.string().describe('Repository full name'),
+      htmlUrl: z.string().describe('Repository URL'),
+      starred: z.boolean().describe('Whether the repository is starred after this action')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitHubClient(ctx.auth.token);
     let { owner, repo, action } = ctx.input;
 
@@ -35,9 +36,9 @@ export let starRepository = SlateTool.create(
           repo,
           fullName: `${owner}/${repo}`,
           htmlUrl: `https://github.com/${owner}/${repo}`,
-          starred: true,
+          starred: true
         },
-        message: `Starred **${owner}/${repo}**.`,
+        message: `Starred **${owner}/${repo}**.`
       };
     }
 
@@ -48,8 +49,9 @@ export let starRepository = SlateTool.create(
         repo,
         fullName: `${owner}/${repo}`,
         htmlUrl: `https://github.com/${owner}/${repo}`,
-        starred: false,
+        starred: false
       },
-      message: `Removed star from **${owner}/${repo}**.`,
+      message: `Removed star from **${owner}/${repo}**.`
     };
-  }).build();
+  })
+  .build();

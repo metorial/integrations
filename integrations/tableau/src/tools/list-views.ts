@@ -9,28 +9,34 @@ export let listViews = SlateTool.create(spec, {
   description: `List and search views across the Tableau site. Supports pagination, filtering, and sorting.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    pageSize: z.number().optional().describe('Number of items per page'),
-    pageNumber: z.number().optional().describe('Page number (1-based)'),
-    filter: z.string().optional().describe('Filter expression (e.g., "name:eq:Revenue")'),
-    sort: z.string().optional().describe('Sort expression (e.g., "name:asc")')
-  }))
-  .output(z.object({
-    views: z.array(z.object({
-      viewId: z.string(),
-      name: z.string(),
-      contentUrl: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      viewUrlName: z.string().optional(),
-      workbookId: z.string().optional(),
-      ownerId: z.string().optional()
-    })),
-    totalCount: z.number(),
-    pageNumber: z.number(),
-    pageSize: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageSize: z.number().optional().describe('Number of items per page'),
+      pageNumber: z.number().optional().describe('Page number (1-based)'),
+      filter: z.string().optional().describe('Filter expression (e.g., "name:eq:Revenue")'),
+      sort: z.string().optional().describe('Sort expression (e.g., "name:asc")')
+    })
+  )
+  .output(
+    z.object({
+      views: z.array(
+        z.object({
+          viewId: z.string(),
+          name: z.string(),
+          contentUrl: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          viewUrlName: z.string().optional(),
+          workbookId: z.string().optional(),
+          ownerId: z.string().optional()
+        })
+      ),
+      totalCount: z.number(),
+      pageNumber: z.number(),
+      pageSize: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let result = await client.queryViews({
       pageSize: ctx.input.pageSize,
@@ -60,4 +66,5 @@ export let listViews = SlateTool.create(spec, {
       },
       message: `Found **${views.length}** views (${pagination.totalAvailable || 0} total).`
     };
-  }).build();
+  })
+  .build();

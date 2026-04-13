@@ -15,13 +15,16 @@ let orderItemSchema = z.object({
   rowTotal: z.number().optional().describe('Row total'),
   taxAmount: z.number().optional().describe('Tax amount'),
   discountAmount: z.number().optional().describe('Discount amount'),
-  productType: z.string().optional().describe('Product type'),
+  productType: z.string().optional().describe('Product type')
 });
 
 let orderOutputSchema = z.object({
   orderId: z.number().optional().describe('Order entity ID'),
   incrementId: z.string().optional().describe('Human-readable order number'),
-  state: z.string().optional().describe('Order state (new, processing, complete, closed, canceled, holded)'),
+  state: z
+    .string()
+    .optional()
+    .describe('Order state (new, processing, complete, closed, canceled, holded)'),
   status: z.string().optional().describe('Order status'),
   grandTotal: z.number().optional().describe('Order grand total'),
   subtotal: z.number().optional().describe('Order subtotal'),
@@ -36,7 +39,7 @@ let orderOutputSchema = z.object({
   currencyCode: z.string().optional().describe('Order currency code'),
   createdAt: z.string().optional().describe('Order creation timestamp'),
   updatedAt: z.string().optional().describe('Order last update timestamp'),
-  items: z.array(orderItemSchema).optional().describe('Order line items'),
+  items: z.array(orderItemSchema).optional().describe('Order line items')
 });
 
 let mapOrder = (o: any) => ({
@@ -69,51 +72,57 @@ let mapOrder = (o: any) => ({
     rowTotal: i.row_total,
     taxAmount: i.tax_amount,
     discountAmount: i.discount_amount,
-    productType: i.product_type,
-  })),
+    productType: i.product_type
+  }))
 });
 
-export let manageOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Order',
-    key: 'manage_order',
-    description: `Retrieve order details or perform order actions including adding comments, cancelling, holding, and unholding orders. Use the order entity ID (not the increment ID) for all operations.`,
-    instructions: [
-      'To **get** an order, provide the orderId.',
-      'To **add a comment**, provide orderId, set action to "comment", and include commentText.',
-      'To **cancel** an order, set action to "cancel".',
-      'To **hold** or **unhold**, set action to "hold" or "unhold" respectively.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageOrder = SlateTool.create(spec, {
+  name: 'Manage Order',
+  key: 'manage_order',
+  description: `Retrieve order details or perform order actions including adding comments, cancelling, holding, and unholding orders. Use the order entity ID (not the increment ID) for all operations.`,
+  instructions: [
+    'To **get** an order, provide the orderId.',
+    'To **add a comment**, provide orderId, set action to "comment", and include commentText.',
+    'To **cancel** an order, set action to "cancel".',
+    'To **hold** or **unhold**, set action to "hold" or "unhold" respectively.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'comment', 'cancel', 'hold', 'unhold']).describe('Action to perform on the order'),
-    orderId: z.number().describe('Order entity ID'),
-    commentText: z.string().optional().describe('Comment text (for comment action)'),
-    commentStatus: z.string().optional().describe('Order status to set with the comment'),
-    commentVisibleOnFront: z.boolean().optional().describe('Whether the comment is visible to the customer'),
-  }))
-  .output(z.object({
-    order: orderOutputSchema.optional().describe('Order details (for get action)'),
-    success: z.boolean().optional().describe('Whether the action was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'comment', 'cancel', 'hold', 'unhold'])
+        .describe('Action to perform on the order'),
+      orderId: z.number().describe('Order entity ID'),
+      commentText: z.string().optional().describe('Comment text (for comment action)'),
+      commentStatus: z.string().optional().describe('Order status to set with the comment'),
+      commentVisibleOnFront: z
+        .boolean()
+        .optional()
+        .describe('Whether the comment is visible to the customer')
+    })
+  )
+  .output(
+    z.object({
+      order: orderOutputSchema.optional().describe('Order details (for get action)'),
+      success: z.boolean().optional().describe('Whether the action was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MagentoClient({
       storeUrl: ctx.config.storeUrl,
       storeCode: ctx.config.storeCode,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     if (ctx.input.action === 'get') {
       let order = await client.getOrder(ctx.input.orderId);
       return {
         output: { order: mapOrder(order) },
-        message: `Retrieved order **#${order.increment_id}** (status: ${order.status}).`,
+        message: `Retrieved order **#${order.increment_id}** (status: ${order.status}).`
       };
     }
 
@@ -121,10 +130,15 @@ export let manageOrder = SlateTool.create(
       if (!ctx.input.commentText) {
         throw new Error('commentText is required for the comment action');
       }
-      await client.addOrderComment(ctx.input.orderId, ctx.input.commentText, ctx.input.commentStatus, ctx.input.commentVisibleOnFront);
+      await client.addOrderComment(
+        ctx.input.orderId,
+        ctx.input.commentText,
+        ctx.input.commentStatus,
+        ctx.input.commentVisibleOnFront
+      );
       return {
         output: { success: true },
-        message: `Added comment to order \`${ctx.input.orderId}\`.`,
+        message: `Added comment to order \`${ctx.input.orderId}\`.`
       };
     }
 
@@ -132,7 +146,7 @@ export let manageOrder = SlateTool.create(
       await client.cancelOrder(ctx.input.orderId);
       return {
         output: { success: true },
-        message: `Cancelled order \`${ctx.input.orderId}\`.`,
+        message: `Cancelled order \`${ctx.input.orderId}\`.`
       };
     }
 
@@ -140,7 +154,7 @@ export let manageOrder = SlateTool.create(
       await client.holdOrder(ctx.input.orderId);
       return {
         output: { success: true },
-        message: `Placed order \`${ctx.input.orderId}\` on hold.`,
+        message: `Placed order \`${ctx.input.orderId}\` on hold.`
       };
     }
 
@@ -148,7 +162,7 @@ export let manageOrder = SlateTool.create(
     await client.unholdOrder(ctx.input.orderId);
     return {
       output: { success: true },
-      message: `Released hold on order \`${ctx.input.orderId}\`.`,
+      message: `Released hold on order \`${ctx.input.orderId}\`.`
     };
   })
   .build();

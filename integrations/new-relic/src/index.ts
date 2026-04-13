@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   runNrqlQuery,
@@ -9,11 +8,9 @@ import {
   manageSyntheticMonitor,
   createChangeTrackingMarker,
   manageEntityTags,
-  ingestData,
+  ingestData
 } from './tools';
-import { alertIssues,
-  inboundWebhook,
-} from './triggers';
+import { alertIssues, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -25,10 +22,7 @@ export let provider = Slate.create({
     manageSyntheticMonitor,
     createChangeTrackingMarker,
     manageEntityTags,
-    ingestData,
+    ingestData
   ],
-  triggers: [
-    inboundWebhook,
-    alertIssues,
-  ],
+  triggers: [inboundWebhook, alertIssues]
 });

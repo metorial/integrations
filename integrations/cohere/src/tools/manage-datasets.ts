@@ -12,29 +12,42 @@ let datasetOutputSchema = z.object({
   updatedAt: z.string().optional().describe('ISO 8601 timestamp of last update')
 });
 
-export let listDatasetsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Datasets',
-    key: 'list_datasets',
-    description: `List datasets stored in your Cohere account. Datasets are used for batch embedding jobs and can be filtered by type, date, and validation status.`,
-    tags: {
-      readOnly: true
-    }
+export let listDatasetsTool = SlateTool.create(spec, {
+  name: 'List Datasets',
+  key: 'list_datasets',
+  description: `List datasets stored in your Cohere account. Datasets are used for batch embedding jobs and can be filtered by type, date, and validation status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    datasetType: z.string().optional().describe('Filter by dataset type (e.g., "embed-input")'),
-    before: z.string().optional().describe('Only return datasets created before this ISO 8601 date'),
-    after: z.string().optional().describe('Only return datasets created after this ISO 8601 date'),
-    limit: z.number().optional().describe('Maximum number of datasets to return'),
-    offset: z.number().optional().describe('Number of datasets to skip for pagination'),
-    validationStatus: z.string().optional().describe('Filter by validation status (e.g., "validated")')
-  }))
-  .output(z.object({
-    datasets: z.array(datasetOutputSchema).describe('List of datasets')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetType: z
+        .string()
+        .optional()
+        .describe('Filter by dataset type (e.g., "embed-input")'),
+      before: z
+        .string()
+        .optional()
+        .describe('Only return datasets created before this ISO 8601 date'),
+      after: z
+        .string()
+        .optional()
+        .describe('Only return datasets created after this ISO 8601 date'),
+      limit: z.number().optional().describe('Maximum number of datasets to return'),
+      offset: z.number().optional().describe('Number of datasets to skip for pagination'),
+      validationStatus: z
+        .string()
+        .optional()
+        .describe('Filter by validation status (e.g., "validated")')
+    })
+  )
+  .output(
+    z.object({
+      datasets: z.array(datasetOutputSchema).describe('List of datasets')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CohereClient({ token: ctx.auth.token });
 
     let result = await client.listDatasets({
@@ -59,24 +72,24 @@ export let listDatasetsTool = SlateTool.create(
       output: { datasets },
       message: `Found **${datasets.length}** dataset(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let getDatasetTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Dataset',
-    key: 'get_dataset',
-    description: `Retrieve details about a specific dataset by its ID, including its type, validation status, and metadata.`,
-    tags: {
-      readOnly: true
-    }
+export let getDatasetTool = SlateTool.create(spec, {
+  name: 'Get Dataset',
+  key: 'get_dataset',
+  description: `Retrieve details about a specific dataset by its ID, including its type, validation status, and metadata.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('ID of the dataset to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('ID of the dataset to retrieve')
+    })
+  )
   .output(datasetOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CohereClient({ token: ctx.auth.token });
 
     let result = await client.getDataset(ctx.input.datasetId);
@@ -93,26 +106,28 @@ export let getDatasetTool = SlateTool.create(
       },
       message: `Retrieved dataset **${d.name || ctx.input.datasetId}** (status: ${d.validation_status || 'unknown'}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteDatasetTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Dataset',
-    key: 'delete_dataset',
-    description: `Delete a dataset from your Cohere account by its ID. Datasets are automatically deleted after 30 days, but this allows immediate removal.`,
-    tags: {
-      destructive: true
-    }
+export let deleteDatasetTool = SlateTool.create(spec, {
+  name: 'Delete Dataset',
+  key: 'delete_dataset',
+  description: `Delete a dataset from your Cohere account by its ID. Datasets are automatically deleted after 30 days, but this allows immediate removal.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('ID of the dataset to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the dataset was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('ID of the dataset to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the dataset was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CohereClient({ token: ctx.auth.token });
 
     await client.deleteDataset(ctx.input.datasetId);
@@ -121,4 +136,5 @@ export let deleteDatasetTool = SlateTool.create(
       output: { deleted: true },
       message: `Deleted dataset **${ctx.input.datasetId}**.`
     };
-  }).build();
+  })
+  .build();

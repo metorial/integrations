@@ -6,10 +6,12 @@ let axiosInstance = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    workspaceId: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      workspaceId: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -19,10 +21,12 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       apiKey: z.string().describe('API Key generated from Settings > API Settings'),
       apiSecret: z.string().describe('API Secret provided at key creation time'),
-      workspaceId: z.string().describe('Workspace ID found on the Workspace details page in Settings')
+      workspaceId: z
+        .string()
+        .describe('Workspace ID found on the Workspace details page in Settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let encoded = btoa(`${ctx.input.apiKey}:${ctx.input.apiSecret}`);
       return {
         output: {
@@ -32,10 +36,13 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; workspaceId: string }; input: { apiKey: string; apiSecret: string; workspaceId: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; workspaceId: string };
+      input: { apiKey: string; apiSecret: string; workspaceId: string };
+    }) => {
       let response = await axiosInstance.get('/dashboard/accounts/v2/users/me/', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'X-Workspace': ctx.output.workspaceId
         }
       });
@@ -45,7 +52,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id ?? ''),
           email: user.email ?? '',
-          name: [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email || '',
+          name: [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email || ''
         }
       };
     }

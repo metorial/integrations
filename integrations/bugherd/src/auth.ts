@@ -2,23 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('BugHerd API key found under Settings > General Settings'),
+      token: z.string().describe('BugHerd API key found under Settings > General Settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,8 +29,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://www.bugherd.com/api_v2',
         auth: {
           username: ctx.output.token,
-          password: 'x',
-        },
+          password: 'x'
+        }
       });
 
       let response = await client.get('/organization.json');
@@ -37,8 +39,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: String(org.id),
-          name: org.name,
-        },
+          name: org.name
+        }
       };
-    },
+    }
   });

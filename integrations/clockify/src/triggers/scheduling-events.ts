@@ -11,35 +11,37 @@ let schedulingEventTypes = [
 ] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'ASSIGNMENT_CREATED': 'assignment.created',
-  'ASSIGNMENT_UPDATED': 'assignment.updated',
-  'ASSIGNMENT_DELETED': 'assignment.deleted',
-  'ASSIGNMENT_PUBLISHED': 'assignment.published'
+  ASSIGNMENT_CREATED: 'assignment.created',
+  ASSIGNMENT_UPDATED: 'assignment.updated',
+  ASSIGNMENT_DELETED: 'assignment.deleted',
+  ASSIGNMENT_PUBLISHED: 'assignment.published'
 };
 
-export let schedulingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Scheduling Events',
-    key: 'scheduling_events',
-    description: 'Triggered when scheduled assignments are created, updated, deleted, or published.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    assignment: z.any().describe('Assignment data from webhook payload')
-  }))
-  .output(z.object({
-    assignmentId: z.string(),
-    userId: z.string().optional(),
-    projectId: z.string().optional(),
-    start: z.string().optional(),
-    end: z.string().optional(),
-    published: z.boolean().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let schedulingEvents = SlateTrigger.create(spec, {
+  name: 'Scheduling Events',
+  key: 'scheduling_events',
+  description:
+    'Triggered when scheduled assignments are created, updated, deleted, or published.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      assignment: z.any().describe('Assignment data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      assignmentId: z.string(),
+      userId: z.string().optional(),
+      projectId: z.string().optional(),
+      start: z.string().optional(),
+      end: z.string().optional(),
+      published: z.boolean().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -61,7 +63,7 @@ export let schedulingEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -78,21 +80,24 @@ export let schedulingEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          assignment: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            assignment: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let assignment = ctx.input.assignment;
       let assignmentId = assignment.id || assignment.assignmentId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `assignment.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `assignment.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

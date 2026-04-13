@@ -43,7 +43,7 @@ import {
   listUsers,
   getRelatedItems,
   createRelatedItem,
-  deleteRelatedItem,
+  deleteRelatedItem
 } from './tools';
 import { entityChange } from './triggers';
 
@@ -92,9 +92,7 @@ export let provider = Slate.create({
     listUsers,
     getRelatedItems,
     createRelatedItem,
-    deleteRelatedItem,
+    deleteRelatedItem
   ],
-  triggers: [
-    entityChange,
-  ],
+  triggers: [entityChange]
 });

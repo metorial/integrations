@@ -41,27 +41,30 @@ export class Client {
 
     this.http = createAxios({
       baseURL: 'https://api.cloudflare.com/client/v4',
-      headers,
+      headers
     });
   }
 
   // ─── DNS Records ───────────────────────────────────────────────
 
-  async listDnsRecords(zoneId: string, params?: {
-    type?: string;
-    name?: string;
-    content?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listDnsRecords(
+    zoneId: string,
+    params?: {
+      type?: string;
+      name?: string;
+      content?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.http.get(`/zones/${zoneId}/dns_records`, {
       params: {
         type: params?.type,
         name: params?.name,
         content: params?.content,
         page: params?.page || 1,
-        per_page: params?.perPage || 100,
-      },
+        per_page: params?.perPage || 100
+      }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -71,28 +74,35 @@ export class Client {
     return response.data as CloudflareResponse<any>;
   }
 
-  async createDnsRecord(zoneId: string, record: {
-    type: string;
-    name: string;
-    content: string;
-    ttl?: number;
-    proxied?: boolean;
-    priority?: number;
-    comment?: string;
-  }) {
+  async createDnsRecord(
+    zoneId: string,
+    record: {
+      type: string;
+      name: string;
+      content: string;
+      ttl?: number;
+      proxied?: boolean;
+      priority?: number;
+      comment?: string;
+    }
+  ) {
     let response = await this.http.post(`/zones/${zoneId}/dns_records`, record);
     return response.data as CloudflareResponse<any>;
   }
 
-  async updateDnsRecord(zoneId: string, recordId: string, record: {
-    type?: string;
-    name?: string;
-    content?: string;
-    ttl?: number;
-    proxied?: boolean;
-    priority?: number;
-    comment?: string;
-  }) {
+  async updateDnsRecord(
+    zoneId: string,
+    recordId: string,
+    record: {
+      type?: string;
+      name?: string;
+      content?: string;
+      ttl?: number;
+      proxied?: boolean;
+      priority?: number;
+      comment?: string;
+    }
+  ) {
     let response = await this.http.patch(`/zones/${zoneId}/dns_records/${recordId}`, record);
     return response.data as CloudflareResponse<any>;
   }
@@ -122,8 +132,8 @@ export class Client {
         status: params?.status,
         'account.id': params?.accountId,
         page: params?.page || 1,
-        per_page: params?.perPage || 50,
-      },
+        per_page: params?.perPage || 50
+      }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -143,7 +153,7 @@ export class Client {
       name: data.name,
       account: { id: data.accountId },
       type: data.type || 'full',
-      jump_start: data.jumpStart ?? true,
+      jump_start: data.jumpStart ?? true
     });
     return response.data as CloudflareResponse<any>;
   }
@@ -165,7 +175,7 @@ export class Client {
 
   async purgeAllCache(zoneId: string) {
     let response = await this.http.post(`/zones/${zoneId}/purge_cache`, {
-      purge_everything: true,
+      purge_everything: true
     });
     return response.data as CloudflareResponse<{ id: string }>;
   }
@@ -193,18 +203,21 @@ export class Client {
 
   async listFirewallRules(zoneId: string, params?: PaginationParams) {
     let response = await this.http.get(`/zones/${zoneId}/firewall/rules`, {
-      params: { page: params?.page || 1, per_page: params?.perPage || 50 },
+      params: { page: params?.page || 1, per_page: params?.perPage || 50 }
     });
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createFirewallRules(zoneId: string, rules: Array<{
-    filter: { expression: string };
-    action: string;
-    description?: string;
-    priority?: number;
-    paused?: boolean;
-  }>) {
+  async createFirewallRules(
+    zoneId: string,
+    rules: Array<{
+      filter: { expression: string };
+      action: string;
+      description?: string;
+      priority?: number;
+      paused?: boolean;
+    }>
+  ) {
     let response = await this.http.post(`/zones/${zoneId}/firewall/rules`, rules);
     return response.data as CloudflareResponse<any[]>;
   }
@@ -226,38 +239,48 @@ export class Client {
 
   async listIpAccessRules(zoneId: string, params?: PaginationParams) {
     let response = await this.http.get(`/zones/${zoneId}/firewall/access_rules/rules`, {
-      params: { page: params?.page || 1, per_page: params?.perPage || 50 },
+      params: { page: params?.page || 1, per_page: params?.perPage || 50 }
     });
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createIpAccessRule(zoneId: string, rule: {
-    mode: string;
-    configuration: { target: string; value: string };
-    notes?: string;
-  }) {
+  async createIpAccessRule(
+    zoneId: string,
+    rule: {
+      mode: string;
+      configuration: { target: string; value: string };
+      notes?: string;
+    }
+  ) {
     let response = await this.http.post(`/zones/${zoneId}/firewall/access_rules/rules`, rule);
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteIpAccessRule(zoneId: string, ruleId: string) {
-    let response = await this.http.delete(`/zones/${zoneId}/firewall/access_rules/rules/${ruleId}`);
+    let response = await this.http.delete(
+      `/zones/${zoneId}/firewall/access_rules/rules/${ruleId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   // ─── Custom Rules (WAF) ───────────────────────────────────────
 
   async listCustomRules(zoneId: string) {
-    let response = await this.http.get(`/zones/${zoneId}/rulesets/phases/http_request_firewall_custom/entrypoint`);
+    let response = await this.http.get(
+      `/zones/${zoneId}/rulesets/phases/http_request_firewall_custom/entrypoint`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
-  async createCustomRule(zoneId: string, rule: {
-    expression: string;
-    action: string;
-    description?: string;
-    enabled?: boolean;
-  }) {
+  async createCustomRule(
+    zoneId: string,
+    rule: {
+      expression: string;
+      action: string;
+      description?: string;
+      enabled?: boolean;
+    }
+  ) {
     let entrypoint = await this.listCustomRules(zoneId);
     let rulesetId = entrypoint.result?.id;
 
@@ -266,7 +289,7 @@ export class Client {
         expression: rule.expression,
         action: rule.action,
         description: rule.description,
-        enabled: rule.enabled ?? true,
+        enabled: rule.enabled ?? true
       });
       return response.data as CloudflareResponse<any>;
     } else {
@@ -274,12 +297,14 @@ export class Client {
         name: 'Custom Rules',
         kind: 'zone',
         phase: 'http_request_firewall_custom',
-        rules: [{
-          expression: rule.expression,
-          action: rule.action,
-          description: rule.description,
-          enabled: rule.enabled ?? true,
-        }],
+        rules: [
+          {
+            expression: rule.expression,
+            action: rule.action,
+            description: rule.description,
+            enabled: rule.enabled ?? true
+          }
+        ]
       });
       return response.data as CloudflareResponse<any>;
     }
@@ -293,19 +318,26 @@ export class Client {
   }
 
   async getWorker(accountId: string, scriptName: string) {
-    let response = await this.http.get(`/accounts/${accountId}/workers/scripts/${scriptName}`, {
-      headers: { 'Accept': 'application/javascript' },
-    });
+    let response = await this.http.get(
+      `/accounts/${accountId}/workers/scripts/${scriptName}`,
+      {
+        headers: { Accept: 'application/javascript' }
+      }
+    );
     return response.data;
   }
 
   async getWorkerSettings(accountId: string, scriptName: string) {
-    let response = await this.http.get(`/accounts/${accountId}/workers/scripts/${scriptName}/settings`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/workers/scripts/${scriptName}/settings`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteWorker(accountId: string, scriptName: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/workers/scripts/${scriptName}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/workers/scripts/${scriptName}`
+    );
     return response.data;
   }
 
@@ -314,10 +346,13 @@ export class Client {
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createWorkerRoute(zoneId: string, route: {
-    pattern: string;
-    script: string;
-  }) {
+  async createWorkerRoute(
+    zoneId: string,
+    route: {
+      pattern: string;
+      script: string;
+    }
+  ) {
     let response = await this.http.post(`/zones/${zoneId}/workers/routes`, route);
     return response.data as CloudflareResponse<any>;
   }
@@ -331,54 +366,75 @@ export class Client {
 
   async listKvNamespaces(accountId: string, params?: PaginationParams) {
     let response = await this.http.get(`/accounts/${accountId}/storage/kv/namespaces`, {
-      params: { page: params?.page || 1, per_page: params?.perPage || 50 },
+      params: { page: params?.page || 1, per_page: params?.perPage || 50 }
     });
     return response.data as CloudflareResponse<any[]>;
   }
 
   async createKvNamespace(accountId: string, title: string) {
-    let response = await this.http.post(`/accounts/${accountId}/storage/kv/namespaces`, { title });
+    let response = await this.http.post(`/accounts/${accountId}/storage/kv/namespaces`, {
+      title
+    });
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteKvNamespace(accountId: string, namespaceId: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/storage/kv/namespaces/${namespaceId}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
-  async listKvKeys(accountId: string, namespaceId: string, params?: {
-    prefix?: string;
-    limit?: number;
-    cursor?: string;
-  }) {
-    let response = await this.http.get(`/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/keys`, {
-      params: {
-        prefix: params?.prefix,
-        limit: params?.limit || 1000,
-        cursor: params?.cursor,
-      },
-    });
+  async listKvKeys(
+    accountId: string,
+    namespaceId: string,
+    params?: {
+      prefix?: string;
+      limit?: number;
+      cursor?: string;
+    }
+  ) {
+    let response = await this.http.get(
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/keys`,
+      {
+        params: {
+          prefix: params?.prefix,
+          limit: params?.limit || 1000,
+          cursor: params?.cursor
+        }
+      }
+    );
     return response.data as CloudflareResponse<any[]>;
   }
 
   async getKvValue(accountId: string, namespaceId: string, key: string) {
-    let response = await this.http.get(`/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`
+    );
     return response.data;
   }
 
-  async putKvValue(accountId: string, namespaceId: string, key: string, value: string, metadata?: any) {
+  async putKvValue(
+    accountId: string,
+    namespaceId: string,
+    key: string,
+    value: string,
+    metadata?: any
+  ) {
     let response = await this.http.put(
       `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`,
       value,
       {
-        headers: { 'Content-Type': 'text/plain' },
+        headers: { 'Content-Type': 'text/plain' }
       }
     );
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteKvKey(accountId: string, namespaceId: string, key: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/values/${key}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
@@ -418,16 +474,19 @@ export class Client {
     return response.data as CloudflareResponse<any>;
   }
 
-  async createLoadBalancer(zoneId: string, data: {
-    name: string;
-    fallbackPool: string;
-    defaultPools: string[];
-    description?: string;
-    proxied?: boolean;
-    steeringPolicy?: string;
-    sessionAffinity?: string;
-    ttl?: number;
-  }) {
+  async createLoadBalancer(
+    zoneId: string,
+    data: {
+      name: string;
+      fallbackPool: string;
+      defaultPools: string[];
+      description?: string;
+      proxied?: boolean;
+      steeringPolicy?: string;
+      sessionAffinity?: string;
+      ttl?: number;
+    }
+  ) {
     let response = await this.http.post(`/zones/${zoneId}/load_balancers`, {
       name: data.name,
       fallback_pool: data.fallbackPool,
@@ -436,7 +495,7 @@ export class Client {
       proxied: data.proxied,
       steering_policy: data.steeringPolicy,
       session_affinity: data.sessionAffinity,
-      ttl: data.ttl,
+      ttl: data.ttl
     });
     return response.data as CloudflareResponse<any>;
   }
@@ -451,27 +510,32 @@ export class Client {
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createPool(accountId: string, data: {
-    name: string;
-    origins: Array<{ name: string; address: string; enabled?: boolean; weight?: number }>;
-    description?: string;
-    enabled?: boolean;
-    monitor?: string;
-    notificationEmail?: string;
-  }) {
+  async createPool(
+    accountId: string,
+    data: {
+      name: string;
+      origins: Array<{ name: string; address: string; enabled?: boolean; weight?: number }>;
+      description?: string;
+      enabled?: boolean;
+      monitor?: string;
+      notificationEmail?: string;
+    }
+  ) {
     let response = await this.http.post(`/accounts/${accountId}/load_balancers/pools`, {
       name: data.name,
       origins: data.origins,
       description: data.description,
       enabled: data.enabled ?? true,
       monitor: data.monitor,
-      notification_email: data.notificationEmail,
+      notification_email: data.notificationEmail
     });
     return response.data as CloudflareResponse<any>;
   }
 
   async deletePool(accountId: string, poolId: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/load_balancers/pools/${poolId}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/load_balancers/pools/${poolId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
@@ -480,17 +544,20 @@ export class Client {
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createMonitor(accountId: string, data: {
-    type?: string;
-    description?: string;
-    method?: string;
-    path?: string;
-    expectedBody?: string;
-    expectedCodes?: string;
-    timeout?: number;
-    retries?: number;
-    interval?: number;
-  }) {
+  async createMonitor(
+    accountId: string,
+    data: {
+      type?: string;
+      description?: string;
+      method?: string;
+      path?: string;
+      expectedBody?: string;
+      expectedCodes?: string;
+      timeout?: number;
+      retries?: number;
+      interval?: number;
+    }
+  ) {
     let response = await this.http.post(`/accounts/${accountId}/load_balancers/monitors`, {
       type: data.type || 'https',
       description: data.description,
@@ -500,7 +567,7 @@ export class Client {
       expected_codes: data.expectedCodes || '2xx',
       timeout: data.timeout || 5,
       retries: data.retries || 2,
-      interval: data.interval || 60,
+      interval: data.interval || 60
     });
     return response.data as CloudflareResponse<any>;
   }
@@ -518,27 +585,37 @@ export class Client {
   }
 
   async deletePagesProject(accountId: string, projectName: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/pages/projects/${projectName}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/pages/projects/${projectName}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   async listPagesDeployments(accountId: string, projectName: string) {
-    let response = await this.http.get(`/accounts/${accountId}/pages/projects/${projectName}/deployments`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/pages/projects/${projectName}/deployments`
+    );
     return response.data as CloudflareResponse<any[]>;
   }
 
   async getPagesDeployment(accountId: string, projectName: string, deploymentId: string) {
-    let response = await this.http.get(`/accounts/${accountId}/pages/projects/${projectName}/deployments/${deploymentId}`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/pages/projects/${projectName}/deployments/${deploymentId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   async rollbackPagesDeployment(accountId: string, projectName: string, deploymentId: string) {
-    let response = await this.http.post(`/accounts/${accountId}/pages/projects/${projectName}/deployments/${deploymentId}/rollback`);
+    let response = await this.http.post(
+      `/accounts/${accountId}/pages/projects/${projectName}/deployments/${deploymentId}/rollback`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   async deletePagesDeployment(accountId: string, projectName: string, deploymentId: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/pages/projects/${projectName}/deployments/${deploymentId}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/pages/projects/${projectName}/deployments/${deploymentId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
@@ -565,7 +642,7 @@ export class Client {
 
   async listOriginCaCertificates(zoneId: string) {
     let response = await this.http.get('/certificates', {
-      params: { zone_id: zoneId },
+      params: { zone_id: zoneId }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -580,7 +657,7 @@ export class Client {
       hostnames: data.hostnames,
       requested_validity: data.requestedValidity || 5475,
       request_type: data.requestType || 'origin-rsa',
-      csr: data.csr,
+      csr: data.csr
     });
     return response.data as CloudflareResponse<any>;
   }
@@ -599,7 +676,7 @@ export class Client {
 
   async listAccounts(params?: PaginationParams) {
     let response = await this.http.get('/accounts', {
-      params: { page: params?.page || 1, per_page: params?.perPage || 50 },
+      params: { page: params?.page || 1, per_page: params?.perPage || 50 }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -611,7 +688,7 @@ export class Client {
 
   async listAccountMembers(accountId: string, params?: PaginationParams) {
     let response = await this.http.get(`/accounts/${accountId}/members`, {
-      params: { page: params?.page || 1, per_page: params?.perPage || 50 },
+      params: { page: params?.page || 1, per_page: params?.perPage || 50 }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -619,7 +696,7 @@ export class Client {
   async addAccountMember(accountId: string, email: string, roles: string[]) {
     let response = await this.http.post(`/accounts/${accountId}/members`, {
       email,
-      roles,
+      roles
     });
     return response.data as CloudflareResponse<any>;
   }
@@ -634,14 +711,17 @@ export class Client {
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async getAuditLogs(accountId: string, params?: {
-    since?: string;
-    before?: string;
-    page?: number;
-    perPage?: number;
-    actorEmail?: string;
-    actorIp?: string;
-  }) {
+  async getAuditLogs(
+    accountId: string,
+    params?: {
+      since?: string;
+      before?: string;
+      page?: number;
+      perPage?: number;
+      actorEmail?: string;
+      actorIp?: string;
+    }
+  ) {
     let response = await this.http.get(`/accounts/${accountId}/audit_logs`, {
       params: {
         since: params?.since,
@@ -649,8 +729,8 @@ export class Client {
         page: params?.page || 1,
         per_page: params?.perPage || 50,
         'actor.email': params?.actorEmail,
-        'actor.ip': params?.actorIp,
-      },
+        'actor.ip': params?.actorIp
+      }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -663,66 +743,86 @@ export class Client {
   }
 
   async getNotificationPolicy(accountId: string, policyId: string) {
-    let response = await this.http.get(`/accounts/${accountId}/alerting/v3/policies/${policyId}`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/alerting/v3/policies/${policyId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
-  async createNotificationPolicy(accountId: string, data: {
-    name: string;
-    alertType: string;
-    enabled?: boolean;
-    description?: string;
-    mechanisms: Record<string, Array<{ id: string }>>;
-    filters?: Record<string, string[]>;
-  }) {
+  async createNotificationPolicy(
+    accountId: string,
+    data: {
+      name: string;
+      alertType: string;
+      enabled?: boolean;
+      description?: string;
+      mechanisms: Record<string, Array<{ id: string }>>;
+      filters?: Record<string, string[]>;
+    }
+  ) {
     let response = await this.http.post(`/accounts/${accountId}/alerting/v3/policies`, {
       name: data.name,
       alert_type: data.alertType,
       enabled: data.enabled ?? true,
       description: data.description,
       mechanisms: data.mechanisms,
-      filters: data.filters,
+      filters: data.filters
     });
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteNotificationPolicy(accountId: string, policyId: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/alerting/v3/policies/${policyId}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/alerting/v3/policies/${policyId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   async listNotificationWebhooks(accountId: string) {
-    let response = await this.http.get(`/accounts/${accountId}/alerting/v3/destinations/webhooks`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/alerting/v3/destinations/webhooks`
+    );
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createNotificationWebhook(accountId: string, data: {
-    name: string;
-    url: string;
-    secret?: string;
-  }) {
-    let response = await this.http.post(`/accounts/${accountId}/alerting/v3/destinations/webhooks`, data);
+  async createNotificationWebhook(
+    accountId: string,
+    data: {
+      name: string;
+      url: string;
+      secret?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/accounts/${accountId}/alerting/v3/destinations/webhooks`,
+      data
+    );
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteNotificationWebhook(accountId: string, webhookId: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/alerting/v3/destinations/webhooks/${webhookId}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/alerting/v3/destinations/webhooks/${webhookId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
-  async listNotificationHistory(accountId: string, params?: {
-    since?: string;
-    before?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async listNotificationHistory(
+    accountId: string,
+    params?: {
+      since?: string;
+      before?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.http.get(`/accounts/${accountId}/alerting/v3/history`, {
       params: {
         since: params?.since,
         before: params?.before,
         page: params?.page || 1,
-        per_page: params?.perPage || 25,
-      },
+        per_page: params?.perPage || 25
+      }
     });
     return response.data as CloudflareResponse<any[]>;
   }
@@ -735,20 +835,29 @@ export class Client {
   }
 
   async getDomain(accountId: string, domainName: string) {
-    let response = await this.http.get(`/accounts/${accountId}/registrar/domains/${domainName}`);
+    let response = await this.http.get(
+      `/accounts/${accountId}/registrar/domains/${domainName}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 
-  async updateDomain(accountId: string, domainName: string, data: {
-    autoRenew?: boolean;
-    locked?: boolean;
-    privacy?: boolean;
-  }) {
-    let response = await this.http.put(`/accounts/${accountId}/registrar/domains/${domainName}`, {
-      auto_renew: data.autoRenew,
-      locked: data.locked,
-      privacy: data.privacy,
-    });
+  async updateDomain(
+    accountId: string,
+    domainName: string,
+    data: {
+      autoRenew?: boolean;
+      locked?: boolean;
+      privacy?: boolean;
+    }
+  ) {
+    let response = await this.http.put(
+      `/accounts/${accountId}/registrar/domains/${domainName}`,
+      {
+        auto_renew: data.autoRenew,
+        locked: data.locked,
+        privacy: data.privacy
+      }
+    );
     return response.data as CloudflareResponse<any>;
   }
 
@@ -757,7 +866,7 @@ export class Client {
   async queryAnalytics(query: string, variables?: Record<string, any>) {
     let response = await this.http.post('/graphql', {
       query,
-      variables: variables || {},
+      variables: variables || {}
     });
     return response.data;
   }
@@ -784,22 +893,29 @@ export class Client {
     return response.data as CloudflareResponse<any[]>;
   }
 
-  async createStreamLiveInput(accountId: string, data: {
-    meta?: Record<string, string>;
-    recording?: { mode?: string; timeoutSeconds?: number };
-  }) {
+  async createStreamLiveInput(
+    accountId: string,
+    data: {
+      meta?: Record<string, string>;
+      recording?: { mode?: string; timeoutSeconds?: number };
+    }
+  ) {
     let response = await this.http.post(`/accounts/${accountId}/stream/live_inputs`, {
       meta: data.meta,
-      recording: data.recording ? {
-        mode: data.recording.mode || 'automatic',
-        timeoutSeconds: data.recording.timeoutSeconds || 0,
-      } : undefined,
+      recording: data.recording
+        ? {
+            mode: data.recording.mode || 'automatic',
+            timeoutSeconds: data.recording.timeoutSeconds || 0
+          }
+        : undefined
     });
     return response.data as CloudflareResponse<any>;
   }
 
   async deleteStreamLiveInput(accountId: string, liveInputId: string) {
-    let response = await this.http.delete(`/accounts/${accountId}/stream/live_inputs/${liveInputId}`);
+    let response = await this.http.delete(
+      `/accounts/${accountId}/stream/live_inputs/${liveInputId}`
+    );
     return response.data as CloudflareResponse<any>;
   }
 }

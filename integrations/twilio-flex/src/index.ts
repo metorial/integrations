@@ -44,9 +44,5 @@ export let provider = Slate.create({
     manageStudioFlowsTool,
     getWorkspaceStatisticsTool
   ],
-  triggers: [
-    taskEventsTrigger,
-    taskRouterWebhookTrigger,
-    interactionWebhookTrigger
-  ]
+  triggers: [taskEventsTrigger, taskRouterWebhookTrigger, interactionWebhookTrigger]
 });

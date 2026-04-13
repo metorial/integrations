@@ -3,24 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTest = SlateTool.create(
-  spec,
-  {
-    name: 'Get Test',
-    key: 'get_test',
-    description: `Retrieve detailed information about a specific coding assessment test, including its configuration, duration, questions, and status.`,
-    tags: {
-      readOnly: true,
-    },
+export let getTest = SlateTool.create(spec, {
+  name: 'Get Test',
+  key: 'get_test',
+  description: `Retrieve detailed information about a specific coding assessment test, including its configuration, duration, questions, and status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    testId: z.string().describe('ID of the test to retrieve'),
-  }))
-  .output(z.object({
-    test: z.record(z.string(), z.any()).describe('Test object with full details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      testId: z.string().describe('ID of the test to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      test: z.record(z.string(), z.any()).describe('Test object with full details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getTest(ctx.input.testId);
@@ -29,8 +30,8 @@ export let getTest = SlateTool.create(
 
     return {
       output: {
-        test,
+        test
       },
-      message: `Retrieved test **${test.name ?? ctx.input.testId}**.`,
+      message: `Retrieved test **${test.name ?? ctx.input.testId}**.`
     };
   });

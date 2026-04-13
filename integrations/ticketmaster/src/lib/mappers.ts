@@ -26,7 +26,7 @@ export let mapEvent = (event: any) => {
       type: pr.type || '',
       currency: pr.currency || '',
       min: pr.min ?? null,
-      max: pr.max ?? null,
+      max: pr.max ?? null
     })),
     seatmap: event.seatmap?.staticUrl || '',
     ticketLimit: event.ticketLimit?.info || '',
@@ -36,7 +36,7 @@ export let mapEvent = (event: any) => {
       url: img.url || '',
       width: img.width ?? null,
       height: img.height ?? null,
-      ratio: img.ratio || '',
+      ratio: img.ratio || ''
     })),
     sales: {
       publicStartDateTime: event.sales?.public?.startDateTime || '',
@@ -45,8 +45,8 @@ export let mapEvent = (event: any) => {
       presales: (event.sales?.presales || []).map((ps: any) => ({
         name: ps.name || '',
         startDateTime: ps.startDateTime || '',
-        endDateTime: ps.endDateTime || '',
-      })),
+        endDateTime: ps.endDateTime || ''
+      }))
     },
     classifications: (event.classifications || []).map((c: any) => ({
       primary: c.primary || false,
@@ -57,37 +57,41 @@ export let mapEvent = (event: any) => {
       subGenreName: c.subGenre?.name || '',
       subGenreId: c.subGenre?.id || '',
       typeName: c.type?.name || '',
-      subTypeName: c.subType?.name || '',
+      subTypeName: c.subType?.name || ''
     })),
-    promoter: event.promoter ? {
-      promoterId: event.promoter.id || '',
-      name: event.promoter.name || '',
-      description: event.promoter.description || '',
-    } : null,
-    venue: venue ? {
-      venueId: venue.id || '',
-      name: venue.name || '',
-      url: venue.url || '',
-      city: venue.city?.name || '',
-      stateCode: venue.state?.stateCode || '',
-      stateName: venue.state?.name || '',
-      countryCode: venue.country?.countryCode || '',
-      countryName: venue.country?.name || '',
-      postalCode: venue.postalCode || '',
-      address: venue.address?.line1 || '',
-      latitude: venue.location?.latitude || '',
-      longitude: venue.location?.longitude || '',
-      timezone: venue.timezone || '',
-    } : null,
+    promoter: event.promoter
+      ? {
+          promoterId: event.promoter.id || '',
+          name: event.promoter.name || '',
+          description: event.promoter.description || ''
+        }
+      : null,
+    venue: venue
+      ? {
+          venueId: venue.id || '',
+          name: venue.name || '',
+          url: venue.url || '',
+          city: venue.city?.name || '',
+          stateCode: venue.state?.stateCode || '',
+          stateName: venue.state?.name || '',
+          countryCode: venue.country?.countryCode || '',
+          countryName: venue.country?.name || '',
+          postalCode: venue.postalCode || '',
+          address: venue.address?.line1 || '',
+          latitude: venue.location?.latitude || '',
+          longitude: venue.location?.longitude || '',
+          timezone: venue.timezone || ''
+        }
+      : null,
     attractions: (attractions || []).map((a: any) => ({
       attractionId: a.id || '',
       name: a.name || '',
       url: a.url || '',
       classifications: (a.classifications || []).map((c: any) => ({
         segmentName: c.segment?.name || '',
-        genreName: c.genre?.name || '',
-      })),
-    })),
+        genreName: c.genre?.name || ''
+      }))
+    }))
   };
 };
 
@@ -106,7 +110,7 @@ export let mapAttraction = (attraction: any) => {
       url: img.url || '',
       width: img.width ?? null,
       height: img.height ?? null,
-      ratio: img.ratio || '',
+      ratio: img.ratio || ''
     })),
     classifications: (attraction.classifications || []).map((c: any) => ({
       primary: c.primary || false,
@@ -115,9 +119,9 @@ export let mapAttraction = (attraction: any) => {
       genreName: c.genre?.name || '',
       genreId: c.genre?.id || '',
       subGenreName: c.subGenre?.name || '',
-      subGenreId: c.subGenre?.id || '',
+      subGenreId: c.subGenre?.id || ''
     })),
-    aliases: attraction.aliases || [],
+    aliases: attraction.aliases || []
   };
 };
 
@@ -145,23 +149,23 @@ export let mapVenue = (venue: any) => {
     accessibleSeatingDetail: venue.accessibleSeatingDetail || '',
     generalInfo: {
       generalRule: venue.generalInfo?.generalRule || '',
-      childRule: venue.generalInfo?.childRule || '',
+      childRule: venue.generalInfo?.childRule || ''
     },
     boxOfficeInfo: {
       phoneNumberDetail: venue.boxOfficeInfo?.phoneNumberDetail || '',
       openHoursDetail: venue.boxOfficeInfo?.openHoursDetail || '',
       acceptedPaymentDetail: venue.boxOfficeInfo?.acceptedPaymentDetail || '',
-      willCallDetail: venue.boxOfficeInfo?.willCallDetail || '',
+      willCallDetail: venue.boxOfficeInfo?.willCallDetail || ''
     },
     upcomingEvents: venue.upcomingEvents || {},
     images: (venue.images || []).map((img: any) => ({
       url: img.url || '',
       width: img.width ?? null,
       height: img.height ?? null,
-      ratio: img.ratio || '',
+      ratio: img.ratio || ''
     })),
     dmas: (venue.dmas || []).map((d: any) => ({ dmaId: String(d.id || '') })),
-    social: venue.social || {},
+    social: venue.social || {}
   };
 };
 
@@ -169,27 +173,37 @@ export let mapClassification = (classification: any) => {
   if (!classification) return null;
 
   return {
-    segment: classification.segment ? {
-      segmentId: classification.segment.id || '',
-      name: classification.segment.name || '',
-    } : null,
-    genre: classification.genre ? {
-      genreId: classification.genre.id || '',
-      name: classification.genre.name || '',
-    } : null,
-    subGenre: classification.subGenre ? {
-      subGenreId: classification.subGenre.id || '',
-      name: classification.subGenre.name || '',
-    } : null,
-    type: classification.type ? {
-      typeId: classification.type.id || '',
-      name: classification.type.name || '',
-    } : null,
-    subType: classification.subType ? {
-      subTypeId: classification.subType.id || '',
-      name: classification.subType.name || '',
-    } : null,
-    primary: classification.primary || false,
+    segment: classification.segment
+      ? {
+          segmentId: classification.segment.id || '',
+          name: classification.segment.name || ''
+        }
+      : null,
+    genre: classification.genre
+      ? {
+          genreId: classification.genre.id || '',
+          name: classification.genre.name || ''
+        }
+      : null,
+    subGenre: classification.subGenre
+      ? {
+          subGenreId: classification.subGenre.id || '',
+          name: classification.subGenre.name || ''
+        }
+      : null,
+    type: classification.type
+      ? {
+          typeId: classification.type.id || '',
+          name: classification.type.name || ''
+        }
+      : null,
+    subType: classification.subType
+      ? {
+          subTypeId: classification.subType.id || '',
+          name: classification.subType.name || ''
+        }
+      : null,
+    primary: classification.primary || false
   };
 };
 
@@ -198,6 +212,6 @@ export let mapPagination = (page: any) => {
     totalElements: page?.totalElements ?? 0,
     totalPages: page?.totalPages ?? 0,
     currentPage: page?.number ?? 0,
-    pageSize: page?.size ?? 20,
+    pageSize: page?.size ?? 20
   };
 };

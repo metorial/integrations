@@ -15,6 +15,7 @@ Algodocs supports two authentication methods. Both require a secret API key obta
 Pass your registered email address and API key using HTTP Basic Auth, encoded as `base64('<email_address>:<api_key>')`.
 
 Example:
+
 ```
 curl https://api.algodocs.com/v1/me --user '<email_address>:<api_key>'
 ```
@@ -24,6 +25,7 @@ curl https://api.algodocs.com/v1/me --user '<email_address>:<api_key>'
 Pass only your API key via the `x-api-key` header.
 
 Example:
+
 ```
 curl https://api.algodocs.com/v1/me -H 'x-api-key: <api_key>'
 ```

@@ -3,50 +3,65 @@ import { FreshBooksClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTimeEntries = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Time Entries',
-    key: 'manage_time_entries',
-    description: `Create, update, or delete time entries in FreshBooks. Log time worked against clients and projects with duration, notes, and billable status. Requires a **businessId** in the configuration.`,
-    instructions: [
-      'Duration is specified in seconds (e.g., 3600 = 1 hour).',
-      'startedAt is a UTC Unix timestamp.',
-      'Requires businessId to be set in the configuration.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageTimeEntries = SlateTool.create(spec, {
+  name: 'Manage Time Entries',
+  key: 'manage_time_entries',
+  description: `Create, update, or delete time entries in FreshBooks. Log time worked against clients and projects with duration, notes, and billable status. Requires a **businessId** in the configuration.`,
+  instructions: [
+    'Duration is specified in seconds (e.g., 3600 = 1 hour).',
+    'startedAt is a UTC Unix timestamp.',
+    'Requires businessId to be set in the configuration.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    timeEntryId: z.number().optional().describe('Time entry ID (required for update/delete)'),
-    duration: z.number().optional().describe('Duration in seconds (e.g. 3600 for 1 hour)'),
-    startedAt: z.string().optional().describe('UTC timestamp when work began (ISO 8601 or Unix timestamp)'),
-    clientId: z.number().optional().describe('Client ID to bill'),
-    projectId: z.number().optional().describe('Project ID to associate with'),
-    note: z.string().optional().describe('Description of work performed'),
-    billable: z.boolean().optional().describe('Whether this time is billable (default: true)'),
-    isLogged: z.boolean().optional().describe('Whether to stop the timer (true = stopped/logged, false = timer still running)'),
-  }))
-  .output(z.object({
-    timeEntryId: z.number(),
-    duration: z.number().nullable().optional(),
-    startedAt: z.string().nullable().optional(),
-    clientId: z.number().nullable().optional(),
-    projectId: z.number().nullable().optional(),
-    note: z.string().nullable().optional(),
-    billable: z.boolean().nullable().optional(),
-    billed: z.boolean().nullable().optional(),
-    isLogged: z.boolean().nullable().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      timeEntryId: z
+        .number()
+        .optional()
+        .describe('Time entry ID (required for update/delete)'),
+      duration: z.number().optional().describe('Duration in seconds (e.g. 3600 for 1 hour)'),
+      startedAt: z
+        .string()
+        .optional()
+        .describe('UTC timestamp when work began (ISO 8601 or Unix timestamp)'),
+      clientId: z.number().optional().describe('Client ID to bill'),
+      projectId: z.number().optional().describe('Project ID to associate with'),
+      note: z.string().optional().describe('Description of work performed'),
+      billable: z
+        .boolean()
+        .optional()
+        .describe('Whether this time is billable (default: true)'),
+      isLogged: z
+        .boolean()
+        .optional()
+        .describe(
+          'Whether to stop the timer (true = stopped/logged, false = timer still running)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.number(),
+      duration: z.number().nullable().optional(),
+      startedAt: z.string().nullable().optional(),
+      clientId: z.number().nullable().optional(),
+      projectId: z.number().nullable().optional(),
+      note: z.string().nullable().optional(),
+      billable: z.boolean().nullable().optional(),
+      billed: z.boolean().nullable().optional(),
+      isLogged: z.boolean().nullable().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshBooksClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      businessId: ctx.config.businessId,
+      businessId: ctx.config.businessId
     });
 
     let buildPayload = () => {
@@ -70,14 +85,14 @@ export let manageTimeEntries = SlateTool.create(
       note: raw.note,
       billable: raw.billable,
       billed: raw.billed,
-      isLogged: raw.is_logged,
+      isLogged: raw.is_logged
     });
 
     if (ctx.input.action === 'create') {
       let result = await client.createTimeEntry(buildPayload());
       return {
         output: mapResult(result),
-        message: `Created time entry (ID: ${result.id}) - ${result.duration ? `${Math.round(result.duration / 60)} minutes` : 'timer started'}.`,
+        message: `Created time entry (ID: ${result.id}) - ${result.duration ? `${Math.round(result.duration / 60)} minutes` : 'timer started'}.`
       };
     }
 
@@ -86,7 +101,7 @@ export let manageTimeEntries = SlateTool.create(
       let result = await client.updateTimeEntry(ctx.input.timeEntryId, buildPayload());
       return {
         output: mapResult(result),
-        message: `Updated time entry (ID: ${ctx.input.timeEntryId}).`,
+        message: `Updated time entry (ID: ${ctx.input.timeEntryId}).`
       };
     }
 
@@ -95,11 +110,12 @@ export let manageTimeEntries = SlateTool.create(
       await client.deleteTimeEntry(ctx.input.timeEntryId);
       return {
         output: {
-          timeEntryId: ctx.input.timeEntryId,
+          timeEntryId: ctx.input.timeEntryId
         },
-        message: `Deleted time entry (ID: ${ctx.input.timeEntryId}).`,
+        message: `Deleted time entry (ID: ${ctx.input.timeEntryId}).`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

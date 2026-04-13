@@ -16,39 +16,39 @@ let contactEventSchema = z.object({
   taxNumber: z.string().optional().describe('Tax number'),
   updatedDate: z.string().optional().describe('Last updated timestamp'),
   accountNumber: z.string().optional().describe('Account number'),
-  website: z.string().optional().describe('Website URL'),
+  website: z.string().optional().describe('Website URL')
 });
 
-export let contactChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Changes',
-    key: 'contact_changes',
-    description: 'Triggers when contacts (customers or suppliers) are created or updated in Xero.',
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('Xero contact ID'),
-    name: z.string().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    emailAddress: z.string().optional(),
-    contactStatus: z.string().optional(),
-    isSupplier: z.boolean().optional(),
-    isCustomer: z.boolean().optional(),
-    defaultCurrency: z.string().optional(),
-    taxNumber: z.string().optional(),
-    updatedDate: z.string().optional(),
-    accountNumber: z.string().optional(),
-    website: z.string().optional(),
-  }))
+export let contactChanges = SlateTrigger.create(spec, {
+  name: 'Contact Changes',
+  key: 'contact_changes',
+  description:
+    'Triggers when contacts (customers or suppliers) are created or updated in Xero.'
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('Xero contact ID'),
+      name: z.string().optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      emailAddress: z.string().optional(),
+      contactStatus: z.string().optional(),
+      isSupplier: z.boolean().optional(),
+      isCustomer: z.boolean().optional(),
+      defaultCurrency: z.string().optional(),
+      taxNumber: z.string().optional(),
+      updatedDate: z.string().optional(),
+      accountNumber: z.string().optional(),
+      website: z.string().optional()
+    })
+  )
   .output(contactEventSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClientFromContext(ctx);
 
       let lastModified = (ctx.state as any)?.lastModified as string | undefined;
@@ -56,7 +56,7 @@ export let contactChanges = SlateTrigger.create(
       let result = await client.getContacts({
         modifiedAfter: lastModified,
         order: 'UpdatedDateUTC ASC',
-        summaryOnly: true,
+        summaryOnly: true
       });
 
       let contacts = result.Contacts || [];
@@ -83,15 +83,15 @@ export let contactChanges = SlateTrigger.create(
           taxNumber: c.TaxNumber,
           updatedDate: c.UpdatedDateUTC,
           accountNumber: c.AccountNumber,
-          website: c.Website,
+          website: c.Website
         })),
         updatedState: {
-          lastModified: newLastModified,
-        },
+          lastModified: newLastModified
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'contact.updated',
         id: `${ctx.input.contactId}-${ctx.input.updatedDate || Date.now()}`,
@@ -108,9 +108,9 @@ export let contactChanges = SlateTrigger.create(
           taxNumber: ctx.input.taxNumber,
           updatedDate: ctx.input.updatedDate,
           accountNumber: ctx.input.accountNumber,
-          website: ctx.input.website,
-        },
+          website: ctx.input.website
+        }
       };
-    },
+    }
   })
   .build();

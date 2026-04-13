@@ -3,36 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Folder',
-    key: 'manage_folder',
-    description: `Create, update, or delete folders for organizing templates and renders. Also supports moving templates and renders into folders.
+export let manageFolder = SlateTool.create(spec, {
+  name: 'Manage Folder',
+  key: 'manage_folder',
+  description: `Create, update, or delete folders for organizing templates and renders. Also supports moving templates and renders into folders.
 Specify the **action** to perform: create, update, delete, moveTemplate, or moveRender.`,
-    instructions: [
-      'To create a folder, set action to "create" and provide a folderName.',
-      'To move a template, set action to "moveTemplate" and provide both folderId and templateId.',
-      'To move a render, set action to "moveRender" and provide both folderId and renderId.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'moveTemplate', 'moveRender']).describe('Action to perform'),
-    folderId: z.string().optional().describe('Folder ID (required for update, delete, moveTemplate, moveRender)'),
-    folderName: z.string().optional().describe('Folder name (required for create, update)'),
-    templateId: z.string().optional().describe('Template ID to move (required for moveTemplate)'),
-    renderId: z.string().optional().describe('Render ID to move (required for moveRender)')
-  }))
-  .output(z.object({
-    folderId: z.string().optional(),
-    folderName: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    deleted: z.boolean().optional(),
-    moved: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'To create a folder, set action to "create" and provide a folderName.',
+    'To move a template, set action to "moveTemplate" and provide both folderId and templateId.',
+    'To move a render, set action to "moveRender" and provide both folderId and renderId.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'moveTemplate', 'moveRender'])
+        .describe('Action to perform'),
+      folderId: z
+        .string()
+        .optional()
+        .describe('Folder ID (required for update, delete, moveTemplate, moveRender)'),
+      folderName: z.string().optional().describe('Folder name (required for create, update)'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Template ID to move (required for moveTemplate)'),
+      renderId: z.string().optional().describe('Render ID to move (required for moveRender)')
+    })
+  )
+  .output(
+    z.object({
+      folderId: z.string().optional(),
+      folderName: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      deleted: z.boolean().optional(),
+      moved: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, folderId, folderName, templateId, renderId } = ctx.input;
 
@@ -91,4 +100,5 @@ Specify the **action** to perform: create, update, delete, moveTemplate, or move
         };
       }
     }
-  }).build();
+  })
+  .build();

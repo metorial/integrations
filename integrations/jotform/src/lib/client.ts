@@ -105,13 +105,11 @@ export class Client {
     return response.data.content;
   }
 
-  async updateFormProperties(
-    formId: string,
-    properties: Record<string, any>
-  ): Promise<any> {
+  async updateFormProperties(formId: string, properties: Record<string, any>): Promise<any> {
     let payload: Record<string, any> = {};
     for (let [key, value] of Object.entries(properties)) {
-      payload[`properties[${key}]`] = typeof value === 'object' ? JSON.stringify(value) : value;
+      payload[`properties[${key}]`] =
+        typeof value === 'object' ? JSON.stringify(value) : value;
     }
     let response = await this.http.post(`/form/${formId}/properties`, payload);
     return response.data.content;
@@ -125,16 +123,11 @@ export class Client {
   }
 
   async getFormQuestion(formId: string, questionId: string): Promise<any> {
-    let response = await this.http.get(
-      `/form/${formId}/question/${questionId}`
-    );
+    let response = await this.http.get(`/form/${formId}/question/${questionId}`);
     return response.data.content;
   }
 
-  async addFormQuestion(
-    formId: string,
-    question: Record<string, any>
-  ): Promise<any> {
+  async addFormQuestion(formId: string, question: Record<string, any>): Promise<any> {
     let payload: Record<string, any> = {};
     for (let [key, value] of Object.entries(question)) {
       payload[`question[${key}]`] = value;
@@ -144,9 +137,7 @@ export class Client {
   }
 
   async deleteFormQuestion(formId: string, questionId: string): Promise<any> {
-    let response = await this.http.delete(
-      `/form/${formId}/question/${questionId}`
-    );
+    let response = await this.http.delete(`/form/${formId}/question/${questionId}`);
     return response.data.content;
   }
 
@@ -159,10 +150,7 @@ export class Client {
     return response.data.content;
   }
 
-  async listFormSubmissions(
-    formId: string,
-    params?: ListParams
-  ): Promise<any[]> {
+  async listFormSubmissions(formId: string, params?: ListParams): Promise<any[]> {
     let response = await this.http.get(`/form/${formId}/submissions`, {
       params: this.buildListParams(params)
     });
@@ -174,49 +162,33 @@ export class Client {
     return response.data.content;
   }
 
-  async createSubmission(
-    formId: string,
-    answers: Record<string, any>
-  ): Promise<any> {
+  async createSubmission(formId: string, answers: Record<string, any>): Promise<any> {
     let payload: Record<string, any> = {};
     for (let [questionId, value] of Object.entries(answers)) {
       if (typeof value === 'object' && value !== null) {
-        for (let [subKey, subValue] of Object.entries(
-          value as Record<string, any>
-        )) {
+        for (let [subKey, subValue] of Object.entries(value as Record<string, any>)) {
           payload[`submission[${questionId}][${subKey}]`] = subValue;
         }
       } else {
         payload[`submission[${questionId}]`] = value;
       }
     }
-    let response = await this.http.post(
-      `/form/${formId}/submissions`,
-      payload
-    );
+    let response = await this.http.post(`/form/${formId}/submissions`, payload);
     return response.data.content;
   }
 
-  async updateSubmission(
-    submissionId: string,
-    answers: Record<string, any>
-  ): Promise<any> {
+  async updateSubmission(submissionId: string, answers: Record<string, any>): Promise<any> {
     let payload: Record<string, any> = {};
     for (let [questionId, value] of Object.entries(answers)) {
       if (typeof value === 'object' && value !== null) {
-        for (let [subKey, subValue] of Object.entries(
-          value as Record<string, any>
-        )) {
+        for (let [subKey, subValue] of Object.entries(value as Record<string, any>)) {
           payload[`submission[${questionId}][${subKey}]`] = subValue;
         }
       } else {
         payload[`submission[${questionId}]`] = value;
       }
     }
-    let response = await this.http.post(
-      `/submission/${submissionId}`,
-      payload
-    );
+    let response = await this.http.post(`/submission/${submissionId}`, payload);
     return response.data.content;
   }
 
@@ -300,17 +272,13 @@ export class Client {
   }
 
   async deleteFormWebhook(formId: string, webhookId: string): Promise<any> {
-    let response = await this.http.delete(
-      `/form/${formId}/webhooks/${webhookId}`
-    );
+    let response = await this.http.delete(`/form/${formId}/webhooks/${webhookId}`);
     return response.data.content;
   }
 
   // ── Helpers ───────────────────────────────────────────
 
-  private buildListParams(
-    params?: ListParams
-  ): Record<string, string | number> {
+  private buildListParams(params?: ListParams): Record<string, string | number> {
     let result: Record<string, string | number> = {};
     if (params?.offset !== undefined) result.offset = params.offset;
     if (params?.limit !== undefined) result.limit = params.limit;

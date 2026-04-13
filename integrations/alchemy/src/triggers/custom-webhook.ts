@@ -6,58 +6,68 @@ import { AlchemyClient } from '../lib/client';
 export let customWebhook = SlateTrigger.create(spec, {
   name: 'Custom Webhook',
   key: 'custom_webhook',
-  description: 'Receives custom webhook events from Alchemy using GraphQL filters. Tracks any smart contract interaction, marketplace activity, or contract creation based on custom-defined filters.',
+  description:
+    'Receives custom webhook events from Alchemy using GraphQL filters. Tracks any smart contract interaction, marketplace activity, or contract creation based on custom-defined filters.'
 })
-  .input(z.object({
-    webhookId: z.string().describe('Alchemy webhook ID'),
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Type of the event'),
-    eventData: z.any().describe('Raw event data from the webhook payload'),
-  }))
-  .output(z.object({
-    webhookId: z.string().describe('Alchemy webhook ID'),
-    transactionHash: z.string().optional().describe('Transaction hash if applicable'),
-    blockNumber: z.string().optional().describe('Block number if applicable'),
-    fromAddress: z.string().optional().describe('From address if applicable'),
-    toAddress: z.string().optional().describe('To address if applicable'),
-    logs: z.array(z.object({
-      contractAddress: z.string().optional(),
-      topics: z.array(z.string()).optional(),
-      logData: z.string().optional(),
-    })).optional().describe('Event logs'),
-    rawEvent: z.any().describe('Full raw event data'),
-  }))
+  .input(
+    z.object({
+      webhookId: z.string().describe('Alchemy webhook ID'),
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Type of the event'),
+      eventData: z.any().describe('Raw event data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      webhookId: z.string().describe('Alchemy webhook ID'),
+      transactionHash: z.string().optional().describe('Transaction hash if applicable'),
+      blockNumber: z.string().optional().describe('Block number if applicable'),
+      fromAddress: z.string().optional().describe('From address if applicable'),
+      toAddress: z.string().optional().describe('To address if applicable'),
+      logs: z
+        .array(
+          z.object({
+            contractAddress: z.string().optional(),
+            topics: z.array(z.string()).optional(),
+            logData: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Event logs'),
+      rawEvent: z.any().describe('Full raw event data')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AlchemyClient({
         token: ctx.auth.token,
-        network: 'eth-mainnet',
+        network: 'eth-mainnet'
       });
 
       let result = await client.createWebhook({
         webhookType: 'GRAPHQL',
         webhookUrl: ctx.input.webhookBaseUrl,
-        network: 'ETH_MAINNET',
+        network: 'ETH_MAINNET'
       });
 
       return {
         registrationDetails: {
-          webhookId: result.data?.id || result.id,
-        },
+          webhookId: result.data?.id || result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AlchemyClient({
         token: ctx.auth.token,
-        network: 'eth-mainnet',
+        network: 'eth-mainnet'
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let webhookId = data.webhookId || '';
       let event = data.event || {};
 
@@ -67,12 +77,14 @@ export let customWebhook = SlateTrigger.create(spec, {
       if (transactions.length === 0) {
         // Single event format
         return {
-          inputs: [{
-            webhookId,
-            eventId: `${data.id || webhookId}-${data.createdAt || Date.now()}`,
-            eventType: 'custom',
-            eventData: event,
-          }],
+          inputs: [
+            {
+              webhookId,
+              eventId: `${data.id || webhookId}-${data.createdAt || Date.now()}`,
+              eventType: 'custom',
+              eventData: event
+            }
+          ]
         };
       }
 
@@ -84,20 +96,20 @@ export let customWebhook = SlateTrigger.create(spec, {
         eventData: {
           ...tx,
           blockNumber: event.data?.block?.number,
-          blockTimestamp: event.data?.block?.timestamp,
-        },
+          blockTimestamp: event.data?.block?.timestamp
+        }
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventData = ctx.input.eventData || {};
 
       let logs = (eventData.logs || []).map((log: any) => ({
         contractAddress: log.account?.address || log.address,
         topics: log.topics?.map((t: any) => t.hash || t) || [],
-        logData: log.data,
+        logData: log.data
       }));
 
       return {
@@ -110,9 +122,9 @@ export let customWebhook = SlateTrigger.create(spec, {
           fromAddress: eventData.from?.address || eventData.from,
           toAddress: eventData.to?.address || eventData.to,
           logs,
-          rawEvent: eventData,
-        },
+          rawEvent: eventData
+        }
       };
-    },
+    }
   })
   .build();

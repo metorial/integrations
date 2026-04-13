@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.getpostman.com',
       headers: {
         'X-API-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,20 +25,19 @@ export class Client {
     return response.data.workspace;
   }
 
-  async createWorkspace(workspace: {
-    name: string;
-    type: string;
-    description?: string;
-  }) {
+  async createWorkspace(workspace: { name: string; type: string; description?: string }) {
     let response = await this.axios.post('/workspaces', { workspace });
     return response.data.workspace;
   }
 
-  async updateWorkspace(workspaceId: string, workspace: {
-    name?: string;
-    type?: string;
-    description?: string;
-  }) {
+  async updateWorkspace(
+    workspaceId: string,
+    workspace: {
+      name?: string;
+      type?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.put(`/workspaces/${workspaceId}`, { workspace });
     return response.data.workspace;
   }
@@ -61,9 +60,13 @@ export class Client {
   }
 
   async createCollection(collection: Record<string, any>, workspaceId?: string) {
-    let response = await this.axios.post('/collections', { collection }, {
-      params: workspaceId ? { workspace: workspaceId } : undefined,
-    });
+    let response = await this.axios.post(
+      '/collections',
+      { collection },
+      {
+        params: workspaceId ? { workspace: workspaceId } : undefined
+      }
+    );
     return response.data.collection;
   }
 
@@ -79,20 +82,33 @@ export class Client {
 
   // ── Collection Items ────────────────────────────────────────
 
-  async createCollectionRequest(collectionId: string, request: Record<string, any>, folderId?: string) {
+  async createCollectionRequest(
+    collectionId: string,
+    request: Record<string, any>,
+    folderId?: string
+  ) {
     let response = await this.axios.post(`/collections/${collectionId}/requests`, request, {
-      params: folderId ? { folder: folderId } : undefined,
+      params: folderId ? { folder: folderId } : undefined
     });
     return response.data.data;
   }
 
-  async updateCollectionRequest(collectionId: string, requestId: string, request: Record<string, any>) {
-    let response = await this.axios.put(`/collections/${collectionId}/requests/${requestId}`, request);
+  async updateCollectionRequest(
+    collectionId: string,
+    requestId: string,
+    request: Record<string, any>
+  ) {
+    let response = await this.axios.put(
+      `/collections/${collectionId}/requests/${requestId}`,
+      request
+    );
     return response.data.data;
   }
 
   async deleteCollectionRequest(collectionId: string, requestId: string) {
-    let response = await this.axios.delete(`/collections/${collectionId}/requests/${requestId}`);
+    let response = await this.axios.delete(
+      `/collections/${collectionId}/requests/${requestId}`
+    );
     return response.data.data;
   }
 
@@ -101,8 +117,15 @@ export class Client {
     return response.data.data;
   }
 
-  async updateCollectionFolder(collectionId: string, folderId: string, folder: Record<string, any>) {
-    let response = await this.axios.put(`/collections/${collectionId}/folders/${folderId}`, folder);
+  async updateCollectionFolder(
+    collectionId: string,
+    folderId: string,
+    folder: Record<string, any>
+  ) {
+    let response = await this.axios.put(
+      `/collections/${collectionId}/folders/${folderId}`,
+      folder
+    );
     return response.data.data;
   }
 
@@ -114,13 +137,20 @@ export class Client {
   // ── Forks ───────────────────────────────────────────────────
 
   async forkCollection(collectionId: string, label: string, workspaceId: string) {
-    let response = await this.axios.post(`/collections/fork/${collectionId}`, { label }, {
-      params: { workspace: workspaceId },
-    });
+    let response = await this.axios.post(
+      `/collections/fork/${collectionId}`,
+      { label },
+      {
+        params: { workspace: workspaceId }
+      }
+    );
     return response.data.collection;
   }
 
-  async listCollectionForks(collectionId: string, params?: { cursor?: string; limit?: number; sort?: string; direction?: string }) {
+  async listCollectionForks(
+    collectionId: string,
+    params?: { cursor?: string; limit?: number; sort?: string; direction?: string }
+  ) {
     let response = await this.axios.get(`/collections/${collectionId}/forks`, { params });
     return response.data;
   }
@@ -139,14 +169,20 @@ export class Client {
     return response.data.data ?? [];
   }
 
-  async createPullRequest(collectionId: string, pullRequest: {
-    title: string;
-    description?: string;
-    source: string;
-    destination: string;
-    reviewers?: string[];
-  }) {
-    let response = await this.axios.post(`/collections/${collectionId}/pull-requests`, pullRequest);
+  async createPullRequest(
+    collectionId: string,
+    pullRequest: {
+      title: string;
+      description?: string;
+      source: string;
+      destination: string;
+      reviewers?: string[];
+    }
+  ) {
+    let response = await this.axios.post(
+      `/collections/${collectionId}/pull-requests`,
+      pullRequest
+    );
     return response.data.data;
   }
 
@@ -155,10 +191,13 @@ export class Client {
     return response.data.data;
   }
 
-  async updatePullRequest(pullRequestId: string, pullRequest: {
-    title?: string;
-    description?: string;
-  }) {
+  async updatePullRequest(
+    pullRequestId: string,
+    pullRequest: {
+      title?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.put(`/pull-requests/${pullRequestId}`, pullRequest);
     return response.data.data;
   }
@@ -175,20 +214,30 @@ export class Client {
     return response.data.environment;
   }
 
-  async createEnvironment(environment: {
-    name: string;
-    values?: Array<{ key: string; value: string; enabled?: boolean; type?: string }>;
-  }, workspaceId?: string) {
-    let response = await this.axios.post('/environments', { environment }, {
-      params: workspaceId ? { workspace: workspaceId } : undefined,
-    });
+  async createEnvironment(
+    environment: {
+      name: string;
+      values?: Array<{ key: string; value: string; enabled?: boolean; type?: string }>;
+    },
+    workspaceId?: string
+  ) {
+    let response = await this.axios.post(
+      '/environments',
+      { environment },
+      {
+        params: workspaceId ? { workspace: workspaceId } : undefined
+      }
+    );
     return response.data.environment;
   }
 
-  async updateEnvironment(environmentId: string, environment: {
-    name?: string;
-    values?: Array<{ key: string; value: string; enabled?: boolean; type?: string }>;
-  }) {
+  async updateEnvironment(
+    environmentId: string,
+    environment: {
+      name?: string;
+      values?: Array<{ key: string; value: string; enabled?: boolean; type?: string }>;
+    }
+  ) {
     let response = await this.axios.put(`/environments/${environmentId}`, { environment });
     return response.data.environment;
   }
@@ -210,24 +259,34 @@ export class Client {
     return response.data.mock;
   }
 
-  async createMock(mock: {
-    name?: string;
-    collection: string;
-    environment?: string;
-    private?: boolean;
-  }, workspaceId?: string) {
-    let response = await this.axios.post('/mocks', { mock }, {
-      params: workspaceId ? { workspace: workspaceId } : undefined,
-    });
+  async createMock(
+    mock: {
+      name?: string;
+      collection: string;
+      environment?: string;
+      private?: boolean;
+    },
+    workspaceId?: string
+  ) {
+    let response = await this.axios.post(
+      '/mocks',
+      { mock },
+      {
+        params: workspaceId ? { workspace: workspaceId } : undefined
+      }
+    );
     return response.data.mock;
   }
 
-  async updateMock(mockId: string, mock: {
-    name?: string;
-    environment?: string;
-    private?: boolean;
-    description?: string;
-  }) {
+  async updateMock(
+    mockId: string,
+    mock: {
+      name?: string;
+      environment?: string;
+      private?: boolean;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.put(`/mocks/${mockId}`, { mock });
     return response.data.mock;
   }
@@ -249,22 +308,32 @@ export class Client {
     return response.data.monitor;
   }
 
-  async createMonitor(monitor: {
-    name: string;
-    collection: string;
-    environment?: string;
-    schedule: { cron: string; timezone: string };
-  }, workspaceId?: string) {
-    let response = await this.axios.post('/monitors', { monitor }, {
-      params: workspaceId ? { workspace: workspaceId } : undefined,
-    });
+  async createMonitor(
+    monitor: {
+      name: string;
+      collection: string;
+      environment?: string;
+      schedule: { cron: string; timezone: string };
+    },
+    workspaceId?: string
+  ) {
+    let response = await this.axios.post(
+      '/monitors',
+      { monitor },
+      {
+        params: workspaceId ? { workspace: workspaceId } : undefined
+      }
+    );
     return response.data.monitor;
   }
 
-  async updateMonitor(monitorId: string, monitor: {
-    name?: string;
-    schedule?: { cron?: string; timezone?: string };
-  }) {
+  async updateMonitor(
+    monitorId: string,
+    monitor: {
+      name?: string;
+      schedule?: { cron?: string; timezone?: string };
+    }
+  ) {
     let response = await this.axios.put(`/monitors/${monitorId}`, { monitor });
     return response.data.monitor;
   }
@@ -291,22 +360,28 @@ export class Client {
     return response.data;
   }
 
-  async createApi(api: {
-    name: string;
-    summary?: string;
-    description?: string;
-  }, workspaceId?: string) {
+  async createApi(
+    api: {
+      name: string;
+      summary?: string;
+      description?: string;
+    },
+    workspaceId?: string
+  ) {
     let response = await this.axios.post('/apis', api, {
-      params: workspaceId ? { workspace: workspaceId } : undefined,
+      params: workspaceId ? { workspace: workspaceId } : undefined
     });
     return response.data;
   }
 
-  async updateApi(apiId: string, api: {
-    name?: string;
-    summary?: string;
-    description?: string;
-  }) {
+  async updateApi(
+    apiId: string,
+    api: {
+      name?: string;
+      summary?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.put(`/apis/${apiId}`, api);
     return response.data;
   }
@@ -324,25 +399,45 @@ export class Client {
     return response.data.comments ?? [];
   }
 
-  async createComment(entityType: string, entityId: string, body: string, parentEntityId?: string) {
+  async createComment(
+    entityType: string,
+    entityId: string,
+    body: string,
+    parentEntityId?: string
+  ) {
     let path = this.buildCommentPath(entityType, entityId, parentEntityId);
     let response = await this.axios.post(path, { body });
     return response.data;
   }
 
-  async updateComment(entityType: string, entityId: string, commentId: number, body: string, parentEntityId?: string) {
+  async updateComment(
+    entityType: string,
+    entityId: string,
+    commentId: number,
+    body: string,
+    parentEntityId?: string
+  ) {
     let path = this.buildCommentPath(entityType, entityId, parentEntityId);
     let response = await this.axios.put(`${path}/${commentId}`, { body });
     return response.data;
   }
 
-  async deleteComment(entityType: string, entityId: string, commentId: number, parentEntityId?: string) {
+  async deleteComment(
+    entityType: string,
+    entityId: string,
+    commentId: number,
+    parentEntityId?: string
+  ) {
     let path = this.buildCommentPath(entityType, entityId, parentEntityId);
     let response = await this.axios.delete(`${path}/${commentId}`);
     return response.data;
   }
 
-  private buildCommentPath(entityType: string, entityId: string, parentEntityId?: string): string {
+  private buildCommentPath(
+    entityType: string,
+    entityId: string,
+    parentEntityId?: string
+  ): string {
     switch (entityType) {
       case 'collection':
         return `/collections/${entityId}/comments`;
@@ -380,20 +475,30 @@ export class Client {
     return response.data;
   }
 
-  async getEntitiesByTag(tagSlug: string, params?: { entityType?: string; limit?: number; cursor?: string; direction?: string }) {
+  async getEntitiesByTag(
+    tagSlug: string,
+    params?: { entityType?: string; limit?: number; cursor?: string; direction?: string }
+  ) {
     let response = await this.axios.get(`/tags/${tagSlug}/entities`, { params });
     return response.data;
   }
 
   // ── Webhooks ────────────────────────────────────────────────
 
-  async createWebhook(webhook: {
-    name: string;
-    collection: string;
-  }, workspaceId?: string) {
-    let response = await this.axios.post('/webhooks', { webhook }, {
-      params: workspaceId ? { workspace: workspaceId } : undefined,
-    });
+  async createWebhook(
+    webhook: {
+      name: string;
+      collection: string;
+    },
+    workspaceId?: string
+  ) {
+    let response = await this.axios.post(
+      '/webhooks',
+      { webhook },
+      {
+        params: workspaceId ? { workspace: workspaceId } : undefined
+      }
+    );
     return response.data.webhook;
   }
 }

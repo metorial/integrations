@@ -15,17 +15,17 @@ export class AlchemyClient {
       baseURL: `https://${config.network}.g.alchemy.com/v2/${config.token}`,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     this.notifyApi = createAxios({
       baseURL: 'https://dashboard.alchemy.com/api',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-Alchemy-Token': config.token,
-      },
+        Accept: 'application/json',
+        'X-Alchemy-Token': config.token
+      }
     });
   }
 
@@ -36,10 +36,12 @@ export class AlchemyClient {
       jsonrpc: '2.0',
       id: 1,
       method,
-      params,
+      params
     });
     if (response.data.error) {
-      throw new Error(`JSON-RPC error: ${response.data.error.message || JSON.stringify(response.data.error)}`);
+      throw new Error(
+        `JSON-RPC error: ${response.data.error.message || JSON.stringify(response.data.error)}`
+      );
     }
     return response.data.result as T;
   }
@@ -54,7 +56,10 @@ export class AlchemyClient {
     return this.jsonRpc<string>('eth_blockNumber');
   }
 
-  async getBlockByNumber(blockNumber: string, fullTransactions: boolean = false): Promise<any> {
+  async getBlockByNumber(
+    blockNumber: string,
+    fullTransactions: boolean = false
+  ): Promise<any> {
     return this.jsonRpc<any>('eth_getBlockByNumber', [blockNumber, fullTransactions]);
   }
 
@@ -70,11 +75,19 @@ export class AlchemyClient {
     return this.jsonRpc<any>('eth_getTransactionReceipt', [txHash]);
   }
 
-  async call(transaction: { to: string; data?: string; from?: string; value?: string; gas?: string }, blockTag: string = 'latest'): Promise<string> {
+  async call(
+    transaction: { to: string; data?: string; from?: string; value?: string; gas?: string },
+    blockTag: string = 'latest'
+  ): Promise<string> {
     return this.jsonRpc<string>('eth_call', [transaction, blockTag]);
   }
 
-  async estimateGas(transaction: { to?: string; from?: string; data?: string; value?: string }): Promise<string> {
+  async estimateGas(transaction: {
+    to?: string;
+    from?: string;
+    data?: string;
+    value?: string;
+  }): Promise<string> {
     return this.jsonRpc<string>('eth_estimateGas', [transaction]);
   }
 
@@ -101,7 +114,11 @@ export class AlchemyClient {
 
   // -- Token API (Alchemy enhanced JSON-RPC) --
 
-  async getTokenBalances(address: string, tokenAddresses?: string[], pageKey?: string): Promise<any> {
+  async getTokenBalances(
+    address: string,
+    tokenAddresses?: string[],
+    pageKey?: string
+  ): Promise<any> {
     let params: any[] = [address];
     if (tokenAddresses && tokenAddresses.length > 0) {
       params.push(tokenAddresses);
@@ -118,8 +135,14 @@ export class AlchemyClient {
     return this.jsonRpc<any>('alchemy_getTokenMetadata', [contractAddress]);
   }
 
-  async getTokenAllowance(contractAddress: string, owner: string, spender: string): Promise<string> {
-    return this.jsonRpc<string>('alchemy_getTokenAllowance', [{ contract: contractAddress, owner, spender }]);
+  async getTokenAllowance(
+    contractAddress: string,
+    owner: string,
+    spender: string
+  ): Promise<string> {
+    return this.jsonRpc<string>('alchemy_getTokenAllowance', [
+      { contract: contractAddress, owner, spender }
+    ]);
   }
 
   // -- Transfers API --
@@ -158,7 +181,8 @@ export class AlchemyClient {
   }): Promise<any> {
     let nftApi = createAxios({ baseURL: this.getNftApiBaseUrl() });
     let queryParams: any = { owner: params.owner, withMetadata: params.withMetadata ?? true };
-    if (params.contractAddresses) queryParams['contractAddresses[]'] = params.contractAddresses;
+    if (params.contractAddresses)
+      queryParams['contractAddresses[]'] = params.contractAddresses;
     if (params.pageKey) queryParams.pageKey = params.pageKey;
     if (params.pageSize) queryParams.pageSize = params.pageSize;
     if (params.excludeFilters) queryParams['excludeFilters[]'] = params.excludeFilters;
@@ -168,7 +192,11 @@ export class AlchemyClient {
     return response.data;
   }
 
-  async getNFTMetadata(contractAddress: string, tokenId: string, tokenType?: string): Promise<any> {
+  async getNFTMetadata(
+    contractAddress: string,
+    tokenId: string,
+    tokenType?: string
+  ): Promise<any> {
     let nftApi = createAxios({ baseURL: this.getNftApiBaseUrl() });
     let queryParams: any = { contractAddress, tokenId };
     if (tokenType) queryParams.tokenType = tokenType;
@@ -176,7 +204,11 @@ export class AlchemyClient {
     return response.data;
   }
 
-  async getOwnersForNFT(contractAddress: string, tokenId: string, pageKey?: string): Promise<any> {
+  async getOwnersForNFT(
+    contractAddress: string,
+    tokenId: string,
+    pageKey?: string
+  ): Promise<any> {
     let nftApi = createAxios({ baseURL: this.getNftApiBaseUrl() });
     let queryParams: any = { contractAddress, tokenId };
     if (pageKey) queryParams.pageKey = pageKey;
@@ -184,7 +216,11 @@ export class AlchemyClient {
     return response.data;
   }
 
-  async getOwnersForContract(contractAddress: string, withTokenBalances?: boolean, pageKey?: string): Promise<any> {
+  async getOwnersForContract(
+    contractAddress: string,
+    withTokenBalances?: boolean,
+    pageKey?: string
+  ): Promise<any> {
     let nftApi = createAxios({ baseURL: this.getNftApiBaseUrl() });
     let queryParams: any = { contractAddress };
     if (withTokenBalances !== undefined) queryParams.withTokenBalances = withTokenBalances;
@@ -222,11 +258,14 @@ export class AlchemyClient {
     return response.data;
   }
 
-  async getNFTsForContract(contractAddress: string, params?: {
-    startToken?: string;
-    limit?: number;
-    withMetadata?: boolean;
-  }): Promise<any> {
+  async getNFTsForContract(
+    contractAddress: string,
+    params?: {
+      startToken?: string;
+      limit?: number;
+      withMetadata?: boolean;
+    }
+  ): Promise<any> {
     let nftApi = createAxios({ baseURL: this.getNftApiBaseUrl() });
     let queryParams: any = { contractAddress, ...params };
     let response = await nftApi.get('/getNFTsForContract', { params: queryParams });
@@ -242,11 +281,11 @@ export class AlchemyClient {
       baseURL: 'https://api.g.alchemy.com/prices/v1',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.token}`,
-      },
+        Authorization: `Bearer ${this.token}`
+      }
     });
     let response = await pricesApi.post('/tokens/by-address', {
-      addresses: params.addresses,
+      addresses: params.addresses
     });
     return response.data;
   }
@@ -283,14 +322,15 @@ export class AlchemyClient {
   }): Promise<any> {
     let body: any = {
       webhook_type: params.webhookType,
-      webhook_url: params.webhookUrl,
+      webhook_url: params.webhookUrl
     };
     if (params.network) body.network = params.network;
     if (params.addresses) body.addresses = params.addresses;
-    if (params.nftFilters) body.nft_filters = params.nftFilters.map(f => ({
-      contract_address: f.contractAddress,
-      token_id: f.tokenId,
-    }));
+    if (params.nftFilters)
+      body.nft_filters = params.nftFilters.map(f => ({
+        contract_address: f.contractAddress,
+        token_id: f.tokenId
+      }));
     if (params.graphqlQuery) body.graphql_query = params.graphqlQuery;
 
     let response = await this.notifyApi.post('/create-webhook', body);
@@ -299,7 +339,7 @@ export class AlchemyClient {
 
   async deleteWebhook(webhookId: string): Promise<any> {
     let response = await this.notifyApi.delete('/delete-webhook', {
-      data: { webhook_id: webhookId },
+      data: { webhook_id: webhookId }
     });
     return response.data;
   }
@@ -312,7 +352,7 @@ export class AlchemyClient {
     let response = await this.notifyApi.patch('/update-webhook-addresses', {
       webhook_id: params.webhookId,
       addresses_to_add: params.addressesToAdd || [],
-      addresses_to_remove: params.addressesToRemove || [],
+      addresses_to_remove: params.addressesToRemove || []
     });
     return response.data;
   }

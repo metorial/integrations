@@ -7,7 +7,7 @@ import {
   upgradeAudiofile,
   cancelAudiofile,
   getInvoice,
-  getPrepayBalance,
+  getPrepayBalance
 } from './tools';
 import { audiofileEvents } from './triggers';
 
@@ -20,9 +20,7 @@ export let provider = Slate.create({
     upgradeAudiofile,
     cancelAudiofile,
     getInvoice,
-    getPrepayBalance,
+    getPrepayBalance
   ],
-  triggers: [
-    audiofileEvents,
-  ],
+  triggers: [audiofileEvents]
 });

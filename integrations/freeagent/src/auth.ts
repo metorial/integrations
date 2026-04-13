@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -14,37 +16,40 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://api.freeagent.com/v2/approve_app?${params.toString()}`,
+        url: `https://api.freeagent.com/v2/approve_app?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({
-        baseURL: 'https://api.freeagent.com/v2',
+        baseURL: 'https://api.freeagent.com/v2'
       });
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post('/token_endpoint', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        '/token_endpoint',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -55,28 +60,31 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let http = createAxios({
-        baseURL: 'https://api.freeagent.com/v2',
+        baseURL: 'https://api.freeagent.com/v2'
       });
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post('/token_endpoint', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken || '',
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        '/token_endpoint',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken || ''
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -87,20 +95,24 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let http = createAxios({
-        baseURL: 'https://api.freeagent.com/v2',
+        baseURL: 'https://api.freeagent.com/v2'
       });
 
       let response = await http.get('/users/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -109,8 +121,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.url,
           email: user.email,
-          name: [user.first_name, user.last_name].filter(Boolean).join(' '),
-        },
+          name: [user.first_name, user.last_name].filter(Boolean).join(' ')
+        }
       };
-    },
+    }
   });

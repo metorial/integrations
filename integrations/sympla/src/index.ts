@@ -8,7 +8,7 @@ import {
   listParticipantsTool,
   getParticipantTool,
   checkinParticipantTool,
-  listAffiliatesTool,
+  listAffiliatesTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     listParticipantsTool,
     getParticipantTool,
     checkinParticipantTool,
-    listAffiliatesTool,
+    listAffiliatesTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

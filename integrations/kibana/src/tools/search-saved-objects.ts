@@ -3,44 +3,64 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchSavedObjects = SlateTool.create(
-  spec,
-  {
-    name: 'Search Saved Objects',
-    key: 'search_saved_objects',
-    description: `Search and list Kibana saved objects such as dashboards, visualizations, maps, data views, Canvas workpads, and other saved objects.
+export let searchSavedObjects = SlateTool.create(spec, {
+  name: 'Search Saved Objects',
+  key: 'search_saved_objects',
+  description: `Search and list Kibana saved objects such as dashboards, visualizations, maps, data views, Canvas workpads, and other saved objects.
 Use this to find specific objects by type and search term, or to browse all objects of a given type.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    objectType: z.string().describe('Type of saved object to search for (e.g., "dashboard", "visualization", "map", "index-pattern", "canvas-workpad", "lens", "search")'),
-    search: z.string().optional().describe('Search query string to filter objects by name or other fields'),
-    searchFields: z.array(z.string()).optional().describe('Fields to search against (defaults to all searchable fields)'),
-    page: z.number().optional().describe('Page number (1-based)'),
-    perPage: z.number().optional().describe('Number of results per page (default 20)'),
-    sortField: z.string().optional().describe('Field to sort results by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order')
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of matching objects'),
-    page: z.number().describe('Current page number'),
-    perPage: z.number().describe('Results per page'),
-    savedObjects: z.array(z.object({
-      objectId: z.string().describe('Unique ID of the saved object'),
-      type: z.string().describe('Type of the saved object'),
-      title: z.string().optional().describe('Title/name of the saved object'),
-      updatedAt: z.string().optional().describe('Last update timestamp'),
-      references: z.array(z.object({
-        referenceId: z.string(),
-        name: z.string(),
-        type: z.string()
-      })).optional().describe('References to other saved objects')
-    })).describe('List of saved objects matching the search criteria')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      objectType: z
+        .string()
+        .describe(
+          'Type of saved object to search for (e.g., "dashboard", "visualization", "map", "index-pattern", "canvas-workpad", "lens", "search")'
+        ),
+      search: z
+        .string()
+        .optional()
+        .describe('Search query string to filter objects by name or other fields'),
+      searchFields: z
+        .array(z.string())
+        .optional()
+        .describe('Fields to search against (defaults to all searchable fields)'),
+      page: z.number().optional().describe('Page number (1-based)'),
+      perPage: z.number().optional().describe('Number of results per page (default 20)'),
+      sortField: z.string().optional().describe('Field to sort results by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of matching objects'),
+      page: z.number().describe('Current page number'),
+      perPage: z.number().describe('Results per page'),
+      savedObjects: z
+        .array(
+          z.object({
+            objectId: z.string().describe('Unique ID of the saved object'),
+            type: z.string().describe('Type of the saved object'),
+            title: z.string().optional().describe('Title/name of the saved object'),
+            updatedAt: z.string().optional().describe('Last update timestamp'),
+            references: z
+              .array(
+                z.object({
+                  referenceId: z.string(),
+                  name: z.string(),
+                  type: z.string()
+                })
+              )
+              .optional()
+              .describe('References to other saved objects')
+          })
+        )
+        .describe('List of saved objects matching the search criteria')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result = await client.findSavedObjects({
@@ -74,4 +94,5 @@ Use this to find specific objects by type and search term, or to browse all obje
       },
       message: `Found **${result.total ?? 0}** saved objects of type \`${ctx.input.objectType}\`${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

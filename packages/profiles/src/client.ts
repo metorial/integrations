@@ -1,8 +1,8 @@
 import { createLocalSlateTransport, createSlatesClient } from '@slates/client';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { SlatesProfileRecord } from './types';
+import path from 'path';
+import { pathToFileURL } from 'url';
 import { resolveSlatesCliRoot } from './store';
+import { SlatesProfileRecord } from './types';
 
 let resolveEntryPath = (entry: string, cwd?: string) => {
   if (path.isAbsolute(entry)) return entry;

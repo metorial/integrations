@@ -3,45 +3,64 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDisks = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Persistent Disks',
-    key: 'manage_disks',
-    description: `Manage persistent disks on Render services. Supports **list** (disks for a service), **add**, **get**, **update**, **delete**, **list_snapshots**, and **restore_snapshot** actions.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'get', 'update', 'delete', 'list_snapshots', 'restore_snapshot']).describe('Action to perform'),
-    serviceId: z.string().optional().describe('Service ID (for list/add)'),
-    diskId: z.string().optional().describe('Disk ID (for get/update/delete/list_snapshots/restore_snapshot)'),
-    snapshotId: z.string().optional().describe('Snapshot ID (for restore_snapshot)'),
-    name: z.string().optional().describe('Disk name (for add/update)'),
-    mountPath: z.string().optional().describe('Mount path (for add/update)'),
-    sizeGB: z.number().optional().describe('Disk size in GB (for add/update)'),
-  }))
-  .output(z.object({
-    disks: z.array(z.object({
-      diskId: z.string().describe('Disk ID'),
-      name: z.string().optional().describe('Disk name'),
-      mountPath: z.string().optional().describe('Mount path'),
-      sizeGB: z.number().optional().describe('Size in GB'),
-      serviceId: z.string().optional().describe('Attached service'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of disks'),
-    disk: z.object({
-      diskId: z.string().describe('Disk ID'),
-      name: z.string().optional().describe('Disk name'),
-      mountPath: z.string().optional().describe('Mount path'),
-      sizeGB: z.number().optional().describe('Size in GB'),
-    }).optional().describe('Disk details'),
-    snapshots: z.array(z.object({
-      snapshotId: z.string().describe('Snapshot ID'),
-      createdAt: z.string().optional().describe('Snapshot timestamp'),
-    })).optional().describe('Disk snapshots'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageDisks = SlateTool.create(spec, {
+  name: 'Manage Persistent Disks',
+  key: 'manage_disks',
+  description: `Manage persistent disks on Render services. Supports **list** (disks for a service), **add**, **get**, **update**, **delete**, **list_snapshots**, and **restore_snapshot** actions.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'add', 'get', 'update', 'delete', 'list_snapshots', 'restore_snapshot'])
+        .describe('Action to perform'),
+      serviceId: z.string().optional().describe('Service ID (for list/add)'),
+      diskId: z
+        .string()
+        .optional()
+        .describe('Disk ID (for get/update/delete/list_snapshots/restore_snapshot)'),
+      snapshotId: z.string().optional().describe('Snapshot ID (for restore_snapshot)'),
+      name: z.string().optional().describe('Disk name (for add/update)'),
+      mountPath: z.string().optional().describe('Mount path (for add/update)'),
+      sizeGB: z.number().optional().describe('Disk size in GB (for add/update)')
+    })
+  )
+  .output(
+    z.object({
+      disks: z
+        .array(
+          z.object({
+            diskId: z.string().describe('Disk ID'),
+            name: z.string().optional().describe('Disk name'),
+            mountPath: z.string().optional().describe('Mount path'),
+            sizeGB: z.number().optional().describe('Size in GB'),
+            serviceId: z.string().optional().describe('Attached service'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of disks'),
+      disk: z
+        .object({
+          diskId: z.string().describe('Disk ID'),
+          name: z.string().optional().describe('Disk name'),
+          mountPath: z.string().optional().describe('Mount path'),
+          sizeGB: z.number().optional().describe('Size in GB')
+        })
+        .optional()
+        .describe('Disk details'),
+      snapshots: z
+        .array(
+          z.object({
+            snapshotId: z.string().describe('Snapshot ID'),
+            createdAt: z.string().optional().describe('Snapshot timestamp')
+          })
+        )
+        .optional()
+        .describe('Disk snapshots'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RenderClient(ctx.auth.token);
     let { action, diskId } = ctx.input;
 
@@ -56,12 +75,12 @@ export let manageDisks = SlateTool.create(
           mountPath: d.mountPath,
           sizeGB: d.sizeGB,
           serviceId: d.serviceId,
-          createdAt: d.createdAt,
+          createdAt: d.createdAt
         };
       });
       return {
         output: { disks, success: true },
-        message: `Found **${disks.length}** disk(s) for service \`${ctx.input.serviceId}\`.`,
+        message: `Found **${disks.length}** disk(s) for service \`${ctx.input.serviceId}\`.`
       };
     }
 
@@ -72,13 +91,16 @@ export let manageDisks = SlateTool.create(
       let body: Record<string, any> = {
         serviceId: ctx.input.serviceId,
         name: ctx.input.name,
-        mountPath: ctx.input.mountPath,
+        mountPath: ctx.input.mountPath
       };
       if (ctx.input.sizeGB) body.sizeGB = ctx.input.sizeGB;
       let d = await client.addDisk(body);
       return {
-        output: { disk: { diskId: d.id, name: d.name, mountPath: d.mountPath, sizeGB: d.sizeGB }, success: true },
-        message: `Added disk **${d.name}** (\`${d.id}\`) mounted at \`${d.mountPath}\`.`,
+        output: {
+          disk: { diskId: d.id, name: d.name, mountPath: d.mountPath, sizeGB: d.sizeGB },
+          success: true
+        },
+        message: `Added disk **${d.name}** (\`${d.id}\`) mounted at \`${d.mountPath}\`.`
       };
     }
 
@@ -87,8 +109,11 @@ export let manageDisks = SlateTool.create(
     if (action === 'get') {
       let d = await client.getDisk(diskId);
       return {
-        output: { disk: { diskId: d.id, name: d.name, mountPath: d.mountPath, sizeGB: d.sizeGB }, success: true },
-        message: `Disk **${d.name}** — ${d.sizeGB}GB at \`${d.mountPath}\`.`,
+        output: {
+          disk: { diskId: d.id, name: d.name, mountPath: d.mountPath, sizeGB: d.sizeGB },
+          success: true
+        },
+        message: `Disk **${d.name}** — ${d.sizeGB}GB at \`${d.mountPath}\`.`
       };
     }
 
@@ -99,8 +124,11 @@ export let manageDisks = SlateTool.create(
       if (ctx.input.sizeGB) body.sizeGB = ctx.input.sizeGB;
       let d = await client.updateDisk(diskId, body);
       return {
-        output: { disk: { diskId: d.id, name: d.name, mountPath: d.mountPath, sizeGB: d.sizeGB }, success: true },
-        message: `Updated disk **${d.name}**.`,
+        output: {
+          disk: { diskId: d.id, name: d.name, mountPath: d.mountPath, sizeGB: d.sizeGB },
+          success: true
+        },
+        message: `Updated disk **${d.name}**.`
       };
     }
 
@@ -108,7 +136,7 @@ export let manageDisks = SlateTool.create(
       await client.deleteDisk(diskId);
       return {
         output: { success: true },
-        message: `Deleted disk \`${diskId}\`.`,
+        message: `Deleted disk \`${diskId}\`.`
       };
     }
 
@@ -120,18 +148,20 @@ export let manageDisks = SlateTool.create(
       });
       return {
         output: { snapshots, success: true },
-        message: `Found **${snapshots.length}** snapshot(s) for disk \`${diskId}\`.`,
+        message: `Found **${snapshots.length}** snapshot(s) for disk \`${diskId}\`.`
       };
     }
 
     if (action === 'restore_snapshot') {
-      if (!ctx.input.snapshotId) throw new Error('snapshotId is required for restore_snapshot');
+      if (!ctx.input.snapshotId)
+        throw new Error('snapshotId is required for restore_snapshot');
       await client.restoreDiskSnapshot(diskId, ctx.input.snapshotId);
       return {
         output: { success: true },
-        message: `Restored disk \`${diskId}\` from snapshot \`${ctx.input.snapshotId}\`.`,
+        message: `Restored disk \`${diskId}\` from snapshot \`${ctx.input.snapshotId}\`.`
       };
     }
 
     return { output: { success: false }, message: 'Unknown action.' };
-  }).build();
+  })
+  .build();

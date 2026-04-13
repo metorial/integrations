@@ -3,41 +3,43 @@ import { NgrokClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let endpointChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Endpoint Changes',
-    key: 'endpoint_changes',
-    description: 'Triggers when endpoints are created or removed. Polls for active endpoints and detects changes between polling intervals.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'removed']).describe('Type of change'),
-    endpointId: z.string().describe('Endpoint ID'),
-    url: z.string().describe('Endpoint URL'),
-    hostport: z.string().describe('Host and port'),
-    proto: z.string().describe('Protocol'),
-    type: z.string().describe('Endpoint type'),
-    createdAt: z.string().describe('Creation timestamp'),
-    description: z.string().describe('Description'),
-    metadata: z.string().describe('Metadata')
-  }))
-  .output(z.object({
-    endpointId: z.string().describe('Endpoint ID'),
-    url: z.string().describe('Endpoint URL'),
-    hostport: z.string().describe('Host and port combination'),
-    proto: z.string().describe('Protocol (http, https, tcp, tls)'),
-    type: z.string().describe('Endpoint type (ephemeral, edge, cloud)'),
-    createdAt: z.string().describe('Creation timestamp'),
-    description: z.string().describe('Description'),
-    metadata: z.string().describe('Metadata')
-  }))
+export let endpointChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Endpoint Changes',
+  key: 'endpoint_changes',
+  description:
+    'Triggers when endpoints are created or removed. Polls for active endpoints and detects changes between polling intervals.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'removed']).describe('Type of change'),
+      endpointId: z.string().describe('Endpoint ID'),
+      url: z.string().describe('Endpoint URL'),
+      hostport: z.string().describe('Host and port'),
+      proto: z.string().describe('Protocol'),
+      type: z.string().describe('Endpoint type'),
+      createdAt: z.string().describe('Creation timestamp'),
+      description: z.string().describe('Description'),
+      metadata: z.string().describe('Metadata')
+    })
+  )
+  .output(
+    z.object({
+      endpointId: z.string().describe('Endpoint ID'),
+      url: z.string().describe('Endpoint URL'),
+      hostport: z.string().describe('Host and port combination'),
+      proto: z.string().describe('Protocol (http, https, tcp, tls)'),
+      type: z.string().describe('Endpoint type (ephemeral, edge, cloud)'),
+      createdAt: z.string().describe('Creation timestamp'),
+      description: z.string().describe('Description'),
+      metadata: z.string().describe('Metadata')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new NgrokClient(ctx.auth.token);
       let result = await client.listEndpoints({ limit: 100 });
       let currentEndpoints = result.endpoints || [];
@@ -92,7 +94,7 @@ export let endpointChangesTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `endpoint.${ctx.input.changeType}`,
         id: `${ctx.input.endpointId}-${ctx.input.changeType}-${Date.now()}`,
@@ -108,4 +110,5 @@ export let endpointChangesTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

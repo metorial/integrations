@@ -9,6 +9,7 @@ Zoom is a cloud-based video communications platform that provides video meetings
 Zoom uses **OAuth 2.0** exclusively for API authentication (JWT was deprecated in June 2023). There are two OAuth flows:
 
 ### User-Level OAuth (Authorization Code Grant)
+
 Used for apps that act on behalf of individual Zoom users.
 
 - **Authorization URL:** `https://zoom.us/oauth/authorize`
@@ -19,6 +20,7 @@ Used for apps that act on behalf of individual Zoom users.
 - Access tokens expire after 1 hour. Refresh tokens can last for 15 years. When refreshing, Zoom issues a new refresh token along with a new access token, making the previous refresh token invalid.
 
 ### Server-to-Server OAuth (Client Credentials)
+
 Used to authenticate with Zoom using server-to-server OAuth account credentials to make API requests without user interaction.
 
 - **Token URL:** `https://zoom.us/oauth/token?grant_type=account_credentials&account_id={accountId}`
@@ -30,33 +32,43 @@ Used to authenticate with Zoom using server-to-server OAuth account credentials 
 ## Features
 
 ### Meeting Management
+
 Create, join, and manage meetings. Configure meeting settings including scheduling, recurrence, passwords, waiting rooms, breakout rooms, host/participant video defaults, join-before-host, and alternative hosts. Manage meeting registrants and polls.
 
 ### Webinar Management
+
 Access the Zoom Webinar API to manage webinars. Requires a paid webinar add-on. Create and configure webinars, manage registrants, panelists, polls, and Q&A settings.
 
 ### Cloud Recording Management
+
 Access and manage cloud recordings of meetings and webinars. Transcripts can be accessed through the recording features and are available for Pro, Business, or Enterprise accounts. Download, list, and delete recordings.
 
 ### User Management
+
 Manage Contact Groups, Groups, and Users. Create, update, delete, and list users. Manage user settings, permissions, and roles within an account.
 
 ### Zoom Phone
+
 Access and control Zoom Phone via the RESTful Zoom Phone API. Manage call logs, call recordings, voicemail, phone numbers, call queues, auto-receptionists, and SMS sessions. Requires Zoom Phone license.
 
 ### Chat
+
 Access data connected to chat and chat channels. Send and receive chat messages. Manage channels, channel members, and message history.
 
 ### Zoom Rooms
+
 Zoom Rooms provide a conference room experience with audio, video, screen sharing, whiteboarding, and digital signage. Manage Zoom Rooms using the API—create new Rooms or change configurations.
 
 ### Reports and Dashboards
+
 Access user details, meeting reports, and dashboard data. Retrieve usage reports, meeting participant reports, and operational metrics. Some reports require Business or higher plans.
 
 ### Contact Center
+
 Access data from the Zoom Contact Center. Requires Zoom Contact Center subscription.
 
 ### Account and Settings Management
+
 Manage account-level settings including security, meeting defaults, recording behavior, and integration preferences. Manage sub-accounts for master account holders.
 
 ## Events
@@ -68,34 +80,45 @@ Webhooks require configuring Event Subscriptions in your Zoom Marketplace app, s
 Event types are grouped into the following categories:
 
 ### Meeting Events
+
 Meeting lifecycle events: created, updated, deleted, started, ended. Participant events: joined, left. Meeting-specific events such as sharing started/ended and meeting recovery.
 
 ### Webinar Events
+
 Webinar lifecycle events: created, updated, deleted, started, ended. Registration events, attendee joined/left, and Q&A/polling events.
 
 ### Recording Events
+
 Cloud recording lifecycle: completed, paused, resumed, started, stopped, trashed, deleted, recovered. Transcript completed.
 
 ### User Events
+
 User events include actions such as: activated, created, deactivated, deleted, disassociated, updated. Role assignment changes and user settings updates.
 
 ### Zoom Phone Events
+
 Call events for Zoom Phone: call started, ended, ringing, answered, missed, voicemail received, and call recording completed.
 
 ### Chat Message Events
+
 Chat message sent, updated, deleted, reactions, and file-sharing events within chat channels.
 
 ### Chat Channel Events
+
 Channel created, updated, deleted, and membership changes (member joined, left).
 
 ### Zoom Rooms Events
+
 Room alerts, check-in/check-out events, and room status changes.
 
 ### Account Events
+
 Account-level events such as account settings updates and sub-account changes.
 
 ### User Activity Events
+
 Sign-in and sign-out activities, presence status changes.
 
 ### Billing Events
+
 Subscription and plan change notifications.

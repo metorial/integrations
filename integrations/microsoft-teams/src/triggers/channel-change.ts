@@ -3,31 +3,36 @@ import { GraphClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let channelChangeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Channel Change',
-    key: 'channel_change',
-    description: 'Triggers when a channel is created, updated, or deleted across teams. Uses Microsoft Graph webhooks for real-time notifications.',
-  }
-)
-  .input(z.object({
-    changeType: z.string().describe('Type of change: created, updated, or deleted'),
-    resourceUrl: z.string().describe('Resource URL for the changed channel'),
-    subscriptionId: z.string().describe('Subscription ID'),
-    tenantId: z.string().optional().describe('Tenant ID'),
-    resourceData: z.any().optional().describe('Resource data included in the notification'),
-  }))
-  .output(z.object({
-    channelId: z.string().describe('ID of the channel'),
-    teamId: z.string().optional().describe('ID of the team'),
-    changeType: z.string().describe('Type of change: created, updated, or deleted'),
-    displayName: z.string().optional().describe('Channel display name'),
-    description: z.string().nullable().optional().describe('Channel description'),
-    membershipType: z.string().optional().describe('Channel type: standard, private, or shared'),
-  }))
+export let channelChangeTrigger = SlateTrigger.create(spec, {
+  name: 'Channel Change',
+  key: 'channel_change',
+  description:
+    'Triggers when a channel is created, updated, or deleted across teams. Uses Microsoft Graph webhooks for real-time notifications.'
+})
+  .input(
+    z.object({
+      changeType: z.string().describe('Type of change: created, updated, or deleted'),
+      resourceUrl: z.string().describe('Resource URL for the changed channel'),
+      subscriptionId: z.string().describe('Subscription ID'),
+      tenantId: z.string().optional().describe('Tenant ID'),
+      resourceData: z.any().optional().describe('Resource data included in the notification')
+    })
+  )
+  .output(
+    z.object({
+      channelId: z.string().describe('ID of the channel'),
+      teamId: z.string().optional().describe('ID of the team'),
+      changeType: z.string().describe('Type of change: created, updated, or deleted'),
+      displayName: z.string().optional().describe('Channel display name'),
+      description: z.string().nullable().optional().describe('Channel description'),
+      membershipType: z
+        .string()
+        .optional()
+        .describe('Channel type: standard, private, or shared')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GraphClient({ token: ctx.auth.token });
 
       let expirationDateTime = new Date(Date.now() + 55 * 60 * 1000).toISOString();
@@ -37,23 +42,23 @@ export let channelChangeTrigger = SlateTrigger.create(
         notificationUrl: ctx.input.webhookBaseUrl,
         resource: '/teams/getAllChannels',
         expirationDateTime,
-        includeResourceData: false,
+        includeResourceData: false
       });
 
       return {
         registrationDetails: {
           subscriptionId: subscription.id,
-          expirationDateTime: subscription.expirationDateTime,
-        },
+          expirationDateTime: subscription.expirationDateTime
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GraphClient({ token: ctx.auth.token });
       await client.deleteSubscription(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let url = new URL(ctx.request.url);
       let validationToken = url.searchParams.get('validationToken');
 
@@ -62,12 +67,12 @@ export let channelChangeTrigger = SlateTrigger.create(
           inputs: [],
           response: new Response(validationToken, {
             status: 200,
-            headers: { 'Content-Type': 'text/plain' },
-          }),
+            headers: { 'Content-Type': 'text/plain' }
+          })
         } as any;
       }
 
-      let body = await ctx.request.json() as any;
+      let body = (await ctx.request.json()) as any;
       let notifications = body.value || [];
 
       let inputs = notifications.map((n: any) => ({
@@ -75,17 +80,19 @@ export let channelChangeTrigger = SlateTrigger.create(
         resourceUrl: n.resource,
         subscriptionId: n.subscriptionId,
         tenantId: n.tenantId,
-        resourceData: n.resourceData,
+        resourceData: n.resourceData
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resourceUrl = ctx.input.resourceUrl || '';
 
-      let teamIdMatch = resourceUrl.match(/teams\('([^']+)'\)/) || resourceUrl.match(/teams\/([^/]+)/);
-      let channelIdMatch = resourceUrl.match(/channels\('([^']+)'\)/) || resourceUrl.match(/channels\/([^/]+)/);
+      let teamIdMatch =
+        resourceUrl.match(/teams\('([^']+)'\)/) || resourceUrl.match(/teams\/([^/]+)/);
+      let channelIdMatch =
+        resourceUrl.match(/channels\('([^']+)'\)/) || resourceUrl.match(/channels\/([^/]+)/);
 
       let teamId = teamIdMatch ? teamIdMatch[1] : undefined;
       let channelId = channelIdMatch ? channelIdMatch[1] : resourceUrl;
@@ -93,7 +100,7 @@ export let channelChangeTrigger = SlateTrigger.create(
       let output: any = {
         channelId,
         teamId,
-        changeType: ctx.input.changeType,
+        changeType: ctx.input.changeType
       };
 
       if (teamId && channelId && ctx.input.changeType !== 'deleted') {
@@ -111,8 +118,8 @@ export let channelChangeTrigger = SlateTrigger.create(
       return {
         type: `channel.${ctx.input.changeType}`,
         id: `${ctx.input.subscriptionId}-${channelId}-${ctx.input.changeType}-${Date.now()}`,
-        output,
+        output
       };
-    },
+    }
   })
   .build();

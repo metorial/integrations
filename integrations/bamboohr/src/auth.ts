@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    companyDomain: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      companyDomain: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -30,7 +32,7 @@ export let auth = SlateAuth.create()
       companyDomain: z.string().describe('Your BambooHR company subdomain (e.g., "mycompany")')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join('+');
       let url = `https://${ctx.input.companyDomain}.bamboohr.com/authorize.php?request=authorize&state=${encodeURIComponent(ctx.state)}&response_type=code&scope=${scopeString}&client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}`;
 
@@ -40,22 +42,26 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({
         baseURL: `https://${ctx.input.companyDomain}.bamboohr.com`
       });
 
-      let response = await http.post('/token.php?request=token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await http.post(
+        '/token.php?request=token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + (data.expires_in || 3600) * 1000).toISOString();
@@ -71,25 +77,31 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available. Ensure the offline_access scope was requested.');
+        throw new Error(
+          'No refresh token available. Ensure the offline_access scope was requested.'
+        );
       }
 
       let http = createAxios({
         baseURL: `https://${ctx.input.companyDomain}.bamboohr.com`
       });
 
-      let response = await http.post('/token.php?request=token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await http.post(
+        '/token.php?request=token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + (data.expires_in || 3600) * 1000).toISOString();
@@ -115,7 +127,7 @@ export let auth = SlateAuth.create()
       companyDomain: z.string().describe('Your BambooHR company subdomain (e.g., "mycompany")')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,

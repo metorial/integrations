@@ -18,6 +18,7 @@ To obtain these, log into your WaiverFile dashboard, select Settings >> API, the
 Both values are passed as query parameters (`apiKey` and `siteID`) on each API request. The base URL for the API is `https://api.waiverfile.com/api/v1/`.
 
 Example request:
+
 ```
 GET https://api.waiverfile.com/api/v1/GetSiteDetails?apiKey=YOUR_API_KEY&siteID=YOUR_SITE_ID
 ```

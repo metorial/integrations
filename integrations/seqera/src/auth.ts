@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Access Token',
     key: 'access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Seqera Platform personal access token. Generate one from User tokens in your Seqera UI.'),
+      token: z
+        .string()
+        .describe(
+          'Seqera Platform personal access token. Generate one from User tokens in your Seqera UI.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,8 +33,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.cloud.seqera.io',
         headers: {
           Authorization: `Bearer ${ctx.output.token}`,
-          Accept: 'application/json',
-        },
+          Accept: 'application/json'
+        }
       });
 
       let response = await http.get('/user-info');
@@ -51,8 +57,8 @@ export let auth = SlateAuth.create()
           id: user?.id != null ? String(user.id) : undefined,
           email: user?.email,
           name: name || undefined,
-          imageUrl: user?.avatar,
-        },
+          imageUrl: user?.avatar
+        }
       };
-    },
+    }
   });

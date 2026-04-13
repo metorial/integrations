@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Experimentation OAuth',
@@ -16,34 +18,38 @@ export let auth = SlateAuth.create()
       {
         title: 'All Access',
         description: 'Full read and write access to Optimizely Experimentation',
-        scope: 'all',
-      },
+        scope: 'all'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         state: ctx.state,
-        scopes: ctx.scopes.join(','),
+        scopes: ctx.scopes.join(',')
       });
       return {
-        url: `https://app.optimizely.com/oauth2/authorize?${params.toString()}`,
+        url: `https://app.optimizely.com/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
-      let response = await axios.post('https://app.optimizely.com/oauth2/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      let response = await axios.post(
+        'https://app.optimizely.com/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
       return {
@@ -52,24 +58,28 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
       let axios = createAxios();
-      let response = await axios.post('https://app.optimizely.com/oauth2/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      let response = await axios.post(
+        'https://app.optimizely.com/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
       return {
@@ -78,10 +88,10 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
-    },
+    }
   })
   .addOauth({
     type: 'auth.oauth',
@@ -92,33 +102,37 @@ export let auth = SlateAuth.create()
       {
         title: 'CMP Access',
         description: 'Access to Optimizely Content Marketing Platform API',
-        scope: 'cmp',
-      },
+        scope: 'cmp'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
       return {
-        url: `https://api.cmp.optimizely.com/oauth2/authorize?${params.toString()}`,
+        url: `https://api.cmp.optimizely.com/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
-      let response = await axios.post('https://api.cmp.optimizely.com/oauth2/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      let response = await axios.post(
+        'https://api.cmp.optimizely.com/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
       return {
@@ -127,24 +141,28 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
       let axios = createAxios();
-      let response = await axios.post('https://api.cmp.optimizely.com/oauth2/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      let response = await axios.post(
+        'https://api.cmp.optimizely.com/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let data = response.data;
       return {
@@ -153,10 +171,10 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -164,16 +182,20 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal Access Token generated from Optimizely app (Profile > API Access > Generate New Token). Works for Experimentation APIs.'),
+      token: z
+        .string()
+        .describe(
+          'Personal Access Token generated from Optimizely app (Profile > API Access > Generate New Token). Works for Experimentation APIs.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -181,21 +203,23 @@ export let auth = SlateAuth.create()
     key: 'cms_client_credentials',
 
     inputSchema: z.object({
-      clientId: z.string().describe('CMS API Client ID (found under Settings > API Keys in your CMS instance)'),
-      clientSecret: z.string().describe('CMS API Client Secret'),
+      clientId: z
+        .string()
+        .describe('CMS API Client ID (found under Settings > API Keys in your CMS instance)'),
+      clientSecret: z.string().describe('CMS API Client Secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let axios = createAxios();
       let response = await axios.post(
         'https://api.cms.optimizely.com/oauth/token',
         new URLSearchParams({
           grant_type: 'client_credentials',
           client_id: ctx.input.clientId,
-          client_secret: ctx.input.clientSecret,
+          client_secret: ctx.input.clientSecret
         }).toString(),
         {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -203,10 +227,10 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          expiresAt: new Date(Date.now() + (data.expires_in || 300) * 1000).toISOString(),
-        },
+          expiresAt: new Date(Date.now() + (data.expires_in || 300) * 1000).toISOString()
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -214,18 +238,22 @@ export let auth = SlateAuth.create()
     key: 'campaign_basic_auth',
 
     inputSchema: z.object({
-      username: z.string().describe('Campaign API username (found under Administration > API Overview > REST API)'),
-      password: z.string().describe('Campaign API password'),
+      username: z
+        .string()
+        .describe(
+          'Campaign API username (found under Administration > API Overview > REST API)'
+        ),
+      password: z.string().describe('Campaign API password')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let encoded = btoa(`${ctx.input.username}:${ctx.input.password}`);
       return {
         output: {
-          token: `Basic ${encoded}`,
-        },
+          token: `Basic ${encoded}`
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -233,14 +261,14 @@ export let auth = SlateAuth.create()
     key: 'odp_api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('ODP API key obtained from the ODP dashboard'),
+      token: z.string().describe('ODP API key obtained from the ODP dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   });

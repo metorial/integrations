@@ -10,9 +10,9 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.statuspage.io/v1',
       headers: {
-        'Authorization': `OAuth ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `OAuth ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -41,12 +41,16 @@ export class Client {
   }
 
   async createComponent(data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/pages/${this.pageId}/components`, { component: data });
+    let response = await this.api.post(`/pages/${this.pageId}/components`, {
+      component: data
+    });
     return response.data;
   }
 
   async updateComponent(componentId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.patch(`/pages/${this.pageId}/components/${componentId}`, { component: data });
+    let response = await this.api.patch(`/pages/${this.pageId}/components/${componentId}`, {
+      component: data
+    });
     return response.data;
   }
 
@@ -58,7 +62,10 @@ export class Client {
     let params: Record<string, string> = {};
     if (start) params['start'] = start;
     if (end) params['end'] = end;
-    let response = await this.api.get(`/pages/${this.pageId}/components/${componentId}/uptime`, { params });
+    let response = await this.api.get(
+      `/pages/${this.pageId}/components/${componentId}/uptime`,
+      { params }
+    );
     return response.data;
   }
 
@@ -70,12 +77,16 @@ export class Client {
   }
 
   async createComponentGroup(data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/pages/${this.pageId}/component-groups`, { component_group: data });
+    let response = await this.api.post(`/pages/${this.pageId}/component-groups`, {
+      component_group: data
+    });
     return response.data;
   }
 
   async updateComponentGroup(groupId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.patch(`/pages/${this.pageId}/component-groups/${groupId}`, { component_group: data });
+    let response = await this.api.patch(`/pages/${this.pageId}/component-groups/${groupId}`, {
+      component_group: data
+    });
     return response.data;
   }
 
@@ -85,9 +96,13 @@ export class Client {
 
   // ─── Incidents ───
 
-  async listIncidents(params?: { query?: string; limit?: number; page?: number }): Promise<any[]> {
+  async listIncidents(params?: {
+    query?: string;
+    limit?: number;
+    page?: number;
+  }): Promise<any[]> {
     let response = await this.api.get(`/pages/${this.pageId}/incidents`, {
-      params: { q: params?.query, per_page: params?.limit, page: params?.page },
+      params: { q: params?.query, per_page: params?.limit, page: params?.page }
     });
     return response.data;
   }
@@ -113,7 +128,9 @@ export class Client {
   }
 
   async updateIncident(incidentId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.patch(`/pages/${this.pageId}/incidents/${incidentId}`, { incident: data });
+    let response = await this.api.patch(`/pages/${this.pageId}/incidents/${incidentId}`, {
+      incident: data
+    });
     return response.data;
   }
 
@@ -145,7 +162,9 @@ export class Client {
     if (params?.page) queryParams['page'] = params.page;
     if (params?.sortField) queryParams['sort_field'] = params.sortField;
     if (params?.sortDirection) queryParams['sort_direction'] = params.sortDirection;
-    let response = await this.api.get(`/pages/${this.pageId}/subscribers`, { params: queryParams });
+    let response = await this.api.get(`/pages/${this.pageId}/subscribers`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -155,7 +174,9 @@ export class Client {
   }
 
   async createSubscriber(data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/pages/${this.pageId}/subscribers`, { subscriber: data });
+    let response = await this.api.post(`/pages/${this.pageId}/subscribers`, {
+      subscriber: data
+    });
     return response.data;
   }
 
@@ -164,19 +185,26 @@ export class Client {
   }
 
   async resubscribeSubscriber(subscriberId: string): Promise<any> {
-    let response = await this.api.post(`/pages/${this.pageId}/subscribers/${subscriberId}/resubscribe`);
+    let response = await this.api.post(
+      `/pages/${this.pageId}/subscribers/${subscriberId}/resubscribe`
+    );
     return response.data;
   }
 
   // ─── Incident Subscribers ───
 
   async listIncidentSubscribers(incidentId: string): Promise<any[]> {
-    let response = await this.api.get(`/pages/${this.pageId}/incidents/${incidentId}/subscribers`);
+    let response = await this.api.get(
+      `/pages/${this.pageId}/incidents/${incidentId}/subscribers`
+    );
     return response.data;
   }
 
   async createIncidentSubscriber(incidentId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/pages/${this.pageId}/incidents/${incidentId}/subscribers`, { subscriber: data });
+    let response = await this.api.post(
+      `/pages/${this.pageId}/incidents/${incidentId}/subscribers`,
+      { subscriber: data }
+    );
     return response.data;
   }
 
@@ -198,7 +226,9 @@ export class Client {
   }
 
   async updateMetric(metricId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.patch(`/pages/${this.pageId}/metrics/${metricId}`, { metric: data });
+    let response = await this.api.patch(`/pages/${this.pageId}/metrics/${metricId}`, {
+      metric: data
+    });
     return response.data;
   }
 
@@ -206,9 +236,12 @@ export class Client {
     await this.api.delete(`/pages/${this.pageId}/metrics/${metricId}`);
   }
 
-  async submitMetricData(metricId: string, dataPoints: { timestamp: number; value: number }[]): Promise<any> {
+  async submitMetricData(
+    metricId: string,
+    dataPoints: { timestamp: number; value: number }[]
+  ): Promise<any> {
     let response = await this.api.post(`/pages/${this.pageId}/metrics/${metricId}/data`, {
-      data: dataPoints,
+      data: dataPoints
     });
     return response.data;
   }
@@ -216,27 +249,41 @@ export class Client {
   // ─── Postmortems ───
 
   async getPostmortem(incidentId: string): Promise<any> {
-    let response = await this.api.get(`/pages/${this.pageId}/incidents/${incidentId}/postmortem`);
+    let response = await this.api.get(
+      `/pages/${this.pageId}/incidents/${incidentId}/postmortem`
+    );
     return response.data;
   }
 
   async createOrUpdatePostmortem(incidentId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.put(`/pages/${this.pageId}/incidents/${incidentId}/postmortem`, { postmortem: data });
+    let response = await this.api.put(
+      `/pages/${this.pageId}/incidents/${incidentId}/postmortem`,
+      { postmortem: data }
+    );
     return response.data;
   }
 
-  async publishPostmortem(incidentId: string, notifySubscribers: boolean, notifyTwitter: boolean): Promise<any> {
-    let response = await this.api.put(`/pages/${this.pageId}/incidents/${incidentId}/postmortem/publish`, {
-      postmortem: {
-        notify_subscribers: notifySubscribers,
-        notify_twitter: notifyTwitter,
-      },
-    });
+  async publishPostmortem(
+    incidentId: string,
+    notifySubscribers: boolean,
+    notifyTwitter: boolean
+  ): Promise<any> {
+    let response = await this.api.put(
+      `/pages/${this.pageId}/incidents/${incidentId}/postmortem/publish`,
+      {
+        postmortem: {
+          notify_subscribers: notifySubscribers,
+          notify_twitter: notifyTwitter
+        }
+      }
+    );
     return response.data;
   }
 
   async revertPostmortem(incidentId: string): Promise<any> {
-    let response = await this.api.put(`/pages/${this.pageId}/incidents/${incidentId}/postmortem/revert`);
+    let response = await this.api.put(
+      `/pages/${this.pageId}/incidents/${incidentId}/postmortem/revert`
+    );
     return response.data;
   }
 }

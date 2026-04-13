@@ -14,33 +14,37 @@ let checkoutEventOutputSchema = z.object({
   createdAt: z.string().describe('Creation timestamp'),
   schedulerName: z.string().nullable().optional().describe('Name of the person who booked'),
   schedulerEmail: z.string().nullable().optional().describe('Email of the person who booked'),
-  payment: z.object({
-    amountTotal: z.number().optional().describe('Total amount in smallest currency unit'),
-    state: z.string().optional().describe('Payment state'),
-    url: z.string().nullable().optional().describe('Payment URL')
-  }).nullable().optional().describe('Payment details'),
+  payment: z
+    .object({
+      amountTotal: z.number().optional().describe('Total amount in smallest currency unit'),
+      state: z.string().optional().describe('Payment state'),
+      url: z.string().nullable().optional().describe('Payment URL')
+    })
+    .nullable()
+    .optional()
+    .describe('Payment details'),
   linkId: z.string().nullable().optional().describe('Scheduling link ID'),
   linkName: z.string().nullable().optional().describe('Scheduling link name'),
-  metadata: z.record(z.string(), z.any()).optional().describe('Custom metadata'),
+  metadata: z.record(z.string(), z.any()).optional().describe('Custom metadata')
 });
 
-export let eventCheckoutTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Checkout',
-    key: 'event_checkout',
-    description: 'Triggers when a paid event checkout status changes: pending, completed, or expired.',
-  }
-)
-  .input(z.object({
-    webhookEventType: z.string().describe('Webhook event type'),
-    webhookEventId: z.string().describe('Webhook payload ID'),
-    occurredAt: z.string().describe('When the event occurred'),
-    eventPayload: z.any().describe('Raw event payload')
-  }))
+export let eventCheckoutTrigger = SlateTrigger.create(spec, {
+  name: 'Event Checkout',
+  key: 'event_checkout',
+  description:
+    'Triggers when a paid event checkout status changes: pending, completed, or expired.'
+})
+  .input(
+    z.object({
+      webhookEventType: z.string().describe('Webhook event type'),
+      webhookEventId: z.string().describe('Webhook payload ID'),
+      occurredAt: z.string().describe('When the event occurred'),
+      eventPayload: z.any().describe('Raw event payload')
+    })
+  )
   .output(checkoutEventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let webhook = await client.createWebhook({ url: ctx.input.webhookBaseUrl });
 
@@ -52,13 +56,13 @@ export let eventCheckoutTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let checkoutTypes = [
         'event.checkout.pending',
@@ -71,16 +75,18 @@ export let eventCheckoutTrigger = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          webhookEventType: data.type,
-          webhookEventId: data.id,
-          occurredAt: data.occurred_at,
-          eventPayload: data.payload
-        }]
+        inputs: [
+          {
+            webhookEventType: data.type,
+            webhookEventId: data.id,
+            occurredAt: data.occurred_at,
+            eventPayload: data.payload
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let e = ctx.input.eventPayload;
 
       return {
@@ -97,14 +103,16 @@ export let eventCheckoutTrigger = SlateTrigger.create(
           createdAt: e.created_at,
           schedulerName: e.scheduler?.display_name,
           schedulerEmail: e.scheduler?.email,
-          payment: e.payment ? {
-            amountTotal: e.payment.amount_total,
-            state: e.payment.state,
-            url: e.payment.url
-          } : null,
+          payment: e.payment
+            ? {
+                amountTotal: e.payment.amount_total,
+                state: e.payment.state,
+                url: e.payment.url
+              }
+            : null,
           linkId: e.link?.id,
           linkName: e.link?.name,
-          metadata: e.metadata,
+          metadata: e.metadata
         }
       };
     }

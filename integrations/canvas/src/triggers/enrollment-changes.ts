@@ -3,48 +3,54 @@ import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let enrollmentChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Enrollment Changes',
-    key: 'enrollment_changes',
-    description: 'Detects new or changed enrollments across courses. Triggers when students or instructors are enrolled, their enrollment state changes, or enrollments are removed.',
-  }
-)
-  .input(z.object({
-    enrollmentId: z.string().describe('Enrollment ID'),
-    courseId: z.string().describe('Course ID'),
-    userId: z.string().describe('User ID'),
-    enrollmentType: z.string().describe('Enrollment type'),
-    enrollmentState: z.string().describe('Enrollment state'),
-    changeType: z.enum(['new', 'updated', 'removed']).describe('Type of change'),
-  }))
-  .output(z.object({
-    enrollmentId: z.string().describe('Enrollment ID'),
-    courseId: z.string().describe('Course ID'),
-    courseName: z.string().optional().describe('Course name'),
-    userId: z.string().describe('User ID'),
-    userName: z.string().optional().describe('User name'),
-    enrollmentType: z.string().describe('Enrollment type (StudentEnrollment, TeacherEnrollment, etc.)'),
-    enrollmentState: z.string().describe('Enrollment state (active, invited, completed, inactive, deleted)'),
-    courseSectionId: z.string().optional().describe('Section ID'),
-  }))
+export let enrollmentChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Enrollment Changes',
+  key: 'enrollment_changes',
+  description:
+    'Detects new or changed enrollments across courses. Triggers when students or instructors are enrolled, their enrollment state changes, or enrollments are removed.'
+})
+  .input(
+    z.object({
+      enrollmentId: z.string().describe('Enrollment ID'),
+      courseId: z.string().describe('Course ID'),
+      userId: z.string().describe('User ID'),
+      enrollmentType: z.string().describe('Enrollment type'),
+      enrollmentState: z.string().describe('Enrollment state'),
+      changeType: z.enum(['new', 'updated', 'removed']).describe('Type of change')
+    })
+  )
+  .output(
+    z.object({
+      enrollmentId: z.string().describe('Enrollment ID'),
+      courseId: z.string().describe('Course ID'),
+      courseName: z.string().optional().describe('Course name'),
+      userId: z.string().describe('User ID'),
+      userName: z.string().optional().describe('User name'),
+      enrollmentType: z
+        .string()
+        .describe('Enrollment type (StudentEnrollment, TeacherEnrollment, etc.)'),
+      enrollmentState: z
+        .string()
+        .describe('Enrollment state (active, invited, completed, inactive, deleted)'),
+      courseSectionId: z.string().optional().describe('Section ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CanvasClient({
         token: ctx.auth.token,
-        canvasDomain: ctx.auth.canvasDomain,
+        canvasDomain: ctx.auth.canvasDomain
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownEnrollments = (ctx.state?.knownEnrollments || {}) as Record<string, string>;
 
       let courses = await client.listCourses({
-        enrollmentState: 'active',
+        enrollmentState: 'active'
       });
 
       let inputs: Array<{
@@ -61,7 +67,7 @@ export let enrollmentChangesTrigger = SlateTrigger.create(
       // Check up to 10 courses
       for (let course of courses.slice(0, 10)) {
         let enrollments = await client.listEnrollments(String(course.id), {
-          state: ['active', 'invited', 'completed', 'inactive'],
+          state: ['active', 'invited', 'completed', 'inactive']
         });
 
         for (let enrollment of enrollments) {
@@ -80,7 +86,7 @@ export let enrollmentChangesTrigger = SlateTrigger.create(
               userId: String(enrollment.user_id),
               enrollmentType: enrollment.type,
               enrollmentState: enrollment.enrollment_state,
-              changeType: 'new',
+              changeType: 'new'
             });
           } else if (previousState !== stateKey) {
             inputs.push({
@@ -89,7 +95,7 @@ export let enrollmentChangesTrigger = SlateTrigger.create(
               userId: String(enrollment.user_id),
               enrollmentType: enrollment.type,
               enrollmentState: enrollment.enrollment_state,
-              changeType: 'updated',
+              changeType: 'updated'
             });
           }
         }
@@ -106,7 +112,7 @@ export let enrollmentChangesTrigger = SlateTrigger.create(
               userId: '',
               enrollmentType: '',
               enrollmentState: 'deleted',
-              changeType: 'removed',
+              changeType: 'removed'
             });
           }
         }
@@ -116,12 +122,12 @@ export let enrollmentChangesTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: new Date().toISOString(),
-          knownEnrollments: newKnownEnrollments,
-        },
+          knownEnrollments: newKnownEnrollments
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `enrollment.${ctx.input.changeType === 'new' ? 'created' : ctx.input.changeType}`,
         id: `enrollment-${ctx.input.enrollmentId}-${ctx.input.changeType}-${Date.now()}`,
@@ -130,9 +136,9 @@ export let enrollmentChangesTrigger = SlateTrigger.create(
           courseId: ctx.input.courseId,
           userId: ctx.input.userId,
           enrollmentType: ctx.input.enrollmentType,
-          enrollmentState: ctx.input.enrollmentState,
-        },
+          enrollmentState: ctx.input.enrollmentState
+        }
       };
-    },
+    }
   })
   .build();

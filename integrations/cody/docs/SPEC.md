@@ -25,6 +25,7 @@ Retrieve a list of all AI bots configured in your account. Bots are the AI assis
 ### Knowledge Base (Documents & Folders)
 
 Manage the knowledge base that powers your AI bots. Documents can be created in three ways:
+
 - **From text/HTML content**: Directly provide text or HTML (up to 768 KB). Structured HTML with headings and paragraphs yields the best results.
 - **From file upload**: Upload files (e.g., PDFs) via a two-step process — first obtain a signed S3 upload URL, then upload the file and reference the returned key.
 - **From webpage URL**: Provide a publicly accessible URL and Cody will crawl and ingest its content.

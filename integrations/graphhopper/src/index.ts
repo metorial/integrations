@@ -7,7 +7,7 @@ import {
   geocode,
   calculateIsochrone,
   matchGpsTrace,
-  clusterLocations,
+  clusterLocations
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     geocode,
     calculateIsochrone,
     matchGpsTrace,
-    clusterLocations,
+    clusterLocations
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

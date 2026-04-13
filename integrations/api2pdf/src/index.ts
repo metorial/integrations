@@ -14,7 +14,7 @@ import {
   createZip,
   convertToMarkdown,
   deleteFile,
-  checkBalance,
+  checkBalance
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     createZip,
     convertToMarkdown,
     deleteFile,
-    checkBalance,
+    checkBalance
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

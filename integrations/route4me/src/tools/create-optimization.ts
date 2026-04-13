@@ -14,59 +14,107 @@ let addressSchema = z.object({
   cube: z.number().optional().describe('Cubic volume of cargo'),
   pieces: z.number().optional().describe('Number of pieces to deliver/pick up'),
   isDepot: z.boolean().optional().describe('Whether this address is a depot'),
-  customFields: z.record(z.string(), z.string()).optional().describe('Custom key-value metadata for this address'),
+  customFields: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe('Custom key-value metadata for this address')
 });
 
-export let createOptimization = SlateTool.create(
-  spec,
-  {
-    name: 'Create Optimization',
-    key: 'create_optimization',
-    description: `Create and solve a route optimization problem. Provide a set of addresses/destinations with constraints and Route4Me will calculate optimal routes.
+export let createOptimization = SlateTool.create(spec, {
+  name: 'Create Optimization',
+  key: 'create_optimization',
+  description: `Create and solve a route optimization problem. Provide a set of addresses/destinations with constraints and Route4Me will calculate optimal routes.
 Supports multiple algorithm types including TSP, CVRP with time windows, and multi-depot scenarios. Returns the optimized routes with sequenced stops.`,
-    instructions: [
-      'Provide at least one depot and one non-depot address.',
-      'Use algorithm_type values: 1=TSP, 2=VRP, 3=CVRP_TW_SD, 4=CVRP_TW_MD, 5=TSP_TW, 6=TSP_TW_CR, 7=BBCVRP.',
-      'Use travel_mode: "Driving", "Walking", "Bicycling", or "Transit".',
-      'Use distance_unit: "mi" for miles, "km" for kilometers.',
-      'Use optimize: "Distance", "Time", "timeWithTraffic".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Provide at least one depot and one non-depot address.',
+    'Use algorithm_type values: 1=TSP, 2=VRP, 3=CVRP_TW_SD, 4=CVRP_TW_MD, 5=TSP_TW, 6=TSP_TW_CR, 7=BBCVRP.',
+    'Use travel_mode: "Driving", "Walking", "Bicycling", or "Transit".',
+    'Use distance_unit: "mi" for miles, "km" for kilometers.',
+    'Use optimize: "Distance", "Time", "timeWithTraffic".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    addresses: z.array(addressSchema).describe('List of addresses to include in the optimization'),
-    parameters: z.object({
-      algorithmType: z.number().optional().describe('Algorithm type (1=TSP, 2=VRP, 3=CVRP_TW_SD, 4=CVRP_TW_MD, 5=TSP_TW, 6=TSP_TW_CR, 7=BBCVRP)'),
-      routeName: z.string().optional().describe('Name for the generated route(s)'),
-      routeMaxDuration: z.number().optional().describe('Maximum duration of each route in seconds'),
-      vehicleCapacity: z.number().optional().describe('Maximum cargo capacity per vehicle'),
-      vehicleMaxDistanceMi: z.number().optional().describe('Maximum distance per vehicle in miles'),
-      travelMode: z.string().optional().describe('Travel mode: Driving, Walking, Bicycling, or Transit'),
-      distanceUnit: z.string().optional().describe('Distance unit: mi or km'),
-      optimize: z.string().optional().describe('Optimization target: Distance, Time, or timeWithTraffic'),
-      routeTime: z.number().optional().describe('Route start time in seconds from midnight'),
-      parts: z.number().optional().describe('Number of route parts (for multi-driver)'),
-      storeRoute: z.boolean().optional().describe('Whether to store the generated route(s)'),
-    }).optional().describe('Optimization parameters'),
-    callbackUrl: z.string().optional().describe('URL to receive callback when optimization completes'),
-  }))
-  .output(z.object({
-    optimizationProblemId: z.string().describe('Unique ID of the optimization problem'),
-    state: z.number().describe('State of the optimization (1=Initial, 2=MatrixGenerating, 3=Optimizing, 4=Optimized, 5=Error, 6=ComputingDirections)'),
-    routes: z.array(z.any()).optional().describe('Generated routes if optimization is complete'),
-    addresses: z.array(z.any()).optional().describe('Addresses included in the optimization'),
-    totalDistance: z.number().optional().describe('Total distance across all routes'),
-    totalTime: z.number().optional().describe('Total travel time across all routes'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      addresses: z
+        .array(addressSchema)
+        .describe('List of addresses to include in the optimization'),
+      parameters: z
+        .object({
+          algorithmType: z
+            .number()
+            .optional()
+            .describe(
+              'Algorithm type (1=TSP, 2=VRP, 3=CVRP_TW_SD, 4=CVRP_TW_MD, 5=TSP_TW, 6=TSP_TW_CR, 7=BBCVRP)'
+            ),
+          routeName: z.string().optional().describe('Name for the generated route(s)'),
+          routeMaxDuration: z
+            .number()
+            .optional()
+            .describe('Maximum duration of each route in seconds'),
+          vehicleCapacity: z
+            .number()
+            .optional()
+            .describe('Maximum cargo capacity per vehicle'),
+          vehicleMaxDistanceMi: z
+            .number()
+            .optional()
+            .describe('Maximum distance per vehicle in miles'),
+          travelMode: z
+            .string()
+            .optional()
+            .describe('Travel mode: Driving, Walking, Bicycling, or Transit'),
+          distanceUnit: z.string().optional().describe('Distance unit: mi or km'),
+          optimize: z
+            .string()
+            .optional()
+            .describe('Optimization target: Distance, Time, or timeWithTraffic'),
+          routeTime: z
+            .number()
+            .optional()
+            .describe('Route start time in seconds from midnight'),
+          parts: z.number().optional().describe('Number of route parts (for multi-driver)'),
+          storeRoute: z
+            .boolean()
+            .optional()
+            .describe('Whether to store the generated route(s)')
+        })
+        .optional()
+        .describe('Optimization parameters'),
+      callbackUrl: z
+        .string()
+        .optional()
+        .describe('URL to receive callback when optimization completes')
+    })
+  )
+  .output(
+    z.object({
+      optimizationProblemId: z.string().describe('Unique ID of the optimization problem'),
+      state: z
+        .number()
+        .describe(
+          'State of the optimization (1=Initial, 2=MatrixGenerating, 3=Optimizing, 4=Optimized, 5=Error, 6=ComputingDirections)'
+        ),
+      routes: z
+        .array(z.any())
+        .optional()
+        .describe('Generated routes if optimization is complete'),
+      addresses: z
+        .array(z.any())
+        .optional()
+        .describe('Addresses included in the optimization'),
+      totalDistance: z.number().optional().describe('Total distance across all routes'),
+      totalTime: z.number().optional().describe('Total travel time across all routes')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {
-      addresses: ctx.input.addresses.map((a) => ({
+      addresses: ctx.input.addresses.map(a => ({
         address: a.address,
         lat: a.lat,
         lng: a.lng,
@@ -77,8 +125,8 @@ Supports multiple algorithm types including TSP, CVRP with time windows, and mul
         cube: a.cube,
         pieces: a.pieces,
         is_depot: a.isDepot || false,
-        custom_fields: a.customFields,
-      })),
+        custom_fields: a.customFields
+      }))
     };
 
     if (ctx.input.parameters) {
@@ -94,7 +142,7 @@ Supports multiple algorithm types including TSP, CVRP with time windows, and mul
         optimize: p.optimize,
         route_time: p.routeTime,
         parts: p.parts,
-        store_route: p.storeRoute,
+        store_route: p.storeRoute
       };
     }
 
@@ -120,9 +168,9 @@ Supports multiple algorithm types including TSP, CVRP with time windows, and mul
         routes: result.routes,
         addresses: result.addresses,
         totalDistance,
-        totalTime,
+        totalTime
       },
-      message: `Created optimization **${result.optimization_problem_id}** with state ${result.state}. ${routes.length} route(s) generated.`,
+      message: `Created optimization **${result.optimization_problem_id}** with state ${result.state}. ${routes.length} route(s) generated.`
     };
   })
   .build();

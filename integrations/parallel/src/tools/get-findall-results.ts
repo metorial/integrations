@@ -3,30 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getFindallResults = SlateTool.create(
-  spec,
-  {
-    name: 'Get FindAll Results',
-    key: 'get_findall_results',
-    description: `Check the status of a FindAll entity discovery run and retrieve matched entities when complete.
+export let getFindallResults = SlateTool.create(spec, {
+  name: 'Get FindAll Results',
+  key: 'get_findall_results',
+  description: `Check the status of a FindAll entity discovery run and retrieve matched entities when complete.
 Use the run ID returned by the **Find Entities** tool.`,
-    instructions: [
-      'Set includeResults to true to retrieve the list of matched candidates.',
-      'If the run is not yet complete, only status and metrics are returned.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+  instructions: [
+    'Set includeResults to true to retrieve the list of matched candidates.',
+    'If the run is not yet complete, only status and metrics are returned.'
+  ],
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       findallId: z.string().describe('FindAll run ID from the Find Entities tool'),
       includeResults: z
         .boolean()
         .optional()
-        .describe('If true and run is completed, fetch the full results. Defaults to false.'),
-    }),
+        .describe('If true and run is completed, fetch the full results. Defaults to false.')
+    })
   )
   .output(
     z.object({
@@ -35,7 +32,9 @@ Use the run ID returned by the **Find Entities** tool.`,
       metrics: z
         .object({
           generatedCandidatesCount: z.number().describe('Number of candidates generated'),
-          matchedCandidatesCount: z.number().describe('Number of candidates that matched conditions'),
+          matchedCandidatesCount: z
+            .number()
+            .describe('Number of candidates that matched conditions')
         })
         .describe('Progress metrics'),
       createdAt: z.string().describe('Creation timestamp'),
@@ -53,8 +52,8 @@ Use the run ID returned by the **Find Entities** tool.`,
                 z.string(),
                 z.object({
                   value: z.string().describe('Condition evaluation value'),
-                  isMatched: z.boolean().describe('Whether this condition matched'),
-                }),
+                  isMatched: z.boolean().describe('Whether this condition matched')
+                })
               )
               .describe('Per-condition match results'),
             basis: z
@@ -65,22 +64,22 @@ Use the run ID returned by the **Find Entities** tool.`,
                     .array(
                       z.object({
                         url: z.string().describe('Source URL'),
-                        excerpts: z.array(z.string()).describe('Supporting excerpts'),
-                      }),
+                        excerpts: z.array(z.string()).describe('Supporting excerpts')
+                      })
                     )
                     .describe('Citations'),
                   reasoning: z.string().describe('Reasoning explanation'),
-                  confidence: z.string().describe('Confidence level'),
-                }),
+                  confidence: z.string().describe('Confidence level')
+                })
               )
-              .describe('Evidence and reasoning per condition'),
-          }),
+              .describe('Evidence and reasoning per condition')
+          })
         )
         .nullable()
-        .describe('Matched candidates (null if results not requested or run not complete)'),
-    }),
+        .describe('Matched candidates (null if results not requested or run not complete)')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let run = await client.getFindAllRun(ctx.input.findallId);
 
@@ -97,9 +96,9 @@ Use the run ID returned by the **Find Entities** tool.`,
         metrics: run.metrics,
         createdAt: run.createdAt,
         modifiedAt: run.modifiedAt,
-        candidates,
+        candidates
       },
-      message: `FindAll run **${run.findallId}** status: **${run.status}** — ${run.metrics.matchedCandidatesCount} matched out of ${run.metrics.generatedCandidatesCount} candidates.${candidates ? ` Results retrieved.` : ''}`,
+      message: `FindAll run **${run.findallId}** status: **${run.status}** — ${run.metrics.matchedCandidatesCount} matched out of ${run.metrics.generatedCandidatesCount} candidates.${candidates ? ` Results retrieved.` : ''}`
     };
   })
   .build();

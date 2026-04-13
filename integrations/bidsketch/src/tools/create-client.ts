@@ -3,47 +3,51 @@ import { BidsketchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createClient = SlateTool.create(
-  spec,
-  {
-    name: 'Create Client',
-    key: 'create_client',
-    description: `Create a new client record in Bidsketch. Requires first name, last name, and email. Optionally set phone, website, full mailing address, private notes, and a secondary contact person.`,
-    tags: {
-      destructive: false
-    }
+export let createClient = SlateTool.create(spec, {
+  name: 'Create Client',
+  key: 'create_client',
+  description: `Create a new client record in Bidsketch. Requires first name, last name, and email. Optionally set phone, website, full mailing address, private notes, and a secondary contact person.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    firstName: z.string().describe('Client first name'),
-    lastName: z.string().describe('Client last name'),
-    email: z.string().describe('Client email address'),
-    phone: z.string().optional().describe('Phone number'),
-    website: z.string().optional().describe('Website URL'),
-    address: z.string().optional().describe('Street address'),
-    address2: z.string().optional().describe('Address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State/province'),
-    postalZip: z.string().optional().describe('Postal/ZIP code'),
-    locale: z.string().optional().describe('Country/locale'),
-    notes: z.string().optional().describe('Private notes about the client'),
-    otherContact: z.object({
-      firstName: z.string().describe('Secondary contact first name'),
-      lastName: z.string().describe('Secondary contact last name'),
-      email: z.string().describe('Secondary contact email'),
-      phone: z.string().optional().describe('Secondary contact phone')
-    }).optional().describe('Secondary contact person')
-  }))
-  .output(z.object({
-    clientId: z.number().describe('ID of the newly created client'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    email: z.string().describe('Email address'),
-    url: z.string().describe('API URL'),
-    appUrl: z.string().describe('Bidsketch app URL'),
-    createdAt: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      firstName: z.string().describe('Client first name'),
+      lastName: z.string().describe('Client last name'),
+      email: z.string().describe('Client email address'),
+      phone: z.string().optional().describe('Phone number'),
+      website: z.string().optional().describe('Website URL'),
+      address: z.string().optional().describe('Street address'),
+      address2: z.string().optional().describe('Address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State/province'),
+      postalZip: z.string().optional().describe('Postal/ZIP code'),
+      locale: z.string().optional().describe('Country/locale'),
+      notes: z.string().optional().describe('Private notes about the client'),
+      otherContact: z
+        .object({
+          firstName: z.string().describe('Secondary contact first name'),
+          lastName: z.string().describe('Secondary contact last name'),
+          email: z.string().describe('Secondary contact email'),
+          phone: z.string().optional().describe('Secondary contact phone')
+        })
+        .optional()
+        .describe('Secondary contact person')
+    })
+  )
+  .output(
+    z.object({
+      clientId: z.number().describe('ID of the newly created client'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      email: z.string().describe('Email address'),
+      url: z.string().describe('API URL'),
+      appUrl: z.string().describe('Bidsketch app URL'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let body: Record<string, unknown> = {

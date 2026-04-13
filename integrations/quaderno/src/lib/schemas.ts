@@ -48,7 +48,9 @@ export let documentOutputSchema = z.object({
   permalink: z.string().optional().describe('Public permalink for sharing')
 });
 
-export let mapLineItemInput = (item: z.infer<typeof lineItemInputSchema>): Record<string, any> => {
+export let mapLineItemInput = (
+  item: z.infer<typeof lineItemInputSchema>
+): Record<string, any> => {
   let mapped: Record<string, any> = {};
   if (item.description) mapped.description = item.description;
   if (item.quantity !== undefined) mapped.quantity = item.quantity;

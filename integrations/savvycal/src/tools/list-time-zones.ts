@@ -3,27 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTimeZonesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Time Zones',
-    key: 'list_time_zones',
-    description: `List all supported time zones in SavvyCal. Returns IANA time zone identifiers with their abbreviations and UTC offsets. Useful for creating events or scheduling links with the correct time zone.`,
-    tags: {
-      readOnly: true
-    }
+export let listTimeZonesTool = SlateTool.create(spec, {
+  name: 'List Time Zones',
+  key: 'list_time_zones',
+  description: `List all supported time zones in SavvyCal. Returns IANA time zone identifiers with their abbreviations and UTC offsets. Useful for creating events or scheduling links with the correct time zone.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    timeZones: z.array(z.object({
-      timeZoneId: z.string().describe('IANA time zone identifier (e.g., "America/New_York")'),
-      abbreviation: z.string().optional().describe('Time zone abbreviation (e.g., "EST")'),
-      offset: z.number().optional().describe('UTC offset in seconds'),
-      formattedOffset: z.string().optional().describe('Human-readable offset (e.g., "-05:00")')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      timeZones: z.array(
+        z.object({
+          timeZoneId: z
+            .string()
+            .describe('IANA time zone identifier (e.g., "America/New_York")'),
+          abbreviation: z.string().optional().describe('Time zone abbreviation (e.g., "EST")'),
+          offset: z.number().optional().describe('UTC offset in seconds'),
+          formattedOffset: z
+            .string()
+            .optional()
+            .describe('Human-readable offset (e.g., "-05:00")')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let data = await client.listTimeZones();
 

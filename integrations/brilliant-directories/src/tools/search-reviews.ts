@@ -3,32 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchReviews = SlateTool.create(
-  spec,
-  {
-    name: 'Search Reviews',
-    key: 'search_reviews',
-    description: `Search for reviews in the directory using various criteria.
+export let searchReviews = SlateTool.create(spec, {
+  name: 'Search Reviews',
+  key: 'search_reviews',
+  description: `Search for reviews in the directory using various criteria.
 Returns matching reviews with pagination.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    reviewId: z.string().optional().describe('Filter by review ID.'),
-    userId: z.string().optional().describe('Filter by member ID being reviewed.'),
-    query: z.string().optional().describe('Keyword search query.'),
-    additionalFilters: z.record(z.string(), z.string()).optional().describe('Any additional search filters as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    reviews: z.any().describe('The search results.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      reviewId: z.string().optional().describe('Filter by review ID.'),
+      userId: z.string().optional().describe('Filter by member ID being reviewed.'),
+      query: z.string().optional().describe('Keyword search query.'),
+      additionalFilters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional search filters as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      reviews: z.any().describe('The search results.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let params: Record<string, any> = {};
@@ -46,8 +50,9 @@ Returns matching reviews with pagination.`,
     return {
       output: {
         status: result.status,
-        reviews: result.message,
+        reviews: result.message
       },
-      message: `Found reviews matching the search criteria.`,
+      message: `Found reviews matching the search criteria.`
     };
-  }).build();
+  })
+  .build();

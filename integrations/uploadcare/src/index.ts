@@ -23,7 +23,7 @@ import {
   createWebhook,
   updateWebhook,
   deleteWebhook,
-  buildCdnUrl,
+  buildCdnUrl
 } from './tools';
 import { fileEvents } from './triggers';
 
@@ -52,9 +52,7 @@ export let provider = Slate.create({
     createWebhook,
     updateWebhook,
     deleteWebhook,
-    buildCdnUrl,
+    buildCdnUrl
   ],
-  triggers: [
-    fileEvents,
-  ],
+  triggers: [fileEvents]
 });

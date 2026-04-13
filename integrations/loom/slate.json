@@ -2,10 +2,7 @@
   "name": "@metorial/loom",
   "version": "0.1.1",
   "description": "Record video messages capturing screen, camera, and microphone directly within web applications. Embed Loom video players by converting share URLs into rich embedded content. Retrieve video metadata including title, thumbnail, dimensions, and duration via the oembed method. Listen to client-side recording lifecycle events such as recording start, completion, and upload. Replace Loom links in text or DOM elements with embedded video players or GIF previews.",
-  "categories": [
-    "email-and-messaging",
-    "scheduling-and-calendars"
-  ],
+  "categories": ["email-and-messaging", "scheduling-and-calendars"],
   "skills": [
     "record screen and camera video",
     "embed video players",

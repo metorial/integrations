@@ -26,7 +26,9 @@ export class VonageRestClient {
 
   private async getJwtToken(): Promise<string> {
     if (!this.auth.applicationId || !this.auth.privateKey) {
-      throw new Error('Application ID and Private Key are required for JWT authentication. Use the "API Key, Secret & Application JWT" auth method.');
+      throw new Error(
+        'Application ID and Private Key are required for JWT authentication. Use the "API Key, Secret & Application JWT" auth method.'
+      );
     }
     return generateVonageJwt(this.auth.applicationId, this.auth.privateKey);
   }
@@ -62,7 +64,7 @@ export class VonageRestClient {
       message_type: body.messageType,
       channel: body.channel,
       to: body.to,
-      from: body.from,
+      from: body.from
     };
 
     if (body.clientRef) requestBody.client_ref = body.clientRef;
@@ -87,20 +89,20 @@ export class VonageRestClient {
       case 'template':
         requestBody.whatsapp = {
           policy: body.whatsappPolicy || 'deterministic',
-          locale: body.whatsappLocale || 'en',
+          locale: body.whatsappLocale || 'en'
         };
         requestBody.template = {
           name: body.templateName,
-          parameters: body.templateParameters,
+          parameters: body.templateParameters
         };
         break;
     }
 
     let res = await this.mainApi.post('/v1/messages', requestBody, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json'
       }
     });
 
@@ -134,11 +136,12 @@ export class VonageRestClient {
       api_secret: this.auth.apiSecret,
       to: body.to,
       from: body.from,
-      text: body.text,
+      text: body.text
     };
 
     if (body.type) requestBody.type = body.type;
-    if (body.statusReportReq !== undefined) requestBody.status_report_req = body.statusReportReq ? 1 : 0;
+    if (body.statusReportReq !== undefined)
+      requestBody.status_report_req = body.statusReportReq ? 1 : 0;
     if (body.clientRef) requestBody.client_ref = body.clientRef;
     if (body.callbackUrl) requestBody.callback = body.callbackUrl;
 
@@ -155,7 +158,7 @@ export class VonageRestClient {
         remainingBalance: m['remaining-balance'],
         messagePrice: m['message-price'],
         network: m.network,
-        errorText: m['error-text'],
+        errorText: m['error-text']
       }))
     };
   }
@@ -183,7 +186,7 @@ export class VonageRestClient {
 
     let requestBody: Record<string, unknown> = {
       to: body.to,
-      from: body.from,
+      from: body.from
     };
 
     if (body.ncco) {
@@ -201,8 +204,8 @@ export class VonageRestClient {
 
     let res = await this.mainApi.post('/v1/calls', requestBody, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
 
@@ -210,7 +213,7 @@ export class VonageRestClient {
       callUuid: res.data.uuid,
       status: res.data.status,
       direction: res.data.direction,
-      conversationUuid: res.data.conversation_uuid,
+      conversationUuid: res.data.conversation_uuid
     };
   }
 
@@ -241,7 +244,7 @@ export class VonageRestClient {
 
     let res = await this.mainApi.get('/v1/calls', {
       params: queryParams,
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     let embedded = res.data._embedded || {};
@@ -257,21 +260,21 @@ export class VonageRestClient {
       duration: c.duration,
       rate: c.rate,
       price: c.price,
-      network: c.network,
+      network: c.network
     }));
 
     return {
       count: res.data.count,
       pageSize: res.data.page_size,
       recordIndex: res.data.record_index,
-      calls,
+      calls
     };
   }
 
   async getCall(callUuid: string): Promise<Record<string, unknown>> {
     let token = await this.getJwtToken();
     let res = await this.mainApi.get(`/v1/calls/${callUuid}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     let c = res.data;
     return {
@@ -286,31 +289,38 @@ export class VonageRestClient {
       duration: c.duration,
       rate: c.rate,
       price: c.price,
-      network: c.network,
+      network: c.network
     };
   }
 
-  async modifyCall(callUuid: string, action: {
-    action: string;
-    destination?: { type: string; url: string[] };
-  }): Promise<void> {
+  async modifyCall(
+    callUuid: string,
+    action: {
+      action: string;
+      destination?: { type: string; url: string[] };
+    }
+  ): Promise<void> {
     let token = await this.getJwtToken();
     await this.mainApi.put(`/v1/calls/${callUuid}`, action, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
   }
 
-  async playTts(callUuid: string, text: string, options?: {
-    voiceName?: string;
-    language?: string;
-    style?: number;
-    premium?: boolean;
-    loop?: number;
-    level?: number;
-  }): Promise<{ message: string; uuid: string }> {
+  async playTts(
+    callUuid: string,
+    text: string,
+    options?: {
+      voiceName?: string;
+      language?: string;
+      style?: number;
+      premium?: boolean;
+      loop?: number;
+      level?: number;
+    }
+  ): Promise<{ message: string; uuid: string }> {
     let token = await this.getJwtToken();
     let body: Record<string, unknown> = { text };
     if (options?.voiceName) body.voice_name = options.voiceName;
@@ -322,8 +332,8 @@ export class VonageRestClient {
 
     let res = await this.mainApi.put(`/v1/calls/${callUuid}/talk`, body, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
     return { message: res.data.message, uuid: res.data.uuid };
@@ -332,14 +342,18 @@ export class VonageRestClient {
   async stopTts(callUuid: string): Promise<void> {
     let token = await this.getJwtToken();
     await this.mainApi.delete(`/v1/calls/${callUuid}/talk`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
   }
 
-  async playStream(callUuid: string, streamUrl: string[], options?: {
-    loop?: number;
-    level?: number;
-  }): Promise<{ message: string; uuid: string }> {
+  async playStream(
+    callUuid: string,
+    streamUrl: string[],
+    options?: {
+      loop?: number;
+      level?: number;
+    }
+  ): Promise<{ message: string; uuid: string }> {
     let token = await this.getJwtToken();
     let body: Record<string, unknown> = { stream_url: streamUrl };
     if (options?.loop !== undefined) body.loop = options.loop;
@@ -347,8 +361,8 @@ export class VonageRestClient {
 
     let res = await this.mainApi.put(`/v1/calls/${callUuid}/stream`, body, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
     return { message: res.data.message, uuid: res.data.uuid };
@@ -357,18 +371,25 @@ export class VonageRestClient {
   async stopStream(callUuid: string): Promise<void> {
     let token = await this.getJwtToken();
     await this.mainApi.delete(`/v1/calls/${callUuid}/stream`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
   }
 
-  async sendDtmf(callUuid: string, digits: string): Promise<{ message: string; uuid: string }> {
+  async sendDtmf(
+    callUuid: string,
+    digits: string
+  ): Promise<{ message: string; uuid: string }> {
     let token = await this.getJwtToken();
-    let res = await this.mainApi.put(`/v1/calls/${callUuid}/dtmf`, { digits }, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+    let res = await this.mainApi.put(
+      `/v1/calls/${callUuid}/dtmf`,
+      { digits },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     return { message: res.data.message, uuid: res.data.uuid };
   }
 
@@ -399,7 +420,7 @@ export class VonageRestClient {
 
     let requestBody: Record<string, unknown> = {
       brand: body.brand,
-      workflow: workflows,
+      workflow: workflows
     };
 
     // For channels that need a 'to' at the top level
@@ -410,47 +431,58 @@ export class VonageRestClient {
 
     let res = await this.mainApi.post('/v2/verify', requestBody, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
 
     return {
       requestId: res.data.request_id,
-      checkUrl: res.data.check_url,
+      checkUrl: res.data.check_url
     };
   }
 
-  async checkVerificationCode(requestId: string, code: string): Promise<{ requestId: string; status: string }> {
+  async checkVerificationCode(
+    requestId: string,
+    code: string
+  ): Promise<{ requestId: string; status: string }> {
     let token = await this.getJwtToken();
-    let res = await this.mainApi.post(`/v2/verify/${requestId}`, { code }, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+    let res = await this.mainApi.post(
+      `/v2/verify/${requestId}`,
+      { code },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     return {
       requestId: res.data.request_id || requestId,
-      status: res.data.status || 'completed',
+      status: res.data.status || 'completed'
     };
   }
 
   async cancelVerification(requestId: string): Promise<void> {
     let token = await this.getJwtToken();
     await this.mainApi.delete(`/v2/verify/${requestId}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
   }
 
   // ========== Number Insight API (api key/secret, api.nexmo.com) ==========
 
-  async numberInsight(level: 'basic' | 'standard' | 'advanced', number: string, country?: string): Promise<Record<string, unknown>> {
+  async numberInsight(
+    level: 'basic' | 'standard' | 'advanced',
+    number: string,
+    country?: string
+  ): Promise<Record<string, unknown>> {
     let path = `/ni/${level}/json`;
 
     let params: Record<string, string> = {
       api_key: this.auth.apiKey,
       api_secret: this.auth.apiSecret,
-      number,
+      number
     };
     if (country) params.country = country;
 
@@ -481,7 +513,7 @@ export class VonageRestClient {
     let queryParams: Record<string, unknown> = {
       api_key: this.auth.apiKey,
       api_secret: this.auth.apiSecret,
-      country: params.country,
+      country: params.country
     };
     if (params.type) queryParams.type = params.type;
     if (params.pattern) queryParams.pattern = params.pattern;
@@ -498,7 +530,7 @@ export class VonageRestClient {
         msisdn: n.msisdn,
         type: n.type,
         cost: n.cost,
-        features: n.features,
+        features: n.features
       }))
     };
   }
@@ -526,10 +558,11 @@ export class VonageRestClient {
   }> {
     let queryParams: Record<string, unknown> = {
       api_key: this.auth.apiKey,
-      api_secret: this.auth.apiSecret,
+      api_secret: this.auth.apiSecret
     };
     if (params?.applicationId) queryParams.application_id = params.applicationId;
-    if (params?.hasApplication !== undefined) queryParams.has_application = params.hasApplication;
+    if (params?.hasApplication !== undefined)
+      queryParams.has_application = params.hasApplication;
     if (params?.country) queryParams.country = params.country;
     if (params?.pattern) queryParams.pattern = params.pattern;
     if (params?.searchPattern !== undefined) queryParams.search_pattern = params.searchPattern;
@@ -547,7 +580,7 @@ export class VonageRestClient {
         moHttpUrl: n.moHttpUrl,
         voiceCallbackType: n.voiceCallbackType,
         voiceCallbackValue: n.voiceCallbackValue,
-        applicationId: n.app_id,
+        applicationId: n.app_id
       }))
     };
   }
@@ -557,7 +590,7 @@ export class VonageRestClient {
       api_key: this.auth.apiKey,
       api_secret: this.auth.apiSecret,
       country,
-      msisdn,
+      msisdn
     };
     if (targetApiKey) body.target_api_key = targetApiKey;
 
@@ -571,7 +604,7 @@ export class VonageRestClient {
       api_key: this.auth.apiKey,
       api_secret: this.auth.apiSecret,
       country,
-      msisdn,
+      msisdn
     };
     if (targetApiKey) body.target_api_key = targetApiKey;
 
@@ -594,7 +627,7 @@ export class VonageRestClient {
       api_key: this.auth.apiKey,
       api_secret: this.auth.apiSecret,
       country: body.country,
-      msisdn: body.msisdn,
+      msisdn: body.msisdn
     };
     if (body.applicationId) formData.app_id = body.applicationId;
     if (body.moHttpUrl) formData.moHttpUrl = body.moHttpUrl;
@@ -610,10 +643,7 @@ export class VonageRestClient {
 
   // ========== Application API (JWT auth, api.nexmo.com) ==========
 
-  async listApplications(params?: {
-    pageSize?: number;
-    page?: number;
-  }): Promise<{
+  async listApplications(params?: { pageSize?: number; page?: number }): Promise<{
     totalItems: number;
     totalPages: number;
     page: number;
@@ -627,7 +657,7 @@ export class VonageRestClient {
 
     let res = await this.mainApi.get('/v2/applications', {
       params: queryParams,
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     let embedded = res.data._embedded || {};
@@ -636,14 +666,16 @@ export class VonageRestClient {
       totalPages: res.data.total_pages,
       page: res.data.page,
       pageSize: res.data.page_size,
-      applications: (embedded.applications || []).map((a: Record<string, unknown>) => this.mapApplication(a)),
+      applications: (embedded.applications || []).map((a: Record<string, unknown>) =>
+        this.mapApplication(a)
+      )
     };
   }
 
   async getApplication(applicationId: string): Promise<Record<string, unknown>> {
     let token = await this.getJwtToken();
     let res = await this.mainApi.get(`/v2/applications/${applicationId}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
     return this.mapApplication(res.data);
   }
@@ -655,22 +687,25 @@ export class VonageRestClient {
     let token = await this.getJwtToken();
     let res = await this.mainApi.post('/v2/applications', body, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
     return this.mapApplication(res.data);
   }
 
-  async updateApplication(applicationId: string, body: {
-    name?: string;
-    capabilities?: Record<string, unknown>;
-  }): Promise<Record<string, unknown>> {
+  async updateApplication(
+    applicationId: string,
+    body: {
+      name?: string;
+      capabilities?: Record<string, unknown>;
+    }
+  ): Promise<Record<string, unknown>> {
     let token = await this.getJwtToken();
     let res = await this.mainApi.put(`/v2/applications/${applicationId}`, body, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
     return this.mapApplication(res.data);
@@ -679,7 +714,7 @@ export class VonageRestClient {
   async deleteApplication(applicationId: string): Promise<void> {
     let token = await this.getJwtToken();
     await this.mainApi.delete(`/v2/applications/${applicationId}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
   }
 
@@ -690,7 +725,7 @@ export class VonageRestClient {
       capabilities: a.capabilities,
       keys: a.keys,
       createdAt: a.created_at,
-      updatedAt: a.updated_at,
+      updatedAt: a.updated_at
     };
   }
 
@@ -700,12 +735,12 @@ export class VonageRestClient {
     let res = await this.restApi.get('/account/get-balance', {
       params: {
         api_key: this.auth.apiKey,
-        api_secret: this.auth.apiSecret,
+        api_secret: this.auth.apiSecret
       }
     });
     return {
       value: res.data.value,
-      autoReload: res.data.autoReload,
+      autoReload: res.data.autoReload
     };
   }
 
@@ -716,27 +751,31 @@ export class VonageRestClient {
     subaccounts: Array<Record<string, unknown>>;
   }> {
     let res = await this.mainApi.get(`/accounts/${this.auth.apiKey}/subaccounts`, {
-      headers: { 'Authorization': this.getBasicAuthHeader() }
+      headers: { Authorization: this.getBasicAuthHeader() }
     });
     return {
-      primaryAccount: res.data.primary_account ? {
-        apiKey: res.data.primary_account.api_key,
-        name: res.data.primary_account.name,
-        createdAt: res.data.primary_account.created_at,
-        suspended: res.data.primary_account.suspended,
-        balance: res.data.primary_account.balance,
-        creditLimit: res.data.primary_account.credit_limit,
-      } : {},
-      subaccounts: (res.data._embedded?.subaccounts || []).map((s: Record<string, unknown>) => ({
-        apiKey: s.api_key,
-        name: s.name,
-        primaryAccountApiKey: s.primary_account_api_key,
-        usePrimaryAccountBalance: s.use_primary_account_balance,
-        createdAt: s.created_at,
-        suspended: s.suspended,
-        balance: s.balance,
-        creditLimit: s.credit_limit,
-      }))
+      primaryAccount: res.data.primary_account
+        ? {
+            apiKey: res.data.primary_account.api_key,
+            name: res.data.primary_account.name,
+            createdAt: res.data.primary_account.created_at,
+            suspended: res.data.primary_account.suspended,
+            balance: res.data.primary_account.balance,
+            creditLimit: res.data.primary_account.credit_limit
+          }
+        : {},
+      subaccounts: (res.data._embedded?.subaccounts || []).map(
+        (s: Record<string, unknown>) => ({
+          apiKey: s.api_key,
+          name: s.name,
+          primaryAccountApiKey: s.primary_account_api_key,
+          usePrimaryAccountBalance: s.use_primary_account_balance,
+          createdAt: s.created_at,
+          suspended: s.suspended,
+          balance: s.balance,
+          creditLimit: s.credit_limit
+        })
+      )
     };
   }
 
@@ -747,14 +786,19 @@ export class VonageRestClient {
   }): Promise<Record<string, unknown>> {
     let requestBody: Record<string, unknown> = { name: body.name };
     if (body.secret) requestBody.secret = body.secret;
-    if (body.usePrimaryAccountBalance !== undefined) requestBody.use_primary_account_balance = body.usePrimaryAccountBalance;
+    if (body.usePrimaryAccountBalance !== undefined)
+      requestBody.use_primary_account_balance = body.usePrimaryAccountBalance;
 
-    let res = await this.mainApi.post(`/accounts/${this.auth.apiKey}/subaccounts`, requestBody, {
-      headers: {
-        'Authorization': this.getBasicAuthHeader(),
-        'Content-Type': 'application/json',
+    let res = await this.mainApi.post(
+      `/accounts/${this.auth.apiKey}/subaccounts`,
+      requestBody,
+      {
+        headers: {
+          Authorization: this.getBasicAuthHeader(),
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
 
     return {
       apiKey: res.data.api_key,
@@ -765,7 +809,7 @@ export class VonageRestClient {
       createdAt: res.data.created_at,
       suspended: res.data.suspended,
       balance: res.data.balance,
-      creditLimit: res.data.credit_limit,
+      creditLimit: res.data.credit_limit
     };
   }
 
@@ -778,23 +822,27 @@ export class VonageRestClient {
     let requestBody: Record<string, unknown> = {
       from: body.from,
       to: body.to,
-      amount: body.amount,
+      amount: body.amount
     };
     if (body.reference) requestBody.reference = body.reference;
 
-    let res = await this.mainApi.post(`/accounts/${this.auth.apiKey}/credit-transfers`, requestBody, {
-      headers: {
-        'Authorization': this.getBasicAuthHeader(),
-        'Content-Type': 'application/json',
+    let res = await this.mainApi.post(
+      `/accounts/${this.auth.apiKey}/credit-transfers`,
+      requestBody,
+      {
+        headers: {
+          Authorization: this.getBasicAuthHeader(),
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     return {
       creditTransferId: res.data.credit_transfer_id,
       from: res.data.from,
       to: res.data.to,
       amount: res.data.amount,
       reference: res.data.reference,
-      createdAt: res.data.created_at,
+      createdAt: res.data.created_at
     };
   }
 
@@ -807,23 +855,27 @@ export class VonageRestClient {
     let requestBody: Record<string, unknown> = {
       from: body.from,
       to: body.to,
-      amount: body.amount,
+      amount: body.amount
     };
     if (body.reference) requestBody.reference = body.reference;
 
-    let res = await this.mainApi.post(`/accounts/${this.auth.apiKey}/balance-transfers`, requestBody, {
-      headers: {
-        'Authorization': this.getBasicAuthHeader(),
-        'Content-Type': 'application/json',
+    let res = await this.mainApi.post(
+      `/accounts/${this.auth.apiKey}/balance-transfers`,
+      requestBody,
+      {
+        headers: {
+          Authorization: this.getBasicAuthHeader(),
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     return {
       balanceTransferId: res.data.balance_transfer_id,
       from: res.data.from,
       to: res.data.to,
       amount: res.data.amount,
       reference: res.data.reference,
-      createdAt: res.data.created_at,
+      createdAt: res.data.created_at
     };
   }
 }

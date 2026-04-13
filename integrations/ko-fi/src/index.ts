@@ -5,5 +5,5 @@ import { paymentTrigger } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [],
-  triggers: [paymentTrigger],
+  triggers: [paymentTrigger]
 });

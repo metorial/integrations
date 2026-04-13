@@ -1,5 +1,12 @@
 import { createAxios } from 'slates';
-import type { AuthMethod, AnnotateImageRequest, AnnotateImageResponse, ImageSource, Feature, ImageContext } from './types';
+import type {
+  AuthMethod,
+  AnnotateImageRequest,
+  AnnotateImageResponse,
+  ImageSource,
+  Feature,
+  ImageContext
+} from './types';
 
 let BASE_URL = 'https://vision.googleapis.com/v1';
 
@@ -17,16 +24,16 @@ export class VisionClient {
       return createAxios({
         baseURL: BASE_URL,
         params: { key: this.token },
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
     return createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -52,11 +59,11 @@ export class VisionClient {
     let request: AnnotateImageRequest = {
       image: this.buildImagePayload(imageSource),
       features,
-      ...(imageContext ? { imageContext } : {}),
+      ...(imageContext ? { imageContext } : {})
     };
 
     let response = await axios.post('/images:annotate', {
-      requests: [request],
+      requests: [request]
     });
 
     let result = response.data.responses?.[0] as AnnotateImageResponse | undefined;
@@ -81,14 +88,14 @@ export class VisionClient {
   ): Promise<AnnotateImageResponse[]> {
     let axios = this.createAxiosInstance();
 
-    let annotateRequests: AnnotateImageRequest[] = requests.map((req) => ({
+    let annotateRequests: AnnotateImageRequest[] = requests.map(req => ({
       image: this.buildImagePayload(req.imageSource),
       features: req.features,
-      ...(req.imageContext ? { imageContext: req.imageContext } : {}),
+      ...(req.imageContext ? { imageContext: req.imageContext } : {})
     }));
 
     let response = await axios.post('/images:annotate', {
-      requests: annotateRequests,
+      requests: annotateRequests
     });
 
     let results = response.data.responses as AnnotateImageResponse[];
@@ -110,23 +117,23 @@ export class VisionClient {
   ): Promise<{ operationName: string }> {
     let axios = this.createAxiosInstance();
 
-    let annotateRequests: AnnotateImageRequest[] = requests.map((req) => ({
+    let annotateRequests: AnnotateImageRequest[] = requests.map(req => ({
       image: this.buildImagePayload(req.imageSource),
       features: req.features,
-      ...(req.imageContext ? { imageContext: req.imageContext } : {}),
+      ...(req.imageContext ? { imageContext: req.imageContext } : {})
     }));
 
     let response = await axios.post('/images:asyncBatchAnnotate', {
       requests: annotateRequests,
       outputConfig: {
         gcsDestination: {
-          uri: outputGcsUri,
-        },
-      },
+          uri: outputGcsUri
+        }
+      }
     });
 
     return {
-      operationName: response.data.name,
+      operationName: response.data.name
     };
   }
 }

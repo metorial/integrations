@@ -3,28 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let productEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Product Events',
-    key: 'product_events',
-    description: 'Triggered when products are modified in the workspace. Products are top-level entities in the product hierarchy.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of product event'),
-    eventId: z.string().describe('Unique event identifier'),
-    productId: z.string().describe('ID of the affected product'),
-    productName: z.string().optional().describe('Name of the product'),
-    raw: z.record(z.string(), z.any()).optional().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    productId: z.string().describe('ID of the affected product'),
-    productName: z.string().optional().describe('Name of the product'),
-    product: z.record(z.string(), z.any()).optional().describe('Raw product data from the event'),
-  }))
+export let productEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Product Events',
+  key: 'product_events',
+  description:
+    'Triggered when products are modified in the workspace. Products are top-level entities in the product hierarchy.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of product event'),
+      eventId: z.string().describe('Unique event identifier'),
+      productId: z.string().describe('ID of the affected product'),
+      productName: z.string().optional().describe('Name of the product'),
+      raw: z.record(z.string(), z.any()).optional().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string().describe('ID of the affected product'),
+      productName: z.string().optional().describe('Name of the product'),
+      product: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Raw product data from the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let eventTypes = ['product.created', 'product.updated', 'product.deleted'];
       let webhookIds: string[] = [];
@@ -33,7 +38,7 @@ export let productEventsTrigger = SlateTrigger.create(
         try {
           let webhook = await client.createWebhook({
             notificationUrl: ctx.input.webhookBaseUrl,
-            eventType,
+            eventType
           });
           webhookIds.push(webhook.id);
         } catch {
@@ -42,11 +47,11 @@ export let productEventsTrigger = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
@@ -59,8 +64,8 @@ export let productEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
 
       if (body.type === 'probe' || body.eventType === 'probe') {
         return { inputs: [] };
@@ -72,17 +77,19 @@ export let productEventsTrigger = SlateTrigger.create(
       let productName = productData?.name || productData?.product?.name;
 
       return {
-        inputs: [{
-          eventType,
-          eventId: body.id || `${eventType}-${productId}-${Date.now()}`,
-          productId,
-          productName,
-          raw: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: body.id || `${eventType}-${productId}-${Date.now()}`,
+            productId,
+            productName,
+            raw: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let rawData = ctx.input.raw as Record<string, any> | undefined;
 
       return {
@@ -91,9 +98,9 @@ export let productEventsTrigger = SlateTrigger.create(
         output: {
           productId: ctx.input.productId,
           productName: ctx.input.productName,
-          product: rawData?.data as Record<string, any> | undefined,
-        },
+          product: rawData?.data as Record<string, any> | undefined
+        }
       };
-    },
+    }
   })
   .build();

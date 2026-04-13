@@ -9,11 +9,14 @@ let variantSchema = z.object({
   price: z.number().describe('Variant price'),
   url: z.string().describe('Variant page URL'),
   sku: z.string().optional().describe('Stock keeping unit'),
-  status: z.enum(['inStock', 'outOfStock', 'notAvailable']).optional().describe('Variant availability status'),
+  status: z
+    .enum(['inStock', 'outOfStock', 'notAvailable'])
+    .optional()
+    .describe('Variant availability status'),
   description: z.string().optional().describe('Variant description'),
   defaultImageUrl: z.string().optional().describe('Primary variant image URL'),
   images: z.array(z.string()).optional().describe('Additional variant image URLs'),
-  strikeThroughPrice: z.number().optional().describe('Original price before discount'),
+  strikeThroughPrice: z.number().optional().describe('Original price before discount')
 });
 
 let productOutputSchema = z.object({
@@ -28,36 +31,43 @@ let productOutputSchema = z.object({
   type: z.string().optional().describe('Product type/category'),
   tags: z.array(z.string()).optional().describe('Product tags'),
   createdAt: z.string().optional().describe('Creation timestamp'),
-  updatedAt: z.string().optional().describe('Last updated timestamp'),
+  updatedAt: z.string().optional().describe('Last updated timestamp')
 });
 
-export let createProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Create Product',
-    key: 'create_product',
-    description: `Create a new product in the Omnisend catalog. Products enable the Product Picker in Omnisend's Email Builder and power product recommendation automations. Include at least one variant with pricing.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    productId: z.string().describe('Unique product identifier (max 100 chars)'),
-    title: z.string().describe('Product title (max 255 chars)'),
-    url: z.string().describe('Product page URL'),
-    currency: z.string().describe('Currency code (e.g., "USD")'),
-    status: z.enum(['inStock', 'outOfStock', 'notAvailable']).describe('Product availability status'),
-    description: z.string().optional().describe('Short product description (max 1000 chars)'),
-    defaultImageUrl: z.string().optional().describe('Primary product image URL'),
-    images: z.array(z.string()).optional().describe('Additional product image URLs (max 300)'),
-    vendor: z.string().optional().describe('Manufacturer or brand name'),
-    type: z.string().optional().describe('Product type/category'),
-    tags: z.array(z.string()).optional().describe('Product tags (max 100)'),
-    categoryIds: z.array(z.string()).optional().describe('Associated category IDs'),
-    variants: z.array(variantSchema).optional().describe('Product variants with pricing'),
-    createdAt: z.string().optional().describe('Product creation date (ISO 8601)'),
-  }))
+export let createProduct = SlateTool.create(spec, {
+  name: 'Create Product',
+  key: 'create_product',
+  description: `Create a new product in the Omnisend catalog. Products enable the Product Picker in Omnisend's Email Builder and power product recommendation automations. Include at least one variant with pricing.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      productId: z.string().describe('Unique product identifier (max 100 chars)'),
+      title: z.string().describe('Product title (max 255 chars)'),
+      url: z.string().describe('Product page URL'),
+      currency: z.string().describe('Currency code (e.g., "USD")'),
+      status: z
+        .enum(['inStock', 'outOfStock', 'notAvailable'])
+        .describe('Product availability status'),
+      description: z
+        .string()
+        .optional()
+        .describe('Short product description (max 1000 chars)'),
+      defaultImageUrl: z.string().optional().describe('Primary product image URL'),
+      images: z
+        .array(z.string())
+        .optional()
+        .describe('Additional product image URLs (max 300)'),
+      vendor: z.string().optional().describe('Manufacturer or brand name'),
+      type: z.string().optional().describe('Product type/category'),
+      tags: z.array(z.string()).optional().describe('Product tags (max 100)'),
+      categoryIds: z.array(z.string()).optional().describe('Associated category IDs'),
+      variants: z.array(variantSchema).optional().describe('Product variants with pricing'),
+      createdAt: z.string().optional().describe('Product creation date (ISO 8601)')
+    })
+  )
   .output(productOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new OmnisendClient(ctx.auth.token);
 
     let body: Record<string, any> = {
@@ -65,7 +75,7 @@ export let createProduct = SlateTool.create(
       title: ctx.input.title,
       url: ctx.input.url,
       currency: ctx.input.currency,
-      status: ctx.input.status,
+      status: ctx.input.status
     };
 
     if (ctx.input.description) body.description = ctx.input.description;
@@ -77,7 +87,7 @@ export let createProduct = SlateTool.create(
     if (ctx.input.categoryIds) body.categoryIDs = ctx.input.categoryIds;
     if (ctx.input.createdAt) body.createdAt = ctx.input.createdAt;
     if (ctx.input.variants) {
-      body.variants = ctx.input.variants.map((v) => ({
+      body.variants = ctx.input.variants.map(v => ({
         id: v.variantId,
         title: v.title,
         price: v.price,
@@ -87,7 +97,7 @@ export let createProduct = SlateTool.create(
         description: v.description,
         defaultImageUrl: v.defaultImageUrl,
         images: v.images,
-        strikeThroughPrice: v.strikeThroughPrice,
+        strikeThroughPrice: v.strikeThroughPrice
       }));
     }
 
@@ -105,47 +115,54 @@ export let createProduct = SlateTool.create(
         vendor: ctx.input.vendor,
         type: ctx.input.type,
         tags: ctx.input.tags,
-        createdAt: ctx.input.createdAt,
+        createdAt: ctx.input.createdAt
       },
-      message: `Created product **${ctx.input.title}** (ID: ${ctx.input.productId}).`,
+      message: `Created product **${ctx.input.title}** (ID: ${ctx.input.productId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let getProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Get Product',
-    key: 'get_product',
-    description: `Retrieve a product from the Omnisend catalog by its product ID. Returns full product details including variants, images, and metadata.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    productId: z.string().describe('Omnisend product ID'),
-  }))
-  .output(z.object({
-    productId: z.string().describe('Product ID'),
-    title: z.string().optional().describe('Product title'),
-    url: z.string().optional().describe('Product page URL'),
-    currency: z.string().optional().describe('Currency code'),
-    status: z.string().optional().describe('Availability status'),
-    description: z.string().optional().describe('Product description'),
-    defaultImageUrl: z.string().optional().describe('Primary image URL'),
-    vendor: z.string().optional().describe('Vendor name'),
-    type: z.string().optional().describe('Product type'),
-    tags: z.array(z.string()).optional().describe('Product tags'),
-    variants: z.array(z.object({
-      variantId: z.string().describe('Variant ID'),
-      title: z.string().optional().describe('Variant title'),
-      price: z.number().optional().describe('Price'),
-      sku: z.string().optional().describe('SKU'),
-      status: z.string().optional().describe('Variant status'),
-      url: z.string().optional().describe('Variant URL'),
-    })).optional().describe('Product variants'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getProduct = SlateTool.create(spec, {
+  name: 'Get Product',
+  key: 'get_product',
+  description: `Retrieve a product from the Omnisend catalog by its product ID. Returns full product details including variants, images, and metadata.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      productId: z.string().describe('Omnisend product ID')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string().describe('Product ID'),
+      title: z.string().optional().describe('Product title'),
+      url: z.string().optional().describe('Product page URL'),
+      currency: z.string().optional().describe('Currency code'),
+      status: z.string().optional().describe('Availability status'),
+      description: z.string().optional().describe('Product description'),
+      defaultImageUrl: z.string().optional().describe('Primary image URL'),
+      vendor: z.string().optional().describe('Vendor name'),
+      type: z.string().optional().describe('Product type'),
+      tags: z.array(z.string()).optional().describe('Product tags'),
+      variants: z
+        .array(
+          z.object({
+            variantId: z.string().describe('Variant ID'),
+            title: z.string().optional().describe('Variant title'),
+            price: z.number().optional().describe('Price'),
+            sku: z.string().optional().describe('SKU'),
+            status: z.string().optional().describe('Variant status'),
+            url: z.string().optional().describe('Variant URL')
+          })
+        )
+        .optional()
+        .describe('Product variants'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OmnisendClient(ctx.auth.token);
     let result = await client.getProduct(ctx.input.productId);
 
@@ -155,7 +172,7 @@ export let getProduct = SlateTool.create(
       price: v.price,
       sku: v.sku,
       status: v.status,
-      url: v.url,
+      url: v.url
     }));
 
     return {
@@ -172,38 +189,45 @@ export let getProduct = SlateTool.create(
         tags: result.tags,
         variants,
         createdAt: result.createdAt,
-        updatedAt: result.updatedAt,
+        updatedAt: result.updatedAt
       },
-      message: `Retrieved product **${result.title}** (ID: ${result.id}).`,
+      message: `Retrieved product **${result.title}** (ID: ${result.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let listProducts = SlateTool.create(
-  spec,
-  {
-    name: 'List Products',
-    key: 'list_products',
-    description: `List products from the Omnisend catalog with pagination. Returns product summaries sorted by the specified criteria.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional().describe('Number of products to return (max 250, default 100)'),
-    offset: z.number().optional().describe('Offset for pagination (default 0)'),
-    sort: z.enum(['date', 'updatedAt', 'createdAt']).optional().describe('Sort order'),
-  }))
-  .output(z.object({
-    products: z.array(productOutputSchema).describe('List of products'),
-    hasMore: z.boolean().describe('Whether more products are available'),
-    nextOffset: z.number().optional().describe('Offset for the next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listProducts = SlateTool.create(spec, {
+  name: 'List Products',
+  key: 'list_products',
+  description: `List products from the Omnisend catalog with pagination. Returns product summaries sorted by the specified criteria.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of products to return (max 250, default 100)'),
+      offset: z.number().optional().describe('Offset for pagination (default 0)'),
+      sort: z.enum(['date', 'updatedAt', 'createdAt']).optional().describe('Sort order')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(productOutputSchema).describe('List of products'),
+      hasMore: z.boolean().describe('Whether more products are available'),
+      nextOffset: z.number().optional().describe('Offset for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OmnisendClient(ctx.auth.token);
 
     let result = await client.listProducts({
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      sort: ctx.input.sort,
+      sort: ctx.input.sort
     });
 
     let products = (result.products || []).map((p: any) => ({
@@ -218,7 +242,7 @@ export let listProducts = SlateTool.create(
       type: p.type,
       tags: p.tags,
       createdAt: p.createdAt,
-      updatedAt: p.updatedAt,
+      updatedAt: p.updatedAt
     }));
 
     let hasMore = !!result.paging?.next;
@@ -228,33 +252,36 @@ export let listProducts = SlateTool.create(
       output: {
         products,
         hasMore,
-        nextOffset,
+        nextOffset
       },
-      message: `Retrieved **${products.length}** products${hasMore ? ' (more available)' : ''}.`,
+      message: `Retrieved **${products.length}** products${hasMore ? ' (more available)' : ''}.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Product',
-    key: 'delete_product',
-    description: `Delete a product from the Omnisend catalog by its product ID. This permanently removes the product and its variants.`,
-    tags: { destructive: true, readOnly: false },
-  }
-)
-  .input(z.object({
-    productId: z.string().describe('Product ID to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteProduct = SlateTool.create(spec, {
+  name: 'Delete Product',
+  key: 'delete_product',
+  description: `Delete a product from the Omnisend catalog by its product ID. This permanently removes the product and its variants.`,
+  tags: { destructive: true, readOnly: false }
+})
+  .input(
+    z.object({
+      productId: z.string().describe('Product ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OmnisendClient(ctx.auth.token);
     await client.deleteProduct(ctx.input.productId);
 
     return {
       output: { success: true },
-      message: `Deleted product (ID: ${ctx.input.productId}).`,
+      message: `Deleted product (ID: ${ctx.input.productId}).`
     };
-  }).build();
+  })
+  .build();

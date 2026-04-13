@@ -14,50 +14,65 @@ let recipientSchema = z.object({
   state: z.string().optional().describe('State/province'),
   zip: z.string().optional().describe('Postal/ZIP code'),
   countryId: z.number().optional().describe('Country ID'),
-  birthday: z.string().optional().describe('Birthday (YYYY-MM-DD)'),
+  birthday: z.string().optional().describe('Birthday (YYYY-MM-DD)')
 });
 
-export let manageAddressBook = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Address Book',
-    key: 'manage_address_book',
-    description: `Create, update, delete, search, or list recipient contacts in the Handwrytten address book. Set the **action** field to choose the operation. When searching, provide a query to match against name, address, or other fields.`,
-    instructions: [
-      'To create: set action to "create" and provide recipient address fields.',
-      'To update: set action to "update" and provide the recipientId and fields to change.',
-      'To delete: set action to "delete" and provide the recipientId.',
-      'To search: set action to "search" and provide a searchQuery.',
-      'To list all: set action to "list".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageAddressBook = SlateTool.create(spec, {
+  name: 'Manage Address Book',
+  key: 'manage_address_book',
+  description: `Create, update, delete, search, or list recipient contacts in the Handwrytten address book. Set the **action** field to choose the operation. When searching, provide a query to match against name, address, or other fields.`,
+  instructions: [
+    'To create: set action to "create" and provide recipient address fields.',
+    'To update: set action to "update" and provide the recipientId and fields to change.',
+    'To delete: set action to "delete" and provide the recipientId.',
+    'To search: set action to "search" and provide a searchQuery.',
+    'To list all: set action to "list".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'search', 'create', 'update', 'delete']).describe('Operation to perform on the address book'),
-    recipientId: z.string().optional().describe('Recipient ID (required for update and delete)'),
-    searchQuery: z.string().optional().describe('Search query to find contacts (for search action)'),
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'search', 'create', 'update', 'delete'])
+        .describe('Operation to perform on the address book'),
+      recipientId: z
+        .string()
+        .optional()
+        .describe('Recipient ID (required for update and delete)'),
+      searchQuery: z
+        .string()
+        .optional()
+        .describe('Search query to find contacts (for search action)'),
 
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    businessName: z.string().optional().describe('Business/company name'),
-    address1: z.string().optional().describe('Street address line 1'),
-    address2: z.string().optional().describe('Street address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State/province'),
-    zip: z.string().optional().describe('Postal/ZIP code'),
-    countryId: z.number().optional().describe('Country ID'),
-    birthday: z.string().optional().describe('Birthday in YYYY-MM-DD format'),
-  }))
-  .output(z.object({
-    recipients: z.array(recipientSchema).optional().describe('List of recipients (for list/search)'),
-    recipientId: z.string().optional().describe('ID of the created/updated/deleted recipient'),
-    success: z.boolean().describe('Whether the operation was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      businessName: z.string().optional().describe('Business/company name'),
+      address1: z.string().optional().describe('Street address line 1'),
+      address2: z.string().optional().describe('Street address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State/province'),
+      zip: z.string().optional().describe('Postal/ZIP code'),
+      countryId: z.number().optional().describe('Country ID'),
+      birthday: z.string().optional().describe('Birthday in YYYY-MM-DD format')
+    })
+  )
+  .output(
+    z.object({
+      recipients: z
+        .array(recipientSchema)
+        .optional()
+        .describe('List of recipients (for list/search)'),
+      recipientId: z
+        .string()
+        .optional()
+        .describe('ID of the created/updated/deleted recipient'),
+      success: z.boolean().describe('Whether the operation was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -72,7 +87,7 @@ export let manageAddressBook = SlateTool.create(
       state: r.state ?? undefined,
       zip: r.zip ?? undefined,
       countryId: r.country_id != null ? Number(r.country_id) : undefined,
-      birthday: r.birthday ?? undefined,
+      birthday: r.birthday ?? undefined
     });
 
     if (action === 'list') {
@@ -81,7 +96,7 @@ export let manageAddressBook = SlateTool.create(
       let recipients = rawRecipients.map(mapRecipient);
       return {
         output: { recipients, success: true },
-        message: `Found **${recipients.length}** recipients in the address book.`,
+        message: `Found **${recipients.length}** recipients in the address book.`
       };
     }
 
@@ -93,7 +108,7 @@ export let manageAddressBook = SlateTool.create(
       let recipients = results.map(mapRecipient);
       return {
         output: { recipients, success: true },
-        message: `Found **${recipients.length}** recipients matching "${ctx.input.searchQuery}".`,
+        message: `Found **${recipients.length}** recipients matching "${ctx.input.searchQuery}".`
       };
     }
 
@@ -111,12 +126,12 @@ export let manageAddressBook = SlateTool.create(
         state: ctx.input.state,
         zip: ctx.input.zip,
         countryId: ctx.input.countryId,
-        birthday: ctx.input.birthday,
+        birthday: ctx.input.birthday
       });
       let recipientId = String(result.id ?? result.recipient_id ?? '');
       return {
         output: { recipientId, success: true },
-        message: `Created recipient **${[ctx.input.firstName, ctx.input.lastName].filter(Boolean).join(' ') || 'contact'}** with ID \`${recipientId}\`.`,
+        message: `Created recipient **${[ctx.input.firstName, ctx.input.lastName].filter(Boolean).join(' ') || 'contact'}** with ID \`${recipientId}\`.`
       };
     }
 
@@ -134,11 +149,11 @@ export let manageAddressBook = SlateTool.create(
         state: ctx.input.state,
         zip: ctx.input.zip,
         countryId: ctx.input.countryId,
-        birthday: ctx.input.birthday,
+        birthday: ctx.input.birthday
       });
       return {
         output: { recipientId: ctx.input.recipientId, success: true },
-        message: `Updated recipient \`${ctx.input.recipientId}\`.`,
+        message: `Updated recipient \`${ctx.input.recipientId}\`.`
       };
     }
 
@@ -149,7 +164,7 @@ export let manageAddressBook = SlateTool.create(
       await client.deleteRecipient(ctx.input.recipientId);
       return {
         output: { recipientId: ctx.input.recipientId, success: true },
-        message: `Deleted recipient \`${ctx.input.recipientId}\`.`,
+        message: `Deleted recipient \`${ctx.input.recipientId}\`.`
       };
     }
 

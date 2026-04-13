@@ -11,7 +11,7 @@ let listOutputSchema = z.object({
   createdDateTime: z.string().optional().describe('When the list was created'),
   lastModifiedDateTime: z.string().optional().describe('When the list was last modified'),
   template: z.string().optional().describe('List template type'),
-  itemCount: z.number().optional().describe('Number of items in the list'),
+  itemCount: z.number().optional().describe('Number of items in the list')
 });
 
 export let manageList = SlateTool.create(spec, {
@@ -20,27 +20,49 @@ export let manageList = SlateTool.create(spec, {
   description: `Create, read, update, or delete SharePoint lists within a site. Also supports listing all lists on a site. Lists are the foundation for data storage in SharePoint and can represent custom business data, contact lists, task trackers, and more.`,
   instructions: [
     'Set **action** to "get" to retrieve a single list, "list" to list all lists on a site, "create" to create a new list, "update" to rename or re-describe a list, or "delete" to remove a list.',
-    'For "create", provide **displayName** and optionally **template** (defaults to "genericList").',
+    'For "create", provide **displayName** and optionally **template** (defaults to "genericList").'
   ],
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['get', 'list', 'create', 'update', 'delete']).describe('Action to perform'),
-    siteId: z.string().describe('SharePoint site ID'),
-    listId: z.string().optional().describe('List ID (required for get, update, delete)'),
-    displayName: z.string().optional().describe('Display name for the list (for create/update)'),
-    description: z.string().optional().describe('Description for the list (for create/update)'),
-    template: z.string().optional().describe('List template, e.g. "genericList", "documentLibrary", "events" (for create, defaults to "genericList")'),
-  }))
-  .output(z.object({
-    list: listOutputSchema.optional().describe('Single list details (for get, create, update)'),
-    lists: z.array(listOutputSchema).optional().describe('All lists (for list action)'),
-    deleted: z.boolean().optional().describe('Whether the list was deleted (for delete action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'list', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      siteId: z.string().describe('SharePoint site ID'),
+      listId: z.string().optional().describe('List ID (required for get, update, delete)'),
+      displayName: z
+        .string()
+        .optional()
+        .describe('Display name for the list (for create/update)'),
+      description: z
+        .string()
+        .optional()
+        .describe('Description for the list (for create/update)'),
+      template: z
+        .string()
+        .optional()
+        .describe(
+          'List template, e.g. "genericList", "documentLibrary", "events" (for create, defaults to "genericList")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      list: listOutputSchema
+        .optional()
+        .describe('Single list details (for get, create, update)'),
+      lists: z.array(listOutputSchema).optional().describe('All lists (for list action)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the list was deleted (for delete action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
     let { action, siteId, listId, displayName, description, template } = ctx.input;
 
@@ -52,7 +74,7 @@ export let manageList = SlateTool.create(spec, {
       createdDateTime: l.createdDateTime,
       lastModifiedDateTime: l.lastModifiedDateTime,
       template: l.list?.template,
-      itemCount: l.list?.contentTypesEnabled != null ? undefined : undefined,
+      itemCount: l.list?.contentTypesEnabled != null ? undefined : undefined
     });
 
     switch (action) {
@@ -61,7 +83,7 @@ export let manageList = SlateTool.create(spec, {
         let list = await client.getList(siteId, listId);
         return {
           output: { list: mapList(list) },
-          message: `Retrieved list **${list.displayName}** (${list.id}).`,
+          message: `Retrieved list **${list.displayName}** (${list.id}).`
         };
       }
 
@@ -70,7 +92,7 @@ export let manageList = SlateTool.create(spec, {
         let lists = (data.value || []).map(mapList);
         return {
           output: { lists },
-          message: `Found **${lists.length}** list(s) on site.`,
+          message: `Found **${lists.length}** list(s) on site.`
         };
       }
 
@@ -82,7 +104,7 @@ export let manageList = SlateTool.create(spec, {
         }
         return {
           output: { list: mapList(list) },
-          message: `Created list **${displayName}**.`,
+          message: `Created list **${displayName}**.`
         };
       }
 
@@ -94,7 +116,7 @@ export let manageList = SlateTool.create(spec, {
         let list = await client.updateList(siteId, listId, updates);
         return {
           output: { list: mapList(list) },
-          message: `Updated list **${list.displayName}**.`,
+          message: `Updated list **${list.displayName}**.`
         };
       }
 
@@ -103,7 +125,7 @@ export let manageList = SlateTool.create(spec, {
         await client.deleteList(siteId, listId);
         return {
           output: { deleted: true },
-          message: `Deleted list \`${listId}\`.`,
+          message: `Deleted list \`${listId}\`.`
         };
       }
     }

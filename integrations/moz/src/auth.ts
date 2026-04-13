@@ -2,23 +2,25 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('Moz API token from https://moz.com/api/dashboard'),
+      token: z.string().describe('Moz API token from https://moz.com/api/dashboard')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -26,15 +28,16 @@ export let auth = SlateAuth.create()
     key: 'basic_auth',
     inputSchema: z.object({
       accessId: z.string().describe('Moz Access ID'),
-      secretKey: z.string().describe('Moz Secret Key'),
+      secretKey: z.string().describe('Moz Secret Key')
     }),
-    getOutput: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let encoded = Buffer.from(`${ctx.input.accessId}:${ctx.input.secretKey}`).toString('base64');
+    getOutput: async ctx => {
+      let encoded = Buffer.from(`${ctx.input.accessId}:${ctx.input.secretKey}`).toString(
+        'base64'
+      );
       return {
         output: {
-          token: `Basic ${encoded}`,
-        },
+          token: `Basic ${encoded}`
+        }
       };
-    },
+    }
   });

@@ -2,9 +2,7 @@
   "name": "@metorial/screenshotfyi",
   "version": "0.1.1",
   "description": "Capture high-quality screenshots of any website via API. Supports full-page captures, custom viewport sizes (mobile to widescreen), dark mode, automatic cookie banner and popup removal, and multiple output formats (PNG, JPG). Returns a URL to the captured screenshot image.",
-  "categories": [
-    "document-processing"
-  ],
+  "categories": ["document-processing"],
   "skills": [
     "capture website screenshots",
     "full-page screenshot capture",

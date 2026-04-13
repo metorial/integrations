@@ -3,30 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPipelineMetadataTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Pipeline Metadata',
-    key: 'get_pipeline_metadata',
-    description: `Retrieve pipeline configuration metadata from Lever including stages, archive reasons, sources, and tags. Select which types of metadata to fetch. Useful for looking up stage IDs, archive reason IDs, and available tags/sources.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    include: z.array(z.enum(['stages', 'archiveReasons', 'sources', 'tags'])).describe('Types of metadata to include'),
-  }))
-  .output(z.object({
-    stages: z.array(z.any()).optional().describe('Pipeline stages'),
-    archiveReasons: z.array(z.any()).optional().describe('Archive reasons'),
-    sources: z.array(z.any()).optional().describe('Candidate sources'),
-    tags: z.array(z.any()).optional().describe('Tags'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getPipelineMetadataTool = SlateTool.create(spec, {
+  name: 'Get Pipeline Metadata',
+  key: 'get_pipeline_metadata',
+  description: `Retrieve pipeline configuration metadata from Lever including stages, archive reasons, sources, and tags. Select which types of metadata to fetch. Useful for looking up stage IDs, archive reason IDs, and available tags/sources.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      include: z
+        .array(z.enum(['stages', 'archiveReasons', 'sources', 'tags']))
+        .describe('Types of metadata to include')
+    })
+  )
+  .output(
+    z.object({
+      stages: z.array(z.any()).optional().describe('Pipeline stages'),
+      archiveReasons: z.array(z.any()).optional().describe('Archive reasons'),
+      sources: z.array(z.any()).optional().describe('Candidate sources'),
+      tags: z.array(z.any()).optional().describe('Tags')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
     let output: Record<string, any> = {};
     let parts: string[] = [];
 
-    let fetches = ctx.input.include.map(async (type) => {
+    let fetches = ctx.input.include.map(async type => {
       if (type === 'stages') {
         let result = await client.listStages();
         output.stages = result.data || [];
@@ -50,7 +53,7 @@ export let getPipelineMetadataTool = SlateTool.create(
 
     return {
       output: output as any,
-      message: `Retrieved: ${parts.join(', ')}.`,
+      message: `Retrieved: ${parts.join(', ')}.`
     };
   })
   .build();

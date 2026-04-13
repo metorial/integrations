@@ -3,67 +3,94 @@ import { SheetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSheets = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Sheets',
-    key: 'manage_sheets',
-    description: `Add, delete, duplicate, rename, or update individual sheet tabs within a spreadsheet. Configure sheet properties like grid size, frozen rows/columns, tab color, and visibility.`,
-    instructions: [
-      'To add a sheet, set action to "add" and provide a title.',
-      'To delete a sheet, set action to "delete" and provide the sheetId (numeric, not the title).',
-      'To duplicate a sheet, set action to "duplicate" and provide the sourceSheetId.',
-      'To update sheet properties (rename, freeze rows, etc.), set action to "update" and provide the sheetId along with the properties to change.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageSheets = SlateTool.create(spec, {
+  name: 'Manage Sheets',
+  key: 'manage_sheets',
+  description: `Add, delete, duplicate, rename, or update individual sheet tabs within a spreadsheet. Configure sheet properties like grid size, frozen rows/columns, tab color, and visibility.`,
+  instructions: [
+    'To add a sheet, set action to "add" and provide a title.',
+    'To delete a sheet, set action to "delete" and provide the sheetId (numeric, not the title).',
+    'To duplicate a sheet, set action to "duplicate" and provide the sourceSheetId.',
+    'To update sheet properties (rename, freeze rows, etc.), set action to "update" and provide the sheetId along with the properties to change.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),
-    action: z.enum(['add', 'delete', 'duplicate', 'update']).describe('Operation to perform on the sheet tab'),
-    sheetId: z.number().optional().describe('Numeric ID of the sheet tab (required for delete and update)'),
-    title: z.string().optional().describe('Title for the sheet (used in add and update)'),
-    sourceSheetId: z.number().optional().describe('Sheet ID to duplicate (required for duplicate)'),
-    newSheetName: z.string().optional().describe('Name for the duplicated sheet'),
-    insertSheetIndex: z.number().optional().describe('Position index where the new/duplicated sheet should be inserted'),
-    rowCount: z.number().optional().describe('Number of rows for the sheet grid (add or update)'),
-    columnCount: z.number().optional().describe('Number of columns for the sheet grid (add or update)'),
-    frozenRowCount: z.number().optional().describe('Number of frozen rows (update)'),
-    frozenColumnCount: z.number().optional().describe('Number of frozen columns (update)'),
-    hidden: z.boolean().optional().describe('Whether the sheet should be hidden (update)'),
-    tabColorRed: z.number().optional().describe('Red component of the tab color (0-1)'),
-    tabColorGreen: z.number().optional().describe('Green component of the tab color (0-1)'),
-    tabColorBlue: z.number().optional().describe('Blue component of the tab color (0-1)'),
-    rightToLeft: z.boolean().optional().describe('Whether the sheet is right-to-left (update)'),
-  }))
-  .output(z.object({
-    sheetId: z.number().optional().describe('ID of the affected sheet'),
-    title: z.string().optional().describe('Title of the affected sheet'),
-    action: z.string().describe('The action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),
+      action: z
+        .enum(['add', 'delete', 'duplicate', 'update'])
+        .describe('Operation to perform on the sheet tab'),
+      sheetId: z
+        .number()
+        .optional()
+        .describe('Numeric ID of the sheet tab (required for delete and update)'),
+      title: z.string().optional().describe('Title for the sheet (used in add and update)'),
+      sourceSheetId: z
+        .number()
+        .optional()
+        .describe('Sheet ID to duplicate (required for duplicate)'),
+      newSheetName: z.string().optional().describe('Name for the duplicated sheet'),
+      insertSheetIndex: z
+        .number()
+        .optional()
+        .describe('Position index where the new/duplicated sheet should be inserted'),
+      rowCount: z
+        .number()
+        .optional()
+        .describe('Number of rows for the sheet grid (add or update)'),
+      columnCount: z
+        .number()
+        .optional()
+        .describe('Number of columns for the sheet grid (add or update)'),
+      frozenRowCount: z.number().optional().describe('Number of frozen rows (update)'),
+      frozenColumnCount: z.number().optional().describe('Number of frozen columns (update)'),
+      hidden: z.boolean().optional().describe('Whether the sheet should be hidden (update)'),
+      tabColorRed: z.number().optional().describe('Red component of the tab color (0-1)'),
+      tabColorGreen: z.number().optional().describe('Green component of the tab color (0-1)'),
+      tabColorBlue: z.number().optional().describe('Blue component of the tab color (0-1)'),
+      rightToLeft: z
+        .boolean()
+        .optional()
+        .describe('Whether the sheet is right-to-left (update)')
+    })
+  )
+  .output(
+    z.object({
+      sheetId: z.number().optional().describe('ID of the affected sheet'),
+      title: z.string().optional().describe('Title of the affected sheet'),
+      action: z.string().describe('The action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SheetsClient(ctx.auth.token);
     let { action, spreadsheetId } = ctx.input;
 
     if (action === 'add') {
       let properties: Record<string, any> = {};
       if (ctx.input.title) properties.title = ctx.input.title;
-      if (ctx.input.insertSheetIndex !== undefined) properties.index = ctx.input.insertSheetIndex;
+      if (ctx.input.insertSheetIndex !== undefined)
+        properties.index = ctx.input.insertSheetIndex;
       if (ctx.input.rowCount || ctx.input.columnCount) {
         properties.gridProperties = {};
         if (ctx.input.rowCount) properties.gridProperties.rowCount = ctx.input.rowCount;
-        if (ctx.input.columnCount) properties.gridProperties.columnCount = ctx.input.columnCount;
+        if (ctx.input.columnCount)
+          properties.gridProperties.columnCount = ctx.input.columnCount;
       }
-      if (ctx.input.tabColorRed !== undefined || ctx.input.tabColorGreen !== undefined || ctx.input.tabColorBlue !== undefined) {
+      if (
+        ctx.input.tabColorRed !== undefined ||
+        ctx.input.tabColorGreen !== undefined ||
+        ctx.input.tabColorBlue !== undefined
+      ) {
         properties.tabColorStyle = {
           rgbColor: {
             red: ctx.input.tabColorRed ?? 0,
             green: ctx.input.tabColorGreen ?? 0,
-            blue: ctx.input.tabColorBlue ?? 0,
-          },
+            blue: ctx.input.tabColorBlue ?? 0
+          }
         };
       }
 
@@ -74,9 +101,9 @@ export let manageSheets = SlateTool.create(
         output: {
           sheetId: reply?.sheetId,
           title: reply?.title ?? ctx.input.title,
-          action: 'add',
+          action: 'add'
         },
-        message: `Added sheet **"${reply?.title ?? ctx.input.title}"** (ID: ${reply?.sheetId}).`,
+        message: `Added sheet **"${reply?.title ?? ctx.input.title}"** (ID: ${reply?.sheetId}).`
       };
     }
 
@@ -86,14 +113,15 @@ export let manageSheets = SlateTool.create(
       return {
         output: {
           sheetId: ctx.input.sheetId,
-          action: 'delete',
+          action: 'delete'
         },
-        message: `Deleted sheet with ID ${ctx.input.sheetId}.`,
+        message: `Deleted sheet with ID ${ctx.input.sheetId}.`
       };
     }
 
     if (action === 'duplicate') {
-      if (ctx.input.sourceSheetId === undefined) throw new Error('sourceSheetId is required for duplicate');
+      if (ctx.input.sourceSheetId === undefined)
+        throw new Error('sourceSheetId is required for duplicate');
       let result = await client.duplicateSheet(
         spreadsheetId,
         ctx.input.sourceSheetId,
@@ -106,9 +134,9 @@ export let manageSheets = SlateTool.create(
         output: {
           sheetId: reply?.sheetId,
           title: reply?.title ?? ctx.input.newSheetName,
-          action: 'duplicate',
+          action: 'duplicate'
         },
-        message: `Duplicated sheet to **"${reply?.title ?? ctx.input.newSheetName}"** (ID: ${reply?.sheetId}).`,
+        message: `Duplicated sheet to **"${reply?.title ?? ctx.input.newSheetName}"** (ID: ${reply?.sheetId}).`
       };
     }
 
@@ -134,13 +162,17 @@ export let manageSheets = SlateTool.create(
         properties.index = ctx.input.insertSheetIndex;
         fields.push('index');
       }
-      if (ctx.input.tabColorRed !== undefined || ctx.input.tabColorGreen !== undefined || ctx.input.tabColorBlue !== undefined) {
+      if (
+        ctx.input.tabColorRed !== undefined ||
+        ctx.input.tabColorGreen !== undefined ||
+        ctx.input.tabColorBlue !== undefined
+      ) {
         properties.tabColorStyle = {
           rgbColor: {
             red: ctx.input.tabColorRed ?? 0,
             green: ctx.input.tabColorGreen ?? 0,
-            blue: ctx.input.tabColorBlue ?? 0,
-          },
+            blue: ctx.input.tabColorBlue ?? 0
+          }
         };
         fields.push('tabColorStyle');
       }
@@ -168,7 +200,8 @@ export let manageSheets = SlateTool.create(
       }
 
       let allFields = [...fields, ...gridFields];
-      if (allFields.length === 0) throw new Error('At least one property must be provided to update');
+      if (allFields.length === 0)
+        throw new Error('At least one property must be provided to update');
 
       await client.updateSheetProperties(spreadsheetId, properties, allFields.join(','));
 
@@ -176,9 +209,9 @@ export let manageSheets = SlateTool.create(
         output: {
           sheetId: ctx.input.sheetId,
           title: ctx.input.title,
-          action: 'update',
+          action: 'update'
         },
-        message: `Updated sheet ${ctx.input.sheetId} properties: ${allFields.join(', ')}.`,
+        message: `Updated sheet ${ctx.input.sheetId} properties: ${allFields.join(', ')}.`
       };
     }
 

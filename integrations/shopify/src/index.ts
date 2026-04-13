@@ -54,11 +54,5 @@ export let provider = Slate.create({
     manageDraftOrders,
     getShop
   ],
-  triggers: [
-    orderEvents,
-    productEvents,
-    customerEvents,
-    inventoryEvents,
-    fulfillmentEvents
-  ]
+  triggers: [orderEvents, productEvents, customerEvents, inventoryEvents, fulfillmentEvents]
 });

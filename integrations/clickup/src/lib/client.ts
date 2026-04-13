@@ -9,8 +9,8 @@ export class ClickUpClient {
       baseURL: 'https://api.clickup.com/api/v2',
       headers: {
         Authorization: token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,7 +25,7 @@ export class ClickUpClient {
 
   async getSpaces(teamId: string, archived?: boolean) {
     let response = await this.axios.get(`/team/${teamId}/space`, {
-      params: { archived: archived ?? false },
+      params: { archived: archived ?? false }
     });
     return response.data.spaces as any[];
   }
@@ -35,12 +35,25 @@ export class ClickUpClient {
     return response.data as any;
   }
 
-  async createSpace(teamId: string, data: { name: string; multipleAssignees?: boolean; features?: Record<string, any> }) {
+  async createSpace(
+    teamId: string,
+    data: { name: string; multipleAssignees?: boolean; features?: Record<string, any> }
+  ) {
     let response = await this.axios.post(`/team/${teamId}/space`, data);
     return response.data as any;
   }
 
-  async updateSpace(spaceId: string, data: { name?: string; color?: string; private?: boolean; adminCanManage?: boolean; multipleAssignees?: boolean; features?: Record<string, any> }) {
+  async updateSpace(
+    spaceId: string,
+    data: {
+      name?: string;
+      color?: string;
+      private?: boolean;
+      adminCanManage?: boolean;
+      multipleAssignees?: boolean;
+      features?: Record<string, any>;
+    }
+  ) {
     let response = await this.axios.put(`/space/${spaceId}`, data);
     return response.data as any;
   }
@@ -53,7 +66,7 @@ export class ClickUpClient {
 
   async getFolders(spaceId: string, archived?: boolean) {
     let response = await this.axios.get(`/space/${spaceId}/folder`, {
-      params: { archived: archived ?? false },
+      params: { archived: archived ?? false }
     });
     return response.data.folders as any[];
   }
@@ -81,14 +94,14 @@ export class ClickUpClient {
 
   async getLists(folderId: string, archived?: boolean) {
     let response = await this.axios.get(`/folder/${folderId}/list`, {
-      params: { archived: archived ?? false },
+      params: { archived: archived ?? false }
     });
     return response.data.lists as any[];
   }
 
   async getFolderlessLists(spaceId: string, archived?: boolean) {
     let response = await this.axios.get(`/space/${spaceId}/list`, {
-      params: { archived: archived ?? false },
+      params: { archived: archived ?? false }
     });
     return response.data.lists as any[];
   }
@@ -98,17 +111,48 @@ export class ClickUpClient {
     return response.data as any;
   }
 
-  async createList(folderId: string, data: { name: string; content?: string; dueDate?: number; priority?: number; assignee?: number; status?: string }) {
+  async createList(
+    folderId: string,
+    data: {
+      name: string;
+      content?: string;
+      dueDate?: number;
+      priority?: number;
+      assignee?: number;
+      status?: string;
+    }
+  ) {
     let response = await this.axios.post(`/folder/${folderId}/list`, data);
     return response.data as any;
   }
 
-  async createFolderlessList(spaceId: string, data: { name: string; content?: string; dueDate?: number; priority?: number; assignee?: number; status?: string }) {
+  async createFolderlessList(
+    spaceId: string,
+    data: {
+      name: string;
+      content?: string;
+      dueDate?: number;
+      priority?: number;
+      assignee?: number;
+      status?: string;
+    }
+  ) {
     let response = await this.axios.post(`/space/${spaceId}/list`, data);
     return response.data as any;
   }
 
-  async updateList(listId: string, data: { name?: string; content?: string; dueDate?: number; dueDateTime?: boolean; priority?: number; assignee?: string; unsetStatus?: boolean }) {
+  async updateList(
+    listId: string,
+    data: {
+      name?: string;
+      content?: string;
+      dueDate?: number;
+      dueDateTime?: boolean;
+      priority?: number;
+      assignee?: string;
+      unsetStatus?: boolean;
+    }
+  ) {
     let response = await this.axios.put(`/list/${listId}`, data);
     return response.data as any;
   }
@@ -119,23 +163,26 @@ export class ClickUpClient {
 
   // ── Tasks ──
 
-  async getTasks(listId: string, params?: {
-    archived?: boolean;
-    page?: number;
-    orderBy?: string;
-    reverse?: boolean;
-    subtasks?: boolean;
-    statuses?: string[];
-    includeClosed?: boolean;
-    assignees?: string[];
-    tags?: string[];
-    dueDateGt?: number;
-    dueDateLt?: number;
-    dateCreatedGt?: number;
-    dateCreatedLt?: number;
-    dateUpdatedGt?: number;
-    dateUpdatedLt?: number;
-  }) {
+  async getTasks(
+    listId: string,
+    params?: {
+      archived?: boolean;
+      page?: number;
+      orderBy?: string;
+      reverse?: boolean;
+      subtasks?: boolean;
+      statuses?: string[];
+      includeClosed?: boolean;
+      assignees?: string[];
+      tags?: string[];
+      dueDateGt?: number;
+      dueDateLt?: number;
+      dateCreatedGt?: number;
+      dateCreatedLt?: number;
+      dateUpdatedGt?: number;
+      dateUpdatedLt?: number;
+    }
+  ) {
     let response = await this.axios.get(`/list/${listId}/task`, {
       params: {
         archived: params?.archived,
@@ -152,37 +199,40 @@ export class ClickUpClient {
         date_created_gt: params?.dateCreatedGt,
         date_created_lt: params?.dateCreatedLt,
         date_updated_gt: params?.dateUpdatedGt,
-        date_updated_lt: params?.dateUpdatedLt,
-      },
+        date_updated_lt: params?.dateUpdatedLt
+      }
     });
     return response.data as { tasks: any[] };
   }
 
   async getTask(taskId: string, params?: { includeSubtasks?: boolean }) {
     let response = await this.axios.get(`/task/${taskId}`, {
-      params: { include_subtasks: params?.includeSubtasks },
+      params: { include_subtasks: params?.includeSubtasks }
     });
     return response.data as any;
   }
 
-  async createTask(listId: string, data: {
-    name: string;
-    description?: string;
-    assignees?: number[];
-    tags?: string[];
-    status?: string;
-    priority?: number | null;
-    dueDate?: number;
-    dueDateTime?: boolean;
-    timeEstimate?: number;
-    startDate?: number;
-    startDatetime?: boolean;
-    notifyAll?: boolean;
-    parent?: string | null;
-    linksTo?: string | null;
-    checkRequiredCustomFields?: boolean;
-    customFields?: { id: string; value: any }[];
-  }) {
+  async createTask(
+    listId: string,
+    data: {
+      name: string;
+      description?: string;
+      assignees?: number[];
+      tags?: string[];
+      status?: string;
+      priority?: number | null;
+      dueDate?: number;
+      dueDateTime?: boolean;
+      timeEstimate?: number;
+      startDate?: number;
+      startDatetime?: boolean;
+      notifyAll?: boolean;
+      parent?: string | null;
+      linksTo?: string | null;
+      checkRequiredCustomFields?: boolean;
+      customFields?: { id: string; value: any }[];
+    }
+  ) {
     let response = await this.axios.post(`/list/${listId}/task`, {
       name: data.name,
       description: data.description,
@@ -199,25 +249,28 @@ export class ClickUpClient {
       parent: data.parent,
       links_to: data.linksTo,
       check_required_custom_fields: data.checkRequiredCustomFields,
-      custom_fields: data.customFields,
+      custom_fields: data.customFields
     });
     return response.data as any;
   }
 
-  async updateTask(taskId: string, data: {
-    name?: string;
-    description?: string;
-    assignees?: { add?: number[]; rem?: number[] };
-    status?: string;
-    priority?: number | null;
-    dueDate?: number;
-    dueDateTime?: boolean;
-    timeEstimate?: number;
-    startDate?: number;
-    startDatetime?: boolean;
-    parent?: string | null;
-    archived?: boolean;
-  }) {
+  async updateTask(
+    taskId: string,
+    data: {
+      name?: string;
+      description?: string;
+      assignees?: { add?: number[]; rem?: number[] };
+      status?: string;
+      priority?: number | null;
+      dueDate?: number;
+      dueDateTime?: boolean;
+      timeEstimate?: number;
+      startDate?: number;
+      startDatetime?: boolean;
+      parent?: string | null;
+      archived?: boolean;
+    }
+  ) {
     let response = await this.axios.put(`/task/${taskId}`, {
       name: data.name,
       description: data.description,
@@ -230,7 +283,7 @@ export class ClickUpClient {
       start_date: data.startDate,
       start_date_time: data.startDatetime,
       parent: data.parent,
-      archived: data.archived,
+      archived: data.archived
     });
     return response.data as any;
   }
@@ -241,26 +294,29 @@ export class ClickUpClient {
 
   // ── Task Search ──
 
-  async searchTasks(teamId: string, params?: {
-    page?: number;
-    orderBy?: string;
-    reverse?: boolean;
-    subtasks?: boolean;
-    spaces?: string[];
-    projectIds?: string[];
-    listIds?: string[];
-    statuses?: string[];
-    includeClosed?: boolean;
-    assignees?: string[];
-    tags?: string[];
-    dueDateGt?: number;
-    dueDateLt?: number;
-    dateCreatedGt?: number;
-    dateCreatedLt?: number;
-    dateUpdatedGt?: number;
-    dateUpdatedLt?: number;
-    includeMarkdownDescription?: boolean;
-  }) {
+  async searchTasks(
+    teamId: string,
+    params?: {
+      page?: number;
+      orderBy?: string;
+      reverse?: boolean;
+      subtasks?: boolean;
+      spaces?: string[];
+      projectIds?: string[];
+      listIds?: string[];
+      statuses?: string[];
+      includeClosed?: boolean;
+      assignees?: string[];
+      tags?: string[];
+      dueDateGt?: number;
+      dueDateLt?: number;
+      dateCreatedGt?: number;
+      dateCreatedLt?: number;
+      dateUpdatedGt?: number;
+      dateUpdatedLt?: number;
+      includeMarkdownDescription?: boolean;
+    }
+  ) {
     let response = await this.axios.get(`/team/${teamId}/task`, {
       params: {
         page: params?.page,
@@ -280,8 +336,8 @@ export class ClickUpClient {
         date_created_lt: params?.dateCreatedLt,
         date_updated_gt: params?.dateUpdatedGt,
         date_updated_lt: params?.dateUpdatedLt,
-        include_markdown_description: params?.includeMarkdownDescription,
-      },
+        include_markdown_description: params?.includeMarkdownDescription
+      }
     });
     return response.data as { tasks: any[] };
   }
@@ -290,25 +346,31 @@ export class ClickUpClient {
 
   async getTaskComments(taskId: string, params?: { start?: number; startId?: string }) {
     let response = await this.axios.get(`/task/${taskId}/comment`, {
-      params: { start: params?.start, start_id: params?.startId },
+      params: { start: params?.start, start_id: params?.startId }
     });
     return response.data.comments as any[];
   }
 
-  async createTaskComment(taskId: string, data: { commentText: string; assignee?: number; notifyAll?: boolean }) {
+  async createTaskComment(
+    taskId: string,
+    data: { commentText: string; assignee?: number; notifyAll?: boolean }
+  ) {
     let response = await this.axios.post(`/task/${taskId}/comment`, {
       comment_text: data.commentText,
       assignee: data.assignee,
-      notify_all: data.notifyAll ?? true,
+      notify_all: data.notifyAll ?? true
     });
     return response.data as any;
   }
 
-  async updateComment(commentId: string, data: { commentText: string; assignee?: number; resolved?: boolean }) {
+  async updateComment(
+    commentId: string,
+    data: { commentText: string; assignee?: number; resolved?: boolean }
+  ) {
     let response = await this.axios.put(`/comment/${commentId}`, {
       comment_text: data.commentText,
       assignee: data.assignee,
-      resolved: data.resolved,
+      resolved: data.resolved
     });
     return response.data as any;
   }
@@ -340,7 +402,10 @@ export class ClickUpClient {
     return response.data.tags as any[];
   }
 
-  async createSpaceTag(spaceId: string, tag: { name: string; tagFg?: string; tagBg?: string }) {
+  async createSpaceTag(
+    spaceId: string,
+    tag: { name: string; tagFg?: string; tagBg?: string }
+  ) {
     let response = await this.axios.post(`/space/${spaceId}/tag`, { tag });
     return response.data as any;
   }
@@ -356,15 +421,18 @@ export class ClickUpClient {
 
   // ── Time Tracking ──
 
-  async getTimeEntries(teamId: string, params?: {
-    startDate?: number;
-    endDate?: number;
-    assignee?: string;
-    spaceId?: string;
-    folderId?: string;
-    listId?: string;
-    taskId?: string;
-  }) {
+  async getTimeEntries(
+    teamId: string,
+    params?: {
+      startDate?: number;
+      endDate?: number;
+      assignee?: string;
+      spaceId?: string;
+      folderId?: string;
+      listId?: string;
+      taskId?: string;
+    }
+  ) {
     let response = await this.axios.get(`/team/${teamId}/time_entries`, {
       params: {
         start_date: params?.startDate,
@@ -374,21 +442,24 @@ export class ClickUpClient {
         space_id: params?.spaceId,
         folder_id: params?.folderId,
         list_id: params?.listId,
-        task_id: params?.taskId,
-      },
+        task_id: params?.taskId
+      }
     });
     return response.data.data as any[];
   }
 
-  async createTimeEntry(teamId: string, data: {
-    taskId?: string;
-    description?: string;
-    start: number;
-    duration: number;
-    assignee?: number;
-    tags?: { name: string }[];
-    billable?: boolean;
-  }) {
+  async createTimeEntry(
+    teamId: string,
+    data: {
+      taskId?: string;
+      description?: string;
+      start: number;
+      duration: number;
+      assignee?: number;
+      tags?: { name: string }[];
+      billable?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/team/${teamId}/time_entries`, {
       tid: data.taskId,
       description: data.description,
@@ -396,7 +467,7 @@ export class ClickUpClient {
       duration: data.duration,
       assignee: data.assignee,
       tags: data.tags,
-      billable: data.billable,
+      billable: data.billable
     });
     return response.data.data as any;
   }
@@ -406,11 +477,14 @@ export class ClickUpClient {
     return response.data as any;
   }
 
-  async startTimer(teamId: string, data: { taskId?: string; description?: string; billable?: boolean }) {
+  async startTimer(
+    teamId: string,
+    data: { taskId?: string; description?: string; billable?: boolean }
+  ) {
     let response = await this.axios.post(`/team/${teamId}/time_entries/start`, {
       tid: data.taskId,
       description: data.description,
-      billable: data.billable,
+      billable: data.billable
     });
     return response.data.data as any;
   }
@@ -422,7 +496,7 @@ export class ClickUpClient {
 
   async getRunningTimer(teamId: string, assignee?: string) {
     let response = await this.axios.get(`/team/${teamId}/time_entries/current`, {
-      params: { assignee },
+      params: { assignee }
     });
     return response.data.data as any;
   }
@@ -431,7 +505,7 @@ export class ClickUpClient {
 
   async getGoals(teamId: string, includeCompleted?: boolean) {
     let response = await this.axios.get(`/team/${teamId}/goal`, {
-      params: { include_completed: includeCompleted },
+      params: { include_completed: includeCompleted }
     });
     return response.data.goals as any[];
   }
@@ -441,26 +515,32 @@ export class ClickUpClient {
     return response.data.goal as any;
   }
 
-  async createGoal(teamId: string, data: {
-    name: string;
-    dueDate?: number;
-    description?: string;
-    multipleOwners?: boolean;
-    owners?: number[];
-    color?: string;
-  }) {
+  async createGoal(
+    teamId: string,
+    data: {
+      name: string;
+      dueDate?: number;
+      description?: string;
+      multipleOwners?: boolean;
+      owners?: number[];
+      color?: string;
+    }
+  ) {
     let response = await this.axios.post(`/team/${teamId}/goal`, data);
     return response.data.goal as any;
   }
 
-  async updateGoal(goalId: string, data: {
-    name?: string;
-    dueDate?: number;
-    description?: string;
-    color?: string;
-    addOwners?: number[];
-    remOwners?: number[];
-  }) {
+  async updateGoal(
+    goalId: string,
+    data: {
+      name?: string;
+      dueDate?: number;
+      description?: string;
+      color?: string;
+      addOwners?: number[];
+      remOwners?: number[];
+    }
+  ) {
     let response = await this.axios.put(`/goal/${goalId}`, data);
     return response.data.goal as any;
   }
@@ -469,16 +549,19 @@ export class ClickUpClient {
     await this.axios.delete(`/goal/${goalId}`);
   }
 
-  async createKeyResult(goalId: string, data: {
-    name: string;
-    owners?: number[];
-    type: 'number' | 'currency' | 'boolean' | 'percentage' | 'automatic';
-    stepsStart?: number;
-    stepsEnd?: number;
-    unit?: string;
-    taskIds?: string[];
-    listIds?: string[];
-  }) {
+  async createKeyResult(
+    goalId: string,
+    data: {
+      name: string;
+      owners?: number[];
+      type: 'number' | 'currency' | 'boolean' | 'percentage' | 'automatic';
+      stepsStart?: number;
+      stepsEnd?: number;
+      unit?: string;
+      taskIds?: string[];
+      listIds?: string[];
+    }
+  ) {
     let response = await this.axios.post(`/goal/${goalId}/key_result`, {
       name: data.name,
       owners: data.owners,
@@ -487,18 +570,21 @@ export class ClickUpClient {
       steps_end: data.stepsEnd,
       unit: data.unit,
       task_ids: data.taskIds,
-      list_ids: data.listIds,
+      list_ids: data.listIds
     });
     return response.data as any;
   }
 
-  async updateKeyResult(keyResultId: string, data: {
-    stepsCurrent?: number;
-    note?: string;
-  }) {
+  async updateKeyResult(
+    keyResultId: string,
+    data: {
+      stepsCurrent?: number;
+      note?: string;
+    }
+  ) {
     let response = await this.axios.put(`/key_result/${keyResultId}`, {
       steps_current: data.stepsCurrent,
-      note: data.note,
+      note: data.note
     });
     return response.data as any;
   }
@@ -530,7 +616,9 @@ export class ClickUpClient {
   }
 
   async getViewTasks(viewId: string, page?: number) {
-    let response = await this.axios.get(`/view/${viewId}/task`, { params: { page: page ?? 0 } });
+    let response = await this.axios.get(`/view/${viewId}/task`, {
+      params: { page: page ?? 0 }
+    });
     return response.data as { tasks: any[]; last_page: boolean };
   }
 
@@ -538,7 +626,7 @@ export class ClickUpClient {
 
   async getWorkspaceMembers(teamId: string) {
     let response = await this.axios.get(`/team/${teamId}`);
-    return response.data.team?.members as any[] ?? [];
+    return (response.data.team?.members as any[]) ?? [];
   }
 
   async getListMembers(listId: string) {
@@ -558,17 +646,20 @@ export class ClickUpClient {
     return response.data.webhooks as any[];
   }
 
-  async createWebhook(teamId: string, data: {
-    endpoint: string;
-    events: string[];
-    spaceId?: string;
-    folderId?: string;
-    listId?: string;
-    taskId?: string;
-  }) {
+  async createWebhook(
+    teamId: string,
+    data: {
+      endpoint: string;
+      events: string[];
+      spaceId?: string;
+      folderId?: string;
+      listId?: string;
+      taskId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       endpoint: data.endpoint,
-      events: data.events,
+      events: data.events
     };
     if (data.spaceId) body.space_id = data.spaceId;
     if (data.folderId) body.folder_id = data.folderId;
@@ -579,11 +670,14 @@ export class ClickUpClient {
     return response.data as any;
   }
 
-  async updateWebhook(webhookId: string, data: {
-    endpoint?: string;
-    events?: string[];
-    status?: 'active' | 'inactive';
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      endpoint?: string;
+      events?: string[];
+      status?: 'active' | 'inactive';
+    }
+  ) {
     let response = await this.axios.put(`/webhook/${webhookId}`, data);
     return response.data as any;
   }
@@ -607,12 +701,22 @@ export class ClickUpClient {
   }
 
   async createChecklistItem(checklistId: string, name: string, assignee?: number) {
-    let response = await this.axios.post(`/checklist/${checklistId}/checklist_item`, { name, assignee });
+    let response = await this.axios.post(`/checklist/${checklistId}/checklist_item`, {
+      name,
+      assignee
+    });
     return response.data.checklist as any;
   }
 
-  async updateChecklistItem(checklistId: string, checklistItemId: string, data: { name?: string; resolved?: boolean; assignee?: number | null }) {
-    let response = await this.axios.put(`/checklist/${checklistId}/checklist_item/${checklistItemId}`, data);
+  async updateChecklistItem(
+    checklistId: string,
+    checklistItemId: string,
+    data: { name?: string; resolved?: boolean; assignee?: number | null }
+  ) {
+    let response = await this.axios.put(
+      `/checklist/${checklistId}/checklist_item/${checklistItemId}`,
+      data
+    );
     return response.data.checklist as any;
   }
 

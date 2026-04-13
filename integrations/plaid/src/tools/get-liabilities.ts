@@ -9,14 +9,29 @@ let creditLiabilitySchema = z.object({
   lastPaymentAmount: z.number().nullable().optional().describe('Last payment amount'),
   lastPaymentDate: z.string().nullable().optional().describe('Last payment date'),
   lastStatementBalance: z.number().nullable().optional().describe('Last statement balance'),
-  lastStatementIssueDate: z.string().nullable().optional().describe('Last statement issue date'),
+  lastStatementIssueDate: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Last statement issue date'),
   minimumPaymentAmount: z.number().nullable().optional().describe('Minimum payment due'),
   nextPaymentDueDate: z.string().nullable().optional().describe('Next payment due date'),
-  aprs: z.array(z.object({
-    aprPercentage: z.number().describe('APR percentage'),
-    aprType: z.string().describe('APR type: purchase_apr, balance_transfer_apr, cash_apr, etc.'),
-    balanceSubjectToApr: z.number().nullable().optional().describe('Balance subject to this APR'),
-  })).optional().describe('APR details'),
+  aprs: z
+    .array(
+      z.object({
+        aprPercentage: z.number().describe('APR percentage'),
+        aprType: z
+          .string()
+          .describe('APR type: purchase_apr, balance_transfer_apr, cash_apr, etc.'),
+        balanceSubjectToApr: z
+          .number()
+          .nullable()
+          .optional()
+          .describe('Balance subject to this APR')
+      })
+    )
+    .optional()
+    .describe('APR details')
 });
 
 let studentLoanSchema = z.object({
@@ -32,7 +47,7 @@ let studentLoanSchema = z.object({
   originationPrincipalAmount: z.number().nullable().optional(),
   outstandingInterestAmount: z.number().nullable().optional(),
   expectedPayoffDate: z.string().nullable().optional(),
-  repaymentPlanType: z.string().nullable().optional().describe('Repayment plan type'),
+  repaymentPlanType: z.string().nullable().optional().describe('Repayment plan type')
 });
 
 let mortgageSchema = z.object({
@@ -47,34 +62,35 @@ let mortgageSchema = z.object({
   originationDate: z.string().nullable().optional(),
   originationPrincipalAmount: z.number().nullable().optional(),
   maturityDate: z.string().nullable().optional(),
-  hasPmi: z.boolean().nullable().optional().describe('Has private mortgage insurance'),
+  hasPmi: z.boolean().nullable().optional().describe('Has private mortgage insurance')
 });
 
-export let getLiabilitiesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Liabilities',
-    key: 'get_liabilities',
-    description: `Retrieve liability data for credit cards, student loans, and mortgages. Returns payment schedules, interest rates, APRs, outstanding balances, and repayment details for each liability type.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLiabilitiesTool = SlateTool.create(spec, {
+  name: 'Get Liabilities',
+  key: 'get_liabilities',
+  description: `Retrieve liability data for credit cards, student loans, and mortgages. Returns payment schedules, interest rates, APRs, outstanding balances, and repayment details for each liability type.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    accessToken: z.string().describe('Access token for the Plaid Item'),
-    accountIds: z.array(z.string()).optional().describe('Filter to specific account IDs'),
-  }))
-  .output(z.object({
-    credit: z.array(creditLiabilitySchema).describe('Credit card liabilities'),
-    student: z.array(studentLoanSchema).describe('Student loan liabilities'),
-    mortgage: z.array(mortgageSchema).describe('Mortgage liabilities'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accessToken: z.string().describe('Access token for the Plaid Item'),
+      accountIds: z.array(z.string()).optional().describe('Filter to specific account IDs')
+    })
+  )
+  .output(
+    z.object({
+      credit: z.array(creditLiabilitySchema).describe('Credit card liabilities'),
+      student: z.array(studentLoanSchema).describe('Student loan liabilities'),
+      mortgage: z.array(mortgageSchema).describe('Mortgage liabilities')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlaidClient({
       clientId: ctx.auth.clientId,
       secret: ctx.auth.secret,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let result = await client.getLiabilities(ctx.input.accessToken, ctx.input.accountIds);
@@ -92,8 +108,8 @@ export let getLiabilitiesTool = SlateTool.create(
       aprs: (c.aprs || []).map((a: any) => ({
         aprPercentage: a.apr_percentage,
         aprType: a.apr_type,
-        balanceSubjectToApr: a.balance_subject_to_apr ?? null,
-      })),
+        balanceSubjectToApr: a.balance_subject_to_apr ?? null
+      }))
     }));
 
     let student = (liabilities.student || []).map((s: any) => ({
@@ -109,7 +125,7 @@ export let getLiabilitiesTool = SlateTool.create(
       originationPrincipalAmount: s.origination_principal_amount ?? null,
       outstandingInterestAmount: s.outstanding_interest_amount ?? null,
       expectedPayoffDate: s.expected_payoff_date ?? null,
-      repaymentPlanType: s.repayment_plan?.type ?? null,
+      repaymentPlanType: s.repayment_plan?.type ?? null
     }));
 
     let mortgage = (liabilities.mortgage || []).map((m: any) => ({
@@ -124,11 +140,12 @@ export let getLiabilitiesTool = SlateTool.create(
       originationDate: m.origination_date ?? null,
       originationPrincipalAmount: m.origination_principal_amount ?? null,
       maturityDate: m.maturity_date ?? null,
-      hasPmi: m.has_pmi ?? null,
+      hasPmi: m.has_pmi ?? null
     }));
 
     return {
       output: { credit, student, mortgage },
-      message: `Retrieved **${credit.length}** credit card(s), **${student.length}** student loan(s), **${mortgage.length}** mortgage(s).`,
+      message: `Retrieved **${credit.length}** credit card(s), **${student.length}** student loan(s), **${mortgage.length}** mortgage(s).`
     };
-  }).build();
+  })
+  .build();

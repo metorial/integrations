@@ -8,47 +8,60 @@ let segmentSchema = z.object({
   start: z.number().describe('Start time in milliseconds.'),
   end: z.number().describe('End time in milliseconds.'),
   confidence: z.number().describe('Confidence score.'),
-  words: z.array(z.object({
-    text: z.string(),
-    start: z.number(),
-    end: z.number(),
-    confidence: z.number(),
-    speaker: z.string().optional().nullable(),
-  })).optional().describe('Words in this segment.'),
+  words: z
+    .array(
+      z.object({
+        text: z.string(),
+        start: z.number(),
+        end: z.number(),
+        confidence: z.number(),
+        speaker: z.string().optional().nullable()
+      })
+    )
+    .optional()
+    .describe('Words in this segment.')
 });
 
-export let getTranscriptText = SlateTool.create(
-  spec,
-  {
-    name: 'Get Transcript Text',
-    key: 'get_transcript_text',
-    description: `Retrieve a completed transcript's text segmented into sentences or paragraphs. The API semantically segments the text for more reader-friendly output.
+export let getTranscriptText = SlateTool.create(spec, {
+  name: 'Get Transcript Text',
+  key: 'get_transcript_text',
+  description: `Retrieve a completed transcript's text segmented into sentences or paragraphs. The API semantically segments the text for more reader-friendly output.
 Choose "sentences" or "paragraphs" segmentation depending on how granular you need the output.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    transcriptId: z.string().describe('The unique transcript ID.'),
-    segmentation: z.enum(['sentences', 'paragraphs']).describe('How to segment the text: "sentences" for fine-grained, "paragraphs" for broader chunks.'),
-  }))
-  .output(z.object({
-    transcriptId: z.string().describe('The transcript ID.'),
-    confidence: z.number().describe('Overall confidence score.'),
-    audioDuration: z.number().describe('Audio duration in seconds.'),
-    segments: z.array(segmentSchema).describe('The transcript segments (sentences or paragraphs).'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      transcriptId: z.string().describe('The unique transcript ID.'),
+      segmentation: z
+        .enum(['sentences', 'paragraphs'])
+        .describe(
+          'How to segment the text: "sentences" for fine-grained, "paragraphs" for broader chunks.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      transcriptId: z.string().describe('The transcript ID.'),
+      confidence: z.number().describe('Overall confidence score.'),
+      audioDuration: z.number().describe('Audio duration in seconds.'),
+      segments: z
+        .array(segmentSchema)
+        .describe('The transcript segments (sentences or paragraphs).')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
-    let result = ctx.input.segmentation === 'sentences'
-      ? await client.getSentences(ctx.input.transcriptId)
-      : await client.getParagraphs(ctx.input.transcriptId);
+    let result =
+      ctx.input.segmentation === 'sentences'
+        ? await client.getSentences(ctx.input.transcriptId)
+        : await client.getParagraphs(ctx.input.transcriptId);
 
     let segmentKey = ctx.input.segmentation === 'sentences' ? 'sentences' : 'paragraphs';
     let segments = (result[segmentKey] || []).map((s: any) => ({
@@ -56,7 +69,7 @@ Choose "sentences" or "paragraphs" segmentation depending on how granular you ne
       start: s.start,
       end: s.end,
       confidence: s.confidence,
-      words: s.words,
+      words: s.words
     }));
 
     return {
@@ -64,9 +77,9 @@ Choose "sentences" or "paragraphs" segmentation depending on how granular you ne
         transcriptId: result.id,
         confidence: result.confidence,
         audioDuration: result.audio_duration,
-        segments,
+        segments
       },
-      message: `Retrieved **${segments.length}** ${ctx.input.segmentation} from transcript **${result.id}**.`,
+      message: `Retrieved **${segments.length}** ${ctx.input.segmentation} from transcript **${result.id}**.`
     };
   })
   .build();

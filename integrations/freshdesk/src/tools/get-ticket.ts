@@ -3,46 +3,50 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Get Ticket',
-    key: 'get_ticket',
-    description: `Retrieves a single ticket by ID with full details. Optionally includes conversations, requester info, company info, and stats (resolution/response times).`,
-    tags: {
-      readOnly: true
-    }
+export let getTicket = SlateTool.create(spec, {
+  name: 'Get Ticket',
+  key: 'get_ticket',
+  description: `Retrieves a single ticket by ID with full details. Optionally includes conversations, requester info, company info, and stats (resolution/response times).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ticketId: z.number().describe('ID of the ticket to retrieve'),
-    includeConversations: z.boolean().optional().describe('Include ticket conversations/replies'),
-    includeRequester: z.boolean().optional().describe('Include requester contact details'),
-    includeStats: z.boolean().optional().describe('Include ticket timing statistics')
-  }))
-  .output(z.object({
-    ticketId: z.number().describe('Ticket ID'),
-    subject: z.string().describe('Ticket subject'),
-    descriptionText: z.string().nullable().describe('Plain text description'),
-    status: z.number().describe('Status: 2=Open, 3=Pending, 4=Resolved, 5=Closed'),
-    priority: z.number().describe('Priority: 1=Low, 2=Medium, 3=High, 4=Urgent'),
-    source: z.number().describe('Channel source of the ticket'),
-    type: z.string().nullable().describe('Ticket type'),
-    requesterId: z.number().describe('Requester contact ID'),
-    responderId: z.number().nullable().describe('Assigned agent ID'),
-    groupId: z.number().nullable().describe('Assigned group ID'),
-    tags: z.array(z.string()).describe('Ticket tags'),
-    ccEmails: z.array(z.string()).describe('CC email addresses'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    dueBy: z.string().nullable().describe('Due date for resolution'),
-    frDueBy: z.string().nullable().describe('Due date for first response'),
-    customFields: z.record(z.string(), z.any()).describe('Custom field values'),
-    conversations: z.array(z.any()).optional().describe('Ticket conversations if requested'),
-    requester: z.any().optional().describe('Requester details if requested'),
-    stats: z.any().optional().describe('Ticket stats if requested')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticketId: z.number().describe('ID of the ticket to retrieve'),
+      includeConversations: z
+        .boolean()
+        .optional()
+        .describe('Include ticket conversations/replies'),
+      includeRequester: z.boolean().optional().describe('Include requester contact details'),
+      includeStats: z.boolean().optional().describe('Include ticket timing statistics')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.number().describe('Ticket ID'),
+      subject: z.string().describe('Ticket subject'),
+      descriptionText: z.string().nullable().describe('Plain text description'),
+      status: z.number().describe('Status: 2=Open, 3=Pending, 4=Resolved, 5=Closed'),
+      priority: z.number().describe('Priority: 1=Low, 2=Medium, 3=High, 4=Urgent'),
+      source: z.number().describe('Channel source of the ticket'),
+      type: z.string().nullable().describe('Ticket type'),
+      requesterId: z.number().describe('Requester contact ID'),
+      responderId: z.number().nullable().describe('Assigned agent ID'),
+      groupId: z.number().nullable().describe('Assigned group ID'),
+      tags: z.array(z.string()).describe('Ticket tags'),
+      ccEmails: z.array(z.string()).describe('CC email addresses'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      dueBy: z.string().nullable().describe('Due date for resolution'),
+      frDueBy: z.string().nullable().describe('Due date for first response'),
+      customFields: z.record(z.string(), z.any()).describe('Custom field values'),
+      conversations: z.array(z.any()).optional().describe('Ticket conversations if requested'),
+      requester: z.any().optional().describe('Requester details if requested'),
+      stats: z.any().optional().describe('Ticket stats if requested')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -90,4 +94,5 @@ export let getTicket = SlateTool.create(
       output: output as any,
       message: `Retrieved ticket **#${ticket.id}**: "${ticket.subject}" (Status: ${ticket.status}, Priority: ${ticket.priority})`
     };
-  }).build();
+  })
+  .build();

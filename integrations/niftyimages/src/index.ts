@@ -11,7 +11,7 @@ import {
   deleteImage,
   managePhotoshopImage,
   getWidgetStats,
-  suspendWidgetUser,
+  suspendWidgetUser
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     deleteImage,
     managePhotoshopImage,
     getWidgetStats,
-    suspendWidgetUser,
+    suspendWidgetUser
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

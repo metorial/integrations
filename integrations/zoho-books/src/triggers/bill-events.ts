@@ -3,47 +3,49 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let billEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Bill Events',
-    key: 'bill_events',
-    description: 'Polls for new or updated bills from vendors. Detects bill creation, status changes, and payment updates.'
-  }
-)
-  .input(z.object({
-    billId: z.string(),
-    eventType: z.string(),
-    billNumber: z.string().optional(),
-    vendorName: z.string().optional(),
-    vendorId: z.string().optional(),
-    status: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    currencyCode: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
-  .output(z.object({
-    billId: z.string(),
-    billNumber: z.string().optional(),
-    vendorName: z.string().optional(),
-    vendorId: z.string().optional(),
-    status: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    currencyCode: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
+export let billEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Bill Events',
+  key: 'bill_events',
+  description:
+    'Polls for new or updated bills from vendors. Detects bill creation, status changes, and payment updates.'
+})
+  .input(
+    z.object({
+      billId: z.string(),
+      eventType: z.string(),
+      billNumber: z.string().optional(),
+      vendorName: z.string().optional(),
+      vendorId: z.string().optional(),
+      status: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      currencyCode: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      billId: z.string(),
+      billNumber: z.string().optional(),
+      vendorName: z.string().optional(),
+      vendorId: z.string().optional(),
+      status: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      currencyCode: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownBills = (ctx.state?.knownBills || {}) as Record<string, string>;
@@ -87,9 +89,7 @@ export let billEventsTrigger = SlateTrigger.create(
         newKnownBills[b.bill_id] = b.status;
       }
 
-      let newPollTime = bills.length > 0
-        ? bills[0].last_modified_time
-        : lastPollTime;
+      let newPollTime = bills.length > 0 ? bills[0].last_modified_time : lastPollTime;
 
       return {
         inputs,
@@ -100,7 +100,7 @@ export let billEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `bill.${ctx.input.eventType}`,
         id: `${ctx.input.billId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -119,4 +119,5 @@ export let billEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

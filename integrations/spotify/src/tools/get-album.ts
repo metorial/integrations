@@ -3,84 +3,106 @@ import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAlbum = SlateTool.create(
-  spec,
-  {
-    name: 'Get Album',
-    key: 'get_album',
-    description: `Retrieve detailed information about an album including its metadata, track listing, and artwork. Also supports browsing new album releases.`,
-    instructions: [
-      'Use the "newReleases" action to browse recently released albums instead of looking up a specific album.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getAlbum = SlateTool.create(spec, {
+  name: 'Get Album',
+  key: 'get_album',
+  description: `Retrieve detailed information about an album including its metadata, track listing, and artwork. Also supports browsing new album releases.`,
+  instructions: [
+    'Use the "newReleases" action to browse recently released albums instead of looking up a specific album.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'newReleases']).describe('"get" to fetch a specific album, "newReleases" to browse new releases'),
-    albumId: z.string().optional().describe('Spotify album ID (required for "get" action)'),
-    market: z.string().optional().describe('ISO 3166-1 alpha-2 country code'),
-    limit: z.number().min(1).max(50).optional().describe('Max results for new releases (default 20)'),
-    offset: z.number().min(0).optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    album: z.object({
-      albumId: z.string(),
-      name: z.string(),
-      albumType: z.string(),
-      totalTracks: z.number(),
-      releaseDate: z.string(),
-      label: z.string(),
-      popularity: z.number(),
-      genres: z.array(z.string()),
-      artists: z.array(z.object({
-        artistId: z.string(),
-        name: z.string(),
-      })),
-      tracks: z.array(z.object({
-        trackId: z.string(),
-        name: z.string(),
-        trackNumber: z.number(),
-        discNumber: z.number(),
-        durationMs: z.number(),
-        explicit: z.boolean(),
-        artists: z.array(z.object({
-          artistId: z.string(),
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'newReleases'])
+        .describe('"get" to fetch a specific album, "newReleases" to browse new releases'),
+      albumId: z.string().optional().describe('Spotify album ID (required for "get" action)'),
+      market: z.string().optional().describe('ISO 3166-1 alpha-2 country code'),
+      limit: z
+        .number()
+        .min(1)
+        .max(50)
+        .optional()
+        .describe('Max results for new releases (default 20)'),
+      offset: z.number().min(0).optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      album: z
+        .object({
+          albumId: z.string(),
           name: z.string(),
-        })),
-        uri: z.string(),
-      })),
-      imageUrl: z.string().nullable(),
-      spotifyUrl: z.string(),
-      uri: z.string(),
-      copyrights: z.array(z.object({ text: z.string(), type: z.string() })),
-    }).optional(),
-    newReleases: z.array(z.object({
-      albumId: z.string(),
-      name: z.string(),
-      albumType: z.string(),
-      totalTracks: z.number(),
-      releaseDate: z.string(),
-      artists: z.array(z.object({
-        artistId: z.string(),
-        name: z.string(),
-      })),
-      imageUrl: z.string().nullable(),
-      spotifyUrl: z.string(),
-    })).optional(),
-    total: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+          albumType: z.string(),
+          totalTracks: z.number(),
+          releaseDate: z.string(),
+          label: z.string(),
+          popularity: z.number(),
+          genres: z.array(z.string()),
+          artists: z.array(
+            z.object({
+              artistId: z.string(),
+              name: z.string()
+            })
+          ),
+          tracks: z.array(
+            z.object({
+              trackId: z.string(),
+              name: z.string(),
+              trackNumber: z.number(),
+              discNumber: z.number(),
+              durationMs: z.number(),
+              explicit: z.boolean(),
+              artists: z.array(
+                z.object({
+                  artistId: z.string(),
+                  name: z.string()
+                })
+              ),
+              uri: z.string()
+            })
+          ),
+          imageUrl: z.string().nullable(),
+          spotifyUrl: z.string(),
+          uri: z.string(),
+          copyrights: z.array(z.object({ text: z.string(), type: z.string() }))
+        })
+        .optional(),
+      newReleases: z
+        .array(
+          z.object({
+            albumId: z.string(),
+            name: z.string(),
+            albumType: z.string(),
+            totalTracks: z.number(),
+            releaseDate: z.string(),
+            artists: z.array(
+              z.object({
+                artistId: z.string(),
+                name: z.string()
+              })
+            ),
+            imageUrl: z.string().nullable(),
+            spotifyUrl: z.string()
+          })
+        )
+        .optional(),
+      total: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SpotifyClient({
       token: ctx.auth.token,
-      market: ctx.config.market,
+      market: ctx.config.market
     });
 
     if (ctx.input.action === 'newReleases') {
       let result = await client.getNewReleases({
         limit: ctx.input.limit,
-        offset: ctx.input.offset,
+        offset: ctx.input.offset
       });
 
       let releases = result.albums.items.map(a => ({
@@ -91,15 +113,15 @@ export let getAlbum = SlateTool.create(
         releaseDate: a.release_date,
         artists: a.artists.map(ar => ({ artistId: ar.id, name: ar.name })),
         imageUrl: a.images?.[0]?.url ?? null,
-        spotifyUrl: a.external_urls.spotify,
+        spotifyUrl: a.external_urls.spotify
       }));
 
       return {
         output: {
           newReleases: releases,
-          total: result.albums.total,
+          total: result.albums.total
         },
-        message: `Found ${releases.length} new releases (${result.albums.total} total).`,
+        message: `Found ${releases.length} new releases (${result.albums.total} total).`
       };
     }
 
@@ -128,17 +150,17 @@ export let getAlbum = SlateTool.create(
           durationMs: t.duration_ms,
           explicit: t.explicit,
           artists: t.artists.map(a => ({ artistId: a.id, name: a.name })),
-          uri: t.uri,
+          uri: t.uri
         })),
         imageUrl: album.images?.[0]?.url ?? null,
         spotifyUrl: album.external_urls.spotify,
         uri: album.uri,
-        copyrights: album.copyrights,
-      },
+        copyrights: album.copyrights
+      }
     };
 
     return {
       output,
-      message: `Retrieved album **${album.name}** by ${album.artists.map(a => a.name).join(', ')} (${album.total_tracks} tracks, released ${album.release_date}).`,
+      message: `Retrieved album **${album.name}** by ${album.artists.map(a => a.name).join(', ')} (${album.total_tracks} tracks, released ${album.release_date}).`
     };
   });

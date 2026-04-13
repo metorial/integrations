@@ -16,32 +16,36 @@ let attendeeInputSchema = z.object({
   linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
   jobPosition: z.string().optional().describe('Job position/title'),
   company: z.string().optional().describe('Company name'),
-  sendEmail: z.boolean().optional().describe('Whether to send an invitation email to the attendee'),
+  sendEmail: z
+    .boolean()
+    .optional()
+    .describe('Whether to send an invitation email to the attendee')
 });
 
-export let inviteAttendees = SlateTool.create(
-  spec,
-  {
-    name: 'Invite Attendees',
-    key: 'invite_attendees',
-    description: `Invites one or more attendees to the event. Each attendee must have an email address; additional profile fields (name, photo, phone, bio, social links, job, company) are optional.
+export let inviteAttendees = SlateTool.create(spec, {
+  name: 'Invite Attendees',
+  key: 'invite_attendees',
+  description: `Invites one or more attendees to the event. Each attendee must have an email address; additional profile fields (name, photo, phone, bio, social links, job, company) are optional.
 Optionally triggers an invitation email to each attendee.`,
-    instructions: [
-      'At minimum, provide an email address for each attendee.',
-      'Set sendEmail to true if you want Eventee to send an invitation email to the attendee.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'At minimum, provide an email address for each attendee.',
+    'Set sendEmail to true if you want Eventee to send an invitation email to the attendee.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    attendees: z.array(attendeeInputSchema).min(1).describe('List of attendees to invite'),
-  }))
-  .output(z.object({
-    invitedCount: z.number().describe('Number of attendees successfully invited'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      attendees: z.array(attendeeInputSchema).min(1).describe('List of attendees to invite')
+    })
+  )
+  .output(
+    z.object({
+      invitedCount: z.number().describe('Number of attendees successfully invited')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.inviteAttendees(ctx.input.attendees);
 
@@ -49,9 +53,9 @@ Optionally triggers an invitation email to each attendee.`,
 
     return {
       output: {
-        invitedCount,
+        invitedCount
       },
-      message: `Successfully invited **${invitedCount}** attendee(s) to the event.`,
+      message: `Successfully invited **${invitedCount}** attendee(s) to the event.`
     };
   })
   .build();

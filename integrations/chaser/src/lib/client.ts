@@ -4,14 +4,14 @@ import type { AxiosInstance } from 'axios';
 // --- Mapping helpers ---
 
 let toSnakeCase = (str: string): string =>
-  str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
 let toSnakeCaseKeys = (obj: Record<string, any>): Record<string, any> => {
   let result: Record<string, any> = {};
   for (let [key, value] of Object.entries(obj)) {
     let snakeKey = toSnakeCase(key);
     if (Array.isArray(value)) {
-      result[snakeKey] = value.map((v) =>
+      result[snakeKey] = value.map(v =>
         typeof v === 'object' && v !== null ? toSnakeCaseKeys(v) : v
       );
     } else if (typeof value === 'object' && value !== null) {
@@ -28,7 +28,7 @@ let toCamelCase = (str: string): string =>
 
 let toCamelCaseKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
-    return obj.map((v) => toCamelCaseKeys(v));
+    return obj.map(v => toCamelCaseKeys(v));
   }
   if (typeof obj === 'object' && obj !== null) {
     let result: Record<string, any> = {};
@@ -72,9 +72,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://openapi.chaserhq.com',
       headers: {
-        'Authorization': `Basic ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -111,14 +111,21 @@ export class Client {
 
   // --- Contact Persons ---
 
-  async listContactPersons(customerId: string, params: ListParams = {}): Promise<ListResponse<any>> {
+  async listContactPersons(
+    customerId: string,
+    params: ListParams = {}
+  ): Promise<ListResponse<any>> {
     let queryParams = this.buildListParams(params);
-    let response = await this.axios.get(`/v1/customers/${customerId}/contact_persons`, { params: queryParams });
+    let response = await this.axios.get(`/v1/customers/${customerId}/contact_persons`, {
+      params: queryParams
+    });
     return this.mapListResponse(response.data);
   }
 
   async getContactPerson(customerId: string, contactPersonId: string): Promise<any> {
-    let response = await this.axios.get(`/v1/customers/${customerId}/contact_persons/${contactPersonId}`);
+    let response = await this.axios.get(
+      `/v1/customers/${customerId}/contact_persons/${contactPersonId}`
+    );
     return toCamelCaseKeys(response.data.data);
   }
 
@@ -128,9 +135,16 @@ export class Client {
     return toCamelCaseKeys(response.data.data);
   }
 
-  async updateContactPerson(customerId: string, contactPersonId: string, data: Record<string, any>): Promise<any> {
+  async updateContactPerson(
+    customerId: string,
+    contactPersonId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let body = toSnakeCaseKeys(data);
-    let response = await this.axios.put(`/v1/customers/${customerId}/contact_persons/${contactPersonId}`, body);
+    let response = await this.axios.put(
+      `/v1/customers/${customerId}/contact_persons/${contactPersonId}`,
+      body
+    );
     return toCamelCaseKeys(response.data.data);
   }
 
@@ -138,9 +152,15 @@ export class Client {
     await this.axios.delete(`/v1/customers/${customerId}/contact_persons/${contactPersonId}`);
   }
 
-  async bulkUpsertContactPersons(customerId: string, entries: Record<string, any>[]): Promise<BulkResponse> {
+  async bulkUpsertContactPersons(
+    customerId: string,
+    entries: Record<string, any>[]
+  ): Promise<BulkResponse> {
     let body = { entries: entries.map(toSnakeCaseKeys) };
-    let response = await this.axios.put(`/v1/bulk/customers/${customerId}/contact_persons`, body);
+    let response = await this.axios.put(
+      `/v1/bulk/customers/${customerId}/contact_persons`,
+      body
+    );
     return toCamelCaseKeys(response.data.data);
   }
 
@@ -252,7 +272,7 @@ export class Client {
   async syncOrganisation(tasks?: string[]): Promise<{ result: boolean }> {
     let body: Record<string, any> = {};
     if (tasks && tasks.length > 0) {
-      body.tasks = tasks.map((task) => ({ task }));
+      body.tasks = tasks.map(task => ({ task }));
     }
     let response = await this.axios.post('/v1/organisation/sync', body);
     return response.data.data;
@@ -289,7 +309,7 @@ export class Client {
       pageNumber: data.page_number,
       pageSize: data.page_size,
       totalCount: data.total_count,
-      data: Array.isArray(data.data) ? data.data.map(toCamelCaseKeys) : [],
+      data: Array.isArray(data.data) ? data.data.map(toCamelCaseKeys) : []
     };
   }
 }

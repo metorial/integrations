@@ -10,7 +10,7 @@ import {
   manageCollection,
   listCollections,
   getCollectionResults,
-  getAccount,
+  getAccount
 } from './tools';
 import { collectionCompleted } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     manageCollection,
     listCollections,
     getCollectionResults,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    collectionCompleted,
-  ],
+  triggers: [collectionCompleted]
 });

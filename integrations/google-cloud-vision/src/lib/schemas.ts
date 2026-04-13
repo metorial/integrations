@@ -1,20 +1,37 @@
 import { z } from 'zod';
 
-export let imageSourceSchema = z.object({
-  base64Content: z.string().optional().describe('Base64-encoded image data (without the data URI prefix)'),
-  gcsUri: z.string().optional().describe('Google Cloud Storage URI (e.g., gs://bucket-name/image.jpg)'),
-  imageUrl: z.string().optional().describe('Publicly accessible URL of the image'),
-}).describe('Image source - provide exactly one of base64Content, gcsUri, or imageUrl');
+export let imageSourceSchema = z
+  .object({
+    base64Content: z
+      .string()
+      .optional()
+      .describe('Base64-encoded image data (without the data URI prefix)'),
+    gcsUri: z
+      .string()
+      .optional()
+      .describe('Google Cloud Storage URI (e.g., gs://bucket-name/image.jpg)'),
+    imageUrl: z.string().optional().describe('Publicly accessible URL of the image')
+  })
+  .describe('Image source - provide exactly one of base64Content, gcsUri, or imageUrl');
 
 export let boundingPolySchema = z.object({
-  vertices: z.array(z.object({
-    x: z.number().describe('X coordinate'),
-    y: z.number().describe('Y coordinate'),
-  })).describe('Bounding polygon vertices'),
-  normalizedVertices: z.array(z.object({
-    x: z.number().describe('Normalized X coordinate (0-1)'),
-    y: z.number().describe('Normalized Y coordinate (0-1)'),
-  })).optional().describe('Normalized bounding polygon vertices'),
+  vertices: z
+    .array(
+      z.object({
+        x: z.number().describe('X coordinate'),
+        y: z.number().describe('Y coordinate')
+      })
+    )
+    .describe('Bounding polygon vertices'),
+  normalizedVertices: z
+    .array(
+      z.object({
+        x: z.number().describe('Normalized X coordinate (0-1)'),
+        y: z.number().describe('Normalized Y coordinate (0-1)')
+      })
+    )
+    .optional()
+    .describe('Normalized bounding polygon vertices')
 });
 
 export let likelihoodSchema = z.enum([
@@ -23,5 +40,5 @@ export let likelihoodSchema = z.enum([
   'UNLIKELY',
   'POSSIBLE',
   'LIKELY',
-  'VERY_LIKELY',
+  'VERY_LIKELY'
 ]);

@@ -3,33 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let PAYMENT_EVENT_TYPES = [
-  'payment.changed',
-] as const;
+let PAYMENT_EVENT_TYPES = ['payment.changed'] as const;
 
-export let paymentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Payment Events',
-    key: 'payment_events',
-    description: 'Triggers when payment information changes in Lexoffice.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The Lexoffice event type (payment.changed)'),
-    resourceId: z.string().describe('The payment resource ID'),
-    organizationId: z.string().describe('The organization ID'),
-    eventDate: z.string().describe('ISO timestamp of the event'),
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('The payment resource ID'),
-    eventType: z.string().describe('The event type that occurred'),
-    openAmount: z.number().optional().describe('Remaining open amount'),
-    paymentStatus: z.string().optional().describe('Current payment status'),
-    currency: z.string().optional().describe('Currency code'),
-  }))
+export let paymentEvents = SlateTrigger.create(spec, {
+  name: 'Payment Events',
+  key: 'payment_events',
+  description: 'Triggers when payment information changes in Lexoffice.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The Lexoffice event type (payment.changed)'),
+      resourceId: z.string().describe('The payment resource ID'),
+      organizationId: z.string().describe('The organization ID'),
+      eventDate: z.string().describe('ISO timestamp of the event')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('The payment resource ID'),
+      eventType: z.string().describe('The event type that occurred'),
+      openAmount: z.number().optional().describe('Remaining open amount'),
+      paymentStatus: z.string().optional().describe('Current payment status'),
+      currency: z.string().optional().describe('Currency code')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subscriptions: { subscriptionId: string; eventType: string }[] = [];
 
@@ -39,11 +38,11 @@ export let paymentEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptions },
+        registrationDetails: { subscriptions }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subs = ctx.input.registrationDetails?.subscriptions ?? [];
 
@@ -56,20 +55,22 @@ export let paymentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType,
-          resourceId: body.resourceId,
-          organizationId: body.organizationId,
-          eventDate: body.eventDate,
-        }],
+        inputs: [
+          {
+            eventType: body.eventType,
+            resourceId: body.resourceId,
+            organizationId: body.organizationId,
+            eventDate: body.eventDate
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let openAmount: number | undefined;
@@ -93,8 +94,9 @@ export let paymentEvents = SlateTrigger.create(
           eventType: ctx.input.eventType,
           openAmount,
           paymentStatus,
-          currency,
-        },
+          currency
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

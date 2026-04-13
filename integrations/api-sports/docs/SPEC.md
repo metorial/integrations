@@ -16,6 +16,7 @@ API-Sports uses **API key authentication**. The API key must be sent as an HTTP 
 If connecting through RapidAPI, you need both `x-rapidapi-host` and `x-rapidapi-key` headers instead.
 
 Each sport API has its own base URL following the pattern:
+
 - `https://v3.football.api-sports.io/` (Football)
 - `https://v1.basketball.api-sports.io/` (Basketball)
 - `https://v2.nba.api-sports.io/` (NBA)

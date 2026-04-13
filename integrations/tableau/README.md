@@ -5,51 +5,67 @@ Manage Tableau Cloud and Tableau Server resources programmatically. Publish, que
 ## Tools
 
 ### Get Site Info
+
 Retrieve information about the current Tableau site, including name, URL, storage usage, and configuration settings.
 
 ### Get View Data
+
 Export the underlying data from a Tableau view as CSV. Useful for retrieving the tabular data behind a dashboard visualization.
 
 ### List Data Sources
+
 List and search data sources on the Tableau site. Supports pagination, filtering, and sorting.
 
 ### List Views
+
 List and search views across the Tableau site. Supports pagination, filtering, and sorting.
 
 ### List Workbooks
+
 List and search workbooks on the Tableau site. Supports pagination, filtering, and sorting to find specific workbooks.
 
 ### Manage Data-Driven Alerts
+
 List, get, delete data-driven alerts, and add or remove users from alert recipient lists. Data-driven alerts trigger when data in a view meets specified conditions.
 
 ### Manage Collections
+
 List, create, update, or delete collections. Collections are curated groups of content items for organizational purposes.
 
 ### Manage Data Source
+
 Get details, update, delete, or trigger extract refresh for a data source. Use the **action** field to select the operation.
 
 ### Manage Favorites
+
 List, add, or remove favorites for a user. Supports workbooks, views, data sources, projects, and flows.
 
 ### Manage Flows
+
 List, get, update, delete, or run Tableau Prep flows. Use the **action** field to select the operation.
 
 ### Manage Groups
+
 List, create, update, delete groups, and add or remove users from groups. Use the **action** field to select the operation.
 
 ### Manage Jobs
+
 List, get details, or cancel background jobs (extract refreshes, flow runs, subscriptions). Use the **action** field to select the operation.
 
 ### Manage Permissions
+
 Query, add, or delete permissions on Tableau resources (workbooks, datasources, projects, views, flows). Permissions are granted to users or groups with specific capability modes.
 
 ### Manage Projects
+
 List, create, update, or delete projects. Projects organize workbooks, data sources, and other content in Tableau.
 
 ### Manage Users
+
 List, get, add, update, or remove users on the Tableau site. Use the **action** field to select the operation.
 
 ### Manage Workbook
+
 Get details, update properties, delete, refresh extracts, or manage tags for a workbook. Use the **action** field to select the operation.
 
 ## License

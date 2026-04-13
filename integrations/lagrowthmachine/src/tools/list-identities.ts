@@ -3,22 +3,21 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listIdentities = SlateTool.create(
-  spec,
-  {
-    name: 'List Identities',
-    key: 'list_identities',
-    description: `List all connected identities in your La Growth Machine account. Identities represent connected LinkedIn, email, or Twitter accounts used to send messages and perform outreach.`,
-    tags: {
-      readOnly: true,
-    },
+export let listIdentities = SlateTool.create(spec, {
+  name: 'List Identities',
+  key: 'list_identities',
+  description: `List all connected identities in your La Growth Machine account. Identities represent connected LinkedIn, email, or Twitter accounts used to send messages and perform outreach.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    identities: z.array(z.any()).describe('List of connected identity records'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      identities: z.array(z.any()).describe('List of connected identity records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listIdentities();
@@ -27,7 +26,7 @@ export let listIdentities = SlateTool.create(
 
     return {
       output: { identities },
-      message: `Retrieved **${identities.length}** connected identity(ies).`,
+      message: `Retrieved **${identities.length}** connected identity(ies).`
     };
   })
   .build();

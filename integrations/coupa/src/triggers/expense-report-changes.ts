@@ -3,42 +3,44 @@ import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let expenseReportChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Expense Report Changes',
-    key: 'expense_report_changes',
-    description: 'Triggers when expense reports are created, submitted, approved, or otherwise updated in Coupa.',
-  }
-)
-  .input(z.object({
-    expenseReportId: z.number().describe('Expense report ID'),
-    title: z.string().nullable().optional().describe('Expense report title'),
-    status: z.string().nullable().optional().describe('Current status'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    rawData: z.any().describe('Full expense report data'),
-  }))
-  .output(z.object({
-    expenseReportId: z.number().describe('Coupa expense report ID'),
-    title: z.string().nullable().optional().describe('Expense report title'),
-    status: z.string().nullable().optional().describe('Current status'),
-    expenseReportNumber: z.string().nullable().optional().describe('Report number'),
-    submittedBy: z.any().nullable().optional().describe('Submitting user'),
-    totalAmount: z.any().nullable().optional().describe('Total amount'),
-    currency: z.any().nullable().optional().describe('Currency'),
-    expenseLines: z.array(z.any()).nullable().optional().describe('Expense line items'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  }))
+export let expenseReportChanges = SlateTrigger.create(spec, {
+  name: 'Expense Report Changes',
+  key: 'expense_report_changes',
+  description:
+    'Triggers when expense reports are created, submitted, approved, or otherwise updated in Coupa.'
+})
+  .input(
+    z.object({
+      expenseReportId: z.number().describe('Expense report ID'),
+      title: z.string().nullable().optional().describe('Expense report title'),
+      status: z.string().nullable().optional().describe('Current status'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      rawData: z.any().describe('Full expense report data')
+    })
+  )
+  .output(
+    z.object({
+      expenseReportId: z.number().describe('Coupa expense report ID'),
+      title: z.string().nullable().optional().describe('Expense report title'),
+      status: z.string().nullable().optional().describe('Current status'),
+      expenseReportNumber: z.string().nullable().optional().describe('Report number'),
+      submittedBy: z.any().nullable().optional().describe('Submitting user'),
+      totalAmount: z.any().nullable().optional().describe('Total amount'),
+      currency: z.any().nullable().optional().describe('Currency'),
+      expenseLines: z.array(z.any()).nullable().optional().describe('Expense line items'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CoupaClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -52,7 +54,7 @@ export let expenseReportChanges = SlateTrigger.create(
         filters,
         orderBy: 'updated_at',
         dir: 'asc',
-        limit: 50,
+        limit: 50
       });
 
       let reports = Array.isArray(results) ? results : [];
@@ -69,15 +71,15 @@ export let expenseReportChanges = SlateTrigger.create(
           title: er.title ?? null,
           status: er.status ?? null,
           updatedAt: er['updated-at'] ?? er.updated_at ?? '',
-          rawData: er,
+          rawData: er
         })),
         updatedState: {
-          lastPollTime: newLastPollTime ?? new Date().toISOString(),
-        },
+          lastPollTime: newLastPollTime ?? new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let er = ctx.input.rawData;
 
       return {
@@ -93,9 +95,9 @@ export let expenseReportChanges = SlateTrigger.create(
           currency: er.currency ?? null,
           expenseLines: er['expense-lines'] ?? er.expense_lines ?? null,
           createdAt: er['created-at'] ?? er.created_at ?? null,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

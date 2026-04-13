@@ -15,8 +15,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: this.baseURL,
       headers: {
-        'x-goog-api-key': config.token,
-      },
+        'x-goog-api-key': config.token
+      }
     });
   }
 
@@ -38,20 +38,23 @@ export class Client {
 
   // ─── Content Generation ───
 
-  async generateContent(modelName: string, params: {
-    contents: Array<{
-      role?: string;
-      parts: Array<any>;
-    }>;
-    systemInstruction?: { parts: Array<any> };
-    generationConfig?: Record<string, any>;
-    safetySettings?: Array<{ category: string; threshold: string }>;
-    tools?: Array<any>;
-    toolConfig?: Record<string, any>;
-    cachedContent?: string;
-  }): Promise<any> {
+  async generateContent(
+    modelName: string,
+    params: {
+      contents: Array<{
+        role?: string;
+        parts: Array<any>;
+      }>;
+      systemInstruction?: { parts: Array<any> };
+      generationConfig?: Record<string, any>;
+      safetySettings?: Array<{ category: string; threshold: string }>;
+      tools?: Array<any>;
+      toolConfig?: Record<string, any>;
+      cachedContent?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      contents: params.contents,
+      contents: params.contents
     };
 
     if (params.systemInstruction) body.systemInstruction = params.systemInstruction;
@@ -67,40 +70,47 @@ export class Client {
 
   // ─── Embeddings ───
 
-  async embedContent(modelName: string, params: {
-    content: { parts: Array<any> };
-    taskType?: string;
-    title?: string;
-    outputDimensionality?: number;
-  }): Promise<any> {
+  async embedContent(
+    modelName: string,
+    params: {
+      content: { parts: Array<any> };
+      taskType?: string;
+      title?: string;
+      outputDimensionality?: number;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      content: params.content,
+      content: params.content
     };
 
     if (params.taskType) body.taskType = params.taskType;
     if (params.title) body.title = params.title;
-    if (params.outputDimensionality !== undefined) body.outputDimensionality = params.outputDimensionality;
+    if (params.outputDimensionality !== undefined)
+      body.outputDimensionality = params.outputDimensionality;
 
     let response = await this.axios.post(`/models/${modelName}:embedContent`, body);
     return response.data;
   }
 
-  async batchEmbedContents(modelName: string, params: {
-    requests: Array<{
-      content: { parts: Array<any> };
-      taskType?: string;
-      title?: string;
-      outputDimensionality?: number;
-    }>;
-  }): Promise<any> {
+  async batchEmbedContents(
+    modelName: string,
+    params: {
+      requests: Array<{
+        content: { parts: Array<any> };
+        taskType?: string;
+        title?: string;
+        outputDimensionality?: number;
+      }>;
+    }
+  ): Promise<any> {
     let body = {
       requests: params.requests.map(req => ({
         model: `models/${modelName}`,
         content: req.content,
         taskType: req.taskType,
         title: req.title,
-        outputDimensionality: req.outputDimensionality,
-      })),
+        outputDimensionality: req.outputDimensionality
+      }))
     };
 
     let response = await this.axios.post(`/models/${modelName}:batchEmbedContents`, body);
@@ -109,14 +119,18 @@ export class Client {
 
   // ─── Token Counting ───
 
-  async countTokens(modelName: string, params: {
-    contents?: Array<{ role?: string; parts: Array<any> }>;
-    generateContentRequest?: Record<string, any>;
-  }): Promise<any> {
+  async countTokens(
+    modelName: string,
+    params: {
+      contents?: Array<{ role?: string; parts: Array<any> }>;
+      generateContentRequest?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
 
     if (params.contents) body.contents = params.contents;
-    if (params.generateContentRequest) body.generateContentRequest = params.generateContentRequest;
+    if (params.generateContentRequest)
+      body.generateContentRequest = params.generateContentRequest;
 
     let response = await this.axios.post(`/models/${modelName}:countTokens`, body);
     return response.data;
@@ -131,8 +145,8 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       file: {
-        displayName: params.displayName,
-      },
+        displayName: params.displayName
+      }
     };
 
     let response = await this.axios.post(
@@ -141,13 +155,13 @@ export class Client {
         file: { displayName: params.displayName },
         inline_data: {
           mime_type: params.mimeType,
-          data: params.fileData,
-        },
+          data: params.fileData
+        }
       },
       {
         headers: {
-          'x-goog-api-key': this.config.token,
-        },
+          'x-goog-api-key': this.config.token
+        }
       }
     );
     return response.data;
@@ -187,7 +201,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       model: params.model.startsWith('models/') ? params.model : `models/${params.model}`,
-      contents: params.contents,
+      contents: params.contents
     };
 
     if (params.systemInstruction) body.systemInstruction = params.systemInstruction;
@@ -215,10 +229,13 @@ export class Client {
     return response.data;
   }
 
-  async updateCachedContent(name: string, params: {
-    ttl?: string;
-    expireTime?: string;
-  }): Promise<any> {
+  async updateCachedContent(
+    name: string,
+    params: {
+      ttl?: string;
+      expireTime?: string;
+    }
+  ): Promise<any> {
     let fullName = name.startsWith('cachedContents/') ? name : `cachedContents/${name}`;
     let body: Record<string, any> = {};
     let updateMask: string[] = [];
@@ -233,7 +250,7 @@ export class Client {
     }
 
     let response = await this.axios.patch(`/${fullName}`, body, {
-      params: { updateMask: updateMask.join(',') },
+      params: { updateMask: updateMask.join(',') }
     });
     return response.data;
   }

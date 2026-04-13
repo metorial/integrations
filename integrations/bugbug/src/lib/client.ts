@@ -134,8 +134,8 @@ export class Client {
       baseURL: 'https://app.bugbug.io/api/v2',
       headers: {
         Authorization: `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -146,12 +146,14 @@ export class Client {
     query?: string;
     ordering?: string;
   }): Promise<PaginatedResponse<BugBugTest>> {
-    let response = await this.axios.get('/tests/', { params: {
-      page: params?.page,
-      page_size: params?.pageSize,
-      query: params?.query,
-      ordering: params?.ordering,
-    }});
+    let response = await this.axios.get('/tests/', {
+      params: {
+        page: params?.page,
+        page_size: params?.pageSize,
+        query: params?.query,
+        ordering: params?.ordering
+      }
+    });
     return response.data;
   }
 
@@ -162,7 +164,7 @@ export class Client {
 
   async runTest(params: RunTestParams): Promise<BugBugTestRunStatus> {
     let body: Record<string, unknown> = {
-      testId: params.testId,
+      testId: params.testId
     };
     if (params.profileId) {
       body.profileId = params.profileId;
@@ -184,15 +186,17 @@ export class Client {
     startedBefore?: string;
     ordering?: string;
   }): Promise<PaginatedResponse<BugBugTestRun>> {
-    let response = await this.axios.get('/testruns/', { params: {
-      page: params?.page,
-      page_size: params?.pageSize,
-      test_id: params?.testId,
-      status: params?.status,
-      started_after: params?.startedAfter,
-      started_before: params?.startedBefore,
-      ordering: params?.ordering,
-    }});
+    let response = await this.axios.get('/testruns/', {
+      params: {
+        page: params?.page,
+        page_size: params?.pageSize,
+        test_id: params?.testId,
+        status: params?.status,
+        started_after: params?.startedAfter,
+        started_before: params?.startedBefore,
+        ordering: params?.ordering
+      }
+    });
     return response.data;
   }
 
@@ -218,12 +222,14 @@ export class Client {
     query?: string;
     ordering?: string;
   }): Promise<PaginatedResponse<BugBugSuite>> {
-    let response = await this.axios.get('/suites/', { params: {
-      page: params?.page,
-      page_size: params?.pageSize,
-      query: params?.query,
-      ordering: params?.ordering,
-    }});
+    let response = await this.axios.get('/suites/', {
+      params: {
+        page: params?.page,
+        page_size: params?.pageSize,
+        query: params?.query,
+        ordering: params?.ordering
+      }
+    });
     return response.data;
   }
 
@@ -234,7 +240,7 @@ export class Client {
 
   async runSuite(params: RunSuiteParams): Promise<BugBugSuiteRunStatus> {
     let body: Record<string, unknown> = {
-      suiteId: params.suiteId,
+      suiteId: params.suiteId
     };
     if (params.profileId) {
       body.profileId = params.profileId;
@@ -254,13 +260,15 @@ export class Client {
     startedBefore?: string;
     ordering?: string;
   }): Promise<PaginatedResponse<BugBugSuiteRun>> {
-    let response = await this.axios.get('/suiteruns/', { params: {
-      page: params?.page,
-      page_size: params?.pageSize,
-      started_after: params?.startedAfter,
-      started_before: params?.startedBefore,
-      ordering: params?.ordering,
-    }});
+    let response = await this.axios.get('/suiteruns/', {
+      params: {
+        page: params?.page,
+        page_size: params?.pageSize,
+        started_after: params?.startedAfter,
+        started_before: params?.startedBefore,
+        ordering: params?.ordering
+      }
+    });
     return response.data;
   }
 
@@ -284,10 +292,12 @@ export class Client {
     page?: number;
     pageSize?: number;
   }): Promise<PaginatedResponse<BugBugProfile>> {
-    let response = await this.axios.get('/profiles/', { params: {
-      page: params?.page,
-      page_size: params?.pageSize,
-    }});
+    let response = await this.axios.get('/profiles/', {
+      params: {
+        page: params?.page,
+        page_size: params?.pageSize
+      }
+    });
     return response.data;
   }
 

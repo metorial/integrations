@@ -6,33 +6,46 @@ import { z } from 'zod';
 export let listItemChanges = SlateTrigger.create(spec, {
   name: 'List Item Changes',
   key: 'list_item_changes',
-  description: 'Triggers when list items are created, updated, or deleted in a SharePoint list. Polls the list items delta API to detect changes.',
+  description:
+    'Triggers when list items are created, updated, or deleted in a SharePoint list. Polls the list items delta API to detect changes.'
 })
-  .input(z.object({
-    siteId: z.string().describe('SharePoint site ID to monitor'),
-    listId: z.string().describe('SharePoint list ID to monitor'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    itemId: z.string().describe('ID of the changed list item'),
-    fields: z.record(z.string(), z.any()).optional().describe('Current field values of the item (not present for deletions)'),
-    lastModifiedDateTime: z.string().optional().describe('When the item was last modified'),
-    lastModifiedBy: z.string().optional().describe('User who last modified the item'),
-  }))
-  .output(z.object({
-    siteId: z.string().describe('SharePoint site ID'),
-    listId: z.string().describe('SharePoint list ID'),
-    itemId: z.string().describe('ID of the changed list item'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change'),
-    fields: z.record(z.string(), z.any()).optional().describe('Current field values (not present for deletions)'),
-    lastModifiedDateTime: z.string().optional().describe('When the item was last modified'),
-    lastModifiedBy: z.string().optional().describe('User who last modified the item'),
-    webUrl: z.string().optional().describe('URL of the list item'),
-  }))
+  .input(
+    z.object({
+      siteId: z.string().describe('SharePoint site ID to monitor'),
+      listId: z.string().describe('SharePoint list ID to monitor'),
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      itemId: z.string().describe('ID of the changed list item'),
+      fields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Current field values of the item (not present for deletions)'),
+      lastModifiedDateTime: z.string().optional().describe('When the item was last modified'),
+      lastModifiedBy: z.string().optional().describe('User who last modified the item')
+    })
+  )
+  .output(
+    z.object({
+      siteId: z.string().describe('SharePoint site ID'),
+      listId: z.string().describe('SharePoint list ID'),
+      itemId: z.string().describe('ID of the changed list item'),
+      changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change'),
+      fields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Current field values (not present for deletions)'),
+      lastModifiedDateTime: z.string().optional().describe('When the item was last modified'),
+      lastModifiedBy: z.string().optional().describe('User who last modified the item'),
+      webUrl: z.string().optional().describe('URL of the list item')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SharePointClient(ctx.auth.token);
       let state = ctx.state as {
         deltaToken?: string;
@@ -50,8 +63,8 @@ export let listItemChanges = SlateTrigger.create(spec, {
           inputs: [],
           updatedState: {
             ...state,
-            initialized: false,
-          },
+            initialized: false
+          }
         };
       }
 
@@ -74,8 +87,8 @@ export let listItemChanges = SlateTrigger.create(spec, {
             listId,
             deltaToken: newDeltaToken,
             knownItems: updatedKnown,
-            initialized: true,
-          },
+            initialized: true
+          }
         };
       }
 
@@ -100,7 +113,7 @@ export let listItemChanges = SlateTrigger.create(spec, {
               siteId,
               listId,
               changeType: 'deleted',
-              itemId: item.id,
+              itemId: item.id
             });
             delete updatedKnown[item.id];
           }
@@ -112,7 +125,7 @@ export let listItemChanges = SlateTrigger.create(spec, {
             itemId: item.id,
             fields: item.fields,
             lastModifiedDateTime: item.lastModifiedDateTime,
-            lastModifiedBy: item.lastModifiedBy?.user?.displayName,
+            lastModifiedBy: item.lastModifiedBy?.user?.displayName
           });
           updatedKnown[item.id] = item.lastModifiedDateTime || '';
         } else {
@@ -123,7 +136,7 @@ export let listItemChanges = SlateTrigger.create(spec, {
             itemId: item.id,
             fields: item.fields,
             lastModifiedDateTime: item.lastModifiedDateTime,
-            lastModifiedBy: item.lastModifiedBy?.user?.displayName,
+            lastModifiedBy: item.lastModifiedBy?.user?.displayName
           });
           updatedKnown[item.id] = item.lastModifiedDateTime || '';
         }
@@ -136,12 +149,12 @@ export let listItemChanges = SlateTrigger.create(spec, {
           listId,
           deltaToken: newDeltaToken,
           knownItems: updatedKnown,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `list_item.${ctx.input.changeType}`,
         id: `${ctx.input.listId}_${ctx.input.itemId}_${ctx.input.lastModifiedDateTime || Date.now()}`,
@@ -152,9 +165,9 @@ export let listItemChanges = SlateTrigger.create(spec, {
           changeType: ctx.input.changeType,
           fields: ctx.input.fields,
           lastModifiedDateTime: ctx.input.lastModifiedDateTime,
-          lastModifiedBy: ctx.input.lastModifiedBy,
-        },
+          lastModifiedBy: ctx.input.lastModifiedBy
+        }
       };
-    },
+    }
   })
   .build();

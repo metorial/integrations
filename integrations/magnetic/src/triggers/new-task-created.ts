@@ -3,41 +3,42 @@ import { MagneticClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newTaskCreated = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Task Created',
-    key: 'new_task_created',
-    description: 'Triggers when a new task is created in Magnetic.'
-  }
-)
-  .input(z.object({
-    taskId: z.string().describe('ID of the task'),
-    task: z.any().describe('Raw task data from the API')
-  }))
-  .output(z.object({
-    taskId: z.string().describe('ID of the task'),
-    taskName: z.string().optional().describe('Name of the task'),
-    taskCode: z.string().optional().describe('Code identifier of the task'),
-    description: z.string().optional().describe('Description of the task'),
-    billable: z.boolean().optional().describe('Whether the task is billable'),
-    timeMinutes: z.number().optional().describe('Total time tracked in minutes'),
-    effortMinutes: z.number().optional().describe('Estimated effort in minutes'),
-    startDate: z.string().optional().describe('Start date of the task'),
-    endDate: z.string().optional().describe('End/due date of the task'),
-    status: z.string().optional().describe('Current status of the task'),
-    ownerName: z.string().optional().describe('Full name of the task owner'),
-    ownerId: z.string().optional().describe('ID of the task owner'),
-    groupingName: z.string().optional().describe('Name of the linked opportunity/job'),
-    groupingId: z.string().optional().describe('ID of the linked opportunity/job'),
-    createdDate: z.string().optional().describe('Date the task was created')
-  }))
+export let newTaskCreated = SlateTrigger.create(spec, {
+  name: 'New Task Created',
+  key: 'new_task_created',
+  description: 'Triggers when a new task is created in Magnetic.'
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('ID of the task'),
+      task: z.any().describe('Raw task data from the API')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('ID of the task'),
+      taskName: z.string().optional().describe('Name of the task'),
+      taskCode: z.string().optional().describe('Code identifier of the task'),
+      description: z.string().optional().describe('Description of the task'),
+      billable: z.boolean().optional().describe('Whether the task is billable'),
+      timeMinutes: z.number().optional().describe('Total time tracked in minutes'),
+      effortMinutes: z.number().optional().describe('Estimated effort in minutes'),
+      startDate: z.string().optional().describe('Start date of the task'),
+      endDate: z.string().optional().describe('End/due date of the task'),
+      status: z.string().optional().describe('Current status of the task'),
+      ownerName: z.string().optional().describe('Full name of the task owner'),
+      ownerId: z.string().optional().describe('ID of the task owner'),
+      groupingName: z.string().optional().describe('Name of the linked opportunity/job'),
+      groupingId: z.string().optional().describe('ID of the linked opportunity/job'),
+      createdDate: z.string().optional().describe('Date the task was created')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MagneticClient({ token: ctx.auth.token });
 
       let tasks = await client.listTasks();
@@ -71,7 +72,7 @@ export let newTaskCreated = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let t = ctx.input.task;
 
       return {

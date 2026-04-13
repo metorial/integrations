@@ -3,68 +3,78 @@ import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTrack = SlateTool.create(
-  spec,
-  {
-    name: 'Get Track',
-    key: 'get_track',
-    description: `Retrieve detailed information about one or more tracks including metadata, audio features (danceability, energy, tempo, etc.), and album info. Supports fetching up to 50 tracks at once.`,
-    constraints: [
-      'Audio features may not be available for all tracks or for new applications without extended quota mode.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getTrack = SlateTool.create(spec, {
+  name: 'Get Track',
+  key: 'get_track',
+  description: `Retrieve detailed information about one or more tracks including metadata, audio features (danceability, energy, tempo, etc.), and album info. Supports fetching up to 50 tracks at once.`,
+  constraints: [
+    'Audio features may not be available for all tracks or for new applications without extended quota mode.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    trackIds: z.array(z.string()).min(1).max(50).describe('One or more Spotify track IDs'),
-    includeAudioFeatures: z.boolean().optional().describe('Whether to include audio features (danceability, energy, tempo, etc.)'),
-    market: z.string().optional().describe('ISO 3166-1 alpha-2 country code'),
-  }))
-  .output(z.object({
-    tracks: z.array(z.object({
-      trackId: z.string(),
-      name: z.string(),
-      durationMs: z.number(),
-      explicit: z.boolean(),
-      popularity: z.number(),
-      trackNumber: z.number(),
-      discNumber: z.number(),
-      isLocal: z.boolean(),
-      artists: z.array(z.object({
-        artistId: z.string(),
-        name: z.string(),
-      })),
-      album: z.object({
-        albumId: z.string(),
-        name: z.string(),
-        releaseDate: z.string(),
-        imageUrl: z.string().nullable(),
-      }),
-      spotifyUrl: z.string(),
-      previewUrl: z.string().nullable(),
-      uri: z.string(),
-      audioFeatures: z.object({
-        danceability: z.number(),
-        energy: z.number(),
-        key: z.number(),
-        loudness: z.number(),
-        mode: z.number(),
-        speechiness: z.number(),
-        acousticness: z.number(),
-        instrumentalness: z.number(),
-        liveness: z.number(),
-        valence: z.number(),
-        tempo: z.number(),
-        timeSignature: z.number(),
-      }).optional(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      trackIds: z.array(z.string()).min(1).max(50).describe('One or more Spotify track IDs'),
+      includeAudioFeatures: z
+        .boolean()
+        .optional()
+        .describe('Whether to include audio features (danceability, energy, tempo, etc.)'),
+      market: z.string().optional().describe('ISO 3166-1 alpha-2 country code')
+    })
+  )
+  .output(
+    z.object({
+      tracks: z.array(
+        z.object({
+          trackId: z.string(),
+          name: z.string(),
+          durationMs: z.number(),
+          explicit: z.boolean(),
+          popularity: z.number(),
+          trackNumber: z.number(),
+          discNumber: z.number(),
+          isLocal: z.boolean(),
+          artists: z.array(
+            z.object({
+              artistId: z.string(),
+              name: z.string()
+            })
+          ),
+          album: z.object({
+            albumId: z.string(),
+            name: z.string(),
+            releaseDate: z.string(),
+            imageUrl: z.string().nullable()
+          }),
+          spotifyUrl: z.string(),
+          previewUrl: z.string().nullable(),
+          uri: z.string(),
+          audioFeatures: z
+            .object({
+              danceability: z.number(),
+              energy: z.number(),
+              key: z.number(),
+              loudness: z.number(),
+              mode: z.number(),
+              speechiness: z.number(),
+              acousticness: z.number(),
+              instrumentalness: z.number(),
+              liveness: z.number(),
+              valence: z.number(),
+              tempo: z.number(),
+              timeSignature: z.number()
+            })
+            .optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SpotifyClient({
       token: ctx.auth.token,
-      market: ctx.config.market,
+      market: ctx.config.market
     });
 
     let tracksData;
@@ -89,7 +99,9 @@ export let getTrack = SlateTool.create(
           }
         }
       } catch (e) {
-        ctx.warn('Audio features could not be retrieved. This endpoint may be restricted for your application.');
+        ctx.warn(
+          'Audio features could not be retrieved. This endpoint may be restricted for your application.'
+        );
       }
     }
 
@@ -109,32 +121,34 @@ export let getTrack = SlateTool.create(
           albumId: t.album.id,
           name: t.album.name,
           releaseDate: t.album.release_date,
-          imageUrl: t.album.images?.[0]?.url ?? null,
+          imageUrl: t.album.images?.[0]?.url ?? null
         },
         spotifyUrl: t.external_urls.spotify,
         previewUrl: t.preview_url,
         uri: t.uri,
-        ...(features ? {
-          audioFeatures: {
-            danceability: features.danceability,
-            energy: features.energy,
-            key: features.key,
-            loudness: features.loudness,
-            mode: features.mode,
-            speechiness: features.speechiness,
-            acousticness: features.acousticness,
-            instrumentalness: features.instrumentalness,
-            liveness: features.liveness,
-            valence: features.valence,
-            tempo: features.tempo,
-            timeSignature: features.time_signature,
-          },
-        } : {}),
+        ...(features
+          ? {
+              audioFeatures: {
+                danceability: features.danceability,
+                energy: features.energy,
+                key: features.key,
+                loudness: features.loudness,
+                mode: features.mode,
+                speechiness: features.speechiness,
+                acousticness: features.acousticness,
+                instrumentalness: features.instrumentalness,
+                liveness: features.liveness,
+                valence: features.valence,
+                tempo: features.tempo,
+                timeSignature: features.time_signature
+              }
+            }
+          : {})
       };
     });
 
     return {
       output: { tracks },
-      message: `Retrieved ${tracks.length} track(s): ${tracks.map(t => `**${t.name}** by ${t.artists.map(a => a.name).join(', ')}`).join('; ')}.`,
+      message: `Retrieved ${tracks.length} track(s): ${tracks.map(t => `**${t.name}** by ${t.artists.map(a => a.name).join(', ')}`).join('; ')}.`
     };
   });

@@ -7,7 +7,9 @@ let getBaseUrl = (region: AmplitudeRegion) => {
 };
 
 let getApiBaseUrl = (region: AmplitudeRegion) => {
-  return region === 'EU' ? 'https://analytics.eu.amplitude.com/api' : 'https://amplitude.com/api';
+  return region === 'EU'
+    ? 'https://analytics.eu.amplitude.com/api'
+    : 'https://amplitude.com/api';
 };
 
 let getIngestionBaseUrl = (region: AmplitudeRegion) => {
@@ -15,7 +17,9 @@ let getIngestionBaseUrl = (region: AmplitudeRegion) => {
 };
 
 let getProfileBaseUrl = (region: AmplitudeRegion) => {
-  return region === 'EU' ? 'https://profile-api.eu.amplitude.com' : 'https://profile-api.amplitude.com';
+  return region === 'EU'
+    ? 'https://profile-api.eu.amplitude.com'
+    : 'https://profile-api.amplitude.com';
 };
 
 export interface AmplitudeEvent {
@@ -173,7 +177,11 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async groupIdentify(groupType: string, groupValue: string, groupProperties: Record<string, any>) {
+  async groupIdentify(
+    groupType: string,
+    groupValue: string,
+    groupProperties: Record<string, any>
+  ) {
     let ax = createAxios({
       baseURL: getIngestionBaseUrl(this.config.region)
     });
@@ -195,10 +203,7 @@ export class AmplitudeClient {
 
   // --- User Mapping (Aliasing) ---
 
-  async mapUserIdentities(mapping: {
-    userId: string;
-    globalUserId: string;
-  }) {
+  async mapUserIdentities(mapping: { userId: string; globalUserId: string }) {
     let ax = createAxios({
       baseURL: getIngestionBaseUrl(this.config.region)
     });
@@ -221,7 +226,7 @@ export class AmplitudeClient {
     return createAxios({
       baseURL: getApiBaseUrl(this.config.region),
       headers: {
-        'Authorization': `Basic ${this.config.token}`
+        Authorization: `Basic ${this.config.token}`
       }
     });
   }
@@ -308,14 +313,11 @@ export class AmplitudeClient {
 
   // --- User Profile API ---
 
-  async getUserProfile(params: {
-    userId?: string;
-    amplitudeId?: number;
-  }) {
+  async getUserProfile(params: { userId?: string; amplitudeId?: number }) {
     let ax = createAxios({
       baseURL: getProfileBaseUrl(this.config.region),
       headers: {
-        'Authorization': `Api-Key ${this.config.secretKey}`
+        Authorization: `Api-Key ${this.config.secretKey}`
       }
     });
 
@@ -407,11 +409,14 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async updateEventType(eventType: string, params: {
-    newEventType?: string;
-    category?: string;
-    description?: string;
-  }) {
+  async updateEventType(
+    eventType: string,
+    params: {
+      newEventType?: string;
+      category?: string;
+      description?: string;
+    }
+  ) {
     let ax = this.getAnalyticsAxios();
     let body: Record<string, any> = {};
     if (params.newEventType) body.new_event_type = params.newEventType;
@@ -462,20 +467,25 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async updateEventProperty(eventProperty: string, eventType: string, params: {
-    newEventPropertyValue?: string;
-    description?: string;
-    type?: string;
-    regex?: string;
-    enumValues?: string;
-    isArrayType?: boolean;
-    isRequired?: boolean;
-  }) {
+  async updateEventProperty(
+    eventProperty: string,
+    eventType: string,
+    params: {
+      newEventPropertyValue?: string;
+      description?: string;
+      type?: string;
+      regex?: string;
+      enumValues?: string;
+      isArrayType?: boolean;
+      isRequired?: boolean;
+    }
+  ) {
     let ax = this.getAnalyticsAxios();
     let body: Record<string, any> = {
       event_type: eventType
     };
-    if (params.newEventPropertyValue) body.new_event_property_value = params.newEventPropertyValue;
+    if (params.newEventPropertyValue)
+      body.new_event_property_value = params.newEventPropertyValue;
     if (params.description) body.description = params.description;
     if (params.type) body.type = params.type;
     if (params.regex) body.regex = params.regex;
@@ -483,15 +493,21 @@ export class AmplitudeClient {
     if (params.isArrayType !== undefined) body.is_array_type = params.isArrayType;
     if (params.isRequired !== undefined) body.is_required = params.isRequired;
 
-    let response = await ax.put(`/2/taxonomy/event-property/${encodeURIComponent(eventProperty)}`, body);
+    let response = await ax.put(
+      `/2/taxonomy/event-property/${encodeURIComponent(eventProperty)}`,
+      body
+    );
     return response.data;
   }
 
   async deleteEventProperty(eventProperty: string, eventType: string) {
     let ax = this.getAnalyticsAxios();
-    let response = await ax.delete(`/2/taxonomy/event-property/${encodeURIComponent(eventProperty)}`, {
-      params: { event_type: eventType }
-    });
+    let response = await ax.delete(
+      `/2/taxonomy/event-property/${encodeURIComponent(eventProperty)}`,
+      {
+        params: { event_type: eventType }
+      }
+    );
     return response.data;
   }
 
@@ -523,30 +539,39 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async updateUserProperty(userProperty: string, params: {
-    newUserPropertyValue?: string;
-    description?: string;
-    type?: string;
-    regex?: string;
-    enumValues?: string;
-    isArrayType?: boolean;
-  }) {
+  async updateUserProperty(
+    userProperty: string,
+    params: {
+      newUserPropertyValue?: string;
+      description?: string;
+      type?: string;
+      regex?: string;
+      enumValues?: string;
+      isArrayType?: boolean;
+    }
+  ) {
     let ax = this.getAnalyticsAxios();
     let body: Record<string, any> = {};
-    if (params.newUserPropertyValue) body.new_user_property_value = params.newUserPropertyValue;
+    if (params.newUserPropertyValue)
+      body.new_user_property_value = params.newUserPropertyValue;
     if (params.description) body.description = params.description;
     if (params.type) body.type = params.type;
     if (params.regex) body.regex = params.regex;
     if (params.enumValues) body.enum_values = params.enumValues;
     if (params.isArrayType !== undefined) body.is_array_type = params.isArrayType;
 
-    let response = await ax.put(`/2/taxonomy/user-property/${encodeURIComponent(userProperty)}`, body);
+    let response = await ax.put(
+      `/2/taxonomy/user-property/${encodeURIComponent(userProperty)}`,
+      body
+    );
     return response.data;
   }
 
   async deleteUserProperty(userProperty: string) {
     let ax = this.getAnalyticsAxios();
-    let response = await ax.delete(`/2/taxonomy/user-property/${encodeURIComponent(userProperty)}`);
+    let response = await ax.delete(
+      `/2/taxonomy/user-property/${encodeURIComponent(userProperty)}`
+    );
     return response.data;
   }
 
@@ -584,11 +609,7 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async createAnnotation(params: {
-    label: string;
-    date: string;
-    details?: string;
-  }) {
+  async createAnnotation(params: { label: string; date: string; details?: string }) {
     let ax = this.getAnalyticsAxios();
     let body: Record<string, any> = {
       label: params.label,
@@ -600,11 +621,14 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async updateAnnotation(annotationId: string, params: {
-    label?: string;
-    date?: string;
-    details?: string;
-  }) {
+  async updateAnnotation(
+    annotationId: string,
+    params: {
+      label?: string;
+      date?: string;
+      details?: string;
+    }
+  ) {
     let ax = this.getAnalyticsAxios();
     let body: Record<string, any> = {};
     if (params.label) body.label = params.label;
@@ -627,7 +651,7 @@ export class AmplitudeClient {
     let ax = createAxios({
       baseURL: getBaseUrl(this.config.region),
       headers: {
-        'Authorization': `Basic ${this.config.token}`
+        Authorization: `Basic ${this.config.token}`
       }
     });
     let response = await ax.get('/api/2/export', {
@@ -684,10 +708,7 @@ export class AmplitudeClient {
     return response.data;
   }
 
-  async getDeletionJobs(params?: {
-    startDay?: string;
-    endDay?: string;
-  }) {
+  async getDeletionJobs(params?: { startDay?: string; endDay?: string }) {
     let ax = this.getAnalyticsAxios();
     let queryParams: Record<string, any> = {};
     if (params?.startDay) queryParams.start_day = params.startDay;

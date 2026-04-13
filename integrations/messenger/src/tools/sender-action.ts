@@ -3,27 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let senderAction = SlateTool.create(
-  spec,
-  {
-    name: 'Send Sender Action',
-    key: 'send_sender_action',
-    description: `Display a typing indicator or mark a message as read in a Messenger conversation. Use **typing_on** to show a typing bubble, **typing_off** to hide it, and **mark_seen** to show a read receipt.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let senderAction = SlateTool.create(spec, {
+  name: 'Send Sender Action',
+  key: 'send_sender_action',
+  description: `Display a typing indicator or mark a message as read in a Messenger conversation. Use **typing_on** to show a typing bubble, **typing_off** to hide it, and **mark_seen** to show a read receipt.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    recipientId: z.string().describe('Page-Scoped User ID (PSID) of the recipient'),
-    action: z.enum(['typing_on', 'typing_off', 'mark_seen']).describe('Sender action to display: typing_on (show typing), typing_off (hide typing), mark_seen (read receipt)')
-  }))
-  .output(z.object({
-    recipientId: z.string().describe('PSID of the recipient'),
-    success: z.boolean().describe('Whether the action was applied successfully')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      recipientId: z.string().describe('Page-Scoped User ID (PSID) of the recipient'),
+      action: z
+        .enum(['typing_on', 'typing_off', 'mark_seen'])
+        .describe(
+          'Sender action to display: typing_on (show typing), typing_off (hide typing), mark_seen (read receipt)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      recipientId: z.string().describe('PSID of the recipient'),
+      success: z.boolean().describe('Whether the action was applied successfully')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       pageId: ctx.config.pageId,
@@ -45,4 +50,5 @@ export let senderAction = SlateTool.create(
       },
       message: `${actionLabel} for user **${ctx.input.recipientId}**.`
     };
-  }).build();
+  })
+  .build();

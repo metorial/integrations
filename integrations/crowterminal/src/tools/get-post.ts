@@ -3,22 +3,19 @@ import { CrowTerminalClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPost = SlateTool.create(
-  spec,
-  {
-    name: 'Get Post',
-    key: 'get_post',
-    description: `Retrieve a single post by its ID, including its current publish status, platform details, and any associated media.
+export let getPost = SlateTool.create(spec, {
+  name: 'Get Post',
+  key: 'get_post',
+  description: `Retrieve a single post by its ID, including its current publish status, platform details, and any associated media.
 Also returns job delivery information if available, including failure reasons for failed posts.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
-      postId: z.string().describe('Unique identifier of the post to retrieve'),
+      postId: z.string().describe('Unique identifier of the post to retrieve')
     })
   )
   .output(
@@ -32,16 +29,22 @@ Also returns job delivery information if available, including failure reasons fo
       publishedAt: z.string().nullable().describe('Actual publish time if published'),
       createdAt: z.string().describe('Timestamp when the post was created'),
       updatedAt: z.string().describe('Timestamp of last update'),
-      failureReason: z.string().nullable().describe('Reason for failure if the post failed to publish'),
+      failureReason: z
+        .string()
+        .nullable()
+        .describe('Reason for failure if the post failed to publish'),
       platformPostId: z.string().nullable().describe('Native post ID on the target platform'),
-      platformPostUrl: z.string().nullable().describe('Direct URL to the post on the target platform'),
-      accountId: z.string().describe('Account ID the post belongs to'),
+      platformPostUrl: z
+        .string()
+        .nullable()
+        .describe('Direct URL to the post on the target platform'),
+      accountId: z.string().describe('Account ID the post belongs to')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CrowTerminalClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let post = await client.getPost(ctx.input.postId);
@@ -60,9 +63,9 @@ Also returns job delivery information if available, including failure reasons fo
         failureReason: post.failureReason,
         platformPostId: post.platformPostId,
         platformPostUrl: post.platformPostUrl,
-        accountId: post.accountId,
+        accountId: post.accountId
       },
-      message: `Post **${post.postId}** on **${post.platform}** — status: **${post.status}**${post.platformPostUrl ? ` — [view on platform](${post.platformPostUrl})` : ''}.`,
+      message: `Post **${post.postId}** on **${post.platform}** — status: **${post.status}**${post.platformPostUrl ? ` — [view on platform](${post.platformPostUrl})` : ''}.`
     };
   })
   .build();

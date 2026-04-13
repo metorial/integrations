@@ -15,24 +15,25 @@ let adAccountSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listAdAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'List Ad Accounts',
-    key: 'list_ad_accounts',
-    description: `List all ad accounts under a Snapchat organization. Returns account IDs, names, currencies, timezones, and statuses. Use organization IDs from the List Organizations tool.`,
-    tags: {
-      readOnly: true
-    }
+export let listAdAccounts = SlateTool.create(spec, {
+  name: 'List Ad Accounts',
+  key: 'list_ad_accounts',
+  description: `List all ad accounts under a Snapchat organization. Returns account IDs, names, currencies, timezones, and statuses. Use organization IDs from the List Organizations tool.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    organizationId: z.string().describe('ID of the organization to list ad accounts for')
-  }))
-  .output(z.object({
-    adAccounts: z.array(adAccountSchema).describe('List of ad accounts')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      organizationId: z.string().describe('ID of the organization to list ad accounts for')
+    })
+  )
+  .output(
+    z.object({
+      adAccounts: z.array(adAccountSchema).describe('List of ad accounts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let accounts = await client.listAdAccounts(ctx.input.organizationId);
 

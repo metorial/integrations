@@ -9,26 +9,32 @@ export let listBlogPosts = SlateTool.create(spec, {
   description: `List Confluence blog posts, optionally filtered by space or title. Returns blog post metadata for each result.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    spaceId: z.string().optional().describe('Filter blog posts by space ID'),
-    title: z.string().optional().describe('Filter by exact title'),
-    status: z.string().optional().describe('Filter by status (current, draft, trashed)'),
-    limit: z.number().optional().default(25).describe('Maximum number of results'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    sort: z.string().optional().describe('Sort order (e.g., "-modified-date")')
-  }))
-  .output(z.object({
-    blogPosts: z.array(z.object({
-      blogPostId: z.string(),
-      title: z.string(),
-      status: z.string(),
-      spaceId: z.string().optional(),
-      versionNumber: z.number().optional(),
-      createdAt: z.string().optional()
-    })),
-    nextCursor: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      spaceId: z.string().optional().describe('Filter blog posts by space ID'),
+      title: z.string().optional().describe('Filter by exact title'),
+      status: z.string().optional().describe('Filter by status (current, draft, trashed)'),
+      limit: z.number().optional().default(25).describe('Maximum number of results'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      sort: z.string().optional().describe('Sort order (e.g., "-modified-date")')
+    })
+  )
+  .output(
+    z.object({
+      blogPosts: z.array(
+        z.object({
+          blogPostId: z.string(),
+          title: z.string(),
+          status: z.string(),
+          spaceId: z.string().optional(),
+          versionNumber: z.number().optional(),
+          createdAt: z.string().optional()
+        })
+      ),
+      nextCursor: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getBlogPosts({
       spaceId: ctx.input.spaceId,
@@ -68,22 +74,30 @@ export let getBlogPost = SlateTool.create(spec, {
   description: `Retrieve a single Confluence blog post by ID with optional body content.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    blogPostId: z.string().describe('The blog post ID'),
-    includeBody: z.boolean().optional().default(false).describe('Whether to include the body content')
-  }))
-  .output(z.object({
-    blogPostId: z.string(),
-    title: z.string(),
-    status: z.string(),
-    spaceId: z.string().optional(),
-    authorId: z.string().optional(),
-    createdAt: z.string().optional(),
-    versionNumber: z.number().optional(),
-    body: z.string().optional(),
-    webUrl: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      blogPostId: z.string().describe('The blog post ID'),
+      includeBody: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to include the body content')
+    })
+  )
+  .output(
+    z.object({
+      blogPostId: z.string(),
+      title: z.string(),
+      status: z.string(),
+      spaceId: z.string().optional(),
+      authorId: z.string().optional(),
+      createdAt: z.string().optional(),
+      versionNumber: z.number().optional(),
+      body: z.string().optional(),
+      webUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let bp = await client.getBlogPostById(ctx.input.blogPostId, ctx.input.includeBody);
 
@@ -110,21 +124,29 @@ export let createBlogPost = SlateTool.create(spec, {
   description: `Create a new blog post in a Confluence space. The body should be in Confluence storage format (XHTML-based).`,
   tags: { destructive: false }
 })
-  .input(z.object({
-    spaceId: z.string().describe('The space ID to create the blog post in'),
-    title: z.string().describe('The blog post title'),
-    body: z.string().describe('Blog post body in Confluence storage format'),
-    status: z.enum(['current', 'draft']).optional().default('current').describe('Blog post status')
-  }))
-  .output(z.object({
-    blogPostId: z.string(),
-    title: z.string(),
-    status: z.string(),
-    spaceId: z.string().optional(),
-    versionNumber: z.number().optional(),
-    webUrl: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      spaceId: z.string().describe('The space ID to create the blog post in'),
+      title: z.string().describe('The blog post title'),
+      body: z.string().describe('Blog post body in Confluence storage format'),
+      status: z
+        .enum(['current', 'draft'])
+        .optional()
+        .default('current')
+        .describe('Blog post status')
+    })
+  )
+  .output(
+    z.object({
+      blogPostId: z.string(),
+      title: z.string(),
+      status: z.string(),
+      spaceId: z.string().optional(),
+      versionNumber: z.number().optional(),
+      webUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let bp = await client.createBlogPost({
       spaceId: ctx.input.spaceId,
@@ -154,21 +176,25 @@ export let updateBlogPost = SlateTool.create(spec, {
   instructions: ['Retrieve the blog post first to get the current version number.'],
   tags: { destructive: false }
 })
-  .input(z.object({
-    blogPostId: z.string().describe('The blog post ID to update'),
-    title: z.string().optional().describe('New title'),
-    body: z.string().optional().describe('New body in Confluence storage format'),
-    versionNumber: z.number().describe('Current version number (will be incremented)'),
-    status: z.enum(['current', 'draft']).optional().describe('New status')
-  }))
-  .output(z.object({
-    blogPostId: z.string(),
-    title: z.string(),
-    status: z.string(),
-    versionNumber: z.number().optional(),
-    webUrl: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      blogPostId: z.string().describe('The blog post ID to update'),
+      title: z.string().optional().describe('New title'),
+      body: z.string().optional().describe('New body in Confluence storage format'),
+      versionNumber: z.number().describe('Current version number (will be incremented)'),
+      status: z.enum(['current', 'draft']).optional().describe('New status')
+    })
+  )
+  .output(
+    z.object({
+      blogPostId: z.string(),
+      title: z.string(),
+      status: z.string(),
+      versionNumber: z.number().optional(),
+      webUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let bp = await client.updateBlogPost(ctx.input.blogPostId, {
       title: ctx.input.title,
@@ -196,13 +222,17 @@ export let deleteBlogPost = SlateTool.create(spec, {
   description: `Delete a Confluence blog post by ID (moves to trash).`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    blogPostId: z.string().describe('The blog post ID to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      blogPostId: z.string().describe('The blog post ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     await client.deleteBlogPost(ctx.input.blogPostId);
 

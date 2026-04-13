@@ -19,51 +19,97 @@ let sellerServiceOutputSchema = z.object({
   updatedAt: z.string().describe('ISO 8601 last update timestamp')
 });
 
-export let manageSellerService = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Seller Service',
-    key: 'manage_seller_service',
-    description: `Create, update, activate, deactivate, or list seller services. Seller services allow you to offer APIs, tools, or web pages for consumption by buyer agents in the Skyfire marketplace.`,
-    instructions: [
-      'Use action "list" to see all your seller services.',
-      'Use action "get" with sellerServiceId to retrieve a specific service.',
-      'Use action "create" to register a new service — provide name, description, type, and acceptedTokens at minimum.',
-      'Use action "update" with sellerServiceId and the fields to change.',
-      'Use action "activate" or "deactivate" with sellerServiceId to toggle service visibility.',
-      'Newly created services must be approved by Skyfire before they can be activated.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageSellerService = SlateTool.create(spec, {
+  name: 'Manage Seller Service',
+  key: 'manage_seller_service',
+  description: `Create, update, activate, deactivate, or list seller services. Seller services allow you to offer APIs, tools, or web pages for consumption by buyer agents in the Skyfire marketplace.`,
+  instructions: [
+    'Use action "list" to see all your seller services.',
+    'Use action "get" with sellerServiceId to retrieve a specific service.',
+    'Use action "create" to register a new service — provide name, description, type, and acceptedTokens at minimum.',
+    'Use action "update" with sellerServiceId and the fields to change.',
+    'Use action "activate" or "deactivate" with sellerServiceId to toggle service visibility.',
+    'Newly created services must be approved by Skyfire before they can be activated.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'activate', 'deactivate']).describe('The operation to perform'),
-    sellerServiceId: z.string().optional().describe('UUID of the seller service (required for get, update, activate, deactivate)'),
-    name: z.string().optional().describe('Service name (for create/update)'),
-    description: z.string().optional().describe('Service description (for create/update)'),
-    tags: z.array(z.string()).optional().describe('Service tags (for create/update)'),
-    type: z.enum(['API', 'WEB_PAGE', 'MCP_SERVER_REMOTE']).optional().describe('Service type (for create)'),
-    price: z.string().optional().describe('Price in USD (for create/update)'),
-    priceModel: z.enum(['PAY_PER_USE', 'SUBSCRIPTION']).optional().describe('Pricing model (for create/update)'),
-    minimumTokenAmount: z.string().optional().describe('Minimum token amount buyers must authorize (for create/update)'),
-    acceptedTokens: z.array(z.enum(['kya', 'pay', 'kya+pay'])).optional().describe('Accepted token types (for create/update)'),
-    openApiSpecUrl: z.string().optional().describe('OpenAPI specification URL (for API type services, create/update)'),
-    termsOfServiceUrl: z.string().optional().describe('Terms of service URL (for create/update)'),
-    termsOfServiceRequired: z.boolean().optional().describe('Whether accepting terms is required (for create/update)')
-  }))
-  .output(z.object({
-    services: z.array(sellerServiceOutputSchema).optional().describe('List of seller services (for list/get/create actions)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-    actionPerformed: z.string().describe('Description of what was done')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'activate', 'deactivate'])
+        .describe('The operation to perform'),
+      sellerServiceId: z
+        .string()
+        .optional()
+        .describe(
+          'UUID of the seller service (required for get, update, activate, deactivate)'
+        ),
+      name: z.string().optional().describe('Service name (for create/update)'),
+      description: z.string().optional().describe('Service description (for create/update)'),
+      tags: z.array(z.string()).optional().describe('Service tags (for create/update)'),
+      type: z
+        .enum(['API', 'WEB_PAGE', 'MCP_SERVER_REMOTE'])
+        .optional()
+        .describe('Service type (for create)'),
+      price: z.string().optional().describe('Price in USD (for create/update)'),
+      priceModel: z
+        .enum(['PAY_PER_USE', 'SUBSCRIPTION'])
+        .optional()
+        .describe('Pricing model (for create/update)'),
+      minimumTokenAmount: z
+        .string()
+        .optional()
+        .describe('Minimum token amount buyers must authorize (for create/update)'),
+      acceptedTokens: z
+        .array(z.enum(['kya', 'pay', 'kya+pay']))
+        .optional()
+        .describe('Accepted token types (for create/update)'),
+      openApiSpecUrl: z
+        .string()
+        .optional()
+        .describe('OpenAPI specification URL (for API type services, create/update)'),
+      termsOfServiceUrl: z
+        .string()
+        .optional()
+        .describe('Terms of service URL (for create/update)'),
+      termsOfServiceRequired: z
+        .boolean()
+        .optional()
+        .describe('Whether accepting terms is required (for create/update)')
+    })
+  )
+  .output(
+    z.object({
+      services: z
+        .array(sellerServiceOutputSchema)
+        .optional()
+        .describe('List of seller services (for list/get/create actions)'),
+      success: z.boolean().describe('Whether the operation succeeded'),
+      actionPerformed: z.string().describe('Description of what was done')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SkyfireClient({ token: ctx.auth.token });
     let { action, sellerServiceId } = ctx.input;
 
-    let mapService = (s: { id: string; name: string; description: string; tags: string[]; type: string; price: string; priceModel: string; minimumTokenAmount: string; acceptedTokens: string[]; active: boolean; approved: boolean; createdAt: string; updatedAt: string }) => ({
+    let mapService = (s: {
+      id: string;
+      name: string;
+      description: string;
+      tags: string[];
+      type: string;
+      price: string;
+      priceModel: string;
+      minimumTokenAmount: string;
+      acceptedTokens: string[];
+      active: boolean;
+      approved: boolean;
+      createdAt: string;
+      updatedAt: string;
+    }) => ({
       sellerServiceId: s.id,
       name: s.name,
       description: s.description,
@@ -106,11 +152,21 @@ export let manageSellerService = SlateTool.create(
     }
 
     if (action === 'create') {
-      if (!ctx.input.name || !ctx.input.description || !ctx.input.type || !ctx.input.acceptedTokens) {
-        throw new Error('name, description, type, and acceptedTokens are required for create action');
+      if (
+        !ctx.input.name ||
+        !ctx.input.description ||
+        !ctx.input.type ||
+        !ctx.input.acceptedTokens
+      ) {
+        throw new Error(
+          'name, description, type, and acceptedTokens are required for create action'
+        );
       }
       let termsOfService = ctx.input.termsOfServiceUrl
-        ? { url: ctx.input.termsOfServiceUrl, required: ctx.input.termsOfServiceRequired ?? false }
+        ? {
+            url: ctx.input.termsOfServiceUrl,
+            required: ctx.input.termsOfServiceRequired ?? false
+          }
         : undefined;
 
       let service = await client.createSellerService({
@@ -139,7 +195,10 @@ export let manageSellerService = SlateTool.create(
     if (action === 'update') {
       if (!sellerServiceId) throw new Error('sellerServiceId is required for update action');
       let termsOfService = ctx.input.termsOfServiceUrl
-        ? { url: ctx.input.termsOfServiceUrl, required: ctx.input.termsOfServiceRequired ?? false }
+        ? {
+            url: ctx.input.termsOfServiceUrl,
+            required: ctx.input.termsOfServiceRequired ?? false
+          }
         : undefined;
 
       await client.updateSellerService(sellerServiceId, {
@@ -174,7 +233,8 @@ export let manageSellerService = SlateTool.create(
     }
 
     if (action === 'deactivate') {
-      if (!sellerServiceId) throw new Error('sellerServiceId is required for deactivate action');
+      if (!sellerServiceId)
+        throw new Error('sellerServiceId is required for deactivate action');
       await client.deactivateSellerService(sellerServiceId);
       return {
         output: {

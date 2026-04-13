@@ -16,6 +16,7 @@ The token is passed via the `Authorization` header in one of two formats observe
 - `Authorization: Bearer <your_token>` — referenced in some contexts
 
 Example:
+
 ```
 curl 'https://api.crustdata.com/screener/company?company_domain=hubspot.com' \
   --header 'Authorization: Token $auth_token'

@@ -45,7 +45,7 @@ let storyListPaths: Record<StoryListType, string> = {
   best: '/beststories.json',
   ask: '/askstories.json',
   show: '/showstories.json',
-  job: '/jobstories.json',
+  job: '/jobstories.json'
 };
 
 export class HNClient {
@@ -55,9 +55,7 @@ export class HNClient {
   }
 
   async getItems(itemIds: number[]): Promise<HNItem[]> {
-    let results = await Promise.all(
-      itemIds.map((id) => this.getItem(id))
-    );
+    let results = await Promise.all(itemIds.map(id => this.getItem(id)));
     return results.filter((item): item is HNItem => item !== null);
   }
 

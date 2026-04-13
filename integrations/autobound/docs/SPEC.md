@@ -11,6 +11,7 @@ Autobound uses API key authentication. All API requests require an API key passe
 To generate an API key, navigate to **Settings > API** in your Autobound account. Add this key to your API requests.
 
 The API key is included as a header in every request:
+
 ```
 X-API-KEY: YOUR-API-KEY
 ```

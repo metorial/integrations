@@ -3,53 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createMember = SlateTool.create(
-  spec,
-  {
-    name: 'Create Member',
-    key: 'create_member',
-    description: `Create a new member (user) in the directory. Requires an email, password, and subscription (membership plan) ID at minimum.
+export let createMember = SlateTool.create(spec, {
+  name: 'Create Member',
+  key: 'create_member',
+  description: `Create a new member (user) in the directory. Requires an email, password, and subscription (membership plan) ID at minimum.
 Additional profile fields can be provided. The membership plan settings are respected unless overriding data is sent.`,
-    instructions: [
-      'The password must be at least 6 characters long.',
-      'The subscriptionId must reference an existing Membership Plan ID.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'The password must be at least 6 characters long.',
+    'The subscriptionId must reference an existing Membership Plan ID.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    email: z.string().describe('Email address for the new member.'),
-    password: z.string().describe('Password for the new member (minimum 6 characters).'),
-    subscriptionId: z.string().describe('The Membership Plan ID to assign to the member.'),
-    firstName: z.string().optional().describe('First name of the member.'),
-    lastName: z.string().optional().describe('Last name of the member.'),
-    phone: z.string().optional().describe('Phone number of the member.'),
-    company: z.string().optional().describe('Company or business name.'),
-    website: z.string().optional().describe('Website URL.'),
-    address: z.string().optional().describe('Street address.'),
-    city: z.string().optional().describe('City.'),
-    state: z.string().optional().describe('State or province.'),
-    zip: z.string().optional().describe('Zip or postal code.'),
-    country: z.string().optional().describe('Country.'),
-    sendWelcomeEmail: z.boolean().optional().describe('Whether to trigger the welcome email. Defaults to false.'),
-    additionalFields: z.record(z.string(), z.string()).optional().describe('Any additional custom fields as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    member: z.any().describe('The newly created member record.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().describe('Email address for the new member.'),
+      password: z.string().describe('Password for the new member (minimum 6 characters).'),
+      subscriptionId: z.string().describe('The Membership Plan ID to assign to the member.'),
+      firstName: z.string().optional().describe('First name of the member.'),
+      lastName: z.string().optional().describe('Last name of the member.'),
+      phone: z.string().optional().describe('Phone number of the member.'),
+      company: z.string().optional().describe('Company or business name.'),
+      website: z.string().optional().describe('Website URL.'),
+      address: z.string().optional().describe('Street address.'),
+      city: z.string().optional().describe('City.'),
+      state: z.string().optional().describe('State or province.'),
+      zip: z.string().optional().describe('Zip or postal code.'),
+      country: z.string().optional().describe('Country.'),
+      sendWelcomeEmail: z
+        .boolean()
+        .optional()
+        .describe('Whether to trigger the welcome email. Defaults to false.'),
+      additionalFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional custom fields as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      member: z.any().describe('The newly created member record.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let data: Record<string, any> = {
       email: ctx.input.email,
       password: ctx.input.password,
-      subscription_id: ctx.input.subscriptionId,
+      subscription_id: ctx.input.subscriptionId
     };
 
     if (ctx.input.firstName) data.first_name = ctx.input.firstName;
@@ -74,8 +81,9 @@ Additional profile fields can be provided. The membership plan settings are resp
     return {
       output: {
         status: result.status,
-        member: result.message,
+        member: result.message
       },
-      message: `Created new member with email **${ctx.input.email}**.`,
+      message: `Created new member with email **${ctx.input.email}**.`
     };
-  }).build();
+  })
+  .build();

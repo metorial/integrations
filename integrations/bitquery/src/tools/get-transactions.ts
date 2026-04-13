@@ -12,38 +12,57 @@ let transactionOutputSchema = z.object({
   value: z.string().optional().describe('Transaction value in native currency'),
   gas: z.string().optional().describe('Gas used'),
   gasPrice: z.string().optional().describe('Gas price'),
-  success: z.boolean().optional().describe('Whether the transaction succeeded'),
+  success: z.boolean().optional().describe('Whether the transaction succeeded')
 });
 
-export let getTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'Get Transactions',
-    key: 'get_transactions',
-    description: `Retrieve blockchain transactions from EVM chains or Solana. Filter by sender address, receiver address, or time range.
+export let getTransactions = SlateTool.create(spec, {
+  name: 'Get Transactions',
+  key: 'get_transactions',
+  description: `Retrieve blockchain transactions from EVM chains or Solana. Filter by sender address, receiver address, or time range.
 Use this to audit wallet activity, monitor address transactions, or investigate specific blockchain activity.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    blockchain: z.enum(['eth', 'bsc', 'matic', 'arbitrum', 'base', 'optimism', 'opbnb', 'avalanche', 'fantom', 'cronos', 'solana'])
-      .describe('Blockchain network to query'),
-    fromAddress: z.string().optional().describe('Filter by sender address'),
-    toAddress: z.string().optional().describe('Filter by recipient address'),
-    since: z.string().optional().describe('Start datetime filter (ISO 8601 format)'),
-    till: z.string().optional().describe('End datetime filter (ISO 8601 format)'),
-    limit: z.number().min(1).max(1000).default(25).describe('Maximum number of transactions to return'),
-  }))
-  .output(z.object({
-    transactions: z.array(transactionOutputSchema).describe('List of transactions'),
-    transactionCount: z.number().describe('Number of transactions returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      blockchain: z
+        .enum([
+          'eth',
+          'bsc',
+          'matic',
+          'arbitrum',
+          'base',
+          'optimism',
+          'opbnb',
+          'avalanche',
+          'fantom',
+          'cronos',
+          'solana'
+        ])
+        .describe('Blockchain network to query'),
+      fromAddress: z.string().optional().describe('Filter by sender address'),
+      toAddress: z.string().optional().describe('Filter by recipient address'),
+      since: z.string().optional().describe('Start datetime filter (ISO 8601 format)'),
+      till: z.string().optional().describe('End datetime filter (ISO 8601 format)'),
+      limit: z
+        .number()
+        .min(1)
+        .max(1000)
+        .default(25)
+        .describe('Maximum number of transactions to return')
+    })
+  )
+  .output(
+    z.object({
+      transactions: z.array(transactionOutputSchema).describe('List of transactions'),
+      transactionCount: z.number().describe('Number of transactions returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BitqueryClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion as 'v1' | 'v2',
+      apiVersion: ctx.config.apiVersion as 'v1' | 'v2'
     });
 
     let { blockchain, fromAddress, toAddress, since, till, limit } = ctx.input;
@@ -55,7 +74,10 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
       let txFilters: string[] = [];
       if (fromAddress) txFilters.push('Signer: {is: $fromAddress}');
 
-      let timeFilter = (since || till) ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}` : '';
+      let timeFilter =
+        since || till
+          ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}`
+          : '';
       let txFilter = txFilters.length > 0 ? `Transaction: {${txFilters.join(', ')}}` : '';
       let allFilters = [txFilter, timeFilter].filter(Boolean).join(', ');
       let whereClause = allFilters ? `where: {${allFilters}}` : '';
@@ -97,16 +119,26 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
         transactionHash: t.Transaction?.Signature || '',
         from: t.Transaction?.Signer,
         value: t.Transaction?.Fee?.toString(),
-        success: t.Transaction?.Result?.Success,
+        success: t.Transaction?.Result?.Success
       }));
     } else if (ctx.config.apiVersion === 'v1') {
       let networkMap: Record<string, string> = {
-        eth: 'ethereum', bsc: 'bsc', matic: 'matic', arbitrum: 'arbitrum',
-        base: 'base', optimism: 'optimism', avalanche: 'avalanche_c', fantom: 'fantom', cronos: 'cronos',
+        eth: 'ethereum',
+        bsc: 'bsc',
+        matic: 'matic',
+        arbitrum: 'arbitrum',
+        base: 'base',
+        optimism: 'optimism',
+        avalanche: 'avalanche_c',
+        fantom: 'fantom',
+        cronos: 'cronos'
       };
 
       let filters: string[] = ['options: {limit: $limit, desc: "block.timestamp.iso8601"}'];
-      if (since || till) filters.push(`date: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}`);
+      if (since || till)
+        filters.push(
+          `date: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}`
+        );
       if (fromAddress) filters.push('txSender: {is: $fromAddress}');
       if (toAddress) filters.push('txTo: {is: $toAddress}');
 
@@ -133,7 +165,7 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
 
       let variables: Record<string, any> = {
         network: networkMap[blockchain] || blockchain,
-        limit,
+        limit
       };
       if (fromAddress) variables.fromAddress = fromAddress;
       if (toAddress) variables.toAddress = toAddress;
@@ -152,7 +184,7 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
         value: t.value?.toString(),
         gas: t.gas?.toString(),
         gasPrice: t.gasPrice?.toString(),
-        success: t.success,
+        success: t.success
       }));
     } else {
       // V2 EVM
@@ -161,7 +193,10 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
       if (toAddress) txFilters.push('To: {is: $toAddress}');
 
       let txFilter = txFilters.length > 0 ? `Transaction: {${txFilters.join(', ')}}` : '';
-      let timeFilter = (since || till) ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}` : '';
+      let timeFilter =
+        since || till
+          ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}`
+          : '';
       let allFilters = [txFilter, timeFilter].filter(Boolean).join(', ');
       let whereClause = allFilters ? `where: {${allFilters}}` : '';
 
@@ -203,16 +238,16 @@ Use this to audit wallet activity, monitor address transactions, or investigate 
         to: t.Transaction?.To,
         value: t.Transaction?.Value?.toString(),
         gas: t.Transaction?.Gas?.toString(),
-        gasPrice: t.Transaction?.GasPrice?.toString(),
+        gasPrice: t.Transaction?.GasPrice?.toString()
       }));
     }
 
     return {
       output: {
         transactions,
-        transactionCount: transactions.length,
+        transactionCount: transactions.length
       },
-      message: `Retrieved **${transactions.length}** transaction(s) on **${blockchain}**.`,
+      message: `Retrieved **${transactions.length}** transaction(s) on **${blockchain}**.`
     };
   })
   .build();

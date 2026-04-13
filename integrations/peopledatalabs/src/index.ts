@@ -13,7 +13,7 @@ import {
   cleanCompany,
   cleanLocation,
   cleanSchool,
-  autocomplete,
+  autocomplete
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     cleanCompany,
     cleanLocation,
     cleanSchool,
-    autocomplete,
+    autocomplete
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

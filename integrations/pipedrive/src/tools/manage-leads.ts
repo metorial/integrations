@@ -3,45 +3,52 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLeads = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Leads',
-    key: 'manage_leads',
-    description: `Create, update, or delete leads in the Pipedrive Leads Inbox. Leads are prequalified potential deals that can later be converted to deals.
+export let manageLeads = SlateTool.create(spec, {
+  name: 'Manage Leads',
+  key: 'manage_leads',
+  description: `Create, update, or delete leads in the Pipedrive Leads Inbox. Leads are prequalified potential deals that can later be converted to deals.
 Supports setting title, labels, value, expected close date, linked person/organization, and visibility.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    leadId: z.string().optional().describe('Lead ID (required for update and delete)'),
-    title: z.string().optional().describe('Lead title (required for create)'),
-    personId: z.number().optional().describe('Person ID to link'),
-    organizationId: z.number().optional().describe('Organization ID to link'),
-    labelIds: z.array(z.string()).optional().describe('Array of label UUIDs to assign'),
-    value: z.object({
-      amount: z.number().describe('Monetary value'),
-      currency: z.string().describe('Currency code'),
-    }).optional().describe('Expected deal value'),
-    expectedCloseDate: z.string().optional().describe('Expected close date (YYYY-MM-DD)'),
-    visibleTo: z.enum(['1', '3', '5', '7']).optional().describe('Visibility: 1=owner, 3=group, 5=group+sub, 7=company'),
-    isArchived: z.boolean().optional().describe('Whether the lead is archived (update only)'),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('Lead ID'),
-    title: z.string().optional().describe('Lead title'),
-    personId: z.number().optional().nullable().describe('Linked person ID'),
-    organizationId: z.number().optional().nullable().describe('Linked organization ID'),
-    isArchived: z.boolean().optional().describe('Whether the lead is archived'),
-    addTime: z.string().optional().describe('Creation timestamp'),
-    updateTime: z.string().optional().nullable().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the lead was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      leadId: z.string().optional().describe('Lead ID (required for update and delete)'),
+      title: z.string().optional().describe('Lead title (required for create)'),
+      personId: z.number().optional().describe('Person ID to link'),
+      organizationId: z.number().optional().describe('Organization ID to link'),
+      labelIds: z.array(z.string()).optional().describe('Array of label UUIDs to assign'),
+      value: z
+        .object({
+          amount: z.number().describe('Monetary value'),
+          currency: z.string().describe('Currency code')
+        })
+        .optional()
+        .describe('Expected deal value'),
+      expectedCloseDate: z.string().optional().describe('Expected close date (YYYY-MM-DD)'),
+      visibleTo: z
+        .enum(['1', '3', '5', '7'])
+        .optional()
+        .describe('Visibility: 1=owner, 3=group, 5=group+sub, 7=company'),
+      isArchived: z.boolean().optional().describe('Whether the lead is archived (update only)')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('Lead ID'),
+      title: z.string().optional().describe('Lead title'),
+      personId: z.number().optional().nullable().describe('Linked person ID'),
+      organizationId: z.number().optional().nullable().describe('Linked organization ID'),
+      isArchived: z.boolean().optional().describe('Whether the lead is archived'),
+      addTime: z.string().optional().describe('Creation timestamp'),
+      updateTime: z.string().optional().nullable().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the lead was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
@@ -49,7 +56,7 @@ Supports setting title, labels, value, expected close date, linked person/organi
       await client.deleteLead(ctx.input.leadId);
       return {
         output: { leadId: ctx.input.leadId, deleted: true },
-        message: `Lead **${ctx.input.leadId}** has been deleted.`,
+        message: `Lead **${ctx.input.leadId}** has been deleted.`
       };
     }
 
@@ -82,8 +89,8 @@ Supports setting title, labels, value, expected close date, linked person/organi
         organizationId: lead?.organization_id,
         isArchived: lead?.is_archived,
         addTime: lead?.add_time,
-        updateTime: lead?.update_time,
+        updateTime: lead?.update_time
       },
-      message: `Lead **"${lead?.title}"** (ID: ${lead?.id}) has been ${action}.`,
+      message: `Lead **"${lead?.title}"** (ID: ${lead?.id}) has been ${action}.`
     };
   });

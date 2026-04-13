@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   queryMetrics,
@@ -30,7 +29,7 @@ import {
   monitorAlertTrigger,
   newEventTrigger,
   incidentUpdateTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -60,10 +59,5 @@ export let provider = Slate.create({
     listHosts,
     scheduleDowntime
   ],
-  triggers: [
-    inboundWebhook,
-    monitorAlertTrigger,
-    newEventTrigger,
-    incidentUpdateTrigger
-  ]
+  triggers: [inboundWebhook, monitorAlertTrigger, newEventTrigger, incidentUpdateTrigger]
 });

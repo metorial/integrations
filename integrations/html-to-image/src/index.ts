@@ -23,7 +23,5 @@ export let provider = Slate.create({
     updateTemplate,
     listTemplates
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

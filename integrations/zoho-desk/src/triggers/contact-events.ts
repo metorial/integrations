@@ -3,36 +3,33 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let contactEventTypes = [
-  'Contact_Add',
-  'Contact_Update',
-  'Contact_Delete',
-] as const;
+let contactEventTypes = ['Contact_Add', 'Contact_Update', 'Contact_Delete'] as const;
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggered when a customer contact is created, updated, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of contact event'),
-    contactId: z.string().describe('ID of the affected contact'),
-    payload: z.any().describe('Full event payload from Zoho Desk'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the affected contact'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    accountId: z.string().optional().describe('Associated account ID'),
-    previousState: z.any().optional().describe('Previous state (for update events)'),
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description: 'Triggered when a customer contact is created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of contact event'),
+      contactId: z.string().describe('ID of the affected contact'),
+      payload: z.any().describe('Full event payload from Zoho Desk')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the affected contact'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      accountId: z.string().optional().describe('Associated account ID'),
+      previousState: z.any().optional().describe('Previous state (for update events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhookIds: string[] = [];
 
@@ -42,7 +39,7 @@ export let contactEvents = SlateTrigger.create(
             name: `Slates - ${eventType}`,
             url: ctx.input.webhookBaseUrl,
             eventType,
-            isActive: true,
+            isActive: true
           };
 
           if (eventType === 'Contact_Update') {
@@ -59,32 +56,38 @@ export let contactEvents = SlateTrigger.create(
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
-        try { await client.deleteWebhook(webhookId); } catch { /* ignore */ }
+      for (let webhookId of details.webhookIds || []) {
+        try {
+          await client.deleteWebhook(webhookId);
+        } catch {
+          /* ignore */
+        }
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as Record<string, any>;
 
       let eventType = data.eventType || data.event_type || 'unknown';
       let contact = data.payload || data.contact || data;
       let contactId = contact.id || contact.contactId || data.contactId || '';
 
       return {
-        inputs: [{
-          eventType,
-          contactId: String(contactId),
-          payload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            contactId: String(contactId),
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, contactId, payload } = ctx.input;
       let contact = payload?.payload || payload?.contact || payload || {};
 
@@ -103,9 +106,9 @@ export let contactEvents = SlateTrigger.create(
           email: contact.email,
           phone: contact.phone,
           accountId: contact.accountId,
-          previousState: contact.prevState || payload?.prevState,
-        },
+          previousState: contact.prevState || payload?.prevState
+        }
       };
-    },
+    }
   })
   .build();

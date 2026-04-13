@@ -3,24 +3,27 @@ import { createClient } from '../lib/utils';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listOrganizationData = SlateTool.create(
-  spec,
-  {
-    name: 'List Organization Data',
-    key: 'list_organization_data',
-    description: `Retrieve organizational structure data from Deel. Can list legal entities, teams/groups, or departments. Useful for finding IDs needed when creating contracts.`,
-    tags: {
-      readOnly: true,
-    },
+export let listOrganizationData = SlateTool.create(spec, {
+  name: 'List Organization Data',
+  key: 'list_organization_data',
+  description: `Retrieve organizational structure data from Deel. Can list legal entities, teams/groups, or departments. Useful for finding IDs needed when creating contracts.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    resourceType: z.enum(['legal_entities', 'teams', 'departments']).describe('Type of organization data to list'),
-  }))
-  .output(z.object({
-    items: z.array(z.record(z.string(), z.any())).describe('List of organization resources'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      resourceType: z
+        .enum(['legal_entities', 'teams', 'departments'])
+        .describe('Type of organization data to list')
+    })
+  )
+  .output(
+    z.object({
+      items: z.array(z.record(z.string(), z.any())).describe('List of organization resources')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result: any;
@@ -41,6 +44,7 @@ export let listOrganizationData = SlateTool.create(
 
     return {
       output: { items },
-      message: `Found ${items.length} ${ctx.input.resourceType.replace(/_/g, ' ')}.`,
+      message: `Found ${items.length} ${ctx.input.resourceType.replace(/_/g, ' ')}.`
     };
-  }).build();
+  })
+  .build();

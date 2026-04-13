@@ -17,7 +17,7 @@ import {
   upsertOverpayment,
   listOverpayments,
   getOrganisation,
-  syncOrganisation,
+  syncOrganisation
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -41,9 +41,7 @@ export let provider = Slate.create({
     upsertOverpayment,
     listOverpayments,
     getOrganisation,
-    syncOrganisation,
+    syncOrganisation
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

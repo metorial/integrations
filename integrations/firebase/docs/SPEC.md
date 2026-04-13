@@ -13,11 +13,13 @@ Firebase services support two primary authentication methods for API access:
 This is the recommended method for server-side integrations. Firebase projects support Google service accounts, which you can use to call Firebase server APIs from your app server or trusted environment.
 
 **Setup:**
+
 1. To authenticate a service account and authorize it to access Firebase services, you must generate a private key file in JSON format. To generate a private key file for your service account: In the Firebase console, open Settings > Service Accounts.
 2. Use the service account key JSON file to generate an OAuth 2.0 access token.
 3. Pass it to the endpoints as an Authorization header set to `Bearer {YOUR_TOKEN}`.
 
 **Required Scopes (vary by service):**
+
 - Realtime Database: `https://www.googleapis.com/auth/firebase.database` and `https://www.googleapis.com/auth/userinfo.email`
 - Firestore / Cloud Messaging / General: `https://www.googleapis.com/auth/cloud-platform`
 
@@ -36,6 +38,7 @@ When a user or device signs in using Firebase Authentication, Firebase creates a
 The Firebase Authentication REST API itself uses a Web API Key (found in Firebase Console project settings) passed as a `key` query parameter. This is used for client-side operations like signing up users, signing in, and managing accounts.
 
 **Required inputs for integration:**
+
 - Firebase Project ID
 - Service Account Key JSON (for server-to-server auth)
 - Database URL (for Realtime Database, e.g., `https://<DATABASE_NAME>.firebaseio.com`)

@@ -3,37 +3,39 @@ import { FirestoreClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let firestoreDocumentChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Firestore Document Changes',
-    key: 'firestore_document_changes',
-    description: 'Monitors a Firestore collection for new or updated documents by polling for changes. Detects documents that have been created or modified since the last poll.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    documentPath: z.string().describe('Full resource path of the document'),
-    documentId: z.string().describe('The document ID'),
-    collectionPath: z.string().describe('Collection path being monitored'),
-    fields: z.record(z.string(), z.any()).describe('Current document fields'),
-    createTime: z.string().describe('Document creation timestamp'),
-    updateTime: z.string().describe('Document last update timestamp'),
-  }))
-  .output(z.object({
-    documentPath: z.string().describe('Full resource path of the document'),
-    documentId: z.string().describe('The document ID'),
-    collectionPath: z.string().describe('Collection path being monitored'),
-    fields: z.record(z.string(), z.any()).describe('Current document fields'),
-    createTime: z.string().describe('Document creation timestamp'),
-    updateTime: z.string().describe('Document last update timestamp'),
-  }))
+export let firestoreDocumentChanges = SlateTrigger.create(spec, {
+  name: 'Firestore Document Changes',
+  key: 'firestore_document_changes',
+  description:
+    'Monitors a Firestore collection for new or updated documents by polling for changes. Detects documents that have been created or modified since the last poll.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      documentPath: z.string().describe('Full resource path of the document'),
+      documentId: z.string().describe('The document ID'),
+      collectionPath: z.string().describe('Collection path being monitored'),
+      fields: z.record(z.string(), z.any()).describe('Current document fields'),
+      createTime: z.string().describe('Document creation timestamp'),
+      updateTime: z.string().describe('Document last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      documentPath: z.string().describe('Full resource path of the document'),
+      documentId: z.string().describe('The document ID'),
+      collectionPath: z.string().describe('Collection path being monitored'),
+      fields: z.record(z.string(), z.any()).describe('Current document fields'),
+      createTime: z.string().describe('Document creation timestamp'),
+      updateTime: z.string().describe('Document last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let state = ctx.state || {};
       let collectionPath = state.collectionPath || 'documents';
       let lastPollTime = state.lastPollTime || '';
@@ -41,7 +43,7 @@ export let firestoreDocumentChanges = SlateTrigger.create(
 
       let client = new FirestoreClient({
         token: ctx.auth.token,
-        projectId: ctx.config.projectId,
+        projectId: ctx.config.projectId
       });
 
       let inputs: Array<{
@@ -71,7 +73,7 @@ export let firestoreDocumentChanges = SlateTrigger.create(
               collectionPath,
               fields: doc.fields,
               createTime: doc.createTime,
-              updateTime: doc.updateTime,
+              updateTime: doc.updateTime
             });
           }
         } else if (previousUpdateTime !== doc.updateTime) {
@@ -82,7 +84,7 @@ export let firestoreDocumentChanges = SlateTrigger.create(
             collectionPath,
             fields: doc.fields,
             createTime: doc.createTime,
-            updateTime: doc.updateTime,
+            updateTime: doc.updateTime
           });
         }
       }
@@ -92,12 +94,12 @@ export let firestoreDocumentChanges = SlateTrigger.create(
         updatedState: {
           collectionPath,
           lastPollTime: new Date().toISOString(),
-          knownDocIds: newKnownDocIds,
-        },
+          knownDocIds: newKnownDocIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `firestore_document.${ctx.input.changeType}`,
         id: `${ctx.input.documentId}-${ctx.input.updateTime}`,
@@ -107,9 +109,9 @@ export let firestoreDocumentChanges = SlateTrigger.create(
           collectionPath: ctx.input.collectionPath,
           fields: ctx.input.fields,
           createTime: ctx.input.createTime,
-          updateTime: ctx.input.updateTime,
-        },
+          updateTime: ctx.input.updateTime
+        }
       };
-    },
+    }
   })
   .build();

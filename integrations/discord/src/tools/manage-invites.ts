@@ -8,12 +8,18 @@ let inviteSchema = z.object({
   channelId: z.string().nullable().describe('Channel the invite is for'),
   guildId: z.string().nullable().describe('Guild the invite belongs to'),
   inviterUsername: z.string().nullable().describe('Username of the invite creator'),
-  maxAge: z.number().nullable().describe('Duration (in seconds) after which the invite expires, or 0 for never'),
-  maxUses: z.number().nullable().describe('Max number of times the invite can be used, or 0 for unlimited'),
+  maxAge: z
+    .number()
+    .nullable()
+    .describe('Duration (in seconds) after which the invite expires, or 0 for never'),
+  maxUses: z
+    .number()
+    .nullable()
+    .describe('Max number of times the invite can be used, or 0 for unlimited'),
   uses: z.number().nullable().describe('Number of times the invite has been used'),
   temporary: z.boolean().nullable().describe('Whether the invite grants temporary membership'),
   expiresAt: z.string().nullable().describe('ISO8601 timestamp when the invite expires'),
-  inviteUrl: z.string().describe('Full invite URL'),
+  inviteUrl: z.string().describe('Full invite URL')
 });
 
 let mapInvite = (invite: any) => ({
@@ -26,46 +32,77 @@ let mapInvite = (invite: any) => ({
   uses: invite.uses ?? null,
   temporary: invite.temporary ?? null,
   expiresAt: invite.expires_at ?? null,
-  inviteUrl: `https://discord.gg/${invite.code}`,
+  inviteUrl: `https://discord.gg/${invite.code}`
 });
 
-export let manageInvites = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Invites',
-    key: 'manage_invites',
-    description: `List, create, or delete Discord invites. Invites allow users to join a guild via a shareable link. You can list invites for a specific channel or an entire guild, create new invites for a channel, or delete existing invites by code.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageInvites = SlateTool.create(spec, {
+  name: 'Manage Invites',
+  key: 'manage_invites',
+  description: `List, create, or delete Discord invites. Invites allow users to join a guild via a shareable link. You can list invites for a specific channel or an entire guild, create new invites for a channel, or delete existing invites by code.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list_channel', 'list_guild', 'create', 'delete']).describe('Invite action to perform'),
-    channelId: z.string().optional().describe('Channel ID (required for list_channel and create actions)'),
-    guildId: z.string().optional().describe('Guild ID (required for list_guild action)'),
-    inviteCode: z.string().optional().describe('Invite code to delete (required for delete action)'),
-    maxAge: z.number().optional().describe('Duration (in seconds) before the invite expires, or 0 for never (default: 86400 / 24 hours)'),
-    maxUses: z.number().optional().describe('Max number of times the invite can be used, or 0 for unlimited (default: 0)'),
-    temporary: z.boolean().optional().describe('Whether the invite grants temporary membership (default: false)'),
-    unique: z.boolean().optional().describe('Whether to create a unique one-time invite (default: false)'),
-  }))
-  .output(z.object({
-    invite: inviteSchema.optional().describe('Created or deleted invite (for create/delete actions)'),
-    invites: z.array(inviteSchema).optional().describe('List of invites (for list_channel/list_guild actions)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list_channel', 'list_guild', 'create', 'delete'])
+        .describe('Invite action to perform'),
+      channelId: z
+        .string()
+        .optional()
+        .describe('Channel ID (required for list_channel and create actions)'),
+      guildId: z.string().optional().describe('Guild ID (required for list_guild action)'),
+      inviteCode: z
+        .string()
+        .optional()
+        .describe('Invite code to delete (required for delete action)'),
+      maxAge: z
+        .number()
+        .optional()
+        .describe(
+          'Duration (in seconds) before the invite expires, or 0 for never (default: 86400 / 24 hours)'
+        ),
+      maxUses: z
+        .number()
+        .optional()
+        .describe(
+          'Max number of times the invite can be used, or 0 for unlimited (default: 0)'
+        ),
+      temporary: z
+        .boolean()
+        .optional()
+        .describe('Whether the invite grants temporary membership (default: false)'),
+      unique: z
+        .boolean()
+        .optional()
+        .describe('Whether to create a unique one-time invite (default: false)')
+    })
+  )
+  .output(
+    z.object({
+      invite: inviteSchema
+        .optional()
+        .describe('Created or deleted invite (for create/delete actions)'),
+      invites: z
+        .array(inviteSchema)
+        .optional()
+        .describe('List of invites (for list_channel/list_guild actions)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DiscordClient({ token: ctx.auth.token, tokenType: ctx.auth.tokenType });
     let { action } = ctx.input;
 
     if (action === 'list_channel') {
-      if (!ctx.input.channelId) throw new Error('channelId is required for list_channel action');
+      if (!ctx.input.channelId)
+        throw new Error('channelId is required for list_channel action');
       let invites = await client.getChannelInvites(ctx.input.channelId);
       let mapped = invites.map(mapInvite);
       return {
         output: { invites: mapped },
-        message: `Found ${mapped.length} invite(s) for channel \`${ctx.input.channelId}\`.`,
+        message: `Found ${mapped.length} invite(s) for channel \`${ctx.input.channelId}\`.`
       };
     }
 
@@ -75,7 +112,7 @@ export let manageInvites = SlateTool.create(
       let mapped = invites.map(mapInvite);
       return {
         output: { invites: mapped },
-        message: `Found ${mapped.length} invite(s) for guild \`${ctx.input.guildId}\`.`,
+        message: `Found ${mapped.length} invite(s) for guild \`${ctx.input.guildId}\`.`
       };
     }
 
@@ -85,12 +122,12 @@ export let manageInvites = SlateTool.create(
         max_age: ctx.input.maxAge,
         max_uses: ctx.input.maxUses,
         temporary: ctx.input.temporary,
-        unique: ctx.input.unique,
+        unique: ctx.input.unique
       });
       let mapped = mapInvite(invite);
       return {
         output: { invite: mapped },
-        message: `Created invite \`${mapped.inviteCode}\` for channel \`${ctx.input.channelId}\`: ${mapped.inviteUrl}`,
+        message: `Created invite \`${mapped.inviteCode}\` for channel \`${ctx.input.channelId}\`: ${mapped.inviteUrl}`
       };
     }
 
@@ -100,7 +137,7 @@ export let manageInvites = SlateTool.create(
     let mapped = mapInvite(invite);
     return {
       output: { invite: mapped },
-      message: `Deleted invite \`${ctx.input.inviteCode}\`.`,
+      message: `Deleted invite \`${ctx.input.inviteCode}\`.`
     };
   })
   .build();

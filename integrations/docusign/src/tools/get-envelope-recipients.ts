@@ -14,40 +14,51 @@ let recipientOutputSchema = z.object({
   deliveredDateTime: z.string().optional(),
   sentDateTime: z.string().optional(),
   declinedDateTime: z.string().optional(),
-  declinedReason: z.string().optional(),
+  declinedReason: z.string().optional()
 });
 
-export let getEnvelopeRecipients = SlateTool.create(
-  spec,
-  {
-    name: 'Get Envelope Recipients',
-    key: 'get_envelope_recipients',
-    description: `Retrieves all recipients for a DocuSign envelope, including their status, signing order, and optionally their tab (form field) data. Useful for tracking who has signed and who hasn't.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getEnvelopeRecipients = SlateTool.create(spec, {
+  name: 'Get Envelope Recipients',
+  key: 'get_envelope_recipients',
+  description: `Retrieves all recipients for a DocuSign envelope, including their status, signing order, and optionally their tab (form field) data. Useful for tracking who has signed and who hasn't.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    envelopeId: z.string().describe('ID of the envelope'),
-    includeTabs: z.boolean().optional().default(false).describe('Include tab (form field) data for each recipient'),
-  }))
-  .output(z.object({
-    signers: z.array(recipientOutputSchema).optional().describe('Signers on the envelope'),
-    carbonCopies: z.array(recipientOutputSchema).optional().describe('CC recipients'),
-    certifiedDeliveries: z.array(recipientOutputSchema).optional().describe('Certified delivery recipients'),
-    agents: z.array(recipientOutputSchema).optional().describe('Agent recipients'),
-    editors: z.array(recipientOutputSchema).optional().describe('Editor recipients'),
-    inPersonSigners: z.array(recipientOutputSchema).optional().describe('In-person signers'),
-    currentRoutingOrder: z.string().optional().describe('Current routing order being processed'),
-    recipientCount: z.string().optional().describe('Total number of recipients'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      envelopeId: z.string().describe('ID of the envelope'),
+      includeTabs: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include tab (form field) data for each recipient')
+    })
+  )
+  .output(
+    z.object({
+      signers: z.array(recipientOutputSchema).optional().describe('Signers on the envelope'),
+      carbonCopies: z.array(recipientOutputSchema).optional().describe('CC recipients'),
+      certifiedDeliveries: z
+        .array(recipientOutputSchema)
+        .optional()
+        .describe('Certified delivery recipients'),
+      agents: z.array(recipientOutputSchema).optional().describe('Agent recipients'),
+      editors: z.array(recipientOutputSchema).optional().describe('Editor recipients'),
+      inPersonSigners: z.array(recipientOutputSchema).optional().describe('In-person signers'),
+      currentRoutingOrder: z
+        .string()
+        .optional()
+        .describe('Current routing order being processed'),
+      recipientCount: z.string().optional().describe('Total number of recipients')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUri: ctx.auth.baseUri,
-      accountId: ctx.auth.accountId,
+      accountId: ctx.auth.accountId
     });
 
     let result = await client.getRecipients(ctx.input.envelopeId, ctx.input.includeTabs);
@@ -64,7 +75,7 @@ export let getEnvelopeRecipients = SlateTool.create(
         deliveredDateTime: r.deliveredDateTime,
         sentDateTime: r.sentDateTime,
         declinedDateTime: r.declinedDateTime,
-        declinedReason: r.declinedReason,
+        declinedReason: r.declinedReason
       }));
 
     let signers = mapRecipients(result.signers);
@@ -74,8 +85,14 @@ export let getEnvelopeRecipients = SlateTool.create(
     let editors = mapRecipients(result.editors);
     let inPersonSigners = mapRecipients(result.inPersonSigners);
 
-    let totalCount = [signers, carbonCopies, certifiedDeliveries, agents, editors, inPersonSigners]
-      .reduce((sum, arr) => sum + (arr?.length || 0), 0);
+    let totalCount = [
+      signers,
+      carbonCopies,
+      certifiedDeliveries,
+      agents,
+      editors,
+      inPersonSigners
+    ].reduce((sum, arr) => sum + (arr?.length || 0), 0);
 
     return {
       output: {
@@ -86,9 +103,9 @@ export let getEnvelopeRecipients = SlateTool.create(
         editors,
         inPersonSigners,
         currentRoutingOrder: result.currentRoutingOrder,
-        recipientCount: String(totalCount),
+        recipientCount: String(totalCount)
       },
-      message: `Envelope has **${totalCount}** recipient(s). ${signers?.filter((s: any) => s.status === 'completed').length || 0} signer(s) have completed signing.`,
+      message: `Envelope has **${totalCount}** recipient(s). ${signers?.filter((s: any) => s.status === 'completed').length || 0} signer(s) have completed signing.`
     };
   })
   .build();

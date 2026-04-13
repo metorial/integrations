@@ -16,13 +16,9 @@ import {
   listRefunds,
   listSettlements,
   resolveBankAccount,
-  manageBeneficiaries,
+  manageBeneficiaries
 } from './tools';
-import {
-  chargeCompleted,
-  transferCompleted,
-  subscriptionEvent,
-} from './triggers';
+import { chargeCompleted, transferCompleted, subscriptionEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,11 +38,7 @@ export let provider = Slate.create({
     listRefunds,
     listSettlements,
     resolveBankAccount,
-    manageBeneficiaries,
+    manageBeneficiaries
   ],
-  triggers: [
-    chargeCompleted,
-    transferCompleted,
-    subscriptionEvent,
-  ],
+  triggers: [chargeCompleted, transferCompleted, subscriptionEvent]
 });

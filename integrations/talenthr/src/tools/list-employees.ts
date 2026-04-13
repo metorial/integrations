@@ -23,39 +23,48 @@ let employeeSchema = z.object({
   hireDate: z.string().describe('Hire date'),
   reportsToEmployeeId: z.number().nullable().describe('Manager employee ID'),
   photoUrl: z.string().nullable().describe('Profile photo URL'),
-  role: z.string().describe('User role name'),
+  role: z.string().describe('User role name')
 });
 
-export let listEmployees = SlateTool.create(
-  spec,
-  {
-    name: 'List Employees',
-    key: 'list_employees',
-    description: `Retrieve the employee directory from TalentHR. Returns a paginated list of employees with their basic profile, job assignment, and organizational details.
+export let listEmployees = SlateTool.create(spec, {
+  name: 'List Employees',
+  key: 'list_employees',
+  description: `Retrieve the employee directory from TalentHR. Returns a paginated list of employees with their basic profile, job assignment, and organizational details.
 Use this to browse the workforce, find specific employees, or get an overview of the organization.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().default(100).describe('Maximum number of employees to return (default 100)'),
-    offset: z.number().optional().default(0).describe('Number of records to skip for pagination'),
-  }))
-  .output(z.object({
-    employees: z.array(employeeSchema).describe('List of employees'),
-    count: z.number().describe('Number of employees returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .optional()
+        .default(100)
+        .describe('Maximum number of employees to return (default 100)'),
+      offset: z
+        .number()
+        .optional()
+        .default(0)
+        .describe('Number of records to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      employees: z.array(employeeSchema).describe('List of employees'),
+      count: z.number().describe('Number of employees returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.listEmployees({
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
-    let employees = response.data.rows.map((emp) => ({
+    let employees = response.data.rows.map(emp => ({
       employeeId: emp.id,
       userId: emp.user_id,
       firstName: emp.first_name,
@@ -75,14 +84,15 @@ Use this to browse the workforce, find specific employees, or get an overview of
       hireDate: emp.hire_date,
       reportsToEmployeeId: emp.reports_to_employee_id,
       photoUrl: emp.photo_url,
-      role: emp.user_role.name,
+      role: emp.user_role.name
     }));
 
     return {
       output: {
         employees,
-        count: employees.length,
+        count: employees.length
       },
-      message: `Retrieved **${employees.length}** employee(s) from the directory.`,
+      message: `Retrieved **${employees.length}** employee(s) from the directory.`
     };
-  }).build();
+  })
+  .build();

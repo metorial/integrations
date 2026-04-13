@@ -13,13 +13,13 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${config.brandSubdomain}.reamaze.io/api/v1`,
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       },
       auth: {
         username: config.loginEmail,
-        password: config.token,
-      },
+        password: config.token
+      }
     });
   }
 
@@ -93,31 +93,34 @@ export class Client {
           suppress_notifications: data.message.suppressNotifications,
           suppress_autoresolve: data.message.suppressAutoresolve,
           attachment: data.message.attachment,
-          attachments: data.message.attachments,
+          attachments: data.message.attachments
         },
         user: {
           name: data.user.name,
           email: data.user.email,
-          data: data.user.data,
-        },
-      },
+          data: data.user.data
+        }
+      }
     };
 
     let response = await this.axios.post('/conversations', body);
     return response.data;
   }
 
-  async updateConversation(slug: string, data: {
-    status?: number;
-    assignee?: string;
-    tagList?: string[];
-    category?: string;
-    data?: Record<string, string>;
-    holdUntil?: string;
-    brand?: string;
-  }) {
+  async updateConversation(
+    slug: string,
+    data: {
+      status?: number;
+      assignee?: string;
+      tagList?: string[];
+      category?: string;
+      data?: Record<string, string>;
+      holdUntil?: string;
+      brand?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      conversation: {} as Record<string, any>,
+      conversation: {} as Record<string, any>
     };
     if (data.status !== undefined) body['conversation']['status'] = data.status;
     if (data.assignee) body['conversation']['assignee'] = { email: data.assignee };
@@ -133,24 +136,29 @@ export class Client {
 
   // ---- Messages ----
 
-  async createMessage(conversationSlug: string, data: {
-    body: string;
-    visibility?: number;
-    user?: { email: string; name?: string };
-    suppressNotifications?: boolean;
-    suppressAutoresolve?: boolean;
-    attachment?: string;
-    recipients?: string[];
-  }) {
+  async createMessage(
+    conversationSlug: string,
+    data: {
+      body: string;
+      visibility?: number;
+      user?: { email: string; name?: string };
+      suppressNotifications?: boolean;
+      suppressAutoresolve?: boolean;
+      attachment?: string;
+      recipients?: string[];
+    }
+  ) {
     let body: Record<string, any> = {
       message: {
         body: data.body,
-        visibility: data.visibility ?? 0,
-      },
+        visibility: data.visibility ?? 0
+      }
     };
     if (data.user) body['message']['user'] = data.user;
-    if (data.suppressNotifications !== undefined) body['message']['suppress_notifications'] = data.suppressNotifications;
-    if (data.suppressAutoresolve !== undefined) body['message']['suppress_autoresolve'] = data.suppressAutoresolve;
+    if (data.suppressNotifications !== undefined)
+      body['message']['suppress_notifications'] = data.suppressNotifications;
+    if (data.suppressAutoresolve !== undefined)
+      body['message']['suppress_autoresolve'] = data.suppressAutoresolve;
     if (data.attachment) body['message']['attachment'] = data.attachment;
     if (data.recipients) body['message']['recipients'] = data.recipients;
 
@@ -199,22 +207,25 @@ export class Client {
         id: data.id,
         external_avatar_url: data.externalAvatarUrl,
         notes: data.notes,
-        data: data.data,
-      },
+        data: data.data
+      }
     };
 
     let response = await this.axios.post('/contacts', body);
     return response.data;
   }
 
-  async updateContact(identifier: string, data: {
-    name?: string;
-    friendlyName?: string;
-    externalAvatarUrl?: string;
-    notes?: string[];
-    data?: Record<string, string>;
-    identifierType?: string;
-  }) {
+  async updateContact(
+    identifier: string,
+    data: {
+      name?: string;
+      friendlyName?: string;
+      externalAvatarUrl?: string;
+      notes?: string[];
+      data?: Record<string, string>;
+      identifierType?: string;
+    }
+  ) {
     let url = `/contacts/${encodeURIComponent(identifier)}`;
     if (data.identifierType) {
       url += `?identifier_type=${data.identifierType}`;
@@ -226,8 +237,8 @@ export class Client {
         friendly_name: data.friendlyName,
         external_avatar_url: data.externalAvatarUrl,
         notes: data.notes,
-        data: data.data,
-      },
+        data: data.data
+      }
     };
 
     let response = await this.axios.put(url, body);
@@ -237,20 +248,25 @@ export class Client {
   // ---- Contact Notes ----
 
   async listContactNotes(contactIdentifier: string) {
-    let response = await this.axios.get(`/contacts/${encodeURIComponent(contactIdentifier)}/notes`);
+    let response = await this.axios.get(
+      `/contacts/${encodeURIComponent(contactIdentifier)}/notes`
+    );
     return response.data;
   }
 
   async createContactNote(contactIdentifier: string, note: string) {
-    let response = await this.axios.post(`/contacts/${encodeURIComponent(contactIdentifier)}/notes`, {
-      note: { body: note },
-    });
+    let response = await this.axios.post(
+      `/contacts/${encodeURIComponent(contactIdentifier)}/notes`,
+      {
+        note: { body: note }
+      }
+    );
     return response.data;
   }
 
   async updateContactNote(noteId: number, note: string) {
     let response = await this.axios.put(`/notes/${noteId}`, {
-      note: { body: note },
+      note: { body: note }
     });
     return response.data;
   }
@@ -273,9 +289,7 @@ export class Client {
     if (params?.q) query['q'] = params.q;
     if (params?.page) query['page'] = String(params.page);
 
-    let path = params?.topicSlug
-      ? `/topics/${params.topicSlug}/articles`
-      : '/articles';
+    let path = params?.topicSlug ? `/topics/${params.topicSlug}/articles` : '/articles';
 
     let response = await this.axios.get(path, { params: query });
     return response.data;
@@ -297,22 +311,25 @@ export class Client {
         title: data.title,
         body: data.body,
         status: data.status,
-        topic_id: data.topicId,
-      },
+        topic_id: data.topicId
+      }
     };
 
     let response = await this.axios.post('/articles', body);
     return response.data;
   }
 
-  async updateArticle(articleId: string, data: {
-    title?: string;
-    body?: string;
-    status?: number;
-    topicId?: string;
-  }) {
+  async updateArticle(
+    articleId: string,
+    data: {
+      title?: string;
+      body?: string;
+      status?: number;
+      topicId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      article: {} as Record<string, any>,
+      article: {} as Record<string, any>
     };
     if (data.title !== undefined) body['article']['title'] = data.title;
     if (data.body !== undefined) body['article']['body'] = data.body;
@@ -335,10 +352,7 @@ export class Client {
 
   // ---- Response Templates ----
 
-  async listResponseTemplates(params?: {
-    q?: string;
-    page?: number;
-  }) {
+  async listResponseTemplates(params?: { q?: string; page?: number }) {
     let query: Record<string, string> = {};
     if (params?.q) query['q'] = params.q;
     if (params?.page) query['page'] = String(params.page);
@@ -352,20 +366,20 @@ export class Client {
     return response.data;
   }
 
-  async createResponseTemplate(data: {
-    name: string;
-    body: string;
-  }) {
+  async createResponseTemplate(data: { name: string; body: string }) {
     let response = await this.axios.post('/response_templates', {
-      response_template: { name: data.name, body: data.body },
+      response_template: { name: data.name, body: data.body }
     });
     return response.data;
   }
 
-  async updateResponseTemplate(templateId: string, data: {
-    name?: string;
-    body?: string;
-  }) {
+  async updateResponseTemplate(
+    templateId: string,
+    data: {
+      name?: string;
+      body?: string;
+    }
+  ) {
     let body: Record<string, any> = { response_template: {} as Record<string, any> };
     if (data.name !== undefined) body['response_template']['name'] = data.name;
     if (data.body !== undefined) body['response_template']['body'] = data.body;
@@ -381,22 +395,22 @@ export class Client {
     return response.data;
   }
 
-  async createStaff(data: {
-    name: string;
-    email: string;
-  }) {
+  async createStaff(data: { name: string; email: string }) {
     let response = await this.axios.post('/staff', {
-      staff: { name: data.name, email: data.email },
+      staff: { name: data.name, email: data.email }
     });
     return response.data;
   }
 
   // ---- Reports ----
 
-  async getReport(type: 'volume' | 'response_time' | 'staff' | 'tags' | 'channel_summary', params?: {
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getReport(
+    type: 'volume' | 'response_time' | 'staff' | 'tags' | 'channel_summary',
+    params?: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ) {
     let query: Record<string, string> = {};
     if (params?.startDate) query['start_date'] = params.startDate;
     if (params?.endDate) query['end_date'] = params.endDate;
@@ -432,16 +446,16 @@ export class Client {
     let body: Record<string, any> = {
       incident: {
         title: data.title,
-        updates_attributes: data.updates.map((u) => ({
+        updates_attributes: data.updates.map(u => ({
           status: u.status,
-          message: u.message,
-        })),
-      },
+          message: u.message
+        }))
+      }
     };
     if (data.systems) {
-      body['incident']['incidents_systems_attributes'] = data.systems.map((s) => ({
+      body['incident']['incidents_systems_attributes'] = data.systems.map(s => ({
         system_id: s.systemId,
-        status: s.status,
+        status: s.status
       }));
     }
 
@@ -449,33 +463,36 @@ export class Client {
     return response.data;
   }
 
-  async updateIncident(incidentId: string, data: {
-    title?: string;
-    updates?: Array<{
-      status: string;
-      message: string;
-    }>;
-    systems?: Array<{
-      id?: number;
-      systemId: number;
-      status: string;
-    }>;
-  }) {
+  async updateIncident(
+    incidentId: string,
+    data: {
+      title?: string;
+      updates?: Array<{
+        status: string;
+        message: string;
+      }>;
+      systems?: Array<{
+        id?: number;
+        systemId: number;
+        status: string;
+      }>;
+    }
+  ) {
     let body: Record<string, any> = {
-      incident: {} as Record<string, any>,
+      incident: {} as Record<string, any>
     };
     if (data.title !== undefined) body['incident']['title'] = data.title;
     if (data.updates) {
-      body['incident']['updates_attributes'] = data.updates.map((u) => ({
+      body['incident']['updates_attributes'] = data.updates.map(u => ({
         status: u.status,
-        message: u.message,
+        message: u.message
       }));
     }
     if (data.systems) {
-      body['incident']['incidents_systems_attributes'] = data.systems.map((s) => ({
+      body['incident']['incidents_systems_attributes'] = data.systems.map(s => ({
         id: s.id,
         system_id: s.systemId,
-        status: s.status,
+        status: s.status
       }));
     }
 

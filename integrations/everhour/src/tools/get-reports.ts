@@ -17,30 +17,33 @@ let reportEntrySchema = z.object({
   costsCents: z.number().optional().describe('Costs in cents'),
   profitCents: z.number().optional().describe('Profit in cents'),
   uninvoicedAmountCents: z.number().optional().describe('Uninvoiced amount in cents'),
-  expensesCents: z.number().optional().describe('Total expenses in cents'),
+  expensesCents: z.number().optional().describe('Total expenses in cents')
 });
 
-export let getReport = SlateTool.create(
-  spec,
-  {
-    name: 'Get Report',
-    key: 'get_report',
-    description: `Generate aggregated time and billing reports by projects, clients, or users. Reports include total time, billable/non-billable breakdown, amounts, costs, profit, and expenses. All monetary values are in cents.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    reportType: z.enum(['projects', 'clients', 'users']).describe('Type of report to generate'),
-    dateFrom: z.string().optional().describe('Start date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('End date (YYYY-MM-DD)'),
-    projectId: z.string().optional().describe('Filter by project ID'),
-    clientId: z.number().optional().describe('Filter by client ID'),
-    memberId: z.number().optional().describe('Filter by member ID'),
-  }))
-  .output(z.object({
-    entries: z.array(reportEntrySchema).describe('Report entries'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getReport = SlateTool.create(spec, {
+  name: 'Get Report',
+  key: 'get_report',
+  description: `Generate aggregated time and billing reports by projects, clients, or users. Reports include total time, billable/non-billable breakdown, amounts, costs, profit, and expenses. All monetary values are in cents.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      reportType: z
+        .enum(['projects', 'clients', 'users'])
+        .describe('Type of report to generate'),
+      dateFrom: z.string().optional().describe('Start date (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('End date (YYYY-MM-DD)'),
+      projectId: z.string().optional().describe('Filter by project ID'),
+      clientId: z.number().optional().describe('Filter by client ID'),
+      memberId: z.number().optional().describe('Filter by member ID')
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(reportEntrySchema).describe('Report entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EverhourClient(ctx.auth.token);
     let params: any = {};
     if (ctx.input.dateFrom) params['date.gte'] = ctx.input.dateFrom;
@@ -75,11 +78,11 @@ export let getReport = SlateTool.create(
       costsCents: entry.costs,
       profitCents: entry.profit,
       uninvoicedAmountCents: entry.uninvoicedAmount,
-      expensesCents: entry.expenses,
+      expensesCents: entry.expenses
     }));
 
     return {
       output: { entries },
-      message: `Generated **${ctx.input.reportType}** report with **${entries.length}** entries.`,
+      message: `Generated **${ctx.input.reportType}** report with **${entries.length}** entries.`
     };
   });

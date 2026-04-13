@@ -3,41 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listActivities = SlateTool.create(
-  spec,
-  {
-    name: 'List Activities',
-    key: 'list_activities',
-    description: `Retrieve activity feed for a YouTube channel or the authenticated user. Activities include uploads, likes, favorites, comments, subscriptions, and more. Results can be filtered by date range.`,
-    tags: {
-      readOnly: true
-    }
+export let listActivities = SlateTool.create(spec, {
+  name: 'List Activities',
+  key: 'list_activities',
+  description: `Retrieve activity feed for a YouTube channel or the authenticated user. Activities include uploads, likes, favorites, comments, subscriptions, and more. Results can be filtered by date range.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    channelId: z.string().optional().describe('Channel ID to get activities for'),
-    mine: z.boolean().optional().describe('Get the authenticated user\'s activities'),
-    maxResults: z.number().min(1).max(50).optional().describe('Maximum number of results (1-50)'),
-    pageToken: z.string().optional().describe('Token for pagination'),
-    publishedAfter: z.string().optional().describe('Filter activities after this ISO 8601 date'),
-    publishedBefore: z.string().optional().describe('Filter activities before this ISO 8601 date')
-  }))
-  .output(z.object({
-    activities: z.array(z.object({
-      activityId: z.string(),
-      type: z.string().optional(),
-      title: z.string().optional(),
-      description: z.string().optional(),
-      publishedAt: z.string().optional(),
-      channelId: z.string().optional(),
-      videoId: z.string().optional().describe('Related video ID (if applicable)'),
-      relatedChannelId: z.string().optional().describe('Related channel ID (if applicable)'),
-      playlistId: z.string().optional().describe('Related playlist ID (if applicable)')
-    })),
-    totalResults: z.number().optional(),
-    nextPageToken: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      channelId: z.string().optional().describe('Channel ID to get activities for'),
+      mine: z.boolean().optional().describe("Get the authenticated user's activities"),
+      maxResults: z
+        .number()
+        .min(1)
+        .max(50)
+        .optional()
+        .describe('Maximum number of results (1-50)'),
+      pageToken: z.string().optional().describe('Token for pagination'),
+      publishedAfter: z
+        .string()
+        .optional()
+        .describe('Filter activities after this ISO 8601 date'),
+      publishedBefore: z
+        .string()
+        .optional()
+        .describe('Filter activities before this ISO 8601 date')
+    })
+  )
+  .output(
+    z.object({
+      activities: z.array(
+        z.object({
+          activityId: z.string(),
+          type: z.string().optional(),
+          title: z.string().optional(),
+          description: z.string().optional(),
+          publishedAt: z.string().optional(),
+          channelId: z.string().optional(),
+          videoId: z.string().optional().describe('Related video ID (if applicable)'),
+          relatedChannelId: z
+            .string()
+            .optional()
+            .describe('Related channel ID (if applicable)'),
+          playlistId: z.string().optional().describe('Related playlist ID (if applicable)')
+        })
+      ),
+      totalResults: z.number().optional(),
+      nextPageToken: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.listActivities({
@@ -50,7 +67,7 @@ export let listActivities = SlateTool.create(
       publishedBefore: ctx.input.publishedBefore
     });
 
-    let activities = response.items.map((act) => {
+    let activities = response.items.map(act => {
       let videoId: string | undefined;
       let relatedChannelId: string | undefined;
       let playlistId: string | undefined;
@@ -95,4 +112,5 @@ export let listActivities = SlateTool.create(
       },
       message: `Retrieved **${activities.length}** activities.${response.nextPageToken ? ' More pages available.' : ''}`
     };
-  }).build();
+  })
+  .build();

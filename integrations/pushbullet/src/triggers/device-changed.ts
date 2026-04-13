@@ -3,42 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deviceChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Device Changed',
-    key: 'device_changed',
-    description: 'Triggers when a device is added, updated, or removed from the account.',
-  }
-)
-  .input(z.object({
-    deviceIden: z.string().describe('Unique identifier of the device'),
-    active: z.boolean().describe('Whether the device is active'),
-    nickname: z.string().optional().describe('Display name of the device'),
-    manufacturer: z.string().optional().describe('Device manufacturer'),
-    model: z.string().optional().describe('Device model'),
-    icon: z.string().optional().describe('Device icon type'),
-    hasSms: z.string().optional().describe('Whether the device supports SMS'),
-    created: z.number().describe('Creation Unix timestamp'),
-    modified: z.number().describe('Modification Unix timestamp'),
-  }))
-  .output(z.object({
-    deviceIden: z.string().describe('Unique identifier of the device'),
-    active: z.boolean().describe('Whether the device is active'),
-    nickname: z.string().optional().describe('Display name of the device'),
-    manufacturer: z.string().optional().describe('Device manufacturer'),
-    model: z.string().optional().describe('Device model'),
-    icon: z.string().optional().describe('Device icon type'),
-    hasSms: z.string().optional().describe('Whether the device supports SMS'),
-    created: z.string().describe('Creation Unix timestamp'),
-    modified: z.string().describe('Last modification Unix timestamp'),
-  }))
+export let deviceChanged = SlateTrigger.create(spec, {
+  name: 'Device Changed',
+  key: 'device_changed',
+  description: 'Triggers when a device is added, updated, or removed from the account.'
+})
+  .input(
+    z.object({
+      deviceIden: z.string().describe('Unique identifier of the device'),
+      active: z.boolean().describe('Whether the device is active'),
+      nickname: z.string().optional().describe('Display name of the device'),
+      manufacturer: z.string().optional().describe('Device manufacturer'),
+      model: z.string().optional().describe('Device model'),
+      icon: z.string().optional().describe('Device icon type'),
+      hasSms: z.string().optional().describe('Whether the device supports SMS'),
+      created: z.number().describe('Creation Unix timestamp'),
+      modified: z.number().describe('Modification Unix timestamp')
+    })
+  )
+  .output(
+    z.object({
+      deviceIden: z.string().describe('Unique identifier of the device'),
+      active: z.boolean().describe('Whether the device is active'),
+      nickname: z.string().optional().describe('Display name of the device'),
+      manufacturer: z.string().optional().describe('Device manufacturer'),
+      model: z.string().optional().describe('Device model'),
+      icon: z.string().optional().describe('Device icon type'),
+      hasSms: z.string().optional().describe('Whether the device supports SMS'),
+      created: z.string().describe('Creation Unix timestamp'),
+      modified: z.string().describe('Last modification Unix timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let knownDevices = (ctx.state?.knownDevices || {}) as Record<string, string>;
@@ -66,14 +67,14 @@ export let deviceChanged = SlateTrigger.create(
             iden,
             active: false,
             created: 0,
-            modified: Date.now() / 1000,
+            modified: Date.now() / 1000
           });
           // Don't carry deleted devices forward
         }
       }
 
       return {
-        inputs: changedDevices.map((d) => ({
+        inputs: changedDevices.map(d => ({
           deviceIden: d.iden,
           active: d.active,
           nickname: d.nickname,
@@ -82,15 +83,15 @@ export let deviceChanged = SlateTrigger.create(
           icon: d.icon,
           hasSms: d.has_sms,
           created: d.created,
-          modified: d.modified,
+          modified: d.modified
         })),
         updatedState: {
-          knownDevices: newKnownDevices,
-        },
+          knownDevices: newKnownDevices
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.active ? 'updated' : 'deleted';
 
       return {
@@ -105,9 +106,9 @@ export let deviceChanged = SlateTrigger.create(
           icon: ctx.input.icon,
           hasSms: ctx.input.hasSms,
           created: String(ctx.input.created),
-          modified: String(ctx.input.modified),
-        },
+          modified: String(ctx.input.modified)
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,16 +1,16 @@
 import { createAxios } from 'slates';
 import type {
-  ContentItem,
-  LanguageVariant,
-  ContentType,
   Asset,
-  TaxonomyGroup,
-  Workflow,
-  Language,
   Collection,
-  KontentWebhook,
-  PatchOperation,
+  ContentItem,
+  ContentType,
   FileReference,
+  KontentWebhook,
+  Language,
+  LanguageVariant,
+  PatchOperation,
+  TaxonomyGroup,
+  Workflow
 } from './types';
 
 export class ManagementClient {
@@ -21,14 +21,16 @@ export class ManagementClient {
       baseURL: `https://manage.kontent.ai/v2/projects/${params.environmentId}`,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Content Items ───
 
-  async listContentItems(continuationToken?: string): Promise<{ items: ContentItem[]; continuationToken?: string }> {
+  async listContentItems(
+    continuationToken?: string
+  ): Promise<{ items: ContentItem[]; continuationToken?: string }> {
     let headers: Record<string, string> = {};
     if (continuationToken) {
       headers['x-continuation'] = continuationToken;
@@ -36,11 +38,17 @@ export class ManagementClient {
     let response = await this.axios.get('/items', { headers });
     return {
       items: response.data.items || response.data || [],
-      continuationToken: response.headers?.['x-continuation'] || response.data?.pagination?.continuation_token || undefined,
+      continuationToken:
+        response.headers?.['x-continuation'] ||
+        response.data?.pagination?.continuation_token ||
+        undefined
     };
   }
 
-  async getContentItem(identifier: string, identifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<ContentItem> {
+  async getContentItem(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<ContentItem> {
     let path = this.buildIdentifierPath('/items', identifier, identifierType);
     let response = await this.axios.get(path);
     return response.data;
@@ -55,7 +63,7 @@ export class ManagementClient {
   }): Promise<ContentItem> {
     let body: any = {
       name: data.name,
-      type: data.type,
+      type: data.type
     };
     if (data.codename) body.codename = data.codename;
     if (data.externalId) body.external_id = data.externalId;
@@ -64,29 +72,42 @@ export class ManagementClient {
     return response.data;
   }
 
-  async upsertContentItem(externalId: string, data: {
-    name: string;
-    codename?: string;
-    type?: { codename: string };
-    collection?: { codename: string };
-  }): Promise<ContentItem> {
+  async upsertContentItem(
+    externalId: string,
+    data: {
+      name: string;
+      codename?: string;
+      type?: { codename: string };
+      collection?: { codename: string };
+    }
+  ): Promise<ContentItem> {
     let body: any = { name: data.name };
     if (data.codename) body.codename = data.codename;
     if (data.type) body.type = data.type;
     if (data.collection) body.collection = data.collection;
-    let response = await this.axios.put(`/items/external-id/${encodeURIComponent(externalId)}`, body);
+    let response = await this.axios.put(
+      `/items/external-id/${encodeURIComponent(externalId)}`,
+      body
+    );
     return response.data;
   }
 
-  async deleteContentItem(identifier: string, identifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<void> {
+  async deleteContentItem(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<void> {
     let path = this.buildIdentifierPath('/items', identifier, identifierType);
     await this.axios.delete(path);
   }
 
   // ─── Language Variants ───
 
-  async listLanguageVariants(itemIdentifier: string, itemIdentifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<LanguageVariant[]> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) + '/variants';
+  async listLanguageVariants(
+    itemIdentifier: string,
+    itemIdentifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<LanguageVariant[]> {
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) + '/variants';
     let response = await this.axios.get(path);
     return response.data;
   }
@@ -96,7 +117,9 @@ export class ManagementClient {
     itemIdentifierType: 'id' | 'codename' | 'external_id',
     languageCodename: string
   ): Promise<LanguageVariant> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) + `/variants/codename/${languageCodename}`;
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+      `/variants/codename/${languageCodename}`;
     let response = await this.axios.get(path);
     return response.data;
   }
@@ -107,7 +130,9 @@ export class ManagementClient {
     languageCodename: string,
     elements: Array<{ element: { codename: string }; value: any }>
   ): Promise<LanguageVariant> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) + `/variants/codename/${languageCodename}`;
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+      `/variants/codename/${languageCodename}`;
     let response = await this.axios.put(path, { elements });
     return response.data;
   }
@@ -117,7 +142,9 @@ export class ManagementClient {
     itemIdentifierType: 'id' | 'codename' | 'external_id',
     languageCodename: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) + `/variants/codename/${languageCodename}`;
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+      `/variants/codename/${languageCodename}`;
     await this.axios.delete(path);
   }
 
@@ -134,7 +161,8 @@ export class ManagementClient {
     languageCodename: string,
     workflowStepIdentifier: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
       `/variants/codename/${languageCodename}/workflow/${workflowStepIdentifier}`;
     await this.axios.put(path);
   }
@@ -145,7 +173,8 @@ export class ManagementClient {
     languageCodename: string,
     scheduledTo?: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
       `/variants/codename/${languageCodename}/publish`;
     let body = scheduledTo ? { scheduled_to: scheduledTo } : undefined;
     await this.axios.put(path, body);
@@ -157,7 +186,8 @@ export class ManagementClient {
     languageCodename: string,
     scheduledTo?: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
       `/variants/codename/${languageCodename}/unpublish-and-archive`;
     let body = scheduledTo ? { scheduled_to: scheduledTo } : undefined;
     await this.axios.put(path, body);
@@ -168,7 +198,8 @@ export class ManagementClient {
     itemIdentifierType: 'id' | 'codename' | 'external_id',
     languageCodename: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
       `/variants/codename/${languageCodename}/new-version`;
     await this.axios.put(path);
   }
@@ -178,7 +209,8 @@ export class ManagementClient {
     itemIdentifierType: 'id' | 'codename' | 'external_id',
     languageCodename: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
       `/variants/codename/${languageCodename}/cancel-scheduled-publish`;
     await this.axios.put(path);
   }
@@ -188,14 +220,17 @@ export class ManagementClient {
     itemIdentifierType: 'id' | 'codename' | 'external_id',
     languageCodename: string
   ): Promise<void> {
-    let path = this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
+    let path =
+      this.buildIdentifierPath('/items', itemIdentifier, itemIdentifierType) +
       `/variants/codename/${languageCodename}/cancel-scheduled-unpublish`;
     await this.axios.put(path);
   }
 
   // ─── Content Types ───
 
-  async listContentTypes(continuationToken?: string): Promise<{ types: ContentType[]; continuationToken?: string }> {
+  async listContentTypes(
+    continuationToken?: string
+  ): Promise<{ types: ContentType[]; continuationToken?: string }> {
     let headers: Record<string, string> = {};
     if (continuationToken) {
       headers['x-continuation'] = continuationToken;
@@ -203,11 +238,17 @@ export class ManagementClient {
     let response = await this.axios.get('/types', { headers });
     return {
       types: response.data.types || response.data || [],
-      continuationToken: response.headers?.['x-continuation'] || response.data?.pagination?.continuation_token || undefined,
+      continuationToken:
+        response.headers?.['x-continuation'] ||
+        response.data?.pagination?.continuation_token ||
+        undefined
     };
   }
 
-  async getContentType(identifier: string, identifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<ContentType> {
+  async getContentType(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<ContentType> {
     let path = this.buildIdentifierPath('/types', identifier, identifierType);
     let response = await this.axios.get(path);
     return response.data;
@@ -222,7 +263,7 @@ export class ManagementClient {
   }): Promise<ContentType> {
     let body: any = {
       name: data.name,
-      elements: data.elements,
+      elements: data.elements
     };
     if (data.codename) body.codename = data.codename;
     if (data.externalId) body.external_id = data.externalId;
@@ -231,20 +272,29 @@ export class ManagementClient {
     return response.data;
   }
 
-  async modifyContentType(identifier: string, identifierType: 'id' | 'codename' | 'external_id', operations: PatchOperation[]): Promise<ContentType> {
+  async modifyContentType(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id',
+    operations: PatchOperation[]
+  ): Promise<ContentType> {
     let path = this.buildIdentifierPath('/types', identifier, identifierType);
     let response = await this.axios.patch(path, operations);
     return response.data;
   }
 
-  async deleteContentType(identifier: string, identifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<void> {
+  async deleteContentType(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<void> {
     let path = this.buildIdentifierPath('/types', identifier, identifierType);
     await this.axios.delete(path);
   }
 
   // ─── Assets ───
 
-  async listAssets(continuationToken?: string): Promise<{ assets: Asset[]; continuationToken?: string }> {
+  async listAssets(
+    continuationToken?: string
+  ): Promise<{ assets: Asset[]; continuationToken?: string }> {
     let headers: Record<string, string> = {};
     if (continuationToken) {
       headers['x-continuation'] = continuationToken;
@@ -252,26 +302,38 @@ export class ManagementClient {
     let response = await this.axios.get('/assets', { headers });
     return {
       assets: response.data.assets || response.data || [],
-      continuationToken: response.headers?.['x-continuation'] || response.data?.pagination?.continuation_token || undefined,
+      continuationToken:
+        response.headers?.['x-continuation'] ||
+        response.data?.pagination?.continuation_token ||
+        undefined
     };
   }
 
-  async getAsset(identifier: string, identifierType: 'id' | 'external_id' = 'id'): Promise<Asset> {
-    let path = identifierType === 'external_id'
-      ? `/assets/external-id/${encodeURIComponent(identifier)}`
-      : `/assets/${identifier}`;
+  async getAsset(
+    identifier: string,
+    identifierType: 'id' | 'external_id' = 'id'
+  ): Promise<Asset> {
+    let path =
+      identifierType === 'external_id'
+        ? `/assets/external-id/${encodeURIComponent(identifier)}`
+        : `/assets/${identifier}`;
     let response = await this.axios.get(path);
     return response.data;
   }
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-  async uploadBinaryFile(fileName: string, contentType: string, fileData: Buffer | ArrayBuffer): Promise<FileReference> {
+  async uploadBinaryFile(
+    fileName: string,
+    contentType: string,
+    fileData: Buffer | ArrayBuffer
+  ): Promise<FileReference> {
     let response = await this.axios.post(`/files/${encodeURIComponent(fileName)}`, fileData, {
       headers: {
         'Content-Type': contentType,
-        // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-        'Content-Length': String(fileData instanceof Buffer ? fileData.length : fileData.byteLength),
-      },
+
+        'Content-Length': String(
+          fileData instanceof Buffer ? fileData.length : fileData.byteLength
+        )
+      }
     });
     return response.data;
   }
@@ -284,7 +346,7 @@ export class ManagementClient {
     folder?: { id?: string; external_id?: string };
   }): Promise<Asset> {
     let body: any = {
-      file_reference: data.fileReference,
+      file_reference: data.fileReference
     };
     if (data.title) body.title = data.title;
     if (data.externalId) body.external_id = data.externalId;
@@ -294,11 +356,14 @@ export class ManagementClient {
     return response.data;
   }
 
-  async updateAsset(assetId: string, data: {
-    title?: string;
-    descriptions?: Array<{ language: { codename: string }; description: string }>;
-    folder?: { id?: string; external_id?: string };
-  }): Promise<Asset> {
+  async updateAsset(
+    assetId: string,
+    data: {
+      title?: string;
+      descriptions?: Array<{ language: { codename: string }; description: string }>;
+      folder?: { id?: string; external_id?: string };
+    }
+  ): Promise<Asset> {
     let body: any = {};
     if (data.title !== undefined) body.title = data.title;
     if (data.descriptions) body.descriptions = data.descriptions;
@@ -307,10 +372,14 @@ export class ManagementClient {
     return response.data;
   }
 
-  async deleteAsset(identifier: string, identifierType: 'id' | 'external_id' = 'id'): Promise<void> {
-    let path = identifierType === 'external_id'
-      ? `/assets/external-id/${encodeURIComponent(identifier)}`
-      : `/assets/${identifier}`;
+  async deleteAsset(
+    identifier: string,
+    identifierType: 'id' | 'external_id' = 'id'
+  ): Promise<void> {
+    let path =
+      identifierType === 'external_id'
+        ? `/assets/external-id/${encodeURIComponent(identifier)}`
+        : `/assets/${identifier}`;
     await this.axios.delete(path);
   }
 
@@ -321,7 +390,10 @@ export class ManagementClient {
     return response.data.taxonomies || response.data || [];
   }
 
-  async getTaxonomyGroup(identifier: string, identifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<TaxonomyGroup> {
+  async getTaxonomyGroup(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<TaxonomyGroup> {
     let path = this.buildIdentifierPath('/taxonomies', identifier, identifierType);
     let response = await this.axios.get(path);
     return response.data;
@@ -335,7 +407,7 @@ export class ManagementClient {
   }): Promise<TaxonomyGroup> {
     let body: any = {
       name: data.name,
-      terms: data.terms,
+      terms: data.terms
     };
     if (data.codename) body.codename = data.codename;
     if (data.externalId) body.external_id = data.externalId;
@@ -343,13 +415,20 @@ export class ManagementClient {
     return response.data;
   }
 
-  async modifyTaxonomyGroup(identifier: string, identifierType: 'id' | 'codename' | 'external_id', operations: PatchOperation[]): Promise<TaxonomyGroup> {
+  async modifyTaxonomyGroup(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id',
+    operations: PatchOperation[]
+  ): Promise<TaxonomyGroup> {
     let path = this.buildIdentifierPath('/taxonomies', identifier, identifierType);
     let response = await this.axios.patch(path, operations);
     return response.data;
   }
 
-  async deleteTaxonomyGroup(identifier: string, identifierType: 'id' | 'codename' | 'external_id' = 'id'): Promise<void> {
+  async deleteTaxonomyGroup(
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id' = 'id'
+  ): Promise<void> {
     let path = this.buildIdentifierPath('/taxonomies', identifier, identifierType);
     await this.axios.delete(path);
   }
@@ -370,7 +449,7 @@ export class ManagementClient {
   }): Promise<Language> {
     let body: any = {
       name: data.name,
-      codename: data.codename,
+      codename: data.codename
     };
     if (data.externalId) body.external_id = data.externalId;
     if (data.isActive !== undefined) body.is_active = data.isActive;
@@ -443,7 +522,11 @@ export class ManagementClient {
 
   // ─── Helpers ───
 
-  private buildIdentifierPath(basePath: string, identifier: string, identifierType: 'id' | 'codename' | 'external_id'): string {
+  private buildIdentifierPath(
+    basePath: string,
+    identifier: string,
+    identifierType: 'id' | 'codename' | 'external_id'
+  ): string {
     switch (identifierType) {
       case 'codename':
         return `${basePath}/codename/${identifier}`;

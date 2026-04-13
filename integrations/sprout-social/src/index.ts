@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getMetadata,
@@ -13,11 +12,7 @@ import {
   getCases,
   getPublishingPost
 } from './tools';
-import {
-  newMessages,
-  newCases,
-  inboundWebhook,
-} from './triggers';
+import { newMessages, newCases, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,9 +28,5 @@ export let provider = Slate.create({
     getCases.build(),
     getPublishingPost.build()
   ],
-  triggers: [
-    inboundWebhook,
-    newMessages.build(),
-    newCases.build()
-  ]
+  triggers: [inboundWebhook, newMessages.build(), newCases.build()]
 });

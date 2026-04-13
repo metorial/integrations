@@ -12,29 +12,38 @@ let refreshEntrySchema = z.object({
   serviceExceptionJson: z.string().optional().describe('Error details if refresh failed')
 });
 
-export let refreshDataset = SlateTool.create(
-  spec,
-  {
-    name: 'Refresh Dataset',
-    key: 'refresh_dataset',
-    description: `Trigger a dataset refresh or view refresh history. Use this to keep datasets up-to-date with the latest source data and monitor refresh status.`,
-    instructions: [
-      'Use action "trigger" to start a new refresh. The refresh runs asynchronously.',
-      'Use action "history" to check recent refresh status and diagnose failures.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['trigger', 'history']).describe('Whether to trigger a refresh or view history'),
-    datasetId: z.string().describe('ID of the dataset'),
-    workspaceId: z.string().optional().describe('Workspace ID containing the dataset'),
-    historyCount: z.number().optional().describe('Number of history entries to return (default 10)')
-  }))
-  .output(z.object({
-    triggered: z.boolean().optional().describe('Whether a refresh was triggered'),
-    refreshHistory: z.array(refreshEntrySchema).optional().describe('Recent refresh history entries')
-  }))
-  .handleInvocation(async (ctx) => {
+export let refreshDataset = SlateTool.create(spec, {
+  name: 'Refresh Dataset',
+  key: 'refresh_dataset',
+  description: `Trigger a dataset refresh or view refresh history. Use this to keep datasets up-to-date with the latest source data and monitor refresh status.`,
+  instructions: [
+    'Use action "trigger" to start a new refresh. The refresh runs asynchronously.',
+    'Use action "history" to check recent refresh status and diagnose failures.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['trigger', 'history'])
+        .describe('Whether to trigger a refresh or view history'),
+      datasetId: z.string().describe('ID of the dataset'),
+      workspaceId: z.string().optional().describe('Workspace ID containing the dataset'),
+      historyCount: z
+        .number()
+        .optional()
+        .describe('Number of history entries to return (default 10)')
+    })
+  )
+  .output(
+    z.object({
+      triggered: z.boolean().optional().describe('Whether a refresh was triggered'),
+      refreshHistory: z
+        .array(refreshEntrySchema)
+        .optional()
+        .describe('Recent refresh history entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let { action, datasetId, workspaceId, historyCount } = ctx.input;
 

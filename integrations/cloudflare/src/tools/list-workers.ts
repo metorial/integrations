@@ -3,30 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listWorkersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Workers',
-    key: 'list_workers',
-    description: `List all Workers scripts deployed on the account. Returns script names, modification dates, and usage model for each Worker.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWorkersTool = SlateTool.create(spec, {
+  name: 'List Workers',
+  key: 'list_workers',
+  description: `List all Workers scripts deployed on the account. Returns script names, modification dates, and usage model for each Worker.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    accountId: z.string().optional().describe('Account ID (uses config accountId if not provided)'),
-  }))
-  .output(z.object({
-    workers: z.array(z.object({
-      scriptName: z.string(),
-      modifiedOn: z.string().optional(),
-      createdOn: z.string().optional(),
-      usageModel: z.string().optional(),
-      compatibilityDate: z.string().optional(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z
+        .string()
+        .optional()
+        .describe('Account ID (uses config accountId if not provided)')
+    })
+  )
+  .output(
+    z.object({
+      workers: z.array(
+        z.object({
+          scriptName: z.string(),
+          modifiedOn: z.string().optional(),
+          createdOn: z.string().optional(),
+          usageModel: z.string().optional(),
+          compatibilityDate: z.string().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let accountId = ctx.input.accountId || ctx.config.accountId;
     if (!accountId) throw new Error('accountId is required');
 
@@ -38,12 +44,12 @@ export let listWorkersTool = SlateTool.create(
       modifiedOn: w.modified_on,
       createdOn: w.created_on,
       usageModel: w.usage_model,
-      compatibilityDate: w.compatibility_date,
+      compatibilityDate: w.compatibility_date
     }));
 
     return {
       output: { workers },
-      message: `Found **${workers.length}** Worker script(s).`,
+      message: `Found **${workers.length}** Worker script(s).`
     };
   })
   .build();

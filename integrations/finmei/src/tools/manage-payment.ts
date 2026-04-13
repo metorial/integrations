@@ -3,39 +3,46 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePayment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Payment',
-    key: 'manage_payment',
-    description: `Record a new payment against an invoice, retrieve payment details, or delete a payment in Finmei. Use this to track payments received for invoices.`,
-    instructions: [
-      'To **record** a new payment, set action to "create" and provide the **invoiceId** and **amount**.',
-      'To **retrieve** a payment, set action to "get" and provide the **paymentId**.',
-      'To **delete** a payment, set action to "delete" and provide the **paymentId**.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let managePayment = SlateTool.create(spec, {
+  name: 'Manage Payment',
+  key: 'manage_payment',
+  description: `Record a new payment against an invoice, retrieve payment details, or delete a payment in Finmei. Use this to track payments received for invoices.`,
+  instructions: [
+    'To **record** a new payment, set action to "create" and provide the **invoiceId** and **amount**.',
+    'To **retrieve** a payment, set action to "get" and provide the **paymentId**.',
+    'To **delete** a payment, set action to "delete" and provide the **paymentId**.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'delete']).describe('Action to perform'),
-    paymentId: z.string().optional().describe('Payment ID (required for get and delete)'),
-    invoiceId: z.string().optional().describe('Invoice ID to record the payment against (required for create)'),
-    amount: z.number().optional().describe('Payment amount (required for create)'),
-    date: z.string().optional().describe('Payment date in YYYY-MM-DD format'),
-    mode: z.string().optional().describe('Payment mode/method (e.g., "bank_transfer", "cash", "card")'),
-    reference: z.string().optional().describe('Payment reference number or transaction ID'),
-    notes: z.string().optional().describe('Additional notes about the payment'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    paymentId: z.string().optional().describe('Payment ID'),
-    payment: z.any().optional().describe('Payment details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'delete']).describe('Action to perform'),
+      paymentId: z.string().optional().describe('Payment ID (required for get and delete)'),
+      invoiceId: z
+        .string()
+        .optional()
+        .describe('Invoice ID to record the payment against (required for create)'),
+      amount: z.number().optional().describe('Payment amount (required for create)'),
+      date: z.string().optional().describe('Payment date in YYYY-MM-DD format'),
+      mode: z
+        .string()
+        .optional()
+        .describe('Payment mode/method (e.g., "bank_transfer", "cash", "card")'),
+      reference: z.string().optional().describe('Payment reference number or transaction ID'),
+      notes: z.string().optional().describe('Additional notes about the payment')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      paymentId: z.string().optional().describe('Payment ID'),
+      payment: z.any().optional().describe('Payment details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FinmeiClient(ctx.auth.token);
 
     if (ctx.input.action === 'delete') {
@@ -47,9 +54,9 @@ export let managePayment = SlateTool.create(
       return {
         output: {
           success: true,
-          paymentId: ctx.input.paymentId,
+          paymentId: ctx.input.paymentId
         },
-        message: `Deleted payment \`${ctx.input.paymentId}\`.`,
+        message: `Deleted payment \`${ctx.input.paymentId}\`.`
       };
     }
 
@@ -64,9 +71,9 @@ export let managePayment = SlateTool.create(
         output: {
           success: true,
           paymentId: String(payment?.id ?? ctx.input.paymentId),
-          payment,
+          payment
         },
-        message: `Retrieved payment \`${ctx.input.paymentId}\`.`,
+        message: `Retrieved payment \`${ctx.input.paymentId}\`.`
       };
     }
 
@@ -81,7 +88,7 @@ export let managePayment = SlateTool.create(
       date: ctx.input.date,
       mode: ctx.input.mode,
       reference: ctx.input.reference,
-      notes: ctx.input.notes,
+      notes: ctx.input.notes
     });
 
     let payment = result?.data ?? result;
@@ -91,9 +98,9 @@ export let managePayment = SlateTool.create(
       output: {
         success: true,
         paymentId,
-        payment,
+        payment
       },
-      message: `Recorded payment of **${ctx.input.amount}** for invoice \`${ctx.input.invoiceId}\` (Payment ID: ${paymentId}).`,
+      message: `Recorded payment of **${ctx.input.amount}** for invoice \`${ctx.input.invoiceId}\` (Payment ID: ${paymentId}).`
     };
   })
   .build();

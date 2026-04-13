@@ -34,16 +34,19 @@ Front's OAuth implementation uses the **authorization code grant type**:
 Scopes are configured when creating API tokens or setting up OAuth and cover three dimensions:
 
 **Features:**
+
 - **Access resources** — manage Core API resources (conversations, contacts, inboxes, etc.)
 - **Auto-provisioning** — manage provisioning resources via SCIM (not generally available)
 - **Application triggers** — process events from external services (not available for OAuth tokens)
 
 **Namespaces:**
+
 - **Global resources** — company-level resources (company rules, teams, accounts)
 - **Shared resources** — workspace-scoped resources (shared inboxes, workspace tags); can be set to all shared workspaces or specific ones
 - **Private resources** — individual teammate resources (personal inboxes, signatures); requires the teammate to enable API access
 
 **Permissions** (per namespace):
+
 - **Read** — retrieve resource information
 - **Write** — create and update resources
 - **Delete** — remove resources

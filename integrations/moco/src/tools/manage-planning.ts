@@ -27,27 +27,28 @@ let mapEntry = (e: any) => ({
   updatedAt: e.updated_at
 });
 
-export let listPlanningEntries = SlateTool.create(
-  spec,
-  {
-    name: 'List Planning Entries',
-    key: 'list_planning_entries',
-    description: `Retrieve resource planning entries. A period filter is required. Optionally filter by user, project, or deal.`,
-    tags: {
-      readOnly: true
-    }
+export let listPlanningEntries = SlateTool.create(spec, {
+  name: 'List Planning Entries',
+  key: 'list_planning_entries',
+  description: `Retrieve resource planning entries. A period filter is required. Optionally filter by user, project, or deal.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    period: z.string().describe('Planning period (e.g., "2024-01" for January 2024)'),
-    userId: z.number().optional().describe('Filter by user ID'),
-    projectId: z.number().optional().describe('Filter by project ID'),
-    dealId: z.number().optional().describe('Filter by deal ID')
-  }))
-  .output(z.object({
-    entries: z.array(planningEntryOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      period: z.string().describe('Planning period (e.g., "2024-01" for January 2024)'),
+      userId: z.number().optional().describe('Filter by user ID'),
+      projectId: z.number().optional().describe('Filter by project ID'),
+      dealId: z.number().optional().describe('Filter by deal ID')
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(planningEntryOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = { period: ctx.input.period };
@@ -62,30 +63,30 @@ export let listPlanningEntries = SlateTool.create(
       output: { entries },
       message: `Found **${entries.length}** planning entries.`
     };
-  }).build();
+  })
+  .build();
 
-export let createPlanningEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Create Planning Entry',
-    key: 'create_planning_entry',
-    description: `Create a new resource planning entry to schedule a team member on a project or deal for a time period.`,
-    tags: {
-      destructive: false
-    }
+export let createPlanningEntry = SlateTool.create(spec, {
+  name: 'Create Planning Entry',
+  key: 'create_planning_entry',
+  description: `Create a new resource planning entry to schedule a team member on a project or deal for a time period.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    startsOn: z.string().describe('Planning start date (YYYY-MM-DD)'),
-    endsOn: z.string().describe('Planning end date (YYYY-MM-DD)'),
-    hoursPerDay: z.number().describe('Planned hours per day'),
-    userId: z.number().optional().describe('User ID to schedule'),
-    projectId: z.number().optional().describe('Project ID (required if no dealId)'),
-    dealId: z.number().optional().describe('Deal ID (required if no projectId)'),
-    comment: z.string().optional().describe('Planning entry comment')
-  }))
+})
+  .input(
+    z.object({
+      startsOn: z.string().describe('Planning start date (YYYY-MM-DD)'),
+      endsOn: z.string().describe('Planning end date (YYYY-MM-DD)'),
+      hoursPerDay: z.number().describe('Planned hours per day'),
+      userId: z.number().optional().describe('User ID to schedule'),
+      projectId: z.number().optional().describe('Project ID (required if no dealId)'),
+      dealId: z.number().optional().describe('Deal ID (required if no projectId)'),
+      comment: z.string().optional().describe('Planning entry comment')
+    })
+  )
   .output(planningEntryOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -105,28 +106,28 @@ export let createPlanningEntry = SlateTool.create(
       output: mapEntry(e),
       message: `Created planning entry (ID: ${e.id}) from ${e.starts_on} to ${e.ends_on}.`
     };
-  }).build();
+  })
+  .build();
 
-export let updatePlanningEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Update Planning Entry',
-    key: 'update_planning_entry',
-    description: `Update an existing resource planning entry.`,
-    tags: {
-      destructive: false
-    }
+export let updatePlanningEntry = SlateTool.create(spec, {
+  name: 'Update Planning Entry',
+  key: 'update_planning_entry',
+  description: `Update an existing resource planning entry.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    entryId: z.number().describe('The planning entry ID to update'),
-    startsOn: z.string().optional().describe('New start date (YYYY-MM-DD)'),
-    endsOn: z.string().optional().describe('New end date (YYYY-MM-DD)'),
-    hoursPerDay: z.number().optional().describe('New hours per day'),
-    comment: z.string().optional().describe('Updated comment')
-  }))
+})
+  .input(
+    z.object({
+      entryId: z.number().describe('The planning entry ID to update'),
+      startsOn: z.string().optional().describe('New start date (YYYY-MM-DD)'),
+      endsOn: z.string().optional().describe('New end date (YYYY-MM-DD)'),
+      hoursPerDay: z.number().optional().describe('New hours per day'),
+      comment: z.string().optional().describe('Updated comment')
+    })
+  )
   .output(planningEntryOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {};
@@ -141,26 +142,28 @@ export let updatePlanningEntry = SlateTool.create(
       output: mapEntry(e),
       message: `Updated planning entry **${e.id}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deletePlanningEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Planning Entry',
-    key: 'delete_planning_entry',
-    description: `Delete a resource planning entry.`,
-    tags: {
-      destructive: true
-    }
+export let deletePlanningEntry = SlateTool.create(spec, {
+  name: 'Delete Planning Entry',
+  key: 'delete_planning_entry',
+  description: `Delete a resource planning entry.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    entryId: z.number().describe('The planning entry ID to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      entryId: z.number().describe('The planning entry ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     await client.deletePlanningEntry(ctx.input.entryId);
 
@@ -168,4 +171,5 @@ export let deletePlanningEntry = SlateTool.create(
       output: { success: true },
       message: `Deleted planning entry **${ctx.input.entryId}**.`
     };
-  }).build();
+  })
+  .build();

@@ -19,7 +19,7 @@ let planOutputSchema = z.object({
   purchaseUrl: z.string().nullable().describe('URL for purchasing this plan'),
   productId: z.string().nullable().describe('Associated product ID'),
   createdAt: z.string().describe('ISO 8601 creation timestamp'),
-  updatedAt: z.string().describe('ISO 8601 last update timestamp'),
+  updatedAt: z.string().describe('ISO 8601 last update timestamp')
 });
 
 let mapPlan = (p: any) => ({
@@ -38,51 +38,58 @@ let mapPlan = (p: any) => ({
   purchaseUrl: p.purchase_url || null,
   productId: p.product?.id || null,
   createdAt: p.created_at,
-  updatedAt: p.updated_at,
+  updatedAt: p.updated_at
 });
 
-export let managePlan = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Plan',
-    key: 'manage_plan',
-    description: `Create, update, retrieve, or delete a Whop plan. Plans define pricing, billing period, and release method for a product.
+export let managePlan = SlateTool.create(spec, {
+  name: 'Manage Plan',
+  key: 'manage_plan',
+  description: `Create, update, retrieve, or delete a Whop plan. Plans define pricing, billing period, and release method for a product.
 Use **action** to specify the operation: \`create\`, \`update\`, \`get\`, or \`delete\`.`,
-    instructions: [
-      'For "create": companyId and productId are required.',
-      'For "update" and "get": planId is required.',
-      'For "delete": planId is required. Existing memberships on the plan are not affected.',
-    ],
-    tags: {
-      destructive: true,
-    },
+  instructions: [
+    'For "create": companyId and productId are required.',
+    'For "update" and "get": planId is required.',
+    'For "delete": planId is required. Existing memberships on the plan are not affected.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'delete']).describe('Operation to perform'),
-    planId: z.string().optional().describe('Plan ID (required for get, update, delete)'),
-    companyId: z.string().optional().describe('Company ID (required for create). Uses config companyId if not provided.'),
-    productId: z.string().optional().describe('Product ID (required for create)'),
-    title: z.string().optional().describe('Plan title (max 30 chars)'),
-    description: z.string().optional().describe('Plan description (max 500 chars)'),
-    planType: z.enum(['renewal', 'one_time']).optional().describe('Plan type'),
-    billingPeriod: z.number().optional().describe('Billing period in days'),
-    initialPrice: z.number().optional().describe('Initial price'),
-    renewalPrice: z.number().optional().describe('Renewal price'),
-    trialPeriodDays: z.number().optional().describe('Free trial period in days'),
-    expirationDays: z.number().optional().describe('Membership expiration in days'),
-    currency: z.string().optional().describe('ISO currency code (e.g. usd)'),
-    visibility: z.enum(['visible', 'hidden', 'archived', 'quick_link']).optional().describe('Plan visibility'),
-    releaseMethod: z.enum(['buy_now', 'waitlist']).optional().describe('Release method'),
-    stock: z.number().optional().describe('Available stock quantity'),
-    unlimitedStock: z.boolean().optional().describe('Whether stock is unlimited'),
-    internalNotes: z.string().optional().describe('Internal notes for the plan'),
-  }))
-  .output(z.object({
-    plan: planOutputSchema.nullable().describe('Plan data (null for delete)'),
-    deleted: z.boolean().optional().describe('Whether the plan was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'get', 'delete']).describe('Operation to perform'),
+      planId: z.string().optional().describe('Plan ID (required for get, update, delete)'),
+      companyId: z
+        .string()
+        .optional()
+        .describe('Company ID (required for create). Uses config companyId if not provided.'),
+      productId: z.string().optional().describe('Product ID (required for create)'),
+      title: z.string().optional().describe('Plan title (max 30 chars)'),
+      description: z.string().optional().describe('Plan description (max 500 chars)'),
+      planType: z.enum(['renewal', 'one_time']).optional().describe('Plan type'),
+      billingPeriod: z.number().optional().describe('Billing period in days'),
+      initialPrice: z.number().optional().describe('Initial price'),
+      renewalPrice: z.number().optional().describe('Renewal price'),
+      trialPeriodDays: z.number().optional().describe('Free trial period in days'),
+      expirationDays: z.number().optional().describe('Membership expiration in days'),
+      currency: z.string().optional().describe('ISO currency code (e.g. usd)'),
+      visibility: z
+        .enum(['visible', 'hidden', 'archived', 'quick_link'])
+        .optional()
+        .describe('Plan visibility'),
+      releaseMethod: z.enum(['buy_now', 'waitlist']).optional().describe('Release method'),
+      stock: z.number().optional().describe('Available stock quantity'),
+      unlimitedStock: z.boolean().optional().describe('Whether stock is unlimited'),
+      internalNotes: z.string().optional().describe('Internal notes for the plan')
+    })
+  )
+  .output(
+    z.object({
+      plan: planOutputSchema.nullable().describe('Plan data (null for delete)'),
+      deleted: z.boolean().optional().describe('Whether the plan was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WhopClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -91,7 +98,7 @@ Use **action** to specify the operation: \`create\`, \`update\`, \`get\`, or \`d
       let p = await client.getPlan(ctx.input.planId);
       return {
         output: { plan: mapPlan(p) },
-        message: `Retrieved plan **${p.title || p.id}** (\`${p.id}\`).`,
+        message: `Retrieved plan **${p.title || p.id}** (\`${p.id}\`).`
       };
     }
 
@@ -116,12 +123,12 @@ Use **action** to specify the operation: \`create\`, \`update\`, \`get\`, or \`d
         releaseMethod: ctx.input.releaseMethod,
         stock: ctx.input.stock,
         unlimitedStock: ctx.input.unlimitedStock,
-        internalNotes: ctx.input.internalNotes,
+        internalNotes: ctx.input.internalNotes
       });
 
       return {
         output: { plan: mapPlan(p) },
-        message: `Created plan **${p.title || p.id}** (\`${p.id}\`) for product \`${ctx.input.productId}\`.`,
+        message: `Created plan **${p.title || p.id}** (\`${p.id}\`) for product \`${ctx.input.productId}\`.`
       };
     }
 
@@ -140,12 +147,12 @@ Use **action** to specify the operation: \`create\`, \`update\`, \`get\`, or \`d
         visibility: ctx.input.visibility,
         stock: ctx.input.stock,
         unlimitedStock: ctx.input.unlimitedStock,
-        internalNotes: ctx.input.internalNotes,
+        internalNotes: ctx.input.internalNotes
       });
 
       return {
         output: { plan: mapPlan(p) },
-        message: `Updated plan **${p.title || p.id}** (\`${p.id}\`).`,
+        message: `Updated plan **${p.title || p.id}** (\`${p.id}\`).`
       };
     }
 
@@ -154,9 +161,10 @@ Use **action** to specify the operation: \`create\`, \`update\`, \`get\`, or \`d
       let result = await client.deletePlan(ctx.input.planId);
       return {
         output: { plan: null, deleted: !!result },
-        message: `Deleted plan \`${ctx.input.planId}\`.`,
+        message: `Deleted plan \`${ctx.input.planId}\`.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

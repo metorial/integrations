@@ -15,45 +15,60 @@ let invoiceSummarySchema = z.object({
   paymentTerm: z.any().nullable().optional().describe('Payment terms'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  rawData: z.any().optional().describe('Complete raw invoice data'),
+  rawData: z.any().optional().describe('Complete raw invoice data')
 });
 
-export let searchInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'Search Invoices',
-    key: 'search_invoices',
-    description: `Search and list invoices in Coupa. Filter by status, supplier, date range, export status, and other attributes. Supports PO-backed invoices, non-PO invoices, and credit notes.`,
-    instructions: [
-      'Common statuses: draft, pending_approval, approved, disputed, voided, paid.',
-      'Use date filters like createdAfter/updatedAfter for incremental syncs.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let searchInvoices = SlateTool.create(spec, {
+  name: 'Search Invoices',
+  key: 'search_invoices',
+  description: `Search and list invoices in Coupa. Filter by status, supplier, date range, export status, and other attributes. Supports PO-backed invoices, non-PO invoices, and credit notes.`,
+  instructions: [
+    'Common statuses: draft, pending_approval, approved, disputed, voided, paid.',
+    'Use date filters like createdAfter/updatedAfter for incremental syncs.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.string().optional().describe('Filter by status (e.g. "draft", "pending_approval", "approved", "disputed", "voided", "paid")'),
-    supplierId: z.number().optional().describe('Filter by supplier ID'),
-    invoiceNumber: z.string().optional().describe('Filter by invoice number'),
-    exportedFlag: z.boolean().optional().describe('Filter by exported status'),
-    createdAfter: z.string().optional().describe('Filter invoices created after this date (ISO 8601)'),
-    updatedAfter: z.string().optional().describe('Filter invoices updated after this date (ISO 8601)'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional Coupa query filters'),
-    orderBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    limit: z.number().optional().describe('Maximum number of results (default 50)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    invoices: z.array(invoiceSummarySchema).describe('List of matching invoices'),
-    count: z.number().describe('Number of invoices returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .string()
+        .optional()
+        .describe(
+          'Filter by status (e.g. "draft", "pending_approval", "approved", "disputed", "voided", "paid")'
+        ),
+      supplierId: z.number().optional().describe('Filter by supplier ID'),
+      invoiceNumber: z.string().optional().describe('Filter by invoice number'),
+      exportedFlag: z.boolean().optional().describe('Filter by exported status'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter invoices created after this date (ISO 8601)'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter invoices updated after this date (ISO 8601)'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional Coupa query filters'),
+      orderBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      limit: z.number().optional().describe('Maximum number of results (default 50)'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(invoiceSummarySchema).describe('List of matching invoices'),
+      count: z.number().describe('Number of invoices returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let filters: Record<string, string> = {};
@@ -74,7 +89,7 @@ export let searchInvoices = SlateTool.create(
       dir: ctx.input.sortDirection,
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      exportedFlag: ctx.input.exportedFlag,
+      exportedFlag: ctx.input.exportedFlag
     });
 
     let invoices = (Array.isArray(results) ? results : []).map((inv: any) => ({
@@ -85,19 +100,23 @@ export let searchInvoices = SlateTool.create(
       supplier: inv.supplier ?? null,
       currency: inv.currency ?? null,
       totalAmount: inv['total'] ?? inv.total ?? null,
-      lineCount: inv['invoice-lines'] ? inv['invoice-lines'].length : (inv.invoice_lines ? inv.invoice_lines.length : null),
+      lineCount: inv['invoice-lines']
+        ? inv['invoice-lines'].length
+        : inv.invoice_lines
+          ? inv.invoice_lines.length
+          : null,
       paymentTerm: inv['payment-term'] ?? inv.payment_term ?? null,
       createdAt: inv['created-at'] ?? inv.created_at ?? null,
       updatedAt: inv['updated-at'] ?? inv.updated_at ?? null,
-      rawData: inv,
+      rawData: inv
     }));
 
     return {
       output: {
         invoices,
-        count: invoices.length,
+        count: invoices.length
       },
-      message: `Found **${invoices.length}** invoice(s).`,
+      message: `Found **${invoices.length}** invoice(s).`
     };
   })
   .build();

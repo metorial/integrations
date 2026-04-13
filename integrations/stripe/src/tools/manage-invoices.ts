@@ -3,70 +3,119 @@ import { StripeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Invoices',
-    key: 'manage_invoices',
-    description: `Create, retrieve, update, finalize, send, pay, or void invoices. Supports adding line items, applying discounts, and managing the full invoice lifecycle from draft to paid or voided.`,
-    instructions: [
-      'Invoices start as draft. Finalize them to lock the amount and generate a payment page, then send or pay.',
-      'Use addLineItem action to add items before finalizing.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageInvoices = SlateTool.create(spec, {
+  name: 'Manage Invoices',
+  key: 'manage_invoices',
+  description: `Create, retrieve, update, finalize, send, pay, or void invoices. Supports adding line items, applying discounts, and managing the full invoice lifecycle from draft to paid or voided.`,
+  instructions: [
+    'Invoices start as draft. Finalize them to lock the amount and generate a payment page, then send or pay.',
+    'Use addLineItem action to add items before finalizing.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'finalize', 'send', 'pay', 'void', 'add_line_item', 'list']).describe('Operation to perform'),
-    invoiceId: z.string().optional().describe('Invoice ID (required for get/update/finalize/send/pay/void)'),
-    customerId: z.string().optional().describe('Customer ID (required for create)'),
-    subscriptionId: z.string().optional().describe('Subscription ID to create an invoice for'),
-    description: z.string().optional().describe('Invoice description'),
-    collectionMethod: z.enum(['charge_automatically', 'send_invoice']).optional().describe('How to collect payment'),
-    daysUntilDue: z.number().optional().describe('Number of days until the invoice is due (for send_invoice collection method)'),
-    autoAdvance: z.boolean().optional().describe('Whether Stripe should auto-finalize the invoice'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Key-value metadata'),
-    // For line items
-    lineItemPriceId: z.string().optional().describe('Price ID for the line item'),
-    lineItemQuantity: z.number().optional().describe('Quantity for the line item'),
-    lineItemAmount: z.number().optional().describe('Amount in smallest currency unit (for one-off line items)'),
-    lineItemCurrency: z.string().optional().describe('Currency for one-off line items'),
-    lineItemDescription: z.string().optional().describe('Description for the line item'),
-    // For pay action
-    paymentMethodId: z.string().optional().describe('Payment method to use for paying'),
-    // For list
-    limit: z.number().optional().describe('Max results (for list)'),
-    startingAfter: z.string().optional().describe('Cursor for pagination'),
-    statusFilter: z.enum(['draft', 'open', 'paid', 'uncollectible', 'void']).optional().describe('Filter by status (for list)'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().optional().describe('Invoice ID'),
-    customerId: z.string().optional().nullable().describe('Customer ID'),
-    status: z.string().optional().nullable().describe('Invoice status (draft, open, paid, uncollectible, void)'),
-    total: z.number().optional().describe('Total amount in smallest currency unit'),
-    currency: z.string().optional().describe('Currency code'),
-    amountDue: z.number().optional().describe('Amount due'),
-    amountPaid: z.number().optional().describe('Amount paid'),
-    hostedInvoiceUrl: z.string().optional().nullable().describe('URL for the hosted invoice payment page'),
-    invoicePdf: z.string().optional().nullable().describe('URL for the invoice PDF'),
-    created: z.number().optional().describe('Creation timestamp'),
-    invoices: z.array(z.object({
-      invoiceId: z.string(),
-      customerId: z.string().nullable(),
-      status: z.string().nullable(),
-      total: z.number(),
-      currency: z.string(),
-      created: z.number(),
-    })).optional().describe('List of invoices'),
-    hasMore: z.boolean().optional().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'create',
+          'get',
+          'update',
+          'finalize',
+          'send',
+          'pay',
+          'void',
+          'add_line_item',
+          'list'
+        ])
+        .describe('Operation to perform'),
+      invoiceId: z
+        .string()
+        .optional()
+        .describe('Invoice ID (required for get/update/finalize/send/pay/void)'),
+      customerId: z.string().optional().describe('Customer ID (required for create)'),
+      subscriptionId: z
+        .string()
+        .optional()
+        .describe('Subscription ID to create an invoice for'),
+      description: z.string().optional().describe('Invoice description'),
+      collectionMethod: z
+        .enum(['charge_automatically', 'send_invoice'])
+        .optional()
+        .describe('How to collect payment'),
+      daysUntilDue: z
+        .number()
+        .optional()
+        .describe(
+          'Number of days until the invoice is due (for send_invoice collection method)'
+        ),
+      autoAdvance: z
+        .boolean()
+        .optional()
+        .describe('Whether Stripe should auto-finalize the invoice'),
+      metadata: z.record(z.string(), z.string()).optional().describe('Key-value metadata'),
+      // For line items
+      lineItemPriceId: z.string().optional().describe('Price ID for the line item'),
+      lineItemQuantity: z.number().optional().describe('Quantity for the line item'),
+      lineItemAmount: z
+        .number()
+        .optional()
+        .describe('Amount in smallest currency unit (for one-off line items)'),
+      lineItemCurrency: z.string().optional().describe('Currency for one-off line items'),
+      lineItemDescription: z.string().optional().describe('Description for the line item'),
+      // For pay action
+      paymentMethodId: z.string().optional().describe('Payment method to use for paying'),
+      // For list
+      limit: z.number().optional().describe('Max results (for list)'),
+      startingAfter: z.string().optional().describe('Cursor for pagination'),
+      statusFilter: z
+        .enum(['draft', 'open', 'paid', 'uncollectible', 'void'])
+        .optional()
+        .describe('Filter by status (for list)')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().optional().describe('Invoice ID'),
+      customerId: z.string().optional().nullable().describe('Customer ID'),
+      status: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Invoice status (draft, open, paid, uncollectible, void)'),
+      total: z.number().optional().describe('Total amount in smallest currency unit'),
+      currency: z.string().optional().describe('Currency code'),
+      amountDue: z.number().optional().describe('Amount due'),
+      amountPaid: z.number().optional().describe('Amount paid'),
+      hostedInvoiceUrl: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('URL for the hosted invoice payment page'),
+      invoicePdf: z.string().optional().nullable().describe('URL for the invoice PDF'),
+      created: z.number().optional().describe('Creation timestamp'),
+      invoices: z
+        .array(
+          z.object({
+            invoiceId: z.string(),
+            customerId: z.string().nullable(),
+            status: z.string().nullable(),
+            total: z.number(),
+            currency: z.string(),
+            created: z.number()
+          })
+        )
+        .optional()
+        .describe('List of invoices'),
+      hasMore: z.boolean().optional().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StripeClient({
       token: ctx.auth.token,
-      stripeAccountId: ctx.config.stripeAccountId,
+      stripeAccountId: ctx.config.stripeAccountId
     });
 
     let { action } = ctx.input;
@@ -81,7 +130,7 @@ export let manageInvoices = SlateTool.create(
       amountPaid: inv.amount_paid,
       hostedInvoiceUrl: inv.hosted_invoice_url,
       invoicePdf: inv.invoice_pdf,
-      created: inv.created,
+      created: inv.created
     });
 
     if (action === 'create') {
@@ -97,7 +146,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.createInvoice(params);
       return {
         output: mapInvoice(inv),
-        message: `Created draft invoice **${inv.id}** for customer ${inv.customer}`,
+        message: `Created draft invoice **${inv.id}** for customer ${inv.customer}`
       };
     }
 
@@ -106,7 +155,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.getInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
-        message: `Invoice **${inv.id}**: ${inv.status} — ${inv.total} ${inv.currency?.toUpperCase()}`,
+        message: `Invoice **${inv.id}**: ${inv.status} — ${inv.total} ${inv.currency?.toUpperCase()}`
       };
     }
 
@@ -122,7 +171,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.updateInvoice(ctx.input.invoiceId, params);
       return {
         output: mapInvoice(inv),
-        message: `Updated invoice **${inv.id}**`,
+        message: `Updated invoice **${inv.id}**`
       };
     }
 
@@ -131,7 +180,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.finalizeInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
-        message: `Finalized invoice **${inv.id}** — amount due: ${inv.amount_due} ${inv.currency?.toUpperCase()}`,
+        message: `Finalized invoice **${inv.id}** — amount due: ${inv.amount_due} ${inv.currency?.toUpperCase()}`
       };
     }
 
@@ -140,7 +189,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.sendInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
-        message: `Sent invoice **${inv.id}** to customer`,
+        message: `Sent invoice **${inv.id}** to customer`
       };
     }
 
@@ -151,7 +200,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.payInvoice(ctx.input.invoiceId, params);
       return {
         output: mapInvoice(inv),
-        message: `Paid invoice **${inv.id}** — amount paid: ${inv.amount_paid} ${inv.currency?.toUpperCase()}`,
+        message: `Paid invoice **${inv.id}** — amount paid: ${inv.amount_paid} ${inv.currency?.toUpperCase()}`
       };
     }
 
@@ -160,12 +209,13 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.voidInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
-        message: `Voided invoice **${inv.id}**`,
+        message: `Voided invoice **${inv.id}**`
       };
     }
 
     if (action === 'add_line_item') {
-      if (!ctx.input.invoiceId) throw new Error('invoiceId is required for add_line_item action');
+      if (!ctx.input.invoiceId)
+        throw new Error('invoiceId is required for add_line_item action');
 
       let params: Record<string, any> = { invoice: ctx.input.invoiceId };
       if (ctx.input.lineItemPriceId) {
@@ -191,7 +241,7 @@ export let manageInvoices = SlateTool.create(
       let inv = await client.getInvoice(ctx.input.invoiceId);
       return {
         output: mapInvoice(inv),
-        message: `Added line item to invoice **${inv.id}** — new total: ${inv.total} ${inv.currency?.toUpperCase()}`,
+        message: `Added line item to invoice **${inv.id}** — new total: ${inv.total} ${inv.currency?.toUpperCase()}`
       };
     }
 
@@ -211,10 +261,11 @@ export let manageInvoices = SlateTool.create(
           status: inv.status,
           total: inv.total,
           currency: inv.currency,
-          created: inv.created,
+          created: inv.created
         })),
-        hasMore: result.has_more,
+        hasMore: result.has_more
       },
-      message: `Found **${result.data.length}** invoice(s)${result.has_more ? ' (more available)' : ''}`,
+      message: `Found **${result.data.length}** invoice(s)${result.has_more ? ' (more available)' : ''}`
     };
-  }).build();
+  })
+  .build();

@@ -3,32 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLists = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Lists',
-    key: 'manage_lists',
-    description: `Create, update, or delete subscriber lists. Lists are the primary organizational structure for contacts in Doppler.
+export let manageLists = SlateTool.create(spec, {
+  name: 'Manage Lists',
+  key: 'manage_lists',
+  description: `Create, update, or delete subscriber lists. Lists are the primary organizational structure for contacts in Doppler.
 Use this tool to create new lists, rename existing ones, or remove lists that are no longer needed.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform on the list'),
-    listId: z.number().optional().describe('ID of the list to update or delete. Required for update and delete actions.'),
-    name: z.string().optional().describe('Name for the list. Required for create, optional for update (max 100 characters).'),
-  }))
-  .output(z.object({
-    listId: z.number().optional().describe('ID of the created or updated list'),
-    message: z.string().describe('Result message from the operation'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('The operation to perform on the list'),
+      listId: z
+        .number()
+        .optional()
+        .describe(
+          'ID of the list to update or delete. Required for update and delete actions.'
+        ),
+      name: z
+        .string()
+        .optional()
+        .describe(
+          'Name for the list. Required for create, optional for update (max 100 characters).'
+        )
+    })
+  )
+  .output(
+    z.object({
+      listId: z.number().optional().describe('ID of the created or updated list'),
+      message: z.string().describe('Result message from the operation')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountEmail: ctx.config.accountEmail,
+      accountEmail: ctx.config.accountEmail
     });
 
     if (ctx.input.action === 'create') {
@@ -39,9 +52,9 @@ Use this tool to create new lists, rename existing ones, or remove lists that ar
       return {
         output: {
           listId: result.createdResourceId,
-          message: result.message,
+          message: result.message
         },
-        message: `Created list **${ctx.input.name}** with ID \`${result.createdResourceId}\`.`,
+        message: `Created list **${ctx.input.name}** with ID \`${result.createdResourceId}\`.`
       };
     }
 
@@ -56,9 +69,9 @@ Use this tool to create new lists, rename existing ones, or remove lists that ar
       return {
         output: {
           listId: ctx.input.listId,
-          message: 'List updated successfully',
+          message: 'List updated successfully'
         },
-        message: `Updated list \`${ctx.input.listId}\` name to **${ctx.input.name}**.`,
+        message: `Updated list \`${ctx.input.listId}\` name to **${ctx.input.name}**.`
       };
     }
 
@@ -70,9 +83,9 @@ Use this tool to create new lists, rename existing ones, or remove lists that ar
       return {
         output: {
           listId: ctx.input.listId,
-          message: 'List deleted successfully',
+          message: 'List deleted successfully'
         },
-        message: `Deleted list \`${ctx.input.listId}\`.`,
+        message: `Deleted list \`${ctx.input.listId}\`.`
       };
     }
 

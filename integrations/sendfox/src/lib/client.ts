@@ -91,8 +91,8 @@ export class Client {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -107,7 +107,7 @@ export class Client {
 
   async listContacts(page?: number): Promise<PaginatedResponse<SendFoxContact>> {
     let response = await this.axios.get('/contacts', {
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -119,7 +119,7 @@ export class Client {
 
   async getContactByEmail(email: string): Promise<SendFoxContact | null> {
     let response = await this.axios.get('/contacts', {
-      params: { email },
+      params: { email }
     });
     let data = response.data;
     if (data.data && data.data.length > 0) {
@@ -136,7 +136,7 @@ export class Client {
     contactFields?: Array<{ name: string; value: string }>;
   }): Promise<SendFoxContact> {
     let body: Record<string, unknown> = {
-      email: params.email,
+      email: params.email
     };
     if (params.firstName) body.first_name = params.firstName;
     if (params.lastName) body.last_name = params.lastName;
@@ -147,12 +147,15 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: number, params: {
-    firstName?: string;
-    lastName?: string;
-    lists?: number[];
-    contactFields?: Array<{ name: string; value: string }>;
-  }): Promise<SendFoxContact> {
+  async updateContact(
+    contactId: number,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      lists?: number[];
+      contactFields?: Array<{ name: string; value: string }>;
+    }
+  ): Promise<SendFoxContact> {
     let body: Record<string, unknown> = {};
     if (params.firstName !== undefined) body.first_name = params.firstName;
     if (params.lastName !== undefined) body.last_name = params.lastName;
@@ -181,7 +184,7 @@ export class Client {
     listIds?: number[];
   }): Promise<{ created: number; updated: number }> {
     let body: Record<string, unknown> = {
-      contacts: params.contacts,
+      contacts: params.contacts
     };
     if (params.listIds) body.list_ids = params.listIds;
 
@@ -193,7 +196,7 @@ export class Client {
 
   async listLists(page?: number): Promise<PaginatedResponse<SendFoxList>> {
     let response = await this.axios.get('/lists', {
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -214,7 +217,7 @@ export class Client {
 
   async addContactToList(listId: number, contactId: number): Promise<void> {
     await this.axios.post(`/lists/${listId}/contacts`, {
-      contact_id: contactId,
+      contact_id: contactId
     });
   }
 
@@ -227,7 +230,7 @@ export class Client {
 
   async listCampaigns(page?: number): Promise<PaginatedResponse<SendFoxCampaign>> {
     let response = await this.axios.get('/campaigns', {
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -254,7 +257,7 @@ export class Client {
       html: params.html,
       from_name: params.fromName,
       from_email: params.fromEmail,
-      list_ids: params.listIds,
+      list_ids: params.listIds
     };
     if (params.scheduledAt) body.scheduled_at = params.scheduledAt;
     if (params.timezone) body.timezone = params.timezone;
@@ -264,17 +267,20 @@ export class Client {
     return response.data;
   }
 
-  async updateCampaign(campaignId: number, params: {
-    title?: string;
-    subject?: string;
-    html?: string;
-    fromName?: string;
-    fromEmail?: string;
-    listIds?: number[];
-    scheduledAt?: string;
-    timezone?: string;
-    previewText?: string;
-  }): Promise<SendFoxCampaign> {
+  async updateCampaign(
+    campaignId: number,
+    params: {
+      title?: string;
+      subject?: string;
+      html?: string;
+      fromName?: string;
+      fromEmail?: string;
+      listIds?: number[];
+      scheduledAt?: string;
+      timezone?: string;
+      previewText?: string;
+    }
+  ): Promise<SendFoxCampaign> {
     let body: Record<string, unknown> = {};
     if (params.title !== undefined) body.title = params.title;
     if (params.subject !== undefined) body.subject = params.subject;
@@ -303,7 +309,7 @@ export class Client {
 
   async listAutomations(page?: number): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/automations', {
-      params: { page },
+      params: { page }
     });
     return response.data;
   }
@@ -317,7 +323,7 @@ export class Client {
 
   async listForms(page?: number): Promise<PaginatedResponse<any>> {
     let response = await this.axios.get('/forms', {
-      params: { page },
+      params: { page }
     });
     return response.data;
   }

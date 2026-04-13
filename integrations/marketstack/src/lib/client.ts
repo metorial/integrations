@@ -210,13 +210,15 @@ export class Client {
   constructor(params: { token: string }) {
     this.accessKey = params.token;
     this.axios = createAxios({
-      baseURL: 'https://api.marketstack.com/v2',
+      baseURL: 'https://api.marketstack.com/v2'
     });
   }
 
-  private buildParams(params: Record<string, string | number | boolean | undefined | null>): Record<string, string | number | boolean> {
+  private buildParams(
+    params: Record<string, string | number | boolean | undefined | null>
+  ): Record<string, string | number | boolean> {
     let result: Record<string, string | number | boolean> = {
-      access_key: this.accessKey,
+      access_key: this.accessKey
     };
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null && value !== '') {
@@ -243,8 +245,8 @@ export class Client {
         sort: params.sort,
         exchange: params.exchange,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -260,8 +262,8 @@ export class Client {
         symbols: params.symbols,
         exchange: params.exchange,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -278,8 +280,8 @@ export class Client {
         symbols: params.symbols,
         exchange: params.exchange,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -303,8 +305,8 @@ export class Client {
         sort: params.sort,
         exchange: params.exchange,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -320,8 +322,8 @@ export class Client {
         symbols: params.symbols,
         exchange: params.exchange,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -331,8 +333,8 @@ export class Client {
   }): Promise<PaginatedResponse<RealTimePrice>> {
     let response = await this.axios.get('/intraday/latest', {
       params: this.buildParams({
-        symbols: params.symbols,
-      }),
+        symbols: params.symbols
+      })
     });
     return response.data;
   }
@@ -348,15 +350,15 @@ export class Client {
         search: params.search,
         exchange: params.exchange,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
 
   async getTickerInfo(symbol: string): Promise<{ data: TickerInfo }> {
     let response = await this.axios.get(`/tickers/${symbol}`, {
-      params: this.buildParams({}),
+      params: this.buildParams({})
     });
     return response.data;
   }
@@ -370,15 +372,15 @@ export class Client {
       params: this.buildParams({
         search: params.search,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
 
   async getExchangeInfo(mic: string): Promise<{ data: ExchangeInfo }> {
     let response = await this.axios.get(`/exchanges/${mic}`, {
-      params: this.buildParams({}),
+      params: this.buildParams({})
     });
     return response.data;
   }
@@ -398,8 +400,8 @@ export class Client {
         date_to: params.dateTo,
         sort: params.sort,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -419,8 +421,8 @@ export class Client {
         date_to: params.dateTo,
         sort: params.sort,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -440,8 +442,8 @@ export class Client {
         date_to: params.dateTo,
         sort: params.sort,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -455,8 +457,8 @@ export class Client {
       params: this.buildParams({
         search: params.search,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -470,8 +472,8 @@ export class Client {
       params: this.buildParams({
         search: params.search,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -488,19 +490,17 @@ export class Client {
         date_from: params.dateFrom,
         date_to: params.dateTo,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
 
-  async getCikLookup(params: {
-    query: string;
-  }): Promise<PaginatedResponse<CikLookupResult>> {
+  async getCikLookup(params: { query: string }): Promise<PaginatedResponse<CikLookupResult>> {
     let response = await this.axios.get('/sec/cik', {
       params: this.buildParams({
-        query: params.query,
-      }),
+        query: params.query
+      })
     });
     return response.data;
   }
@@ -519,8 +519,8 @@ export class Client {
         date_from: params.dateFrom,
         date_to: params.dateTo,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -537,8 +537,8 @@ export class Client {
         taxonomy: params.taxonomy,
         tag: params.tag,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -558,8 +558,8 @@ export class Client {
         unit: params.unit,
         period: params.period,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -577,8 +577,8 @@ export class Client {
         date_from: params.dateFrom,
         date_to: params.dateTo,
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -590,8 +590,8 @@ export class Client {
     let response = await this.axios.get('/currencies', {
       params: this.buildParams({
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }
@@ -603,8 +603,8 @@ export class Client {
     let response = await this.axios.get('/timezones', {
       params: this.buildParams({
         limit: params.limit,
-        offset: params.offset,
-      }),
+        offset: params.offset
+      })
     });
     return response.data;
   }

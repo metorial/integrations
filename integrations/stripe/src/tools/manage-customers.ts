@@ -3,68 +3,94 @@ import { StripeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let addressSchema = z.object({
-  line1: z.string().optional().describe('Address line 1'),
-  line2: z.string().optional().describe('Address line 2'),
-  city: z.string().optional().describe('City'),
-  state: z.string().optional().describe('State or province'),
-  postalCode: z.string().optional().describe('Postal or ZIP code'),
-  country: z.string().optional().describe('Two-letter country code (ISO 3166-1 alpha-2)'),
-}).optional().describe('Customer address');
+let addressSchema = z
+  .object({
+    line1: z.string().optional().describe('Address line 1'),
+    line2: z.string().optional().describe('Address line 2'),
+    city: z.string().optional().describe('City'),
+    state: z.string().optional().describe('State or province'),
+    postalCode: z.string().optional().describe('Postal or ZIP code'),
+    country: z.string().optional().describe('Two-letter country code (ISO 3166-1 alpha-2)')
+  })
+  .optional()
+  .describe('Customer address');
 
-let shippingSchema = z.object({
-  name: z.string().describe('Recipient name'),
-  phone: z.string().optional().describe('Recipient phone'),
-  address: addressSchema,
-}).optional().describe('Customer shipping information');
+let shippingSchema = z
+  .object({
+    name: z.string().describe('Recipient name'),
+    phone: z.string().optional().describe('Recipient phone'),
+    address: addressSchema
+  })
+  .optional()
+  .describe('Customer shipping information');
 
-export let manageCustomers = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Customers',
-    key: 'manage_customers',
-    description: `Create, retrieve, update, or delete Stripe customers. Use **action** to specify the operation. Customers are the core entity for tracking payments, subscriptions, and invoices.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageCustomers = SlateTool.create(spec, {
+  name: 'Manage Customers',
+  key: 'manage_customers',
+  description: `Create, retrieve, update, or delete Stripe customers. Use **action** to specify the operation. Customers are the core entity for tracking payments, subscriptions, and invoices.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('Operation to perform'),
-    customerId: z.string().optional().describe('Customer ID (required for get, update, delete)'),
-    email: z.string().optional().describe('Customer email address'),
-    name: z.string().optional().describe('Customer full name'),
-    phone: z.string().optional().describe('Customer phone number'),
-    description: z.string().optional().describe('Description of the customer'),
-    address: addressSchema,
-    shipping: shippingSchema,
-    metadata: z.record(z.string(), z.string()).optional().describe('Key-value metadata to attach to the customer'),
-    paymentMethodId: z.string().optional().describe('Default payment method ID to set'),
-    limit: z.number().optional().describe('Max number of results to return (for list, default 10)'),
-    startingAfter: z.string().optional().describe('Cursor for pagination - customer ID to start after'),
-    emailFilter: z.string().optional().describe('Filter customers by email (for list)'),
-  }))
-  .output(z.object({
-    customerId: z.string().optional().describe('Customer ID'),
-    email: z.string().optional().nullable().describe('Customer email'),
-    name: z.string().optional().nullable().describe('Customer name'),
-    phone: z.string().optional().nullable().describe('Customer phone'),
-    description: z.string().optional().nullable().describe('Customer description'),
-    created: z.number().optional().describe('Creation timestamp'),
-    deleted: z.boolean().optional().describe('Whether the customer was deleted'),
-    customers: z.array(z.object({
-      customerId: z.string(),
-      email: z.string().optional().nullable(),
-      name: z.string().optional().nullable(),
-      created: z.number().optional(),
-    })).optional().describe('List of customers (for list action)'),
-    hasMore: z.boolean().optional().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('Operation to perform'),
+      customerId: z
+        .string()
+        .optional()
+        .describe('Customer ID (required for get, update, delete)'),
+      email: z.string().optional().describe('Customer email address'),
+      name: z.string().optional().describe('Customer full name'),
+      phone: z.string().optional().describe('Customer phone number'),
+      description: z.string().optional().describe('Description of the customer'),
+      address: addressSchema,
+      shipping: shippingSchema,
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Key-value metadata to attach to the customer'),
+      paymentMethodId: z.string().optional().describe('Default payment method ID to set'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Max number of results to return (for list, default 10)'),
+      startingAfter: z
+        .string()
+        .optional()
+        .describe('Cursor for pagination - customer ID to start after'),
+      emailFilter: z.string().optional().describe('Filter customers by email (for list)')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().optional().describe('Customer ID'),
+      email: z.string().optional().nullable().describe('Customer email'),
+      name: z.string().optional().nullable().describe('Customer name'),
+      phone: z.string().optional().nullable().describe('Customer phone'),
+      description: z.string().optional().nullable().describe('Customer description'),
+      created: z.number().optional().describe('Creation timestamp'),
+      deleted: z.boolean().optional().describe('Whether the customer was deleted'),
+      customers: z
+        .array(
+          z.object({
+            customerId: z.string(),
+            email: z.string().optional().nullable(),
+            name: z.string().optional().nullable(),
+            created: z.number().optional()
+          })
+        )
+        .optional()
+        .describe('List of customers (for list action)'),
+      hasMore: z.boolean().optional().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StripeClient({
       token: ctx.auth.token,
-      stripeAccountId: ctx.config.stripeAccountId,
+      stripeAccountId: ctx.config.stripeAccountId
     });
 
     let { action } = ctx.input;
@@ -87,21 +113,23 @@ export let manageCustomers = SlateTool.create(
           city: ctx.input.address.city,
           state: ctx.input.address.state,
           postal_code: ctx.input.address.postalCode,
-          country: ctx.input.address.country,
+          country: ctx.input.address.country
         };
       }
       if (ctx.input.shipping) {
         params.shipping = {
           name: ctx.input.shipping.name,
           phone: ctx.input.shipping.phone,
-          address: ctx.input.shipping.address ? {
-            line1: ctx.input.shipping.address.line1,
-            line2: ctx.input.shipping.address.line2,
-            city: ctx.input.shipping.address.city,
-            state: ctx.input.shipping.address.state,
-            postal_code: ctx.input.shipping.address.postalCode,
-            country: ctx.input.shipping.address.country,
-          } : undefined,
+          address: ctx.input.shipping.address
+            ? {
+                line1: ctx.input.shipping.address.line1,
+                line2: ctx.input.shipping.address.line2,
+                city: ctx.input.shipping.address.city,
+                state: ctx.input.shipping.address.state,
+                postal_code: ctx.input.shipping.address.postalCode,
+                country: ctx.input.shipping.address.country
+              }
+            : undefined
         };
       }
 
@@ -113,9 +141,9 @@ export let manageCustomers = SlateTool.create(
           name: customer.name,
           phone: customer.phone,
           description: customer.description,
-          created: customer.created,
+          created: customer.created
         },
-        message: `Created customer **${customer.name || customer.email || customer.id}**`,
+        message: `Created customer **${customer.name || customer.email || customer.id}**`
       };
     }
 
@@ -129,9 +157,9 @@ export let manageCustomers = SlateTool.create(
           name: customer.name,
           phone: customer.phone,
           description: customer.description,
-          created: customer.created,
+          created: customer.created
         },
-        message: `Retrieved customer **${customer.name || customer.email || customer.id}**`,
+        message: `Retrieved customer **${customer.name || customer.email || customer.id}**`
       };
     }
 
@@ -153,7 +181,7 @@ export let manageCustomers = SlateTool.create(
           city: ctx.input.address.city,
           state: ctx.input.address.state,
           postal_code: ctx.input.address.postalCode,
-          country: ctx.input.address.country,
+          country: ctx.input.address.country
         };
       }
 
@@ -165,9 +193,9 @@ export let manageCustomers = SlateTool.create(
           name: customer.name,
           phone: customer.phone,
           description: customer.description,
-          created: customer.created,
+          created: customer.created
         },
-        message: `Updated customer **${customer.name || customer.email || customer.id}**`,
+        message: `Updated customer **${customer.name || customer.email || customer.id}**`
       };
     }
 
@@ -177,9 +205,9 @@ export let manageCustomers = SlateTool.create(
       return {
         output: {
           customerId: result.id,
-          deleted: result.deleted,
+          deleted: result.deleted
         },
-        message: `Deleted customer **${ctx.input.customerId}**`,
+        message: `Deleted customer **${ctx.input.customerId}**`
       };
     }
 
@@ -196,10 +224,11 @@ export let manageCustomers = SlateTool.create(
           customerId: c.id,
           email: c.email,
           name: c.name,
-          created: c.created,
+          created: c.created
         })),
-        hasMore: result.has_more,
+        hasMore: result.has_more
       },
-      message: `Found **${result.data.length}** customer(s)${result.has_more ? ' (more available)' : ''}`,
+      message: `Found **${result.data.length}** customer(s)${result.has_more ? ' (more available)' : ''}`
     };
-  }).build();
+  })
+  .build();

@@ -3,37 +3,57 @@ import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageJob = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Job',
-    key: 'manage_job',
-    description: `Create, copy, enable, disable, delete, or update the configuration of a Jenkins job.
+export let manageJob = SlateTool.create(spec, {
+  name: 'Manage Job',
+  key: 'manage_job',
+  description: `Create, copy, enable, disable, delete, or update the configuration of a Jenkins job.
 For **create** and **update**, provide the job's XML configuration.
 For **copy**, specify the source job name and new job name.
 For **enable**, **disable**, and **delete**, only the job path is required.`,
-    instructions: [
-      'For create/update actions, xmlConfig must be a valid Jenkins job XML configuration.',
-      'Jobs in folders use slash-separated paths, e.g. "my-folder/my-job".'
-    ],
-    tags: {
-      destructive: true
-    }
+  instructions: [
+    'For create/update actions, xmlConfig must be a valid Jenkins job XML configuration.',
+    'Jobs in folders use slash-separated paths, e.g. "my-folder/my-job".'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'copy', 'enable', 'disable', 'delete', 'update_config']).describe('Action to perform on the job'),
-    jobPath: z.string().describe('Path to the job (e.g. "my-job" or "folder/my-job"). For "create", this is the new job name.'),
-    folderPath: z.string().optional().describe('Folder in which to create or copy the job. Only used with "create" and "copy" actions.'),
-    xmlConfig: z.string().optional().describe('XML configuration for the job. Required for "create" and "update_config" actions.'),
-    sourceJobName: z.string().optional().describe('Source job name to copy from. Required for "copy" action.')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    action: z.string().describe('The action that was performed'),
-    jobPath: z.string().describe('Path of the affected job')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'copy', 'enable', 'disable', 'delete', 'update_config'])
+        .describe('Action to perform on the job'),
+      jobPath: z
+        .string()
+        .describe(
+          'Path to the job (e.g. "my-job" or "folder/my-job"). For "create", this is the new job name.'
+        ),
+      folderPath: z
+        .string()
+        .optional()
+        .describe(
+          'Folder in which to create or copy the job. Only used with "create" and "copy" actions.'
+        ),
+      xmlConfig: z
+        .string()
+        .optional()
+        .describe(
+          'XML configuration for the job. Required for "create" and "update_config" actions.'
+        ),
+      sourceJobName: z
+        .string()
+        .optional()
+        .describe('Source job name to copy from. Required for "copy" action.')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      action: z.string().describe('The action that was performed'),
+      jobPath: z.string().describe('Path of the affected job')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new JenkinsClient({
       instanceUrl: ctx.config.instanceUrl,
       username: ctx.auth.username,
@@ -74,4 +94,5 @@ For **enable**, **disable**, and **delete**, only the job path is required.`,
       },
       message: `Successfully **${action.replace('_', ' ')}** job \`${jobPath}\`.`
     };
-  }).build();
+  })
+  .build();

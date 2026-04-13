@@ -3,24 +3,23 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getBalance = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Balance',
-    key: 'get_account_balance',
-    description: `Retrieve your current DocuPost account balance. Use this to verify you have sufficient funds before sending letters or postcards, as mailings are charged against your prepaid balance.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getBalance = SlateTool.create(spec, {
+  name: 'Get Account Balance',
+  key: 'get_account_balance',
+  description: `Retrieve your current DocuPost account balance. Use this to verify you have sufficient funds before sending letters or postcards, as mailings are charged against your prepaid balance.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    balance: z.any().describe('Current account balance information'),
-    response: z.any().optional().describe('Raw response from the DocuPost API'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      balance: z.any().describe('Current account balance information'),
+      response: z.any().optional().describe('Raw response from the DocuPost API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getBalance();
@@ -30,9 +29,9 @@ export let getBalance = SlateTool.create(
     return {
       output: {
         balance: result?.response?.balance ?? result,
-        response: result,
+        response: result
       },
-      message: `Account balance retrieved successfully.`,
+      message: `Account balance retrieved successfully.`
     };
   })
   .build();

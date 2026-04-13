@@ -62,7 +62,7 @@ export class ContentApiClient {
 
   private getAxios() {
     return createAxios({
-      baseURL: `https://${this.repositoryName}.cdn.prismic.io/api/v2`,
+      baseURL: `https://${this.repositoryName}.cdn.prismic.io/api/v2`
     });
   }
 
@@ -80,37 +80,39 @@ export class ContentApiClient {
   async getApiMetadata(): Promise<PrismicApiResponse> {
     let axios = this.getAxios();
     let response = await axios.get('', {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data as PrismicApiResponse;
   }
 
   async getMasterRef(): Promise<string> {
     let metadata = await this.getApiMetadata();
-    let masterRef = metadata.refs.find((r) => r.isMasterRef);
+    let masterRef = metadata.refs.find(r => r.isMasterRef);
     if (!masterRef) {
       throw new Error('Could not find master ref');
     }
     return masterRef.ref;
   }
 
-  async queryDocuments(options: {
-    query?: string;
-    predicates?: string[];
-    pageSize?: number;
-    page?: number;
-    orderings?: string;
-    after?: string;
-    lang?: string;
-    fetchLinks?: string;
-    graphQuery?: string;
-    ref?: string;
-  } = {}): Promise<PrismicQueryResponse> {
+  async queryDocuments(
+    options: {
+      query?: string;
+      predicates?: string[];
+      pageSize?: number;
+      page?: number;
+      orderings?: string;
+      after?: string;
+      lang?: string;
+      fetchLinks?: string;
+      graphQuery?: string;
+      ref?: string;
+    } = {}
+  ): Promise<PrismicQueryResponse> {
     let axios = this.getAxios();
-    let ref = options.ref || await this.getMasterRef();
+    let ref = options.ref || (await this.getMasterRef());
 
     let params: Record<string, any> = {
-      ref,
+      ref
     };
 
     if (options.predicates && options.predicates.length > 0) {
@@ -128,37 +130,54 @@ export class ContentApiClient {
     if (options.graphQuery) params.graphQuery = options.graphQuery;
 
     let response = await axios.get('/documents/search', {
-      params: this.getParams(params),
+      params: this.getParams(params)
     });
 
     return response.data as PrismicQueryResponse;
   }
 
-  async getDocumentById(documentId: string, options?: { ref?: string; lang?: string; fetchLinks?: string; graphQuery?: string }): Promise<PrismicDocument | null> {
+  async getDocumentById(
+    documentId: string,
+    options?: { ref?: string; lang?: string; fetchLinks?: string; graphQuery?: string }
+  ): Promise<PrismicDocument | null> {
     let predicates = [`[:d = at(document.id, "${documentId}")]`];
     let result = await this.queryDocuments({
       predicates,
       ref: options?.ref,
       lang: options?.lang,
       fetchLinks: options?.fetchLinks,
-      graphQuery: options?.graphQuery,
+      graphQuery: options?.graphQuery
     });
     return result.results[0] || null;
   }
 
-  async getDocumentByUid(type: string, uid: string, options?: { ref?: string; lang?: string; fetchLinks?: string; graphQuery?: string }): Promise<PrismicDocument | null> {
+  async getDocumentByUid(
+    type: string,
+    uid: string,
+    options?: { ref?: string; lang?: string; fetchLinks?: string; graphQuery?: string }
+  ): Promise<PrismicDocument | null> {
     let predicates = [`[:d = at(my.${type}.uid, "${uid}")]`];
     let result = await this.queryDocuments({
       predicates,
       ref: options?.ref,
       lang: options?.lang,
       fetchLinks: options?.fetchLinks,
-      graphQuery: options?.graphQuery,
+      graphQuery: options?.graphQuery
     });
     return result.results[0] || null;
   }
 
-  async getDocumentsByType(type: string, options?: { pageSize?: number; page?: number; orderings?: string; lang?: string; ref?: string; fetchLinks?: string }): Promise<PrismicQueryResponse> {
+  async getDocumentsByType(
+    type: string,
+    options?: {
+      pageSize?: number;
+      page?: number;
+      orderings?: string;
+      lang?: string;
+      ref?: string;
+      fetchLinks?: string;
+    }
+  ): Promise<PrismicQueryResponse> {
     let predicates = [`[:d = at(document.type, "${type}")]`];
     return this.queryDocuments({
       predicates,
@@ -167,11 +186,20 @@ export class ContentApiClient {
       orderings: options?.orderings,
       lang: options?.lang,
       ref: options?.ref,
-      fetchLinks: options?.fetchLinks,
+      fetchLinks: options?.fetchLinks
     });
   }
 
-  async getDocumentsByTags(tags: string[], options?: { pageSize?: number; page?: number; orderings?: string; lang?: string; ref?: string }): Promise<PrismicQueryResponse> {
+  async getDocumentsByTags(
+    tags: string[],
+    options?: {
+      pageSize?: number;
+      page?: number;
+      orderings?: string;
+      lang?: string;
+      ref?: string;
+    }
+  ): Promise<PrismicQueryResponse> {
     let predicates = [`[:d = at(document.tags, [${tags.map(t => `"${t}"`).join(',')}])]`];
     return this.queryDocuments({
       predicates,
@@ -179,7 +207,7 @@ export class ContentApiClient {
       page: options?.page,
       orderings: options?.orderings,
       lang: options?.lang,
-      ref: options?.ref,
+      ref: options?.ref
     });
   }
 }

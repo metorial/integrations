@@ -7,7 +7,7 @@ export class Client {
   constructor(config: { token: string }) {
     this.http = createAxios({
       baseURL: 'https://enterprise.godial.cc/meta/api/externals',
-      params: { access_token: config.token },
+      params: { access_token: config.token }
     });
   }
 

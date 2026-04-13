@@ -3,47 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newPolls = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Poll',
-    key: 'new_polls',
-    description: 'Triggers when a new poll or proposal is created. Polls for recently created polls and proposals of any type.',
-  }
-)
-  .input(z.object({
-    pollId: z.number().describe('ID of the poll'),
-    pollKey: z.string().describe('Key of the poll'),
-    title: z.string().describe('Title of the poll'),
-    pollType: z.string().describe('Type of the poll'),
-    details: z.string().optional().describe('Description of the poll'),
-    groupId: z.number().optional().describe('ID of the group'),
-    discussionId: z.number().optional().describe('ID of the associated discussion'),
-    authorId: z.number().optional().describe('ID of the author'),
-    closingAt: z.string().optional().describe('ISO 8601 closing time'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-  }))
-  .output(z.object({
-    pollId: z.number().describe('ID of the poll'),
-    pollKey: z.string().describe('Key of the poll'),
-    title: z.string().describe('Title of the poll'),
-    pollType: z.string().describe('Type of the poll'),
-    details: z.string().optional().describe('Description of the poll'),
-    groupId: z.number().optional().describe('ID of the group'),
-    discussionId: z.number().optional().describe('ID of the associated discussion'),
-    authorId: z.number().optional().describe('ID of the author'),
-    closingAt: z.string().optional().describe('ISO 8601 closing time'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-  }))
+export let newPolls = SlateTrigger.create(spec, {
+  name: 'New Poll',
+  key: 'new_polls',
+  description:
+    'Triggers when a new poll or proposal is created. Polls for recently created polls and proposals of any type.'
+})
+  .input(
+    z.object({
+      pollId: z.number().describe('ID of the poll'),
+      pollKey: z.string().describe('Key of the poll'),
+      title: z.string().describe('Title of the poll'),
+      pollType: z.string().describe('Type of the poll'),
+      details: z.string().optional().describe('Description of the poll'),
+      groupId: z.number().optional().describe('ID of the group'),
+      discussionId: z.number().optional().describe('ID of the associated discussion'),
+      authorId: z.number().optional().describe('ID of the author'),
+      closingAt: z.string().optional().describe('ISO 8601 closing time'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      pollId: z.number().describe('ID of the poll'),
+      pollKey: z.string().describe('Key of the poll'),
+      title: z.string().describe('Title of the poll'),
+      pollType: z.string().describe('Type of the poll'),
+      details: z.string().optional().describe('Description of the poll'),
+      groupId: z.number().optional().describe('ID of the group'),
+      discussionId: z.number().optional().describe('ID of the associated discussion'),
+      authorId: z.number().optional().describe('ID of the author'),
+      closingAt: z.string().optional().describe('ISO 8601 closing time'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let lastSeenId = (ctx.state as any)?.lastSeenId as number | undefined;
@@ -72,15 +74,15 @@ export let newPolls = SlateTrigger.create(
           discussionId: p.discussion_id,
           authorId: p.author_id,
           closingAt: p.closing_at,
-          createdAt: p.created_at,
+          createdAt: p.created_at
         })),
         updatedState: {
-          lastSeenId: newestId,
-        },
+          lastSeenId: newestId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'poll.created',
         id: `poll-${ctx.input.pollId}`,
@@ -94,8 +96,9 @@ export let newPolls = SlateTrigger.create(
           discussionId: ctx.input.discussionId,
           authorId: ctx.input.authorId,
           closingAt: ctx.input.closingAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

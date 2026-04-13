@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteMedia = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Media',
-    key: 'delete_media',
-    description: `Delete one or more media files from the team's media library. This permanently removes the files.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteMedia = SlateTool.create(spec, {
+  name: 'Delete Media',
+  key: 'delete_media',
+  description: `Delete one or more media files from the team's media library. This permanently removes the files.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    mediaIds: z.array(z.string()).describe('IDs of media files to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      mediaIds: z.array(z.string()).describe('IDs of media files to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteMedia(ctx.input.mediaIds);
 

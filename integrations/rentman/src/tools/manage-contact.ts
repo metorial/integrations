@@ -3,35 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact (company or individual) in Rentman. Contacts can be linked to projects, invoices, and other entities. Optionally add contact persons after creation.`,
-    tags: { destructive: false },
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Contact / company name'),
-    firstName: z.string().optional().describe('First name'),
-    surName: z.string().optional().describe('Surname'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    city: z.string().optional().describe('City'),
-    country: z.string().optional().describe('Country code'),
-    street: z.string().optional().describe('Street address'),
-    postalCode: z.string().optional().describe('Postal code'),
-    vatCode: z.string().optional().describe('VAT code'),
-    tags: z.string().optional().describe('Tags / labels'),
-    memo: z.string().optional().describe('Internal notes'),
-  }))
-  .output(z.object({
-    contactId: z.number().describe('ID of the newly created contact'),
-    name: z.string().optional(),
-    createdAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact (company or individual) in Rentman. Contacts can be linked to projects, invoices, and other entities. Optionally add contact persons after creation.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      name: z.string().describe('Contact / company name'),
+      firstName: z.string().optional().describe('First name'),
+      surName: z.string().optional().describe('Surname'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      city: z.string().optional().describe('City'),
+      country: z.string().optional().describe('Country code'),
+      street: z.string().optional().describe('Street address'),
+      postalCode: z.string().optional().describe('Postal code'),
+      vatCode: z.string().optional().describe('VAT code'),
+      tags: z.string().optional().describe('Tags / labels'),
+      memo: z.string().optional().describe('Internal notes')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('ID of the newly created contact'),
+      name: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = { name: ctx.input.name };
@@ -54,42 +55,44 @@ export let createContact = SlateTool.create(
       output: {
         contactId: c.id,
         name: c.name,
-        createdAt: c.created,
+        createdAt: c.created
       },
-      message: `Created contact **${c.name}** (ID: ${c.id}).`,
+      message: `Created contact **${c.name}** (ID: ${c.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact in Rentman. Provide the contact ID and the fields to update. Only provided fields will be modified.`,
-    tags: { destructive: false },
-  }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the contact to update'),
-    name: z.string().optional().describe('Updated contact / company name'),
-    firstName: z.string().optional().describe('Updated first name'),
-    surName: z.string().optional().describe('Updated surname'),
-    email: z.string().optional().describe('Updated email address'),
-    phone: z.string().optional().describe('Updated phone number'),
-    city: z.string().optional().describe('Updated city'),
-    country: z.string().optional().describe('Updated country code'),
-    street: z.string().optional().describe('Updated street address'),
-    postalCode: z.string().optional().describe('Updated postal code'),
-    vatCode: z.string().optional().describe('Updated VAT code'),
-    tags: z.string().optional().describe('Updated tags'),
-    memo: z.string().optional().describe('Updated internal notes'),
-  }))
-  .output(z.object({
-    contactId: z.number(),
-    name: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact in Rentman. Provide the contact ID and the fields to update. Only provided fields will be modified.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the contact to update'),
+      name: z.string().optional().describe('Updated contact / company name'),
+      firstName: z.string().optional().describe('Updated first name'),
+      surName: z.string().optional().describe('Updated surname'),
+      email: z.string().optional().describe('Updated email address'),
+      phone: z.string().optional().describe('Updated phone number'),
+      city: z.string().optional().describe('Updated city'),
+      country: z.string().optional().describe('Updated country code'),
+      street: z.string().optional().describe('Updated street address'),
+      postalCode: z.string().optional().describe('Updated postal code'),
+      vatCode: z.string().optional().describe('Updated VAT code'),
+      tags: z.string().optional().describe('Updated tags'),
+      memo: z.string().optional().describe('Updated internal notes')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number(),
+      name: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -113,33 +116,36 @@ export let updateContact = SlateTool.create(
       output: {
         contactId: c.id,
         name: c.name,
-        updatedAt: c.modified,
+        updatedAt: c.modified
       },
-      message: `Updated contact **${c.name}** (ID: ${c.id}).`,
+      message: `Updated contact **${c.name}** (ID: ${c.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteContact = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Contact',
-    key: 'delete_contact',
-    description: `Permanently delete a contact from Rentman by its ID.`,
-    tags: { destructive: true },
-  }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the contact to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteContact = SlateTool.create(spec, {
+  name: 'Delete Contact',
+  key: 'delete_contact',
+  description: `Permanently delete a contact from Rentman by its ID.`,
+  tags: { destructive: true }
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the contact to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.remove('contacts', ctx.input.contactId);
 
     return {
       output: { deleted: true },
-      message: `Deleted contact with ID **${ctx.input.contactId}**.`,
+      message: `Deleted contact with ID **${ctx.input.contactId}**.`
     };
-  }).build();
+  })
+  .build();

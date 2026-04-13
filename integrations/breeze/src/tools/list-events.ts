@@ -3,35 +3,48 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listEvents = SlateTool.create(
-  spec,
-  {
-    name: 'List Events',
-    key: 'list_events',
-    description: `List church events with optional filtering by date range and calendar/category. Also retrieves available calendars and event locations when requested.`,
-    constraints: [
-      'Event responses may be cached and lag up to 15 minutes behind the live site.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let listEvents = SlateTool.create(spec, {
+  name: 'List Events',
+  key: 'list_events',
+  description: `List church events with optional filtering by date range and calendar/category. Also retrieves available calendars and event locations when requested.`,
+  constraints: [
+    'Event responses may be cached and lag up to 15 minutes behind the live site.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    start: z.string().optional().describe('Start date filter (YYYY-MM-DD format)'),
-    end: z.string().optional().describe('End date filter (YYYY-MM-DD format)'),
-    categoryId: z.string().optional().describe('Calendar/category ID to filter by'),
-    details: z.boolean().optional().describe('Set to true to include full event details'),
-    limit: z.number().optional().describe('Maximum number of events to return'),
-    includeCalendars: z.boolean().optional().describe('Set to true to also return available calendars'),
-    includeLocations: z.boolean().optional().describe('Set to true to also return available locations'),
-  }))
-  .output(z.object({
-    events: z.array(z.any()).describe('Array of event objects'),
-    calendars: z.array(z.any()).optional().describe('Available calendars (when includeCalendars is true)'),
-    locations: z.array(z.any()).optional().describe('Available locations (when includeLocations is true)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      start: z.string().optional().describe('Start date filter (YYYY-MM-DD format)'),
+      end: z.string().optional().describe('End date filter (YYYY-MM-DD format)'),
+      categoryId: z.string().optional().describe('Calendar/category ID to filter by'),
+      details: z.boolean().optional().describe('Set to true to include full event details'),
+      limit: z.number().optional().describe('Maximum number of events to return'),
+      includeCalendars: z
+        .boolean()
+        .optional()
+        .describe('Set to true to also return available calendars'),
+      includeLocations: z
+        .boolean()
+        .optional()
+        .describe('Set to true to also return available locations')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(z.any()).describe('Array of event objects'),
+      calendars: z
+        .array(z.any())
+        .optional()
+        .describe('Available calendars (when includeCalendars is true)'),
+      locations: z
+        .array(z.any())
+        .optional()
+        .describe('Available locations (when includeLocations is true)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let events = await client.listEvents({
@@ -39,7 +52,7 @@ export let listEvents = SlateTool.create(
       end: ctx.input.end,
       categoryId: ctx.input.categoryId,
       details: ctx.input.details,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
     let eventsArray = Array.isArray(events) ? events : [];
 
@@ -57,6 +70,7 @@ export let listEvents = SlateTool.create(
 
     return {
       output: { events: eventsArray, calendars, locations },
-      message: `Found **${eventsArray.length}** events.`,
+      message: `Found **${eventsArray.length}** events.`
     };
-  }).build();
+  })
+  .build();

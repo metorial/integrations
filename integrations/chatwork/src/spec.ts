@@ -5,7 +5,8 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'chatwork',
   name: 'Chatwork',
-  description: 'Business communication platform providing team messaging, task management, and file sharing within chat rooms.',
+  description:
+    'Business communication platform providing team messaging, task management, and file sharing within chat rooms.',
   metadata: {},
   config,
   auth

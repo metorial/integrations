@@ -4,49 +4,50 @@ import { buildClientConfig } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let paymentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Payment Events',
-    key: 'payment_events',
-    description: 'Triggers when a payment is completed.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of payment event'),
-    webhookId: z.string().describe('The webhook delivery ID'),
-    paymentId: z.string().describe('The affected payment ID'),
-    payload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    paymentId: z.string().describe('The payment ID'),
-    orderId: z.string().optional().describe('Associated order ID'),
-    amountInCents: z.number().optional().describe('Payment amount in cents'),
-    status: z.string().optional().describe('Payment status'),
-    provider: z.string().optional().describe('Payment provider'),
-    createdAt: z.string().optional().describe('Payment creation timestamp'),
-    updatedAt: z.string().optional().describe('Payment last updated timestamp'),
-  }))
+export let paymentEvents = SlateTrigger.create(spec, {
+  name: 'Payment Events',
+  key: 'payment_events',
+  description: 'Triggers when a payment is completed.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of payment event'),
+      webhookId: z.string().describe('The webhook delivery ID'),
+      paymentId: z.string().describe('The affected payment ID'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.string().describe('The payment ID'),
+      orderId: z.string().optional().describe('Associated order ID'),
+      amountInCents: z.number().optional().describe('Payment amount in cents'),
+      status: z.string().optional().describe('Payment status'),
+      provider: z.string().optional().describe('Payment provider'),
+      createdAt: z.string().optional().describe('Payment creation timestamp'),
+      updatedAt: z.string().optional().describe('Payment last updated timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(buildClientConfig(ctx));
 
       let response = await client.createWebhookEndpoint({
         url: ctx.input.webhookBaseUrl,
         events: ['payment.completed'],
-        version: 4,
+        version: 4
       });
 
       let endpointId = response?.data?.id;
 
       return {
         registrationDetails: {
-          webhookEndpointId: endpointId,
-        },
+          webhookEndpointId: endpointId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(buildClientConfig(ctx));
       let endpointId = ctx.input.registrationDetails?.webhookEndpointId;
       if (endpointId) {
@@ -54,8 +55,8 @@ export let paymentEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data?.event || data?.type || 'payment.completed';
       let paymentId = data?.data?.id || data?.payment_id || data?.id || '';
@@ -67,14 +68,18 @@ export let paymentEvents = SlateTrigger.create(
             eventType: String(eventType),
             webhookId: String(webhookId),
             paymentId: String(paymentId),
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let attrs = ctx.input.payload?.data?.attributes || ctx.input.payload?.payment || ctx.input.payload || {};
+    handleEvent: async ctx => {
+      let attrs =
+        ctx.input.payload?.data?.attributes ||
+        ctx.input.payload?.payment ||
+        ctx.input.payload ||
+        {};
 
       return {
         type: ctx.input.eventType,
@@ -86,8 +91,9 @@ export let paymentEvents = SlateTrigger.create(
           status: attrs.status,
           provider: attrs.provider,
           createdAt: attrs.created_at,
-          updatedAt: attrs.updated_at,
-        },
+          updatedAt: attrs.updated_at
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -2,9 +2,7 @@
   "name": "@metorial/postgresql",
   "version": "0.1.1",
   "description": "Query, insert, update, and delete data in PostgreSQL relational databases. Manage schemas, tables, indexes, and constraints. Execute complex SQL with joins, subqueries, aggregations, window functions, and CTEs. Create and manage views, materialized views, stored procedures, functions, and triggers. Handle transactions with ACID compliance and configurable isolation levels. Manage database roles, permissions, and row-level security policies. Import and export data in bulk using CSV or binary formats. Listen for real-time event notifications via LISTEN/NOTIFY channels and capture row-level changes through logical replication.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "execute SQL queries",
     "manage database schemas",

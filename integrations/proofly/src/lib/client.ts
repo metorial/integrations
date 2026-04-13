@@ -7,8 +7,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://proofly.io/api',
       headers: {
-        'X-Api-Key': config.token,
-      },
+        'X-Api-Key': config.token
+      }
     });
   }
 
@@ -42,17 +42,23 @@ export class Client {
     return response.data;
   }
 
-  async createConversion(notificationId: string, conversionData: {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    ip?: string;
-    city?: string;
-    country?: string;
-    pageUrl?: string;
-    [key: string]: unknown;
-  }) {
-    let response = await this.axios.post(`/notification/${notificationId}/conversion`, conversionData);
+  async createConversion(
+    notificationId: string,
+    conversionData: {
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+      ip?: string;
+      city?: string;
+      country?: string;
+      pageUrl?: string;
+      [key: string]: unknown;
+    }
+  ) {
+    let response = await this.axios.post(
+      `/notification/${notificationId}/conversion`,
+      conversionData
+    );
     return response.data;
   }
 }

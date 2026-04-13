@@ -49,12 +49,12 @@ export class Client {
       baseURL: 'https://api.apilio.com/api/v1',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json'
       },
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
@@ -71,7 +71,7 @@ export class Client {
 
   async updateBooleanVariable(variableId: string, value: boolean): Promise<BooleanVariable> {
     let response = await this.axios.put(`/boolean_variables/${variableId}`, {
-      boolean_variable: { value },
+      boolean_variable: { value }
     });
     return response.data.boolean_variable ?? response.data;
   }
@@ -87,9 +87,12 @@ export class Client {
     return response.data.string_variable ?? response.data;
   }
 
-  async updateStringVariable(variableId: string, value: string | null): Promise<StringVariable> {
+  async updateStringVariable(
+    variableId: string,
+    value: string | null
+  ): Promise<StringVariable> {
     let response = await this.axios.put(`/string_variables/${variableId}`, {
-      string_variable: { value },
+      string_variable: { value }
     });
     return response.data.string_variable ?? response.data;
   }
@@ -107,7 +110,7 @@ export class Client {
 
   async updateNumericVariable(variableId: string, value: number): Promise<NumericVariable> {
     let response = await this.axios.put(`/numeric_variables/${variableId}`, {
-      numeric_variable: { value },
+      numeric_variable: { value }
     });
     return response.data.numeric_variable ?? response.data;
   }
@@ -141,7 +144,7 @@ export class Client {
 
   async updateLogicblockActive(logicblockId: string, active: boolean): Promise<Logicblock> {
     let response = await this.axios.put(`/logicblocks/${logicblockId}`, {
-      logicblock: { active },
+      logicblock: { active }
     });
     return response.data.logicblock ?? response.data;
   }

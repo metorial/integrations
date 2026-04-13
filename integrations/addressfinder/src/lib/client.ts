@@ -26,11 +26,13 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: 'https://api.addressfinder.io/api',
-      headers,
+      headers
     });
   }
 
-  private buildParams(extra: Record<string, string | number | undefined> = {}): Record<string, string | number> {
+  private buildParams(
+    extra: Record<string, string | number | undefined> = {}
+  ): Record<string, string | number> {
     let params: Record<string, string | number> = { format: 'json' };
     if (this.authMethod === 'api_key') {
       params['key'] = this.token;
@@ -60,8 +62,8 @@ export class Client {
         state_codes: options.stateCodes,
         source: options.source,
         post_box: options.postBox,
-        canonical: options.canonical,
-      }),
+        canonical: options.canonical
+      })
     });
     return response.data;
   }
@@ -83,22 +85,18 @@ export class Client {
         delivered: options.delivered,
         post_box: options.postBox,
         rural: options.rural,
-        strict: options.strict,
-      }),
+        strict: options.strict
+      })
     });
     return response.data;
   }
 
-  async intAddressAutocomplete(options: {
-    country: string;
-    query: string;
-    max?: number;
-  }) {
+  async intAddressAutocomplete(options: { country: string; query: string; max?: number }) {
     let response = await this.axios.get(`/${options.country}/address/v2/autocomplete`, {
       params: this.buildParams({
         q: options.query,
-        max: options.max,
-      }),
+        max: options.max
+      })
     });
     return response.data;
   }
@@ -120,37 +118,29 @@ export class Client {
         dpid: options.dpid,
         source: options.source,
         gps: options.gps,
-        census: options.census,
-      }),
+        census: options.census
+      })
     });
     return response.data;
   }
 
-  async nzAddressMetadata(options: {
-    pxid?: string;
-    dpid?: string;
-    census?: number;
-  }) {
+  async nzAddressMetadata(options: { pxid?: string; dpid?: string; census?: number }) {
     let response = await this.axios.get('/nz/address/metadata', {
       params: this.buildParams({
         pxid: options.pxid,
         dpid: options.dpid,
-        census: options.census,
-      }),
+        census: options.census
+      })
     });
     return response.data;
   }
 
-  async intAddressMetadata(options: {
-    country: string;
-    addressId: string;
-    gps?: string;
-  }) {
+  async intAddressMetadata(options: { country: string; addressId: string; gps?: string }) {
     let response = await this.axios.get(`/${options.country}/address/v2/metadata`, {
       params: this.buildParams({
         id: options.addressId,
-        gps: options.gps,
-      }),
+        gps: options.gps
+      })
     });
     return response.data;
   }
@@ -176,8 +166,8 @@ export class Client {
         gps: options.gps,
         extended: options.extended,
         census: options.census,
-        state_codes: options.stateCodes,
-      }),
+        state_codes: options.stateCodes
+      })
     });
     return response.data;
   }
@@ -193,8 +183,8 @@ export class Client {
         q: options.query,
         post_box: options.postBox,
         region_code: options.regionCode,
-        census: options.census,
-      }),
+        census: options.census
+      })
     });
     return response.data;
   }
@@ -212,8 +202,8 @@ export class Client {
         q: options.query,
         max: options.max,
         location_types: options.locationTypes,
-        state_codes: options.stateCodes,
-      }),
+        state_codes: options.stateCodes
+      })
     });
     return response.data;
   }
@@ -237,8 +227,8 @@ export class Client {
         city: options.city,
         region: options.region,
         region_code: options.regionCode,
-        strict: options.strict,
-      }),
+        strict: options.strict
+      })
     });
     return response.data;
   }
@@ -248,8 +238,8 @@ export class Client {
   async auLocationMetadata(options: { locationId: string }) {
     let response = await this.axios.get('/au/location/metadata', {
       params: this.buildParams({
-        id: options.locationId,
-      }),
+        id: options.locationId
+      })
     });
     return response.data;
   }
@@ -257,40 +247,33 @@ export class Client {
   async nzLocationMetadata(options: { pxid: string }) {
     let response = await this.axios.get('/nz/location/metadata', {
       params: this.buildParams({
-        pxid: options.pxid,
-      }),
+        pxid: options.pxid
+      })
     });
     return response.data;
   }
 
   // ---- Reverse Geocoding (NZ only) ----
 
-  async nzReverseGeocode(options: {
-    longitude: string;
-    latitude: string;
-    max?: number;
-  }) {
+  async nzReverseGeocode(options: { longitude: string; latitude: string; max?: number }) {
     let response = await this.axios.get('/nz/address/reverse_geocode', {
       params: this.buildParams({
         x: options.longitude,
         y: options.latitude,
-        max: options.max,
-      }),
+        max: options.max
+      })
     });
     return response.data;
   }
 
   // ---- Email Verification ----
 
-  async verifyEmail(options: {
-    email: string;
-    features?: string;
-  }) {
+  async verifyEmail(options: { email: string; features?: string }) {
     let response = await this.axios.get('/email/v1/verification', {
       params: this.buildParams({
         email: options.email,
-        features: options.features,
-      }),
+        features: options.features
+      })
     });
     return response.data;
   }
@@ -308,10 +291,11 @@ export class Client {
       params: this.buildParams({
         phone_number: options.phoneNumber,
         default_country_code: options.defaultCountryCode,
-        mobile_only: options.mobileOnly !== undefined ? (options.mobileOnly ? '1' : '0') : undefined,
+        mobile_only:
+          options.mobileOnly !== undefined ? (options.mobileOnly ? '1' : '0') : undefined,
         timeout: options.timeout,
-        allowed_country_codes: options.allowedCountryCodes,
-      }),
+        allowed_country_codes: options.allowedCountryCodes
+      })
     });
     return response.data;
   }

@@ -17,13 +17,15 @@ export class SemrushAnalyticsClient {
     this.token = config.token;
     this.database = config.database || 'us';
     this.axios = createAxios({
-      baseURL: 'https://api.semrush.com',
+      baseURL: 'https://api.semrush.com'
     });
   }
 
-  private buildParams(params: Record<string, string | number | undefined>): Record<string, string | number> {
+  private buildParams(
+    params: Record<string, string | number | undefined>
+  ): Record<string, string | number> {
     let result: Record<string, string | number> = {
-      key: this.token,
+      key: this.token
     };
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null && value !== '') {
@@ -39,8 +41,8 @@ export class SemrushAnalyticsClient {
         type: 'domain_ranks',
         domain,
         database: database || this.database,
-        export_columns: 'Db,Dn,Rk,Or,Ot,Oc,Ad,At,Ac,Sh,Sv',
-      }),
+        export_columns: 'Db,Dn,Rk,Or,Ot,Oc,Ad,At,Ac,Sh,Sv'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -62,8 +64,8 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'Ph,Po,Pp,Pd,Nq,Cp,Ur,Tr,Tc,Co,Nr,Td',
-      }),
+        export_columns: 'Ph,Po,Pp,Pd,Nq,Cp,Ur,Tr,Tc,Co,Nr,Td'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -85,8 +87,8 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'Ph,Po,Nq,Cp,Ur,Tr,Tc,Co,Nr,Td,Tt,Ds,Vu',
-      }),
+        export_columns: 'Ph,Po,Nq,Cp,Ur,Tr,Tc,Co,Nr,Td,Tt,Ds,Vu'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -104,8 +106,8 @@ export class SemrushAnalyticsClient {
         database: params.database || this.database,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'Ph,P0,P1,P2,P3,P4,Nr,Nq,Cp,Co',
-      }),
+        export_columns: 'Ph,P0,P1,P2,P3,P4,Nr,Nq,Cp,Co'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -119,8 +121,8 @@ export class SemrushAnalyticsClient {
         type: 'domain_rank',
         domain: params.domain,
         database: params.database || this.database,
-        export_columns: 'Db,Dn,Rk,Or,Ot,Oc,Ad,At,Ac,Sh,Sv',
-      }),
+        export_columns: 'Db,Dn,Rk,Or,Ot,Oc,Ad,At,Ac,Sh,Sv'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -138,8 +140,8 @@ export class SemrushAnalyticsClient {
         database: params.database || this.database,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'Dt,Rk,Or,Ot,Oc,Ad,At,Ac',
-      }),
+        export_columns: 'Dt,Rk,Or,Ot,Oc,Ad,At,Ac'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -157,8 +159,8 @@ export class SemrushAnalyticsClient {
         database: params.database || this.database,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'Dn,Cr,Np,Or,Ot,Oc,Ad',
-      }),
+        export_columns: 'Dn,Cr,Np,Or,Ot,Oc,Ad'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -176,8 +178,8 @@ export class SemrushAnalyticsClient {
         database: params.database || this.database,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'Dn,Cr,Np,Ad,At,Ac,Or',
-      }),
+        export_columns: 'Dn,Cr,Np,Ad,At,Ac,Or'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -193,8 +195,8 @@ export class SemrushAnalyticsClient {
         type: 'phrase_all',
         phrase: params.phrase,
         database: params.database || this.database,
-        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,In,Kd',
-      }),
+        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,In,Kd'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -208,8 +210,8 @@ export class SemrushAnalyticsClient {
         type: 'phrase_all',
         phrase: params.phrases.join(';'),
         database: params.database || this.database,
-        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,In,Kd',
-      }),
+        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,In,Kd'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -227,8 +229,8 @@ export class SemrushAnalyticsClient {
         database: params.database || this.database,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'Dn,Ur,Fk,Fp',
-      }),
+        export_columns: 'Dn,Ur,Fk,Fp'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -250,8 +252,8 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,Rr,Kd',
-      }),
+        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,Rr,Kd'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -273,8 +275,8 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,Rr,Kd',
-      }),
+        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,Rr,Kd'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -296,8 +298,8 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,Kd',
-      }),
+        export_columns: 'Ph,Nq,Cp,Co,Nr,Td,Kd'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -311,8 +313,8 @@ export class SemrushAnalyticsClient {
         type: 'phrase_kdi',
         phrase: params.phrase,
         database: params.database || this.database,
-        export_columns: 'Ph,Kd',
-      }),
+        export_columns: 'Ph,Kd'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -328,8 +330,9 @@ export class SemrushAnalyticsClient {
         type: 'backlinks_overview',
         target: params.target,
         target_type: params.targetType || 'root_domain',
-        export_columns: 'ascore,total,domains_num,urls_num,ips_num,ipclassc_num,follows_num,nofollows_num,sponsored_num,ugc_num,texts_num,images_num,forms_num,frames_num',
-      }),
+        export_columns:
+          'ascore,total,domains_num,urls_num,ips_num,ipclassc_num,follows_num,nofollows_num,sponsored_num,ugc_num,texts_num,images_num,forms_num,frames_num'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -351,8 +354,9 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'page_score,response_code,source_url,source_title,target_url,anchor,external_num,internal_num,redirect_url,source_size,last_seen,first_seen,nofollow,form,frame,image,sitewide,newlink,lostlink',
-      }),
+        export_columns:
+          'page_score,response_code,source_url,source_title,target_url,anchor,external_num,internal_num,redirect_url,source_size,last_seen,first_seen,nofollow,form,frame,image,sitewide,newlink,lostlink'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -374,8 +378,8 @@ export class SemrushAnalyticsClient {
         display_offset: params.displayOffset,
         display_sort: params.displaySort,
         display_filter: params.displayFilter,
-        export_columns: 'domain_ascore,domain,backlinks_num,ip,country,first_seen,last_seen',
-      }),
+        export_columns: 'domain_ascore,domain,backlinks_num,ip,country,first_seen,last_seen'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -393,8 +397,8 @@ export class SemrushAnalyticsClient {
         target_type: params.targetType || 'root_domain',
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'anchor,domains_num,backlinks_num,first_seen,last_seen',
-      }),
+        export_columns: 'anchor,domains_num,backlinks_num,first_seen,last_seen'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -412,8 +416,8 @@ export class SemrushAnalyticsClient {
         target_type: params.targetType || 'root_domain',
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'ascore,domain,common_refdomains,domains_num,backlinks_num',
-      }),
+        export_columns: 'ascore,domain,common_refdomains,domains_num,backlinks_num'
+      })
     });
     return parseCsvResponse(response.data);
   }

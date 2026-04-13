@@ -3,38 +3,42 @@ import { SegmentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workspaceActivityTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Workspace Activity',
-    key: 'workspace_activity',
-    description: '[Polling fallback] Polls for audit trail events in the Segment workspace. Captures changes to sources, destinations, tracking plans, warehouses, and other workspace resources.',
-  }
-)
-  .input(z.object({
-    auditEventId: z.string().describe('Unique audit event ID'),
-    eventType: z.string().describe('Type of the audit event'),
-    resourceId: z.string().optional().describe('Affected resource ID'),
-    resourceType: z.string().optional().describe('Affected resource type'),
-    actorEmail: z.string().optional().describe('Email of the actor'),
-    actorType: z.string().optional().describe('Actor type'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-  }))
-  .output(z.object({
-    auditEventId: z.string().describe('Unique audit event ID'),
-    eventType: z.string().describe('Audit event type (e.g. "source.created", "destination.updated")'),
-    resourceId: z.string().optional().describe('ID of the affected resource'),
-    resourceType: z.string().optional().describe('Type of the affected resource'),
-    actorEmail: z.string().optional().describe('Who performed the action'),
-    actorType: z.string().optional().describe('Actor type (USER, API_TOKEN, etc.)'),
-    timestamp: z.string().optional().describe('When the event occurred'),
-  }))
+export let workspaceActivityTrigger = SlateTrigger.create(spec, {
+  name: 'Workspace Activity',
+  key: 'workspace_activity',
+  description:
+    '[Polling fallback] Polls for audit trail events in the Segment workspace. Captures changes to sources, destinations, tracking plans, warehouses, and other workspace resources.'
+})
+  .input(
+    z.object({
+      auditEventId: z.string().describe('Unique audit event ID'),
+      eventType: z.string().describe('Type of the audit event'),
+      resourceId: z.string().optional().describe('Affected resource ID'),
+      resourceType: z.string().optional().describe('Affected resource type'),
+      actorEmail: z.string().optional().describe('Email of the actor'),
+      actorType: z.string().optional().describe('Actor type'),
+      timestamp: z.string().optional().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      auditEventId: z.string().describe('Unique audit event ID'),
+      eventType: z
+        .string()
+        .describe('Audit event type (e.g. "source.created", "destination.updated")'),
+      resourceId: z.string().optional().describe('ID of the affected resource'),
+      resourceType: z.string().optional().describe('Type of the affected resource'),
+      actorEmail: z.string().optional().describe('Who performed the action'),
+      actorType: z.string().optional().describe('Actor type (USER, API_TOKEN, etc.)'),
+      timestamp: z.string().optional().describe('When the event occurred')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SegmentClient(ctx.auth.token, ctx.config.region);
 
       let lastTimestamp = (ctx.state as any)?.lastTimestamp as string | undefined;
@@ -67,17 +71,19 @@ export let workspaceActivityTrigger = SlateTrigger.create(
           resourceType: e.resource?.type,
           actorEmail: e.actor?.email,
           actorType: e.actor?.type,
-          timestamp: e.timestamp,
+          timestamp: e.timestamp
         })),
         updatedState: {
           lastTimestamp: newLastTimestamp,
-          seenIds: updatedSeenIds,
-        },
+          seenIds: updatedSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
-      let normalizedType = (ctx.input.eventType ?? 'unknown').toLowerCase().replace(/\s+/g, '_');
+    handleEvent: async ctx => {
+      let normalizedType = (ctx.input.eventType ?? 'unknown')
+        .toLowerCase()
+        .replace(/\s+/g, '_');
 
       return {
         type: `workspace.${normalizedType}`,
@@ -89,9 +95,9 @@ export let workspaceActivityTrigger = SlateTrigger.create(
           resourceType: ctx.input.resourceType,
           actorEmail: ctx.input.actorEmail,
           actorType: ctx.input.actorType,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

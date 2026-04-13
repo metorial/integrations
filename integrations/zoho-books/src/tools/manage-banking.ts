@@ -3,32 +3,43 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let listBankAccountsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Bank Accounts',
-    key: 'list_bank_accounts',
-    description: `List all bank and credit card accounts configured in Zoho Books.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    filterBy: z.enum(['Status.All', 'Status.Active', 'Status.Inactive', 'AccountType.Bank', 'AccountType.CreditCard']).optional()
-  }))
-  .output(z.object({
-    bankAccounts: z.array(z.object({
-      accountId: z.string(),
-      accountName: z.string().optional(),
-      accountType: z.string().optional(),
-      bankName: z.string().optional(),
-      accountNumber: z.string().optional(),
-      currencyCode: z.string().optional(),
-      balance: z.number().optional(),
-      bankBalance: z.number().optional(),
-      isActive: z.boolean().optional()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+export let listBankAccountsTool = SlateTool.create(spec, {
+  name: 'List Bank Accounts',
+  key: 'list_bank_accounts',
+  description: `List all bank and credit card accounts configured in Zoho Books.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      filterBy: z
+        .enum([
+          'Status.All',
+          'Status.Active',
+          'Status.Inactive',
+          'AccountType.Bank',
+          'AccountType.CreditCard'
+        ])
+        .optional()
+    })
+  )
+  .output(
+    z.object({
+      bankAccounts: z.array(
+        z.object({
+          accountId: z.string(),
+          accountName: z.string().optional(),
+          accountType: z.string().optional(),
+          bankName: z.string().optional(),
+          accountNumber: z.string().optional(),
+          currencyCode: z.string().optional(),
+          balance: z.number().optional(),
+          bankBalance: z.number().optional(),
+          isActive: z.boolean().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let query: Record<string, any> = {};
     if (ctx.input.filterBy) query.filter_by = ctx.input.filterBy;
@@ -50,44 +61,52 @@ export let listBankAccountsTool = SlateTool.create(
       output: { bankAccounts },
       message: `Found **${bankAccounts.length}** bank account(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let listBankTransactionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Bank Transactions',
-    key: 'list_bank_transactions',
-    description: `List bank transactions for a specific account with filtering by status, date, and type.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    accountId: z.string().describe('Bank account ID'),
-    dateFrom: z.string().optional().describe('From date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('To date (YYYY-MM-DD)'),
-    status: z.enum(['manually_added', 'matched', 'uncategorized', 'categorized', 'excluded']).optional(),
-    page: z.number().optional().default(1),
-    perPage: z.number().optional().default(200)
-  }))
-  .output(z.object({
-    transactions: z.array(z.object({
-      transactionId: z.string(),
-      date: z.string().optional(),
-      amount: z.number().optional(),
-      transactionType: z.string().optional(),
-      status: z.string().optional(),
-      referenceNumber: z.string().optional(),
-      description: z.string().optional(),
-      debitOrCredit: z.string().optional(),
-      accountName: z.string().optional()
-    })),
-    pageContext: z.object({
-      page: z.number(),
-      perPage: z.number(),
-      hasMorePage: z.boolean()
-    }).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listBankTransactionsTool = SlateTool.create(spec, {
+  name: 'List Bank Transactions',
+  key: 'list_bank_transactions',
+  description: `List bank transactions for a specific account with filtering by status, date, and type.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      accountId: z.string().describe('Bank account ID'),
+      dateFrom: z.string().optional().describe('From date (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('To date (YYYY-MM-DD)'),
+      status: z
+        .enum(['manually_added', 'matched', 'uncategorized', 'categorized', 'excluded'])
+        .optional(),
+      page: z.number().optional().default(1),
+      perPage: z.number().optional().default(200)
+    })
+  )
+  .output(
+    z.object({
+      transactions: z.array(
+        z.object({
+          transactionId: z.string(),
+          date: z.string().optional(),
+          amount: z.number().optional(),
+          transactionType: z.string().optional(),
+          status: z.string().optional(),
+          referenceNumber: z.string().optional(),
+          description: z.string().optional(),
+          debitOrCredit: z.string().optional(),
+          accountName: z.string().optional()
+        })
+      ),
+      pageContext: z
+        .object({
+          page: z.number(),
+          perPage: z.number(),
+          hasMorePage: z.boolean()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let query: Record<string, any> = {
       account_id: ctx.input.accountId,
@@ -111,14 +130,17 @@ export let listBankTransactionsTool = SlateTool.create(
       accountName: t.account_name
     }));
 
-    let pageContext = resp.page_context ? {
-      page: resp.page_context.page,
-      perPage: resp.page_context.per_page,
-      hasMorePage: resp.page_context.has_more_page
-    } : undefined;
+    let pageContext = resp.page_context
+      ? {
+          page: resp.page_context.page,
+          perPage: resp.page_context.per_page,
+          hasMorePage: resp.page_context.has_more_page
+        }
+      : undefined;
 
     return {
       output: { transactions, pageContext },
       message: `Found **${transactions.length}** bank transaction(s).`
     };
-  }).build();
+  })
+  .build();

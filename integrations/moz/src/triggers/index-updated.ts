@@ -3,30 +3,38 @@ import { MozClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let indexUpdatedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Index Updated',
-    key: 'index_updated',
-    description: 'Triggers when the Moz link index is updated with new data. Polls the index metadata endpoint to detect changes.',
-  }
-)
-  .input(z.object({
-    indexId: z.string().describe('The new index ID'),
-    previousIndexId: z.string().optional().describe('The previous index ID'),
-    spamScoreUpdateDays: z.array(z.string()).optional().describe('Spam score update dates'),
-  }))
-  .output(z.object({
-    indexId: z.string().describe('The current index ID'),
-    previousIndexId: z.string().optional().describe('The previous index ID before this update'),
-    spamScoreUpdateDays: z.array(z.string()).optional().describe('Dates when spam scores were updated'),
-  }))
+export let indexUpdatedTrigger = SlateTrigger.create(spec, {
+  name: 'Index Updated',
+  key: 'index_updated',
+  description:
+    'Triggers when the Moz link index is updated with new data. Polls the index metadata endpoint to detect changes.'
+})
+  .input(
+    z.object({
+      indexId: z.string().describe('The new index ID'),
+      previousIndexId: z.string().optional().describe('The previous index ID'),
+      spamScoreUpdateDays: z.array(z.string()).optional().describe('Spam score update dates')
+    })
+  )
+  .output(
+    z.object({
+      indexId: z.string().describe('The current index ID'),
+      previousIndexId: z
+        .string()
+        .optional()
+        .describe('The previous index ID before this update'),
+      spamScoreUpdateDays: z
+        .array(z.string())
+        .optional()
+        .describe('Dates when spam scores were updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MozClient({ token: ctx.auth.token });
 
       let metadata = await client.getIndexMetadata();
@@ -39,35 +47,37 @@ export let indexUpdatedTrigger = SlateTrigger.create(
 
       if (previousIndexId && currentIndexId !== previousIndexId) {
         return {
-          inputs: [{
-            indexId: currentIndexId,
-            previousIndexId,
-            spamScoreUpdateDays: metadata?.spam_score_update_days,
-          }],
+          inputs: [
+            {
+              indexId: currentIndexId,
+              previousIndexId,
+              spamScoreUpdateDays: metadata?.spam_score_update_days
+            }
+          ],
           updatedState: {
-            lastIndexId: currentIndexId,
-          },
+            lastIndexId: currentIndexId
+          }
         };
       }
 
       return {
         inputs: [],
         updatedState: {
-          lastIndexId: currentIndexId,
-        },
+          lastIndexId: currentIndexId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'index.updated',
         id: ctx.input.indexId,
         output: {
           indexId: ctx.input.indexId,
           previousIndexId: ctx.input.previousIndexId,
-          spamScoreUpdateDays: ctx.input.spamScoreUpdateDays,
-        },
+          spamScoreUpdateDays: ctx.input.spamScoreUpdateDays
+        }
       };
-    },
+    }
   })
   .build();

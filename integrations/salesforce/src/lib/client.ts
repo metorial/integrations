@@ -50,8 +50,16 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
       return { recordId, success: true };
     },
 
-    upsertRecord: async (objectType: string, externalIdField: string, externalIdValue: string, data: Record<string, any>) => {
-      let response = await http.patch(`/sobjects/${objectType}/${externalIdField}/${externalIdValue}`, data);
+    upsertRecord: async (
+      objectType: string,
+      externalIdField: string,
+      externalIdValue: string,
+      data: Record<string, any>
+    ) => {
+      let response = await http.patch(
+        `/sobjects/${objectType}/${externalIdField}/${externalIdValue}`,
+        data
+      );
       return response.data || { success: true };
     },
 
@@ -105,7 +113,9 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
       if (method === 'GET') {
         let ids = records.map(r => r.id || r.Id).join(',');
         let objectType = records[0]?.attributes?.type;
-        let response = await http.get('/composite/sobjects/' + objectType, { params: { ids } });
+        let response = await http.get('/composite/sobjects/' + objectType, {
+          params: { ids }
+        });
         return response.data;
       }
 
@@ -126,7 +136,11 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
 
     // --- Bulk API 2.0 ---
 
-    createBulkJob: async (operation: string, objectType: string, options?: { externalIdFieldName?: string; lineEnding?: string; columnDelimiter?: string }) => {
+    createBulkJob: async (
+      operation: string,
+      objectType: string,
+      options?: { externalIdFieldName?: string; lineEnding?: string; columnDelimiter?: string }
+    ) => {
       let response = await http.post('/jobs/ingest', {
         operation,
         object: objectType,
@@ -158,7 +172,10 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
       return response.data;
     },
 
-    getBulkJobResults: async (jobId: string, resultType: 'successfulResults' | 'failedResults' | 'unprocessedrecords') => {
+    getBulkJobResults: async (
+      jobId: string,
+      resultType: 'successfulResults' | 'failedResults' | 'unprocessedrecords'
+    ) => {
       let response = await http.get(`/jobs/ingest/${jobId}/${resultType}`, {
         headers: { Accept: 'text/csv' }
       });
@@ -197,10 +214,14 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
 
     runReport: async (reportId: string, metadata?: any) => {
       if (metadata) {
-        let response = await http.post(`/analytics/reports/${reportId}`, { reportMetadata: metadata });
+        let response = await http.post(`/analytics/reports/${reportId}`, {
+          reportMetadata: metadata
+        });
         return response.data;
       }
-      let response = await http.get(`/analytics/reports/${reportId}`, { params: { includeDetails: true } });
+      let response = await http.get(`/analytics/reports/${reportId}`, {
+        params: { includeDetails: true }
+      });
       return response.data;
     },
 
@@ -281,22 +302,33 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
     },
 
     downloadFile: async (contentVersionId: string) => {
-      let response = await http.get(`/sobjects/ContentVersion/${contentVersionId}/VersionData`, {
-        responseType: 'arraybuffer'
-      });
+      let response = await http.get(
+        `/sobjects/ContentVersion/${contentVersionId}/VersionData`,
+        {
+          responseType: 'arraybuffer'
+        }
+      );
       return response.data;
     },
 
     // --- Approval Processes ---
 
-    submitForApproval: async (actionType: string, contextId: string, comments?: string, nextApproverIds?: string[]) => {
+    submitForApproval: async (
+      actionType: string,
+      contextId: string,
+      comments?: string,
+      nextApproverIds?: string[]
+    ) => {
       let request: Record<string, any> = {
         actionType,
         contextId
       };
       if (comments) request.comments = comments;
       if (nextApproverIds) request.nextApproverIds = nextApproverIds;
-      let response = await rawHttp.post(`/services/data/${config.apiVersion}/process/approvals`, { requests: [request] });
+      let response = await rawHttp.post(
+        `/services/data/${config.apiVersion}/process/approvals`,
+        { requests: [request] }
+      );
       return response.data;
     },
 
@@ -306,18 +338,23 @@ export let createSalesforceClient = (config: SalesforceClientConfig) => {
       let url = subjectId
         ? `/chatter/feeds/${feedType}/feed-elements?subjectId=${subjectId}`
         : `/chatter/feeds/${feedType}/feed-elements`;
-      let response = await rawHttp.get(`/services/data/${config.apiVersion}/connect${url.startsWith('/') ? url : '/' + url}`);
+      let response = await rawHttp.get(
+        `/services/data/${config.apiVersion}/connect${url.startsWith('/') ? url : '/' + url}`
+      );
       return response.data;
     },
 
     postChatterFeedItem: async (subjectId: string, text: string) => {
-      let response = await rawHttp.post(`/services/data/${config.apiVersion}/connect/chatter/feed-elements`, {
-        body: {
-          messageSegments: [{ type: 'Text', text }]
-        },
-        feedElementType: 'FeedItem',
-        subjectId
-      });
+      let response = await rawHttp.post(
+        `/services/data/${config.apiVersion}/connect/chatter/feed-elements`,
+        {
+          body: {
+            messageSegments: [{ type: 'Text', text }]
+          },
+          feedElementType: 'FeedItem',
+          subjectId
+        }
+      );
       return response.data;
     }
   };

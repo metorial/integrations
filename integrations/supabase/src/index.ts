@@ -14,12 +14,9 @@ import {
   manageStorageObjects,
   manageAuthUsers,
   invokeRpc,
-  getAuthConfig,
+  getAuthConfig
 } from './tools';
-import {
-  databaseChangesTrigger,
-  databaseWebhookTrigger,
-} from './triggers';
+import { databaseChangesTrigger, databaseWebhookTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     manageStorageObjects,
     manageAuthUsers,
     invokeRpc,
-    getAuthConfig,
+    getAuthConfig
   ],
-  triggers: [
-    databaseChangesTrigger,
-    databaseWebhookTrigger,
-  ],
+  triggers: [databaseChangesTrigger, databaseWebhookTrigger]
 });

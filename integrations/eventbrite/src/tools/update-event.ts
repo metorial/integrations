@@ -3,42 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Update Event',
-    key: 'update_event',
-    description: `Update an existing event's details. All fields except the event ID are optional — only provided fields will be updated.`,
-    tags: {
-      destructive: false,
-    },
+export let updateEvent = SlateTool.create(spec, {
+  name: 'Update Event',
+  key: 'update_event',
+  description: `Update an existing event's details. All fields except the event ID are optional — only provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('The ID of the event to update.'),
-    name: z.string().optional().describe('New name/title for the event.'),
-    description: z.string().optional().describe('New HTML description.'),
-    startUtc: z.string().optional().describe('New UTC start time.'),
-    startTimezone: z.string().optional().describe('Timezone for the new start time.'),
-    endUtc: z.string().optional().describe('New UTC end time.'),
-    endTimezone: z.string().optional().describe('Timezone for the new end time.'),
-    currency: z.string().optional().describe('New currency code.'),
-    onlineEvent: z.boolean().optional().describe('Whether this is an online event.'),
-    listed: z.boolean().optional().describe('Whether the event should be publicly listed.'),
-    shareable: z.boolean().optional().describe('Whether the event is shareable.'),
-    capacity: z.number().optional().describe('New maximum capacity.'),
-    venueId: z.string().optional().describe('New venue ID.'),
-    organizerId: z.string().optional().describe('New organizer ID.'),
-    categoryId: z.string().optional().describe('New category ID.'),
-    formatId: z.string().optional().describe('New format ID.'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('The ID of the updated event.'),
-    name: z.string().describe('The updated name of the event.'),
-    status: z.string().optional().describe('Current status of the event.'),
-    url: z.string().optional().describe('The public URL of the event.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('The ID of the event to update.'),
+      name: z.string().optional().describe('New name/title for the event.'),
+      description: z.string().optional().describe('New HTML description.'),
+      startUtc: z.string().optional().describe('New UTC start time.'),
+      startTimezone: z.string().optional().describe('Timezone for the new start time.'),
+      endUtc: z.string().optional().describe('New UTC end time.'),
+      endTimezone: z.string().optional().describe('Timezone for the new end time.'),
+      currency: z.string().optional().describe('New currency code.'),
+      onlineEvent: z.boolean().optional().describe('Whether this is an online event.'),
+      listed: z.boolean().optional().describe('Whether the event should be publicly listed.'),
+      shareable: z.boolean().optional().describe('Whether the event is shareable.'),
+      capacity: z.number().optional().describe('New maximum capacity.'),
+      venueId: z.string().optional().describe('New venue ID.'),
+      organizerId: z.string().optional().describe('New organizer ID.'),
+      categoryId: z.string().optional().describe('New category ID.'),
+      formatId: z.string().optional().describe('New format ID.')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('The ID of the updated event.'),
+      name: z.string().describe('The updated name of the event.'),
+      status: z.string().optional().describe('Current status of the event.'),
+      url: z.string().optional().describe('The public URL of the event.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let eventUpdate: any = {};
@@ -67,9 +68,9 @@ export let updateEvent = SlateTool.create(
         eventId: event.id,
         name: event.name?.html || event.name?.text || '',
         status: event.status,
-        url: event.url,
+        url: event.url
       },
-      message: `Updated event **${event.name?.html || event.name?.text || event.id}**.`,
+      message: `Updated event **${event.name?.html || event.name?.text || event.id}**.`
     };
   })
   .build();

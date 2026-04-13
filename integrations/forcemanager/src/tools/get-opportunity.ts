@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOpportunity = SlateTool.create(
-  spec,
-  {
-    name: 'Get Opportunity',
-    key: 'get_opportunity',
-    description: `Retrieve one or more sales opportunity records from ForceManager.
+export let getOpportunity = SlateTool.create(spec, {
+  name: 'Get Opportunity',
+  key: 'get_opportunity',
+  description: `Retrieve one or more sales opportunity records from ForceManager.
 Fetch by ID or list/search opportunities with filtering by account, status, sales rep, or custom queries.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    opportunityId: z.number().optional().describe('Specific opportunity ID to retrieve'),
-    query: z.string().optional().describe('ForceManager query language filter'),
-    accountId: z.number().optional().describe('Filter by primary account ID'),
-    salesRepId: z.number().optional().describe('Filter by sales rep ID'),
-    reference: z.string().optional().describe('Search by reference (LIKE match)'),
-    page: z.number().optional().describe('Page number (0-indexed)')
-  }))
-  .output(z.object({
-    opportunities: z.array(z.any()).describe('List of matching opportunity records'),
-    totalCount: z.number().describe('Number of records returned'),
-    nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      opportunityId: z.number().optional().describe('Specific opportunity ID to retrieve'),
+      query: z.string().optional().describe('ForceManager query language filter'),
+      accountId: z.number().optional().describe('Filter by primary account ID'),
+      salesRepId: z.number().optional().describe('Filter by sales rep ID'),
+      reference: z.string().optional().describe('Search by reference (LIKE match)'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      opportunities: z.array(z.any()).describe('List of matching opportunity records'),
+      totalCount: z.number().describe('Number of records returned'),
+      nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.opportunityId) {
@@ -55,4 +56,5 @@ Fetch by ID or list/search opportunities with filtering by account, status, sale
       },
       message: `Found **${result.entityCount}** opportunity/opportunities${result.nextPage !== null ? ` (more pages available)` : ''}`
     };
-  }).build();
+  })
+  .build();

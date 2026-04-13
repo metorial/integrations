@@ -2,35 +2,44 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let emailDeliveryEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Email Delivery Events',
-    key: 'email_delivery_events',
-    description: 'Receive webhook notifications for email delivery events including delivered, opened, clicked, bounced, unsubscribed, and spam reports. Configure the webhook URL in the Listclean dashboard.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of delivery event (e.g., delivered, open, click, soft_bounce, hard_bounce, unsubscribe, spam, soft_block, hard_block, request)'),
-    eventId: z.string().describe('Unique identifier for the event'),
-    recipient: z.string().optional().describe('Recipient email address'),
-    subject: z.string().optional().describe('Email subject line'),
-    messageId: z.string().optional().describe('Unique message identifier'),
-    timestamp: z.string().optional().describe('Timestamp of the event'),
-    rawPayload: z.record(z.string(), z.unknown()).optional().describe('Full raw event payload from the webhook')
-  }))
-  .output(z.object({
-    recipient: z.string().describe('Recipient email address'),
-    subject: z.string().describe('Email subject line'),
-    messageId: z.string().describe('Unique message identifier'),
-    timestamp: z.string().describe('Timestamp of the event')
-  }))
+export let emailDeliveryEvents = SlateTrigger.create(spec, {
+  name: 'Email Delivery Events',
+  key: 'email_delivery_events',
+  description:
+    'Receive webhook notifications for email delivery events including delivered, opened, clicked, bounced, unsubscribed, and spam reports. Configure the webhook URL in the Listclean dashboard.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Type of delivery event (e.g., delivered, open, click, soft_bounce, hard_bounce, unsubscribe, spam, soft_block, hard_block, request)'
+        ),
+      eventId: z.string().describe('Unique identifier for the event'),
+      recipient: z.string().optional().describe('Recipient email address'),
+      subject: z.string().optional().describe('Email subject line'),
+      messageId: z.string().optional().describe('Unique message identifier'),
+      timestamp: z.string().optional().describe('Timestamp of the event'),
+      rawPayload: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Full raw event payload from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      recipient: z.string().describe('Recipient email address'),
+      subject: z.string().describe('Email subject line'),
+      messageId: z.string().describe('Unique message identifier'),
+      timestamp: z.string().describe('Timestamp of the event')
+    })
+  )
   .webhook({
     // Webhook registration must be done manually in the Listclean dashboard
     // No autoRegisterWebhook or autoUnregisterWebhook since the API doesn't support programmatic webhook management
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       // Handle both single event and batch payloads
       let events: Record<string, unknown>[] = Array.isArray(data) ? data : [data];
@@ -43,9 +52,9 @@ export let emailDeliveryEvents = SlateTrigger.create(
 
         let eventId = String(
           event.id ||
-          event.event_id ||
-          event.message_id ||
-          `${normalizedType}_${event.timestamp || Date.now()}_${index}`
+            event.event_id ||
+            event.message_id ||
+            `${normalizedType}_${event.timestamp || Date.now()}_${index}`
         );
 
         return {
@@ -62,7 +71,7 @@ export let emailDeliveryEvents = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `email.${ctx.input.eventType}`,
         id: ctx.input.eventId,

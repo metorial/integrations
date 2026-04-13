@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let photosAxios = createAxios({
-  baseURL: 'https://api.pexels.com/v1',
+  baseURL: 'https://api.pexels.com/v1'
 });
 
 let videosAxios = createAxios({
-  baseURL: 'https://api.pexels.com/videos',
+  baseURL: 'https://api.pexels.com/videos'
 });
 
 interface PaginationParams {
@@ -51,7 +51,7 @@ let mapPhoto = (raw: any) => ({
   avgColor: raw.avg_color,
   src: raw.src,
   alt: raw.alt,
-  liked: raw.liked,
+  liked: raw.liked
 });
 
 let mapVideoFile = (raw: any) => ({
@@ -61,13 +61,13 @@ let mapVideoFile = (raw: any) => ({
   width: raw.width ?? 0,
   height: raw.height ?? 0,
   fps: raw.fps,
-  link: raw.link,
+  link: raw.link
 });
 
 let mapVideoPicture = (raw: any) => ({
   pictureId: raw.id,
   picture: raw.picture,
-  nr: raw.nr,
+  nr: raw.nr
 });
 
 let mapVideo = (raw: any) => ({
@@ -80,10 +80,10 @@ let mapVideo = (raw: any) => ({
   user: {
     userId: raw.user.id,
     name: raw.user.name,
-    url: raw.user.url,
+    url: raw.user.url
   },
   videoFiles: (raw.video_files ?? []).map(mapVideoFile),
-  videoPictures: (raw.video_pictures ?? []).map(mapVideoPicture),
+  videoPictures: (raw.video_pictures ?? []).map(mapVideoPicture)
 });
 
 let mapCollection = (raw: any) => ({
@@ -93,7 +93,7 @@ let mapCollection = (raw: any) => ({
   isPrivate: raw.private,
   mediaCount: raw.media_count,
   photosCount: raw.photos_count,
-  videosCount: raw.videos_count,
+  videosCount: raw.videos_count
 });
 
 let mapPagination = (raw: any) => ({
@@ -101,7 +101,7 @@ let mapPagination = (raw: any) => ({
   perPage: raw.per_page,
   totalResults: raw.total_results,
   nextPage: raw.next_page,
-  prevPage: raw.prev_page,
+  prevPage: raw.prev_page
 });
 
 export class Client {
@@ -125,14 +125,14 @@ export class Client {
         color: params.color,
         locale: params.locale,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
     return {
       photos: (data.photos ?? []).map(mapPhoto),
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 
@@ -141,20 +141,20 @@ export class Client {
       headers: this.authHeaders(),
       params: {
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
     return {
       photos: (data.photos ?? []).map(mapPhoto),
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 
   async getPhoto(photoId: number) {
     let response = await photosAxios.get(`/photos/${photoId}`, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return mapPhoto(response.data);
@@ -169,14 +169,14 @@ export class Client {
         size: params.size,
         locale: params.locale,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
     return {
       videos: (data.videos ?? []).map(mapVideo),
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 
@@ -189,20 +189,20 @@ export class Client {
         min_duration: params.minDuration,
         max_duration: params.maxDuration,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
     return {
       videos: (data.videos ?? []).map(mapVideo),
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 
   async getVideo(videoId: number) {
     let response = await videosAxios.get(`/videos/${videoId}`, {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
 
     return mapVideo(response.data);
@@ -213,14 +213,14 @@ export class Client {
       headers: this.authHeaders(),
       params: {
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
     return {
       collections: (data.collections ?? []).map(mapCollection),
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 
@@ -229,14 +229,14 @@ export class Client {
       headers: this.authHeaders(),
       params: {
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
     return {
       collections: (data.collections ?? []).map(mapCollection),
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 
@@ -247,8 +247,8 @@ export class Client {
         type: params.type,
         sort: params.sort,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
 
     let data = response.data;
@@ -262,7 +262,7 @@ export class Client {
     return {
       collectionId: data.id,
       media,
-      pagination: mapPagination(data),
+      pagination: mapPagination(data)
     };
   }
 }

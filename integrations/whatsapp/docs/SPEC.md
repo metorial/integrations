@@ -37,6 +37,7 @@ There are two types of tokens:
 All API calls are made to Meta's Graph API: `https://graph.facebook.com/v{VERSION}/`
 
 Requests include the token as a Bearer authorization header:
+
 ```
 Authorization: Bearer {ACCESS_TOKEN}
 ```

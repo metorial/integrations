@@ -3,27 +3,34 @@ import { BaseLinkerClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getInventories = SlateTool.create(
-  spec,
-  {
-    name: 'Get Inventories',
-    key: 'get_inventories',
-    description: `Retrieve the list of BaseLinker inventories (product catalogs), their categories, and manufacturers. Provides the inventory IDs needed to work with products, stock, and prices.`,
-    tags: {
-      readOnly: true,
-    },
+export let getInventories = SlateTool.create(spec, {
+  name: 'Get Inventories',
+  key: 'get_inventories',
+  description: `Retrieve the list of BaseLinker inventories (product catalogs), their categories, and manufacturers. Provides the inventory IDs needed to work with products, stock, and prices.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeCategoriesForInventoryId: z.number().optional().describe('Also fetch categories for this inventory ID'),
-    includeManufacturers: z.boolean().optional().describe('Also fetch the list of manufacturers'),
-  }))
-  .output(z.object({
-    inventories: z.any().describe('List of inventories with their IDs, names, and details'),
-    categories: z.any().optional().describe('Categories for the requested inventory'),
-    manufacturers: z.any().optional().describe('List of manufacturers'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeCategoriesForInventoryId: z
+        .number()
+        .optional()
+        .describe('Also fetch categories for this inventory ID'),
+      includeManufacturers: z
+        .boolean()
+        .optional()
+        .describe('Also fetch the list of manufacturers')
+    })
+  )
+  .output(
+    z.object({
+      inventories: z.any().describe('List of inventories with their IDs, names, and details'),
+      categories: z.any().optional().describe('Categories for the requested inventory'),
+      manufacturers: z.any().optional().describe('List of manufacturers')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BaseLinkerClient({ token: ctx.auth.token });
 
     let inventoriesResult = await client.getInventories();
@@ -31,7 +38,9 @@ export let getInventories = SlateTool.create(
     let manufacturers: any = undefined;
 
     if (ctx.input.includeCategoriesForInventoryId) {
-      let catResult = await client.getInventoryCategories(ctx.input.includeCategoriesForInventoryId);
+      let catResult = await client.getInventoryCategories(
+        ctx.input.includeCategoriesForInventoryId
+      );
       categories = catResult.categories;
     }
 
@@ -44,6 +53,7 @@ export let getInventories = SlateTool.create(
 
     return {
       output: { inventories, categories, manufacturers },
-      message: `Retrieved **${Array.isArray(inventories) ? inventories.length : Object.keys(inventories).length}** inventory catalog(s).`,
+      message: `Retrieved **${Array.isArray(inventories) ? inventories.length : Object.keys(inventories).length}** inventory catalog(s).`
     };
-  }).build();
+  })
+  .build();

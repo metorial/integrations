@@ -3,26 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transferResource = SlateTool.create(
-  spec,
-  {
-    name: 'Transfer Resource',
-    key: 'transfer_resource',
-    description: `Transfer a workflow or credential to a different project. Useful for reorganizing resources across projects.`,
-    tags: {
-      destructive: false
-    }
+export let transferResource = SlateTool.create(spec, {
+  name: 'Transfer Resource',
+  key: 'transfer_resource',
+  description: `Transfer a workflow or credential to a different project. Useful for reorganizing resources across projects.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    resourceType: z.enum(['workflow', 'credential']).describe('Type of resource to transfer'),
-    resourceId: z.string().describe('ID of the workflow or credential to transfer'),
-    destinationProjectId: z.string().describe('ID of the project to transfer the resource to')
-  }))
-  .output(z.object({
-    transferred: z.boolean().describe('Whether the transfer was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      resourceType: z
+        .enum(['workflow', 'credential'])
+        .describe('Type of resource to transfer'),
+      resourceId: z.string().describe('ID of the workflow or credential to transfer'),
+      destinationProjectId: z
+        .string()
+        .describe('ID of the project to transfer the resource to')
+    })
+  )
+  .output(
+    z.object({
+      transferred: z.boolean().describe('Whether the transfer was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
       token: ctx.auth.token

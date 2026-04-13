@@ -15,7 +15,7 @@ let fileOutputSchema = z.object({
   lastModifiedDateTime: z.string().optional().describe('When the item was last modified'),
   createdBy: z.string().optional().describe('User who created the item'),
   lastModifiedBy: z.string().optional().describe('User who last modified the item'),
-  parentPath: z.string().optional().describe('Path of the parent folder'),
+  parentPath: z.string().optional().describe('Path of the parent folder')
 });
 
 export let manageFile = SlateTool.create(spec, {
@@ -26,39 +26,100 @@ export let manageFile = SlateTool.create(spec, {
     'Set **action** to "upload", "download", "get", "list", "createFolder", "move", "copy", "rename", or "delete".',
     'For **upload**, provide **fileContent** (text/base64), **fileName**, and either **parentPath** or **parentFolderId**.',
     'For **download**, returns the download URL of the file.',
-    'For **list**, provide **driveId** and optionally **folderId** to list a specific folder\'s contents.',
+    "For **list**, provide **driveId** and optionally **folderId** to list a specific folder's contents.",
     'For **move**, provide **destinationFolderId** in the same drive.',
-    'For **copy**, provide **destinationDriveId** and **destinationFolderId**.',
+    'For **copy**, provide **destinationDriveId** and **destinationFolderId**.'
   ],
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['upload', 'download', 'get', 'list', 'createFolder', 'move', 'copy', 'rename', 'delete']).describe('File action to perform'),
-    driveId: z.string().describe('Drive (document library) ID'),
-    itemId: z.string().optional().describe('Drive item ID (required for get, download, move, copy, rename, delete)'),
-    itemPath: z.string().optional().describe('Path to the item relative to the drive root (alternative to itemId for get)'),
-    fileName: z.string().optional().describe('File or folder name (for upload, createFolder, rename, copy)'),
-    fileContent: z.string().optional().describe('File content as text (for upload, max ~4MB)'),
-    parentPath: z.string().optional().describe('Parent folder path relative to drive root (for upload)'),
-    parentFolderId: z.string().optional().describe('Parent folder ID (for upload, createFolder)'),
-    folderId: z.string().optional().describe('Folder ID to list contents of (for list action)'),
-    destinationFolderId: z.string().optional().describe('Destination folder ID (for move, copy)'),
-    destinationDriveId: z.string().optional().describe('Destination drive ID (for copy across drives)'),
-    newName: z.string().optional().describe('New name (for rename)'),
-  }))
-  .output(z.object({
-    file: fileOutputSchema.optional().describe('File/folder details'),
-    files: z.array(fileOutputSchema).optional().describe('List of files and folders (for list action)'),
-    downloadUrl: z.string().optional().describe('Direct download URL (for download action)'),
-    deleted: z.boolean().optional().describe('Whether the item was deleted'),
-    copied: z.boolean().optional().describe('Whether the copy was initiated'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'upload',
+          'download',
+          'get',
+          'list',
+          'createFolder',
+          'move',
+          'copy',
+          'rename',
+          'delete'
+        ])
+        .describe('File action to perform'),
+      driveId: z.string().describe('Drive (document library) ID'),
+      itemId: z
+        .string()
+        .optional()
+        .describe('Drive item ID (required for get, download, move, copy, rename, delete)'),
+      itemPath: z
+        .string()
+        .optional()
+        .describe(
+          'Path to the item relative to the drive root (alternative to itemId for get)'
+        ),
+      fileName: z
+        .string()
+        .optional()
+        .describe('File or folder name (for upload, createFolder, rename, copy)'),
+      fileContent: z
+        .string()
+        .optional()
+        .describe('File content as text (for upload, max ~4MB)'),
+      parentPath: z
+        .string()
+        .optional()
+        .describe('Parent folder path relative to drive root (for upload)'),
+      parentFolderId: z
+        .string()
+        .optional()
+        .describe('Parent folder ID (for upload, createFolder)'),
+      folderId: z
+        .string()
+        .optional()
+        .describe('Folder ID to list contents of (for list action)'),
+      destinationFolderId: z
+        .string()
+        .optional()
+        .describe('Destination folder ID (for move, copy)'),
+      destinationDriveId: z
+        .string()
+        .optional()
+        .describe('Destination drive ID (for copy across drives)'),
+      newName: z.string().optional().describe('New name (for rename)')
+    })
+  )
+  .output(
+    z.object({
+      file: fileOutputSchema.optional().describe('File/folder details'),
+      files: z
+        .array(fileOutputSchema)
+        .optional()
+        .describe('List of files and folders (for list action)'),
+      downloadUrl: z.string().optional().describe('Direct download URL (for download action)'),
+      deleted: z.boolean().optional().describe('Whether the item was deleted'),
+      copied: z.boolean().optional().describe('Whether the copy was initiated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
-    let { action, driveId, itemId, itemPath, fileName, fileContent, parentPath, parentFolderId, folderId, destinationFolderId, destinationDriveId, newName } = ctx.input;
+    let {
+      action,
+      driveId,
+      itemId,
+      itemPath,
+      fileName,
+      fileContent,
+      parentPath,
+      parentFolderId,
+      folderId,
+      destinationFolderId,
+      destinationDriveId,
+      newName
+    } = ctx.input;
 
     let mapItem = (item: any) => ({
       itemId: item.id,
@@ -72,7 +133,7 @@ export let manageFile = SlateTool.create(spec, {
       lastModifiedDateTime: item.lastModifiedDateTime,
       createdBy: item.createdBy?.user?.displayName,
       lastModifiedBy: item.lastModifiedBy?.user?.displayName,
-      parentPath: item.parentReference?.path,
+      parentPath: item.parentReference?.path
     });
 
     switch (action) {
@@ -87,7 +148,7 @@ export let manageFile = SlateTool.create(spec, {
         }
         return {
           output: { file: mapItem(item) },
-          message: `Retrieved **${item.name}** (${item.folder ? 'folder' : `${item.size} bytes`}).`,
+          message: `Retrieved **${item.name}** (${item.folder ? 'folder' : `${item.size} bytes`}).`
         };
       }
 
@@ -96,7 +157,7 @@ export let manageFile = SlateTool.create(spec, {
         let files = (data.value || []).map(mapItem);
         return {
           output: { files },
-          message: `Found **${files.length}** item(s) in the folder.`,
+          message: `Found **${files.length}** item(s) in the folder.`
         };
       }
 
@@ -105,14 +166,19 @@ export let manageFile = SlateTool.create(spec, {
         if (fileContent === undefined) throw new Error('fileContent is required for upload.');
         let item: any;
         if (parentFolderId) {
-          item = await client.uploadSmallFileToFolder(driveId, parentFolderId, fileName, fileContent);
+          item = await client.uploadSmallFileToFolder(
+            driveId,
+            parentFolderId,
+            fileName,
+            fileContent
+          );
         } else {
           let path = parentPath || '';
           item = await client.uploadSmallFile(driveId, path, fileName, fileContent);
         }
         return {
           output: { file: mapItem(item) },
-          message: `Uploaded **${fileName}** (${item.size} bytes).`,
+          message: `Uploaded **${fileName}** (${item.size} bytes).`
         };
       }
 
@@ -121,7 +187,7 @@ export let manageFile = SlateTool.create(spec, {
         let downloadUrl = await client.getFileDownloadUrl(driveId, itemId);
         return {
           output: { downloadUrl },
-          message: `Download URL generated for item \`${itemId}\`.`,
+          message: `Download URL generated for item \`${itemId}\`.`
         };
       }
 
@@ -131,7 +197,7 @@ export let manageFile = SlateTool.create(spec, {
         let item = await client.createFolder(driveId, parent, fileName);
         return {
           output: { file: mapItem(item) },
-          message: `Created folder **${fileName}**.`,
+          message: `Created folder **${fileName}**.`
         };
       }
 
@@ -141,7 +207,7 @@ export let manageFile = SlateTool.create(spec, {
         let item = await client.moveDriveItem(driveId, itemId, destinationFolderId, newName);
         return {
           output: { file: mapItem(item) },
-          message: `Moved item to folder \`${destinationFolderId}\`.`,
+          message: `Moved item to folder \`${destinationFolderId}\`.`
         };
       }
 
@@ -149,10 +215,16 @@ export let manageFile = SlateTool.create(spec, {
         if (!itemId) throw new Error('itemId is required for copy.');
         if (!destinationFolderId) throw new Error('destinationFolderId is required for copy.');
         let targetDrive = destinationDriveId || driveId;
-        await client.copyDriveItem(driveId, itemId, targetDrive, destinationFolderId, fileName);
+        await client.copyDriveItem(
+          driveId,
+          itemId,
+          targetDrive,
+          destinationFolderId,
+          fileName
+        );
         return {
           output: { copied: true },
-          message: `Copy initiated for item \`${itemId}\`.`,
+          message: `Copy initiated for item \`${itemId}\`.`
         };
       }
 
@@ -162,7 +234,7 @@ export let manageFile = SlateTool.create(spec, {
         let item = await client.renameDriveItem(driveId, itemId, newName);
         return {
           output: { file: mapItem(item) },
-          message: `Renamed item to **${newName}**.`,
+          message: `Renamed item to **${newName}**.`
         };
       }
 
@@ -171,7 +243,7 @@ export let manageFile = SlateTool.create(spec, {
         await client.deleteDriveItem(driveId, itemId);
         return {
           output: { deleted: true },
-          message: `Deleted item \`${itemId}\`.`,
+          message: `Deleted item \`${itemId}\`.`
         };
       }
     }

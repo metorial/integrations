@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createAndScheduleScan,
@@ -23,11 +22,7 @@ import {
   downloadReport,
   getCloudAccount
 } from './tools';
-import {
-  scanCompleted,
-  dataBreachUpdated,
-  inboundWebhook,
-} from './triggers';
+import { scanCompleted, dataBreachUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,9 +48,5 @@ export let provider = Slate.create({
     downloadReport,
     getCloudAccount
   ],
-  triggers: [
-    inboundWebhook,
-    scanCompleted,
-    dataBreachUpdated
-  ]
+  triggers: [inboundWebhook, scanCompleted, dataBreachUpdated]
 });

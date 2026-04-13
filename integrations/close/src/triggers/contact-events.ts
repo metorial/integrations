@@ -3,44 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when a contact is created, updated, or deleted in Close.',
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The action that occurred (created, updated, deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    objectId: z.string().describe('ID of the affected contact'),
-    objectType: z.string().describe('Object type (contact)'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed during an update'),
-    currentData: z.any().optional().describe('Current data after the change'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event was created')
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the affected contact'),
-    action: z.string().describe('The action that occurred'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed'),
-    leadId: z.string().optional().describe('ID of the parent lead'),
-    contactName: z.string().optional().describe('Name of the contact'),
-    title: z.string().optional().describe('Contact title'),
-    emails: z.array(z.object({
-      email: z.string(),
-      type: z.string().optional()
-    })).optional().describe('Contact email addresses'),
-    phones: z.array(z.object({
-      phone: z.string(),
-      type: z.string().optional()
-    })).optional().describe('Contact phone numbers'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event occurred'),
-  }))
+export let contactEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description: 'Triggers when a contact is created, updated, or deleted in Close.'
+})
+  .input(
+    z.object({
+      eventAction: z.string().describe('The action that occurred (created, updated, deleted)'),
+      eventId: z.string().describe('Unique event identifier'),
+      objectId: z.string().describe('ID of the affected contact'),
+      objectType: z.string().describe('Object type (contact)'),
+      changedFields: z
+        .array(z.string())
+        .optional()
+        .describe('Fields that changed during an update'),
+      currentData: z.any().optional().describe('Current data after the change'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event was created')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the affected contact'),
+      action: z.string().describe('The action that occurred'),
+      changedFields: z.array(z.string()).optional().describe('Fields that changed'),
+      leadId: z.string().optional().describe('ID of the parent lead'),
+      contactName: z.string().optional().describe('Name of the contact'),
+      title: z.string().optional().describe('Contact title'),
+      emails: z
+        .array(
+          z.object({
+            email: z.string(),
+            type: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Contact email addresses'),
+      phones: z
+        .array(
+          z.object({
+            phone: z.string(),
+            type: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Contact phone numbers'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
       let webhook = await client.createWebhook({
@@ -48,7 +62,7 @@ export let contactEventsTrigger = SlateTrigger.create(
         events: [
           { object_type: 'contact', action: 'created' },
           { object_type: 'contact', action: 'updated' },
-          { object_type: 'contact', action: 'deleted' },
+          { object_type: 'contact', action: 'deleted' }
         ],
         status: 'active'
       });
@@ -61,13 +75,13 @@ export let contactEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!data || !data.event) {
         return { inputs: [] };
@@ -91,7 +105,7 @@ export let contactEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let currentData = ctx.input.currentData || {};
 
       return {
@@ -107,8 +121,9 @@ export let contactEventsTrigger = SlateTrigger.create(
           emails: currentData.emails?.map((e: any) => ({ email: e.email, type: e.type })),
           phones: currentData.phones?.map((p: any) => ({ phone: p.phone, type: p.type })),
           userId: ctx.input.userId,
-          dateCreated: ctx.input.dateCreated,
+          dateCreated: ctx.input.dateCreated
         }
       };
     }
-  }).build();
+  })
+  .build();

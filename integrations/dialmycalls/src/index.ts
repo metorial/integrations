@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listContacts,
@@ -22,13 +21,9 @@ import {
   listDoNotContacts,
   manageAccessAccount,
   listAccessAccounts,
-  getAccount,
+  getAccount
 } from './tools';
-import {
-  newIncomingText,
-  newContact,
-  inboundWebhook,
-} from './triggers';
+import { newIncomingText, newContact, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,11 +48,7 @@ export let provider = Slate.create({
     listDoNotContacts,
     manageAccessAccount,
     listAccessAccounts,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    inboundWebhook,
-    newIncomingText,
-    newContact,
-  ],
+  triggers: [inboundWebhook, newIncomingText, newContact]
 });

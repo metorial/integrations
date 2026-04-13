@@ -2,11 +2,11 @@ import { createAxios } from 'slates';
 import type { GifObject, PaginationInfo } from './types';
 
 let api = createAxios({
-  baseURL: 'https://api.giphy.com',
+  baseURL: 'https://api.giphy.com'
 });
 
 let uploadApi = createAxios({
-  baseURL: 'https://upload.giphy.com',
+  baseURL: 'https://upload.giphy.com'
 });
 
 let normalizeGif = (raw: any): GifObject => {
@@ -24,16 +24,18 @@ let normalizeGif = (raw: any): GifObject => {
     importDatetime: raw.import_datetime,
     trendingDatetime: raw.trending_datetime,
     images: raw.images,
-    user: raw.user ? {
-      avatarUrl: raw.user.avatar_url,
-      bannerImage: raw.user.banner_image,
-      bannerUrl: raw.user.banner_url,
-      profileUrl: raw.user.profile_url,
-      username: raw.user.username,
-      displayName: raw.user.display_name,
-      description: raw.user.description,
-      isVerified: raw.user.is_verified,
-    } : undefined,
+    user: raw.user
+      ? {
+          avatarUrl: raw.user.avatar_url,
+          bannerImage: raw.user.banner_image,
+          bannerUrl: raw.user.banner_url,
+          profileUrl: raw.user.profile_url,
+          username: raw.user.username,
+          displayName: raw.user.display_name,
+          description: raw.user.description,
+          isVerified: raw.user.is_verified
+        }
+      : undefined
   };
 };
 
@@ -41,7 +43,7 @@ let normalizePagination = (raw: any): PaginationInfo => {
   return {
     totalCount: raw?.total_count,
     count: raw?.count,
-    offset: raw?.offset,
+    offset: raw?.offset
   };
 };
 
@@ -77,12 +79,12 @@ export class Client {
         offset: options.offset,
         rating: options.rating,
         lang: options.lang,
-        bundle: options.bundle,
-      }),
+        bundle: options.bundle
+      })
     });
     return {
       gifs: (response.data.data || []).map(normalizeGif),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 
@@ -101,12 +103,12 @@ export class Client {
         offset: options.offset,
         rating: options.rating,
         lang: options.lang,
-        bundle: options.bundle,
-      }),
+        bundle: options.bundle
+      })
     });
     return {
       stickers: (response.data.data || []).map(normalizeGif),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 
@@ -121,12 +123,12 @@ export class Client {
         limit: options.limit,
         offset: options.offset,
         rating: options.rating,
-        bundle: options.bundle,
-      }),
+        bundle: options.bundle
+      })
     });
     return {
       gifs: (response.data.data || []).map(normalizeGif),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 
@@ -141,12 +143,12 @@ export class Client {
         limit: options.limit,
         offset: options.offset,
         rating: options.rating,
-        bundle: options.bundle,
-      }),
+        bundle: options.bundle
+      })
     });
     return {
       stickers: (response.data.data || []).map(normalizeGif),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 
@@ -157,11 +159,11 @@ export class Client {
     let response = await api.get('/v1/gifs/translate', {
       params: this.params({
         s: options.searchTerm,
-        rating: options.rating,
-      }),
+        rating: options.rating
+      })
     });
     return {
-      gif: normalizeGif(response.data.data),
+      gif: normalizeGif(response.data.data)
     };
   }
 
@@ -172,26 +174,23 @@ export class Client {
     let response = await api.get('/v1/stickers/translate', {
       params: this.params({
         s: options.searchTerm,
-        rating: options.rating,
-      }),
+        rating: options.rating
+      })
     });
     return {
-      sticker: normalizeGif(response.data.data),
+      sticker: normalizeGif(response.data.data)
     };
   }
 
-  async randomGif(options: {
-    tag?: string;
-    rating?: string;
-  }): Promise<{ gif: GifObject }> {
+  async randomGif(options: { tag?: string; rating?: string }): Promise<{ gif: GifObject }> {
     let response = await api.get('/v1/gifs/random', {
       params: this.params({
         tag: options.tag,
-        rating: options.rating,
-      }),
+        rating: options.rating
+      })
     });
     return {
-      gif: normalizeGif(response.data.data),
+      gif: normalizeGif(response.data.data)
     };
   }
 
@@ -202,32 +201,34 @@ export class Client {
     let response = await api.get('/v1/stickers/random', {
       params: this.params({
         tag: options.tag,
-        rating: options.rating,
-      }),
+        rating: options.rating
+      })
     });
     return {
-      sticker: normalizeGif(response.data.data),
+      sticker: normalizeGif(response.data.data)
     };
   }
 
   async getGifById(gifId: string): Promise<{ gif: GifObject }> {
     let response = await api.get(`/v1/gifs/${gifId}`, {
-      params: this.params(),
+      params: this.params()
     });
     return {
-      gif: normalizeGif(response.data.data),
+      gif: normalizeGif(response.data.data)
     };
   }
 
-  async getGifsByIds(gifIds: string[]): Promise<{ gifs: GifObject[]; pagination: PaginationInfo }> {
+  async getGifsByIds(
+    gifIds: string[]
+  ): Promise<{ gifs: GifObject[]; pagination: PaginationInfo }> {
     let response = await api.get('/v1/gifs', {
       params: this.params({
-        ids: gifIds.join(','),
-      }),
+        ids: gifIds.join(',')
+      })
     });
     return {
       gifs: (response.data.data || []).map(normalizeGif),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 
@@ -238,41 +239,41 @@ export class Client {
     let response = await api.get('/v2/emoji', {
       params: this.params({
         limit: options.limit,
-        offset: options.offset,
-      }),
+        offset: options.offset
+      })
     });
     return {
       emojis: (response.data.data || []).map(normalizeGif),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 
   async getEmojiVariations(gifId: string): Promise<{ variations: GifObject[] }> {
     let response = await api.get(`/v2/emoji/${gifId}/variations`, {
-      params: this.params(),
+      params: this.params()
     });
     return {
-      variations: (response.data.data || []).map(normalizeGif),
+      variations: (response.data.data || []).map(normalizeGif)
     };
   }
 
   async trendingSearchTerms(): Promise<{ terms: string[] }> {
     let response = await api.get('/v1/trending/searches', {
-      params: this.params(),
+      params: this.params()
     });
     return {
-      terms: response.data.data || [],
+      terms: response.data.data || []
     };
   }
 
   async searchSuggestions(term: string): Promise<{ suggestions: Array<{ name: string }> }> {
     let response = await api.get(`/v1/tags/related/${encodeURIComponent(term)}`, {
-      params: this.params(),
+      params: this.params()
     });
     return {
       suggestions: (response.data.data || []).map((item: any) => ({
-        name: item.name,
-      })),
+        name: item.name
+      }))
     };
   }
 
@@ -285,19 +286,25 @@ export class Client {
       params: this.params({
         q: options.query,
         limit: options.limit,
-        offset: options.offset,
-      }),
+        offset: options.offset
+      })
     });
     return {
       tags: (response.data.data || []).map((item: any) => ({
-        name: item.name,
-      })),
+        name: item.name
+      }))
     };
   }
 
-  async getCategories(): Promise<{ categories: Array<{ name: string; nameEncoded: string; subcategories: Array<{ name: string; nameEncoded: string }> }> }> {
+  async getCategories(): Promise<{
+    categories: Array<{
+      name: string;
+      nameEncoded: string;
+      subcategories: Array<{ name: string; nameEncoded: string }>;
+    }>;
+  }> {
     let response = await api.get('/v1/gifs/categories', {
-      params: this.params(),
+      params: this.params()
     });
     return {
       categories: (response.data.data || []).map((cat: any) => ({
@@ -305,9 +312,9 @@ export class Client {
         nameEncoded: cat.name_encoded,
         subcategories: (cat.subcategories || []).map((sub: any) => ({
           name: sub.name,
-          nameEncoded: sub.name_encoded,
-        })),
-      })),
+          nameEncoded: sub.name_encoded
+        }))
+      }))
     };
   }
 
@@ -322,11 +329,11 @@ export class Client {
         source_image_url: options.sourceImageUrl,
         tags: options.tags,
         source_post_url: options.sourcePostUrl,
-        username: options.username,
-      }),
+        username: options.username
+      })
     });
     return {
-      gifId: response.data.data?.id || '',
+      gifId: response.data.data?.id || ''
     };
   }
 
@@ -334,13 +341,27 @@ export class Client {
     query: string;
     limit?: number;
     offset?: number;
-  }): Promise<{ channels: Array<{ channelId: number; url: string; displayName: string; slug: string; type: string; shortDisplayName: string; description: string; bannerImage: string; username: string; featuredGif: GifObject | null }>; pagination: PaginationInfo }> {
+  }): Promise<{
+    channels: Array<{
+      channelId: number;
+      url: string;
+      displayName: string;
+      slug: string;
+      type: string;
+      shortDisplayName: string;
+      description: string;
+      bannerImage: string;
+      username: string;
+      featuredGif: GifObject | null;
+    }>;
+    pagination: PaginationInfo;
+  }> {
     let response = await api.get('/v1/channels/search', {
       params: this.params({
         q: options.query,
         limit: options.limit,
-        offset: options.offset,
-      }),
+        offset: options.offset
+      })
     });
     return {
       channels: (response.data.data || []).map((ch: any) => ({
@@ -353,9 +374,9 @@ export class Client {
         description: ch.description,
         bannerImage: ch.banner_image,
         username: ch.user?.username || '',
-        featuredGif: ch.featured_gif ? normalizeGif(ch.featured_gif) : null,
+        featuredGif: ch.featured_gif ? normalizeGif(ch.featured_gif) : null
       })),
-      pagination: normalizePagination(response.data.pagination),
+      pagination: normalizePagination(response.data.pagination)
     };
   }
 }

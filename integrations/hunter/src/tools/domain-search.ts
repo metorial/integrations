@@ -15,43 +15,70 @@ let emailSchema = z.object({
   linkedin: z.string().nullable().optional().describe('LinkedIn URL'),
   twitter: z.string().nullable().optional().describe('Twitter handle'),
   phoneNumber: z.string().nullable().optional().describe('Phone number'),
-  verificationStatus: z.string().nullable().optional().describe('Email verification status'),
+  verificationStatus: z.string().nullable().optional().describe('Email verification status')
 });
 
-export let domainSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Domain Search',
-    key: 'domain_search',
-    description: `Search for all email addresses associated with a domain or company name. Returns contact details including names, positions, departments, seniority levels, confidence scores, and verification status. Results can be filtered by email type, seniority, department, and more.`,
-    constraints: [
-      'Requires either a domain or company name.',
-      'Maximum 100 results per request. Use offset for pagination.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let domainSearch = SlateTool.create(spec, {
+  name: 'Domain Search',
+  key: 'domain_search',
+  description: `Search for all email addresses associated with a domain or company name. Returns contact details including names, positions, departments, seniority levels, confidence scores, and verification status. Results can be filtered by email type, seniority, department, and more.`,
+  constraints: [
+    'Requires either a domain or company name.',
+    'Maximum 100 results per request. Use offset for pagination.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().optional().describe('Domain name to search (e.g., "stripe.com"). Either domain or companyName is required.'),
-    companyName: z.string().optional().describe('Company name to search. Either domain or companyName is required.'),
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of results to return (1-100, default 10)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-    type: z.enum(['personal', 'generic']).optional().describe('Filter by email type'),
-    seniority: z.string().optional().describe('Filter by seniority level (e.g., "senior", "executive", "junior")'),
-    department: z.string().optional().describe('Filter by department (e.g., "executive", "engineering", "marketing")'),
-    verificationStatus: z.enum(['valid', 'invalid', 'accept_all', 'unknown']).optional().describe('Filter by verification status'),
-    location: z.string().optional().describe('Filter by location of the contacts'),
-  }))
-  .output(z.object({
-    domain: z.string().describe('The domain searched'),
-    organization: z.string().nullable().describe('Organization name'),
-    emailCount: z.number().describe('Total number of emails found'),
-    emails: z.array(emailSchema).describe('List of email addresses found'),
-    pattern: z.string().nullable().optional().describe('Most common email pattern for this domain'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z
+        .string()
+        .optional()
+        .describe(
+          'Domain name to search (e.g., "stripe.com"). Either domain or companyName is required.'
+        ),
+      companyName: z
+        .string()
+        .optional()
+        .describe('Company name to search. Either domain or companyName is required.'),
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of results to return (1-100, default 10)'),
+      offset: z.number().optional().describe('Offset for pagination'),
+      type: z.enum(['personal', 'generic']).optional().describe('Filter by email type'),
+      seniority: z
+        .string()
+        .optional()
+        .describe('Filter by seniority level (e.g., "senior", "executive", "junior")'),
+      department: z
+        .string()
+        .optional()
+        .describe('Filter by department (e.g., "executive", "engineering", "marketing")'),
+      verificationStatus: z
+        .enum(['valid', 'invalid', 'accept_all', 'unknown'])
+        .optional()
+        .describe('Filter by verification status'),
+      location: z.string().optional().describe('Filter by location of the contacts')
+    })
+  )
+  .output(
+    z.object({
+      domain: z.string().describe('The domain searched'),
+      organization: z.string().nullable().describe('Organization name'),
+      emailCount: z.number().describe('Total number of emails found'),
+      emails: z.array(emailSchema).describe('List of email addresses found'),
+      pattern: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Most common email pattern for this domain')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.domainSearch({
@@ -63,7 +90,7 @@ export let domainSearch = SlateTool.create(
       seniority: ctx.input.seniority,
       department: ctx.input.department,
       verificationStatus: ctx.input.verificationStatus,
-      location: ctx.input.location,
+      location: ctx.input.location
     });
 
     let data = result.data;
@@ -79,7 +106,7 @@ export let domainSearch = SlateTool.create(
       linkedin: e.linkedin ?? null,
       twitter: e.twitter ?? null,
       phoneNumber: e.phone_number ?? null,
-      verificationStatus: e.verification?.status ?? null,
+      verificationStatus: e.verification?.status ?? null
     }));
 
     return {
@@ -88,9 +115,9 @@ export let domainSearch = SlateTool.create(
         organization: data.organization ?? null,
         emailCount: data.emails?.length ?? 0,
         emails,
-        pattern: data.pattern ?? null,
+        pattern: data.pattern ?? null
       },
-      message: `Found **${emails.length}** email addresses for **${data.domain || ctx.input.companyName}**.`,
+      message: `Found **${emails.length}** email addresses for **${data.domain || ctx.input.companyName}**.`
     };
   })
   .build();

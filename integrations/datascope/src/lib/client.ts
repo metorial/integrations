@@ -9,9 +9,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -36,8 +36,8 @@ export class Client {
         location_id: params.locationId,
         date_modified: params.dateModified,
         limit: params.limit ?? 200,
-        offset: params.offset ?? 0,
-      },
+        offset: params.offset ?? 0
+      }
     });
     return response.data;
   }
@@ -55,8 +55,8 @@ export class Client {
         user_id: params.userId,
         start: params.start,
         end: params.end,
-        location_id: params.locationId,
-      },
+        location_id: params.locationId
+      }
     });
     return response.data;
   }
@@ -73,7 +73,7 @@ export class Client {
       form_code: params.formCode,
       question_name: params.questionName,
       question_value: params.questionValue,
-      ...(params.subformIndex !== undefined ? { subform_index: params.subformIndex } : {}),
+      ...(params.subformIndex !== undefined ? { subform_index: params.subformIndex } : {})
     });
     return response.data;
   }
@@ -112,26 +112,29 @@ export class Client {
         phone: location.phone,
         company_code: location.companyCode,
         company_name: location.companyName,
-        email: location.email,
-      },
+        email: location.email
+      }
     });
     return response.data;
   }
 
-  async updateLocation(locationId: string, location: {
-    name?: string;
-    description?: string;
-    code?: string;
-    address?: string;
-    city?: string;
-    country?: string;
-    latitude?: number;
-    longitude?: number;
-    phone?: string;
-    companyCode?: string;
-    companyName?: string;
-    email?: string;
-  }) {
+  async updateLocation(
+    locationId: string,
+    location: {
+      name?: string;
+      description?: string;
+      code?: string;
+      address?: string;
+      city?: string;
+      country?: string;
+      latitude?: number;
+      longitude?: number;
+      phone?: string;
+      companyCode?: string;
+      companyName?: string;
+      email?: string;
+    }
+  ) {
     let response = await this.axios.post(`/locations/${locationId}`, {
       location: {
         name: location.name,
@@ -145,8 +148,8 @@ export class Client {
         phone: location.phone,
         company_code: location.companyCode,
         company_name: location.companyName,
-        email: location.email,
-      },
+        email: location.email
+      }
     });
     return response.data;
   }
@@ -155,7 +158,7 @@ export class Client {
 
   async getListElements(metadataType: string) {
     let response = await this.axios.get('/metadata_objects', {
-      params: { metadata_type: metadataType },
+      params: { metadata_type: metadataType }
     });
     return response.data;
   }
@@ -164,48 +167,58 @@ export class Client {
     let response = await this.axios.get('/metadata_object', {
       params: {
         metadata_type: metadataType,
-        metadata_id: metadataId,
-      },
+        metadata_id: metadataId
+      }
     });
     return response.data;
   }
 
-  async createListElement(metadataType: string, element: {
-    name: string;
-    description?: string;
-    code?: string;
-    attribute1?: string;
-    attribute2?: string;
-  }) {
-    let response = await this.axios.post('/metadata_object', {
-      list_object: {
-        name: element.name,
-        description: element.description,
-        code: element.code,
-        attribute1: element.attribute1,
-        attribute2: element.attribute2,
+  async createListElement(
+    metadataType: string,
+    element: {
+      name: string;
+      description?: string;
+      code?: string;
+      attribute1?: string;
+      attribute2?: string;
+    }
+  ) {
+    let response = await this.axios.post(
+      '/metadata_object',
+      {
+        list_object: {
+          name: element.name,
+          description: element.description,
+          code: element.code,
+          attribute1: element.attribute1,
+          attribute2: element.attribute2
+        }
       },
-    }, {
-      params: { metadata_type: metadataType },
-    });
+      {
+        params: { metadata_type: metadataType }
+      }
+    );
     return response.data;
   }
 
-  async updateListElement(elementId: string, element: {
-    name?: string;
-    description?: string;
-    code?: string;
-    attribute1?: string;
-    attribute2?: string;
-  }) {
+  async updateListElement(
+    elementId: string,
+    element: {
+      name?: string;
+      description?: string;
+      code?: string;
+      attribute1?: string;
+      attribute2?: string;
+    }
+  ) {
     let response = await this.axios.post(`/metadata_object/${elementId}`, {
       list_object: {
         name: element.name,
         description: element.description,
         code: element.code,
         attribute1: element.attribute1,
-        attribute2: element.attribute2,
-      },
+        attribute2: element.attribute2
+      }
     });
     return response.data;
   }
@@ -221,25 +234,28 @@ export class Client {
         name: list.name,
         description: list.description,
         code: list.code,
-        list_type: list.listType ?? 'standard',
-      },
+        list_type: list.listType ?? 'standard'
+      }
     });
     return response.data;
   }
 
-  async updateList(listId: string, list: {
-    name?: string;
-    description?: string;
-    code?: string;
-    listType?: string;
-  }) {
+  async updateList(
+    listId: string,
+    list: {
+      name?: string;
+      description?: string;
+      code?: string;
+      listType?: string;
+    }
+  ) {
     let response = await this.axios.post(`/metadata_types/${listId}`, {
       list: {
         name: list.name,
         description: list.description,
         code: list.code,
-        list_type: list.listType,
-      },
+        list_type: list.listType
+      }
     });
     return response.data;
   }
@@ -258,13 +274,13 @@ export class Client {
     let response = await this.axios.post('/metadata_objects/bulk_update', {
       metadata_type: params.metadataType,
       name: params.name,
-      list_objects: params.elements.map((el) => ({
+      list_objects: params.elements.map(el => ({
         code: el.code,
         name: el.name,
         description: el.description,
         attribute1: el.attribute1,
-        attribute2: el.attribute2,
-      })),
+        attribute2: el.attribute2
+      }))
     });
     return response.data;
   }
@@ -303,37 +319,31 @@ export class Client {
       longitude: params.longitude,
       task_instruction: params.taskInstruction,
       gap: params.gap,
-      code: params.code,
+      code: params.code
     });
     return response.data;
   }
 
   // ─── Notifications ────────────────────────────────────────
 
-  async getNotifications(params: {
-    start?: string;
-    end?: string;
-  }) {
+  async getNotifications(params: { start?: string; end?: string }) {
     let response = await this.axios.get('/notifications', {
       params: {
         start: params.start,
-        end: params.end,
-      },
+        end: params.end
+      }
     });
     return response.data;
   }
 
   // ─── Files ────────────────────────────────────────────────
 
-  async getFiles(params: {
-    start?: string;
-    end?: string;
-  }) {
+  async getFiles(params: { start?: string; end?: string }) {
     let response = await this.axios.get('/files', {
       params: {
         start: params.start,
-        end: params.end,
-      },
+        end: params.end
+      }
     });
     return response.data;
   }

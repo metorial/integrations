@@ -3,41 +3,44 @@ import { MeetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let conferenceEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conference Events',
-    key: 'conference_events',
-    description: 'Triggers when conferences start or end in meeting spaces. Polls for new and recently ended conference records.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['started', 'ended']).describe('Whether the conference started or ended'),
-    conferenceRecordName: z.string().describe('Resource name of the conference record'),
-    spaceName: z.string().optional().describe('Associated space resource name'),
-    startTime: z.string().optional().describe('When the conference started'),
-    endTime: z.string().optional().describe('When the conference ended')
-  }))
-  .output(z.object({
-    conferenceRecordName: z.string().describe('Resource name of the conference record'),
-    spaceName: z.string().optional().describe('Associated space resource name'),
-    startTime: z.string().optional().describe('When the conference started'),
-    endTime: z.string().optional().describe('When the conference ended')
-  }))
+export let conferenceEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Conference Events',
+  key: 'conference_events',
+  description:
+    'Triggers when conferences start or end in meeting spaces. Polls for new and recently ended conference records.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['started', 'ended'])
+        .describe('Whether the conference started or ended'),
+      conferenceRecordName: z.string().describe('Resource name of the conference record'),
+      spaceName: z.string().optional().describe('Associated space resource name'),
+      startTime: z.string().optional().describe('When the conference started'),
+      endTime: z.string().optional().describe('When the conference ended')
+    })
+  )
+  .output(
+    z.object({
+      conferenceRecordName: z.string().describe('Resource name of the conference record'),
+      spaceName: z.string().optional().describe('Associated space resource name'),
+      startTime: z.string().optional().describe('When the conference started'),
+      endTime: z.string().optional().describe('When the conference ended')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MeetClient({ token: ctx.auth.token });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
-      let knownActiveConferences = (ctx.state?.knownActiveConferences as string[] | undefined) || [];
+      let knownActiveConferences =
+        (ctx.state?.knownActiveConferences as string[] | undefined) || [];
 
-      let filter = lastPollTime
-        ? `start_time>="${lastPollTime}"`
-        : undefined;
+      let filter = lastPollTime ? `start_time>="${lastPollTime}"` : undefined;
 
       let result = await client.listConferenceRecords(filter, 50);
       let inputs: Array<{
@@ -96,7 +99,7 @@ export let conferenceEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `conference.${ctx.input.eventType}`,
         id: `${ctx.input.conferenceRecordName}-${ctx.input.eventType}`,
@@ -108,4 +111,5 @@ export let conferenceEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

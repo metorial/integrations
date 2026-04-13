@@ -4,34 +4,34 @@ import { postSchema, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newPostFromSearch = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Post from Search',
-    key: 'new_post_from_search',
-    description: 'Triggers when a new post matches a search query. Use Twitter search operators to monitor keywords, hashtags, mentions, or specific users.'
-  }
-)
-  .input(z.object({
-    postId: z.string().describe('ID of the matching post'),
-    text: z.string().describe('Text of the matching post'),
-    authorId: z.string().optional().describe('User ID of the post author'),
-    conversationId: z.string().optional().describe('Conversation thread ID'),
-    createdAt: z.string().optional().describe('ISO 8601 timestamp'),
-    lang: z.string().optional().describe('Language code'),
-    inReplyToUserId: z.string().optional().describe('User ID being replied to'),
-    likeCount: z.number().optional().describe('Number of likes'),
-    retweetCount: z.number().optional().describe('Number of retweets'),
-    replyCount: z.number().optional().describe('Number of replies'),
-    quoteCount: z.number().optional().describe('Number of quote tweets')
-  }))
+export let newPostFromSearch = SlateTrigger.create(spec, {
+  name: 'New Post from Search',
+  key: 'new_post_from_search',
+  description:
+    'Triggers when a new post matches a search query. Use Twitter search operators to monitor keywords, hashtags, mentions, or specific users.'
+})
+  .input(
+    z.object({
+      postId: z.string().describe('ID of the matching post'),
+      text: z.string().describe('Text of the matching post'),
+      authorId: z.string().optional().describe('User ID of the post author'),
+      conversationId: z.string().optional().describe('Conversation thread ID'),
+      createdAt: z.string().optional().describe('ISO 8601 timestamp'),
+      lang: z.string().optional().describe('Language code'),
+      inReplyToUserId: z.string().optional().describe('User ID being replied to'),
+      likeCount: z.number().optional().describe('Number of likes'),
+      retweetCount: z.number().optional().describe('Number of retweets'),
+      replyCount: z.number().optional().describe('Number of replies'),
+      quoteCount: z.number().optional().describe('Number of quote tweets')
+    })
+  )
   .output(postSchema)
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TwitterClient(ctx.auth.token);
       let query = ctx.state?.query || '#twitter';
 
@@ -75,7 +75,7 @@ export let newPostFromSearch = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'post.matched',
         id: ctx.input.postId,
@@ -94,4 +94,5 @@ export let newPostFromSearch = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

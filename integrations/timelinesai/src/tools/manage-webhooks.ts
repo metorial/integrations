@@ -8,39 +8,61 @@ let webhookSchema = z.object({
   eventType: z.string().optional().describe('Event type the webhook listens for'),
   url: z.string().optional().describe('Destination HTTPS endpoint'),
   enabled: z.boolean().optional().describe('Whether the webhook is active'),
-  errorsCounter: z.number().optional().describe('Number of consecutive delivery failures'),
+  errorsCounter: z.number().optional().describe('Number of consecutive delivery failures')
 });
 
-export let manageWebhooks = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Webhooks',
-    key: 'manage_webhooks',
-    description: `List, create, update, or delete webhooks for real-time event notifications. Webhooks deliver events such as new messages, new chats, and chat renames to a specified HTTPS endpoint.`,
-    instructions: [
-      'Set the action to "list", "create", "get", "update", or "delete".',
-      'Supported event types include: message:sent:new, message:received:new, chat.created, chat.renamed, whatsapp_account.created.',
-      'Maximum of 10 webhooks per workspace.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageWebhooks = SlateTool.create(spec, {
+  name: 'Manage Webhooks',
+  key: 'manage_webhooks',
+  description: `List, create, update, or delete webhooks for real-time event notifications. Webhooks deliver events such as new messages, new chats, and chat renames to a specified HTTPS endpoint.`,
+  instructions: [
+    'Set the action to "list", "create", "get", "update", or "delete".',
+    'Supported event types include: message:sent:new, message:received:new, chat.created, chat.renamed, whatsapp_account.created.',
+    'Maximum of 10 webhooks per workspace.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'get', 'update', 'delete']).describe('The webhook operation to perform'),
-    webhookId: z.number().optional().describe('Webhook ID (for get, update, delete actions)'),
-    eventType: z.string().optional().describe('Event type (for create/update). E.g., message:sent:new, message:received:new, chat.created'),
-    url: z.string().optional().describe('HTTPS endpoint URL (for create/update)'),
-    enabled: z.boolean().optional().describe('Whether the webhook is active (for create/update)'),
-  }))
-  .output(z.object({
-    webhooks: z.array(webhookSchema).optional().describe('List of webhooks (for list action)'),
-    webhook: webhookSchema.optional().describe('Webhook details (for create, get, update actions)'),
-    deleted: z.boolean().optional().describe('Whether the webhook was deleted (for delete action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'get', 'update', 'delete'])
+        .describe('The webhook operation to perform'),
+      webhookId: z
+        .number()
+        .optional()
+        .describe('Webhook ID (for get, update, delete actions)'),
+      eventType: z
+        .string()
+        .optional()
+        .describe(
+          'Event type (for create/update). E.g., message:sent:new, message:received:new, chat.created'
+        ),
+      url: z.string().optional().describe('HTTPS endpoint URL (for create/update)'),
+      enabled: z
+        .boolean()
+        .optional()
+        .describe('Whether the webhook is active (for create/update)')
+    })
+  )
+  .output(
+    z.object({
+      webhooks: z
+        .array(webhookSchema)
+        .optional()
+        .describe('List of webhooks (for list action)'),
+      webhook: webhookSchema
+        .optional()
+        .describe('Webhook details (for create, get, update actions)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the webhook was deleted (for delete action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, webhookId, eventType, url, enabled } = ctx.input;
 
@@ -49,7 +71,7 @@ export let manageWebhooks = SlateTool.create(
       eventType: w.event_type,
       url: w.url,
       enabled: w.enabled,
-      errorsCounter: w.errors_counter,
+      errorsCounter: w.errors_counter
     });
 
     if (action === 'list') {
@@ -57,7 +79,7 @@ export let manageWebhooks = SlateTool.create(
       let webhooks = (result?.data || []).map(mapWebhook);
       return {
         output: { webhooks },
-        message: `Found **${webhooks.length}** webhook(s).`,
+        message: `Found **${webhooks.length}** webhook(s).`
       };
     }
 
@@ -68,7 +90,7 @@ export let manageWebhooks = SlateTool.create(
       let webhook = mapWebhook(result?.data || result);
       return {
         output: { webhook },
-        message: `Webhook created for **${eventType}** → ${url}`,
+        message: `Webhook created for **${eventType}** → ${url}`
       };
     }
 
@@ -78,7 +100,7 @@ export let manageWebhooks = SlateTool.create(
       let webhook = mapWebhook(result?.data || result);
       return {
         output: { webhook },
-        message: `Webhook **${webhookId}** retrieved.`,
+        message: `Webhook **${webhookId}** retrieved.`
       };
     }
 
@@ -88,7 +110,7 @@ export let manageWebhooks = SlateTool.create(
       let webhook = mapWebhook(result?.data || result);
       return {
         output: { webhook },
-        message: `Webhook **${webhookId}** updated.`,
+        message: `Webhook **${webhookId}** updated.`
       };
     }
 
@@ -97,7 +119,7 @@ export let manageWebhooks = SlateTool.create(
       await client.deleteWebhook(webhookId);
       return {
         output: { deleted: true },
-        message: `Webhook **${webhookId}** deleted.`,
+        message: `Webhook **${webhookId}** deleted.`
       };
     }
 

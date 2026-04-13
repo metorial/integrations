@@ -44,7 +44,5 @@ export let provider = Slate.create({
     handleContactRequest,
     getFiles
   ],
-  triggers: [
-    messageEvent
-  ]
+  triggers: [messageEvent]
 });

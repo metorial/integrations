@@ -3,32 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDpia = SlateTool.create(
-  spec,
-  {
-    name: 'Manage DPIA',
-    key: 'manage_dpia',
-    description: `Create, retrieve, update, or delete Data Protection Impact Assessments (DPIAs) for processing activities. Includes comprehensive risk assessments for confidentiality, integrity, and availability compliance.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageDpia = SlateTool.create(spec, {
+  name: 'Manage DPIA',
+  key: 'manage_dpia',
+  description: `Create, retrieve, update, or delete Data Protection Impact Assessments (DPIAs) for processing activities. Includes comprehensive risk assessments for confidentiality, integrity, and availability compliance.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('Action to perform'),
-    dpiaId: z.string().optional().describe('DPIA ID (required for get, update, delete)'),
-    processingActivityId: z.string().optional().describe('Processing activity ID (required for create)'),
-    status: z.string().optional().describe('DPIA status'),
-    confidentialityRisk: z.string().optional().describe('Confidentiality risk assessment level'),
-    integrityRisk: z.string().optional().describe('Integrity risk assessment level'),
-    availabilityRisk: z.string().optional().describe('Availability risk assessment level')
-  }))
-  .output(z.object({
-    dpia: z.any().optional().describe('DPIA record'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'update', 'delete']).describe('Action to perform'),
+      dpiaId: z.string().optional().describe('DPIA ID (required for get, update, delete)'),
+      processingActivityId: z
+        .string()
+        .optional()
+        .describe('Processing activity ID (required for create)'),
+      status: z.string().optional().describe('DPIA status'),
+      confidentialityRisk: z
+        .string()
+        .optional()
+        .describe('Confidentiality risk assessment level'),
+      integrityRisk: z.string().optional().describe('Integrity risk assessment level'),
+      availabilityRisk: z.string().optional().describe('Availability risk assessment level')
+    })
+  )
+  .output(
+    z
+      .object({
+        dpia: z.any().optional().describe('DPIA record'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -67,9 +76,12 @@ export let manageDpia = SlateTool.create(
         if (!dpiaId) throw new Error('dpiaId is required for update action');
         let updatePayload: Record<string, any> = {};
         if (ctx.input.status !== undefined) updatePayload.status = ctx.input.status;
-        if (ctx.input.confidentialityRisk !== undefined) updatePayload.confidentialityRisk = ctx.input.confidentialityRisk;
-        if (ctx.input.integrityRisk !== undefined) updatePayload.integrityRisk = ctx.input.integrityRisk;
-        if (ctx.input.availabilityRisk !== undefined) updatePayload.availabilityRisk = ctx.input.availabilityRisk;
+        if (ctx.input.confidentialityRisk !== undefined)
+          updatePayload.confidentialityRisk = ctx.input.confidentialityRisk;
+        if (ctx.input.integrityRisk !== undefined)
+          updatePayload.integrityRisk = ctx.input.integrityRisk;
+        if (ctx.input.availabilityRisk !== undefined)
+          updatePayload.availabilityRisk = ctx.input.availabilityRisk;
 
         let result = await client.updateDpia(dpiaId, updatePayload);
         let data = result?.data ?? result;
@@ -87,4 +99,5 @@ export let manageDpia = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

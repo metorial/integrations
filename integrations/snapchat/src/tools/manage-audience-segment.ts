@@ -11,34 +11,45 @@ let segmentOutputSchema = z.object({
   status: z.string().optional().describe('Segment status'),
   sourceType: z.string().optional().describe('Source type (e.g., FIRST_PARTY)'),
   retentionInDays: z.number().optional().describe('Retention period in days'),
-  approximateNumberUsers: z.number().optional().describe('Approximate number of matched users'),
+  approximateNumberUsers: z
+    .number()
+    .optional()
+    .describe('Approximate number of matched users'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let manageAudienceSegment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Audience Segment',
-    key: 'manage_audience_segment',
-    description: `Create or update a Snapchat custom audience segment. Segments can be customer lists (hashed emails, phones, mobile ad IDs), pixel-based audiences, or lookalike audiences. To create, provide **adAccountId** and segment properties. To update, also provide **segmentId**.`,
-    instructions: [
-      'For customer lists, user identifiers must be SHA-256 hashed before uploading.',
-      'A minimum of 1,000 matched users is required for a segment to be usable for targeting.',
-      'Use the Add Users to Segment tool to populate customer list segments after creation.'
-    ]
-  }
-)
-  .input(z.object({
-    adAccountId: z.string().describe('Ad account ID the segment belongs to'),
-    segmentId: z.string().optional().describe('Segment ID to update (omit to create a new segment)'),
-    name: z.string().optional().describe('Segment name'),
-    description: z.string().optional().describe('Segment description'),
-    sourceType: z.string().optional().describe('Source type (FIRST_PARTY, ENGAGEMENT, PIXEL, LOOKALIKE)'),
-    retentionInDays: z.number().optional().describe('Number of days to retain users in the segment')
-  }))
+export let manageAudienceSegment = SlateTool.create(spec, {
+  name: 'Manage Audience Segment',
+  key: 'manage_audience_segment',
+  description: `Create or update a Snapchat custom audience segment. Segments can be customer lists (hashed emails, phones, mobile ad IDs), pixel-based audiences, or lookalike audiences. To create, provide **adAccountId** and segment properties. To update, also provide **segmentId**.`,
+  instructions: [
+    'For customer lists, user identifiers must be SHA-256 hashed before uploading.',
+    'A minimum of 1,000 matched users is required for a segment to be usable for targeting.',
+    'Use the Add Users to Segment tool to populate customer list segments after creation.'
+  ]
+})
+  .input(
+    z.object({
+      adAccountId: z.string().describe('Ad account ID the segment belongs to'),
+      segmentId: z
+        .string()
+        .optional()
+        .describe('Segment ID to update (omit to create a new segment)'),
+      name: z.string().optional().describe('Segment name'),
+      description: z.string().optional().describe('Segment description'),
+      sourceType: z
+        .string()
+        .optional()
+        .describe('Source type (FIRST_PARTY, ENGAGEMENT, PIXEL, LOOKALIKE)'),
+      retentionInDays: z
+        .number()
+        .optional()
+        .describe('Number of days to retain users in the segment')
+    })
+  )
   .output(segmentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let { adAccountId, segmentId, ...fields } = ctx.input;
 
@@ -47,7 +58,8 @@ export let manageAudienceSegment = SlateTool.create(
     if (fields.name) segmentData.name = fields.name;
     if (fields.description) segmentData.description = fields.description;
     if (fields.sourceType) segmentData.source_type = fields.sourceType;
-    if (fields.retentionInDays !== undefined) segmentData.retention_in_days = fields.retentionInDays;
+    if (fields.retentionInDays !== undefined)
+      segmentData.retention_in_days = fields.retentionInDays;
 
     let result: any;
     if (segmentId) {

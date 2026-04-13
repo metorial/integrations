@@ -6,11 +6,13 @@ let api = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -24,7 +26,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -38,22 +40,28 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await api.post('/oauth2/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        scope: ctx.scopes.join(' ')
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await api.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          scope: ctx.scopes.join(' ')
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
-      let expiresAt = new Date(Date.now() + (response.data.expires_in || 3600) * 1000).toISOString();
+      let expiresAt = new Date(
+        Date.now() + (response.data.expires_in || 3600) * 1000
+      ).toISOString();
 
       return {
         output: {
@@ -64,25 +72,31 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await api.post('/oauth2/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        scope: ctx.scopes.join(' ')
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await api.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          scope: ctx.scopes.join(' ')
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
-      let expiresAt = new Date(Date.now() + (response.data.expires_in || 3600) * 1000).toISOString();
+      let expiresAt = new Date(
+        Date.now() + (response.data.expires_in || 3600) * 1000
+      ).toISOString();
 
       return {
         output: {
@@ -96,7 +110,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let response = await api.get('/v1/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 

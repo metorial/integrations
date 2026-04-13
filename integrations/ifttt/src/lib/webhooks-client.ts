@@ -5,7 +5,7 @@ export class WebhooksClient {
 
   constructor(private webhooksKey: string) {
     this.http = createAxios({
-      baseURL: 'https://maker.ifttt.com',
+      baseURL: 'https://maker.ifttt.com'
     });
   }
 
@@ -18,8 +18,8 @@ export class WebhooksClient {
       values || {},
       {
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
     return response.data;
@@ -31,8 +31,8 @@ export class WebhooksClient {
       jsonPayload,
       {
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
     return response.data;

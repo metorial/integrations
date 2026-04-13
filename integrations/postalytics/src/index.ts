@@ -10,7 +10,7 @@ import {
   manageWebhooks,
   manageAccount,
   manageSuppressionLists,
-  createLoginLink,
+  createLoginLink
 } from './tools';
 import { mailEvent } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     manageWebhooks,
     manageAccount,
     manageSuppressionLists,
-    createLoginLink,
+    createLoginLink
   ],
-  triggers: [
-    mailEvent,
-  ],
+  triggers: [mailEvent]
 });

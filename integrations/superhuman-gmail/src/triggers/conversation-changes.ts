@@ -3,43 +3,58 @@ import { Client, parseMessage } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let conversationChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conversation Changes',
-    key: 'conversation_changes',
-    description:
-      'Fires when messages are added or removed, or labels change on messages—**grouped by Gmail history**, with **threadId** for conversation-centric workflows. Uses incremental **history** polling (no Pub/Sub setup).',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['message_added', 'message_deleted', 'labels_added', 'labels_removed']).describe('Kind of mailbox change.'),
-    historyId: z.string().describe('History record ID from Gmail.'),
-    messageId: z.string().describe('Affected message ID.'),
-    threadId: z.string().describe('Thread (conversation) ID.'),
-    labelIds: z.array(z.string()).optional().describe('Labels on the message after the change (when known).'),
-    changedLabelIds: z.array(z.string()).optional().describe('Labels added or removed in this event.'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Affected message ID.'),
-    threadId: z.string().describe('Conversation thread ID.'),
-    labelIds: z.array(z.string()).describe('Current labels on the message when available.'),
-    changedLabelIds: z.array(z.string()).optional().describe('Label IDs that were added or removed.'),
-    from: z.string().optional().describe('Sender (message_added, when body fetch succeeds).'),
-    to: z.string().optional().describe('Recipients (message_added).'),
-    subject: z.string().optional().describe('Subject (message_added).'),
-    snippet: z.string().optional().describe('Snippet (message_added).'),
-    date: z.string().optional().describe('Date header (message_added).'),
-  }))
+export let conversationChanges = SlateTrigger.create(spec, {
+  name: 'Conversation Changes',
+  key: 'conversation_changes',
+  description:
+    'Fires when messages are added or removed, or labels change on messages—**grouped by Gmail history**, with **threadId** for conversation-centric workflows. Uses incremental **history** polling (no Pub/Sub setup).'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['message_added', 'message_deleted', 'labels_added', 'labels_removed'])
+        .describe('Kind of mailbox change.'),
+      historyId: z.string().describe('History record ID from Gmail.'),
+      messageId: z.string().describe('Affected message ID.'),
+      threadId: z.string().describe('Thread (conversation) ID.'),
+      labelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Labels on the message after the change (when known).'),
+      changedLabelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Labels added or removed in this event.')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Affected message ID.'),
+      threadId: z.string().describe('Conversation thread ID.'),
+      labelIds: z.array(z.string()).describe('Current labels on the message when available.'),
+      changedLabelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Label IDs that were added or removed.'),
+      from: z
+        .string()
+        .optional()
+        .describe('Sender (message_added, when body fetch succeeds).'),
+      to: z.string().optional().describe('Recipients (message_added).'),
+      subject: z.string().optional().describe('Subject (message_added).'),
+      snippet: z.string().optional().describe('Snippet (message_added).'),
+      date: z.string().optional().describe('Date header (message_added).')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        userId: ctx.config.userId,
+        userId: ctx.config.userId
       });
 
       let currentHistoryId = ctx.state?.lastHistoryId as string | undefined;
@@ -49,8 +64,8 @@ export let conversationChanges = SlateTrigger.create(
         return {
           inputs: [],
           updatedState: {
-            lastHistoryId: profile.historyId,
-          },
+            lastHistoryId: profile.historyId
+          }
         };
       }
 
@@ -71,7 +86,7 @@ export let conversationChanges = SlateTrigger.create(
           startHistoryId: currentHistoryId,
           historyTypes: ['messageAdded', 'messageDeleted', 'labelAdded', 'labelRemoved'],
           maxResults: 100,
-          pageToken,
+          pageToken
         });
 
         latestHistoryId = result.historyId;
@@ -84,7 +99,7 @@ export let conversationChanges = SlateTrigger.create(
                 historyId: record.id,
                 messageId: item.message.id,
                 threadId: item.message.threadId,
-                labelIds: item.message.labelIds,
+                labelIds: item.message.labelIds
               });
             }
           }
@@ -95,7 +110,7 @@ export let conversationChanges = SlateTrigger.create(
                 historyId: record.id,
                 messageId: item.message.id,
                 threadId: item.message.threadId,
-                labelIds: item.message.labelIds,
+                labelIds: item.message.labelIds
               });
             }
           }
@@ -107,7 +122,7 @@ export let conversationChanges = SlateTrigger.create(
                 messageId: item.message.id,
                 threadId: item.message.threadId,
                 labelIds: item.message.labelIds,
-                changedLabelIds: item.labelIds,
+                changedLabelIds: item.labelIds
               });
             }
           }
@@ -119,7 +134,7 @@ export let conversationChanges = SlateTrigger.create(
                 messageId: item.message.id,
                 threadId: item.message.threadId,
                 labelIds: item.message.labelIds,
-                changedLabelIds: item.labelIds,
+                changedLabelIds: item.labelIds
               });
             }
           }
@@ -131,15 +146,15 @@ export let conversationChanges = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          lastHistoryId: latestHistoryId,
-        },
+          lastHistoryId: latestHistoryId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        userId: ctx.config.userId,
+        userId: ctx.config.userId
       });
 
       let output: {
@@ -156,7 +171,7 @@ export let conversationChanges = SlateTrigger.create(
         messageId: ctx.input.messageId,
         threadId: ctx.input.threadId,
         labelIds: ctx.input.labelIds || [],
-        changedLabelIds: ctx.input.changedLabelIds,
+        changedLabelIds: ctx.input.changedLabelIds
       };
 
       if (ctx.input.changeType === 'message_added') {
@@ -177,7 +192,7 @@ export let conversationChanges = SlateTrigger.create(
       return {
         type: `conversation.${ctx.input.changeType}`,
         id: `${ctx.input.historyId}-${ctx.input.messageId}-${ctx.input.changeType}`,
-        output,
+        output
       };
-    },
+    }
   });

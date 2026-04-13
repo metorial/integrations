@@ -139,8 +139,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.pushbullet.com',
       headers: {
-        'Access-Token': config.token,
-      },
+        'Access-Token': config.token
+      }
     });
   }
 
@@ -198,7 +198,7 @@ export class Client {
       channel_tag: push.channelTag,
       client_iden: push.clientIden,
       source_device_iden: push.sourceDeviceIden,
-      guid: push.guid,
+      guid: push.guid
     };
 
     // Remove undefined values
@@ -251,7 +251,7 @@ export class Client {
       push_token: device.pushToken,
       app_version: device.appVersion,
       icon: device.icon,
-      has_sms: device.hasSms,
+      has_sms: device.hasSms
     };
 
     let cleanBody = Object.fromEntries(
@@ -262,15 +262,18 @@ export class Client {
     return response.data as Device;
   }
 
-  async updateDevice(deviceIden: string, device: {
-    nickname?: string;
-    model?: string;
-    manufacturer?: string;
-    icon?: string;
-    hasSms?: string;
-    pushToken?: string;
-    appVersion?: number;
-  }): Promise<Device> {
+  async updateDevice(
+    deviceIden: string,
+    device: {
+      nickname?: string;
+      model?: string;
+      manufacturer?: string;
+      icon?: string;
+      hasSms?: string;
+      pushToken?: string;
+      appVersion?: number;
+    }
+  ): Promise<Device> {
     let body: Record<string, string | number | undefined> = {
       nickname: device.nickname,
       model: device.model,
@@ -278,7 +281,7 @@ export class Client {
       icon: device.icon,
       has_sms: device.hasSms,
       push_token: device.pushToken,
-      app_version: device.appVersion,
+      app_version: device.appVersion
     };
 
     let cleanBody = Object.fromEntries(
@@ -344,7 +347,10 @@ export class Client {
     return response.data as Subscription;
   }
 
-  async updateSubscription(subscriptionIden: string, params: { muted: boolean }): Promise<Subscription> {
+  async updateSubscription(
+    subscriptionIden: string,
+    params: { muted: boolean }
+  ): Promise<Subscription> {
     let response = await this.axios.post(`/v2/subscriptions/${subscriptionIden}`, params);
     return response.data as Subscription;
   }
@@ -379,9 +385,9 @@ export class Client {
         addresses: params.addresses,
         message: params.message,
         ...(params.fileType ? { file_type: params.fileType } : {}),
-        ...(params.guid ? { guid: params.guid } : {}),
+        ...(params.guid ? { guid: params.guid } : {})
       },
-      ...(params.fileUrl ? { file_url: params.fileUrl } : {}),
+      ...(params.fileUrl ? { file_url: params.fileUrl } : {})
     };
 
     let response = await this.axios.post('/v2/texts', body);
@@ -397,7 +403,7 @@ export class Client {
   async sendEphemeral(push: Record<string, unknown>): Promise<void> {
     await this.axios.post('/v2/ephemerals', {
       type: 'push',
-      push,
+      push
     });
   }
 
@@ -405,7 +411,7 @@ export class Client {
     await this.sendEphemeral({
       type: 'clip',
       body,
-      ...(sourceDeviceIden ? { source_device_iden: sourceDeviceIden } : {}),
+      ...(sourceDeviceIden ? { source_device_iden: sourceDeviceIden } : {})
     });
   }
 
@@ -414,7 +420,7 @@ export class Client {
   async requestUpload(fileName: string, fileType: string): Promise<UploadRequestResponse> {
     let response = await this.axios.post('/v2/upload-request', {
       file_name: fileName,
-      file_type: fileType,
+      file_type: fileType
     });
     return response.data as UploadRequestResponse;
   }

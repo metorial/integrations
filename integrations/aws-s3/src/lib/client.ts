@@ -132,7 +132,11 @@ export class S3Client {
       }
     }
 
-    return { status: response.status, data: response.data as string, headers: responseHeaders };
+    return {
+      status: response.status,
+      data: response.data as string,
+      headers: responseHeaders
+    };
   }
 
   // === Bucket Operations ===
@@ -191,19 +195,23 @@ export class S3Client {
 
   // === Object Operations ===
 
-  async listObjects(bucket: string, options?: {
-    prefix?: string;
-    delimiter?: string;
-    maxKeys?: number;
-    continuationToken?: string;
-    startAfter?: string;
-  }): Promise<ListObjectsResult> {
+  async listObjects(
+    bucket: string,
+    options?: {
+      prefix?: string;
+      delimiter?: string;
+      maxKeys?: number;
+      continuationToken?: string;
+      startAfter?: string;
+    }
+  ): Promise<ListObjectsResult> {
     let url = new URL(this.getBucketEndpoint(bucket) + '/');
     url.searchParams.set('list-type', '2');
     if (options?.prefix) url.searchParams.set('prefix', options.prefix);
     if (options?.delimiter) url.searchParams.set('delimiter', options.delimiter);
     if (options?.maxKeys) url.searchParams.set('max-keys', String(options.maxKeys));
-    if (options?.continuationToken) url.searchParams.set('continuation-token', options.continuationToken);
+    if (options?.continuationToken)
+      url.searchParams.set('continuation-token', options.continuationToken);
     if (options?.startAfter) url.searchParams.set('start-after', options.startAfter);
 
     let response = await this.makeRequest({
@@ -221,8 +229,8 @@ export class S3Client {
       storageClass: getChildText(c, 'StorageClass') || 'STANDARD'
     }));
 
-    let commonPrefixes = getChildren(xml, 'CommonPrefixes').map(cp =>
-      getChildText(cp, 'Prefix') || ''
+    let commonPrefixes = getChildren(xml, 'CommonPrefixes').map(
+      cp => getChildText(cp, 'Prefix') || ''
     );
 
     return {
@@ -234,10 +242,14 @@ export class S3Client {
     };
   }
 
-  async getObject(bucket: string, key: string, options?: {
-    versionId?: string;
-    range?: string;
-  }): Promise<{ content: string; metadata: S3ObjectMetadata }> {
+  async getObject(
+    bucket: string,
+    key: string,
+    options?: {
+      versionId?: string;
+      range?: string;
+    }
+  ): Promise<{ content: string; metadata: S3ObjectMetadata }> {
     let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
     if (options?.versionId) url.searchParams.set('versionId', options.versionId);
 
@@ -255,7 +267,11 @@ export class S3Client {
     return { content: response.data, metadata };
   }
 
-  async headObject(bucket: string, key: string, versionId?: string): Promise<S3ObjectMetadata> {
+  async headObject(
+    bucket: string,
+    key: string,
+    versionId?: string
+  ): Promise<S3ObjectMetadata> {
     let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
     if (versionId) url.searchParams.set('versionId', versionId);
 
@@ -267,18 +283,24 @@ export class S3Client {
     return extractMetadataFromHeaders(key, response.headers);
   }
 
-  async putObject(bucket: string, key: string, body: string, options?: {
-    contentType?: string;
-    metadata?: Record<string, string>;
-    storageClass?: string;
-    serverSideEncryption?: string;
-    tagging?: string;
-    acl?: string;
-  }): Promise<{ eTag: string; versionId?: string }> {
+  async putObject(
+    bucket: string,
+    key: string,
+    body: string,
+    options?: {
+      contentType?: string;
+      metadata?: Record<string, string>;
+      storageClass?: string;
+      serverSideEncryption?: string;
+      tagging?: string;
+      acl?: string;
+    }
+  ): Promise<{ eTag: string; versionId?: string }> {
     let headers: Record<string, string> = {};
     if (options?.contentType) headers['Content-Type'] = options.contentType;
     if (options?.storageClass) headers['x-amz-storage-class'] = options.storageClass;
-    if (options?.serverSideEncryption) headers['x-amz-server-side-encryption'] = options.serverSideEncryption;
+    if (options?.serverSideEncryption)
+      headers['x-amz-server-side-encryption'] = options.serverSideEncryption;
     if (options?.tagging) headers['x-amz-tagging'] = options.tagging;
     if (options?.acl) headers['x-amz-acl'] = options.acl;
     if (options?.metadata) {
@@ -301,7 +323,11 @@ export class S3Client {
     };
   }
 
-  async deleteObject(bucket: string, key: string, versionId?: string): Promise<{ deleteMarker?: boolean; versionId?: string }> {
+  async deleteObject(
+    bucket: string,
+    key: string,
+    versionId?: string
+  ): Promise<{ deleteMarker?: boolean; versionId?: string }> {
     let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
     if (versionId) url.searchParams.set('versionId', versionId);
 
@@ -316,7 +342,10 @@ export class S3Client {
     };
   }
 
-  async deleteObjects(bucket: string, keys: Array<{ objectKey: string; versionId?: string }>): Promise<{
+  async deleteObjects(
+    bucket: string,
+    keys: Array<{ objectKey: string; versionId?: string }>
+  ): Promise<{
     deleted: Array<{ objectKey: string; versionId?: string }>;
     errors: Array<{ objectKey: string; code: string; message: string }>;
   }> {
@@ -329,10 +358,7 @@ export class S3Client {
     let body = buildXml({
       name: 'Delete',
       attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [
-        { name: 'Quiet', text: 'false' },
-        ...objectNodes
-      ]
+      children: [{ name: 'Quiet', text: 'false' }, ...objectNodes]
     });
 
     let url = this.getBucketEndpoint(bucket) + '/?delete';
@@ -364,23 +390,31 @@ export class S3Client {
     return { deleted, errors };
   }
 
-  async copyObject(sourceBucket: string, sourceKey: string, destBucket: string, destKey: string, options?: {
-    metadataDirective?: 'COPY' | 'REPLACE';
-    metadata?: Record<string, string>;
-    contentType?: string;
-    storageClass?: string;
-    serverSideEncryption?: string;
-    sourceVersionId?: string;
-  }): Promise<{ eTag: string; lastModified: string; versionId?: string }> {
+  async copyObject(
+    sourceBucket: string,
+    sourceKey: string,
+    destBucket: string,
+    destKey: string,
+    options?: {
+      metadataDirective?: 'COPY' | 'REPLACE';
+      metadata?: Record<string, string>;
+      contentType?: string;
+      storageClass?: string;
+      serverSideEncryption?: string;
+      sourceVersionId?: string;
+    }
+  ): Promise<{ eTag: string; lastModified: string; versionId?: string }> {
     let headers: Record<string, string> = {};
     let copySource = `/${sourceBucket}/${encodeObjectKey(sourceKey)}`;
     if (options?.sourceVersionId) copySource += `?versionId=${options.sourceVersionId}`;
     headers['x-amz-copy-source'] = copySource;
 
-    if (options?.metadataDirective) headers['x-amz-metadata-directive'] = options.metadataDirective;
+    if (options?.metadataDirective)
+      headers['x-amz-metadata-directive'] = options.metadataDirective;
     if (options?.contentType) headers['Content-Type'] = options.contentType;
     if (options?.storageClass) headers['x-amz-storage-class'] = options.storageClass;
-    if (options?.serverSideEncryption) headers['x-amz-server-side-encryption'] = options.serverSideEncryption;
+    if (options?.serverSideEncryption)
+      headers['x-amz-server-side-encryption'] = options.serverSideEncryption;
     if (options?.metadata) {
       for (let [k, v] of Object.entries(options.metadata)) {
         headers[`x-amz-meta-${k}`] = v;
@@ -404,12 +438,16 @@ export class S3Client {
 
   // === Presigned URLs ===
 
-  async generatePresignedUrl(bucket: string, key: string, options?: {
-    method?: string;
-    expiresInSeconds?: number;
-    versionId?: string;
-    contentType?: string;
-  }): Promise<string> {
+  async generatePresignedUrl(
+    bucket: string,
+    key: string,
+    options?: {
+      method?: string;
+      expiresInSeconds?: number;
+      versionId?: string;
+      contentType?: string;
+    }
+  ): Promise<string> {
     let method = options?.method || 'GET';
     let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
     if (options?.versionId) url.searchParams.set('versionId', options.versionId);
@@ -458,18 +496,22 @@ export class S3Client {
     });
   }
 
-  async listObjectVersions(bucket: string, options?: {
-    prefix?: string;
-    maxKeys?: number;
-    keyMarker?: string;
-    versionIdMarker?: string;
-  }): Promise<ListVersionsResult> {
+  async listObjectVersions(
+    bucket: string,
+    options?: {
+      prefix?: string;
+      maxKeys?: number;
+      keyMarker?: string;
+      versionIdMarker?: string;
+    }
+  ): Promise<ListVersionsResult> {
     let url = new URL(this.getBucketEndpoint(bucket) + '/');
     url.searchParams.set('versions', '');
     if (options?.prefix) url.searchParams.set('prefix', options.prefix);
     if (options?.maxKeys) url.searchParams.set('max-keys', String(options.maxKeys));
     if (options?.keyMarker) url.searchParams.set('key-marker', options.keyMarker);
-    if (options?.versionIdMarker) url.searchParams.set('version-id-marker', options.versionIdMarker);
+    if (options?.versionIdMarker)
+      url.searchParams.set('version-id-marker', options.versionIdMarker);
 
     let response = await this.makeRequest({
       method: 'GET',
@@ -534,7 +576,12 @@ export class S3Client {
     }));
   }
 
-  async putObjectTagging(bucket: string, key: string, tags: S3Tag[], versionId?: string): Promise<void> {
+  async putObjectTagging(
+    bucket: string,
+    key: string,
+    tags: S3Tag[],
+    versionId?: string
+  ): Promise<void> {
     let url = new URL(this.getBucketEndpoint(bucket) + '/' + encodeObjectKey(key));
     url.searchParams.set('tagging', '');
     if (versionId) url.searchParams.set('versionId', versionId);
@@ -542,16 +589,18 @@ export class S3Client {
     let body = buildXml({
       name: 'Tagging',
       attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [{
-        name: 'TagSet',
-        children: tags.map(t => ({
-          name: 'Tag',
-          children: [
-            { name: 'Key', text: t.key },
-            { name: 'Value', text: t.value }
-          ]
-        }))
-      }]
+      children: [
+        {
+          name: 'TagSet',
+          children: tags.map(t => ({
+            name: 'Tag',
+            children: [
+              { name: 'Key', text: t.key },
+              { name: 'Value', text: t.value }
+            ]
+          }))
+        }
+      ]
     });
 
     await this.makeRequest({
@@ -593,16 +642,18 @@ export class S3Client {
     let body = buildXml({
       name: 'Tagging',
       attributes: { xmlns: 'http://s3.amazonaws.com/doc/2006-03-01/' },
-      children: [{
-        name: 'TagSet',
-        children: tags.map(t => ({
-          name: 'Tag',
-          children: [
-            { name: 'Key', text: t.key },
-            { name: 'Value', text: t.value }
-          ]
-        }))
-      }]
+      children: [
+        {
+          name: 'TagSet',
+          children: tags.map(t => ({
+            name: 'Tag',
+            children: [
+              { name: 'Key', text: t.key },
+              { name: 'Value', text: t.value }
+            ]
+          }))
+        }
+      ]
     });
 
     await this.makeRequest({
@@ -641,10 +692,16 @@ export class S3Client {
 }
 
 let encodeObjectKey = (key: string): string => {
-  return key.split('/').map(segment => encodeURIComponent(segment)).join('/');
+  return key
+    .split('/')
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
 };
 
-let extractMetadataFromHeaders = (key: string, headers: Record<string, string>): S3ObjectMetadata => {
+let extractMetadataFromHeaders = (
+  key: string,
+  headers: Record<string, string>
+): S3ObjectMetadata => {
   let metadata: Record<string, string> = {};
   for (let [k, v] of Object.entries(headers)) {
     if (k.toLowerCase().startsWith('x-amz-meta-')) {
@@ -655,7 +712,9 @@ let extractMetadataFromHeaders = (key: string, headers: Record<string, string>):
   return {
     objectKey: key,
     contentType: headers['content-type'],
-    contentLength: headers['content-length'] ? parseInt(headers['content-length'], 10) : undefined,
+    contentLength: headers['content-length']
+      ? parseInt(headers['content-length'], 10)
+      : undefined,
     eTag: headers['etag']?.replace(/"/g, ''),
     lastModified: headers['last-modified'],
     storageClass: headers['x-amz-storage-class'],
@@ -678,34 +737,27 @@ let computeMd5Base64 = (data: string): string => {
 
 let md5 = (input: Uint8Array): Uint8Array => {
   let S = [
-    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
-    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
+    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5,
+    9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10,
+    15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
   ];
   let K = [
-    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-    0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-    0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-    0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-    0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-    0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-    0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-    0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613,
+    0xfd469501, 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193,
+    0xa679438e, 0x49b40821, 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d,
+    0x02441453, 0xd8a1e681, 0xe7d3fbc8, 0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a, 0xfffa3942, 0x8771f681, 0x6d9d6122,
+    0xfde5380c, 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70, 0x289b7ec6, 0xeaa127fa,
+    0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665, 0xf4292244,
+    0x432aff97, 0xab9423a7, 0xfc93a039, 0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb,
+    0xeb86d391
   ];
 
   let leftRotate = (x: number, c: number): number => ((x << c) | (x >>> (32 - c))) >>> 0;
 
   let originalLength = input.length;
-  let paddingLength = (56 - (originalLength + 1) % 64 + 64) % 64;
+  let paddingLength = (56 - ((originalLength + 1) % 64) + 64) % 64;
   let padded = new Uint8Array(originalLength + 1 + paddingLength + 8);
   padded.set(input);
   padded[originalLength] = 0x80;
@@ -723,13 +775,18 @@ let md5 = (input: Uint8Array): Uint8Array => {
   for (let offset = 0; offset < padded.length; offset += 64) {
     let M = new Uint32Array(16);
     for (let j = 0; j < 16; j++) {
-      M[j] = (padded[offset + j * 4]! |
-        (padded[offset + j * 4 + 1]! << 8) |
-        (padded[offset + j * 4 + 2]! << 16) |
-        (padded[offset + j * 4 + 3]! << 24)) >>> 0;
+      M[j] =
+        (padded[offset + j * 4]! |
+          (padded[offset + j * 4 + 1]! << 8) |
+          (padded[offset + j * 4 + 2]! << 16) |
+          (padded[offset + j * 4 + 3]! << 24)) >>>
+        0;
     }
 
-    let A = a0, B = b0, C = c0, D = d0;
+    let A = a0,
+      B = b0,
+      C = c0,
+      D = d0;
 
     for (let i = 0; i < 64; i++) {
       let F: number, g: number;

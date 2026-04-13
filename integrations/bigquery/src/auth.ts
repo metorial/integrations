@@ -2,11 +2,13 @@ import { SlateAuth, axios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Google OAuth',
@@ -45,7 +47,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -61,7 +63,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await axios.post('https://oauth2.googleapis.com/token', {
         code: ctx.code,
         client_id: ctx.clientId,
@@ -82,7 +84,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -106,7 +108,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`
@@ -134,7 +140,7 @@ export let auth = SlateAuth.create()
       serviceAccountJson: z.string().describe('Service account JSON key file contents')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let serviceAccount = JSON.parse(ctx.input.serviceAccountJson);
       let clientEmail = serviceAccount.client_email;
       let privateKey = serviceAccount.private_key;
@@ -143,14 +149,21 @@ export let auth = SlateAuth.create()
       let header = { alg: 'RS256', typ: 'JWT' };
       let payload = {
         iss: clientEmail,
-        scope: 'https://www.googleapis.com/auth/bigquery https://www.googleapis.com/auth/cloud-platform',
+        scope:
+          'https://www.googleapis.com/auth/bigquery https://www.googleapis.com/auth/cloud-platform',
         aud: 'https://oauth2.googleapis.com/token',
         iat: now,
         exp: now + 3600
       };
 
-      let encodedHeader = btoa(JSON.stringify(header)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      let encodedPayload = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      let encodedHeader = btoa(JSON.stringify(header))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      let encodedPayload = btoa(JSON.stringify(payload))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
       let signingInput = `${encodedHeader}.${encodedPayload}`;
 
       let pemContents = privateKey
@@ -184,7 +197,10 @@ export let auth = SlateAuth.create()
       for (let i = 0; i < signatureArray.length; i++) {
         signatureStr += String.fromCharCode(signatureArray[i]!);
       }
-      let encodedSignature = btoa(signatureStr).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      let encodedSignature = btoa(signatureStr)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
 
       let jwt = `${signingInput}.${encodedSignature}`;
 

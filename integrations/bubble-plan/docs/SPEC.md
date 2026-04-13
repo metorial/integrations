@@ -11,12 +11,14 @@ Project Bubble (now known as ProProfs Project) is a project management and colla
 Project Bubble uses API key authentication. To authenticate, you need your API key (found on the My Account page) and your account domain. Both must be sent as HTTP headers with every request.
 
 Required headers:
+
 - `key`: Your API key from the My Account page
 - `domain`: Your Project Bubble domain (e.g., `mydomain.projectbubble.com`)
 
 The base URL for all API requests is `https://api.projectbubble.com/v2/`.
 
 Example:
+
 ```
 curl -H "key:YOUR_API_KEY" -H "domain: mydomain.projectbubble.com" https://api.projectbubble.com/v2/user
 ```
@@ -26,28 +28,37 @@ There is no OAuth or token-based authentication; the API key and domain header c
 ## Features
 
 ### Company & User Management
+
 Retrieve company details, users, and teams. Allows reading organizational data including company settings, user profiles, and team membership.
 
 ### Project Management
+
 Create and manage projects. Projects serve as the top-level container for organizing tasks, files, and collaboration.
 
 ### Task Management
+
 Full task lifecycle management including task lists, subtasks. Tasks can be created, updated, retrieved, and organized within projects. Subtasks allow for breaking work into smaller units.
+
 - Tasks and subtasks can be marked as completed.
 
 ### Time Tracking
+
 Track time, budget, and resources. Time entries can be managed via the API, allowing logging and retrieval of time spent on tasks.
 
 ### Comments
+
 Create, retrieve, and delete comments. Comments facilitate collaboration on tasks and projects.
 
 ### File Management
+
 Share and manage files within projects. The Files API enables access to files attached to projects.
 
 ### Calendar Events
+
 Manage calendar events. The Events API allows reading and managing calendar events within Project Bubble.
 
 ### Client Management
+
 Manage client records and contacts. Clients can be associated with projects, and contact information can be managed through dedicated API resources.
 
 ## Events

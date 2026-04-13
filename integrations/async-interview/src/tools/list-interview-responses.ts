@@ -9,7 +9,7 @@ let attemptSchema = z.object({
   videoUrl: z.string().describe('URL of the recorded video'),
   thumbnailUrl: z.string().describe('URL of the video thumbnail'),
   streamingVideoUrl: z.string().describe('URL for streaming the video'),
-  recordedAt: z.string().describe('Timestamp when the attempt was recorded'),
+  recordedAt: z.string().describe('Timestamp when the attempt was recorded')
 });
 
 let responseSchema = z.object({
@@ -26,47 +26,53 @@ let responseSchema = z.object({
   datetime: z.string().describe('Full ISO datetime of the response submission'),
   shareUrl: z.string().describe('Public shareable URL for the response'),
   internalUrl: z.string().describe('Internal URL for viewing the response'),
-  textQuestionsAnswers: z.record(z.string(), z.unknown()).describe('Answers to text-based interview questions'),
+  textQuestionsAnswers: z
+    .record(z.string(), z.unknown())
+    .describe('Answers to text-based interview questions'),
   videoUrl: z.string().describe('URL of the primary video recording'),
   audioUrl: z.string().describe('URL of the audio recording'),
   thumbnailUrl: z.string().describe('URL of the video thumbnail'),
   durationSeconds: z.number().describe('Total duration of the response in seconds'),
-  attempts: z.array(attemptSchema).describe('List of recording attempts'),
+  attempts: z.array(attemptSchema).describe('List of recording attempts')
 });
 
-export let listInterviewResponses = SlateTool.create(
-  spec,
-  {
-    name: 'List Interview Responses',
-    key: 'list_interview_responses',
-    description: `Retrieve all candidate interview responses from your Async Interview account. Returns detailed information about each submission including candidate details, video/audio recordings, text answers, and recording attempts. Useful for reviewing candidate submissions, building reporting workflows, or syncing data with an ATS.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listInterviewResponses = SlateTool.create(spec, {
+  name: 'List Interview Responses',
+  key: 'list_interview_responses',
+  description: `Retrieve all candidate interview responses from your Async Interview account. Returns detailed information about each submission including candidate details, video/audio recordings, text answers, and recording attempts. Useful for reviewing candidate submissions, building reporting workflows, or syncing data with an ATS.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    jobId: z.number().optional().describe('Filter responses by job ID. If not provided, all responses are returned.'),
-  }))
-  .output(z.object({
-    responses: z.array(responseSchema).describe('List of interview responses'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z
+        .number()
+        .optional()
+        .describe('Filter responses by job ID. If not provided, all responses are returned.')
+    })
+  )
+  .output(
+    z.object({
+      responses: z.array(responseSchema).describe('List of interview responses')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let rawResponses = await client.listInterviewResponses();
 
-    let mapped = rawResponses.map((r) => client.mapInterviewResponse(r));
+    let mapped = rawResponses.map(r => client.mapInterviewResponse(r));
 
     if (ctx.input.jobId !== undefined) {
-      mapped = mapped.filter((r) => r.jobId === ctx.input.jobId);
+      mapped = mapped.filter(r => r.jobId === ctx.input.jobId);
     }
 
     return {
       output: {
-        responses: mapped,
+        responses: mapped
       },
-      message: `Retrieved **${mapped.length}** interview response(s)${ctx.input.jobId !== undefined ? ` for job ID ${ctx.input.jobId}` : ''}.`,
+      message: `Retrieved **${mapped.length}** interview response(s)${ctx.input.jobId !== undefined ? ` for job ID ${ctx.input.jobId}` : ''}.`
     };
   })
   .build();

@@ -24,7 +24,7 @@ import {
   resumeIngestion,
   getArchiveConfig,
   configureArchiving,
-  deleteArchiveConfig,
+  deleteArchiveConfig
 } from './tools';
 import { logAlert } from './triggers';
 
@@ -54,9 +54,7 @@ export let provider = Slate.create({
     resumeIngestion,
     getArchiveConfig,
     configureArchiving,
-    deleteArchiveConfig,
+    deleteArchiveConfig
   ],
-  triggers: [
-    logAlert,
-  ],
+  triggers: [logAlert]
 });

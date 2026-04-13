@@ -13,7 +13,7 @@ let cleanedNameSchema = z.object({
   name: z.string().nullable().describe('First name'),
   patronymic: z.string().nullable().describe('Patronymic'),
   gender: z.string().nullable().describe('Gender: М (male), Ж (female), НД (not determined)'),
-  qualityCode: z.number().nullable().describe('Quality: 0=confident, 1=needs review'),
+  qualityCode: z.number().nullable().describe('Quality: 0=confident, 1=needs review')
 });
 
 let cleanedPhoneSchema = z.object({
@@ -29,7 +29,10 @@ let cleanedPhoneSchema = z.object({
   region: z.string().nullable().describe('Region'),
   city: z.string().nullable().describe('City'),
   timezone: z.string().nullable().describe('Timezone'),
-  qualityCode: z.number().nullable().describe('Quality: 0=confident, 1=uncertain, 2=invalid, 3=multiple'),
+  qualityCode: z
+    .number()
+    .nullable()
+    .describe('Quality: 0=confident, 1=uncertain, 2=invalid, 3=multiple')
 });
 
 let cleanedEmailSchema = z.object({
@@ -38,20 +41,23 @@ let cleanedEmailSchema = z.object({
   local: z.string().nullable().describe('Local part (before @)'),
   domain: z.string().nullable().describe('Domain (after @)'),
   emailType: z.string().nullable().describe('Type: PERSONAL, CORPORATE, ROLE, DISPOSABLE'),
-  qualityCode: z.number().nullable().describe('Quality: 0=valid, 1=invalid, 2=empty, 3=disposable, 4=corrected'),
+  qualityCode: z
+    .number()
+    .nullable()
+    .describe('Quality: 0=valid, 1=invalid, 2=empty, 3=disposable, 4=corrected')
 });
 
 let cleanedPassportSchema = z.object({
   source: z.string().describe('Original input'),
   series: z.string().nullable().describe('Passport series'),
   number: z.string().nullable().describe('Passport number'),
-  qualityCode: z.number().nullable().describe('Quality code'),
+  qualityCode: z.number().nullable().describe('Quality code')
 });
 
 let cleanedBirthdateSchema = z.object({
   source: z.string().describe('Original input'),
   birthdate: z.string().nullable().describe('Standardized birthdate'),
-  qualityCode: z.number().nullable().describe('Quality code'),
+  qualityCode: z.number().nullable().describe('Quality code')
 });
 
 let cleanedVehicleSchema = z.object({
@@ -59,43 +65,58 @@ let cleanedVehicleSchema = z.object({
   result: z.string().nullable().describe('Standardized brand and model'),
   brand: z.string().nullable().describe('Vehicle brand'),
   model: z.string().nullable().describe('Vehicle model'),
-  qualityCode: z.number().nullable().describe('Quality code'),
+  qualityCode: z.number().nullable().describe('Quality code')
 });
 
-export let cleanContactData = SlateTool.create(
-  spec,
-  {
-    name: 'Clean Contact Data',
-    key: 'clean_contact_data',
-    description: `Standardizes and validates contact data including personal names, phone numbers, emails, passport numbers, birthdates, and vehicle identifiers.
+export let cleanContactData = SlateTool.create(spec, {
+  name: 'Clean Contact Data',
+  key: 'clean_contact_data',
+  description: `Standardizes and validates contact data including personal names, phone numbers, emails, passport numbers, birthdates, and vehicle identifiers.
 Corrects common errors, normalizes formatting, and provides quality codes indicating confidence level. For names, also provides declension cases (genitive, dative, instrumental).
 Specify the data type and the raw input to clean.`,
-    constraints: [
-      'Requires both API Key and Secret Key.',
-      'Rate limit: 20 requests/sec per IP.',
-      'One item per request.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  constraints: [
+    'Requires both API Key and Secret Key.',
+    'Rate limit: 20 requests/sec per IP.',
+    'One item per request.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    dataType: z.enum(['name', 'phone', 'email', 'passport', 'birthdate', 'vehicle']).describe('Type of contact data to clean'),
-    value: z.string().describe('Raw input string to standardize'),
-  }))
-  .output(z.object({
-    cleanedName: cleanedNameSchema.nullable().describe('Cleaned name result (when dataType is "name")'),
-    cleanedPhone: cleanedPhoneSchema.nullable().describe('Cleaned phone result (when dataType is "phone")'),
-    cleanedEmail: cleanedEmailSchema.nullable().describe('Cleaned email result (when dataType is "email")'),
-    cleanedPassport: cleanedPassportSchema.nullable().describe('Cleaned passport result (when dataType is "passport")'),
-    cleanedBirthdate: cleanedBirthdateSchema.nullable().describe('Cleaned birthdate result (when dataType is "birthdate")'),
-    cleanedVehicle: cleanedVehicleSchema.nullable().describe('Cleaned vehicle result (when dataType is "vehicle")'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dataType: z
+        .enum(['name', 'phone', 'email', 'passport', 'birthdate', 'vehicle'])
+        .describe('Type of contact data to clean'),
+      value: z.string().describe('Raw input string to standardize')
+    })
+  )
+  .output(
+    z.object({
+      cleanedName: cleanedNameSchema
+        .nullable()
+        .describe('Cleaned name result (when dataType is "name")'),
+      cleanedPhone: cleanedPhoneSchema
+        .nullable()
+        .describe('Cleaned phone result (when dataType is "phone")'),
+      cleanedEmail: cleanedEmailSchema
+        .nullable()
+        .describe('Cleaned email result (when dataType is "email")'),
+      cleanedPassport: cleanedPassportSchema
+        .nullable()
+        .describe('Cleaned passport result (when dataType is "passport")'),
+      cleanedBirthdate: cleanedBirthdateSchema
+        .nullable()
+        .describe('Cleaned birthdate result (when dataType is "birthdate")'),
+      cleanedVehicle: cleanedVehicleSchema
+        .nullable()
+        .describe('Cleaned vehicle result (when dataType is "vehicle")')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CleanerClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let result: any;
@@ -128,7 +149,7 @@ Specify the data type and the raw input to clean.`,
       cleanedEmail: null,
       cleanedPassport: null,
       cleanedBirthdate: null,
-      cleanedVehicle: null,
+      cleanedVehicle: null
     };
 
     let message = '';
@@ -145,9 +166,11 @@ Specify the data type and the raw input to clean.`,
           name: r?.name ?? null,
           patronymic: r?.patronymic ?? null,
           gender: r?.gender ?? null,
-          qualityCode: r?.qc ?? null,
+          qualityCode: r?.qc ?? null
         };
-        message = r?.result ? `Cleaned name: **${r.result}** (gender: ${r.gender || 'N/A'})` : `Could not clean name "${ctx.input.value}".`;
+        message = r?.result
+          ? `Cleaned name: **${r.result}** (gender: ${r.gender || 'N/A'})`
+          : `Could not clean name "${ctx.input.value}".`;
         break;
       case 'phone':
         output.cleanedPhone = {
@@ -163,9 +186,11 @@ Specify the data type and the raw input to clean.`,
           region: r?.region ?? null,
           city: r?.city ?? null,
           timezone: r?.timezone ?? null,
-          qualityCode: r?.qc ?? null,
+          qualityCode: r?.qc ?? null
         };
-        message = r?.phone ? `Cleaned phone: **${r.phone}** (${r.type || 'unknown type'})` : `Could not clean phone "${ctx.input.value}".`;
+        message = r?.phone
+          ? `Cleaned phone: **${r.phone}** (${r.type || 'unknown type'})`
+          : `Could not clean phone "${ctx.input.value}".`;
         break;
       case 'email':
         output.cleanedEmail = {
@@ -174,26 +199,32 @@ Specify the data type and the raw input to clean.`,
           local: r?.local ?? null,
           domain: r?.domain ?? null,
           emailType: r?.type ?? null,
-          qualityCode: r?.qc ?? null,
+          qualityCode: r?.qc ?? null
         };
-        message = r?.email ? `Cleaned email: **${r.email}** (${r.type || 'unknown type'})` : `Could not clean email "${ctx.input.value}".`;
+        message = r?.email
+          ? `Cleaned email: **${r.email}** (${r.type || 'unknown type'})`
+          : `Could not clean email "${ctx.input.value}".`;
         break;
       case 'passport':
         output.cleanedPassport = {
           source: r?.source || ctx.input.value,
           series: r?.series ?? null,
           number: r?.number ?? null,
-          qualityCode: r?.qc ?? null,
+          qualityCode: r?.qc ?? null
         };
-        message = r?.series ? `Cleaned passport: series **${r.series}**, number **${r.number}**` : `Could not clean passport "${ctx.input.value}".`;
+        message = r?.series
+          ? `Cleaned passport: series **${r.series}**, number **${r.number}**`
+          : `Could not clean passport "${ctx.input.value}".`;
         break;
       case 'birthdate':
         output.cleanedBirthdate = {
           source: r?.source || ctx.input.value,
           birthdate: r?.birthdate ?? null,
-          qualityCode: r?.qc ?? null,
+          qualityCode: r?.qc ?? null
         };
-        message = r?.birthdate ? `Cleaned birthdate: **${r.birthdate}**` : `Could not clean birthdate "${ctx.input.value}".`;
+        message = r?.birthdate
+          ? `Cleaned birthdate: **${r.birthdate}**`
+          : `Could not clean birthdate "${ctx.input.value}".`;
         break;
       case 'vehicle':
         output.cleanedVehicle = {
@@ -201,11 +232,14 @@ Specify the data type and the raw input to clean.`,
           result: r?.result ?? null,
           brand: r?.brand ?? null,
           model: r?.model ?? null,
-          qualityCode: r?.qc ?? null,
+          qualityCode: r?.qc ?? null
         };
-        message = r?.result ? `Cleaned vehicle: **${r.result}**` : `Could not clean vehicle "${ctx.input.value}".`;
+        message = r?.result
+          ? `Cleaned vehicle: **${r.result}**`
+          : `Could not clean vehicle "${ctx.input.value}".`;
         break;
     }
 
     return { output, message };
-  }).build();
+  })
+  .build();

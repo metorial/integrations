@@ -3,33 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createClient = SlateTool.create(
-  spec,
-  {
-    name: 'Create Client',
-    key: 'create_client',
-    description: `Create a new client (company) in ServiceM8. The name is required. Optionally provide address, website, and billing details. Returns the UUID of the newly created client.`,
-    tags: {
-      destructive: false,
-    },
+export let createClient = SlateTool.create(spec, {
+  name: 'Create Client',
+  key: 'create_client',
+  description: `Create a new client (company) in ServiceM8. The name is required. Optionally provide address, website, and billing details. Returns the UUID of the newly created client.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Company/client name (required)'),
-    addressStreet: z.string().optional().describe('Street address (max 500 chars)'),
-    addressCity: z.string().optional().describe('City'),
-    addressState: z.string().optional().describe('State/province'),
-    addressPostcode: z.string().optional().describe('Postal/zip code'),
-    addressCountry: z.string().optional().describe('Country'),
-    website: z.string().optional().describe('Company website URL'),
-    isIndividual: z.string().optional().describe('Set to "1" if this is an individual, not a company'),
-    billingAttention: z.string().optional().describe('Billing attention line'),
-    paymentTerms: z.string().optional().describe('Payment terms'),
-  }))
-  .output(z.object({
-    companyUuid: z.string().describe('UUID of the newly created client'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Company/client name (required)'),
+      addressStreet: z.string().optional().describe('Street address (max 500 chars)'),
+      addressCity: z.string().optional().describe('City'),
+      addressState: z.string().optional().describe('State/province'),
+      addressPostcode: z.string().optional().describe('Postal/zip code'),
+      addressCountry: z.string().optional().describe('Country'),
+      website: z.string().optional().describe('Company website URL'),
+      isIndividual: z
+        .string()
+        .optional()
+        .describe('Set to "1" if this is an individual, not a company'),
+      billingAttention: z.string().optional().describe('Billing attention line'),
+      paymentTerms: z.string().optional().describe('Payment terms')
+    })
+  )
+  .output(
+    z.object({
+      companyUuid: z.string().describe('UUID of the newly created client')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = { name: ctx.input.name };
@@ -47,6 +51,7 @@ export let createClient = SlateTool.create(
 
     return {
       output: { companyUuid },
-      message: `Created new client **${ctx.input.name}** with UUID **${companyUuid}**.`,
+      message: `Created new client **${ctx.input.name}** with UUID **${companyUuid}**.`
     };
-  }).build();
+  })
+  .build();

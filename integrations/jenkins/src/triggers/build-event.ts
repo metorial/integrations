@@ -3,48 +3,56 @@ import { JenkinsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let buildEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Build Event',
-    key: 'build_event',
-    description: 'Triggers when a build starts, completes (success, failure, unstable, or aborted) on monitored Jenkins jobs. Polls job build histories for new builds since the last check.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['started', 'success', 'failure', 'unstable', 'aborted', 'completed']).describe('Type of build event'),
-    buildNumber: z.number().describe('Build number'),
-    jobName: z.string().describe('Name of the job'),
-    jobFullName: z.string().describe('Fully qualified job name'),
-    buildUrl: z.string().describe('URL of the build'),
-    result: z.string().optional().nullable().describe('Build result'),
-    building: z.boolean().describe('Whether the build is currently running'),
-    timestamp: z.number().describe('Build start timestamp in milliseconds'),
-    duration: z.number().describe('Build duration in milliseconds')
-  }))
-  .output(z.object({
-    buildNumber: z.number().describe('Build number'),
-    jobName: z.string().describe('Name of the job'),
-    jobFullName: z.string().describe('Fully qualified job name'),
-    buildUrl: z.string().describe('URL of the build'),
-    result: z.string().optional().nullable().describe('Build result (SUCCESS, FAILURE, UNSTABLE, ABORTED)'),
-    building: z.boolean().describe('Whether the build is currently running'),
-    timestamp: z.number().describe('Build start timestamp in milliseconds'),
-    duration: z.number().describe('Build duration in milliseconds')
-  }))
+export let buildEvent = SlateTrigger.create(spec, {
+  name: 'Build Event',
+  key: 'build_event',
+  description:
+    'Triggers when a build starts, completes (success, failure, unstable, or aborted) on monitored Jenkins jobs. Polls job build histories for new builds since the last check.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['started', 'success', 'failure', 'unstable', 'aborted', 'completed'])
+        .describe('Type of build event'),
+      buildNumber: z.number().describe('Build number'),
+      jobName: z.string().describe('Name of the job'),
+      jobFullName: z.string().describe('Fully qualified job name'),
+      buildUrl: z.string().describe('URL of the build'),
+      result: z.string().optional().nullable().describe('Build result'),
+      building: z.boolean().describe('Whether the build is currently running'),
+      timestamp: z.number().describe('Build start timestamp in milliseconds'),
+      duration: z.number().describe('Build duration in milliseconds')
+    })
+  )
+  .output(
+    z.object({
+      buildNumber: z.number().describe('Build number'),
+      jobName: z.string().describe('Name of the job'),
+      jobFullName: z.string().describe('Fully qualified job name'),
+      buildUrl: z.string().describe('URL of the build'),
+      result: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Build result (SUCCESS, FAILURE, UNSTABLE, ABORTED)'),
+      building: z.boolean().describe('Whether the build is currently running'),
+      timestamp: z.number().describe('Build start timestamp in milliseconds'),
+      duration: z.number().describe('Build duration in milliseconds')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new JenkinsClient({
         instanceUrl: ctx.config.instanceUrl,
         username: ctx.auth.username,
         token: ctx.auth.token
       });
 
-      let state = ctx.state as Record<string, any> || {};
+      let state = (ctx.state as Record<string, any>) || {};
       let lastPolledBuilds: Record<string, number> = state.lastPolledBuilds || {};
       let inputs: any[] = [];
 
@@ -110,7 +118,7 @@ export let buildEvent = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `build.${ctx.input.eventType}`,
         id: `${ctx.input.jobFullName}-${ctx.input.buildNumber}-${ctx.input.eventType}`,
@@ -126,4 +134,5 @@ export let buildEvent = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

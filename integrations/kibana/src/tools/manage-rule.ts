@@ -7,11 +7,18 @@ let ruleActionSchema = z.object({
   group: z.string().describe('Action group (e.g., "default", "recovered")'),
   connectorId: z.string().describe('ID of the connector to use'),
   actionParams: z.record(z.string(), z.any()).describe('Parameters for the connector action'),
-  frequency: z.object({
-    summary: z.boolean().describe('Whether to send a summary'),
-    notifyWhen: z.string().describe('When to notify: "onActionGroupChange", "onActiveAlert", "onThrottleInterval"'),
-    throttle: z.string().optional().describe('Throttle interval (e.g., "5m", "1h")')
-  }).optional().describe('Action frequency configuration')
+  frequency: z
+    .object({
+      summary: z.boolean().describe('Whether to send a summary'),
+      notifyWhen: z
+        .string()
+        .describe(
+          'When to notify: "onActionGroupChange", "onActiveAlert", "onThrottleInterval"'
+        ),
+      throttle: z.string().optional().describe('Throttle interval (e.g., "5m", "1h")')
+    })
+    .optional()
+    .describe('Action frequency configuration')
 });
 
 let ruleOutputSchema = z.object({
@@ -21,9 +28,11 @@ let ruleOutputSchema = z.object({
   consumer: z.string().describe('Application that owns the rule'),
   enabled: z.boolean().describe('Whether the rule is enabled'),
   tags: z.array(z.string()).describe('Tags assigned to the rule'),
-  schedule: z.object({
-    interval: z.string().describe('Check interval')
-  }).describe('Rule check schedule'),
+  schedule: z
+    .object({
+      interval: z.string().describe('Check interval')
+    })
+    .describe('Rule check schedule'),
   ruleParams: z.record(z.string(), z.any()).optional().describe('Rule-specific parameters'),
   actions: z.array(z.any()).optional().describe('Configured actions'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
@@ -45,54 +54,100 @@ let mapRule = (r: any) => ({
   createdAt: r.created_at
 });
 
-export let manageRule = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Alerting Rule',
-    key: 'manage_rule',
-    description: `Create, get, update, delete, enable, disable, or mute/unmute a Kibana alerting rule.
+export let manageRule = SlateTool.create(spec, {
+  name: 'Manage Alerting Rule',
+  key: 'manage_rule',
+  description: `Create, get, update, delete, enable, disable, or mute/unmute a Kibana alerting rule.
 Rules monitor conditions and trigger actions via connectors when thresholds are met.
 Supports Elasticsearch query, index threshold, metric threshold, log threshold, and more.`,
-    instructions: [
-      'To create a rule, provide name, ruleTypeId, consumer, schedule, and ruleParams.',
-      'Use "enable" / "disable" actions to toggle rule execution.',
-      'Use "mute" / "unmute" to suppress or restore alert notifications.'
-    ],
-    tags: {
-      destructive: true
-    }
+  instructions: [
+    'To create a rule, provide name, ruleTypeId, consumer, schedule, and ruleParams.',
+    'Use "enable" / "disable" actions to toggle rule execution.',
+    'Use "mute" / "unmute" to suppress or restore alert notifications.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'create', 'update', 'delete', 'enable', 'disable', 'mute', 'unmute']).describe('Action to perform on the rule'),
-    ruleId: z.string().optional().describe('ID of the rule (required for all actions except create)'),
-    name: z.string().optional().describe('Name of the rule (required for create)'),
-    ruleTypeId: z.string().optional().describe('Rule type ID (e.g., ".index-threshold", ".es-query"). Required for create.'),
-    consumer: z.string().optional().describe('Consumer application (e.g., "alerts", "infrastructure", "siem"). Required for create.'),
-    schedule: z.object({
-      interval: z.string().describe('Check interval (e.g., "1m", "5m", "1h")')
-    }).optional().describe('Rule check schedule (required for create)'),
-    ruleParams: z.record(z.string(), z.any()).optional().describe('Rule-specific parameters (required for create)'),
-    actions: z.array(ruleActionSchema).optional().describe('Actions to execute when rule fires'),
-    tags: z.array(z.string()).optional().describe('Tags for the rule'),
-    enabled: z.boolean().optional().describe('Whether the rule should be enabled on creation'),
-    throttle: z.string().optional().describe('Global throttle interval (e.g., "5m", "1h")'),
-    notifyWhen: z.string().optional().describe('When to notify: "onActionGroupChange", "onActiveAlert", "onThrottleInterval"')
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'create', 'update', 'delete', 'enable', 'disable', 'mute', 'unmute'])
+        .describe('Action to perform on the rule'),
+      ruleId: z
+        .string()
+        .optional()
+        .describe('ID of the rule (required for all actions except create)'),
+      name: z.string().optional().describe('Name of the rule (required for create)'),
+      ruleTypeId: z
+        .string()
+        .optional()
+        .describe(
+          'Rule type ID (e.g., ".index-threshold", ".es-query"). Required for create.'
+        ),
+      consumer: z
+        .string()
+        .optional()
+        .describe(
+          'Consumer application (e.g., "alerts", "infrastructure", "siem"). Required for create.'
+        ),
+      schedule: z
+        .object({
+          interval: z.string().describe('Check interval (e.g., "1m", "5m", "1h")')
+        })
+        .optional()
+        .describe('Rule check schedule (required for create)'),
+      ruleParams: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Rule-specific parameters (required for create)'),
+      actions: z
+        .array(ruleActionSchema)
+        .optional()
+        .describe('Actions to execute when rule fires'),
+      tags: z.array(z.string()).optional().describe('Tags for the rule'),
+      enabled: z
+        .boolean()
+        .optional()
+        .describe('Whether the rule should be enabled on creation'),
+      throttle: z.string().optional().describe('Global throttle interval (e.g., "5m", "1h")'),
+      notifyWhen: z
+        .string()
+        .optional()
+        .describe(
+          'When to notify: "onActionGroupChange", "onActiveAlert", "onThrottleInterval"'
+        )
+    })
+  )
   .output(ruleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
-    let { action, ruleId, name, ruleTypeId, consumer, schedule, ruleParams, actions, tags, enabled, throttle, notifyWhen } = ctx.input;
+    let {
+      action,
+      ruleId,
+      name,
+      ruleTypeId,
+      consumer,
+      schedule,
+      ruleParams,
+      actions,
+      tags,
+      enabled,
+      throttle,
+      notifyWhen
+    } = ctx.input;
 
     let mappedActions = actions?.map(a => ({
       group: a.group,
       id: a.connectorId,
       params: a.actionParams,
-      frequency: a.frequency ? {
-        summary: a.frequency.summary,
-        notify_when: a.frequency.notifyWhen,
-        throttle: a.frequency.throttle ?? null
-      } : undefined
+      frequency: a.frequency
+        ? {
+            summary: a.frequency.summary,
+            notify_when: a.frequency.notifyWhen,
+            throttle: a.frequency.throttle ?? null
+          }
+        : undefined
     }));
 
     if (action === 'get') {
@@ -205,4 +260,5 @@ Supports Elasticsearch query, index threshold, metric threshold, log threshold, 
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

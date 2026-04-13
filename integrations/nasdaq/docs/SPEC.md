@@ -47,6 +47,7 @@ Data can be filtered by date range, column selection, and row-level criteria. Fi
 The latest transaction that is last sale eligible based on market rules. Last Sale provides real-time or delayed pricing information on different stock exchanges for one or multiple securities.
 
 Available products include:
+
 - **Nasdaq Basic / Last Sale+**: Best bid/offer and last sale data for US exchange-listed stocks.
 - **BX/PSX BBO and Last Sale**: Quote and trade data from Nasdaq's BX and PSX exchanges.
 - **Global Index Data Service**: Real-time index values.
@@ -57,6 +58,7 @@ The Bars endpoint provides the ability to create real-time, delayed and historic
 ### Real-Time Streaming Data
 
 The Streaming API (Kafka-based) provides continuous real-time feeds for:
+
 - Nasdaq Basic and Last Sale+
 - Nasdaq TotalView (full order book depth)
 - Consolidated Quotes and Trades

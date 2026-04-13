@@ -3,35 +3,50 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCustomDomains = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Custom Domains',
-    key: 'manage_custom_domains',
-    description: `Add, list, verify, or delete custom domains on a Render service. Use **list** to see configured domains, **add** to attach a new domain, **verify** to check DNS configuration, or **delete** to remove a domain.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'verify', 'delete']).describe('Action to perform'),
-    serviceId: z.string().optional().describe('Service ID (required for list and add)'),
-    domainId: z.string().optional().describe('Custom domain ID (required for verify and delete)'),
-    domainName: z.string().optional().describe('Domain name to add (required for add action)'),
-  }))
-  .output(z.object({
-    domains: z.array(z.object({
-      domainId: z.string().describe('Custom domain ID'),
-      name: z.string().describe('Domain name'),
-      verificationStatus: z.string().optional().describe('DNS verification status'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of custom domains (for list action)'),
-    domain: z.object({
-      domainId: z.string().describe('Custom domain ID'),
-      name: z.string().describe('Domain name'),
-      verificationStatus: z.string().optional().describe('DNS verification status'),
-    }).optional().describe('Domain details (for add/verify actions)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageCustomDomains = SlateTool.create(spec, {
+  name: 'Manage Custom Domains',
+  key: 'manage_custom_domains',
+  description: `Add, list, verify, or delete custom domains on a Render service. Use **list** to see configured domains, **add** to attach a new domain, **verify** to check DNS configuration, or **delete** to remove a domain.`
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'add', 'verify', 'delete']).describe('Action to perform'),
+      serviceId: z.string().optional().describe('Service ID (required for list and add)'),
+      domainId: z
+        .string()
+        .optional()
+        .describe('Custom domain ID (required for verify and delete)'),
+      domainName: z
+        .string()
+        .optional()
+        .describe('Domain name to add (required for add action)')
+    })
+  )
+  .output(
+    z.object({
+      domains: z
+        .array(
+          z.object({
+            domainId: z.string().describe('Custom domain ID'),
+            name: z.string().describe('Domain name'),
+            verificationStatus: z.string().optional().describe('DNS verification status'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of custom domains (for list action)'),
+      domain: z
+        .object({
+          domainId: z.string().describe('Custom domain ID'),
+          name: z.string().describe('Domain name'),
+          verificationStatus: z.string().optional().describe('DNS verification status')
+        })
+        .optional()
+        .describe('Domain details (for add/verify actions)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RenderClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -44,13 +59,13 @@ export let manageCustomDomains = SlateTool.create(
           domainId: d.id,
           name: d.name,
           verificationStatus: d.verificationStatus,
-          createdAt: d.createdAt,
+          createdAt: d.createdAt
         };
       });
 
       return {
         output: { domains, success: true },
-        message: `Found **${domains.length}** custom domain(s).${domains.map(d => `\n- **${d.name}** (${d.verificationStatus || 'unknown'})`).join('')}`,
+        message: `Found **${domains.length}** custom domain(s).${domains.map(d => `\n- **${d.name}** (${d.verificationStatus || 'unknown'})`).join('')}`
       };
     }
 
@@ -61,9 +76,9 @@ export let manageCustomDomains = SlateTool.create(
       return {
         output: {
           domain: { domainId: d.id, name: d.name, verificationStatus: d.verificationStatus },
-          success: true,
+          success: true
         },
-        message: `Added custom domain **${d.name}** to service \`${ctx.input.serviceId}\`. Verification status: **${d.verificationStatus || 'pending'}**.`,
+        message: `Added custom domain **${d.name}** to service \`${ctx.input.serviceId}\`. Verification status: **${d.verificationStatus || 'pending'}**.`
       };
     }
 
@@ -73,9 +88,9 @@ export let manageCustomDomains = SlateTool.create(
       return {
         output: {
           domain: { domainId: d.id, name: d.name, verificationStatus: d.verificationStatus },
-          success: true,
+          success: true
         },
-        message: `DNS verification for **${d.name}**: **${d.verificationStatus || 'unknown'}**.`,
+        message: `DNS verification for **${d.name}**: **${d.verificationStatus || 'unknown'}**.`
       };
     }
 
@@ -84,9 +99,10 @@ export let manageCustomDomains = SlateTool.create(
       await client.deleteCustomDomain(ctx.input.domainId);
       return {
         output: { success: true },
-        message: `Deleted custom domain \`${ctx.input.domainId}\`.`,
+        message: `Deleted custom domain \`${ctx.input.domainId}\`.`
       };
     }
 
     return { output: { success: false }, message: 'Unknown action.' };
-  }).build();
+  })
+  .build();

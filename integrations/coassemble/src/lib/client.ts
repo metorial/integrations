@@ -12,16 +12,17 @@ export class Client {
   private http;
 
   constructor(private config: ClientConfig) {
-    let authHeader = config.authScheme === 'coassemble'
-      ? `COASSEMBLE-V1-SHA256 UserId=${config.userId}, UserToken=${config.token}`
-      : `Bearer ${config.token}`;
+    let authHeader =
+      config.authScheme === 'coassemble'
+        ? `COASSEMBLE-V1-SHA256 UserId=${config.userId}, UserToken=${config.token}`
+        : `Bearer ${config.token}`;
 
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': authHeader,
-        'Content-Type': 'application/json',
-      },
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -54,10 +55,13 @@ export class Client {
     return response.data;
   }
 
-  async duplicateCourse(courseId: string, body?: {
-    identifier?: string;
-    clientIdentifier?: string;
-  }) {
+  async duplicateCourse(
+    courseId: string,
+    body?: {
+      identifier?: string;
+      clientIdentifier?: string;
+    }
+  ) {
     let response = await this.http.post(`/course/${courseId}/duplicate`, body ?? {});
     return response.data;
   }
@@ -115,10 +119,13 @@ export class Client {
 
   // ─── SCORM Export ──────────────────────────────────────────
 
-  async exportScorm(courseId: string, params?: {
-    type?: string;
-    version?: string;
-  }) {
+  async exportScorm(
+    courseId: string,
+    params?: {
+      type?: string;
+      version?: string;
+    }
+  ) {
     let response = await this.http.get(`/course/scorm/${courseId}`, { params });
     return response.data;
   }
@@ -146,24 +153,24 @@ export class Client {
 
   async deleteTracking(courseId: string, identifier: string) {
     let response = await this.http.delete('/tracking', {
-      data: { id: courseId, identifier },
+      data: { id: courseId, identifier }
     });
     return response.data;
   }
 
   // ─── Clients ───────────────────────────────────────────────
 
-  async listClients(params?: {
-    length?: number;
-    page?: number;
-  }) {
+  async listClients(params?: { length?: number; page?: number }) {
     let response = await this.http.get('/clients', { params });
     return response.data;
   }
 
-  async updateClient(clientIdentifier: string, body: {
-    metadata?: Record<string, unknown>;
-  }) {
+  async updateClient(
+    clientIdentifier: string,
+    body: {
+      metadata?: Record<string, unknown>;
+    }
+  ) {
     let response = await this.http.put(`/client/${clientIdentifier}`, body);
     return response.data;
   }
@@ -175,28 +182,30 @@ export class Client {
 
   // ─── Users ─────────────────────────────────────────────────
 
-  async listUsers(params?: {
-    length?: number;
-    page?: number;
-    clientIdentifier?: string;
-  }) {
+  async listUsers(params?: { length?: number; page?: number; clientIdentifier?: string }) {
     let response = await this.http.get('/users', { params });
     return response.data;
   }
 
-  async updateUser(identifier: string, body: {
-    clientIdentifier?: string;
-    metadata?: Record<string, unknown>;
-  }) {
+  async updateUser(
+    identifier: string,
+    body: {
+      clientIdentifier?: string;
+      metadata?: Record<string, unknown>;
+    }
+  ) {
     let response = await this.http.put(`/user/${identifier}`, body);
     return response.data;
   }
 
-  async deleteUser(identifier: string, params: {
-    action: 'reallocate' | 'delete' | 'ignore';
-    reallocateTo?: string;
-    clientIdentifier?: string;
-  }) {
+  async deleteUser(
+    identifier: string,
+    params: {
+      action: 'reallocate' | 'delete' | 'ignore';
+      reallocateTo?: string;
+      clientIdentifier?: string;
+    }
+  ) {
     let response = await this.http.delete(`/user/${identifier}`, { params });
     return response.data;
   }

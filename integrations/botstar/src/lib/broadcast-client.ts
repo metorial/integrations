@@ -7,18 +7,22 @@ export class BroadcastClient {
     this.axios = createAxios({
       baseURL: 'https://api2.botstar.com',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async broadcastMessage(userId: string, messages: Array<{ text: string }>): Promise<any> {
-    let response = await this.axios.post('/broadcast', {
-      userId,
-      messages,
-    }, {
-      params: { token: this.botToken },
-    });
+    let response = await this.axios.post(
+      '/broadcast',
+      {
+        userId,
+        messages
+      },
+      {
+        params: { token: this.botToken }
+      }
+    );
     return response.data;
   }
 }

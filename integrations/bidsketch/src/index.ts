@@ -31,10 +31,7 @@ import {
   listTemplates,
   getTemplate
 } from './tools';
-import {
-  clientCreated,
-  proposalEvents
-} from './triggers';
+import { clientCreated, proposalEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -69,8 +66,5 @@ export let provider = Slate.create({
     listTemplates,
     getTemplate
   ],
-  triggers: [
-    clientCreated,
-    proposalEvents
-  ]
+  triggers: [clientCreated, proposalEvents]
 });

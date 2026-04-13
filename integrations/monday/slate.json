@@ -2,10 +2,7 @@
   "name": "@metorial/mondaycom",
   "version": "0.1.1",
   "description": "Create, read, update, and delete boards, items, sub-items, groups, and columns to manage projects and workflows. Post updates and replies on items for team communication. Manage workspaces, folders, documents (Workdocs), users, teams, tags, and file assets. Upload files, send notifications, query activity logs and dashboards, and configure webhooks for real-time event notifications on boards. Supports a wide variety of column types including status, date, people, timeline, dropdown, and more.",
-  "categories": [
-    "email-and-messaging",
-    "task-and-project-management"
-  ],
+  "categories": ["email-and-messaging", "task-and-project-management"],
   "skills": [
     "manage boards and items",
     "create and update columns",

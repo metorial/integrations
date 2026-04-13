@@ -72,8 +72,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.geocod.io/v1.11',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -100,7 +100,8 @@ export class Client {
     }
 
     if (params.country) queryParams.country = params.country;
-    if (params.fields && params.fields.length > 0) queryParams.fields = params.fields.join(',');
+    if (params.fields && params.fields.length > 0)
+      queryParams.fields = params.fields.join(',');
     if (params.limit) queryParams.limit = params.limit;
     if (params.format) queryParams.format = params.format;
 
@@ -117,10 +118,11 @@ export class Client {
     skipGeocoding?: boolean;
   }): Promise<any> {
     let queryParams: Record<string, any> = {
-      q: `${params.latitude},${params.longitude}`,
+      q: `${params.latitude},${params.longitude}`
     };
 
-    if (params.fields && params.fields.length > 0) queryParams.fields = params.fields.join(',');
+    if (params.fields && params.fields.length > 0)
+      queryParams.fields = params.fields.join(',');
     if (params.limit) queryParams.limit = params.limit;
     if (params.format) queryParams.format = params.format;
     if (params.skipGeocoding) queryParams.skip_geocoding = true;
@@ -136,10 +138,13 @@ export class Client {
   }): Promise<any> {
     let queryParams: Record<string, any> = {};
 
-    if (params.fields && params.fields.length > 0) queryParams.fields = params.fields.join(',');
+    if (params.fields && params.fields.length > 0)
+      queryParams.fields = params.fields.join(',');
     if (params.limit) queryParams.limit = params.limit;
 
-    let response = await this.axios.post('/geocode', params.addresses, { params: queryParams });
+    let response = await this.axios.post('/geocode', params.addresses, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -150,10 +155,13 @@ export class Client {
   }): Promise<any> {
     let queryParams: Record<string, any> = {};
 
-    if (params.fields && params.fields.length > 0) queryParams.fields = params.fields.join(',');
+    if (params.fields && params.fields.length > 0)
+      queryParams.fields = params.fields.join(',');
     if (params.limit) queryParams.limit = params.limit;
 
-    let response = await this.axios.post('/reverse', params.coordinates, { params: queryParams });
+    let response = await this.axios.post('/reverse', params.coordinates, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -174,7 +182,8 @@ export class Client {
       queryParams.q = `${params.latitude},${params.longitude}`;
     }
 
-    if (params.fields && params.fields.length > 0) queryParams.fields = params.fields.join(',');
+    if (params.fields && params.fields.length > 0)
+      queryParams.fields = params.fields.join(',');
     if (params.distanceMode) queryParams.distance_mode = params.distanceMode;
     if (params.distanceUnits) queryParams.distance_units = params.distanceUnits;
 
@@ -203,15 +212,15 @@ export class Client {
 
     if (params.callback) formData.append('callback', params.callback);
     if (params.fields && params.fields.length > 0) {
-      params.fields.forEach((field) => {
+      params.fields.forEach(field => {
         formData.append('fields[]', field);
       });
     }
 
     let response = await this.axios.post('/lists', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }

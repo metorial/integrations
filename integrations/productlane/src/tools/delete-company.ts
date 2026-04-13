@@ -8,21 +8,26 @@ export let deleteCompany = SlateTool.create(spec, {
   key: 'delete_company',
   description: `Permanently delete a company from Productlane.`,
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    companyId: z.string().describe('ID of the company to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      companyId: z.string().describe('ID of the company to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteCompany(ctx.input.companyId);
 
     return {
       output: { success: true },
-      message: `Deleted company ${ctx.input.companyId}.`,
+      message: `Deleted company ${ctx.input.companyId}.`
     };
-  }).build();
+  })
+  .build();

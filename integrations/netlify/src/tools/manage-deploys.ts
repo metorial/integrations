@@ -14,10 +14,13 @@ let deployOutputSchema = z.object({
   commitRef: z.string().optional().describe('Git commit reference'),
   commitUrl: z.string().optional().describe('URL to the commit'),
   title: z.string().optional().describe('Deploy title/message'),
-  context: z.string().optional().describe('Deploy context (production, deploy-preview, branch-deploy)'),
+  context: z
+    .string()
+    .optional()
+    .describe('Deploy context (production, deploy-preview, branch-deploy)'),
   createdAt: z.string().optional().describe('Deploy creation timestamp'),
   publishedAt: z.string().optional().describe('Deploy publish timestamp'),
-  errorMessage: z.string().optional().describe('Error message if deploy failed'),
+  errorMessage: z.string().optional().describe('Error message if deploy failed')
 });
 
 let mapDeploy = (deploy: any) => ({
@@ -34,95 +37,100 @@ let mapDeploy = (deploy: any) => ({
   context: deploy.context,
   createdAt: deploy.created_at,
   publishedAt: deploy.published_at,
-  errorMessage: deploy.error_message,
+  errorMessage: deploy.error_message
 });
 
-export let listDeploys = SlateTool.create(
-  spec,
-  {
-    name: 'List Deploys',
-    key: 'list_deploys',
-    description: `List deploys for a Netlify site. Returns deploy history with state, branch, and commit information. Supports pagination.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDeploys = SlateTool.create(spec, {
+  name: 'List Deploys',
+  key: 'list_deploys',
+  description: `List deploys for a Netlify site. Returns deploy history with state, branch, and commit information. Supports pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    siteId: z.string().describe('The site ID to list deploys for'),
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of deploys per page'),
-  }))
-  .output(z.object({
-    deploys: z.array(deployOutputSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      siteId: z.string().describe('The site ID to list deploys for'),
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of deploys per page')
+    })
+  )
+  .output(
+    z.object({
+      deploys: z.array(deployOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let deploys = await client.listDeploys(ctx.input.siteId, {
       page: ctx.input.page,
-      perPage: ctx.input.perPage,
+      perPage: ctx.input.perPage
     });
 
     let mapped = deploys.map(mapDeploy);
 
     return {
       output: { deploys: mapped },
-      message: `Found **${mapped.length}** deploy(s) for site **${ctx.input.siteId}**.`,
+      message: `Found **${mapped.length}** deploy(s) for site **${ctx.input.siteId}**.`
     };
   })
   .build();
 
-export let getDeploy = SlateTool.create(
-  spec,
-  {
-    name: 'Get Deploy',
-    key: 'get_deploy',
-    description: `Get detailed information about a specific deploy, including its state, URL, commit information, and error details if applicable.`,
-    tags: {
-      readOnly: true,
-    },
+export let getDeploy = SlateTool.create(spec, {
+  name: 'Get Deploy',
+  key: 'get_deploy',
+  description: `Get detailed information about a specific deploy, including its state, URL, commit information, and error details if applicable.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    deployId: z.string().describe('The deploy ID to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      deployId: z.string().describe('The deploy ID to retrieve')
+    })
+  )
   .output(deployOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let deploy = await client.getDeploy(ctx.input.deployId);
 
     return {
       output: mapDeploy(deploy),
-      message: `Retrieved deploy **${deploy.id}** (state: ${deploy.state}).`,
+      message: `Retrieved deploy **${deploy.id}** (state: ${deploy.state}).`
     };
   })
   .build();
 
-export let manageDeploy = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Deploy',
-    key: 'manage_deploy',
-    description: `Perform actions on a deploy: cancel a running build, lock/unlock auto-publishing, restore a previous deploy, or delete a deploy.`,
-    instructions: [
-      'Use "lock" to pin the site to a specific deploy and stop auto-publishing.',
-      'Use "unlock" to resume auto-publishing new deploys.',
-      'Use "restore" to re-publish a previous deploy (rollback). Requires siteId.',
-      'Use "cancel" to stop a running build.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['cancel', 'lock', 'unlock', 'restore', 'delete']).describe('Action to perform on the deploy'),
-    deployId: z.string().describe('The deploy ID to act on'),
-    siteId: z.string().optional().describe('Site ID (required for restore action)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    deploy: deployOutputSchema.optional().describe('Updated deploy information (not returned for delete)'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageDeploy = SlateTool.create(spec, {
+  name: 'Manage Deploy',
+  key: 'manage_deploy',
+  description: `Perform actions on a deploy: cancel a running build, lock/unlock auto-publishing, restore a previous deploy, or delete a deploy.`,
+  instructions: [
+    'Use "lock" to pin the site to a specific deploy and stop auto-publishing.',
+    'Use "unlock" to resume auto-publishing new deploys.',
+    'Use "restore" to re-publish a previous deploy (rollback). Requires siteId.',
+    'Use "cancel" to stop a running build.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['cancel', 'lock', 'unlock', 'restore', 'delete'])
+        .describe('Action to perform on the deploy'),
+      deployId: z.string().describe('The deploy ID to act on'),
+      siteId: z.string().optional().describe('Site ID (required for restore action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      deploy: deployOutputSchema
+        .optional()
+        .describe('Updated deploy information (not returned for delete)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let deploy: any;
 
@@ -146,16 +154,16 @@ export let manageDeploy = SlateTool.create(
         await client.deleteDeploy(ctx.input.deployId);
         return {
           output: { success: true },
-          message: `Deleted deploy **${ctx.input.deployId}**.`,
+          message: `Deleted deploy **${ctx.input.deployId}**.`
         };
     }
 
     return {
       output: {
         success: true,
-        deploy: deploy ? mapDeploy(deploy) : undefined,
+        deploy: deploy ? mapDeploy(deploy) : undefined
       },
-      message: `Performed **${ctx.input.action}** on deploy **${ctx.input.deployId}**.`,
+      message: `Performed **${ctx.input.action}** on deploy **${ctx.input.deployId}**.`
     };
   })
   .build();

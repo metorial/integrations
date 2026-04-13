@@ -16,7 +16,7 @@ import {
   getActivityFeed,
   getTopEvents,
   listCohorts,
-  queryInsights,
+  queryInsights
 } from './tools';
 import { cohortSync } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     getActivityFeed,
     getTopEvents,
     listCohorts,
-    queryInsights,
+    queryInsights
   ],
-  triggers: [
-    cohortSync,
-  ],
+  triggers: [cohortSync]
 });

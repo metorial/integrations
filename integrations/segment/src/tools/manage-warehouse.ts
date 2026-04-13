@@ -3,42 +3,51 @@ import { SegmentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWarehouse = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Warehouse',
-    key: 'manage_warehouse',
-    description: `Create, update, delete, or manage source connections for data warehouses. Warehouses like BigQuery, Snowflake, and Redshift receive synced data from Segment sources.`,
-    instructions: [
-      'To create a warehouse, provide metadataId (from catalog) and optionally settings/name.',
-      'To update, provide warehouseId and fields to change.',
-      'To delete, set action to "delete" with warehouseId.',
-      'To connect/disconnect a source, use "add_source" or "remove_source" with warehouseId and sourceId.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageWarehouse = SlateTool.create(spec, {
+  name: 'Manage Warehouse',
+  key: 'manage_warehouse',
+  description: `Create, update, delete, or manage source connections for data warehouses. Warehouses like BigQuery, Snowflake, and Redshift receive synced data from Segment sources.`,
+  instructions: [
+    'To create a warehouse, provide metadataId (from catalog) and optionally settings/name.',
+    'To update, provide warehouseId and fields to change.',
+    'To delete, set action to "delete" with warehouseId.',
+    'To connect/disconnect a source, use "add_source" or "remove_source" with warehouseId and sourceId.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'add_source', 'remove_source']).describe('Operation to perform'),
-    warehouseId: z.string().optional().describe('Warehouse ID (required for update/delete/add_source/remove_source)'),
-    metadataId: z.string().optional().describe('Catalog metadata ID (required for create)'),
-    name: z.string().optional().describe('Warehouse display name'),
-    enabled: z.boolean().optional().describe('Whether the warehouse is enabled'),
-    settings: z.record(z.string(), z.any()).optional().describe('Warehouse-specific configuration settings'),
-    sourceId: z.string().optional().describe('Source ID to connect/disconnect'),
-  }))
-  .output(z.object({
-    warehouseId: z.string().optional().describe('Warehouse ID'),
-    warehouseName: z.string().optional().describe('Warehouse name'),
-    enabled: z.boolean().optional().describe('Whether enabled'),
-    deleted: z.boolean().optional().describe('Whether deleted'),
-    sourceConnected: z.boolean().optional().describe('Whether source was connected'),
-    sourceDisconnected: z.boolean().optional().describe('Whether source was disconnected'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'add_source', 'remove_source'])
+        .describe('Operation to perform'),
+      warehouseId: z
+        .string()
+        .optional()
+        .describe('Warehouse ID (required for update/delete/add_source/remove_source)'),
+      metadataId: z.string().optional().describe('Catalog metadata ID (required for create)'),
+      name: z.string().optional().describe('Warehouse display name'),
+      enabled: z.boolean().optional().describe('Whether the warehouse is enabled'),
+      settings: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Warehouse-specific configuration settings'),
+      sourceId: z.string().optional().describe('Source ID to connect/disconnect')
+    })
+  )
+  .output(
+    z.object({
+      warehouseId: z.string().optional().describe('Warehouse ID'),
+      warehouseName: z.string().optional().describe('Warehouse name'),
+      enabled: z.boolean().optional().describe('Whether enabled'),
+      deleted: z.boolean().optional().describe('Whether deleted'),
+      sourceConnected: z.boolean().optional().describe('Whether source was connected'),
+      sourceDisconnected: z.boolean().optional().describe('Whether source was disconnected')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SegmentClient(ctx.auth.token, ctx.config.region);
 
     if (ctx.input.action === 'create') {
@@ -49,15 +58,15 @@ export let manageWarehouse = SlateTool.create(
         metadataId: ctx.input.metadataId,
         name: ctx.input.name,
         enabled: ctx.input.enabled,
-        settings: ctx.input.settings,
+        settings: ctx.input.settings
       });
       return {
         output: {
           warehouseId: wh?.id,
           warehouseName: wh?.name,
-          enabled: wh?.enabled,
+          enabled: wh?.enabled
         },
-        message: `Created warehouse **${wh?.name ?? ctx.input.metadataId}**`,
+        message: `Created warehouse **${wh?.name ?? ctx.input.metadataId}**`
       };
     }
 
@@ -68,15 +77,15 @@ export let manageWarehouse = SlateTool.create(
       let wh = await client.updateWarehouse(ctx.input.warehouseId, {
         name: ctx.input.name,
         enabled: ctx.input.enabled,
-        settings: ctx.input.settings,
+        settings: ctx.input.settings
       });
       return {
         output: {
           warehouseId: wh?.id,
           warehouseName: wh?.name,
-          enabled: wh?.enabled,
+          enabled: wh?.enabled
         },
-        message: `Updated warehouse **${wh?.name ?? ctx.input.warehouseId}**`,
+        message: `Updated warehouse **${wh?.name ?? ctx.input.warehouseId}**`
       };
     }
 
@@ -87,7 +96,7 @@ export let manageWarehouse = SlateTool.create(
       await client.deleteWarehouse(ctx.input.warehouseId);
       return {
         output: { warehouseId: ctx.input.warehouseId, deleted: true },
-        message: `Deleted warehouse **${ctx.input.warehouseId}**`,
+        message: `Deleted warehouse **${ctx.input.warehouseId}**`
       };
     }
 
@@ -98,7 +107,7 @@ export let manageWarehouse = SlateTool.create(
       await client.addSourceToWarehouse(ctx.input.warehouseId, ctx.input.sourceId);
       return {
         output: { warehouseId: ctx.input.warehouseId, sourceConnected: true },
-        message: `Connected source \`${ctx.input.sourceId}\` to warehouse **${ctx.input.warehouseId}**`,
+        message: `Connected source \`${ctx.input.sourceId}\` to warehouse **${ctx.input.warehouseId}**`
       };
     }
 
@@ -109,7 +118,7 @@ export let manageWarehouse = SlateTool.create(
       await client.removeSourceFromWarehouse(ctx.input.warehouseId, ctx.input.sourceId);
       return {
         output: { warehouseId: ctx.input.warehouseId, sourceDisconnected: true },
-        message: `Disconnected source \`${ctx.input.sourceId}\` from warehouse **${ctx.input.warehouseId}**`,
+        message: `Disconnected source \`${ctx.input.sourceId}\` from warehouse **${ctx.input.warehouseId}**`
       };
     }
 

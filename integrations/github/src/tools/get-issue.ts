@@ -3,41 +3,42 @@ import { GitHubClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getIssue = SlateTool.create(
-  spec,
-  {
-    name: 'Get Issue',
-    key: 'get_issue',
-    description: `Retrieve detailed information about a specific issue, including its body, comments count, labels, assignees, and milestone.`,
-    tags: {
-      readOnly: true,
-    },
+export let getIssue = SlateTool.create(spec, {
+  name: 'Get Issue',
+  key: 'get_issue',
+  description: `Retrieve detailed information about a specific issue, including its body, comments count, labels, assignees, and milestone.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    owner: z.string().describe('Repository owner (user or organization)'),
-    repo: z.string().describe('Repository name'),
-    issueNumber: z.number().describe('Issue number'),
-  }))
-  .output(z.object({
-    issueNumber: z.number().describe('Issue number'),
-    issueId: z.number().describe('Unique issue ID'),
-    title: z.string().describe('Issue title'),
-    body: z.string().nullable().describe('Issue body in Markdown'),
-    state: z.string().describe('Issue state (open/closed)'),
-    stateReason: z.string().nullable().describe('Reason for the state'),
-    htmlUrl: z.string().describe('URL to the issue on GitHub'),
-    author: z.string().describe('Issue author login'),
-    assignees: z.array(z.string()).describe('Assigned usernames'),
-    labels: z.array(z.string()).describe('Label names'),
-    milestoneName: z.string().nullable().describe('Milestone title'),
-    commentsCount: z.number().describe('Number of comments'),
-    locked: z.boolean().describe('Whether the issue is locked'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    closedAt: z.string().nullable().describe('Closure timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      owner: z.string().describe('Repository owner (user or organization)'),
+      repo: z.string().describe('Repository name'),
+      issueNumber: z.number().describe('Issue number')
+    })
+  )
+  .output(
+    z.object({
+      issueNumber: z.number().describe('Issue number'),
+      issueId: z.number().describe('Unique issue ID'),
+      title: z.string().describe('Issue title'),
+      body: z.string().nullable().describe('Issue body in Markdown'),
+      state: z.string().describe('Issue state (open/closed)'),
+      stateReason: z.string().nullable().describe('Reason for the state'),
+      htmlUrl: z.string().describe('URL to the issue on GitHub'),
+      author: z.string().describe('Issue author login'),
+      assignees: z.array(z.string()).describe('Assigned usernames'),
+      labels: z.array(z.string()).describe('Label names'),
+      milestoneName: z.string().nullable().describe('Milestone title'),
+      commentsCount: z.number().describe('Number of comments'),
+      locked: z.boolean().describe('Whether the issue is locked'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      closedAt: z.string().nullable().describe('Closure timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitHubClient(ctx.auth.token);
     let issue = await client.getIssue(ctx.input.owner, ctx.input.repo, ctx.input.issueNumber);
 
@@ -58,8 +59,9 @@ export let getIssue = SlateTool.create(
         locked: issue.locked,
         createdAt: issue.created_at,
         updatedAt: issue.updated_at,
-        closedAt: issue.closed_at,
+        closedAt: issue.closed_at
       },
-      message: `Issue **#${issue.number}**: "${issue.title}" (${issue.state}) — ${issue.html_url}`,
+      message: `Issue **#${issue.number}**: "${issue.title}" (${issue.state}) — ${issue.html_url}`
     };
-  }).build();
+  })
+  .build();

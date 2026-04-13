@@ -15,44 +15,52 @@ export class GhostAdminClient {
     return createAxios({
       baseURL: `https://${this.domain}/ghost/api/admin`,
       headers: {
-        'Authorization': `Ghost ${jwt}`,
+        Authorization: `Ghost ${jwt}`,
         'Accept-Version': 'v5.0',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Posts ──────────────────────────────────────────────────────
 
-  async browsePosts(params: {
-    include?: string;
-    formats?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browsePosts(
+    params: {
+      include?: string;
+      formats?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/posts/', { params });
     return response.data;
   }
 
-  async readPost(postId: string, params: {
-    include?: string;
-    formats?: string;
-    fields?: string;
-  } = {}) {
+  async readPost(
+    postId: string,
+    params: {
+      include?: string;
+      formats?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get(`/posts/${postId}/`, { params });
     return response.data;
   }
 
-  async readPostBySlug(slug: string, params: {
-    include?: string;
-    formats?: string;
-    fields?: string;
-  } = {}) {
+  async readPostBySlug(
+    slug: string,
+    params: {
+      include?: string;
+      formats?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get(`/posts/slug/${slug}/`, { params });
     return response.data;
@@ -64,7 +72,11 @@ export class GhostAdminClient {
     return response.data;
   }
 
-  async updatePost(postId: string, post: Record<string, any>, params: { source?: string } = {}) {
+  async updatePost(
+    postId: string,
+    post: Record<string, any>,
+    params: { source?: string } = {}
+  ) {
     let client = await this.http();
     let response = await client.put(`/posts/${postId}/`, { posts: [post] }, { params });
     return response.data;
@@ -77,35 +89,43 @@ export class GhostAdminClient {
 
   // ─── Pages ──────────────────────────────────────────────────────
 
-  async browsePages(params: {
-    include?: string;
-    formats?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browsePages(
+    params: {
+      include?: string;
+      formats?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/pages/', { params });
     return response.data;
   }
 
-  async readPage(pageId: string, params: {
-    include?: string;
-    formats?: string;
-    fields?: string;
-  } = {}) {
+  async readPage(
+    pageId: string,
+    params: {
+      include?: string;
+      formats?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get(`/pages/${pageId}/`, { params });
     return response.data;
   }
 
-  async readPageBySlug(slug: string, params: {
-    include?: string;
-    formats?: string;
-    fields?: string;
-  } = {}) {
+  async readPageBySlug(
+    slug: string,
+    params: {
+      include?: string;
+      formats?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get(`/pages/slug/${slug}/`, { params });
     return response.data;
@@ -117,7 +137,11 @@ export class GhostAdminClient {
     return response.data;
   }
 
-  async updatePage(pageId: string, page: Record<string, any>, params: { source?: string } = {}) {
+  async updatePage(
+    pageId: string,
+    page: Record<string, any>,
+    params: { source?: string } = {}
+  ) {
     let client = await this.http();
     let response = await client.put(`/pages/${pageId}/`, { pages: [page] }, { params });
     return response.data;
@@ -130,14 +154,16 @@ export class GhostAdminClient {
 
   // ─── Tags ──────────────────────────────────────────────────────
 
-  async browseTags(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browseTags(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/tags/', { params });
     return response.data;
@@ -174,14 +200,16 @@ export class GhostAdminClient {
 
   // ─── Members ──────────────────────────────────────────────────
 
-  async browseMembers(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browseMembers(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/members/', { params });
     return response.data;
@@ -212,13 +240,15 @@ export class GhostAdminClient {
 
   // ─── Tiers ──────────────────────────────────────────────────────
 
-  async browseTiers(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-  } = {}) {
+  async browseTiers(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/tiers/', { params });
     return response.data;
@@ -244,11 +274,13 @@ export class GhostAdminClient {
 
   // ─── Offers ──────────────────────────────────────────────────────
 
-  async browseOffers(params: {
-    filter?: string;
-    limit?: number;
-    page?: number;
-  } = {}) {
+  async browseOffers(
+    params: {
+      filter?: string;
+      limit?: number;
+      page?: number;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/offers/', { params });
     return response.data;
@@ -274,13 +306,15 @@ export class GhostAdminClient {
 
   // ─── Newsletters ──────────────────────────────────────────────
 
-  async browseNewsletters(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-  } = {}) {
+  async browseNewsletters(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/newsletters/', { params });
     return response.data;
@@ -300,20 +334,24 @@ export class GhostAdminClient {
 
   async updateNewsletter(newsletterId: string, newsletter: Record<string, any>) {
     let client = await this.http();
-    let response = await client.put(`/newsletters/${newsletterId}/`, { newsletters: [newsletter] });
+    let response = await client.put(`/newsletters/${newsletterId}/`, {
+      newsletters: [newsletter]
+    });
     return response.data;
   }
 
   // ─── Users ──────────────────────────────────────────────────────
 
-  async browseUsers(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browseUsers(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = await this.http();
     let response = await client.get('/users/', { params });
     return response.data;
@@ -344,13 +382,15 @@ export class GhostAdminClient {
   }) {
     let client = await this.http();
     let response = await client.post('/webhooks/', {
-      webhooks: [{
-        event: webhook.event,
-        target_url: webhook.targetUrl,
-        name: webhook.name,
-        secret: webhook.secret,
-        api_version: webhook.apiVersion ?? 'v5',
-      }],
+      webhooks: [
+        {
+          event: webhook.event,
+          target_url: webhook.targetUrl,
+          name: webhook.name,
+          secret: webhook.secret,
+          api_version: webhook.apiVersion ?? 'v5'
+        }
+      ]
     });
     return response.data;
   }
@@ -358,7 +398,7 @@ export class GhostAdminClient {
   async updateWebhook(webhookId: string, webhook: Record<string, any>) {
     let client = await this.http();
     let response = await client.put(`/webhooks/${webhookId}/`, {
-      webhooks: [webhook],
+      webhooks: [webhook]
     });
     return response.data;
   }
@@ -398,8 +438,8 @@ export class GhostAdminClient {
 
     let response = await client.post('/images/upload/', body, {
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
     return response.data;
   }
@@ -418,94 +458,110 @@ export class GhostContentClient {
     return createAxios({
       baseURL: `https://${this.domain}/ghost/api/content`,
       headers: {
-        'Accept-Version': 'v5.0',
+        'Accept-Version': 'v5.0'
       },
       params: {
-        key: this.contentApiKey,
-      },
+        key: this.contentApiKey
+      }
     });
   }
 
-  async browsePosts(params: {
-    include?: string;
-    formats?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browsePosts(
+    params: {
+      include?: string;
+      formats?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get('/posts/', { params });
     return response.data;
   }
 
-  async readPost(postId: string, params: {
-    include?: string;
-    formats?: string;
-    fields?: string;
-  } = {}) {
+  async readPost(
+    postId: string,
+    params: {
+      include?: string;
+      formats?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get(`/posts/${postId}/`, { params });
     return response.data;
   }
 
-  async readPostBySlug(slug: string, params: {
-    include?: string;
-    formats?: string;
-    fields?: string;
-  } = {}) {
+  async readPostBySlug(
+    slug: string,
+    params: {
+      include?: string;
+      formats?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get(`/posts/slug/${slug}/`, { params });
     return response.data;
   }
 
-  async browsePages(params: {
-    include?: string;
-    formats?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browsePages(
+    params: {
+      include?: string;
+      formats?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get('/pages/', { params });
     return response.data;
   }
 
-  async browseTags(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browseTags(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get('/tags/', { params });
     return response.data;
   }
 
-  async browseAuthors(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-    order?: string;
-    fields?: string;
-  } = {}) {
+  async browseAuthors(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+      order?: string;
+      fields?: string;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get('/authors/', { params });
     return response.data;
   }
 
-  async browseTiers(params: {
-    include?: string;
-    filter?: string;
-    limit?: number;
-    page?: number;
-  } = {}) {
+  async browseTiers(
+    params: {
+      include?: string;
+      filter?: string;
+      limit?: number;
+      page?: number;
+    } = {}
+  ) {
     let client = this.http();
     let response = await client.get('/tiers/', { params });
     return response.data;

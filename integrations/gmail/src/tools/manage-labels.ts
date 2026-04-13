@@ -14,45 +14,59 @@ let labelSchema = z.object({
   threadsTotal: z.number().optional().describe('Total threads with this label.'),
   threadsUnread: z.number().optional().describe('Unread threads with this label.'),
   backgroundColor: z.string().optional().describe('Label background color.'),
-  textColor: z.string().optional().describe('Label text color.'),
+  textColor: z.string().optional().describe('Label text color.')
 });
 
-export let manageLabels = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Labels',
-    key: 'manage_labels',
-    description: `List, create, update, get, or delete Gmail labels. Labels organize messages and threads (e.g., INBOX, SENT, STARRED, or custom labels).`,
-    instructions: [
-      'Use **action** "list" to get all labels in the mailbox.',
-      'Use **action** "create" to create a new label. Provide **name** at minimum.',
-      'Use **action** "update" to modify an existing label (name, visibility, color).',
-      'Use **action** "get" to retrieve details for a specific label.',
-      'Use **action** "delete" to permanently remove a user-created label.',
-    ],
-    tags: {
-      readOnly: false,
-    },
+export let manageLabels = SlateTool.create(spec, {
+  name: 'Manage Labels',
+  key: 'manage_labels',
+  description: `List, create, update, get, or delete Gmail labels. Labels organize messages and threads (e.g., INBOX, SENT, STARRED, or custom labels).`,
+  instructions: [
+    'Use **action** "list" to get all labels in the mailbox.',
+    'Use **action** "create" to create a new label. Provide **name** at minimum.',
+    'Use **action** "update" to modify an existing label (name, visibility, color).',
+    'Use **action** "get" to retrieve details for a specific label.',
+    'Use **action** "delete" to permanently remove a user-created label.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'get', 'delete']).describe('Label operation to perform.'),
-    labelId: z.string().optional().describe('Label ID (required for get, update, delete).'),
-    name: z.string().optional().describe('Label name (for create/update).'),
-    messageListVisibility: z.enum(['show', 'hide']).optional().describe('Visibility in message list.'),
-    labelListVisibility: z.enum(['labelShow', 'labelShowIfUnread', 'labelHide']).optional().describe('Visibility in label list.'),
-    backgroundColor: z.string().optional().describe('Background color hex (e.g., "#16a765").'),
-    textColor: z.string().optional().describe('Text color hex (e.g., "#ffffff").'),
-  }))
-  .output(z.object({
-    label: labelSchema.optional().describe('Single label details (for create, update, get).'),
-    labels: z.array(labelSchema).optional().describe('List of labels (for list action).'),
-    deleted: z.boolean().optional().describe('Whether deletion was successful.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'update', 'get', 'delete'])
+        .describe('Label operation to perform.'),
+      labelId: z.string().optional().describe('Label ID (required for get, update, delete).'),
+      name: z.string().optional().describe('Label name (for create/update).'),
+      messageListVisibility: z
+        .enum(['show', 'hide'])
+        .optional()
+        .describe('Visibility in message list.'),
+      labelListVisibility: z
+        .enum(['labelShow', 'labelShowIfUnread', 'labelHide'])
+        .optional()
+        .describe('Visibility in label list.'),
+      backgroundColor: z
+        .string()
+        .optional()
+        .describe('Background color hex (e.g., "#16a765").'),
+      textColor: z.string().optional().describe('Text color hex (e.g., "#ffffff").')
+    })
+  )
+  .output(
+    z.object({
+      label: labelSchema
+        .optional()
+        .describe('Single label details (for create, update, get).'),
+      labels: z.array(labelSchema).optional().describe('List of labels (for list action).'),
+      deleted: z.boolean().optional().describe('Whether deletion was successful.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      userId: ctx.config.userId,
+      userId: ctx.config.userId
     });
 
     let { action } = ctx.input;
@@ -68,16 +82,16 @@ export let manageLabels = SlateTool.create(
       threadsTotal: l.threadsTotal,
       threadsUnread: l.threadsUnread,
       backgroundColor: l.color?.backgroundColor,
-      textColor: l.color?.textColor,
+      textColor: l.color?.textColor
     });
 
     if (action === 'list') {
       let labels = await client.listLabels();
       return {
         output: {
-          labels: labels.map(mapLabel),
+          labels: labels.map(mapLabel)
         },
-        message: `Found **${labels.length}** labels.`,
+        message: `Found **${labels.length}** labels.`
       };
     }
 
@@ -88,11 +102,11 @@ export let manageLabels = SlateTool.create(
         messageListVisibility: ctx.input.messageListVisibility,
         labelListVisibility: ctx.input.labelListVisibility,
         backgroundColor: ctx.input.backgroundColor,
-        textColor: ctx.input.textColor,
+        textColor: ctx.input.textColor
       });
       return {
         output: { label: mapLabel(label) },
-        message: `Label "${ctx.input.name}" created.`,
+        message: `Label "${ctx.input.name}" created.`
       };
     }
 
@@ -103,11 +117,11 @@ export let manageLabels = SlateTool.create(
         messageListVisibility: ctx.input.messageListVisibility,
         labelListVisibility: ctx.input.labelListVisibility,
         backgroundColor: ctx.input.backgroundColor,
-        textColor: ctx.input.textColor,
+        textColor: ctx.input.textColor
       });
       return {
         output: { label: mapLabel(label) },
-        message: `Label **${ctx.input.labelId}** updated.`,
+        message: `Label **${ctx.input.labelId}** updated.`
       };
     }
 
@@ -116,7 +130,7 @@ export let manageLabels = SlateTool.create(
       let label = await client.getLabel(ctx.input.labelId);
       return {
         output: { label: mapLabel(label) },
-        message: `Retrieved label "${label.name}".`,
+        message: `Retrieved label "${label.name}".`
       };
     }
 
@@ -125,7 +139,7 @@ export let manageLabels = SlateTool.create(
       await client.deleteLabel(ctx.input.labelId);
       return {
         output: { deleted: true },
-        message: `Label **${ctx.input.labelId}** deleted.`,
+        message: `Label **${ctx.input.labelId}** deleted.`
       };
     }
 

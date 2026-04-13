@@ -4,41 +4,48 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let dealEventTypes = [
-  'deal_add', 'deal_update', 'deal_note_add',
-  'deal_task_add', 'deal_task_complete', 'deal_tasktype_add',
-  'deal_pipeline_add', 'deal_stage_add'
+  'deal_add',
+  'deal_update',
+  'deal_note_add',
+  'deal_task_add',
+  'deal_task_complete',
+  'deal_tasktype_add',
+  'deal_pipeline_add',
+  'deal_stage_add'
 ] as const;
 
-export let dealEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Deal Events',
-    key: 'deal_events',
-    description: 'Triggers when a deal is created, updated, moved between pipelines/stages, or when notes and tasks are added to deals.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of deal event'),
-    payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    dealId: z.string().optional().describe('ID of the affected deal'),
-    dealTitle: z.string().optional().describe('Title of the deal'),
-    dealValue: z.string().optional().describe('Value of the deal'),
-    dealCurrency: z.string().optional().describe('Currency of the deal'),
-    pipelineId: z.string().optional().describe('Pipeline ID'),
-    pipelineTitle: z.string().optional().describe('Pipeline title'),
-    stageId: z.string().optional().describe('Stage ID'),
-    stageTitle: z.string().optional().describe('Stage title'),
-    contactId: z.string().optional().describe('Primary contact ID'),
-    contactEmail: z.string().optional().describe('Primary contact email'),
-    ownerId: z.string().optional().describe('Deal owner user ID'),
-    status: z.string().optional().describe('Deal status'),
-    initiatedBy: z.string().optional().describe('Who initiated the action'),
-    occurredAt: z.string().optional().describe('When the event occurred')
-  }))
+export let dealEvents = SlateTrigger.create(spec, {
+  name: 'Deal Events',
+  key: 'deal_events',
+  description:
+    'Triggers when a deal is created, updated, moved between pipelines/stages, or when notes and tasks are added to deals.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of deal event'),
+      payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.string().optional().describe('ID of the affected deal'),
+      dealTitle: z.string().optional().describe('Title of the deal'),
+      dealValue: z.string().optional().describe('Value of the deal'),
+      dealCurrency: z.string().optional().describe('Currency of the deal'),
+      pipelineId: z.string().optional().describe('Pipeline ID'),
+      pipelineTitle: z.string().optional().describe('Pipeline title'),
+      stageId: z.string().optional().describe('Stage ID'),
+      stageTitle: z.string().optional().describe('Stage title'),
+      contactId: z.string().optional().describe('Primary contact ID'),
+      contactEmail: z.string().optional().describe('Primary contact email'),
+      ownerId: z.string().optional().describe('Deal owner user ID'),
+      status: z.string().optional().describe('Deal status'),
+      initiatedBy: z.string().optional().describe('Who initiated the action'),
+      occurredAt: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -58,7 +65,7 @@ export let dealEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -67,7 +74,7 @@ export let dealEvents = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       let contentType = ctx.request.headers.get('content-type') || '';
 
@@ -82,25 +89,31 @@ export let dealEvents = SlateTrigger.create(
       let eventType = data.type || data['type'] || 'unknown';
 
       return {
-        inputs: [{
-          eventType,
-          payload: data
-        }]
+        inputs: [
+          {
+            eventType,
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
       let dealId = String(p['deal[id]'] || p['dealId'] || '');
       let dealTitle = String(p['deal[title]'] || p['dealTitle'] || '');
       let dealValue = String(p['deal[value]'] || p['dealValue'] || '');
       let dealCurrency = String(p['deal[currency]'] || p['dealCurrency'] || '');
-      let pipelineId = String(p['deal[pipeline_id]'] || p['deal[group]'] || p['pipelineId'] || '');
+      let pipelineId = String(
+        p['deal[pipeline_id]'] || p['deal[group]'] || p['pipelineId'] || ''
+      );
       let pipelineTitle = String(p['deal[pipeline_title]'] || p['pipelineTitle'] || '');
       let stageId = String(p['deal[stage_id]'] || p['deal[stage]'] || p['stageId'] || '');
       let stageTitle = String(p['deal[stage_title]'] || p['stageTitle'] || '');
-      let contactId = String(p['deal[contact_id]'] || p['deal[contact]'] || p['contactId'] || '');
+      let contactId = String(
+        p['deal[contact_id]'] || p['deal[contact]'] || p['contactId'] || ''
+      );
       let contactEmail = String(p['deal[contact_email]'] || p['contactEmail'] || '');
       let ownerId = String(p['deal[owner]'] || p['ownerId'] || '');
       let status = String(p['deal[status]'] || p['status'] || '');
@@ -130,4 +143,5 @@ export let dealEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

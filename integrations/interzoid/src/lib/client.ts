@@ -1,20 +1,21 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.interzoid.com',
+  baseURL: 'https://api.interzoid.com'
 });
 
 export class Client {
-  constructor(
-    private token: string
-  ) {}
+  constructor(private token: string) {}
 
-  private async get<T = any>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+  private async get<T = any>(
+    endpoint: string,
+    params: Record<string, string> = {}
+  ): Promise<T> {
     let response = await api.get(endpoint, {
       params: {
         license: this.token,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data as T;
   }
@@ -87,11 +88,16 @@ export class Client {
   // Data Enrichment
   // ──────────────────────────────────────────────────────────────
 
-  async getCustomEnrichment(topic: string, lookup: string, outputFields: string[], model?: string) {
+  async getCustomEnrichment(
+    topic: string,
+    lookup: string,
+    outputFields: string[],
+    model?: string
+  ) {
     let params: Record<string, string> = {
       topic,
       lookup,
-      output: JSON.stringify(outputFields),
+      output: JSON.stringify(outputFields)
     };
     if (model) {
       params.model = model;

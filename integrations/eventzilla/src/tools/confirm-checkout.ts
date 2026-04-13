@@ -3,17 +3,14 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let confirmCheckoutTool = SlateTool.create(
-  spec,
-  {
-    name: 'Confirm Checkout',
-    key: 'confirm_checkout',
-    description: `Finalize an order by confirming the checkout with payment status. This is the final step of the checkout flow after "Fill Order". Optionally send a confirmation email to the buyer.`,
-    tags: {
-      destructive: false,
-    },
-  },
-)
+export let confirmCheckoutTool = SlateTool.create(spec, {
+  name: 'Confirm Checkout',
+  key: 'confirm_checkout',
+  description: `Finalize an order by confirming the checkout with payment status. This is the final step of the checkout flow after "Fill Order". Optionally send a confirmation email to the buyer.`,
+  tags: {
+    destructive: false
+  }
+})
   .input(
     z.object({
       eventId: z.number().describe('The event ID'),
@@ -21,8 +18,11 @@ export let confirmCheckoutTool = SlateTool.create(
       checkoutId: z.number().describe('The checkout ID'),
       paymentStatus: z.string().describe('Payment status (e.g., "success")'),
       comments: z.string().describe('Comments for the order'),
-      sendEmail: z.boolean().optional().describe('Whether to send confirmation email (default: true)'),
-    }),
+      sendEmail: z
+        .boolean()
+        .optional()
+        .describe('Whether to send confirmation email (default: true)')
+    })
   )
   .output(
     z.object({
@@ -33,11 +33,14 @@ export let confirmCheckoutTool = SlateTool.create(
       transactionDiscount: z.number().optional().describe('Discount amount'),
       eventzillaFee: z.number().optional().describe('Service fee'),
       transactionStatus: z.string().optional().describe('Final transaction status'),
-      confirmationEmailSent: z.boolean().optional().describe('Whether confirmation email was sent'),
-      currency: z.string().optional().describe('Currency symbol'),
-    }),
+      confirmationEmailSent: z
+        .boolean()
+        .optional()
+        .describe('Whether confirmation email was sent'),
+      currency: z.string().optional().describe('Currency symbol')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.confirmCheckout({
@@ -46,7 +49,7 @@ export let confirmCheckoutTool = SlateTool.create(
       checkoutId: ctx.input.checkoutId,
       paymentStatus: ctx.input.paymentStatus,
       comments: ctx.input.comments,
-      sendEmail: ctx.input.sendEmail,
+      sendEmail: ctx.input.sendEmail
     });
 
     return {
@@ -59,8 +62,9 @@ export let confirmCheckoutTool = SlateTool.create(
         eventzillaFee: data.eventzilla_fee,
         transactionStatus: data.transaction_status,
         confirmationEmailSent: data.confirmation_email_sent,
-        currency: data.currency,
+        currency: data.currency
       },
-      message: `Checkout **${data.checkout_id}** confirmed. Status: ${data.transaction_status}. Total: ${data.currency}${data.transaction_total}.`,
+      message: `Checkout **${data.checkout_id}** confirmed. Status: ${data.transaction_status}. Total: ${data.currency}${data.transaction_total}.`
     };
-  }).build();
+  })
+  .build();

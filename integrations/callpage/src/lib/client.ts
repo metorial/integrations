@@ -7,8 +7,8 @@ export class CallPageClient {
     this.axios = createAxios({
       baseURL: 'https://core.callpage.io',
       headers: {
-        'Authorization': config.token,
-        'Accept': 'application/json',
+        Authorization: config.token,
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       }
     });
@@ -18,21 +18,23 @@ export class CallPageClient {
   // CALLS
   // =====================
 
-  async getCallHistory(params: {
-    widgetIds?: number[];
-    statuses?: string[];
-    phoneNumber?: string;
-    userIds?: number[];
-    callIds?: number[];
-    tagIds?: number[];
-    dateFrom?: string;
-    dateTo?: string;
-    url?: string;
-    incomingNumberIds?: number[];
-    displayHidden?: boolean;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<{ calls: any[]; meta: { offset: number; limit: number; count: number } }> {
+  async getCallHistory(
+    params: {
+      widgetIds?: number[];
+      statuses?: string[];
+      phoneNumber?: string;
+      userIds?: number[];
+      callIds?: number[];
+      tagIds?: number[];
+      dateFrom?: string;
+      dateTo?: string;
+      url?: string;
+      incomingNumberIds?: number[];
+      displayHidden?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<{ calls: any[]; meta: { offset: number; limit: number; count: number } }> {
     let query: Record<string, any> = {};
 
     if (params.widgetIds?.length) query['widget_ids[]'] = params.widgetIds;
@@ -44,8 +46,10 @@ export class CallPageClient {
     if (params.dateFrom) query['date_from'] = params.dateFrom;
     if (params.dateTo) query['date_to'] = params.dateTo;
     if (params.url) query['url'] = params.url;
-    if (params.incomingNumberIds?.length) query['incoming_number_ids[]'] = params.incomingNumberIds;
-    if (params.displayHidden !== undefined) query['display_hidden'] = params.displayHidden ? 1 : 0;
+    if (params.incomingNumberIds?.length)
+      query['incoming_number_ids[]'] = params.incomingNumberIds;
+    if (params.displayHidden !== undefined)
+      query['display_hidden'] = params.displayHidden ? 1 : 0;
     if (params.limit !== undefined) query['limit'] = params.limit;
     if (params.offset !== undefined) query['offset'] = params.offset;
 
@@ -61,7 +65,11 @@ export class CallPageClient {
     return response.data.data;
   }
 
-  async updateCallField(callId: number, fieldId: number, value: string | number | boolean): Promise<void> {
+  async updateCallField(
+    callId: number,
+    fieldId: number,
+    value: string | number | boolean
+  ): Promise<void> {
     await this.axios.patch(`/api/v1/external/calls/${callId}/fields/${fieldId}`, { value });
   }
 
@@ -69,7 +77,9 @@ export class CallPageClient {
   // WIDGETS
   // =====================
 
-  async getWidgets(params: { limit?: number; offset?: number } = {}): Promise<{ widgets: any[]; meta: any }> {
+  async getWidgets(
+    params: { limit?: number; offset?: number } = {}
+  ): Promise<{ widgets: any[]; meta: any }> {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query['limit'] = params.limit;
     if (params.offset !== undefined) query['offset'] = params.offset;
@@ -178,7 +188,9 @@ export class CallPageClient {
   // USERS
   // =====================
 
-  async getUsers(params: { limit?: number; offset?: number } = {}): Promise<{ users: any[]; meta: any }> {
+  async getUsers(
+    params: { limit?: number; offset?: number } = {}
+  ): Promise<{ users: any[]; meta: any }> {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query['limit'] = params.limit;
     if (params.offset !== undefined) query['offset'] = params.offset;

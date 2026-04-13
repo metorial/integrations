@@ -9,6 +9,7 @@ Mailgun is an email service provider (owned by Sinch) that offers APIs for sendi
 Authentication to the Mailgun API is done via HTTP Basic Auth, where the username is `api` and the password is your API key.
 
 Example:
+
 ```
 curl --user 'api:YOUR_API_KEY'
 ```
@@ -21,6 +22,7 @@ curl --user 'api:YOUR_API_KEY'
 **Role-Based Access Control (RBAC):**
 
 RBAC API Keys empower admin users to generate API keys using predefined roles that dictate the access level of each key. Available roles:
+
 - **Admin**: Full administrative access across all endpoints.
 - **Analyst**: Read-only access to data and metrics.
 - **Developer**: Full access to technical endpoints needed for building and maintaining email integrations.
@@ -29,6 +31,7 @@ RBAC API Keys empower admin users to generate API keys using predefined roles th
 **Region-Specific Base URLs:**
 
 Mailgun supports both US and EU regions. Use the appropriate base URL based on which region your domain was created in.
+
 - US: `https://api.mailgun.net/`
 - EU: `https://api.eu.mailgun.net/`
 

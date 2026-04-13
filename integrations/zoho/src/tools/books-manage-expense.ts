@@ -10,55 +10,71 @@ export let booksManageExpense = SlateTool.create(spec, {
   description: `Create, update, delete, or list expenses in Zoho Books. Track business expenses with account categorization, amounts, dates, vendors, and custom fields.`,
   instructions: [
     'The organizationId is required for all Zoho Books operations.',
-    'For create, accountId, date, and amount are required.',
+    'For create, accountId, date, and amount are required.'
   ],
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    organizationId: z.string().describe('Zoho Books organization ID'),
-    action: z.enum(['create', 'update', 'delete', 'get', 'list']).describe('Operation to perform'),
-    expenseId: z.string().optional().describe('Expense ID (required for update, delete, get)'),
-    accountId: z.string().optional().describe('Expense account ID (required for create)'),
-    date: z.string().optional().describe('Expense date (YYYY-MM-DD, required for create)'),
-    amount: z.number().optional().describe('Expense amount (required for create)'),
-    paidThroughAccountId: z.string().optional().describe('Account ID through which payment was made'),
-    vendorId: z.string().optional().describe('Vendor ID'),
-    description: z.string().optional().describe('Expense description'),
-    referenceNumber: z.string().optional().describe('Reference number'),
-    taxId: z.string().optional().describe('Tax ID to apply'),
-    isBillable: z.boolean().optional().describe('Whether the expense is billable'),
-    customerId: z.string().optional().describe('Customer ID (for billable expenses)'),
-    projectId: z.string().optional().describe('Project ID'),
-    currencyId: z.string().optional().describe('Currency ID'),
-    page: z.number().optional().describe('Page number (for list action)'),
-    perPage: z.number().optional().describe('Records per page (for list action)'),
-    status: z.string().optional().describe('Filter by status (for list action)'),
-  }))
-  .output(z.object({
-    expense: z.record(z.string(), z.any()).optional().describe('Expense record'),
-    expenses: z.array(z.record(z.string(), z.any())).optional().describe('List of expenses'),
-    deleted: z.boolean().optional(),
-    hasMorePages: z.boolean().optional(),
-    apiMessage: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      organizationId: z.string().describe('Zoho Books organization ID'),
+      action: z
+        .enum(['create', 'update', 'delete', 'get', 'list'])
+        .describe('Operation to perform'),
+      expenseId: z
+        .string()
+        .optional()
+        .describe('Expense ID (required for update, delete, get)'),
+      accountId: z.string().optional().describe('Expense account ID (required for create)'),
+      date: z.string().optional().describe('Expense date (YYYY-MM-DD, required for create)'),
+      amount: z.number().optional().describe('Expense amount (required for create)'),
+      paidThroughAccountId: z
+        .string()
+        .optional()
+        .describe('Account ID through which payment was made'),
+      vendorId: z.string().optional().describe('Vendor ID'),
+      description: z.string().optional().describe('Expense description'),
+      referenceNumber: z.string().optional().describe('Reference number'),
+      taxId: z.string().optional().describe('Tax ID to apply'),
+      isBillable: z.boolean().optional().describe('Whether the expense is billable'),
+      customerId: z.string().optional().describe('Customer ID (for billable expenses)'),
+      projectId: z.string().optional().describe('Project ID'),
+      currencyId: z.string().optional().describe('Currency ID'),
+      page: z.number().optional().describe('Page number (for list action)'),
+      perPage: z.number().optional().describe('Records per page (for list action)'),
+      status: z.string().optional().describe('Filter by status (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      expense: z.record(z.string(), z.any()).optional().describe('Expense record'),
+      expenses: z.array(z.record(z.string(), z.any())).optional().describe('List of expenses'),
+      deleted: z.boolean().optional(),
+      hasMorePages: z.boolean().optional(),
+      apiMessage: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
-    let client = new ZohoBooksClient({ token: ctx.auth.token, datacenter: dc, organizationId: ctx.input.organizationId });
+    let client = new ZohoBooksClient({
+      token: ctx.auth.token,
+      datacenter: dc,
+      organizationId: ctx.input.organizationId
+    });
 
     if (ctx.input.action === 'list') {
       let result = await client.listExpenses({
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        status: ctx.input.status,
+        status: ctx.input.status
       });
       return {
         output: {
           expenses: result?.expenses || [],
-          hasMorePages: result?.page_context?.has_more_page ?? false,
+          hasMorePages: result?.page_context?.has_more_page ?? false
         },
-        message: `Retrieved **${(result?.expenses || []).length}** expenses.`,
+        message: `Retrieved **${(result?.expenses || []).length}** expenses.`
       };
     }
 
@@ -67,7 +83,7 @@ export let booksManageExpense = SlateTool.create(spec, {
       let result = await client.getExpense(ctx.input.expenseId);
       return {
         output: { expense: result?.expense || result },
-        message: `Fetched expense **${ctx.input.expenseId}**.`,
+        message: `Fetched expense **${ctx.input.expenseId}**.`
       };
     }
 
@@ -76,7 +92,8 @@ export let booksManageExpense = SlateTool.create(spec, {
       if (ctx.input.accountId) data.account_id = ctx.input.accountId;
       if (ctx.input.date) data.date = ctx.input.date;
       if (ctx.input.amount !== undefined) data.amount = ctx.input.amount;
-      if (ctx.input.paidThroughAccountId) data.paid_through_account_id = ctx.input.paidThroughAccountId;
+      if (ctx.input.paidThroughAccountId)
+        data.paid_through_account_id = ctx.input.paidThroughAccountId;
       if (ctx.input.vendorId) data.vendor_id = ctx.input.vendorId;
       if (ctx.input.description) data.description = ctx.input.description;
       if (ctx.input.referenceNumber) data.reference_number = ctx.input.referenceNumber;
@@ -93,7 +110,7 @@ export let booksManageExpense = SlateTool.create(spec, {
       let expense = result?.expense;
       return {
         output: { expense, apiMessage: result?.message },
-        message: `Created expense of **${expense?.total || ctx.input.amount}** on **${expense?.date || ctx.input.date}**.`,
+        message: `Created expense of **${expense?.total || ctx.input.amount}** on **${expense?.date || ctx.input.date}**.`
       };
     }
 
@@ -102,7 +119,7 @@ export let booksManageExpense = SlateTool.create(spec, {
       let result = await client.updateExpense(ctx.input.expenseId, buildData());
       return {
         output: { expense: result?.expense, apiMessage: result?.message },
-        message: `Updated expense **${ctx.input.expenseId}**.`,
+        message: `Updated expense **${ctx.input.expenseId}**.`
       };
     }
 
@@ -111,9 +128,10 @@ export let booksManageExpense = SlateTool.create(spec, {
       let result = await client.deleteExpense(ctx.input.expenseId);
       return {
         output: { deleted: true, apiMessage: result?.message },
-        message: `Deleted expense **${ctx.input.expenseId}**.`,
+        message: `Deleted expense **${ctx.input.expenseId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

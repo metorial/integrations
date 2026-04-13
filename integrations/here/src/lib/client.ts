@@ -46,16 +46,11 @@ export class HereClient {
     return response.data;
   }
 
-  async reverseGeocode(params: {
-    at: string;
-    types?: string;
-    limit?: number;
-    lang?: string;
-  }) {
+  async reverseGeocode(params: { at: string; types?: string; limit?: number; lang?: string }) {
     let client = this.createClient('https://revgeocode.search.hereapi.com');
     let queryParams: Record<string, string | number> = {
       ...this.authParams(),
-      at: params.at,
+      at: params.at
     };
     if (params.types) queryParams['types'] = params.types;
     if (params.limit) queryParams['limit'] = params.limit;
@@ -75,7 +70,7 @@ export class HereClient {
     let client = this.createClient('https://autosuggest.search.hereapi.com');
     let queryParams: Record<string, string | number> = {
       ...this.authParams(),
-      q: params.query,
+      q: params.query
     };
     if (params.at) queryParams['at'] = params.at;
     if (params.inArea) queryParams['in'] = params.inArea;
@@ -97,7 +92,7 @@ export class HereClient {
     let client = this.createClient('https://autocomplete.search.hereapi.com');
     let queryParams: Record<string, string | number> = {
       ...this.authParams(),
-      q: params.query,
+      q: params.query
     };
     if (params.at) queryParams['at'] = params.at;
     if (params.inArea) queryParams['in'] = params.inArea;
@@ -118,7 +113,7 @@ export class HereClient {
     let client = this.createClient('https://discover.search.hereapi.com');
     let queryParams: Record<string, string | number> = {
       ...this.authParams(),
-      q: params.query,
+      q: params.query
     };
     if (params.at) queryParams['at'] = params.at;
     if (params.inArea) queryParams['in'] = params.inArea;
@@ -141,7 +136,7 @@ export class HereClient {
     let client = this.createClient('https://browse.search.hereapi.com');
     let queryParams: Record<string, string | number> = {
       ...this.authParams(),
-      at: params.at,
+      at: params.at
     };
     if (params.categories) queryParams['categories'] = params.categories;
     if (params.foodTypes) queryParams['foodTypes'] = params.foodTypes;
@@ -154,14 +149,11 @@ export class HereClient {
     return response.data;
   }
 
-  async lookup(params: {
-    placeId: string;
-    lang?: string;
-  }) {
+  async lookup(params: { placeId: string; lang?: string }) {
     let client = this.createClient('https://lookup.search.hereapi.com');
     let queryParams: Record<string, string> = {
       ...this.authParams(),
-      id: params.placeId,
+      id: params.placeId
     };
     if (params.lang) queryParams['lang'] = params.lang;
     let response = await client.get('/v1/lookup', { params: queryParams });
@@ -200,14 +192,18 @@ export class HereClient {
       ...this.authParams(),
       origin: params.origin,
       destination: params.destination,
-      transportMode: params.transportMode,
+      transportMode: params.transportMode
     };
-    if (params.returnFields && params.returnFields.length > 0) queryParams['return'] = params.returnFields.join(',');
+    if (params.returnFields && params.returnFields.length > 0)
+      queryParams['return'] = params.returnFields.join(',');
     if (params.departureTime) queryParams['departureTime'] = params.departureTime;
     if (params.arrivalTime) queryParams['arrivalTime'] = params.arrivalTime;
-    if (params.avoidFeatures && params.avoidFeatures.length > 0) queryParams['avoid[features]'] = params.avoidFeatures.join(',');
-    if (params.avoidAreas && params.avoidAreas.length > 0) queryParams['avoid[areas]'] = params.avoidAreas.join('|');
-    if (params.excludeCountries && params.excludeCountries.length > 0) queryParams['exclude'] = params.excludeCountries.join(',');
+    if (params.avoidFeatures && params.avoidFeatures.length > 0)
+      queryParams['avoid[features]'] = params.avoidFeatures.join(',');
+    if (params.avoidAreas && params.avoidAreas.length > 0)
+      queryParams['avoid[areas]'] = params.avoidAreas.join('|');
+    if (params.excludeCountries && params.excludeCountries.length > 0)
+      queryParams['exclude'] = params.excludeCountries.join(',');
     if (params.units) queryParams['units'] = params.units;
     if (params.lang) queryParams['lang'] = params.lang;
     if (params.spans && params.spans.length > 0) queryParams['spans'] = params.spans.join(',');
@@ -221,9 +217,11 @@ export class HereClient {
     if (params.truckWidth) queryParams['truck[width]'] = params.truckWidth;
     if (params.truckLength) queryParams['truck[length]'] = params.truckLength;
     if (params.truckType) queryParams['truck[type]'] = params.truckType;
-    if (params.truckTrailerCount) queryParams['truck[trailerCount]'] = params.truckTrailerCount;
+    if (params.truckTrailerCount)
+      queryParams['truck[trailerCount]'] = params.truckTrailerCount;
     if (params.truckShippedHazardousGoods && params.truckShippedHazardousGoods.length > 0) {
-      queryParams['truck[shippedHazardousGoods]'] = params.truckShippedHazardousGoods.join(',');
+      queryParams['truck[shippedHazardousGoods]'] =
+        params.truckShippedHazardousGoods.join(',');
     }
 
     // Via waypoints
@@ -250,15 +248,15 @@ export class HereClient {
     let client = this.createClient('https://matrix.router.hereapi.com');
     let queryParams: Record<string, string> = {
       ...this.authParams(),
-      async: 'false',
+      async: 'false'
     };
 
     let body: Record<string, any> = {
       origins: params.origins,
       regionDefinition: {
         type: params.regionType || 'autoCircle',
-        ...(params.regionMargin ? { margin: params.regionMargin } : {}),
-      },
+        ...(params.regionMargin ? { margin: params.regionMargin } : {})
+      }
     };
 
     if (params.destinations) body['destinations'] = params.destinations;
@@ -288,14 +286,15 @@ export class HereClient {
       ...this.authParams(),
       transportMode: params.transportMode,
       'range[type]': params.rangeType,
-      'range[values]': params.rangeValues.join(','),
+      'range[values]': params.rangeValues.join(',')
     };
     if (params.origin) queryParams['origin'] = params.origin;
     if (params.destination) queryParams['destination'] = params.destination;
     if (params.departureTime) queryParams['departureTime'] = params.departureTime;
     if (params.routingMode) queryParams['routingMode'] = params.routingMode;
     if (params.optimizeFor) queryParams['optimizeFor'] = params.optimizeFor;
-    if (params.avoidFeatures && params.avoidFeatures.length > 0) queryParams['avoid[features]'] = params.avoidFeatures.join(',');
+    if (params.avoidFeatures && params.avoidFeatures.length > 0)
+      queryParams['avoid[features]'] = params.avoidFeatures.join(',');
     if (params.shapeMaxPoints) queryParams['shape[maxPoints]'] = params.shapeMaxPoints;
 
     let response = await client.get('/v8/isolines', { params: queryParams });
@@ -316,7 +315,7 @@ export class HereClient {
     let queryParams: Record<string, string | number> = {
       ...this.authParams(),
       in: params.inArea,
-      locationReferencing: params.locationReferencing || 'shape',
+      locationReferencing: params.locationReferencing || 'shape'
     };
     if (params.minJamFactor !== undefined) queryParams['minJamFactor'] = params.minJamFactor;
     if (params.maxJamFactor !== undefined) queryParams['maxJamFactor'] = params.maxJamFactor;
@@ -336,7 +335,7 @@ export class HereClient {
     let queryParams: Record<string, string> = {
       ...this.authParams(),
       in: params.inArea,
-      locationReferencing: params.locationReferencing || 'shape',
+      locationReferencing: params.locationReferencing || 'shape'
     };
     if (params.lang) queryParams['lang'] = params.lang;
     if (params.latestEndTime) queryParams['latestEndTime'] = params.latestEndTime;
@@ -359,14 +358,15 @@ export class HereClient {
     let client = this.createClient('https://weather.hereapi.com');
     let queryParams: Record<string, string> = {
       ...this.authParams(),
-      products: params.products.join(','),
+      products: params.products.join(',')
     };
     if (params.location) queryParams['location'] = params.location;
     if (params.query) queryParams['q'] = params.query;
     if (params.zipCode) queryParams['zipCode'] = params.zipCode;
     if (params.units) queryParams['units'] = params.units;
     if (params.lang) queryParams['lang'] = params.lang;
-    if (params.oneObservation !== undefined) queryParams['oneobservation'] = String(params.oneObservation);
+    if (params.oneObservation !== undefined)
+      queryParams['oneobservation'] = String(params.oneObservation);
     if (params.hourlyDate) queryParams['hourlyDate'] = params.hourlyDate;
     let response = await client.get('/v3/report', { params: queryParams });
     return response.data;
@@ -400,7 +400,7 @@ export class HereClient {
 
     let response = await client.post('/v2/locate', body, {
       params: queryParams,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }

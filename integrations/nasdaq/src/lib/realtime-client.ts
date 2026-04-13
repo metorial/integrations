@@ -19,7 +19,15 @@ export interface BarsParams {
   symbols: string[];
   source?: 'Nasdaq' | 'CQT';
   offset?: 'realtime' | 'delayed';
-  barPrecision?: '1minute' | '5minute' | '10minute' | '15minute' | '30minute' | '1day' | '1week' | '1month';
+  barPrecision?:
+    | '1minute'
+    | '5minute'
+    | '10minute'
+    | '15minute'
+    | '30minute'
+    | '1day'
+    | '1week'
+    | '1month';
   dateRange?: '1d' | '5d' | '1m' | '3m' | '6m' | '1y' | '5y' | 'max' | 'ytd';
   adjusted?: boolean;
 }
@@ -68,12 +76,12 @@ export class RealtimeClient {
 
     let response = await http.post(this.config.tokenEndpoint, params.toString(), {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     this.currentToken = response.data.access_token;
-    this.tokenExpiresAt = new Date(Date.now() + (response.data.expires_in * 1000)).toISOString();
+    this.tokenExpiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
 
     return this.currentToken;
   }
@@ -81,14 +89,14 @@ export class RealtimeClient {
   private async request(path: string, params?: Record<string, string>): Promise<any> {
     let token = await this.ensureValidToken();
     let http = createAxios({
-      baseURL: this.config.baseUrl,
+      baseURL: this.config.baseUrl
     });
 
     let response = await http.get(`/v1${path}`, {
       params,
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
 
     return response.data;
@@ -96,7 +104,7 @@ export class RealtimeClient {
 
   async getLastSale(params: LastSaleParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      symbols: params.symbols.join(','),
+      symbols: params.symbols.join(',')
     };
     if (params.source) queryParams['source'] = params.source;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -106,7 +114,7 @@ export class RealtimeClient {
 
   async getLastTrade(params: LastSaleParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      symbols: params.symbols.join(','),
+      symbols: params.symbols.join(',')
     };
     if (params.source) queryParams['source'] = params.source;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -116,7 +124,7 @@ export class RealtimeClient {
 
   async getLastQuote(params: LastSaleParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      symbols: params.symbols.join(','),
+      symbols: params.symbols.join(',')
     };
     if (params.source) queryParams['source'] = params.source;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -126,7 +134,7 @@ export class RealtimeClient {
 
   async getSnapshot(params: SnapshotParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      symbols: params.symbols.join(','),
+      symbols: params.symbols.join(',')
     };
     if (params.source) queryParams['source'] = params.source;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -136,7 +144,7 @@ export class RealtimeClient {
 
   async getBars(params: BarsParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      symbols: params.symbols.join(','),
+      symbols: params.symbols.join(',')
     };
     if (params.source) queryParams['source'] = params.source;
     if (params.offset) queryParams['offset'] = params.offset;
@@ -145,7 +153,10 @@ export class RealtimeClient {
     if (params.adjusted !== undefined) queryParams['adjusted'] = String(params.adjusted);
 
     // Use bars-all for Nasdaq/CQT sources (which support 10+ year history)
-    let endpoint = (params.source === 'Nasdaq' || params.source === 'CQT' || !params.source) ? '/bars-all' : '/bars';
+    let endpoint =
+      params.source === 'Nasdaq' || params.source === 'CQT' || !params.source
+        ? '/bars-all'
+        : '/bars';
     return this.request(endpoint, queryParams);
   }
 
@@ -159,7 +170,7 @@ export class RealtimeClient {
 
   async getOptionsChain(params: OptionsChainParams): Promise<any> {
     let queryParams: Record<string, string> = {
-      symbol: params.symbol,
+      symbol: params.symbol
     };
     if (params.source) queryParams['source'] = params.source;
     if (params.offset) queryParams['offset'] = params.offset;

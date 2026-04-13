@@ -13,10 +13,7 @@ import {
   deleteDatapoint,
   createCharge
 } from './tools';
-import {
-  goalDerailReminder,
-  goalUpdated
-} from './triggers';
+import { goalDerailReminder, goalUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,8 +30,5 @@ export let provider = Slate.create({
     deleteDatapoint,
     createCharge
   ],
-  triggers: [
-    goalDerailReminder,
-    goalUpdated
-  ]
+  triggers: [goalDerailReminder, goalUpdated]
 });

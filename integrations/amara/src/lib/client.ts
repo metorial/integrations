@@ -200,9 +200,7 @@ export interface NotificationData {
 export class Client {
   private axios;
 
-  constructor(
-    private config: { token: string; username: string }
-  ) {
+  constructor(private config: { token: string; username: string }) {
     this.axios = createAxios({
       baseURL: 'https://amara.org/api'
     });
@@ -263,7 +261,8 @@ export class Client {
     };
     if (data.title) body.title = data.title;
     if (data.description) body.description = data.description;
-    if (data.primaryAudioLanguageCode) body.primary_audio_language_code = data.primaryAudioLanguageCode;
+    if (data.primaryAudioLanguageCode)
+      body.primary_audio_language_code = data.primaryAudioLanguageCode;
     if (data.thumbnail) body.thumbnail = data.thumbnail;
     if (data.metadata) body.metadata = data.metadata;
     if (data.team) body.team = data.team;
@@ -275,19 +274,23 @@ export class Client {
     return response.data;
   }
 
-  async updateVideo(videoId: string, data: {
-    title?: string;
-    description?: string;
-    primaryAudioLanguageCode?: string;
-    thumbnail?: string;
-    metadata?: Record<string, string>;
-    team?: string;
-    project?: string;
-  }): Promise<VideoData> {
+  async updateVideo(
+    videoId: string,
+    data: {
+      title?: string;
+      description?: string;
+      primaryAudioLanguageCode?: string;
+      thumbnail?: string;
+      metadata?: Record<string, string>;
+      team?: string;
+      project?: string;
+    }
+  ): Promise<VideoData> {
     let body: Record<string, any> = {};
     if (data.title !== undefined) body.title = data.title;
     if (data.description !== undefined) body.description = data.description;
-    if (data.primaryAudioLanguageCode !== undefined) body.primary_audio_language_code = data.primaryAudioLanguageCode;
+    if (data.primaryAudioLanguageCode !== undefined)
+      body.primary_audio_language_code = data.primaryAudioLanguageCode;
     if (data.thumbnail !== undefined) body.thumbnail = data.thumbnail;
     if (data.metadata !== undefined) body.metadata = data.metadata;
     if (data.team !== undefined) body.team = data.team;
@@ -314,11 +317,14 @@ export class Client {
     return response.data;
   }
 
-  async addVideoUrl(videoId: string, data: {
-    url: string;
-    primary?: boolean;
-    original?: boolean;
-  }): Promise<any> {
+  async addVideoUrl(
+    videoId: string,
+    data: {
+      url: string;
+      primary?: boolean;
+      original?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/videos/${videoId}/urls/`, data, {
       headers: this.headers
     });
@@ -327,10 +333,13 @@ export class Client {
 
   // ==================== Subtitle Languages ====================
 
-  async listSubtitleLanguages(videoId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<SubtitleLanguageData>> {
+  async listSubtitleLanguages(
+    videoId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<SubtitleLanguageData>> {
     let response = await this.axios.get(`/videos/${videoId}/languages/`, {
       headers: this.headers,
       params
@@ -338,31 +347,40 @@ export class Client {
     return response.data;
   }
 
-  async getSubtitleLanguage(videoId: string, languageCode: string): Promise<SubtitleLanguageData> {
+  async getSubtitleLanguage(
+    videoId: string,
+    languageCode: string
+  ): Promise<SubtitleLanguageData> {
     let response = await this.axios.get(`/videos/${videoId}/languages/${languageCode}/`, {
       headers: this.headers
     });
     return response.data;
   }
 
-  async createSubtitleLanguage(videoId: string, data: {
-    languageCode: string;
-    isPrimaryAudioLanguage?: boolean;
-    subtitlesComplete?: boolean;
-    softLimitLines?: number;
-    softLimitMinDuration?: number;
-    softLimitMaxDuration?: number;
-    softLimitCpl?: number;
-    softLimitCps?: number;
-  }): Promise<SubtitleLanguageData> {
+  async createSubtitleLanguage(
+    videoId: string,
+    data: {
+      languageCode: string;
+      isPrimaryAudioLanguage?: boolean;
+      subtitlesComplete?: boolean;
+      softLimitLines?: number;
+      softLimitMinDuration?: number;
+      softLimitMaxDuration?: number;
+      softLimitCpl?: number;
+      softLimitCps?: number;
+    }
+  ): Promise<SubtitleLanguageData> {
     let body: Record<string, any> = {
       language_code: data.languageCode
     };
-    if (data.isPrimaryAudioLanguage !== undefined) body.is_primary_audio_language = data.isPrimaryAudioLanguage;
+    if (data.isPrimaryAudioLanguage !== undefined)
+      body.is_primary_audio_language = data.isPrimaryAudioLanguage;
     if (data.subtitlesComplete !== undefined) body.subtitles_complete = data.subtitlesComplete;
     if (data.softLimitLines !== undefined) body.soft_limit_lines = data.softLimitLines;
-    if (data.softLimitMinDuration !== undefined) body.soft_limit_min_duration = data.softLimitMinDuration;
-    if (data.softLimitMaxDuration !== undefined) body.soft_limit_max_duration = data.softLimitMaxDuration;
+    if (data.softLimitMinDuration !== undefined)
+      body.soft_limit_min_duration = data.softLimitMinDuration;
+    if (data.softLimitMaxDuration !== undefined)
+      body.soft_limit_max_duration = data.softLimitMaxDuration;
     if (data.softLimitCpl !== undefined) body.soft_limit_cpl = data.softLimitCpl;
     if (data.softLimitCps !== undefined) body.soft_limit_cps = data.softLimitCps;
 
@@ -372,48 +390,70 @@ export class Client {
     return response.data;
   }
 
-  async updateSubtitleLanguage(videoId: string, languageCode: string, data: {
-    isPrimaryAudioLanguage?: boolean;
-    subtitlesComplete?: boolean;
-    softLimitLines?: number;
-    softLimitMinDuration?: number;
-    softLimitMaxDuration?: number;
-    softLimitCpl?: number;
-    softLimitCps?: number;
-  }): Promise<SubtitleLanguageData> {
+  async updateSubtitleLanguage(
+    videoId: string,
+    languageCode: string,
+    data: {
+      isPrimaryAudioLanguage?: boolean;
+      subtitlesComplete?: boolean;
+      softLimitLines?: number;
+      softLimitMinDuration?: number;
+      softLimitMaxDuration?: number;
+      softLimitCpl?: number;
+      softLimitCps?: number;
+    }
+  ): Promise<SubtitleLanguageData> {
     let body: Record<string, any> = {};
-    if (data.isPrimaryAudioLanguage !== undefined) body.is_primary_audio_language = data.isPrimaryAudioLanguage;
+    if (data.isPrimaryAudioLanguage !== undefined)
+      body.is_primary_audio_language = data.isPrimaryAudioLanguage;
     if (data.subtitlesComplete !== undefined) body.subtitles_complete = data.subtitlesComplete;
     if (data.softLimitLines !== undefined) body.soft_limit_lines = data.softLimitLines;
-    if (data.softLimitMinDuration !== undefined) body.soft_limit_min_duration = data.softLimitMinDuration;
-    if (data.softLimitMaxDuration !== undefined) body.soft_limit_max_duration = data.softLimitMaxDuration;
+    if (data.softLimitMinDuration !== undefined)
+      body.soft_limit_min_duration = data.softLimitMinDuration;
+    if (data.softLimitMaxDuration !== undefined)
+      body.soft_limit_max_duration = data.softLimitMaxDuration;
     if (data.softLimitCpl !== undefined) body.soft_limit_cpl = data.softLimitCpl;
     if (data.softLimitCps !== undefined) body.soft_limit_cps = data.softLimitCps;
 
-    let response = await this.axios.put(`/videos/${videoId}/languages/${languageCode}/`, body, {
-      headers: this.headers
-    });
+    let response = await this.axios.put(
+      `/videos/${videoId}/languages/${languageCode}/`,
+      body,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   // ==================== Subtitles ====================
 
-  async getSubtitles(videoId: string, languageCode: string, params?: {
-    subFormat?: string;
-    versionNumber?: number;
-  }): Promise<SubtitleData> {
+  async getSubtitles(
+    videoId: string,
+    languageCode: string,
+    params?: {
+      subFormat?: string;
+      versionNumber?: number;
+    }
+  ): Promise<SubtitleData> {
     let query: Record<string, any> = {};
     if (params?.subFormat) query.sub_format = params.subFormat;
     if (params?.versionNumber) query.version_number = params.versionNumber;
 
-    let response = await this.axios.get(`/videos/${videoId}/languages/${languageCode}/subtitles/`, {
-      headers: this.headers,
-      params: query
-    });
+    let response = await this.axios.get(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/`,
+      {
+        headers: this.headers,
+        params: query
+      }
+    );
     return response.data;
   }
 
-  async downloadSubtitles(videoId: string, languageCode: string, format: string): Promise<string> {
+  async downloadSubtitles(
+    videoId: string,
+    languageCode: string,
+    format: string
+  ): Promise<string> {
     let acceptMap: Record<string, string> = {
       dfxp: 'application/ttml+xml',
       srt: 'text/srt',
@@ -424,24 +464,31 @@ export class Client {
 
     let accept = acceptMap[format] || 'text/srt';
 
-    let response = await this.axios.get(`/videos/${videoId}/languages/${languageCode}/subtitles/`, {
-      headers: {
-        ...this.headers,
-        'Accept': accept
+    let response = await this.axios.get(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/`,
+      {
+        headers: {
+          ...this.headers,
+          Accept: accept
+        }
       }
-    });
+    );
     return response.data;
   }
 
-  async createSubtitles(videoId: string, languageCode: string, data: {
-    subtitles?: string;
-    subtitlesUrl?: string;
-    subFormat?: string;
-    title?: string;
-    description?: string;
-    action?: string;
-    isComplete?: boolean;
-  }): Promise<SubtitleData> {
+  async createSubtitles(
+    videoId: string,
+    languageCode: string,
+    data: {
+      subtitles?: string;
+      subtitlesUrl?: string;
+      subFormat?: string;
+      title?: string;
+      description?: string;
+      action?: string;
+      isComplete?: boolean;
+    }
+  ): Promise<SubtitleData> {
     let body: Record<string, any> = {};
     if (data.subtitles !== undefined) body.subtitles = data.subtitles;
     if (data.subtitlesUrl !== undefined) body.subtitles_url = data.subtitlesUrl;
@@ -451,9 +498,13 @@ export class Client {
     if (data.action !== undefined) body.action = data.action;
     if (data.isComplete !== undefined) body.is_complete = data.isComplete;
 
-    let response = await this.axios.post(`/videos/${videoId}/languages/${languageCode}/subtitles/`, body, {
-      headers: this.headers
-    });
+    let response = await this.axios.post(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/`,
+      body,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -466,31 +517,56 @@ export class Client {
   // ==================== Subtitle Actions ====================
 
   async listSubtitleActions(videoId: string, languageCode: string): Promise<SubtitleAction[]> {
-    let response = await this.axios.get(`/videos/${videoId}/languages/${languageCode}/subtitles/actions/`, {
-      headers: this.headers
-    });
+    let response = await this.axios.get(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/actions/`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
-  async performSubtitleAction(videoId: string, languageCode: string, action: string): Promise<void> {
-    await this.axios.post(`/videos/${videoId}/languages/${languageCode}/subtitles/actions/`, { action }, {
-      headers: this.headers
-    });
+  async performSubtitleAction(
+    videoId: string,
+    languageCode: string,
+    action: string
+  ): Promise<void> {
+    await this.axios.post(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/actions/`,
+      { action },
+      {
+        headers: this.headers
+      }
+    );
   }
 
   // ==================== Subtitle Notes ====================
 
-  async listSubtitleNotes(videoId: string, languageCode: string): Promise<PaginatedResponse<SubtitleNote>> {
-    let response = await this.axios.get(`/videos/${videoId}/languages/${languageCode}/subtitles/notes/`, {
-      headers: this.headers
-    });
+  async listSubtitleNotes(
+    videoId: string,
+    languageCode: string
+  ): Promise<PaginatedResponse<SubtitleNote>> {
+    let response = await this.axios.get(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/notes/`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
-  async addSubtitleNote(videoId: string, languageCode: string, body: string): Promise<SubtitleNote> {
-    let response = await this.axios.post(`/videos/${videoId}/languages/${languageCode}/subtitles/notes/`, { body }, {
-      headers: this.headers
-    });
+  async addSubtitleNote(
+    videoId: string,
+    languageCode: string,
+    body: string
+  ): Promise<SubtitleNote> {
+    let response = await this.axios.post(
+      `/videos/${videoId}/languages/${languageCode}/subtitles/notes/`,
+      { body },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -541,15 +617,18 @@ export class Client {
     return response.data;
   }
 
-  async updateTeam(teamSlug: string, data: {
-    name?: string;
-    slug?: string;
-    description?: string;
-    teamVisibility?: string;
-    videoVisibility?: string;
-    membershipPolicy?: string;
-    videoPolicy?: string;
-  }): Promise<TeamData> {
+  async updateTeam(
+    teamSlug: string,
+    data: {
+      name?: string;
+      slug?: string;
+      description?: string;
+      teamVisibility?: string;
+      videoVisibility?: string;
+      membershipPolicy?: string;
+      videoPolicy?: string;
+    }
+  ): Promise<TeamData> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.slug !== undefined) body.slug = data.slug;
@@ -567,10 +646,13 @@ export class Client {
 
   // ==================== Team Members ====================
 
-  async listTeamMembers(teamSlug: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<TeamMemberData>> {
+  async listTeamMembers(
+    teamSlug: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<TeamMemberData>> {
     let response = await this.axios.get(`/teams/${teamSlug}/members/`, {
       headers: this.headers,
       params
@@ -585,22 +667,33 @@ export class Client {
     return response.data;
   }
 
-  async addTeamMember(teamSlug: string, data: {
-    user: string;
-    role?: string;
-  }): Promise<TeamMemberData> {
+  async addTeamMember(
+    teamSlug: string,
+    data: {
+      user: string;
+      role?: string;
+    }
+  ): Promise<TeamMemberData> {
     let response = await this.axios.post(`/teams/${teamSlug}/members/`, data, {
       headers: this.headers
     });
     return response.data;
   }
 
-  async updateTeamMember(teamSlug: string, userIdentifier: string, data: {
-    role: string;
-  }): Promise<TeamMemberData> {
-    let response = await this.axios.put(`/teams/${teamSlug}/members/${userIdentifier}/`, data, {
-      headers: this.headers
-    });
+  async updateTeamMember(
+    teamSlug: string,
+    userIdentifier: string,
+    data: {
+      role: string;
+    }
+  ): Promise<TeamMemberData> {
+    let response = await this.axios.put(
+      `/teams/${teamSlug}/members/${userIdentifier}/`,
+      data,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -612,10 +705,13 @@ export class Client {
 
   // ==================== Projects ====================
 
-  async listProjects(teamSlug: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<ProjectData>> {
+  async listProjects(
+    teamSlug: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<ProjectData>> {
     let response = await this.axios.get(`/teams/${teamSlug}/projects/`, {
       headers: this.headers,
       params
@@ -630,23 +726,30 @@ export class Client {
     return response.data;
   }
 
-  async createProject(teamSlug: string, data: {
-    name: string;
-    slug: string;
-    description?: string;
-    guidelines?: string;
-  }): Promise<ProjectData> {
+  async createProject(
+    teamSlug: string,
+    data: {
+      name: string;
+      slug: string;
+      description?: string;
+      guidelines?: string;
+    }
+  ): Promise<ProjectData> {
     let response = await this.axios.post(`/teams/${teamSlug}/projects/`, data, {
       headers: this.headers
     });
     return response.data;
   }
 
-  async updateProject(teamSlug: string, projectSlug: string, data: {
-    name?: string;
-    description?: string;
-    guidelines?: string;
-  }): Promise<ProjectData> {
+  async updateProject(
+    teamSlug: string,
+    projectSlug: string,
+    data: {
+      name?: string;
+      description?: string;
+      guidelines?: string;
+    }
+  ): Promise<ProjectData> {
     let response = await this.axios.put(`/teams/${teamSlug}/projects/${projectSlug}/`, data, {
       headers: this.headers
     });
@@ -661,14 +764,17 @@ export class Client {
 
   // ==================== Team Applications ====================
 
-  async listApplications(teamSlug: string, params?: {
-    status?: string;
-    before?: string;
-    after?: string;
-    user?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<ApplicationData>> {
+  async listApplications(
+    teamSlug: string,
+    params?: {
+      status?: string;
+      before?: string;
+      after?: string;
+      user?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<ApplicationData>> {
     let response = await this.axios.get(`/teams/${teamSlug}/applications/`, {
       headers: this.headers,
       params
@@ -683,10 +789,18 @@ export class Client {
     return response.data;
   }
 
-  async updateApplication(teamSlug: string, applicationId: number, status: string): Promise<ApplicationData> {
-    let response = await this.axios.put(`/teams/${teamSlug}/applications/${applicationId}/`, { status }, {
-      headers: this.headers
-    });
+  async updateApplication(
+    teamSlug: string,
+    applicationId: number,
+    status: string
+  ): Promise<ApplicationData> {
+    let response = await this.axios.put(
+      `/teams/${teamSlug}/applications/${applicationId}/`,
+      { status },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -706,17 +820,20 @@ export class Client {
 
   // ==================== Subtitle Requests ====================
 
-  async listSubtitleRequests(teamSlug: string, params?: {
-    workStatus?: string;
-    video?: string;
-    videoTitle?: string;
-    language?: string;
-    project?: string;
-    assignee?: string;
-    sort?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<SubtitleRequestData>> {
+  async listSubtitleRequests(
+    teamSlug: string,
+    params?: {
+      workStatus?: string;
+      video?: string;
+      videoTitle?: string;
+      language?: string;
+      project?: string;
+      assignee?: string;
+      sort?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<SubtitleRequestData>> {
     let query: Record<string, any> = {};
     if (params?.workStatus) query.work_status = params.workStatus;
     if (params?.video) query.video = params.video;
@@ -742,31 +859,42 @@ export class Client {
     return response.data;
   }
 
-  async createSubtitleRequest(teamSlug: string, data: {
-    video: string;
-    language: string;
-  }): Promise<SubtitleRequestData> {
+  async createSubtitleRequest(
+    teamSlug: string,
+    data: {
+      video: string;
+      language: string;
+    }
+  ): Promise<SubtitleRequestData> {
     let response = await this.axios.post(`/teams/${teamSlug}/subtitle-requests/`, data, {
       headers: this.headers
     });
     return response.data;
   }
 
-  async updateSubtitleRequest(teamSlug: string, jobId: string, data: {
-    subtitler?: string | null;
-    reviewer?: string | null;
-    approver?: string | null;
-    workStatus?: string;
-  }): Promise<SubtitleRequestData> {
+  async updateSubtitleRequest(
+    teamSlug: string,
+    jobId: string,
+    data: {
+      subtitler?: string | null;
+      reviewer?: string | null;
+      approver?: string | null;
+      workStatus?: string;
+    }
+  ): Promise<SubtitleRequestData> {
     let body: Record<string, any> = {};
     if (data.subtitler !== undefined) body.subtitler = data.subtitler;
     if (data.reviewer !== undefined) body.reviewer = data.reviewer;
     if (data.approver !== undefined) body.approver = data.approver;
     if (data.workStatus !== undefined) body.work_status = data.workStatus;
 
-    let response = await this.axios.put(`/teams/${teamSlug}/subtitle-requests/${jobId}/`, body, {
-      headers: this.headers
-    });
+    let response = await this.axios.put(
+      `/teams/${teamSlug}/subtitle-requests/${jobId}/`,
+      body,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -778,15 +906,18 @@ export class Client {
 
   // ==================== Activity ====================
 
-  async getVideoActivity(videoId: string, params?: {
-    type?: string;
-    user?: string;
-    language?: string;
-    before?: string;
-    after?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<ActivityData>> {
+  async getVideoActivity(
+    videoId: string,
+    params?: {
+      type?: string;
+      user?: string;
+      language?: string;
+      before?: string;
+      after?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<ActivityData>> {
     let response = await this.axios.get(`/videos/${videoId}/activity/`, {
       headers: this.headers,
       params
@@ -794,16 +925,19 @@ export class Client {
     return response.data;
   }
 
-  async getTeamActivity(teamSlug: string, params?: {
-    type?: string;
-    user?: string;
-    video?: string;
-    language?: string;
-    before?: string;
-    after?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<ActivityData>> {
+  async getTeamActivity(
+    teamSlug: string,
+    params?: {
+      type?: string;
+      user?: string;
+      video?: string;
+      language?: string;
+      before?: string;
+      after?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<ActivityData>> {
     let response = await this.axios.get(`/teams/${teamSlug}/activity/`, {
       headers: this.headers,
       params
@@ -811,16 +945,19 @@ export class Client {
     return response.data;
   }
 
-  async getUserActivity(userIdentifier: string, params?: {
-    type?: string;
-    video?: string;
-    language?: string;
-    team?: string;
-    before?: string;
-    after?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<ActivityData>> {
+  async getUserActivity(
+    userIdentifier: string,
+    params?: {
+      type?: string;
+      video?: string;
+      language?: string;
+      team?: string;
+      before?: string;
+      after?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<ActivityData>> {
     let response = await this.axios.get(`/users/${userIdentifier}/activity/`, {
       headers: this.headers,
       params
@@ -854,9 +991,11 @@ export class Client {
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
-    if (data.allow3rdPartyLogin !== undefined) body.allow_3rd_party_login = data.allow3rdPartyLogin;
+    if (data.allow3rdPartyLogin !== undefined)
+      body.allow_3rd_party_login = data.allow3rdPartyLogin;
     if (data.createLoginToken !== undefined) body.create_login_token = data.createLoginToken;
-    if (data.findUniqueUsername !== undefined) body.find_unique_username = data.findUniqueUsername;
+    if (data.findUniqueUsername !== undefined)
+      body.find_unique_username = data.findUniqueUsername;
 
     let response = await this.axios.post('/users/', body, {
       headers: this.headers
@@ -864,11 +1003,14 @@ export class Client {
     return response.data;
   }
 
-  async updateUser(identifier: string, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-  }): Promise<UserData> {
+  async updateUser(
+    identifier: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+    }
+  ): Promise<UserData> {
     let body: Record<string, any> = {};
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -911,10 +1053,13 @@ export class Client {
 
   // ==================== Team Notifications ====================
 
-  async listNotifications(teamSlug: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<NotificationData>> {
+  async listNotifications(
+    teamSlug: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<NotificationData>> {
     let response = await this.axios.get(`/teams/${teamSlug}/notifications/`, {
       headers: this.headers,
       params

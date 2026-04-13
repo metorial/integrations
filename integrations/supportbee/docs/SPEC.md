@@ -17,6 +17,7 @@ To find your API token, click on your profile picture at the top left corner of 
 In addition to the API token, you need your **company subdomain**. All API requests should be made to `https://[your-company].supportbee.com/`. For example, if your account URL address is `https://www.xyz.supportbee.com`, then your domain is `xyz`.
 
 Example request:
+
 ```
 https://{company}.supportbee.com/tickets?auth_token=your_api_token
 ```
@@ -24,6 +25,7 @@ https://{company}.supportbee.com/tickets?auth_token=your_api_token
 All API endpoints except the Create Ticket endpoint require authentication.
 
 **Required credentials:**
+
 - **API Token**: Found in your SupportBee profile settings under "API Token".
 - **Company subdomain**: The subdomain portion of your SupportBee account URL.
 
@@ -76,6 +78,7 @@ SupportBee supports webhooks that send HTTP POST notifications to a specified UR
 ### Ticket Lifecycle Events
 
 Notifications for core ticket state changes:
+
 - **New Ticket Created** — Triggered when a new ticket is created.
 - **Ticket Archived / Unarchived** — Triggered when a ticket is archived or restored.
 - **Ticket Trashed / Untrashed** — Triggered when a ticket is moved to or restored from trash.
@@ -85,6 +88,7 @@ Notifications for core ticket state changes:
 ### Reply and Comment Events
 
 Notifications for new communication on tickets:
+
 - **New Customer Reply Created** — Triggered when a customer replies to a ticket.
 - **New Agent Reply Created** — Triggered when an agent replies to a ticket.
 - **New Comment Created** — Triggered when an internal comment is added to a ticket.
@@ -92,5 +96,6 @@ Notifications for new communication on tickets:
 ### Assignment Events
 
 Notifications for ticket assignment changes:
+
 - **Ticket Assigned to User / Unassigned from User** — Triggered when a ticket is assigned to or unassigned from a specific user.
 - **Ticket Assigned to Team / Unassigned from Team** — Triggered when a ticket is assigned to or unassigned from a team.

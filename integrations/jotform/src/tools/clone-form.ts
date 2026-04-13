@@ -20,7 +20,7 @@ export let cloneFormTool = SlateTool.create(spec, {
       url: z.string().describe('Public URL of the cloned form')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

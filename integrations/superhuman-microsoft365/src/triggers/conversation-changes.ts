@@ -5,23 +5,22 @@ import { z } from 'zod';
 
 let CLIENT_STATE = 'slates-conversation-changes';
 
-export let conversationChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conversation Changes',
-    key: 'conversation_changes',
-    description:
-      'Fires when messages in the mailbox are created, updated, or deleted. Subscribes to Microsoft Graph `me/messages` webhooks and surfaces **conversationId**-centric payloads for triage workflows.',
-  },
-)
+export let conversationChanges = SlateTrigger.create(spec, {
+  name: 'Conversation Changes',
+  key: 'conversation_changes',
+  description:
+    'Fires when messages in the mailbox are created, updated, or deleted. Subscribes to Microsoft Graph `me/messages` webhooks and surfaces **conversationId**-centric payloads for triage workflows.'
+})
   .input(
     z.object({
-      changeType: z.enum(['created', 'updated', 'deleted']).describe('Graph change type for the message resource'),
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Graph change type for the message resource'),
       resourceUri: z.string().describe('Resource path from the notification'),
       messageId: z.string().describe('Affected message id'),
       subscriptionId: z.string().describe('Subscription that produced the notification'),
-      tenantId: z.string().optional(),
-    }),
+      tenantId: z.string().optional()
+    })
   )
   .output(
     z.object({
@@ -35,8 +34,8 @@ export let conversationChanges = SlateTrigger.create(
         .array(
           z.object({
             address: z.string(),
-            name: z.string().optional(),
-          }),
+            name: z.string().optional()
+          })
         )
         .optional(),
       receivedDateTime: z.string().optional(),
@@ -44,37 +43,39 @@ export let conversationChanges = SlateTrigger.create(
       importance: z.string().optional(),
       hasAttachments: z.boolean().optional(),
       parentFolderId: z.string().optional(),
-      webLink: z.string().optional(),
-    }),
+      webLink: z.string().optional()
+    })
   )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let expirationDateTime = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 - 60000).toISOString();
+      let expirationDateTime = new Date(
+        Date.now() + 3 * 24 * 60 * 60 * 1000 - 60000
+      ).toISOString();
 
       let subscription = await client.createSubscription({
         changeType: 'created,updated,deleted',
         notificationUrl: ctx.input.webhookBaseUrl,
         resource: 'me/messages',
         expirationDateTime,
-        clientState: CLIENT_STATE,
+        clientState: CLIENT_STATE
       });
 
       return {
         registrationDetails: {
           subscriptionId: subscription.id,
-          expirationDateTime: subscription.expirationDateTime,
-        },
+          expirationDateTime: subscription.expirationDateTime
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { subscriptionId: string };
       await client.deleteSubscription(details.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let url = new URL(ctx.request.url);
       let validationToken = url.searchParams.get('validationToken');
       if (validationToken) {
@@ -82,8 +83,8 @@ export let conversationChanges = SlateTrigger.create(
           inputs: [],
           response: new Response(validationToken, {
             status: 200,
-            headers: { 'Content-Type': 'text/plain' },
-          }),
+            headers: { 'Content-Type': 'text/plain' }
+          })
         };
       }
 
@@ -102,22 +103,22 @@ export let conversationChanges = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let notifications = body.value.filter((n) => n.clientState === CLIENT_STATE);
+      let notifications = body.value.filter(n => n.clientState === CLIENT_STATE);
 
       let inputs = notifications
-        .filter((n) => n.resourceData?.id)
-        .map((n) => ({
+        .filter(n => n.resourceData?.id)
+        .map(n => ({
           changeType: n.changeType,
           resourceUri: n.resource,
           messageId: n.resourceData!.id,
           subscriptionId: n.subscriptionId,
-          tenantId: n.tenantId,
+          tenantId: n.tenantId
         }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { changeType, messageId } = ctx.input;
 
       if (changeType === 'deleted') {
@@ -125,8 +126,8 @@ export let conversationChanges = SlateTrigger.create(
           type: `conversation.message_${changeType}`,
           id: `${messageId}-${changeType}-${Date.now()}`,
           output: {
-            messageId,
-          },
+            messageId
+          }
         };
       }
 
@@ -144,7 +145,7 @@ export let conversationChanges = SlateTrigger.create(
           'importance',
           'hasAttachments',
           'parentFolderId',
-          'webLink',
+          'webLink'
         ]);
 
         return {
@@ -157,27 +158,27 @@ export let conversationChanges = SlateTrigger.create(
             bodyPreview: msg.bodyPreview,
             fromAddress: msg.from?.emailAddress?.address,
             fromName: msg.from?.emailAddress?.name,
-            toRecipients: msg.toRecipients?.map((r) => ({
+            toRecipients: msg.toRecipients?.map(r => ({
               address: r.emailAddress.address,
-              name: r.emailAddress.name,
+              name: r.emailAddress.name
             })),
             receivedDateTime: msg.receivedDateTime,
             isRead: msg.isRead,
             importance: msg.importance,
             hasAttachments: msg.hasAttachments,
             parentFolderId: msg.parentFolderId,
-            webLink: msg.webLink,
-          },
+            webLink: msg.webLink
+          }
         };
       } catch {
         return {
           type: `conversation.message_${changeType}`,
           id: `${messageId}-${changeType}-${Date.now()}`,
           output: {
-            messageId,
-          },
+            messageId
+          }
         };
       }
-    },
+    }
   })
   .build();

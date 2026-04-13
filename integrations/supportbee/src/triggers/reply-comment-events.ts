@@ -13,23 +13,23 @@ let replyCommentOutputSchema = z.object({
   createdAt: z.string().optional().describe('Timestamp when the reply/comment was created')
 });
 
-export let replyCommentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Reply and Comment Events',
-    key: 'reply_comment_events',
-    description: 'Triggered when a new reply or comment is created on a ticket. Covers customer replies, agent replies, and internal comments. Configure the webhook URL in SupportBee admin settings under the Web Hooks tab.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of reply/comment event'),
-    eventId: z.string().describe('Unique event identifier for deduplication'),
-    rawData: z.any().describe('Raw webhook payload data')
-  }))
+export let replyCommentEvents = SlateTrigger.create(spec, {
+  name: 'Reply and Comment Events',
+  key: 'reply_comment_events',
+  description:
+    'Triggered when a new reply or comment is created on a ticket. Covers customer replies, agent replies, and internal comments. Configure the webhook URL in SupportBee admin settings under the Web Hooks tab.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of reply/comment event'),
+      eventId: z.string().describe('Unique event identifier for deduplication'),
+      rawData: z.any().describe('Raw webhook payload data')
+    })
+  )
   .output(replyCommentOutputSchema)
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.event_type || data.action || 'unknown';
       let payload = data.reply || data.comment || data.object || data;
@@ -49,18 +49,18 @@ export let replyCommentEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, rawData } = ctx.input;
       let payload = rawData._payload || {};
       let ticket = rawData._ticket || rawData.ticket || {};
 
       let typeMap: Record<string, string> = {
         'reply.created': 'reply.customer_created',
-        'customer_reply_create': 'reply.customer_created',
+        customer_reply_create: 'reply.customer_created',
         'agent_reply.created': 'reply.agent_created',
-        'agent_reply_create': 'reply.agent_created',
+        agent_reply_create: 'reply.agent_created',
         'comment.created': 'comment.created',
-        'comment_create': 'comment.created'
+        comment_create: 'comment.created'
       };
 
       let normalizedType = typeMap[eventType] || `reply.${eventType}`;
@@ -82,4 +82,5 @@ export let replyCommentEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

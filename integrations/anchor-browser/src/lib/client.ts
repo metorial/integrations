@@ -11,8 +11,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'anchor-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,16 +35,24 @@ export class Client {
     return response.data?.data as SessionDetails;
   }
 
-  async getActiveSessionStatuses(params?: { tags?: string; domains?: string; createdFrom?: string; createdTo?: string }) {
+  async getActiveSessionStatuses(params?: {
+    tags?: string;
+    domains?: string;
+    createdFrom?: string;
+    createdTo?: string;
+  }) {
     let response = await this.axios.get('/v1/sessions/all/status', {
       params: {
         tags: params?.tags,
         domains: params?.domains,
         created_from: params?.createdFrom,
-        created_to: params?.createdTo,
-      },
+        created_to: params?.createdTo
+      }
     });
-    return response.data?.data as { count: number; items: Array<{ session_id: string; status: string; tags: string[]; created_at: string }> };
+    return response.data?.data as {
+      count: number;
+      items: Array<{ session_id: string; status: string; tags: string[]; created_at: string }>;
+    };
   }
 
   async endSession(sessionId: string) {
@@ -97,7 +105,7 @@ export class Client {
 
   async performWebTask(params: WebTaskParams, sessionId?: string) {
     let response = await this.axios.post('/v1/tools/perform-web-task', params, {
-      params: sessionId ? { sessionId } : undefined,
+      params: sessionId ? { sessionId } : undefined
     });
     return response.data?.data;
   }
@@ -113,14 +121,14 @@ export class Client {
 
   async fetchWebpage(params: FetchWebpageParams, sessionId?: string) {
     let response = await this.axios.post('/v1/tools/fetch-webpage', params, {
-      params: sessionId ? { sessionId } : undefined,
+      params: sessionId ? { sessionId } : undefined
     });
     return response.data?.data as { content: string };
   }
 
   async screenshotWebpage(params: ScreenshotParams, sessionId?: string) {
     let response = await this.axios.post('/v1/tools/screenshot', params, {
-      params: sessionId ? { sessionId } : undefined,
+      params: sessionId ? { sessionId } : undefined
     });
     return response.data?.data as { image: string };
   }
@@ -128,7 +136,7 @@ export class Client {
   async pageToPdf(params: PdfParams, sessionId?: string) {
     let response = await this.axios.post('/v1/tools/page-pdf', params, {
       params: sessionId ? { sessionId } : undefined,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -137,43 +145,85 @@ export class Client {
   // OS-Level Controls
   // =====================
 
-  async mouseClick(sessionId: string, params: { x?: number; y?: number; button?: string; selector?: string; timeout?: number; index?: number }) {
-    let response = await this.axios.post('/v1/tools/mouse-click', params, { params: { sessionId } });
+  async mouseClick(
+    sessionId: string,
+    params: {
+      x?: number;
+      y?: number;
+      button?: string;
+      selector?: string;
+      timeout?: number;
+      index?: number;
+    }
+  ) {
+    let response = await this.axios.post('/v1/tools/mouse-click', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
-  async mouseDoubleClick(sessionId: string, params: { x?: number; y?: number; button?: string }) {
-    let response = await this.axios.post('/v1/tools/mouse-double-click', params, { params: { sessionId } });
+  async mouseDoubleClick(
+    sessionId: string,
+    params: { x?: number; y?: number; button?: string }
+  ) {
+    let response = await this.axios.post('/v1/tools/mouse-double-click', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
-  async dragDrop(sessionId: string, params: { startX: number; startY: number; endX: number; endY: number; button?: string }) {
-    let response = await this.axios.post('/v1/tools/drag-drop', params, { params: { sessionId } });
+  async dragDrop(
+    sessionId: string,
+    params: { startX: number; startY: number; endX: number; endY: number; button?: string }
+  ) {
+    let response = await this.axios.post('/v1/tools/drag-drop', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
-  async scroll(sessionId: string, params: { x?: number; y?: number; deltaX?: number; deltaY: number; steps?: number; useOs?: boolean }) {
-    let response = await this.axios.post('/v1/tools/scroll', params, { params: { sessionId } });
+  async scroll(
+    sessionId: string,
+    params: {
+      x?: number;
+      y?: number;
+      deltaX?: number;
+      deltaY: number;
+      steps?: number;
+      useOs?: boolean;
+    }
+  ) {
+    let response = await this.axios.post('/v1/tools/scroll', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
   async typeText(sessionId: string, params: { text: string; delay?: number }) {
-    let response = await this.axios.post('/v1/tools/type-text', params, { params: { sessionId } });
+    let response = await this.axios.post('/v1/tools/type-text', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
   async keyboardShortcut(sessionId: string, params: { keys: string[]; holdTime?: number }) {
-    let response = await this.axios.post('/v1/tools/keyboard-shortcut', params, { params: { sessionId } });
+    let response = await this.axios.post('/v1/tools/keyboard-shortcut', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
   async navigate(sessionId: string, params: { url: string }) {
-    let response = await this.axios.post('/v1/tools/navigate', params, { params: { sessionId } });
+    let response = await this.axios.post('/v1/tools/navigate', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
   async setClipboard(sessionId: string, params: { text: string }) {
-    let response = await this.axios.post('/v1/tools/clipboard', params, { params: { sessionId } });
+    let response = await this.axios.post('/v1/tools/clipboard', params, {
+      params: { sessionId }
+    });
     return response.data;
   }
 
@@ -184,7 +234,7 @@ export class Client {
 
   async takeScreenshot(sessionId: string) {
     let response = await this.axios.get(`/v1/sessions/${sessionId}/screenshot`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -217,14 +267,19 @@ export class Client {
     return response.data as BatchCreateResponse;
   }
 
-  async listBatches(params?: { page?: number; limit?: number; sortBy?: string; sortOrder?: string }) {
+  async listBatches(params?: {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: string;
+  }) {
     let response = await this.axios.get('/v1/batch-sessions', {
       params: {
         page: params?.page,
         limit: params?.limit,
         sort_by: params?.sortBy,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data as BatchListResponse;
   }
@@ -235,7 +290,9 @@ export class Client {
   }
 
   async cancelBatch(batchId: string) {
-    let response = await this.axios.patch(`/v1/batch-sessions/${batchId}`, { status: 'cancelled' });
+    let response = await this.axios.patch(`/v1/batch-sessions/${batchId}`, {
+      status: 'cancelled'
+    });
     return response.data;
   }
 
@@ -244,10 +301,13 @@ export class Client {
     return response.data;
   }
 
-  async retryBatch(batchId: string, params?: { retryFailedOnly?: boolean; maxRetries?: number }) {
+  async retryBatch(
+    batchId: string,
+    params?: { retryFailedOnly?: boolean; maxRetries?: number }
+  ) {
     let response = await this.axios.post(`/v1/batch-sessions/${batchId}/retry`, {
       retry_failed_only: params?.retryFailedOnly ?? true,
-      max_retries: params?.maxRetries ?? 1,
+      max_retries: params?.maxRetries ?? 1
     });
     return response.data;
   }
@@ -257,15 +317,22 @@ export class Client {
   // =====================
 
   async signalEvent(sessionId: string, eventName: string, data: Record<string, unknown>) {
-    let response = await this.axios.post(`/v1/tools/signal-event/${encodeURIComponent(eventName)}`, { data }, { params: { sessionId } });
+    let response = await this.axios.post(
+      `/v1/tools/signal-event/${encodeURIComponent(eventName)}`,
+      { data },
+      { params: { sessionId } }
+    );
     return response.data;
   }
 
   async waitForEvent(sessionId: string, eventName: string, timeoutMs?: number) {
-    let response = await this.axios.get(`/v1/tools/wait-for-event/${encodeURIComponent(eventName)}`, {
-      params: { sessionId },
-      data: timeoutMs ? { timeoutMs } : undefined,
-    });
+    let response = await this.axios.get(
+      `/v1/tools/wait-for-event/${encodeURIComponent(eventName)}`,
+      {
+        params: { sessionId },
+        data: timeoutMs ? { timeoutMs } : undefined
+      }
+    );
     return response.data?.data;
   }
 
@@ -309,7 +376,7 @@ export class Client {
 
   async updateApplication(applicationId: string, params: { allowedDomains?: string[] }) {
     let response = await this.axios.patch(`/v1/applications/${applicationId}`, {
-      allowed_domains: params.allowedDomains,
+      allowed_domains: params.allowedDomains
     });
     return response.data;
   }
@@ -329,19 +396,30 @@ export class Client {
     return response.data;
   }
 
-  async createAuthFlow(applicationId: string, params: { name: string; description?: string; isRecommended?: boolean; methods?: string[]; customFields?: Array<Record<string, unknown>> }) {
+  async createAuthFlow(
+    applicationId: string,
+    params: {
+      name: string;
+      description?: string;
+      isRecommended?: boolean;
+      methods?: string[];
+      customFields?: Array<Record<string, unknown>>;
+    }
+  ) {
     let response = await this.axios.post(`/v1/applications/${applicationId}/auth-flows`, {
       name: params.name,
       description: params.description,
       is_recommended: params.isRecommended,
       methods: params.methods,
-      custom_fields: params.customFields,
+      custom_fields: params.customFields
     });
     return response.data;
   }
 
   async deleteAuthFlow(applicationId: string, authFlowId: string) {
-    let response = await this.axios.delete(`/v1/applications/${applicationId}/auth-flows/${authFlowId}`);
+    let response = await this.axios.delete(
+      `/v1/applications/${applicationId}/auth-flows/${authFlowId}`
+    );
     return response.data;
   }
 
@@ -364,7 +442,14 @@ export class Client {
     return response.data;
   }
 
-  async updateIdentity(identityId: string, params: { name?: string; metadata?: Record<string, unknown>; credentials?: Array<Record<string, unknown>> }) {
+  async updateIdentity(
+    identityId: string,
+    params: {
+      name?: string;
+      metadata?: Record<string, unknown>;
+      credentials?: Array<Record<string, unknown>>;
+    }
+  ) {
     let response = await this.axios.patch(`/v1/identities/${identityId}`, params);
     return response.data;
   }
@@ -383,7 +468,11 @@ export class Client {
   // Integrations
   // =====================
 
-  async createIntegration(params: { name: string; type: string; credentials: Record<string, unknown> }) {
+  async createIntegration(params: {
+    name: string;
+    type: string;
+    credentials: Record<string, unknown>;
+  }) {
     let response = await this.axios.post('/v1/integrations', params);
     return response.data?.data as { integration: IntegrationResponse };
   }
@@ -404,7 +493,9 @@ export class Client {
 
   async listAgentFiles(sessionId: string) {
     let response = await this.axios.get(`/v1/sessions/${sessionId}/agent/files`);
-    return response.data?.data as { files: Array<{ name: string; size: number; type: string; lastModified: string }> };
+    return response.data?.data as {
+      files: Array<{ name: string; size: number; type: string; lastModified: string }>;
+    };
   }
 
   async pauseAgent(sessionId: string) {

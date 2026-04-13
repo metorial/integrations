@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteWebhook = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Webhook',
-    key: 'delete_webhook',
-    description: `Permanently delete a webhook from your VerifiedEmail account. The webhook will stop receiving event notifications immediately.`,
-    tags: {
-      readOnly: false,
-      destructive: true,
-    },
+export let deleteWebhook = SlateTool.create(spec, {
+  name: 'Delete Webhook',
+  key: 'delete_webhook',
+  description: `Permanently delete a webhook from your VerifiedEmail account. The webhook will stop receiving event notifications immediately.`,
+  tags: {
+    readOnly: false,
+    destructive: true
   }
-)
-  .input(z.object({
-    webhookId: z.string().describe('ID of the webhook to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the webhook was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      webhookId: z.string().describe('ID of the webhook to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the webhook was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteWebhook(ctx.input.webhookId);
 
     return {
       output: { deleted: true },
-      message: `Webhook \`${ctx.input.webhookId}\` has been permanently deleted.`,
+      message: `Webhook \`${ctx.input.webhookId}\` has been permanently deleted.`
     };
   })
   .build();

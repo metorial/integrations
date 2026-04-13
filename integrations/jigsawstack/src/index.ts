@@ -18,7 +18,7 @@ import {
   generateEmbedding,
   geoSearch,
   getFile,
-  deleteFile,
+  deleteFile
 } from './tools';
 import { taskCompleted } from './triggers';
 
@@ -42,9 +42,7 @@ export let provider = Slate.create({
     generateEmbedding,
     geoSearch,
     getFile,
-    deleteFile,
+    deleteFile
   ],
-  triggers: [
-    taskCompleted,
-  ],
+  triggers: [taskCompleted]
 });

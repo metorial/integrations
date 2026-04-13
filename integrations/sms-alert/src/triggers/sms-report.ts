@@ -3,37 +3,39 @@ import { SmsAlertClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let smsReport = SlateTrigger.create(
-  spec,
-  {
-    name: 'New SMS Report',
-    key: 'sms_report',
-    description: 'Polls for newly sent SMS campaign logs. Triggers when new SMS messages are found in the account report since the last check.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Unique message ID from the SMS report.'),
-    mobileNumber: z.string().describe('Recipient mobile number.'),
-    status: z.string().describe('Delivery status of the message.'),
-    senderId: z.string().describe('Sender ID used for the message.'),
-    text: z.string().describe('Message content.'),
-    sentAt: z.string().describe('Timestamp when the message was sent.'),
-    rawEntry: z.any().describe('Raw report entry from the API.'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Unique message ID.'),
-    mobileNumber: z.string().describe('Recipient mobile number.'),
-    status: z.string().describe('Delivery status (e.g., DELIVRD, AWAITED-DLR, FAILED).'),
-    senderId: z.string().describe('Sender ID used.'),
-    text: z.string().describe('Message content sent.'),
-    sentAt: z.string().describe('Timestamp of when the message was sent.'),
-  }))
+export let smsReport = SlateTrigger.create(spec, {
+  name: 'New SMS Report',
+  key: 'sms_report',
+  description:
+    'Polls for newly sent SMS campaign logs. Triggers when new SMS messages are found in the account report since the last check.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Unique message ID from the SMS report.'),
+      mobileNumber: z.string().describe('Recipient mobile number.'),
+      status: z.string().describe('Delivery status of the message.'),
+      senderId: z.string().describe('Sender ID used for the message.'),
+      text: z.string().describe('Message content.'),
+      sentAt: z.string().describe('Timestamp when the message was sent.'),
+      rawEntry: z.any().describe('Raw report entry from the API.')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Unique message ID.'),
+      mobileNumber: z.string().describe('Recipient mobile number.'),
+      status: z.string().describe('Delivery status (e.g., DELIVRD, AWAITED-DLR, FAILED).'),
+      senderId: z.string().describe('Sender ID used.'),
+      text: z.string().describe('Message content sent.'),
+      sentAt: z.string().describe('Timestamp of when the message was sent.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SmsAlertClient({ token: ctx.auth.token });
 
       let lastPollDate = ctx.state?.lastPollDate as string | undefined;
@@ -49,7 +51,7 @@ export let smsReport = SlateTrigger.create(
 
       let result = await client.getSmsReport({
         fromDate: params.fromDate,
-        toDate: params.toDate,
+        toDate: params.toDate
       });
 
       let entries: any[] = [];
@@ -68,7 +70,9 @@ export let smsReport = SlateTrigger.create(
 
       let newSeenIds = [
         ...seenIds,
-        ...newEntries.map((entry: any) => entry.id || entry.msgid || entry.message_id || JSON.stringify(entry)),
+        ...newEntries.map(
+          (entry: any) => entry.id || entry.msgid || entry.message_id || JSON.stringify(entry)
+        )
       ].slice(-1000); // Keep only last 1000 IDs
 
       return {
@@ -79,16 +83,16 @@ export let smsReport = SlateTrigger.create(
           senderId: String(entry.sender || entry.senderid || ''),
           text: String(entry.text || entry.message || entry.msg || ''),
           sentAt: String(entry.date || entry.created || entry.sent_at || ''),
-          rawEntry: entry,
+          rawEntry: entry
         })),
         updatedState: {
           lastPollDate: todayStr,
-          seenIds: newSeenIds,
-        },
+          seenIds: newSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'sms.sent',
         id: ctx.input.messageId || `sms-${Date.now()}`,
@@ -98,8 +102,9 @@ export let smsReport = SlateTrigger.create(
           status: ctx.input.status,
           senderId: ctx.input.senderId,
           text: ctx.input.text,
-          sentAt: ctx.input.sentAt,
-        },
+          sentAt: ctx.input.sentAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

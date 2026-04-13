@@ -6,11 +6,13 @@ let fathomAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -19,12 +21,13 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Public API',
-        description: 'Access to the Fathom public API including meetings, transcripts, summaries, and webhooks',
+        description:
+          'Access to the Fathom public API including meetings, transcripts, summaries, and webhooks',
         scope: 'public_api'
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -38,7 +41,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let params = new URLSearchParams();
       params.append('grant_type', 'authorization_code');
       params.append('code', ctx.code);
@@ -65,7 +68,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let params = new URLSearchParams();
       params.append('grant_type', 'refresh_token');
       params.append('refresh_token', ctx.output.refreshToken || '');
@@ -97,10 +100,14 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Fathom API key generated from Settings → API Access in the Fathom dashboard')
+      apiKey: z
+        .string()
+        .describe(
+          'Fathom API key generated from Settings → API Access in the Fathom dashboard'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey

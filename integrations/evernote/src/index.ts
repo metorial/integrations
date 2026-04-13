@@ -12,12 +12,9 @@ import {
   searchNotesTool,
   listTagsTool,
   manageTagTool,
-  copyNoteTool,
+  copyNoteTool
 } from './tools';
-import {
-  noteChangesTrigger,
-  noteUpdatesPollTrigger,
-} from './triggers';
+import { noteChangesTrigger, noteUpdatesPollTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     searchNotesTool,
     listTagsTool,
     manageTagTool,
-    copyNoteTool,
+    copyNoteTool
   ],
-  triggers: [
-    noteChangesTrigger,
-    noteUpdatesPollTrigger,
-  ],
+  triggers: [noteChangesTrigger, noteUpdatesPollTrigger]
 });

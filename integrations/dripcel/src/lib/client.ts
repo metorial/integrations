@@ -7,7 +7,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.dripcel.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -58,36 +58,47 @@ export class Client {
     return res.data;
   }
 
-  async optOutContact(cell: string, params: {
-    campaignIds?: string[];
-    all?: boolean;
-    createMissingContact?: boolean;
-  }) {
+  async optOutContact(
+    cell: string,
+    params: {
+      campaignIds?: string[];
+      all?: boolean;
+      createMissingContact?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.campaignIds) body.campaign_ids = params.campaignIds;
     if (params.all !== undefined) body.all = params.all;
-    if (params.createMissingContact !== undefined) body.create_missing_contact = params.createMissingContact;
+    if (params.createMissingContact !== undefined)
+      body.create_missing_contact = params.createMissingContact;
     let res = await this.axios.post(`/contacts/${encodeURIComponent(cell)}/optOut`, body);
     return res.data;
   }
 
-  async addTagsToContact(cell: string, params: {
-    tagIds?: string[];
-    tags?: string[];
-    createMissingContact?: boolean;
-  }) {
+  async addTagsToContact(
+    cell: string,
+    params: {
+      tagIds?: string[];
+      tags?: string[];
+      createMissingContact?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.tagIds) body.tag_ids = params.tagIds;
     if (params.tags) body.tags = params.tags;
-    if (params.createMissingContact !== undefined) body.create_missing_contact = params.createMissingContact;
+    if (params.createMissingContact !== undefined)
+      body.create_missing_contact = params.createMissingContact;
     let res = await this.axios.put(`/contacts/${encodeURIComponent(cell)}/tag/add`, body);
     return res.data;
   }
 
-  async removeTagsFromContact(cell: string, params: {
-    tagIds?: string[];
-    tags?: string[];
-  }) {
+  async removeTagsFromContact(
+    cell: string,
+    params: {
+      tagIds?: string[];
+      tags?: string[];
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.tagIds) body.tag_ids = params.tagIds;
     if (params.tags) body.tags = params.tags;
@@ -144,7 +155,8 @@ export class Client {
       template_id: params.templateId,
       destinations: params.destinations
     };
-    if (params.filterNonContacts !== undefined) body.filter_non_contacts = params.filterNonContacts;
+    if (params.filterNonContacts !== undefined)
+      body.filter_non_contacts = params.filterNonContacts;
     if (params.toStartAt) body.to_start_at = params.toStartAt;
     let res = await this.axios.post('/send/email/bulk', body);
     return res.data;
@@ -229,14 +241,16 @@ export class Client {
 
   // ── Sales ─────────────────────────────────────────────────
 
-  async uploadSales(sales: Array<{
-    campaignId: string;
-    cell: string;
-    sendId?: string;
-    clickId?: string;
-    soldAt?: string;
-    saleValue?: number;
-  }>) {
+  async uploadSales(
+    sales: Array<{
+      campaignId: string;
+      cell: string;
+      sendId?: string;
+      clickId?: string;
+      soldAt?: string;
+      saleValue?: number;
+    }>
+  ) {
     let body = sales.map(s => {
       let entry: Record<string, any> = {
         campaign_id: s.campaignId,
@@ -271,17 +285,17 @@ export class Client {
 
   // ── Compliance ────────────────────────────────────────────
 
-  async checkCompliance(params: {
-    cells: string[];
-    country: string;
-    campaignId?: string;
-  }) {
+  async checkCompliance(params: { cells: string[]; country: string; campaignId?: string }) {
     let queryParams: Record<string, string> = {};
     if (params.campaignId) queryParams.campaign_id = params.campaignId;
-    let res = await this.axios.post('/compliance/send', {
-      cells: params.cells,
-      country: params.country
-    }, { params: queryParams });
+    let res = await this.axios.post(
+      '/compliance/send',
+      {
+        cells: params.cells,
+        country: params.country
+      },
+      { params: queryParams }
+    );
     return res.data;
   }
 

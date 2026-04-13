@@ -9,14 +9,24 @@ let EC2_SERVICE = 'ec2';
 
 let tagSchema = z.object({
   key: z.string().describe('Tag key'),
-  value: z.string().describe('Tag value'),
+  value: z.string().describe('Tag value')
 });
 
 let instanceSchema = z.object({
   instanceId: z.string().describe('EC2 instance ID (e.g., i-0abcd1234efgh5678)'),
   instanceType: z.string().optional().describe('Instance type (e.g., t3.micro, m5.large)'),
-  state: z.string().optional().describe('Current instance state (pending, running, shutting-down, terminated, stopping, stopped)'),
-  stateCode: z.number().optional().describe('Numeric state code (0=pending, 16=running, 32=shutting-down, 48=terminated, 64=stopping, 80=stopped)'),
+  state: z
+    .string()
+    .optional()
+    .describe(
+      'Current instance state (pending, running, shutting-down, terminated, stopping, stopped)'
+    ),
+  stateCode: z
+    .number()
+    .optional()
+    .describe(
+      'Numeric state code (0=pending, 16=running, 32=shutting-down, 48=terminated, 64=stopping, 80=stopped)'
+    ),
   publicIpAddress: z.string().optional().describe('Public IPv4 address, if assigned'),
   privateIpAddress: z.string().optional().describe('Private IPv4 address'),
   publicDnsName: z.string().optional().describe('Public DNS hostname'),
@@ -29,19 +39,24 @@ let instanceSchema = z.object({
   launchTime: z.string().optional().describe('Timestamp when the instance was launched'),
   platform: z.string().optional().describe('Platform (windows or empty for Linux)'),
   architecture: z.string().optional().describe('Instance architecture (x86_64, arm64)'),
-  securityGroups: z.array(z.object({
-    groupId: z.string().describe('Security group ID'),
-    groupName: z.string().describe('Security group name'),
-  })).optional().describe('Security groups attached to the instance'),
+  securityGroups: z
+    .array(
+      z.object({
+        groupId: z.string().describe('Security group ID'),
+        groupName: z.string().describe('Security group name')
+      })
+    )
+    .optional()
+    .describe('Security groups attached to the instance'),
   tags: z.array(tagSchema).optional().describe('Tags assigned to the instance'),
   iamInstanceProfile: z.string().optional().describe('ARN of the IAM instance profile'),
-  ebsOptimized: z.boolean().optional().describe('Whether the instance is EBS-optimized'),
+  ebsOptimized: z.boolean().optional().describe('Whether the instance is EBS-optimized')
 });
 
 let actionResultSchema = z.object({
   instanceId: z.string().describe('EC2 instance ID'),
   previousState: z.string().optional().describe('State before the action'),
-  currentState: z.string().optional().describe('State after the action'),
+  currentState: z.string().optional().describe('State after the action')
 });
 
 let parseInstance = (instanceBlock: string): z.infer<typeof instanceSchema> => {
@@ -68,7 +83,9 @@ let parseInstance = (instanceBlock: string): z.infer<typeof instanceSchema> => {
 
   // Parse placement for availability zone
   let placementBlock = extractXmlBlocks(instanceBlock, 'placement')[0];
-  let availabilityZone = placementBlock ? extractXmlValue(placementBlock, 'availabilityZone') : undefined;
+  let availabilityZone = placementBlock
+    ? extractXmlValue(placementBlock, 'availabilityZone')
+    : undefined;
 
   // Parse security groups
   let securityGroups: { groupId: string; groupName: string }[] = [];
@@ -77,10 +94,10 @@ let parseInstance = (instanceBlock: string): z.infer<typeof instanceSchema> => {
   if (groupSetBlock) {
     let sgItems = extractXmlBlocks(groupSetBlock, 'item');
     securityGroups = sgItems
-      .filter((item) => extractXmlValue(item, 'groupId'))
-      .map((item) => ({
+      .filter(item => extractXmlValue(item, 'groupId'))
+      .map(item => ({
         groupId: extractXmlValue(item, 'groupId') ?? '',
-        groupName: extractXmlValue(item, 'groupName') ?? '',
+        groupName: extractXmlValue(item, 'groupName') ?? ''
       }));
   }
 
@@ -90,10 +107,10 @@ let parseInstance = (instanceBlock: string): z.infer<typeof instanceSchema> => {
   if (tagSetBlock) {
     let tagItems = extractXmlBlocks(tagSetBlock, 'item');
     tags = tagItems
-      .filter((item) => extractXmlValue(item, 'key'))
-      .map((item) => ({
+      .filter(item => extractXmlValue(item, 'key'))
+      .map(item => ({
         key: extractXmlValue(item, 'key') ?? '',
-        value: extractXmlValue(item, 'value') ?? '',
+        value: extractXmlValue(item, 'value') ?? ''
       }));
   }
 
@@ -121,7 +138,7 @@ let parseInstance = (instanceBlock: string): z.infer<typeof instanceSchema> => {
     securityGroups: securityGroups.length > 0 ? securityGroups : undefined,
     tags: tags.length > 0 ? tags : undefined,
     iamInstanceProfile,
-    ebsOptimized: ebsOptimizedStr ? ebsOptimizedStr === 'true' : undefined,
+    ebsOptimized: ebsOptimizedStr ? ebsOptimizedStr === 'true' : undefined
   };
 };
 
@@ -129,74 +146,133 @@ let parseStateChange = (itemBlock: string): z.infer<typeof actionResultSchema> =
   let instanceId = extractXmlValue(itemBlock, 'instanceId') ?? '';
 
   let previousStateBlock = extractXmlBlocks(itemBlock, 'previousState')[0];
-  let previousState = previousStateBlock ? extractXmlValue(previousStateBlock, 'name') : undefined;
+  let previousState = previousStateBlock
+    ? extractXmlValue(previousStateBlock, 'name')
+    : undefined;
 
   let currentStateBlock = extractXmlBlocks(itemBlock, 'currentState')[0];
-  let currentState = currentStateBlock ? extractXmlValue(currentStateBlock, 'name') : undefined;
+  let currentState = currentStateBlock
+    ? extractXmlValue(currentStateBlock, 'name')
+    : undefined;
 
   return { instanceId, previousState, currentState };
 };
 
-export let manageEc2InstancesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage EC2 Instances',
-    key: 'manage_ec2_instances',
-    description: `List, start, stop, terminate, or reboot Amazon EC2 instances. Use the list operation to discover instances with filtering by IDs, states, or tags. Use action operations to control instance lifecycle.`,
-    instructions: [
-      'To **list** instances, set operation to "list". Optionally filter by instanceIds, states, or tagFilters.',
-      'To **start** stopped instances, set operation to "start" and provide instanceIds.',
-      'To **stop** running instances, set operation to "stop" and provide instanceIds. Use force to force stop if needed.',
-      'To **terminate** instances permanently, set operation to "terminate" and provide instanceIds. This is irreversible.',
-      'To **reboot** instances, set operation to "reboot" and provide instanceIds.',
-      'The list operation supports pagination via nextToken and maxResults.',
-      'Tag filters use the format { key: "Name", value: "my-server" } and match instances where the tag key has the given value.',
-    ],
-    constraints: [
-      'Terminate is irreversible — all data on instance store volumes is lost.',
-      'You can only start instances that are in the "stopped" state.',
-      'You can only stop instances that are in the "running" state.',
-      'You can list up to 1000 instances per request.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageEc2InstancesTool = SlateTool.create(spec, {
+  name: 'Manage EC2 Instances',
+  key: 'manage_ec2_instances',
+  description: `List, start, stop, terminate, or reboot Amazon EC2 instances. Use the list operation to discover instances with filtering by IDs, states, or tags. Use action operations to control instance lifecycle.`,
+  instructions: [
+    'To **list** instances, set operation to "list". Optionally filter by instanceIds, states, or tagFilters.',
+    'To **start** stopped instances, set operation to "start" and provide instanceIds.',
+    'To **stop** running instances, set operation to "stop" and provide instanceIds. Use force to force stop if needed.',
+    'To **terminate** instances permanently, set operation to "terminate" and provide instanceIds. This is irreversible.',
+    'To **reboot** instances, set operation to "reboot" and provide instanceIds.',
+    'The list operation supports pagination via nextToken and maxResults.',
+    'Tag filters use the format { key: "Name", value: "my-server" } and match instances where the tag key has the given value.'
+  ],
+  constraints: [
+    'Terminate is irreversible — all data on instance store volumes is lost.',
+    'You can only start instances that are in the "stopped" state.',
+    'You can only stop instances that are in the "running" state.',
+    'You can list up to 1000 instances per request.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    operation: z.enum(['list', 'start', 'stop', 'terminate', 'reboot']).describe('The EC2 instance operation to perform'),
-    instanceIds: z.array(z.string()).optional().describe('Instance IDs to target (required for start, stop, terminate, reboot; optional filter for list)'),
-    states: z.array(z.enum([
-      'pending',
-      'running',
-      'shutting-down',
-      'terminated',
-      'stopping',
-      'stopped',
-    ])).optional().describe('Filter instances by state (only for list operation)'),
-    tagFilters: z.array(z.object({
-      key: z.string().describe('Tag key to filter on'),
-      value: z.string().describe('Tag value to match'),
-    })).optional().describe('Filter instances by tags (only for list operation)'),
-    maxResults: z.number().optional().describe('Maximum number of results to return for list operation (5-1000)'),
-    nextToken: z.string().optional().describe('Pagination token from a previous list request'),
-    force: z.boolean().optional().describe('Force stop the instance without waiting for graceful shutdown (only for stop operation)'),
-    hibernate: z.boolean().optional().describe('Hibernate the instance instead of stopping it (only for stop operation, instance must support hibernation)'),
-    additionalFilters: z.array(z.object({
-      name: z.string().describe('Filter name (e.g., "vpc-id", "instance-type", "availability-zone")'),
-      values: z.array(z.string()).describe('Filter values to match'),
-    })).optional().describe('Additional EC2 API filters for the list operation (e.g., vpc-id, instance-type, availability-zone)'),
-  }))
-  .output(z.object({
-    instances: z.array(instanceSchema).optional().describe('List of instances returned by the list operation'),
-    actionResults: z.array(actionResultSchema).optional().describe('State change results for start, stop, terminate, or reboot operations'),
-    nextToken: z.string().optional().describe('Pagination token for retrieving the next page of list results'),
-    totalCount: z.number().optional().describe('Number of instances or results returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      operation: z
+        .enum(['list', 'start', 'stop', 'terminate', 'reboot'])
+        .describe('The EC2 instance operation to perform'),
+      instanceIds: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Instance IDs to target (required for start, stop, terminate, reboot; optional filter for list)'
+        ),
+      states: z
+        .array(
+          z.enum(['pending', 'running', 'shutting-down', 'terminated', 'stopping', 'stopped'])
+        )
+        .optional()
+        .describe('Filter instances by state (only for list operation)'),
+      tagFilters: z
+        .array(
+          z.object({
+            key: z.string().describe('Tag key to filter on'),
+            value: z.string().describe('Tag value to match')
+          })
+        )
+        .optional()
+        .describe('Filter instances by tags (only for list operation)'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return for list operation (5-1000)'),
+      nextToken: z
+        .string()
+        .optional()
+        .describe('Pagination token from a previous list request'),
+      force: z
+        .boolean()
+        .optional()
+        .describe(
+          'Force stop the instance without waiting for graceful shutdown (only for stop operation)'
+        ),
+      hibernate: z
+        .boolean()
+        .optional()
+        .describe(
+          'Hibernate the instance instead of stopping it (only for stop operation, instance must support hibernation)'
+        ),
+      additionalFilters: z
+        .array(
+          z.object({
+            name: z
+              .string()
+              .describe('Filter name (e.g., "vpc-id", "instance-type", "availability-zone")'),
+            values: z.array(z.string()).describe('Filter values to match')
+          })
+        )
+        .optional()
+        .describe(
+          'Additional EC2 API filters for the list operation (e.g., vpc-id, instance-type, availability-zone)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      instances: z
+        .array(instanceSchema)
+        .optional()
+        .describe('List of instances returned by the list operation'),
+      actionResults: z
+        .array(actionResultSchema)
+        .optional()
+        .describe('State change results for start, stop, terminate, or reboot operations'),
+      nextToken: z
+        .string()
+        .optional()
+        .describe('Pagination token for retrieving the next page of list results'),
+      totalCount: z.number().optional().describe('Number of instances or results returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = clientFromContext(ctx);
-    let { operation, instanceIds, states, tagFilters, maxResults, nextToken, force, hibernate, additionalFilters } = ctx.input;
+    let {
+      operation,
+      instanceIds,
+      states,
+      tagFilters,
+      maxResults,
+      nextToken,
+      force,
+      hibernate,
+      additionalFilters
+    } = ctx.input;
 
     if (operation === 'list') {
       let params: Record<string, string> = {};
@@ -220,7 +296,7 @@ export let manageEc2InstancesTool = SlateTool.create(
 
       // Tag filters
       if (tagFilters && tagFilters.length > 0) {
-        tagFilters.forEach((tag) => {
+        tagFilters.forEach(tag => {
           params[`Filter.${filterIndex}.Name`] = `tag:${tag.key}`;
           params[`Filter.${filterIndex}.Value.1`] = tag.value;
           filterIndex++;
@@ -229,7 +305,7 @@ export let manageEc2InstancesTool = SlateTool.create(
 
       // Additional filters
       if (additionalFilters && additionalFilters.length > 0) {
-        additionalFilters.forEach((filter) => {
+        additionalFilters.forEach(filter => {
           params[`Filter.${filterIndex}.Name`] = filter.name;
           filter.values.forEach((value, i) => {
             params[`Filter.${filterIndex}.Value.${i + 1}`] = value;
@@ -250,7 +326,7 @@ export let manageEc2InstancesTool = SlateTool.create(
         service: EC2_SERVICE,
         action: 'DescribeInstances',
         params,
-        version: EC2_VERSION,
+        version: EC2_VERSION
       });
 
       let xml = typeof response === 'string' ? response : String(response);
@@ -260,11 +336,11 @@ export let manageEc2InstancesTool = SlateTool.create(
       let reservationSetBlock = extractXmlBlocks(xml, 'reservationSet')[0];
       if (reservationSetBlock) {
         let reservations = extractXmlBlocks(reservationSetBlock, 'item');
-        reservations.forEach((reservation) => {
+        reservations.forEach(reservation => {
           let instancesSetBlock = extractXmlBlocks(reservation, 'instancesSet')[0];
           if (instancesSetBlock) {
             let instanceItems = extractXmlBlocks(instancesSetBlock, 'item');
-            instanceItems.forEach((instanceBlock) => {
+            instanceItems.forEach(instanceBlock => {
               instances.push(parseInstance(instanceBlock));
             });
           }
@@ -273,7 +349,10 @@ export let manageEc2InstancesTool = SlateTool.create(
 
       let responseNextToken = extractXmlValue(xml, 'nextToken');
 
-      let countMsg = instances.length === 0 ? 'No instances found' : `Found **${instances.length}** instance(s)`;
+      let countMsg =
+        instances.length === 0
+          ? 'No instances found'
+          : `Found **${instances.length}** instance(s)`;
       let filterMsg = '';
       if (states && states.length > 0) {
         filterMsg += ` in state(s): ${states.join(', ')}`;
@@ -287,9 +366,9 @@ export let manageEc2InstancesTool = SlateTool.create(
         output: {
           instances,
           nextToken: responseNextToken,
-          totalCount: instances.length,
+          totalCount: instances.length
         },
-        message: `${countMsg}${filterMsg}${paginationMsg}`,
+        message: `${countMsg}${filterMsg}${paginationMsg}`
       };
     }
 
@@ -305,19 +384,19 @@ export let manageEc2InstancesTool = SlateTool.create(
         service: EC2_SERVICE,
         action: 'StartInstances',
         params: instanceIdParams,
-        version: EC2_VERSION,
+        version: EC2_VERSION
       });
 
       let xml = typeof response === 'string' ? response : String(response);
       let itemBlocks = extractXmlBlocks(xml, 'item');
-      let actionResults = itemBlocks.map(parseStateChange).filter((r) => r.instanceId);
+      let actionResults = itemBlocks.map(parseStateChange).filter(r => r.instanceId);
 
       return {
         output: {
           actionResults,
-          totalCount: actionResults.length,
+          totalCount: actionResults.length
         },
-        message: `Started **${actionResults.length}** instance(s): ${instanceIds.join(', ')}`,
+        message: `Started **${actionResults.length}** instance(s): ${instanceIds.join(', ')}`
       };
     }
 
@@ -334,12 +413,12 @@ export let manageEc2InstancesTool = SlateTool.create(
         service: EC2_SERVICE,
         action: 'StopInstances',
         params,
-        version: EC2_VERSION,
+        version: EC2_VERSION
       });
 
       let xml = typeof response === 'string' ? response : String(response);
       let itemBlocks = extractXmlBlocks(xml, 'item');
-      let actionResults = itemBlocks.map(parseStateChange).filter((r) => r.instanceId);
+      let actionResults = itemBlocks.map(parseStateChange).filter(r => r.instanceId);
 
       let extraMsg = force ? ' (forced)' : '';
       extraMsg += hibernate ? ' (hibernate)' : '';
@@ -347,9 +426,9 @@ export let manageEc2InstancesTool = SlateTool.create(
       return {
         output: {
           actionResults,
-          totalCount: actionResults.length,
+          totalCount: actionResults.length
         },
-        message: `Stopped **${actionResults.length}** instance(s)${extraMsg}: ${instanceIds.join(', ')}`,
+        message: `Stopped **${actionResults.length}** instance(s)${extraMsg}: ${instanceIds.join(', ')}`
       };
     }
 
@@ -358,19 +437,19 @@ export let manageEc2InstancesTool = SlateTool.create(
         service: EC2_SERVICE,
         action: 'TerminateInstances',
         params: instanceIdParams,
-        version: EC2_VERSION,
+        version: EC2_VERSION
       });
 
       let xml = typeof response === 'string' ? response : String(response);
       let itemBlocks = extractXmlBlocks(xml, 'item');
-      let actionResults = itemBlocks.map(parseStateChange).filter((r) => r.instanceId);
+      let actionResults = itemBlocks.map(parseStateChange).filter(r => r.instanceId);
 
       return {
         output: {
           actionResults,
-          totalCount: actionResults.length,
+          totalCount: actionResults.length
         },
-        message: `Terminated **${actionResults.length}** instance(s): ${instanceIds.join(', ')}`,
+        message: `Terminated **${actionResults.length}** instance(s): ${instanceIds.join(', ')}`
       };
     }
 
@@ -379,24 +458,25 @@ export let manageEc2InstancesTool = SlateTool.create(
         service: EC2_SERVICE,
         action: 'RebootInstances',
         params: instanceIdParams,
-        version: EC2_VERSION,
+        version: EC2_VERSION
       });
 
       // RebootInstances does not return state change info, just success/failure
-      let actionResults = instanceIds.map((id) => ({
+      let actionResults = instanceIds.map(id => ({
         instanceId: id,
         previousState: 'running',
-        currentState: 'running',
+        currentState: 'running'
       }));
 
       return {
         output: {
           actionResults,
-          totalCount: actionResults.length,
+          totalCount: actionResults.length
         },
-        message: `Rebooted **${actionResults.length}** instance(s): ${instanceIds.join(', ')}`,
+        message: `Rebooted **${actionResults.length}** instance(s): ${instanceIds.join(', ')}`
       };
     }
 
     throw new Error(`Unknown operation: ${operation}`);
-  }).build();
+  })
+  .build();

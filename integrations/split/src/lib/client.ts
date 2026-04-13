@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let apiV2 = createAxios({
-  baseURL: 'https://api.split.io/internal/api/v2',
+  baseURL: 'https://api.split.io/internal/api/v2'
 });
 
 let apiV3 = createAxios({
-  baseURL: 'https://api.split.io/internal/api/v3',
+  baseURL: 'https://api.split.io/internal/api/v3'
 });
 
 export class Client {
@@ -18,7 +18,7 @@ export class Client {
   private headers() {
     return {
       Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -30,11 +30,16 @@ export class Client {
       params: {
         offset: params?.offset ?? 0,
         limit: params?.limit ?? 50,
-        ...(params?.name ? { name: params.name } : {}),
-      },
+        ...(params?.name ? { name: params.name } : {})
+      }
     });
     return res.data as {
-      objects: Array<{ id: string; name: string; type: string; requiresTitleAndComments: boolean }>;
+      objects: Array<{
+        id: string;
+        name: string;
+        type: string;
+        requiresTitleAndComments: boolean;
+      }>;
       offset: number;
       limit: number;
       totalCount: number;
@@ -45,7 +50,7 @@ export class Client {
 
   async listEnvironments(workspaceId: string) {
     let res = await apiV2.get(`/environments/ws/${workspaceId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as Array<{
       id: string;
@@ -58,7 +63,7 @@ export class Client {
 
   async createEnvironment(workspaceId: string, body: { name: string; production?: boolean }) {
     let res = await apiV2.post(`/environments/ws/${workspaceId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as {
       id: string;
@@ -71,7 +76,7 @@ export class Client {
 
   async deleteEnvironment(workspaceId: string, environmentIdOrName: string) {
     await apiV2.delete(`/environments/ws/${workspaceId}/${environmentIdOrName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -79,7 +84,7 @@ export class Client {
 
   async listTrafficTypes(workspaceId: string) {
     let res = await apiV2.get(`/trafficTypes/ws/${workspaceId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as Array<{
       id: string;
@@ -90,29 +95,40 @@ export class Client {
 
   // ─── Feature Flags (Splits) ────────────────────────────────
 
-  async createFeatureFlag(workspaceId: string, trafficTypeIdOrName: string, body: { name: string; description?: string }) {
-    let res = await apiV2.post(`/splits/ws/${workspaceId}/trafficTypes/${trafficTypeIdOrName}`, body, {
-      headers: this.headers(),
-    });
+  async createFeatureFlag(
+    workspaceId: string,
+    trafficTypeIdOrName: string,
+    body: { name: string; description?: string }
+  ) {
+    let res = await apiV2.post(
+      `/splits/ws/${workspaceId}/trafficTypes/${trafficTypeIdOrName}`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FeatureFlag;
   }
 
   async getFeatureFlag(workspaceId: string, flagName: string) {
     let res = await apiV2.get(`/splits/ws/${workspaceId}/${flagName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as FeatureFlag;
   }
 
-  async listFeatureFlags(workspaceId: string, params?: { offset?: number; limit?: number; tag?: string; name?: string }) {
+  async listFeatureFlags(
+    workspaceId: string,
+    params?: { offset?: number; limit?: number; tag?: string; name?: string }
+  ) {
     let res = await apiV2.get(`/splits/ws/${workspaceId}`, {
       headers: this.headers(),
       params: {
         offset: params?.offset ?? 0,
         limit: params?.limit ?? 50,
         ...(params?.tag ? { tag: params.tag } : {}),
-        ...(params?.name ? { name: params.name } : {}),
-      },
+        ...(params?.name ? { name: params.name } : {})
+      }
     });
     return res.data as {
       objects: FeatureFlag[];
@@ -122,43 +138,66 @@ export class Client {
     };
   }
 
-  async updateFeatureFlagMetadata(workspaceId: string, flagName: string, operations: JsonPatchOp[]) {
+  async updateFeatureFlagMetadata(
+    workspaceId: string,
+    flagName: string,
+    operations: JsonPatchOp[]
+  ) {
     let res = await apiV2.patch(`/splits/ws/${workspaceId}/${flagName}`, operations, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as FeatureFlag;
   }
 
   async deleteFeatureFlag(workspaceId: string, flagName: string) {
     await apiV2.delete(`/splits/ws/${workspaceId}/${flagName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   // ─── Feature Flag Definitions (Environment-level) ──────────
 
-  async createFlagDefinition(workspaceId: string, flagName: string, environmentId: string, body: FlagDefinitionBody) {
-    let res = await apiV2.post(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`, body, {
-      headers: this.headers(),
-    });
+  async createFlagDefinition(
+    workspaceId: string,
+    flagName: string,
+    environmentId: string,
+    body: FlagDefinitionBody
+  ) {
+    let res = await apiV2.post(
+      `/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FlagDefinition;
   }
 
   async getFlagDefinition(workspaceId: string, flagName: string, environmentIdOrName: string) {
-    let res = await apiV2.get(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentIdOrName}`, {
-      headers: this.headers(),
-    });
+    let res = await apiV2.get(
+      `/splits/ws/${workspaceId}/${flagName}/environments/${environmentIdOrName}`,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FlagDefinition;
   }
 
-  async listFlagDefinitions(workspaceId: string, environmentIdOrName: string, params?: { offset?: number; limit?: number }) {
-    let res = await apiV2.get(`/splits/ws/${workspaceId}/environments/${environmentIdOrName}`, {
-      headers: this.headers(),
-      params: {
-        offset: params?.offset ?? 0,
-        limit: params?.limit ?? 50,
-      },
-    });
+  async listFlagDefinitions(
+    workspaceId: string,
+    environmentIdOrName: string,
+    params?: { offset?: number; limit?: number }
+  ) {
+    let res = await apiV2.get(
+      `/splits/ws/${workspaceId}/environments/${environmentIdOrName}`,
+      {
+        headers: this.headers(),
+        params: {
+          offset: params?.offset ?? 0,
+          limit: params?.limit ?? 50
+        }
+      }
+    );
     return res.data as {
       objects: FlagDefinition[];
       offset: number;
@@ -167,52 +206,86 @@ export class Client {
     };
   }
 
-  async updateFlagDefinition(workspaceId: string, flagName: string, environmentId: string, operations: JsonPatchOp[]) {
-    let res = await apiV2.patch(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`, operations, {
-      headers: this.headers(),
-    });
+  async updateFlagDefinition(
+    workspaceId: string,
+    flagName: string,
+    environmentId: string,
+    operations: JsonPatchOp[]
+  ) {
+    let res = await apiV2.patch(
+      `/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`,
+      operations,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FlagDefinition;
   }
 
-  async fullUpdateFlagDefinition(workspaceId: string, flagName: string, environmentId: string, body: FlagDefinitionBody) {
-    let res = await apiV2.put(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`, body, {
-      headers: this.headers(),
-    });
+  async fullUpdateFlagDefinition(
+    workspaceId: string,
+    flagName: string,
+    environmentId: string,
+    body: FlagDefinitionBody
+  ) {
+    let res = await apiV2.put(
+      `/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FlagDefinition;
   }
 
   async killFlag(workspaceId: string, flagName: string, environmentId: string) {
-    let res = await apiV2.put(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}/kill`, {}, {
-      headers: this.headers(),
-    });
+    let res = await apiV2.put(
+      `/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}/kill`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FlagDefinition;
   }
 
   async restoreFlag(workspaceId: string, flagName: string, environmentId: string) {
-    let res = await apiV2.put(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}/restore`, {}, {
-      headers: this.headers(),
-    });
+    let res = await apiV2.put(
+      `/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}/restore`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as FlagDefinition;
   }
 
   async removeFlagDefinition(workspaceId: string, flagName: string, environmentId: string) {
     await apiV2.delete(`/splits/ws/${workspaceId}/${flagName}/environments/${environmentId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   // ─── Segments ──────────────────────────────────────────────
 
-  async createSegment(workspaceId: string, trafficTypeId: string, body: { name: string; description?: string }) {
-    let res = await apiV2.post(`/segments/ws/${workspaceId}/trafficTypes/${trafficTypeId}`, body, {
-      headers: this.headers(),
-    });
+  async createSegment(
+    workspaceId: string,
+    trafficTypeId: string,
+    body: { name: string; description?: string }
+  ) {
+    let res = await apiV2.post(
+      `/segments/ws/${workspaceId}/trafficTypes/${trafficTypeId}`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as Segment;
   }
 
   async listSegments(workspaceId: string) {
     let res = await apiV2.get(`/segments/ws/${workspaceId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as {
       objects: Segment[];
@@ -224,26 +297,30 @@ export class Client {
 
   async deleteSegment(workspaceId: string, segmentName: string) {
     await apiV2.delete(`/segments/ws/${workspaceId}/${segmentName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async activateSegmentInEnv(environmentId: string, segmentName: string) {
-    let res = await apiV2.post(`/segments/${environmentId}/${segmentName}`, {}, {
-      headers: this.headers(),
-    });
+    let res = await apiV2.post(
+      `/segments/${environmentId}/${segmentName}`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     return res.data;
   }
 
   async deactivateSegmentInEnv(environmentId: string, segmentName: string) {
     await apiV2.delete(`/segments/${environmentId}/${segmentName}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async getSegmentKeys(environmentId: string, segmentName: string) {
     let res = await apiV2.get(`/segments/${environmentId}/${segmentName}/keys`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as {
       keys: Array<{ key: string }>;
@@ -255,26 +332,39 @@ export class Client {
 
   async uploadSegmentKeys(environmentId: string, segmentName: string, keys: string[]) {
     let res = await apiV2.put(`/segments/${environmentId}/${segmentName}/upload`, keys, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async removeSegmentKeys(environmentId: string, segmentName: string, keys: string[], comment?: string) {
-    let res = await apiV2.put(`/segments/${environmentId}/${segmentName}/removeKeys`, {
-      keys,
-      comment: comment ?? '',
-    }, {
-      headers: this.headers(),
-    });
+  async removeSegmentKeys(
+    environmentId: string,
+    segmentName: string,
+    keys: string[],
+    comment?: string
+  ) {
+    let res = await apiV2.put(
+      `/segments/${environmentId}/${segmentName}/removeKeys`,
+      {
+        keys,
+        comment: comment ?? ''
+      },
+      {
+        headers: this.headers()
+      }
+    );
     return res.data;
   }
 
   // ─── Flag Sets (v3) ───────────────────────────────────────
 
-  async createFlagSet(body: { name: string; description?: string; workspace: { id: string; type: string } }) {
+  async createFlagSet(body: {
+    name: string;
+    description?: string;
+    workspace: { id: string; type: string };
+  }) {
     let res = await apiV3.post('/flag-sets', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as FlagSet;
   }
@@ -285,8 +375,8 @@ export class Client {
       params: {
         workspace_id: workspaceId,
         limit: params?.limit ?? 50,
-        ...(params?.after ? { after: params.after } : {}),
-      },
+        ...(params?.after ? { after: params.after } : {})
+      }
     });
     return res.data as {
       data: FlagSet[];
@@ -299,23 +389,27 @@ export class Client {
 
   async getFlagSet(flagSetId: string) {
     let res = await apiV3.get(`/flag-sets/${flagSetId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as FlagSet;
   }
 
   async deleteFlagSet(flagSetId: string) {
     await apiV3.delete(`/flag-sets/${flagSetId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   // ─── Users ─────────────────────────────────────────────────
 
   async inviteUser(email: string, groups?: Array<{ id: string; type: string }>) {
-    let res = await apiV2.post('/users', { email, groups: groups ?? [] }, {
-      headers: this.headers(),
-    });
+    let res = await apiV2.post(
+      '/users',
+      { email, groups: groups ?? [] },
+      {
+        headers: this.headers()
+      }
+    );
     return res.data as SplitUser;
   }
 
@@ -325,8 +419,8 @@ export class Client {
       params: {
         limit: params?.limit ?? 50,
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.status ? { status: params.status } : {}),
-      },
+        ...(params?.status ? { status: params.status } : {})
+      }
     });
     return res.data as {
       data: SplitUser[];
@@ -339,21 +433,24 @@ export class Client {
 
   async getUser(userId: string) {
     let res = await apiV2.get(`/users/${userId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as SplitUser;
   }
 
-  async updateUser(userId: string, body: { email: string; name: string; status: string; '2fa': boolean; type: string }) {
+  async updateUser(
+    userId: string,
+    body: { email: string; name: string; status: string; '2fa': boolean; type: string }
+  ) {
     let res = await apiV2.put(`/users/${userId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as SplitUser;
   }
 
   async deleteUser(userId: string) {
     await apiV2.delete(`/users/${userId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -361,7 +458,7 @@ export class Client {
 
   async createGroup(body: { name: string; description?: string }) {
     let res = await apiV2.post('/groups', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as SplitGroup;
   }
@@ -371,8 +468,8 @@ export class Client {
       headers: this.headers(),
       params: {
         offset: params?.offset ?? 0,
-        limit: params?.limit ?? 50,
-      },
+        limit: params?.limit ?? 50
+      }
     });
     return res.data as {
       objects: SplitGroup[];
@@ -384,14 +481,14 @@ export class Client {
 
   async updateGroup(groupId: string, body: { name: string; description?: string }) {
     let res = await apiV2.put(`/groups/${groupId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as SplitGroup;
   }
 
   async deleteGroup(groupId: string) {
     await apiV2.delete(`/groups/${groupId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -400,7 +497,7 @@ export class Client {
   async listRolloutStatuses(workspaceId: string) {
     let res = await apiV2.get('/rolloutStatuses', {
       headers: this.headers(),
-      params: { wsId: workspaceId },
+      params: { wsId: workspaceId }
     });
     return res.data as Array<{
       id: string;
@@ -413,7 +510,7 @@ export class Client {
 
   async listAttributes(workspaceId: string, trafficTypeId: string) {
     let res = await apiV2.get(`/schema/ws/${workspaceId}/trafficTypes/${trafficTypeId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data as Array<{
       id: string;
@@ -427,25 +524,41 @@ export class Client {
     }>;
   }
 
-  async createAttribute(workspaceId: string, trafficTypeId: string, body: {
-    id: string;
-    displayName?: string;
-    description?: string;
-    dataType: string;
-    suggestedValues?: string[];
-  }) {
-    let res = await apiV2.post(`/schema/ws/${workspaceId}/trafficTypes/${trafficTypeId}`, body, {
-      headers: this.headers(),
-    });
+  async createAttribute(
+    workspaceId: string,
+    trafficTypeId: string,
+    body: {
+      id: string;
+      displayName?: string;
+      description?: string;
+      dataType: string;
+      suggestedValues?: string[];
+    }
+  ) {
+    let res = await apiV2.post(
+      `/schema/ws/${workspaceId}/trafficTypes/${trafficTypeId}`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data;
   }
 
   // ─── Identities ────────────────────────────────────────────
 
-  async saveIdentities(trafficTypeId: string, environmentId: string, identities: Array<{ key: string; values: Record<string, unknown> }>) {
-    let res = await apiV2.post(`/trafficTypes/${trafficTypeId}/environments/${environmentId}/identities`, identities, {
-      headers: this.headers(),
-    });
+  async saveIdentities(
+    trafficTypeId: string,
+    environmentId: string,
+    identities: Array<{ key: string; values: Record<string, unknown> }>
+  ) {
+    let res = await apiV2.post(
+      `/trafficTypes/${trafficTypeId}/environments/${environmentId}/identities`,
+      identities,
+      {
+        headers: this.headers()
+      }
+    );
     return res.data;
   }
 
@@ -456,8 +569,8 @@ export class Client {
       headers: this.headers(),
       params: {
         limit: params?.limit ?? 50,
-        ...(params?.after ? { after: params.after } : {}),
-      },
+        ...(params?.after ? { after: params.after } : {})
+      }
     });
     return res.data;
   }

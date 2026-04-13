@@ -13,50 +13,55 @@ let matchedPersonSchema = z.object({
   jobTitle: z.string().nullable().optional(),
   jobCompanyName: z.string().nullable().optional(),
   locationName: z.string().nullable().optional(),
-  matchScore: z.number().nullable().optional().describe('Confidence score indicating match strength'),
+  matchScore: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('Confidence score indicating match strength')
 });
 
-export let identifyPerson = SlateTool.create(
-  spec,
-  {
-    name: 'Identify Person',
-    key: 'identify_person',
-    description: `Retrieve multiple potential person matches ranked by confidence score. Use broad search inputs to find candidates when you have partial or ambiguous information about an individual.
+export let identifyPerson = SlateTool.create(spec, {
+  name: 'Identify Person',
+  key: 'identify_person',
+  description: `Retrieve multiple potential person matches ranked by confidence score. Use broad search inputs to find candidates when you have partial or ambiguous information about an individual.
 Returns up to 20 matching profiles sorted by match strength, useful for building comprehensive profiles from limited data.`,
-    instructions: [
-      'Provide at least one identifying attribute such as name, email, phone, company, school, or location.',
-      'The more attributes provided, the more accurate the match ranking will be.',
-    ],
-    constraints: [
-      'Returns a maximum of 20 matching profiles per request.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Provide at least one identifying attribute such as name, email, phone, company, school, or location.',
+    'The more attributes provided, the more accurate the match ranking will be.'
+  ],
+  constraints: ['Returns a maximum of 20 matching profiles per request.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Full name of the person'),
-    firstName: z.string().optional().describe('First name of the person'),
-    lastName: z.string().optional().describe('Last name of the person'),
-    email: z.string().optional().describe('Email address associated with the person'),
-    phone: z.string().optional().describe('Phone number associated with the person'),
-    linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
-    company: z.string().optional().describe('Company name where the person works or worked'),
-    school: z.string().optional().describe('School name the person attended'),
-    location: z.string().optional().describe('Location of the person'),
-    locality: z.string().optional().describe('City/locality of the person'),
-    region: z.string().optional().describe('State/region of the person'),
-    country: z.string().optional().describe('Country of the person'),
-    titlecase: z.boolean().optional().describe('Titlecase the output fields'),
-  }))
-  .output(z.object({
-    matches: z.array(matchedPersonSchema).describe('Matching person records ranked by confidence'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Full name of the person'),
+      firstName: z.string().optional().describe('First name of the person'),
+      lastName: z.string().optional().describe('Last name of the person'),
+      email: z.string().optional().describe('Email address associated with the person'),
+      phone: z.string().optional().describe('Phone number associated with the person'),
+      linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
+      company: z.string().optional().describe('Company name where the person works or worked'),
+      school: z.string().optional().describe('School name the person attended'),
+      location: z.string().optional().describe('Location of the person'),
+      locality: z.string().optional().describe('City/locality of the person'),
+      region: z.string().optional().describe('State/region of the person'),
+      country: z.string().optional().describe('Country of the person'),
+      titlecase: z.boolean().optional().describe('Titlecase the output fields')
+    })
+  )
+  .output(
+    z.object({
+      matches: z
+        .array(matchedPersonSchema)
+        .describe('Matching person records ranked by confidence')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      sandbox: ctx.config.sandbox,
+      sandbox: ctx.config.sandbox
     });
 
     let params: Record<string, unknown> = {};
@@ -89,12 +94,13 @@ Returns up to 20 matching profiles sorted by match strength, useful for building
         jobTitle: data.job_title ?? null,
         jobCompanyName: data.job_company_name ?? null,
         locationName: data.location_name ?? null,
-        matchScore: record.match_score ?? null,
+        matchScore: record.match_score ?? null
       };
     });
 
     return {
       output: { matches },
-      message: `Found **${matches.length}** potential matches.${matches.length > 0 && matches[0]?.fullName ? ` Top match: **${matches[0].fullName}**${matches[0].matchScore !== null ? ` (score: ${matches[0].matchScore})` : ''}` : ''}`,
+      message: `Found **${matches.length}** potential matches.${matches.length > 0 && matches[0]?.fullName ? ` Top match: **${matches[0].fullName}**${matches[0].matchScore !== null ? ` (score: ${matches[0].matchScore})` : ''}` : ''}`
     };
-  }).build();
+  })
+  .build();

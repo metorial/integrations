@@ -6,11 +6,7 @@ export class MetaAdsClient {
   private apiVersion: string;
   private baseUrl: string;
 
-  constructor(config: {
-    token: string;
-    adAccountId: string;
-    apiVersion: string;
-  }) {
+  constructor(config: { token: string; adAccountId: string; apiVersion: string }) {
     this.token = config.token;
     this.adAccountId = config.adAccountId;
     this.apiVersion = config.apiVersion;
@@ -40,7 +36,9 @@ export class MetaAdsClient {
   }) {
     let response = await this.axios.get(`${this.accountPath}/campaigns`, {
       params: {
-        fields: params?.fields || 'id,name,objective,status,daily_budget,lifetime_budget,budget_remaining,created_time,updated_time,start_time,stop_time,special_ad_categories,buying_type',
+        fields:
+          params?.fields ||
+          'id,name,objective,status,daily_budget,lifetime_budget,budget_remaining,created_time,updated_time,start_time,stop_time,special_ad_categories,buying_type',
         limit: params?.limit || 25,
         after: params?.after,
         filtering: params?.filtering ? JSON.stringify(params.filtering) : undefined
@@ -52,7 +50,9 @@ export class MetaAdsClient {
   async getCampaign(campaignId: string, fields?: string) {
     let response = await this.axios.get(`/${campaignId}`, {
       params: {
-        fields: fields || 'id,name,objective,status,daily_budget,lifetime_budget,budget_remaining,created_time,updated_time,start_time,stop_time,special_ad_categories,buying_type'
+        fields:
+          fields ||
+          'id,name,objective,status,daily_budget,lifetime_budget,budget_remaining,created_time,updated_time,start_time,stop_time,special_ad_categories,buying_type'
       }
     });
     return response.data;
@@ -88,7 +88,9 @@ export class MetaAdsClient {
 
     let response = await this.axios.get(path, {
       params: {
-        fields: params?.fields || 'id,name,campaign_id,status,daily_budget,lifetime_budget,budget_remaining,targeting,optimization_goal,billing_event,bid_amount,start_time,end_time,created_time,updated_time',
+        fields:
+          params?.fields ||
+          'id,name,campaign_id,status,daily_budget,lifetime_budget,budget_remaining,targeting,optimization_goal,billing_event,bid_amount,start_time,end_time,created_time,updated_time',
         limit: params?.limit || 25,
         after: params?.after,
         filtering: params?.filtering ? JSON.stringify(params.filtering) : undefined
@@ -100,7 +102,9 @@ export class MetaAdsClient {
   async getAdSet(adSetId: string, fields?: string) {
     let response = await this.axios.get(`/${adSetId}`, {
       params: {
-        fields: fields || 'id,name,campaign_id,status,daily_budget,lifetime_budget,budget_remaining,targeting,optimization_goal,billing_event,bid_amount,start_time,end_time,created_time,updated_time'
+        fields:
+          fields ||
+          'id,name,campaign_id,status,daily_budget,lifetime_budget,budget_remaining,targeting,optimization_goal,billing_event,bid_amount,start_time,end_time,created_time,updated_time'
       }
     });
     return response.data;
@@ -130,13 +134,13 @@ export class MetaAdsClient {
     after?: string;
     filtering?: Array<{ field: string; operator: string; value: string }>;
   }) {
-    let path = params?.adSetId
-      ? `/${params.adSetId}/ads`
-      : `${this.accountPath}/ads`;
+    let path = params?.adSetId ? `/${params.adSetId}/ads` : `${this.accountPath}/ads`;
 
     let response = await this.axios.get(path, {
       params: {
-        fields: params?.fields || 'id,name,adset_id,campaign_id,status,creative,created_time,updated_time',
+        fields:
+          params?.fields ||
+          'id,name,adset_id,campaign_id,status,creative,created_time,updated_time',
         limit: params?.limit || 25,
         after: params?.after,
         filtering: params?.filtering ? JSON.stringify(params.filtering) : undefined
@@ -148,7 +152,8 @@ export class MetaAdsClient {
   async getAd(adId: string, fields?: string) {
     let response = await this.axios.get(`/${adId}`, {
       params: {
-        fields: fields || 'id,name,adset_id,campaign_id,status,creative,created_time,updated_time'
+        fields:
+          fields || 'id,name,adset_id,campaign_id,status,creative,created_time,updated_time'
       }
     });
     return response.data;
@@ -171,14 +176,12 @@ export class MetaAdsClient {
 
   // ---- Ad Creatives ----
 
-  async getAdCreatives(params?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-  }) {
+  async getAdCreatives(params?: { fields?: string; limit?: number; after?: string }) {
     let response = await this.axios.get(`${this.accountPath}/adcreatives`, {
       params: {
-        fields: params?.fields || 'id,name,title,body,image_url,thumbnail_url,object_story_spec,status,created_time',
+        fields:
+          params?.fields ||
+          'id,name,title,body,image_url,thumbnail_url,object_story_spec,status,created_time',
         limit: params?.limit || 25,
         after: params?.after
       }
@@ -189,7 +192,9 @@ export class MetaAdsClient {
   async getAdCreative(creativeId: string, fields?: string) {
     let response = await this.axios.get(`/${creativeId}`, {
       params: {
-        fields: fields || 'id,name,title,body,image_url,thumbnail_url,object_story_spec,status,created_time'
+        fields:
+          fields ||
+          'id,name,title,body,image_url,thumbnail_url,object_story_spec,status,created_time'
       }
     });
     return response.data;
@@ -217,7 +222,9 @@ export class MetaAdsClient {
     let objectId = params.objectId || this.adAccountId;
 
     let requestParams: Record<string, any> = {
-      fields: params.fields || 'impressions,clicks,spend,ctr,cpc,cpm,reach,frequency,actions,cost_per_action_type',
+      fields:
+        params.fields ||
+        'impressions,clicks,spend,ctr,cpc,cpm,reach,frequency,actions,cost_per_action_type',
       limit: params.limit || 25,
       after: params.after
     };
@@ -235,14 +242,12 @@ export class MetaAdsClient {
 
   // ---- Custom Audiences ----
 
-  async getCustomAudiences(params?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-  }) {
+  async getCustomAudiences(params?: { fields?: string; limit?: number; after?: string }) {
     let response = await this.axios.get(`${this.accountPath}/customaudiences`, {
       params: {
-        fields: params?.fields || 'id,name,description,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status,operation_status,time_created,time_updated',
+        fields:
+          params?.fields ||
+          'id,name,description,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status,operation_status,time_created,time_updated',
         limit: params?.limit || 25,
         after: params?.after
       }
@@ -253,7 +258,9 @@ export class MetaAdsClient {
   async getCustomAudience(audienceId: string, fields?: string) {
     let response = await this.axios.get(`/${audienceId}`, {
       params: {
-        fields: fields || 'id,name,description,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status,operation_status,time_created,time_updated'
+        fields:
+          fields ||
+          'id,name,description,subtype,approximate_count_lower_bound,approximate_count_upper_bound,delivery_status,operation_status,time_created,time_updated'
       }
     });
     return response.data;
@@ -286,7 +293,11 @@ export class MetaAdsClient {
 
   // ---- Conversions API ----
 
-  async sendConversionEvents(datasetId: string, events: Array<Record<string, any>>, testEventCode?: string) {
+  async sendConversionEvents(
+    datasetId: string,
+    events: Array<Record<string, any>>,
+    testEventCode?: string
+  ) {
     let params: Record<string, any> = {
       data: JSON.stringify(events)
     };
@@ -313,7 +324,9 @@ export class MetaAdsClient {
   }) {
     let requestParams: Record<string, any> = {
       ad_reached_countries: JSON.stringify(params.adReachedCountries),
-      fields: params.fields || 'id,ad_creation_time,ad_delivery_start_time,ad_delivery_stop_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_titles,page_id,page_name,publisher_platforms,estimated_audience_size,spend,impressions',
+      fields:
+        params.fields ||
+        'id,ad_creation_time,ad_delivery_start_time,ad_delivery_stop_time,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_titles,page_id,page_name,publisher_platforms,estimated_audience_size,spend,impressions',
       limit: params.limit || 25,
       after: params.after
     };
@@ -321,7 +334,8 @@ export class MetaAdsClient {
     if (params.searchTerms) requestParams.search_terms = params.searchTerms;
     if (params.adType) requestParams.ad_type = params.adType;
     if (params.adActiveStatus) requestParams.ad_active_status = params.adActiveStatus;
-    if (params.searchPageIds) requestParams.search_page_ids = JSON.stringify(params.searchPageIds);
+    if (params.searchPageIds)
+      requestParams.search_page_ids = JSON.stringify(params.searchPageIds);
     if (params.bylines) requestParams.bylines = JSON.stringify(params.bylines);
 
     let response = await this.axios.get('/ads_archive', { params: requestParams });
@@ -330,11 +344,14 @@ export class MetaAdsClient {
 
   // ---- Lead Ads ----
 
-  async getLeadForms(pageId: string, params?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-  }) {
+  async getLeadForms(
+    pageId: string,
+    params?: {
+      fields?: string;
+      limit?: number;
+      after?: string;
+    }
+  ) {
     let response = await this.axios.get(`/${pageId}/leadgen_forms`, {
       params: {
         fields: params?.fields || 'id,name,status,created_time,leads_count,locale,page',
@@ -345,14 +362,19 @@ export class MetaAdsClient {
     return response.data;
   }
 
-  async getLeads(formId: string, params?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-  }) {
+  async getLeads(
+    formId: string,
+    params?: {
+      fields?: string;
+      limit?: number;
+      after?: string;
+    }
+  ) {
     let response = await this.axios.get(`/${formId}/leads`, {
       params: {
-        fields: params?.fields || 'id,created_time,field_data,ad_id,ad_name,campaign_id,campaign_name,form_id,is_organic',
+        fields:
+          params?.fields ||
+          'id,created_time,field_data,ad_id,ad_name,campaign_id,campaign_name,form_id,is_organic',
         limit: params?.limit || 25,
         after: params?.after
       }
@@ -363,7 +385,9 @@ export class MetaAdsClient {
   async getLead(leadId: string, fields?: string) {
     let response = await this.axios.get(`/${leadId}`, {
       params: {
-        fields: fields || 'id,created_time,field_data,ad_id,ad_name,campaign_id,campaign_name,form_id,is_organic'
+        fields:
+          fields ||
+          'id,created_time,field_data,ad_id,ad_name,campaign_id,campaign_name,form_id,is_organic'
       }
     });
     return response.data;
@@ -371,30 +395,34 @@ export class MetaAdsClient {
 
   // ---- Product Catalogs ----
 
-  async getCatalogs(params?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-  }) {
-    let response = await this.axios.get(`/${this.adAccountId.replace('act_', '')}/owned_product_catalogs`, {
-      params: {
-        fields: params?.fields || 'id,name,product_count,vertical',
-        limit: params?.limit || 25,
-        after: params?.after
+  async getCatalogs(params?: { fields?: string; limit?: number; after?: string }) {
+    let response = await this.axios.get(
+      `/${this.adAccountId.replace('act_', '')}/owned_product_catalogs`,
+      {
+        params: {
+          fields: params?.fields || 'id,name,product_count,vertical',
+          limit: params?.limit || 25,
+          after: params?.after
+        }
       }
-    });
+    );
     return response.data;
   }
 
-  async getCatalogProducts(catalogId: string, params?: {
-    fields?: string;
-    limit?: number;
-    after?: string;
-    filter?: Record<string, any>;
-  }) {
+  async getCatalogProducts(
+    catalogId: string,
+    params?: {
+      fields?: string;
+      limit?: number;
+      after?: string;
+      filter?: Record<string, any>;
+    }
+  ) {
     let response = await this.axios.get(`/${catalogId}/products`, {
       params: {
-        fields: params?.fields || 'id,name,description,price,currency,availability,image_url,url,retailer_id',
+        fields:
+          params?.fields ||
+          'id,name,description,price,currency,availability,image_url,url,retailer_id',
         limit: params?.limit || 25,
         after: params?.after,
         filter: params?.filter ? JSON.stringify(params.filter) : undefined

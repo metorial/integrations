@@ -9,9 +9,9 @@ export class RaiselyClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -40,18 +40,21 @@ export class RaiselyClient {
 
   // ── Profiles ───────────────────────────────────────────────
 
-  async listProfiles(campaignUuid: string, params?: {
-    offset?: number;
-    limit?: number;
-    sort?: string;
-    order?: string;
-    type?: string;
-    private?: boolean;
-    q?: string;
-    user?: string;
-    parent?: string;
-    team?: string;
-  }) {
+  async listProfiles(
+    campaignUuid: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      sort?: string;
+      order?: string;
+      type?: string;
+      private?: boolean;
+      q?: string;
+      user?: string;
+      parent?: string;
+      team?: string;
+    }
+  ) {
     let response = await this.axios.get(`/campaigns/${campaignUuid}/profiles`, { params });
     return response.data;
   }
@@ -78,7 +81,7 @@ export class RaiselyClient {
 
   async addProfileMember(profileUuid: string, userUuid: string) {
     let response = await this.axios.post(`/profiles/${profileUuid}/members`, {
-      data: { userUuid },
+      data: { userUuid }
     });
     return response.data;
   }
@@ -90,16 +93,19 @@ export class RaiselyClient {
 
   // ── Donations ──────────────────────────────────────────────
 
-  async listDonations(campaignUuid: string, params?: {
-    offset?: number;
-    limit?: number;
-    sort?: string;
-    order?: string;
-    private?: boolean;
-    profile?: string;
-    user?: string;
-    status?: string;
-  }) {
+  async listDonations(
+    campaignUuid: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      sort?: string;
+      order?: string;
+      private?: boolean;
+      profile?: string;
+      user?: string;
+      status?: string;
+    }
+  ) {
     let response = await this.axios.get(`/campaigns/${campaignUuid}/donations`, { params });
     return response.data;
   }
@@ -121,17 +127,22 @@ export class RaiselyClient {
 
   // ── Subscriptions ──────────────────────────────────────────
 
-  async listSubscriptions(campaignUuid: string, params?: {
-    offset?: number;
-    limit?: number;
-    sort?: string;
-    order?: string;
-    private?: boolean;
-    profile?: string;
-    user?: string;
-    status?: string;
-  }) {
-    let response = await this.axios.get(`/campaigns/${campaignUuid}/subscriptions`, { params });
+  async listSubscriptions(
+    campaignUuid: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      sort?: string;
+      order?: string;
+      private?: boolean;
+      profile?: string;
+      user?: string;
+      status?: string;
+    }
+  ) {
+    let response = await this.axios.get(`/campaigns/${campaignUuid}/subscriptions`, {
+      params
+    });
     return response.data;
   }
 
@@ -187,10 +198,13 @@ export class RaiselyClient {
 
   // ── Products ───────────────────────────────────────────────
 
-  async listProducts(campaignUuid: string, params?: {
-    offset?: number;
-    limit?: number;
-  }) {
+  async listProducts(
+    campaignUuid: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.axios.get(`/campaigns/${campaignUuid}/products`, { params });
     return response.data;
   }
@@ -202,10 +216,13 @@ export class RaiselyClient {
 
   // ── Orders ─────────────────────────────────────────────────
 
-  async listOrders(campaignUuid: string, params?: {
-    offset?: number;
-    limit?: number;
-  }) {
+  async listOrders(
+    campaignUuid: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.axios.get(`/campaigns/${campaignUuid}/orders`, { params });
     return response.data;
   }
@@ -217,12 +234,15 @@ export class RaiselyClient {
 
   // ── Posts ──────────────────────────────────────────────────
 
-  async listPosts(profileUuid: string, params?: {
-    offset?: number;
-    limit?: number;
-    sort?: string;
-    order?: string;
-  }) {
+  async listPosts(
+    profileUuid: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      sort?: string;
+      order?: string;
+    }
+  ) {
     let response = await this.axios.get(`/profiles/${profileUuid}/posts`, { params });
     return response.data;
   }
@@ -230,7 +250,7 @@ export class RaiselyClient {
   async createPost(campaignUuid: string, profileUuid: string, data: Record<string, any>) {
     let response = await this.axios.post(
       `/campaigns/${campaignUuid}/profiles/${profileUuid}/posts`,
-      { data },
+      { data }
     );
     return response.data;
   }
@@ -259,11 +279,7 @@ export class RaiselyClient {
     return response.data;
   }
 
-  async createWebhook(data: {
-    url: string;
-    campaignUuid?: string;
-    sharedSecret?: string;
-  }) {
+  async createWebhook(data: { url: string; campaignUuid?: string; sharedSecret?: string }) {
     let response = await this.axios.post('/webhooks', { data });
     return response.data;
   }

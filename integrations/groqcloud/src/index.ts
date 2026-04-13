@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   generateText,
@@ -13,11 +12,9 @@ import {
   createBatch,
   getBatch,
   listBatches,
-  cancelBatch,
+  cancelBatch
 } from './tools';
-import { batchStatus,
-  inboundWebhook,
-} from './triggers';
+import { batchStatus, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     createBatch,
     getBatch,
     listBatches,
-    cancelBatch,
+    cancelBatch
   ],
-  triggers: [
-    inboundWebhook,
-    batchStatus,
-  ],
+  triggers: [inboundWebhook, batchStatus]
 });

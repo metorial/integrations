@@ -114,8 +114,8 @@ export class Client {
       baseURL: `${this.baseUrl}/api`,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -128,25 +128,31 @@ export class Client {
   // Documents
 
   async getDocument(documentId: string): Promise<OutlineDocument> {
-    let result = await this.post<{ data: OutlineDocument }>('/documents.info', { id: documentId });
+    let result = await this.post<{ data: OutlineDocument }>('/documents.info', {
+      id: documentId
+    });
     return result.data;
   }
 
-  async listDocuments(params: {
-    collectionId?: string;
-    parentDocumentId?: string;
-    template?: boolean;
-    sort?: string;
-    direction?: 'ASC' | 'DESC';
-  } & PaginationParams = {}): Promise<{ data: OutlineDocument[]; pagination: any }> {
+  async listDocuments(
+    params: {
+      collectionId?: string;
+      parentDocumentId?: string;
+      template?: boolean;
+      sort?: string;
+      direction?: 'ASC' | 'DESC';
+    } & PaginationParams = {}
+  ): Promise<{ data: OutlineDocument[]; pagination: any }> {
     return this.post('/documents.list', params);
   }
 
-  async listDrafts(params: {
-    collectionId?: string;
-    sort?: string;
-    direction?: 'ASC' | 'DESC';
-  } & PaginationParams = {}): Promise<{ data: OutlineDocument[]; pagination: any }> {
+  async listDrafts(
+    params: {
+      collectionId?: string;
+      sort?: string;
+      direction?: 'ASC' | 'DESC';
+    } & PaginationParams = {}
+  ): Promise<{ data: OutlineDocument[]; pagination: any }> {
     return this.post('/documents.drafts', params);
   }
 
@@ -184,43 +190,57 @@ export class Client {
   }
 
   async archiveDocument(documentId: string): Promise<OutlineDocument> {
-    let result = await this.post<{ data: OutlineDocument }>('/documents.archive', { id: documentId });
-    return result.data;
-  }
-
-  async restoreDocument(documentId: string): Promise<OutlineDocument> {
-    let result = await this.post<{ data: OutlineDocument }>('/documents.restore', { id: documentId });
-    return result.data;
-  }
-
-  async moveDocument(documentId: string, collectionId?: string, parentDocumentId?: string): Promise<OutlineDocument> {
-    let result = await this.post<{ data: OutlineDocument }>('/documents.move', {
-      id: documentId,
-      collectionId,
-      parentDocumentId,
+    let result = await this.post<{ data: OutlineDocument }>('/documents.archive', {
+      id: documentId
     });
     return result.data;
   }
 
-  async searchDocuments(params: {
-    query: string;
-    collectionId?: string;
-    userId?: string;
-    dateFilter?: string;
-    statusFilter?: string[];
-    titleFilter?: boolean;
-  } & PaginationParams): Promise<{ data: SearchResult[]; pagination: any }> {
+  async restoreDocument(documentId: string): Promise<OutlineDocument> {
+    let result = await this.post<{ data: OutlineDocument }>('/documents.restore', {
+      id: documentId
+    });
+    return result.data;
+  }
+
+  async moveDocument(
+    documentId: string,
+    collectionId?: string,
+    parentDocumentId?: string
+  ): Promise<OutlineDocument> {
+    let result = await this.post<{ data: OutlineDocument }>('/documents.move', {
+      id: documentId,
+      collectionId,
+      parentDocumentId
+    });
+    return result.data;
+  }
+
+  async searchDocuments(
+    params: {
+      query: string;
+      collectionId?: string;
+      userId?: string;
+      dateFilter?: string;
+      statusFilter?: string[];
+      titleFilter?: boolean;
+    } & PaginationParams
+  ): Promise<{ data: SearchResult[]; pagination: any }> {
     return this.post('/documents.search', params);
   }
 
   // Collections
 
   async getCollection(collectionId: string): Promise<OutlineCollection> {
-    let result = await this.post<{ data: OutlineCollection }>('/collections.info', { id: collectionId });
+    let result = await this.post<{ data: OutlineCollection }>('/collections.info', {
+      id: collectionId
+    });
     return result.data;
   }
 
-  async listCollections(params: PaginationParams = {}): Promise<{ data: OutlineCollection[]; pagination: any }> {
+  async listCollections(
+    params: PaginationParams = {}
+  ): Promise<{ data: OutlineCollection[]; pagination: any }> {
     return this.post('/collections.list', params);
   }
 
@@ -263,25 +283,31 @@ export class Client {
     return result.data;
   }
 
-  async listUsers(params: {
-    query?: string;
-    filter?: string;
-    role?: string;
-  } & PaginationParams = {}): Promise<{ data: OutlineUser[]; pagination: any }> {
+  async listUsers(
+    params: {
+      query?: string;
+      filter?: string;
+      role?: string;
+    } & PaginationParams = {}
+  ): Promise<{ data: OutlineUser[]; pagination: any }> {
     return this.post('/users.list', params);
   }
 
   // Comments
 
   async getComment(commentId: string): Promise<OutlineComment> {
-    let result = await this.post<{ data: OutlineComment }>('/comments.info', { id: commentId });
+    let result = await this.post<{ data: OutlineComment }>('/comments.info', {
+      id: commentId
+    });
     return result.data;
   }
 
-  async listComments(params: {
-    documentId?: string;
-    collectionId?: string;
-  } & PaginationParams = {}): Promise<{ data: OutlineComment[]; pagination: any }> {
+  async listComments(
+    params: {
+      documentId?: string;
+      collectionId?: string;
+    } & PaginationParams = {}
+  ): Promise<{ data: OutlineComment[]; pagination: any }> {
     return this.post('/comments.list', params);
   }
 
@@ -294,10 +320,7 @@ export class Client {
     return result.data;
   }
 
-  async updateComment(params: {
-    id: string;
-    data: any;
-  }): Promise<OutlineComment> {
+  async updateComment(params: { id: string; data: any }): Promise<OutlineComment> {
     let result = await this.post<{ data: OutlineComment }>('/comments.update', params);
     return result.data;
   }
@@ -313,21 +336,18 @@ export class Client {
     return result.data;
   }
 
-  async listGroups(params: PaginationParams = {}): Promise<{ data: OutlineGroup[]; pagination: any }> {
+  async listGroups(
+    params: PaginationParams = {}
+  ): Promise<{ data: OutlineGroup[]; pagination: any }> {
     return this.post('/groups.list', params);
   }
 
-  async createGroup(params: {
-    name: string;
-  }): Promise<OutlineGroup> {
+  async createGroup(params: { name: string }): Promise<OutlineGroup> {
     let result = await this.post<{ data: OutlineGroup }>('/groups.create', params);
     return result.data;
   }
 
-  async updateGroup(params: {
-    id: string;
-    name: string;
-  }): Promise<OutlineGroup> {
+  async updateGroup(params: { id: string; name: string }): Promise<OutlineGroup> {
     let result = await this.post<{ data: OutlineGroup }>('/groups.update', params);
     return result.data;
   }
@@ -346,20 +366,24 @@ export class Client {
 
   // Events
 
-  async listEvents(params: {
-    name?: string;
-    documentId?: string;
-    collectionId?: string;
-    auditLog?: boolean;
-    sort?: string;
-    direction?: 'ASC' | 'DESC';
-  } & PaginationParams = {}): Promise<{ data: OutlineEvent[]; pagination: any }> {
+  async listEvents(
+    params: {
+      name?: string;
+      documentId?: string;
+      collectionId?: string;
+      auditLog?: boolean;
+      sort?: string;
+      direction?: 'ASC' | 'DESC';
+    } & PaginationParams = {}
+  ): Promise<{ data: OutlineEvent[]; pagination: any }> {
     return this.post('/events.list', params);
   }
 
   // Webhook Subscriptions
 
-  async listWebhookSubscriptions(params: PaginationParams = {}): Promise<{ data: OutlineWebhookSubscription[]; pagination: any }> {
+  async listWebhookSubscriptions(
+    params: PaginationParams = {}
+  ): Promise<{ data: OutlineWebhookSubscription[]; pagination: any }> {
     return this.post('/webhookSubscriptions.list', params);
   }
 
@@ -369,7 +393,10 @@ export class Client {
     secret?: string;
     events: string[];
   }): Promise<OutlineWebhookSubscription> {
-    let result = await this.post<{ data: OutlineWebhookSubscription }>('/webhookSubscriptions.create', params);
+    let result = await this.post<{ data: OutlineWebhookSubscription }>(
+      '/webhookSubscriptions.create',
+      params
+    );
     return result.data;
   }
 
@@ -380,7 +407,10 @@ export class Client {
     secret?: string;
     events?: string[];
   }): Promise<OutlineWebhookSubscription> {
-    let result = await this.post<{ data: OutlineWebhookSubscription }>('/webhookSubscriptions.update', params);
+    let result = await this.post<{ data: OutlineWebhookSubscription }>(
+      '/webhookSubscriptions.update',
+      params
+    );
     return result.data;
   }
 
@@ -405,13 +435,19 @@ export class Client {
 
   // Templates
 
-  async listTemplates(params: PaginationParams = {}): Promise<{ data: OutlineDocument[]; pagination: any }> {
+  async listTemplates(
+    params: PaginationParams = {}
+  ): Promise<{ data: OutlineDocument[]; pagination: any }> {
     return this.post('/templates.list', params);
   }
 
   // Collection memberships
 
-  async addUserToCollection(collectionId: string, userId: string, permission?: string): Promise<void> {
+  async addUserToCollection(
+    collectionId: string,
+    userId: string,
+    permission?: string
+  ): Promise<void> {
     await this.post('/collections.add_user', { id: collectionId, userId, permission });
   }
 
@@ -419,7 +455,11 @@ export class Client {
     await this.post('/collections.remove_user', { id: collectionId, userId });
   }
 
-  async addGroupToCollection(collectionId: string, groupId: string, permission?: string): Promise<void> {
+  async addGroupToCollection(
+    collectionId: string,
+    groupId: string,
+    permission?: string
+  ): Promise<void> {
     await this.post('/collections.add_group', { id: collectionId, groupId, permission });
   }
 

@@ -26,8 +26,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -102,7 +102,9 @@ export class Client {
   // ─── Evaluators ───
 
   async listEvaluators(params?: ListParams) {
-    let response = await this.axios.get('/evaluators', { params: this.buildListParams(params) });
+    let response = await this.axios.get('/evaluators', {
+      params: this.buildListParams(params)
+    });
     return response.data as PaginatedResponse<any>;
   }
 
@@ -159,7 +161,9 @@ export class Client {
     let query: Record<string, number> = {};
     if (params?.page) query.page = params.page;
     if (params?.size) query.size = params.size;
-    let response = await this.axios.get(`/datasets/${datasetId}/datapoints`, { params: query });
+    let response = await this.axios.get(`/datasets/${datasetId}/datapoints`, {
+      params: query
+    });
     return response.data as PaginatedResponse<any>;
   }
 
@@ -240,14 +244,17 @@ export class Client {
 
   // ─── Logs ───
 
-  async listLogs(fileId: string, params?: {
-    page?: number;
-    size?: number;
-    versionId?: string;
-    search?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async listLogs(
+    fileId: string,
+    params?: {
+      page?: number;
+      size?: number;
+      versionId?: string;
+      search?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ) {
     let query: Record<string, string | number> = { file_id: fileId };
     if (params?.page) query.page = params.page;
     if (params?.size) query.size = params.size;

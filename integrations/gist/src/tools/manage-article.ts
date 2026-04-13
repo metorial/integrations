@@ -8,31 +8,32 @@ let translationSchema = z.object({
   title: z.string().optional().describe('Article title'),
   description: z.string().optional().describe('Article description/excerpt'),
   htmlText: z.string().optional().describe('Article body as HTML'),
-  status: z.enum(['published', 'draft']).optional().describe('Publication status'),
+  status: z.enum(['published', 'draft']).optional().describe('Publication status')
 });
 
-export let manageArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Article',
-    key: 'manage_article',
-    description: `Create, update, or delete a knowledge base article in Gist. Articles support multi-language translations and can be organized into collections.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    articleId: z.string().optional().describe('Article ID (required for update/delete)'),
-    parentId: z.string().optional().describe('Parent collection ID'),
-    defaultLocale: z.string().optional().describe('Default locale code (e.g. "en")'),
-    translations: z.array(translationSchema).optional().describe('Article translations'),
-  }))
-  .output(z.object({
-    articleId: z.string().optional(),
-    defaultLocale: z.string().optional(),
-    translations: z.array(z.any()).optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageArticle = SlateTool.create(spec, {
+  name: 'Manage Article',
+  key: 'manage_article',
+  description: `Create, update, or delete a knowledge base article in Gist. Articles support multi-language translations and can be organized into collections.`
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      articleId: z.string().optional().describe('Article ID (required for update/delete)'),
+      parentId: z.string().optional().describe('Parent collection ID'),
+      defaultLocale: z.string().optional().describe('Default locale code (e.g. "en")'),
+      translations: z.array(translationSchema).optional().describe('Article translations')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.string().optional(),
+      defaultLocale: z.string().optional(),
+      translations: z.array(z.any()).optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
 
     switch (ctx.input.action) {
@@ -46,7 +47,7 @@ export let manageArticle = SlateTool.create(
             title: t.title,
             description: t.description,
             html_text: t.htmlText,
-            status: t.status,
+            status: t.status
           }));
         }
         let data = await client.createArticle(body);
@@ -55,9 +56,9 @@ export let manageArticle = SlateTool.create(
           output: {
             articleId: String(article.id),
             defaultLocale: article.default_locale,
-            translations: article.translations,
+            translations: article.translations
           },
-          message: `Created article **${article.id}**.`,
+          message: `Created article **${article.id}**.`
         };
       }
 
@@ -72,7 +73,7 @@ export let manageArticle = SlateTool.create(
             title: t.title,
             description: t.description,
             html_text: t.htmlText,
-            status: t.status,
+            status: t.status
           }));
         }
         let data = await client.updateArticle(ctx.input.articleId, body);
@@ -81,9 +82,9 @@ export let manageArticle = SlateTool.create(
           output: {
             articleId: String(article.id),
             defaultLocale: article.default_locale,
-            translations: article.translations,
+            translations: article.translations
           },
-          message: `Updated article **${ctx.input.articleId}**.`,
+          message: `Updated article **${ctx.input.articleId}**.`
         };
       }
 
@@ -92,8 +93,9 @@ export let manageArticle = SlateTool.create(
         await client.deleteArticle(ctx.input.articleId);
         return {
           output: { deleted: true },
-          message: `Deleted article **${ctx.input.articleId}**.`,
+          message: `Deleted article **${ctx.input.articleId}**.`
         };
       }
     }
-  }).build();
+  })
+  .build();

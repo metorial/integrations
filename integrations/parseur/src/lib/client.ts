@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface PaginatedResponse<T> {
   count: number;
@@ -160,8 +160,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.parseur.com',
       headers: {
-        'Authorization': config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -173,8 +173,8 @@ export class Client {
         page: params?.page,
         page_size: params?.pageSize,
         search: params?.search,
-        ordering: params?.ordering,
-      },
+        ordering: params?.ordering
+      }
     });
     return response.data;
   }
@@ -187,11 +187,12 @@ export class Client {
   async createMailbox(params: CreateMailboxParams): Promise<Mailbox> {
     let body: Record<string, any> = {
       ai_engine: params.aiEngine || 'GCP_AI_2',
-      identification_status: 'REQUESTED',
+      identification_status: 'REQUESTED'
     };
     if (params.name) body.name = params.name;
     if (params.templateSlug) body.template_slug = params.templateSlug;
-    if (params.processAttachments !== undefined) body.process_attachments = params.processAttachments;
+    if (params.processAttachments !== undefined)
+      body.process_attachments = params.processAttachments;
     if (params.retentionPolicy !== undefined) body.retention_policy = params.retentionPolicy;
     if (params.forceOcr !== undefined) body.force_ocr = params.forceOcr;
     if (params.allowedExtensions) body.allowed_extensions = params.allowedExtensions;
@@ -206,10 +207,12 @@ export class Client {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.aiEngine !== undefined) body.ai_engine = params.aiEngine;
-    if (params.processAttachments !== undefined) body.process_attachments = params.processAttachments;
+    if (params.processAttachments !== undefined)
+      body.process_attachments = params.processAttachments;
     if (params.retentionPolicy !== undefined) body.retention_policy = params.retentionPolicy;
     if (params.forceOcr !== undefined) body.force_ocr = params.forceOcr;
-    if (params.allowedExtensions !== undefined) body.allowed_extensions = params.allowedExtensions;
+    if (params.allowedExtensions !== undefined)
+      body.allowed_extensions = params.allowedExtensions;
     if (params.splitPage !== undefined) body.split_page = params.splitPage;
     if (params.disableDeskew !== undefined) body.disable_deskew = params.disableDeskew;
 
@@ -233,7 +236,10 @@ export class Client {
 
   // ---- Document Management ----
 
-  async listDocuments(mailboxId: number, params?: ListDocumentsParams): Promise<PaginatedResponse<Document>> {
+  async listDocuments(
+    mailboxId: number,
+    params?: ListDocumentsParams
+  ): Promise<PaginatedResponse<Document>> {
     let response = await this.axios.get(`/parser/${mailboxId}/document_set`, {
       params: {
         page: params?.page,
@@ -244,8 +250,8 @@ export class Client {
         received_before: params?.receivedBefore,
         status: params?.status,
         tz: params?.tz,
-        with_result: params?.withResult,
-      },
+        with_result: params?.withResult
+      }
     });
     return response.data;
   }
@@ -255,33 +261,40 @@ export class Client {
     return response.data;
   }
 
-  async getDocumentLogs(documentId: number, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<DocumentLog>> {
+  async getDocumentLogs(
+    documentId: number,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<DocumentLog>> {
     let response = await this.axios.get(`/document/${documentId}/log_set`, {
       params: {
         page: params?.page,
-        page_size: params?.pageSize,
-      },
+        page_size: params?.pageSize
+      }
     });
     return response.data;
   }
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-  async uploadBinaryDocument(mailboxId: number, fileName: string, fileContent: Buffer | string, contentType?: string): Promise<UploadResponse> {
+  async uploadBinaryDocument(
+    mailboxId: number,
+    fileName: string,
+    fileContent: Buffer | string,
+    contentType?: string
+  ): Promise<UploadResponse> {
     let formData = new FormData();
     let blob = new Blob([fileContent], { type: contentType || 'application/octet-stream' });
     formData.append('file', blob, fileName);
 
     let response = await this.axios.post(`/parser/${mailboxId}/upload`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }
 
   async uploadEmailDocument(params: UploadEmailParams): Promise<{ message: string }> {
     let body: Record<string, any> = {
-      recipient: params.recipient,
+      recipient: params.recipient
     };
     if (params.subject) body.subject = params.subject;
     if (params.from) body.from = params.from;
@@ -293,7 +306,7 @@ export class Client {
     if (params.messageHeaders) body.message_headers = params.messageHeaders;
 
     let response = await this.axios.post('/email', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -308,7 +321,10 @@ export class Client {
     return response.data;
   }
 
-  async copyDocument(documentId: number, targetMailboxId: number): Promise<{ message: string }> {
+  async copyDocument(
+    documentId: number,
+    targetMailboxId: number
+  ): Promise<{ message: string }> {
     let response = await this.axios.post(`/document/${documentId}/copy/${targetMailboxId}`);
     return response.data;
   }
@@ -319,12 +335,15 @@ export class Client {
 
   // ---- Template Management ----
 
-  async listTemplates(mailboxId: number, params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<Template>> {
+  async listTemplates(
+    mailboxId: number,
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PaginatedResponse<Template>> {
     let response = await this.axios.get(`/parser/${mailboxId}/template_set`, {
       params: {
         page: params?.page,
-        page_size: params?.pageSize,
-      },
+        page_size: params?.pageSize
+      }
     });
     return response.data;
   }
@@ -334,7 +353,10 @@ export class Client {
     return response.data;
   }
 
-  async copyTemplate(templateId: number, targetMailboxId: number): Promise<{ message: string }> {
+  async copyTemplate(
+    templateId: number,
+    targetMailboxId: number
+  ): Promise<{ message: string }> {
     let response = await this.axios.post(`/template/${templateId}/copy/${targetMailboxId}`);
     return response.data;
   }
@@ -349,7 +371,7 @@ export class Client {
     let body: Record<string, any> = {
       event: params.event,
       target: params.target,
-      category: params.category || 'CUSTOM',
+      category: params.category || 'CUSTOM'
     };
     if (params.name) body.name = params.name;
     if (params.headers) body.headers = params.headers;

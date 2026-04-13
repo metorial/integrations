@@ -3,46 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newSubmission = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Submission',
-    key: 'new_submission',
-    description: 'Triggers when a new form submission is received in Basin. Polls for new submissions across all forms or a specific form.',
-  },
-)
-  .input(z.object({
-    submissionId: z.number().describe('ID of the submission.'),
-    formId: z.number().describe('Form ID the submission belongs to.'),
-    email: z.string().nullable().describe('Submitter email.'),
-    spam: z.boolean().describe('Whether flagged as spam.'),
-    fields: z.record(z.string(), z.unknown()).describe('Form field data.'),
-    createdAt: z.string().describe('Submission timestamp.'),
-    ip: z.string().nullable().describe('Submitter IP address.'),
-    referrer: z.string().nullable().describe('Referrer URL.'),
-    userAgent: z.string().nullable().describe('Submitter user agent.'),
-    attachments: z.array(z.unknown()).describe('File attachments.'),
-  }))
-  .output(z.object({
-    submissionId: z.number().describe('Submission ID.'),
-    formId: z.number().describe('Form ID the submission belongs to.'),
-    email: z.string().nullable().describe('Submitter email, if provided.'),
-    spam: z.boolean().describe('Whether the submission was flagged as spam.'),
-    spamReason: z.string().nullable().describe('Reason flagged as spam, if applicable.'),
-    read: z.boolean().describe('Whether the submission has been read.'),
-    fields: z.record(z.string(), z.unknown()).describe('All form field data submitted by the user.'),
-    ip: z.string().nullable().describe('IP address of the submitter.'),
-    referrer: z.string().nullable().describe('Referrer URL.'),
-    userAgent: z.string().nullable().describe('Submitter user agent string.'),
-    attachments: z.array(z.unknown()).describe('File attachments included with the submission.'),
-    createdAt: z.string().describe('Submission timestamp.'),
-  }))
+export let newSubmission = SlateTrigger.create(spec, {
+  name: 'New Submission',
+  key: 'new_submission',
+  description:
+    'Triggers when a new form submission is received in Basin. Polls for new submissions across all forms or a specific form.'
+})
+  .input(
+    z.object({
+      submissionId: z.number().describe('ID of the submission.'),
+      formId: z.number().describe('Form ID the submission belongs to.'),
+      email: z.string().nullable().describe('Submitter email.'),
+      spam: z.boolean().describe('Whether flagged as spam.'),
+      fields: z.record(z.string(), z.unknown()).describe('Form field data.'),
+      createdAt: z.string().describe('Submission timestamp.'),
+      ip: z.string().nullable().describe('Submitter IP address.'),
+      referrer: z.string().nullable().describe('Referrer URL.'),
+      userAgent: z.string().nullable().describe('Submitter user agent.'),
+      attachments: z.array(z.unknown()).describe('File attachments.')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.number().describe('Submission ID.'),
+      formId: z.number().describe('Form ID the submission belongs to.'),
+      email: z.string().nullable().describe('Submitter email, if provided.'),
+      spam: z.boolean().describe('Whether the submission was flagged as spam.'),
+      spamReason: z.string().nullable().describe('Reason flagged as spam, if applicable.'),
+      read: z.boolean().describe('Whether the submission has been read.'),
+      fields: z
+        .record(z.string(), z.unknown())
+        .describe('All form field data submitted by the user.'),
+      ip: z.string().nullable().describe('IP address of the submitter.'),
+      referrer: z.string().nullable().describe('Referrer URL.'),
+      userAgent: z.string().nullable().describe('Submitter user agent string.'),
+      attachments: z
+        .array(z.unknown())
+        .describe('File attachments included with the submission.'),
+      createdAt: z.string().describe('Submission timestamp.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastSeenId = (ctx.state as any)?.lastSeenId as number | undefined;
@@ -50,7 +56,7 @@ export let newSubmission = SlateTrigger.create(
 
       let params: Record<string, any> = {
         order_by: 'date_desc',
-        filter_by: 'all',
+        filter_by: 'all'
       };
 
       if (lastPollTime) {
@@ -68,9 +74,8 @@ export let newSubmission = SlateTrigger.create(
       // Sort ascending by ID so events process in order
       items.sort((a: any, b: any) => a.id - b.id);
 
-      let newLastSeenId = items.length > 0
-        ? Math.max(...items.map((s: any) => s.id))
-        : lastSeenId;
+      let newLastSeenId =
+        items.length > 0 ? Math.max(...items.map((s: any) => s.id)) : lastSeenId;
 
       let now = new Date().toISOString().split('T')[0];
 
@@ -85,16 +90,16 @@ export let newSubmission = SlateTrigger.create(
           ip: s.ip ?? null,
           referrer: s.referrer ?? null,
           userAgent: s.user_agent ?? null,
-          attachments: s.attachments ?? [],
+          attachments: s.attachments ?? []
         })),
         updatedState: {
           lastSeenId: newLastSeenId,
-          lastPollTime: now,
-        },
+          lastPollTime: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let s = ctx.input;
 
       return {
@@ -112,9 +117,9 @@ export let newSubmission = SlateTrigger.create(
           referrer: s.referrer,
           userAgent: s.userAgent,
           attachments: s.attachments,
-          createdAt: s.createdAt,
-        },
+          createdAt: s.createdAt
+        }
       };
-    },
+    }
   })
   .build();

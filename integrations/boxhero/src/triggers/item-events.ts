@@ -6,7 +6,7 @@ let attributeSchema = z.object({
   attributeId: z.number().describe('Attribute ID'),
   name: z.string().describe('Attribute name'),
   type: z.string().describe('Attribute data type (text, number, date, barcode)'),
-  value: z.union([z.string(), z.number(), z.null()]).describe('Attribute value'),
+  value: z.union([z.string(), z.number(), z.null()]).describe('Attribute value')
 });
 
 let webhookPayloadSchema = z.object({
@@ -21,31 +21,31 @@ let webhookPayloadSchema = z.object({
   photoUrl: z.string().nullable().optional().describe('URL of the item photo'),
   cost: z.string().nullable().optional().describe('Purchase cost'),
   price: z.string().nullable().optional().describe('Selling price'),
-  attributes: z.array(attributeSchema).optional().describe('Custom attributes'),
+  attributes: z.array(attributeSchema).optional().describe('Custom attributes')
 });
 
-export let itemEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Item Events',
-    key: 'item_events',
-    description: 'Triggered when inventory items are created, edited, or deleted in BoxHero. Not triggered for bulk operations (Add Item Variants, Data Center bulk edits, Excel imports/deletions).',
-  }
-)
+export let itemEvents = SlateTrigger.create(spec, {
+  name: 'Item Events',
+  key: 'item_events',
+  description:
+    'Triggered when inventory items are created, edited, or deleted in BoxHero. Not triggered for bulk operations (Add Item Variants, Data Center bulk edits, Excel imports/deletions).'
+})
   .input(webhookPayloadSchema)
-  .output(z.object({
-    itemId: z.number().describe('Item ID'),
-    name: z.string().optional().describe('Item name'),
-    sku: z.string().optional().describe('SKU code'),
-    barcode: z.string().optional().describe('Barcode number'),
-    photoUrl: z.string().nullable().optional().describe('Photo URL'),
-    cost: z.string().nullable().optional().describe('Purchase cost'),
-    price: z.string().nullable().optional().describe('Selling price'),
-    attributes: z.array(attributeSchema).optional().describe('Custom attributes'),
-  }))
+  .output(
+    z.object({
+      itemId: z.number().describe('Item ID'),
+      name: z.string().optional().describe('Item name'),
+      sku: z.string().optional().describe('SKU code'),
+      barcode: z.string().optional().describe('Barcode number'),
+      photoUrl: z.string().nullable().optional().describe('Photo URL'),
+      cost: z.string().nullable().optional().describe('Purchase cost'),
+      price: z.string().nullable().optional().describe('Selling price'),
+      attributes: z.array(attributeSchema).optional().describe('Custom attributes')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as {
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as {
         id: string;
         topic: string;
         version: number;
@@ -83,22 +83,22 @@ export let itemEvents = SlateTrigger.create(
             photoUrl: payload.photo_url,
             cost: payload.cost,
             price: payload.price,
-            attributes: payload.attrs?.map((attr) => ({
+            attributes: payload.attrs?.map(attr => ({
               attributeId: attr.id,
               name: attr.name,
               type: attr.type,
-              value: attr.value,
-            })),
-          },
-        ],
+              value: attr.value
+            }))
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let topicMap: Record<string, string> = {
         'item/new': 'item.created',
         'item/edit': 'item.updated',
-        'item/delete': 'item.deleted',
+        'item/delete': 'item.deleted'
       };
 
       let eventType = topicMap[ctx.input.topic] || `item.${ctx.input.topic}`;
@@ -114,8 +114,9 @@ export let itemEvents = SlateTrigger.create(
           photoUrl: ctx.input.photoUrl,
           cost: ctx.input.cost,
           price: ctx.input.price,
-          attributes: ctx.input.attributes,
-        },
+          attributes: ctx.input.attributes
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

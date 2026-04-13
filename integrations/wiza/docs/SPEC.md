@@ -9,6 +9,7 @@ Wiza is a B2B contact enrichment and sales intelligence platform that finds veri
 All Wiza API requests require authentication using a Bearer token. Include your API key in the `Authorization` header of every request.
 
 **Header format:**
+
 ```
 Authorization: Bearer YOUR_API_KEY
 ```

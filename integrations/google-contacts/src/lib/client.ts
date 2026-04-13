@@ -1,15 +1,22 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://people.googleapis.com/v1/',
+  baseURL: 'https://people.googleapis.com/v1/'
 });
 
-export let DEFAULT_PERSON_FIELDS = 'names,emailAddresses,phoneNumbers,addresses,organizations,birthdays,urls,biographies,events,genders,occupations,nicknames,relations,userDefined,memberships';
+export let DEFAULT_PERSON_FIELDS =
+  'names,emailAddresses,phoneNumbers,addresses,organizations,birthdays,urls,biographies,events,genders,occupations,nicknames,relations,userDefined,memberships';
 
 export let READONLY_PERSON_FIELDS = 'names,emailAddresses,phoneNumbers';
 
 export interface ContactInput {
-  names?: Array<{ givenName?: string; familyName?: string; middleName?: string; prefix?: string; suffix?: string }>;
+  names?: Array<{
+    givenName?: string;
+    familyName?: string;
+    middleName?: string;
+    prefix?: string;
+    suffix?: string;
+  }>;
   emailAddresses?: Array<{ value: string; type?: string }>;
   phoneNumbers?: Array<{ value: string; type?: string }>;
   addresses?: Array<{
@@ -40,7 +47,7 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.headers = {
-      Authorization: `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`
     };
   }
 
@@ -49,7 +56,7 @@ export class Client {
   async getContact(resourceName: string, personFields?: string) {
     let response = await api.get(resourceName, {
       params: { personFields: personFields || DEFAULT_PERSON_FIELDS },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -67,9 +74,9 @@ export class Client {
         pageSize: params.pageSize || 100,
         pageToken: params.pageToken,
         sortOrder: params.sortOrder,
-        syncToken: params.syncToken,
+        syncToken: params.syncToken
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -79,9 +86,9 @@ export class Client {
       params: {
         query,
         readMask: personFields || DEFAULT_PERSON_FIELDS,
-        pageSize: pageSize || 30,
+        pageSize: pageSize || 30
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -89,7 +96,7 @@ export class Client {
   async createContact(contactData: ContactInput) {
     let response = await api.post('people:createContact', contactData, {
       params: { personFields: DEFAULT_PERSON_FIELDS },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -102,21 +109,21 @@ export class Client {
   ) {
     let body = {
       ...contactData,
-      etag,
+      etag
     };
     let response = await api.patch(`${resourceName}:updateContact`, body, {
       params: {
         updatePersonFields,
-        personFields: DEFAULT_PERSON_FIELDS,
+        personFields: DEFAULT_PERSON_FIELDS
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteContact(resourceName: string) {
     await api.delete(`${resourceName}:deleteContact`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -124,16 +131,16 @@ export class Client {
     let response = await api.get('people:batchGet', {
       params: {
         resourceNames,
-        personFields: personFields || DEFAULT_PERSON_FIELDS,
+        personFields: personFields || DEFAULT_PERSON_FIELDS
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteContactPhoto(resourceName: string) {
     let response = await api.delete(`${resourceName}:deleteContactPhoto`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -145,9 +152,9 @@ export class Client {
       params: {
         pageSize: pageSize || 100,
         pageToken,
-        groupFields: 'name,groupType,memberCount,clientData',
+        groupFields: 'name,groupType,memberCount,clientData'
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -156,22 +163,26 @@ export class Client {
     let response = await api.get(resourceName, {
       params: {
         maxMembers: maxMembers || 100,
-        groupFields: 'name,groupType,memberCount,clientData',
+        groupFields: 'name,groupType,memberCount,clientData'
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createContactGroup(name: string, clientData?: Array<{ key: string; value: string }>) {
-    let response = await api.post('contactGroups', {
-      contactGroup: {
-        name,
-        clientData,
+    let response = await api.post(
+      'contactGroups',
+      {
+        contactGroup: {
+          name,
+          clientData
+        }
       },
-    }, {
-      headers: this.headers,
-    });
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -180,22 +191,26 @@ export class Client {
     name: string,
     clientData?: Array<{ key: string; value: string }>
   ) {
-    let response = await api.put(resourceName, {
-      contactGroup: {
-        name,
-        clientData,
+    let response = await api.put(
+      resourceName,
+      {
+        contactGroup: {
+          name,
+          clientData
+        },
+        updateGroupFields: 'name,clientData'
       },
-      updateGroupFields: 'name,clientData',
-    }, {
-      headers: this.headers,
-    });
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteContactGroup(resourceName: string, deleteContacts?: boolean) {
     await api.delete(resourceName, {
       params: { deleteContacts: deleteContacts || false },
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -204,12 +219,16 @@ export class Client {
     addResourceNames?: string[],
     removeResourceNames?: string[]
   ) {
-    let response = await api.post(`${resourceName}/members:modify`, {
-      resourceNamesToAdd: addResourceNames,
-      resourceNamesToRemove: removeResourceNames,
-    }, {
-      headers: this.headers,
-    });
+    let response = await api.post(
+      `${resourceName}/members:modify`,
+      {
+        resourceNamesToAdd: addResourceNames,
+        resourceNamesToRemove: removeResourceNames
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -220,9 +239,9 @@ export class Client {
       params: {
         pageSize: pageSize || 100,
         pageToken,
-        readMask: READONLY_PERSON_FIELDS,
+        readMask: READONLY_PERSON_FIELDS
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -232,20 +251,24 @@ export class Client {
       params: {
         query,
         readMask: READONLY_PERSON_FIELDS,
-        pageSize: pageSize || 30,
+        pageSize: pageSize || 30
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async copyOtherContactToMyContacts(resourceName: string) {
-    let response = await api.post(`${resourceName}:copyOtherContactToMyContactsGroup`, {
-      copyMask: READONLY_PERSON_FIELDS,
-      readMask: DEFAULT_PERSON_FIELDS,
-    }, {
-      headers: this.headers,
-    });
+    let response = await api.post(
+      `${resourceName}:copyOtherContactToMyContactsGroup`,
+      {
+        copyMask: READONLY_PERSON_FIELDS,
+        readMask: DEFAULT_PERSON_FIELDS
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -262,9 +285,9 @@ export class Client {
         pageSize: params.pageSize || 100,
         pageToken: params.pageToken,
         sources: params.sources,
-        readMask: params.readMask || DEFAULT_PERSON_FIELDS,
+        readMask: params.readMask || DEFAULT_PERSON_FIELDS
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -282,9 +305,9 @@ export class Client {
         pageSize: params.pageSize || 30,
         pageToken: params.pageToken,
         sources: params.sources,
-        readMask: params.readMask || DEFAULT_PERSON_FIELDS,
+        readMask: params.readMask || DEFAULT_PERSON_FIELDS
       },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

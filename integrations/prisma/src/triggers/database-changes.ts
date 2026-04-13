@@ -3,41 +3,46 @@ import { PrismaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let databaseChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Database Changes',
-    key: 'database_changes',
-    description: 'Polls for new, updated, or deleted Prisma Postgres databases. Detects when databases are created, change status, or are removed.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of database change event'),
-    databaseId: z.string().describe('ID of the affected database'),
-    databaseName: z.string().describe('Name of the affected database'),
-    region: z.string().optional().describe('Region of the database'),
-    status: z.string().optional().describe('Current status of the database'),
-    projectId: z.string().optional().describe('Parent project ID'),
-    projectName: z.string().optional().describe('Parent project name'),
-  }))
-  .output(z.object({
-    databaseId: z.string().describe('ID of the affected database'),
-    databaseName: z.string().describe('Name of the affected database'),
-    region: z.string().optional().describe('Region of the database'),
-    status: z.string().optional().describe('Current status of the database'),
-    projectId: z.string().optional().describe('Parent project ID'),
-    projectName: z.string().optional().describe('Parent project name'),
-  }))
+export let databaseChanges = SlateTrigger.create(spec, {
+  name: 'Database Changes',
+  key: 'database_changes',
+  description:
+    'Polls for new, updated, or deleted Prisma Postgres databases. Detects when databases are created, change status, or are removed.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of database change event'),
+      databaseId: z.string().describe('ID of the affected database'),
+      databaseName: z.string().describe('Name of the affected database'),
+      region: z.string().optional().describe('Region of the database'),
+      status: z.string().optional().describe('Current status of the database'),
+      projectId: z.string().optional().describe('Parent project ID'),
+      projectName: z.string().optional().describe('Parent project name')
+    })
+  )
+  .output(
+    z.object({
+      databaseId: z.string().describe('ID of the affected database'),
+      databaseName: z.string().describe('Name of the affected database'),
+      region: z.string().optional().describe('Region of the database'),
+      status: z.string().optional().describe('Current status of the database'),
+      projectId: z.string().optional().describe('Parent project ID'),
+      projectName: z.string().optional().describe('Parent project name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new PrismaClient(ctx.auth.token);
       let currentDatabases = await client.listDatabases();
 
-      let previousDatabaseMap: Record<string, { status?: string; name?: string }> = ctx.state?.databaseMap ?? {};
+      let previousDatabaseMap: Record<string, { status?: string; name?: string }> =
+        ctx.state?.databaseMap ?? {};
       let inputs: Array<{
         eventType: 'created' | 'updated' | 'deleted';
         databaseId: string;
@@ -62,7 +67,7 @@ export let databaseChanges = SlateTrigger.create(
             region: db.region,
             status: db.status,
             projectId: db.project?.id,
-            projectName: db.project?.name,
+            projectName: db.project?.name
           });
         } else if (previous.status !== db.status || previous.name !== db.name) {
           inputs.push({
@@ -72,7 +77,7 @@ export let databaseChanges = SlateTrigger.create(
             region: db.region,
             status: db.status,
             projectId: db.project?.id,
-            projectName: db.project?.name,
+            projectName: db.project?.name
           });
         }
       }
@@ -82,7 +87,7 @@ export let databaseChanges = SlateTrigger.create(
           inputs.push({
             eventType: 'deleted',
             databaseId: prevId,
-            databaseName: prevData.name ?? prevId,
+            databaseName: prevData.name ?? prevId
           });
         }
       }
@@ -95,12 +100,12 @@ export let databaseChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          databaseMap: newDatabaseMap,
-        },
+          databaseMap: newDatabaseMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `database.${ctx.input.eventType}`,
         id: `${ctx.input.databaseId}-${ctx.input.eventType}-${Date.now()}`,
@@ -110,9 +115,9 @@ export let databaseChanges = SlateTrigger.create(
           region: ctx.input.region,
           status: ctx.input.status,
           projectId: ctx.input.projectId,
-          projectName: ctx.input.projectName,
-        },
+          projectName: ctx.input.projectName
+        }
       };
-    },
+    }
   })
   .build();

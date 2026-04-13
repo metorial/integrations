@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://getcody.ai/api/v1',
+  baseURL: 'https://getcody.ai/api/v1'
 });
 
 export interface PaginationMeta {
@@ -60,13 +60,13 @@ let mapBot = (raw: any): Bot => ({
   botId: raw.id,
   name: raw.name,
   model: raw.model,
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 let mapFolder = (raw: any): Folder => ({
   folderId: raw.id,
   name: raw.name,
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 let mapDocument = (raw: any): Document => ({
@@ -75,14 +75,14 @@ let mapDocument = (raw: any): Document => ({
   status: raw.status,
   contentUrl: raw.content_url,
   folderId: raw.folder_id,
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 let mapConversation = (raw: any): Conversation => ({
   conversationId: raw.id,
   name: raw.name,
   botId: raw.bot_id,
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 let mapMessage = (raw: any): Message => ({
@@ -92,7 +92,7 @@ let mapMessage = (raw: any): Message => ({
   machine: raw.machine,
   failedResponding: raw.failed_responding,
   flagged: raw.flagged,
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 let mapPagination = (raw: any): PaginationMeta => ({
@@ -101,7 +101,7 @@ let mapPagination = (raw: any): PaginationMeta => ({
   perPage: raw.per_page,
   totalPages: raw.total_pages,
   nextPage: raw.next_page ?? null,
-  previousPage: raw.previous_page ?? null,
+  previousPage: raw.previous_page ?? null
 });
 
 export class Client {
@@ -114,39 +114,45 @@ export class Client {
   private headers() {
     return {
       Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   // ── Bots ──
 
-  async listBots(params?: { keyword?: string; page?: number }): Promise<{ bots: Bot[]; pagination: PaginationMeta }> {
+  async listBots(params?: {
+    keyword?: string;
+    page?: number;
+  }): Promise<{ bots: Bot[]; pagination: PaginationMeta }> {
     let response = await api.get('/bots', {
       headers: this.headers(),
       params: {
         ...(params?.keyword ? { keyword: params.keyword } : {}),
-        ...(params?.page ? { page: params.page } : {}),
-      },
+        ...(params?.page ? { page: params.page } : {})
+      }
     });
     return {
       bots: response.data.data.map(mapBot),
-      pagination: mapPagination(response.data.meta.pagination),
+      pagination: mapPagination(response.data.meta.pagination)
     };
   }
 
   // ── Folders ──
 
-  async listFolders(params?: { keyword?: string; page?: number }): Promise<{ folders: Folder[]; pagination: PaginationMeta }> {
+  async listFolders(params?: {
+    keyword?: string;
+    page?: number;
+  }): Promise<{ folders: Folder[]; pagination: PaginationMeta }> {
     let response = await api.get('/folders', {
       headers: this.headers(),
       params: {
         ...(params?.keyword ? { keyword: params.keyword } : {}),
-        ...(params?.page ? { page: params.page } : {}),
-      },
+        ...(params?.page ? { page: params.page } : {})
+      }
     });
     return {
       folders: response.data.data.map(mapFolder),
-      pagination: mapPagination(response.data.meta.pagination),
+      pagination: mapPagination(response.data.meta.pagination)
     };
   }
 
@@ -161,7 +167,11 @@ export class Client {
   }
 
   async updateFolder(folderId: string, name: string): Promise<Folder> {
-    let response = await api.post(`/folders/${folderId}`, { name }, { headers: this.headers() });
+    let response = await api.post(
+      `/folders/${folderId}`,
+      { name },
+      { headers: this.headers() }
+    );
     return mapFolder(response.data.data);
   }
 
@@ -179,12 +189,12 @@ export class Client {
         ...(params?.folderId ? { folder_id: params.folderId } : {}),
         ...(params?.conversationId ? { conversation_id: params.conversationId } : {}),
         ...(params?.keyword ? { keyword: params.keyword } : {}),
-        ...(params?.page ? { page: params.page } : {}),
-      },
+        ...(params?.page ? { page: params.page } : {})
+      }
     });
     return {
       documents: response.data.data.map(mapDocument),
-      pagination: mapPagination(response.data.meta.pagination),
+      pagination: mapPagination(response.data.meta.pagination)
     };
   }
 
@@ -198,11 +208,15 @@ export class Client {
     folderId?: string;
     content: string;
   }): Promise<Document> {
-    let response = await api.post('/documents', {
-      name: params.name,
-      ...(params.folderId ? { folder_id: params.folderId } : {}),
-      content: params.content,
-    }, { headers: this.headers() });
+    let response = await api.post(
+      '/documents',
+      {
+        name: params.name,
+        ...(params.folderId ? { folder_id: params.folderId } : {}),
+        content: params.content
+      },
+      { headers: this.headers() }
+    );
     return mapDocument(response.data.data);
   }
 
@@ -210,10 +224,14 @@ export class Client {
     folderId: string;
     url: string;
   }): Promise<Document> {
-    let response = await api.post('/documents/webpage', {
-      folder_id: params.folderId,
-      url: params.url,
-    }, { headers: this.headers() });
+    let response = await api.post(
+      '/documents/webpage',
+      {
+        folder_id: params.folderId,
+        url: params.url
+      },
+      { headers: this.headers() }
+    );
     return mapDocument(response.data.data);
   }
 
@@ -221,24 +239,29 @@ export class Client {
     fileName: string;
     contentType: string;
   }): Promise<{ url: string; key: string }> {
-    let response = await api.post('/uploads/signed-url', {
-      file_name: params.fileName,
-      content_type: params.contentType,
-    }, { headers: this.headers() });
+    let response = await api.post(
+      '/uploads/signed-url',
+      {
+        file_name: params.fileName,
+        content_type: params.contentType
+      },
+      { headers: this.headers() }
+    );
     return {
       url: response.data.url,
-      key: response.data.key,
+      key: response.data.key
     };
   }
 
-  async createDocumentFromFile(params: {
-    folderId: string;
-    key: string;
-  }): Promise<void> {
-    await api.post('/documents/file', {
-      folder_id: params.folderId,
-      key: params.key,
-    }, { headers: this.headers() });
+  async createDocumentFromFile(params: { folderId: string; key: string }): Promise<void> {
+    await api.post(
+      '/documents/file',
+      {
+        folder_id: params.folderId,
+        key: params.key
+      },
+      { headers: this.headers() }
+    );
   }
 
   async deleteDocument(documentId: string): Promise<void> {
@@ -259,19 +282,22 @@ export class Client {
         ...(params?.botId ? { bot_id: params.botId } : {}),
         ...(params?.keyword ? { keyword: params.keyword } : {}),
         ...(params?.includeDocumentIds ? { includes: 'document_ids' } : {}),
-        ...(params?.page ? { page: params.page } : {}),
-      },
+        ...(params?.page ? { page: params.page } : {})
+      }
     });
     return {
       conversations: response.data.data.map(mapConversation),
-      pagination: mapPagination(response.data.meta.pagination),
+      pagination: mapPagination(response.data.meta.pagination)
     };
   }
 
-  async getConversation(conversationId: string, includeDocumentIds?: boolean): Promise<Conversation> {
+  async getConversation(
+    conversationId: string,
+    includeDocumentIds?: boolean
+  ): Promise<Conversation> {
     let response = await api.get(`/conversations/${conversationId}`, {
       headers: this.headers(),
-      params: includeDocumentIds ? { includes: 'document_ids' } : {},
+      params: includeDocumentIds ? { includes: 'document_ids' } : {}
     });
     return mapConversation(response.data.data);
   }
@@ -281,24 +307,35 @@ export class Client {
     botId: string;
     documentIds?: string[];
   }): Promise<Conversation> {
-    let response = await api.post('/conversations', {
-      name: params.name,
-      bot_id: params.botId,
-      ...(params.documentIds ? { document_ids: params.documentIds } : {}),
-    }, { headers: this.headers() });
+    let response = await api.post(
+      '/conversations',
+      {
+        name: params.name,
+        bot_id: params.botId,
+        ...(params.documentIds ? { document_ids: params.documentIds } : {})
+      },
+      { headers: this.headers() }
+    );
     return mapConversation(response.data.data);
   }
 
-  async updateConversation(conversationId: string, params: {
-    name: string;
-    botId: string;
-    documentIds?: string[];
-  }): Promise<Conversation> {
-    let response = await api.post(`/conversations/${conversationId}`, {
-      name: params.name,
-      bot_id: params.botId,
-      ...(params.documentIds ? { document_ids: params.documentIds } : {}),
-    }, { headers: this.headers() });
+  async updateConversation(
+    conversationId: string,
+    params: {
+      name: string;
+      botId: string;
+      documentIds?: string[];
+    }
+  ): Promise<Conversation> {
+    let response = await api.post(
+      `/conversations/${conversationId}`,
+      {
+        name: params.name,
+        bot_id: params.botId,
+        ...(params.documentIds ? { document_ids: params.documentIds } : {})
+      },
+      { headers: this.headers() }
+    );
     return mapConversation(response.data.data);
   }
 
@@ -323,38 +360,42 @@ export class Client {
       params: {
         ...(params?.conversationId ? { conversation_id: params.conversationId } : {}),
         ...(includes.length > 0 ? { includes: includes.join(',') } : {}),
-        ...(params?.page ? { page: params.page } : {}),
-      },
+        ...(params?.page ? { page: params.page } : {})
+      }
     });
     return {
       messages: response.data.data.map(mapMessage),
-      pagination: mapPagination(response.data.meta.pagination),
+      pagination: mapPagination(response.data.meta.pagination)
     };
   }
 
-  async getMessage(messageId: string, params?: {
-    includeSources?: boolean;
-    includeUsage?: boolean;
-  }): Promise<Message> {
+  async getMessage(
+    messageId: string,
+    params?: {
+      includeSources?: boolean;
+      includeUsage?: boolean;
+    }
+  ): Promise<Message> {
     let includes: string[] = [];
     if (params?.includeSources) includes.push('sources');
     if (params?.includeUsage) includes.push('usage');
 
     let response = await api.get(`/messages/${messageId}`, {
       headers: this.headers(),
-      params: includes.length > 0 ? { includes: includes.join(',') } : {},
+      params: includes.length > 0 ? { includes: includes.join(',') } : {}
     });
     return mapMessage(response.data.data);
   }
 
-  async sendMessage(params: {
-    content: string;
-    conversationId: string;
-  }): Promise<Message> {
-    let response = await api.post('/messages', {
-      content: params.content,
-      conversation_id: params.conversationId,
-    }, { headers: this.headers() });
+  async sendMessage(params: { content: string; conversationId: string }): Promise<Message> {
+    let response = await api.post(
+      '/messages',
+      {
+        content: params.content,
+        conversation_id: params.conversationId
+      },
+      { headers: this.headers() }
+    );
     return mapMessage(response.data.data);
   }
 
@@ -362,16 +403,20 @@ export class Client {
     content: string;
     conversationId: string;
   }): Promise<StreamInfo> {
-    let response = await api.post('/messages/stream', {
-      content: params.content,
-      conversation_id: params.conversationId,
-      redirect: false,
-    }, {
-      headers: this.headers(),
-      maxRedirects: 0,
-    });
+    let response = await api.post(
+      '/messages/stream',
+      {
+        content: params.content,
+        conversation_id: params.conversationId,
+        redirect: false
+      },
+      {
+        headers: this.headers(),
+        maxRedirects: 0
+      }
+    );
     return {
-      streamUrl: response.data.data.stream_url,
+      streamUrl: response.data.data.stream_url
     };
   }
 }

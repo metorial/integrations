@@ -9,8 +9,8 @@ export class Client {
       headers: {
         'X-VO-Api-Id': config.apiId,
         'X-VO-Api-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -63,10 +63,7 @@ export class Client {
     return response.data;
   }
 
-  async resolveUserIncidents(params: {
-    userName: string;
-    message?: string;
-  }): Promise<any> {
+  async resolveUserIncidents(params: { userName: string; message?: string }): Promise<any> {
     let response = await this.axios.patch('/api-public/v1/incidents/byUser/resolve', params);
     return response.data;
   }
@@ -89,22 +86,37 @@ export class Client {
     return response.data;
   }
 
-  async createIncidentNote(incidentNumber: string, params: {
-    content: string;
-  }): Promise<any> {
-    let response = await this.axios.post(`/api-public/v1/incidents/${incidentNumber}/notes`, params);
+  async createIncidentNote(
+    incidentNumber: string,
+    params: {
+      content: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/api-public/v1/incidents/${incidentNumber}/notes`,
+      params
+    );
     return response.data;
   }
 
-  async updateIncidentNote(incidentNumber: string, noteName: string, params: {
-    content: string;
-  }): Promise<any> {
-    let response = await this.axios.put(`/api-public/v1/incidents/${incidentNumber}/notes/${noteName}`, params);
+  async updateIncidentNote(
+    incidentNumber: string,
+    noteName: string,
+    params: {
+      content: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/api-public/v1/incidents/${incidentNumber}/notes/${noteName}`,
+      params
+    );
     return response.data;
   }
 
   async deleteIncidentNote(incidentNumber: string, noteName: string): Promise<any> {
-    let response = await this.axios.delete(`/api-public/v1/incidents/${incidentNumber}/notes/${noteName}`);
+    let response = await this.axios.delete(
+      `/api-public/v1/incidents/${incidentNumber}/notes/${noteName}`
+    );
     return response.data;
   }
 
@@ -139,20 +151,23 @@ export class Client {
     return response.data;
   }
 
-  async updateUser(username: string, params: {
-    firstName?: string;
-    lastName?: string;
-    username?: string;
-    email?: string;
-    admin?: boolean;
-  }): Promise<any> {
+  async updateUser(
+    username: string,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      username?: string;
+      email?: string;
+      admin?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/api-public/v1/user/${username}`, params);
     return response.data;
   }
 
   async deleteUser(username: string, replacement: string): Promise<any> {
     let response = await this.axios.delete(`/api-public/v1/user/${username}`, {
-      data: { replacement },
+      data: { replacement }
     });
     return response.data;
   }
@@ -195,14 +210,23 @@ export class Client {
   }
 
   async addTeamMember(teamSlug: string, username: string): Promise<any> {
-    let response = await this.axios.post(`/api-public/v1/team/${teamSlug}/members`, { username });
+    let response = await this.axios.post(`/api-public/v1/team/${teamSlug}/members`, {
+      username
+    });
     return response.data;
   }
 
-  async removeTeamMember(teamSlug: string, username: string, replacement: string): Promise<any> {
-    let response = await this.axios.delete(`/api-public/v1/team/${teamSlug}/members/${username}`, {
-      data: { replacement },
-    });
+  async removeTeamMember(
+    teamSlug: string,
+    username: string,
+    replacement: string
+  ): Promise<any> {
+    let response = await this.axios.delete(
+      `/api-public/v1/team/${teamSlug}/members/${username}`,
+      {
+        data: { replacement }
+      }
+    );
     return response.data;
   }
 
@@ -223,22 +247,31 @@ export class Client {
     return response.data;
   }
 
-  async getTeamOnCallSchedule(teamSlug: string, params?: {
-    daysForward?: number;
-    daysSkip?: number;
-    step?: number;
-  }): Promise<any> {
+  async getTeamOnCallSchedule(
+    teamSlug: string,
+    params?: {
+      daysForward?: number;
+      daysSkip?: number;
+      step?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/api-public/v2/team/${teamSlug}/oncall/schedule`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async createOnCallOverride(policySlug: string, params: {
-    fromUser: string;
-    toUser: string;
-  }): Promise<any> {
-    let response = await this.axios.patch(`/api-public/v1/policies/${policySlug}/oncall/user`, params);
+  async createOnCallOverride(
+    policySlug: string,
+    params: {
+      fromUser: string;
+      toUser: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      `/api-public/v1/policies/${policySlug}/oncall/user`,
+      params
+    );
     return response.data;
   }
 
@@ -270,7 +303,7 @@ export class Client {
     let response = await this.axios.post('/api-public/v1/policies', {
       name: params.name,
       team_id: params.teamId,
-      step: params.steps,
+      step: params.steps
     });
     return response.data;
   }
@@ -309,10 +342,7 @@ export class Client {
     return response.data;
   }
 
-  async createScheduledOverride(params: {
-    start: string;
-    end: string;
-  }): Promise<any> {
+  async createScheduledOverride(params: { start: string; end: string }): Promise<any> {
     let response = await this.axios.post('/api-public/v1/overrides', params);
     return response.data;
   }
@@ -344,7 +374,9 @@ export class Client {
   }
 
   async endMaintenanceMode(maintenanceModeId: string): Promise<any> {
-    let response = await this.axios.put(`/api-public/v1/maintenancemode/${maintenanceModeId}/end`);
+    let response = await this.axios.put(
+      `/api-public/v1/maintenancemode/${maintenanceModeId}/end`
+    );
     return response.data;
   }
 
@@ -366,12 +398,17 @@ export class Client {
     return response.data;
   }
 
-  async getTeamShiftLog(teamSlug: string, params?: {
-    start?: string;
-    end?: string;
-    userName?: string;
-  }): Promise<any> {
-    let response = await this.axios.get(`/api-reporting/v1/team/${teamSlug}/oncall/log`, { params });
+  async getTeamShiftLog(
+    teamSlug: string,
+    params?: {
+      start?: string;
+      end?: string;
+      userName?: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.get(`/api-reporting/v1/team/${teamSlug}/oncall/log`, {
+      params
+    });
     return response.data;
   }
 

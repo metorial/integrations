@@ -5,16 +5,15 @@ export class DockClient {
   private axios: AxiosInstance;
 
   constructor(private config: { token: string; environment: string }) {
-    let baseURL = config.environment === 'testnet'
-      ? 'https://api-testnet.dock.io'
-      : 'https://api.dock.io';
+    let baseURL =
+      config.environment === 'testnet' ? 'https://api-testnet.dock.io' : 'https://api.dock.io';
 
     this.axios = createAxios({
       baseURL,
       headers: {
         'DOCK-API-TOKEN': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -57,7 +56,9 @@ export class DockClient {
   }
 
   async exportDid(did: string, password: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/dids/${encodeURIComponent(did)}/export`, { password });
+    let response = await this.axios.post(`/dids/${encodeURIComponent(did)}/export`, {
+      password
+    });
     return response.data;
   }
 
@@ -90,12 +91,18 @@ export class DockClient {
     return response.data;
   }
 
-  async updateProfile(profileId: string, params: {
-    name?: string;
-    description?: string;
-    logo?: string;
-  }): Promise<Record<string, unknown>> {
-    let response = await this.axios.patch(`/profiles/${encodeURIComponent(profileId)}`, params);
+  async updateProfile(
+    profileId: string,
+    params: {
+      name?: string;
+      description?: string;
+      logo?: string;
+    }
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.patch(
+      `/profiles/${encodeURIComponent(profileId)}`,
+      params
+    );
     return response.data;
   }
 
@@ -129,13 +136,18 @@ export class DockClient {
     return response.data;
   }
 
-  async getCredential(credentialId: string, params?: {
-    password?: string;
-  }): Promise<Record<string, unknown>> {
+  async getCredential(
+    credentialId: string,
+    params?: {
+      password?: string;
+    }
+  ): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = {};
     if (params?.password !== undefined) queryParams.password = params.password;
 
-    let response = await this.axios.get(`/credentials/${encodeURIComponent(credentialId)}`, { params: queryParams });
+    let response = await this.axios.get(`/credentials/${encodeURIComponent(credentialId)}`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -157,12 +169,16 @@ export class DockClient {
 
   // ---- Verification ----
 
-  async verifyCredential(credential: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async verifyCredential(
+    credential: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/verify', credential);
     return response.data;
   }
 
-  async verifyPresentation(presentation: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async verifyPresentation(
+    presentation: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/verify', presentation);
     return response.data;
   }
@@ -236,26 +252,37 @@ export class DockClient {
     return response.data;
   }
 
-  async revokeCredential(registryId: string, credentialIds: string[]): Promise<Record<string, unknown>> {
+  async revokeCredential(
+    registryId: string,
+    credentialIds: string[]
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/registries/${encodeURIComponent(registryId)}`, {
       action: 'revoke',
-      credentialIds,
+      credentialIds
     });
     return response.data;
   }
 
-  async unrevokeCredential(registryId: string, credentialIds: string[]): Promise<Record<string, unknown>> {
+  async unrevokeCredential(
+    registryId: string,
+    credentialIds: string[]
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(`/registries/${encodeURIComponent(registryId)}`, {
       action: 'unrevoke',
-      credentialIds,
+      credentialIds
     });
     return response.data;
   }
 
   // ---- Revocation Status ----
 
-  async getRevocationStatus(registryId: string, credentialId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/revocationStatus/${encodeURIComponent(registryId)}/${encodeURIComponent(credentialId)}`);
+  async getRevocationStatus(
+    registryId: string,
+    credentialId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.get(
+      `/revocationStatus/${encodeURIComponent(registryId)}/${encodeURIComponent(credentialId)}`
+    );
     return response.data;
   }
 
@@ -284,7 +311,9 @@ export class DockClient {
   }
 
   async verifyAnchor(anchorId: string, documents: string[]): Promise<Record<string, unknown>> {
-    let response = await this.axios.post(`/anchors/${encodeURIComponent(anchorId)}/verify`, { documents });
+    let response = await this.axios.post(`/anchors/${encodeURIComponent(anchorId)}/verify`, {
+      documents
+    });
     return response.data;
   }
 
@@ -301,7 +330,9 @@ export class DockClient {
   }
 
   async getProofRequest(proofRequestId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.get(`/proof-requests/${encodeURIComponent(proofRequestId)}`);
+    let response = await this.axios.get(
+      `/proof-requests/${encodeURIComponent(proofRequestId)}`
+    );
     return response.data;
   }
 
@@ -366,9 +397,7 @@ export class DockClient {
 
   // ---- Sub-Accounts ----
 
-  async createSubAccount(params: {
-    name: string;
-  }): Promise<Record<string, unknown>> {
+  async createSubAccount(params: { name: string }): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/sub-accounts', params);
     return response.data;
   }

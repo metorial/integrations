@@ -3,21 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let propertyTypeEnum = z.enum(['apartment', 'house', 'building', 'parking', 'office', 'land', 'shop']);
+let propertyTypeEnum = z.enum([
+  'apartment',
+  'house',
+  'building',
+  'parking',
+  'office',
+  'land',
+  'shop'
+]);
 let transactionTypeEnum = z.enum(['sale', 'rent']);
 let publisherTypeEnum = z.enum(['individual', 'professional']);
 let sortDirectionEnum = z.enum(['asc', 'desc']);
 
 let propertyTypeMap: Record<string, number> = {
-  apartment: 0, house: 1, building: 2, parking: 3, office: 4, land: 5, shop: 6,
+  apartment: 0,
+  house: 1,
+  building: 2,
+  parking: 3,
+  office: 4,
+  land: 5,
+  shop: 6
 };
 
 let transactionTypeMap: Record<string, number> = {
-  sale: 0, rent: 1,
+  sale: 0,
+  rent: 1
 };
 
 let publisherTypeMap: Record<string, number> = {
-  individual: 0, professional: 1,
+  individual: 0,
+  professional: 1
 };
 
 let advertSchema = z.object({
@@ -28,24 +44,33 @@ let advertSchema = z.object({
   description: z.string().describe('Advert description'),
   condominiumFees: z.number().nullable().describe('Monthly condominium fees'),
   constructionYear: z.number().nullable().describe('Year of construction'),
-  energy: z.object({
-    category: z.string(),
-    value: z.number(),
-  }).nullable().describe('Energy performance rating'),
-  greenHouseGas: z.object({
-    category: z.string(),
-    value: z.number(),
-  }).nullable().describe('Greenhouse gas emission rating'),
-  contact: z.object({
-    agency: z.string().nullable(),
-    name: z.string().nullable(),
-    email: z.string().nullable(),
-    phone: z.string().nullable(),
-    reference: z.string().nullable(),
-  }).nullable().describe('Contact information'),
+  energy: z
+    .object({
+      category: z.string(),
+      value: z.number()
+    })
+    .nullable()
+    .describe('Energy performance rating'),
+  greenHouseGas: z
+    .object({
+      category: z.string(),
+      value: z.number()
+    })
+    .nullable()
+    .describe('Greenhouse gas emission rating'),
+  contact: z
+    .object({
+      agency: z.string().nullable(),
+      name: z.string().nullable(),
+      email: z.string().nullable(),
+      phone: z.string().nullable(),
+      reference: z.string().nullable()
+    })
+    .nullable()
+    .describe('Contact information'),
   publisherName: z.string().nullable().describe('Publisher name'),
   publisherType: z.string().nullable().describe('Publisher type (individual or professional)'),
-  createdAt: z.string().describe('When the advert was first seen'),
+  createdAt: z.string().describe('When the advert was first seen')
 });
 
 let propertyOutputSchema = z.object({
@@ -73,22 +98,34 @@ let propertyOutputSchema = z.object({
   updatedAt: z.string().describe('When the property was last updated'),
   expired: z.boolean().describe('Whether the listing has expired'),
   adverts: z.array(advertSchema).describe('Individual adverts for this property'),
-  stations: z.array(z.object({
-    name: z.string(),
-    lines: z.array(z.string()),
-  })).describe('Nearby transit stations'),
+  stations: z
+    .array(
+      z.object({
+        name: z.string(),
+        lines: z.array(z.string())
+      })
+    )
+    .describe('Nearby transit stations')
 });
 
 let reversePropertyTypeMap: Record<number, string> = {
-  0: 'apartment', 1: 'house', 2: 'building', 3: 'parking', 4: 'office', 5: 'land', 6: 'shop',
+  0: 'apartment',
+  1: 'house',
+  2: 'building',
+  3: 'parking',
+  4: 'office',
+  5: 'land',
+  6: 'shop'
 };
 
 let reverseTransactionTypeMap: Record<number, string> = {
-  0: 'sale', 1: 'rent',
+  0: 'sale',
+  1: 'rent'
 };
 
 let reversePublisherTypeMap: Record<number, string> = {
-  0: 'individual', 1: 'professional',
+  0: 'individual',
+  1: 'professional'
 };
 
 export let mapPropertyOutput = (p: any) => ({
@@ -125,95 +162,126 @@ export let mapPropertyOutput = (p: any) => ({
     constructionYear: a.constructionYear ?? null,
     energy: a.energy ?? null,
     greenHouseGas: a.greenHouseGas ?? null,
-    contact: a.contact ? {
-      agency: a.contact.agency ?? null,
-      name: a.contact.name ?? null,
-      email: a.contact.email ?? null,
-      phone: a.contact.phone ?? null,
-      reference: a.contact.reference ?? null,
-    } : null,
+    contact: a.contact
+      ? {
+          agency: a.contact.agency ?? null,
+          name: a.contact.name ?? null,
+          email: a.contact.email ?? null,
+          phone: a.contact.phone ?? null,
+          reference: a.contact.reference ?? null
+        }
+      : null,
     publisherName: a.publisher?.name ?? null,
-    publisherType: a.publisher ? (reversePublisherTypeMap[a.publisher.type] ?? String(a.publisher.type)) : null,
-    createdAt: a.createdAt,
+    publisherType: a.publisher
+      ? (reversePublisherTypeMap[a.publisher.type] ?? String(a.publisher.type))
+      : null,
+    createdAt: a.createdAt
   })),
   stations: (p.stations ?? []).map((s: any) => ({
     name: s.name,
-    lines: (s.lines ?? []).map((l: any) => l.number),
-  })),
+    lines: (s.lines ?? []).map((l: any) => l.number)
+  }))
 });
 
 export { propertyOutputSchema };
 
-export let searchProperties = SlateTool.create(
-  spec,
-  {
-    name: 'Search Properties',
-    key: 'search_properties',
-    description: `Search for real estate property listings across France. Properties are deduplicated from 900+ sources.
+export let searchProperties = SlateTool.create(spec, {
+  name: 'Search Properties',
+  key: 'search_properties',
+  description: `Search for real estate property listings across France. Properties are deduplicated from 900+ sources.
 Filter by location, price, surface area, property type, transaction type, and more.
 Results include price, location, photos, energy ratings, contact info, and nearby transit.`,
-    instructions: [
-      'Use location filters (city, department, zipcode, or lat/lon with radius) to narrow results geographically.',
-      'Set itemsPerPage to 0 to get only the count of matching properties without returning listings.',
-      'Use expressions for full-text keyword search within property titles and descriptions.',
-    ],
-    constraints: [
-      'Maximum 30 items per page.',
-      'Total count is capped at 10,000.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    transactionType: transactionTypeEnum.describe('Filter by transaction type'),
-    propertyTypes: z.array(propertyTypeEnum).optional().describe('Filter by property types'),
-    budgetMin: z.number().optional().describe('Minimum price in EUR'),
-    budgetMax: z.number().optional().describe('Maximum price in EUR'),
-    surfaceMin: z.number().optional().describe('Minimum surface area in m²'),
-    surfaceMax: z.number().optional().describe('Maximum surface area in m²'),
-    bedroomMin: z.number().optional().describe('Minimum number of bedrooms'),
-    bedroomMax: z.number().optional().describe('Maximum number of bedrooms'),
-    roomMin: z.number().optional().describe('Minimum number of rooms'),
-    roomMax: z.number().optional().describe('Maximum number of rooms'),
-    includedCities: z.array(z.string()).optional().describe('City IRIs to include (e.g. "cities/12345")'),
-    excludedCities: z.array(z.string()).optional().describe('City IRIs to exclude'),
-    includedDepartments: z.array(z.string()).optional().describe('Department IRIs to include (e.g. "departments/75")'),
-    includedZipcodes: z.array(z.string()).optional().describe('Zipcodes to include'),
-    excludedZipcodes: z.array(z.string()).optional().describe('Zipcodes to exclude'),
-    includedInseeCodes: z.array(z.string()).optional().describe('INSEE codes to include'),
-    excludedInseeCodes: z.array(z.string()).optional().describe('INSEE codes to exclude'),
-    latitude: z.number().optional().describe('Center latitude for radius search'),
-    longitude: z.number().optional().describe('Center longitude for radius search'),
-    radius: z.number().optional().describe('Search radius in km (requires lat/lon)'),
-    pricePerMeterMin: z.number().optional().describe('Minimum price per m²'),
-    pricePerMeterMax: z.number().optional().describe('Maximum price per m²'),
-    publisherTypes: z.array(publisherTypeEnum).optional().describe('Filter by publisher type'),
-    furnished: z.boolean().optional().describe('Filter by furnished status'),
-    withVirtualTour: z.boolean().optional().describe('Only include properties with virtual tours'),
-    expressions: z.array(z.string()).optional().describe('Full-text search expressions for titles/descriptions'),
-    fromDate: z.string().optional().describe('Only properties created after this date (ISO 8601)'),
-    toDate: z.string().optional().describe('Only properties created before this date (ISO 8601)'),
-    expired: z.boolean().optional().describe('Filter by expired status. null returns all.'),
-    sortBy: z.enum(['createdAt', 'updatedAt', 'price', 'surface', 'pricePerMeter']).optional().describe('Field to sort by'),
-    sortDirection: sortDirectionEnum.optional().describe('Sort direction'),
-    page: z.number().optional().describe('Page number (starts at 1)'),
-    itemsPerPage: z.number().optional().describe('Results per page (max 30, use 0 for count only)'),
-  }))
-  .output(z.object({
-    totalItems: z.number().describe('Total number of matching properties (capped at 10,000)'),
-    properties: z.array(propertyOutputSchema).describe('List of matching properties'),
-    hasNextPage: z.boolean().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Use location filters (city, department, zipcode, or lat/lon with radius) to narrow results geographically.',
+    'Set itemsPerPage to 0 to get only the count of matching properties without returning listings.',
+    'Use expressions for full-text keyword search within property titles and descriptions.'
+  ],
+  constraints: ['Maximum 30 items per page.', 'Total count is capped at 10,000.'],
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      transactionType: transactionTypeEnum.describe('Filter by transaction type'),
+      propertyTypes: z.array(propertyTypeEnum).optional().describe('Filter by property types'),
+      budgetMin: z.number().optional().describe('Minimum price in EUR'),
+      budgetMax: z.number().optional().describe('Maximum price in EUR'),
+      surfaceMin: z.number().optional().describe('Minimum surface area in m²'),
+      surfaceMax: z.number().optional().describe('Maximum surface area in m²'),
+      bedroomMin: z.number().optional().describe('Minimum number of bedrooms'),
+      bedroomMax: z.number().optional().describe('Maximum number of bedrooms'),
+      roomMin: z.number().optional().describe('Minimum number of rooms'),
+      roomMax: z.number().optional().describe('Maximum number of rooms'),
+      includedCities: z
+        .array(z.string())
+        .optional()
+        .describe('City IRIs to include (e.g. "cities/12345")'),
+      excludedCities: z.array(z.string()).optional().describe('City IRIs to exclude'),
+      includedDepartments: z
+        .array(z.string())
+        .optional()
+        .describe('Department IRIs to include (e.g. "departments/75")'),
+      includedZipcodes: z.array(z.string()).optional().describe('Zipcodes to include'),
+      excludedZipcodes: z.array(z.string()).optional().describe('Zipcodes to exclude'),
+      includedInseeCodes: z.array(z.string()).optional().describe('INSEE codes to include'),
+      excludedInseeCodes: z.array(z.string()).optional().describe('INSEE codes to exclude'),
+      latitude: z.number().optional().describe('Center latitude for radius search'),
+      longitude: z.number().optional().describe('Center longitude for radius search'),
+      radius: z.number().optional().describe('Search radius in km (requires lat/lon)'),
+      pricePerMeterMin: z.number().optional().describe('Minimum price per m²'),
+      pricePerMeterMax: z.number().optional().describe('Maximum price per m²'),
+      publisherTypes: z
+        .array(publisherTypeEnum)
+        .optional()
+        .describe('Filter by publisher type'),
+      furnished: z.boolean().optional().describe('Filter by furnished status'),
+      withVirtualTour: z
+        .boolean()
+        .optional()
+        .describe('Only include properties with virtual tours'),
+      expressions: z
+        .array(z.string())
+        .optional()
+        .describe('Full-text search expressions for titles/descriptions'),
+      fromDate: z
+        .string()
+        .optional()
+        .describe('Only properties created after this date (ISO 8601)'),
+      toDate: z
+        .string()
+        .optional()
+        .describe('Only properties created before this date (ISO 8601)'),
+      expired: z.boolean().optional().describe('Filter by expired status. null returns all.'),
+      sortBy: z
+        .enum(['createdAt', 'updatedAt', 'price', 'surface', 'pricePerMeter'])
+        .optional()
+        .describe('Field to sort by'),
+      sortDirection: sortDirectionEnum.optional().describe('Sort direction'),
+      page: z.number().optional().describe('Page number (starts at 1)'),
+      itemsPerPage: z
+        .number()
+        .optional()
+        .describe('Results per page (max 30, use 0 for count only)')
+    })
+  )
+  .output(
+    z.object({
+      totalItems: z
+        .number()
+        .describe('Total number of matching properties (capped at 10,000)'),
+      properties: z.array(propertyOutputSchema).describe('List of matching properties'),
+      hasNextPage: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let params: Record<string, unknown> = {
-      transactionType: transactionTypeMap[ctx.input.transactionType],
+      transactionType: transactionTypeMap[ctx.input.transactionType]
     };
 
     if (ctx.input.propertyTypes) {
@@ -229,21 +297,27 @@ Results include price, location, photos, energy ratings, contact info, and nearb
     if (ctx.input.roomMax !== undefined) params.roomMax = ctx.input.roomMax;
     if (ctx.input.includedCities) params['includedCities[]'] = ctx.input.includedCities;
     if (ctx.input.excludedCities) params['excludedCities[]'] = ctx.input.excludedCities;
-    if (ctx.input.includedDepartments) params['includedDepartments[]'] = ctx.input.includedDepartments;
+    if (ctx.input.includedDepartments)
+      params['includedDepartments[]'] = ctx.input.includedDepartments;
     if (ctx.input.includedZipcodes) params['includedZipcodes[]'] = ctx.input.includedZipcodes;
     if (ctx.input.excludedZipcodes) params['excludedZipcodes[]'] = ctx.input.excludedZipcodes;
-    if (ctx.input.includedInseeCodes) params['includedInseeCodes[]'] = ctx.input.includedInseeCodes;
-    if (ctx.input.excludedInseeCodes) params['excludedInseeCodes[]'] = ctx.input.excludedInseeCodes;
+    if (ctx.input.includedInseeCodes)
+      params['includedInseeCodes[]'] = ctx.input.includedInseeCodes;
+    if (ctx.input.excludedInseeCodes)
+      params['excludedInseeCodes[]'] = ctx.input.excludedInseeCodes;
     if (ctx.input.latitude !== undefined) params.lat = ctx.input.latitude;
     if (ctx.input.longitude !== undefined) params.lon = ctx.input.longitude;
     if (ctx.input.radius !== undefined) params.radius = ctx.input.radius;
-    if (ctx.input.pricePerMeterMin !== undefined) params.pricePerMeterMin = ctx.input.pricePerMeterMin;
-    if (ctx.input.pricePerMeterMax !== undefined) params.pricePerMeterMax = ctx.input.pricePerMeterMax;
+    if (ctx.input.pricePerMeterMin !== undefined)
+      params.pricePerMeterMin = ctx.input.pricePerMeterMin;
+    if (ctx.input.pricePerMeterMax !== undefined)
+      params.pricePerMeterMax = ctx.input.pricePerMeterMax;
     if (ctx.input.publisherTypes) {
       params['publisherTypes[]'] = ctx.input.publisherTypes.map(t => publisherTypeMap[t]);
     }
     if (ctx.input.furnished !== undefined) params.furnished = ctx.input.furnished;
-    if (ctx.input.withVirtualTour !== undefined) params.withVirtualTour = ctx.input.withVirtualTour;
+    if (ctx.input.withVirtualTour !== undefined)
+      params.withVirtualTour = ctx.input.withVirtualTour;
     if (ctx.input.expressions) params['expressions[]'] = ctx.input.expressions;
     if (ctx.input.fromDate) params.fromDate = ctx.input.fromDate;
     if (ctx.input.toDate) params.toDate = ctx.input.toDate;
@@ -262,8 +336,9 @@ Results include price, location, photos, energy ratings, contact info, and nearb
       output: {
         totalItems: result['hydra:totalItems'],
         properties,
-        hasNextPage,
+        hasNextPage
       },
-      message: `Found **${result['hydra:totalItems']}** properties matching the search criteria. Returned **${properties.length}** results${hasNextPage ? ' (more pages available)' : ''}.`,
+      message: `Found **${result['hydra:totalItems']}** properties matching the search criteria. Returned **${properties.length}** results${hasNextPage ? ' (more pages available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

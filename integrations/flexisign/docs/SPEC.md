@@ -18,6 +18,7 @@ To authenticate API requests, include the API key in the request headers:
 The API key can be obtained from the FlexiSign application under the integrations section. The base URL for API requests is `https://api.flexisign.io/v1/`.
 
 Example header:
+
 ```
 api-key: your_api_key_here
 ```

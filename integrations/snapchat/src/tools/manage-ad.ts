@@ -14,28 +14,27 @@ let adOutputSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let manageAd = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Ad',
-    key: 'manage_ad',
-    description: `Create or update a Snapchat ad within an ad squad. An ad links a creative to an ad squad for delivery. To create, provide **adSquadId** and properties. To update, also provide **adId**.`,
-    instructions: [
-      'A creative must be created first and referenced by creativeId.',
-      'Valid statuses: ACTIVE, PAUSED.'
-    ]
-  }
-)
-  .input(z.object({
-    adSquadId: z.string().describe('Ad squad ID this ad belongs to'),
-    adId: z.string().optional().describe('Ad ID to update (omit to create a new ad)'),
-    name: z.string().optional().describe('Ad name'),
-    creativeId: z.string().optional().describe('ID of the creative to use'),
-    status: z.enum(['ACTIVE', 'PAUSED']).optional().describe('Ad status'),
-    type: z.string().optional().describe('Ad type (e.g., SNAP_AD)')
-  }))
+export let manageAd = SlateTool.create(spec, {
+  name: 'Manage Ad',
+  key: 'manage_ad',
+  description: `Create or update a Snapchat ad within an ad squad. An ad links a creative to an ad squad for delivery. To create, provide **adSquadId** and properties. To update, also provide **adId**.`,
+  instructions: [
+    'A creative must be created first and referenced by creativeId.',
+    'Valid statuses: ACTIVE, PAUSED.'
+  ]
+})
+  .input(
+    z.object({
+      adSquadId: z.string().describe('Ad squad ID this ad belongs to'),
+      adId: z.string().optional().describe('Ad ID to update (omit to create a new ad)'),
+      name: z.string().optional().describe('Ad name'),
+      creativeId: z.string().optional().describe('ID of the creative to use'),
+      status: z.enum(['ACTIVE', 'PAUSED']).optional().describe('Ad status'),
+      type: z.string().optional().describe('Ad type (e.g., SNAP_AD)')
+    })
+  )
   .output(adOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let { adSquadId, adId, ...fields } = ctx.input;
 

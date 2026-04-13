@@ -14,16 +14,17 @@ export class DialpadClient {
   private axios;
 
   constructor(config: DialpadClientConfig) {
-    let baseURL = config.environment === 'sandbox'
-      ? 'https://sandbox.dialpad.com/api/v2'
-      : 'https://dialpad.com/api/v2';
+    let baseURL =
+      config.environment === 'sandbox'
+        ? 'https://sandbox.dialpad.com/api/v2'
+        : 'https://dialpad.com/api/v2';
 
     this.axios = createAxios({
       baseURL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -131,13 +132,16 @@ export class DialpadClient {
 
   // ── Calls ──────────────────────────────────────────
 
-  async initiateCall(userId: string, data: {
-    phone_number?: string;
-    user_id?: number;
-    group_type?: string;
-    group_id?: number;
-    custom_data?: string;
-  }) {
+  async initiateCall(
+    userId: string,
+    data: {
+      phone_number?: string;
+      user_id?: number;
+      group_type?: string;
+      group_id?: number;
+      custom_data?: string;
+    }
+  ) {
     let response = await this.axios.post(`/users/${userId}/initiate_call`, data);
     return response.data;
   }
@@ -163,11 +167,14 @@ export class DialpadClient {
     return response.data;
   }
 
-  async transferCall(callId: string, data: {
-    phone_number?: string;
-    user_id?: number;
-    type?: string;
-  }) {
+  async transferCall(
+    callId: string,
+    data: {
+      phone_number?: string;
+      user_id?: number;
+      type?: string;
+    }
+  ) {
     let response = await this.axios.post(`/calls/${callId}/transfer`, data);
     return response.data;
   }
@@ -189,10 +196,13 @@ export class DialpadClient {
     return response.data;
   }
 
-  async createCallCenter(officeId: string, data: {
-    name: string;
-    description?: string;
-  }) {
+  async createCallCenter(
+    officeId: string,
+    data: {
+      name: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.post(`/offices/${officeId}/callcenters`, data);
     return response.data;
   }
@@ -212,13 +222,18 @@ export class DialpadClient {
     return response.data as PaginatedResponse<any>;
   }
 
-  async addCallCenterOperator(callCenterId: string, data: { user_id: number; skill_level?: number }) {
+  async addCallCenterOperator(
+    callCenterId: string,
+    data: { user_id: number; skill_level?: number }
+  ) {
     let response = await this.axios.post(`/callcenters/${callCenterId}/operators`, data);
     return response.data;
   }
 
   async removeCallCenterOperator(callCenterId: string, operatorId: string) {
-    let response = await this.axios.delete(`/callcenters/${callCenterId}/operators/${operatorId}`);
+    let response = await this.axios.delete(
+      `/callcenters/${callCenterId}/operators/${operatorId}`
+    );
     return response.data;
   }
 
@@ -253,20 +268,12 @@ export class DialpadClient {
     return response.data as PaginatedResponse<any>;
   }
 
-  async assignNumber(data: {
-    number: string;
-    target_type: string;
-    target_id: number;
-  }) {
+  async assignNumber(data: { number: string; target_type: string; target_id: number }) {
     let response = await this.axios.post('/numbers/assign', data);
     return response.data;
   }
 
-  async unassignNumber(data: {
-    number: string;
-    target_type: string;
-    target_id: number;
-  }) {
+  async unassignNumber(data: { number: string; target_type: string; target_id: number }) {
     let response = await this.axios.post('/numbers/unassign', data);
     return response.data;
   }
@@ -332,10 +339,7 @@ export class DialpadClient {
     return response.data;
   }
 
-  async createContactEventSubscription(data: {
-    endpoint_id: number;
-    enabled?: boolean;
-  }) {
+  async createContactEventSubscription(data: { endpoint_id: number; enabled?: boolean }) {
     let response = await this.axios.post('/subscriptions/contact', data);
     return response.data;
   }

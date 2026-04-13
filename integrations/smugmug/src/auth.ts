@@ -3,12 +3,14 @@ import { z } from 'zod';
 import { getRequestToken, getAccessToken, buildOAuth1Header } from './lib/oauth1';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('OAuth access token'),
-    tokenSecret: z.string().describe('OAuth access token secret'),
-    consumerKey: z.string().describe('OAuth consumer key (API key)'),
-    consumerSecret: z.string().describe('OAuth consumer secret'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('OAuth access token'),
+      tokenSecret: z.string().describe('OAuth access token secret'),
+      consumerKey: z.string().describe('OAuth consumer key (API key)'),
+      consumerSecret: z.string().describe('OAuth consumer secret')
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 1.0a',
@@ -18,21 +20,22 @@ export let auth = SlateAuth.create()
       {
         title: 'Read',
         description: 'Read-only access to public and private content',
-        scope: 'Read',
+        scope: 'Read'
       },
       {
         title: 'Add',
-        description: 'Read access plus ability to create new content (upload photos, create albums)',
-        scope: 'Add',
+        description:
+          'Read access plus ability to create new content (upload photos, create albums)',
+        scope: 'Add'
       },
       {
         title: 'Modify',
         description: 'Full access including read, create, update, and delete operations',
-        scope: 'Modify',
-      },
+        scope: 'Modify'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let { oauthToken, oauthTokenSecret } = await getRequestToken(
         ctx.clientId,
         ctx.clientSecret,
@@ -49,7 +52,7 @@ export let auth = SlateAuth.create()
       let params = new URLSearchParams({
         oauth_token: oauthToken,
         Access: 'Full',
-        Permissions: permission,
+        Permissions: permission
       });
 
       let url = `https://api.smugmug.com/services/oauth/authorize.mg?${params.toString()}`;
@@ -58,12 +61,12 @@ export let auth = SlateAuth.create()
         url,
         callbackState: {
           oauthToken,
-          oauthTokenSecret,
-        },
+          oauthTokenSecret
+        }
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let requestToken = ctx.callbackState.oauthToken as string;
       let requestTokenSecret = ctx.callbackState.oauthTokenSecret as string;
       let verifier = ctx.code;
@@ -81,14 +84,23 @@ export let auth = SlateAuth.create()
           token: oauthToken,
           tokenSecret: oauthTokenSecret,
           consumerKey: ctx.clientId,
-          consumerSecret: ctx.clientSecret,
-        },
+          consumerSecret: ctx.clientSecret
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; tokenSecret: string; consumerKey: string; consumerSecret: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        tokenSecret: string;
+        consumerKey: string;
+        consumerSecret: string;
+      };
+      input: {};
+      scopes: string[];
+    }) => {
       let httpClient = createAxios({
-        baseURL: 'https://api.smugmug.com',
+        baseURL: 'https://api.smugmug.com'
       });
 
       let url = 'https://api.smugmug.com/api/v2!authuser';
@@ -96,15 +108,15 @@ export let auth = SlateAuth.create()
         consumerKey: ctx.output.consumerKey,
         consumerSecret: ctx.output.consumerSecret,
         token: ctx.output.token,
-        tokenSecret: ctx.output.tokenSecret,
+        tokenSecret: ctx.output.tokenSecret
       });
 
       try {
         let response = await httpClient.get('/api/v2!authuser', {
           headers: {
-            'Authorization': authHeader,
-            'Accept': 'application/json',
-          },
+            Authorization: authHeader,
+            Accept: 'application/json'
+          }
         });
 
         let user = response.data?.Response?.User;
@@ -112,13 +124,13 @@ export let auth = SlateAuth.create()
           profile: {
             id: user?.NickName || '',
             name: user?.Name || user?.NickName || '',
-            imageUrl: user?.ImageSmallUrl || undefined,
-          },
+            imageUrl: user?.ImageSmallUrl || undefined
+          }
         };
       } catch {
         return { profile: {} };
       }
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -126,26 +138,49 @@ export let auth = SlateAuth.create()
     key: 'api_keys',
 
     inputSchema: z.object({
-      consumerKey: z.string().describe('API Key (Consumer Key) from SmugMug developer settings'),
-      consumerSecret: z.string().describe('API Secret (Consumer Secret) from SmugMug developer settings'),
-      accessToken: z.string().describe('OAuth access token from SmugMug account settings (Privacy > Authorized Services)'),
-      accessTokenSecret: z.string().describe('OAuth access token secret from SmugMug account settings'),
+      consumerKey: z
+        .string()
+        .describe('API Key (Consumer Key) from SmugMug developer settings'),
+      consumerSecret: z
+        .string()
+        .describe('API Secret (Consumer Secret) from SmugMug developer settings'),
+      accessToken: z
+        .string()
+        .describe(
+          'OAuth access token from SmugMug account settings (Privacy > Authorized Services)'
+        ),
+      accessTokenSecret: z
+        .string()
+        .describe('OAuth access token secret from SmugMug account settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.accessToken,
           tokenSecret: ctx.input.accessTokenSecret,
           consumerKey: ctx.input.consumerKey,
-          consumerSecret: ctx.input.consumerSecret,
-        },
+          consumerSecret: ctx.input.consumerSecret
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; tokenSecret: string; consumerKey: string; consumerSecret: string }; input: { consumerKey: string; consumerSecret: string; accessToken: string; accessTokenSecret: string } }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        tokenSecret: string;
+        consumerKey: string;
+        consumerSecret: string;
+      };
+      input: {
+        consumerKey: string;
+        consumerSecret: string;
+        accessToken: string;
+        accessTokenSecret: string;
+      };
+    }) => {
       let httpClient = createAxios({
-        baseURL: 'https://api.smugmug.com',
+        baseURL: 'https://api.smugmug.com'
       });
 
       let url = 'https://api.smugmug.com/api/v2!authuser';
@@ -153,15 +188,15 @@ export let auth = SlateAuth.create()
         consumerKey: ctx.output.consumerKey,
         consumerSecret: ctx.output.consumerSecret,
         token: ctx.output.token,
-        tokenSecret: ctx.output.tokenSecret,
+        tokenSecret: ctx.output.tokenSecret
       });
 
       try {
         let response = await httpClient.get('/api/v2!authuser', {
           headers: {
-            'Authorization': authHeader,
-            'Accept': 'application/json',
-          },
+            Authorization: authHeader,
+            Accept: 'application/json'
+          }
         });
 
         let user = response.data?.Response?.User;
@@ -169,11 +204,11 @@ export let auth = SlateAuth.create()
           profile: {
             id: user?.NickName || '',
             name: user?.Name || user?.NickName || '',
-            imageUrl: user?.ImageSmallUrl || undefined,
-          },
+            imageUrl: user?.ImageSmallUrl || undefined
+          }
         };
       } catch {
         return { profile: {} };
       }
-    },
+    }
   });

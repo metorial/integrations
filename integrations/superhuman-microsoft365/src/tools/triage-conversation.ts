@@ -3,25 +3,22 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let triageConversation = SlateTool.create(
-  spec,
-  {
-    name: 'Triage Conversation',
-    key: 'triage_conversation',
-    description:
-      'Apply a single triage **action** to **every message** in a conversation (same `conversationId`). Supports archive, move folder, read/unread, flag/unflag, replace categories, and delete—aligned with fast inbox workflows.',
-    instructions: [
-      '**archive** moves each message to the well-known **archive** folder.',
-      '**move** requires **destinationFolderId** (folder id or well-known name such as `inbox` or `junkemail`).',
-      '**categorize** replaces the full category set on each message with **categories** (Graph stores an array).',
-      'Large threads trigger many Graph calls; consider scope before running destructive actions.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
+export let triageConversation = SlateTool.create(spec, {
+  name: 'Triage Conversation',
+  key: 'triage_conversation',
+  description:
+    'Apply a single triage **action** to **every message** in a conversation (same `conversationId`). Supports archive, move folder, read/unread, flag/unflag, replace categories, and delete—aligned with fast inbox workflows.',
+  instructions: [
+    '**archive** moves each message to the well-known **archive** folder.',
+    '**move** requires **destinationFolderId** (folder id or well-known name such as `inbox` or `junkemail`).',
+    '**categorize** replaces the full category set on each message with **categories** (Graph stores an array).',
+    'Large threads trigger many Graph calls; consider scope before running destructive actions.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
   .input(
     z.object({
       conversationId: z.string().describe('Thread id (`conversationId`) to triage'),
@@ -34,7 +31,7 @@ export let triageConversation = SlateTool.create(
           'flag',
           'unflag',
           'categorize',
-          'delete',
+          'delete'
         ])
         .describe('Operation applied to each message in the thread'),
       destinationFolderId: z
@@ -44,33 +41,33 @@ export let triageConversation = SlateTool.create(
       categories: z
         .array(z.string())
         .optional()
-        .describe('Required for **categorize**: replacement category list on each message'),
-    }),
+        .describe('Required for **categorize**: replacement category list on each message')
+    })
   )
   .output(
     z.object({
       success: z.boolean(),
       messagesAffected: z.number(),
-      action: z.string(),
-    }),
+      action: z.string()
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { conversationId, action } = ctx.input;
 
     let threadMessages = await client.listMessagesByConversation(conversationId, {
       select: ['id'],
-      orderby: 'receivedDateTime asc',
+      orderby: 'receivedDateTime asc'
     });
 
     if (!threadMessages.length) {
       return {
         output: { success: true, messagesAffected: 0, action },
-        message: `No messages found for conversation **${conversationId}**.`,
+        message: `No messages found for conversation **${conversationId}**.`
       };
     }
 
-    let ids = threadMessages.map((m) => m.id);
+    let ids = threadMessages.map(m => m.id);
 
     switch (action) {
       case 'archive': {
@@ -133,9 +130,9 @@ export let triageConversation = SlateTool.create(
       output: {
         success: true,
         messagesAffected: ids.length,
-        action,
+        action
       },
-      message: `Applied **${action}** to **${ids.length}** message(s) in the conversation.`,
+      message: `Applied **${action}** to **${ids.length}** message(s) in the conversation.`
     };
   })
   .build();

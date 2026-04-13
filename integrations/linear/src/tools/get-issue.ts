@@ -3,73 +3,80 @@ import { LinearClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getIssueTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Issue',
-    key: 'get_issue',
-    description: `Retrieves a single Linear issue by ID with full details including sub-issues and comments.`,
-    tags: {
-      readOnly: true
-    }
+export let getIssueTool = SlateTool.create(spec, {
+  name: 'Get Issue',
+  key: 'get_issue',
+  description: `Retrieves a single Linear issue by ID with full details including sub-issues and comments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    issueId: z.string().describe('Issue ID (UUID or identifier like ENG-123)')
-  }))
-  .output(z.object({
-    issueId: z.string(),
-    identifier: z.string(),
-    title: z.string(),
-    description: z.string().nullable(),
-    priority: z.number(),
-    priorityLabel: z.string(),
-    estimate: z.number().nullable(),
-    dueDate: z.string().nullable(),
-    url: z.string(),
-    teamId: z.string(),
-    teamName: z.string(),
-    stateId: z.string(),
-    stateName: z.string(),
-    stateType: z.string(),
-    assigneeId: z.string().nullable(),
-    assigneeName: z.string().nullable(),
-    assigneeEmail: z.string().nullable(),
-    creatorId: z.string().nullable(),
-    creatorName: z.string().nullable(),
-    projectId: z.string().nullable(),
-    projectName: z.string().nullable(),
-    cycleId: z.string().nullable(),
-    cycleName: z.string().nullable(),
-    parentId: z.string().nullable(),
-    parentIdentifier: z.string().nullable(),
-    labels: z.array(z.object({
-      labelId: z.string(),
-      name: z.string(),
-      color: z.string()
-    })),
-    subIssues: z.array(z.object({
+})
+  .input(
+    z.object({
+      issueId: z.string().describe('Issue ID (UUID or identifier like ENG-123)')
+    })
+  )
+  .output(
+    z.object({
       issueId: z.string(),
       identifier: z.string(),
       title: z.string(),
+      description: z.string().nullable(),
       priority: z.number(),
+      priorityLabel: z.string(),
+      estimate: z.number().nullable(),
+      dueDate: z.string().nullable(),
+      url: z.string(),
+      teamId: z.string(),
+      teamName: z.string(),
+      stateId: z.string(),
       stateName: z.string(),
-      assigneeName: z.string().nullable()
-    })),
-    comments: z.array(z.object({
-      commentId: z.string(),
-      body: z.string(),
-      authorName: z.string().nullable(),
-      authorEmail: z.string().nullable(),
-      createdAt: z.string()
-    })),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    completedAt: z.string().nullable(),
-    canceledAt: z.string().nullable(),
-    archivedAt: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+      stateType: z.string(),
+      assigneeId: z.string().nullable(),
+      assigneeName: z.string().nullable(),
+      assigneeEmail: z.string().nullable(),
+      creatorId: z.string().nullable(),
+      creatorName: z.string().nullable(),
+      projectId: z.string().nullable(),
+      projectName: z.string().nullable(),
+      cycleId: z.string().nullable(),
+      cycleName: z.string().nullable(),
+      parentId: z.string().nullable(),
+      parentIdentifier: z.string().nullable(),
+      labels: z.array(
+        z.object({
+          labelId: z.string(),
+          name: z.string(),
+          color: z.string()
+        })
+      ),
+      subIssues: z.array(
+        z.object({
+          issueId: z.string(),
+          identifier: z.string(),
+          title: z.string(),
+          priority: z.number(),
+          stateName: z.string(),
+          assigneeName: z.string().nullable()
+        })
+      ),
+      comments: z.array(
+        z.object({
+          commentId: z.string(),
+          body: z.string(),
+          authorName: z.string().nullable(),
+          authorEmail: z.string().nullable(),
+          createdAt: z.string()
+        })
+      ),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      completedAt: z.string().nullable(),
+      canceledAt: z.string().nullable(),
+      archivedAt: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let issue = await client.getIssue(ctx.input.issueId);
 
@@ -130,4 +137,5 @@ export let getIssueTool = SlateTool.create(
       output,
       message: `Retrieved issue **${issue.identifier}**: ${issue.title} (${issue.state?.name || 'Unknown state'})`
     };
-  }).build();
+  })
+  .build();

@@ -64,7 +64,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.linkup.so/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });

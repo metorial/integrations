@@ -115,10 +115,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://rest.boxhero-app.com/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -152,7 +152,7 @@ export class Client {
     while (hasMore) {
       let response = await this.listItems({
         ...params,
-        cursor,
+        cursor
       });
 
       allItems.push(...response.items);
@@ -163,7 +163,9 @@ export class Client {
     return allItems;
   }
 
-  async listTransactions(params?: ListTransactionsParams): Promise<PaginatedResponse<BoxHeroTransaction>> {
+  async listTransactions(
+    params?: ListTransactionsParams
+  ): Promise<PaginatedResponse<BoxHeroTransaction>> {
     let queryParams: Record<string, string> = {};
 
     if (params?.type) {
@@ -180,7 +182,9 @@ export class Client {
     return response.data;
   }
 
-  async listLocationTransactions(params?: ListTransactionsParams): Promise<PaginatedResponse<BoxHeroTransaction>> {
+  async listLocationTransactions(
+    params?: ListTransactionsParams
+  ): Promise<PaginatedResponse<BoxHeroTransaction>> {
     let queryParams: Record<string, string> = {};
 
     if (params?.type) {
@@ -200,10 +204,10 @@ export class Client {
   async createTransaction(params: CreateTransactionParams): Promise<BoxHeroTransaction> {
     let body: Record<string, unknown> = {
       type: params.type,
-      items: params.items.map((item) => ({
+      items: params.items.map(item => ({
         item_id: item.itemId,
-        quantity: item.quantity,
-      })),
+        quantity: item.quantity
+      }))
     };
 
     if (params.toLocationId !== undefined) {
@@ -231,7 +235,10 @@ export class Client {
     return response.data;
   }
 
-  async listPartners(params?: { cursor?: string; limit?: number }): Promise<PaginatedResponse<BoxHeroPartner>> {
+  async listPartners(params?: {
+    cursor?: string;
+    limit?: number;
+  }): Promise<PaginatedResponse<BoxHeroPartner>> {
     let queryParams: Record<string, string> = {};
 
     if (params?.limit) {

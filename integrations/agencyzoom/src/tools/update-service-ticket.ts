@@ -3,37 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateServiceTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Update Service Ticket',
-    key: 'update_service_ticket',
-    description: `Update or complete an existing service ticket in AgencyZoom. Use action "update" to modify ticket fields like CSR assignment, category, priority, pipeline stage, or description. Use action "complete" to mark the ticket as completed with an optional resolution.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    ticketId: z.string().describe('ID of the service ticket to update or complete'),
-    action: z.enum(['update', 'complete']).describe('Action to perform: "update" to modify ticket fields, "complete" to mark the ticket as completed'),
-    csrId: z.string().optional().describe('ID of the CSR to reassign the ticket to'),
-    category: z.string().optional().describe('Updated service ticket category'),
-    priority: z.string().optional().describe('Updated priority level'),
-    pipelineId: z.string().optional().describe('Updated pipeline ID'),
-    stageId: z.string().optional().describe('Updated pipeline stage ID'),
-    resolution: z.string().optional().describe('Resolution for the ticket (typically used with action "complete")'),
-    description: z.string().optional().describe('Updated description or details'),
-  }))
-  .output(z.object({
-    ticket: z.record(z.string(), z.any()).describe('The updated service ticket data'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateServiceTicket = SlateTool.create(spec, {
+  name: 'Update Service Ticket',
+  key: 'update_service_ticket',
+  description: `Update or complete an existing service ticket in AgencyZoom. Use action "update" to modify ticket fields like CSR assignment, category, priority, pipeline stage, or description. Use action "complete" to mark the ticket as completed with an optional resolution.`,
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      ticketId: z.string().describe('ID of the service ticket to update or complete'),
+      action: z
+        .enum(['update', 'complete'])
+        .describe(
+          'Action to perform: "update" to modify ticket fields, "complete" to mark the ticket as completed'
+        ),
+      csrId: z.string().optional().describe('ID of the CSR to reassign the ticket to'),
+      category: z.string().optional().describe('Updated service ticket category'),
+      priority: z.string().optional().describe('Updated priority level'),
+      pipelineId: z.string().optional().describe('Updated pipeline ID'),
+      stageId: z.string().optional().describe('Updated pipeline stage ID'),
+      resolution: z
+        .string()
+        .optional()
+        .describe('Resolution for the ticket (typically used with action "complete")'),
+      description: z.string().optional().describe('Updated description or details')
+    })
+  )
+  .output(
+    z.object({
+      ticket: z.record(z.string(), z.any()).describe('The updated service ticket data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let data: Record<string, any> = {};
@@ -57,8 +65,9 @@ export let updateServiceTicket = SlateTool.create(
 
     return {
       output: {
-        ticket: result,
+        ticket: result
       },
-      message: `${actionLabel} service ticket **${ctx.input.ticketId}** successfully.`,
+      message: `${actionLabel} service ticket **${ctx.input.ticketId}** successfully.`
     };
-  }).build();
+  })
+  .build();

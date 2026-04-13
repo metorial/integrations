@@ -8,12 +8,12 @@ let CAMPAIGN_EVENTS = [
   'campaign_completed',
   'followup_after_autoreply',
   'email_opened',
-  'link_clicked',
+  'link_clicked'
 ] as const;
 
 let webhookInputSchema = z.object({
   eventType: z.string().describe('Webhook event type'),
-  eventPayload: z.any().describe('Raw webhook event payload'),
+  eventPayload: z.any().describe('Raw webhook event payload')
 });
 
 let campaignEventOutputSchema = z.object({
@@ -27,25 +27,26 @@ let campaignEventOutputSchema = z.object({
   clickUrl: z.string().optional().describe('Clicked link URL (for click events)'),
   openCount: z.number().optional().describe('Total open count (for open events)'),
   openDate: z.string().optional().describe('Latest open date (for open events)'),
-  followupAfter: z.string().optional().describe('Scheduled follow-up date (for autoreply followup events)'),
-  timestamp: z.string().optional().describe('Event timestamp'),
+  followupAfter: z
+    .string()
+    .optional()
+    .describe('Scheduled follow-up date (for autoreply followup events)'),
+  timestamp: z.string().optional().describe('Event timestamp')
 });
 
-export let campaignEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Events',
-    key: 'campaign_events',
-    description: 'Triggered on campaign-level events: emails sent, campaigns completed, email opens, link clicks, and follow-ups after autoreplies.',
-  }
-)
+export let campaignEvents = SlateTrigger.create(spec, {
+  name: 'Campaign Events',
+  key: 'campaign_events',
+  description:
+    'Triggered on campaign-level events: emails sent, campaigns completed, email opens, link clicks, and follow-ups after autoreplies.'
+})
   .input(webhookInputSchema)
   .output(campaignEventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let registeredEvents: string[] = [];
@@ -62,14 +63,14 @@ export let campaignEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl },
+        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let details = ctx.input.registrationDetails as { events: string[]; targetUrl: string };
@@ -82,19 +83,19 @@ export let campaignEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
       let events = Array.isArray(data) ? data : [data];
 
       return {
         inputs: events.map((event: any) => ({
           eventType: event.method ?? event.event ?? 'unknown',
-          eventPayload: event,
-        })),
+          eventPayload: event
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.eventPayload;
       let prospect = payload.prospect ?? {};
       let email = payload.email ?? {};
@@ -117,9 +118,9 @@ export let campaignEvents = SlateTrigger.create(
           openCount: payload.open_count,
           openDate: payload.open_date_latest,
           followupAfter: payload.followup_after,
-          timestamp: payload.timestamp,
-        },
+          timestamp: payload.timestamp
+        }
       };
-    },
+    }
   })
   .build();

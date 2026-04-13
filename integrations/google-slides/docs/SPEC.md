@@ -18,15 +18,15 @@ OAuth 2.0: Whenever your application requests private user data, it must send an
 
 **Available scopes:**
 
-| Scope | Description | Sensitivity |
-|---|---|---|
-| `https://www.googleapis.com/auth/presentations` | See, edit, create, and delete all Google Slides presentations. | Sensitive |
-| `https://www.googleapis.com/auth/presentations.readonly` | See all Google Slides presentations. | Sensitive |
-| `https://www.googleapis.com/auth/drive.file` | See, edit, create, and delete only the specific Google Drive files used with the app. | Non-sensitive (Recommended) |
-| `https://www.googleapis.com/auth/drive` | See, edit, create, and delete all Google Drive files. | Restricted |
-| `https://www.googleapis.com/auth/drive.readonly` | See and download all Google Drive files. | Restricted |
-| `https://www.googleapis.com/auth/spreadsheets.readonly` | See all Google Sheets spreadsheets. | Sensitive |
-| `https://www.googleapis.com/auth/spreadsheets` | See, edit, create, and delete all Google Sheets spreadsheets. | Sensitive |
+| Scope                                                    | Description                                                                           | Sensitivity                 |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------- |
+| `https://www.googleapis.com/auth/presentations`          | See, edit, create, and delete all Google Slides presentations.                        | Sensitive                   |
+| `https://www.googleapis.com/auth/presentations.readonly` | See all Google Slides presentations.                                                  | Sensitive                   |
+| `https://www.googleapis.com/auth/drive.file`             | See, edit, create, and delete only the specific Google Drive files used with the app. | Non-sensitive (Recommended) |
+| `https://www.googleapis.com/auth/drive`                  | See, edit, create, and delete all Google Drive files.                                 | Restricted                  |
+| `https://www.googleapis.com/auth/drive.readonly`         | See and download all Google Drive files.                                              | Restricted                  |
+| `https://www.googleapis.com/auth/spreadsheets.readonly`  | See all Google Sheets spreadsheets.                                                   | Sensitive                   |
+| `https://www.googleapis.com/auth/spreadsheets`           | See, edit, create, and delete all Google Sheets spreadsheets.                         | Sensitive                   |
 
 Use the Drive scopes if you also plan to use the Drive API to manage the sharing settings or parent folders of presentations. The Sheets scopes are only required when creating or refreshing charts linked to Google Sheets.
 

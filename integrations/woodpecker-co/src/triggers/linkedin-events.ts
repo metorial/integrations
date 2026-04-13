@@ -3,13 +3,11 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let LINKEDIN_EVENTS = [
-  'prospect_li_cr_accepted',
-] as const;
+let LINKEDIN_EVENTS = ['prospect_li_cr_accepted'] as const;
 
 let webhookInputSchema = z.object({
   eventType: z.string().describe('Webhook event type'),
-  eventPayload: z.any().describe('Raw webhook event payload'),
+  eventPayload: z.any().describe('Raw webhook event payload')
 });
 
 let linkedinEventOutputSchema = z.object({
@@ -21,24 +19,22 @@ let linkedinEventOutputSchema = z.object({
   linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
   campaignId: z.number().optional().describe('Campaign ID'),
   campaignName: z.string().optional().describe('Campaign name'),
-  timestamp: z.string().optional().describe('Event timestamp'),
+  timestamp: z.string().optional().describe('Event timestamp')
 });
 
-export let linkedinEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'LinkedIn Events',
-    key: 'linkedin_events',
-    description: 'Triggered when a LinkedIn-related event occurs, such as a connection request being accepted by a prospect.',
-  }
-)
+export let linkedinEvents = SlateTrigger.create(spec, {
+  name: 'LinkedIn Events',
+  key: 'linkedin_events',
+  description:
+    'Triggered when a LinkedIn-related event occurs, such as a connection request being accepted by a prospect.'
+})
   .input(webhookInputSchema)
   .output(linkedinEventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let registeredEvents: string[] = [];
@@ -55,14 +51,14 @@ export let linkedinEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl },
+        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let details = ctx.input.registrationDetails as { events: string[]; targetUrl: string };
@@ -75,19 +71,19 @@ export let linkedinEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
       let events = Array.isArray(data) ? data : [data];
 
       return {
         inputs: events.map((event: any) => ({
           eventType: event.method ?? event.event ?? 'unknown',
-          eventPayload: event,
-        })),
+          eventPayload: event
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.eventPayload;
       let prospect = payload.prospect ?? {};
 
@@ -105,9 +101,9 @@ export let linkedinEvents = SlateTrigger.create(
           linkedinUrl: prospect.linkedin_url,
           campaignId: prospect.campaign_id,
           campaignName: prospect.campaign_name,
-          timestamp: payload.timestamp,
-        },
+          timestamp: payload.timestamp
+        }
       };
-    },
+    }
   })
   .build();

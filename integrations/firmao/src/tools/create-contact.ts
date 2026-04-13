@@ -3,37 +3,38 @@ import { FirmaoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact person associated with a customer in Firmao. A customer ID is required to link the contact to an existing customer record.`,
-  }
-)
-  .input(z.object({
-    firstName: z.string().describe('First name of the contact'),
-    lastName: z.string().optional().describe('Last name of the contact'),
-    label: z.string().optional().describe('Label/display name for the contact'),
-    customerId: z.number().describe('ID of the customer this contact belongs to'),
-    position: z.string().optional().describe('Job position/title'),
-    department: z.string().optional().describe('Department name'),
-    emails: z.array(z.string()).optional().describe('Email addresses'),
-    phones: z.array(z.string()).optional().describe('Phone numbers'),
-  }))
-  .output(z.object({
-    contactId: z.number().describe('ID of the created contact'),
-    firstName: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact person associated with a customer in Firmao. A customer ID is required to link the contact to an existing customer record.`
+})
+  .input(
+    z.object({
+      firstName: z.string().describe('First name of the contact'),
+      lastName: z.string().optional().describe('Last name of the contact'),
+      label: z.string().optional().describe('Label/display name for the contact'),
+      customerId: z.number().describe('ID of the customer this contact belongs to'),
+      position: z.string().optional().describe('Job position/title'),
+      department: z.string().optional().describe('Department name'),
+      emails: z.array(z.string()).optional().describe('Email addresses'),
+      phones: z.array(z.string()).optional().describe('Phone numbers')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('ID of the created contact'),
+      firstName: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FirmaoClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let body: Record<string, any> = {
       firstName: ctx.input.firstName,
-      customer: ctx.input.customerId,
+      customer: ctx.input.customerId
     };
 
     if (ctx.input.lastName) body.lastName = ctx.input.lastName;
@@ -49,9 +50,9 @@ export let createContact = SlateTool.create(
     return {
       output: {
         contactId: createdId,
-        firstName: ctx.input.firstName,
+        firstName: ctx.input.firstName
       },
-      message: `Created contact **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}** (ID: ${createdId}).`,
+      message: `Created contact **${ctx.input.firstName}${ctx.input.lastName ? ' ' + ctx.input.lastName : ''}** (ID: ${createdId}).`
     };
   })
   .build();

@@ -10,9 +10,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -340,7 +340,11 @@ export class Client {
     return res.data;
   }
 
-  async createWebhook(data: { event: string; target_url: string; authorization_token?: string }): Promise<any> {
+  async createWebhook(data: {
+    event: string;
+    target_url: string;
+    authorization_token?: string;
+  }): Promise<any> {
     let res = await this.axios.post('/subscription', data);
     return res.data;
   }
@@ -352,7 +356,9 @@ export class Client {
   // --- Project Resources / Tags ---
 
   async addResourcesToProject(projectId: string, resourceIds: string[]): Promise<any> {
-    let res = await this.axios.post(`/project/${projectId}/addResourcesToProject`, { resourceIds });
+    let res = await this.axios.post(`/project/${projectId}/addResourcesToProject`, {
+      resourceIds
+    });
     return res.data;
   }
 

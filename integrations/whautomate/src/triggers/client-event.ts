@@ -3,65 +3,73 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let clientEventTypes = [
-  'client_created',
-  'client_tag_added',
-  'client_tag_removed',
-] as const;
+let clientEventTypes = ['client_created', 'client_tag_added', 'client_tag_removed'] as const;
 
-export let clientEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Client Event',
-    key: 'client_event',
-    description: 'Triggered when a client is created, or when tags are added to or removed from a client.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type (client_created, client_tag_added, client_tag_removed)'),
-    eventId: z.string().describe('Unique event ID'),
-    eventTimestamp: z.string().describe('Event timestamp'),
-    clientData: z.record(z.string(), z.any()).describe('Client payload from the webhook'),
-  }))
-  .output(z.object({
-    clientId: z.string().describe('Client ID'),
-    fullName: z.string().optional().describe('Client full name'),
-    firstName: z.string().optional().describe('Client first name'),
-    lastName: z.string().optional().describe('Client last name'),
-    phone: z.string().optional().describe('Phone number'),
-    email: z.string().optional().describe('Email address'),
-    tags: z.array(z.string()).optional().describe('Current tags on the client'),
-    addedTags: z.array(z.string()).optional().describe('Tags that were added (for tag_added events)'),
-    removedTags: z.array(z.string()).optional().describe('Tags that were removed (for tag_removed events)'),
-    locationId: z.string().optional().describe('Primary location ID'),
-    locationTitle: z.string().optional().describe('Primary location name'),
-    createdAt: z.string().optional().describe('Client creation timestamp'),
-    updatedAt: z.string().optional().describe('Client last update timestamp'),
-  }))
+export let clientEvent = SlateTrigger.create(spec, {
+  name: 'Client Event',
+  key: 'client_event',
+  description:
+    'Triggered when a client is created, or when tags are added to or removed from a client.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The webhook event type (client_created, client_tag_added, client_tag_removed)'
+        ),
+      eventId: z.string().describe('Unique event ID'),
+      eventTimestamp: z.string().describe('Event timestamp'),
+      clientData: z.record(z.string(), z.any()).describe('Client payload from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      clientId: z.string().describe('Client ID'),
+      fullName: z.string().optional().describe('Client full name'),
+      firstName: z.string().optional().describe('Client first name'),
+      lastName: z.string().optional().describe('Client last name'),
+      phone: z.string().optional().describe('Phone number'),
+      email: z.string().optional().describe('Email address'),
+      tags: z.array(z.string()).optional().describe('Current tags on the client'),
+      addedTags: z
+        .array(z.string())
+        .optional()
+        .describe('Tags that were added (for tag_added events)'),
+      removedTags: z
+        .array(z.string())
+        .optional()
+        .describe('Tags that were removed (for tag_removed events)'),
+      locationId: z.string().optional().describe('Primary location ID'),
+      locationTitle: z.string().optional().describe('Primary location name'),
+      createdAt: z.string().optional().describe('Client creation timestamp'),
+      updatedAt: z.string().optional().describe('Client last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        apiHost: ctx.config.apiHost,
+        apiHost: ctx.config.apiHost
       });
 
       let result = await client.createWebhook({
         serverUrl: ctx.input.webhookBaseUrl,
         eventTypes: [...clientEventTypes],
-        isActive: true,
+        isActive: true
       });
 
       return {
         registrationDetails: {
-          webhookId: result.id || result._id,
-        },
+          webhookId: result.id || result._id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        apiHost: ctx.config.apiHost,
+        apiHost: ctx.config.apiHost
       });
 
       if (ctx.input.registrationDetails?.webhookId) {
@@ -69,8 +77,8 @@ export let clientEvent = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let event = data.event || {};
       let clientData = data.client || data;
@@ -80,14 +88,15 @@ export let clientEvent = SlateTrigger.create(
           {
             eventType: event.type || 'client_created',
             eventId: event.id || clientData.id || clientData._id || crypto.randomUUID(),
-            eventTimestamp: event.timeStamp || clientData.createdAt || new Date().toISOString(),
-            clientData,
-          },
-        ],
+            eventTimestamp:
+              event.timeStamp || clientData.createdAt || new Date().toISOString(),
+            clientData
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let c = ctx.input.clientData;
 
       let tags: string[] = [];
@@ -117,8 +126,9 @@ export let clientEvent = SlateTrigger.create(
           locationId: c.location?.id,
           locationTitle: c.location?.title,
           createdAt: c.createdAt,
-          updatedAt: c.updatedAt,
-        },
+          updatedAt: c.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

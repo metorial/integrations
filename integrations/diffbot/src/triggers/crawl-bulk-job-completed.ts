@@ -8,37 +8,49 @@ let jobStatusSchema = z.object({
   jobType: z.enum(['crawl', 'bulk']).describe('Type of job (crawl or bulk)'),
   jobStatus: z.string().describe('Current status of the job'),
   objectsFound: z.number().optional().describe('Number of objects found'),
-  pageProcessSuccesses: z.number().optional().describe('Number of pages successfully processed'),
-  pageProcessAttempts: z.number().optional().describe('Number of pages attempted for processing'),
-  pageCrawlSuccesses: z.number().optional().describe('Number of pages successfully crawled (crawl jobs only)'),
-  pageCrawlAttempts: z.number().optional().describe('Number of pages attempted for crawling (crawl jobs only)'),
+  pageProcessSuccesses: z
+    .number()
+    .optional()
+    .describe('Number of pages successfully processed'),
+  pageProcessAttempts: z
+    .number()
+    .optional()
+    .describe('Number of pages attempted for processing'),
+  pageCrawlSuccesses: z
+    .number()
+    .optional()
+    .describe('Number of pages successfully crawled (crawl jobs only)'),
+  pageCrawlAttempts: z
+    .number()
+    .optional()
+    .describe('Number of pages attempted for crawling (crawl jobs only)'),
   urlsHarvested: z.number().optional().describe('Number of URLs discovered (crawl jobs only)'),
   jobCreationTimeUTC: z.number().optional().describe('Job creation timestamp (UTC)'),
   jobCompletionTimeUTC: z.number().optional().describe('Job completion timestamp (UTC)'),
   downloadJson: z.string().optional().describe('URL to download results as JSON'),
-  notifyWebhook: z.string().optional().describe('Configured webhook notification URL'),
+  notifyWebhook: z.string().optional().describe('Configured webhook notification URL')
 });
 
-export let crawlBulkJobCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Crawl/Bulk Job Completed',
-    key: 'crawl_bulk_job_completed',
-    description: 'Triggers when a Diffbot crawl or bulk extraction job completes or reaches its processing limits. Polls for status changes across all active crawl and bulk jobs.',
-  }
-)
-  .input(z.object({
-    jobName: z.string().describe('Name of the completed job'),
-    jobType: z.enum(['crawl', 'bulk']).describe('Type of job'),
-    rawJob: z.any().describe('Raw job data from the API'),
-  }))
+export let crawlBulkJobCompleted = SlateTrigger.create(spec, {
+  name: 'Crawl/Bulk Job Completed',
+  key: 'crawl_bulk_job_completed',
+  description:
+    'Triggers when a Diffbot crawl or bulk extraction job completes or reaches its processing limits. Polls for status changes across all active crawl and bulk jobs.'
+})
+  .input(
+    z.object({
+      jobName: z.string().describe('Name of the completed job'),
+      jobType: z.enum(['crawl', 'bulk']).describe('Type of job'),
+      rawJob: z.any().describe('Raw job data from the API')
+    })
+  )
   .output(jobStatusSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DiffbotClient({ token: ctx.auth.token });
 
       let previousCompletedJobs: Record<string, boolean> = ctx.state?.completedJobs || {};
@@ -51,16 +63,20 @@ export let crawlBulkJobCompleted = SlateTrigger.create(
       for (let job of crawlJobs) {
         let name = job.name || '';
         let jobKey = `crawl:${name}`;
-        let jobStatusCode = typeof job.jobStatus === 'object' ? job.jobStatus?.status : job.jobStatus;
-        let isComplete = jobStatusCode === 9 || jobStatusCode === 10 ||
-          String(jobStatusCode).includes('DONE') || String(jobStatusCode).includes('COMPLETE') ||
+        let jobStatusCode =
+          typeof job.jobStatus === 'object' ? job.jobStatus?.status : job.jobStatus;
+        let isComplete =
+          jobStatusCode === 9 ||
+          jobStatusCode === 10 ||
+          String(jobStatusCode).includes('DONE') ||
+          String(jobStatusCode).includes('COMPLETE') ||
           job.sentDone === true;
 
         if (isComplete && !previousCompletedJobs[jobKey]) {
           inputs.push({
             jobName: name,
             jobType: 'crawl',
-            rawJob: job,
+            rawJob: job
           });
           updatedCompletedJobs[jobKey] = true;
         } else if (isComplete) {
@@ -74,16 +90,20 @@ export let crawlBulkJobCompleted = SlateTrigger.create(
       for (let job of bulkJobs) {
         let name = job.name || '';
         let jobKey = `bulk:${name}`;
-        let jobStatusCode = typeof job.jobStatus === 'object' ? job.jobStatus?.status : job.jobStatus;
-        let isComplete = jobStatusCode === 9 || jobStatusCode === 10 ||
-          String(jobStatusCode).includes('DONE') || String(jobStatusCode).includes('COMPLETE') ||
+        let jobStatusCode =
+          typeof job.jobStatus === 'object' ? job.jobStatus?.status : job.jobStatus;
+        let isComplete =
+          jobStatusCode === 9 ||
+          jobStatusCode === 10 ||
+          String(jobStatusCode).includes('DONE') ||
+          String(jobStatusCode).includes('COMPLETE') ||
           job.sentDone === true;
 
         if (isComplete && !previousCompletedJobs[jobKey]) {
           inputs.push({
             jobName: name,
             jobType: 'bulk',
-            rawJob: job,
+            rawJob: job
           });
           updatedCompletedJobs[jobKey] = true;
         } else if (isComplete) {
@@ -94,14 +114,17 @@ export let crawlBulkJobCompleted = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          completedJobs: updatedCompletedJobs,
-        },
+          completedJobs: updatedCompletedJobs
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let job = ctx.input.rawJob;
-      let statusValue = typeof job.jobStatus === 'object' ? (job.jobStatus?.message || 'completed') : String(job.jobStatus || 'completed');
+      let statusValue =
+        typeof job.jobStatus === 'object'
+          ? job.jobStatus?.message || 'completed'
+          : String(job.jobStatus || 'completed');
 
       return {
         type: `${ctx.input.jobType}_job.completed`,
@@ -119,8 +142,9 @@ export let crawlBulkJobCompleted = SlateTrigger.create(
           jobCreationTimeUTC: job.jobCreationTimeUTC,
           jobCompletionTimeUTC: job.jobCompletionTimeUTC,
           downloadJson: job.downloadJson,
-          notifyWebhook: job.notifyWebhook,
-        },
+          notifyWebhook: job.notifyWebhook
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

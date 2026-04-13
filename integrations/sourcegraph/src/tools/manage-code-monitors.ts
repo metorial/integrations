@@ -9,38 +9,43 @@ let codeMonitorSchema = z.object({
   enabled: z.boolean(),
   owner: z.string().optional().describe('Owner username or org name'),
   query: z.string().optional().describe('Search query that triggers the monitor'),
-  actions: z.array(z.object({
-    actionType: z.string().describe('Type of action: email, slackWebhook, or webhook'),
-    enabled: z.boolean(),
-    url: z.string().optional().describe('Webhook URL (for slack/webhook actions)')
-  })).optional(),
+  actions: z
+    .array(
+      z.object({
+        actionType: z.string().describe('Type of action: email, slackWebhook, or webhook'),
+        enabled: z.boolean(),
+        url: z.string().optional().describe('Webhook URL (for slack/webhook actions)')
+      })
+    )
+    .optional(),
   createdAt: z.string().optional()
 });
 
-export let listCodeMonitors = SlateTool.create(
-  spec,
-  {
-    name: 'List Code Monitors',
-    key: 'list_code_monitors',
-    description: `List code monitors for the current user. Code monitors watch for changes matching a search query and trigger notifications via email, Slack, or webhooks.
+export let listCodeMonitors = SlateTool.create(spec, {
+  name: 'List Code Monitors',
+  key: 'list_code_monitors',
+  description: `List code monitors for the current user. Code monitors watch for changes matching a search query and trigger notifications via email, Slack, or webhooks.
 Useful for tracking secrets, anti-patterns, or specific code changes.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    first: z.number().optional().describe('Number of monitors to return (default 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    codeMonitors: z.array(codeMonitorSchema),
-    totalCount: z.number(),
-    hasNextPage: z.boolean(),
-    endCursor: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      first: z.number().optional().describe('Number of monitors to return (default 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      codeMonitors: z.array(codeMonitorSchema),
+      totalCount: z.number(),
+      hasNextPage: z.boolean(),
+      endCursor: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -81,42 +86,52 @@ Useful for tracking secrets, anti-patterns, or specific code changes.`,
       },
       message: `Found **${monitors.totalCount}** code monitors. Showing ${codeMonitors.length}.`
     };
-  }).build();
+  })
+  .build();
 
-export let createCodeMonitor = SlateTool.create(
-  spec,
-  {
-    name: 'Create Code Monitor',
-    key: 'create_code_monitor',
-    description: `Create a new code monitor that watches for code changes matching a search query.
+export let createCodeMonitor = SlateTool.create(spec, {
+  name: 'Create Code Monitor',
+  key: 'create_code_monitor',
+  description: `Create a new code monitor that watches for code changes matching a search query.
 When matches are found in new commits, the monitor triggers notifications via email, Slack webhook, or generic webhook.
 The search query must include a \`type:diff\` or \`type:commit\` filter.`,
-    instructions: [
-      'The search query must include type:diff or type:commit to monitor for new changes',
-      'At least one action (email, slack, or webhook) must be specified'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'The search query must include type:diff or type:commit to monitor for new changes',
+    'At least one action (email, slack, or webhook) must be specified'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    description: z.string().describe('Description of what the monitor watches for'),
-    enabled: z.boolean().optional().describe('Whether the monitor is enabled. Defaults to true.'),
-    namespaceUserId: z.string().describe('GraphQL ID of the user who owns the monitor'),
-    query: z.string().describe('Sourcegraph search query (must include type:diff or type:commit)'),
-    emailRecipients: z.array(z.string()).optional().describe('GraphQL IDs of email recipients'),
-    slackWebhookUrl: z.string().optional().describe('Slack webhook URL for notifications'),
-    webhookUrl: z.string().optional().describe('Generic webhook URL for notifications')
-  }))
-  .output(z.object({
-    codeMonitorId: z.string(),
-    description: z.string(),
-    enabled: z.boolean(),
-    query: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      description: z.string().describe('Description of what the monitor watches for'),
+      enabled: z
+        .boolean()
+        .optional()
+        .describe('Whether the monitor is enabled. Defaults to true.'),
+      namespaceUserId: z.string().describe('GraphQL ID of the user who owns the monitor'),
+      query: z
+        .string()
+        .describe('Sourcegraph search query (must include type:diff or type:commit)'),
+      emailRecipients: z
+        .array(z.string())
+        .optional()
+        .describe('GraphQL IDs of email recipients'),
+      slackWebhookUrl: z.string().optional().describe('Slack webhook URL for notifications'),
+      webhookUrl: z.string().optional().describe('Generic webhook URL for notifications')
+    })
+  )
+  .output(
+    z.object({
+      codeMonitorId: z.string(),
+      description: z.string(),
+      enabled: z.boolean(),
+      query: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -167,27 +182,29 @@ The search query must include a \`type:diff\` or \`type:commit\` filter.`,
       },
       message: `Created code monitor **${monitor.description}** watching for: \`${ctx.input.query}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteCodeMonitor = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Code Monitor',
-    key: 'delete_code_monitor',
-    description: `Delete a code monitor from the Sourcegraph instance.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteCodeMonitor = SlateTool.create(spec, {
+  name: 'Delete Code Monitor',
+  key: 'delete_code_monitor',
+  description: `Delete a code monitor from the Sourcegraph instance.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    codeMonitorId: z.string().describe('GraphQL ID of the code monitor to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      codeMonitorId: z.string().describe('GraphQL ID of the code monitor to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -199,4 +216,5 @@ export let deleteCodeMonitor = SlateTool.create(
       output: { deleted: true },
       message: `Deleted code monitor **${ctx.input.codeMonitorId}**.`
     };
-  }).build();
+  })
+  .build();

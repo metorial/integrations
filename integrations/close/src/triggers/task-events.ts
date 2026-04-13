@@ -3,39 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Events',
-    key: 'task_events',
-    description: 'Triggers when a task is created, updated, or deleted in Close.',
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The action that occurred (created, updated, deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    objectId: z.string().describe('ID of the affected task'),
-    objectType: z.string().describe('Object type (task)'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed during an update'),
-    currentData: z.any().optional().describe('Current data after the change'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event was created')
-  }))
-  .output(z.object({
-    taskId: z.string().describe('ID of the affected task'),
-    action: z.string().describe('The action that occurred'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed'),
-    leadId: z.string().optional().describe('ID of the parent lead'),
-    text: z.string().optional().describe('Task text/description'),
-    assignedTo: z.string().optional().describe('User ID the task is assigned to'),
-    isComplete: z.boolean().optional().describe('Whether the task is complete'),
-    dueDate: z.string().optional().describe('Task due date'),
-    taskType: z.string().optional().describe('Type of task (lead, outgoing_call, etc.)'),
-    userId: z.string().optional().describe('User who triggered the event'),
-    dateCreated: z.string().optional().describe('When the event occurred'),
-  }))
+export let taskEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Task Events',
+  key: 'task_events',
+  description: 'Triggers when a task is created, updated, or deleted in Close.'
+})
+  .input(
+    z.object({
+      eventAction: z.string().describe('The action that occurred (created, updated, deleted)'),
+      eventId: z.string().describe('Unique event identifier'),
+      objectId: z.string().describe('ID of the affected task'),
+      objectType: z.string().describe('Object type (task)'),
+      changedFields: z
+        .array(z.string())
+        .optional()
+        .describe('Fields that changed during an update'),
+      currentData: z.any().optional().describe('Current data after the change'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event was created')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('ID of the affected task'),
+      action: z.string().describe('The action that occurred'),
+      changedFields: z.array(z.string()).optional().describe('Fields that changed'),
+      leadId: z.string().optional().describe('ID of the parent lead'),
+      text: z.string().optional().describe('Task text/description'),
+      assignedTo: z.string().optional().describe('User ID the task is assigned to'),
+      isComplete: z.boolean().optional().describe('Whether the task is complete'),
+      dueDate: z.string().optional().describe('Task due date'),
+      taskType: z.string().optional().describe('Type of task (lead, outgoing_call, etc.)'),
+      userId: z.string().optional().describe('User who triggered the event'),
+      dateCreated: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
 
       let webhook = await client.createWebhook({
@@ -43,7 +47,7 @@ export let taskEventsTrigger = SlateTrigger.create(
         events: [
           { object_type: 'task', action: 'created' },
           { object_type: 'task', action: 'updated' },
-          { object_type: 'task', action: 'deleted' },
+          { object_type: 'task', action: 'deleted' }
         ],
         status: 'active'
       });
@@ -56,13 +60,13 @@ export let taskEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, authType: ctx.auth.authType });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (!data || !data.event) {
         return { inputs: [] };
@@ -86,7 +90,7 @@ export let taskEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let currentData = ctx.input.currentData || {};
 
       return {
@@ -103,8 +107,9 @@ export let taskEventsTrigger = SlateTrigger.create(
           dueDate: currentData.date,
           taskType: currentData._type,
           userId: ctx.input.userId,
-          dateCreated: ctx.input.dateCreated,
+          dateCreated: ctx.input.dateCreated
         }
       };
     }
-  }).build();
+  })
+  .build();

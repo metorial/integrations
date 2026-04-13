@@ -14,6 +14,7 @@ Scrapfly uses API key authentication. The `key` parameter is required for all AP
 - Each project has two dedicated API keys for LIVE and TEST environments, available on the Scrapfly dashboard.
 
 Example:
+
 ```
 GET https://api.scrapfly.io/scrape?key=scp-live-xxx&url=https://example.com
 ```
@@ -110,5 +111,6 @@ Receive instant HTTP callbacks as crawler events occur. Best for real-time data 
 - Event type is identified via the `X-Scrapfly-Crawl-Event-Name` header.
 
 **General webhook notes:**
+
 - Webhook payloads are signed using HMAC-SHA256, included in the `X-Scrapfly-Webhook-Signature` header, allowing payload verification.
 - Failed deliveries are automatically retried per a retry policy.

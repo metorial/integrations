@@ -9,18 +9,24 @@ export let getPageProperties = SlateTool.create(spec, {
   description: `Retrieve all content properties (key-value metadata) for a Confluence page.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    pageId: z.string().describe('The page ID')
-  }))
-  .output(z.object({
-    properties: z.array(z.object({
-      propertyId: z.string(),
-      key: z.string(),
-      value: z.any(),
-      versionNumber: z.number().optional()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageId: z.string().describe('The page ID')
+    })
+  )
+  .output(
+    z.object({
+      properties: z.array(
+        z.object({
+          propertyId: z.string(),
+          key: z.string(),
+          value: z.any(),
+          versionNumber: z.number().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getPageProperties(ctx.input.pageId);
 
@@ -44,19 +50,26 @@ export let setPageProperty = SlateTool.create(spec, {
   description: `Create or update a content property (key-value metadata) on a Confluence page. If updating, provide the property ID and current version number.`,
   tags: { destructive: false }
 })
-  .input(z.object({
-    pageId: z.string().describe('The page ID'),
-    key: z.string().describe('The property key'),
-    value: z.any().describe('The property value (any JSON-serializable data)'),
-    propertyId: z.string().optional().describe('The property ID (required for updates)'),
-    versionNumber: z.number().optional().describe('Current version number (required for updates)')
-  }))
-  .output(z.object({
-    propertyId: z.string(),
-    key: z.string(),
-    versionNumber: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageId: z.string().describe('The page ID'),
+      key: z.string().describe('The property key'),
+      value: z.any().describe('The property value (any JSON-serializable data)'),
+      propertyId: z.string().optional().describe('The property ID (required for updates)'),
+      versionNumber: z
+        .number()
+        .optional()
+        .describe('Current version number (required for updates)')
+    })
+  )
+  .output(
+    z.object({
+      propertyId: z.string(),
+      key: z.string(),
+      versionNumber: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let result;
 
@@ -69,7 +82,11 @@ export let setPageProperty = SlateTool.create(spec, {
         ctx.input.versionNumber + 1
       );
     } else {
-      result = await client.createPageProperty(ctx.input.pageId, ctx.input.key, ctx.input.value);
+      result = await client.createPageProperty(
+        ctx.input.pageId,
+        ctx.input.key,
+        ctx.input.value
+      );
     }
 
     return {
@@ -89,14 +106,18 @@ export let deletePageProperty = SlateTool.create(spec, {
   description: `Delete a content property from a Confluence page.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    pageId: z.string().describe('The page ID'),
-    propertyId: z.string().describe('The property ID to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageId: z.string().describe('The page ID'),
+      propertyId: z.string().describe('The property ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     await client.deletePageProperty(ctx.input.pageId, ctx.input.propertyId);
 

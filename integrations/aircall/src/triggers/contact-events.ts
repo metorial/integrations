@@ -3,44 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let contactEventTypes = [
-  'contact.created', 'contact.updated', 'contact.deleted'
-] as const;
+let contactEventTypes = ['contact.created', 'contact.updated', 'contact.deleted'] as const;
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when contacts are created, updated, or deleted. Returns the full contact record including phone numbers, emails, and company information.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of contact event'),
-    timestamp: z.number().describe('Event timestamp as UNIX timestamp'),
-    webhookToken: z.string().describe('Webhook verification token'),
-    contact: z.any().describe('The contact data from the event payload')
-  }))
-  .output(z.object({
-    contactId: z.number().describe('Unique contact identifier'),
-    firstName: z.string().nullable().describe('First name'),
-    lastName: z.string().nullable().describe('Last name'),
-    fullName: z.string().nullable().describe('Full name'),
-    companyName: z.string().nullable().describe('Company name'),
-    information: z.string().nullable().describe('Additional information'),
-    phoneNumbers: z.array(z.object({
-      phoneNumberId: z.number(),
-      label: z.string(),
-      value: z.string()
-    })).describe('Phone numbers'),
-    emails: z.array(z.object({
-      emailId: z.number(),
-      label: z.string(),
-      value: z.string()
-    })).describe('Email addresses')
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description:
+    'Triggers when contacts are created, updated, or deleted. Returns the full contact record including phone numbers, emails, and company information.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of contact event'),
+      timestamp: z.number().describe('Event timestamp as UNIX timestamp'),
+      webhookToken: z.string().describe('Webhook verification token'),
+      contact: z.any().describe('The contact data from the event payload')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('Unique contact identifier'),
+      firstName: z.string().nullable().describe('First name'),
+      lastName: z.string().nullable().describe('Last name'),
+      fullName: z.string().nullable().describe('Full name'),
+      companyName: z.string().nullable().describe('Company name'),
+      information: z.string().nullable().describe('Additional information'),
+      phoneNumbers: z
+        .array(
+          z.object({
+            phoneNumberId: z.number(),
+            label: z.string(),
+            value: z.string()
+          })
+        )
+        .describe('Phone numbers'),
+      emails: z
+        .array(
+          z.object({
+            emailId: z.number(),
+            label: z.string(),
+            value: z.string()
+          })
+        )
+        .describe('Email addresses')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
       let webhook = await client.createWebhook(
         ctx.input.webhookBaseUrl,
@@ -55,30 +63,32 @@ export let contactEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
       let details = ctx.input.registrationDetails as { webhookId: number };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (data.resource !== 'contact') {
         return { inputs: [] };
       }
 
       return {
-        inputs: [{
-          eventType: data.event,
-          timestamp: data.timestamp,
-          webhookToken: data.token || '',
-          contact: data.data
-        }]
+        inputs: [
+          {
+            eventType: data.event,
+            timestamp: data.timestamp,
+            webhookToken: data.token || '',
+            contact: data.data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let contact = ctx.input.contact;
 
       return {
@@ -104,4 +114,5 @@ export let contactEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

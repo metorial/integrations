@@ -3,52 +3,80 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBotTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Bot',
-    key: 'manage_bot',
-    description: `Create, update, delete, or fetch ChatBotKit bots. Bots are conversational AI systems with a backstory, AI model, dataset, and skillset. Use this to configure bot behavior, personality, and capabilities.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageBotTool = SlateTool.create(spec, {
+  name: 'Manage Bot',
+  key: 'manage_bot',
+  description: `Create, update, delete, or fetch ChatBotKit bots. Bots are conversational AI systems with a backstory, AI model, dataset, and skillset. Use this to configure bot behavior, personality, and capabilities.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'fetch']).describe('Action to perform on the bot'),
-    botId: z.string().optional().describe('Bot ID (required for update, delete, fetch)'),
-    name: z.string().optional().describe('Bot display name'),
-    description: z.string().optional().describe('Bot description'),
-    backstory: z.string().optional().describe('Natural language instructions defining the bot personality and behavior'),
-    model: z.string().optional().describe('AI model identifier (e.g. gpt-4, claude-3)'),
-    datasetId: z.string().optional().describe('ID of the dataset to attach to the bot'),
-    skillsetId: z.string().optional().describe('ID of the skillset to attach to the bot'),
-    privacy: z.boolean().optional().describe('Enable privacy features'),
-    moderation: z.boolean().optional().describe('Enable content moderation'),
-    meta: z.record(z.string(), z.any()).optional().describe('Arbitrary metadata'),
-  }))
-  .output(z.object({
-    botId: z.string().describe('Bot ID'),
-    name: z.string().optional().describe('Bot name'),
-    description: z.string().optional().describe('Bot description'),
-    backstory: z.string().optional().describe('Bot backstory'),
-    model: z.string().optional().describe('AI model'),
-    datasetId: z.string().optional().describe('Attached dataset ID'),
-    skillsetId: z.string().optional().describe('Attached skillset ID'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'fetch'])
+        .describe('Action to perform on the bot'),
+      botId: z.string().optional().describe('Bot ID (required for update, delete, fetch)'),
+      name: z.string().optional().describe('Bot display name'),
+      description: z.string().optional().describe('Bot description'),
+      backstory: z
+        .string()
+        .optional()
+        .describe('Natural language instructions defining the bot personality and behavior'),
+      model: z.string().optional().describe('AI model identifier (e.g. gpt-4, claude-3)'),
+      datasetId: z.string().optional().describe('ID of the dataset to attach to the bot'),
+      skillsetId: z.string().optional().describe('ID of the skillset to attach to the bot'),
+      privacy: z.boolean().optional().describe('Enable privacy features'),
+      moderation: z.boolean().optional().describe('Enable content moderation'),
+      meta: z.record(z.string(), z.any()).optional().describe('Arbitrary metadata')
+    })
+  )
+  .output(
+    z.object({
+      botId: z.string().describe('Bot ID'),
+      name: z.string().optional().describe('Bot name'),
+      description: z.string().optional().describe('Bot description'),
+      backstory: z.string().optional().describe('Bot backstory'),
+      model: z.string().optional().describe('AI model'),
+      datasetId: z.string().optional().describe('Attached dataset ID'),
+      skillsetId: z.string().optional().describe('Attached skillset ID'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      runAsUserId: ctx.config.runAsUserId,
+      runAsUserId: ctx.config.runAsUserId
     });
 
-    let { action, botId, name, description, backstory, model, datasetId, skillsetId, privacy, moderation, meta } = ctx.input;
+    let {
+      action,
+      botId,
+      name,
+      description,
+      backstory,
+      model,
+      datasetId,
+      skillsetId,
+      privacy,
+      moderation,
+      meta
+    } = ctx.input;
 
     if (action === 'create') {
-      let result = await client.createBot({ name, description, backstory, model, datasetId, skillsetId, privacy, moderation, meta });
+      let result = await client.createBot({
+        name,
+        description,
+        backstory,
+        model,
+        datasetId,
+        skillsetId,
+        privacy,
+        moderation,
+        meta
+      });
       return {
         output: {
           botId: result.id,
@@ -59,9 +87,9 @@ export let manageBotTool = SlateTool.create(
           datasetId: result.datasetId,
           skillsetId: result.skillsetId,
           createdAt: result.createdAt,
-          updatedAt: result.updatedAt,
+          updatedAt: result.updatedAt
         },
-        message: `Bot **${result.name || result.id}** created successfully.`,
+        message: `Bot **${result.name || result.id}** created successfully.`
       };
     }
 
@@ -78,9 +106,9 @@ export let manageBotTool = SlateTool.create(
           datasetId: result.datasetId,
           skillsetId: result.skillsetId,
           createdAt: result.createdAt,
-          updatedAt: result.updatedAt,
+          updatedAt: result.updatedAt
         },
-        message: `Fetched bot **${result.name || result.id}**.`,
+        message: `Fetched bot **${result.name || result.id}**.`
       };
     }
 
@@ -107,9 +135,9 @@ export let manageBotTool = SlateTool.create(
           datasetId: result.datasetId,
           skillsetId: result.skillsetId,
           createdAt: result.createdAt,
-          updatedAt: result.updatedAt,
+          updatedAt: result.updatedAt
         },
-        message: `Bot **${botId}** updated successfully.`,
+        message: `Bot **${botId}** updated successfully.`
       };
     }
 
@@ -118,11 +146,12 @@ export let manageBotTool = SlateTool.create(
       await client.deleteBot(botId);
       return {
         output: {
-          botId,
+          botId
         },
-        message: `Bot **${botId}** deleted successfully.`,
+        message: `Bot **${botId}** deleted successfully.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

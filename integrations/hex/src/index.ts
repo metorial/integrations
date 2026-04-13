@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listProjects,
@@ -21,13 +20,9 @@ import {
   listCollections,
   listDataConnections,
   getDataConnection,
-  getQueriedTables,
+  getQueriedTables
 } from './tools';
-import {
-  projectRunCompleted,
-  newProject,
-  inboundWebhook,
-} from './triggers';
+import { projectRunCompleted, newProject, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,11 +46,7 @@ export let provider = Slate.create({
     listCollections,
     listDataConnections,
     getDataConnection,
-    getQueriedTables,
+    getQueriedTables
   ],
-  triggers: [
-    inboundWebhook,
-    projectRunCompleted,
-    newProject,
-  ],
+  triggers: [inboundWebhook, projectRunCompleted, newProject]
 });

@@ -3,41 +3,43 @@ import { RunscopeClient } from '../lib/runscope-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let monitoringTestRun = SlateTrigger.create(
-  spec,
-  {
-    name: 'API Monitoring Test Run',
-    key: 'monitoring_test_run',
-    description: 'Triggers when an API monitoring test completes a run. Polls for new test run results across buckets.',
-  }
-)
-  .input(z.object({
-    testRunId: z.string().describe('Test run ID'),
-    testId: z.string().describe('Monitoring test ID'),
-    testName: z.string().optional().describe('Test name'),
-    bucketKey: z.string().describe('Bucket key'),
-    result: z.string().optional().describe('Pass/fail result'),
-    createdAt: z.string().optional().describe('When the run was created'),
-    finishedAt: z.string().optional().describe('When the run finished'),
-    region: z.string().optional().describe('Region the test ran from'),
-  }))
-  .output(z.object({
-    testRunId: z.string().describe('Test run ID'),
-    testId: z.string().describe('Monitoring test ID'),
-    testName: z.string().optional().describe('Test name'),
-    bucketKey: z.string().describe('Bucket key'),
-    result: z.string().optional().describe('Pass or fail'),
-    createdAt: z.string().optional().describe('When the run was created'),
-    finishedAt: z.string().optional().describe('When the run finished'),
-    region: z.string().optional().describe('Run region'),
-    passed: z.boolean().describe('Whether the test passed'),
-  }))
+export let monitoringTestRun = SlateTrigger.create(spec, {
+  name: 'API Monitoring Test Run',
+  key: 'monitoring_test_run',
+  description:
+    'Triggers when an API monitoring test completes a run. Polls for new test run results across buckets.'
+})
+  .input(
+    z.object({
+      testRunId: z.string().describe('Test run ID'),
+      testId: z.string().describe('Monitoring test ID'),
+      testName: z.string().optional().describe('Test name'),
+      bucketKey: z.string().describe('Bucket key'),
+      result: z.string().optional().describe('Pass/fail result'),
+      createdAt: z.string().optional().describe('When the run was created'),
+      finishedAt: z.string().optional().describe('When the run finished'),
+      region: z.string().optional().describe('Region the test ran from')
+    })
+  )
+  .output(
+    z.object({
+      testRunId: z.string().describe('Test run ID'),
+      testId: z.string().describe('Monitoring test ID'),
+      testName: z.string().optional().describe('Test name'),
+      bucketKey: z.string().describe('Bucket key'),
+      result: z.string().optional().describe('Pass or fail'),
+      createdAt: z.string().optional().describe('When the run was created'),
+      finishedAt: z.string().optional().describe('When the run finished'),
+      region: z.string().optional().describe('Run region'),
+      passed: z.boolean().describe('Whether the test passed')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       if (!ctx.auth.runscopeToken && !ctx.auth.token) {
         return { inputs: [] };
       }
@@ -85,7 +87,7 @@ export let monitoringTestRun = SlateTrigger.create(
                   result: run.result,
                   createdAt: run.created_at ? String(run.created_at) : undefined,
                   finishedAt: run.finished_at ? String(run.finished_at) : undefined,
-                  region: run.region,
+                  region: run.region
                 });
               }
             }
@@ -101,11 +103,11 @@ export let monitoringTestRun = SlateTrigger.create(
 
       return {
         inputs: allInputs,
-        updatedState: { lastRunIds: updatedRunIds },
+        updatedState: { lastRunIds: updatedRunIds }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let passed = ctx.input.result === 'pass';
       let eventType = passed ? 'monitoring_run.passed' : 'monitoring_run.failed';
 
@@ -121,9 +123,9 @@ export let monitoringTestRun = SlateTrigger.create(
           createdAt: ctx.input.createdAt,
           finishedAt: ctx.input.finishedAt,
           region: ctx.input.region,
-          passed,
-        },
+          passed
+        }
       };
-    },
+    }
   })
   .build();

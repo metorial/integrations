@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listConsortia,
@@ -12,12 +11,9 @@ import {
   manageCompiledContract,
   getNodeStatus,
   getAuditLogs,
-  manageInvitation,
+  manageInvitation
 } from './tools';
-import {
-  auditLogChanges,
-  inboundWebhook,
-} from './triggers';
+import { auditLogChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,10 +28,7 @@ export let provider = Slate.create({
     manageCompiledContract,
     getNodeStatus,
     getAuditLogs,
-    manageInvitation,
+    manageInvitation
   ],
-  triggers: [
-    inboundWebhook,
-    auditLogChanges,
-  ],
+  triggers: [inboundWebhook, auditLogChanges]
 });

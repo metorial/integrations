@@ -3,7 +3,7 @@ import type { AxiosInstance } from 'axios';
 
 let BASE_URLS = {
   production: 'https://pro-api.coinmarketcap.com',
-  sandbox: 'https://sandbox-api.coinmarketcap.com',
+  sandbox: 'https://sandbox-api.coinmarketcap.com'
 };
 
 export interface ClientConfig {
@@ -134,12 +134,15 @@ export interface MarketPair {
   category: string;
   feeType: string;
   marketUrl: string;
-  quote: Record<string, {
-    price: number | null;
-    volume24h: number | null;
-    lastUpdated: string | null;
-    effectiveLiquidity: number | null;
-  }>;
+  quote: Record<
+    string,
+    {
+      price: number | null;
+      volume24h: number | null;
+      lastUpdated: string | null;
+      effectiveLiquidity: number | null;
+    }
+  >;
 }
 
 export interface MarketPairsResponse {
@@ -172,19 +175,22 @@ export interface GlobalMetrics {
   derivativesVolume24hReported: number;
   derivatives24hPercentageChange: number;
   lastUpdated: string;
-  quote: Record<string, {
-    totalMarketCap: number | null;
-    totalVolume24h: number | null;
-    totalVolume24hReported: number | null;
-    altcoinVolume24h: number | null;
-    altcoinMarketCap: number | null;
-    defiVolume24h: number | null;
-    defiMarketCap: number | null;
-    stablecoinVolume24h: number | null;
-    stablecoinMarketCap: number | null;
-    derivativesVolume24h: number | null;
-    lastUpdated: string | null;
-  }>;
+  quote: Record<
+    string,
+    {
+      totalMarketCap: number | null;
+      totalVolume24h: number | null;
+      totalVolume24hReported: number | null;
+      altcoinVolume24h: number | null;
+      altcoinMarketCap: number | null;
+      defiVolume24h: number | null;
+      defiMarketCap: number | null;
+      stablecoinVolume24h: number | null;
+      stablecoinMarketCap: number | null;
+      derivativesVolume24h: number | null;
+      lastUpdated: string | null;
+    }
+  >;
 }
 
 export interface PriceConversion {
@@ -193,10 +199,13 @@ export interface PriceConversion {
   name: string;
   amount: number;
   lastUpdated: string;
-  quote: Record<string, {
-    price: number | null;
-    lastUpdated: string | null;
-  }>;
+  quote: Record<
+    string,
+    {
+      price: number | null;
+      lastUpdated: string | null;
+    }
+  >;
 }
 
 export interface FiatMapEntry {
@@ -221,17 +230,20 @@ export interface ExchangeListing {
   slug: string;
   numMarketPairs: number;
   lastUpdated: string;
-  quote: Record<string, {
-    volume24h: number | null;
-    volume24hAdjusted: number | null;
-    volume7d: number | null;
-    volume30d: number | null;
-    percentChangeVolume24h: number | null;
-    percentChangeVolume7d: number | null;
-    percentChangeVolume30d: number | null;
-    effectiveLiquidity24h: number | null;
-    lastUpdated: string | null;
-  }>;
+  quote: Record<
+    string,
+    {
+      volume24h: number | null;
+      volume24hAdjusted: number | null;
+      volume7d: number | null;
+      volume30d: number | null;
+      percentChangeVolume24h: number | null;
+      percentChangeVolume7d: number | null;
+      percentChangeVolume30d: number | null;
+      effectiveLiquidity24h: number | null;
+      lastUpdated: string | null;
+    }
+  >;
 }
 
 export interface ExchangeInfo {
@@ -252,7 +264,7 @@ export interface ExchangeInfo {
 
 // Helper to transform camelCase keys to snake_case for API params
 let toSnakeCase = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 let toSnakeCaseParams = (params: Record<string, any>): Record<string, any> => {
@@ -292,8 +304,8 @@ export class Client {
       baseURL,
       headers: {
         'X-CMC_PRO_API_KEY': clientConfig.token,
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -358,7 +370,10 @@ export class Client {
     convertId?: string;
     aux?: string;
   }): Promise<Record<string, CryptocurrencyQuote | CryptocurrencyQuote[]>> {
-    return this.get<Record<string, CryptocurrencyQuote | CryptocurrencyQuote[]>>('/v2/cryptocurrency/quotes/latest', params);
+    return this.get<Record<string, CryptocurrencyQuote | CryptocurrencyQuote[]>>(
+      '/v2/cryptocurrency/quotes/latest',
+      params
+    );
   }
 
   // Cryptocurrency Market Pairs Latest

@@ -54,9 +54,8 @@ export class Client {
   private http: AxiosInstance;
 
   constructor(private config: ClientConfig) {
-    let authHeader = config.authType === 'jwt'
-      ? `JWT ${config.token}`
-      : `Token ${config.token}`;
+    let authHeader =
+      config.authType === 'jwt' ? `JWT ${config.token}` : `Token ${config.token}`;
 
     this.http = createAxios({
       baseURL: config.baseUrl,
@@ -77,7 +76,8 @@ export class Client {
     if (params.orderBy) queryParams.order_by = params.orderBy;
     if (params.filterType) queryParams.filter_type = params.filterType;
     if (params.viewId) queryParams.view_id = params.viewId;
-    if (params.userFieldNames !== undefined) queryParams.user_field_names = params.userFieldNames;
+    if (params.userFieldNames !== undefined)
+      queryParams.user_field_names = params.userFieldNames;
     if (params.include) queryParams.include = params.include;
     if (params.exclude) queryParams.exclude = params.exclude;
 
@@ -102,33 +102,61 @@ export class Client {
 
   async createRows(params: CreateRowParams): Promise<any> {
     if (params.rows.length === 1) {
-      let response = await this.http.post(`/api/database/rows/table/${params.tableId}/`, params.rows[0], {
-        params: params.userFieldNames !== undefined ? { user_field_names: params.userFieldNames } : {}
-      });
+      let response = await this.http.post(
+        `/api/database/rows/table/${params.tableId}/`,
+        params.rows[0],
+        {
+          params:
+            params.userFieldNames !== undefined
+              ? { user_field_names: params.userFieldNames }
+              : {}
+        }
+      );
       return [response.data];
     }
 
-    let response = await this.http.post(`/api/database/rows/table/${params.tableId}/batch/`, {
-      items: params.rows
-    }, {
-      params: params.userFieldNames !== undefined ? { user_field_names: params.userFieldNames } : {}
-    });
+    let response = await this.http.post(
+      `/api/database/rows/table/${params.tableId}/batch/`,
+      {
+        items: params.rows
+      },
+      {
+        params:
+          params.userFieldNames !== undefined
+            ? { user_field_names: params.userFieldNames }
+            : {}
+      }
+    );
     return response.data.items;
   }
 
   async updateRow(params: UpdateRowParams): Promise<any> {
-    let response = await this.http.patch(`/api/database/rows/table/${params.tableId}/${params.rowId}/`, params.data, {
-      params: params.userFieldNames !== undefined ? { user_field_names: params.userFieldNames } : {}
-    });
+    let response = await this.http.patch(
+      `/api/database/rows/table/${params.tableId}/${params.rowId}/`,
+      params.data,
+      {
+        params:
+          params.userFieldNames !== undefined
+            ? { user_field_names: params.userFieldNames }
+            : {}
+      }
+    );
     return response.data;
   }
 
   async batchUpdateRows(params: BatchUpdateRowsParams): Promise<any> {
-    let response = await this.http.patch(`/api/database/rows/table/${params.tableId}/batch/`, {
-      items: params.rows
-    }, {
-      params: params.userFieldNames !== undefined ? { user_field_names: params.userFieldNames } : {}
-    });
+    let response = await this.http.patch(
+      `/api/database/rows/table/${params.tableId}/batch/`,
+      {
+        items: params.rows
+      },
+      {
+        params:
+          params.userFieldNames !== undefined
+            ? { user_field_names: params.userFieldNames }
+            : {}
+      }
+    );
     return response.data.items;
   }
 
@@ -144,9 +172,13 @@ export class Client {
   }
 
   async moveRow(tableId: number, rowId: number, beforeId?: number): Promise<any> {
-    let response = await this.http.patch(`/api/database/rows/table/${tableId}/${rowId}/move/`, null, {
-      params: beforeId ? { before_id: beforeId } : {}
-    });
+    let response = await this.http.patch(
+      `/api/database/rows/table/${tableId}/${rowId}/move/`,
+      null,
+      {
+        params: beforeId ? { before_id: beforeId } : {}
+      }
+    );
     return response.data;
   }
 
@@ -162,7 +194,12 @@ export class Client {
     return response.data;
   }
 
-  async createTable(databaseId: number, name: string, data?: any[][], firstRowHeader?: boolean): Promise<any> {
+  async createTable(
+    databaseId: number,
+    name: string,
+    data?: any[][],
+    firstRowHeader?: boolean
+  ): Promise<any> {
     let body: Record<string, any> = { name };
     if (data) body.data = data;
     if (firstRowHeader !== undefined) body.first_row_header = firstRowHeader;
@@ -286,7 +323,8 @@ export class Client {
     if (data.url !== undefined) body.url = data.url;
     if (data.includeAllEvents !== undefined) body.include_all_events = data.includeAllEvents;
     if (data.requestMethod !== undefined) body.request_method = data.requestMethod;
-    if (data.useUserFieldNames !== undefined) body.use_user_field_names = data.useUserFieldNames;
+    if (data.useUserFieldNames !== undefined)
+      body.use_user_field_names = data.useUserFieldNames;
     if (data.events !== undefined) body.events = data.events;
     if (data.headers !== undefined) body.headers = data.headers;
 

@@ -28,7 +28,7 @@ import {
   listUsers,
   removeUser,
   sendInvitation,
-  manageInvitation,
+  manageInvitation
 } from './tools';
 import { cardlyEvents } from './triggers';
 
@@ -62,9 +62,7 @@ export let provider = Slate.create({
     listUsers,
     removeUser,
     sendInvitation,
-    manageInvitation,
+    manageInvitation
   ],
-  triggers: [
-    cardlyEvents,
-  ],
+  triggers: [cardlyEvents]
 });

@@ -17,39 +17,51 @@ let supplierOutputSchema = z.object({
   taxId: z.string().nullable().optional().describe('Tax ID / VAT number'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  rawData: z.any().optional().describe('Complete raw supplier data'),
+  rawData: z.any().optional().describe('Complete raw supplier data')
 });
 
-export let searchSuppliers = SlateTool.create(
-  spec,
-  {
-    name: 'Search Suppliers',
-    key: 'search_suppliers',
-    description: `Search and list suppliers in Coupa. Filter by name, status, supplier number, or other attributes.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchSuppliers = SlateTool.create(spec, {
+  name: 'Search Suppliers',
+  key: 'search_suppliers',
+  description: `Search and list suppliers in Coupa. Filter by name, status, supplier number, or other attributes.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Filter by supplier name (exact match or use filters for contains/starts_with)'),
-    status: z.string().optional().describe('Filter by status (e.g. "active", "inactive")'),
-    supplierNumber: z.string().optional().describe('Filter by supplier number'),
-    updatedAfter: z.string().optional().describe('Filter suppliers updated after this date (ISO 8601)'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional Coupa query filters'),
-    orderBy: z.string().optional().describe('Field to sort by'),
-    sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    suppliers: z.array(supplierOutputSchema).describe('List of matching suppliers'),
-    count: z.number().describe('Number of suppliers returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z
+        .string()
+        .optional()
+        .describe(
+          'Filter by supplier name (exact match or use filters for contains/starts_with)'
+        ),
+      status: z.string().optional().describe('Filter by status (e.g. "active", "inactive")'),
+      supplierNumber: z.string().optional().describe('Filter by supplier number'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter suppliers updated after this date (ISO 8601)'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional Coupa query filters'),
+      orderBy: z.string().optional().describe('Field to sort by'),
+      sortDirection: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      suppliers: z.array(supplierOutputSchema).describe('List of matching suppliers'),
+      count: z.number().describe('Number of suppliers returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let filters: Record<string, string> = {};
@@ -68,7 +80,7 @@ export let searchSuppliers = SlateTool.create(
       orderBy: ctx.input.orderBy,
       dir: ctx.input.sortDirection,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let suppliers = (Array.isArray(results) ? results : []).map((s: any) => ({
@@ -85,62 +97,67 @@ export let searchSuppliers = SlateTool.create(
       taxId: s['tax-id'] ?? s.tax_id ?? null,
       createdAt: s['created-at'] ?? s.created_at ?? null,
       updatedAt: s['updated-at'] ?? s.updated_at ?? null,
-      rawData: s,
+      rawData: s
     }));
 
     return {
       output: {
         suppliers,
-        count: suppliers.length,
+        count: suppliers.length
       },
-      message: `Found **${suppliers.length}** supplier(s).`,
+      message: `Found **${suppliers.length}** supplier(s).`
     };
   })
   .build();
 
-export let createSupplier = SlateTool.create(
-  spec,
-  {
-    name: 'Create Supplier',
-    key: 'create_supplier',
-    description: `Create a new supplier record in Coupa with name, address, contact information, and payment details.`,
-    tags: {
-      destructive: false,
-    },
+export let createSupplier = SlateTool.create(spec, {
+  name: 'Create Supplier',
+  key: 'create_supplier',
+  description: `Create a new supplier record in Coupa with name, address, contact information, and payment details.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Supplier name'),
-    supplierNumber: z.string().optional().describe('Supplier number'),
-    displayName: z.string().optional().describe('Display name'),
-    status: z.enum(['active', 'inactive']).optional().describe('Supplier status'),
-    website: z.string().optional().describe('Supplier website URL'),
-    taxId: z.string().optional().describe('Tax ID / VAT number'),
-    primaryAddress: z.object({
-      street1: z.string().optional(),
-      street2: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postalCode: z.string().optional(),
-      countryCode: z.string().optional().describe('ISO 3166-1 alpha-2 country code'),
-    }).optional().describe('Primary address'),
-    primaryContact: z.object({
-      name: z.string().optional(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
-    }).optional().describe('Primary contact'),
-    paymentTermCode: z.string().optional().describe('Payment term code'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values'),
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Supplier name'),
+      supplierNumber: z.string().optional().describe('Supplier number'),
+      displayName: z.string().optional().describe('Display name'),
+      status: z.enum(['active', 'inactive']).optional().describe('Supplier status'),
+      website: z.string().optional().describe('Supplier website URL'),
+      taxId: z.string().optional().describe('Tax ID / VAT number'),
+      primaryAddress: z
+        .object({
+          street1: z.string().optional(),
+          street2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postalCode: z.string().optional(),
+          countryCode: z.string().optional().describe('ISO 3166-1 alpha-2 country code')
+        })
+        .optional()
+        .describe('Primary address'),
+      primaryContact: z
+        .object({
+          name: z.string().optional(),
+          email: z.string().optional(),
+          phone: z.string().optional()
+        })
+        .optional()
+        .describe('Primary contact'),
+      paymentTermCode: z.string().optional().describe('Payment term code'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Custom field values')
+    })
+  )
   .output(supplierOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let payload: any = {
-      name: ctx.input.name,
+      name: ctx.input.name
     };
 
     if (ctx.input.supplierNumber) payload.number = ctx.input.supplierNumber;
@@ -152,12 +169,12 @@ export let createSupplier = SlateTool.create(
     if (ctx.input.primaryAddress) {
       let a = ctx.input.primaryAddress;
       payload['primary-address'] = {
-        'street1': a.street1,
-        'street2': a.street2,
-        'city': a.city,
-        'state': a.state,
+        street1: a.street1,
+        street2: a.street2,
+        city: a.city,
+        state: a.state,
         'postal-code': a.postalCode,
-        'country': a.countryCode ? { code: a.countryCode } : undefined,
+        country: a.countryCode ? { code: a.countryCode } : undefined
       };
     }
 
@@ -166,11 +183,12 @@ export let createSupplier = SlateTool.create(
       payload['primary-contact'] = {
         'name-fullname': c.name,
         email: c.email,
-        'phone-work': c.phone,
+        'phone-work': c.phone
       };
     }
 
-    if (ctx.input.paymentTermCode) payload['payment-term'] = { code: ctx.input.paymentTermCode };
+    if (ctx.input.paymentTermCode)
+      payload['payment-term'] = { code: ctx.input.paymentTermCode };
 
     if (ctx.input.customFields) {
       for (let [key, value] of Object.entries(ctx.input.customFields)) {
@@ -195,52 +213,60 @@ export let createSupplier = SlateTool.create(
         taxId: result['tax-id'] ?? result.tax_id ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `Created supplier **${result.name}** (ID: ${result.id}).`,
+      message: `Created supplier **${result.name}** (ID: ${result.id}).`
     };
   })
   .build();
 
-export let updateSupplier = SlateTool.create(
-  spec,
-  {
-    name: 'Update Supplier',
-    key: 'update_supplier',
-    description: `Update an existing supplier record in Coupa. Modify name, status, address, contact info, payment terms, or custom fields. Note: when updating the primary address, you can update address attributes but cannot associate a different address ID.`,
-    tags: {
-      destructive: false,
-    },
+export let updateSupplier = SlateTool.create(spec, {
+  name: 'Update Supplier',
+  key: 'update_supplier',
+  description: `Update an existing supplier record in Coupa. Modify name, status, address, contact info, payment terms, or custom fields. Note: when updating the primary address, you can update address attributes but cannot associate a different address ID.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    supplierId: z.number().describe('Coupa supplier ID to update'),
-    name: z.string().optional().describe('Updated supplier name'),
-    displayName: z.string().optional().describe('Updated display name'),
-    status: z.enum(['active', 'inactive']).optional().describe('Updated status'),
-    website: z.string().optional().describe('Updated website URL'),
-    taxId: z.string().optional().describe('Updated Tax ID / VAT number'),
-    primaryAddress: z.object({
-      street1: z.string().optional(),
-      street2: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postalCode: z.string().optional(),
-      countryCode: z.string().optional(),
-    }).optional().describe('Updated primary address attributes'),
-    primaryContact: z.object({
-      name: z.string().optional(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
-    }).optional().describe('Updated primary contact'),
-    paymentTermCode: z.string().optional().describe('Updated payment term code'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values to update'),
-  }))
+})
+  .input(
+    z.object({
+      supplierId: z.number().describe('Coupa supplier ID to update'),
+      name: z.string().optional().describe('Updated supplier name'),
+      displayName: z.string().optional().describe('Updated display name'),
+      status: z.enum(['active', 'inactive']).optional().describe('Updated status'),
+      website: z.string().optional().describe('Updated website URL'),
+      taxId: z.string().optional().describe('Updated Tax ID / VAT number'),
+      primaryAddress: z
+        .object({
+          street1: z.string().optional(),
+          street2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postalCode: z.string().optional(),
+          countryCode: z.string().optional()
+        })
+        .optional()
+        .describe('Updated primary address attributes'),
+      primaryContact: z
+        .object({
+          name: z.string().optional(),
+          email: z.string().optional(),
+          phone: z.string().optional()
+        })
+        .optional()
+        .describe('Updated primary contact'),
+      paymentTermCode: z.string().optional().describe('Updated payment term code'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values to update')
+    })
+  )
   .output(supplierOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let payload: any = {};
@@ -259,7 +285,8 @@ export let updateSupplier = SlateTool.create(
       if (a.city !== undefined) payload['primary-address']['city'] = a.city;
       if (a.state !== undefined) payload['primary-address']['state'] = a.state;
       if (a.postalCode !== undefined) payload['primary-address']['postal-code'] = a.postalCode;
-      if (a.countryCode !== undefined) payload['primary-address']['country'] = { code: a.countryCode };
+      if (a.countryCode !== undefined)
+        payload['primary-address']['country'] = { code: a.countryCode };
     }
 
     if (ctx.input.primaryContact) {
@@ -270,7 +297,8 @@ export let updateSupplier = SlateTool.create(
       if (c.phone) payload['primary-contact']['phone-work'] = c.phone;
     }
 
-    if (ctx.input.paymentTermCode) payload['payment-term'] = { code: ctx.input.paymentTermCode };
+    if (ctx.input.paymentTermCode)
+      payload['payment-term'] = { code: ctx.input.paymentTermCode };
 
     if (ctx.input.customFields) {
       for (let [key, value] of Object.entries(ctx.input.customFields)) {
@@ -295,9 +323,9 @@ export let updateSupplier = SlateTool.create(
         taxId: result['tax-id'] ?? result.tax_id ?? null,
         createdAt: result['created-at'] ?? result.created_at ?? null,
         updatedAt: result['updated-at'] ?? result.updated_at ?? null,
-        rawData: result,
+        rawData: result
       },
-      message: `Updated supplier **${result.name ?? result.id}**.`,
+      message: `Updated supplier **${result.name ?? result.id}**.`
     };
   })
   .build();

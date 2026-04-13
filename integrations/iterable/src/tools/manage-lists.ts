@@ -3,41 +3,68 @@ import { IterableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLists = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Lists',
-    key: 'manage_lists',
-    description: `Create, delete, or retrieve lists in Iterable. Lists are used to organize users into segments for campaign targeting and journey entry. Also supports subscribing and unsubscribing users to/from lists.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageLists = SlateTool.create(spec, {
+  name: 'Manage Lists',
+  key: 'manage_lists',
+  description: `Create, delete, or retrieve lists in Iterable. Lists are used to organize users into segments for campaign targeting and journey entry. Also supports subscribing and unsubscribing users to/from lists.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete', 'subscribe', 'unsubscribe']).describe('Operation to perform: list all lists, create a new list, delete a list, subscribe users to a list, or unsubscribe users from a list'),
-    listName: z.string().optional().describe('Name for a new list (required for create)'),
-    listId: z.number().optional().describe('ID of the list (required for delete, subscribe, unsubscribe)'),
-    subscribers: z.array(z.object({
-      email: z.string().optional().describe('User email'),
-      userId: z.string().optional().describe('User ID'),
-      subscriberFields: z.record(z.string(), z.any()).optional().describe('Custom data fields to set on the user during subscription')
-    })).optional().describe('List of users to subscribe/unsubscribe')
-  }))
-  .output(z.object({
-    lists: z.array(z.object({
-      listId: z.number().describe('List ID'),
-      name: z.string().describe('List name'),
-      createdAt: z.string().optional().describe('When the list was created'),
-      listType: z.string().optional().describe('Type of list')
-    })).optional().describe('All lists (for list action)'),
-    listId: z.number().optional().describe('ID of newly created list'),
-    successCount: z.number().optional().describe('Number of successful subscribe/unsubscribe operations'),
-    failCount: z.number().optional().describe('Number of failed subscribe/unsubscribe operations'),
-    message: z.string().describe('Result message')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'delete', 'subscribe', 'unsubscribe'])
+        .describe(
+          'Operation to perform: list all lists, create a new list, delete a list, subscribe users to a list, or unsubscribe users from a list'
+        ),
+      listName: z.string().optional().describe('Name for a new list (required for create)'),
+      listId: z
+        .number()
+        .optional()
+        .describe('ID of the list (required for delete, subscribe, unsubscribe)'),
+      subscribers: z
+        .array(
+          z.object({
+            email: z.string().optional().describe('User email'),
+            userId: z.string().optional().describe('User ID'),
+            subscriberFields: z
+              .record(z.string(), z.any())
+              .optional()
+              .describe('Custom data fields to set on the user during subscription')
+          })
+        )
+        .optional()
+        .describe('List of users to subscribe/unsubscribe')
+    })
+  )
+  .output(
+    z.object({
+      lists: z
+        .array(
+          z.object({
+            listId: z.number().describe('List ID'),
+            name: z.string().describe('List name'),
+            createdAt: z.string().optional().describe('When the list was created'),
+            listType: z.string().optional().describe('Type of list')
+          })
+        )
+        .optional()
+        .describe('All lists (for list action)'),
+      listId: z.number().optional().describe('ID of newly created list'),
+      successCount: z
+        .number()
+        .optional()
+        .describe('Number of successful subscribe/unsubscribe operations'),
+      failCount: z
+        .number()
+        .optional()
+        .describe('Number of failed subscribe/unsubscribe operations'),
+      message: z.string().describe('Result message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new IterableClient({
       token: ctx.auth.token,
       dataCenter: ctx.config.dataCenter
@@ -112,4 +139,5 @@ export let manageLists = SlateTool.create(
       },
       message: `Unsubscribed **${result.successCount || subs.length}** user(s) from list **${ctx.input.listId}**.`
     };
-  }).build();
+  })
+  .build();

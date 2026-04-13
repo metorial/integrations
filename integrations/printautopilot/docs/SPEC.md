@@ -23,6 +23,7 @@ PrintAutopilot uses two levels of authentication:
 ### PDF Document Queue Submission
 
 Allows automated printing by adding PDF files to a print queue, enabling seamless integration between applications and physical printers. When submitting a PDF, you must specify:
+
 - **File:** The PDF document to print (uploaded as a file).
 - **Filename:** The name for the document in the queue.
 - **Print Queue Token:** The token identifying which print queue to target.

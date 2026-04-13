@@ -22,32 +22,36 @@ let reportEntrySchema = z.object({
   notes: z.string().nullable().describe('Associated notes')
 });
 
-export let getKpiReport = SlateTool.create(
-  spec,
-  {
-    name: 'Get KPI Report',
-    key: 'get_kpi_report',
-    description: `Query processed KPI data entries for reporting, including calculated KPIs. Filter by KPI IDs, date range, user IDs, and group item IDs. This is the primary way to extract aggregated performance data. Unlike "List KPI Entries", this endpoint returns calculated KPI values and formatted report data.`,
-    constraints: [
-      'Maximum 10,000 entries returned per request.',
-      'Both dateFrom and dateTo are required.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getKpiReport = SlateTool.create(spec, {
+  name: 'Get KPI Report',
+  key: 'get_kpi_report',
+  description: `Query processed KPI data entries for reporting, including calculated KPIs. Filter by KPI IDs, date range, user IDs, and group item IDs. This is the primary way to extract aggregated performance data. Unlike "List KPI Entries", this endpoint returns calculated KPI values and formatted report data.`,
+  constraints: [
+    'Maximum 10,000 entries returned per request.',
+    'Both dateFrom and dateTo are required.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    dateFrom: z.string().describe('Start date (YYYY-MM-DD)'),
-    dateTo: z.string().describe('End date (YYYY-MM-DD)'),
-    kpiIds: z.array(z.number()).optional().describe('Filter by specific KPI IDs'),
-    userIds: z.array(z.number()).optional().describe('Filter by specific user IDs'),
-    groupItemIds: z.array(z.number()).optional().describe('Filter by specific group item IDs')
-  }))
-  .output(z.object({
-    entries: z.array(reportEntrySchema).describe('Report data entries')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dateFrom: z.string().describe('Start date (YYYY-MM-DD)'),
+      dateTo: z.string().describe('End date (YYYY-MM-DD)'),
+      kpiIds: z.array(z.number()).optional().describe('Filter by specific KPI IDs'),
+      userIds: z.array(z.number()).optional().describe('Filter by specific user IDs'),
+      groupItemIds: z
+        .array(z.number())
+        .optional()
+        .describe('Filter by specific group item IDs')
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(reportEntrySchema).describe('Report data entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
 
     let reportParams: {
@@ -95,4 +99,5 @@ export let getKpiReport = SlateTool.create(
       output: { entries },
       message: `Retrieved **${entries.length}** report entries from ${ctx.input.dateFrom} to ${ctx.input.dateTo}.`
     };
-  }).build();
+  })
+  .build();

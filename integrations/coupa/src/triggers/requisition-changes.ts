@@ -3,42 +3,48 @@ import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let requisitionChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Requisition Changes',
-    key: 'requisition_changes',
-    description: 'Triggers when purchase requisitions are created, submitted, approved, or otherwise updated in Coupa.',
-  }
-)
-  .input(z.object({
-    requisitionId: z.number().describe('Requisition ID'),
-    requisitionNumber: z.string().nullable().optional().describe('Requisition number'),
-    status: z.string().nullable().optional().describe('Current requisition status'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    rawData: z.any().describe('Full requisition data'),
-  }))
-  .output(z.object({
-    requisitionId: z.number().describe('Coupa requisition ID'),
-    requisitionNumber: z.string().nullable().optional().describe('Requisition number'),
-    status: z.string().nullable().optional().describe('Current status'),
-    requestedBy: z.any().nullable().optional().describe('Requesting user'),
-    totalAmount: z.any().nullable().optional().describe('Requisition total'),
-    currency: z.any().nullable().optional().describe('Currency'),
-    requisitionLines: z.array(z.any()).nullable().optional().describe('Requisition line items'),
-    justification: z.string().nullable().optional().describe('Justification'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  }))
+export let requisitionChanges = SlateTrigger.create(spec, {
+  name: 'Requisition Changes',
+  key: 'requisition_changes',
+  description:
+    'Triggers when purchase requisitions are created, submitted, approved, or otherwise updated in Coupa.'
+})
+  .input(
+    z.object({
+      requisitionId: z.number().describe('Requisition ID'),
+      requisitionNumber: z.string().nullable().optional().describe('Requisition number'),
+      status: z.string().nullable().optional().describe('Current requisition status'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      rawData: z.any().describe('Full requisition data')
+    })
+  )
+  .output(
+    z.object({
+      requisitionId: z.number().describe('Coupa requisition ID'),
+      requisitionNumber: z.string().nullable().optional().describe('Requisition number'),
+      status: z.string().nullable().optional().describe('Current status'),
+      requestedBy: z.any().nullable().optional().describe('Requesting user'),
+      totalAmount: z.any().nullable().optional().describe('Requisition total'),
+      currency: z.any().nullable().optional().describe('Currency'),
+      requisitionLines: z
+        .array(z.any())
+        .nullable()
+        .optional()
+        .describe('Requisition line items'),
+      justification: z.string().nullable().optional().describe('Justification'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CoupaClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -52,7 +58,7 @@ export let requisitionChanges = SlateTrigger.create(
         filters,
         orderBy: 'updated_at',
         dir: 'asc',
-        limit: 50,
+        limit: 50
       });
 
       let reqs = Array.isArray(results) ? results : [];
@@ -69,15 +75,15 @@ export let requisitionChanges = SlateTrigger.create(
           requisitionNumber: r['requisition-number'] ?? r.requisition_number ?? null,
           status: r.status ?? null,
           updatedAt: r['updated-at'] ?? r.updated_at ?? '',
-          rawData: r,
+          rawData: r
         })),
         updatedState: {
-          lastPollTime: newLastPollTime ?? new Date().toISOString(),
-        },
+          lastPollTime: newLastPollTime ?? new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let r = ctx.input.rawData;
 
       return {
@@ -93,9 +99,9 @@ export let requisitionChanges = SlateTrigger.create(
           requisitionLines: r['requisition-lines'] ?? r.requisition_lines ?? null,
           justification: r.justification ?? null,
           createdAt: r['created-at'] ?? r.created_at ?? null,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

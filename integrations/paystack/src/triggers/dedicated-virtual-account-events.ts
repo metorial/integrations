@@ -2,35 +2,37 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dedicatedVirtualAccountEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Dedicated Virtual Account Events',
-    key: 'dedicated_virtual_account_events',
-    description: 'Triggers when a dedicated virtual account assignment succeeds or fails, and when a bank transfer is rejected.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Paystack event type'),
-    eventId: z.string().describe('Unique event identifier'),
-    accountName: z.string().describe('Virtual account name'),
-    accountNumber: z.string().describe('Virtual account number'),
-    bankName: z.string().describe('Bank name'),
-    customerCode: z.string().describe('Customer code'),
-    customerEmail: z.string().describe('Customer email'),
-    assignmentStatus: z.string().describe('Assignment status (success, failed, rejected)'),
-  }))
-  .output(z.object({
-    accountName: z.string().describe('Virtual account name'),
-    accountNumber: z.string().describe('Virtual account number'),
-    bankName: z.string().describe('Bank name'),
-    customerCode: z.string().describe('Customer code'),
-    customerEmail: z.string().describe('Customer email'),
-    assignmentStatus: z.string().describe('Assignment status'),
-  }))
+export let dedicatedVirtualAccountEvents = SlateTrigger.create(spec, {
+  name: 'Dedicated Virtual Account Events',
+  key: 'dedicated_virtual_account_events',
+  description:
+    'Triggers when a dedicated virtual account assignment succeeds or fails, and when a bank transfer is rejected.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Paystack event type'),
+      eventId: z.string().describe('Unique event identifier'),
+      accountName: z.string().describe('Virtual account name'),
+      accountNumber: z.string().describe('Virtual account number'),
+      bankName: z.string().describe('Bank name'),
+      customerCode: z.string().describe('Customer code'),
+      customerEmail: z.string().describe('Customer email'),
+      assignmentStatus: z.string().describe('Assignment status (success, failed, rejected)')
+    })
+  )
+  .output(
+    z.object({
+      accountName: z.string().describe('Virtual account name'),
+      accountNumber: z.string().describe('Virtual account number'),
+      bankName: z.string().describe('Bank name'),
+      customerCode: z.string().describe('Customer code'),
+      customerEmail: z.string().describe('Customer email'),
+      assignmentStatus: z.string().describe('Assignment status')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
       let event = body.event as string;
 
       if (!event.startsWith('dedicatedaccount.') && event !== 'bank.transfer.rejected') {
@@ -56,21 +58,23 @@ export let dedicatedVirtualAccountEvents = SlateTrigger.create(
             bankName: dedicatedAccount.bank?.name ?? '',
             customerCode: customer.customer_code ?? '',
             customerEmail: customer.email ?? '',
-            assignmentStatus: status,
-          },
-        ],
+            assignmentStatus: status
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
         'dedicatedaccount.assign.success': 'dedicated_virtual_account.assigned',
         'dedicatedaccount.assign.failed': 'dedicated_virtual_account.assignment_failed',
-        'bank.transfer.rejected': 'dedicated_virtual_account.transfer_rejected',
+        'bank.transfer.rejected': 'dedicated_virtual_account.transfer_rejected'
       };
 
       return {
-        type: typeMap[ctx.input.eventType] ?? `dedicated_virtual_account.${ctx.input.assignmentStatus}`,
+        type:
+          typeMap[ctx.input.eventType] ??
+          `dedicated_virtual_account.${ctx.input.assignmentStatus}`,
         id: ctx.input.eventId,
         output: {
           accountName: ctx.input.accountName,
@@ -78,9 +82,9 @@ export let dedicatedVirtualAccountEvents = SlateTrigger.create(
           bankName: ctx.input.bankName,
           customerCode: ctx.input.customerCode,
           customerEmail: ctx.input.customerEmail,
-          assignmentStatus: ctx.input.assignmentStatus,
-        },
+          assignmentStatus: ctx.input.assignmentStatus
+        }
       };
-    },
+    }
   })
   .build();

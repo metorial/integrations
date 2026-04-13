@@ -22,6 +22,7 @@ Once you have an account, you can find your API Key and API Secret at the top of
 For APIs which use a JWT for authentication you'll need to pass application_id and private_key arguments. Newer endpoints that support JWT authentication include the Voice API and Messages API.
 
 To use JWT authentication:
+
 1. Create a Vonage Application in the Dashboard.
 2. Click "Generate public and private key", which will download a file called "private.key" to your computer.
 3. The JWT payload requires `application_id` (the ID of the application) and `acl` (a list of permissions the token will have).
@@ -123,6 +124,7 @@ Receive notifications when messages are sent to your Vonage number across any su
 ### Voice Event Webhooks
 
 Receive call lifecycle events when using the Voice API. Two primary webhook types:
+
 - **Answer URL**: Called when an inbound call is received or an outbound call is answered; expects an NCCO response to control call flow.
 - **Event URL**: Receives call state change events (e.g., ringing, answered, completed, failed, busy), recording completion notifications, DTMF input, and speech recognition results.
 

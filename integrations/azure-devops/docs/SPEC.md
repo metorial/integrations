@@ -26,6 +26,7 @@ The recommended approach for new production applications. Register an applicatio
 - Requires: `client_id`, `client_secret`, `tenant_id`, and the organization name.
 
 **Granular Scopes** (used in both Entra ID and legacy OAuth): Scopes follow the `vso.*` naming convention. Key scopes include:
+
 - `vso.work` / `vso.work_write` / `vso.work_full` — Work items
 - `vso.code` / `vso.code_write` / `vso.code_manage` — Code/repos
 - `vso.build` / `vso.build_execute` — Build pipelines
@@ -47,6 +48,7 @@ You can use your PAT anywhere that your user credentials are required for authen
 ### 3. Legacy Azure DevOps OAuth 2.0 (Deprecated)
 
 Azure DevOps OAuth is deprecated and scheduled for removal in 2026. New app registrations are no longer accepted as of April 2025. Existing apps use:
+
 - Authorization URL: `https://app.vssps.visualstudio.com/oauth2/authorize`
 - Token URL: `https://app.vssps.visualstudio.com/oauth2/token`
 - Azure DevOps Services supports only the web server flow (authorization code flow).

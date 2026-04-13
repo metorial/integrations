@@ -3,33 +3,42 @@ import { SlackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePins = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Pins',
-    key: 'manage_pins',
-    description: `Pin or unpin messages in a Slack channel, or list all pinned items. Pinned messages are highlighted and easily accessible by all channel members.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let managePins = SlateTool.create(spec, {
+  name: 'Manage Pins',
+  key: 'manage_pins',
+  description: `Pin or unpin messages in a Slack channel, or list all pinned items. Pinned messages are highlighted and easily accessible by all channel members.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['pin', 'unpin', 'list']).describe('Pin action to perform'),
-    channelId: z.string().describe('Channel ID'),
-    messageTs: z.string().optional().describe('Message timestamp to pin or unpin (required for pin/unpin)'),
-  }))
-  .output(z.object({
-    channelId: z.string().describe('Channel ID'),
-    pins: z.array(z.object({
-      messageTs: z.string().optional().describe('Pinned message timestamp'),
-      messageText: z.string().optional().describe('Pinned message text preview'),
-      pinnedBy: z.string().optional().describe('User ID who pinned the item'),
-      pinnedAt: z.number().optional().describe('Unix timestamp when the item was pinned'),
-    })).optional().describe('List of pinned items (for list action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['pin', 'unpin', 'list']).describe('Pin action to perform'),
+      channelId: z.string().describe('Channel ID'),
+      messageTs: z
+        .string()
+        .optional()
+        .describe('Message timestamp to pin or unpin (required for pin/unpin)')
+    })
+  )
+  .output(
+    z.object({
+      channelId: z.string().describe('Channel ID'),
+      pins: z
+        .array(
+          z.object({
+            messageTs: z.string().optional().describe('Pinned message timestamp'),
+            messageText: z.string().optional().describe('Pinned message text preview'),
+            pinnedBy: z.string().optional().describe('User ID who pinned the item'),
+            pinnedAt: z.number().optional().describe('Unix timestamp when the item was pinned')
+          })
+        )
+        .optional()
+        .describe('List of pinned items (for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
     let { action, channelId, messageTs } = ctx.input;
 
@@ -38,7 +47,7 @@ export let managePins = SlateTool.create(
       await client.addPin({ channel: channelId, timestamp: messageTs });
       return {
         output: { channelId },
-        message: `Pinned message \`${messageTs}\` in channel \`${channelId}\`.`,
+        message: `Pinned message \`${messageTs}\` in channel \`${channelId}\`.`
       };
     }
 
@@ -47,7 +56,7 @@ export let managePins = SlateTool.create(
       await client.removePin({ channel: channelId, timestamp: messageTs });
       return {
         output: { channelId },
-        message: `Unpinned message \`${messageTs}\` from channel \`${channelId}\`.`,
+        message: `Unpinned message \`${messageTs}\` from channel \`${channelId}\`.`
       };
     }
 
@@ -60,10 +69,10 @@ export let managePins = SlateTool.create(
           messageTs: p.message?.ts,
           messageText: p.message?.text,
           pinnedBy: p.created_by,
-          pinnedAt: p.created,
-        })),
+          pinnedAt: p.created
+        }))
       },
-      message: `Found ${pins.length} pinned item(s) in channel \`${channelId}\`.`,
+      message: `Found ${pins.length} pinned item(s) in channel \`${channelId}\`.`
     };
   })
   .build();

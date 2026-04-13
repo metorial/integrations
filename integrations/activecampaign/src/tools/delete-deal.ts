@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Deal',
-    key: 'delete_deal',
-    description: `Permanently deletes a deal from ActiveCampaign.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteDeal = SlateTool.create(spec, {
+  name: 'Delete Deal',
+  key: 'delete_deal',
+  description: `Permanently deletes a deal from ActiveCampaign.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    dealId: z.string().describe('ID of the deal to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.string().describe('ID of the deal to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -33,4 +34,5 @@ export let deleteDeal = SlateTool.create(
       output: { deleted: true },
       message: `Deal (ID: ${ctx.input.dealId}) has been deleted.`
     };
-  }).build();
+  })
+  .build();

@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.niftyimages.com/v1',
       headers: {
-        'ApiKey': config.token,
-        'Content-Type': 'application/json',
-      },
+        ApiKey: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -17,28 +17,31 @@ export class Client {
 
   async getDataStoreFields(dataStoreApiKey: string): Promise<any[]> {
     let response = await this.axios.get('/DataStores/Fields', {
-      params: { ApiKey: dataStoreApiKey },
+      params: { ApiKey: dataStoreApiKey }
     });
     return response.data;
   }
 
   async addDataStoreRecord(dataStoreApiKey: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/DataStores/AddRecord', data, {
-      params: { ApiKey: dataStoreApiKey },
+      params: { ApiKey: dataStoreApiKey }
     });
     return response.data;
   }
 
   async deleteDataStoreRecordById(dataStoreApiKey: string, recordId: string): Promise<any> {
     let response = await this.axios.delete(`/DataStores/DeleteById/${recordId}`, {
-      params: { ApiKey: dataStoreApiKey },
+      params: { ApiKey: dataStoreApiKey }
     });
     return response.data;
   }
 
-  async deleteDataStoreRecord(dataStoreApiKey: string, matchCriteria: Record<string, any>): Promise<any> {
+  async deleteDataStoreRecord(
+    dataStoreApiKey: string,
+    matchCriteria: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.post('/DataStores/DeleteRecord', matchCriteria, {
-      params: { ApiKey: dataStoreApiKey },
+      params: { ApiKey: dataStoreApiKey }
     });
     return response.data;
   }
@@ -58,7 +61,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       TimerImageUrl: params.timerImageUrl,
-      TargetDate: params.targetDate,
+      TargetDate: params.targetDate
     };
     if (params.format !== undefined) body.Format = params.format;
     if (params.isUtc !== undefined) body.IsUtc = params.isUtc;
@@ -68,7 +71,7 @@ export class Client {
     if (params.addMonths !== undefined) body.AddMonths = params.addMonths;
 
     let response = await this.axios.put('/Timer/UpdateTargetDate', body, {
-      params: { ApiKey: params.timerApiKey },
+      params: { ApiKey: params.timerApiKey }
     });
     return response.data;
   }
@@ -85,14 +88,17 @@ export class Client {
     return response.data;
   }
 
-  async searchMapLocations(mapId: string, params: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
-    query?: string;
-  }): Promise<any[]> {
+  async searchMapLocations(
+    mapId: string,
+    params: {
+      latitude?: number;
+      longitude?: number;
+      radius?: number;
+      query?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/Maps/${mapId}/Locations/Search`, {
-      params,
+      params
     });
     return response.data;
   }
@@ -102,7 +108,11 @@ export class Client {
     return response.data;
   }
 
-  async updateMapLocation(mapId: string, locationId: string, location: Record<string, any>): Promise<any> {
+  async updateMapLocation(
+    mapId: string,
+    locationId: string,
+    location: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/Maps/${mapId}/Locations/${locationId}`, location);
     return response.data;
   }
@@ -114,22 +124,16 @@ export class Client {
 
   // ==================== Images ====================
 
-  async listImages(params: {
-    page?: number;
-    pageSize?: number;
-  }): Promise<any> {
+  async listImages(params: { page?: number; pageSize?: number }): Promise<any> {
     let response = await this.axios.get('/Images', {
-      params,
+      params
     });
     return response.data;
   }
 
-  async getImageStats(params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async getImageStats(params: { startDate?: string; endDate?: string }): Promise<any> {
     let response = await this.axios.get('/Images/Stats', {
-      params,
+      params
     });
     return response.data;
   }
@@ -163,52 +167,69 @@ export class Client {
     return response.data;
   }
 
-  async getWidgetStats(widgetKey: string, params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async getWidgetStats(
+    widgetKey: string,
+    params: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/Widgets/${widgetKey}`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async getWidgetImages(widgetKey: string, params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async getWidgetImages(
+    widgetKey: string,
+    params: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/Widgets/${widgetKey}/Images`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async getWidgetUsers(widgetKey: string, params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any[]> {
+  async getWidgetUsers(
+    widgetKey: string,
+    params: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/Widgets/${widgetKey}/Users`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async getWidgetUserStats(widgetKey: string, user: string, params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async getWidgetUserStats(
+    widgetKey: string,
+    user: string,
+    params: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/Widgets/${widgetKey}/Users/${user}`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async getWidgetUserImages(widgetKey: string, user: string, params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async getWidgetUserImages(
+    widgetKey: string,
+    user: string,
+    params: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/Widgets/${widgetKey}/Images/${user}`, {
-      params,
+      params
     });
     return response.data;
   }
@@ -220,12 +241,9 @@ export class Client {
 
   // ==================== Widget Stats (Aggregated) ====================
 
-  async getAllWidgetStats(params: {
-    startDate?: string;
-    endDate?: string;
-  }): Promise<any> {
+  async getAllWidgetStats(params: { startDate?: string; endDate?: string }): Promise<any> {
     let response = await this.axios.get('/Widgets/AllStats', {
-      params,
+      params
     });
     return response.data;
   }

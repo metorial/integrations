@@ -33,7 +33,10 @@ let uriEncode = (str: string): string => {
 };
 
 let getDateStrings = (date: Date): { dateStamp: string; amzDate: string } => {
-  let iso = date.toISOString().replace(/[:-]/g, '').replace(/\.\d{3}/, '');
+  let iso = date
+    .toISOString()
+    .replace(/[:-]/g, '')
+    .replace(/\.\d{3}/, '');
   let dateStamp = iso.substring(0, 8);
   let amzDate = iso.substring(0, 15) + 'Z';
   return { dateStamp, amzDate };
@@ -51,7 +54,7 @@ export let signRequest = (options: SignedRequestOptions): Record<string, string>
   let allHeaders: Record<string, string> = {
     ...headers,
     host,
-    'x-amz-date': amzDate,
+    'x-amz-date': amzDate
   };
 
   if (credentials.sessionToken) {
@@ -68,9 +71,13 @@ export let signRequest = (options: SignedRequestOptions): Record<string, string>
   // Build canonical headers (sorted, lowercase)
   let headerKeys = Object.keys(allHeaders).map(k => k.toLowerCase());
   headerKeys.sort();
-  let canonicalHeaders = headerKeys
-    .map(key => `${key}:${allHeaders[Object.keys(allHeaders).find(k => k.toLowerCase() === key)!]!.trim()}`)
-    .join('\n') + '\n';
+  let canonicalHeaders =
+    headerKeys
+      .map(
+        key =>
+          `${key}:${allHeaders[Object.keys(allHeaders).find(k => k.toLowerCase() === key)!]!.trim()}`
+      )
+      .join('\n') + '\n';
   let signedHeaders = headerKeys.join(';');
 
   let payloadHash = sha256(body);
@@ -106,7 +113,7 @@ export let signRequest = (options: SignedRequestOptions): Record<string, string>
   let resultHeaders: Record<string, string> = {
     ...headers,
     'x-amz-date': amzDate,
-    'Authorization': authorizationHeader,
+    Authorization: authorizationHeader
   };
 
   if (credentials.sessionToken) {

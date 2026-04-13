@@ -3,70 +3,74 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let customerEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Events',
-    key: 'customer_events',
-    description: 'Triggers when a customer record is created, updated, or deleted. Useful for syncing customer data to external CRM systems.',
-  }
-)
-  .input(z.object({
-    customerId: z.string().describe('Customer ID'),
-    webhookType: z.string().describe('Webhook event type'),
-    rawPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    customerId: z.string().describe('Customer ID'),
-    customerName: z.string().nullable().optional().describe('Customer name'),
-    email: z.string().nullable().optional().describe('Email'),
-    phoneNumber: z.string().nullable().optional().describe('Phone number'),
-    address: z.string().nullable().optional().describe('Address'),
-    city: z.string().nullable().optional().describe('City'),
-    postalCode: z.string().nullable().optional().describe('Postal code'),
-    countryCode: z.string().nullable().optional().describe('Country code'),
-    customerCode: z.string().nullable().optional().describe('Loyalty code'),
-    totalPoints: z.number().optional().describe('Total loyalty points'),
-    totalMoneySpent: z.number().optional().describe('Total money spent'),
-    isDeleted: z.boolean().optional().describe('Whether the customer was deleted'),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    deletedAt: z.string().nullable().optional(),
-  }))
+export let customerEvents = SlateTrigger.create(spec, {
+  name: 'Customer Events',
+  key: 'customer_events',
+  description:
+    'Triggers when a customer record is created, updated, or deleted. Useful for syncing customer data to external CRM systems.'
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('Customer ID'),
+      webhookType: z.string().describe('Webhook event type'),
+      rawPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().describe('Customer ID'),
+      customerName: z.string().nullable().optional().describe('Customer name'),
+      email: z.string().nullable().optional().describe('Email'),
+      phoneNumber: z.string().nullable().optional().describe('Phone number'),
+      address: z.string().nullable().optional().describe('Address'),
+      city: z.string().nullable().optional().describe('City'),
+      postalCode: z.string().nullable().optional().describe('Postal code'),
+      countryCode: z.string().nullable().optional().describe('Country code'),
+      customerCode: z.string().nullable().optional().describe('Loyalty code'),
+      totalPoints: z.number().optional().describe('Total loyalty points'),
+      totalMoneySpent: z.number().optional().describe('Total money spent'),
+      isDeleted: z.boolean().optional().describe('Whether the customer was deleted'),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      deletedAt: z.string().nullable().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let webhook = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        types: ['customers.update'],
+        types: ['customers.update']
       });
 
       return {
-        registrationDetails: { webhookId: webhook.id },
+        registrationDetails: { webhookId: webhook.id }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let customerId = body.customer_id ?? body.id ?? '';
       let webhookType = body.type ?? 'customers.update';
 
       return {
-        inputs: [{
-          customerId,
-          webhookType,
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            customerId,
+            webhookType,
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       try {
@@ -90,8 +94,8 @@ export let customerEvents = SlateTrigger.create(
             isDeleted: !!c.deleted_at,
             createdAt: c.created_at,
             updatedAt: c.updated_at,
-            deletedAt: c.deleted_at,
-          },
+            deletedAt: c.deleted_at
+          }
         };
       } catch {
         return {
@@ -99,10 +103,10 @@ export let customerEvents = SlateTrigger.create(
           id: `${ctx.input.customerId}-deleted`,
           output: {
             customerId: ctx.input.customerId,
-            isDeleted: true,
-          },
+            isDeleted: true
+          }
         };
       }
-    },
+    }
   })
   .build();

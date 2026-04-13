@@ -6,7 +6,7 @@ import { z } from 'zod';
 let orderShipmentSchema = z.object({
   deviceType: z.string().describe('Type of device being returned'),
   sendStatus: z.string().describe('Status of the box shipped to employee'),
-  returnStatus: z.string().describe('Status of the device shipped back to company'),
+  returnStatus: z.string().describe('Status of the device shipped back to company')
 });
 
 let orderEmployeeSchema = z.object({
@@ -16,7 +16,7 @@ let orderEmployeeSchema = z.object({
   addressLine2: z.string().optional().describe('Employee address line 2'),
   city: z.string().describe('Employee city'),
   state: z.string().describe('Employee state'),
-  zip: z.string().describe('Employee ZIP code'),
+  zip: z.string().describe('Employee ZIP code')
 });
 
 let orderCompanySchema = z.object({
@@ -26,7 +26,7 @@ let orderCompanySchema = z.object({
   addressLine2: z.string().optional().describe('Company address line 2'),
   city: z.string().describe('Company city'),
   state: z.string().describe('Company state'),
-  zip: z.string().describe('Company ZIP code'),
+  zip: z.string().describe('Company ZIP code')
 });
 
 let orderResultSchema = z.object({
@@ -35,30 +35,40 @@ let orderResultSchema = z.object({
   orderStatus: z.string().describe('Current order/shipping status'),
   employeeInfo: orderEmployeeSchema,
   companyInfo: orderCompanySchema,
-  shipments: orderShipmentSchema,
+  shipments: orderShipmentSchema
 });
 
-export let listOrders = SlateTool.create(
-  spec,
-  {
-    name: 'List Orders',
-    key: 'list_orders',
-    description: `Retrieve equipment return orders with pagination support. Returns order details including payment status, shipping status, employee and company information, and shipment tracking.
+export let listOrders = SlateTool.create(spec, {
+  name: 'List Orders',
+  key: 'list_orders',
+  description: `Retrieve equipment return orders with pagination support. Returns order details including payment status, shipping status, employee and company information, and shipment tracking.
 Supports cursor-based pagination (25 orders per page).`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cursor: z.string().optional().describe('Pagination cursor for fetching the next page of results'),
-  }))
-  .output(z.object({
-    orders: z.array(orderResultSchema).describe('List of return orders'),
-    nextCursor: z.string().nullable().describe('Cursor for the next page, null if no more pages'),
-    previousCursor: z.string().nullable().describe('Cursor for the previous page, null if at the first page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cursor: z
+        .string()
+        .optional()
+        .describe('Pagination cursor for fetching the next page of results')
+    })
+  )
+  .output(
+    z.object({
+      orders: z.array(orderResultSchema).describe('List of return orders'),
+      nextCursor: z
+        .string()
+        .nullable()
+        .describe('Cursor for the next page, null if no more pages'),
+      previousCursor: z
+        .string()
+        .nullable()
+        .describe('Cursor for the previous page, null if at the first page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getOrders(ctx.input.cursor);
@@ -74,7 +84,7 @@ Supports cursor-based pagination (25 orders per page).`,
         addressLine2: order.employee_info?.address_line_2 || undefined,
         city: order.employee_info?.city || '',
         state: order.employee_info?.state || '',
-        zip: order.employee_info?.zip || '',
+        zip: order.employee_info?.zip || ''
       },
       companyInfo: {
         email: order.company_info?.email || '',
@@ -83,22 +93,22 @@ Supports cursor-based pagination (25 orders per page).`,
         addressLine2: order.company_info?.address_line_2 || undefined,
         city: order.company_info?.city || '',
         state: order.company_info?.state || '',
-        zip: order.company_info?.zip || '',
+        zip: order.company_info?.zip || ''
       },
       shipments: {
         deviceType: order.shipments?.device_type || '',
         sendStatus: order.shipments?.send_status || '',
-        returnStatus: order.shipments?.return_status || '',
-      },
+        returnStatus: order.shipments?.return_status || ''
+      }
     }));
 
     return {
       output: {
         orders,
         nextCursor: result.next || null,
-        previousCursor: result.previous || null,
+        previousCursor: result.previous || null
       },
-      message: `Retrieved **${orders.length}** order(s).${result.next ? ' More pages available.' : ''}`,
+      message: `Retrieved **${orders.length}** order(s).${result.next ? ' More pages available.' : ''}`
     };
   })
   .build();

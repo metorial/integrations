@@ -3,37 +3,40 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Product',
-    key: 'manage_product',
-    description: `Create, update, or delete a product in the Finmei product catalog. Products can be referenced when creating invoices.`,
-    instructions: [
-      'To **create** a product, set action to "create" and provide at least a **name**.',
-      'To **update** a product, set action to "update", provide the **productId**, and the fields to change.',
-      'To **delete** a product, set action to "delete" and provide the **productId**.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageProduct = SlateTool.create(spec, {
+  name: 'Manage Product',
+  key: 'manage_product',
+  description: `Create, update, or delete a product in the Finmei product catalog. Products can be referenced when creating invoices.`,
+  instructions: [
+    'To **create** a product, set action to "create" and provide at least a **name**.',
+    'To **update** a product, set action to "update", provide the **productId**, and the fields to change.',
+    'To **delete** a product, set action to "delete" and provide the **productId**.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform on the product'),
-    productId: z.string().optional().describe('Product ID (required for update and delete)'),
-    name: z.string().optional().describe('Product name'),
-    price: z.number().optional().describe('Product price'),
-    currency: z.string().optional().describe('Three-letter currency code (e.g., "USD")'),
-    description: z.string().optional().describe('Product description'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    productId: z.string().optional().describe('ID of the product'),
-    product: z.any().optional().describe('Product details (for create/update actions)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('Action to perform on the product'),
+      productId: z.string().optional().describe('Product ID (required for update and delete)'),
+      name: z.string().optional().describe('Product name'),
+      price: z.number().optional().describe('Product price'),
+      currency: z.string().optional().describe('Three-letter currency code (e.g., "USD")'),
+      description: z.string().optional().describe('Product description')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      productId: z.string().optional().describe('ID of the product'),
+      product: z.any().optional().describe('Product details (for create/update actions)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FinmeiClient(ctx.auth.token);
 
     if (ctx.input.action === 'delete') {
@@ -45,9 +48,9 @@ export let manageProduct = SlateTool.create(
       return {
         output: {
           success: true,
-          productId: ctx.input.productId,
+          productId: ctx.input.productId
         },
-        message: `Deleted product \`${ctx.input.productId}\`.`,
+        message: `Deleted product \`${ctx.input.productId}\`.`
       };
     }
 
@@ -60,7 +63,7 @@ export let manageProduct = SlateTool.create(
         name: ctx.input.name,
         price: ctx.input.price,
         currency: ctx.input.currency,
-        description: ctx.input.description,
+        description: ctx.input.description
       });
 
       let product = result?.data ?? result;
@@ -70,9 +73,9 @@ export let manageProduct = SlateTool.create(
         output: {
           success: true,
           productId,
-          product,
+          product
         },
-        message: `Created product **${ctx.input.name}** (ID: ${productId}).`,
+        message: `Created product **${ctx.input.name}** (ID: ${productId}).`
       };
     }
 
@@ -94,9 +97,9 @@ export let manageProduct = SlateTool.create(
       output: {
         success: true,
         productId: ctx.input.productId,
-        product,
+        product
       },
-      message: `Updated product \`${ctx.input.productId}\`.`,
+      message: `Updated product \`${ctx.input.productId}\`.`
     };
   })
   .build();

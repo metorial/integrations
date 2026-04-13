@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export class ElevenLabsClient {
   private axios: AxiosInstance;
@@ -8,8 +8,8 @@ export class ElevenLabsClient {
     this.axios = createAxios({
       baseURL: 'https://api.elevenlabs.io',
       headers: {
-        'xi-api-key': token,
-      },
+        'xi-api-key': token
+      }
     });
   }
 
@@ -46,8 +46,8 @@ export class ElevenLabsClient {
         sort_direction: params.sortDirection,
         voice_type: params.voiceType,
         category: params.category,
-        include_total_count: params.includeTotalCount,
-      },
+        include_total_count: params.includeTotalCount
+      }
     });
     return response.data;
   }
@@ -57,15 +57,18 @@ export class ElevenLabsClient {
     return response.data;
   }
 
-  async editVoice(voiceId: string, params: {
-    name: string;
-    description?: string;
-    labels?: Record<string, string>;
-  }): Promise<any> {
+  async editVoice(
+    voiceId: string,
+    params: {
+      name: string;
+      description?: string;
+      labels?: Record<string, string>;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/v1/voices/${voiceId}`, {
       name: params.name,
       description: params.description,
-      labels: params.labels,
+      labels: params.labels
     });
     return response.data;
   }
@@ -76,30 +79,35 @@ export class ElevenLabsClient {
 
   // ── Text to Speech ──
 
-  async textToSpeech(voiceId: string, params: {
-    text: string;
-    modelId?: string;
-    languageCode?: string;
-    voiceSettings?: {
-      stability?: number;
-      similarityBoost?: number;
-      style?: number;
-      useSpeakerBoost?: boolean;
-      speed?: number;
-    };
-    outputFormat?: string;
-    seed?: number;
-    previousText?: string;
-    nextText?: string;
-    applyTextNormalization?: string;
-  }): Promise<{ audioBase64: string; contentType: string }> {
-    let voiceSettings = params.voiceSettings ? {
-      stability: params.voiceSettings.stability,
-      similarity_boost: params.voiceSettings.similarityBoost,
-      style: params.voiceSettings.style,
-      use_speaker_boost: params.voiceSettings.useSpeakerBoost,
-      speed: params.voiceSettings.speed,
-    } : undefined;
+  async textToSpeech(
+    voiceId: string,
+    params: {
+      text: string;
+      modelId?: string;
+      languageCode?: string;
+      voiceSettings?: {
+        stability?: number;
+        similarityBoost?: number;
+        style?: number;
+        useSpeakerBoost?: boolean;
+        speed?: number;
+      };
+      outputFormat?: string;
+      seed?: number;
+      previousText?: string;
+      nextText?: string;
+      applyTextNormalization?: string;
+    }
+  ): Promise<{ audioBase64: string; contentType: string }> {
+    let voiceSettings = params.voiceSettings
+      ? {
+          stability: params.voiceSettings.stability,
+          similarity_boost: params.voiceSettings.similarityBoost,
+          style: params.voiceSettings.style,
+          use_speaker_boost: params.voiceSettings.useSpeakerBoost,
+          speed: params.voiceSettings.speed
+        }
+      : undefined;
 
     let response = await this.axios.post(
       `/v1/text-to-speech/${voiceId}`,
@@ -111,17 +119,16 @@ export class ElevenLabsClient {
         seed: params.seed,
         previous_text: params.previousText,
         next_text: params.nextText,
-        apply_text_normalization: params.applyTextNormalization,
+        apply_text_normalization: params.applyTextNormalization
       },
       {
         params: {
-          output_format: params.outputFormat || 'mp3_44100_128',
+          output_format: params.outputFormat || 'mp3_44100_128'
         },
-        responseType: 'arraybuffer',
-      },
+        responseType: 'arraybuffer'
+      }
     );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(response.data);
     let audioBase64 = buffer.toString('base64');
     let contentType = response.headers['content-type'] || 'audio/mpeg';
@@ -146,7 +153,6 @@ export class ElevenLabsClient {
     formData.append('model_id', params.modelId || 'scribe_v2');
 
     if (params.audioBase64) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let buffer = Buffer.from(params.audioBase64, 'base64');
       let blob = new Blob([buffer]);
       formData.append('file', blob, params.fileName || 'audio.mp3');
@@ -174,8 +180,8 @@ export class ElevenLabsClient {
 
     let response = await this.axios.post('/v1/speech-to-text', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
     return response.data;
@@ -196,17 +202,16 @@ export class ElevenLabsClient {
         text: params.text,
         duration_seconds: params.durationSeconds,
         prompt_influence: params.promptInfluence,
-        loop: params.loop,
+        loop: params.loop
       },
       {
         params: {
-          output_format: params.outputFormat || 'mp3_44100_128',
+          output_format: params.outputFormat || 'mp3_44100_128'
         },
-        responseType: 'arraybuffer',
-      },
+        responseType: 'arraybuffer'
+      }
     );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(response.data);
     let audioBase64 = buffer.toString('base64');
     let contentType = response.headers['content-type'] || 'audio/mpeg';
@@ -265,13 +270,13 @@ export class ElevenLabsClient {
 
     let response = await this.axios.post('/v1/dubbing', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
     return {
       dubbingId: response.data.dubbing_id,
-      expectedDurationSec: response.data.expected_duration_sec,
+      expectedDurationSec: response.data.expected_duration_sec
     };
   }
 
@@ -292,19 +297,17 @@ export class ElevenLabsClient {
   }): Promise<{ audioBase64: string; contentType: string }> {
     let formData = new FormData();
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(params.audioBase64, 'base64');
     let blob = new Blob([buffer]);
     formData.append('audio', blob, params.fileName || 'audio.mp3');
 
     let response = await this.axios.post('/v1/audio-isolation', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'multipart/form-data'
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let resultBuffer = Buffer.from(response.data);
     let audioBase64 = resultBuffer.toString('base64');
     let contentType = response.headers['content-type'] || 'audio/mpeg';
@@ -324,7 +327,7 @@ export class ElevenLabsClient {
       voice_description: params.voiceDescription,
       text: params.text,
       model_id: params.modelId,
-      auto_generate_text: params.autoGenerateText,
+      auto_generate_text: params.autoGenerateText
     });
 
     return response.data;
@@ -343,8 +346,8 @@ export class ElevenLabsClient {
         page_size: params?.pageSize || 20,
         start_after_history_item_id: params?.startAfterHistoryItemId,
         voice_id: params?.voiceId,
-        search: params?.search,
-      },
+        search: params?.search
+      }
     });
     return response.data;
   }
@@ -367,8 +370,8 @@ export class ElevenLabsClient {
     let response = await this.axios.get('/v1/pronunciation-dictionaries', {
       params: {
         page_size: params?.pageSize || 30,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }

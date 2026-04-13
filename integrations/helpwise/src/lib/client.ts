@@ -5,15 +5,15 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://app.helpwise.io/dev-apis/v1',
+      baseURL: 'https://app.helpwise.io/dev-apis/v1'
     });
   }
 
   private get headers() {
     return {
-      'Authorization': this.config.token,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Authorization: this.config.token,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -24,7 +24,7 @@ export class Client {
       method: 'GET',
       url: '/mailboxes',
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -33,7 +33,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/mailboxes/${mailboxId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -43,7 +43,7 @@ export class Client {
       method: 'POST',
       url: '/mailboxes',
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -53,7 +53,7 @@ export class Client {
       method: 'PUT',
       url: `/mailboxes/${mailboxId}`,
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -62,19 +62,26 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/mailboxes/${mailboxId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ---- Conversations ----
 
-  async listConversations(params?: { mailbox_id?: string; status?: string; limit?: number; page?: number; tag_id?: string; query?: string }) {
+  async listConversations(params?: {
+    mailbox_id?: string;
+    status?: string;
+    limit?: number;
+    page?: number;
+    tag_id?: string;
+    query?: string;
+  }) {
     let response = await this.axios.request({
       method: 'GET',
       url: '/conversations',
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -84,7 +91,7 @@ export class Client {
       method: 'GET',
       url: `/conversations/${conversationId}`,
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -93,19 +100,24 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/conversations/${conversationId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ---- Messages / Emails ----
 
-  async listMessages(params: { mailbox_id: string; thread_id: string; limit?: number; page?: number }) {
+  async listMessages(params: {
+    mailbox_id: string;
+    thread_id: string;
+    limit?: number;
+    page?: number;
+  }) {
     let response = await this.axios.request({
       method: 'GET',
       url: '/messages',
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -124,7 +136,7 @@ export class Client {
       method: 'POST',
       url: '/messages',
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -134,7 +146,7 @@ export class Client {
       method: 'PUT',
       url: `/messages/${messageId}`,
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -143,7 +155,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/messages/${messageId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -155,7 +167,7 @@ export class Client {
       method: 'GET',
       url: '/contacts',
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -164,17 +176,22 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/contacts/${contactId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async createContact(data: { email?: string; phone?: string; name?: string; [key: string]: any }) {
+  async createContact(data: {
+    email?: string;
+    phone?: string;
+    name?: string;
+    [key: string]: any;
+  }) {
     let response = await this.axios.request({
       method: 'POST',
       url: '/contacts',
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -184,7 +201,7 @@ export class Client {
       method: 'PUT',
       url: `/contacts/${contactId}`,
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -193,7 +210,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/contacts/${contactId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -203,7 +220,7 @@ export class Client {
       method: 'GET',
       url: '/contacts/search',
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -214,17 +231,20 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/conversations/${conversationId}/notes`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async addNote(conversationId: string, data: { body: string; mailbox_id?: string; [key: string]: any }) {
+  async addNote(
+    conversationId: string,
+    data: { body: string; mailbox_id?: string; [key: string]: any }
+  ) {
     let response = await this.axios.request({
       method: 'POST',
       url: `/conversations/${conversationId}/notes`,
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -233,7 +253,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/conversations/${conversationId}/notes/${noteId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -244,7 +264,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/conversations/${conversationId}/attachments`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -253,17 +273,22 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/attachments/${attachmentId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async createAttachment(data: { conversation_id: string; file_url?: string; file_name?: string; [key: string]: any }) {
+  async createAttachment(data: {
+    conversation_id: string;
+    file_url?: string;
+    file_name?: string;
+    [key: string]: any;
+  }) {
     let response = await this.axios.request({
       method: 'POST',
       url: '/attachments',
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -274,7 +299,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: '/tags',
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -283,7 +308,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/tags/${tagId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -293,7 +318,7 @@ export class Client {
       method: 'PUT',
       url: `/tags/${tagId}`,
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -302,7 +327,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/tags/${tagId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -313,7 +338,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: '/teams',
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -322,7 +347,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/teams/${teamId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -333,7 +358,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: '/users',
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -342,7 +367,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: '/users/me',
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -353,7 +378,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: '/templates',
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -362,7 +387,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/templates/${templateId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -372,7 +397,7 @@ export class Client {
       method: 'PUT',
       url: `/templates/${templateId}`,
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -381,7 +406,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/templates/${templateId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -392,7 +417,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/signatures/${signatureId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -403,7 +428,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: '/webhooks',
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -412,17 +437,22 @@ export class Client {
     let response = await this.axios.request({
       method: 'GET',
       url: `/webhooks/${webhookId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async createWebhook(data: { url: string; event_type: string; secret_key?: string; [key: string]: any }) {
+  async createWebhook(data: {
+    url: string;
+    event_type: string;
+    secret_key?: string;
+    [key: string]: any;
+  }) {
     let response = await this.axios.request({
       method: 'POST',
       url: '/webhooks',
       headers: this.headers,
-      data,
+      data
     });
     return response.data;
   }
@@ -431,7 +461,7 @@ export class Client {
     let response = await this.axios.request({
       method: 'DELETE',
       url: `/webhooks/${webhookId}`,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

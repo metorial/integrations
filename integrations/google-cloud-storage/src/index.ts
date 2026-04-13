@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listBuckets,
@@ -13,11 +12,9 @@ import {
   updateObjectMetadata,
   manageBucketIam,
   manageLifecycle,
-  manageNotifications,
+  manageNotifications
 } from './tools';
-import { objectChanges,
-  inboundWebhook,
-} from './triggers';
+import { objectChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     updateObjectMetadata,
     manageBucketIam,
     manageLifecycle,
-    manageNotifications,
+    manageNotifications
   ],
-  triggers: [
-    inboundWebhook,
-    objectChanges,
-  ],
+  triggers: [inboundWebhook, objectChanges]
 });

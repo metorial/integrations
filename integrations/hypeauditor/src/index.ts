@@ -12,7 +12,7 @@ import {
   getMetricsHistory,
   getMyNetwork,
   getAccountActivity,
-  getReportConnections,
+  getReportConnections
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     getMetricsHistory,
     getMyNetwork,
     getAccountActivity,
-    getReportConnections,
+    getReportConnections
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

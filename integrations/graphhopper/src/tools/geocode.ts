@@ -17,28 +17,28 @@ let geocodeResultSchema = z.object({
   osmType: z.string().optional().describe('OSM type: N (Node), W (Way), R (Relation)'),
   osmKey: z.string().optional().describe('OSM key (e.g., "place", "building")'),
   osmValue: z.string().optional().describe('OSM value (e.g., "city", "residential")'),
-  extent: z.array(z.number()).optional().describe('Bounding box [minLon, maxLat, maxLon, minLat]'),
+  extent: z
+    .array(z.number())
+    .optional()
+    .describe('Bounding box [minLon, maxLat, maxLon, minLat]')
 });
 
-export let geocode = SlateTool.create(
-  spec,
-  {
-    name: 'Geocode',
-    key: 'geocode',
-    description: `Convert addresses to coordinates (forward geocoding) or coordinates to addresses (reverse geocoding).
+export let geocode = SlateTool.create(spec, {
+  name: 'Geocode',
+  key: 'geocode',
+  description: `Convert addresses to coordinates (forward geocoding) or coordinates to addresses (reverse geocoding).
 Supports multiple providers, country filtering, bounding box filtering, and OSM tag filtering.
 Use for address lookup, place search, or finding what is at a given coordinate.`,
-    instructions: [
-      'For forward geocoding, provide a query string.',
-      'For reverse geocoding, set reverse to true and provide a point as "latitude,longitude".',
-      'OSM tag filtering (osmTags) only works with the default provider.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
+  instructions: [
+    'For forward geocoding, provide a query string.',
+    'For reverse geocoding, set reverse to true and provide a point as "latitude,longitude".',
+    'OSM tag filtering (osmTags) only works with the default provider.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
   .input(
     z.object({
       query: z
@@ -52,7 +52,9 @@ Use for address lookup, place search, or finding what is at a given coordinate.`
       point: z
         .string()
         .optional()
-        .describe('Coordinate as "latitude,longitude" - used as bias for forward geocoding or lookup point for reverse'),
+        .describe(
+          'Coordinate as "latitude,longitude" - used as bias for forward geocoding or lookup point for reverse'
+        ),
       locale: z.string().optional().describe('Language for results (e.g., "en", "de", "fr")'),
       limit: z.number().optional().describe('Maximum number of results (default 5)'),
       provider: z
@@ -70,16 +72,18 @@ Use for address lookup, place search, or finding what is at a given coordinate.`
       osmTags: z
         .array(z.string())
         .optional()
-        .describe('Filter by OSM tags (default provider only). E.g., ["tourism:museum", "!industrial"]'),
-    }),
+        .describe(
+          'Filter by OSM tags (default provider only). E.g., ["tourism:museum", "!industrial"]'
+        )
+    })
   )
   .output(
     z.object({
       results: z.array(geocodeResultSchema).describe('Geocoding results'),
-      locale: z.string().optional().describe('Locale used for results'),
-    }),
+      locale: z.string().optional().describe('Locale used for results')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new GraphHopperClient({ token: ctx.auth.token });
 
     let result = await client.geocode({
@@ -91,10 +95,10 @@ Use for address lookup, place search, or finding what is at a given coordinate.`
       provider: ctx.input.provider,
       countryCode: ctx.input.countryCode,
       bounds: ctx.input.bounds,
-      osmTag: ctx.input.osmTags,
+      osmTag: ctx.input.osmTags
     });
 
-    let results = ((result.hits || []) as Array<Record<string, unknown>>).map((hit) => ({
+    let results = ((result.hits || []) as Array<Record<string, unknown>>).map(hit => ({
       name: hit.name as string | undefined,
       country: hit.country as string | undefined,
       city: hit.city as string | undefined,
@@ -108,18 +112,20 @@ Use for address lookup, place search, or finding what is at a given coordinate.`
       osmType: hit.osm_type as string | undefined,
       osmKey: hit.osm_key as string | undefined,
       osmValue: hit.osm_value as string | undefined,
-      extent: hit.extent as number[] | undefined,
+      extent: hit.extent as number[] | undefined
     }));
 
     let isReverse = ctx.input.reverse;
-    let actionDescription = isReverse ? 'Reverse geocoded' : `Searched for "${ctx.input.query}"`;
+    let actionDescription = isReverse
+      ? 'Reverse geocoded'
+      : `Searched for "${ctx.input.query}"`;
 
     return {
       output: {
         results,
-        locale: result.locale as string | undefined,
+        locale: result.locale as string | undefined
       },
-      message: `${actionDescription}. Found **${results.length}** result(s).${results.length > 0 ? ` Top result: **${results[0]!.name || results[0]!.street || 'Unknown'}**${results[0]!.city ? `, ${results[0]!.city}` : ''}${results[0]!.country ? `, ${results[0]!.country}` : ''}` : ''}`,
+      message: `${actionDescription}. Found **${results.length}** result(s).${results.length > 0 ? ` Top result: **${results[0]!.name || results[0]!.street || 'Unknown'}**${results[0]!.city ? `, ${results[0]!.city}` : ''}${results[0]!.country ? `, ${results[0]!.country}` : ''}` : ''}`
     };
   })
   .build();

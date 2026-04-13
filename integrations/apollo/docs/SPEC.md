@@ -24,17 +24,20 @@ You need to create an API key to access the Apollo API. The API key should be in
 Apollo supports the OAuth 2.0 authorization code grant type. This method is intended for building integrations that act on behalf of Apollo users.
 
 **Setup:**
+
 1. Navigate to Settings > Integrations in Apollo, find the API option and click Connect, then click OAuth registration.
 2. Provide: App Name, App Logo (optional), OAuth Redirect URL(s) (must use HTTPS, up to 4 URLs), and Scopes.
 3. Copy the client ID and secret. The client ID is a public identifier for your app. The client secret is a confidential key used to authenticate your app.
 
 **Flow:**
+
 1. Direct users to the authorization URL:
    `https://app.apollo.io/#/oauth/authorize?client_id=<your_client_id>&redirect_uri=<redirect_uri>&response_type=code&scope=<scopes>&state=<state>`
 2. After the user authorizes, you receive an authorization code. You can then exchange it for an access token and refresh token.
 3. Token exchange endpoint: `POST https://app.apollo.io/api/v1/oauth/token` with parameters: `grant_type`, `client_id`, `client_secret`, `redirect_uri`, `code`.
 
 **Scopes:**
+
 - Set the scopes (permissions) for your app. Each scope provides access to specific Apollo API endpoints. Only add scopes necessary for your app's functionality. By default, Apollo adds `read_user_profile` and `app_scopes` for all selected scopes.
 - Scopes are endpoint-specific (e.g., `contacts_search`, `person_read`).
 - If you edit scopes later, you need to repeat the entire authorization flow.
@@ -42,16 +45,22 @@ Apollo supports the OAuth 2.0 authorization code grant type. This method is inte
 ## Features
 
 ### People Search
+
 Search Apollo's database to find prospects based on demographic filters, including job titles, locations, and seniority.
+
 - This endpoint is primarily designed for prospecting net new people. It does not return email addresses or phone numbers. Use enrichment endpoints for that.
 - Filters include industry, company size, location, job title, seniority, and more.
 
 ### Organization Search
+
 Search for companies in the Apollo database. Several filters are available to help narrow your search.
+
 - Can also retrieve active job postings for organizations.
 
 ### Data Enrichment
+
 Perform data enrichment for both people and organizations. Enrich the data of an individual person or organization, or enrich data in bulk.
+
 - People enrichment accepts identifiers like email, name, or domain to return detailed profile data.
 - By default, this endpoint does not return personal emails or phone numbers. Use the `reveal_personal_emails` and `reveal_phone_number` parameters to retrieve them.
 - Waterfall enrichment can be enabled to check connected third-party data sources for broader contact email and phone number coverage.
@@ -59,36 +68,50 @@ Perform data enrichment for both people and organizations. Enrich the data of an
 - Enrichment consumes credits based on your pricing plan.
 
 ### Contact Management
+
 Create new contacts in Apollo from other systems, update contact details, search for contacts, and manage contact ownership and stages.
+
 - Supports bulk creation of contacts.
 - Does not handle deduplication.
 - Converting enriched people into contacts makes their data permanently accessible to your organization, avoiding repeated credit consumption.
 
 ### Account Management
+
 Create and update companies in your database, search for accounts, and manage account stages and ownership.
+
 - Supports bulk account creation.
 
 ### Deal Management
+
 Create, view, and update deals associated with companies and people.
+
 - List all deals or view individual deal details.
 - Update and search existing deals.
 
 ### Sequence Management
+
 Modify existing sequences with API calls instead of manually clicking through the UI.
+
 - Search for sequences, add contacts to sequences, and update contact status within sequences.
 - Useful for automating outbound email cadences programmatically.
 
 ### Task Management
+
 Create and manage tasks associated with your sales workflow.
+
 - Make updates to things like task priority, due date, custom fields, and more.
 - Supports bulk task creation and searching for tasks.
 
 ### Call Records
+
 Create, search, and update call activity records within Apollo.
+
 - Log call outcomes and associate calls with contacts and accounts.
 
 ### User and Email Account Management
+
 Retrieve a list of users in your Apollo organization and view connected email accounts.
+
 - Some endpoints (like listing users) require a master API key.
 
 ## Events

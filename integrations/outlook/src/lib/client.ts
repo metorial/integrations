@@ -18,7 +18,7 @@ import type {
   Attendee,
   Location,
   PatternedRecurrence,
-  MeetingTimeSuggestion,
+  MeetingTimeSuggestion
 } from './types';
 
 export class Client {
@@ -29,8 +29,8 @@ export class Client {
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -83,17 +83,17 @@ export class Client {
 
     let messagePayload: any = { ...messageProps };
     if (attachments?.length) {
-      messagePayload.attachments = attachments.map((a) => ({
+      messagePayload.attachments = attachments.map(a => ({
         '@odata.type': '#microsoft.graph.fileAttachment',
         name: a.name,
         contentType: a.contentType,
-        contentBytes: a.contentBytes,
+        contentBytes: a.contentBytes
       }));
     }
 
     await this.axios.post('/me/sendMail', {
       message: messagePayload,
-      saveToSentItems: saveToSentItems !== false,
+      saveToSentItems: saveToSentItems !== false
     });
   }
 
@@ -109,17 +109,20 @@ export class Client {
     return response.data;
   }
 
-  async updateMessage(messageId: string, updates: {
-    isRead?: boolean;
-    importance?: 'low' | 'normal' | 'high';
-    categories?: string[];
-    flag?: { flagStatus: 'notFlagged' | 'complete' | 'flagged' };
-    subject?: string;
-    body?: ItemBody;
-    toRecipients?: Recipient[];
-    ccRecipients?: Recipient[];
-    bccRecipients?: Recipient[];
-  }): Promise<Message> {
+  async updateMessage(
+    messageId: string,
+    updates: {
+      isRead?: boolean;
+      importance?: 'low' | 'normal' | 'high';
+      categories?: string[];
+      flag?: { flagStatus: 'notFlagged' | 'complete' | 'flagged' };
+      subject?: string;
+      body?: ItemBody;
+      toRecipients?: Recipient[];
+      ccRecipients?: Recipient[];
+      bccRecipients?: Recipient[];
+    }
+  ): Promise<Message> {
     let response = await this.axios.patch(`/me/messages/${messageId}`, updates);
     return response.data;
   }
@@ -130,7 +133,7 @@ export class Client {
 
   async moveMessage(messageId: string, destinationFolderId: string): Promise<Message> {
     let response = await this.axios.post(`/me/messages/${messageId}/move`, {
-      destinationId: destinationFolderId,
+      destinationId: destinationFolderId
     });
     return response.data;
   }
@@ -138,14 +141,18 @@ export class Client {
   async replyToMessage(messageId: string, comment: string, replyAll?: boolean): Promise<void> {
     let endpoint = replyAll ? 'replyAll' : 'reply';
     await this.axios.post(`/me/messages/${messageId}/${endpoint}`, {
-      comment,
+      comment
     });
   }
 
-  async forwardMessage(messageId: string, toRecipients: Recipient[], comment?: string): Promise<void> {
+  async forwardMessage(
+    messageId: string,
+    toRecipients: Recipient[],
+    comment?: string
+  ): Promise<void> {
     await this.axios.post(`/me/messages/${messageId}/forward`, {
       comment: comment || '',
-      toRecipients,
+      toRecipients
     });
   }
 
@@ -178,16 +185,19 @@ export class Client {
     return response.data;
   }
 
-  async addAttachment(messageId: string, attachment: {
-    name: string;
-    contentType?: string;
-    contentBytes: string;
-  }): Promise<Attachment> {
+  async addAttachment(
+    messageId: string,
+    attachment: {
+      name: string;
+      contentType?: string;
+      contentBytes: string;
+    }
+  ): Promise<Attachment> {
     let response = await this.axios.post(`/me/messages/${messageId}/attachments`, {
       '@odata.type': '#microsoft.graph.fileAttachment',
       name: attachment.name,
       contentType: attachment.contentType,
-      contentBytes: attachment.contentBytes,
+      contentBytes: attachment.contentBytes
     });
     return response.data;
   }
@@ -255,29 +265,30 @@ export class Client {
     calendarId?: string;
   }): Promise<CalendarEvent> {
     let { calendarId, ...eventData } = event;
-    let path = calendarId
-      ? `/me/calendars/${calendarId}/events`
-      : '/me/events';
+    let path = calendarId ? `/me/calendars/${calendarId}/events` : '/me/events';
     let response = await this.axios.post(path, eventData);
     return response.data;
   }
 
-  async updateEvent(eventId: string, updates: {
-    subject?: string;
-    body?: ItemBody;
-    start?: DateTimeTimeZone;
-    end?: DateTimeTimeZone;
-    location?: Location;
-    attendees?: Attendee[];
-    isAllDay?: boolean;
-    isOnlineMeeting?: boolean;
-    recurrence?: PatternedRecurrence;
-    reminderMinutesBeforeStart?: number;
-    showAs?: string;
-    importance?: string;
-    sensitivity?: string;
-    categories?: string[];
-  }): Promise<CalendarEvent> {
+  async updateEvent(
+    eventId: string,
+    updates: {
+      subject?: string;
+      body?: ItemBody;
+      start?: DateTimeTimeZone;
+      end?: DateTimeTimeZone;
+      location?: Location;
+      attendees?: Attendee[];
+      isAllDay?: boolean;
+      isOnlineMeeting?: boolean;
+      recurrence?: PatternedRecurrence;
+      reminderMinutesBeforeStart?: number;
+      showAs?: string;
+      importance?: string;
+      sensitivity?: string;
+      categories?: string[];
+    }
+  ): Promise<CalendarEvent> {
     let response = await this.axios.patch(`/me/events/${eventId}`, updates);
     return response.data;
   }
@@ -286,10 +297,15 @@ export class Client {
     await this.axios.delete(`/me/events/${eventId}`);
   }
 
-  async respondToEvent(eventId: string, response: 'accept' | 'tentativelyAccept' | 'decline', comment?: string, sendResponse?: boolean): Promise<void> {
+  async respondToEvent(
+    eventId: string,
+    response: 'accept' | 'tentativelyAccept' | 'decline',
+    comment?: string,
+    sendResponse?: boolean
+  ): Promise<void> {
     await this.axios.post(`/me/events/${eventId}/${response}`, {
       comment: comment || '',
-      sendResponse: sendResponse !== false,
+      sendResponse: sendResponse !== false
     });
   }
 
@@ -302,7 +318,10 @@ export class Client {
     maxCandidates?: number;
     isOrganizerOptional?: boolean;
     minimumAttendeePercentage?: number;
-  }): Promise<{ meetingTimeSuggestions: MeetingTimeSuggestion[]; emptySuggestionsReason?: string }> {
+  }): Promise<{
+    meetingTimeSuggestions: MeetingTimeSuggestion[];
+    emptySuggestionsReason?: string;
+  }> {
     let response = await this.axios.post('/me/findMeetingTimes', params);
     return response.data;
   }
@@ -373,38 +392,63 @@ export class Client {
     jobTitle?: string;
     companyName?: string;
     department?: string;
-    businessAddress?: { street?: string; city?: string; state?: string; countryOrRegion?: string; postalCode?: string };
-    homeAddress?: { street?: string; city?: string; state?: string; countryOrRegion?: string; postalCode?: string };
+    businessAddress?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      countryOrRegion?: string;
+      postalCode?: string;
+    };
+    homeAddress?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      countryOrRegion?: string;
+      postalCode?: string;
+    };
     birthday?: string;
     personalNotes?: string;
     categories?: string[];
     folderId?: string;
   }): Promise<Contact> {
     let { folderId, ...contactData } = contact;
-    let path = folderId
-      ? `/me/contactFolders/${folderId}/contacts`
-      : '/me/contacts';
+    let path = folderId ? `/me/contactFolders/${folderId}/contacts` : '/me/contacts';
     let response = await this.axios.post(path, contactData);
     return response.data;
   }
 
-  async updateContact(contactId: string, updates: {
-    givenName?: string;
-    surname?: string;
-    displayName?: string;
-    emailAddresses?: { address: string; name?: string }[];
-    businessPhones?: string[];
-    homePhones?: string[];
-    mobilePhone?: string;
-    jobTitle?: string;
-    companyName?: string;
-    department?: string;
-    businessAddress?: { street?: string; city?: string; state?: string; countryOrRegion?: string; postalCode?: string };
-    homeAddress?: { street?: string; city?: string; state?: string; countryOrRegion?: string; postalCode?: string };
-    birthday?: string;
-    personalNotes?: string;
-    categories?: string[];
-  }): Promise<Contact> {
+  async updateContact(
+    contactId: string,
+    updates: {
+      givenName?: string;
+      surname?: string;
+      displayName?: string;
+      emailAddresses?: { address: string; name?: string }[];
+      businessPhones?: string[];
+      homePhones?: string[];
+      mobilePhone?: string;
+      jobTitle?: string;
+      companyName?: string;
+      department?: string;
+      businessAddress?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        countryOrRegion?: string;
+        postalCode?: string;
+      };
+      homeAddress?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        countryOrRegion?: string;
+        postalCode?: string;
+      };
+      birthday?: string;
+      personalNotes?: string;
+      categories?: string[];
+    }
+  ): Promise<Contact> {
     let response = await this.axios.patch(`/me/contacts/${contactId}`, updates);
     return response.data;
   }
@@ -418,7 +462,10 @@ export class Client {
     return response.data;
   }
 
-  async createContactFolder(displayName: string, parentFolderId?: string): Promise<ContactFolder> {
+  async createContactFolder(
+    displayName: string,
+    parentFolderId?: string
+  ): Promise<ContactFolder> {
     let path = parentFolderId
       ? `/me/contactFolders/${parentFolderId}/childFolders`
       : '/me/contactFolders';
@@ -452,19 +499,24 @@ export class Client {
     await this.axios.delete(`/me/todo/lists/${listId}`);
   }
 
-  async listTasks(listId: string, params?: {
-    top?: number;
-    skip?: number;
-    filter?: string;
-    orderby?: string;
-  }): Promise<GraphListResponse<TodoTask>> {
+  async listTasks(
+    listId: string,
+    params?: {
+      top?: number;
+      skip?: number;
+      filter?: string;
+      orderby?: string;
+    }
+  ): Promise<GraphListResponse<TodoTask>> {
     let queryParams: Record<string, string> = {};
     if (params?.top) queryParams['$top'] = String(params.top);
     if (params?.skip) queryParams['$skip'] = String(params.skip);
     if (params?.filter) queryParams['$filter'] = params.filter;
     if (params?.orderby) queryParams['$orderby'] = params.orderby;
 
-    let response = await this.axios.get(`/me/todo/lists/${listId}/tasks`, { params: queryParams });
+    let response = await this.axios.get(`/me/todo/lists/${listId}/tasks`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -473,32 +525,39 @@ export class Client {
     return response.data;
   }
 
-  async createTask(listId: string, task: {
-    title: string;
-    body?: ItemBody;
-    importance?: 'low' | 'normal' | 'high';
-    status?: 'notStarted' | 'inProgress' | 'completed' | 'waitingOnOthers' | 'deferred';
-    dueDateTime?: DateTimeTimeZone;
-    reminderDateTime?: DateTimeTimeZone;
-    isReminderOn?: boolean;
-    categories?: string[];
-    recurrence?: PatternedRecurrence;
-  }): Promise<TodoTask> {
+  async createTask(
+    listId: string,
+    task: {
+      title: string;
+      body?: ItemBody;
+      importance?: 'low' | 'normal' | 'high';
+      status?: 'notStarted' | 'inProgress' | 'completed' | 'waitingOnOthers' | 'deferred';
+      dueDateTime?: DateTimeTimeZone;
+      reminderDateTime?: DateTimeTimeZone;
+      isReminderOn?: boolean;
+      categories?: string[];
+      recurrence?: PatternedRecurrence;
+    }
+  ): Promise<TodoTask> {
     let response = await this.axios.post(`/me/todo/lists/${listId}/tasks`, task);
     return response.data;
   }
 
-  async updateTask(listId: string, taskId: string, updates: {
-    title?: string;
-    body?: ItemBody;
-    importance?: 'low' | 'normal' | 'high';
-    status?: 'notStarted' | 'inProgress' | 'completed' | 'waitingOnOthers' | 'deferred';
-    dueDateTime?: DateTimeTimeZone | null;
-    reminderDateTime?: DateTimeTimeZone | null;
-    isReminderOn?: boolean;
-    categories?: string[];
-    recurrence?: PatternedRecurrence | null;
-  }): Promise<TodoTask> {
+  async updateTask(
+    listId: string,
+    taskId: string,
+    updates: {
+      title?: string;
+      body?: ItemBody;
+      importance?: 'low' | 'normal' | 'high';
+      status?: 'notStarted' | 'inProgress' | 'completed' | 'waitingOnOthers' | 'deferred';
+      dueDateTime?: DateTimeTimeZone | null;
+      reminderDateTime?: DateTimeTimeZone | null;
+      isReminderOn?: boolean;
+      categories?: string[];
+      recurrence?: PatternedRecurrence | null;
+    }
+  ): Promise<TodoTask> {
     let response = await this.axios.patch(`/me/todo/lists/${listId}/tasks/${taskId}`, updates);
     return response.data;
   }
@@ -507,26 +566,52 @@ export class Client {
     await this.axios.delete(`/me/todo/lists/${listId}/tasks/${taskId}`);
   }
 
-  async listChecklistItems(listId: string, taskId: string): Promise<GraphListResponse<ChecklistItem>> {
-    let response = await this.axios.get(`/me/todo/lists/${listId}/tasks/${taskId}/checklistItems`);
+  async listChecklistItems(
+    listId: string,
+    taskId: string
+  ): Promise<GraphListResponse<ChecklistItem>> {
+    let response = await this.axios.get(
+      `/me/todo/lists/${listId}/tasks/${taskId}/checklistItems`
+    );
     return response.data;
   }
 
-  async createChecklistItem(listId: string, taskId: string, displayName: string): Promise<ChecklistItem> {
-    let response = await this.axios.post(`/me/todo/lists/${listId}/tasks/${taskId}/checklistItems`, { displayName });
+  async createChecklistItem(
+    listId: string,
+    taskId: string,
+    displayName: string
+  ): Promise<ChecklistItem> {
+    let response = await this.axios.post(
+      `/me/todo/lists/${listId}/tasks/${taskId}/checklistItems`,
+      { displayName }
+    );
     return response.data;
   }
 
-  async updateChecklistItem(listId: string, taskId: string, checklistItemId: string, updates: {
-    displayName?: string;
-    isChecked?: boolean;
-  }): Promise<ChecklistItem> {
-    let response = await this.axios.patch(`/me/todo/lists/${listId}/tasks/${taskId}/checklistItems/${checklistItemId}`, updates);
+  async updateChecklistItem(
+    listId: string,
+    taskId: string,
+    checklistItemId: string,
+    updates: {
+      displayName?: string;
+      isChecked?: boolean;
+    }
+  ): Promise<ChecklistItem> {
+    let response = await this.axios.patch(
+      `/me/todo/lists/${listId}/tasks/${taskId}/checklistItems/${checklistItemId}`,
+      updates
+    );
     return response.data;
   }
 
-  async deleteChecklistItem(listId: string, taskId: string, checklistItemId: string): Promise<void> {
-    await this.axios.delete(`/me/todo/lists/${listId}/tasks/${taskId}/checklistItems/${checklistItemId}`);
+  async deleteChecklistItem(
+    listId: string,
+    taskId: string,
+    checklistItemId: string
+  ): Promise<void> {
+    await this.axios.delete(
+      `/me/todo/lists/${listId}/tasks/${taskId}/checklistItems/${checklistItemId}`
+    );
   }
 
   // ─── Subscriptions (Webhooks) ──────────────────────────────────────
@@ -542,8 +627,13 @@ export class Client {
     return response.data;
   }
 
-  async updateSubscription(subscriptionId: string, expirationDateTime: string): Promise<Subscription> {
-    let response = await this.axios.patch(`/subscriptions/${subscriptionId}`, { expirationDateTime });
+  async updateSubscription(
+    subscriptionId: string,
+    expirationDateTime: string
+  ): Promise<Subscription> {
+    let response = await this.axios.patch(`/subscriptions/${subscriptionId}`, {
+      expirationDateTime
+    });
     return response.data;
   }
 

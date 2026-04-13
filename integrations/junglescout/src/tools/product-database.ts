@@ -20,79 +20,115 @@ let productSchema = z.object({
   weight: z.number().nullable().describe('Product weight'),
   numberOfSellers: z.number().nullable().describe('Number of active sellers'),
   feeBreakdown: z.any().nullable().describe('Amazon fee breakdown details'),
-  updatedAt: z.string().nullable().describe('Last data update timestamp'),
+  updatedAt: z.string().nullable().describe('Last data update timestamp')
 });
 
-export let productDatabaseTool = SlateTool.create(
-  spec,
-  {
-    name: 'Search Product Database',
-    key: 'search_product_database',
-    description: `Search the Jungle Scout product database using various filters to find Amazon products matching specific criteria. Returns product details including sales estimates, pricing, rankings, reviews, and seller information. Use this for **product research**, discovering market opportunities, and analyzing competitive landscape across Amazon categories.`,
-    instructions: [
-      'Use keyword filters to search by product title or ASIN.',
-      'Combine category, price, rank, sales, and other filters for precise targeting.',
-      'Sort by different metrics to find top performers or opportunities.',
-    ],
-    constraints: [
-      'Maximum page size is 100 results.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let productDatabaseTool = SlateTool.create(spec, {
+  name: 'Search Product Database',
+  key: 'search_product_database',
+  description: `Search the Jungle Scout product database using various filters to find Amazon products matching specific criteria. Returns product details including sales estimates, pricing, rankings, reviews, and seller information. Use this for **product research**, discovering market opportunities, and analyzing competitive landscape across Amazon categories.`,
+  instructions: [
+    'Use keyword filters to search by product title or ASIN.',
+    'Combine category, price, rank, sales, and other filters for precise targeting.',
+    'Sort by different metrics to find top performers or opportunities.'
+  ],
+  constraints: ['Maximum page size is 100 results.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeKeywords: z.array(z.string()).optional().describe('Keywords or ASINs to include in product title search'),
-    excludeKeywords: z.array(z.string()).optional().describe('Keywords to exclude from results'),
-    categories: z.array(z.string()).optional().describe('Amazon product categories to filter by (marketplace-specific)'),
-    productTiers: z.array(z.enum(['oversize', 'standard'])).optional().describe('Product size tiers to include'),
-    sellerTypes: z.array(z.enum(['amz', 'fba', 'fbm'])).optional().describe('Seller types to include'),
-    excludeTopBrands: z.boolean().optional().describe('Exclude products from top brands'),
-    excludeUnavailableProducts: z.boolean().optional().describe('Exclude currently unavailable products'),
-    minPrice: z.number().optional().describe('Minimum product price'),
-    maxPrice: z.number().optional().describe('Maximum product price'),
-    minNet: z.number().optional().describe('Minimum net revenue after fees'),
-    maxNet: z.number().optional().describe('Maximum net revenue after fees'),
-    minRank: z.number().optional().describe('Minimum Best Sellers Rank'),
-    maxRank: z.number().optional().describe('Maximum Best Sellers Rank'),
-    minSales: z.number().optional().describe('Minimum estimated monthly sales'),
-    maxSales: z.number().optional().describe('Maximum estimated monthly sales'),
-    minRevenue: z.number().optional().describe('Minimum estimated monthly revenue'),
-    maxRevenue: z.number().optional().describe('Maximum estimated monthly revenue'),
-    minReviews: z.number().optional().describe('Minimum number of reviews'),
-    maxReviews: z.number().optional().describe('Maximum number of reviews'),
-    minRating: z.number().optional().describe('Minimum average rating (0-5)'),
-    maxRating: z.number().optional().describe('Maximum average rating (0-5)'),
-    minWeight: z.number().optional().describe('Minimum product weight'),
-    maxWeight: z.number().optional().describe('Maximum product weight'),
-    minSellers: z.number().optional().describe('Minimum number of sellers'),
-    maxSellers: z.number().optional().describe('Maximum number of sellers'),
-    minLqs: z.number().optional().describe('Minimum Listing Quality Score (1-10)'),
-    maxLqs: z.number().optional().describe('Maximum Listing Quality Score (1-10)'),
-    sort: z.enum([
-      'name', '-name',
-      'category', '-category',
-      'revenue', '-revenue',
-      'sales', '-sales',
-      'price', '-price',
-      'rank', '-rank',
-      'reviews', '-reviews',
-      'lqs', '-lqs',
-    ]).optional().describe('Sort field (prefix with - for descending)'),
-    pageSize: z.number().min(1).max(100).optional().describe('Number of results per page (1-100)'),
-    pageCursor: z.string().optional().describe('Pagination cursor for fetching next page'),
-  }))
-  .output(z.object({
-    products: z.array(productSchema).describe('List of matching products'),
-    totalItems: z.number().nullable().describe('Total number of matching products'),
-    nextPageCursor: z.string().nullable().describe('Cursor for fetching the next page of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeKeywords: z
+        .array(z.string())
+        .optional()
+        .describe('Keywords or ASINs to include in product title search'),
+      excludeKeywords: z
+        .array(z.string())
+        .optional()
+        .describe('Keywords to exclude from results'),
+      categories: z
+        .array(z.string())
+        .optional()
+        .describe('Amazon product categories to filter by (marketplace-specific)'),
+      productTiers: z
+        .array(z.enum(['oversize', 'standard']))
+        .optional()
+        .describe('Product size tiers to include'),
+      sellerTypes: z
+        .array(z.enum(['amz', 'fba', 'fbm']))
+        .optional()
+        .describe('Seller types to include'),
+      excludeTopBrands: z.boolean().optional().describe('Exclude products from top brands'),
+      excludeUnavailableProducts: z
+        .boolean()
+        .optional()
+        .describe('Exclude currently unavailable products'),
+      minPrice: z.number().optional().describe('Minimum product price'),
+      maxPrice: z.number().optional().describe('Maximum product price'),
+      minNet: z.number().optional().describe('Minimum net revenue after fees'),
+      maxNet: z.number().optional().describe('Maximum net revenue after fees'),
+      minRank: z.number().optional().describe('Minimum Best Sellers Rank'),
+      maxRank: z.number().optional().describe('Maximum Best Sellers Rank'),
+      minSales: z.number().optional().describe('Minimum estimated monthly sales'),
+      maxSales: z.number().optional().describe('Maximum estimated monthly sales'),
+      minRevenue: z.number().optional().describe('Minimum estimated monthly revenue'),
+      maxRevenue: z.number().optional().describe('Maximum estimated monthly revenue'),
+      minReviews: z.number().optional().describe('Minimum number of reviews'),
+      maxReviews: z.number().optional().describe('Maximum number of reviews'),
+      minRating: z.number().optional().describe('Minimum average rating (0-5)'),
+      maxRating: z.number().optional().describe('Maximum average rating (0-5)'),
+      minWeight: z.number().optional().describe('Minimum product weight'),
+      maxWeight: z.number().optional().describe('Maximum product weight'),
+      minSellers: z.number().optional().describe('Minimum number of sellers'),
+      maxSellers: z.number().optional().describe('Maximum number of sellers'),
+      minLqs: z.number().optional().describe('Minimum Listing Quality Score (1-10)'),
+      maxLqs: z.number().optional().describe('Maximum Listing Quality Score (1-10)'),
+      sort: z
+        .enum([
+          'name',
+          '-name',
+          'category',
+          '-category',
+          'revenue',
+          '-revenue',
+          'sales',
+          '-sales',
+          'price',
+          '-price',
+          'rank',
+          '-rank',
+          'reviews',
+          '-reviews',
+          'lqs',
+          '-lqs'
+        ])
+        .optional()
+        .describe('Sort field (prefix with - for descending)'),
+      pageSize: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Number of results per page (1-100)'),
+      pageCursor: z.string().optional().describe('Pagination cursor for fetching next page')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(productSchema).describe('List of matching products'),
+      totalItems: z.number().nullable().describe('Total number of matching products'),
+      nextPageCursor: z
+        .string()
+        .nullable()
+        .describe('Cursor for fetching the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       marketplace: ctx.config.marketplace,
-      apiType: ctx.config.apiType,
+      apiType: ctx.config.apiType
     });
 
     let result = await client.productDatabase({
@@ -126,8 +162,8 @@ export let productDatabaseTool = SlateTool.create(
       sort: ctx.input.sort,
       pagination: {
         pageSize: ctx.input.pageSize,
-        pageCursor: ctx.input.pageCursor,
-      },
+        pageCursor: ctx.input.pageCursor
+      }
     });
 
     let products = (result.data || []).map((item: any) => ({
@@ -147,7 +183,7 @@ export let productDatabaseTool = SlateTool.create(
       weight: item.attributes?.weight ?? null,
       numberOfSellers: item.attributes?.number_of_sellers ?? null,
       feeBreakdown: item.attributes?.fee_breakdown ?? null,
-      updatedAt: item.attributes?.updated_at ?? null,
+      updatedAt: item.attributes?.updated_at ?? null
     }));
 
     let totalItems = result.meta?.total_items ?? null;
@@ -161,9 +197,9 @@ export let productDatabaseTool = SlateTool.create(
       output: {
         products,
         totalItems,
-        nextPageCursor,
+        nextPageCursor
       },
-      message: `Found **${products.length}** products${totalItems ? ` (${totalItems} total)` : ''} matching the search criteria.`,
+      message: `Found **${products.length}** products${totalItems ? ` (${totalItems} total)` : ''} matching the search criteria.`
     };
   })
   .build();

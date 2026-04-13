@@ -2,10 +2,7 @@
   "name": "@metorial/securitytrails",
   "version": "0.1.1",
   "description": "Query current and historical DNS, WHOIS, IP, and domain intelligence data. Look up domain details including DNS records, hosting providers, and subdomains. Retrieve current and historical WHOIS registration data. Search for domains and IPs using a powerful DSL query interface. Discover associated domains, explore IP neighbors, fetch IP WHOIS and user agent data, and access SSL certificate information. All operations are read-only data queries.",
-  "categories": [
-    "apis-and-http-requests",
-    "security"
-  ],
+  "categories": ["apis-and-http-requests", "security"],
   "skills": [
     "lookup domain DNS records",
     "discover subdomains",

@@ -3,31 +3,33 @@ import { createClient } from '../lib/utils';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contractEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contract Events',
-    key: 'contract_events',
-    description: 'Triggered when contract lifecycle events occur: created, amended, status updated, terminated, or team member invited to sign.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type identifier'),
-    eventId: z.string().describe('Unique identifier for this event'),
-    contractId: z.string().optional().describe('ID of the affected contract'),
-    payload: z.any().describe('Full event payload from Deel'),
-  }))
-  .output(z.object({
-    contractId: z.string().describe('ID of the affected contract'),
-    contractTitle: z.string().optional().describe('Title of the contract'),
-    contractStatus: z.string().optional().describe('Current status of the contract'),
-    contractType: z.string().optional().describe('Type of the contract'),
-    workerName: z.string().optional().describe('Name of the worker on this contract'),
-    workerEmail: z.string().optional().describe('Email of the worker'),
-    rawEvent: z.any().describe('Full raw event data from Deel'),
-  }))
+export let contractEvents = SlateTrigger.create(spec, {
+  name: 'Contract Events',
+  key: 'contract_events',
+  description:
+    'Triggered when contract lifecycle events occur: created, amended, status updated, terminated, or team member invited to sign.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The webhook event type identifier'),
+      eventId: z.string().describe('Unique identifier for this event'),
+      contractId: z.string().optional().describe('ID of the affected contract'),
+      payload: z.any().describe('Full event payload from Deel')
+    })
+  )
+  .output(
+    z.object({
+      contractId: z.string().describe('ID of the affected contract'),
+      contractTitle: z.string().optional().describe('Title of the contract'),
+      contractStatus: z.string().optional().describe('Current status of the contract'),
+      contractType: z.string().optional().describe('Type of the contract'),
+      workerName: z.string().optional().describe('Name of the worker on this contract'),
+      workerEmail: z.string().optional().describe('Email of the worker'),
+      rawEvent: z.any().describe('Full raw event data from Deel')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let result = await client.createWebhook({
@@ -40,8 +42,8 @@ export let contractEvents = SlateTrigger.create(
           'contract.status_updated',
           'contract.terminated',
           'contract.archived',
-          'contract.team_member_invited_to_sign',
-        ],
+          'contract.team_member_invited_to_sign'
+        ]
       });
 
       let webhookData = result?.data ?? result;
@@ -49,12 +51,12 @@ export let contractEvents = SlateTrigger.create(
       return {
         registrationDetails: {
           webhookId: webhookData?.id ?? webhookData?.webhook_id,
-          secret: webhookData?.secret,
-        },
+          secret: webhookData?.secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhookId = ctx.input.registrationDetails?.webhookId;
       if (webhookId) {
@@ -62,8 +64,8 @@ export let contractEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let meta = data?.data?.meta ?? data?.meta ?? {};
       let resource = data?.data?.resource ?? data?.resource ?? {};
@@ -72,16 +74,18 @@ export let contractEvents = SlateTrigger.create(
       let trackingId = meta.tracking_id ?? data?.id ?? `${eventType}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId: trackingId,
-          contractId: resource?.id?.toString(),
-          payload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: trackingId,
+            contractId: resource?.id?.toString(),
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resource = ctx.input.payload?.data?.resource ?? ctx.input.payload?.resource ?? {};
 
       return {
@@ -94,8 +98,9 @@ export let contractEvents = SlateTrigger.create(
           contractType: resource?.type,
           workerName: resource?.contractor?.name ?? resource?.worker?.name,
           workerEmail: resource?.contractor?.email ?? resource?.worker?.email,
-          rawEvent: ctx.input.payload,
-        },
+          rawEvent: ctx.input.payload
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

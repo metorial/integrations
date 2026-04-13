@@ -3,37 +3,51 @@ import { NanonetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let uploadTrainingData = SlateTool.create(
-  spec,
-  {
-    name: 'Upload Training Data',
-    key: 'upload_training_data',
-    description: `Upload training images via URL to a Nanonets model. Supports OCR, image classification, and object detection models. For classification models, images must be associated with a category. For OCR and object detection, annotations with bounding boxes can be provided.`,
-    instructions: [
-      'For OCR models: provide URLs and optional annotations as a JSON string with field names and bounding boxes.',
-      'For classification models: provide URLs, a category label, and the images will be assigned to that category.',
-      'For object detection: provide URLs and annotations as a JSON string with object names and bounding boxes.',
-      'Annotation format for bounding boxes: [{"name": "field_name", "bndbox": {"xmin": 50, "ymin": 50, "xmax": 100, "ymax": 100}}]'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let uploadTrainingData = SlateTool.create(spec, {
+  name: 'Upload Training Data',
+  key: 'upload_training_data',
+  description: `Upload training images via URL to a Nanonets model. Supports OCR, image classification, and object detection models. For classification models, images must be associated with a category. For OCR and object detection, annotations with bounding boxes can be provided.`,
+  instructions: [
+    'For OCR models: provide URLs and optional annotations as a JSON string with field names and bounding boxes.',
+    'For classification models: provide URLs, a category label, and the images will be assigned to that category.',
+    'For object detection: provide URLs and annotations as a JSON string with object names and bounding boxes.',
+    'Annotation format for bounding boxes: [{"name": "field_name", "bndbox": {"xmin": 50, "ymin": 50, "xmax": 100, "ymax": 100}}]'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    modelId: z.string().describe('ID of the model to upload training data to'),
-    modelType: z.enum(['ocr', 'image_classification', 'object_detection']).default('ocr').describe('Type of model'),
-    urls: z.array(z.string()).min(1).describe('URLs of training images to upload'),
-    category: z.string().optional().describe('Category label for classification models (required for image_classification)'),
-    annotations: z.string().optional().describe('JSON string of annotation data with bounding boxes (for OCR and object detection)')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the upload was successful'),
-    modelId: z.string().describe('ID of the model that received training data'),
-    uploadedCount: z.number().describe('Number of URLs uploaded')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      modelId: z.string().describe('ID of the model to upload training data to'),
+      modelType: z
+        .enum(['ocr', 'image_classification', 'object_detection'])
+        .default('ocr')
+        .describe('Type of model'),
+      urls: z.array(z.string()).min(1).describe('URLs of training images to upload'),
+      category: z
+        .string()
+        .optional()
+        .describe(
+          'Category label for classification models (required for image_classification)'
+        ),
+      annotations: z
+        .string()
+        .optional()
+        .describe(
+          'JSON string of annotation data with bounding boxes (for OCR and object detection)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the upload was successful'),
+      modelId: z.string().describe('ID of the model that received training data'),
+      uploadedCount: z.number().describe('Number of URLs uploaded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NanonetsClient(ctx.auth.token);
 
     if (ctx.input.modelType === 'image_classification') {

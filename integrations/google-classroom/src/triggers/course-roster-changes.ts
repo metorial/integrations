@@ -7,37 +7,42 @@ let rosterMemberSchema = z.object({
   courseId: z.string().optional().describe('Course ID'),
   userId: z.string().optional().describe('User ID'),
   role: z.enum(['teacher', 'student']).describe('Role of the member'),
-  name: z.object({
-    givenName: z.string().optional(),
-    familyName: z.string().optional(),
-    fullName: z.string().optional(),
-  }).optional().describe('User name'),
+  name: z
+    .object({
+      givenName: z.string().optional(),
+      familyName: z.string().optional(),
+      fullName: z.string().optional()
+    })
+    .optional()
+    .describe('User name'),
   emailAddress: z.string().optional().describe('User email address'),
-  photoUrl: z.string().optional().describe('User profile photo URL'),
+  photoUrl: z.string().optional().describe('User profile photo URL')
 });
 
-export let courseRosterChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Course Roster Changes',
-    key: 'course_roster_changes',
-    description: 'Triggers when students or teachers are added to or removed from a course. Polls the course roster periodically and detects changes in the list of teachers and students.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['added', 'removed']).describe('Whether the member was added or removed'),
-    role: z.enum(['teacher', 'student']).describe('Role of the member'),
-    courseId: z.string().describe('Course ID'),
-    userId: z.string().describe('User ID'),
-    memberData: z.any().optional().describe('Full member data from the API'),
-  }))
+export let courseRosterChanges = SlateTrigger.create(spec, {
+  name: 'Course Roster Changes',
+  key: 'course_roster_changes',
+  description:
+    'Triggers when students or teachers are added to or removed from a course. Polls the course roster periodically and detects changes in the list of teachers and students.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['added', 'removed'])
+        .describe('Whether the member was added or removed'),
+      role: z.enum(['teacher', 'student']).describe('Role of the member'),
+      courseId: z.string().describe('Course ID'),
+      userId: z.string().describe('User ID'),
+      memberData: z.any().optional().describe('Full member data from the API')
+    })
+  )
   .output(rosterMemberSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ClassroomClient({ token: ctx.auth.token });
 
       let previousState = ctx.state || {};
@@ -71,8 +76,12 @@ export let courseRosterChanges = SlateTrigger.create(
         let teacherResult = await client.listTeachers(cId, 100);
         let studentResult = await client.listStudents(cId, 100);
 
-        let teacherIds = (teacherResult.teachers || []).map((t: any) => t.userId).filter(Boolean) as string[];
-        let studentIds = (studentResult.students || []).map((s: any) => s.userId).filter(Boolean) as string[];
+        let teacherIds = (teacherResult.teachers || [])
+          .map((t: any) => t.userId)
+          .filter(Boolean) as string[];
+        let studentIds = (studentResult.students || [])
+          .map((s: any) => s.userId)
+          .filter(Boolean) as string[];
 
         let key = `${cId}`;
         currentRosterMap[`${key}_teachers`] = teacherIds;
@@ -83,24 +92,48 @@ export let courseRosterChanges = SlateTrigger.create(
 
         // Only detect changes if we have previous state (not the first run)
         if (previousState.initialized) {
-          let addedTeachers = teacherIds.filter((id) => !prevTeachers.includes(id));
-          let removedTeachers = prevTeachers.filter((id) => !teacherIds.includes(id));
-          let addedStudents = studentIds.filter((id) => !prevStudents.includes(id));
-          let removedStudents = prevStudents.filter((id) => !studentIds.includes(id));
+          let addedTeachers = teacherIds.filter(id => !prevTeachers.includes(id));
+          let removedTeachers = prevTeachers.filter(id => !teacherIds.includes(id));
+          let addedStudents = studentIds.filter(id => !prevStudents.includes(id));
+          let removedStudents = prevStudents.filter(id => !studentIds.includes(id));
 
           for (let userId of addedTeachers) {
             let member = (teacherResult.teachers || []).find((t: any) => t.userId === userId);
-            inputs.push({ changeType: 'added', role: 'teacher', courseId: cId, userId, memberData: member });
+            inputs.push({
+              changeType: 'added',
+              role: 'teacher',
+              courseId: cId,
+              userId,
+              memberData: member
+            });
           }
           for (let userId of removedTeachers) {
-            inputs.push({ changeType: 'removed', role: 'teacher', courseId: cId, userId, memberData: null });
+            inputs.push({
+              changeType: 'removed',
+              role: 'teacher',
+              courseId: cId,
+              userId,
+              memberData: null
+            });
           }
           for (let userId of addedStudents) {
             let member = (studentResult.students || []).find((s: any) => s.userId === userId);
-            inputs.push({ changeType: 'added', role: 'student', courseId: cId, userId, memberData: member });
+            inputs.push({
+              changeType: 'added',
+              role: 'student',
+              courseId: cId,
+              userId,
+              memberData: member
+            });
           }
           for (let userId of removedStudents) {
-            inputs.push({ changeType: 'removed', role: 'student', courseId: cId, userId, memberData: null });
+            inputs.push({
+              changeType: 'removed',
+              role: 'student',
+              courseId: cId,
+              userId,
+              memberData: null
+            });
           }
         }
       }
@@ -109,12 +142,12 @@ export let courseRosterChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           ...currentRosterMap,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { changeType, role, courseId, userId, memberData } = ctx.input;
 
       let profile = memberData?.profile;
@@ -128,9 +161,9 @@ export let courseRosterChanges = SlateTrigger.create(
           role,
           name: profile?.name,
           emailAddress: profile?.emailAddress,
-          photoUrl: profile?.photoUrl,
-        },
+          photoUrl: profile?.photoUrl
+        }
       };
-    },
+    }
   })
   .build();

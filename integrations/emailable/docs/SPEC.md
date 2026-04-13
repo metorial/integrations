@@ -13,6 +13,7 @@ Emailable supports two authentication methods:
 Emailable expects the API key to be included in all API requests as a URL parameter (`api_key`), as POST data, or via an HTTP Authorization header using the Bearer scheme (e.g., `Authorization: Bearer your_api_key`).
 
 There are two types of API keys:
+
 - **Private API Keys**: Meant for server-side use. Should never be exposed publicly. Can optionally be restricted to a list of trusted IP addresses. Can access all API endpoints.
 - **Public API Keys**: Meant for client-side use where the key is publicly exposed (e.g., JavaScript on a website). Requires a list of trusted domains to be configured. Limited to the `/verify` endpoint only.
 
@@ -46,6 +47,7 @@ Verify an individual email address in real time. Returns the deliverability stat
 - Whether the mail server is catch-all (accept-all)
 
 **Key options:**
+
 - `smtp`: Can be disabled to speed up verification at the cost of accuracy.
 - `accept_all`: Enable accept-all detection (increases response time).
 - `timeout`: Set a custom timeout (2–10 seconds).

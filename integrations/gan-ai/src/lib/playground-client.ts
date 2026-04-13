@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export class PlaygroundClient {
   private axios: AxiosInstance;
@@ -8,8 +8,8 @@ export class PlaygroundClient {
     this.axios = createAxios({
       baseURL: 'https://os.gan.ai',
       headers: {
-        'ganos-api-key': apiKey,
-      },
+        'ganos-api-key': apiKey
+      }
     });
   }
 
@@ -34,22 +34,22 @@ export class PlaygroundClient {
     voiceId: string;
     text: string;
   }): Promise<{ audioData: string }> {
-    let response = await this.axios.post('/v1/tts', {
-      voice_id: params.voiceId,
-      text: params.text,
-    }, {
-      responseType: 'arraybuffer',
-    });
+    let response = await this.axios.post(
+      '/v1/tts',
+      {
+        voice_id: params.voiceId,
+        text: params.text
+      },
+      {
+        responseType: 'arraybuffer'
+      }
+    );
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let base64 = Buffer.from(response.data).toString('base64');
     return { audioData: base64 };
   }
 
-  async getTtsHistory(params: {
-    skip?: number;
-    limit?: number;
-  }): Promise<{
+  async getTtsHistory(params: { skip?: number; limit?: number }): Promise<{
     total: number;
     data: Array<{
       inference_id: string;
@@ -62,8 +62,8 @@ export class PlaygroundClient {
     let response = await this.axios.get('/v1/tts/history', {
       params: {
         skip: params.skip ?? 0,
-        limit: params.limit ?? 10,
-      },
+        limit: params.limit ?? 10
+      }
     });
     return response.data;
   }
@@ -84,7 +84,7 @@ export class PlaygroundClient {
     created_at: string | null;
   }> {
     let body: Record<string, unknown> = {
-      base_video_url: params.baseVideoUrl,
+      base_video_url: params.baseVideoUrl
     };
     if (params.title) body.title = params.title;
     if (params.webhookUrl) {
@@ -119,8 +119,8 @@ export class PlaygroundClient {
         skip: params.skip ?? 0,
         limit: params.limit ?? 10,
         start_datetime: params.startDatetime,
-        end_datetime: params.endDatetime,
-      },
+        end_datetime: params.endDatetime
+      }
     });
     return response.data;
   }
@@ -136,7 +136,7 @@ export class PlaygroundClient {
     consent_verification_results: Array<{ check_name: string; check_status: string }> | null;
   }> {
     let response = await this.axios.get('/v1/avatars/avatar_details', {
-      params: { avatar_id: avatarId },
+      params: { avatar_id: avatarId }
     });
     return response.data;
   }
@@ -158,7 +158,7 @@ export class PlaygroundClient {
     created_at: string | null;
   }> {
     let body: Record<string, unknown> = {
-      avatar_id: params.avatarId,
+      avatar_id: params.avatarId
     };
     if (params.title) body.title = params.title;
     if (params.text) body.text = params.text;
@@ -180,7 +180,7 @@ export class PlaygroundClient {
     created_at: string | null;
   }> {
     let response = await this.axios.get('/v1/avatars/inference_details', {
-      params: { inference_id: inferenceId },
+      params: { inference_id: inferenceId }
     });
     return response.data;
   }
@@ -217,8 +217,8 @@ export class PlaygroundClient {
         skip: params.skip ?? 0,
         limit: params.limit ?? 10,
         start_datetime: params.startDatetime,
-        end_datetime: params.endDatetime,
-      },
+        end_datetime: params.endDatetime
+      }
     });
     return response.data;
   }
@@ -231,7 +231,7 @@ export class PlaygroundClient {
     deletion_failed_avatar_ids: string[];
   }> {
     let response = await this.axios.delete('/v1/avatars/bulk_delete_avatars', {
-      data: avatarIds,
+      data: avatarIds
     });
     return response.data;
   }
@@ -243,7 +243,7 @@ export class PlaygroundClient {
     deletion_failed_inference_ids: string[];
   }> {
     let response = await this.axios.delete('/v1/avatars/bulk_delete_avatar_inferences', {
-      data: inferenceIds,
+      data: inferenceIds
     });
     return response.data;
   }
@@ -255,7 +255,7 @@ export class PlaygroundClient {
     expire_at: number;
   }> {
     let response = await this.axios.get('/v1/consents/consent_passcode', {
-      params: { avatar_id: avatarId },
+      params: { avatar_id: avatarId }
     });
     return response.data;
   }
@@ -267,8 +267,8 @@ export class PlaygroundClient {
     let response = await this.axios.post('/v1/consents/submit_consent', null, {
       params: {
         avatar_id: params.avatarId,
-        consent_video: params.consentVideoUrl,
-      },
+        consent_video: params.consentVideoUrl
+      }
     });
     return response.data;
   }
@@ -287,7 +287,7 @@ export class PlaygroundClient {
     created_at: string | null;
   }> {
     let body: Record<string, unknown> = {
-      base_image_url: params.baseImageUrl,
+      base_image_url: params.baseImageUrl
     };
     if (params.title) body.title = params.title;
     if (params.webhookUrl) {
@@ -321,8 +321,8 @@ export class PlaygroundClient {
         skip: params.skip ?? 0,
         limit: params.limit ?? 20,
         start_datetime: params.startDatetime,
-        end_datetime: params.endDatetime,
-      },
+        end_datetime: params.endDatetime
+      }
     });
     return response.data;
   }
@@ -335,7 +335,7 @@ export class PlaygroundClient {
     created_at: string | null;
   }> {
     let response = await this.axios.get('/v1/photo_avatars/details', {
-      params: { photo_avatar_id: photoAvatarId },
+      params: { photo_avatar_id: photoAvatarId }
     });
     return response.data;
   }
@@ -358,7 +358,7 @@ export class PlaygroundClient {
     credit_details: { tts_cost: number; gan_cost: number } | null;
   }> {
     let body: Record<string, unknown> = {
-      photo_avatar_id: params.photoAvatarId,
+      photo_avatar_id: params.photoAvatarId
     };
     if (params.title) body.title = params.title;
     if (params.text) body.text = params.text;
@@ -398,8 +398,8 @@ export class PlaygroundClient {
         skip: params.skip ?? 0,
         limit: params.limit ?? 10,
         start_datetime: params.startDatetime,
-        end_datetime: params.endDatetime,
-      },
+        end_datetime: params.endDatetime
+      }
     });
     return response.data;
   }
@@ -420,8 +420,8 @@ export class PlaygroundClient {
     let response = await this.axios.get('/v1/photo_avatars/inference_details', {
       params: {
         photo_avatar_inference_id: params.photoAvatarInferenceId,
-        downloadable_link: params.downloadableLink ?? false,
-      },
+        downloadable_link: params.downloadableLink ?? false
+      }
     });
     return response.data;
   }
@@ -451,15 +451,15 @@ export class PlaygroundClient {
       inputs: {
         input_video_url: params.inputVideoUrl,
         input_audio_url: params.inputAudioUrl || '',
-        use_audio_from_video: params.useAudioFromVideo ?? false,
-      },
+        use_audio_from_video: params.useAudioFromVideo ?? false
+      }
     };
     if (params.title) body.title = params.title;
     if (params.description) body.description = params.description;
     if (params.webhookUrl) {
       body.webhook_data = {
         enabled: true,
-        webhook_url: params.webhookUrl,
+        webhook_url: params.webhookUrl
       };
     }
 
@@ -480,7 +480,7 @@ export class PlaygroundClient {
     description: string | null;
   }> {
     let response = await this.axios.get('/v1/lipsync/inference_details', {
-      params: { inference_id: inferenceId },
+      params: { inference_id: inferenceId }
     });
     return response.data;
   }
@@ -514,8 +514,8 @@ export class PlaygroundClient {
         skip: params.skip ?? 0,
         limit: params.limit ?? 10,
         start_datetime: params.startDatetime,
-        end_datetime: params.endDatetime,
-      },
+        end_datetime: params.endDatetime
+      }
     });
     return response.data;
   }
@@ -527,7 +527,7 @@ export class PlaygroundClient {
     failed_ids: string[];
   }> {
     let response = await this.axios.delete('/v1/lipsync/bulk_delete_lipsyncs', {
-      data: inferenceIds,
+      data: inferenceIds
     });
     return response.data;
   }
@@ -539,24 +539,26 @@ export class PlaygroundClient {
     numVariations?: number;
     durationSeconds?: number;
     creativity?: number;
-  }): Promise<Array<{
-    sfx_inference_history_object: {
-      inference_id: string;
-      sfx_prompt: string;
-      generation_params: {
-        duration_seconds: number;
-        creativity: number;
-        seed: number;
+  }): Promise<
+    Array<{
+      sfx_inference_history_object: {
+        inference_id: string;
+        sfx_prompt: string;
+        generation_params: {
+          duration_seconds: number;
+          creativity: number;
+          seed: number;
+        };
+        created_at: string;
       };
-      created_at: string;
-    };
-    wav_base64: string;
-  }>> {
+      wav_base64: string;
+    }>
+  > {
     let response = await this.axios.post('/v1/sfx/generate', {
       prompt: params.prompt,
       num_variations: params.numVariations ?? 3,
       duration_seconds: params.durationSeconds ?? 1,
-      creativity: params.creativity ?? 0,
+      creativity: params.creativity ?? 0
     });
     return response.data;
   }
@@ -575,15 +577,12 @@ export class PlaygroundClient {
     wav_base64: string;
   }> {
     let response = await this.axios.post('/v1/sfx/audio', {
-      inference_id: inferenceId,
+      inference_id: inferenceId
     });
     return response.data;
   }
 
-  async getSfxHistory(params: {
-    skip?: number;
-    limit?: number;
-  }): Promise<{
+  async getSfxHistory(params: { skip?: number; limit?: number }): Promise<{
     total: number;
     data: Array<{
       inference_id: string;
@@ -599,8 +598,8 @@ export class PlaygroundClient {
     let response = await this.axios.get('/v1/sfx/history', {
       params: {
         skip: params.skip ?? 0,
-        limit: params.limit ?? 10,
-      },
+        limit: params.limit ?? 10
+      }
     });
     return response.data;
   }

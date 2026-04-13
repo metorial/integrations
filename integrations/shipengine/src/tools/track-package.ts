@@ -16,41 +16,49 @@ let trackingEventSchema = z.object({
   statusDescription: z.string().optional().describe('Event status description')
 });
 
-export let trackPackage = SlateTool.create(
-  spec,
-  {
-    name: 'Track Package',
-    key: 'track_package',
-    description: `Get the current tracking status and full event history for a package. Track by **carrier code + tracking number**, or by **ShipEngine label ID**. Returns status, estimated/actual delivery dates, and a chronological event history.`,
-    instructions: [
-      'Provide either labelId OR both carrierCode and trackingNumber.'
-    ],
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let trackPackage = SlateTool.create(spec, {
+  name: 'Track Package',
+  key: 'track_package',
+  description: `Get the current tracking status and full event history for a package. Track by **carrier code + tracking number**, or by **ShipEngine label ID**. Returns status, estimated/actual delivery dates, and a chronological event history.`,
+  instructions: ['Provide either labelId OR both carrierCode and trackingNumber.'],
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    labelId: z.string().optional().describe('ShipEngine label ID to track'),
-    carrierCode: z.string().optional().describe('Carrier code (e.g. fedex, ups, usps, dhl_express)'),
-    trackingNumber: z.string().optional().describe('Carrier tracking number')
-  }))
-  .output(z.object({
-    trackingNumber: z.string().describe('Tracking number'),
-    trackingUrl: z.string().optional().describe('Carrier tracking URL'),
-    statusCode: z.string().describe('Current status code (e.g. IT, DE, AC, EX, UN, AT)'),
-    statusDescription: z.string().describe('Human-readable status'),
-    carrierCode: z.string().optional().describe('Carrier code'),
-    carrierStatusCode: z.string().optional().describe('Carrier-specific status code'),
-    carrierStatusDescription: z.string().optional().describe('Carrier-specific status description'),
-    shipDate: z.string().optional().describe('Ship date'),
-    estimatedDeliveryDate: z.string().optional().describe('Estimated delivery date'),
-    actualDeliveryDate: z.string().optional().describe('Actual delivery date'),
-    exceptionDescription: z.string().optional().describe('Exception description if there is an issue'),
-    events: z.array(trackingEventSchema).describe('Chronological list of tracking events')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      labelId: z.string().optional().describe('ShipEngine label ID to track'),
+      carrierCode: z
+        .string()
+        .optional()
+        .describe('Carrier code (e.g. fedex, ups, usps, dhl_express)'),
+      trackingNumber: z.string().optional().describe('Carrier tracking number')
+    })
+  )
+  .output(
+    z.object({
+      trackingNumber: z.string().describe('Tracking number'),
+      trackingUrl: z.string().optional().describe('Carrier tracking URL'),
+      statusCode: z.string().describe('Current status code (e.g. IT, DE, AC, EX, UN, AT)'),
+      statusDescription: z.string().describe('Human-readable status'),
+      carrierCode: z.string().optional().describe('Carrier code'),
+      carrierStatusCode: z.string().optional().describe('Carrier-specific status code'),
+      carrierStatusDescription: z
+        .string()
+        .optional()
+        .describe('Carrier-specific status description'),
+      shipDate: z.string().optional().describe('Ship date'),
+      estimatedDeliveryDate: z.string().optional().describe('Estimated delivery date'),
+      actualDeliveryDate: z.string().optional().describe('Actual delivery date'),
+      exceptionDescription: z
+        .string()
+        .optional()
+        .describe('Exception description if there is an issue'),
+      events: z.array(trackingEventSchema).describe('Chronological list of tracking events')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -66,7 +74,7 @@ export let trackPackage = SlateTool.create(
       throw new Error('Provide either labelId, or both carrierCode and trackingNumber.');
     }
 
-    let events = tracking.events.map((e) => ({
+    let events = tracking.events.map(e => ({
       occurredAt: e.occurred_at,
       description: e.description,
       cityLocality: e.city_locality,
@@ -96,4 +104,5 @@ export let trackPackage = SlateTool.create(
       },
       message: `Package **${tracking.tracking_number}**: **${tracking.status_description}**${tracking.estimated_delivery_date ? ` — Est. delivery: ${tracking.estimated_delivery_date}` : ''}${tracking.actual_delivery_date ? ` — Delivered: ${tracking.actual_delivery_date}` : ''}`
     };
-  }).build();
+  })
+  .build();

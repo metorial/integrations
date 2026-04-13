@@ -29,44 +29,59 @@ let versionSchema = z.object({
   variableCount: z.number().optional().describe('Number of variables')
 });
 
-export let manageVersion = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Version',
-    key: 'manage_version',
-    description: `Create, list, get, publish, or delete container versions. Versions are snapshots of a container's configuration. Publishing a version makes it live on your website or app.`,
-    instructions: [
-      'Use "create" to snapshot the current workspace into a new version.',
-      'Use "publish" to make a version live. This deploys the configuration to production.',
-      'Use "get_live" to retrieve the currently published version.',
-      'Use "list" to see all version headers for a container.',
-      'Use "get_latest" to get the most recent version header.'
-    ],
-    constraints: [
-      'Publishing is irreversible in the sense that the version immediately goes live.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageVersion = SlateTool.create(spec, {
+  name: 'Manage Version',
+  key: 'manage_version',
+  description: `Create, list, get, publish, or delete container versions. Versions are snapshots of a container's configuration. Publishing a version makes it live on your website or app.`,
+  instructions: [
+    'Use "create" to snapshot the current workspace into a new version.',
+    'Use "publish" to make a version live. This deploys the configuration to production.',
+    'Use "get_live" to retrieve the currently published version.',
+    'Use "list" to see all version headers for a container.',
+    'Use "get_latest" to get the most recent version header.'
+  ],
+  constraints: [
+    'Publishing is irreversible in the sense that the version immediately goes live.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'get', 'get_live', 'get_latest', 'publish', 'delete']).describe('Operation to perform'),
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    workspaceId: z.string().optional().describe('Workspace ID (required for create)'),
-    versionId: z.string().optional().describe('Version ID (required for get, publish, delete)'),
-    name: z.string().optional().describe('Version name (for create)'),
-    notes: z.string().optional().describe('Version notes/description (for create)')
-  }))
-  .output(z.object({
-    version: versionSchema.optional().describe('Version details'),
-    versionHeaders: z.array(versionHeaderSchema).optional().describe('List of version headers (for list action)'),
-    compilerError: z.boolean().optional().describe('Whether a compiler error occurred (for create/publish)'),
-    published: z.boolean().optional().describe('Whether the version was successfully published')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'get', 'get_live', 'get_latest', 'publish', 'delete'])
+        .describe('Operation to perform'),
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      workspaceId: z.string().optional().describe('Workspace ID (required for create)'),
+      versionId: z
+        .string()
+        .optional()
+        .describe('Version ID (required for get, publish, delete)'),
+      name: z.string().optional().describe('Version name (for create)'),
+      notes: z.string().optional().describe('Version notes/description (for create)')
+    })
+  )
+  .output(
+    z.object({
+      version: versionSchema.optional().describe('Version details'),
+      versionHeaders: z
+        .array(versionHeaderSchema)
+        .optional()
+        .describe('List of version headers (for list action)'),
+      compilerError: z
+        .boolean()
+        .optional()
+        .describe('Whether a compiler error occurred (for create/publish)'),
+      published: z
+        .boolean()
+        .optional()
+        .describe('Whether the version was successfully published')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GtmClient(ctx.auth.token);
     let { action, accountId, containerId, workspaceId, versionId } = ctx.input;
 
@@ -85,18 +100,20 @@ export let manageVersion = SlateTool.create(
 
       return {
         output: {
-          version: version ? {
-            containerVersionId: version.containerVersionId,
-            accountId: version.accountId,
-            containerId: version.containerId,
-            name: version.name,
-            description: version.description,
-            fingerprint: version.fingerprint,
-            tagManagerUrl: version.tagManagerUrl,
-            tagCount,
-            triggerCount,
-            variableCount
-          } : undefined,
+          version: version
+            ? {
+                containerVersionId: version.containerVersionId,
+                accountId: version.accountId,
+                containerId: version.containerId,
+                name: version.name,
+                description: version.description,
+                fingerprint: version.fingerprint,
+                tagManagerUrl: version.tagManagerUrl,
+                tagCount,
+                triggerCount,
+                variableCount
+              }
+            : undefined,
           compilerError: result.compilerError
         } as any,
         message: result.compilerError
@@ -147,7 +164,8 @@ export let manageVersion = SlateTool.create(
       };
     }
 
-    if (!versionId) throw new Error('versionId is required for get, publish, and delete actions');
+    if (!versionId)
+      throw new Error('versionId is required for get, publish, and delete actions');
 
     if (action === 'get') {
       let version = await client.getVersion(accountId, containerId, versionId);
@@ -180,15 +198,17 @@ export let manageVersion = SlateTool.create(
       let version = result.containerVersion;
       return {
         output: {
-          version: version ? {
-            containerVersionId: version.containerVersionId,
-            accountId: version.accountId,
-            containerId: version.containerId,
-            name: version.name,
-            description: version.description,
-            fingerprint: version.fingerprint,
-            tagManagerUrl: version.tagManagerUrl
-          } : undefined,
+          version: version
+            ? {
+                containerVersionId: version.containerVersionId,
+                accountId: version.accountId,
+                containerId: version.containerId,
+                name: version.name,
+                description: version.description,
+                fingerprint: version.fingerprint,
+                tagManagerUrl: version.tagManagerUrl
+              }
+            : undefined,
           compilerError: result.compilerError,
           published: !result.compilerError
         } as any,

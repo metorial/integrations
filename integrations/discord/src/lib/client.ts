@@ -25,7 +25,11 @@ export class DiscordClient {
     return response.data;
   }
 
-  async listCurrentUserGuilds(limit?: number, before?: string, after?: string): Promise<any[]> {
+  async listCurrentUserGuilds(
+    limit?: number,
+    before?: string,
+    after?: string
+  ): Promise<any[]> {
     let params: Record<string, string> = {};
     if (limit) params.limit = String(limit);
     if (before) params.before = before;
@@ -67,12 +71,15 @@ export class DiscordClient {
 
   // ── Messages ──
 
-  async getMessages(channelId: string, options?: {
-    limit?: number;
-    before?: string;
-    after?: string;
-    around?: string;
-  }): Promise<any[]> {
+  async getMessages(
+    channelId: string,
+    options?: {
+      limit?: number;
+      before?: string;
+      after?: string;
+      around?: string;
+    }
+  ): Promise<any[]> {
     let params: Record<string, string> = {};
     if (options?.limit) params.limit = String(options.limit);
     if (options?.before) params.before = options.before;
@@ -92,7 +99,11 @@ export class DiscordClient {
     return response.data;
   }
 
-  async editMessage(channelId: string, messageId: string, data: Record<string, any>): Promise<any> {
+  async editMessage(
+    channelId: string,
+    messageId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.patch(`/channels/${channelId}/messages/${messageId}`, data);
     return response.data;
   }
@@ -102,7 +113,9 @@ export class DiscordClient {
   }
 
   async bulkDeleteMessages(channelId: string, messageIds: string[]): Promise<void> {
-    await this.api.post(`/channels/${channelId}/messages/bulk-delete`, { messages: messageIds });
+    await this.api.post(`/channels/${channelId}/messages/bulk-delete`, {
+      messages: messageIds
+    });
   }
 
   async pinMessage(channelId: string, messageId: string): Promise<void> {
@@ -119,7 +132,9 @@ export class DiscordClient {
   }
 
   async crosspostMessage(channelId: string, messageId: string): Promise<any> {
-    let response = await this.api.post(`/channels/${channelId}/messages/${messageId}/crosspost`);
+    let response = await this.api.post(
+      `/channels/${channelId}/messages/${messageId}/crosspost`
+    );
     return response.data;
   }
 
@@ -127,12 +142,16 @@ export class DiscordClient {
 
   async createReaction(channelId: string, messageId: string, emoji: string): Promise<void> {
     let encodedEmoji = encodeURIComponent(emoji);
-    await this.api.put(`/channels/${channelId}/messages/${messageId}/reactions/${encodedEmoji}/@me`);
+    await this.api.put(
+      `/channels/${channelId}/messages/${messageId}/reactions/${encodedEmoji}/@me`
+    );
   }
 
   async deleteOwnReaction(channelId: string, messageId: string, emoji: string): Promise<void> {
     let encodedEmoji = encodeURIComponent(emoji);
-    await this.api.delete(`/channels/${channelId}/messages/${messageId}/reactions/${encodedEmoji}/@me`);
+    await this.api.delete(
+      `/channels/${channelId}/messages/${messageId}/reactions/${encodedEmoji}/@me`
+    );
   }
 
   async deleteAllReactions(channelId: string, messageId: string): Promise<void> {
@@ -146,10 +165,13 @@ export class DiscordClient {
     return response.data;
   }
 
-  async listGuildMembers(guildId: string, options?: {
-    limit?: number;
-    after?: string;
-  }): Promise<any[]> {
+  async listGuildMembers(
+    guildId: string,
+    options?: {
+      limit?: number;
+      after?: string;
+    }
+  ): Promise<any[]> {
     let params: Record<string, string> = {};
     if (options?.limit) params.limit = String(options.limit);
     if (options?.after) params.after = options.after;
@@ -164,7 +186,11 @@ export class DiscordClient {
     return response.data;
   }
 
-  async modifyGuildMember(guildId: string, userId: string, data: Record<string, any>): Promise<any> {
+  async modifyGuildMember(
+    guildId: string,
+    userId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.patch(`/guilds/${guildId}/members/${userId}`, data);
     return response.data;
   }
@@ -183,7 +209,10 @@ export class DiscordClient {
 
   // ── Bans ──
 
-  async getGuildBans(guildId: string, options?: { limit?: number; before?: string; after?: string }): Promise<any[]> {
+  async getGuildBans(
+    guildId: string,
+    options?: { limit?: number; before?: string; after?: string }
+  ): Promise<any[]> {
     let params: Record<string, string> = {};
     if (options?.limit) params.limit = String(options.limit);
     if (options?.before) params.before = options.before;
@@ -192,7 +221,11 @@ export class DiscordClient {
     return response.data;
   }
 
-  async createGuildBan(guildId: string, userId: string, deleteMessageSeconds?: number): Promise<void> {
+  async createGuildBan(
+    guildId: string,
+    userId: string,
+    deleteMessageSeconds?: number
+  ): Promise<void> {
     let data: Record<string, any> = {};
     if (deleteMessageSeconds !== undefined) data.delete_message_seconds = deleteMessageSeconds;
     await this.api.put(`/guilds/${guildId}/bans/${userId}`, data);
@@ -214,7 +247,11 @@ export class DiscordClient {
     return response.data;
   }
 
-  async modifyGuildRole(guildId: string, roleId: string, data: Record<string, any>): Promise<any> {
+  async modifyGuildRole(
+    guildId: string,
+    roleId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.patch(`/guilds/${guildId}/roles/${roleId}`, data);
     return response.data;
   }
@@ -225,8 +262,15 @@ export class DiscordClient {
 
   // ── Threads ──
 
-  async startThreadFromMessage(channelId: string, messageId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/channels/${channelId}/messages/${messageId}/threads`, data);
+  async startThreadFromMessage(
+    channelId: string,
+    messageId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.post(
+      `/channels/${channelId}/messages/${messageId}/threads`,
+      data
+    );
     return response.data;
   }
 
@@ -242,7 +286,10 @@ export class DiscordClient {
 
   // ── Webhooks ──
 
-  async createWebhook(channelId: string, data: { name: string; avatar?: string }): Promise<any> {
+  async createWebhook(
+    channelId: string,
+    data: { name: string; avatar?: string }
+  ): Promise<any> {
     let response = await this.api.post(`/channels/${channelId}/webhooks`, data);
     return response.data;
   }
@@ -266,8 +313,15 @@ export class DiscordClient {
     await this.api.delete(`/webhooks/${webhookId}`);
   }
 
-  async executeWebhook(webhookId: string, webhookToken: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/webhooks/${webhookId}/${webhookToken}?wait=true`, data);
+  async executeWebhook(
+    webhookId: string,
+    webhookToken: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.post(
+      `/webhooks/${webhookId}/${webhookToken}?wait=true`,
+      data
+    );
     return response.data;
   }
 
@@ -321,8 +375,15 @@ export class DiscordClient {
     return response.data;
   }
 
-  async modifyGuildScheduledEvent(guildId: string, eventId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.patch(`/guilds/${guildId}/scheduled-events/${eventId}`, data);
+  async modifyGuildScheduledEvent(
+    guildId: string,
+    eventId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.patch(
+      `/guilds/${guildId}/scheduled-events/${eventId}`,
+      data
+    );
     return response.data;
   }
 
@@ -347,8 +408,15 @@ export class DiscordClient {
     return response.data;
   }
 
-  async modifyAutoModerationRule(guildId: string, ruleId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.patch(`/guilds/${guildId}/auto-moderation/rules/${ruleId}`, data);
+  async modifyAutoModerationRule(
+    guildId: string,
+    ruleId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.patch(
+      `/guilds/${guildId}/auto-moderation/rules/${ruleId}`,
+      data
+    );
     return response.data;
   }
 
@@ -358,13 +426,16 @@ export class DiscordClient {
 
   // ── Audit Log ──
 
-  async getGuildAuditLog(guildId: string, options?: {
-    userId?: string;
-    actionType?: number;
-    before?: string;
-    after?: string;
-    limit?: number;
-  }): Promise<any> {
+  async getGuildAuditLog(
+    guildId: string,
+    options?: {
+      userId?: string;
+      actionType?: number;
+      before?: string;
+      after?: string;
+      limit?: number;
+    }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.userId) params.user_id = options.userId;
     if (options?.actionType !== undefined) params.action_type = String(options.actionType);
@@ -394,26 +465,47 @@ export class DiscordClient {
     return response.data;
   }
 
-  async createGlobalApplicationCommand(applicationId: string, data: Record<string, any>): Promise<any> {
+  async createGlobalApplicationCommand(
+    applicationId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.post(`/applications/${applicationId}/commands`, data);
     return response.data;
   }
 
-  async deleteGlobalApplicationCommand(applicationId: string, commandId: string): Promise<void> {
+  async deleteGlobalApplicationCommand(
+    applicationId: string,
+    commandId: string
+  ): Promise<void> {
     await this.api.delete(`/applications/${applicationId}/commands/${commandId}`);
   }
 
   async getGuildApplicationCommands(applicationId: string, guildId: string): Promise<any[]> {
-    let response = await this.api.get(`/applications/${applicationId}/guilds/${guildId}/commands`);
+    let response = await this.api.get(
+      `/applications/${applicationId}/guilds/${guildId}/commands`
+    );
     return response.data;
   }
 
-  async createGuildApplicationCommand(applicationId: string, guildId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.post(`/applications/${applicationId}/guilds/${guildId}/commands`, data);
+  async createGuildApplicationCommand(
+    applicationId: string,
+    guildId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.post(
+      `/applications/${applicationId}/guilds/${guildId}/commands`,
+      data
+    );
     return response.data;
   }
 
-  async deleteGuildApplicationCommand(applicationId: string, guildId: string, commandId: string): Promise<void> {
-    await this.api.delete(`/applications/${applicationId}/guilds/${guildId}/commands/${commandId}`);
+  async deleteGuildApplicationCommand(
+    applicationId: string,
+    guildId: string,
+    commandId: string
+  ): Promise<void> {
+    await this.api.delete(
+      `/applications/${applicationId}/guilds/${guildId}/commands/${commandId}`
+    );
   }
 }

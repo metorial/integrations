@@ -3,40 +3,38 @@ import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Events',
-    key: 'project_events',
-    description: 'Triggered when a project is created, updated, deleted, closed, or moved to a different stage in Capsule CRM.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum([
-      'kase/created',
-      'kase/updated',
-      'kase/deleted',
-      'kase/closed',
-      'kase/moved',
-    ]).describe('Type of project event'),
-    projects: z.array(z.any()).describe('Project records from the webhook payload'),
-  }))
-  .output(z.object({
-    projectId: z.number().describe('ID of the affected project'),
-    name: z.string().optional().describe('Project name'),
-    description: z.string().optional().describe('Description'),
-    status: z.string().optional().describe('Status: OPEN or CLOSED'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Update timestamp'),
-    closedOn: z.string().optional().describe('Close date'),
-    expectedCloseOn: z.string().optional().describe('Expected close date'),
-    party: z.any().optional().describe('Associated party'),
-    owner: z.any().optional().describe('Assigned owner'),
-    team: z.any().optional().describe('Assigned team'),
-    stage: z.any().optional().describe('Current board stage'),
-  }))
+export let projectEvents = SlateTrigger.create(spec, {
+  name: 'Project Events',
+  key: 'project_events',
+  description:
+    'Triggered when a project is created, updated, deleted, closed, or moved to a different stage in Capsule CRM.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['kase/created', 'kase/updated', 'kase/deleted', 'kase/closed', 'kase/moved'])
+        .describe('Type of project event'),
+      projects: z.array(z.any()).describe('Project records from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('ID of the affected project'),
+      name: z.string().optional().describe('Project name'),
+      description: z.string().optional().describe('Description'),
+      status: z.string().optional().describe('Status: OPEN or CLOSED'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Update timestamp'),
+      closedOn: z.string().optional().describe('Close date'),
+      expectedCloseOn: z.string().optional().describe('Expected close date'),
+      party: z.any().optional().describe('Associated party'),
+      owner: z.any().optional().describe('Assigned owner'),
+      team: z.any().optional().describe('Assigned team'),
+      stage: z.any().optional().describe('Current board stage')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
 
       let events = [
@@ -44,7 +42,7 @@ export let projectEvents = SlateTrigger.create(
         'kase/updated',
         'kase/deleted',
         'kase/closed',
-        'kase/moved',
+        'kase/moved'
       ];
       let hooks: Array<{ hookId: number; event: string }> = [];
 
@@ -52,17 +50,17 @@ export let projectEvents = SlateTrigger.create(
         let hook = await client.createRestHook({
           event,
           targetUrl: ctx.input.webhookBaseUrl,
-          description: `Slates: ${event}`,
+          description: `Slates: ${event}`
         });
         hooks.push({ hookId: hook.id, event });
       }
 
       return {
-        registrationDetails: { hooks },
+        registrationDetails: { hooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
       let hooks = (ctx.input.registrationDetails as any)?.hooks || [];
 
@@ -75,18 +73,20 @@ export let projectEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.event,
-          projects: data.payload || [],
-        }],
+        inputs: [
+          {
+            eventType: data.event,
+            projects: data.payload || []
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let projects = ctx.input.projects || [];
       let eventAction = ctx.input.eventType.replace('kase/', '');
 
@@ -95,8 +95,8 @@ export let projectEvents = SlateTrigger.create(
           type: `project.${eventAction}`,
           id: `${ctx.input.eventType}-${Date.now()}`,
           output: {
-            projectId: 0,
-          },
+            projectId: 0
+          }
         };
       }
 
@@ -117,8 +117,9 @@ export let projectEvents = SlateTrigger.create(
           party: k.party,
           owner: k.owner,
           team: k.team,
-          stage: k.stage,
-        },
+          stage: k.stage
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

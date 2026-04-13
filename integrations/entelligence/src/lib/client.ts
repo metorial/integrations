@@ -31,11 +31,7 @@ export class Client {
   private vectorDBUrl: string;
   private http;
 
-  constructor(config: {
-    token: string;
-    repoName: string;
-    organization: string;
-  }) {
+  constructor(config: { token: string; repoName: string; organization: string }) {
     this.token = config.token;
     this.repoName = config.repoName;
     this.organization = config.organization;
@@ -43,27 +39,32 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://entelligence.ddbrief.com',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async chatQuery(params: ChatQueryParams): Promise<ChatQueryResponse> {
-    let response = await this.http.post('/repositoryAgent/', {
-      question: params.question,
-      history: params.history ?? [],
-      vectorDBUrl: this.vectorDBUrl,
-      enableArtifacts: params.enableArtifacts ?? false,
-      advancedAgent: params.advancedAgent ?? false,
-      enableDocs: params.enableDocs ?? true,
-      limitSources: params.limitSources ?? 5,
-    }, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
+    let response = await this.http.post(
+      '/repositoryAgent/',
+      {
+        question: params.question,
+        history: params.history ?? [],
+        vectorDBUrl: this.vectorDBUrl,
+        enableArtifacts: params.enableArtifacts ?? false,
+        advancedAgent: params.advancedAgent ?? false,
+        enableDocs: params.enableDocs ?? true,
+        limitSources: params.limitSources ?? 5
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }
+    );
 
-    let rawText = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+    let rawText =
+      typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
 
     let answer = rawText;
     let references: string[] = [];
@@ -84,18 +85,18 @@ export class Client {
 
     return {
       answer,
-      references,
+      references
     };
   }
 
   async checkQueryPermission(): Promise<AllowQueryResponse> {
     let response = await this.http.post('/bot/allow-query', {
       ApiKey: this.token,
-      VectorDBURL: this.vectorDBUrl,
+      VectorDBURL: this.vectorDBUrl
     });
 
     return {
-      allowed: response.data?.allowed ?? false,
+      allowed: response.data?.allowed ?? false
     };
   }
 
@@ -109,14 +110,15 @@ export class Client {
       VectorDBURL: this.vectorDBUrl,
       ChatHist: params.history ?? [],
       Question: params.question,
-      UserEmail: params.userEmail ?? '',
+      UserEmail: params.userEmail ?? ''
     });
 
-    let rawText = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+    let rawText =
+      typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
 
     return {
       answer: rawText,
-      references: [],
+      references: []
     };
   }
 }

@@ -3,43 +3,51 @@ import { TwitchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageRaids = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Raids',
-    key: 'manage_raids',
-    description: `Start or cancel a raid to another channel. Raids redirect your viewers to another streamer's channel.`,
-    instructions: [
-      'To **start** a raid, provide the target broadcaster ID.',
-      'To **cancel** a pending raid, set action to "cancel".',
-      'The broadcaster must be live to start a raid.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageRaids = SlateTool.create(spec, {
+  name: 'Manage Raids',
+  key: 'manage_raids',
+  description: `Start or cancel a raid to another channel. Raids redirect your viewers to another streamer's channel.`,
+  instructions: [
+    'To **start** a raid, provide the target broadcaster ID.',
+    'To **cancel** a pending raid, set action to "cancel".',
+    'The broadcaster must be live to start a raid.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    fromBroadcasterId: z.string().describe('Your broadcaster user ID (raiding from)'),
-    action: z.enum(['start', 'cancel']).describe('Whether to start or cancel a raid'),
-    toBroadcasterId: z.string().optional().describe('Target broadcaster ID (required for start)'),
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    createdAt: z.string().optional(),
-    isMature: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fromBroadcasterId: z.string().describe('Your broadcaster user ID (raiding from)'),
+      action: z.enum(['start', 'cancel']).describe('Whether to start or cancel a raid'),
+      toBroadcasterId: z
+        .string()
+        .optional()
+        .describe('Target broadcaster ID (required for start)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      createdAt: z.string().optional(),
+      isMature: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwitchClient(ctx.auth.token, ctx.auth.clientId);
 
     if (ctx.input.action === 'start') {
-      if (!ctx.input.toBroadcasterId) throw new Error('toBroadcasterId is required to start a raid');
+      if (!ctx.input.toBroadcasterId)
+        throw new Error('toBroadcasterId is required to start a raid');
 
-      let result = await client.startRaid(ctx.input.fromBroadcasterId, ctx.input.toBroadcasterId);
+      let result = await client.startRaid(
+        ctx.input.fromBroadcasterId,
+        ctx.input.toBroadcasterId
+      );
 
       return {
         output: { success: true, createdAt: result.createdAt, isMature: result.isMature },
-        message: `Raid started to broadcaster \`${ctx.input.toBroadcasterId}\``,
+        message: `Raid started to broadcaster \`${ctx.input.toBroadcasterId}\``
       };
     }
 
@@ -47,7 +55,7 @@ export let manageRaids = SlateTool.create(
 
     return {
       output: { success: true },
-      message: 'Raid canceled',
+      message: 'Raid canceled'
     };
   })
   .build();

@@ -2,9 +2,7 @@
   "name": "@metorial/runpod",
   "version": "0.1.1",
   "description": "Manage GPU/CPU cloud infrastructure for AI/ML workloads. Create, start, stop, and terminate GPU Pods for training and development. Deploy and manage serverless endpoints for AI inference with synchronous, asynchronous, and streaming execution modes. Submit jobs, check job status, cancel jobs, and purge queues. Create and manage persistent network volumes for storage. Save and reuse deployment configurations as templates. Connect private container registries. Monitor endpoint health, worker availability, and job statistics. Access billing history and usage data. Call pre-deployed public AI model endpoints for image, video, audio, and text generation.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "manage GPU pods",
     "deploy serverless endpoints",

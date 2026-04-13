@@ -3,51 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let featureEventTypes = [
-  'feature.created',
-  'feature.updated',
-  'feature.deleted',
-] as const;
+let featureEventTypes = ['feature.created', 'feature.updated', 'feature.deleted'] as const;
 
-export let featureEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Feature Events',
-    key: 'feature_events',
-    description: 'Triggered when features are created, updated, or deleted in the workspace. Includes changes to feature attributes such as status, name, description, timeframes, and custom field values.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of feature event'),
-    eventId: z.string().describe('Unique event identifier'),
-    featureId: z.string().describe('ID of the affected feature'),
-    featureName: z.string().optional().describe('Name of the feature'),
-    raw: z.record(z.string(), z.any()).optional().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    featureId: z.string().describe('ID of the affected feature'),
-    featureName: z.string().optional().describe('Name of the feature'),
-    feature: z.record(z.string(), z.any()).optional().describe('Full feature data if available'),
-  }))
+export let featureEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Feature Events',
+  key: 'feature_events',
+  description:
+    'Triggered when features are created, updated, or deleted in the workspace. Includes changes to feature attributes such as status, name, description, timeframes, and custom field values.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of feature event'),
+      eventId: z.string().describe('Unique event identifier'),
+      featureId: z.string().describe('ID of the affected feature'),
+      featureName: z.string().optional().describe('Name of the feature'),
+      raw: z.record(z.string(), z.any()).optional().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      featureId: z.string().describe('ID of the affected feature'),
+      featureName: z.string().optional().describe('Name of the feature'),
+      feature: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full feature data if available')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let webhookIds: string[] = [];
 
       for (let eventType of featureEventTypes) {
         let webhook = await client.createWebhook({
           notificationUrl: ctx.input.webhookBaseUrl,
-          eventType,
+          eventType
         });
         webhookIds.push(webhook.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
@@ -60,8 +61,8 @@ export let featureEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
 
       // Handle probe/verification request
       if (body.type === 'probe' || body.eventType === 'probe') {
@@ -74,17 +75,19 @@ export let featureEventsTrigger = SlateTrigger.create(
       let featureName = featureData?.name || featureData?.feature?.name;
 
       return {
-        inputs: [{
-          eventType,
-          eventId: body.id || `${eventType}-${featureId}-${Date.now()}`,
-          featureId,
-          featureName,
-          raw: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId: body.id || `${eventType}-${featureId}-${Date.now()}`,
+            featureId,
+            featureName,
+            raw: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let featureData: Record<string, any> | undefined = undefined;
 
       // If feature wasn't deleted, try to fetch current data
@@ -105,9 +108,9 @@ export let featureEventsTrigger = SlateTrigger.create(
         output: {
           featureId: ctx.input.featureId,
           featureName: ctx.input.featureName || featureData?.name,
-          feature: featureData || (rawData?.data as Record<string, any> | undefined),
-        },
+          feature: featureData || (rawData?.data as Record<string, any> | undefined)
+        }
       };
-    },
+    }
   })
   .build();

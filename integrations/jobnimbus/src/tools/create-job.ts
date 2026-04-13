@@ -3,41 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createJob = SlateTool.create(
-  spec,
-  {
-    name: 'Create Job',
-    key: 'create_job',
-    description: `Create a new job (project) in JobNimbus. Jobs must be associated with a contact. You can set the job name, address, workflow status, and more.`,
-    instructions: [
-      'A contactId (primary) is required to link the job to an existing contact.',
-      'Use the List Contacts or Search Contacts tool to find the contact ID first if needed.'
-    ]
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('The contact ID (jnid) to associate this job with'),
-    name: z.string().optional().describe('Job name/title'),
-    description: z.string().optional().describe('Job description'),
-    recordTypeName: z.string().optional().describe('Workflow type name'),
-    statusName: z.string().optional().describe('Workflow status name'),
-    addressLine1: z.string().optional().describe('Job site address line 1'),
-    addressLine2: z.string().optional().describe('Job site address line 2'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State'),
-    zip: z.string().optional().describe('Zip code'),
-    country: z.string().optional().describe('Country'),
-    sourceName: z.string().optional().describe('Lead source name'),
-    tags: z.array(z.string()).optional().describe('Tags to assign'),
-    salesRep: z.string().optional().describe('Sales rep user ID')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Unique JobNimbus ID of the created job'),
-    name: z.string().optional().describe('Job name'),
-    statusName: z.string().optional().describe('Current workflow status'),
-    dateCreated: z.number().optional().describe('Unix timestamp of creation')
-  }))
-  .handleInvocation(async (ctx) => {
+export let createJob = SlateTool.create(spec, {
+  name: 'Create Job',
+  key: 'create_job',
+  description: `Create a new job (project) in JobNimbus. Jobs must be associated with a contact. You can set the job name, address, workflow status, and more.`,
+  instructions: [
+    'A contactId (primary) is required to link the job to an existing contact.',
+    'Use the List Contacts or Search Contacts tool to find the contact ID first if needed.'
+  ]
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('The contact ID (jnid) to associate this job with'),
+      name: z.string().optional().describe('Job name/title'),
+      description: z.string().optional().describe('Job description'),
+      recordTypeName: z.string().optional().describe('Workflow type name'),
+      statusName: z.string().optional().describe('Workflow status name'),
+      addressLine1: z.string().optional().describe('Job site address line 1'),
+      addressLine2: z.string().optional().describe('Job site address line 2'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State'),
+      zip: z.string().optional().describe('Zip code'),
+      country: z.string().optional().describe('Country'),
+      sourceName: z.string().optional().describe('Lead source name'),
+      tags: z.array(z.string()).optional().describe('Tags to assign'),
+      salesRep: z.string().optional().describe('Sales rep user ID')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Unique JobNimbus ID of the created job'),
+      name: z.string().optional().describe('Job name'),
+      statusName: z.string().optional().describe('Current workflow status'),
+      dateCreated: z.number().optional().describe('Unix timestamp of creation')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = {
@@ -69,4 +70,5 @@ export let createJob = SlateTool.create(
       },
       message: `Created job **${result.name || result.jnid}** linked to contact ${ctx.input.contactId}.`
     };
-  }).build();
+  })
+  .build();

@@ -3,34 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUsers = SlateTool.create(
-  spec,
-  {
-    name: 'Get Workspace Users',
-    key: 'get_users',
-    description: `List users in the Clockify workspace. Filter by email, name, or status. Returns user profiles with roles and membership info.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Filter by email address'),
-    name: z.string().optional().describe('Filter by name (partial match)'),
-    status: z.enum(['ACTIVE', 'PENDING', 'DECLINED', 'INACTIVE']).optional().describe('Filter by user status'),
-    projectId: z.string().optional().describe('Filter users who have access to this project'),
-    page: z.number().optional().describe('Page number'),
-    pageSize: z.number().optional().describe('Entries per page')
-  }))
-  .output(z.object({
-    users: z.array(z.object({
-      userId: z.string(),
-      name: z.string(),
-      email: z.string(),
-      status: z.string().optional(),
-      profilePicture: z.string().optional()
-    })),
-    count: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+export let getUsers = SlateTool.create(spec, {
+  name: 'Get Workspace Users',
+  key: 'get_users',
+  description: `List users in the Clockify workspace. Filter by email, name, or status. Returns user profiles with roles and membership info.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Filter by email address'),
+      name: z.string().optional().describe('Filter by name (partial match)'),
+      status: z
+        .enum(['ACTIVE', 'PENDING', 'DECLINED', 'INACTIVE'])
+        .optional()
+        .describe('Filter by user status'),
+      projectId: z
+        .string()
+        .optional()
+        .describe('Filter users who have access to this project'),
+      page: z.number().optional().describe('Page number'),
+      pageSize: z.number().optional().describe('Entries per page')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(
+        z.object({
+          userId: z.string(),
+          name: z.string(),
+          email: z.string(),
+          status: z.string().optional(),
+          profilePicture: z.string().optional()
+        })
+      ),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -61,26 +70,25 @@ export let getUsers = SlateTool.create(
   })
   .build();
 
-export let getCurrentUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_current_user',
-    description: `Get the profile of the currently authenticated user, including their default workspace and settings.`,
-    tags: { readOnly: true }
-  }
-)
+export let getCurrentUser = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_current_user',
+  description: `Get the profile of the currently authenticated user, including their default workspace and settings.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string(),
-    name: z.string(),
-    email: z.string(),
-    profilePicture: z.string().optional(),
-    activeWorkspace: z.string().optional(),
-    defaultWorkspace: z.string().optional(),
-    timezone: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string(),
+      name: z.string(),
+      email: z.string(),
+      profilePicture: z.string().optional(),
+      activeWorkspace: z.string().optional(),
+      defaultWorkspace: z.string().optional(),
+      timezone: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

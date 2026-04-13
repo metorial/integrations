@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://app.goodbits.io/api/v1',
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -18,7 +18,7 @@ export class Client {
     let data = response.data;
     return {
       newsletterId: data.id,
-      name: data.name,
+      name: data.name
     };
   }
 
@@ -36,15 +36,15 @@ export class Client {
       subscriber: {
         email: params.email,
         first_name: params.firstName,
-        last_name: params.lastName,
-      },
+        last_name: params.lastName
+      }
     });
     let sub = response.data.subscriber;
     return {
       email: sub.email,
       firstName: sub.first_name,
       lastName: sub.last_name,
-      name: sub.name,
+      name: sub.name
     };
   }
 
@@ -57,13 +57,13 @@ export class Client {
   }> {
     let response = await this.axios.put(`/subscribers/${encodeURIComponent(params.email)}`, {
       subscriber: {
-        status: params.status,
-      },
+        status: params.status
+      }
     });
     let sub = response.data.subscriber || response.data;
     return {
       email: params.email,
-      status: sub.status || params.status,
+      status: sub.status || params.status
     };
   }
 
@@ -77,7 +77,7 @@ export class Client {
     return {
       active: data.active ?? 0,
       unsubscribed: data.unsubscribed ?? 0,
-      deleted: data.deleted ?? 0,
+      deleted: data.deleted ?? 0
     };
   }
 
@@ -99,22 +99,19 @@ export class Client {
         title: params.title,
         description: params.description,
         fetch_remote_thumbnail_url: params.fetchRemoteThumbnailUrl,
-        image_candidates: params.imageCandidates,
-      },
+        image_candidates: params.imageCandidates
+      }
     });
     let link = response.data.link || response.data;
     return {
       linkId: String(link.id ?? ''),
       url: link.url ?? params.url,
       title: link.title ?? '',
-      description: link.description ?? '',
+      description: link.description ?? ''
     };
   }
 
-  async listSentEmails(params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<{
+  async listSentEmails(params?: { offset?: number; limit?: number }): Promise<{
     emails: Array<{
       newsletterEmailId: string;
       subject: string;
@@ -136,16 +133,16 @@ export class Client {
     let emails = (data.emails || []).map((e: any) => ({
       newsletterEmailId: String(e.id),
       subject: e.subject ?? '',
-      sentAt: e.sent_at ?? '',
+      sentAt: e.sent_at ?? ''
     }));
 
     return {
       emails,
       meta: {
         total: data.meta?.total ?? emails.length,
-        offset: data.meta?.offset ?? (params?.offset ?? 0),
-        limit: data.meta?.limit ?? (params?.limit ?? 10),
-      },
+        offset: data.meta?.offset ?? params?.offset ?? 0,
+        limit: data.meta?.limit ?? params?.limit ?? 10
+      }
     };
   }
 
@@ -162,13 +159,15 @@ export class Client {
       engagementRate: number;
     }>;
   }> {
-    let response = await this.axios.get(`/emails/${encodeURIComponent(newsletterEmailId)}/analytics`);
+    let response = await this.axios.get(
+      `/emails/${encodeURIComponent(newsletterEmailId)}/analytics`
+    );
     let data = response.data;
 
     let trackedLinks = (data.newsletter_links || []).map((link: any) => ({
       url: link.url ?? '',
       uniqueClicks: link.unique_clicks ?? 0,
-      engagementRate: link.engagement_rate ?? 0,
+      engagementRate: link.engagement_rate ?? 0
     }));
 
     return {
@@ -178,7 +177,7 @@ export class Client {
       uniqueClicks: data.unique_clicks?.value ?? 0,
       engagementRate: data.engagement_rate?.value ?? 0,
       deltaPreviousEngagementRate: data.engagement_rate?.delta_previous ?? null,
-      trackedLinks,
+      trackedLinks
     };
   }
 }

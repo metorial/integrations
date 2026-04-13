@@ -10,12 +10,9 @@ import {
   nameToDomain,
   getLogo,
   checkRisk,
-  autocompleteCompany,
+  autocompleteCompany
 } from './tools';
-import {
-  enrichmentWebhook,
-  audienceWebhook,
-} from './triggers';
+import { enrichmentWebhook, audienceWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     nameToDomain,
     getLogo,
     checkRisk,
-    autocompleteCompany,
+    autocompleteCompany
   ],
-  triggers: [
-    enrichmentWebhook,
-    audienceWebhook,
-  ],
+  triggers: [enrichmentWebhook, audienceWebhook]
 });

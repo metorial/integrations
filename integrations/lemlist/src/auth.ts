@@ -2,17 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      token: z.string().describe('Your Lemlist API key. Found in Settings > Integrations in the Lemlist app.')
+      token: z
+        .string()
+        .describe('Your Lemlist API key. Found in Settings > Integrations in the Lemlist app.')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -24,12 +28,11 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.lemlist.com/api'
       });
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let encoded = Buffer.from(`:${ctx.output.token}`).toString('base64');
 
       let response = await apiAxios.get('/team', {
         headers: {
-          'Authorization': `Basic ${encoded}`
+          Authorization: `Basic ${encoded}`
         }
       });
 

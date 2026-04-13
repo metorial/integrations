@@ -3,44 +3,46 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let newMessage = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Message',
-    key: 'new_message',
-    description: 'Triggers when a new message is sent in one or more monitored Revolt channels. Captures the message content, author, embeds, attachments, and reply information.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('ID of the new message'),
-    channelId: z.string().describe('ID of the channel'),
-    authorId: z.string().describe('ID of the message author'),
-    content: z.string().optional().describe('Text content of the message'),
-    editedAt: z.string().optional().describe('ISO 8601 timestamp if the message was edited'),
-    hasAttachments: z.boolean().describe('Whether the message has attachments'),
-    hasEmbeds: z.boolean().describe('Whether the message has embeds'),
-    replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
-    mentions: z.array(z.string()).optional().describe('User IDs mentioned'),
-    pinned: z.boolean().optional().describe('Whether the message is pinned'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('ID of the message'),
-    channelId: z.string().describe('ID of the channel'),
-    authorId: z.string().describe('ID of the message author'),
-    content: z.string().optional().describe('Text content of the message'),
-    editedAt: z.string().optional().describe('ISO 8601 timestamp if the message was edited'),
-    hasAttachments: z.boolean().describe('Whether the message has attachments'),
-    hasEmbeds: z.boolean().describe('Whether the message has embeds'),
-    replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
-    mentions: z.array(z.string()).optional().describe('User IDs mentioned in the message'),
-    pinned: z.boolean().optional().describe('Whether the message is pinned'),
-  }))
+export let newMessage = SlateTrigger.create(spec, {
+  name: 'New Message',
+  key: 'new_message',
+  description:
+    'Triggers when a new message is sent in one or more monitored Revolt channels. Captures the message content, author, embeds, attachments, and reply information.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('ID of the new message'),
+      channelId: z.string().describe('ID of the channel'),
+      authorId: z.string().describe('ID of the message author'),
+      content: z.string().optional().describe('Text content of the message'),
+      editedAt: z.string().optional().describe('ISO 8601 timestamp if the message was edited'),
+      hasAttachments: z.boolean().describe('Whether the message has attachments'),
+      hasEmbeds: z.boolean().describe('Whether the message has embeds'),
+      replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
+      mentions: z.array(z.string()).optional().describe('User IDs mentioned'),
+      pinned: z.boolean().optional().describe('Whether the message is pinned')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('ID of the message'),
+      channelId: z.string().describe('ID of the channel'),
+      authorId: z.string().describe('ID of the message author'),
+      content: z.string().optional().describe('Text content of the message'),
+      editedAt: z.string().optional().describe('ISO 8601 timestamp if the message was edited'),
+      hasAttachments: z.boolean().describe('Whether the message has attachments'),
+      hasEmbeds: z.boolean().describe('Whether the message has embeds'),
+      replies: z.array(z.string()).optional().describe('IDs of messages this replies to'),
+      mentions: z.array(z.string()).optional().describe('User IDs mentioned in the message'),
+      pinned: z.boolean().optional().describe('Whether the message is pinned')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let state = ctx.state ?? {};
       let channelIds: string[] = state.channelIds ?? [];
@@ -60,7 +62,7 @@ export let newMessage = SlateTrigger.create(
       if (channelIds.length === 0) {
         return {
           inputs: [],
-          updatedState: { ...state, channelIds },
+          updatedState: { ...state, channelIds }
         };
       }
 
@@ -96,7 +98,7 @@ export let newMessage = SlateTrigger.create(
       if (!state.lastMessageIds) {
         return {
           inputs: [],
-          updatedState: { channelIds, lastMessageIds: newLastMessageIds },
+          updatedState: { channelIds, lastMessageIds: newLastMessageIds }
         };
       }
 
@@ -110,16 +112,16 @@ export let newMessage = SlateTrigger.create(
         hasEmbeds: Array.isArray(msg.embeds) && msg.embeds.length > 0,
         replies: (msg.replies ?? undefined) as string[] | undefined,
         mentions: (msg.mentions ?? undefined) as string[] | undefined,
-        pinned: (msg.pinned ?? undefined) as boolean | undefined,
+        pinned: (msg.pinned ?? undefined) as boolean | undefined
       }));
 
       return {
         inputs,
-        updatedState: { channelIds, lastMessageIds: newLastMessageIds },
+        updatedState: { channelIds, lastMessageIds: newLastMessageIds }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'message.created',
         id: ctx.input.messageId,
@@ -133,8 +135,9 @@ export let newMessage = SlateTrigger.create(
           hasEmbeds: ctx.input.hasEmbeds,
           replies: ctx.input.replies,
           mentions: ctx.input.mentions,
-          pinned: ctx.input.pinned,
-        },
+          pinned: ctx.input.pinned
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

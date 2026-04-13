@@ -15,14 +15,14 @@ import {
   manageEnvironment,
   manageBuildTrigger,
   searchSite,
-  getSiteInfo,
+  getSiteInfo
 } from './tools';
 import {
   recordEvents,
   modelEvents,
   uploadEvents,
   buildEvents,
-  environmentEvents,
+  environmentEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -42,13 +42,7 @@ export let provider = Slate.create({
     manageEnvironment,
     manageBuildTrigger,
     searchSite,
-    getSiteInfo,
+    getSiteInfo
   ],
-  triggers: [
-    recordEvents,
-    modelEvents,
-    uploadEvents,
-    buildEvents,
-    environmentEvents,
-  ],
+  triggers: [recordEvents, modelEvents, uploadEvents, buildEvents, environmentEvents]
 });

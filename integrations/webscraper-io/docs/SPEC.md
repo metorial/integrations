@@ -25,6 +25,7 @@ Sitemaps define the structure and rules for scraping a website, including start 
 ### Scraping Job Execution
 
 Users can create scraping jobs to execute a sitemap and extract data from the target website. Key configuration options include:
+
 - **Driver**: `fast` (skips JavaScript) or `fulljs` (executes JavaScript on pages).
 - **Proxy**: Choice of datacenter or residential proxies across many countries.
 - **Page load delay and request interval**: Controls timing between requests.

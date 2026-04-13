@@ -3,36 +3,38 @@ import { CabinPandaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newSubmission = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Form Submission',
-    key: 'new_submission',
-    description: 'Triggers when a new submission is received on any of the account\'s forms. Polls all forms for new submissions periodically.',
-  }
-)
-  .input(z.object({
-    submissionId: z.string().describe('Unique identifier for the submission'),
-    formId: z.string().describe('ID of the form the submission belongs to'),
-    formName: z.string().optional().describe('Name of the form'),
-    createdAt: z.string().optional().describe('When the submission was received'),
-    fields: z.any().optional().describe('Submitted field values'),
-    raw: z.any().optional().describe('Full submission object'),
-  }))
-  .output(z.object({
-    submissionId: z.string().describe('Unique identifier for the submission'),
-    formId: z.string().describe('ID of the form the submission belongs to'),
-    formName: z.string().optional().describe('Name of the form'),
-    createdAt: z.string().optional().describe('When the submission was received'),
-    fields: z.any().optional().describe('Submitted field values'),
-    raw: z.any().optional().describe('Full submission object'),
-  }))
+export let newSubmission = SlateTrigger.create(spec, {
+  name: 'New Form Submission',
+  key: 'new_submission',
+  description:
+    "Triggers when a new submission is received on any of the account's forms. Polls all forms for new submissions periodically."
+})
+  .input(
+    z.object({
+      submissionId: z.string().describe('Unique identifier for the submission'),
+      formId: z.string().describe('ID of the form the submission belongs to'),
+      formName: z.string().optional().describe('Name of the form'),
+      createdAt: z.string().optional().describe('When the submission was received'),
+      fields: z.any().optional().describe('Submitted field values'),
+      raw: z.any().optional().describe('Full submission object')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.string().describe('Unique identifier for the submission'),
+      formId: z.string().describe('ID of the form the submission belongs to'),
+      formName: z.string().optional().describe('Name of the form'),
+      createdAt: z.string().optional().describe('When the submission was received'),
+      fields: z.any().optional().describe('Submitted field values'),
+      raw: z.any().optional().describe('Full submission object')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CabinPandaClient({ token: ctx.auth.token });
 
       let knownIds: string[] = ctx.state?.knownSubmissionIds ?? [];
@@ -75,7 +77,7 @@ export let newSubmission = SlateTrigger.create(
                 formName,
                 createdAt: sub?.created_at,
                 fields: sub?.fields ?? sub?.data,
-                raw: sub,
+                raw: sub
               });
             }
           }
@@ -89,20 +91,20 @@ export let newSubmission = SlateTrigger.create(
         return {
           inputs: [],
           updatedState: {
-            knownSubmissionIds: allCurrentIds,
-          },
+            knownSubmissionIds: allCurrentIds
+          }
         };
       }
 
       return {
         inputs: newInputs,
         updatedState: {
-          knownSubmissionIds: allCurrentIds,
-        },
+          knownSubmissionIds: allCurrentIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'submission.created',
         id: ctx.input.submissionId,
@@ -112,8 +114,9 @@ export let newSubmission = SlateTrigger.create(
           formName: ctx.input.formName,
           createdAt: ctx.input.createdAt,
           fields: ctx.input.fields,
-          raw: ctx.input.raw,
-        },
+          raw: ctx.input.raw
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

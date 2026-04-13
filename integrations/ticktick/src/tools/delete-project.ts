@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteProject = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Project',
-    key: 'delete_project',
-    description: `Permanently delete a project and all its tasks from TickTick. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteProject = SlateTool.create(spec, {
+  name: 'Delete Project',
+  key: 'delete_project',
+  description: `Permanently delete a project and all its tasks from TickTick. This action cannot be undone.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project to delete'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('ID of the deleted project'),
-    deleted: z.boolean().describe('Whether the project was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project to delete')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('ID of the deleted project'),
+      deleted: z.boolean().describe('Whether the project was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.deleteProject(ctx.input.projectId);
@@ -30,9 +31,9 @@ export let deleteProject = SlateTool.create(
     return {
       output: {
         projectId: ctx.input.projectId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted project \`${ctx.input.projectId}\`.`,
+      message: `Deleted project \`${ctx.input.projectId}\`.`
     };
   })
   .build();

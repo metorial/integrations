@@ -3,37 +3,41 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createCognitoClient } from '../lib/helpers';
 
-export let manageGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group',
-    key: 'manage_group',
-    description: `Create, get, update, or delete a group in a Cognito user pool. Groups provide role-based access control and can be associated with IAM roles for identity pool authorization.`,
-    instructions: [
-      'Precedence is a non-negative integer where lower values indicate higher priority.',
-      'When multiple groups are assigned to a user, the group with the lowest precedence takes priority for IAM role selection.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('Operation to perform'),
-    userPoolId: z.string().describe('User pool ID'),
-    groupName: z.string().describe('Name of the group'),
-    description: z.string().optional().describe('Group description (for create/update)'),
-    precedence: z.number().optional().describe('Group precedence for IAM role resolution (lower = higher priority)'),
-    roleArn: z.string().optional().describe('IAM role ARN to associate with the group')
-  }))
-  .output(z.object({
-    groupName: z.string().optional(),
-    userPoolId: z.string().optional(),
-    description: z.string().optional(),
-    precedence: z.number().optional(),
-    roleArn: z.string().optional(),
-    creationDate: z.number().optional(),
-    lastModifiedDate: z.number().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageGroup = SlateTool.create(spec, {
+  name: 'Manage Group',
+  key: 'manage_group',
+  description: `Create, get, update, or delete a group in a Cognito user pool. Groups provide role-based access control and can be associated with IAM roles for identity pool authorization.`,
+  instructions: [
+    'Precedence is a non-negative integer where lower values indicate higher priority.',
+    'When multiple groups are assigned to a user, the group with the lowest precedence takes priority for IAM role selection.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'update', 'delete']).describe('Operation to perform'),
+      userPoolId: z.string().describe('User pool ID'),
+      groupName: z.string().describe('Name of the group'),
+      description: z.string().optional().describe('Group description (for create/update)'),
+      precedence: z
+        .number()
+        .optional()
+        .describe('Group precedence for IAM role resolution (lower = higher priority)'),
+      roleArn: z.string().optional().describe('IAM role ARN to associate with the group')
+    })
+  )
+  .output(
+    z.object({
+      groupName: z.string().optional(),
+      userPoolId: z.string().optional(),
+      description: z.string().optional(),
+      precedence: z.number().optional(),
+      roleArn: z.string().optional(),
+      creationDate: z.number().optional(),
+      lastModifiedDate: z.number().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createCognitoClient(ctx);
     let { action, userPoolId, groupName } = ctx.input;
 
@@ -96,4 +100,5 @@ export let manageGroup = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

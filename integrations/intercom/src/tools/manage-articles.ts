@@ -3,49 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageArticles = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Articles',
-    key: 'manage_articles',
-    description: `Create, update, or delete help center articles in Intercom. Articles power the help center and provide content for the Fin AI agent.
+export let manageArticles = SlateTool.create(spec, {
+  name: 'Manage Articles',
+  key: 'manage_articles',
+  description: `Create, update, or delete help center articles in Intercom. Articles power the help center and provide content for the Fin AI agent.
 Supports multilingual content through translated content fields.`,
-    instructions: [
-      'For "create", title and authorId are required.',
-      'Set state to "published" or "draft" to control visibility.',
-      'Use parentId and parentType to organize articles in collections.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+  instructions: [
+    'For "create", title and authorId are required.',
+    'Set state to "published" or "draft" to control visibility.',
+    'Use parentId and parentType to organize articles in collections.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    articleId: z.string().optional().describe('Article ID (required for update, delete)'),
-    title: z.string().optional().describe('Article title (required for create)'),
-    authorId: z.string().optional().describe('Author admin ID (required for create)'),
-    body: z.string().optional().describe('Article body (HTML)'),
-    description: z.string().optional().describe('Article description for search results'),
-    state: z.enum(['published', 'draft']).optional().describe('Article publication state'),
-    parentId: z.string().optional().describe('Parent collection or section ID'),
-    parentType: z.string().optional().describe('Parent type (e.g., "collection", "section")'),
-    translatedContent: z.record(z.string(), z.any()).optional().describe('Translated content keyed by locale')
-  }))
-  .output(z.object({
-    articleId: z.string().optional().describe('Article ID'),
-    title: z.string().optional().describe('Article title'),
-    authorId: z.string().optional().describe('Author ID'),
-    state: z.string().optional().describe('Article state'),
-    url: z.string().optional().describe('Article URL'),
-    parentId: z.string().optional().describe('Parent collection/section ID'),
-    parentType: z.string().optional().describe('Parent type'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether article was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      articleId: z.string().optional().describe('Article ID (required for update, delete)'),
+      title: z.string().optional().describe('Article title (required for create)'),
+      authorId: z.string().optional().describe('Author admin ID (required for create)'),
+      body: z.string().optional().describe('Article body (HTML)'),
+      description: z.string().optional().describe('Article description for search results'),
+      state: z.enum(['published', 'draft']).optional().describe('Article publication state'),
+      parentId: z.string().optional().describe('Parent collection or section ID'),
+      parentType: z
+        .string()
+        .optional()
+        .describe('Parent type (e.g., "collection", "section")'),
+      translatedContent: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Translated content keyed by locale')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.string().optional().describe('Article ID'),
+      title: z.string().optional().describe('Article title'),
+      authorId: z.string().optional().describe('Author ID'),
+      state: z.string().optional().describe('Article state'),
+      url: z.string().optional().describe('Article URL'),
+      parentId: z.string().optional().describe('Parent collection/section ID'),
+      parentType: z.string().optional().describe('Parent type'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether article was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
     let { action } = ctx.input;
 
@@ -97,7 +104,8 @@ Supports multilingual content through translated content fields.`,
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let mapArticle = (data: any) => ({
   articleId: data.id,

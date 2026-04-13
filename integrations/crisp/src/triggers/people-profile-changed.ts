@@ -3,32 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let peopleProfileChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'People Profile Changed',
-    key: 'people_profile_changed',
-    description: 'Triggers when a contact profile is created or updated in the Crisp CRM. Polls for recently updated profiles.',
-  }
-)
-  .input(z.object({
-    peopleId: z.string(),
-    email: z.string().optional(),
-    nickname: z.string().optional(),
-    updatedAt: z.string(),
-  }))
-  .output(z.object({
-    peopleId: z.string().describe('People profile ID'),
-    email: z.string().optional().describe('Contact email'),
-    nickname: z.string().optional().describe('Contact nickname'),
-    updatedAt: z.string().describe('When the profile was last updated'),
-  }))
+export let peopleProfileChanged = SlateTrigger.create(spec, {
+  name: 'People Profile Changed',
+  key: 'people_profile_changed',
+  description:
+    'Triggers when a contact profile is created or updated in the Crisp CRM. Polls for recently updated profiles.'
+})
+  .input(
+    z.object({
+      peopleId: z.string(),
+      email: z.string().optional(),
+      nickname: z.string().optional(),
+      updatedAt: z.string()
+    })
+  )
+  .output(
+    z.object({
+      peopleId: z.string().describe('People profile ID'),
+      email: z.string().optional().describe('Contact email'),
+      nickname: z.string().optional().describe('Contact nickname'),
+      updatedAt: z.string().describe('When the profile was last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
 
       let profiles = await client.listPeopleProfiles({ pageNumber: 1 });
@@ -36,7 +38,7 @@ export let peopleProfileChanged = SlateTrigger.create(
       let lastSeenTimestamp = ctx.state?.lastSeenTimestamp as string | undefined;
       let inputs: any[] = [];
 
-      for (let p of (profiles || [])) {
+      for (let p of profiles || []) {
         let updatedAt = p.updated_at ? String(p.updated_at) : undefined;
 
         if (lastSeenTimestamp && updatedAt && updatedAt <= lastSeenTimestamp) {
@@ -47,7 +49,7 @@ export let peopleProfileChanged = SlateTrigger.create(
           peopleId: p.people_id,
           email: p.email,
           nickname: p.person?.nickname,
-          updatedAt: updatedAt || '',
+          updatedAt: updatedAt || ''
         });
       }
 
@@ -58,12 +60,12 @@ export let peopleProfileChanged = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastSeenTimestamp: newTimestamp,
-        },
+          lastSeenTimestamp: newTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'people.updated',
         id: `${ctx.input.peopleId}-${ctx.input.updatedAt}`,
@@ -71,9 +73,9 @@ export let peopleProfileChanged = SlateTrigger.create(
           peopleId: ctx.input.peopleId,
           email: ctx.input.email,
           nickname: ctx.input.nickname,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

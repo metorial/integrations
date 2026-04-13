@@ -10,52 +10,77 @@ let jobResultSchema = z.object({
   link: z.string().optional().describe('Job listing URL'),
   description: z.string().optional().describe('Job description snippet'),
   via: z.string().optional().describe('Job board source (e.g., "via LinkedIn", "via Indeed")'),
-  detectedExtensions: z.object({
-    postedAt: z.string().optional().describe('When the job was posted'),
-    schedule: z.string().optional().describe('Work schedule (e.g., "Full-time", "Part-time")'),
-    salary: z.string().optional().describe('Salary information'),
-    workFromHome: z.boolean().optional().describe('Whether remote work is available'),
-  }).optional().describe('Detected job details'),
+  detectedExtensions: z
+    .object({
+      postedAt: z.string().optional().describe('When the job was posted'),
+      schedule: z
+        .string()
+        .optional()
+        .describe('Work schedule (e.g., "Full-time", "Part-time")'),
+      salary: z.string().optional().describe('Salary information'),
+      workFromHome: z.boolean().optional().describe('Whether remote work is available')
+    })
+    .optional()
+    .describe('Detected job details'),
   thumbnailUrl: z.string().optional().describe('Company logo URL'),
-  jobId: z.string().optional().describe('Google Jobs job ID for detailed lookup'),
+  jobId: z.string().optional().describe('Google Jobs job ID for detailed lookup')
 });
 
-export let jobsSearchTool = SlateTool.create(
-  spec,
-  {
-    name: 'Jobs Search',
-    key: 'jobs_search',
-    description: `Search Google Jobs for job listings. Returns job titles, companies, locations, descriptions, salary info, and job board sources. Supports geographic and keyword filtering.`,
-    tags: {
-      readOnly: true,
-    },
+export let jobsSearchTool = SlateTool.create(spec, {
+  name: 'Jobs Search',
+  key: 'jobs_search',
+  description: `Search Google Jobs for job listings. Returns job titles, companies, locations, descriptions, salary info, and job board sources. Supports geographic and keyword filtering.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Job search query (e.g., "software engineer", "marketing manager")'),
-    location: z.string().optional().describe('Location to search in (e.g., "New York, NY")'),
-    language: z.string().optional().describe('Language code (e.g., "en")'),
-    country: z.string().optional().describe('Country code (e.g., "us")'),
-    chips: z.string().optional().describe('Filter chips for refining results (e.g., date posted, job type)'),
-    startIndex: z.number().optional().describe('Start index for pagination (increments of 10)'),
-    noCache: z.boolean().optional().describe('Force fresh results'),
-  }))
-  .output(z.object({
-    jobs: z.array(jobResultSchema).describe('Job listing results'),
-    chipsFilters: z.array(z.object({
-      type: z.string().optional().describe('Filter type'),
-      options: z.array(z.object({
-        text: z.string().optional(),
-        value: z.string().optional(),
-      })).optional().describe('Filter options'),
-    })).optional().describe('Available filter chips for refining search'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .describe('Job search query (e.g., "software engineer", "marketing manager")'),
+      location: z.string().optional().describe('Location to search in (e.g., "New York, NY")'),
+      language: z.string().optional().describe('Language code (e.g., "en")'),
+      country: z.string().optional().describe('Country code (e.g., "us")'),
+      chips: z
+        .string()
+        .optional()
+        .describe('Filter chips for refining results (e.g., date posted, job type)'),
+      startIndex: z
+        .number()
+        .optional()
+        .describe('Start index for pagination (increments of 10)'),
+      noCache: z.boolean().optional().describe('Force fresh results')
+    })
+  )
+  .output(
+    z.object({
+      jobs: z.array(jobResultSchema).describe('Job listing results'),
+      chipsFilters: z
+        .array(
+          z.object({
+            type: z.string().optional().describe('Filter type'),
+            options: z
+              .array(
+                z.object({
+                  text: z.string().optional(),
+                  value: z.string().optional()
+                })
+              )
+              .optional()
+              .describe('Filter options')
+          })
+        )
+        .optional()
+        .describe('Available filter chips for refining search')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SerpApiClient({ apiKey: ctx.auth.token });
 
     let params: Record<string, any> = {
       engine: 'google_jobs',
-      q: ctx.input.query,
+      q: ctx.input.query
     };
 
     if (ctx.input.location) params.location = ctx.input.location;
@@ -74,29 +99,32 @@ export let jobsSearchTool = SlateTool.create(
       link: r.share_link || r.related_links?.[0]?.link,
       description: r.description,
       via: r.via,
-      detectedExtensions: r.detected_extensions ? {
-        postedAt: r.detected_extensions.posted_at,
-        schedule: r.detected_extensions.schedule_type,
-        salary: r.detected_extensions.salary,
-        workFromHome: r.detected_extensions.work_from_home,
-      } : undefined,
+      detectedExtensions: r.detected_extensions
+        ? {
+            postedAt: r.detected_extensions.posted_at,
+            schedule: r.detected_extensions.schedule_type,
+            salary: r.detected_extensions.salary,
+            workFromHome: r.detected_extensions.work_from_home
+          }
+        : undefined,
       thumbnailUrl: r.thumbnail,
-      jobId: r.job_id,
+      jobId: r.job_id
     }));
 
     let chipsFilters = (data.chips || []).map((c: any) => ({
       type: c.type,
       options: c.options?.map((o: any) => ({
         text: o.text,
-        value: o.value,
-      })),
+        value: o.value
+      }))
     }));
 
     return {
       output: {
         jobs,
-        chipsFilters: chipsFilters.length > 0 ? chipsFilters : undefined,
+        chipsFilters: chipsFilters.length > 0 ? chipsFilters : undefined
       },
-      message: `Jobs search for "${ctx.input.query}"${ctx.input.location ? ` in ${ctx.input.location}` : ''} returned **${jobs.length}** job listings.`,
+      message: `Jobs search for "${ctx.input.query}"${ctx.input.location ? ` in ${ctx.input.location}` : ''} returned **${jobs.length}** job listings.`
     };
-  }).build();
+  })
+  .build();

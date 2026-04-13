@@ -12,14 +12,14 @@ import {
   getPresence,
   updatePresence,
   listExtensions,
-  listPhoneNumbers,
+  listPhoneNumbers
 } from './tools';
 import {
   telephonyEvents,
   smsEvents,
   presenceEvents,
   messageEvents,
-  teamMessagingEvents,
+  teamMessagingEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -36,13 +36,7 @@ export let provider = Slate.create({
     getPresence,
     updatePresence,
     listExtensions,
-    listPhoneNumbers,
+    listPhoneNumbers
   ],
-  triggers: [
-    telephonyEvents,
-    smsEvents,
-    presenceEvents,
-    messageEvents,
-    teamMessagingEvents,
-  ],
+  triggers: [telephonyEvents, smsEvents, presenceEvents, messageEvents, teamMessagingEvents]
 });

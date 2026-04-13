@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getRunStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Run Status',
-    key: 'get_run_status',
-    description: `Get the current status and details of a specific project run. Returns the run status (PENDING, RUNNING, ERRORED, COMPLETED, KILLED), timestamps, and elapsed time.`,
-    tags: {
-      readOnly: true,
-    },
+export let getRunStatus = SlateTool.create(spec, {
+  name: 'Get Run Status',
+  key: 'get_run_status',
+  description: `Get the current status and details of a specific project run. Returns the run status (PENDING, RUNNING, ERRORED, COMPLETED, KILLED), timestamps, and elapsed time.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('UUID of the project'),
-    runId: z.string().describe('UUID of the run to check'),
-  }))
-  .output(z.object({
-    projectId: z.string(),
-    runId: z.string(),
-    runUrl: z.string(),
-    status: z.string(),
-    startTime: z.string().nullable(),
-    endTime: z.string().nullable(),
-    elapsedTime: z.number().nullable(),
-    traceId: z.string().nullable(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('UUID of the project'),
+      runId: z.string().describe('UUID of the run to check')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string(),
+      runId: z.string(),
+      runUrl: z.string(),
+      status: z.string(),
+      startTime: z.string().nullable(),
+      endTime: z.string().nullable(),
+      elapsedTime: z.number().nullable(),
+      traceId: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
     let run = await client.getRunStatus(ctx.input.projectId, ctx.input.runId);
 
@@ -41,9 +42,9 @@ export let getRunStatus = SlateTool.create(
         startTime: run.startTime,
         endTime: run.endTime,
         elapsedTime: run.elapsedTime,
-        traceId: run.traceId,
+        traceId: run.traceId
       },
-      message: `Run **${run.runId}** status: **${run.status}**${run.elapsedTime ? ` (${run.elapsedTime}ms)` : ''}.`,
+      message: `Run **${run.runId}** status: **${run.status}**${run.elapsedTime ? ` (${run.elapsedTime}ms)` : ''}.`
     };
   })
   .build();

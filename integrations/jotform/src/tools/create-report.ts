@@ -30,7 +30,7 @@ export let createReportTool = SlateTool.create(spec, {
       url: z.string().optional().describe('URL to access the report')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

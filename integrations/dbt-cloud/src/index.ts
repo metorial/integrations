@@ -32,7 +32,5 @@ export let provider = Slate.create({
     listUsersTool,
     manageWebhookTool
   ],
-  triggers: [
-    jobRunEventTrigger
-  ]
+  triggers: [jobRunEventTrigger]
 });

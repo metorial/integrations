@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    tokenType: z.enum(['oauth', 'api_key']).optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      tokenType: z.enum(['oauth', 'api_key']).optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Scoped OAuth',
@@ -13,12 +15,28 @@ export let auth = SlateAuth.create()
 
     scopes: [
       // Incidents
-      { title: 'Read Incidents', description: 'Read access to incidents', scope: 'incidents.read' },
-      { title: 'Write Incidents', description: 'Write access to incidents', scope: 'incidents.write' },
+      {
+        title: 'Read Incidents',
+        description: 'Read access to incidents',
+        scope: 'incidents.read'
+      },
+      {
+        title: 'Write Incidents',
+        description: 'Write access to incidents',
+        scope: 'incidents.write'
+      },
 
       // Services
-      { title: 'Read Services', description: 'Read access to services', scope: 'services.read' },
-      { title: 'Write Services', description: 'Write access to services', scope: 'services.write' },
+      {
+        title: 'Read Services',
+        description: 'Read access to services',
+        scope: 'services.read'
+      },
+      {
+        title: 'Write Services',
+        description: 'Write access to services',
+        scope: 'services.write'
+      },
 
       // Users
       { title: 'Read Users', description: 'Read access to users', scope: 'users.read' },
@@ -29,88 +47,184 @@ export let auth = SlateAuth.create()
       { title: 'Write Teams', description: 'Write access to teams', scope: 'teams.write' },
 
       // Schedules
-      { title: 'Read Schedules', description: 'Read access to on-call schedules', scope: 'schedules.read' },
-      { title: 'Write Schedules', description: 'Write access to on-call schedules', scope: 'schedules.write' },
+      {
+        title: 'Read Schedules',
+        description: 'Read access to on-call schedules',
+        scope: 'schedules.read'
+      },
+      {
+        title: 'Write Schedules',
+        description: 'Write access to on-call schedules',
+        scope: 'schedules.write'
+      },
 
       // Escalation Policies
-      { title: 'Read Escalation Policies', description: 'Read access to escalation policies', scope: 'escalation_policies.read' },
-      { title: 'Write Escalation Policies', description: 'Write access to escalation policies', scope: 'escalation_policies.write' },
+      {
+        title: 'Read Escalation Policies',
+        description: 'Read access to escalation policies',
+        scope: 'escalation_policies.read'
+      },
+      {
+        title: 'Write Escalation Policies',
+        description: 'Write access to escalation policies',
+        scope: 'escalation_policies.write'
+      },
 
       // Oncalls
-      { title: 'Read On-Calls', description: 'Read access to on-call information', scope: 'oncalls.read' },
+      {
+        title: 'Read On-Calls',
+        description: 'Read access to on-call information',
+        scope: 'oncalls.read'
+      },
 
       // Tags
       { title: 'Read Tags', description: 'Read access to tags', scope: 'tags.read' },
       { title: 'Write Tags', description: 'Write access to tags', scope: 'tags.write' },
 
       // Priorities
-      { title: 'Read Priorities', description: 'Read access to incident priorities', scope: 'priorities.read' },
+      {
+        title: 'Read Priorities',
+        description: 'Read access to incident priorities',
+        scope: 'priorities.read'
+      },
 
       // Extensions
-      { title: 'Read Extensions', description: 'Read access to extensions', scope: 'extensions.read' },
-      { title: 'Write Extensions', description: 'Write access to extensions', scope: 'extensions.write' },
+      {
+        title: 'Read Extensions',
+        description: 'Read access to extensions',
+        scope: 'extensions.read'
+      },
+      {
+        title: 'Write Extensions',
+        description: 'Write access to extensions',
+        scope: 'extensions.write'
+      },
 
       // Webhook Subscriptions
-      { title: 'Read Webhook Subscriptions', description: 'Read access to webhook subscriptions', scope: 'webhook_subscriptions.read' },
-      { title: 'Write Webhook Subscriptions', description: 'Write access to webhook subscriptions', scope: 'webhook_subscriptions.write' },
+      {
+        title: 'Read Webhook Subscriptions',
+        description: 'Read access to webhook subscriptions',
+        scope: 'webhook_subscriptions.read'
+      },
+      {
+        title: 'Write Webhook Subscriptions',
+        description: 'Write access to webhook subscriptions',
+        scope: 'webhook_subscriptions.write'
+      },
 
       // Analytics
-      { title: 'Read Analytics', description: 'Read access to analytics data', scope: 'analytics.read' },
+      {
+        title: 'Read Analytics',
+        description: 'Read access to analytics data',
+        scope: 'analytics.read'
+      },
 
       // Audit
-      { title: 'Read Audit Records', description: 'Read access to audit trail records', scope: 'audit.read' },
+      {
+        title: 'Read Audit Records',
+        description: 'Read access to audit trail records',
+        scope: 'audit.read'
+      },
 
       // Event Orchestration
-      { title: 'Read Event Orchestrations', description: 'Read access to event orchestration rules', scope: 'event_orchestrations.read' },
-      { title: 'Write Event Orchestrations', description: 'Write access to event orchestration rules', scope: 'event_orchestrations.write' },
+      {
+        title: 'Read Event Orchestrations',
+        description: 'Read access to event orchestration rules',
+        scope: 'event_orchestrations.read'
+      },
+      {
+        title: 'Write Event Orchestrations',
+        description: 'Write access to event orchestration rules',
+        scope: 'event_orchestrations.write'
+      },
 
       // Custom Fields
-      { title: 'Read Custom Fields', description: 'Read access to custom fields', scope: 'custom_fields.read' },
-      { title: 'Write Custom Fields', description: 'Write access to custom fields', scope: 'custom_fields.write' },
+      {
+        title: 'Read Custom Fields',
+        description: 'Read access to custom fields',
+        scope: 'custom_fields.read'
+      },
+      {
+        title: 'Write Custom Fields',
+        description: 'Write access to custom fields',
+        scope: 'custom_fields.write'
+      },
 
       // Maintenance Windows
-      { title: 'Read Maintenance Windows', description: 'Read access to maintenance windows', scope: 'maintenance_windows.read' },
-      { title: 'Write Maintenance Windows', description: 'Write access to maintenance windows', scope: 'maintenance_windows.write' },
+      {
+        title: 'Read Maintenance Windows',
+        description: 'Read access to maintenance windows',
+        scope: 'maintenance_windows.read'
+      },
+      {
+        title: 'Write Maintenance Windows',
+        description: 'Write access to maintenance windows',
+        scope: 'maintenance_windows.write'
+      },
 
       // Notifications
-      { title: 'Read Notifications', description: 'Read access to notifications', scope: 'notifications.read' },
+      {
+        title: 'Read Notifications',
+        description: 'Read access to notifications',
+        scope: 'notifications.read'
+      },
 
       // Incident Workflows
-      { title: 'Read Incident Workflows', description: 'Read access to incident workflows', scope: 'incident_workflows.read' },
-      { title: 'Write Incident Workflows', description: 'Write access to incident workflows', scope: 'incident_workflows.write' },
+      {
+        title: 'Read Incident Workflows',
+        description: 'Read access to incident workflows',
+        scope: 'incident_workflows.read'
+      },
+      {
+        title: 'Write Incident Workflows',
+        description: 'Write access to incident workflows',
+        scope: 'incident_workflows.write'
+      }
     ],
 
     inputSchema: z.object({
-      subdomain: z.string().describe('Your PagerDuty subdomain (e.g., "yourcompany" from yourcompany.pagerduty.com)'),
+      subdomain: z
+        .string()
+        .describe(
+          'Your PagerDuty subdomain (e.g., "yourcompany" from yourcompany.pagerduty.com)'
+        )
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
-        scope: ctx.scopes.map(s => `as_account-${ctx.input.subdomain ? 'us' : 'us'}.${ctx.input.subdomain} ${s}`).join(' '),
-        state: ctx.state,
+        scope: ctx.scopes
+          .map(
+            s => `as_account-${ctx.input.subdomain ? 'us' : 'us'}.${ctx.input.subdomain} ${s}`
+          )
+          .join(' '),
+        state: ctx.state
       });
 
       return {
         url: `https://app.pagerduty.com/oauth/authorize?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let client = createAxios({ baseURL: 'https://app.pagerduty.com' });
 
-      let response = await client.post('/oauth/token', {
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let response = await client.post(
+        '/oauth/token',
+        {
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data as {
         access_token?: string;
@@ -127,23 +241,27 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          tokenType: 'oauth' as const,
+          tokenType: 'oauth' as const
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let client = createAxios({ baseURL: 'https://app.pagerduty.com' });
 
-      let response = await client.post('/oauth/token', {
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.token,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let response = await client.post(
+        '/oauth/token',
+        {
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.token,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data as {
         access_token?: string;
@@ -154,26 +272,32 @@ export let auth = SlateAuth.create()
       };
 
       if (!data.access_token) {
-        throw new Error(`PagerDuty token refresh error: ${data.error || 'No access token returned'}`);
+        throw new Error(
+          `PagerDuty token refresh error: ${data.error || 'No access token returned'}`
+        );
       }
 
       return {
         output: {
           token: data.access_token,
-          tokenType: 'oauth' as const,
+          tokenType: 'oauth' as const
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; tokenType?: string }; input: { subdomain: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; tokenType?: string };
+      input: { subdomain: string };
+      scopes: string[];
+    }) => {
       let client = createAxios({ baseURL: 'https://api.pagerduty.com' });
 
       let response = await client.get('/users/me', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       let data = response.data as {
@@ -190,10 +314,10 @@ export let auth = SlateAuth.create()
           id: data.user?.id,
           email: data.user?.email,
           name: data.user?.name,
-          imageUrl: data.user?.avatar_url,
-        },
+          imageUrl: data.user?.avatar_url
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -201,19 +325,22 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('PagerDuty REST API key (20-character string)'),
+      token: z.string().describe('PagerDuty REST API key (20-character string)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
-          tokenType: 'api_key' as const,
-        },
+          tokenType: 'api_key' as const
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; tokenType?: string }; input: { token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; tokenType?: string };
+      input: { token: string };
+    }) => {
       let client = createAxios({ baseURL: 'https://api.pagerduty.com' });
 
       // API key auth uses Token token=... format - try to get current user
@@ -223,8 +350,8 @@ export let auth = SlateAuth.create()
         let response = await client.get('/abilities', {
           headers: {
             Authorization: `Token token=${ctx.output.token}`,
-            'Content-Type': 'application/json',
-          },
+            'Content-Type': 'application/json'
+          }
         });
 
         let data = response.data as { abilities?: string[] };
@@ -232,15 +359,15 @@ export let auth = SlateAuth.create()
         return {
           profile: {
             name: 'API Key User',
-            abilities: data.abilities,
-          },
+            abilities: data.abilities
+          }
         };
       } catch {
         return {
           profile: {
-            name: 'API Key User',
-          },
+            name: 'API Key User'
+          }
         };
       }
-    },
+    }
   });

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   convertFile,
@@ -9,11 +8,9 @@ import {
   manageTask,
   getFileInfo,
   captureWebsite,
-  getAccount,
+  getAccount
 } from './tools';
-import { taskCompleted,
-  inboundWebhook,
-} from './triggers';
+import { taskCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -25,10 +22,7 @@ export let provider = Slate.create({
     manageTask,
     getFileInfo,
     captureWebsite,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    inboundWebhook,
-    taskCompleted,
-  ],
+  triggers: [inboundWebhook, taskCompleted]
 });

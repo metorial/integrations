@@ -3,21 +3,18 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createCheckoutTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Checkout',
-    key: 'create_checkout',
-    description: `Initiate a new checkout session for an event by selecting ticket types and quantities. Optionally apply a discount code. Returns a checkout ID and transaction summary needed for the next steps (fill order, then confirm checkout).`,
-    instructions: [
-      'Use "Prepare Checkout" first to get available ticket type IDs.',
-      'After creating, use "Fill Order" to submit buyer and attendee details, then "Confirm Checkout" to finalize.',
-    ],
-    tags: {
-      destructive: false,
-    },
-  },
-)
+export let createCheckoutTool = SlateTool.create(spec, {
+  name: 'Create Checkout',
+  key: 'create_checkout',
+  description: `Initiate a new checkout session for an event by selecting ticket types and quantities. Optionally apply a discount code. Returns a checkout ID and transaction summary needed for the next steps (fill order, then confirm checkout).`,
+  instructions: [
+    'Use "Prepare Checkout" first to get available ticket type IDs.',
+    'After creating, use "Fill Order" to submit buyer and attendee details, then "Confirm Checkout" to finalize.'
+  ],
+  tags: {
+    destructive: false
+  }
+})
   .input(
     z.object({
       eventId: z.number().describe('The event ID'),
@@ -26,12 +23,12 @@ export let createCheckoutTool = SlateTool.create(
         .array(
           z.object({
             ticketTypeId: z.number().describe('Ticket type ID'),
-            quantity: z.number().describe('Number of tickets'),
-          }),
+            quantity: z.number().describe('Number of tickets')
+          })
         )
         .describe('Ticket types and quantities to purchase'),
-      discountCode: z.string().optional().describe('Optional discount/promo code'),
-    }),
+      discountCode: z.string().optional().describe('Optional discount/promo code')
+    })
   )
   .output(
     z.object({
@@ -45,29 +42,32 @@ export let createCheckoutTool = SlateTool.create(
       tickets: z
         .array(
           z.object({
-            ticketPriceId: z.number().optional().describe('Ticket price ID (use in fill order)'),
+            ticketPriceId: z
+              .number()
+              .optional()
+              .describe('Ticket price ID (use in fill order)'),
             ticketTypeId: z.number().optional().describe('Ticket type ID'),
-            ticketTypeName: z.string().optional().describe('Ticket type name'),
-          }),
+            ticketTypeName: z.string().optional().describe('Ticket type name')
+          })
         )
         .optional()
-        .describe('Tickets in the checkout'),
-    }),
+        .describe('Tickets in the checkout')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.createCheckout({
       eventId: ctx.input.eventId,
       eventDateId: ctx.input.eventDateId,
       ticketTypes: ctx.input.ticketTypes,
-      discountCode: ctx.input.discountCode,
+      discountCode: ctx.input.discountCode
     });
 
     let tickets = data.tickets?.map((t: any) => ({
       ticketPriceId: t.ticket_price_id,
       ticketTypeId: t.ticket_type_id,
-      ticketTypeName: t.ticket_type_name,
+      ticketTypeName: t.ticket_type_name
     }));
 
     return {
@@ -79,8 +79,9 @@ export let createCheckoutTool = SlateTool.create(
         transactionDiscount: data.transaction_discount,
         eventzillaFee: data.eventzilla_fee,
         currency: data.currency,
-        tickets,
+        tickets
       },
-      message: `Checkout **${data.checkout_id}** created. Total: ${data.currency}${data.transaction_total}. Use "Fill Order" next.`,
+      message: `Checkout **${data.checkout_id}** created. Total: ${data.currency}${data.transaction_total}. Use "Fill Order" next.`
     };
-  }).build();
+  })
+  .build();

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   sendChatCompletion,
@@ -15,11 +14,9 @@ import {
   listGuardrails,
   createGuardrail,
   updateGuardrail,
-  deleteGuardrail,
+  deleteGuardrail
 } from './tools';
-import { creditBalanceChange,
-  inboundWebhook,
-} from './triggers';
+import { creditBalanceChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     listGuardrails,
     createGuardrail,
     updateGuardrail,
-    deleteGuardrail,
+    deleteGuardrail
   ],
-  triggers: [
-    inboundWebhook,
-    creditBalanceChange,
-  ],
+  triggers: [inboundWebhook, creditBalanceChange]
 });

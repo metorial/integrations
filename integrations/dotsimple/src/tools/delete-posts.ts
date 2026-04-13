@@ -3,32 +3,31 @@ import { DotSimpleClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deletePosts = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Posts',
-    key: 'delete_posts',
-    description: `Delete one or more social media posts from the workspace. Supports both single and bulk deletion by providing post UUIDs.`,
-    constraints: [
-      'This action is irreversible. Deleted posts cannot be recovered.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deletePosts = SlateTool.create(spec, {
+  name: 'Delete Posts',
+  key: 'delete_posts',
+  description: `Delete one or more social media posts from the workspace. Supports both single and bulk deletion by providing post UUIDs.`,
+  constraints: ['This action is irreversible. Deleted posts cannot be recovered.'],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    postUuids: z.array(z.string()).min(1).describe('Array of post UUIDs to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-    deletedCount: z.number().describe('Number of posts deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      postUuids: z.array(z.string()).min(1).describe('Array of post UUIDs to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful'),
+      deletedCount: z.number().describe('Number of posts deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DotSimpleClient({
       token: ctx.auth.token,
-      workspaceId: ctx.config.workspaceId,
+      workspaceId: ctx.config.workspaceId
     });
 
     if (ctx.input.postUuids.length === 1) {
@@ -40,9 +39,9 @@ export let deletePosts = SlateTool.create(
     return {
       output: {
         success: true,
-        deletedCount: ctx.input.postUuids.length,
+        deletedCount: ctx.input.postUuids.length
       },
-      message: `Successfully deleted **${ctx.input.postUuids.length}** post(s).`,
+      message: `Successfully deleted **${ctx.input.postUuids.length}** post(s).`
     };
   })
   .build();

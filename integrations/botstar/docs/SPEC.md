@@ -71,24 +71,31 @@ BotStar supports webhook-based event subscriptions that can be configured throug
 BotStar currently supports the following event triggers:
 
 ### New Checkpoint Record
+
 Triggers when a user reaches a checkpoint in the chatbot flow. Checkpoints are data collection points in the conversation where user-provided information is saved. You can configure which specific checkpoint to listen to.
 
 ### New Subscriber
+
 Triggers when a user subscribes to receive broadcast messages from the chatbot.
 
 ### Updated User Attribute
+
 Triggers when a specified user attribute has been added or updated in the audience. You can select which attribute to monitor.
 
 ### New Request for Human Takeover
+
 Triggers when a user requests to contact a human operator.
 
 ### New Tag on User
+
 Triggers when a new tag is added to a user.
 
 ### New CMS Item
+
 Triggers on new CMS items. Fires when a new item is created in a CMS entity.
 
 ### User Capture Response
+
 Triggers when a user meets a User Capture Response Block. Fires when users provide input at a capture point in the chatbot flow.
 
 All webhook events support two environment modes: **Live** (data from real users on live platforms) and **Test** (data generated via local testing/preview in BotStar).

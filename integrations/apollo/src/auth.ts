@@ -2,21 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Apollo.io API key. Create one in Settings > Integrations > API Keys.')
+      apiKey: z
+        .string()
+        .describe('Apollo.io API key. Create one in Settings > Integrations > API Keys.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey
@@ -74,14 +78,14 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join(' ');
       let url = `https://app.apollo.io/#/oauth/authorize?client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&response_type=code&scope=${encodeURIComponent(scopeString)}&state=${encodeURIComponent(ctx.state)}`;
 
       return { url };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let client = createAxios({
         baseURL: 'https://app.apollo.io/api/v1'
       });
@@ -108,7 +112,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let client = createAxios({
         baseURL: 'https://app.apollo.io/api/v1'
       });
@@ -134,14 +138,18 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let client = createAxios({
         baseURL: 'https://api.apollo.io/api/v1'
       });
 
       let response = await client.get('/users/api_profile', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 

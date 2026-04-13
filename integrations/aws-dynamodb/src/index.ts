@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createTable,
@@ -18,11 +17,9 @@ import {
   batchGetItems,
   transactWrite,
   manageTtl,
-  manageBackups,
+  manageBackups
 } from './tools';
-import { streamChanges,
-  inboundWebhook,
-} from './triggers';
+import { streamChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,10 +40,7 @@ export let provider = Slate.create({
     batchGetItems,
     transactWrite,
     manageTtl,
-    manageBackups,
+    manageBackups
   ],
-  triggers: [
-    inboundWebhook,
-    streamChanges,
-  ],
+  triggers: [inboundWebhook, streamChanges]
 });

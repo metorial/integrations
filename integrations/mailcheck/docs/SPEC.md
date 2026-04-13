@@ -21,6 +21,7 @@ Authorization: Bearer YOUR_API_KEY
 Base URL: `https://api.mailcheck.co/v1`
 
 Example request:
+
 ```
 GET https://api.mailcheck.co/v1/emails/operations
 Authorization: Bearer YOUR_API_KEY

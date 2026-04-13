@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    domain: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      domain: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -13,10 +15,12 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('Your MOCO API key (personal or account key)'),
-      domain: z.string().describe('Your MOCO subdomain (e.g., "mycompany" for mycompany.mocoapp.com)')
+      domain: z
+        .string()
+        .describe('Your MOCO subdomain (e.g., "mycompany" for mycompany.mocoapp.com)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -25,13 +29,16 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; domain: string }; input: { token: string; domain: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; domain: string };
+      input: { token: string; domain: string };
+    }) => {
       let http = createAxios({
         baseURL: `https://${ctx.output.domain}.mocoapp.com/api/v1`
       });
 
       let headers = {
-        'Authorization': `Token token=${ctx.output.token}`,
+        Authorization: `Token token=${ctx.output.token}`,
         'Content-Type': 'application/json'
       };
 

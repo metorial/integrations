@@ -9,7 +9,7 @@ export class EventsClient {
     this.axios = createAxios({
       baseURL: 'https://events.twilio.com/v1',
       headers: {
-        'Authorization': `Basic ${token}`,
+        Authorization: `Basic ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });

@@ -14,8 +14,8 @@ export class Client {
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -56,17 +56,20 @@ export class Client {
     return response.data;
   }
 
-  async updateMessage(messageId: string, updates: {
-    isRead?: boolean;
-    importance?: 'low' | 'normal' | 'high';
-    categories?: string[];
-    flag?: { flagStatus: 'notFlagged' | 'complete' | 'flagged' };
-    subject?: string;
-    body?: ItemBody;
-    toRecipients?: Recipient[];
-    ccRecipients?: Recipient[];
-    bccRecipients?: Recipient[];
-  }): Promise<Message> {
+  async updateMessage(
+    messageId: string,
+    updates: {
+      isRead?: boolean;
+      importance?: 'low' | 'normal' | 'high';
+      categories?: string[];
+      flag?: { flagStatus: 'notFlagged' | 'complete' | 'flagged' };
+      subject?: string;
+      body?: ItemBody;
+      toRecipients?: Recipient[];
+      ccRecipients?: Recipient[];
+      bccRecipients?: Recipient[];
+    }
+  ): Promise<Message> {
     let response = await this.axios.patch(`/me/messages/${messageId}`, updates);
     return response.data;
   }
@@ -77,7 +80,7 @@ export class Client {
 
   async moveMessage(messageId: string, destinationFolderId: string): Promise<Message> {
     let response = await this.axios.post(`/me/messages/${messageId}/move`, {
-      destinationId: destinationFolderId,
+      destinationId: destinationFolderId
     });
     return response.data;
   }
@@ -85,7 +88,7 @@ export class Client {
   async replyToMessage(messageId: string, comment: string, replyAll?: boolean): Promise<void> {
     let endpoint = replyAll ? 'replyAll' : 'reply';
     await this.axios.post(`/me/messages/${messageId}/${endpoint}`, {
-      comment,
+      comment
     });
   }
 
@@ -105,7 +108,7 @@ export class Client {
 
   async listMessagesByConversation(
     conversationId: string,
-    params?: { select?: string[]; orderby?: string; pageSize?: number },
+    params?: { select?: string[]; orderby?: string; pageSize?: number }
   ): Promise<Message[]> {
     let escaped = escapeODataString(conversationId);
     let filter = `conversationId eq '${escaped}'`;
@@ -124,8 +127,8 @@ export class Client {
               $filter: filter,
               $orderby: orderby,
               $top: String(pageSize),
-              ...(select?.length ? { $select: select.join(',') } : {}),
-            },
+              ...(select?.length ? { $select: select.join(',') } : {})
+            }
           })
         : await this.axios.get<GraphListResponse<Message>>(nextLink!);
 

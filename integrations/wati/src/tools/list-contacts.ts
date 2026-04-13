@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 let customParamSchema = z.object({
   name: z.string().describe('Parameter name.'),
-  value: z.string().describe('Parameter value.'),
+  value: z.string().describe('Parameter value.')
 });
 
 let contactSchema = z.object({
@@ -23,39 +23,46 @@ let contactSchema = z.object({
   teams: z.array(z.string()).optional().describe('Assigned team names.'),
   segments: z.array(z.string()).optional().describe('Associated segments.'),
   customParams: z.array(customParamSchema).optional().describe('Custom parameters.'),
-  channelType: z.string().optional().describe('Channel type (whatsapp, instagram, messenger).'),
+  channelType: z.string().optional().describe('Channel type (whatsapp, instagram, messenger).')
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Retrieve a paginated list of contacts stored in Wati. Returns contact details including name, phone number, status, custom parameters, and team assignments.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Retrieve a paginated list of contacts stored in Wati. Returns contact details including name, phone number, status, custom parameters, and team assignments.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    pageNumber: z.number().int().min(1).default(1).describe('Page number (1-based).'),
-    pageSize: z.number().int().min(1).max(100).default(50).describe('Number of contacts per page (max 100).'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema).describe('List of contacts.'),
-    pageNumber: z.number().optional().describe('Current page number.'),
-    pageSize: z.number().optional().describe('Items per page.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pageNumber: z.number().int().min(1).default(1).describe('Page number (1-based).'),
+      pageSize: z
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .default(50)
+        .describe('Number of contacts per page (max 100).')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSchema).describe('List of contacts.'),
+      pageNumber: z.number().optional().describe('Current page number.'),
+      pageSize: z.number().optional().describe('Items per page.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      apiEndpoint: ctx.config.apiEndpoint,
+      apiEndpoint: ctx.config.apiEndpoint
     });
 
     let result = await client.listContacts({
       pageNumber: ctx.input.pageNumber,
-      pageSize: ctx.input.pageSize,
+      pageSize: ctx.input.pageSize
     });
 
     let contacts = (result?.contact_list || []).map((c: any) => ({
@@ -73,16 +80,16 @@ export let listContacts = SlateTool.create(
       teams: c.teams,
       segments: c.segments,
       customParams: c.custom_params,
-      channelType: c.channel_type,
+      channelType: c.channel_type
     }));
 
     return {
       output: {
         contacts,
         pageNumber: result?.page_number,
-        pageSize: result?.page_size,
+        pageSize: result?.page_size
       },
-      message: `Retrieved **${contacts.length}** contacts (page ${ctx.input.pageNumber}).`,
+      message: `Retrieved **${contacts.length}** contacts (page ${ctx.input.pageNumber}).`
     };
   })
   .build();

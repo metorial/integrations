@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.phantombuster.com/api/v2',
       headers: {
         'X-Phantombuster-Key-1': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -17,7 +17,7 @@ export class Client {
 
   async fetchAgent(agentId: string): Promise<any> {
     let response = await this.axios.get('/agents/fetch', {
-      params: { id: agentId },
+      params: { id: agentId }
     });
     return response.data;
   }
@@ -51,7 +51,7 @@ export class Client {
 
   async fetchAgentOutput(agentId: string): Promise<any> {
     let response = await this.axios.get('/agents/fetch-output', {
-      params: { id: agentId },
+      params: { id: agentId }
     });
     return response.data;
   }
@@ -60,7 +60,7 @@ export class Client {
 
   async fetchContainer(containerId: string): Promise<any> {
     let response = await this.axios.get('/containers/fetch', {
-      params: { id: containerId },
+      params: { id: containerId }
     });
     return response.data;
   }
@@ -76,14 +76,14 @@ export class Client {
 
   async fetchContainerOutput(containerId: string): Promise<any> {
     let response = await this.axios.get('/containers/fetch-output', {
-      params: { id: containerId },
+      params: { id: containerId }
     });
     return response.data;
   }
 
   async fetchContainerResultObject(containerId: string): Promise<any> {
     let response = await this.axios.get('/containers/fetch-result-object', {
-      params: { id: containerId },
+      params: { id: containerId }
     });
     return response.data;
   }
@@ -104,7 +104,7 @@ export class Client {
 
   async fetchList(listId: string): Promise<any> {
     let response = await this.axios.get('/org-storage/lists/fetch', {
-      params: { id: listId },
+      params: { id: listId }
     });
     return response.data;
   }
@@ -120,7 +120,10 @@ export class Client {
 
   // ── Storage: Leads ──
 
-  async fetchLeadsByList(listId: string, options?: { limit?: number; offset?: number }): Promise<any> {
+  async fetchLeadsByList(
+    listId: string,
+    options?: { limit?: number; offset?: number }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (options?.limit !== undefined) {
       body.limit = options.limit;
@@ -150,7 +153,7 @@ export class Client {
 
   async fetchScript(scriptId: string): Promise<any> {
     let response = await this.axios.get('/scripts/fetch', {
-      params: { id: scriptId },
+      params: { id: scriptId }
     });
     return response.data;
   }
@@ -171,7 +174,7 @@ export class Client {
 
   async fetchScriptCode(scriptId: string): Promise<any> {
     let response = await this.axios.get('/scripts/code', {
-      params: { id: scriptId },
+      params: { id: scriptId }
     });
     return response.data;
   }

@@ -5,7 +5,9 @@ Comprehensive research and documentation for TomTom APIs including exact endpoin
 ## Documentation Files
 
 ### 1. **API_RESEARCH.md** (32 KB) - Complete Reference
+
 The most comprehensive document containing:
+
 - Detailed specifications for all 5 APIs
 - Complete endpoint URLs and patterns
 - All query parameters with types and descriptions
@@ -18,6 +20,7 @@ The most comprehensive document containing:
 **Use this for:** Development integration, detailed implementation reference, exact parameter specifications
 
 **Sections:**
+
 1. Traffic Flow API - Flow Segment Data endpoint
 2. Traffic Incidents API - Incident Details endpoint
 3. Geofencing API - Projects, Fences, Objects, Report services
@@ -27,7 +30,9 @@ The most comprehensive document containing:
 ---
 
 ### 2. **ENDPOINTS_SUMMARY.md** (12 KB) - Quick Reference Tables
+
 Quick lookup tables for all endpoints with:
+
 - Endpoint names and HTTP methods
 - URL patterns
 - Key parameters
@@ -39,6 +44,7 @@ Quick lookup tables for all endpoints with:
 **Use this for:** Quick reference during development, API explorer, endpoint lookup
 
 **Includes:**
+
 - Complete endpoints summary table
 - Authentication summary
 - Request/response formats
@@ -49,7 +55,9 @@ Quick lookup tables for all endpoints with:
 ---
 
 ### 3. **API_INDEX.md** (8 KB) - Navigation Guide
+
 Quick navigation and overview of all APIs:
+
 - One-page index of all endpoints
 - Key endpoints for each API
 - Authentication reference
@@ -62,7 +70,9 @@ Quick navigation and overview of all APIs:
 ---
 
 ### 4. **SPEC.md** (8 KB) - General Overview
+
 General specification and feature overview:
+
 - TomTom service overview
 - Authentication methods
 - Feature descriptions
@@ -78,6 +88,7 @@ General specification and feature overview:
 ### APIs Covered
 
 #### 1. Traffic Flow API
+
 - **Purpose:** Real-time traffic speed and travel time data
 - **Key Endpoint:** `GET /traffic/services/4/flowSegmentData/{style}/{zoom}/{format}`
 - **Parameters:** point, style, zoom, format, unit, thickness
@@ -85,6 +96,7 @@ General specification and feature overview:
 - **Status:** Active
 
 #### 2. Traffic Incidents API
+
 - **Purpose:** Traffic jams, accidents, incidents, and delays
 - **Key Endpoint:** `GET/POST /traffic/services/5/incidentDetails`
 - **Parameters:** bbox (or up to 100 incident IDs via POST)
@@ -93,6 +105,7 @@ General specification and feature overview:
 - **Status:** Active
 
 #### 3. Geofencing API
+
 - **Purpose:** Virtual fences, object tracking, transition detection
 - **Key Endpoints:**
   - Projects: List, Get, Edit
@@ -105,6 +118,7 @@ General specification and feature overview:
 - **Status:** ⚠️ Deprecating (12-month deprecation period)
 
 #### 4. Location History API
+
 - **Purpose:** Track object locations over time
 - **Key Endpoints:**
   - Send Position: `POST /locationHistory/1/history/positions`
@@ -117,6 +131,7 @@ General specification and feature overview:
 - **Status:** Active
 
 #### 5. Notifications API
+
 - **Purpose:** Manage alert delivery via webhooks and email
 - **Key Endpoints:**
   - Contact Groups: CRUD operations
@@ -131,6 +146,7 @@ General specification and feature overview:
 ## Quick Start
 
 ### 1. Authentication Setup
+
 ```bash
 # Register for Geofencing (get Admin Key)
 POST https://api.tomtom.com/geofencing/1/register?key=YOUR_API_KEY
@@ -142,6 +158,7 @@ Body: { "secret": "your_secret" }
 ```
 
 ### 2. Get Traffic Data
+
 ```bash
 # Traffic Flow
 curl "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=YOUR_API_KEY&point=52.41072,4.84239"
@@ -151,6 +168,7 @@ curl "https://api.tomtom.com/traffic/services/5/incidentDetails?key=YOUR_API_KEY
 ```
 
 ### 3. Create Geofence
+
 ```bash
 # List projects
 curl "https://api.tomtom.com/geofencing/1/projects?key=YOUR_API_KEY"
@@ -168,6 +186,7 @@ curl "https://api.tomtom.com/geofencing/1/report/project_uuid?key=YOUR_API_KEY&p
 ```
 
 ### 4. Track Location
+
 ```bash
 # Send position
 curl -X POST "https://api.tomtom.com/locationHistory/1/history/positions?key=YOUR_API_KEY" \
@@ -184,6 +203,7 @@ curl "https://api.tomtom.com/locationHistory/1/history/positions/object_uuid?key
 ```
 
 ### 5. Send Notifications
+
 ```bash
 # Create contact group
 curl -X POST "https://api.tomtom.com/notifications/1/groups?key=YOUR_API_KEY" \
@@ -203,24 +223,29 @@ curl "https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-
 ## Key Specifications
 
 ### Coordinate System
+
 - **Projection:** WGS84 (EPSG:4326)
 - **Format:** longitude,latitude[,altitude]
 - **Example:** 4.8432,52.3745,100
 
 ### Timestamp Format
+
 - **Standard:** ISO 8601
 - **Pattern:** YYYY-MM-DDThh:mm:ss[Z]
 - **Example:** 2024-03-14T14:30:45Z
 
 ### Base URL
+
 - **Production:** `https://api.tomtom.com`
 - **Korea Region:** `https://kr-api.tomtom.com`
 
 ### Authentication
+
 - **API Key:** Query parameter `key=YOUR_API_KEY` (required for all)
 - **Admin Key:** Query parameter `adminKey=YOUR_ADMIN_KEY` (required for management)
 
 ### Pagination
+
 - **Default:** 100 results per page
 - **Max:** 100 results per page
 - **Parameters:** `maxResults` (1-100), `pageNumber` (≥1)
@@ -229,52 +254,52 @@ curl "https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-
 
 ## Rate Limits
 
-| API | Limit |
-|-----|-------|
-| Incident IDs (POST) | 100 max per request |
-| Incident IDs (GET) | 5 max per request |
-| Webhooks per Group | 20 max |
-| Emails per Group | 20 max |
-| Time Range (History) | 24 hours max |
-| Results per Page | 100 max |
+| API                  | Limit               |
+| -------------------- | ------------------- |
+| Incident IDs (POST)  | 100 max per request |
+| Incident IDs (GET)   | 5 max per request   |
+| Webhooks per Group   | 20 max              |
+| Emails per Group     | 20 max              |
+| Time Range (History) | 24 hours max        |
+| Results per Page     | 100 max             |
 
 ---
 
 ## Data Retention
 
-| Data Type | Retention |
-|-----------|-----------|
-| Traffic Updates | Every minute |
-| Location History | 3 months active + 6 months archive |
-| Transitions | 3 months active + 6 months archive |
-| Notification History | 7 days (auto-deleted) |
+| Data Type            | Retention                          |
+| -------------------- | ---------------------------------- |
+| Traffic Updates      | Every minute                       |
+| Location History     | 3 months active + 6 months archive |
+| Transitions          | 3 months active + 6 months archive |
+| Notification History | 7 days (auto-deleted)              |
 
 ---
 
 ## Service Status
 
-| Service | Status | Notes |
-|---------|--------|-------|
-| Traffic Flow API | ✓ Active | - |
-| Traffic Incidents API | ✓ Active | - |
-| Geofencing API | ⚠️ Deprecating | 12-month deprecation |
-| Location History API | ✓ Active | - |
-| Notifications API | ⚠️ Decommissioning | End: January 31, 2027 |
+| Service               | Status             | Notes                 |
+| --------------------- | ------------------ | --------------------- |
+| Traffic Flow API      | ✓ Active           | -                     |
+| Traffic Incidents API | ✓ Active           | -                     |
+| Geofencing API        | ⚠️ Deprecating     | 12-month deprecation  |
+| Location History API  | ✓ Active           | -                     |
+| Notifications API     | ⚠️ Decommissioning | End: January 31, 2027 |
 
 ---
 
 ## HTTP Status Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | OK (successful GET/PUT) |
-| 201 | Created (successful POST) |
-| 204 | No Content (successful DELETE) |
-| 400 | Bad Request (invalid parameters) |
-| 401 | Unauthorized (invalid API key) |
-| 403 | Forbidden (invalid Admin Key) |
-| 404 | Not Found (resource doesn't exist) |
-| 500 | Server Error |
+| Code | Meaning                            |
+| ---- | ---------------------------------- |
+| 200  | OK (successful GET/PUT)            |
+| 201  | Created (successful POST)          |
+| 204  | No Content (successful DELETE)     |
+| 400  | Bad Request (invalid parameters)   |
+| 401  | Unauthorized (invalid API key)     |
+| 403  | Forbidden (invalid Admin Key)      |
+| 404  | Not Found (resource doesn't exist) |
+| 500  | Server Error                       |
 
 ---
 
@@ -306,6 +331,7 @@ curl "https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-
 ## Navigation
 
 **Quick Navigation:**
+
 - Start here: [API_INDEX.md](API_INDEX.md)
 - Detailed reference: [API_RESEARCH.md](API_RESEARCH.md)
 - Quick lookup: [ENDPOINTS_SUMMARY.md](ENDPOINTS_SUMMARY.md)

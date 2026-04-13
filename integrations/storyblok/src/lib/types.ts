@@ -32,7 +32,12 @@ export interface StoryblokStory {
   path?: string;
   default_root?: string;
   disable_fe_editor?: boolean;
-  breadcrumbs?: Array<{ id: number; name: string; parent_id: number; disable_fe_editor: boolean }>;
+  breadcrumbs?: Array<{
+    id: number;
+    name: string;
+    parent_id: number;
+    disable_fe_editor: boolean;
+  }>;
   scheduled_dates?: string;
   preview_token?: { token: string; timestamp: string };
 }

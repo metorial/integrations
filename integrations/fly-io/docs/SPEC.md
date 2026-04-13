@@ -31,6 +31,7 @@ Tokens are valid for 20 years by default. We recommend using a shorter expiry if
 Use the correct scheme based on token type: `Bearer <token>` for `flyctl auth token`, and `FlyV1 <token>` for all tokens created with `fly tokens create`.
 
 **API Base URLs:**
+
 - Internal base URL: `http://_api.internal:4280`. Public base URL: `https://api.machines.dev`.
 - GraphQL API: `https://api.fly.io/graphql`
 

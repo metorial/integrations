@@ -3,50 +3,59 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let serviceTicketUpdatedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Service Ticket Updated',
-    key: 'service_ticket_updated',
-    description: 'Triggers when a service ticket is created or updated in AgencyZoom. Polls for recently modified service tickets.',
-  }
-)
-  .input(z.object({
-    ticketId: z.string().describe('Unique ID of the service ticket'),
-    customerId: z.string().optional().describe('ID of the associated customer'),
-    csrId: z.string().optional().describe('ID of the assigned CSR'),
-    category: z.string().optional().describe('Service ticket category'),
-    priority: z.string().optional().describe('Service ticket priority'),
-    status: z.string().optional().describe('Current status of the ticket'),
-    resolution: z.string().optional().describe('Resolution of the ticket'),
-    createdAt: z.string().optional().describe('ISO timestamp when the ticket was created'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the ticket was last updated'),
-    raw: z.any().optional().describe('Raw ticket data from the API')
-  }))
-  .output(z.object({
-    ticketId: z.string().describe('Unique ID of the service ticket'),
-    customerId: z.string().optional().describe('ID of the associated customer'),
-    csrId: z.string().optional().describe('ID of the assigned CSR'),
-    category: z.string().optional().describe('Service ticket category'),
-    priority: z.string().optional().describe('Service ticket priority'),
-    status: z.string().optional().describe('Current status of the ticket'),
-    resolution: z.string().optional().describe('Resolution of the ticket'),
-    createdAt: z.string().optional().describe('ISO timestamp when the ticket was created'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the ticket was last updated'),
-    raw: z.any().optional().describe('Full ticket data from the API')
-  }))
+export let serviceTicketUpdatedTrigger = SlateTrigger.create(spec, {
+  name: 'Service Ticket Updated',
+  key: 'service_ticket_updated',
+  description:
+    'Triggers when a service ticket is created or updated in AgencyZoom. Polls for recently modified service tickets.'
+})
+  .input(
+    z.object({
+      ticketId: z.string().describe('Unique ID of the service ticket'),
+      customerId: z.string().optional().describe('ID of the associated customer'),
+      csrId: z.string().optional().describe('ID of the assigned CSR'),
+      category: z.string().optional().describe('Service ticket category'),
+      priority: z.string().optional().describe('Service ticket priority'),
+      status: z.string().optional().describe('Current status of the ticket'),
+      resolution: z.string().optional().describe('Resolution of the ticket'),
+      createdAt: z.string().optional().describe('ISO timestamp when the ticket was created'),
+      updatedAt: z
+        .string()
+        .optional()
+        .describe('ISO timestamp when the ticket was last updated'),
+      raw: z.any().optional().describe('Raw ticket data from the API')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.string().describe('Unique ID of the service ticket'),
+      customerId: z.string().optional().describe('ID of the associated customer'),
+      csrId: z.string().optional().describe('ID of the assigned CSR'),
+      category: z.string().optional().describe('Service ticket category'),
+      priority: z.string().optional().describe('Service ticket priority'),
+      status: z.string().optional().describe('Current status of the ticket'),
+      resolution: z.string().optional().describe('Resolution of the ticket'),
+      createdAt: z.string().optional().describe('ISO timestamp when the ticket was created'),
+      updatedAt: z
+        .string()
+        .optional()
+        .describe('ISO timestamp when the ticket was last updated'),
+      raw: z.any().optional().describe('Full ticket data from the API')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiKey: ctx.auth.apiKey,
         apiSecret: ctx.auth.apiSecret
       });
 
-      let lastPolledAt = ctx.state?.lastPolledAt || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      let lastPolledAt =
+        ctx.state?.lastPolledAt || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
       let result = await client.searchServiceTickets({
         fromDate: lastPolledAt,
@@ -55,7 +64,9 @@ export let serviceTicketUpdatedTrigger = SlateTrigger.create(
         limit: 100
       });
 
-      let tickets = Array.isArray(result) ? result : (result?.data || result?.tickets || result?.items || []);
+      let tickets = Array.isArray(result)
+        ? result
+        : result?.data || result?.tickets || result?.items || [];
 
       let inputs = tickets.map((ticket: any) => ({
         ticketId: ticket.id || ticket.ticketId || ticket._id || String(ticket),
@@ -77,7 +88,7 @@ export let serviceTicketUpdatedTrigger = SlateTrigger.create(
         }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let isNew = !ctx.input.updatedAt || ctx.input.createdAt === ctx.input.updatedAt;
       let eventType = isNew ? 'service_ticket.created' : 'service_ticket.updated';
 
@@ -98,5 +109,5 @@ export let serviceTicketUpdatedTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
-
+  })
+  .build();

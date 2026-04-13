@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listCoursesTool,
@@ -22,7 +21,7 @@ import {
   sendMessageTool,
   listQuizzesTool,
   listFilesTool,
-  getCourseAnalyticsTool,
+  getCourseAnalyticsTool
 } from './tools';
 import {
   courseChangesTrigger,
@@ -30,7 +29,7 @@ import {
   enrollmentChangesTrigger,
   newAnnouncementsTrigger,
   assignmentChangesTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -56,7 +55,7 @@ export let provider = Slate.create({
     sendMessageTool,
     listQuizzesTool,
     listFilesTool,
-    getCourseAnalyticsTool,
+    getCourseAnalyticsTool
   ],
   triggers: [
     inboundWebhook,
@@ -64,6 +63,6 @@ export let provider = Slate.create({
     newSubmissionsTrigger,
     enrollmentChangesTrigger,
     newAnnouncementsTrigger,
-    assignmentChangesTrigger,
-  ],
+    assignmentChangesTrigger
+  ]
 });

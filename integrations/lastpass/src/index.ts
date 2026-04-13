@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getUsers,
@@ -8,12 +7,9 @@ import {
   manageUser,
   manageGroupMembership,
   getSharedFolders,
-  getEventReport,
+  getEventReport
 } from './tools';
-import {
-  accountEvents,
-  inboundWebhook,
-} from './triggers';
+import { accountEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -24,10 +20,7 @@ export let provider = Slate.create({
     manageUser,
     manageGroupMembership,
     getSharedFolders,
-    getEventReport,
+    getEventReport
   ],
-  triggers: [
-    inboundWebhook,
-    accountEvents,
-  ],
+  triggers: [inboundWebhook, accountEvents]
 });

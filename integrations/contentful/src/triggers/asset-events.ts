@@ -3,34 +3,43 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 
-export let assetEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Asset Events',
-    key: 'asset_events',
-    description: 'Triggers when an asset is created, saved, published, unpublished, archived, unarchived, or deleted via Contentful webhooks.'
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The asset action that triggered the event (e.g. create, save, publish, unpublish, archive, unarchive, delete).'),
-    assetId: z.string().describe('ID of the affected asset.'),
-    spaceId: z.string().optional().describe('Space ID.'),
-    environmentId: z.string().optional().describe('Environment ID.'),
-    fields: z.record(z.string(), z.any()).optional().describe('Asset fields at the time of the event.'),
-    webhookCallId: z.string().describe('Unique identifier for this webhook call.')
-  }))
-  .output(z.object({
-    assetId: z.string().describe('ID of the affected asset.'),
-    spaceId: z.string().optional().describe('Space ID.'),
-    environmentId: z.string().optional().describe('Environment ID.'),
-    title: z.record(z.string(), z.string()).optional().describe('Asset title by locale.'),
-    fileName: z.string().optional().describe('File name.'),
-    contentType: z.string().optional().describe('MIME content type.'),
-    url: z.string().optional().describe('File URL.'),
-    version: z.number().optional().describe('Version of the asset.')
-  }))
+export let assetEvents = SlateTrigger.create(spec, {
+  name: 'Asset Events',
+  key: 'asset_events',
+  description:
+    'Triggers when an asset is created, saved, published, unpublished, archived, unarchived, or deleted via Contentful webhooks.'
+})
+  .input(
+    z.object({
+      eventAction: z
+        .string()
+        .describe(
+          'The asset action that triggered the event (e.g. create, save, publish, unpublish, archive, unarchive, delete).'
+        ),
+      assetId: z.string().describe('ID of the affected asset.'),
+      spaceId: z.string().optional().describe('Space ID.'),
+      environmentId: z.string().optional().describe('Environment ID.'),
+      fields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Asset fields at the time of the event.'),
+      webhookCallId: z.string().describe('Unique identifier for this webhook call.')
+    })
+  )
+  .output(
+    z.object({
+      assetId: z.string().describe('ID of the affected asset.'),
+      spaceId: z.string().optional().describe('Space ID.'),
+      environmentId: z.string().optional().describe('Environment ID.'),
+      title: z.record(z.string(), z.string()).optional().describe('Asset title by locale.'),
+      fileName: z.string().optional().describe('File name.'),
+      contentType: z.string().optional().describe('MIME content type.'),
+      url: z.string().optional().describe('File URL.'),
+      version: z.number().optional().describe('Version of the asset.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
 
       let webhook = await client.createWebhook({
@@ -52,33 +61,36 @@ export let assetEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any = await ctx.request.json();
       let topic = ctx.request.headers.get('X-Contentful-Topic') || '';
       let parts = topic.split('.');
       let eventAction = parts[2] || 'unknown';
 
       let sys = body?.sys || {};
-      let webhookCallId = ctx.request.headers.get('X-Contentful-Webhook-Call-Id') || `${sys.id}-${Date.now()}`;
+      let webhookCallId =
+        ctx.request.headers.get('X-Contentful-Webhook-Call-Id') || `${sys.id}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventAction,
-          assetId: sys.id || '',
-          spaceId: sys.space?.sys?.id,
-          environmentId: sys.environment?.sys?.id,
-          fields: body?.fields,
-          webhookCallId
-        }]
+        inputs: [
+          {
+            eventAction,
+            assetId: sys.id || '',
+            spaceId: sys.space?.sys?.id,
+            environmentId: sys.environment?.sys?.id,
+            fields: body?.fields,
+            webhookCallId
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let fields: any = ctx.input.fields || {};
       let fileField: any = fields.file;
       let firstLocale = fileField ? Object.keys(fileField)[0] : undefined;
@@ -98,4 +110,5 @@ export let assetEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -15,7 +15,7 @@ import {
   setBlobTier,
   createSnapshot,
   manageLease,
-  appendToBlob,
+  appendToBlob
 } from './tools';
 import { blobEvents } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     setBlobTier,
     createSnapshot,
     manageLease,
-    appendToBlob,
+    appendToBlob
   ],
-  triggers: [
-    blobEvents,
-  ],
+  triggers: [blobEvents]
 });

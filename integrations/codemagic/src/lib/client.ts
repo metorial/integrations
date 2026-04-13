@@ -123,17 +123,17 @@ export class CodemagicClient {
       baseURL: 'https://api.codemagic.io',
       headers: {
         'Content-Type': 'application/json',
-        'x-auth-token': config.token,
-      },
+        'x-auth-token': config.token
+      }
     });
 
     this.apiV3 = createAxios({
       baseURL: 'https://codemagic.io/api/v3',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'x-auth-token': config.token,
-      },
+        Accept: 'application/json',
+        'x-auth-token': config.token
+      }
     });
   }
 
@@ -152,7 +152,7 @@ export class CodemagicClient {
   async addApplication(params: AddAppParams): Promise<ApplicationResponse> {
     let response = await this.api.post('/apps', {
       repositoryUrl: params.repositoryUrl,
-      ...(params.teamId ? { teamId: params.teamId } : {}),
+      ...(params.teamId ? { teamId: params.teamId } : {})
     });
     return response.data;
   }
@@ -162,7 +162,7 @@ export class CodemagicClient {
       repositoryUrl: params.repositoryUrl,
       sshKey: params.sshKey,
       ...(params.projectType ? { projectType: params.projectType } : {}),
-      ...(params.teamId ? { teamId: params.teamId } : {}),
+      ...(params.teamId ? { teamId: params.teamId } : {})
     });
     return response.data.application;
   }
@@ -172,7 +172,7 @@ export class CodemagicClient {
   async startBuild(params: StartBuildParams): Promise<{ buildId: string }> {
     let body: Record<string, unknown> = {
       appId: params.appId,
-      workflowId: params.workflowId,
+      workflowId: params.workflowId
     };
 
     if (params.branch) body.branch = params.branch;
@@ -184,7 +184,8 @@ export class CodemagicClient {
       let env: Record<string, unknown> = {};
       if (params.environment.variables) env.variables = params.environment.variables;
       if (params.environment.groups) env.groups = params.environment.groups;
-      if (params.environment.softwareVersions) env.softwareVersions = params.environment.softwareVersions;
+      if (params.environment.softwareVersions)
+        env.softwareVersions = params.environment.softwareVersions;
       body.environment = env;
     }
 
@@ -213,7 +214,10 @@ export class CodemagicClient {
 
   // --- Artifacts ---
 
-  async getPublicArtifactUrl(artifactUrl: string, expiresAt?: number): Promise<{ url: string; expiresAt: string }> {
+  async getPublicArtifactUrl(
+    artifactUrl: string,
+    expiresAt?: number
+  ): Promise<{ url: string; expiresAt: string }> {
     let securePath = artifactUrl.replace('https://api.codemagic.io/artifacts/', '');
     let body: Record<string, unknown> = {};
     if (expiresAt) body.expiresAt = expiresAt;
@@ -239,10 +243,13 @@ export class CodemagicClient {
   // --- Environment Variables (v3 API) ---
 
   async addVariablesToGroup(params: AddVariablesParams): Promise<unknown> {
-    let response = await this.apiV3.post(`/variable-groups/${params.variableGroupId}/variables`, {
-      secure: params.secure ?? false,
-      variables: params.variables,
-    });
+    let response = await this.apiV3.post(
+      `/variable-groups/${params.variableGroupId}/variables`,
+      {
+        secure: params.secure ?? false,
+        variables: params.variables
+      }
+    );
     return response.data;
   }
 }

@@ -15,7 +15,7 @@ export class Client {
     this.http = createAxios({
       baseURL: getBaseUrl(config.region),
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -45,7 +45,10 @@ export class Client {
     return response.data;
   }
 
-  async createProject(teamSlug: string, data: { name: string; slug?: string; platform?: string }) {
+  async createProject(
+    teamSlug: string,
+    data: { name: string; slug?: string; platform?: string }
+  ) {
     let response = await this.http.post(`/teams/${this.orgSlug}/${teamSlug}/projects/`, data);
     return response.data;
   }
@@ -91,7 +94,9 @@ export class Client {
   }
 
   async addProjectToTeam(teamSlug: string, projectSlug: string) {
-    let response = await this.http.post(`/projects/${this.orgSlug}/${projectSlug}/teams/${teamSlug}/`);
+    let response = await this.http.post(
+      `/projects/${this.orgSlug}/${projectSlug}/teams/${teamSlug}/`
+    );
     return response.data;
   }
 
@@ -118,16 +123,22 @@ export class Client {
     return response.data;
   }
 
-  async updateIssue(issueId: string, data: {
-    status?: string;
-    assignedTo?: string;
-    hasSeen?: boolean;
-    isBookmarked?: boolean;
-    isSubscribed?: boolean;
-    isPublic?: boolean;
-    substatus?: string;
-  }) {
-    let response = await this.http.put(`/organizations/${this.orgSlug}/issues/${issueId}/`, data);
+  async updateIssue(
+    issueId: string,
+    data: {
+      status?: string;
+      assignedTo?: string;
+      hasSeen?: boolean;
+      isBookmarked?: boolean;
+      isSubscribed?: boolean;
+      isPublic?: boolean;
+      substatus?: string;
+    }
+  ) {
+    let response = await this.http.put(
+      `/organizations/${this.orgSlug}/issues/${issueId}/`,
+      data
+    );
     return response.data;
   }
 
@@ -152,24 +163,33 @@ export class Client {
     if (query) params.query = query;
     if (project) params.project = project;
 
-    let response = await this.http.put(`/organizations/${this.orgSlug}/issues/`, body, { params });
+    let response = await this.http.put(`/organizations/${this.orgSlug}/issues/`, body, {
+      params
+    });
     return response.data;
   }
 
   // ── Events ─────────────────────────────────────────────────
 
   async listIssueEvents(issueId: string, params?: { cursor?: string }) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/issues/${issueId}/events/`, { params });
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/issues/${issueId}/events/`,
+      { params }
+    );
     return response.data;
   }
 
   async getEvent(projectSlug: string, eventId: string) {
-    let response = await this.http.get(`/projects/${this.orgSlug}/${projectSlug}/events/${eventId}/`);
+    let response = await this.http.get(
+      `/projects/${this.orgSlug}/${projectSlug}/events/${eventId}/`
+    );
     return response.data;
   }
 
   async getLatestEvent(issueId: string) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/issues/${issueId}/events/latest/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/issues/${issueId}/events/latest/`
+    );
     return response.data;
   }
 
@@ -182,7 +202,9 @@ export class Client {
 
   async getRelease(version: string) {
     let encodedVersion = encodeURIComponent(version);
-    let response = await this.http.get(`/organizations/${this.orgSlug}/releases/${encodedVersion}/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/releases/${encodedVersion}/`
+    );
     return response.data;
   }
 
@@ -192,20 +214,33 @@ export class Client {
     url?: string;
     projects: string[];
     dateReleased?: string;
-    commits?: Array<{ id: string; repository?: string; message?: string; authorName?: string; authorEmail?: string; timestamp?: string }>;
+    commits?: Array<{
+      id: string;
+      repository?: string;
+      message?: string;
+      authorName?: string;
+      authorEmail?: string;
+      timestamp?: string;
+    }>;
   }) {
     let response = await this.http.post(`/organizations/${this.orgSlug}/releases/`, data);
     return response.data;
   }
 
-  async updateRelease(version: string, data: {
-    ref?: string;
-    url?: string;
-    dateReleased?: string;
-    commits?: Array<{ id: string; repository?: string }>;
-  }) {
+  async updateRelease(
+    version: string,
+    data: {
+      ref?: string;
+      url?: string;
+      dateReleased?: string;
+      commits?: Array<{ id: string; repository?: string }>;
+    }
+  ) {
     let encodedVersion = encodeURIComponent(version);
-    let response = await this.http.put(`/organizations/${this.orgSlug}/releases/${encodedVersion}/`, data);
+    let response = await this.http.put(
+      `/organizations/${this.orgSlug}/releases/${encodedVersion}/`,
+      data
+    );
     return response.data;
   }
 
@@ -216,19 +251,27 @@ export class Client {
 
   async listReleaseDeploys(version: string) {
     let encodedVersion = encodeURIComponent(version);
-    let response = await this.http.get(`/organizations/${this.orgSlug}/releases/${encodedVersion}/deploys/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/releases/${encodedVersion}/deploys/`
+    );
     return response.data;
   }
 
-  async createReleaseDeploy(version: string, data: {
-    environment: string;
-    name?: string;
-    url?: string;
-    dateStarted?: string;
-    dateFinished?: string;
-  }) {
+  async createReleaseDeploy(
+    version: string,
+    data: {
+      environment: string;
+      name?: string;
+      url?: string;
+      dateStarted?: string;
+      dateFinished?: string;
+    }
+  ) {
     let encodedVersion = encodeURIComponent(version);
-    let response = await this.http.post(`/organizations/${this.orgSlug}/releases/${encodedVersion}/deploys/`, data);
+    let response = await this.http.post(
+      `/organizations/${this.orgSlug}/releases/${encodedVersion}/deploys/`,
+      data
+    );
     return response.data;
   }
 
@@ -240,17 +283,25 @@ export class Client {
   }
 
   async getIssueAlertRule(projectSlug: string, ruleId: string) {
-    let response = await this.http.get(`/projects/${this.orgSlug}/${projectSlug}/rules/${ruleId}/`);
+    let response = await this.http.get(
+      `/projects/${this.orgSlug}/${projectSlug}/rules/${ruleId}/`
+    );
     return response.data;
   }
 
   async createIssueAlertRule(projectSlug: string, data: Record<string, any>) {
-    let response = await this.http.post(`/projects/${this.orgSlug}/${projectSlug}/rules/`, data);
+    let response = await this.http.post(
+      `/projects/${this.orgSlug}/${projectSlug}/rules/`,
+      data
+    );
     return response.data;
   }
 
   async updateIssueAlertRule(projectSlug: string, ruleId: string, data: Record<string, any>) {
-    let response = await this.http.put(`/projects/${this.orgSlug}/${projectSlug}/rules/${ruleId}/`, data);
+    let response = await this.http.put(
+      `/projects/${this.orgSlug}/${projectSlug}/rules/${ruleId}/`,
+      data
+    );
     return response.data;
   }
 
@@ -264,7 +315,9 @@ export class Client {
   }
 
   async getMetricAlertRule(ruleId: string) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/alert-rules/${ruleId}/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/alert-rules/${ruleId}/`
+    );
     return response.data;
   }
 
@@ -274,7 +327,10 @@ export class Client {
   }
 
   async updateMetricAlertRule(ruleId: string, data: Record<string, any>) {
-    let response = await this.http.put(`/organizations/${this.orgSlug}/alert-rules/${ruleId}/`, data);
+    let response = await this.http.put(
+      `/organizations/${this.orgSlug}/alert-rules/${ruleId}/`,
+      data
+    );
     return response.data;
   }
 
@@ -290,7 +346,9 @@ export class Client {
   }
 
   async getMonitor(monitorSlug: string) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/monitors/${monitorSlug}/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/monitors/${monitorSlug}/`
+    );
     return response.data;
   }
 
@@ -307,7 +365,10 @@ export class Client {
   }
 
   async updateMonitor(monitorSlug: string, data: Record<string, any>) {
-    let response = await this.http.put(`/organizations/${this.orgSlug}/monitors/${monitorSlug}/`, data);
+    let response = await this.http.put(
+      `/organizations/${this.orgSlug}/monitors/${monitorSlug}/`,
+      data
+    );
     return response.data;
   }
 
@@ -346,28 +407,40 @@ export class Client {
   // ── Tags ───────────────────────────────────────────────────
 
   async listIssueTags(issueId: string) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/issues/${issueId}/tags/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/issues/${issueId}/tags/`
+    );
     return response.data;
   }
 
   // ── Issue Comments (Notes) ─────────────────────────────────
 
   async listIssueComments(issueId: string) {
-    let response = await this.http.get(`/organizations/${this.orgSlug}/issues/${issueId}/comments/`);
+    let response = await this.http.get(
+      `/organizations/${this.orgSlug}/issues/${issueId}/comments/`
+    );
     return response.data;
   }
 
   async createIssueComment(issueId: string, data: { text: string }) {
-    let response = await this.http.post(`/organizations/${this.orgSlug}/issues/${issueId}/comments/`, data);
+    let response = await this.http.post(
+      `/organizations/${this.orgSlug}/issues/${issueId}/comments/`,
+      data
+    );
     return response.data;
   }
 
   async updateIssueComment(issueId: string, commentId: string, data: { text: string }) {
-    let response = await this.http.put(`/organizations/${this.orgSlug}/issues/${issueId}/comments/${commentId}/`, data);
+    let response = await this.http.put(
+      `/organizations/${this.orgSlug}/issues/${issueId}/comments/${commentId}/`,
+      data
+    );
     return response.data;
   }
 
   async deleteIssueComment(issueId: string, commentId: string) {
-    await this.http.delete(`/organizations/${this.orgSlug}/issues/${issueId}/comments/${commentId}/`);
+    await this.http.delete(
+      `/organizations/${this.orgSlug}/issues/${issueId}/comments/${commentId}/`
+    );
   }
 }

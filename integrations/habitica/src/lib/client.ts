@@ -4,19 +4,21 @@ import type { AxiosInstance } from 'axios';
 export class HabiticaClient {
   private axios: AxiosInstance;
 
-  constructor(private config: {
-    userId: string;
-    token: string;
-    xClient: string;
-  }) {
+  constructor(
+    private config: {
+      userId: string;
+      token: string;
+      xClient: string;
+    }
+  ) {
     this.axios = createAxios({
       baseURL: 'https://habitica.com/api/v3',
       headers: {
         'x-api-user': config.userId,
         'x-api-key': config.token,
         'x-client': config.xClient,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -46,14 +48,14 @@ export class HabiticaClient {
 
   async allocateStatPoint(stat: string): Promise<Record<string, any>> {
     let response = await this.axios.post('/user/allocate', undefined, {
-      params: { stat },
+      params: { stat }
     });
     return response.data.data;
   }
 
   async changeClass(className: string): Promise<Record<string, any>> {
     let response = await this.axios.post('/user/change-class', undefined, {
-      params: { class: className },
+      params: { class: className }
     });
     return response.data.data;
   }
@@ -77,7 +79,10 @@ export class HabiticaClient {
     return response.data.data;
   }
 
-  async updateTask(taskId: string, taskData: Record<string, any>): Promise<Record<string, any>> {
+  async updateTask(
+    taskId: string,
+    taskData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/tasks/${taskId}`, taskData);
     return response.data.data;
   }
@@ -99,7 +104,11 @@ export class HabiticaClient {
     return response.data.data;
   }
 
-  async updateChecklistItem(taskId: string, itemId: string, text: string): Promise<Record<string, any>> {
+  async updateChecklistItem(
+    taskId: string,
+    itemId: string,
+    text: string
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/tasks/${taskId}/checklist/${itemId}`, { text });
     return response.data.data;
   }
@@ -182,7 +191,10 @@ export class HabiticaClient {
     return response.data.data;
   }
 
-  async updateGroup(groupId: string, groupData: Record<string, any>): Promise<Record<string, any>> {
+  async updateGroup(
+    groupId: string,
+    groupData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/groups/${groupId}`, groupData);
     return response.data.data;
   }
@@ -194,7 +206,7 @@ export class HabiticaClient {
 
   async leaveGroup(groupId: string, keep?: string): Promise<void> {
     await this.axios.post(`/groups/${groupId}/leave`, undefined, {
-      params: keep ? { keep } : undefined,
+      params: keep ? { keep } : undefined
     });
   }
 
@@ -206,12 +218,18 @@ export class HabiticaClient {
     await this.axios.post(`/groups/${groupId}/removeMember/${memberId}`);
   }
 
-  async inviteToGroup(groupId: string, inviteData: Record<string, any>): Promise<Record<string, any>> {
+  async inviteToGroup(
+    groupId: string,
+    inviteData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/groups/${groupId}/invite`, inviteData);
     return response.data.data;
   }
 
-  async getGroupMembers(groupId: string, params?: { lastId?: string; limit?: number }): Promise<Array<Record<string, any>>> {
+  async getGroupMembers(
+    groupId: string,
+    params?: { lastId?: string; limit?: number }
+  ): Promise<Array<Record<string, any>>> {
     let queryParams: Record<string, string> = {};
     if (params?.lastId) queryParams.lastId = params.lastId;
     if (params?.limit) queryParams.limit = String(params.limit);
@@ -240,7 +258,7 @@ export class HabiticaClient {
   async sendPrivateMessage(toUserId: string, message: string): Promise<Record<string, any>> {
     let response = await this.axios.post(`/members/send-private-message`, {
       toUserId,
-      message,
+      message
     });
     return response.data.data;
   }
@@ -283,7 +301,10 @@ export class HabiticaClient {
 
   // ---- Challenges ----
 
-  async getChallenges(params?: { page?: number; memberOnly?: boolean }): Promise<Array<Record<string, any>>> {
+  async getChallenges(params?: {
+    page?: number;
+    memberOnly?: boolean;
+  }): Promise<Array<Record<string, any>>> {
     let queryParams: Record<string, string> = {};
     if (params?.page !== undefined) queryParams.page = String(params.page);
     if (params?.memberOnly !== undefined) queryParams.member = String(params.memberOnly);
@@ -306,7 +327,10 @@ export class HabiticaClient {
     return response.data.data;
   }
 
-  async updateChallenge(challengeId: string, challengeData: Record<string, any>): Promise<Record<string, any>> {
+  async updateChallenge(
+    challengeId: string,
+    challengeData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/challenges/${challengeId}`, challengeData);
     return response.data.data;
   }
@@ -383,7 +407,10 @@ export class HabiticaClient {
     return response.data.data;
   }
 
-  async updateWebhook(webhookId: string, webhookData: Record<string, any>): Promise<Record<string, any>> {
+  async updateWebhook(
+    webhookId: string,
+    webhookData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/user/webhook/${webhookId}`, webhookData);
     return response.data.data;
   }

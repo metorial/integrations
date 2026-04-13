@@ -3,28 +3,31 @@ import { RecruiteeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDisqualifyReasons = SlateTool.create(
-  spec,
-  {
-    name: 'List Disqualify Reasons',
-    key: 'list_disqualify_reasons',
-    description: `Retrieve all configured disqualification reasons. Use these reason IDs when disqualifying candidates through the Manage Pipeline tool.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDisqualifyReasons = SlateTool.create(spec, {
+  name: 'List Disqualify Reasons',
+  key: 'list_disqualify_reasons',
+  description: `Retrieve all configured disqualification reasons. Use these reason IDs when disqualifying candidates through the Manage Pipeline tool.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    reasons: z.array(z.object({
-      reasonId: z.number().describe('Disqualify reason ID'),
-      name: z.string().describe('Reason name'),
-    })).describe('All disqualification reasons'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      reasons: z
+        .array(
+          z.object({
+            reasonId: z.number().describe('Disqualify reason ID'),
+            name: z.string().describe('Reason name')
+          })
+        )
+        .describe('All disqualification reasons')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RecruiteeClient({
       token: ctx.auth.token,
-      companyId: ctx.config.companyId,
+      companyId: ctx.config.companyId
     });
 
     let result = await client.listDisqualifyReasons();
@@ -34,9 +37,10 @@ export let listDisqualifyReasons = SlateTool.create(
       output: {
         reasons: reasons.map((r: any) => ({
           reasonId: r.id,
-          name: r.name,
-        })),
+          name: r.name
+        }))
       },
-      message: `Found ${reasons.length} disqualification reasons.`,
+      message: `Found ${reasons.length} disqualification reasons.`
     };
-  }).build();
+  })
+  .build();

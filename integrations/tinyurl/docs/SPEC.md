@@ -23,9 +23,11 @@ The base URL for the API is `https://api.tinyurl.com`.
 TinyURL allows users to create permission-specific API tokens. For example, there can be a token that can only be used to create TinyURLs, or one that can only be used to delete TinyURLs. It is possible to create a token with multiple or even all permissions.
 
 Available token permissions for **free** users:
+
 - Create TinyURL, Update TinyURL (update alias), and Archive TinyURL.
 
 Additional permissions for **paid** users:
+
 - Change URL (change destination URL), Manage TinyURL Expiration, and Use Bulk Requests (enables processing multiple links in one request, combined with other permissions like create or delete).
 
 ## Features

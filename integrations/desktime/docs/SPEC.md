@@ -22,9 +22,11 @@ DeskTime uses API keys for authentication.
 ## Features
 
 ### Company Information
+
 - Retrieve company-level settings and metadata including company name, work start/end times, work duration, working days, tracking schedule, and timezone.
 
 ### Employee Data & Productivity Tracking
+
 - The Get Employee endpoint allows you to retrieve information about a single employee to return user tracking data for a specific date.
 - The Get Employees endpoint allows you to retrieve information about all employees in your company, with an optional period parameter to return user tracking data for a specific day or month, starting with the given date.
 - Parameters include `date` (format: `Y-m-d`), `period` (`day` or `month`), and optional `employeeId`.
@@ -34,16 +36,19 @@ DeskTime uses API keys for authentication.
 - **Limitation:** The API can't access the User's profile data (i.e., work starts, work ends and work duration) — user profile/shift schedule configuration is not available via the API.
 
 ### Project & Task Management
+
 - Create a new project with an optional task in DeskTime.
 - Starts tracking time for a given project and optionally a task.
 - Stop tracking time for a given project and optionally a task.
 - These endpoints allow programmatic control over project time tracking, enabling integration with external project management or invoicing tools.
 
 ### Attendance & Work Hours
+
 - Retrieve employee check-in and check-out times and daily work hour summaries via employee data endpoints.
 - Useful for compiling attendance reports and integrating with payroll systems.
 
 ### Custom API on Request
+
 - Custom API on request — Request custom API adjustments for specific needs is available on higher-tier plans.
 
 ## Events

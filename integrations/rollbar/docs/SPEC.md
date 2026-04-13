@@ -17,6 +17,7 @@ There are two levels of access tokens:
 Most operations are performed at the project level and require a project-specific access token. You can find and administer your project access tokens in Project -> Settings -> Project Access Tokens.
 
 Project access tokens support the following scopes:
+
 - `post_server_item` — Can post errors/exceptions and deploys from server-side code, and upload source maps.
 - `post_client_item` — Can post errors/exceptions from client-side (browser, mobile) code only.
 - `read` — Can perform all GET requests.
@@ -29,10 +30,12 @@ For newly created project tokens, `post_server_item` and `post_client_item` can 
 Operations performed at the level of the account require an account-specific access token. These can be found and managed at {Account name} Settings -> Account Access Tokens.
 
 Account access tokens support:
+
 - `read` — Supports all GET operations at the account level.
 - `write` — Supports all POST, PUT, PATCH, and DELETE operations at the account level.
 
 **Example:**
+
 ```
 curl --header 'X-Rollbar-Access-Token: YOUR_ACCESS_TOKEN' 'https://api.rollbar.com/api/1/item/12345'
 ```
@@ -42,51 +45,67 @@ The base API URL is `https://api.rollbar.com/api/1/`.
 ## Features
 
 ### Error & Message Tracking (Items)
+
 Create, retrieve, list, and update items (grouped errors/messages) in a project. Items can be looked up by ID, UUID, or project counter. Items have statuses (active, resolved, muted, archived) and can be filtered by environment, level, and status.
 
 ### Occurrences
+
 List and retrieve individual occurrences (instances of errors/messages) within a project or within a specific item. Occurrences can also be deleted.
 
 ### Deploy Tracking
+
 If you notify Rollbar every time you deploy or release your app, you'll unlock several features that will help your debugging process. Deploys are reported via API with parameters including environment, revision (code version/git SHA), status (started, succeeded, failed, timed_out), and optional deployer information. Deploys can also be listed and retrieved. When deploys are reported to Rollbar, we'll attempt to identify a 'Suspect Deploy' for each error.
 
 ### Metrics & Reports
+
 Retrieve metrics about items and occurrences, including top active items, occurrence counts over time, and resolution time metrics. Reports analogous to dashboard views (e.g., top 10 items in last 24 hours, daily new/reactivated items) are available.
 
 ### RQL (Rollbar Query Language)
+
 Create and manage RQL jobs to run custom SQL-like queries against your occurrence data. Jobs can be created, checked for status, and results can be retrieved.
 
 ### Project Management
+
 Create, list, retrieve, and delete projects within an account. A project represents a single deployable / release-able service or app and has its own settings for notifications, custom fingerprinting, user access, and more.
 
 ### Project Access Token Management
+
 List, create, update (rate limits), and delete project access tokens programmatically.
 
 ### Team & User Management
+
 Create and manage teams, list users within an account, and manage team memberships. Users can be assigned to or removed from teams, and email invitations can be sent to join teams. When creating teams via the API, you can set the `access_level` field (Standard, Light, or View) as a form of role-based access control, controlling permissions for assigned projects.
 
 ### Team-Project Associations
+
 Assign teams to projects, remove teams from projects, and list a team's projects or a project's teams.
 
 ### Notification Rule Management
+
 Configure notification rules programmatically for multiple channels: Webhook, Slack, PagerDuty, and Email. Rules can be created, listed, updated, replaced, and deleted for each channel.
 
 ### Symbol Map Uploads
+
 Upload JavaScript source maps, iOS dSYM bundles, Android Proguard files, and Flutter symbol files to enable de-obfuscation of stack traces.
 
 ### Version Tracking
+
 Retrieve details about code versions within a project and list items associated with a specific code version.
 
 ### Session Replay
+
 Retrieve and delete session replay data associated with specific environments and sessions.
 
 ### Service Links
+
 Create, list, update, and delete service links — templated URLs that provide quick navigation from Rollbar items to external tools and services.
 
 ### Environments
+
 List all environments that have been seen for a project.
 
 ### People (PII Management)
+
 Request deletion of a person's data from a project and check the status of deletion jobs, for data privacy compliance purposes.
 
 ## Events

@@ -8,9 +8,9 @@ export class ClearoutClient {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -18,36 +18,47 @@ export class ClearoutClient {
   // Email Verification
   // ──────────────────────────────────────────
 
-  async verifyEmail(params: { email: string; timeout?: number }): Promise<Record<string, unknown>> {
+  async verifyEmail(params: {
+    email: string;
+    timeout?: number;
+  }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { email: params.email };
     if (params.timeout !== undefined) body.timeout = params.timeout;
     let response = await this.axios.post('/v2/email_verify/instant', body);
     return response.data;
   }
 
-  async bulkVerifyUpload(params: { fileContent: string; fileName: string; ignoreDuplicateFile?: boolean }): Promise<Record<string, unknown>> {
+  async bulkVerifyUpload(params: {
+    fileContent: string;
+    fileName: string;
+    ignoreDuplicateFile?: boolean;
+  }): Promise<Record<string, unknown>> {
     let boundary = '----SlatesBoundary' + Date.now();
     let bodyParts: string[] = [];
 
-    bodyParts.push(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${params.fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${params.fileContent}\r\n`);
+    bodyParts.push(
+      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${params.fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${params.fileContent}\r\n`
+    );
 
     if (params.ignoreDuplicateFile !== undefined) {
-      bodyParts.push(`--${boundary}\r\nContent-Disposition: form-data; name="ignore_duplicate_file"\r\n\r\n${params.ignoreDuplicateFile}\r\n`);
+      bodyParts.push(
+        `--${boundary}\r\nContent-Disposition: form-data; name="ignore_duplicate_file"\r\n\r\n${params.ignoreDuplicateFile}\r\n`
+      );
     }
 
     bodyParts.push(`--${boundary}--\r\n`);
 
     let response = await this.axios.post('/v2/email_verify/bulk', bodyParts.join(''), {
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
     return response.data;
   }
 
   async bulkVerifyProgress(listId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/v2/email_verify/bulk/progress_status', {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data;
   }
@@ -71,10 +82,14 @@ export class ClearoutClient {
   // Email Finder
   // ──────────────────────────────────────────
 
-  async findEmail(params: { name: string; domain: string; timeout?: number }): Promise<Record<string, unknown>> {
+  async findEmail(params: {
+    name: string;
+    domain: string;
+    timeout?: number;
+  }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       name: params.name,
-      domain: params.domain,
+      domain: params.domain
     };
     if (params.timeout !== undefined) body.timeout = params.timeout;
     let response = await this.axios.post('/v2/email_finder/instant', body);
@@ -83,40 +98,50 @@ export class ClearoutClient {
 
   async findEmailQueueStatus(queueId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/v2/email_finder/instant/queue_status', {
-      params: { qid: queueId },
+      params: { qid: queueId }
     });
     return response.data;
   }
 
-  async bulkFinderUpload(params: { fileContent: string; fileName: string; ignoreDuplicateFile?: boolean }): Promise<Record<string, unknown>> {
+  async bulkFinderUpload(params: {
+    fileContent: string;
+    fileName: string;
+    ignoreDuplicateFile?: boolean;
+  }): Promise<Record<string, unknown>> {
     let boundary = '----SlatesBoundary' + Date.now();
     let bodyParts: string[] = [];
 
-    bodyParts.push(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${params.fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${params.fileContent}\r\n`);
+    bodyParts.push(
+      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${params.fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n${params.fileContent}\r\n`
+    );
 
     if (params.ignoreDuplicateFile !== undefined) {
-      bodyParts.push(`--${boundary}\r\nContent-Disposition: form-data; name="ignore_duplicate_file"\r\n\r\n${params.ignoreDuplicateFile}\r\n`);
+      bodyParts.push(
+        `--${boundary}\r\nContent-Disposition: form-data; name="ignore_duplicate_file"\r\n\r\n${params.ignoreDuplicateFile}\r\n`
+      );
     }
 
     bodyParts.push(`--${boundary}--\r\n`);
 
     let response = await this.axios.post('/v2/email_finder/bulk', bodyParts.join(''), {
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
     return response.data;
   }
 
   async bulkFinderProgress(listId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/v2/email_finder/bulk/progress_status', {
-      params: { list_id: listId },
+      params: { list_id: listId }
     });
     return response.data;
   }
 
   async downloadFinderResult(listId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.post('/v2/email_finder/download/result', { list_id: listId });
+    let response = await this.axios.post('/v2/email_finder/download/result', {
+      list_id: listId
+    });
     return response.data;
   }
 
@@ -126,21 +151,21 @@ export class ClearoutClient {
 
   async reverseLookupLinkedIn(linkedinUrl: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/v2/reverse_lookup/linkedin', {
-      params: { url: linkedinUrl },
+      params: { url: linkedinUrl }
     });
     return response.data;
   }
 
   async reverseLookupEmail(emailAddress: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/v2/reverse_lookup/email', {
-      params: { email_address: emailAddress },
+      params: { email_address: emailAddress }
     });
     return response.data;
   }
 
   async reverseLookupDomain(domain: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/v2/reverse_lookup/domain', {
-      params: { name: domain },
+      params: { name: domain }
     });
     return response.data;
   }
@@ -165,7 +190,7 @@ export class ClearoutClient {
 
   async autocompleteCompany(query: string): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/public/companies/autocomplete', {
-      params: { query },
+      params: { query }
     });
     return response.data;
   }

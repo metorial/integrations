@@ -9,8 +9,8 @@ export class Client {
       baseURL: config.serverUrl,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -202,22 +202,29 @@ export class Client {
     return res.data;
   }
 
-  async addDatapoints(datasetId: string, body: {
-    project: string;
-    data: Array<Record<string, any>>;
-    mapping: {
-      inputs: string[];
-      ground_truth: string[];
-      history: string[];
-    };
-  }) {
+  async addDatapoints(
+    datasetId: string,
+    body: {
+      project: string;
+      data: Array<Record<string, any>>;
+      mapping: {
+        inputs: string[];
+        ground_truth: string[];
+        history: string[];
+      };
+    }
+  ) {
     let res = await this.axios.post(`/v1/datasets/${datasetId}/datapoints`, body);
     return res.data;
   }
 
   // ── Datapoints ──
 
-  async listDatapoints(params: { project: string; datapoint_ids?: string; dataset_name?: string }) {
+  async listDatapoints(params: {
+    project: string;
+    datapoint_ids?: string;
+    dataset_name?: string;
+  }) {
     let res = await this.axios.get('/v1/datapoints', { params });
     return res.data;
   }
@@ -240,14 +247,17 @@ export class Client {
     return res.data;
   }
 
-  async updateDatapoint(datapointId: string, body: {
-    inputs?: Record<string, any>;
-    history?: Array<Record<string, any>>;
-    ground_truth?: Record<string, any>;
-    linked_event?: string;
-    linked_datasets?: string[];
-    metadata?: Record<string, any>;
-  }) {
+  async updateDatapoint(
+    datapointId: string,
+    body: {
+      inputs?: Record<string, any>;
+      history?: Array<Record<string, any>>;
+      ground_truth?: Record<string, any>;
+      linked_event?: string;
+      linked_datasets?: string[];
+      metadata?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.put(`/v1/datapoints/${datapointId}`, body);
     return res.data;
   }
@@ -277,15 +287,18 @@ export class Client {
     return res.data;
   }
 
-  async updateConfiguration(configId: string, body: {
-    project: string;
-    name: string;
-    provider: string;
-    parameters: Record<string, any>;
-    env?: string[];
-    type?: string;
-    user_properties?: Record<string, any>;
-  }) {
+  async updateConfiguration(
+    configId: string,
+    body: {
+      project: string;
+      name: string;
+      provider: string;
+      parameters: Record<string, any>;
+      env?: string[];
+      type?: string;
+      user_properties?: Record<string, any>;
+    }
+  ) {
     let res = await this.axios.put(`/v1/configurations/${configId}`, body);
     return res.data;
   }
@@ -383,15 +396,18 @@ export class Client {
     return res.data;
   }
 
-  async updateRun(runId: string, body: {
-    event_ids?: string[];
-    dataset_id?: string;
-    datapoint_ids?: string[];
-    configuration?: Record<string, any>;
-    metadata?: Record<string, any>;
-    name?: string;
-    status?: string;
-  }) {
+  async updateRun(
+    runId: string,
+    body: {
+      event_ids?: string[];
+      dataset_id?: string;
+      datapoint_ids?: string[];
+      configuration?: Record<string, any>;
+      metadata?: Record<string, any>;
+      name?: string;
+      status?: string;
+    }
+  ) {
     let res = await this.axios.put(`/v1/runs/${runId}`, body);
     return res.data;
   }
@@ -401,7 +417,10 @@ export class Client {
     return res.data;
   }
 
-  async getRunResult(runId: string, params?: { aggregate_function?: string; filters?: string }) {
+  async getRunResult(
+    runId: string,
+    params?: { aggregate_function?: string; filters?: string }
+  ) {
     let res = await this.axios.get(`/v1/runs/${runId}/result`, { params });
     return res.data;
   }

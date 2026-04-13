@@ -2,23 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Postman API key (generated from your Postman account settings)'),
+      token: z
+        .string()
+        .describe('Postman API key (generated from your Postman account settings)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +30,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://api.getpostman.com',
         headers: {
-          'X-API-Key': ctx.output.token,
-        },
+          'X-API-Key': ctx.output.token
+        }
       });
 
       let response = await axios.get('/me');
@@ -39,8 +43,8 @@ export let auth = SlateAuth.create()
           email: user.email,
           name: user.fullName,
           imageUrl: user.avatar,
-          username: user.username,
-        },
+          username: user.username
+        }
       };
-    },
+    }
   });

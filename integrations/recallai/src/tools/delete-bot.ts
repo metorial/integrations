@@ -3,32 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteBotTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Bot',
-    key: 'delete_bot',
-    description: `Delete a scheduled bot that has not yet been dispatched. This permanently removes the bot and cancels its scheduled join.`,
-    constraints: [
-      'Only non-dispatched (scheduled) bots can be deleted.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteBotTool = SlateTool.create(spec, {
+  name: 'Delete Bot',
+  key: 'delete_bot',
+  description: `Delete a scheduled bot that has not yet been dispatched. This permanently removes the bot and cancels its scheduled join.`,
+  constraints: ['Only non-dispatched (scheduled) bots can be deleted.'],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    botId: z.string().describe('The unique identifier of the bot to delete'),
-  }))
-  .output(z.object({
-    botId: z.string().describe('ID of the deleted bot'),
-    deleted: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      botId: z.string().describe('The unique identifier of the bot to delete')
+    })
+  )
+  .output(
+    z.object({
+      botId: z.string().describe('ID of the deleted bot'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     await client.deleteBot(ctx.input.botId);
@@ -36,8 +35,9 @@ export let deleteBotTool = SlateTool.create(
     return {
       output: {
         botId: ctx.input.botId,
-        deleted: true,
+        deleted: true
       },
-      message: `Bot ${ctx.input.botId} has been deleted.`,
+      message: `Bot ${ctx.input.botId} has been deleted.`
     };
-  }).build();
+  })
+  .build();

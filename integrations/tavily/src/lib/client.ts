@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.tavily.com',
+  baseURL: 'https://api.tavily.com'
 });
 
 export interface SearchParams {
@@ -181,8 +181,8 @@ export class Client {
 
   private getHeaders(): Record<string, string> {
     let headers: Record<string, string> = {
-      'Authorization': `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.token}`,
+      'Content-Type': 'application/json'
     };
     if (this.projectId) {
       headers['X-Project-ID'] = this.projectId;
@@ -193,7 +193,7 @@ export class Client {
   async search(params: SearchParams): Promise<SearchResponse> {
     let body: Record<string, unknown> = {
       query: params.query,
-      include_usage: true,
+      include_usage: true
     };
 
     if (params.searchDepth) body.search_depth = params.searchDepth;
@@ -204,17 +204,21 @@ export class Client {
     if (params.startDate) body.start_date = params.startDate;
     if (params.endDate) body.end_date = params.endDate;
     if (params.includeAnswer !== undefined) body.include_answer = params.includeAnswer;
-    if (params.includeRawContent !== undefined) body.include_raw_content = params.includeRawContent;
+    if (params.includeRawContent !== undefined)
+      body.include_raw_content = params.includeRawContent;
     if (params.includeImages !== undefined) body.include_images = params.includeImages;
-    if (params.includeImageDescriptions !== undefined) body.include_image_descriptions = params.includeImageDescriptions;
-    if (params.includeDomains && params.includeDomains.length > 0) body.include_domains = params.includeDomains;
-    if (params.excludeDomains && params.excludeDomains.length > 0) body.exclude_domains = params.excludeDomains;
+    if (params.includeImageDescriptions !== undefined)
+      body.include_image_descriptions = params.includeImageDescriptions;
+    if (params.includeDomains && params.includeDomains.length > 0)
+      body.include_domains = params.includeDomains;
+    if (params.excludeDomains && params.excludeDomains.length > 0)
+      body.exclude_domains = params.excludeDomains;
     if (params.country) body.country = params.country;
     if (params.autoParameters !== undefined) body.auto_parameters = params.autoParameters;
     if (params.exactMatch !== undefined) body.exact_match = params.exactMatch;
 
     let response = await http.post('/search', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -229,18 +233,18 @@ export class Client {
         content: r.content,
         score: r.score,
         rawContent: r.raw_content,
-        favicon: r.favicon,
+        favicon: r.favicon
       })),
       autoParameters: data.auto_parameters,
       responseTime: data.response_time,
-      requestId: data.request_id,
+      requestId: data.request_id
     };
   }
 
   async extract(params: ExtractParams): Promise<ExtractResponse> {
     let body: Record<string, unknown> = {
       urls: params.urls,
-      include_usage: true,
+      include_usage: true
     };
 
     if (params.query) body.query = params.query;
@@ -251,7 +255,7 @@ export class Client {
     if (params.timeout !== undefined) body.timeout = params.timeout;
 
     let response = await http.post('/extract', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -261,21 +265,21 @@ export class Client {
         url: r.url,
         rawContent: r.raw_content,
         images: r.images,
-        favicon: r.favicon,
+        favicon: r.favicon
       })),
       failedResults: (data.failed_results || []).map((r: any) => ({
         url: r.url,
-        error: r.error,
+        error: r.error
       })),
       responseTime: data.response_time,
-      requestId: data.request_id,
+      requestId: data.request_id
     };
   }
 
   async crawl(params: CrawlParams): Promise<CrawlResponse> {
     let body: Record<string, unknown> = {
       url: params.url,
-      include_usage: true,
+      include_usage: true
     };
 
     if (params.instructions) body.instructions = params.instructions;
@@ -283,10 +287,14 @@ export class Client {
     if (params.maxDepth !== undefined) body.max_depth = params.maxDepth;
     if (params.maxBreadth !== undefined) body.max_breadth = params.maxBreadth;
     if (params.limit !== undefined) body.limit = params.limit;
-    if (params.selectPaths && params.selectPaths.length > 0) body.select_paths = params.selectPaths;
-    if (params.selectDomains && params.selectDomains.length > 0) body.select_domains = params.selectDomains;
-    if (params.excludePaths && params.excludePaths.length > 0) body.exclude_paths = params.excludePaths;
-    if (params.excludeDomains && params.excludeDomains.length > 0) body.exclude_domains = params.excludeDomains;
+    if (params.selectPaths && params.selectPaths.length > 0)
+      body.select_paths = params.selectPaths;
+    if (params.selectDomains && params.selectDomains.length > 0)
+      body.select_domains = params.selectDomains;
+    if (params.excludePaths && params.excludePaths.length > 0)
+      body.exclude_paths = params.excludePaths;
+    if (params.excludeDomains && params.excludeDomains.length > 0)
+      body.exclude_domains = params.excludeDomains;
     if (params.allowExternal !== undefined) body.allow_external = params.allowExternal;
     if (params.includeImages !== undefined) body.include_images = params.includeImages;
     if (params.extractDepth) body.extract_depth = params.extractDepth;
@@ -294,7 +302,7 @@ export class Client {
     if (params.timeout !== undefined) body.timeout = params.timeout;
 
     let response = await http.post('/crawl', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -304,32 +312,36 @@ export class Client {
       results: (data.results || []).map((r: any) => ({
         url: r.url,
         rawContent: r.raw_content,
-        favicon: r.favicon,
+        favicon: r.favicon
       })),
       responseTime: data.response_time,
-      requestId: data.request_id,
+      requestId: data.request_id
     };
   }
 
   async map(params: MapParams): Promise<MapResponse> {
     let body: Record<string, unknown> = {
       url: params.url,
-      include_usage: true,
+      include_usage: true
     };
 
     if (params.instructions) body.instructions = params.instructions;
     if (params.maxDepth !== undefined) body.max_depth = params.maxDepth;
     if (params.maxBreadth !== undefined) body.max_breadth = params.maxBreadth;
     if (params.limit !== undefined) body.limit = params.limit;
-    if (params.selectPaths && params.selectPaths.length > 0) body.select_paths = params.selectPaths;
-    if (params.selectDomains && params.selectDomains.length > 0) body.select_domains = params.selectDomains;
-    if (params.excludePaths && params.excludePaths.length > 0) body.exclude_paths = params.excludePaths;
-    if (params.excludeDomains && params.excludeDomains.length > 0) body.exclude_domains = params.excludeDomains;
+    if (params.selectPaths && params.selectPaths.length > 0)
+      body.select_paths = params.selectPaths;
+    if (params.selectDomains && params.selectDomains.length > 0)
+      body.select_domains = params.selectDomains;
+    if (params.excludePaths && params.excludePaths.length > 0)
+      body.exclude_paths = params.excludePaths;
+    if (params.excludeDomains && params.excludeDomains.length > 0)
+      body.exclude_domains = params.excludeDomains;
     if (params.allowExternal !== undefined) body.allow_external = params.allowExternal;
     if (params.timeout !== undefined) body.timeout = params.timeout;
 
     let response = await http.post('/map', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -338,13 +350,13 @@ export class Client {
       baseUrl: data.base_url,
       results: data.results || [],
       responseTime: data.response_time,
-      requestId: data.request_id,
+      requestId: data.request_id
     };
   }
 
   async createResearch(params: ResearchParams): Promise<ResearchCreateResponse> {
     let body: Record<string, unknown> = {
-      input: params.input,
+      input: params.input
     };
 
     if (params.model) body.model = params.model;
@@ -352,7 +364,7 @@ export class Client {
     if (params.citationFormat) body.citation_format = params.citationFormat;
 
     let response = await http.post('/research', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -363,13 +375,13 @@ export class Client {
       status: data.status,
       input: data.input,
       model: data.model,
-      responseTime: data.response_time,
+      responseTime: data.response_time
     };
   }
 
   async getResearch(requestId: string): Promise<ResearchGetResponse> {
     let response = await http.get(`/research/${requestId}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -382,15 +394,15 @@ export class Client {
       sources: data.sources?.map((s: any) => ({
         title: s.title,
         url: s.url,
-        favicon: s.favicon,
+        favicon: s.favicon
       })),
-      responseTime: data.response_time,
+      responseTime: data.response_time
     };
   }
 
   async getUsage(): Promise<UsageResponse> {
     let response = await http.get('/usage', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     let data = response.data;
@@ -409,7 +421,7 @@ export class Client {
       planUsage: account.plan_usage ?? 0,
       planLimit: account.plan_limit ?? 0,
       paygoUsage: account.paygo_usage ?? 0,
-      paygoLimit: account.paygo_limit ?? 0,
+      paygoLimit: account.paygo_limit ?? 0
     };
   }
 }

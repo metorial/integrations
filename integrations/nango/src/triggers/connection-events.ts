@@ -3,45 +3,55 @@ import { NangoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let connectionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Connection Events',
-    key: 'connection_events',
-    description: 'Detects new or removed connections by polling the Nango connections list. Fires events when connections are created or disappear.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'deleted']).describe('Type of connection event'),
-    connectionId: z.string().describe('The connection identifier'),
-    provider: z.string().describe('The external service provider'),
-    providerConfigKey: z.string().describe('The integration ID'),
-    created: z.string().describe('Connection creation timestamp'),
-    metadata: z.record(z.string(), z.any()).nullable().describe('Custom metadata on the connection'),
-  }))
-  .output(z.object({
-    connectionId: z.string().describe('The connection identifier'),
-    provider: z.string().describe('The external service provider'),
-    providerConfigKey: z.string().describe('The integration ID'),
-    created: z.string().describe('Connection creation timestamp'),
-    metadata: z.record(z.string(), z.any()).nullable().describe('Custom metadata on the connection'),
-  }))
+export let connectionEvents = SlateTrigger.create(spec, {
+  name: 'Connection Events',
+  key: 'connection_events',
+  description:
+    'Detects new or removed connections by polling the Nango connections list. Fires events when connections are created or disappear.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'deleted']).describe('Type of connection event'),
+      connectionId: z.string().describe('The connection identifier'),
+      provider: z.string().describe('The external service provider'),
+      providerConfigKey: z.string().describe('The integration ID'),
+      created: z.string().describe('Connection creation timestamp'),
+      metadata: z
+        .record(z.string(), z.any())
+        .nullable()
+        .describe('Custom metadata on the connection')
+    })
+  )
+  .output(
+    z.object({
+      connectionId: z.string().describe('The connection identifier'),
+      provider: z.string().describe('The external service provider'),
+      providerConfigKey: z.string().describe('The integration ID'),
+      created: z.string().describe('Connection creation timestamp'),
+      metadata: z
+        .record(z.string(), z.any())
+        .nullable()
+        .describe('Custom metadata on the connection')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new NangoClient({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let result = await client.listConnections();
       let currentConnections = result.connections;
 
       let previousConnectionIds: string[] = ctx.state?.connectionIds ?? [];
-      let currentConnectionIds = currentConnections.map((c) => `${c.provider_config_key}::${c.connection_id}`);
+      let currentConnectionIds = currentConnections.map(
+        c => `${c.provider_config_key}::${c.connection_id}`
+      );
 
       let previousSet = new Set(previousConnectionIds);
       let currentSet = new Set(currentConnectionIds);
@@ -65,7 +75,7 @@ export let connectionEvents = SlateTrigger.create(
             provider: conn.provider,
             providerConfigKey: conn.provider_config_key,
             created: conn.created,
-            metadata: conn.metadata,
+            metadata: conn.metadata
           });
         }
       }
@@ -80,7 +90,7 @@ export let connectionEvents = SlateTrigger.create(
             provider: '',
             providerConfigKey: providerConfigKey ?? '',
             created: '',
-            metadata: null,
+            metadata: null
           });
         }
       }
@@ -88,12 +98,12 @@ export let connectionEvents = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          connectionIds: currentConnectionIds,
-        },
+          connectionIds: currentConnectionIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `connection.${ctx.input.eventType}`,
         id: `${ctx.input.providerConfigKey}::${ctx.input.connectionId}::${ctx.input.eventType}::${Date.now()}`,
@@ -102,9 +112,9 @@ export let connectionEvents = SlateTrigger.create(
           provider: ctx.input.provider,
           providerConfigKey: ctx.input.providerConfigKey,
           created: ctx.input.created,
-          metadata: ctx.input.metadata,
-        },
+          metadata: ctx.input.metadata
+        }
       };
-    },
+    }
   })
   .build();

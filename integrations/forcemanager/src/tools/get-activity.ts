@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getActivity = SlateTool.create(
-  spec,
-  {
-    name: 'Get Activity',
-    key: 'get_activity',
-    description: `Retrieve one or more sales activity records from ForceManager.
+export let getActivity = SlateTool.create(spec, {
+  name: 'Get Activity',
+  key: 'get_activity',
+  description: `Retrieve one or more sales activity records from ForceManager.
 Fetch by ID or list/search activities with filtering by account, contact, sales rep, or date range.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    activityId: z.number().optional().describe('Specific activity ID to retrieve'),
-    query: z.string().optional().describe('ForceManager query language filter'),
-    accountId: z.number().optional().describe('Filter by account ID'),
-    contactId: z.number().optional().describe('Filter by contact ID'),
-    salesRepId: z.number().optional().describe('Filter by sales rep ID'),
-    page: z.number().optional().describe('Page number (0-indexed)')
-  }))
-  .output(z.object({
-    activities: z.array(z.any()).describe('List of matching activity records'),
-    totalCount: z.number().describe('Number of records returned'),
-    nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      activityId: z.number().optional().describe('Specific activity ID to retrieve'),
+      query: z.string().optional().describe('ForceManager query language filter'),
+      accountId: z.number().optional().describe('Filter by account ID'),
+      contactId: z.number().optional().describe('Filter by contact ID'),
+      salesRepId: z.number().optional().describe('Filter by sales rep ID'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      activities: z.array(z.any()).describe('List of matching activity records'),
+      totalCount: z.number().describe('Number of records returned'),
+      nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.activityId) {
@@ -55,4 +56,5 @@ Fetch by ID or list/search activities with filtering by account, contact, sales 
       },
       message: `Found **${result.entityCount}** activity/activities${result.nextPage !== null ? ` (more pages available)` : ''}`
     };
-  }).build();
+  })
+  .build();

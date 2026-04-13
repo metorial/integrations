@@ -15,6 +15,7 @@ Flowise supports two layers of authentication:
 From v3.0.1 onwards, Flowise uses a Passport.js-based authentication system with JWT tokens stored in secure HTTP-only cookies. Users log in with email and password, and the system issues a short-lived access token and a long-lived refresh token. This is primarily used for accessing the Flowise dashboard UI and management APIs.
 
 For API access, the Bearer token obtained from this authentication is sent via the `Authorization` header:
+
 ```
 Authorization: Bearer YOUR_SECRET_TOKEN
 ```
@@ -24,11 +25,13 @@ Legacy instances may use simpler username/password authentication configured via
 ### 2. Chatflow-Level API Keys
 
 Individual chatflows can be protected with API keys. Keys are created and managed in the Flowise dashboard under the **API Keys** section (a `DefaultKey` is created automatically). When a chatflow has an API key assigned, clients must include it as a Bearer token in the `Authorization` header to call the prediction endpoint for that flow:
+
 ```
 Authorization: Bearer <API_KEY>
 ```
 
 **Important notes:**
+
 - Management endpoints (chatflows, assistants, tools, document stores, etc.) require the application-level Bearer token.
 - Prediction endpoints may be open or require a chatflow-level API key, depending on the flow's configuration.
 - The base URL depends on where the Flowise instance is hosted (self-hosted or Flowise Cloud).
@@ -38,6 +41,7 @@ Authorization: Bearer <API_KEY>
 ### Predictions (Chat Interaction)
 
 Send messages to any deployed chatflow, assistant, or agentflow and receive AI-generated responses. This is the primary runtime endpoint for interacting with flows.
+
 - Supports streaming responses for real-time output.
 - Accepts file uploads (images, audio, documents) alongside messages.
 - Allows passing conversation history for context continuity.
@@ -48,18 +52,21 @@ Send messages to any deployed chatflow, assistant, or agentflow and receive AI-g
 ### Chatflow Management
 
 Create, retrieve, update, and delete chatflows programmatically. Chatflows define the visual workflow (nodes and connections) that power AI interactions.
+
 - Each chatflow has properties like name, flow data, deployment status, public visibility, API key assignment, chatbot configuration, and analytics settings.
 - Chatflows can be filtered by type: `CHATFLOW`, `ASSISTANT`, or `AGENTFLOW`.
 
 ### Assistant Management
 
 Create, retrieve, update, and delete AI assistants. Assistants are a beginner-friendly way to create agents that follow instructions, use tools, and retrieve from knowledge bases.
+
 - Configurable model, instructions, temperature, and tool assignments (function calling, code interpreter, file search).
 - Linked to credentials for LLM provider access.
 
 ### Document Store Management
 
 Manage document stores used for retrieval-augmented generation (RAG). Document stores hold ingested and chunked documents for vector search.
+
 - Retrieve document store details and contents.
 - Upsert documents into a store with configurable loader, text splitter, embedding model, vector store, and record manager.
 - Refresh existing document stores to re-process documents.

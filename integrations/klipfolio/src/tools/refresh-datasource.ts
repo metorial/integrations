@@ -3,28 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let refreshDatasource = SlateTool.create(
-  spec,
-  {
-    name: 'Refresh Data Sources',
-    key: 'refresh_datasource',
-    description: `Trigger an on-demand refresh for one or more data sources, or refresh a specific data source instance. Also supports enabling/disabling data sources.`,
-    instructions: [
-      'Provide datasource IDs to refresh them, or a single instance ID to refresh a specific instance.',
-      'Use enable/disable to control whether a data source is actively refreshing.',
-    ],
-  }
-)
-  .input(z.object({
-    datasourceIds: z.array(z.string()).optional().describe('Data source IDs to refresh'),
-    instanceId: z.string().optional().describe('Specific data source instance ID to refresh'),
-    enable: z.string().optional().describe('Data source ID to enable'),
-    disable: z.string().optional().describe('Data source ID to disable'),
-  }))
-  .output(z.object({
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let refreshDatasource = SlateTool.create(spec, {
+  name: 'Refresh Data Sources',
+  key: 'refresh_datasource',
+  description: `Trigger an on-demand refresh for one or more data sources, or refresh a specific data source instance. Also supports enabling/disabling data sources.`,
+  instructions: [
+    'Provide datasource IDs to refresh them, or a single instance ID to refresh a specific instance.',
+    'Use enable/disable to control whether a data source is actively refreshing.'
+  ]
+})
+  .input(
+    z.object({
+      datasourceIds: z.array(z.string()).optional().describe('Data source IDs to refresh'),
+      instanceId: z
+        .string()
+        .optional()
+        .describe('Specific data source instance ID to refresh'),
+      enable: z.string().optional().describe('Data source ID to enable'),
+      disable: z.string().optional().describe('Data source ID to disable')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let actions: string[] = [];
 
@@ -50,7 +54,7 @@ export let refreshDatasource = SlateTool.create(
 
     return {
       output: { success: true },
-      message: actions.length > 0 ? actions.join('; ') + '.' : 'No actions performed.',
+      message: actions.length > 0 ? actions.join('; ') + '.' : 'No actions performed.'
     };
   })
   .build();

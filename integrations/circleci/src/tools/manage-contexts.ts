@@ -3,38 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContexts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contexts',
-    key: 'manage_contexts',
-    description: `Create, list, get, or delete CircleCI contexts for an organization. Contexts provide a way to secure and share environment variables across projects.`,
-    tags: {
-      readOnly: false
-    }
+export let manageContexts = SlateTool.create(spec, {
+  name: 'Manage Contexts',
+  key: 'manage_contexts',
+  description: `Create, list, get, or delete CircleCI contexts for an organization. Contexts provide a way to secure and share environment variables across projects.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'delete']).describe('Action to perform'),
-    ownerId: z.string().optional().describe('Organization or account UUID (required for list and create)'),
-    ownerType: z.enum(['account', 'organization']).optional().describe('Owner type (required for list and create)'),
-    contextId: z.string().optional().describe('Context UUID (required for get and delete)'),
-    contextName: z.string().optional().describe('Name for the new context (required for create)')
-  }))
-  .output(z.object({
-    contexts: z.array(z.object({
-      contextId: z.string(),
-      name: z.string(),
-      createdAt: z.string().optional()
-    })).optional(),
-    context: z.object({
-      contextId: z.string(),
-      name: z.string(),
-      createdAt: z.string().optional()
-    }).optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'create', 'delete']).describe('Action to perform'),
+      ownerId: z
+        .string()
+        .optional()
+        .describe('Organization or account UUID (required for list and create)'),
+      ownerType: z
+        .enum(['account', 'organization'])
+        .optional()
+        .describe('Owner type (required for list and create)'),
+      contextId: z.string().optional().describe('Context UUID (required for get and delete)'),
+      contextName: z
+        .string()
+        .optional()
+        .describe('Name for the new context (required for create)')
+    })
+  )
+  .output(
+    z.object({
+      contexts: z
+        .array(
+          z.object({
+            contextId: z.string(),
+            name: z.string(),
+            createdAt: z.string().optional()
+          })
+        )
+        .optional(),
+      context: z
+        .object({
+          contextId: z.string(),
+          name: z.string(),
+          createdAt: z.string().optional()
+        })
+        .optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -72,7 +88,9 @@ export let manageContexts = SlateTool.create(
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.contextName || !ctx.input.ownerId || !ctx.input.ownerType) {
-        throw new Error('contextName, ownerId, and ownerType are required to create a context.');
+        throw new Error(
+          'contextName, ownerId, and ownerType are required to create a context.'
+        );
       }
       let context = await client.createContext(ctx.input.contextName, {
         id: ctx.input.ownerId,

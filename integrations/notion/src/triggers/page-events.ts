@@ -3,35 +3,37 @@ import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let pageEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Page Events',
-    key: 'page_events',
-    description: 'Receives webhook notifications for page events including content updates, page creation, and lock/unlock changes. Configure the webhook URL in your Notion integration settings.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of page event'),
-    eventId: z.string().describe('Unique event identifier'),
-    pageId: z.string().describe('ID of the affected page'),
-    timestamp: z.string().describe('When the event occurred'),
-    rawEvent: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    pageId: z.string().describe('ID of the affected page'),
-    url: z.string().optional().describe('URL of the page'),
-    title: z.string().optional().describe('Title of the page'),
-    lastEditedTime: z.string().optional().describe('When the page was last edited'),
-    createdTime: z.string().optional().describe('When the page was created'),
-    archived: z.boolean().optional().describe('Whether the page is archived'),
-    isLocked: z.boolean().optional().describe('Whether the page is locked'),
-    properties: z.record(z.string(), z.any()).optional().describe('Page properties'),
-    parent: z.any().optional().describe('Parent reference'),
-  }))
+export let pageEvents = SlateTrigger.create(spec, {
+  name: 'Page Events',
+  key: 'page_events',
+  description:
+    'Receives webhook notifications for page events including content updates, page creation, and lock/unlock changes. Configure the webhook URL in your Notion integration settings.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of page event'),
+      eventId: z.string().describe('Unique event identifier'),
+      pageId: z.string().describe('ID of the affected page'),
+      timestamp: z.string().describe('When the event occurred'),
+      rawEvent: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      pageId: z.string().describe('ID of the affected page'),
+      url: z.string().optional().describe('URL of the page'),
+      title: z.string().optional().describe('Title of the page'),
+      lastEditedTime: z.string().optional().describe('When the page was last edited'),
+      createdTime: z.string().optional().describe('When the page was created'),
+      archived: z.boolean().optional().describe('Whether the page is archived'),
+      isLocked: z.boolean().optional().describe('Whether the page is locked'),
+      properties: z.record(z.string(), z.any()).optional().describe('Page properties'),
+      parent: z.any().optional().describe('Parent reference')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // Handle Notion webhook verification challenge
       if (body.type === 'url_verification' || body.challenge) {
@@ -39,8 +41,8 @@ export let pageEvents = SlateTrigger.create(
           inputs: [],
           response: new Response(JSON.stringify({ challenge: body.challenge }), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          }),
+            headers: { 'Content-Type': 'application/json' }
+          })
         };
       }
 
@@ -63,16 +65,18 @@ export let pageEvents = SlateTrigger.create(
 
       let inputs = pageEvents.map((event: any) => ({
         eventType: event.type,
-        eventId: event.id ?? `${event.type}-${event.entity?.id ?? 'unknown'}-${event.timestamp ?? Date.now()}`,
+        eventId:
+          event.id ??
+          `${event.type}-${event.entity?.id ?? 'unknown'}-${event.timestamp ?? Date.now()}`,
         pageId: event.entity?.id ?? event.page_id ?? '',
         timestamp: event.timestamp ?? new Date().toISOString(),
-        rawEvent: event,
+        rawEvent: event
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new NotionClient({ token: ctx.auth.token });
 
       let page: any = null;
@@ -113,8 +117,9 @@ export let pageEvents = SlateTrigger.create(
           archived: page?.archived,
           isLocked: page?.is_locked,
           properties: page?.properties,
-          parent: page?.parent,
-        },
+          parent: page?.parent
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

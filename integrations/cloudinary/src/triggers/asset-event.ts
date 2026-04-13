@@ -3,51 +3,53 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let assetEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Asset Event',
-    key: 'asset_event',
-    description: 'Triggers when an asset event occurs in Cloudinary, such as uploads, deletions, renames, tag changes, metadata updates, moderation results, and more.',
-  }
-)
-  .input(z.object({
-    notificationType: z.string().describe('Type of notification event from Cloudinary.'),
-    publicId: z.string().optional().describe('Public ID of the affected asset.'),
-    assetId: z.string().optional().describe('Immutable asset ID of the affected asset.'),
-    resourceType: z.string().optional().describe('Resource type of the affected asset.'),
-    notificationId: z.string().describe('Unique identifier for deduplication.'),
-    rawPayload: z.any().describe('Full raw webhook payload from Cloudinary.'),
-  }))
-  .output(z.object({
-    publicId: z.string().optional().describe('Public ID of the affected asset.'),
-    assetId: z.string().optional().describe('Immutable asset ID.'),
-    resourceType: z.string().optional().describe('Resource type (image, video, raw).'),
-    format: z.string().optional().describe('File format.'),
-    secureUrl: z.string().optional().describe('HTTPS delivery URL.'),
-    bytes: z.number().optional().describe('File size in bytes.'),
-    width: z.number().optional().describe('Width in pixels.'),
-    height: z.number().optional().describe('Height in pixels.'),
-    createdAt: z.string().optional().describe('Creation timestamp.'),
-    tags: z.array(z.string()).optional().describe('Tags on the asset.'),
-    version: z.number().optional().describe('Asset version number.'),
-    folder: z.string().optional().describe('Folder path.'),
-    displayName: z.string().optional().describe('Display name.'),
-    moderationStatus: z.string().optional().describe('Moderation status if applicable.'),
-  }))
+export let assetEvent = SlateTrigger.create(spec, {
+  name: 'Asset Event',
+  key: 'asset_event',
+  description:
+    'Triggers when an asset event occurs in Cloudinary, such as uploads, deletions, renames, tag changes, metadata updates, moderation results, and more.'
+})
+  .input(
+    z.object({
+      notificationType: z.string().describe('Type of notification event from Cloudinary.'),
+      publicId: z.string().optional().describe('Public ID of the affected asset.'),
+      assetId: z.string().optional().describe('Immutable asset ID of the affected asset.'),
+      resourceType: z.string().optional().describe('Resource type of the affected asset.'),
+      notificationId: z.string().describe('Unique identifier for deduplication.'),
+      rawPayload: z.any().describe('Full raw webhook payload from Cloudinary.')
+    })
+  )
+  .output(
+    z.object({
+      publicId: z.string().optional().describe('Public ID of the affected asset.'),
+      assetId: z.string().optional().describe('Immutable asset ID.'),
+      resourceType: z.string().optional().describe('Resource type (image, video, raw).'),
+      format: z.string().optional().describe('File format.'),
+      secureUrl: z.string().optional().describe('HTTPS delivery URL.'),
+      bytes: z.number().optional().describe('File size in bytes.'),
+      width: z.number().optional().describe('Width in pixels.'),
+      height: z.number().optional().describe('Height in pixels.'),
+      createdAt: z.string().optional().describe('Creation timestamp.'),
+      tags: z.array(z.string()).optional().describe('Tags on the asset.'),
+      version: z.number().optional().describe('Asset version number.'),
+      folder: z.string().optional().describe('Folder path.'),
+      displayName: z.string().optional().describe('Display name.'),
+      moderationStatus: z.string().optional().describe('Moderation status if applicable.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
       let trigger = await client.createTrigger(ctx.input.webhookBaseUrl, 'all');
 
       return {
         registrationDetails: {
-          triggerId: trigger.triggerId,
-        },
+          triggerId: trigger.triggerId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let triggerId = ctx.input.registrationDetails?.triggerId;
       if (triggerId) {
@@ -55,8 +57,8 @@ export let assetEvent = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // Cloudinary webhook signature verification
       let signature = ctx.request.headers.get('x-cld-signature');
@@ -81,13 +83,13 @@ export let assetEvent = SlateTrigger.create(
             assetId,
             resourceType,
             notificationId,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.rawPayload;
       let notificationType = ctx.input.notificationType;
 
@@ -109,7 +111,7 @@ export let assetEvent = SlateTrigger.create(
         explode: 'asset.explode_completed',
         multi: 'asset.multi_completed',
         create_folder: 'folder.created',
-        delete_folder: 'folder.deleted',
+        delete_folder: 'folder.deleted'
       };
 
       let eventType = eventTypeMap[notificationType] || `asset.${notificationType}`;
@@ -131,9 +133,9 @@ export let assetEvent = SlateTrigger.create(
           version: payload.version,
           folder: payload.folder ?? payload.asset_folder,
           displayName: payload.display_name,
-          moderationStatus: payload.moderation_status,
-        },
+          moderationStatus: payload.moderation_status
+        }
       };
-    },
+    }
   })
   .build();

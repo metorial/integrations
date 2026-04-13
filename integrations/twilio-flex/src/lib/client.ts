@@ -18,7 +18,7 @@ export class FlexClient {
     this.axios = createAxios({
       baseURL: 'https://flex-api.twilio.com/v1',
       headers: {
-        'Authorization': `Basic ${token}`,
+        Authorization: `Basic ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
@@ -51,7 +51,10 @@ export class FlexClient {
     return response.data;
   }
 
-  async updateFlexFlow(flexFlowSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateFlexFlow(
+    flexFlowSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(`/FlexFlows/${flexFlowSid}`, encodeFormBody(params));
     return response.data;
   }
@@ -76,11 +79,17 @@ export class FlexClient {
   }
 
   async getInteractionChannel(interactionSid: string, channelSid: string): Promise<any> {
-    let response = await this.axios.get(`/Interactions/${interactionSid}/Channels/${channelSid}`);
+    let response = await this.axios.get(
+      `/Interactions/${interactionSid}/Channels/${channelSid}`
+    );
     return response.data;
   }
 
-  async updateInteractionChannel(interactionSid: string, channelSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateInteractionChannel(
+    interactionSid: string,
+    channelSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/Interactions/${interactionSid}/Channels/${channelSid}`,
       encodeFormBody(params)
@@ -88,12 +97,21 @@ export class FlexClient {
     return response.data;
   }
 
-  async listInteractionChannelParticipants(interactionSid: string, channelSid: string): Promise<any> {
-    let response = await this.axios.get(`/Interactions/${interactionSid}/Channels/${channelSid}/Participants`);
+  async listInteractionChannelParticipants(
+    interactionSid: string,
+    channelSid: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/Interactions/${interactionSid}/Channels/${channelSid}/Participants`
+    );
     return response.data;
   }
 
-  async createInteractionChannelParticipant(interactionSid: string, channelSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async createInteractionChannelParticipant(
+    interactionSid: string,
+    channelSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/Interactions/${interactionSid}/Channels/${channelSid}/Participants`,
       encodeFormBody(params)
@@ -101,7 +119,12 @@ export class FlexClient {
     return response.data;
   }
 
-  async updateInteractionChannelParticipant(interactionSid: string, channelSid: string, participantSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateInteractionChannelParticipant(
+    interactionSid: string,
+    channelSid: string,
+    participantSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/Interactions/${interactionSid}/Channels/${channelSid}/Participants/${participantSid}`,
       encodeFormBody(params)
@@ -109,7 +132,11 @@ export class FlexClient {
     return response.data;
   }
 
-  async createInteractionChannelInvite(interactionSid: string, channelSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async createInteractionChannelInvite(
+    interactionSid: string,
+    channelSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/Interactions/${interactionSid}/Channels/${channelSid}/Invites`,
       encodeFormBody(params)
@@ -117,8 +144,13 @@ export class FlexClient {
     return response.data;
   }
 
-  async listInteractionChannelInvites(interactionSid: string, channelSid: string): Promise<any> {
-    let response = await this.axios.get(`/Interactions/${interactionSid}/Channels/${channelSid}/Invites`);
+  async listInteractionChannelInvites(
+    interactionSid: string,
+    channelSid: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/Interactions/${interactionSid}/Channels/${channelSid}/Invites`
+    );
     return response.data;
   }
 }

@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your TextIt API token. Found at the top right of the API documentation page (https://textit.com/api/v2/).'),
+      token: z
+        .string()
+        .describe(
+          'Your TextIt API token. Found at the top right of the API documentation page (https://textit.com/api/v2/).'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://textit.com/api/v2',
         headers: {
-          Authorization: `Token ${ctx.output.token}`,
-        },
+          Authorization: `Token ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/workspace.json');
@@ -36,8 +42,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: workspace.uuid,
-          name: workspace.name,
-        },
+          name: workspace.name
+        }
       };
-    },
+    }
   });

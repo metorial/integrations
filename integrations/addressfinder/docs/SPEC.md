@@ -15,6 +15,7 @@ Addressfinder supports three authentication methods:
 Every project in the Addressfinder Portal has an API key and a secret. For server-to-server calls, pass the API key as a `key` query parameter and the secret in the `Authorization` header.
 
 Example:
+
 ```
 curl -H "Authorization: YOUR_API_SECRET" \
   "https://api.addressfinder.io/api/nz/address/autocomplete/?key=YOUR_API_KEY&q=184+will&format=json"
@@ -43,30 +44,39 @@ OAuth2 credentials (Client ID and Client Secret) are created in the Addressfinde
 ## Features
 
 ### Address Autocomplete
+
 Interactive type-ahead search that returns closely matching addresses as the user types. Available for Australian, New Zealand, and international addresses. Supports configurable parameters such as filtering by state/region and response format.
 
 ### Address Metadata Retrieval
+
 Fetches the full metadata (e.g., structured components, geocoordinates, identifiers) associated with an address selected from the autocomplete results. Works in tandem with the Address Autocomplete feature.
 
 ### Address Verification
+
 Accepts a full address (potentially with errors or typos) and attempts to match it against a verified record in the Addressfinder database. Returns the matched, standardized address along with metadata. Available for Australian and New Zealand addresses.
 
 ### Location Autocomplete and Metadata
+
 Interactive search for locations such as streets, suburbs, and states (AU and NZ). Returns matching locations which can then be selected to retrieve full location metadata.
 
 ### Reverse Geocoding
+
 Takes GPS coordinates (longitude and latitude) and returns the nearest addresses ordered by distance. Available for New Zealand only.
 
 ### Points of Interest Search
+
 Interactive search for points of interest and their associated addresses (NZ only). Supports autocomplete and full metadata retrieval for selected results.
 
 ### Email Verification
+
 Validates an email address by checking syntax, domain existence and availability, and email account existence. Returns a verified state and associated metadata.
 
 ### Phone Verification
+
 Verifies a phone number through syntax and range checks followed by a network-level connection status check. Returns the verified number, line type, connection status, and other metadata.
 
 ### Bulk Verification
+
 Allows verification of address data in bulk, suitable for cleaning up existing address databases rather than one-off lookups.
 
 ## Events

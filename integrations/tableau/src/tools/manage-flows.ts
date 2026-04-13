@@ -6,46 +6,61 @@ import { createClient } from '../lib/helpers';
 export let manageFlows = SlateTool.create(spec, {
   name: 'Manage Flows',
   key: 'manage_flows',
-  description: `List, get, update, delete, or run Tableau Prep flows. Use the **action** field to select the operation.`,
+  description: `List, get, update, delete, or run Tableau Prep flows. Use the **action** field to select the operation.`
 })
-  .input(z.object({
-    action: z.enum(['list', 'get', 'update', 'delete', 'run']).describe('Operation to perform'),
-    flowId: z.string().optional().describe('Flow LUID (required for get, update, delete, run)'),
-    name: z.string().optional().describe('New name (for update)'),
-    description: z.string().optional().describe('New description (for update)'),
-    projectId: z.string().optional().describe('New project LUID (for update)'),
-    ownerUserId: z.string().optional().describe('New owner LUID (for update)'),
-    pageSize: z.number().optional().describe('Page size for list'),
-    pageNumber: z.number().optional().describe('Page number for list'),
-    filter: z.string().optional().describe('Filter expression for list'),
-    sort: z.string().optional().describe('Sort expression for list')
-  }))
-  .output(z.object({
-    flows: z.array(z.object({
-      flowId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      projectId: z.string().optional(),
-      projectName: z.string().optional(),
-      ownerId: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })).optional(),
-    flow: z.object({
-      flowId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      projectId: z.string().optional(),
-      projectName: z.string().optional(),
-      ownerId: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    }).optional(),
-    totalCount: z.number().optional(),
-    jobId: z.string().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'update', 'delete', 'run'])
+        .describe('Operation to perform'),
+      flowId: z
+        .string()
+        .optional()
+        .describe('Flow LUID (required for get, update, delete, run)'),
+      name: z.string().optional().describe('New name (for update)'),
+      description: z.string().optional().describe('New description (for update)'),
+      projectId: z.string().optional().describe('New project LUID (for update)'),
+      ownerUserId: z.string().optional().describe('New owner LUID (for update)'),
+      pageSize: z.number().optional().describe('Page size for list'),
+      pageNumber: z.number().optional().describe('Page number for list'),
+      filter: z.string().optional().describe('Filter expression for list'),
+      sort: z.string().optional().describe('Sort expression for list')
+    })
+  )
+  .output(
+    z.object({
+      flows: z
+        .array(
+          z.object({
+            flowId: z.string(),
+            name: z.string().optional(),
+            description: z.string().optional(),
+            projectId: z.string().optional(),
+            projectName: z.string().optional(),
+            ownerId: z.string().optional(),
+            createdAt: z.string().optional(),
+            updatedAt: z.string().optional()
+          })
+        )
+        .optional(),
+      flow: z
+        .object({
+          flowId: z.string(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          projectId: z.string().optional(),
+          projectName: z.string().optional(),
+          ownerId: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional(),
+      jobId: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -78,9 +93,14 @@ export let manageFlows = SlateTool.create(spec, {
       return {
         output: {
           flow: {
-            flowId: f.id, name: f.name, description: f.description,
-            projectId: f.project?.id, projectName: f.project?.name,
-            ownerId: f.owner?.id, createdAt: f.createdAt, updatedAt: f.updatedAt
+            flowId: f.id,
+            name: f.name,
+            description: f.description,
+            projectId: f.project?.id,
+            projectName: f.project?.name,
+            ownerId: f.owner?.id,
+            createdAt: f.createdAt,
+            updatedAt: f.updatedAt
           }
         },
         message: `Retrieved flow **${f.name}**.`
@@ -89,15 +109,21 @@ export let manageFlows = SlateTool.create(spec, {
 
     if (action === 'update') {
       let f = await client.updateFlow(ctx.input.flowId!, {
-        name: ctx.input.name, description: ctx.input.description,
-        projectId: ctx.input.projectId, ownerUserId: ctx.input.ownerUserId
+        name: ctx.input.name,
+        description: ctx.input.description,
+        projectId: ctx.input.projectId,
+        ownerUserId: ctx.input.ownerUserId
       });
       return {
         output: {
           flow: {
-            flowId: f.id, name: f.name, description: f.description,
-            projectId: f.project?.id, projectName: f.project?.name,
-            ownerId: f.owner?.id, updatedAt: f.updatedAt
+            flowId: f.id,
+            name: f.name,
+            description: f.description,
+            projectId: f.project?.id,
+            projectName: f.project?.name,
+            ownerId: f.owner?.id,
+            updatedAt: f.updatedAt
           }
         },
         message: `Updated flow **${f.name}**.`
@@ -121,4 +147,5 @@ export let manageFlows = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

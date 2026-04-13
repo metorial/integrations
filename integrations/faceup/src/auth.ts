@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    region: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      region: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -14,15 +16,19 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('API key from FaceUp admin: Integrations > API Keys'),
-      region: z.string().describe('Data hosting region from FaceUp admin: Settings > Data hosting region (e.g., "eu", "us")'),
+      region: z
+        .string()
+        .describe(
+          'Data hosting region from FaceUp admin: Settings > Data hosting region (e.g., "eu", "us")'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
-          region: ctx.input.region,
-        },
+          region: ctx.input.region
+        }
       };
-    },
+    }
   });

@@ -17,22 +17,21 @@ let userSchema = z.object({
   updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
 });
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve all users in your SimpleKPI account. Returns user details including name, email, role, status, and permissions.`,
-    tags: {
-      readOnly: true
-    }
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve all users in your SimpleKPI account. Returns user details including name, email, role, status, and permissions.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of all users')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of all users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let users = await client.listUsers();
 
@@ -54,4 +53,5 @@ export let listUsers = SlateTool.create(
       output: { users: mapped },
       message: `Retrieved **${mapped.length}** users.`
     };
-  }).build();
+  })
+  .build();

@@ -7,41 +7,50 @@ let templateSchema = z.object({
   templateId: z.string().describe('Unique ID of the template'),
   name: z.string().describe('Name of the template'),
   message: z.string().optional().describe('Message content of the template'),
-  categoryId: z.string().optional().describe('Category the template belongs to'),
+  categoryId: z.string().optional().describe('Category the template belongs to')
 });
 
-export let manageTemplates = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Templates',
-    key: 'manage_templates',
-    description: `Create, update, delete, or list message templates. Templates store reusable message content for common outreach scenarios such as thank-you notes, birthday cards, etc.`,
-    instructions: [
-      'To list: set action to "list". Optionally filter by categoryId.',
-      'To get details: set action to "get" and provide templateId.',
-      'To create: set action to "create" and provide name and message.',
-      'To update: set action to "update" and provide templateId plus fields to change.',
-      'To delete: set action to "delete" and provide templateId.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageTemplates = SlateTool.create(spec, {
+  name: 'Manage Templates',
+  key: 'manage_templates',
+  description: `Create, update, delete, or list message templates. Templates store reusable message content for common outreach scenarios such as thank-you notes, birthday cards, etc.`,
+  instructions: [
+    'To list: set action to "list". Optionally filter by categoryId.',
+    'To get details: set action to "get" and provide templateId.',
+    'To create: set action to "create" and provide name and message.',
+    'To update: set action to "update" and provide templateId plus fields to change.',
+    'To delete: set action to "delete" and provide templateId.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    templateId: z.string().optional().describe('Template ID (required for get, update, delete)'),
-    categoryId: z.string().optional().describe('Filter templates by category ID (for list)'),
-    name: z.string().optional().describe('Template name (for create/update)'),
-    message: z.string().optional().describe('Template message content (for create/update)'),
-  }))
-  .output(z.object({
-    templates: z.array(templateSchema).optional().describe('List of templates (for list action)'),
-    template: templateSchema.optional().describe('Template details (for get/create/update)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Operation to perform'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Template ID (required for get, update, delete)'),
+      categoryId: z.string().optional().describe('Filter templates by category ID (for list)'),
+      name: z.string().optional().describe('Template name (for create/update)'),
+      message: z.string().optional().describe('Template message content (for create/update)')
+    })
+  )
+  .output(
+    z.object({
+      templates: z
+        .array(templateSchema)
+        .optional()
+        .describe('List of templates (for list action)'),
+      template: templateSchema.optional().describe('Template details (for get/create/update)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -49,7 +58,7 @@ export let manageTemplates = SlateTool.create(
       templateId: String(t.id ?? t.template_id),
       name: t.name ?? '',
       message: t.message ?? undefined,
-      categoryId: t.category_id != null ? String(t.category_id) : undefined,
+      categoryId: t.category_id != null ? String(t.category_id) : undefined
     });
 
     if (action === 'list') {
@@ -57,7 +66,7 @@ export let manageTemplates = SlateTool.create(
       let templates = (result.templates ?? []).map(mapTemplate);
       return {
         output: { templates, success: true },
-        message: `Found **${templates.length}** templates.`,
+        message: `Found **${templates.length}** templates.`
       };
     }
 
@@ -67,7 +76,7 @@ export let manageTemplates = SlateTool.create(
       let template = mapTemplate(result.template ?? result);
       return {
         output: { template, success: true },
-        message: `Retrieved template **${template.name}**.`,
+        message: `Retrieved template **${template.name}**.`
       };
     }
 
@@ -80,9 +89,9 @@ export let manageTemplates = SlateTool.create(
       return {
         output: {
           template: { templateId, name: ctx.input.name, message: ctx.input.message },
-          success: true,
+          success: true
         },
-        message: `Created template **${ctx.input.name}** with ID \`${templateId}\`.`,
+        message: `Created template **${ctx.input.name}** with ID \`${templateId}\`.`
       };
     }
 
@@ -90,16 +99,18 @@ export let manageTemplates = SlateTool.create(
       if (!ctx.input.templateId) throw new Error('templateId is required for update action');
       let result = await client.updateTemplate(ctx.input.templateId, {
         name: ctx.input.name,
-        message: ctx.input.message,
+        message: ctx.input.message
       });
-      let template = result.template ? mapTemplate(result.template) : {
-        templateId: ctx.input.templateId,
-        name: ctx.input.name ?? '',
-        message: ctx.input.message ?? undefined,
-      };
+      let template = result.template
+        ? mapTemplate(result.template)
+        : {
+            templateId: ctx.input.templateId,
+            name: ctx.input.name ?? '',
+            message: ctx.input.message ?? undefined
+          };
       return {
         output: { template, success: true },
-        message: `Updated template \`${ctx.input.templateId}\`.`,
+        message: `Updated template \`${ctx.input.templateId}\`.`
       };
     }
 
@@ -108,7 +119,7 @@ export let manageTemplates = SlateTool.create(
       await client.deleteTemplate(ctx.input.templateId);
       return {
         output: { success: true },
-        message: `Deleted template \`${ctx.input.templateId}\`.`,
+        message: `Deleted template \`${ctx.input.templateId}\`.`
       };
     }
 

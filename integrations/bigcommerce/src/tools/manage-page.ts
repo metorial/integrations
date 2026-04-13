@@ -3,46 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePage = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Page',
-    key: 'manage_page',
-    description: `List, create, update, or delete content pages. Pages are used for static content like About Us, Contact, Terms & Conditions, etc.`,
-    instructions: [
-      'Use action "list" to retrieve pages.',
-      'Use action "get" to retrieve a specific page by ID.',
-      'Use action "create" to create a new page.',
-      'Use action "update" to modify an existing page.',
-      'Use action "delete" to remove a page.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    pageId: z.number().optional().describe('Page ID (required for get/update/delete)'),
-    name: z.string().optional().describe('Page name/title'),
-    type: z.enum(['page', 'raw', 'contact_form', 'feed', 'link', 'blog']).optional().describe('Page type (required for create)'),
-    body: z.string().optional().describe('HTML content of the page'),
-    isVisible: z.boolean().optional().describe('Whether the page is visible'),
-    parentId: z.number().optional().describe('Parent page ID for nesting'),
-    sortOrder: z.number().optional().describe('Sort order'),
-    metaTitle: z.string().optional().describe('SEO meta title'),
-    metaDescription: z.string().optional().describe('SEO meta description'),
-    url: z.string().optional().describe('Custom URL for the page'),
-    channelId: z.number().optional().describe('Channel ID for the page'),
-    page: z.number().optional().describe('Page number for list pagination'),
-    limit: z.number().optional().describe('Results per page for list'),
-  }))
-  .output(z.object({
-    contentPage: z.any().optional().describe('The page object'),
-    pages: z.array(z.any()).optional().describe('List of pages'),
-    deleted: z.boolean().optional().describe('Whether the page was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let managePage = SlateTool.create(spec, {
+  name: 'Manage Page',
+  key: 'manage_page',
+  description: `List, create, update, or delete content pages. Pages are used for static content like About Us, Contact, Terms & Conditions, etc.`,
+  instructions: [
+    'Use action "list" to retrieve pages.',
+    'Use action "get" to retrieve a specific page by ID.',
+    'Use action "create" to create a new page.',
+    'Use action "update" to modify an existing page.',
+    'Use action "delete" to remove a page.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      pageId: z.number().optional().describe('Page ID (required for get/update/delete)'),
+      name: z.string().optional().describe('Page name/title'),
+      type: z
+        .enum(['page', 'raw', 'contact_form', 'feed', 'link', 'blog'])
+        .optional()
+        .describe('Page type (required for create)'),
+      body: z.string().optional().describe('HTML content of the page'),
+      isVisible: z.boolean().optional().describe('Whether the page is visible'),
+      parentId: z.number().optional().describe('Parent page ID for nesting'),
+      sortOrder: z.number().optional().describe('Sort order'),
+      metaTitle: z.string().optional().describe('SEO meta title'),
+      metaDescription: z.string().optional().describe('SEO meta description'),
+      url: z.string().optional().describe('Custom URL for the page'),
+      channelId: z.number().optional().describe('Channel ID for the page'),
+      page: z.number().optional().describe('Page number for list pagination'),
+      limit: z.number().optional().describe('Results per page for list')
+    })
+  )
+  .output(
+    z.object({
+      contentPage: z.any().optional().describe('The page object'),
+      pages: z.array(z.any()).optional().describe('List of pages'),
+      deleted: z.boolean().optional().describe('Whether the page was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      storeHash: ctx.config.storeHash,
+      storeHash: ctx.config.storeHash
     });
 
     if (ctx.input.action === 'list') {
@@ -54,7 +60,7 @@ export let managePage = SlateTool.create(
       let result = await client.listPages(params);
       return {
         output: { pages: result.data },
-        message: `Found ${result.data.length} pages.`,
+        message: `Found ${result.data.length} pages.`
       };
     }
 
@@ -63,7 +69,7 @@ export let managePage = SlateTool.create(
       let result = await client.getPage(ctx.input.pageId);
       return {
         output: { contentPage: result.data },
-        message: `Retrieved page **${result.data.name}** (ID: ${result.data.id}).`,
+        message: `Retrieved page **${result.data.name}** (ID: ${result.data.id}).`
       };
     }
 
@@ -72,7 +78,7 @@ export let managePage = SlateTool.create(
       await client.deletePage(ctx.input.pageId);
       return {
         output: { deleted: true },
-        message: `Deleted page with ID ${ctx.input.pageId}.`,
+        message: `Deleted page with ID ${ctx.input.pageId}.`
       };
     }
 
@@ -92,7 +98,7 @@ export let managePage = SlateTool.create(
       let result = await client.createPage(data);
       return {
         output: { contentPage: result.data },
-        message: `Created page **${result.data.name}** (ID: ${result.data.id}).`,
+        message: `Created page **${result.data.name}** (ID: ${result.data.id}).`
       };
     }
 
@@ -100,7 +106,7 @@ export let managePage = SlateTool.create(
     let result = await client.updatePage(ctx.input.pageId, data);
     return {
       output: { contentPage: result.data },
-      message: `Updated page **${result.data.name}** (ID: ${result.data.id}).`,
+      message: `Updated page **${result.data.name}** (ID: ${result.data.id}).`
     };
   })
   .build();

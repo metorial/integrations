@@ -20,14 +20,14 @@ import {
   processPayout,
   manageEmailSubscriptions,
   sendInviteFeed,
-  getMemberAccessUrls,
+  getMemberAccessUrls
 } from './tools';
 import {
   programEvents,
   memberEvents,
   referralEvents,
   rewardEvents,
-  emailEvents,
+  emailEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -52,13 +52,7 @@ export let provider = Slate.create({
     processPayout,
     manageEmailSubscriptions,
     sendInviteFeed,
-    getMemberAccessUrls,
+    getMemberAccessUrls
   ],
-  triggers: [
-    programEvents,
-    memberEvents,
-    referralEvents,
-    rewardEvents,
-    emailEvents,
-  ],
+  triggers: [programEvents, memberEvents, referralEvents, rewardEvents, emailEvents]
 });

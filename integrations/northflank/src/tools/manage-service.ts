@@ -3,70 +3,103 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageService = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Service',
-    key: 'manage_service',
-    description: `Create, get, update, delete, pause, or resume a Northflank deployment service. Supports configuring instances, ports, and deployment sources.`,
-    instructions: [
-      'Use action "create" to create a new deployment service from an external image or internal build.',
-      'Use action "get" to retrieve detailed service information including build and deployment status.',
-      'Use action "pause" or "resume" to control service lifecycle.',
-      'Use action "delete" to permanently remove a service.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageService = SlateTool.create(spec, {
+  name: 'Manage Service',
+  key: 'manage_service',
+  description: `Create, get, update, delete, pause, or resume a Northflank deployment service. Supports configuring instances, ports, and deployment sources.`,
+  instructions: [
+    'Use action "create" to create a new deployment service from an external image or internal build.',
+    'Use action "get" to retrieve detailed service information including build and deployment status.',
+    'Use action "pause" or "resume" to control service lifecycle.',
+    'Use action "delete" to permanently remove a service.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'pause', 'resume']).describe('Operation to perform'),
-    projectId: z.string().describe('Project ID the service belongs to'),
-    serviceId: z.string().optional().describe('Service ID (required for get, update, delete, pause, resume)'),
-    name: z.string().optional().describe('Service name (required for create)'),
-    description: z.string().optional().describe('Service description'),
-    tags: z.array(z.string()).optional().describe('Tags to assign to the service'),
-    deploymentPlan: z.string().optional().describe('Billing deployment plan ID (required for create)'),
-    instances: z.number().optional().describe('Number of instances (required for create)'),
-    imagePath: z.string().optional().describe('External container image path (for create from external registry)'),
-    registryCredentials: z.string().optional().describe('Registry credentials ID for private images'),
-    ports: z.array(z.object({
-      name: z.string().describe('Port name'),
-      internalPort: z.number().describe('Internal port number'),
-      protocol: z.string().describe('Protocol: HTTP, TCP, or UDP'),
-      public: z.boolean().describe('Whether the port is publicly accessible'),
-    })).optional().describe('Port configuration for the service'),
-  }))
-  .output(z.object({
-    serviceId: z.string().optional().describe('Service ID'),
-    name: z.string().optional().describe('Service name'),
-    serviceType: z.string().optional().describe('Service type'),
-    deploymentStatus: z.string().optional().describe('Current deployment status'),
-    deleted: z.boolean().optional().describe('Whether the service was deleted'),
-    paused: z.boolean().optional().describe('Whether the service was paused'),
-    resumed: z.boolean().optional().describe('Whether the service was resumed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'pause', 'resume'])
+        .describe('Operation to perform'),
+      projectId: z.string().describe('Project ID the service belongs to'),
+      serviceId: z
+        .string()
+        .optional()
+        .describe('Service ID (required for get, update, delete, pause, resume)'),
+      name: z.string().optional().describe('Service name (required for create)'),
+      description: z.string().optional().describe('Service description'),
+      tags: z.array(z.string()).optional().describe('Tags to assign to the service'),
+      deploymentPlan: z
+        .string()
+        .optional()
+        .describe('Billing deployment plan ID (required for create)'),
+      instances: z.number().optional().describe('Number of instances (required for create)'),
+      imagePath: z
+        .string()
+        .optional()
+        .describe('External container image path (for create from external registry)'),
+      registryCredentials: z
+        .string()
+        .optional()
+        .describe('Registry credentials ID for private images'),
+      ports: z
+        .array(
+          z.object({
+            name: z.string().describe('Port name'),
+            internalPort: z.number().describe('Internal port number'),
+            protocol: z.string().describe('Protocol: HTTP, TCP, or UDP'),
+            public: z.boolean().describe('Whether the port is publicly accessible')
+          })
+        )
+        .optional()
+        .describe('Port configuration for the service')
+    })
+  )
+  .output(
+    z.object({
+      serviceId: z.string().optional().describe('Service ID'),
+      name: z.string().optional().describe('Service name'),
+      serviceType: z.string().optional().describe('Service type'),
+      deploymentStatus: z.string().optional().describe('Current deployment status'),
+      deleted: z.boolean().optional().describe('Whether the service was deleted'),
+      paused: z.boolean().optional().describe('Whether the service was paused'),
+      resumed: z.boolean().optional().describe('Whether the service was resumed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      teamId: ctx.config.teamId,
+      teamId: ctx.config.teamId
     });
 
-    let { action, projectId, serviceId, name, description, tags, deploymentPlan, instances, imagePath, registryCredentials, ports } = ctx.input;
+    let {
+      action,
+      projectId,
+      serviceId,
+      name,
+      description,
+      tags,
+      deploymentPlan,
+      instances,
+      imagePath,
+      registryCredentials,
+      ports
+    } = ctx.input;
 
     if (action === 'create') {
       if (!name) throw new Error('name is required for creating a service');
-      if (!deploymentPlan) throw new Error('deploymentPlan is required for creating a service');
+      if (!deploymentPlan)
+        throw new Error('deploymentPlan is required for creating a service');
 
       let deploymentConfig: any = {
-        instances: instances || 1,
+        instances: instances || 1
       };
 
       if (imagePath) {
         deploymentConfig.external = {
           imagePath,
-          credentials: registryCredentials,
+          credentials: registryCredentials
         };
       }
 
@@ -76,16 +109,16 @@ export let manageService = SlateTool.create(
         tags,
         billing: { deploymentPlan },
         deployment: deploymentConfig,
-        ports,
+        ports
       });
 
       return {
         output: {
           serviceId: result?.id,
           name: result?.name,
-          serviceType: result?.serviceType,
+          serviceType: result?.serviceType
         },
-        message: `Service **${name}** created in project **${projectId}**.`,
+        message: `Service **${name}** created in project **${projectId}**.`
       };
     }
 
@@ -98,9 +131,9 @@ export let manageService = SlateTool.create(
           serviceId: result?.id,
           name: result?.name,
           serviceType: result?.serviceType,
-          deploymentStatus: depStatus,
+          deploymentStatus: depStatus
         },
-        message: `Service **${result?.name}** — type: ${result?.serviceType}, deployment status: ${depStatus}.`,
+        message: `Service **${result?.name}** — type: ${result?.serviceType}, deployment status: ${depStatus}.`
       };
     }
 
@@ -115,9 +148,9 @@ export let manageService = SlateTool.create(
         output: {
           serviceId: result?.id || serviceId,
           name: result?.name,
-          serviceType: result?.serviceType,
+          serviceType: result?.serviceType
         },
-        message: `Service **${serviceId}** updated.`,
+        message: `Service **${serviceId}** updated.`
       };
     }
 
@@ -127,9 +160,9 @@ export let manageService = SlateTool.create(
       return {
         output: {
           serviceId,
-          deleted: true,
+          deleted: true
         },
-        message: `Service **${serviceId}** deleted.`,
+        message: `Service **${serviceId}** deleted.`
       };
     }
 
@@ -139,9 +172,9 @@ export let manageService = SlateTool.create(
       return {
         output: {
           serviceId,
-          paused: true,
+          paused: true
         },
-        message: `Service **${serviceId}** paused.`,
+        message: `Service **${serviceId}** paused.`
       };
     }
 
@@ -151,9 +184,9 @@ export let manageService = SlateTool.create(
       return {
         output: {
           serviceId,
-          resumed: true,
+          resumed: true
         },
-        message: `Service **${serviceId}** resumed.`,
+        message: `Service **${serviceId}** resumed.`
       };
     }
 

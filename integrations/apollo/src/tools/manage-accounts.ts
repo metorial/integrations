@@ -16,51 +16,57 @@ let accountFieldsSchema = z.object({
   country: z.string().optional().describe('Country')
 });
 
-export let searchAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Accounts',
-    key: 'search_accounts',
-    description: `Search for accounts (companies) that have been added to your Apollo database. Returns accounts your team has explicitly added — use Search Organizations for the broader Apollo company database.`,
-    constraints: [
-      'Maximum 50,000 results (100 per page, up to 500 pages)',
-      'Only returns accounts in your team\'s database'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let searchAccounts = SlateTool.create(spec, {
+  name: 'Search Accounts',
+  key: 'search_accounts',
+  description: `Search for accounts (companies) that have been added to your Apollo database. Returns accounts your team has explicitly added — use Search Organizations for the broader Apollo company database.`,
+  constraints: [
+    'Maximum 50,000 results (100 per page, up to 500 pages)',
+    "Only returns accounts in your team's database"
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    keywords: z.string().optional().describe('Keywords to search accounts'),
-    accountStageIds: z.array(z.string()).optional().describe('Filter by account stage IDs'),
-    sortByField: z.string().optional().describe('Field to sort results by'),
-    sortAscending: z.boolean().optional().describe('Sort in ascending order (default: false)'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 25, max: 100)')
-  }))
-  .output(z.object({
-    accounts: z.array(z.object({
-      accountId: z.string().optional(),
-      name: z.string().optional(),
-      domain: z.string().optional(),
-      websiteUrl: z.string().optional(),
-      phone: z.string().optional(),
-      ownerId: z.string().optional(),
-      accountStageId: z.string().optional(),
-      industry: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      country: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })),
-    totalEntries: z.number().optional(),
-    currentPage: z.number().optional(),
-    totalPages: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      keywords: z.string().optional().describe('Keywords to search accounts'),
+      accountStageIds: z.array(z.string()).optional().describe('Filter by account stage IDs'),
+      sortByField: z.string().optional().describe('Field to sort results by'),
+      sortAscending: z
+        .boolean()
+        .optional()
+        .describe('Sort in ascending order (default: false)'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 25, max: 100)')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z.array(
+        z.object({
+          accountId: z.string().optional(),
+          name: z.string().optional(),
+          domain: z.string().optional(),
+          websiteUrl: z.string().optional(),
+          phone: z.string().optional(),
+          ownerId: z.string().optional(),
+          accountStageId: z.string().optional(),
+          industry: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          country: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+      ),
+      totalEntries: z.number().optional(),
+      currentPage: z.number().optional(),
+      totalPages: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchAccounts({
@@ -101,29 +107,28 @@ export let searchAccounts = SlateTool.create(
   })
   .build();
 
-export let createAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Create Account',
-    key: 'create_account',
-    description: `Create a new account (company) in your Apollo database. Accounts represent companies your team is tracking.`,
-    instructions: [
-      'Apollo does not deduplicate accounts automatically. If a matching account already exists, a new one will be created.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let createAccount = SlateTool.create(spec, {
+  name: 'Create Account',
+  key: 'create_account',
+  description: `Create a new account (company) in your Apollo database. Accounts represent companies your team is tracking.`,
+  instructions: [
+    'Apollo does not deduplicate accounts automatically. If a matching account already exists, a new one will be created.'
+  ],
+  tags: {
+    destructive: false
   }
-)
+})
   .input(accountFieldsSchema.required({ name: true }))
-  .output(z.object({
-    accountId: z.string().optional(),
-    name: z.string().optional(),
-    domain: z.string().optional(),
-    websiteUrl: z.string().optional(),
-    createdAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountId: z.string().optional(),
+      name: z.string().optional(),
+      domain: z.string().optional(),
+      websiteUrl: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.createAccount({
@@ -153,28 +158,31 @@ export let createAccount = SlateTool.create(
   })
   .build();
 
-export let updateAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Update Account',
-    key: 'update_account',
-    description: `Update an existing account in your Apollo database. Provide the account ID and any fields you want to change. Only the provided fields will be updated.`,
-    tags: {
-      destructive: false
-    }
+export let updateAccount = SlateTool.create(spec, {
+  name: 'Update Account',
+  key: 'update_account',
+  description: `Update an existing account in your Apollo database. Provide the account ID and any fields you want to change. Only the provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    accountId: z.string().describe('The Apollo account ID to update')
-  }).merge(accountFieldsSchema))
-  .output(z.object({
-    accountId: z.string().optional(),
-    name: z.string().optional(),
-    domain: z.string().optional(),
-    websiteUrl: z.string().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z
+      .object({
+        accountId: z.string().describe('The Apollo account ID to update')
+      })
+      .merge(accountFieldsSchema)
+  )
+  .output(
+    z.object({
+      accountId: z.string().optional(),
+      name: z.string().optional(),
+      domain: z.string().optional(),
+      websiteUrl: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.updateAccount(ctx.input.accountId, {

@@ -3,43 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updatePost = SlateTool.create(
-  spec,
-  {
-    name: 'Update Post',
-    key: 'update_post',
-    description: `Update an existing single-image post (standard post) in the directory. Only one post can be updated at a time.`,
-    constraints: [
-      'Only one post can be updated at a time.',
-    ],
-  }
-)
-  .input(z.object({
-    postId: z.string().describe('The post ID to update.'),
-    dataId: z.string().describe('The post type (data category) ID.'),
-    dataType: z.string().optional().describe('The data type identifier.'),
-    postTitle: z.string().optional().describe('Updated title.'),
-    postContent: z.string().optional().describe('Updated content.'),
-    postStatus: z.string().optional().describe('Updated status.'),
-    postImage: z.string().optional().describe('Updated image URL.'),
-    postTags: z.string().optional().describe('Updated comma-separated tags.'),
-    postLiveDate: z.string().optional().describe('Updated live date (YYYY-MM-DD).'),
-    postExpireDate: z.string().optional().describe('Updated expiration date (YYYY-MM-DD).'),
-    additionalFields: z.record(z.string(), z.string()).optional().describe('Any additional fields as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    post: z.any().describe('The updated post record.'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updatePost = SlateTool.create(spec, {
+  name: 'Update Post',
+  key: 'update_post',
+  description: `Update an existing single-image post (standard post) in the directory. Only one post can be updated at a time.`,
+  constraints: ['Only one post can be updated at a time.']
+})
+  .input(
+    z.object({
+      postId: z.string().describe('The post ID to update.'),
+      dataId: z.string().describe('The post type (data category) ID.'),
+      dataType: z.string().optional().describe('The data type identifier.'),
+      postTitle: z.string().optional().describe('Updated title.'),
+      postContent: z.string().optional().describe('Updated content.'),
+      postStatus: z.string().optional().describe('Updated status.'),
+      postImage: z.string().optional().describe('Updated image URL.'),
+      postTags: z.string().optional().describe('Updated comma-separated tags.'),
+      postLiveDate: z.string().optional().describe('Updated live date (YYYY-MM-DD).'),
+      postExpireDate: z.string().optional().describe('Updated expiration date (YYYY-MM-DD).'),
+      additionalFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional fields as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      post: z.any().describe('The updated post record.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let data: Record<string, any> = {
       post_id: ctx.input.postId,
-      data_id: ctx.input.dataId,
+      data_id: ctx.input.dataId
     };
 
     if (ctx.input.dataType) data.data_type = ctx.input.dataType;
@@ -61,8 +63,9 @@ export let updatePost = SlateTool.create(
     return {
       output: {
         status: result.status,
-        post: result.message,
+        post: result.message
       },
-      message: `Updated post **${ctx.input.postId}**.`,
+      message: `Updated post **${ctx.input.postId}**.`
     };
-  }).build();
+  })
+  .build();

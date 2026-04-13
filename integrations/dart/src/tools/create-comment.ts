@@ -4,25 +4,24 @@ import { commentSchema } from '../lib/types';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createComment = SlateTool.create(
-  spec,
-  {
-    name: 'Create Comment',
-    key: 'create_comment',
-    description: `Adds a comment to a task. Supports markdown formatting and threaded replies by specifying a parent comment ID.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createComment = SlateTool.create(spec, {
+  name: 'Create Comment',
+  key: 'create_comment',
+  description: `Adds a comment to a task. Supports markdown formatting and threaded replies by specifying a parent comment ID.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    taskId: z.string().describe('ID of the task to comment on'),
-    text: z.string().describe('Comment text in markdown'),
-    parentId: z.string().optional().describe('Parent comment ID for threaded replies')
-  }))
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('ID of the task to comment on'),
+      text: z.string().describe('Comment text in markdown'),
+      parentId: z.string().optional().describe('Parent comment ID for threaded replies')
+    })
+  )
   .output(commentSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let comment = await client.createComment(ctx.input);
 

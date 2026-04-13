@@ -3,34 +3,49 @@ import { RocketadminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSavedQueries = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Saved Queries',
-    key: 'manage_saved_queries',
-    description: `Create, list, execute, update, or delete saved database queries. Saved queries let you store and reuse frequently needed SQL statements.`,
-    tags: {
-      destructive: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'execute']).describe('Action to perform'),
-    connectionId: z.string().optional().describe('Connection ID (required for list and create)'),
-    queryId: z.string().optional().describe('Query ID (required for get, update, delete, execute)'),
-    title: z.string().optional().describe('Query title'),
-    queryText: z.string().optional().describe('SQL query text'),
-  }))
-  .output(z.object({
-    queries: z.array(z.record(z.string(), z.unknown())).optional().describe('List of saved queries'),
-    query: z.record(z.string(), z.unknown()).optional().describe('Saved query details'),
-    queryResult: z.record(z.string(), z.unknown()).optional().describe('Result of executing the query'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSavedQueries = SlateTool.create(spec, {
+  name: 'Manage Saved Queries',
+  key: 'manage_saved_queries',
+  description: `Create, list, execute, update, or delete saved database queries. Saved queries let you store and reuse frequently needed SQL statements.`,
+  tags: {
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete', 'execute'])
+        .describe('Action to perform'),
+      connectionId: z
+        .string()
+        .optional()
+        .describe('Connection ID (required for list and create)'),
+      queryId: z
+        .string()
+        .optional()
+        .describe('Query ID (required for get, update, delete, execute)'),
+      title: z.string().optional().describe('Query title'),
+      queryText: z.string().optional().describe('SQL query text')
+    })
+  )
+  .output(
+    z.object({
+      queries: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of saved queries'),
+      query: z.record(z.string(), z.unknown()).optional().describe('Saved query details'),
+      queryResult: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Result of executing the query'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RocketadminClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let { action, connectionId, queryId, title, queryText } = ctx.input;
@@ -40,7 +55,7 @@ export let manageSavedQueries = SlateTool.create(
       let queries = await client.listSavedQueries(connectionId);
       return {
         output: { queries, success: true },
-        message: `Found **${queries.length}** saved query(ies).`,
+        message: `Found **${queries.length}** saved query(ies).`
       };
     }
 
@@ -49,7 +64,7 @@ export let manageSavedQueries = SlateTool.create(
       let query = await client.getSavedQuery(queryId);
       return {
         output: { query, success: true },
-        message: `Retrieved saved query **${queryId}**.`,
+        message: `Retrieved saved query **${queryId}**.`
       };
     }
 
@@ -57,11 +72,11 @@ export let manageSavedQueries = SlateTool.create(
       if (!connectionId) throw new Error('connectionId is required for creating a query');
       let query = await client.createSavedQuery(connectionId, {
         ...(title ? { title } : {}),
-        ...(queryText ? { query: queryText } : {}),
+        ...(queryText ? { query: queryText } : {})
       });
       return {
         output: { query, success: true },
-        message: `Saved query created successfully.`,
+        message: `Saved query created successfully.`
       };
     }
 
@@ -69,11 +84,11 @@ export let manageSavedQueries = SlateTool.create(
       if (!queryId) throw new Error('queryId is required for updating');
       let query = await client.updateSavedQuery(queryId, {
         ...(title ? { title } : {}),
-        ...(queryText ? { query: queryText } : {}),
+        ...(queryText ? { query: queryText } : {})
       });
       return {
         output: { query, success: true },
-        message: `Saved query **${queryId}** updated.`,
+        message: `Saved query **${queryId}** updated.`
       };
     }
 
@@ -82,7 +97,7 @@ export let manageSavedQueries = SlateTool.create(
       await client.deleteSavedQuery(queryId);
       return {
         output: { success: true },
-        message: `Saved query **${queryId}** deleted.`,
+        message: `Saved query **${queryId}** deleted.`
       };
     }
 
@@ -91,9 +106,10 @@ export let manageSavedQueries = SlateTool.create(
       let queryResult = await client.executeSavedQuery(queryId);
       return {
         output: { queryResult, success: true },
-        message: `Query **${queryId}** executed successfully.`,
+        message: `Query **${queryId}** executed successfully.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

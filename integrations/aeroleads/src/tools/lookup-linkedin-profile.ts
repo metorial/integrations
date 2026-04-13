@@ -3,26 +3,23 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let lookupLinkedInProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Lookup LinkedIn Profile',
-    key: 'lookup_linkedin_profile',
-    description: `Retrieve detailed profile information for a LinkedIn user. Provide a LinkedIn profile URL to get the person's name, job title, current company, previous companies, education, skills, verified emails, and phone numbers.`,
-    constraints: [
-      'Each API call consumes 1 credit from your AeroLeads account.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let lookupLinkedInProfile = SlateTool.create(spec, {
+  name: 'Lookup LinkedIn Profile',
+  key: 'lookup_linkedin_profile',
+  description: `Retrieve detailed profile information for a LinkedIn user. Provide a LinkedIn profile URL to get the person's name, job title, current company, previous companies, education, skills, verified emails, and phone numbers.`,
+  constraints: ['Each API call consumes 1 credit from your AeroLeads account.'],
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
       linkedinUrl: z
         .string()
-        .describe('The LinkedIn profile URL of the prospect (e.g. "linkedin.com/in/johndoe" or "https://www.linkedin.com/in/johndoe").'),
-    }),
+        .describe(
+          'The LinkedIn profile URL of the prospect (e.g. "linkedin.com/in/johndoe" or "https://www.linkedin.com/in/johndoe").'
+        )
+    })
   )
   .output(
     z.object({
@@ -34,14 +31,20 @@ export let lookupLinkedInProfile = SlateTool.create(
       location: z.string().optional().describe('Location of the prospect.'),
       emails: z.array(z.string()).optional().describe('List of verified email addresses.'),
       phoneNumbers: z.array(z.string()).optional().describe('List of phone numbers.'),
-      previousCompanies: z.array(z.string()).optional().describe('List of previous company names.'),
+      previousCompanies: z
+        .array(z.string())
+        .optional()
+        .describe('List of previous company names.'),
       education: z.array(z.string()).optional().describe('List of educational institutions.'),
       skills: z.array(z.string()).optional().describe('List of skills.'),
       linkedinUrl: z.string().optional().describe('The LinkedIn profile URL.'),
-      rawResponse: z.any().optional().describe('Full raw response from the API for additional fields.'),
-    }),
+      rawResponse: z
+        .any()
+        .optional()
+        .describe('Full raw response from the API for additional fields.')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getLinkedInDetails(ctx.input.linkedinUrl);
@@ -95,18 +98,19 @@ export let lookupLinkedInProfile = SlateTool.create(
       education: education.length > 0 ? education : undefined,
       skills: skills.length > 0 ? skills : undefined,
       linkedinUrl: ctx.input.linkedinUrl,
-      rawResponse: result,
+      rawResponse: result
     };
 
     let messageParts = [`**${name || 'Profile'}**`];
     if (jobTitle) messageParts.push(`${jobTitle}`);
     if (currentCompany) messageParts.push(`at ${currentCompany}`);
     if (emails && emails.length > 0) messageParts.push(`\nEmails: ${emails.join(', ')}`);
-    if (phoneNumbers && phoneNumbers.length > 0) messageParts.push(`\nPhone: ${phoneNumbers.join(', ')}`);
+    if (phoneNumbers && phoneNumbers.length > 0)
+      messageParts.push(`\nPhone: ${phoneNumbers.join(', ')}`);
 
     return {
       output,
-      message: messageParts.join(' '),
+      message: messageParts.join(' ')
     };
   })
   .build();

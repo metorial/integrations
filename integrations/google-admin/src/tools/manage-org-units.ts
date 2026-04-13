@@ -3,46 +3,68 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageOrgUnits = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Org Units',
-    key: 'manage_org_units',
-    description: `List, create, update, or delete organizational units (OUs) in the Google Workspace hierarchy. OUs are used to apply policies and configurations to subsets of users and devices.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageOrgUnits = SlateTool.create(spec, {
+  name: 'Manage Org Units',
+  key: 'manage_org_units',
+  description: `List, create, update, or delete organizational units (OUs) in the Google Workspace hierarchy. OUs are used to apply policies and configurations to subsets of users and devices.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    orgUnitPath: z.string().optional().describe('Full path of the org unit (e.g. /Engineering/Backend). Required for get, update, delete.'),
-    name: z.string().optional().describe('Name for the org unit (required for create)'),
-    parentOrgUnitPath: z.string().optional().describe('Parent org unit path (for create, defaults to /)'),
-    description: z.string().optional().describe('Description of the org unit'),
-    listType: z.enum(['all', 'children', 'allIncludingParent']).optional().describe('Type of listing: all OUs, direct children only, or all including parent. Defaults to all.')
-  }))
-  .output(z.object({
-    orgUnits: z.array(z.object({
-      orgUnitId: z.string().optional(),
-      name: z.string().optional(),
-      orgUnitPath: z.string().optional(),
-      parentOrgUnitPath: z.string().optional(),
-      description: z.string().optional(),
-      parentOrgUnitId: z.string().optional()
-    })).optional(),
-    orgUnit: z.object({
-      orgUnitId: z.string().optional(),
-      name: z.string().optional(),
-      orgUnitPath: z.string().optional(),
-      parentOrgUnitPath: z.string().optional(),
-      description: z.string().optional()
-    }).optional(),
-    deleted: z.boolean().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      orgUnitPath: z
+        .string()
+        .optional()
+        .describe(
+          'Full path of the org unit (e.g. /Engineering/Backend). Required for get, update, delete.'
+        ),
+      name: z.string().optional().describe('Name for the org unit (required for create)'),
+      parentOrgUnitPath: z
+        .string()
+        .optional()
+        .describe('Parent org unit path (for create, defaults to /)'),
+      description: z.string().optional().describe('Description of the org unit'),
+      listType: z
+        .enum(['all', 'children', 'allIncludingParent'])
+        .optional()
+        .describe(
+          'Type of listing: all OUs, direct children only, or all including parent. Defaults to all.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      orgUnits: z
+        .array(
+          z.object({
+            orgUnitId: z.string().optional(),
+            name: z.string().optional(),
+            orgUnitPath: z.string().optional(),
+            parentOrgUnitPath: z.string().optional(),
+            description: z.string().optional(),
+            parentOrgUnitId: z.string().optional()
+          })
+        )
+        .optional(),
+      orgUnit: z
+        .object({
+          orgUnitId: z.string().optional(),
+          name: z.string().optional(),
+          orgUnitPath: z.string().optional(),
+          parentOrgUnitPath: z.string().optional(),
+          description: z.string().optional()
+        })
+        .optional(),
+      deleted: z.boolean().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -115,7 +137,8 @@ export let manageOrgUnits = SlateTool.create(
       let updateData: Record<string, any> = {};
       if (ctx.input.name) updateData.name = ctx.input.name;
       if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
-      if (ctx.input.parentOrgUnitPath) updateData.parentOrgUnitPath = ctx.input.parentOrgUnitPath;
+      if (ctx.input.parentOrgUnitPath)
+        updateData.parentOrgUnitPath = ctx.input.parentOrgUnitPath;
 
       let ou = await client.updateOrgUnit(ctx.input.orgUnitPath, updateData);
       return {

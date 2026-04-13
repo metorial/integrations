@@ -24,12 +24,12 @@ import {
   searchCodeTool,
   listWorkspaceMembersTool,
   manageProjectsTool,
-  createCommitStatusTool,
+  createCommitStatusTool
 } from './tools';
 import {
   repositoryEventsTrigger,
   pullRequestEventsTrigger,
-  issueEventsTrigger,
+  issueEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -58,11 +58,7 @@ export let provider = Slate.create({
     searchCodeTool,
     listWorkspaceMembersTool,
     manageProjectsTool,
-    createCommitStatusTool,
+    createCommitStatusTool
   ],
-  triggers: [
-    repositoryEventsTrigger,
-    pullRequestEventsTrigger,
-    issueEventsTrigger,
-  ],
+  triggers: [repositoryEventsTrigger, pullRequestEventsTrigger, issueEventsTrigger]
 });

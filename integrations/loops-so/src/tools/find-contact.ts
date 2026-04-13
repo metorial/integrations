@@ -13,33 +13,40 @@ let contactSchema = z.object({
   userGroup: z.string().nullable().describe('User group for segmentation'),
   userId: z.string().nullable().describe('External user ID'),
   mailingLists: z.record(z.string(), z.boolean()).describe('Mailing list subscription status'),
-  optInStatus: z.string().nullable().describe('Double opt-in status: pending, accepted, rejected, or null'),
-  customProperties: z.record(z.string(), z.unknown()).optional().describe('Any custom properties on the contact')
+  optInStatus: z
+    .string()
+    .nullable()
+    .describe('Double opt-in status: pending, accepted, rejected, or null'),
+  customProperties: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('Any custom properties on the contact')
 });
 
-export let findContact = SlateTool.create(
-  spec,
-  {
-    name: 'Find Contact',
-    key: 'find_contact',
-    description: `Look up a contact in your Loops audience by email address or user ID. Returns the full contact record including all standard and custom properties, mailing list subscriptions, and opt-in status.`,
-    instructions: [
-      'Provide either email or userId, not both.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let findContact = SlateTool.create(spec, {
+  name: 'Find Contact',
+  key: 'find_contact',
+  description: `Look up a contact in your Loops audience by email address or user ID. Returns the full contact record including all standard and custom properties, mailing list subscriptions, and opt-in status.`,
+  instructions: ['Provide either email or userId, not both.'],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Email address to search for'),
-    userId: z.string().optional().describe('External user ID to search for')
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema).describe('List of matching contacts (empty if none found)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Email address to search for'),
+      userId: z.string().optional().describe('External user ID to search for')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z
+        .array(contactSchema)
+        .describe('List of matching contacts (empty if none found)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let results = await client.findContact({
@@ -47,8 +54,20 @@ export let findContact = SlateTool.create(
       userId: ctx.input.userId
     });
 
-    let contacts = results.map((c) => {
-      let { id, email, firstName, lastName, source, subscribed, userGroup, userId, mailingLists, optInStatus, ...rest } = c;
+    let contacts = results.map(c => {
+      let {
+        id,
+        email,
+        firstName,
+        lastName,
+        source,
+        subscribed,
+        userGroup,
+        userId,
+        mailingLists,
+        optInStatus,
+        ...rest
+      } = c;
       return {
         contactId: id,
         email,
@@ -67,9 +86,10 @@ export let findContact = SlateTool.create(
     let identifier = ctx.input.email || ctx.input.userId || 'unknown';
     return {
       output: { contacts },
-      message: contacts.length > 0
-        ? `Found **${contacts.length}** contact(s) matching **${identifier}**.`
-        : `No contacts found matching **${identifier}**.`
+      message:
+        contacts.length > 0
+          ? `Found **${contacts.length}** contact(s) matching **${identifier}**.`
+          : `No contacts found matching **${identifier}**.`
     };
   })
   .build();

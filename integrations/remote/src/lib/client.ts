@@ -12,10 +12,10 @@ export class Client {
     this.http = createAxios({
       baseURL: `${getBaseUrl(params.environment)}/v1`,
       headers: {
-        'Authorization': `Bearer ${params.token}`,
+        Authorization: `Bearer ${params.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -124,7 +124,7 @@ export class Client {
       notes: data.notes,
       start_date_is_half_day: data.startDateIsHalfDay,
       end_date_is_half_day: data.endDateIsHalfDay,
-      document: data.document,
+      document: data.document
     });
     return response.data;
   }
@@ -185,10 +185,7 @@ export class Client {
     return response.data;
   }
 
-  async listExpenseCategories(params?: {
-    employmentId?: string;
-    expenseId?: string;
-  }) {
+  async listExpenseCategories(params?: { employmentId?: string; expenseId?: string }) {
     let query: Record<string, any> = {};
     if (params?.employmentId) query.employment_id = params.employmentId;
     if (params?.expenseId) query.expense_id = params.expenseId;
@@ -234,7 +231,7 @@ export class Client {
       type: data.type,
       effective_date: data.effectiveDate,
       note: data.note,
-      currency: data.currency,
+      currency: data.currency
     });
     return response.data;
   }
@@ -267,7 +264,7 @@ export class Client {
       start_date: data.startDate,
       note: data.note,
       currency: data.currency,
-      end_date: data.endDate,
+      end_date: data.endDate
     });
     return response.data;
   }
@@ -330,7 +327,7 @@ export class Client {
       confidential: data.confidential,
       type: data.type,
       proposed_last_working_date: data.proposedLastWorkingDate,
-      risk_assessment: data.riskAssessment,
+      risk_assessment: data.riskAssessment
     });
     return response.data;
   }
@@ -435,12 +432,15 @@ export class Client {
   async createWebhookCallback(url: string, subscribedEvents: string[]) {
     let response = await this.http.post('/webhook-callbacks', {
       url,
-      subscribed_events: subscribedEvents,
+      subscribed_events: subscribedEvents
     });
     return response.data;
   }
 
-  async updateWebhookCallback(callbackId: string, data: { url?: string; subscribedEvents?: string[] }) {
+  async updateWebhookCallback(
+    callbackId: string,
+    data: { url?: string; subscribedEvents?: string[] }
+  ) {
     let body: Record<string, any> = {};
     if (data.url) body.url = data.url;
     if (data.subscribedEvents) body.subscribed_events = data.subscribedEvents;
@@ -494,7 +494,7 @@ export class Client {
       salary: data.salary,
       employer_currency_slug: data.employerCurrencySlug,
       age: data.age,
-      region: data.region,
+      region: data.region
     });
     return response.data;
   }
@@ -506,7 +506,10 @@ export class Client {
     return response.data;
   }
 
-  async uploadEmploymentFile(employmentId: string, data: { name: string; type: string; content: string }) {
+  async uploadEmploymentFile(
+    employmentId: string,
+    data: { name: string; type: string; content: string }
+  ) {
     let response = await this.http.post(`/employments/${employmentId}/files`, data);
     return response.data;
   }

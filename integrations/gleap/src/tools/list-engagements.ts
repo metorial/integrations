@@ -18,28 +18,42 @@ let engagementTypeMap: Record<string, string> = {
   push_notification: 'push-notifications'
 };
 
-export let listEngagements = SlateTool.create(
-  spec,
-  {
-    name: 'List Engagements',
-    key: 'list_engagements',
-    description: `List engagement campaigns of a specific type. Retrieve all banners, chat messages, emails, surveys, product tours, tooltips, checklists, news, modals, WhatsApp messages, cobrowse sessions, or push notifications.`,
-    tags: {
-      readOnly: true
-    }
+export let listEngagements = SlateTool.create(spec, {
+  name: 'List Engagements',
+  key: 'list_engagements',
+  description: `List engagement campaigns of a specific type. Retrieve all banners, chat messages, emails, surveys, product tours, tooltips, checklists, news, modals, WhatsApp messages, cobrowse sessions, or push notifications.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    engagementType: z.enum([
-      'banner', 'chat_message', 'email', 'survey', 'product_tour',
-      'tooltip', 'checklist', 'news', 'modal', 'whatsapp',
-      'cobrowse', 'push_notification'
-    ]).describe('Type of engagement to list')
-  }))
-  .output(z.object({
-    engagements: z.array(z.record(z.string(), z.any())).describe('List of engagement objects')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      engagementType: z
+        .enum([
+          'banner',
+          'chat_message',
+          'email',
+          'survey',
+          'product_tour',
+          'tooltip',
+          'checklist',
+          'news',
+          'modal',
+          'whatsapp',
+          'cobrowse',
+          'push_notification'
+        ])
+        .describe('Type of engagement to list')
+    })
+  )
+  .output(
+    z.object({
+      engagements: z
+        .array(z.record(z.string(), z.any()))
+        .describe('List of engagement objects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GleapClient({
       token: ctx.auth.token,
       projectId: ctx.auth.projectId

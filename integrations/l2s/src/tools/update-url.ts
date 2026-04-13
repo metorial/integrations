@@ -3,34 +3,35 @@ import { L2sClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUrl = SlateTool.create(
-  spec,
-  {
-    name: 'Update URL',
-    key: 'update_url',
-    description: `Update an existing shortened URL's destination, UTM parameters, or tags. Only provided fields will be updated; omitted fields remain unchanged.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateUrl = SlateTool.create(spec, {
+  name: 'Update URL',
+  key: 'update_url',
+  description: `Update an existing shortened URL's destination, UTM parameters, or tags. Only provided fields will be updated; omitted fields remain unchanged.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    urlId: z.string().describe('The ID of the shortened URL to update'),
-    url: z.string().optional().describe('New destination URL'),
-    tags: z.array(z.string()).optional().describe('Updated tags for the shortened URL'),
-    utmSource: z.string().optional().describe('Updated UTM source parameter'),
-    utmMedium: z.string().optional().describe('Updated UTM medium parameter'),
-    utmCampaign: z.string().optional().describe('Updated UTM campaign parameter'),
-    utmTerm: z.string().optional().describe('Updated UTM term parameter'),
-    utmContent: z.string().optional().describe('Updated UTM content parameter'),
-  }))
-  .output(z.object({
-    ok: z.boolean().describe('Whether the operation was successful'),
-    message: z.string().describe('Status message from the API'),
-    urlData: z.any().describe('Updated shortened URL data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      urlId: z.string().describe('The ID of the shortened URL to update'),
+      url: z.string().optional().describe('New destination URL'),
+      tags: z.array(z.string()).optional().describe('Updated tags for the shortened URL'),
+      utmSource: z.string().optional().describe('Updated UTM source parameter'),
+      utmMedium: z.string().optional().describe('Updated UTM medium parameter'),
+      utmCampaign: z.string().optional().describe('Updated UTM campaign parameter'),
+      utmTerm: z.string().optional().describe('Updated UTM term parameter'),
+      utmContent: z.string().optional().describe('Updated UTM content parameter')
+    })
+  )
+  .output(
+    z.object({
+      ok: z.boolean().describe('Whether the operation was successful'),
+      message: z.string().describe('Status message from the API'),
+      urlData: z.any().describe('Updated shortened URL data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new L2sClient({ token: ctx.auth.token });
 
     let updateParams: Record<string, any> = {};
@@ -48,9 +49,9 @@ export let updateUrl = SlateTool.create(
       output: {
         ok: result.ok,
         message: result.response?.message ?? 'URL updated',
-        urlData: result.response?.data,
+        urlData: result.response?.data
       },
-      message: `Updated shortened URL **${ctx.input.urlId}**.`,
+      message: `Updated shortened URL **${ctx.input.urlId}**.`
     };
   })
   .build();

@@ -77,17 +77,17 @@ export class NeedleClient {
   constructor(token: string) {
     let headers = {
       'x-api-key': token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     this.api = createAxios({
       baseURL: NEEDLE_BASE_URL,
-      headers,
+      headers
     });
 
     this.searchApi = createAxios({
       baseURL: NEEDLE_SEARCH_URL,
-      headers,
+      headers
     });
   }
 
@@ -108,7 +108,9 @@ export class NeedleClient {
     return res.data.result ?? res.data;
   }
 
-  async createCollection(name: string): Promise<{ name: string; id: string; created_at: string }> {
+  async createCollection(
+    name: string
+  ): Promise<{ name: string; id: string; created_at: string }> {
     let res = await this.api.post('/api/v1/collections', { name });
     return res.data.result ?? res.data;
   }
@@ -139,12 +141,9 @@ export class NeedleClient {
     return res.data.result ?? res.data;
   }
 
-  async deleteFilesFromCollection(
-    collectionId: string,
-    fileIds: string[]
-  ): Promise<void> {
+  async deleteFilesFromCollection(collectionId: string, fileIds: string[]): Promise<void> {
     await this.api.delete(`/api/v1/collections/${collectionId}/files`, {
-      data: { file_ids: fileIds },
+      data: { file_ids: fileIds }
     });
   }
 
@@ -167,7 +166,7 @@ export class NeedleClient {
 
   async getUploadUrl(contentTypes: string[]): Promise<NeedleUploadUrlResult[]> {
     let res = await this.api.get('/api/v1/files/upload_url', {
-      params: { content_type: contentTypes.join(',') },
+      params: { content_type: contentTypes.join(',') }
     });
     return res.data.result ?? res.data;
   }

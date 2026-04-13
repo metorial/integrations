@@ -7,9 +7,9 @@ export class FlyClient {
     this.axios = createAxios({
       baseURL: options.baseUrl,
       headers: {
-        'Authorization': `${options.tokenScheme} ${options.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `${options.tokenScheme} ${options.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -17,11 +17,11 @@ export class FlyClient {
 
   async listApps(orgSlug: string): Promise<{ totalApps: number; apps: FlyApp[] }> {
     let response = await this.axios.get('/v1/apps', {
-      params: { org_slug: orgSlug },
+      params: { org_slug: orgSlug }
     });
     return {
       totalApps: response.data.total_apps,
-      apps: (response.data.apps || []).map(mapApp),
+      apps: (response.data.apps || []).map(mapApp)
     };
   }
 
@@ -30,28 +30,36 @@ export class FlyClient {
     return mapAppDetail(response.data);
   }
 
-  async createApp(params: { appName: string; orgSlug: string; network?: string; enableSubdomains?: boolean }): Promise<{ appId: string; createdAt: number }> {
+  async createApp(params: {
+    appName: string;
+    orgSlug: string;
+    network?: string;
+    enableSubdomains?: boolean;
+  }): Promise<{ appId: string; createdAt: number }> {
     let response = await this.axios.post('/v1/apps', {
       app_name: params.appName,
       org_slug: params.orgSlug,
       network: params.network,
-      enable_subdomains: params.enableSubdomains,
+      enable_subdomains: params.enableSubdomains
     });
     return {
       appId: response.data.id,
-      createdAt: response.data.created_at,
+      createdAt: response.data.created_at
     };
   }
 
   async deleteApp(appName: string, force?: boolean): Promise<void> {
     await this.axios.delete(`/v1/apps/${appName}`, {
-      params: force ? { force: true } : undefined,
+      params: force ? { force: true } : undefined
     });
   }
 
   // ─── Machines ───────────────────────────────────────────
 
-  async listMachines(appName: string, params?: { includeDeleted?: boolean; region?: string; metadata?: Record<string, string> }): Promise<FlyMachine[]> {
+  async listMachines(
+    appName: string,
+    params?: { includeDeleted?: boolean; region?: string; metadata?: Record<string, string> }
+  ): Promise<FlyMachine[]> {
     let queryParams: Record<string, string> = {};
     if (params?.includeDeleted) queryParams['include_deleted'] = 'true';
     if (params?.region) queryParams['region'] = params.region;
@@ -60,7 +68,9 @@ export class FlyClient {
         queryParams[`metadata.${key}`] = value;
       }
     }
-    let response = await this.axios.get(`/v1/apps/${appName}/machines`, { params: queryParams });
+    let response = await this.axios.get(`/v1/apps/${appName}/machines`, {
+      params: queryParams
+    });
     return (response.data || []).map(mapMachine);
   }
 
@@ -71,25 +81,30 @@ export class FlyClient {
 
   async createMachine(appName: string, params: CreateMachineParams): Promise<FlyMachine> {
     let body: Record<string, any> = {
-      config: buildMachineConfig(params.config),
+      config: buildMachineConfig(params.config)
     };
     if (params.name) body.name = params.name;
     if (params.region) body.region = params.region;
     if (params.skipLaunch !== undefined) body.skip_launch = params.skipLaunch;
-    if (params.skipServiceRegistration !== undefined) body.skip_service_registration = params.skipServiceRegistration;
+    if (params.skipServiceRegistration !== undefined)
+      body.skip_service_registration = params.skipServiceRegistration;
     if (params.leaseTtl !== undefined) body.lease_ttl = params.leaseTtl;
 
     let response = await this.axios.post(`/v1/apps/${appName}/machines`, body);
     return mapMachine(response.data);
   }
 
-  async updateMachine(appName: string, machineId: string, params: UpdateMachineParams): Promise<FlyMachine> {
+  async updateMachine(
+    appName: string,
+    machineId: string,
+    params: UpdateMachineParams
+  ): Promise<FlyMachine> {
     let body: Record<string, any> = {
-      config: buildMachineConfig(params.config),
+      config: buildMachineConfig(params.config)
     };
     if (params.leaseNonce) {
       let response = await this.axios.post(`/v1/apps/${appName}/machines/${machineId}`, body, {
-        headers: { 'fly-machine-lease-nonce': params.leaseNonce },
+        headers: { 'fly-machine-lease-nonce': params.leaseNonce }
       });
       return mapMachine(response.data);
     }
@@ -97,32 +112,50 @@ export class FlyClient {
     return mapMachine(response.data);
   }
 
-  async startMachine(appName: string, machineId: string): Promise<{ previousState: string; migrated: boolean; newHost: string }> {
+  async startMachine(
+    appName: string,
+    machineId: string
+  ): Promise<{ previousState: string; migrated: boolean; newHost: string }> {
     let response = await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/start`);
     return {
       previousState: response.data.previous_state,
       migrated: response.data.migrated,
-      newHost: response.data.new_host || '',
+      newHost: response.data.new_host || ''
     };
   }
 
-  async stopMachine(appName: string, machineId: string, params?: { signal?: string; timeout?: number }): Promise<void> {
-    await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/stop`, params ? {
-      signal: params.signal,
-      timeout: params.timeout,
-    } : undefined);
+  async stopMachine(
+    appName: string,
+    machineId: string,
+    params?: { signal?: string; timeout?: number }
+  ): Promise<void> {
+    await this.axios.post(
+      `/v1/apps/${appName}/machines/${machineId}/stop`,
+      params
+        ? {
+            signal: params.signal,
+            timeout: params.timeout
+          }
+        : undefined
+    );
   }
 
-  async restartMachine(appName: string, machineId: string, params?: { signal?: string; timeout?: number }): Promise<void> {
+  async restartMachine(
+    appName: string,
+    machineId: string,
+    params?: { signal?: string; timeout?: number }
+  ): Promise<void> {
     let queryParams: Record<string, string> = {};
     if (params?.signal) queryParams['signal'] = params.signal;
     if (params?.timeout) queryParams['timeout'] = String(params.timeout);
-    await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/restart`, undefined, { params: queryParams });
+    await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/restart`, undefined, {
+      params: queryParams
+    });
   }
 
   async deleteMachine(appName: string, machineId: string, force?: boolean): Promise<void> {
     await this.axios.delete(`/v1/apps/${appName}/machines/${machineId}`, {
-      params: force ? { force: true } : undefined,
+      params: force ? { force: true } : undefined
     });
   }
 
@@ -130,11 +163,17 @@ export class FlyClient {
     await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/suspend`);
   }
 
-  async waitForMachine(appName: string, machineId: string, params: { state: string; timeout?: number; instanceId?: string }): Promise<void> {
+  async waitForMachine(
+    appName: string,
+    machineId: string,
+    params: { state: string; timeout?: number; instanceId?: string }
+  ): Promise<void> {
     let queryParams: Record<string, string> = { state: params.state };
     if (params.timeout) queryParams['timeout'] = String(params.timeout);
     if (params.instanceId) queryParams['instance_id'] = params.instanceId;
-    await this.axios.get(`/v1/apps/${appName}/machines/${machineId}/wait`, { params: queryParams });
+    await this.axios.get(`/v1/apps/${appName}/machines/${machineId}/wait`, {
+      params: queryParams
+    });
   }
 
   async cordonMachine(appName: string, machineId: string): Promise<void> {
@@ -147,13 +186,23 @@ export class FlyClient {
 
   // ─── Machine Metadata ──────────────────────────────────
 
-  async getMachineMetadata(appName: string, machineId: string): Promise<Record<string, string>> {
+  async getMachineMetadata(
+    appName: string,
+    machineId: string
+  ): Promise<Record<string, string>> {
     let response = await this.axios.get(`/v1/apps/${appName}/machines/${machineId}/metadata`);
     return response.data || {};
   }
 
-  async setMachineMetadata(appName: string, machineId: string, key: string, value: string): Promise<void> {
-    await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/metadata/${key}`, { value });
+  async setMachineMetadata(
+    appName: string,
+    machineId: string,
+    key: string,
+    value: string
+  ): Promise<void> {
+    await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/metadata/${key}`, {
+      value
+    });
   }
 
   async deleteMachineMetadata(appName: string, machineId: string, key: string): Promise<void> {
@@ -162,31 +211,38 @@ export class FlyClient {
 
   // ─── Machine Leases ────────────────────────────────────
 
-  async createLease(appName: string, machineId: string, params?: { ttl?: number; description?: string }): Promise<{ nonce: string; expiresAt: number; version: string }> {
+  async createLease(
+    appName: string,
+    machineId: string,
+    params?: { ttl?: number; description?: string }
+  ): Promise<{ nonce: string; expiresAt: number; version: string }> {
     let response = await this.axios.post(`/v1/apps/${appName}/machines/${machineId}/lease`, {
       ttl: params?.ttl,
-      description: params?.description,
+      description: params?.description
     });
     return {
       nonce: response.data.nonce,
       expiresAt: response.data.expires_at,
-      version: response.data.version,
+      version: response.data.version
     };
   }
 
-  async getLease(appName: string, machineId: string): Promise<{ nonce: string; expiresAt: number; version: string } | null> {
+  async getLease(
+    appName: string,
+    machineId: string
+  ): Promise<{ nonce: string; expiresAt: number; version: string } | null> {
     let response = await this.axios.get(`/v1/apps/${appName}/machines/${machineId}/lease`);
     if (!response.data || !response.data.nonce) return null;
     return {
       nonce: response.data.nonce,
       expiresAt: response.data.expires_at,
-      version: response.data.version,
+      version: response.data.version
     };
   }
 
   async releaseLease(appName: string, machineId: string, nonce: string): Promise<void> {
     await this.axios.delete(`/v1/apps/${appName}/machines/${machineId}/lease`, {
-      headers: { 'fly-machine-lease-nonce': nonce },
+      headers: { 'fly-machine-lease-nonce': nonce }
     });
   }
 
@@ -210,15 +266,19 @@ export class FlyClient {
       encrypted: params.encrypted,
       snapshot_retention: params.snapshotRetention,
       auto_backup_enabled: params.autoBackupEnabled,
-      snapshot_id: params.snapshotId,
+      snapshot_id: params.snapshotId
     });
     return mapVolume(response.data);
   }
 
-  async updateVolume(appName: string, volumeId: string, params: { snapshotRetention?: number; autoBackupEnabled?: boolean }): Promise<FlyVolume> {
+  async updateVolume(
+    appName: string,
+    volumeId: string,
+    params: { snapshotRetention?: number; autoBackupEnabled?: boolean }
+  ): Promise<FlyVolume> {
     let response = await this.axios.put(`/v1/apps/${appName}/volumes/${volumeId}`, {
       snapshot_retention: params.snapshotRetention,
-      auto_backup_enabled: params.autoBackupEnabled,
+      auto_backup_enabled: params.autoBackupEnabled
     });
     return mapVolume(response.data);
   }
@@ -227,13 +287,17 @@ export class FlyClient {
     await this.axios.delete(`/v1/apps/${appName}/volumes/${volumeId}`);
   }
 
-  async extendVolume(appName: string, volumeId: string, sizeGb: number): Promise<{ needsRestart: boolean; volume: FlyVolume }> {
+  async extendVolume(
+    appName: string,
+    volumeId: string,
+    sizeGb: number
+  ): Promise<{ needsRestart: boolean; volume: FlyVolume }> {
     let response = await this.axios.put(`/v1/apps/${appName}/volumes/${volumeId}/extend`, {
-      size_gb: sizeGb,
+      size_gb: sizeGb
     });
     return {
       needsRestart: response.data.needs_restart || false,
-      volume: mapVolume(response.data.volume || response.data),
+      volume: mapVolume(response.data.volume || response.data)
     };
   }
 
@@ -257,7 +321,7 @@ export class FlyClient {
     let secretEntries = Object.entries(secrets).map(([key, value]) => ({
       label: key,
       type: 'secret',
-      value: value,
+      value: value
     }));
     await this.axios.post(`/v1/apps/${appName}/secrets`, secretEntries);
   }
@@ -268,7 +332,10 @@ export class FlyClient {
 
   // ─── Certificates ──────────────────────────────────────
 
-  async listCertificates(appName: string, params?: { filter?: string; cursor?: string; limit?: number }): Promise<FlyCertificate[]> {
+  async listCertificates(
+    appName: string,
+    params?: { filter?: string; cursor?: string; limit?: number }
+  ): Promise<FlyCertificate[]> {
     let response = await this.axios.get(`/v1/apps/${appName}/certificates`, { params });
     return (response.data || []).map(mapCertificate);
   }
@@ -279,15 +346,20 @@ export class FlyClient {
   }
 
   async requestAcmeCertificate(appName: string, hostname: string): Promise<FlyCertificate> {
-    let response = await this.axios.post(`/v1/apps/${appName}/certificates/acme`, { hostname });
+    let response = await this.axios.post(`/v1/apps/${appName}/certificates/acme`, {
+      hostname
+    });
     return mapCertificate(response.data);
   }
 
-  async importCustomCertificate(appName: string, params: { hostname: string; fullchain: string; privateKey: string }): Promise<FlyCertificate> {
+  async importCustomCertificate(
+    appName: string,
+    params: { hostname: string; fullchain: string; privateKey: string }
+  ): Promise<FlyCertificate> {
     let response = await this.axios.post(`/v1/apps/${appName}/certificates/custom`, {
       hostname: params.hostname,
       fullchain: params.fullchain,
-      private_key: params.privateKey,
+      private_key: params.privateKey
     });
     return mapCertificate(response.data);
   }
@@ -302,12 +374,16 @@ export class FlyClient {
   }
 
   async deleteAcmeCertificate(appName: string, hostname: string): Promise<FlyCertificate> {
-    let response = await this.axios.delete(`/v1/apps/${appName}/certificates/${hostname}/acme`);
+    let response = await this.axios.delete(
+      `/v1/apps/${appName}/certificates/${hostname}/acme`
+    );
     return mapCertificate(response.data);
   }
 
   async deleteCustomCertificate(appName: string, hostname: string): Promise<FlyCertificate> {
-    let response = await this.axios.delete(`/v1/apps/${appName}/certificates/${hostname}/custom`);
+    let response = await this.axios.delete(
+      `/v1/apps/${appName}/certificates/${hostname}/custom`
+    );
     return mapCertificate(response.data);
   }
 
@@ -476,7 +552,7 @@ let mapApp = (data: any): FlyApp => ({
   appName: data.name || '',
   machineCount: data.machine_count || 0,
   volumeCount: data.volume_count || 0,
-  network: data.network || '',
+  network: data.network || ''
 });
 
 let mapAppDetail = (data: any): FlyAppDetail => ({
@@ -485,8 +561,8 @@ let mapAppDetail = (data: any): FlyAppDetail => ({
   status: data.status || '',
   organization: {
     name: data.organization?.name || '',
-    slug: data.organization?.slug || '',
-  },
+    slug: data.organization?.slug || ''
+  }
 });
 
 let mapMachine = (data: any): FlyMachine => ({
@@ -500,7 +576,7 @@ let mapMachine = (data: any): FlyMachine => ({
   imageRef: data.image_ref || {},
   createdAt: data.created_at || '',
   updatedAt: data.updated_at || '',
-  events: data.events || [],
+  events: data.events || []
 });
 
 let mapVolume = (data: any): FlyVolume => ({
@@ -514,21 +590,21 @@ let mapVolume = (data: any): FlyVolume => ({
   snapshotRetention: data.snapshot_retention || 5,
   autoBackupEnabled: data.auto_backup_enabled ?? true,
   attachedMachineId: data.attached_machine_id || null,
-  createdAt: data.created_at || '',
+  createdAt: data.created_at || ''
 });
 
 let mapSnapshot = (data: any): FlySnapshot => ({
   snapshotId: data.id || '',
   sizeGb: data.size || 0,
   createdAt: data.created_at || '',
-  status: data.status || '',
+  status: data.status || ''
 });
 
 let mapSecret = (data: any): FlySecret => ({
   label: data.label || data.name || '',
   type: data.type || '',
   digest: data.digest || '',
-  createdAt: data.created_at || '',
+  createdAt: data.created_at || ''
 });
 
 let mapCertificate = (data: any): FlyCertificate => ({
@@ -539,15 +615,15 @@ let mapCertificate = (data: any): FlyCertificate => ({
   certificates: (data.certificates || []).map((c: any) => ({
     source: c.source || '',
     status: c.status || '',
-    expiresAt: c.expires_at || '',
+    expiresAt: c.expires_at || ''
   })),
   dnsRequirements: data.dns_requirements || {},
-  validation: data.validation || {},
+  validation: data.validation || {}
 });
 
 let buildMachineConfig = (config: MachineConfig): Record<string, any> => {
   let result: Record<string, any> = {
-    image: config.image,
+    image: config.image
   };
 
   if (config.env) result.env = config.env;
@@ -560,23 +636,23 @@ let buildMachineConfig = (config: MachineConfig): Record<string, any> => {
   }
   if (config.size) result.size = config.size;
   if (config.services) {
-    result.services = config.services.map((s) => ({
-      ports: s.ports.map((p) => ({
+    result.services = config.services.map(s => ({
+      ports: s.ports.map(p => ({
         port: p.port,
         handlers: p.handlers,
-        force_https: p.forceHttps,
+        force_https: p.forceHttps
       })),
       protocol: s.protocol,
       internal_port: s.internalPort,
       auto_stop_machines: s.autoStopMachines,
       auto_start_machines: s.autoStartMachines,
-      min_machines_running: s.minMachinesRunning,
+      min_machines_running: s.minMachinesRunning
     }));
   }
   if (config.mounts) {
-    result.mounts = config.mounts.map((m) => ({
+    result.mounts = config.mounts.map(m => ({
       volume: m.volume,
-      path: m.path,
+      path: m.path
     }));
   }
   if (config.init) {
@@ -589,7 +665,8 @@ let buildMachineConfig = (config: MachineConfig): Record<string, any> => {
   if (config.restart) {
     result.restart = {};
     if (config.restart.policy) result.restart.policy = config.restart.policy;
-    if (config.restart.maxRetries !== undefined) result.restart.max_retries = config.restart.maxRetries;
+    if (config.restart.maxRetries !== undefined)
+      result.restart.max_retries = config.restart.maxRetries;
   }
   if (config.metadata) result.metadata = config.metadata;
   if (config.metrics) {
@@ -601,16 +678,17 @@ let buildMachineConfig = (config: MachineConfig): Record<string, any> => {
   if (config.autoDestroy !== undefined) result.auto_destroy = config.autoDestroy;
   if (config.checks) result.checks = config.checks;
   if (config.statics) {
-    result.statics = config.statics.map((s) => ({
+    result.statics = config.statics.map(s => ({
       guest_path: s.guestPath,
-      url_prefix: s.urlPrefix,
+      url_prefix: s.urlPrefix
     }));
   }
   if (config.dns) result.dns = config.dns;
   if (config.stopConfig) {
     result.stop_config = {};
     if (config.stopConfig.signal) result.stop_config.signal = config.stopConfig.signal;
-    if (config.stopConfig.timeout !== undefined) result.stop_config.timeout = config.stopConfig.timeout;
+    if (config.stopConfig.timeout !== undefined)
+      result.stop_config.timeout = config.stopConfig.timeout;
   }
   if (config.standbys) result.standbys = config.standbys;
 

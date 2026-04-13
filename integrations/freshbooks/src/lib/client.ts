@@ -5,11 +5,7 @@ export class FreshBooksClient {
   private accountId: string;
   private businessId?: string;
 
-  constructor(config: {
-    token: string;
-    accountId: string;
-    businessId?: string;
-  }) {
+  constructor(config: { token: string; accountId: string; businessId?: string }) {
     this.accountId = config.accountId;
     this.businessId = config.businessId;
     this.http = createAxios({
@@ -17,8 +13,8 @@ export class FreshBooksClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Api-Version': 'alpha',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -57,17 +53,23 @@ export class FreshBooksClient {
   }
 
   async createClient(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/users/clients`, { client: data });
+    let response = await this.http.post(`${this.accountingBase}/users/clients`, {
+      client: data
+    });
     return response.data.response.result.client;
   }
 
   async updateClient(clientId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/users/clients/${clientId}`, { client: data });
+    let response = await this.http.put(`${this.accountingBase}/users/clients/${clientId}`, {
+      client: data
+    });
     return response.data.response.result.client;
   }
 
   async deleteClient(clientId: number) {
-    let response = await this.http.put(`${this.accountingBase}/users/clients/${clientId}`, { client: { vis_state: 1 } });
+    let response = await this.http.put(`${this.accountingBase}/users/clients/${clientId}`, {
+      client: { vis_state: 1 }
+    });
     return response.data.response.result.client;
   }
 
@@ -79,41 +81,57 @@ export class FreshBooksClient {
   }
 
   async getInvoice(invoiceId: number) {
-    let response = await this.http.get(`${this.accountingBase}/invoices/invoices/${invoiceId}`);
+    let response = await this.http.get(
+      `${this.accountingBase}/invoices/invoices/${invoiceId}`
+    );
     return response.data.response.result.invoice;
   }
 
   async createInvoice(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/invoices/invoices`, { invoice: data });
+    let response = await this.http.post(`${this.accountingBase}/invoices/invoices`, {
+      invoice: data
+    });
     return response.data.response.result.invoice;
   }
 
   async updateInvoice(invoiceId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/invoices/invoices/${invoiceId}`, { invoice: data });
+    let response = await this.http.put(
+      `${this.accountingBase}/invoices/invoices/${invoiceId}`,
+      { invoice: data }
+    );
     return response.data.response.result.invoice;
   }
 
   async deleteInvoice(invoiceId: number) {
-    let response = await this.http.put(`${this.accountingBase}/invoices/invoices/${invoiceId}`, { invoice: { vis_state: 1 } });
+    let response = await this.http.put(
+      `${this.accountingBase}/invoices/invoices/${invoiceId}`,
+      { invoice: { vis_state: 1 } }
+    );
     return response.data.response.result.invoice;
   }
 
   async sendInvoiceByEmail(invoiceId: number, recipients: string[]) {
-    let response = await this.http.put(`${this.accountingBase}/invoices/invoices/${invoiceId}`, {
-      invoice: {
-        action_email: true,
-        email_recipients: recipients,
-      },
-    });
+    let response = await this.http.put(
+      `${this.accountingBase}/invoices/invoices/${invoiceId}`,
+      {
+        invoice: {
+          action_email: true,
+          email_recipients: recipients
+        }
+      }
+    );
     return response.data.response.result.invoice;
   }
 
   async markInvoiceAsSent(invoiceId: number) {
-    let response = await this.http.put(`${this.accountingBase}/invoices/invoices/${invoiceId}`, {
-      invoice: {
-        action_mark_as_sent: true,
-      },
-    });
+    let response = await this.http.put(
+      `${this.accountingBase}/invoices/invoices/${invoiceId}`,
+      {
+        invoice: {
+          action_mark_as_sent: true
+        }
+      }
+    );
     return response.data.response.result.invoice;
   }
 
@@ -125,59 +143,84 @@ export class FreshBooksClient {
   }
 
   async getPayment(paymentId: number) {
-    let response = await this.http.get(`${this.accountingBase}/payments/payments/${paymentId}`);
+    let response = await this.http.get(
+      `${this.accountingBase}/payments/payments/${paymentId}`
+    );
     return response.data.response.result.payment;
   }
 
   async createPayment(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/payments/payments`, { payment: data });
+    let response = await this.http.post(`${this.accountingBase}/payments/payments`, {
+      payment: data
+    });
     return response.data.response.result.payment;
   }
 
   async updatePayment(paymentId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/payments/payments/${paymentId}`, { payment: data });
+    let response = await this.http.put(
+      `${this.accountingBase}/payments/payments/${paymentId}`,
+      { payment: data }
+    );
     return response.data.response.result.payment;
   }
 
   async deletePayment(paymentId: number) {
-    let response = await this.http.put(`${this.accountingBase}/payments/payments/${paymentId}`, { payment: { vis_state: 1 } });
+    let response = await this.http.put(
+      `${this.accountingBase}/payments/payments/${paymentId}`,
+      { payment: { vis_state: 1 } }
+    );
     return response.data.response.result.payment;
   }
 
   // ========== Estimates ==========
 
   async listEstimates(params?: Record<string, string | number>) {
-    let response = await this.http.get(`${this.accountingBase}/estimates/estimates`, { params });
+    let response = await this.http.get(`${this.accountingBase}/estimates/estimates`, {
+      params
+    });
     return response.data.response.result;
   }
 
   async getEstimate(estimateId: number) {
-    let response = await this.http.get(`${this.accountingBase}/estimates/estimates/${estimateId}`);
+    let response = await this.http.get(
+      `${this.accountingBase}/estimates/estimates/${estimateId}`
+    );
     return response.data.response.result.estimate;
   }
 
   async createEstimate(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/estimates/estimates`, { estimate: data });
+    let response = await this.http.post(`${this.accountingBase}/estimates/estimates`, {
+      estimate: data
+    });
     return response.data.response.result.estimate;
   }
 
   async updateEstimate(estimateId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/estimates/estimates/${estimateId}`, { estimate: data });
+    let response = await this.http.put(
+      `${this.accountingBase}/estimates/estimates/${estimateId}`,
+      { estimate: data }
+    );
     return response.data.response.result.estimate;
   }
 
   async deleteEstimate(estimateId: number) {
-    let response = await this.http.put(`${this.accountingBase}/estimates/estimates/${estimateId}`, { estimate: { vis_state: 1 } });
+    let response = await this.http.put(
+      `${this.accountingBase}/estimates/estimates/${estimateId}`,
+      { estimate: { vis_state: 1 } }
+    );
     return response.data.response.result.estimate;
   }
 
   async sendEstimateByEmail(estimateId: number, recipients: string[]) {
-    let response = await this.http.put(`${this.accountingBase}/estimates/estimates/${estimateId}`, {
-      estimate: {
-        action_email: true,
-        email_recipients: recipients,
-      },
-    });
+    let response = await this.http.put(
+      `${this.accountingBase}/estimates/estimates/${estimateId}`,
+      {
+        estimate: {
+          action_email: true,
+          email_recipients: recipients
+        }
+      }
+    );
     return response.data.response.result.estimate;
   }
 
@@ -189,22 +232,32 @@ export class FreshBooksClient {
   }
 
   async getExpense(expenseId: number) {
-    let response = await this.http.get(`${this.accountingBase}/expenses/expenses/${expenseId}`);
+    let response = await this.http.get(
+      `${this.accountingBase}/expenses/expenses/${expenseId}`
+    );
     return response.data.response.result.expense;
   }
 
   async createExpense(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/expenses/expenses`, { expense: data });
+    let response = await this.http.post(`${this.accountingBase}/expenses/expenses`, {
+      expense: data
+    });
     return response.data.response.result.expense;
   }
 
   async updateExpense(expenseId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/expenses/expenses/${expenseId}`, { expense: data });
+    let response = await this.http.put(
+      `${this.accountingBase}/expenses/expenses/${expenseId}`,
+      { expense: data }
+    );
     return response.data.response.result.expense;
   }
 
   async deleteExpense(expenseId: number) {
-    let response = await this.http.put(`${this.accountingBase}/expenses/expenses/${expenseId}`, { expense: { vis_state: 1 } });
+    let response = await this.http.put(
+      `${this.accountingBase}/expenses/expenses/${expenseId}`,
+      { expense: { vis_state: 1 } }
+    );
     return response.data.response.result.expense;
   }
 
@@ -221,12 +274,17 @@ export class FreshBooksClient {
   }
 
   async createTimeEntry(data: Record<string, any>) {
-    let response = await this.http.post(`${this.timetrackingBase}/time_entries`, { time_entry: data });
+    let response = await this.http.post(`${this.timetrackingBase}/time_entries`, {
+      time_entry: data
+    });
     return response.data.time_entry;
   }
 
   async updateTimeEntry(timeEntryId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.timetrackingBase}/time_entries/${timeEntryId}`, { time_entry: data });
+    let response = await this.http.put(
+      `${this.timetrackingBase}/time_entries/${timeEntryId}`,
+      { time_entry: data }
+    );
     return response.data.time_entry;
   }
 
@@ -252,7 +310,9 @@ export class FreshBooksClient {
   }
 
   async updateProject(projectId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.projectsBase}/project/${projectId}`, { project: data });
+    let response = await this.http.put(`${this.projectsBase}/project/${projectId}`, {
+      project: data
+    });
     return response.data.project;
   }
 
@@ -278,7 +338,9 @@ export class FreshBooksClient {
   }
 
   async updateTax(taxId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/taxes/taxes/${taxId}`, { tax: data });
+    let response = await this.http.put(`${this.accountingBase}/taxes/taxes/${taxId}`, {
+      tax: data
+    });
     return response.data.response.result.tax;
   }
 
@@ -304,12 +366,16 @@ export class FreshBooksClient {
   }
 
   async updateItem(itemId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/items/items/${itemId}`, { item: data });
+    let response = await this.http.put(`${this.accountingBase}/items/items/${itemId}`, {
+      item: data
+    });
     return response.data.response.result.item;
   }
 
   async deleteItem(itemId: number) {
-    let response = await this.http.put(`${this.accountingBase}/items/items/${itemId}`, { item: { vis_state: 1 } });
+    let response = await this.http.put(`${this.accountingBase}/items/items/${itemId}`, {
+      item: { vis_state: 1 }
+    });
     return response.data.response.result.item;
   }
 
@@ -322,14 +388,14 @@ export class FreshBooksClient {
 
   async createWebhook(event: string, uri: string) {
     let response = await this.http.post(`${this.eventsBase}/events/callbacks`, {
-      callback: { event, uri },
+      callback: { event, uri }
     });
     return response.data.response.result.callback;
   }
 
   async verifyWebhook(callbackId: number, verifier: string) {
     let response = await this.http.put(`${this.eventsBase}/events/callbacks/${callbackId}`, {
-      callback: { verifier },
+      callback: { verifier }
     });
     return response.data.response.result.callback;
   }
@@ -341,27 +407,39 @@ export class FreshBooksClient {
   // ========== Credit Notes ==========
 
   async listCreditNotes(params?: Record<string, string | number>) {
-    let response = await this.http.get(`${this.accountingBase}/credit_notes/credit_notes`, { params });
+    let response = await this.http.get(`${this.accountingBase}/credit_notes/credit_notes`, {
+      params
+    });
     return response.data.response.result;
   }
 
   async getCreditNote(creditNoteId: number) {
-    let response = await this.http.get(`${this.accountingBase}/credit_notes/credit_notes/${creditNoteId}`);
+    let response = await this.http.get(
+      `${this.accountingBase}/credit_notes/credit_notes/${creditNoteId}`
+    );
     return response.data.response.result.credit_note;
   }
 
   async createCreditNote(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/credit_notes/credit_notes`, { credit_note: data });
+    let response = await this.http.post(`${this.accountingBase}/credit_notes/credit_notes`, {
+      credit_note: data
+    });
     return response.data.response.result.credit_note;
   }
 
   async updateCreditNote(creditNoteId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/credit_notes/credit_notes/${creditNoteId}`, { credit_note: data });
+    let response = await this.http.put(
+      `${this.accountingBase}/credit_notes/credit_notes/${creditNoteId}`,
+      { credit_note: data }
+    );
     return response.data.response.result.credit_note;
   }
 
   async deleteCreditNote(creditNoteId: number) {
-    let response = await this.http.put(`${this.accountingBase}/credit_notes/credit_notes/${creditNoteId}`, { credit_note: { vis_state: 1 } });
+    let response = await this.http.put(
+      `${this.accountingBase}/credit_notes/credit_notes/${creditNoteId}`,
+      { credit_note: { vis_state: 1 } }
+    );
     return response.data.response.result.credit_note;
   }
 
@@ -383,7 +461,9 @@ export class FreshBooksClient {
   }
 
   async updateService(serviceId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.projectsBase}/service/${serviceId}`, { service: data });
+    let response = await this.http.put(`${this.projectsBase}/service/${serviceId}`, {
+      service: data
+    });
     return response.data.service;
   }
 
@@ -394,34 +474,48 @@ export class FreshBooksClient {
   // ========== Other Income ==========
 
   async listOtherIncome(params?: Record<string, string | number>) {
-    let response = await this.http.get(`${this.accountingBase}/other_incomes/other_incomes`, { params });
+    let response = await this.http.get(`${this.accountingBase}/other_incomes/other_incomes`, {
+      params
+    });
     return response.data.response.result;
   }
 
   async getOtherIncome(otherIncomeId: number) {
-    let response = await this.http.get(`${this.accountingBase}/other_incomes/other_incomes/${otherIncomeId}`);
+    let response = await this.http.get(
+      `${this.accountingBase}/other_incomes/other_incomes/${otherIncomeId}`
+    );
     return response.data.response.result.other_income;
   }
 
   async createOtherIncome(data: Record<string, any>) {
-    let response = await this.http.post(`${this.accountingBase}/other_incomes/other_incomes`, { other_income: data });
+    let response = await this.http.post(`${this.accountingBase}/other_incomes/other_incomes`, {
+      other_income: data
+    });
     return response.data.response.result.other_income;
   }
 
   async updateOtherIncome(otherIncomeId: number, data: Record<string, any>) {
-    let response = await this.http.put(`${this.accountingBase}/other_incomes/other_incomes/${otherIncomeId}`, { other_income: data });
+    let response = await this.http.put(
+      `${this.accountingBase}/other_incomes/other_incomes/${otherIncomeId}`,
+      { other_income: data }
+    );
     return response.data.response.result.other_income;
   }
 
   async deleteOtherIncome(otherIncomeId: number) {
-    let response = await this.http.put(`${this.accountingBase}/other_incomes/other_incomes/${otherIncomeId}`, { other_income: { vis_state: 1 } });
+    let response = await this.http.put(
+      `${this.accountingBase}/other_incomes/other_incomes/${otherIncomeId}`,
+      { other_income: { vis_state: 1 } }
+    );
     return response.data.response.result.other_income;
   }
 
   // ========== Expense Categories ==========
 
   async listExpenseCategories(params?: Record<string, string | number>) {
-    let response = await this.http.get(`${this.accountingBase}/expenses/categories`, { params });
+    let response = await this.http.get(`${this.accountingBase}/expenses/categories`, {
+      params
+    });
     return response.data.response.result;
   }
 }

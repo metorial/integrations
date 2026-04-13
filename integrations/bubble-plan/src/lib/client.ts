@@ -15,8 +15,8 @@ export class Client {
       headers: {
         key: this.token,
         domain: this.domain,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -109,27 +109,30 @@ export class Client {
     return response.data;
   }
 
-  async updateProject(projectId: string, data: {
-    projectName?: string;
-    description?: string;
-    tags?: string;
-    notes?: string;
-    startDate?: string;
-    dueDate?: string;
-    clientId?: string;
-    currency?: string;
-    hourlyRate?: number;
-    fixedPrice?: number;
-    price?: number;
-    public?: boolean;
-    active?: boolean;
-    important?: boolean;
-    closed?: boolean;
-    archived?: boolean;
-    notifications?: boolean;
-    users?: number[];
-    teams?: number[];
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    data: {
+      projectName?: string;
+      description?: string;
+      tags?: string;
+      notes?: string;
+      startDate?: string;
+      dueDate?: string;
+      clientId?: string;
+      currency?: string;
+      hourlyRate?: number;
+      fixedPrice?: number;
+      price?: number;
+      public?: boolean;
+      active?: boolean;
+      important?: boolean;
+      closed?: boolean;
+      archived?: boolean;
+      notifications?: boolean;
+      users?: number[];
+      teams?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.projectName !== undefined) body.project_name = data.projectName;
     if (data.description !== undefined) body.description = data.description;
@@ -192,23 +195,26 @@ export class Client {
     return response.data;
   }
 
-  async createTask(projectId: string, data: {
-    taskName: string;
-    description?: string;
-    tags?: string;
-    notes?: string;
-    startDate?: string;
-    dueDate?: string;
-    estimatedHours?: number;
-    estimatedCost?: number;
-    hourlyRate?: number;
-    fixedPrice?: number;
-    active?: boolean;
-    important?: boolean;
-    recurring?: string;
-    users?: number[];
-    teams?: number[];
-  }): Promise<any> {
+  async createTask(
+    projectId: string,
+    data: {
+      taskName: string;
+      description?: string;
+      tags?: string;
+      notes?: string;
+      startDate?: string;
+      dueDate?: string;
+      estimatedHours?: number;
+      estimatedCost?: number;
+      hourlyRate?: number;
+      fixedPrice?: number;
+      active?: boolean;
+      important?: boolean;
+      recurring?: string;
+      users?: number[];
+      teams?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { task_name: data.taskName };
     if (data.description !== undefined) body.description = data.description;
     if (data.tags !== undefined) body.tags = data.tags;
@@ -228,24 +234,27 @@ export class Client {
     return response.data;
   }
 
-  async updateTask(taskId: string, data: {
-    taskName?: string;
-    description?: string;
-    tags?: string;
-    notes?: string;
-    startDate?: string;
-    dueDate?: string;
-    progress?: number;
-    estimatedHours?: number;
-    estimatedCost?: number;
-    hourlyRate?: number;
-    fixedPrice?: number;
-    active?: boolean;
-    important?: boolean;
-    recurring?: string;
-    users?: number[];
-    teams?: number[];
-  }): Promise<any> {
+  async updateTask(
+    taskId: string,
+    data: {
+      taskName?: string;
+      description?: string;
+      tags?: string;
+      notes?: string;
+      startDate?: string;
+      dueDate?: string;
+      progress?: number;
+      estimatedHours?: number;
+      estimatedCost?: number;
+      hourlyRate?: number;
+      fixedPrice?: number;
+      active?: boolean;
+      important?: boolean;
+      recurring?: string;
+      users?: number[];
+      teams?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.taskName !== undefined) body.task_name = data.taskName;
     if (data.description !== undefined) body.description = data.description;
@@ -313,20 +322,23 @@ export class Client {
     return response.data;
   }
 
-  async createSubtask(taskId: string, data: {
-    subtaskName: string;
-    description?: string;
-    color?: string;
-    notes?: string;
-    startDate?: string;
-    dueDate?: string;
-    active?: boolean;
-    important?: boolean;
-    notifications?: boolean;
-    recurring?: string;
-    users?: number[];
-    teams?: number[];
-  }): Promise<any> {
+  async createSubtask(
+    taskId: string,
+    data: {
+      subtaskName: string;
+      description?: string;
+      color?: string;
+      notes?: string;
+      startDate?: string;
+      dueDate?: string;
+      active?: boolean;
+      important?: boolean;
+      notifications?: boolean;
+      recurring?: string;
+      users?: number[];
+      teams?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { subtask_name: data.subtaskName };
     if (data.description !== undefined) body.description = data.description;
     if (data.color !== undefined) body.color = data.color;
@@ -343,21 +355,24 @@ export class Client {
     return response.data;
   }
 
-  async updateSubtask(subtaskId: string, data: {
-    subtaskName?: string;
-    description?: string;
-    color?: string;
-    notes?: string;
-    startDate?: string;
-    dueDate?: string;
-    progress?: number;
-    active?: boolean;
-    important?: boolean;
-    notifications?: boolean;
-    recurring?: string;
-    users?: number[];
-    teams?: number[];
-  }): Promise<any> {
+  async updateSubtask(
+    subtaskId: string,
+    data: {
+      subtaskName?: string;
+      description?: string;
+      color?: string;
+      notes?: string;
+      startDate?: string;
+      dueDate?: string;
+      progress?: number;
+      active?: boolean;
+      important?: boolean;
+      notifications?: boolean;
+      recurring?: string;
+      users?: number[];
+      teams?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.subtaskName !== undefined) body.subtask_name = data.subtaskName;
     if (data.description !== undefined) body.description = data.description;
@@ -422,13 +437,16 @@ export class Client {
     return response.data;
   }
 
-  async createTimeEntry(taskId: string, data: {
-    seconds: number;
-    date?: string;
-    subtaskId?: string;
-    description?: string;
-    userId?: string;
-  }): Promise<any> {
+  async createTimeEntry(
+    taskId: string,
+    data: {
+      seconds: number;
+      date?: string;
+      subtaskId?: string;
+      description?: string;
+      userId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { seconds: data.seconds };
     if (data.date !== undefined) body.date = data.date;
     if (data.subtaskId !== undefined) body.subtask_id = data.subtaskId;
@@ -438,14 +456,17 @@ export class Client {
     return response.data;
   }
 
-  async updateTimeEntry(entryId: string, data: {
-    seconds: number;
-    dateStarted?: string;
-    taskId?: string;
-    subtaskId?: string;
-    description?: string;
-    userId?: string;
-  }): Promise<any> {
+  async updateTimeEntry(
+    entryId: string,
+    data: {
+      seconds: number;
+      dateStarted?: string;
+      taskId?: string;
+      subtaskId?: string;
+      description?: string;
+      userId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { seconds: data.seconds };
     if (data.dateStarted !== undefined) body.date_started = data.dateStarted;
     if (data.taskId !== undefined) body.task_id = data.taskId;
@@ -482,12 +503,15 @@ export class Client {
     return response.data;
   }
 
-  async createComment(projectId: string, data: {
-    comment: string;
-    taskId?: string;
-    subtaskId?: string;
-    parentId?: string;
-  }): Promise<any> {
+  async createComment(
+    projectId: string,
+    data: {
+      comment: string;
+      taskId?: string;
+      subtaskId?: string;
+      parentId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { comment: data.comment };
     if (data.taskId !== undefined) body.task_id = data.taskId;
     if (data.subtaskId !== undefined) body.subtask_id = data.subtaskId;
@@ -561,7 +585,7 @@ export class Client {
     let body: Record<string, any> = {
       event_name: data.eventName,
       start_date: data.startDate,
-      due_date: data.dueDate,
+      due_date: data.dueDate
     };
     if (data.projectId !== undefined) body.project_id = data.projectId;
     if (data.userId !== undefined) body.user_id = data.userId;
@@ -569,13 +593,16 @@ export class Client {
     return response.data;
   }
 
-  async updateEvent(eventId: string, data: {
-    eventName?: string;
-    startDate?: string;
-    dueDate?: string;
-    projectId?: string;
-    userId?: string;
-  }): Promise<any> {
+  async updateEvent(
+    eventId: string,
+    data: {
+      eventName?: string;
+      startDate?: string;
+      dueDate?: string;
+      projectId?: string;
+      userId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.eventName !== undefined) body.event_name = data.eventName;
     if (data.startDate !== undefined) body.start_date = data.startDate;
@@ -647,17 +674,20 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    contactName?: string;
-    email?: string;
-    tel?: string;
-    fax?: string;
-    mobile?: string;
-    role?: string;
-    companyName?: string;
-    clientId?: string;
-    userId?: string;
-  }): Promise<any> {
+  async updateContact(
+    contactId: string,
+    data: {
+      contactName?: string;
+      email?: string;
+      tel?: string;
+      fax?: string;
+      mobile?: string;
+      role?: string;
+      companyName?: string;
+      clientId?: string;
+      userId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.contactName !== undefined) body.contact_name = data.contactName;
     if (data.email !== undefined) body.email = data.email;
@@ -682,7 +712,7 @@ export class Client {
   async subscribeWebhook(targetUrl: string, event: string): Promise<any> {
     let response = await this.axios.post('/hooks', {
       target_url: targetUrl,
-      event: event,
+      event: event
     });
     return response.data;
   }
@@ -695,7 +725,9 @@ export class Client {
   // ── Generic resource fetch (used by webhooks) ────────────────
 
   async fetchResourceByUrl(resourceUrl: string): Promise<any> {
-    let response = await this.axios.get(resourceUrl.replace('https://api.projectbubble.com/v2', ''));
+    let response = await this.axios.get(
+      resourceUrl.replace('https://api.projectbubble.com/v2', '')
+    );
     return response.data;
   }
 }

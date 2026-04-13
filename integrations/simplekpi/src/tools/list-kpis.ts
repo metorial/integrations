@@ -8,7 +8,9 @@ let kpiSchema = z.object({
   categoryId: z.number().describe('Category the KPI belongs to'),
   iconId: z.number().describe('Icon identifier'),
   unitId: z.number().describe('Unit of measure identifier'),
-  frequencyId: z.string().describe('Tracking frequency code (D=Daily, W=Weekly, M=Monthly, etc.)'),
+  frequencyId: z
+    .string()
+    .describe('Tracking frequency code (D=Daily, W=Weekly, M=Monthly, etc.)'),
   name: z.string().describe('KPI name'),
   description: z.string().nullable().describe('KPI description'),
   targetDefault: z.number().nullable().describe('Default target value'),
@@ -21,22 +23,21 @@ let kpiSchema = z.object({
   updatedAt: z.string().nullable().describe('Last update timestamp (UTC)')
 });
 
-export let listKpis = SlateTool.create(
-  spec,
-  {
-    name: 'List KPIs',
-    key: 'list_kpis',
-    description: `Retrieve all KPIs from your SimpleKPI account. Returns the full list of KPIs with their configuration including name, category, frequency, targets, and status.`,
-    tags: {
-      readOnly: true
-    }
+export let listKpis = SlateTool.create(spec, {
+  name: 'List KPIs',
+  key: 'list_kpis',
+  description: `Retrieve all KPIs from your SimpleKPI account. Returns the full list of KPIs with their configuration including name, category, frequency, targets, and status.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    kpis: z.array(kpiSchema).describe('List of all KPIs')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      kpis: z.array(kpiSchema).describe('List of all KPIs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let kpis = await client.listKpis();
 
@@ -62,4 +63,5 @@ export let listKpis = SlateTool.create(
       output: { kpis: mapped },
       message: `Retrieved **${mapped.length}** KPIs.`
     };
-  }).build();
+  })
+  .build();

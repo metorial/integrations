@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listCampaigns,
@@ -15,14 +14,9 @@ import {
   manageUserList,
   uploadOfflineConversions,
   getProfile,
-  updateProfile,
+  updateProfile
 } from './tools';
-import {
-  campaignStatusChange,
-  newLink,
-  newAttachment,
-  inboundWebhook,
-} from './triggers';
+import { campaignStatusChange, newLink, newAttachment, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,12 +34,7 @@ export let provider = Slate.create({
     manageUserList,
     uploadOfflineConversions,
     getProfile,
-    updateProfile,
+    updateProfile
   ],
-  triggers: [
-    inboundWebhook,
-    campaignStatusChange,
-    newLink,
-    newAttachment,
-  ],
+  triggers: [inboundWebhook, campaignStatusChange, newLink, newAttachment]
 });

@@ -25,12 +25,9 @@ import {
   listPods,
   manageListEntry,
   listListEntries,
-  manageWebhook,
+  manageWebhook
 } from './tools';
-import {
-  messageEvents,
-  domainEvents,
-} from './triggers';
+import { messageEvents, domainEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,10 +56,7 @@ export let provider = Slate.create({
     listPods,
     manageListEntry,
     listListEntries,
-    manageWebhook,
+    manageWebhook
   ],
-  triggers: [
-    messageEvents,
-    domainEvents,
-  ],
+  triggers: [messageEvents, domainEvents]
 });

@@ -3,48 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEtfHoldings = SlateTool.create(
-  spec,
-  {
-    name: 'Get ETF Holdings',
-    key: 'get_etf_holdings',
-    description: `Retrieve complete ETF holdings data by ticker, including fund metadata and individual security holdings with balances, values, weights, asset categories, and ISINs. Supports date range filtering.`,
-    constraints: [
-      'Available on Basic plan and higher',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getEtfHoldings = SlateTool.create(spec, {
+  name: 'Get ETF Holdings',
+  key: 'get_etf_holdings',
+  description: `Retrieve complete ETF holdings data by ticker, including fund metadata and individual security holdings with balances, values, weights, asset categories, and ISINs. Supports date range filtering.`,
+  constraints: ['Available on Basic plan and higher'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    symbol: z.string().describe('ETF ticker symbol (e.g. "SPY", "QQQ")'),
-    dateFrom: z.string().optional().describe('Start date in YYYY-MM-DD format'),
-    dateTo: z.string().optional().describe('End date in YYYY-MM-DD format'),
-    limit: z.number().optional().describe('Number of holdings to return (max 1000)'),
-    offset: z.number().optional().describe('Pagination offset'),
-  }))
-  .output(z.object({
-    pagination: z.object({
-      limit: z.number(),
-      offset: z.number(),
-      count: z.number(),
-      total: z.number(),
-    }),
-    fundSymbol: z.string(),
-    fundName: z.string(),
-    holdings: z.array(z.object({
-      symbol: z.string(),
-      name: z.string(),
-      balance: z.number().nullable(),
-      value: z.number().nullable(),
-      weight: z.number().nullable(),
-      assetCategory: z.string().nullable(),
-      isin: z.string().nullable(),
-      date: z.string(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      symbol: z.string().describe('ETF ticker symbol (e.g. "SPY", "QQQ")'),
+      dateFrom: z.string().optional().describe('Start date in YYYY-MM-DD format'),
+      dateTo: z.string().optional().describe('End date in YYYY-MM-DD format'),
+      limit: z.number().optional().describe('Number of holdings to return (max 1000)'),
+      offset: z.number().optional().describe('Pagination offset')
+    })
+  )
+  .output(
+    z.object({
+      pagination: z.object({
+        limit: z.number(),
+        offset: z.number(),
+        count: z.number(),
+        total: z.number()
+      }),
+      fundSymbol: z.string(),
+      fundName: z.string(),
+      holdings: z.array(
+        z.object({
+          symbol: z.string(),
+          name: z.string(),
+          balance: z.number().nullable(),
+          value: z.number().nullable(),
+          weight: z.number().nullable(),
+          assetCategory: z.string().nullable(),
+          isin: z.string().nullable(),
+          date: z.string()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getEtfHoldings({
@@ -52,10 +53,10 @@ export let getEtfHoldings = SlateTool.create(
       dateFrom: ctx.input.dateFrom,
       dateTo: ctx.input.dateTo,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
-    let holdings = (result.data.holdings || []).map((h) => ({
+    let holdings = (result.data.holdings || []).map(h => ({
       symbol: h.symbol,
       name: h.name,
       balance: h.balance,
@@ -63,7 +64,7 @@ export let getEtfHoldings = SlateTool.create(
       weight: h.weight,
       assetCategory: h.asset_category,
       isin: h.isin,
-      date: h.date,
+      date: h.date
     }));
 
     return {
@@ -71,8 +72,9 @@ export let getEtfHoldings = SlateTool.create(
         pagination: result.pagination,
         fundSymbol: result.data.fund?.symbol ?? ctx.input.symbol,
         fundName: result.data.fund?.name ?? '',
-        holdings,
+        holdings
       },
-      message: `Retrieved ${holdings.length} holdings for ETF **${ctx.input.symbol}** (${result.data.fund?.name ?? 'N/A'}). Total holdings: ${result.pagination.total}.`,
+      message: `Retrieved ${holdings.length} holdings for ETF **${ctx.input.symbol}** (${result.data.fund?.name ?? 'N/A'}). Total holdings: ${result.pagination.total}.`
     };
-  }).build();
+  })
+  .build();

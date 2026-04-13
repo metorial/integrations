@@ -30,14 +30,14 @@ export class IpEnrichClient {
     this.http = createAxios({
       baseURL: 'https://api.lf-discover.com',
       headers: {
-        'X-API-KEY': apiKey,
-      },
+        'X-API-KEY': apiKey
+      }
     });
   }
 
   async enrichIp(ipAddress: string): Promise<IpEnrichCompany> {
     let response = await this.http.get('/companies', {
-      params: { ip: ipAddress },
+      params: { ip: ipAddress }
     });
 
     let data = response.data;
@@ -68,11 +68,11 @@ export class IpEnrichClient {
       businessIds: (data.business_ids ?? company.business_ids ?? []).map((b: any) => ({
         countryCode: b.country_code ?? '',
         key: b.key ?? '',
-        value: b.value ?? '',
+        value: b.value ?? ''
       })),
       city: location.city ?? '',
       region: location.region ?? '',
-      countryCode: location.country_code ?? '',
+      countryCode: location.country_code ?? ''
     };
   }
 }

@@ -10,8 +10,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         apiKey: this.config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -22,15 +22,17 @@ export class Client {
     return response.data;
   }
 
-  async getLeads(params: {
-    page?: number;
-    perPage?: number;
-    companyId?: string;
-    filter?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    search?: string;
-  } = {}) {
+  async getLeads(
+    params: {
+      page?: number;
+      perPage?: number;
+      companyId?: string;
+      filter?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      search?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/lead', {
       params: {
         page: params.page,
@@ -39,8 +41,8 @@ export class Client {
         filter: params.filter,
         sort_by: params.sortBy,
         sort_order: params.sortOrder,
-        search: params.search,
-      },
+        search: params.search
+      }
     });
     return response.data;
   }
@@ -67,23 +69,26 @@ export class Client {
       phone: data.phone,
       linkedin: data.linkedin,
       twitter: data.twitter,
-      notes: data.notes,
+      notes: data.notes
     });
     return response.data;
   }
 
-  async updateLead(leadId: string, data: {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    companyName?: string;
-    companyUrl?: string;
-    title?: string;
-    phone?: string;
-    linkedin?: string;
-    twitter?: string;
-    notes?: string;
-  }) {
+  async updateLead(
+    leadId: string,
+    data: {
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+      companyName?: string;
+      companyUrl?: string;
+      title?: string;
+      phone?: string;
+      linkedin?: string;
+      twitter?: string;
+      notes?: string;
+    }
+  ) {
     let response = await this.axios.put(`/lead/${leadId}`, {
       email: data.email,
       first_name: data.firstName,
@@ -94,7 +99,7 @@ export class Client {
       phone: data.phone,
       linkedin: data.linkedin,
       twitter: data.twitter,
-      notes: data.notes,
+      notes: data.notes
     });
     return response.data;
   }
@@ -111,14 +116,16 @@ export class Client {
     return response.data;
   }
 
-  async getCompanies(params: {
-    page?: number;
-    perPage?: number;
-    filter?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    search?: string;
-  } = {}) {
+  async getCompanies(
+    params: {
+      page?: number;
+      perPage?: number;
+      filter?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      search?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/company', {
       params: {
         page: params.page,
@@ -126,8 +133,8 @@ export class Client {
         filter: params.filter,
         sort_by: params.sortBy,
         sort_order: params.sortOrder,
-        search: params.search,
-      },
+        search: params.search
+      }
     });
     return response.data;
   }
@@ -147,17 +154,20 @@ export class Client {
     return response.data;
   }
 
-  async updateCompany(companyId: string, data: {
-    name?: string;
-    url?: string;
-    industry?: string;
-    description?: string;
-    phone?: string;
-    linkedin?: string;
-    twitter?: string;
-    country?: string;
-    city?: string;
-  }) {
+  async updateCompany(
+    companyId: string,
+    data: {
+      name?: string;
+      url?: string;
+      industry?: string;
+      description?: string;
+      phone?: string;
+      linkedin?: string;
+      twitter?: string;
+      country?: string;
+      city?: string;
+    }
+  ) {
     let response = await this.axios.put(`/company/${companyId}`, data);
     return response.data;
   }
@@ -169,24 +179,20 @@ export class Client {
 
   // ---- Email ----
 
-  async findEmail(params: {
-    domain: string;
-    firstName: string;
-    lastName: string;
-  }) {
+  async findEmail(params: { domain: string; firstName: string; lastName: string }) {
     let response = await this.axios.get('/email/find', {
       params: {
         domain: params.domain,
         firstName: params.firstName,
-        lastName: params.lastName,
-      },
+        lastName: params.lastName
+      }
     });
     return response.data;
   }
 
   async verifyEmail(email: string) {
     let response = await this.axios.get('/email/verify', {
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
@@ -198,14 +204,16 @@ export class Client {
     return response.data;
   }
 
-  async getSequences(params: {
-    page?: number;
-    perPage?: number;
-    filter?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    search?: string;
-  } = {}) {
+  async getSequences(
+    params: {
+      page?: number;
+      perPage?: number;
+      filter?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      search?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/sequence', {
       params: {
         page: params.page,
@@ -213,24 +221,24 @@ export class Client {
         filter: params.filter,
         sort_by: params.sortBy,
         sort_order: params.sortOrder,
-        search: params.search,
-      },
+        search: params.search
+      }
     });
     return response.data;
   }
 
-  async createSequence(data: {
-    name: string;
-    description?: string;
-  }) {
+  async createSequence(data: { name: string; description?: string }) {
     let response = await this.axios.post('/sequence', data);
     return response.data;
   }
 
-  async updateSequence(sequenceId: string, data: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateSequence(
+    sequenceId: string,
+    data: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.put(`/sequence/${sequenceId}`, data);
     return response.data;
   }
@@ -257,20 +265,23 @@ export class Client {
       sequence_id: data.sequenceId,
       subject: data.subject,
       body: data.body,
-      delay_days: data.delayDays,
+      delay_days: data.delayDays
     });
     return response.data;
   }
 
-  async updateStep(stepId: string, data: {
-    subject?: string;
-    body?: string;
-    delayDays?: number;
-  }) {
+  async updateStep(
+    stepId: string,
+    data: {
+      subject?: string;
+      body?: string;
+      delayDays?: number;
+    }
+  ) {
     let response = await this.axios.put(`/step/${stepId}`, {
       subject: data.subject,
       body: data.body,
-      delay_days: data.delayDays,
+      delay_days: data.delayDays
     });
     return response.data;
   }
@@ -309,33 +320,35 @@ export class Client {
     return response.data;
   }
 
-  async getNotes(params: {
-    page?: number;
-    perPage?: number;
-  } = {}) {
+  async getNotes(
+    params: {
+      page?: number;
+      perPage?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/note', {
       params: {
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
 
-  async createNote(data: {
-    leadId?: string;
-    content: string;
-  }) {
+  async createNote(data: { leadId?: string; content: string }) {
     let response = await this.axios.post('/note', {
       lead_id: data.leadId,
-      content: data.content,
+      content: data.content
     });
     return response.data;
   }
 
-  async updateNote(noteId: string, data: {
-    content?: string;
-  }) {
+  async updateNote(
+    noteId: string,
+    data: {
+      content?: string;
+    }
+  ) {
     let response = await this.axios.put(`/note/${noteId}`, data);
     return response.data;
   }
@@ -352,15 +365,17 @@ export class Client {
     return response.data;
   }
 
-  async getDomains(params: {
-    page?: number;
-    perPage?: number;
-  } = {}) {
+  async getDomains(
+    params: {
+      page?: number;
+      perPage?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/domain', {
       params: {
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
@@ -392,7 +407,7 @@ export class Client {
       webhook_url: data.webhookUrl,
       description: data.description,
       request_headers: data.requestHeaders,
-      events: data.events,
+      events: data.events
     });
     return response.data;
   }

@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Travis CI API access token. Obtain from Account Settings > API Token in the Travis CI dashboard, or via the Travis CI CLI.'),
+      token: z
+        .string()
+        .describe(
+          'Travis CI API access token. Obtain from Account Settings > API Token in the Travis CI dashboard, or via the Travis CI CLI.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,9 +32,9 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://api.travis-ci.com',
         headers: {
-          'Authorization': `token ${ctx.output.token}`,
-          'Travis-API-Version': '3',
-        },
+          Authorization: `token ${ctx.output.token}`,
+          'Travis-API-Version': '3'
+        }
       });
 
       let response = await client.get('/user');
@@ -40,8 +46,8 @@ export let auth = SlateAuth.create()
           name: user.name || user.login,
           email: user.email,
           imageUrl: user.avatar_url,
-          login: user.login,
-        },
+          login: user.login
+        }
       };
-    },
+    }
   });

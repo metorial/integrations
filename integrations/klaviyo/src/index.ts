@@ -18,13 +18,9 @@ import {
   manageTemplates,
   manageTags,
   manageCoupons,
-  requestProfileDeletion,
+  requestProfileDeletion
 } from './tools';
-import {
-  webhookEvents,
-  newEvents,
-  newProfiles,
-} from './triggers';
+import { webhookEvents, newEvents, newProfiles } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -46,11 +42,7 @@ export let provider = Slate.create({
     manageTemplates,
     manageTags,
     manageCoupons,
-    requestProfileDeletion,
+    requestProfileDeletion
   ],
-  triggers: [
-    webhookEvents,
-    newEvents,
-    newProfiles,
-  ],
+  triggers: [webhookEvents, newEvents, newProfiles]
 });

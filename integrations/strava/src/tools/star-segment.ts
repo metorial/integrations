@@ -3,27 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let starSegment = SlateTool.create(
-  spec,
-  {
-    name: 'Star Segment',
-    key: 'star_segment',
-    description: `Star or unstar a segment for the authenticated athlete. Starred segments appear in the athlete's starred segments list. Requires \`profile:write\` scope.`,
-    tags: {
-      destructive: false
-    }
+export let starSegment = SlateTool.create(spec, {
+  name: 'Star Segment',
+  key: 'star_segment',
+  description: `Star or unstar a segment for the authenticated athlete. Starred segments appear in the athlete's starred segments list. Requires \`profile:write\` scope.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    segmentId: z.number().describe('The segment identifier'),
-    starred: z.boolean().describe('Whether to star (true) or unstar (false) the segment')
-  }))
-  .output(z.object({
-    segmentId: z.number().describe('Segment identifier'),
-    name: z.string().describe('Segment name'),
-    starred: z.boolean().describe('New star status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      segmentId: z.number().describe('The segment identifier'),
+      starred: z.boolean().describe('Whether to star (true) or unstar (false) the segment')
+    })
+  )
+  .output(
+    z.object({
+      segmentId: z.number().describe('Segment identifier'),
+      name: z.string().describe('Segment name'),
+      starred: z.boolean().describe('New star status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let segment = await client.starSegment(ctx.input.segmentId, ctx.input.starred);
@@ -38,4 +39,5 @@ export let starSegment = SlateTool.create(
         ? `Starred segment **${segment.name}**.`
         : `Unstarred segment **${segment.name}**.`
     };
-  }).build();
+  })
+  .build();

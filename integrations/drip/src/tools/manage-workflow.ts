@@ -3,66 +3,92 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWorkflow = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Workflow',
-    key: 'manage_workflow',
-    description: `List, fetch, activate, or pause automation workflows. Start a subscriber on a workflow or remove them from one. Use this to control Drip's automation engine.`,
-    tags: {
-      destructive: false,
-    },
+export let manageWorkflow = SlateTool.create(spec, {
+  name: 'Manage Workflow',
+  key: 'manage_workflow',
+  description: `List, fetch, activate, or pause automation workflows. Start a subscriber on a workflow or remove them from one. Use this to control Drip's automation engine.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'fetch', 'activate', 'pause', 'start_subscriber', 'remove_subscriber']).describe('The action to perform.'),
-    workflowId: z.string().optional().describe('Workflow ID. Required for all actions except list.'),
-    subscriberEmail: z.string().optional().describe('Subscriber email. Required for start_subscriber.'),
-    subscriberId: z.string().optional().describe('Subscriber ID. Required for remove_subscriber.'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom fields to set when starting a subscriber.'),
-    tags: z.array(z.string()).optional().describe('Tags to apply when starting a subscriber.'),
-    page: z.number().optional().describe('Page number for list.'),
-    perPage: z.number().optional().describe('Results per page for list.'),
-  }))
-  .output(z.object({
-    workflows: z.array(z.object({
-      workflowId: z.string(),
-      name: z.string().optional(),
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-    })).optional().describe('List of workflows.'),
-    workflow: z.object({
-      workflowId: z.string(),
-      name: z.string().optional(),
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-    }).optional().describe('Workflow details.'),
-    activated: z.boolean().optional(),
-    paused: z.boolean().optional(),
-    started: z.boolean().optional(),
-    removed: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'fetch', 'activate', 'pause', 'start_subscriber', 'remove_subscriber'])
+        .describe('The action to perform.'),
+      workflowId: z
+        .string()
+        .optional()
+        .describe('Workflow ID. Required for all actions except list.'),
+      subscriberEmail: z
+        .string()
+        .optional()
+        .describe('Subscriber email. Required for start_subscriber.'),
+      subscriberId: z
+        .string()
+        .optional()
+        .describe('Subscriber ID. Required for remove_subscriber.'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom fields to set when starting a subscriber.'),
+      tags: z
+        .array(z.string())
+        .optional()
+        .describe('Tags to apply when starting a subscriber.'),
+      page: z.number().optional().describe('Page number for list.'),
+      perPage: z.number().optional().describe('Results per page for list.')
+    })
+  )
+  .output(
+    z.object({
+      workflows: z
+        .array(
+          z.object({
+            workflowId: z.string(),
+            name: z.string().optional(),
+            status: z.string().optional(),
+            createdAt: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of workflows.'),
+      workflow: z
+        .object({
+          workflowId: z.string(),
+          name: z.string().optional(),
+          status: z.string().optional(),
+          createdAt: z.string().optional()
+        })
+        .optional()
+        .describe('Workflow details.'),
+      activated: z.boolean().optional(),
+      paused: z.boolean().optional(),
+      started: z.boolean().optional(),
+      removed: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     if (ctx.input.action === 'list') {
       let result = await client.listWorkflows({
         page: ctx.input.page,
-        perPage: ctx.input.perPage,
+        perPage: ctx.input.perPage
       });
       let workflows = (result.workflows ?? []).map((w: any) => ({
         workflowId: w.id ?? '',
         name: w.name,
         status: w.status,
-        createdAt: w.created_at,
+        createdAt: w.created_at
       }));
       return {
         output: { workflows },
-        message: `Found **${workflows.length}** workflows.`,
+        message: `Found **${workflows.length}** workflows.`
       };
     }
 
@@ -79,10 +105,10 @@ export let manageWorkflow = SlateTool.create(
             workflowId: w.id ?? '',
             name: w.name,
             status: w.status,
-            createdAt: w.created_at,
-          },
+            createdAt: w.created_at
+          }
         },
-        message: `Fetched workflow **${w.name}** (${w.status}).`,
+        message: `Fetched workflow **${w.name}** (${w.status}).`
       };
     }
 
@@ -90,7 +116,7 @@ export let manageWorkflow = SlateTool.create(
       await client.activateWorkflow(ctx.input.workflowId);
       return {
         output: { activated: true },
-        message: `Workflow **${ctx.input.workflowId}** activated.`,
+        message: `Workflow **${ctx.input.workflowId}** activated.`
       };
     }
 
@@ -98,7 +124,7 @@ export let manageWorkflow = SlateTool.create(
       await client.pauseWorkflow(ctx.input.workflowId);
       return {
         output: { paused: true },
-        message: `Workflow **${ctx.input.workflowId}** paused.`,
+        message: `Workflow **${ctx.input.workflowId}** paused.`
       };
     }
 
@@ -112,7 +138,7 @@ export let manageWorkflow = SlateTool.create(
       await client.startOnWorkflow(ctx.input.workflowId, sub);
       return {
         output: { started: true },
-        message: `**${ctx.input.subscriberEmail}** started on workflow **${ctx.input.workflowId}**.`,
+        message: `**${ctx.input.subscriberEmail}** started on workflow **${ctx.input.workflowId}**.`
       };
     }
 
@@ -123,7 +149,7 @@ export let manageWorkflow = SlateTool.create(
       await client.removeFromWorkflow(ctx.input.workflowId, ctx.input.subscriberId);
       return {
         output: { removed: true },
-        message: `Subscriber **${ctx.input.subscriberId}** removed from workflow **${ctx.input.workflowId}**.`,
+        message: `Subscriber **${ctx.input.subscriberId}** removed from workflow **${ctx.input.workflowId}**.`
       };
     }
 

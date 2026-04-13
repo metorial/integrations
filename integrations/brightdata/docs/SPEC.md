@@ -31,28 +31,37 @@ Native Access — authenticate and interact with the Bright Data platform using 
 ## Features
 
 ### Web Unlocker API
+
 Access blocked content and bypass CAPTCHAs. Submit any URL and receive the page content with automatic handling of anti-bot measures, proxy rotation, and CAPTCHA solving. Supports output in JSON, HTML, or Markdown formats. Configurable options include target country, device type, and data format.
 
 ### SERP API
+
 Lets you tailor requests for multiple search engines—including Google, Bing, Yandex, and DuckDuckGo—using query parameters for localization, pagination, device emulation, and more. Supports various Google services, including Search, Maps, Trends, Reviews, Lens, Hotels, and Flights. Results are delivered in JSON or HTML. Supports both synchronous (real-time) and asynchronous (batch) modes.
 
 ### Web Scraper API (Pre-built Scrapers)
+
 Start with 120+ ready-made scrapers for popular platforms. Trigger data collection jobs for specific websites (e.g., Amazon, LinkedIn, Airbnb) by providing URLs or search keywords. Data is returned as structured records in JSON, NDJSON, or CSV. Supports discovery modes to find new entities via keywords, categories, or locations. Configurable parameters include result limits, output format, and delivery method (webhook or API download).
 
 ### Crawl API
+
 The Crawl API lets you index and extract data across millions of pages at once, working like a search engine crawler where you control what gets crawled and how.
 
 ### Scraping Browser
+
 Headless browser automation with built-in proxy rotation, CAPTCHA solving, and anti-detection features. Compatible with Puppeteer, Playwright, and Selenium for interacting with JavaScript-heavy websites.
 
 ### Dataset Marketplace
+
 Provides access to pre-collected, structured datasets from over 100 domains, including LinkedIn, Zillow, eCommerce platforms, social media, and more. These datasets are ready to be integrated into business intelligence and market research tools.
 
 ### Scraping Functions
+
 Run scrapers as serverless functions, automating web data collection tasks without the need for continuous manual intervention.
 
 ### Account Management
+
 Programmatically manage your Bright Data account, including:
+
 - Creating, configuring, and removing zones
 - Managing IP allowlists/denylists and static IPs
 - Querying account balance, account status, and zone statistics
@@ -60,6 +69,7 @@ Programmatically manage your Bright Data account, including:
 - Toggling zones on/off and managing domain restrictions
 
 ### Proxy Network Access
+
 Bright Data's Proxy API allows you to interact with and control your proxies programmatically, including automating tasks such as creating, updating, or deleting proxy ports. Proxy types include residential, datacenter, ISP, and mobile. Supports geo-targeting by country, city, carrier, and ASN, with rotating or sticky sessions.
 
 ## Events
@@ -67,10 +77,13 @@ Bright Data's Proxy API allows you to interact with and control your proxies pro
 Bright Data supports webhook-based notifications for asynchronous job completion across its scraping products:
 
 ### Scraping Job Completion (Notify URL)
+
 A URL where a notification will be sent once the collection is finished. The notification will contain `snapshot_id` and `status`. This is a lightweight callback used to inform you that a job has completed, after which you retrieve the results separately. Configured per-request via the `notify` parameter when triggering a data collection.
 
 ### Scraping Job Data Delivery (Webhook URL)
+
 A webhook URL where data will be delivered. Unlike the notify URL, this delivers the actual scraped data payload directly to your endpoint. Configurable options include the data format for delivery and an authorization header to be used when sending to the webhook. By default, data is sent compressed. Configured per-request via the `endpoint` parameter.
 
 ### Async SERP/Unlocker Request Completion
+
 If you've set up a webhook, you'll receive a notification immediately when the requests are ready with the following parameters: `status`, `response_id`, `request_url` and `hook_data` (optional). Used with asynchronous mode for the SERP API and Web Unlocker API. Configured per-request via a webhook URL parameter.

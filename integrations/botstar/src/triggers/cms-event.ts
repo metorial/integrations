@@ -2,42 +2,46 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let cmsEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'CMS Item Created',
-    key: 'cms_item_created',
-    description: `Triggers when a new CMS item is created in a BotStar entity. Configure in Bot Builder > Integrations by selecting the "New CMS Item" event type.`,
-    instructions: [
-      'In BotStar, go to Bot Builder > Integrations, select "New CMS Item", and paste the webhook URL.',
-      'Supports both Live and Test environment modes.',
-    ],
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of event'),
-    eventId: z.string().describe('Unique ID for deduplication'),
-    entityId: z.string().optional().describe('ID of the CMS entity'),
-    entityName: z.string().optional().describe('Name of the CMS entity'),
-    itemId: z.string().optional().describe('ID of the created item'),
-    itemName: z.string().optional().describe('Name of the created item'),
-    botId: z.string().optional().describe('ID of the bot'),
-    environment: z.string().optional().describe('Environment mode (live or test)'),
-    itemFields: z.record(z.string(), z.any()).optional().describe('Field values of the item'),
-    rawPayload: z.any().optional().describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    entityId: z.string().describe('ID of the CMS entity'),
-    entityName: z.string().optional().describe('Name of the CMS entity'),
-    itemId: z.string().describe('ID of the created item'),
-    itemName: z.string().optional().describe('Name of the item'),
-    botId: z.string().optional().describe('ID of the bot'),
-    environment: z.string().optional().describe('Environment mode'),
-    itemFields: z.record(z.string(), z.any()).optional().describe('Field values of the item'),
-  }))
+export let cmsEvent = SlateTrigger.create(spec, {
+  name: 'CMS Item Created',
+  key: 'cms_item_created',
+  description: `Triggers when a new CMS item is created in a BotStar entity. Configure in Bot Builder > Integrations by selecting the "New CMS Item" event type.`,
+  instructions: [
+    'In BotStar, go to Bot Builder > Integrations, select "New CMS Item", and paste the webhook URL.',
+    'Supports both Live and Test environment modes.'
+  ]
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of event'),
+      eventId: z.string().describe('Unique ID for deduplication'),
+      entityId: z.string().optional().describe('ID of the CMS entity'),
+      entityName: z.string().optional().describe('Name of the CMS entity'),
+      itemId: z.string().optional().describe('ID of the created item'),
+      itemName: z.string().optional().describe('Name of the created item'),
+      botId: z.string().optional().describe('ID of the bot'),
+      environment: z.string().optional().describe('Environment mode (live or test)'),
+      itemFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Field values of the item'),
+      rawPayload: z.any().optional().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      entityId: z.string().describe('ID of the CMS entity'),
+      entityName: z.string().optional().describe('Name of the CMS entity'),
+      itemId: z.string().describe('ID of the created item'),
+      itemName: z.string().optional().describe('Name of the item'),
+      botId: z.string().optional().describe('ID of the bot'),
+      environment: z.string().optional().describe('Environment mode'),
+      itemFields: z.record(z.string(), z.any()).optional().describe('Field values of the item')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.event || data.type || data.event_type || 'new_cms_item';
       let entityId = data.entity_id || data.entityId || data.entity?.id || '';
@@ -60,22 +64,24 @@ export let cmsEvent = SlateTrigger.create(
       let eventId = data.id || data.event_id || `${eventType}-${itemId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          entityId,
-          entityName,
-          itemId,
-          itemName,
-          botId,
-          environment,
-          itemFields,
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            entityId,
+            entityName,
+            itemId,
+            itemName,
+            botId,
+            environment,
+            itemFields,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'cms_item.created',
         id: ctx.input.eventId,
@@ -86,8 +92,9 @@ export let cmsEvent = SlateTrigger.create(
           itemName: ctx.input.itemName,
           botId: ctx.input.botId,
           environment: ctx.input.environment,
-          itemFields: ctx.input.itemFields,
-        },
+          itemFields: ctx.input.itemFields
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

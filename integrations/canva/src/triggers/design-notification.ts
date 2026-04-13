@@ -8,60 +8,85 @@ let designSummarySchema = z.object({
   editUrl: z.string().optional().describe('Temporary edit URL'),
   viewUrl: z.string().optional().describe('Temporary view URL'),
   thumbnailUrl: z.string().optional().describe('Thumbnail URL'),
-  pageCount: z.number().optional().describe('Number of pages'),
+  pageCount: z.number().optional().describe('Number of pages')
 });
 
 let userSummarySchema = z.object({
   userId: z.string().describe('The user ID'),
-  displayName: z.string().optional().describe('User display name'),
+  displayName: z.string().optional().describe('User display name')
 });
 
 let receivingUserSchema = z.object({
   userId: z.string().describe('The receiving user ID'),
   teamId: z.string().optional().describe('The receiving user team ID'),
-  displayName: z.string().optional().describe('Receiving user display name'),
+  displayName: z.string().optional().describe('Receiving user display name')
 });
 
-export let designNotification = SlateTrigger.create(
-  spec,
-  {
-    name: 'Design Notification',
-    key: 'design_notification',
-    description: 'Triggered when a design-related event occurs, including comments, shares, approval requests/responses, access requests, suggestions, and team invitations.',
-  }
-)
-  .input(z.object({
-    notificationId: z.string().describe('Unique notification ID'),
-    notificationType: z.string().describe('Type of notification (e.g., comment, share_design, etc.)'),
-    createdAt: z.number().describe('Unix timestamp of the notification'),
-    rawContent: z.record(z.string(), z.unknown()).describe('Raw notification content'),
-  }))
-  .output(z.object({
-    notificationId: z.string().describe('Unique notification ID'),
-    notificationType: z.string().describe('Notification type'),
-    createdAt: z.number().describe('Unix timestamp of the notification'),
-    triggeringUser: userSummarySchema.optional().describe('The user who triggered the event'),
-    receivingUser: receivingUserSchema.optional().describe('The user receiving the notification'),
-    design: designSummarySchema.optional().describe('The affected design'),
-    commentEventType: z.string().optional().describe('Comment event sub-type: "new", "assigned", "resolved", "reply", or "mention"'),
-    commentThreadId: z.string().optional().describe('Comment thread ID (for comment events)'),
-    commentContent: z.string().optional().describe('Comment or reply text content'),
-    commentUrl: z.string().optional().describe('URL to the comment on the design'),
-    suggestionEventType: z.string().optional().describe('Suggestion event sub-type: "new" or "accepted"'),
-    shareUrl: z.string().optional().describe('Share URL (for share events)'),
-    shareMessage: z.string().optional().describe('Share message (for share events)'),
-    approvalMessage: z.string().optional().describe('Approval request message'),
-    approvalApproved: z.boolean().optional().describe('Whether the design was approved (for approval response events)'),
-    approvalReadyToPublish: z.boolean().optional().describe('Whether the design is ready to publish'),
-    accessRequestUrl: z.string().optional().describe('URL to approve access request'),
-    folderName: z.string().optional().describe('Folder name (for folder access requests)'),
-    folderId: z.string().optional().describe('Folder ID (for folder access requests)'),
-  }))
+export let designNotification = SlateTrigger.create(spec, {
+  name: 'Design Notification',
+  key: 'design_notification',
+  description:
+    'Triggered when a design-related event occurs, including comments, shares, approval requests/responses, access requests, suggestions, and team invitations.'
+})
+  .input(
+    z.object({
+      notificationId: z.string().describe('Unique notification ID'),
+      notificationType: z
+        .string()
+        .describe('Type of notification (e.g., comment, share_design, etc.)'),
+      createdAt: z.number().describe('Unix timestamp of the notification'),
+      rawContent: z.record(z.string(), z.unknown()).describe('Raw notification content')
+    })
+  )
+  .output(
+    z.object({
+      notificationId: z.string().describe('Unique notification ID'),
+      notificationType: z.string().describe('Notification type'),
+      createdAt: z.number().describe('Unix timestamp of the notification'),
+      triggeringUser: userSummarySchema
+        .optional()
+        .describe('The user who triggered the event'),
+      receivingUser: receivingUserSchema
+        .optional()
+        .describe('The user receiving the notification'),
+      design: designSummarySchema.optional().describe('The affected design'),
+      commentEventType: z
+        .string()
+        .optional()
+        .describe(
+          'Comment event sub-type: "new", "assigned", "resolved", "reply", or "mention"'
+        ),
+      commentThreadId: z
+        .string()
+        .optional()
+        .describe('Comment thread ID (for comment events)'),
+      commentContent: z.string().optional().describe('Comment or reply text content'),
+      commentUrl: z.string().optional().describe('URL to the comment on the design'),
+      suggestionEventType: z
+        .string()
+        .optional()
+        .describe('Suggestion event sub-type: "new" or "accepted"'),
+      shareUrl: z.string().optional().describe('Share URL (for share events)'),
+      shareMessage: z.string().optional().describe('Share message (for share events)'),
+      approvalMessage: z.string().optional().describe('Approval request message'),
+      approvalApproved: z
+        .boolean()
+        .optional()
+        .describe('Whether the design was approved (for approval response events)'),
+      approvalReadyToPublish: z
+        .boolean()
+        .optional()
+        .describe('Whether the design is ready to publish'),
+      accessRequestUrl: z.string().optional().describe('URL to approve access request'),
+      folderName: z.string().optional().describe('Folder name (for folder access requests)'),
+      folderId: z.string().optional().describe('Folder ID (for folder access requests)')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: WebhookPayload;
       try {
-        body = await ctx.request.json() as WebhookPayload;
+        body = (await ctx.request.json()) as WebhookPayload;
       } catch {
         return { inputs: [] };
       }
@@ -71,21 +96,27 @@ export let designNotification = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          notificationId: body.id,
-          notificationType: body.content.type || 'unknown',
-          createdAt: body.created_at || 0,
-          rawContent: body.content as Record<string, unknown>,
-        }],
+        inputs: [
+          {
+            notificationId: body.id,
+            notificationType: body.content.type || 'unknown',
+            createdAt: body.created_at || 0,
+            rawContent: body.content as Record<string, unknown>
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let content = ctx.input.rawContent;
       let notificationType = ctx.input.notificationType;
 
-      let triggeringUser = extractUser(content['triggering_user'] as Record<string, unknown> | undefined);
-      let receivingUser = extractReceivingUser(content['receiving_team_user'] as Record<string, unknown> | undefined);
+      let triggeringUser = extractUser(
+        content['triggering_user'] as Record<string, unknown> | undefined
+      );
+      let receivingUser = extractReceivingUser(
+        content['receiving_team_user'] as Record<string, unknown> | undefined
+      );
       let design = extractDesign(content['design'] as Record<string, unknown> | undefined);
 
       let commentEventType: string | undefined;
@@ -123,7 +154,9 @@ export let designNotification = SlateTrigger.create(
           }
         }
       } else if (notificationType === 'suggestion') {
-        let suggestionEvent = content['suggestion_event'] as Record<string, unknown> | undefined;
+        let suggestionEvent = content['suggestion_event'] as
+          | Record<string, unknown>
+          | undefined;
         if (suggestionEvent) {
           suggestionEventType = suggestionEvent['type'] as string | undefined;
         }
@@ -175,10 +208,10 @@ export let designNotification = SlateTrigger.create(
           approvalReadyToPublish,
           accessRequestUrl,
           folderName,
-          folderId,
-        },
+          folderId
+        }
       };
-    },
+    }
   })
   .build();
 
@@ -194,31 +227,39 @@ interface WebhookPayload {
 
 // ---- Helper functions ----
 
-let extractUser = (raw: Record<string, unknown> | undefined): { userId: string; displayName?: string } | undefined => {
+let extractUser = (
+  raw: Record<string, unknown> | undefined
+): { userId: string; displayName?: string } | undefined => {
   if (!raw) return undefined;
   return {
     userId: raw['id'] as string,
-    displayName: raw['display_name'] as string | undefined,
+    displayName: raw['display_name'] as string | undefined
   };
 };
 
-let extractReceivingUser = (raw: Record<string, unknown> | undefined): { userId: string; teamId?: string; displayName?: string } | undefined => {
+let extractReceivingUser = (
+  raw: Record<string, unknown> | undefined
+): { userId: string; teamId?: string; displayName?: string } | undefined => {
   if (!raw) return undefined;
   return {
     userId: raw['user_id'] as string,
     teamId: raw['team_id'] as string | undefined,
-    displayName: raw['display_name'] as string | undefined,
+    displayName: raw['display_name'] as string | undefined
   };
 };
 
-let extractDesign = (raw: Record<string, unknown> | undefined): {
-  designId: string;
-  title?: string;
-  editUrl?: string;
-  viewUrl?: string;
-  thumbnailUrl?: string;
-  pageCount?: number;
-} | undefined => {
+let extractDesign = (
+  raw: Record<string, unknown> | undefined
+):
+  | {
+      designId: string;
+      title?: string;
+      editUrl?: string;
+      viewUrl?: string;
+      thumbnailUrl?: string;
+      pageCount?: number;
+    }
+  | undefined => {
   if (!raw) return undefined;
   let urls = raw['urls'] as Record<string, string> | undefined;
   let thumbnail = raw['thumbnail'] as Record<string, unknown> | undefined;
@@ -228,6 +269,6 @@ let extractDesign = (raw: Record<string, unknown> | undefined): {
     editUrl: urls?.['edit_url'],
     viewUrl: urls?.['view_url'],
     thumbnailUrl: thumbnail?.['url'] as string | undefined,
-    pageCount: raw['page_count'] as number | undefined,
+    pageCount: raw['page_count'] as number | undefined
   };
 };

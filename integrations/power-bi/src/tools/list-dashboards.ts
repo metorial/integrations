@@ -20,54 +20,62 @@ let dashboardSchema = z.object({
   tiles: z.array(tileSchema).optional().describe('Dashboard tiles')
 });
 
-export let listDashboards = SlateTool.create(
-  spec,
-  {
-    name: 'List Dashboards',
-    key: 'list_dashboards',
-    description: `List Power BI dashboards and optionally include tile details. Retrieve dashboard names, IDs, embed URLs, and the tiles they contain.`,
-    tags: {
-      readOnly: true
-    }
+export let listDashboards = SlateTool.create(spec, {
+  name: 'List Dashboards',
+  key: 'list_dashboards',
+  description: `List Power BI dashboards and optionally include tile details. Retrieve dashboard names, IDs, embed URLs, and the tiles they contain.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID to filter dashboards. If omitted, lists dashboards from "My Workspace".'),
-    includeTiles: z.boolean().optional().describe('Include tile details for each dashboard')
-  }))
-  .output(z.object({
-    dashboards: z.array(dashboardSchema).describe('List of dashboards')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe(
+          'Workspace ID to filter dashboards. If omitted, lists dashboards from "My Workspace".'
+        ),
+      includeTiles: z.boolean().optional().describe('Include tile details for each dashboard')
+    })
+  )
+  .output(
+    z.object({
+      dashboards: z.array(dashboardSchema).describe('List of dashboards')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let dashboards = await client.listDashboards(ctx.input.workspaceId);
 
-    let mapped = await Promise.all(dashboards.map(async (d: any) => {
-      let dashboard: any = {
-        dashboardId: d.id,
-        displayName: d.displayName,
-        isReadOnly: d.isReadOnly,
-        embedUrl: d.embedUrl,
-        webUrl: d.webUrl
-      };
+    let mapped = await Promise.all(
+      dashboards.map(async (d: any) => {
+        let dashboard: any = {
+          dashboardId: d.id,
+          displayName: d.displayName,
+          isReadOnly: d.isReadOnly,
+          embedUrl: d.embedUrl,
+          webUrl: d.webUrl
+        };
 
-      if (ctx.input.includeTiles) {
-        try {
-          let tiles = await client.getDashboardTiles(d.id, ctx.input.workspaceId);
-          dashboard.tiles = tiles.map((t: any) => ({
-            tileId: t.id,
-            title: t.title,
-            reportId: t.reportId,
-            datasetId: t.datasetId,
-            embedUrl: t.embedUrl
-          }));
-        } catch {
-          dashboard.tiles = [];
+        if (ctx.input.includeTiles) {
+          try {
+            let tiles = await client.getDashboardTiles(d.id, ctx.input.workspaceId);
+            dashboard.tiles = tiles.map((t: any) => ({
+              tileId: t.id,
+              title: t.title,
+              reportId: t.reportId,
+              datasetId: t.datasetId,
+              embedUrl: t.embedUrl
+            }));
+          } catch {
+            dashboard.tiles = [];
+          }
         }
-      }
 
-      return dashboard;
-    }));
+        return dashboard;
+      })
+    );
 
     return {
       output: { dashboards: mapped },

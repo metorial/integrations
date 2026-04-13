@@ -17,7 +17,7 @@ import {
   managePayload,
   managePayloadIndex,
   manageSnapshots,
-  manageClusters,
+  manageClusters
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -41,9 +41,7 @@ export let provider = Slate.create({
     managePayload,
     managePayloadIndex,
     manageSnapshots,
-    manageClusters,
+    manageClusters
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -1,19 +1,22 @@
 import { createAxios } from 'slates';
 
 let userManagementHttp = createAxios({
-  baseURL: 'https://user-management-service.platform.moretrees.eco/user-management-api/external',
+  baseURL:
+    'https://user-management-service.platform.moretrees.eco/user-management-api/external'
 });
 
 let projectManagementHttp = createAxios({
-  baseURL: 'https://project-management-service.platform.moretrees.eco/project-management-api/external',
+  baseURL:
+    'https://project-management-service.platform.moretrees.eco/project-management-api/external'
 });
 
 let transactionManagementHttp = createAxios({
-  baseURL: 'https://transaction-management-service.platform.moretrees.eco/transaction-management-api/external',
+  baseURL:
+    'https://transaction-management-service.platform.moretrees.eco/transaction-management-api/external'
 });
 
 let basicApiHttp = createAxios({
-  baseURL: 'https://api.moretrees.eco/v1/basic',
+  baseURL: 'https://api.moretrees.eco/v1/basic'
 });
 
 export interface MoreTreesClientConfig {
@@ -116,22 +119,22 @@ export class Client {
   private get apiKeyHeaders() {
     return {
       'X-API-KEY': this.token,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   private get publicHeaders() {
     return {
-      'Authorization': this.publicValidationKey,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Authorization: this.publicValidationKey,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   async getAccountInfo(accountCode: string): Promise<AccountInfo> {
     let response = await userManagementHttp.get(`/accounts/${accountCode}`, {
-      headers: this.apiKeyHeaders,
+      headers: this.apiKeyHeaders
     });
 
     let data = response.data;
@@ -139,13 +142,13 @@ export class Client {
       accountName: data.account_name,
       creditBalance: data.credit_balance,
       forestName: data.forest_name,
-      forestSlug: data.forest_slug,
+      forestSlug: data.forest_slug
     };
   }
 
   async getForestInfo(forestSlugOrAccountCode: string): Promise<ForestInfo> {
     let response = await userManagementHttp.get(`/forest/${forestSlugOrAccountCode}`, {
-      headers: this.apiKeyHeaders,
+      headers: this.apiKeyHeaders
     });
 
     let data = response.data;
@@ -158,14 +161,14 @@ export class Client {
         treesGifted: data.totals.trees_gifted,
         treesReceived: data.totals.trees_received,
         co2Captured: data.totals.co2_captured,
-        projectsSupported: data.totals.projects_supported,
-      },
+        projectsSupported: data.totals.projects_supported
+      }
     };
   }
 
   async getProjects(): Promise<ProjectInfo[]> {
     let response = await projectManagementHttp.get('/projects', {
-      headers: this.publicHeaders,
+      headers: this.publicHeaders
     });
 
     let data = response.data as any[];
@@ -185,8 +188,8 @@ export class Client {
         tonnesCo2: tree.tonnes_c02,
         creditsRequired: tree.credits_required,
         isDefault: tree.default,
-        treeImage: tree.tree_image,
-      })),
+        treeImage: tree.tree_image
+      }))
     }));
   }
 
@@ -194,7 +197,7 @@ export class Client {
     let body: Record<string, any> = {
       payment_account_code: request.paymentAccountCode,
       plant_for_others: false,
-      quantity: request.quantity,
+      quantity: request.quantity
     };
 
     if (request.projectId !== undefined) body.project_id = request.projectId;
@@ -202,7 +205,7 @@ export class Client {
     if (request.test !== undefined) body.test = request.test;
 
     let response = await transactionManagementHttp.post('/plant', body, {
-      headers: this.apiKeyHeaders,
+      headers: this.apiKeyHeaders
     });
 
     let data = response.data;
@@ -212,7 +215,7 @@ export class Client {
       creditsUsed: data.credits_used,
       creditsRemaining: data.credits_remaining,
       projectId: data.project_id,
-      treeId: data.tree_id,
+      treeId: data.tree_id
     };
   }
 
@@ -220,15 +223,15 @@ export class Client {
     let body: Record<string, any> = {
       payment_account_code: request.paymentAccountCode,
       plant_for_others: true,
-      recipients: request.recipients.map((r) => {
+      recipients: request.recipients.map(r => {
         let recipient: Record<string, any> = {
           name: r.name,
-          quantity: r.quantity,
+          quantity: r.quantity
         };
         if (r.accountCode) recipient.account_code = r.accountCode;
         if (r.email) recipient.email = r.email;
         return recipient;
-      }),
+      })
     };
 
     if (request.projectId !== undefined) body.project_id = request.projectId;
@@ -236,7 +239,7 @@ export class Client {
     if (request.test !== undefined) body.test = request.test;
 
     let response = await transactionManagementHttp.post('/plant', body, {
-      headers: this.apiKeyHeaders,
+      headers: this.apiKeyHeaders
     });
 
     let data = response.data;
@@ -250,25 +253,25 @@ export class Client {
       recipients: (data.recipients || []).map((r: any) => ({
         accountCode: r.account_code,
         accountName: r.account_name,
-        quantity: r.quantity,
-      })),
+        quantity: r.quantity
+      }))
     };
   }
 
   async viewCredits(): Promise<{ creditBalance: number }> {
     let response = await basicApiHttp.get('/viewCredits', {
-      headers: this.publicHeaders,
+      headers: this.publicHeaders
     });
 
     let data = response.data;
     return {
-      creditBalance: data.credit_balance ?? data.credits ?? data,
+      creditBalance: data.credit_balance ?? data.credits ?? data
     };
   }
 
   async getCarbonOffset(): Promise<Record<string, any>> {
     let response = await basicApiHttp.get('/carbonOffset', {
-      headers: this.publicHeaders,
+      headers: this.publicHeaders
     });
 
     return response.data;

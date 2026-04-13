@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listUsers,
@@ -18,13 +17,13 @@ import {
   runCommand,
   listCommandResults,
   listApplications,
-  queryEvents,
+  queryEvents
 } from './tools';
 import {
   directoryEvents,
   authenticationEvents,
   systemEvents,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,12 +45,7 @@ export let provider = Slate.create({
     runCommand,
     listCommandResults,
     listApplications,
-    queryEvents,
+    queryEvents
   ],
-  triggers: [
-    inboundWebhook,
-    directoryEvents,
-    authenticationEvents,
-    systemEvents,
-  ],
+  triggers: [inboundWebhook, directoryEvents, authenticationEvents, systemEvents]
 });

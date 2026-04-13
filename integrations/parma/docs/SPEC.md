@@ -24,6 +24,7 @@ Parma uses OAuth authentication. It implements the standard OAuth 2.0 Authorizat
 Authenticated API requests use Bearer tokens in the Authorization header against the base URL `https://app.parma.ai/api/v1/`.
 
 Example authenticated request:
+
 ```
 GET https://app.parma.ai/api/v1/users/me
 Authorization: Bearer {access_token}

@@ -127,8 +127,8 @@ export class Client {
       baseURL: `${params.baseUrl}/api/v2`,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -171,7 +171,7 @@ export class Client {
     let body: Record<string, any> = {
       email: data.email,
       first_name: data.firstName,
-      last_name: data.lastName,
+      last_name: data.lastName
     };
     if (data.active !== undefined) body.active = data.active;
     if (data.metadata) body.metadata = data.metadata;
@@ -181,7 +181,10 @@ export class Client {
     return response.data;
   }
 
-  async updateUser(userId: string, operations: Array<{ op: string; path: string; value: any }>): Promise<SingleResponse<RetoolUser>> {
+  async updateUser(
+    userId: string,
+    operations: Array<{ op: string; path: string; value: any }>
+  ): Promise<SingleResponse<RetoolUser>> {
     let response = await this.axios.patch(`/users/${userId}`, { operations });
     return response.data;
   }
@@ -208,7 +211,10 @@ export class Client {
     return response.data;
   }
 
-  async getGroup(groupId: number, excludeDisabledUsers?: boolean): Promise<SingleResponse<RetoolGroup>> {
+  async getGroup(
+    groupId: number,
+    excludeDisabledUsers?: boolean
+  ): Promise<SingleResponse<RetoolGroup>> {
     let params: Record<string, any> = {};
     if (excludeDisabledUsers) params.excludeDisabledUsers = true;
 
@@ -226,41 +232,58 @@ export class Client {
   }): Promise<SingleResponse<RetoolGroup>> {
     let body: Record<string, any> = { name: data.name };
     if (data.universalAppAccess) body.universal_app_access = data.universalAppAccess;
-    if (data.universalResourceAccess) body.universal_resource_access = data.universalResourceAccess;
-    if (data.universalWorkflowAccess) body.universal_workflow_access = data.universalWorkflowAccess;
-    if (data.universalQueryLibraryAccess) body.universal_query_library_access = data.universalQueryLibraryAccess;
-    if (data.members) body.members = data.members.map(m => ({ id: m.id, is_group_admin: m.isGroupAdmin ?? false }));
+    if (data.universalResourceAccess)
+      body.universal_resource_access = data.universalResourceAccess;
+    if (data.universalWorkflowAccess)
+      body.universal_workflow_access = data.universalWorkflowAccess;
+    if (data.universalQueryLibraryAccess)
+      body.universal_query_library_access = data.universalQueryLibraryAccess;
+    if (data.members)
+      body.members = data.members.map(m => ({
+        id: m.id,
+        is_group_admin: m.isGroupAdmin ?? false
+      }));
 
     let response = await this.axios.post('/groups', body);
     return response.data;
   }
 
-  async updateGroup(groupId: number, data: {
-    name?: string;
-    universalAppAccess?: string;
-    universalResourceAccess?: string;
-    universalWorkflowAccess?: string;
-    universalQueryLibraryAccess?: string;
-    userListAccess?: boolean;
-    auditLogAccess?: boolean;
-    unpublishedReleaseAccess?: boolean;
-    usageAnalyticsAccess?: boolean;
-    themeAccess?: boolean;
-    accountDetailsAccess?: boolean;
-    landingPageAppId?: string | null;
-  }): Promise<SingleResponse<RetoolGroup>> {
+  async updateGroup(
+    groupId: number,
+    data: {
+      name?: string;
+      universalAppAccess?: string;
+      universalResourceAccess?: string;
+      universalWorkflowAccess?: string;
+      universalQueryLibraryAccess?: string;
+      userListAccess?: boolean;
+      auditLogAccess?: boolean;
+      unpublishedReleaseAccess?: boolean;
+      usageAnalyticsAccess?: boolean;
+      themeAccess?: boolean;
+      accountDetailsAccess?: boolean;
+      landingPageAppId?: string | null;
+    }
+  ): Promise<SingleResponse<RetoolGroup>> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
-    if (data.universalAppAccess !== undefined) body.universal_app_access = data.universalAppAccess;
-    if (data.universalResourceAccess !== undefined) body.universal_resource_access = data.universalResourceAccess;
-    if (data.universalWorkflowAccess !== undefined) body.universal_workflow_access = data.universalWorkflowAccess;
-    if (data.universalQueryLibraryAccess !== undefined) body.universal_query_library_access = data.universalQueryLibraryAccess;
+    if (data.universalAppAccess !== undefined)
+      body.universal_app_access = data.universalAppAccess;
+    if (data.universalResourceAccess !== undefined)
+      body.universal_resource_access = data.universalResourceAccess;
+    if (data.universalWorkflowAccess !== undefined)
+      body.universal_workflow_access = data.universalWorkflowAccess;
+    if (data.universalQueryLibraryAccess !== undefined)
+      body.universal_query_library_access = data.universalQueryLibraryAccess;
     if (data.userListAccess !== undefined) body.user_list_access = data.userListAccess;
     if (data.auditLogAccess !== undefined) body.audit_log_access = data.auditLogAccess;
-    if (data.unpublishedReleaseAccess !== undefined) body.unpublished_release_access = data.unpublishedReleaseAccess;
-    if (data.usageAnalyticsAccess !== undefined) body.usage_analytics_access = data.usageAnalyticsAccess;
+    if (data.unpublishedReleaseAccess !== undefined)
+      body.unpublished_release_access = data.unpublishedReleaseAccess;
+    if (data.usageAnalyticsAccess !== undefined)
+      body.usage_analytics_access = data.usageAnalyticsAccess;
     if (data.themeAccess !== undefined) body.theme_access = data.themeAccess;
-    if (data.accountDetailsAccess !== undefined) body.account_details_access = data.accountDetailsAccess;
+    if (data.accountDetailsAccess !== undefined)
+      body.account_details_access = data.accountDetailsAccess;
     if (data.landingPageAppId !== undefined) body.landing_page_app_id = data.landingPageAppId;
 
     let response = await this.axios.put(`/groups/${groupId}`, body);
@@ -271,7 +294,10 @@ export class Client {
     await this.axios.delete(`/groups/${groupId}`);
   }
 
-  async addGroupMembers(groupId: number, members: Array<{ id: string; isGroupAdmin?: boolean }>): Promise<void> {
+  async addGroupMembers(
+    groupId: number,
+    members: Array<{ id: string; isGroupAdmin?: boolean }>
+  ): Promise<void> {
     let body = members.map(m => ({ id: m.id, is_group_admin: m.isGroupAdmin ?? false }));
     await this.axios.post(`/groups/${groupId}/members`, body);
   }
@@ -282,7 +308,10 @@ export class Client {
 
   // ---- Apps ----
 
-  async listApps(options?: { limit?: number; nextToken?: string }): Promise<PaginatedResponse<RetoolApp>> {
+  async listApps(options?: {
+    limit?: number;
+    nextToken?: string;
+  }): Promise<PaginatedResponse<RetoolApp>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.nextToken) params.next_token = options.nextToken;
@@ -296,7 +325,11 @@ export class Client {
     return response.data;
   }
 
-  async createApp(data: { name: string; folderId?: string; description?: string }): Promise<SingleResponse<RetoolApp>> {
+  async createApp(data: {
+    name: string;
+    folderId?: string;
+    description?: string;
+  }): Promise<SingleResponse<RetoolApp>> {
     let body: Record<string, any> = { name: data.name };
     if (data.folderId) body.folder_id = data.folderId;
     if (data.description) body.description = data.description;
@@ -305,7 +338,10 @@ export class Client {
     return response.data;
   }
 
-  async updateApp(appId: string, data: { name?: string; folderId?: string | null }): Promise<SingleResponse<RetoolApp>> {
+  async updateApp(
+    appId: string,
+    data: { name?: string; folderId?: string | null }
+  ): Promise<SingleResponse<RetoolApp>> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.folderId !== undefined) body.folder_id = data.folderId;
@@ -320,7 +356,10 @@ export class Client {
 
   // ---- Folders ----
 
-  async listFolders(options?: { limit?: number; nextToken?: string }): Promise<PaginatedResponse<RetoolFolder>> {
+  async listFolders(options?: {
+    limit?: number;
+    nextToken?: string;
+  }): Promise<PaginatedResponse<RetoolFolder>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.nextToken) params.next_token = options.nextToken;
@@ -347,7 +386,10 @@ export class Client {
     return response.data;
   }
 
-  async updateFolder(folderId: string, data: { name?: string; parentFolderId?: string | null }): Promise<SingleResponse<RetoolFolder>> {
+  async updateFolder(
+    folderId: string,
+    data: { name?: string; parentFolderId?: string | null }
+  ): Promise<SingleResponse<RetoolFolder>> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.parentFolderId !== undefined) body.parent_folder_id = data.parentFolderId;
@@ -383,20 +425,27 @@ export class Client {
   }): Promise<SingleResponse<RetoolSpace>> {
     let body: Record<string, any> = {
       name: data.name,
-      domain: data.domain,
+      domain: data.domain
     };
     if (data.options) {
       body.options = {};
-      if (data.options.copySsoSettings !== undefined) body.options.copy_sso_settings = data.options.copySsoSettings;
-      if (data.options.copyBrandingAndThemesSettings !== undefined) body.options.copy_branding_and_themes_settings = data.options.copyBrandingAndThemesSettings;
-      if (data.options.createAdminUser !== undefined) body.options.create_admin_user = data.options.createAdminUser;
+      if (data.options.copySsoSettings !== undefined)
+        body.options.copy_sso_settings = data.options.copySsoSettings;
+      if (data.options.copyBrandingAndThemesSettings !== undefined)
+        body.options.copy_branding_and_themes_settings =
+          data.options.copyBrandingAndThemesSettings;
+      if (data.options.createAdminUser !== undefined)
+        body.options.create_admin_user = data.options.createAdminUser;
     }
 
     let response = await this.axios.post('/spaces', body);
     return response.data;
   }
 
-  async updateSpace(spaceId: string, data: { name?: string; domain?: string }): Promise<SingleResponse<RetoolSpace>> {
+  async updateSpace(
+    spaceId: string,
+    data: { name?: string; domain?: string }
+  ): Promise<SingleResponse<RetoolSpace>> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.domain !== undefined) body.domain = data.domain;
@@ -413,14 +462,14 @@ export class Client {
 
   async listPermissionObjects(subjectType: string, subjectId: string): Promise<any> {
     let response = await this.axios.get('/permissions/listObjects', {
-      params: { subject_type: subjectType, subject_id: subjectId },
+      params: { subject_type: subjectType, subject_id: subjectId }
     });
     return response.data;
   }
 
   async listPermissionSubjects(objectType: string, objectId: string): Promise<any> {
     let response = await this.axios.get('/permissions/listSubjects', {
-      params: { object_type: objectType, object_id: objectId },
+      params: { object_type: objectType, object_id: objectId }
     });
     return response.data;
   }
@@ -435,7 +484,7 @@ export class Client {
     let response = await this.axios.post('/permissions/grant', {
       subject: { id: data.subjectId, type: data.subjectType },
       object: { id: data.objectId, type: data.objectType },
-      access_level: data.accessLevel,
+      access_level: data.accessLevel
     });
     return response.data;
   }
@@ -450,14 +499,17 @@ export class Client {
     let response = await this.axios.post('/permissions/revoke', {
       subject: { id: data.subjectId, type: data.subjectType },
       object: { id: data.objectId, type: data.objectType },
-      access_level: data.accessLevel,
+      access_level: data.accessLevel
     });
     return response.data;
   }
 
   // ---- Resources ----
 
-  async listResources(options?: { limit?: number; nextToken?: string }): Promise<PaginatedResponse<RetoolResource>> {
+  async listResources(options?: {
+    limit?: number;
+    nextToken?: string;
+  }): Promise<PaginatedResponse<RetoolResource>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.nextToken) params.next_token = options.nextToken;
@@ -476,7 +528,10 @@ export class Client {
     return response.data;
   }
 
-  async updateResource(resourceId: string, data: Record<string, any>): Promise<SingleResponse<RetoolResource>> {
+  async updateResource(
+    resourceId: string,
+    data: Record<string, any>
+  ): Promise<SingleResponse<RetoolResource>> {
     let response = await this.axios.put(`/resources/${resourceId}`, data);
     return response.data;
   }
@@ -502,7 +557,10 @@ export class Client {
     return response.data;
   }
 
-  async updateEnvironment(environmentId: string, data: { name?: string }): Promise<SingleResponse<RetoolEnvironment>> {
+  async updateEnvironment(
+    environmentId: string,
+    data: { name?: string }
+  ): Promise<SingleResponse<RetoolEnvironment>> {
     let response = await this.axios.put(`/environments/${environmentId}`, data);
     return response.data;
   }
@@ -513,7 +571,10 @@ export class Client {
 
   // ---- Workflows ----
 
-  async listWorkflows(options?: { limit?: number; nextToken?: string }): Promise<PaginatedResponse<RetoolWorkflow>> {
+  async listWorkflows(options?: {
+    limit?: number;
+    nextToken?: string;
+  }): Promise<PaginatedResponse<RetoolWorkflow>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.nextToken) params.next_token = options.nextToken;
@@ -593,7 +654,10 @@ export class Client {
 
   // ---- Configuration Variables ----
 
-  async listConfigurationVariables(options?: { limit?: number; nextToken?: string }): Promise<PaginatedResponse<any>> {
+  async listConfigurationVariables(options?: {
+    limit?: number;
+    nextToken?: string;
+  }): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = {};
     if (options?.limit) params.limit = options.limit;
     if (options?.nextToken) params.next_token = options.nextToken;
@@ -607,7 +671,10 @@ export class Client {
     return response.data;
   }
 
-  async updateConfigurationVariable(variableId: string, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updateConfigurationVariable(
+    variableId: string,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.axios.put(`/configuration_variables/${variableId}`, data);
     return response.data;
   }

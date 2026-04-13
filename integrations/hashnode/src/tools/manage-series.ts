@@ -12,58 +12,87 @@ let seriesOutputSchema = z.object({
   coverImage: z.string().nullable().optional().describe('Cover image URL'),
   sortOrder: z.string().nullable().optional().describe('Sort order for posts in the series'),
   authorUsername: z.string().nullable().optional().describe('Author username'),
-  posts: z.array(z.object({
-    postId: z.string(),
-    title: z.string(),
-    slug: z.string(),
-    url: z.string(),
-  })).optional().describe('Posts in the series'),
-  totalPosts: z.number().nullable().optional().describe('Total number of posts'),
+  posts: z
+    .array(
+      z.object({
+        postId: z.string(),
+        title: z.string(),
+        slug: z.string(),
+        url: z.string()
+      })
+    )
+    .optional()
+    .describe('Posts in the series'),
+  totalPosts: z.number().nullable().optional().describe('Total number of posts')
 });
 
-export let manageSeries = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Series',
-    key: 'manage_series',
-    description: `Create, retrieve, list, update, or delete a post series. A series groups related articles so readers can view them in order.
+export let manageSeries = SlateTool.create(spec, {
+  name: 'Manage Series',
+  key: 'manage_series',
+  description: `Create, retrieve, list, update, or delete a post series. A series groups related articles so readers can view them in order.
 - **create**: Create a new series.
 - **get**: Get a series by its slug, including its posts.
 - **list**: List all series in the publication.
 - **update**: Update a series name, slug, description, or cover image.
-- **delete**: Remove a series permanently.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'update', 'delete']).describe('Operation to perform'),
-    seriesId: z.string().optional().describe('Series ID — required for "update" and "delete"'),
-    slug: z.string().optional().describe('Series slug — used for "get" lookup and optionally for "create"/"update"'),
-    name: z.string().optional().describe('Series name — required for "create"'),
-    description: z.string().optional().describe('Series description in Markdown — used with "create" and "update"'),
-    coverImage: z.string().optional().describe('Cover image URL — used with "create" and "update"'),
-    sortOrder: z.string().optional().describe('Sort order (e.g. "asc" or "desc") — used with "create" and "update"'),
-    first: z.number().optional().default(10).describe('Number of series to list'),
-    after: z.string().optional().describe('Pagination cursor for "list"'),
-  }))
-  .output(z.object({
-    series: seriesOutputSchema.nullable().optional().describe('Single series result'),
-    seriesList: z.array(z.object({
-      seriesId: z.string(),
-      name: z.string().nullable().optional(),
-      slug: z.string().nullable().optional(),
-      createdAt: z.string().nullable().optional(),
-      descriptionMarkdown: z.string().nullable().optional(),
-      sortOrder: z.string().nullable().optional(),
-    })).nullable().optional().describe('List of series'),
-    hasNextPage: z.boolean().optional(),
-    endCursor: z.string().nullable().optional(),
-    totalDocuments: z.number().nullable().optional(),
-    deleted: z.boolean().optional().describe('Whether the series was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+- **delete**: Remove a series permanently.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'update', 'delete'])
+        .describe('Operation to perform'),
+      seriesId: z
+        .string()
+        .optional()
+        .describe('Series ID — required for "update" and "delete"'),
+      slug: z
+        .string()
+        .optional()
+        .describe('Series slug — used for "get" lookup and optionally for "create"/"update"'),
+      name: z.string().optional().describe('Series name — required for "create"'),
+      description: z
+        .string()
+        .optional()
+        .describe('Series description in Markdown — used with "create" and "update"'),
+      coverImage: z
+        .string()
+        .optional()
+        .describe('Cover image URL — used with "create" and "update"'),
+      sortOrder: z
+        .string()
+        .optional()
+        .describe('Sort order (e.g. "asc" or "desc") — used with "create" and "update"'),
+      first: z.number().optional().default(10).describe('Number of series to list'),
+      after: z.string().optional().describe('Pagination cursor for "list"')
+    })
+  )
+  .output(
+    z.object({
+      series: seriesOutputSchema.nullable().optional().describe('Single series result'),
+      seriesList: z
+        .array(
+          z.object({
+            seriesId: z.string(),
+            name: z.string().nullable().optional(),
+            slug: z.string().nullable().optional(),
+            createdAt: z.string().nullable().optional(),
+            descriptionMarkdown: z.string().nullable().optional(),
+            sortOrder: z.string().nullable().optional()
+          })
+        )
+        .nullable()
+        .optional()
+        .describe('List of series'),
+      hasNextPage: z.boolean().optional(),
+      endCursor: z.string().nullable().optional(),
+      totalDocuments: z.number().nullable().optional(),
+      deleted: z.boolean().optional().describe('Whether the series was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      publicationHost: ctx.config.publicationHost,
+      publicationHost: ctx.config.publicationHost
     });
 
     let { action } = ctx.input;
@@ -76,7 +105,7 @@ export let manageSeries = SlateTool.create(
         slug: ctx.input.slug,
         description: ctx.input.description,
         coverImage: ctx.input.coverImage,
-        sortOrder: ctx.input.sortOrder,
+        sortOrder: ctx.input.sortOrder
       });
 
       return {
@@ -85,10 +114,10 @@ export let manageSeries = SlateTool.create(
             seriesId: series.id,
             name: series.name,
             slug: series.slug,
-            createdAt: series.createdAt,
-          },
+            createdAt: series.createdAt
+          }
         },
-        message: `Created series **"${series.name}"**`,
+        message: `Created series **"${series.name}"**`
       };
     }
 
@@ -102,7 +131,7 @@ export let manageSeries = SlateTool.create(
         postId: e.node.id,
         title: e.node.title,
         slug: e.node.slug,
-        url: e.node.url,
+        url: e.node.url
       }));
 
       return {
@@ -117,17 +146,17 @@ export let manageSeries = SlateTool.create(
             sortOrder: series.sortOrder,
             authorUsername: series.author?.username,
             posts,
-            totalPosts: series.posts?.totalDocuments,
-          },
+            totalPosts: series.posts?.totalDocuments
+          }
         },
-        message: `Retrieved series **"${series.name}"** with ${posts.length} posts`,
+        message: `Retrieved series **"${series.name}"** with ${posts.length} posts`
       };
     }
 
     if (action === 'list') {
       let result = await client.listSeries({
         first: Math.min(ctx.input.first, 20),
-        after: ctx.input.after,
+        after: ctx.input.after
       });
 
       let seriesList = result.series.map((s: any) => ({
@@ -136,7 +165,7 @@ export let manageSeries = SlateTool.create(
         slug: s.slug,
         createdAt: s.createdAt,
         descriptionMarkdown: s.description?.markdown,
-        sortOrder: s.sortOrder,
+        sortOrder: s.sortOrder
       }));
 
       return {
@@ -144,9 +173,9 @@ export let manageSeries = SlateTool.create(
           seriesList,
           hasNextPage: result.pageInfo?.hasNextPage ?? false,
           endCursor: result.pageInfo?.endCursor,
-          totalDocuments: result.totalDocuments,
+          totalDocuments: result.totalDocuments
         },
-        message: `Found **${seriesList.length}** series${result.totalDocuments ? ` (${result.totalDocuments} total)` : ''}`,
+        message: `Found **${seriesList.length}** series${result.totalDocuments ? ` (${result.totalDocuments} total)` : ''}`
       };
     }
 
@@ -158,7 +187,7 @@ export let manageSeries = SlateTool.create(
         slug: ctx.input.slug,
         description: ctx.input.description,
         coverImage: ctx.input.coverImage,
-        sortOrder: ctx.input.sortOrder,
+        sortOrder: ctx.input.sortOrder
       });
 
       return {
@@ -166,10 +195,10 @@ export let manageSeries = SlateTool.create(
           series: {
             seriesId: series.id,
             name: series.name,
-            slug: series.slug,
-          },
+            slug: series.slug
+          }
         },
-        message: `Updated series **"${series.name}"**`,
+        message: `Updated series **"${series.name}"**`
       };
     }
 
@@ -180,11 +209,12 @@ export let manageSeries = SlateTool.create(
 
       return {
         output: {
-          deleted: true,
+          deleted: true
         },
-        message: `Deleted series \`${ctx.input.seriesId}\``,
+        message: `Deleted series \`${ctx.input.seriesId}\``
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

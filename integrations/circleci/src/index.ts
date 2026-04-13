@@ -40,7 +40,5 @@ export let provider = Slate.create({
     manageWebhooks,
     getUser
   ],
-  triggers: [
-    buildEvent
-  ]
+  triggers: [buildEvent]
 });

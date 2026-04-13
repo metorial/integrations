@@ -3,53 +3,67 @@ import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let addComment = SlateTool.create(
-  spec,
-  {
-    name: 'Add Comment',
-    key: 'add_comment',
-    description: `Add a comment to a Notion page or reply to an existing discussion thread.
+export let addComment = SlateTool.create(spec, {
+  name: 'Add Comment',
+  key: 'add_comment',
+  description: `Add a comment to a Notion page or reply to an existing discussion thread.
 Comments can be placed at the top of a page or as a reply to an existing discussion.`,
-    instructions: [
-      'Provide either a pageId to comment on a page, or a discussionId to reply to an existing thread.',
-      'The comment text is provided as plain text and will be converted to rich text automatically. For advanced formatting, use the richText parameter instead.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Provide either a pageId to comment on a page, or a discussionId to reply to an existing thread.',
+    'The comment text is provided as plain text and will be converted to rich text automatically. For advanced formatting, use the richText parameter instead.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    pageId: z.string().optional().describe('ID of the page to comment on (use this OR discussionId)'),
-    discussionId: z.string().optional().describe('ID of the discussion thread to reply to (use this OR pageId)'),
-    text: z.string().optional().describe('Plain text comment content (use this OR richText)'),
-    richText: z.array(z.record(z.string(), z.any())).optional().describe('Rich text array for advanced formatting (use this OR text)'),
-  }))
-  .output(z.object({
-    commentId: z.string().describe('ID of the created comment'),
-    discussionId: z.string().optional().describe('ID of the discussion thread'),
-    createdTime: z.string().optional().describe('When the comment was created'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pageId: z
+        .string()
+        .optional()
+        .describe('ID of the page to comment on (use this OR discussionId)'),
+      discussionId: z
+        .string()
+        .optional()
+        .describe('ID of the discussion thread to reply to (use this OR pageId)'),
+      text: z
+        .string()
+        .optional()
+        .describe('Plain text comment content (use this OR richText)'),
+      richText: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Rich text array for advanced formatting (use this OR text)')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('ID of the created comment'),
+      discussionId: z.string().optional().describe('ID of the discussion thread'),
+      createdTime: z.string().optional().describe('When the comment was created')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NotionClient({ token: ctx.auth.token });
 
     let richText = ctx.input.richText ?? [
-      { type: 'text', text: { content: ctx.input.text ?? '' } },
+      { type: 'text', text: { content: ctx.input.text ?? '' } }
     ];
 
     let comment = await client.createComment({
       parentPageId: ctx.input.pageId,
       discussionId: ctx.input.discussionId,
-      richText,
+      richText
     });
 
     return {
       output: {
         commentId: comment.id,
         discussionId: comment.discussion_id,
-        createdTime: comment.created_time,
+        createdTime: comment.created_time
       },
-      message: `Added comment **${comment.id}**${ctx.input.pageId ? ` on page ${ctx.input.pageId}` : ''}${ctx.input.discussionId ? ` in discussion ${ctx.input.discussionId}` : ''}`,
+      message: `Added comment **${comment.id}**${ctx.input.pageId ? ` on page ${ctx.input.pageId}` : ''}${ctx.input.discussionId ? ` in discussion ${ctx.input.discussionId}` : ''}`
     };
-  }).build();
+  })
+  .build();

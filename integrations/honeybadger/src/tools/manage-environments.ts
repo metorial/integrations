@@ -8,34 +8,41 @@ let environmentSchema = z.object({
   projectId: z.number().optional().describe('Project ID'),
   name: z.string().optional().describe('Environment name'),
   notifications: z.boolean().optional().describe('Whether notifications are enabled'),
-  createdAt: z.string().optional().describe('When the environment was created'),
+  createdAt: z.string().optional().describe('When the environment was created')
 });
 
-export let manageEnvironments = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Environments',
-    key: 'manage_environments',
-    description: `List, create, update, or delete environments within a Honeybadger project. Environments organize error data and monitoring by deployment context (e.g., production, staging, development).`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    projectId: z.string().describe('Project ID'),
-    environmentId: z.string().optional().describe('Environment ID (required for update and delete)'),
-    name: z.string().optional().describe('Environment name (required for create)'),
-    notifications: z.boolean().optional().describe('Enable/disable notifications for this environment'),
-  }))
-  .output(z.object({
-    environments: z.array(environmentSchema).optional().describe('List of environments'),
-    environment: environmentSchema.optional().describe('Created or updated environment'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageEnvironments = SlateTool.create(spec, {
+  name: 'Manage Environments',
+  key: 'manage_environments',
+  description: `List, create, update, or delete environments within a Honeybadger project. Environments organize error data and monitoring by deployment context (e.g., production, staging, development).`,
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      projectId: z.string().describe('Project ID'),
+      environmentId: z
+        .string()
+        .optional()
+        .describe('Environment ID (required for update and delete)'),
+      name: z.string().optional().describe('Environment name (required for create)'),
+      notifications: z
+        .boolean()
+        .optional()
+        .describe('Enable/disable notifications for this environment')
+    })
+  )
+  .output(
+    z.object({
+      environments: z.array(environmentSchema).optional().describe('List of environments'),
+      environment: environmentSchema.optional().describe('Created or updated environment'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HoneybadgerClient({ token: ctx.auth.token });
     let { action, projectId, environmentId, name, notifications } = ctx.input;
 
@@ -44,7 +51,7 @@ export let manageEnvironments = SlateTool.create(
       projectId: e.project_id,
       name: e.name,
       notifications: e.notifications,
-      createdAt: e.created_at,
+      createdAt: e.created_at
     });
 
     switch (action) {
@@ -53,7 +60,7 @@ export let manageEnvironments = SlateTool.create(
         let environments = (data.results || []).map(mapEnv);
         return {
           output: { environments, success: true },
-          message: `Found **${environments.length}** environment(s).`,
+          message: `Found **${environments.length}** environment(s).`
         };
       }
 
@@ -62,7 +69,7 @@ export let manageEnvironments = SlateTool.create(
         let created = await client.createEnvironment(projectId, { name, notifications });
         return {
           output: { environment: mapEnv(created), success: true },
-          message: `Created environment **${created.name}**.`,
+          message: `Created environment **${created.name}**.`
         };
       }
 
@@ -71,7 +78,7 @@ export let manageEnvironments = SlateTool.create(
         await client.updateEnvironment(projectId, environmentId, { name, notifications });
         return {
           output: { success: true },
-          message: `Updated environment **${environmentId}**.`,
+          message: `Updated environment **${environmentId}**.`
         };
       }
 
@@ -80,7 +87,7 @@ export let manageEnvironments = SlateTool.create(
         await client.deleteEnvironment(projectId, environmentId);
         return {
           output: { success: true },
-          message: `Deleted environment **${environmentId}**.`,
+          message: `Deleted environment **${environmentId}**.`
         };
       }
 

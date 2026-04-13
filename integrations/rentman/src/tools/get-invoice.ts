@@ -3,38 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Get Invoice',
-    key: 'get_invoice',
-    description: `Retrieve detailed information about a specific invoice. Optionally include invoice line items and associated files.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('The ID of the invoice'),
-    includeLines: z.boolean().optional().default(false).describe('Include invoice line items'),
-    includePayments: z.boolean().optional().default(false).describe('Include payment records'),
-  }))
-  .output(z.object({
-    invoiceId: z.number(),
-    number: z.string().optional(),
-    subject: z.string().optional(),
-    contact: z.string().optional(),
-    project: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    totalExclVat: z.number().optional(),
-    totalInclVat: z.number().optional(),
-    status: z.string().optional(),
-    paymentDate: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    lines: z.array(z.record(z.string(), z.any())).optional(),
-    payments: z.array(z.record(z.string(), z.any())).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getInvoice = SlateTool.create(spec, {
+  name: 'Get Invoice',
+  key: 'get_invoice',
+  description: `Retrieve detailed information about a specific invoice. Optionally include invoice line items and associated files.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('The ID of the invoice'),
+      includeLines: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include invoice line items'),
+      includePayments: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include payment records')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.number(),
+      number: z.string().optional(),
+      subject: z.string().optional(),
+      contact: z.string().optional(),
+      project: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      totalExclVat: z.number().optional(),
+      totalInclVat: z.number().optional(),
+      status: z.string().optional(),
+      paymentDate: z.string().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      lines: z.array(z.record(z.string(), z.any())).optional(),
+      payments: z.array(z.record(z.string(), z.any())).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.get('invoices', ctx.input.invoiceId);
@@ -53,7 +62,7 @@ export let getInvoice = SlateTool.create(
       status: i.status,
       paymentDate: i.payment_date,
       createdAt: i.created,
-      updatedAt: i.modified,
+      updatedAt: i.modified
     };
 
     if (ctx.input.includeLines) {
@@ -68,6 +77,7 @@ export let getInvoice = SlateTool.create(
 
     return {
       output,
-      message: `Retrieved invoice **${output.number || output.invoiceId}**${output.subject ? ` — ${output.subject}` : ''}.`,
+      message: `Retrieved invoice **${output.number || output.invoiceId}**${output.subject ? ` — ${output.subject}` : ''}.`
     };
-  }).build();
+  })
+  .build();

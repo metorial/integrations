@@ -13,52 +13,54 @@ let inspectionTriggerEvents = [
   'TRIGGER_EVENT_INSPECTION_ACCESS',
   'TRIGGER_EVENT_INSPECTION_LOCATION',
   'TRIGGER_EVENT_INSPECTION_DURATION',
-  'TRIGGER_EVENT_INSPECTION_CLONED',
+  'TRIGGER_EVENT_INSPECTION_CLONED'
 ];
 
-export let inspectionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Inspection Events',
-    key: 'inspection_events',
-    description: 'Triggers when inspections are started, completed, updated, archived, deleted, cloned, or when inspection items change.',
-  }
-)
-  .input(z.object({
-    webhookId: z.string().describe('Webhook ID'),
-    eventTypes: z.array(z.string()).describe('Event types that triggered this event'),
-    resourceId: z.string().describe('Inspection ID'),
-    resourceType: z.string().describe('Resource type'),
-    triggeredAt: z.string().describe('Timestamp of the event'),
-    triggeredByUserId: z.string().optional().describe('User who triggered the event'),
-    organisationId: z.string().optional().describe('Organization ID'),
-    eventData: z.any().optional().describe('Additional event-specific data'),
-  }))
-  .output(z.object({
-    inspectionId: z.string().describe('ID of the affected inspection'),
-    eventTypes: z.array(z.string()).describe('Event types'),
-    triggeredAt: z.string().describe('When the event occurred'),
-    triggeredByUserId: z.string().optional().describe('User who triggered the event'),
-    organisationId: z.string().optional().describe('Organization ID'),
-    resourceType: z.string().optional().describe('Resource type'),
-    eventData: z.any().optional().describe('Additional event data'),
-  }))
+export let inspectionEvents = SlateTrigger.create(spec, {
+  name: 'Inspection Events',
+  key: 'inspection_events',
+  description:
+    'Triggers when inspections are started, completed, updated, archived, deleted, cloned, or when inspection items change.'
+})
+  .input(
+    z.object({
+      webhookId: z.string().describe('Webhook ID'),
+      eventTypes: z.array(z.string()).describe('Event types that triggered this event'),
+      resourceId: z.string().describe('Inspection ID'),
+      resourceType: z.string().describe('Resource type'),
+      triggeredAt: z.string().describe('Timestamp of the event'),
+      triggeredByUserId: z.string().optional().describe('User who triggered the event'),
+      organisationId: z.string().optional().describe('Organization ID'),
+      eventData: z.any().optional().describe('Additional event-specific data')
+    })
+  )
+  .output(
+    z.object({
+      inspectionId: z.string().describe('ID of the affected inspection'),
+      eventTypes: z.array(z.string()).describe('Event types'),
+      triggeredAt: z.string().describe('When the event occurred'),
+      triggeredByUserId: z.string().optional().describe('User who triggered the event'),
+      organisationId: z.string().optional().describe('Organization ID'),
+      resourceType: z.string().optional().describe('Resource type'),
+      eventData: z.any().optional().describe('Additional event data')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        triggerEvents: inspectionTriggerEvents,
+        triggerEvents: inspectionTriggerEvents
       });
 
       return {
         registrationDetails: {
-          webhookId: result.webhook_id || result.id,
-        },
+          webhookId: result.webhook_id || result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let webhookId = ctx.input.registrationDetails?.webhookId;
       if (webhookId) {
@@ -66,7 +68,7 @@ export let inspectionEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let eventTypes = data.event?.event_types || [];
@@ -83,13 +85,13 @@ export let inspectionEvents = SlateTrigger.create(
             triggeredAt: data.event?.date_triggered || new Date().toISOString(),
             triggeredByUserId: data.event?.triggered_by?.user,
             organisationId: data.event?.triggered_by?.organization,
-            eventData: data.data,
-          },
-        ],
+            eventData: data.data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = 'inspection.updated';
       let types = ctx.input.eventTypes;
 
@@ -121,8 +123,9 @@ export let inspectionEvents = SlateTrigger.create(
           triggeredByUserId: ctx.input.triggeredByUserId,
           organisationId: ctx.input.organisationId,
           resourceType: ctx.input.resourceType,
-          eventData: ctx.input.eventData,
-        },
+          eventData: ctx.input.eventData
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

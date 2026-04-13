@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listProfiles,
@@ -15,11 +14,9 @@ import {
   getAnalytics,
   getLogs,
   clearLogs,
-  getSetup,
+  getSetup
 } from './tools';
-import { dnsQueryLog,
-  inboundWebhook,
-} from './triggers';
+import { dnsQueryLog, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     getAnalytics,
     getLogs,
     clearLogs,
-    getSetup,
+    getSetup
   ],
-  triggers: [
-    inboundWebhook,
-    dnsQueryLog,
-  ],
+  triggers: [inboundWebhook, dnsQueryLog]
 });

@@ -3,40 +3,42 @@ import { BTCPayClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let payoutEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Payout Events',
-    key: 'payout_events',
-    description: 'Triggers when payout status changes occur, including approval, completion, and cancellation.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('BTCPay Server payout event type'),
-    deliveryId: z.string().describe('Webhook delivery ID'),
-    payoutId: z.string().describe('Payout ID'),
-    storeId: z.string().describe('Store ID'),
-    pullPaymentId: z.string().optional().nullable().describe('Associated pull payment ID'),
-    paymentMethod: z.string().optional().nullable().describe('Payment method'),
-    destination: z.string().optional().nullable().describe('Payout destination'),
-    amount: z.string().optional().nullable().describe('Payout amount'),
-    timestamp: z.number().optional().describe('Event timestamp'),
-  }))
-  .output(z.object({
-    payoutId: z.string().describe('Payout ID'),
-    storeId: z.string().describe('Store ID'),
-    state: z.string().describe('Payout state derived from event'),
-    pullPaymentId: z.string().optional().nullable().describe('Associated pull payment ID'),
-    paymentMethod: z.string().optional().nullable().describe('Payment method'),
-    destination: z.string().optional().nullable().describe('Payout destination address'),
-    amount: z.string().optional().nullable().describe('Payout amount'),
-    timestamp: z.number().optional().describe('Event timestamp'),
-  }))
+export let payoutEvents = SlateTrigger.create(spec, {
+  name: 'Payout Events',
+  key: 'payout_events',
+  description:
+    'Triggers when payout status changes occur, including approval, completion, and cancellation.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('BTCPay Server payout event type'),
+      deliveryId: z.string().describe('Webhook delivery ID'),
+      payoutId: z.string().describe('Payout ID'),
+      storeId: z.string().describe('Store ID'),
+      pullPaymentId: z.string().optional().nullable().describe('Associated pull payment ID'),
+      paymentMethod: z.string().optional().nullable().describe('Payment method'),
+      destination: z.string().optional().nullable().describe('Payout destination'),
+      amount: z.string().optional().nullable().describe('Payout amount'),
+      timestamp: z.number().optional().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      payoutId: z.string().describe('Payout ID'),
+      storeId: z.string().describe('Store ID'),
+      state: z.string().describe('Payout state derived from event'),
+      pullPaymentId: z.string().optional().nullable().describe('Associated pull payment ID'),
+      paymentMethod: z.string().optional().nullable().describe('Payment method'),
+      destination: z.string().optional().nullable().describe('Payout destination address'),
+      amount: z.string().optional().nullable().describe('Payout amount'),
+      timestamp: z.number().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new BTCPayClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
       let stores = await client.getStores();
@@ -49,28 +51,29 @@ export let payoutEvents = SlateTrigger.create(
           url: ctx.input.webhookBaseUrl,
           enabled: true,
           authorizedEvents: {
-            everything: true,
-          },
+            everything: true
+          }
         });
 
         registrations.push({
           storeId,
-          webhookId: result.id as string,
+          webhookId: result.id as string
         });
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new BTCPayClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
-      let registrations = (ctx.input.registrationDetails as Record<string, unknown>).registrations as Array<{ storeId: string; webhookId: string }>;
+      let registrations = (ctx.input.registrationDetails as Record<string, unknown>)
+        .registrations as Array<{ storeId: string; webhookId: string }>;
 
       for (let reg of registrations) {
         try {
@@ -81,8 +84,8 @@ export let payoutEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, unknown>;
 
       if (!body || !body.type) {
         return { inputs: [] };
@@ -95,29 +98,34 @@ export let payoutEvents = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let deliveryId = body.deliveryId as string || body.webhookId as string || `${body.payoutId}-${Date.now()}`;
+      let deliveryId =
+        (body.deliveryId as string) ||
+        (body.webhookId as string) ||
+        `${body.payoutId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          deliveryId: String(deliveryId),
-          payoutId: body.payoutId as string || '',
-          storeId: body.storeId as string || '',
-          pullPaymentId: (body.pullPaymentId as string) || null,
-          paymentMethod: (body.paymentMethod as string) || null,
-          destination: (body.destination as string) || null,
-          amount: (body.amount as string) || null,
-          timestamp: body.timestamp as number | undefined,
-        }],
+        inputs: [
+          {
+            eventType,
+            deliveryId: String(deliveryId),
+            payoutId: (body.payoutId as string) || '',
+            storeId: (body.storeId as string) || '',
+            pullPaymentId: (body.pullPaymentId as string) || null,
+            paymentMethod: (body.paymentMethod as string) || null,
+            destination: (body.destination as string) || null,
+            amount: (body.amount as string) || null,
+            timestamp: body.timestamp as number | undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let stateMap: Record<string, string> = {
-        'PayoutApproved': 'Approved',
-        'PayoutCompleted': 'Completed',
-        'PayoutCreated': 'AwaitingApproval',
-        'PayoutCancelled': 'Cancelled',
+        PayoutApproved: 'Approved',
+        PayoutCompleted: 'Completed',
+        PayoutCreated: 'AwaitingApproval',
+        PayoutCancelled: 'Cancelled'
       };
 
       let state = stateMap[ctx.input.eventType] || ctx.input.eventType;
@@ -137,8 +145,9 @@ export let payoutEvents = SlateTrigger.create(
           paymentMethod: ctx.input.paymentMethod,
           destination: ctx.input.destination,
           amount: ctx.input.amount,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

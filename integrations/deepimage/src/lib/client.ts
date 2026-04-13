@@ -80,7 +80,8 @@ let toSnakeCase = (params: ProcessImageParams): Record<string, unknown> => {
   if (params.outputQuality !== undefined) body['output_quality'] = params.outputQuality;
   if (params.maxFileSize !== undefined) body['max_file_size'] = params.maxFileSize;
   if (params.enhancements !== undefined) body['enhancements'] = params.enhancements;
-  if (params.generativeUpscale !== undefined) body['generative_upscale'] = params.generativeUpscale;
+  if (params.generativeUpscale !== undefined)
+    body['generative_upscale'] = params.generativeUpscale;
   if (params.preset !== undefined) body['preset'] = params.preset;
 
   if (params.denoiseParameters) {
@@ -92,25 +93,25 @@ let toSnakeCase = (params: ProcessImageParams): Record<string, unknown> => {
   if (params.lightParameters) {
     body['light_parameters'] = {
       type: params.lightParameters.type,
-      level: params.lightParameters.level,
+      level: params.lightParameters.level
     };
   }
   if (params.colorParameters) {
     body['color_parameters'] = {
       type: params.colorParameters.type,
-      level: params.colorParameters.level,
+      level: params.colorParameters.level
     };
   }
   if (params.whiteBalanceParameters) {
     body['white_balance_parameters'] = {
-      level: params.whiteBalanceParameters.level,
+      level: params.whiteBalanceParameters.level
     };
   }
   if (params.faceEnhanceParameters) {
     body['face_enhance_parameters'] = {
       type: params.faceEnhanceParameters.type,
       level: params.faceEnhanceParameters.level,
-      smoothing_level: params.faceEnhanceParameters.smoothingLevel,
+      smoothing_level: params.faceEnhanceParameters.smoothingLevel
     };
   }
 
@@ -144,11 +145,14 @@ let toSnakeCase = (params: ProcessImageParams): Record<string, unknown> => {
       if (g.sampleNum !== undefined) gen['sample_num'] = g.sampleNum;
       if (g.adapterType !== undefined) gen['adapter_type'] = g.adapterType;
       if (g.faceId !== undefined) gen['face_id'] = g.faceId;
-      if (g.controlnetConditioningScale !== undefined) gen['controlnet_conditioning_scale'] = g.controlnetConditioningScale;
+      if (g.controlnetConditioningScale !== undefined)
+        gen['controlnet_conditioning_scale'] = g.controlnetConditioningScale;
       if (g.ipImage2 !== undefined) gen['ip_image2'] = g.ipImage2;
       if (g.strength !== undefined) gen['strength'] = g.strength;
-      if (g.avatarGenerationType !== undefined) gen['avatar_generation_type'] = g.avatarGenerationType;
-      if (g.itemAreaPercentage !== undefined) gen['item_area_percentage'] = g.itemAreaPercentage;
+      if (g.avatarGenerationType !== undefined)
+        gen['avatar_generation_type'] = g.avatarGenerationType;
+      if (g.itemAreaPercentage !== undefined)
+        gen['item_area_percentage'] = g.itemAreaPercentage;
       if (g.backgroundUrl !== undefined) gen['background_url'] = g.backgroundUrl;
       if (g.color !== undefined) gen['color'] = g.color;
       bg['generate'] = gen;
@@ -159,7 +163,8 @@ let toSnakeCase = (params: ProcessImageParams): Record<string, unknown> => {
   if (params.caption) {
     let cap: Record<string, unknown> = { url: params.caption.url };
     if (params.caption.position) cap['position'] = params.caption.position;
-    if (params.caption.targetWidthPercentage !== undefined) cap['target_width_percentage'] = params.caption.targetWidthPercentage;
+    if (params.caption.targetWidthPercentage !== undefined)
+      cap['target_width_percentage'] = params.caption.targetWidthPercentage;
     if (params.caption.padding !== undefined) cap['padding'] = params.caption.padding;
     if (params.caption.opacity !== undefined) cap['opacity'] = params.caption.opacity;
     body['caption'] = cap;
@@ -184,8 +189,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -196,7 +201,7 @@ export class Client {
     return {
       status: response.data.status,
       jobId: response.data.job,
-      resultUrl: response.data.result_url,
+      resultUrl: response.data.result_url
     };
   }
 
@@ -207,7 +212,7 @@ export class Client {
     return {
       status: response.data.status,
       jobId: response.data.job,
-      resultUrl: response.data.result_url,
+      resultUrl: response.data.result_url
     };
   }
 
@@ -217,7 +222,7 @@ export class Client {
     return {
       status: response.data.status,
       jobId: jobHash,
-      resultUrl: response.data.result_url,
+      resultUrl: response.data.result_url
     };
   }
 
@@ -236,7 +241,7 @@ export class Client {
       apiKey: response.data.api_key,
       language: response.data.language,
       webhooks: response.data.webhooks || {},
-      billingAddress: response.data.billing_address || {},
+      billingAddress: response.data.billing_address || {}
     };
   }
 }

@@ -24,14 +24,14 @@ import {
   createCommentTool,
   getThreadTool,
   deleteCommentTool,
-  listWorkspaceMembersTool,
+  listWorkspaceMembersTool
 } from './tools';
 import {
   recordEventsTrigger,
   listEntryEventsTrigger,
   noteEventsTrigger,
   taskEventsTrigger,
-  commentEventsTrigger,
+  commentEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -60,13 +60,13 @@ export let provider = Slate.create({
     createCommentTool,
     getThreadTool,
     deleteCommentTool,
-    listWorkspaceMembersTool,
+    listWorkspaceMembersTool
   ],
   triggers: [
     recordEventsTrigger,
     listEntryEventsTrigger,
     noteEventsTrigger,
     taskEventsTrigger,
-    commentEventsTrigger,
-  ],
+    commentEventsTrigger
+  ]
 });

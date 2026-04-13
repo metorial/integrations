@@ -18,27 +18,30 @@ let scheduledTransactionSchema = z.object({
   categoryId: z.string().nullable().optional().describe('Category ID'),
   categoryName: z.string().nullable().optional().describe('Category name'),
   transferAccountId: z.string().nullable().optional().describe('Transfer account ID'),
-  deleted: z.boolean().describe('Whether deleted'),
+  deleted: z.boolean().describe('Whether deleted')
 });
 
-export let listScheduledTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'List Scheduled Transactions',
-    key: 'list_scheduled_transactions',
-    description: `Retrieve all scheduled (recurring) transactions in a budget. Includes frequency, next occurrence date, and transaction details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listScheduledTransactions = SlateTool.create(spec, {
+  name: 'List Scheduled Transactions',
+  key: 'list_scheduled_transactions',
+  description: `Retrieve all scheduled (recurring) transactions in a budget. Includes frequency, next occurrence date, and transaction details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.'),
-  }))
-  .output(z.object({
-    scheduledTransactions: z.array(scheduledTransactionSchema).describe('List of scheduled transactions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.')
+    })
+  )
+  .output(
+    z.object({
+      scheduledTransactions: z
+        .array(scheduledTransactionSchema)
+        .describe('List of scheduled transactions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let budgetId = ctx.input.budgetId ?? ctx.config.budgetId;
 
@@ -59,12 +62,12 @@ export let listScheduledTransactions = SlateTool.create(
       categoryId: st.category_id,
       categoryName: st.category_name,
       transferAccountId: st.transfer_account_id,
-      deleted: st.deleted,
+      deleted: st.deleted
     }));
 
     return {
       output: { scheduledTransactions: mapped },
-      message: `Found **${mapped.length}** scheduled transaction(s)`,
+      message: `Found **${mapped.length}** scheduled transaction(s)`
     };
   })
   .build();

@@ -3,38 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newContacts = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Contact',
-    key: 'new_contacts',
-    description: 'Triggers when a new customer contact is created.',
-  }
-)
-  .input(z.object({
-    contactEmail: z.string().nullable().optional().describe('Contact email'),
-    contactName: z.string().nullable().optional().describe('Contact name'),
-    friendlyName: z.string().nullable().optional().describe('Friendly display name'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-    customAttributes: z.record(z.string(), z.string()).optional().describe('Custom data attributes'),
-  }))
-  .output(z.object({
-    contactEmail: z.string().nullable().optional().describe('Contact email'),
-    contactName: z.string().nullable().optional().describe('Contact name'),
-    friendlyName: z.string().nullable().optional().describe('Friendly display name'),
-    createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
-    customAttributes: z.record(z.string(), z.string()).optional().describe('Custom data attributes'),
-  }))
+export let newContacts = SlateTrigger.create(spec, {
+  name: 'New Contact',
+  key: 'new_contacts',
+  description: 'Triggers when a new customer contact is created.'
+})
+  .input(
+    z.object({
+      contactEmail: z.string().nullable().optional().describe('Contact email'),
+      contactName: z.string().nullable().optional().describe('Contact name'),
+      friendlyName: z.string().nullable().optional().describe('Friendly display name'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
+      customAttributes: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom data attributes')
+    })
+  )
+  .output(
+    z.object({
+      contactEmail: z.string().nullable().optional().describe('Contact email'),
+      contactName: z.string().nullable().optional().describe('Contact name'),
+      friendlyName: z.string().nullable().optional().describe('Friendly display name'),
+      createdAt: z.string().optional().describe('ISO 8601 creation timestamp'),
+      customAttributes: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom data attributes')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         loginEmail: ctx.auth.loginEmail,
-        brandSubdomain: ctx.config.brandSubdomain,
+        brandSubdomain: ctx.config.brandSubdomain
       });
 
       let lastPolledAt = (ctx.state as any)?.lastPolledAt as string | undefined;
@@ -53,28 +60,33 @@ export let newContacts = SlateTrigger.create(
         contactName: c.name,
         friendlyName: c.friendly_name,
         createdAt: c.created_at,
-        customAttributes: c.data,
+        customAttributes: c.data
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPolledAt: now,
-        },
+          lastPolledAt: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'contact.created',
-        id: ctx.input.contactEmail || ctx.input.contactName || ctx.input.createdAt || String(Date.now()),
+        id:
+          ctx.input.contactEmail ||
+          ctx.input.contactName ||
+          ctx.input.createdAt ||
+          String(Date.now()),
         output: {
           contactEmail: ctx.input.contactEmail,
           contactName: ctx.input.contactName,
           friendlyName: ctx.input.friendlyName,
           createdAt: ctx.input.createdAt,
-          customAttributes: ctx.input.customAttributes,
-        },
+          customAttributes: ctx.input.customAttributes
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

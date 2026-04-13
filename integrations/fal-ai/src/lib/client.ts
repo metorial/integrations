@@ -8,22 +8,22 @@ export class FalClient {
   constructor(private token: string) {
     let headers = {
       Authorization: `Key ${token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     this.runAxios = createAxios({
       baseURL: 'https://fal.run',
-      headers,
+      headers
     });
 
     this.queueAxios = createAxios({
       baseURL: 'https://queue.fal.run',
-      headers,
+      headers
     });
 
     this.platformAxios = createAxios({
       baseURL: 'https://api.fal.ai/v1',
-      headers,
+      headers
     });
   }
 
@@ -60,7 +60,7 @@ export class FalClient {
       responseUrl: data.response_url,
       statusUrl: data.status_url,
       cancelUrl: data.cancel_url,
-      queuePosition: data.queue_position,
+      queuePosition: data.queue_position
     };
   }
 
@@ -82,7 +82,7 @@ export class FalClient {
     return {
       status: data.status,
       queuePosition: data.queue_position,
-      logs: data.logs,
+      logs: data.logs
     };
   }
 
@@ -129,23 +129,25 @@ export class FalClient {
     return {
       models: (data.models || []).map((m: any) => ({
         endpointId: m.endpoint_id,
-        metadata: m.metadata || {},
+        metadata: m.metadata || {}
       })),
       nextCursor: data.next_cursor || null,
-      hasMore: data.has_more || false,
+      hasMore: data.has_more || false
     };
   }
 
-  async getModelPricing(endpointIds: string[]): Promise<Array<{
-    endpointId: string;
-    pricing: Record<string, any>;
-  }>> {
+  async getModelPricing(endpointIds: string[]): Promise<
+    Array<{
+      endpointId: string;
+      pricing: Record<string, any>;
+    }>
+  > {
     let response = await this.platformAxios.get('/models/pricing', {
-      params: { endpoint_id: endpointIds.join(',') },
+      params: { endpoint_id: endpointIds.join(',') }
     });
     return (response.data.pricing || response.data || []).map((p: any) => ({
       endpointId: p.endpoint_id,
-      pricing: p,
+      pricing: p
     }));
   }
 
@@ -174,24 +176,21 @@ export class FalClient {
     return {
       items: data.items || data.usage || [],
       nextCursor: data.next_cursor || null,
-      hasMore: data.has_more || false,
+      hasMore: data.has_more || false
     };
   }
 
   // --- File Storage ---
 
   async uploadFileFromUrl(targetPath: string, sourceUrl: string): Promise<{ url: string }> {
-    let response = await this.platformAxios.post(
-      `/serverless/files/file/url/${targetPath}`,
-      { url: sourceUrl }
-    );
+    let response = await this.platformAxios.post(`/serverless/files/file/url/${targetPath}`, {
+      url: sourceUrl
+    });
     return { url: response.data.url || response.data.file_url || response.data };
   }
 
   async listFiles(directory?: string): Promise<Array<Record<string, any>>> {
-    let path = directory
-      ? `/serverless/files/list/${directory}`
-      : '/serverless/files/list';
+    let path = directory ? `/serverless/files/list/${directory}` : '/serverless/files/list';
     let response = await this.platformAxios.get(path);
     return response.data.files || response.data || [];
   }

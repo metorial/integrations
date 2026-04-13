@@ -3,37 +3,41 @@ import { CapsuleClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let partyEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Party Events',
-    key: 'party_events',
-    description: 'Triggered when a contact (person or organisation) is created, updated, or deleted in Capsule CRM.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['party/created', 'party/updated', 'party/deleted']).describe('Type of party event'),
-    parties: z.array(z.any()).describe('Party records from the webhook payload'),
-  }))
-  .output(z.object({
-    partyId: z.number().describe('ID of the affected party'),
-    type: z.string().optional().describe('"person" or "organisation"'),
-    firstName: z.string().optional().describe('First name (persons)'),
-    lastName: z.string().optional().describe('Last name (persons)'),
-    name: z.string().optional().describe('Organisation name'),
-    jobTitle: z.string().optional().describe('Job title'),
-    about: z.string().optional().describe('Description'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Update timestamp'),
-    emailAddresses: z.array(z.any()).optional().describe('Email addresses'),
-    phoneNumbers: z.array(z.any()).optional().describe('Phone numbers'),
-    addresses: z.array(z.any()).optional().describe('Addresses'),
-    websites: z.array(z.any()).optional().describe('Websites'),
-    owner: z.any().optional().describe('Assigned owner'),
-    team: z.any().optional().describe('Assigned team'),
-  }))
+export let partyEvents = SlateTrigger.create(spec, {
+  name: 'Party Events',
+  key: 'party_events',
+  description:
+    'Triggered when a contact (person or organisation) is created, updated, or deleted in Capsule CRM.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['party/created', 'party/updated', 'party/deleted'])
+        .describe('Type of party event'),
+      parties: z.array(z.any()).describe('Party records from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      partyId: z.number().describe('ID of the affected party'),
+      type: z.string().optional().describe('"person" or "organisation"'),
+      firstName: z.string().optional().describe('First name (persons)'),
+      lastName: z.string().optional().describe('Last name (persons)'),
+      name: z.string().optional().describe('Organisation name'),
+      jobTitle: z.string().optional().describe('Job title'),
+      about: z.string().optional().describe('Description'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Update timestamp'),
+      emailAddresses: z.array(z.any()).optional().describe('Email addresses'),
+      phoneNumbers: z.array(z.any()).optional().describe('Phone numbers'),
+      addresses: z.array(z.any()).optional().describe('Addresses'),
+      websites: z.array(z.any()).optional().describe('Websites'),
+      owner: z.any().optional().describe('Assigned owner'),
+      team: z.any().optional().describe('Assigned team')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
 
       let events = ['party/created', 'party/updated', 'party/deleted'];
@@ -43,17 +47,17 @@ export let partyEvents = SlateTrigger.create(
         let hook = await client.createRestHook({
           event,
           targetUrl: ctx.input.webhookBaseUrl,
-          description: `Slates: ${event}`,
+          description: `Slates: ${event}`
         });
         hooks.push({ hookId: hook.id, event });
       }
 
       return {
-        registrationDetails: { hooks },
+        registrationDetails: { hooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new CapsuleClient({ token: ctx.auth.token });
       let hooks = (ctx.input.registrationDetails as any)?.hooks || [];
 
@@ -66,21 +70,23 @@ export let partyEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.event;
       let parties = data.payload || [];
 
       return {
-        inputs: [{
-          eventType,
-          parties,
-        }],
+        inputs: [
+          {
+            eventType,
+            parties
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let parties = ctx.input.parties || [];
       let eventAction = ctx.input.eventType.split('/')[1] || 'unknown';
 
@@ -89,8 +95,8 @@ export let partyEvents = SlateTrigger.create(
           type: `party.${eventAction}`,
           id: `${ctx.input.eventType}-${Date.now()}`,
           output: {
-            partyId: 0,
-          },
+            partyId: 0
+          }
         };
       }
 
@@ -114,8 +120,9 @@ export let partyEvents = SlateTrigger.create(
           addresses: p.addresses,
           websites: p.websites,
           owner: p.owner,
-          team: p.team,
-        },
+          team: p.team
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

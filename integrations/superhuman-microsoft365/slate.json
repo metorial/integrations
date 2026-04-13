@@ -2,10 +2,7 @@
   "name": "@metorial/superhuman-microsoft-365",
   "version": "0.1.2",
   "description": "Conversation-first Microsoft 365 mail for inbox triage: search and group threads, load full conversation context, bulk triage (archive, move, read state, flags, categories, delete), create and edit reply drafts with Graph createReply/createReplyAll, send from drafts or instant reply/reply-all, and webhook notifications for message changes with conversation context.",
-  "categories": [
-    "email-and-messaging",
-    "task-and-project-management"
-  ],
+  "categories": ["email-and-messaging", "task-and-project-management"],
   "skills": [
     "search and triage email conversations",
     "load full thread context for replies",

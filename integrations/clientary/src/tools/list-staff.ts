@@ -13,24 +13,28 @@ let staffSchema = z.object({
   extension: z.string().optional().describe('Phone extension')
 });
 
-export let listStaff = SlateTool.create(
-  spec,
-  {
-    name: 'List Staff',
-    key: 'list_staff',
-    description: `Retrieve staff members in the Clientary account. Can list all staff or get a specific member by ID. Staff management (create/update/delete) is only available through the Clientary dashboard.`,
-    tags: {
-      readOnly: true
-    }
+export let listStaff = SlateTool.create(spec, {
+  name: 'List Staff',
+  key: 'list_staff',
+  description: `Retrieve staff members in the Clientary account. Can list all staff or get a specific member by ID. Staff management (create/update/delete) is only available through the Clientary dashboard.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    staffId: z.number().optional().describe('ID of a specific staff member to retrieve. If omitted, lists all staff.')
-  }))
-  .output(z.object({
-    staff: z.array(staffSchema).describe('List of staff members')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      staffId: z
+        .number()
+        .optional()
+        .describe('ID of a specific staff member to retrieve. If omitted, lists all staff.')
+    })
+  )
+  .output(
+    z.object({
+      staff: z.array(staffSchema).describe('List of staff members')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     if (ctx.input.staffId) {
@@ -38,15 +42,17 @@ export let listStaff = SlateTool.create(
       let s = result.staff || result;
       return {
         output: {
-          staff: [{
-            staffId: s.id,
-            name: s.name,
-            email: s.email,
-            phone: s.phone,
-            mobile: s.mobile,
-            title: s.title,
-            extension: s.ext
-          }]
+          staff: [
+            {
+              staffId: s.id,
+              name: s.name,
+              email: s.email,
+              phone: s.phone,
+              mobile: s.mobile,
+              title: s.title,
+              extension: s.ext
+            }
+          ]
         },
         message: `Retrieved staff member **${s.name}** (ID: ${s.id}).`
       };

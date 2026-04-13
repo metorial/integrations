@@ -15,6 +15,7 @@ Knack supports two authentication methods, both using HTTP headers passed with e
 Object-based requests require at least two headers: an application ID — to identify the app whose records you are requesting — and an API key (which is specific to each app) to authenticate the request.
 
 Required headers:
+
 - `X-Knack-Application-Id`: Your application's unique ID.
 - `X-Knack-REST-API-Key`: Your app-specific API key.
 
@@ -27,6 +28,7 @@ This method provides full access to all fields and records across all objects in
 View-based requests require at least two headers: an application ID, and the value of `knack` for the API key header; note that you should not include your actual API key in view-based requests. To authenticate requests to views on pages protected by logins, you will need to use the Authorization header whose value should be a user token.
 
 Required headers:
+
 - `X-Knack-Application-Id`: Your application's unique ID.
 - `X-Knack-REST-API-Key`: Set to the literal string `knack` (not your actual API key).
 - `Authorization`: A user token (required for login-protected views).

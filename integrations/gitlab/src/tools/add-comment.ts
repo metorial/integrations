@@ -3,48 +3,70 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let addComment = SlateTool.create(
-  spec,
-  {
-    name: 'Add Comment',
-    key: 'add_comment',
-    description: `Add a comment (note) to an issue or merge request. Supports Markdown formatting. Can also list existing comments on an issue or merge request.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let addComment = SlateTool.create(spec, {
+  name: 'Add Comment',
+  key: 'add_comment',
+  description: `Add a comment (note) to an issue or merge request. Supports Markdown formatting. Can also list existing comments on an issue or merge request.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list']).describe('Create a new comment or list existing comments'),
-    projectId: z.string().describe('Project ID or URL-encoded path'),
-    targetType: z.enum(['issue', 'merge_request']).describe('Whether to comment on an issue or merge request'),
-    targetIid: z.number().describe('IID of the issue or merge request'),
-    body: z.string().optional().describe('Comment body (Markdown supported, required for create)'),
-    confidential: z.boolean().optional().describe('Whether the comment is confidential (issues only)'),
-    orderBy: z.enum(['created_at', 'updated_at']).optional().describe('Order comments by field (list only)'),
-    sort: z.enum(['asc', 'desc']).optional().describe('Sort direction (list only)'),
-    perPage: z.number().optional().describe('Results per page (list only)'),
-    page: z.number().optional().describe('Page number (list only)')
-  }))
-  .output(z.object({
-    comment: z.object({
-      noteId: z.number().describe('Comment ID'),
-      body: z.string().describe('Comment body'),
-      authorUsername: z.string().describe('Author username'),
-      createdAt: z.string().describe('Creation timestamp'),
-      system: z.boolean().describe('Whether this is a system-generated note')
-    }).optional().describe('Created comment'),
-    comments: z.array(z.object({
-      noteId: z.number().describe('Comment ID'),
-      body: z.string().describe('Comment body'),
-      authorUsername: z.string().describe('Author username'),
-      createdAt: z.string().describe('Creation timestamp'),
-      updatedAt: z.string().describe('Update timestamp'),
-      system: z.boolean().describe('Whether this is a system-generated note')
-    })).optional().describe('List of comments')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list'])
+        .describe('Create a new comment or list existing comments'),
+      projectId: z.string().describe('Project ID or URL-encoded path'),
+      targetType: z
+        .enum(['issue', 'merge_request'])
+        .describe('Whether to comment on an issue or merge request'),
+      targetIid: z.number().describe('IID of the issue or merge request'),
+      body: z
+        .string()
+        .optional()
+        .describe('Comment body (Markdown supported, required for create)'),
+      confidential: z
+        .boolean()
+        .optional()
+        .describe('Whether the comment is confidential (issues only)'),
+      orderBy: z
+        .enum(['created_at', 'updated_at'])
+        .optional()
+        .describe('Order comments by field (list only)'),
+      sort: z.enum(['asc', 'desc']).optional().describe('Sort direction (list only)'),
+      perPage: z.number().optional().describe('Results per page (list only)'),
+      page: z.number().optional().describe('Page number (list only)')
+    })
+  )
+  .output(
+    z.object({
+      comment: z
+        .object({
+          noteId: z.number().describe('Comment ID'),
+          body: z.string().describe('Comment body'),
+          authorUsername: z.string().describe('Author username'),
+          createdAt: z.string().describe('Creation timestamp'),
+          system: z.boolean().describe('Whether this is a system-generated note')
+        })
+        .optional()
+        .describe('Created comment'),
+      comments: z
+        .array(
+          z.object({
+            noteId: z.number().describe('Comment ID'),
+            body: z.string().describe('Comment body'),
+            authorUsername: z.string().describe('Author username'),
+            createdAt: z.string().describe('Creation timestamp'),
+            updatedAt: z.string().describe('Update timestamp'),
+            system: z.boolean().describe('Whether this is a system-generated note')
+          })
+        )
+        .optional()
+        .describe('List of comments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GitLabClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -87,9 +109,18 @@ export let addComment = SlateTool.create(
 
     let note: any;
     if (ctx.input.targetType === 'issue') {
-      note = await client.createIssueNote(ctx.input.projectId, ctx.input.targetIid, ctx.input.body, ctx.input.confidential);
+      note = await client.createIssueNote(
+        ctx.input.projectId,
+        ctx.input.targetIid,
+        ctx.input.body,
+        ctx.input.confidential
+      );
     } else {
-      note = await client.createMergeRequestNote(ctx.input.projectId, ctx.input.targetIid, ctx.input.body);
+      note = await client.createMergeRequestNote(
+        ctx.input.projectId,
+        ctx.input.targetIid,
+        ctx.input.body
+      );
     }
 
     return {

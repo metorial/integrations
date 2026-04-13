@@ -3,39 +3,59 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageField = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Field',
-    key: 'manage_field',
-    description: `Create, update, or delete fields on a content model. Fields define the structure and types of data that records can hold. Supported types include string, text, integer, float, boolean, date, date_time, json, file, gallery, link, links, rich_text, structured_text, slug, seo, color, lat_lon, video, and more.`,
-    instructions: [
-      'When creating a field, modelId, label, apiKey, and fieldType are required.',
-      'Validators and appearance settings depend on the field type.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform on the field'),
-    modelId: z.string().optional().describe('Model ID to add the field to (required for create)'),
-    fieldId: z.string().optional().describe('Field ID (required for update and delete)'),
-    label: z.string().optional().describe('Display label for the field'),
-    apiKey: z.string().optional().describe('API key identifier for the field'),
-    fieldType: z.string().optional().describe('Field type (e.g. "string", "text", "integer", "boolean", "link", "file", "structured_text")'),
-    localized: z.boolean().optional().describe('If true, the field supports multiple locales'),
-    validators: z.record(z.string(), z.any()).optional().describe('Validation rules for the field'),
-    appearance: z.record(z.string(), z.any()).optional().describe('Appearance/editor configuration for the field'),
-    defaultValue: z.any().optional().describe('Default value for the field'),
-    hint: z.string().optional().describe('Help text shown to editors'),
-    position: z.number().optional().describe('Position of the field in the model'),
-  }))
-  .output(z.object({
-    field: z.any().describe('The field object'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageField = SlateTool.create(spec, {
+  name: 'Manage Field',
+  key: 'manage_field',
+  description: `Create, update, or delete fields on a content model. Fields define the structure and types of data that records can hold. Supported types include string, text, integer, float, boolean, date, date_time, json, file, gallery, link, links, rich_text, structured_text, slug, seo, color, lat_lon, video, and more.`,
+  instructions: [
+    'When creating a field, modelId, label, apiKey, and fieldType are required.',
+    'Validators and appearance settings depend on the field type.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('Action to perform on the field'),
+      modelId: z
+        .string()
+        .optional()
+        .describe('Model ID to add the field to (required for create)'),
+      fieldId: z.string().optional().describe('Field ID (required for update and delete)'),
+      label: z.string().optional().describe('Display label for the field'),
+      apiKey: z.string().optional().describe('API key identifier for the field'),
+      fieldType: z
+        .string()
+        .optional()
+        .describe(
+          'Field type (e.g. "string", "text", "integer", "boolean", "link", "file", "structured_text")'
+        ),
+      localized: z
+        .boolean()
+        .optional()
+        .describe('If true, the field supports multiple locales'),
+      validators: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Validation rules for the field'),
+      appearance: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Appearance/editor configuration for the field'),
+      defaultValue: z.any().optional().describe('Default value for the field'),
+      hint: z.string().optional().describe('Help text shown to editors'),
+      position: z.number().optional().describe('Position of the field in the model')
+    })
+  )
+  .output(
+    z.object({
+      field: z.any().describe('The field object')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action, modelId, fieldId, label, apiKey, fieldType, ...rest } = ctx.input;
@@ -49,7 +69,7 @@ export let manageField = SlateTool.create(
       let attributes: Record<string, any> = {
         label,
         api_key: apiKey,
-        field_type: fieldType,
+        field_type: fieldType
       };
       if (rest.localized !== undefined) attributes.localized = rest.localized;
       if (rest.validators) attributes.validators = rest.validators;
@@ -61,7 +81,7 @@ export let manageField = SlateTool.create(
       let field = await client.createField(modelId, attributes);
       return {
         output: { field },
-        message: `Created field **${field.label}** (type: ${field.field_type}) on model ${modelId}.`,
+        message: `Created field **${field.label}** (type: ${field.field_type}) on model ${modelId}.`
       };
     }
 
@@ -81,7 +101,7 @@ export let manageField = SlateTool.create(
       let field = await client.updateField(fieldId, attributes);
       return {
         output: { field },
-        message: `Updated field **${field.label}** (ID: ${field.id}).`,
+        message: `Updated field **${field.label}** (ID: ${field.id}).`
       };
     }
 
@@ -90,7 +110,7 @@ export let manageField = SlateTool.create(
       let field = await client.deleteField(fieldId);
       return {
         output: { field },
-        message: `Deleted field with ID **${fieldId}**.`,
+        message: `Deleted field with ID **${fieldId}**.`
       };
     }
 

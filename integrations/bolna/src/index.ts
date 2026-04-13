@@ -40,7 +40,5 @@ export let provider = Slate.create({
     listVoices,
     getAccountInfo
   ],
-  triggers: [
-    callStatus
-  ]
+  triggers: [callStatus]
 });

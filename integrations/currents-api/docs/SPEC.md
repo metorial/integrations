@@ -9,14 +9,17 @@ Currents News API provides a comprehensive solution for curating global news and
 Authentication is handled with a simple API key. You can attach your API key to a request in one of two ways: via the `Authorization` HTTP header, or via the `apiKey` query string parameter.
 
 To obtain an API key:
+
 1. Go to https://currentsapi.services/ and sign up for a free account. Once logged in, you will be given an API key that you will use to authenticate your requests.
 
 **Header-based authentication example:**
+
 ```
 Authorization: YOUR_API_KEY
 ```
 
 **Query parameter authentication example:**
+
 ```
 https://api.currentsapi.services/v1/latest-news?apiKey=YOUR_API_KEY
 ```

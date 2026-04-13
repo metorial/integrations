@@ -15,13 +15,9 @@ import {
   commentOnPullRequest,
   listCommits,
   getFileContent,
-  searchCode,
+  searchCode
 } from './tools';
-import {
-  codePush,
-  pullRequestEvent,
-  repositoryEvent,
-} from './triggers';
+import { codePush, pullRequestEvent, repositoryEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,11 +36,7 @@ export let provider = Slate.create({
     commentOnPullRequest,
     listCommits,
     getFileContent,
-    searchCode,
+    searchCode
   ],
-  triggers: [
-    codePush,
-    pullRequestEvent,
-    repositoryEvent,
-  ],
+  triggers: [codePush, pullRequestEvent, repositoryEvent]
 });

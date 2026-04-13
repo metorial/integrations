@@ -39,6 +39,7 @@ OAuth apps have some limitations compared to API key access: they cannot use `in
 ### Meeting Retrieval
 
 List and retrieve meetings recorded by the user or shared to their team. Meetings include metadata such as title, scheduled and actual recording times, meeting type (internal/external), calendar invitees, and who recorded the meeting. Filtering is available by:
+
 - Recorder email addresses
 - Team names
 - Calendar invitee email addresses

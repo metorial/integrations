@@ -13,13 +13,13 @@ Remarkety uses **API Key** authentication. There are two key credentials require
 
 When making server-side API requests, include the following headers:
 
-| Header | Description |
-|---|---|
-| `x-api-key` | Your Remarkety API Key |
+| Header         | Description                                          |
+| -------------- | ---------------------------------------------------- |
+| `x-api-key`    | Your Remarkety API Key                               |
 | `x-event-type` | The event type being sent (e.g., `customers/update`) |
-| `x-domain` | Your store's domain (optional) |
-| `x-platform` | Your eCommerce platform identifier (optional) |
-| `Content-Type` | `application/json; charset=UTF-8` |
+| `x-domain`     | Your store's domain (optional)                       |
+| `x-platform`   | Your eCommerce platform identifier (optional)        |
+| `Content-Type` | `application/json; charset=UTF-8`                    |
 
 For authentication, you must use one of the two methods: your store API Key in the `x-api-key` header OR your Remarkety API Key in the `x-api-key`.
 
@@ -38,6 +38,7 @@ Send order creation and update events to Remarkety, including full order details
 ### Product Catalog Sync
 
 Products can be synced to Remarkety in two ways:
+
 - **Event API**: Send product create, update, and delete events with full product details including variants, images, inventory, pricing, and categories.
 - **Google Product Feed**: Use the standard Google Products feed format, which is a good option for custom carts or non-standard eCommerce websites. Remarkety can use a Google Product Feed to fetch your catalog and keep it up to date, sampling the feed once a day.
 

@@ -3,66 +3,72 @@ import { EverhourClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let estimateEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Estimate Events',
-    key: 'estimate_events',
-    description: 'Triggers when a task estimate is updated.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    estimateData: z.any().describe('Estimate data from the webhook payload'),
-  }))
-  .output(z.object({
-    taskId: z.string().optional().describe('Task ID'),
-    taskName: z.string().optional().describe('Task name'),
-    totalSeconds: z.number().optional().describe('Total estimate in seconds'),
-    estimateType: z.string().optional().describe('Estimate type (e.g., overall)'),
-    users: z.record(z.string(), z.number()).optional().describe('Per-user estimates in seconds'),
-  }))
+export let estimateEvents = SlateTrigger.create(spec, {
+  name: 'Estimate Events',
+  key: 'estimate_events',
+  description: 'Triggers when a task estimate is updated.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      estimateData: z.any().describe('Estimate data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().optional().describe('Task ID'),
+      taskName: z.string().optional().describe('Task name'),
+      totalSeconds: z.number().optional().describe('Total estimate in seconds'),
+      estimateType: z.string().optional().describe('Estimate type (e.g., overall)'),
+      users: z
+        .record(z.string(), z.number())
+        .optional()
+        .describe('Per-user estimates in seconds')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new EverhourClient(ctx.auth.token);
       let webhook = await client.createWebhook({
         targetUrl: ctx.input.webhookBaseUrl,
-        events: ['api:estimate:updated'],
+        events: ['api:estimate:updated']
       });
       return {
-        registrationDetails: { webhookId: webhook.id },
+        registrationDetails: { webhookId: webhook.id }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new EverhourClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let hookSecret = ctx.request.headers.get('X-Hook-Secret');
       if (hookSecret) {
         return {
           inputs: [],
           response: new Response('', {
             status: 200,
-            headers: { 'X-Hook-Secret': hookSecret },
-          }),
+            headers: { 'X-Hook-Secret': hookSecret }
+          })
         };
       }
 
-      let data = await ctx.request.json() as any;
+      let data = (await ctx.request.json()) as any;
       let estimateData = data.payload || {};
 
       return {
-        inputs: [{
-          eventId: `estimate-${estimateData.task?.id || 'unknown'}-${Date.now()}`,
-          estimateData,
-        }],
+        inputs: [
+          {
+            eventId: `estimate-${estimateData.task?.id || 'unknown'}-${Date.now()}`,
+            estimateData
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let est = ctx.input.estimateData || {};
       let task = est.task || {};
       let estimate = est.estimate || task.estimate || {};
@@ -74,8 +80,8 @@ export let estimateEvents = SlateTrigger.create(
           taskName: task.name,
           totalSeconds: estimate.total,
           estimateType: estimate.type,
-          users: estimate.users,
-        },
+          users: estimate.users
+        }
       };
-    },
+    }
   });

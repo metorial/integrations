@@ -102,21 +102,27 @@ let mapDocument = (doc: any): DocsumoDocument => ({
   approvedWithError: doc.approved_with_error,
   convertedToDigital: doc.converted_to_digital,
   reviewToken: doc.review_token,
-  previewImage: doc.preview_image ? {
-    url: doc.preview_image.url,
-    width: doc.preview_image.width,
-    height: doc.preview_image.height,
-  } : undefined,
-  uploadedBy: doc.uploaded_by ? {
-    userId: doc.uploaded_by.user_id,
-    email: doc.uploaded_by.email,
-    fullName: doc.uploaded_by.full_name,
-    avatarUrl: doc.uploaded_by.avatar_url,
-  } : undefined,
-  timeDict: doc.time_dict ? {
-    processingTime: doc.time_dict.processing_time,
-    totalTime: doc.time_dict.total_time,
-  } : undefined,
+  previewImage: doc.preview_image
+    ? {
+        url: doc.preview_image.url,
+        width: doc.preview_image.width,
+        height: doc.preview_image.height
+      }
+    : undefined,
+  uploadedBy: doc.uploaded_by
+    ? {
+        userId: doc.uploaded_by.user_id,
+        email: doc.uploaded_by.email,
+        fullName: doc.uploaded_by.full_name,
+        avatarUrl: doc.uploaded_by.avatar_url
+      }
+    : undefined,
+  timeDict: doc.time_dict
+    ? {
+        processingTime: doc.time_dict.processing_time,
+        totalTime: doc.time_dict.total_time
+      }
+    : undefined
 });
 
 export class Client {
@@ -126,8 +132,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://app.docsumo.com',
       headers: {
-        'X-API-KEY': options.token,
-      },
+        'X-API-KEY': options.token
+      }
     });
   }
 
@@ -155,7 +161,7 @@ export class Client {
     }
 
     let response = await this.axios.get('/api/v1/eevee/apikey/documents/all/', {
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data?.data || {};
@@ -165,7 +171,7 @@ export class Client {
       documents,
       total: data.total || 0,
       limit: data.limit || 0,
-      offset: data.offset || 0,
+      offset: data.offset || 0
     };
   }
 
@@ -186,7 +192,8 @@ export class Client {
     formData.append('type', params.documentType);
     if (params.userDocId) formData.append('user_doc_id', params.userDocId);
     if (params.docMetaData) formData.append('doc_meta_data', params.docMetaData);
-    if (params.reviewToken !== undefined) formData.append('review_token', String(params.reviewToken));
+    if (params.reviewToken !== undefined)
+      formData.append('review_token', String(params.reviewToken));
     if (params.filename) formData.append('filename', params.filename);
     if (params.password) formData.append('password', params.password);
 
@@ -203,7 +210,8 @@ export class Client {
     formData.append('filename', params.filename);
     if (params.userDocId) formData.append('user_doc_id', params.userDocId);
     if (params.docMetaData) formData.append('doc_meta_data', params.docMetaData);
-    if (params.reviewToken !== undefined) formData.append('review_token', String(params.reviewToken));
+    if (params.reviewToken !== undefined)
+      formData.append('review_token', String(params.reviewToken));
     if (params.password) formData.append('password', params.password);
 
     let response = await this.axios.post('/api/v1/eevee/apikey/upload/custom/', formData);
@@ -229,7 +237,10 @@ export class Client {
     return { sections, metaData };
   }
 
-  async updateReviewStatus(docId: string, action: 'review' | 'skip' | 'finish'): Promise<void> {
+  async updateReviewStatus(
+    docId: string,
+    action: 'review' | 'skip' | 'finish'
+  ): Promise<void> {
     let actionPath: string;
     switch (action) {
       case 'review':
@@ -260,9 +271,9 @@ export class Client {
       docCounts: {
         all: dt.doc_counts?.all || 0,
         processed: dt.doc_counts?.processed || 0,
-        reviewing: dt.doc_counts?.reviewing || 0,
+        reviewing: dt.doc_counts?.reviewing || 0
       },
-      uploadEmail: dt.upload_email,
+      uploadEmail: dt.upload_email
     }));
   }
 
@@ -280,9 +291,9 @@ export class Client {
       docCounts: {
         all: dt.doc_counts?.all || 0,
         processed: dt.doc_counts?.processed || 0,
-        reviewing: dt.doc_counts?.reviewing || 0,
+        reviewing: dt.doc_counts?.reviewing || 0
       },
-      uploadEmail: dt.upload_email,
+      uploadEmail: dt.upload_email
     }));
   }
 
@@ -305,7 +316,7 @@ export class Client {
       email: data.email || '',
       fullName: data.full_name || '',
       monthlyDocCurrent: data.monthly_doc_current || 0,
-      monthlyDocLimit: data.monthly_doc_limit || 0,
+      monthlyDocLimit: data.monthly_doc_limit || 0
     };
   }
 }

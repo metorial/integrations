@@ -34,9 +34,7 @@ export interface CreditBalanceResponse {
 }
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   async lookupProxy(params: ProxyLookupParams): Promise<ProxyLookupResponse> {
     let queryParams: Record<string, string> = {

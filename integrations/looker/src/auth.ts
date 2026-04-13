@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key Credentials',
@@ -13,27 +15,29 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       clientId: z.string().describe('Looker API3 Client ID'),
       clientSecret: z.string().describe('Looker API3 Client Secret'),
-      instanceUrl: z.string().describe('Looker instance URL (e.g., https://mycompany.looker.com)'),
+      instanceUrl: z
+        .string()
+        .describe('Looker instance URL (e.g., https://mycompany.looker.com)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = ctx.input.instanceUrl.replace(/\/+$/, '');
 
       let axiosInstance = createAxios({
-        baseURL: `${baseUrl}/api/4.0`,
+        baseURL: `${baseUrl}/api/4.0`
       });
 
       let response = await axiosInstance.post('/login', null, {
         params: {
           client_id: ctx.input.clientId,
-          client_secret: ctx.input.clientSecret,
-        },
+          client_secret: ctx.input.clientSecret
+        }
       });
 
       return {
         output: {
-          token: response.data.access_token,
-        },
+          token: response.data.access_token
+        }
       };
     },
 
@@ -42,9 +46,9 @@ export let auth = SlateAuth.create()
 
       let response = await axiosInstance.get(`/api/4.0/user`, {
         headers: {
-          Authorization: `token ${ctx.output.token}`,
+          Authorization: `token ${ctx.output.token}`
         },
-        baseURL: ctx.input.instanceUrl.replace(/\/+$/, ''),
+        baseURL: ctx.input.instanceUrl.replace(/\/+$/, '')
       });
 
       let user = response.data;
@@ -53,8 +57,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id),
           email: user.email,
-          name: user.display_name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-        },
+          name: user.display_name || `${user.first_name || ''} ${user.last_name || ''}`.trim()
+        }
       };
-    },
+    }
   });

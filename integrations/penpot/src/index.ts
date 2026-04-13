@@ -15,7 +15,7 @@ import {
   manageCommentsTool,
   manageLibrariesTool,
   addMediaFromUrlTool,
-  exportFileTool,
+  exportFileTool
 } from './tools';
 import { teamEventsTrigger } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     manageCommentsTool,
     manageLibrariesTool,
     addMediaFromUrlTool,
-    exportFileTool,
+    exportFileTool
   ],
-  triggers: [
-    teamEventsTrigger,
-  ],
+  triggers: [teamEventsTrigger]
 });

@@ -16,28 +16,30 @@ let timeEntrySchema = z.object({
   cost: z.number().optional().describe('Total cost (hours * rate)')
 });
 
-export let logTime = SlateTool.create(
-  spec,
-  {
-    name: 'Log Time',
-    key: 'log_time',
-    description: `Log a time entry against a project. The authenticated user is automatically attributed for the entry. Each entry tracks hours worked, rate, and billing status.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let logTime = SlateTool.create(spec, {
+  name: 'Log Time',
+  key: 'log_time',
+  description: `Log a time entry against a project. The authenticated user is automatically attributed for the entry. Each entry tracks hours worked, rate, and billing status.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('Project ID to log time against'),
-    title: z.string().describe('Title describing the work performed (required)'),
-    hours: z.number().describe('Number of hours to log (required)'),
-    date: z.string().optional().describe('Date of the entry (YYYY-MM-DD). Defaults to today.'),
-    rate: z.number().optional().describe('Hourly rate. Defaults to project rate.'),
-    description: z.string().optional().describe('Additional details about the work')
-  }))
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('Project ID to log time against'),
+      title: z.string().describe('Title describing the work performed (required)'),
+      hours: z.number().describe('Number of hours to log (required)'),
+      date: z
+        .string()
+        .optional()
+        .describe('Date of the entry (YYYY-MM-DD). Defaults to today.'),
+      rate: z.number().optional().describe('Hourly rate. Defaults to project rate.'),
+      description: z.string().optional().describe('Additional details about the work')
+    })
+  )
   .output(timeEntrySchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {
@@ -58,28 +60,27 @@ export let logTime = SlateTool.create(
   })
   .build();
 
-export let updateTimeEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Update Time Entry',
-    key: 'update_time_entry',
-    description: `Update an existing time entry's details including hours, title, rate, or date.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateTimeEntry = SlateTool.create(spec, {
+  name: 'Update Time Entry',
+  key: 'update_time_entry',
+  description: `Update an existing time entry's details including hours, title, rate, or date.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    timeEntryId: z.number().describe('ID of the time entry to update'),
-    title: z.string().optional().describe('Title describing the work'),
-    hours: z.number().optional().describe('Number of hours'),
-    date: z.string().optional().describe('Date of the entry (YYYY-MM-DD)'),
-    rate: z.number().optional().describe('Hourly rate'),
-    description: z.string().optional().describe('Additional details')
-  }))
+})
+  .input(
+    z.object({
+      timeEntryId: z.number().describe('ID of the time entry to update'),
+      title: z.string().optional().describe('Title describing the work'),
+      hours: z.number().optional().describe('Number of hours'),
+      date: z.string().optional().describe('Date of the entry (YYYY-MM-DD)'),
+      rate: z.number().optional().describe('Hourly rate'),
+      description: z.string().optional().describe('Additional details')
+    })
+  )
   .output(timeEntrySchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {};
@@ -99,29 +100,35 @@ export let updateTimeEntry = SlateTool.create(
   })
   .build();
 
-export let getTimeEntries = SlateTool.create(
-  spec,
-  {
-    name: 'Get Time Entries',
-    key: 'get_time_entries',
-    description: `List time entries for a project, or retrieve a single time entry by ID. Can be filtered by billed/unbilled status.`,
-    tags: {
-      readOnly: true
-    }
+export let getTimeEntries = SlateTool.create(spec, {
+  name: 'Get Time Entries',
+  key: 'get_time_entries',
+  description: `List time entries for a project, or retrieve a single time entry by ID. Can be filtered by billed/unbilled status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    timeEntryId: z.number().optional().describe('ID of a specific time entry to retrieve'),
-    projectId: z.number().optional().describe('Project ID to list time entries for (required if timeEntryId is not provided)'),
-    filter: z.enum(['billed', 'unbilled']).optional().describe('Filter by billing status'),
-    page: z.number().optional().describe('Page number for pagination')
-  }))
-  .output(z.object({
-    timeEntries: z.array(timeEntrySchema).describe('List of time entries'),
-    totalCount: z.number().optional().describe('Total number of matching entries'),
-    pageCount: z.number().optional().describe('Total number of pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      timeEntryId: z.number().optional().describe('ID of a specific time entry to retrieve'),
+      projectId: z
+        .number()
+        .optional()
+        .describe(
+          'Project ID to list time entries for (required if timeEntryId is not provided)'
+        ),
+      filter: z.enum(['billed', 'unbilled']).optional().describe('Filter by billing status'),
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      timeEntries: z.array(timeEntrySchema).describe('List of time entries'),
+      totalCount: z.number().optional().describe('Total number of matching entries'),
+      pageCount: z.number().optional().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     if (ctx.input.timeEntryId) {
@@ -155,25 +162,26 @@ export let getTimeEntries = SlateTool.create(
   })
   .build();
 
-export let deleteTimeEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Time Entry',
-    key: 'delete_time_entry',
-    description: `Permanently delete a time entry.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteTimeEntry = SlateTool.create(spec, {
+  name: 'Delete Time Entry',
+  key: 'delete_time_entry',
+  description: `Permanently delete a time entry.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    timeEntryId: z.number().describe('ID of the time entry to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      timeEntryId: z.number().describe('ID of the time entry to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
     await client.deleteHour(ctx.input.timeEntryId);
 

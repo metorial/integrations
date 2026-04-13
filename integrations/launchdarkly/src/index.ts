@@ -18,12 +18,9 @@ import {
   inviteMembers,
   searchContexts,
   listMetrics,
-  listExperiments,
+  listExperiments
 } from './tools';
-import {
-  resourceChangeTrigger,
-  flagChangeTrigger,
-} from './triggers';
+import { resourceChangeTrigger, flagChangeTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,10 +42,7 @@ export let provider = Slate.create({
     inviteMembers,
     searchContexts,
     listMetrics,
-    listExperiments,
+    listExperiments
   ],
-  triggers: [
-    resourceChangeTrigger,
-    flagChangeTrigger,
-  ],
+  triggers: [resourceChangeTrigger, flagChangeTrigger]
 });

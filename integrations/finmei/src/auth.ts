@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      apiToken: z.string().describe('Finmei API token. Go to Settings → Integrations in the Finmei app to generate one.'),
+      apiToken: z
+        .string()
+        .describe(
+          'Finmei API token. Go to Settings → Integrations in the Finmei app to generate one.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiToken,
-        },
+          token: ctx.input.apiToken
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://app.finmei.com/api',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/profile');
@@ -42,8 +48,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: data.id ? String(data.id) : undefined,
           name: data.name || data.business_name,
-          email: data.email,
-        },
+          email: data.email
+        }
       };
-    },
+    }
   });

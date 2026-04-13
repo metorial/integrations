@@ -3,22 +3,21 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve all users (agents and admins) in your Helpwise account. Returns user details including names, emails, and roles.`,
-    tags: {
-      readOnly: true,
-    },
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve all users (agents and admins) in your Helpwise account. Returns user details including names, emails, and roles.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    users: z.array(z.record(z.string(), z.any())).describe('List of Helpwise users'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      users: z.array(z.record(z.string(), z.any())).describe('List of Helpwise users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listUsers();
@@ -26,6 +25,7 @@ export let listUsers = SlateTool.create(
 
     return {
       output: { users },
-      message: `Retrieved ${users.length} user(s).`,
+      message: `Retrieved ${users.length} user(s).`
     };
-  }).build();
+  })
+  .build();

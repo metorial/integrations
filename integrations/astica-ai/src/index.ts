@@ -6,7 +6,7 @@ import {
   textToSpeechTool,
   speechToTextTool,
   generateTextTool,
-  listVoicesTool,
+  listVoicesTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     textToSpeechTool,
     speechToTextTool,
     generateTextTool,
-    listVoicesTool,
+    listVoicesTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

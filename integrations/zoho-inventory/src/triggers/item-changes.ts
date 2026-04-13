@@ -3,46 +3,48 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let itemChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Item Changes',
-    key: 'item_changes',
-    description: 'Triggers when items are created or updated in Zoho Inventory. Polls for recently modified items.',
-  }
-)
-  .input(z.object({
-    itemId: z.string().describe('Item ID'),
-    name: z.string().describe('Item name'),
-    sku: z.string().optional().describe('SKU'),
-    rate: z.number().optional().describe('Sales rate'),
-    purchaseRate: z.number().optional().describe('Purchase rate'),
-    status: z.string().optional().describe('Item status'),
-    stockOnHand: z.number().optional().describe('Stock on hand'),
-    lastModifiedTime: z.string().optional().describe('Last modified time'),
-  }))
-  .output(z.object({
-    itemId: z.string().describe('Item ID'),
-    name: z.string().describe('Item name'),
-    sku: z.string().optional().describe('SKU'),
-    rate: z.number().optional().describe('Sales rate'),
-    purchaseRate: z.number().optional().describe('Purchase rate'),
-    status: z.string().optional().describe('Item status'),
-    stockOnHand: z.number().optional().describe('Stock on hand'),
-    lastModifiedTime: z.string().optional().describe('Last modified time'),
-  }))
+export let itemChanges = SlateTrigger.create(spec, {
+  name: 'Item Changes',
+  key: 'item_changes',
+  description:
+    'Triggers when items are created or updated in Zoho Inventory. Polls for recently modified items.'
+})
+  .input(
+    z.object({
+      itemId: z.string().describe('Item ID'),
+      name: z.string().describe('Item name'),
+      sku: z.string().optional().describe('SKU'),
+      rate: z.number().optional().describe('Sales rate'),
+      purchaseRate: z.number().optional().describe('Purchase rate'),
+      status: z.string().optional().describe('Item status'),
+      stockOnHand: z.number().optional().describe('Stock on hand'),
+      lastModifiedTime: z.string().optional().describe('Last modified time')
+    })
+  )
+  .output(
+    z.object({
+      itemId: z.string().describe('Item ID'),
+      name: z.string().describe('Item name'),
+      sku: z.string().optional().describe('SKU'),
+      rate: z.number().optional().describe('Sales rate'),
+      purchaseRate: z.number().optional().describe('Purchase rate'),
+      status: z.string().optional().describe('Item status'),
+      stockOnHand: z.number().optional().describe('Stock on hand'),
+      lastModifiedTime: z.string().optional().describe('Last modified time')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let result = await client.listItems({
         sort_column: 'last_modified_time',
         sort_order: 'descending',
-        per_page: 25,
+        per_page: 25
       });
 
       let items = result.items || [];
@@ -50,15 +52,20 @@ export let itemChanges = SlateTrigger.create(
       let newItems: any[] = [];
 
       for (let item of items) {
-        if (lastPolledAt && item.last_modified_time && item.last_modified_time <= lastPolledAt) {
+        if (
+          lastPolledAt &&
+          item.last_modified_time &&
+          item.last_modified_time <= lastPolledAt
+        ) {
           break;
         }
         newItems.push(item);
       }
 
-      let updatedLastPolled = items.length > 0 && items[0].last_modified_time
-        ? items[0].last_modified_time
-        : lastPolledAt;
+      let updatedLastPolled =
+        items.length > 0 && items[0].last_modified_time
+          ? items[0].last_modified_time
+          : lastPolledAt;
 
       return {
         inputs: newItems.map((item: any) => ({
@@ -69,15 +76,15 @@ export let itemChanges = SlateTrigger.create(
           purchaseRate: item.purchase_rate ?? undefined,
           status: item.status ?? undefined,
           stockOnHand: item.stock_on_hand ?? undefined,
-          lastModifiedTime: item.last_modified_time ?? undefined,
+          lastModifiedTime: item.last_modified_time ?? undefined
         })),
         updatedState: {
-          lastPolledAt: updatedLastPolled,
-        },
+          lastPolledAt: updatedLastPolled
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'item.updated',
         id: `item-${ctx.input.itemId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -89,8 +96,9 @@ export let itemChanges = SlateTrigger.create(
           purchaseRate: ctx.input.purchaseRate,
           status: ctx.input.status,
           stockOnHand: ctx.input.stockOnHand,
-          lastModifiedTime: ctx.input.lastModifiedTime,
-        },
+          lastModifiedTime: ctx.input.lastModifiedTime
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

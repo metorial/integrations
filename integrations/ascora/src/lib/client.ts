@@ -13,9 +13,9 @@ export class AscoraClient {
     return createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Auth': this.token,
-        'Content-Type': 'application/json',
-      },
+        Auth: this.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -60,12 +60,12 @@ export class AscoraAccountingClient {
     return createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       auth: {
         username: this.username,
-        password: this.password,
-      },
+        password: this.password
+      }
     });
   }
 
@@ -84,7 +84,7 @@ export class AscoraAccountingClient {
   async markInvoices(invoiceIds: string[]): Promise<any> {
     let http = this.getAxios();
     let response = await http.post('/MarkInvoice', {
-      InvoiceIds: invoiceIds,
+      InvoiceIds: invoiceIds
     });
     return response.data;
   }
@@ -99,7 +99,7 @@ export class AscoraAccountingClient {
   async markPayments(paymentIds: string[]): Promise<any> {
     let http = this.getAxios();
     let response = await http.post('/MarkPayment', {
-      PaymentIds: paymentIds,
+      PaymentIds: paymentIds
     });
     return response.data;
   }

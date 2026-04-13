@@ -2,16 +2,18 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let capsuleAxios = createAxios({
-  baseURL: 'https://api.capsulecrm.com',
+  baseURL: 'https://api.capsulecrm.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    subdomain: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      subdomain: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -21,41 +23,45 @@ export let auth = SlateAuth.create()
       {
         title: 'Read',
         description: 'Read access to your Capsule CRM data',
-        scope: 'read',
+        scope: 'read'
       },
       {
         title: 'Write',
         description: 'Write access to create, update, and delete Capsule CRM data',
-        scope: 'write',
-      },
+        scope: 'write'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
-        url: `https://api.capsulecrm.com/oauth/authorise?${params.toString()}`,
+        url: `https://api.capsulecrm.com/oauth/authorise?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await capsuleAxios.post('/oauth/token', {
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+    handleCallback: async ctx => {
+      let response = await capsuleAxios.post(
+        '/oauth/token',
+        {
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
         },
-      });
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -66,22 +72,26 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          subdomain: data.subdomain,
-        },
+          subdomain: data.subdomain
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
-      let response = await capsuleAxios.post('/oauth/token', {
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+    handleTokenRefresh: async ctx => {
+      let response = await capsuleAxios.post(
+        '/oauth/token',
+        {
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
         },
-      });
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -92,16 +102,16 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          subdomain: data.subdomain ?? ctx.output.subdomain,
-        },
+          subdomain: data.subdomain ?? ctx.output.subdomain
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: any; scopes: string[] }) => {
       let response = await capsuleAxios.get('/api/v2/users/current', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -110,10 +120,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id),
           name: user.name,
-          email: user.username,
-        },
+          email: user.username
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -121,22 +131,24 @@ export let auth = SlateAuth.create()
     key: 'personal_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Personal Access Token generated from your Capsule CRM account preferences'),
+      token: z
+        .string()
+        .describe('Personal Access Token generated from your Capsule CRM account preferences')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let response = await capsuleAxios.get('/api/v2/users/current', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -145,8 +157,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.id),
           name: user.name,
-          email: user.username,
-        },
+          email: user.username
+        }
       };
-    },
+    }
   });

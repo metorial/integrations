@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    tenantId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      tenantId: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Xero OAuth',
@@ -16,84 +18,170 @@ export let auth = SlateAuth.create()
     scopes: [
       // OpenID Connect
       { title: 'OpenID', description: 'Access to OpenID identity', scope: 'openid' },
-      { title: 'Profile', description: 'Access to user profile information', scope: 'profile' },
+      {
+        title: 'Profile',
+        description: 'Access to user profile information',
+        scope: 'profile'
+      },
       { title: 'Email', description: 'Access to user email address', scope: 'email' },
 
       // Offline access
-      { title: 'Offline Access', description: 'Maintain connection and refresh tokens automatically', scope: 'offline_access' },
+      {
+        title: 'Offline Access',
+        description: 'Maintain connection and refresh tokens automatically',
+        scope: 'offline_access'
+      },
 
       // Accounting - Transactions
-      { title: 'Transactions', description: 'Read and write access to invoices, bank transactions, credit notes, payments, etc.', scope: 'accounting.transactions' },
-      { title: 'Transactions (Read)', description: 'Read-only access to invoices, bank transactions, credit notes, payments, etc.', scope: 'accounting.transactions.read' },
+      {
+        title: 'Transactions',
+        description:
+          'Read and write access to invoices, bank transactions, credit notes, payments, etc.',
+        scope: 'accounting.transactions'
+      },
+      {
+        title: 'Transactions (Read)',
+        description:
+          'Read-only access to invoices, bank transactions, credit notes, payments, etc.',
+        scope: 'accounting.transactions.read'
+      },
 
       // Accounting - Contacts
-      { title: 'Contacts', description: 'Read and write access to contacts and contact groups', scope: 'accounting.contacts' },
-      { title: 'Contacts (Read)', description: 'Read-only access to contacts and contact groups', scope: 'accounting.contacts.read' },
+      {
+        title: 'Contacts',
+        description: 'Read and write access to contacts and contact groups',
+        scope: 'accounting.contacts'
+      },
+      {
+        title: 'Contacts (Read)',
+        description: 'Read-only access to contacts and contact groups',
+        scope: 'accounting.contacts.read'
+      },
 
       // Accounting - Settings
-      { title: 'Settings', description: 'Read and write access to chart of accounts, tax rates, currencies, etc.', scope: 'accounting.settings' },
-      { title: 'Settings (Read)', description: 'Read-only access to chart of accounts, tax rates, currencies, etc.', scope: 'accounting.settings.read' },
+      {
+        title: 'Settings',
+        description: 'Read and write access to chart of accounts, tax rates, currencies, etc.',
+        scope: 'accounting.settings'
+      },
+      {
+        title: 'Settings (Read)',
+        description: 'Read-only access to chart of accounts, tax rates, currencies, etc.',
+        scope: 'accounting.settings.read'
+      },
 
       // Accounting - Reports
-      { title: 'Reports (Read)', description: 'Read-only access to financial reports', scope: 'accounting.reports.read' },
+      {
+        title: 'Reports (Read)',
+        description: 'Read-only access to financial reports',
+        scope: 'accounting.reports.read'
+      },
 
       // Accounting - Journals
-      { title: 'Journals (Read)', description: 'Read-only access to journal entries', scope: 'accounting.journals.read' },
+      {
+        title: 'Journals (Read)',
+        description: 'Read-only access to journal entries',
+        scope: 'accounting.journals.read'
+      },
 
       // Accounting - Attachments
-      { title: 'Attachments', description: 'Read and write access to file attachments', scope: 'accounting.attachments' },
-      { title: 'Attachments (Read)', description: 'Read-only access to file attachments', scope: 'accounting.attachments.read' },
+      {
+        title: 'Attachments',
+        description: 'Read and write access to file attachments',
+        scope: 'accounting.attachments'
+      },
+      {
+        title: 'Attachments (Read)',
+        description: 'Read-only access to file attachments',
+        scope: 'accounting.attachments.read'
+      },
 
       // Assets
-      { title: 'Assets', description: 'Read and write access to fixed assets', scope: 'assets' },
-      { title: 'Assets (Read)', description: 'Read-only access to fixed assets', scope: 'assets.read' },
+      {
+        title: 'Assets',
+        description: 'Read and write access to fixed assets',
+        scope: 'assets'
+      },
+      {
+        title: 'Assets (Read)',
+        description: 'Read-only access to fixed assets',
+        scope: 'assets.read'
+      },
 
       // Projects
-      { title: 'Projects', description: 'Read and write access to projects and time tracking', scope: 'projects' },
-      { title: 'Projects (Read)', description: 'Read-only access to projects and time tracking', scope: 'projects.read' },
+      {
+        title: 'Projects',
+        description: 'Read and write access to projects and time tracking',
+        scope: 'projects'
+      },
+      {
+        title: 'Projects (Read)',
+        description: 'Read-only access to projects and time tracking',
+        scope: 'projects.read'
+      },
 
       // Files
       { title: 'Files', description: 'Read and write access to Xero Files', scope: 'files' },
-      { title: 'Files (Read)', description: 'Read-only access to Xero Files', scope: 'files.read' },
+      {
+        title: 'Files (Read)',
+        description: 'Read-only access to Xero Files',
+        scope: 'files.read'
+      },
 
       // Bank Feeds
-      { title: 'Bank Feeds', description: 'Access to bank feeds for pushing statement data', scope: 'bankfeeds' },
+      {
+        title: 'Bank Feeds',
+        description: 'Access to bank feeds for pushing statement data',
+        scope: 'bankfeeds'
+      },
 
       // Payroll
-      { title: 'Payroll AU', description: 'Access to Australian payroll', scope: 'payroll.au' },
+      {
+        title: 'Payroll AU',
+        description: 'Access to Australian payroll',
+        scope: 'payroll.au'
+      },
       { title: 'Payroll UK', description: 'Access to UK payroll', scope: 'payroll.uk' },
-      { title: 'Payroll NZ', description: 'Access to New Zealand payroll', scope: 'payroll.nz' },
+      {
+        title: 'Payroll NZ',
+        description: 'Access to New Zealand payroll',
+        scope: 'payroll.nz'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         scope: ctx.scopes.join(' '),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://login.xero.com/identity/connect/authorize?${params.toString()}`,
+        url: `https://login.xero.com/identity/connect/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenResponse = await tokenClient.post('/connect/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`,
-        },
-      });
+      let tokenResponse = await tokenClient.post(
+        '/connect/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
+        }
+      );
 
       let tokenData = tokenResponse.data as {
         access_token: string;
@@ -115,9 +203,9 @@ export let auth = SlateAuth.create()
       let connectionsClient = createAxios({ baseURL: 'https://api.xero.com' });
       let connectionsResponse = await connectionsClient.get('/connections', {
         headers: {
-          'Authorization': `Bearer ${tokenData.access_token}`,
-          'Content-Type': 'application/json',
-        },
+          Authorization: `Bearer ${tokenData.access_token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       let connections = connectionsResponse.data as Array<{
@@ -134,12 +222,12 @@ export let auth = SlateAuth.create()
           token: tokenData.access_token,
           refreshToken: tokenData.refresh_token,
           expiresAt,
-          tenantId,
-        },
+          tenantId
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available. User must reauthorize.');
       }
@@ -147,15 +235,19 @@ export let auth = SlateAuth.create()
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let tokenResponse = await tokenClient.post('/connect/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`,
-        },
-      });
+      let tokenResponse = await tokenClient.post(
+        '/connect/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
+        }
+      );
 
       let tokenData = tokenResponse.data as {
         access_token: string;
@@ -176,9 +268,9 @@ export let auth = SlateAuth.create()
       let connectionsClient = createAxios({ baseURL: 'https://api.xero.com' });
       let connectionsResponse = await connectionsClient.get('/connections', {
         headers: {
-          'Authorization': `Bearer ${tokenData.access_token}`,
-          'Content-Type': 'application/json',
-        },
+          Authorization: `Bearer ${tokenData.access_token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       let connections = connectionsResponse.data as Array<{
@@ -188,15 +280,16 @@ export let auth = SlateAuth.create()
         tenantType: string;
       }>;
 
-      let tenantId = ctx.output.tenantId || (connections.length > 0 ? connections[0]?.tenantId : undefined);
+      let tenantId =
+        ctx.output.tenantId || (connections.length > 0 ? connections[0]?.tenantId : undefined);
 
       return {
         output: {
           token: tokenData.access_token,
           refreshToken: tokenData.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          tenantId,
-        },
+          tenantId
+        }
       };
     },
 
@@ -208,9 +301,9 @@ export let auth = SlateAuth.create()
       // Get connections to show organisation details
       let connectionsResponse = await client.get('/connections', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       let connections = connectionsResponse.data as Array<{
@@ -227,8 +320,8 @@ export let auth = SlateAuth.create()
         let userinfoClient = createAxios({ baseURL: 'https://identity.xero.com' });
         let userinfoResponse = await userinfoClient.get('/connect/userinfo', {
           headers: {
-            'Authorization': `Bearer ${ctx.output.token}`,
-          },
+            Authorization: `Bearer ${ctx.output.token}`
+          }
         });
 
         let userinfo = userinfoResponse.data as {
@@ -242,7 +335,9 @@ export let auth = SlateAuth.create()
 
         profile.id = userinfo.sub;
         profile.email = userinfo.email;
-        profile.name = userinfo.name || [userinfo.given_name, userinfo.family_name].filter(Boolean).join(' ');
+        profile.name =
+          userinfo.name ||
+          [userinfo.given_name, userinfo.family_name].filter(Boolean).join(' ');
         if (userinfo.picture) {
           profile.imageUrl = userinfo.picture;
         }
@@ -254,12 +349,12 @@ export let auth = SlateAuth.create()
         profile.organisations = connections.map(c => ({
           tenantId: c.tenantId,
           tenantName: c.tenantName,
-          tenantType: c.tenantType,
+          tenantType: c.tenantType
         }));
       }
 
       return { profile };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -268,22 +363,27 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('Client ID from Xero Developer Portal'),
-      clientSecret: z.string().describe('Client Secret from Xero Developer Portal'),
+      clientSecret: z.string().describe('Client Secret from Xero Developer Portal')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let tokenClient = createAxios({ baseURL: 'https://identity.xero.com' });
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let tokenResponse = await tokenClient.post('/connect/token', new URLSearchParams({
-        grant_type: 'client_credentials',
-        scope: 'accounting.transactions accounting.contacts accounting.settings accounting.reports.read accounting.journals.read accounting.attachments',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`,
-        },
-      });
+      let tokenResponse = await tokenClient.post(
+        '/connect/token',
+        new URLSearchParams({
+          grant_type: 'client_credentials',
+          scope:
+            'accounting.transactions accounting.contacts accounting.settings accounting.reports.read accounting.journals.read accounting.attachments'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`
+          }
+        }
+      );
 
       let tokenData = tokenResponse.data as {
         access_token: string;
@@ -302,8 +402,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: tokenData.access_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
-    },
+    }
   });

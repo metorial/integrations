@@ -22,13 +22,9 @@ import {
   createParcelTemplate,
   listParcelTemplates,
   createBatch,
-  purchaseBatch,
+  purchaseBatch
 } from './tools';
-import {
-  trackingUpdated,
-  transactionEvents,
-  batchEvents,
-} from './triggers';
+import { trackingUpdated, transactionEvents, batchEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -54,11 +50,7 @@ export let provider = Slate.create({
     createParcelTemplate,
     listParcelTemplates,
     createBatch,
-    purchaseBatch,
+    purchaseBatch
   ],
-  triggers: [
-    trackingUpdated,
-    transactionEvents,
-    batchEvents,
-  ],
+  triggers: [trackingUpdated, transactionEvents, batchEvents]
 });

@@ -3,35 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createBriefcase = SlateTool.create(
-  spec,
-  {
-    name: 'Create Briefcase',
-    key: 'create_briefcase',
-    description: `Bundle multiple documents together so signers can sign all of them using a single signing link. Each document must have its form descriptor configured beforehand, and all documents must use the same signer IDs. Supports custom package names displayed during signing.`,
-    instructions: [
-      'All documents in the briefcase must belong to the same account.',
-      'Signer IDs must be consistent across all documents in the bundle.',
-      'Each document must have its form descriptor configured before adding to a briefcase.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createBriefcase = SlateTool.create(spec, {
+  name: 'Create Briefcase',
+  key: 'create_briefcase',
+  description: `Bundle multiple documents together so signers can sign all of them using a single signing link. Each document must have its form descriptor configured beforehand, and all documents must use the same signer IDs. Supports custom package names displayed during signing.`,
+  instructions: [
+    'All documents in the briefcase must belong to the same account.',
+    'Signer IDs must be consistent across all documents in the bundle.',
+    'Each document must have its form descriptor configured before adding to a briefcase.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    documentIds: z.array(z.string()).describe('Array of document IDs to bundle'),
-    packageName: z.string().optional().describe('Custom package name displayed during the signing process'),
-    callbackUrl: z.string().optional().describe('URL called when a document is signed'),
-    returnUrl: z.string().optional().describe('URL to redirect the signer after signing'),
-    webhookUrl: z.string().optional().describe('URL for notification delivery error reports')
-  }))
-  .output(z.object({
-    briefcaseId: z.string().describe('Briefcase token ID'),
-    briefcaseDetails: z.any().describe('Full briefcase creation response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      documentIds: z.array(z.string()).describe('Array of document IDs to bundle'),
+      packageName: z
+        .string()
+        .optional()
+        .describe('Custom package name displayed during the signing process'),
+      callbackUrl: z.string().optional().describe('URL called when a document is signed'),
+      returnUrl: z.string().optional().describe('URL to redirect the signer after signing'),
+      webhookUrl: z.string().optional().describe('URL for notification delivery error reports')
+    })
+  )
+  .output(
+    z.object({
+      briefcaseId: z.string().describe('Briefcase token ID'),
+      briefcaseDetails: z.any().describe('Full briefcase creation response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.createBriefcase({
@@ -44,7 +48,8 @@ export let createBriefcase = SlateTool.create(
 
     return {
       output: {
-        briefcaseId: typeof result === 'string' ? result : (result?.docid || JSON.stringify(result)),
+        briefcaseId:
+          typeof result === 'string' ? result : result?.docid || JSON.stringify(result),
         briefcaseDetails: result
       },
       message: `Briefcase created with **${ctx.input.documentIds.length}** document(s).`
@@ -52,25 +57,26 @@ export let createBriefcase = SlateTool.create(
   })
   .build();
 
-export let getBriefcase = SlateTool.create(
-  spec,
-  {
-    name: 'Get Briefcase',
-    key: 'get_briefcase',
-    description: `Retrieve configuration and details of an existing briefcase (document bundle).`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getBriefcase = SlateTool.create(spec, {
+  name: 'Get Briefcase',
+  key: 'get_briefcase',
+  description: `Retrieve configuration and details of an existing briefcase (document bundle).`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    briefcaseId: z.string().describe('Briefcase token ID')
-  }))
-  .output(z.object({
-    briefcaseDetails: z.any().describe('Briefcase configuration and status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      briefcaseId: z.string().describe('Briefcase token ID')
+    })
+  )
+  .output(
+    z.object({
+      briefcaseDetails: z.any().describe('Briefcase configuration and status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let briefcaseDetails = await client.retrieveBriefcase(ctx.input.briefcaseId);
 
@@ -81,25 +87,26 @@ export let getBriefcase = SlateTool.create(
   })
   .build();
 
-export let removeBriefcase = SlateTool.create(
-  spec,
-  {
-    name: 'Remove Briefcase',
-    key: 'remove_briefcase',
-    description: `Delete a briefcase (document bundle) from the OKSign platform. This does not delete the individual documents.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let removeBriefcase = SlateTool.create(spec, {
+  name: 'Remove Briefcase',
+  key: 'remove_briefcase',
+  description: `Delete a briefcase (document bundle) from the OKSign platform. This does not delete the individual documents.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    briefcaseId: z.string().describe('Briefcase token ID to remove')
-  }))
-  .output(z.object({
-    removed: z.boolean().describe('Whether the briefcase was removed successfully')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      briefcaseId: z.string().describe('Briefcase token ID to remove')
+    })
+  )
+  .output(
+    z.object({
+      removed: z.boolean().describe('Whether the briefcase was removed successfully')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.removeBriefcase(ctx.input.briefcaseId);
 

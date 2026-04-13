@@ -16,7 +16,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Your JotForm API key. Generate one at Settings > API.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

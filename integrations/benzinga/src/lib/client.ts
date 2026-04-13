@@ -14,32 +14,32 @@ export class BenzingaClient {
 
     this.axiosV2 = createAxios({
       baseURL: 'https://api.benzinga.com/api/v2',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json' }
     });
 
     this.axiosV2_1 = createAxios({
       baseURL: 'https://api.benzinga.com/api/v2.1',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json' }
     });
 
     this.axiosV1 = createAxios({
       baseURL: 'https://api.benzinga.com/api/v1',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json' }
     });
 
     this.axiosMovers = createAxios({
       baseURL: 'https://api.benzinga.com/api/v1/market',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json' }
     });
 
     this.axiosGov = createAxios({
       baseURL: 'https://api.benzinga.com/api/v1/gov/usa/congress',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json' }
     });
 
     this.axiosSec = createAxios({
       baseURL: 'https://api.benzinga.com/api/v1',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json' }
     });
   }
 
@@ -77,8 +77,8 @@ export class BenzingaClient {
         channels: params.channels,
         topics: params.topics,
         authors: params.authors,
-        content_types: params.contentTypes,
-      },
+        content_types: params.contentTypes
+      }
     });
     return res.data;
   }
@@ -100,8 +100,8 @@ export class BenzingaClient {
         updated_since: params.updatedSince,
         country: params.country,
         page: params.page,
-        pagesize: params.pageSize,
-      },
+        pagesize: params.pageSize
+      }
     });
     return res.data;
   }
@@ -128,8 +128,8 @@ export class BenzingaClient {
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
         'parameters[updated]': params.updated,
-        'parameters[importance]': params.importance,
-      },
+        'parameters[importance]': params.importance
+      }
     });
     return res.data;
   }
@@ -154,8 +154,8 @@ export class BenzingaClient {
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
         'parameters[updated]': params.updated,
-        'parameters[importance]': params.importance,
-      },
+        'parameters[importance]': params.importance
+      }
     });
     return res.data;
   }
@@ -180,8 +180,8 @@ export class BenzingaClient {
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
         'parameters[updated]': params.updated,
-        'parameters[importance]': params.importance,
-      },
+        'parameters[importance]': params.importance
+      }
     });
     return res.data;
   }
@@ -206,8 +206,8 @@ export class BenzingaClient {
         'parameters[date]': params.date,
         'parameters[updated]': params.updated,
         'parameters[importance]': params.importance,
-        'parameters[country]': params.country,
-      },
+        'parameters[country]': params.country
+      }
     });
     return res.data;
   }
@@ -230,8 +230,8 @@ export class BenzingaClient {
         'parameters[date_from]': params.dateFrom,
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
-        'parameters[updated]': params.updated,
-      },
+        'parameters[updated]': params.updated
+      }
     });
     return res.data;
   }
@@ -256,8 +256,8 @@ export class BenzingaClient {
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
         'parameters[updated]': params.updated,
-        'parameters[importance]': params.importance,
-      },
+        'parameters[importance]': params.importance
+      }
     });
     return res.data;
   }
@@ -282,8 +282,8 @@ export class BenzingaClient {
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
         'parameters[updated]': params.updated,
-        'parameters[importance]': params.importance,
-      },
+        'parameters[importance]': params.importance
+      }
     });
     return res.data;
   }
@@ -306,8 +306,8 @@ export class BenzingaClient {
         'parameters[date_from]': params.dateFrom,
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
-        'parameters[updated]': params.updated,
-      },
+        'parameters[updated]': params.updated
+      }
     });
     return res.data;
   }
@@ -330,8 +330,8 @@ export class BenzingaClient {
         'parameters[date_from]': params.dateFrom,
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
-        'parameters[updated]': params.updated,
-      },
+        'parameters[updated]': params.updated
+      }
     });
     return res.data;
   }
@@ -354,8 +354,8 @@ export class BenzingaClient {
         'parameters[date_from]': params.dateFrom,
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
-        'parameters[updated]': params.updated,
-      },
+        'parameters[updated]': params.updated
+      }
     });
     return res.data;
   }
@@ -378,8 +378,8 @@ export class BenzingaClient {
         'parameters[date_from]': params.dateFrom,
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
-        'parameters[updated]': params.updated,
-      },
+        'parameters[updated]': params.updated
+      }
     });
     return res.data;
   }
@@ -400,8 +400,8 @@ export class BenzingaClient {
         from: params.from,
         to: params.to,
         session: params.session,
-        screenerQuery: params.screenerQuery,
-      },
+        screenerQuery: params.screenerQuery
+      }
     });
     return res.data;
   }
@@ -426,26 +426,22 @@ export class BenzingaClient {
         'parameters[date_from]': params.dateFrom,
         'parameters[date_to]': params.dateTo,
         'parameters[date]': params.date,
-        'parameters[updated]': params.updated,
-      },
+        'parameters[updated]': params.updated
+      }
     });
     return res.data;
   }
 
   // ---- Delayed Quotes ----
 
-  async getDelayedQuotes(params: {
-    symbols?: string;
-    isin?: string;
-    cik?: string;
-  }) {
+  async getDelayedQuotes(params: { symbols?: string; isin?: string; cik?: string }) {
     let res = await this.axiosV2.get('/quoteDelayed', {
       params: {
         token: this.token,
         symbols: params.symbols,
         isin: params.isin,
-        cik: params.cik,
-      },
+        cik: params.cik
+      }
     });
     return res.data;
   }
@@ -464,38 +460,32 @@ export class BenzingaClient {
         symbols: params.symbols,
         from: params.from,
         to: params.to,
-        interval: params.interval,
-      },
+        interval: params.interval
+      }
     });
     return res.data;
   }
 
   // ---- Company Fundamentals ----
 
-  async getFundamentals(params: {
-    symbols: string;
-    asOf?: string;
-  }) {
+  async getFundamentals(params: { symbols: string; asOf?: string }) {
     let res = await this.axiosV2_1.get('/fundamentals', {
       params: {
         token: this.token,
         symbols: params.symbols,
-        asOf: params.asOf,
-      },
+        asOf: params.asOf
+      }
     });
     return res.data;
   }
 
-  async getCompanyProfile(params: {
-    symbols: string;
-    asOf?: string;
-  }) {
+  async getCompanyProfile(params: { symbols: string; asOf?: string }) {
     let res = await this.axiosV2_1.get('/fundamentals/companyProfile', {
       params: {
         token: this.token,
         symbols: params.symbols,
-        asOf: params.asOf,
-      },
+        asOf: params.asOf
+      }
     });
     return res.data;
   }
@@ -512,22 +502,19 @@ export class BenzingaClient {
         symbols: params.symbols,
         asOf: params.asOf,
         period: params.period,
-        reportType: params.reportType,
-      },
+        reportType: params.reportType
+      }
     });
     return res.data;
   }
 
-  async getValuationRatios(params: {
-    symbols: string;
-    asOf?: string;
-  }) {
+  async getValuationRatios(params: { symbols: string; asOf?: string }) {
     let res = await this.axiosV2_1.get('/fundamentals/valuationRatios', {
       params: {
         token: this.token,
         symbols: params.symbols,
-        asOf: params.asOf,
-      },
+        asOf: params.asOf
+      }
     });
     return res.data;
   }
@@ -544,8 +531,10 @@ export class BenzingaClient {
         token: this.token,
         search_keys: params.searchKeys,
         search_keys_type: params.searchKeysType || 'symbol',
-        fields: params.fields || 'logo_light,logo_dark,logo_vector_light,logo_vector_dark,mark_light,mark_dark',
-      },
+        fields:
+          params.fields ||
+          'logo_light,logo_dark,logo_vector_light,logo_vector_dark,mark_light,mark_dark'
+      }
     });
     return res.data;
   }
@@ -572,8 +561,8 @@ export class BenzingaClient {
         search_keys: params.searchKeys,
         page: params.page,
         pagesize: params.pageSize,
-        updated_since: params.updatedSince,
-      },
+        updated_since: params.updatedSince
+      }
     });
     return res.data;
   }
@@ -600,8 +589,8 @@ export class BenzingaClient {
         search_keys_type: params.searchKeysType || 'symbol',
         page: params.page,
         pagesize: params.pageSize,
-        updated_since: params.updatedSince,
-      },
+        updated_since: params.updatedSince
+      }
     });
     return res.data;
   }
@@ -622,8 +611,8 @@ export class BenzingaClient {
         from: params.from,
         to: params.to,
         page: params.page,
-        pageSize: params.pageSize,
-      },
+        pageSize: params.pageSize
+      }
     });
     return res.data;
   }

@@ -30,6 +30,7 @@ Replace `common` with a specific **Tenant ID** to restrict authentication to a s
 Microsoft Graph exposes delegated permissions and application permissions. Delegated permissions, also called scopes, work in the delegated access scenario.
 
 Key Teams-related scopes include:
+
 - `Team.ReadBasic.All` — Read basic team properties
 - `TeamSettings.Read.All` / `TeamSettings.ReadWrite.All` — Read or modify team settings
 - `Channel.ReadBasic.All` / `Channel.Create` / `Channel.Delete.All` — Manage channels

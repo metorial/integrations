@@ -8,53 +8,59 @@ let draftEventTypes = [
   'draft.scheduled',
   'draft.status_changed',
   'draft.tags_changed',
-  'draft.deleted',
+  'draft.deleted'
 ] as const;
 
-export let draftEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Draft Events',
-    key: 'draft_events',
-    description: 'Fires when a draft is created, published, scheduled, deleted, or when its status or tags change. Configure the webhook URL in Typefully Settings → API.',
-  },
-)
-  .input(z.object({
-    eventType: z.enum(draftEventTypes).describe('Type of draft event'),
-    timestamp: z.string().describe('Unix timestamp of the event'),
-    draftId: z.string().describe('ID of the affected draft'),
-    socialSetId: z.string().describe('ID of the social set'),
-    status: z.string().nullable().describe('Draft status after the event'),
-    createdAt: z.string().nullable().describe('When the draft was created'),
-    updatedAt: z.string().nullable().describe('When the draft was last updated'),
-    scheduledDate: z.string().nullable().describe('Scheduled publication time'),
-    publishedAt: z.string().nullable().describe('When the draft was published'),
-    draftTitle: z.string().nullable().describe('Internal title of the draft'),
-    tags: z.array(z.string()).describe('Tags on the draft'),
-    preview: z.string().nullable().describe('Preview text of the draft'),
-    enabledPlatforms: z.array(z.string()).describe('Platforms this draft targets'),
-    publishedUrls: z.record(z.string(), z.string().nullable()).describe('Published post URLs per platform'),
-  }))
-  .output(z.object({
-    draftId: z.string().describe('ID of the affected draft'),
-    socialSetId: z.string().describe('ID of the social set'),
-    status: z.string().nullable().describe('Draft status after the event'),
-    createdAt: z.string().nullable().describe('When the draft was created'),
-    updatedAt: z.string().nullable().describe('When the draft was last updated'),
-    scheduledDate: z.string().nullable().describe('Scheduled publication time'),
-    publishedAt: z.string().nullable().describe('When the draft was published'),
-    draftTitle: z.string().nullable().describe('Internal title of the draft'),
-    tags: z.array(z.string()).describe('Tags on the draft'),
-    preview: z.string().nullable().describe('Preview text of the draft'),
-    enabledPlatforms: z.array(z.string()).describe('Platforms targeted by the draft'),
-    publishedUrls: z.record(z.string(), z.string().nullable()).describe('Published post URLs per platform'),
-  }))
+export let draftEvents = SlateTrigger.create(spec, {
+  name: 'Draft Events',
+  key: 'draft_events',
+  description:
+    'Fires when a draft is created, published, scheduled, deleted, or when its status or tags change. Configure the webhook URL in Typefully Settings → API.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(draftEventTypes).describe('Type of draft event'),
+      timestamp: z.string().describe('Unix timestamp of the event'),
+      draftId: z.string().describe('ID of the affected draft'),
+      socialSetId: z.string().describe('ID of the social set'),
+      status: z.string().nullable().describe('Draft status after the event'),
+      createdAt: z.string().nullable().describe('When the draft was created'),
+      updatedAt: z.string().nullable().describe('When the draft was last updated'),
+      scheduledDate: z.string().nullable().describe('Scheduled publication time'),
+      publishedAt: z.string().nullable().describe('When the draft was published'),
+      draftTitle: z.string().nullable().describe('Internal title of the draft'),
+      tags: z.array(z.string()).describe('Tags on the draft'),
+      preview: z.string().nullable().describe('Preview text of the draft'),
+      enabledPlatforms: z.array(z.string()).describe('Platforms this draft targets'),
+      publishedUrls: z
+        .record(z.string(), z.string().nullable())
+        .describe('Published post URLs per platform')
+    })
+  )
+  .output(
+    z.object({
+      draftId: z.string().describe('ID of the affected draft'),
+      socialSetId: z.string().describe('ID of the social set'),
+      status: z.string().nullable().describe('Draft status after the event'),
+      createdAt: z.string().nullable().describe('When the draft was created'),
+      updatedAt: z.string().nullable().describe('When the draft was last updated'),
+      scheduledDate: z.string().nullable().describe('Scheduled publication time'),
+      publishedAt: z.string().nullable().describe('When the draft was published'),
+      draftTitle: z.string().nullable().describe('Internal title of the draft'),
+      tags: z.array(z.string()).describe('Tags on the draft'),
+      preview: z.string().nullable().describe('Preview text of the draft'),
+      enabledPlatforms: z.array(z.string()).describe('Platforms targeted by the draft'),
+      publishedUrls: z
+        .record(z.string(), z.string().nullable())
+        .describe('Published post URLs per platform')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let eventType = ctx.request.headers.get('x-typefully-event') as string | null;
       let timestamp = ctx.request.headers.get('x-typefully-timestamp') ?? '';
 
-      let body = await ctx.request.json() as any;
+      let body = (await ctx.request.json()) as any;
 
       if (!eventType || !body) {
         return { inputs: [] };
@@ -92,13 +98,13 @@ export let draftEvents = SlateTrigger.create(
             tags: draft.tags ?? [],
             preview: draft.preview ?? null,
             enabledPlatforms,
-            publishedUrls,
-          },
-        ],
+            publishedUrls
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.draftId}-${ctx.input.eventType}-${ctx.input.timestamp}`,
@@ -114,8 +120,9 @@ export let draftEvents = SlateTrigger.create(
           tags: ctx.input.tags,
           preview: ctx.input.preview,
           enabledPlatforms: ctx.input.enabledPlatforms,
-          publishedUrls: ctx.input.publishedUrls,
-        },
+          publishedUrls: ctx.input.publishedUrls
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -4,23 +4,22 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { printJobSchema, mapPrintJob } from '../lib/schemas';
 
-export let getPrintJob = SlateTool.create(
-  spec,
-  {
-    name: 'Get Print Job',
-    key: 'get_print_job',
-    description: `Retrieve the full details of a print job including its letters, statuses, tracking numbers, costs, and metadata. Use this to check the current state of a print job or monitor delivery progress.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getPrintJob = SlateTool.create(spec, {
+  name: 'Get Print Job',
+  key: 'get_print_job',
+  description: `Retrieve the full details of a print job including its letters, statuses, tracking numbers, costs, and metadata. Use this to check the current state of a print job or monitor delivery progress.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    printJobId: z.string().describe('The ID of the print job to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      printJobId: z.string().describe('The ID of the print job to retrieve')
+    })
+  )
   .output(printJobSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getPrintJob(ctx.input.printJobId);
     let mapped = mapPrintJob(result);
@@ -35,7 +34,7 @@ export let getPrintJob = SlateTool.create(
 
     return {
       output: mapped,
-      message: `Print job **${mapped.printJobId}** (${mapped.type ?? 'letter'}): ${mapped.confirmed ? 'confirmed' : 'draft'}, **${letterCount}** letter(s).${statusSummary}${mapped.testmode ? ' *(test mode)*' : ''}`,
+      message: `Print job **${mapped.printJobId}** (${mapped.type ?? 'letter'}): ${mapped.confirmed ? 'confirmed' : 'draft'}, **${letterCount}** letter(s).${statusSummary}${mapped.testmode ? ' *(test mode)*' : ''}`
     };
   })
   .build();

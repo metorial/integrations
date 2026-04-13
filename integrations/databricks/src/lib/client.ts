@@ -9,8 +9,8 @@ export class DatabricksClient {
       baseURL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -23,7 +23,7 @@ export class DatabricksClient {
 
   async getCluster(clusterId: string) {
     let response = await this.http.get('/api/2.0/clusters/get', {
-      params: { cluster_id: clusterId },
+      params: { cluster_id: clusterId }
     });
     return response.data as any;
   }
@@ -41,17 +41,18 @@ export class DatabricksClient {
     let body: Record<string, any> = {
       cluster_name: params.clusterName,
       spark_version: params.sparkVersion,
-      node_type_id: params.nodeTypeId,
+      node_type_id: params.nodeTypeId
     };
     if (params.autoscale) {
       body.autoscale = {
         min_workers: params.autoscale.minWorkers,
-        max_workers: params.autoscale.maxWorkers,
+        max_workers: params.autoscale.maxWorkers
       };
     } else if (params.numWorkers !== undefined) {
       body.num_workers = params.numWorkers;
     }
-    if (params.autoterminationMinutes !== undefined) body.autotermination_minutes = params.autoterminationMinutes;
+    if (params.autoterminationMinutes !== undefined)
+      body.autotermination_minutes = params.autoterminationMinutes;
     if (params.sparkConf) body.spark_conf = params.sparkConf;
     if (params.customTags) body.custom_tags = params.customTags;
 
@@ -59,25 +60,28 @@ export class DatabricksClient {
     return response.data as any;
   }
 
-  async editCluster(clusterId: string, params: {
-    clusterName?: string;
-    sparkVersion?: string;
-    nodeTypeId?: string;
-    numWorkers?: number;
-    autoterminationMinutes?: number;
-    autoscale?: { minWorkers: number; maxWorkers: number };
-  }) {
+  async editCluster(
+    clusterId: string,
+    params: {
+      clusterName?: string;
+      sparkVersion?: string;
+      nodeTypeId?: string;
+      numWorkers?: number;
+      autoterminationMinutes?: number;
+      autoscale?: { minWorkers: number; maxWorkers: number };
+    }
+  ) {
     let current = await this.getCluster(clusterId);
     let body: Record<string, any> = {
       cluster_id: clusterId,
       cluster_name: params.clusterName ?? current.cluster_name,
       spark_version: params.sparkVersion ?? current.spark_version,
-      node_type_id: params.nodeTypeId ?? current.node_type_id,
+      node_type_id: params.nodeTypeId ?? current.node_type_id
     };
     if (params.autoscale) {
       body.autoscale = {
         min_workers: params.autoscale.minWorkers,
-        max_workers: params.autoscale.maxWorkers,
+        max_workers: params.autoscale.maxWorkers
       };
     } else if (params.numWorkers !== undefined) {
       body.num_workers = params.numWorkers;
@@ -86,7 +90,8 @@ export class DatabricksClient {
     } else {
       body.num_workers = current.num_workers ?? 0;
     }
-    if (params.autoterminationMinutes !== undefined) body.autotermination_minutes = params.autoterminationMinutes;
+    if (params.autoterminationMinutes !== undefined)
+      body.autotermination_minutes = params.autoterminationMinutes;
 
     let response = await this.http.post('/api/2.0/clusters/edit', body);
     return response.data as any;
@@ -110,7 +115,9 @@ export class DatabricksClient {
 
   // ─── Jobs ────────────────────────────────────────────────────────────
 
-  async listJobs(params: { limit?: number; offset?: number; name?: string; expandTasks?: boolean } = {}) {
+  async listJobs(
+    params: { limit?: number; offset?: number; name?: string; expandTasks?: boolean } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.limit !== undefined) query.limit = params.limit;
     if (params.offset !== undefined) query.offset = params.offset;
@@ -123,7 +130,7 @@ export class DatabricksClient {
 
   async getJob(jobId: string) {
     let response = await this.http.get('/api/2.1/jobs/get', {
-      params: { job_id: jobId },
+      params: { job_id: jobId }
     });
     return response.data as any;
   }
@@ -140,16 +147,17 @@ export class DatabricksClient {
   }) {
     let body: Record<string, any> = {
       name: params.name,
-      tasks: params.tasks.map((t: any) => this.mapTaskToApi(t)),
+      tasks: params.tasks.map((t: any) => this.mapTaskToApi(t))
     };
     if (params.schedule) {
       body.schedule = {
         quartz_cron_expression: params.schedule.quartzCronExpression,
         timezone_id: params.schedule.timezoneId,
-        pause_status: params.schedule.pauseStatus ?? 'UNPAUSED',
+        pause_status: params.schedule.pauseStatus ?? 'UNPAUSED'
       };
     }
-    if (params.maxConcurrentRuns !== undefined) body.max_concurrent_runs = params.maxConcurrentRuns;
+    if (params.maxConcurrentRuns !== undefined)
+      body.max_concurrent_runs = params.maxConcurrentRuns;
     if (params.timeoutSeconds !== undefined) body.timeout_seconds = params.timeoutSeconds;
     if (params.emailNotifications) body.email_notifications = params.emailNotifications;
     if (params.webhookNotifications) body.webhook_notifications = params.webhookNotifications;
@@ -163,12 +171,15 @@ export class DatabricksClient {
     await this.http.post('/api/2.1/jobs/delete', { job_id: jobId });
   }
 
-  async runJobNow(jobId: string, params: {
-    notebookParams?: Record<string, string>;
-    pythonParams?: string[];
-    jarParams?: string[];
-    sparkSubmitParams?: string[];
-  } = {}) {
+  async runJobNow(
+    jobId: string,
+    params: {
+      notebookParams?: Record<string, string>;
+      pythonParams?: string[];
+      jarParams?: string[];
+      sparkSubmitParams?: string[];
+    } = {}
+  ) {
     let body: Record<string, any> = { job_id: jobId };
     if (params.notebookParams) body.notebook_params = params.notebookParams;
     if (params.pythonParams) body.python_params = params.pythonParams;
@@ -185,12 +196,20 @@ export class DatabricksClient {
 
   async getJobRun(runId: string) {
     let response = await this.http.get('/api/2.1/jobs/runs/get', {
-      params: { run_id: runId },
+      params: { run_id: runId }
     });
     return response.data as any;
   }
 
-  async listJobRuns(params: { jobId?: string; activeOnly?: boolean; completedOnly?: boolean; limit?: number; offset?: number } = {}) {
+  async listJobRuns(
+    params: {
+      jobId?: string;
+      activeOnly?: boolean;
+      completedOnly?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.jobId) query.job_id = params.jobId;
     if (params.activeOnly) query.active_only = true;
@@ -204,29 +223,30 @@ export class DatabricksClient {
 
   async getJobRunOutput(runId: string) {
     let response = await this.http.get('/api/2.1/jobs/runs/get-output', {
-      params: { run_id: runId },
+      params: { run_id: runId }
     });
     return response.data as any;
   }
 
   private mapTaskToApi(task: any): any {
     let mapped: Record<string, any> = {
-      task_key: task.taskKey,
+      task_key: task.taskKey
     };
     if (task.description) mapped.description = task.description;
-    if (task.dependsOn) mapped.depends_on = task.dependsOn.map((d: string) => ({ task_key: d }));
+    if (task.dependsOn)
+      mapped.depends_on = task.dependsOn.map((d: string) => ({ task_key: d }));
     if (task.existingClusterId) mapped.existing_cluster_id = task.existingClusterId;
     if (task.newCluster) mapped.new_cluster = task.newCluster;
     if (task.notebookTask) {
       mapped.notebook_task = {
         notebook_path: task.notebookTask.notebookPath,
-        base_parameters: task.notebookTask.baseParameters,
+        base_parameters: task.notebookTask.baseParameters
       };
     }
     if (task.sparkPythonTask) {
       mapped.spark_python_task = {
         python_file: task.sparkPythonTask.pythonFile,
-        parameters: task.sparkPythonTask.parameters,
+        parameters: task.sparkPythonTask.parameters
       };
     }
     if (task.sqlTask) {
@@ -260,15 +280,18 @@ export class DatabricksClient {
   }) {
     let body: Record<string, any> = {
       name: params.name,
-      cluster_size: params.clusterSize,
+      cluster_size: params.clusterSize
     };
     if (params.minNumClusters !== undefined) body.min_num_clusters = params.minNumClusters;
     if (params.maxNumClusters !== undefined) body.max_num_clusters = params.maxNumClusters;
     if (params.autoStopMins !== undefined) body.auto_stop_mins = params.autoStopMins;
     if (params.warehouseType) body.warehouse_type = params.warehouseType;
-    if (params.enableServerlessCompute !== undefined) body.enable_serverless_compute = params.enableServerlessCompute;
+    if (params.enableServerlessCompute !== undefined)
+      body.enable_serverless_compute = params.enableServerlessCompute;
     if (params.tags) {
-      body.tags = { custom_tags: Object.entries(params.tags).map(([k, v]) => ({ key: k, value: v })) };
+      body.tags = {
+        custom_tags: Object.entries(params.tags).map(([k, v]) => ({ key: k, value: v }))
+      };
     }
 
     let response = await this.http.post('/api/2.0/sql/warehouses', body);
@@ -300,7 +323,7 @@ export class DatabricksClient {
   }) {
     let body: Record<string, any> = {
       warehouse_id: params.warehouseId,
-      statement: params.statement,
+      statement: params.statement
     };
     if (params.catalog) body.catalog = params.catalog;
     if (params.schema) body.schema = params.schema;
@@ -325,14 +348,14 @@ export class DatabricksClient {
 
   async listWorkspace(path: string) {
     let response = await this.http.get('/api/2.0/workspace/list', {
-      params: { path },
+      params: { path }
     });
     return (response.data as any).objects ?? [];
   }
 
   async getWorkspaceStatus(path: string) {
     let response = await this.http.get('/api/2.0/workspace/get-status', {
-      params: { path },
+      params: { path }
     });
     return response.data as any;
   }
@@ -348,7 +371,7 @@ export class DatabricksClient {
       path: params.path,
       content: params.content,
       format: params.format ?? 'SOURCE',
-      overwrite: params.overwrite ?? false,
+      overwrite: params.overwrite ?? false
     };
     if (params.language) body.language = params.language;
 
@@ -357,7 +380,7 @@ export class DatabricksClient {
 
   async exportNotebook(path: string, format?: string) {
     let response = await this.http.get('/api/2.0/workspace/export', {
-      params: { path, format: format ?? 'SOURCE' },
+      params: { path, format: format ?? 'SOURCE' }
     });
     return response.data as any;
   }
@@ -365,7 +388,7 @@ export class DatabricksClient {
   async deleteWorkspaceItem(path: string, recursive?: boolean) {
     await this.http.post('/api/2.0/workspace/delete', {
       path,
-      recursive: recursive ?? false,
+      recursive: recursive ?? false
     });
   }
 
@@ -387,7 +410,7 @@ export class DatabricksClient {
 
   async listSchemas(catalogName: string) {
     let response = await this.http.get('/api/2.1/unity-catalog/schemas', {
-      params: { catalog_name: catalogName },
+      params: { catalog_name: catalogName }
     });
     return (response.data as any).schemas ?? [];
   }
@@ -399,7 +422,7 @@ export class DatabricksClient {
 
   async listTables(catalogName: string, schemaName: string) {
     let response = await this.http.get('/api/2.1/unity-catalog/tables', {
-      params: { catalog_name: catalogName, schema_name: schemaName },
+      params: { catalog_name: catalogName, schema_name: schemaName }
     });
     return (response.data as any).tables ?? [];
   }
@@ -411,7 +434,7 @@ export class DatabricksClient {
 
   async listVolumes(catalogName: string, schemaName: string) {
     let response = await this.http.get('/api/2.1/unity-catalog/volumes', {
-      params: { catalog_name: catalogName, schema_name: schemaName },
+      params: { catalog_name: catalogName, schema_name: schemaName }
     });
     return (response.data as any).volumes ?? [];
   }
@@ -429,7 +452,7 @@ export class DatabricksClient {
 
   async getExperiment(experimentId: string) {
     let response = await this.http.get('/api/2.0/mlflow/experiments/get', {
-      params: { experiment_id: experimentId },
+      params: { experiment_id: experimentId }
     });
     return response.data as any;
   }
@@ -443,10 +466,20 @@ export class DatabricksClient {
   }
 
   async deleteExperiment(experimentId: string) {
-    await this.http.post('/api/2.0/mlflow/experiments/delete', { experiment_id: experimentId });
+    await this.http.post('/api/2.0/mlflow/experiments/delete', {
+      experiment_id: experimentId
+    });
   }
 
-  async listRuns(experimentIds: string[], params: { filter?: string; maxResults?: number; orderBy?: string[]; pageToken?: string } = {}) {
+  async listRuns(
+    experimentIds: string[],
+    params: {
+      filter?: string;
+      maxResults?: number;
+      orderBy?: string[];
+      pageToken?: string;
+    } = {}
+  ) {
     let body: Record<string, any> = { experiment_ids: experimentIds };
     if (params.filter) body.filter = params.filter;
     if (params.maxResults) body.max_results = params.maxResults;
@@ -459,7 +492,7 @@ export class DatabricksClient {
 
   async getRun(runId: string) {
     let response = await this.http.get('/api/2.0/mlflow/runs/get', {
-      params: { run_id: runId },
+      params: { run_id: runId }
     });
     return response.data as any;
   }
@@ -471,18 +504,24 @@ export class DatabricksClient {
     if (params.maxResults) query.max_results = params.maxResults;
     if (params.pageToken) query.page_token = params.pageToken;
 
-    let response = await this.http.get('/api/2.0/mlflow/registered-models/list', { params: query });
+    let response = await this.http.get('/api/2.0/mlflow/registered-models/list', {
+      params: query
+    });
     return response.data as any;
   }
 
   async getRegisteredModel(name: string) {
     let response = await this.http.get('/api/2.0/mlflow/registered-models/get', {
-      params: { name },
+      params: { name }
     });
     return response.data as any;
   }
 
-  async createRegisteredModel(name: string, description?: string, tags?: Array<{ key: string; value: string }>) {
+  async createRegisteredModel(
+    name: string,
+    description?: string,
+    tags?: Array<{ key: string; value: string }>
+  ) {
     let body: Record<string, any> = { name };
     if (description) body.description = description;
     if (tags) body.tags = tags;
@@ -493,7 +532,7 @@ export class DatabricksClient {
 
   async listModelVersions(name: string) {
     let response = await this.http.get('/api/2.0/mlflow/model-versions/list', {
-      params: { name },
+      params: { name }
     });
     return response.data as any;
   }
@@ -553,7 +592,7 @@ export class DatabricksClient {
 
   async listSecrets(scope: string) {
     let response = await this.http.get('/api/2.0/secrets/list', {
-      params: { scope },
+      params: { scope }
     });
     return (response.data as any).secrets ?? [];
   }
@@ -562,7 +601,7 @@ export class DatabricksClient {
     await this.http.post('/api/2.0/secrets/put', {
       scope,
       key,
-      string_value: stringValue,
+      string_value: stringValue
     });
   }
 
@@ -572,7 +611,9 @@ export class DatabricksClient {
 
   // ─── Pipelines (Delta Live Tables) ───────────────────────────────────
 
-  async listPipelines(params: { maxResults?: number; pageToken?: string; filter?: string } = {}) {
+  async listPipelines(
+    params: { maxResults?: number; pageToken?: string; filter?: string } = {}
+  ) {
     let query: Record<string, any> = {};
     if (params.maxResults) query.max_results = params.maxResults;
     if (params.pageToken) query.page_token = params.pageToken;
@@ -598,7 +639,7 @@ export class DatabricksClient {
   }) {
     let body: Record<string, any> = {
       name: params.name,
-      libraries: params.libraries,
+      libraries: params.libraries
     };
     if (params.target) body.target = params.target;
     if (params.continuous !== undefined) body.continuous = params.continuous;
@@ -641,7 +682,7 @@ export class DatabricksClient {
   async createVectorSearchEndpoint(name: string, endpointType: string) {
     let response = await this.http.post('/api/2.0/vector-search/endpoints', {
       name,
-      endpoint_type: endpointType,
+      endpoint_type: endpointType
     });
     return response.data as any;
   }
@@ -652,27 +693,33 @@ export class DatabricksClient {
 
   async listVectorSearchIndexes(endpointName: string) {
     let response = await this.http.get(`/api/2.0/vector-search/indexes`, {
-      params: { endpoint_name: endpointName },
+      params: { endpoint_name: endpointName }
     });
     return (response.data as any).vector_indexes ?? [];
   }
 
-  async queryVectorSearchIndex(indexName: string, params: {
-    queryVector?: number[];
-    queryText?: string;
-    columns: string[];
-    numResults?: number;
-    filtersJson?: string;
-  }) {
+  async queryVectorSearchIndex(
+    indexName: string,
+    params: {
+      queryVector?: number[];
+      queryText?: string;
+      columns: string[];
+      numResults?: number;
+      filtersJson?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      columns: params.columns,
+      columns: params.columns
     };
     if (params.queryVector) body.query_vector = params.queryVector;
     if (params.queryText) body.query_text = params.queryText;
     if (params.numResults) body.num_results = params.numResults;
     if (params.filtersJson) body.filters_json = params.filtersJson;
 
-    let response = await this.http.post(`/api/2.0/vector-search/indexes/${indexName}/query`, body);
+    let response = await this.http.post(
+      `/api/2.0/vector-search/indexes/${indexName}/query`,
+      body
+    );
     return response.data as any;
   }
 
@@ -680,14 +727,14 @@ export class DatabricksClient {
 
   async dbfsList(path: string) {
     let response = await this.http.get('/api/2.0/dbfs/list', {
-      params: { path },
+      params: { path }
     });
     return (response.data as any).files ?? [];
   }
 
   async dbfsGetStatus(path: string) {
     let response = await this.http.get('/api/2.0/dbfs/get-status', {
-      params: { path },
+      params: { path }
     });
     return response.data as any;
   }
@@ -713,7 +760,7 @@ export class DatabricksClient {
     await this.http.post('/api/2.0/dbfs/put', {
       path,
       contents,
-      overwrite: overwrite ?? false,
+      overwrite: overwrite ?? false
     });
   }
 
@@ -724,20 +771,27 @@ export class DatabricksClient {
     if (params.modelName) query.model_name = params.modelName;
     if (params.events) query.events = params.events;
 
-    let response = await this.http.get('/api/2.0/mlflow/registry-webhooks/list', { params: query });
+    let response = await this.http.get('/api/2.0/mlflow/registry-webhooks/list', {
+      params: query
+    });
     return (response.data as any).webhooks ?? [];
   }
 
   async createRegistryWebhook(params: {
     events: string[];
     modelName?: string;
-    httpUrlSpec?: { url: string; enableSslVerification?: boolean; secret?: string; authorization?: string };
+    httpUrlSpec?: {
+      url: string;
+      enableSslVerification?: boolean;
+      secret?: string;
+      authorization?: string;
+    };
     jobSpec?: { jobId: string; workspaceUrl?: string; accessToken?: string };
     description?: string;
     status?: string;
   }) {
     let body: Record<string, any> = {
-      events: params.events,
+      events: params.events
     };
     if (params.modelName) body.model_name = params.modelName;
     if (params.description) body.description = params.description;
@@ -745,16 +799,18 @@ export class DatabricksClient {
     if (params.httpUrlSpec) {
       body.http_url_spec = {
         url: params.httpUrlSpec.url,
-        enable_ssl_verification: params.httpUrlSpec.enableSslVerification ?? true,
+        enable_ssl_verification: params.httpUrlSpec.enableSslVerification ?? true
       };
       if (params.httpUrlSpec.secret) body.http_url_spec.secret = params.httpUrlSpec.secret;
-      if (params.httpUrlSpec.authorization) body.http_url_spec.authorization = params.httpUrlSpec.authorization;
+      if (params.httpUrlSpec.authorization)
+        body.http_url_spec.authorization = params.httpUrlSpec.authorization;
     }
     if (params.jobSpec) {
       body.job_spec = {
-        job_id: params.jobSpec.jobId,
+        job_id: params.jobSpec.jobId
       };
-      if (params.jobSpec.workspaceUrl) body.job_spec.workspace_url = params.jobSpec.workspaceUrl;
+      if (params.jobSpec.workspaceUrl)
+        body.job_spec.workspace_url = params.jobSpec.workspaceUrl;
       if (params.jobSpec.accessToken) body.job_spec.access_token = params.jobSpec.accessToken;
     }
 
@@ -764,7 +820,7 @@ export class DatabricksClient {
 
   async deleteRegistryWebhook(webhookId: string) {
     await this.http.delete('/api/2.0/mlflow/registry-webhooks/delete', {
-      params: { id: webhookId },
+      params: { id: webhookId }
     });
   }
 
@@ -811,12 +867,19 @@ export class DatabricksClient {
     return response.data as any;
   }
 
-  async publishDashboard(dashboardId: string, params: { warehouseId?: string; embedCredentials?: boolean } = {}) {
+  async publishDashboard(
+    dashboardId: string,
+    params: { warehouseId?: string; embedCredentials?: boolean } = {}
+  ) {
     let body: Record<string, any> = {};
     if (params.warehouseId) body.warehouse_id = params.warehouseId;
-    if (params.embedCredentials !== undefined) body.embed_credentials = params.embedCredentials;
+    if (params.embedCredentials !== undefined)
+      body.embed_credentials = params.embedCredentials;
 
-    let response = await this.http.post(`/api/2.0/lakeview/dashboards/${dashboardId}/published`, body);
+    let response = await this.http.post(
+      `/api/2.0/lakeview/dashboards/${dashboardId}/published`,
+      body
+    );
     return response.data as any;
   }
 }

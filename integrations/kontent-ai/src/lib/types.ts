@@ -58,7 +58,12 @@ export interface ContentTypeElement {
   options?: Array<{ name: string; codename?: string; external_id?: string }>;
   mode?: string;
   depends_on?: { element: KontentReference; snippet?: KontentReference };
-  validation_regex?: { regex: string; flags?: string; is_active: boolean; validation_message?: string };
+  validation_regex?: {
+    regex: string;
+    flags?: string;
+    is_active: boolean;
+    validation_message?: string;
+  };
   [key: string]: any;
 }
 

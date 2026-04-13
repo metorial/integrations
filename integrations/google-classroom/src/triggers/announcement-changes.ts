@@ -11,30 +11,32 @@ let announcementOutputSchema = z.object({
   alternateLink: z.string().optional().describe('URL to the announcement'),
   creationTime: z.string().optional().describe('When the announcement was created'),
   updateTime: z.string().optional().describe('When the announcement was last updated'),
-  creatorUserId: z.string().optional().describe('User ID of the creator'),
+  creatorUserId: z.string().optional().describe('User ID of the creator')
 });
 
-export let announcementChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Announcement Changes',
-    key: 'announcement_changes',
-    description: 'Triggers when announcements are created or updated in courses you teach. Detects new and modified announcements by polling the API.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Whether the announcement was created or updated'),
-    announcementId: z.string().describe('Announcement ID'),
-    courseId: z.string().describe('Course ID'),
-    announcement: z.any().describe('Full announcement data'),
-  }))
+export let announcementChanges = SlateTrigger.create(spec, {
+  name: 'Announcement Changes',
+  key: 'announcement_changes',
+  description:
+    'Triggers when announcements are created or updated in courses you teach. Detects new and modified announcements by polling the API.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the announcement was created or updated'),
+      announcementId: z.string().describe('Announcement ID'),
+      courseId: z.string().describe('Course ID'),
+      announcement: z.any().describe('Full announcement data')
+    })
+  )
   .output(announcementOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ClassroomClient({ token: ctx.auth.token });
 
       let previousState = ctx.state || {};
@@ -58,7 +60,7 @@ export let announcementChanges = SlateTrigger.create(
 
         let result = await client.listAnnouncements(cId, {
           pageSize: 50,
-          orderBy: 'updateTime desc',
+          orderBy: 'updateTime desc'
         });
 
         let announcements = result.announcements || [];
@@ -72,9 +74,19 @@ export let announcementChanges = SlateTrigger.create(
           if (previousState.initialized) {
             let prevUpdateTime = knownAnnouncements[annId];
             if (!prevUpdateTime) {
-              inputs.push({ changeType: 'created', announcementId: annId, courseId: cId, announcement: ann });
+              inputs.push({
+                changeType: 'created',
+                announcementId: annId,
+                courseId: cId,
+                announcement: ann
+              });
             } else if (prevUpdateTime !== (ann.updateTime || '')) {
-              inputs.push({ changeType: 'updated', announcementId: annId, courseId: cId, announcement: ann });
+              inputs.push({
+                changeType: 'updated',
+                announcementId: annId,
+                courseId: cId,
+                announcement: ann
+              });
             }
           }
         }
@@ -84,12 +96,12 @@ export let announcementChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           knownAnnouncements: newKnownAnnouncements,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { changeType, announcementId, courseId, announcement } = ctx.input;
 
       return {
@@ -103,9 +115,9 @@ export let announcementChanges = SlateTrigger.create(
           alternateLink: announcement.alternateLink,
           creationTime: announcement.creationTime,
           updateTime: announcement.updateTime,
-          creatorUserId: announcement.creatorUserId,
-        },
+          creatorUserId: announcement.creatorUserId
+        }
       };
-    },
+    }
   })
   .build();

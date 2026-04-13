@@ -10,8 +10,8 @@ export class ThanksIoClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -49,24 +49,31 @@ export class ThanksIoClient {
     if (params.imageTemplate !== undefined) body.image_template = params.imageTemplate;
     if (params.message !== undefined) body.message = params.message;
     if (params.messageTemplate !== undefined) body.message_template = params.messageTemplate;
-    if (params.useCustomBackground !== undefined) body.use_custom_background = params.useCustomBackground;
-    if (params.customBackgroundImage !== undefined) body.custom_background_image = params.customBackgroundImage;
+    if (params.useCustomBackground !== undefined)
+      body.use_custom_background = params.useCustomBackground;
+    if (params.customBackgroundImage !== undefined)
+      body.custom_background_image = params.customBackgroundImage;
     if (params.qrcodeUrl !== undefined) body.qrcode_url = params.qrcodeUrl;
     if (params.mailingLists !== undefined) body.mailing_lists = params.mailingLists;
     if (params.recipients !== undefined) body.recipients = params.recipients;
     if (params.radiusSearch !== undefined) body.radius_search = params.radiusSearch;
-    if (params.handwritingStyle !== undefined) body.handwriting_style = params.handwritingStyle;
-    if (params.handwritingColor !== undefined) body.handwriting_color = params.handwritingColor;
-    if (params.handwritingRealism !== undefined) body.handwriting_realism = params.handwritingRealism;
+    if (params.handwritingStyle !== undefined)
+      body.handwriting_style = params.handwritingStyle;
+    if (params.handwritingColor !== undefined)
+      body.handwriting_color = params.handwritingColor;
+    if (params.handwritingRealism !== undefined)
+      body.handwriting_realism = params.handwritingRealism;
     if (params.subAccount !== undefined) body.sub_account = params.subAccount;
     if (params.emailAdditional !== undefined) body.email_additional = params.emailAdditional;
-    if (params.sendStandardMail !== undefined) body.send_standard_mail = params.sendStandardMail;
+    if (params.sendStandardMail !== undefined)
+      body.send_standard_mail = params.sendStandardMail;
     if (params.returnName !== undefined) body.return_name = params.returnName;
     if (params.returnAddress !== undefined) body.return_address = params.returnAddress;
     if (params.returnAddress2 !== undefined) body.return_address2 = params.returnAddress2;
     if (params.returnCity !== undefined) body.return_city = params.returnCity;
     if (params.returnState !== undefined) body.return_state = params.returnState;
-    if (params.returnPostalCode !== undefined) body.return_postal_code = params.returnPostalCode;
+    if (params.returnPostalCode !== undefined)
+      body.return_postal_code = params.returnPostalCode;
     if (params.preview !== undefined) body.preview = params.preview;
 
     let response = await this.axios.post('/send/postcard', body);
@@ -103,24 +110,31 @@ export class ThanksIoClient {
     if (params.imageTemplate !== undefined) body.image_template = params.imageTemplate;
     if (params.message !== undefined) body.message = params.message;
     if (params.messageTemplate !== undefined) body.message_template = params.messageTemplate;
-    if (params.useCustomBackground !== undefined) body.use_custom_background = params.useCustomBackground;
-    if (params.customBackgroundImage !== undefined) body.custom_background_image = params.customBackgroundImage;
+    if (params.useCustomBackground !== undefined)
+      body.use_custom_background = params.useCustomBackground;
+    if (params.customBackgroundImage !== undefined)
+      body.custom_background_image = params.customBackgroundImage;
     if (params.qrcodeUrl !== undefined) body.qrcode_url = params.qrcodeUrl;
     if (params.mailingLists !== undefined) body.mailing_lists = params.mailingLists;
     if (params.recipients !== undefined) body.recipients = params.recipients;
     if (params.radiusSearch !== undefined) body.radius_search = params.radiusSearch;
-    if (params.handwritingStyle !== undefined) body.handwriting_style = params.handwritingStyle;
-    if (params.handwritingColor !== undefined) body.handwriting_color = params.handwritingColor;
-    if (params.handwritingRealism !== undefined) body.handwriting_realism = params.handwritingRealism;
+    if (params.handwritingStyle !== undefined)
+      body.handwriting_style = params.handwritingStyle;
+    if (params.handwritingColor !== undefined)
+      body.handwriting_color = params.handwritingColor;
+    if (params.handwritingRealism !== undefined)
+      body.handwriting_realism = params.handwritingRealism;
     if (params.subAccount !== undefined) body.sub_account = params.subAccount;
     if (params.emailAdditional !== undefined) body.email_additional = params.emailAdditional;
-    if (params.sendStandardMail !== undefined) body.send_standard_mail = params.sendStandardMail;
+    if (params.sendStandardMail !== undefined)
+      body.send_standard_mail = params.sendStandardMail;
     if (params.returnName !== undefined) body.return_name = params.returnName;
     if (params.returnAddress !== undefined) body.return_address = params.returnAddress;
     if (params.returnAddress2 !== undefined) body.return_address2 = params.returnAddress2;
     if (params.returnCity !== undefined) body.return_city = params.returnCity;
     if (params.returnState !== undefined) body.return_state = params.returnState;
-    if (params.returnPostalCode !== undefined) body.return_postal_code = params.returnPostalCode;
+    if (params.returnPostalCode !== undefined)
+      body.return_postal_code = params.returnPostalCode;
     if (params.preview !== undefined) body.preview = params.preview;
 
     let response = await this.axios.post('/send/notecard', body);
@@ -159,26 +173,33 @@ export class ThanksIoClient {
     if (params.message !== undefined) body.message = params.message;
     if (params.messageTemplate !== undefined) body.message_template = params.messageTemplate;
     if (params.qrcodeUrl !== undefined) body.qrcode_url = params.qrcodeUrl;
-    if (params.additionalPagesUrl !== undefined) body.additional_pages_url = params.additionalPagesUrl;
+    if (params.additionalPagesUrl !== undefined)
+      body.additional_pages_url = params.additionalPagesUrl;
     if (params.pdfOnlyUrl !== undefined) body.pdf_only_url = params.pdfOnlyUrl;
     if (params.mailingLists !== undefined) body.mailing_lists = params.mailingLists;
     if (params.recipients !== undefined) body.recipients = params.recipients;
     if (params.radiusSearch !== undefined) body.radius_search = params.radiusSearch;
-    if (params.handwritingStyle !== undefined) body.handwriting_style = params.handwritingStyle;
-    if (params.handwritingColor !== undefined) body.handwriting_color = params.handwritingColor;
-    if (params.handwritingRealism !== undefined) body.handwriting_realism = params.handwritingRealism;
+    if (params.handwritingStyle !== undefined)
+      body.handwriting_style = params.handwritingStyle;
+    if (params.handwritingColor !== undefined)
+      body.handwriting_color = params.handwritingColor;
+    if (params.handwritingRealism !== undefined)
+      body.handwriting_realism = params.handwritingRealism;
     if (params.subAccount !== undefined) body.sub_account = params.subAccount;
     if (params.emailAdditional !== undefined) body.email_additional = params.emailAdditional;
-    if (params.sendStandardMail !== undefined) body.send_standard_mail = params.sendStandardMail;
+    if (params.sendStandardMail !== undefined)
+      body.send_standard_mail = params.sendStandardMail;
     if (params.returnName !== undefined) body.return_name = params.returnName;
     if (params.returnAddress !== undefined) body.return_address = params.returnAddress;
     if (params.returnAddress2 !== undefined) body.return_address2 = params.returnAddress2;
     if (params.returnCity !== undefined) body.return_city = params.returnCity;
     if (params.returnState !== undefined) body.return_state = params.returnState;
-    if (params.returnPostalCode !== undefined) body.return_postal_code = params.returnPostalCode;
+    if (params.returnPostalCode !== undefined)
+      body.return_postal_code = params.returnPostalCode;
     if (params.preview !== undefined) body.preview = params.preview;
 
-    let endpoint = params.letterType === 'windowed' ? '/send/letter/windowed' : '/send/letter/windowless';
+    let endpoint =
+      params.letterType === 'windowed' ? '/send/letter/windowed' : '/send/letter/windowless';
     let response = await this.axios.post(endpoint, body);
     return response.data;
   }
@@ -213,22 +234,28 @@ export class ThanksIoClient {
     if (params.message !== undefined) body.message = params.message;
     if (params.messageTemplate !== undefined) body.message_template = params.messageTemplate;
     if (params.giftcardBrand !== undefined) body.giftcard_brand = params.giftcardBrand;
-    if (params.giftcardAmountInCents !== undefined) body.giftcard_amount_in_cents = params.giftcardAmountInCents;
+    if (params.giftcardAmountInCents !== undefined)
+      body.giftcard_amount_in_cents = params.giftcardAmountInCents;
     if (params.mailingLists !== undefined) body.mailing_lists = params.mailingLists;
     if (params.recipients !== undefined) body.recipients = params.recipients;
     if (params.radiusSearch !== undefined) body.radius_search = params.radiusSearch;
-    if (params.handwritingStyle !== undefined) body.handwriting_style = params.handwritingStyle;
-    if (params.handwritingColor !== undefined) body.handwriting_color = params.handwritingColor;
-    if (params.handwritingRealism !== undefined) body.handwriting_realism = params.handwritingRealism;
+    if (params.handwritingStyle !== undefined)
+      body.handwriting_style = params.handwritingStyle;
+    if (params.handwritingColor !== undefined)
+      body.handwriting_color = params.handwritingColor;
+    if (params.handwritingRealism !== undefined)
+      body.handwriting_realism = params.handwritingRealism;
     if (params.subAccount !== undefined) body.sub_account = params.subAccount;
     if (params.emailAdditional !== undefined) body.email_additional = params.emailAdditional;
-    if (params.sendStandardMail !== undefined) body.send_standard_mail = params.sendStandardMail;
+    if (params.sendStandardMail !== undefined)
+      body.send_standard_mail = params.sendStandardMail;
     if (params.returnName !== undefined) body.return_name = params.returnName;
     if (params.returnAddress !== undefined) body.return_address = params.returnAddress;
     if (params.returnAddress2 !== undefined) body.return_address2 = params.returnAddress2;
     if (params.returnCity !== undefined) body.return_city = params.returnCity;
     if (params.returnState !== undefined) body.return_state = params.returnState;
-    if (params.returnPostalCode !== undefined) body.return_postal_code = params.returnPostalCode;
+    if (params.returnPostalCode !== undefined)
+      body.return_postal_code = params.returnPostalCode;
     if (params.preview !== undefined) body.preview = params.preview;
 
     let response = await this.axios.post('/send/giftcard', body);
@@ -256,7 +283,7 @@ export class ThanksIoClient {
     custom4?: string;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      mailing_list_id: params.mailingListId,
+      mailing_list_id: params.mailingListId
     };
     if (params.name !== undefined) body.name = params.name;
     if (params.company !== undefined) body.company = params.company;
@@ -278,7 +305,9 @@ export class ThanksIoClient {
     return response.data;
   }
 
-  async createMultipleRecipients(recipients: Array<Record<string, unknown>>): Promise<Record<string, unknown>> {
+  async createMultipleRecipients(
+    recipients: Array<Record<string, unknown>>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/recipients-utils/create-multiple', recipients);
     return response.data;
   }
@@ -288,7 +317,10 @@ export class ThanksIoClient {
     return response.data;
   }
 
-  async updateRecipient(recipientId: number, params: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateRecipient(
+    recipientId: number,
+    params: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.company !== undefined) body.company = params.company;
@@ -326,7 +358,7 @@ export class ThanksIoClient {
     email?: string;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      mailing_list_id: params.mailingListId,
+      mailing_list_id: params.mailingListId
     };
     if (params.address !== undefined) body.address = params.address;
     if (params.address2 !== undefined) body.address2 = params.address2;
@@ -342,7 +374,9 @@ export class ThanksIoClient {
 
   // ---- Mailing Lists ----
 
-  async listMailingLists(params?: { itemsPerPage?: number }): Promise<Record<string, unknown>> {
+  async listMailingLists(params?: {
+    itemsPerPage?: number;
+  }): Promise<Record<string, unknown>> {
     let query: Record<string, string> = {};
     if (params?.itemsPerPage !== undefined) query.items_per_page = String(params.itemsPerPage);
 
@@ -356,7 +390,7 @@ export class ThanksIoClient {
     qrcodeUrl?: string;
   }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      description: params.description,
+      description: params.description
     };
     if (params.subAccountId !== undefined) body.sub_account_id = params.subAccountId;
     if (params.qrcodeUrl !== undefined) body.qrcode_url = params.qrcodeUrl;
@@ -375,15 +409,20 @@ export class ThanksIoClient {
     return response.data;
   }
 
-  async listMailingListRecipients(mailingListId: number, params?: {
-    limit?: number;
-    updatedSince?: string;
-  }): Promise<Record<string, unknown>> {
+  async listMailingListRecipients(
+    mailingListId: number,
+    params?: {
+      limit?: number;
+      updatedSince?: string;
+    }
+  ): Promise<Record<string, unknown>> {
     let query: Record<string, string> = {};
     if (params?.limit !== undefined) query.limit = String(params.limit);
     if (params?.updatedSince !== undefined) query.updated_since = params.updatedSince;
 
-    let response = await this.axios.get(`/mailing-lists-utils/recipients/${mailingListId}`, { params: query });
+    let response = await this.axios.get(`/mailing-lists-utils/recipients/${mailingListId}`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -401,14 +440,16 @@ export class ThanksIoClient {
     let body: Record<string, unknown> = {
       address: params.address,
       postal_code: params.postalCode,
-      record_count: params.recordCount,
+      record_count: params.recordCount
     };
     if (params.mailingListId !== undefined) body.mailing_list_id = params.mailingListId;
     if (params.recordTypes !== undefined) body.record_types = params.recordTypes;
     if (params.includeCondos !== undefined) body.include_condos = params.includeCondos;
     if (params.appendData !== undefined) body.append_data = params.appendData;
-    if (params.usePropertyOwner !== undefined) body.use_property_owner = params.usePropertyOwner;
-    if (params.includeSearchAddress !== undefined) body.include_search_address = params.includeSearchAddress;
+    if (params.usePropertyOwner !== undefined)
+      body.use_property_owner = params.usePropertyOwner;
+    if (params.includeSearchAddress !== undefined)
+      body.include_search_address = params.includeSearchAddress;
 
     let response = await this.axios.post('/mailing-lists-utils/buy-radius-search', body);
     return response.data;
@@ -484,7 +525,8 @@ export class ThanksIoClient {
     if (params.returnAddress2 !== undefined) body.return_address2 = params.returnAddress2;
     if (params.returnCity !== undefined) body.return_city = params.returnCity;
     if (params.returnState !== undefined) body.return_state = params.returnState;
-    if (params.returnPostalCode !== undefined) body.return_postal_code = params.returnPostalCode;
+    if (params.returnPostalCode !== undefined)
+      body.return_postal_code = params.returnPostalCode;
 
     let response = await this.axios.post('/sub-accounts', body);
     return response.data;
@@ -495,7 +537,10 @@ export class ThanksIoClient {
     return response.data;
   }
 
-  async updateSubAccount(subAccountId: number, params: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateSubAccount(
+    subAccountId: number,
+    params: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.returnName !== undefined) body.return_name = params.returnName;
@@ -503,7 +548,8 @@ export class ThanksIoClient {
     if (params.returnAddress2 !== undefined) body.return_address2 = params.returnAddress2;
     if (params.returnCity !== undefined) body.return_city = params.returnCity;
     if (params.returnState !== undefined) body.return_state = params.returnState;
-    if (params.returnPostalCode !== undefined) body.return_postal_code = params.returnPostalCode;
+    if (params.returnPostalCode !== undefined)
+      body.return_postal_code = params.returnPostalCode;
 
     let response = await this.axios.put(`/sub-accounts/${subAccountId}`, body);
     return response.data;
@@ -534,7 +580,7 @@ export class ThanksIoClient {
     let body: Record<string, unknown> = {
       url: params.url,
       type: params.type,
-      verb: params.verb,
+      verb: params.verb
     };
     if (params.description !== undefined) body.description = params.description;
     if (params.mailingListId !== undefined) body.mailing_list_id = params.mailingListId;
@@ -543,16 +589,19 @@ export class ThanksIoClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: number, params: {
-    url: string;
-    type: string;
-    verb: string;
-    description?: string;
-  }): Promise<Record<string, unknown>> {
+  async updateWebhook(
+    webhookId: number,
+    params: {
+      url: string;
+      type: string;
+      verb: string;
+      description?: string;
+    }
+  ): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
       url: params.url,
       type: params.type,
-      verb: params.verb,
+      verb: params.verb
     };
     if (params.description !== undefined) body.description = params.description;
 

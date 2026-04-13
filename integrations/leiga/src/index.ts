@@ -34,14 +34,14 @@ import {
   createTagTool,
   deleteTagTool,
   listOrgMembersTool,
-  listProjectMembersTool,
+  listProjectMembersTool
 } from './tools';
 import {
   issueEventsTrigger,
   commentEventsTrigger,
   sprintEventsTrigger,
   subtaskEventsTrigger,
-  attachmentEventsTrigger,
+  attachmentEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -80,13 +80,13 @@ export let provider = Slate.create({
     createTagTool,
     deleteTagTool,
     listOrgMembersTool,
-    listProjectMembersTool,
+    listProjectMembersTool
   ],
   triggers: [
     issueEventsTrigger,
     commentEventsTrigger,
     sprintEventsTrigger,
     subtaskEventsTrigger,
-    attachmentEventsTrigger,
-  ],
+    attachmentEventsTrigger
+  ]
 });

@@ -12,32 +12,43 @@ let versionSchema = z.object({
   size: z.number().optional().describe('File size in bytes'),
   fileType: z.string().optional().describe('File type'),
   createdAt: z.string().optional().describe('Version creation timestamp'),
-  updatedAt: z.string().optional().describe('Version last update timestamp'),
+  updatedAt: z.string().optional().describe('Version last update timestamp')
 });
 
-export let manageFileVersions = SlateTool.create(
-  spec,
-  {
-    name: 'Manage File Versions',
-    key: 'manage_file_versions',
-    description: `List, get details, delete, or restore file versions. ImageKit maintains version history for files, allowing you to view previous versions and restore them.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageFileVersions = SlateTool.create(spec, {
+  name: 'Manage File Versions',
+  key: 'manage_file_versions',
+  description: `List, get details, delete, or restore file versions. ImageKit maintains version history for files, allowing you to view previous versions and restore them.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    operation: z.enum(['list', 'get', 'delete', 'restore']).describe('Version operation to perform'),
-    fileId: z.string().describe('File ID to operate on'),
-    versionId: z.string().optional().describe('Version ID (required for get, delete, and restore)'),
-  }))
-  .output(z.object({
-    versions: z.array(versionSchema).optional().describe('List of file versions (for list operation)'),
-    version: versionSchema.optional().describe('Version details (for get/restore operations)'),
-    deleted: z.boolean().optional().describe('Whether the version was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      operation: z
+        .enum(['list', 'get', 'delete', 'restore'])
+        .describe('Version operation to perform'),
+      fileId: z.string().describe('File ID to operate on'),
+      versionId: z
+        .string()
+        .optional()
+        .describe('Version ID (required for get, delete, and restore)')
+    })
+  )
+  .output(
+    z.object({
+      versions: z
+        .array(versionSchema)
+        .optional()
+        .describe('List of file versions (for list operation)'),
+      version: versionSchema
+        .optional()
+        .describe('Version details (for get/restore operations)'),
+      deleted: z.boolean().optional().describe('Whether the version was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.operation === 'list') {
@@ -51,12 +62,12 @@ export let manageFileVersions = SlateTool.create(
         size: v.size,
         fileType: v.fileType,
         createdAt: v.createdAt,
-        updatedAt: v.updatedAt,
+        updatedAt: v.updatedAt
       }));
 
       return {
         output: { versions: mapped },
-        message: `Found **${mapped.length}** version(s) for file \`${ctx.input.fileId}\`.`,
+        message: `Found **${mapped.length}** version(s) for file \`${ctx.input.fileId}\`.`
       };
     }
 
@@ -75,10 +86,10 @@ export let manageFileVersions = SlateTool.create(
             size: v.size,
             fileType: v.fileType,
             createdAt: v.createdAt,
-            updatedAt: v.updatedAt,
-          },
+            updatedAt: v.updatedAt
+          }
         },
-        message: `Retrieved version \`${ctx.input.versionId}\` of file \`${ctx.input.fileId}\`.`,
+        message: `Retrieved version \`${ctx.input.versionId}\` of file \`${ctx.input.fileId}\`.`
       };
     }
 
@@ -88,7 +99,7 @@ export let manageFileVersions = SlateTool.create(
 
       return {
         output: { deleted: true },
-        message: `Deleted version \`${ctx.input.versionId}\` of file \`${ctx.input.fileId}\`.`,
+        message: `Deleted version \`${ctx.input.versionId}\` of file \`${ctx.input.fileId}\`.`
       };
     }
 
@@ -107,12 +118,13 @@ export let manageFileVersions = SlateTool.create(
             size: v.size,
             fileType: v.fileType,
             createdAt: v.createdAt,
-            updatedAt: v.updatedAt,
-          },
+            updatedAt: v.updatedAt
+          }
         },
-        message: `Restored version \`${ctx.input.versionId}\` of file \`${ctx.input.fileId}\`.`,
+        message: `Restored version \`${ctx.input.versionId}\` of file \`${ctx.input.fileId}\`.`
       };
     }
 
     throw new Error(`Unknown operation: ${ctx.input.operation}`);
-  }).build();
+  })
+  .build();

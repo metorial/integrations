@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getProfile,
@@ -12,11 +11,9 @@ import {
   listIntegrations,
   getIntegration,
   deleteIntegration,
-  listUsers,
+  listUsers
 } from './tools';
-import { newSubmission,
-  inboundWebhook,
-} from './triggers';
+import { newSubmission, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     listIntegrations,
     getIntegration,
     deleteIntegration,
-    listUsers,
+    listUsers
   ],
-  triggers: [
-    inboundWebhook,
-    newSubmission,
-  ],
+  triggers: [inboundWebhook, newSubmission]
 });

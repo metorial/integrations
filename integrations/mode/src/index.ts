@@ -17,14 +17,14 @@ import {
   manageReportSchedule,
   listDefinitions,
   manageDefinition,
-  listMembers,
+  listMembers
 } from './tools';
 import {
   reportEvents,
   reportRunEvents,
   dataSourceEvents,
   definitionEvents,
-  memberEvents,
+  memberEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,13 +46,7 @@ export let provider = Slate.create({
     manageReportSchedule,
     listDefinitions,
     manageDefinition,
-    listMembers,
+    listMembers
   ],
-  triggers: [
-    reportEvents,
-    reportRunEvents,
-    dataSourceEvents,
-    definitionEvents,
-    memberEvents,
-  ],
+  triggers: [reportEvents, reportRunEvents, dataSourceEvents, definitionEvents, memberEvents]
 });

@@ -3,40 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Contacts',
-    key: 'search_contacts',
-    description: `Searches and lists contacts with optional filters for email, list, tag, and status. Supports pagination and free-text search across contact fields.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let searchContacts = SlateTool.create(spec, {
+  name: 'Search Contacts',
+  key: 'search_contacts',
+  description: `Searches and lists contacts with optional filters for email, list, tag, and status. Supports pagination and free-text search across contact fields.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Free-text search query across contact fields'),
-    email: z.string().optional().describe('Filter by exact email address'),
-    listId: z.string().optional().describe('Filter by list ID'),
-    tagId: z.string().optional().describe('Filter by tag ID'),
-    status: z.number().optional().describe('Filter by status (-1=any, 0=unconfirmed, 1=active, 2=unsubscribed, 3=bounced)'),
-    limit: z.number().optional().describe('Maximum number of contacts to return (default 20, max 100)'),
-    offset: z.number().optional().describe('Number of contacts to skip for pagination')
-  }))
-  .output(z.object({
-    contacts: z.array(z.object({
-      contactId: z.string(),
-      email: z.string(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      phone: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })),
-    totalCount: z.number().optional().describe('Total number of contacts matching the search')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Free-text search query across contact fields'),
+      email: z.string().optional().describe('Filter by exact email address'),
+      listId: z.string().optional().describe('Filter by list ID'),
+      tagId: z.string().optional().describe('Filter by tag ID'),
+      status: z
+        .number()
+        .optional()
+        .describe(
+          'Filter by status (-1=any, 0=unconfirmed, 1=active, 2=unsubscribed, 3=bounced)'
+        ),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of contacts to return (default 20, max 100)'),
+      offset: z.number().optional().describe('Number of contacts to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(
+        z.object({
+          contactId: z.string(),
+          email: z.string(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          phone: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+      ),
+      totalCount: z
+        .number()
+        .optional()
+        .describe('Total number of contacts matching the search')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -69,4 +83,5 @@ export let searchContacts = SlateTool.create(
       output: { contacts, totalCount },
       message: `Found **${contacts.length}** contacts${totalCount !== undefined ? ` (out of ${totalCount} total)` : ''}.`
     };
-  }).build();
+  })
+  .build();

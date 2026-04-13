@@ -5,39 +5,51 @@ Manage web application sites, deploys, and hosting on Netlify. Create, update, c
 ## Tools
 
 ### List Accounts
+
 List all Netlify accounts/teams accessible by the authenticated user. Returns account IDs and slugs needed for other operations like managing environment variables and DNS zones.
 
 ### Get Site
+
 Retrieve detailed information about a specific Netlify site, including build settings, repository configuration, deploy settings, and domain information.
 
 ### List Sites
+
 List all Netlify sites accessible by the authenticated user. Supports filtering and pagination to browse through large numbers of sites.
 
 ### List Deploys
+
 List deploys for a Netlify site. Returns deploy history with state, branch, and commit information. Supports pagination.
 
 ### List DNS Zones
+
 List all DNS zones managed by Netlify DNS. Optionally filter by account slug.
 
 ### List Environment Variables
+
 List all environment variables for a Netlify account. Optionally filter by a specific site. Shows values per deploy context.
 
 ### List Forms
+
 List all forms for a Netlify site. Returns form metadata including submission count and creation date.
 
 ### List Notification Hooks
+
 List all notification hooks configured for a Netlify site. Hooks can be webhooks, email notifications, or Slack messages triggered by deploy or form submission events.
 
 ### Create Site
+
 Create a new Netlify site. Optionally link it to a Git repository and configure build settings. The site can be created under a specific team account.
 
 ### List Snippets
+
 List all JavaScript/HTML code snippets injected into a Netlify site's pages. Shows both general page snippets and form thank-you page snippets.
 
 ### List Split Tests
+
 List all A/B split tests for a Netlify site. Shows traffic distribution across branches and active status.
 
 ### Purge CDN Cache
+
 Purge all cached content from Netlify's CDN for a site. Forces the CDN to re-fetch content from the origin on the next request.
 
 ## License

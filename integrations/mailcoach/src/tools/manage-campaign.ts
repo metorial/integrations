@@ -12,44 +12,56 @@ let campaignOutputSchema = z.object({
   fromEmail: z.string().nullable().describe('Sender email address'),
   fromName: z.string().nullable().describe('Sender name'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let manageCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Campaign',
-    key: 'manage_campaign',
-    description: `Create, update, or delete a campaign. For creation, provide the campaign name, email list UUID, and optionally subject, HTML content, template, and scheduling details. For update, provide the campaign UUID and fields to modify. For delete, provide the campaign UUID.`,
-    tags: {
-      destructive: true,
-    },
+export let manageCampaign = SlateTool.create(spec, {
+  name: 'Manage Campaign',
+  key: 'manage_campaign',
+  description: `Create, update, or delete a campaign. For creation, provide the campaign name, email list UUID, and optionally subject, HTML content, template, and scheduling details. For update, provide the campaign UUID and fields to modify. For delete, provide the campaign UUID.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
-    campaignUuid: z.string().optional().describe('UUID of the campaign (required for update and delete)'),
-    name: z.string().optional().describe('Campaign name'),
-    emailListUuid: z.string().optional().describe('UUID of the email list (required for create)'),
-    subject: z.string().optional().describe('Email subject line'),
-    html: z.string().optional().describe('Raw HTML content for the email body'),
-    templateUuid: z.string().optional().describe('UUID of a template to use'),
-    fields: z.record(z.string(), z.string()).optional().describe('Template field values as key-value pairs'),
-    fromEmail: z.string().optional().describe('Sender email address'),
-    fromName: z.string().optional().describe('Sender name'),
-    replyToEmail: z.string().optional().describe('Reply-to email address'),
-    replyToName: z.string().optional().describe('Reply-to name'),
-    segmentUuid: z.string().optional().describe('UUID of a segment to target'),
-    utmTags: z.boolean().optional().describe('Whether to add UTM tags to links'),
-    scheduleAt: z.string().optional().describe('ISO 8601 datetime to schedule the campaign'),
-  }))
-  .output(z.object({
-    campaign: campaignOutputSchema.nullable().describe('The campaign data, null when deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
+      campaignUuid: z
+        .string()
+        .optional()
+        .describe('UUID of the campaign (required for update and delete)'),
+      name: z.string().optional().describe('Campaign name'),
+      emailListUuid: z
+        .string()
+        .optional()
+        .describe('UUID of the email list (required for create)'),
+      subject: z.string().optional().describe('Email subject line'),
+      html: z.string().optional().describe('Raw HTML content for the email body'),
+      templateUuid: z.string().optional().describe('UUID of a template to use'),
+      fields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Template field values as key-value pairs'),
+      fromEmail: z.string().optional().describe('Sender email address'),
+      fromName: z.string().optional().describe('Sender name'),
+      replyToEmail: z.string().optional().describe('Reply-to email address'),
+      replyToName: z.string().optional().describe('Reply-to name'),
+      segmentUuid: z.string().optional().describe('UUID of a segment to target'),
+      utmTags: z.boolean().optional().describe('Whether to add UTM tags to links'),
+      scheduleAt: z.string().optional().describe('ISO 8601 datetime to schedule the campaign')
+    })
+  )
+  .output(
+    z.object({
+      campaign: campaignOutputSchema
+        .nullable()
+        .describe('The campaign data, null when deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.domain,
+      domain: ctx.config.domain
     });
 
     if (ctx.input.action === 'delete') {
@@ -57,7 +69,7 @@ export let manageCampaign = SlateTool.create(
       await client.deleteCampaign(ctx.input.campaignUuid);
       return {
         output: { campaign: null },
-        message: `Campaign **${ctx.input.campaignUuid}** has been deleted.`,
+        message: `Campaign **${ctx.input.campaignUuid}** has been deleted.`
       };
     }
 
@@ -78,12 +90,12 @@ export let manageCampaign = SlateTool.create(
         reply_to_name: ctx.input.replyToName,
         segment_uuid: ctx.input.segmentUuid,
         utm_tags: ctx.input.utmTags,
-        schedule_at: ctx.input.scheduleAt,
+        schedule_at: ctx.input.scheduleAt
       });
 
       return {
         output: { campaign: mapCampaign(result) },
-        message: `Campaign **${result.name}** has been created.`,
+        message: `Campaign **${result.name}** has been created.`
       };
     }
 
@@ -103,12 +115,12 @@ export let manageCampaign = SlateTool.create(
       reply_to_name: ctx.input.replyToName,
       segment_uuid: ctx.input.segmentUuid,
       utm_tags: ctx.input.utmTags,
-      schedule_at: ctx.input.scheduleAt,
+      schedule_at: ctx.input.scheduleAt
     });
 
     return {
       output: { campaign: mapCampaign(result) },
-      message: `Campaign **${result.name}** has been updated.`,
+      message: `Campaign **${result.name}** has been updated.`
     };
   });
 
@@ -121,5 +133,5 @@ let mapCampaign = (c: any) => ({
   fromEmail: c.from_email ?? null,
   fromName: c.from_name ?? null,
   createdAt: c.created_at,
-  updatedAt: c.updated_at,
+  updatedAt: c.updated_at
 });

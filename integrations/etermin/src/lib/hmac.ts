@@ -1,6 +1,9 @@
 import crypto from 'crypto';
 
-export let generateAuthHeaders = (publicKey: string, privateKey: string): Record<string, string> => {
+export let generateAuthHeaders = (
+  publicKey: string,
+  privateKey: string
+): Record<string, string> => {
   let salt = crypto.randomUUID();
   let hmac = crypto.createHmac('sha256', privateKey);
   hmac.update(salt);
@@ -9,6 +12,6 @@ export let generateAuthHeaders = (publicKey: string, privateKey: string): Record
   return {
     publickey: publicKey,
     salt: salt,
-    signature: signature,
+    signature: signature
   };
 };

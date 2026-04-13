@@ -33,7 +33,7 @@ import {
   manageSupplier,
   listReceipts,
   manageReceipt,
-  getSettings,
+  getSettings
 } from './tools';
 
 import {
@@ -41,7 +41,7 @@ import {
   contactEvents,
   invoiceEvents,
   quoteEvents,
-  productEvents,
+  productEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -78,13 +78,7 @@ export let provider = Slate.create({
     manageSupplier,
     listReceipts,
     manageReceipt,
-    getSettings,
+    getSettings
   ],
-  triggers: [
-    customerEvents,
-    contactEvents,
-    invoiceEvents,
-    quoteEvents,
-    productEvents,
-  ],
+  triggers: [customerEvents, contactEvents, invoiceEvents, quoteEvents, productEvents]
 });

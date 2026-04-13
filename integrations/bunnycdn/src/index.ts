@@ -11,7 +11,7 @@ import {
   manageVideo,
   manageCollection,
   getStatistics,
-  getBilling,
+  getBilling
 } from './tools';
 import { videoProcessing } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     manageVideo,
     manageCollection,
     getStatistics,
-    getBilling,
+    getBilling
   ],
-  triggers: [
-    videoProcessing,
-  ],
+  triggers: [videoProcessing]
 });

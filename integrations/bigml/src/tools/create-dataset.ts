@@ -3,41 +3,73 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let createDataset = SlateTool.create(
-  spec,
-  {
-    name: 'Create Dataset',
-    key: 'create_dataset',
-    description: `Create a new dataset in BigML from a source, another dataset, or a list of datasets. Datasets are processed, structured representations of data with statistical summaries for each field.
+export let createDataset = SlateTool.create(spec, {
+  name: 'Create Dataset',
+  key: 'create_dataset',
+  description: `Create a new dataset in BigML from a source, another dataset, or a list of datasets. Datasets are processed, structured representations of data with statistical summaries for each field.
 Supports sampling, filtering, field selection, and train/test splitting.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    sourceId: z.string().optional().describe('Source resource ID to create the dataset from (e.g., "source/abc123")'),
-    originDatasetId: z.string().optional().describe('Origin dataset ID for creating a derived dataset (e.g., "dataset/abc123")'),
-    datasetIds: z.array(z.string()).optional().describe('List of dataset IDs to merge into a multi-dataset'),
-    name: z.string().optional().describe('Name for the dataset'),
-    sampleRate: z.number().optional().describe('Sampling rate between 0 and 1 (e.g., 0.8 for 80%)'),
-    seed: z.string().optional().describe('Seed for deterministic sampling, useful for reproducible train/test splits'),
-    outOfBag: z.boolean().optional().describe('If true with sampleRate, returns the complement sample (useful for test split)'),
-    inputFields: z.array(z.string()).optional().describe('List of field IDs to include in the dataset'),
-    excludedFields: z.array(z.string()).optional().describe('List of field IDs to exclude from the dataset'),
-    range: z.array(z.number()).optional().describe('Row range [start, end] to include (1-indexed)'),
-    tags: z.array(z.string()).optional().describe('Tags to assign to the dataset'),
-    projectId: z.string().optional().describe('Project to associate the dataset with')
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('BigML resource ID for the created dataset'),
-    name: z.string().optional().describe('Name of the dataset'),
-    statusCode: z.number().describe('Status code of the dataset creation'),
-    statusMessage: z.string().describe('Status message'),
-    created: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sourceId: z
+        .string()
+        .optional()
+        .describe('Source resource ID to create the dataset from (e.g., "source/abc123")'),
+      originDatasetId: z
+        .string()
+        .optional()
+        .describe('Origin dataset ID for creating a derived dataset (e.g., "dataset/abc123")'),
+      datasetIds: z
+        .array(z.string())
+        .optional()
+        .describe('List of dataset IDs to merge into a multi-dataset'),
+      name: z.string().optional().describe('Name for the dataset'),
+      sampleRate: z
+        .number()
+        .optional()
+        .describe('Sampling rate between 0 and 1 (e.g., 0.8 for 80%)'),
+      seed: z
+        .string()
+        .optional()
+        .describe(
+          'Seed for deterministic sampling, useful for reproducible train/test splits'
+        ),
+      outOfBag: z
+        .boolean()
+        .optional()
+        .describe(
+          'If true with sampleRate, returns the complement sample (useful for test split)'
+        ),
+      inputFields: z
+        .array(z.string())
+        .optional()
+        .describe('List of field IDs to include in the dataset'),
+      excludedFields: z
+        .array(z.string())
+        .optional()
+        .describe('List of field IDs to exclude from the dataset'),
+      range: z
+        .array(z.number())
+        .optional()
+        .describe('Row range [start, end] to include (1-indexed)'),
+      tags: z.array(z.string()).optional().describe('Tags to assign to the dataset'),
+      projectId: z.string().optional().describe('Project to associate the dataset with')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('BigML resource ID for the created dataset'),
+      name: z.string().optional().describe('Name of the dataset'),
+      statusCode: z.number().describe('Status code of the dataset creation'),
+      statusMessage: z.string().describe('Status message'),
+      created: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let body: Record<string, any> = {};
@@ -72,4 +104,5 @@ Supports sampling, filtering, field selection, and train/test splitting.`,
       },
       message: `Dataset **${result.resource}** created${result.name ? ` as "${result.name}"` : ''}. Status: ${result.status?.message ?? 'pending'}.`
     };
-  }).build();
+  })
+  .build();

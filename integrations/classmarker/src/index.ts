@@ -1,6 +1,14 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { listGroupsAndLinks, getExamResults, listCategories, manageCategory, getQuestions, createOrUpdateQuestion, manageAccessList } from './tools';
+import {
+  listGroupsAndLinks,
+  getExamResults,
+  listCategories,
+  manageCategory,
+  getQuestions,
+  createOrUpdateQuestion,
+  manageAccessList
+} from './tools';
 import { examResultsCompleted } from './triggers';
 
 export let provider = Slate.create({
@@ -12,9 +20,7 @@ export let provider = Slate.create({
     manageCategory,
     getQuestions,
     createOrUpdateQuestion,
-    manageAccessList,
+    manageAccessList
   ],
-  triggers: [
-    examResultsCompleted,
-  ],
+  triggers: [examResultsCompleted]
 });

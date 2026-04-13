@@ -8,9 +8,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.mailersend.com/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -26,7 +26,12 @@ export class Client {
     cc?: Array<{ email: string; name?: string }>;
     bcc?: Array<{ email: string; name?: string }>;
     replyTo?: { email: string; name?: string };
-    attachments?: Array<{ filename: string; content: string; disposition?: string; id?: string }>;
+    attachments?: Array<{
+      filename: string;
+      content: string;
+      disposition?: string;
+      id?: string;
+    }>;
     tags?: string[];
     personalization?: Array<{ email: string; data: Record<string, unknown> }>;
     variables?: Array<{ email: string; substitutions: Array<{ var: string; value: string }> }>;
@@ -42,7 +47,7 @@ export class Client {
   }) {
     let body: Record<string, unknown> = {
       from: params.from,
-      to: params.to,
+      to: params.to
     };
 
     if (params.subject) body.subject = params.subject;
@@ -58,11 +63,11 @@ export class Client {
     if (params.references) body.references = params.references;
 
     if (params.attachments) {
-      body.attachments = params.attachments.map((a) => ({
+      body.attachments = params.attachments.map(a => ({
         filename: a.filename,
         content: a.content,
         disposition: a.disposition || 'attachment',
-        id: a.id,
+        id: a.id
       }));
     }
 
@@ -78,7 +83,7 @@ export class Client {
       body.settings = {
         track_clicks: params.settings.trackClicks,
         track_opens: params.settings.trackOpens,
-        track_content: params.settings.trackContent,
+        track_content: params.settings.trackContent
       };
     }
 
@@ -87,7 +92,7 @@ export class Client {
     }
 
     let response = await this.axios.post('/email', body, {
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     let messageId = response.headers?.['x-message-id'] as string | undefined;
@@ -95,7 +100,7 @@ export class Client {
     return {
       statusCode: response.status as number,
       messageId: messageId || null,
-      warnings: response.data || null,
+      warnings: response.data || null
     };
   }
 
@@ -118,14 +123,14 @@ export class Client {
     personalization?: Array<{ phone_number: string; data: Record<string, unknown> }>;
   }) {
     let response = await this.axios.post('/sms', params, {
-      validateStatus: () => true,
+      validateStatus: () => true
     });
 
     let smsMessageId = response.headers?.['x-sms-message-id'] as string | undefined;
 
     return {
       statusCode: response.status as number,
-      smsMessageId: smsMessageId || null,
+      smsMessageId: smsMessageId || null
     };
   }
 
@@ -136,10 +141,13 @@ export class Client {
       params: {
         domain_id: params?.domainId,
         page: params?.page,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   async getTemplate(templateId: string) {
@@ -158,10 +166,13 @@ export class Client {
       params: {
         page: params?.page,
         limit: params?.limit,
-        verified: params?.verified,
-      },
+        verified: params?.verified
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   async getDomain(domainId: string) {
@@ -179,7 +190,7 @@ export class Client {
       name: params.name,
       return_path_subdomain: params.returnPathSubdomain,
       custom_tracking_subdomain: params.customTrackingSubdomain,
-      inbound_routing_subdomain: params.inboundRoutingSubdomain,
+      inbound_routing_subdomain: params.inboundRoutingSubdomain
     });
     return response.data as { data: Record<string, unknown> };
   }
@@ -210,10 +221,13 @@ export class Client {
       params: {
         domain_id: params?.domainId,
         page: params?.page,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   async getIdentity(identityId: string) {
@@ -242,18 +256,21 @@ export class Client {
       reply_to_email: params.replyToEmail,
       reply_to_name: params.replyToName,
       add_note: params.addNote,
-      personal_note: params.personalNote,
+      personal_note: params.personalNote
     });
     return response.data as { data: Record<string, unknown> };
   }
 
-  async updateIdentity(identityId: string, params: {
-    name?: string;
-    replyToEmail?: string;
-    replyToName?: string;
-    addNote?: boolean;
-    personalNote?: string;
-  }) {
+  async updateIdentity(
+    identityId: string,
+    params: {
+      name?: string;
+      replyToEmail?: string;
+      replyToName?: string;
+      addNote?: boolean;
+      personalNote?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.replyToEmail !== undefined) body.reply_to_email = params.replyToEmail;
@@ -279,7 +296,7 @@ export class Client {
   async createVerificationList(params: { name: string; emails: string[] }) {
     let response = await this.axios.post('/email-verification', {
       name: params.name,
-      emails: params.emails,
+      emails: params.emails
     });
     return response.data as { data: Record<string, unknown> };
   }
@@ -288,10 +305,13 @@ export class Client {
     let response = await this.axios.get('/email-verification', {
       params: {
         page: params?.page,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   async getVerificationList(listId: string) {
@@ -304,31 +324,40 @@ export class Client {
     return response.data as { data: Record<string, unknown> };
   }
 
-  async getVerificationListResults(listId: string, params?: { page?: number; limit?: number; results?: string[] }) {
+  async getVerificationListResults(
+    listId: string,
+    params?: { page?: number; limit?: number; results?: string[] }
+  ) {
     let response = await this.axios.get(`/email-verification/${listId}/results`, {
       params: {
         page: params?.page,
         limit: params?.limit,
-        'results[]': params?.results,
-      },
+        'results[]': params?.results
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   // ---- Activity ----
 
-  async listActivity(domainId: string, params: {
-    dateFrom: number;
-    dateTo: number;
-    page?: number;
-    limit?: number;
-    events?: string[];
-  }) {
+  async listActivity(
+    domainId: string,
+    params: {
+      dateFrom: number;
+      dateTo: number;
+      page?: number;
+      limit?: number;
+      events?: string[];
+    }
+  ) {
     let queryParams: Record<string, unknown> = {
       date_from: params.dateFrom,
       date_to: params.dateTo,
       page: params.page,
-      limit: params.limit,
+      limit: params.limit
     };
 
     if (params.events && params.events.length > 0) {
@@ -336,9 +365,12 @@ export class Client {
     }
 
     let response = await this.axios.get(`/activity/${domainId}`, {
-      params: queryParams,
+      params: queryParams
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   // ---- Recipients ----
@@ -348,10 +380,13 @@ export class Client {
       params: {
         domain_id: params?.domainId,
         page: params?.page,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
   async getRecipient(recipientId: string) {
@@ -365,28 +400,37 @@ export class Client {
 
   // ---- Suppressions ----
 
-  async getSuppressionList(type: 'blocklist' | 'hard-bounces' | 'spam-complaints' | 'unsubscribes', params?: {
-    domainId?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  async getSuppressionList(
+    type: 'blocklist' | 'hard-bounces' | 'spam-complaints' | 'unsubscribes',
+    params?: {
+      domainId?: string;
+      page?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.axios.get(`/suppressions/${type}`, {
       params: {
         domain_id: params?.domainId,
         page: params?.page,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
-    return response.data as { data: Array<Record<string, unknown>>; meta: Record<string, unknown> };
+    return response.data as {
+      data: Array<Record<string, unknown>>;
+      meta: Record<string, unknown>;
+    };
   }
 
-  async addToSuppressionList(type: 'blocklist' | 'hard-bounces' | 'spam-complaints' | 'unsubscribes', params: {
-    domainId: string;
-    recipients?: string[];
-    patterns?: string[];
-  }) {
+  async addToSuppressionList(
+    type: 'blocklist' | 'hard-bounces' | 'spam-complaints' | 'unsubscribes',
+    params: {
+      domainId: string;
+      recipients?: string[];
+      patterns?: string[];
+    }
+  ) {
     let body: Record<string, unknown> = {
-      domain_id: params.domainId,
+      domain_id: params.domainId
     };
     if (params.recipients) body.recipients = params.recipients;
     if (params.patterns) body.patterns = params.patterns;
@@ -395,11 +439,14 @@ export class Client {
     return response.data as { data: Array<Record<string, unknown>> };
   }
 
-  async deleteFromSuppressionList(type: 'blocklist' | 'hard-bounces' | 'spam-complaints' | 'unsubscribes', params: {
-    ids?: string[];
-    all?: boolean;
-    domainId?: string;
-  }) {
+  async deleteFromSuppressionList(
+    type: 'blocklist' | 'hard-bounces' | 'spam-complaints' | 'unsubscribes',
+    params: {
+      ids?: string[];
+      all?: boolean;
+      domainId?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.ids) body.ids = params.ids;
     if (params.all) body.all = params.all;
@@ -412,7 +459,7 @@ export class Client {
 
   async listWebhooks(domainId: string) {
     let response = await this.axios.get('/webhooks', {
-      params: { domain_id: domainId },
+      params: { domain_id: domainId }
     });
     return response.data as { data: Array<Record<string, unknown>> };
   }
@@ -429,7 +476,7 @@ export class Client {
       name: params.name,
       events: params.events,
       domain_id: params.domainId,
-      enabled: params.enabled ?? true,
+      enabled: params.enabled ?? true
     });
     return response.data as { data: Record<string, unknown> };
   }
@@ -439,12 +486,15 @@ export class Client {
     return response.data as { data: Record<string, unknown> };
   }
 
-  async updateWebhook(webhookId: string, params: {
-    url?: string;
-    name?: string;
-    events?: string[];
-    enabled?: boolean;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      url?: string;
+      name?: string;
+      events?: string[];
+      enabled?: boolean;
+    }
+  ) {
     let response = await this.axios.put(`/webhooks/${webhookId}`, params);
     return response.data as { data: Record<string, unknown> };
   }
@@ -457,7 +507,7 @@ export class Client {
 
   async listSmsWebhooks(smsNumberId: string) {
     let response = await this.axios.get('/sms-webhooks', {
-      params: { sms_number_id: smsNumberId },
+      params: { sms_number_id: smsNumberId }
     });
     return response.data as { data: Array<Record<string, unknown>> };
   }
@@ -474,7 +524,7 @@ export class Client {
       name: params.name,
       events: params.events,
       sms_number_id: params.smsNumberId,
-      enabled: params.enabled ?? true,
+      enabled: params.enabled ?? true
     });
     return response.data as { data: Record<string, unknown> };
   }

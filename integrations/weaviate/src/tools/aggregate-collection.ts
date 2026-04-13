@@ -3,44 +3,59 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let aggregateCollection = SlateTool.create(
-  spec,
-  {
-    name: 'Aggregate Collection',
-    key: 'aggregate_collection',
-    description: `Run aggregation queries over a collection to compute metrics like counts, sums, averages, min/max, top occurrences, and more. Supports grouping by a property and filtering with a where clause.
+export let aggregateCollection = SlateTool.create(spec, {
+  name: 'Aggregate Collection',
+  key: 'aggregate_collection',
+  description: `Run aggregation queries over a collection to compute metrics like counts, sums, averages, min/max, top occurrences, and more. Supports grouping by a property and filtering with a where clause.
 Provide the raw GraphQL aggregation body for full flexibility, or use the simplified parameters.`,
-    instructions: [
-      'For text properties: count, topOccurrences { value occurs }',
-      'For number/int properties: count, minimum, maximum, mean, median, mode, sum',
-      'For boolean properties: count, totalTrue, totalFalse, percentageTrue, percentageFalse',
-      'For date properties: count, minimum, maximum, mean, median, mode',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'For text properties: count, topOccurrences { value occurs }',
+    'For number/int properties: count, minimum, maximum, mean, median, mode, sum',
+    'For boolean properties: count, totalTrue, totalFalse, percentageTrue, percentageFalse',
+    'For date properties: count, minimum, maximum, mean, median, mode'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    collectionName: z.string().describe('Name of the collection to aggregate'),
-    graphqlBody: z.string().describe('GraphQL body for the aggregation query inside the collection block. Example: "meta { count } wordCount { mean maximum }"'),
-    where: z.any().optional().describe('Where filter for pre-aggregation filtering'),
-    groupBy: z.array(z.string()).optional().describe('Properties to group by'),
-    nearText: z.object({
-      concepts: z.array(z.string()),
-      certainty: z.number().optional(),
-      distance: z.number().optional(),
-    }).optional().describe('Narrow aggregation to semantically similar objects'),
-    objectLimit: z.number().optional().describe('Limit the number of objects considered when using nearText'),
-    tenant: z.string().optional().describe('Tenant name for multi-tenant collections'),
-    limit: z.number().optional().describe('Limit number of groups returned when using groupBy'),
-  }))
-  .output(z.object({
-    aggregation: z.any().describe('Aggregation results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      collectionName: z.string().describe('Name of the collection to aggregate'),
+      graphqlBody: z
+        .string()
+        .describe(
+          'GraphQL body for the aggregation query inside the collection block. Example: "meta { count } wordCount { mean maximum }"'
+        ),
+      where: z.any().optional().describe('Where filter for pre-aggregation filtering'),
+      groupBy: z.array(z.string()).optional().describe('Properties to group by'),
+      nearText: z
+        .object({
+          concepts: z.array(z.string()),
+          certainty: z.number().optional(),
+          distance: z.number().optional()
+        })
+        .optional()
+        .describe('Narrow aggregation to semantically similar objects'),
+      objectLimit: z
+        .number()
+        .optional()
+        .describe('Limit the number of objects considered when using nearText'),
+      tenant: z.string().optional().describe('Tenant name for multi-tenant collections'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Limit number of groups returned when using groupBy')
+    })
+  )
+  .output(
+    z.object({
+      aggregation: z.any().describe('Aggregation results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
-    let { collectionName, graphqlBody, where, groupBy, nearText, objectLimit, tenant, limit } = ctx.input;
+    let { collectionName, graphqlBody, where, groupBy, nearText, objectLimit, tenant, limit } =
+      ctx.input;
 
     let args: string[] = [];
 
@@ -63,9 +78,7 @@ Provide the raw GraphQL aggregation body for full flexibility, or use the simpli
     let argsStr = args.length > 0 ? `(${args.join(', ')})` : '';
 
     // Add groupedBy field when groupBy is used
-    let groupedByField = groupBy && groupBy.length > 0
-      ? 'groupedBy { value path }'
-      : '';
+    let groupedByField = groupBy && groupBy.length > 0 ? 'groupedBy { value path }' : '';
 
     let query = `{
       Aggregate {
@@ -86,6 +99,7 @@ Provide the raw GraphQL aggregation body for full flexibility, or use the simpli
 
     return {
       output: { aggregation },
-      message: `Aggregation on **${collectionName}** completed.`,
+      message: `Aggregation on **${collectionName}** completed.`
     };
-  }).build();
+  })
+  .build();

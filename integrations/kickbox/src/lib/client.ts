@@ -77,7 +77,10 @@ export class Client {
     return response.data as VerifyEmailResponse;
   }
 
-  async createBatchVerification(emails: string[], filename?: string): Promise<BatchCreateResponse> {
+  async createBatchVerification(
+    emails: string[],
+    filename?: string
+  ): Promise<BatchCreateResponse> {
     let csvBody = emails.join('\n');
 
     let headers: Record<string, string> = {

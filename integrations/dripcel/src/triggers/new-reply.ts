@@ -3,38 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newReply = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Reply',
-    key: 'new_reply',
-    description: 'Triggers when a contact replies to a campaign send. Replies are classified as optIn, optOut, or unknown.'
-  }
-)
-  .input(z.object({
-    replyId: z.string().describe('Unique ID of the reply'),
-    msisdn: z.string().describe('Cell number of the replying contact'),
-    message: z.string().describe('Reply message content'),
-    kind: z.string().describe('Reply classification: optIn, optOut, or unknown'),
-    campaignId: z.string().optional().describe('Campaign ID the reply is associated with'),
-    userReference: z.string().optional().describe('Send log reference'),
-    received: z.string().describe('ISO 8601 timestamp when the reply was received')
-  }))
-  .output(z.object({
-    replyId: z.string().describe('Unique ID of the reply'),
-    msisdn: z.string().describe('Cell number of the replying contact'),
-    message: z.string().describe('Reply message content'),
-    kind: z.string().describe('Reply classification: optIn, optOut, or unknown'),
-    campaignId: z.string().optional().describe('Campaign ID the reply is associated with'),
-    userReference: z.string().optional().describe('Send log reference'),
-    received: z.string().describe('Timestamp when the reply was received')
-  }))
+export let newReply = SlateTrigger.create(spec, {
+  name: 'New Reply',
+  key: 'new_reply',
+  description:
+    'Triggers when a contact replies to a campaign send. Replies are classified as optIn, optOut, or unknown.'
+})
+  .input(
+    z.object({
+      replyId: z.string().describe('Unique ID of the reply'),
+      msisdn: z.string().describe('Cell number of the replying contact'),
+      message: z.string().describe('Reply message content'),
+      kind: z.string().describe('Reply classification: optIn, optOut, or unknown'),
+      campaignId: z.string().optional().describe('Campaign ID the reply is associated with'),
+      userReference: z.string().optional().describe('Send log reference'),
+      received: z.string().describe('ISO 8601 timestamp when the reply was received')
+    })
+  )
+  .output(
+    z.object({
+      replyId: z.string().describe('Unique ID of the reply'),
+      msisdn: z.string().describe('Cell number of the replying contact'),
+      message: z.string().describe('Reply message content'),
+      kind: z.string().describe('Reply classification: optIn, optOut, or unknown'),
+      campaignId: z.string().optional().describe('Campaign ID the reply is associated with'),
+      userReference: z.string().optional().describe('Send log reference'),
+      received: z.string().describe('Timestamp when the reply was received')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPolledAt = (ctx.input as any).state?.lastPolledAt as string | undefined;
@@ -67,7 +69,7 @@ export let newReply = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `reply.${ctx.input.kind}`,
         id: ctx.input.replyId,

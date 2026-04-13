@@ -26,19 +26,21 @@ export class SplunkClient {
     return createAxios({
       baseURL: this.baseURL,
       headers: {
-        'Authorization': `Splunk ${this.token}`
+        Authorization: `Splunk ${this.token}`
       }
     });
   }
 
   private get hecApi() {
     if (!this.hecToken) {
-      throw new Error('HEC token is required for data ingestion. Please configure an HEC token in your authentication settings.');
+      throw new Error(
+        'HEC token is required for data ingestion. Please configure an HEC token in your authentication settings.'
+      );
     }
     return createAxios({
       baseURL: this.hecBaseURL,
       headers: {
-        'Authorization': `Splunk ${this.hecToken}`
+        Authorization: `Splunk ${this.hecToken}`
       }
     });
   }
@@ -58,15 +60,19 @@ export class SplunkClient {
       `search=${encodeURIComponent(params.search)}`,
       'output_mode=json'
     ];
-    if (params.earliestTime) formParts.push(`earliest_time=${encodeURIComponent(params.earliestTime)}`);
-    if (params.latestTime) formParts.push(`latest_time=${encodeURIComponent(params.latestTime)}`);
+    if (params.earliestTime)
+      formParts.push(`earliest_time=${encodeURIComponent(params.earliestTime)}`);
+    if (params.latestTime)
+      formParts.push(`latest_time=${encodeURIComponent(params.latestTime)}`);
     if (params.maxCount !== undefined) formParts.push(`max_count=${params.maxCount}`);
     if (params.execMode) formParts.push(`exec_mode=${params.execMode}`);
-    if (params.statusBuckets !== undefined) formParts.push(`status_buckets=${params.statusBuckets}`);
+    if (params.statusBuckets !== undefined)
+      formParts.push(`status_buckets=${params.statusBuckets}`);
 
-    let path = params.namespace?.owner && params.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/search/jobs`
-      : '/services/search/jobs';
+    let path =
+      params.namespace?.owner && params.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/search/jobs`
+        : '/services/search/jobs';
 
     let response = await this.api.post(path, formParts.join('&'), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -76,9 +82,12 @@ export class SplunkClient {
   }
 
   async getSearchJobStatus(searchId: string): Promise<Record<string, any>> {
-    let response = await this.api.get(`/services/search/jobs/${encodeURIComponent(searchId)}`, {
-      params: { output_mode: 'json' }
-    });
+    let response = await this.api.get(
+      `/services/search/jobs/${encodeURIComponent(searchId)}`,
+      {
+        params: { output_mode: 'json' }
+      }
+    );
     let content = response.data?.entry?.[0]?.content || {};
     return {
       searchId,
@@ -95,17 +104,23 @@ export class SplunkClient {
     };
   }
 
-  async getSearchResults(searchId: string, params?: {
-    count?: number;
-    offset?: number;
-  }): Promise<{ results: Record<string, any>[]; resultCount: number }> {
-    let response = await this.api.get(`/services/search/jobs/${encodeURIComponent(searchId)}/results`, {
-      params: {
-        output_mode: 'json',
-        count: params?.count ?? 100,
-        offset: params?.offset ?? 0
+  async getSearchResults(
+    searchId: string,
+    params?: {
+      count?: number;
+      offset?: number;
+    }
+  ): Promise<{ results: Record<string, any>[]; resultCount: number }> {
+    let response = await this.api.get(
+      `/services/search/jobs/${encodeURIComponent(searchId)}/results`,
+      {
+        params: {
+          output_mode: 'json',
+          count: params?.count ?? 100,
+          offset: params?.offset ?? 0
+        }
       }
-    });
+    );
     return {
       results: response.data?.results || [],
       resultCount: response.data?.results?.length || 0
@@ -124,13 +139,16 @@ export class SplunkClient {
       'output_mode=json',
       'exec_mode=oneshot'
     ];
-    if (params.earliestTime) formParts.push(`earliest_time=${encodeURIComponent(params.earliestTime)}`);
-    if (params.latestTime) formParts.push(`latest_time=${encodeURIComponent(params.latestTime)}`);
+    if (params.earliestTime)
+      formParts.push(`earliest_time=${encodeURIComponent(params.earliestTime)}`);
+    if (params.latestTime)
+      formParts.push(`latest_time=${encodeURIComponent(params.latestTime)}`);
     if (params.maxCount !== undefined) formParts.push(`max_count=${params.maxCount}`);
 
-    let path = params.namespace?.owner && params.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/search/jobs`
-      : '/services/search/jobs';
+    let path =
+      params.namespace?.owner && params.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/search/jobs`
+        : '/services/search/jobs';
 
     let response = await this.api.post(path, formParts.join('&'), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -147,9 +165,10 @@ export class SplunkClient {
     searchFilter?: string;
     namespace?: { owner?: string; app?: string };
   }): Promise<{ savedSearches: Record<string, any>[]; total: number }> {
-    let path = params?.namespace?.owner && params?.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches`
-      : '/servicesNS/-/-/saved/searches';
+    let path =
+      params?.namespace?.owner && params?.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches`
+        : '/servicesNS/-/-/saved/searches';
 
     let response = await this.api.get(path, {
       params: {
@@ -199,21 +218,32 @@ export class SplunkClient {
       `search=${encodeURIComponent(params.searchQuery)}`,
       'output_mode=json'
     ];
-    if (params.description) formParts.push(`description=${encodeURIComponent(params.description)}`);
-    if (params.isScheduled !== undefined) formParts.push(`is_scheduled=${params.isScheduled ? '1' : '0'}`);
-    if (params.cronSchedule) formParts.push(`cron_schedule=${encodeURIComponent(params.cronSchedule)}`);
-    if (params.earliestTime) formParts.push(`dispatch.earliest_time=${encodeURIComponent(params.earliestTime)}`);
-    if (params.latestTime) formParts.push(`dispatch.latest_time=${encodeURIComponent(params.latestTime)}`);
-    if (params.disabled !== undefined) formParts.push(`disabled=${params.disabled ? '1' : '0'}`);
+    if (params.description)
+      formParts.push(`description=${encodeURIComponent(params.description)}`);
+    if (params.isScheduled !== undefined)
+      formParts.push(`is_scheduled=${params.isScheduled ? '1' : '0'}`);
+    if (params.cronSchedule)
+      formParts.push(`cron_schedule=${encodeURIComponent(params.cronSchedule)}`);
+    if (params.earliestTime)
+      formParts.push(`dispatch.earliest_time=${encodeURIComponent(params.earliestTime)}`);
+    if (params.latestTime)
+      formParts.push(`dispatch.latest_time=${encodeURIComponent(params.latestTime)}`);
+    if (params.disabled !== undefined)
+      formParts.push(`disabled=${params.disabled ? '1' : '0'}`);
     if (params.alertType) formParts.push(`alert_type=${encodeURIComponent(params.alertType)}`);
-    if (params.alertComparator) formParts.push(`alert.severity=${encodeURIComponent(params.alertComparator)}`);
-    if (params.alertThreshold) formParts.push(`alert_threshold=${encodeURIComponent(params.alertThreshold)}`);
-    if (params.alertActions) formParts.push(`actions=${encodeURIComponent(params.alertActions)}`);
-    if (params.webhookUrl) formParts.push(`action.webhook.param.url=${encodeURIComponent(params.webhookUrl)}`);
+    if (params.alertComparator)
+      formParts.push(`alert.severity=${encodeURIComponent(params.alertComparator)}`);
+    if (params.alertThreshold)
+      formParts.push(`alert_threshold=${encodeURIComponent(params.alertThreshold)}`);
+    if (params.alertActions)
+      formParts.push(`actions=${encodeURIComponent(params.alertActions)}`);
+    if (params.webhookUrl)
+      formParts.push(`action.webhook.param.url=${encodeURIComponent(params.webhookUrl)}`);
 
-    let path = params.namespace?.owner && params.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches`
-      : '/services/saved/searches';
+    let path =
+      params.namespace?.owner && params.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches`
+        : '/services/saved/searches';
 
     let response = await this.api.post(path, formParts.join('&'), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -231,32 +261,44 @@ export class SplunkClient {
     };
   }
 
-  async updateSavedSearch(name: string, params: {
-    searchQuery?: string;
-    description?: string;
-    isScheduled?: boolean;
-    cronSchedule?: string;
-    earliestTime?: string;
-    latestTime?: string;
-    disabled?: boolean;
-    alertActions?: string;
-    webhookUrl?: string;
-    namespace?: { owner?: string; app?: string };
-  }): Promise<Record<string, any>> {
+  async updateSavedSearch(
+    name: string,
+    params: {
+      searchQuery?: string;
+      description?: string;
+      isScheduled?: boolean;
+      cronSchedule?: string;
+      earliestTime?: string;
+      latestTime?: string;
+      disabled?: boolean;
+      alertActions?: string;
+      webhookUrl?: string;
+      namespace?: { owner?: string; app?: string };
+    }
+  ): Promise<Record<string, any>> {
     let formParts: string[] = ['output_mode=json'];
     if (params.searchQuery) formParts.push(`search=${encodeURIComponent(params.searchQuery)}`);
-    if (params.description !== undefined) formParts.push(`description=${encodeURIComponent(params.description)}`);
-    if (params.isScheduled !== undefined) formParts.push(`is_scheduled=${params.isScheduled ? '1' : '0'}`);
-    if (params.cronSchedule) formParts.push(`cron_schedule=${encodeURIComponent(params.cronSchedule)}`);
-    if (params.earliestTime) formParts.push(`dispatch.earliest_time=${encodeURIComponent(params.earliestTime)}`);
-    if (params.latestTime) formParts.push(`dispatch.latest_time=${encodeURIComponent(params.latestTime)}`);
-    if (params.disabled !== undefined) formParts.push(`disabled=${params.disabled ? '1' : '0'}`);
-    if (params.alertActions) formParts.push(`actions=${encodeURIComponent(params.alertActions)}`);
-    if (params.webhookUrl) formParts.push(`action.webhook.param.url=${encodeURIComponent(params.webhookUrl)}`);
+    if (params.description !== undefined)
+      formParts.push(`description=${encodeURIComponent(params.description)}`);
+    if (params.isScheduled !== undefined)
+      formParts.push(`is_scheduled=${params.isScheduled ? '1' : '0'}`);
+    if (params.cronSchedule)
+      formParts.push(`cron_schedule=${encodeURIComponent(params.cronSchedule)}`);
+    if (params.earliestTime)
+      formParts.push(`dispatch.earliest_time=${encodeURIComponent(params.earliestTime)}`);
+    if (params.latestTime)
+      formParts.push(`dispatch.latest_time=${encodeURIComponent(params.latestTime)}`);
+    if (params.disabled !== undefined)
+      formParts.push(`disabled=${params.disabled ? '1' : '0'}`);
+    if (params.alertActions)
+      formParts.push(`actions=${encodeURIComponent(params.alertActions)}`);
+    if (params.webhookUrl)
+      formParts.push(`action.webhook.param.url=${encodeURIComponent(params.webhookUrl)}`);
 
-    let path = params.namespace?.owner && params.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches/${encodeURIComponent(name)}`
-      : `/services/saved/searches/${encodeURIComponent(name)}`;
+    let path =
+      params.namespace?.owner && params.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches/${encodeURIComponent(name)}`
+        : `/services/saved/searches/${encodeURIComponent(name)}`;
 
     let response = await this.api.post(path, formParts.join('&'), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -274,32 +316,44 @@ export class SplunkClient {
     };
   }
 
-  async deleteSavedSearch(name: string, namespace?: { owner?: string; app?: string }): Promise<void> {
-    let path = namespace?.owner && namespace?.app
-      ? `/servicesNS/${encodeURIComponent(namespace.owner)}/${encodeURIComponent(namespace.app)}/saved/searches/${encodeURIComponent(name)}`
-      : `/services/saved/searches/${encodeURIComponent(name)}`;
+  async deleteSavedSearch(
+    name: string,
+    namespace?: { owner?: string; app?: string }
+  ): Promise<void> {
+    let path =
+      namespace?.owner && namespace?.app
+        ? `/servicesNS/${encodeURIComponent(namespace.owner)}/${encodeURIComponent(namespace.app)}/saved/searches/${encodeURIComponent(name)}`
+        : `/services/saved/searches/${encodeURIComponent(name)}`;
 
     await this.api.delete(path, {
       params: { output_mode: 'json' }
     });
   }
 
-  async dispatchSavedSearch(name: string, params?: {
-    earliestTime?: string;
-    latestTime?: string;
-    triggerActions?: boolean;
-    forceDispatch?: boolean;
-    namespace?: { owner?: string; app?: string };
-  }): Promise<{ searchId: string }> {
+  async dispatchSavedSearch(
+    name: string,
+    params?: {
+      earliestTime?: string;
+      latestTime?: string;
+      triggerActions?: boolean;
+      forceDispatch?: boolean;
+      namespace?: { owner?: string; app?: string };
+    }
+  ): Promise<{ searchId: string }> {
     let formParts: string[] = ['output_mode=json'];
-    if (params?.earliestTime) formParts.push(`dispatch.earliest_time=${encodeURIComponent(params.earliestTime)}`);
-    if (params?.latestTime) formParts.push(`dispatch.latest_time=${encodeURIComponent(params.latestTime)}`);
-    if (params?.triggerActions !== undefined) formParts.push(`trigger_actions=${params.triggerActions ? '1' : '0'}`);
-    if (params?.forceDispatch !== undefined) formParts.push(`force_dispatch=${params.forceDispatch ? '1' : '0'}`);
+    if (params?.earliestTime)
+      formParts.push(`dispatch.earliest_time=${encodeURIComponent(params.earliestTime)}`);
+    if (params?.latestTime)
+      formParts.push(`dispatch.latest_time=${encodeURIComponent(params.latestTime)}`);
+    if (params?.triggerActions !== undefined)
+      formParts.push(`trigger_actions=${params.triggerActions ? '1' : '0'}`);
+    if (params?.forceDispatch !== undefined)
+      formParts.push(`force_dispatch=${params.forceDispatch ? '1' : '0'}`);
 
-    let path = params?.namespace?.owner && params?.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches/${encodeURIComponent(name)}/dispatch`
-      : `/services/saved/searches/${encodeURIComponent(name)}/dispatch`;
+    let path =
+      params?.namespace?.owner && params?.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/saved/searches/${encodeURIComponent(name)}/dispatch`
+        : `/services/saved/searches/${encodeURIComponent(name)}/dispatch`;
 
     let response = await this.api.post(path, formParts.join('&'), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -324,14 +378,16 @@ export class SplunkClient {
     return { text: response.data?.text || 'Success', code: response.data?.code || 0 };
   }
 
-  async sendHecEvents(events: Array<{
-    event: any;
-    time?: number;
-    host?: string;
-    source?: string;
-    sourcetype?: string;
-    index?: string;
-  }>): Promise<{ text: string; code: number }> {
+  async sendHecEvents(
+    events: Array<{
+      event: any;
+      time?: number;
+      host?: string;
+      source?: string;
+      sourcetype?: string;
+      index?: string;
+    }>
+  ): Promise<{ text: string; code: number }> {
     let body = events.map(e => JSON.stringify(e)).join('');
     let response = await this.hecApi.post('/services/collector/event', body, {
       headers: { 'Content-Type': 'application/json' }
@@ -339,13 +395,16 @@ export class SplunkClient {
     return { text: response.data?.text || 'Success', code: response.data?.code || 0 };
   }
 
-  async sendHecRaw(rawData: string, params?: {
-    host?: string;
-    source?: string;
-    sourcetype?: string;
-    index?: string;
-    channel?: string;
-  }): Promise<{ text: string; code: number }> {
+  async sendHecRaw(
+    rawData: string,
+    params?: {
+      host?: string;
+      source?: string;
+      sourcetype?: string;
+      index?: string;
+      channel?: string;
+    }
+  ): Promise<{ text: string; code: number }> {
     let headers: Record<string, string> = { 'Content-Type': 'text/plain' };
     if (params?.channel) {
       headers['X-Splunk-Request-Channel'] = params.channel;
@@ -408,16 +467,16 @@ export class SplunkClient {
     maxDataSizeMB?: number;
     frozenTimePeriodInSecs?: number;
   }): Promise<Record<string, any>> {
-    let formParts: string[] = [
-      `name=${encodeURIComponent(params.name)}`,
-      'output_mode=json'
-    ];
+    let formParts: string[] = [`name=${encodeURIComponent(params.name)}`, 'output_mode=json'];
     if (params.datatype) formParts.push(`datatype=${params.datatype}`);
     if (params.homePath) formParts.push(`homePath=${encodeURIComponent(params.homePath)}`);
     if (params.coldPath) formParts.push(`coldPath=${encodeURIComponent(params.coldPath)}`);
-    if (params.thawedPath) formParts.push(`thawedPath=${encodeURIComponent(params.thawedPath)}`);
-    if (params.maxDataSizeMB !== undefined) formParts.push(`maxDataSize=${params.maxDataSizeMB}`);
-    if (params.frozenTimePeriodInSecs !== undefined) formParts.push(`frozenTimePeriodInSecs=${params.frozenTimePeriodInSecs}`);
+    if (params.thawedPath)
+      formParts.push(`thawedPath=${encodeURIComponent(params.thawedPath)}`);
+    if (params.maxDataSizeMB !== undefined)
+      formParts.push(`maxDataSize=${params.maxDataSizeMB}`);
+    if (params.frozenTimePeriodInSecs !== undefined)
+      formParts.push(`frozenTimePeriodInSecs=${params.frozenTimePeriodInSecs}`);
 
     let response = await this.api.post('/services/data/indexes', formParts.join('&'), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -461,9 +520,12 @@ export class SplunkClient {
     owner?: string;
   }): Promise<{ collections: Record<string, any>[] }> {
     let owner = params.owner || 'nobody';
-    let response = await this.api.get(`/servicesNS/${encodeURIComponent(owner)}/${encodeURIComponent(params.app)}/storage/collections/config`, {
-      params: { output_mode: 'json' }
-    });
+    let response = await this.api.get(
+      `/servicesNS/${encodeURIComponent(owner)}/${encodeURIComponent(params.app)}/storage/collections/config`,
+      {
+        params: { output_mode: 'json' }
+      }
+    );
 
     let entries = response.data?.entry || [];
     return {
@@ -661,9 +723,10 @@ export class SplunkClient {
     offset?: number;
     namespace?: { owner?: string; app?: string };
   }): Promise<{ alerts: Record<string, any>[]; total: number }> {
-    let path = params?.namespace?.owner && params?.namespace?.app
-      ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/alerts/fired_alerts`
-      : '/services/alerts/fired_alerts';
+    let path =
+      params?.namespace?.owner && params?.namespace?.app
+        ? `/servicesNS/${encodeURIComponent(params.namespace.owner)}/${encodeURIComponent(params.namespace.app)}/alerts/fired_alerts`
+        : '/services/alerts/fired_alerts';
 
     let response = await this.api.get(path, {
       params: {

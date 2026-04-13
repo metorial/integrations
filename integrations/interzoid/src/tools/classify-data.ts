@@ -3,32 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let classifyData = SlateTool.create(
-  spec,
-  {
-    name: 'Classify Data',
-    key: 'classify_data',
-    description: `Use AI to analyze and classify data values in real time.
+export let classifyData = SlateTool.create(spec, {
+  name: 'Classify Data',
+  key: 'classify_data',
+  description: `Use AI to analyze and classify data values in real time.
 
 - **Entity type**: Determine whether a value is a name, company, location, email, phone number, website, or text.
 - **Gender**: Infer likely gender from an individual name, including international character sets.
 - **Name origin**: Determine the likely cultural/ethnic country of origin from an individual name.
 - **Language**: Detect the language of a text input (supports Latin, Japanese, Chinese, Arabic, Greek, and more).`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    classificationType: z.enum(['entity_type', 'gender', 'name_origin', 'language']).describe('Type of classification to perform'),
-    value: z.string().describe('The data value to classify'),
-  }))
-  .output(z.object({
-    classification: z.string().describe('The classification result (entity type, gender, origin country, or language)'),
-    code: z.string().describe('API response status code'),
-    remainingCredits: z.number().describe('Remaining API credits'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      classificationType: z
+        .enum(['entity_type', 'gender', 'name_origin', 'language'])
+        .describe('Type of classification to perform'),
+      value: z.string().describe('The data value to classify')
+    })
+  )
+  .output(
+    z.object({
+      classification: z
+        .string()
+        .describe(
+          'The classification result (entity type, gender, origin country, or language)'
+        ),
+      code: z.string().describe('API response status code'),
+      remainingCredits: z.number().describe('Remaining API credits')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let classification: string;
     let code: string;
@@ -69,9 +76,9 @@ export let classifyData = SlateTool.create(
       output: {
         classification,
         code,
-        remainingCredits: credits,
+        remainingCredits: credits
       },
-      message: `Classified "${ctx.input.value}" (${ctx.input.classificationType.replace('_', ' ')}): **${classification}**`,
+      message: `Classified "${ctx.input.value}" (${ctx.input.classificationType.replace('_', ' ')}): **${classification}**`
     };
   })
   .build();

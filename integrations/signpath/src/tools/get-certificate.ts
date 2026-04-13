@@ -3,36 +3,46 @@ import { SignPathClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCertificate = SlateTool.create(
-  spec,
-  {
-    name: 'Get Certificate',
-    key: 'get_certificate',
-    description: `Retrieve detailed metadata for a specific certificate by its slug, or retrieve the certificate associated with a specific project's signing policy. Use certificateSlug for direct lookup, or projectSlug + signingPolicySlug to get the certificate linked to a signing policy.`,
-    instructions: [
-      'Provide either certificateSlug for direct certificate lookup, or both projectSlug and signingPolicySlug to get a signing policy certificate.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getCertificate = SlateTool.create(spec, {
+  name: 'Get Certificate',
+  key: 'get_certificate',
+  description: `Retrieve detailed metadata for a specific certificate by its slug, or retrieve the certificate associated with a specific project's signing policy. Use certificateSlug for direct lookup, or projectSlug + signingPolicySlug to get the certificate linked to a signing policy.`,
+  instructions: [
+    'Provide either certificateSlug for direct certificate lookup, or both projectSlug and signingPolicySlug to get a signing policy certificate.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    certificateSlug: z.string().optional().describe('Slug of the certificate to retrieve directly'),
-    projectSlug: z.string().optional().describe('Project slug to look up the signing policy certificate'),
-    signingPolicySlug: z.string().optional().describe('Signing policy slug to look up its associated certificate')
-  }))
-  .output(z.object({
-    slug: z.string().optional().describe('Slug identifier of the certificate'),
-    name: z.string().optional().describe('Name of the certificate'),
-    thumbprint: z.string().describe('Certificate thumbprint'),
-    isActive: z.boolean().optional().describe('Whether the certificate is active'),
-    commonName: z.string().optional().describe('Common name (CN) of the certificate'),
-    issuer: z.string().optional().describe('Certificate issuer'),
-    validFrom: z.string().optional().describe('Certificate validity start date'),
-    validTo: z.string().optional().describe('Certificate validity end date')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      certificateSlug: z
+        .string()
+        .optional()
+        .describe('Slug of the certificate to retrieve directly'),
+      projectSlug: z
+        .string()
+        .optional()
+        .describe('Project slug to look up the signing policy certificate'),
+      signingPolicySlug: z
+        .string()
+        .optional()
+        .describe('Signing policy slug to look up its associated certificate')
+    })
+  )
+  .output(
+    z.object({
+      slug: z.string().optional().describe('Slug identifier of the certificate'),
+      name: z.string().optional().describe('Name of the certificate'),
+      thumbprint: z.string().describe('Certificate thumbprint'),
+      isActive: z.boolean().optional().describe('Whether the certificate is active'),
+      commonName: z.string().optional().describe('Common name (CN) of the certificate'),
+      issuer: z.string().optional().describe('Certificate issuer'),
+      validFrom: z.string().optional().describe('Certificate validity start date'),
+      validTo: z.string().optional().describe('Certificate validity end date')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SignPathClient({
       token: ctx.auth.token,
       organizationId: ctx.config.organizationId,
@@ -71,5 +81,8 @@ export let getCertificate = SlateTool.create(
       };
     }
 
-    throw new Error('Provide either certificateSlug, or both projectSlug and signingPolicySlug.');
-  }).build();
+    throw new Error(
+      'Provide either certificateSlug, or both projectSlug and signingPolicySlug.'
+    );
+  })
+  .build();

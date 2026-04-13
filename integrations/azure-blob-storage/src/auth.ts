@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Microsoft Entra ID (OAuth 2.0)',
@@ -15,26 +17,27 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Azure Storage Full Access',
-        description: 'Full access to Azure Storage resources including blobs, containers, queues, tables, and files',
-        scope: 'https://storage.azure.com/.default',
+        description:
+          'Full access to Azure Storage resources including blobs, containers, queues, tables, and files',
+        scope: 'https://storage.azure.com/.default'
       },
       {
         title: 'User Profile',
         description: 'Read your basic profile information',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Offline Access',
         description: 'Maintain access with a refresh token',
-        scope: 'offline_access',
-      },
+        scope: 'offline_access'
+      }
     ],
 
     inputSchema: z.object({
-      tenantId: z.string().describe('Azure AD Tenant ID'),
+      tenantId: z.string().describe('Azure AD Tenant ID')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let tenantId = ctx.input.tenantId;
       let scopes = ctx.scopes.join(' ');
       let params = new URLSearchParams({
@@ -43,16 +46,16 @@ export let auth = SlateAuth.create()
         redirect_uri: ctx.redirectUri,
         scope: scopes,
         state: ctx.state,
-        response_mode: 'query',
+        response_mode: 'query'
       });
 
       return {
         url: `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params.toString()}`,
-        input: { tenantId },
+        input: { tenantId }
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let tenantId = ctx.input.tenantId;
       let http = createAxios();
 
@@ -64,12 +67,12 @@ export let auth = SlateAuth.create()
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code',
-          scope: ctx.scopes.join(' '),
+          scope: ctx.scopes.join(' ')
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -82,13 +85,13 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
+          expiresAt
         },
-        input: { tenantId },
+        input: { tenantId }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -103,12 +106,12 @@ export let auth = SlateAuth.create()
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token',
-          scope: ctx.scopes.join(' '),
+          scope: ctx.scopes.join(' ')
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -121,11 +124,11 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
+          expiresAt
         },
-        input: { tenantId },
+        input: { tenantId }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -133,14 +136,18 @@ export let auth = SlateAuth.create()
     key: 'sas_token',
 
     inputSchema: z.object({
-      sasToken: z.string().describe('Shared Access Signature token (the query string portion starting with "sv=")'),
+      sasToken: z
+        .string()
+        .describe(
+          'Shared Access Signature token (the query string portion starting with "sv=")'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.sasToken,
-        },
+          token: ctx.input.sasToken
+        }
       };
-    },
+    }
   });

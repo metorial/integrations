@@ -11,7 +11,7 @@ import {
   listUsers,
   listViews,
   executeView,
-  triggerSkillWebhook,
+  triggerSkillWebhook
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     listUsers,
     listViews,
     executeView,
-    triggerSkillWebhook,
+    triggerSkillWebhook
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

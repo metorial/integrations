@@ -10,35 +10,39 @@ let categorySchema = z.object({
   openSuggestionsCount: z.number().describe('Open suggestions in this category'),
   createdAt: z.string().describe('When the category was created'),
   updatedAt: z.string().describe('When the category was last updated'),
-  links: z.record(z.string(), z.any()).optional().describe('Associated resource links (e.g., forum)'),
+  links: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Associated resource links (e.g., forum)')
 });
 
-export let listCategories = SlateTool.create(
-  spec,
-  {
-    name: 'List Categories',
-    key: 'list_categories',
-    description: `List user-facing categories available within forums. Categories organize suggestions into topics visible to end users. Returns category IDs for use with suggestion creation.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
-  }))
-  .output(z.object({
-    categories: z.array(categorySchema),
-    totalRecords: z.number().describe('Total number of categories'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listCategories = SlateTool.create(spec, {
+  name: 'List Categories',
+  key: 'list_categories',
+  description: `List user-facing categories available within forums. Categories organize suggestions into topics visible to end users. Returns category IDs for use with suggestion creation.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 20, max: 100)')
+    })
+  )
+  .output(
+    z.object({
+      categories: z.array(categorySchema),
+      totalRecords: z.number().describe('Total number of categories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.auth.subdomain,
+      subdomain: ctx.auth.subdomain
     });
 
     let result = await client.listCategories({
       page: ctx.input.page,
-      perPage: ctx.input.perPage,
+      perPage: ctx.input.perPage
     });
 
     let categories = result.categories.map((c: any) => ({
@@ -48,14 +52,15 @@ export let listCategories = SlateTool.create(
       openSuggestionsCount: c.open_suggestions_count || 0,
       createdAt: c.created_at,
       updatedAt: c.updated_at,
-      links: c.links,
+      links: c.links
     }));
 
     return {
       output: {
         categories,
-        totalRecords: result.pagination?.totalRecords || categories.length,
+        totalRecords: result.pagination?.totalRecords || categories.length
       },
-      message: `Found **${categories.length}** categories.`,
+      message: `Found **${categories.length}** categories.`
     };
-  }).build();
+  })
+  .build();

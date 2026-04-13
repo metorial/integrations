@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Retrieve user records from ForceManager (read-only).
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Retrieve user records from ForceManager (read-only).
 Fetch a specific user by ID or list/search users. Users include branch assignments, permission levels, and last known geolocation.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.number().optional().describe('Specific user ID to retrieve'),
-    query: z.string().optional().describe('ForceManager query language filter'),
-    name: z.string().optional().describe('Search by name (LIKE match)'),
-    email: z.string().optional().describe('Search by email (LIKE match)'),
-    page: z.number().optional().describe('Page number (0-indexed)')
-  }))
-  .output(z.object({
-    users: z.array(z.any()).describe('List of matching user records'),
-    totalCount: z.number().describe('Number of records returned'),
-    nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.number().optional().describe('Specific user ID to retrieve'),
+      query: z.string().optional().describe('ForceManager query language filter'),
+      name: z.string().optional().describe('Search by name (LIKE match)'),
+      email: z.string().optional().describe('Search by email (LIKE match)'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(z.any()).describe('List of matching user records'),
+      totalCount: z.number().describe('Number of records returned'),
+      nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.userId) {
@@ -53,4 +54,5 @@ Fetch a specific user by ID or list/search users. Users include branch assignmen
       },
       message: `Found **${result.entityCount}** user(s)${result.nextPage !== null ? ` (more pages available)` : ''}`
     };
-  }).build();
+  })
+  .build();

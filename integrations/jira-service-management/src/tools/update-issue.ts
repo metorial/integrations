@@ -3,44 +3,61 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { JiraClient } from '../lib/client';
 
-export let updateIssueTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Issue',
-    key: 'update_issue',
-    description: `Update an existing Jira issue's fields. Supports changing summary, description, priority, labels, components, assignee, and custom fields. Can also transition the issue to a new status or assign/unassign it.`,
-    instructions: [
-      'To unassign an issue, set assigneeAccountId to null.',
-      'To transition an issue, provide either transitionId or transitionName. Use the Get Issue tool with includeTransitions to discover available transitions.',
-      'Only fields that are provided will be updated; omitted fields remain unchanged.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let updateIssueTool = SlateTool.create(spec, {
+  name: 'Update Issue',
+  key: 'update_issue',
+  description: `Update an existing Jira issue's fields. Supports changing summary, description, priority, labels, components, assignee, and custom fields. Can also transition the issue to a new status or assign/unassign it.`,
+  instructions: [
+    'To unassign an issue, set assigneeAccountId to null.',
+    'To transition an issue, provide either transitionId or transitionName. Use the Get Issue tool with includeTransitions to discover available transitions.',
+    'Only fields that are provided will be updated; omitted fields remain unchanged.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    issueIdOrKey: z.string().describe('Issue key (e.g., PROJ-123) or numeric issue ID'),
-    summary: z.string().optional().describe('New summary/title'),
-    description: z.string().optional().describe('New plain text description'),
-    priority: z.string().optional().describe('New priority name'),
-    assigneeAccountId: z.string().nullable().optional().describe('Account ID to assign, or null to unassign'),
-    labels: z.array(z.string()).optional().describe('Replace labels with this list'),
-    components: z.array(z.string()).optional().describe('Replace components with this list'),
-    transitionId: z.string().optional().describe('Transition ID to move the issue to a new status'),
-    transitionName: z.string().optional().describe('Transition name to move the issue (looked up automatically)'),
-    transitionComment: z.string().optional().describe('Comment to add when transitioning'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values as a map of field ID to value'),
-  }))
-  .output(z.object({
-    issueIdOrKey: z.string().describe('The issue key or ID that was updated'),
-    transitioned: z.boolean().describe('Whether a transition was performed'),
-    transitionedTo: z.string().optional().describe('The status the issue was transitioned to'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      issueIdOrKey: z.string().describe('Issue key (e.g., PROJ-123) or numeric issue ID'),
+      summary: z.string().optional().describe('New summary/title'),
+      description: z.string().optional().describe('New plain text description'),
+      priority: z.string().optional().describe('New priority name'),
+      assigneeAccountId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Account ID to assign, or null to unassign'),
+      labels: z.array(z.string()).optional().describe('Replace labels with this list'),
+      components: z.array(z.string()).optional().describe('Replace components with this list'),
+      transitionId: z
+        .string()
+        .optional()
+        .describe('Transition ID to move the issue to a new status'),
+      transitionName: z
+        .string()
+        .optional()
+        .describe('Transition name to move the issue (looked up automatically)'),
+      transitionComment: z.string().optional().describe('Comment to add when transitioning'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values as a map of field ID to value')
+    })
+  )
+  .output(
+    z.object({
+      issueIdOrKey: z.string().describe('The issue key or ID that was updated'),
+      transitioned: z.boolean().describe('Whether a transition was performed'),
+      transitionedTo: z
+        .string()
+        .optional()
+        .describe('The status the issue was transitioned to')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new JiraClient({
       token: ctx.auth.token,
-      cloudId: ctx.config.cloudId,
+      cloudId: ctx.config.cloudId
     });
 
     let fields: any = {};
@@ -55,7 +72,9 @@ export let updateIssueTool = SlateTool.create(
       fields.description = {
         type: 'doc',
         version: 1,
-        content: [{ type: 'paragraph', content: [{ type: 'text', text: ctx.input.description }] }],
+        content: [
+          { type: 'paragraph', content: [{ type: 'text', text: ctx.input.description }] }
+        ]
       };
       hasFieldUpdates = true;
     }
@@ -71,7 +90,7 @@ export let updateIssueTool = SlateTool.create(
     }
 
     if (ctx.input.components !== undefined) {
-      fields.components = ctx.input.components.map((name) => ({ name }));
+      fields.components = ctx.input.components.map(name => ({ name }));
       hasFieldUpdates = true;
     }
 
@@ -98,12 +117,14 @@ export let updateIssueTool = SlateTool.create(
 
       if (!transitionId && ctx.input.transitionName) {
         let transitions = await client.getTransitions(ctx.input.issueIdOrKey);
-        let match = transitions.find((t: any) =>
-          t.name.toLowerCase() === ctx.input.transitionName!.toLowerCase()
+        let match = transitions.find(
+          (t: any) => t.name.toLowerCase() === ctx.input.transitionName!.toLowerCase()
         );
         if (!match) {
           let available = transitions.map((t: any) => t.name).join(', ');
-          throw new Error(`Transition "${ctx.input.transitionName}" not found. Available transitions: ${available}`);
+          throw new Error(
+            `Transition "${ctx.input.transitionName}" not found. Available transitions: ${available}`
+          );
         }
         transitionId = match.id;
         transitionedTo = match.to?.name || match.name;
@@ -114,7 +135,7 @@ export let updateIssueTool = SlateTool.create(
           ctx.input.issueIdOrKey,
           transitionId,
           undefined,
-          ctx.input.transitionComment,
+          ctx.input.transitionComment
         );
         transitioned = true;
 
@@ -135,9 +156,9 @@ export let updateIssueTool = SlateTool.create(
       output: {
         issueIdOrKey: ctx.input.issueIdOrKey,
         transitioned,
-        transitionedTo,
+        transitionedTo
       },
-      message: `Issue **${ctx.input.issueIdOrKey}**: ${actions.join(', ') || 'no changes made'}.`,
+      message: `Issue **${ctx.input.issueIdOrKey}**: ${actions.join(', ') || 'no changes made'}.`
     };
   })
   .build();

@@ -15,27 +15,34 @@ let nutritionItemSchema = z.object({
   cholesterolMg: z.number().describe('Cholesterol in milligrams'),
   carbohydratesTotalG: z.number().describe('Total carbohydrates in grams'),
   fiberG: z.number().describe('Fiber in grams'),
-  sugarG: z.number().describe('Sugar in grams'),
+  sugarG: z.number().describe('Sugar in grams')
 });
 
-export let getNutrition = SlateTool.create(
-  spec,
-  {
-    name: 'Get Nutrition Info',
-    key: 'get_nutrition',
-    description: `Extract nutrition information from a natural language food description. Describe what you ate in plain English (e.g. "3 eggs and 2 slices of toast") and get detailed nutritional breakdown per item.`,
-    tags: {
-      readOnly: true,
-    },
+export let getNutrition = SlateTool.create(spec, {
+  name: 'Get Nutrition Info',
+  key: 'get_nutrition',
+  description: `Extract nutrition information from a natural language food description. Describe what you ate in plain English (e.g. "3 eggs and 2 slices of toast") and get detailed nutritional breakdown per item.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Natural language description of food (e.g. "1 cup of rice and 200g chicken breast")'),
-  }))
-  .output(z.object({
-    items: z.array(nutritionItemSchema).describe('Nutrition data for each identified food item'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .describe(
+          'Natural language description of food (e.g. "1 cup of rice and 200g chicken breast")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      items: z
+        .array(nutritionItemSchema)
+        .describe('Nutrition data for each identified food item')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getNutrition(ctx.input.query);
     let items = Array.isArray(result) ? result : [result];
@@ -52,13 +59,14 @@ export let getNutrition = SlateTool.create(
       cholesterolMg: item.cholesterol_mg,
       carbohydratesTotalG: item.carbohydrates_total_g,
       fiberG: item.fiber_g,
-      sugarG: item.sugar_g,
+      sugarG: item.sugar_g
     }));
 
     let totalCalories = mapped.reduce((sum: number, i: any) => sum + (i.calories ?? 0), 0);
 
     return {
       output: { items: mapped },
-      message: `Found nutrition data for **${mapped.length}** item(s). Total calories: **${totalCalories} kcal**.`,
+      message: `Found nutrition data for **${mapped.length}** item(s). Total calories: **${totalCalories} kcal**.`
     };
-  }).build();
+  })
+  .build();

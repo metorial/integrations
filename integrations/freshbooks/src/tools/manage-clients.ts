@@ -11,50 +11,53 @@ let clientSchema = z.object({
   email: z.string().nullable().optional().describe('Primary email address'),
   phone: z.string().nullable().optional().describe('Phone number (work)'),
   mobilePhone: z.string().nullable().optional().describe('Mobile phone number'),
-  currencyCode: z.string().nullable().optional().describe('Preferred currency code (e.g. USD, CAD)'),
+  currencyCode: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Preferred currency code (e.g. USD, CAD)'),
   language: z.string().nullable().optional().describe('Communication language (e.g. en)'),
   billingStreet: z.string().nullable().optional().describe('Billing street address'),
   billingCity: z.string().nullable().optional().describe('Billing city'),
   billingProvince: z.string().nullable().optional().describe('Billing state/province'),
   billingPostalCode: z.string().nullable().optional().describe('Billing postal/zip code'),
-  billingCountry: z.string().nullable().optional().describe('Billing country'),
+  billingCountry: z.string().nullable().optional().describe('Billing country')
 });
 
-export let manageClients = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Clients',
-    key: 'manage_clients',
-    description: `Create, update, or delete client records in FreshBooks. Clients are entities you send invoices to. Use this tool to add new clients, update their contact and billing information, or archive them.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageClients = SlateTool.create(spec, {
+  name: 'Manage Clients',
+  key: 'manage_clients',
+  description: `Create, update, or delete client records in FreshBooks. Clients are entities you send invoices to. Use this tool to add new clients, update their contact and billing information, or archive them.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    clientId: z.number().optional().describe('Client ID (required for update/delete)'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    organization: z.string().optional().describe('Organization/company name'),
-    email: z.string().optional().describe('Primary email address'),
-    phone: z.string().optional().describe('Phone number (work)'),
-    mobilePhone: z.string().optional().describe('Mobile phone number'),
-    currencyCode: z.string().optional().describe('Preferred currency code (e.g. USD, CAD)'),
-    language: z.string().optional().describe('Communication language (e.g. en)'),
-    billingStreet: z.string().optional().describe('Billing street address'),
-    billingCity: z.string().optional().describe('Billing city'),
-    billingProvince: z.string().optional().describe('Billing state/province'),
-    billingPostalCode: z.string().optional().describe('Billing postal/zip code'),
-    billingCountry: z.string().optional().describe('Billing country'),
-  }))
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      clientId: z.number().optional().describe('Client ID (required for update/delete)'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      organization: z.string().optional().describe('Organization/company name'),
+      email: z.string().optional().describe('Primary email address'),
+      phone: z.string().optional().describe('Phone number (work)'),
+      mobilePhone: z.string().optional().describe('Mobile phone number'),
+      currencyCode: z.string().optional().describe('Preferred currency code (e.g. USD, CAD)'),
+      language: z.string().optional().describe('Communication language (e.g. en)'),
+      billingStreet: z.string().optional().describe('Billing street address'),
+      billingCity: z.string().optional().describe('Billing city'),
+      billingProvince: z.string().optional().describe('Billing state/province'),
+      billingPostalCode: z.string().optional().describe('Billing postal/zip code'),
+      billingCountry: z.string().optional().describe('Billing country')
+    })
+  )
   .output(clientSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new FreshBooksClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      businessId: ctx.config.businessId,
+      businessId: ctx.config.businessId
     });
 
     let buildPayload = () => {
@@ -69,8 +72,10 @@ export let manageClients = SlateTool.create(
       if (ctx.input.language !== undefined) payload.language = ctx.input.language;
       if (ctx.input.billingStreet !== undefined) payload.p_street = ctx.input.billingStreet;
       if (ctx.input.billingCity !== undefined) payload.p_city = ctx.input.billingCity;
-      if (ctx.input.billingProvince !== undefined) payload.p_province = ctx.input.billingProvince;
-      if (ctx.input.billingPostalCode !== undefined) payload.p_code = ctx.input.billingPostalCode;
+      if (ctx.input.billingProvince !== undefined)
+        payload.p_province = ctx.input.billingProvince;
+      if (ctx.input.billingPostalCode !== undefined)
+        payload.p_code = ctx.input.billingPostalCode;
       if (ctx.input.billingCountry !== undefined) payload.p_country = ctx.input.billingCountry;
       return payload;
     };
@@ -89,14 +94,14 @@ export let manageClients = SlateTool.create(
       billingCity: raw.p_city,
       billingProvince: raw.p_province,
       billingPostalCode: raw.p_code,
-      billingCountry: raw.p_country,
+      billingCountry: raw.p_country
     });
 
     if (ctx.input.action === 'create') {
       let result = await client.createClient(buildPayload());
       return {
         output: mapResult(result),
-        message: `Created client **${result.fname || ''} ${result.lname || ''}** (ID: ${result.id})${result.organization ? ` at ${result.organization}` : ''}.`,
+        message: `Created client **${result.fname || ''} ${result.lname || ''}** (ID: ${result.id})${result.organization ? ` at ${result.organization}` : ''}.`
       };
     }
 
@@ -105,7 +110,7 @@ export let manageClients = SlateTool.create(
       let result = await client.updateClient(ctx.input.clientId, buildPayload());
       return {
         output: mapResult(result),
-        message: `Updated client **${result.fname || ''} ${result.lname || ''}** (ID: ${result.id}).`,
+        message: `Updated client **${result.fname || ''} ${result.lname || ''}** (ID: ${result.id}).`
       };
     }
 
@@ -114,9 +119,10 @@ export let manageClients = SlateTool.create(
       let result = await client.deleteClient(ctx.input.clientId);
       return {
         output: mapResult(result),
-        message: `Archived client (ID: ${ctx.input.clientId}).`,
+        message: `Archived client (ID: ${ctx.input.clientId}).`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

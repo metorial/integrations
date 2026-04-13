@@ -12,38 +12,42 @@ let attemptSchema = z.object({
   status: z.number().describe('Attempt status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
   timestamp: z.string().describe('When the attempt was made'),
   triggerType: z.number().describe('What triggered the attempt: 0=Scheduled, 1=Manual'),
-  url: z.string().describe('URL the message was sent to'),
+  url: z.string().describe('URL the message was sent to')
 });
 
-export let listAttemptsByMessage = SlateTool.create(
-  spec,
-  {
-    name: 'List Attempts by Message',
-    key: 'list_attempts_by_message',
-    description: `List delivery attempts for a specific message. Shows the status, response, and endpoint for each attempt. Use this to debug delivery failures or verify successful delivery.`,
-    tags: {
-      readOnly: true,
-    },
+export let listAttemptsByMessage = SlateTool.create(spec, {
+  name: 'List Attempts by Message',
+  key: 'list_attempts_by_message',
+  description: `List delivery attempts for a specific message. Shows the status, response, and endpoint for each attempt. Use this to debug delivery failures or verify successful delivery.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    applicationId: z.string().describe('Application ID or UID'),
-    messageId: z.string().describe('Message ID to list attempts for'),
-    limit: z.number().optional().describe('Maximum number of attempts to return'),
-    iterator: z.string().optional().describe('Pagination cursor'),
-    status: z.number().optional().describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
-    before: z.string().optional().describe('Only return attempts before this ISO timestamp'),
-    after: z.string().optional().describe('Only return attempts after this ISO timestamp'),
-  }))
-  .output(z.object({
-    attempts: z.array(attemptSchema),
-    hasMore: z.boolean().describe('Whether there are more results'),
-    iterator: z.string().optional().describe('Cursor for the next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      applicationId: z.string().describe('Application ID or UID'),
+      messageId: z.string().describe('Message ID to list attempts for'),
+      limit: z.number().optional().describe('Maximum number of attempts to return'),
+      iterator: z.string().optional().describe('Pagination cursor'),
+      status: z
+        .number()
+        .optional()
+        .describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
+      before: z.string().optional().describe('Only return attempts before this ISO timestamp'),
+      after: z.string().optional().describe('Only return attempts after this ISO timestamp')
+    })
+  )
+  .output(
+    z.object({
+      attempts: z.array(attemptSchema),
+      hasMore: z.boolean().describe('Whether there are more results'),
+      iterator: z.string().optional().describe('Cursor for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region || 'us',
+      region: ctx.config.region || 'us'
     });
 
     ctx.progress('Fetching message attempts...');
@@ -55,11 +59,11 @@ export let listAttemptsByMessage = SlateTool.create(
         iterator: ctx.input.iterator,
         status: ctx.input.status,
         before: ctx.input.before,
-        after: ctx.input.after,
+        after: ctx.input.after
       }
     );
 
-    let attempts = result.data.map((a) => ({
+    let attempts = result.data.map(a => ({
       attemptId: a.id,
       messageId: a.msgId,
       endpointId: a.endpointId,
@@ -68,48 +72,53 @@ export let listAttemptsByMessage = SlateTool.create(
       status: a.status,
       timestamp: a.timestamp,
       triggerType: a.triggerType,
-      url: a.url,
+      url: a.url
     }));
 
     return {
       output: {
         attempts,
         hasMore: !result.done,
-        iterator: result.iterator,
+        iterator: result.iterator
       },
-      message: `Found **${attempts.length}** attempt(s) for message \`${ctx.input.messageId}\`.`,
+      message: `Found **${attempts.length}** attempt(s) for message \`${ctx.input.messageId}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let listAttemptsByEndpoint = SlateTool.create(
-  spec,
-  {
-    name: 'List Attempts by Endpoint',
-    key: 'list_attempts_by_endpoint',
-    description: `List delivery attempts targeting a specific endpoint across all messages. Useful for diagnosing endpoint health and delivery patterns.`,
-    tags: {
-      readOnly: true,
-    },
+export let listAttemptsByEndpoint = SlateTool.create(spec, {
+  name: 'List Attempts by Endpoint',
+  key: 'list_attempts_by_endpoint',
+  description: `List delivery attempts targeting a specific endpoint across all messages. Useful for diagnosing endpoint health and delivery patterns.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    applicationId: z.string().describe('Application ID or UID'),
-    endpointId: z.string().describe('Endpoint ID or UID'),
-    limit: z.number().optional().describe('Maximum number of attempts to return'),
-    iterator: z.string().optional().describe('Pagination cursor'),
-    status: z.number().optional().describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
-    before: z.string().optional().describe('Only return attempts before this ISO timestamp'),
-    after: z.string().optional().describe('Only return attempts after this ISO timestamp'),
-  }))
-  .output(z.object({
-    attempts: z.array(attemptSchema),
-    hasMore: z.boolean().describe('Whether there are more results'),
-    iterator: z.string().optional().describe('Cursor for the next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      applicationId: z.string().describe('Application ID or UID'),
+      endpointId: z.string().describe('Endpoint ID or UID'),
+      limit: z.number().optional().describe('Maximum number of attempts to return'),
+      iterator: z.string().optional().describe('Pagination cursor'),
+      status: z
+        .number()
+        .optional()
+        .describe('Filter by status: 0=Success, 1=Pending, 2=Failed, 3=Sending'),
+      before: z.string().optional().describe('Only return attempts before this ISO timestamp'),
+      after: z.string().optional().describe('Only return attempts after this ISO timestamp')
+    })
+  )
+  .output(
+    z.object({
+      attempts: z.array(attemptSchema),
+      hasMore: z.boolean().describe('Whether there are more results'),
+      iterator: z.string().optional().describe('Cursor for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region || 'us',
+      region: ctx.config.region || 'us'
     });
 
     ctx.progress('Fetching endpoint attempts...');
@@ -121,11 +130,11 @@ export let listAttemptsByEndpoint = SlateTool.create(
         iterator: ctx.input.iterator,
         status: ctx.input.status,
         before: ctx.input.before,
-        after: ctx.input.after,
+        after: ctx.input.after
       }
     );
 
-    let attempts = result.data.map((a) => ({
+    let attempts = result.data.map(a => ({
       attemptId: a.id,
       messageId: a.msgId,
       endpointId: a.endpointId,
@@ -134,46 +143,53 @@ export let listAttemptsByEndpoint = SlateTool.create(
       status: a.status,
       timestamp: a.timestamp,
       triggerType: a.triggerType,
-      url: a.url,
+      url: a.url
     }));
 
     return {
       output: {
         attempts,
         hasMore: !result.done,
-        iterator: result.iterator,
+        iterator: result.iterator
       },
-      message: `Found **${attempts.length}** attempt(s) for endpoint \`${ctx.input.endpointId}\`.`,
+      message: `Found **${attempts.length}** attempt(s) for endpoint \`${ctx.input.endpointId}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let resendMessage = SlateTool.create(
-  spec,
-  {
-    name: 'Resend Message',
-    key: 'resend_message',
-    description: `Manually resend a specific message to a specific endpoint. Use this to retry a single failed delivery without recovering all messages.`,
-  }
-)
-  .input(z.object({
-    applicationId: z.string().describe('Application ID or UID'),
-    messageId: z.string().describe('Message ID to resend'),
-    endpointId: z.string().describe('Endpoint ID or UID to resend to'),
-  }))
-  .output(z.object({
-    resent: z.boolean().describe('Whether the resend was initiated'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let resendMessage = SlateTool.create(spec, {
+  name: 'Resend Message',
+  key: 'resend_message',
+  description: `Manually resend a specific message to a specific endpoint. Use this to retry a single failed delivery without recovering all messages.`
+})
+  .input(
+    z.object({
+      applicationId: z.string().describe('Application ID or UID'),
+      messageId: z.string().describe('Message ID to resend'),
+      endpointId: z.string().describe('Endpoint ID or UID to resend to')
+    })
+  )
+  .output(
+    z.object({
+      resent: z.boolean().describe('Whether the resend was initiated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region || 'us',
+      region: ctx.config.region || 'us'
     });
 
     ctx.progress('Resending message...');
-    await client.resendMessage(ctx.input.applicationId, ctx.input.messageId, ctx.input.endpointId);
+    await client.resendMessage(
+      ctx.input.applicationId,
+      ctx.input.messageId,
+      ctx.input.endpointId
+    );
 
     return {
       output: { resent: true },
-      message: `Resent message \`${ctx.input.messageId}\` to endpoint \`${ctx.input.endpointId}\`.`,
+      message: `Resent message \`${ctx.input.messageId}\` to endpoint \`${ctx.input.endpointId}\`.`
     };
-  }).build();
+  })
+  .build();

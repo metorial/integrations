@@ -9,7 +9,7 @@ let macroSchema = z.object({
   visibility: z.enum(['private', 'shared']).optional().describe('Macro visibility'),
   actions: z.array(z.any()).optional().describe('Macro actions'),
   createdAt: z.string().optional().describe('When the macro was created'),
-  updatedAt: z.string().optional().describe('When the macro was last updated'),
+  updatedAt: z.string().optional().describe('When the macro was last updated')
 });
 
 let mapMacro = (macro: any) => ({
@@ -18,31 +18,48 @@ let mapMacro = (macro: any) => ({
   visibility: macro.visibility,
   actions: macro.actions,
   createdAt: macro.createdAt,
-  updatedAt: macro.updatedAt,
+  updatedAt: macro.updatedAt
 });
 
-export let manageMacros = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Macros',
-    key: 'manage_macros',
-    description: `Manage HelpDesk macros. Supports listing all macros, getting a specific macro by ID, creating new macros, updating existing macros, and deleting macros. Macros are reusable sets of actions that can be applied to tickets.`,
-    tags: { readOnly: false },
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('The action to perform on macros'),
-    macroId: z.string().optional().describe('Macro ID (required for get, update, and delete actions)'),
-    name: z.string().optional().describe('Macro name (required for create, optional for update)'),
-    visibility: z.enum(['private', 'shared']).optional().describe('Macro visibility (for create or update)'),
-    actions: z.array(z.any()).optional().describe('Array of action objects the macro will execute (for create or update)'),
-  }))
-  .output(z.object({
-    macro: macroSchema.optional().describe('A single macro (for get, create, update actions)'),
-    macros: z.array(macroSchema).optional().describe('List of macros (for list action)'),
-    success: z.boolean().optional().describe('Whether the delete action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageMacros = SlateTool.create(spec, {
+  name: 'Manage Macros',
+  key: 'manage_macros',
+  description: `Manage HelpDesk macros. Supports listing all macros, getting a specific macro by ID, creating new macros, updating existing macros, and deleting macros. Macros are reusable sets of actions that can be applied to tickets.`,
+  tags: { readOnly: false }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('The action to perform on macros'),
+      macroId: z
+        .string()
+        .optional()
+        .describe('Macro ID (required for get, update, and delete actions)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Macro name (required for create, optional for update)'),
+      visibility: z
+        .enum(['private', 'shared'])
+        .optional()
+        .describe('Macro visibility (for create or update)'),
+      actions: z
+        .array(z.any())
+        .optional()
+        .describe('Array of action objects the macro will execute (for create or update)')
+    })
+  )
+  .output(
+    z.object({
+      macro: macroSchema
+        .optional()
+        .describe('A single macro (for get, create, update actions)'),
+      macros: z.array(macroSchema).optional().describe('List of macros (for list action)'),
+      success: z.boolean().optional().describe('Whether the delete action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -51,7 +68,7 @@ export let manageMacros = SlateTool.create(
       let mapped = macros.map(mapMacro);
       return {
         output: { macros: mapped },
-        message: `Found **${mapped.length}** macros.`,
+        message: `Found **${mapped.length}** macros.`
       };
     }
 
@@ -62,7 +79,7 @@ export let manageMacros = SlateTool.create(
       let macro = await client.getMacro(ctx.input.macroId);
       return {
         output: { macro: mapMacro(macro) },
-        message: `Retrieved macro **${macro.name}**.`,
+        message: `Retrieved macro **${macro.name}**.`
       };
     }
 
@@ -73,11 +90,11 @@ export let manageMacros = SlateTool.create(
       let macro = await client.createMacro({
         name: ctx.input.name,
         visibility: ctx.input.visibility,
-        actions: ctx.input.actions,
+        actions: ctx.input.actions
       });
       return {
         output: { macro: mapMacro(macro) },
-        message: `Created macro **${macro.name}**.`,
+        message: `Created macro **${macro.name}**.`
       };
     }
 
@@ -93,7 +110,7 @@ export let manageMacros = SlateTool.create(
       let macro = await client.updateMacro(ctx.input.macroId, input);
       return {
         output: { macro: mapMacro(macro) },
-        message: `Updated macro **${macro.name}**.`,
+        message: `Updated macro **${macro.name}**.`
       };
     }
 
@@ -104,6 +121,7 @@ export let manageMacros = SlateTool.create(
     await client.deleteMacro(ctx.input.macroId);
     return {
       output: { success: true },
-      message: `Deleted macro **${ctx.input.macroId}**.`,
+      message: `Deleted macro **${ctx.input.macroId}**.`
     };
-  }).build();
+  })
+  .build();

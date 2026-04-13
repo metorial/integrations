@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.ai21.com/studio/v1',
+  baseURL: 'https://api.ai21.com/studio/v1'
 });
 
 export class Client {
@@ -10,7 +10,7 @@ export class Client {
   constructor(private config: { token: string }) {
     this.headers = {
       Authorization: `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -49,7 +49,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       model: params.model,
-      messages: params.messages,
+      messages: params.messages
     };
 
     if (params.maxTokens !== undefined) body.max_tokens = params.maxTokens;
@@ -62,7 +62,7 @@ export class Client {
     if (params.responseFormat !== undefined) body.response_format = params.responseFormat;
 
     let response = await http.post('/chat/completions', body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -87,14 +87,14 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       input: params.input,
-      system_prompt: params.systemPrompt,
+      system_prompt: params.systemPrompt
     };
 
     if (params.requirements !== undefined) {
-      body.requirements = params.requirements.map((r) => ({
+      body.requirements = params.requirements.map(r => ({
         name: r.name,
         description: r.description,
-        is_mandatory: r.isMandatory,
+        is_mandatory: r.isMandatory
       }));
     }
     if (params.tools !== undefined) body.tools = params.tools;
@@ -102,10 +102,11 @@ export class Client {
     if (params.models !== undefined) body.models = params.models;
     if (params.budget !== undefined) body.budget = params.budget;
     if (params.include !== undefined) body.include = params.include;
-    if (params.responseLanguage !== undefined) body.response_language = params.responseLanguage;
+    if (params.responseLanguage !== undefined)
+      body.response_language = params.responseLanguage;
 
     let response = await http.post('/maestro/runs', body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -125,20 +126,23 @@ export class Client {
     hybridSearchAlpha?: number;
   }) {
     let body: Record<string, any> = {
-      messages: params.messages,
+      messages: params.messages
     };
 
     if (params.path !== undefined) body.path = params.path;
     if (params.labels !== undefined) body.labels = params.labels;
     if (params.fileIds !== undefined) body.file_ids = params.fileIds;
     if (params.maxSegments !== undefined) body.max_segments = params.maxSegments;
-    if (params.retrievalSimilarityThreshold !== undefined) body.retrieval_similarity_threshold = params.retrievalSimilarityThreshold;
-    if (params.retrievalStrategy !== undefined) body.retrieval_strategy = params.retrievalStrategy;
+    if (params.retrievalSimilarityThreshold !== undefined)
+      body.retrieval_similarity_threshold = params.retrievalSimilarityThreshold;
+    if (params.retrievalStrategy !== undefined)
+      body.retrieval_strategy = params.retrievalStrategy;
     if (params.maxNeighbors !== undefined) body.max_neighbors = params.maxNeighbors;
-    if (params.hybridSearchAlpha !== undefined) body.hybridsearch_alpha = params.hybridSearchAlpha;
+    if (params.hybridSearchAlpha !== undefined)
+      body.hybridsearch_alpha = params.hybridSearchAlpha;
 
     let response = await http.post('/beta/conversational-rag', body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -154,7 +158,7 @@ export class Client {
 
     let response = await http.get('/library/files', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -162,7 +166,7 @@ export class Client {
 
   async getFile(fileId: string) {
     let response = await http.get(`/library/files/${fileId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -170,7 +174,7 @@ export class Client {
 
   async deleteFile(fileId: string) {
     let response = await http.delete(`/library/files/${fileId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -182,7 +186,7 @@ export class Client {
     if (params.labels !== undefined) body.labels = params.labels;
 
     let response = await http.put(`/library/files/${fileId}`, body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -193,13 +197,13 @@ export class Client {
   async summarize(params: { source: string; sourceType: string; focus?: string }) {
     let body: Record<string, any> = {
       source: params.source,
-      sourceType: params.sourceType,
+      sourceType: params.sourceType
     };
 
     if (params.focus !== undefined) body.focus = params.focus;
 
     let response = await http.post('/summarize', body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -210,13 +214,13 @@ export class Client {
   async summarizeBySegment(params: { source: string; sourceType: string; focus?: string }) {
     let body: Record<string, any> = {
       source: params.source,
-      sourceType: params.sourceType,
+      sourceType: params.sourceType
     };
 
     if (params.focus !== undefined) body.focus = params.focus;
 
     let response = await http.post('/summarize-by-segment', body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -224,9 +228,14 @@ export class Client {
 
   // ─── Paraphrase ───
 
-  async paraphrase(params: { text: string; style?: string; startIndex?: number; endIndex?: number }) {
+  async paraphrase(params: {
+    text: string;
+    style?: string;
+    startIndex?: number;
+    endIndex?: number;
+  }) {
     let body: Record<string, any> = {
-      text: params.text,
+      text: params.text
     };
 
     if (params.style !== undefined) body.style = params.style;
@@ -234,7 +243,7 @@ export class Client {
     if (params.endIndex !== undefined) body.endIndex = params.endIndex;
 
     let response = await http.post('/paraphrase', body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -243,12 +252,16 @@ export class Client {
   // ─── Text Improvements ───
 
   async textImprovements(params: { text: string; types: string[] }) {
-    let response = await http.post('/improvements', {
-      text: params.text,
-      types: params.types,
-    }, {
-      headers: this.headers,
-    });
+    let response = await http.post(
+      '/improvements',
+      {
+        text: params.text,
+        types: params.types
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }
@@ -256,11 +269,15 @@ export class Client {
   // ─── Grammatical Error Correction ───
 
   async grammarCheck(params: { text: string }) {
-    let response = await http.post('/gec', {
-      text: params.text,
-    }, {
-      headers: this.headers,
-    });
+    let response = await http.post(
+      '/gec',
+      {
+        text: params.text
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }
@@ -268,12 +285,16 @@ export class Client {
   // ─── Text Segmentation ───
 
   async segmentText(params: { source: string; sourceType: string }) {
-    let response = await http.post('/segmentation', {
-      source: params.source,
-      sourceType: params.sourceType,
-    }, {
-      headers: this.headers,
-    });
+    let response = await http.post(
+      '/segmentation',
+      {
+        source: params.source,
+        sourceType: params.sourceType
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }
@@ -281,12 +302,16 @@ export class Client {
   // ─── Contextual Answers ───
 
   async contextualAnswer(params: { context: string; question: string }) {
-    let response = await http.post('/experimental/answer', {
-      context: params.context,
-      question: params.question,
-    }, {
-      headers: this.headers,
-    });
+    let response = await http.post(
+      '/experimental/answer',
+      {
+        context: params.context,
+        question: params.question
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return response.data;
   }
@@ -302,12 +327,33 @@ export class Client {
     numResults?: number;
     stopSequences?: string[];
     topKReturn?: number;
-    presencePenalty?: { scale: number; applyToWhitespaces?: boolean; applyToPunctuations?: boolean; applyToNumbers?: boolean; applyToStopwords?: boolean; applyToEmojis?: boolean };
-    countPenalty?: { scale: number; applyToWhitespaces?: boolean; applyToPunctuations?: boolean; applyToNumbers?: boolean; applyToStopwords?: boolean; applyToEmojis?: boolean };
-    frequencyPenalty?: { scale: number; applyToWhitespaces?: boolean; applyToPunctuations?: boolean; applyToNumbers?: boolean; applyToStopwords?: boolean; applyToEmojis?: boolean };
+    presencePenalty?: {
+      scale: number;
+      applyToWhitespaces?: boolean;
+      applyToPunctuations?: boolean;
+      applyToNumbers?: boolean;
+      applyToStopwords?: boolean;
+      applyToEmojis?: boolean;
+    };
+    countPenalty?: {
+      scale: number;
+      applyToWhitespaces?: boolean;
+      applyToPunctuations?: boolean;
+      applyToNumbers?: boolean;
+      applyToStopwords?: boolean;
+      applyToEmojis?: boolean;
+    };
+    frequencyPenalty?: {
+      scale: number;
+      applyToWhitespaces?: boolean;
+      applyToPunctuations?: boolean;
+      applyToNumbers?: boolean;
+      applyToStopwords?: boolean;
+      applyToEmojis?: boolean;
+    };
   }) {
     let body: Record<string, any> = {
-      prompt: params.prompt,
+      prompt: params.prompt
     };
 
     if (params.maxTokens !== undefined) body.maxTokens = params.maxTokens;
@@ -321,7 +367,7 @@ export class Client {
     if (params.frequencyPenalty !== undefined) body.frequencyPenalty = params.frequencyPenalty;
 
     let response = await http.post(`/${params.model}/complete`, body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;

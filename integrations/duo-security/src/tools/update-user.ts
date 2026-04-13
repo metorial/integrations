@@ -3,46 +3,56 @@ import { DuoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUser = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update a Duo Security user's profile, status, group memberships, or phone associations. Supports modifying user fields, adding/removing groups, and associating/disassociating phones in a single operation.`,
-    tags: {
-      destructive: false,
-    },
+export let updateUser = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update a Duo Security user's profile, status, group memberships, or phone associations. Supports modifying user fields, adding/removing groups, and associating/disassociating phones in a single operation.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    userId: z.string().describe('The Duo user ID to update'),
-    username: z.string().optional().describe('New username'),
-    email: z.string().optional().describe('New email address'),
-    realname: z.string().optional().describe('New full name'),
-    firstname: z.string().optional().describe('New first name'),
-    lastname: z.string().optional().describe('New last name'),
-    status: z.enum(['active', 'bypass', 'disabled']).optional().describe('New user status'),
-    notes: z.string().optional().describe('New notes'),
-    addGroupIds: z.array(z.string()).optional().describe('Group IDs to add the user to'),
-    removeGroupIds: z.array(z.string()).optional().describe('Group IDs to remove the user from'),
-    addPhoneIds: z.array(z.string()).optional().describe('Phone IDs to associate with the user'),
-    removePhoneIds: z.array(z.string()).optional().describe('Phone IDs to disassociate from the user'),
-  }))
-  .output(z.object({
-    userId: z.string(),
-    username: z.string(),
-    email: z.string().optional(),
-    status: z.string(),
-    groupsAdded: z.number().optional(),
-    groupsRemoved: z.number().optional(),
-    phonesAdded: z.number().optional(),
-    phonesRemoved: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('The Duo user ID to update'),
+      username: z.string().optional().describe('New username'),
+      email: z.string().optional().describe('New email address'),
+      realname: z.string().optional().describe('New full name'),
+      firstname: z.string().optional().describe('New first name'),
+      lastname: z.string().optional().describe('New last name'),
+      status: z.enum(['active', 'bypass', 'disabled']).optional().describe('New user status'),
+      notes: z.string().optional().describe('New notes'),
+      addGroupIds: z.array(z.string()).optional().describe('Group IDs to add the user to'),
+      removeGroupIds: z
+        .array(z.string())
+        .optional()
+        .describe('Group IDs to remove the user from'),
+      addPhoneIds: z
+        .array(z.string())
+        .optional()
+        .describe('Phone IDs to associate with the user'),
+      removePhoneIds: z
+        .array(z.string())
+        .optional()
+        .describe('Phone IDs to disassociate from the user')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string(),
+      username: z.string(),
+      email: z.string().optional(),
+      status: z.string(),
+      groupsAdded: z.number().optional(),
+      groupsRemoved: z.number().optional(),
+      phonesAdded: z.number().optional(),
+      phonesRemoved: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DuoClient({
       integrationKey: ctx.auth.integrationKey,
       secretKey: ctx.auth.secretKey,
-      apiHostname: ctx.auth.apiHostname,
+      apiHostname: ctx.auth.apiHostname
     });
 
     let profileUpdates: Record<string, any> = {};
@@ -105,8 +115,9 @@ export let updateUser = SlateTool.create(
         groupsAdded: groupsAdded > 0 ? groupsAdded : undefined,
         groupsRemoved: groupsRemoved > 0 ? groupsRemoved : undefined,
         phonesAdded: phonesAdded > 0 ? phonesAdded : undefined,
-        phonesRemoved: phonesRemoved > 0 ? phonesRemoved : undefined,
+        phonesRemoved: phonesRemoved > 0 ? phonesRemoved : undefined
       },
-      message: `Updated user **${user.username}**.`,
+      message: `Updated user **${user.username}**.`
     };
-  }).build();
+  })
+  .build();

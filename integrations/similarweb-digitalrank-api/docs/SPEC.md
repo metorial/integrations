@@ -16,6 +16,7 @@ To get started, you'll need to have a Similarweb account and generate a personal
 2. Insert a name for your key (e.g., "MySimilarwebAPIKey") and click Create. Your API key will appear in the Generated Keys table.
 
 The API key is passed as a query parameter `api_key` on each request. For example:
+
 ```
 https://api.similarweb.com/user-capabilities?api_key=YOUR_API_KEY
 ```

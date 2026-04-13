@@ -3,42 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroupMembers = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group Members',
-    key: 'manage_group_members',
-    description: `List, add, update, or remove members from a Google Workspace group. Supports managing member roles (OWNER, MANAGER, MEMBER) and filtering by role.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageGroupMembers = SlateTool.create(spec, {
+  name: 'Manage Group Members',
+  key: 'manage_group_members',
+  description: `List, add, update, or remove members from a Google Workspace group. Supports managing member roles (OWNER, MANAGER, MEMBER) and filtering by role.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    groupKey: z.string().describe('Group email address or unique group ID'),
-    action: z.enum(['list', 'add', 'update', 'remove']).describe('Action to perform on group membership'),
-    memberEmail: z.string().optional().describe('Email address of the member (required for add, update, remove)'),
-    role: z.enum(['OWNER', 'MANAGER', 'MEMBER']).optional().describe('Role for the member. Used with add/update actions.'),
-    filterRole: z.enum(['OWNER', 'MANAGER', 'MEMBER']).optional().describe('Filter members by role (only for list action)'),
-    maxResults: z.number().optional().describe('Max results for list (1-200). Defaults to 200.'),
-    pageToken: z.string().optional().describe('Page token for list action')
-  }))
-  .output(z.object({
-    members: z.array(z.object({
-      memberId: z.string().optional(),
-      email: z.string().optional(),
-      role: z.string().optional(),
-      type: z.string().optional(),
-      status: z.string().optional()
-    })).optional(),
-    nextPageToken: z.string().optional(),
-    addedMember: z.string().optional(),
-    updatedMember: z.string().optional(),
-    removedMember: z.string().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      groupKey: z.string().describe('Group email address or unique group ID'),
+      action: z
+        .enum(['list', 'add', 'update', 'remove'])
+        .describe('Action to perform on group membership'),
+      memberEmail: z
+        .string()
+        .optional()
+        .describe('Email address of the member (required for add, update, remove)'),
+      role: z
+        .enum(['OWNER', 'MANAGER', 'MEMBER'])
+        .optional()
+        .describe('Role for the member. Used with add/update actions.'),
+      filterRole: z
+        .enum(['OWNER', 'MANAGER', 'MEMBER'])
+        .optional()
+        .describe('Filter members by role (only for list action)'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Max results for list (1-200). Defaults to 200.'),
+      pageToken: z.string().optional().describe('Page token for list action')
+    })
+  )
+  .output(
+    z.object({
+      members: z
+        .array(
+          z.object({
+            memberId: z.string().optional(),
+            email: z.string().optional(),
+            role: z.string().optional(),
+            type: z.string().optional(),
+            status: z.string().optional()
+          })
+        )
+        .optional(),
+      nextPageToken: z.string().optional(),
+      addedMember: z.string().optional(),
+      updatedMember: z.string().optional(),
+      removedMember: z.string().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,

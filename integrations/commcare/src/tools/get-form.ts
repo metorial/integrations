@@ -3,45 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getForm = SlateTool.create(
-  spec,
-  {
-    name: 'Get Form',
-    key: 'get_form',
-    description: `Retrieve a single submitted form by its ID. Returns the full form data including all question responses, metadata (device info, timestamps, submitting user), and application details.`,
-    tags: {
-      readOnly: true,
-    },
+export let getForm = SlateTool.create(spec, {
+  name: 'Get Form',
+  key: 'get_form',
+  description: `Retrieve a single submitted form by its ID. Returns the full form data including all question responses, metadata (device info, timestamps, submitting user), and application details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    formId: z.string().describe('The unique form ID to retrieve'),
-  }))
-  .output(z.object({
-    formId: z.string(),
-    appId: z.string(),
-    buildId: z.string(),
-    domain: z.string(),
-    receivedOn: z.string(),
-    formType: z.string(),
-    formData: z.record(z.string(), z.any()),
-    archived: z.boolean(),
-    editedOn: z.string().nullable(),
-    metadata: z.object({
-      appVersion: z.string(),
-      deviceId: z.string(),
-      instanceId: z.string(),
-      timeEnd: z.string(),
-      timeStart: z.string(),
-      userId: z.string(),
-      username: z.string(),
-    }),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      formId: z.string().describe('The unique form ID to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      formId: z.string(),
+      appId: z.string(),
+      buildId: z.string(),
+      domain: z.string(),
+      receivedOn: z.string(),
+      formType: z.string(),
+      formData: z.record(z.string(), z.any()),
+      archived: z.boolean(),
+      editedOn: z.string().nullable(),
+      metadata: z.object({
+        appVersion: z.string(),
+        deviceId: z.string(),
+        instanceId: z.string(),
+        timeEnd: z.string(),
+        timeStart: z.string(),
+        userId: z.string(),
+        username: z.string()
+      })
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       domain: ctx.config.domain,
       username: ctx.auth.username,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let f = await client.getForm(ctx.input.formId);
@@ -64,9 +65,10 @@ export let getForm = SlateTool.create(
           timeEnd: f.metadata.timeEnd,
           timeStart: f.metadata.timeStart,
           userId: f.metadata.userID,
-          username: f.metadata.username,
-        },
+          username: f.metadata.username
+        }
       },
-      message: `Retrieved form **${f.id}** submitted by ${f.metadata.username} on ${f.received_on}.`,
+      message: `Retrieved form **${f.id}** submitted by ${f.metadata.username} on ${f.received_on}.`
     };
-  }).build();
+  })
+  .build();

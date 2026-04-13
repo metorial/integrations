@@ -64,14 +64,14 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://formcarry.com/api',
       headers: {
-        'api_key': config.token,
-      },
+        api_key: config.token
+      }
     });
   }
 
   async createForm(params: CreateFormParams): Promise<CreateFormResponse> {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
 
     if (params.email !== undefined) body.email = params.email;
@@ -110,7 +110,7 @@ export class Client {
     if (params.filter !== undefined) queryParams.filter = params.filter;
 
     let response = await this.axios.get(`/form/${params.formId}/submissions`, {
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data;
@@ -123,9 +123,9 @@ export class Client {
         previousPage: data.pagination?.previous_page,
         nextPage: data.pagination?.next_page,
         totalPage: data.pagination?.total_page,
-        totalSubmissions: data.pagination?.total_submissions,
+        totalSubmissions: data.pagination?.total_submissions
       },
-      submissions: data.submissions || [],
+      submissions: data.submissions || []
     };
   }
 }

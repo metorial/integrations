@@ -3,25 +3,29 @@ import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listArticles = SlateTool.create(
-  spec,
-  {
-    name: 'List Help Center Articles',
-    key: 'list_articles',
-    description: `Retrieve all articles within a help center collection, or search articles across all collections by keyword.`,
-    tags: {
-      readOnly: true
-    }
+export let listArticles = SlateTool.create(spec, {
+  name: 'List Help Center Articles',
+  key: 'list_articles',
+  description: `Retrieve all articles within a help center collection, or search articles across all collections by keyword.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    collectionId: z.string().optional().describe('Collection ID to list articles from'),
-    searchTerm: z.string().optional().describe('Search term to find articles across all collections')
-  }))
-  .output(z.object({
-    articles: z.array(z.record(z.string(), z.any())).describe('List of article objects')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      collectionId: z.string().optional().describe('Collection ID to list articles from'),
+      searchTerm: z
+        .string()
+        .optional()
+        .describe('Search term to find articles across all collections')
+    })
+  )
+  .output(
+    z.object({
+      articles: z.array(z.record(z.string(), z.any())).describe('List of article objects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GleapClient({
       token: ctx.auth.token,
       projectId: ctx.auth.projectId
@@ -30,7 +34,7 @@ export let listArticles = SlateTool.create(
     let articles;
     if (ctx.input.searchTerm) {
       let result = await client.searchArticles({ searchTerm: ctx.input.searchTerm });
-      articles = Array.isArray(result) ? result : (result.articles || result.data || []);
+      articles = Array.isArray(result) ? result : result.articles || result.data || [];
     } else if (ctx.input.collectionId) {
       articles = await client.listArticles(ctx.input.collectionId);
     } else {

@@ -5,24 +5,31 @@ Automate workflows and integrate across hundreds of third-party services using p
 ## Tools
 
 ### Call Connector
+
 Execute an operation on a Tray.io connector. This calls the specified third-party service operation (e.g., send an SMS via Twilio, find records in Salesforce) using the REST Call Connector API. Requires a valid authentication ID for the target service.
 
 ### Get Connector Operations
+
 Retrieve the available operations and their input/output schemas for a specific connector. Use this to discover what operations a connector supports and what parameters are required before calling it. Also returns service environments needed for authentication setup.
 
 ### List Connectors
+
 List all available Tray.io connectors. Each connector represents a third-party service integration (e.g., Salesforce, Slack, Twilio). Returns connector names, versions, and descriptions needed for calling connector operations.
 
 ### List Solutions
+
 List all available solutions in the Tray.io workspace. Solutions are configurable project templates that end users can instantiate. Requires a master token.
 
 ### List Authentications
+
 List all service authentications for the authenticated user. Each authentication represents stored credentials for a third-party service connector (e.g., Salesforce, Slack). Returns authentication IDs needed for calling connectors and configuring solution instances.
 
 ### List Solution Instances
+
 List all solution instances for the authenticated user. Solution instances are end-user deployments of a solution with their specific configuration and authentication values. Requires a user token.
 
 ### List Users
+
 List external end users managed through the Tray.io Embedded API. Optionally filter by external user ID.
 
 ## License

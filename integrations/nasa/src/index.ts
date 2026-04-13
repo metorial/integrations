@@ -16,7 +16,7 @@ import {
   queryExoplanets,
   getCloseApproaches,
   getFireballs,
-  lookupSmallBody,
+  lookupSmallBody
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -39,9 +39,7 @@ export let provider = Slate.create({
     queryExoplanets,
     getCloseApproaches,
     getFireballs,
-    lookupSmallBody,
+    lookupSmallBody
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -10,8 +10,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -54,12 +54,15 @@ export class Client {
     return response.data;
   }
 
-  async updateWorkflowRun(workflowRunId: string, data: {
-    name: string;
-    status: string;
-    shared: boolean;
-    dueDate?: string | null;
-  }) {
+  async updateWorkflowRun(
+    workflowRunId: string,
+    data: {
+      name: string;
+      status: string;
+      shared: boolean;
+      dueDate?: string | null;
+    }
+  ) {
     await this.axios.put(`/workflow-runs/${workflowRunId}`, data);
   }
 
@@ -79,11 +82,15 @@ export class Client {
   }
 
   async assignUserToWorkflowRun(workflowRunId: string, email: string) {
-    await this.axios.post(`/workflow-runs/${workflowRunId}/assignees/${encodeURIComponent(email)}`);
+    await this.axios.post(
+      `/workflow-runs/${workflowRunId}/assignees/${encodeURIComponent(email)}`
+    );
   }
 
   async unassignUserFromWorkflowRun(workflowRunId: string, email: string) {
-    await this.axios.delete(`/workflow-runs/${workflowRunId}/assignees/${encodeURIComponent(email)}`);
+    await this.axios.delete(
+      `/workflow-runs/${workflowRunId}/assignees/${encodeURIComponent(email)}`
+    );
   }
 
   // ---- Tasks ----
@@ -105,26 +112,36 @@ export class Client {
     return response.data;
   }
 
-  async updateTask(workflowRunId: string, taskId: string, data: {
-    status: string;
-    dueDate?: string | null;
-  }) {
+  async updateTask(
+    workflowRunId: string,
+    taskId: string,
+    data: {
+      status: string;
+      dueDate?: string | null;
+    }
+  ) {
     await this.axios.put(`/workflow-runs/${workflowRunId}/tasks/${taskId}`, data);
   }
 
   // ---- Task Assignees ----
 
   async listTaskAssignees(workflowRunId: string, taskId: string) {
-    let response = await this.axios.get(`/workflow-runs/${workflowRunId}/tasks/${taskId}/assignees`);
+    let response = await this.axios.get(
+      `/workflow-runs/${workflowRunId}/tasks/${taskId}/assignees`
+    );
     return response.data;
   }
 
   async assignUserToTask(workflowRunId: string, taskId: string, email: string) {
-    await this.axios.put(`/workflow-runs/${workflowRunId}/tasks/${taskId}/assignees/${encodeURIComponent(email)}`);
+    await this.axios.put(
+      `/workflow-runs/${workflowRunId}/tasks/${taskId}/assignees/${encodeURIComponent(email)}`
+    );
   }
 
   async unassignUserFromTask(workflowRunId: string, taskId: string, email: string) {
-    await this.axios.delete(`/workflow-runs/${workflowRunId}/tasks/${taskId}/assignees/${encodeURIComponent(email)}`);
+    await this.axios.delete(
+      `/workflow-runs/${workflowRunId}/tasks/${taskId}/assignees/${encodeURIComponent(email)}`
+    );
   }
 
   // ---- Approvals ----
@@ -134,12 +151,15 @@ export class Client {
     return response.data;
   }
 
-  async upsertApproval(workflowRunId: string, data: {
-    approvalTaskId: string;
-    status: string;
-    subjectTaskId?: string;
-    comment?: string;
-  }) {
+  async upsertApproval(
+    workflowRunId: string,
+    data: {
+      approvalTaskId: string;
+      status: string;
+      subjectTaskId?: string;
+      comment?: string;
+    }
+  ) {
     await this.axios.put(`/workflow-runs/${workflowRunId}/approvals`, data);
   }
 
@@ -151,7 +171,9 @@ export class Client {
   }
 
   async listFormFieldOptions(workflowId: string, formFieldId: string) {
-    let response = await this.axios.get(`/workflows/${workflowId}/form-fields/${formFieldId}/options`);
+    let response = await this.axios.get(
+      `/workflows/${workflowId}/form-fields/${formFieldId}/options`
+    );
     return response.data;
   }
 
@@ -161,18 +183,25 @@ export class Client {
   }
 
   async listTaskFormFieldValues(workflowRunId: string, taskId: string) {
-    let response = await this.axios.get(`/workflow-runs/${workflowRunId}/tasks/${taskId}/form-fields`);
+    let response = await this.axios.get(
+      `/workflow-runs/${workflowRunId}/tasks/${taskId}/form-fields`
+    );
     return response.data;
   }
 
-  async updateFormFieldValues(workflowRunId: string, fields: Array<{
-    id: string;
-    value?: string;
-    values?: string[];
-    timeHidden?: boolean;
-    dataSetRowId?: string;
-  }>) {
-    let response = await this.axios.post(`/workflow-runs/${workflowRunId}/form-fields`, { fields });
+  async updateFormFieldValues(
+    workflowRunId: string,
+    fields: Array<{
+      id: string;
+      value?: string;
+      values?: string[];
+      timeHidden?: boolean;
+      dataSetRowId?: string;
+    }>
+  ) {
+    let response = await this.axios.post(`/workflow-runs/${workflowRunId}/form-fields`, {
+      fields
+    });
     return response.data;
   }
 
@@ -188,7 +217,10 @@ export class Client {
     return response.data;
   }
 
-  async createDataSetRecord(dataSetId: string, cells: Array<{ fieldId: string; value: string | number | null }>) {
+  async createDataSetRecord(
+    dataSetId: string,
+    cells: Array<{ fieldId: string; value: string | number | null }>
+  ) {
     let response = await this.axios.post(`/data-sets/${dataSetId}/records`, { cells });
     return response.data;
   }
@@ -198,8 +230,14 @@ export class Client {
     return response.data;
   }
 
-  async updateDataSetRecord(dataSetId: string, recordId: string, cells: Array<{ fieldId: string; value: string | number | null }>) {
-    let response = await this.axios.put(`/data-sets/${dataSetId}/records/${recordId}`, { cells });
+  async updateDataSetRecord(
+    dataSetId: string,
+    recordId: string,
+    cells: Array<{ fieldId: string; value: string | number | null }>
+  ) {
+    let response = await this.axios.put(`/data-sets/${dataSetId}/records/${recordId}`, {
+      cells
+    });
     return response.data;
   }
 

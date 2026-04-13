@@ -139,6 +139,7 @@ You create one or more subscriptions that tell HubSpot which events your app wan
 - **Association change** — When an association between objects is added or removed
 
 **Configuration:**
+
 - A target HTTPS URL must be provided where HubSpot will POST event payloads (JSON)
 - Webhook settings can be cached for up to five minutes, so changes may take up to five minutes to take effect.
 - Webhooks aren't available on free or starter tiers.

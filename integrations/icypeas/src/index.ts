@@ -32,7 +32,5 @@ export let provider = Slate.create({
     searchCompanies,
     getSubscription
   ],
-  triggers: [
-    bulkSearchEvent
-  ]
+  triggers: [bulkSearchEvent]
 });

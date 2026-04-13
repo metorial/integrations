@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createComment = SlateTool.create(
-  spec,
-  {
-    name: 'Create Comment',
-    key: 'create_comment',
-    description: `Add a comment to a task in Nozbe Teams. Comment body supports Markdown formatting. Comments can also be pinned within the task.`,
-    tags: {
-      destructive: false
-    }
+export let createComment = SlateTool.create(spec, {
+  name: 'Create Comment',
+  key: 'create_comment',
+  description: `Add a comment to a task in Nozbe Teams. Comment body supports Markdown formatting. Comments can also be pinned within the task.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    taskId: z.string().describe('ID of the task to comment on'),
-    body: z.string().describe('Comment text in Markdown format'),
-    isPinned: z.boolean().optional().describe('Whether to pin the comment')
-  }))
-  .output(z.object({
-    commentId: z.string().describe('ID of the created comment'),
-    body: z.string().describe('Comment body'),
-    taskId: z.string().describe('Task ID'),
-    authorId: z.string().describe('Author ID'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    isPinned: z.boolean().optional().describe('Whether the comment is pinned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('ID of the task to comment on'),
+      body: z.string().describe('Comment text in Markdown format'),
+      isPinned: z.boolean().optional().describe('Whether to pin the comment')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('ID of the created comment'),
+      body: z.string().describe('Comment body'),
+      taskId: z.string().describe('Task ID'),
+      authorId: z.string().describe('Author ID'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      isPinned: z.boolean().optional().describe('Whether the comment is pinned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, unknown> = {
@@ -49,4 +50,5 @@ export let createComment = SlateTool.create(
       },
       message: `Added comment to task **${ctx.input.taskId}** (Comment ID: ${comment.id}).`
     };
-  }).build();
+  })
+  .build();

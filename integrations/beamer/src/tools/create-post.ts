@@ -6,10 +6,13 @@ import { z } from 'zod';
 let translationSchema = z.object({
   title: z.string().describe('Title of the post in this language'),
   content: z.string().describe('HTML content of the post in this language'),
-  language: z.string().optional().describe('ISO-639 two-letter language code (e.g., "EN", "ES", "FR")'),
+  language: z
+    .string()
+    .optional()
+    .describe('ISO-639 two-letter language code (e.g., "EN", "ES", "FR")'),
   linkUrl: z.string().optional().describe('Call-to-action URL'),
   linkText: z.string().optional().describe('Call-to-action button text'),
-  customCategory: z.string().optional().describe('Custom category name for this translation'),
+  customCategory: z.string().optional().describe('Custom category name for this translation')
 });
 
 let postTranslationOutput = z.object({
@@ -20,7 +23,7 @@ let postTranslationOutput = z.object({
   category: z.string().describe('Category name'),
   linkUrl: z.string().describe('CTA URL'),
   linkText: z.string().describe('CTA text'),
-  images: z.array(z.string()).describe('Image URLs'),
+  images: z.array(z.string()).describe('Image URLs')
 });
 
 export let postOutputSchema = z.object({
@@ -44,54 +47,63 @@ export let postOutputSchema = z.object({
   clicks: z.number().describe('Total clicks'),
   positiveReactions: z.number().describe('Positive reaction count'),
   neutralReactions: z.number().describe('Neutral reaction count'),
-  negativeReactions: z.number().describe('Negative reaction count'),
+  negativeReactions: z.number().describe('Negative reaction count')
 });
 
-export let createPostTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Post',
-    key: 'create_post',
-    description: `Create a new changelog post or announcement in Beamer. Supports multi-language translations, categories (new, improvement, fix, or custom), scheduling, segmentation filters, and rich HTML content. Can target specific users or user segments.`,
-    instructions: [
-      'Provide at least one translation with title and content.',
-      'Use the category field for built-in categories: "new", "improvement", or "fix".',
-      'Use filterUserId to send single-user notifications.',
-      'Set publish to true to publish immediately, or false to save as draft.',
-    ],
-    constraints: [
-      'Rate limit: 30 requests/second for paid accounts.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let createPostTool = SlateTool.create(spec, {
+  name: 'Create Post',
+  key: 'create_post',
+  description: `Create a new changelog post or announcement in Beamer. Supports multi-language translations, categories (new, improvement, fix, or custom), scheduling, segmentation filters, and rich HTML content. Can target specific users or user segments.`,
+  instructions: [
+    'Provide at least one translation with title and content.',
+    'Use the category field for built-in categories: "new", "improvement", or "fix".',
+    'Use filterUserId to send single-user notifications.',
+    'Set publish to true to publish immediately, or false to save as draft.'
+  ],
+  constraints: ['Rate limit: 30 requests/second for paid accounts.'],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    translations: z.array(translationSchema).min(1).describe('Post content translations (at least one required)'),
-    category: z.enum(['new', 'improvement', 'fix']).optional().describe('Built-in post category'),
-    publish: z.boolean().optional().default(true).describe('Publish the post immediately'),
-    archive: z.boolean().optional().describe('Archive the post'),
-    pinned: z.boolean().optional().describe('Pin the post to the top of the feed'),
-    showInWidget: z.boolean().optional().describe('Show in the embedded widget'),
-    showInStandalone: z.boolean().optional().describe('Show in the standalone feed'),
-    boostedAnnouncement: z.string().optional().describe('Boost level (e.g., "snippet")'),
-    linksInNewWindow: z.boolean().optional().describe('Open links in a new window'),
-    date: z.string().optional().describe('Publication date (ISO-8601). Defaults to now.'),
-    dueDate: z.string().optional().describe('Expiration date (ISO-8601)'),
-    filter: z.string().optional().describe('Segmentation filter name (e.g., "admins;paid-users")'),
-    filterUserId: z.string().optional().describe('Target a specific user by their ID'),
-    filterUrl: z.string().optional().describe('URL-based segmentation filter'),
-    enableFeedback: z.boolean().optional().describe('Allow user comments/feedback'),
-    enableReactions: z.boolean().optional().describe('Allow emoji reactions'),
-    enableSocialShare: z.boolean().optional().describe('Enable social media sharing'),
-    autoOpen: z.boolean().optional().describe('Auto-open the post sidebar'),
-    sendPushNotification: z.boolean().optional().describe('Send push notification on publish'),
-    fixedBoostedAnnouncement: z.boolean().optional().describe('Pin the boosted announcement'),
-  }))
+})
+  .input(
+    z.object({
+      translations: z
+        .array(translationSchema)
+        .min(1)
+        .describe('Post content translations (at least one required)'),
+      category: z
+        .enum(['new', 'improvement', 'fix'])
+        .optional()
+        .describe('Built-in post category'),
+      publish: z.boolean().optional().default(true).describe('Publish the post immediately'),
+      archive: z.boolean().optional().describe('Archive the post'),
+      pinned: z.boolean().optional().describe('Pin the post to the top of the feed'),
+      showInWidget: z.boolean().optional().describe('Show in the embedded widget'),
+      showInStandalone: z.boolean().optional().describe('Show in the standalone feed'),
+      boostedAnnouncement: z.string().optional().describe('Boost level (e.g., "snippet")'),
+      linksInNewWindow: z.boolean().optional().describe('Open links in a new window'),
+      date: z.string().optional().describe('Publication date (ISO-8601). Defaults to now.'),
+      dueDate: z.string().optional().describe('Expiration date (ISO-8601)'),
+      filter: z
+        .string()
+        .optional()
+        .describe('Segmentation filter name (e.g., "admins;paid-users")'),
+      filterUserId: z.string().optional().describe('Target a specific user by their ID'),
+      filterUrl: z.string().optional().describe('URL-based segmentation filter'),
+      enableFeedback: z.boolean().optional().describe('Allow user comments/feedback'),
+      enableReactions: z.boolean().optional().describe('Allow emoji reactions'),
+      enableSocialShare: z.boolean().optional().describe('Enable social media sharing'),
+      autoOpen: z.boolean().optional().describe('Auto-open the post sidebar'),
+      sendPushNotification: z
+        .boolean()
+        .optional()
+        .describe('Send push notification on publish'),
+      fixedBoostedAnnouncement: z.boolean().optional().describe('Pin the boosted announcement')
+    })
+  )
   .output(postOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let titles = ctx.input.translations.map(t => t.title);
@@ -99,7 +111,9 @@ export let createPostTool = SlateTool.create(
     let languages = ctx.input.translations.map(t => t.language).filter(Boolean) as string[];
     let linkUrls = ctx.input.translations.map(t => t.linkUrl).filter(Boolean) as string[];
     let linkTexts = ctx.input.translations.map(t => t.linkText).filter(Boolean) as string[];
-    let customCategories = ctx.input.translations.map(t => t.customCategory).filter(Boolean) as string[];
+    let customCategories = ctx.input.translations
+      .map(t => t.customCategory)
+      .filter(Boolean) as string[];
 
     let post = await client.createPost({
       title: titles,
@@ -126,7 +140,7 @@ export let createPostTool = SlateTool.create(
       enableSocialShare: ctx.input.enableSocialShare,
       autoOpen: ctx.input.autoOpen,
       sendPushNotification: ctx.input.sendPushNotification,
-      fixedBoostedAnnouncement: ctx.input.fixedBoostedAnnouncement,
+      fixedBoostedAnnouncement: ctx.input.fixedBoostedAnnouncement
     });
 
     let primaryTitle = post.translations?.[0]?.title ?? 'Untitled';
@@ -153,8 +167,9 @@ export let createPostTool = SlateTool.create(
         clicks: post.clicks,
         positiveReactions: post.positiveReactions,
         neutralReactions: post.neutralReactions,
-        negativeReactions: post.negativeReactions,
+        negativeReactions: post.negativeReactions
       },
-      message: `Created post **"${primaryTitle}"** (ID: ${post.id}) in category **${post.category}**. Published: ${post.published}.`,
+      message: `Created post **"${primaryTitle}"** (ID: ${post.id}) in category **${post.category}**. Published: ${post.published}.`
     };
-  }).build();
+  })
+  .build();

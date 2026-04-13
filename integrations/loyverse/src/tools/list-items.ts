@@ -15,15 +15,20 @@ let variantSchema = z.object({
   cost: z.number().nullable().optional().describe('Cost price'),
   purchaseCost: z.number().nullable().optional().describe('Purchase cost'),
   defaultPrice: z.number().nullable().optional().describe('Default selling price'),
-  storesAvailability: z.array(z.object({
-    storeId: z.string(),
-    pricingType: z.string().optional(),
-    price: z.number().nullable().optional(),
-    availableForSale: z.boolean().optional(),
-  })).optional().describe('Store-specific pricing and availability'),
+  storesAvailability: z
+    .array(
+      z.object({
+        storeId: z.string(),
+        pricingType: z.string().optional(),
+        price: z.number().nullable().optional(),
+        availableForSale: z.boolean().optional()
+      })
+    )
+    .optional()
+    .describe('Store-specific pricing and availability'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
-  deletedAt: z.string().nullable().optional().describe('Deletion timestamp'),
+  deletedAt: z.string().nullable().optional().describe('Deletion timestamp')
 });
 
 let itemSchema = z.object({
@@ -49,37 +54,49 @@ let itemSchema = z.object({
   variants: z.array(variantSchema).optional().describe('Item variants'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp'),
-  deletedAt: z.string().nullable().optional().describe('Deletion timestamp'),
+  deletedAt: z.string().nullable().optional().describe('Deletion timestamp')
 });
 
-export let listItems = SlateTool.create(
-  spec,
-  {
-    name: 'List Items',
-    key: 'list_items',
-    description: `Retrieve items (products) from the Loyverse catalog. Supports filtering by update time for syncing recently changed products. Returns paginated results with variants, pricing, stock tracking, and category assignments.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional().describe('Number of items to return (1-250, default 50)'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-    updatedAtMin: z.string().optional().describe('Filter items updated at or after this ISO 8601 timestamp'),
-    updatedAtMax: z.string().optional().describe('Filter items updated at or before this ISO 8601 timestamp'),
-    showDeleted: z.boolean().optional().describe('Include deleted items in the response'),
-  }))
-  .output(z.object({
-    items: z.array(itemSchema).describe('List of items'),
-    cursor: z.string().nullable().optional().describe('Cursor for the next page of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listItems = SlateTool.create(spec, {
+  name: 'List Items',
+  key: 'list_items',
+  description: `Retrieve items (products) from the Loyverse catalog. Supports filtering by update time for syncing recently changed products. Returns paginated results with variants, pricing, stock tracking, and category assignments.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of items to return (1-250, default 50)'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response'),
+      updatedAtMin: z
+        .string()
+        .optional()
+        .describe('Filter items updated at or after this ISO 8601 timestamp'),
+      updatedAtMax: z
+        .string()
+        .optional()
+        .describe('Filter items updated at or before this ISO 8601 timestamp'),
+      showDeleted: z.boolean().optional().describe('Include deleted items in the response')
+    })
+  )
+  .output(
+    z.object({
+      items: z.array(itemSchema).describe('List of items'),
+      cursor: z.string().nullable().optional().describe('Cursor for the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listItems({
       limit: ctx.input.limit,
       cursor: ctx.input.cursor,
       updatedAtMin: ctx.input.updatedAtMin,
       updatedAtMax: ctx.input.updatedAtMax,
-      showDeleted: ctx.input.showDeleted,
+      showDeleted: ctx.input.showDeleted
     });
 
     let items = (result.items ?? []).map((item: any) => ({
@@ -118,23 +135,23 @@ export let listItems = SlateTool.create(
           storeId: s.store_id,
           pricingType: s.pricing_type,
           price: s.price,
-          availableForSale: s.available_for_sale,
+          availableForSale: s.available_for_sale
         })),
         createdAt: v.created_at,
         updatedAt: v.updated_at,
-        deletedAt: v.deleted_at,
+        deletedAt: v.deleted_at
       })),
       createdAt: item.created_at,
       updatedAt: item.updated_at,
-      deletedAt: item.deleted_at,
+      deletedAt: item.deleted_at
     }));
 
     return {
       output: {
         items,
-        cursor: result.cursor,
+        cursor: result.cursor
       },
-      message: `Retrieved **${items.length}** item(s).${result.cursor ? ' More items available via cursor pagination.' : ''}`,
+      message: `Retrieved **${items.length}** item(s).${result.cursor ? ' More items available via cursor pagination.' : ''}`
     };
   })
   .build();

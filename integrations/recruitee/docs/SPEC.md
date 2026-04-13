@@ -26,6 +26,7 @@ All API requests require two pieces of information:
 - **API Token**: Passed via the `Authorization: Bearer {token}` header.
 
 Example:
+
 ```
 GET https://api.recruitee.com/c/12345/candidates
 Authorization: Bearer your_api_token_here

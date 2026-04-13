@@ -9,7 +9,7 @@ let categorySchema = z.object({
   slug: z.string(),
   parentId: z.number(),
   description: z.string(),
-  count: z.number(),
+  count: z.number()
 });
 
 export let manageProductCategories = SlateTool.create(spec, {
@@ -17,39 +17,50 @@ export let manageProductCategories = SlateTool.create(spec, {
   key: 'manage_product_categories',
   description: `List, create, update, or delete product categories. Categories help organize products and can be nested hierarchically.`,
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
-    categoryId: z.number().optional().describe('Category ID (required for update/delete)'),
-    name: z.string().optional().describe('Category name (required for create)'),
-    slug: z.string().optional().describe('Category slug'),
-    parentId: z.number().optional().describe('Parent category ID for nesting'),
-    description: z.string().optional().describe('Category description'),
-    image: z.object({
-      src: z.string().describe('Image URL'),
-      name: z.string().optional(),
-      alt: z.string().optional(),
-    }).optional().describe('Category image'),
-    page: z.number().optional().default(1).describe('Page number for list'),
-    perPage: z.number().optional().default(100).describe('Results per page for list'),
-    search: z.string().optional().describe('Search term for list'),
-    force: z.boolean().optional().default(true).describe('Force deletion (categories require force=true)'),
-  }))
-  .output(z.object({
-    categories: z.array(categorySchema).optional(),
-    category: categorySchema.optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
+      categoryId: z.number().optional().describe('Category ID (required for update/delete)'),
+      name: z.string().optional().describe('Category name (required for create)'),
+      slug: z.string().optional().describe('Category slug'),
+      parentId: z.number().optional().describe('Parent category ID for nesting'),
+      description: z.string().optional().describe('Category description'),
+      image: z
+        .object({
+          src: z.string().describe('Image URL'),
+          name: z.string().optional(),
+          alt: z.string().optional()
+        })
+        .optional()
+        .describe('Category image'),
+      page: z.number().optional().default(1).describe('Page number for list'),
+      perPage: z.number().optional().default(100).describe('Results per page for list'),
+      search: z.string().optional().describe('Search term for list'),
+      force: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Force deletion (categories require force=true)')
+    })
+  )
+  .output(
+    z.object({
+      categories: z.array(categorySchema).optional(),
+      category: categorySchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action } = ctx.input;
 
     if (action === 'list') {
       let params: Record<string, any> = {
         page: ctx.input.page,
-        per_page: ctx.input.perPage,
+        per_page: ctx.input.perPage
       };
       if (ctx.input.search) params.search = ctx.input.search;
 
@@ -58,7 +69,7 @@ export let manageProductCategories = SlateTool.create(spec, {
 
       return {
         output: { categories: mapped },
-        message: `Found **${mapped.length}** product categories.`,
+        message: `Found **${mapped.length}** product categories.`
       };
     }
 
@@ -75,7 +86,7 @@ export let manageProductCategories = SlateTool.create(spec, {
 
       return {
         output: { category: mapCategory(category) },
-        message: `Created category **"${category.name}"** (ID: ${category.id}).`,
+        message: `Created category **"${category.name}"** (ID: ${category.id}).`
       };
     }
 
@@ -93,7 +104,7 @@ export let manageProductCategories = SlateTool.create(spec, {
 
       return {
         output: { category: mapCategory(category) },
-        message: `Updated category **"${category.name}"** (ID: ${category.id}).`,
+        message: `Updated category **"${category.name}"** (ID: ${category.id}).`
       };
     }
 
@@ -104,7 +115,7 @@ export let manageProductCategories = SlateTool.create(spec, {
 
       return {
         output: { deleted: true },
-        message: `Deleted category (ID: ${ctx.input.categoryId}).`,
+        message: `Deleted category (ID: ${ctx.input.categoryId}).`
       };
     }
 
@@ -118,5 +129,5 @@ let mapCategory = (c: any) => ({
   slug: c.slug,
   parentId: c.parent || 0,
   description: c.description || '',
-  count: c.count || 0,
+  count: c.count || 0
 });

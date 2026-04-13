@@ -32,7 +32,7 @@ export class DuoClient {
 
   private createAxiosInstance() {
     return createAxios({
-      baseURL: `https://${this.auth.apiHostname}`,
+      baseURL: `https://${this.auth.apiHostname}`
     });
   }
 
@@ -54,22 +54,25 @@ export class DuoClient {
       apiHostname: this.auth.apiHostname,
       method: 'GET',
       path,
-      params: flatParams,
+      params: flatParams
     });
 
     let axiosInstance = this.createAxiosInstance();
     let response = await axiosInstance.get(path, {
       params: flatParams,
       headers: {
-        'Authorization': authorization,
-        'Date': date,
-      },
+        Authorization: authorization,
+        Date: date
+      }
     });
 
     return response.data;
   }
 
-  async post<T = any>(path: string, params: Record<string, any> = {}): Promise<DuoResponse<T>> {
+  async post<T = any>(
+    path: string,
+    params: Record<string, any> = {}
+  ): Promise<DuoResponse<T>> {
     let flatParams = this.flattenParams(params);
     let { authorization, date } = await signRequest({
       integrationKey: this.auth.integrationKey,
@@ -77,23 +80,26 @@ export class DuoClient {
       apiHostname: this.auth.apiHostname,
       method: 'POST',
       path,
-      params: flatParams,
+      params: flatParams
     });
 
     let body = new URLSearchParams(flatParams).toString();
     let axiosInstance = this.createAxiosInstance();
     let response = await axiosInstance.post(path, body, {
       headers: {
-        'Authorization': authorization,
-        'Date': date,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        Authorization: authorization,
+        Date: date,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     return response.data;
   }
 
-  async delete<T = any>(path: string, params: Record<string, any> = {}): Promise<DuoResponse<T>> {
+  async delete<T = any>(
+    path: string,
+    params: Record<string, any> = {}
+  ): Promise<DuoResponse<T>> {
     let flatParams = this.flattenParams(params);
     let { authorization, date } = await signRequest({
       integrationKey: this.auth.integrationKey,
@@ -101,16 +107,16 @@ export class DuoClient {
       apiHostname: this.auth.apiHostname,
       method: 'DELETE',
       path,
-      params: flatParams,
+      params: flatParams
     });
 
     let axiosInstance = this.createAxiosInstance();
     let response = await axiosInstance.delete(path, {
       params: flatParams,
       headers: {
-        'Authorization': authorization,
-        'Date': date,
-      },
+        Authorization: authorization,
+        Date: date
+      }
     });
 
     return response.data;
@@ -120,17 +126,19 @@ export class DuoClient {
   // Users
   // ========================
 
-  async listUsers(params: {
-    limit?: number;
-    offset?: number;
-    username?: string;
-    email?: string;
-  } = {}): Promise<DuoResponse<any[]>> {
+  async listUsers(
+    params: {
+      limit?: number;
+      offset?: number;
+      username?: string;
+      email?: string;
+    } = {}
+  ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/users', {
       limit: params.limit ?? 100,
       offset: params.offset ?? 0,
       ...(params.username ? { username: params.username } : {}),
-      ...(params.email ? { email: params.email } : {}),
+      ...(params.email ? { email: params.email } : {})
     });
   }
 
@@ -150,15 +158,18 @@ export class DuoClient {
     return this.post('/admin/v1/users', params);
   }
 
-  async updateUser(userId: string, params: {
-    username?: string;
-    email?: string;
-    realname?: string;
-    firstname?: string;
-    lastname?: string;
-    status?: string;
-    notes?: string;
-  }): Promise<DuoResponse<any>> {
+  async updateUser(
+    userId: string,
+    params: {
+      username?: string;
+      email?: string;
+      realname?: string;
+      firstname?: string;
+      lastname?: string;
+      status?: string;
+      notes?: string;
+    }
+  ): Promise<DuoResponse<any>> {
     return this.post(`/admin/v1/users/${userId}`, params);
   }
 
@@ -174,7 +185,7 @@ export class DuoClient {
     return this.post('/admin/v1/users/enroll', {
       username: params.username,
       email: params.email,
-      ...(params.validSecs ? { valid_secs: params.validSecs } : {}),
+      ...(params.validSecs ? { valid_secs: params.validSecs } : {})
     });
   }
 
@@ -202,13 +213,16 @@ export class DuoClient {
     return this.delete(`/admin/v1/users/${userId}/phones/${phoneId}`);
   }
 
-  async createBypassCodes(userId: string, params: {
-    count?: number;
-    validSecs?: number;
-  } = {}): Promise<DuoResponse<string[]>> {
+  async createBypassCodes(
+    userId: string,
+    params: {
+      count?: number;
+      validSecs?: number;
+    } = {}
+  ): Promise<DuoResponse<string[]>> {
     return this.post(`/admin/v1/users/${userId}/bypass_codes`, {
       ...(params.count ? { count: params.count } : {}),
-      ...(params.validSecs ? { valid_secs: params.validSecs } : {}),
+      ...(params.validSecs ? { valid_secs: params.validSecs } : {})
     });
   }
 
@@ -216,13 +230,15 @@ export class DuoClient {
   // Groups
   // ========================
 
-  async listGroups(params: {
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<DuoResponse<any[]>> {
+  async listGroups(
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/groups', {
       limit: params.limit ?? 100,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
   }
 
@@ -246,13 +262,15 @@ export class DuoClient {
   // Phones
   // ========================
 
-  async listPhones(params: {
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<DuoResponse<any[]>> {
+  async listPhones(
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/phones', {
       limit: params.limit ?? 100,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
   }
 
@@ -269,12 +287,15 @@ export class DuoClient {
     return this.post('/admin/v1/phones', params);
   }
 
-  async updatePhone(phoneId: string, params: {
-    number?: string;
-    name?: string;
-    type?: string;
-    platform?: string;
-  }): Promise<DuoResponse<any>> {
+  async updatePhone(
+    phoneId: string,
+    params: {
+      number?: string;
+      name?: string;
+      type?: string;
+      platform?: string;
+    }
+  ): Promise<DuoResponse<any>> {
     return this.post(`/admin/v1/phones/${phoneId}`, params);
   }
 
@@ -286,13 +307,15 @@ export class DuoClient {
   // Admins
   // ========================
 
-  async listAdmins(params: {
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<DuoResponse<any[]>> {
+  async listAdmins(
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/admins', {
       limit: params.limit ?? 100,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
   }
 
@@ -309,11 +332,14 @@ export class DuoClient {
     return this.post('/admin/v1/admins', params);
   }
 
-  async updateAdmin(adminId: string, params: {
-    name?: string;
-    phone?: string;
-    role?: string;
-  }): Promise<DuoResponse<any>> {
+  async updateAdmin(
+    adminId: string,
+    params: {
+      name?: string;
+      phone?: string;
+      role?: string;
+    }
+  ): Promise<DuoResponse<any>> {
     return this.post(`/admin/v1/admins/${adminId}`, params);
   }
 
@@ -325,13 +351,15 @@ export class DuoClient {
   // Integrations (Applications)
   // ========================
 
-  async listIntegrations(params: {
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<DuoResponse<any[]>> {
+  async listIntegrations(
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<DuoResponse<any[]>> {
     return this.get('/admin/v1/integrations', {
       limit: params.limit ?? 100,
-      offset: params.offset ?? 0,
+      offset: params.offset ?? 0
     });
   }
 
@@ -365,7 +393,7 @@ export class DuoClient {
       mintime: params.mintime,
       maxtime: params.maxtime,
       ...(params.limit ? { limit: params.limit } : {}),
-      ...(params.sort ? { sort: params.sort } : {}),
+      ...(params.sort ? { sort: params.sort } : {})
     };
 
     // next_offset is passed as two separate parameters with the same key
@@ -386,7 +414,7 @@ export class DuoClient {
     return this.get('/admin/v1/logs/administrator', {
       mintime: params.mintime,
       ...(params.maxtime ? { maxtime: params.maxtime } : {}),
-      ...(params.limit ? { limit: params.limit } : {}),
+      ...(params.limit ? { limit: params.limit } : {})
     });
   }
 
@@ -399,7 +427,7 @@ export class DuoClient {
     return this.get('/admin/v1/logs/telephony', {
       mintime: params.mintime,
       ...(params.maxtime ? { maxtime: params.maxtime } : {}),
-      ...(params.limit ? { limit: params.limit } : {}),
+      ...(params.limit ? { limit: params.limit } : {})
     });
   }
 
@@ -422,14 +450,20 @@ export class DuoClient {
     userTelephonyCostMax?: number;
   }): Promise<DuoResponse<any>> {
     let postParams: Record<string, any> = {};
-    if (params.lockoutThreshold !== undefined) postParams['lockout_threshold'] = params.lockoutThreshold;
-    if (params.lockoutExpireDurationSecs !== undefined) postParams['lockout_expire_duration_secs'] = params.lockoutExpireDurationSecs;
-    if (params.inactiveUserExpiration !== undefined) postParams['inactive_user_expiration'] = params.inactiveUserExpiration;
+    if (params.lockoutThreshold !== undefined)
+      postParams['lockout_threshold'] = params.lockoutThreshold;
+    if (params.lockoutExpireDurationSecs !== undefined)
+      postParams['lockout_expire_duration_secs'] = params.lockoutExpireDurationSecs;
+    if (params.inactiveUserExpiration !== undefined)
+      postParams['inactive_user_expiration'] = params.inactiveUserExpiration;
     if (params.callerID !== undefined) postParams['caller_id'] = params.callerID;
     if (params.fraudEmail !== undefined) postParams['fraud_email'] = params.fraudEmail;
-    if (params.fraudEmailEnabled !== undefined) postParams['fraud_email_enabled'] = params.fraudEmailEnabled ? '1' : '0';
-    if (params.keystrokesEnabled !== undefined) postParams['keystrokes_enabled'] = params.keystrokesEnabled ? '1' : '0';
-    if (params.userTelephonyCostMax !== undefined) postParams['user_telephony_cost_max'] = params.userTelephonyCostMax;
+    if (params.fraudEmailEnabled !== undefined)
+      postParams['fraud_email_enabled'] = params.fraudEmailEnabled ? '1' : '0';
+    if (params.keystrokesEnabled !== undefined)
+      postParams['keystrokes_enabled'] = params.keystrokesEnabled ? '1' : '0';
+    if (params.userTelephonyCostMax !== undefined)
+      postParams['user_telephony_cost_max'] = params.userTelephonyCostMax;
     return this.post('/admin/v1/settings', postParams);
   }
 

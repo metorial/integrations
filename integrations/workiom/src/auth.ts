@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -12,7 +14,7 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       token: z.string().describe('Your Workiom API Key. Found in Account Settings.')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -39,7 +41,7 @@ export let auth = SlateAuth.create()
       username: z.string().describe('Your Workiom username or email'),
       password: z.string().describe('Your Workiom password')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios({ baseURL: 'https://api.workiom.com' });
       let response = await http.post('/api/TokenAuth/Authenticate', {
         userNameOrEmailAddress: ctx.input.username,
@@ -55,10 +57,13 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    getProfile: async (ctx: { output: { token: string }; input: { username: string; password: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { username: string; password: string };
+    }) => {
       let http = createAxios({ baseURL: 'https://api.workiom.com' });
       await http.get('/api/services/app/Apps/GetAll', {
-        headers: { 'Authorization': `Bearer ${ctx.output.token}` }
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
       return {
         profile: {

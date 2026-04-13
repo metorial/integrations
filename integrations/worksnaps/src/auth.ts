@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Worksnaps API token. Find it under Profile & Settings >> Web Service API.'),
+      token: z
+        .string()
+        .describe(
+          'Your Worksnaps API token. Find it under Profile & Settings >> Web Service API.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,11 +33,11 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.worksnaps.com/api',
         auth: {
           username: ctx.output.token,
-          password: 'ignored',
+          password: 'ignored'
         },
         headers: {
-          'Accept': 'application/xml',
-        },
+          Accept: 'application/xml'
+        }
       });
 
       let response = await client.get('/me.xml');
@@ -49,10 +55,10 @@ export let auth = SlateAuth.create()
         profile: {
           id,
           email,
-          name,
-        },
+          name
+        }
       };
-    },
+    }
   });
 
 let extractXmlValue = (xml: string, tag: string): string | undefined => {

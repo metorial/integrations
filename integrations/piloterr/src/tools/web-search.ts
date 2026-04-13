@@ -3,39 +3,50 @@ import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let webSearch = SlateTool.create(
-  spec,
-  {
-    name: 'Bing & Brave Search',
-    key: 'web_search',
-    description: `Search the web using Bing or Brave search engines and retrieve structured organic results with titles, links, snippets, and pagination.`,
-    tags: {
-      readOnly: true
-    }
+export let webSearch = SlateTool.create(spec, {
+  name: 'Bing & Brave Search',
+  key: 'web_search',
+  description: `Search the web using Bing or Brave search engines and retrieve structured organic results with titles, links, snippets, and pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string'),
-    engine: z.enum(['bing', 'brave']).describe('Search engine to use'),
-    page: z.number().optional().describe('Page number for pagination'),
-    resultsPerPage: z.number().optional().describe('Number of results per page (Bing only, 10-50)'),
-    location: z.string().optional().describe('Geographic location for localized results (Bing only)'),
-    market: z.string().optional().describe('Market code e.g., "en-us" (Bing only)'),
-    countryCode: z.string().optional().describe('Two-letter country code (Bing only)')
-  }))
-  .output(z.object({
-    organicResults: z.array(z.object({
-      link: z.string().optional(),
-      title: z.string().optional(),
-      domain: z.string().optional(),
-      snippet: z.string().optional(),
-      position: z.number().optional(),
-      displayedLink: z.string().optional()
-    })).describe('Organic search results'),
-    pagination: z.any().optional().describe('Pagination information'),
-    searchParameters: z.any().optional().describe('Parameters used for the search')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string'),
+      engine: z.enum(['bing', 'brave']).describe('Search engine to use'),
+      page: z.number().optional().describe('Page number for pagination'),
+      resultsPerPage: z
+        .number()
+        .optional()
+        .describe('Number of results per page (Bing only, 10-50)'),
+      location: z
+        .string()
+        .optional()
+        .describe('Geographic location for localized results (Bing only)'),
+      market: z.string().optional().describe('Market code e.g., "en-us" (Bing only)'),
+      countryCode: z.string().optional().describe('Two-letter country code (Bing only)')
+    })
+  )
+  .output(
+    z.object({
+      organicResults: z
+        .array(
+          z.object({
+            link: z.string().optional(),
+            title: z.string().optional(),
+            domain: z.string().optional(),
+            snippet: z.string().optional(),
+            position: z.number().optional(),
+            displayedLink: z.string().optional()
+          })
+        )
+        .describe('Organic search results'),
+      pagination: z.any().optional().describe('Pagination information'),
+      searchParameters: z.any().optional().describe('Parameters used for the search')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result: any;
 

@@ -11,63 +11,83 @@ export let booksManageContact = SlateTool.create(spec, {
   instructions: [
     'The organizationId is required for all Zoho Books operations.',
     'For create, contactName is required.',
-    'Use contactType to specify "customer" or "vendor".',
+    'Use contactType to specify "customer" or "vendor".'
   ],
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    organizationId: z.string().describe('Zoho Books organization ID'),
-    action: z.enum(['create', 'update', 'delete', 'list']).describe('Operation to perform'),
-    contactId: z.string().optional().describe('Contact ID (required for update, delete)'),
-    contactName: z.string().optional().describe('Contact/company name (required for create)'),
-    contactType: z.enum(['customer', 'vendor']).optional().describe('Type of contact'),
-    companyName: z.string().optional().describe('Company name'),
-    email: z.string().optional().describe('Contact email address'),
-    phone: z.string().optional().describe('Contact phone number'),
-    website: z.string().optional().describe('Contact website'),
-    billingAddress: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-    }).optional().describe('Billing address'),
-    shippingAddress: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-    }).optional().describe('Shipping address'),
-    paymentTerms: z.number().optional().describe('Net payment terms in days'),
-    notes: z.string().optional().describe('Notes about the contact'),
-    page: z.number().optional().describe('Page number (for list action)'),
-    perPage: z.number().optional().describe('Records per page (for list action)'),
-  }))
-  .output(z.object({
-    contact: z.record(z.string(), z.any()).optional().describe('Contact record'),
-    contacts: z.array(z.record(z.string(), z.any())).optional().describe('List of contacts (for list action)'),
-    deleted: z.boolean().optional(),
-    hasMorePages: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      organizationId: z.string().describe('Zoho Books organization ID'),
+      action: z.enum(['create', 'update', 'delete', 'list']).describe('Operation to perform'),
+      contactId: z.string().optional().describe('Contact ID (required for update, delete)'),
+      contactName: z
+        .string()
+        .optional()
+        .describe('Contact/company name (required for create)'),
+      contactType: z.enum(['customer', 'vendor']).optional().describe('Type of contact'),
+      companyName: z.string().optional().describe('Company name'),
+      email: z.string().optional().describe('Contact email address'),
+      phone: z.string().optional().describe('Contact phone number'),
+      website: z.string().optional().describe('Contact website'),
+      billingAddress: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional()
+        .describe('Billing address'),
+      shippingAddress: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional()
+        .describe('Shipping address'),
+      paymentTerms: z.number().optional().describe('Net payment terms in days'),
+      notes: z.string().optional().describe('Notes about the contact'),
+      page: z.number().optional().describe('Page number (for list action)'),
+      perPage: z.number().optional().describe('Records per page (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      contact: z.record(z.string(), z.any()).optional().describe('Contact record'),
+      contacts: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of contacts (for list action)'),
+      deleted: z.boolean().optional(),
+      hasMorePages: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
-    let client = new ZohoBooksClient({ token: ctx.auth.token, datacenter: dc, organizationId: ctx.input.organizationId });
+    let client = new ZohoBooksClient({
+      token: ctx.auth.token,
+      datacenter: dc,
+      organizationId: ctx.input.organizationId
+    });
 
     if (ctx.input.action === 'list') {
       let result = await client.listContacts({
         page: ctx.input.page,
         perPage: ctx.input.perPage,
-        contactType: ctx.input.contactType,
+        contactType: ctx.input.contactType
       });
       return {
         output: {
           contacts: result?.contacts || [],
-          hasMorePages: result?.page_context?.has_more_page ?? false,
+          hasMorePages: result?.page_context?.has_more_page ?? false
         },
-        message: `Retrieved **${(result?.contacts || []).length}** contacts.`,
+        message: `Retrieved **${(result?.contacts || []).length}** contacts.`
       };
     }
 
@@ -87,7 +107,7 @@ export let booksManageContact = SlateTool.create(spec, {
           city: ctx.input.billingAddress.city,
           state: ctx.input.billingAddress.state,
           zip: ctx.input.billingAddress.zip,
-          country: ctx.input.billingAddress.country,
+          country: ctx.input.billingAddress.country
         };
       }
       if (ctx.input.shippingAddress) {
@@ -96,7 +116,7 @@ export let booksManageContact = SlateTool.create(spec, {
           city: ctx.input.shippingAddress.city,
           state: ctx.input.shippingAddress.state,
           zip: ctx.input.shippingAddress.zip,
-          country: ctx.input.shippingAddress.country,
+          country: ctx.input.shippingAddress.country
         };
       }
       return data;
@@ -107,7 +127,7 @@ export let booksManageContact = SlateTool.create(spec, {
       let contact = result?.contact;
       return {
         output: { contact },
-        message: `Created contact **${contact?.contact_name}**.`,
+        message: `Created contact **${contact?.contact_name}**.`
       };
     }
 
@@ -117,7 +137,7 @@ export let booksManageContact = SlateTool.create(spec, {
       let contact = result?.contact;
       return {
         output: { contact },
-        message: `Updated contact **${contact?.contact_name || ctx.input.contactId}**.`,
+        message: `Updated contact **${contact?.contact_name || ctx.input.contactId}**.`
       };
     }
 
@@ -126,9 +146,10 @@ export let booksManageContact = SlateTool.create(spec, {
       await client.deleteContact(ctx.input.contactId);
       return {
         output: { deleted: true },
-        message: `Deleted contact **${ctx.input.contactId}**.`,
+        message: `Deleted contact **${ctx.input.contactId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

@@ -3,24 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAiSearchTerms = SlateTool.create(
-  spec,
-  {
-    name: 'Get AI Search Terms',
-    key: 'get_ai_search_terms',
-    description: `Retrieve all search terms tracked for an AI Visibility domain. Shows which queries are being monitored across AI search engines, along with their status, update interval, region, and execution timestamps.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    domainId: z.string().describe('AI Visibility domain ID to get search terms for'),
-  }))
-  .output(z.object({
-    searchTerms: z.array(z.any()).describe('List of tracked AI search terms'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getAiSearchTerms = SlateTool.create(spec, {
+  name: 'Get AI Search Terms',
+  key: 'get_ai_search_terms',
+  description: `Retrieve all search terms tracked for an AI Visibility domain. Shows which queries are being monitored across AI search engines, along with their status, update interval, region, and execution timestamps.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      domainId: z.string().describe('AI Visibility domain ID to get search terms for')
+    })
+  )
+  .output(
+    z.object({
+      searchTerms: z.array(z.any()).describe('List of tracked AI search terms')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.listAiSearchTerms(ctx.input.domainId);
@@ -28,7 +29,7 @@ export let getAiSearchTerms = SlateTool.create(
 
     return {
       output: { searchTerms },
-      message: `Found **${searchTerms.length}** tracked AI search term(s).`,
+      message: `Found **${searchTerms.length}** tracked AI search term(s).`
     };
   })
   .build();

@@ -3,32 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let endSession = SlateTool.create(
-  spec,
-  {
-    name: 'End Session',
-    key: 'end_session',
-    description: `Terminate one or all active browser sessions. Provide a specific session ID to end a single session, or set endAll to true to terminate all active sessions at once.`,
-    tags: {
-      destructive: true,
-    },
+export let endSession = SlateTool.create(spec, {
+  name: 'End Session',
+  key: 'end_session',
+  description: `Terminate one or all active browser sessions. Provide a specific session ID to end a single session, or set endAll to true to terminate all active sessions at once.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    sessionId: z.string().optional().describe('ID of the session to terminate. Omit if using endAll.'),
-    endAll: z.boolean().optional().describe('Set to true to terminate all active sessions'),
-  }))
-  .output(z.object({
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sessionId: z
+        .string()
+        .optional()
+        .describe('ID of the session to terminate. Omit if using endAll.'),
+      endAll: z.boolean().optional().describe('Set to true to terminate all active sessions')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.endAll) {
       await client.endAllSessions();
       return {
         output: { success: true },
-        message: 'All active sessions have been terminated.',
+        message: 'All active sessions have been terminated.'
       };
     }
 
@@ -40,6 +44,7 @@ export let endSession = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Session **${ctx.input.sessionId}** has been terminated.`,
+      message: `Session **${ctx.input.sessionId}** has been terminated.`
     };
-  }).build();
+  })
+  .build();

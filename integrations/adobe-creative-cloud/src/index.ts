@@ -15,13 +15,13 @@ import {
   applyLightroomEdits,
   manageUsers,
   indesignDataMerge,
-  checkJobStatus,
+  checkJobStatus
 } from './tools';
 import {
   assetEvents,
   libraryEvents,
   cloudDocumentEvents,
-  photoshopJobEvents,
+  photoshopJobEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -41,12 +41,7 @@ export let provider = Slate.create({
     applyLightroomEdits,
     manageUsers,
     indesignDataMerge,
-    checkJobStatus,
+    checkJobStatus
   ],
-  triggers: [
-    assetEvents,
-    libraryEvents,
-    cloudDocumentEvents,
-    photoshopJobEvents,
-  ],
+  triggers: [assetEvents, libraryEvents, cloudDocumentEvents, photoshopJobEvents]
 });

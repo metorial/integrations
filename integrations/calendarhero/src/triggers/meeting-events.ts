@@ -13,34 +13,41 @@ let meetingEventTypes = [
   'meeting_started'
 ] as const;
 
-export let meetingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Meeting Events',
-    key: 'meeting_events',
-    description: 'Triggers when meeting-related events occur, including new meeting requests, scheduled meetings, cancellations, expirations, rescheduling, and meeting start/completion.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The CalendarHero event type'),
-    payload: z.any().describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    meetingId: z.string().optional().describe('Meeting or request ID'),
-    subject: z.string().optional().describe('Meeting subject'),
-    start: z.string().optional().describe('Meeting start time'),
-    end: z.string().optional().describe('Meeting end time'),
-    attendees: z.array(z.object({
-      name: z.string().optional(),
-      email: z.string().optional()
-    })).optional().describe('Meeting attendees'),
-    location: z.string().optional().describe('Meeting location or video link'),
-    meetingType: z.string().optional().describe('Meeting type used'),
-    status: z.string().optional().describe('Meeting or request status'),
-    raw: z.any().optional().describe('Full event payload')
-  }))
+export let meetingEvents = SlateTrigger.create(spec, {
+  name: 'Meeting Events',
+  key: 'meeting_events',
+  description:
+    'Triggers when meeting-related events occur, including new meeting requests, scheduled meetings, cancellations, expirations, rescheduling, and meeting start/completion.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The CalendarHero event type'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      meetingId: z.string().optional().describe('Meeting or request ID'),
+      subject: z.string().optional().describe('Meeting subject'),
+      start: z.string().optional().describe('Meeting start time'),
+      end: z.string().optional().describe('Meeting end time'),
+      attendees: z
+        .array(
+          z.object({
+            name: z.string().optional(),
+            email: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Meeting attendees'),
+      location: z.string().optional().describe('Meeting location or video link'),
+      meetingType: z.string().optional().describe('Meeting type used'),
+      status: z.string().optional().describe('Meeting or request status'),
+      raw: z.any().optional().describe('Full event payload')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
 
       let registrations: Array<{ event: string; hookUrl: string }> = [];
@@ -56,7 +63,7 @@ export let meetingEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
 
       for (let eventType of meetingEventTypes) {
@@ -68,7 +75,7 @@ export let meetingEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
@@ -89,7 +96,7 @@ export let meetingEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p: any = ctx.input.payload || {};
       let meeting: any = p.meeting || p.event || p.data || p;
 
@@ -98,7 +105,8 @@ export let meetingEvents = SlateTrigger.create(
         email: a.email
       }));
 
-      let eventId = meeting._id || meeting.id || p._id || p.id || `${ctx.input.eventType}-${Date.now()}`;
+      let eventId =
+        meeting._id || meeting.id || p._id || p.id || `${ctx.input.eventType}-${Date.now()}`;
 
       return {
         type: `meeting.${ctx.input.eventType}`,

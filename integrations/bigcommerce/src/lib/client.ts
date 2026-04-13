@@ -34,9 +34,9 @@ export class Client {
       baseURL: `https://api.bigcommerce.com/stores/${config.storeHash}`,
       headers: {
         'X-Auth-Token': config.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -47,7 +47,10 @@ export class Client {
     return response.data;
   }
 
-  async getProduct(productId: number, params?: Record<string, any>): Promise<SingleResponse<any>> {
+  async getProduct(
+    productId: number,
+    params?: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.get(`/v3/catalog/products/${productId}`, { params });
     return response.data;
   }
@@ -57,7 +60,10 @@ export class Client {
     return response.data;
   }
 
-  async updateProduct(productId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updateProduct(
+    productId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.put(`/v3/catalog/products/${productId}`, data);
     return response.data;
   }
@@ -68,23 +74,40 @@ export class Client {
 
   // ─── Product Variants ───────────────────────────────────────────────
 
-  async listProductVariants(productId: number, params?: Record<string, any>): Promise<PaginatedResponse<any>> {
-    let response = await this.api.get(`/v3/catalog/products/${productId}/variants`, { params });
+  async listProductVariants(
+    productId: number,
+    params?: Record<string, any>
+  ): Promise<PaginatedResponse<any>> {
+    let response = await this.api.get(`/v3/catalog/products/${productId}/variants`, {
+      params
+    });
     return response.data;
   }
 
   async getProductVariant(productId: number, variantId: number): Promise<SingleResponse<any>> {
-    let response = await this.api.get(`/v3/catalog/products/${productId}/variants/${variantId}`);
+    let response = await this.api.get(
+      `/v3/catalog/products/${productId}/variants/${variantId}`
+    );
     return response.data;
   }
 
-  async createProductVariant(productId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async createProductVariant(
+    productId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.post(`/v3/catalog/products/${productId}/variants`, data);
     return response.data;
   }
 
-  async updateProductVariant(productId: number, variantId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
-    let response = await this.api.put(`/v3/catalog/products/${productId}/variants/${variantId}`, data);
+  async updateProductVariant(
+    productId: number,
+    variantId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
+    let response = await this.api.put(
+      `/v3/catalog/products/${productId}/variants/${variantId}`,
+      data
+    );
     return response.data;
   }
 
@@ -95,7 +118,10 @@ export class Client {
     return response.data;
   }
 
-  async createProductImage(productId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async createProductImage(
+    productId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.post(`/v3/catalog/products/${productId}/images`, data);
     return response.data;
   }
@@ -118,7 +144,9 @@ export class Client {
   }
 
   async deleteCategory(categoryId: number): Promise<void> {
-    await this.api.delete('/v3/catalog/trees/categories', { params: { 'category_id:in': categoryId } });
+    await this.api.delete('/v3/catalog/trees/categories', {
+      params: { 'category_id:in': categoryId }
+    });
   }
 
   // ─── Brands ─────────────────────────────────────────────────────────
@@ -185,7 +213,11 @@ export class Client {
     return response.data;
   }
 
-  async updateOrderShipment(orderId: number, shipmentId: number, data: Record<string, any>): Promise<any> {
+  async updateOrderShipment(
+    orderId: number,
+    shipmentId: number,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.put(`/v2/orders/${orderId}/shipments/${shipmentId}`, data);
     return response.data;
   }
@@ -197,7 +229,10 @@ export class Client {
     return response.data;
   }
 
-  async createOrderRefund(orderId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async createOrderRefund(
+    orderId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.post(`/v3/orders/${orderId}/payment_actions/refunds`, data);
     return response.data;
   }
@@ -264,12 +299,19 @@ export class Client {
     return response.data;
   }
 
-  async addCartLineItems(cartId: string, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async addCartLineItems(
+    cartId: string,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.post(`/v3/carts/${cartId}/items`, data);
     return response.data;
   }
 
-  async updateCartLineItem(cartId: string, itemId: string, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updateCartLineItem(
+    cartId: string,
+    itemId: string,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.put(`/v3/carts/${cartId}/items/${itemId}`, data);
     return response.data;
   }
@@ -289,12 +331,22 @@ export class Client {
     return response.data;
   }
 
-  async updateCheckoutBillingAddress(checkoutId: string, addressId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
-    let response = await this.api.put(`/v3/checkouts/${checkoutId}/billing-address/${addressId}`, data);
+  async updateCheckoutBillingAddress(
+    checkoutId: string,
+    addressId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
+    let response = await this.api.put(
+      `/v3/checkouts/${checkoutId}/billing-address/${addressId}`,
+      data
+    );
     return response.data;
   }
 
-  async addCheckoutBillingAddress(checkoutId: string, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async addCheckoutBillingAddress(
+    checkoutId: string,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.post(`/v3/checkouts/${checkoutId}/billing-address`, data);
     return response.data;
   }
@@ -316,7 +368,10 @@ export class Client {
     return response.data;
   }
 
-  async updateChannel(channelId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updateChannel(
+    channelId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.put(`/v3/channels/${channelId}`, data);
     return response.data;
   }
@@ -406,7 +461,10 @@ export class Client {
     return response.data;
   }
 
-  async updateSubscriber(subscriberId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updateSubscriber(
+    subscriberId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.put(`/v3/customers/subscribers/${subscriberId}`, data);
     return response.data;
   }
@@ -432,7 +490,10 @@ export class Client {
     return response.data;
   }
 
-  async updatePriceList(priceListId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updatePriceList(
+    priceListId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.put(`/v3/pricelists/${priceListId}`, data);
     return response.data;
   }
@@ -443,7 +504,10 @@ export class Client {
 
   // ─── Price List Records ─────────────────────────────────────────────
 
-  async listPriceListRecords(priceListId: number, params?: Record<string, any>): Promise<PaginatedResponse<any>> {
+  async listPriceListRecords(
+    priceListId: number,
+    params?: Record<string, any>
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.api.get(`/v3/pricelists/${priceListId}/records`, { params });
     return response.data;
   }
@@ -508,7 +572,10 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: number, data: Record<string, any>): Promise<SingleResponse<any>> {
+  async updateWebhook(
+    webhookId: number,
+    data: Record<string, any>
+  ): Promise<SingleResponse<any>> {
     let response = await this.api.put(`/v3/hooks/${webhookId}`, data);
     return response.data;
   }
@@ -530,7 +597,9 @@ export class Client {
   }
 
   async deleteRedirects(uuids: string[]): Promise<void> {
-    await this.api.delete('/v3/storefront/redirects', { params: { 'id:in': uuids.join(',') } });
+    await this.api.delete('/v3/storefront/redirects', {
+      params: { 'id:in': uuids.join(',') }
+    });
   }
 
   // ─── Shipping Zones ─────────────────────────────────────────────────

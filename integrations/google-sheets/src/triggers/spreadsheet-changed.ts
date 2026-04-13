@@ -4,31 +4,43 @@ import { SheetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let spreadsheetChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Spreadsheet Changed',
-    key: 'spreadsheet_changed',
-    description: 'Triggers when a watched spreadsheet file is modified. Uses Google Drive push notifications to detect changes, then fetches updated spreadsheet metadata. Requires Drive scope.',
-  }
-)
-  .input(z.object({
-    spreadsheetId: z.string().describe('ID of the spreadsheet that changed'),
-    resourceState: z.string().describe('State of the resource change (sync, update, add, remove, trash, untrash, change)'),
-    changedFields: z.string().optional().describe('Comma-separated list of changed fields'),
-    channelId: z.string().optional().describe('Channel ID of the notification'),
-  }))
-  .output(z.object({
-    spreadsheetId: z.string().describe('ID of the changed spreadsheet'),
-    spreadsheetUrl: z.string().describe('URL of the spreadsheet'),
-    title: z.string().describe('Current title of the spreadsheet'),
-    modifiedTime: z.string().optional().describe('Last modified time of the file'),
-    lastModifyingUserEmail: z.string().optional().describe('Email of the user who last modified the file'),
-    lastModifyingUserName: z.string().optional().describe('Display name of the user who last modified the file'),
-    sheetTitles: z.array(z.string()).describe('List of sheet tab titles in the spreadsheet'),
-  }))
+export let spreadsheetChanged = SlateTrigger.create(spec, {
+  name: 'Spreadsheet Changed',
+  key: 'spreadsheet_changed',
+  description:
+    'Triggers when a watched spreadsheet file is modified. Uses Google Drive push notifications to detect changes, then fetches updated spreadsheet metadata. Requires Drive scope.'
+})
+  .input(
+    z.object({
+      spreadsheetId: z.string().describe('ID of the spreadsheet that changed'),
+      resourceState: z
+        .string()
+        .describe(
+          'State of the resource change (sync, update, add, remove, trash, untrash, change)'
+        ),
+      changedFields: z.string().optional().describe('Comma-separated list of changed fields'),
+      channelId: z.string().optional().describe('Channel ID of the notification')
+    })
+  )
+  .output(
+    z.object({
+      spreadsheetId: z.string().describe('ID of the changed spreadsheet'),
+      spreadsheetUrl: z.string().describe('URL of the spreadsheet'),
+      title: z.string().describe('Current title of the spreadsheet'),
+      modifiedTime: z.string().optional().describe('Last modified time of the file'),
+      lastModifyingUserEmail: z
+        .string()
+        .optional()
+        .describe('Email of the user who last modified the file'),
+      lastModifyingUserName: z
+        .string()
+        .optional()
+        .describe('Display name of the user who last modified the file'),
+      sheetTitles: z.array(z.string()).describe('List of sheet tab titles in the spreadsheet')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let driveClient = new DriveClient(ctx.auth.token);
 
       // We need a spreadsheet ID from the user to watch - this will be stored in registration details
@@ -42,33 +54,40 @@ export let spreadsheetChanged = SlateTrigger.create(
       // This is stored during setup. For now, we return the channel info.
       // The actual registration will be handled based on the setup flow.
 
-      let watchResult = await driveClient.watchFile(
-        '', // Will be set by the platform
-        ctx.input.webhookBaseUrl,
-        channelId,
-        expiration
-      ).catch(() => null);
+      let watchResult = await driveClient
+        .watchFile(
+          '', // Will be set by the platform
+          ctx.input.webhookBaseUrl,
+          channelId,
+          expiration
+        )
+        .catch(() => null);
 
       return {
         registrationDetails: {
           channelId,
           resourceId: watchResult?.resourceId,
-          expiration,
-        },
+          expiration
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
-      if (ctx.input.registrationDetails?.channelId && ctx.input.registrationDetails?.resourceId) {
+    autoUnregisterWebhook: async ctx => {
+      if (
+        ctx.input.registrationDetails?.channelId &&
+        ctx.input.registrationDetails?.resourceId
+      ) {
         let driveClient = new DriveClient(ctx.auth.token);
-        await driveClient.stopChannel(
-          ctx.input.registrationDetails.channelId,
-          ctx.input.registrationDetails.resourceId
-        ).catch(() => {});
+        await driveClient
+          .stopChannel(
+            ctx.input.registrationDetails.channelId,
+            ctx.input.registrationDetails.resourceId
+          )
+          .catch(() => {});
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let headers = ctx.request.headers;
 
       let resourceState = headers.get('x-goog-resource-state') ?? 'unknown';
@@ -97,13 +116,13 @@ export let spreadsheetChanged = SlateTrigger.create(
             spreadsheetId,
             resourceState,
             changedFields: changed,
-            channelId,
-          },
-        ],
+            channelId
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { spreadsheetId, resourceState } = ctx.input;
 
       // Fetch current spreadsheet metadata
@@ -112,12 +131,16 @@ export let spreadsheetChanged = SlateTrigger.create(
 
       let [spreadsheet, fileInfo] = await Promise.all([
         sheetsClient.getSpreadsheet(spreadsheetId).catch(() => null),
-        driveClient.getFile(spreadsheetId).catch(() => null),
+        driveClient.getFile(spreadsheetId).catch(() => null)
       ]);
 
       let title = spreadsheet?.properties?.title ?? fileInfo?.name ?? 'Unknown';
-      let spreadsheetUrl = spreadsheet?.spreadsheetUrl ?? `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
-      let sheetTitles = (spreadsheet?.sheets ?? []).map((s: any) => s.properties?.title ?? 'Untitled');
+      let spreadsheetUrl =
+        spreadsheet?.spreadsheetUrl ??
+        `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
+      let sheetTitles = (spreadsheet?.sheets ?? []).map(
+        (s: any) => s.properties?.title ?? 'Untitled'
+      );
 
       return {
         type: `spreadsheet.${resourceState}`,
@@ -129,9 +152,9 @@ export let spreadsheetChanged = SlateTrigger.create(
           modifiedTime: fileInfo?.modifiedTime,
           lastModifyingUserEmail: fileInfo?.lastModifyingUser?.emailAddress,
           lastModifyingUserName: fileInfo?.lastModifyingUser?.displayName,
-          sheetTitles,
-        },
+          sheetTitles
+        }
       };
-    },
+    }
   })
   .build();

@@ -13,6 +13,7 @@ All API requests require Token-based authentication. All requests must include a
 Get your API key from the Mem0 Dashboard at app.mem0.ai and include it in the Authorization header.
 
 Example header:
+
 ```
 Authorization: Token m0-your_api_key_here
 ```

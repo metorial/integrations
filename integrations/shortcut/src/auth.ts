@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Shortcut API token. Generate one at https://app.shortcut.com/settings/account/api-tokens'),
+      token: z
+        .string()
+        .describe(
+          'Shortcut API token. Generate one at https://app.shortcut.com/settings/account/api-tokens'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,8 +33,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.app.shortcut.com/api/v3',
         headers: {
           'Shortcut-Token': ctx.output.token,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       let response = await http.get('/member');
@@ -39,8 +45,8 @@ export let auth = SlateAuth.create()
           id: member.id,
           name: member.profile?.name || member.profile?.mention_name,
           email: member.profile?.email_address,
-          imageUrl: member.profile?.display_icon?.url,
-        },
+          imageUrl: member.profile?.display_icon?.url
+        }
       };
-    },
+    }
   });

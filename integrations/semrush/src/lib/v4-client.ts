@@ -8,9 +8,9 @@ export class SemrushV4Client {
     this.axios = createAxios({
       baseURL: 'https://api.semrush.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -32,15 +32,18 @@ export class SemrushV4Client {
   }): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/management/v1/projects', {
       domain: params.domain,
-      name: params.name,
+      name: params.name
     });
     return response.data?.data || response.data;
   }
 
-  async updateProject(projectId: string, params: {
-    name?: string;
-    domain?: string;
-  }): Promise<Record<string, unknown>> {
+  async updateProject(
+    projectId: string,
+    params: {
+      name?: string;
+      domain?: string;
+    }
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.put(`/management/v1/projects/${projectId}`, params);
     return response.data?.data || response.data;
   }
@@ -52,83 +55,110 @@ export class SemrushV4Client {
   // Position Tracking
 
   async getPositionTrackingCampaigns(projectId: string): Promise<Record<string, unknown>[]> {
-    let response = await this.axios.get(`/management/v1/projects/${projectId}/position-tracking/campaigns`);
+    let response = await this.axios.get(
+      `/management/v1/projects/${projectId}/position-tracking/campaigns`
+    );
     return response.data?.data || response.data || [];
   }
 
-  async createPositionTrackingCampaign(projectId: string, params: {
-    domain: string;
-    searchEngine?: string;
-    location?: string;
-    device?: string;
-    keywords?: string[];
-    competitors?: string[];
-  }): Promise<Record<string, unknown>> {
+  async createPositionTrackingCampaign(
+    projectId: string,
+    params: {
+      domain: string;
+      searchEngine?: string;
+      location?: string;
+      device?: string;
+      keywords?: string[];
+      competitors?: string[];
+    }
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
       `/management/v1/projects/${projectId}/position-tracking/campaigns`,
-      params,
+      params
     );
     return response.data?.data || response.data;
   }
 
-  async getPositionTrackingKeywords(projectId: string, campaignId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<Record<string, unknown>[]> {
+  async getPositionTrackingKeywords(
+    projectId: string,
+    campaignId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/management/v1/projects/${projectId}/position-tracking/campaigns/${campaignId}/keywords`,
-      { params },
+      { params }
     );
     return response.data?.data || response.data || [];
   }
 
-  async addPositionTrackingKeywords(projectId: string, campaignId: string, keywords: string[]): Promise<Record<string, unknown>> {
+  async addPositionTrackingKeywords(
+    projectId: string,
+    campaignId: string,
+    keywords: string[]
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
       `/management/v1/projects/${projectId}/position-tracking/campaigns/${campaignId}/keywords`,
-      { keywords },
+      { keywords }
     );
     return response.data?.data || response.data;
   }
 
-  async removePositionTrackingKeywords(projectId: string, campaignId: string, keywords: string[]): Promise<void> {
+  async removePositionTrackingKeywords(
+    projectId: string,
+    campaignId: string,
+    keywords: string[]
+  ): Promise<void> {
     await this.axios.delete(
       `/management/v1/projects/${projectId}/position-tracking/campaigns/${campaignId}/keywords`,
-      { data: { keywords } },
+      { data: { keywords } }
     );
   }
 
-  async getPositionTrackingReport(projectId: string, campaignId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<Record<string, unknown>[]> {
+  async getPositionTrackingReport(
+    projectId: string,
+    campaignId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get(
       `/management/v1/projects/${projectId}/position-tracking/campaigns/${campaignId}/report`,
-      { params },
+      { params }
     );
     return response.data?.data || response.data || [];
   }
 
   // Site Audit
 
-  async enableSiteAudit(projectId: string, params?: {
-    crawlLimit?: number;
-    crawlSubdomains?: boolean;
-  }): Promise<Record<string, unknown>> {
+  async enableSiteAudit(
+    projectId: string,
+    params?: {
+      crawlLimit?: number;
+      crawlSubdomains?: boolean;
+    }
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
       `/management/v1/projects/${projectId}/site-audit/enable`,
-      params,
+      params
     );
     return response.data?.data || response.data;
   }
 
   async runSiteAudit(projectId: string): Promise<Record<string, unknown>> {
     let response = await this.axios.post(
-      `/management/v1/projects/${projectId}/site-audit/run`,
+      `/management/v1/projects/${projectId}/site-audit/run`
     );
     return response.data?.data || response.data;
   }
 
-  async getSiteAuditSnapshot(projectId: string, snapshotId?: string): Promise<Record<string, unknown>> {
+  async getSiteAuditSnapshot(
+    projectId: string,
+    snapshotId?: string
+  ): Promise<Record<string, unknown>> {
     let url = snapshotId
       ? `/management/v1/projects/${projectId}/site-audit/snapshots/${snapshotId}`
       : `/management/v1/projects/${projectId}/site-audit/snapshots/latest`;
@@ -136,12 +166,15 @@ export class SemrushV4Client {
     return response.data?.data || response.data;
   }
 
-  async getSiteAuditIssues(projectId: string, params?: {
-    snapshotId?: string;
-    limit?: number;
-    offset?: number;
-    severity?: string;
-  }): Promise<Record<string, unknown>[]> {
+  async getSiteAuditIssues(
+    projectId: string,
+    params?: {
+      snapshotId?: string;
+      limit?: number;
+      offset?: number;
+      severity?: string;
+    }
+  ): Promise<Record<string, unknown>[]> {
     let snapshotPath = params?.snapshotId
       ? `/snapshots/${params.snapshotId}`
       : '/snapshots/latest';
@@ -151,9 +184,9 @@ export class SemrushV4Client {
         params: {
           limit: params?.limit,
           offset: params?.offset,
-          severity: params?.severity,
-        },
-      },
+          severity: params?.severity
+        }
+      }
     );
     return response.data?.data || response.data || [];
   }
@@ -165,7 +198,7 @@ export class SemrushV4Client {
     offset?: number;
   }): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/listing-management/v1/locations', {
-      params,
+      params
     });
     return response.data?.data || response.data || [];
   }
@@ -192,8 +225,14 @@ export class SemrushV4Client {
     return response.data?.data || response.data;
   }
 
-  async updateLocation(locationId: string, params: Record<string, unknown>): Promise<Record<string, unknown>> {
-    let response = await this.axios.put(`/listing-management/v1/locations/${locationId}`, params);
+  async updateLocation(
+    locationId: string,
+    params: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
+    let response = await this.axios.put(
+      `/listing-management/v1/locations/${locationId}`,
+      params
+    );
     return response.data?.data || response.data;
   }
 
@@ -208,7 +247,7 @@ export class SemrushV4Client {
     offset?: number;
   }): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/map-rank-tracker/v2/campaigns', {
-      params,
+      params
     });
     return response.data?.data || response.data || [];
   }
@@ -218,30 +257,45 @@ export class SemrushV4Client {
     return response.data?.data || response.data;
   }
 
-  async getMapRankTrackerKeywords(campaignId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<Record<string, unknown>[]> {
-    let response = await this.axios.get(`/map-rank-tracker/v2/campaigns/${campaignId}/keywords`, {
-      params,
-    });
+  async getMapRankTrackerKeywords(
+    campaignId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<Record<string, unknown>[]> {
+    let response = await this.axios.get(
+      `/map-rank-tracker/v2/campaigns/${campaignId}/keywords`,
+      {
+        params
+      }
+    );
     return response.data?.data || response.data || [];
   }
 
-  async getMapRankTrackerHeatmap(campaignId: string, keywordId: string): Promise<Record<string, unknown>> {
+  async getMapRankTrackerHeatmap(
+    campaignId: string,
+    keywordId: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get(
-      `/map-rank-tracker/v2/campaigns/${campaignId}/keywords/${keywordId}/heatmap`,
+      `/map-rank-tracker/v2/campaigns/${campaignId}/keywords/${keywordId}/heatmap`
     );
     return response.data?.data || response.data;
   }
 
-  async getMapRankTrackerCompetitors(campaignId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<Record<string, unknown>[]> {
-    let response = await this.axios.get(`/map-rank-tracker/v2/campaigns/${campaignId}/competitors`, {
-      params,
-    });
+  async getMapRankTrackerCompetitors(
+    campaignId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<Record<string, unknown>[]> {
+    let response = await this.axios.get(
+      `/map-rank-tracker/v2/campaigns/${campaignId}/competitors`,
+      {
+        params
+      }
+    );
     return response.data?.data || response.data || [];
   }
 }

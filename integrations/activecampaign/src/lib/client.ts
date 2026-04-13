@@ -111,14 +111,16 @@ export class Client {
     return res.data;
   }
 
-  async listContacts(params?: PaginationParams & {
-    search?: string;
-    email?: string;
-    listid?: string;
-    tagid?: string;
-    status?: number;
-    orderBy?: string;
-  }) {
+  async listContacts(
+    params?: PaginationParams & {
+      search?: string;
+      email?: string;
+      listid?: string;
+      tagid?: string;
+      status?: number;
+      orderBy?: string;
+    }
+  ) {
     let res = await this.axios.get('/contacts', { params });
     return res.data;
   }
@@ -271,14 +273,16 @@ export class Client {
     return res.data;
   }
 
-  async listDeals(params?: PaginationParams & {
-    search?: string;
-    'filters[stage]'?: string;
-    'filters[group]'?: string;
-    'filters[status]'?: number;
-    'filters[owner]'?: string;
-    'filters[contact_id]'?: string;
-  }) {
+  async listDeals(
+    params?: PaginationParams & {
+      search?: string;
+      'filters[stage]'?: string;
+      'filters[group]'?: string;
+      'filters[status]'?: number;
+      'filters[owner]'?: string;
+      'filters[contact_id]'?: string;
+    }
+  ) {
     let res = await this.axios.get('/deals', { params });
     return res.data;
   }
@@ -467,12 +471,14 @@ export class Client {
     return res.data;
   }
 
-  async listTasks(params?: PaginationParams & {
-    'filters[reltype]'?: string;
-    'filters[relid]'?: string;
-    'filters[status]'?: number;
-    'filters[dealTasktype]'?: string;
-  }) {
+  async listTasks(
+    params?: PaginationParams & {
+      'filters[reltype]'?: string;
+      'filters[relid]'?: string;
+      'filters[status]'?: number;
+      'filters[dealTasktype]'?: string;
+    }
+  ) {
     let res = await this.axios.get('/dealTasks', { params });
     return res.data;
   }

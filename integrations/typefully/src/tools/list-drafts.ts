@@ -13,41 +13,50 @@ let draftSummarySchema = z.object({
   draftTitle: z.string().nullable().describe('Internal title'),
   tags: z.array(z.string()).describe('Tags assigned to the draft'),
   preview: z.string().nullable().describe('Preview text of the content'),
-  enabledPlatforms: z.array(z.string()).describe('Platforms this draft targets'),
+  enabledPlatforms: z.array(z.string()).describe('Platforms this draft targets')
 });
 
-export let listDrafts = SlateTool.create(
-  spec,
-  {
-    name: 'List Drafts',
-    key: 'list_drafts',
-    description: `List and filter drafts in a social set. Filter by status (draft, scheduled, published) or tag to find specific content. Supports pagination for browsing large numbers of drafts.`,
-    instructions: [
-      'Use the status filter to find drafts in a specific state.',
-      'Results are paginated — use limit and offset for browsing.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    socialSetId: z.string().describe('ID of the social set'),
-    status: z.enum(['draft', 'scheduled', 'published']).optional().describe('Filter by draft status'),
-    tag: z.string().optional().describe('Filter by tag name'),
-    sort: z.string().optional().describe('Sort field (e.g. "created_at", "scheduled_date")'),
-    limit: z.number().min(1).max(50).optional().describe('Number of results per page (1-50, default: 10)'),
-    offset: z.number().min(0).optional().describe('Pagination offset (default: 0)'),
-  }))
-  .output(z.object({
-    drafts: z.array(draftSummarySchema).describe('List of drafts'),
-    totalCount: z.number().describe('Total number of matching drafts'),
-    limit: z.number().describe('Results per page'),
-    offset: z.number().describe('Current pagination offset'),
-    hasMore: z.boolean().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listDrafts = SlateTool.create(spec, {
+  name: 'List Drafts',
+  key: 'list_drafts',
+  description: `List and filter drafts in a social set. Filter by status (draft, scheduled, published) or tag to find specific content. Supports pagination for browsing large numbers of drafts.`,
+  instructions: [
+    'Use the status filter to find drafts in a specific state.',
+    'Results are paginated — use limit and offset for browsing.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      socialSetId: z.string().describe('ID of the social set'),
+      status: z
+        .enum(['draft', 'scheduled', 'published'])
+        .optional()
+        .describe('Filter by draft status'),
+      tag: z.string().optional().describe('Filter by tag name'),
+      sort: z.string().optional().describe('Sort field (e.g. "created_at", "scheduled_date")'),
+      limit: z
+        .number()
+        .min(1)
+        .max(50)
+        .optional()
+        .describe('Number of results per page (1-50, default: 10)'),
+      offset: z.number().min(0).optional().describe('Pagination offset (default: 0)')
+    })
+  )
+  .output(
+    z.object({
+      drafts: z.array(draftSummarySchema).describe('List of drafts'),
+      totalCount: z.number().describe('Total number of matching drafts'),
+      limit: z.number().describe('Results per page'),
+      offset: z.number().describe('Current pagination offset'),
+      hasMore: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TypefullyClient(ctx.auth.token);
 
     let result = await client.listDrafts({
@@ -56,10 +65,10 @@ export let listDrafts = SlateTool.create(
       tag: ctx.input.tag,
       sort: ctx.input.sort,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
-    let drafts = result.results.map((draft) => {
+    let drafts = result.results.map(draft => {
       let enabledPlatforms: string[] = [];
       if (draft.x_post_enabled) enabledPlatforms.push('x');
       if (draft.linkedin_post_enabled) enabledPlatforms.push('linkedin');
@@ -77,7 +86,7 @@ export let listDrafts = SlateTool.create(
         draftTitle: draft.draft_title,
         tags: draft.tags ?? [],
         preview: draft.preview,
-        enabledPlatforms,
+        enabledPlatforms
       };
     });
 
@@ -89,8 +98,9 @@ export let listDrafts = SlateTool.create(
         totalCount: result.count,
         limit: result.limit,
         offset: result.offset,
-        hasMore,
+        hasMore
       },
-      message: `Found **${result.count}** draft(s)${ctx.input.status ? ` with status "${ctx.input.status}"` : ''}. Showing ${drafts.length} result(s).`,
+      message: `Found **${result.count}** draft(s)${ctx.input.status ? ` with status "${ctx.input.status}"` : ''}. Showing ${drafts.length} result(s).`
     };
-  }).build();
+  })
+  .build();

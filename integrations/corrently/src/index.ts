@@ -33,7 +33,5 @@ export let provider = Slate.create({
     getTariffInfo,
     calculateCo2Offset
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

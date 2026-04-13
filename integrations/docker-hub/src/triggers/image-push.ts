@@ -3,44 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let imagePush = SlateTrigger.create(
-  spec,
-  {
-    name: 'Image Push',
-    key: 'image_push',
-    description: 'Triggers when a Docker image is pushed or a new tag is added to a repository. Requires a webhook to be configured on the repository.',
-  }
-)
-  .input(z.object({
-    pusher: z.string().describe('Username of the person who pushed the image.'),
-    tag: z.string().describe('Tag that was pushed.'),
-    pushedAt: z.number().describe('Unix timestamp of when the push occurred.'),
-    repositoryName: z.string().describe('Short name of the repository.'),
-    repoName: z.string().describe('Full repository name (namespace/name).'),
-    namespace: z.string().describe('Namespace of the repository.'),
-    description: z.string().describe('Short description of the repository.'),
-    fullDescription: z.string().describe('Full markdown description.'),
-    isPrivate: z.boolean().describe('Whether the repository is private.'),
-    isOfficial: z.boolean().describe('Whether this is an official Docker image.'),
-    starCount: z.number().describe('Number of stars on the repository.'),
-    repoUrl: z.string().describe('URL of the repository on Docker Hub.'),
-    callbackUrl: z.string().describe('Callback URL for acknowledging the webhook.'),
-  }))
-  .output(z.object({
-    pusher: z.string().describe('Username of the person who pushed the image.'),
-    tag: z.string().describe('Tag that was pushed.'),
-    pushedAt: z.string().describe('ISO timestamp of when the push occurred.'),
-    repositoryName: z.string().describe('Short name of the repository.'),
-    fullRepositoryName: z.string().describe('Full repository name (namespace/name).'),
-    namespace: z.string().describe('Namespace of the repository.'),
-    description: z.string().describe('Short description of the repository.'),
-    isPrivate: z.boolean().describe('Whether the repository is private.'),
-    isOfficial: z.boolean().describe('Whether this is an official Docker image.'),
-    starCount: z.number().describe('Number of stars on the repository.'),
-    repoUrl: z.string().describe('URL of the repository on Docker Hub.'),
-  }))
+export let imagePush = SlateTrigger.create(spec, {
+  name: 'Image Push',
+  key: 'image_push',
+  description:
+    'Triggers when a Docker image is pushed or a new tag is added to a repository. Requires a webhook to be configured on the repository.'
+})
+  .input(
+    z.object({
+      pusher: z.string().describe('Username of the person who pushed the image.'),
+      tag: z.string().describe('Tag that was pushed.'),
+      pushedAt: z.number().describe('Unix timestamp of when the push occurred.'),
+      repositoryName: z.string().describe('Short name of the repository.'),
+      repoName: z.string().describe('Full repository name (namespace/name).'),
+      namespace: z.string().describe('Namespace of the repository.'),
+      description: z.string().describe('Short description of the repository.'),
+      fullDescription: z.string().describe('Full markdown description.'),
+      isPrivate: z.boolean().describe('Whether the repository is private.'),
+      isOfficial: z.boolean().describe('Whether this is an official Docker image.'),
+      starCount: z.number().describe('Number of stars on the repository.'),
+      repoUrl: z.string().describe('URL of the repository on Docker Hub.'),
+      callbackUrl: z.string().describe('Callback URL for acknowledging the webhook.')
+    })
+  )
+  .output(
+    z.object({
+      pusher: z.string().describe('Username of the person who pushed the image.'),
+      tag: z.string().describe('Tag that was pushed.'),
+      pushedAt: z.string().describe('ISO timestamp of when the push occurred.'),
+      repositoryName: z.string().describe('Short name of the repository.'),
+      fullRepositoryName: z.string().describe('Full repository name (namespace/name).'),
+      namespace: z.string().describe('Namespace of the repository.'),
+      description: z.string().describe('Short description of the repository.'),
+      isPrivate: z.boolean().describe('Whether the repository is private.'),
+      isOfficial: z.boolean().describe('Whether this is an official Docker image.'),
+      starCount: z.number().describe('Number of stars on the repository.'),
+      repoUrl: z.string().describe('URL of the repository on Docker Hub.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let namespace = ctx.config.namespace || ctx.auth.username;
 
       // The webhookBaseUrl does not tell us which repo to register for.
@@ -56,22 +58,30 @@ export let imagePush = SlateTrigger.create(
       return {
         registrationDetails: {
           webhookBaseUrl: ctx.input.webhookBaseUrl,
-          namespace,
-        },
+          namespace
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       // If we stored webhook IDs during registration, clean them up
-      let details = ctx.input.registrationDetails as { webhookId?: number; namespace?: string; repositoryName?: string };
+      let details = ctx.input.registrationDetails as {
+        webhookId?: number;
+        namespace?: string;
+        repositoryName?: string;
+      };
       if (details.webhookId && details.namespace && details.repositoryName) {
         let client = new Client({ token: ctx.auth.token });
-        await client.deleteWebhook(details.namespace, details.repositoryName, details.webhookId);
+        await client.deleteWebhook(
+          details.namespace,
+          details.repositoryName,
+          details.webhookId
+        );
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as {
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as {
         callback_url?: string;
         push_data?: {
           pusher?: string;
@@ -112,13 +122,13 @@ export let imagePush = SlateTrigger.create(
             isOfficial: repo.is_official ?? false,
             starCount: repo.star_count ?? 0,
             repoUrl: repo.repo_url || '',
-            callbackUrl: data.callback_url || '',
-          },
-        ],
+            callbackUrl: data.callback_url || ''
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let pushedAtIso = ctx.input.pushedAt
         ? new Date(ctx.input.pushedAt * 1000).toISOString()
         : new Date().toISOString();
@@ -139,9 +149,9 @@ export let imagePush = SlateTrigger.create(
           isPrivate: ctx.input.isPrivate,
           isOfficial: ctx.input.isOfficial,
           starCount: ctx.input.starCount,
-          repoUrl: ctx.input.repoUrl,
-        },
+          repoUrl: ctx.input.repoUrl
+        }
       };
-    },
+    }
   })
   .build();

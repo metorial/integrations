@@ -14,10 +14,13 @@ Mailtrap uses API token-based authentication. There are several ways to send aut
 - All requests must be sent over HTTPS protocol.
 
 Example header:
+
 ```
 Authorization: Bearer your_api_token_here
 ```
+
 or:
+
 ```
 Api-Token: your_api_token_here
 ```
@@ -43,6 +46,7 @@ Email templates allow you to design, edit, and host HTML/text templates on Mailt
 ### Contact Management
 
 Mailtrap Contacts allows you to upload and store your contacts on the platform and organize them in different email lists to send targeted campaigns. Features include:
+
 - Import contacts via CSV, API, or third-party integrations. Organize contacts into targeted lists and segments.
 - Define custom variables like name, date of birth, or location to personalize campaigns.
 - Build dynamic segments that automatically update based on contact properties.

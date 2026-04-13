@@ -103,14 +103,17 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    name?: string;
-    title?: string;
-    organization?: string;
-    email?: string[];
-    telephone?: string[];
-    providerId?: string;
-  }): Promise<any> {
+  async updateContact(
+    contactId: string,
+    data: {
+      name?: string;
+      title?: string;
+      organization?: string;
+      email?: string[];
+      telephone?: string[];
+      providerId?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/contact/${contactId}`, data);
     return response.data;
   }

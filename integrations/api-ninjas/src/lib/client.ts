@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.api-ninjas.com',
+  baseURL: 'https://api.api-ninjas.com'
 });
 
 export class Client {
@@ -20,7 +20,7 @@ export class Client {
   async getStockPrice(ticker: string) {
     let res = await api.get('/v1/stockprice', {
       params: { ticker },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -28,7 +28,7 @@ export class Client {
   async getExchangeRate(pair: string) {
     let res = await api.get('/v1/exchangerate', {
       params: { pair },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -36,7 +36,7 @@ export class Client {
   async getCommodityPrice(name: string) {
     let res = await api.get('/v1/commodityprice', {
       params: { name },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -44,7 +44,7 @@ export class Client {
   async getCryptoPrice(symbol: string) {
     let res = await api.get('/v1/cryptoprice', {
       params: { symbol },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -54,7 +54,7 @@ export class Client {
   async getWeather(params: Record<string, string | number>) {
     let res = await api.get('/v1/weather', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -62,7 +62,7 @@ export class Client {
   async getAirQuality(params: Record<string, string | number>) {
     let res = await api.get('/v1/airquality', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -70,7 +70,7 @@ export class Client {
   async geocode(params: Record<string, string>) {
     let res = await api.get('/v1/geocoding', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -78,7 +78,7 @@ export class Client {
   async reverseGeocode(params: { lat: number; lon: number }) {
     let res = await api.get('/v1/reversegeocoding', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -86,7 +86,7 @@ export class Client {
   async getCountry(params: Record<string, string | number>) {
     let res = await api.get('/v1/country', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -94,7 +94,7 @@ export class Client {
   async getCity(params: Record<string, string | number>) {
     let res = await api.get('/v1/city', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -102,7 +102,7 @@ export class Client {
   async getWorldTime(params: Record<string, string | number>) {
     let res = await api.get('/v1/worldtime', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -112,7 +112,7 @@ export class Client {
   async getDictionary(word: string) {
     let res = await api.get('/v1/dictionary', {
       params: { word },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -120,7 +120,7 @@ export class Client {
   async getThesaurus(word: string) {
     let res = await api.get('/v1/thesaurus', {
       params: { word },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -128,18 +128,22 @@ export class Client {
   async getSentiment(text: string) {
     let res = await api.get('/v1/sentiment', {
       params: { text },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async getTextSimilarity(text1: string, text2: string) {
-    let res = await api.post('/v1/textsimilarity', {
-      text_1: text1,
-      text_2: text2,
-    }, {
-      headers: { ...this.headers(), 'Content-Type': 'application/json' },
-    });
+    let res = await api.post(
+      '/v1/textsimilarity',
+      {
+        text_1: text1,
+        text_2: text2
+      },
+      {
+        headers: { ...this.headers(), 'Content-Type': 'application/json' }
+      }
+    );
     return res.data;
   }
 
@@ -148,7 +152,7 @@ export class Client {
   async getNutrition(query: string) {
     let res = await api.get('/v1/nutrition', {
       params: { query },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -156,7 +160,7 @@ export class Client {
   async getExercises(params: Record<string, string | number>) {
     let res = await api.get('/v1/exercises', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -166,7 +170,7 @@ export class Client {
   async getQuotes(params: Record<string, string | number>) {
     let res = await api.get('/v2/quotes', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -174,7 +178,7 @@ export class Client {
   async getJokes(params?: Record<string, string | number>) {
     let res = await api.get('/v1/jokes', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -182,7 +186,7 @@ export class Client {
   async getTrivia(params?: Record<string, string | number>) {
     let res = await api.get('/v1/trivia', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -190,7 +194,7 @@ export class Client {
   async getHistoricalEvents(params: Record<string, string | number>) {
     let res = await api.get('/v1/historicalevents', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -198,7 +202,7 @@ export class Client {
   async getFacts(params?: Record<string, string | number>) {
     let res = await api.get('/v1/facts', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -208,7 +212,7 @@ export class Client {
   async getAnimals(name: string) {
     let res = await api.get('/v1/animals', {
       params: { name },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -218,7 +222,7 @@ export class Client {
   async getIpLookup(address: string) {
     let res = await api.get('/v1/iplookup', {
       params: { address },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -226,7 +230,7 @@ export class Client {
   async getDnsLookup(domain: string) {
     let res = await api.get('/v1/dnslookup', {
       params: { domain },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -234,7 +238,7 @@ export class Client {
   async getWhois(domain: string) {
     let res = await api.get('/v1/whois', {
       params: { domain },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -242,7 +246,7 @@ export class Client {
   async validateEmail(email: string) {
     let res = await api.get('/v1/emailvalidation', {
       params: { email },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -250,7 +254,7 @@ export class Client {
   async validatePhone(number: string) {
     let res = await api.get('/v1/validatephone', {
       params: { number },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -258,7 +262,7 @@ export class Client {
   async urlLookup(url: string) {
     let res = await api.get('/v1/urllookup', {
       params: { url },
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -268,7 +272,7 @@ export class Client {
   async getCars(params: Record<string, string | number>) {
     let res = await api.get('/v1/cars', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -276,7 +280,7 @@ export class Client {
   async getAircraft(params: Record<string, string | number>) {
     let res = await api.get('/v1/aircraft', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -286,7 +290,7 @@ export class Client {
   async getHolidays(params: Record<string, string | number>) {
     let res = await api.get('/v1/holidays', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -294,7 +298,7 @@ export class Client {
   async convertUnits(params: Record<string, string | number>) {
     let res = await api.get('/v1/convertcurrency', {
       params,
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }

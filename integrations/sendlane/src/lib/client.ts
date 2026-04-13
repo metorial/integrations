@@ -147,23 +147,26 @@ export class SendlaneClient {
     this.axios = createAxios({
       baseURL: 'https://api.sendlane.com/v2',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
   // ─── Contacts ──────────────────────────────────────────
 
-  async listContacts(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneContact>> {
+  async listContacts(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneContact>> {
     let response = await this.axios.get('/contacts', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -173,7 +176,12 @@ export class SendlaneClient {
     return body.data ?? body;
   }
 
-  async searchContacts(params: { email?: string; phone?: string; page?: number; perPage?: number }): Promise<PaginatedResponse<SendlaneContact>> {
+  async searchContacts(params: {
+    email?: string;
+    phone?: string;
+    page?: number;
+    perPage?: number;
+  }): Promise<PaginatedResponse<SendlaneContact>> {
     let queryParams: Record<string, any> = {};
     if (params.email) queryParams.email = params.email;
     if (params.phone) queryParams.phone = params.phone;
@@ -184,7 +192,7 @@ export class SendlaneClient {
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -194,25 +202,32 @@ export class SendlaneClient {
 
   // ─── Lists ─────────────────────────────────────────────
 
-  async listLists(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneList>> {
+  async listLists(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneList>> {
     let response = await this.axios.get('/lists', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
-  async getListContacts(listId: number, page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneContact>> {
+  async getListContacts(
+    listId: number,
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneContact>> {
     let response = await this.axios.get(`/lists/${listId}/contacts`, {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -239,14 +254,17 @@ export class SendlaneClient {
 
   // ─── Tags ──────────────────────────────────────────────
 
-  async listTags(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneTag>> {
+  async listTags(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneTag>> {
     let response = await this.axios.get('/tags', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -266,14 +284,17 @@ export class SendlaneClient {
 
   // ─── Custom Fields ─────────────────────────────────────
 
-  async listCustomFields(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneCustomField>> {
+  async listCustomFields(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneCustomField>> {
     let response = await this.axios.get('/custom-fields', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -283,39 +304,54 @@ export class SendlaneClient {
     return body.data ?? [];
   }
 
-  async updateContactCustomFields(contactId: number, customFields: Record<string, string>): Promise<void> {
-    await this.axios.put(`/contacts/${contactId}/custom-fields`, { custom_fields: customFields });
+  async updateContactCustomFields(
+    contactId: number,
+    customFields: Record<string, string>
+  ): Promise<void> {
+    await this.axios.put(`/contacts/${contactId}/custom-fields`, {
+      custom_fields: customFields
+    });
   }
 
   // ─── Campaigns ─────────────────────────────────────────
 
-  async listCampaigns(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneCampaign>> {
+  async listCampaigns(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneCampaign>> {
     let response = await this.axios.get('/campaigns', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
   // ─── Senders ───────────────────────────────────────────
 
-  async listSenders(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneSender>> {
+  async listSenders(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneSender>> {
     let response = await this.axios.get('/senders', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
   // ─── SMS Consent ───────────────────────────────────────
 
-  async updateSmsConsent(contactId: number, smsConsent: boolean, phone?: string): Promise<void> {
+  async updateSmsConsent(
+    contactId: number,
+    smsConsent: boolean,
+    phone?: string
+  ): Promise<void> {
     let body: Record<string, any> = { sms_consent: smsConsent };
     if (phone) body.phone = phone;
     await this.axios.put(`/contacts/${contactId}/sms-consent`, body);
@@ -323,14 +359,17 @@ export class SendlaneClient {
 
   // ─── Suppression ───────────────────────────────────────
 
-  async listSuppressed(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<{ email: string }>> {
+  async listSuppressed(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<{ email: string }>> {
     let response = await this.axios.get('/suppression', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -344,14 +383,17 @@ export class SendlaneClient {
 
   // ─── Unsubscribed ──────────────────────────────────────
 
-  async listUnsubscribed(page: number = 1, perPage: number = 25): Promise<PaginatedResponse<SendlaneContact>> {
+  async listUnsubscribed(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResponse<SendlaneContact>> {
     let response = await this.axios.get('/contacts/unsubscribed', {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage }
     });
     let body = response.data as any;
     return {
       data: body.data ?? [],
-      pagination: this.extractPagination(body),
+      pagination: this.extractPagination(body)
     };
   }
 
@@ -363,7 +405,7 @@ export class SendlaneClient {
       currentPage: pagination.current_page ?? 1,
       lastPage: pagination.last_page ?? 1,
       perPage: pagination.per_page ?? 25,
-      total: pagination.total ?? 0,
+      total: pagination.total ?? 0
     };
   }
 }

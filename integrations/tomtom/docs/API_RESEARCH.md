@@ -13,6 +13,7 @@ The Traffic Flow API provides real-time observed speeds and travel times for all
 **Purpose:** Get traffic flow data for the road closest to given coordinates.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/traffic/services/{versionNumber}/flowSegmentData/{style}/{zoom}/{format}
 ```
@@ -38,11 +39,13 @@ https://api.tomtom.com/traffic/services/{versionNumber}/flowSegmentData/{style}/
 | jsonp | No | string | - | JSONP callback method name (for jsonp format only) |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=YOUR_API_KEY&point=52.41072,4.84239&unit=kmph
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "flowSegmentData": {
@@ -64,6 +67,7 @@ GET https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?k
 ```
 
 **Response Fields:**
+
 - `frc`: Functional Road Class (FRC0-FRC7)
 - `currentSpeed`: Current average speed in specified unit
 - `freeFlowSpeed`: Speed under ideal conditions
@@ -74,6 +78,7 @@ GET https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?k
 - `coordinates`: Array of location coordinates
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request (missing required parameters)
 - 401: Unauthorized (invalid API key)
@@ -90,6 +95,7 @@ The Traffic Incidents API provides information about traffic jams, incidents, co
 **Purpose:** Get detailed information about traffic incidents in a bounding box or by specific incident IDs.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/traffic/services/{versionNumber}/incidentDetails
 ```
@@ -113,14 +119,16 @@ https://api.tomtom.com/traffic/services/{versionNumber}/incidentDetails
 | categoryFilter | No | string | Incident types (0-11, 14) | Both |
 | timeValidityFilter | No | string | `present` or `future` | Both |
 
-*Either bbox or ids is required
+\*Either bbox or ids is required
 
 **Example GET Request:**
+
 ```
 GET https://api.tomtom.com/traffic/services/5/incidentDetails?key=YOUR_API_KEY&bbox=4.8396,52.3602,4.8951,52.3891&language=en-GB
 ```
 
 **Example POST Request:**
+
 ```
 POST https://api.tomtom.com/traffic/services/5/incidentDetails?key=YOUR_API_KEY&language=en-GB
 
@@ -131,6 +139,7 @@ Request Body:
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "incidents": [
@@ -165,6 +174,7 @@ Request Body:
 ```
 
 **Response Fields (properties object):**
+
 - `id`: Unique incident identifier
 - `iconCategory`: Incident type (0-14)
 - `magnitudeOfDelay`: Estimated delay in minutes
@@ -179,6 +189,7 @@ Request Body:
 - `roadClosed`: Boolean indicating if road is closed
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request
 - 401: Unauthorized
@@ -197,6 +208,7 @@ The Geofencing API allows you to define virtual barriers (fences) and determine 
 **Purpose:** Retrieve all projects associated with the account.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/projects
 ```
@@ -209,11 +221,13 @@ https://api.tomtom.com/geofencing/1/projects
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/geofencing/1/projects?key=YOUR_API_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "projects": [
@@ -230,6 +244,7 @@ GET https://api.tomtom.com/geofencing/1/projects?key=YOUR_API_KEY
 ```
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request
 - 401: Unauthorized
@@ -241,6 +256,7 @@ GET https://api.tomtom.com/geofencing/1/projects?key=YOUR_API_KEY
 **Purpose:** Retrieve all fences and details for a specific project.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/projects/{projectId}
 ```
@@ -258,11 +274,13 @@ https://api.tomtom.com/geofencing/1/projects/{projectId}
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/geofencing/1/projects/project_uuid?key=YOUR_API_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "id": "project_uuid",
@@ -283,6 +301,7 @@ GET https://api.tomtom.com/geofencing/1/projects/project_uuid?key=YOUR_API_KEY
 ```
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 404: Project not found
 - 401: Unauthorized
@@ -296,6 +315,7 @@ GET https://api.tomtom.com/geofencing/1/projects/project_uuid?key=YOUR_API_KEY
 **Purpose:** Retrieve all details for a specific fence.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/fences/{fenceId}
 ```
@@ -314,11 +334,13 @@ https://api.tomtom.com/geofencing/1/fences/{fenceId}
 | showGeoJson | No | boolean | Include GeoJSON representation (default: false) |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/geofencing/1/fences/fence_uuid?key=YOUR_API_KEY&showGeoJson=true
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "id": "fence_uuid",
@@ -338,6 +360,7 @@ GET https://api.tomtom.com/geofencing/1/fences/fence_uuid?key=YOUR_API_KEY&showG
 ```
 
 **Response Fields:**
+
 - `id`: Fence identifier
 - `name`: Fence name
 - `type`: GeoJSON type (always "Feature")
@@ -348,6 +371,7 @@ GET https://api.tomtom.com/geofencing/1/fences/fence_uuid?key=YOUR_API_KEY&showG
 - `properties`: Custom fence attributes
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 404: Fence not found
 - 401: Unauthorized
@@ -361,6 +385,7 @@ GET https://api.tomtom.com/geofencing/1/fences/fence_uuid?key=YOUR_API_KEY&showG
 **Purpose:** Get a report of which fences an object is inside/outside, with optional transition detection.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/report/{projectId}
 ```
@@ -383,11 +408,13 @@ https://api.tomtom.com/geofencing/1/report/{projectId}
 | timestamp | No | ISO 8601 | Report timestamp (POST only) | POST |
 
 **Example GET Request:**
+
 ```
 GET https://api.tomtom.com/geofencing/1/report/project_uuid?key=YOUR_API_KEY&point=4.8432,52.3745,100&object=object_uuid&range=0
 ```
 
 **Example POST Request:**
+
 ```
 POST https://api.tomtom.com/geofencing/1/report/project_uuid?key=YOUR_API_KEY&point=4.8432,52.3745,100&object=object_uuid
 
@@ -395,6 +422,7 @@ No request body required.
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "summary": {
@@ -426,7 +454,7 @@ No request body required.
         "properties": {
           "name": "Service Area",
           "distance": 1500,
-          "nearestBorderPoint": [4.8500, 52.3800]
+          "nearestBorderPoint": [4.85, 52.38]
         }
       }
     ]
@@ -435,6 +463,7 @@ No request body required.
 ```
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request
 - 401: Unauthorized
@@ -449,6 +478,7 @@ No request body required.
 **Purpose:** Get a list of all tracked objects in the account.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/objects
 ```
@@ -461,11 +491,13 @@ https://api.tomtom.com/geofencing/1/objects
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/geofencing/1/objects?key=YOUR_API_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "objects": [
@@ -488,6 +520,7 @@ GET https://api.tomtom.com/geofencing/1/objects?key=YOUR_API_KEY
 **Purpose:** Retrieve all details for a specific object.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/objects/{objectId}
 ```
@@ -505,11 +538,13 @@ https://api.tomtom.com/geofencing/1/objects/{objectId}
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/geofencing/1/objects/object_uuid?key=YOUR_API_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "id": "object_uuid",
@@ -529,6 +564,7 @@ GET https://api.tomtom.com/geofencing/1/objects/object_uuid?key=YOUR_API_KEY
 **Purpose:** Create a new tracked object.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/objects
 ```
@@ -542,6 +578,7 @@ https://api.tomtom.com/geofencing/1/objects
 | adminKey | Yes | string | Your Admin Key |
 
 **Request Body (JSON):**
+
 ```json
 {
   "name": "Vehicle-001",
@@ -555,6 +592,7 @@ https://api.tomtom.com/geofencing/1/objects
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "id": "object_uuid",
@@ -569,6 +607,7 @@ https://api.tomtom.com/geofencing/1/objects
 ```
 
 **HTTP Status Codes:**
+
 - 201: Created
 - 400: Bad request
 - 401: Unauthorized
@@ -580,6 +619,7 @@ https://api.tomtom.com/geofencing/1/objects
 **Purpose:** Update an existing object's attributes.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/objects/{objectId}
 ```
@@ -598,6 +638,7 @@ https://api.tomtom.com/geofencing/1/objects/{objectId}
 | adminKey | Yes | string | Your Admin Key |
 
 **Request Body (JSON):**
+
 ```json
 {
   "name": "Vehicle-001-Updated",
@@ -617,6 +658,7 @@ https://api.tomtom.com/geofencing/1/objects/{objectId}
 **Purpose:** Remove a tracked object.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/geofencing/1/objects/{objectId}
 ```
@@ -635,11 +677,13 @@ https://api.tomtom.com/geofencing/1/objects/{objectId}
 | adminKey | Yes | string | Your Admin Key |
 
 **Example Request:**
+
 ```
 DELETE https://api.tomtom.com/geofencing/1/objects/object_uuid?key=YOUR_API_KEY&adminKey=YOUR_ADMIN_KEY
 ```
 
 **HTTP Status Codes:**
+
 - 204: No Content (successful deletion)
 - 404: Object not found
 - 401: Unauthorized
@@ -655,6 +699,7 @@ The Location History API tracks and manages the locations of multiple objects ov
 Requires both API Key and Admin Key.
 
 **Register/Configure Admin Key:**
+
 ```
 POST https://api.tomtom.com/locationHistory/1/register?key=YOUR_API_KEY
 {
@@ -673,6 +718,7 @@ Returns Admin Key for use in subsequent requests.
 **Purpose:** Report an object's current location.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/locationHistory/1/history/positions
 ```
@@ -685,6 +731,7 @@ https://api.tomtom.com/locationHistory/1/history/positions
 | key | Yes | string | Your API Key |
 
 **Request Body (JSON - GeoJSON Feature):**
+
 ```json
 {
   "type": "Feature",
@@ -698,6 +745,7 @@ https://api.tomtom.com/locationHistory/1/history/positions
 ```
 
 **Request Fields:**
+
 - `type`: Always "Feature"
 - `geometry.type`: Always "Point"
 - `geometry.coordinates`: [longitude, latitude, altitude (optional)]
@@ -705,12 +753,14 @@ https://api.tomtom.com/locationHistory/1/history/positions
 - `timestamp`: ISO 8601 format (optional; defaults to server time)
 
 **Response:**
+
 - Status 201: Created (no response body)
 - Status 400: Bad request
 - Status 403: No consent for data storage
 - Status 404: Object not found
 
 **Example Request:**
+
 ```
 POST https://api.tomtom.com/locationHistory/1/history/positions?key=YOUR_API_KEY
 
@@ -734,6 +784,7 @@ POST https://api.tomtom.com/locationHistory/1/history/positions?key=YOUR_API_KEY
 **Purpose:** Retrieve historical positions for a specific object within a time range.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/locationHistory/1/history/positions/{objectId}
 ```
@@ -756,11 +807,13 @@ https://api.tomtom.com/locationHistory/1/history/positions/{objectId}
 | pageNumber | No | integer | 1 | Page number (≥1) |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/locationHistory/1/history/positions/object_uuid?key=YOUR_API_KEY&adminKey=YOUR_ADMIN_KEY&from=2024-03-10T00:00:00&to=2024-03-14T23:59:59&maxResults=50&pageNumber=1
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "summary": {
@@ -796,6 +849,7 @@ GET https://api.tomtom.com/locationHistory/1/history/positions/object_uuid?key=Y
 ```
 
 **Response Fields:**
+
 - `timestamp`: Server-recorded time
 - `userTimestamp`: User-provided time (or server timestamp if not set)
 - `estimatedSpeed`: Speed in km/h
@@ -805,6 +859,7 @@ GET https://api.tomtom.com/locationHistory/1/history/positions/object_uuid?key=Y
 **Pagination Note:** Maximum time range between timestamps is 24 hours.
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request (invalid date format, bad order, wrong types)
 - 403: Forbidden (invalid Admin Key)
@@ -817,6 +872,7 @@ GET https://api.tomtom.com/locationHistory/1/history/positions/object_uuid?key=Y
 **Purpose:** Retrieve the most recent position of an object.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/locationHistory/1/history/positions/{objectId}/latest
 ```
@@ -835,11 +891,13 @@ https://api.tomtom.com/locationHistory/1/history/positions/{objectId}/latest
 | adminKey | Yes | string | Your Admin Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/locationHistory/1/history/positions/object_uuid/latest?key=YOUR_API_KEY&adminKey=YOUR_ADMIN_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "objectId": "object_uuid",
@@ -873,6 +931,7 @@ The Notifications API manages communication from TomTom APIs to users via webhoo
 **Purpose:** List account and privacy settings.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/settings
 ```
@@ -885,11 +944,13 @@ https://api.tomtom.com/notifications/1/settings
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/notifications/1/settings?key=YOUR_API_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "privacySettings": {
@@ -900,10 +961,12 @@ GET https://api.tomtom.com/notifications/1/settings?key=YOUR_API_KEY
 ```
 
 **Response Fields:**
+
 - `deleteAllHistoryMessagesBefore`: ISO 8601 timestamp (only if deletion requested)
 - `deleteAllHistoryMessagesBeforeStatus`: Status - "PROCESSING" or "DELETED"
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request (missing key)
 
@@ -916,6 +979,7 @@ GET https://api.tomtom.com/notifications/1/settings?key=YOUR_API_KEY
 **Purpose:** Create a new contact group for notifications.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/groups
 ```
@@ -928,6 +992,7 @@ https://api.tomtom.com/notifications/1/groups
 | key | Yes | string | Your API Key |
 
 **Request Body (JSON):**
+
 ```json
 {
   "name": "Emergency Alerts",
@@ -935,20 +1000,19 @@ https://api.tomtom.com/notifications/1/groups
     "https://example.com/webhook/geofence",
     "https://backup.example.com/webhook/geofence"
   ],
-  "emails": [
-    "admin@example.com",
-    "operations@example.com"
-  ]
+  "emails": ["admin@example.com", "operations@example.com"]
 }
 ```
 
 **Request Constraints:**
+
 - `name`: Optional, max 255 characters
 - `webhookUrls`: Optional, max 20 URLs
 - `emails`: Optional, max 20 addresses
 - At least one notification method must be provided
 
 **Response Body (JSON):**
+
 ```json
 {
   "id": "group_uuid",
@@ -957,14 +1021,12 @@ https://api.tomtom.com/notifications/1/groups
     "https://example.com/webhook/geofence",
     "https://backup.example.com/webhook/geofence"
   ],
-  "emails": [
-    "admin@example.com",
-    "operations@example.com"
-  ]
+  "emails": ["admin@example.com", "operations@example.com"]
 }
 ```
 
 **HTTP Status Codes:**
+
 - 201: Created
 - 400: Bad request (name too long, limit exceeded, no notification methods)
 
@@ -975,6 +1037,7 @@ https://api.tomtom.com/notifications/1/groups
 **Purpose:** List all contact groups.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/groups
 ```
@@ -989,11 +1052,13 @@ https://api.tomtom.com/notifications/1/groups
 | pageNumber | No | integer | 1 | Page number (≥1) |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/notifications/1/groups?key=YOUR_API_KEY&maxResults=20&pageNumber=1
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "groups": [
@@ -1015,6 +1080,7 @@ GET https://api.tomtom.com/notifications/1/groups?key=YOUR_API_KEY&maxResults=20
 ```
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request (invalid pagination)
 
@@ -1025,6 +1091,7 @@ GET https://api.tomtom.com/notifications/1/groups?key=YOUR_API_KEY&maxResults=20
 **Purpose:** Retrieve details for a specific contact group.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/groups/{groupId}
 ```
@@ -1042,11 +1109,13 @@ https://api.tomtom.com/notifications/1/groups/{groupId}
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/notifications/1/groups/group_uuid?key=YOUR_API_KEY
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "id": "group_uuid",
@@ -1055,10 +1124,7 @@ GET https://api.tomtom.com/notifications/1/groups/group_uuid?key=YOUR_API_KEY
     "https://example.com/webhook/geofence",
     "https://backup.example.com/webhook/geofence"
   ],
-  "emails": [
-    "admin@example.com",
-    "operations@example.com"
-  ]
+  "emails": ["admin@example.com", "operations@example.com"]
 }
 ```
 
@@ -1069,6 +1135,7 @@ GET https://api.tomtom.com/notifications/1/groups/group_uuid?key=YOUR_API_KEY
 **Purpose:** Update an entire contact group.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/groups/{groupId}
 ```
@@ -1086,21 +1153,19 @@ https://api.tomtom.com/notifications/1/groups/{groupId}
 | key | Yes | string | Your API Key |
 
 **Request Body (JSON):**
+
 ```json
 {
   "name": "Critical Alerts Updated",
-  "webhookUrls": [
-    "https://newexample.com/webhook/geofence"
-  ],
-  "emails": [
-    "newemail@example.com"
-  ]
+  "webhookUrls": ["https://newexample.com/webhook/geofence"],
+  "emails": ["newemail@example.com"]
 }
 ```
 
 **Response Body:** Same as Get Contact Group Details
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request
 - 404: Group not found
@@ -1112,6 +1177,7 @@ https://api.tomtom.com/notifications/1/groups/{groupId}
 **Purpose:** Partially update a contact group (only specified fields).
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/groups/{groupId}
 ```
@@ -1129,11 +1195,10 @@ https://api.tomtom.com/notifications/1/groups/{groupId}
 | key | Yes | string | Your API Key |
 
 **Request Body (JSON - partial):**
+
 ```json
 {
-  "webhookUrls": [
-    "https://newexample.com/webhook/geofence"
-  ]
+  "webhookUrls": ["https://newexample.com/webhook/geofence"]
 }
 ```
 
@@ -1146,6 +1211,7 @@ https://api.tomtom.com/notifications/1/groups/{groupId}
 **Purpose:** Delete a contact group.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/groups/{groupId}
 ```
@@ -1163,11 +1229,13 @@ https://api.tomtom.com/notifications/1/groups/{groupId}
 | key | Yes | string | Your API Key |
 
 **Example Request:**
+
 ```
 DELETE https://api.tomtom.com/notifications/1/groups/group_uuid?key=YOUR_API_KEY
 ```
 
 **HTTP Status Codes:**
+
 - 204: No Content (successful deletion)
 - 404: Group not found
 - 401: Unauthorized
@@ -1181,6 +1249,7 @@ DELETE https://api.tomtom.com/notifications/1/groups/group_uuid?key=YOUR_API_KEY
 **Purpose:** Retrieve history of sent notifications (stored for 7 days).
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/history
 ```
@@ -1197,11 +1266,13 @@ https://api.tomtom.com/notifications/1/history
 | pageNumber | No | integer | 1 | Page number (≥1) |
 
 **Example Request:**
+
 ```
 GET https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-03-10T00:00:00&to=2024-03-14T23:59:59&maxResults=50
 ```
 
 **Response Body (JSON):**
+
 ```json
 {
   "summary": {
@@ -1245,6 +1316,7 @@ GET https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-03
 ```
 
 **Response Fields:**
+
 - `title`: Notification title
 - `body`: Notification message body
 - `contact.type`: "WEBHOOK" or "EMAIL"
@@ -1254,6 +1326,7 @@ GET https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-03
 - `sendDate`: ISO 8601 timestamp
 
 **HTTP Status Codes:**
+
 - 200: OK
 - 400: Bad request (incorrect datetime format)
 
@@ -1264,6 +1337,7 @@ GET https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&from=2024-03
 **Purpose:** Clear notification history before a specified date.
 
 **URL Pattern:**
+
 ```
 https://api.tomtom.com/notifications/1/history
 ```
@@ -1277,11 +1351,13 @@ https://api.tomtom.com/notifications/1/history
 | before | Yes | ISO 8601 | Clear notifications before this timestamp |
 
 **Example Request:**
+
 ```
 DELETE https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&before=2024-03-10T00:00:00
 ```
 
 **HTTP Status Codes:**
+
 - 204: No Content (successful deletion)
 - 400: Bad request
 
@@ -1290,18 +1366,21 @@ DELETE https://api.tomtom.com/notifications/1/history?key=YOUR_API_KEY&before=20
 ## Authentication Summary
 
 ### API Key (Public)
+
 - Used in query parameter: `key=YOUR_API_KEY`
 - Required for most endpoints
 - Generate in TomTom Developer Portal
 - Can be scoped to specific products
 
 ### Admin Key (Private)
+
 - Used in query parameter: `adminKey=YOUR_ADMIN_KEY`
 - Required for management operations (create, edit, delete)
 - Required for Geofencing and Location History management
 - Generated via registration endpoint
 
 **Geofencing Registration:**
+
 ```
 POST https://api.tomtom.com/geofencing/1/register?key=YOUR_API_KEY
 {
@@ -1310,6 +1389,7 @@ POST https://api.tomtom.com/geofencing/1/register?key=YOUR_API_KEY
 ```
 
 **Location History Registration:**
+
 ```
 POST https://api.tomtom.com/locationHistory/1/register?key=YOUR_API_KEY
 {
@@ -1321,16 +1401,16 @@ POST https://api.tomtom.com/locationHistory/1/register?key=YOUR_API_KEY
 
 ## Common Response Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | OK - Request successful |
-| 201 | Created - Resource created successfully |
-| 204 | No Content - Successful deletion |
-| 400 | Bad Request - Invalid parameters or format |
-| 401 | Unauthorized - Invalid API key |
-| 403 | Forbidden - No permission (invalid Admin Key) |
-| 404 | Not Found - Resource doesn't exist |
-| 500 | Internal Server Error |
+| Code | Meaning                                       |
+| ---- | --------------------------------------------- |
+| 200  | OK - Request successful                       |
+| 201  | Created - Resource created successfully       |
+| 204  | No Content - Successful deletion              |
+| 400  | Bad Request - Invalid parameters or format    |
+| 401  | Unauthorized - Invalid API key                |
+| 403  | Forbidden - No permission (invalid Admin Key) |
+| 404  | Not Found - Resource doesn't exist            |
+| 500  | Internal Server Error                         |
 
 ---
 
@@ -1356,6 +1436,7 @@ POST https://api.tomtom.com/locationHistory/1/register?key=YOUR_API_KEY
 ## References
 
 Sources:
+
 - [Traffic Flow API Documentation](https://developer.tomtom.com/traffic-api/documentation/tomtom-maps/traffic-flow/flow-segment-data)
 - [Traffic Incidents API Documentation](https://developer.tomtom.com/traffic-api/documentation/tomtom-maps/traffic-incidents/incident-details)
 - [Geofencing API Introduction](https://developer.tomtom.com/geofencing-api/documentation/product-information/introduction)

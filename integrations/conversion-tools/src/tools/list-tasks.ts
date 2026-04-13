@@ -16,33 +16,37 @@ let taskDetailSchema = z.object({
   resultFileName: z.string().nullable().describe('Name of the result file'),
   resultFileId: z.string().nullable().describe('File ID of the result file'),
   retentionMode: z.string().describe('File retention mode (standard_24h or ttl_15m)'),
-  dateExpires: z.string().nullable().describe('ISO timestamp when the task files expire'),
+  dateExpires: z.string().nullable().describe('ISO timestamp when the task files expire')
 });
 
-export let listTasks = SlateTool.create(
-  spec,
-  {
-    name: 'List Tasks',
-    key: 'list_tasks',
-    description: `Lists up to 50 most recent conversion tasks. Optionally filter by status to find pending, running, successful, or failed tasks.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTasks = SlateTool.create(spec, {
+  name: 'List Tasks',
+  key: 'list_tasks',
+  description: `Lists up to 50 most recent conversion tasks. Optionally filter by status to find pending, running, successful, or failed tasks.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    status: z.enum(['PENDING', 'RUNNING', 'SUCCESS', 'ERROR']).optional().describe('Filter tasks by status'),
-  }))
-  .output(z.object({
-    tasks: z.array(taskDetailSchema).describe('List of conversion tasks'),
-    totalCount: z.number().describe('Number of tasks returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['PENDING', 'RUNNING', 'SUCCESS', 'ERROR'])
+        .optional()
+        .describe('Filter tasks by status')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskDetailSchema).describe('List of conversion tasks'),
+      totalCount: z.number().describe('Number of tasks returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let tasks = await client.listTasks(ctx.input.status);
 
-    let mappedTasks = tasks.map((t) => ({
+    let mappedTasks = tasks.map(t => ({
       taskId: t.id,
       conversionType: t.type,
       status: t.status,
@@ -55,7 +59,7 @@ export let listTasks = SlateTool.create(
       resultFileName: t.fileResult?.name ?? null,
       resultFileId: t.fileResult?.id ?? null,
       retentionMode: t.retentionMode,
-      dateExpires: t.dateExpires,
+      dateExpires: t.dateExpires
     }));
 
     let statusFilter = ctx.input.status ? ` with status **${ctx.input.status}**` : '';
@@ -63,9 +67,9 @@ export let listTasks = SlateTool.create(
     return {
       output: {
         tasks: mappedTasks,
-        totalCount: mappedTasks.length,
+        totalCount: mappedTasks.length
       },
-      message: `Found **${mappedTasks.length}** task(s)${statusFilter}.`,
+      message: `Found **${mappedTasks.length}** task(s)${statusFilter}.`
     };
   })
   .build();

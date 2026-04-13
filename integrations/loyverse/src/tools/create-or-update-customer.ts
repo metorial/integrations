@@ -3,36 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createOrUpdateCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Create or Update Customer',
-    key: 'create_or_update_customer',
-    description: `Create a new customer or update an existing one. If a **customerId** is provided, the customer is updated; otherwise a new customer is created. Customers can be looked up by email or phone number using the List Customers tool before updating.`,
-  }
-)
-  .input(z.object({
-    customerId: z.string().optional().describe('Customer ID to update; omit to create a new customer'),
-    customerName: z.string().optional().describe('Full name of the customer'),
-    email: z.string().optional().describe('Email address'),
-    phoneNumber: z.string().optional().describe('Phone number'),
-    address: z.string().optional().describe('Street address'),
-    city: z.string().optional().describe('City'),
-    region: z.string().optional().describe('State or region'),
-    postalCode: z.string().optional().describe('Postal/ZIP code'),
-    countryCode: z.string().optional().describe('Country code (e.g., US, GB)'),
-    customerCode: z.string().optional().describe('Customer loyalty code'),
-    note: z.string().optional().describe('Note about the customer'),
-  }))
-  .output(z.object({
-    customerId: z.string().describe('ID of the created/updated customer'),
-    customerName: z.string().nullable().optional().describe('Customer name'),
-    email: z.string().nullable().optional().describe('Email address'),
-    phoneNumber: z.string().nullable().optional().describe('Phone number'),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createOrUpdateCustomer = SlateTool.create(spec, {
+  name: 'Create or Update Customer',
+  key: 'create_or_update_customer',
+  description: `Create a new customer or update an existing one. If a **customerId** is provided, the customer is updated; otherwise a new customer is created. Customers can be looked up by email or phone number using the List Customers tool before updating.`
+})
+  .input(
+    z.object({
+      customerId: z
+        .string()
+        .optional()
+        .describe('Customer ID to update; omit to create a new customer'),
+      customerName: z.string().optional().describe('Full name of the customer'),
+      email: z.string().optional().describe('Email address'),
+      phoneNumber: z.string().optional().describe('Phone number'),
+      address: z.string().optional().describe('Street address'),
+      city: z.string().optional().describe('City'),
+      region: z.string().optional().describe('State or region'),
+      postalCode: z.string().optional().describe('Postal/ZIP code'),
+      countryCode: z.string().optional().describe('Country code (e.g., US, GB)'),
+      customerCode: z.string().optional().describe('Customer loyalty code'),
+      note: z.string().optional().describe('Note about the customer')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().describe('ID of the created/updated customer'),
+      customerName: z.string().nullable().optional().describe('Customer name'),
+      email: z.string().nullable().optional().describe('Email address'),
+      phoneNumber: z.string().nullable().optional().describe('Phone number'),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: any = {};
@@ -58,9 +62,9 @@ export let createOrUpdateCustomer = SlateTool.create(
         email: result.email,
         phoneNumber: result.phone_number,
         createdAt: result.created_at,
-        updatedAt: result.updated_at,
+        updatedAt: result.updated_at
       },
-      message: `${isUpdate ? 'Updated' : 'Created'} customer **${result.name ?? result.id}**.`,
+      message: `${isUpdate ? 'Updated' : 'Created'} customer **${result.name ?? result.id}**.`
     };
   })
   .build();

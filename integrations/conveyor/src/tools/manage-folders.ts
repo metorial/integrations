@@ -12,22 +12,21 @@ let folderSchema = z.object({
   updatedAt: z.string().describe('When the folder was last updated')
 });
 
-export let listFolders = SlateTool.create(
-  spec,
-  {
-    name: 'List Folders',
-    key: 'list_folders',
-    description: `Retrieve all folders in your Trust Center. Folders organize documents and can be used when uploading or updating documents.`,
-    tags: {
-      readOnly: true
-    }
+export let listFolders = SlateTool.create(spec, {
+  name: 'List Folders',
+  key: 'list_folders',
+  description: `Retrieve all folders in your Trust Center. Folders organize documents and can be used when uploading or updating documents.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    folders: z.array(folderSchema).describe('List of folders')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      folders: z.array(folderSchema).describe('List of folders')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConveyorClient({ token: ctx.auth.token });
 
     let data = await client.listFolders();
@@ -44,21 +43,21 @@ export let listFolders = SlateTool.create(
       output: { folders },
       message: `Found **${folders.length}** folders.`
     };
-  }).build();
+  })
+  .build();
 
-export let createFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Create Folder',
-    key: 'create_folder',
-    description: `Create a new folder in your Trust Center to organize documents. Returns the created folder with its ID, which can be used when uploading documents.`
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Name for the new folder')
-  }))
+export let createFolder = SlateTool.create(spec, {
+  name: 'Create Folder',
+  key: 'create_folder',
+  description: `Create a new folder in your Trust Center to organize documents. Returns the created folder with its ID, which can be used when uploading documents.`
+})
+  .input(
+    z.object({
+      name: z.string().describe('Name for the new folder')
+    })
+  )
   .output(folderSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ConveyorClient({ token: ctx.auth.token });
 
     let f = await client.createFolder(ctx.input.name);
@@ -74,26 +73,28 @@ export let createFolder = SlateTool.create(
       },
       message: `Folder **"${f.name}"** created with ID \`${f.id}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Folder',
-    key: 'delete_folder',
-    description: `Delete a folder from your Trust Center. This removes the folder but does not delete the documents within it.`,
-    tags: {
-      destructive: true
-    }
+export let deleteFolder = SlateTool.create(spec, {
+  name: 'Delete Folder',
+  key: 'delete_folder',
+  description: `Delete a folder from your Trust Center. This removes the folder but does not delete the documents within it.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    folderId: z.string().describe('ID of the folder to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the folder was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      folderId: z.string().describe('ID of the folder to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the folder was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConveyorClient({ token: ctx.auth.token });
     await client.deleteFolder(ctx.input.folderId);
 
@@ -101,4 +102,5 @@ export let deleteFolder = SlateTool.create(
       output: { deleted: true },
       message: `Folder \`${ctx.input.folderId}\` has been **deleted**.`
     };
-  }).build();
+  })
+  .build();

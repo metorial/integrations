@@ -3,48 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newArticlesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Articles',
-    key: 'new_articles',
-    description: 'Triggers when new news articles matching specified search criteria are published. Polls periodically for new articles and emits each new article as an event.',
-  }
-)
-  .input(z.object({
-    articleId: z.number().describe('Unique ID of the news article'),
-    title: z.string().describe('Article headline'),
-    text: z.string().describe('Full text of the article'),
-    summary: z.string().describe('Short summary'),
-    url: z.string().describe('URL to the original article'),
-    image: z.string().nullable().describe('Main image URL'),
-    publishDate: z.string().describe('When the article was published'),
-    authors: z.array(z.string()).describe('Article authors'),
-    category: z.string().nullable().describe('Article category'),
-    language: z.string().describe('Language code'),
-    sourceCountry: z.string().describe('Source country code'),
-    sentiment: z.number().nullable().describe('Sentiment score'),
-  }))
-  .output(z.object({
-    articleId: z.number().describe('Unique ID of the news article'),
-    title: z.string().describe('Article headline'),
-    text: z.string().describe('Full text of the article'),
-    summary: z.string().describe('Short summary'),
-    url: z.string().describe('URL to the original article'),
-    image: z.string().nullable().describe('Main image URL'),
-    publishDate: z.string().describe('When the article was published'),
-    authors: z.array(z.string()).describe('Article authors'),
-    category: z.string().nullable().describe('Article category'),
-    language: z.string().describe('Language code'),
-    sourceCountry: z.string().describe('Source country code'),
-    sentiment: z.number().nullable().describe('Sentiment score'),
-  }))
+export let newArticlesTrigger = SlateTrigger.create(spec, {
+  name: 'New Articles',
+  key: 'new_articles',
+  description:
+    'Triggers when new news articles matching specified search criteria are published. Polls periodically for new articles and emits each new article as an event.'
+})
+  .input(
+    z.object({
+      articleId: z.number().describe('Unique ID of the news article'),
+      title: z.string().describe('Article headline'),
+      text: z.string().describe('Full text of the article'),
+      summary: z.string().describe('Short summary'),
+      url: z.string().describe('URL to the original article'),
+      image: z.string().nullable().describe('Main image URL'),
+      publishDate: z.string().describe('When the article was published'),
+      authors: z.array(z.string()).describe('Article authors'),
+      category: z.string().nullable().describe('Article category'),
+      language: z.string().describe('Language code'),
+      sourceCountry: z.string().describe('Source country code'),
+      sentiment: z.number().nullable().describe('Sentiment score')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.number().describe('Unique ID of the news article'),
+      title: z.string().describe('Article headline'),
+      text: z.string().describe('Full text of the article'),
+      summary: z.string().describe('Short summary'),
+      url: z.string().describe('URL to the original article'),
+      image: z.string().nullable().describe('Main image URL'),
+      publishDate: z.string().describe('When the article was published'),
+      authors: z.array(z.string()).describe('Article authors'),
+      category: z.string().nullable().describe('Article category'),
+      language: z.string().describe('Language code'),
+      sourceCountry: z.string().describe('Source country code'),
+      sentiment: z.number().nullable().describe('Sentiment score')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPollDate = ctx.state?.lastPollDate as string | undefined;
@@ -54,7 +56,7 @@ export let newArticlesTrigger = SlateTrigger.create(
         language: 'en',
         sort: 'publish-time',
         sortDirection: 'DESC',
-        number: 50,
+        number: 50
       };
 
       if (lastPollDate) {
@@ -63,7 +65,7 @@ export let newArticlesTrigger = SlateTrigger.create(
 
       let result = await client.searchNews(searchParams);
 
-      let inputs = (result.news || []).map((article) => ({
+      let inputs = (result.news || []).map(article => ({
         articleId: article.id,
         title: article.title,
         text: article.text,
@@ -75,18 +77,18 @@ export let newArticlesTrigger = SlateTrigger.create(
         category: article.category,
         language: article.language,
         sourceCountry: article.source_country,
-        sentiment: article.sentiment,
+        sentiment: article.sentiment
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollDate: now,
-        },
+          lastPollDate: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'article.published',
         id: String(ctx.input.articleId),
@@ -102,9 +104,9 @@ export let newArticlesTrigger = SlateTrigger.create(
           category: ctx.input.category,
           language: ctx.input.language,
           sourceCountry: ctx.input.sourceCountry,
-          sentiment: ctx.input.sentiment,
-        },
+          sentiment: ctx.input.sentiment
+        }
       };
-    },
+    }
   })
   .build();

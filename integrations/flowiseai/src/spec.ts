@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'flowiseai',
   name: 'Flowise',
-  description: 'Open-source generative AI platform for building AI agents and LLM workflows visually.',
+  description:
+    'Open-source generative AI platform for building AI agents and LLM workflows visually.',
   metadata: {},
   config,
-  auth,
+  auth
 });

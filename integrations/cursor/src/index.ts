@@ -22,7 +22,7 @@ import {
   getAuditLogs,
   getRepoBlocklists,
   upsertRepoBlocklists,
-  deleteRepoBlocklist,
+  deleteRepoBlocklist
 } from './tools';
 import { agentStatusChange } from './triggers';
 
@@ -50,9 +50,7 @@ export let provider = Slate.create({
     getAuditLogs,
     getRepoBlocklists,
     upsertRepoBlocklists,
-    deleteRepoBlocklist,
+    deleteRepoBlocklist
   ],
-  triggers: [
-    agentStatusChange,
-  ],
+  triggers: [agentStatusChange]
 });

@@ -17,7 +17,7 @@ import {
   archiveChatConversation,
   listSmartGroups,
   getSmartGroupMembers,
-  createSmartGroup,
+  createSmartGroup
 } from './tools';
 import { gosquaredEvents } from './triggers';
 
@@ -40,9 +40,7 @@ export let provider = Slate.create({
     archiveChatConversation,
     listSmartGroups,
     getSmartGroupMembers,
-    createSmartGroup,
+    createSmartGroup
   ],
-  triggers: [
-    gosquaredEvents,
-  ],
+  triggers: [gosquaredEvents]
 });

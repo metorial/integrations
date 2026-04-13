@@ -3,49 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Get Order',
-    key: 'get_order',
-    description: `Retrieve full details of a specific order by its ID, including customer info, pricing, statuses, and optional related data.`,
-    tags: {
-      readOnly: true,
-    },
+export let getOrder = SlateTool.create(spec, {
+  name: 'Get Order',
+  key: 'get_order',
+  description: `Retrieve full details of a specific order by its ID, including customer info, pricing, statuses, and optional related data.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    orderId: z.string().describe('The ID of the order to retrieve'),
-  }))
-  .output(z.object({
-    orderId: z.string(),
-    customerId: z.string().optional(),
-    customerFirstName: z.string().optional(),
-    customerLastName: z.string().optional(),
-    customerEmail: z.string().optional(),
-    customerIp: z.string().optional(),
-    priceProductsSubtotal: z.any().optional(),
-    priceSubtotal: z.any().optional(),
-    priceTotal: z.any().optional(),
-    quantity: z.any().optional(),
-    weight: z.any().optional(),
-    status: z.string().optional(),
-    statusFulfillment: z.string().optional(),
-    currency: z.string().optional(),
-    vatIncluded: z.any().optional(),
-    emailSent: z.any().optional(),
-    invoiceNumber: z.string().optional(),
-    invoiceDate: z.string().optional(),
-    abandoned: z.any().optional(),
-    usn: z.string().optional(),
-    desiredDeliveryDate: z.string().optional(),
-    noteCustomer: z.string().optional(),
-    noteAdministrator: z.string().optional(),
-    dateAdded: z.string().optional(),
-    updatedAt: z.string().optional(),
-    relationships: z.record(z.string(), z.any()).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      orderId: z.string().describe('The ID of the order to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string(),
+      customerId: z.string().optional(),
+      customerFirstName: z.string().optional(),
+      customerLastName: z.string().optional(),
+      customerEmail: z.string().optional(),
+      customerIp: z.string().optional(),
+      priceProductsSubtotal: z.any().optional(),
+      priceSubtotal: z.any().optional(),
+      priceTotal: z.any().optional(),
+      quantity: z.any().optional(),
+      weight: z.any().optional(),
+      status: z.string().optional(),
+      statusFulfillment: z.string().optional(),
+      currency: z.string().optional(),
+      vatIncluded: z.any().optional(),
+      emailSent: z.any().optional(),
+      invoiceNumber: z.string().optional(),
+      invoiceDate: z.string().optional(),
+      abandoned: z.any().optional(),
+      usn: z.string().optional(),
+      desiredDeliveryDate: z.string().optional(),
+      noteCustomer: z.string().optional(),
+      noteAdministrator: z.string().optional(),
+      dateAdded: z.string().optional(),
+      updatedAt: z.string().optional(),
+      relationships: z.record(z.string(), z.any()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
     let res = await client.getOrder(ctx.input.orderId);
@@ -78,9 +79,9 @@ export let getOrder = SlateTool.create(
         noteAdministrator: o.attributes.note_administrator,
         dateAdded: o.attributes.date_added,
         updatedAt: o.attributes.updated_at,
-        relationships: o.relationships,
+        relationships: o.relationships
       },
-      message: `Retrieved order **#${o.id}** — status: **${o.attributes.status}**, total: **${o.attributes.price_total} ${o.attributes.currency || ''}**.`,
+      message: `Retrieved order **#${o.id}** — status: **${o.attributes.status}**, total: **${o.attributes.price_total} ${o.attributes.currency || ''}**.`
     };
   })
   .build();

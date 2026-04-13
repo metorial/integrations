@@ -2,96 +2,108 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let addressSchema = z.object({
-  address1: z.string().nullable(),
-  address2: z.string().nullable(),
-  city: z.string().nullable(),
-  state: z.string().nullable(),
-  zipcode: z.string().nullable(),
-  country: z.string().nullable(),
-}).nullable();
+let addressSchema = z
+  .object({
+    address1: z.string().nullable(),
+    address2: z.string().nullable(),
+    city: z.string().nullable(),
+    state: z.string().nullable(),
+    zipcode: z.string().nullable(),
+    country: z.string().nullable()
+  })
+  .nullable();
 
-let givingSpaceSchema = z.object({
-  givingSpaceId: z.number().nullable(),
-  name: z.string().nullable(),
-  amount: z.number().nullable(),
-  message: z.string().nullable(),
-}).nullable();
+let givingSpaceSchema = z
+  .object({
+    givingSpaceId: z.number().nullable(),
+    name: z.string().nullable(),
+    amount: z.number().nullable(),
+    message: z.string().nullable()
+  })
+  .nullable();
 
-export let transactionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transaction Succeeded',
-    key: 'transaction_events',
-    description: 'Triggered when a transaction succeeds. Does not fire during CSV imports. No webhooks are available for refunds or updates.',
-  }
-)
-  .input(z.object({
-    transactionId: z.string().describe('Transaction ID'),
-    rawPayload: z.any().describe('Raw transaction payload'),
-  }))
-  .output(z.object({
-    transactionId: z.string().describe('Transaction ID'),
-    campaignId: z.number().nullable().describe('Campaign ID'),
-    campaignCode: z.string().nullable().describe('Campaign code'),
-    planId: z.string().nullable().describe('Recurring plan ID'),
-    teamId: z.string().nullable().describe('Team ID'),
-    memberId: z.string().nullable().describe('Member ID'),
-    fundId: z.string().nullable().describe('Fund ID'),
-    firstName: z.string().nullable().describe('Donor first name'),
-    lastName: z.string().nullable().describe('Donor last name'),
-    email: z.string().nullable().describe('Donor email'),
-    phone: z.string().nullable().describe('Donor phone'),
-    company: z.string().nullable().describe('Donor company'),
-    address: addressSchema.describe('Donor address'),
-    status: z.string().nullable().describe('Transaction status'),
-    paymentMethod: z.string().nullable().describe('Payment method'),
-    amount: z.number().nullable().describe('Amount in cents'),
-    fee: z.number().nullable().describe('Processing fee'),
-    feeCovered: z.number().nullable().describe('Fee covered by donor'),
-    donated: z.number().nullable().describe('Net donated amount'),
-    payout: z.number().nullable().describe('Payout amount'),
-    currency: z.string().nullable().describe('Currency code'),
-    givingSpace: givingSpaceSchema.describe('Giving space details'),
-    customFields: z.array(z.any()).describe('Custom field responses'),
-    communicationOptIn: z.boolean().nullable().describe('Communication opt-in status'),
-    transactedAt: z.string().nullable().describe('When the transaction occurred'),
-    createdAt: z.string().nullable().describe('When created'),
-  }))
+export let transactionEvents = SlateTrigger.create(spec, {
+  name: 'Transaction Succeeded',
+  key: 'transaction_events',
+  description:
+    'Triggered when a transaction succeeds. Does not fire during CSV imports. No webhooks are available for refunds or updates.'
+})
+  .input(
+    z.object({
+      transactionId: z.string().describe('Transaction ID'),
+      rawPayload: z.any().describe('Raw transaction payload')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().describe('Transaction ID'),
+      campaignId: z.number().nullable().describe('Campaign ID'),
+      campaignCode: z.string().nullable().describe('Campaign code'),
+      planId: z.string().nullable().describe('Recurring plan ID'),
+      teamId: z.string().nullable().describe('Team ID'),
+      memberId: z.string().nullable().describe('Member ID'),
+      fundId: z.string().nullable().describe('Fund ID'),
+      firstName: z.string().nullable().describe('Donor first name'),
+      lastName: z.string().nullable().describe('Donor last name'),
+      email: z.string().nullable().describe('Donor email'),
+      phone: z.string().nullable().describe('Donor phone'),
+      company: z.string().nullable().describe('Donor company'),
+      address: addressSchema.describe('Donor address'),
+      status: z.string().nullable().describe('Transaction status'),
+      paymentMethod: z.string().nullable().describe('Payment method'),
+      amount: z.number().nullable().describe('Amount in cents'),
+      fee: z.number().nullable().describe('Processing fee'),
+      feeCovered: z.number().nullable().describe('Fee covered by donor'),
+      donated: z.number().nullable().describe('Net donated amount'),
+      payout: z.number().nullable().describe('Payout amount'),
+      currency: z.string().nullable().describe('Currency code'),
+      givingSpace: givingSpaceSchema.describe('Giving space details'),
+      customFields: z.array(z.any()).describe('Custom field responses'),
+      communicationOptIn: z.boolean().nullable().describe('Communication opt-in status'),
+      transactedAt: z.string().nullable().describe('When the transaction occurred'),
+      createdAt: z.string().nullable().describe('When created')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       if (body.event !== 'transaction.succeeded') {
         return { inputs: [] };
       }
 
       return {
-        inputs: [{
-          transactionId: String(body.data.id),
-          rawPayload: body.data,
-        }],
+        inputs: [
+          {
+            transactionId: String(body.data.id),
+            rawPayload: body.data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let d = ctx.input.rawPayload;
 
-      let address = d.address ? {
-        address1: d.address.address_1 ?? null,
-        address2: d.address.address_2 ?? null,
-        city: d.address.city ?? null,
-        state: d.address.state ?? null,
-        zipcode: d.address.zipcode ?? null,
-        country: d.address.country ?? null,
-      } : null;
+      let address = d.address
+        ? {
+            address1: d.address.address_1 ?? null,
+            address2: d.address.address_2 ?? null,
+            city: d.address.city ?? null,
+            state: d.address.state ?? null,
+            zipcode: d.address.zipcode ?? null,
+            country: d.address.country ?? null
+          }
+        : null;
 
-      let givingSpace = d.giving_space ? {
-        givingSpaceId: d.giving_space.id ?? null,
-        name: d.giving_space.name ?? null,
-        amount: d.giving_space.amount ?? null,
-        message: d.giving_space.message ?? null,
-      } : null;
+      let givingSpace = d.giving_space
+        ? {
+            givingSpaceId: d.giving_space.id ?? null,
+            name: d.giving_space.name ?? null,
+            amount: d.giving_space.amount ?? null,
+            message: d.giving_space.message ?? null
+          }
+        : null;
 
       return {
         type: 'transaction.succeeded',
@@ -122,9 +134,9 @@ export let transactionEvents = SlateTrigger.create(
           customFields: d.custom_fields ?? [],
           communicationOptIn: d.communication_opt_in ?? null,
           transactedAt: d.transacted_at ?? null,
-          createdAt: d.created_at ?? null,
-        },
+          createdAt: d.created_at ?? null
+        }
       };
-    },
+    }
   })
   .build();

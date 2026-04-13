@@ -24,14 +24,14 @@ import {
   listPayouts,
   getPayout,
   listCampaignMembers,
-  listCampaignTeams,
+  listCampaignTeams
 } from './tools';
 import {
   campaignEvents,
   transactionEvents,
   contactEvents,
   ticketEvents,
-  planEvents,
+  planEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -60,13 +60,7 @@ export let provider = Slate.create({
     listPayouts,
     getPayout,
     listCampaignMembers,
-    listCampaignTeams,
+    listCampaignTeams
   ],
-  triggers: [
-    campaignEvents,
-    transactionEvents,
-    contactEvents,
-    ticketEvents,
-    planEvents,
-  ],
+  triggers: [campaignEvents, transactionEvents, contactEvents, ticketEvents, planEvents]
 });

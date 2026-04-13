@@ -3,40 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let accountChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Changes',
-    key: 'account_changes',
-    description: 'Polls for new, updated, or deleted accounts in a budget using delta requests.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    accountId: z.string().describe('Account ID'),
-    name: z.string().describe('Account name'),
-    type: z.string().describe('Account type'),
-    balance: z.number().describe('Balance in milliunits'),
-    clearedBalance: z.number().describe('Cleared balance in milliunits'),
-    unclearedBalance: z.number().describe('Uncleared balance in milliunits'),
-    closed: z.boolean().describe('Whether closed'),
-    deleted: z.boolean().describe('Whether deleted'),
-  }))
-  .output(z.object({
-    accountId: z.string().describe('Account ID'),
-    name: z.string().describe('Account name'),
-    type: z.string().describe('Account type'),
-    balance: z.number().describe('Balance in milliunits'),
-    clearedBalance: z.number().describe('Cleared balance in milliunits'),
-    unclearedBalance: z.number().describe('Uncleared balance in milliunits'),
-    closed: z.boolean().describe('Whether closed'),
-  }))
+export let accountChanges = SlateTrigger.create(spec, {
+  name: 'Account Changes',
+  key: 'account_changes',
+  description: 'Polls for new, updated, or deleted accounts in a budget using delta requests.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      accountId: z.string().describe('Account ID'),
+      name: z.string().describe('Account name'),
+      type: z.string().describe('Account type'),
+      balance: z.number().describe('Balance in milliunits'),
+      clearedBalance: z.number().describe('Cleared balance in milliunits'),
+      unclearedBalance: z.number().describe('Uncleared balance in milliunits'),
+      closed: z.boolean().describe('Whether closed'),
+      deleted: z.boolean().describe('Whether deleted')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.string().describe('Account ID'),
+      name: z.string().describe('Account name'),
+      type: z.string().describe('Account type'),
+      balance: z.number().describe('Balance in milliunits'),
+      clearedBalance: z.number().describe('Cleared balance in milliunits'),
+      unclearedBalance: z.number().describe('Uncleared balance in milliunits'),
+      closed: z.boolean().describe('Whether closed')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let budgetId = ctx.config.budgetId;
 
@@ -63,7 +66,7 @@ export let accountChanges = SlateTrigger.create(
           clearedBalance: a.cleared_balance,
           unclearedBalance: a.uncleared_balance,
           closed: a.closed,
-          deleted: a.deleted,
+          deleted: a.deleted
         };
       });
 
@@ -80,12 +83,12 @@ export let accountChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           serverKnowledge: result.serverKnowledge,
-          knownAccountIds: Array.from(newIds),
-        },
+          knownAccountIds: Array.from(newIds)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `account.${ctx.input.changeType}`,
         id: `${ctx.input.accountId}-${ctx.input.changeType}`,
@@ -96,9 +99,9 @@ export let accountChanges = SlateTrigger.create(
           balance: ctx.input.balance,
           clearedBalance: ctx.input.clearedBalance,
           unclearedBalance: ctx.input.unclearedBalance,
-          closed: ctx.input.closed,
-        },
+          closed: ctx.input.closed
+        }
       };
-    },
+    }
   })
   .build();

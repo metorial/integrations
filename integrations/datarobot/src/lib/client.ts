@@ -13,9 +13,9 @@ export class DataRobotClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${opts.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${opts.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -45,9 +45,12 @@ export class DataRobotClient {
     return res.data;
   }
 
-  async updateProject(projectId: string, body: {
-    projectName?: string;
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    body: {
+      projectName?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/projects/${projectId}/`, body);
     return res.data;
   }
@@ -56,20 +59,23 @@ export class DataRobotClient {
     await this.axios.delete(`/projects/${projectId}/`);
   }
 
-  async setTarget(projectId: string, body: {
-    target: string;
-    mode?: string;
-    metric?: string;
-    quickrun?: boolean;
-    positiveClass?: string;
-    partitioningMethod?: string;
-    cvMethod?: string;
-    blueprintThreshold?: number;
-    seed?: number;
-    smartDownsampled?: boolean;
-    majorityDownsamplingRate?: number;
-    accuracyOptimizedMb?: boolean;
-  }): Promise<any> {
+  async setTarget(
+    projectId: string,
+    body: {
+      target: string;
+      mode?: string;
+      metric?: string;
+      quickrun?: boolean;
+      positiveClass?: string;
+      partitioningMethod?: string;
+      cvMethod?: string;
+      blueprintThreshold?: number;
+      seed?: number;
+      smartDownsampled?: boolean;
+      majorityDownsamplingRate?: number;
+      accuracyOptimizedMb?: boolean;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/projects/${projectId}/aim/`, body);
     return res.data;
   }
@@ -81,11 +87,14 @@ export class DataRobotClient {
 
   // ─── Models ────────────────────────────────────────────────
 
-  async listModels(projectId: string, params?: {
-    offset?: number;
-    limit?: number;
-    orderBy?: string;
-  }): Promise<any[]> {
+  async listModels(
+    projectId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      orderBy?: string;
+    }
+  ): Promise<any[]> {
     let res = await this.axios.get(`/projects/${projectId}/models/`, { params });
     return res.data;
   }
@@ -96,7 +105,9 @@ export class DataRobotClient {
   }
 
   async getRecommendedModel(projectId: string): Promise<any> {
-    let res = await this.axios.get(`/projects/${projectId}/recommendedModels/recommendedModel/`);
+    let res = await this.axios.get(
+      `/projects/${projectId}/recommendedModels/recommendedModel/`
+    );
     return res.data;
   }
 
@@ -110,22 +121,22 @@ export class DataRobotClient {
     return res.data;
   }
 
-  async trainModel(projectId: string, body: {
-    blueprintId: string;
-    samplePct?: number;
-    trainingRowCount?: number;
-    sourceProjectId?: string;
-  }): Promise<any> {
+  async trainModel(
+    projectId: string,
+    body: {
+      blueprintId: string;
+      samplePct?: number;
+      trainingRowCount?: number;
+      sourceProjectId?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.post(`/projects/${projectId}/models/`, body);
     return res.data;
   }
 
   // ─── Datasets / AI Catalog ─────────────────────────────────
 
-  async listDatasets(params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any> {
+  async listDatasets(params?: { offset?: number; limit?: number }): Promise<any> {
     let res = await this.axios.get('/datasets/', { params });
     return res.data;
   }
@@ -135,17 +146,17 @@ export class DataRobotClient {
     return res.data;
   }
 
-  async createDatasetFromUrl(body: {
-    url: string;
-    categories?: string[];
-  }): Promise<any> {
+  async createDatasetFromUrl(body: { url: string; categories?: string[] }): Promise<any> {
     let res = await this.axios.post('/datasets/fromURL/', body);
     return res.data;
   }
 
-  async updateDataset(datasetId: string, body: {
-    name?: string;
-  }): Promise<any> {
+  async updateDataset(
+    datasetId: string,
+    body: {
+      name?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/datasets/${datasetId}/`, body);
     return res.data;
   }
@@ -194,11 +205,14 @@ export class DataRobotClient {
     return res.data;
   }
 
-  async updateDeployment(deploymentId: string, body: {
-    label?: string;
-    description?: string;
-    importance?: string;
-  }): Promise<any> {
+  async updateDeployment(
+    deploymentId: string,
+    body: {
+      label?: string;
+      description?: string;
+      importance?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/deployments/${deploymentId}/`, body);
     return res.data;
   }
@@ -207,55 +221,75 @@ export class DataRobotClient {
     await this.axios.delete(`/deployments/${deploymentId}/`);
   }
 
-  async replaceDeploymentModel(deploymentId: string, body: {
-    modelId?: string;
-    modelPackageId?: string;
-    reason: string;
-  }): Promise<any> {
+  async replaceDeploymentModel(
+    deploymentId: string,
+    body: {
+      modelId?: string;
+      modelPackageId?: string;
+      reason: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.patch(`/deployments/${deploymentId}/model/`, body);
     return res.data;
   }
 
   // ─── Deployment Monitoring ─────────────────────────────────
 
-  async getServiceStats(deploymentId: string, params?: {
-    startTime?: string;
-    endTime?: string;
-  }): Promise<any> {
+  async getServiceStats(
+    deploymentId: string,
+    params?: {
+      startTime?: string;
+      endTime?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/deployments/${deploymentId}/serviceStats/`, { params });
     return res.data;
   }
 
-  async getServiceStatsOverTime(deploymentId: string, params?: {
-    startTime?: string;
-    endTime?: string;
-    bucketSize?: string;
-    metric?: string;
-  }): Promise<any> {
-    let res = await this.axios.get(`/deployments/${deploymentId}/serviceStatsOverTime/`, { params });
+  async getServiceStatsOverTime(
+    deploymentId: string,
+    params?: {
+      startTime?: string;
+      endTime?: string;
+      bucketSize?: string;
+      metric?: string;
+    }
+  ): Promise<any> {
+    let res = await this.axios.get(`/deployments/${deploymentId}/serviceStatsOverTime/`, {
+      params
+    });
     return res.data;
   }
 
-  async getAccuracy(deploymentId: string, params?: {
-    startTime?: string;
-    endTime?: string;
-  }): Promise<any> {
+  async getAccuracy(
+    deploymentId: string,
+    params?: {
+      startTime?: string;
+      endTime?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/deployments/${deploymentId}/accuracy/`, { params });
     return res.data;
   }
 
-  async getDataDrift(deploymentId: string, params?: {
-    startTime?: string;
-    endTime?: string;
-  }): Promise<any> {
+  async getDataDrift(
+    deploymentId: string,
+    params?: {
+      startTime?: string;
+      endTime?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/deployments/${deploymentId}/featureDrift/`, { params });
     return res.data;
   }
 
-  async getTargetDrift(deploymentId: string, params?: {
-    startTime?: string;
-    endTime?: string;
-  }): Promise<any> {
+  async getTargetDrift(
+    deploymentId: string,
+    params?: {
+      startTime?: string;
+      endTime?: string;
+    }
+  ): Promise<any> {
     let res = await this.axios.get(`/deployments/${deploymentId}/targetDrift/`, { params });
     return res.data;
   }
@@ -286,14 +320,16 @@ export class DataRobotClient {
 
   // ─── Predictions ───────────────────────────────────────────
 
-  async makePredictions(deploymentId: string, body: Record<string, any>[], params?: {
-    maxExplanations?: number;
-  }): Promise<any> {
-    let res = await this.axios.post(
-      `/deployments/${deploymentId}/predictions/`,
-      body,
-      { params }
-    );
+  async makePredictions(
+    deploymentId: string,
+    body: Record<string, any>[],
+    params?: {
+      maxExplanations?: number;
+    }
+  ): Promise<any> {
+    let res = await this.axios.post(`/deployments/${deploymentId}/predictions/`, body, {
+      params
+    });
     return res.data;
   }
 
@@ -378,10 +414,13 @@ export class DataRobotClient {
 
   // ─── Blueprints ────────────────────────────────────────────
 
-  async listBlueprints(projectId: string, params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any[]> {
+  async listBlueprints(
+    projectId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ): Promise<any[]> {
     let res = await this.axios.get(`/projects/${projectId}/blueprints/`, { params });
     return res.data;
   }

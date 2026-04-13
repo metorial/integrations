@@ -3,34 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reminderEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Reminder Events',
-    key: 'reminder_events',
-    description: 'Triggers when a reminder is created, updated, deleted, or triggered (fires at scheduled time) in your Folk workspace.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of reminder event'),
-    eventId: z.string().describe('Unique event ID'),
-    reminderId: z.string().describe('ID of the affected reminder'),
-    reminderUrl: z.string().describe('API URL for the reminder'),
-    details: z.record(z.string(), z.unknown()).optional().describe('Additional details'),
-    createdAt: z.string().describe('Event timestamp'),
-  }))
-  .output(z.object({
-    reminderId: z.string().describe('ID of the affected reminder'),
-    reminderUrl: z.string().describe('API URL for the reminder'),
-    name: z.string().optional().describe('Reminder name (when available)'),
-    entityId: z.string().optional().describe('ID of the associated entity'),
-    entityType: z.string().optional().describe('Type of associated entity'),
-    lastTriggerTime: z.string().nullable().optional().describe('Last trigger time (for triggered events)'),
-    nextTriggerTime: z.string().nullable().optional().describe('Next trigger time (for triggered events)'),
-    createdAt: z.string().describe('Event timestamp'),
-  }))
+export let reminderEvents = SlateTrigger.create(spec, {
+  name: 'Reminder Events',
+  key: 'reminder_events',
+  description:
+    'Triggers when a reminder is created, updated, deleted, or triggered (fires at scheduled time) in your Folk workspace.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of reminder event'),
+      eventId: z.string().describe('Unique event ID'),
+      reminderId: z.string().describe('ID of the affected reminder'),
+      reminderUrl: z.string().describe('API URL for the reminder'),
+      details: z.record(z.string(), z.unknown()).optional().describe('Additional details'),
+      createdAt: z.string().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      reminderId: z.string().describe('ID of the affected reminder'),
+      reminderUrl: z.string().describe('API URL for the reminder'),
+      name: z.string().optional().describe('Reminder name (when available)'),
+      entityId: z.string().optional().describe('ID of the associated entity'),
+      entityType: z.string().optional().describe('Type of associated entity'),
+      lastTriggerTime: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Last trigger time (for triggered events)'),
+      nextTriggerTime: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Next trigger time (for triggered events)'),
+      createdAt: z.string().describe('Event timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let webhook = await client.createWebhook({
@@ -40,25 +50,25 @@ export let reminderEvents = SlateTrigger.create(
           { eventType: 'reminder.created' },
           { eventType: 'reminder.updated' },
           { eventType: 'reminder.deleted' },
-          { eventType: 'reminder.triggered' },
-        ],
+          { eventType: 'reminder.triggered' }
+        ]
       });
 
       return {
         registrationDetails: {
           webhookId: webhook.id,
-          signingSecret: webhook.signingSecret,
-        },
+          signingSecret: webhook.signingSecret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, unknown>;
 
       let data = body.data as Record<string, unknown> | undefined;
 
@@ -67,20 +77,20 @@ export let reminderEvents = SlateTrigger.create(
           {
             eventType: body.type as string,
             eventId: body.id as string,
-            reminderId: data?.id as string ?? '',
-            reminderUrl: data?.url as string ?? '',
-            details: data?.details as Record<string, unknown> ?? undefined,
-            createdAt: body.createdAt as string,
-          },
-        ],
+            reminderId: (data?.id as string) ?? '',
+            reminderUrl: (data?.url as string) ?? '',
+            details: (data?.details as Record<string, unknown>) ?? undefined,
+            createdAt: body.createdAt as string
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let output: Record<string, unknown> = {
         reminderId: ctx.input.reminderId,
         reminderUrl: ctx.input.reminderUrl,
-        createdAt: ctx.input.createdAt,
+        createdAt: ctx.input.createdAt
       };
 
       if (ctx.input.details) {
@@ -119,8 +129,8 @@ export let reminderEvents = SlateTrigger.create(
           entityType?: string;
           lastTriggerTime?: string | null;
           nextTriggerTime?: string | null;
-        },
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,19 +1,19 @@
 import { createAxios } from 'slates';
 
 let nasaApi = createAxios({
-  baseURL: 'https://api.nasa.gov',
+  baseURL: 'https://api.nasa.gov'
 });
 
 let nasaImageApi = createAxios({
-  baseURL: 'https://images-api.nasa.gov',
+  baseURL: 'https://images-api.nasa.gov'
 });
 
 let eonetApi = createAxios({
-  baseURL: 'https://eonet.gsfc.nasa.gov/api/v3',
+  baseURL: 'https://eonet.gsfc.nasa.gov/api/v3'
 });
 
 let tleApi = createAxios({
-  baseURL: 'https://tle.ivanstanojevic.me/api/tle',
+  baseURL: 'https://tle.ivanstanojevic.me/api/tle'
 });
 
 export class NasaClient {
@@ -23,27 +23,31 @@ export class NasaClient {
     this.token = opts.token;
   }
 
-  private params(extra: Record<string, string | number | boolean | undefined> = {}): Record<string, string | number | boolean | undefined> {
+  private params(
+    extra: Record<string, string | number | boolean | undefined> = {}
+  ): Record<string, string | number | boolean | undefined> {
     return { api_key: this.token, ...extra };
   }
 
   // ── APOD ──────────────────────────────────────────────────
 
-  async getApod(opts: {
-    date?: string;
-    startDate?: string;
-    endDate?: string;
-    count?: number;
-    thumbs?: boolean;
-  } = {}) {
+  async getApod(
+    opts: {
+      date?: string;
+      startDate?: string;
+      endDate?: string;
+      count?: number;
+      thumbs?: boolean;
+    } = {}
+  ) {
     let { data } = await nasaApi.get('/planetary/apod', {
       params: this.params({
         date: opts.date,
         start_date: opts.startDate,
         end_date: opts.endDate,
         count: opts.count,
-        thumbs: opts.thumbs,
-      }),
+        thumbs: opts.thumbs
+      })
     });
     return data;
   }
@@ -54,15 +58,15 @@ export class NasaClient {
     let { data } = await nasaApi.get('/neo/rest/v1/feed', {
       params: this.params({
         start_date: opts.startDate,
-        end_date: opts.endDate,
-      }),
+        end_date: opts.endDate
+      })
     });
     return data;
   }
 
   async getNeoLookup(asteroidId: string) {
     let { data } = await nasaApi.get(`/neo/rest/v1/neo/${asteroidId}`, {
-      params: this.params(),
+      params: this.params()
     });
     return data;
   }
@@ -71,8 +75,8 @@ export class NasaClient {
     let { data } = await nasaApi.get('/neo/rest/v1/neo/browse', {
       params: this.params({
         page: opts.page,
-        size: opts.size,
-      }),
+        size: opts.size
+      })
     });
     return data;
   }
@@ -91,15 +95,15 @@ export class NasaClient {
         sol: opts.sol,
         earth_date: opts.earthDate,
         camera: opts.camera,
-        page: opts.page,
-      }),
+        page: opts.page
+      })
     });
     return data;
   }
 
   async getMarsRoverManifest(rover: string) {
     let { data } = await nasaApi.get(`/mars-photos/api/v1/manifests/${rover}`, {
-      params: this.params(),
+      params: this.params()
     });
     return data;
   }
@@ -112,7 +116,7 @@ export class NasaClient {
       ? `/EPIC/api/${collection}/date/${opts.date}`
       : `/EPIC/api/${collection}`;
     let { data } = await nasaApi.get(path, {
-      params: this.params(),
+      params: this.params()
     });
     return data;
   }
@@ -120,21 +124,23 @@ export class NasaClient {
   async getEpicAvailableDates(collection?: string) {
     let col = collection || 'natural';
     let { data } = await nasaApi.get(`/EPIC/api/${col}/all`, {
-      params: this.params(),
+      params: this.params()
     });
     return data;
   }
 
   // ── EONET ─────────────────────────────────────────────────
 
-  async getEonetEvents(opts: {
-    status?: string;
-    limit?: number;
-    source?: string;
-    category?: string;
-    start?: string;
-    end?: string;
-  } = {}) {
+  async getEonetEvents(
+    opts: {
+      status?: string;
+      limit?: number;
+      source?: string;
+      category?: string;
+      start?: string;
+      end?: string;
+    } = {}
+  ) {
     let { data } = await eonetApi.get('/events', {
       params: {
         status: opts.status,
@@ -142,8 +148,8 @@ export class NasaClient {
         source: opts.source,
         category: opts.category,
         start: opts.start,
-        end: opts.end,
-      },
+        end: opts.end
+      }
     });
     return data;
   }
@@ -155,12 +161,15 @@ export class NasaClient {
 
   // ── DONKI ─────────────────────────────────────────────────
 
-  async getDonkiEvents(eventType: string, opts: { startDate?: string; endDate?: string } = {}) {
+  async getDonkiEvents(
+    eventType: string,
+    opts: { startDate?: string; endDate?: string } = {}
+  ) {
     let { data } = await nasaApi.get(`/DONKI/${eventType}`, {
       params: this.params({
         startDate: opts.startDate,
-        endDate: opts.endDate,
-      }),
+        endDate: opts.endDate
+      })
     });
     return data;
   }
@@ -173,8 +182,8 @@ export class NasaClient {
         lat: opts.lat,
         lon: opts.lon,
         date: opts.date,
-        dim: opts.dim,
-      }),
+        dim: opts.dim
+      })
     });
     return data;
   }
@@ -185,8 +194,8 @@ export class NasaClient {
         lat: opts.lat,
         lon: opts.lon,
         date: opts.date,
-        dim: opts.dim,
-      }),
+        dim: opts.dim
+      })
     });
     return data;
   }
@@ -212,8 +221,8 @@ export class NasaClient {
         year_end: opts.yearEnd,
         keywords: opts.keywords,
         nasa_id: opts.nasaId,
-        page: opts.page,
-      },
+        page: opts.page
+      }
     });
     return data;
   }
@@ -230,13 +239,15 @@ export class NasaClient {
 
   // ── TLE ───────────────────────────────────────────────────
 
-  async searchTle(opts: { search?: string; satelliteNumber?: number; page?: number; pageSize?: number } = {}) {
+  async searchTle(
+    opts: { search?: string; satelliteNumber?: number; page?: number; pageSize?: number } = {}
+  ) {
     let { data } = await tleApi.get('/', {
       params: {
         search: opts.search,
         'page-size': opts.pageSize,
-        page: opts.page,
-      },
+        page: opts.page
+      }
     });
     return data;
   }
@@ -250,7 +261,7 @@ export class NasaClient {
 
   async getTechPortProject(projectId: number) {
     let { data } = await nasaApi.get(`/techport/api/projects/${projectId}`, {
-      params: this.params(),
+      params: this.params()
     });
     return data;
   }
@@ -258,8 +269,8 @@ export class NasaClient {
   async searchTechPortProjects(opts: { updatedSince?: string } = {}) {
     let { data } = await nasaApi.get('/techport/api/projects', {
       params: this.params({
-        updatedSince: opts.updatedSince,
-      }),
+        updatedSince: opts.updatedSince
+      })
     });
     return data;
   }
@@ -273,59 +284,74 @@ export class NasaClient {
     orderBy?: string;
     format?: string;
   }) {
-    let { data } = await createAxios({ baseURL: 'https://exoplanetarchive.ipac.caltech.edu' }).get('/TAP/sync', {
+    let { data } = await createAxios({
+      baseURL: 'https://exoplanetarchive.ipac.caltech.edu'
+    }).get('/TAP/sync', {
       params: {
         query: `SELECT ${opts.select || '*'} FROM ${opts.table}${opts.where ? ` WHERE ${opts.where}` : ''}${opts.orderBy ? ` ORDER BY ${opts.orderBy}` : ''}`,
-        format: opts.format || 'json',
-      },
+        format: opts.format || 'json'
+      }
     });
     return data;
   }
 
   // ── SSD/CNEOS ─────────────────────────────────────────────
 
-  async getSsdCloseApproach(opts: {
-    dateMin?: string;
-    dateMax?: string;
-    distMax?: string;
-    body?: string;
-  } = {}) {
-    let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get('/cad.api', {
-      params: {
-        'date-min': opts.dateMin,
-        'date-max': opts.dateMax,
-        'dist-max': opts.distMax,
-        body: opts.body,
-      },
-    });
+  async getSsdCloseApproach(
+    opts: {
+      dateMin?: string;
+      dateMax?: string;
+      distMax?: string;
+      body?: string;
+    } = {}
+  ) {
+    let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get(
+      '/cad.api',
+      {
+        params: {
+          'date-min': opts.dateMin,
+          'date-max': opts.dateMax,
+          'dist-max': opts.distMax,
+          body: opts.body
+        }
+      }
+    );
     return data;
   }
 
-  async getSsdFireballs(opts: {
-    dateMin?: string;
-    dateMax?: string;
-    minEnergy?: number;
-    reqLoc?: boolean;
-  } = {}) {
-    let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get('/fireball.api', {
-      params: {
-        'date-min': opts.dateMin,
-        'date-max': opts.dateMax,
-        'min-energy': opts.minEnergy,
-        'req-loc': opts.reqLoc,
-      },
-    });
+  async getSsdFireballs(
+    opts: {
+      dateMin?: string;
+      dateMax?: string;
+      minEnergy?: number;
+      reqLoc?: boolean;
+    } = {}
+  ) {
+    let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get(
+      '/fireball.api',
+      {
+        params: {
+          'date-min': opts.dateMin,
+          'date-max': opts.dateMax,
+          'min-energy': opts.minEnergy,
+          'req-loc': opts.reqLoc
+        }
+      }
+    );
     return data;
   }
 
   async getSsdSmallBody(opts: { designation?: string; spkId?: number; searchName?: string }) {
-    let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get('/sbdb.api', {
-      params: {
-        des: opts.designation,
-        spk: opts.spkId,
-        sstr: opts.searchName,
-      },
-    });
+    let { data } = await createAxios({ baseURL: 'https://ssd-api.jpl.nasa.gov' }).get(
+      '/sbdb.api',
+      {
+        params: {
+          des: opts.designation,
+          spk: opts.spkId,
+          sstr: opts.searchName
+        }
+      }
+    );
     return data;
   }
 }

@@ -3,37 +3,38 @@ import { RuntimeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMessageTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Message',
-    key: 'new_message',
-    description: 'Triggers when new messages are sent or received in bot conversations.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Unique message ID'),
-    conversationId: z.string().describe('Conversation the message belongs to'),
-    userId: z.string().optional().describe('User who sent the message'),
-    messageType: z.string().optional().describe('Message type (text, image, etc.)'),
-    payload: z.record(z.string(), z.unknown()).describe('Message content and payload'),
-    direction: z.string().optional().describe('incoming or outgoing'),
-    createdAt: z.string().describe('Message creation timestamp'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Unique message ID'),
-    conversationId: z.string().describe('Conversation the message belongs to'),
-    userId: z.string().optional().describe('User who sent the message'),
-    messageType: z.string().optional().describe('Message type (text, image, etc.)'),
-    payload: z.record(z.string(), z.unknown()).describe('Message content and payload'),
-    direction: z.string().optional().describe('incoming or outgoing'),
-    createdAt: z.string().describe('Message creation timestamp'),
-  }))
+export let newMessageTrigger = SlateTrigger.create(spec, {
+  name: 'New Message',
+  key: 'new_message',
+  description: 'Triggers when new messages are sent or received in bot conversations.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Unique message ID'),
+      conversationId: z.string().describe('Conversation the message belongs to'),
+      userId: z.string().optional().describe('User who sent the message'),
+      messageType: z.string().optional().describe('Message type (text, image, etc.)'),
+      payload: z.record(z.string(), z.unknown()).describe('Message content and payload'),
+      direction: z.string().optional().describe('incoming or outgoing'),
+      createdAt: z.string().describe('Message creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Unique message ID'),
+      conversationId: z.string().describe('Conversation the message belongs to'),
+      userId: z.string().optional().describe('User who sent the message'),
+      messageType: z.string().optional().describe('Message type (text, image, etc.)'),
+      payload: z.record(z.string(), z.unknown()).describe('Message content and payload'),
+      direction: z.string().optional().describe('incoming or outgoing'),
+      createdAt: z.string().describe('Message creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let botId = ctx.config.botId;
       if (!botId) return { inputs: [], updatedState: ctx.state };
 
@@ -44,17 +45,22 @@ export let newMessageTrigger = SlateTrigger.create(
       let messages = (result.messages || []) as Array<Record<string, unknown>>;
 
       let newMessages = lastSeenId
-        ? messages.filter((m) => m.id !== lastSeenId && new Date(m.createdAt as string) > new Date(ctx.state?.lastSeenAt as string || '1970-01-01'))
+        ? messages.filter(
+            m =>
+              m.id !== lastSeenId &&
+              new Date(m.createdAt as string) >
+                new Date((ctx.state?.lastSeenAt as string) || '1970-01-01')
+          )
         : messages;
 
-      let inputs = newMessages.map((m) => ({
+      let inputs = newMessages.map(m => ({
         messageId: m.id as string,
         conversationId: m.conversationId as string,
         userId: m.userId as string | undefined,
         messageType: m.type as string | undefined,
         payload: (m.payload || {}) as Record<string, unknown>,
         direction: m.direction as string | undefined,
-        createdAt: m.createdAt as string,
+        createdAt: m.createdAt as string
       }));
 
       let latestMessage = messages[0];
@@ -62,11 +68,11 @@ export let newMessageTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           lastSeenId: latestMessage ? latestMessage.id : lastSeenId,
-          lastSeenAt: latestMessage ? latestMessage.createdAt : ctx.state?.lastSeenAt,
-        },
+          lastSeenAt: latestMessage ? latestMessage.createdAt : ctx.state?.lastSeenAt
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let direction = ctx.input.direction || 'unknown';
       return {
         type: `message.${direction}`,
@@ -78,9 +84,9 @@ export let newMessageTrigger = SlateTrigger.create(
           messageType: ctx.input.messageType,
           payload: ctx.input.payload,
           direction: ctx.input.direction,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

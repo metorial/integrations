@@ -9,61 +9,63 @@ let CONTACT_WEBHOOK_SETTINGS = [
   'delete_contact',
   'restore_contact',
   'responsible_contact',
-  'note_contact',
+  'note_contact'
 ];
 
-export let contactEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when a contact is added, updated, deleted, restored, changes responsible user, or receives a note.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of contact event'),
-    contactId: z.number().describe('Contact ID'),
-    contactName: z.string().optional().describe('Contact name'),
-    responsibleUserId: z.number().optional().describe('Responsible user ID'),
-    createdAt: z.number().optional().describe('Contact creation timestamp'),
-    updatedAt: z.number().optional().describe('Contact update timestamp'),
-    accountId: z.number().optional().describe('Account ID'),
-    customFields: z.any().optional().describe('Custom field values'),
-  }))
-  .output(z.object({
-    contactId: z.number().describe('Contact ID'),
-    contactName: z.string().optional().describe('Contact name'),
-    responsibleUserId: z.number().optional().describe('Responsible user ID'),
-    createdAt: z.number().optional().describe('Contact creation timestamp'),
-    updatedAt: z.number().optional().describe('Contact update timestamp'),
-    accountId: z.number().optional().describe('Account ID'),
-    customFields: z.any().optional().describe('Custom field values'),
-  }))
+export let contactEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description:
+    'Triggers when a contact is added, updated, deleted, restored, changes responsible user, or receives a note.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of contact event'),
+      contactId: z.number().describe('Contact ID'),
+      contactName: z.string().optional().describe('Contact name'),
+      responsibleUserId: z.number().optional().describe('Responsible user ID'),
+      createdAt: z.number().optional().describe('Contact creation timestamp'),
+      updatedAt: z.number().optional().describe('Contact update timestamp'),
+      accountId: z.number().optional().describe('Account ID'),
+      customFields: z.any().optional().describe('Custom field values')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('Contact ID'),
+      contactName: z.string().optional().describe('Contact name'),
+      responsibleUserId: z.number().optional().describe('Responsible user ID'),
+      createdAt: z.number().optional().describe('Contact creation timestamp'),
+      updatedAt: z.number().optional().describe('Contact update timestamp'),
+      accountId: z.number().optional().describe('Account ID'),
+      customFields: z.any().optional().describe('Custom field values')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new KommoClient({
         token: ctx.auth.token,
-        subdomain: ctx.config.subdomain,
+        subdomain: ctx.config.subdomain
       });
 
       let webhookUrl = ctx.input.webhookBaseUrl;
       await client.createWebhook(webhookUrl, CONTACT_WEBHOOK_SETTINGS);
 
       return {
-        registrationDetails: { destination: webhookUrl, settings: CONTACT_WEBHOOK_SETTINGS },
+        registrationDetails: { destination: webhookUrl, settings: CONTACT_WEBHOOK_SETTINGS }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new KommoClient({
         token: ctx.auth.token,
-        subdomain: ctx.config.subdomain,
+        subdomain: ctx.config.subdomain
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.destination);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         let text = await ctx.request.text();
@@ -81,12 +83,12 @@ export let contactEventsTrigger = SlateTrigger.create(
       let inputs: Array<any> = [];
 
       let eventTypes: Record<string, string> = {
-        'add_contact': 'contact.added',
-        'update_contact': 'contact.updated',
-        'delete_contact': 'contact.deleted',
-        'restore_contact': 'contact.restored',
-        'responsible_contact': 'contact.responsible_changed',
-        'note_contact': 'contact.note_added',
+        add_contact: 'contact.added',
+        update_contact: 'contact.updated',
+        delete_contact: 'contact.deleted',
+        restore_contact: 'contact.restored',
+        responsible_contact: 'contact.responsible_changed',
+        note_contact: 'contact.note_added'
       };
 
       for (let [webhookKey, eventType] of Object.entries(eventTypes)) {
@@ -99,11 +101,12 @@ export let contactEventsTrigger = SlateTrigger.create(
             eventType,
             contactId: Number(item.id),
             contactName: item.name,
-            responsibleUserId: item.responsible_user_id != null ? Number(item.responsible_user_id) : undefined,
+            responsibleUserId:
+              item.responsible_user_id != null ? Number(item.responsible_user_id) : undefined,
             createdAt: item.created_at != null ? Number(item.created_at) : undefined,
             updatedAt: item.updated_at != null ? Number(item.updated_at) : undefined,
             accountId: body.account_id != null ? Number(body.account_id) : undefined,
-            customFields: item.custom_fields,
+            customFields: item.custom_fields
           });
         }
       }
@@ -111,7 +114,7 @@ export let contactEventsTrigger = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.eventType}-${ctx.input.contactId}-${ctx.input.updatedAt || Date.now()}`,
@@ -122,8 +125,9 @@ export let contactEventsTrigger = SlateTrigger.create(
           createdAt: ctx.input.createdAt,
           updatedAt: ctx.input.updatedAt,
           accountId: ctx.input.accountId,
-          customFields: ctx.input.customFields,
-        },
+          customFields: ctx.input.customFields
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

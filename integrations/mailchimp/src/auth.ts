@@ -2,7 +2,7 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let oauthAxios = createAxios({
-  baseURL: 'https://login.mailchimp.com',
+  baseURL: 'https://login.mailchimp.com'
 });
 
 type AuthOutput = {
@@ -11,10 +11,12 @@ type AuthOutput = {
 };
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    serverPrefix: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      serverPrefix: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -22,37 +24,41 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       return {
-        url: `https://login.mailchimp.com/oauth2/authorize?${params.toString()}`,
+        url: `https://login.mailchimp.com/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let tokenResponse = await oauthAxios.post('/oauth2/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        code: ctx.code,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+    handleCallback: async ctx => {
+      let tokenResponse = await oauthAxios.post(
+        '/oauth2/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          code: ctx.code
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let accessToken = tokenResponse.data.access_token as string;
 
       let metadataResponse = await oauthAxios.get('/oauth2/metadata', {
         headers: {
-          Authorization: `OAuth ${accessToken}`,
-        },
+          Authorization: `OAuth ${accessToken}`
+        }
       });
 
       let serverPrefix = metadataResponse.data.dc as string;
@@ -60,20 +66,20 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: accessToken,
-          serverPrefix,
-        },
+          serverPrefix
+        }
       };
     },
 
     getProfile: async (ctx: { output: AuthOutput; input: {}; scopes: string[] }) => {
       let apiAxios = createAxios({
-        baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`,
+        baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`
       });
 
       let response = await apiAxios.get('/', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -83,10 +89,10 @@ export let auth = SlateAuth.create()
           id: data.account_id,
           email: data.email,
           name: `${data.first_name ?? ''} ${data.last_name ?? ''}`.trim() || data.account_name,
-          accountName: data.account_name,
-        },
+          accountName: data.account_name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -94,32 +100,36 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Mailchimp API key (e.g., "abc123def-us19"). Find it under Profile > Extras > API Keys.'),
+      token: z
+        .string()
+        .describe(
+          'Mailchimp API key (e.g., "abc123def-us19"). Find it under Profile > Extras > API Keys.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let parts = ctx.input.token.split('-');
       let serverPrefix = parts[parts.length - 1] ?? '';
 
       return {
         output: {
           token: ctx.input.token,
-          serverPrefix,
-        },
+          serverPrefix
+        }
       };
     },
 
     getProfile: async (ctx: { output: AuthOutput; input: { token: string } }) => {
       let apiAxios = createAxios({
-        baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`,
+        baseURL: `https://${ctx.output.serverPrefix}.api.mailchimp.com/3.0`
       });
 
       let encoded = btoa(`anystring:${ctx.output.token}`);
 
       let response = await apiAxios.get('/', {
         headers: {
-          Authorization: `Basic ${encoded}`,
-        },
+          Authorization: `Basic ${encoded}`
+        }
       });
 
       let data = response.data;
@@ -129,8 +139,8 @@ export let auth = SlateAuth.create()
           id: data.account_id,
           email: data.email,
           name: `${data.first_name ?? ''} ${data.last_name ?? ''}`.trim() || data.account_name,
-          accountName: data.account_name,
-        },
+          accountName: data.account_name
+        }
       };
-    },
+    }
   });

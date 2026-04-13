@@ -12,37 +12,54 @@ export let deskManageTicket = SlateTool.create(spec, {
     'The orgId parameter is required for all Zoho Desk operations.',
     'For create, provide subject and optionally departmentId, contactId, description, priority, status, etc.',
     'For update, provide ticketId and the fields to change.',
-    'For delete, provide ticketId.',
+    'For delete, provide ticketId.'
   ],
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    orgId: z.string().describe('Zoho Desk organization ID'),
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    ticketId: z.string().optional().describe('Ticket ID (required for update and delete)'),
-    subject: z.string().optional().describe('Ticket subject (required for create)'),
-    description: z.string().optional().describe('Ticket description/content'),
-    departmentId: z.string().optional().describe('Department ID to assign the ticket to'),
-    contactId: z.string().optional().describe('Contact ID associated with the ticket'),
-    email: z.string().optional().describe('Email of the requester'),
-    priority: z.string().optional().describe('Ticket priority (e.g., "High", "Medium", "Low")'),
-    status: z.string().optional().describe('Ticket status (e.g., "Open", "On Hold", "Escalated", "Closed")'),
-    assigneeId: z.string().optional().describe('Agent ID to assign the ticket to'),
-    category: z.string().optional().describe('Ticket category'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values as key-value pairs'),
-  }))
-  .output(z.object({
-    ticketId: z.string().optional(),
-    ticketNumber: z.string().optional(),
-    subject: z.string().optional(),
-    status: z.string().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      orgId: z.string().describe('Zoho Desk organization ID'),
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      ticketId: z.string().optional().describe('Ticket ID (required for update and delete)'),
+      subject: z.string().optional().describe('Ticket subject (required for create)'),
+      description: z.string().optional().describe('Ticket description/content'),
+      departmentId: z.string().optional().describe('Department ID to assign the ticket to'),
+      contactId: z.string().optional().describe('Contact ID associated with the ticket'),
+      email: z.string().optional().describe('Email of the requester'),
+      priority: z
+        .string()
+        .optional()
+        .describe('Ticket priority (e.g., "High", "Medium", "Low")'),
+      status: z
+        .string()
+        .optional()
+        .describe('Ticket status (e.g., "Open", "On Hold", "Escalated", "Closed")'),
+      assigneeId: z.string().optional().describe('Agent ID to assign the ticket to'),
+      category: z.string().optional().describe('Ticket category'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values as key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.string().optional(),
+      ticketNumber: z.string().optional(),
+      subject: z.string().optional(),
+      status: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
-    let client = new ZohoDeskClient({ token: ctx.auth.token, datacenter: dc, orgId: ctx.input.orgId });
+    let client = new ZohoDeskClient({
+      token: ctx.auth.token,
+      datacenter: dc,
+      orgId: ctx.input.orgId
+    });
 
     if (ctx.input.action === 'create') {
       let data: Record<string, any> = {};
@@ -63,9 +80,9 @@ export let deskManageTicket = SlateTool.create(spec, {
           ticketId: result?.id,
           ticketNumber: result?.ticketNumber,
           subject: result?.subject,
-          status: result?.status,
+          status: result?.status
         },
-        message: `Created ticket **#${result?.ticketNumber}**: "${result?.subject}".`,
+        message: `Created ticket **#${result?.ticketNumber}**: "${result?.subject}".`
       };
     }
 
@@ -87,9 +104,9 @@ export let deskManageTicket = SlateTool.create(spec, {
           ticketId: result?.id,
           ticketNumber: result?.ticketNumber,
           subject: result?.subject,
-          status: result?.status,
+          status: result?.status
         },
-        message: `Updated ticket **${ctx.input.ticketId}**.`,
+        message: `Updated ticket **${ctx.input.ticketId}**.`
       };
     }
 
@@ -98,9 +115,10 @@ export let deskManageTicket = SlateTool.create(spec, {
       await client.deleteTicket(ctx.input.ticketId);
       return {
         output: { ticketId: ctx.input.ticketId, deleted: true },
-        message: `Deleted ticket **${ctx.input.ticketId}**.`,
+        message: `Deleted ticket **${ctx.input.ticketId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

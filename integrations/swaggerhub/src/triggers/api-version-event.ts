@@ -2,31 +2,35 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let apiVersionEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'API Version Event',
-    key: 'api_version_event',
-    description: 'Triggers when an API version is saved or published in SwaggerHub via a configured webhook integration.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('The action that triggered the event (e.g., after_api_version_saved)'),
-    apiPath: z.string().describe('Full path to the API (owner/api/version)'),
-    definition: z.any().optional().describe('The full API definition'),
-  }))
-  .output(z.object({
-    owner: z.string().describe('Owner of the API'),
-    apiName: z.string().describe('Name of the API'),
-    version: z.string().describe('Version that was affected'),
-    action: z.string().describe('The action that was performed'),
-    definition: z.any().optional().describe('The full API definition payload'),
-  }))
+export let apiVersionEvent = SlateTrigger.create(spec, {
+  name: 'API Version Event',
+  key: 'api_version_event',
+  description:
+    'Triggers when an API version is saved or published in SwaggerHub via a configured webhook integration.'
+})
+  .input(
+    z.object({
+      action: z
+        .string()
+        .describe('The action that triggered the event (e.g., after_api_version_saved)'),
+      apiPath: z.string().describe('Full path to the API (owner/api/version)'),
+      definition: z.any().optional().describe('The full API definition')
+    })
+  )
+  .output(
+    z.object({
+      owner: z.string().describe('Owner of the API'),
+      apiName: z.string().describe('Name of the API'),
+      version: z.string().describe('Version that was affected'),
+      action: z.string().describe('The action that was performed'),
+      definition: z.any().optional().describe('The full API definition payload')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: Record<string, unknown>;
       try {
-        body = await ctx.request.json() as Record<string, unknown>;
+        body = (await ctx.request.json()) as Record<string, unknown>;
       } catch {
         return { inputs: [] };
       }
@@ -40,13 +44,13 @@ export let apiVersionEvent = SlateTrigger.create(
           {
             action,
             apiPath,
-            definition,
-          },
-        ],
+            definition
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { action, apiPath, definition } = ctx.input;
 
       // Parse the API path: typically "apis/owner/apiName/version"
@@ -81,8 +85,9 @@ export let apiVersionEvent = SlateTrigger.create(
           apiName,
           version,
           action,
-          definition,
-        },
+          definition
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -142,7 +142,10 @@ export interface TranscriptionRequestParams {
   };
   custom_vocabulary?: boolean;
   custom_vocabulary_config?: {
-    vocabulary?: (string | { value: string; intensity?: number; pronunciations?: string[]; language?: string })[];
+    vocabulary?: (
+      | string
+      | { value: string; intensity?: number; pronunciations?: string[]; language?: string }
+    )[];
     default_intensity?: number;
   };
   custom_spelling?: boolean;
@@ -179,7 +182,10 @@ export interface LiveSessionRequestParams {
   realtime_processing?: {
     custom_vocabulary?: boolean;
     custom_vocabulary_config?: {
-      vocabulary?: (string | { value: string; intensity?: number; pronunciations?: string[]; language?: string })[];
+      vocabulary?: (
+        | string
+        | { value: string; intensity?: number; pronunciations?: string[]; language?: string }
+      )[];
       default_intensity?: number;
     };
     translation?: boolean;

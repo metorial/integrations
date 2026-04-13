@@ -13,7 +13,7 @@ import {
   jobsSearchTool,
   autocompleteTool,
   locationsLookupTool,
-  accountInfoTool,
+  accountInfoTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -33,9 +33,7 @@ export let provider = Slate.create({
     jobsSearchTool,
     autocompleteTool,
     locationsLookupTool,
-    accountInfoTool,
+    accountInfoTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

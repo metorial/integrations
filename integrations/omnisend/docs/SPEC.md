@@ -20,6 +20,7 @@ The primary authentication method is an API key, provided via the `X-API-KEY` he
 - Base URL: `https://api.omnisend.com/v5/`
 
 Example:
+
 ```
 GET https://api.omnisend.com/v5/contacts
 X-API-KEY: your-api-key
@@ -40,13 +41,17 @@ API requests use the access token as a Bearer token in the `Authorization` heade
 ## Features
 
 ### Contact Management
+
 Sync subscriber lists, add custom properties, and update contact details. Contacts can be listed, created, updated, and retrieved by ID. Contacts can have email and SMS subscription statuses managed independently.
 
 ### Product Catalog
+
 Manage a product catalog within Omnisend by creating, updating, deleting, and listing products and product categories. This enables the Product Picker in Omnisend's Email Builder and automation workflows.
 
 ### Ecommerce Event Tracking
+
 Omnisend provides an events endpoint that allows you to send events to Omnisend, used to track customer behavior and trigger automations. Predefined events include:
+
 - **Cart events:** added product to cart, started checkout
 - **Order events:** placed order, paid for order, order fulfilled, order refunded, order canceled
 - **Browsing events:** viewed product
@@ -54,15 +59,19 @@ Omnisend provides an events endpoint that allows you to send events to Omnisend,
 Custom events can also be sent (e.g., "trial started," "subscription renewed") to trigger automation workflows.
 
 ### Automation Workflows
+
 Pass cart data to trigger abandoned cart emails/SMS. Pass order data to trigger order confirmation and shipping confirmation transactional emails. Track product views and cart additions to enable product abandonment and browse abandonment workflows. Automations can be listed via the API.
 
 ### Campaigns
+
 List and view campaigns. Campaigns cover email newsletters and other marketing messages managed within Omnisend.
 
 ### Brand Management
+
 Retrieve and configure brand information, including connecting a brand/store to Omnisend.
 
 ### Analytics & Reporting
+
 Export analytics data with the Statistics API — query campaign and workflow performance, engagement metrics, revenue attribution, deliverability, and audience growth data. This feature is currently in beta.
 
 ## Events

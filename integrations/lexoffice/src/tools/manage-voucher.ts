@@ -3,18 +3,20 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let voucherItemInputSchema = z.object({
-  amount: z.number().describe('Item amount'),
-  taxAmount: z.number().describe('Tax amount for this item'),
-  taxRatePercentage: z.number().describe('Tax rate percentage (e.g. 0, 7, 19)'),
-  categoryId: z.string().describe('Posting category ID for this item'),
-}).describe('Voucher line item');
+let voucherItemInputSchema = z
+  .object({
+    amount: z.number().describe('Item amount'),
+    taxAmount: z.number().describe('Tax amount for this item'),
+    taxRatePercentage: z.number().describe('Tax rate percentage (e.g. 0, 7, 19)'),
+    categoryId: z.string().describe('Posting category ID for this item')
+  })
+  .describe('Voucher line item');
 
 let voucherItemOutputSchema = z.object({
   amount: z.number().optional().describe('Item amount'),
   taxAmount: z.number().optional().describe('Tax amount'),
   taxRatePercentage: z.number().optional().describe('Tax rate percentage'),
-  categoryId: z.string().optional().describe('Posting category ID'),
+  categoryId: z.string().optional().describe('Posting category ID')
 });
 
 let voucherOutputSchema = z.object({
@@ -32,7 +34,7 @@ let voucherOutputSchema = z.object({
   voucherItems: z.array(voucherItemOutputSchema).optional().describe('Voucher line items'),
   version: z.number().optional().describe('Voucher version for optimistic locking'),
   createdDate: z.string().optional().describe('Creation date'),
-  updatedDate: z.string().optional().describe('Last updated date'),
+  updatedDate: z.string().optional().describe('Last updated date')
 });
 
 let mapVoucher = (voucher: any) => ({
@@ -51,58 +53,82 @@ let mapVoucher = (voucher: any) => ({
     amount: item.amount,
     taxAmount: item.taxAmount,
     taxRatePercentage: item.taxRatePercentage,
-    categoryId: item.categoryId,
+    categoryId: item.categoryId
   })),
   version: voucher.version,
   createdDate: voucher.createdDate,
-  updatedDate: voucher.updatedDate,
+  updatedDate: voucher.updatedDate
 });
 
-export let manageVoucher = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Voucher',
-    key: 'manage_voucher',
-    description: `Create, retrieve, or update bookkeeping vouchers in Lexoffice. Vouchers represent financial documents such as sales invoices, purchase invoices, credit notes, and their purchase counterparts.`,
-    instructions: [
-      'Use action "create" to add a new voucher — type, voucherNumber, voucherDate, totalGrossAmount, totalTaxAmount, taxType, and voucherItems are required.',
-      'Use action "get" to retrieve full details of a voucher by its ID.',
-      'Use action "update" to modify an existing voucher — voucherId is required.',
-      'Supported voucher types: salesinvoice, salescreditnote, purchaseinvoice, purchasecreditnote.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageVoucher = SlateTool.create(spec, {
+  name: 'Manage Voucher',
+  key: 'manage_voucher',
+  description: `Create, retrieve, or update bookkeeping vouchers in Lexoffice. Vouchers represent financial documents such as sales invoices, purchase invoices, credit notes, and their purchase counterparts.`,
+  instructions: [
+    'Use action "create" to add a new voucher — type, voucherNumber, voucherDate, totalGrossAmount, totalTaxAmount, taxType, and voucherItems are required.',
+    'Use action "get" to retrieve full details of a voucher by its ID.',
+    'Use action "update" to modify an existing voucher — voucherId is required.',
+    'Supported voucher types: salesinvoice, salescreditnote, purchaseinvoice, purchasecreditnote.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update']).describe('Operation to perform on the voucher'),
-    voucherId: z.string().optional().describe('Voucher ID (required for get and update)'),
-    type: z.enum(['salesinvoice', 'salescreditnote', 'purchaseinvoice', 'purchasecreditnote']).optional().describe('Voucher type (required for create)'),
-    voucherNumber: z.string().optional().describe('Voucher number (required for create)'),
-    voucherDate: z.string().optional().describe('Voucher date in ISO format, e.g. 2024-01-15 (required for create)'),
-    dueDate: z.string().optional().describe('Due date in ISO format'),
-    totalGrossAmount: z.number().optional().describe('Total gross amount (required for create)'),
-    totalTaxAmount: z.number().optional().describe('Total tax amount (required for create)'),
-    taxType: z.enum(['net', 'gross', 'vatfree']).optional().describe('Tax type (required for create)'),
-    voucherItems: z.array(voucherItemInputSchema).optional().describe('Voucher line items (required for create)'),
-    contactId: z.string().optional().describe('Contact ID to associate with the voucher'),
-    voucherStatus: z.enum(['open', 'paid', 'paidoff', 'voided', 'transferred', 'sepadebit', 'unchecked']).optional().describe('Voucher status'),
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update'])
+        .describe('Operation to perform on the voucher'),
+      voucherId: z.string().optional().describe('Voucher ID (required for get and update)'),
+      type: z
+        .enum(['salesinvoice', 'salescreditnote', 'purchaseinvoice', 'purchasecreditnote'])
+        .optional()
+        .describe('Voucher type (required for create)'),
+      voucherNumber: z.string().optional().describe('Voucher number (required for create)'),
+      voucherDate: z
+        .string()
+        .optional()
+        .describe('Voucher date in ISO format, e.g. 2024-01-15 (required for create)'),
+      dueDate: z.string().optional().describe('Due date in ISO format'),
+      totalGrossAmount: z
+        .number()
+        .optional()
+        .describe('Total gross amount (required for create)'),
+      totalTaxAmount: z.number().optional().describe('Total tax amount (required for create)'),
+      taxType: z
+        .enum(['net', 'gross', 'vatfree'])
+        .optional()
+        .describe('Tax type (required for create)'),
+      voucherItems: z
+        .array(voucherItemInputSchema)
+        .optional()
+        .describe('Voucher line items (required for create)'),
+      contactId: z.string().optional().describe('Contact ID to associate with the voucher'),
+      voucherStatus: z
+        .enum(['open', 'paid', 'paidoff', 'voided', 'transferred', 'sepadebit', 'unchecked'])
+        .optional()
+        .describe('Voucher status')
+    })
+  )
   .output(voucherOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
     if (action === 'create') {
       if (!ctx.input.type) throw new Error('type is required for voucher creation');
-      if (!ctx.input.voucherNumber) throw new Error('voucherNumber is required for voucher creation');
-      if (!ctx.input.voucherDate) throw new Error('voucherDate is required for voucher creation');
-      if (ctx.input.totalGrossAmount === undefined) throw new Error('totalGrossAmount is required for voucher creation');
-      if (ctx.input.totalTaxAmount === undefined) throw new Error('totalTaxAmount is required for voucher creation');
+      if (!ctx.input.voucherNumber)
+        throw new Error('voucherNumber is required for voucher creation');
+      if (!ctx.input.voucherDate)
+        throw new Error('voucherDate is required for voucher creation');
+      if (ctx.input.totalGrossAmount === undefined)
+        throw new Error('totalGrossAmount is required for voucher creation');
+      if (ctx.input.totalTaxAmount === undefined)
+        throw new Error('totalTaxAmount is required for voucher creation');
       if (!ctx.input.taxType) throw new Error('taxType is required for voucher creation');
-      if (!ctx.input.voucherItems || ctx.input.voucherItems.length === 0) throw new Error('voucherItems are required for voucher creation');
+      if (!ctx.input.voucherItems || ctx.input.voucherItems.length === 0)
+        throw new Error('voucherItems are required for voucher creation');
 
       let voucherData: Record<string, any> = {
         type: ctx.input.type,
@@ -111,12 +137,12 @@ export let manageVoucher = SlateTool.create(
         totalGrossAmount: ctx.input.totalGrossAmount,
         totalTaxAmount: ctx.input.totalTaxAmount,
         taxType: ctx.input.taxType,
-        voucherItems: ctx.input.voucherItems.map((item) => ({
+        voucherItems: ctx.input.voucherItems.map(item => ({
           amount: item.amount,
           taxAmount: item.taxAmount,
           taxRatePercentage: item.taxRatePercentage,
-          categoryId: item.categoryId,
-        })),
+          categoryId: item.categoryId
+        }))
       };
       if (ctx.input.dueDate) voucherData.dueDate = ctx.input.dueDate;
       if (ctx.input.contactId) voucherData.contactId = ctx.input.contactId;
@@ -136,9 +162,9 @@ export let manageVoucher = SlateTool.create(
           taxType: ctx.input.taxType,
           version: result.version,
           createdDate: result.createdDate,
-          updatedDate: result.updatedDate,
+          updatedDate: result.updatedDate
         },
-        message: `Created ${ctx.input.type} voucher **${ctx.input.voucherNumber}** (${result.id}) for **${ctx.input.totalGrossAmount}** gross.`,
+        message: `Created ${ctx.input.type} voucher **${ctx.input.voucherNumber}** (${result.id}) for **${ctx.input.totalGrossAmount}** gross.`
       };
     }
 
@@ -150,7 +176,7 @@ export let manageVoucher = SlateTool.create(
 
       return {
         output,
-        message: `Retrieved voucher **${output.voucherNumber}** (${output.id}) — ${output.type}, status: **${output.voucherStatus}**, gross: **${output.totalGrossAmount}**.`,
+        message: `Retrieved voucher **${output.voucherNumber}** (${output.id}) — ${output.type}, status: **${output.voucherStatus}**, gross: **${output.totalGrossAmount}**.`
       };
     }
 
@@ -162,17 +188,19 @@ export let manageVoucher = SlateTool.create(
     if (ctx.input.voucherNumber) voucherData.voucherNumber = ctx.input.voucherNumber;
     if (ctx.input.voucherDate) voucherData.voucherDate = ctx.input.voucherDate;
     if (ctx.input.dueDate) voucherData.dueDate = ctx.input.dueDate;
-    if (ctx.input.totalGrossAmount !== undefined) voucherData.totalGrossAmount = ctx.input.totalGrossAmount;
-    if (ctx.input.totalTaxAmount !== undefined) voucherData.totalTaxAmount = ctx.input.totalTaxAmount;
+    if (ctx.input.totalGrossAmount !== undefined)
+      voucherData.totalGrossAmount = ctx.input.totalGrossAmount;
+    if (ctx.input.totalTaxAmount !== undefined)
+      voucherData.totalTaxAmount = ctx.input.totalTaxAmount;
     if (ctx.input.taxType) voucherData.taxType = ctx.input.taxType;
     if (ctx.input.contactId) voucherData.contactId = ctx.input.contactId;
     if (ctx.input.voucherStatus) voucherData.voucherStatus = ctx.input.voucherStatus;
     if (ctx.input.voucherItems) {
-      voucherData.voucherItems = ctx.input.voucherItems.map((item) => ({
+      voucherData.voucherItems = ctx.input.voucherItems.map(item => ({
         amount: item.amount,
         taxAmount: item.taxAmount,
         taxRatePercentage: item.taxRatePercentage,
-        categoryId: item.categoryId,
+        categoryId: item.categoryId
       }));
     }
 
@@ -184,8 +212,9 @@ export let manageVoucher = SlateTool.create(
         resourceUri: result.resourceUri,
         version: result.version,
         createdDate: result.createdDate,
-        updatedDate: result.updatedDate,
+        updatedDate: result.updatedDate
       },
-      message: `Updated voucher **${ctx.input.voucherNumber || result.id}**.`,
+      message: `Updated voucher **${ctx.input.voucherNumber || result.id}**.`
     };
-  }).build();
+  })
+  .build();

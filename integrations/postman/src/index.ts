@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listWorkspacesTool,
@@ -20,13 +19,13 @@ import {
   manageCommentTool,
   getUserTool,
   manageTagsTool,
-  createWebhookTool,
+  createWebhookTool
 } from './tools';
 import {
   collectionUpdatedTrigger,
   monitorRunCompletedTrigger,
   workspaceUpdatedTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -50,12 +49,12 @@ export let provider = Slate.create({
     manageCommentTool,
     getUserTool,
     manageTagsTool,
-    createWebhookTool,
+    createWebhookTool
   ],
   triggers: [
     inboundWebhook,
     collectionUpdatedTrigger,
     monitorRunCompletedTrigger,
-    workspaceUpdatedTrigger,
-  ],
+    workspaceUpdatedTrigger
+  ]
 });

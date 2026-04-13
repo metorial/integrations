@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createPost,
@@ -23,7 +22,7 @@ import {
   newPostFromSearch,
   newFollower,
   newDirectMessage,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -45,11 +44,5 @@ export let provider = Slate.create({
     manageList,
     manageReplyVisibility
   ],
-  triggers: [
-    inboundWebhook,
-    newMention,
-    newPostFromSearch,
-    newFollower,
-    newDirectMessage
-  ]
+  triggers: [inboundWebhook, newMention, newPostFromSearch, newFollower, newDirectMessage]
 });

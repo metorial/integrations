@@ -3,42 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let projectEventTypes = [
-  'NEW_PROJECT',
-  'PROJECT_UPDATED',
-  'PROJECT_DELETED'
-] as const;
+let projectEventTypes = ['NEW_PROJECT', 'PROJECT_UPDATED', 'PROJECT_DELETED'] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'NEW_PROJECT': 'project.created',
-  'PROJECT_UPDATED': 'project.updated',
-  'PROJECT_DELETED': 'project.deleted'
+  NEW_PROJECT: 'project.created',
+  PROJECT_UPDATED: 'project.updated',
+  PROJECT_DELETED: 'project.deleted'
 };
 
-export let projectEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Events',
-    key: 'project_events',
-    description: 'Triggered when projects are created, updated, or deleted.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    project: z.any().describe('Project data from webhook payload')
-  }))
-  .output(z.object({
-    projectId: z.string(),
-    name: z.string().optional(),
-    clientId: z.string().optional(),
-    billable: z.boolean().optional(),
-    archived: z.boolean().optional(),
-    isPublic: z.boolean().optional(),
-    color: z.string().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let projectEvents = SlateTrigger.create(spec, {
+  name: 'Project Events',
+  key: 'project_events',
+  description: 'Triggered when projects are created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      project: z.any().describe('Project data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string(),
+      name: z.string().optional(),
+      clientId: z.string().optional(),
+      billable: z.boolean().optional(),
+      archived: z.boolean().optional(),
+      isPublic: z.boolean().optional(),
+      color: z.string().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -60,7 +57,7 @@ export let projectEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -77,21 +74,24 @@ export let projectEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          project: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            project: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let project = ctx.input.project;
       let projectId = project.id || project.projectId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `project.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `project.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

@@ -3,44 +3,55 @@ import { GraphClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageOnlineMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Online Meeting',
-    key: 'manage_online_meeting',
-    description: `Create, get, update, or delete a Microsoft Teams online meeting. Can schedule meetings with a start/end time, subject, and participants.`,
-    instructions: [
-      'For creating a meeting, provide subject and optionally startDateTime, endDateTime.',
-      'For getting or deleting, provide meetingId.',
-      'For updating, provide meetingId and the fields to update.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('Action to perform'),
-    meetingId: z.string().optional().describe('Meeting ID (required for get/update/delete)'),
-    subject: z.string().optional().describe('Meeting subject'),
-    startDateTime: z.string().optional().describe('Meeting start time in ISO 8601 format'),
-    endDateTime: z.string().optional().describe('Meeting end time in ISO 8601 format'),
-    participantUserIds: z.array(z.string()).optional().describe('User IDs to invite as attendees'),
-  }))
-  .output(z.object({
-    meetingId: z.string().optional().describe('Unique identifier of the meeting'),
-    subject: z.string().optional().describe('Meeting subject'),
-    startDateTime: z.string().optional().describe('Start time'),
-    endDateTime: z.string().optional().describe('End time'),
-    joinWebUrl: z.string().optional().describe('URL to join the meeting'),
-    meetingCode: z.string().optional().describe('Meeting code for joining'),
-    meetings: z.array(z.object({
-      meetingId: z.string().describe('Meeting ID'),
-      subject: z.string().optional().describe('Subject'),
-      joinWebUrl: z.string().optional().describe('Join URL'),
+export let manageOnlineMeeting = SlateTool.create(spec, {
+  name: 'Manage Online Meeting',
+  key: 'manage_online_meeting',
+  description: `Create, get, update, or delete a Microsoft Teams online meeting. Can schedule meetings with a start/end time, subject, and participants.`,
+  instructions: [
+    'For creating a meeting, provide subject and optionally startDateTime, endDateTime.',
+    'For getting or deleting, provide meetingId.',
+    'For updating, provide meetingId and the fields to update.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('Action to perform'),
+      meetingId: z.string().optional().describe('Meeting ID (required for get/update/delete)'),
+      subject: z.string().optional().describe('Meeting subject'),
+      startDateTime: z.string().optional().describe('Meeting start time in ISO 8601 format'),
+      endDateTime: z.string().optional().describe('Meeting end time in ISO 8601 format'),
+      participantUserIds: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to invite as attendees')
+    })
+  )
+  .output(
+    z.object({
+      meetingId: z.string().optional().describe('Unique identifier of the meeting'),
+      subject: z.string().optional().describe('Meeting subject'),
       startDateTime: z.string().optional().describe('Start time'),
       endDateTime: z.string().optional().describe('End time'),
-    })).optional().describe('List of meetings (for list action)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+      joinWebUrl: z.string().optional().describe('URL to join the meeting'),
+      meetingCode: z.string().optional().describe('Meeting code for joining'),
+      meetings: z
+        .array(
+          z.object({
+            meetingId: z.string().describe('Meeting ID'),
+            subject: z.string().optional().describe('Subject'),
+            joinWebUrl: z.string().optional().describe('Join URL'),
+            startDateTime: z.string().optional().describe('Start time'),
+            endDateTime: z.string().optional().describe('End time')
+          })
+        )
+        .optional()
+        .describe('List of meetings (for list action)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GraphClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -50,17 +61,17 @@ export let manageOnlineMeeting = SlateTool.create(
         subject: m.subject,
         joinWebUrl: m.joinWebUrl,
         startDateTime: m.startDateTime,
-        endDateTime: m.endDateTime,
+        endDateTime: m.endDateTime
       }));
       return {
         output: { meetings: mapped, success: true },
-        message: `Found **${mapped.length}** online meetings.`,
+        message: `Found **${mapped.length}** online meetings.`
       };
     }
 
     if (ctx.input.action === 'create') {
       let body: any = {
-        subject: ctx.input.subject || 'New Meeting',
+        subject: ctx.input.subject || 'New Meeting'
       };
       if (ctx.input.startDateTime) body.startDateTime = ctx.input.startDateTime;
       if (ctx.input.endDateTime) body.endDateTime = ctx.input.endDateTime;
@@ -68,8 +79,8 @@ export let manageOnlineMeeting = SlateTool.create(
         body.participants = {
           attendees: ctx.input.participantUserIds.map((uid: string) => ({
             upn: uid,
-            role: 'attendee',
-          })),
+            role: 'attendee'
+          }))
         };
       }
 
@@ -82,9 +93,9 @@ export let manageOnlineMeeting = SlateTool.create(
           endDateTime: meeting.endDateTime,
           joinWebUrl: meeting.joinWebUrl,
           meetingCode: meeting.meetingCode,
-          success: true,
+          success: true
         },
-        message: `Meeting **${meeting.subject}** created. Join URL: ${meeting.joinWebUrl}`,
+        message: `Meeting **${meeting.subject}** created. Join URL: ${meeting.joinWebUrl}`
       };
     }
 
@@ -99,9 +110,9 @@ export let manageOnlineMeeting = SlateTool.create(
           endDateTime: meeting.endDateTime,
           joinWebUrl: meeting.joinWebUrl,
           meetingCode: meeting.meetingCode,
-          success: true,
+          success: true
         },
-        message: `Retrieved meeting **${meeting.subject}**.`,
+        message: `Retrieved meeting **${meeting.subject}**.`
       };
     }
 
@@ -120,9 +131,9 @@ export let manageOnlineMeeting = SlateTool.create(
           startDateTime: meeting.startDateTime,
           endDateTime: meeting.endDateTime,
           joinWebUrl: meeting.joinWebUrl,
-          success: true,
+          success: true
         },
-        message: `Meeting updated successfully.`,
+        message: `Meeting updated successfully.`
       };
     }
 
@@ -131,7 +142,7 @@ export let manageOnlineMeeting = SlateTool.create(
       await client.deleteOnlineMeeting(ctx.input.meetingId);
       return {
         output: { meetingId: ctx.input.meetingId, success: true },
-        message: `Meeting deleted successfully.`,
+        message: `Meeting deleted successfully.`
       };
     }
 

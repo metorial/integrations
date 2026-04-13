@@ -18,6 +18,7 @@ The API key can be found on the dashboard page in the user's admin panel after r
 - **Passed as:** Query string parameter on every request
 
 Example:
+
 ```
 GET https://api.scrapingant.com/v2/general?url=https://example.com&x-api-key=<YOUR_API_KEY>
 ```

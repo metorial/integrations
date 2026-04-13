@@ -13,6 +13,7 @@ Authorization: Token YOUR_API_KEY
 ```
 
 To obtain an API key:
+
 1. Create a free account at `https://www.tpscheck.uk/signup/` (no credit card required).
 2. Retrieve your API key from your profile page at `https://www.tpscheck.uk/profile/`.
 

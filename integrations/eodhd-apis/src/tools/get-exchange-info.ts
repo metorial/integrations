@@ -23,31 +23,49 @@ let tickerSchema = z.object({
   Isin: z.string().optional().nullable().describe('ISIN identifier')
 });
 
-export let getExchangeInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Exchange Info',
-    key: 'get_exchange_info',
-    description: `Retrieve information about supported exchanges and their listed instruments. List all 70+ supported exchanges, or get the full symbol list for a specific exchange.`,
-    instructions: [
-      'Omit exchangeCode to list all supported exchanges',
-      'Provide exchangeCode (e.g., US, LSE, XETRA) to list tickers on that exchange'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getExchangeInfo = SlateTool.create(spec, {
+  name: 'Get Exchange Info',
+  key: 'get_exchange_info',
+  description: `Retrieve information about supported exchanges and their listed instruments. List all 70+ supported exchanges, or get the full symbol list for a specific exchange.`,
+  instructions: [
+    'Omit exchangeCode to list all supported exchanges',
+    'Provide exchangeCode (e.g., US, LSE, XETRA) to list tickers on that exchange'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    exchangeCode: z.string().optional().describe('Exchange code to list tickers for (e.g., US, LSE, XETRA). Omit to list all exchanges.'),
-    type: z.string().optional().describe('Filter tickers by type: common_stock, preferred_stock, etf, fund'),
-    includeDelisted: z.boolean().optional().describe('Include delisted tickers (default: false)')
-  }))
-  .output(z.object({
-    exchanges: z.array(exchangeSchema).optional().describe('List of supported exchanges (when no exchangeCode provided)'),
-    tickers: z.array(tickerSchema).optional().describe('List of tickers on the specified exchange')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      exchangeCode: z
+        .string()
+        .optional()
+        .describe(
+          'Exchange code to list tickers for (e.g., US, LSE, XETRA). Omit to list all exchanges.'
+        ),
+      type: z
+        .string()
+        .optional()
+        .describe('Filter tickers by type: common_stock, preferred_stock, etf, fund'),
+      includeDelisted: z
+        .boolean()
+        .optional()
+        .describe('Include delisted tickers (default: false)')
+    })
+  )
+  .output(
+    z.object({
+      exchanges: z
+        .array(exchangeSchema)
+        .optional()
+        .describe('List of supported exchanges (when no exchangeCode provided)'),
+      tickers: z
+        .array(tickerSchema)
+        .optional()
+        .describe('List of tickers on the specified exchange')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EodhdClient({ token: ctx.auth.token });
 
     if (!ctx.input.exchangeCode) {
@@ -69,4 +87,5 @@ export let getExchangeInfo = SlateTool.create(
       output: { tickers: tickersList },
       message: `Retrieved **${tickersList.length}** tickers from **${ctx.input.exchangeCode}** exchange.`
     };
-  }).build();
+  })
+  .build();

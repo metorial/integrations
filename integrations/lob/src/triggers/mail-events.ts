@@ -76,62 +76,90 @@ let ALL_MAIL_EVENT_TYPES = [
   'address.deleted',
   'bank_account.created',
   'bank_account.deleted',
-  'bank_account.verified',
+  'bank_account.verified'
 ];
 
-export let mailEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Mail & Resource Events',
-    key: 'mail_events',
-    description: 'Receive real-time webhook notifications for mail piece lifecycle events (postcards, letters, self-mailers, checks), USPS tracking updates, address events, and bank account events.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Lob event type (e.g., "postcard.delivered", "letter.created")'),
-    eventId: z.string().describe('Unique event ID'),
-    resourceId: z.string().describe('ID of the affected resource'),
-    resourceType: z.string().describe('Type of resource (postcard, letter, self_mailer, check, address, bank_account)'),
-    dateCreated: z.string().describe('When the event was created'),
-    body: z.any().describe('Full event body from Lob'),
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('ID of the affected resource (e.g., postcard ID, letter ID)'),
-    resourceType: z.string().describe('Type of resource: postcard, letter, self_mailer, check, address, bank_account'),
-    eventType: z.string().describe('Specific event type (e.g., "delivered", "in_transit", "created")'),
-    description: z.string().optional().nullable().describe('Resource description if available'),
-    status: z.string().optional().nullable().describe('Current status of the resource'),
-    url: z.string().optional().nullable().describe('PDF preview URL if available'),
-    to: z.any().optional().nullable().describe('Recipient address if applicable'),
-    from: z.any().optional().nullable().describe('Sender address if applicable'),
-    trackingEvents: z.array(z.any()).optional().nullable().describe('Latest tracking events if available'),
-    dateCreated: z.string().describe('When the event occurred'),
-    metadata: z.record(z.string(), z.string()).optional().nullable().describe('Resource metadata'),
-    rawResource: z.any().describe('Complete resource object from Lob'),
-  }))
+export let mailEvents = SlateTrigger.create(spec, {
+  name: 'Mail & Resource Events',
+  key: 'mail_events',
+  description:
+    'Receive real-time webhook notifications for mail piece lifecycle events (postcards, letters, self-mailers, checks), USPS tracking updates, address events, and bank account events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Lob event type (e.g., "postcard.delivered", "letter.created")'),
+      eventId: z.string().describe('Unique event ID'),
+      resourceId: z.string().describe('ID of the affected resource'),
+      resourceType: z
+        .string()
+        .describe(
+          'Type of resource (postcard, letter, self_mailer, check, address, bank_account)'
+        ),
+      dateCreated: z.string().describe('When the event was created'),
+      body: z.any().describe('Full event body from Lob')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z
+        .string()
+        .describe('ID of the affected resource (e.g., postcard ID, letter ID)'),
+      resourceType: z
+        .string()
+        .describe(
+          'Type of resource: postcard, letter, self_mailer, check, address, bank_account'
+        ),
+      eventType: z
+        .string()
+        .describe('Specific event type (e.g., "delivered", "in_transit", "created")'),
+      description: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Resource description if available'),
+      status: z.string().optional().nullable().describe('Current status of the resource'),
+      url: z.string().optional().nullable().describe('PDF preview URL if available'),
+      to: z.any().optional().nullable().describe('Recipient address if applicable'),
+      from: z.any().optional().nullable().describe('Sender address if applicable'),
+      trackingEvents: z
+        .array(z.any())
+        .optional()
+        .nullable()
+        .describe('Latest tracking events if available'),
+      dateCreated: z.string().describe('When the event occurred'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .nullable()
+        .describe('Resource metadata'),
+      rawResource: z.any().describe('Complete resource object from Lob')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        eventTypes: ALL_MAIL_EVENT_TYPES.map((id) => ({ id })),
-        description: 'Slates integration webhook',
+        eventTypes: ALL_MAIL_EVENT_TYPES.map(id => ({ id })),
+        description: 'Slates integration webhook'
       });
       return {
         registrationDetails: {
-          webhookId: result.id,
-        },
+          webhookId: result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       // Lob sends the event object directly
       let eventType = data.event_type?.id ?? data.event_type ?? '';
@@ -154,13 +182,13 @@ export let mailEvents = SlateTrigger.create(
             resourceId,
             resourceType,
             dateCreated: data.date_created ?? new Date().toISOString(),
-            body: resourceBody,
-          },
-        ],
+            body: resourceBody
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resource = ctx.input.body;
       let shortEventType = ctx.input.eventType;
 
@@ -170,7 +198,9 @@ export let mailEvents = SlateTrigger.create(
         output: {
           resourceId: ctx.input.resourceId,
           resourceType: ctx.input.resourceType,
-          eventType: shortEventType.includes('.') ? shortEventType.split('.').slice(1).join('.') : shortEventType,
+          eventType: shortEventType.includes('.')
+            ? shortEventType.split('.').slice(1).join('.')
+            : shortEventType,
           description: resource.description ?? null,
           status: resource.status ?? null,
           url: resource.url ?? null,
@@ -179,8 +209,8 @@ export let mailEvents = SlateTrigger.create(
           trackingEvents: resource.tracking_events ?? null,
           dateCreated: ctx.input.dateCreated,
           metadata: resource.metadata ?? null,
-          rawResource: resource,
-        },
+          rawResource: resource
+        }
       };
-    },
+    }
   });

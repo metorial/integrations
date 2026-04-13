@@ -3,43 +3,72 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listKnowledgeBase = SlateTool.create(
-  spec,
-  {
-    name: 'List Knowledge Base',
-    key: 'list_knowledge_base',
-    description: `Browses the knowledge base hierarchy. Lists categories, or folders within a category, or articles within a folder depending on the parameters provided.`,
-    tags: {
-      readOnly: true
-    }
+export let listKnowledgeBase = SlateTool.create(spec, {
+  name: 'List Knowledge Base',
+  key: 'list_knowledge_base',
+  description: `Browses the knowledge base hierarchy. Lists categories, or folders within a category, or articles within a folder depending on the parameters provided.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    categoryId: z.number().optional().describe('If provided, lists folders within this category. If omitted, lists all categories.'),
-    folderId: z.number().optional().describe('If provided, lists articles within this folder. Requires categoryId to be omitted.')
-  }))
-  .output(z.object({
-    categories: z.array(z.object({
-      categoryId: z.number().describe('Category ID'),
-      name: z.string().describe('Category name'),
-      description: z.string().nullable().describe('Category description')
-    })).optional().describe('Solution categories (when listing categories)'),
-    folders: z.array(z.object({
-      folderId: z.number().describe('Folder ID'),
-      name: z.string().describe('Folder name'),
-      description: z.string().nullable().describe('Folder description'),
-      visibility: z.number().nullable().describe('Visibility: 1=All, 2=Logged-in, 3=Agents, 4=Selected companies'),
-      articlesCount: z.number().nullable().describe('Number of articles in the folder')
-    })).optional().describe('Solution folders (when listing folders in a category)'),
-    articles: z.array(z.object({
-      articleId: z.number().describe('Article ID'),
-      title: z.string().describe('Article title'),
-      status: z.number().describe('Status: 1=Draft, 2=Published'),
-      createdAt: z.string().describe('Creation timestamp'),
-      updatedAt: z.string().describe('Last update timestamp')
-    })).optional().describe('Solution articles (when listing articles in a folder)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      categoryId: z
+        .number()
+        .optional()
+        .describe(
+          'If provided, lists folders within this category. If omitted, lists all categories.'
+        ),
+      folderId: z
+        .number()
+        .optional()
+        .describe(
+          'If provided, lists articles within this folder. Requires categoryId to be omitted.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      categories: z
+        .array(
+          z.object({
+            categoryId: z.number().describe('Category ID'),
+            name: z.string().describe('Category name'),
+            description: z.string().nullable().describe('Category description')
+          })
+        )
+        .optional()
+        .describe('Solution categories (when listing categories)'),
+      folders: z
+        .array(
+          z.object({
+            folderId: z.number().describe('Folder ID'),
+            name: z.string().describe('Folder name'),
+            description: z.string().nullable().describe('Folder description'),
+            visibility: z
+              .number()
+              .nullable()
+              .describe('Visibility: 1=All, 2=Logged-in, 3=Agents, 4=Selected companies'),
+            articlesCount: z.number().nullable().describe('Number of articles in the folder')
+          })
+        )
+        .optional()
+        .describe('Solution folders (when listing folders in a category)'),
+      articles: z
+        .array(
+          z.object({
+            articleId: z.number().describe('Article ID'),
+            title: z.string().describe('Article title'),
+            status: z.number().describe('Status: 1=Draft, 2=Published'),
+            createdAt: z.string().describe('Creation timestamp'),
+            updatedAt: z.string().describe('Last update timestamp')
+          })
+        )
+        .optional()
+        .describe('Solution articles (when listing articles in a folder)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -85,37 +114,39 @@ export let listKnowledgeBase = SlateTool.create(
       output: { categories: mapped },
       message: `Retrieved **${mapped.length}** knowledge base categories`
     };
-  }).build();
+  })
+  .build();
 
-export let getArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Get Article',
-    key: 'get_article',
-    description: `Retrieves a single knowledge base article by ID, including full HTML content, SEO metadata, tags, and folder/category information.`,
-    tags: {
-      readOnly: true
-    }
+export let getArticle = SlateTool.create(spec, {
+  name: 'Get Article',
+  key: 'get_article',
+  description: `Retrieves a single knowledge base article by ID, including full HTML content, SEO metadata, tags, and folder/category information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    articleId: z.number().describe('ID of the article to retrieve')
-  }))
-  .output(z.object({
-    articleId: z.number().describe('Article ID'),
-    title: z.string().describe('Article title'),
-    description: z.string().nullable().describe('Full HTML content of the article'),
-    descriptionText: z.string().nullable().describe('Plain text content'),
-    status: z.number().describe('Status: 1=Draft, 2=Published'),
-    folderId: z.number().describe('Parent folder ID'),
-    categoryId: z.number().describe('Parent category ID'),
-    tags: z.array(z.string()).describe('Article tags'),
-    seoTitle: z.string().nullable().describe('SEO title'),
-    seoDescription: z.string().nullable().describe('SEO meta description'),
-    createdAt: z.string().describe('Creation timestamp'),
-    updatedAt: z.string().describe('Last update timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      articleId: z.number().describe('ID of the article to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.number().describe('Article ID'),
+      title: z.string().describe('Article title'),
+      description: z.string().nullable().describe('Full HTML content of the article'),
+      descriptionText: z.string().nullable().describe('Plain text content'),
+      status: z.number().describe('Status: 1=Draft, 2=Published'),
+      folderId: z.number().describe('Parent folder ID'),
+      categoryId: z.number().describe('Parent category ID'),
+      tags: z.array(z.string()).describe('Article tags'),
+      seoTitle: z.string().nullable().describe('SEO title'),
+      seoDescription: z.string().nullable().describe('SEO meta description'),
+      createdAt: z.string().describe('Creation timestamp'),
+      updatedAt: z.string().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -140,37 +171,42 @@ export let getArticle = SlateTool.create(
       },
       message: `Retrieved article **"${article.title}"** (ID: ${article.id})`
     };
-  }).build();
+  })
+  .build();
 
-export let createArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Create Article',
-    key: 'create_article',
-    description: `Creates a new knowledge base article in a specified folder. Supports HTML content, tags, SEO metadata, and draft/published status.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createArticle = SlateTool.create(spec, {
+  name: 'Create Article',
+  key: 'create_article',
+  description: `Creates a new knowledge base article in a specified folder. Supports HTML content, tags, SEO metadata, and draft/published status.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    folderId: z.number().describe('ID of the folder to create the article in'),
-    title: z.string().describe('Article title'),
-    description: z.string().describe('HTML content of the article'),
-    status: z.number().optional().describe('Status: 1=Draft, 2=Published. Defaults to 1 (Draft).'),
-    tags: z.array(z.string()).optional().describe('Tags for the article'),
-    seoTitle: z.string().optional().describe('SEO title'),
-    seoDescription: z.string().optional().describe('SEO meta description')
-  }))
-  .output(z.object({
-    articleId: z.number().describe('ID of the created article'),
-    title: z.string().describe('Article title'),
-    status: z.number().describe('Article status'),
-    folderId: z.number().describe('Parent folder ID'),
-    createdAt: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      folderId: z.number().describe('ID of the folder to create the article in'),
+      title: z.string().describe('Article title'),
+      description: z.string().describe('HTML content of the article'),
+      status: z
+        .number()
+        .optional()
+        .describe('Status: 1=Draft, 2=Published. Defaults to 1 (Draft).'),
+      tags: z.array(z.string()).optional().describe('Tags for the article'),
+      seoTitle: z.string().optional().describe('SEO title'),
+      seoDescription: z.string().optional().describe('SEO meta description')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.number().describe('ID of the created article'),
+      title: z.string().describe('Article title'),
+      status: z.number().describe('Article status'),
+      folderId: z.number().describe('Parent folder ID'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -186,7 +222,8 @@ export let createArticle = SlateTool.create(
     if (ctx.input.seoTitle || ctx.input.seoDescription) {
       articleData['seo_data'] = {};
       if (ctx.input.seoTitle) articleData['seo_data']['meta_title'] = ctx.input.seoTitle;
-      if (ctx.input.seoDescription) articleData['seo_data']['meta_description'] = ctx.input.seoDescription;
+      if (ctx.input.seoDescription)
+        articleData['seo_data']['meta_description'] = ctx.input.seoDescription;
     }
 
     let article = await client.createSolutionArticle(ctx.input.folderId, articleData);
@@ -201,4 +238,5 @@ export let createArticle = SlateTool.create(
       },
       message: `Created article **"${article.title}"** (ID: ${article.id})`
     };
-  }).build();
+  })
+  .build();

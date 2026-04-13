@@ -28,33 +28,43 @@ You control access by creating IAM policies and attaching them to AWS identities
 ## Features
 
 ### Table Management
+
 Create, update, describe, list, and delete DynamoDB tables. Tables require a primary key (partition key, and optionally a sort key). You can configure capacity mode (on-demand or provisioned throughput) and table class (Standard or Standard-IA for infrequently accessed data).
 
 ### Item Operations (CRUD)
+
 You can use PartiQL (a SQL-compatible query language) or DynamoDB's classic CRUD APIs to perform data operations. This includes creating, reading, updating, and deleting individual items by primary key. UpdateItem allows modifying specific attributes of an existing item using expressions, while PutItem replaces the entire item. Conditional expressions can be used to perform writes only when certain conditions are met.
 
 ### Querying and Scanning
+
 Query retrieves items that share the same partition key, with optional sort key conditions and filter expressions. Scan reads every item in a table or index and can apply filters. Both support projection expressions to return only specific attributes.
 
 ### Secondary Indexes
+
 Local Secondary Indexes (LSIs) and Global Secondary Indexes (GSIs) enable querying data using alternative key schemas. LSIs share the same partition key as the table but use a different sort key. GSIs can have entirely different partition and sort keys.
 
 ### Transactions
+
 Transactions allow CRUD operations on multiple items both within and across tables with guaranteed all-or-nothing results, for both reads (TransactGetItems) and writes (TransactWriteItems).
 
 ### Global Tables
+
 Global tables provide active-active replication across your choice of AWS Regions with 99.999% availability. They are multi-active, meaning you can read and write from any replica.
 
 ### Backup and Restore
+
 Point-in-Time Recovery (PITR) automatically provides continuous backups with per-second granularity so that you can restore to any given second within a configurable recovery period between 1 and 35 days. On-demand backups can also be created and restored at any time.
 
 ### Import and Export
+
 Bulk import and export capabilities provide a way to move data between Amazon S3 and DynamoDB tables without writing any code. Useful for migrations, data sharing across accounts/regions, and analytics.
 
 ### Time to Live (TTL)
+
 Automatically delete items after a specified expiration timestamp. Useful for managing session data, temporary records, or implementing data retention policies.
 
 ### PartiQL Support
+
 You can use PartiQL, a SQL-compatible query language, to perform CRUD operations using familiar SQL-like syntax rather than the native DynamoDB JSON API format.
 
 ## Events

@@ -9,7 +9,7 @@ export class ChatworkClient {
 
   constructor(token: string, authType: 'oauth' | 'api_token' = 'api_token') {
     if (authType === 'oauth') {
-      this.headers = { 'Authorization': `Bearer ${token}` };
+      this.headers = { Authorization: `Bearer ${token}` };
     } else {
       this.headers = { 'X-ChatWorkToken': token };
     }
@@ -27,9 +27,13 @@ export class ChatworkClient {
     return response.data;
   }
 
-  async getMyTasks(params?: { assignedByAccountId?: number; status?: 'open' | 'done' }): Promise<ChatworkTask[]> {
+  async getMyTasks(params?: {
+    assignedByAccountId?: number;
+    status?: 'open' | 'done';
+  }): Promise<ChatworkTask[]> {
     let query: Record<string, string> = {};
-    if (params?.assignedByAccountId) query['assigned_by_account_id'] = String(params.assignedByAccountId);
+    if (params?.assignedByAccountId)
+      query['assigned_by_account_id'] = String(params.assignedByAccountId);
     if (params?.status) query['status'] = params.status;
 
     let response = await api.get('/my/tasks', { headers: this.headers, params: query });
@@ -49,7 +53,9 @@ export class ChatworkClient {
   }
 
   async approveRequest(requestId: number): Promise<ChatworkContact> {
-    let response = await api.put(`/incoming_requests/${requestId}`, null, { headers: this.headers });
+    let response = await api.put(`/incoming_requests/${requestId}`, null, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -85,11 +91,14 @@ export class ChatworkClient {
     if (params.description) body.append('description', params.description);
     if (params.iconPreset) body.append('icon_preset', params.iconPreset);
     body.append('members_admin_ids', params.membersAdminIds.join(','));
-    if (params.membersMemberIds?.length) body.append('members_member_ids', params.membersMemberIds.join(','));
-    if (params.membersReadonlyIds?.length) body.append('members_readonly_ids', params.membersReadonlyIds.join(','));
+    if (params.membersMemberIds?.length)
+      body.append('members_member_ids', params.membersMemberIds.join(','));
+    if (params.membersReadonlyIds?.length)
+      body.append('members_readonly_ids', params.membersReadonlyIds.join(','));
     if (params.link !== undefined) body.append('link', params.link ? '1' : '0');
     if (params.linkCode) body.append('link_code', params.linkCode);
-    if (params.linkNeedAcceptance !== undefined) body.append('link_need_acceptance', params.linkNeedAcceptance ? '1' : '0');
+    if (params.linkNeedAcceptance !== undefined)
+      body.append('link_need_acceptance', params.linkNeedAcceptance ? '1' : '0');
 
     let response = await api.post('/rooms', body.toString(), {
       headers: { ...this.headers, 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -97,11 +106,14 @@ export class ChatworkClient {
     return response.data;
   }
 
-  async updateRoom(roomId: number, params: {
-    name?: string;
-    description?: string;
-    iconPreset?: string;
-  }): Promise<{ room_id: number }> {
+  async updateRoom(
+    roomId: number,
+    params: {
+      name?: string;
+      description?: string;
+      iconPreset?: string;
+    }
+  ): Promise<{ room_id: number }> {
     let body = new URLSearchParams();
     if (params.name) body.append('name', params.name);
     if (params.description !== undefined) body.append('description', params.description);
@@ -127,15 +139,20 @@ export class ChatworkClient {
     return response.data || [];
   }
 
-  async updateRoomMembers(roomId: number, params: {
-    membersAdminIds: number[];
-    membersMemberIds?: number[];
-    membersReadonlyIds?: number[];
-  }): Promise<{ admin: number[]; member: number[]; readonly: number[] }> {
+  async updateRoomMembers(
+    roomId: number,
+    params: {
+      membersAdminIds: number[];
+      membersMemberIds?: number[];
+      membersReadonlyIds?: number[];
+    }
+  ): Promise<{ admin: number[]; member: number[]; readonly: number[] }> {
     let body = new URLSearchParams();
     body.append('members_admin_ids', params.membersAdminIds.join(','));
-    if (params.membersMemberIds?.length) body.append('members_member_ids', params.membersMemberIds.join(','));
-    if (params.membersReadonlyIds?.length) body.append('members_readonly_ids', params.membersReadonlyIds.join(','));
+    if (params.membersMemberIds?.length)
+      body.append('members_member_ids', params.membersMemberIds.join(','));
+    if (params.membersReadonlyIds?.length)
+      body.append('members_readonly_ids', params.membersReadonlyIds.join(','));
 
     let response = await api.put(`/rooms/${roomId}/members`, body.toString(), {
       headers: { ...this.headers, 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -149,16 +166,25 @@ export class ChatworkClient {
     let params: Record<string, string> = {};
     if (force !== undefined) params['force'] = force ? '1' : '0';
 
-    let response = await api.get(`/rooms/${roomId}/messages`, { headers: this.headers, params });
+    let response = await api.get(`/rooms/${roomId}/messages`, {
+      headers: this.headers,
+      params
+    });
     return response.data || [];
   }
 
   async getMessage(roomId: number, messageId: string): Promise<ChatworkMessage> {
-    let response = await api.get(`/rooms/${roomId}/messages/${messageId}`, { headers: this.headers });
+    let response = await api.get(`/rooms/${roomId}/messages/${messageId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async sendMessage(roomId: number, body: string, selfUnread?: boolean): Promise<{ message_id: string }> {
+  async sendMessage(
+    roomId: number,
+    body: string,
+    selfUnread?: boolean
+  ): Promise<{ message_id: string }> {
     let formBody = new URLSearchParams({ body });
     if (selfUnread !== undefined) formBody.append('self_unread', selfUnread ? '1' : '0');
 
@@ -168,12 +194,20 @@ export class ChatworkClient {
     return response.data;
   }
 
-  async updateMessage(roomId: number, messageId: string, body: string): Promise<{ message_id: string }> {
+  async updateMessage(
+    roomId: number,
+    messageId: string,
+    body: string
+  ): Promise<{ message_id: string }> {
     let formBody = new URLSearchParams({ body });
 
-    let response = await api.put(`/rooms/${roomId}/messages/${messageId}`, formBody.toString(), {
-      headers: { ...this.headers, 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    let response = await api.put(
+      `/rooms/${roomId}/messages/${messageId}`,
+      formBody.toString(),
+      {
+        headers: { ...this.headers, 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -181,7 +215,10 @@ export class ChatworkClient {
     await api.delete(`/rooms/${roomId}/messages/${messageId}`, { headers: this.headers });
   }
 
-  async markMessagesRead(roomId: number, messageId: string): Promise<{ unread_num: number; mention_num: number }> {
+  async markMessagesRead(
+    roomId: number,
+    messageId: string
+  ): Promise<{ unread_num: number; mention_num: number }> {
     let body = new URLSearchParams({ message_id: messageId });
 
     let response = await api.put(`/rooms/${roomId}/messages/read`, body.toString(), {
@@ -190,7 +227,10 @@ export class ChatworkClient {
     return response.data;
   }
 
-  async markMessagesUnread(roomId: number, messageId: string): Promise<{ unread_num: number; mention_num: number }> {
+  async markMessagesUnread(
+    roomId: number,
+    messageId: string
+  ): Promise<{ unread_num: number; mention_num: number }> {
     let body = new URLSearchParams({ message_id: messageId });
 
     let response = await api.put(`/rooms/${roomId}/messages/unread`, body.toString(), {
@@ -207,16 +247,21 @@ export class ChatworkClient {
   }
 
   async getRoomTask(roomId: number, taskId: number): Promise<ChatworkRoomTask> {
-    let response = await api.get(`/rooms/${roomId}/tasks/${taskId}`, { headers: this.headers });
+    let response = await api.get(`/rooms/${roomId}/tasks/${taskId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async createTask(roomId: number, params: {
-    body: string;
-    toIds: number[];
-    limit?: number;
-    limitType?: 'none' | 'date' | 'time';
-  }): Promise<{ task_ids: number[] }> {
+  async createTask(
+    roomId: number,
+    params: {
+      body: string;
+      toIds: number[];
+      limit?: number;
+      limitType?: 'none' | 'date' | 'time';
+    }
+  ): Promise<{ task_ids: number[] }> {
     let formBody = new URLSearchParams();
     formBody.append('body', params.body);
     formBody.append('to_ids', params.toIds.join(','));
@@ -229,7 +274,11 @@ export class ChatworkClient {
     return response.data;
   }
 
-  async updateTaskStatus(roomId: number, taskId: number, status: 'open' | 'done'): Promise<ChatworkRoomTask> {
+  async updateTaskStatus(
+    roomId: number,
+    taskId: number,
+    status: 'open' | 'done'
+  ): Promise<ChatworkRoomTask> {
     let body = new URLSearchParams({ status });
 
     let response = await api.put(`/rooms/${roomId}/tasks/${taskId}/status`, body.toString(), {
@@ -260,14 +309,18 @@ export class ChatworkClient {
     return response.data;
   }
 
-  async createRoomLink(roomId: number, params?: {
-    code?: string;
-    needAcceptance?: boolean;
-    description?: string;
-  }): Promise<ChatworkLink> {
+  async createRoomLink(
+    roomId: number,
+    params?: {
+      code?: string;
+      needAcceptance?: boolean;
+      description?: string;
+    }
+  ): Promise<ChatworkLink> {
     let body = new URLSearchParams();
     if (params?.code) body.append('code', params.code);
-    if (params?.needAcceptance !== undefined) body.append('need_acceptance', params.needAcceptance ? '1' : '0');
+    if (params?.needAcceptance !== undefined)
+      body.append('need_acceptance', params.needAcceptance ? '1' : '0');
     if (params?.description) body.append('description', params.description);
 
     let response = await api.post(`/rooms/${roomId}/link`, body.toString(), {

@@ -22,7 +22,7 @@ export class SpeechToTextClient {
 
   private get headers() {
     return {
-      'Ocp-Apim-Subscription-Key': this.config.token,
+      'Ocp-Apim-Subscription-Key': this.config.token
     };
   }
 
@@ -42,11 +42,11 @@ export class SpeechToTextClient {
     };
   }) {
     let axios = createAxios({
-      baseURL: this.sttBaseUrl,
+      baseURL: this.sttBaseUrl
     });
 
     let queryParams: Record<string, string> = {
-      language: params.language,
+      language: params.language
     };
     if (params.format) queryParams['format'] = params.format;
     if (params.profanity) queryParams['profanity'] = params.profanity;
@@ -54,7 +54,7 @@ export class SpeechToTextClient {
     let reqHeaders: Record<string, string> = {
       ...this.headers,
       'Content-Type': params.contentType || 'audio/wav; codecs=audio/pcm; samplerate=16000',
-      'Accept': 'application/json',
+      Accept: 'application/json'
     };
 
     if (params.pronunciationAssessment) {
@@ -64,7 +64,9 @@ export class SpeechToTextClient {
         Granularity: params.pronunciationAssessment.granularity || 'Phoneme',
         Dimension: params.pronunciationAssessment.dimension || 'Comprehensive',
         EnableMiscue: params.pronunciationAssessment.enableMiscue ? 'True' : 'False',
-        EnableProsodyAssessment: params.pronunciationAssessment.enableProsodyAssessment ? 'True' : 'False',
+        EnableProsodyAssessment: params.pronunciationAssessment.enableProsodyAssessment
+          ? 'True'
+          : 'False'
       });
       reqHeaders['Pronunciation-Assessment'] = btoa(pronJson);
     }
@@ -74,7 +76,7 @@ export class SpeechToTextClient {
       params.audioData,
       {
         params: queryParams,
-        headers: reqHeaders,
+        headers: reqHeaders
       }
     );
 
@@ -102,11 +104,11 @@ export class SpeechToTextClient {
     };
   }) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let properties: Record<string, any> = {
-      timeToLiveHours: params.timeToLiveHours ?? 48,
+      timeToLiveHours: params.timeToLiveHours ?? 48
     };
 
     if (params.wordLevelTimestampsEnabled !== undefined) {
@@ -119,8 +121,8 @@ export class SpeechToTextClient {
       properties['diarization'] = {
         speakers: {
           minCount: params.diarization.minCount ?? 2,
-          maxCount: params.diarization.maxCount ?? 10,
-        },
+          maxCount: params.diarization.maxCount ?? 10
+        }
       };
     }
     if (params.punctuationMode) {
@@ -136,7 +138,7 @@ export class SpeechToTextClient {
     let body: Record<string, any> = {
       displayName: params.displayName,
       locale: params.locale,
-      properties,
+      properties
     };
 
     if (params.contentUrls) body['contentUrls'] = params.contentUrls;
@@ -145,49 +147,42 @@ export class SpeechToTextClient {
       body['model'] = { self: params.model };
     }
 
-    let response = await axios.post(
-      '/speechtotext/transcriptions:submit',
-      body,
-      {
-        params: { 'api-version': '2024-11-15' },
-        headers: {
-          ...this.headers,
-          'Content-Type': 'application/json',
-        },
+    let response = await axios.post('/speechtotext/transcriptions:submit', body, {
+      params: { 'api-version': '2024-11-15' },
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/json'
       }
-    );
+    });
 
     return response.data;
   }
 
   async getTranscription(transcriptionId: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
-    let response = await axios.get(
-      `/speechtotext/transcriptions/${transcriptionId}`,
-      {
-        params: { 'api-version': '2024-11-15' },
-        headers: this.headers,
-      }
-    );
+    let response = await axios.get(`/speechtotext/transcriptions/${transcriptionId}`, {
+      params: { 'api-version': '2024-11-15' },
+      headers: this.headers
+    });
 
     return response.data;
   }
 
   async listTranscriptions(params?: { skip?: number; top?: number }) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.get('/speechtotext/transcriptions', {
       params: {
         'api-version': '2024-11-15',
         ...(params?.skip !== undefined ? { skip: params.skip } : {}),
-        ...(params?.top !== undefined ? { top: params.top } : {}),
+        ...(params?.top !== undefined ? { top: params.top } : {})
       },
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -195,46 +190,40 @@ export class SpeechToTextClient {
 
   async getTranscriptionFiles(transcriptionId: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
-    let response = await axios.get(
-      `/speechtotext/transcriptions/${transcriptionId}/files`,
-      {
-        params: { 'api-version': '2024-11-15' },
-        headers: this.headers,
-      }
-    );
+    let response = await axios.get(`/speechtotext/transcriptions/${transcriptionId}/files`, {
+      params: { 'api-version': '2024-11-15' },
+      headers: this.headers
+    });
 
     return response.data;
   }
 
   async deleteTranscription(transcriptionId: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
-    await axios.delete(
-      `/speechtotext/transcriptions/${transcriptionId}`,
-      {
-        params: { 'api-version': '2024-11-15' },
-        headers: this.headers,
-      }
-    );
+    await axios.delete(`/speechtotext/transcriptions/${transcriptionId}`, {
+      params: { 'api-version': '2024-11-15' },
+      headers: this.headers
+    });
   }
 
   async listBaseModels(params?: { skip?: number; top?: number }) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.get('/speechtotext/models/base', {
       params: {
         'api-version': '2024-11-15',
         ...(params?.skip !== undefined ? { skip: params.skip } : {}),
-        ...(params?.top !== undefined ? { top: params.top } : {}),
+        ...(params?.top !== undefined ? { top: params.top } : {})
       },
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
@@ -254,43 +243,36 @@ export class TextToSpeechClient {
 
   private get headers() {
     return {
-      'Ocp-Apim-Subscription-Key': this.config.token,
+      'Ocp-Apim-Subscription-Key': this.config.token
     };
   }
 
   async listVoices() {
     let axios = createAxios({
-      baseURL: this.ttsBaseUrl,
+      baseURL: this.ttsBaseUrl
     });
 
     let response = await axios.get('/cognitiveservices/voices/list', {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data;
   }
 
-  async synthesizeSpeech(params: {
-    ssml: string;
-    outputFormat: string;
-  }) {
+  async synthesizeSpeech(params: { ssml: string; outputFormat: string }) {
     let axios = createAxios({
-      baseURL: this.ttsBaseUrl,
+      baseURL: this.ttsBaseUrl
     });
 
-    let response = await axios.post(
-      '/cognitiveservices/v1',
-      params.ssml,
-      {
-        headers: {
-          ...this.headers,
-          'Content-Type': 'application/ssml+xml',
-          'X-Microsoft-OutputFormat': params.outputFormat,
-          'User-Agent': 'SlatesAzureSpeech/1.0',
-        },
-        responseType: 'arraybuffer',
-      }
-    );
+    let response = await axios.post('/cognitiveservices/v1', params.ssml, {
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/ssml+xml',
+        'X-Microsoft-OutputFormat': params.outputFormat,
+        'User-Agent': 'SlatesAzureSpeech/1.0'
+      },
+      responseType: 'arraybuffer'
+    });
 
     let audioBytes = new Uint8Array(response.data);
     let binaryString = '';
@@ -301,7 +283,7 @@ export class TextToSpeechClient {
 
     return {
       audioBase64,
-      contentType: response.headers?.['content-type'] || 'audio/wav',
+      contentType: response.headers?.['content-type'] || 'audio/wav'
     };
   }
 }
@@ -319,13 +301,13 @@ export class SpeakerRecognitionClient {
 
   private get headers() {
     return {
-      'Ocp-Apim-Subscription-Key': this.config.token,
+      'Ocp-Apim-Subscription-Key': this.config.token
     };
   }
 
   async createVerificationProfile(locale: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.post(
@@ -335,8 +317,8 @@ export class SpeakerRecognitionClient {
         params: { 'api-version': '2021-09-05' },
         headers: {
           ...this.headers,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
 
@@ -345,7 +327,7 @@ export class SpeakerRecognitionClient {
 
   async createIdentificationProfile(locale: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.post(
@@ -355,8 +337,8 @@ export class SpeakerRecognitionClient {
         params: { 'api-version': '2021-09-05' },
         headers: {
           ...this.headers,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
 
@@ -365,28 +347,28 @@ export class SpeakerRecognitionClient {
 
   async deleteProfile(profileType: 'verification' | 'identification', profileId: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     await axios.delete(
       `/speaker-recognition/${profileType}/text-independent/profiles/${profileId}`,
       {
         params: { 'api-version': '2021-09-05' },
-        headers: this.headers,
+        headers: this.headers
       }
     );
   }
 
   async getProfile(profileType: 'verification' | 'identification', profileId: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.get(
       `/speaker-recognition/${profileType}/text-independent/profiles/${profileId}`,
       {
         params: { 'api-version': '2021-09-05' },
-        headers: this.headers,
+        headers: this.headers
       }
     );
 
@@ -395,23 +377,27 @@ export class SpeakerRecognitionClient {
 
   async listProfiles(profileType: 'verification' | 'identification') {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.get(
       `/speaker-recognition/${profileType}/text-independent/profiles`,
       {
         params: { 'api-version': '2021-09-05' },
-        headers: this.headers,
+        headers: this.headers
       }
     );
 
     return response.data;
   }
 
-  async enrollProfile(profileType: 'verification' | 'identification', profileId: string, audioData: string) {
+  async enrollProfile(
+    profileType: 'verification' | 'identification',
+    profileId: string,
+    audioData: string
+  ) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.post(
@@ -421,8 +407,8 @@ export class SpeakerRecognitionClient {
         params: { 'api-version': '2021-09-05' },
         headers: {
           ...this.headers,
-          'Content-Type': 'audio/wav',
-        },
+          'Content-Type': 'audio/wav'
+        }
       }
     );
 
@@ -431,7 +417,7 @@ export class SpeakerRecognitionClient {
 
   async verifySpeaker(profileId: string, audioData: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.post(
@@ -441,8 +427,8 @@ export class SpeakerRecognitionClient {
         params: { 'api-version': '2021-09-05' },
         headers: {
           ...this.headers,
-          'Content-Type': 'audio/wav',
-        },
+          'Content-Type': 'audio/wav'
+        }
       }
     );
 
@@ -451,7 +437,7 @@ export class SpeakerRecognitionClient {
 
   async identifySpeaker(profileIds: string[], audioData: string) {
     let axios = createAxios({
-      baseURL: this.cognitiveBaseUrl,
+      baseURL: this.cognitiveBaseUrl
     });
 
     let response = await axios.post(
@@ -460,12 +446,12 @@ export class SpeakerRecognitionClient {
       {
         params: {
           'api-version': '2021-09-05',
-          profileIds: profileIds.join(','),
+          profileIds: profileIds.join(',')
         },
         headers: {
           ...this.headers,
-          'Content-Type': 'audio/wav',
-        },
+          'Content-Type': 'audio/wav'
+        }
       }
     );
 

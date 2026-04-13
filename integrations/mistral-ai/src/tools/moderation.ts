@@ -8,7 +8,9 @@ let categoryResultSchema = z.object({
     sexual: z.boolean().describe('Contains sexual content'),
     hateAndDiscrimination: z.boolean().describe('Contains hate or discrimination'),
     violenceAndThreats: z.boolean().describe('Contains violence or threats'),
-    dangerousAndCriminalContent: z.boolean().describe('Contains dangerous or criminal content'),
+    dangerousAndCriminalContent: z
+      .boolean()
+      .describe('Contains dangerous or criminal content'),
     selfharm: z.boolean().describe('Contains self-harm content'),
     health: z.boolean().describe('Contains health misinformation'),
     financial: z.boolean().describe('Contains financial misinformation'),
@@ -28,27 +30,30 @@ let categoryResultSchema = z.object({
   })
 });
 
-export let moderateContentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Moderate Content',
-    key: 'moderate_content',
-    description: `Analyze text for harmful content across multiple safety categories. Returns boolean flags and confidence scores for categories including sexual content, hate/discrimination, violence, dangerous content, self-harm, health/financial/legal misinformation, and PII detection.`,
-    tags: {
-      readOnly: true
-    }
+export let moderateContentTool = SlateTool.create(spec, {
+  name: 'Moderate Content',
+  key: 'moderate_content',
+  description: `Analyze text for harmful content across multiple safety categories. Returns boolean flags and confidence scores for categories including sexual content, hate/discrimination, violence, dangerous content, self-harm, health/financial/legal misinformation, and PII detection.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    input: z.union([z.string(), z.array(z.string())]).describe('Text or array of texts to moderate'),
-    model: z.string().default('mistral-moderation-latest').describe('Moderation model ID')
-  }))
-  .output(z.object({
-    moderationId: z.string().describe('Unique moderation request ID'),
-    model: z.string().describe('Model used'),
-    results: z.array(categoryResultSchema).describe('Moderation results for each input')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      input: z
+        .union([z.string(), z.array(z.string())])
+        .describe('Text or array of texts to moderate'),
+      model: z.string().default('mistral-moderation-latest').describe('Moderation model ID')
+    })
+  )
+  .output(
+    z.object({
+      moderationId: z.string().describe('Unique moderation request ID'),
+      model: z.string().describe('Model used'),
+      results: z.array(categoryResultSchema).describe('Moderation results for each input')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MistralClient(ctx.auth.token);
 
     let result = await client.moderate({
@@ -89,9 +94,10 @@ export let moderateContentTool = SlateTool.create(
         .map(([k]) => k)
     );
 
-    let flaggedMsg = flaggedCategories.length > 0
-      ? `Flagged categories: **${flaggedCategories.join(', ')}**`
-      : 'No harmful content detected.';
+    let flaggedMsg =
+      flaggedCategories.length > 0
+        ? `Flagged categories: **${flaggedCategories.join(', ')}**`
+        : 'No harmful content detected.';
 
     return {
       output: {

@@ -9,39 +9,61 @@ export let manageGroups = SlateTool.create(spec, {
   description: `List, create, update, delete groups, and add or remove users from groups. Use the **action** field to select the operation.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete', 'addUser', 'removeUser', 'listUsers']).describe('Operation to perform'),
-    groupId: z.string().optional().describe('Group LUID (required for update, delete, addUser, removeUser, listUsers)'),
-    userId: z.string().optional().describe('User LUID (for addUser, removeUser)'),
-    name: z.string().optional().describe('Group name (for create, update)'),
-    minimumSiteRole: z.string().optional().describe('Minimum site role for group members (for create, update)'),
-    pageSize: z.number().optional().describe('Number of items per page'),
-    pageNumber: z.number().optional().describe('Page number (1-based)'),
-    filter: z.string().optional().describe('Filter expression for list'),
-    sort: z.string().optional().describe('Sort expression for list')
-  }))
-  .output(z.object({
-    groups: z.array(z.object({
-      groupId: z.string(),
-      name: z.string().optional(),
-      minimumSiteRole: z.string().optional()
-    })).optional(),
-    group: z.object({
-      groupId: z.string(),
-      name: z.string().optional(),
-      minimumSiteRole: z.string().optional()
-    }).optional(),
-    users: z.array(z.object({
-      userId: z.string(),
-      name: z.string().optional(),
-      siteRole: z.string().optional()
-    })).optional(),
-    totalCount: z.number().optional(),
-    deleted: z.boolean().optional(),
-    userAdded: z.boolean().optional(),
-    userRemoved: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'update', 'delete', 'addUser', 'removeUser', 'listUsers'])
+        .describe('Operation to perform'),
+      groupId: z
+        .string()
+        .optional()
+        .describe('Group LUID (required for update, delete, addUser, removeUser, listUsers)'),
+      userId: z.string().optional().describe('User LUID (for addUser, removeUser)'),
+      name: z.string().optional().describe('Group name (for create, update)'),
+      minimumSiteRole: z
+        .string()
+        .optional()
+        .describe('Minimum site role for group members (for create, update)'),
+      pageSize: z.number().optional().describe('Number of items per page'),
+      pageNumber: z.number().optional().describe('Page number (1-based)'),
+      filter: z.string().optional().describe('Filter expression for list'),
+      sort: z.string().optional().describe('Sort expression for list')
+    })
+  )
+  .output(
+    z.object({
+      groups: z
+        .array(
+          z.object({
+            groupId: z.string(),
+            name: z.string().optional(),
+            minimumSiteRole: z.string().optional()
+          })
+        )
+        .optional(),
+      group: z
+        .object({
+          groupId: z.string(),
+          name: z.string().optional(),
+          minimumSiteRole: z.string().optional()
+        })
+        .optional(),
+      users: z
+        .array(
+          z.object({
+            userId: z.string(),
+            name: z.string().optional(),
+            siteRole: z.string().optional()
+          })
+        )
+        .optional(),
+      totalCount: z.number().optional(),
+      deleted: z.boolean().optional(),
+      userAdded: z.boolean().optional(),
+      userRemoved: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -125,4 +147,5 @@ export let manageGroups = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

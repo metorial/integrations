@@ -178,7 +178,7 @@ export class ConnectClient {
       address: (s.address || '') as string,
       phone: (s.phone || '') as string,
       alcohol: Boolean(s.alcohol),
-      pickupOnly: Boolean(s.pickup_only),
+      pickupOnly: Boolean(s.pickup_only)
     }));
   }
 
@@ -186,12 +186,13 @@ export class ConnectClient {
     let axios = createAuthenticatedAxios(this.token, this.environment);
 
     let body: Record<string, unknown> = {
-      postal_code: params.postalCode,
+      postal_code: params.postalCode
     };
     if (params.cartTotalCents !== undefined) body.cart_total_cents = params.cartTotalCents;
     if (params.itemsCount !== undefined) body.items_count = params.itemsCount;
     if (params.withEtaOptions !== undefined) body.with_eta_options = params.withEtaOptions;
-    if (params.withPriorityEtaOptions !== undefined) body.with_priority_eta_options = params.withPriorityEtaOptions;
+    if (params.withPriorityEtaOptions !== undefined)
+      body.with_priority_eta_options = params.withPriorityEtaOptions;
 
     let path = `/v2/fulfillment/service_options/${params.fulfillmentType}`;
     let response = await axios.post(path, body);
@@ -208,9 +209,9 @@ export class ConnectClient {
           startAt: (window?.start_at || '') as string,
           endAt: (window?.end_at || '') as string,
           type: (window?.type || '') as string,
-          asap: Boolean(window?.asap),
+          asap: Boolean(window?.asap)
         },
-        available: Boolean(availability?.available ?? true),
+        available: Boolean(availability?.available ?? true)
       };
     });
   }
@@ -221,14 +222,15 @@ export class ConnectClient {
     let body: Record<string, unknown> = {};
     if (params.locationCode) body.location_code = params.locationCode;
     if (params.items) {
-      body.items = params.items.map((item) => ({
+      body.items = params.items.map(item => ({
         line_num: item.lineNum,
         count: item.count,
-        product_codes: item.productCodes?.map((pc) => ({ type: pc.type, value: pc.value })),
+        product_codes: item.productCodes?.map(pc => ({ type: pc.type, value: pc.value }))
       }));
     }
     if (params.withEtaOptions !== undefined) body.with_eta_options = params.withEtaOptions;
-    if (params.withPriorityEtaOptions !== undefined) body.with_priority_eta_options = params.withPriorityEtaOptions;
+    if (params.withPriorityEtaOptions !== undefined)
+      body.with_priority_eta_options = params.withPriorityEtaOptions;
 
     let path = `/v2/fulfillment/users/${params.userId}/service_options/cart/${params.fulfillmentType}`;
     let response = await axios.post(path, body);
@@ -245,9 +247,9 @@ export class ConnectClient {
           startAt: (window?.start_at || '') as string,
           endAt: (window?.end_at || '') as string,
           type: (window?.type || '') as string,
-          asap: Boolean(window?.asap),
+          asap: Boolean(window?.asap)
         },
-        available: Boolean(availability?.available ?? true),
+        available: Boolean(availability?.available ?? true)
       };
     });
   }
@@ -257,7 +259,7 @@ export class ConnectClient {
 
     let body: Record<string, unknown> = {
       address_line_1: params.addressLine1,
-      postal_code: params.postalCode,
+      postal_code: params.postalCode
     };
     if (params.firstName) body.first_name = params.firstName;
     if (params.lastName) body.last_name = params.lastName;
@@ -270,7 +272,7 @@ export class ConnectClient {
     let response = await axios.post(`/v2/fulfillment/users/${params.userId}/addresses`, body);
 
     return {
-      userId: response.data.user_id || params.userId,
+      userId: response.data.user_id || params.userId
     };
   }
 
@@ -279,27 +281,28 @@ export class ConnectClient {
 
     let body: Record<string, unknown> = {
       location_code: params.locationCode,
-      items: params.items.map((item) => {
+      items: params.items.map(item => {
         let mapped: Record<string, unknown> = {
           line_num: item.lineNum,
-          count: item.count,
+          count: item.count
         };
         if (item.weight !== undefined) mapped.weight = item.weight;
         if (item.specialInstructions) mapped.special_instructions = item.specialInstructions;
         if (item.replacementPolicy) mapped.replacement_policy = item.replacementPolicy;
         if (item.productCodes) {
-          mapped.product_codes = item.productCodes.map((pc) => ({
+          mapped.product_codes = item.productCodes.map(pc => ({
             type: pc.type,
-            value: pc.value,
+            value: pc.value
           }));
         }
         if (item.metadata) mapped.metadata = item.metadata;
         return mapped;
-      }),
+      })
     };
 
     if (params.orderId) body.order_id = params.orderId;
-    if (params.serviceOptionHoldId !== undefined) body.service_option_hold_id = params.serviceOptionHoldId;
+    if (params.serviceOptionHoldId !== undefined)
+      body.service_option_hold_id = params.serviceOptionHoldId;
     if (params.initialTipCents !== undefined) body.initial_tip_cents = params.initialTipCents;
     if (params.leaveUnattended !== undefined) body.leave_unattended = params.leaveUnattended;
     if (params.specialInstructions) body.special_instructions = params.specialInstructions;
@@ -313,7 +316,7 @@ export class ConnectClient {
         address_line_2: params.address.addressLine2,
         address_type: params.address.addressType,
         postal_code: params.address.postalCode,
-        city: params.address.city,
+        city: params.address.city
       };
     }
 
@@ -321,11 +324,14 @@ export class ConnectClient {
       body.user = {
         birthday: params.user.birthday,
         phone_number: params.user.phoneNumber,
-        sms_opt_in: params.user.smsOptIn,
+        sms_opt_in: params.user.smsOptIn
       };
     }
 
-    let response = await axios.post(`/v2/fulfillment/users/${params.userId}/orders/delivery`, body);
+    let response = await axios.post(
+      `/v2/fulfillment/users/${params.userId}/orders/delivery`,
+      body
+    );
     return this.mapOrder(response.data);
   }
 
@@ -334,26 +340,27 @@ export class ConnectClient {
 
     let body: Record<string, unknown> = {
       location_code: params.locationCode,
-      items: params.items.map((item) => {
+      items: params.items.map(item => {
         let mapped: Record<string, unknown> = {
           line_num: item.lineNum,
-          count: item.count,
+          count: item.count
         };
         if (item.weight !== undefined) mapped.weight = item.weight;
         if (item.specialInstructions) mapped.special_instructions = item.specialInstructions;
         if (item.replacementPolicy) mapped.replacement_policy = item.replacementPolicy;
         if (item.productCodes) {
-          mapped.product_codes = item.productCodes.map((pc) => ({
+          mapped.product_codes = item.productCodes.map(pc => ({
             type: pc.type,
-            value: pc.value,
+            value: pc.value
           }));
         }
         return mapped;
-      }),
+      })
     };
 
     if (params.orderId) body.order_id = params.orderId;
-    if (params.serviceOptionHoldId !== undefined) body.service_option_hold_id = params.serviceOptionHoldId;
+    if (params.serviceOptionHoldId !== undefined)
+      body.service_option_hold_id = params.serviceOptionHoldId;
     if (params.loyaltyNumber) body.loyalty_number = params.loyaltyNumber;
     if (params.locale) body.locale = params.locale;
 
@@ -361,11 +368,14 @@ export class ConnectClient {
       body.user = {
         birthday: params.user.birthday,
         phone_number: params.user.phoneNumber,
-        sms_opt_in: params.user.smsOptIn,
+        sms_opt_in: params.user.smsOptIn
       };
     }
 
-    let response = await axios.post(`/v2/fulfillment/users/${params.userId}/orders/pickup`, body);
+    let response = await axios.post(
+      `/v2/fulfillment/users/${params.userId}/orders/pickup`,
+      body
+    );
     return this.mapOrder(response.data);
   }
 
@@ -384,25 +394,32 @@ export class ConnectClient {
 
   async cancelOrder(userId: string, orderId: string): Promise<Order> {
     let axios = createAuthenticatedAxios(this.token, this.environment);
-    let response = await axios.post(`/v2/fulfillment/users/${userId}/orders/${orderId}/cancel`);
+    let response = await axios.post(
+      `/v2/fulfillment/users/${userId}/orders/${orderId}/cancel`
+    );
     return this.mapOrder(response.data);
   }
 
-  async reserveServiceOption(userId: string, serviceOptionId: string, locationCode: string, items?: Array<{
-    lineNum: string;
-    count: number;
-    productCodes?: Array<{ type: string; value: string }>;
-  }>): Promise<{ serviceOptionHoldId: number; expiresAt: string }> {
+  async reserveServiceOption(
+    userId: string,
+    serviceOptionId: string,
+    locationCode: string,
+    items?: Array<{
+      lineNum: string;
+      count: number;
+      productCodes?: Array<{ type: string; value: string }>;
+    }>
+  ): Promise<{ serviceOptionHoldId: number; expiresAt: string }> {
     let axios = createAuthenticatedAxios(this.token, this.environment);
 
     let body: Record<string, unknown> = {
-      location_code: locationCode,
+      location_code: locationCode
     };
     if (items) {
-      body.items = items.map((item) => ({
+      body.items = items.map(item => ({
         line_num: item.lineNum,
         count: item.count,
-        product_codes: item.productCodes?.map((pc) => ({ type: pc.type, value: pc.value })),
+        product_codes: item.productCodes?.map(pc => ({ type: pc.type, value: pc.value }))
       }));
     }
 
@@ -413,7 +430,7 @@ export class ConnectClient {
 
     return {
       serviceOptionHoldId: response.data.service_option_hold_id,
-      expiresAt: response.data.expires_at || '',
+      expiresAt: response.data.expires_at || ''
     };
   }
 
@@ -427,7 +444,7 @@ export class ConnectClient {
     let axios = createAuthenticatedAxios(this.token, this.environment);
     let response = await axios.post('/v2/fulfillment_sandbox/batches', {
       order_id: orderId,
-      shopper_id: shopperId,
+      shopper_id: shopperId
     });
     return { batchId: response.data.id || response.data.batch_id || '' };
   }
@@ -451,21 +468,23 @@ export class ConnectClient {
       cancellationReason: data.cancellation_reason as string | undefined,
       locale: data.locale as string | undefined,
       isInstacartplus: data.is_instacartplus as boolean | undefined,
-      fulfillmentDetails: fulfillmentDetails ? {
-        storeLocation: fulfillmentDetails.store_location as string | undefined,
-        windowStartsAt: fulfillmentDetails.window_starts_at as string | undefined,
-        windowEndsAt: fulfillmentDetails.window_ends_at as string | undefined,
-        deliveredAt: fulfillmentDetails.delivered_at as string | undefined,
-        bagCount: fulfillmentDetails.bag_count as number | undefined,
-      } : undefined,
-      items: items?.map((item) => ({
+      fulfillmentDetails: fulfillmentDetails
+        ? {
+            storeLocation: fulfillmentDetails.store_location as string | undefined,
+            windowStartsAt: fulfillmentDetails.window_starts_at as string | undefined,
+            windowEndsAt: fulfillmentDetails.window_ends_at as string | undefined,
+            deliveredAt: fulfillmentDetails.delivered_at as string | undefined,
+            bagCount: fulfillmentDetails.bag_count as number | undefined
+          }
+        : undefined,
+      items: items?.map(item => ({
         lineNum: (item.line_num || '') as string,
         qty: item.qty as number | undefined,
         replaced: item.replaced as boolean | undefined,
         refunded: item.refunded as boolean | undefined,
-        scanCode: item.scan_code as string | undefined,
+        scanCode: item.scan_code as string | undefined
       })),
-      warnings: warnings?.map((w) => ({ message: (w.message || '') as string })),
+      warnings: warnings?.map(w => ({ message: (w.message || '') as string }))
     };
   }
 }

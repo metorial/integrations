@@ -9,22 +9,30 @@ export let createPage = SlateTool.create(spec, {
   description: `Create a new Confluence page in a specified space. The body should be in Confluence storage format (XHTML-based). Optionally set a parent page to create hierarchical content.`,
   tags: { destructive: false }
 })
-  .input(z.object({
-    spaceId: z.string().describe('The space ID to create the page in'),
-    title: z.string().describe('The title of the new page'),
-    body: z.string().describe('Page body in Confluence storage format (XHTML)'),
-    parentId: z.string().optional().describe('Parent page ID for hierarchical organization'),
-    status: z.enum(['current', 'draft']).optional().default('current').describe('Page status')
-  }))
-  .output(z.object({
-    pageId: z.string().describe('The newly created page ID'),
-    title: z.string().describe('The page title'),
-    status: z.string().describe('The page status'),
-    spaceId: z.string().optional().describe('The space ID'),
-    versionNumber: z.number().optional().describe('Version number (1 for new pages)'),
-    webUrl: z.string().optional().describe('Web URL to view the page')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      spaceId: z.string().describe('The space ID to create the page in'),
+      title: z.string().describe('The title of the new page'),
+      body: z.string().describe('Page body in Confluence storage format (XHTML)'),
+      parentId: z.string().optional().describe('Parent page ID for hierarchical organization'),
+      status: z
+        .enum(['current', 'draft'])
+        .optional()
+        .default('current')
+        .describe('Page status')
+    })
+  )
+  .output(
+    z.object({
+      pageId: z.string().describe('The newly created page ID'),
+      title: z.string().describe('The page title'),
+      status: z.string().describe('The page status'),
+      spaceId: z.string().optional().describe('The space ID'),
+      versionNumber: z.number().optional().describe('Version number (1 for new pages)'),
+      webUrl: z.string().optional().describe('Web URL to view the page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let page = await client.createPage({
       spaceId: ctx.input.spaceId,

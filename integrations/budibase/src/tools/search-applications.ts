@@ -9,29 +9,33 @@ let applicationSchema = z.object({
   url: z.string().describe('URL path for the application'),
   status: z.string().describe('Current status: "development" or "published"'),
   createdAt: z.string().optional().describe('ISO timestamp when the application was created'),
-  updatedAt: z.string().optional().describe('ISO timestamp when the application was last updated'),
+  updatedAt: z
+    .string()
+    .optional()
+    .describe('ISO timestamp when the application was last updated'),
   version: z.string().optional().describe('Budibase client version'),
-  tenantId: z.string().optional().describe('Tenant identifier'),
+  tenantId: z.string().optional().describe('Tenant identifier')
 });
 
-export let searchApplications = SlateTool.create(
-  spec,
-  {
-    name: 'Search Applications',
-    key: 'search_applications',
-    description: `Search for Budibase applications by name. Returns a list of applications matching the search criteria, including their IDs, URLs, and status.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchApplications = SlateTool.create(spec, {
+  name: 'Search Applications',
+  key: 'search_applications',
+  description: `Search for Budibase applications by name. Returns a list of applications matching the search criteria, including their IDs, URLs, and status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Filter applications by name'),
-  }))
-  .output(z.object({
-    applications: z.array(applicationSchema).describe('List of matching applications'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Filter applications by name')
+    })
+  )
+  .output(
+    z.object({
+      applications: z.array(applicationSchema).describe('List of matching applications')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
     let results = await client.searchApplications({ name: ctx.input.name });
 
@@ -43,12 +47,12 @@ export let searchApplications = SlateTool.create(
       createdAt: app.createdAt,
       updatedAt: app.updatedAt,
       version: app.version,
-      tenantId: app.tenantId,
+      tenantId: app.tenantId
     }));
 
     return {
       output: { applications },
-      message: `Found **${applications.length}** application(s)${ctx.input.name ? ` matching "${ctx.input.name}"` : ''}.`,
+      message: `Found **${applications.length}** application(s)${ctx.input.name ? ` matching "${ctx.input.name}"` : ''}.`
     };
   })
   .build();

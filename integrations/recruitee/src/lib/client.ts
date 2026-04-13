@@ -8,8 +8,8 @@ export class RecruiteeClient {
       baseURL: `https://api.recruitee.com/c/${params.companyId}`,
       headers: {
         Authorization: `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -62,16 +62,19 @@ export class RecruiteeClient {
     return res.data;
   }
 
-  async createCandidate(candidate: {
-    name: string;
-    emails?: string[];
-    phones?: string[];
-    socialLinks?: string[];
-    links?: string[];
-    coverLetter?: string;
-    remoteCvUrl?: string;
-    sources?: string[];
-  }, offerIds?: number[]) {
+  async createCandidate(
+    candidate: {
+      name: string;
+      emails?: string[];
+      phones?: string[];
+      socialLinks?: string[];
+      links?: string[];
+      coverLetter?: string;
+      remoteCvUrl?: string;
+      sources?: string[];
+    },
+    offerIds?: number[]
+  ) {
     let body: Record<string, any> = {
       candidate: {
         name: candidate.name,
@@ -81,8 +84,8 @@ export class RecruiteeClient {
         ...(candidate.links && { links: candidate.links }),
         ...(candidate.coverLetter && { cover_letter: candidate.coverLetter }),
         ...(candidate.remoteCvUrl && { remote_cv_url: candidate.remoteCvUrl }),
-        ...(candidate.sources && { sources: candidate.sources }),
-      },
+        ...(candidate.sources && { sources: candidate.sources })
+      }
     };
     if (offerIds && offerIds.length > 0) {
       body.offers = offerIds;
@@ -92,15 +95,18 @@ export class RecruiteeClient {
     return res.data;
   }
 
-  async updateCandidate(candidateId: number, candidate: {
-    name?: string;
-    emails?: string[];
-    phones?: string[];
-    socialLinks?: string[];
-    links?: string[];
-    coverLetter?: string;
-    remoteCvUrl?: string;
-  }) {
+  async updateCandidate(
+    candidateId: number,
+    candidate: {
+      name?: string;
+      emails?: string[];
+      phones?: string[];
+      socialLinks?: string[];
+      links?: string[];
+      coverLetter?: string;
+      remoteCvUrl?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       candidate: {
         ...(candidate.name && { name: candidate.name }),
@@ -109,8 +115,8 @@ export class RecruiteeClient {
         ...(candidate.socialLinks && { social_links: candidate.socialLinks }),
         ...(candidate.links && { links: candidate.links }),
         ...(candidate.coverLetter !== undefined && { cover_letter: candidate.coverLetter }),
-        ...(candidate.remoteCvUrl && { remote_cv_url: candidate.remoteCvUrl }),
-      },
+        ...(candidate.remoteCvUrl && { remote_cv_url: candidate.remoteCvUrl })
+      }
     };
 
     let res = await this.axios.patch(`/candidates/${candidateId}`, body);
@@ -124,7 +130,7 @@ export class RecruiteeClient {
 
   async updateCandidateCv(candidateId: number, remoteCvUrl: string) {
     let res = await this.axios.patch(`/candidates/${candidateId}/update_cv`, {
-      candidate: { remote_cv_url: remoteCvUrl },
+      candidate: { remote_cv_url: remoteCvUrl }
     });
     return res.data;
   }
@@ -146,9 +152,9 @@ export class RecruiteeClient {
       note: {
         body,
         visibility: {
-          level: visibility || 'public',
-        },
-      },
+          level: visibility || 'public'
+        }
+      }
     });
     return res.data;
   }
@@ -167,12 +173,15 @@ export class RecruiteeClient {
 
   // ── Candidate Custom Fields ─────────────────────────────────
 
-  async setCandidateCustomFields(candidateId: number, fields: Array<{
-    kind: string;
-    values: any[];
-  }>) {
+  async setCandidateCustomFields(
+    candidateId: number,
+    fields: Array<{
+      kind: string;
+      values: any[];
+    }>
+  ) {
     let res = await this.axios.post(`/custom_fields/candidates/${candidateId}/fields`, {
-      fields,
+      fields
     });
     return res.data;
   }
@@ -213,23 +222,26 @@ export class RecruiteeClient {
         ...(offer.departmentId != null && { department_id: offer.departmentId }),
         ...(offer.locationIds && { location_ids: offer.locationIds }),
         ...(offer.remote != null && { remote: offer.remote }),
-        ...(offer.status && { status: offer.status }),
-      },
+        ...(offer.status && { status: offer.status })
+      }
     };
 
     let res = await this.axios.post('/offers', body);
     return res.data;
   }
 
-  async updateOffer(offerId: number, offer: {
-    title?: string;
-    description?: string;
-    requirements?: string;
-    departmentId?: number;
-    locationIds?: number[];
-    remote?: boolean;
-    status?: string;
-  }) {
+  async updateOffer(
+    offerId: number,
+    offer: {
+      title?: string;
+      description?: string;
+      requirements?: string;
+      departmentId?: number;
+      locationIds?: number[];
+      remote?: boolean;
+      status?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       offer: {
         ...(offer.title && { title: offer.title }),
@@ -238,8 +250,8 @@ export class RecruiteeClient {
         ...(offer.departmentId != null && { department_id: offer.departmentId }),
         ...(offer.locationIds && { location_ids: offer.locationIds }),
         ...(offer.remote != null && { remote: offer.remote }),
-        ...(offer.status && { status: offer.status }),
-      },
+        ...(offer.status && { status: offer.status })
+      }
     };
 
     let res = await this.axios.patch(`/offers/${offerId}`, body);
@@ -253,13 +265,17 @@ export class RecruiteeClient {
 
   // ── Placements (Pipeline) ──────────────────────────────────
 
-  async changeStage(placementId: number, stageId: number, opts?: {
-    proceed?: boolean;
-    hiredAt?: string;
-    jobStartsAt?: string;
-  }) {
+  async changeStage(
+    placementId: number,
+    stageId: number,
+    opts?: {
+      proceed?: boolean;
+      hiredAt?: string;
+      jobStartsAt?: string;
+    }
+  ) {
     let params: Record<string, any> = {
-      stage_id: stageId,
+      stage_id: stageId
     };
     if (opts?.proceed != null) params.proceed = opts.proceed;
     if (opts?.hiredAt) params.hired_at = opts.hiredAt;
@@ -321,8 +337,8 @@ export class RecruiteeClient {
     let res = await this.axios.post('/webhooks', {
       webhook: {
         url,
-        event_types: eventTypes,
-      },
+        event_types: eventTypes
+      }
     });
     return res.data;
   }

@@ -14,15 +14,15 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://storage.googleapis.com/storage/v1',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
 
     this.uploadApi = createAxios({
       baseURL: 'https://storage.googleapis.com/upload/storage/v1',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -34,8 +34,8 @@ export class Client {
         project: this.config.projectId,
         prefix: params?.prefix,
         maxResults: params?.maxResults,
-        pageToken: params?.pageToken,
-      },
+        pageToken: params?.pageToken
+      }
     });
     return response.data;
   }
@@ -53,7 +53,7 @@ export class Client {
     enableHierarchicalNamespace?: boolean;
   }) {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
 
     if (params.location) body.location = params.location;
@@ -66,20 +66,23 @@ export class Client {
     }
 
     let response = await this.api.post('/b', body, {
-      params: { project: this.config.projectId },
+      params: { project: this.config.projectId }
     });
     return response.data;
   }
 
-  async updateBucket(bucketName: string, params: {
-    storageClass?: string;
-    enableVersioning?: boolean;
-    lifecycle?: any;
-    website?: { mainPageSuffix?: string; notFoundPage?: string };
-    labels?: Record<string, string>;
-    retentionPolicy?: { retentionPeriod?: string };
-    softDeletePolicy?: { retentionDurationSeconds?: string };
-  }) {
+  async updateBucket(
+    bucketName: string,
+    params: {
+      storageClass?: string;
+      enableVersioning?: boolean;
+      lifecycle?: any;
+      website?: { mainPageSuffix?: string; notFoundPage?: string };
+      labels?: Record<string, string>;
+      retentionPolicy?: { retentionPeriod?: string };
+      softDeletePolicy?: { retentionDurationSeconds?: string };
+    }
+  ) {
     let body: Record<string, any> = {};
 
     if (params.storageClass) body.storageClass = params.storageClass;
@@ -102,21 +105,24 @@ export class Client {
 
   // ── Objects ──
 
-  async listObjects(bucketName: string, params?: {
-    prefix?: string;
-    delimiter?: string;
-    maxResults?: number;
-    pageToken?: string;
-    versions?: boolean;
-  }) {
+  async listObjects(
+    bucketName: string,
+    params?: {
+      prefix?: string;
+      delimiter?: string;
+      maxResults?: number;
+      pageToken?: string;
+      versions?: boolean;
+    }
+  ) {
     let response = await this.api.get(`/b/${encodeURIComponent(bucketName)}/o`, {
       params: {
         prefix: params?.prefix,
         delimiter: params?.delimiter,
         maxResults: params?.maxResults,
         pageToken: params?.pageToken,
-        versions: params?.versions,
-      },
+        versions: params?.versions
+      }
     });
     return response.data;
   }
@@ -136,14 +142,19 @@ export class Client {
     return response.data;
   }
 
-  async uploadObject(bucketName: string, objectName: string, content: string, params?: {
-    contentType?: string;
-    metadata?: Record<string, string>;
-  }) {
+  async uploadObject(
+    bucketName: string,
+    objectName: string,
+    content: string,
+    params?: {
+      contentType?: string;
+      metadata?: Record<string, string>;
+    }
+  ) {
     let contentType = params?.contentType || 'application/octet-stream';
 
     let metadataBody: Record<string, any> = {
-      name: objectName,
+      name: objectName
     };
     if (params?.metadata) {
       metadataBody.metadata = params.metadata;
@@ -159,7 +170,7 @@ export class Client {
       `Content-Type: ${contentType}`,
       '',
       content,
-      `--${boundary}--`,
+      `--${boundary}--`
     ].join('\r\n');
 
     let response = await this.uploadApi.post(
@@ -168,14 +179,18 @@ export class Client {
       {
         params: { uploadType: 'multipart' },
         headers: {
-          'Content-Type': `multipart/related; boundary=${boundary}`,
-        },
+          'Content-Type': `multipart/related; boundary=${boundary}`
+        }
       }
     );
     return response.data;
   }
 
-  async deleteObject(bucketName: string, objectName: string, params?: { generation?: string }) {
+  async deleteObject(
+    bucketName: string,
+    objectName: string,
+    params?: { generation?: string }
+  ) {
     await this.api.delete(
       `/b/${encodeURIComponent(bucketName)}/o/${encodeURIComponent(objectName)}`,
       { params: { generation: params?.generation } }
@@ -202,12 +217,21 @@ export class Client {
     destinationBucket: string,
     destinationObject: string
   ) {
-    let copied = await this.copyObject(sourceBucket, sourceObject, destinationBucket, destinationObject);
+    let copied = await this.copyObject(
+      sourceBucket,
+      sourceObject,
+      destinationBucket,
+      destinationObject
+    );
     await this.deleteObject(sourceBucket, sourceObject);
     return copied;
   }
 
-  async updateObjectMetadata(bucketName: string, objectName: string, metadata: Record<string, any>) {
+  async updateObjectMetadata(
+    bucketName: string,
+    objectName: string,
+    metadata: Record<string, any>
+  ) {
     let response = await this.api.patch(
       `/b/${encodeURIComponent(bucketName)}/o/${encodeURIComponent(objectName)}`,
       metadata
@@ -250,7 +274,10 @@ export class Client {
     let credentialDate = now.toISOString().replace(/[-:]/g, '').substring(0, 8);
     let credentialScope = `${credentialDate}/auto/storage/goog4_request`;
 
-    let timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    let timestamp = now
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}/, '');
 
     let signedHeaders = 'host';
     let host = 'storage.googleapis.com';
@@ -260,7 +287,7 @@ export class Client {
       'X-Goog-Credential': `${credentialScope}`,
       'X-Goog-Date': timestamp,
       'X-Goog-Expires': params.expirationSeconds.toString(),
-      'X-Goog-SignedHeaders': signedHeaders,
+      'X-Goog-SignedHeaders': signedHeaders
     }).toString();
 
     let canonicalRequest = [
@@ -270,13 +297,13 @@ export class Client {
       `host:${host}`,
       '',
       signedHeaders,
-      'UNSIGNED-PAYLOAD',
+      'UNSIGNED-PAYLOAD'
     ].join('\n');
 
     return {
       url: `https://${host}/${encodeURIComponent(params.bucketName)}/${encodeURIComponent(params.objectName)}`,
       expiresAt: expiration.toISOString(),
-      note: 'Full V4 signing requires a private key. Use this with Service Account auth for complete signed URL generation.',
+      note: 'Full V4 signing requires a private key. Use this with Service Account auth for complete signed URL generation.'
     };
   }
 
@@ -289,16 +316,19 @@ export class Client {
     return response.data;
   }
 
-  async createNotification(bucketName: string, params: {
-    topic: string;
-    eventTypes?: string[];
-    objectNamePrefix?: string;
-    payloadFormat?: string;
-    customAttributes?: Record<string, string>;
-  }) {
+  async createNotification(
+    bucketName: string,
+    params: {
+      topic: string;
+      eventTypes?: string[];
+      objectNamePrefix?: string;
+      payloadFormat?: string;
+      customAttributes?: Record<string, string>;
+    }
+  ) {
     let body: Record<string, any> = {
       topic: params.topic,
-      payload_format: params.payloadFormat || 'JSON_API_V1',
+      payload_format: params.payloadFormat || 'JSON_API_V1'
     };
     if (params.eventTypes) body.event_types = params.eventTypes;
     if (params.objectNamePrefix) body.object_name_prefix = params.objectNamePrefix;
@@ -321,24 +351,28 @@ export class Client {
 
   async getBucketLifecycle(bucketName: string) {
     let response = await this.api.get(`/b/${encodeURIComponent(bucketName)}`, {
-      params: { fields: 'lifecycle' },
+      params: { fields: 'lifecycle' }
     });
     return response.data;
   }
 
   async setBucketLifecycle(bucketName: string, lifecycle: any) {
     let response = await this.api.patch(`/b/${encodeURIComponent(bucketName)}`, {
-      lifecycle,
+      lifecycle
     });
     return response.data;
   }
 
   // ── Object holds and retention ──
 
-  async setObjectHold(bucketName: string, objectName: string, params: {
-    temporaryHold?: boolean;
-    eventBasedHold?: boolean;
-  }) {
+  async setObjectHold(
+    bucketName: string,
+    objectName: string,
+    params: {
+      temporaryHold?: boolean;
+      eventBasedHold?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.temporaryHold !== undefined) body.temporaryHold = params.temporaryHold;
     if (params.eventBasedHold !== undefined) body.eventBasedHold = params.eventBasedHold;

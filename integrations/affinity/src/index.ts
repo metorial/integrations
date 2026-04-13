@@ -37,7 +37,7 @@ import {
   updateReminder,
   deleteReminder,
   getRelationshipStrengths,
-  getEntityFiles,
+  getEntityFiles
 } from './tools';
 
 import {
@@ -49,7 +49,7 @@ import {
   fieldValueEvents,
   noteEvents,
   fileEvents,
-  reminderEvents,
+  reminderEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -90,7 +90,7 @@ export let provider = Slate.create({
     updateReminder,
     deleteReminder,
     getRelationshipStrengths,
-    getEntityFiles,
+    getEntityFiles
   ],
   triggers: [
     personEvents,
@@ -101,6 +101,6 @@ export let provider = Slate.create({
     fieldValueEvents,
     noteEvents,
     fileEvents,
-    reminderEvents,
-  ],
+    reminderEvents
+  ]
 });

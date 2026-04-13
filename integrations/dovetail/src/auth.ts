@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Personal API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Dovetail personal API token (starts with "api."). Generate one at Settings → Account → Personal API keys.'),
+      token: z
+        .string()
+        .describe(
+          'Dovetail personal API token (starts with "api."). Generate one at Settings → Account → Personal API keys.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,10 +32,10 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://dovetail.com/api/v1',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+          Accept: 'application/json'
+        }
       });
 
       let response = await axios.get('/token/info');
@@ -38,8 +44,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: data?.id,
-          subdomain: data?.subdomain,
-        },
+          subdomain: data?.subdomain
+        }
       };
-    },
+    }
   });

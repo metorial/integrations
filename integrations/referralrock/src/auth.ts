@@ -2,9 +2,11 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Keys',
@@ -12,16 +14,17 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       publicKey: z.string().describe('Your Referral Rock public API key'),
-      privateKey: z.string().describe('Your Referral Rock private API key'),
+      privateKey: z.string().describe('Your Referral Rock private API key')
     }),
 
-    getOutput: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let encoded = Buffer.from(`${ctx.input.publicKey}:${ctx.input.privateKey}`).toString('base64');
+    getOutput: async ctx => {
+      let encoded = Buffer.from(`${ctx.input.publicKey}:${ctx.input.privateKey}`).toString(
+        'base64'
+      );
       return {
         output: {
-          token: encoded,
-        },
+          token: encoded
+        }
       };
-    },
+    }
   });

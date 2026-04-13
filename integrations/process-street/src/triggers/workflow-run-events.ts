@@ -8,41 +8,52 @@ let taskDataSchema = z.object({
   taskName: z.string().optional().describe('Name of the task'),
   taskStatus: z.string().optional().describe('Status of the task (NotCompleted, Completed)'),
   hidden: z.boolean().optional().describe('Whether the task is hidden'),
-  stopped: z.boolean().optional().describe('Whether the task is stopped'),
+  stopped: z.boolean().optional().describe('Whether the task is stopped')
 });
 
 let workflowRunDataSchema = z.object({
   workflowRunId: z.string().optional().describe('ID of the workflow run'),
   workflowRunName: z.string().optional().describe('Name of the workflow run'),
   workflowId: z.string().optional().describe('ID of the parent workflow'),
-  workflowName: z.string().optional().describe('Name of the parent workflow'),
+  workflowName: z.string().optional().describe('Name of the parent workflow')
 });
 
-export let workflowRunEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Workflow Run Events',
-    key: 'workflow_run_events',
-    description: 'Triggers on workflow run lifecycle events including run creation, completion, task checked/unchecked, task ready/not ready, task approved/rejected, and task overdue.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the event'),
-    eventId: z.string().describe('Unique ID for this event'),
-    createdDate: z.string().optional().describe('Date the event was created'),
-    payload: z.any().describe('Raw event payload'),
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Type of event that occurred'),
-    task: taskDataSchema.optional().describe('Task data if the event is task-related'),
-    workflowRun: workflowRunDataSchema.optional().describe('Workflow run data'),
-    approvalStatus: z.string().optional().describe('Approval status (Approved/Rejected) for approval events'),
-    approvalComment: z.string().optional().describe('Comment left on the approval'),
-    reviewerEmail: z.string().optional().describe('Email of the reviewer for approval events'),
-    reviewerUsername: z.string().optional().describe('Username of the reviewer for approval events'),
-  }))
+export let workflowRunEvents = SlateTrigger.create(spec, {
+  name: 'Workflow Run Events',
+  key: 'workflow_run_events',
+  description:
+    'Triggers on workflow run lifecycle events including run creation, completion, task checked/unchecked, task ready/not ready, task approved/rejected, and task overdue.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of the event'),
+      eventId: z.string().describe('Unique ID for this event'),
+      createdDate: z.string().optional().describe('Date the event was created'),
+      payload: z.any().describe('Raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('Type of event that occurred'),
+      task: taskDataSchema.optional().describe('Task data if the event is task-related'),
+      workflowRun: workflowRunDataSchema.optional().describe('Workflow run data'),
+      approvalStatus: z
+        .string()
+        .optional()
+        .describe('Approval status (Approved/Rejected) for approval events'),
+      approvalComment: z.string().optional().describe('Comment left on the approval'),
+      reviewerEmail: z
+        .string()
+        .optional()
+        .describe('Email of the reviewer for approval events'),
+      reviewerUsername: z
+        .string()
+        .optional()
+        .describe('Username of the reviewer for approval events')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let result = await client.createWebhook({
@@ -51,24 +62,24 @@ export let workflowRunEvents = SlateTrigger.create(
           'TaskCheckedUnchecked',
           'TaskReady',
           'WorkflowRunCreated',
-          'WorkflowRunCompleted',
-        ],
+          'WorkflowRunCompleted'
+        ]
       });
 
       return {
         registrationDetails: {
-          webhookId: result.id,
-        },
+          webhookId: result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       // Process Street may send a single event
       let eventType = data.type || 'unknown';
@@ -80,26 +91,26 @@ export let workflowRunEvents = SlateTrigger.create(
             eventType,
             eventId,
             createdDate: data.createdDate,
-            payload: data.data || data,
-          },
-        ],
+            payload: data.data || data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, eventId, payload } = ctx.input;
 
       let typeMap: Record<string, string> = {
-        'TaskCheckedUnchecked': 'task.checked_unchecked',
-        'ChecklistCreated': 'workflow_run.created',
-        'WorkflowRunCreated': 'workflow_run.created',
-        'ChecklistCompleted': 'workflow_run.completed',
-        'WorkflowRunCompleted': 'workflow_run.completed',
-        'TaskReady': 'task.ready',
-        'TaskNotReady': 'task.not_ready',
-        'TaskApproved': 'task.approved',
-        'TaskRejected': 'task.rejected',
-        'TaskOverdue': 'task.overdue',
+        TaskCheckedUnchecked: 'task.checked_unchecked',
+        ChecklistCreated: 'workflow_run.created',
+        WorkflowRunCreated: 'workflow_run.created',
+        ChecklistCompleted: 'workflow_run.completed',
+        WorkflowRunCompleted: 'workflow_run.completed',
+        TaskReady: 'task.ready',
+        TaskNotReady: 'task.not_ready',
+        TaskApproved: 'task.approved',
+        TaskRejected: 'task.rejected',
+        TaskOverdue: 'task.overdue'
       };
 
       let normalizedType = typeMap[eventType] || eventType.toLowerCase();
@@ -118,7 +129,7 @@ export let workflowRunEvents = SlateTrigger.create(
           taskName: payload.name,
           taskStatus: payload.status,
           hidden: payload.hidden,
-          stopped: payload.stopped,
+          stopped: payload.stopped
         };
       }
 
@@ -129,7 +140,7 @@ export let workflowRunEvents = SlateTrigger.create(
           taskName: payload.task.name,
           taskStatus: payload.task.status,
           hidden: payload.task.hidden,
-          stopped: payload.task.stopped,
+          stopped: payload.task.stopped
         };
       }
 
@@ -139,7 +150,7 @@ export let workflowRunEvents = SlateTrigger.create(
           workflowRunId: payload.id,
           workflowRunName: payload.name,
           workflowId: payload.template?.id,
-          workflowName: payload.template?.name,
+          workflowName: payload.template?.name
         };
       }
 
@@ -161,8 +172,9 @@ export let workflowRunEvents = SlateTrigger.create(
           approvalStatus,
           approvalComment,
           reviewerEmail,
-          reviewerUsername,
-        },
+          reviewerUsername
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

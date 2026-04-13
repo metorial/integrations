@@ -8,28 +8,32 @@ let listSchema = z.object({
   name: z.string().describe('List name'),
   closed: z.boolean().describe('Whether the list is archived'),
   position: z.number().describe('Position of the list on the board'),
-  boardId: z.string().describe('ID of the board this list belongs to'),
+  boardId: z.string().describe('ID of the board this list belongs to')
 });
 
-export let getLists = SlateTool.create(
-  spec,
-  {
-    name: 'Get Lists',
-    key: 'get_lists',
-    description: `Get all lists on a Trello board. Lists represent columns (e.g. "To Do", "In Progress", "Done"). Use to discover list IDs needed for creating or moving cards.`,
-    tags: {
-      readOnly: true,
-    },
+export let getLists = SlateTool.create(spec, {
+  name: 'Get Lists',
+  key: 'get_lists',
+  description: `Get all lists on a Trello board. Lists represent columns (e.g. "To Do", "In Progress", "Done"). Use to discover list IDs needed for creating or moving cards.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    boardId: z.string().describe('ID of the board to get lists from'),
-    filter: z.enum(['open', 'closed', 'all']).optional().describe('Filter lists by status. Defaults to "open"'),
-  }))
-  .output(z.object({
-    lists: z.array(listSchema).describe('Lists on the board'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      boardId: z.string().describe('ID of the board to get lists from'),
+      filter: z
+        .enum(['open', 'closed', 'all'])
+        .optional()
+        .describe('Filter lists by status. Defaults to "open"')
+    })
+  )
+  .output(
+    z.object({
+      lists: z.array(listSchema).describe('Lists on the board')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TrelloClient({ apiKey: ctx.auth.apiKey, token: ctx.auth.token });
 
     let rawLists = await client.getLists(ctx.input.boardId, ctx.input.filter);
@@ -39,11 +43,12 @@ export let getLists = SlateTool.create(
       name: l.name,
       closed: l.closed ?? false,
       position: l.pos,
-      boardId: l.idBoard,
+      boardId: l.idBoard
     }));
 
     return {
       output: { lists },
-      message: `Found **${lists.length}** list(s) on the board.`,
+      message: `Found **${lists.length}** list(s) on the board.`
     };
-  }).build();
+  })
+  .build();

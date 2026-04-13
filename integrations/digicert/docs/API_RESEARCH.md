@@ -1,6 +1,7 @@
 # DigiCert CertCentral Services API v2 - Comprehensive Research
 
 ## Table of Contents
+
 1. [Base URL and Request Structure](#base-url-and-request-structure)
 2. [Authentication](#authentication)
 3. [Certificate Ordering Endpoints](#certificate-ordering-endpoints)
@@ -18,17 +19,18 @@
 
 ### Base URLs
 
-| Instance | Base URL |
-|----------|----------|
-| US (Production) | `https://www.digicert.com/services/v2/` |
+| Instance        | Base URL                                       |
+| --------------- | ---------------------------------------------- |
+| US (Production) | `https://www.digicert.com/services/v2/`        |
 | EU (Production) | `https://certcentral.digicert.eu/services/v2/` |
-| Beta Server | `https://beta.digicert.com/services/v2/` |
+| Beta Server     | `https://beta.digicert.com/services/v2/`       |
 
 Most accounts use the US instance. If your account uses the Europe instance, your CertCentral console displays "CertCentral Europe" in the top left corner.
 
 ### Request Format
 
 All API requests are submitted via RESTful URLs using REST features:
+
 - **Protocol:** HTTPS on port 443
 - **Character Set:** UTF-8
 - **Content Types Supported:**
@@ -74,13 +76,13 @@ DigiCert CertCentral Services API uses header-based authentication via the custo
 
 ### API Key Restrictions (Optional)
 
-| Restriction | Allowed Actions |
-|------------|-----------------|
-| None (default) | All actions the linked user can perform |
-| Orders | Orders, Requests, Certificates only |
+| Restriction                    | Allowed Actions                                        |
+| ------------------------------ | ------------------------------------------------------ |
+| None (default)                 | All actions the linked user can perform                |
+| Orders                         | Orders, Requests, Certificates only                    |
 | Orders, Domains, Organizations | Orders, Requests, Certificates, Organizations, Domains |
-| User Management | User-related actions only |
-| View Only | GET requests only (no POST, PUT, DELETE) |
+| User Management                | User-related actions only                              |
+| View Only                      | GET requests only (no POST, PUT, DELETE)               |
 
 ### Service Users
 
@@ -105,6 +107,7 @@ DigiCert CertCentral Services API uses header-based authentication via the custo
 **Endpoint:** `POST https://www.digicert.com/services/v2/order/certificate/{{ssl_certificate_id}}`
 
 **Product Identifiers (replace `{{ssl_certificate_id}}`):**
+
 - `ssl_plus` - Standard SSL
 - `ssl_multi_domain` - Multi Domain SSL
 - `ssl_wildcard` - Wildcard SSL
@@ -145,20 +148,20 @@ DigiCert CertCentral Services API uses header-based authentication via the custo
 
 **Key Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `certificate.common_name` | string | Yes | Primary domain to secure |
-| `certificate.dns_names` | array | No | Additional SANs for multi-domain |
-| `certificate.csr` | string | Yes | Certificate Signing Request |
-| `certificate.signature_hash` | string | Yes | Hash algorithm (sha256, sha384, sha512) |
-| `certificate.server_platform.id` | integer | No | Server platform identifier |
-| `certificate.cert_validity.days` | integer | No | Certificate validity (max 199 days) |
-| `order_validity.years` | integer | Yes | Order duration (1-3 for Multi-year Plans) |
-| `organization.id` | integer | Yes | Existing organization ID |
-| `payment_method` | string | Yes | "balance", "profile", or "card" |
-| `skip_approval` | boolean | No | Skip approval step (default: false) |
-| `dcv_method` | string | No | Domain validation method |
-| `disable_ct` | boolean | No | Disable CT logging |
+| Parameter                        | Type    | Required | Description                               |
+| -------------------------------- | ------- | -------- | ----------------------------------------- |
+| `certificate.common_name`        | string  | Yes      | Primary domain to secure                  |
+| `certificate.dns_names`          | array   | No       | Additional SANs for multi-domain          |
+| `certificate.csr`                | string  | Yes      | Certificate Signing Request               |
+| `certificate.signature_hash`     | string  | Yes      | Hash algorithm (sha256, sha384, sha512)   |
+| `certificate.server_platform.id` | integer | No       | Server platform identifier                |
+| `certificate.cert_validity.days` | integer | No       | Certificate validity (max 199 days)       |
+| `order_validity.years`           | integer | Yes      | Order duration (1-3 for Multi-year Plans) |
+| `organization.id`                | integer | Yes      | Existing organization ID                  |
+| `payment_method`                 | string  | Yes      | "balance", "profile", or "card"           |
+| `skip_approval`                  | boolean | No       | Skip approval step (default: false)       |
+| `dcv_method`                     | string  | No       | Domain validation method                  |
+| `disable_ct`                     | boolean | No       | Disable CT logging                        |
 
 **Response (201 Created):**
 
@@ -187,6 +190,7 @@ DigiCert CertCentral Services API uses header-based authentication via the custo
 ```
 
 **Order Status Values:**
+
 - `pending` - Awaiting approval
 - `submitted` - Submitted for validation
 - `approved` - Approved; validation in progress
@@ -230,23 +234,25 @@ This creates a 3-year plan with initial 90-day certificate validity.
 ### Wildcard and Multi-Domain Handling
 
 **Wildcard Certificates:**
+
 - Use `*.example.com` format in `common_name`
 - EV certificates only allow wildcard domains if right-most label is "onion" (e.g., `*.example.onion`)
 
 **Multi-Domain (SAN) Certificates:**
+
 - Add additional domains to `dns_names` array
 - Each SAN may incur additional cost
 - OV/EV orders can mix wildcard and non-wildcard domains
 
 ### Domain Control Validation (DCV) Methods
 
-| Method | Description | Supports Wildcard |
-|--------|-------------|-------------------|
-| `email` | Email to admin contact | Yes |
-| `dns-txt-token` | DNS TXT record (recommended) | Yes |
-| `dns-cname-token` | DNS CNAME record | Yes |
-| `http-token` | HTTP file at specific path | No (FQDN only) |
-| `http-token-dynamic` | Dynamic HTTP token | No (FQDN only) |
+| Method               | Description                  | Supports Wildcard |
+| -------------------- | ---------------------------- | ----------------- |
+| `email`              | Email to admin contact       | Yes               |
+| `dns-txt-token`      | DNS TXT record (recommended) | Yes               |
+| `dns-cname-token`    | DNS CNAME record             | Yes               |
+| `http-token`         | HTTP file at specific path   | No (FQDN only)    |
+| `http-token-dynamic` | Dynamic HTTP token           | No (FQDN only)    |
 
 ---
 
@@ -278,17 +284,17 @@ Replaces existing certificate with new one containing different information (CSR
 
 **Key Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `certificate.csr` | string | Yes | New Certificate Signing Request |
-| `certificate.common_name` | string | Yes* | Domain to secure (*not for Code Signing) |
-| `certificate.signature_hash` | string | Yes | Hash algorithm |
-| `certificate.server_platform.id` | integer | No | Server platform |
-| `skip_approval` | boolean | No | Skip approval step (requires admin) |
-| `cs_provisioning_method` | string | No | For Code Signing: ship_token, email, client_app |
-| `certificate_dcv_scope` | string | No | base_domain or fqdn |
-| `store_reissue_as_duplicate` | boolean | No | Store as duplicate for public TLS |
-| `comments` | string | No | Administrator notes |
+| Parameter                        | Type    | Required | Description                                     |
+| -------------------------------- | ------- | -------- | ----------------------------------------------- |
+| `certificate.csr`                | string  | Yes      | New Certificate Signing Request                 |
+| `certificate.common_name`        | string  | Yes\*    | Domain to secure (\*not for Code Signing)       |
+| `certificate.signature_hash`     | string  | Yes      | Hash algorithm                                  |
+| `certificate.server_platform.id` | integer | No       | Server platform                                 |
+| `skip_approval`                  | boolean | No       | Skip approval step (requires admin)             |
+| `cs_provisioning_method`         | string  | No       | For Code Signing: ship_token, email, client_app |
+| `certificate_dcv_scope`          | string  | No       | base_domain or fqdn                             |
+| `store_reissue_as_duplicate`     | boolean | No       | Store as duplicate for public TLS               |
+| `comments`                       | string  | No       | Administrator notes                             |
 
 **Response (201 Created):**
 
@@ -316,6 +322,7 @@ When enabled for Multi-year Plans, DigiCert automatically creates reissue reques
 **Endpoint:** `PUT https://www.digicert.com/services/v2/certificate/{{certificate_identifier}}/revoke`
 
 The `certificate_identifier` can be:
+
 - Certificate ID (numeric)
 - Serial number
 
@@ -331,19 +338,21 @@ The `certificate_identifier` can be:
 
 **Revocation Reasons (for TLS/SSL):**
 
-| Reason | Description |
-|--------|-------------|
-| `unspecified` | None of the other reasons apply (default) |
-| `keyCompromise` | Private key has been compromised |
-| `affiliationChanged` | Organization information has changed |
-| `superseded` | Certificate has been replaced |
-| `cessationOfOperation` | Domain no longer active or used |
+| Reason                 | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `unspecified`          | None of the other reasons apply (default) |
+| `keyCompromise`        | Private key has been compromised          |
+| `affiliationChanged`   | Organization information has changed      |
+| `superseded`           | Certificate has been replaced             |
+| `cessationOfOperation` | Domain no longer active or used           |
 
 **Response:**
+
 - `204 No Content` - When skip_approval is true
 - `201 Created` - When creating revocation request (requires approval)
 
 **Important Notes:**
+
 - Revoking is permanent and irreversible
 - Certificates with pending reissue cannot be revoked
 - Administrator must approve unless `skip_approval: true` with admin API key
@@ -367,26 +376,31 @@ Revokes all certificates on an order, including duplicates and reissues.
 ### Download Certificate
 
 **By Certificate ID:**
+
 ```
 GET https://www.digicert.com/services/v2/certificate/{{certificate_id}}/download/platform
 ```
 
 **By Certificate ID (specific format):**
+
 ```
 GET https://www.digicert.com/services/v2/certificate/{{certificate_id}}/download/format/{{format_type}}
 ```
 
 **By Order ID (active certificate only):**
+
 ```
 GET https://www.digicert.com/services/v2/certificate/download/order/{{order_id}}
 ```
 
 **By Order ID (specific format):**
+
 ```
 GET https://www.digicert.com/services/v2/certificate/download/order/{{order_id}}/format/{{format_type}}
 ```
 
 **Format Types:**
+
 - `pem_all` - PEM with full chain
 - `pem_noroot` - PEM without root
 - `p7b` - PKCS#7
@@ -419,6 +433,7 @@ Creates duplicate certificate with same information except CSR, validity, platfo
 ```
 
 **Rules:**
+
 - All fields must be identical to original (except CSR, validity, platform, hash)
 - Multi-domain: Can move SAN to common name
 - Wildcard: Can add SANs if they're subdomains of wildcard
@@ -483,7 +498,7 @@ Can also use thumbprint or serial number of primary certificate (not duplicates)
     "validation_type": "OV"
   },
   "validity_years": 1,
-  "price": 299.00,
+  "price": 299.0,
   "payment_method": "balance",
   "container": {
     "id": 1,
@@ -525,27 +540,29 @@ Supports filters, sorting, and pagination.
 
 **Query Parameters:**
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `container_id` | Filter by container/division | `12345` |
-| `organization_id` | Filter by organization | `67890` |
-| `user_id` | Filter by user | `111` |
-| `filters[date_created]` | Creation date range/comparison | `=2024-01-01...2024-12-31` or `>2024-01-01` |
-| `filters[valid_till]` | Expiration date filter | `<2024-12-31` |
-| `filters[status]` | Order status | `issued`, `pending`, `revoked` |
-| `filters[search]` | Search domain/order ID | `%example.com` or `123456` |
-| `filters[common_name]` | Filter by common name | `%example.com` |
-| `filters[product_name_id]` | Filter by product type | `ssl_plus` |
-| `limit` | Max results (max 1000) | `25` |
-| `offset` | Pagination offset | `0` |
-| `sort` | Sort field (+/- for asc/desc) | `-date_created`, `+common_name` |
+| Parameter                  | Description                    | Example                                     |
+| -------------------------- | ------------------------------ | ------------------------------------------- |
+| `container_id`             | Filter by container/division   | `12345`                                     |
+| `organization_id`          | Filter by organization         | `67890`                                     |
+| `user_id`                  | Filter by user                 | `111`                                       |
+| `filters[date_created]`    | Creation date range/comparison | `=2024-01-01...2024-12-31` or `>2024-01-01` |
+| `filters[valid_till]`      | Expiration date filter         | `<2024-12-31`                               |
+| `filters[status]`          | Order status                   | `issued`, `pending`, `revoked`              |
+| `filters[search]`          | Search domain/order ID         | `%example.com` or `123456`                  |
+| `filters[common_name]`     | Filter by common name          | `%example.com`                              |
+| `filters[product_name_id]` | Filter by product type         | `ssl_plus`                                  |
+| `limit`                    | Max results (max 1000)         | `25`                                        |
+| `offset`                   | Pagination offset              | `0`                                         |
+| `sort`                     | Sort field (+/- for asc/desc)  | `-date_created`, `+common_name`             |
 
 **Multiple Filter Values:**
+
 ```
 filters[product_name_id][0]=ssl_plus&filters[product_name_id][1]=ssl_wildcard
 ```
 
 **Sort Options:**
+
 - `order_id`, `date_created`, `common_name`, `status`, `validity_years`, `product_name`, `valid_till`
 - Prefix with `+` (ascending) or `-` (descending)
 
@@ -633,17 +650,18 @@ Add domain, associate with organization, and submit for validation.
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | string | Yes | Domain name to add |
-| `organization.id` | integer | Yes | Organization identifier |
-| `validations` | array | Yes | Validation types (ov, ev, cs, etc.) |
-| `dcv_method` | string | No | DCV method (default: email) |
-| `locale` | string | No | Language code for DCV emails |
-| `email_array` | array | No | Specific verification email addresses |
-| `keep_www` | boolean | No | Retain www subdomain (default: false) |
+| Parameter         | Type    | Required | Description                           |
+| ----------------- | ------- | -------- | ------------------------------------- |
+| `name`            | string  | Yes      | Domain name to add                    |
+| `organization.id` | integer | Yes      | Organization identifier               |
+| `validations`     | array   | Yes      | Validation types (ov, ev, cs, etc.)   |
+| `dcv_method`      | string  | No       | DCV method (default: email)           |
+| `locale`          | string  | No       | Language code for DCV emails          |
+| `email_array`     | array   | No       | Specific verification email addresses |
+| `keep_www`        | boolean | No       | Retain www subdomain (default: false) |
 
 **Validation Types:**
+
 - `ov` - Organization Validation
 - `ev` - Extended Validation
 - `cs` - Code Signing
@@ -675,6 +693,7 @@ Add domain, associate with organization, and submit for validation.
 ```
 
 **Important Notes:**
+
 - By default, `www.` subdomain is removed unless using file-based DCV and `keep_www: true`
 - At least one validation type required
 - DCV method `http-token` and `http-token-dynamic` don't support wildcard domains
@@ -703,6 +722,7 @@ Submit domain for validation with specified validation types.
 **Endpoint:** `GET https://www.digicert.com/services/v2/domain/{{domain_id}}`
 
 **Query Parameters:**
+
 - `include_dcv=true` - Include DCV token information
 - `include_validation=true` - Include validation status
 
@@ -752,13 +772,13 @@ Submit domain for validation with specified validation types.
 
 **Query Parameters:**
 
-| Parameter | Description |
-|-----------|-------------|
-| `filters[validation]` | Filter by validation type |
-| `container_id` | Filter by container |
-| `limit` | Max results (default/max: 1000) |
-| `offset` | Pagination offset |
-| `sort` | Sort field |
+| Parameter             | Description                     |
+| --------------------- | ------------------------------- |
+| `filters[validation]` | Filter by validation type       |
+| `container_id`        | Filter by container             |
+| `limit`               | Max results (default/max: 1000) |
+| `offset`              | Pagination offset               |
+| `sort`                | Sort field                      |
 
 **Response:**
 
@@ -847,10 +867,7 @@ Check DCV for pending TLS/SSL certificate order with dns-txt-token, dns-cname-to
 
 ```json
 {
-  "dns_names_validations": [
-    "sub1.example.com",
-    "sub2.example.com"
-  ]
+  "dns_names_validations": ["sub1.example.com", "sub2.example.com"]
 }
 ```
 
@@ -929,39 +946,40 @@ Resend DCV email for email-based validation.
 
 **Core Organization Fields:**
 
-| Parameter | Type | Required | Max Length | Description |
-|-----------|------|----------|------------|-------------|
-| `name` | string | Yes | 64* | Legal organization name |
-| `assumed_name` | string | No | Combined 61* | DBA/public name |
-| `country` | string | Yes | 2 | ISO 3166-1 alpha-2 code |
-| `address` | string | Yes | 64 | Street address |
-| `address2` | string | No | 64 | Secondary address line |
-| `city` | string | Yes | 64 | City |
-| `state` | string | Yes | 64 | State/province (full name) |
-| `zip` | string | Yes | 40 | Postal code |
-| `telephone` | string | Yes | 32 | Phone number |
+| Parameter      | Type   | Required | Max Length    | Description                |
+| -------------- | ------ | -------- | ------------- | -------------------------- |
+| `name`         | string | Yes      | 64\*          | Legal organization name    |
+| `assumed_name` | string | No       | Combined 61\* | DBA/public name            |
+| `country`      | string | Yes      | 2             | ISO 3166-1 alpha-2 code    |
+| `address`      | string | Yes      | 64            | Street address             |
+| `address2`     | string | No       | 64            | Secondary address line     |
+| `city`         | string | Yes      | 64            | City                       |
+| `state`        | string | Yes      | 64            | State/province (full name) |
+| `zip`          | string | Yes      | 40            | Postal code                |
+| `telephone`    | string | Yes      | 32            | Phone number               |
 
-*If `assumed_name` provided, combined length of `name` + `assumed_name` cannot exceed 61 characters.
+\*If `assumed_name` provided, combined length of `name` + `assumed_name` cannot exceed 61 characters.
 
 **Organization Contact Fields:**
 
-| Parameter | Type | Required | Max Length |
-|-----------|------|----------|------------|
-| `first_name` | string | Yes | 128 |
-| `last_name` | string | Yes | 128 |
-| `email` | string | Yes | 255 |
-| `job_title` | string | No | 64 |
-| `telephone` | string | No | 32 |
-| `telephone_extension` | string | No | 16 |
+| Parameter             | Type   | Required | Max Length |
+| --------------------- | ------ | -------- | ---------- |
+| `first_name`          | string | Yes      | 128        |
+| `last_name`           | string | Yes      | 128        |
+| `email`               | string | Yes      | 255        |
+| `job_title`           | string | No       | 64         |
+| `telephone`           | string | No       | 32         |
+| `telephone_extension` | string | No       | 16         |
 
 **Optional Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `skip_duplicate_org_check` | boolean | Bypass duplicate checking |
-| `validations` | array | Pre-validation objects with types and verified_users |
+| Parameter                  | Type    | Description                                          |
+| -------------------------- | ------- | ---------------------------------------------------- |
+| `skip_duplicate_org_check` | boolean | Bypass duplicate checking                            |
+| `validations`              | array   | Pre-validation objects with types and verified_users |
 
 **Validation Types:**
+
 - `ov`, `ev`, `cs`, `ev_cs`, `ds`, `smime`
 
 **Response (201 Created):**
@@ -1038,6 +1056,7 @@ Returns validation status details for the organization.
 **Endpoint:** `GET https://www.digicert.com/services/v2/user`
 
 **Query Parameters:**
+
 - `container_id` - Filter by container/division
 - `limit` - Max results
 - `offset` - Pagination offset
@@ -1145,6 +1164,7 @@ To change user role, use Change user role endpoint (separate).
 ### Additional User Endpoints
 
 Based on API documentation, additional endpoints exist for:
+
 - Edit service user
 - Change user role
 - Update container assignments
@@ -1164,6 +1184,7 @@ Returns account information and settings.
 CertCentral webhooks send automatic updates for certificate issuance and validation events.
 
 **Important Notes:**
+
 - Webhooks not enabled for all accounts - contact account manager to request access
 - Only one webhook per CertCentral account
 - Endpoint must use HTTPS protocol
@@ -1198,35 +1219,35 @@ CertCentral webhooks send automatic updates for certificate issuance and validat
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `endpoint` | string | Yes | HTTPS URL hosting webhook listener |
-| `secret` | string | No | Min 32 chars; sent in X-WEBHOOK-KEY header |
-| `events` | array | No | Event subscriptions (default: certificate_issued) |
-| `webhook_settings` | object | No | Notification customization |
+| Parameter          | Type   | Required | Description                                       |
+| ------------------ | ------ | -------- | ------------------------------------------------- |
+| `endpoint`         | string | Yes      | HTTPS URL hosting webhook listener                |
+| `secret`           | string | No       | Min 32 chars; sent in X-WEBHOOK-KEY header        |
+| `events`           | array  | No       | Event subscriptions (default: certificate_issued) |
+| `webhook_settings` | object | No       | Notification customization                        |
 
 **Webhook Settings:**
 
-| Setting | Type | Description |
-|---------|------|-------------|
-| `instant_issue_webhook_notification` | int | Send for instantly-issued certs (0 or 1) |
-| `webhook_notification_frequency` | array | Timing for expiration alerts (90, 60, 30, 7, 0, -7 days) |
-| `webhook_send_certificate_chain` | int | Include chain for non-instant certs (0 or 1) |
-| `webhook_send_instant_issued_certificate_chain` | int | Include chain for instant certs (0 or 1) |
+| Setting                                         | Type  | Description                                              |
+| ----------------------------------------------- | ----- | -------------------------------------------------------- |
+| `instant_issue_webhook_notification`            | int   | Send for instantly-issued certs (0 or 1)                 |
+| `webhook_notification_frequency`                | array | Timing for expiration alerts (90, 60, 30, 7, 0, -7 days) |
+| `webhook_send_certificate_chain`                | int   | Include chain for non-instant certs (0 or 1)             |
+| `webhook_send_instant_issued_certificate_chain` | int   | Include chain for instant certs (0 or 1)                 |
 
 **Supported Event Types:**
 
-| Event | Description |
-|-------|-------------|
-| `certificate_issued` | Certificate issued in account |
-| `certificate_revoked` | Certificate revoked |
-| `order_rejected` | Order rejected |
-| `organization_validated` | Organization validation completed |
-| `organization_expired` | Organization validation expired |
+| Event                              | Description                           |
+| ---------------------------------- | ------------------------------------- |
+| `certificate_issued`               | Certificate issued in account         |
+| `certificate_revoked`              | Certificate revoked                   |
+| `order_rejected`                   | Order rejected                        |
+| `organization_validated`           | Organization validation completed     |
+| `organization_expired`             | Organization validation expired       |
 | `organization_revalidation_notice` | Organization validation expiring soon |
-| `domain_validated` | Domain control validation completed |
-| `domain_expired` | Domain validation expired |
-| `domain_revalidation_notice` | Domain validation expiring soon |
+| `domain_validated`                 | Domain control validation completed   |
+| `domain_expired`                   | Domain validation expired             |
+| `domain_revalidation_notice`       | Domain validation expiring soon       |
 
 **Response (201 Created):**
 
@@ -1237,6 +1258,7 @@ CertCentral webhooks send automatic updates for certificate issuance and validat
 ```
 
 **Next Steps After Creation:**
+
 1. Send test event to verify communication
 2. Complete verification challenge
 3. Activate webhook
@@ -1256,10 +1278,7 @@ Returns webhook information. Since only one webhook allowed per account, returns
       "id": 1234,
       "endpoint": "https://example.com/webhooks/digicert",
       "status": "active",
-      "events": [
-        "certificate_issued",
-        "domain_validated"
-      ],
+      "events": ["certificate_issued", "domain_validated"],
       "webhook_settings": {
         "instant_issue_webhook_notification": 1,
         "webhook_notification_frequency": [90, 60, 30, 7, 0, -7]
@@ -1279,10 +1298,7 @@ Returns webhook information. Since only one webhook allowed per account, returns
 {
   "endpoint": "https://example.com/webhooks/digicert-new",
   "secret": "new-secret-key-minimum-32-characters-long-xyz789",
-  "events": [
-    "certificate_issued",
-    "certificate_revoked"
-  ],
+  "events": ["certificate_issued", "certificate_revoked"],
   "webhook_settings": {
     "instant_issue_webhook_notification": 0
   }
@@ -1322,6 +1338,7 @@ Send test event to webhook endpoint to verify communication.
 Returns log of events sent to webhook listener.
 
 **Query Parameters:**
+
 - `limit` - Max results
 - `offset` - Pagination offset
 
@@ -1351,6 +1368,7 @@ Returns log of events sent to webhook listener.
 ### Webhook Security
 
 **Secret Key:**
+
 - Minimum 32 characters
 - Included in `X-WEBHOOK-KEY` header of webhook events
 - Verify this value in your webhook listener to ensure authenticity
@@ -1376,12 +1394,13 @@ List endpoints support standard pagination via URL query parameters:
 
 **Query Parameters:**
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `limit` | Max results to return | `25` (max usually 1000) |
-| `offset` | Starting index | `0` |
+| Parameter | Description           | Example                 |
+| --------- | --------------------- | ----------------------- |
+| `limit`   | Max results to return | `25` (max usually 1000) |
+| `offset`  | Starting index        | `0`                     |
 
 **Example:**
+
 ```
 GET https://www.digicert.com/services/v2/order/certificate?limit=25&offset=50
 ```
@@ -1401,28 +1420,34 @@ GET https://www.digicert.com/services/v2/order/certificate?limit=25&offset=50
 ### Filtering
 
 **Basic Filters:**
+
 ```
 filters[{{property_name}}]={{value}}
 ```
 
 **Search Filters (with wildcards):**
+
 ```
 filters[search]=%25example.com
 ```
+
 - `%25` represents `%` (URL-encoded wildcard for partial matching)
 
 **Date Range Filters:**
+
 ```
 filters[date_created]=2024-01-01T00:00:00...2024-12-31T23:59:59
 ```
 
 **Date Comparison Filters:**
+
 ```
 filters[valid_till]=>2024-06-01    # After date
 filters[valid_till]=<2024-12-31    # Before date
 ```
 
 **Multiple Values:**
+
 ```
 filters[status][0]=issued&filters[status][1]=pending
 ```
@@ -1430,12 +1455,14 @@ filters[status][0]=issued&filters[status][1]=pending
 ### Sorting
 
 **Syntax:**
+
 ```
 sort={{field}}    # Ascending (default)
 sort=-{{field}}   # Descending
 ```
 
 **Multiple Fields:**
+
 ```
 sort=status,-date_created
 ```
@@ -1456,17 +1483,17 @@ GET https://www.digicert.com/services/v2/order/certificate?
 
 ### HTTP Status Codes
 
-| Code | Meaning | Description |
-|------|---------|-------------|
-| 200 | OK | Successful GET request |
-| 201 | Created | Resource successfully created |
-| 204 | No Content | Successful DELETE or action with no response body |
-| 400 | Bad Request | Invalid request parameters |
-| 401 | Unauthorized | Invalid or missing API key |
-| 403 | Forbidden | API key lacks required permissions |
-| 404 | Not Found | Resource not found |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Server-side error |
+| Code | Meaning               | Description                                       |
+| ---- | --------------------- | ------------------------------------------------- |
+| 200  | OK                    | Successful GET request                            |
+| 201  | Created               | Resource successfully created                     |
+| 204  | No Content            | Successful DELETE or action with no response body |
+| 400  | Bad Request           | Invalid request parameters                        |
+| 401  | Unauthorized          | Invalid or missing API key                        |
+| 403  | Forbidden             | API key lacks required permissions                |
+| 404  | Not Found             | Resource not found                                |
+| 429  | Too Many Requests     | Rate limit exceeded                               |
+| 500  | Internal Server Error | Server-side error                                 |
 
 ### Error Response Format
 
@@ -1484,18 +1511,21 @@ GET https://www.digicert.com/services/v2/order/certificate?
 ### Content Type Handling
 
 **JSON (default):**
+
 ```
 Content-Type: application/json
 Accept: application/json
 ```
 
 **XML:**
+
 ```
 Content-Type: application/xml
 Accept: application/xml
 ```
 
 **CSV (list endpoints):**
+
 ```
 Accept: text/csv
 ```
@@ -1503,6 +1533,7 @@ Accept: text/csv
 ### Rate Limiting
 
 DigiCert implements rate limiting, though specific limits not publicly documented. Best practices:
+
 - Implement exponential backoff for 429 responses
 - Cache frequently-accessed data
 - Use webhooks instead of polling where possible
@@ -1544,22 +1575,23 @@ Returns products available to your account.
 
 **Product Fields:**
 
-| Field | Description |
-|-------|-------------|
-| `group_name` | Product category |
-| `name_id` | Unique identifier for API calls |
-| `name` | Human-readable product name |
-| `type` | Certificate type |
-| `validation_type` | OV, EV, DV, etc. |
-| `allowed_container_ids` | Containers where product available |
-| `allowed_validity_years` | Certificate validity options |
+| Field                          | Description                               |
+| ------------------------------ | ----------------------------------------- |
+| `group_name`                   | Product category                          |
+| `name_id`                      | Unique identifier for API calls           |
+| `name`                         | Human-readable product name               |
+| `type`                         | Certificate type                          |
+| `validation_type`              | OV, EV, DV, etc.                          |
+| `allowed_container_ids`        | Containers where product available        |
+| `allowed_validity_years`       | Certificate validity options              |
 | `allowed_order_validity_years` | Order validity options (Multi-year Plans) |
-| `signature_hash_types` | Allowed and default hash algorithms |
-| `csr_required` | Whether CSR required |
+| `signature_hash_types`         | Allowed and default hash algorithms       |
+| `csr_required`                 | Whether CSR required                      |
 
 ### Common Product Name IDs
 
 **SSL/TLS Certificates:**
+
 - `ssl_plus` - Standard SSL (OV)
 - `ssl_multi_domain` - Multi-Domain SSL (OV)
 - `ssl_wildcard` - Wildcard SSL (OV)
@@ -1570,13 +1602,16 @@ Returns products available to your account.
 - `ssl_securesite_flex` - Secure Site OV (Flex)
 
 **Code Signing:**
+
 - `code_signing` - Code Signing Certificate
 - `code_signing_ev` - EV Code Signing Certificate
 
 **Client Certificates (S/MIME):**
+
 - Individual, Business, and Organization variants
 
 **Document Signing:**
+
 - Various document signing certificate types
 
 ### Get Product Info
@@ -1600,8 +1635,8 @@ Returns comprehensive pricing information including SAN costs.
       "name_id": "ssl_plus",
       "name": "Standard SSL",
       "validity_years": 1,
-      "price": 299.00,
-      "additional_san_price": 99.00,
+      "price": 299.0,
+      "additional_san_price": 99.0,
       "currency": "USD"
     }
   ]
@@ -1619,16 +1654,19 @@ List certificate format returned for each server platform.
 ## Additional Resources
 
 ### Official Documentation
+
 - [DigiCert Developer Portal](https://dev.digicert.com/)
 - [Services API Overview](https://dev.digicert.com/certcentral-apis/services-api.html)
 - [Authentication Guide](https://dev.digicert.com/certcentral-apis/authentication.html)
 
 ### API Endpoints Base
+
 - Production (US): https://www.digicert.com/services/v2/
 - Production (EU): https://certcentral.digicert.eu/services/v2/
 - Beta: https://beta.digicert.com/services/v2/
 
 ### Support
+
 - Contact DigiCert Support for webhook access
 - Account Manager for product activation
 - CertCentral Console: Automation > API Keys for key management

@@ -8,12 +8,12 @@ export class Client {
       baseURL: 'https://api.delighted.com/v1',
       auth: {
         username: config.token,
-        password: '',
+        password: ''
       },
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -71,7 +71,9 @@ export class Client {
   }
 
   async deletePendingSurveyRequests(personEmail: string) {
-    let response = await this.axios.delete(`/people/${encodeURIComponent(personEmail)}/survey_requests/pending.json`);
+    let response = await this.axios.delete(
+      `/people/${encodeURIComponent(personEmail)}/survey_requests/pending.json`
+    );
     return response.data;
   }
 
@@ -97,7 +99,7 @@ export class Client {
       personId: u.person_id,
       email: u.email,
       name: u.name,
-      unsubscribedAt: u.unsubscribed_at,
+      unsubscribedAt: u.unsubscribed_at
     }));
   }
 
@@ -118,7 +120,7 @@ export class Client {
       personId: b.person_id,
       email: b.email,
       name: b.name,
-      bouncedAt: b.bounced_at,
+      bouncedAt: b.bounced_at
     }));
   }
 
@@ -163,7 +165,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       person: params.personId,
-      score: params.score,
+      score: params.score
     };
     if (params.comment) body.comment = params.comment;
     if (params.personProperties) body.person_properties = params.personProperties;
@@ -175,11 +177,7 @@ export class Client {
 
   // ---- Metrics ----
 
-  async getMetrics(params?: {
-    since?: number;
-    until?: number;
-    trend?: string;
-  }) {
+  async getMetrics(params?: { since?: number; until?: number; trend?: string }) {
     let query: Record<string, any> = {};
     if (params?.since) query.since = params.since;
     if (params?.until) query.until = params.until;
@@ -195,7 +193,7 @@ export class Client {
       passivePercent: d.passive_percent,
       detractorCount: d.detractor_count,
       detractorPercent: d.detractor_percent,
-      responseCount: d.response_count,
+      responseCount: d.response_count
     };
   }
 
@@ -209,17 +207,20 @@ export class Client {
       active: d.active,
       frequency: d.frequency,
       createdAt: d.created_at,
-      updatedAt: d.updated_at,
+      updatedAt: d.updated_at
     };
   }
 
-  async addToAutopilot(platform: 'email' | 'sms', params: {
-    personEmail?: string;
-    personPhoneNumber?: string;
-    personId?: string;
-    personName?: string;
-    properties?: Record<string, string>;
-  }) {
+  async addToAutopilot(
+    platform: 'email' | 'sms',
+    params: {
+      personEmail?: string;
+      personPhoneNumber?: string;
+      personId?: string;
+      personName?: string;
+      properties?: Record<string, string>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.personEmail) body.person_email = params.personEmail;
     if (params.personPhoneNumber) body.person_phone_number = params.personPhoneNumber;
@@ -231,50 +232,62 @@ export class Client {
     let d = response.data;
     return {
       person: d.person ? this.mapPersonBasic(d.person) : null,
-      properties: d.properties || {},
+      properties: d.properties || {}
     };
   }
 
-  async listAutopilotMembers(platform: 'email' | 'sms', params?: {
-    perPage?: number;
-    personId?: string;
-    personEmail?: string;
-    personPhoneNumber?: string;
-  }) {
+  async listAutopilotMembers(
+    platform: 'email' | 'sms',
+    params?: {
+      perPage?: number;
+      personId?: string;
+      personEmail?: string;
+      personPhoneNumber?: string;
+    }
+  ) {
     let query: Record<string, any> = {};
     if (params?.perPage) query.per_page = params.perPage;
     if (params?.personId) query.person_id = params.personId;
     if (params?.personEmail) query.person_email = params.personEmail;
     if (params?.personPhoneNumber) query.person_phone_number = params.personPhoneNumber;
 
-    let response = await this.axios.get(`/autopilot/${platform}/memberships.json`, { params: query });
+    let response = await this.axios.get(`/autopilot/${platform}/memberships.json`, {
+      params: query
+    });
     return (response.data as any[]).map((m: any) => ({
       createdAt: m.created_at,
       updatedAt: m.updated_at,
       person: m.person ? this.mapPersonBasic(m.person) : null,
-      nextSurveyRequest: m.next_survey_request ? {
-        surveyRequestId: m.next_survey_request.id,
-        createdAt: m.next_survey_request.created_at,
-        surveyScheduledAt: m.next_survey_request.survey_scheduled_at,
-        properties: m.next_survey_request.properties || {},
-      } : null,
+      nextSurveyRequest: m.next_survey_request
+        ? {
+            surveyRequestId: m.next_survey_request.id,
+            createdAt: m.next_survey_request.created_at,
+            surveyScheduledAt: m.next_survey_request.survey_scheduled_at,
+            properties: m.next_survey_request.properties || {}
+          }
+        : null
     }));
   }
 
-  async removeFromAutopilot(platform: 'email' | 'sms', params: {
-    personId?: string;
-    personEmail?: string;
-    personPhoneNumber?: string;
-  }) {
+  async removeFromAutopilot(
+    platform: 'email' | 'sms',
+    params: {
+      personId?: string;
+      personEmail?: string;
+      personPhoneNumber?: string;
+    }
+  ) {
     let query: Record<string, any> = {};
     if (params.personId) query.person_id = params.personId;
     if (params.personEmail) query.person_email = params.personEmail;
     if (params.personPhoneNumber) query.person_phone_number = params.personPhoneNumber;
 
-    let response = await this.axios.delete(`/autopilot/${platform}/memberships.json`, { params: query });
+    let response = await this.axios.delete(`/autopilot/${platform}/memberships.json`, {
+      params: query
+    });
     let d = response.data;
     return {
-      person: d.person ? this.mapPersonBasic(d.person) : null,
+      person: d.person ? this.mapPersonBasic(d.person) : null
     };
   }
 
@@ -291,7 +304,7 @@ export class Client {
       lastRespondedAt: p.last_responded_at || null,
       nextSurveyScheduledAt: p.next_survey_scheduled_at || null,
       surveyScheduledAt: p.survey_scheduled_at || null,
-      properties: p.properties || {},
+      properties: p.properties || {}
     };
   }
 
@@ -301,7 +314,7 @@ export class Client {
       email: p.email || null,
       name: p.name || null,
       phoneNumber: p.phone_number || null,
-      createdAt: p.created_at,
+      createdAt: p.created_at
     };
   }
 
@@ -326,14 +339,14 @@ export class Client {
       notes: (r.notes || []).map((n: any) => ({
         noteId: n.id,
         body: n.body,
-        createdAt: n.created_at,
+        createdAt: n.created_at
       })),
       tags: r.tags || [],
       additionalAnswers: (r.additional_answers || []).map((a: any) => ({
         answerId: a.id,
         value: a.value,
-        question: a.question,
-      })),
+        question: a.question
+      }))
     };
   }
 }

@@ -8,13 +8,9 @@ import {
   manageInvoices,
   manageBalance,
   manageCustomerSettings,
-  quotePricing,
+  quotePricing
 } from './tools';
-import {
-  customerEvents,
-  subscriptionEvents,
-  invoiceAndPaymentEvents,
-} from './triggers';
+import { customerEvents, subscriptionEvents, invoiceAndPaymentEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -26,11 +22,7 @@ export let provider = Slate.create({
     manageInvoices,
     manageBalance,
     manageCustomerSettings,
-    quotePricing,
+    quotePricing
   ],
-  triggers: [
-    customerEvents,
-    subscriptionEvents,
-    invoiceAndPaymentEvents,
-  ],
+  triggers: [customerEvents, subscriptionEvents, invoiceAndPaymentEvents]
 });

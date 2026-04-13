@@ -3,35 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Create, update, or delete a user in Aircall. When creating, provide email, first name, and last name. When updating, specify only the fields to change. Supports setting availability, roles, and wrap-up time.`,
-    tags: {
-      destructive: true
-    }
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Create, update, or delete a user in Aircall. When creating, provide email, first name, and last name. When updating, specify only the fields to change. Supports setting availability, roles, and wrap-up time.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
-    userId: z.number().optional().describe('User ID (required for update and delete)'),
-    email: z.string().optional().describe('Email address (required for create)'),
-    firstName: z.string().optional().describe('First name (required for create)'),
-    lastName: z.string().optional().describe('Last name (required for create)'),
-    availabilityStatus: z.enum(['available', 'custom', 'unavailable']).optional().describe('Availability status'),
-    substatus: z.enum(['out_for_lunch', 'on_a_break', 'in_training', 'doing_back_office', 'other']).optional().describe('Substatus when availabilityStatus is custom'),
-    roleIds: z.array(z.string()).optional().describe('Role IDs: owner, supervisor, admin, agent'),
-    wrapUpTime: z.number().optional().describe('Wrap-up time in seconds after each call')
-  }))
-  .output(z.object({
-    userId: z.number().optional().describe('User ID'),
-    name: z.string().optional().describe('Full name of the user'),
-    email: z.string().optional().describe('Email address'),
-    deleted: z.boolean().optional().describe('Whether the user was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
+      userId: z.number().optional().describe('User ID (required for update and delete)'),
+      email: z.string().optional().describe('Email address (required for create)'),
+      firstName: z.string().optional().describe('First name (required for create)'),
+      lastName: z.string().optional().describe('Last name (required for create)'),
+      availabilityStatus: z
+        .enum(['available', 'custom', 'unavailable'])
+        .optional()
+        .describe('Availability status'),
+      substatus: z
+        .enum(['out_for_lunch', 'on_a_break', 'in_training', 'doing_back_office', 'other'])
+        .optional()
+        .describe('Substatus when availabilityStatus is custom'),
+      roleIds: z
+        .array(z.string())
+        .optional()
+        .describe('Role IDs: owner, supervisor, admin, agent'),
+      wrapUpTime: z.number().optional().describe('Wrap-up time in seconds after each call')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().optional().describe('User ID'),
+      name: z.string().optional().describe('Full name of the user'),
+      email: z.string().optional().describe('Email address'),
+      deleted: z.boolean().optional().describe('Whether the user was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
     let { action } = ctx.input;
 
@@ -90,4 +100,5 @@ export let manageUser = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

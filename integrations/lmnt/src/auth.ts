@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
 
@@ -12,14 +14,16 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your LMNT API key. Get it from your account page at app.lmnt.com.'),
+      apiKey: z
+        .string()
+        .describe('Your LMNT API key. Get it from your account page at app.lmnt.com.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -27,8 +31,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://api.lmnt.com',
         headers: {
-          'X-API-Key': ctx.output.token,
-        },
+          'X-API-Key': ctx.output.token
+        }
       });
 
       let response = await axios.get('/v1/account');
@@ -36,8 +40,8 @@ export let auth = SlateAuth.create()
 
       return {
         profile: {
-          name: account.plan?.type ?? 'LMNT User',
-        },
+          name: account.plan?.type ?? 'LMNT User'
+        }
       };
-    },
+    }
   });

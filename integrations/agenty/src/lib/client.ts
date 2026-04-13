@@ -15,15 +15,15 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'X-Agenty-ApiKey': config.token,
-      },
+        'X-Agenty-ApiKey': config.token
+      }
     });
 
     this.browserHttp = createAxios({
       baseURL: BROWSER_BASE_URL,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -72,50 +72,58 @@ export class Client {
     return response.data;
   }
 
-  async getJobResult(jobId: string, params?: {
-    offset?: number;
-    limit?: number;
-    collection?: number;
-    modified?: number;
-  }) {
+  async getJobResult(
+    jobId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      collection?: number;
+      modified?: number;
+    }
+  ) {
     let response = await this.http.get(`/jobs/${jobId}/result`, { params });
     return response.data;
   }
 
-  async getJobLogs(jobId: string, params?: {
-    offset?: number;
-    limit?: number;
-  }) {
+  async getJobLogs(
+    jobId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.http.get(`/jobs/${jobId}/logs`, { params });
     return response.data;
   }
 
-  async exportJobResult(jobId: string, params?: {
-    type?: string;
-    collection?: number;
-    modified?: number;
-    filename?: string;
-  }) {
+  async exportJobResult(
+    jobId: string,
+    params?: {
+      type?: string;
+      collection?: number;
+      modified?: number;
+      filename?: string;
+    }
+  ) {
     let response = await this.http.get(`/jobs/${jobId}/export`, { params });
     return response.data;
   }
 
-  async listJobs(params?: {
-    agent_id?: string;
-    offset?: number;
-    limit?: number;
-  }) {
+  async listJobs(params?: { agent_id?: string; offset?: number; limit?: number }) {
     let response = await this.http.get('/jobs', { params });
     return response.data;
   }
 
   // ─── Scheduler ───
 
-  async createSchedule(agentId: string, schedule: {
-    type: string;
-    expression: string;
-    is_enabled: boolean;
-  }) {
+  async createSchedule(
+    agentId: string,
+    schedule: {
+      type: string;
+      expression: string;
+      is_enabled: boolean;
+    }
+  ) {
     let response = await this.http.post(`/scheduler/${agentId}`, schedule);
     return response.data;
   }
@@ -137,23 +145,23 @@ export class Client {
     return response.data;
   }
 
-  async updateInput(agentId: string, input: {
-    type: string;
-    collection?: number;
-    data?: string[];
-    id?: string;
-    field?: string;
-  }) {
+  async updateInput(
+    agentId: string,
+    input: {
+      type: string;
+      collection?: number;
+      data?: string[];
+      id?: string;
+      field?: string;
+    }
+  ) {
     let response = await this.http.put(`/inputs/${agentId}`, input);
     return response.data;
   }
 
   // ─── Lists ───
 
-  async listLists(params?: {
-    offset?: number;
-    limit?: number;
-  }) {
+  async listLists(params?: { offset?: number; limit?: number }) {
     let response = await this.http.get('/lists', { params });
     return response.data;
   }
@@ -172,10 +180,13 @@ export class Client {
     return response.data;
   }
 
-  async updateList(listId: string, data: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateList(
+    listId: string,
+    data: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.http.put(`/lists/${listId}`, data);
     return response.data;
   }
@@ -196,7 +207,12 @@ export class Client {
     url?: string;
     html?: string;
     gotoOptions?: { timeout?: number; waitUntil?: string };
-    options?: { fullPage?: boolean; type?: string; quality?: number; omitBackground?: boolean };
+    options?: {
+      fullPage?: boolean;
+      type?: string;
+      quality?: number;
+      omitBackground?: boolean;
+    };
   }) {
     let response = await this.browserHttp.post(`/screenshot?apiKey=${this.token}`, params);
     return response.data;
@@ -221,7 +237,9 @@ export class Client {
   }
 
   async extractStructuredData(url: string) {
-    let response = await this.browserHttp.get(`/extract?apiKey=${this.token}&url=${encodeURIComponent(url)}`);
+    let response = await this.browserHttp.get(
+      `/extract?apiKey=${this.token}&url=${encodeURIComponent(url)}`
+    );
     return response.data;
   }
 }

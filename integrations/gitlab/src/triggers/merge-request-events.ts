@@ -3,50 +3,54 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let mergeRequestEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Merge Request Events',
-    key: 'merge_request_events',
-    description: 'Triggers when a merge request is created, updated, merged, closed, reopened, or approved.'
-  }
-)
-  .input(z.object({
-    action: z.string().describe('MR action (open, close, reopen, update, merge, approved, unapproved)'),
-    mergeRequestId: z.number().describe('Global merge request ID'),
-    mergeRequestIid: z.number().describe('MR IID within the project'),
-    title: z.string().describe('MR title'),
-    description: z.string().nullable().describe('MR description'),
-    state: z.string().describe('MR state'),
-    sourceBranch: z.string().describe('Source branch'),
-    targetBranch: z.string().describe('Target branch'),
-    projectId: z.number().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    projectUrl: z.string().describe('Project web URL'),
-    mergeRequestUrl: z.string().describe('MR web URL'),
-    authorUsername: z.string().describe('Author username'),
-    labels: z.array(z.string()).describe('Applied labels'),
-    assigneeUsernames: z.array(z.string()).describe('Assignee usernames'),
-    reviewerUsernames: z.array(z.string()).describe('Reviewer usernames'),
-    draft: z.boolean().describe('Whether this is a draft MR'),
-    mergeStatus: z.string().nullable().describe('Merge status')
-  }))
-  .output(z.object({
-    mergeRequestIid: z.number().describe('MR IID within the project'),
-    title: z.string().describe('MR title'),
-    state: z.string().describe('MR state'),
-    action: z.string().describe('Action that triggered the event'),
-    sourceBranch: z.string().describe('Source branch'),
-    targetBranch: z.string().describe('Target branch'),
-    projectId: z.number().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    mergeRequestUrl: z.string().describe('MR web URL'),
-    authorUsername: z.string().describe('Author username'),
-    labels: z.array(z.string()).describe('Applied labels'),
-    draft: z.boolean().describe('Whether this is a draft MR')
-  }))
+export let mergeRequestEvents = SlateTrigger.create(spec, {
+  name: 'Merge Request Events',
+  key: 'merge_request_events',
+  description:
+    'Triggers when a merge request is created, updated, merged, closed, reopened, or approved.'
+})
+  .input(
+    z.object({
+      action: z
+        .string()
+        .describe('MR action (open, close, reopen, update, merge, approved, unapproved)'),
+      mergeRequestId: z.number().describe('Global merge request ID'),
+      mergeRequestIid: z.number().describe('MR IID within the project'),
+      title: z.string().describe('MR title'),
+      description: z.string().nullable().describe('MR description'),
+      state: z.string().describe('MR state'),
+      sourceBranch: z.string().describe('Source branch'),
+      targetBranch: z.string().describe('Target branch'),
+      projectId: z.number().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      projectUrl: z.string().describe('Project web URL'),
+      mergeRequestUrl: z.string().describe('MR web URL'),
+      authorUsername: z.string().describe('Author username'),
+      labels: z.array(z.string()).describe('Applied labels'),
+      assigneeUsernames: z.array(z.string()).describe('Assignee usernames'),
+      reviewerUsernames: z.array(z.string()).describe('Reviewer usernames'),
+      draft: z.boolean().describe('Whether this is a draft MR'),
+      mergeStatus: z.string().nullable().describe('Merge status')
+    })
+  )
+  .output(
+    z.object({
+      mergeRequestIid: z.number().describe('MR IID within the project'),
+      title: z.string().describe('MR title'),
+      state: z.string().describe('MR state'),
+      action: z.string().describe('Action that triggered the event'),
+      sourceBranch: z.string().describe('Source branch'),
+      targetBranch: z.string().describe('Target branch'),
+      projectId: z.number().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      mergeRequestUrl: z.string().describe('MR web URL'),
+      authorUsername: z.string().describe('Author username'),
+      labels: z.array(z.string()).describe('Applied labels'),
+      draft: z.boolean().describe('Whether this is a draft MR')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GitLabClient({
         token: ctx.auth.token,
         instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -78,7 +82,7 @@ export let mergeRequestEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GitLabClient({
         token: ctx.auth.token,
         instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -88,8 +92,8 @@ export let mergeRequestEvents = SlateTrigger.create(
       await client.deleteProjectWebhook(details.projectId, details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let eventHeader = ctx.request.headers.get('X-Gitlab-Event');
 
       if (eventHeader !== 'Merge Request Hook') {
@@ -100,30 +104,32 @@ export let mergeRequestEvents = SlateTrigger.create(
       let project = data.project || {};
 
       return {
-        inputs: [{
-          action: attrs.action || 'update',
-          mergeRequestId: attrs.id || 0,
-          mergeRequestIid: attrs.iid || 0,
-          title: attrs.title || '',
-          description: attrs.description || null,
-          state: attrs.state || '',
-          sourceBranch: attrs.source_branch || '',
-          targetBranch: attrs.target_branch || '',
-          projectId: project.id || 0,
-          projectName: project.name || '',
-          projectUrl: project.web_url || '',
-          mergeRequestUrl: attrs.url || '',
-          authorUsername: data.user?.username || '',
-          labels: (data.labels || []).map((l: any) => l.title),
-          assigneeUsernames: (data.assignees || []).map((a: any) => a.username),
-          reviewerUsernames: (data.reviewers || []).map((r: any) => r.username),
-          draft: attrs.draft || false,
-          mergeStatus: attrs.merge_status || null
-        }]
+        inputs: [
+          {
+            action: attrs.action || 'update',
+            mergeRequestId: attrs.id || 0,
+            mergeRequestIid: attrs.iid || 0,
+            title: attrs.title || '',
+            description: attrs.description || null,
+            state: attrs.state || '',
+            sourceBranch: attrs.source_branch || '',
+            targetBranch: attrs.target_branch || '',
+            projectId: project.id || 0,
+            projectName: project.name || '',
+            projectUrl: project.web_url || '',
+            mergeRequestUrl: attrs.url || '',
+            authorUsername: data.user?.username || '',
+            labels: (data.labels || []).map((l: any) => l.title),
+            assigneeUsernames: (data.assignees || []).map((a: any) => a.username),
+            reviewerUsernames: (data.reviewers || []).map((r: any) => r.username),
+            draft: attrs.draft || false,
+            mergeStatus: attrs.merge_status || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `merge_request.${ctx.input.action}`,
         id: `mr_${ctx.input.mergeRequestId}_${ctx.input.action}_${Date.now()}`,

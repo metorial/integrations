@@ -79,9 +79,10 @@ let toSnakeCase = (params: ScrapeParams): Record<string, any> => {
   if (params.cookies !== undefined) body.cookies = params.cookies;
   if (params.forceCookies !== undefined) body.force_cookies = params.forceCookies;
   if (params.sessionId !== undefined) body.session_id = params.sessionId;
-  if (params.successfulStatusCodes !== undefined) body.successful_status_codes = params.successfulStatusCodes;
+  if (params.successfulStatusCodes !== undefined)
+    body.successful_status_codes = params.successfulStatusCodes;
   if (params.browserActions !== undefined) {
-    body.browser_actions = params.browserActions.map((action) => {
+    body.browser_actions = params.browserActions.map(action => {
       let mapped: Record<string, any> = { type: action.type };
       if (action.selector) mapped.selector = action.selector;
       if (action.value !== undefined) mapped.value = action.value;
@@ -106,10 +107,10 @@ export class ScrapingClient {
     this.axios = createAxios({
       baseURL: 'https://scraper-api.decodo.com',
       headers: {
-        'Authorization': `Basic ${basicToken}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${basicToken}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -123,7 +124,7 @@ export class ScrapingClient {
       statusCode: r.status_code,
       taskId: r.task_id,
       createdAt: r.created_at,
-      updatedAt: r.updated_at,
+      updatedAt: r.updated_at
     }));
     return { results };
   }
@@ -138,7 +139,7 @@ export class ScrapingClient {
       url: data.url,
       target: data.target,
       createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      updatedAt: data.updated_at
     };
   }
 
@@ -151,7 +152,7 @@ export class ScrapingClient {
       statusCode: r.status_code,
       taskId: r.task_id,
       createdAt: r.created_at,
-      updatedAt: r.updated_at,
+      updatedAt: r.updated_at
     }));
     return { results };
   }
@@ -165,7 +166,7 @@ export class ScrapingClient {
       url: data.url,
       target: data.target,
       createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      updatedAt: data.updated_at
     };
   }
 }

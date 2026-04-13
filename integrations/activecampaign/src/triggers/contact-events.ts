@@ -4,37 +4,46 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let contactEventTypes = [
-  'subscribe', 'unsubscribe', 'update',
-  'contact_tag_added', 'contact_tag_removed',
-  'subscriber_note', 'list_add'
+  'subscribe',
+  'unsubscribe',
+  'update',
+  'contact_tag_added',
+  'contact_tag_removed',
+  'subscriber_note',
+  'list_add'
 ] as const;
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Triggers when a contact is subscribed, unsubscribed, updated, tagged, or added to a list.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of contact event'),
-    payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('ID of the affected contact'),
-    email: z.string().optional().describe('Email of the contact'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    phone: z.string().optional().describe('Phone number'),
-    listId: z.string().optional().describe('ID of the related list'),
-    tagId: z.string().optional().describe('ID of the related tag'),
-    tagName: z.string().optional().describe('Name of the related tag'),
-    initiatedBy: z.string().optional().describe('Who initiated the action (public, admin, api, system)'),
-    occurredAt: z.string().optional().describe('When the event occurred')
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description:
+    'Triggers when a contact is subscribed, unsubscribed, updated, tagged, or added to a list.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of contact event'),
+      payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('ID of the affected contact'),
+      email: z.string().optional().describe('Email of the contact'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      phone: z.string().optional().describe('Phone number'),
+      listId: z.string().optional().describe('ID of the related list'),
+      tagId: z.string().optional().describe('ID of the related tag'),
+      tagName: z.string().optional().describe('Name of the related tag'),
+      initiatedBy: z
+        .string()
+        .optional()
+        .describe('Who initiated the action (public, admin, api, system)'),
+      occurredAt: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -54,7 +63,7 @@ export let contactEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -63,7 +72,7 @@ export let contactEvents = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       let contentType = ctx.request.headers.get('content-type') || '';
 
@@ -78,14 +87,16 @@ export let contactEvents = SlateTrigger.create(
       let eventType = data.type || data['type'] || 'unknown';
 
       return {
-        inputs: [{
-          eventType,
-          payload: data
-        }]
+        inputs: [
+          {
+            eventType,
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
       let contactId = String(p['contact[id]'] || p['contact_id'] || p['contactId'] || '');
@@ -118,4 +129,5 @@ export let contactEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

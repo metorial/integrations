@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let axiosInstance = createAxios({
-  baseURL: 'https://api.apps-encodian.com/api/v1',
+  baseURL: 'https://api.apps-encodian.com/api/v1'
 });
 
 export interface EncodianBaseResponse {
@@ -31,11 +31,15 @@ export class Client {
   private get headers() {
     return {
       'X-ApiKey': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
-  async post<T = any>(path: string, body: Record<string, any>, queryParams?: Record<string, string>): Promise<T> {
+  async post<T = any>(
+    path: string,
+    body: Record<string, any>,
+    queryParams?: Record<string, string>
+  ): Promise<T> {
     let url = path;
     if (queryParams) {
       let params = new URLSearchParams(queryParams);
@@ -43,7 +47,7 @@ export class Client {
     }
 
     let response = await axiosInstance.post(url, body, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data as T;
@@ -57,7 +61,7 @@ export class Client {
     }
 
     let response = await axiosInstance.get(url, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return response.data as T;
@@ -197,16 +201,31 @@ export class Client {
     return this.post<EncodianFileResponse>('/Conversion/ConvertToPdfA', body);
   }
 
-  async convertWord(body: Record<string, any>, outputFormat: string): Promise<EncodianFileResponse> {
-    return this.post<EncodianFileResponse>('/Conversion/ConvertWord', body, { outputFormatParameter: outputFormat });
+  async convertWord(
+    body: Record<string, any>,
+    outputFormat: string
+  ): Promise<EncodianFileResponse> {
+    return this.post<EncodianFileResponse>('/Conversion/ConvertWord', body, {
+      outputFormatParameter: outputFormat
+    });
   }
 
-  async convertExcel(body: Record<string, any>, outputFormat: string): Promise<EncodianFileResponse> {
-    return this.post<EncodianFileResponse>('/Conversion/ConvertExcel', body, { outputFormatParameter: outputFormat });
+  async convertExcel(
+    body: Record<string, any>,
+    outputFormat: string
+  ): Promise<EncodianFileResponse> {
+    return this.post<EncodianFileResponse>('/Conversion/ConvertExcel', body, {
+      outputFormatParameter: outputFormat
+    });
   }
 
-  async convertPowerPoint(body: Record<string, any>, outputFormat: string): Promise<EncodianFileResponse> {
-    return this.post<EncodianFileResponse>('/Conversion/ConvertPowerPoint', body, { outputFormatParameter: outputFormat });
+  async convertPowerPoint(
+    body: Record<string, any>,
+    outputFormat: string
+  ): Promise<EncodianFileResponse> {
+    return this.post<EncodianFileResponse>('/Conversion/ConvertPowerPoint', body, {
+      outputFormatParameter: outputFormat
+    });
   }
 
   async convertJsonToExcel(body: Record<string, any>): Promise<EncodianFileResponse> {
@@ -329,8 +348,13 @@ export class Client {
   }
 
   // Barcode Operations
-  async createBarcode(body: Record<string, any>, barcodeType: string): Promise<EncodianFileResponse> {
-    return this.post<EncodianFileResponse>('/Barcodes/CreateBarcode', body, { barcodeTypeParameter: barcodeType });
+  async createBarcode(
+    body: Record<string, any>,
+    barcodeType: string
+  ): Promise<EncodianFileResponse> {
+    return this.post<EncodianFileResponse>('/Barcodes/CreateBarcode', body, {
+      barcodeTypeParameter: barcodeType
+    });
   }
 
   async createQrCode(body: Record<string, any>): Promise<EncodianFileResponse> {
@@ -354,7 +378,10 @@ export class Client {
   }
 
   // AI Operations
-  async aiProcessDocument(documentType: string, body: Record<string, any>): Promise<EncodianStringResponse> {
+  async aiProcessDocument(
+    documentType: string,
+    body: Record<string, any>
+  ): Promise<EncodianStringResponse> {
     return this.post<EncodianStringResponse>(`/General/${documentType}`, body);
   }
 
@@ -398,7 +425,11 @@ export class Client {
   }
 
   // Utility Operations
-  async utilityPost<T = any>(path: string, body: Record<string, any>, queryParams?: Record<string, string>): Promise<T> {
+  async utilityPost<T = any>(
+    path: string,
+    body: Record<string, any>,
+    queryParams?: Record<string, string>
+  ): Promise<T> {
     return this.post<T>(`/Utilities/${path}`, body, queryParams);
   }
 

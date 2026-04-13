@@ -8,6 +8,6 @@ export let createClient = (ctx: {
     token: ctx.auth.token,
     siteName: ctx.config.siteName,
     region: ctx.config.region,
-    apiEndpoint: ctx.auth.apiEndpoint,
+    apiEndpoint: ctx.auth.apiEndpoint
   });
 };

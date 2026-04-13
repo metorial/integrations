@@ -122,38 +122,58 @@ let toSendCampaignBody = (params: SendCampaignParams): Record<string, any> => {
   };
 
   if (params.inlineCss !== undefined) body.inline_css = params.inlineCss;
-  if (params.inlineCssImportant !== undefined) body.inline_css_important = params.inlineCssImportant;
-  if (params.preserveMediaQueries !== undefined) body.preserve_media_queries = params.preserveMediaQueries;
-  if (params.mediaQueriesImportant !== undefined) body.media_queries_important = params.mediaQueriesImportant;
-  if (params.removeCssInheritance !== undefined) body.remove_css_inheritance = params.removeCssInheritance;
+  if (params.inlineCssImportant !== undefined)
+    body.inline_css_important = params.inlineCssImportant;
+  if (params.preserveMediaQueries !== undefined)
+    body.preserve_media_queries = params.preserveMediaQueries;
+  if (params.mediaQueriesImportant !== undefined)
+    body.media_queries_important = params.mediaQueriesImportant;
+  if (params.removeCssInheritance !== undefined)
+    body.remove_css_inheritance = params.removeCssInheritance;
   if (params.adjustFontColors !== undefined) body.adjust_font_colors = params.adjustFontColors;
   if (params.adjustFontSize !== undefined) body.adjust_font_size = params.adjustFontSize;
-  if (params.minFontSizeAllowed !== undefined) body.min_font_size_allowed = params.minFontSizeAllowed;
-  if (params.maxFontSizeAllowed !== undefined) body.max_font_size_allowed = params.maxFontSizeAllowed;
-  if (params.replaceDiacritics !== undefined) body.replace_diacritics = params.replaceDiacritics;
-  if (params.replaceNonAsciiCharacters !== undefined) body.replace_non_ascii_characters = params.replaceNonAsciiCharacters;
+  if (params.minFontSizeAllowed !== undefined)
+    body.min_font_size_allowed = params.minFontSizeAllowed;
+  if (params.maxFontSizeAllowed !== undefined)
+    body.max_font_size_allowed = params.maxFontSizeAllowed;
+  if (params.replaceDiacritics !== undefined)
+    body.replace_diacritics = params.replaceDiacritics;
+  if (params.replaceNonAsciiCharacters !== undefined)
+    body.replace_non_ascii_characters = params.replaceNonAsciiCharacters;
   if (params.removeComments !== undefined) body.remove_comments = params.removeComments;
-  if (params.removeClassesAndIds !== undefined) body.remove_classes_and_ids = params.removeClassesAndIds;
-  if (params.removeControlNonPrintable !== undefined) body.remove_control_non_printable = params.removeControlNonPrintable;
-  if (params.removeSuccessivePunctuation !== undefined) body.remove_successive_punctuation = params.removeSuccessivePunctuation;
+  if (params.removeClassesAndIds !== undefined)
+    body.remove_classes_and_ids = params.removeClassesAndIds;
+  if (params.removeControlNonPrintable !== undefined)
+    body.remove_control_non_printable = params.removeControlNonPrintable;
+  if (params.removeSuccessivePunctuation !== undefined)
+    body.remove_successive_punctuation = params.removeSuccessivePunctuation;
   if (params.convertHToPTags !== undefined) body.convert_h_to_p_tags = params.convertHToPTags;
-  if (params.convertTablesToDivs !== undefined) body.convert_tables_to_divs = params.convertTablesToDivs;
+  if (params.convertTablesToDivs !== undefined)
+    body.convert_tables_to_divs = params.convertTablesToDivs;
   if (params.resizeAndHost !== undefined) body.resize_and_host = params.resizeAndHost;
-  if (params.hostExtensionlessImages !== undefined) body.host_extensionless_images = params.hostExtensionlessImages;
+  if (params.hostExtensionlessImages !== undefined)
+    body.host_extensionless_images = params.hostExtensionlessImages;
   if (params.imageMaxWidth !== undefined) body.image_max_width = params.imageMaxWidth;
-  if (params.removeImageHeight !== undefined) body.remove_image_height = params.removeImageHeight;
-  if (params.removeLargeWidthsOver !== undefined) body.remove_large_widths_over = params.removeLargeWidthsOver;
-  if (params.relativeLinksBaseUrl !== undefined) body.relative_links_base_url = params.relativeLinksBaseUrl;
+  if (params.removeImageHeight !== undefined)
+    body.remove_image_height = params.removeImageHeight;
+  if (params.removeLargeWidthsOver !== undefined)
+    body.remove_large_widths_over = params.removeLargeWidthsOver;
+  if (params.relativeLinksBaseUrl !== undefined)
+    body.relative_links_base_url = params.relativeLinksBaseUrl;
   if (params.webhookUrl !== undefined) body.webhook_url = params.webhookUrl;
   if (params.customInfo !== undefined) body.custom_info = params.customInfo;
   if (params.minifyHtml !== undefined) body.minify_html = params.minifyHtml;
 
   if (params.surroundingDiv) {
     let div: Record<string, any> = {};
-    if (params.surroundingDiv.maxWidth !== undefined) div.max_width = params.surroundingDiv.maxWidth;
-    if (params.surroundingDiv.textAlign !== undefined) div.text_align = params.surroundingDiv.textAlign;
-    if (params.surroundingDiv.fontSize !== undefined) div.font_size = params.surroundingDiv.fontSize;
-    if (params.surroundingDiv.centerToParent !== undefined) div.center_to_parent = params.surroundingDiv.centerToParent;
+    if (params.surroundingDiv.maxWidth !== undefined)
+      div.max_width = params.surroundingDiv.maxWidth;
+    if (params.surroundingDiv.textAlign !== undefined)
+      div.text_align = params.surroundingDiv.textAlign;
+    if (params.surroundingDiv.fontSize !== undefined)
+      div.font_size = params.surroundingDiv.fontSize;
+    if (params.surroundingDiv.centerToParent !== undefined)
+      div.center_to_parent = params.surroundingDiv.centerToParent;
     body.surrounding_div = div;
   }
 
@@ -201,14 +221,18 @@ export let mapCampaignResult = (data: any): CampaignResult => ({
   allCapitalizedWordRatio: data.all_capitalized_word_ratio ?? 0,
   spamWordsCount: data.spam_words_count ?? 0,
   spamKeywordRatio: data.spam_keyword_ratio ?? 0,
-  spamKeywordList: Array.isArray(data.spam_keyword_list) ? data.spam_keyword_list.map(mapSpamKeyword) : [],
+  spamKeywordList: Array.isArray(data.spam_keyword_list)
+    ? data.spam_keyword_list.map(mapSpamKeyword)
+    : [],
   textImageRatio: data.text_image_ratio ?? 0,
   textLinkRatio: data.text_link_ratio ?? 0,
   linksScanned: data.links_scanned ?? 0,
   brokenLinks: data.broken_links ?? 0,
   allLinkList: Array.isArray(data.all_link_list) ? data.all_link_list.map(mapLink) : [],
   blacklistedLinksFound: data.blacklisted_links_found ?? 0,
-  blacklistedLinks: Array.isArray(data.blacklisted_links) ? data.blacklisted_links.map(mapLink) : [],
+  blacklistedLinks: Array.isArray(data.blacklisted_links)
+    ? data.blacklisted_links.map(mapLink)
+    : [],
   pdCdnsFound: data.pd_cdns_found ?? 0,
   pdCdnList: Array.isArray(data.pd_cdn_list) ? data.pd_cdn_list : [],
   domainsScanned: data.domains_scanned ?? 0,
@@ -216,7 +240,9 @@ export let mapCampaignResult = (data: any): CampaignResult => ({
   imageList: Array.isArray(data.image_list) ? data.image_list.map(mapImage) : [],
   osImageList: Array.isArray(data.os_image_list) ? data.os_image_list.map(mapImage) : [],
   bgImageList: Array.isArray(data.bg_image_list) ? data.bg_image_list.map(mapImage) : [],
-  campaignSummary: Array.isArray(data.campaign_summary) ? data.campaign_summary.map(mapSummaryItem) : []
+  campaignSummary: Array.isArray(data.campaign_summary)
+    ? data.campaign_summary.map(mapSummaryItem)
+    : []
 });
 
 let mapCampaignStatus = (data: any): CampaignStatus => ({
@@ -244,9 +270,13 @@ export class Client {
   }
 
   async sendCampaign(params: SendCampaignParams): Promise<{ campaignId: string }> {
-    let response = await api.post('/send_campaign', {
-      send_campaign: toSendCampaignBody(params)
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/send_campaign',
+      {
+        send_campaign: toSendCampaignBody(params)
+      },
+      { headers: this.headers }
+    );
 
     return {
       campaignId: response.data.campaign?.id ?? ''
@@ -254,22 +284,30 @@ export class Client {
   }
 
   async getCampaign(campaignId: string, minifyHtml: boolean = true): Promise<CampaignResult> {
-    let response = await api.post('/get_campaign', {
-      campaign: {
-        id: campaignId,
-        minimize_html: minifyHtml
-      }
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/get_campaign',
+      {
+        campaign: {
+          id: campaignId,
+          minimize_html: minifyHtml
+        }
+      },
+      { headers: this.headers }
+    );
 
     return mapCampaignResult(response.data.campaign ?? response.data);
   }
 
   async getCampaignStatus(campaignId: string): Promise<CampaignStatus> {
-    let response = await api.post('/get_campaign_status', {
-      campaign: {
-        id: campaignId
-      }
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/get_campaign_status',
+      {
+        campaign: {
+          id: campaignId
+        }
+      },
+      { headers: this.headers }
+    );
 
     return mapCampaignStatus(response.data.campaign_status ?? response.data);
   }
@@ -284,11 +322,15 @@ export class Client {
   }
 
   async deleteCampaign(campaignId: string): Promise<{ status: string }> {
-    let response = await api.post('/delete_campaign', {
-      campaign: {
-        id: campaignId
-      }
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/delete_campaign',
+      {
+        campaign: {
+          id: campaignId
+        }
+      },
+      { headers: this.headers }
+    );
 
     return {
       status: response.data.status ?? 'unknown'
@@ -306,14 +348,18 @@ export class Client {
   }
 
   async getCampaignPdfAnalysis(campaignId: string): Promise<{ pdfBase64: string }> {
-    let response = await api.post('/get_campaign_pdf_analysis', {
-      campaign: {
-        id: campaignId
+    let response = await api.post(
+      '/get_campaign_pdf_analysis',
+      {
+        campaign: {
+          id: campaignId
+        }
+      },
+      {
+        headers: this.headers,
+        responseType: 'arraybuffer'
       }
-    }, {
-      headers: this.headers,
-      responseType: 'arraybuffer'
-    });
+    );
 
     let buffer = Buffer.from(response.data);
     return {

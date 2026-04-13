@@ -4,23 +4,22 @@ import { datapointSchema, mapDatapoint } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteDatapoint = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Datapoint',
-    key: 'delete_datapoint',
-    description: `Delete a specific datapoint from a goal. This permanently removes the datapoint and recalculates the goal graph.`,
-    tags: {
-      destructive: true
-    }
+export let deleteDatapoint = SlateTool.create(spec, {
+  name: 'Delete Datapoint',
+  key: 'delete_datapoint',
+  description: `Delete a specific datapoint from a goal. This permanently removes the datapoint and recalculates the goal graph.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    goalSlug: z.string().describe('URL-friendly identifier of the goal'),
-    datapointId: z.string().describe('Unique identifier of the datapoint to delete')
-  }))
+})
+  .input(
+    z.object({
+      goalSlug: z.string().describe('URL-friendly identifier of the goal'),
+      datapointId: z.string().describe('Unique identifier of the datapoint to delete')
+    })
+  )
   .output(datapointSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new BeeminderClient({
       token: ctx.auth.token,
       username: ctx.auth.username

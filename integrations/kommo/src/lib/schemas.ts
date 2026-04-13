@@ -2,20 +2,24 @@ import { z } from 'zod';
 
 export let customFieldValueSchema = z.object({
   fieldId: z.number().describe('ID of the custom field'),
-  values: z.array(z.object({
-    value: z.union([z.string(), z.number(), z.boolean()]).describe('Field value'),
-    enumId: z.number().optional().describe('Enum option ID for select/multiselect fields'),
-  })).describe('Array of values for the field'),
+  values: z
+    .array(
+      z.object({
+        value: z.union([z.string(), z.number(), z.boolean()]).describe('Field value'),
+        enumId: z.number().optional().describe('Enum option ID for select/multiselect fields')
+      })
+    )
+    .describe('Array of values for the field')
 });
 
 export let tagSchema = z.object({
   tagId: z.number().optional().describe('Tag ID'),
-  name: z.string().optional().describe('Tag name'),
+  name: z.string().optional().describe('Tag name')
 });
 
 export let paginationSchema = z.object({
   page: z.number().optional().describe('Page number (starts from 1)'),
-  limit: z.number().optional().describe('Number of results per page (max 250)'),
+  limit: z.number().optional().describe('Number of results per page (max 250)')
 });
 
 export let leadOutputSchema = z.object({
@@ -32,7 +36,7 @@ export let leadOutputSchema = z.object({
   updatedAt: z.number().optional().describe('Last update timestamp (Unix)'),
   closedAt: z.number().nullable().optional().describe('Close timestamp (Unix)'),
   customFieldsValues: z.any().optional().describe('Custom field values'),
-  tags: z.any().optional().describe('Tags attached to the lead'),
+  tags: z.any().optional().describe('Tags attached to the lead')
 });
 
 export let contactOutputSchema = z.object({
@@ -46,7 +50,7 @@ export let contactOutputSchema = z.object({
   createdAt: z.number().optional().describe('Creation timestamp (Unix)'),
   updatedAt: z.number().optional().describe('Last update timestamp (Unix)'),
   customFieldsValues: z.any().optional().describe('Custom field values'),
-  tags: z.any().optional().describe('Tags attached to the contact'),
+  tags: z.any().optional().describe('Tags attached to the contact')
 });
 
 export let companyOutputSchema = z.object({
@@ -58,7 +62,7 @@ export let companyOutputSchema = z.object({
   createdAt: z.number().optional().describe('Creation timestamp (Unix)'),
   updatedAt: z.number().optional().describe('Last update timestamp (Unix)'),
   customFieldsValues: z.any().optional().describe('Custom field values'),
-  tags: z.any().optional().describe('Tags attached to the company'),
+  tags: z.any().optional().describe('Tags attached to the company')
 });
 
 export let taskOutputSchema = z.object({
@@ -66,7 +70,10 @@ export let taskOutputSchema = z.object({
   text: z.string().optional().describe('Task description'),
   responsibleUserId: z.number().optional().describe('Responsible user ID'),
   entityId: z.number().optional().describe('Linked entity ID'),
-  entityType: z.string().optional().describe('Linked entity type (leads, contacts, companies)'),
+  entityType: z
+    .string()
+    .optional()
+    .describe('Linked entity type (leads, contacts, companies)'),
   taskTypeId: z.number().optional().describe('Task type ID (1=Follow-up, 2=Meeting)'),
   completeTill: z.number().optional().describe('Deadline timestamp (Unix)'),
   duration: z.number().optional().describe('Task duration in seconds'),
@@ -75,7 +82,7 @@ export let taskOutputSchema = z.object({
   createdBy: z.number().optional().describe('ID of user who created the task'),
   updatedBy: z.number().optional().describe('ID of user who last updated the task'),
   createdAt: z.number().optional().describe('Creation timestamp (Unix)'),
-  updatedAt: z.number().optional().describe('Last update timestamp (Unix)'),
+  updatedAt: z.number().optional().describe('Last update timestamp (Unix)')
 });
 
 export let mapLead = (lead: any) => ({
@@ -92,7 +99,7 @@ export let mapLead = (lead: any) => ({
   updatedAt: lead.updated_at,
   closedAt: lead.closed_at,
   customFieldsValues: lead.custom_fields_values,
-  tags: lead._embedded?.tags,
+  tags: lead._embedded?.tags
 });
 
 export let mapContact = (contact: any) => ({
@@ -106,7 +113,7 @@ export let mapContact = (contact: any) => ({
   createdAt: contact.created_at,
   updatedAt: contact.updated_at,
   customFieldsValues: contact.custom_fields_values,
-  tags: contact._embedded?.tags,
+  tags: contact._embedded?.tags
 });
 
 export let mapCompany = (company: any) => ({
@@ -118,7 +125,7 @@ export let mapCompany = (company: any) => ({
   createdAt: company.created_at,
   updatedAt: company.updated_at,
   customFieldsValues: company.custom_fields_values,
-  tags: company._embedded?.tags,
+  tags: company._embedded?.tags
 });
 
 export let mapTask = (task: any) => ({
@@ -135,19 +142,27 @@ export let mapTask = (task: any) => ({
   createdBy: task.created_by,
   updatedBy: task.updated_by,
   createdAt: task.created_at,
-  updatedAt: task.updated_at,
+  updatedAt: task.updated_at
 });
 
-export let buildCustomFieldsPayload = (fields: Array<{ fieldId: number; values: Array<{ value?: string | number | boolean; enumId?: number }> }>) => {
+export let buildCustomFieldsPayload = (
+  fields: Array<{
+    fieldId: number;
+    values: Array<{ value?: string | number | boolean; enumId?: number }>;
+  }>
+) => {
   return fields.map(f => ({
     field_id: f.fieldId,
     values: f.values
-      .filter((v): v is { value: string | number | boolean; enumId?: number } => v.value !== undefined)
+      .filter(
+        (v): v is { value: string | number | boolean; enumId?: number } =>
+          v.value !== undefined
+      )
       .map(v => {
-      let val: Record<string, any> = { value: v.value };
-      if (v.enumId !== undefined) val['enum_id'] = v.enumId;
-      return val;
-    }),
+        let val: Record<string, any> = { value: v.value };
+        if (v.enumId !== undefined) val['enum_id'] = v.enumId;
+        return val;
+      })
   }));
 };
 

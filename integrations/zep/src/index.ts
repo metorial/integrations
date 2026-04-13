@@ -12,12 +12,9 @@ import {
   deleteEpisode,
   cloneGraph,
   setUserSummaryInstructions,
-  getUserThreads,
+  getUserThreads
 } from './tools';
-import {
-  graphEvent,
-  byomEvent,
-} from './triggers';
+import { graphEvent, byomEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     deleteEpisode,
     cloneGraph,
     setUserSummaryInstructions,
-    getUserThreads,
+    getUserThreads
   ],
-  triggers: [
-    graphEvent,
-    byomEvent,
-  ],
+  triggers: [graphEvent, byomEvent]
 });

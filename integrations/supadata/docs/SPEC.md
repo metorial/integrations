@@ -17,6 +17,7 @@ x-api-key: YOUR_API_KEY
 The same key works with direct API calls, SDKs, and no-code integrations.
 
 To obtain an API key:
+
 1. Sign up for an account at [dash.supadata.ai](https://dash.supadata.ai).
 2. The API key is generated automatically during onboarding and is available in the dashboard.
 

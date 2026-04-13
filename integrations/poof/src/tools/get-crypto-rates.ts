@@ -3,29 +3,44 @@ import { PoofClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCryptoRates = SlateTool.create(
-  spec,
-  {
-    name: 'Get Crypto Rates',
-    key: 'get_crypto_rates',
-    description: `Fetch cryptocurrency exchange rates, prices, and gas prices. Retrieve exchange rates for 6000+ currency pairs relative to a base currency, get the current price of a specific cryptocurrency, or fetch the current gas price for ERC-20 token transactions.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getCryptoRates = SlateTool.create(spec, {
+  name: 'Get Crypto Rates',
+  key: 'get_crypto_rates',
+  description: `Fetch cryptocurrency exchange rates, prices, and gas prices. Retrieve exchange rates for 6000+ currency pairs relative to a base currency, get the current price of a specific cryptocurrency, or fetch the current gas price for ERC-20 token transactions.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    action: z.enum(['rates', 'price', 'gas_price']).describe('"rates" for exchange rates, "price" for crypto price, "gas_price" for ERC-20 gas price'),
-    base: z.string().optional().describe('Base currency for exchange rates (e.g., "USD"). Required for "rates" action.'),
-    crypto: z.string().optional().describe('Crypto ticker for price/gas_price (e.g., "bnb", "usdc"). Required for "price" and "gas_price" actions.')
-  }))
-  .output(z.object({
-    rates: z.any().optional().describe('Exchange rates keyed by crypto ticker'),
-    price: z.any().optional().describe('Current price of the cryptocurrency'),
-    gasPrice: z.any().optional().describe('Current gas price for ERC-20 transactions')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['rates', 'price', 'gas_price'])
+        .describe(
+          '"rates" for exchange rates, "price" for crypto price, "gas_price" for ERC-20 gas price'
+        ),
+      base: z
+        .string()
+        .optional()
+        .describe(
+          'Base currency for exchange rates (e.g., "USD"). Required for "rates" action.'
+        ),
+      crypto: z
+        .string()
+        .optional()
+        .describe(
+          'Crypto ticker for price/gas_price (e.g., "bnb", "usdc"). Required for "price" and "gas_price" actions.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      rates: z.any().optional().describe('Exchange rates keyed by crypto ticker'),
+      price: z.any().optional().describe('Current price of the cryptocurrency'),
+      gasPrice: z.any().optional().describe('Current gas price for ERC-20 transactions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PoofClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'rates') {
@@ -56,4 +71,5 @@ export let getCryptoRates = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

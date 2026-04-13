@@ -10,20 +10,23 @@ export class ZohoCrmClient {
     this.http = createAxios({
       baseURL: `${baseUrl}/crm/v7`,
       headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`,
-      },
+        Authorization: `Zoho-oauthtoken ${opts.token}`
+      }
     });
   }
 
-  async getRecords(module: string, params?: {
-    fields?: string;
-    page?: number;
-    perPage?: number;
-    sortBy?: string;
-    sortOrder?: string;
-    cvid?: string;
-    ids?: string;
-  }) {
+  async getRecords(
+    module: string,
+    params?: {
+      fields?: string;
+      page?: number;
+      perPage?: number;
+      sortBy?: string;
+      sortOrder?: string;
+      cvid?: string;
+      ids?: string;
+    }
+  ) {
     let response = await this.http.get(`/${module}`, {
       params: {
         fields: params?.fields,
@@ -32,8 +35,8 @@ export class ZohoCrmClient {
         sort_by: params?.sortBy,
         sort_order: params?.sortOrder,
         cvid: params?.cvid,
-        ids: params?.ids,
-      },
+        ids: params?.ids
+      }
     });
     return response.data;
   }
@@ -50,7 +53,12 @@ export class ZohoCrmClient {
     return response.data;
   }
 
-  async updateRecord(module: string, recordId: string, data: Record<string, any>, trigger?: string[]) {
+  async updateRecord(
+    module: string,
+    recordId: string,
+    data: Record<string, any>,
+    trigger?: string[]
+  ) {
     let body: Record<string, any> = { data: [{ ...data, id: recordId }] };
     if (trigger && trigger.length > 0) body.trigger = trigger;
     let response = await this.http.put(`/${module}`, body);
@@ -62,14 +70,17 @@ export class ZohoCrmClient {
     return response.data;
   }
 
-  async searchRecords(module: string, params: {
-    criteria?: string;
-    email?: string;
-    phone?: string;
-    word?: string;
-    page?: number;
-    perPage?: number;
-  }) {
+  async searchRecords(
+    module: string,
+    params: {
+      criteria?: string;
+      email?: string;
+      phone?: string;
+      word?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.http.get(`/${module}/search`, {
       params: {
         criteria: params.criteria,
@@ -77,8 +88,8 @@ export class ZohoCrmClient {
         phone: params.phone,
         word: params.word,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
@@ -98,36 +109,38 @@ export class ZohoCrmClient {
       params: {
         type: params?.type,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
 
-  async enableNotifications(watchData: Array<{
-    channelId: string;
-    events: string[];
-    notifyUrl: string;
-    token?: string;
-    channelExpiry?: string;
-    returnAffectedFieldValues?: boolean;
-  }>) {
+  async enableNotifications(
+    watchData: Array<{
+      channelId: string;
+      events: string[];
+      notifyUrl: string;
+      token?: string;
+      channelExpiry?: string;
+      returnAffectedFieldValues?: boolean;
+    }>
+  ) {
     let response = await this.http.post('/actions/watch', {
-      watch: watchData.map((w) => ({
+      watch: watchData.map(w => ({
         channel_id: w.channelId,
         events: w.events,
         notify_url: w.notifyUrl,
         token: w.token,
         channel_expiry: w.channelExpiry,
-        return_affected_field_values: w.returnAffectedFieldValues,
-      })),
+        return_affected_field_values: w.returnAffectedFieldValues
+      }))
     });
     return response.data;
   }
 
   async disableNotifications(channelIds: string[]) {
     let response = await this.http.delete('/actions/watch', {
-      params: { channel_ids: channelIds.join(',') },
+      params: { channel_ids: channelIds.join(',') }
     });
     return response.data;
   }
@@ -147,8 +160,8 @@ export class ZohoDeskClient {
       baseURL: `${baseUrl}/api/v1`,
       headers: {
         Authorization: `Zoho-oauthtoken ${opts.token}`,
-        orgId: opts.orgId,
-      },
+        orgId: opts.orgId
+      }
     });
   }
 
@@ -167,8 +180,8 @@ export class ZohoDeskClient {
         departmentId: params?.departmentId,
         status: params?.status,
         sortBy: params?.sortBy,
-        sortOrder: params?.sortOrder,
-      },
+        sortOrder: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -231,8 +244,8 @@ export class ZohoDeskClient {
         from: params.from,
         limit: params.limit,
         searchStr: params.searchStr,
-        statusType: params.statusType,
-      },
+        statusType: params.statusType
+      }
     });
     return response.data;
   }
@@ -271,11 +284,11 @@ export class ZohoBooksClient {
     this.http = createAxios({
       baseURL: `${baseUrl}/books/v3`,
       headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`,
+        Authorization: `Zoho-oauthtoken ${opts.token}`
       },
       params: {
-        organization_id: opts.organizationId,
-      },
+        organization_id: opts.organizationId
+      }
     });
   }
 
@@ -283,7 +296,7 @@ export class ZohoBooksClient {
     let baseUrl = getApiBaseUrl(datacenter);
     let http = createAxios({
       baseURL: `${baseUrl}/books/v3`,
-      headers: { Authorization: `Zoho-oauthtoken ${token}` },
+      headers: { Authorization: `Zoho-oauthtoken ${token}` }
     });
     let response = await http.get('/organizations');
     return response.data;
@@ -304,8 +317,8 @@ export class ZohoBooksClient {
         status: params?.status,
         customer_id: params?.customerId,
         sort_column: params?.sortColumn,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -348,8 +361,8 @@ export class ZohoBooksClient {
         per_page: params?.perPage,
         contact_type: params?.contactType,
         sort_column: params?.sortColumn,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -387,8 +400,8 @@ export class ZohoBooksClient {
         per_page: params?.perPage,
         status: params?.status,
         sort_column: params?.sortColumn,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -422,45 +435,48 @@ export class ZohoPeopleClient {
     this.http = createAxios({
       baseURL: `${baseUrl}/people/api`,
       headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`,
-      },
+        Authorization: `Zoho-oauthtoken ${opts.token}`
+      }
     });
   }
 
-  async getFormRecords(formLinkName: string, params?: {
-    sIndex?: number;
-    limit?: number;
-    searchColumn?: string;
-    searchValue?: string;
-  }) {
+  async getFormRecords(
+    formLinkName: string,
+    params?: {
+      sIndex?: number;
+      limit?: number;
+      searchColumn?: string;
+      searchValue?: string;
+    }
+  ) {
     let response = await this.http.get(`/forms/${formLinkName}/getRecords`, {
       params: {
         sIndex: params?.sIndex ?? 0,
         limit: params?.limit ?? 200,
         searchColumn: params?.searchColumn,
-        searchValue: params?.searchValue,
-      },
+        searchValue: params?.searchValue
+      }
     });
     return response.data;
   }
 
   async getFormRecordById(formLinkName: string, recordId: string) {
     let response = await this.http.get(`/forms/${formLinkName}/getDataByID`, {
-      params: { recordId },
+      params: { recordId }
     });
     return response.data;
   }
 
   async insertFormRecord(formLinkName: string, data: Record<string, any>) {
     let response = await this.http.post(`/forms/json/${formLinkName}/insertRecord`, null, {
-      params: { inputData: JSON.stringify(data) },
+      params: { inputData: JSON.stringify(data) }
     });
     return response.data;
   }
 
   async updateFormRecord(formLinkName: string, recordId: string, data: Record<string, any>) {
     let response = await this.http.post(`/forms/json/${formLinkName}/updateRecord`, null, {
-      params: { inputData: JSON.stringify(data), recordId },
+      params: { inputData: JSON.stringify(data), recordId }
     });
     return response.data;
   }
@@ -484,8 +500,8 @@ export class ZohoProjectsClient {
     this.http = createAxios({
       baseURL: `${baseUrl}/restapi/portal/${opts.portalId}`,
       headers: {
-        Authorization: `Zoho-oauthtoken ${opts.token}`,
-      },
+        Authorization: `Zoho-oauthtoken ${opts.token}`
+      }
     });
   }
 
@@ -502,8 +518,8 @@ export class ZohoProjectsClient {
         range: params?.range,
         status: params?.status,
         sort_column: params?.sortBy,
-        sort_order: params?.sortOrder,
-      },
+        sort_order: params?.sortOrder
+      }
     });
     return response.data;
   }
@@ -528,17 +544,20 @@ export class ZohoProjectsClient {
     return response.data;
   }
 
-  async listTasks(projectId: string, params?: {
-    index?: number;
-    range?: number;
-    status?: string;
-  }) {
+  async listTasks(
+    projectId: string,
+    params?: {
+      index?: number;
+      range?: number;
+      status?: string;
+    }
+  ) {
     let response = await this.http.get(`/projects/${projectId}/tasks/`, {
       params: {
         index: params?.index,
         range: params?.range,
-        status: params?.status,
-      },
+        status: params?.status
+      }
     });
     return response.data;
   }
@@ -563,17 +582,20 @@ export class ZohoProjectsClient {
     return response.data;
   }
 
-  async listMilestones(projectId: string, params?: {
-    index?: number;
-    range?: number;
-    status?: string;
-  }) {
+  async listMilestones(
+    projectId: string,
+    params?: {
+      index?: number;
+      range?: number;
+      status?: string;
+    }
+  ) {
     let response = await this.http.get(`/projects/${projectId}/milestones/`, {
       params: {
         index: params?.index,
         range: params?.range,
-        status: params?.status,
-      },
+        status: params?.status
+      }
     });
     return response.data;
   }

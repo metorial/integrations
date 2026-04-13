@@ -10,7 +10,7 @@ import {
   pushGlance,
   checkAppLimits,
   listSounds,
-  migrateSubscription,
+  migrateSubscription
 } from './tools';
 import { emergencyAcknowledged } from './triggers';
 
@@ -26,9 +26,7 @@ export let provider = Slate.create({
     pushGlance,
     checkAppLimits,
     listSounds,
-    migrateSubscription,
+    migrateSubscription
   ],
-  triggers: [
-    emergencyAcknowledged,
-  ],
+  triggers: [emergencyAcknowledged]
 });

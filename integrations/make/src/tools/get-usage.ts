@@ -3,31 +3,32 @@ import { MakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUsage = SlateTool.create(
-  spec,
-  {
-    name: 'Get Usage',
-    key: 'get_usage',
-    description: `Retrieve usage statistics for an organization or team. Returns daily operations count, data transfer, and centicredits usage for the past 30 days.`,
-    tags: {
-      readOnly: true,
-    },
-    instructions: [
-      'Provide either organizationId or teamId to get usage for.',
-    ],
-  }
-)
-  .input(z.object({
-    organizationId: z.number().optional().describe('Organization ID to get usage for'),
-    teamId: z.number().optional().describe('Team ID to get usage for'),
-  }))
-  .output(z.object({
-    usage: z.any().describe('Usage data including daily operations, data transfer, and centicredits'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let getUsage = SlateTool.create(spec, {
+  name: 'Get Usage',
+  key: 'get_usage',
+  description: `Retrieve usage statistics for an organization or team. Returns daily operations count, data transfer, and centicredits usage for the past 30 days.`,
+  tags: {
+    readOnly: true
+  },
+  instructions: ['Provide either organizationId or teamId to get usage for.']
+})
+  .input(
+    z.object({
+      organizationId: z.number().optional().describe('Organization ID to get usage for'),
+      teamId: z.number().optional().describe('Team ID to get usage for')
+    })
+  )
+  .output(
+    z.object({
+      usage: z
+        .any()
+        .describe('Usage data including daily operations, data transfer, and centicredits')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MakeClient({
       token: ctx.auth.token,
-      zoneUrl: ctx.config.zoneUrl,
+      zoneUrl: ctx.config.zoneUrl
     });
 
     if (!ctx.input.organizationId && !ctx.input.teamId) {
@@ -47,7 +48,7 @@ export let getUsage = SlateTool.create(
 
     return {
       output: { usage: result },
-      message: `Retrieved usage statistics for ${scope}.`,
+      message: `Retrieved usage statistics for ${scope}.`
     };
   })
   .build();

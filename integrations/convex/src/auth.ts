@@ -2,18 +2,22 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    authType: z.enum(['deploy_key', 'oauth']).describe('The type of authentication used')
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      authType: z.enum(['deploy_key', 'oauth']).describe('The type of authentication used')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Deploy Key',
     key: 'deploy_key',
     inputSchema: z.object({
-      deployKey: z.string().describe('Convex deploy key from the dashboard deployment settings')
+      deployKey: z
+        .string()
+        .describe('Convex deploy key from the dashboard deployment settings')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.deployKey,
@@ -29,7 +33,8 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Team Access',
-        description: 'Create and manage projects, deployments, and access all projects on the team',
+        description:
+          'Create and manage projects, deployments, and access all projects on the team',
         scope: 'team'
       },
       {
@@ -39,13 +44,15 @@ export let auth = SlateAuth.create()
       }
     ],
     inputSchema: z.object({
-      scopeLevel: z.enum(['team', 'project']).default('team').describe('Whether to authorize at team or project level')
+      scopeLevel: z
+        .enum(['team', 'project'])
+        .default('team')
+        .describe('Whether to authorize at team or project level')
     }),
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeLevel = ctx.input.scopeLevel || 'team';
-      let authorizePath = scopeLevel === 'project'
-        ? '/oauth/authorize/project'
-        : '/oauth/authorize/team';
+      let authorizePath =
+        scopeLevel === 'project' ? '/oauth/authorize/project' : '/oauth/authorize/team';
 
       let params = new URLSearchParams({
         client_id: ctx.clientId,
@@ -59,18 +66,22 @@ export let auth = SlateAuth.create()
         input: ctx.input
       };
     },
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
-      let response = await http.post('https://api.convex.dev/oauth/token', {
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret
-      }, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      let response = await http.post(
+        'https://api.convex.dev/oauth/token',
+        {
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       return {
         output: {

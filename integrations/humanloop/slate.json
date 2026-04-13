@@ -2,9 +2,7 @@
   "name": "@metorial/humanloop",
   "version": "0.1.1",
   "description": "Manage LLM prompts, evaluations, and observability for AI applications. Create, version, and deploy prompts with templated variables. Run evaluations using code-based, AI-based, or human evaluators against datasets. Log LLM calls with inputs, outputs, latencies, token counts, and costs. Proxy calls to model providers (OpenAI, Anthropic, Cohere, AWS Bedrock) with automatic logging. Manage datasets of test cases for benchmarking. Configure and trace multi-step agent workflows and flows. Deploy prompt versions to different environments (staging, production). Organize files into directories and attach human feedback to logs.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "manage prompt versions",
     "run LLM evaluations",

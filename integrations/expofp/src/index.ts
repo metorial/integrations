@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listEvents,
@@ -27,13 +26,9 @@ import {
   deleteSessionSpeakers,
   getSessionTracks,
   upsertSessionTracks,
-  deleteSessionTracks,
+  deleteSessionTracks
 } from './tools';
-import {
-  exhibitorChanges,
-  boothChanges,
-  inboundWebhook,
-} from './triggers';
+import { exhibitorChanges, boothChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -63,11 +58,7 @@ export let provider = Slate.create({
     deleteSessionSpeakers,
     getSessionTracks,
     upsertSessionTracks,
-    deleteSessionTracks,
+    deleteSessionTracks
   ],
-  triggers: [
-    inboundWebhook,
-    exhibitorChanges,
-    boothChanges,
-  ]
+  triggers: [inboundWebhook, exhibitorChanges, boothChanges]
 });

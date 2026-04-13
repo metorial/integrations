@@ -3,47 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listClients = SlateTool.create(
-  spec,
-  {
-    name: 'List Clients',
-    key: 'list_clients',
-    description: `Retrieve a list of clients from Project Bubble. Clients can be associated with projects and contacts.`,
-    tags: {
-      readOnly: true,
-    },
+export let listClients = SlateTool.create(spec, {
+  name: 'List Clients',
+  key: 'list_clients',
+  description: `Retrieve a list of clients from Project Bubble. Clients can be associated with projects and contacts.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum number of records (max 1000)'),
-    offset: z.number().optional().describe('Starting position for pagination'),
-  }))
-  .output(z.object({
-    clients: z.array(z.object({
-      clientId: z.string().describe('Client ID'),
-      clientName: z.string().optional().describe('Client name'),
-    })).describe('List of clients'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Maximum number of records (max 1000)'),
+      offset: z.number().optional().describe('Starting position for pagination')
+    })
+  )
+  .output(
+    z.object({
+      clients: z
+        .array(
+          z.object({
+            clientId: z.string().describe('Client ID'),
+            clientName: z.string().optional().describe('Client name')
+          })
+        )
+        .describe('List of clients')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.domain,
+      domain: ctx.config.domain
     });
 
     let result = await client.getClients({
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
-    let data = Array.isArray(result?.data) ? result.data : (result?.data ? [result.data] : []);
+    let data = Array.isArray(result?.data) ? result.data : result?.data ? [result.data] : [];
 
     let clients = data.map((c: any) => ({
       clientId: String(c.client_id),
-      clientName: c.client_name || c.name || undefined,
+      clientName: c.client_name || c.name || undefined
     }));
 
     return {
       output: { clients },
-      message: `Found **${clients.length}** client(s).`,
+      message: `Found **${clients.length}** client(s).`
     };
-  }).build();
+  })
+  .build();

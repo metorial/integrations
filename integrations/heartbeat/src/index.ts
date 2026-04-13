@@ -15,12 +15,9 @@ import {
   createEvent,
   sendDirectMessage,
   sendInvitation,
-  getRecentPosts,
+  getRecentPosts
 } from './tools';
-import {
-  communityEvents,
-  newPosts,
-} from './triggers';
+import { communityEvents, newPosts } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     createEvent,
     sendDirectMessage,
     sendInvitation,
-    getRecentPosts,
+    getRecentPosts
   ],
-  triggers: [
-    communityEvents,
-    newPosts,
-  ],
+  triggers: [communityEvents, newPosts]
 });

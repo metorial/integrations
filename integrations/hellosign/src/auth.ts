@@ -6,12 +6,14 @@ let api = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    authMethod: z.enum(['oauth', 'api_key']),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      authMethod: z.enum(['oauth', 'api_key'])
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -25,7 +27,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Request Signature',
-        description: 'Send signature requests, access statuses and document files. App owner is billed.',
+        description:
+          'Send signature requests, access statuses and document files. App owner is billed.',
         scope: 'request_signature'
       },
       {
@@ -35,7 +38,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Signature Request Access',
-        description: 'Send, view, update signature requests and download files. User is billed.',
+        description:
+          'Send, view, update signature requests and download files. User is billed.',
         scope: 'signature_request_access'
       },
       {
@@ -55,12 +59,12 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         state: ctx.state,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       if (ctx.scopes.length > 0) {
@@ -72,13 +76,13 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await api.post('/oauth/token', {
         state: ctx.state,
         code: ctx.code,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        grant_type: 'authorization_code',
+        grant_type: 'authorization_code'
       });
 
       let data = response.data;
@@ -93,24 +97,28 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          authMethod: 'oauth' as const,
+          authMethod: 'oauth' as const
         }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await api.post('/oauth/token', {
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }, {
-        params: { refresh: true }
-      });
+      let response = await api.post(
+        '/oauth/token',
+        {
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        },
+        {
+          params: { refresh: true }
+        }
+      );
 
       let data = response.data;
 
@@ -124,15 +132,24 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          authMethod: 'oauth' as const,
+          authMethod: 'oauth' as const
         }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; authMethod: 'oauth' | 'api_key'; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        authMethod: 'oauth' | 'api_key';
+        refreshToken?: string;
+        expiresAt?: string;
+      };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await api.get('/account', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -141,7 +158,7 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: account.account_id,
-          email: account.email_address,
+          email: account.email_address
         }
       };
     }
@@ -152,23 +169,31 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string(),
+      apiKey: z.string()
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,
-          authMethod: 'api_key' as const,
+          authMethod: 'api_key' as const
         }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; authMethod: 'oauth' | 'api_key'; refreshToken?: string; expiresAt?: string }; input: { apiKey: string } }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        authMethod: 'oauth' | 'api_key';
+        refreshToken?: string;
+        expiresAt?: string;
+      };
+      input: { apiKey: string };
+    }) => {
       let encoded = btoa(`${ctx.output.token}:`);
       let response = await api.get('/account', {
         headers: {
-          'Authorization': `Basic ${encoded}`
+          Authorization: `Basic ${encoded}`
         }
       });
 
@@ -177,7 +202,7 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: account.account_id,
-          email: account.email_address,
+          email: account.email_address
         }
       };
     }

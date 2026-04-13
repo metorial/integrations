@@ -14,33 +14,38 @@ let fileResultSchema = z.object({
   predictionCount: z.number().describe('Number of extracted predictions')
 });
 
-export let listProcessedFiles = SlateTool.create(
-  spec,
-  {
-    name: 'List Processed Files',
-    key: 'list_processed_files',
-    description: `List all files that have been processed by a Nanonets model within a date range. Returns both moderated (reviewed) and unmoderated files with their extraction results and review status.`,
-    instructions: [
-      'The date range uses "days since epoch" (January 1, 1970). For example, day 19700 corresponds to roughly December 2023.',
-      'To calculate: Math.floor(Date.now() / 86400000) gives today\'s day since epoch.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listProcessedFiles = SlateTool.create(spec, {
+  name: 'List Processed Files',
+  key: 'list_processed_files',
+  description: `List all files that have been processed by a Nanonets model within a date range. Returns both moderated (reviewed) and unmoderated files with their extraction results and review status.`,
+  instructions: [
+    'The date range uses "days since epoch" (January 1, 1970). For example, day 19700 corresponds to roughly December 2023.',
+    "To calculate: Math.floor(Date.now() / 86400000) gives today's day since epoch."
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    modelId: z.string().describe('ID of the model to list files for'),
-    startDayInterval: z.number().describe('Start of date range as days since epoch (Jan 1, 1970)'),
-    currentBatchDay: z.number().describe('End of date range as days since epoch (Jan 1, 1970)')
-  }))
-  .output(z.object({
-    moderatedCount: z.number().describe('Number of reviewed files'),
-    unmoderatedCount: z.number().describe('Number of unreviewed files'),
-    files: z.array(fileResultSchema).describe('List of processed files')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      modelId: z.string().describe('ID of the model to list files for'),
+      startDayInterval: z
+        .number()
+        .describe('Start of date range as days since epoch (Jan 1, 1970)'),
+      currentBatchDay: z
+        .number()
+        .describe('End of date range as days since epoch (Jan 1, 1970)')
+    })
+  )
+  .output(
+    z.object({
+      moderatedCount: z.number().describe('Number of reviewed files'),
+      unmoderatedCount: z.number().describe('Number of unreviewed files'),
+      files: z.array(fileResultSchema).describe('List of processed files')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NanonetsClient(ctx.auth.token);
 
     let result = await client.getAllPredictions(

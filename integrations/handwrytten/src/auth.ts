@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Handwrytten API key. Found under Profile > Integrations in your Handwrytten account.'),
+      token: z
+        .string()
+        .describe(
+          'Handwrytten API key. Found under Profile > Integrations in your Handwrytten account.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,8 +33,8 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.handwrytten.com/v1',
         headers: {
           Authorization: ctx.output.token,
-          Accept: 'application/json',
-        },
+          Accept: 'application/json'
+        }
       });
 
       let response = await client.get('/auth/getUser');
@@ -38,8 +44,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.user_id ?? ''),
           email: user.email ?? '',
-          name: [user.fname, user.lname].filter(Boolean).join(' ') || undefined,
-        },
+          name: [user.fname, user.lname].filter(Boolean).join(' ') || undefined
+        }
       };
-    },
+    }
   });

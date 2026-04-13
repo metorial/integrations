@@ -14,7 +14,7 @@ let addressSchema = z.object({
   postcode: z.string(),
   country: z.string(),
   email: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().optional()
 });
 
 export let getCustomer = SlateTool.create(spec, {
@@ -23,29 +23,33 @@ export let getCustomer = SlateTool.create(spec, {
   description: `Retrieve detailed information about a specific customer including billing/shipping addresses, order history stats, and account details.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    customerId: z.number().describe('The customer ID to retrieve'),
-  }))
-  .output(z.object({
-    customerId: z.number(),
-    email: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-    username: z.string(),
-    role: z.string(),
-    billing: addressSchema,
-    shipping: addressSchema,
-    ordersCount: z.number(),
-    totalSpent: z.string(),
-    avatarUrl: z.string(),
-    isPayingCustomer: z.boolean(),
-    dateCreated: z.string(),
-    dateModified: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      customerId: z.number().describe('The customer ID to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.number(),
+      email: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      username: z.string(),
+      role: z.string(),
+      billing: addressSchema,
+      shipping: addressSchema,
+      ordersCount: z.number(),
+      totalSpent: z.string(),
+      avatarUrl: z.string(),
+      isPayingCustomer: z.boolean(),
+      dateCreated: z.string(),
+      dateModified: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let c = await client.getCustomer(ctx.input.customerId);
 
@@ -60,7 +64,7 @@ export let getCustomer = SlateTool.create(spec, {
       postcode: a?.postcode || '',
       country: a?.country || '',
       email: a?.email || undefined,
-      phone: a?.phone || undefined,
+      phone: a?.phone || undefined
     });
 
     return {
@@ -78,9 +82,9 @@ export let getCustomer = SlateTool.create(spec, {
         avatarUrl: c.avatar_url || '',
         isPayingCustomer: c.is_paying_customer || false,
         dateCreated: c.date_created || '',
-        dateModified: c.date_modified || '',
+        dateModified: c.date_modified || ''
       },
-      message: `Retrieved customer **${c.first_name || ''} ${c.last_name || ''}** (ID: ${c.id}, email: ${c.email}).`,
+      message: `Retrieved customer **${c.first_name || ''} ${c.last_name || ''}** (ID: ${c.id}, email: ${c.email}).`
     };
   })
   .build();

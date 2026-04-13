@@ -9,8 +9,8 @@ export class CabinPandaClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -41,7 +41,7 @@ export class CabinPandaClient {
     settings?: Record<string, any>;
   }): Promise<any> {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
 
     if (params.typeId) body.type_id = params.typeId;
@@ -53,17 +53,20 @@ export class CabinPandaClient {
     return response.data?.data ?? response.data;
   }
 
-  async updateForm(formId: string, params: {
-    name?: string;
-    typeId?: string;
-    templateId?: string;
-    fields?: any[];
-    settings?: Record<string, any>;
-    receivers?: string[];
-    showErrors?: boolean;
-    successMessage?: string;
-    submitButtonLabel?: string;
-  }): Promise<any> {
+  async updateForm(
+    formId: string,
+    params: {
+      name?: string;
+      typeId?: string;
+      templateId?: string;
+      fields?: any[];
+      settings?: Record<string, any>;
+      receivers?: string[];
+      showErrors?: boolean;
+      successMessage?: string;
+      submitButtonLabel?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
 
     if (params.name !== undefined) body.name = params.name;
@@ -74,7 +77,8 @@ export class CabinPandaClient {
     if (params.receivers !== undefined) body.receivers = params.receivers;
     if (params.showErrors !== undefined) body.show_errors = params.showErrors;
     if (params.successMessage !== undefined) body.success_message = params.successMessage;
-    if (params.submitButtonLabel !== undefined) body.submit_button_label = params.submitButtonLabel;
+    if (params.submitButtonLabel !== undefined)
+      body.submit_button_label = params.submitButtonLabel;
 
     let response = await this.http.put(`/forms/${formId}`, body);
     return response.data?.data ?? response.data;

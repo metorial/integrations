@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://api.mailgun.net',
-  eu: 'https://api.eu.mailgun.net',
+  eu: 'https://api.eu.mailgun.net'
 };
 
 export class MailgunClient {
@@ -14,39 +14,42 @@ export class MailgunClient {
       baseURL,
       auth: {
         username: 'api',
-        password: config.token,
-      },
+        password: config.token
+      }
     });
   }
 
   // ==================== Messages ====================
 
-  async sendMessage(domain: string, params: {
-    from: string;
-    to: string[];
-    cc?: string[];
-    bcc?: string[];
-    subject?: string;
-    text?: string;
-    html?: string;
-    template?: string;
-    templateVersion?: string;
-    templateVariables?: Record<string, unknown>;
-    tags?: string[];
-    deliveryTime?: string;
-    testMode?: boolean;
-    tracking?: boolean;
-    trackingClicks?: string;
-    trackingOpens?: boolean;
-    requireTls?: boolean;
-    skipVerification?: boolean;
-    customHeaders?: Record<string, string>;
-    customVariables?: Record<string, string>;
-    recipientVariables?: Record<string, Record<string, unknown>>;
-    replyTo?: string;
-    sendingIp?: string;
-    sendingIpPool?: string;
-  }) {
+  async sendMessage(
+    domain: string,
+    params: {
+      from: string;
+      to: string[];
+      cc?: string[];
+      bcc?: string[];
+      subject?: string;
+      text?: string;
+      html?: string;
+      template?: string;
+      templateVersion?: string;
+      templateVariables?: Record<string, unknown>;
+      tags?: string[];
+      deliveryTime?: string;
+      testMode?: boolean;
+      tracking?: boolean;
+      trackingClicks?: string;
+      trackingOpens?: boolean;
+      requireTls?: boolean;
+      skipVerification?: boolean;
+      customHeaders?: Record<string, string>;
+      customVariables?: Record<string, string>;
+      recipientVariables?: Record<string, Record<string, unknown>>;
+      replyTo?: string;
+      sendingIp?: string;
+      sendingIpPool?: string;
+    }
+  ) {
     let formData = new URLSearchParams();
     formData.append('from', params.from);
 
@@ -71,7 +74,8 @@ export class MailgunClient {
     if (params.html) formData.append('html', params.html);
     if (params.template) formData.append('template', params.template);
     if (params.templateVersion) formData.append('t:version', params.templateVersion);
-    if (params.templateVariables) formData.append('t:variables', JSON.stringify(params.templateVariables));
+    if (params.templateVariables)
+      formData.append('t:variables', JSON.stringify(params.templateVariables));
     if (params.replyTo) formData.append('h:Reply-To', params.replyTo);
 
     if (params.tags) {
@@ -82,9 +86,11 @@ export class MailgunClient {
 
     if (params.deliveryTime) formData.append('o:deliverytime', params.deliveryTime);
     if (params.testMode) formData.append('o:testmode', 'yes');
-    if (params.tracking !== undefined) formData.append('o:tracking', params.tracking ? 'yes' : 'no');
+    if (params.tracking !== undefined)
+      formData.append('o:tracking', params.tracking ? 'yes' : 'no');
     if (params.trackingClicks) formData.append('o:tracking-clicks', params.trackingClicks);
-    if (params.trackingOpens !== undefined) formData.append('o:tracking-opens', params.trackingOpens ? 'yes' : 'no');
+    if (params.trackingOpens !== undefined)
+      formData.append('o:tracking-opens', params.trackingOpens ? 'yes' : 'no');
     if (params.requireTls) formData.append('o:require-tls', 'yes');
     if (params.skipVerification) formData.append('o:skip-verification', 'yes');
     if (params.sendingIp) formData.append('o:sending-ip', params.sendingIp);
@@ -107,7 +113,7 @@ export class MailgunClient {
     }
 
     let response = await this.axios.post(`/v3/${domain}/messages`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
     return response.data as { id: string; message: string };
@@ -141,15 +147,20 @@ export class MailgunClient {
     formData.append('name', params.name);
     if (params.spamAction) formData.append('spam_action', params.spamAction);
     if (params.wildcard !== undefined) formData.append('wildcard', String(params.wildcard));
-    if (params.forceDkimAuthority !== undefined) formData.append('force_dkim_authority', String(params.forceDkimAuthority));
+    if (params.forceDkimAuthority !== undefined)
+      formData.append('force_dkim_authority', String(params.forceDkimAuthority));
     if (params.dkimKeySize) formData.append('dkim_key_size', String(params.dkimKeySize));
     if (params.webScheme) formData.append('web_scheme', params.webScheme);
 
     let response = await this.axios.post('/v4/domains', formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
-    return response.data as { domain: DomainItem; sending_dns_records: DnsRecord[]; receiving_dns_records: DnsRecord[] };
+    return response.data as {
+      domain: DomainItem;
+      sending_dns_records: DnsRecord[];
+      receiving_dns_records: DnsRecord[];
+    };
   }
 
   async deleteDomain(domainName: string) {
@@ -173,11 +184,15 @@ export class MailgunClient {
     return response.data as { tracking: TrackingSettings };
   }
 
-  async updateDomainTracking(domainName: string, trackingType: 'open' | 'click' | 'unsubscribe', params: {
-    active: boolean | string;
-    htmlFooter?: string;
-    textFooter?: string;
-  }) {
+  async updateDomainTracking(
+    domainName: string,
+    trackingType: 'open' | 'click' | 'unsubscribe',
+    params: {
+      active: boolean | string;
+      htmlFooter?: string;
+      textFooter?: string;
+    }
+  ) {
     let formData = new URLSearchParams();
     formData.append('active', String(params.active));
     if (params.htmlFooter) formData.append('html_footer', params.htmlFooter);
@@ -194,19 +209,22 @@ export class MailgunClient {
 
   // ==================== Events ====================
 
-  async getEvents(domain: string, params?: {
-    begin?: string;
-    end?: string;
-    ascending?: string;
-    limit?: number;
-    event?: string;
-    recipient?: string;
-    from?: string;
-    to?: string;
-    subject?: string;
-    messageId?: string;
-    severity?: string;
-  }) {
+  async getEvents(
+    domain: string,
+    params?: {
+      begin?: string;
+      end?: string;
+      ascending?: string;
+      limit?: number;
+      event?: string;
+      recipient?: string;
+      from?: string;
+      to?: string;
+      subject?: string;
+      messageId?: string;
+      severity?: string;
+    }
+  ) {
     let queryParams: Record<string, string | number> = {};
     if (params?.begin) queryParams['begin'] = params.begin;
     if (params?.end) queryParams['end'] = params.end;
@@ -237,11 +255,16 @@ export class MailgunClient {
   }
 
   async getBounce(domain: string, address: string) {
-    let response = await this.axios.get(`/v3/${domain}/bounces/${encodeURIComponent(address)}`);
+    let response = await this.axios.get(
+      `/v3/${domain}/bounces/${encodeURIComponent(address)}`
+    );
     return response.data as BounceItem;
   }
 
-  async addBounce(domain: string, params: { address: string; code?: number; error?: string; createdAt?: string }) {
+  async addBounce(
+    domain: string,
+    params: { address: string; code?: number; error?: string; createdAt?: string }
+  ) {
     let formData = new URLSearchParams();
     formData.append('address', params.address);
     if (params.code) formData.append('code', String(params.code));
@@ -249,13 +272,15 @@ export class MailgunClient {
     if (params.createdAt) formData.append('created_at', params.createdAt);
 
     let response = await this.axios.post(`/v3/${domain}/bounces`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async deleteBounce(domain: string, address: string) {
-    let response = await this.axios.delete(`/v3/${domain}/bounces/${encodeURIComponent(address)}`);
+    let response = await this.axios.delete(
+      `/v3/${domain}/bounces/${encodeURIComponent(address)}`
+    );
     return response.data;
   }
 
@@ -272,13 +297,15 @@ export class MailgunClient {
     if (params.createdAt) formData.append('created_at', params.createdAt);
 
     let response = await this.axios.post(`/v3/${domain}/complaints`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async deleteComplaint(domain: string, address: string) {
-    let response = await this.axios.delete(`/v3/${domain}/complaints/${encodeURIComponent(address)}`);
+    let response = await this.axios.delete(
+      `/v3/${domain}/complaints/${encodeURIComponent(address)}`
+    );
     return response.data;
   }
 
@@ -289,20 +316,25 @@ export class MailgunClient {
     return response.data as { items: UnsubscribeItem[]; paging: PagingInfo };
   }
 
-  async addUnsubscribe(domain: string, params: { address: string; tag?: string; createdAt?: string }) {
+  async addUnsubscribe(
+    domain: string,
+    params: { address: string; tag?: string; createdAt?: string }
+  ) {
     let formData = new URLSearchParams();
     formData.append('address', params.address);
     if (params.tag) formData.append('tag', params.tag);
     if (params.createdAt) formData.append('created_at', params.createdAt);
 
     let response = await this.axios.post(`/v3/${domain}/unsubscribes`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async deleteUnsubscribe(domain: string, address: string) {
-    let response = await this.axios.delete(`/v3/${domain}/unsubscribes/${encodeURIComponent(address)}`);
+    let response = await this.axios.delete(
+      `/v3/${domain}/unsubscribes/${encodeURIComponent(address)}`
+    );
     return response.data;
   }
 
@@ -333,18 +365,21 @@ export class MailgunClient {
     if (params.replyPreference) formData.append('reply_preference', params.replyPreference);
 
     let response = await this.axios.post('/v3/lists', formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data as { list: MailingListItem };
   }
 
-  async updateMailingList(listAddress: string, params: {
-    address?: string;
-    name?: string;
-    description?: string;
-    accessLevel?: string;
-    replyPreference?: string;
-  }) {
+  async updateMailingList(
+    listAddress: string,
+    params: {
+      address?: string;
+      name?: string;
+      description?: string;
+      accessLevel?: string;
+      replyPreference?: string;
+    }
+  ) {
     let formData = new URLSearchParams();
     if (params.address) formData.append('address', params.address);
     if (params.name) formData.append('name', params.name);
@@ -353,7 +388,7 @@ export class MailgunClient {
     if (params.replyPreference) formData.append('reply_preference', params.replyPreference);
 
     let response = await this.axios.put(`/v3/lists/${listAddress}`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data as { list: MailingListItem };
   }
@@ -365,7 +400,10 @@ export class MailgunClient {
 
   // ==================== Mailing List Members ====================
 
-  async listMailingListMembers(listAddress: string, params?: { limit?: number; skip?: number; subscribed?: boolean }) {
+  async listMailingListMembers(
+    listAddress: string,
+    params?: { limit?: number; skip?: number; subscribed?: boolean }
+  ) {
     let response = await this.axios.get(`/v3/lists/${listAddress}/members/pages`, { params });
     return response.data as { items: MailingListMember[] };
   }
@@ -375,44 +413,63 @@ export class MailgunClient {
     return response.data as { member: MailingListMember };
   }
 
-  async addMailingListMember(listAddress: string, params: {
-    address: string;
-    name?: string;
-    vars?: Record<string, unknown>;
-    subscribed?: boolean;
-    upsert?: boolean;
-  }) {
+  async addMailingListMember(
+    listAddress: string,
+    params: {
+      address: string;
+      name?: string;
+      vars?: Record<string, unknown>;
+      subscribed?: boolean;
+      upsert?: boolean;
+    }
+  ) {
     let formData = new URLSearchParams();
     formData.append('address', params.address);
     if (params.name) formData.append('name', params.name);
     if (params.vars) formData.append('vars', JSON.stringify(params.vars));
-    if (params.subscribed !== undefined) formData.append('subscribed', String(params.subscribed));
+    if (params.subscribed !== undefined)
+      formData.append('subscribed', String(params.subscribed));
     if (params.upsert !== undefined) formData.append('upsert', String(params.upsert));
 
-    let response = await this.axios.post(`/v3/lists/${listAddress}/members`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.post(
+      `/v3/lists/${listAddress}/members`,
+      formData.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data as { member: MailingListMember };
   }
 
-  async updateMailingListMember(listAddress: string, memberAddress: string, params: {
-    name?: string;
-    vars?: Record<string, unknown>;
-    subscribed?: boolean;
-  }) {
+  async updateMailingListMember(
+    listAddress: string,
+    memberAddress: string,
+    params: {
+      name?: string;
+      vars?: Record<string, unknown>;
+      subscribed?: boolean;
+    }
+  ) {
     let formData = new URLSearchParams();
     if (params.name) formData.append('name', params.name);
     if (params.vars) formData.append('vars', JSON.stringify(params.vars));
-    if (params.subscribed !== undefined) formData.append('subscribed', String(params.subscribed));
+    if (params.subscribed !== undefined)
+      formData.append('subscribed', String(params.subscribed));
 
-    let response = await this.axios.put(`/v3/lists/${listAddress}/members/${memberAddress}`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.put(
+      `/v3/lists/${listAddress}/members/${memberAddress}`,
+      formData.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data as { member: MailingListMember };
   }
 
   async deleteMailingListMember(listAddress: string, memberAddress: string) {
-    let response = await this.axios.delete(`/v3/lists/${listAddress}/members/${memberAddress}`);
+    let response = await this.axios.delete(
+      `/v3/lists/${listAddress}/members/${memberAddress}`
+    );
     return response.data;
   }
 
@@ -430,13 +487,16 @@ export class MailgunClient {
     return response.data as { template: TemplateItem };
   }
 
-  async createTemplate(domain: string, params: {
-    name: string;
-    description?: string;
-    template?: string;
-    tag?: string;
-    comment?: string;
-  }) {
+  async createTemplate(
+    domain: string,
+    params: {
+      name: string;
+      description?: string;
+      template?: string;
+      tag?: string;
+      comment?: string;
+    }
+  ) {
     let formData = new URLSearchParams();
     formData.append('name', params.name);
     if (params.description) formData.append('description', params.description);
@@ -445,18 +505,26 @@ export class MailgunClient {
     if (params.comment) formData.append('comment', params.comment);
 
     let response = await this.axios.post(`/v3/${domain}/templates`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data as { template: TemplateItem; message: string };
   }
 
-  async updateTemplate(domain: string, templateName: string, params: { description?: string }) {
+  async updateTemplate(
+    domain: string,
+    templateName: string,
+    params: { description?: string }
+  ) {
     let formData = new URLSearchParams();
     if (params.description) formData.append('description', params.description);
 
-    let response = await this.axios.put(`/v3/${domain}/templates/${templateName}`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.put(
+      `/v3/${domain}/templates/${templateName}`,
+      formData.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -467,31 +535,43 @@ export class MailgunClient {
 
   // ==================== Template Versions ====================
 
-  async createTemplateVersion(domain: string, templateName: string, params: {
-    template: string;
-    tag: string;
-    comment?: string;
-    active?: boolean;
-  }) {
+  async createTemplateVersion(
+    domain: string,
+    templateName: string,
+    params: {
+      template: string;
+      tag: string;
+      comment?: string;
+      active?: boolean;
+    }
+  ) {
     let formData = new URLSearchParams();
     formData.append('template', params.template);
     formData.append('tag', params.tag);
     if (params.comment) formData.append('comment', params.comment);
     if (params.active !== undefined) formData.append('active', params.active ? 'yes' : 'no');
 
-    let response = await this.axios.post(`/v3/${domain}/templates/${templateName}/versions`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.post(
+      `/v3/${domain}/templates/${templateName}/versions`,
+      formData.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async getTemplateVersion(domain: string, templateName: string, tag: string) {
-    let response = await this.axios.get(`/v3/${domain}/templates/${templateName}/versions/${tag}`);
+    let response = await this.axios.get(
+      `/v3/${domain}/templates/${templateName}/versions/${tag}`
+    );
     return response.data as { template: TemplateItem };
   }
 
   async deleteTemplateVersion(domain: string, templateName: string, tag: string) {
-    let response = await this.axios.delete(`/v3/${domain}/templates/${templateName}/versions/${tag}`);
+    let response = await this.axios.delete(
+      `/v3/${domain}/templates/${templateName}/versions/${tag}`
+    );
     return response.data;
   }
 
@@ -522,17 +602,20 @@ export class MailgunClient {
     }
 
     let response = await this.axios.post('/v3/routes', formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data as { route: RouteItem; message: string };
   }
 
-  async updateRoute(routeId: string, params: {
-    priority?: number;
-    description?: string;
-    expression?: string;
-    actions?: string[];
-  }) {
+  async updateRoute(
+    routeId: string,
+    params: {
+      priority?: number;
+      description?: string;
+      expression?: string;
+      actions?: string[];
+    }
+  ) {
     let formData = new URLSearchParams();
     if (params.priority !== undefined) formData.append('priority', String(params.priority));
     if (params.description) formData.append('description', params.description);
@@ -544,7 +627,7 @@ export class MailgunClient {
     }
 
     let response = await this.axios.put(`/v3/routes/${routeId}`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -578,9 +661,13 @@ export class MailgunClient {
     formData.append('id', params.id);
     formData.append('url', params.url);
 
-    let response = await this.axios.post(`/v3/domains/${domain}/webhooks`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.post(
+      `/v3/domains/${domain}/webhooks`,
+      formData.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -588,9 +675,13 @@ export class MailgunClient {
     let formData = new URLSearchParams();
     formData.append('url', url);
 
-    let response = await this.axios.put(`/v3/domains/${domain}/webhooks/${webhookName}`, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.axios.put(
+      `/v3/domains/${domain}/webhooks/${webhookName}`,
+      formData.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -601,13 +692,16 @@ export class MailgunClient {
 
   // ==================== Stats ====================
 
-  async getStats(domain: string, params: {
-    event: string[];
-    start?: string;
-    end?: string;
-    resolution?: string;
-    duration?: string;
-  }) {
+  async getStats(
+    domain: string,
+    params: {
+      event: string[];
+      start?: string;
+      end?: string;
+      resolution?: string;
+      duration?: string;
+    }
+  ) {
     let queryParams = new URLSearchParams();
     for (let event of params.event) {
       queryParams.append('event', event);
@@ -618,7 +712,12 @@ export class MailgunClient {
     if (params.duration) queryParams.append('duration', params.duration);
 
     let response = await this.axios.get(`/v3/${domain}/stats/total`, { params: queryParams });
-    return response.data as { stats: StatsItem[]; start: string; end: string; resolution: string };
+    return response.data as {
+      stats: StatsItem[];
+      start: string;
+      end: string;
+      resolution: string;
+    };
   }
 }
 
@@ -757,7 +856,10 @@ export type StatsItem = {
   time: string;
   accepted?: { incoming: number; outgoing: number; total: number };
   delivered?: { smtp: number; http: number; optimized: number; total: number };
-  failed?: { permanent: { bounce: number; 'delayed-bounce': number; suppressed: number; total: number }; temporary: { espblock: number; total: number } };
+  failed?: {
+    permanent: { bounce: number; 'delayed-bounce': number; suppressed: number; total: number };
+    temporary: { espblock: number; total: number };
+  };
   opened?: { total: number };
   clicked?: { total: number };
   unsubscribed?: { total: number };

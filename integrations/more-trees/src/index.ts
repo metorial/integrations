@@ -6,7 +6,7 @@ import {
   listProjects,
   plantTrees,
   getCreditBalance,
-  getCarbonOffset,
+  getCarbonOffset
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     listProjects,
     plantTrees,
     getCreditBalance,
-    getCarbonOffset,
+    getCarbonOffset
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

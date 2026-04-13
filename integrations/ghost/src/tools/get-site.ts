@@ -3,30 +3,29 @@ import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSite = SlateTool.create(
-  spec,
-  {
-    name: 'Get Site',
-    key: 'get_site',
-    description: `Retrieve site-level metadata and configuration from your Ghost instance, including title, description, logo, language, and other global settings.`,
-    tags: { readOnly: true },
-  }
-)
+export let getSite = SlateTool.create(spec, {
+  name: 'Get Site',
+  key: 'get_site',
+  description: `Retrieve site-level metadata and configuration from your Ghost instance, including title, description, logo, language, and other global settings.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    title: z.string().describe('Site title'),
-    description: z.string().nullable().describe('Site description'),
-    logo: z.string().nullable().describe('Site logo URL'),
-    icon: z.string().nullable().describe('Site icon URL'),
-    coverImage: z.string().nullable().describe('Site cover image URL'),
-    url: z.string().describe('Site URL'),
-    version: z.string().describe('Ghost version'),
-    lang: z.string().describe('Site language'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      title: z.string().describe('Site title'),
+      description: z.string().nullable().describe('Site description'),
+      logo: z.string().nullable().describe('Site logo URL'),
+      icon: z.string().nullable().describe('Site icon URL'),
+      coverImage: z.string().nullable().describe('Site cover image URL'),
+      url: z.string().describe('Site URL'),
+      version: z.string().describe('Ghost version'),
+      lang: z.string().describe('Site language')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let result = await client.readSite();
@@ -41,8 +40,9 @@ export let getSite = SlateTool.create(
         coverImage: site.cover_image ?? null,
         url: site.url,
         version: site.version,
-        lang: site.lang ?? 'en',
+        lang: site.lang ?? 'en'
       },
-      message: `Site **"${site.title}"** running Ghost v${site.version}.`,
+      message: `Site **"${site.title}"** running Ghost v${site.version}.`
     };
-  }).build();
+  })
+  .build();

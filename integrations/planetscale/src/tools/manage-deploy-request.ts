@@ -3,53 +3,68 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDeployRequest = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Deploy Request',
-    key: 'manage_deploy_request',
-    description: `Perform lifecycle actions on a deploy request. Get details, queue for deployment, cancel, close, approve/review, skip revert period, or complete a revert. Also retrieve deployment status and operations.`,
-    instructions: [
-      'Use action "get" to retrieve full deploy request details.',
-      'Use action "deploy" to queue the deploy request for deployment.',
-      'Use action "cancel" to cancel a queued/in-progress deploy request.',
-      'Use action "close" to close the deploy request without deploying.',
-      'Use action "approve" to approve the deploy request (optionally with a review comment).',
-      'Use action "skip_revert" to skip the revert period after deployment.',
-      'Use action "revert" to revert a deployed schema change.',
-      'Use action "deployment" to get deployment status details.',
-    ],
-    constraints: [
-      'Deploy requests are only available for Vitess (MySQL) databases.',
-      'A service token cannot approve its own deploy request.',
-    ],
-  }
-)
-  .input(z.object({
-    databaseName: z.string().describe('Name of the database'),
-    deployRequestNumber: z.number().describe('Deploy request number'),
-    action: z.enum(['get', 'deploy', 'cancel', 'close', 'approve', 'skip_revert', 'revert', 'deployment']).describe('Action to perform'),
-    reviewComment: z.string().optional().describe('Review comment (used with approve action)'),
-  }))
-  .output(z.object({
-    deployRequestId: z.string().optional(),
-    number: z.number().optional(),
-    branch: z.string().optional(),
-    intoBranch: z.string().optional(),
-    state: z.string().optional(),
-    deploymentState: z.string().optional(),
-    approved: z.boolean().optional(),
-    createdAt: z.string().optional(),
-    closedAt: z.string().optional(),
-    deployedAt: z.string().optional(),
-    htmlUrl: z.string().optional(),
-    deployment: z.any().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageDeployRequest = SlateTool.create(spec, {
+  name: 'Manage Deploy Request',
+  key: 'manage_deploy_request',
+  description: `Perform lifecycle actions on a deploy request. Get details, queue for deployment, cancel, close, approve/review, skip revert period, or complete a revert. Also retrieve deployment status and operations.`,
+  instructions: [
+    'Use action "get" to retrieve full deploy request details.',
+    'Use action "deploy" to queue the deploy request for deployment.',
+    'Use action "cancel" to cancel a queued/in-progress deploy request.',
+    'Use action "close" to close the deploy request without deploying.',
+    'Use action "approve" to approve the deploy request (optionally with a review comment).',
+    'Use action "skip_revert" to skip the revert period after deployment.',
+    'Use action "revert" to revert a deployed schema change.',
+    'Use action "deployment" to get deployment status details.'
+  ],
+  constraints: [
+    'Deploy requests are only available for Vitess (MySQL) databases.',
+    'A service token cannot approve its own deploy request.'
+  ]
+})
+  .input(
+    z.object({
+      databaseName: z.string().describe('Name of the database'),
+      deployRequestNumber: z.number().describe('Deploy request number'),
+      action: z
+        .enum([
+          'get',
+          'deploy',
+          'cancel',
+          'close',
+          'approve',
+          'skip_revert',
+          'revert',
+          'deployment'
+        ])
+        .describe('Action to perform'),
+      reviewComment: z
+        .string()
+        .optional()
+        .describe('Review comment (used with approve action)')
+    })
+  )
+  .output(
+    z.object({
+      deployRequestId: z.string().optional(),
+      number: z.number().optional(),
+      branch: z.string().optional(),
+      intoBranch: z.string().optional(),
+      state: z.string().optional(),
+      deploymentState: z.string().optional(),
+      approved: z.boolean().optional(),
+      createdAt: z.string().optional(),
+      closedAt: z.string().optional(),
+      deployedAt: z.string().optional(),
+      htmlUrl: z.string().optional(),
+      deployment: z.any().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType,
-      organization: ctx.config.organization,
+      organization: ctx.config.organization
     });
 
     let { databaseName, deployRequestNumber, action } = ctx.input;
@@ -58,7 +73,7 @@ export let manageDeployRequest = SlateTool.create(
       let deployment = await client.getDeployment(databaseName, deployRequestNumber);
       return {
         output: { number: deployRequestNumber, deployment },
-        message: `Retrieved deployment details for deploy request **#${deployRequestNumber}**.`,
+        message: `Retrieved deployment details for deploy request **#${deployRequestNumber}**.`
       };
     }
 
@@ -79,7 +94,7 @@ export let manageDeployRequest = SlateTool.create(
       case 'approve':
         dr = await client.reviewDeployRequest(databaseName, deployRequestNumber, {
           state: 'approved',
-          body: ctx.input.reviewComment,
+          body: ctx.input.reviewComment
         });
         break;
       case 'skip_revert':
@@ -97,7 +112,7 @@ export let manageDeployRequest = SlateTool.create(
       close: 'Closed',
       approve: 'Approved',
       skip_revert: 'Skipped revert period for',
-      revert: 'Reverted',
+      revert: 'Reverted'
     };
 
     return {
@@ -112,8 +127,8 @@ export let manageDeployRequest = SlateTool.create(
         createdAt: dr.created_at,
         closedAt: dr.closed_at,
         deployedAt: dr.deployed_at,
-        htmlUrl: dr.html_url,
+        htmlUrl: dr.html_url
       },
-      message: `${actionLabels[action]} deploy request **#${deployRequestNumber}** on database **${databaseName}**.`,
+      message: `${actionLabels[action]} deploy request **#${deployRequestNumber}** on database **${databaseName}**.`
     };
   });

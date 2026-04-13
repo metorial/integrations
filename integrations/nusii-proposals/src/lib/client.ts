@@ -23,11 +23,11 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': config.isOAuth
+        Authorization: config.isOAuth
           ? `Bearer ${config.token}`
           : `Token token=${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'User-Agent': 'Slates Integration (slates.dev)'
       }
     });
@@ -87,7 +87,9 @@ export class Client {
 
   private mapSection(item: any): NusiiSection {
     let attrs = item.attributes || {};
-    let lineItemIds = (item.relationships?.line_items?.data || []).map((li: any) => String(li.id));
+    let lineItemIds = (item.relationships?.line_items?.data || []).map((li: any) =>
+      String(li.id)
+    );
     return {
       sectionId: String(item.id),
       currency: attrs.currency || '',
@@ -185,7 +187,10 @@ export class Client {
 
   // --- Clients ---
 
-  async listClients(page: number = 1, perPage: number = 25): Promise<PaginatedResult<NusiiClient>> {
+  async listClients(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResult<NusiiClient>> {
     let response = await this.axios.get('/clients', { params: { page, per: perPage } });
     let items = (response.data.data || []).map((item: any) => this.mapClient(item));
     let pagination = this.parsePagination(response.data.meta);
@@ -234,22 +239,25 @@ export class Client {
     return this.mapClient(response.data.data);
   }
 
-  async updateClient(clientId: string, data: {
-    email?: string;
-    name?: string;
-    surname?: string;
-    currency?: string;
-    business?: string;
-    locale?: string;
-    pdfPageSize?: string;
-    web?: string;
-    telephone?: string;
-    address?: string;
-    city?: string;
-    postcode?: string;
-    country?: string;
-    state?: string;
-  }): Promise<NusiiClient> {
+  async updateClient(
+    clientId: string,
+    data: {
+      email?: string;
+      name?: string;
+      surname?: string;
+      currency?: string;
+      business?: string;
+      locale?: string;
+      pdfPageSize?: string;
+      web?: string;
+      telephone?: string;
+      address?: string;
+      city?: string;
+      postcode?: string;
+      country?: string;
+      state?: string;
+    }
+  ): Promise<NusiiClient> {
     let response = await this.axios.put(`/clients/${clientId}`, {
       client: {
         email: data.email,
@@ -334,17 +342,20 @@ export class Client {
     return this.mapProposal(response.data.data);
   }
 
-  async updateProposal(proposalId: string, data: {
-    title?: string;
-    clientId?: number;
-    preparedById?: number;
-    expiresAt?: string;
-    displayDate?: string;
-    report?: boolean;
-    excludeTotal?: boolean;
-    excludeTotalInPdf?: boolean;
-    theme?: string;
-  }): Promise<NusiiProposal> {
+  async updateProposal(
+    proposalId: string,
+    data: {
+      title?: string;
+      clientId?: number;
+      preparedById?: number;
+      expiresAt?: string;
+      displayDate?: string;
+      report?: boolean;
+      excludeTotal?: boolean;
+      excludeTotalInPdf?: boolean;
+      theme?: string;
+    }
+  ): Promise<NusiiProposal> {
     let response = await this.axios.put(`/proposals/${proposalId}`, {
       title: data.title,
       client_id: data.clientId,
@@ -368,17 +379,20 @@ export class Client {
     return this.mapProposal(response.data.data);
   }
 
-  async sendProposal(proposalId: string, data: {
-    email?: string;
-    recipients?: Array<{ name?: string; email: string; eligibleToSign?: boolean }>;
-    subject?: string;
-    message?: string;
-    cc?: string;
-    bcc?: string;
-    senderId?: number;
-    senderEmail?: string;
-    saveEmailTemplate?: boolean;
-  }): Promise<{
+  async sendProposal(
+    proposalId: string,
+    data: {
+      email?: string;
+      recipients?: Array<{ name?: string; email: string; eligibleToSign?: boolean }>;
+      subject?: string;
+      message?: string;
+      cc?: string;
+      bcc?: string;
+      senderId?: number;
+      senderEmail?: string;
+      saveEmailTemplate?: boolean;
+    }
+  ): Promise<{
     status: string;
     sentAt: string;
     senderId: number | null;
@@ -402,7 +416,8 @@ export class Client {
     if (data.bcc) body.bcc = data.bcc;
     if (data.senderId !== undefined) body.sender_id = data.senderId;
     if (data.senderEmail) body.sender_email = data.senderEmail;
-    if (data.saveEmailTemplate !== undefined) body.save_email_template = data.saveEmailTemplate;
+    if (data.saveEmailTemplate !== undefined)
+      body.save_email_template = data.saveEmailTemplate;
 
     let response = await this.axios.put(`/proposals/${proposalId}/send_proposal`, body);
     let d = response.data;
@@ -473,16 +488,19 @@ export class Client {
     return this.mapSection(response.data.data);
   }
 
-  async updateSection(sectionId: string, data: {
-    title?: string;
-    body?: string;
-    name?: string;
-    position?: number;
-    reusable?: boolean;
-    pageBreak?: boolean;
-    optional?: boolean;
-    includeTotal?: boolean;
-  }): Promise<NusiiSection> {
+  async updateSection(
+    sectionId: string,
+    data: {
+      title?: string;
+      body?: string;
+      name?: string;
+      position?: number;
+      reusable?: boolean;
+      pageBreak?: boolean;
+      optional?: boolean;
+      includeTotal?: boolean;
+    }
+  ): Promise<NusiiSection> {
     let response = await this.axios.put(`/sections/${sectionId}`, {
       section: {
         title: data.title,
@@ -504,7 +522,10 @@ export class Client {
 
   // --- Line Items ---
 
-  async listLineItems(page: number = 1, perPage: number = 25): Promise<PaginatedResult<NusiiLineItem>> {
+  async listLineItems(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResult<NusiiLineItem>> {
     let response = await this.axios.get('/line_items', { params: { page, per: perPage } });
     let items = (response.data.data || []).map((item: any) => this.mapLineItem(item));
     let pagination = this.parsePagination(response.data.meta);
@@ -516,15 +537,18 @@ export class Client {
     return (response.data.data || []).map((item: any) => this.mapLineItem(item));
   }
 
-  async createLineItem(sectionId: string, data: {
-    name: string;
-    costType?: string;
-    recurringType?: string;
-    perType?: string;
-    position?: number;
-    quantity?: number;
-    amount?: number;
-  }): Promise<NusiiLineItem> {
+  async createLineItem(
+    sectionId: string,
+    data: {
+      name: string;
+      costType?: string;
+      recurringType?: string;
+      perType?: string;
+      position?: number;
+      quantity?: number;
+      amount?: number;
+    }
+  ): Promise<NusiiLineItem> {
     let response = await this.axios.post(`/sections/${sectionId}/line_items`, {
       line_item: {
         name: data.name,
@@ -539,15 +563,18 @@ export class Client {
     return this.mapLineItem(response.data.data);
   }
 
-  async updateLineItem(lineItemId: string, data: {
-    name?: string;
-    costType?: string;
-    recurringType?: string;
-    perType?: string;
-    position?: number;
-    quantity?: number;
-    amount?: number;
-  }): Promise<NusiiLineItem> {
+  async updateLineItem(
+    lineItemId: string,
+    data: {
+      name?: string;
+      costType?: string;
+      recurringType?: string;
+      perType?: string;
+      position?: number;
+      quantity?: number;
+      amount?: number;
+    }
+  ): Promise<NusiiLineItem> {
     let response = await this.axios.put(`/line_items/${lineItemId}`, {
       line_item: {
         name: data.name,
@@ -608,7 +635,10 @@ export class Client {
 
   // --- Users ---
 
-  async listUsers(page: number = 1, perPage: number = 25): Promise<PaginatedResult<NusiiUser>> {
+  async listUsers(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResult<NusiiUser>> {
     let response = await this.axios.get('/users', { params: { page, per: perPage } });
     let items = (response.data.data || []).map((item: any) => this.mapUser(item));
     let pagination = this.parsePagination(response.data.meta);
@@ -639,8 +669,13 @@ export class Client {
 
   // --- Webhooks ---
 
-  async listWebhookEndpoints(page: number = 1, perPage: number = 25): Promise<PaginatedResult<NusiiWebhookEndpoint>> {
-    let response = await this.axios.get('/webhook_endpoints', { params: { page, per: perPage } });
+  async listWebhookEndpoints(
+    page: number = 1,
+    perPage: number = 25
+  ): Promise<PaginatedResult<NusiiWebhookEndpoint>> {
+    let response = await this.axios.get('/webhook_endpoints', {
+      params: { page, per: perPage }
+    });
     let items = (response.data.data || []).map((item: any) => this.mapWebhookEndpoint(item));
     let pagination = this.parsePagination(response.data.meta);
     return { items, pagination };
@@ -651,7 +686,10 @@ export class Client {
     return this.mapWebhookEndpoint(response.data.data);
   }
 
-  async createWebhookEndpoint(targetUrl: string, events: string[]): Promise<NusiiWebhookEndpoint> {
+  async createWebhookEndpoint(
+    targetUrl: string,
+    events: string[]
+  ): Promise<NusiiWebhookEndpoint> {
     let response = await this.axios.post('/webhook_endpoints', {
       webhook_endpoint: {
         target_url: targetUrl,

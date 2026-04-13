@@ -15,9 +15,7 @@ import {
   manageWebhookEndpoint,
   listWebhookEndpoints
 } from './tools';
-import {
-  fullstoryEvents
-} from './triggers';
+import { fullstoryEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,7 +34,5 @@ export let provider = Slate.create({
     manageWebhookEndpoint,
     listWebhookEndpoints
   ],
-  triggers: [
-    fullstoryEvents
-  ]
+  triggers: [fullstoryEvents]
 });

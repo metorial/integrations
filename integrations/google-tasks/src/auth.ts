@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -25,7 +27,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -41,18 +43,22 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let api = createAxios({});
 
-      let response = await api.post('https://oauth2.googleapis.com/token', {
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code'
-      }, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      let response = await api.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data;
 
@@ -70,21 +76,25 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let api = createAxios({});
 
-      let response = await api.post('https://oauth2.googleapis.com/token', {
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken,
-        grant_type: 'refresh_token'
-      }, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      let response = await api.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken,
+          grant_type: 'refresh_token'
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
 
       let data = response.data;
 
@@ -102,7 +112,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let api = createAxios({
         headers: { Authorization: `Bearer ${ctx.output.token}` }
       });

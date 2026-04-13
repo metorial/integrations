@@ -3,39 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Changes',
-    key: 'contact_changes',
-    description: 'Triggers when contacts are created or modified in Salesflare. Uses the modification_after parameter to detect incremental changes.',
-  }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the changed contact'),
-    changeType: z.enum(['created', 'updated']).describe('Whether the contact was created or updated'),
-    contact: z.record(z.string(), z.any()).describe('Full contact data'),
-  }))
-  .output(z.object({
-    contactId: z.number().describe('Contact ID'),
-    name: z.string().optional().describe('Contact full name'),
-    email: z.string().optional().describe('Contact email'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    accountId: z.number().optional().describe('Associated account ID'),
-    accountName: z.string().optional().describe('Associated account name'),
-    modificationDate: z.string().optional().describe('Last modification date'),
-    creationDate: z.string().optional().describe('Creation date'),
-    tags: z.array(z.string()).optional().describe('Tag names'),
-    role: z.string().optional().describe('Contact role/title'),
-    organisation: z.string().optional().describe('Contact organisation'),
-  }))
+export let contactChanges = SlateTrigger.create(spec, {
+  name: 'Contact Changes',
+  key: 'contact_changes',
+  description:
+    'Triggers when contacts are created or modified in Salesflare. Uses the modification_after parameter to detect incremental changes.'
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the changed contact'),
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the contact was created or updated'),
+      contact: z.record(z.string(), z.any()).describe('Full contact data')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('Contact ID'),
+      name: z.string().optional().describe('Contact full name'),
+      email: z.string().optional().describe('Contact email'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      accountId: z.number().optional().describe('Associated account ID'),
+      accountName: z.string().optional().describe('Associated account name'),
+      modificationDate: z.string().optional().describe('Last modification date'),
+      creationDate: z.string().optional().describe('Creation date'),
+      tags: z.array(z.string()).optional().describe('Tag names'),
+      role: z.string().optional().describe('Contact role/title'),
+      organisation: z.string().optional().describe('Contact organisation')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth.token);
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -44,7 +48,7 @@ export let contactChanges = SlateTrigger.create(
       let params: Record<string, any> = {
         limit: 100,
         offset: 0,
-        order_by: ['modification_date asc'],
+        order_by: ['modification_date asc']
       };
 
       if (lastPolledAt) {
@@ -59,7 +63,7 @@ export let contactChanges = SlateTrigger.create(
         return {
           contactId: contact.id,
           changeType: (isNew ? 'created' : 'updated') as 'created' | 'updated',
-          contact,
+          contact
         };
       });
 
@@ -70,26 +74,29 @@ export let contactChanges = SlateTrigger.create(
         newKnownIds = newKnownIds.slice(-10000);
       }
 
-      let newLastPolledAt = list.length > 0
-        ? list[list.length - 1].modification_date || new Date().toISOString()
-        : lastPolledAt || new Date().toISOString();
+      let newLastPolledAt =
+        list.length > 0
+          ? list[list.length - 1].modification_date || new Date().toISOString()
+          : lastPolledAt || new Date().toISOString();
 
       return {
         inputs,
         updatedState: {
           lastPolledAt: newLastPolledAt,
-          knownContactIds: newKnownIds,
-        },
+          knownContactIds: newKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let contact = ctx.input.contact as Record<string, any>;
       let account = contact.account as Record<string, any> | undefined;
 
       let tagNames: string[] = [];
       if (Array.isArray(contact.tags)) {
-        tagNames = contact.tags.map((t: any) => typeof t === 'string' ? t : t.name).filter(Boolean);
+        tagNames = contact.tags
+          .map((t: any) => (typeof t === 'string' ? t : t.name))
+          .filter(Boolean);
       }
 
       return {
@@ -107,9 +114,9 @@ export let contactChanges = SlateTrigger.create(
           creationDate: contact.creation_date as string | undefined,
           tags: tagNames,
           role: contact.role as string | undefined,
-          organisation: contact.organisation as string | undefined,
-        },
+          organisation: contact.organisation as string | undefined
+        }
       };
-    },
+    }
   })
   .build();

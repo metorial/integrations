@@ -9,36 +9,46 @@ let channelOutputSchema = z.object({
   isPrivate: z.boolean().optional().describe('Whether the channel is private'),
   isArchived: z.boolean().optional().describe('Whether the channel is archived'),
   topic: z.string().optional().describe('Channel topic'),
-  purpose: z.string().optional().describe('Channel purpose'),
+  purpose: z.string().optional().describe('Channel purpose')
 });
 
-export let manageChannel = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Channel',
-    key: 'manage_channel',
-    description: `Create, update, archive, unarchive, or configure a Slack channel. Combine multiple channel operations in a single action — create a new channel, rename it, set its topic/purpose, or manage its lifecycle.`,
-    instructions: [
-      'To **create** a channel, set action to "create" and provide a name.',
-      'To **update** a channel, set action to "update" and provide the channelId plus fields to change (name, topic, purpose).',
-      'To **archive** or **unarchive**, set the corresponding action and provide the channelId.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageChannel = SlateTool.create(spec, {
+  name: 'Manage Channel',
+  key: 'manage_channel',
+  description: `Create, update, archive, unarchive, or configure a Slack channel. Combine multiple channel operations in a single action — create a new channel, rename it, set its topic/purpose, or manage its lifecycle.`,
+  instructions: [
+    'To **create** a channel, set action to "create" and provide a name.',
+    'To **update** a channel, set action to "update" and provide the channelId plus fields to change (name, topic, purpose).',
+    'To **archive** or **unarchive**, set the corresponding action and provide the channelId.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'archive', 'unarchive']).describe('The channel management action to perform'),
-    channelId: z.string().optional().describe('Channel ID (required for update, archive, unarchive)'),
-    name: z.string().optional().describe('Channel name (required for create, optional for update/rename)'),
-    isPrivate: z.boolean().optional().describe('Create the channel as private (only for create action)'),
-    topic: z.string().optional().describe('Set the channel topic (for create or update)'),
-    purpose: z.string().optional().describe('Set the channel purpose (for create or update)'),
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'archive', 'unarchive'])
+        .describe('The channel management action to perform'),
+      channelId: z
+        .string()
+        .optional()
+        .describe('Channel ID (required for update, archive, unarchive)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Channel name (required for create, optional for update/rename)'),
+      isPrivate: z
+        .boolean()
+        .optional()
+        .describe('Create the channel as private (only for create action)'),
+      topic: z.string().optional().describe('Set the channel topic (for create or update)'),
+      purpose: z.string().optional().describe('Set the channel purpose (for create or update)')
+    })
+  )
   .output(channelOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
     let { action, channelId, name, isPrivate, topic, purpose } = ctx.input;
 
@@ -57,9 +67,9 @@ export let manageChannel = SlateTool.create(
           isPrivate: channel.is_private,
           isArchived: false,
           topic: topic,
-          purpose: purpose,
+          purpose: purpose
         },
-        message: `Created ${isPrivate ? 'private' : 'public'} channel **#${name}** (\`${channel.id}\`).`,
+        message: `Created ${isPrivate ? 'private' : 'public'} channel **#${name}** (\`${channel.id}\`).`
       };
     }
 
@@ -69,7 +79,7 @@ export let manageChannel = SlateTool.create(
       await client.archiveConversation(channelId);
       return {
         output: { channelId, isArchived: true },
-        message: `Archived channel \`${channelId}\`.`,
+        message: `Archived channel \`${channelId}\`.`
       };
     }
 
@@ -77,7 +87,7 @@ export let manageChannel = SlateTool.create(
       await client.unarchiveConversation(channelId);
       return {
         output: { channelId, isArchived: false },
-        message: `Unarchived channel \`${channelId}\`.`,
+        message: `Unarchived channel \`${channelId}\`.`
       };
     }
 
@@ -98,9 +108,9 @@ export let manageChannel = SlateTool.create(
         isPrivate: info.is_private,
         isArchived: info.is_archived,
         topic: info.topic?.value,
-        purpose: info.purpose?.value,
+        purpose: info.purpose?.value
       },
-      message: `Updated channel \`${channelId}\`${updatedName ? ` (renamed to **#${updatedName}**)` : ''}.`,
+      message: `Updated channel \`${channelId}\`${updatedName ? ` (renamed to **#${updatedName}**)` : ''}.`
     };
   })
   .build();

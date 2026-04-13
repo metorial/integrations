@@ -16,7 +16,7 @@ import {
   manageTeams,
   manageTags,
   manageCannedResponses,
-  manageCustomFields,
+  manageCustomFields
 } from './tools';
 import { ticketEventsTrigger } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     manageTeams,
     manageTags,
     manageCannedResponses,
-    manageCustomFields,
+    manageCustomFields
   ],
-  triggers: [
-    ticketEventsTrigger,
-  ],
+  triggers: [ticketEventsTrigger]
 });

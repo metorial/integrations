@@ -8,8 +8,8 @@ export class StatsClient {
       baseURL: config.baseUrl,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -29,7 +29,7 @@ export class StatsClient {
     let body: Record<string, any> = {
       site_id: params.siteId,
       metrics: params.metrics,
-      date_range: params.dateRange,
+      date_range: params.dateRange
     };
 
     if (params.dimensions && params.dimensions.length > 0) {
@@ -65,7 +65,7 @@ export class StatsClient {
 
   async getRealtimeVisitors(siteId: string) {
     let response = await this.axios.get('/api/v1/stats/realtime/visitors', {
-      params: { site_id: siteId },
+      params: { site_id: siteId }
     });
     return response.data;
   }
@@ -78,8 +78,8 @@ export class EventsClient {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -96,7 +96,7 @@ export class EventsClient {
     let body: Record<string, any> = {
       domain: params.domain,
       name: params.name,
-      url: params.url,
+      url: params.url
     };
 
     if (params.referrer) body.referrer = params.referrer;
@@ -120,13 +120,18 @@ export class SitesClient {
       baseURL: config.baseUrl,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // Sites
-  async listSites(params?: { after?: string; before?: string; limit?: number; teamId?: string }) {
+  async listSites(params?: {
+    after?: string;
+    before?: string;
+    limit?: number;
+    teamId?: string;
+  }) {
     let queryParams: Record<string, any> = {};
     if (params?.after) queryParams.after = params.after;
     if (params?.before) queryParams.before = params.before;
@@ -149,7 +154,7 @@ export class SitesClient {
     trackerScriptConfiguration?: Record<string, boolean>;
   }) {
     let body: Record<string, any> = {
-      domain: params.domain,
+      domain: params.domain
     };
     if (params.timezone) body.timezone = params.timezone;
     if (params.teamId) body.team_id = params.teamId;
@@ -161,10 +166,13 @@ export class SitesClient {
     return response.data;
   }
 
-  async updateSite(siteId: string, params: {
-    domain?: string;
-    trackerScriptConfiguration?: Record<string, boolean>;
-  }) {
+  async updateSite(
+    siteId: string,
+    params: {
+      domain?: string;
+      trackerScriptConfiguration?: Record<string, boolean>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.domain) body.domain = params.domain;
     if (params.trackerScriptConfiguration) {
@@ -181,7 +189,10 @@ export class SitesClient {
   }
 
   // Goals
-  async listGoals(siteId: string, params?: { after?: string; before?: string; limit?: number }) {
+  async listGoals(
+    siteId: string,
+    params?: { after?: string; before?: string; limit?: number }
+  ) {
     let queryParams: Record<string, any> = { site_id: siteId };
     if (params?.after) queryParams.after = params.after;
     if (params?.before) queryParams.before = params.before;
@@ -201,7 +212,7 @@ export class SitesClient {
   }) {
     let body: Record<string, any> = {
       site_id: params.siteId,
-      goal_type: params.goalType,
+      goal_type: params.goalType
     };
     if (params.eventName) body.event_name = params.eventName;
     if (params.pagePath) body.page_path = params.pagePath;
@@ -213,16 +224,19 @@ export class SitesClient {
   }
 
   async deleteGoal(siteId: string, goalId: string) {
-    let response = await this.axios.delete(`/api/v1/sites/goals/${encodeURIComponent(goalId)}`, {
-      data: { site_id: siteId },
-    });
+    let response = await this.axios.delete(
+      `/api/v1/sites/goals/${encodeURIComponent(goalId)}`,
+      {
+        data: { site_id: siteId }
+      }
+    );
     return response.data;
   }
 
   // Custom Properties
   async listCustomProperties(siteId: string) {
     let response = await this.axios.get('/api/v1/sites/custom-props', {
-      params: { site_id: siteId },
+      params: { site_id: siteId }
     });
     return response.data;
   }
@@ -230,15 +244,18 @@ export class SitesClient {
   async createCustomProperty(siteId: string, property: string) {
     let response = await this.axios.put('/api/v1/sites/custom-props', {
       site_id: siteId,
-      property,
+      property
     });
     return response.data;
   }
 
   async deleteCustomProperty(siteId: string, property: string) {
-    let response = await this.axios.delete(`/api/v1/sites/custom-props/${encodeURIComponent(property)}`, {
-      data: { site_id: siteId },
-    });
+    let response = await this.axios.delete(
+      `/api/v1/sites/custom-props/${encodeURIComponent(property)}`,
+      {
+        data: { site_id: siteId }
+      }
+    );
     return response.data;
   }
 
@@ -246,13 +263,16 @@ export class SitesClient {
   async createSharedLink(siteId: string, name: string) {
     let response = await this.axios.put('/api/v1/sites/shared-links', {
       site_id: siteId,
-      name,
+      name
     });
     return response.data;
   }
 
   // Guests
-  async listGuests(siteId: string, params?: { after?: string; before?: string; limit?: number }) {
+  async listGuests(
+    siteId: string,
+    params?: { after?: string; before?: string; limit?: number }
+  ) {
     let queryParams: Record<string, any> = { site_id: siteId };
     if (params?.after) queryParams.after = params.after;
     if (params?.before) queryParams.before = params.before;
@@ -266,15 +286,18 @@ export class SitesClient {
     let response = await this.axios.put('/api/v1/sites/guests', {
       site_id: siteId,
       email,
-      role,
+      role
     });
     return response.data;
   }
 
   async removeGuest(siteId: string, email: string) {
-    let response = await this.axios.delete(`/api/v1/sites/guests/${encodeURIComponent(email)}`, {
-      data: { site_id: siteId },
-    });
+    let response = await this.axios.delete(
+      `/api/v1/sites/guests/${encodeURIComponent(email)}`,
+      {
+        data: { site_id: siteId }
+      }
+    );
     return response.data;
   }
 

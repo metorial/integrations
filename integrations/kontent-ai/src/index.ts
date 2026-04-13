@@ -16,14 +16,9 @@ import {
   listTaxonomyGroups,
   listWorkflows,
   listLanguages,
-  listCollections,
+  listCollections
 } from './tools';
-import {
-  contentItemEvents,
-  assetEvents,
-  contentTypeEvents,
-  taxonomyEvents,
-} from './triggers';
+import { contentItemEvents, assetEvents, contentTypeEvents, taxonomyEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,12 +38,7 @@ export let provider = Slate.create({
     listTaxonomyGroups,
     listWorkflows,
     listLanguages,
-    listCollections,
+    listCollections
   ],
-  triggers: [
-    contentItemEvents,
-    assetEvents,
-    contentTypeEvents,
-    taxonomyEvents,
-  ],
+  triggers: [contentItemEvents, assetEvents, contentTypeEvents, taxonomyEvents]
 });

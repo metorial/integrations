@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   writeData,
@@ -43,13 +42,9 @@ import {
   getOrganizationMembers,
   listDBRPs,
   createDBRP,
-  deleteDBRP,
+  deleteDBRP
 } from './tools';
-import {
-  taskRunsTrigger,
-  bucketChangesTrigger,
-  inboundWebhook,
-} from './triggers';
+import { taskRunsTrigger, bucketChangesTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -95,11 +90,7 @@ export let provider = Slate.create({
     getOrganizationMembers,
     listDBRPs,
     createDBRP,
-    deleteDBRP,
+    deleteDBRP
   ],
-  triggers: [
-    inboundWebhook,
-    taskRunsTrigger,
-    bucketChangesTrigger,
-  ],
+  triggers: [inboundWebhook, taskRunsTrigger, bucketChangesTrigger]
 });

@@ -9,21 +9,33 @@ export let getPageChildren = SlateTool.create(spec, {
   description: `Retrieve the direct child pages of a Confluence page. Useful for navigating the page hierarchy.`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    pageId: z.string().describe('The parent page ID'),
-    limit: z.number().optional().default(25).describe('Maximum number of children to return'),
-    cursor: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    children: z.array(z.object({
-      pageId: z.string(),
-      title: z.string(),
-      status: z.string(),
-      versionNumber: z.number().optional()
-    })).describe('List of child pages'),
-    nextCursor: z.string().optional().describe('Cursor for the next page of results')
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      pageId: z.string().describe('The parent page ID'),
+      limit: z
+        .number()
+        .optional()
+        .default(25)
+        .describe('Maximum number of children to return'),
+      cursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      children: z
+        .array(
+          z.object({
+            pageId: z.string(),
+            title: z.string(),
+            status: z.string(),
+            versionNumber: z.number().optional()
+          })
+        )
+        .describe('List of child pages'),
+      nextCursor: z.string().optional().describe('Cursor for the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getPageChildren(ctx.input.pageId, {
       limit: ctx.input.limit,

@@ -80,9 +80,11 @@ These webhooks are limited to the batch processing context:
 ### Batch Data Ingestion Status
 
 Notifications about the progress or completion of data ingestion into a batch. Includes details about successfully ingested files and any failures.
+
 - Configurable via `--notifications-url` and `--notification-category` parameters.
 
 ### Batch Job Completion
 
 Notifications sent when a batch processing job finishes (success or failure). In response to this event, you can automatically trigger pulling of results and initiate further processing, enabling end-to-end automation.
+
 - Configurable via `--notifications-url` when launching a batch processing job.

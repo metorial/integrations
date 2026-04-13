@@ -81,15 +81,15 @@ export class Client {
         baseURL: 'https://api.forminit.com/v1',
         headers: {
           'X-API-Key': this.token,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
     } else {
       this.axios = createAxios({
         baseURL: 'https://api.getform.io/v1',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
     }
   }
@@ -99,12 +99,12 @@ export class Client {
       baseURL: 'https://forminit.com',
       headers: {
         'X-API-Key': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     let response = await submitAxios.post(`/f/${params.formId}`, {
-      blocks: params.blocks,
+      blocks: params.blocks
     });
 
     let data = response.data;
@@ -115,8 +115,8 @@ export class Client {
         hashId: data.submission?.hashId ?? '',
         date: data.submission?.date ?? '',
         blocks: data.submission?.blocks ?? {},
-        submissionInfo: data.submission?.submissionInfo,
-      },
+        submissionInfo: data.submission?.submissionInfo
+      }
     };
   }
 
@@ -133,7 +133,7 @@ export class Client {
     if (params.timezone !== undefined) queryParams.timezone = params.timezone;
 
     let response = await this.axios.get(`/forms/${params.formId}`, {
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data;
@@ -143,7 +143,7 @@ export class Client {
       status: s.status ?? 'active',
       submissionStatus: s.submissionStatus ?? s.submission_status ?? 'open',
       blocks: s.blocks ?? {},
-      files: s.files,
+      files: s.files
     }));
 
     let pagination = data.data?.pagination ?? {
@@ -152,7 +152,7 @@ export class Client {
       total: 0,
       firstPage: 1,
       lastPage: 1,
-      size: params.size ?? 30,
+      size: params.size ?? 30
     };
 
     return {
@@ -164,8 +164,8 @@ export class Client {
         total: pagination.total,
         firstPage: pagination.firstPage ?? pagination.first_page,
         lastPage: pagination.lastPage ?? pagination.last_page,
-        size: pagination.size,
-      },
+        size: pagination.size
+      }
     };
   }
 }

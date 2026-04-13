@@ -12,7 +12,7 @@ export let normalizeReport = (raw: any) => ({
   archived: raw.archived || false,
   publicUrl: raw.web_preview_image || raw._links?.web_preview?.href || '',
   spaceToken: raw.space_token || '',
-  lastRunAt: raw.last_successfully_run_at || '',
+  lastRunAt: raw.last_successfully_run_at || ''
 });
 
 export let normalizeQuery = (raw: any) => ({
@@ -21,7 +21,7 @@ export let normalizeQuery = (raw: any) => ({
   rawQuery: raw.raw_query || '',
   dataSourceId: raw.data_source_id || 0,
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let normalizeReportRun = (raw: any) => ({
@@ -31,7 +31,7 @@ export let normalizeReportRun = (raw: any) => ({
   createdAt: raw.created_at || '',
   updatedAt: raw.updated_at || '',
   completedAt: raw.completed_at || '',
-  parameters: raw.parameters || {},
+  parameters: raw.parameters || {}
 });
 
 export let normalizeQueryRun = (raw: any) => ({
@@ -42,7 +42,7 @@ export let normalizeQueryRun = (raw: any) => ({
   rawSource: raw.raw_source || '',
   createdAt: raw.created_at || '',
   completedAt: raw.completed_at || '',
-  dataSourceId: raw.data_source_id || 0,
+  dataSourceId: raw.data_source_id || 0
 });
 
 export let normalizeCollection = (raw: any) => ({
@@ -54,7 +54,7 @@ export let normalizeCollection = (raw: any) => ({
   restricted: raw.restricted || false,
   freeDefault: raw.free_default || false,
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let normalizeDataset = (raw: any) => ({
@@ -62,7 +62,7 @@ export let normalizeDataset = (raw: any) => ({
   name: raw.name || '',
   description: raw.description || '',
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let normalizeDataSource = (raw: any) => ({
@@ -74,7 +74,7 @@ export let normalizeDataSource = (raw: any) => ({
   database: raw.database || '',
   port: raw.port || 0,
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let normalizeSchedule = (raw: any) => ({
@@ -87,7 +87,7 @@ export let normalizeSchedule = (raw: any) => ({
   dayOfMonth: raw.cron?.day_of_month ?? null,
   timeZone: raw.cron?.time_zone || '',
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let normalizeDefinition = (raw: any) => ({
@@ -95,7 +95,7 @@ export let normalizeDefinition = (raw: any) => ({
   name: raw.name || '',
   description: raw.description || '',
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let normalizeMember = (raw: any) => ({
@@ -106,7 +106,7 @@ export let normalizeMember = (raw: any) => ({
   memberName: raw.name || raw.member_name || '',
   admin: raw.admin || false,
   createdAt: raw.created_at || '',
-  updatedAt: raw.updated_at || '',
+  updatedAt: raw.updated_at || ''
 });
 
 export let getEmbedded = (data: any, key: string): any[] => {

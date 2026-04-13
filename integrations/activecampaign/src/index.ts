@@ -23,12 +23,7 @@ import {
   listPipelinesAndStages,
   listCustomFields
 } from './tools';
-import {
-  contactEvents,
-  dealEvents,
-  campaignEvents,
-  smsEvents
-} from './triggers';
+import { contactEvents, dealEvents, campaignEvents, smsEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,10 +50,5 @@ export let provider = Slate.create({
     listPipelinesAndStages,
     listCustomFields
   ],
-  triggers: [
-    contactEvents,
-    dealEvents,
-    campaignEvents,
-    smsEvents
-  ]
+  triggers: [contactEvents, dealEvents, campaignEvents, smsEvents]
 });

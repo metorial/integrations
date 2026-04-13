@@ -3,44 +3,63 @@ import { MeetClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateSpaceTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Meeting Space',
-    key: 'update_space',
-    description: `Update the configuration of an existing Google Meet meeting space. Modify access controls, moderation settings, feature restrictions, and auto-artifact settings. Only the fields you provide will be updated.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateSpaceTool = SlateTool.create(spec, {
+  name: 'Update Meeting Space',
+  key: 'update_space',
+  description: `Update the configuration of an existing Google Meet meeting space. Modify access controls, moderation settings, feature restrictions, and auto-artifact settings. Only the fields you provide will be updated.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    spaceName: z.string().describe('Space resource name (e.g., "spaces/abc123")'),
-    accessType: z.enum(['OPEN', 'TRUSTED', 'RESTRICTED']).optional()
-      .describe('Who can join without knocking.'),
-    entryPointAccess: z.enum(['ALL', 'CREATOR_APP_ONLY']).optional()
-      .describe('Which entry points can be used to join.'),
-    moderation: z.enum(['ON', 'OFF']).optional()
-      .describe('Whether moderation mode is enabled.'),
-    moderationRestrictions: z.object({
-      chatRestriction: z.enum(['HOSTS_ONLY', 'NO_RESTRICTION']).optional(),
-      reactionRestriction: z.enum(['HOSTS_ONLY', 'NO_RESTRICTION']).optional(),
-      presentRestriction: z.enum(['HOSTS_ONLY', 'NO_RESTRICTION']).optional(),
-      defaultJoinAsViewerType: z.enum(['ON', 'OFF']).optional()
-    }).optional().describe('Feature restrictions when moderation is ON.'),
-    autoRecording: z.enum(['ON', 'OFF']).optional().describe('Automatically start recording.'),
-    autoTranscription: z.enum(['ON', 'OFF']).optional().describe('Automatically start transcription.'),
-    autoSmartNotes: z.enum(['ON', 'OFF']).optional().describe('Automatically generate smart notes.')
-  }))
-  .output(z.object({
-    spaceName: z.string().describe('Resource name of the updated space'),
-    meetingUri: z.string().describe('Full meeting URL'),
-    meetingCode: z.string().describe('Human-readable meeting code'),
-    accessType: z.string().optional().describe('Updated access type'),
-    moderation: z.string().optional().describe('Updated moderation mode')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      spaceName: z.string().describe('Space resource name (e.g., "spaces/abc123")'),
+      accessType: z
+        .enum(['OPEN', 'TRUSTED', 'RESTRICTED'])
+        .optional()
+        .describe('Who can join without knocking.'),
+      entryPointAccess: z
+        .enum(['ALL', 'CREATOR_APP_ONLY'])
+        .optional()
+        .describe('Which entry points can be used to join.'),
+      moderation: z
+        .enum(['ON', 'OFF'])
+        .optional()
+        .describe('Whether moderation mode is enabled.'),
+      moderationRestrictions: z
+        .object({
+          chatRestriction: z.enum(['HOSTS_ONLY', 'NO_RESTRICTION']).optional(),
+          reactionRestriction: z.enum(['HOSTS_ONLY', 'NO_RESTRICTION']).optional(),
+          presentRestriction: z.enum(['HOSTS_ONLY', 'NO_RESTRICTION']).optional(),
+          defaultJoinAsViewerType: z.enum(['ON', 'OFF']).optional()
+        })
+        .optional()
+        .describe('Feature restrictions when moderation is ON.'),
+      autoRecording: z
+        .enum(['ON', 'OFF'])
+        .optional()
+        .describe('Automatically start recording.'),
+      autoTranscription: z
+        .enum(['ON', 'OFF'])
+        .optional()
+        .describe('Automatically start transcription.'),
+      autoSmartNotes: z
+        .enum(['ON', 'OFF'])
+        .optional()
+        .describe('Automatically generate smart notes.')
+    })
+  )
+  .output(
+    z.object({
+      spaceName: z.string().describe('Resource name of the updated space'),
+      meetingUri: z.string().describe('Full meeting URL'),
+      meetingCode: z.string().describe('Human-readable meeting code'),
+      accessType: z.string().optional().describe('Updated access type'),
+      moderation: z.string().optional().describe('Updated moderation mode')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
 
     let updateMaskFields: string[] = [];
@@ -64,17 +83,25 @@ export let updateSpaceTool = SlateTool.create(
     }
     if (ctx.input.autoRecording) {
       configUpdate.artifactConfig = configUpdate.artifactConfig || {};
-      configUpdate.artifactConfig.recordingConfig = { autoRecordingGeneration: ctx.input.autoRecording };
+      configUpdate.artifactConfig.recordingConfig = {
+        autoRecordingGeneration: ctx.input.autoRecording
+      };
       updateMaskFields.push('config.artifactConfig.recordingConfig.autoRecordingGeneration');
     }
     if (ctx.input.autoTranscription) {
       configUpdate.artifactConfig = configUpdate.artifactConfig || {};
-      configUpdate.artifactConfig.transcriptionConfig = { autoTranscriptionGeneration: ctx.input.autoTranscription };
-      updateMaskFields.push('config.artifactConfig.transcriptionConfig.autoTranscriptionGeneration');
+      configUpdate.artifactConfig.transcriptionConfig = {
+        autoTranscriptionGeneration: ctx.input.autoTranscription
+      };
+      updateMaskFields.push(
+        'config.artifactConfig.transcriptionConfig.autoTranscriptionGeneration'
+      );
     }
     if (ctx.input.autoSmartNotes) {
       configUpdate.artifactConfig = configUpdate.artifactConfig || {};
-      configUpdate.artifactConfig.smartNotesConfig = { autoSmartNotesGeneration: ctx.input.autoSmartNotes };
+      configUpdate.artifactConfig.smartNotesConfig = {
+        autoSmartNotesGeneration: ctx.input.autoSmartNotes
+      };
       updateMaskFields.push('config.artifactConfig.smartNotesConfig.autoSmartNotesGeneration');
     }
 
@@ -94,4 +121,5 @@ export let updateSpaceTool = SlateTool.create(
       },
       message: `Updated space **${space.meetingCode}**. Changed: ${updateMaskFields.join(', ')}.`
     };
-  }).build();
+  })
+  .build();

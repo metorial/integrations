@@ -6,44 +6,50 @@ import { z } from 'zod';
 let workdayReferenceSchema = z.object({
   id: z.string().optional().describe('Workday ID'),
   descriptor: z.string().optional().describe('Display name'),
-  href: z.string().optional().describe('API href'),
+  href: z.string().optional().describe('API href')
 });
 
-export let workerChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Worker Changes',
-    key: 'worker_changes',
-    description: 'Detects new and updated workers in Workday by polling the workers endpoint. Triggers when workers are added or their profiles change.',
-  }
-)
-  .input(z.object({
-    workerId: z.string().describe('The worker ID'),
-    displayName: z.string().describe('Worker display name'),
-    href: z.string().optional().describe('API href'),
-    primaryWorkEmail: z.string().optional().describe('Primary work email'),
-    businessTitle: z.string().optional().describe('Business title'),
-    supervisoryOrganization: workdayReferenceSchema.optional().describe('Primary supervisory organization'),
-    isNew: z.boolean().describe('Whether this worker was newly detected'),
-  }))
-  .output(z.object({
-    workerId: z.string().describe('The worker ID'),
-    displayName: z.string().describe('Worker display name'),
-    href: z.string().optional().describe('API href'),
-    primaryWorkEmail: z.string().optional().describe('Primary work email'),
-    businessTitle: z.string().optional().describe('Business title'),
-    supervisoryOrganization: workdayReferenceSchema.optional().describe('Primary supervisory organization'),
-  }))
+export let workerChanges = SlateTrigger.create(spec, {
+  name: 'Worker Changes',
+  key: 'worker_changes',
+  description:
+    'Detects new and updated workers in Workday by polling the workers endpoint. Triggers when workers are added or their profiles change.'
+})
+  .input(
+    z.object({
+      workerId: z.string().describe('The worker ID'),
+      displayName: z.string().describe('Worker display name'),
+      href: z.string().optional().describe('API href'),
+      primaryWorkEmail: z.string().optional().describe('Primary work email'),
+      businessTitle: z.string().optional().describe('Business title'),
+      supervisoryOrganization: workdayReferenceSchema
+        .optional()
+        .describe('Primary supervisory organization'),
+      isNew: z.boolean().describe('Whether this worker was newly detected')
+    })
+  )
+  .output(
+    z.object({
+      workerId: z.string().describe('The worker ID'),
+      displayName: z.string().describe('Worker display name'),
+      href: z.string().optional().describe('API href'),
+      primaryWorkEmail: z.string().optional().describe('Primary work email'),
+      businessTitle: z.string().optional().describe('Business title'),
+      supervisoryOrganization: workdayReferenceSchema
+        .optional()
+        .describe('Primary supervisory organization')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new WorkdayClient({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl,
-        tenant: ctx.config.tenant,
+        tenant: ctx.config.tenant
       });
 
       let state = (ctx.input.state as { knownWorkerIds?: string[] } | null) ?? {};
@@ -72,7 +78,7 @@ export let workerChanges = SlateTrigger.create(
         if (offset > 1000) break;
       }
 
-      let currentWorkerIds = new Set(allWorkers.map((w) => w.id));
+      let currentWorkerIds = new Set(allWorkers.map(w => w.id));
       let inputs: Array<{
         workerId: string;
         displayName: string;
@@ -93,7 +99,7 @@ export let workerChanges = SlateTrigger.create(
               primaryWorkEmail: worker.primaryWorkEmail,
               businessTitle: worker.businessTitle,
               supervisoryOrganization: worker.primarySupervisoryOrganization,
-              isNew: true,
+              isNew: true
             });
           }
         }
@@ -102,12 +108,12 @@ export let workerChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownWorkerIds: Array.from(currentWorkerIds),
-        },
+          knownWorkerIds: Array.from(currentWorkerIds)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNew ? 'worker.created' : 'worker.updated';
 
       return {
@@ -119,9 +125,9 @@ export let workerChanges = SlateTrigger.create(
           href: ctx.input.href,
           primaryWorkEmail: ctx.input.primaryWorkEmail,
           businessTitle: ctx.input.businessTitle,
-          supervisoryOrganization: ctx.input.supervisoryOrganization,
-        },
+          supervisoryOrganization: ctx.input.supervisoryOrganization
+        }
       };
-    },
+    }
   })
   .build();

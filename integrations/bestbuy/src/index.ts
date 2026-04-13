@@ -7,7 +7,7 @@ import {
   searchStores,
   checkAvailability,
   getRecommendations,
-  getOpenBoxOffers,
+  getOpenBoxOffers
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     searchStores,
     checkAvailability,
     getRecommendations,
-    getOpenBoxOffers,
+    getOpenBoxOffers
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

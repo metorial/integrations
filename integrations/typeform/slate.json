@@ -2,11 +2,7 @@
   "name": "@metorial/typeform",
   "version": "0.1.1",
   "description": "Create, retrieve, update, and delete online forms and surveys. Manage form responses, including filtering by date and deleting submissions. Configure webhooks to receive real-time notifications on form submissions and partial responses. Upload and manage images, create and apply visual themes, and organize forms across workspaces with team collaboration. Translate forms into multiple languages, retrieve form insights and analytics, and download files uploaded by respondents.",
-  "categories": [
-    "apis-and-http-requests",
-    "crm-and-sales-tools",
-    "document-processing"
-  ],
+  "categories": ["apis-and-http-requests", "crm-and-sales-tools", "document-processing"],
   "skills": [
     "create and manage forms",
     "retrieve form responses",

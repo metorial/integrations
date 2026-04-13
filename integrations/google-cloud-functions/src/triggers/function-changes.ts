@@ -4,7 +4,9 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let functionEventSchema = z.object({
-  eventType: z.enum(['created', 'updated', 'deleted', 'state_changed']).describe('Type of change detected'),
+  eventType: z
+    .enum(['created', 'updated', 'deleted', 'state_changed'])
+    .describe('Type of change detected'),
   functionName: z.string().describe('Fully qualified function resource name'),
   shortName: z.string().describe('Short function name'),
   state: z.string().describe('Current function state'),
@@ -12,32 +14,32 @@ let functionEventSchema = z.object({
   previousState: z.string().optional().describe('Previous state if changed')
 });
 
-export let functionChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Function Changes',
-    key: 'function_changes',
-    description: 'Detects changes to Cloud Functions in a project, including new functions, updates, deletions, and state changes.'
-  }
-)
+export let functionChanges = SlateTrigger.create(spec, {
+  name: 'Function Changes',
+  key: 'function_changes',
+  description:
+    'Detects changes to Cloud Functions in a project, including new functions, updates, deletions, and state changes.'
+})
   .input(functionEventSchema)
-  .output(z.object({
-    functionName: z.string().describe('Fully qualified function resource name'),
-    shortName: z.string().describe('Short function name'),
-    state: z.string().describe('Current function state'),
-    runtime: z.string().optional().describe('Runtime environment'),
-    url: z.string().optional().describe('Deployed HTTP URL'),
-    environment: z.string().optional().describe('GEN_1 or GEN_2'),
-    updateTime: z.string().optional().describe('Last update timestamp'),
-    description: z.string().optional().describe('Function description'),
-    labels: z.record(z.string(), z.string()).optional().describe('Function labels')
-  }))
+  .output(
+    z.object({
+      functionName: z.string().describe('Fully qualified function resource name'),
+      shortName: z.string().describe('Short function name'),
+      state: z.string().describe('Current function state'),
+      runtime: z.string().optional().describe('Runtime environment'),
+      url: z.string().optional().describe('Deployed HTTP URL'),
+      environment: z.string().optional().describe('GEN_1 or GEN_2'),
+      updateTime: z.string().optional().describe('Last update timestamp'),
+      description: z.string().optional().describe('Function description'),
+      labels: z.record(z.string(), z.string()).optional().describe('Function labels')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         projectId: ctx.config.projectId,
@@ -47,7 +49,7 @@ export let functionChanges = SlateTrigger.create(
       let response = await client.listFunctions({ allLocations: true, pageSize: 1000 });
       let currentFunctions: Record<string, any> = {};
 
-      for (let fn of (response.functions || [])) {
+      for (let fn of response.functions || []) {
         currentFunctions[fn.name] = {
           state: fn.state,
           updateTime: fn.updateTime,
@@ -123,7 +125,7 @@ export let functionChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         projectId: ctx.config.projectId,
@@ -159,4 +161,5 @@ export let functionChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

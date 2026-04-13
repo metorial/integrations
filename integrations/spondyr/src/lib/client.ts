@@ -64,20 +64,20 @@ export class SpondyrClient {
     this.apiKey = auth.token;
     this.appToken = auth.applicationToken;
     this.http = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
   private authParams() {
     return {
       APIKey: this.apiKey,
-      ApplicationToken: this.appToken,
+      ApplicationToken: this.appToken
     };
   }
 
   async listTransactionTypes(): Promise<TransactionType[]> {
     let response = await this.http.get('/TransactionTypes', {
-      params: this.authParams(),
+      params: this.authParams()
     });
     return response.data;
   }
@@ -86,55 +86,72 @@ export class SpondyrClient {
     let response = await this.http.get('/TransactionTypes', {
       params: {
         ...this.authParams(),
-        TransactionType: transactionType,
-      },
+        TransactionType: transactionType
+      }
     });
     return response.data;
   }
 
-  async createCorrespondence(params: CreateCorrespondenceParams): Promise<CreateCorrespondenceResponse> {
-    let response = await this.http.post('/Send', {
-      TransactionType: params.transactionType,
-      EventType: params.eventType,
-      IsGenerateOnly: params.isGenerateOnly ?? false,
-      Data: params.transactionData,
-    }, {
-      params: this.authParams(),
-    });
+  async createCorrespondence(
+    params: CreateCorrespondenceParams
+  ): Promise<CreateCorrespondenceResponse> {
+    let response = await this.http.post(
+      '/Send',
+      {
+        TransactionType: params.transactionType,
+        EventType: params.eventType,
+        IsGenerateOnly: params.isGenerateOnly ?? false,
+        Data: params.transactionData
+      },
+      {
+        params: this.authParams()
+      }
+    );
     return {
-      referenceId: response.data.ReferenceId ?? response.data.ReferenceID ?? response.data.referenceId,
+      referenceId:
+        response.data.ReferenceId ?? response.data.ReferenceID ?? response.data.referenceId,
       apiStatus: response.data.APIStatus ?? response.data.apiStatus,
-      ...response.data,
+      ...response.data
     };
   }
 
-  async getCorrespondenceStatus(params: CorrespondenceStatusParams): Promise<CorrespondenceStatusResponse> {
+  async getCorrespondenceStatus(
+    params: CorrespondenceStatusParams
+  ): Promise<CorrespondenceStatusResponse> {
     let response = await this.http.get('/Status', {
       params: {
         ...this.authParams(),
         ReferenceId: params.referenceId,
-        IncludeData: params.includeData ?? false,
-      },
+        IncludeData: params.includeData ?? false
+      }
     });
     return {
       apiStatus: response.data.APIStatus ?? response.data.apiStatus,
-      referenceId: response.data.ReferenceId ?? response.data.ReferenceID ?? response.data.referenceId,
+      referenceId:
+        response.data.ReferenceId ?? response.data.ReferenceID ?? response.data.referenceId,
       createdDate: response.data.CreatedDate ?? response.data.createdDate,
       transactionData: response.data.Data ?? response.data.data,
-      ...response.data,
+      ...response.data
     };
   }
 
-  async deliverCorrespondence(params: DeliverCorrespondenceParams): Promise<DeliverCorrespondenceResponse> {
-    let response = await this.http.post('/Deliver', {
-      ReferenceId: params.referenceId,
-    }, {
-      params: this.authParams(),
-    });
+  async deliverCorrespondence(
+    params: DeliverCorrespondenceParams
+  ): Promise<DeliverCorrespondenceResponse> {
+    let response = await this.http.post(
+      '/Deliver',
+      {
+        ReferenceId: params.referenceId
+      },
+      {
+        params: this.authParams()
+      }
+    );
     return {
       apiStatus: response.data.APIStatus ?? response.data.apiStatus,
-      referenceId: response.data.ReferenceId ?? response.data.ReferenceID ?? response.data.referenceId,
-      ...response.data,
+      referenceId:
+        response.data.ReferenceId ?? response.data.ReferenceID ?? response.data.referenceId,
+      ...response.data
     };
   }
 }

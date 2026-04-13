@@ -23,7 +23,7 @@ import {
   generateEmbeddings,
   generateImages,
   webSearch,
-  webCrawl,
+  webCrawl
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -53,9 +53,7 @@ export let provider = Slate.create({
     generateEmbeddings,
     generateImages,
     webSearch,
-    webCrawl,
+    webCrawl
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

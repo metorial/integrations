@@ -3,28 +3,35 @@ import { TelegramClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let pinMessageTool = SlateTool.create(
-  spec,
-  {
-    name: 'Pin/Unpin Message',
-    key: 'pin_message',
-    description: `Pin or unpin a message in a chat. Can pin a specific message, unpin a specific message, or unpin all messages. The bot must be an admin with the appropriate pin permission.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let pinMessageTool = SlateTool.create(spec, {
+  name: 'Pin/Unpin Message',
+  key: 'pin_message',
+  description: `Pin or unpin a message in a chat. Can pin a specific message, unpin a specific message, or unpin all messages. The bot must be an admin with the appropriate pin permission.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    chatId: z.string().describe('Chat ID or @username'),
-    action: z.enum(['pin', 'unpin', 'unpin_all']).describe('Action to perform'),
-    messageId: z.number().optional().describe('Message ID to pin or unpin. Required for "pin" and "unpin" actions.'),
-    disableNotification: z.boolean().optional().describe('Pin silently without sending a notification (pin only)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      chatId: z.string().describe('Chat ID or @username'),
+      action: z.enum(['pin', 'unpin', 'unpin_all']).describe('Action to perform'),
+      messageId: z
+        .number()
+        .optional()
+        .describe('Message ID to pin or unpin. Required for "pin" and "unpin" actions.'),
+      disableNotification: z
+        .boolean()
+        .optional()
+        .describe('Pin silently without sending a notification (pin only)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TelegramClient(ctx.auth.token);
     let { chatId, action, messageId, disableNotification } = ctx.input;
 
@@ -33,7 +40,7 @@ export let pinMessageTool = SlateTool.create(
       await client.pinChatMessage({ chatId, messageId, disableNotification });
       return {
         output: { success: true },
-        message: `Message **${messageId}** pinned in chat **${chatId}**.`,
+        message: `Message **${messageId}** pinned in chat **${chatId}**.`
       };
     }
 
@@ -43,7 +50,7 @@ export let pinMessageTool = SlateTool.create(
         output: { success: true },
         message: messageId
           ? `Message **${messageId}** unpinned in chat **${chatId}**.`
-          : `Most recent pinned message unpinned in chat **${chatId}**.`,
+          : `Most recent pinned message unpinned in chat **${chatId}**.`
       };
     }
 
@@ -51,13 +58,13 @@ export let pinMessageTool = SlateTool.create(
       await client.unpinAllChatMessages({ chatId });
       return {
         output: { success: true },
-        message: `All pinned messages unpinned in chat **${chatId}**.`,
+        message: `All pinned messages unpinned in chat **${chatId}**.`
       };
     }
 
     return {
       output: { success: false },
-      message: `Unknown action: ${action}`,
+      message: `Unknown action: ${action}`
     };
   })
   .build();

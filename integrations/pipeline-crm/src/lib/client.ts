@@ -13,9 +13,7 @@ export interface PaginatedResponse<T> {
 export class Client {
   private axios;
 
-  constructor(
-    private credentials: { token: string; appKey: string }
-  ) {
+  constructor(private credentials: { token: string; appKey: string }) {
     this.axios = createAxios({
       baseURL: 'https://api.pipelinecrm.com/api/v3'
     });
@@ -31,12 +29,14 @@ export class Client {
 
   // ── Deals ──
 
-  async listDeals(options: {
-    page?: number;
-    perPage?: number;
-    conditions?: Record<string, any>;
-    sort?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listDeals(
+    options: {
+      page?: number;
+      perPage?: number;
+      conditions?: Record<string, any>;
+      sort?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = this.params({
       page: options.page ?? 1,
       per_page: options.perPage ?? 200
@@ -59,16 +59,24 @@ export class Client {
   }
 
   async createDeal(deal: Record<string, any>): Promise<any> {
-    let response = await this.axios.post('/deals.json', { deal }, {
-      params: this.params()
-    });
+    let response = await this.axios.post(
+      '/deals.json',
+      { deal },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
   async updateDeal(dealId: number, deal: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/deals/${dealId}.json`, { deal }, {
-      params: this.params()
-    });
+    let response = await this.axios.put(
+      `/deals/${dealId}.json`,
+      { deal },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
@@ -80,12 +88,14 @@ export class Client {
 
   // ── People ──
 
-  async listPeople(options: {
-    page?: number;
-    perPage?: number;
-    conditions?: Record<string, any>;
-    sort?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listPeople(
+    options: {
+      page?: number;
+      perPage?: number;
+      conditions?: Record<string, any>;
+      sort?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = this.params({
       page: options.page ?? 1,
       per_page: options.perPage ?? 200
@@ -108,16 +118,24 @@ export class Client {
   }
 
   async createPerson(person: Record<string, any>): Promise<any> {
-    let response = await this.axios.post('/people.json', { person }, {
-      params: this.params()
-    });
+    let response = await this.axios.post(
+      '/people.json',
+      { person },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
   async updatePerson(personId: number, person: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/people/${personId}.json`, { person }, {
-      params: this.params()
-    });
+    let response = await this.axios.put(
+      `/people/${personId}.json`,
+      { person },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
@@ -129,12 +147,14 @@ export class Client {
 
   // ── Companies ──
 
-  async listCompanies(options: {
-    page?: number;
-    perPage?: number;
-    conditions?: Record<string, any>;
-    sort?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listCompanies(
+    options: {
+      page?: number;
+      perPage?: number;
+      conditions?: Record<string, any>;
+      sort?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = this.params({
       page: options.page ?? 1,
       per_page: options.perPage ?? 200
@@ -157,16 +177,24 @@ export class Client {
   }
 
   async createCompany(company: Record<string, any>): Promise<any> {
-    let response = await this.axios.post('/companies.json', { company }, {
-      params: this.params()
-    });
+    let response = await this.axios.post(
+      '/companies.json',
+      { company },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
   async updateCompany(companyId: number, company: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/companies/${companyId}.json`, { company }, {
-      params: this.params()
-    });
+    let response = await this.axios.put(
+      `/companies/${companyId}.json`,
+      { company },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
@@ -178,13 +206,15 @@ export class Client {
 
   // ── Notes ──
 
-  async listNotes(options: {
-    page?: number;
-    perPage?: number;
-    dealId?: number;
-    personId?: number;
-    companyId?: number;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listNotes(
+    options: {
+      page?: number;
+      perPage?: number;
+      dealId?: number;
+      personId?: number;
+      companyId?: number;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let basePath: string;
     if (options.dealId) {
       basePath = `/deals/${options.dealId}/notes.json`;
@@ -213,16 +243,24 @@ export class Client {
   }
 
   async createNote(note: Record<string, any>): Promise<any> {
-    let response = await this.axios.post('/notes.json', { note }, {
-      params: this.params()
-    });
+    let response = await this.axios.post(
+      '/notes.json',
+      { note },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
   async updateNote(noteId: number, note: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/notes/${noteId}.json`, { note }, {
-      params: this.params()
-    });
+    let response = await this.axios.put(
+      `/notes/${noteId}.json`,
+      { note },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
@@ -234,12 +272,14 @@ export class Client {
 
   // ── Calendar Entries ──
 
-  async listCalendarEntries(options: {
-    page?: number;
-    perPage?: number;
-    conditions?: Record<string, any>;
-    sort?: string;
-  } = {}): Promise<PaginatedResponse<any>> {
+  async listCalendarEntries(
+    options: {
+      page?: number;
+      perPage?: number;
+      conditions?: Record<string, any>;
+      sort?: string;
+    } = {}
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = this.params({
       page: options.page ?? 1,
       per_page: options.perPage ?? 200
@@ -262,16 +302,24 @@ export class Client {
   }
 
   async createCalendarEntry(entry: Record<string, any>): Promise<any> {
-    let response = await this.axios.post('/calendar_entries.json', { calendar_entry: entry }, {
-      params: this.params()
-    });
+    let response = await this.axios.post(
+      '/calendar_entries.json',
+      { calendar_entry: entry },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 
   async updateCalendarEntry(entryId: number, entry: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/calendar_entries/${entryId}.json`, { calendar_entry: entry }, {
-      params: this.params()
-    });
+    let response = await this.axios.put(
+      `/calendar_entries/${entryId}.json`,
+      { calendar_entry: entry },
+      {
+        params: this.params()
+      }
+    );
     return response.data;
   }
 

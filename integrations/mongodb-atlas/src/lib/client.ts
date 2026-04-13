@@ -19,7 +19,7 @@ export class Client {
   constructor(config: ClientConfig) {
     this.config = config;
     this.axios = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
@@ -30,7 +30,7 @@ export class Client {
     params?: Record<string, any>
   ): Promise<T> {
     let headers: Record<string, string> = {
-      'Accept': ACCEPT_HEADER,
+      Accept: ACCEPT_HEADER
     };
 
     if (data && method !== 'GET' && method !== 'DELETE') {
@@ -44,7 +44,7 @@ export class Client {
         url: path,
         data,
         params,
-        headers,
+        headers
       });
       return response.data;
     }
@@ -60,7 +60,7 @@ export class Client {
         data,
         params,
         headers,
-        validateStatus: (status) => status === 401 || (status >= 200 && status < 300),
+        validateStatus: status => status === 401 || (status >= 200 && status < 300)
       });
 
       if (initialResponse.status !== 401) {
@@ -91,7 +91,13 @@ export class Client {
         }
       }
 
-      let digestHeader = await buildDigestHeader(method, uri, publicKey, privateKey, challenge);
+      let digestHeader = await buildDigestHeader(
+        method,
+        uri,
+        publicKey,
+        privateKey,
+        challenge
+      );
       headers['Authorization'] = digestHeader;
 
       let response = await this.axios.request<T>({
@@ -99,14 +105,16 @@ export class Client {
         url: path,
         data,
         params,
-        headers,
+        headers
       });
 
       return response.data;
     } catch (error: any) {
       if (error?.response?.data) {
         let errData = error.response.data;
-        throw new Error(errData.detail || errData.reason || errData.errorCode || JSON.stringify(errData));
+        throw new Error(
+          errData.detail || errData.reason || errData.errorCode || JSON.stringify(errData)
+        );
       }
       throw error;
     }
@@ -146,7 +154,10 @@ export class Client {
 
   // --- Clusters ---
 
-  async listClusters(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
+  async listClusters(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/clusters`, undefined, params);
   }
 
@@ -190,29 +201,54 @@ export class Client {
 
   // --- Database Users ---
 
-  async listDatabaseUsers(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
+  async listDatabaseUsers(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/databaseUsers`, undefined, params);
   }
 
   async getDatabaseUser(projectId: string, authDb: string, username: string): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/databaseUsers/${authDb}/${encodeURIComponent(username)}`);
+    return this.request(
+      'GET',
+      `/groups/${projectId}/databaseUsers/${authDb}/${encodeURIComponent(username)}`
+    );
   }
 
   async createDatabaseUser(projectId: string, data: any): Promise<any> {
     return this.request('POST', `/groups/${projectId}/databaseUsers`, data);
   }
 
-  async updateDatabaseUser(projectId: string, authDb: string, username: string, data: any): Promise<any> {
-    return this.request('PATCH', `/groups/${projectId}/databaseUsers/${authDb}/${encodeURIComponent(username)}`, data);
+  async updateDatabaseUser(
+    projectId: string,
+    authDb: string,
+    username: string,
+    data: any
+  ): Promise<any> {
+    return this.request(
+      'PATCH',
+      `/groups/${projectId}/databaseUsers/${authDb}/${encodeURIComponent(username)}`,
+      data
+    );
   }
 
-  async deleteDatabaseUser(projectId: string, authDb: string, username: string): Promise<void> {
-    await this.request('DELETE', `/groups/${projectId}/databaseUsers/${authDb}/${encodeURIComponent(username)}`);
+  async deleteDatabaseUser(
+    projectId: string,
+    authDb: string,
+    username: string
+  ): Promise<void> {
+    await this.request(
+      'DELETE',
+      `/groups/${projectId}/databaseUsers/${authDb}/${encodeURIComponent(username)}`
+    );
   }
 
   // --- IP Access List ---
 
-  async listIpAccessList(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
+  async listIpAccessList(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/accessList`, undefined, params);
   }
 
@@ -221,12 +257,18 @@ export class Client {
   }
 
   async deleteIpAccessListEntry(projectId: string, entryValue: string): Promise<void> {
-    await this.request('DELETE', `/groups/${projectId}/accessList/${encodeURIComponent(entryValue)}`);
+    await this.request(
+      'DELETE',
+      `/groups/${projectId}/accessList/${encodeURIComponent(entryValue)}`
+    );
   }
 
   // --- Network Peering ---
 
-  async listNetworkPeering(projectId: string, params?: { providerName?: string }): Promise<any> {
+  async listNetworkPeering(
+    projectId: string,
+    params?: { providerName?: string }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/peers`, undefined, params);
   }
 
@@ -244,7 +286,10 @@ export class Client {
 
   // --- Alerts ---
 
-  async listAlertConfigurations(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
+  async listAlertConfigurations(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/alertConfigs`, undefined, params);
   }
 
@@ -256,7 +301,11 @@ export class Client {
     return this.request('POST', `/groups/${projectId}/alertConfigs`, data);
   }
 
-  async updateAlertConfiguration(projectId: string, alertConfigId: string, data: any): Promise<any> {
+  async updateAlertConfiguration(
+    projectId: string,
+    alertConfigId: string,
+    data: any
+  ): Promise<any> {
     return this.request('PUT', `/groups/${projectId}/alertConfigs/${alertConfigId}`, data);
   }
 
@@ -264,7 +313,10 @@ export class Client {
     await this.request('DELETE', `/groups/${projectId}/alertConfigs/${alertConfigId}`);
   }
 
-  async listAlerts(projectId: string, params?: { status?: string; itemsPerPage?: number; pageNum?: number }): Promise<any> {
+  async listAlerts(
+    projectId: string,
+    params?: { status?: string; itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/alerts`, undefined, params);
   }
 
@@ -272,36 +324,81 @@ export class Client {
     return this.request('GET', `/groups/${projectId}/alerts/${alertId}`);
   }
 
-  async acknowledgeAlert(projectId: string, alertId: string, data: {
-    acknowledgedUntil: string;
-    acknowledgementComment?: string;
-  }): Promise<any> {
+  async acknowledgeAlert(
+    projectId: string,
+    alertId: string,
+    data: {
+      acknowledgedUntil: string;
+      acknowledgementComment?: string;
+    }
+  ): Promise<any> {
     return this.request('PATCH', `/groups/${projectId}/alerts/${alertId}`, data);
   }
 
   // --- Backups ---
 
-  async listBackupSnapshots(projectId: string, clusterName: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/backup/snapshots`, undefined, params);
+  async listBackupSnapshots(
+    projectId: string,
+    clusterName: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/clusters/${clusterName}/backup/snapshots`,
+      undefined,
+      params
+    );
   }
 
-  async getBackupSnapshot(projectId: string, clusterName: string, snapshotId: string): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/backup/snapshots/${snapshotId}`);
+  async getBackupSnapshot(
+    projectId: string,
+    clusterName: string,
+    snapshotId: string
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/clusters/${clusterName}/backup/snapshots/${snapshotId}`
+    );
   }
 
-  async createBackupSnapshot(projectId: string, clusterName: string, data: {
-    description: string;
-    retentionInDays: number;
-  }): Promise<any> {
-    return this.request('POST', `/groups/${projectId}/clusters/${clusterName}/backup/snapshots`, data);
+  async createBackupSnapshot(
+    projectId: string,
+    clusterName: string,
+    data: {
+      description: string;
+      retentionInDays: number;
+    }
+  ): Promise<any> {
+    return this.request(
+      'POST',
+      `/groups/${projectId}/clusters/${clusterName}/backup/snapshots`,
+      data
+    );
   }
 
-  async listBackupRestoreJobs(projectId: string, clusterName: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`, undefined, params);
+  async listBackupRestoreJobs(
+    projectId: string,
+    clusterName: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`,
+      undefined,
+      params
+    );
   }
 
-  async createBackupRestoreJob(projectId: string, clusterName: string, data: any): Promise<any> {
-    return this.request('POST', `/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`, data);
+  async createBackupRestoreJob(
+    projectId: string,
+    clusterName: string,
+    data: any
+  ): Promise<any> {
+    return this.request(
+      'POST',
+      `/groups/${projectId}/clusters/${clusterName}/backup/restoreJobs`,
+      data
+    );
   }
 
   async getBackupSchedule(projectId: string, clusterName: string): Promise<any> {
@@ -309,46 +406,88 @@ export class Client {
   }
 
   async updateBackupSchedule(projectId: string, clusterName: string, data: any): Promise<any> {
-    return this.request('PATCH', `/groups/${projectId}/clusters/${clusterName}/backup/schedule`, data);
+    return this.request(
+      'PATCH',
+      `/groups/${projectId}/clusters/${clusterName}/backup/schedule`,
+      data
+    );
   }
 
   // --- Atlas Search ---
 
-  async listSearchIndexes(projectId: string, clusterName: string, databaseName: string, collectionName: string): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/search/indexes/${databaseName}/${collectionName}`);
+  async listSearchIndexes(
+    projectId: string,
+    clusterName: string,
+    databaseName: string,
+    collectionName: string
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/clusters/${clusterName}/search/indexes/${databaseName}/${collectionName}`
+    );
   }
 
   async getSearchIndex(projectId: string, clusterName: string, indexId: string): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`);
+    return this.request(
+      'GET',
+      `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`
+    );
   }
 
   async createSearchIndex(projectId: string, clusterName: string, data: any): Promise<any> {
-    return this.request('POST', `/groups/${projectId}/clusters/${clusterName}/search/indexes`, data);
+    return this.request(
+      'POST',
+      `/groups/${projectId}/clusters/${clusterName}/search/indexes`,
+      data
+    );
   }
 
-  async updateSearchIndex(projectId: string, clusterName: string, indexId: string, data: any): Promise<any> {
-    return this.request('PATCH', `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`, data);
+  async updateSearchIndex(
+    projectId: string,
+    clusterName: string,
+    indexId: string,
+    data: any
+  ): Promise<any> {
+    return this.request(
+      'PATCH',
+      `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`,
+      data
+    );
   }
 
-  async deleteSearchIndex(projectId: string, clusterName: string, indexId: string): Promise<void> {
-    await this.request('DELETE', `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`);
+  async deleteSearchIndex(
+    projectId: string,
+    clusterName: string,
+    indexId: string
+  ): Promise<void> {
+    await this.request(
+      'DELETE',
+      `/groups/${projectId}/clusters/${clusterName}/search/indexes/${indexId}`
+    );
   }
 
   // --- Metrics ---
 
-  async getClusterProcesses(projectId: string, params?: { itemsPerPage?: number; pageNum?: number }): Promise<any> {
+  async getClusterProcesses(
+    projectId: string,
+    params?: { itemsPerPage?: number; pageNum?: number }
+  ): Promise<any> {
     return this.request('GET', `/groups/${projectId}/processes`, undefined, params);
   }
 
-  async getProcessMeasurements(projectId: string, processId: string, params: {
-    granularity: string;
-    period?: string;
-    start?: string;
-    end?: string;
-    m?: string[];
-  }): Promise<any> {
+  async getProcessMeasurements(
+    projectId: string,
+    processId: string,
+    params: {
+      granularity: string;
+      period?: string;
+      start?: string;
+      end?: string;
+      m?: string[];
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {
-      granularity: params.granularity,
+      granularity: params.granularity
     };
     if (params.period) queryParams['period'] = params.period;
     if (params.start) queryParams['start'] = params.start;
@@ -356,18 +495,28 @@ export class Client {
     if (params.m && params.m.length > 0) {
       queryParams['m'] = params.m.join(',');
     }
-    return this.request('GET', `/groups/${projectId}/processes/${processId}/measurements`, undefined, queryParams);
+    return this.request(
+      'GET',
+      `/groups/${projectId}/processes/${processId}/measurements`,
+      undefined,
+      queryParams
+    );
   }
 
-  async getDiskMeasurements(projectId: string, processId: string, partitionName: string, params: {
-    granularity: string;
-    period?: string;
-    start?: string;
-    end?: string;
-    m?: string[];
-  }): Promise<any> {
+  async getDiskMeasurements(
+    projectId: string,
+    processId: string,
+    partitionName: string,
+    params: {
+      granularity: string;
+      period?: string;
+      start?: string;
+      end?: string;
+      m?: string[];
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {
-      granularity: params.granularity,
+      granularity: params.granularity
     };
     if (params.period) queryParams['period'] = params.period;
     if (params.start) queryParams['start'] = params.start;
@@ -375,7 +524,12 @@ export class Client {
     if (params.m && params.m.length > 0) {
       queryParams['m'] = params.m.join(',');
     }
-    return this.request('GET', `/groups/${projectId}/processes/${processId}/disks/${partitionName}/measurements`, undefined, queryParams);
+    return this.request(
+      'GET',
+      `/groups/${projectId}/processes/${processId}/disks/${partitionName}/measurements`,
+      undefined,
+      queryParams
+    );
   }
 
   // --- Third-Party Integrations ---
@@ -388,7 +542,11 @@ export class Client {
     return this.request('GET', `/groups/${projectId}/integrations/${integrationType}`);
   }
 
-  async configureIntegration(projectId: string, integrationType: string, data: any): Promise<any> {
+  async configureIntegration(
+    projectId: string,
+    integrationType: string,
+    data: any
+  ): Promise<any> {
     return this.request('POST', `/groups/${projectId}/integrations/${integrationType}`, data);
   }
 
@@ -398,23 +556,41 @@ export class Client {
 
   // --- Performance Advisor ---
 
-  async listSuggestedIndexes(projectId: string, processId: string, params?: {
-    namespaces?: string;
-    duration?: number;
-    since?: number;
-    nIndexes?: number;
-    nExamples?: number;
-  }): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/processes/${processId}/performanceAdvisor/suggestedIndexes`, undefined, params);
+  async listSuggestedIndexes(
+    projectId: string,
+    processId: string,
+    params?: {
+      namespaces?: string;
+      duration?: number;
+      since?: number;
+      nIndexes?: number;
+      nExamples?: number;
+    }
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/processes/${processId}/performanceAdvisor/suggestedIndexes`,
+      undefined,
+      params
+    );
   }
 
-  async listSlowQueries(projectId: string, processId: string, params?: {
-    namespaces?: string;
-    duration?: number;
-    since?: number;
-    nLogs?: number;
-  }): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/processes/${processId}/performanceAdvisor/slowQueryLogs`, undefined, params);
+  async listSlowQueries(
+    projectId: string,
+    processId: string,
+    params?: {
+      namespaces?: string;
+      duration?: number;
+      since?: number;
+      nLogs?: number;
+    }
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/processes/${processId}/performanceAdvisor/slowQueryLogs`,
+      undefined,
+      params
+    );
   }
 
   // --- Online Archive ---
@@ -423,31 +599,61 @@ export class Client {
     return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/onlineArchives`);
   }
 
-  async getOnlineArchive(projectId: string, clusterName: string, archiveId: string): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/clusters/${clusterName}/onlineArchives/${archiveId}`);
+  async getOnlineArchive(
+    projectId: string,
+    clusterName: string,
+    archiveId: string
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/clusters/${clusterName}/onlineArchives/${archiveId}`
+    );
   }
 
   async createOnlineArchive(projectId: string, clusterName: string, data: any): Promise<any> {
-    return this.request('POST', `/groups/${projectId}/clusters/${clusterName}/onlineArchives`, data);
+    return this.request(
+      'POST',
+      `/groups/${projectId}/clusters/${clusterName}/onlineArchives`,
+      data
+    );
   }
 
-  async updateOnlineArchive(projectId: string, clusterName: string, archiveId: string, data: any): Promise<any> {
-    return this.request('PATCH', `/groups/${projectId}/clusters/${clusterName}/onlineArchives/${archiveId}`, data);
+  async updateOnlineArchive(
+    projectId: string,
+    clusterName: string,
+    archiveId: string,
+    data: any
+  ): Promise<any> {
+    return this.request(
+      'PATCH',
+      `/groups/${projectId}/clusters/${clusterName}/onlineArchives/${archiveId}`,
+      data
+    );
   }
 
-  async deleteOnlineArchive(projectId: string, clusterName: string, archiveId: string): Promise<void> {
-    await this.request('DELETE', `/groups/${projectId}/clusters/${clusterName}/onlineArchives/${archiveId}`);
+  async deleteOnlineArchive(
+    projectId: string,
+    clusterName: string,
+    archiveId: string
+  ): Promise<void> {
+    await this.request(
+      'DELETE',
+      `/groups/${projectId}/clusters/${clusterName}/onlineArchives/${archiveId}`
+    );
   }
 
   // --- Events ---
 
-  async listProjectEvents(projectId: string, params?: {
-    eventType?: string[];
-    minDate?: string;
-    maxDate?: string;
-    itemsPerPage?: number;
-    pageNum?: number;
-  }): Promise<any> {
+  async listProjectEvents(
+    projectId: string,
+    params?: {
+      eventType?: string[];
+      minDate?: string;
+      maxDate?: string;
+      itemsPerPage?: number;
+      pageNum?: number;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.itemsPerPage) queryParams['itemsPerPage'] = params.itemsPerPage;
     if (params?.pageNum) queryParams['pageNum'] = params.pageNum;
@@ -459,13 +665,16 @@ export class Client {
     return this.request('GET', `/groups/${projectId}/events`, undefined, queryParams);
   }
 
-  async listOrganizationEvents(orgId: string, params?: {
-    eventType?: string[];
-    minDate?: string;
-    maxDate?: string;
-    itemsPerPage?: number;
-    pageNum?: number;
-  }): Promise<any> {
+  async listOrganizationEvents(
+    orgId: string,
+    params?: {
+      eventType?: string[];
+      minDate?: string;
+      maxDate?: string;
+      itemsPerPage?: number;
+      pageNum?: number;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.itemsPerPage) queryParams['itemsPerPage'] = params.itemsPerPage;
     if (params?.pageNum) queryParams['pageNum'] = params.pageNum;
@@ -479,14 +688,23 @@ export class Client {
 
   // --- Access Logs ---
 
-  async listAccessLogs(projectId: string, clusterName: string, params?: {
-    start?: string;
-    end?: string;
-    nLogs?: number;
-    authResult?: boolean;
-    ipAddress?: string;
-  }): Promise<any> {
-    return this.request('GET', `/groups/${projectId}/dbAccessHistory/clusters/${clusterName}`, undefined, params);
+  async listAccessLogs(
+    projectId: string,
+    clusterName: string,
+    params?: {
+      start?: string;
+      end?: string;
+      nLogs?: number;
+      authResult?: boolean;
+      ipAddress?: string;
+    }
+  ): Promise<any> {
+    return this.request(
+      'GET',
+      `/groups/${projectId}/dbAccessHistory/clusters/${clusterName}`,
+      undefined,
+      params
+    );
   }
 
   // --- Maintenance Windows ---
@@ -495,11 +713,14 @@ export class Client {
     return this.request('GET', `/groups/${projectId}/maintenanceWindow`);
   }
 
-  async updateMaintenanceWindow(projectId: string, data: {
-    dayOfWeek: number;
-    hourOfDay: number;
-    autoDeferOnceEnabled?: boolean;
-  }): Promise<any> {
+  async updateMaintenanceWindow(
+    projectId: string,
+    data: {
+      dayOfWeek: number;
+      hourOfDay: number;
+      autoDeferOnceEnabled?: boolean;
+    }
+  ): Promise<any> {
     return this.request('PATCH', `/groups/${projectId}/maintenanceWindow`, data);
   }
 

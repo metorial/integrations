@@ -55,7 +55,7 @@ let mapContact = (raw: any): WhoisContact => ({
   country: raw?.country ?? '',
   phone: raw?.phone ?? '',
   fax: raw?.fax ?? '',
-  email: raw?.email ?? '',
+  email: raw?.email ?? ''
 });
 
 export class Client {
@@ -67,15 +67,15 @@ export class Client {
 
   async lookupWhois(domain: string): Promise<WhoisResult> {
     let axios = createAxios({
-      baseURL: 'https://api.ip2whois.com',
+      baseURL: 'https://api.ip2whois.com'
     });
 
     let response = await axios.get('/v2', {
       params: {
         key: this.token,
         domain,
-        format: 'json',
-      },
+        format: 'json'
+      }
     });
 
     let data = response.data;
@@ -92,25 +92,25 @@ export class Client {
       registrar: {
         ianaId: data.registrar?.iana_id ?? '',
         name: data.registrar?.name ?? '',
-        url: data.registrar?.url ?? '',
+        url: data.registrar?.url ?? ''
       },
       registrant: mapContact(data.registrant),
       admin: mapContact(data.admin),
       tech: mapContact(data.tech),
       billing: mapContact(data.billing),
-      nameservers: data.nameservers ?? [],
+      nameservers: data.nameservers ?? []
     };
   }
 
   async lookupHostedDomains(ip: string, page?: number): Promise<HostedDomainsResult> {
     let axios = createAxios({
-      baseURL: 'https://domains.ip2whois.com',
+      baseURL: 'https://domains.ip2whois.com'
     });
 
     let params: Record<string, any> = {
       key: this.token,
       ip,
-      format: 'json',
+      format: 'json'
     };
 
     if (page !== undefined) {
@@ -118,7 +118,7 @@ export class Client {
     }
 
     let response = await axios.get('/domains', {
-      params,
+      params
     });
 
     let data = response.data;
@@ -129,7 +129,7 @@ export class Client {
       page: data.page ?? 1,
       perPage: data.per_page ?? 0,
       totalPages: data.total_pages ?? 0,
-      domains: data.domains ?? [],
+      domains: data.domains ?? []
     };
   }
 }

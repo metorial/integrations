@@ -14,7 +14,7 @@ import {
   manageTMTool,
   manageGlossaryTool,
   manageTasksTool,
-  listMembersTool,
+  listMembersTool
 } from './tools';
 import {
   fileEventsTrigger,
@@ -22,7 +22,7 @@ import {
   stringEventsTrigger,
   suggestionEventsTrigger,
   taskEventsTrigger,
-  commentEventsTrigger,
+  commentEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -41,7 +41,7 @@ export let provider = Slate.create({
     manageTMTool,
     manageGlossaryTool,
     manageTasksTool,
-    listMembersTool,
+    listMembersTool
   ],
   triggers: [
     fileEventsTrigger,
@@ -49,6 +49,6 @@ export let provider = Slate.create({
     stringEventsTrigger,
     suggestionEventsTrigger,
     taskEventsTrigger,
-    commentEventsTrigger,
-  ],
+    commentEventsTrigger
+  ]
 });

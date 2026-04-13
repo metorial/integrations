@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    host: z.string().describe('Wrike API host, e.g. www.wrike.com or app-eu.wrike.com')
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      host: z.string().describe('Wrike API host, e.g. www.wrike.com or app-eu.wrike.com')
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -56,7 +58,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
@@ -73,23 +75,27 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
-      let response = await axios.post('https://login.wrike.com/oauth2/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await axios.post(
+        'https://login.wrike.com/oauth2/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
@@ -101,26 +107,30 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let axios = createAxios();
 
-      let response = await axios.post('https://login.wrike.com/oauth2/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await axios.post(
+        'https://login.wrike.com/oauth2/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
@@ -140,7 +150,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: `https://${ctx.output.host}/api/v4`,
         headers: {
-          'Authorization': `bearer ${ctx.output.token}`
+          Authorization: `bearer ${ctx.output.token}`
         }
       });
 
@@ -151,7 +161,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: contact?.id,
           name: `${contact?.firstName || ''} ${contact?.lastName || ''}`.trim(),
-          email: contact?.profiles?.[0]?.email,
+          email: contact?.profiles?.[0]?.email
         }
       };
     }
@@ -163,10 +173,13 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('Permanent access token generated from Wrike App Console'),
-      host: z.string().default('www.wrike.com').describe('Wrike API host (e.g. www.wrike.com or app-eu.wrike.com)')
+      host: z
+        .string()
+        .default('www.wrike.com')
+        .describe('Wrike API host (e.g. www.wrike.com or app-eu.wrike.com)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -182,7 +195,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: `https://${ctx.output.host}/api/v4`,
         headers: {
-          'Authorization': `bearer ${ctx.output.token}`
+          Authorization: `bearer ${ctx.output.token}`
         }
       });
 
@@ -193,7 +206,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: contact?.id,
           name: `${contact?.firstName || ''} ${contact?.lastName || ''}`.trim(),
-          email: contact?.profiles?.[0]?.email,
+          email: contact?.profiles?.[0]?.email
         }
       };
     }

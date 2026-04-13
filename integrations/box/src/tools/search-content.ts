@@ -3,44 +3,67 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchContent = SlateTool.create(
-  spec,
-  {
-    name: 'Search Content',
-    key: 'search_content',
-    description: `Full-text search across all Box content accessible to the authenticated user. Filter results by file type, date ranges, ancestor folders, content type, and owner. Returns matching files and folders with key metadata.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let searchContent = SlateTool.create(spec, {
+  name: 'Search Content',
+  key: 'search_content',
+  description: `Full-text search across all Box content accessible to the authenticated user. Filter results by file type, date ranges, ancestor folders, content type, and owner. Returns matching files and folders with key metadata.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query string for full-text search'),
-    fileExtensions: z.array(z.string()).optional().describe('Filter by file extensions (e.g. ["pdf", "docx"])'),
-    ancestorFolderIds: z.array(z.string()).optional().describe('Limit search to specific folder subtrees by folder ID'),
-    contentTypes: z.array(z.enum(['name', 'description', 'file_content', 'comments', 'tags'])).optional().describe('Limit where Box searches for the query'),
-    type: z.enum(['file', 'folder', 'web_link']).optional().describe('Filter results by item type'),
-    ownerUserIds: z.array(z.string()).optional().describe('Filter by owner user IDs'),
-    createdAtRange: z.string().optional().describe('ISO 8601 date range for creation, e.g. "2024-01-01T00:00:00Z,2024-12-31T23:59:59Z"'),
-    updatedAtRange: z.string().optional().describe('ISO 8601 date range for last modification'),
-    limit: z.number().optional().describe('Maximum number of results (default 30, max 200)'),
-    offset: z.number().optional().describe('Offset for pagination')
-  }))
-  .output(z.object({
-    totalCount: z.number().describe('Total number of matching results'),
-    results: z.array(z.object({
-      itemId: z.string().describe('ID of the matching item'),
-      type: z.string().describe('Item type: file, folder, or web_link'),
-      name: z.string().describe('Name of the item'),
-      size: z.number().optional().describe('File size in bytes'),
-      modifiedAt: z.string().optional().describe('ISO 8601 last modification timestamp'),
-      parentFolderId: z.string().optional().describe('Parent folder ID'),
-      parentFolderName: z.string().optional().describe('Parent folder name'),
-      ownedBy: z.string().optional().describe('Owner name')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query string for full-text search'),
+      fileExtensions: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by file extensions (e.g. ["pdf", "docx"])'),
+      ancestorFolderIds: z
+        .array(z.string())
+        .optional()
+        .describe('Limit search to specific folder subtrees by folder ID'),
+      contentTypes: z
+        .array(z.enum(['name', 'description', 'file_content', 'comments', 'tags']))
+        .optional()
+        .describe('Limit where Box searches for the query'),
+      type: z
+        .enum(['file', 'folder', 'web_link'])
+        .optional()
+        .describe('Filter results by item type'),
+      ownerUserIds: z.array(z.string()).optional().describe('Filter by owner user IDs'),
+      createdAtRange: z
+        .string()
+        .optional()
+        .describe(
+          'ISO 8601 date range for creation, e.g. "2024-01-01T00:00:00Z,2024-12-31T23:59:59Z"'
+        ),
+      updatedAtRange: z
+        .string()
+        .optional()
+        .describe('ISO 8601 date range for last modification'),
+      limit: z.number().optional().describe('Maximum number of results (default 30, max 200)'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().describe('Total number of matching results'),
+      results: z.array(
+        z.object({
+          itemId: z.string().describe('ID of the matching item'),
+          type: z.string().describe('Item type: file, folder, or web_link'),
+          name: z.string().describe('Name of the item'),
+          size: z.number().optional().describe('File size in bytes'),
+          modifiedAt: z.string().optional().describe('ISO 8601 last modification timestamp'),
+          parentFolderId: z.string().optional().describe('Parent folder ID'),
+          parentFolderName: z.string().optional().describe('Parent folder name'),
+          ownedBy: z.string().optional().describe('Owner name')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.search(ctx.input.query, {

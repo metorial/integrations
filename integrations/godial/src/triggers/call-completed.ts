@@ -2,29 +2,31 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let callCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Call Completed',
-    key: 'call_completed',
-    description: 'Triggers when a call is completed in GoDial. Configure the webhook URL in GoDial under Integrations → Web Hook, select the call event, and paste the provided webhook URL.',
-  }
-)
-  .input(z.object({
-    eventPayload: z.any().describe('Raw call event payload from GoDial'),
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('ID of the contact that was called'),
-    contactName: z.string().optional().describe('Name of the contact'),
-    phone: z.string().optional().describe('Phone number that was called'),
-    duration: z.any().optional().describe('Duration of the call'),
-    disposition: z.string().optional().describe('Call disposition or outcome'),
-    agentName: z.string().optional().describe('Name of the agent who made the call'),
-    listId: z.string().optional().describe('ID of the list the contact belongs to'),
-    callDetails: z.any().describe('Full call event data from GoDial'),
-  }))
+export let callCompleted = SlateTrigger.create(spec, {
+  name: 'Call Completed',
+  key: 'call_completed',
+  description:
+    'Triggers when a call is completed in GoDial. Configure the webhook URL in GoDial under Integrations → Web Hook, select the call event, and paste the provided webhook URL.'
+})
+  .input(
+    z.object({
+      eventPayload: z.any().describe('Raw call event payload from GoDial')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('ID of the contact that was called'),
+      contactName: z.string().optional().describe('Name of the contact'),
+      phone: z.string().optional().describe('Phone number that was called'),
+      duration: z.any().optional().describe('Duration of the call'),
+      disposition: z.string().optional().describe('Call disposition or outcome'),
+      agentName: z.string().optional().describe('Name of the agent who made the call'),
+      listId: z.string().optional().describe('ID of the list the contact belongs to'),
+      callDetails: z.any().describe('Full call event data from GoDial')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -41,12 +43,12 @@ export let callCompleted = SlateTrigger.create(
 
       return {
         inputs: events.map((event: any) => ({
-          eventPayload: event,
-        })),
+          eventPayload: event
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.eventPayload || {};
 
       let contactId = payload.contactId || payload.id || payload._id || '';
@@ -63,9 +65,9 @@ export let callCompleted = SlateTrigger.create(
           disposition: payload.disposition || payload.status || payload.callStatus,
           agentName: payload.agentName || payload.agent,
           listId: payload.listId,
-          callDetails: payload,
-        },
+          callDetails: payload
+        }
       };
-    },
+    }
   })
   .build();

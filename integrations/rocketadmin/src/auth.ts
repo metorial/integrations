@@ -2,46 +2,52 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      apiKey: z.string().describe('Rocketadmin API key generated from Account Settings in the Rocketadmin dashboard'),
+      apiKey: z
+        .string()
+        .describe(
+          'Rocketadmin API key generated from Account Settings in the Rocketadmin dashboard'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
     getProfile: async (ctx: { output: { token?: string }; input: { apiKey: string } }) => {
       let axios = createAxios({
         baseURL: 'https://app.rocketadmin.com',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Content-Type': 'application/json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          'Content-Type': 'application/json'
+        }
       });
       try {
         await axios.get('/check/apikey');
         return {
           profile: {
-            name: 'Rocketadmin User',
-          },
+            name: 'Rocketadmin User'
+          }
         };
       } catch {
         return {
           profile: {
-            name: 'Rocketadmin User',
-          },
+            name: 'Rocketadmin User'
+          }
         };
       }
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -50,20 +56,20 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       email: z.string().describe('Rocketadmin account email address'),
       password: z.string().describe('Rocketadmin account password'),
-      companyId: z.string().optional().describe('Company ID to log in to (optional)'),
+      companyId: z.string().optional().describe('Company ID to log in to (optional)')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let axios = createAxios({
         baseURL: 'https://app.rocketadmin.com',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       let response = await axios.post('/user/login/', {
         email: ctx.input.email,
         password: ctx.input.password,
-        ...(ctx.input.companyId ? { companyId: ctx.input.companyId } : {}),
+        ...(ctx.input.companyId ? { companyId: ctx.input.companyId } : {})
       });
 
       let cookies = response.headers['set-cookie'];
@@ -85,17 +91,20 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token,
-        },
+          token
+        }
       };
     },
-    getProfile: async (ctx: { output: { token: string }; input: { email: string; password: string; companyId?: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { email: string; password: string; companyId?: string };
+    }) => {
       let axios = createAxios({
         baseURL: 'https://app.rocketadmin.com',
         headers: {
-          'Cookie': `rocketadmin_cookie=${ctx.output.token}`,
-          'Content-Type': 'application/json',
-        },
+          Cookie: `rocketadmin_cookie=${ctx.output.token}`,
+          'Content-Type': 'application/json'
+        }
       });
       try {
         let response = await axios.get('/user/my/');
@@ -104,15 +113,15 @@ export let auth = SlateAuth.create()
           profile: {
             id: data.id,
             email: data.email,
-            name: data.name || data.email,
-          },
+            name: data.name || data.email
+          }
         };
       } catch {
         return {
           profile: {
-            name: 'Rocketadmin User',
-          },
+            name: 'Rocketadmin User'
+          }
         };
       }
-    },
+    }
   });

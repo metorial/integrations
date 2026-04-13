@@ -3,31 +3,52 @@ import { GistClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageConversation = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Conversation',
-    key: 'manage_conversation',
-    description: `Perform actions on a Gist conversation: assign/unassign, close, snooze/unsnooze, prioritize, or tag/untag. Use this to manage conversation state and routing.`,
-    instructions: [
-      'Only one action can be performed per invocation. Choose the appropriate action field.',
-    ],
-  }
-)
-  .input(z.object({
-    conversationId: z.string().describe('ID of the conversation'),
-    action: z.enum(['assign', 'unassign', 'close', 'snooze', 'unsnooze', 'prioritize', 'tag', 'untag']).describe('Action to perform'),
-    assigneeId: z.string().optional().describe('Teammate ID to assign to (for "assign" action)'),
-    teamId: z.string().optional().describe('Team ID to assign to (for "assign" action)'),
-    snoozedUntil: z.string().optional().describe('UNIX timestamp to snooze until (for "snooze" action)'),
-    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().describe('Priority level (for "prioritize" action)'),
-    tagName: z.string().optional().describe('Tag name (for "tag" or "untag" action)'),
-  }))
-  .output(z.object({
-    conversationId: z.string().describe('Conversation ID'),
-    actionPerformed: z.string().describe('The action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageConversation = SlateTool.create(spec, {
+  name: 'Manage Conversation',
+  key: 'manage_conversation',
+  description: `Perform actions on a Gist conversation: assign/unassign, close, snooze/unsnooze, prioritize, or tag/untag. Use this to manage conversation state and routing.`,
+  instructions: [
+    'Only one action can be performed per invocation. Choose the appropriate action field.'
+  ]
+})
+  .input(
+    z.object({
+      conversationId: z.string().describe('ID of the conversation'),
+      action: z
+        .enum([
+          'assign',
+          'unassign',
+          'close',
+          'snooze',
+          'unsnooze',
+          'prioritize',
+          'tag',
+          'untag'
+        ])
+        .describe('Action to perform'),
+      assigneeId: z
+        .string()
+        .optional()
+        .describe('Teammate ID to assign to (for "assign" action)'),
+      teamId: z.string().optional().describe('Team ID to assign to (for "assign" action)'),
+      snoozedUntil: z
+        .string()
+        .optional()
+        .describe('UNIX timestamp to snooze until (for "snooze" action)'),
+      priority: z
+        .enum(['low', 'medium', 'high', 'urgent'])
+        .optional()
+        .describe('Priority level (for "prioritize" action)'),
+      tagName: z.string().optional().describe('Tag name (for "tag" or "untag" action)')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string().describe('Conversation ID'),
+      actionPerformed: z.string().describe('The action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GistClient({ token: ctx.auth.token });
     let { conversationId, action } = ctx.input;
 
@@ -46,7 +67,9 @@ export let manageConversation = SlateTool.create(
         await client.closeConversation(conversationId);
         break;
       case 'snooze':
-        await client.snoozeConversation(conversationId, { snoozed_until: ctx.input.snoozedUntil });
+        await client.snoozeConversation(conversationId, {
+          snoozed_until: ctx.input.snoozedUntil
+        });
         break;
       case 'unsnooze':
         await client.unsnoozeConversation(conversationId);
@@ -67,8 +90,9 @@ export let manageConversation = SlateTool.create(
     return {
       output: {
         conversationId,
-        actionPerformed: action,
+        actionPerformed: action
       },
-      message: `Action **${action}** performed on conversation **${conversationId}**.`,
+      message: `Action **${action}** performed on conversation **${conversationId}**.`
     };
-  }).build();
+  })
+  .build();

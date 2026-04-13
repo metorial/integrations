@@ -2,45 +2,47 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transactionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transaction Events',
-    key: 'transaction_events',
-    description: 'Triggers when a payment transaction is successfully completed. Covers one-time charges, subscription renewals, and bulk charges.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Paystack event type'),
-    eventId: z.string().describe('Unique event identifier for deduplication'),
-    transactionId: z.number().describe('Transaction ID'),
-    reference: z.string().describe('Transaction reference'),
-    status: z.string().describe('Transaction status'),
-    amount: z.number().describe('Amount in smallest currency unit'),
-    currency: z.string().describe('Currency code'),
-    channel: z.string().describe('Payment channel used'),
-    customerEmail: z.string().describe('Customer email'),
-    customerCode: z.string().describe('Customer code'),
-    paidAt: z.string().nullable().describe('Payment timestamp'),
-    gatewayResponse: z.string().describe('Gateway response'),
-    metadata: z.any().optional().describe('Transaction metadata'),
-  }))
-  .output(z.object({
-    transactionId: z.number().describe('Transaction ID'),
-    reference: z.string().describe('Transaction reference'),
-    status: z.string().describe('Transaction status'),
-    amount: z.number().describe('Amount in smallest currency unit'),
-    currency: z.string().describe('Currency code'),
-    channel: z.string().describe('Payment channel'),
-    customerEmail: z.string().describe('Customer email'),
-    customerCode: z.string().describe('Customer code'),
-    paidAt: z.string().nullable().describe('Payment timestamp'),
-    gatewayResponse: z.string().describe('Gateway response'),
-    metadata: z.any().optional().describe('Transaction metadata'),
-  }))
+export let transactionEvents = SlateTrigger.create(spec, {
+  name: 'Transaction Events',
+  key: 'transaction_events',
+  description:
+    'Triggers when a payment transaction is successfully completed. Covers one-time charges, subscription renewals, and bulk charges.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Paystack event type'),
+      eventId: z.string().describe('Unique event identifier for deduplication'),
+      transactionId: z.number().describe('Transaction ID'),
+      reference: z.string().describe('Transaction reference'),
+      status: z.string().describe('Transaction status'),
+      amount: z.number().describe('Amount in smallest currency unit'),
+      currency: z.string().describe('Currency code'),
+      channel: z.string().describe('Payment channel used'),
+      customerEmail: z.string().describe('Customer email'),
+      customerCode: z.string().describe('Customer code'),
+      paidAt: z.string().nullable().describe('Payment timestamp'),
+      gatewayResponse: z.string().describe('Gateway response'),
+      metadata: z.any().optional().describe('Transaction metadata')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.number().describe('Transaction ID'),
+      reference: z.string().describe('Transaction reference'),
+      status: z.string().describe('Transaction status'),
+      amount: z.number().describe('Amount in smallest currency unit'),
+      currency: z.string().describe('Currency code'),
+      channel: z.string().describe('Payment channel'),
+      customerEmail: z.string().describe('Customer email'),
+      customerCode: z.string().describe('Customer code'),
+      paidAt: z.string().nullable().describe('Payment timestamp'),
+      gatewayResponse: z.string().describe('Gateway response'),
+      metadata: z.any().optional().describe('Transaction metadata')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
       let event = body.event as string;
 
       if (event !== 'charge.success') {
@@ -64,13 +66,13 @@ export let transactionEvents = SlateTrigger.create(
             customerCode: tx.customer?.customer_code ?? '',
             paidAt: tx.paid_at ?? null,
             gatewayResponse: tx.gateway_response,
-            metadata: tx.metadata,
-          },
-        ],
+            metadata: tx.metadata
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'transaction.successful',
         id: ctx.input.eventId,
@@ -85,9 +87,9 @@ export let transactionEvents = SlateTrigger.create(
           customerCode: ctx.input.customerCode,
           paidAt: ctx.input.paidAt,
           gatewayResponse: ctx.input.gatewayResponse,
-          metadata: ctx.input.metadata,
-        },
+          metadata: ctx.input.metadata
+        }
       };
-    },
+    }
   })
   .build();

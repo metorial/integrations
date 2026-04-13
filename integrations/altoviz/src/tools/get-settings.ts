@@ -7,7 +7,7 @@ let vatRateSchema = z.object({
   vatId: z.number(),
   rate: z.number(),
   region: z.string().nullable().optional(),
-  label: z.string().nullable().optional(),
+  label: z.string().nullable().optional()
 });
 
 let classificationSchema = z.object({
@@ -17,37 +17,46 @@ let classificationSchema = z.object({
   accountNumber: z.string().nullable().optional(),
   isProduct: z.boolean().nullable().optional(),
   isService: z.boolean().nullable().optional(),
-  type: z.string().nullable().optional(),
+  type: z.string().nullable().optional()
 });
 
 let unitSchema = z.object({
   unitId: z.number().optional(),
-  label: z.string().nullable().optional(),
+  label: z.string().nullable().optional()
 });
 
-export let getSettings = SlateTool.create(
-  spec,
-  {
-    name: 'Get Settings',
-    key: 'get_settings',
-    description: `Retrieve account settings, available VAT rates, classifications (accounting registers), and units from Altoviz. Useful for looking up VAT rate IDs when creating invoices or quotes.`,
-    tags: {
-      readOnly: true,
-    },
+export let getSettings = SlateTool.create(spec, {
+  name: 'Get Settings',
+  key: 'get_settings',
+  description: `Retrieve account settings, available VAT rates, classifications (accounting registers), and units from Altoviz. Useful for looking up VAT rate IDs when creating invoices or quotes.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeVatRates: z.boolean().optional().describe('Include list of available VAT rates (default: true)'),
-    includeClassifications: z.boolean().optional().describe('Include list of classifications/accounting registers'),
-    includeUnits: z.boolean().optional().describe('Include list of available units'),
-  }))
-  .output(z.object({
-    settings: z.record(z.string(), z.any()).describe('Account settings (timezone, logo, VAT number, VAT mode, etc.)'),
-    vatRates: z.array(vatRateSchema).optional(),
-    classifications: z.array(classificationSchema).optional(),
-    units: z.array(unitSchema).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeVatRates: z
+        .boolean()
+        .optional()
+        .describe('Include list of available VAT rates (default: true)'),
+      includeClassifications: z
+        .boolean()
+        .optional()
+        .describe('Include list of classifications/accounting registers'),
+      includeUnits: z.boolean().optional().describe('Include list of available units')
+    })
+  )
+  .output(
+    z.object({
+      settings: z
+        .record(z.string(), z.any())
+        .describe('Account settings (timezone, logo, VAT number, VAT mode, etc.)'),
+      vatRates: z.array(vatRateSchema).optional(),
+      classifications: z.array(classificationSchema).optional(),
+      units: z.array(unitSchema).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let settings = await client.getSettings();
@@ -59,7 +68,7 @@ export let getSettings = SlateTool.create(
         vatId: v.id,
         rate: v.rate,
         region: v.region,
-        label: v.label,
+        label: v.label
       }));
     }
 
@@ -73,7 +82,7 @@ export let getSettings = SlateTool.create(
         accountNumber: c.accountNumber,
         isProduct: c.isProduct,
         isService: c.isService,
-        type: c.type,
+        type: c.type
       }));
     }
 
@@ -82,7 +91,7 @@ export let getSettings = SlateTool.create(
       let rawUnits = await client.getUnits();
       units = rawUnits.map((u: any) => ({
         unitId: u.id,
-        label: u.label,
+        label: u.label
       }));
     }
 
@@ -91,8 +100,9 @@ export let getSettings = SlateTool.create(
         settings,
         vatRates,
         classifications,
-        units,
+        units
       },
-      message: `Retrieved account settings${vatRates ? ` with **${vatRates.length}** VAT rate(s)` : ''}${classifications ? `, **${classifications.length}** classification(s)` : ''}${units ? `, **${units.length}** unit(s)` : ''}.`,
+      message: `Retrieved account settings${vatRates ? ` with **${vatRates.length}** VAT rate(s)` : ''}${classifications ? `, **${classifications.length}** classification(s)` : ''}${units ? `, **${units.length}** unit(s)` : ''}.`
     };
-  }).build();
+  })
+  .build();

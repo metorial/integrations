@@ -110,15 +110,15 @@ export class Client {
     this.axios = createAxios({
       baseURL: clientConfig.baseUrl,
       headers: {
-        'Authorization': `Bearer ${clientConfig.token}`,
-        'carbone-version': String(clientConfig.carboneVersion),
-      },
+        Authorization: `Bearer ${clientConfig.token}`,
+        'carbone-version': String(clientConfig.carboneVersion)
+      }
     });
   }
 
   async uploadTemplate(params: UploadTemplateParams): Promise<UploadTemplateResponse> {
     let body: Record<string, unknown> = {
-      template: params.template,
+      template: params.template
     };
 
     if (params.versioning !== undefined) body.versioning = params.versioning;
@@ -132,7 +132,7 @@ export class Client {
     if (params.expireAt !== undefined) body.expireAt = params.expireAt;
 
     let response = await this.axios.post('/template', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     let data = response.data.data;
@@ -141,13 +141,15 @@ export class Client {
       versionId: data.versionId,
       type: data.type,
       size: data.size,
-      createdAt: data.createdAt,
+      createdAt: data.createdAt
     };
   }
 
-  async downloadTemplate(templateIdOrVersionId: string): Promise<{ content: ArrayBuffer; contentType: string; filename: string }> {
+  async downloadTemplate(
+    templateIdOrVersionId: string
+  ): Promise<{ content: ArrayBuffer; contentType: string; filename: string }> {
     let response = await this.axios.get(`/template/${templateIdOrVersionId}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     let contentDisposition = response.headers['content-disposition'] || '';
@@ -157,7 +159,7 @@ export class Client {
     return {
       content: response.data,
       contentType: response.headers['content-type'] || 'application/octet-stream',
-      filename,
+      filename
     };
   }
 
@@ -165,7 +167,10 @@ export class Client {
     await this.axios.delete(`/template/${templateIdOrVersionId}`);
   }
 
-  async updateTemplate(templateIdOrVersionId: string, params: UpdateTemplateParams): Promise<void> {
+  async updateTemplate(
+    templateIdOrVersionId: string,
+    params: UpdateTemplateParams
+  ): Promise<void> {
     let body: Record<string, unknown> = {};
 
     if (params.name !== undefined) body.name = params.name;
@@ -176,7 +181,7 @@ export class Client {
     if (params.expireAt !== undefined) body.expireAt = params.expireAt;
 
     await this.axios.patch(`/template/${templateIdOrVersionId}`, body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
@@ -187,7 +192,8 @@ export class Client {
     if (params.versionId) queryParams.versionId = params.versionId;
     if (params.category) queryParams.category = params.category;
     if (params.origin !== undefined) queryParams.origin = String(params.origin);
-    if (params.includeVersions !== undefined) queryParams.includeVersions = String(params.includeVersions);
+    if (params.includeVersions !== undefined)
+      queryParams.includeVersions = String(params.includeVersions);
     if (params.search) queryParams.search = params.search;
     if (params.limit !== undefined) queryParams.limit = String(params.limit);
     if (params.cursor) queryParams.cursor = params.cursor;
@@ -208,10 +214,10 @@ export class Client {
         category: t.category,
         comment: t.comment,
         tags: t.tags || [],
-        origin: t.origin,
+        origin: t.origin
       })),
       hasMore: data.hasMore || false,
-      nextCursor: data.nextCursor || null,
+      nextCursor: data.nextCursor || null
     };
   }
 
@@ -227,7 +233,7 @@ export class Client {
 
   async renderDocument(params: RenderDocumentParams): Promise<RenderDocumentResponse> {
     let body: Record<string, unknown> = {
-      data: params.data,
+      data: params.data
     };
 
     if (params.convertTo !== undefined) body.convertTo = params.convertTo;
@@ -248,7 +254,7 @@ export class Client {
     if (params.template) body.template = params.template;
 
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (params.webhookUrl) {
@@ -261,26 +267,24 @@ export class Client {
       }
     }
 
-    let response = await this.axios.post(
-      `/render/${params.templateIdOrVersionId}`,
-      body,
-      { headers }
-    );
+    let response = await this.axios.post(`/render/${params.templateIdOrVersionId}`, body, {
+      headers
+    });
 
     return {
-      renderId: response.data.data.renderId,
+      renderId: response.data.data.renderId
     };
   }
 
   async getStatus(): Promise<{ success: boolean; message: string }> {
     let statusAxios = createAxios({
-      baseURL: this.clientConfig.baseUrl,
+      baseURL: this.clientConfig.baseUrl
     });
 
     let response = await statusAxios.get('/status');
     return {
       success: response.data.success ?? true,
-      message: response.data.message ?? 'OK',
+      message: response.data.message ?? 'OK'
     };
   }
 }

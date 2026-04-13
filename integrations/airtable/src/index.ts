@@ -11,7 +11,7 @@ import {
   manageTableTool,
   manageFieldTool,
   manageCommentTool,
-  listBasesTool,
+  listBasesTool
 } from './tools';
 import { baseChangesTrigger } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     manageTableTool,
     manageFieldTool,
     manageCommentTool,
-    listBasesTool,
+    listBasesTool
   ],
-  triggers: [
-    baseChangesTrigger,
-  ],
+  triggers: [baseChangesTrigger]
 });

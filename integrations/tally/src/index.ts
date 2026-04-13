@@ -13,7 +13,7 @@ import {
   getUser,
   listWorkspaces,
   createWorkspace,
-  deleteWorkspace,
+  deleteWorkspace
 } from './tools';
 import { formResponse } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     getUser,
     listWorkspaces,
     createWorkspace,
-    deleteWorkspace,
+    deleteWorkspace
   ],
-  triggers: [
-    formResponse,
-  ],
+  triggers: [formResponse]
 });

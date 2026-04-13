@@ -8,8 +8,8 @@ export class StartonClient {
     this.axios = createAxios({
       baseURL: 'https://api.starton.com/v3',
       headers: {
-        'x-api-key': config.token,
-      },
+        'x-api-key': config.token
+      }
     });
   }
 
@@ -30,7 +30,7 @@ export class StartonClient {
       name: params.name,
       description: params.description,
       params: params.params,
-      speed: params.speed || 'average',
+      speed: params.speed || 'average'
     });
     return response.data;
   }
@@ -54,7 +54,7 @@ export class StartonClient {
       name: params.name,
       description: params.description,
       params: params.params,
-      speed: params.speed || 'average',
+      speed: params.speed || 'average'
     });
     return response.data;
   }
@@ -72,7 +72,7 @@ export class StartonClient {
       network: params.network,
       address: params.address,
       name: params.name,
-      description: params.description,
+      description: params.description
     });
     return response.data;
   }
@@ -91,8 +91,8 @@ export class StartonClient {
         page: params?.page || 0,
         network: params?.network,
         includeAbi: params?.includeAbi,
-        includeCompilationDetails: params?.includeCompilationDetails,
-      },
+        includeCompilationDetails: params?.includeCompilationDetails
+      }
     });
     return response.data;
   }
@@ -111,7 +111,9 @@ export class StartonClient {
 
   // Smart Contract - Get available functions
   async getAvailableFunctions(network: string, address: string) {
-    let response = await this.axios.get(`/smart-contract/${network}/${address}/available-functions`);
+    let response = await this.axios.get(
+      `/smart-contract/${network}/${address}/available-functions`
+    );
     return response.data;
   }
 
@@ -134,7 +136,7 @@ export class StartonClient {
         signerWallet: params.signerWallet,
         speed: params.speed || 'average',
         gasLimit: params.gasLimit,
-        value: params.value,
+        value: params.value
       }
     );
     return response.data;
@@ -151,7 +153,7 @@ export class StartonClient {
       `/smart-contract/${params.network}/${params.address}/read`,
       {
         functionName: params.functionName,
-        params: params.params,
+        params: params.params
       }
     );
     return response.data;
@@ -176,21 +178,18 @@ export class StartonClient {
     let response = await this.axios.post('/ipfs/json', {
       name: params.name,
       content: params.content,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return response.data;
   }
 
   // IPFS - List pins
-  async listIpfsPins(params?: {
-    limit?: number;
-    page?: number;
-  }) {
+  async listIpfsPins(params?: { limit?: number; page?: number }) {
     let response = await this.axios.get('/ipfs/pin', {
       params: {
         limit: params?.limit || 20,
-        page: params?.page || 0,
-      },
+        page: params?.page || 0
+      }
     });
     return response.data;
   }
@@ -220,7 +219,7 @@ export class StartonClient {
       type: params.type,
       webhookUrl: params.webhookUrl,
       confirmationsBlocks: params.confirmationsBlocks,
-      customEventAbi: params.customEventAbi,
+      customEventAbi: params.customEventAbi
     });
     return response.data;
   }
@@ -237,8 +236,8 @@ export class StartonClient {
         limit: params?.limit || 20,
         page: params?.page || 0,
         network: params?.network,
-        type: params?.type,
-      },
+        type: params?.type
+      }
     });
     return response.data;
   }
@@ -250,11 +249,14 @@ export class StartonClient {
   }
 
   // Watcher - Update
-  async updateWatcher(watcherId: string, params: {
-    name?: string;
-    description?: string;
-    isPaused?: boolean;
-  }) {
+  async updateWatcher(
+    watcherId: string,
+    params: {
+      name?: string;
+      description?: string;
+      isPaused?: boolean;
+    }
+  ) {
     let response = await this.axios.patch(`/watcher/${watcherId}`, params);
     return response.data;
   }
@@ -272,25 +274,18 @@ export class StartonClient {
   }
 
   // Wallet - Create
-  async createWallet(params: {
-    description?: string;
-    name?: string;
-    kmsId?: string;
-  }) {
+  async createWallet(params: { description?: string; name?: string; kmsId?: string }) {
     let response = await this.axios.post('/kms/wallet', params);
     return response.data;
   }
 
   // Wallet - List
-  async listWallets(params?: {
-    limit?: number;
-    page?: number;
-  }) {
+  async listWallets(params?: { limit?: number; page?: number }) {
     let response = await this.axios.get('/kms/wallet', {
       params: {
         limit: params?.limit || 20,
-        page: params?.page || 0,
-      },
+        page: params?.page || 0
+      }
     });
     return response.data;
   }
@@ -302,31 +297,24 @@ export class StartonClient {
   }
 
   // Transaction - List
-  async listTransactions(params?: {
-    limit?: number;
-    page?: number;
-    network?: string;
-  }) {
+  async listTransactions(params?: { limit?: number; page?: number; network?: string }) {
     let response = await this.axios.get('/transaction', {
       params: {
         limit: params?.limit || 20,
         page: params?.page || 0,
-        network: params?.network,
-      },
+        network: params?.network
+      }
     });
     return response.data;
   }
 
   // Smart Contract Templates - List
-  async listTemplates(params?: {
-    limit?: number;
-    page?: number;
-  }) {
+  async listTemplates(params?: { limit?: number; page?: number }) {
     let response = await this.axios.get('/smart-contract-template', {
       params: {
         limit: params?.limit || 20,
-        page: params?.page || 0,
-      },
+        page: params?.page || 0
+      }
     });
     return response.data;
   }

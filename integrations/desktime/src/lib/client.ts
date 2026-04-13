@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://desktime.com/api/v2/json',
+  baseURL: 'https://desktime.com/api/v2/json'
 });
 
 export class Client {
@@ -11,7 +11,10 @@ export class Client {
     this.token = config.token;
   }
 
-  private async get<T = any>(path: string, params?: Record<string, string | undefined>): Promise<T> {
+  private async get<T = any>(
+    path: string,
+    params?: Record<string, string | undefined>
+  ): Promise<T> {
     let filteredParams: Record<string, string> = { apiKey: this.token };
     if (params) {
       for (let [key, value] of Object.entries(params)) {
@@ -24,7 +27,10 @@ export class Client {
     return response.data;
   }
 
-  private async post<T = any>(path: string, params?: Record<string, string | undefined>): Promise<T> {
+  private async post<T = any>(
+    path: string,
+    params?: Record<string, string | undefined>
+  ): Promise<T> {
     let filteredParams: Record<string, string> = { apiKey: this.token };
     if (params) {
       for (let [key, value] of Object.entries(params)) {
@@ -44,42 +50,42 @@ export class Client {
   async getEmployee(params?: { employeeId?: string; date?: string }): Promise<any> {
     return this.get('/employee', {
       id: params?.employeeId,
-      date: params?.date,
+      date: params?.date
     });
   }
 
   async getEmployeeByEmail(email: string, date?: string): Promise<any> {
     return this.get('/employee', {
       email,
-      date,
+      date
     });
   }
 
   async getEmployees(params?: { date?: string; period?: string }): Promise<any> {
     return this.get('/employees', {
       date: params?.date,
-      period: params?.period,
+      period: params?.period
     });
   }
 
   async createProject(project: string, task?: string): Promise<any> {
     return this.post('/create-project', {
       project,
-      task,
+      task
     });
   }
 
   async startTracking(project: string, task?: string): Promise<any> {
     return this.get('/start-project', {
       project,
-      task,
+      task
     });
   }
 
   async stopTracking(project: string, task?: string): Promise<any> {
     return this.get('/stop-project', {
       project,
-      task,
+      task
     });
   }
 

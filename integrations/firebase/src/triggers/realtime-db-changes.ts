@@ -3,31 +3,33 @@ import { RealtimeDbClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let realtimeDbChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Realtime Database Changes',
-    key: 'realtime_db_changes',
-    description: 'Monitors a path in the Firebase Realtime Database for data changes by polling. Detects when new child keys are added or existing values are modified at the monitored path.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    path: z.string().describe('Database path of the changed data'),
-    childKey: z.string().describe('Key of the changed child node'),
-    data: z.any().describe('Current data at the changed path'),
-  }))
-  .output(z.object({
-    path: z.string().describe('Database path of the changed data'),
-    childKey: z.string().describe('Key of the changed child node'),
-    data: z.any().describe('Current data at the changed path'),
-  }))
+export let realtimeDbChanges = SlateTrigger.create(spec, {
+  name: 'Realtime Database Changes',
+  key: 'realtime_db_changes',
+  description:
+    'Monitors a path in the Firebase Realtime Database for data changes by polling. Detects when new child keys are added or existing values are modified at the monitored path.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      path: z.string().describe('Database path of the changed data'),
+      childKey: z.string().describe('Key of the changed child node'),
+      data: z.any().describe('Current data at the changed path')
+    })
+  )
+  .output(
+    z.object({
+      path: z.string().describe('Database path of the changed data'),
+      childKey: z.string().describe('Key of the changed child node'),
+      data: z.any().describe('Current data at the changed path')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       if (!ctx.config.databaseUrl) {
         return { inputs: [] };
       }
@@ -39,7 +41,7 @@ export let realtimeDbChanges = SlateTrigger.create(
 
       let client = new RealtimeDbClient({
         token: ctx.auth.token,
-        databaseUrl: ctx.config.databaseUrl,
+        databaseUrl: ctx.config.databaseUrl
       });
 
       let currentData = await client.getData(monitorPath, { shallow: false });
@@ -51,7 +53,12 @@ export let realtimeDbChanges = SlateTrigger.create(
         data: any;
       }> = [];
 
-      if (!isFirstPoll && currentData && typeof currentData === 'object' && !Array.isArray(currentData)) {
+      if (
+        !isFirstPoll &&
+        currentData &&
+        typeof currentData === 'object' &&
+        !Array.isArray(currentData)
+      ) {
         let previousKeys = previousSnapshot ? Object.keys(previousSnapshot) : [];
         let currentKeys = Object.keys(currentData);
 
@@ -61,14 +68,16 @@ export let realtimeDbChanges = SlateTrigger.create(
               changeType: 'created',
               path: `${monitorPath}/${key}`,
               childKey: key,
-              data: currentData[key],
+              data: currentData[key]
             });
-          } else if (JSON.stringify(previousSnapshot?.[key]) !== JSON.stringify(currentData[key])) {
+          } else if (
+            JSON.stringify(previousSnapshot?.[key]) !== JSON.stringify(currentData[key])
+          ) {
             inputs.push({
               changeType: 'updated',
               path: `${monitorPath}/${key}`,
               childKey: key,
-              data: currentData[key],
+              data: currentData[key]
             });
           }
         }
@@ -78,22 +87,23 @@ export let realtimeDbChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           monitorPath,
-          previousSnapshot: currentData && typeof currentData === 'object' ? currentData : null,
-          isFirstPoll: false,
-        },
+          previousSnapshot:
+            currentData && typeof currentData === 'object' ? currentData : null,
+          isFirstPoll: false
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `realtime_db.${ctx.input.changeType}`,
         id: `${ctx.input.path}-${Date.now()}`,
         output: {
           path: ctx.input.path,
           childKey: ctx.input.childKey,
-          data: ctx.input.data,
-        },
+          data: ctx.input.data
+        }
       };
-    },
+    }
   })
   .build();

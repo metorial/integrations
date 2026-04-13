@@ -31,12 +31,9 @@ import {
   updateSplitTest,
   toggleSplitTest,
   purgeCache,
-  listAccounts,
+  listAccounts
 } from './tools';
-import {
-  deployEvents,
-  formSubmissionEvents,
-} from './triggers';
+import { deployEvents, formSubmissionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -71,10 +68,7 @@ export let provider = Slate.create({
     updateSplitTest,
     toggleSplitTest,
     purgeCache,
-    listAccounts,
+    listAccounts
   ],
-  triggers: [
-    deployEvents,
-    formSubmissionEvents,
-  ],
+  triggers: [deployEvents, formSubmissionEvents]
 });

@@ -3,30 +3,43 @@ import { CannyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePostOrganizationTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Post Organization',
-    key: 'manage_post_organization',
-    description: `Move a post to a different board, change its category, add/remove tags, or merge posts together. Use the \`action\` field to specify the operation.`,
-    tags: {
-      destructive: false,
-    },
+export let managePostOrganizationTool = SlateTool.create(spec, {
+  name: 'Manage Post Organization',
+  key: 'manage_post_organization',
+  description: `Move a post to a different board, change its category, add/remove tags, or merge posts together. Use the \`action\` field to specify the operation.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['move_board', 'change_category', 'add_tag', 'remove_tag', 'merge']).describe('The organizational action to perform'),
-    postId: z.string().describe('The post ID to act on'),
-    boardId: z.string().optional().describe('Target board ID (for move_board)'),
-    categoryId: z.string().nullable().optional().describe('Category ID to set (for change_category, null to remove)'),
-    tagId: z.string().optional().describe('Tag ID to add or remove (for add_tag/remove_tag)'),
-    mergeIntoPostId: z.string().optional().describe('Post ID to merge into (for merge action)'),
-    mergerId: z.string().optional().describe('User ID of the person performing the merge'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['move_board', 'change_category', 'add_tag', 'remove_tag', 'merge'])
+        .describe('The organizational action to perform'),
+      postId: z.string().describe('The post ID to act on'),
+      boardId: z.string().optional().describe('Target board ID (for move_board)'),
+      categoryId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Category ID to set (for change_category, null to remove)'),
+      tagId: z
+        .string()
+        .optional()
+        .describe('Tag ID to add or remove (for add_tag/remove_tag)'),
+      mergeIntoPostId: z
+        .string()
+        .optional()
+        .describe('Post ID to merge into (for merge action)'),
+      mergerId: z.string().optional().describe('User ID of the person performing the merge')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CannyClient(ctx.auth.token);
     let { action, postId } = ctx.input;
 
@@ -36,7 +49,7 @@ export let managePostOrganizationTool = SlateTool.create(
         await client.changePostBoard(postId, ctx.input.boardId);
         return {
           output: { success: true },
-          message: `Moved post **${postId}** to board **${ctx.input.boardId}**.`,
+          message: `Moved post **${postId}** to board **${ctx.input.boardId}**.`
         };
 
       case 'change_category':
@@ -45,7 +58,7 @@ export let managePostOrganizationTool = SlateTool.create(
           output: { success: true },
           message: ctx.input.categoryId
             ? `Changed category of post **${postId}** to **${ctx.input.categoryId}**.`
-            : `Removed category from post **${postId}**.`,
+            : `Removed category from post **${postId}**.`
         };
 
       case 'add_tag':
@@ -53,7 +66,7 @@ export let managePostOrganizationTool = SlateTool.create(
         await client.addTagToPost(postId, ctx.input.tagId);
         return {
           output: { success: true },
-          message: `Added tag **${ctx.input.tagId}** to post **${postId}**.`,
+          message: `Added tag **${ctx.input.tagId}** to post **${postId}**.`
         };
 
       case 'remove_tag':
@@ -61,23 +74,25 @@ export let managePostOrganizationTool = SlateTool.create(
         await client.removeTagFromPost(postId, ctx.input.tagId);
         return {
           output: { success: true },
-          message: `Removed tag **${ctx.input.tagId}** from post **${postId}**.`,
+          message: `Removed tag **${ctx.input.tagId}** from post **${postId}**.`
         };
 
       case 'merge':
-        if (!ctx.input.mergeIntoPostId) throw new Error('mergeIntoPostId is required for merge action');
+        if (!ctx.input.mergeIntoPostId)
+          throw new Error('mergeIntoPostId is required for merge action');
         if (!ctx.input.mergerId) throw new Error('mergerId is required for merge action');
         await client.mergePosts({
           mergePostID: postId,
           intoPostID: ctx.input.mergeIntoPostId,
-          mergerID: ctx.input.mergerId,
+          mergerID: ctx.input.mergerId
         });
         return {
           output: { success: true },
-          message: `Merged post **${postId}** into **${ctx.input.mergeIntoPostId}**.`,
+          message: `Merged post **${postId}** into **${ctx.input.mergeIntoPostId}**.`
         };
 
       default:
         throw new Error(`Unknown action: ${action}`);
     }
-  }).build();
+  })
+  .build();

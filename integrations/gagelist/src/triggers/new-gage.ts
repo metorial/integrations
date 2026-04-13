@@ -3,50 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newGage = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Gage Created',
-    key: 'new_gage_created',
-    description: 'Triggers when a new gage record is created in GageList.',
-  }
-)
-  .input(z.object({
-    gageId: z.number().describe('ID of the gage'),
-    status: z.string().optional().describe('Status of the gage'),
-    type: z.string().optional().describe('Type of the gage'),
-    manufacturer: z.string().optional().describe('Manufacturer name'),
-    model: z.string().optional().describe('Model identifier'),
-    serialNumber: z.string().optional().describe('Serial number'),
-    controlNumber: z.string().optional().describe('Control number'),
-    assetNumber: z.string().optional().describe('Asset number'),
-    lastCalibrationDate: z.string().optional().describe('Last calibration date'),
-    calibrationDueDate: z.string().optional().describe('Next calibration due date'),
-    createdBy: z.string().optional().describe('Created by user'),
-    createdDate: z.string().optional().describe('Date created'),
-    updatedDate: z.string().optional().describe('Date last updated'),
-  }))
-  .output(z.object({
-    gageId: z.number().describe('ID of the new gage'),
-    status: z.string().optional().describe('Status of the gage'),
-    type: z.string().optional().describe('Type of the gage'),
-    manufacturer: z.string().optional().describe('Manufacturer name'),
-    model: z.string().optional().describe('Model identifier'),
-    serialNumber: z.string().optional().describe('Serial number'),
-    controlNumber: z.string().optional().describe('Control number'),
-    assetNumber: z.string().optional().describe('Asset number'),
-    lastCalibrationDate: z.string().optional().describe('Last calibration date'),
-    calibrationDueDate: z.string().optional().describe('Next calibration due date'),
-    createdBy: z.string().optional().describe('Created by user'),
-    createdDate: z.string().optional().describe('Date created'),
-    updatedDate: z.string().optional().describe('Date last updated'),
-  }))
+export let newGage = SlateTrigger.create(spec, {
+  name: 'New Gage Created',
+  key: 'new_gage_created',
+  description: 'Triggers when a new gage record is created in GageList.'
+})
+  .input(
+    z.object({
+      gageId: z.number().describe('ID of the gage'),
+      status: z.string().optional().describe('Status of the gage'),
+      type: z.string().optional().describe('Type of the gage'),
+      manufacturer: z.string().optional().describe('Manufacturer name'),
+      model: z.string().optional().describe('Model identifier'),
+      serialNumber: z.string().optional().describe('Serial number'),
+      controlNumber: z.string().optional().describe('Control number'),
+      assetNumber: z.string().optional().describe('Asset number'),
+      lastCalibrationDate: z.string().optional().describe('Last calibration date'),
+      calibrationDueDate: z.string().optional().describe('Next calibration due date'),
+      createdBy: z.string().optional().describe('Created by user'),
+      createdDate: z.string().optional().describe('Date created'),
+      updatedDate: z.string().optional().describe('Date last updated')
+    })
+  )
+  .output(
+    z.object({
+      gageId: z.number().describe('ID of the new gage'),
+      status: z.string().optional().describe('Status of the gage'),
+      type: z.string().optional().describe('Type of the gage'),
+      manufacturer: z.string().optional().describe('Manufacturer name'),
+      model: z.string().optional().describe('Model identifier'),
+      serialNumber: z.string().optional().describe('Serial number'),
+      controlNumber: z.string().optional().describe('Control number'),
+      assetNumber: z.string().optional().describe('Asset number'),
+      lastCalibrationDate: z.string().optional().describe('Last calibration date'),
+      calibrationDueDate: z.string().optional().describe('Next calibration due date'),
+      createdBy: z.string().optional().describe('Created by user'),
+      createdDate: z.string().optional().describe('Date created'),
+      updatedDate: z.string().optional().describe('Date last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastTs: number = ctx.state?.lastTs ?? 0;
@@ -78,16 +79,16 @@ export let newGage = SlateTrigger.create(
         calibrationDueDate: g.CalibrationDueDate,
         createdBy: g.CreatedBy,
         createdDate: g.CreatedDate,
-        updatedDate: g.UpdatedDate,
+        updatedDate: g.UpdatedDate
       }));
 
       return {
         inputs,
-        updatedState: { lastTs: maxTs },
+        updatedState: { lastTs: maxTs }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'gage.created',
         id: `gage-${ctx.input.gageId}`,
@@ -104,9 +105,9 @@ export let newGage = SlateTrigger.create(
           calibrationDueDate: ctx.input.calibrationDueDate,
           createdBy: ctx.input.createdBy,
           createdDate: ctx.input.createdDate,
-          updatedDate: ctx.input.updatedDate,
-        },
+          updatedDate: ctx.input.updatedDate
+        }
       };
-    },
+    }
   })
   .build();

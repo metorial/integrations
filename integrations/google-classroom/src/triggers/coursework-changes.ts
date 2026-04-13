@@ -9,34 +9,39 @@ let courseWorkOutputSchema = z.object({
   title: z.string().optional().describe('Title of the coursework'),
   description: z.string().optional().describe('Description'),
   state: z.string().optional().describe('State (PUBLISHED, DRAFT, DELETED)'),
-  workType: z.string().optional().describe('Type (ASSIGNMENT, SHORT_ANSWER_QUESTION, MULTIPLE_CHOICE_QUESTION)'),
+  workType: z
+    .string()
+    .optional()
+    .describe('Type (ASSIGNMENT, SHORT_ANSWER_QUESTION, MULTIPLE_CHOICE_QUESTION)'),
   maxPoints: z.number().optional().describe('Maximum points'),
   alternateLink: z.string().optional().describe('URL to the coursework'),
   creationTime: z.string().optional().describe('When the coursework was created'),
-  updateTime: z.string().optional().describe('When the coursework was last updated'),
+  updateTime: z.string().optional().describe('When the coursework was last updated')
 });
 
-export let courseworkChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Coursework Changes',
-    key: 'coursework_changes',
-    description: 'Triggers when coursework (assignments, questions) is created or updated in courses you teach. Detects new and modified coursework items by polling the API.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Whether the coursework was created or updated'),
-    courseWorkId: z.string().describe('Coursework ID'),
-    courseId: z.string().describe('Course ID'),
-    coursework: z.any().describe('Full coursework data'),
-  }))
+export let courseworkChanges = SlateTrigger.create(spec, {
+  name: 'Coursework Changes',
+  key: 'coursework_changes',
+  description:
+    'Triggers when coursework (assignments, questions) is created or updated in courses you teach. Detects new and modified coursework items by polling the API.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the coursework was created or updated'),
+      courseWorkId: z.string().describe('Coursework ID'),
+      courseId: z.string().describe('Course ID'),
+      coursework: z.any().describe('Full coursework data')
+    })
+  )
   .output(courseWorkOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ClassroomClient({ token: ctx.auth.token });
 
       let previousState = ctx.state || {};
@@ -61,7 +66,7 @@ export let courseworkChanges = SlateTrigger.create(
 
         let cwResult = await client.listCourseWork(cId, {
           pageSize: 50,
-          orderBy: 'updateTime desc',
+          orderBy: 'updateTime desc'
         });
 
         let courseWorkItems = cwResult.courseWork || [];
@@ -75,9 +80,19 @@ export let courseworkChanges = SlateTrigger.create(
           if (previousState.initialized) {
             let prevUpdateTime = knownCoursework[cwId];
             if (!prevUpdateTime) {
-              inputs.push({ changeType: 'created', courseWorkId: cwId, courseId: cId, coursework: cw });
+              inputs.push({
+                changeType: 'created',
+                courseWorkId: cwId,
+                courseId: cId,
+                coursework: cw
+              });
             } else if (prevUpdateTime !== (cw.updateTime || '')) {
-              inputs.push({ changeType: 'updated', courseWorkId: cwId, courseId: cId, coursework: cw });
+              inputs.push({
+                changeType: 'updated',
+                courseWorkId: cwId,
+                courseId: cId,
+                coursework: cw
+              });
             }
           }
         }
@@ -87,12 +102,12 @@ export let courseworkChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           knownCoursework: newKnownCoursework,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { changeType, courseWorkId, courseId, coursework } = ctx.input;
 
       return {
@@ -108,9 +123,9 @@ export let courseworkChanges = SlateTrigger.create(
           maxPoints: coursework.maxPoints,
           alternateLink: coursework.alternateLink,
           creationTime: coursework.creationTime,
-          updateTime: coursework.updateTime,
-        },
+          updateTime: coursework.updateTime
+        }
       };
-    },
+    }
   })
   .build();

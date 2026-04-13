@@ -3,31 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event',
-    key: 'get_event',
-    description: `Retrieve detailed information about a specific Evenium event by its ID. Returns the event's title, dates, status, description, and URL. Supports both Evenium IDs and external IDs (prefixed with \`ext:\`).`,
-    tags: {
-      readOnly: true
-    }
+export let getEvent = SlateTool.create(spec, {
+  name: 'Get Event',
+  key: 'get_event',
+  description: `Retrieve detailed information about a specific Evenium event by its ID. Returns the event's title, dates, status, description, and URL. Supports both Evenium IDs and external IDs (prefixed with \`ext:\`).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('Event ID (Evenium ID or external ID with ext: prefix, e.g. "ext:EV-AB12CD34")')
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    title: z.string().describe('Event title'),
-    description: z.string().optional().describe('Event description'),
-    startDate: z.string().describe('Event start date (RFC 3339)'),
-    endDate: z.string().optional().describe('Event end date (RFC 3339)'),
-    creationDate: z.string().optional().describe('Event creation date (RFC 3339)'),
-    status: z.string().optional().describe('Event status'),
-    url: z.string().optional().describe('Event URL')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z
+        .string()
+        .describe(
+          'Event ID (Evenium ID or external ID with ext: prefix, e.g. "ext:EV-AB12CD34")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      title: z.string().describe('Event title'),
+      description: z.string().optional().describe('Event description'),
+      startDate: z.string().describe('Event start date (RFC 3339)'),
+      endDate: z.string().optional().describe('Event end date (RFC 3339)'),
+      creationDate: z.string().optional().describe('Event creation date (RFC 3339)'),
+      status: z.string().optional().describe('Event status'),
+      url: z.string().optional().describe('Event URL')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let event = await client.getEvent(ctx.input.eventId);
 
@@ -44,4 +49,5 @@ export let getEvent = SlateTool.create(
       },
       message: `Retrieved event **${event.title}** (${event.status ?? 'unknown status'}).`
     };
-  }).build();
+  })
+  .build();

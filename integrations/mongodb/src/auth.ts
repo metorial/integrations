@@ -2,16 +2,18 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let atlasAxios = createAxios({
-  baseURL: 'https://cloud.mongodb.com',
+  baseURL: 'https://cloud.mongodb.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    publicKey: z.string().optional(),
-    privateKey: z.string().optional(),
-    authMethod: z.enum(['oauth', 'digest']),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      publicKey: z.string().optional(),
+      privateKey: z.string().optional(),
+      authMethod: z.enum(['oauth', 'digest'])
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0 Service Account',
@@ -21,41 +23,41 @@ export let auth = SlateAuth.create()
       {
         title: 'Organization Owner',
         description: 'Full access to manage the organization and all its projects',
-        scope: 'org:owner',
+        scope: 'org:owner'
       },
       {
         title: 'Organization Member',
         description: 'Read access to organization resources',
-        scope: 'org:member',
+        scope: 'org:member'
       },
       {
         title: 'Organization Read Only',
         description: 'Read-only access to organization settings and projects',
-        scope: 'org:read',
+        scope: 'org:read'
       },
       {
         title: 'Project Owner',
         description: 'Full access to manage a project and its resources',
-        scope: 'project:owner',
+        scope: 'project:owner'
       },
       {
         title: 'Project Read Only',
         description: 'Read-only access to project resources',
-        scope: 'project:read',
+        scope: 'project:read'
       },
       {
         title: 'Project Cluster Manager',
         description: 'Create, edit, and delete clusters within a project',
-        scope: 'project:cluster_manager',
+        scope: 'project:cluster_manager'
       },
       {
         title: 'Project Data Access Admin',
         description: 'Manage database users and access within a project',
-        scope: 'project:data_access_admin',
-      },
+        scope: 'project:data_access_admin'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       // MongoDB Atlas OAuth uses client_credentials flow (no user redirect needed)
       // We return a token URL that the platform will handle
       let params = new URLSearchParams({
@@ -63,15 +65,15 @@ export let auth = SlateAuth.create()
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
-        url: `https://cloud.mongodb.com/api/oauth/authorize?${params.toString()}`,
+        url: `https://cloud.mongodb.com/api/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let tokenResponse = await atlasAxios.post(
         'https://cloud.mongodb.com/api/oauth/token',
         new URLSearchParams({
@@ -79,24 +81,24 @@ export let auth = SlateAuth.create()
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
+          client_secret: ctx.clientSecret
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
       return {
         output: {
           token: tokenResponse.data.access_token,
-          authMethod: 'oauth' as const,
-        },
+          authMethod: 'oauth' as const
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       // MongoDB Atlas service accounts use client_credentials - get a new token
       let tokenResponse = await atlasAxios.post(
         'https://cloud.mongodb.com/api/oauth/token',
@@ -104,22 +106,22 @@ export let auth = SlateAuth.create()
           grant_type: 'client_credentials',
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          scope: ctx.scopes.join(' '),
+          scope: ctx.scopes.join(' ')
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
       return {
         output: {
           token: tokenResponse.data.access_token,
-          authMethod: 'oauth' as const,
-        },
+          authMethod: 'oauth' as const
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -128,19 +130,19 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       publicKey: z.string().describe('MongoDB Atlas API Public Key'),
-      privateKey: z.string().describe('MongoDB Atlas API Private Key'),
+      privateKey: z.string().describe('MongoDB Atlas API Private Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       // Verify the credentials work by making a test request
       let credentials = btoa(`${ctx.input.publicKey}:${ctx.input.privateKey}`);
 
       // Test the credentials
       await atlasAxios.get('/api/atlas/v2/orgs', {
         headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Accept': 'application/vnd.atlas.2025-03-12+json',
-        },
+          Authorization: `Basic ${credentials}`,
+          Accept: 'application/vnd.atlas.2025-03-12+json'
+        }
       });
 
       return {
@@ -148,20 +150,25 @@ export let auth = SlateAuth.create()
           token: credentials,
           publicKey: ctx.input.publicKey,
           privateKey: ctx.input.privateKey,
-          authMethod: 'digest' as const,
-        },
+          authMethod: 'digest' as const
+        }
       };
     },
 
     getProfile: async (ctx: {
-      output: { token: string; publicKey?: string; privateKey?: string; authMethod: 'oauth' | 'digest' };
+      output: {
+        token: string;
+        publicKey?: string;
+        privateKey?: string;
+        authMethod: 'oauth' | 'digest';
+      };
       input: { publicKey: string; privateKey: string };
     }) => {
       let response = await atlasAxios.get('/api/atlas/v2/orgs', {
         headers: {
-          'Authorization': `Basic ${ctx.output.token}`,
-          'Accept': 'application/vnd.atlas.2025-03-12+json',
-        },
+          Authorization: `Basic ${ctx.output.token}`,
+          Accept: 'application/vnd.atlas.2025-03-12+json'
+        }
       });
 
       let orgs = response.data.results || [];
@@ -170,8 +177,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: firstOrg?.id,
-          name: firstOrg?.name,
-        },
+          name: firstOrg?.name
+        }
       };
-    },
+    }
   });

@@ -23,6 +23,7 @@ Rafflys uses API keys for authentication. When you connect your Rafflys account,
 The API key must be passed in the `X-API-KEY` HTTP header on every request. The base URL for the API is `https://app-sorteos.com/api/v2/`.
 
 Example request:
+
 ```
 GET https://app-sorteos.com/api/v2/users/me
 Headers:

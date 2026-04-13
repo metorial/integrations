@@ -3,30 +3,33 @@ import { TwoCaptchaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reportSolution = SlateTool.create(
-  spec,
-  {
-    name: 'Report Solution',
-    key: 'report_solution',
-    description: `Report a captcha solution as correct or incorrect. Reporting incorrect solutions helps improve quality and may result in a refund for the incorrectly solved captcha.`,
-    instructions: [
-      'Only report a solution after you have verified whether it worked or not.',
-      'Reporting incorrect solutions within a reasonable timeframe may result in account credit.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    taskId: z.number().describe('Task ID of the captcha solution to report'),
-    isCorrect: z.boolean().describe('Set to true to report as correct, false to report as incorrect'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Report submission status'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let reportSolution = SlateTool.create(spec, {
+  name: 'Report Solution',
+  key: 'report_solution',
+  description: `Report a captcha solution as correct or incorrect. Reporting incorrect solutions helps improve quality and may result in a refund for the incorrectly solved captcha.`,
+  instructions: [
+    'Only report a solution after you have verified whether it worked or not.',
+    'Reporting incorrect solutions within a reasonable timeframe may result in account credit.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      taskId: z.number().describe('Task ID of the captcha solution to report'),
+      isCorrect: z
+        .boolean()
+        .describe('Set to true to report as correct, false to report as incorrect')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Report submission status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwoCaptchaClient({ token: ctx.auth.token });
 
     let result = ctx.input.isCorrect
@@ -39,8 +42,9 @@ export let reportSolution = SlateTool.create(
 
     return {
       output: {
-        status: result.status ?? 'ok',
+        status: result.status ?? 'ok'
       },
-      message: `Solution for task **${ctx.input.taskId}** reported as **${ctx.input.isCorrect ? 'correct' : 'incorrect'}**.`,
+      message: `Solution for task **${ctx.input.taskId}** reported as **${ctx.input.isCorrect ? 'correct' : 'incorrect'}**.`
     };
-  }).build();
+  })
+  .build();

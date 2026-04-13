@@ -5,37 +5,38 @@ import { z } from 'zod';
 
 let marketplaceEventTypes = ['marketplace.offer.live', 'marketplace.offer.updated'] as const;
 
-export let marketplaceOfferEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Marketplace Offer Events',
-    key: 'marketplace_offer_events',
-    description: 'Triggers when a marketplace offer goes live or is updated.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(marketplaceEventTypes).describe('Type of marketplace offer event'),
-    offerId: z.string().describe('Unique identifier of the offer'),
-    rawEvent: z.any().describe('Raw event payload from Fidel API'),
-  }))
-  .output(z.object({
-    offerId: z.string().describe('Unique identifier of the offer'),
-    programId: z.string().optional().describe('ID of the program'),
-    brandId: z.string().optional().describe('ID of the brand'),
-    accountId: z.string().optional().describe('Account ID'),
-    name: z.string().optional().describe('Name of the offer'),
-    countryCode: z.string().optional().describe('Country code'),
-    status: z.string().optional().describe('Current status of the offer'),
-    offerType: z.string().optional().describe('Offer type (amount or discount)'),
-    offerValue: z.number().optional().describe('Offer value'),
-    startDate: z.string().optional().describe('ISO 8601 start date'),
-    endDate: z.string().optional().describe('ISO 8601 end date'),
-    live: z.boolean().optional().describe('Whether the offer is in live mode'),
-    created: z.string().optional().describe('ISO 8601 creation timestamp'),
-    updated: z.string().optional().describe('ISO 8601 update timestamp'),
-  }))
+export let marketplaceOfferEvents = SlateTrigger.create(spec, {
+  name: 'Marketplace Offer Events',
+  key: 'marketplace_offer_events',
+  description: 'Triggers when a marketplace offer goes live or is updated.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(marketplaceEventTypes).describe('Type of marketplace offer event'),
+      offerId: z.string().describe('Unique identifier of the offer'),
+      rawEvent: z.any().describe('Raw event payload from Fidel API')
+    })
+  )
+  .output(
+    z.object({
+      offerId: z.string().describe('Unique identifier of the offer'),
+      programId: z.string().optional().describe('ID of the program'),
+      brandId: z.string().optional().describe('ID of the brand'),
+      accountId: z.string().optional().describe('Account ID'),
+      name: z.string().optional().describe('Name of the offer'),
+      countryCode: z.string().optional().describe('Country code'),
+      status: z.string().optional().describe('Current status of the offer'),
+      offerType: z.string().optional().describe('Offer type (amount or discount)'),
+      offerValue: z.number().optional().describe('Offer value'),
+      startDate: z.string().optional().describe('ISO 8601 start date'),
+      endDate: z.string().optional().describe('ISO 8601 end date'),
+      live: z.boolean().optional().describe('Whether the offer is in live mode'),
+      created: z.string().optional().describe('ISO 8601 creation timestamp'),
+      updated: z.string().optional().describe('ISO 8601 update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations: Array<{ webhookId: string; programId: string; event: string }> = [];
 
@@ -47,12 +48,12 @@ export let marketplaceOfferEvents = SlateTrigger.create(
           try {
             let webhook = await client.createWebhook(program.id, {
               event,
-              url: ctx.input.webhookBaseUrl,
+              url: ctx.input.webhookBaseUrl
             });
             registrations.push({
               webhookId: webhook.id,
               programId: program.id,
-              event,
+              event
             });
           } catch {
             // Continue on error
@@ -61,11 +62,11 @@ export let marketplaceOfferEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let registrations = (ctx.input.registrationDetails as any)?.registrations ?? [];
 
@@ -78,23 +79,23 @@ export let marketplaceOfferEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
       let eventType = data?.type ?? 'marketplace.offer.live';
       let offerId = data?.id ?? '';
 
       return {
         inputs: [
           {
-            eventType: eventType as typeof marketplaceEventTypes[number],
+            eventType: eventType as (typeof marketplaceEventTypes)[number],
             offerId,
-            rawEvent: data,
-          },
-        ],
+            rawEvent: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let offer = ctx.input.rawEvent;
 
       return {
@@ -114,9 +115,9 @@ export let marketplaceOfferEvents = SlateTrigger.create(
           endDate: offer.endDate,
           live: offer.live,
           created: offer.created,
-          updated: offer.updated,
-        },
+          updated: offer.updated
+        }
       };
-    },
+    }
   })
   .build();

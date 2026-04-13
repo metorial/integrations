@@ -3,59 +3,79 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCalendarResources = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Calendar Resources',
-    key: 'manage_calendar_resources',
-    description: `List, create, update, or delete calendar resources like meeting rooms and equipment. These resources appear in Google Calendar for booking.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageCalendarResources = SlateTool.create(spec, {
+  name: 'Manage Calendar Resources',
+  key: 'manage_calendar_resources',
+  description: `List, create, update, or delete calendar resources like meeting rooms and equipment. These resources appear in Google Calendar for booking.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    calendarResourceId: z.string().optional().describe('Calendar resource ID (required for get, update, delete; also used as the ID when creating)'),
-    resourceName: z.string().optional().describe('Name of the resource (required for create)'),
-    resourceType: z.string().optional().describe('Type of resource (e.g. "Conference Room", "Equipment")'),
-    resourceDescription: z.string().optional().describe('Description of the resource'),
-    buildingId: z.string().optional().describe('Building ID the resource belongs to'),
-    floorName: z.string().optional().describe('Floor name/number'),
-    capacity: z.number().optional().describe('Room capacity'),
-    query: z.string().optional().describe('Search query for listing resources'),
-    maxResults: z.number().optional(),
-    pageToken: z.string().optional()
-  }))
-  .output(z.object({
-    resources: z.array(z.object({
-      calendarResourceId: z.string().optional(),
-      resourceName: z.string().optional(),
-      resourceType: z.string().optional(),
-      resourceDescription: z.string().optional(),
-      resourceEmail: z.string().optional(),
-      buildingId: z.string().optional(),
-      floorName: z.string().optional(),
-      capacity: z.number().optional(),
-      generatedResourceName: z.string().optional()
-    })).optional(),
-    resource: z.object({
-      calendarResourceId: z.string().optional(),
-      resourceName: z.string().optional(),
-      resourceType: z.string().optional(),
-      resourceDescription: z.string().optional(),
-      resourceEmail: z.string().optional(),
-      buildingId: z.string().optional(),
-      floorName: z.string().optional(),
-      capacity: z.number().optional(),
-      generatedResourceName: z.string().optional()
-    }).optional(),
-    nextPageToken: z.string().optional(),
-    deleted: z.boolean().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      calendarResourceId: z
+        .string()
+        .optional()
+        .describe(
+          'Calendar resource ID (required for get, update, delete; also used as the ID when creating)'
+        ),
+      resourceName: z
+        .string()
+        .optional()
+        .describe('Name of the resource (required for create)'),
+      resourceType: z
+        .string()
+        .optional()
+        .describe('Type of resource (e.g. "Conference Room", "Equipment")'),
+      resourceDescription: z.string().optional().describe('Description of the resource'),
+      buildingId: z.string().optional().describe('Building ID the resource belongs to'),
+      floorName: z.string().optional().describe('Floor name/number'),
+      capacity: z.number().optional().describe('Room capacity'),
+      query: z.string().optional().describe('Search query for listing resources'),
+      maxResults: z.number().optional(),
+      pageToken: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      resources: z
+        .array(
+          z.object({
+            calendarResourceId: z.string().optional(),
+            resourceName: z.string().optional(),
+            resourceType: z.string().optional(),
+            resourceDescription: z.string().optional(),
+            resourceEmail: z.string().optional(),
+            buildingId: z.string().optional(),
+            floorName: z.string().optional(),
+            capacity: z.number().optional(),
+            generatedResourceName: z.string().optional()
+          })
+        )
+        .optional(),
+      resource: z
+        .object({
+          calendarResourceId: z.string().optional(),
+          resourceName: z.string().optional(),
+          resourceType: z.string().optional(),
+          resourceDescription: z.string().optional(),
+          resourceEmail: z.string().optional(),
+          buildingId: z.string().optional(),
+          floorName: z.string().optional(),
+          capacity: z.number().optional(),
+          generatedResourceName: z.string().optional()
+        })
+        .optional(),
+      nextPageToken: z.string().optional(),
+      deleted: z.boolean().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -90,7 +110,9 @@ export let manageCalendarResources = SlateTool.create(
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.calendarResourceId || !ctx.input.resourceName) {
-        throw new Error('calendarResourceId and resourceName are required to create a resource');
+        throw new Error(
+          'calendarResourceId and resourceName are required to create a resource'
+        );
       }
       let r = await client.createCalendarResource({
         resourceId: ctx.input.calendarResourceId,
@@ -121,7 +143,8 @@ export let manageCalendarResources = SlateTool.create(
       let updateData: Record<string, any> = {};
       if (ctx.input.resourceName) updateData.resourceName = ctx.input.resourceName;
       if (ctx.input.resourceType) updateData.resourceType = ctx.input.resourceType;
-      if (ctx.input.resourceDescription !== undefined) updateData.resourceDescription = ctx.input.resourceDescription;
+      if (ctx.input.resourceDescription !== undefined)
+        updateData.resourceDescription = ctx.input.resourceDescription;
       if (ctx.input.buildingId) updateData.buildingId = ctx.input.buildingId;
       if (ctx.input.floorName) updateData.floorName = ctx.input.floorName;
       if (ctx.input.capacity !== undefined) updateData.capacity = ctx.input.capacity;

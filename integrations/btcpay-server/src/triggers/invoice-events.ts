@@ -3,42 +3,60 @@ import { BTCPayClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Events',
-    key: 'invoice_events',
-    description: 'Triggers when invoice status changes occur, including creation, payment, settlement, expiration, and invalidation.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('BTCPay Server event type (e.g., InvoiceCreated, InvoiceSettled)'),
-    deliveryId: z.string().describe('Webhook delivery ID'),
-    invoiceId: z.string().describe('Invoice ID'),
-    storeId: z.string().describe('Store ID'),
-    timestamp: z.number().optional().describe('Event timestamp'),
-    partiallyPaid: z.boolean().optional().describe('Whether the invoice was partially paid (for expired events)'),
-    overPaid: z.boolean().optional().describe('Whether the invoice was overpaid'),
-    manuallyMarked: z.boolean().optional().describe('Whether the status was manually marked'),
-    paymentMethodId: z.string().optional().nullable().describe('Payment method ID (for payment events)'),
-    paymentValue: z.string().optional().nullable().describe('Payment value (for payment events)'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('Invoice ID'),
-    storeId: z.string().describe('Store ID'),
-    status: z.string().describe('Invoice status derived from event type'),
-    partiallyPaid: z.boolean().optional().describe('Whether the invoice was partially paid'),
-    overPaid: z.boolean().optional().describe('Whether the invoice was overpaid'),
-    manuallyMarked: z.boolean().optional().describe('Whether status was manually set'),
-    paymentMethodId: z.string().optional().nullable().describe('Payment method used'),
-    paymentValue: z.string().optional().nullable().describe('Payment amount received'),
-    timestamp: z.number().optional().describe('Event timestamp'),
-  }))
+export let invoiceEvents = SlateTrigger.create(spec, {
+  name: 'Invoice Events',
+  key: 'invoice_events',
+  description:
+    'Triggers when invoice status changes occur, including creation, payment, settlement, expiration, and invalidation.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('BTCPay Server event type (e.g., InvoiceCreated, InvoiceSettled)'),
+      deliveryId: z.string().describe('Webhook delivery ID'),
+      invoiceId: z.string().describe('Invoice ID'),
+      storeId: z.string().describe('Store ID'),
+      timestamp: z.number().optional().describe('Event timestamp'),
+      partiallyPaid: z
+        .boolean()
+        .optional()
+        .describe('Whether the invoice was partially paid (for expired events)'),
+      overPaid: z.boolean().optional().describe('Whether the invoice was overpaid'),
+      manuallyMarked: z
+        .boolean()
+        .optional()
+        .describe('Whether the status was manually marked'),
+      paymentMethodId: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Payment method ID (for payment events)'),
+      paymentValue: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Payment value (for payment events)')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('Invoice ID'),
+      storeId: z.string().describe('Store ID'),
+      status: z.string().describe('Invoice status derived from event type'),
+      partiallyPaid: z.boolean().optional().describe('Whether the invoice was partially paid'),
+      overPaid: z.boolean().optional().describe('Whether the invoice was overpaid'),
+      manuallyMarked: z.boolean().optional().describe('Whether status was manually set'),
+      paymentMethodId: z.string().optional().nullable().describe('Payment method used'),
+      paymentValue: z.string().optional().nullable().describe('Payment amount received'),
+      timestamp: z.number().optional().describe('Event timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new BTCPayClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
       let stores = await client.getStores();
@@ -59,30 +77,31 @@ export let invoiceEvents = SlateTrigger.create(
               'InvoiceExpired',
               'InvoiceSettled',
               'InvoiceInvalid',
-              'InvoicePaymentSettled',
-            ],
-          },
+              'InvoicePaymentSettled'
+            ]
+          }
         });
 
         registrations.push({
           storeId,
           webhookId: result.id as string,
-          secret: result.secret as string,
+          secret: result.secret as string
         });
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new BTCPayClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
-      let registrations = (ctx.input.registrationDetails as Record<string, unknown>).registrations as Array<{ storeId: string; webhookId: string }>;
+      let registrations = (ctx.input.registrationDetails as Record<string, unknown>)
+        .registrations as Array<{ storeId: string; webhookId: string }>;
 
       for (let reg of registrations) {
         try {
@@ -93,8 +112,8 @@ export let invoiceEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, unknown>;
 
       if (!body || !body.type) {
         return { inputs: [] };
@@ -107,33 +126,38 @@ export let invoiceEvents = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let deliveryId = body.deliveryId as string || body.webhookId as string || `${body.invoiceId}-${Date.now()}`;
+      let deliveryId =
+        (body.deliveryId as string) ||
+        (body.webhookId as string) ||
+        `${body.invoiceId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          deliveryId: String(deliveryId),
-          invoiceId: body.invoiceId as string || '',
-          storeId: body.storeId as string || '',
-          timestamp: body.timestamp as number | undefined,
-          partiallyPaid: body.partiallyPaid as boolean | undefined,
-          overPaid: body.overPaid as boolean | undefined,
-          manuallyMarked: body.manuallyMarked as boolean | undefined,
-          paymentMethodId: (body.paymentMethodId as string) || null,
-          paymentValue: (body.payment as Record<string, unknown>)?.value as string || null,
-        }],
+        inputs: [
+          {
+            eventType,
+            deliveryId: String(deliveryId),
+            invoiceId: (body.invoiceId as string) || '',
+            storeId: (body.storeId as string) || '',
+            timestamp: body.timestamp as number | undefined,
+            partiallyPaid: body.partiallyPaid as boolean | undefined,
+            overPaid: body.overPaid as boolean | undefined,
+            manuallyMarked: body.manuallyMarked as boolean | undefined,
+            paymentMethodId: (body.paymentMethodId as string) || null,
+            paymentValue: ((body.payment as Record<string, unknown>)?.value as string) || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusMap: Record<string, string> = {
-        'InvoiceCreated': 'New',
-        'InvoiceReceivedPayment': 'Processing',
-        'InvoiceProcessing': 'Processing',
-        'InvoiceExpired': 'Expired',
-        'InvoiceSettled': 'Settled',
-        'InvoiceInvalid': 'Invalid',
-        'InvoicePaymentSettled': 'Settled',
+        InvoiceCreated: 'New',
+        InvoiceReceivedPayment: 'Processing',
+        InvoiceProcessing: 'Processing',
+        InvoiceExpired: 'Expired',
+        InvoiceSettled: 'Settled',
+        InvoiceInvalid: 'Invalid',
+        InvoicePaymentSettled: 'Settled'
       };
 
       let status = statusMap[ctx.input.eventType] || ctx.input.eventType;
@@ -154,8 +178,9 @@ export let invoiceEvents = SlateTrigger.create(
           manuallyMarked: ctx.input.manuallyMarked,
           paymentMethodId: ctx.input.paymentMethodId,
           paymentValue: ctx.input.paymentValue,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

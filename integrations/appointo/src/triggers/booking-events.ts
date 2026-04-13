@@ -16,39 +16,38 @@ let bookingEventInputSchema = z.object({
   status: z.string().optional().describe('Booking status'),
   orderName: z.string().optional().describe('Order name'),
   quantity: z.number().optional().describe('Booking quantity'),
-  raw: z.any().optional().describe('Raw booking data from the API'),
+  raw: z.any().optional().describe('Raw booking data from the API')
 });
 
-let bookingEventOutputSchema = z.object({
-  bookingId: z.number().describe('Booking ID'),
-  customerName: z.string().optional().describe('Customer name'),
-  customerEmail: z.string().optional().describe('Customer email'),
-  customerPhone: z.string().optional().describe('Customer phone'),
-  productName: z.string().optional().describe('Product name'),
-  appointmentName: z.string().optional().describe('Appointment name'),
-  startTime: z.string().optional().describe('Booking start time'),
-  endTime: z.string().optional().describe('Booking end time'),
-  status: z.string().optional().describe('Booking status'),
-  orderName: z.string().optional().describe('Order name'),
-  quantity: z.number().optional().describe('Booking quantity'),
-}).passthrough();
+let bookingEventOutputSchema = z
+  .object({
+    bookingId: z.number().describe('Booking ID'),
+    customerName: z.string().optional().describe('Customer name'),
+    customerEmail: z.string().optional().describe('Customer email'),
+    customerPhone: z.string().optional().describe('Customer phone'),
+    productName: z.string().optional().describe('Product name'),
+    appointmentName: z.string().optional().describe('Appointment name'),
+    startTime: z.string().optional().describe('Booking start time'),
+    endTime: z.string().optional().describe('Booking end time'),
+    status: z.string().optional().describe('Booking status'),
+    orderName: z.string().optional().describe('Order name'),
+    quantity: z.number().optional().describe('Booking quantity')
+  })
+  .passthrough();
 
-export let bookingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Booking Events',
-    key: 'booking_events',
-    description: 'Triggers when bookings are created, rescheduled, or canceled in Appointo.',
-  }
-)
+export let bookingEvents = SlateTrigger.create(spec, {
+  name: 'Booking Events',
+  key: 'booking_events',
+  description: 'Triggers when bookings are created, rescheduled, or canceled in Appointo.'
+})
   .input(bookingEventInputSchema)
   .output(bookingEventOutputSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastSeenBookingIds: number[] = ctx.state?.lastSeenBookingIds ?? [];
@@ -57,14 +56,20 @@ export let bookingEvents = SlateTrigger.create(
 
       // Fetch upcoming bookings to detect new and rescheduled bookings
       let upcomingResult = await client.listBookings({ status: 'upcoming', limit: 100 });
-      let upcomingBookings = Array.isArray(upcomingResult) ? upcomingResult : (upcomingResult?.bookings ?? upcomingResult?.data ?? []);
+      let upcomingBookings = Array.isArray(upcomingResult)
+        ? upcomingResult
+        : (upcomingResult?.bookings ?? upcomingResult?.data ?? []);
 
       // Fetch past bookings to detect cancellations
       let pastResult = await client.listBookings({ status: 'past', limit: 100 });
-      let pastBookings = Array.isArray(pastResult) ? pastResult : (pastResult?.bookings ?? pastResult?.data ?? []);
+      let pastBookings = Array.isArray(pastResult)
+        ? pastResult
+        : (pastResult?.bookings ?? pastResult?.data ?? []);
 
       let allBookings = [...upcomingBookings, ...pastBookings];
-      let currentUpcomingIds = upcomingBookings.map((b: any) => b.id ?? b.booking_id).filter(Boolean);
+      let currentUpcomingIds = upcomingBookings
+        .map((b: any) => b.id ?? b.booking_id)
+        .filter(Boolean);
       let allCurrentIds = allBookings.map((b: any) => b.id ?? b.booking_id).filter(Boolean);
 
       let inputs: z.infer<typeof bookingEventInputSchema>[] = [];
@@ -80,7 +85,7 @@ export let bookingEvents = SlateTrigger.create(
         endTime: b.end_time,
         status: b.status,
         orderName: b.order_name,
-        quantity: b.quantity,
+        quantity: b.quantity
       });
 
       if (lastPollTimestamp) {
@@ -102,7 +107,10 @@ export let bookingEvents = SlateTrigger.create(
         for (let oldId of lastSeenUpcomingIds) {
           if (!currentUpcomingIds.includes(oldId)) {
             let pastMatch = pastBookings.find((b: any) => (b.id ?? b.booking_id) === oldId);
-            if (pastMatch && (pastMatch.status === 'cancelled' || pastMatch.status === 'canceled')) {
+            if (
+              pastMatch &&
+              (pastMatch.status === 'cancelled' || pastMatch.status === 'canceled')
+            ) {
               let mapped = mapBooking(pastMatch);
               if (!inputs.some(i => i.bookingId === oldId)) {
                 inputs.push({ ...mapped, eventType: 'canceled', raw: pastMatch });
@@ -117,12 +125,12 @@ export let bookingEvents = SlateTrigger.create(
         updatedState: {
           lastSeenBookingIds: allCurrentIds.slice(0, 200),
           lastSeenUpcomingIds: currentUpcomingIds.slice(0, 200),
-          lastPollTimestamp: new Date().toISOString(),
-        },
+          lastPollTimestamp: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `booking.${ctx.input.eventType}`,
         id: `booking_${ctx.input.bookingId}_${ctx.input.eventType}_${Date.now()}`,
@@ -138,9 +146,9 @@ export let bookingEvents = SlateTrigger.create(
           status: ctx.input.status,
           orderName: ctx.input.orderName,
           quantity: ctx.input.quantity,
-          ...(ctx.input.raw ?? {}),
-        },
+          ...(ctx.input.raw ?? {})
+        }
       };
-    },
+    }
   })
   .build();

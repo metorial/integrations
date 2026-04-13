@@ -15,6 +15,7 @@ Mural supports two authentication methods depending on the API set being used:
 The Mural API uses OAuth 2.0 as a secure method of authorizing interaction between your app and the Mural API. The current implementation uses the Authorization Code Grant method. PKCE (Proof Key for Code Exchange) is also supported to prevent malicious third parties from attempting to steal your access token.
 
 **Endpoints:**
+
 - Authorization URL: `https://app.mural.co/api/public/v1/authorization/oauth2/`
 - Access Token URL: `https://app.mural.co/api/public/v1/authorization/oauth2/token`
 - Refresh Token URL: `https://app.mural.co/api/public/v1/authorization/oauth2/token`
@@ -29,6 +30,7 @@ When the access token expires, you use the refresh token to request a new access
 **Available Scopes:**
 
 Read scopes:
+
 - `rooms:read` — Retrieve information about a workspace's rooms and room settings.
 - `users:read` — Retrieve information about users and their permission levels.
 - `workspaces:read` — Retrieve information about workspaces, settings, and properties.
@@ -37,6 +39,7 @@ Read scopes:
 - `templates:read` — Retrieve a workspace's custom template names, descriptions, and categories.
 
 Write scopes:
+
 - `rooms:write` — Create, update, and delete rooms and their properties.
 - `murals:write` — Create murals (blank or from a template), manage settings and widgets.
 - `templates:write` — Create a template from a mural or delete templates.
@@ -52,10 +55,13 @@ The Enterprise API is only available to Enterprise plan customers.
 ## Features
 
 ### Mural Management
+
 Create, retrieve, update, duplicate, delete, and export murals. Murals can be created blank or from templates. You can also manage mural access settings and visitor link settings, and search for murals across workspaces.
 
 ### Canvas Content (Widgets)
+
 Add and manage content on a mural canvas, including:
+
 - **Sticky notes** — Create and update sticky notes with text, color, and position.
 - **Shapes** — Add geometric shapes to a mural.
 - **Text boxes and titles** — Add text content to the canvas.
@@ -66,39 +72,51 @@ Add and manage content on a mural canvas, including:
 - **Comments** — Add and update comments on a mural.
 
 ### Tags
+
 Create, retrieve, update, and delete tags within a mural for organizing and categorizing content.
 
 ### Voting Sessions
+
 Start, manage, and end voting sessions within a mural. Retrieve voting session results and cast votes on widgets.
 
 ### Timer
+
 Start, stop, pause, and resume a countdown timer within a mural for facilitated sessions.
 
 ### Private Mode
+
 Start and stop private mode sessions on a mural, allowing participants to work independently before revealing content to the group.
 
 ### Chat
+
 Retrieve the chat history for a mural.
 
 ### Room Management
+
 Create, retrieve, update, and delete rooms within workspaces. Manage folders within rooms. List rooms including open rooms in a workspace. Search for rooms.
 
 ### User Management
+
 Invite users to workspaces, rooms, and murals. Remove users from rooms and murals. Update member permissions at the room and mural level. Retrieve user lists and current user information.
 
 ### Workspace Management
+
 Retrieve workspaces and workspace details. Invite users to workspaces.
 
 ### Templates
+
 Retrieve default and custom templates. Create custom templates from existing murals. Create new murals from templates. Delete templates. Search for templates.
 
 ### Search
+
 Search across murals, rooms, and templates within workspaces.
 
 ### Canvas Embed SDK
+
 Embed interactive mural canvases directly within third-party applications, enabling real-time collaboration without leaving the host platform.
 
 ### Enterprise Administration (Enterprise API only)
+
 - **Member Information** — Retrieve and manage company member details and user types.
 - **Audit Logs** — Access audit log data for compliance and monitoring.
 - **Content Ownership Transfer** — Transfer ownership of content between users.

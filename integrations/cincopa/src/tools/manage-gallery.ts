@@ -3,36 +3,45 @@ import { CincopaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGallery = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Gallery',
-    key: 'manage_gallery',
-    description: `Update, delete, or manage a Cincopa gallery. Use this to rename a gallery, change its description or template, delete it (with optional asset cleanup), set a featured/master asset, or generate a downloadable zip of gallery contents.`,
-    instructions: [
-      'Provide the gallery ID (fid) to identify which gallery to manage.',
-      'Set the action to "update", "delete", "set_master", or "zip".',
-      'For "delete", optionally set deleteAssets to true to also remove all assets in the gallery.'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageGallery = SlateTool.create(spec, {
+  name: 'Manage Gallery',
+  key: 'manage_gallery',
+  description: `Update, delete, or manage a Cincopa gallery. Use this to rename a gallery, change its description or template, delete it (with optional asset cleanup), set a featured/master asset, or generate a downloadable zip of gallery contents.`,
+  instructions: [
+    'Provide the gallery ID (fid) to identify which gallery to manage.',
+    'Set the action to "update", "delete", "set_master", or "zip".',
+    'For "delete", optionally set deleteAssets to true to also remove all assets in the gallery.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    galleryId: z.string().describe('Gallery ID (fid) to manage'),
-    action: z.enum(['update', 'delete', 'set_master', 'zip']).describe('Action to perform on the gallery'),
-    name: z.string().optional().describe('New name (for update action)'),
-    description: z.string().optional().describe('New description (for update action)'),
-    template: z.string().optional().describe('New template ID (for update action)'),
-    deleteAssets: z.boolean().optional().describe('Whether to also delete all assets when deleting the gallery'),
-    masterAssetId: z.string().optional().describe('Asset ID (rid) to set as featured/master (for set_master action)')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    downloadUrl: z.string().optional().describe('Download URL for zip action')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      galleryId: z.string().describe('Gallery ID (fid) to manage'),
+      action: z
+        .enum(['update', 'delete', 'set_master', 'zip'])
+        .describe('Action to perform on the gallery'),
+      name: z.string().optional().describe('New name (for update action)'),
+      description: z.string().optional().describe('New description (for update action)'),
+      template: z.string().optional().describe('New template ID (for update action)'),
+      deleteAssets: z
+        .boolean()
+        .optional()
+        .describe('Whether to also delete all assets when deleting the gallery'),
+      masterAssetId: z
+        .string()
+        .optional()
+        .describe('Asset ID (rid) to set as featured/master (for set_master action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      downloadUrl: z.string().optional().describe('Download URL for zip action')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CincopaClient({ token: ctx.auth.token });
     let { action, galleryId } = ctx.input;
     let data: any;
@@ -87,4 +96,5 @@ export let manageGallery = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

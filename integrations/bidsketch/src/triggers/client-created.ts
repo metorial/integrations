@@ -3,55 +3,57 @@ import { BidsketchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let clientCreated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Client Created',
-    key: 'client_created',
-    description: 'Triggers when a new client is created in Bidsketch, whether through the API or the Bidsketch app.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type'),
-    clientId: z.number().describe('Client ID'),
-    firstName: z.string().describe('Client first name'),
-    lastName: z.string().describe('Client last name'),
-    email: z.string().describe('Client email'),
-    phone: z.string().nullable().describe('Phone number'),
-    website: z.string().nullable().describe('Website'),
-    address: z.string().nullable().describe('Street address'),
-    address2: z.string().nullable().describe('Address line 2'),
-    city: z.string().nullable().describe('City'),
-    state: z.string().nullable().describe('State'),
-    postalZip: z.string().nullable().describe('Postal/ZIP code'),
-    locale: z.string().nullable().describe('Country/locale'),
-    notes: z.string().nullable().describe('Private notes'),
-    url: z.string().nullable().describe('API URL'),
-    appUrl: z.string().nullable().describe('Bidsketch app URL'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp')
-  }))
-  .output(z.object({
-    clientId: z.number().describe('Unique client ID'),
-    firstName: z.string().describe('Client first name'),
-    lastName: z.string().describe('Client last name'),
-    email: z.string().describe('Client email address'),
-    phone: z.string().nullable().describe('Phone number'),
-    website: z.string().nullable().describe('Website URL'),
-    address: z.string().nullable().describe('Street address'),
-    address2: z.string().nullable().describe('Address line 2'),
-    city: z.string().nullable().describe('City'),
-    state: z.string().nullable().describe('State/province'),
-    postalZip: z.string().nullable().describe('Postal/ZIP code'),
-    locale: z.string().nullable().describe('Country/locale'),
-    notes: z.string().nullable().describe('Private notes'),
-    url: z.string().nullable().describe('API URL'),
-    appUrl: z.string().nullable().describe('Bidsketch app URL'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp')
-  }))
+export let clientCreated = SlateTrigger.create(spec, {
+  name: 'Client Created',
+  key: 'client_created',
+  description:
+    'Triggers when a new client is created in Bidsketch, whether through the API or the Bidsketch app.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type'),
+      clientId: z.number().describe('Client ID'),
+      firstName: z.string().describe('Client first name'),
+      lastName: z.string().describe('Client last name'),
+      email: z.string().describe('Client email'),
+      phone: z.string().nullable().describe('Phone number'),
+      website: z.string().nullable().describe('Website'),
+      address: z.string().nullable().describe('Street address'),
+      address2: z.string().nullable().describe('Address line 2'),
+      city: z.string().nullable().describe('City'),
+      state: z.string().nullable().describe('State'),
+      postalZip: z.string().nullable().describe('Postal/ZIP code'),
+      locale: z.string().nullable().describe('Country/locale'),
+      notes: z.string().nullable().describe('Private notes'),
+      url: z.string().nullable().describe('API URL'),
+      appUrl: z.string().nullable().describe('Bidsketch app URL'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      clientId: z.number().describe('Unique client ID'),
+      firstName: z.string().describe('Client first name'),
+      lastName: z.string().describe('Client last name'),
+      email: z.string().describe('Client email address'),
+      phone: z.string().nullable().describe('Phone number'),
+      website: z.string().nullable().describe('Website URL'),
+      address: z.string().nullable().describe('Street address'),
+      address2: z.string().nullable().describe('Address line 2'),
+      city: z.string().nullable().describe('City'),
+      state: z.string().nullable().describe('State/province'),
+      postalZip: z.string().nullable().describe('Postal/ZIP code'),
+      locale: z.string().nullable().describe('Country/locale'),
+      notes: z.string().nullable().describe('Private notes'),
+      url: z.string().nullable().describe('API URL'),
+      appUrl: z.string().nullable().describe('Bidsketch app URL'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new BidsketchClient(ctx.auth.token);
       let webhook = await client.createWebhook('client_created', ctx.input.webhookBaseUrl);
 
@@ -62,14 +64,14 @@ export let clientCreated = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new BidsketchClient(ctx.auth.token);
       let details = ctx.input.registrationDetails as { webhookId: number };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as { event: string; data: any };
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as { event: string; data: any };
 
       let d = body.data;
 
@@ -99,7 +101,7 @@ export let clientCreated = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'client.created',
         id: `client_created_${ctx.input.clientId}`,

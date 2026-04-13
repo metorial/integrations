@@ -21,7 +21,5 @@ export let provider = Slate.create({
     manageUserProfile,
     getExtractionResult
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

@@ -3,13 +3,11 @@ import { createAxios } from 'slates';
 export class Client {
   private api: ReturnType<typeof createAxios>;
 
-  constructor(
-    private config: { token: string }
-  ) {
+  constructor(private config: { token: string }) {
     this.api = createAxios({
       baseURL: 'https://app.icypeas.com/api',
       headers: {
-        'Authorization': config.token,
+        Authorization: config.token,
         'Content-Type': 'application/json'
       }
     });
@@ -123,7 +121,8 @@ export class Client {
     if (params.webhookUrlItem) custom.webhookUrlItem = params.webhookUrlItem;
     if (params.webhookUrlBulkDone) custom.webhookUrlBulkDone = params.webhookUrlBulkDone;
     if (params.externalIds) custom.externalIds = params.externalIds;
-    if (params.includeResultsInWebhook !== undefined) custom.includeResultsInWebhook = params.includeResultsInWebhook;
+    if (params.includeResultsInWebhook !== undefined)
+      custom.includeResultsInWebhook = params.includeResultsInWebhook;
     if (Object.keys(custom).length > 0) body.custom = custom;
 
     let response = await this.api.post('/bulk-search', body);

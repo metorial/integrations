@@ -3,36 +3,40 @@ import { GraphClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTeam = SlateTool.create(
-  spec,
-  {
-    name: 'Update Team',
-    key: 'update_team',
-    description: `Update properties of an existing Microsoft Team such as display name, description, visibility, or settings. Also supports archiving and unarchiving a team.`,
-    instructions: [
-      'Provide only the fields you want to update; omitted fields will remain unchanged.',
-      'To archive or unarchive, set the "action" field accordingly.',
-    ],
-  }
-)
-  .input(z.object({
-    teamId: z.string().describe('ID of the team to update'),
-    action: z.enum(['update', 'archive', 'unarchive']).default('update').describe('Action to perform on the team'),
-    displayName: z.string().optional().describe('New display name'),
-    description: z.string().optional().describe('New description'),
-    visibility: z.enum(['public', 'private']).optional().describe('New visibility setting'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateTeam = SlateTool.create(spec, {
+  name: 'Update Team',
+  key: 'update_team',
+  description: `Update properties of an existing Microsoft Team such as display name, description, visibility, or settings. Also supports archiving and unarchiving a team.`,
+  instructions: [
+    'Provide only the fields you want to update; omitted fields will remain unchanged.',
+    'To archive or unarchive, set the "action" field accordingly.'
+  ]
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('ID of the team to update'),
+      action: z
+        .enum(['update', 'archive', 'unarchive'])
+        .default('update')
+        .describe('Action to perform on the team'),
+      displayName: z.string().optional().describe('New display name'),
+      description: z.string().optional().describe('New description'),
+      visibility: z.enum(['public', 'private']).optional().describe('New visibility setting')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GraphClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'archive') {
       await client.archiveTeam(ctx.input.teamId);
       return {
         output: { success: true },
-        message: `Team archived successfully.`,
+        message: `Team archived successfully.`
       };
     }
 
@@ -40,7 +44,7 @@ export let updateTeam = SlateTool.create(
       await client.unarchiveTeam(ctx.input.teamId);
       return {
         output: { success: true },
-        message: `Team unarchived successfully.`,
+        message: `Team unarchived successfully.`
       };
     }
 
@@ -53,7 +57,7 @@ export let updateTeam = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Team updated successfully.`,
+      message: `Team updated successfully.`
     };
   })
   .build();

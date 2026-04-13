@@ -3,35 +3,53 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAttachments = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Attachments',
-    key: 'manage_attachments',
-    description: `Upload, retrieve, or delete file attachments in EspoCRM. Attachments can be associated with records of any entity type. Upload attachments before using them with emails or other records.`,
-    tags: {
-      destructive: true,
-    },
+export let manageAttachments = SlateTool.create(spec, {
+  name: 'Manage Attachments',
+  key: 'manage_attachments',
+  description: `Upload, retrieve, or delete file attachments in EspoCRM. Attachments can be associated with records of any entity type. Upload attachments before using them with emails or other records.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['upload', 'get', 'delete']).describe('Operation to perform'),
-    attachmentId: z.string().optional().describe('Attachment ID (required for get and delete)'),
-    fileName: z.string().optional().describe('File name with extension (required for upload)'),
-    fileContent: z.string().optional().describe('Base64-encoded file content (required for upload)'),
-    mimeType: z.string().optional().describe('MIME type of the file (required for upload, e.g., application/pdf, image/png)'),
-    relatedType: z.string().optional().describe('Entity type to associate the attachment with'),
-    relatedId: z.string().optional().describe('Record ID to associate the attachment with'),
-    role: z.string().optional().describe('Attachment role (default: Attachment)'),
-  }))
-  .output(z.object({
-    attachmentId: z.string().describe('ID of the attachment'),
-    fileName: z.string().optional().describe('File name'),
-    mimeType: z.string().optional().describe('MIME type'),
-    size: z.number().optional().describe('File size in bytes'),
-    url: z.string().optional().describe('URL to access the attachment'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['upload', 'get', 'delete']).describe('Operation to perform'),
+      attachmentId: z
+        .string()
+        .optional()
+        .describe('Attachment ID (required for get and delete)'),
+      fileName: z
+        .string()
+        .optional()
+        .describe('File name with extension (required for upload)'),
+      fileContent: z
+        .string()
+        .optional()
+        .describe('Base64-encoded file content (required for upload)'),
+      mimeType: z
+        .string()
+        .optional()
+        .describe(
+          'MIME type of the file (required for upload, e.g., application/pdf, image/png)'
+        ),
+      relatedType: z
+        .string()
+        .optional()
+        .describe('Entity type to associate the attachment with'),
+      relatedId: z.string().optional().describe('Record ID to associate the attachment with'),
+      role: z.string().optional().describe('Attachment role (default: Attachment)')
+    })
+  )
+  .output(
+    z.object({
+      attachmentId: z.string().describe('ID of the attachment'),
+      fileName: z.string().optional().describe('File name'),
+      mimeType: z.string().optional().describe('MIME type'),
+      size: z.number().optional().describe('File size in bytes'),
+      url: z.string().optional().describe('URL to access the attachment')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action, attachmentId } = ctx.input;
 
@@ -46,7 +64,7 @@ export let manageAttachments = SlateTool.create(
         role: ctx.input.role || 'Attachment',
         relatedType: ctx.input.relatedType,
         relatedId: ctx.input.relatedId,
-        file: `data:${ctx.input.mimeType};base64,${ctx.input.fileContent}`,
+        file: `data:${ctx.input.mimeType};base64,${ctx.input.fileContent}`
       });
 
       return {
@@ -55,9 +73,9 @@ export let manageAttachments = SlateTool.create(
           fileName: result.name,
           mimeType: result.type,
           size: result.size,
-          url: result.url,
+          url: result.url
         },
-        message: `Attachment **${result.name}** uploaded successfully.`,
+        message: `Attachment **${result.name}** uploaded successfully.`
       };
     }
 
@@ -70,9 +88,9 @@ export let manageAttachments = SlateTool.create(
           fileName: result.name,
           mimeType: result.type,
           size: result.size,
-          url: result.url,
+          url: result.url
         },
-        message: `Retrieved attachment **${result.name || attachmentId}**.`,
+        message: `Retrieved attachment **${result.name || attachmentId}**.`
       };
     }
 
@@ -81,11 +99,12 @@ export let manageAttachments = SlateTool.create(
       await client.deleteAttachment(attachmentId);
       return {
         output: {
-          attachmentId,
+          attachmentId
         },
-        message: `Attachment **${attachmentId}** deleted successfully.`,
+        message: `Attachment **${attachmentId}** deleted successfully.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

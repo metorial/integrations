@@ -12,7 +12,7 @@ import {
   getTask,
   createTask,
   updateTask,
-  postComment,
+  postComment
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     getTask,
     createTask,
     updateTask,
-    postComment,
+    postComment
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

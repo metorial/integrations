@@ -13,14 +13,17 @@ Xata is a serverless PostgreSQL database platform that provides managed Postgres
 Xata supports two authentication methods:
 
 ### API Keys (Bearer Token)
+
 The Xata API uses API keys to authenticate users. Authentication is required using an API key associated with the workspace. Include the API key in the `Authorization` HTTP request header as a Bearer token (e.g., `Authorization: Bearer xau_YOUR_API_KEY`). To create an API key, visit the Account Settings page and click "+ Add a key", then enter a name and save.
 
 Xata has two API contexts:
+
 - **Core API** at `https://api.xata.io` — responsible for operations not bound to a specific workspace, including user management and workspace management.
 - **Workspace API** at `https://{workspace-display-name}-{workspace-id}.{region}.xata.sh` — used when interacting with Xata properties within the bounds of a workspace, such as databases, tables, and records.
 - **New platform API** at `https://api.xata.tech` — allows you to programmatically manage your databases, branches, and data.
 
 ### OAuth 2.0 (Authorization Code Flow)
+
 Xata offers OAuth 2.0 authentication for external applications. Xata supports the Authorization Code Flow of OAuth2, designed for web applications that run on a server, not for mobile or desktop applications.
 
 - **Authorization URL:** `https://app.xata.io/integrations/oauth/authorize`
@@ -32,45 +35,59 @@ Xata offers OAuth 2.0 authentication for external applications. Xata supports th
 ## Features
 
 ### Record Management (CRUD)
+
 Perform create, read, update, and delete operations on records within tables. Xata offers a transactions endpoint which allows you to execute multiple operations together as a single unit, supporting insert, update, delete, and get operations in a single request.
 
 ### Querying and Filtering
+
 The Query Table API can be used to retrieve all records in a table and supports filtering, sorting, selecting a subset of columns, and pagination. You can choose between strong consistency (primary store) or eventual consistency (read replica).
 
 ### Free-Text Search
+
 Run a free text search operation across the database branch or within a specific table. Search supports fuzziness, filtering, column boosting, and relevancy tuning. This feature runs against the Elasticsearch-based search store (eventually consistent). Available on Pro and Enterprise plans only.
 
 ### Vector / Similarity Search
+
 Perform vector-based similarity searches in a table for implementing semantic search and product recommendation. Requires a column of type vector with a fixed dimension (2–10,000). The vector type can be used to store embeddings computed via machine learning models.
 
 ### Aggregations
+
 The aggregation API allows you to use the search/analytics engine to perform aggregations on your data. Supports count, sum, average, min, max, unique count, date histograms, top values, percentiles, and nested sub-aggregations. Aggregations run in the optional search store, which is eventually consistent and cannot access linked fields. Available on Pro and Enterprise plans only.
 
 ### Summarize
+
 Run calculations on groups of data directly from the transactional store (strongly consistent). Supports grouping by columns and running operations like count, sum, average, min, and max. This is an alternative to aggregations when strong consistency is required.
 
 ### Ask AI
+
 Ask your table a question and have Xata answer. This feature uses AI to answer natural language questions about your data. It supports follow-up questions via session IDs and streaming responses.
 
 ### Database Branching
+
 Xata is a branchable database, allowing you to set up dev environments and replicate data for experiments and feature development. Branches use copy-on-write to share storage with the parent so you only pay for changes. Dev branches can scale to zero, so you only pay for compute when active. Branches can be created from existing branches, including production.
 
 ### Schema Management and Migrations
+
 Modify your database schema without downtime and deploy schema changes with confidence. Xata uses pgroll under the hood to support zero-downtime, reversible schema migrations that can serve old and new schema versions in parallel. You can query schema history for a branch.
 
 ### Data Anonymization
+
 Automatically anonymize sensitive data and use real data safely in non-production environments. Useful for compliance with SOC2, HIPAA, and GDPR when working with branch copies.
 
 ### File Attachments
+
 Xata offers general-purpose file attachment capabilities, integrating file support directly into the database. Files are managed via the `xata_file` and `xata_file_array` column types. Supports authenticated URLs, public URLs, signed URLs, and upload URLs. File attachments are delivered through an integrated CDN. Available on Pro and Enterprise plans only.
 
 ### Database and Workspace Management
+
 Create, list, update, and delete databases and workspaces (organizations). Manage workspace members and invitations. Databases are scoped to regions and workspaces.
 
 ### Project Management
+
 Create a new project to start managing your database environments and branches. Configure compute resources for your project including scale-to-zero capabilities and manual hibernation options.
 
 ### Replication / Data Streaming
+
 Set up continuous streaming from your production PostgreSQL database to Xata. Connect to external Postgres providers (AWS RDS, Cloud SQL, Azure Database, self-hosted) and use Xata for branching and development workflows on top.
 
 ## Events

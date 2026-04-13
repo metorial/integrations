@@ -15,6 +15,7 @@ Starton uses **API key** authentication. To use Starton from your code, you will
 - **Test vs. Production keys**: You can select "Test API key" for development purposes or create production keys.
 
 Example header:
+
 ```
 x-api-key: YOUR_API_KEY
 ```

@@ -6,38 +6,53 @@ import { createClient } from '../lib/helpers';
 export let manageAlerts = SlateTool.create(spec, {
   name: 'Manage Data-Driven Alerts',
   key: 'manage_alerts',
-  description: `List, get, delete data-driven alerts, and add or remove users from alert recipient lists. Data-driven alerts trigger when data in a view meets specified conditions.`,
+  description: `List, get, delete data-driven alerts, and add or remove users from alert recipient lists. Data-driven alerts trigger when data in a view meets specified conditions.`
 })
-  .input(z.object({
-    action: z.enum(['list', 'get', 'delete', 'addUser', 'removeUser']).describe('Operation to perform'),
-    alertId: z.string().optional().describe('Alert LUID (required for get, delete, addUser, removeUser)'),
-    userId: z.string().optional().describe('User LUID (for addUser, removeUser)'),
-    pageSize: z.number().optional().describe('Page size for list'),
-    pageNumber: z.number().optional().describe('Page number for list')
-  }))
-  .output(z.object({
-    alerts: z.array(z.object({
-      alertId: z.string(),
-      subject: z.string().optional(),
-      creatorId: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })).optional(),
-    alert: z.object({
-      alertId: z.string(),
-      subject: z.string().optional(),
-      creatorId: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      frequency: z.string().optional(),
-      ownerName: z.string().optional()
-    }).optional(),
-    totalCount: z.number().optional(),
-    deleted: z.boolean().optional(),
-    userAdded: z.boolean().optional(),
-    userRemoved: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'delete', 'addUser', 'removeUser'])
+        .describe('Operation to perform'),
+      alertId: z
+        .string()
+        .optional()
+        .describe('Alert LUID (required for get, delete, addUser, removeUser)'),
+      userId: z.string().optional().describe('User LUID (for addUser, removeUser)'),
+      pageSize: z.number().optional().describe('Page size for list'),
+      pageNumber: z.number().optional().describe('Page number for list')
+    })
+  )
+  .output(
+    z.object({
+      alerts: z
+        .array(
+          z.object({
+            alertId: z.string(),
+            subject: z.string().optional(),
+            creatorId: z.string().optional(),
+            createdAt: z.string().optional(),
+            updatedAt: z.string().optional()
+          })
+        )
+        .optional(),
+      alert: z
+        .object({
+          alertId: z.string(),
+          subject: z.string().optional(),
+          creatorId: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          frequency: z.string().optional(),
+          ownerName: z.string().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional(),
+      deleted: z.boolean().optional(),
+      userAdded: z.boolean().optional(),
+      userRemoved: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -102,4 +117,5 @@ export let manageAlerts = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

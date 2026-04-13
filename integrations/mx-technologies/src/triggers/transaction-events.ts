@@ -2,49 +2,52 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transactionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transaction Events',
-    key: 'transaction_events',
-    description: 'Triggered when new or updated transactions are available for a user.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('Event action (created, updated, deleted)'),
-    userGuid: z.string().describe('GUID of the user'),
-    transactionGuid: z.string().describe('GUID of the transaction'),
-    payload: z.any().optional().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    userGuid: z.string().describe('GUID of the user'),
-    transactionGuid: z.string().describe('GUID of the transaction'),
-    accountGuid: z.string().optional().nullable().describe('GUID of the account'),
-    memberGuid: z.string().optional().nullable().describe('GUID of the member'),
-    amount: z.number().optional().nullable().describe('Transaction amount'),
-    description: z.string().optional().nullable().describe('Transaction description'),
-    category: z.string().optional().nullable().describe('Transaction category'),
-    date: z.string().optional().nullable().describe('Transaction date'),
-    type: z.string().optional().nullable().describe('Transaction type (CREDIT/DEBIT)'),
-    status: z.string().optional().nullable().describe('Transaction status (POSTED/PENDING)'),
-    version: z.number().optional().nullable().describe('Object version for change detection'),
-  }))
+export let transactionEvents = SlateTrigger.create(spec, {
+  name: 'Transaction Events',
+  key: 'transaction_events',
+  description: 'Triggered when new or updated transactions are available for a user.'
+})
+  .input(
+    z.object({
+      action: z.string().describe('Event action (created, updated, deleted)'),
+      userGuid: z.string().describe('GUID of the user'),
+      transactionGuid: z.string().describe('GUID of the transaction'),
+      payload: z.any().optional().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      userGuid: z.string().describe('GUID of the user'),
+      transactionGuid: z.string().describe('GUID of the transaction'),
+      accountGuid: z.string().optional().nullable().describe('GUID of the account'),
+      memberGuid: z.string().optional().nullable().describe('GUID of the member'),
+      amount: z.number().optional().nullable().describe('Transaction amount'),
+      description: z.string().optional().nullable().describe('Transaction description'),
+      category: z.string().optional().nullable().describe('Transaction category'),
+      date: z.string().optional().nullable().describe('Transaction date'),
+      type: z.string().optional().nullable().describe('Transaction type (CREDIT/DEBIT)'),
+      status: z.string().optional().nullable().describe('Transaction status (POSTED/PENDING)'),
+      version: z.number().optional().nullable().describe('Object version for change detection')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let action = data.action || 'created';
 
       return {
-        inputs: [{
-          action,
-          userGuid: data.user_guid || data.transaction?.user_guid || '',
-          transactionGuid: data.transaction_guid || data.transaction?.guid || '',
-          payload: data,
-        }],
+        inputs: [
+          {
+            action,
+            userGuid: data.user_guid || data.transaction?.user_guid || '',
+            transactionGuid: data.transaction_guid || data.transaction?.guid || '',
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let txn = ctx.input.payload?.transaction || {};
 
       return {
@@ -61,8 +64,9 @@ export let transactionEvents = SlateTrigger.create(
           date: txn.date,
           type: txn.type,
           status: txn.status,
-          version: txn.version,
-        },
+          version: txn.version
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

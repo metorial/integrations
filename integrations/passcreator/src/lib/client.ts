@@ -10,9 +10,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,12 +25,15 @@ export class Client {
 
   async getTemplateFields(templateId: string): Promise<any[]> {
     let response = await this.axios.get(`/api/pass-template/${templateId}`, {
-      params: { zapierStyle: 'true' },
+      params: { zapierStyle: 'true' }
     });
     return response.data;
   }
 
-  async copyTemplate(templateId: string, body: { name: string; description?: string }): Promise<any> {
+  async copyTemplate(
+    templateId: string,
+    body: { name: string; description?: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/api/pass-template/copy/${templateId}`, body);
     return response.data;
   }
@@ -68,8 +71,14 @@ export class Client {
 
   // ─── Template Notifications ───
 
-  async scheduleTemplateNotification(templateId: string, body: { pushNotificationText: string; publicationDate?: string }): Promise<any> {
-    let response = await this.axios.post(`/api/pass-template/${templateId}/notification`, body);
+  async scheduleTemplateNotification(
+    templateId: string,
+    body: { pushNotificationText: string; publicationDate?: string }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/api/pass-template/${templateId}/notification`,
+      body
+    );
     return response.data;
   }
 
@@ -86,17 +95,29 @@ export class Client {
 
   async createPassV1(templateId: string, body: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/api/pass', body, {
-      params: { passtemplate: templateId, zapierStyle: 'true' },
+      params: { passtemplate: templateId, zapierStyle: 'true' }
     });
     return response.data;
   }
 
-  async listPasses(templateId: string, params?: { start?: number; pageSize?: number; lastIdOfPriorPage?: string; createdSince?: string; modifiedSince?: string }): Promise<any> {
+  async listPasses(
+    templateId: string,
+    params?: {
+      start?: number;
+      pageSize?: number;
+      lastIdOfPriorPage?: string;
+      createdSince?: string;
+      modifiedSince?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/api/pass/list/${templateId}`, { params });
     return response.data;
   }
 
-  async getPass(passId: string, params?: { includeFieldMapping?: boolean; appConfigurationId?: string }): Promise<any> {
+  async getPass(
+    passId: string,
+    params?: { includeFieldMapping?: boolean; appConfigurationId?: string }
+  ): Promise<any> {
     let response = await this.axios.get(`/api/pass/${passId}`, { params });
     return response.data;
   }
@@ -107,13 +128,15 @@ export class Client {
   }
 
   async searchPasses(templateId: string, searchString: string): Promise<any[]> {
-    let response = await this.axios.get(`/api/pass/search/${templateId}/${encodeURIComponent(searchString)}`);
+    let response = await this.axios.get(
+      `/api/pass/search/${templateId}/${encodeURIComponent(searchString)}`
+    );
     return response.data;
   }
 
   async updatePassV1(passId: string, body: Record<string, any>): Promise<void> {
     await this.axios.post(`/api/pass/${passId}`, body, {
-      params: { zapierStyle: 'true' },
+      params: { zapierStyle: 'true' }
     });
   }
 
@@ -136,41 +159,65 @@ export class Client {
   // ─── Passes (V3) ───
 
   async createPass(body: Record<string, any>, async_?: boolean): Promise<any> {
-    let response = await this.axios.post('/api/v3/pass', { data: body }, {
-      params: async_ !== undefined ? { async: async_ } : undefined,
-    });
+    let response = await this.axios.post(
+      '/api/v3/pass',
+      { data: body },
+      {
+        params: async_ !== undefined ? { async: async_ } : undefined
+      }
+    );
     return response.data;
   }
 
   async updatePass(passId: string, body: Record<string, any>, async_?: boolean): Promise<any> {
-    let response = await this.axios.post(`/api/v3/pass/${passId}`, { data: body }, {
-      params: async_ !== undefined ? { async: async_ } : undefined,
-    });
+    let response = await this.axios.post(
+      `/api/v3/pass/${passId}`,
+      { data: body },
+      {
+        params: async_ !== undefined ? { async: async_ } : undefined
+      }
+    );
     return response.data;
   }
 
   async patchPass(passId: string, body: Record<string, any>, async_?: boolean): Promise<any> {
-    let response = await this.axios.patch(`/api/v3/pass/${passId}`, { data: body }, {
-      params: async_ !== undefined ? { async: async_ } : undefined,
-    });
+    let response = await this.axios.patch(
+      `/api/v3/pass/${passId}`,
+      { data: body },
+      {
+        params: async_ !== undefined ? { async: async_ } : undefined
+      }
+    );
     return response.data;
   }
 
-  async bulkUpdatePasses(method: 'POST' | 'PATCH', body: { data: Record<string, any>; filter: Record<string, any> }): Promise<any> {
-    let response = method === 'PATCH'
-      ? await this.axios.patch('/api/v3/pass/bulk', body)
-      : await this.axios.post('/api/v3/pass/bulk', body);
+  async bulkUpdatePasses(
+    method: 'POST' | 'PATCH',
+    body: { data: Record<string, any>; filter: Record<string, any> }
+  ): Promise<any> {
+    let response =
+      method === 'PATCH'
+        ? await this.axios.patch('/api/v3/pass/bulk', body)
+        : await this.axios.post('/api/v3/pass/bulk', body);
     return response.data;
   }
 
-  async listPassesV3(params?: { pageSize?: number; formatKeyAdditionalProperties?: string; segmentId?: string; query?: string; fields?: string; nextPageUrl?: string }): Promise<any> {
+  async listPassesV3(params?: {
+    pageSize?: number;
+    formatKeyAdditionalProperties?: string;
+    segmentId?: string;
+    query?: string;
+    fields?: string;
+    nextPageUrl?: string;
+  }): Promise<any> {
     if (params?.nextPageUrl) {
       let response = await this.axios.get(params.nextPageUrl);
       return response.data;
     }
     let queryParams: Record<string, any> = {};
     if (params?.pageSize) queryParams.pageSize = params.pageSize;
-    if (params?.formatKeyAdditionalProperties) queryParams.formatKeyAdditionalProperties = params.formatKeyAdditionalProperties;
+    if (params?.formatKeyAdditionalProperties)
+      queryParams.formatKeyAdditionalProperties = params.formatKeyAdditionalProperties;
     if (params?.segmentId) queryParams.segmentId = params.segmentId;
     if (params?.query) queryParams.query = params.query;
     if (params?.fields) queryParams.fields = params.fields;
@@ -184,27 +231,31 @@ export class Client {
   }
 
   async movePass(passId: string, targetTemplateId: string): Promise<any> {
-    let response = await this.axios.post(`/api/v2/pass/${passId}/movetotemplate/${targetTemplateId}`);
+    let response = await this.axios.post(
+      `/api/v2/pass/${passId}/movetotemplate/${targetTemplateId}`
+    );
     return response.data;
   }
 
   // ─── Distribution ───
 
   async sendPassByEmail(passId: string, email: string): Promise<any> {
-    let response = await this.axios.post(`/api/pass/deliver/${passId}/email/${encodeURIComponent(email)}`);
+    let response = await this.axios.post(
+      `/api/pass/deliver/${passId}/email/${encodeURIComponent(email)}`
+    );
     return response.data;
   }
 
   async sendPushNotification(passId: string, text: string): Promise<void> {
     await this.axios.post(`/api/pass/${passId}/sendpushnotification`, {
-      pushNotificationText: text,
+      pushNotificationText: text
     });
   }
 
   async sendBulkPushNotifications(passIds: string[], text: string): Promise<any> {
     let response = await this.axios.post('/api/pass/sendpushnotifications', {
       listOfPasses: passIds,
-      pushNotificationText: text,
+      pushNotificationText: text
     });
     return response.data;
   }
@@ -213,13 +264,15 @@ export class Client {
 
   async getPassStatistics(templateId: string, timeFrame: string, day: string): Promise<any> {
     let response = await this.axios.get(`/api/pass/statistics/${templateId}`, {
-      params: { timeFrame, day },
+      params: { timeFrame, day }
     });
     return response.data;
   }
 
   async getActiveHistory(templateId: string, startingDay: string): Promise<any> {
-    let response = await this.axios.get(`/api/pass/statistics/${templateId}/activehistory/${startingDay}`);
+    let response = await this.axios.get(
+      `/api/pass/statistics/${templateId}/activehistory/${startingDay}`
+    );
     return response.data;
   }
 
@@ -231,7 +284,9 @@ export class Client {
   }
 
   async updateBundle(bundleId: string, passIds: string[]): Promise<any> {
-    let response = await this.axios.post(`/api/v2/pass-bundle/${bundleId}`, { passes: passIds });
+    let response = await this.axios.post(`/api/v2/pass-bundle/${bundleId}`, {
+      passes: passIds
+    });
     return response.data;
   }
 
@@ -266,7 +321,10 @@ export class Client {
     return response.data;
   }
 
-  async listAppScans(configId: string, params?: { start?: number; pageSize?: number; createdSince?: string }): Promise<any> {
+  async listAppScans(
+    configId: string,
+    params?: { start?: number; pageSize?: number; createdSince?: string }
+  ): Promise<any> {
     let response = await this.axios.get(`/api/appscan/list/${configId}`, { params });
     return response.data;
   }
@@ -278,13 +336,17 @@ export class Client {
 
   // ─── Webhooks ───
 
-  async subscribeWebhook(event: string, targetUrl: string, options?: { templateId?: string; retryEnabled?: boolean; signPayload?: boolean }): Promise<any> {
+  async subscribeWebhook(
+    event: string,
+    targetUrl: string,
+    options?: { templateId?: string; retryEnabled?: boolean; signPayload?: boolean }
+  ): Promise<any> {
     let url = options?.templateId
       ? `/api/hook/subscribe/${options.templateId}`
       : '/api/hook/subscribe';
     let body: Record<string, any> = {
       target_url: targetUrl,
-      event,
+      event
     };
     if (options?.retryEnabled !== undefined) body.retryEnabled = options.retryEnabled;
     if (options?.signPayload !== undefined) body.signPayload = options.signPayload;

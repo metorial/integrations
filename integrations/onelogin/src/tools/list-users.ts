@@ -13,47 +13,77 @@ let userSchema = z.object({
   department: z.string().nullable().optional().describe('Department'),
   title: z.string().nullable().optional().describe('Job title'),
   phone: z.string().nullable().optional().describe('Phone number'),
-  status: z.number().nullable().optional().describe('User status (0=Unactivated, 1=Active, 2=Suspended, 3=Locked, 5=AwaitingPasswordReset, 7=PendingActivation, 8=SecurityQuestionRequired)'),
-  state: z.number().nullable().optional().describe('User state (0=Unapproved, 1=Approved, 2=Rejected, 3=Unlicensed)'),
+  status: z
+    .number()
+    .nullable()
+    .optional()
+    .describe(
+      'User status (0=Unactivated, 1=Active, 2=Suspended, 3=Locked, 5=AwaitingPasswordReset, 7=PendingActivation, 8=SecurityQuestionRequired)'
+    ),
+  state: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('User state (0=Unapproved, 1=Approved, 2=Rejected, 3=Unlicensed)'),
   groupId: z.number().nullable().optional().describe('Group ID the user belongs to'),
-  roleIds: z.array(z.number()).nullable().optional().describe('Array of role IDs assigned to the user'),
+  roleIds: z
+    .array(z.number())
+    .nullable()
+    .optional()
+    .describe('Array of role IDs assigned to the user'),
   createdAt: z.string().nullable().optional().describe('ISO8601 creation timestamp'),
   updatedAt: z.string().nullable().optional().describe('ISO8601 last update timestamp'),
-  lastLogin: z.string().nullable().optional().describe('ISO8601 last login timestamp'),
+  lastLogin: z.string().nullable().optional().describe('ISO8601 last login timestamp')
 });
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Search and list users in the OneLogin directory. Supports filtering by name, email, username, directory, external ID, app, and date ranges. Use wildcards (*) in filter values for partial matching.`,
-    tags: {
-      readOnly: true,
-    },
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Search and list users in the OneLogin directory. Supports filtering by name, email, username, directory, external ID, app, and date ranges. Use wildcards (*) in filter values for partial matching.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    firstname: z.string().optional().describe('Filter by first name (supports wildcards *)'),
-    lastname: z.string().optional().describe('Filter by last name (supports wildcards *)'),
-    email: z.string().optional().describe('Filter by email address (supports wildcards *)'),
-    username: z.string().optional().describe('Filter by username (supports wildcards *)'),
-    directoryId: z.number().optional().describe('Filter by directory ID'),
-    externalId: z.string().optional().describe('Filter by external ID'),
-    appId: z.number().optional().describe('Filter by app ID to find users with access to a specific app'),
-    createdSince: z.string().optional().describe('ISO8601 date to filter users created after this time'),
-    createdUntil: z.string().optional().describe('ISO8601 date to filter users created before this time'),
-    updatedSince: z.string().optional().describe('ISO8601 date to filter users updated after this time'),
-    updatedUntil: z.string().optional().describe('ISO8601 date to filter users updated before this time'),
-    limit: z.number().optional().describe('Maximum number of results per page (max 50)'),
-  }))
-  .output(z.object({
-    users: z.array(userSchema).describe('List of matching users'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      firstname: z.string().optional().describe('Filter by first name (supports wildcards *)'),
+      lastname: z.string().optional().describe('Filter by last name (supports wildcards *)'),
+      email: z.string().optional().describe('Filter by email address (supports wildcards *)'),
+      username: z.string().optional().describe('Filter by username (supports wildcards *)'),
+      directoryId: z.number().optional().describe('Filter by directory ID'),
+      externalId: z.string().optional().describe('Filter by external ID'),
+      appId: z
+        .number()
+        .optional()
+        .describe('Filter by app ID to find users with access to a specific app'),
+      createdSince: z
+        .string()
+        .optional()
+        .describe('ISO8601 date to filter users created after this time'),
+      createdUntil: z
+        .string()
+        .optional()
+        .describe('ISO8601 date to filter users created before this time'),
+      updatedSince: z
+        .string()
+        .optional()
+        .describe('ISO8601 date to filter users updated after this time'),
+      updatedUntil: z
+        .string()
+        .optional()
+        .describe('ISO8601 date to filter users updated before this time'),
+      limit: z.number().optional().describe('Maximum number of results per page (max 50)')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userSchema).describe('List of matching users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OneLoginClient({
       token: ctx.auth.token,
-      subdomain: ctx.config.subdomain,
+      subdomain: ctx.config.subdomain
     });
 
     let params: Record<string, string | number | undefined> = {};
@@ -71,7 +101,7 @@ export let listUsers = SlateTool.create(
     if (ctx.input.limit) params.limit = ctx.input.limit;
 
     let data = await client.listUsers(params);
-    let users = Array.isArray(data) ? data : (data.data || []);
+    let users = Array.isArray(data) ? data : data.data || [];
 
     let mapped = users.map((u: any) => ({
       userId: u.id,
@@ -89,11 +119,11 @@ export let listUsers = SlateTool.create(
       roleIds: u.role_ids,
       createdAt: u.created_at,
       updatedAt: u.updated_at,
-      lastLogin: u.last_login,
+      lastLogin: u.last_login
     }));
 
     return {
       output: { users: mapped },
-      message: `Found **${mapped.length}** user(s).`,
+      message: `Found **${mapped.length}** user(s).`
     };
   });

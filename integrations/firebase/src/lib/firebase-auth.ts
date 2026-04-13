@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let identityAxios = createAxios({
-  baseURL: 'https://identitytoolkit.googleapis.com/v1',
+  baseURL: 'https://identitytoolkit.googleapis.com/v1'
 });
 
 export interface FirebaseUser {
@@ -36,7 +36,7 @@ let mapUserRecord = (user: any): FirebaseUser => ({
   createdAt: user.createdAt,
   lastSignedInAt: user.lastLoginAt,
   customAttributes: user.customAttributes,
-  providerUserInfo: user.providerUserInfo,
+  providerUserInfo: user.providerUserInfo
 });
 
 export class AuthClient {
@@ -50,16 +50,20 @@ export class AuthClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
   async getUser(userId: string): Promise<FirebaseUser> {
-    let response = await identityAxios.post(`/projects/${this.projectId}/accounts:lookup`, {
-      localId: [userId],
-    }, {
-      headers: this.headers,
-    });
+    let response = await identityAxios.post(
+      `/projects/${this.projectId}/accounts:lookup`,
+      {
+        localId: [userId]
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     let users = response.data.users;
     if (!users || users.length === 0) {
@@ -70,11 +74,15 @@ export class AuthClient {
   }
 
   async getUserByEmail(email: string): Promise<FirebaseUser> {
-    let response = await identityAxios.post(`/projects/${this.projectId}/accounts:lookup`, {
-      email: [email],
-    }, {
-      headers: this.headers,
-    });
+    let response = await identityAxios.post(
+      `/projects/${this.projectId}/accounts:lookup`,
+      {
+        email: [email]
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     let users = response.data.users;
     if (!users || users.length === 0) {
@@ -85,11 +93,15 @@ export class AuthClient {
   }
 
   async getUserByPhoneNumber(phoneNumber: string): Promise<FirebaseUser> {
-    let response = await identityAxios.post(`/projects/${this.projectId}/accounts:lookup`, {
-      phoneNumber: [phoneNumber],
-    }, {
-      headers: this.headers,
-    });
+    let response = await identityAxios.post(
+      `/projects/${this.projectId}/accounts:lookup`,
+      {
+        phoneNumber: [phoneNumber]
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     let users = response.data.users;
     if (!users || users.length === 0) {
@@ -108,33 +120,40 @@ export class AuthClient {
     emailVerified?: boolean;
     disabled?: boolean;
   }): Promise<FirebaseUser> {
-    let response = await identityAxios.post(`/projects/${this.projectId}/accounts`, {
-      email: params.email,
-      password: params.password,
-      displayName: params.displayName,
-      phoneNumber: params.phoneNumber,
-      photoUrl: params.photoUrl,
-      emailVerified: params.emailVerified,
-      disabled: params.disabled,
-    }, {
-      headers: this.headers,
-    });
+    let response = await identityAxios.post(
+      `/projects/${this.projectId}/accounts`,
+      {
+        email: params.email,
+        password: params.password,
+        displayName: params.displayName,
+        phoneNumber: params.phoneNumber,
+        photoUrl: params.photoUrl,
+        emailVerified: params.emailVerified,
+        disabled: params.disabled
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return mapUserRecord(response.data);
   }
 
-  async updateUser(userId: string, params: {
-    email?: string;
-    password?: string;
-    displayName?: string;
-    phoneNumber?: string;
-    photoUrl?: string;
-    emailVerified?: boolean;
-    disabled?: boolean;
-    customAttributes?: string;
-  }): Promise<FirebaseUser> {
+  async updateUser(
+    userId: string,
+    params: {
+      email?: string;
+      password?: string;
+      displayName?: string;
+      phoneNumber?: string;
+      photoUrl?: string;
+      emailVerified?: boolean;
+      disabled?: boolean;
+      customAttributes?: string;
+    }
+  ): Promise<FirebaseUser> {
     let body: any = {
-      localId: userId,
+      localId: userId
     };
 
     if (params.email !== undefined) body.email = params.email;
@@ -146,56 +165,69 @@ export class AuthClient {
     if (params.disabled !== undefined) body.disabled = params.disabled;
     if (params.customAttributes !== undefined) body.customAttributes = params.customAttributes;
 
-    let response = await identityAxios.post(`/projects/${this.projectId}/accounts:update`, body, {
-      headers: this.headers,
-    });
+    let response = await identityAxios.post(
+      `/projects/${this.projectId}/accounts:update`,
+      body,
+      {
+        headers: this.headers
+      }
+    );
 
     return mapUserRecord(response.data);
   }
 
   async deleteUser(userId: string): Promise<void> {
-    await identityAxios.post(`/projects/${this.projectId}/accounts:delete`, {
-      localId: userId,
-    }, {
-      headers: this.headers,
-    });
+    await identityAxios.post(
+      `/projects/${this.projectId}/accounts:delete`,
+      {
+        localId: userId
+      },
+      {
+        headers: this.headers
+      }
+    );
   }
 
-  async listUsers(params?: {
-    maxResults?: number;
-    nextPageToken?: string;
-  }): Promise<{
+  async listUsers(params?: { maxResults?: number; nextPageToken?: string }): Promise<{
     users: FirebaseUser[];
     nextPageToken?: string;
   }> {
     let body: any = {
-      maxResults: params?.maxResults || 100,
+      maxResults: params?.maxResults || 100
     };
     if (params?.nextPageToken) {
       body.nextPageToken = params.nextPageToken;
     }
 
-    let response = await identityAxios.post(`/projects/${this.projectId}/accounts:batchGet`, body, {
-      headers: this.headers,
-      params: {
-        maxResults: body.maxResults,
-        nextPageToken: body.nextPageToken,
-      },
-    });
+    let response = await identityAxios.post(
+      `/projects/${this.projectId}/accounts:batchGet`,
+      body,
+      {
+        headers: this.headers,
+        params: {
+          maxResults: body.maxResults,
+          nextPageToken: body.nextPageToken
+        }
+      }
+    );
 
     let users = (response.data.users || []).map(mapUserRecord);
     return {
       users,
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
   async setCustomClaims(userId: string, customClaims: Record<string, any>): Promise<void> {
-    await identityAxios.post(`/projects/${this.projectId}/accounts:update`, {
-      localId: userId,
-      customAttributes: JSON.stringify(customClaims),
-    }, {
-      headers: this.headers,
-    });
+    await identityAxios.post(
+      `/projects/${this.projectId}/accounts:update`,
+      {
+        localId: userId,
+        customAttributes: JSON.stringify(customClaims)
+      },
+      {
+        headers: this.headers
+      }
+    );
   }
 }

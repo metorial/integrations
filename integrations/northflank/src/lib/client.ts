@@ -31,8 +31,8 @@ export class Client {
       baseURL: 'https://api.northflank.com/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -45,13 +45,15 @@ export class Client {
 
   // --- Projects ---
 
-  async listProjects(params?: PaginationParams): Promise<PaginatedResponse<{ projects: any[] }>> {
+  async listProjects(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ projects: any[] }>> {
     let response = await this.axios.get(this.teamPath('/projects'), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -72,11 +74,14 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateProject(projectId: string, data: {
-    name?: string;
-    description?: string;
-    color?: string;
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    data: {
+      name?: string;
+      description?: string;
+      color?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(this.teamPath(`/projects/${projectId}`), data);
     return response.data?.data;
   }
@@ -87,52 +92,70 @@ export class Client {
 
   // --- Services ---
 
-  async listServices(projectId: string, params?: PaginationParams): Promise<PaginatedResponse<{ services: any[] }>> {
+  async listServices(
+    projectId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ services: any[] }>> {
     let response = await this.axios.get(this.teamPath(`/projects/${projectId}/services`), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   async getService(projectId: string, serviceId: string): Promise<any> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/services/${serviceId}`));
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/services/${serviceId}`)
+    );
     return response.data?.data;
   }
 
-  async createDeploymentService(projectId: string, data: {
-    name: string;
-    description?: string;
-    tags?: string[];
-    billing: { deploymentPlan: string };
-    deployment: {
-      instances: number;
-      external?: {
-        imagePath: string;
-        credentials?: string;
-      };
-      internal?: {
-        id: string;
-        branch: string;
-        buildSHA: string;
-      };
-    };
-    ports?: Array<{
+  async createDeploymentService(
+    projectId: string,
+    data: {
       name: string;
-      internalPort: number;
-      protocol: string;
-      public: boolean;
-    }>;
-  }): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/projects/${projectId}/services`), data);
+      description?: string;
+      tags?: string[];
+      billing: { deploymentPlan: string };
+      deployment: {
+        instances: number;
+        external?: {
+          imagePath: string;
+          credentials?: string;
+        };
+        internal?: {
+          id: string;
+          branch: string;
+          buildSHA: string;
+        };
+      };
+      ports?: Array<{
+        name: string;
+        internalPort: number;
+        protocol: string;
+        public: boolean;
+      }>;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.teamPath(`/projects/${projectId}/services`),
+      data
+    );
     return response.data?.data;
   }
 
-  async updateService(projectId: string, serviceId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.patch(this.teamPath(`/projects/${projectId}/services/${serviceId}`), data);
+  async updateService(
+    projectId: string,
+    serviceId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      this.teamPath(`/projects/${projectId}/services/${serviceId}`),
+      data
+    );
     return response.data?.data;
   }
 
@@ -141,24 +164,31 @@ export class Client {
   }
 
   async pauseService(projectId: string, serviceId: string): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/projects/${projectId}/services/${serviceId}/pause`));
+    let response = await this.axios.post(
+      this.teamPath(`/projects/${projectId}/services/${serviceId}/pause`)
+    );
     return response.data?.data;
   }
 
   async resumeService(projectId: string, serviceId: string): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/projects/${projectId}/services/${serviceId}/resume`));
+    let response = await this.axios.post(
+      this.teamPath(`/projects/${projectId}/services/${serviceId}/resume`)
+    );
     return response.data?.data;
   }
 
   // --- Jobs ---
 
-  async listJobs(projectId: string, params?: PaginationParams): Promise<PaginatedResponse<{ jobs: any[] }>> {
+  async listJobs(
+    projectId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ jobs: any[] }>> {
     let response = await this.axios.get(this.teamPath(`/projects/${projectId}/jobs`), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -168,68 +198,91 @@ export class Client {
     return response.data?.data;
   }
 
-  async runJob(projectId: string, jobId: string, overrides?: {
-    runtimeEnvironment?: Record<string, string>;
-    billing?: { deploymentPlan?: string };
-    deployment?: Record<string, any>;
-  }): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/projects/${projectId}/jobs/${jobId}/run`), overrides || {});
+  async runJob(
+    projectId: string,
+    jobId: string,
+    overrides?: {
+      runtimeEnvironment?: Record<string, string>;
+      billing?: { deploymentPlan?: string };
+      deployment?: Record<string, any>;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.teamPath(`/projects/${projectId}/jobs/${jobId}/run`),
+      overrides || {}
+    );
     return response.data?.data;
   }
 
-  async listJobRuns(projectId: string, jobId: string, params?: PaginationParams): Promise<PaginatedResponse<{ runs: any[] }>> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/jobs/${jobId}/runs`), {
-      params: {
-        page: params?.page,
-        per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
-    });
+  async listJobRuns(
+    projectId: string,
+    jobId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ runs: any[] }>> {
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/jobs/${jobId}/runs`),
+      {
+        params: {
+          page: params?.page,
+          per_page: params?.perPage,
+          cursor: params?.cursor
+        }
+      }
+    );
     return response.data;
   }
 
   // --- Addons ---
 
-  async listAddons(projectId: string, params?: PaginationParams): Promise<PaginatedResponse<{ addons: any[] }>> {
+  async listAddons(
+    projectId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ addons: any[] }>> {
     let response = await this.axios.get(this.teamPath(`/projects/${projectId}/addons`), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   async getAddon(projectId: string, addonId: string): Promise<any> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/addons/${addonId}`));
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/addons/${addonId}`)
+    );
     return response.data?.data;
   }
 
-  async createAddon(projectId: string, data: {
-    name: string;
-    description?: string;
-    type: string;
-    version: string;
-    billing: {
-      deploymentPlan: string;
-      storage: number;
-      replicas: number;
-    };
-    tags?: string[];
-    tlsEnabled?: boolean;
-    externalAccessEnabled?: boolean;
-  }): Promise<any> {
+  async createAddon(
+    projectId: string,
+    data: {
+      name: string;
+      description?: string;
+      type: string;
+      version: string;
+      billing: {
+        deploymentPlan: string;
+        storage: number;
+        replicas: number;
+      };
+      tags?: string[];
+      tlsEnabled?: boolean;
+      externalAccessEnabled?: boolean;
+    }
+  ): Promise<any> {
     let body: any = {
       name: data.name,
       type: data.type,
       billing: data.billing,
-      infrastructure: { version: data.version },
+      infrastructure: { version: data.version }
     };
     if (data.description) body.description = data.description;
     if (data.tags) body.tags = data.tags;
     if (data.tlsEnabled !== undefined) body.tlsEnabled = data.tlsEnabled;
-    if (data.externalAccessEnabled !== undefined) body.externalAccessEnabled = data.externalAccessEnabled;
+    if (data.externalAccessEnabled !== undefined)
+      body.externalAccessEnabled = data.externalAccessEnabled;
 
     let response = await this.axios.post(this.teamPath(`/projects/${projectId}/addons`), body);
     return response.data?.data;
@@ -240,64 +293,93 @@ export class Client {
   }
 
   async getAddonCredentials(projectId: string, addonId: string): Promise<any> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/addons/${addonId}/credentials`));
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/addons/${addonId}/credentials`)
+    );
     return response.data?.data;
   }
 
   async backupAddon(projectId: string, addonId: string): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/projects/${projectId}/addons/${addonId}/backups`));
+    let response = await this.axios.post(
+      this.teamPath(`/projects/${projectId}/addons/${addonId}/backups`)
+    );
     return response.data?.data;
   }
 
-  async listAddonBackups(projectId: string, addonId: string, params?: PaginationParams): Promise<PaginatedResponse<{ backups: any[] }>> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/addons/${addonId}/backups`), {
-      params: {
-        page: params?.page,
-        per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
-    });
+  async listAddonBackups(
+    projectId: string,
+    addonId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ backups: any[] }>> {
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/addons/${addonId}/backups`),
+      {
+        params: {
+          page: params?.page,
+          per_page: params?.perPage,
+          cursor: params?.cursor
+        }
+      }
+    );
     return response.data;
   }
 
   // --- Secrets ---
 
-  async listProjectSecrets(projectId: string, params?: PaginationParams): Promise<PaginatedResponse<{ secrets: any[] }>> {
+  async listProjectSecrets(
+    projectId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ secrets: any[] }>> {
     let response = await this.axios.get(this.teamPath(`/projects/${projectId}/secrets`), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   async getProjectSecret(projectId: string, secretId: string): Promise<any> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/secrets/${secretId}`));
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/secrets/${secretId}`)
+    );
     return response.data?.data;
   }
 
-  async createProjectSecret(projectId: string, data: {
-    name: string;
-    description?: string;
-    secretType: string;
-    priority?: number;
-    tags?: string[];
-    variables?: Record<string, string>;
-    files?: Record<string, string>;
-    restrictions?: {
-      restricted: boolean;
-      nfObjects?: Array<{ nfObjectId: string; nfObjectType: string }>;
+  async createProjectSecret(
+    projectId: string,
+    data: {
+      name: string;
+      description?: string;
+      secretType: string;
+      priority?: number;
       tags?: string[];
-    };
-  }): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/projects/${projectId}/secrets`), data);
+      variables?: Record<string, string>;
+      files?: Record<string, string>;
+      restrictions?: {
+        restricted: boolean;
+        nfObjects?: Array<{ nfObjectId: string; nfObjectType: string }>;
+        tags?: string[];
+      };
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.teamPath(`/projects/${projectId}/secrets`),
+      data
+    );
     return response.data?.data;
   }
 
-  async updateProjectSecret(projectId: string, secretId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.patch(this.teamPath(`/projects/${projectId}/secrets/${secretId}`), data);
+  async updateProjectSecret(
+    projectId: string,
+    secretId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      this.teamPath(`/projects/${projectId}/secrets/${secretId}`),
+      data
+    );
     return response.data?.data;
   }
 
@@ -307,44 +389,53 @@ export class Client {
 
   // --- Pipelines ---
 
-  async listPipelines(projectId: string, params?: PaginationParams): Promise<PaginatedResponse<{ pipelines: any[] }>> {
+  async listPipelines(
+    projectId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ pipelines: any[] }>> {
     let response = await this.axios.get(this.teamPath(`/projects/${projectId}/pipelines`), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   async getPipeline(projectId: string, pipelineId: string): Promise<any> {
-    let response = await this.axios.get(this.teamPath(`/projects/${projectId}/pipelines/${pipelineId}`));
+    let response = await this.axios.get(
+      this.teamPath(`/projects/${projectId}/pipelines/${pipelineId}`)
+    );
     return response.data?.data;
   }
 
   // --- Domains ---
 
-  async listDomains(params?: PaginationParams): Promise<PaginatedResponse<{ domains: any[] }>> {
+  async listDomains(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ domains: any[] }>> {
     let response = await this.axios.get(this.teamPath('/domains'), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   // --- Notification Integrations ---
 
-  async listNotificationIntegrations(params?: PaginationParams): Promise<PaginatedResponse<{ integrations: any[] }>> {
+  async listNotificationIntegrations(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ integrations: any[] }>> {
     let response = await this.axios.get(this.teamPath('/integrations/notifications'), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -366,12 +457,20 @@ export class Client {
   }
 
   async getNotificationIntegration(notificationId: string): Promise<any> {
-    let response = await this.axios.get(this.teamPath(`/integrations/notifications/${notificationId}`));
+    let response = await this.axios.get(
+      this.teamPath(`/integrations/notifications/${notificationId}`)
+    );
     return response.data?.data;
   }
 
-  async updateNotificationIntegration(notificationId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/integrations/notifications/${notificationId}`), data);
+  async updateNotificationIntegration(
+    notificationId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.teamPath(`/integrations/notifications/${notificationId}`),
+      data
+    );
     return response.data?.data;
   }
 
@@ -381,31 +480,38 @@ export class Client {
 
   // --- Templates ---
 
-  async listTemplates(params?: PaginationParams): Promise<PaginatedResponse<{ templates: any[] }>> {
+  async listTemplates(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ templates: any[] }>> {
     let response = await this.axios.get(this.teamPath('/templates'), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   async runTemplate(templateId: string, args?: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(this.teamPath(`/templates/${templateId}/run`), args ? { arguments: args } : {});
+    let response = await this.axios.post(
+      this.teamPath(`/templates/${templateId}/run`),
+      args ? { arguments: args } : {}
+    );
     return response.data?.data;
   }
 
   // --- Log Sinks ---
 
-  async listLogSinks(params?: PaginationParams): Promise<PaginatedResponse<{ logSinks: any[] }>> {
+  async listLogSinks(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ logSinks: any[] }>> {
     let response = await this.axios.get(this.teamPath('/integrations/log-sinks'), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -417,21 +523,23 @@ export class Client {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
 
   // --- Billing ---
 
-  async listInvoices(params?: PaginationParams): Promise<PaginatedResponse<{ invoices: any[] }>> {
+  async listInvoices(
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<{ invoices: any[] }>> {
     let response = await this.axios.get(this.teamPath('/billing/invoices'), {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }

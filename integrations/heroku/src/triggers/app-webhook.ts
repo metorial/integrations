@@ -3,38 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let appWebhook = SlateTrigger.create(
-  spec,
-  {
-    name: 'App Webhook',
-    key: 'app_webhook',
-    description: 'Receives webhook notifications when changes occur on Heroku apps, including app updates, dyno events, add-on changes, builds, releases, domain changes, collaborator changes, and formation updates.'
-  }
-)
-  .input(z.object({
-    webhookEventId: z.string().describe('Unique identifier of the webhook event'),
-    entityType: z.string().describe('Entity type that triggered the event (e.g., "api:app", "api:release")'),
-    actionType: z.string().describe('Action type (create, update, destroy)'),
-    resourceId: z.string().describe('ID of the affected resource'),
-    appId: z.string().describe('ID of the app this event belongs to'),
-    appName: z.string().describe('Name of the app'),
-    actorEmail: z.string().describe('Email of the user who performed the action'),
-    actorId: z.string().describe('ID of the user who performed the action'),
-    eventPayload: z.any().describe('Raw event data from the webhook')
-  }))
-  .output(z.object({
-    entityType: z.string().describe('Entity type that triggered the event'),
-    actionType: z.string().describe('Action type (create, update, destroy)'),
-    resourceId: z.string().describe('ID of the affected resource'),
-    appId: z.string().describe('ID of the app'),
-    appName: z.string().describe('Name of the app'),
-    actorEmail: z.string().describe('Email of the user who performed the action'),
-    actorId: z.string().describe('ID of the actor'),
-    previousData: z.any().optional().describe('Previous state of the resource (for update events)'),
-    currentData: z.any().optional().describe('Current state of the resource')
-  }))
+export let appWebhook = SlateTrigger.create(spec, {
+  name: 'App Webhook',
+  key: 'app_webhook',
+  description:
+    'Receives webhook notifications when changes occur on Heroku apps, including app updates, dyno events, add-on changes, builds, releases, domain changes, collaborator changes, and formation updates.'
+})
+  .input(
+    z.object({
+      webhookEventId: z.string().describe('Unique identifier of the webhook event'),
+      entityType: z
+        .string()
+        .describe('Entity type that triggered the event (e.g., "api:app", "api:release")'),
+      actionType: z.string().describe('Action type (create, update, destroy)'),
+      resourceId: z.string().describe('ID of the affected resource'),
+      appId: z.string().describe('ID of the app this event belongs to'),
+      appName: z.string().describe('Name of the app'),
+      actorEmail: z.string().describe('Email of the user who performed the action'),
+      actorId: z.string().describe('ID of the user who performed the action'),
+      eventPayload: z.any().describe('Raw event data from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      entityType: z.string().describe('Entity type that triggered the event'),
+      actionType: z.string().describe('Action type (create, update, destroy)'),
+      resourceId: z.string().describe('ID of the affected resource'),
+      appId: z.string().describe('ID of the app'),
+      appName: z.string().describe('Name of the app'),
+      actorEmail: z.string().describe('Email of the user who performed the action'),
+      actorId: z.string().describe('ID of the actor'),
+      previousData: z
+        .any()
+        .optional()
+        .describe('Previous state of the resource (for update events)'),
+      currentData: z.any().optional().describe('Current state of the resource')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // We need an app to register webhooks against. The webhook URL is app-specific.
@@ -93,7 +100,7 @@ export let appWebhook = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let { registrations } = ctx.input.registrationDetails as {
         registrations: Array<{ appId: string; appName: string; webhookId: string }>;
@@ -108,8 +115,8 @@ export let appWebhook = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // Heroku webhook payload structure:
       // {
@@ -135,22 +142,34 @@ export let appWebhook = SlateTrigger.create(
       let actorId = body.actor?.id || '';
 
       return {
-        inputs: [{
-          webhookEventId: eventId,
-          entityType,
-          actionType,
-          resourceId,
-          appId,
-          appName,
-          actorEmail,
-          actorId,
-          eventPayload: body
-        }]
+        inputs: [
+          {
+            webhookEventId: eventId,
+            entityType,
+            actionType,
+            resourceId,
+            appId,
+            appName,
+            actorEmail,
+            actorId,
+            eventPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let { webhookEventId, entityType, actionType, resourceId, appId, appName, actorEmail, actorId, eventPayload } = ctx.input;
+    handleEvent: async ctx => {
+      let {
+        webhookEventId,
+        entityType,
+        actionType,
+        resourceId,
+        appId,
+        appName,
+        actorEmail,
+        actorId,
+        eventPayload
+      } = ctx.input;
 
       // Normalize entity type for the event type string
       let normalizedEntity = entityType.replace('api:', '').replace(/-/g, '_');

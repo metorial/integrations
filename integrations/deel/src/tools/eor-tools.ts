@@ -3,24 +3,27 @@ import { createClient } from '../lib/utils';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEorCountryGuide = SlateTool.create(
-  spec,
-  {
-    name: 'Get EOR Country Guide',
-    key: 'get_eor_country_guide',
-    description: `Retrieve the Employer of Record (EOR) hiring guide for a specific country. Returns country-specific requirements, validations, and employment parameters needed to create an EOR contract.`,
-    tags: {
-      readOnly: true,
-    },
+export let getEorCountryGuide = SlateTool.create(spec, {
+  name: 'Get EOR Country Guide',
+  key: 'get_eor_country_guide',
+  description: `Retrieve the Employer of Record (EOR) hiring guide for a specific country. Returns country-specific requirements, validations, and employment parameters needed to create an EOR contract.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    countryCode: z.string().describe('ISO country code (e.g. "US", "GB", "DE")'),
-  }))
-  .output(z.object({
-    guide: z.record(z.string(), z.any()).describe('Country-specific EOR hiring guide and validations'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      countryCode: z.string().describe('ISO country code (e.g. "US", "GB", "DE")')
+    })
+  )
+  .output(
+    z.object({
+      guide: z
+        .record(z.string(), z.any())
+        .describe('Country-specific EOR hiring guide and validations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result = await client.getEorCountryGuide(ctx.input.countryCode);
@@ -28,35 +31,39 @@ export let getEorCountryGuide = SlateTool.create(
 
     return {
       output: { guide },
-      message: `Retrieved EOR hiring guide for country **${ctx.input.countryCode}**.`,
+      message: `Retrieved EOR hiring guide for country **${ctx.input.countryCode}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let calculateEorCost = SlateTool.create(
-  spec,
-  {
-    name: 'Calculate EOR Cost',
-    key: 'calculate_eor_cost',
-    description: `Calculate the estimated cost of hiring an employee through Deel's Employer of Record (EOR) service. Provides cost breakdown including employer contributions and Deel fees.`,
-    tags: {
-      readOnly: true,
-    },
+export let calculateEorCost = SlateTool.create(spec, {
+  name: 'Calculate EOR Cost',
+  key: 'calculate_eor_cost',
+  description: `Calculate the estimated cost of hiring an employee through Deel's Employer of Record (EOR) service. Provides cost breakdown including employer contributions and Deel fees.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    countryCode: z.string().describe('ISO country code for the employee'),
-    currencyCode: z.string().optional().describe('Currency code (e.g. "USD")'),
-    salary: z.number().optional().describe('Annual or monthly salary amount'),
-    salaryPeriod: z.string().optional().describe('Salary period: "annual" or "monthly"'),
-  }))
-  .output(z.object({
-    costBreakdown: z.record(z.string(), z.any()).describe('Estimated cost breakdown for EOR employment'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      countryCode: z.string().describe('ISO country code for the employee'),
+      currencyCode: z.string().optional().describe('Currency code (e.g. "USD")'),
+      salary: z.number().optional().describe('Annual or monthly salary amount'),
+      salaryPeriod: z.string().optional().describe('Salary period: "annual" or "monthly"')
+    })
+  )
+  .output(
+    z.object({
+      costBreakdown: z
+        .record(z.string(), z.any())
+        .describe('Estimated cost breakdown for EOR employment')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let data: Record<string, any> = {
-      country_code: ctx.input.countryCode,
+      country_code: ctx.input.countryCode
     };
     if (ctx.input.currencyCode) data.currency_code = ctx.input.currencyCode;
     if (ctx.input.salary) data.salary = ctx.input.salary;
@@ -67,6 +74,7 @@ export let calculateEorCost = SlateTool.create(
 
     return {
       output: { costBreakdown },
-      message: `Calculated EOR cost for **${ctx.input.countryCode}**.`,
+      message: `Calculated EOR cost for **${ctx.input.countryCode}**.`
     };
-  }).build();
+  })
+  .build();

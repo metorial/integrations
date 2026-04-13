@@ -2,17 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      apiKey: z.string().describe('Your eSputnik/Yespo API key. Generate one in your account Settings → API.')
+      apiKey: z
+        .string()
+        .describe('Your eSputnik/Yespo API key. Generate one in your account Settings → API.')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey
@@ -24,12 +28,11 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.yespo.io/api'
       });
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let basicToken = Buffer.from(`x:${ctx.output.token}`).toString('base64');
 
       let response = await axios.get('/v1/account/info', {
         headers: {
-          'Authorization': `Basic ${basicToken}`,
+          Authorization: `Basic ${basicToken}`,
           'Content-Type': 'application/json; charset=UTF-8'
         }
       });

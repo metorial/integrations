@@ -3,25 +3,29 @@ import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
 
-let addressSchema = z.object({
-  addressType: z.enum(['POBOX', 'STREET', 'DELIVERY']).optional().describe('Address type'),
-  addressLine1: z.string().optional().describe('Address line 1'),
-  addressLine2: z.string().optional().describe('Address line 2'),
-  addressLine3: z.string().optional().describe('Address line 3'),
-  addressLine4: z.string().optional().describe('Address line 4'),
-  city: z.string().optional().describe('City'),
-  region: z.string().optional().describe('Region/State'),
-  postalCode: z.string().optional().describe('Postal/ZIP code'),
-  country: z.string().optional().describe('Country'),
-  attentionTo: z.string().optional().describe('Attention to field'),
-}).describe('Contact address');
+let addressSchema = z
+  .object({
+    addressType: z.enum(['POBOX', 'STREET', 'DELIVERY']).optional().describe('Address type'),
+    addressLine1: z.string().optional().describe('Address line 1'),
+    addressLine2: z.string().optional().describe('Address line 2'),
+    addressLine3: z.string().optional().describe('Address line 3'),
+    addressLine4: z.string().optional().describe('Address line 4'),
+    city: z.string().optional().describe('City'),
+    region: z.string().optional().describe('Region/State'),
+    postalCode: z.string().optional().describe('Postal/ZIP code'),
+    country: z.string().optional().describe('Country'),
+    attentionTo: z.string().optional().describe('Attention to field')
+  })
+  .describe('Contact address');
 
-let phoneSchema = z.object({
-  phoneType: z.enum(['DEFAULT', 'DDI', 'MOBILE', 'FAX']).optional().describe('Phone type'),
-  phoneNumber: z.string().optional().describe('Phone number'),
-  phoneAreaCode: z.string().optional().describe('Area code'),
-  phoneCountryCode: z.string().optional().describe('Country code'),
-}).describe('Contact phone number');
+let phoneSchema = z
+  .object({
+    phoneType: z.enum(['DEFAULT', 'DDI', 'MOBILE', 'FAX']).optional().describe('Phone type'),
+    phoneNumber: z.string().optional().describe('Phone number'),
+    phoneAreaCode: z.string().optional().describe('Area code'),
+    phoneCountryCode: z.string().optional().describe('Country code')
+  })
+  .describe('Contact phone number');
 
 let contactOutputSchema = z.object({
   contactId: z.string().optional().describe('Unique Xero contact ID'),
@@ -38,7 +42,7 @@ let contactOutputSchema = z.object({
   defaultCurrency: z.string().optional().describe('Default currency code'),
   updatedDate: z.string().optional().describe('Last updated timestamp'),
   website: z.string().optional().describe('Website URL'),
-  discount: z.number().optional().describe('Default discount rate'),
+  discount: z.number().optional().describe('Default discount rate')
 });
 
 let mapContact = (c: any) => ({
@@ -56,40 +60,39 @@ let mapContact = (c: any) => ({
   defaultCurrency: c.DefaultCurrency,
   updatedDate: c.UpdatedDateUTC,
   website: c.Website,
-  discount: c.Discount,
+  discount: c.Discount
 });
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Creates a new contact (customer or supplier) in Xero. A contact name is required, and you can optionally include address, phone, email, tax information, and payment terms.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    name: z.string().describe('Contact name (company or person name)'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    emailAddress: z.string().optional().describe('Email address'),
-    taxNumber: z.string().optional().describe('Tax identification number'),
-    accountNumber: z.string().optional().describe('Account number for the contact'),
-    contactNumber: z.string().optional().describe('Contact number (your reference)'),
-    isSupplier: z.boolean().optional().describe('Mark as supplier'),
-    isCustomer: z.boolean().optional().describe('Mark as customer'),
-    defaultCurrency: z.string().optional().describe('Default currency code'),
-    website: z.string().optional().describe('Website URL'),
-    discount: z.number().optional().describe('Default discount rate'),
-    addresses: z.array(addressSchema).optional().describe('Contact addresses'),
-    phones: z.array(phoneSchema).optional().describe('Contact phone numbers'),
-  }))
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Creates a new contact (customer or supplier) in Xero. A contact name is required, and you can optionally include address, phone, email, tax information, and payment terms.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      name: z.string().describe('Contact name (company or person name)'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      emailAddress: z.string().optional().describe('Email address'),
+      taxNumber: z.string().optional().describe('Tax identification number'),
+      accountNumber: z.string().optional().describe('Account number for the contact'),
+      contactNumber: z.string().optional().describe('Contact number (your reference)'),
+      isSupplier: z.boolean().optional().describe('Mark as supplier'),
+      isCustomer: z.boolean().optional().describe('Mark as customer'),
+      defaultCurrency: z.string().optional().describe('Default currency code'),
+      website: z.string().optional().describe('Website URL'),
+      discount: z.number().optional().describe('Default discount rate'),
+      addresses: z.array(addressSchema).optional().describe('Contact addresses'),
+      phones: z.array(phoneSchema).optional().describe('Contact phone numbers')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let contactData: Record<string, any> = {
-      Name: ctx.input.name,
+      Name: ctx.input.name
     };
 
     if (ctx.input.firstName) contactData.FirstName = ctx.input.firstName;
@@ -115,7 +118,7 @@ export let createContact = SlateTool.create(
         Region: a.region,
         PostalCode: a.postalCode,
         Country: a.country,
-        AttentionTo: a.attentionTo,
+        AttentionTo: a.attentionTo
       }));
     }
 
@@ -124,7 +127,7 @@ export let createContact = SlateTool.create(
         PhoneType: p.phoneType,
         PhoneNumber: p.phoneNumber,
         PhoneAreaCode: p.phoneAreaCode,
-        PhoneCountryCode: p.phoneCountryCode,
+        PhoneCountryCode: p.phoneCountryCode
       }));
     }
 
@@ -133,64 +136,67 @@ export let createContact = SlateTool.create(
 
     return {
       output,
-      message: `Created contact **${output.name}**${output.emailAddress ? ` (${output.emailAddress})` : ''}.`,
+      message: `Created contact **${output.name}**${output.emailAddress ? ` (${output.emailAddress})` : ''}.`
     };
   })
   .build();
 
-export let getContact = SlateTool.create(
-  spec,
-  {
-    name: 'Get Contact',
-    key: 'get_contact',
-    description: `Retrieves a single contact by ID with full details including addresses, phone numbers, and financial information.`,
-    tags: { destructive: false, readOnly: true },
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('The Xero contact ID'),
-  }))
+export let getContact = SlateTool.create(spec, {
+  name: 'Get Contact',
+  key: 'get_contact',
+  description: `Retrieves a single contact by ID with full details including addresses, phone numbers, and financial information.`,
+  tags: { destructive: false, readOnly: true }
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('The Xero contact ID')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
     let contact = await client.getContact(ctx.input.contactId);
     let output = mapContact(contact);
 
     return {
       output,
-      message: `Retrieved contact **${output.name}** — ${output.isCustomer ? 'Customer' : ''}${output.isCustomer && output.isSupplier ? ' & ' : ''}${output.isSupplier ? 'Supplier' : ''}.`,
+      message: `Retrieved contact **${output.name}** — ${output.isCustomer ? 'Customer' : ''}${output.isCustomer && output.isSupplier ? ' & ' : ''}${output.isSupplier ? 'Supplier' : ''}.`
     };
   })
   .build();
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Lists contacts from Xero with filtering and search. Supports searching by name, filtering by status, and retrieving contacts modified after a certain date.`,
-    instructions: [
-      'Use searchTerm for name-based searching',
-      'Use the "where" parameter for advanced filters, e.g. `IsCustomer==true`',
-    ],
-    constraints: ['Returns up to 100 contacts per page'],
-    tags: { destructive: false, readOnly: true },
-  }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (starting from 1)'),
-    searchTerm: z.string().optional().describe('Search contacts by name'),
-    modifiedAfter: z.string().optional().describe('Only return contacts modified after this date (ISO 8601)'),
-    where: z.string().optional().describe('Xero API where filter expression'),
-    order: z.string().optional().describe('Order results, e.g. "Name ASC"'),
-    includeArchived: z.boolean().optional().describe('Include archived contacts'),
-    ids: z.array(z.string()).optional().describe('Filter to specific contact IDs'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactOutputSchema).describe('List of contacts'),
-    count: z.number().describe('Number of contacts returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Lists contacts from Xero with filtering and search. Supports searching by name, filtering by status, and retrieving contacts modified after a certain date.`,
+  instructions: [
+    'Use searchTerm for name-based searching',
+    'Use the "where" parameter for advanced filters, e.g. `IsCustomer==true`'
+  ],
+  constraints: ['Returns up to 100 contacts per page'],
+  tags: { destructive: false, readOnly: true }
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (starting from 1)'),
+      searchTerm: z.string().optional().describe('Search contacts by name'),
+      modifiedAfter: z
+        .string()
+        .optional()
+        .describe('Only return contacts modified after this date (ISO 8601)'),
+      where: z.string().optional().describe('Xero API where filter expression'),
+      order: z.string().optional().describe('Order results, e.g. "Name ASC"'),
+      includeArchived: z.boolean().optional().describe('Include archived contacts'),
+      ids: z.array(z.string()).optional().describe('Filter to specific contact IDs')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactOutputSchema).describe('List of contacts'),
+      count: z.number().describe('Number of contacts returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let result = await client.getContacts({
@@ -200,44 +206,43 @@ export let listContacts = SlateTool.create(
       where: ctx.input.where,
       order: ctx.input.order,
       includeArchived: ctx.input.includeArchived,
-      ids: ctx.input.ids,
+      ids: ctx.input.ids
     });
 
     let contacts = (result.Contacts || []).map(mapContact);
 
     return {
       output: { contacts, count: contacts.length },
-      message: `Found **${contacts.length}** contact(s)${ctx.input.page ? ` on page ${ctx.input.page}` : ''}.`,
+      message: `Found **${contacts.length}** contact(s)${ctx.input.page ? ` on page ${ctx.input.page}` : ''}.`
     };
   })
   .build();
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Updates an existing contact in Xero. Modify name, email, addresses, phone numbers, and other contact details. Can also archive or restore a contact.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('The Xero contact ID to update'),
-    name: z.string().optional().describe('Updated contact name'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    emailAddress: z.string().optional().describe('Updated email address'),
-    contactStatus: z.enum(['ACTIVE', 'ARCHIVED']).optional().describe('Set contact status'),
-    taxNumber: z.string().optional().describe('Updated tax number'),
-    accountNumber: z.string().optional().describe('Updated account number'),
-    website: z.string().optional().describe('Updated website URL'),
-    defaultCurrency: z.string().optional().describe('Updated default currency'),
-    discount: z.number().optional().describe('Updated default discount rate'),
-    addresses: z.array(addressSchema).optional().describe('Replacement addresses'),
-    phones: z.array(phoneSchema).optional().describe('Replacement phone numbers'),
-  }))
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Updates an existing contact in Xero. Modify name, email, addresses, phone numbers, and other contact details. Can also archive or restore a contact.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('The Xero contact ID to update'),
+      name: z.string().optional().describe('Updated contact name'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      emailAddress: z.string().optional().describe('Updated email address'),
+      contactStatus: z.enum(['ACTIVE', 'ARCHIVED']).optional().describe('Set contact status'),
+      taxNumber: z.string().optional().describe('Updated tax number'),
+      accountNumber: z.string().optional().describe('Updated account number'),
+      website: z.string().optional().describe('Updated website URL'),
+      defaultCurrency: z.string().optional().describe('Updated default currency'),
+      discount: z.number().optional().describe('Updated default discount rate'),
+      addresses: z.array(addressSchema).optional().describe('Replacement addresses'),
+      phones: z.array(phoneSchema).optional().describe('Replacement phone numbers')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let updateData: Record<string, any> = {};
@@ -263,7 +268,7 @@ export let updateContact = SlateTool.create(
         Region: a.region,
         PostalCode: a.postalCode,
         Country: a.country,
-        AttentionTo: a.attentionTo,
+        AttentionTo: a.attentionTo
       }));
     }
 
@@ -272,7 +277,7 @@ export let updateContact = SlateTool.create(
         PhoneType: p.phoneType,
         PhoneNumber: p.phoneNumber,
         PhoneAreaCode: p.phoneAreaCode,
-        PhoneCountryCode: p.phoneCountryCode,
+        PhoneCountryCode: p.phoneCountryCode
       }));
     }
 
@@ -281,7 +286,7 @@ export let updateContact = SlateTool.create(
 
     return {
       output,
-      message: `Updated contact **${output.name}**${ctx.input.contactStatus ? ` — Status: **${ctx.input.contactStatus}**` : ''}.`,
+      message: `Updated contact **${output.name}**${ctx.input.contactStatus ? ` — Status: **${ctx.input.contactStatus}**` : ''}.`
     };
   })
   .build();

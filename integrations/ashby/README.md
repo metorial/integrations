@@ -5,42 +5,55 @@ Manage the full recruiting lifecycle in an applicant tracking system. Create, up
 ## Tools
 
 ### Create Application
+
 Creates a new application for a candidate on a job in Ashby. An application represents a candidate's progression through the hiring pipeline for a specific job. Optionally specify an interview plan, starting stage, source, or credited user.
 
 ### Create Candidate
+
 Creates a new candidate in Ashby with name, email, phone, and social links. Returns the created candidate's ID and basic profile information.
 
 ### Create Job
+
 Creates a new job in Ashby with a title and optional location, department, and default interview plan. Returns the created job's ID and basic details.
 
 ### Get Candidate
+
 Retrieves detailed information about a candidate. Can look up by ID or search by email/name. When searching by email or name, returns the first matching candidate.
 
 ### List Applications
+
 Lists applications with pagination or retrieves detailed information about a specific application. Applications represent a candidate's progress through the hiring pipeline for a particular job.
 
 ### List Jobs
+
 Lists or searches jobs in Ashby. Can paginate through all jobs or search by term and status. When a search term or status filter is provided, the search endpoint is used instead of the list endpoint.
 
 ### List Organization Data
+
 Lists departments, locations, users, sources, archive reasons, candidate tags, or interview stages from the Ashby organization. Returns results in a consistent format regardless of resource type.
 
 ### Manage Interview Schedule
+
 Creates, updates, cancels, or lists interview schedules in Ashby. Use this tool to coordinate interview scheduling for candidates in the hiring pipeline.
 
 ### Manage Offer
+
 Creates, retrieves, lists, updates, approves, or starts offers in Ashby. Use this tool to manage the full offer lifecycle for candidates in the hiring pipeline.
 
 ### Set Custom Field
+
 Sets a custom field value on an Ashby entity. Use the list organization tool with \
 
 ### Update Application
+
 Updates an existing application in Ashby. Supports multiple actions: change the interview stage (optionally with an archive reason), change the application source, transfer the application to a different job, and add or remove hiring team members. Multiple actions can be performed in a single call.
 
 ### Update Candidate
+
 Updates a candidate's profile in Ashby. Supports changing name, email, phone, social links, adding tags, creating notes, and assigning to projects. Multiple operations can be performed in a single call.
 
 ### Update Job
+
 Updates a job's details, status, or compensation. Supports changing the title, location, department, status, and compensation in a single call.
 
 ## License

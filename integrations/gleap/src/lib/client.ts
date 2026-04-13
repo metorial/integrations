@@ -8,8 +8,8 @@ export class GleapClient {
     this.axios = createAxios({
       baseURL: 'https://api.gleap.io/v3',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Project': config.projectId,
+        Authorization: `Bearer ${config.token}`,
+        Project: config.projectId,
         'Content-Type': 'application/json'
       }
     });
@@ -56,22 +56,25 @@ export class GleapClient {
     return response.data;
   }
 
-  async updateTicket(ticketId: string, data: {
-    title?: string;
-    description?: string;
-    status?: string;
-    priority?: string;
-    plainContent?: string;
-    content?: any;
-    tags?: string[];
-    processingUser?: string;
-    processingTeam?: string;
-    customData?: Record<string, any>;
-    formData?: Record<string, any>;
-    archived?: boolean;
-    snoozedUntil?: string;
-    [key: string]: any;
-  }): Promise<any> {
+  async updateTicket(
+    ticketId: string,
+    data: {
+      title?: string;
+      description?: string;
+      status?: string;
+      priority?: string;
+      plainContent?: string;
+      content?: any;
+      tags?: string[];
+      processingUser?: string;
+      processingTeam?: string;
+      customData?: Record<string, any>;
+      formData?: Record<string, any>;
+      archived?: boolean;
+      snoozedUntil?: string;
+      [key: string]: any;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/tickets/${ticketId}`, data);
     return response.data;
   }
@@ -92,11 +95,7 @@ export class GleapClient {
 
   // --- Sessions ---
 
-  async listSessions(params?: {
-    limit?: number;
-    skip?: number;
-    sort?: string;
-  }): Promise<any> {
+  async listSessions(params?: { limit?: number; skip?: number; sort?: string }): Promise<any> {
     let response = await this.axios.get('/sessions', { params });
     return response.data;
   }
@@ -129,19 +128,22 @@ export class GleapClient {
     return response.data;
   }
 
-  async updateSession(sessionId: string, data: {
-    userId?: string;
-    email?: string;
-    name?: string;
-    phone?: string;
-    companyId?: string;
-    companyName?: string;
-    plan?: string;
-    value?: number;
-    customData?: Record<string, any>;
-    tags?: string[];
-    [key: string]: any;
-  }): Promise<any> {
+  async updateSession(
+    sessionId: string,
+    data: {
+      userId?: string;
+      email?: string;
+      name?: string;
+      phone?: string;
+      companyId?: string;
+      companyName?: string;
+      plan?: string;
+      value?: number;
+      customData?: Record<string, any>;
+      tags?: string[];
+      [key: string]: any;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/sessions/${sessionId}`, data);
     return response.data;
   }
@@ -218,12 +220,15 @@ export class GleapClient {
     return response.data;
   }
 
-  async updateCollection(collectionId: string, data: {
-    title?: string;
-    description?: string;
-    iconUrl?: string;
-    targetAudience?: string;
-  }): Promise<any> {
+  async updateCollection(
+    collectionId: string,
+    data: {
+      title?: string;
+      description?: string;
+      iconUrl?: string;
+      targetAudience?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/helpcenter/collections/${collectionId}`, data);
     return response.data;
   }
@@ -240,34 +245,49 @@ export class GleapClient {
   }
 
   async getArticle(collectionId: string, articleId: string): Promise<any> {
-    let response = await this.axios.get(`/helpcenter/collections/${collectionId}/articles/${articleId}`);
+    let response = await this.axios.get(
+      `/helpcenter/collections/${collectionId}/articles/${articleId}`
+    );
     return response.data;
   }
 
-  async createArticle(collectionId: string, data: {
-    title: string;
-    description?: string;
-    content?: any;
-    plainContent?: string;
-    isDraft?: boolean;
-    tags?: string[];
-    targetAudience?: string;
-    author?: string;
-  }): Promise<any> {
-    let response = await this.axios.post(`/helpcenter/collections/${collectionId}/articles`, data);
+  async createArticle(
+    collectionId: string,
+    data: {
+      title: string;
+      description?: string;
+      content?: any;
+      plainContent?: string;
+      isDraft?: boolean;
+      tags?: string[];
+      targetAudience?: string;
+      author?: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/helpcenter/collections/${collectionId}/articles`,
+      data
+    );
     return response.data;
   }
 
-  async updateArticle(collectionId: string, articleId: string, data: {
-    title?: string;
-    description?: string;
-    content?: any;
-    plainContent?: string;
-    isDraft?: boolean;
-    tags?: string[];
-    targetAudience?: string;
-  }): Promise<any> {
-    let response = await this.axios.put(`/helpcenter/collections/${collectionId}/articles/${articleId}`, data);
+  async updateArticle(
+    collectionId: string,
+    articleId: string,
+    data: {
+      title?: string;
+      description?: string;
+      content?: any;
+      plainContent?: string;
+      isDraft?: boolean;
+      tags?: string[];
+      targetAudience?: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/helpcenter/collections/${collectionId}/articles/${articleId}`,
+      data
+    );
     return response.data;
   }
 
@@ -364,7 +384,11 @@ export class GleapClient {
     return response.data;
   }
 
-  async updateEngagement(engagementType: string, engagementId: string, data: Record<string, any>): Promise<any> {
+  async updateEngagement(
+    engagementType: string,
+    engagementId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/${engagementType}/${engagementId}`, data);
     return response.data;
   }

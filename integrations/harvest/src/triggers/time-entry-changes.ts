@@ -3,55 +3,57 @@ import { HarvestClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let timeEntryChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Time Entry Changes',
-    key: 'time_entry_changes',
-    description: 'Triggers when time entries are created or updated in Harvest. Polls for changes since the last check.',
-  }
-)
-  .input(z.object({
-    timeEntryId: z.number().describe('ID of the time entry'),
-    updatedAt: z.string().describe('When the entry was last updated'),
-    createdAt: z.string().describe('When the entry was created'),
-    isNew: z.boolean().describe('Whether this is a newly created entry'),
-    entry: z.any().describe('Full time entry data from the API'),
-  }))
-  .output(z.object({
-    timeEntryId: z.number().describe('ID of the time entry'),
-    userId: z.number().optional().describe('User ID'),
-    userName: z.string().optional().describe('User name'),
-    projectId: z.number().optional().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    clientName: z.string().optional().describe('Client name'),
-    taskId: z.number().optional().describe('Task ID'),
-    taskName: z.string().optional().describe('Task name'),
-    spentDate: z.string().describe('Date the time was spent'),
-    hours: z.number().describe('Hours logged'),
-    notes: z.string().nullable().describe('Notes'),
-    isRunning: z.boolean().describe('Whether the timer is running'),
-    isBilled: z.boolean().describe('Whether billed'),
-    billable: z.boolean().describe('Whether billable'),
-    createdAt: z.string().describe('Created timestamp'),
-    updatedAt: z.string().describe('Updated timestamp'),
-  }))
+export let timeEntryChanges = SlateTrigger.create(spec, {
+  name: 'Time Entry Changes',
+  key: 'time_entry_changes',
+  description:
+    'Triggers when time entries are created or updated in Harvest. Polls for changes since the last check.'
+})
+  .input(
+    z.object({
+      timeEntryId: z.number().describe('ID of the time entry'),
+      updatedAt: z.string().describe('When the entry was last updated'),
+      createdAt: z.string().describe('When the entry was created'),
+      isNew: z.boolean().describe('Whether this is a newly created entry'),
+      entry: z.any().describe('Full time entry data from the API')
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.number().describe('ID of the time entry'),
+      userId: z.number().optional().describe('User ID'),
+      userName: z.string().optional().describe('User name'),
+      projectId: z.number().optional().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      clientName: z.string().optional().describe('Client name'),
+      taskId: z.number().optional().describe('Task ID'),
+      taskName: z.string().optional().describe('Task name'),
+      spentDate: z.string().describe('Date the time was spent'),
+      hours: z.number().describe('Hours logged'),
+      notes: z.string().nullable().describe('Notes'),
+      isRunning: z.boolean().describe('Whether the timer is running'),
+      isBilled: z.boolean().describe('Whether billed'),
+      billable: z.boolean().describe('Whether billable'),
+      createdAt: z.string().describe('Created timestamp'),
+      updatedAt: z.string().describe('Updated timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new HarvestClient({
         token: ctx.auth.token,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownIds = (ctx.state?.knownIds as number[]) ?? [];
 
       let params: any = {
-        perPage: 100,
+        perPage: 100
       };
       if (lastPollTime) {
         params.updatedSince = lastPollTime;
@@ -75,23 +77,23 @@ export let timeEntryChanges = SlateTrigger.create(
         updatedAt: entry.updated_at,
         createdAt: entry.created_at,
         isNew: !knownIds.includes(entry.id),
-        entry,
+        entry
       }));
 
       let updatedKnownIds = [
-        ...new Set([...knownIds, ...entries.map((e: any) => e.id)]),
+        ...new Set([...knownIds, ...entries.map((e: any) => e.id)])
       ].slice(-10000); // Keep last 10k IDs to prevent unbounded growth
 
       return {
         inputs,
         updatedState: {
           lastPollTime: newPollTime,
-          knownIds: updatedKnownIds,
-        },
+          knownIds: updatedKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let entry = ctx.input.entry;
       let eventType = ctx.input.isNew ? 'created' : 'updated';
 
@@ -114,8 +116,9 @@ export let timeEntryChanges = SlateTrigger.create(
           isBilled: entry.is_billed,
           billable: entry.billable,
           createdAt: entry.created_at,
-          updatedAt: entry.updated_at,
-        },
+          updatedAt: entry.updated_at
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

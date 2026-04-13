@@ -6,42 +6,54 @@ import { z } from 'zod';
 let participantTokenSchema = z.object({
   productUserId: z.string().describe('Participant Product User ID'),
   token: z.string().describe('Voice room access token for this participant'),
-  hardMuted: z.boolean().describe('Whether the participant is hard-muted'),
+  hardMuted: z.boolean().describe('Whether the participant is hard-muted')
 });
 
-export let manageVoiceRoom = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Voice Room',
-    key: 'manage_voice_room',
-    description: `Manage voice chat rooms for your game. Supports three operations:
+export let manageVoiceRoom = SlateTool.create(spec, {
+  name: 'Manage Voice Room',
+  key: 'manage_voice_room',
+  description: `Manage voice chat rooms for your game. Supports three operations:
 - **join**: Generate room tokens for participants to join a voice room
 - **remove**: Remove a participant from a voice room
 - **mute**: Hard-mute or unmute a participant in a voice room`,
-    tags: {
-      destructive: true,
-    },
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    operation: z.enum(['join', 'remove', 'mute']).describe('The operation to perform'),
-    roomId: z.string().describe('Voice room identifier'),
-    participants: z.array(z.object({
-      productUserId: z.string().describe('Participant Product User ID'),
-      clientIp: z.string().optional().describe('Client IP address (for join)'),
-      hardMuted: z.boolean().optional().describe('Whether to hard-mute (for join and mute)'),
-    })).min(1).describe('Participants to manage'),
-  }))
-  .output(z.object({
-    roomId: z.string().optional().describe('Voice room ID'),
-    participantTokens: z.array(participantTokenSchema).optional().describe('Generated room tokens for joined participants'),
-    clientBaseUrl: z.string().optional().describe('Media server base URL'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      operation: z.enum(['join', 'remove', 'mute']).describe('The operation to perform'),
+      roomId: z.string().describe('Voice room identifier'),
+      participants: z
+        .array(
+          z.object({
+            productUserId: z.string().describe('Participant Product User ID'),
+            clientIp: z.string().optional().describe('Client IP address (for join)'),
+            hardMuted: z
+              .boolean()
+              .optional()
+              .describe('Whether to hard-mute (for join and mute)')
+          })
+        )
+        .min(1)
+        .describe('Participants to manage')
+    })
+  )
+  .output(
+    z.object({
+      roomId: z.string().optional().describe('Voice room ID'),
+      participantTokens: z
+        .array(participantTokenSchema)
+        .optional()
+        .describe('Generated room tokens for joined participants'),
+      clientBaseUrl: z.string().optional().describe('Media server base URL'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EosGameServicesClient({
       token: ctx.auth.token,
-      deploymentId: ctx.config.deploymentId,
+      deploymentId: ctx.config.deploymentId
     });
 
     if (ctx.input.operation === 'join') {
@@ -50,14 +62,14 @@ export let manageVoiceRoom = SlateTool.create(
         ctx.input.participants.map(p => ({
           puid: p.productUserId,
           clientIp: p.clientIp,
-          hardMuted: p.hardMuted,
+          hardMuted: p.hardMuted
         }))
       );
 
       let participantTokens = (data.participants ?? []).map((p: any) => ({
         productUserId: p.puid,
         token: p.token,
-        hardMuted: p.hardMuted ?? false,
+        hardMuted: p.hardMuted ?? false
       }));
 
       return {
@@ -65,9 +77,9 @@ export let manageVoiceRoom = SlateTool.create(
           roomId: data.roomId,
           participantTokens,
           clientBaseUrl: data.clientBaseUrl,
-          success: true,
+          success: true
         },
-        message: `Generated voice room tokens for **${participantTokens.length}** participant(s) in room \`${ctx.input.roomId}\`.`,
+        message: `Generated voice room tokens for **${participantTokens.length}** participant(s) in room \`${ctx.input.roomId}\`.`
       };
     }
 
@@ -77,7 +89,7 @@ export let manageVoiceRoom = SlateTool.create(
       }
       return {
         output: { success: true },
-        message: `Removed **${ctx.input.participants.length}** participant(s) from voice room \`${ctx.input.roomId}\`.`,
+        message: `Removed **${ctx.input.participants.length}** participant(s) from voice room \`${ctx.input.roomId}\`.`
       };
     }
 
@@ -91,6 +103,7 @@ export let manageVoiceRoom = SlateTool.create(
     }
     return {
       output: { success: true },
-      message: `Updated mute status for **${ctx.input.participants.length}** participant(s) in voice room \`${ctx.input.roomId}\`.`,
+      message: `Updated mute status for **${ctx.input.participants.length}** participant(s) in voice room \`${ctx.input.roomId}\`.`
     };
-  }).build();
+  })
+  .build();

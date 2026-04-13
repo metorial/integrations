@@ -9,5 +9,5 @@ export let spec = SlateSpecification.create({
     'Conversation-first Microsoft 365 mail workflows for inbox triage, thread context, reply drafts, and send/reply using Microsoft Graph.',
   metadata: {},
   config,
-  auth,
+  auth
 });

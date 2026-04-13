@@ -18,7 +18,7 @@ import {
   readSyncState,
   readEDAMUserException,
   readEDAMSystemException,
-  readEDAMNotFoundException,
+  readEDAMNotFoundException
 } from './serializers';
 import type {
   EvernoteNote,
@@ -30,7 +30,7 @@ import type {
   EvernoteSavedSearch,
   EvernoteUser,
   EvernoteSyncState,
-  EvernoteNoteResultSpec,
+  EvernoteNoteResultSpec
 } from './types';
 
 // Evernote error codes
@@ -53,7 +53,7 @@ let EDAMErrorCode: Record<number, string> = {
   16: 'TOO_MANY',
   17: 'UNSUPPORTED_OPERATION',
   18: 'TAKEN_DOWN',
-  19: 'RATE_LIMIT_REACHED',
+  19: 'RATE_LIMIT_REACHED'
 };
 
 export class EvernoteError extends Error {
@@ -61,7 +61,12 @@ export class EvernoteError extends Error {
   parameter?: string;
   rateLimitDuration?: number;
 
-  constructor(message: string, errorCode: number, parameter?: string, rateLimitDuration?: number) {
+  constructor(
+    message: string,
+    errorCode: number,
+    parameter?: string,
+    rateLimitDuration?: number
+  ) {
     super(message);
     this.name = 'EvernoteError';
     this.errorCode = errorCode;
@@ -85,7 +90,10 @@ export class Client {
   }
 
   // Send a Thrift RPC call and parse the response
-  private async callNoteStore(method: string, writeArgs: (w: ThriftWriter) => void): Promise<ThriftReader> {
+  private async callNoteStore(
+    method: string,
+    writeArgs: (w: ThriftWriter) => void
+  ): Promise<ThriftReader> {
     let w = new ThriftWriter();
     w.writeMessageBegin(method, TMessageType.CALL, this.nextSeqId());
     w.writeStructBegin();
@@ -105,9 +113,9 @@ export class Client {
     let response = await axios.post(this.noteStoreUrl, payload, {
       headers: {
         'Content-Type': 'application/x-thrift',
-        'Accept': 'application/x-thrift',
+        Accept: 'application/x-thrift'
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     let responseData = new Uint8Array(response.data);
@@ -121,9 +129,14 @@ export class Client {
         let field = reader.readFieldBegin();
         if (field.type === TType.STOP) break;
         switch (field.id) {
-          case 1: excFields[1] = reader.readString(); break;
-          case 2: excFields[2] = reader.readI32(); break;
-          default: reader.skip(field.type);
+          case 1:
+            excFields[1] = reader.readString();
+            break;
+          case 2:
+            excFields[2] = reader.readI32();
+            break;
+          default:
+            reader.skip(field.type);
         }
       }
       throw new EvernoteError(
@@ -136,7 +149,11 @@ export class Client {
     return reader;
   }
 
-  private async callUserStore(userStoreUrl: string, method: string, writeArgs: (w: ThriftWriter) => void): Promise<ThriftReader> {
+  private async callUserStore(
+    userStoreUrl: string,
+    method: string,
+    writeArgs: (w: ThriftWriter) => void
+  ): Promise<ThriftReader> {
     let w = new ThriftWriter();
     w.writeMessageBegin(method, TMessageType.CALL, this.nextSeqId());
     w.writeStructBegin();
@@ -154,9 +171,9 @@ export class Client {
     let response = await axios.post(userStoreUrl, payload, {
       headers: {
         'Content-Type': 'application/x-thrift',
-        'Accept': 'application/x-thrift',
+        Accept: 'application/x-thrift'
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     let responseData = new Uint8Array(response.data);
@@ -169,9 +186,14 @@ export class Client {
         let field = reader.readFieldBegin();
         if (field.type === TType.STOP) break;
         switch (field.id) {
-          case 1: excFields[1] = reader.readString(); break;
-          case 2: excFields[2] = reader.readI32(); break;
-          default: reader.skip(field.type);
+          case 1:
+            excFields[1] = reader.readString();
+            break;
+          case 2:
+            excFields[2] = reader.readI32();
+            break;
+          default:
+            reader.skip(field.type);
         }
       }
       throw new EvernoteError(
@@ -273,14 +295,14 @@ export class Client {
 
   // Parse an i32 result
   private parseI32Result(reader: ThriftReader): number {
-    return this.parseResultStruct(reader, (r) => r.readI32());
+    return this.parseResultStruct(reader, r => r.readI32());
   }
 
   // --- NoteStore Methods ---
 
   async listNotebooks(): Promise<EvernoteNotebook[]> {
     let reader = await this.callNoteStore('listNotebooks', () => {});
-    return this.parseResultStruct(reader, (r) => {
+    return this.parseResultStruct(reader, r => {
       let list = r.readListBegin();
       let notebooks: EvernoteNotebook[] = [];
       for (let i = 0; i < list.size; i++) {
@@ -291,7 +313,7 @@ export class Client {
   }
 
   async getNotebook(notebookGuid: string): Promise<EvernoteNotebook> {
-    let reader = await this.callNoteStore('getNotebook', (w) => {
+    let reader = await this.callNoteStore('getNotebook', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(notebookGuid);
     });
@@ -304,7 +326,7 @@ export class Client {
   }
 
   async createNotebook(notebook: EvernoteNotebook): Promise<EvernoteNotebook> {
-    let reader = await this.callNoteStore('createNotebook', (w) => {
+    let reader = await this.callNoteStore('createNotebook', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeNotebook(w, notebook);
     });
@@ -312,7 +334,7 @@ export class Client {
   }
 
   async updateNotebook(notebook: EvernoteNotebook): Promise<number> {
-    let reader = await this.callNoteStore('updateNotebook', (w) => {
+    let reader = await this.callNoteStore('updateNotebook', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeNotebook(w, notebook);
     });
@@ -320,7 +342,7 @@ export class Client {
   }
 
   async createNote(note: EvernoteNote): Promise<EvernoteNote> {
-    let reader = await this.callNoteStore('createNote', (w) => {
+    let reader = await this.callNoteStore('createNote', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeNote(w, note);
     });
@@ -328,7 +350,7 @@ export class Client {
   }
 
   async updateNote(note: EvernoteNote): Promise<EvernoteNote> {
-    let reader = await this.callNoteStore('updateNote', (w) => {
+    let reader = await this.callNoteStore('updateNote', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeNote(w, note);
     });
@@ -336,15 +358,21 @@ export class Client {
   }
 
   async deleteNote(noteGuid: string): Promise<number> {
-    let reader = await this.callNoteStore('deleteNote', (w) => {
+    let reader = await this.callNoteStore('deleteNote', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(noteGuid);
     });
     return this.parseI32Result(reader);
   }
 
-  async getNote(noteGuid: string, withContent: boolean, withResourcesData: boolean, withResourcesRecognition: boolean, withResourcesAlternateData: boolean): Promise<EvernoteNote> {
-    let reader = await this.callNoteStore('getNote', (w) => {
+  async getNote(
+    noteGuid: string,
+    withContent: boolean,
+    withResourcesData: boolean,
+    withResourcesRecognition: boolean,
+    withResourcesAlternateData: boolean
+  ): Promise<EvernoteNote> {
+    let reader = await this.callNoteStore('getNote', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(noteGuid);
       w.writeFieldBegin(TType.BOOL, 3);
@@ -360,11 +388,11 @@ export class Client {
   }
 
   async getNoteContent(noteGuid: string): Promise<string> {
-    let reader = await this.callNoteStore('getNoteContent', (w) => {
+    let reader = await this.callNoteStore('getNoteContent', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(noteGuid);
     });
-    return this.parseResultStruct(reader, (r) => r.readString());
+    return this.parseResultStruct(reader, r => r.readString());
   }
 
   async findNotesMetadata(
@@ -373,7 +401,7 @@ export class Client {
     maxNotes: number,
     resultSpec: EvernoteNotesMetadataResultSpec
   ): Promise<EvernoteNotesMetadataList> {
-    let reader = await this.callNoteStore('findNotesMetadata', (w) => {
+    let reader = await this.callNoteStore('findNotesMetadata', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeNoteFilter(w, filter);
       w.writeFieldBegin(TType.I32, 3);
@@ -387,11 +415,11 @@ export class Client {
   }
 
   async getNoteTagNames(noteGuid: string): Promise<string[]> {
-    let reader = await this.callNoteStore('getNoteTagNames', (w) => {
+    let reader = await this.callNoteStore('getNoteTagNames', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(noteGuid);
     });
-    return this.parseResultStruct(reader, (r) => {
+    return this.parseResultStruct(reader, r => {
       let list = r.readListBegin();
       let names: string[] = [];
       for (let i = 0; i < list.size; i++) {
@@ -403,7 +431,7 @@ export class Client {
 
   async listTags(): Promise<EvernoteTag[]> {
     let reader = await this.callNoteStore('listTags', () => {});
-    return this.parseResultStruct(reader, (r) => {
+    return this.parseResultStruct(reader, r => {
       let list = r.readListBegin();
       let tags: EvernoteTag[] = [];
       for (let i = 0; i < list.size; i++) {
@@ -414,11 +442,11 @@ export class Client {
   }
 
   async listTagsByNotebook(notebookGuid: string): Promise<EvernoteTag[]> {
-    let reader = await this.callNoteStore('listTagsByNotebook', (w) => {
+    let reader = await this.callNoteStore('listTagsByNotebook', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(notebookGuid);
     });
-    return this.parseResultStruct(reader, (r) => {
+    return this.parseResultStruct(reader, r => {
       let list = r.readListBegin();
       let tags: EvernoteTag[] = [];
       for (let i = 0; i < list.size; i++) {
@@ -429,7 +457,7 @@ export class Client {
   }
 
   async getTag(tagGuid: string): Promise<EvernoteTag> {
-    let reader = await this.callNoteStore('getTag', (w) => {
+    let reader = await this.callNoteStore('getTag', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(tagGuid);
     });
@@ -437,7 +465,7 @@ export class Client {
   }
 
   async createTag(tag: EvernoteTag): Promise<EvernoteTag> {
-    let reader = await this.callNoteStore('createTag', (w) => {
+    let reader = await this.callNoteStore('createTag', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeTag(w, tag);
     });
@@ -445,7 +473,7 @@ export class Client {
   }
 
   async updateTag(tag: EvernoteTag): Promise<number> {
-    let reader = await this.callNoteStore('updateTag', (w) => {
+    let reader = await this.callNoteStore('updateTag', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeTag(w, tag);
     });
@@ -453,7 +481,7 @@ export class Client {
   }
 
   async untagAll(tagGuid: string): Promise<void> {
-    let reader = await this.callNoteStore('untagAll', (w) => {
+    let reader = await this.callNoteStore('untagAll', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(tagGuid);
     });
@@ -462,7 +490,7 @@ export class Client {
 
   async listSearches(): Promise<EvernoteSavedSearch[]> {
     let reader = await this.callNoteStore('listSearches', () => {});
-    return this.parseResultStruct(reader, (r) => {
+    return this.parseResultStruct(reader, r => {
       let list = r.readListBegin();
       let searches: EvernoteSavedSearch[] = [];
       for (let i = 0; i < list.size; i++) {
@@ -473,7 +501,7 @@ export class Client {
   }
 
   async createSearch(search: EvernoteSavedSearch): Promise<EvernoteSavedSearch> {
-    let reader = await this.callNoteStore('createSearch', (w) => {
+    let reader = await this.callNoteStore('createSearch', w => {
       w.writeFieldBegin(TType.STRUCT, 2);
       writeSavedSearch(w, search);
     });
@@ -486,7 +514,7 @@ export class Client {
   }
 
   async copyNote(noteGuid: string, toNotebookGuid: string): Promise<EvernoteNote> {
-    let reader = await this.callNoteStore('copyNote', (w) => {
+    let reader = await this.callNoteStore('copyNote', w => {
       w.writeFieldBegin(TType.STRING, 2);
       w.writeString(noteGuid);
       w.writeFieldBegin(TType.STRING, 3);

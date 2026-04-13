@@ -10,11 +10,19 @@ let enrichedContactSchema = z.object({
   contactFirstName: z.string().describe('First name of the contact'),
   contactLastName: z.string().describe('Last name of the contact'),
   contactEmailAddress: z.string().nullable().describe('Enriched work email address'),
-  contactEmailAddressStatus: z.string().nullable().describe('Email deliverability status (deliverable, catch_all_safe, catch_all_not_safe, undeliverable)'),
+  contactEmailAddressStatus: z
+    .string()
+    .nullable()
+    .describe(
+      'Email deliverability status (deliverable, catch_all_safe, catch_all_not_safe, undeliverable)'
+    ),
   contactPhoneNumber: z.string().nullable().describe('Enriched mobile phone number'),
   contactGender: z.string().nullable().describe('Detected gender of the contact'),
   contactJobTitle: z.string().nullable().describe('Job title of the contact'),
-  customFields: z.record(z.string(), z.string()).nullable().describe('Custom fields passed during enrichment submission'),
+  customFields: z
+    .record(z.string(), z.string())
+    .nullable()
+    .describe('Custom fields passed during enrichment submission')
 });
 
 let summarySchema = z.object({
@@ -24,42 +32,43 @@ let summarySchema = z.object({
   catchAllSafe: z.number().describe('Number of safe catch-all email results'),
   catchAllNotSafe: z.number().describe('Number of unsafe catch-all email results'),
   undeliverable: z.number().describe('Number of undeliverable results'),
-  notFound: z.number().describe('Number of contacts where no data was found'),
+  notFound: z.number().describe('Number of contacts where no data was found')
 });
 
-export let getEnrichmentResults = SlateTool.create(
-  spec,
-  {
-    name: 'Get Enrichment Results',
-    key: 'get_enrichment_results',
-    description: `Retrieve the results of a previously submitted contact enrichment request. Returns the enrichment status, a summary of results, credit usage, and the enriched contact data including emails, phone numbers, and deliverability statuses.
+export let getEnrichmentResults = SlateTool.create(spec, {
+  name: 'Get Enrichment Results',
+  key: 'get_enrichment_results',
+  description: `Retrieve the results of a previously submitted contact enrichment request. Returns the enrichment status, a summary of results, credit usage, and the enriched contact data including emails, phone numbers, and deliverability statuses.
 
 Poll this endpoint until the status is **"terminated"** to get complete results.`,
 
-    instructions: [
-      'Use the requestId returned by the Enrich Contacts tool.',
-      'The status field will be "terminated" when enrichment is complete.',
-      'You are not charged credits for invalid or not-found data.',
-    ],
+  instructions: [
+    'Use the requestId returned by the Enrich Contacts tool.',
+    'The status field will be "terminated" when enrichment is complete.',
+    'You are not charged credits for invalid or not-found data.'
+  ],
 
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    requestId: z.string().describe('The request ID returned from the Enrich Contacts tool'),
-  }))
-  .output(z.object({
-    requestId: z.string().describe('The enrichment request ID'),
-    status: z.string().describe('Processing status (e.g. "terminated" when complete)'),
-    creditsConsumed: z.number().describe('Number of credits consumed by this request'),
-    creditsLeft: z.number().describe('Remaining credit balance after this request'),
-    summary: summarySchema.describe('Aggregate statistics of enrichment results'),
-    contacts: z.array(enrichedContactSchema).describe('Array of enriched contact records'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      requestId: z.string().describe('The request ID returned from the Enrich Contacts tool')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().describe('The enrichment request ID'),
+      status: z.string().describe('Processing status (e.g. "terminated" when complete)'),
+      creditsConsumed: z.number().describe('Number of credits consumed by this request'),
+      creditsLeft: z.number().describe('Remaining credit balance after this request'),
+      summary: summarySchema.describe('Aggregate statistics of enrichment results'),
+      contacts: z.array(enrichedContactSchema).describe('Array of enriched contact records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getEnrichmentResults(ctx.input.requestId);
@@ -68,7 +77,7 @@ Poll this endpoint until the status is **"terminated"** to get complete results.
 
     return {
       output: result,
-      message: `Enrichment **${statusText}**. ${result.summary.total} contacts processed: **${result.summary.valid}** valid, ${result.summary.catchAll} catch-all, ${result.summary.undeliverable} undeliverable, ${result.summary.notFound} not found. Credits consumed: ${result.creditsConsumed}.`,
+      message: `Enrichment **${statusText}**. ${result.summary.total} contacts processed: **${result.summary.valid}** valid, ${result.summary.catchAll} catch-all, ${result.summary.undeliverable} undeliverable, ${result.summary.notFound} not found. Credits consumed: ${result.creditsConsumed}.`
     };
   })
   .build();

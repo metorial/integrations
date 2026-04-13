@@ -11,70 +11,88 @@ let documentWebhookEvents = [
   'document_creation_failed',
   'document_completed_pdf_ready',
   'document_section_added',
-  'quote_updated',
+  'quote_updated'
 ];
 
-export let documentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Events',
-    key: 'document_events',
-    description: 'Triggers when document-related events occur, including status changes, recipient completions, document deletions, PDF readiness, section additions, and quote updates.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the webhook event'),
-    documentId: z.string().describe('UUID of the affected document'),
-    documentName: z.string().optional().describe('Name of the document'),
-    status: z.string().optional().describe('Document status'),
-    dateCreated: z.string().optional().describe('Document creation date'),
-    dateModified: z.string().optional().describe('Document last modified date'),
-    recipients: z.array(z.object({
-      recipientId: z.string().optional(),
-      email: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      recipientType: z.string().optional(),
-      hasCompleted: z.boolean().optional(),
-    })).optional().describe('Document recipients'),
-    metadata: z.record(z.string(), z.any()).optional().describe('Document metadata'),
-    tags: z.array(z.string()).optional().describe('Document tags'),
-    createdBy: z.object({
-      userId: z.string().optional(),
-      email: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-    }).optional().describe('User who created the document'),
-    rawPayload: z.any().optional().describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('UUID of the affected document'),
-    documentName: z.string().optional().describe('Document name'),
-    status: z.string().optional().describe('Current document status'),
-    dateCreated: z.string().optional().describe('Document creation date'),
-    dateModified: z.string().optional().describe('Document last modified date'),
-    recipients: z.array(z.object({
-      recipientId: z.string().optional(),
-      email: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      recipientType: z.string().optional(),
-      hasCompleted: z.boolean().optional(),
-    })).optional().describe('Document recipients'),
-    metadata: z.record(z.string(), z.any()).optional().describe('Document metadata'),
-    tags: z.array(z.string()).optional().describe('Document tags'),
-    createdBy: z.object({
-      userId: z.string().optional(),
-      email: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-    }).optional().describe('User who created the document'),
-  }))
+export let documentEvents = SlateTrigger.create(spec, {
+  name: 'Document Events',
+  key: 'document_events',
+  description:
+    'Triggers when document-related events occur, including status changes, recipient completions, document deletions, PDF readiness, section additions, and quote updates.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of the webhook event'),
+      documentId: z.string().describe('UUID of the affected document'),
+      documentName: z.string().optional().describe('Name of the document'),
+      status: z.string().optional().describe('Document status'),
+      dateCreated: z.string().optional().describe('Document creation date'),
+      dateModified: z.string().optional().describe('Document last modified date'),
+      recipients: z
+        .array(
+          z.object({
+            recipientId: z.string().optional(),
+            email: z.string().optional(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            recipientType: z.string().optional(),
+            hasCompleted: z.boolean().optional()
+          })
+        )
+        .optional()
+        .describe('Document recipients'),
+      metadata: z.record(z.string(), z.any()).optional().describe('Document metadata'),
+      tags: z.array(z.string()).optional().describe('Document tags'),
+      createdBy: z
+        .object({
+          userId: z.string().optional(),
+          email: z.string().optional(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional()
+        })
+        .optional()
+        .describe('User who created the document'),
+      rawPayload: z.any().optional().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('UUID of the affected document'),
+      documentName: z.string().optional().describe('Document name'),
+      status: z.string().optional().describe('Current document status'),
+      dateCreated: z.string().optional().describe('Document creation date'),
+      dateModified: z.string().optional().describe('Document last modified date'),
+      recipients: z
+        .array(
+          z.object({
+            recipientId: z.string().optional(),
+            email: z.string().optional(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            recipientType: z.string().optional(),
+            hasCompleted: z.boolean().optional()
+          })
+        )
+        .optional()
+        .describe('Document recipients'),
+      metadata: z.record(z.string(), z.any()).optional().describe('Document metadata'),
+      tags: z.array(z.string()).optional().describe('Document tags'),
+      createdBy: z
+        .object({
+          userId: z.string().optional(),
+          email: z.string().optional(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional()
+        })
+        .optional()
+        .describe('User who created the document')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new PandaDocClient({
         token: ctx.auth.token,
-        authType: ctx.auth.authType,
+        authType: ctx.auth.authType
       });
 
       let subscription = await client.createWebhookSubscription({
@@ -82,26 +100,26 @@ export let documentEvents = SlateTrigger.create(
         url: ctx.input.webhookBaseUrl,
         active: true,
         triggers: documentWebhookEvents,
-        payload: ['fields', 'products'],
+        payload: ['fields', 'products']
       });
 
       return {
         registrationDetails: {
-          subscriptionId: subscription.uuid || subscription.id,
-        },
+          subscriptionId: subscription.uuid || subscription.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new PandaDocClient({
         token: ctx.auth.token,
-        authType: ctx.auth.authType,
+        authType: ctx.auth.authType
       });
 
       await client.deleteWebhookSubscription(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body = await ctx.request.json();
 
       // PandaDoc sends webhooks as an array of events
@@ -115,7 +133,7 @@ export let documentEvents = SlateTrigger.create(
           firstName: r.first_name,
           lastName: r.last_name,
           recipientType: r.recipient_type,
-          hasCompleted: r.has_completed,
+          hasCompleted: r.has_completed
         }));
 
         return {
@@ -128,20 +146,22 @@ export let documentEvents = SlateTrigger.create(
           recipients,
           metadata: data.metadata,
           tags: data.tags,
-          createdBy: data.created_by ? {
-            userId: data.created_by.id,
-            email: data.created_by.email,
-            firstName: data.created_by.first_name,
-            lastName: data.created_by.last_name,
-          } : undefined,
-          rawPayload: event,
+          createdBy: data.created_by
+            ? {
+                userId: data.created_by.id,
+                email: data.created_by.email,
+                firstName: data.created_by.first_name,
+                lastName: data.created_by.last_name
+              }
+            : undefined,
+          rawPayload: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventTypeMap: Record<string, string> = {
         document_state_changed: 'document.state_changed',
         recipient_completed: 'document.recipient_completed',
@@ -150,7 +170,7 @@ export let documentEvents = SlateTrigger.create(
         document_creation_failed: 'document.creation_failed',
         document_completed_pdf_ready: 'document.pdf_ready',
         document_section_added: 'document.section_added',
-        quote_updated: 'document.quote_updated',
+        quote_updated: 'document.quote_updated'
       };
 
       let type = eventTypeMap[ctx.input.eventType] || `document.${ctx.input.eventType}`;
@@ -170,9 +190,9 @@ export let documentEvents = SlateTrigger.create(
           recipients: ctx.input.recipients,
           metadata: ctx.input.metadata,
           tags: ctx.input.tags,
-          createdBy: ctx.input.createdBy,
-        },
+          createdBy: ctx.input.createdBy
+        }
       };
-    },
+    }
   })
   .build();

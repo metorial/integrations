@@ -3,38 +3,45 @@ import { TwelveDataClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPrice = SlateTool.create(
-  spec,
-  {
-    name: 'Get Real-Time Price',
-    key: 'get_price',
-    description: `Retrieve the current real-time price for one or more financial instruments. This is the simplest and fastest way to get the latest price.
+export let getPrice = SlateTool.create(spec, {
+  name: 'Get Real-Time Price',
+  key: 'get_price',
+  description: `Retrieve the current real-time price for one or more financial instruments. This is the simplest and fastest way to get the latest price.
 Supports multiple symbols in a single request by providing a comma-separated list.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    symbol: z.string().describe('Ticker symbol or comma-separated symbols (e.g., "AAPL", "AAPL,MSFT,GOOG")'),
-    exchange: z.string().optional().describe('Exchange where the instrument is traded'),
-    country: z.string().optional().describe('Country of the exchange'),
-    prepost: z.boolean().optional().describe('Include pre/post market data for US equities'),
-  }))
-  .output(z.object({
-    prices: z.array(z.object({
-      symbol: z.string().describe('Ticker symbol'),
-      price: z.string().describe('Current price'),
-    })).describe('Array of symbol-price pairs'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      symbol: z
+        .string()
+        .describe('Ticker symbol or comma-separated symbols (e.g., "AAPL", "AAPL,MSFT,GOOG")'),
+      exchange: z.string().optional().describe('Exchange where the instrument is traded'),
+      country: z.string().optional().describe('Country of the exchange'),
+      prepost: z.boolean().optional().describe('Include pre/post market data for US equities')
+    })
+  )
+  .output(
+    z.object({
+      prices: z
+        .array(
+          z.object({
+            symbol: z.string().describe('Ticker symbol'),
+            price: z.string().describe('Current price')
+          })
+        )
+        .describe('Array of symbol-price pairs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwelveDataClient(ctx.auth.token);
 
     let result = await client.getPrice({
       symbol: ctx.input.symbol,
       exchange: ctx.input.exchange,
       country: ctx.input.country,
-      prepost: ctx.input.prepost,
+      prepost: ctx.input.prepost
     });
 
     let symbols = ctx.input.symbol.split(',').map(s => s.trim());
@@ -55,7 +62,7 @@ Supports multiple symbols in a single request by providing a comma-separated lis
 
     return {
       output: { prices },
-      message: `Current prices: ${priceList}`,
+      message: `Current prices: ${priceList}`
     };
   })
   .build();

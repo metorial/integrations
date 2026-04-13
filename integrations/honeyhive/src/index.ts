@@ -4,47 +4,38 @@ import {
   listProjects,
   createProject,
   updateProject,
-  deleteProject,
+  deleteProject
 } from './tools/manage-projects';
-import {
-  startSession,
-  getSession,
-  deleteSession,
-} from './tools/manage-sessions';
+import { startSession, getSession, deleteSession } from './tools/manage-sessions';
 import {
   logEvent,
   updateEvent,
   logEventBatch,
   queryEvents,
   getEvent,
-  deleteEvent,
+  deleteEvent
 } from './tools/manage-events';
 import {
   listDatasets,
   createDataset,
   updateDataset,
   deleteDataset,
-  addDatapointsToDataset,
+  addDatapointsToDataset
 } from './tools/manage-datasets';
 import {
   listConfigurations,
   createConfiguration,
   updateConfiguration,
-  deleteConfiguration,
+  deleteConfiguration
 } from './tools/manage-configurations';
-import {
-  listMetrics,
-  createMetric,
-  updateMetric,
-  deleteMetric,
-} from './tools/manage-metrics';
+import { listMetrics, createMetric, updateMetric, deleteMetric } from './tools/manage-metrics';
 import {
   listRuns,
   createRun,
   getRun,
   getRunResult,
   compareRuns,
-  deleteRun,
+  deleteRun
 } from './tools/manage-runs';
 import { postFeedback } from './tools/post-feedback';
 import { newEvents } from './triggers/new-events';
@@ -86,10 +77,7 @@ export let provider = Slate.create({
     getRunResult,
     compareRuns,
     deleteRun,
-    postFeedback,
+    postFeedback
   ],
-  triggers: [
-    inboundWebhook,
-    newEvents,
-  ],
+  triggers: [inboundWebhook, newEvents]
 });

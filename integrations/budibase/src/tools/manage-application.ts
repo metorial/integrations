@@ -9,38 +9,58 @@ let applicationOutputSchema = z.object({
   url: z.string().describe('URL path for the application'),
   status: z.string().describe('Current status: "development" or "published"'),
   createdAt: z.string().optional().describe('ISO timestamp when the application was created'),
-  updatedAt: z.string().optional().describe('ISO timestamp when the application was last updated'),
-  version: z.string().optional().describe('Budibase client version'),
+  updatedAt: z
+    .string()
+    .optional()
+    .describe('ISO timestamp when the application was last updated'),
+  version: z.string().optional().describe('Budibase client version')
 });
 
-export let manageApplication = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Application',
-    key: 'manage_application',
-    description: `Create, retrieve, update, or delete a Budibase application. Use the **action** field to specify the operation.
+export let manageApplication = SlateTool.create(spec, {
+  name: 'Manage Application',
+  key: 'manage_application',
+  description: `Create, retrieve, update, or delete a Budibase application. Use the **action** field to specify the operation.
 For "create", provide a name. For "get", "update", or "delete", provide the appId. For "update", include the fields to change.`,
-    instructions: [
-      'To create an app, set action to "create" and provide a name.',
-      'To update an app, set action to "update" and provide the appId along with the fields to change.',
-      'The appId typically starts with "app_" for published apps or "app_dev_" for development apps.',
-    ],
-    tags: {
-      destructive: false,
-    },
+  instructions: [
+    'To create an app, set action to "create" and provide a name.',
+    'To update an app, set action to "update" and provide the appId along with the fields to change.',
+    'The appId typically starts with "app_" for published apps or "app_dev_" for development apps.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('The operation to perform'),
-    appId: z.string().optional().describe('Application ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Application name (required for create, optional for update)'),
-    url: z.string().optional().describe('URL-encoded path for the application (optional for create and update)'),
-  }))
-  .output(z.object({
-    application: applicationOutputSchema.optional().describe('The application data (not returned for delete)'),
-    deleted: z.boolean().optional().describe('Whether the application was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete'])
+        .describe('The operation to perform'),
+      appId: z
+        .string()
+        .optional()
+        .describe('Application ID (required for get, update, delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Application name (required for create, optional for update)'),
+      url: z
+        .string()
+        .optional()
+        .describe('URL-encoded path for the application (optional for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      application: applicationOutputSchema
+        .optional()
+        .describe('The application data (not returned for delete)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the application was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
     let { action, appId, name, url } = ctx.input;
 
@@ -54,11 +74,11 @@ For "create", provide a name. For "get", "update", or "delete", provide the appI
         status: app.status,
         createdAt: app.createdAt,
         updatedAt: app.updatedAt,
-        version: app.version,
+        version: app.version
       };
       return {
         output: { application: mapped },
-        message: `Created application **${mapped.name}** (${mapped.appId}).`,
+        message: `Created application **${mapped.name}** (${mapped.appId}).`
       };
     }
 
@@ -73,11 +93,11 @@ For "create", provide a name. For "get", "update", or "delete", provide the appI
         status: app.status,
         createdAt: app.createdAt,
         updatedAt: app.updatedAt,
-        version: app.version,
+        version: app.version
       };
       return {
         output: { application: mapped },
-        message: `Retrieved application **${mapped.name}** (${mapped.appId}), status: ${mapped.status}.`,
+        message: `Retrieved application **${mapped.name}** (${mapped.appId}), status: ${mapped.status}.`
       };
     }
 
@@ -93,11 +113,11 @@ For "create", provide a name. For "get", "update", or "delete", provide the appI
         status: app.status,
         createdAt: app.createdAt,
         updatedAt: app.updatedAt,
-        version: app.version,
+        version: app.version
       };
       return {
         output: { application: mapped },
-        message: `Updated application **${mapped.name}** (${mapped.appId}).`,
+        message: `Updated application **${mapped.name}** (${mapped.appId}).`
       };
     }
 
@@ -105,7 +125,7 @@ For "create", provide a name. For "get", "update", or "delete", provide the appI
     await client.deleteApplication(appId);
     return {
       output: { deleted: true },
-      message: `Deleted application **${appId}**.`,
+      message: `Deleted application **${appId}**.`
     };
   })
   .build();

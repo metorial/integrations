@@ -5,14 +5,14 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.rocketreach.co/api/v2',
+      baseURL: 'https://api.rocketreach.co/api/v2'
     });
   }
 
   private get headers() {
     return {
       'Api-Key': this.config.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -20,7 +20,7 @@ export class Client {
 
   async getAccount() {
     let response = await this.axios.get('/account', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -34,14 +34,14 @@ export class Client {
     orderBy?: string;
   }) {
     let body: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
     if (params.start !== undefined) body.start = params.start;
     if (params.pageSize !== undefined) body.page_size = params.pageSize;
     if (params.orderBy !== undefined) body.order_by = params.orderBy;
 
     let response = await this.axios.post('/person/search', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -68,7 +68,7 @@ export class Client {
 
     let response = await this.axios.get('/person/lookup', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -78,7 +78,7 @@ export class Client {
   async checkPersonLookupStatus(profileIds: number[]) {
     let response = await this.axios.get('/person/checkStatus', {
       headers: this.headers,
-      params: { ids: profileIds },
+      params: { ids: profileIds }
     });
     return response.data;
   }
@@ -92,25 +92,21 @@ export class Client {
     orderBy?: string;
   }) {
     let body: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
     if (params.start !== undefined) body.start = params.start;
     if (params.pageSize !== undefined) body.page_size = params.pageSize;
     if (params.orderBy !== undefined) body.order_by = params.orderBy;
 
     let response = await this.axios.post('/searchCompany', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ─── Company Lookup ────────────────────────────────────────
 
-  async lookupCompany(params: {
-    domain?: string;
-    name?: string;
-    linkedinUrl?: string;
-  }) {
+  async lookupCompany(params: { domain?: string; name?: string; linkedinUrl?: string }) {
     let queryParams: Record<string, any> = {};
     if (params.domain) queryParams.domain = params.domain;
     if (params.name) queryParams.name = params.name;
@@ -118,7 +114,7 @@ export class Client {
 
     let response = await this.axios.get('/company/lookup', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }

@@ -12,55 +12,60 @@ let proposalEventTypes = [
   'proposal_accepted_or_declined'
 ] as const;
 
-export let proposalEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Proposal Events',
-    key: 'proposal_events',
-    description: 'Triggers on proposal lifecycle events: created, sent, viewed, accepted, or declined. Registers separate webhooks for each selected event type.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type (e.g. proposal_created, proposal_sent)'),
-    proposalId: z.number().describe('Proposal ID'),
-    name: z.string().describe('Proposal name'),
-    description: z.string().nullable().describe('Proposal description'),
-    status: z.string().nullable().describe('Proposal status'),
-    isDraft: z.boolean().nullable().describe('Whether proposal is a draft'),
-    currency: z.string().nullable().describe('Currency code'),
-    total: z.number().nullable().describe('Total amount'),
-    monthlyFees: z.number().nullable().describe('Monthly fees total'),
-    yearlyFees: z.number().nullable().describe('Yearly fees total'),
-    oneTimeFees: z.number().nullable().describe('One-time fees total'),
-    user: z.string().nullable().describe('Proposal owner'),
-    clientId: z.number().nullable().describe('Associated client ID'),
-    clientName: z.string().nullable().describe('Associated client name'),
-    url: z.string().nullable().describe('API URL'),
-    appUrl: z.string().nullable().describe('Bidsketch app URL'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp')
-  }))
-  .output(z.object({
-    proposalId: z.number().describe('Unique proposal ID'),
-    name: z.string().describe('Proposal name'),
-    description: z.string().nullable().describe('Proposal description'),
-    status: z.string().nullable().describe('Proposal status: Pending, Viewed, Accepted, or Declined'),
-    isDraft: z.boolean().nullable().describe('Whether the proposal is a draft'),
-    currency: z.string().nullable().describe('ISO 4217 currency code'),
-    total: z.number().nullable().describe('Total amount'),
-    monthlyFees: z.number().nullable().describe('Monthly fees total'),
-    yearlyFees: z.number().nullable().describe('Yearly fees total'),
-    oneTimeFees: z.number().nullable().describe('One-time fees total'),
-    user: z.string().nullable().describe('Proposal owner name'),
-    clientId: z.number().nullable().describe('Associated client ID'),
-    clientName: z.string().nullable().describe('Associated client name'),
-    url: z.string().nullable().describe('API URL'),
-    appUrl: z.string().nullable().describe('Bidsketch app URL'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp')
-  }))
+export let proposalEvents = SlateTrigger.create(spec, {
+  name: 'Proposal Events',
+  key: 'proposal_events',
+  description:
+    'Triggers on proposal lifecycle events: created, sent, viewed, accepted, or declined. Registers separate webhooks for each selected event type.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type (e.g. proposal_created, proposal_sent)'),
+      proposalId: z.number().describe('Proposal ID'),
+      name: z.string().describe('Proposal name'),
+      description: z.string().nullable().describe('Proposal description'),
+      status: z.string().nullable().describe('Proposal status'),
+      isDraft: z.boolean().nullable().describe('Whether proposal is a draft'),
+      currency: z.string().nullable().describe('Currency code'),
+      total: z.number().nullable().describe('Total amount'),
+      monthlyFees: z.number().nullable().describe('Monthly fees total'),
+      yearlyFees: z.number().nullable().describe('Yearly fees total'),
+      oneTimeFees: z.number().nullable().describe('One-time fees total'),
+      user: z.string().nullable().describe('Proposal owner'),
+      clientId: z.number().nullable().describe('Associated client ID'),
+      clientName: z.string().nullable().describe('Associated client name'),
+      url: z.string().nullable().describe('API URL'),
+      appUrl: z.string().nullable().describe('Bidsketch app URL'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      proposalId: z.number().describe('Unique proposal ID'),
+      name: z.string().describe('Proposal name'),
+      description: z.string().nullable().describe('Proposal description'),
+      status: z
+        .string()
+        .nullable()
+        .describe('Proposal status: Pending, Viewed, Accepted, or Declined'),
+      isDraft: z.boolean().nullable().describe('Whether the proposal is a draft'),
+      currency: z.string().nullable().describe('ISO 4217 currency code'),
+      total: z.number().nullable().describe('Total amount'),
+      monthlyFees: z.number().nullable().describe('Monthly fees total'),
+      yearlyFees: z.number().nullable().describe('Yearly fees total'),
+      oneTimeFees: z.number().nullable().describe('One-time fees total'),
+      user: z.string().nullable().describe('Proposal owner name'),
+      clientId: z.number().nullable().describe('Associated client ID'),
+      clientName: z.string().nullable().describe('Associated client name'),
+      url: z.string().nullable().describe('API URL'),
+      appUrl: z.string().nullable().describe('Bidsketch app URL'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new BidsketchClient(ctx.auth.token);
 
       let webhookIds: Record<string, number> = {};
@@ -75,7 +80,7 @@ export let proposalEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new BidsketchClient(ctx.auth.token);
       let details = ctx.input.registrationDetails as { webhookIds: Record<string, number> };
 
@@ -88,8 +93,8 @@ export let proposalEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as { event: string; data: any };
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as { event: string; data: any };
 
       let d = body.data;
 
@@ -119,14 +124,14 @@ export let proposalEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
-        'proposal_created': 'proposal.created',
-        'proposal_sent': 'proposal.sent',
-        'proposal_viewed': 'proposal.viewed',
-        'proposal_accepted': 'proposal.accepted',
-        'proposal_declined': 'proposal.declined',
-        'proposal_accepted_or_declined': 'proposal.accepted_or_declined'
+        proposal_created: 'proposal.created',
+        proposal_sent: 'proposal.sent',
+        proposal_viewed: 'proposal.viewed',
+        proposal_accepted: 'proposal.accepted',
+        proposal_declined: 'proposal.declined',
+        proposal_accepted_or_declined: 'proposal.accepted_or_declined'
       };
 
       let eventType = typeMap[ctx.input.eventType] ?? `proposal.${ctx.input.eventType}`;

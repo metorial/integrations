@@ -19,36 +19,43 @@ let projectSchema = z.object({
   budgetPercent: z.number().nullable().describe('Budget usage percentage'),
   teamIds: z.array(z.number()).describe('Assigned team IDs'),
   labelIds: z.array(z.number()).describe('Associated label IDs'),
-  externalId: z.string().nullable().describe('External reference ID'),
+  externalId: z.string().nullable().describe('External reference ID')
 });
 
 export let listProjects = SlateTool.create(spec, {
   name: 'List Projects',
   key: 'list_projects',
   description: `Retrieve projects from Timely. Filter by status (active, archived, all, mine). Includes client, budget, and rate information.`,
-  tags: { readOnly: true },
+  tags: { readOnly: true }
 })
-  .input(z.object({
-    filter: z.enum(['active', 'all', 'mine', 'archived']).optional().describe('Project filter'),
-    limit: z.number().optional().describe('Max projects to return'),
-    offset: z.number().optional().describe('Offset for pagination'),
-    order: z.enum(['asc', 'desc']).optional().describe('Sort order'),
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema),
-    count: z.number().describe('Number of projects returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      filter: z
+        .enum(['active', 'all', 'mine', 'archived'])
+        .optional()
+        .describe('Project filter'),
+      limit: z.number().optional().describe('Max projects to return'),
+      offset: z.number().optional().describe('Offset for pagination'),
+      order: z.enum(['asc', 'desc']).optional().describe('Sort order')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectSchema),
+      count: z.number().describe('Number of projects returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TimelyClient({
       accountId: ctx.config.accountId,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let projects = await client.listProjects({
       filter: ctx.input.filter,
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
     let mapped = projects.map((p: any) => ({
@@ -67,11 +74,12 @@ export let listProjects = SlateTool.create(spec, {
       budgetPercent: p.budget_percent ?? null,
       teamIds: p.team_ids ?? [],
       labelIds: p.label_ids ?? [],
-      externalId: p.external_id ?? null,
+      externalId: p.external_id ?? null
     }));
 
     return {
       output: { projects: mapped, count: mapped.length },
-      message: `Found **${mapped.length}** projects.`,
+      message: `Found **${mapped.length}** projects.`
     };
-  }).build();
+  })
+  .build();

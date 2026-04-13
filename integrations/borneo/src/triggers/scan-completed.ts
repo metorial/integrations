@@ -3,33 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let scanCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Scan Iteration Completed',
-    key: 'scan_completed',
-    description: 'Triggers when a scan iteration completes, fails, or changes status. Polls for new scan iteration results periodically.'
-  }
-)
-  .input(z.object({
-    iterationId: z.string().describe('Scan iteration ID'),
-    scanId: z.string().optional().describe('Parent scan ID'),
-    status: z.string().describe('Status of the scan iteration'),
-    completedAt: z.string().optional().describe('When the iteration completed'),
-    iteration: z.any().describe('Full scan iteration data')
-  }))
-  .output(z.object({
-    iterationId: z.string().describe('ID of the scan iteration'),
-    scanId: z.string().optional().describe('Parent scan ID'),
-    status: z.string().describe('Final status of the scan iteration'),
-    completedAt: z.string().optional().describe('When the iteration completed')
-  }).passthrough())
+export let scanCompleted = SlateTrigger.create(spec, {
+  name: 'Scan Iteration Completed',
+  key: 'scan_completed',
+  description:
+    'Triggers when a scan iteration completes, fails, or changes status. Polls for new scan iteration results periodically.'
+})
+  .input(
+    z.object({
+      iterationId: z.string().describe('Scan iteration ID'),
+      scanId: z.string().optional().describe('Parent scan ID'),
+      status: z.string().describe('Status of the scan iteration'),
+      completedAt: z.string().optional().describe('When the iteration completed'),
+      iteration: z.any().describe('Full scan iteration data')
+    })
+  )
+  .output(
+    z
+      .object({
+        iterationId: z.string().describe('ID of the scan iteration'),
+        scanId: z.string().optional().describe('Parent scan ID'),
+        status: z.string().describe('Final status of the scan iteration'),
+        completedAt: z.string().optional().describe('When the iteration completed')
+      })
+      .passthrough()
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -45,9 +49,18 @@ export let scanCompleted = SlateTrigger.create(
       });
 
       let data = result?.data ?? result;
-      let iterations: any[] = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+      let iterations: any[] = Array.isArray(data)
+        ? data
+        : (data?.content ?? data?.items ?? []);
 
-      let completedStatuses = ['COMPLETED', 'FAILED', 'STOPPED', 'completed', 'failed', 'stopped'];
+      let completedStatuses = [
+        'COMPLETED',
+        'FAILED',
+        'STOPPED',
+        'completed',
+        'failed',
+        'stopped'
+      ];
       let newIterations = iterations.filter((iter: any) => {
         let isCompleted = completedStatuses.includes(iter?.status);
         if (!isCompleted) return false;
@@ -78,11 +91,14 @@ export let scanCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let statusLower = (ctx.input.status ?? '').toLowerCase();
-      let eventType = statusLower === 'failed' ? 'scan_iteration.failed'
-        : statusLower === 'stopped' ? 'scan_iteration.stopped'
-        : 'scan_iteration.completed';
+      let eventType =
+        statusLower === 'failed'
+          ? 'scan_iteration.failed'
+          : statusLower === 'stopped'
+            ? 'scan_iteration.stopped'
+            : 'scan_iteration.completed';
 
       return {
         type: eventType,
@@ -96,4 +112,5 @@ export let scanCompleted = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -3,15 +3,17 @@ import { ProAbonoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let offerFeatureSchema = z.object({
-  referenceFeature: z.string().optional(),
-  titleLocalized: z.string().optional(),
-  descriptionLocalized: z.string().optional(),
-  isIncluded: z.boolean().optional(),
-  isEnabled: z.boolean().optional(),
-  quantityIncluded: z.number().optional(),
-  quantityCurrent: z.number().optional(),
-}).describe('Feature included in an offer');
+let offerFeatureSchema = z
+  .object({
+    referenceFeature: z.string().optional(),
+    titleLocalized: z.string().optional(),
+    descriptionLocalized: z.string().optional(),
+    isIncluded: z.boolean().optional(),
+    isEnabled: z.boolean().optional(),
+    quantityIncluded: z.number().optional(),
+    quantityCurrent: z.number().optional()
+  })
+  .describe('Feature included in an offer');
 
 let offerSchema = z.object({
   offerId: z.number().optional().describe('ProAbono internal offer ID'),
@@ -27,51 +29,58 @@ let offerSchema = z.object({
   unitRecurrence: z.string().optional().describe('Billing cycle unit (Day, Month, Year)'),
   amountTermination: z.number().optional().describe('Termination fee in cents'),
   features: z.array(offerFeatureSchema).optional().describe('Features included in the offer'),
-  links: z.array(z.any()).optional().describe('Navigation and subscription links'),
+  links: z.array(z.any()).optional().describe('Navigation and subscription links')
 });
 
-export let manageOffers = SlateTool.create(
-  spec,
-  {
-    name: 'Get Offers',
-    key: 'get_offers',
-    description: `Retrieve offers (pricing plans) configured in ProAbono.
+export let manageOffers = SlateTool.create(spec, {
+  name: 'Get Offers',
+  key: 'get_offers',
+  description: `Retrieve offers (pricing plans) configured in ProAbono.
 Returns pricing details, features, trial info, and localized labels.
 Can retrieve offers for a specific customer (with personalized links), or list upgrade-eligible offers.`,
-    instructions: [
-      'Use "get" with referenceOffer to retrieve a single offer.',
-      'Use "list" to browse all offers; pass referenceCustomer to get customer-specific links.',
-      'Set upgradeMode=true with referenceCustomer to get upgrade-eligible offers only.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  instructions: [
+    'Use "get" with referenceOffer to retrieve a single offer.',
+    'Use "list" to browse all offers; pass referenceCustomer to get customer-specific links.',
+    'Set upgradeMode=true with referenceCustomer to get upgrade-eligible offers only.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'list']).describe('Action to perform'),
-    referenceOffer: z.string().optional().describe('Offer reference for single retrieval'),
-    referenceCustomer: z.string().optional().describe('Customer reference for personalized offers'),
-    referenceSegment: z.string().optional().describe('Segment reference filter'),
-    language: z.string().optional().describe('Override language (ISO 639-1)'),
-    isVisible: z.boolean().optional().describe('Filter by visibility'),
-    upgradeMode: z.boolean().optional().describe('Show only upgrade-eligible offers (requires referenceCustomer)'),
-    includeHtml: z.boolean().optional().describe('Return HTML-formatted descriptions'),
-    ignoreFeatures: z.boolean().optional().describe('Exclude feature details from response'),
-    page: z.number().optional().describe('Page number'),
-    sizePage: z.number().optional().describe('Items per page'),
-  }))
-  .output(z.object({
-    offer: offerSchema.optional().describe('Single offer details'),
-    offers: z.array(offerSchema).optional().describe('List of offers'),
-    totalItems: z.number().optional().describe('Total items for list'),
-    page: z.number().optional().describe('Current page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'list']).describe('Action to perform'),
+      referenceOffer: z.string().optional().describe('Offer reference for single retrieval'),
+      referenceCustomer: z
+        .string()
+        .optional()
+        .describe('Customer reference for personalized offers'),
+      referenceSegment: z.string().optional().describe('Segment reference filter'),
+      language: z.string().optional().describe('Override language (ISO 639-1)'),
+      isVisible: z.boolean().optional().describe('Filter by visibility'),
+      upgradeMode: z
+        .boolean()
+        .optional()
+        .describe('Show only upgrade-eligible offers (requires referenceCustomer)'),
+      includeHtml: z.boolean().optional().describe('Return HTML-formatted descriptions'),
+      ignoreFeatures: z.boolean().optional().describe('Exclude feature details from response'),
+      page: z.number().optional().describe('Page number'),
+      sizePage: z.number().optional().describe('Items per page')
+    })
+  )
+  .output(
+    z.object({
+      offer: offerSchema.optional().describe('Single offer details'),
+      offers: z.array(offerSchema).optional().describe('List of offers'),
+      totalItems: z.number().optional().describe('Total items for list'),
+      page: z.number().optional().describe('Current page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ProAbonoClient({
       token: ctx.auth.token,
-      apiEndpoint: ctx.config.apiEndpoint,
+      apiEndpoint: ctx.config.apiEndpoint
     });
 
     let { action } = ctx.input;
@@ -82,12 +91,12 @@ Can retrieve offers for a specific customer (with personalized links), or list u
         ReferenceOffer: ctx.input.referenceOffer,
         ReferenceCustomer: ctx.input.referenceCustomer,
         Language: ctx.input.language,
-        Html: ctx.input.includeHtml,
+        Html: ctx.input.includeHtml
       });
       let offer = mapOffer(result);
       return {
         output: { offer },
-        message: `Retrieved offer **${offer.referenceOffer}** — ${offer.titleLocalized || 'untitled'} (${offer.amountRecurrence != null ? `${offer.amountRecurrence} cents` : 'free'} / ${offer.unitRecurrence || 'n/a'})`,
+        message: `Retrieved offer **${offer.referenceOffer}** — ${offer.titleLocalized || 'untitled'} (${offer.amountRecurrence != null ? `${offer.amountRecurrence} cents` : 'free'} / ${offer.unitRecurrence || 'n/a'})`
       };
     }
 
@@ -101,7 +110,7 @@ Can retrieve offers for a specific customer (with personalized links), or list u
         IgnoreFeatures: ctx.input.ignoreFeatures,
         UpgradeMode: ctx.input.upgradeMode,
         Page: ctx.input.page,
-        SizePage: ctx.input.sizePage,
+        SizePage: ctx.input.sizePage
       });
       let items = result?.Items || [];
       let offers = items.map(mapOffer);
@@ -109,14 +118,15 @@ Can retrieve offers for a specific customer (with personalized links), or list u
         output: {
           offers,
           totalItems: result?.TotalItems,
-          page: result?.Page,
+          page: result?.Page
         },
-        message: `Found **${offers.length}** offers (total: ${result?.TotalItems || 0})`,
+        message: `Found **${offers.length}** offers (total: ${result?.TotalItems || 0})`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let mapOffer = (raw: any) => ({
   offerId: raw?.Id,
@@ -138,7 +148,7 @@ let mapOffer = (raw: any) => ({
     isIncluded: f?.IsIncluded,
     isEnabled: f?.IsEnabled,
     quantityIncluded: f?.QuantityIncluded,
-    quantityCurrent: f?.QuantityCurrent,
+    quantityCurrent: f?.QuantityCurrent
   })),
-  links: raw?.Links,
+  links: raw?.Links
 });

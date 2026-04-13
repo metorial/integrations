@@ -3,24 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let tagSubscriber = SlateTool.create(
-  spec,
-  {
-    name: 'Tag Subscriber',
-    key: 'tag_subscriber',
-    description: `Add or remove a tag from a subscriber. You can identify the subscriber by their ID or email address. Tags enable targeted campaigns and trigger automations.`
-  }
-)
-  .input(z.object({
-    action: z.enum(['add', 'remove']).describe('Whether to add or remove the tag'),
-    tagId: z.number().describe('The tag ID to add or remove'),
-    subscriberId: z.number().optional().describe('Subscriber ID (provide either this or emailAddress)'),
-    emailAddress: z.string().optional().describe('Subscriber email address (provide either this or subscriberId)')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+export let tagSubscriber = SlateTool.create(spec, {
+  name: 'Tag Subscriber',
+  key: 'tag_subscriber',
+  description: `Add or remove a tag from a subscriber. You can identify the subscriber by their ID or email address. Tags enable targeted campaigns and trigger automations.`
+})
+  .input(
+    z.object({
+      action: z.enum(['add', 'remove']).describe('Whether to add or remove the tag'),
+      tagId: z.number().describe('The tag ID to add or remove'),
+      subscriberId: z
+        .number()
+        .optional()
+        .describe('Subscriber ID (provide either this or emailAddress)'),
+      emailAddress: z
+        .string()
+        .optional()
+        .describe('Subscriber email address (provide either this or subscriberId)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (!ctx.input.subscriberId && !ctx.input.emailAddress) {
@@ -52,4 +59,5 @@ export let tagSubscriber = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

@@ -3,29 +3,40 @@ import { ManagementClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAuthConfig = SlateTool.create(
-  spec,
-  {
-    name: 'Get Auth Config',
-    key: 'get_auth_config',
-    description: `Retrieve or update the authentication configuration for a Supabase project. This includes settings for email auth, phone auth, external OAuth providers, JWT configuration, and MFA policies.`,
-    tags: {
-      destructive: true,
-    },
+export let getAuthConfig = SlateTool.create(spec, {
+  name: 'Get Auth Config',
+  key: 'get_auth_config',
+  description: `Retrieve or update the authentication configuration for a Supabase project. This includes settings for email auth, phone auth, external OAuth providers, JWT configuration, and MFA policies.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    projectRef: z.string().optional().describe('Project reference ID (uses config.projectRef if not provided)'),
-    action: z.enum(['get', 'update']).describe('Action to perform'),
-    settings: z.record(z.string(), z.any()).optional().describe('Auth settings to update (for update action). Uses Supabase Auth config field names.'),
-  }))
-  .output(z.object({
-    authConfig: z.record(z.string(), z.any()).describe('Current auth configuration settings'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectRef: z
+        .string()
+        .optional()
+        .describe('Project reference ID (uses config.projectRef if not provided)'),
+      action: z.enum(['get', 'update']).describe('Action to perform'),
+      settings: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe(
+          'Auth settings to update (for update action). Uses Supabase Auth config field names.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      authConfig: z.record(z.string(), z.any()).describe('Current auth configuration settings')
+    })
+  )
+  .handleInvocation(async ctx => {
     let projectRef = ctx.input.projectRef ?? ctx.config.projectRef;
     if (!projectRef) {
-      throw new Error('projectRef is required — provide it as input or set it in the configuration');
+      throw new Error(
+        'projectRef is required — provide it as input or set it in the configuration'
+      );
     }
 
     let client = new ManagementClient(ctx.auth.token);
@@ -37,13 +48,14 @@ export let getAuthConfig = SlateTool.create(
       let result = await client.updateAuthConfig(projectRef, ctx.input.settings);
       return {
         output: { authConfig: result ?? {} },
-        message: `Updated auth configuration for project **${projectRef}**.`,
+        message: `Updated auth configuration for project **${projectRef}**.`
       };
     }
 
     let config = await client.getAuthConfig(projectRef);
     return {
       output: { authConfig: config ?? {} },
-      message: `Retrieved auth configuration for project **${projectRef}**.`,
+      message: `Retrieved auth configuration for project **${projectRef}**.`
     };
-  }).build();
+  })
+  .build();

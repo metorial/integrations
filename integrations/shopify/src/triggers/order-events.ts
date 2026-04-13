@@ -12,51 +12,55 @@ let orderWebhookTopics = [
   'orders/partially_fulfilled'
 ] as const;
 
-export let orderEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Order Events',
-    key: 'order_events',
-    description: 'Triggers when orders are created, updated, cancelled, fulfilled, paid, or partially fulfilled in the Shopify store.'
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic that fired'),
-    orderId: z.string().describe('Shopify order ID'),
-    payload: z.any().describe('Raw order payload from Shopify')
-  }))
-  .output(z.object({
-    orderId: z.string(),
-    orderNumber: z.number(),
-    name: z.string(),
-    email: z.string().nullable(),
-    totalPrice: z.string(),
-    subtotalPrice: z.string(),
-    totalTax: z.string(),
-    totalDiscounts: z.string(),
-    currency: z.string(),
-    financialStatus: z.string().nullable(),
-    fulfillmentStatus: z.string().nullable(),
-    cancelledAt: z.string().nullable(),
-    closedAt: z.string().nullable(),
-    note: z.string().nullable(),
-    tags: z.string(),
-    lineItems: z.array(z.object({
-      lineItemId: z.string(),
-      title: z.string(),
-      quantity: z.number(),
-      price: z.string(),
-      sku: z.string().nullable(),
-      variantId: z.string().nullable(),
-      productId: z.string().nullable()
-    })),
-    customerEmail: z.string().nullable(),
-    customerId: z.string().nullable(),
-    createdAt: z.string(),
-    updatedAt: z.string()
-  }))
+export let orderEvents = SlateTrigger.create(spec, {
+  name: 'Order Events',
+  key: 'order_events',
+  description:
+    'Triggers when orders are created, updated, cancelled, fulfilled, paid, or partially fulfilled in the Shopify store.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic that fired'),
+      orderId: z.string().describe('Shopify order ID'),
+      payload: z.any().describe('Raw order payload from Shopify')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.string(),
+      orderNumber: z.number(),
+      name: z.string(),
+      email: z.string().nullable(),
+      totalPrice: z.string(),
+      subtotalPrice: z.string(),
+      totalTax: z.string(),
+      totalDiscounts: z.string(),
+      currency: z.string(),
+      financialStatus: z.string().nullable(),
+      fulfillmentStatus: z.string().nullable(),
+      cancelledAt: z.string().nullable(),
+      closedAt: z.string().nullable(),
+      note: z.string().nullable(),
+      tags: z.string(),
+      lineItems: z.array(
+        z.object({
+          lineItemId: z.string(),
+          title: z.string(),
+          quantity: z.number(),
+          price: z.string(),
+          sku: z.string().nullable(),
+          variantId: z.string().nullable(),
+          productId: z.string().nullable()
+        })
+      ),
+      customerEmail: z.string().nullable(),
+      customerId: z.string().nullable(),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -77,7 +81,7 @@ export let orderEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -94,20 +98,22 @@ export let orderEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let topic = ctx.request.headers.get('x-shopify-topic') || 'orders/updated';
 
       return {
-        inputs: [{
-          topic,
-          orderId: String(body.id),
-          payload: body
-        }]
+        inputs: [
+          {
+            topic,
+            orderId: String(body.id),
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let o = ctx.input.payload;
       let topicParts = ctx.input.topic.split('/');
       let eventType = topicParts[1] || 'updated';
@@ -147,4 +153,5 @@ export let orderEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

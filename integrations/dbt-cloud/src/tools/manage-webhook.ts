@@ -3,42 +3,55 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWebhookTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Webhook',
-    key: 'manage_webhook',
-    description: `Create, update, or delete a dbt Cloud webhook subscription. Webhooks notify external systems when job runs start, complete, or fail. Supports scoping to specific jobs and configuring which event types to listen for.`,
-    instructions: [
-      'Set action to "create" to register a new webhook, "update" to modify an existing one, or "delete" to remove one.',
-      'Available event types: "job.run.started", "job.run.completed", "job.run.errored".',
-      'Leave jobIds empty to trigger on all jobs in the account.'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageWebhookTool = SlateTool.create(spec, {
+  name: 'Manage Webhook',
+  key: 'manage_webhook',
+  description: `Create, update, or delete a dbt Cloud webhook subscription. Webhooks notify external systems when job runs start, complete, or fail. Supports scoping to specific jobs and configuring which event types to listen for.`,
+  instructions: [
+    'Set action to "create" to register a new webhook, "update" to modify an existing one, or "delete" to remove one.',
+    'Available event types: "job.run.started", "job.run.completed", "job.run.errored".',
+    'Leave jobIds empty to trigger on all jobs in the account.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    webhookId: z.string().optional().describe('Webhook ID (required for update and delete)'),
-    name: z.string().optional().describe('Webhook name (required for create)'),
-    clientUrl: z.string().optional().describe('Endpoint URL to receive webhook events (required for create)'),
-    eventTypes: z.array(z.enum(['job.run.started', 'job.run.completed', 'job.run.errored'])).optional().describe('Event types to subscribe to (required for create)'),
-    description: z.string().optional().describe('Webhook description'),
-    active: z.boolean().optional().describe('Whether the webhook is active'),
-    jobIds: z.array(z.number()).optional().describe('Specific job IDs to trigger on (empty = all jobs)')
-  }))
-  .output(z.object({
-    webhookId: z.string().optional().describe('Webhook subscription ID'),
-    name: z.string().optional().describe('Webhook name'),
-    eventTypes: z.array(z.string()).optional().describe('Subscribed event types'),
-    clientUrl: z.string().optional().describe('Target endpoint URL'),
-    active: z.boolean().optional().describe('Whether the webhook is active'),
-    hmacSecret: z.string().optional().describe('HMAC secret for validating webhook payloads (only returned on create)'),
-    deleted: z.boolean().optional().describe('Whether the webhook was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      webhookId: z.string().optional().describe('Webhook ID (required for update and delete)'),
+      name: z.string().optional().describe('Webhook name (required for create)'),
+      clientUrl: z
+        .string()
+        .optional()
+        .describe('Endpoint URL to receive webhook events (required for create)'),
+      eventTypes: z
+        .array(z.enum(['job.run.started', 'job.run.completed', 'job.run.errored']))
+        .optional()
+        .describe('Event types to subscribe to (required for create)'),
+      description: z.string().optional().describe('Webhook description'),
+      active: z.boolean().optional().describe('Whether the webhook is active'),
+      jobIds: z
+        .array(z.number())
+        .optional()
+        .describe('Specific job IDs to trigger on (empty = all jobs)')
+    })
+  )
+  .output(
+    z.object({
+      webhookId: z.string().optional().describe('Webhook subscription ID'),
+      name: z.string().optional().describe('Webhook name'),
+      eventTypes: z.array(z.string()).optional().describe('Subscribed event types'),
+      clientUrl: z.string().optional().describe('Target endpoint URL'),
+      active: z.boolean().optional().describe('Whether the webhook is active'),
+      hmacSecret: z
+        .string()
+        .optional()
+        .describe('HMAC secret for validating webhook payloads (only returned on create)'),
+      deleted: z.boolean().optional().describe('Whether the webhook was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
@@ -47,7 +60,9 @@ export let manageWebhookTool = SlateTool.create(
 
     if (ctx.input.action === 'create') {
       if (!ctx.input.name || !ctx.input.clientUrl || !ctx.input.eventTypes) {
-        throw new Error('name, clientUrl, and eventTypes are required when creating a webhook');
+        throw new Error(
+          'name, clientUrl, and eventTypes are required when creating a webhook'
+        );
       }
 
       let webhook = await client.createWebhook({
@@ -115,4 +130,5 @@ export let manageWebhookTool = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

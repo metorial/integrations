@@ -3,27 +3,26 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let getSiteInfoTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Site Info',
-    key: 'get_site_info',
-    description: `Retrieve general site information including title, description, URL, and other metadata. Useful for verifying site configuration and connectivity.`,
-    tags: {
-      readOnly: true
-    }
+export let getSiteInfoTool = SlateTool.create(spec, {
+  name: 'Get Site Info',
+  key: 'get_site_info',
+  description: `Retrieve general site information including title, description, URL, and other metadata. Useful for verifying site configuration and connectivity.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    siteName: z.string().describe('Site title'),
-    siteDescription: z.string().describe('Site tagline/description'),
-    siteUrl: z.string().describe('Site URL'),
-    homeUrl: z.string().describe('Home page URL'),
-    language: z.string().describe('Site language code'),
-    timezone: z.string().describe('Site timezone')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      siteName: z.string().describe('Site title'),
+      siteDescription: z.string().describe('Site tagline/description'),
+      siteUrl: z.string().describe('Site URL'),
+      homeUrl: z.string().describe('Home page URL'),
+      language: z.string().describe('Site language code'),
+      timezone: z.string().describe('Site timezone')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let info = await client.getSiteInfo();
 
@@ -55,40 +54,53 @@ export let getSiteInfoTool = SlateTool.create(
   })
   .build();
 
-export let getSiteStatsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Site Stats',
-    key: 'get_site_stats',
-    description: `Retrieve site traffic statistics including page views, visitors, and top posts. **Only available for WordPress.com sites and Jetpack-connected self-hosted sites.**`,
-    constraints: [
-      'Only works with WordPress.com sites or Jetpack-connected self-hosted sites'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getSiteStatsTool = SlateTool.create(spec, {
+  name: 'Get Site Stats',
+  key: 'get_site_stats',
+  description: `Retrieve site traffic statistics including page views, visitors, and top posts. **Only available for WordPress.com sites and Jetpack-connected self-hosted sites.**`,
+  constraints: ['Only works with WordPress.com sites or Jetpack-connected self-hosted sites'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeTopPosts: z.boolean().optional().describe('Include top posts in the response (default: false)'),
-    period: z.enum(['day', 'week', 'month', 'year']).optional().describe('Time period for top posts (default: "day")'),
-    topPostsCount: z.number().optional().describe('Number of top posts to include (default: 10)')
-  }))
-  .output(z.object({
-    viewsToday: z.number().describe('Page views today'),
-    visitorsToday: z.number().describe('Unique visitors today'),
-    viewsYesterday: z.number().describe('Page views yesterday'),
-    visitorsYesterday: z.number().describe('Unique visitors yesterday'),
-    viewsBestDay: z.string().describe('Date of the highest traffic day'),
-    viewsBestDayTotal: z.number().describe('Total views on the best day'),
-    topPosts: z.array(z.object({
-      postId: z.string().describe('Post ID'),
-      title: z.string().describe('Post title'),
-      url: z.string().describe('Post URL'),
-      views: z.number().describe('View count')
-    })).optional().describe('Most viewed posts in the period')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeTopPosts: z
+        .boolean()
+        .optional()
+        .describe('Include top posts in the response (default: false)'),
+      period: z
+        .enum(['day', 'week', 'month', 'year'])
+        .optional()
+        .describe('Time period for top posts (default: "day")'),
+      topPostsCount: z
+        .number()
+        .optional()
+        .describe('Number of top posts to include (default: 10)')
+    })
+  )
+  .output(
+    z.object({
+      viewsToday: z.number().describe('Page views today'),
+      visitorsToday: z.number().describe('Unique visitors today'),
+      viewsYesterday: z.number().describe('Page views yesterday'),
+      visitorsYesterday: z.number().describe('Unique visitors yesterday'),
+      viewsBestDay: z.string().describe('Date of the highest traffic day'),
+      viewsBestDayTotal: z.number().describe('Total views on the best day'),
+      topPosts: z
+        .array(
+          z.object({
+            postId: z.string().describe('Post ID'),
+            title: z.string().describe('Post title'),
+            url: z.string().describe('Post URL'),
+            views: z.number().describe('View count')
+          })
+        )
+        .optional()
+        .describe('Most viewed posts in the period')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let stats = await client.getSiteStats();
 
@@ -109,7 +121,7 @@ export let getSiteStatsTool = SlateTool.create(
 
       let days = topPostsData?.days || {};
       let latestDay = Object.keys(days).sort().reverse()[0];
-      let topPosts: any[] = latestDay ? (days[latestDay]?.postviews || []) : [];
+      let topPosts: any[] = latestDay ? days[latestDay]?.postviews || [] : [];
 
       result.topPosts = topPosts.map((p: any) => ({
         postId: String(p.id || ''),

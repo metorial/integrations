@@ -3,46 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let reimbursementEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Reimbursement Events',
-    key: 'reimbursement_events',
-    description: 'Polls for new and updated Ramp reimbursements. Detects new reimbursements and state changes since the last poll.',
-  }
-)
-  .input(z.object({
-    reimbursementId: z.string().describe('Unique ID of the reimbursement'),
-    reimbursement: z.any().describe('Full reimbursement object from Ramp'),
-  }))
-  .output(z.object({
-    reimbursementId: z.string().describe('Unique ID of the reimbursement'),
-    userId: z.string().optional().describe('User ID of the employee'),
-    userFullName: z.string().optional().describe('Full name of the employee'),
-    userEmail: z.string().optional().describe('Email of the employee'),
-    amount: z.number().optional().describe('Reimbursement amount'),
-    currency: z.string().optional().describe('Currency code'),
-    merchantName: z.string().optional().describe('Merchant name'),
-    state: z.string().optional().describe('Reimbursement state'),
-    direction: z.string().optional().describe('Direction (BUSINESS_TO_USER or USER_TO_BUSINESS)'),
-    type: z.string().optional().describe('Reimbursement type'),
-    createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)'),
-    approvedAt: z.string().optional().describe('Approval timestamp (ISO 8601)'),
-    paidAt: z.string().optional().describe('Payment timestamp (ISO 8601)'),
-    entityId: z.string().optional().describe('Business entity ID'),
-  }))
+export let reimbursementEvents = SlateTrigger.create(spec, {
+  name: 'Reimbursement Events',
+  key: 'reimbursement_events',
+  description:
+    'Polls for new and updated Ramp reimbursements. Detects new reimbursements and state changes since the last poll.'
+})
+  .input(
+    z.object({
+      reimbursementId: z.string().describe('Unique ID of the reimbursement'),
+      reimbursement: z.any().describe('Full reimbursement object from Ramp')
+    })
+  )
+  .output(
+    z.object({
+      reimbursementId: z.string().describe('Unique ID of the reimbursement'),
+      userId: z.string().optional().describe('User ID of the employee'),
+      userFullName: z.string().optional().describe('Full name of the employee'),
+      userEmail: z.string().optional().describe('Email of the employee'),
+      amount: z.number().optional().describe('Reimbursement amount'),
+      currency: z.string().optional().describe('Currency code'),
+      merchantName: z.string().optional().describe('Merchant name'),
+      state: z.string().optional().describe('Reimbursement state'),
+      direction: z
+        .string()
+        .optional()
+        .describe('Direction (BUSINESS_TO_USER or USER_TO_BUSINESS)'),
+      type: z.string().optional().describe('Reimbursement type'),
+      createdAt: z.string().optional().describe('Creation timestamp (ISO 8601)'),
+      approvedAt: z.string().optional().describe('Approval timestamp (ISO 8601)'),
+      paidAt: z.string().optional().describe('Payment timestamp (ISO 8601)'),
+      entityId: z.string().optional().describe('Business entity ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let result = await client.listReimbursements({
-        pageSize: 100,
+        pageSize: 100
       });
 
       let knownIds: Record<string, string> = ctx.state?.knownIds || {};
@@ -59,11 +64,11 @@ export let reimbursementEvents = SlateTrigger.create(
       return {
         inputs: newInputs,
         updatedState: {
-          knownIds,
-        },
+          knownIds
+        }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let r = ctx.input.reimbursement;
 
       return {
@@ -83,9 +88,9 @@ export let reimbursementEvents = SlateTrigger.create(
           createdAt: r.created_at,
           approvedAt: r.approved_at,
           paidAt: r.paid_at,
-          entityId: r.entity_id,
-        },
+          entityId: r.entity_id
+        }
       };
-    },
+    }
   })
   .build();

@@ -1,7 +1,7 @@
 import { openSlatesCliStore } from '@slates/profiles';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
+import { mkdtemp, rm, writeFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { loadSlatesRuntimeContext } from './index';
 

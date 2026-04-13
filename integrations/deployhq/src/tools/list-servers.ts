@@ -16,31 +16,36 @@ let serverSchema = z.object({
   autoDeploy: z.boolean().optional().describe('Whether auto-deploy is enabled'),
   autoDeployUrl: z.string().optional().describe('Auto-deploy webhook URL'),
   environment: z.string().optional().describe('Environment label (e.g., Production, Staging)'),
-  serverGroupIdentifier: z.string().nullable().optional().describe('Server group this server belongs to'),
+  serverGroupIdentifier: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Server group this server belongs to')
 });
 
-export let listServers = SlateTool.create(
-  spec,
-  {
-    name: 'List Servers',
-    key: 'list_servers',
-    description: `List all servers configured for a DeployHQ project. Returns server connection details, protocol type, deployment path, and auto-deploy settings.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    projectPermalink: z.string().describe('The permalink (slug) of the project'),
-  }))
-  .output(z.object({
-    servers: z.array(serverSchema).describe('List of servers in the project'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listServers = SlateTool.create(spec, {
+  name: 'List Servers',
+  key: 'list_servers',
+  description: `List all servers configured for a DeployHQ project. Returns server connection details, protocol type, deployment path, and auto-deploy settings.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      projectPermalink: z.string().describe('The permalink (slug) of the project')
+    })
+  )
+  .output(
+    z.object({
+      servers: z.array(serverSchema).describe('List of servers in the project')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       email: ctx.auth.email,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     let servers = await client.listServers(ctx.input.projectPermalink);
@@ -58,11 +63,12 @@ export let listServers = SlateTool.create(
       autoDeploy: s.auto_deploy,
       autoDeployUrl: s.auto_deploy_url,
       environment: s.environment,
-      serverGroupIdentifier: s.server_group_identifier ?? null,
+      serverGroupIdentifier: s.server_group_identifier ?? null
     }));
 
     return {
       output: { servers: mapped },
-      message: `Found **${mapped.length}** server(s) in project \`${ctx.input.projectPermalink}\`.`,
+      message: `Found **${mapped.length}** server(s) in project \`${ctx.input.projectPermalink}\`.`
     };
-  }).build();
+  })
+  .build();

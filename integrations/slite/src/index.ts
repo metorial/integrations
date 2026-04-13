@@ -33,7 +33,5 @@ export let provider = Slate.create({
     manageCustomContent,
     auditKnowledgeBase
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

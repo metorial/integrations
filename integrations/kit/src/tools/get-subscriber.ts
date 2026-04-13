@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getSubscriber = SlateTool.create(
-  spec,
-  {
-    name: 'Get Subscriber',
-    key: 'get_subscriber',
-    description: `Retrieve a single subscriber's full profile including email, name, status, and all custom field values.`,
-    tags: {
-      readOnly: true
-    }
+export let getSubscriber = SlateTool.create(spec, {
+  name: 'Get Subscriber',
+  key: 'get_subscriber',
+  description: `Retrieve a single subscriber's full profile including email, name, status, and all custom field values.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    subscriberId: z.number().describe('The subscriber ID to look up')
-  }))
-  .output(z.object({
-    subscriberId: z.number().describe('Unique subscriber ID'),
-    emailAddress: z.string().describe('Subscriber email address'),
-    firstName: z.string().nullable().describe('Subscriber first name'),
-    state: z.string().describe('Subscriber state'),
-    createdAt: z.string().describe('When the subscriber was created'),
-    fields: z.record(z.string(), z.string().nullable()).describe('Custom field values')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      subscriberId: z.number().describe('The subscriber ID to look up')
+    })
+  )
+  .output(
+    z.object({
+      subscriberId: z.number().describe('Unique subscriber ID'),
+      emailAddress: z.string().describe('Subscriber email address'),
+      firstName: z.string().nullable().describe('Subscriber first name'),
+      state: z.string().describe('Subscriber state'),
+      createdAt: z.string().describe('When the subscriber was created'),
+      fields: z.record(z.string(), z.string().nullable()).describe('Custom field values')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let data = await client.getSubscriber(ctx.input.subscriberId);
     let s = data.subscriber;
@@ -41,4 +42,5 @@ export let getSubscriber = SlateTool.create(
       },
       message: `Retrieved subscriber **${s.email_address}** (${s.state}).`
     };
-  }).build();
+  })
+  .build();

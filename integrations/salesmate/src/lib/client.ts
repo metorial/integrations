@@ -34,10 +34,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://${params.domain}.salesmate.io/apis/core/v4`,
       headers: {
-        'accessToken': params.token,
+        accessToken: params.token,
         'x-linkname': params.linkname,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -65,7 +65,10 @@ export class Client {
 
   async searchContacts(params: SearchParams) {
     let { pageNo = 1, rows = 25, ...body } = params;
-    let response = await this.axios.post(`/contacts/search?pageNo=${pageNo}&rows=${rows}`, body);
+    let response = await this.axios.post(
+      `/contacts/search?pageNo=${pageNo}&rows=${rows}`,
+      body
+    );
     return response.data;
   }
 
@@ -93,7 +96,10 @@ export class Client {
 
   async searchCompanies(params: SearchParams) {
     let { pageNo = 1, rows = 25, ...body } = params;
-    let response = await this.axios.post(`/companies/search?pageNo=${pageNo}&rows=${rows}`, body);
+    let response = await this.axios.post(
+      `/companies/search?pageNo=${pageNo}&rows=${rows}`,
+      body
+    );
     return response.data;
   }
 
@@ -149,7 +155,10 @@ export class Client {
 
   async searchActivities(params: SearchParams) {
     let { pageNo = 1, rows = 25, ...body } = params;
-    let response = await this.axios.post(`/activities/search?pageNo=${pageNo}&rows=${rows}`, body);
+    let response = await this.axios.post(
+      `/activities/search?pageNo=${pageNo}&rows=${rows}`,
+      body
+    );
     return response.data;
   }
 
@@ -177,7 +186,10 @@ export class Client {
 
   async searchProducts(params: SearchParams) {
     let { pageNo = 1, rows = 25, ...body } = params;
-    let response = await this.axios.post(`/products/search?pageNo=${pageNo}&rows=${rows}`, body);
+    let response = await this.axios.post(
+      `/products/search?pageNo=${pageNo}&rows=${rows}`,
+      body
+    );
     return response.data;
   }
 
@@ -205,7 +217,10 @@ export class Client {
 
   async searchTickets(params: SearchParams) {
     let { pageNo = 1, rows = 25, ...body } = params;
-    let response = await this.axios.post(`/tickets/search?pageNo=${pageNo}&rows=${rows}`, body);
+    let response = await this.axios.post(
+      `/tickets/search?pageNo=${pageNo}&rows=${rows}`,
+      body
+    );
     return response.data;
   }
 

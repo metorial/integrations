@@ -38,33 +38,43 @@ All API operations are scoped to a `website_id`, which identifies the Crisp work
 ## Features
 
 ### Conversation Management
+
 List, search, create, and manage conversations (chat sessions). Supports sending and receiving messages of various types (text, files, audio, animations, picker, carousel, events). Conversations can be filtered by status (unread, resolved, assigned, etc.), date range, and search text. Conversations support routing/assignment to operators, tagging with segments, and state management (resolved, pending, unresolved).
 
 ### Contact / People Management
+
 Full CRM capabilities including listing, creating, updating, and removing people profiles. Contacts can be searched by name, email, or segments. Supports managing custom data key-value pairs per contact, tracking people events, managing subscription status, and bulk importing/exporting profiles via CSV.
 
 ### Helpdesk / Knowledge Base
+
 Create and manage helpdesk articles organized by locale for multi-language support. Initialize, configure, and manage a full knowledge base including article categories and content. Articles can be marked as featured and ordered.
 
 ### Campaigns
+
 List and manage marketing campaigns including both one-shot and automated campaigns. Create, retrieve, and delete campaign templates. Campaigns can target contacts filtered by segments and advanced filters.
 
 ### Website Management
+
 Create, resolve, update, and delete websites (workspaces). Configure website settings including chatbox appearance, contact information, email preferences, inbox configuration, and operator privacy settings.
 
 ### Operator Management
+
 List website operators, list last active operators, flush last active operators, send email to operators. Invite new operators, change operator membership roles, and unlink operators from websites.
 
 ### Visitor Tracking
+
 List and count current visitors, pinpoint visitors on a map by geographic coordinates, and get session identifiers from tokens. Supports counting and managing blocked visitors and blocking rules.
 
 ### Website Availability
+
 Manage and query the online/offline availability status of the website's support team.
 
 ### Analytics
+
 Crisp provides analytics on several levels: Messaging, Contacts, Rating, Campaigns, Helpdesk and Status. Access analytics data programmatically for reporting purposes.
 
 ### Identity Verification
+
 Request and redeem identity verification for conversations to verify visitor identity through email or other channels.
 
 ## Events
@@ -72,34 +82,44 @@ Request and redeem identity verification for conversations to verify visitor ide
 Crisp supports real-time events through two mechanisms: **Web Hooks** (HTTP POST callbacks) and the **RTM API** (WebSocket). The data sent from Web Hooks is exactly the same as received via the RTM API. Those two systems can be used interchangeably to receive real-time events.
 
 There are two types of webhooks:
+
 - **Plugin Hooks**: configured for a plugin through the Crisp Marketplace. They let you receive the same event namespaces available through the RTM API for plugin token tiers. Those Web Hooks are signed, and if a delivery fails it will be attempted again. Recommended for most users.
 - **Website Hooks**: configured for a website as private-use Web Hooks. Fewer event namespaces are available. These are not signed and do not retry on failure.
 
 Plugin Hooks include cryptographic signature verification via the `X-Crisp-Signature` header.
 
 ### Session Events
+
 Covers all changes to conversation sessions: availability changes, identity verification, email/phone/address/subject/avatar/nickname updates, participant and mention changes, routing and inbox assignment, state changes (opened, closed, blocked), capability syncing, geolocation, system info, network info, timezone, locale, page views, event tracking, rating, topic changes, and session removal.
 
 ### Message Events
+
 Includes message sent, message received, message updated, message removed, compose (typing) indicators for both send and receive, read/unread/delivered/ignored acknowledgements, and unread notification events.
 
 ### Campaign Events
+
 Campaign dispatch events when a campaign has been sent.
 
 ### Browsing Events (MagicBrowse)
+
 Events for co-browsing requests initiated or rejected by visitors.
 
 ### Call Events
+
 Events for calls being initiated (accepted) or rejected (declined) by users.
 
 ### Widget Events
+
 Widget action processed results (success or failure).
 
 ### Status Page Events
+
 The status page health has changed (either: healthy, sick or dead).
 
 ### Plugin Events
+
 Generic channel for plugins. A generic plugin event has been fired. Plugin settings saved.
 
 ### People Events
+
 Subscription status changes (subscribe/unsubscribe) and email view tracking events.

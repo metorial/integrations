@@ -81,8 +81,8 @@ export class Client {
       baseURL: 'https://api.dropcontact.com/v1',
       headers: {
         'X-Access-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -91,7 +91,10 @@ export class Client {
     return response.data;
   }
 
-  async getEnrichmentResults(requestId: string, forceResults?: boolean): Promise<EnrichGetResponse> {
+  async getEnrichmentResults(
+    requestId: string,
+    forceResults?: boolean
+  ): Promise<EnrichGetResponse> {
     let params: Record<string, string> = {};
     if (forceResults) {
       params.forceResults = 'true';

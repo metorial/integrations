@@ -11,6 +11,7 @@ Sauce Labs uses **HTTP Basic Authentication** for its REST API.
 Authentication is performed via HTTP Basic Auth. Provide your username as the basic username and your API key as the password. All requests must use HTTPS. Calls made over HTTP or without proper authentication will fail.
 
 **Credentials required:**
+
 - **Username**: Your Sauce Labs username (available under User Settings)
 - **Access Key**: The Sauce Labs API uses API keys to authenticate requests. You can view and manage your API key under your Sauce Labs User Settings.
 
@@ -19,6 +20,7 @@ Alternatively, you can use the username and access key of a service account to a
 **Usage examples:**
 
 Inline credentials:
+
 ```
 curl -u "$SAUCE_USERNAME:$SAUCE_ACCESS_KEY" https://api.us-west-1.saucelabs.com/rest/v1/...
 ```

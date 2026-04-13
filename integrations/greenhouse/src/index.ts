@@ -19,13 +19,13 @@ import {
   listOfficesTool,
   listScheduledInterviewsTool,
   addCandidateNoteTool,
-  manageCandidateTagsTool,
+  manageCandidateTagsTool
 } from './tools';
 import {
   applicationEventsTrigger,
   candidateEventsTrigger,
   jobEventsTrigger,
-  interviewEventsTrigger,
+  interviewEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -49,12 +49,12 @@ export let provider = Slate.create({
     listOfficesTool,
     listScheduledInterviewsTool,
     addCandidateNoteTool,
-    manageCandidateTagsTool,
+    manageCandidateTagsTool
   ],
   triggers: [
     applicationEventsTrigger,
     candidateEventsTrigger,
     jobEventsTrigger,
-    interviewEventsTrigger,
-  ],
+    interviewEventsTrigger
+  ]
 });

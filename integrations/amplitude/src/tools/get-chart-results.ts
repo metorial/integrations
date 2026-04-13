@@ -3,25 +3,28 @@ import { AmplitudeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getChartResultsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Chart Results',
-    key: 'get_chart_results',
-    description: `Fetch results from a saved chart in Amplitude by its chart ID. Returns the same data that the chart displays in the Amplitude dashboard. The chart ID can be found in the URL when viewing a chart.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getChartResultsTool = SlateTool.create(spec, {
+  name: 'Get Chart Results',
+  key: 'get_chart_results',
+  description: `Fetch results from a saved chart in Amplitude by its chart ID. Returns the same data that the chart displays in the Amplitude dashboard. The chart ID can be found in the URL when viewing a chart.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    chartId: z.string().describe('The ID of the saved chart to fetch results for. Found in the chart URL.')
-  }))
-  .output(z.object({
-    chartData: z.any().describe('Full chart data including series, labels, and metadata.')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      chartId: z
+        .string()
+        .describe('The ID of the saved chart to fetch results for. Found in the chart URL.')
+    })
+  )
+  .output(
+    z.object({
+      chartData: z.any().describe('Full chart data including series, labels, and metadata.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AmplitudeClient({
       apiKey: ctx.auth.apiKey,
       secretKey: ctx.auth.secretKey,

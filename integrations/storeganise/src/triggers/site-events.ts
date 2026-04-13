@@ -2,28 +2,32 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let siteEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Site & Business Events',
-    key: 'site_events',
-    description: 'Triggers when business settings are updated, site settings are modified, site availability changes, or leads are created.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type'),
-    eventId: z.string().describe('Unique event ID'),
-    webhookPayload: z.record(z.string(), z.any()).describe('Full webhook payload'),
-  }))
-  .output(z.object({
-    eventType: z.string().describe('The type of site/business event'),
-    created: z.string().optional().describe('Timestamp when the event occurred'),
-    webhookPayload: z.record(z.string(), z.any()).describe('Full webhook payload for additional context'),
-  }))
+export let siteEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Site & Business Events',
+  key: 'site_events',
+  description:
+    'Triggers when business settings are updated, site settings are modified, site availability changes, or leads are created.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The webhook event type'),
+      eventId: z.string().describe('Unique event ID'),
+      webhookPayload: z.record(z.string(), z.any()).describe('Full webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('The type of site/business event'),
+      created: z.string().optional().describe('Timestamp when the event occurred'),
+      webhookPayload: z
+        .record(z.string(), z.any())
+        .describe('Full webhook payload for additional context')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, any>;
-      let eventType = body.type as string || '';
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, any>;
+      let eventType = (body.type as string) || '';
 
       let siteEventTypes = [
         'business.updated',
@@ -35,7 +39,7 @@ export let siteEventsTrigger = SlateTrigger.create(
         'addon.dailyEvent.started',
         'billing.list',
         'billing.charge',
-        'billing.checkout',
+        'billing.checkout'
       ];
 
       if (!siteEventTypes.includes(eventType)) {
@@ -47,22 +51,22 @@ export let siteEventsTrigger = SlateTrigger.create(
           {
             eventType,
             eventId: body.id || `${eventType}_${body.created || Date.now()}`,
-            webhookPayload: body,
-          },
-        ],
+            webhookPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
         output: {
           eventType: ctx.input.eventType,
-          created: (ctx.input.webhookPayload.created as string | undefined),
-          webhookPayload: ctx.input.webhookPayload,
-        },
+          created: ctx.input.webhookPayload.created as string | undefined,
+          webhookPayload: ctx.input.webhookPayload
+        }
       };
-    },
+    }
   })
   .build();

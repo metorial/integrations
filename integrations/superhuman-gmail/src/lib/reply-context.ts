@@ -1,10 +1,14 @@
 import { extractHeader, GmailMessage, parseMessage, ParsedMessage } from './client';
 
-export let buildReplyHeaders = (parentMessage: GmailMessage): { inReplyTo: string; references: string } => {
+export let buildReplyHeaders = (
+  parentMessage: GmailMessage
+): { inReplyTo: string; references: string } => {
   let parsed = parseMessage(parentMessage);
   let mid = parsed.mimeMessageId?.trim();
   if (!mid) {
-    throw new Error('Parent message is missing a Message-ID header; cannot build a threaded reply.');
+    throw new Error(
+      'Parent message is missing a Message-ID header; cannot build a threaded reply.'
+    );
   }
   let prevRefs = (parsed.references || '').trim();
   let references = prevRefs ? `${prevRefs} ${mid}` : mid;
@@ -38,13 +42,16 @@ export let sortMessagesChronological = (messages: ParsedMessage[]): ParsedMessag
   });
 };
 
-export let pickReplyTarget = (threadMessages: GmailMessage[], replyToMessageId?: string): GmailMessage => {
+export let pickReplyTarget = (
+  threadMessages: GmailMessage[],
+  replyToMessageId?: string
+): GmailMessage => {
   let list = threadMessages || [];
   if (list.length === 0) {
     throw new Error('Thread has no messages.');
   }
   if (replyToMessageId) {
-    let found = list.find((m) => m.id === replyToMessageId);
+    let found = list.find(m => m.id === replyToMessageId);
     if (!found) {
       throw new Error(`Message ${replyToMessageId} not found in this thread.`);
     }
@@ -56,7 +63,7 @@ export let pickReplyTarget = (threadMessages: GmailMessage[], replyToMessageId?:
   if (!last) {
     throw new Error('Could not resolve latest message in thread.');
   }
-  let lastRaw = list.find((m) => m.id === last.messageId);
+  let lastRaw = list.find(m => m.id === last.messageId);
   if (!lastRaw) {
     throw new Error('Could not resolve latest message in thread.');
   }

@@ -82,14 +82,26 @@ export interface Attendee {
   emailAddress: EmailAddress;
   type: 'required' | 'optional' | 'resource';
   status?: {
-    response?: 'none' | 'organizer' | 'tentativelyAccepted' | 'accepted' | 'declined' | 'notResponded';
+    response?:
+      | 'none'
+      | 'organizer'
+      | 'tentativelyAccepted'
+      | 'accepted'
+      | 'declined'
+      | 'notResponded';
     time?: string;
   };
 }
 
 export interface PatternedRecurrence {
   pattern: {
-    type: 'daily' | 'weekly' | 'absoluteMonthly' | 'relativeMonthly' | 'absoluteYearly' | 'relativeYearly';
+    type:
+      | 'daily'
+      | 'weekly'
+      | 'absoluteMonthly'
+      | 'relativeMonthly'
+      | 'absoluteYearly'
+      | 'relativeYearly';
     interval: number;
     daysOfWeek?: string[];
     dayOfMonth?: number;

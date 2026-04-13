@@ -8,11 +8,11 @@ export class Client {
       baseURL: 'https://api.passslot.com/v1',
       auth: {
         username: token,
-        password: '',
+        password: ''
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -81,7 +81,10 @@ export class Client {
     return response.data;
   }
 
-  async updateTemplateBranding(templateId: number, branding: Record<string, any>): Promise<any> {
+  async updateTemplateBranding(
+    templateId: number,
+    branding: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/templates/${templateId}/branding`, branding);
     return response.data;
   }
@@ -93,7 +96,10 @@ export class Client {
     return response.data;
   }
 
-  async updateTemplateRestrictions(templateId: number, restrictions: Record<string, any>): Promise<any> {
+  async updateTemplateRestrictions(
+    templateId: number,
+    restrictions: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/templates/${templateId}/restrictions`, restrictions);
     return response.data;
   }
@@ -112,7 +118,10 @@ export class Client {
 
   // ── Pass Generation ──
 
-  async createPassFromTemplate(templateId: number, values: Record<string, any>): Promise<{
+  async createPassFromTemplate(
+    templateId: number,
+    values: Record<string, any>
+  ): Promise<{
     serialNumber: string;
     passTypeIdentifier: string;
     url: string;
@@ -121,7 +130,10 @@ export class Client {
     return response.data;
   }
 
-  async createPassFromTemplateName(templateName: string, values: Record<string, any>): Promise<{
+  async createPassFromTemplateName(
+    templateName: string,
+    values: Record<string, any>
+  ): Promise<{
     serialNumber: string;
     passTypeIdentifier: string;
     url: string;
@@ -143,7 +155,10 @@ export class Client {
     return response.data;
   }
 
-  async getPassUrl(passTypeIdentifier: string, serialNumber: string): Promise<{ url: string }> {
+  async getPassUrl(
+    passTypeIdentifier: string,
+    serialNumber: string
+  ): Promise<{ url: string }> {
     let response = await this.axios.get(
       `/passes/${encodeURIComponent(passTypeIdentifier)}/${serialNumber}/url`
     );
@@ -163,7 +178,11 @@ export class Client {
     );
   }
 
-  async emailPass(passTypeIdentifier: string, serialNumber: string, email: string): Promise<void> {
+  async emailPass(
+    passTypeIdentifier: string,
+    serialNumber: string,
+    email: string
+  ): Promise<void> {
     await this.axios.post(
       `/passes/${encodeURIComponent(passTypeIdentifier)}/${serialNumber}/email`,
       { email }
@@ -178,7 +197,10 @@ export class Client {
 
   // ── Pass Values ──
 
-  async getPassValues(passTypeIdentifier: string, serialNumber: string): Promise<Record<string, any>> {
+  async getPassValues(
+    passTypeIdentifier: string,
+    serialNumber: string
+  ): Promise<Record<string, any>> {
     let response = await this.axios.get(
       `/passes/${encodeURIComponent(passTypeIdentifier)}/${serialNumber}/values`
     );
@@ -212,7 +234,10 @@ export class Client {
 
   // ── Pass Status ──
 
-  async getPassStatus(passTypeIdentifier: string, serialNumber: string): Promise<{ status: string }> {
+  async getPassStatus(
+    passTypeIdentifier: string,
+    serialNumber: string
+  ): Promise<{ status: string }> {
     let response = await this.axios.get(
       `/passes/${encodeURIComponent(passTypeIdentifier)}/${serialNumber}/status`
     );

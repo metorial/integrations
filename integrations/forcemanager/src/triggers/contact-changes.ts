@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Changes',
-    key: 'contact_changes',
-    description: 'Triggers when contacts are created or updated in ForceManager.',
-  }
-)
-  .input(z.object({
-    contactId: z.number().describe('Contact ID'),
-    record: z.any().describe('Full contact record'),
-    detectedAt: z.string().describe('Timestamp when the change was detected')
-  }))
-  .output(z.object({
-    contactId: z.number().describe('Contact ID'),
-    firstName: z.string().nullable().describe('First name'),
-    lastName: z.string().nullable().describe('Last name'),
-    email: z.string().nullable().describe('Primary email'),
-    phone: z.string().nullable().describe('Primary phone'),
-    accountId: z.any().nullable().describe('Associated account'),
-    dateCreated: z.string().nullable().describe('Record creation date'),
-    dateUpdated: z.string().nullable().describe('Record last update date'),
-    record: z.any().describe('Full contact record')
-  }))
+export let contactChanges = SlateTrigger.create(spec, {
+  name: 'Contact Changes',
+  key: 'contact_changes',
+  description: 'Triggers when contacts are created or updated in ForceManager.'
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('Contact ID'),
+      record: z.any().describe('Full contact record'),
+      detectedAt: z.string().describe('Timestamp when the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.number().describe('Contact ID'),
+      firstName: z.string().nullable().describe('First name'),
+      lastName: z.string().nullable().describe('Last name'),
+      email: z.string().nullable().describe('Primary email'),
+      phone: z.string().nullable().describe('Primary phone'),
+      accountId: z.any().nullable().describe('Associated account'),
+      dateCreated: z.string().nullable().describe('Record creation date'),
+      dateUpdated: z.string().nullable().describe('Record last update date'),
+      record: z.any().describe('Full contact record')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth);
       let lastPollTime = ctx.state?.lastPollTime || new Date().toISOString().replace('Z', '');
 
@@ -50,7 +51,7 @@ export let contactChanges = SlateTrigger.create(
       let now = new Date().toISOString().replace('Z', '');
 
       return {
-        inputs: allRecords.map((record) => ({
+        inputs: allRecords.map(record => ({
           contactId: record.id,
           record,
           detectedAt: now
@@ -61,7 +62,7 @@ export let contactChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let record = ctx.input.record;
       let isNew = record.dateCreated === record.dateUpdated;
 
@@ -81,4 +82,5 @@ export let contactChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

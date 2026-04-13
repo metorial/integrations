@@ -6,12 +6,14 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    authType: z.enum(['oauth', 'api_key'])
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      authType: z.enum(['oauth', 'api_key'])
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -30,7 +32,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
@@ -44,18 +46,22 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await apiAxios.post('/oauth2/token/', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await apiAxios.post(
+        '/oauth2/token/',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + (data.expires_in || 3600) * 1000).toISOString();
@@ -70,21 +76,25 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await apiAxios.post('/oauth2/token/', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await apiAxios.post(
+        '/oauth2/token/',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + (data.expires_in || 3600) * 1000).toISOString();
@@ -99,10 +109,14 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: Record<string, any>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: Record<string, any>;
+      scopes: string[];
+    }) => {
       let response = await apiAxios.get('/api/v1/me/', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -124,7 +138,9 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Close API key. Create one in Settings > Developer > API Keys.')
+      apiKey: z
+        .string()
+        .describe('Close API key. Create one in Settings > Developer > API Keys.')
     }),
 
     getOutput: async (ctx: { input: { apiKey: string } }) => {
@@ -136,11 +152,14 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; authType: string }; input: { apiKey: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; authType: string };
+      input: { apiKey: string };
+    }) => {
       let basicToken = btoa(`${ctx.output.token}:`);
       let response = await apiAxios.get('/api/v1/me/', {
         headers: {
-          'Authorization': `Basic ${basicToken}`
+          Authorization: `Basic ${basicToken}`
         }
       });
 

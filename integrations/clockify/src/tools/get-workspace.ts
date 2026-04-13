@@ -3,23 +3,22 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getWorkspace = SlateTool.create(
-  spec,
-  {
-    name: 'Get Workspace',
-    key: 'get_workspace',
-    description: `Get details about the configured Clockify workspace, including settings, features, and billing info.`,
-    tags: { readOnly: true }
-  }
-)
+export let getWorkspace = SlateTool.create(spec, {
+  name: 'Get Workspace',
+  key: 'get_workspace',
+  description: `Get details about the configured Clockify workspace, including settings, features, and billing info.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    workspaceId: z.string(),
-    name: z.string(),
-    imageUrl: z.string().optional(),
-    plan: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      workspaceId: z.string(),
+      name: z.string(),
+      imageUrl: z.string().optional(),
+      plan: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

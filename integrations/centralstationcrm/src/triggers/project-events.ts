@@ -3,65 +3,68 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Events',
-    key: 'project_events',
-    description: 'Triggers when a project is created, updated, or deleted in CentralStationCRM.',
-  }
-)
-  .input(z.object({
-    eventAction: z.string().describe('The action that triggered the event (create, update, destroy)'),
-    projectId: z.number().describe('ID of the affected project'),
-    projectName: z.string().optional().describe('Name of the project'),
-    rawPayload: z.any().describe('Complete webhook payload'),
-  }))
-  .output(z.object({
-    projectId: z.number().describe('ID of the project'),
-    projectName: z.string().optional().describe('Name of the project'),
-    description: z.string().optional().describe('Project description'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let projectEvents = SlateTrigger.create(spec, {
+  name: 'Project Events',
+  key: 'project_events',
+  description: 'Triggers when a project is created, updated, or deleted in CentralStationCRM.'
+})
+  .input(
+    z.object({
+      eventAction: z
+        .string()
+        .describe('The action that triggered the event (create, update, destroy)'),
+      projectId: z.number().describe('ID of the affected project'),
+      projectName: z.string().optional().describe('Name of the project'),
+      rawPayload: z.any().describe('Complete webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('ID of the project'),
+      projectName: z.string().optional().describe('Name of the project'),
+      description: z.string().optional().describe('Project description'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountName: ctx.config.accountName,
+        accountName: ctx.config.accountName
       });
 
       let createHook = await client.createWebhook({
         url: `${ctx.input.webhookBaseUrl}/create`,
         object_type: 'Project',
-        action: 'create',
+        action: 'create'
       });
 
       let updateHook = await client.createWebhook({
         url: `${ctx.input.webhookBaseUrl}/update`,
         object_type: 'Project',
-        action: 'update',
+        action: 'update'
       });
 
       let deleteHook = await client.createWebhook({
         url: `${ctx.input.webhookBaseUrl}/destroy`,
         object_type: 'Project',
-        action: 'destroy',
+        action: 'destroy'
       });
 
       return {
         registrationDetails: {
           createHookId: (createHook?.hook ?? createHook)?.id,
           updateHookId: (updateHook?.hook ?? updateHook)?.id,
-          deleteHookId: (deleteHook?.hook ?? deleteHook)?.id,
-        },
+          deleteHookId: (deleteHook?.hook ?? deleteHook)?.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountName: ctx.config.accountName,
+        accountName: ctx.config.accountName
       });
 
       let details = ctx.input.registrationDetails as Record<string, number>;
@@ -70,8 +73,8 @@ export let projectEvents = SlateTrigger.create(
       if (details.deleteHookId) await client.deleteWebhook(details.deleteHookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
       let actionFromPath = pathParts[pathParts.length - 1] ?? 'unknown';
@@ -84,13 +87,13 @@ export let projectEvents = SlateTrigger.create(
             eventAction: actionFromPath,
             projectId: project?.id ?? 0,
             projectName: project?.name,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let project = ctx.input.rawPayload?.project ?? ctx.input.rawPayload;
 
       return {
@@ -101,9 +104,9 @@ export let projectEvents = SlateTrigger.create(
           projectName: project?.name ?? ctx.input.projectName,
           description: project?.description,
           createdAt: project?.created_at,
-          updatedAt: project?.updated_at,
-        },
+          updatedAt: project?.updated_at
+        }
       };
-    },
+    }
   })
   .build();

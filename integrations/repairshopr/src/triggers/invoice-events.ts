@@ -2,35 +2,37 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Events',
-    key: 'invoice_events',
-    description: 'Triggers when an invoice is created or updated. Configure the webhook URL in RepairShopr under Admin > Notification Center.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of invoice event'),
-    invoiceId: z.number().describe('Invoice ID'),
-    webhookPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    invoiceId: z.number().describe('Invoice ID'),
-    number: z.string().optional().describe('Invoice number'),
-    customerId: z.number().optional().describe('Customer ID'),
-    ticketId: z.number().optional().describe('Associated ticket ID'),
-    date: z.string().optional().describe('Invoice date'),
-    dueDate: z.string().optional().describe('Due date'),
-    total: z.number().optional().describe('Total amount'),
-    balance: z.number().optional().describe('Remaining balance'),
-    status: z.string().optional().describe('Invoice status'),
-    notes: z.string().optional().describe('Invoice notes'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
+export let invoiceEvents = SlateTrigger.create(spec, {
+  name: 'Invoice Events',
+  key: 'invoice_events',
+  description:
+    'Triggers when an invoice is created or updated. Configure the webhook URL in RepairShopr under Admin > Notification Center.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of invoice event'),
+      invoiceId: z.number().describe('Invoice ID'),
+      webhookPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.number().describe('Invoice ID'),
+      number: z.string().optional().describe('Invoice number'),
+      customerId: z.number().optional().describe('Customer ID'),
+      ticketId: z.number().optional().describe('Associated ticket ID'),
+      date: z.string().optional().describe('Invoice date'),
+      dueDate: z.string().optional().describe('Due date'),
+      total: z.number().optional().describe('Total amount'),
+      balance: z.number().optional().describe('Remaining balance'),
+      status: z.string().optional().describe('Invoice status'),
+      notes: z.string().optional().describe('Invoice notes'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -47,15 +49,17 @@ export let invoiceEvents = SlateTrigger.create(
       let eventType = body.type || body.event || body.action || 'updated';
 
       return {
-        inputs: [{
-          eventType: String(eventType),
-          invoiceId: Number(invoiceId),
-          webhookPayload: body,
-        }],
+        inputs: [
+          {
+            eventType: String(eventType),
+            invoiceId: Number(invoiceId),
+            webhookPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let invoice = ctx.input.webhookPayload?.invoice || ctx.input.webhookPayload || {};
       let eventType = ctx.input.eventType.toLowerCase().replace(/\s+/g, '_');
 
@@ -80,9 +84,9 @@ export let invoiceEvents = SlateTrigger.create(
           status: invoice.status,
           notes: invoice.notes,
           createdAt: invoice.created_at,
-          updatedAt: invoice.updated_at,
-        },
+          updatedAt: invoice.updated_at
+        }
       };
-    },
+    }
   })
   .build();

@@ -3,40 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let flowErrorDetected = SlateTrigger.create(
-  spec,
-  {
-    name: 'Flow Error Detected',
-    key: 'flow_error_detected',
-    description: 'Triggers when new errors appear in a specific flow step. Polls for new jobs with errors and returns job-level error counts. Use the Get Flow Errors tool to retrieve individual error details.'
-  }
-)
-  .input(z.object({
-    jobId: z.string().describe('Job ID where errors were detected'),
-    flowId: z.string().describe('Flow ID where errors occurred'),
-    numError: z.number().describe('Number of errors in the job'),
-    numSuccess: z.number().optional().describe('Number of successes in the job'),
-    status: z.string().describe('Job status'),
-    createdAt: z.string().describe('Job creation time'),
-    rawJob: z.any().describe('Full job object')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Job ID where errors were detected'),
-    flowId: z.string().describe('Flow ID where errors occurred'),
-    numError: z.number().describe('Number of errors in the job'),
-    numSuccess: z.number().optional().describe('Number of successes in the job'),
-    status: z.string().describe('Job status'),
-    type: z.string().optional().describe('Job type'),
-    retriable: z.boolean().optional().describe('Whether the errors are retriable'),
-    startedAt: z.string().optional().describe('Job start time'),
-    endedAt: z.string().optional().describe('Job end time')
-  }))
+export let flowErrorDetected = SlateTrigger.create(spec, {
+  name: 'Flow Error Detected',
+  key: 'flow_error_detected',
+  description:
+    'Triggers when new errors appear in a specific flow step. Polls for new jobs with errors and returns job-level error counts. Use the Get Flow Errors tool to retrieve individual error details.'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('Job ID where errors were detected'),
+      flowId: z.string().describe('Flow ID where errors occurred'),
+      numError: z.number().describe('Number of errors in the job'),
+      numSuccess: z.number().optional().describe('Number of successes in the job'),
+      status: z.string().describe('Job status'),
+      createdAt: z.string().describe('Job creation time'),
+      rawJob: z.any().describe('Full job object')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Job ID where errors were detected'),
+      flowId: z.string().describe('Flow ID where errors occurred'),
+      numError: z.number().describe('Number of errors in the job'),
+      numSuccess: z.number().optional().describe('Number of successes in the job'),
+      status: z.string().describe('Job status'),
+      type: z.string().optional().describe('Job type'),
+      retriable: z.boolean().optional().describe('Whether the errors are retriable'),
+      startedAt: z.string().optional().describe('Job start time'),
+      endedAt: z.string().optional().describe('Job end time')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         region: ctx.config.region
@@ -51,8 +53,8 @@ export let flowErrorDetected = SlateTrigger.create(
 
       let jobs = await client.listJobs(params);
 
-      let jobsWithErrors = jobs.filter((j: any) =>
-        (j.status === 'completed' || j.status === 'failed') && j.numError > 0
+      let jobsWithErrors = jobs.filter(
+        (j: any) => (j.status === 'completed' || j.status === 'failed') && j.numError > 0
       );
 
       let seenIds = (ctx.state?.seenIds as string[] | undefined) || [];
@@ -63,7 +65,10 @@ export let flowErrorDetected = SlateTrigger.create(
       let newLastPollTime = lastPollTime;
       if (jobs.length > 0) {
         let mostRecentCreatedAt = jobs[0]?.createdAt;
-        if (mostRecentCreatedAt && (!newLastPollTime || mostRecentCreatedAt > newLastPollTime)) {
+        if (
+          mostRecentCreatedAt &&
+          (!newLastPollTime || mostRecentCreatedAt > newLastPollTime)
+        ) {
           newLastPollTime = mostRecentCreatedAt;
         }
       }
@@ -85,7 +90,7 @@ export let flowErrorDetected = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -104,4 +109,5 @@ export let flowErrorDetected = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

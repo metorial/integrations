@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -18,12 +20,12 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
@@ -31,7 +33,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post('https://www.toneden.io/auth/oauth2/token', {
@@ -39,22 +41,26 @@ export let auth = SlateAuth.create()
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       return {
         output: {
-          token: response.data.access_token,
+          token: response.data.access_token
         }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: Record<string, never>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: Record<string, never>;
+      scopes: string[];
+    }) => {
       let axios = createAxios({
         baseURL: 'https://www.toneden.io/api/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/users/me');
@@ -65,8 +71,8 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           name: user.display_name || user.username,
           email: user.email,
-          imageUrl: user.avatar_url,
+          imageUrl: user.avatar_url
         }
       };
-    },
+    }
   });

@@ -3,52 +3,54 @@ import { MailchimpClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignActivityTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Sent',
-    key: 'campaign_sent',
-    description: '[Polling fallback] Triggers when a campaign is sent. Polls for newly sent campaigns and returns campaign details including recipients, subject, and status.',
-  }
-)
-  .input(z.object({
-    campaignId: z.string(),
-    title: z.string(),
-    subjectLine: z.string(),
-    status: z.string(),
-    sendTime: z.string(),
-    listId: z.string(),
-    listName: z.string(),
-    emailsSent: z.number(),
-    type: z.string(),
-  }))
-  .output(z.object({
-    campaignId: z.string(),
-    title: z.string(),
-    subjectLine: z.string(),
-    status: z.string(),
-    sendTime: z.string(),
-    listId: z.string(),
-    listName: z.string(),
-    emailsSent: z.number(),
-    campaignType: z.string(),
-  }))
+export let campaignActivityTrigger = SlateTrigger.create(spec, {
+  name: 'Campaign Sent',
+  key: 'campaign_sent',
+  description:
+    '[Polling fallback] Triggers when a campaign is sent. Polls for newly sent campaigns and returns campaign details including recipients, subject, and status.'
+})
+  .input(
+    z.object({
+      campaignId: z.string(),
+      title: z.string(),
+      subjectLine: z.string(),
+      status: z.string(),
+      sendTime: z.string(),
+      listId: z.string(),
+      listName: z.string(),
+      emailsSent: z.number(),
+      type: z.string()
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string(),
+      title: z.string(),
+      subjectLine: z.string(),
+      status: z.string(),
+      sendTime: z.string(),
+      listId: z.string(),
+      listName: z.string(),
+      emailsSent: z.number(),
+      campaignType: z.string()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MailchimpClient({
         token: ctx.auth.token,
-        serverPrefix: ctx.auth.serverPrefix,
+        serverPrefix: ctx.auth.serverPrefix
       });
 
       let lastPollTime = (ctx.state as any)?.lastPollTime as string | undefined;
 
       let params: any = {
         count: 50,
-        status: 'sent',
+        status: 'sent'
       };
 
       if (lastPollTime) {
@@ -67,7 +69,7 @@ export let campaignActivityTrigger = SlateTrigger.create(
         listId: c.recipients?.list_id ?? '',
         listName: c.recipients?.list_name ?? '',
         emailsSent: c.emails_sent ?? 0,
-        type: c.type ?? 'regular',
+        type: c.type ?? 'regular'
       }));
 
       let newLastPollTime = new Date().toISOString();
@@ -75,12 +77,12 @@ export let campaignActivityTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastPollTime: newLastPollTime,
-        },
+          lastPollTime: newLastPollTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.sent',
         id: `campaign_sent_${ctx.input.campaignId}_${ctx.input.sendTime}`,
@@ -93,8 +95,9 @@ export let campaignActivityTrigger = SlateTrigger.create(
           listId: ctx.input.listId,
           listName: ctx.input.listName,
           emailsSent: ctx.input.emailsSent,
-          campaignType: ctx.input.type,
-        },
+          campaignType: ctx.input.type
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -15,15 +15,9 @@ import {
   manageOffer,
   browseUsers,
   getSite,
-  manageWebhook,
+  manageWebhook
 } from './tools';
-import {
-  postEvents,
-  pageEvents,
-  tagEvents,
-  memberEvents,
-  siteChanged,
-} from './triggers';
+import { postEvents, pageEvents, tagEvents, memberEvents, siteChanged } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,13 +36,7 @@ export let provider = Slate.create({
     manageOffer,
     browseUsers,
     getSite,
-    manageWebhook,
+    manageWebhook
   ],
-  triggers: [
-    postEvents,
-    pageEvents,
-    tagEvents,
-    memberEvents,
-    siteChanged,
-  ],
+  triggers: [postEvents, pageEvents, tagEvents, memberEvents, siteChanged]
 });

@@ -18,41 +18,43 @@ let subscriptionEventTypes = [
   'SubscriptionFeaturesUpdated',
   'SubscriptionDateTermUpdated',
   'SubscriptionUpgraded',
-  'SubscriptionTerminatedForUpgrade',
+  'SubscriptionTerminatedForUpgrade'
 ] as const;
 
-export let subscriptionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Subscription Events',
-    key: 'subscription_events',
-    description: 'Triggers on subscription lifecycle events including start, renewal, suspension, termination, upgrade, and feature changes. Configure the webhook in ProAbono BackOffice under Integration > My Webhooks.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('ProAbono event type (e.g., SubscriptionStarted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    referenceSubscription: z.string().optional().describe('Subscription reference'),
-    referenceCustomer: z.string().optional().describe('Customer reference'),
-    subscriptionId: z.number().optional().describe('ProAbono subscription ID'),
-    rawPayload: z.any().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    referenceSubscription: z.string().optional().describe('Subscription reference'),
-    referenceCustomer: z.string().optional().describe('Customer reference'),
-    subscriptionId: z.number().optional().describe('ProAbono subscription ID'),
-    referenceOffer: z.string().optional().describe('Offer reference'),
-    status: z.string().optional().describe('Subscription status'),
-    stateSubscription: z.string().optional().describe('Technical subscription state'),
-    dateStart: z.string().optional().describe('Subscription start date'),
-    dateRenewal: z.string().optional().describe('Next renewal date'),
-    dateTermination: z.string().optional().describe('Termination date'),
-    amountRecurrence: z.number().optional().describe('Recurring amount in cents'),
-    currency: z.string().optional().describe('Billing currency'),
-    eventType: z.string().describe('The specific event that occurred'),
-  }))
+export let subscriptionEvents = SlateTrigger.create(spec, {
+  name: 'Subscription Events',
+  key: 'subscription_events',
+  description:
+    'Triggers on subscription lifecycle events including start, renewal, suspension, termination, upgrade, and feature changes. Configure the webhook in ProAbono BackOffice under Integration > My Webhooks.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('ProAbono event type (e.g., SubscriptionStarted)'),
+      eventId: z.string().describe('Unique event identifier'),
+      referenceSubscription: z.string().optional().describe('Subscription reference'),
+      referenceCustomer: z.string().optional().describe('Customer reference'),
+      subscriptionId: z.number().optional().describe('ProAbono subscription ID'),
+      rawPayload: z.any().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      referenceSubscription: z.string().optional().describe('Subscription reference'),
+      referenceCustomer: z.string().optional().describe('Customer reference'),
+      subscriptionId: z.number().optional().describe('ProAbono subscription ID'),
+      referenceOffer: z.string().optional().describe('Offer reference'),
+      status: z.string().optional().describe('Subscription status'),
+      stateSubscription: z.string().optional().describe('Technical subscription state'),
+      dateStart: z.string().optional().describe('Subscription start date'),
+      dateRenewal: z.string().optional().describe('Next renewal date'),
+      dateTermination: z.string().optional().describe('Termination date'),
+      amountRecurrence: z.number().optional().describe('Recurring amount in cents'),
+      currency: z.string().optional().describe('Billing currency'),
+      eventType: z.string().describe('The specific event that occurred')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -61,29 +63,36 @@ export let subscriptionEvents = SlateTrigger.create(
       }
 
       let eventType = data?.Trigger || data?.TypeEvent || data?.EventType || '';
-      let isSubscriptionEvent = subscriptionEventTypes.some((t) => eventType === t) ||
+      let isSubscriptionEvent =
+        subscriptionEventTypes.some(t => eventType === t) ||
         eventType.startsWith('Subscription');
 
       if (!isSubscriptionEvent && eventType) {
         return { inputs: [] };
       }
 
-      let eventId = data?.Id?.toString() || data?.IdNotification?.toString() || `${eventType}-${Date.now()}`;
+      let eventId =
+        data?.Id?.toString() ||
+        data?.IdNotification?.toString() ||
+        `${eventType}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          referenceSubscription: data?.ReferenceSubscription,
-          referenceCustomer: data?.ReferenceCustomer,
-          subscriptionId: data?.IdSubscription ?? data?.Id,
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            referenceSubscription: data?.ReferenceSubscription,
+            referenceCustomer: data?.ReferenceCustomer,
+            subscriptionId: data?.IdSubscription ?? data?.Id,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let { eventType, referenceSubscription, referenceCustomer, subscriptionId, rawPayload } = ctx.input;
+    handleEvent: async ctx => {
+      let { eventType, referenceSubscription, referenceCustomer, subscriptionId, rawPayload } =
+        ctx.input;
 
       let referenceOffer = rawPayload?.ReferenceOffer;
       let status = rawPayload?.Status;
@@ -98,11 +107,11 @@ export let subscriptionEvents = SlateTrigger.create(
         try {
           let client = new ProAbonoClient({
             token: ctx.auth.token,
-            apiEndpoint: ctx.config.apiEndpoint,
+            apiEndpoint: ctx.config.apiEndpoint
           });
           let sub = await client.getSubscription({
             ReferenceSubscription: referenceSubscription,
-            IdSubscription: subscriptionId,
+            IdSubscription: subscriptionId
           });
           referenceSubscription = referenceSubscription || sub?.ReferenceSubscription;
           referenceCustomer = referenceCustomer || sub?.ReferenceCustomer;
@@ -121,25 +130,27 @@ export let subscriptionEvents = SlateTrigger.create(
       }
 
       let typeMap: Record<string, string> = {
-        'SubscriptionStarted': 'subscription.started',
-        'SubscriptionRenewed': 'subscription.renewed',
-        'SubscriptionSuspendedCustomer': 'subscription.suspended_by_customer',
-        'SubscriptionSuspendedPaymentInfoMissing': 'subscription.suspended_payment_info_missing',
-        'SubscriptionSuspendedPaymentDue': 'subscription.suspended_payment_due',
-        'SubscriptionRestarted': 'subscription.restarted',
-        'SubscriptionTerminatedAtRenewal': 'subscription.terminated_at_renewal',
-        'SubscriptionTerminated': 'subscription.terminated',
-        'SubscriptionHistory': 'subscription.ended',
-        'SubscriptionDeleted': 'subscription.deleted',
-        'SubscriptionUpdated': 'subscription.updated',
-        'SubscriptionFeaturesUpdated': 'subscription.features_updated',
-        'SubscriptionDateTermUpdated': 'subscription.date_term_updated',
-        'SubscriptionUpgraded': 'subscription.upgraded',
-        'SubscriptionTerminatedForUpgrade': 'subscription.terminated_for_upgrade',
+        SubscriptionStarted: 'subscription.started',
+        SubscriptionRenewed: 'subscription.renewed',
+        SubscriptionSuspendedCustomer: 'subscription.suspended_by_customer',
+        SubscriptionSuspendedPaymentInfoMissing: 'subscription.suspended_payment_info_missing',
+        SubscriptionSuspendedPaymentDue: 'subscription.suspended_payment_due',
+        SubscriptionRestarted: 'subscription.restarted',
+        SubscriptionTerminatedAtRenewal: 'subscription.terminated_at_renewal',
+        SubscriptionTerminated: 'subscription.terminated',
+        SubscriptionHistory: 'subscription.ended',
+        SubscriptionDeleted: 'subscription.deleted',
+        SubscriptionUpdated: 'subscription.updated',
+        SubscriptionFeaturesUpdated: 'subscription.features_updated',
+        SubscriptionDateTermUpdated: 'subscription.date_term_updated',
+        SubscriptionUpgraded: 'subscription.upgraded',
+        SubscriptionTerminatedForUpgrade: 'subscription.terminated_for_upgrade'
       };
 
       return {
-        type: typeMap[eventType] || `subscription.${eventType.replace(/^Subscription/, '').toLowerCase()}`,
+        type:
+          typeMap[eventType] ||
+          `subscription.${eventType.replace(/^Subscription/, '').toLowerCase()}`,
         id: ctx.input.eventId,
         output: {
           referenceSubscription,
@@ -153,8 +164,9 @@ export let subscriptionEvents = SlateTrigger.create(
           dateTermination,
           amountRecurrence,
           currency,
-          eventType,
-        },
+          eventType
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

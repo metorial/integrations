@@ -18,7 +18,7 @@ import {
   deleteStarterQuestion,
   listConversations,
   getConversation,
-  endChat,
+  endChat
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -43,9 +43,7 @@ export let provider = Slate.create({
     deleteStarterQuestion,
     listConversations,
     getConversation,
-    endChat,
+    endChat
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

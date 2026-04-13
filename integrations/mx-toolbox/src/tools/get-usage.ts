@@ -3,25 +3,24 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { Client } from '../lib/client';
 
-export let getUsage = SlateTool.create(
-  spec,
-  {
-    name: 'Get API Usage',
-    key: 'get_usage',
-    description: `Retrieve the current API usage statistics for your MXToolbox account. Shows how many API requests have been consumed and the maximum allowed for your subscription plan.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getUsage = SlateTool.create(spec, {
+  name: 'Get API Usage',
+  key: 'get_usage',
+  description: `Retrieve the current API usage statistics for your MXToolbox account. Shows how many API requests have been consumed and the maximum allowed for your subscription plan.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    used: z.number().describe('Number of API requests consumed'),
-    limit: z.number().describe('Maximum number of API requests allowed in your plan'),
-    remaining: z.number().describe('Number of API requests remaining'),
-    usagePercentage: z.number().describe('Percentage of API quota used'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      used: z.number().describe('Number of API requests consumed'),
+      limit: z.number().describe('Maximum number of API requests allowed in your plan'),
+      remaining: z.number().describe('Number of API requests remaining'),
+      usagePercentage: z.number().describe('Percentage of API quota used')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let usage = await client.getUsage();
     let remaining = Math.max(0, usage.limit - usage.used);
@@ -32,9 +31,9 @@ export let getUsage = SlateTool.create(
         used: usage.used,
         limit: usage.limit,
         remaining,
-        usagePercentage,
+        usagePercentage
       },
-      message: `API usage: **${usage.used}/${usage.limit}** requests used (**${usagePercentage}%**). ${remaining} requests remaining.`,
+      message: `API usage: **${usage.used}/${usage.limit}** requests used (**${usagePercentage}%**). ${remaining} requests remaining.`
     };
   })
   .build();

@@ -32,10 +32,10 @@ export class CrustdataClient {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Token ${token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -52,7 +52,8 @@ export class CrustdataClient {
     if (params.companyDomain) queryParams.set('company_domain', params.companyDomain);
     if (params.companyName) queryParams.set('company_name', params.companyName);
     if (params.companyId) queryParams.set('company_id', params.companyId);
-    if (params.fields && params.fields.length > 0) queryParams.set('fields', params.fields.join(','));
+    if (params.fields && params.fields.length > 0)
+      queryParams.set('fields', params.fields.join(','));
     if (params.enrichRealtime) queryParams.set('enrich_realtime', 'True');
 
     let response = await this.http.get(`/screener/company?${queryParams.toString()}`);
@@ -70,16 +71,16 @@ export class CrustdataClient {
     let body = {
       filters: {
         op: params.filters.op,
-        conditions: params.filters.conditions.map((c) => ({
+        conditions: params.filters.conditions.map(c => ({
           column: c.column,
           type: c.type,
           value: c.value,
-          allow_null: c.allowNull ?? false,
-        })),
+          allow_null: c.allowNull ?? false
+        }))
       },
       offset: params.offset ?? 0,
       count: params.count ?? 100,
-      sorts: params.sorts ?? [],
+      sorts: params.sorts ?? []
     };
 
     let response = await this.http.post('/screener/screen/', body);
@@ -88,18 +89,15 @@ export class CrustdataClient {
 
   // ─── Company Search (via filters) ─────────────────────────────────
 
-  async searchCompanies(params: {
-    filters: SearchFilter[];
-    page?: number;
-  }) {
+  async searchCompanies(params: { filters: SearchFilter[]; page?: number }) {
     let body = {
-      filters: params.filters.map((f) => ({
+      filters: params.filters.map(f => ({
         filter_type: f.filterType,
         ...(f.type !== undefined ? { type: f.type } : {}),
         ...(f.value !== undefined ? { value: f.value } : {}),
-        ...(f.subFilter !== undefined ? { sub_filter: f.subFilter } : {}),
+        ...(f.subFilter !== undefined ? { sub_filter: f.subFilter } : {})
       })),
-      page: params.page ?? 1,
+      page: params.page ?? 1
     };
 
     let response = await this.http.post('/screener/company/search', body);
@@ -117,11 +115,13 @@ export class CrustdataClient {
     enrichRealtime?: boolean;
   }) {
     let queryParams = new URLSearchParams();
-    if (params.linkedinProfileUrl) queryParams.set('linkedin_profile_url', params.linkedinProfileUrl);
+    if (params.linkedinProfileUrl)
+      queryParams.set('linkedin_profile_url', params.linkedinProfileUrl);
     if (params.email) queryParams.set('email', params.email);
     if (params.name) queryParams.set('name', params.name);
     if (params.companyName) queryParams.set('company_name', params.companyName);
-    if (params.fields && params.fields.length > 0) queryParams.set('fields', params.fields.join(','));
+    if (params.fields && params.fields.length > 0)
+      queryParams.set('fields', params.fields.join(','));
     if (params.enrichRealtime) queryParams.set('enrich_realtime', 'True');
 
     let response = await this.http.get(`/screener/person/enrich?${queryParams.toString()}`);
@@ -130,17 +130,14 @@ export class CrustdataClient {
 
   // ─── People Search (via filters) ──────────────────────────────────
 
-  async searchPeople(params: {
-    filters: SearchFilter[];
-    page?: number;
-  }) {
+  async searchPeople(params: { filters: SearchFilter[]; page?: number }) {
     let body = {
-      filters: params.filters.map((f) => ({
+      filters: params.filters.map(f => ({
         filter_type: f.filterType,
         ...(f.type !== undefined ? { type: f.type } : {}),
-        ...(f.value !== undefined ? { value: f.value } : {}),
+        ...(f.value !== undefined ? { value: f.value } : {})
       })),
-      page: params.page ?? 1,
+      page: params.page ?? 1
     };
 
     let response = await this.http.post('/screener/person/search', body);
@@ -160,18 +157,18 @@ export class CrustdataClient {
       tickers: params.tickers,
       offset: params.offset ?? 0,
       count: params.count ?? 100,
-      sorts: params.sorts ?? [],
+      sorts: params.sorts ?? []
     };
 
     if (params.filters) {
       body.filters = {
         op: params.filters.op,
-        conditions: params.filters.conditions.map((c) => ({
+        conditions: params.filters.conditions.map(c => ({
           column: c.column,
           type: c.type,
           value: c.value,
-          allow_null: c.allowNull ?? false,
-        })),
+          allow_null: c.allowNull ?? false
+        }))
       };
     }
 
@@ -181,10 +178,7 @@ export class CrustdataClient {
 
   // ─── Social Posts (by person) ──────────────────────────────────────
 
-  async getSocialPostsByPerson(params: {
-    personLinkedinUrl: string;
-    page?: number;
-  }) {
+  async getSocialPostsByPerson(params: { personLinkedinUrl: string; page?: number }) {
     let queryParams = new URLSearchParams();
     queryParams.set('person_linkedin_url', params.personLinkedinUrl);
     if (params.page) queryParams.set('page', String(params.page));
@@ -195,15 +189,14 @@ export class CrustdataClient {
 
   // ─── LinkedIn Posts (by company) ───────────────────────────────────
 
-  async getLinkedinPostsByCompany(params: {
-    companyLinkedinUrl: string;
-    page?: number;
-  }) {
+  async getLinkedinPostsByCompany(params: { companyLinkedinUrl: string; page?: number }) {
     let queryParams = new URLSearchParams();
     queryParams.set('company_linkedin_url', params.companyLinkedinUrl);
     if (params.page) queryParams.set('page', String(params.page));
 
-    let response = await this.http.get(`/screener/linkedin_posts/company?${queryParams.toString()}`);
+    let response = await this.http.get(
+      `/screener/linkedin_posts/company?${queryParams.toString()}`
+    );
     return response.data;
   }
 
@@ -221,7 +214,9 @@ export class CrustdataClient {
     if (params.sortBy) queryParams.set('sort_by', params.sortBy);
     if (params.datePosted) queryParams.set('date_posted', params.datePosted);
 
-    let response = await this.http.get(`/screener/linkedin_posts/search?${queryParams.toString()}`);
+    let response = await this.http.get(
+      `/screener/linkedin_posts/search?${queryParams.toString()}`
+    );
     return response.data;
   }
 
@@ -239,7 +234,7 @@ export class CrustdataClient {
     let queryString = params.fetchContent ? '?fetch_content=true' : '';
 
     let body: Record<string, unknown> = {
-      query: params.query,
+      query: params.query
     };
     if (params.geolocation) body.geolocation = params.geolocation;
     if (params.sources) body.sources = params.sources;
@@ -253,13 +248,13 @@ export class CrustdataClient {
 
   // ─── Investor Portfolio ────────────────────────────────────────────
 
-  async getInvestorPortfolio(params: {
-    investorName: string;
-  }) {
+  async getInvestorPortfolio(params: { investorName: string }) {
     let queryParams = new URLSearchParams();
     queryParams.set('investor_name', params.investorName);
 
-    let response = await this.http.get(`/screener/investor_portfolio?${queryParams.toString()}`);
+    let response = await this.http.get(
+      `/screener/investor_portfolio?${queryParams.toString()}`
+    );
     return response.data;
   }
 
@@ -276,18 +271,18 @@ export class CrustdataClient {
       decision_maker_titles: params.decisionMakerTitles,
       offset: params.offset ?? 0,
       count: params.count ?? 100,
-      sorts: params.sorts ?? [],
+      sorts: params.sorts ?? []
     };
 
     if (params.filters) {
       body.filters = {
         op: params.filters.op,
-        conditions: params.filters.conditions.map((c) => ({
+        conditions: params.filters.conditions.map(c => ({
           column: c.column,
           type: c.type,
           value: c.value,
-          allow_null: c.allowNull ?? false,
-        })),
+          allow_null: c.allowNull ?? false
+        }))
       };
     }
 

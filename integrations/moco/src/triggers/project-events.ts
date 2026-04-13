@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Events',
-    key: 'project_events',
-    description: 'Triggers when a project is created, updated, deleted, or archived/unarchived.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type: create, update, delete, archive'),
-    projectId: z.number().describe('Project ID'),
-    timestamp: z.string().describe('Event timestamp'),
-    userId: z.number().optional().describe('User ID that triggered the event'),
-    payload: z.any().describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    projectId: z.number().describe('Project ID'),
-    name: z.string().optional().describe('Project name'),
-    identifier: z.string().optional().describe('Project identifier'),
-    active: z.boolean().optional().describe('Whether the project is active'),
-    currency: z.string().optional().describe('Project currency'),
-    startDate: z.string().optional().describe('Project start date'),
-    finishDate: z.string().optional().describe('Project finish date'),
-    customerId: z.number().optional().describe('Customer company ID'),
-    customerName: z.string().optional().describe('Customer company name'),
-    leaderId: z.number().optional().describe('Project leader user ID'),
-    leaderName: z.string().optional().describe('Project leader name')
-  }))
+export let projectEvents = SlateTrigger.create(spec, {
+  name: 'Project Events',
+  key: 'project_events',
+  description: 'Triggers when a project is created, updated, deleted, or archived/unarchived.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type: create, update, delete, archive'),
+      projectId: z.number().describe('Project ID'),
+      timestamp: z.string().describe('Event timestamp'),
+      userId: z.number().optional().describe('User ID that triggered the event'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('Project ID'),
+      name: z.string().optional().describe('Project name'),
+      identifier: z.string().optional().describe('Project identifier'),
+      active: z.boolean().optional().describe('Whether the project is active'),
+      currency: z.string().optional().describe('Project currency'),
+      startDate: z.string().optional().describe('Project start date'),
+      finishDate: z.string().optional().describe('Project finish date'),
+      customerId: z.number().optional().describe('Customer company ID'),
+      customerName: z.string().optional().describe('Customer company name'),
+      leaderId: z.number().optional().describe('Project leader user ID'),
+      leaderName: z.string().optional().describe('Project leader name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
       let events = ['create', 'update', 'delete'];
@@ -50,9 +51,11 @@ export let projectEvents = SlateTrigger.create(
       return { registrationDetails: { webhooks: registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: number }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: number }>;
+      };
 
       for (let reg of details.webhooks) {
         try {
@@ -63,24 +66,26 @@ export let projectEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let event = ctx.request.headers.get('X-Moco-Event') || 'update';
       let timestamp = ctx.request.headers.get('X-Moco-Timestamp') || new Date().toISOString();
       let userId = ctx.request.headers.get('X-Moco-User-Id');
 
       return {
-        inputs: [{
-          eventType: event,
-          projectId: body.id,
-          timestamp,
-          userId: userId ? Number(userId) : undefined,
-          payload: body
-        }]
+        inputs: [
+          {
+            eventType: event,
+            projectId: body.id,
+            timestamp,
+            userId: userId ? Number(userId) : undefined,
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload;
 
       return {
@@ -101,4 +106,5 @@ export let projectEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

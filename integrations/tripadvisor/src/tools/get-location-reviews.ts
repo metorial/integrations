@@ -3,19 +3,23 @@ import { ContentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let reviewUserSchema = z.object({
-  username: z.string().optional(),
-  userLocation: z.string().optional(),
-  reviewCount: z.number().optional(),
-  reviewerBadge: z.string().optional(),
-}).optional();
+let reviewUserSchema = z
+  .object({
+    username: z.string().optional(),
+    userLocation: z.string().optional(),
+    reviewCount: z.number().optional(),
+    reviewerBadge: z.string().optional()
+  })
+  .optional();
 
-let ownerResponseSchema = z.object({
-  title: z.string().optional(),
-  text: z.string().optional(),
-  author: z.string().optional(),
-  publishedDate: z.string().optional(),
-}).optional();
+let ownerResponseSchema = z
+  .object({
+    title: z.string().optional(),
+    text: z.string().optional(),
+    author: z.string().optional(),
+    publishedDate: z.string().optional()
+  })
+  .optional();
 
 let reviewSchema = z.object({
   reviewId: z.string(),
@@ -32,45 +36,47 @@ let reviewSchema = z.object({
   language: z.string().optional(),
   isMachineTranslated: z.boolean().optional(),
   user: reviewUserSchema,
-  ownerResponse: ownerResponseSchema,
+  ownerResponse: ownerResponseSchema
 });
 
-export let getLocationReviews = SlateTool.create(
-  spec,
-  {
-    name: 'Get Location Reviews',
-    key: 'get_location_reviews',
-    description: `Retrieve the most recent reviews for a specific Tripadvisor location. Returns review text, rating, trip type, travel date, user info, and any owner responses. Use a location ID obtained from the search tools.`,
-    constraints: [
-      'Returns up to 5 reviews per location.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getLocationReviews = SlateTool.create(spec, {
+  name: 'Get Location Reviews',
+  key: 'get_location_reviews',
+  description: `Retrieve the most recent reviews for a specific Tripadvisor location. Returns review text, rating, trip type, travel date, user info, and any owner responses. Use a location ID obtained from the search tools.`,
+  constraints: ['Returns up to 5 reviews per location.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    locationId: z.string().describe('Tripadvisor location ID'),
-    language: z.string().optional().describe('Language code for results (overrides global config)'),
-    limit: z.number().optional().describe('Number of reviews to return (max 5)'),
-    offset: z.number().optional().describe('Index of the first result for pagination'),
-  }))
-  .output(z.object({
-    reviews: z.array(reviewSchema),
-    totalResults: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      locationId: z.string().describe('Tripadvisor location ID'),
+      language: z
+        .string()
+        .optional()
+        .describe('Language code for results (overrides global config)'),
+      limit: z.number().optional().describe('Number of reviews to return (max 5)'),
+      offset: z.number().optional().describe('Index of the first result for pagination')
+    })
+  )
+  .output(
+    z.object({
+      reviews: z.array(reviewSchema),
+      totalResults: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ContentClient({
       token: ctx.auth.token,
       language: ctx.config.language,
-      currency: ctx.config.currency,
+      currency: ctx.config.currency
     });
 
     let result = await client.getLocationReviews(
       ctx.input.locationId,
       ctx.input.language,
       ctx.input.limit,
-      ctx.input.offset,
+      ctx.input.offset
     );
 
     let reviews = (result.data || []).map((r: any) => ({
@@ -87,25 +93,29 @@ export let getLocationReviews = SlateTool.create(
       url: r.url,
       language: r.lang,
       isMachineTranslated: r.is_machine_translated,
-      user: r.user ? {
-        username: r.user.username,
-        userLocation: r.user.user_location?.name,
-        reviewCount: r.user.review_count,
-        reviewerBadge: r.user.reviewer_badge,
-      } : undefined,
-      ownerResponse: r.owner_response ? {
-        title: r.owner_response.title,
-        text: r.owner_response.text,
-        author: r.owner_response.author,
-        publishedDate: r.owner_response.published_date,
-      } : undefined,
+      user: r.user
+        ? {
+            username: r.user.username,
+            userLocation: r.user.user_location?.name,
+            reviewCount: r.user.review_count,
+            reviewerBadge: r.user.reviewer_badge
+          }
+        : undefined,
+      ownerResponse: r.owner_response
+        ? {
+            title: r.owner_response.title,
+            text: r.owner_response.text,
+            author: r.owner_response.author,
+            publishedDate: r.owner_response.published_date
+          }
+        : undefined
     }));
 
     let totalResults = result.paging?.total_results;
 
     return {
       output: { reviews, totalResults },
-      message: `Retrieved **${reviews.length}** review(s) for location ${ctx.input.locationId}${totalResults ? ` (${totalResults} total)` : ''}.`,
+      message: `Retrieved **${reviews.length}** review(s) for location ${ctx.input.locationId}${totalResults ? ` (${totalResults} total)` : ''}.`
     };
   })
   .build();

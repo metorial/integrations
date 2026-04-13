@@ -30,6 +30,7 @@ Zoho CRM uses OAuth 2.0 exclusively for authentication — it does not support s
 **Data Center URLs:**
 
 Your data center (DC) base URL for Zoho Accounts varies by region (US, EU, IN, AU, JP, CA, SA, CN); the same DC must be used for generating and refreshing tokens. Examples:
+
 - US: `https://accounts.zoho.com`
 - EU: `https://accounts.zoho.eu`
 - IN: `https://accounts.zoho.in`
@@ -46,36 +47,47 @@ Scopes contain three parameters — service name, scope name, and operation type
 ## Features
 
 ### Record Management
+
 Access and work with almost all of Zoho CRM's components using the REST API. Fetch, create, update or delete any sort of information stored in your account. Supported modules include Leads, Contacts, Accounts, Deals, Tasks, Events, Calls, Campaigns, Products, Quotes, Sales Orders, Purchase Orders, Invoices, Vendors, Price Books, Cases, Solutions, and custom modules.
 
 ### Search and Querying
+
 Construct custom queries to fetch data from your Zoho CRM account. CRM Object Query Language (COQL) uses a simple SELECT query structure to fetch records using a SQL-like syntax. Standard search by criteria, email, phone, or word is also available.
 
 ### User and Organization Management
+
 Retrieve users' data, add users, update user details, and delete users from your organization. You can also manage user territories and transfer records between users. Organization-level settings and license information are accessible.
 
 ### Module and Field Metadata
+
 Access metadata about modules, fields, layouts, custom views, and related lists. This allows dynamic discovery of the CRM's data structure including custom modules and fields.
 
 ### Automation Configuration
+
 Cadences automate and streamline customer follow-up processes, enabling targeted sequential communications like emails, calls, or tasks. You can get cadence details, enroll, and unenroll records via the API. Scoring rules for ranking records can also be managed through the API.
 
 ### File Management
+
 Upload and download files stored on Zoho's File System (ZFS). Attachments, photos, and documents associated with records can be managed.
 
 ### Bulk Operations
+
 Retrieve or upload large amounts of data using a single Bulk API call. This is asynchronous and is useful for tasks like migration, data backup, and initial data sync between Zoho CRM and external services.
 
 ### Tags and Notes
+
 Organize records with tags and associate notes with records across modules.
 
 ### Blueprints and Workflows
+
 Access and interact with blueprint transitions to move records through defined business processes. Workflow rules and their associated actions can be retrieved.
 
 ### Email and Communication
+
 Send emails from CRM, manage email templates, and track email interactions linked to CRM records.
 
 ### Record Sharing and Territories
+
 Manage record sharing rules, territory assignments, and access control for records across users and roles.
 
 ## Events
@@ -83,6 +95,7 @@ Manage record sharing rules, territory assignments, and access control for recor
 Zoho CRM supports two event mechanisms: **Notification APIs** (push-based watch/subscribe) and **Webhooks** (triggered via workflow rules).
 
 ### Notification API (Record Watch)
+
 Notification APIs allow you to get instant notifications whenever an action is performed on the records of a module. The system notifies you of the event on a provided URL. You can enable notifications based on a specific operation like create, update, or delete.
 
 - Events are subscribed per module and operation, e.g., `Leads.create`, `Sales_Orders.edit`, `Contacts.delete`, or `Deals.all`.
@@ -91,6 +104,7 @@ Notification APIs allow you to get instant notifications whenever an action is p
 - A verification `token` can be set to validate that notifications originate from Zoho CRM.
 
 ### Webhooks (Workflow-Based)
+
 Webhooks facilitate communication with third-party applications by sending instant web notifications every time an event occurs in Zoho CRM. You can configure HTTP URLs and associate them in workflow rules to automate the notification process.
 
 - You can set up webhooks for most CRM primary modules, such as Leads, Accounts, Contacts, Potentials (Opportunities), Events, and Tasks.

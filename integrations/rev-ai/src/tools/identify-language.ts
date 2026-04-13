@@ -3,38 +3,53 @@ import { RevAIClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let identifyLanguage = SlateTool.create(
-  spec,
-  {
-    name: 'Identify Language',
-    key: 'identify_language',
-    description: `Submits audio for language identification and retrieves the results. Identifies the spoken language in audio input and returns confidence scores for each detected language.
+export let identifyLanguage = SlateTool.create(spec, {
+  name: 'Identify Language',
+  key: 'identify_language',
+  description: `Submits audio for language identification and retrieves the results. Identifies the spoken language in audio input and returns confidence scores for each detected language.
 Can submit a media URL for a new identification or poll an existing job for results.`,
-    instructions: [
-      'Provide either a mediaUrl for new identification or a jobId to retrieve results from an existing job.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    mediaUrl: z.string().optional().describe('Public URL of the audio file to identify the language of'),
-    jobId: z.string().optional().describe('Existing language identification job ID to retrieve results for'),
-    metadata: z.string().optional().describe('Optional metadata to associate with the job'),
-    deleteAfterSeconds: z.number().optional().describe('Auto-delete job after this many seconds'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Language identification job ID'),
-    status: z.string().describe('Job status: "in_progress", "completed", "failed"'),
-    topLanguage: z.string().optional().describe('Most likely language code'),
-    languageConfidences: z.array(z.object({
-      language: z.string().describe('ISO 639-1 language code'),
-      confidence: z.number().describe('Confidence score from 0 to 1'),
-    })).optional().describe('Confidence scores for each detected language (only when job is completed)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Provide either a mediaUrl for new identification or a jobId to retrieve results from an existing job.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      mediaUrl: z
+        .string()
+        .optional()
+        .describe('Public URL of the audio file to identify the language of'),
+      jobId: z
+        .string()
+        .optional()
+        .describe('Existing language identification job ID to retrieve results for'),
+      metadata: z.string().optional().describe('Optional metadata to associate with the job'),
+      deleteAfterSeconds: z
+        .number()
+        .optional()
+        .describe('Auto-delete job after this many seconds')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Language identification job ID'),
+      status: z.string().describe('Job status: "in_progress", "completed", "failed"'),
+      topLanguage: z.string().optional().describe('Most likely language code'),
+      languageConfidences: z
+        .array(
+          z.object({
+            language: z.string().describe('ISO 639-1 language code'),
+            confidence: z.number().describe('Confidence score from 0 to 1')
+          })
+        )
+        .optional()
+        .describe('Confidence scores for each detected language (only when job is completed)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RevAIClient({ token: ctx.auth.token });
 
     let jobId = ctx.input.jobId;
@@ -43,7 +58,7 @@ Can submit a media URL for a new identification or poll an existing job for resu
       let job = await client.submitLanguageIdentification({
         mediaUrl: ctx.input.mediaUrl,
         metadata: ctx.input.metadata,
-        deleteAfterSeconds: ctx.input.deleteAfterSeconds,
+        deleteAfterSeconds: ctx.input.deleteAfterSeconds
       });
       jobId = job.jobId;
     }
@@ -68,10 +83,12 @@ Can submit a media URL for a new identification or poll an existing job for resu
         jobId,
         status: job.status,
         topLanguage,
-        languageConfidences,
+        languageConfidences
       },
-      message: job.status === 'completed' && topLanguage
-        ? `Language identified: **${topLanguage}**${languageConfidences?.length ? ` (confidence: ${languageConfidences.find((lc) => lc.language === topLanguage)?.confidence ?? 'N/A'})` : ''}`
-        : `Language identification job **${jobId}** is **${job.status}**.`,
+      message:
+        job.status === 'completed' && topLanguage
+          ? `Language identified: **${topLanguage}**${languageConfidences?.length ? ` (confidence: ${languageConfidences.find(lc => lc.language === topLanguage)?.confidence ?? 'N/A'})` : ''}`
+          : `Language identification job **${jobId}** is **${job.status}**.`
     };
-  }).build();
+  })
+  .build();

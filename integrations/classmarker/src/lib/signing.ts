@@ -1,6 +1,9 @@
 import { createHash, createHmac } from 'crypto';
 
-export let generateAuthParams = (apiKey: string, apiSecret: string): {
+export let generateAuthParams = (
+  apiKey: string,
+  apiSecret: string
+): {
   api_key: string;
   signature: string;
   timestamp: number;
@@ -12,11 +15,15 @@ export let generateAuthParams = (apiKey: string, apiSecret: string): {
   return {
     api_key: apiKey,
     signature,
-    timestamp,
+    timestamp
   };
 };
 
-export let verifyWebhookSignature = (payload: string, secret: string, receivedSignature: string): boolean => {
+export let verifyWebhookSignature = (
+  payload: string,
+  secret: string,
+  receivedSignature: string
+): boolean => {
   let computed = createHmac('sha256', secret).update(payload).digest('base64');
   return computed === receivedSignature;
 };

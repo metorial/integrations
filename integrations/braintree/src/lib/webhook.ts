@@ -36,7 +36,10 @@ export let verifyAndParseWebhook = (params: {
   // Also try with newline appended (Braintree SDK does this)
   let expectedSignatureWithNewline = hmacSha1(privateKey, cleanPayload + '\n');
 
-  if (!secureCompare(signature, expectedSignature) && !secureCompare(signature, expectedSignatureWithNewline)) {
+  if (
+    !secureCompare(signature, expectedSignature) &&
+    !secureCompare(signature, expectedSignatureWithNewline)
+  ) {
     throw new Error('Webhook signature verification failed');
   }
 
@@ -48,7 +51,7 @@ export let verifyAndParseWebhook = (params: {
   return {
     kind: notification.kind || '',
     timestamp: notification.timestamp || '',
-    subject: notification.subject || notification,
+    subject: notification.subject || notification
   };
 };
 
@@ -129,16 +132,16 @@ let concatBytes = (a: Uint8Array, b: Uint8Array): Uint8Array => {
  */
 let sha1Hash = (message: Uint8Array): Uint8Array => {
   let h0 = 0x67452301;
-  let h1 = 0xEFCDAB89;
-  let h2 = 0x98BADCFE;
+  let h1 = 0xefcdab89;
+  let h2 = 0x98badcfe;
   let h3 = 0x10325476;
-  let h4 = 0xC3D2E1F0;
+  let h4 = 0xc3d2e1f0;
 
   let msgLen = message.length;
   let bitLen = msgLen * 8;
 
   // Pre-processing: adding padding bits
-  let paddingLen = (56 - (msgLen + 1) % 64 + 64) % 64;
+  let paddingLen = (56 - ((msgLen + 1) % 64) + 64) % 64;
   let padded = new Uint8Array(msgLen + 1 + paddingLen + 8);
   padded.set(message);
   padded[msgLen] = 0x80;
@@ -167,35 +170,43 @@ let sha1Hash = (message: Uint8Array): Uint8Array => {
     let offset = block * 64;
 
     for (let i = 0; i < 16; i++) {
-      w[i] = (p(offset + i * 4) << 24)
-        | (p(offset + i * 4 + 1) << 16)
-        | (p(offset + i * 4 + 2) << 8)
-        | p(offset + i * 4 + 3);
+      w[i] =
+        (p(offset + i * 4) << 24) |
+        (p(offset + i * 4 + 1) << 16) |
+        (p(offset + i * 4 + 2) << 8) |
+        p(offset + i * 4 + 3);
     }
 
     for (let i = 16; i < 80; i++) {
-      w[i] = rotateLeft(wGet(w, i - 3) ^ wGet(w, i - 8) ^ wGet(w, i - 14) ^ wGet(w, i - 16), 1);
+      w[i] = rotateLeft(
+        wGet(w, i - 3) ^ wGet(w, i - 8) ^ wGet(w, i - 14) ^ wGet(w, i - 16),
+        1
+      );
     }
 
-    let a = h0, b = h1, c = h2, d = h3, e = h4;
+    let a = h0,
+      b = h1,
+      c = h2,
+      d = h3,
+      e = h4;
 
     for (let i = 0; i < 80; i++) {
       let f: number, k: number;
       if (i < 20) {
         f = (b & c) | (~b & d);
-        k = 0x5A827999;
+        k = 0x5a827999;
       } else if (i < 40) {
         f = b ^ c ^ d;
-        k = 0x6ED9EBA1;
+        k = 0x6ed9eba1;
       } else if (i < 60) {
         f = (b & c) | (b & d) | (c & d);
-        k = 0x8F1BBCDC;
+        k = 0x8f1bbcdc;
       } else {
         f = b ^ c ^ d;
-        k = 0xCA62C1D6;
+        k = 0xca62c1d6;
       }
 
-      let temp = (rotateLeft(a, 5) + f + e + k + wGet(w, i)) & 0xFFFFFFFF;
+      let temp = (rotateLeft(a, 5) + f + e + k + wGet(w, i)) & 0xffffffff;
       e = d;
       d = c;
       c = rotateLeft(b, 30);
@@ -203,11 +214,11 @@ let sha1Hash = (message: Uint8Array): Uint8Array => {
       a = temp;
     }
 
-    h0 = (h0 + a) & 0xFFFFFFFF;
-    h1 = (h1 + b) & 0xFFFFFFFF;
-    h2 = (h2 + c) & 0xFFFFFFFF;
-    h3 = (h3 + d) & 0xFFFFFFFF;
-    h4 = (h4 + e) & 0xFFFFFFFF;
+    h0 = (h0 + a) & 0xffffffff;
+    h1 = (h1 + b) & 0xffffffff;
+    h2 = (h2 + c) & 0xffffffff;
+    h3 = (h3 + d) & 0xffffffff;
+    h4 = (h4 + e) & 0xffffffff;
   }
 
   let result = new Uint8Array(20);
@@ -224,7 +235,7 @@ let sha1Hash = (message: Uint8Array): Uint8Array => {
 };
 
 let rotateLeft = (n: number, s: number): number => {
-  return ((n << s) | (n >>> (32 - s))) & 0xFFFFFFFF;
+  return ((n << s) | (n >>> (32 - s))) & 0xffffffff;
 };
 
 /**

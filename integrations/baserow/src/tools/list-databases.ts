@@ -3,40 +3,67 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDatabases = SlateTool.create(
-  spec,
-  {
-    name: 'List Databases',
-    key: 'list_databases',
-    description: `List all databases (applications) in a Baserow workspace, optionally listing workspaces first. When a workspace ID is provided, returns all databases in that workspace. When omitted, returns all accessible workspaces so you can identify the correct workspace ID. Requires JWT authentication.`,
-    instructions: [
-      'If you don\'t know the workspace ID, call this tool without a workspaceId to list all accessible workspaces first.',
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listDatabases = SlateTool.create(spec, {
+  name: 'List Databases',
+  key: 'list_databases',
+  description: `List all databases (applications) in a Baserow workspace, optionally listing workspaces first. When a workspace ID is provided, returns all databases in that workspace. When omitted, returns all accessible workspaces so you can identify the correct workspace ID. Requires JWT authentication.`,
+  instructions: [
+    "If you don't know the workspace ID, call this tool without a workspaceId to list all accessible workspaces first."
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.number().optional().describe('The workspace ID to list databases from. Omit to list all workspaces instead.')
-  }))
-  .output(z.object({
-    workspaces: z.array(z.object({
-      workspaceId: z.number().describe('Workspace ID'),
-      name: z.string().describe('Workspace name'),
-    }).catchall(z.any())).optional().describe('List of workspaces (only returned when workspaceId is omitted)'),
-    databases: z.array(z.object({
-      databaseId: z.number().describe('Database/Application ID'),
-      name: z.string().describe('Database name'),
-      type: z.string().describe('Application type'),
-      workspaceId: z.number().describe('Parent workspace ID'),
-      tables: z.array(z.object({
-        tableId: z.number(),
-        name: z.string(),
-      }).catchall(z.any())).optional().describe('Tables in the database')
-    }).catchall(z.any())).optional().describe('List of databases (only returned when workspaceId is provided)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .number()
+        .optional()
+        .describe(
+          'The workspace ID to list databases from. Omit to list all workspaces instead.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      workspaces: z
+        .array(
+          z
+            .object({
+              workspaceId: z.number().describe('Workspace ID'),
+              name: z.string().describe('Workspace name')
+            })
+            .catchall(z.any())
+        )
+        .optional()
+        .describe('List of workspaces (only returned when workspaceId is omitted)'),
+      databases: z
+        .array(
+          z
+            .object({
+              databaseId: z.number().describe('Database/Application ID'),
+              name: z.string().describe('Database name'),
+              type: z.string().describe('Application type'),
+              workspaceId: z.number().describe('Parent workspace ID'),
+              tables: z
+                .array(
+                  z
+                    .object({
+                      tableId: z.number(),
+                      name: z.string()
+                    })
+                    .catchall(z.any())
+                )
+                .optional()
+                .describe('Tables in the database')
+            })
+            .catchall(z.any())
+        )
+        .optional()
+        .describe('List of databases (only returned when workspaceId is provided)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType,

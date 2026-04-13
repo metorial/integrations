@@ -15,7 +15,7 @@ import {
   listSupportedConversions,
   uploadFile,
   deleteFile,
-  pdfToPdfa,
+  pdfToPdfa
 } from './tools';
 import { asyncConversionComplete } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     listSupportedConversions,
     uploadFile,
     deleteFile,
-    pdfToPdfa,
+    pdfToPdfa
   ],
-  triggers: [
-    asyncConversionComplete,
-  ],
+  triggers: [asyncConversionComplete]
 });

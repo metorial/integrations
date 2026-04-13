@@ -3,26 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account',
-    key: 'get_account',
-    description: `Get information about the currently authenticated Replicate account, including username, name, and account type.`,
-    tags: {
-      readOnly: true
-    }
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account',
+  key: 'get_account',
+  description: `Get information about the currently authenticated Replicate account, including username, name, and account type.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accountType: z.string().describe('Account type (user or organization)'),
-    username: z.string().describe('Account username'),
-    accountName: z.string().optional().describe('Display name'),
-    githubUrl: z.string().optional().nullable().describe('Associated GitHub URL'),
-    avatarUrl: z.string().optional().nullable().describe('Avatar image URL')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountType: z.string().describe('Account type (user or organization)'),
+      username: z.string().describe('Account username'),
+      accountName: z.string().optional().describe('Display name'),
+      githubUrl: z.string().optional().nullable().describe('Associated GitHub URL'),
+      avatarUrl: z.string().optional().nullable().describe('Avatar image URL')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getAccount();
 
@@ -36,4 +35,5 @@ export let getAccount = SlateTool.create(
       },
       message: `Authenticated as **${result.username}** (${result.type}).`
     };
-  }).build();
+  })
+  .build();

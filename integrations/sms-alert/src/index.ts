@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   sendSms,
@@ -13,11 +12,9 @@ import {
   listSenderIds,
   getSmsReport,
   getDeliveryStatus,
-  manageShortUrls,
+  manageShortUrls
 } from './tools';
-import { smsReport,
-  inboundWebhook,
-} from './triggers';
+import { smsReport, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     listSenderIds,
     getSmsReport,
     getDeliveryStatus,
-    manageShortUrls,
+    manageShortUrls
   ],
-  triggers: [
-    inboundWebhook,
-    smsReport,
-  ],
+  triggers: [inboundWebhook, smsReport]
 });

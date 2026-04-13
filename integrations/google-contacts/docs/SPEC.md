@@ -18,13 +18,13 @@ Register your application using the Google API Console. Google provides a client
 
 #### Scopes
 
-| Scope | Description |
-|---|---|
-| `https://www.googleapis.com/auth/contacts` | See, edit, download, and permanently delete your contacts. |
-| `https://www.googleapis.com/auth/contacts.readonly` | See and download your contacts. |
-| `https://www.googleapis.com/auth/contacts.other.readonly` | See and download contact info automatically saved in "Other contacts". |
-| `https://www.googleapis.com/auth/directory.readonly` | See and download your organization's Google Workspace directory. |
-| `https://www.googleapis.com/auth/userinfo.profile` | See your personal info, including any personal info you've made publicly available. |
+| Scope                                                     | Description                                                                         |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/contacts`                | See, edit, download, and permanently delete your contacts.                          |
+| `https://www.googleapis.com/auth/contacts.readonly`       | See and download your contacts.                                                     |
+| `https://www.googleapis.com/auth/contacts.other.readonly` | See and download contact info automatically saved in "Other contacts".              |
+| `https://www.googleapis.com/auth/directory.readonly`      | See and download your organization's Google Workspace directory.                    |
+| `https://www.googleapis.com/auth/userinfo.profile`        | See your personal info, including any personal info you've made publicly available. |
 
 Apps that request access to scopes categorized as sensitive or restricted must complete Google's OAuth app verification before being granted access.
 

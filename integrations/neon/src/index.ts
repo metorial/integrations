@@ -25,7 +25,7 @@ import {
   resetRolePassword,
   listOperations,
   getOperation,
-  getConsumption,
+  getConsumption
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -57,9 +57,7 @@ export let provider = Slate.create({
     resetRolePassword,
     listOperations,
     getOperation,
-    getConsumption,
+    getConsumption
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

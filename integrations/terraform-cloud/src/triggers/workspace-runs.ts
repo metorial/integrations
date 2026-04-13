@@ -4,48 +4,52 @@ import { createClient } from '../lib/helpers';
 import { mapRun } from '../lib/mappers';
 import { z } from 'zod';
 
-export let workspaceRunsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Workspace Runs',
-    key: 'workspace_runs',
-    description: '[Polling fallback] Polls for new Terraform runs in a specified workspace. Triggers whenever a new run is created, including plan, apply, and destroy runs.'
-  }
-)
-  .input(z.object({
-    runId: z.string().describe('The run ID'),
-    status: z.string().describe('Current run status'),
-    message: z.string().describe('Run message'),
-    source: z.string().describe('Where the run was triggered from'),
-    isDestroy: z.boolean().describe('Whether this is a destroy run'),
-    createdAt: z.string().describe('When the run was created'),
-    hasChanges: z.boolean().describe('Whether the run has changes'),
-    autoApply: z.boolean().describe('Whether auto-apply is enabled'),
-    planOnly: z.boolean().describe('Whether this is a plan-only run'),
-    workspaceId: z.string().describe('The workspace ID'),
-    planId: z.string().describe('The plan ID'),
-    applyId: z.string().describe('The apply ID')
-  }))
-  .output(z.object({
-    runId: z.string().describe('The Terraform run ID'),
-    status: z.string().describe('Current status of the run'),
-    message: z.string().describe('Message describing the run'),
-    source: z.string().describe('Source of the run (tfe-ui, tfe-api, tfe-configuration-version, etc.)'),
-    isDestroy: z.boolean().describe('Whether this is a destroy run'),
-    createdAt: z.string().describe('When the run was created'),
-    hasChanges: z.boolean().describe('Whether the plan detected changes'),
-    autoApply: z.boolean().describe('Whether auto-apply is enabled for this run'),
-    planOnly: z.boolean().describe('Whether this is a speculative plan-only run'),
-    workspaceId: z.string().describe('The workspace ID'),
-    planId: z.string().describe('Associated plan ID'),
-    applyId: z.string().describe('Associated apply ID')
-  }))
+export let workspaceRunsTrigger = SlateTrigger.create(spec, {
+  name: 'New Workspace Runs',
+  key: 'workspace_runs',
+  description:
+    '[Polling fallback] Polls for new Terraform runs in a specified workspace. Triggers whenever a new run is created, including plan, apply, and destroy runs.'
+})
+  .input(
+    z.object({
+      runId: z.string().describe('The run ID'),
+      status: z.string().describe('Current run status'),
+      message: z.string().describe('Run message'),
+      source: z.string().describe('Where the run was triggered from'),
+      isDestroy: z.boolean().describe('Whether this is a destroy run'),
+      createdAt: z.string().describe('When the run was created'),
+      hasChanges: z.boolean().describe('Whether the run has changes'),
+      autoApply: z.boolean().describe('Whether auto-apply is enabled'),
+      planOnly: z.boolean().describe('Whether this is a plan-only run'),
+      workspaceId: z.string().describe('The workspace ID'),
+      planId: z.string().describe('The plan ID'),
+      applyId: z.string().describe('The apply ID')
+    })
+  )
+  .output(
+    z.object({
+      runId: z.string().describe('The Terraform run ID'),
+      status: z.string().describe('Current status of the run'),
+      message: z.string().describe('Message describing the run'),
+      source: z
+        .string()
+        .describe('Source of the run (tfe-ui, tfe-api, tfe-configuration-version, etc.)'),
+      isDestroy: z.boolean().describe('Whether this is a destroy run'),
+      createdAt: z.string().describe('When the run was created'),
+      hasChanges: z.boolean().describe('Whether the plan detected changes'),
+      autoApply: z.boolean().describe('Whether auto-apply is enabled for this run'),
+      planOnly: z.boolean().describe('Whether this is a speculative plan-only run'),
+      workspaceId: z.string().describe('The workspace ID'),
+      planId: z.string().describe('Associated plan ID'),
+      applyId: z.string().describe('Associated apply ID')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let state = ctx.state as { lastSeenRunId?: string; workspaceId?: string } | null;
@@ -110,8 +114,12 @@ export let workspaceRunsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
-      let runType = ctx.input.isDestroy ? 'destroy' : ctx.input.planOnly ? 'plan_only' : 'standard';
+    handleEvent: async ctx => {
+      let runType = ctx.input.isDestroy
+        ? 'destroy'
+        : ctx.input.planOnly
+          ? 'plan_only'
+          : 'standard';
 
       return {
         type: `run.${runType}`,

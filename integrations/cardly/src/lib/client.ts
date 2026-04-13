@@ -224,8 +224,8 @@ export class CardlyClient {
       baseURL: 'https://api.card.ly/v2',
       headers: {
         'API-Key': config.token,
-        'Content-type': 'text/json',
-      },
+        'Content-type': 'text/json'
+      }
     });
   }
 
@@ -236,12 +236,14 @@ export class CardlyClient {
     return response.data.data;
   }
 
-  async listCreditHistory(params?: PaginationParams & {
-    effectiveTimeLt?: string;
-    effectiveTimeLte?: string;
-    effectiveTimeGt?: string;
-    effectiveTimeGte?: string;
-  }): Promise<{ records: CreditHistory[]; meta: PaginationMeta }> {
+  async listCreditHistory(
+    params?: PaginationParams & {
+      effectiveTimeLt?: string;
+      effectiveTimeLte?: string;
+      effectiveTimeGt?: string;
+      effectiveTimeGte?: string;
+    }
+  ): Promise<{ records: CreditHistory[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -254,12 +256,14 @@ export class CardlyClient {
     return { records: response.data.data, meta: response.data.meta };
   }
 
-  async listGiftCreditHistory(params?: PaginationParams & {
-    effectiveTimeLt?: string;
-    effectiveTimeLte?: string;
-    effectiveTimeGt?: string;
-    effectiveTimeGte?: string;
-  }): Promise<{ records: CreditHistory[]; meta: PaginationMeta }> {
+  async listGiftCreditHistory(
+    params?: PaginationParams & {
+      effectiveTimeLt?: string;
+      effectiveTimeLte?: string;
+      effectiveTimeGt?: string;
+      effectiveTimeGte?: string;
+    }
+  ): Promise<{ records: CreditHistory[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -268,13 +272,17 @@ export class CardlyClient {
     if (params?.effectiveTimeGt) queryParams['effectiveTime.gt'] = params.effectiveTimeGt;
     if (params?.effectiveTimeGte) queryParams['effectiveTime.gte'] = params.effectiveTimeGte;
 
-    let response = await this.axios.get('/account/gift-credit-history', { params: queryParams });
+    let response = await this.axios.get('/account/gift-credit-history', {
+      params: queryParams
+    });
     return { records: response.data.data, meta: response.data.meta };
   }
 
   // ---- Artwork ----
 
-  async listArtwork(params?: PaginationParams & { ownOnly?: boolean }): Promise<{ artwork: Artwork[]; meta: PaginationMeta }> {
+  async listArtwork(
+    params?: PaginationParams & { ownOnly?: boolean }
+  ): Promise<{ artwork: Artwork[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -299,11 +307,14 @@ export class CardlyClient {
     return response.data.data;
   }
 
-  async editArtwork(artworkId: string, params: {
-    name?: string;
-    description?: string;
-    artwork?: Array<{ page: number; image: string }>;
-  }): Promise<Artwork> {
+  async editArtwork(
+    artworkId: string,
+    params: {
+      name?: string;
+      description?: string;
+      artwork?: Array<{ page: number; image: string }>;
+    }
+  ): Promise<Artwork> {
     let response = await this.axios.post(`/art/${artworkId}`, params);
     return response.data.data;
   }
@@ -314,7 +325,9 @@ export class CardlyClient {
 
   // ---- Contact Lists ----
 
-  async listContactLists(params?: PaginationParams): Promise<{ lists: ContactList[]; meta: PaginationMeta }> {
+  async listContactLists(
+    params?: PaginationParams
+  ): Promise<{ lists: ContactList[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -342,12 +355,17 @@ export class CardlyClient {
 
   // ---- Contacts ----
 
-  async listContacts(listId: string, params?: PaginationParams): Promise<{ contacts: Contact[]; meta: PaginationMeta }> {
+  async listContacts(
+    listId: string,
+    params?: PaginationParams
+  ): Promise<{ contacts: Contact[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
 
-    let response = await this.axios.get(`/contact-lists/${listId}/contacts`, { params: queryParams });
+    let response = await this.axios.get(`/contact-lists/${listId}/contacts`, {
+      params: queryParams
+    });
     return { contacts: response.data.data, meta: response.data.meta };
   }
 
@@ -356,48 +374,63 @@ export class CardlyClient {
     return response.data.data;
   }
 
-  async findContact(listId: string, params: { email?: string; externalId?: string }): Promise<Contact> {
+  async findContact(
+    listId: string,
+    params: { email?: string; externalId?: string }
+  ): Promise<Contact> {
     let queryParams: Record<string, string> = {};
     if (params.email) queryParams.email = params.email;
     if (params.externalId) queryParams.externalId = params.externalId;
 
-    let response = await this.axios.get(`/contact-lists/${listId}/contacts/find`, { params: queryParams });
+    let response = await this.axios.get(`/contact-lists/${listId}/contacts/find`, {
+      params: queryParams
+    });
     return response.data.data;
   }
 
-  async createContact(listId: string, params: {
-    firstName: string;
-    lastName: string;
-    email?: string;
-    externalId?: string;
-    company?: string;
-    address: string;
-    address2?: string;
-    city: string;
-    region?: string;
-    country: string;
-    postcode?: string;
-    customFields?: Record<string, unknown>;
-  }): Promise<Contact> {
+  async createContact(
+    listId: string,
+    params: {
+      firstName: string;
+      lastName: string;
+      email?: string;
+      externalId?: string;
+      company?: string;
+      address: string;
+      address2?: string;
+      city: string;
+      region?: string;
+      country: string;
+      postcode?: string;
+      customFields?: Record<string, unknown>;
+    }
+  ): Promise<Contact> {
     let response = await this.axios.post(`/contact-lists/${listId}/contacts`, params);
     return response.data.data;
   }
 
-  async editContact(listId: string, contactId: string, params: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    externalId?: string;
-    company?: string;
-    address?: string;
-    address2?: string;
-    city?: string;
-    region?: string;
-    country?: string;
-    postcode?: string;
-    customFields?: Record<string, unknown>;
-  }): Promise<Contact> {
-    let response = await this.axios.post(`/contact-lists/${listId}/contacts/${contactId}`, params);
+  async editContact(
+    listId: string,
+    contactId: string,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      externalId?: string;
+      company?: string;
+      address?: string;
+      address2?: string;
+      city?: string;
+      region?: string;
+      country?: string;
+      postcode?: string;
+      customFields?: Record<string, unknown>;
+    }
+  ): Promise<Contact> {
+    let response = await this.axios.post(
+      `/contact-lists/${listId}/contacts/${contactId}`,
+      params
+    );
     return response.data.data;
   }
 
@@ -405,7 +438,10 @@ export class CardlyClient {
     await this.axios.delete(`/contact-lists/${listId}/contacts/${contactId}`);
   }
 
-  async deleteContactByFilter(listId: string, params: { email?: string; externalId?: string }): Promise<void> {
+  async deleteContactByFilter(
+    listId: string,
+    params: { email?: string; externalId?: string }
+  ): Promise<void> {
     let queryParams: Record<string, string> = {};
     if (params.email) queryParams.email = params.email;
     if (params.externalId) queryParams.externalId = params.externalId;
@@ -413,27 +449,32 @@ export class CardlyClient {
     await this.axios.delete(`/contact-lists/${listId}/contacts`, { params: queryParams });
   }
 
-  async syncContact(listId: string, params: {
-    firstName: string;
-    lastName: string;
-    email?: string;
-    externalId?: string;
-    company?: string;
-    address: string;
-    address2?: string;
-    city: string;
-    region?: string;
-    country: string;
-    postcode?: string;
-    customFields?: Record<string, unknown>;
-  }): Promise<Contact> {
+  async syncContact(
+    listId: string,
+    params: {
+      firstName: string;
+      lastName: string;
+      email?: string;
+      externalId?: string;
+      company?: string;
+      address: string;
+      address2?: string;
+      city: string;
+      region?: string;
+      country: string;
+      postcode?: string;
+      customFields?: Record<string, unknown>;
+    }
+  ): Promise<Contact> {
     let response = await this.axios.post(`/contact-lists/${listId}/contacts/sync`, params);
     return response.data.data;
   }
 
   // ---- Templates ----
 
-  async listTemplates(params?: PaginationParams): Promise<{ templates: Template[]; meta: PaginationMeta }> {
+  async listTemplates(
+    params?: PaginationParams
+  ): Promise<{ templates: Template[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -444,7 +485,9 @@ export class CardlyClient {
 
   // ---- Orders ----
 
-  async listOrders(params?: PaginationParams): Promise<{ orders: Order[]; meta: PaginationMeta }> {
+  async listOrders(
+    params?: PaginationParams
+  ): Promise<{ orders: Order[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -465,18 +508,18 @@ export class CardlyClient {
     }
 
     let body: Record<string, unknown> = {
-      lines: params.lines.map((line) => {
+      lines: params.lines.map(line => {
         let mapped: Record<string, unknown> = {
           artwork: line.artwork,
           template: line.template,
-          recipient: line.recipient,
+          recipient: line.recipient
         };
         if (line.sender) mapped.sender = line.sender;
         if (line.variables) mapped.variables = line.variables;
         if (line.shipToMe !== undefined) mapped.shipToMe = line.shipToMe;
         if (line.shippingMethod) mapped.shippingMethod = line.shippingMethod;
         return mapped;
-      }),
+      })
     };
 
     if (params.requestedArrivalDate) body.requestedArrivalDate = params.requestedArrivalDate;
@@ -499,7 +542,9 @@ export class CardlyClient {
 
   // ---- Resources ----
 
-  async listMedia(params?: PaginationParams): Promise<{ media: MediaType[]; meta: PaginationMeta }> {
+  async listMedia(
+    params?: PaginationParams
+  ): Promise<{ media: MediaType[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -508,17 +553,22 @@ export class CardlyClient {
     return { media: response.data.data, meta: response.data.meta };
   }
 
-  async listFonts(params?: PaginationParams & { organisationOnly?: boolean }): Promise<{ fonts: Font[]; meta: PaginationMeta }> {
+  async listFonts(
+    params?: PaginationParams & { organisationOnly?: boolean }
+  ): Promise<{ fonts: Font[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
-    if (params?.organisationOnly !== undefined) queryParams.organisationOnly = String(params.organisationOnly);
+    if (params?.organisationOnly !== undefined)
+      queryParams.organisationOnly = String(params.organisationOnly);
 
     let response = await this.axios.get('/fonts', { params: queryParams });
     return { fonts: response.data.data, meta: response.data.meta };
   }
 
-  async listWritingStyles(params?: PaginationParams): Promise<{ styles: WritingStyle[]; meta: PaginationMeta }> {
+  async listWritingStyles(
+    params?: PaginationParams
+  ): Promise<{ styles: WritingStyle[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -527,11 +577,14 @@ export class CardlyClient {
     return { styles: response.data.data, meta: response.data.meta };
   }
 
-  async listDoodles(params?: PaginationParams & { organisationOnly?: boolean }): Promise<{ doodles: Doodle[]; meta: PaginationMeta }> {
+  async listDoodles(
+    params?: PaginationParams & { organisationOnly?: boolean }
+  ): Promise<{ doodles: Doodle[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
-    if (params?.organisationOnly !== undefined) queryParams.organisationOnly = String(params.organisationOnly);
+    if (params?.organisationOnly !== undefined)
+      queryParams.organisationOnly = String(params.organisationOnly);
 
     let response = await this.axios.get('/doodles', { params: queryParams });
     return { doodles: response.data.data, meta: response.data.meta };
@@ -539,7 +592,9 @@ export class CardlyClient {
 
   // ---- Users ----
 
-  async listUsers(params?: PaginationParams): Promise<{ users: User[]; meta: PaginationMeta }> {
+  async listUsers(
+    params?: PaginationParams
+  ): Promise<{ users: User[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -559,7 +614,9 @@ export class CardlyClient {
 
   // ---- Invitations ----
 
-  async listInvitations(params?: PaginationParams): Promise<{ invitations: Invitation[]; meta: PaginationMeta }> {
+  async listInvitations(
+    params?: PaginationParams
+  ): Promise<{ invitations: Invitation[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -604,7 +661,9 @@ export class CardlyClient {
 
   // ---- Webhooks ----
 
-  async listWebhooks(params?: PaginationParams): Promise<{ webhooks: Webhook[]; meta: PaginationMeta }> {
+  async listWebhooks(
+    params?: PaginationParams
+  ): Promise<{ webhooks: Webhook[]; meta: PaginationMeta }> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
@@ -628,12 +687,15 @@ export class CardlyClient {
     return response.data.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    url?: string;
-    events?: string[];
-    enabled?: boolean;
-    metadata?: Record<string, unknown>;
-  }): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      url?: string;
+      events?: string[];
+      enabled?: boolean;
+      metadata?: Record<string, unknown>;
+    }
+  ): Promise<Webhook> {
     let response = await this.axios.post(`/webhooks/${webhookId}`, params);
     return response.data.data;
   }

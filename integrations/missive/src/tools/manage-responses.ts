@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 let addressFieldSchema = z.object({
   address: z.string().describe('Email address'),
-  name: z.string().optional().describe('Display name'),
+  name: z.string().optional().describe('Display name')
 });
 
 let responseOutputSchema = z.object({
@@ -13,46 +13,63 @@ let responseOutputSchema = z.object({
   title: z.string().optional().describe('Template title'),
   subject: z.string().optional().describe('Email subject'),
   body: z.string().optional().describe('HTML body content'),
-  externalId: z.string().optional().describe('External system reference ID'),
+  externalId: z.string().optional().describe('External system reference ID')
 });
 
-export let manageResponses = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Responses',
-    key: 'manage_responses',
-    description: `List, create, update, or delete canned response templates. Responses can be scoped to an organization or a personal user, shared with specific teams, and associated with shared labels.`,
-    instructions: [
-      'When creating, provide either organizationId (shared) or userId (personal) to scope the response.',
-      'When updating attachments, include ALL attachments — the array replaces existing data.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageResponses = SlateTool.create(spec, {
+  name: 'Manage Responses',
+  key: 'manage_responses',
+  description: `List, create, update, or delete canned response templates. Responses can be scoped to an organization or a personal user, shared with specific teams, and associated with shared labels.`,
+  instructions: [
+    'When creating, provide either organizationId (shared) or userId (personal) to scope the response.',
+    'When updating attachments, include ALL attachments — the array replaces existing data.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Action to perform'),
-    responseId: z.string().optional().describe('Response ID (required for get, update, delete)'),
-    organizationId: z.string().optional().describe('Organization ID (for filtering on list, or scoping on create)'),
-    userId: z.string().optional().describe('User ID (for personal response on create)'),
-    title: z.string().optional().describe('Template title'),
-    subject: z.string().optional().describe('Email subject'),
-    body: z.string().optional().describe('HTML body content'),
-    shareWithTeam: z.string().optional().describe('Team ID to share response with'),
-    sharedLabelIds: z.array(z.string()).optional().describe('Shared label IDs to auto-apply'),
-    toFields: z.array(addressFieldSchema).optional().describe('Default To recipients'),
-    ccFields: z.array(addressFieldSchema).optional().describe('Default CC recipients'),
-    bccFields: z.array(addressFieldSchema).optional().describe('Default BCC recipients'),
-    externalId: z.string().optional().describe('External system reference ID'),
-    externalSource: z.string().optional().describe('External system name'),
-    limit: z.number().min(1).max(200).optional().describe('Max responses to return (list only)'),
-    offset: z.number().optional().describe('Pagination offset (list only)'),
-  }))
-  .output(z.object({
-    responses: z.array(responseOutputSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Action to perform'),
+      responseId: z
+        .string()
+        .optional()
+        .describe('Response ID (required for get, update, delete)'),
+      organizationId: z
+        .string()
+        .optional()
+        .describe('Organization ID (for filtering on list, or scoping on create)'),
+      userId: z.string().optional().describe('User ID (for personal response on create)'),
+      title: z.string().optional().describe('Template title'),
+      subject: z.string().optional().describe('Email subject'),
+      body: z.string().optional().describe('HTML body content'),
+      shareWithTeam: z.string().optional().describe('Team ID to share response with'),
+      sharedLabelIds: z
+        .array(z.string())
+        .optional()
+        .describe('Shared label IDs to auto-apply'),
+      toFields: z.array(addressFieldSchema).optional().describe('Default To recipients'),
+      ccFields: z.array(addressFieldSchema).optional().describe('Default CC recipients'),
+      bccFields: z.array(addressFieldSchema).optional().describe('Default BCC recipients'),
+      externalId: z.string().optional().describe('External system reference ID'),
+      externalSource: z.string().optional().describe('External system name'),
+      limit: z
+        .number()
+        .min(1)
+        .max(200)
+        .optional()
+        .describe('Max responses to return (list only)'),
+      offset: z.number().optional().describe('Pagination offset (list only)')
+    })
+  )
+  .output(
+    z.object({
+      responses: z.array(responseOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -67,12 +84,12 @@ export let manageResponses = SlateTool.create(
         title: r.title,
         subject: r.subject,
         body: r.body,
-        externalId: r.external_id,
+        externalId: r.external_id
       }));
 
       return {
         output: { responses },
-        message: `Retrieved **${responses.length}** response templates.`,
+        message: `Retrieved **${responses.length}** response templates.`
       };
     }
 
@@ -82,15 +99,17 @@ export let manageResponses = SlateTool.create(
       let r = data.responses;
       return {
         output: {
-          responses: [{
-            responseId: r.id,
-            title: r.title,
-            subject: r.subject,
-            body: r.body,
-            externalId: r.external_id,
-          }],
+          responses: [
+            {
+              responseId: r.id,
+              title: r.title,
+              subject: r.subject,
+              body: r.body,
+              externalId: r.external_id
+            }
+          ]
         },
-        message: `Retrieved response **${r.title || r.id}**.`,
+        message: `Retrieved response **${r.title || r.id}**.`
       };
     }
 
@@ -99,7 +118,7 @@ export let manageResponses = SlateTool.create(
       await client.deleteResponses([ctx.input.responseId]);
       return {
         output: { responses: [] },
-        message: `Deleted response **${ctx.input.responseId}**.`,
+        message: `Deleted response **${ctx.input.responseId}**.`
       };
     }
 
@@ -127,10 +146,10 @@ export let manageResponses = SlateTool.create(
             title: r.title,
             subject: r.subject,
             body: r.body,
-            externalId: r.external_id,
-          })),
+            externalId: r.external_id
+          }))
         },
-        message: `Created response **${ctx.input.title}**.`,
+        message: `Created response **${ctx.input.title}**.`
       };
     }
 
@@ -145,10 +164,10 @@ export let manageResponses = SlateTool.create(
           title: r.title,
           subject: r.subject,
           body: r.body,
-          externalId: r.external_id,
-        })),
+          externalId: r.external_id
+        }))
       },
-      message: `Updated response **${ctx.input.responseId}**.`,
+      message: `Updated response **${ctx.input.responseId}**.`
     };
   })
   .build();

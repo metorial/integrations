@@ -3,34 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let promotionSchema = z.object({
-  promotionUuid: z.string().describe('UUID of the promotion'),
-  name: z.string().optional().describe('Promotion name'),
-  description: z.string().optional().describe('Promotion description'),
-  voucherLimit: z.number().optional().describe('Maximum number of vouchers'),
-  limitPerContact: z.number().optional().describe('Maximum vouchers per contact'),
-  expirationDuration: z.number().optional().describe('Voucher expiration duration in days'),
-}).passthrough();
+let promotionSchema = z
+  .object({
+    promotionUuid: z.string().describe('UUID of the promotion'),
+    name: z.string().optional().describe('Promotion name'),
+    description: z.string().optional().describe('Promotion description'),
+    voucherLimit: z.number().optional().describe('Maximum number of vouchers'),
+    limitPerContact: z.number().optional().describe('Maximum vouchers per contact'),
+    expirationDuration: z.number().optional().describe('Voucher expiration duration in days')
+  })
+  .passthrough();
 
-export let listPromotions = SlateTool.create(
-  spec,
-  {
-    name: 'List Promotions',
-    key: 'list_promotions',
-    description: `List all promotions in the account. Promotions define voucher campaigns and are required when creating vouchers. Optionally retrieve a single promotion by UUID.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPromotions = SlateTool.create(spec, {
+  name: 'List Promotions',
+  key: 'list_promotions',
+  description: `List all promotions in the account. Promotions define voucher campaigns and are required when creating vouchers. Optionally retrieve a single promotion by UUID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    promotionUuid: z.string().optional().describe('Get a specific promotion by UUID instead of listing all'),
-  }))
-  .output(z.object({
-    promotions: z.array(promotionSchema).optional().describe('List of promotions'),
-    promotion: promotionSchema.optional().describe('Single promotion (when promotionUuid is provided)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      promotionUuid: z
+        .string()
+        .optional()
+        .describe('Get a specific promotion by UUID instead of listing all')
+    })
+  )
+  .output(
+    z.object({
+      promotions: z.array(promotionSchema).optional().describe('List of promotions'),
+      promotion: promotionSchema
+        .optional()
+        .describe('Single promotion (when promotionUuid is provided)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.promotionUuid) {
@@ -45,10 +53,10 @@ export let listPromotions = SlateTool.create(
             voucherLimit: p.voucher_limit,
             limitPerContact: p.limit_per_contact,
             expirationDuration: p.expiration_duration,
-            ...p,
-          },
+            ...p
+          }
         },
-        message: `Retrieved promotion **${p.name || p.uuid}**.`,
+        message: `Retrieved promotion **${p.name || p.uuid}**.`
       };
     }
 
@@ -60,12 +68,12 @@ export let listPromotions = SlateTool.create(
       voucherLimit: p.voucher_limit,
       limitPerContact: p.limit_per_contact,
       expirationDuration: p.expiration_duration,
-      ...p,
+      ...p
     }));
 
     return {
       output: { promotions },
-      message: `Retrieved **${promotions.length}** promotion(s).`,
+      message: `Retrieved **${promotions.length}** promotion(s).`
     };
   })
   .build();

@@ -3,39 +3,41 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let contactEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Events',
-    key: 'contact_events',
-    description: 'Polls for new or updated customers and vendors. Detects contact creation and modifications.'
-  }
-)
-  .input(z.object({
-    contactId: z.string(),
-    eventType: z.string(),
-    contactName: z.string().optional(),
-    companyName: z.string().optional(),
-    contactType: z.string().optional(),
-    status: z.string().optional(),
-    email: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
-  .output(z.object({
-    contactId: z.string(),
-    contactName: z.string().optional(),
-    companyName: z.string().optional(),
-    contactType: z.string().optional(),
-    status: z.string().optional(),
-    email: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
+export let contactEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Contact Events',
+  key: 'contact_events',
+  description:
+    'Polls for new or updated customers and vendors. Detects contact creation and modifications.'
+})
+  .input(
+    z.object({
+      contactId: z.string(),
+      eventType: z.string(),
+      contactName: z.string().optional(),
+      companyName: z.string().optional(),
+      contactType: z.string().optional(),
+      status: z.string().optional(),
+      email: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string(),
+      contactName: z.string().optional(),
+      companyName: z.string().optional(),
+      contactType: z.string().optional(),
+      status: z.string().optional(),
+      email: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownContacts = (ctx.state?.knownContacts || {}) as Record<string, boolean>;
@@ -73,9 +75,7 @@ export let contactEventsTrigger = SlateTrigger.create(
         newKnownContacts[c.contact_id] = true;
       }
 
-      let newPollTime = contacts.length > 0
-        ? contacts[0].last_modified_time
-        : lastPollTime;
+      let newPollTime = contacts.length > 0 ? contacts[0].last_modified_time : lastPollTime;
 
       return {
         inputs,
@@ -86,7 +86,7 @@ export let contactEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `contact.${ctx.input.eventType}`,
         id: `${ctx.input.contactId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -101,4 +101,5 @@ export let contactEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

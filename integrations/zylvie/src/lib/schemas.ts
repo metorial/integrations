@@ -15,7 +15,7 @@ export let buyerSchema = z.object({
   country: z.string().optional().describe('Country code'),
   paymentMethodType: z.string().optional().describe('Payment method type (e.g. card)'),
   cardBrand: z.string().optional().describe('Card brand (e.g. visa)'),
-  cardLast4: z.string().optional().describe('Last 4 digits of card'),
+  cardLast4: z.string().optional().describe('Last 4 digits of card')
 });
 
 export let productSchema = z.object({
@@ -25,18 +25,18 @@ export let productSchema = z.object({
   quantity: z.number().optional().describe('Quantity purchased'),
   pricingModel: z.string().optional().describe('Pricing model'),
   isVariant: z.boolean().optional().describe('Whether this is a variant'),
-  tags: z.array(z.string()).optional().describe('Product tags'),
+  tags: z.array(z.string()).optional().describe('Product tags')
 });
 
 export let couponSchema = z.object({
   code: z.string().describe('Coupon code'),
   type: z.string().describe('Discount type: percentage or fixed'),
-  amount: z.number().describe('Discount amount'),
+  amount: z.number().describe('Discount amount')
 });
 
 export let customFieldSchema = z.object({
   name: z.string().describe('Field name'),
-  value: z.string().describe('Field value'),
+  value: z.string().describe('Field value')
 });
 
 export let mapBuyer = (buyer: Record<string, unknown>) => ({
@@ -54,7 +54,7 @@ export let mapBuyer = (buyer: Record<string, unknown>) => ({
   country: buyer.country as string | undefined,
   paymentMethodType: buyer.payment_method_type as string | undefined,
   cardBrand: buyer.card_brand as string | undefined,
-  cardLast4: buyer.card_last4 as string | undefined,
+  cardLast4: buyer.card_last4 as string | undefined
 });
 
 export let mapProduct = (product: Record<string, unknown>) => ({
@@ -64,11 +64,11 @@ export let mapProduct = (product: Record<string, unknown>) => ({
   quantity: product.quantity as number | undefined,
   pricingModel: product.pricing_model as string | undefined,
   isVariant: product.is_variant as boolean | undefined,
-  tags: product.tags as string[] | undefined,
+  tags: product.tags as string[] | undefined
 });
 
 export let mapCustomFields = (fields: Record<string, unknown>[] | undefined) =>
-  (fields || []).map((f) => ({
+  (fields || []).map(f => ({
     name: f.name as string,
-    value: f.value as string,
+    value: f.value as string
   }));

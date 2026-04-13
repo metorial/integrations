@@ -3,38 +3,40 @@ import { RedditAdsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignStatusChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Status Change',
-    key: 'campaign_status_change',
-    description: 'Detects when campaign statuses change (e.g., activated, paused, completed). Polls the Reddit Ads API to compare current campaign statuses against previously observed states.',
-  }
-)
-  .input(z.object({
-    campaignId: z.string(),
-    campaignName: z.string(),
-    previousStatus: z.string().optional(),
-    currentStatus: z.string(),
-    objective: z.string().optional(),
-    raw: z.any().optional(),
-  }))
-  .output(z.object({
-    campaignId: z.string(),
-    campaignName: z.string(),
-    previousStatus: z.string().optional(),
-    currentStatus: z.string(),
-    objective: z.string().optional(),
-  }))
+export let campaignStatusChange = SlateTrigger.create(spec, {
+  name: 'Campaign Status Change',
+  key: 'campaign_status_change',
+  description:
+    'Detects when campaign statuses change (e.g., activated, paused, completed). Polls the Reddit Ads API to compare current campaign statuses against previously observed states.'
+})
+  .input(
+    z.object({
+      campaignId: z.string(),
+      campaignName: z.string(),
+      previousStatus: z.string().optional(),
+      currentStatus: z.string(),
+      objective: z.string().optional(),
+      raw: z.any().optional()
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string(),
+      campaignName: z.string(),
+      previousStatus: z.string().optional(),
+      currentStatus: z.string(),
+      objective: z.string().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new RedditAdsClient({
         token: ctx.auth.token,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       let campaigns = await client.listCampaigns();
@@ -50,7 +52,7 @@ export let campaignStatusChange = SlateTrigger.create(
 
       let currentStatuses: Record<string, string> = {};
 
-      for (let campaign of (Array.isArray(campaigns) ? campaigns : [])) {
+      for (let campaign of Array.isArray(campaigns) ? campaigns : []) {
         let id = campaign.id || campaign.campaign_id;
         let status = campaign.status || campaign.effective_status;
         if (!id || !status) continue;
@@ -65,7 +67,7 @@ export let campaignStatusChange = SlateTrigger.create(
             previousStatus: prevStatus,
             currentStatus: status,
             objective: campaign.objective,
-            raw: campaign,
+            raw: campaign
           });
         }
       }
@@ -73,12 +75,12 @@ export let campaignStatusChange = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          campaignStatuses: currentStatuses,
-        },
+          campaignStatuses: currentStatuses
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.status_changed',
         id: `${ctx.input.campaignId}-${ctx.input.currentStatus}-${Date.now()}`,
@@ -87,9 +89,9 @@ export let campaignStatusChange = SlateTrigger.create(
           campaignName: ctx.input.campaignName,
           previousStatus: ctx.input.previousStatus,
           currentStatus: ctx.input.currentStatus,
-          objective: ctx.input.objective,
-        },
+          objective: ctx.input.objective
+        }
       };
-    },
+    }
   })
   .build();

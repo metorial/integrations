@@ -13,7 +13,7 @@ import {
   getConversations,
   sendMessage,
   getLinkedInAccounts,
-  getStats,
+  getStats
 } from './tools';
 import { outreachEvents } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     getConversations,
     sendMessage,
     getLinkedInAccounts,
-    getStats,
+    getStats
   ],
-  triggers: [
-    outreachEvents,
-  ],
+  triggers: [outreachEvents]
 });

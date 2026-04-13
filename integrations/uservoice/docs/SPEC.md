@@ -40,39 +40,51 @@ For client-side applications where the API secret cannot be safely secured, User
 ## Features
 
 ### Suggestions (Ideas) Management
+
 Create, read, update, and manage product feedback suggestions. Suggestions are the core entity in UserVoice, each linked to a forum and optionally associated with categories, labels, and statuses. You can merge duplicate suggestions, link suggestions to features, and attach files to suggestions. Suggestions represent requested changes to your product, can be created by end users or your team, and each is linked to a forum where it can be visible publicly or to authorized users.
 
 ### Forums Management
+
 Forums serve as distinct areas for collecting ideas on different topics or products. You can create and manage multiple forums, each with its own settings for visibility (public or private), prompt messages, and moderation preferences.
 
 ### User and Account Management
+
 Manage users (both admins and end users) and their associated accounts. The API provides a transactional endpoint for importing external users that accepts up to 1,000 external users per call, each of which can embed an associated external account. User and Account Traits allow you to associate external data with UserVoice users, helping analyze feedback based on things like account segment or user type.
 
 ### Supporters and Voting
+
 Track and manage supporters of suggestions. Supporters are end users that support a suggestion. You can retrieve supporter data and manage votes on ideas programmatically.
 
 ### Status Updates
+
 Update and track the status of suggestions through their lifecycle (e.g., under review, planned, completed). Status updates help close the feedback loop with customers.
 
 ### Labels and Categories
+
 Labels are used by admins to internally organize suggestions. Categories provide user-facing organization within forums. Both can be managed via the API.
 
 ### NPS (Net Promoter Score)
+
 The API provides access to NPS ratings data. You can retrieve NPS scores and manage ratings submitted via the NPS widget.
 
 ### Notes and Comments
+
 Create and manage internal notes on suggestions and public comments. Notes can have file attachments linked to them.
 
 ### File Attachments
+
 The Admin API allows you to upload files and link them to suggestions via a two-step process: upload the file using the Attachments API, then use the returned token to link it to a suggestion.
 
 ### Teams
+
 Manage teams within UserVoice. Admins and contributors can be assigned to teams to organize feedback by department, such as Sales, Support, or Product.
 
 ### Features (Roadmap Items)
+
 Link suggestions to features for roadmap planning. You can create links between suggestions and features, as well as unlink them.
 
 ### SSO (Single Sign-On)
+
 Generate SSO tokens to seamlessly authenticate your users with the UserVoice widget, so they can leave feedback without needing to sign in separately.
 
 ## Events
@@ -80,15 +92,19 @@ Generate SSO tokens to seamlessly authenticate your users with the UserVoice wid
 UserVoice supports Service Hooks (webhooks) that allow you to push UserVoice events to any URL. These are configured in the Admin Console under Settings → Integrations → Service Hooks.
 
 ### Suggestion Events
+
 Triggered when new suggestions (ideas) are created. Includes the suggestion data in the payload.
 
 ### Vote/Support Events
+
 Idea vote update events are triggered when users vote on or support a suggestion.
 
 ### Status Change Events
+
 Triggered when the status of a suggestion changes (e.g., moved to planned, completed, etc.).
 
 ### Configuration Options
+
 - By default, events will be pushed across forums, but you can choose to only push events from specific forums.
 - Payload format can be specified as either XML or JSON.
 - A callback URL must be provided to receive the webhook payloads.

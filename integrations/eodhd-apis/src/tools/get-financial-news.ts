@@ -20,33 +20,34 @@ let newsArticleSchema = z.object({
   sentiment: sentimentSchema.optional().nullable().describe('AI-generated sentiment scores')
 });
 
-export let getFinancialNews = SlateTool.create(
-  spec,
-  {
-    name: 'Get Financial News',
-    key: 'get_financial_news',
-    description: `Retrieve financial news articles with AI-generated sentiment analysis. Filter by specific ticker symbols, topic tags, and date ranges. Sentiment scores include polarity, negative, neutral, and positive values.`,
-    instructions: [
-      'Provide either a ticker symbol (e.g., AAPL.US) or a topic tag to filter news',
-      'Common tags: balance sheet, capital markets, earnings, ipo, mergers and acquisitions'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getFinancialNews = SlateTool.create(spec, {
+  name: 'Get Financial News',
+  key: 'get_financial_news',
+  description: `Retrieve financial news articles with AI-generated sentiment analysis. Filter by specific ticker symbols, topic tags, and date ranges. Sentiment scores include polarity, negative, neutral, and positive values.`,
+  instructions: [
+    'Provide either a ticker symbol (e.g., AAPL.US) or a topic tag to filter news',
+    'Common tags: balance sheet, capital markets, earnings, ipo, mergers and acquisitions'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ticker: z.string().optional().describe('Filter by ticker symbol, e.g., AAPL.US'),
-    tag: z.string().optional().describe('Filter by topic tag, e.g., "earnings", "ipo"'),
-    from: z.string().optional().describe('Start date in YYYY-MM-DD format'),
-    to: z.string().optional().describe('End date in YYYY-MM-DD format'),
-    limit: z.number().optional().describe('Number of results (1-1000, default: 50)'),
-    offset: z.number().optional().describe('Pagination offset (default: 0)')
-  }))
-  .output(z.object({
-    articles: z.array(newsArticleSchema).describe('News articles with sentiment data')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticker: z.string().optional().describe('Filter by ticker symbol, e.g., AAPL.US'),
+      tag: z.string().optional().describe('Filter by topic tag, e.g., "earnings", "ipo"'),
+      from: z.string().optional().describe('Start date in YYYY-MM-DD format'),
+      to: z.string().optional().describe('End date in YYYY-MM-DD format'),
+      limit: z.number().optional().describe('Number of results (1-1000, default: 50)'),
+      offset: z.number().optional().describe('Pagination offset (default: 0)')
+    })
+  )
+  .output(
+    z.object({
+      articles: z.array(newsArticleSchema).describe('News articles with sentiment data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EodhdClient({ token: ctx.auth.token });
 
     let articles = await client.getNews({
@@ -66,4 +67,5 @@ export let getFinancialNews = SlateTool.create(
       },
       message: `Retrieved **${articlesArray.length}** news articles${ctx.input.ticker ? ` for **${ctx.input.ticker}**` : ''}${ctx.input.tag ? ` tagged "${ctx.input.tag}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

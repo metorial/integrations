@@ -3,48 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFlowRun = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Flow Run',
-    key: 'new_flow_run',
-    description: '[Polling fallback] Triggered when new flow runs are completed or modified. Polls for recently modified runs and surfaces completed, expired, and interrupted runs.',
-  }
-)
-  .input(z.object({
-    runUuid: z.string().describe('UUID of the run'),
-    flowUuid: z.string().describe('UUID of the flow'),
-    flowName: z.string().describe('Name of the flow'),
-    contactUuid: z.string().describe('UUID of the contact'),
-    contactName: z.string().describe('Name of the contact'),
-    contactUrn: z.string().describe('URN of the contact'),
-    responded: z.boolean().describe('Whether the contact responded'),
-    values: z.record(z.string(), z.any()).describe('Values collected during the run'),
-    exitType: z.string().nullable().describe('How the run exited'),
-    createdOn: z.string().describe('When the run was created'),
-    modifiedOn: z.string().describe('When the run was last modified'),
-    exitedOn: z.string().nullable().describe('When the run exited'),
-  }))
-  .output(z.object({
-    runUuid: z.string().describe('UUID of the run'),
-    flowUuid: z.string().describe('UUID of the flow'),
-    flowName: z.string().describe('Name of the flow'),
-    contactUuid: z.string().describe('UUID of the contact'),
-    contactName: z.string().describe('Name of the contact'),
-    contactUrn: z.string().describe('URN of the contact'),
-    responded: z.boolean().describe('Whether the contact responded'),
-    values: z.record(z.string(), z.any()).describe('Values collected during the run'),
-    exitType: z.string().nullable().describe('How the run exited (completed, interrupted, expired)'),
-    createdOn: z.string().describe('When the run was created'),
-    modifiedOn: z.string().describe('When the run was last modified'),
-    exitedOn: z.string().nullable().describe('When the run exited'),
-  }))
+export let newFlowRun = SlateTrigger.create(spec, {
+  name: 'New Flow Run',
+  key: 'new_flow_run',
+  description:
+    '[Polling fallback] Triggered when new flow runs are completed or modified. Polls for recently modified runs and surfaces completed, expired, and interrupted runs.'
+})
+  .input(
+    z.object({
+      runUuid: z.string().describe('UUID of the run'),
+      flowUuid: z.string().describe('UUID of the flow'),
+      flowName: z.string().describe('Name of the flow'),
+      contactUuid: z.string().describe('UUID of the contact'),
+      contactName: z.string().describe('Name of the contact'),
+      contactUrn: z.string().describe('URN of the contact'),
+      responded: z.boolean().describe('Whether the contact responded'),
+      values: z.record(z.string(), z.any()).describe('Values collected during the run'),
+      exitType: z.string().nullable().describe('How the run exited'),
+      createdOn: z.string().describe('When the run was created'),
+      modifiedOn: z.string().describe('When the run was last modified'),
+      exitedOn: z.string().nullable().describe('When the run exited')
+    })
+  )
+  .output(
+    z.object({
+      runUuid: z.string().describe('UUID of the run'),
+      flowUuid: z.string().describe('UUID of the flow'),
+      flowName: z.string().describe('Name of the flow'),
+      contactUuid: z.string().describe('UUID of the contact'),
+      contactName: z.string().describe('Name of the contact'),
+      contactUrn: z.string().describe('URN of the contact'),
+      responded: z.boolean().describe('Whether the contact responded'),
+      values: z.record(z.string(), z.any()).describe('Values collected during the run'),
+      exitType: z
+        .string()
+        .nullable()
+        .describe('How the run exited (completed, interrupted, expired)'),
+      createdOn: z.string().describe('When the run was created'),
+      modifiedOn: z.string().describe('When the run was last modified'),
+      exitedOn: z.string().nullable().describe('When the run exited')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth.token);
       let state = ctx.state as { lastPollTime?: string } | undefined;
 
@@ -71,22 +76,21 @@ export let newFlowRun = SlateTrigger.create(
         exitType: r.exit_type,
         createdOn: r.created_on,
         modifiedOn: r.modified_on,
-        exitedOn: r.exited_on,
+        exitedOn: r.exited_on
       }));
 
-      let newLastPollTime = result.results.length > 0
-        ? result.results[0]!.modified_on
-        : state?.lastPollTime;
+      let newLastPollTime =
+        result.results.length > 0 ? result.results[0]!.modified_on : state?.lastPollTime;
 
       return {
         inputs,
         updatedState: {
-          lastPollTime: newLastPollTime,
-        },
+          lastPollTime: newLastPollTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.exitType
         ? `flow_run.${ctx.input.exitType}`
         : 'flow_run.exited';
@@ -106,8 +110,9 @@ export let newFlowRun = SlateTrigger.create(
           exitType: ctx.input.exitType,
           createdOn: ctx.input.createdOn,
           modifiedOn: ctx.input.modifiedOn,
-          exitedOn: ctx.input.exitedOn,
-        },
+          exitedOn: ctx.input.exitedOn
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

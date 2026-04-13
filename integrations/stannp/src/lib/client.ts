@@ -17,8 +17,8 @@ export class Client {
       baseURL: getBaseUrl(config.region),
       auth: {
         username: config.token,
-        password: '',
-      },
+        password: ''
+      }
     });
   }
 
@@ -36,13 +36,17 @@ export class Client {
 
   // ---- Recipients ----
 
-  async listRecipients(params?: { groupId?: number; offset?: number; limit?: number }): Promise<any> {
+  async listRecipients(params?: {
+    groupId?: number;
+    offset?: number;
+    limit?: number;
+  }): Promise<any> {
     let response = await this.axios.get('/recipients/list', {
       params: {
         group_id: params?.groupId,
         offset: params?.offset,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
     return response.data?.data;
   }
@@ -83,7 +87,7 @@ export class Client {
       email: data.email,
       phone_number: data.phoneNumber,
       ref_id: data.refId,
-      on_duplicate: data.onDuplicate,
+      on_duplicate: data.onDuplicate
     };
 
     if (data.customFields) {
@@ -107,8 +111,8 @@ export class Client {
     let response = await this.axios.get('/groups/list', {
       params: {
         offset: params?.offset,
-        limit: params?.limit,
-      },
+        limit: params?.limit
+      }
     });
     return response.data?.data;
   }
@@ -121,21 +125,21 @@ export class Client {
   async deleteGroup(groupId: number, deleteRecipients?: boolean): Promise<any> {
     let response = await this.axios.post('/groups/delete', {
       id: groupId,
-      delete_recipients: deleteRecipients,
+      delete_recipients: deleteRecipients
     });
     return response.data;
   }
 
   async addRecipientsToGroup(groupId: number, recipientIds: number[]): Promise<any> {
     let response = await this.axios.post(`/groups/add/${groupId}`, {
-      recipients: recipientIds.join(','),
+      recipients: recipientIds.join(',')
     });
     return response.data?.data;
   }
 
   async removeRecipientsFromGroup(groupId: number, recipientIds: number[]): Promise<any> {
     let response = await this.axios.post(`/groups/remove/${groupId}`, {
-      recipients: recipientIds.join(','),
+      recipients: recipientIds.join(',')
     });
     return response.data?.data;
   }
@@ -143,7 +147,7 @@ export class Client {
   async purgeGroup(groupId: number, deleteRecipients?: boolean): Promise<any> {
     let response = await this.axios.post('/groups/purge', {
       id: groupId,
-      delete_recipients: deleteRecipients,
+      delete_recipients: deleteRecipients
     });
     return response.data;
   }
@@ -173,7 +177,7 @@ export class Client {
       addons: data.addons,
       test: data.test,
       post_unverified: data.postUnverified,
-      padding: data.padding,
+      padding: data.padding
     };
 
     if (typeof data.recipient === 'number') {
@@ -217,7 +221,7 @@ export class Client {
       tags: data.tags,
       addons: data.addons,
       test: data.test,
-      post_unverified: data.postUnverified,
+      post_unverified: data.postUnverified
     };
 
     if (typeof data.recipient === 'number') {
@@ -247,7 +251,7 @@ export class Client {
       tags: data.tags,
       addons: data.addons,
       test: data.test,
-      post_unverified: data.postUnverified,
+      post_unverified: data.postUnverified
     };
 
     if (typeof data.recipient === 'number') {
@@ -304,7 +308,7 @@ export class Client {
       front: data.front,
       back: data.back,
       size: data.size,
-      addons: data.addons,
+      addons: data.addons
     });
     return response.data?.data;
   }
@@ -319,12 +323,16 @@ export class Client {
     return response.data?.data;
   }
 
-  async bookCampaign(campaignId: number, sendDate: string, options?: { nextAvailableDate?: boolean; useBalance?: boolean }): Promise<any> {
+  async bookCampaign(
+    campaignId: number,
+    sendDate: string,
+    options?: { nextAvailableDate?: boolean; useBalance?: boolean }
+  ): Promise<any> {
     let response = await this.axios.post('/campaigns/book', {
       id: campaignId,
       send_date: sendDate,
       next_available_date: options?.nextAvailableDate,
-      use_balance: options?.useBalance,
+      use_balance: options?.useBalance
     });
     return response.data?.data;
   }
@@ -332,7 +340,7 @@ export class Client {
   async getAvailableBookingDates(start?: string, end?: string): Promise<any> {
     let response = await this.axios.post('/campaigns/availableDates', {
       start,
-      end,
+      end
     });
     return response.data?.data;
   }
@@ -354,7 +362,12 @@ export class Client {
     return response.data?.data;
   }
 
-  async getReportingList(startDate: string, endDate: string, status?: string, tag?: string): Promise<any> {
+  async getReportingList(
+    startDate: string,
+    endDate: string,
+    status?: string,
+    tag?: string
+  ): Promise<any> {
     let path = `/reporting/list/${startDate}/${endDate}`;
     if (status) {
       path += `/${status}`;
@@ -395,7 +408,7 @@ export class Client {
       phone_number: data.phoneNumber,
       recipient_id: data.recipientId,
       country: data.country,
-      test: data.test,
+      test: data.test
     });
     return response.data?.data;
   }
@@ -412,7 +425,7 @@ export class Client {
   async uploadFile(fileUrl: string, folderId?: number): Promise<any> {
     let response = await this.axios.post('/files/upload', {
       file: fileUrl,
-      folder: folderId,
+      folder: folderId
     });
     return response.data?.data;
   }
@@ -443,7 +456,7 @@ export class Client {
       value: data.value,
       conversion: data.conversion,
       data: data.eventData,
-      ref: data.ref,
+      ref: data.ref
     });
     return response.data?.data;
   }

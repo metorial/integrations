@@ -12,7 +12,7 @@ import {
   deleteWorkspace,
   listMediaAssets,
   getMediaAsset,
-  deleteMediaAsset,
+  deleteMediaAsset
 } from './tools';
 import { newImageGenerated } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     deleteWorkspace,
     listMediaAssets,
     getMediaAsset,
-    deleteMediaAsset,
+    deleteMediaAsset
   ],
-  triggers: [
-    newImageGenerated,
-  ],
+  triggers: [newImageGenerated]
 });

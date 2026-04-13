@@ -49,9 +49,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': this.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -76,8 +76,8 @@ export class Client {
       isTransitioned: data.IsTransitioned ?? data.isTransitioned ?? false,
       relatedLookups: (data.RelatedLookups ?? data.relatedLookups ?? []).map((r: any) => ({
         name: r.Name ?? r.name ?? '',
-        url: r.Url ?? r.url ?? '',
-      })),
+        url: r.Url ?? r.url ?? ''
+      }))
     };
   }
 
@@ -94,7 +94,7 @@ export class Client {
   async createMonitor(command: string, argument: string): Promise<Monitor> {
     let response = await this.axios.post('/monitor', {
       Command: command,
-      CommandArgument: argument,
+      CommandArgument: argument
     });
     return normalizeMonitor(response.data);
   }
@@ -108,7 +108,7 @@ export class Client {
     let data = response.data;
     return {
       used: data.Used ?? data.used ?? 0,
-      limit: data.Limit ?? data.limit ?? 0,
+      limit: data.Limit ?? data.limit ?? 0
     };
   }
 }
@@ -118,7 +118,7 @@ let normalizeEntries = (entries: any[]): LookupResultEntry[] => {
     id: e.ID ?? e.Id ?? e.id ?? 0,
     name: e.Name ?? e.name ?? '',
     info: e.Info ?? e.info ?? '',
-    url: e.Url ?? e.url ?? '',
+    url: e.Url ?? e.url ?? ''
   }));
 };
 
@@ -129,5 +129,5 @@ let normalizeMonitor = (m: any): Monitor => ({
   lastChecked: m.LastChecked ?? m.lastChecked ?? '',
   mxRep: String(m.MxRep ?? m.mxRep ?? ''),
   failing: m.Failing ?? m.failing ?? [],
-  warnings: m.Warnings ?? m.warnings ?? [],
+  warnings: m.Warnings ?? m.warnings ?? []
 });

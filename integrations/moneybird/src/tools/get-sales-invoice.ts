@@ -14,61 +14,65 @@ let lineItemSchema = z.object({
   period: z.string().nullable(),
   rowOrder: z.number().nullable(),
   totalPriceExclTax: z.string().nullable(),
-  totalPriceInclTax: z.string().nullable(),
+  totalPriceInclTax: z.string().nullable()
 });
 
 let paymentSchema = z.object({
   paymentId: z.string(),
   paymentDate: z.string().nullable(),
   price: z.string().nullable(),
-  financialMutationId: z.string().nullable(),
+  financialMutationId: z.string().nullable()
 });
 
-export let getSalesInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Get Sales Invoice',
-    key: 'get_sales_invoice',
-    description: `Retrieve full details of a sales invoice including line items, payments, and status. Look up by Moneybird ID or human-readable invoice number.`,
-    tags: {
-      readOnly: true,
-    },
+export let getSalesInvoice = SlateTool.create(spec, {
+  name: 'Get Sales Invoice',
+  key: 'get_sales_invoice',
+  description: `Retrieve full details of a sales invoice including line items, payments, and status. Look up by Moneybird ID or human-readable invoice number.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    salesInvoiceId: z.string().optional().describe('Moneybird internal invoice ID'),
-    invoiceNumber: z.string().optional().describe('Human-readable invoice number (e.g., "2024-001")'),
-  }))
-  .output(z.object({
-    salesInvoiceId: z.string(),
-    invoiceNumber: z.string().nullable(),
-    reference: z.string().nullable(),
-    state: z.string(),
-    contactId: z.string().nullable(),
-    contactName: z.string().nullable(),
-    invoiceDate: z.string().nullable(),
-    dueDate: z.string().nullable(),
-    currency: z.string().nullable(),
-    language: z.string().nullable(),
-    pricesAreInclTax: z.boolean(),
-    totalPriceExclTax: z.string().nullable(),
-    totalPriceInclTax: z.string().nullable(),
-    totalPaid: z.string().nullable(),
-    totalUnpaid: z.string().nullable(),
-    paidAt: z.string().nullable(),
-    sentAt: z.string().nullable(),
-    paused: z.boolean(),
-    paymentUrl: z.string().nullable(),
-    url: z.string().nullable(),
-    lineItems: z.array(lineItemSchema),
-    payments: z.array(paymentSchema),
-    createdAt: z.string().nullable(),
-    updatedAt: z.string().nullable(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      salesInvoiceId: z.string().optional().describe('Moneybird internal invoice ID'),
+      invoiceNumber: z
+        .string()
+        .optional()
+        .describe('Human-readable invoice number (e.g., "2024-001")')
+    })
+  )
+  .output(
+    z.object({
+      salesInvoiceId: z.string(),
+      invoiceNumber: z.string().nullable(),
+      reference: z.string().nullable(),
+      state: z.string(),
+      contactId: z.string().nullable(),
+      contactName: z.string().nullable(),
+      invoiceDate: z.string().nullable(),
+      dueDate: z.string().nullable(),
+      currency: z.string().nullable(),
+      language: z.string().nullable(),
+      pricesAreInclTax: z.boolean(),
+      totalPriceExclTax: z.string().nullable(),
+      totalPriceInclTax: z.string().nullable(),
+      totalPaid: z.string().nullable(),
+      totalUnpaid: z.string().nullable(),
+      paidAt: z.string().nullable(),
+      sentAt: z.string().nullable(),
+      paused: z.boolean(),
+      paymentUrl: z.string().nullable(),
+      url: z.string().nullable(),
+      lineItems: z.array(lineItemSchema),
+      payments: z.array(paymentSchema),
+      createdAt: z.string().nullable(),
+      updatedAt: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MoneybirdClient({
       token: ctx.auth.token,
-      administrationId: ctx.config.administrationId,
+      administrationId: ctx.config.administrationId
     });
 
     let invoice: any;
@@ -80,9 +84,10 @@ export let getSalesInvoice = SlateTool.create(
       throw new Error('Either salesInvoiceId or invoiceNumber must be provided');
     }
 
-    let contactName = invoice.contact?.company_name
-      || `${invoice.contact?.firstname || ''} ${invoice.contact?.lastname || ''}`.trim()
-      || null;
+    let contactName =
+      invoice.contact?.company_name ||
+      `${invoice.contact?.firstname || ''} ${invoice.contact?.lastname || ''}`.trim() ||
+      null;
 
     return {
       output: {
@@ -117,17 +122,17 @@ export let getSalesInvoice = SlateTool.create(
           period: d.period || null,
           rowOrder: d.row_order ?? null,
           totalPriceExclTax: d.total_price_excl_tax_with_discount || null,
-          totalPriceInclTax: d.total_price_incl_tax_with_discount || null,
+          totalPriceInclTax: d.total_price_incl_tax_with_discount || null
         })),
         payments: (invoice.payments || []).map((p: any) => ({
           paymentId: String(p.id),
           paymentDate: p.payment_date || null,
           price: p.price || null,
-          financialMutationId: p.financial_mutation_id ? String(p.financial_mutation_id) : null,
+          financialMutationId: p.financial_mutation_id ? String(p.financial_mutation_id) : null
         })),
         createdAt: invoice.created_at || null,
-        updatedAt: invoice.updated_at || null,
+        updatedAt: invoice.updated_at || null
       },
-      message: `Retrieved invoice **${invoice.invoice_id || invoice.id}** (state: ${invoice.state}, total: ${invoice.total_price_incl_tax} ${invoice.currency || ''}).`,
+      message: `Retrieved invoice **${invoice.invoice_id || invoice.id}** (state: ${invoice.state}, total: ${invoice.total_price_incl_tax} ${invoice.currency || ''}).`
     };
   });

@@ -10,13 +10,12 @@ export class Client {
       token: string;
     }
   ) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let encoded = Buffer.from(`${params.email}:${params.token}`).toString('base64');
 
     this.axios = createAxios({
       baseURL: `https://${params.subdomain}.simplekpi.com/api`,
       headers: {
-        'Authorization': `Basic ${encoded}`,
+        Authorization: `Basic ${encoded}`,
         'Content-Type': 'application/json'
       }
     });
@@ -200,12 +199,19 @@ export class Client {
     return response.data;
   }
 
-  async assignKpiToUser(userId: number, data: { id: number; user_target?: number | null; sort_order: number }) {
+  async assignKpiToUser(
+    userId: number,
+    data: { id: number; user_target?: number | null; sort_order: number }
+  ) {
     let response = await this.axios.post(`/users/${userId}/kpis`, data);
     return response.data;
   }
 
-  async updateUserKpi(userId: number, kpiId: number, data: { user_target?: number | null; sort_order?: number }) {
+  async updateUserKpi(
+    userId: number,
+    kpiId: number,
+    data: { user_target?: number | null; sort_order?: number }
+  ) {
     let response = await this.axios.put(`/users/${userId}/kpis/${kpiId}`, data);
     return response.data;
   }

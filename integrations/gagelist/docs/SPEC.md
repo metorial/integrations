@@ -17,9 +17,11 @@ https://gagelist.net/api/token
 ```
 
 **Request headers:**
+
 - `Content-Type`: `application/x-www-form-urlencoded`
 
 **Request body parameters:**
+
 - `grant_type`: `password`
 - `client_id`: Your client ID
 - `client_secret`: Your client secret

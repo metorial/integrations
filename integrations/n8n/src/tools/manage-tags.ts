@@ -3,41 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `Create, update, delete, or list tags used to organize workflows and credentials. Specify an **action** to determine the operation.`,
-    tags: {
-      destructive: false
-    }
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `Create, update, delete, or list tags used to organize workflows and credentials. Specify an **action** to determine the operation.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('The tag operation to perform'),
-    tagId: z.string().optional().describe('Tag ID (required for update and delete actions)'),
-    name: z.string().optional().describe('Tag name (required for create and update actions)'),
-    limit: z.number().optional().describe('Max results for list action'),
-    cursor: z.string().optional().describe('Pagination cursor for list action')
-  }))
-  .output(z.object({
-    tags: z.array(z.object({
-      tagId: z.string().describe('Tag ID'),
-      name: z.string().describe('Tag name'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-      updatedAt: z.string().optional().describe('Last update timestamp')
-    })).optional().describe('List of tags (for list action)'),
-    tag: z.object({
-      tagId: z.string().describe('Tag ID'),
-      name: z.string().describe('Tag name'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-      updatedAt: z.string().optional().describe('Last update timestamp')
-    }).optional().describe('Single tag result (for create, update, get actions)'),
-    deleted: z.boolean().optional().describe('Whether deletion was successful (for delete action)'),
-    nextCursor: z.string().optional().describe('Cursor for next page (for list action)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'update', 'delete'])
+        .describe('The tag operation to perform'),
+      tagId: z.string().optional().describe('Tag ID (required for update and delete actions)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Tag name (required for create and update actions)'),
+      limit: z.number().optional().describe('Max results for list action'),
+      cursor: z.string().optional().describe('Pagination cursor for list action')
+    })
+  )
+  .output(
+    z.object({
+      tags: z
+        .array(
+          z.object({
+            tagId: z.string().describe('Tag ID'),
+            name: z.string().describe('Tag name'),
+            createdAt: z.string().optional().describe('Creation timestamp'),
+            updatedAt: z.string().optional().describe('Last update timestamp')
+          })
+        )
+        .optional()
+        .describe('List of tags (for list action)'),
+      tag: z
+        .object({
+          tagId: z.string().describe('Tag ID'),
+          name: z.string().describe('Tag name'),
+          createdAt: z.string().optional().describe('Creation timestamp'),
+          updatedAt: z.string().optional().describe('Last update timestamp')
+        })
+        .optional()
+        .describe('Single tag result (for create, update, get actions)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether deletion was successful (for delete action)'),
+      nextCursor: z.string().optional().describe('Cursor for next page (for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
       token: ctx.auth.token
@@ -52,7 +69,10 @@ export let manageTags = SlateTool.create(
 
     switch (ctx.input.action) {
       case 'list': {
-        let result = await client.listTags({ limit: ctx.input.limit, cursor: ctx.input.cursor });
+        let result = await client.listTags({
+          limit: ctx.input.limit,
+          cursor: ctx.input.cursor
+        });
         let tags = (result.data || []).map(mapTag);
         return {
           output: { tags, nextCursor: result.nextCursor },

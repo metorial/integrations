@@ -2,20 +2,22 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let graphApi = createAxios({
-  baseURL: 'https://graph.facebook.com',
+  baseURL: 'https://graph.facebook.com'
 });
 
 let instagramApi = createAxios({
-  baseURL: 'https://api.instagram.com',
+  baseURL: 'https://api.instagram.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    userId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      userId: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Instagram Login',
@@ -25,49 +27,53 @@ export let auth = SlateAuth.create()
       {
         title: 'Basic Access',
         description: 'Read basic profile and media data',
-        scope: 'instagram_business_basic',
+        scope: 'instagram_business_basic'
       },
       {
         title: 'Publish Content',
         description: 'Publish media to Instagram',
-        scope: 'instagram_business_content_publish',
+        scope: 'instagram_business_content_publish'
       },
       {
         title: 'Manage Messages',
         description: 'Manage direct messages',
-        scope: 'instagram_business_manage_messages',
+        scope: 'instagram_business_manage_messages'
       },
       {
         title: 'Manage Comments',
         description: 'Manage comments on media',
-        scope: 'instagram_business_manage_comments',
-      },
+        scope: 'instagram_business_manage_comments'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         scope: ctx.scopes.join(','),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://api.instagram.com/oauth/authorize?${params.toString()}`,
+        url: `https://api.instagram.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let tokenResponse = await instagramApi.post('/oauth/access_token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri,
-        code: ctx.code,
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+    handleCallback: async ctx => {
+      let tokenResponse = await instagramApi.post(
+        '/oauth/access_token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'authorization_code',
+          redirect_uri: ctx.redirectUri,
+          code: ctx.code
+        }).toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }
+      );
 
       let shortLivedToken = tokenResponse.data.access_token;
       let userId = String(tokenResponse.data.user_id);
@@ -77,8 +83,8 @@ export let auth = SlateAuth.create()
           grant_type: 'fb_exchange_token',
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          fb_exchange_token: shortLivedToken,
-        },
+          fb_exchange_token: shortLivedToken
+        }
       });
 
       let longLivedToken = longLivedResponse.data.access_token;
@@ -89,17 +95,17 @@ export let auth = SlateAuth.create()
         output: {
           token: longLivedToken,
           expiresAt,
-          userId,
-        },
+          userId
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await graphApi.get('/refresh_access_token', {
         params: {
           grant_type: 'ig_refresh_token',
-          access_token: ctx.output.token,
-        },
+          access_token: ctx.output.token
+        }
       });
 
       let newToken = response.data.access_token;
@@ -110,17 +116,18 @@ export let auth = SlateAuth.create()
         output: {
           ...ctx.output,
           token: newToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let response = await graphApi.get('/me', {
         params: {
-          fields: 'id,username,name,profile_picture_url,account_type,followers_count,media_count',
-          access_token: ctx.output.token,
-        },
+          fields:
+            'id,username,name,profile_picture_url,account_type,followers_count,media_count',
+          access_token: ctx.output.token
+        }
       });
 
       return {
@@ -130,10 +137,10 @@ export let auth = SlateAuth.create()
           email: undefined,
           imageUrl: response.data.profile_picture_url,
           username: response.data.username,
-          accountType: response.data.account_type,
-        },
+          accountType: response.data.account_type
+        }
       };
-    },
+    }
   })
   .addOauth({
     type: 'auth.oauth',
@@ -144,62 +151,62 @@ export let auth = SlateAuth.create()
       {
         title: 'Instagram Basic',
         description: 'Read basic Instagram profile and media data',
-        scope: 'instagram_basic',
+        scope: 'instagram_basic'
       },
       {
         title: 'Publish Content',
         description: 'Publish content to Instagram',
-        scope: 'instagram_content_publish',
+        scope: 'instagram_content_publish'
       },
       {
         title: 'Manage Comments',
         description: 'Manage comments on Instagram media',
-        scope: 'instagram_manage_comments',
+        scope: 'instagram_manage_comments'
       },
       {
         title: 'Manage Insights',
         description: 'Access analytics and insights',
-        scope: 'instagram_manage_insights',
+        scope: 'instagram_manage_insights'
       },
       {
         title: 'Manage Messages',
         description: 'Manage Instagram direct messages',
-        scope: 'instagram_manage_messages',
+        scope: 'instagram_manage_messages'
       },
       {
         title: 'Pages List',
         description: 'List managed Facebook Pages',
-        scope: 'pages_show_list',
+        scope: 'pages_show_list'
       },
       {
         title: 'Pages Metadata',
         description: 'Manage page metadata (required for webhooks)',
-        scope: 'pages_manage_metadata',
-      },
+        scope: 'pages_manage_metadata'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         scope: ctx.scopes.join(','),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`,
+        url: `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let tokenResponse = await graphApi.get('/v21.0/oauth/access_token', {
         params: {
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           redirect_uri: ctx.redirectUri,
-          code: ctx.code,
-        },
+          code: ctx.code
+        }
       });
 
       let shortLivedToken = tokenResponse.data.access_token;
@@ -209,8 +216,8 @@ export let auth = SlateAuth.create()
           grant_type: 'fb_exchange_token',
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          fb_exchange_token: shortLivedToken,
-        },
+          fb_exchange_token: shortLivedToken
+        }
       });
 
       let longLivedToken = longLivedResponse.data.access_token;
@@ -219,7 +226,7 @@ export let auth = SlateAuth.create()
 
       // Get the Instagram Business Account ID via the user's pages
       let pagesResponse = await graphApi.get('/v21.0/me/accounts', {
-        params: { access_token: longLivedToken },
+        params: { access_token: longLivedToken }
       });
 
       let userId: string | undefined;
@@ -230,8 +237,8 @@ export let auth = SlateAuth.create()
             let igResponse = await graphApi.get(`/v21.0/${page.id}`, {
               params: {
                 fields: 'instagram_business_account',
-                access_token: longLivedToken,
-              },
+                access_token: longLivedToken
+              }
             });
             if (igResponse.data.instagram_business_account) {
               userId = igResponse.data.instagram_business_account.id;
@@ -247,19 +254,19 @@ export let auth = SlateAuth.create()
         output: {
           token: longLivedToken,
           expiresAt,
-          userId,
-        },
+          userId
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await graphApi.get('/v21.0/oauth/access_token', {
         params: {
           grant_type: 'fb_exchange_token',
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
-          fb_exchange_token: ctx.output.token,
-        },
+          fb_exchange_token: ctx.output.token
+        }
       });
 
       let newToken = response.data.access_token;
@@ -270,8 +277,8 @@ export let auth = SlateAuth.create()
         output: {
           ...ctx.output,
           token: newToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -280,16 +287,16 @@ export let auth = SlateAuth.create()
         return {
           profile: {
             id: undefined,
-            name: 'Unknown',
-          },
+            name: 'Unknown'
+          }
         };
       }
 
       let response = await graphApi.get(`/v21.0/${ctx.output.userId}`, {
         params: {
           fields: 'id,username,name,profile_picture_url,followers_count,media_count',
-          access_token: ctx.output.token,
-        },
+          access_token: ctx.output.token
+        }
       });
 
       return {
@@ -297,8 +304,8 @@ export let auth = SlateAuth.create()
           id: response.data.id,
           name: response.data.name || response.data.username,
           imageUrl: response.data.profile_picture_url,
-          username: response.data.username,
-        },
+          username: response.data.username
+        }
       };
-    },
+    }
   });

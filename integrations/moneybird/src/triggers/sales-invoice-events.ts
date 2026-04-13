@@ -27,65 +27,69 @@ let salesInvoiceEventTypes = [
   'sales_invoice_created_based_on_estimate',
   'sales_invoice_created_based_on_recurring',
   'sales_invoice_created_based_on_subscription',
-  'credit_invoice_created_from_original',
+  'credit_invoice_created_from_original'
 ] as const;
 
-export let salesInvoiceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sales Invoice Events',
-    key: 'sales_invoice_events',
-    description: 'Triggered on sales invoice lifecycle events: creation, updates, deletion, state changes (draft, open, paid, late, reminded, uncollectible), sending, reminders, credit notes, and pause/resume.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Moneybird event type'),
-    webhookToken: z.string().optional(),
-    entity: z.any().describe('Full invoice entity data'),
-    state: z.string().optional().describe('New state'),
-    administrationId: z.string().optional(),
-  }))
-  .output(z.object({
-    salesInvoiceId: z.string().describe('Sales invoice ID'),
-    invoiceNumber: z.string().nullable().describe('Human-readable invoice number'),
-    contactId: z.string().nullable().describe('Contact ID'),
-    invoiceState: z.string().nullable().describe('Current invoice state'),
-    totalPriceInclTax: z.string().nullable().describe('Total including tax'),
-    totalUnpaid: z.string().nullable().describe('Unpaid amount'),
-    currency: z.string().nullable().describe('Currency code'),
-    invoiceDate: z.string().nullable().describe('Invoice date'),
-    dueDate: z.string().nullable().describe('Due date'),
-    paused: z.boolean().nullable().describe('Whether the invoice workflow is paused'),
-    url: z.string().nullable().describe('Invoice URL'),
-  }))
+export let salesInvoiceEvents = SlateTrigger.create(spec, {
+  name: 'Sales Invoice Events',
+  key: 'sales_invoice_events',
+  description:
+    'Triggered on sales invoice lifecycle events: creation, updates, deletion, state changes (draft, open, paid, late, reminded, uncollectible), sending, reminders, credit notes, and pause/resume.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Moneybird event type'),
+      webhookToken: z.string().optional(),
+      entity: z.any().describe('Full invoice entity data'),
+      state: z.string().optional().describe('New state'),
+      administrationId: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      salesInvoiceId: z.string().describe('Sales invoice ID'),
+      invoiceNumber: z.string().nullable().describe('Human-readable invoice number'),
+      contactId: z.string().nullable().describe('Contact ID'),
+      invoiceState: z.string().nullable().describe('Current invoice state'),
+      totalPriceInclTax: z.string().nullable().describe('Total including tax'),
+      totalUnpaid: z.string().nullable().describe('Unpaid amount'),
+      currency: z.string().nullable().describe('Currency code'),
+      invoiceDate: z.string().nullable().describe('Invoice date'),
+      dueDate: z.string().nullable().describe('Due date'),
+      paused: z.boolean().nullable().describe('Whether the invoice workflow is paused'),
+      url: z.string().nullable().describe('Invoice URL')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new MoneybirdClient({
         token: ctx.auth.token,
-        administrationId: ctx.config.administrationId,
+        administrationId: ctx.config.administrationId
       });
 
-      let webhook = await client.createWebhook(ctx.input.webhookBaseUrl, [...salesInvoiceEventTypes]);
+      let webhook = await client.createWebhook(ctx.input.webhookBaseUrl, [
+        ...salesInvoiceEventTypes
+      ]);
 
       return {
         registrationDetails: {
           webhookId: String(webhook.id),
-          token: webhook.token,
-        },
+          token: webhook.token
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new MoneybirdClient({
         token: ctx.auth.token,
-        administrationId: ctx.config.administrationId,
+        administrationId: ctx.config.administrationId
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
@@ -94,13 +98,15 @@ export let salesInvoiceEvents = SlateTrigger.create(
             webhookToken: data.token,
             entity: data.entity,
             state: data.state,
-            administrationId: data.administration_id ? String(data.administration_id) : undefined,
-          },
-        ],
+            administrationId: data.administration_id
+              ? String(data.administration_id)
+              : undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let entity = ctx.input.entity || {};
       let idempotencyKey = `${ctx.input.eventType}-${entity.id}-${Date.now()}`;
 
@@ -118,8 +124,8 @@ export let salesInvoiceEvents = SlateTrigger.create(
           invoiceDate: entity.invoice_date || null,
           dueDate: entity.due_date || null,
           paused: entity.paused ?? null,
-          url: entity.url || null,
-        },
+          url: entity.url || null
+        }
       };
-    },
+    }
   });

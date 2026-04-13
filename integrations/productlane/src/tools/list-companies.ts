@@ -18,7 +18,7 @@ let companySchema = z.object({
   externalIds: z.array(z.string()).describe('External IDs'),
   workspaceId: z.string().describe('Workspace ID'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last updated timestamp'),
+  updatedAt: z.string().describe('Last updated timestamp')
 });
 
 export let listCompanies = SlateTool.create(spec, {
@@ -26,27 +26,31 @@ export let listCompanies = SlateTool.create(spec, {
   key: 'list_companies',
   description: `List companies in your Productlane workspace. Supports filtering by domain or name, and pagination.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    domain: z.string().optional().describe('Filter companies by domain'),
-    name: z.string().optional().describe('Filter companies by name'),
-    skip: z.number().optional().describe('Number of records to skip for pagination'),
-    take: z.number().optional().describe('Number of records to return (max 100)'),
-  }))
-  .output(z.object({
-    companies: z.array(companySchema).describe('List of companies'),
-    hasMore: z.boolean().describe('Whether more results are available'),
-    count: z.number().describe('Total count of companies'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      domain: z.string().optional().describe('Filter companies by domain'),
+      name: z.string().optional().describe('Filter companies by name'),
+      skip: z.number().optional().describe('Number of records to skip for pagination'),
+      take: z.number().optional().describe('Number of records to return (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      companies: z.array(companySchema).describe('List of companies'),
+      hasMore: z.boolean().describe('Whether more results are available'),
+      count: z.number().describe('Total count of companies')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listCompanies({
       domain: ctx.input.domain,
       name: ctx.input.name,
       skip: ctx.input.skip,
-      take: ctx.input.take,
+      take: ctx.input.take
     });
 
     let companies = (result.companies || []).map((c: any) => ({
@@ -64,15 +68,16 @@ export let listCompanies = SlateTool.create(spec, {
       externalIds: c.externalIds || [],
       workspaceId: c.workspaceId,
       createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
+      updatedAt: c.updatedAt
     }));
 
     return {
       output: {
         companies,
         hasMore: result.hasMore ?? false,
-        count: result.count ?? companies.length,
+        count: result.count ?? companies.length
       },
-      message: `Found **${result.count ?? companies.length}** companies.${result.hasMore ? ' More results are available.' : ''}`,
+      message: `Found **${result.count ?? companies.length}** companies.${result.hasMore ? ' More results are available.' : ''}`
     };
-  }).build();
+  })
+  .build();

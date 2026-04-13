@@ -3,56 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getGage = SlateTool.create(
-  spec,
-  {
-    name: 'Get Gage',
-    key: 'get_gage',
-    description: `Retrieve a single gage record by its ID from GageList.
+export let getGage = SlateTool.create(spec, {
+  name: 'Get Gage',
+  key: 'get_gage',
+  description: `Retrieve a single gage record by its ID from GageList.
 Returns all details about the gage including identification, calibration dates, manufacturer, status, and more.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    gageId: z.number().describe('ID of the gage to retrieve'),
-  }))
-  .output(z.object({
-    gageId: z.number().describe('ID of the gage'),
-    status: z.string().optional().describe('Current status of the gage'),
-    type: z.string().optional().describe('Type of the gage'),
-    manufacturer: z.string().optional().describe('Manufacturer name'),
-    model: z.string().optional().describe('Model identifier'),
-    serialNumber: z.string().optional().describe('Serial number'),
-    controlNumber: z.string().optional().describe('Control number'),
-    assetNumber: z.string().optional().describe('Asset number'),
-    lastCalibrationDate: z.string().optional().describe('Last calibration date'),
-    calibrationDueDate: z.string().optional().describe('Next calibration due date'),
-    location: z.string().optional().describe('Physical location'),
-    responsibleUser: z.string().optional().describe('Responsible person'),
-    tolerance: z.string().optional().describe('Tolerance specification'),
-    rangeOrSize: z.string().optional().describe('Range or size'),
-    unitOfMeasure: z.string().optional().describe('Unit of measure'),
-    typesMeasurement: z.string().optional().describe('Types of measurement'),
-    condition: z.string().optional().describe('Condition when acquired'),
-    masterStandard: z.string().optional().describe('Whether this is a master standard'),
-    calibrationInstructions: z.string().optional().describe('Calibration instructions'),
-    calibrationEnvironment: z.string().optional().describe('Calibration environment'),
-    calibrationTestMode: z.string().optional().describe('Calibration test mode'),
-    interval: z.string().optional().describe('Calibration interval'),
-    years: z.number().optional().describe('Interval years component'),
-    months: z.number().optional().describe('Interval months component'),
-    days: z.number().optional().describe('Interval days component'),
-    purchasePrice: z.number().optional().describe('Purchase price'),
-    createdBy: z.string().optional().describe('Created by user'),
-    updatedBy: z.string().optional().describe('Last updated by user'),
-    createdDate: z.string().optional().describe('Date the record was created'),
-    updatedDate: z.string().optional().describe('Date the record was last updated'),
-    isDeleted: z.boolean().optional().describe('Whether the gage is soft-deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      gageId: z.number().describe('ID of the gage to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      gageId: z.number().describe('ID of the gage'),
+      status: z.string().optional().describe('Current status of the gage'),
+      type: z.string().optional().describe('Type of the gage'),
+      manufacturer: z.string().optional().describe('Manufacturer name'),
+      model: z.string().optional().describe('Model identifier'),
+      serialNumber: z.string().optional().describe('Serial number'),
+      controlNumber: z.string().optional().describe('Control number'),
+      assetNumber: z.string().optional().describe('Asset number'),
+      lastCalibrationDate: z.string().optional().describe('Last calibration date'),
+      calibrationDueDate: z.string().optional().describe('Next calibration due date'),
+      location: z.string().optional().describe('Physical location'),
+      responsibleUser: z.string().optional().describe('Responsible person'),
+      tolerance: z.string().optional().describe('Tolerance specification'),
+      rangeOrSize: z.string().optional().describe('Range or size'),
+      unitOfMeasure: z.string().optional().describe('Unit of measure'),
+      typesMeasurement: z.string().optional().describe('Types of measurement'),
+      condition: z.string().optional().describe('Condition when acquired'),
+      masterStandard: z.string().optional().describe('Whether this is a master standard'),
+      calibrationInstructions: z.string().optional().describe('Calibration instructions'),
+      calibrationEnvironment: z.string().optional().describe('Calibration environment'),
+      calibrationTestMode: z.string().optional().describe('Calibration test mode'),
+      interval: z.string().optional().describe('Calibration interval'),
+      years: z.number().optional().describe('Interval years component'),
+      months: z.number().optional().describe('Interval months component'),
+      days: z.number().optional().describe('Interval days component'),
+      purchasePrice: z.number().optional().describe('Purchase price'),
+      createdBy: z.string().optional().describe('Created by user'),
+      updatedBy: z.string().optional().describe('Last updated by user'),
+      createdDate: z.string().optional().describe('Date the record was created'),
+      updatedDate: z.string().optional().describe('Date the record was last updated'),
+      isDeleted: z.boolean().optional().describe('Whether the gage is soft-deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.getGage(ctx.input.gageId);
@@ -90,9 +91,9 @@ Returns all details about the gage including identification, calibration dates, 
         updatedBy: gage.UpdatedBy,
         createdDate: gage.CreatedDate,
         updatedDate: gage.UpdatedDate,
-        isDeleted: gage.IsDeleted,
+        isDeleted: gage.IsDeleted
       },
-      message: `Retrieved gage **${gage.Id}** — Status: ${gage.Status ?? 'N/A'}, Type: ${gage.Type ?? 'N/A'}.`,
+      message: `Retrieved gage **${gage.Id}** — Status: ${gage.Status ?? 'N/A'}, Type: ${gage.Type ?? 'N/A'}.`
     };
   })
   .build();

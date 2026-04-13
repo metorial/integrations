@@ -137,7 +137,7 @@ export interface Dataset {
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://app.getcensus.com',
-  eu: 'https://app-eu.getcensus.com',
+  eu: 'https://app-eu.getcensus.com'
 };
 
 // Helper to convert snake_case API responses to camelCase
@@ -161,7 +161,7 @@ let convertKeysToCamel = (obj: unknown): unknown => {
 
 // Helper to convert camelCase input to snake_case for API requests
 let toSnakeCase = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 let convertKeysToSnake = (obj: unknown): unknown => {
@@ -186,17 +186,19 @@ export class Client {
     this.http = createAxios({
       baseURL: `${baseURL}/api/v1`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // --- Syncs ---
 
-  async listSyncs(params?: PaginationParams): Promise<{ syncs: Sync[]; pagination?: PaginationInfo }> {
+  async listSyncs(
+    params?: PaginationParams
+  ): Promise<{ syncs: Sync[]; pagination?: PaginationInfo }> {
     let response = await this.http.get('/syncs', {
-      params: params ? convertKeysToSnake(params) : undefined,
+      params: params ? convertKeysToSnake(params) : undefined
     });
     let data = convertKeysToCamel(response.data) as CensusListResponse<Sync>;
     return { syncs: data.data, pagination: data.pagination };
@@ -230,14 +232,21 @@ export class Client {
     let body = forceFullSync ? { force_full_sync: true } : {};
     let response = await this.http.post(`/syncs/${syncId}/trigger`, body);
     let data = convertKeysToCamel(response.data) as Record<string, unknown>;
-    return { syncRunId: (data.data as Record<string, unknown>)?.syncRunId as number ?? data.syncRunId as number };
+    return {
+      syncRunId:
+        ((data.data as Record<string, unknown>)?.syncRunId as number) ??
+        (data.syncRunId as number)
+    };
   }
 
   // --- Sync Runs ---
 
-  async listSyncRuns(syncId: number, params?: PaginationParams): Promise<{ syncRuns: SyncRun[]; pagination?: PaginationInfo }> {
+  async listSyncRuns(
+    syncId: number,
+    params?: PaginationParams
+  ): Promise<{ syncRuns: SyncRun[]; pagination?: PaginationInfo }> {
     let response = await this.http.get(`/syncs/${syncId}/sync_runs`, {
-      params: params ? convertKeysToSnake(params) : undefined,
+      params: params ? convertKeysToSnake(params) : undefined
     });
     let data = convertKeysToCamel(response.data) as CensusListResponse<SyncRun>;
     return { syncRuns: data.data, pagination: data.pagination };
@@ -251,9 +260,11 @@ export class Client {
 
   // --- Sources ---
 
-  async listSources(params?: PaginationParams): Promise<{ sources: Source[]; pagination?: PaginationInfo }> {
+  async listSources(
+    params?: PaginationParams
+  ): Promise<{ sources: Source[]; pagination?: PaginationInfo }> {
     let response = await this.http.get('/sources', {
-      params: params ? convertKeysToSnake(params) : undefined,
+      params: params ? convertKeysToSnake(params) : undefined
     });
     let data = convertKeysToCamel(response.data) as CensusListResponse<Source>;
     return { sources: data.data, pagination: data.pagination };
@@ -267,9 +278,11 @@ export class Client {
 
   // --- Destinations ---
 
-  async listDestinations(params?: PaginationParams): Promise<{ destinations: Destination[]; pagination?: PaginationInfo }> {
+  async listDestinations(
+    params?: PaginationParams
+  ): Promise<{ destinations: Destination[]; pagination?: PaginationInfo }> {
     let response = await this.http.get('/destinations', {
-      params: params ? convertKeysToSnake(params) : undefined,
+      params: params ? convertKeysToSnake(params) : undefined
     });
     let data = convertKeysToCamel(response.data) as CensusListResponse<Destination>;
     return { destinations: data.data, pagination: data.pagination };
@@ -295,14 +308,22 @@ export class Client {
     return data.data;
   }
 
-  async createWebhook(webhook: { name: string; endpoint: string; description?: string; events?: string[] }): Promise<Webhook> {
+  async createWebhook(webhook: {
+    name: string;
+    endpoint: string;
+    description?: string;
+    events?: string[];
+  }): Promise<Webhook> {
     let body = convertKeysToSnake(webhook);
     let response = await this.http.post('/webhooks', body);
     let data = convertKeysToCamel(response.data) as CensusSingleResponse<Webhook>;
     return data.data;
   }
 
-  async updateWebhook(webhookId: number, updates: { name?: string; endpoint?: string; description?: string; events?: string[] }): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: number,
+    updates: { name?: string; endpoint?: string; description?: string; events?: string[] }
+  ): Promise<Webhook> {
     let body = convertKeysToSnake(updates);
     let response = await this.http.patch(`/webhooks/${webhookId}`, body);
     let data = convertKeysToCamel(response.data) as CensusSingleResponse<Webhook>;
@@ -321,11 +342,16 @@ export class Client {
     return data.data;
   }
 
-  async getDatasetRecord(datasetId: number, recordId: string): Promise<Record<string, unknown>> {
+  async getDatasetRecord(
+    datasetId: number,
+    recordId: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.http.get(`/entities/${datasetId}/record`, {
-      params: { record_id: recordId },
+      params: { record_id: recordId }
     });
-    let data = convertKeysToCamel(response.data) as CensusSingleResponse<Record<string, unknown>>;
+    let data = convertKeysToCamel(response.data) as CensusSingleResponse<
+      Record<string, unknown>
+    >;
     return data.data;
   }
 }

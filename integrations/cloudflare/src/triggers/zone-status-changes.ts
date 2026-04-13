@@ -3,40 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let zoneStatusChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Zone Status Changes',
-    key: 'zone_status_changes',
-    description: '[Polling fallback] Polls for changes in zone status (e.g. active, pending, moved). Detects when zones are added, removed, or change their activation status.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['added', 'status_changed', 'removed']).describe('Type of change'),
-    zoneId: z.string().describe('Zone ID'),
-    zoneName: z.string().describe('Zone domain name'),
-    status: z.string().describe('Current zone status'),
-    previousStatus: z.string().optional().describe('Previous zone status'),
-    paused: z.boolean().optional().describe('Whether the zone is paused'),
-  }))
-  .output(z.object({
-    zoneId: z.string().describe('Zone ID'),
-    zoneName: z.string().describe('Zone domain name'),
-    changeType: z.string().describe('Type of change: added, status_changed, or removed'),
-    status: z.string().describe('Current zone status'),
-    previousStatus: z.string().optional().describe('Previous zone status, if changed'),
-    paused: z.boolean().optional().describe('Whether the zone is paused'),
-  }))
+export let zoneStatusChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Zone Status Changes',
+  key: 'zone_status_changes',
+  description:
+    '[Polling fallback] Polls for changes in zone status (e.g. active, pending, moved). Detects when zones are added, removed, or change their activation status.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['added', 'status_changed', 'removed']).describe('Type of change'),
+      zoneId: z.string().describe('Zone ID'),
+      zoneName: z.string().describe('Zone domain name'),
+      status: z.string().describe('Current zone status'),
+      previousStatus: z.string().optional().describe('Previous zone status'),
+      paused: z.boolean().optional().describe('Whether the zone is paused')
+    })
+  )
+  .output(
+    z.object({
+      zoneId: z.string().describe('Zone ID'),
+      zoneName: z.string().describe('Zone domain name'),
+      changeType: z.string().describe('Type of change: added, status_changed, or removed'),
+      status: z.string().describe('Current zone status'),
+      previousStatus: z.string().optional().describe('Previous zone status, if changed'),
+      paused: z.boolean().optional().describe('Whether the zone is paused')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth);
       let response = await client.listZones({
         accountId: ctx.config.accountId,
-        perPage: 50,
+        perPage: 50
       });
 
       let currentZones: Record<string, any> = {};
@@ -45,7 +47,7 @@ export let zoneStatusChangesTrigger = SlateTrigger.create(
           zoneId: z.id,
           zoneName: z.name,
           status: z.status,
-          paused: z.paused,
+          paused: z.paused
         };
       }
 
@@ -59,7 +61,11 @@ export let zoneStatusChangesTrigger = SlateTrigger.create(
             inputs.push({ ...zone, changeType: 'added' as const });
           }
         } else if (prev.status !== zone.status) {
-          inputs.push({ ...zone, changeType: 'status_changed' as const, previousStatus: prev.status });
+          inputs.push({
+            ...zone,
+            changeType: 'status_changed' as const,
+            previousStatus: prev.status
+          });
         }
       }
 
@@ -74,12 +80,12 @@ export let zoneStatusChangesTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          zones: currentZones,
-        },
+          zones: currentZones
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `zone.${ctx.input.changeType}`,
         id: `${ctx.input.zoneId}-${ctx.input.changeType}-${Date.now()}`,
@@ -89,9 +95,9 @@ export let zoneStatusChangesTrigger = SlateTrigger.create(
           changeType: ctx.input.changeType,
           status: ctx.input.status,
           previousStatus: ctx.input.previousStatus,
-          paused: ctx.input.paused,
-        },
+          paused: ctx.input.paused
+        }
       };
-    },
+    }
   })
   .build();

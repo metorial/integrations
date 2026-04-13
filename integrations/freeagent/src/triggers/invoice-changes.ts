@@ -3,56 +3,57 @@ import { FreeAgentClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Changes',
-    key: 'invoice_changes',
-    description: 'Polls for new or updated invoices in FreeAgent.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('FreeAgent invoice ID'),
-    reference: z.string().optional().describe('Invoice reference'),
-    status: z.string().optional().describe('Invoice status'),
-    contact: z.string().optional().describe('Contact URL'),
-    totalValue: z.string().optional().describe('Total invoice value'),
-    datedOn: z.string().optional().describe('Invoice date'),
-    dueOn: z.string().optional().describe('Due date'),
-    paidOn: z.string().optional().describe('Date the invoice was paid'),
-    currency: z.string().optional().describe('Currency code'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    raw: z.record(z.string(), z.any()).optional().describe('Full invoice payload'),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('FreeAgent invoice ID'),
-    reference: z.string().optional().describe('Invoice reference number'),
-    status: z.string().optional().describe('Current invoice status'),
-    contact: z.string().optional().describe('Contact URL'),
-    totalValue: z.string().optional().describe('Total invoice value'),
-    datedOn: z.string().optional().describe('Invoice date'),
-    dueOn: z.string().optional().describe('Due date'),
-    paidOn: z.string().optional().describe('Date paid'),
-    currency: z.string().optional().describe('Currency code'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-  }))
+export let invoiceChanges = SlateTrigger.create(spec, {
+  name: 'Invoice Changes',
+  key: 'invoice_changes',
+  description: 'Polls for new or updated invoices in FreeAgent.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('FreeAgent invoice ID'),
+      reference: z.string().optional().describe('Invoice reference'),
+      status: z.string().optional().describe('Invoice status'),
+      contact: z.string().optional().describe('Contact URL'),
+      totalValue: z.string().optional().describe('Total invoice value'),
+      datedOn: z.string().optional().describe('Invoice date'),
+      dueOn: z.string().optional().describe('Due date'),
+      paidOn: z.string().optional().describe('Date the invoice was paid'),
+      currency: z.string().optional().describe('Currency code'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      raw: z.record(z.string(), z.any()).optional().describe('Full invoice payload')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('FreeAgent invoice ID'),
+      reference: z.string().optional().describe('Invoice reference number'),
+      status: z.string().optional().describe('Current invoice status'),
+      contact: z.string().optional().describe('Contact URL'),
+      totalValue: z.string().optional().describe('Total invoice value'),
+      datedOn: z.string().optional().describe('Invoice date'),
+      dueOn: z.string().optional().describe('Due date'),
+      paidOn: z.string().optional().describe('Date paid'),
+      currency: z.string().optional().describe('Currency code'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FreeAgentClient({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let lastPolled = ctx.state?.lastPolled as string | undefined;
       let invoices = await client.listInvoices({
         updatedSince: lastPolled,
-        nestedItems: false,
+        nestedItems: false
       });
 
       let now = new Date().toISOString();
@@ -72,19 +73,19 @@ export let invoiceChanges = SlateTrigger.create(
           currency: inv.currency,
           updatedAt: inv.updated_at,
           createdAt: inv.created_at,
-          raw: inv,
+          raw: inv
         };
       });
 
       return {
         inputs,
         updatedState: {
-          lastPolled: now,
-        },
+          lastPolled: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let isNew = ctx.input.createdAt === ctx.input.updatedAt;
       let eventType = isNew ? 'created' : 'updated';
 
@@ -102,9 +103,9 @@ export let invoiceChanges = SlateTrigger.create(
           paidOn: ctx.input.paidOn,
           currency: ctx.input.currency,
           updatedAt: ctx.input.updatedAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

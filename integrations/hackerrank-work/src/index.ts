@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listTests,
@@ -17,11 +16,9 @@ import {
   manageTeam,
   listTeams,
   listQuestions,
-  getQuestion,
+  getQuestion
 } from './tools';
-import { candidateStatusChange,
-  inboundWebhook,
-} from './triggers';
+import { candidateStatusChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,10 +38,7 @@ export let provider = Slate.create({
     manageTeam.build(),
     listTeams.build(),
     listQuestions.build(),
-    getQuestion.build(),
+    getQuestion.build()
   ],
-  triggers: [
-    inboundWebhook,
-    candidateStatusChange.build(),
-  ],
+  triggers: [inboundWebhook, candidateStatusChange.build()]
 });

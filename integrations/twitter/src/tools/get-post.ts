@@ -4,25 +4,26 @@ import { postSchema, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPost = SlateTool.create(
-  spec,
-  {
-    name: 'Get Post',
-    key: 'get_post',
-    description: `Retrieve one or more posts by their IDs. Returns full post details including text, author, metrics, and metadata.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getPost = SlateTool.create(spec, {
+  name: 'Get Post',
+  key: 'get_post',
+  description: `Retrieve one or more posts by their IDs. Returns full post details including text, author, metrics, and metadata.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    postIds: z.array(z.string()).min(1).describe('One or more post IDs to retrieve')
-  }))
-  .output(z.object({
-    posts: z.array(postSchema).describe('Retrieved posts')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      postIds: z.array(z.string()).min(1).describe('One or more post IDs to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      posts: z.array(postSchema).describe('Retrieved posts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwitterClient(ctx.auth.token);
 
     let result;
@@ -42,4 +43,5 @@ export let getPost = SlateTool.create(
       output: { posts },
       message: `Retrieved **${posts.length}** post(s).`
     };
-  }).build();
+  })
+  .build();

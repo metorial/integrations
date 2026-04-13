@@ -3,35 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSpace = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Space',
-    key: 'manage_space',
-    description: `Create, update, or delete a Space in the Retool organization. Spaces are isolated sub-environments for multi-tenant or multi-team setups.`,
-    constraints: [
-      'Requires Spaces to be enabled on the organization.',
-      'API calls must be made from the Admin Space domain.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
-    spaceId: z.string().optional().describe('Space ID (required for update and delete)'),
-    spaceName: z.string().optional().describe('Name of the space (required for create)'),
-    domain: z.string().optional().describe('Domain for the space (required for create)'),
-    copySsoSettings: z.boolean().optional().describe('Copy SSO settings from parent (only for create)'),
-    copyBrandingAndThemesSettings: z.boolean().optional().describe('Copy branding and themes from parent (only for create)'),
-    createAdminUser: z.boolean().optional().describe('Create an admin user in the new space (only for create)'),
-  }))
-  .output(z.object({
-    spaceId: z.string(),
-    spaceName: z.string().optional(),
-    domain: z.string().optional(),
-    action: z.string(),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSpace = SlateTool.create(spec, {
+  name: 'Manage Space',
+  key: 'manage_space',
+  description: `Create, update, or delete a Space in the Retool organization. Spaces are isolated sub-environments for multi-tenant or multi-team setups.`,
+  constraints: [
+    'Requires Spaces to be enabled on the organization.',
+    'API calls must be made from the Admin Space domain.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
+      spaceId: z.string().optional().describe('Space ID (required for update and delete)'),
+      spaceName: z.string().optional().describe('Name of the space (required for create)'),
+      domain: z.string().optional().describe('Domain for the space (required for create)'),
+      copySsoSettings: z
+        .boolean()
+        .optional()
+        .describe('Copy SSO settings from parent (only for create)'),
+      copyBrandingAndThemesSettings: z
+        .boolean()
+        .optional()
+        .describe('Copy branding and themes from parent (only for create)'),
+      createAdminUser: z
+        .boolean()
+        .optional()
+        .describe('Create an admin user in the new space (only for create)')
+    })
+  )
+  .output(
+    z.object({
+      spaceId: z.string(),
+      spaceName: z.string().optional(),
+      domain: z.string().optional(),
+      action: z.string(),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
     if (ctx.input.action === 'create') {
@@ -44,8 +54,8 @@ export let manageSpace = SlateTool.create(
         options: {
           copySsoSettings: ctx.input.copySsoSettings,
           copyBrandingAndThemesSettings: ctx.input.copyBrandingAndThemesSettings,
-          createAdminUser: ctx.input.createAdminUser,
-        },
+          createAdminUser: ctx.input.createAdminUser
+        }
       });
       let s = result.data;
       return {
@@ -54,9 +64,9 @@ export let manageSpace = SlateTool.create(
           spaceName: s.name,
           domain: s.domain,
           action: 'create',
-          success: true,
+          success: true
         },
-        message: `Created space **${s.name}** at domain \`${s.domain}\` with ID \`${s.id}\`.`,
+        message: `Created space **${s.name}** at domain \`${s.domain}\` with ID \`${s.id}\`.`
       };
     }
 
@@ -66,7 +76,7 @@ export let manageSpace = SlateTool.create(
       }
       let result = await client.updateSpace(ctx.input.spaceId, {
         name: ctx.input.spaceName,
-        domain: ctx.input.domain,
+        domain: ctx.input.domain
       });
       let s = result.data;
       return {
@@ -75,9 +85,9 @@ export let manageSpace = SlateTool.create(
           spaceName: s.name,
           domain: s.domain,
           action: 'update',
-          success: true,
+          success: true
         },
-        message: `Updated space **${s.name}** (ID: \`${s.id}\`).`,
+        message: `Updated space **${s.name}** (ID: \`${s.id}\`).`
       };
     }
 
@@ -90,8 +100,9 @@ export let manageSpace = SlateTool.create(
       output: {
         spaceId: ctx.input.spaceId,
         action: 'delete',
-        success: true,
+        success: true
       },
-      message: `Deleted space \`${ctx.input.spaceId}\`.`,
+      message: `Deleted space \`${ctx.input.spaceId}\`.`
     };
-  }).build();
+  })
+  .build();

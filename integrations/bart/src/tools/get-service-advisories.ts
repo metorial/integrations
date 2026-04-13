@@ -9,7 +9,7 @@ let advisorySchema = z.object({
   description: z.string().describe('Full advisory description'),
   smsText: z.string().describe('Abbreviated SMS text version'),
   posted: z.string().describe('Time the advisory was posted'),
-  expires: z.string().describe('Time the advisory expires'),
+  expires: z.string().describe('Time the advisory expires')
 });
 
 let elevatorOutageSchema = z.object({
@@ -19,34 +19,42 @@ let elevatorOutageSchema = z.object({
   description: z.string().describe('Outage description'),
   smsText: z.string().describe('Abbreviated SMS text version'),
   posted: z.string().describe('When the outage was posted'),
-  expires: z.string().describe('When the outage is expected to end'),
+  expires: z.string().describe('When the outage is expected to end')
 });
 
-export let getServiceAdvisories = SlateTool.create(
-  spec,
-  {
-    name: 'Get Service Advisories',
-    key: 'get_service_advisories',
-    description: `Retrieve current BART service advisories and elevator outage information. Service advisories include delays, police actions, equipment problems, and other system-affecting conditions. Advisories are issued when two or more trains are off schedule by more than 10 minutes. Optionally includes elevator outage status.`,
-    instructions: [
-      'When there are no active advisories, the API returns a message indicating no delays.',
-      'Set includeElevatorStatus to true to also retrieve current elevator outage information.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getServiceAdvisories = SlateTool.create(spec, {
+  name: 'Get Service Advisories',
+  key: 'get_service_advisories',
+  description: `Retrieve current BART service advisories and elevator outage information. Service advisories include delays, police actions, equipment problems, and other system-affecting conditions. Advisories are issued when two or more trains are off schedule by more than 10 minutes. Optionally includes elevator outage status.`,
+  instructions: [
+    'When there are no active advisories, the API returns a message indicating no delays.',
+    'Set includeElevatorStatus to true to also retrieve current elevator outage information.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeElevatorStatus: z.boolean().optional().default(false).describe('Whether to include elevator outage information'),
-  }))
-  .output(z.object({
-    date: z.string().describe('Current date'),
-    time: z.string().describe('Current time'),
-    advisories: z.array(advisorySchema).describe('Current service advisories'),
-    elevatorOutages: z.array(elevatorOutageSchema).optional().describe('Current elevator outages (when includeElevatorStatus is true)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeElevatorStatus: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to include elevator outage information')
+    })
+  )
+  .output(
+    z.object({
+      date: z.string().describe('Current date'),
+      time: z.string().describe('Current time'),
+      advisories: z.array(advisorySchema).describe('Current service advisories'),
+      elevatorOutages: z
+        .array(elevatorOutageSchema)
+        .optional()
+        .describe('Current elevator outages (when includeElevatorStatus is true)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BartClient({ token: ctx.auth.token });
 
     let result = await client.getAdvisories();
@@ -54,7 +62,8 @@ export let getServiceAdvisories = SlateTool.create(
     let extractCdata = (data: any): string => {
       if (!data) return '';
       if (typeof data === 'string') return data;
-      if (typeof data === 'object' && data['#cdata-section'] !== undefined) return data['#cdata-section'];
+      if (typeof data === 'object' && data['#cdata-section'] !== undefined)
+        return data['#cdata-section'];
       return '';
     };
 
@@ -73,13 +82,13 @@ export let getServiceAdvisories = SlateTool.create(
         description: extractCdata(bsa.description),
         smsText: extractCdata(bsa.sms_text),
         posted: bsa.posted || '',
-        expires: bsa.expires || '',
+        expires: bsa.expires || ''
       }));
 
     let output: any = {
       date: result?.date || '',
       time: result?.time || '',
-      advisories,
+      advisories
     };
 
     if (ctx.input.includeElevatorStatus) {
@@ -94,20 +103,22 @@ export let getServiceAdvisories = SlateTool.create(
         description: extractCdata(elev.description),
         smsText: extractCdata(elev.sms_text),
         posted: elev.posted || '',
-        expires: elev.expires || '',
+        expires: elev.expires || ''
       }));
     }
 
     let advisoryCount = advisories.length;
-    let elevMsg = ctx.input.includeElevatorStatus && output.elevatorOutages
-      ? ` and **${output.elevatorOutages.length}** elevator outage(s)`
-      : '';
+    let elevMsg =
+      ctx.input.includeElevatorStatus && output.elevatorOutages
+        ? ` and **${output.elevatorOutages.length}** elevator outage(s)`
+        : '';
 
     return {
       output,
-      message: advisoryCount > 0
-        ? `Found **${advisoryCount}** active advisory(ies)${elevMsg}.`
-        : `No active service advisories${elevMsg}.`,
+      message:
+        advisoryCount > 0
+          ? `Found **${advisoryCount}** active advisory(ies)${elevMsg}.`
+          : `No active service advisories${elevMsg}.`
     };
   })
   .build();

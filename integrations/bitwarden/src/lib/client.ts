@@ -7,7 +7,7 @@ import type {
   PolicyResponse,
   EventResponse,
   ListResponse,
-  CollectionAssociation,
+  CollectionAssociation
 } from './types';
 
 export class Client {
@@ -18,8 +18,8 @@ export class Client {
       baseURL: `${config.serverUrl}/public`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -58,12 +58,15 @@ export class Client {
     return response.data;
   }
 
-  async updateMember(memberId: string, data: {
-    type: number;
-    accessAll: boolean;
-    externalId?: string | null;
-    collections?: CollectionAssociation[];
-  }): Promise<MemberResponse> {
+  async updateMember(
+    memberId: string,
+    data: {
+      type: number;
+      accessAll: boolean;
+      externalId?: string | null;
+      collections?: CollectionAssociation[];
+    }
+  ): Promise<MemberResponse> {
     let response = await this.http.put<MemberResponse>(`/members/${memberId}`, data);
     return response.data;
   }
@@ -127,12 +130,15 @@ export class Client {
     return response.data;
   }
 
-  async updateGroup(groupId: string, data: {
-    name: string;
-    accessAll: boolean;
-    externalId?: string | null;
-    collections?: CollectionAssociation[];
-  }): Promise<GroupResponse> {
+  async updateGroup(
+    groupId: string,
+    data: {
+      name: string;
+      accessAll: boolean;
+      externalId?: string | null;
+      collections?: CollectionAssociation[];
+    }
+  ): Promise<GroupResponse> {
     let response = await this.http.put<GroupResponse>(`/groups/${groupId}`, data);
     return response.data;
   }
@@ -161,7 +167,9 @@ export class Client {
       if (continuationToken) {
         params.continuationToken = continuationToken;
       }
-      let response = await this.http.get<ListResponse<CollectionResponse>>('/collections', { params });
+      let response = await this.http.get<ListResponse<CollectionResponse>>('/collections', {
+        params
+      });
       results.push(...response.data.data);
       continuationToken = response.data.continuationToken;
     } while (continuationToken);
@@ -174,11 +182,17 @@ export class Client {
     return response.data;
   }
 
-  async updateCollection(collectionId: string, data: {
-    externalId?: string | null;
-    groups?: CollectionAssociation[];
-  }): Promise<CollectionResponse> {
-    let response = await this.http.put<CollectionResponse>(`/collections/${collectionId}`, data);
+  async updateCollection(
+    collectionId: string,
+    data: {
+      externalId?: string | null;
+      groups?: CollectionAssociation[];
+    }
+  ): Promise<CollectionResponse> {
+    let response = await this.http.put<CollectionResponse>(
+      `/collections/${collectionId}`,
+      data
+    );
     return response.data;
   }
 
@@ -197,7 +211,9 @@ export class Client {
       if (continuationToken) {
         params.continuationToken = continuationToken;
       }
-      let response = await this.http.get<ListResponse<PolicyResponse>>('/policies', { params });
+      let response = await this.http.get<ListResponse<PolicyResponse>>('/policies', {
+        params
+      });
       results.push(...response.data.data);
       continuationToken = response.data.continuationToken;
     } while (continuationToken);
@@ -210,10 +226,13 @@ export class Client {
     return response.data;
   }
 
-  async updatePolicy(policyId: string, data: {
-    enabled: boolean;
-    data?: Record<string, any> | null;
-  }): Promise<PolicyResponse> {
+  async updatePolicy(
+    policyId: string,
+    data: {
+      enabled: boolean;
+      data?: Record<string, any> | null;
+    }
+  ): Promise<PolicyResponse> {
     let response = await this.http.put<PolicyResponse>(`/policies/${policyId}`, data);
     return response.data;
   }
@@ -234,10 +253,12 @@ export class Client {
     if (params?.itemId) queryParams.itemId = params.itemId;
     if (params?.continuationToken) queryParams.continuationToken = params.continuationToken;
 
-    let response = await this.http.get<ListResponse<EventResponse>>('/events', { params: queryParams });
+    let response = await this.http.get<ListResponse<EventResponse>>('/events', {
+      params: queryParams
+    });
     return {
       events: response.data.data,
-      continuationToken: response.data.continuationToken,
+      continuationToken: response.data.continuationToken
     };
   }
 
@@ -253,7 +274,7 @@ export class Client {
     do {
       let result = await this.listEvents({
         ...params,
-        continuationToken: continuationToken ?? undefined,
+        continuationToken: continuationToken ?? undefined
       });
       results.push(...result.events);
       continuationToken = result.continuationToken;

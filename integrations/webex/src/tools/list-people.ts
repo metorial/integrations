@@ -19,32 +19,33 @@ let personSchema = z.object({
   lastActivity: z.string().optional().describe('Last activity timestamp')
 });
 
-export let listPeople = SlateTool.create(
-  spec,
-  {
-    name: 'List People',
-    key: 'list_people',
-    description: `Search and list people in the Webex organization directory. Filter by email, display name, or person ID. Returns profile information including name, email, status, and organization.`,
-    instructions: [
-      'At least one filter (email, displayName, or personIds) is required by the API.',
-      'Use displayName for partial name searches.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listPeople = SlateTool.create(spec, {
+  name: 'List People',
+  key: 'list_people',
+  description: `Search and list people in the Webex organization directory. Filter by email, display name, or person ID. Returns profile information including name, email, status, and organization.`,
+  instructions: [
+    'At least one filter (email, displayName, or personIds) is required by the API.',
+    'Use displayName for partial name searches.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Filter by exact email address'),
-    displayName: z.string().optional().describe('Filter by display name (partial match)'),
-    personIds: z.string().optional().describe('Comma-separated person IDs to look up'),
-    orgId: z.string().optional().describe('Filter by organization ID'),
-    max: z.number().optional().describe('Maximum number of results (default 100)')
-  }))
-  .output(z.object({
-    people: z.array(personSchema).describe('List of people')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Filter by exact email address'),
+      displayName: z.string().optional().describe('Filter by display name (partial match)'),
+      personIds: z.string().optional().describe('Comma-separated person IDs to look up'),
+      orgId: z.string().optional().describe('Filter by organization ID'),
+      max: z.number().optional().describe('Maximum number of results (default 100)')
+    })
+  )
+  .output(
+    z.object({
+      people: z.array(personSchema).describe('List of people')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.listPeople({
@@ -79,22 +80,24 @@ export let listPeople = SlateTool.create(
   })
   .build();
 
-export let getPersonDetails = SlateTool.create(
-  spec,
-  {
-    name: 'Get Person Details',
-    key: 'get_person',
-    description: `Retrieve full profile details of a specific person by their person ID, or get the authenticated user's own profile by omitting the person ID.`,
-    tags: {
-      readOnly: true
-    }
+export let getPersonDetails = SlateTool.create(spec, {
+  name: 'Get Person Details',
+  key: 'get_person',
+  description: `Retrieve full profile details of a specific person by their person ID, or get the authenticated user's own profile by omitting the person ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    personId: z.string().optional().describe('Person ID to look up (omit to get your own profile)')
-  }))
+})
+  .input(
+    z.object({
+      personId: z
+        .string()
+        .optional()
+        .describe('Person ID to look up (omit to get your own profile)')
+    })
+  )
   .output(personSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = ctx.input.personId

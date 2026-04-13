@@ -30,9 +30,10 @@ export class HarvestClient {
       headers: {
         Authorization: `Bearer ${clientConfig.token}`,
         'Harvest-Account-Id': clientConfig.accountId,
-        'User-Agent': clientConfig.userAgent || 'Slates Harvest Integration (support@slates.dev)',
-        'Content-Type': 'application/json',
-      },
+        'User-Agent':
+          clientConfig.userAgent || 'Slates Harvest Integration (support@slates.dev)',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -65,8 +66,8 @@ export class HarvestClient {
         from: params?.from,
         to: params?.to,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'time_entries');
   }
@@ -85,12 +86,17 @@ export class HarvestClient {
     startedTime?: string;
     endedTime?: string;
     notes?: string;
-    externalReference?: { id: string; groupId?: string; accountId?: string; permalink?: string };
+    externalReference?: {
+      id: string;
+      groupId?: string;
+      accountId?: string;
+      permalink?: string;
+    };
   }): Promise<any> {
     let body: any = {
       project_id: data.projectId,
       task_id: data.taskId,
-      spent_date: data.spentDate,
+      spent_date: data.spentDate
     };
     if (data.userId !== undefined) body.user_id = data.userId;
     if (data.hours !== undefined) body.hours = data.hours;
@@ -102,23 +108,31 @@ export class HarvestClient {
         id: data.externalReference.id,
         group_id: data.externalReference.groupId,
         account_id: data.externalReference.accountId,
-        permalink: data.externalReference.permalink,
+        permalink: data.externalReference.permalink
       };
     }
     let response = await this.api.post('/time_entries', body);
     return response.data;
   }
 
-  async updateTimeEntry(timeEntryId: number, data: {
-    projectId?: number;
-    taskId?: number;
-    spentDate?: string;
-    startedTime?: string;
-    endedTime?: string;
-    hours?: number;
-    notes?: string;
-    externalReference?: { id: string; groupId?: string; accountId?: string; permalink?: string };
-  }): Promise<any> {
+  async updateTimeEntry(
+    timeEntryId: number,
+    data: {
+      projectId?: number;
+      taskId?: number;
+      spentDate?: string;
+      startedTime?: string;
+      endedTime?: string;
+      hours?: number;
+      notes?: string;
+      externalReference?: {
+        id: string;
+        groupId?: string;
+        accountId?: string;
+        permalink?: string;
+      };
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.projectId !== undefined) body.project_id = data.projectId;
     if (data.taskId !== undefined) body.task_id = data.taskId;
@@ -132,7 +146,7 @@ export class HarvestClient {
         id: data.externalReference.id,
         group_id: data.externalReference.groupId,
         account_id: data.externalReference.accountId,
-        permalink: data.externalReference.permalink,
+        permalink: data.externalReference.permalink
       };
     }
     let response = await this.api.patch(`/time_entries/${timeEntryId}`, body);
@@ -168,8 +182,8 @@ export class HarvestClient {
         client_id: params?.clientId,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'projects');
   }
@@ -206,7 +220,7 @@ export class HarvestClient {
       name: data.name,
       is_billable: data.isBillable,
       bill_by: data.billBy,
-      budget_by: data.budgetBy,
+      budget_by: data.budgetBy
     };
     if (data.code !== undefined) body.code = data.code;
     if (data.isActive !== undefined) body.is_active = data.isActive;
@@ -214,11 +228,14 @@ export class HarvestClient {
     if (data.hourlyRate !== undefined) body.hourly_rate = data.hourlyRate;
     if (data.budget !== undefined) body.budget = data.budget;
     if (data.budgetIsMonthly !== undefined) body.budget_is_monthly = data.budgetIsMonthly;
-    if (data.notifyWhenOverBudget !== undefined) body.notify_when_over_budget = data.notifyWhenOverBudget;
-    if (data.overBudgetNotificationPercentage !== undefined) body.over_budget_notification_percentage = data.overBudgetNotificationPercentage;
+    if (data.notifyWhenOverBudget !== undefined)
+      body.notify_when_over_budget = data.notifyWhenOverBudget;
+    if (data.overBudgetNotificationPercentage !== undefined)
+      body.over_budget_notification_percentage = data.overBudgetNotificationPercentage;
     if (data.showBudgetToAll !== undefined) body.show_budget_to_all = data.showBudgetToAll;
     if (data.costBudget !== undefined) body.cost_budget = data.costBudget;
-    if (data.costBudgetIncludeExpenses !== undefined) body.cost_budget_include_expenses = data.costBudgetIncludeExpenses;
+    if (data.costBudgetIncludeExpenses !== undefined)
+      body.cost_budget_include_expenses = data.costBudgetIncludeExpenses;
     if (data.fee !== undefined) body.fee = data.fee;
     if (data.notes !== undefined) body.notes = data.notes;
     if (data.startsOn !== undefined) body.starts_on = data.startsOn;
@@ -227,28 +244,31 @@ export class HarvestClient {
     return response.data;
   }
 
-  async updateProject(projectId: number, data: {
-    clientId?: number;
-    name?: string;
-    isBillable?: boolean;
-    billBy?: string;
-    budgetBy?: string;
-    code?: string;
-    isActive?: boolean;
-    isFixedFee?: boolean;
-    hourlyRate?: number;
-    budget?: number;
-    budgetIsMonthly?: boolean;
-    notifyWhenOverBudget?: boolean;
-    overBudgetNotificationPercentage?: number;
-    showBudgetToAll?: boolean;
-    costBudget?: number;
-    costBudgetIncludeExpenses?: boolean;
-    fee?: number;
-    notes?: string;
-    startsOn?: string;
-    endsOn?: string;
-  }): Promise<any> {
+  async updateProject(
+    projectId: number,
+    data: {
+      clientId?: number;
+      name?: string;
+      isBillable?: boolean;
+      billBy?: string;
+      budgetBy?: string;
+      code?: string;
+      isActive?: boolean;
+      isFixedFee?: boolean;
+      hourlyRate?: number;
+      budget?: number;
+      budgetIsMonthly?: boolean;
+      notifyWhenOverBudget?: boolean;
+      overBudgetNotificationPercentage?: number;
+      showBudgetToAll?: boolean;
+      costBudget?: number;
+      costBudgetIncludeExpenses?: boolean;
+      fee?: number;
+      notes?: string;
+      startsOn?: string;
+      endsOn?: string;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.clientId !== undefined) body.client_id = data.clientId;
     if (data.name !== undefined) body.name = data.name;
@@ -261,11 +281,14 @@ export class HarvestClient {
     if (data.hourlyRate !== undefined) body.hourly_rate = data.hourlyRate;
     if (data.budget !== undefined) body.budget = data.budget;
     if (data.budgetIsMonthly !== undefined) body.budget_is_monthly = data.budgetIsMonthly;
-    if (data.notifyWhenOverBudget !== undefined) body.notify_when_over_budget = data.notifyWhenOverBudget;
-    if (data.overBudgetNotificationPercentage !== undefined) body.over_budget_notification_percentage = data.overBudgetNotificationPercentage;
+    if (data.notifyWhenOverBudget !== undefined)
+      body.notify_when_over_budget = data.notifyWhenOverBudget;
+    if (data.overBudgetNotificationPercentage !== undefined)
+      body.over_budget_notification_percentage = data.overBudgetNotificationPercentage;
     if (data.showBudgetToAll !== undefined) body.show_budget_to_all = data.showBudgetToAll;
     if (data.costBudget !== undefined) body.cost_budget = data.costBudget;
-    if (data.costBudgetIncludeExpenses !== undefined) body.cost_budget_include_expenses = data.costBudgetIncludeExpenses;
+    if (data.costBudgetIncludeExpenses !== undefined)
+      body.cost_budget_include_expenses = data.costBudgetIncludeExpenses;
     if (data.fee !== undefined) body.fee = data.fee;
     if (data.notes !== undefined) body.notes = data.notes;
     if (data.startsOn !== undefined) body.starts_on = data.startsOn;
@@ -291,8 +314,8 @@ export class HarvestClient {
         is_active: params?.isActive,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'clients');
   }
@@ -316,12 +339,15 @@ export class HarvestClient {
     return response.data;
   }
 
-  async updateClient(clientId: number, data: {
-    name?: string;
-    isActive?: boolean;
-    address?: string;
-    currency?: string;
-  }): Promise<any> {
+  async updateClient(
+    clientId: number,
+    data: {
+      name?: string;
+      isActive?: boolean;
+      address?: string;
+      currency?: string;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.isActive !== undefined) body.is_active = data.isActive;
@@ -348,8 +374,8 @@ export class HarvestClient {
         client_id: params?.clientId,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'contacts');
   }
@@ -371,7 +397,7 @@ export class HarvestClient {
   }): Promise<any> {
     let body: any = {
       client_id: data.clientId,
-      first_name: data.firstName,
+      first_name: data.firstName
     };
     if (data.lastName !== undefined) body.last_name = data.lastName;
     if (data.title !== undefined) body.title = data.title;
@@ -383,16 +409,19 @@ export class HarvestClient {
     return response.data;
   }
 
-  async updateContact(contactId: number, data: {
-    clientId?: number;
-    firstName?: string;
-    lastName?: string;
-    title?: string;
-    email?: string;
-    phoneOffice?: string;
-    phoneMobile?: string;
-    fax?: string;
-  }): Promise<any> {
+  async updateContact(
+    contactId: number,
+    data: {
+      clientId?: number;
+      firstName?: string;
+      lastName?: string;
+      title?: string;
+      email?: string;
+      phoneOffice?: string;
+      phoneMobile?: string;
+      fax?: string;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.clientId !== undefined) body.client_id = data.clientId;
     if (data.firstName !== undefined) body.first_name = data.firstName;
@@ -431,8 +460,8 @@ export class HarvestClient {
         to: params?.to,
         state: params?.state,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'invoices');
   }
@@ -482,47 +511,50 @@ export class HarvestClient {
     if (data.dueDate !== undefined) body.due_date = data.dueDate;
     if (data.paymentTerm !== undefined) body.payment_term = data.paymentTerm;
     if (data.lineItems) {
-      body.line_items = data.lineItems.map((item) => ({
+      body.line_items = data.lineItems.map(item => ({
         kind: item.kind,
         description: item.description,
         quantity: item.quantity,
         unit_price: item.unitPrice,
         project_id: item.projectId,
         taxed: item.taxed,
-        taxed2: item.taxed2,
+        taxed2: item.taxed2
       }));
     }
     let response = await this.api.post('/invoices', body);
     return response.data;
   }
 
-  async updateInvoice(invoiceId: number, data: {
-    clientId?: number;
-    retainerId?: number;
-    estimateId?: number;
-    number?: string;
-    purchaseOrder?: string;
-    tax?: number;
-    tax2?: number;
-    discount?: number;
-    subject?: string;
-    notes?: string;
-    currency?: string;
-    issueDate?: string;
-    dueDate?: string;
-    paymentTerm?: string;
-    lineItems?: Array<{
-      lineItemId?: number;
-      kind?: string;
-      description?: string;
-      quantity?: number;
-      unitPrice?: number;
-      projectId?: number;
-      taxed?: boolean;
-      taxed2?: boolean;
-      destroy?: boolean;
-    }>;
-  }): Promise<any> {
+  async updateInvoice(
+    invoiceId: number,
+    data: {
+      clientId?: number;
+      retainerId?: number;
+      estimateId?: number;
+      number?: string;
+      purchaseOrder?: string;
+      tax?: number;
+      tax2?: number;
+      discount?: number;
+      subject?: string;
+      notes?: string;
+      currency?: string;
+      issueDate?: string;
+      dueDate?: string;
+      paymentTerm?: string;
+      lineItems?: Array<{
+        lineItemId?: number;
+        kind?: string;
+        description?: string;
+        quantity?: number;
+        unitPrice?: number;
+        projectId?: number;
+        taxed?: boolean;
+        taxed2?: boolean;
+        destroy?: boolean;
+      }>;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.clientId !== undefined) body.client_id = data.clientId;
     if (data.retainerId !== undefined) body.retainer_id = data.retainerId;
@@ -539,7 +571,7 @@ export class HarvestClient {
     if (data.dueDate !== undefined) body.due_date = data.dueDate;
     if (data.paymentTerm !== undefined) body.payment_term = data.paymentTerm;
     if (data.lineItems) {
-      body.line_items = data.lineItems.map((item) => {
+      body.line_items = data.lineItems.map(item => {
         let li: any = {};
         if (item.lineItemId !== undefined) li.id = item.lineItemId;
         if (item.kind !== undefined) li.kind = item.kind;
@@ -563,27 +595,33 @@ export class HarvestClient {
 
   // --- Invoice Payments ---
 
-  async listInvoicePayments(invoiceId: number, params?: {
-    updatedSince?: string;
-    page?: number;
-    perPage?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listInvoicePayments(
+    invoiceId: number,
+    params?: {
+      updatedSince?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.api.get(`/invoices/${invoiceId}/payments`, {
       params: {
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'payments');
   }
 
-  async createInvoicePayment(invoiceId: number, data: {
-    amount: number;
-    paidAt?: string;
-    paidDate?: string;
-    notes?: string;
-  }): Promise<any> {
+  async createInvoicePayment(
+    invoiceId: number,
+    data: {
+      amount: number;
+      paidAt?: string;
+      paidDate?: string;
+      notes?: string;
+    }
+  ): Promise<any> {
     let body: any = { amount: data.amount };
     if (data.paidAt !== undefined) body.paid_at = data.paidAt;
     if (data.paidDate !== undefined) body.paid_date = data.paidDate;
@@ -615,8 +653,8 @@ export class HarvestClient {
         to: params?.to,
         state: params?.state,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'estimates');
   }
@@ -657,41 +695,44 @@ export class HarvestClient {
     if (data.currency !== undefined) body.currency = data.currency;
     if (data.issueDate !== undefined) body.issue_date = data.issueDate;
     if (data.lineItems) {
-      body.line_items = data.lineItems.map((item) => ({
+      body.line_items = data.lineItems.map(item => ({
         kind: item.kind,
         description: item.description,
         quantity: item.quantity,
         unit_price: item.unitPrice,
         taxed: item.taxed,
-        taxed2: item.taxed2,
+        taxed2: item.taxed2
       }));
     }
     let response = await this.api.post('/estimates', body);
     return response.data;
   }
 
-  async updateEstimate(estimateId: number, data: {
-    clientId?: number;
-    number?: string;
-    purchaseOrder?: string;
-    tax?: number;
-    tax2?: number;
-    discount?: number;
-    subject?: string;
-    notes?: string;
-    currency?: string;
-    issueDate?: string;
-    lineItems?: Array<{
-      lineItemId?: number;
-      kind?: string;
-      description?: string;
-      quantity?: number;
-      unitPrice?: number;
-      taxed?: boolean;
-      taxed2?: boolean;
-      destroy?: boolean;
-    }>;
-  }): Promise<any> {
+  async updateEstimate(
+    estimateId: number,
+    data: {
+      clientId?: number;
+      number?: string;
+      purchaseOrder?: string;
+      tax?: number;
+      tax2?: number;
+      discount?: number;
+      subject?: string;
+      notes?: string;
+      currency?: string;
+      issueDate?: string;
+      lineItems?: Array<{
+        lineItemId?: number;
+        kind?: string;
+        description?: string;
+        quantity?: number;
+        unitPrice?: number;
+        taxed?: boolean;
+        taxed2?: boolean;
+        destroy?: boolean;
+      }>;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.clientId !== undefined) body.client_id = data.clientId;
     if (data.number !== undefined) body.number = data.number;
@@ -704,7 +745,7 @@ export class HarvestClient {
     if (data.currency !== undefined) body.currency = data.currency;
     if (data.issueDate !== undefined) body.issue_date = data.issueDate;
     if (data.lineItems) {
-      body.line_items = data.lineItems.map((item) => {
+      body.line_items = data.lineItems.map(item => {
         let li: any = {};
         if (item.lineItemId !== undefined) li.id = item.lineItemId;
         if (item.kind !== undefined) li.kind = item.kind;
@@ -748,8 +789,8 @@ export class HarvestClient {
         from: params?.from,
         to: params?.to,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'expenses');
   }
@@ -772,7 +813,7 @@ export class HarvestClient {
     let body: any = {
       project_id: data.projectId,
       expense_category_id: data.expenseCategoryId,
-      spent_date: data.spentDate,
+      spent_date: data.spentDate
     };
     if (data.userId !== undefined) body.user_id = data.userId;
     if (data.totalCost !== undefined) body.total_cost = data.totalCost;
@@ -783,18 +824,22 @@ export class HarvestClient {
     return response.data;
   }
 
-  async updateExpense(expenseId: number, data: {
-    projectId?: number;
-    expenseCategoryId?: number;
-    spentDate?: string;
-    totalCost?: number;
-    units?: number;
-    notes?: string;
-    billable?: boolean;
-  }): Promise<any> {
+  async updateExpense(
+    expenseId: number,
+    data: {
+      projectId?: number;
+      expenseCategoryId?: number;
+      spentDate?: string;
+      totalCost?: number;
+      units?: number;
+      notes?: string;
+      billable?: boolean;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.projectId !== undefined) body.project_id = data.projectId;
-    if (data.expenseCategoryId !== undefined) body.expense_category_id = data.expenseCategoryId;
+    if (data.expenseCategoryId !== undefined)
+      body.expense_category_id = data.expenseCategoryId;
     if (data.spentDate !== undefined) body.spent_date = data.spentDate;
     if (data.totalCost !== undefined) body.total_cost = data.totalCost;
     if (data.units !== undefined) body.units = data.units;
@@ -821,8 +866,8 @@ export class HarvestClient {
         is_active: params?.isActive,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'expense_categories');
   }
@@ -840,8 +885,8 @@ export class HarvestClient {
         is_active: params?.isActive,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'tasks');
   }
@@ -859,25 +904,32 @@ export class HarvestClient {
     isActive?: boolean;
   }): Promise<any> {
     let body: any = { name: data.name };
-    if (data.billableByDefault !== undefined) body.billable_by_default = data.billableByDefault;
-    if (data.defaultHourlyRate !== undefined) body.default_hourly_rate = data.defaultHourlyRate;
+    if (data.billableByDefault !== undefined)
+      body.billable_by_default = data.billableByDefault;
+    if (data.defaultHourlyRate !== undefined)
+      body.default_hourly_rate = data.defaultHourlyRate;
     if (data.isDefault !== undefined) body.is_default = data.isDefault;
     if (data.isActive !== undefined) body.is_active = data.isActive;
     let response = await this.api.post('/tasks', body);
     return response.data;
   }
 
-  async updateTask(taskId: number, data: {
-    name?: string;
-    billableByDefault?: boolean;
-    defaultHourlyRate?: number;
-    isDefault?: boolean;
-    isActive?: boolean;
-  }): Promise<any> {
+  async updateTask(
+    taskId: number,
+    data: {
+      name?: string;
+      billableByDefault?: boolean;
+      defaultHourlyRate?: number;
+      isDefault?: boolean;
+      isActive?: boolean;
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.name !== undefined) body.name = data.name;
-    if (data.billableByDefault !== undefined) body.billable_by_default = data.billableByDefault;
-    if (data.defaultHourlyRate !== undefined) body.default_hourly_rate = data.defaultHourlyRate;
+    if (data.billableByDefault !== undefined)
+      body.billable_by_default = data.billableByDefault;
+    if (data.defaultHourlyRate !== undefined)
+      body.default_hourly_rate = data.defaultHourlyRate;
     if (data.isDefault !== undefined) body.is_default = data.isDefault;
     if (data.isActive !== undefined) body.is_active = data.isActive;
     let response = await this.api.patch(`/tasks/${taskId}`, body);
@@ -901,8 +953,8 @@ export class HarvestClient {
         is_active: params?.isActive,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'users');
   }
@@ -934,14 +986,16 @@ export class HarvestClient {
     let body: any = {
       first_name: data.firstName,
       last_name: data.lastName,
-      email: data.email,
+      email: data.email
     };
     if (data.timezone !== undefined) body.timezone = data.timezone;
-    if (data.hasAccessToAllFutureProjects !== undefined) body.has_access_to_all_future_projects = data.hasAccessToAllFutureProjects;
+    if (data.hasAccessToAllFutureProjects !== undefined)
+      body.has_access_to_all_future_projects = data.hasAccessToAllFutureProjects;
     if (data.isContractor !== undefined) body.is_contractor = data.isContractor;
     if (data.isActive !== undefined) body.is_active = data.isActive;
     if (data.weeklyCapacity !== undefined) body.weekly_capacity = data.weeklyCapacity;
-    if (data.defaultHourlyRate !== undefined) body.default_hourly_rate = data.defaultHourlyRate;
+    if (data.defaultHourlyRate !== undefined)
+      body.default_hourly_rate = data.defaultHourlyRate;
     if (data.costRate !== undefined) body.cost_rate = data.costRate;
     if (data.roles !== undefined) body.roles = data.roles;
     if (data.accessRoles !== undefined) body.access_roles = data.accessRoles;
@@ -949,30 +1003,35 @@ export class HarvestClient {
     return response.data;
   }
 
-  async updateUser(userId: number, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    timezone?: string;
-    hasAccessToAllFutureProjects?: boolean;
-    isContractor?: boolean;
-    isActive?: boolean;
-    weeklyCapacity?: number;
-    defaultHourlyRate?: number;
-    costRate?: number;
-    roles?: string[];
-    accessRoles?: string[];
-  }): Promise<any> {
+  async updateUser(
+    userId: number,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      timezone?: string;
+      hasAccessToAllFutureProjects?: boolean;
+      isContractor?: boolean;
+      isActive?: boolean;
+      weeklyCapacity?: number;
+      defaultHourlyRate?: number;
+      costRate?: number;
+      roles?: string[];
+      accessRoles?: string[];
+    }
+  ): Promise<any> {
     let body: any = {};
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
     if (data.email !== undefined) body.email = data.email;
     if (data.timezone !== undefined) body.timezone = data.timezone;
-    if (data.hasAccessToAllFutureProjects !== undefined) body.has_access_to_all_future_projects = data.hasAccessToAllFutureProjects;
+    if (data.hasAccessToAllFutureProjects !== undefined)
+      body.has_access_to_all_future_projects = data.hasAccessToAllFutureProjects;
     if (data.isContractor !== undefined) body.is_contractor = data.isContractor;
     if (data.isActive !== undefined) body.is_active = data.isActive;
     if (data.weeklyCapacity !== undefined) body.weekly_capacity = data.weeklyCapacity;
-    if (data.defaultHourlyRate !== undefined) body.default_hourly_rate = data.defaultHourlyRate;
+    if (data.defaultHourlyRate !== undefined)
+      body.default_hourly_rate = data.defaultHourlyRate;
     if (data.costRate !== undefined) body.cost_rate = data.costRate;
     if (data.roles !== undefined) body.roles = data.roles;
     if (data.accessRoles !== undefined) body.access_roles = data.accessRoles;
@@ -993,8 +1052,8 @@ export class HarvestClient {
     let response = await this.api.get('/roles', {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'roles');
   }
@@ -1025,30 +1084,36 @@ export class HarvestClient {
 
   // --- Project Task Assignments ---
 
-  async listProjectTaskAssignments(projectId: number, params?: {
-    isActive?: boolean;
-    updatedSince?: string;
-    page?: number;
-    perPage?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listProjectTaskAssignments(
+    projectId: number,
+    params?: {
+      isActive?: boolean;
+      updatedSince?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.api.get(`/projects/${projectId}/task_assignments`, {
       params: {
         is_active: params?.isActive,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'task_assignments');
   }
 
-  async createProjectTaskAssignment(projectId: number, data: {
-    taskId: number;
-    isActive?: boolean;
-    billable?: boolean;
-    hourlyRate?: number;
-    budget?: number;
-  }): Promise<any> {
+  async createProjectTaskAssignment(
+    projectId: number,
+    data: {
+      taskId: number;
+      isActive?: boolean;
+      billable?: boolean;
+      hourlyRate?: number;
+      budget?: number;
+    }
+  ): Promise<any> {
     let body: any = { task_id: data.taskId };
     if (data.isActive !== undefined) body.is_active = data.isActive;
     if (data.billable !== undefined) body.billable = data.billable;
@@ -1060,31 +1125,37 @@ export class HarvestClient {
 
   // --- Project User Assignments ---
 
-  async listProjectUserAssignments(projectId: number, params?: {
-    isActive?: boolean;
-    updatedSince?: string;
-    page?: number;
-    perPage?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async listProjectUserAssignments(
+    projectId: number,
+    params?: {
+      isActive?: boolean;
+      updatedSince?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let response = await this.api.get(`/projects/${projectId}/user_assignments`, {
       params: {
         is_active: params?.isActive,
         updated_since: params?.updatedSince,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return this.parsePaginatedResponse(response.data, 'user_assignments');
   }
 
-  async createProjectUserAssignment(projectId: number, data: {
-    userId: number;
-    isActive?: boolean;
-    isProjectManager?: boolean;
-    useDefaultRates?: boolean;
-    hourlyRate?: number;
-    budget?: number;
-  }): Promise<any> {
+  async createProjectUserAssignment(
+    projectId: number,
+    data: {
+      userId: number;
+      isActive?: boolean;
+      isProjectManager?: boolean;
+      useDefaultRates?: boolean;
+      hourlyRate?: number;
+      budget?: number;
+    }
+  ): Promise<any> {
     let body: any = { user_id: data.userId };
     if (data.isActive !== undefined) body.is_active = data.isActive;
     if (data.isProjectManager !== undefined) body.is_project_manager = data.isProjectManager;
@@ -1115,8 +1186,8 @@ export class HarvestClient {
         from: params.from,
         to: params.to,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
@@ -1132,8 +1203,8 @@ export class HarvestClient {
         from: params.from,
         to: params.to,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
@@ -1149,43 +1220,44 @@ export class HarvestClient {
         from: params.from,
         to: params.to,
         page: params.page,
-        per_page: params.perPage,
-      },
+        per_page: params.perPage
+      }
     });
     return response.data;
   }
 
-  async getProjectBudgetReport(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any> {
+  async getProjectBudgetReport(params?: { page?: number; perPage?: number }): Promise<any> {
     let response = await this.api.get('/reports/project_budget', {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
 
   // --- Invoice Messages ---
 
-  async createInvoiceMessage(invoiceId: number, data: {
-    eventType?: string;
-    recipients?: Array<{ name?: string; email: string }>;
-    subject?: string;
-    body?: string;
-    includeLinkToClientInvoice?: boolean;
-    attachPdf?: boolean;
-    sendMeACopy?: boolean;
-    thankYou?: boolean;
-  }): Promise<any> {
+  async createInvoiceMessage(
+    invoiceId: number,
+    data: {
+      eventType?: string;
+      recipients?: Array<{ name?: string; email: string }>;
+      subject?: string;
+      body?: string;
+      includeLinkToClientInvoice?: boolean;
+      attachPdf?: boolean;
+      sendMeACopy?: boolean;
+      thankYou?: boolean;
+    }
+  ): Promise<any> {
     let reqBody: any = {};
     if (data.eventType !== undefined) reqBody.event_type = data.eventType;
     if (data.recipients !== undefined) reqBody.recipients = data.recipients;
     if (data.subject !== undefined) reqBody.subject = data.subject;
     if (data.body !== undefined) reqBody.body = data.body;
-    if (data.includeLinkToClientInvoice !== undefined) reqBody.include_link_to_client_invoice = data.includeLinkToClientInvoice;
+    if (data.includeLinkToClientInvoice !== undefined)
+      reqBody.include_link_to_client_invoice = data.includeLinkToClientInvoice;
     if (data.attachPdf !== undefined) reqBody.attach_pdf = data.attachPdf;
     if (data.sendMeACopy !== undefined) reqBody.send_me_a_copy = data.sendMeACopy;
     if (data.thankYou !== undefined) reqBody.thank_you = data.thankYou;
@@ -1195,13 +1267,16 @@ export class HarvestClient {
 
   // --- Estimate Messages ---
 
-  async createEstimateMessage(estimateId: number, data: {
-    recipients: Array<{ name?: string; email: string }>;
-    subject?: string;
-    body?: string;
-    sendMeACopy?: boolean;
-    eventType?: string;
-  }): Promise<any> {
+  async createEstimateMessage(
+    estimateId: number,
+    data: {
+      recipients: Array<{ name?: string; email: string }>;
+      subject?: string;
+      body?: string;
+      sendMeACopy?: boolean;
+      eventType?: string;
+    }
+  ): Promise<any> {
     let reqBody: any = { recipients: data.recipients };
     if (data.subject !== undefined) reqBody.subject = data.subject;
     if (data.body !== undefined) reqBody.body = data.body;
@@ -1221,7 +1296,7 @@ export class HarvestClient {
       nextPage: data.next_page ?? null,
       previousPage: data.previous_page ?? null,
       page: data.page ?? 1,
-      perPage: data.per_page ?? 100,
+      perPage: data.per_page ?? 100
     };
   }
 }

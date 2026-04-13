@@ -3,39 +3,51 @@ import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageIndexTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Index',
-    key: 'manage_index',
-    description: `Create, configure, open, close, or delete an Elasticsearch index. Supports setting mappings, settings, aliases, and number of replicas/shards during creation. Can also update mappings and settings on existing indices.`,
-    instructions: [
-      'To create an index, provide the indexName and optionally mappings, settings, and aliases',
-      'To update mappings or settings on an existing index, set the action to "update_mappings" or "update_settings"',
-      'Use "open" or "close" actions to control index availability',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageIndexTool = SlateTool.create(spec, {
+  name: 'Manage Index',
+  key: 'manage_index',
+  description: `Create, configure, open, close, or delete an Elasticsearch index. Supports setting mappings, settings, aliases, and number of replicas/shards during creation. Can also update mappings and settings on existing indices.`,
+  instructions: [
+    'To create an index, provide the indexName and optionally mappings, settings, and aliases',
+    'To update mappings or settings on an existing index, set the action to "update_mappings" or "update_settings"',
+    'Use "open" or "close" actions to control index availability'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'delete', 'open', 'close', 'update_mappings', 'update_settings']).describe('The index management action to perform'),
-    indexName: z.string().describe('Name of the index'),
-    mappings: z.record(z.string(), z.any()).optional().describe('Mapping definitions for create or update_mappings actions'),
-    settings: z.record(z.string(), z.any()).optional().describe('Index settings for create or update_settings actions'),
-    aliases: z.record(z.string(), z.any()).optional().describe('Alias definitions for create action'),
-  }))
-  .output(z.object({
-    acknowledged: z.boolean().describe('Whether the request was acknowledged'),
-    indexName: z.string().describe('The index that was operated on'),
-    action: z.string().describe('The action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'delete', 'open', 'close', 'update_mappings', 'update_settings'])
+        .describe('The index management action to perform'),
+      indexName: z.string().describe('Name of the index'),
+      mappings: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Mapping definitions for create or update_mappings actions'),
+      settings: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Index settings for create or update_settings actions'),
+      aliases: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Alias definitions for create action')
+    })
+  )
+  .output(
+    z.object({
+      acknowledged: z.boolean().describe('Whether the request was acknowledged'),
+      indexName: z.string().describe('The index that was operated on'),
+      action: z.string().describe('The action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ElasticsearchClient({
       baseUrl: ctx.auth.baseUrl,
-      authHeader: ctx.auth.authHeader,
+      authHeader: ctx.auth.authHeader
     });
 
     let result: any;
@@ -59,11 +71,13 @@ export let manageIndexTool = SlateTool.create(
         result = await client.closeIndex(ctx.input.indexName);
         break;
       case 'update_mappings':
-        if (!ctx.input.mappings) throw new Error('Mappings are required for update_mappings action');
+        if (!ctx.input.mappings)
+          throw new Error('Mappings are required for update_mappings action');
         result = await client.putMapping(ctx.input.indexName, ctx.input.mappings);
         break;
       case 'update_settings':
-        if (!ctx.input.settings) throw new Error('Settings are required for update_settings action');
+        if (!ctx.input.settings)
+          throw new Error('Settings are required for update_settings action');
         result = await client.putSettings(ctx.input.indexName, ctx.input.settings);
         break;
     }
@@ -72,9 +86,9 @@ export let manageIndexTool = SlateTool.create(
       output: {
         acknowledged: result.acknowledged ?? true,
         indexName: ctx.input.indexName,
-        action: ctx.input.action,
+        action: ctx.input.action
       },
-      message: `Index **${ctx.input.indexName}** — action **${ctx.input.action}** completed successfully.`,
+      message: `Index **${ctx.input.indexName}** — action **${ctx.input.action}** completed successfully.`
     };
   })
   .build();

@@ -3,39 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let eventLifecycle = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Lifecycle',
-    key: 'event_lifecycle',
-    description: 'Triggered when an event is created, updated, published, or unpublished in your Eventbrite account.',
-  }
-)
-  .input(z.object({
-    action: z.string().describe('The webhook action (e.g., "event.created", "event.updated").'),
-    apiUrl: z.string().describe('The API URL to fetch the full event resource.'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('The unique ID of the event.'),
-    name: z.string().optional().describe('The name/title of the event.'),
-    description: z.string().optional().describe('HTML description of the event.'),
-    url: z.string().optional().describe('The public URL of the event.'),
-    startUtc: z.string().optional().describe('UTC start time.'),
-    startTimezone: z.string().optional().describe('Timezone of the start time.'),
-    endUtc: z.string().optional().describe('UTC end time.'),
-    endTimezone: z.string().optional().describe('Timezone of the end time.'),
-    status: z.string().optional().describe('Current status of the event.'),
-    capacity: z.number().optional().describe('Maximum capacity.'),
-    organizationId: z.string().optional().describe('The owning organization ID.'),
-    venueId: z.string().optional().describe('The venue ID.'),
-    organizerId: z.string().optional().describe('The organizer ID.'),
-    onlineEvent: z.boolean().optional().describe('Whether this is an online event.'),
-    listed: z.boolean().optional().describe('Whether the event is publicly listed.'),
-    created: z.string().optional().describe('When the event was created.'),
-    changed: z.string().optional().describe('When the event was last changed.'),
-  }))
+export let eventLifecycle = SlateTrigger.create(spec, {
+  name: 'Event Lifecycle',
+  key: 'event_lifecycle',
+  description:
+    'Triggered when an event is created, updated, published, or unpublished in your Eventbrite account.'
+})
+  .input(
+    z.object({
+      action: z
+        .string()
+        .describe('The webhook action (e.g., "event.created", "event.updated").'),
+      apiUrl: z.string().describe('The API URL to fetch the full event resource.')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('The unique ID of the event.'),
+      name: z.string().optional().describe('The name/title of the event.'),
+      description: z.string().optional().describe('HTML description of the event.'),
+      url: z.string().optional().describe('The public URL of the event.'),
+      startUtc: z.string().optional().describe('UTC start time.'),
+      startTimezone: z.string().optional().describe('Timezone of the start time.'),
+      endUtc: z.string().optional().describe('UTC end time.'),
+      endTimezone: z.string().optional().describe('Timezone of the end time.'),
+      status: z.string().optional().describe('Current status of the event.'),
+      capacity: z.number().optional().describe('Maximum capacity.'),
+      organizationId: z.string().optional().describe('The owning organization ID.'),
+      venueId: z.string().optional().describe('The venue ID.'),
+      organizerId: z.string().optional().describe('The organizer ID.'),
+      onlineEvent: z.boolean().optional().describe('Whether this is an online event.'),
+      listed: z.boolean().optional().describe('Whether the event is publicly listed.'),
+      created: z.string().optional().describe('When the event was created.'),
+      changed: z.string().optional().describe('When the event was last changed.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       if (!ctx.config.organizationId) {
         throw new Error('Organization ID is required in config to register webhooks.');
       }
@@ -46,35 +50,35 @@ export let eventLifecycle = SlateTrigger.create(
 
       let webhook = await client.createWebhook(ctx.config.organizationId, {
         endpoint_url: ctx.input.webhookBaseUrl,
-        actions,
+        actions
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
         inputs: [
           {
             action: body.config?.action || 'event.updated',
-            apiUrl: body.api_url || '',
-          },
-        ],
+            apiUrl: body.api_url || ''
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let eventId = extractIdFromUrl(ctx.input.apiUrl);
@@ -111,10 +115,10 @@ export let eventLifecycle = SlateTrigger.create(
           onlineEvent: event.online_event,
           listed: event.listed,
           created: event.created,
-          changed: event.changed,
-        },
+          changed: event.changed
+        }
       };
-    },
+    }
   })
   .build();
 

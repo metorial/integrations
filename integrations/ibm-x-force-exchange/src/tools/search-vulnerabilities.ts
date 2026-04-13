@@ -13,48 +13,63 @@ let vulnerabilitySchema = z.object({
   reportedDate: z.string().optional().describe('Date the vulnerability was reported'),
   platforms: z.array(z.string()).optional().describe('Affected platforms'),
   tagName: z.string().optional().describe('Tag/category name'),
-  references: z.array(z.object({
-    linkTarget: z.string().optional(),
-    description: z.string().optional(),
-  })).optional().describe('External references'),
-  remedy: z.string().optional().describe('Remediation guidance'),
+  references: z
+    .array(
+      z.object({
+        linkTarget: z.string().optional(),
+        description: z.string().optional()
+      })
+    )
+    .optional()
+    .describe('External references'),
+  remedy: z.string().optional().describe('Remediation guidance')
 });
 
-export let searchVulnerabilities = SlateTool.create(
-  spec,
-  {
-    name: 'Search Vulnerabilities',
-    key: 'search_vulnerabilities',
-    description: `Search the X-Force vulnerability database by full-text query, specific identifier (CVE, XFID, BID, RHSA, Microsoft Bulletin), or retrieve recently reported vulnerabilities.
+export let searchVulnerabilities = SlateTool.create(spec, {
+  name: 'Search Vulnerabilities',
+  key: 'search_vulnerabilities',
+  description: `Search the X-Force vulnerability database by full-text query, specific identifier (CVE, XFID, BID, RHSA, Microsoft Bulletin), or retrieve recently reported vulnerabilities.
 Returns vulnerability details including CVSS scores, affected platforms, remediation guidance, and references.`,
-    instructions: [
-      'Use "query" for full-text search across vulnerability descriptions and titles.',
-      'Use "vulnerabilityId" to look up a specific vulnerability by XFID, CVE, or other standard identifier.',
-      'Use "startDate" and "endDate" to filter recently reported vulnerabilities by date range (YYYY-MM-DD format).',
-    ],
-    constraints: [
-      'Full-text search may return many results; use specific identifiers when possible.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Use "query" for full-text search across vulnerability descriptions and titles.',
+    'Use "vulnerabilityId" to look up a specific vulnerability by XFID, CVE, or other standard identifier.',
+    'Use "startDate" and "endDate" to filter recently reported vulnerabilities by date range (YYYY-MM-DD format).'
+  ],
+  constraints: [
+    'Full-text search may return many results; use specific identifiers when possible.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Full-text search query for vulnerabilities'),
-    vulnerabilityId: z.string().optional().describe('Specific vulnerability identifier (XFID, CVE, BID, RHSA, MS Bulletin)'),
-    startDate: z.string().optional().describe('Start date for recent vulnerabilities (YYYY-MM-DD)'),
-    endDate: z.string().optional().describe('End date for recent vulnerabilities (YYYY-MM-DD)'),
-    limit: z.number().optional().describe('Maximum number of results to return'),
-  }))
-  .output(z.object({
-    vulnerabilities: z.array(vulnerabilitySchema).describe('Matching vulnerability records'),
-    totalCount: z.number().optional().describe('Total number of matching results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Full-text search query for vulnerabilities'),
+      vulnerabilityId: z
+        .string()
+        .optional()
+        .describe('Specific vulnerability identifier (XFID, CVE, BID, RHSA, MS Bulletin)'),
+      startDate: z
+        .string()
+        .optional()
+        .describe('Start date for recent vulnerabilities (YYYY-MM-DD)'),
+      endDate: z
+        .string()
+        .optional()
+        .describe('End date for recent vulnerabilities (YYYY-MM-DD)'),
+      limit: z.number().optional().describe('Maximum number of results to return')
+    })
+  )
+  .output(
+    z.object({
+      vulnerabilities: z.array(vulnerabilitySchema).describe('Matching vulnerability records'),
+      totalCount: z.number().optional().describe('Total number of matching results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new XForceClient({
       token: ctx.auth.token,
-      password: ctx.auth.password,
+      password: ctx.auth.password
     });
 
     if (ctx.input.vulnerabilityId) {
@@ -70,18 +85,18 @@ Returns vulnerability details including CVSS scores, affected platforms, remedia
         riskLevel: v.risk_level,
         cvss: v.cvss,
         reportedDate: v.reported,
-        platforms: v.platforms_affected?.map((p: any) => typeof p === 'string' ? p : p.text),
+        platforms: v.platforms_affected?.map((p: any) => (typeof p === 'string' ? p : p.text)),
         tagName: v.tagname,
         references: v.references?.map((r: any) => ({
           linkTarget: r.link_target,
-          description: r.description,
+          description: r.description
         })),
-        remedy: v.remedy,
+        remedy: v.remedy
       }));
 
       return {
         output: { vulnerabilities: mapped, totalCount: mapped.length },
-        message: `Found vulnerability **${ctx.input.vulnerabilityId}**: ${mapped[0]?.title || 'N/A'}`,
+        message: `Found vulnerability **${ctx.input.vulnerabilityId}**: ${mapped[0]?.title || 'N/A'}`
       };
     }
 
@@ -99,14 +114,14 @@ Returns vulnerability details including CVSS scores, affected platforms, remedia
         riskLevel: v.risk_level,
         cvss: v.cvss,
         reportedDate: v.reported,
-        platforms: v.platforms_affected?.map((p: any) => typeof p === 'string' ? p : p.text),
+        platforms: v.platforms_affected?.map((p: any) => (typeof p === 'string' ? p : p.text)),
         tagName: v.tagname,
-        remedy: v.remedy,
+        remedy: v.remedy
       }));
 
       return {
         output: { vulnerabilities: mapped, totalCount: totalRows },
-        message: `Found **${totalRows}** vulnerabilities matching "${ctx.input.query}" (showing ${mapped.length})`,
+        message: `Found **${totalRows}** vulnerabilities matching "${ctx.input.query}" (showing ${mapped.length})`
       };
     }
 
@@ -114,7 +129,7 @@ Returns vulnerability details including CVSS scores, affected platforms, remedia
     let report = await client.getRecentVulnerabilities(
       ctx.input.startDate,
       ctx.input.endDate,
-      ctx.input.limit || 25,
+      ctx.input.limit || 25
     );
     let rows = report.rows || report || [];
     let totalRows = report.totalRows || rows.length;
@@ -127,11 +142,12 @@ Returns vulnerability details including CVSS scores, affected platforms, remedia
       riskLevel: v.risk_level,
       cvss: v.cvss,
       reportedDate: v.reported,
-      tagName: v.tagname,
+      tagName: v.tagname
     }));
 
     return {
       output: { vulnerabilities: mapped, totalCount: totalRows },
-      message: `Retrieved **${mapped.length}** recent vulnerabilities${ctx.input.startDate ? ` since ${ctx.input.startDate}` : ''}`,
+      message: `Retrieved **${mapped.length}** recent vulnerabilities${ctx.input.startDate ? ` since ${ctx.input.startDate}` : ''}`
     };
-  }).build();
+  })
+  .build();

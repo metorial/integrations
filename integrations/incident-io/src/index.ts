@@ -18,13 +18,13 @@ import {
   listFollowUps,
   manageStatusPageIncident,
   listUsers,
-  listWorkflows,
+  listWorkflows
 } from './tools';
 import {
   incidentEvents,
   followUpEvents,
   alertEvents,
-  incidentMembershipEvents,
+  incidentMembershipEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -47,12 +47,7 @@ export let provider = Slate.create({
     listFollowUps,
     manageStatusPageIncident,
     listUsers,
-    listWorkflows,
+    listWorkflows
   ],
-  triggers: [
-    incidentEvents,
-    followUpEvents,
-    alertEvents,
-    incidentMembershipEvents,
-  ],
+  triggers: [incidentEvents, followUpEvents, alertEvents, incidentMembershipEvents]
 });

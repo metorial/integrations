@@ -29,13 +29,9 @@ import {
   listChangelogEntriesTool,
   listStatusChangesTool,
   enqueueAutopilotFeedbackTool,
-  listOpportunitiesTool,
+  listOpportunitiesTool
 } from './tools';
-import {
-  postEventsTrigger,
-  commentEventsTrigger,
-  voteEventsTrigger,
-} from './triggers';
+import { postEventsTrigger, commentEventsTrigger, voteEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -68,11 +64,7 @@ export let provider = Slate.create({
     listChangelogEntriesTool,
     listStatusChangesTool,
     enqueueAutopilotFeedbackTool,
-    listOpportunitiesTool,
+    listOpportunitiesTool
   ],
-  triggers: [
-    postEventsTrigger,
-    commentEventsTrigger,
-    voteEventsTrigger,
-  ],
+  triggers: [postEventsTrigger, commentEventsTrigger, voteEventsTrigger]
 });

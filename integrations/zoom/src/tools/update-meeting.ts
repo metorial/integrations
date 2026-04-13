@@ -3,40 +3,47 @@ import { ZoomClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Update Meeting',
-    key: 'update_meeting',
-    description: `Update an existing Zoom meeting's topic, schedule, duration, settings, or other properties. Only provided fields will be updated.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateMeeting = SlateTool.create(spec, {
+  name: 'Update Meeting',
+  key: 'update_meeting',
+  description: `Update an existing Zoom meeting's topic, schedule, duration, settings, or other properties. Only provided fields will be updated.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    meetingId: z.union([z.string(), z.number()]).describe('The meeting ID to update'),
-    topic: z.string().optional().describe('New meeting topic'),
-    startTime: z.string().optional().describe('New start time in UTC (yyyy-MM-ddTHH:mm:ssZ)'),
-    duration: z.number().optional().describe('New duration in minutes'),
-    timezone: z.string().optional().describe('New timezone'),
-    password: z.string().optional().describe('New meeting password'),
-    agenda: z.string().optional().describe('New meeting description/agenda'),
-    settings: z.object({
-      hostVideo: z.boolean().optional(),
-      participantVideo: z.boolean().optional(),
-      joinBeforeHost: z.boolean().optional(),
-      muteUponEntry: z.boolean().optional(),
-      waitingRoom: z.boolean().optional(),
-      autoRecording: z.enum(['local', 'cloud', 'none']).optional(),
-      alternativeHosts: z.string().optional(),
-    }).optional().describe('Meeting settings to update'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      meetingId: z.union([z.string(), z.number()]).describe('The meeting ID to update'),
+      topic: z.string().optional().describe('New meeting topic'),
+      startTime: z
+        .string()
+        .optional()
+        .describe('New start time in UTC (yyyy-MM-ddTHH:mm:ssZ)'),
+      duration: z.number().optional().describe('New duration in minutes'),
+      timezone: z.string().optional().describe('New timezone'),
+      password: z.string().optional().describe('New meeting password'),
+      agenda: z.string().optional().describe('New meeting description/agenda'),
+      settings: z
+        .object({
+          hostVideo: z.boolean().optional(),
+          participantVideo: z.boolean().optional(),
+          joinBeforeHost: z.boolean().optional(),
+          muteUponEntry: z.boolean().optional(),
+          waitingRoom: z.boolean().optional(),
+          autoRecording: z.enum(['local', 'cloud', 'none']).optional(),
+          alternativeHosts: z.string().optional()
+        })
+        .optional()
+        .describe('Meeting settings to update')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZoomClient(ctx.auth.token);
 
     let updateData: Record<string, any> = {};
@@ -56,7 +63,7 @@ export let updateMeeting = SlateTool.create(
         mute_upon_entry: s.muteUponEntry,
         waiting_room: s.waitingRoom,
         auto_recording: s.autoRecording,
-        alternative_hosts: s.alternativeHosts,
+        alternative_hosts: s.alternativeHosts
       };
     }
 
@@ -64,7 +71,7 @@ export let updateMeeting = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Meeting **${ctx.input.meetingId}** updated successfully.`,
+      message: `Meeting **${ctx.input.meetingId}** updated successfully.`
     };
   })
   .build();

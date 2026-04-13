@@ -2,34 +2,53 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let projectPublish = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Published',
-    key: 'project_published',
-    description: 'Triggers when a Plasmic project is published. Receives information about changed pages and changed imported projects/libraries. Configure the webhook URL in the Plasmic Studio publish dialog.',
-  }
-)
-  .input(z.object({
-    pagesChanged: z.array(z.string()).optional().describe('List of page paths or names that changed'),
-    importedProjectsChanged: z.array(z.string()).optional().describe('List of imported project/library IDs that changed'),
-    rawPayload: z.record(z.string(), z.unknown()).optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    pagesChanged: z.array(z.string()).describe('List of pages that were changed in this publish'),
-    importedProjectsChanged: z.array(z.string()).describe('List of imported projects/libraries that changed'),
-  }))
+export let projectPublish = SlateTrigger.create(spec, {
+  name: 'Project Published',
+  key: 'project_published',
+  description:
+    'Triggers when a Plasmic project is published. Receives information about changed pages and changed imported projects/libraries. Configure the webhook URL in the Plasmic Studio publish dialog.'
+})
+  .input(
+    z.object({
+      pagesChanged: z
+        .array(z.string())
+        .optional()
+        .describe('List of page paths or names that changed'),
+      importedProjectsChanged: z
+        .array(z.string())
+        .optional()
+        .describe('List of imported project/library IDs that changed'),
+      rawPayload: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      pagesChanged: z
+        .array(z.string())
+        .describe('List of pages that were changed in this publish'),
+      importedProjectsChanged: z
+        .array(z.string())
+        .describe('List of imported projects/libraries that changed')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: Record<string, unknown> = {};
       try {
-        body = await ctx.request.json() as Record<string, unknown>;
+        body = (await ctx.request.json()) as Record<string, unknown>;
       } catch {
         // Some webhooks may be sent without a body (just a ping)
       }
 
-      let pagesChanged = Array.isArray(body.pagesChanged) ? body.pagesChanged as string[] : [];
-      let importedProjectsChanged = Array.isArray(body.importedProjectsChanged) ? body.importedProjectsChanged as string[] : [];
+      let pagesChanged = Array.isArray(body.pagesChanged)
+        ? (body.pagesChanged as string[])
+        : [];
+      let importedProjectsChanged = Array.isArray(body.importedProjectsChanged)
+        ? (body.importedProjectsChanged as string[])
+        : [];
 
       let eventId = `project_publish_${Date.now()}`;
 
@@ -38,13 +57,13 @@ export let projectPublish = SlateTrigger.create(
           {
             pagesChanged,
             importedProjectsChanged,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let pagesChanged = ctx.input.pagesChanged ?? [];
       let importedProjectsChanged = ctx.input.importedProjectsChanged ?? [];
 
@@ -53,9 +72,9 @@ export let projectPublish = SlateTrigger.create(
         id: `project_publish_${Date.now()}_${pagesChanged.join(',')}`,
         output: {
           pagesChanged,
-          importedProjectsChanged,
-        },
+          importedProjectsChanged
+        }
       };
-    },
+    }
   })
   .build();

@@ -3,27 +3,30 @@ import { VbmlClient } from '../lib/vbml';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let formatText = SlateTool.create(
-  spec,
-  {
-    name: 'Format Text',
-    key: 'format_text',
-    description: `Convert a plain text string into a Vestaboard character code array. Useful for previewing how text will appear on the board or for preparing character arrays for the Local API.
+export let formatText = SlateTool.create(spec, {
+  name: 'Format Text',
+  key: 'format_text',
+  description: `Convert a plain text string into a Vestaboard character code array. Useful for previewing how text will appear on the board or for preparing character arrays for the Local API.
 
 Does **not** require authentication — this is a public VBML formatting service.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    text: z.string().describe('The plain text message to convert into character codes.'),
-  }))
-  .output(z.object({
-    characters: z.array(z.array(z.number())).describe('2D character code array representing the formatted text.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      text: z.string().describe('The plain text message to convert into character codes.')
+    })
+  )
+  .output(
+    z.object({
+      characters: z
+        .array(z.array(z.number()))
+        .describe('2D character code array representing the formatted text.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let vbml = new VbmlClient();
     let characters = await vbml.format(ctx.input.text);
 
@@ -32,7 +35,7 @@ Does **not** require authentication — this is a public VBML formatting service
 
     return {
       output: { characters },
-      message: `Formatted text into a ${rows}x${cols} character array.`,
+      message: `Formatted text into a ${rows}x${cols} character array.`
     };
   })
   .build();

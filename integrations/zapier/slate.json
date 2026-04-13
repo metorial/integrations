@@ -2,10 +2,7 @@
   "name": "@metorial/zapier",
   "version": "0.1.1",
   "description": "Programmatically manage automated workflows (Zaps) that connect thousands of cloud applications. Browse the app directory, create and configure multi-step Zaps with triggers and actions, manage user authentications for connected apps, retrieve Zap templates, and monitor Zap run history. Create workflow steps with webhook URLs for on-demand action execution. Supports embedded Zap editor integration and pre-filled Zap generation for seamless in-product automation experiences.",
-  "categories": [
-    "apis-and-http-requests",
-    "task-and-project-management"
-  ],
+  "categories": ["apis-and-http-requests", "task-and-project-management"],
   "skills": [
     "browse app directory",
     "create and manage Zaps",

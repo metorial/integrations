@@ -42,33 +42,45 @@ export class Client {
     return response.data;
   }
 
-  async createModelPrediction(owner: string, name: string, params: {
-    input: Record<string, any>;
-    webhook?: string;
-    webhookEventsFilter?: string[];
-    stream?: boolean;
-  }) {
+  async createModelPrediction(
+    owner: string,
+    name: string,
+    params: {
+      input: Record<string, any>;
+      webhook?: string;
+      webhookEventsFilter?: string[];
+      stream?: boolean;
+    }
+  ) {
     let body: Record<string, any> = { input: params.input };
     if (params.webhook) body.webhook = params.webhook;
     if (params.webhookEventsFilter) body.webhook_events_filter = params.webhookEventsFilter;
     if (params.stream !== undefined) body.stream = params.stream;
 
-    let response = await axios.post(`/models/${owner}/${name}/predictions`, body, { headers: this.headers });
+    let response = await axios.post(`/models/${owner}/${name}/predictions`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async createDeploymentPrediction(owner: string, name: string, params: {
-    input: Record<string, any>;
-    webhook?: string;
-    webhookEventsFilter?: string[];
-    stream?: boolean;
-  }) {
+  async createDeploymentPrediction(
+    owner: string,
+    name: string,
+    params: {
+      input: Record<string, any>;
+      webhook?: string;
+      webhookEventsFilter?: string[];
+      stream?: boolean;
+    }
+  ) {
     let body: Record<string, any> = { input: params.input };
     if (params.webhook) body.webhook = params.webhook;
     if (params.webhookEventsFilter) body.webhook_events_filter = params.webhookEventsFilter;
     if (params.stream !== undefined) body.stream = params.stream;
 
-    let response = await axios.post(`/deployments/${owner}/${name}/predictions`, body, { headers: this.headers });
+    let response = await axios.post(`/deployments/${owner}/${name}/predictions`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -85,7 +97,11 @@ export class Client {
   }
 
   async cancelPrediction(predictionId: string) {
-    let response = await axios.post(`/predictions/${predictionId}/cancel`, {}, { headers: this.headers });
+    let response = await axios.post(
+      `/predictions/${predictionId}/cancel`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -130,14 +146,18 @@ export class Client {
     return response.data;
   }
 
-  async updateModel(owner: string, name: string, params: {
-    description?: string;
-    readme?: string;
-    githubUrl?: string;
-    paperUrl?: string;
-    licenseUrl?: string;
-    coverImageUrl?: string;
-  }) {
+  async updateModel(
+    owner: string,
+    name: string,
+    params: {
+      description?: string;
+      readme?: string;
+      githubUrl?: string;
+      paperUrl?: string;
+      licenseUrl?: string;
+      coverImageUrl?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.description !== undefined) body.description = params.description;
     if (params.readme !== undefined) body.readme = params.readme;
@@ -146,7 +166,9 @@ export class Client {
     if (params.licenseUrl !== undefined) body.license_url = params.licenseUrl;
     if (params.coverImageUrl !== undefined) body.cover_image_url = params.coverImageUrl;
 
-    let response = await axios.patch(`/models/${owner}/${name}`, body, { headers: this.headers });
+    let response = await axios.patch(`/models/${owner}/${name}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -162,22 +184,31 @@ export class Client {
   }
 
   async getModelVersion(owner: string, name: string, versionId: string) {
-    let response = await axios.get(`/models/${owner}/${name}/versions/${versionId}`, { headers: this.headers });
+    let response = await axios.get(`/models/${owner}/${name}/versions/${versionId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deleteModelVersion(owner: string, name: string, versionId: string) {
-    await axios.delete(`/models/${owner}/${name}/versions/${versionId}`, { headers: this.headers });
+    await axios.delete(`/models/${owner}/${name}/versions/${versionId}`, {
+      headers: this.headers
+    });
   }
 
   // ─── Trainings ───
 
-  async createTraining(owner: string, name: string, versionId: string, params: {
-    destination: string;
-    input: Record<string, any>;
-    webhook?: string;
-    webhookEventsFilter?: string[];
-  }) {
+  async createTraining(
+    owner: string,
+    name: string,
+    versionId: string,
+    params: {
+      destination: string;
+      input: Record<string, any>;
+      webhook?: string;
+      webhookEventsFilter?: string[];
+    }
+  ) {
     let body: Record<string, any> = {
       destination: params.destination,
       input: params.input
@@ -243,19 +274,25 @@ export class Client {
     return response.data;
   }
 
-  async updateDeployment(owner: string, name: string, params: {
-    version?: string;
-    hardware?: string;
-    minInstances?: number;
-    maxInstances?: number;
-  }) {
+  async updateDeployment(
+    owner: string,
+    name: string,
+    params: {
+      version?: string;
+      hardware?: string;
+      minInstances?: number;
+      maxInstances?: number;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.version !== undefined) body.version = params.version;
     if (params.hardware !== undefined) body.hardware = params.hardware;
     if (params.minInstances !== undefined) body.min_instances = params.minInstances;
     if (params.maxInstances !== undefined) body.max_instances = params.maxInstances;
 
-    let response = await axios.patch(`/deployments/${owner}/${name}`, body, { headers: this.headers });
+    let response = await axios.patch(`/deployments/${owner}/${name}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 

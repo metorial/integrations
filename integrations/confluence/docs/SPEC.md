@@ -21,12 +21,14 @@ Users supply their Atlassian account email and an API token as the username and 
 OAuth 2.0 (3LO) uses three-legged OAuth (authorization code grants). It is a token-based method that allows an app to access Atlassian APIs on a user's behalf.
 
 Setup steps:
+
 1. Create an OAuth 2.0 integration in the Atlassian Developer Console (https://developer.atlassian.com/console), provide a name and accept the developer terms.
 2. Configure permissions for the Confluence API and select desired scopes.
 3. Add a callback URL under the Authorization section for OAuth 2.0 (3LO).
 4. Obtain the Client ID and Client Secret from the developer console.
 
 Key endpoints:
+
 - Authorization URL: `https://auth.atlassian.com/authorize`
 - Token URL: `https://auth.atlassian.com/oauth/token`
 - API requests are made via `https://api.atlassian.com/ex/confluence/{cloudId}/{api}`, not directly to the site domain.
@@ -35,6 +37,7 @@ Key endpoints:
 Access tokens expire after 1 hour. Add the `offline_access` scope to obtain a refresh token for long-lived access.
 
 **Classic scopes** (recommended) include:
+
 - `read:confluence-content.all` — Read all content including body
 - `read:confluence-content.summary` — Read content summaries
 - `write:confluence-content` — Create pages, blogs, comments
@@ -59,45 +62,59 @@ Confluence Data Center also supports OAuth 2.0 via the Authorization Code Grant 
 ## Features
 
 ### Pages and Blog Posts
+
 Create, read, update, and delete pages and blog posts. Content can be authored in Confluence's storage format (XHTML-based). Pages support hierarchical organization with parent-child relationships, and can be moved or copied between spaces. Version history is maintained for all content.
 
 ### Spaces
+
 Create and manage spaces, which are the top-level organizational containers for content. Spaces have configurable settings, themes, permissions, and properties. Space permissions can be managed to control which users and groups have access.
 
 ### Comments
+
 Add, update, and delete comments on pages and blog posts. Supports both footer comments and inline comments.
 
 ### Attachments
+
 Upload, download, update, and delete file attachments on pages and blog posts. Attachments support versioning.
 
 ### Labels
+
 Add and remove labels on content and spaces for categorization and discovery.
 
 ### Search
+
 The Confluence Query Language (CQL) allows complex searches using an SQL-like syntax. Search can filter by content type, space, labels, contributors, dates, and more.
 
 ### Content Properties
+
 Content properties are key-value storage associated with a piece of Confluence content, useful for storing metadata. They can be read, created, updated, and deleted via the API.
 
 ### Content Restrictions
+
 Manage read and update restrictions on individual pieces of content, controlling which users or groups can view or edit specific pages.
 
 ### Users and Groups
+
 Read user details and group memberships. Create, update, and delete groups. Manage group membership.
 
 ### Whiteboards, Databases, and Folders (Cloud only, v2 API)
+
 Create and manage whiteboards, databases, Smart Links in the content tree, and folders as content types within spaces.
 
 ### Tasks
+
 View and update inline tasks (action items) within Confluence content.
 
 ### Templates
+
 Manage content templates that provide pre-defined page structures.
 
 ### Audit Log (Admin)
+
 View and export audit records for Confluence events. Create custom audit records.
 
 ### Space Permissions
+
 View and manage granular space-level permissions for users and groups.
 
 ## Events
@@ -111,48 +128,71 @@ On **Confluence Cloud**, webhooks can be registered via the REST API at `/wiki/r
 Webhook payloads contain mostly IDs (to protect identifiable information); the REST API should be used to resolve these IDs into full data.
 
 ### Page Events
+
 Triggered when pages are created, updated, moved, copied, trashed, restored, removed, archived, unarchived, or viewed. Also includes `page_children_reordered`, `page_published`, and `blueprint_page_created`.
+
 - Events: `page_created`, `page_updated`, `page_moved`, `page_copied`, `page_trashed`, `page_restored`, `page_removed`, `page_archived`, `page_unarchived`, `page_viewed`, `page_children_reordered`, `page_published`, `blueprint_page_created`
 
 ### Blog Post Events
+
 Triggered when blog posts are created, updated, moved, trashed, restored, removed, or viewed.
+
 - Events: `blog_created`, `blog_updated`, `blog_moved`, `blog_trashed`, `blog_restored`, `blog_removed`, `blog_viewed`
 
 ### Comment Events
+
 Triggered when comments are created or removed.
+
 - Events: `comment_created`, `comment_removed`
 
 ### Attachment Events
+
 Triggered when attachments are created, updated, removed, trashed, restored, archived, unarchived, or viewed.
+
 - Events: `attachment_created`, `attachment_updated`, `attachment_removed`, `attachment_trashed`, `attachment_restored`, `attachment_archived`, `attachment_unarchived`, `attachment_viewed`
 
 ### Content Events (Generic)
+
 Triggered for generic content lifecycle events and permission changes.
+
 - Events: `content_created`, `content_updated`, `content_removed`, `content_trashed`, `content_restored`, `content_permissions_updated`
 
 ### Space Events
+
 Triggered when spaces are created, updated, or removed, and when space permissions or logos change.
+
 - Events: `space_created`, `space_updated`, `space_removed`, `space_permissions_updated`, `space_logo_updated`
 
 ### Label Events
+
 Triggered when labels are added to or removed from content, and when labels are created or deleted globally.
+
 - Events: `label_added`, `label_removed`, `label_created`, `label_deleted`
 
 ### User Events
+
 Triggered when users are removed or reactivated.
+
 - Events: `user_removed`, `user_reactivated`
 
 ### Group Events
+
 Triggered when groups are created or removed.
+
 - Events: `group_created`, `group_removed`
 
 ### Relation Events
+
 Triggered when entity relationships are created or deleted.
+
 - Events: `relation_created`, `relation_deleted`
 
 ### Search Events
+
 Triggered when a search is performed.
+
 - Events: `search_performed`
 
 ### Other Events
+
 - `theme_enabled` — Triggered when a theme is enabled.

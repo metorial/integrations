@@ -3,47 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Create, update, or lock a user in your HackerRank for Work account. Use this to provision new user accounts, update user details like name and role, or lock (deactivate) users. To look up an existing user, provide a userId; to create a new user, provide an email without a userId.`,
-    instructions: [
-      'To create a new user, omit the userId and provide at least an email address.',
-      'To update a user, provide the userId and any fields to change.',
-      'To lock (deactivate) a user, set the "lock" field to true.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Create, update, or lock a user in your HackerRank for Work account. Use this to provision new user accounts, update user details like name and role, or lock (deactivate) users. To look up an existing user, provide a userId; to create a new user, provide an email without a userId.`,
+  instructions: [
+    'To create a new user, omit the userId and provide at least an email address.',
+    'To update a user, provide the userId and any fields to change.',
+    'To lock (deactivate) a user, set the "lock" field to true.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('ID of an existing user to update or lock. Omit to create a new user.'),
-    email: z.string().optional().describe('Email address of the user (required for creating a new user)'),
-    firstname: z.string().optional().describe('First name of the user'),
-    lastname: z.string().optional().describe('Last name of the user'),
-    role: z.string().optional().describe('Role of the user (e.g., "admin", "recruiter", "interviewer")'),
-    country: z.string().optional().describe('Country code of the user'),
-    phone: z.string().optional().describe('Phone number of the user'),
-    timezone: z.string().optional().describe('Timezone of the user'),
-    lock: z.boolean().optional().describe('Set to true to lock (deactivate) the user'),
-  }))
-  .output(z.object({
-    user: z.record(z.string(), z.any()).optional().describe('User object (absent if locked)'),
-    locked: z.boolean().optional().describe('Whether the user was locked'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z
+        .string()
+        .optional()
+        .describe('ID of an existing user to update or lock. Omit to create a new user.'),
+      email: z
+        .string()
+        .optional()
+        .describe('Email address of the user (required for creating a new user)'),
+      firstname: z.string().optional().describe('First name of the user'),
+      lastname: z.string().optional().describe('Last name of the user'),
+      role: z
+        .string()
+        .optional()
+        .describe('Role of the user (e.g., "admin", "recruiter", "interviewer")'),
+      country: z.string().optional().describe('Country code of the user'),
+      phone: z.string().optional().describe('Phone number of the user'),
+      timezone: z.string().optional().describe('Timezone of the user'),
+      lock: z.boolean().optional().describe('Set to true to lock (deactivate) the user')
+    })
+  )
+  .output(
+    z.object({
+      user: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('User object (absent if locked)'),
+      locked: z.boolean().optional().describe('Whether the user was locked')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.userId && ctx.input.lock) {
       await client.deleteUser(ctx.input.userId);
       return {
         output: {
-          locked: true,
+          locked: true
         },
-        message: `Locked user **${ctx.input.userId}**.`,
+        message: `Locked user **${ctx.input.userId}**.`
       };
     }
 
@@ -62,9 +75,9 @@ export let manageUser = SlateTool.create(
 
       return {
         output: {
-          user,
+          user
         },
-        message: `Updated user **${user.email ?? ctx.input.userId}**.`,
+        message: `Updated user **${user.email ?? ctx.input.userId}**.`
       };
     }
 
@@ -79,15 +92,15 @@ export let manageUser = SlateTool.create(
       role: ctx.input.role,
       country: ctx.input.country,
       phone: ctx.input.phone,
-      timezone: ctx.input.timezone,
+      timezone: ctx.input.timezone
     });
 
     let user = result.data ?? result;
 
     return {
       output: {
-        user,
+        user
       },
-      message: `Created user **${user.email ?? ctx.input.email}**.`,
+      message: `Created user **${user.email ?? ctx.input.email}**.`
     };
   });

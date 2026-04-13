@@ -10,7 +10,7 @@ import {
   searchBible,
   getSections,
   listAudioBibles,
-  getAudioChapter,
+  getAudioChapter
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -27,9 +27,7 @@ export let provider = Slate.create({
     searchBible,
     getSections,
     listAudioBibles,
-    getAudioChapter,
+    getAudioChapter
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

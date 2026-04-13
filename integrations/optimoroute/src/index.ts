@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createOrder,
@@ -14,11 +13,9 @@ import {
   updateDriverParameters,
   updateDriverPositions,
   getCompletionDetails,
-  updateCompletionDetails,
+  updateCompletionDetails
 } from './tools';
-import { mobileEvents,
-  inboundWebhook,
-} from './triggers';
+import { mobileEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     updateDriverParameters,
     updateDriverPositions,
     getCompletionDetails,
-    updateCompletionDetails,
+    updateCompletionDetails
   ],
-  triggers: [
-    inboundWebhook,
-    mobileEvents,
-  ],
+  triggers: [inboundWebhook, mobileEvents]
 });

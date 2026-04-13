@@ -7,7 +7,9 @@ let eventInputSchema = z.object({
   eventType: z.string().describe('Event type (e.g., row.created, cell.updated, column.added)'),
   eventId: z.string().describe('Unique event identifier for deduplication'),
   sheetId: z.string().describe('ID of the sheet that changed'),
-  objectType: z.string().describe('Type of changed object (row, column, cell, attachment, discussion, comment)'),
+  objectType: z
+    .string()
+    .describe('Type of changed object (row, column, cell, attachment, discussion, comment)'),
   rowId: z.string().optional().describe('ID of the affected row'),
   columnId: z.string().optional().describe('ID of the affected column'),
   userId: z.string().optional().describe('ID of the user who made the change'),
@@ -23,18 +25,16 @@ let eventOutputSchema = z.object({
   timestamp: z.string().optional().describe('When the event occurred')
 });
 
-export let sheetChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sheet Changes',
-    key: 'sheet_changes',
-    description: 'Triggers when changes occur on a Smartsheet sheet, including row, column, cell, attachment, discussion, and comment changes. Uses webhooks for real-time notifications. Note: The webhook callback provides a "skinny payload" indicating what changed — use the Get Sheet tool to retrieve full data.'
-  }
-)
+export let sheetChanges = SlateTrigger.create(spec, {
+  name: 'Sheet Changes',
+  key: 'sheet_changes',
+  description:
+    'Triggers when changes occur on a Smartsheet sheet, including row, column, cell, attachment, discussion, and comment changes. Uses webhooks for real-time notifications. Note: The webhook callback provides a "skinny payload" indicating what changed — use the Get Sheet tool to retrieve full data.'
+})
   .input(eventInputSchema)
   .output(eventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new SmartsheetClient({ token: ctx.auth.token });
 
       // Create the webhook
@@ -67,7 +67,7 @@ export let sheetChanges = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new SmartsheetClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookId: string };
 
@@ -76,12 +76,12 @@ export let sheetChanges = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let contentType = ctx.request.headers.get('content-type') || '';
 
       // Handle Smartsheet verification challenge
       // When enabling a webhook, Smartsheet sends a challenge that must be echoed back
-      let body = await ctx.request.json() as any;
+      let body = (await ctx.request.json()) as any;
 
       if (body.challenge) {
         // This is a verification request — respond with the challenge
@@ -118,7 +118,7 @@ export let sheetChanges = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType.toLowerCase(),
         id: ctx.input.eventId,

@@ -3,33 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageRole = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Role',
-    key: 'manage_role',
-    description: `Create, update, or delete a role with specific permission sets. Roles control access to features and resources within Klipfolio.`,
-    instructions: [
-      'Use action "create" to define a new role, "update" to modify, "delete" to remove, or "get" to retrieve details.',
-      'Permissions follow the format "category.action" (e.g., "dashboard.library", "klip.build", "user.manage").',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'get']).describe('Operation to perform'),
-    roleId: z.string().optional().describe('Role ID (required for update, delete, get)'),
-    name: z.string().optional().describe('Role name (required for create)'),
-    description: z.string().optional().describe('Role description'),
-    permissions: z.array(z.string()).optional().describe('Permission strings to assign to the role'),
-  }))
-  .output(z.object({
-    roleId: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    permissions: z.array(z.string()).optional(),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageRole = SlateTool.create(spec, {
+  name: 'Manage Role',
+  key: 'manage_role',
+  description: `Create, update, or delete a role with specific permission sets. Roles control access to features and resources within Klipfolio.`,
+  instructions: [
+    'Use action "create" to define a new role, "update" to modify, "delete" to remove, or "get" to retrieve details.',
+    'Permissions follow the format "category.action" (e.g., "dashboard.library", "klip.build", "user.manage").'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete', 'get']).describe('Operation to perform'),
+      roleId: z.string().optional().describe('Role ID (required for update, delete, get)'),
+      name: z.string().optional().describe('Role name (required for create)'),
+      description: z.string().optional().describe('Role description'),
+      permissions: z
+        .array(z.string())
+        .optional()
+        .describe('Permission strings to assign to the role')
+    })
+  )
+  .output(
+    z.object({
+      roleId: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      permissions: z.array(z.string()).optional(),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'get') {
@@ -42,10 +46,14 @@ export let manageRole = SlateTool.create(
           roleId: role?.id,
           name: role?.name,
           description: role?.description,
-          permissions: permissions ? (Array.isArray(permissions) ? permissions : undefined) : undefined,
-          success: true,
+          permissions: permissions
+            ? Array.isArray(permissions)
+              ? permissions
+              : undefined
+            : undefined,
+          success: true
         },
-        message: `Retrieved role **${role?.name || ctx.input.roleId}**.`,
+        message: `Retrieved role **${role?.name || ctx.input.roleId}**.`
       };
     }
 
@@ -55,15 +63,21 @@ export let manageRole = SlateTool.create(
       let result = await client.createRole({
         name: ctx.input.name,
         description: ctx.input.description,
-        permissions: ctx.input.permissions,
+        permissions: ctx.input.permissions
       });
 
       let location = result?.meta?.location;
       let roleId = location ? location.split('/').pop() : undefined;
 
       return {
-        output: { roleId, name: ctx.input.name, description: ctx.input.description, permissions: ctx.input.permissions, success: true },
-        message: `Created role **${ctx.input.name}**${roleId ? ` with ID \`${roleId}\`` : ''}.`,
+        output: {
+          roleId,
+          name: ctx.input.name,
+          description: ctx.input.description,
+          permissions: ctx.input.permissions,
+          success: true
+        },
+        message: `Created role **${ctx.input.name}**${roleId ? ` with ID \`${roleId}\`` : ''}.`
       };
     }
 
@@ -73,12 +87,18 @@ export let manageRole = SlateTool.create(
       await client.updateRole(ctx.input.roleId, {
         name: ctx.input.name,
         description: ctx.input.description,
-        permissions: ctx.input.permissions,
+        permissions: ctx.input.permissions
       });
 
       return {
-        output: { roleId: ctx.input.roleId, name: ctx.input.name, description: ctx.input.description, permissions: ctx.input.permissions, success: true },
-        message: `Updated role \`${ctx.input.roleId}\`.`,
+        output: {
+          roleId: ctx.input.roleId,
+          name: ctx.input.name,
+          description: ctx.input.description,
+          permissions: ctx.input.permissions,
+          success: true
+        },
+        message: `Updated role \`${ctx.input.roleId}\`.`
       };
     }
 
@@ -88,7 +108,7 @@ export let manageRole = SlateTool.create(
 
       return {
         output: { roleId: ctx.input.roleId, success: true },
-        message: `Deleted role \`${ctx.input.roleId}\`.`,
+        message: `Deleted role \`${ctx.input.roleId}\`.`
       };
     }
 

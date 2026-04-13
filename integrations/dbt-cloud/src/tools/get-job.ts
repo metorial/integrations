@@ -3,41 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getJobTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Job',
-    key: 'get_job',
-    description: `Retrieve detailed information about a specific dbt Cloud job, including its schedule, execution steps, settings, and run history metadata. Use this to inspect a job's full configuration before triggering or modifying it.`,
-    tags: {
-      readOnly: true
-    }
+export let getJobTool = SlateTool.create(spec, {
+  name: 'Get Job',
+  key: 'get_job',
+  description: `Retrieve detailed information about a specific dbt Cloud job, including its schedule, execution steps, settings, and run history metadata. Use this to inspect a job's full configuration before triggering or modifying it.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    jobId: z.string().describe('The unique ID of the job to retrieve')
-  }))
-  .output(z.object({
-    jobId: z.number().describe('Unique job identifier'),
-    accountId: z.number().describe('Account the job belongs to'),
-    projectId: z.number().describe('Project the job belongs to'),
-    environmentId: z.number().describe('Environment the job runs in'),
-    name: z.string().describe('Job name'),
-    description: z.string().optional().describe('Job description'),
-    executeSteps: z.array(z.string()).optional().describe('dbt commands executed by this job'),
-    state: z.number().optional().describe('Job state (1 = active, 2 = deleted)'),
-    dbtVersion: z.string().nullable().optional().describe('dbt version override'),
-    generateDocs: z.boolean().optional().describe('Whether docs are generated after run'),
-    schedule: z.any().optional().describe('Job schedule configuration'),
-    settings: z.any().optional().describe('Job settings including threads'),
-    triggers: z.any().optional().describe('Job trigger configuration'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    runGenerateSources: z.boolean().optional().describe('Whether source freshness is run'),
-    nextRun: z.string().nullable().optional().describe('Next scheduled run timestamp'),
-    nextRunHumanized: z.string().nullable().optional().describe('Human-readable next run time')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('The unique ID of the job to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.number().describe('Unique job identifier'),
+      accountId: z.number().describe('Account the job belongs to'),
+      projectId: z.number().describe('Project the job belongs to'),
+      environmentId: z.number().describe('Environment the job runs in'),
+      name: z.string().describe('Job name'),
+      description: z.string().optional().describe('Job description'),
+      executeSteps: z
+        .array(z.string())
+        .optional()
+        .describe('dbt commands executed by this job'),
+      state: z.number().optional().describe('Job state (1 = active, 2 = deleted)'),
+      dbtVersion: z.string().nullable().optional().describe('dbt version override'),
+      generateDocs: z.boolean().optional().describe('Whether docs are generated after run'),
+      schedule: z.any().optional().describe('Job schedule configuration'),
+      settings: z.any().optional().describe('Job settings including threads'),
+      triggers: z.any().optional().describe('Job trigger configuration'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      runGenerateSources: z.boolean().optional().describe('Whether source freshness is run'),
+      nextRun: z.string().nullable().optional().describe('Next scheduled run timestamp'),
+      nextRunHumanized: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Human-readable next run time')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
@@ -69,4 +77,5 @@ export let getJobTool = SlateTool.create(
       },
       message: `Retrieved job **${job.name}** (ID: ${job.id}).`
     };
-  }).build();
+  })
+  .build();

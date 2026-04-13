@@ -3,37 +3,36 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let getOrganizationTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Organization',
-    key: 'get_organization',
-    description: `Get details about the configured Terraform Cloud organization, including plan entitlements, feature flags, and usage limits.`,
-    tags: {
-      readOnly: true
-    }
+export let getOrganizationTool = SlateTool.create(spec, {
+  name: 'Get Organization',
+  key: 'get_organization',
+  description: `Get details about the configured Terraform Cloud organization, including plan entitlements, feature flags, and usage limits.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    organizationId: z.string(),
-    name: z.string(),
-    email: z.string(),
-    collaboratorAuthPolicy: z.string(),
-    planExpired: z.boolean(),
-    planExpiresAt: z.string(),
-    costEstimationEnabled: z.boolean(),
-    createdAt: z.string(),
-    trialing: z.boolean(),
-    permissions: z.object({
-      canCreateTeam: z.boolean(),
-      canCreateWorkspace: z.boolean(),
-      canManageUsers: z.boolean(),
-      canUpdate: z.boolean(),
-      canDestroy: z.boolean()
+  .output(
+    z.object({
+      organizationId: z.string(),
+      name: z.string(),
+      email: z.string(),
+      collaboratorAuthPolicy: z.string(),
+      planExpired: z.boolean(),
+      planExpiresAt: z.string(),
+      costEstimationEnabled: z.boolean(),
+      createdAt: z.string(),
+      trialing: z.boolean(),
+      permissions: z.object({
+        canCreateTeam: z.boolean(),
+        canCreateWorkspace: z.boolean(),
+        canManageUsers: z.boolean(),
+        canUpdate: z.boolean(),
+        canDestroy: z.boolean()
+      })
     })
-  }))
-  .handleInvocation(async (ctx) => {
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let response = await client.getOrganization();
     let org = response.data;

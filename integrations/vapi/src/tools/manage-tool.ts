@@ -3,48 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tool',
-    key: 'manage_tool',
-    description: `Create, update, retrieve, or delete tools that assistants can invoke during conversations. Tool types include API requests (HTTP calls), code execution, and MCP tools. Configure custom headers, request bodies, and variable extraction from responses.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageTool = SlateTool.create(spec, {
+  name: 'Manage Tool',
+  key: 'manage_tool',
+  description: `Create, update, retrieve, or delete tools that assistants can invoke during conversations. Tool types include API requests (HTTP calls), code execution, and MCP tools. Configure custom headers, request bodies, and variable extraction from responses.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
-    toolId: z.string().optional().describe('Tool ID (required for get, update, delete)'),
-    type: z.string().optional().describe('Tool type (e.g. apiRequest, function, code, mcp)'),
-    name: z.string().optional().describe('Name of the tool'),
-    description: z.string().optional().describe('Description of what the tool does for the LLM'),
-    function: z.object({
-      name: z.string().optional().describe('Function name'),
-      description: z.string().optional().describe('Function description'),
-      parameters: z.any().optional().describe('JSON Schema for the function parameters')
-    }).optional().describe('Function definition for function/API request tools'),
-    server: z.object({
-      url: z.string().optional().describe('Server URL for API request tools'),
-      method: z.string().optional().describe('HTTP method (GET, POST, PUT, DELETE, PATCH)'),
-      headers: z.record(z.string(), z.string()).optional().describe('Custom headers'),
-      body: z.any().optional().describe('Request body template')
-    }).optional().describe('Server configuration for API request tools')
-  }))
-  .output(z.object({
-    toolId: z.string().optional().describe('ID of the tool'),
-    type: z.string().optional().describe('Tool type'),
-    name: z.string().optional().describe('Name of the tool'),
-    description: z.string().optional().describe('Description of the tool'),
-    function: z.any().optional().describe('Function definition'),
-    server: z.any().optional().describe('Server configuration'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the tool was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
+      toolId: z.string().optional().describe('Tool ID (required for get, update, delete)'),
+      type: z.string().optional().describe('Tool type (e.g. apiRequest, function, code, mcp)'),
+      name: z.string().optional().describe('Name of the tool'),
+      description: z
+        .string()
+        .optional()
+        .describe('Description of what the tool does for the LLM'),
+      function: z
+        .object({
+          name: z.string().optional().describe('Function name'),
+          description: z.string().optional().describe('Function description'),
+          parameters: z.any().optional().describe('JSON Schema for the function parameters')
+        })
+        .optional()
+        .describe('Function definition for function/API request tools'),
+      server: z
+        .object({
+          url: z.string().optional().describe('Server URL for API request tools'),
+          method: z
+            .string()
+            .optional()
+            .describe('HTTP method (GET, POST, PUT, DELETE, PATCH)'),
+          headers: z.record(z.string(), z.string()).optional().describe('Custom headers'),
+          body: z.any().optional().describe('Request body template')
+        })
+        .optional()
+        .describe('Server configuration for API request tools')
+    })
+  )
+  .output(
+    z.object({
+      toolId: z.string().optional().describe('ID of the tool'),
+      type: z.string().optional().describe('Tool type'),
+      name: z.string().optional().describe('Name of the tool'),
+      description: z.string().optional().describe('Description of the tool'),
+      function: z.any().optional().describe('Function definition'),
+      server: z.any().optional().describe('Server configuration'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the tool was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, toolId } = ctx.input;
 

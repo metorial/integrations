@@ -9,19 +9,27 @@ export let deleteCampaign = SlateTool.create(spec, {
   description: `Permanently delete a campaign or clone an existing campaign to create a copy as a new draft.`,
   tags: {
     destructive: true,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    campaignId: z.string().describe('ID of the campaign'),
-    action: z.enum(['delete', 'clone']).describe('Action to perform: "delete" permanently removes the campaign, "clone" creates a draft copy'),
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('The campaign ID (original for delete, new for clone)'),
-    action: z.string().describe('Action that was performed'),
-    success: z.boolean().describe('Whether the action completed successfully'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      campaignId: z.string().describe('ID of the campaign'),
+      action: z
+        .enum(['delete', 'clone'])
+        .describe(
+          'Action to perform: "delete" permanently removes the campaign, "clone" creates a draft copy'
+        )
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('The campaign ID (original for delete, new for clone)'),
+      action: z.string().describe('Action that was performed'),
+      success: z.boolean().describe('Whether the action completed successfully')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MoosendClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'delete') {
@@ -30,9 +38,9 @@ export let deleteCampaign = SlateTool.create(spec, {
         output: {
           campaignId: ctx.input.campaignId,
           action: 'delete',
-          success: true,
+          success: true
         },
-        message: `Permanently deleted campaign **${ctx.input.campaignId}**.`,
+        message: `Permanently deleted campaign **${ctx.input.campaignId}**.`
       };
     }
 
@@ -43,9 +51,9 @@ export let deleteCampaign = SlateTool.create(spec, {
       output: {
         campaignId: newId,
         action: 'clone',
-        success: true,
+        success: true
       },
-      message: `Cloned campaign **${ctx.input.campaignId}** → new draft **${newId}**.`,
+      message: `Cloned campaign **${ctx.input.campaignId}** → new draft **${newId}**.`
     };
   })
   .build();

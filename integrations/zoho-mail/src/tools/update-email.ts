@@ -3,48 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateEmail = SlateTool.create(
-  spec,
-  {
-    name: 'Update Email',
-    key: 'update_email',
-    description: `Perform actions on one or more emails: mark as read/unread, flag/unflag, move to a folder, add/remove labels, archive, mark as spam, or delete. Supports batch operations on multiple message IDs.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let updateEmail = SlateTool.create(spec, {
+  name: 'Update Email',
+  key: 'update_email',
+  description: `Perform actions on one or more emails: mark as read/unread, flag/unflag, move to a folder, add/remove labels, archive, mark as spam, or delete. Supports batch operations on multiple message IDs.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    accountId: z.string().describe('Zoho Mail account ID'),
-    messageIds: z.array(z.string()).min(1).describe('One or more message IDs to update'),
-    action: z.enum([
-      'markAsRead',
-      'markAsUnread',
-      'flag',
-      'unflag',
-      'moveToFolder',
-      'addLabel',
-      'removeLabel',
-      'archive',
-      'unarchive',
-      'markAsSpam',
-      'markAsNotSpam',
-      'delete',
-    ]).describe('Action to perform on the message(s)'),
-    destinationFolderId: z.string().optional().describe('Target folder ID (required for moveToFolder action)'),
-    labelId: z.string().optional().describe('Label ID (required for addLabel/removeLabel actions)'),
-    folderId: z.string().optional().describe('Source folder ID (required for delete action)'),
-    flagValue: z.number().optional().describe('Flag color value 0-9 (for flag action)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    messagesAffected: z.number().describe('Number of messages affected'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z.string().describe('Zoho Mail account ID'),
+      messageIds: z.array(z.string()).min(1).describe('One or more message IDs to update'),
+      action: z
+        .enum([
+          'markAsRead',
+          'markAsUnread',
+          'flag',
+          'unflag',
+          'moveToFolder',
+          'addLabel',
+          'removeLabel',
+          'archive',
+          'unarchive',
+          'markAsSpam',
+          'markAsNotSpam',
+          'delete'
+        ])
+        .describe('Action to perform on the message(s)'),
+      destinationFolderId: z
+        .string()
+        .optional()
+        .describe('Target folder ID (required for moveToFolder action)'),
+      labelId: z
+        .string()
+        .optional()
+        .describe('Label ID (required for addLabel/removeLabel actions)'),
+      folderId: z
+        .string()
+        .optional()
+        .describe('Source folder ID (required for delete action)'),
+      flagValue: z.number().optional().describe('Flag color value 0-9 (for flag action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      messagesAffected: z.number().describe('Number of messages affected')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.dataCenterDomain,
+      domain: ctx.config.dataCenterDomain
     });
 
     let { action, messageIds, accountId } = ctx.input;
@@ -58,7 +70,7 @@ export let updateEmail = SlateTool.create(
       }
       return {
         output: { success: true, messagesAffected: messageIds.length },
-        message: `Deleted **${messageIds.length}** email(s).`,
+        message: `Deleted **${messageIds.length}** email(s).`
       };
     }
 
@@ -73,12 +85,12 @@ export let updateEmail = SlateTool.create(
       archive: 'archive',
       unarchive: 'unarchive',
       markAsSpam: 'spam',
-      markAsNotSpam: 'notspam',
+      markAsNotSpam: 'notspam'
     };
 
     let params: any = {
       mode: modeMap[action],
-      messageId: messageIds,
+      messageId: messageIds
     };
 
     if (action === 'moveToFolder') {
@@ -112,12 +124,12 @@ export let updateEmail = SlateTool.create(
       archive: 'archived',
       unarchive: 'unarchived',
       markAsSpam: 'marked as spam',
-      markAsNotSpam: 'marked as not spam',
+      markAsNotSpam: 'marked as not spam'
     };
 
     return {
       output: { success: true, messagesAffected: messageIds.length },
-      message: `**${messageIds.length}** email(s) ${actionDescriptions[action]}.`,
+      message: `**${messageIds.length}** email(s) ${actionDescriptions[action]}.`
     };
   })
   .build();

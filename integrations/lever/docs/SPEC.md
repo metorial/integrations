@@ -24,12 +24,14 @@ API Keys are used by customers to build internal workflows. Integrations are bui
 OAuth is a requirement of the integrations program, and for that reason Lever does not provide API Keys for development. All partner integrations must use OAuth.
 
 **Endpoints:**
+
 - Authorization URL: `https://auth.lever.co/authorize`
 - Token URL: `https://auth.lever.co/oauth/token`
 - Sandbox Authorization URL: `https://sandbox-lever.auth0.com/authorize`
 - Sandbox API URL: `https://api.sandbox.lever.co/v1`
 
 **Required Parameters for Authorization:**
+
 - `client_id` — Provided when registering the application with Lever
 - `redirect_uri` — Must exactly match the registered callback URI
 - `response_type` — Must be `code`
@@ -38,6 +40,7 @@ OAuth is a requirement of the integrations program, and for that reason Lever do
 - `scope` — Space-separated list of required scopes; include `offline_access` to receive a refresh token
 
 **Token Lifecycle:**
+
 - Access tokens expire after 1 hour.
 - The access token will expire, but the customer does not need to re-authenticate your app. You will simply use the refresh token to exchange for a new access token and a new refresh token. Repeat this process, factoring in expiry times for the access token and the refresh token, to maintain persistent authentication.
 - Refresh tokens expire after 1 year or after 90 days of inactivity.
@@ -46,38 +49,38 @@ OAuth is a requirement of the integrations program, and for that reason Lever do
 
 Scopes follow the pattern `resource:permission:admin`. Write scopes include all read permissions for that resource. Available scopes include:
 
-| Scope | Description |
-|---|---|
-| `offline_access` | Required to receive a refresh token |
-| `applications:read:admin` | View all opportunity applications |
-| `archive_reasons:read:admin` | View all archive reasons |
-| `audit_events:read:admin` | View all audit events |
-| `confidential:access:admin` | Access all confidential data |
-| `contact:read:admin` / `contact:write:admin` | View / manage opportunity contacts |
-| `diversity_surveys:read:admin` | View all diversity surveys |
-| `eeo_responses:read:admin` | View EEO responses (without PII) |
-| `eeo_responses_pii:read:admin` | View EEO responses (with PII) |
-| `feedback:read:admin` / `feedback:write:admin` | View / manage feedback forms |
-| `feedback_templates:read:admin` / `feedback_templates:write:admin` | View / manage feedback templates |
-| `files:read:admin` / `files:write:admin` | View / manage files |
-| `forms:read:admin` / `forms:write:admin` | View / manage profile forms |
-| `form_templates:read:admin` / `form_templates:write:admin` | View / manage form templates |
-| `interviews:read:admin` / `interviews:write:admin` | View / manage interviews |
-| `notes:read:admin` / `notes:write:admin` | View / manage notes |
-| `offers:read:admin` | View all offers |
-| `opportunities:read:admin` / `opportunities:write:admin` | View / manage opportunities |
-| `panels:read:admin` / `panels:write:admin` | View / manage interview panels |
-| `postings:read:admin` / `postings:write:admin` | View / manage job postings |
-| `referrals:read:admin` | View all referrals |
-| `requisitions:read:admin` / `requisitions:write:admin` | View / manage requisitions |
-| `requisition_fields:read:admin` / `requisition_fields:write:admin` | View / manage requisition fields |
-| `resumes:read:admin` | View all resumes |
-| `sources:read:admin` | View all sources |
-| `stages:read:admin` | View all stages |
-| `tags:read:admin` | View all tags |
-| `uploads:write:admin` | Manage file uploads |
-| `users:read:admin` / `users:write:admin` | View / manage users |
-| `webhooks:read:admin` / `webhooks:write:admin` | View / manage webhooks |
+| Scope                                                              | Description                         |
+| ------------------------------------------------------------------ | ----------------------------------- |
+| `offline_access`                                                   | Required to receive a refresh token |
+| `applications:read:admin`                                          | View all opportunity applications   |
+| `archive_reasons:read:admin`                                       | View all archive reasons            |
+| `audit_events:read:admin`                                          | View all audit events               |
+| `confidential:access:admin`                                        | Access all confidential data        |
+| `contact:read:admin` / `contact:write:admin`                       | View / manage opportunity contacts  |
+| `diversity_surveys:read:admin`                                     | View all diversity surveys          |
+| `eeo_responses:read:admin`                                         | View EEO responses (without PII)    |
+| `eeo_responses_pii:read:admin`                                     | View EEO responses (with PII)       |
+| `feedback:read:admin` / `feedback:write:admin`                     | View / manage feedback forms        |
+| `feedback_templates:read:admin` / `feedback_templates:write:admin` | View / manage feedback templates    |
+| `files:read:admin` / `files:write:admin`                           | View / manage files                 |
+| `forms:read:admin` / `forms:write:admin`                           | View / manage profile forms         |
+| `form_templates:read:admin` / `form_templates:write:admin`         | View / manage form templates        |
+| `interviews:read:admin` / `interviews:write:admin`                 | View / manage interviews            |
+| `notes:read:admin` / `notes:write:admin`                           | View / manage notes                 |
+| `offers:read:admin`                                                | View all offers                     |
+| `opportunities:read:admin` / `opportunities:write:admin`           | View / manage opportunities         |
+| `panels:read:admin` / `panels:write:admin`                         | View / manage interview panels      |
+| `postings:read:admin` / `postings:write:admin`                     | View / manage job postings          |
+| `referrals:read:admin`                                             | View all referrals                  |
+| `requisitions:read:admin` / `requisitions:write:admin`             | View / manage requisitions          |
+| `requisition_fields:read:admin` / `requisition_fields:write:admin` | View / manage requisition fields    |
+| `resumes:read:admin`                                               | View all resumes                    |
+| `sources:read:admin`                                               | View all sources                    |
+| `stages:read:admin`                                                | View all stages                     |
+| `tags:read:admin`                                                  | View all tags                       |
+| `uploads:write:admin`                                              | Manage file uploads                 |
+| `users:read:admin` / `users:write:admin`                           | View / manage users                 |
+| `webhooks:read:admin` / `webhooks:write:admin`                     | View / manage webhooks              |
 
 There is a maximum of 20 scopes per application.
 

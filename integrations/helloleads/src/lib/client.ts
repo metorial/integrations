@@ -40,7 +40,7 @@ export class HelloLeadsClient {
       baseURL: BASE_URL,
       headers: {
         'hls-key': `token=${config.token}`,
-        'Xemail': config.email,
+        Xemail: config.email,
         'Content-Type': 'application/json'
       }
     });
@@ -58,7 +58,7 @@ export class HelloLeadsClient {
 
   async createLead(lead: CreateLeadParams): Promise<any> {
     let body: Record<string, any> = {
-      first_name: lead.firstName,
+      first_name: lead.firstName
     };
 
     if (lead.lastName) body.last_name = lead.lastName;

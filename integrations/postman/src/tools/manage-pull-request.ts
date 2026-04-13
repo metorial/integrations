@@ -3,32 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let managePullRequestTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Pull Request',
-    key: 'manage_pull_request',
-    description: `Create, get, update, or list pull requests on a Postman collection. Pull requests enable reviewers to review forked collection changes before merging them into the parent collection.`,
-    tags: {
-      destructive: false,
-    },
+export let managePullRequestTool = SlateTool.create(spec, {
+  name: 'Manage Pull Request',
+  key: 'manage_pull_request',
+  description: `Create, get, update, or list pull requests on a Postman collection. Pull requests enable reviewers to review forked collection changes before merging them into the parent collection.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'list']).describe('Operation to perform'),
-    collectionId: z.string().optional().describe('Collection ID (required for create and list)'),
-    pullRequestId: z.string().optional().describe('Pull request ID (required for get and update)'),
-    title: z.string().optional().describe('PR title (required for create)'),
-    description: z.string().optional().describe('PR description'),
-    sourceUid: z.string().optional().describe('Forked collection UID (required for create)'),
-    destinationUid: z.string().optional().describe('Parent collection UID (required for create)'),
-    reviewers: z.array(z.string()).optional().describe('User IDs of reviewers'),
-  }))
-  .output(z.object({
-    pullRequest: z.any().optional(),
-    pullRequests: z.array(z.any()).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'update', 'list']).describe('Operation to perform'),
+      collectionId: z
+        .string()
+        .optional()
+        .describe('Collection ID (required for create and list)'),
+      pullRequestId: z
+        .string()
+        .optional()
+        .describe('Pull request ID (required for get and update)'),
+      title: z.string().optional().describe('PR title (required for create)'),
+      description: z.string().optional().describe('PR description'),
+      sourceUid: z.string().optional().describe('Forked collection UID (required for create)'),
+      destinationUid: z
+        .string()
+        .optional()
+        .describe('Parent collection UID (required for create)'),
+      reviewers: z.array(z.string()).optional().describe('User IDs of reviewers')
+    })
+  )
+  .output(
+    z.object({
+      pullRequest: z.any().optional(),
+      pullRequests: z.array(z.any()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -42,11 +52,11 @@ export let managePullRequestTool = SlateTool.create(
         description: ctx.input.description,
         source: ctx.input.sourceUid,
         destination: ctx.input.destinationUid,
-        reviewers: ctx.input.reviewers,
+        reviewers: ctx.input.reviewers
       });
       return {
         output: { pullRequest: result },
-        message: `Created pull request **"${ctx.input.title}"**.`,
+        message: `Created pull request **"${ctx.input.title}"**.`
       };
     }
 
@@ -55,7 +65,7 @@ export let managePullRequestTool = SlateTool.create(
       let result = await client.getPullRequest(ctx.input.pullRequestId);
       return {
         output: { pullRequest: result },
-        message: `Retrieved pull request **"${result?.title ?? ctx.input.pullRequestId}"**.`,
+        message: `Retrieved pull request **"${result?.title ?? ctx.input.pullRequestId}"**.`
       };
     }
 
@@ -63,11 +73,11 @@ export let managePullRequestTool = SlateTool.create(
       if (!ctx.input.pullRequestId) throw new Error('pullRequestId is required for update.');
       let result = await client.updatePullRequest(ctx.input.pullRequestId, {
         title: ctx.input.title,
-        description: ctx.input.description,
+        description: ctx.input.description
       });
       return {
         output: { pullRequest: result },
-        message: `Updated pull request **${ctx.input.pullRequestId}**.`,
+        message: `Updated pull request **${ctx.input.pullRequestId}**.`
       };
     }
 
@@ -75,7 +85,7 @@ export let managePullRequestTool = SlateTool.create(
     let result = await client.listPullRequests(ctx.input.collectionId);
     return {
       output: { pullRequests: result },
-      message: `Found **${result.length}** pull request(s).`,
+      message: `Found **${result.length}** pull request(s).`
     };
   })
   .build();

@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCalendarEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Get Calendar Entry',
-    key: 'get_calendar_entry',
-    description: `Retrieve calendar events and tasks from ForceManager.
+export let getCalendarEntry = SlateTool.create(spec, {
+  name: 'Get Calendar Entry',
+  key: 'get_calendar_entry',
+  description: `Retrieve calendar events and tasks from ForceManager.
 Fetch by ID or list/search entries with filtering by owner, account, date range, or custom queries.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    entryId: z.number().optional().describe('Specific calendar entry ID to retrieve'),
-    query: z.string().optional().describe('ForceManager query language filter'),
-    ownerId: z.number().optional().describe('Filter by owner user ID'),
-    accountId: z.number().optional().describe('Filter by account ID'),
-    page: z.number().optional().describe('Page number (0-indexed)')
-  }))
-  .output(z.object({
-    entries: z.array(z.any()).describe('List of matching calendar entries'),
-    totalCount: z.number().describe('Number of records returned'),
-    nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      entryId: z.number().optional().describe('Specific calendar entry ID to retrieve'),
+      query: z.string().optional().describe('ForceManager query language filter'),
+      ownerId: z.number().optional().describe('Filter by owner user ID'),
+      accountId: z.number().optional().describe('Filter by account ID'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      entries: z.array(z.any()).describe('List of matching calendar entries'),
+      totalCount: z.number().describe('Number of records returned'),
+      nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.entryId) {
@@ -53,4 +54,5 @@ Fetch by ID or list/search entries with filtering by owner, account, date range,
       },
       message: `Found **${result.entityCount}** calendar entry/entries${result.nextPage !== null ? ` (more pages available)` : ''}`
     };
-  }).build();
+  })
+  .build();

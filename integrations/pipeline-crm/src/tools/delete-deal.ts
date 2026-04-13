@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Deal',
-    key: 'delete_deal',
-    description: `Permanently delete a deal from Pipeline CRM. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteDeal = SlateTool.create(spec, {
+  name: 'Delete Deal',
+  key: 'delete_deal',
+  description: `Permanently delete a deal from Pipeline CRM. This action cannot be undone.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    dealId: z.number().describe('ID of the deal to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the deal was successfully deleted'),
-    dealId: z.number().describe('ID of the deleted deal')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.number().describe('ID of the deal to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the deal was successfully deleted'),
+      dealId: z.number().describe('ID of the deleted deal')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       appKey: ctx.auth.appKey
@@ -37,4 +38,5 @@ export let deleteDeal = SlateTool.create(
       },
       message: `Deleted deal with ID **${ctx.input.dealId}**`
     };
-  }).build();
+  })
+  .build();

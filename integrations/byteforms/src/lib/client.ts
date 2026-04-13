@@ -80,9 +80,9 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.forms.bytesuite.io/api',
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -96,7 +96,10 @@ export class Client {
     return response.data;
   }
 
-  async listFormResponses(formId: string, params?: ListFormResponsesParams): Promise<ListFormResponsesResponse> {
+  async listFormResponses(
+    formId: string,
+    params?: ListFormResponsesParams
+  ): Promise<ListFormResponsesResponse> {
     let queryParams: Record<string, any> = {};
 
     if (params?.limit !== undefined) queryParams.limit = params.limit;
@@ -106,7 +109,7 @@ export class Client {
     if (params?.before) queryParams.before = params.before;
 
     let response = await this.api.get<ListFormResponsesResponse>(`/form/responses/${formId}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }

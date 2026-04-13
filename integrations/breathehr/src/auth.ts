@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Breathe HR API key'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Breathe HR API key')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Breathe HR API key (production keys start with prod-, sandbox keys start with sandbox-)'),
+      token: z
+        .string()
+        .describe(
+          'Your Breathe HR API key (production keys start with prod-, sandbox keys start with sandbox-)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -31,8 +37,8 @@ export let auth = SlateAuth.create()
 
       let response = await axios.get('/account', {
         headers: {
-          'X-API-KEY': ctx.output.token,
-        },
+          'X-API-KEY': ctx.output.token
+        }
       });
 
       let account = response.data?.account;
@@ -40,8 +46,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: account?.uuid || account?.id?.toString(),
-          name: account?.name,
-        },
+          name: account?.name
+        }
       };
-    },
+    }
   });

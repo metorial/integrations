@@ -3,29 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listOrganization = SlateTool.create(
-  spec,
-  {
-    name: 'List Organization Structure',
-    key: 'list_organization',
-    description: `Retrieve organizational structure data from Breathe HR. Fetch departments, divisions, or locations in a single call by specifying the resource type.`,
-    tags: {
-      readOnly: true,
-    },
+export let listOrganization = SlateTool.create(spec, {
+  name: 'List Organization Structure',
+  key: 'list_organization',
+  description: `Retrieve organizational structure data from Breathe HR. Fetch departments, divisions, or locations in a single call by specifying the resource type.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    resourceType: z.enum(['departments', 'divisions', 'locations']).describe('The type of organizational resource to list'),
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of results per page'),
-  }))
-  .output(z.object({
-    items: z.array(z.record(z.string(), z.any())).describe('List of organizational resource records'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      resourceType: z
+        .enum(['departments', 'divisions', 'locations'])
+        .describe('The type of organizational resource to list'),
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of results per page')
+    })
+  )
+  .output(
+    z.object({
+      items: z
+        .array(z.record(z.string(), z.any()))
+        .describe('List of organizational resource records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let pagination = { page: ctx.input.page, perPage: ctx.input.perPage };
@@ -43,7 +48,7 @@ export let listOrganization = SlateTool.create(
 
     return {
       output: { items },
-      message: `Retrieved **${items.length}** ${ctx.input.resourceType}.`,
+      message: `Retrieved **${items.length}** ${ctx.input.resourceType}.`
     };
   })
   .build();

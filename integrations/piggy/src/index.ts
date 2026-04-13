@@ -17,14 +17,14 @@ import {
   listShops,
   listPromotions,
   getLoyaltyProgram,
-  triggerAutomation,
+  triggerAutomation
 } from './tools';
 import {
   contactEvents,
   loyaltyEvents,
   financialEvents,
   voucherEvents,
-  engagementEvents,
+  engagementEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,13 +46,7 @@ export let provider = Slate.create({
     listShops,
     listPromotions,
     getLoyaltyProgram,
-    triggerAutomation,
+    triggerAutomation
   ],
-  triggers: [
-    contactEvents,
-    loyaltyEvents,
-    financialEvents,
-    voucherEvents,
-    engagementEvents,
-  ],
+  triggers: [contactEvents, loyaltyEvents, financialEvents, voucherEvents, engagementEvents]
 });

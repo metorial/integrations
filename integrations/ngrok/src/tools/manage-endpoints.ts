@@ -3,10 +3,13 @@ import { NgrokClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let refSchema = z.object({
-  id: z.string(),
-  uri: z.string()
-}).optional().nullable();
+let refSchema = z
+  .object({
+    id: z.string(),
+    uri: z.string()
+  })
+  .optional()
+  .nullable();
 
 let endpointOutputSchema = z.object({
   endpointId: z.string().describe('Endpoint ID'),
@@ -45,27 +48,30 @@ let mapEndpoint = (e: any) => ({
   bindings: e.bindings || [],
   domain: e.domain?.id ? { id: e.domain.id, uri: e.domain.uri } : null,
   tunnel: e.tunnel?.id ? { id: e.tunnel.id, uri: e.tunnel.uri } : null,
-  tunnelSession: e.tunnel_session?.id ? { id: e.tunnel_session.id, uri: e.tunnel_session.uri } : null
+  tunnelSession: e.tunnel_session?.id
+    ? { id: e.tunnel_session.id, uri: e.tunnel_session.uri }
+    : null
 });
 
-export let listEndpoints = SlateTool.create(
-  spec,
-  {
-    name: 'List Endpoints',
-    key: 'list_endpoints',
-    description: `List all active endpoints. Endpoints define how traffic is routed to your services. Only active endpoints associated with a tunnel or backend are returned.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    beforeId: z.string().optional().describe('Pagination cursor'),
-    limit: z.number().optional().describe('Max results per page (max 100)')
-  }))
-  .output(z.object({
-    endpoints: z.array(endpointOutputSchema),
-    nextPageUri: z.string().optional().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listEndpoints = SlateTool.create(spec, {
+  name: 'List Endpoints',
+  key: 'list_endpoints',
+  description: `List all active endpoints. Endpoints define how traffic is routed to your services. Only active endpoints associated with a tunnel or backend are returned.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      beforeId: z.string().optional().describe('Pagination cursor'),
+      limit: z.number().optional().describe('Max results per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      endpoints: z.array(endpointOutputSchema),
+      nextPageUri: z.string().optional().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let result = await client.listEndpoints({
       beforeId: ctx.input.beforeId,
@@ -76,48 +82,51 @@ export let listEndpoints = SlateTool.create(
       output: { endpoints, nextPageUri: result.next_page_uri || null },
       message: `Found **${endpoints.length}** endpoint(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let getEndpoint = SlateTool.create(
-  spec,
-  {
-    name: 'Get Endpoint',
-    key: 'get_endpoint',
-    description: `Retrieve details of a specific endpoint by ID, including its traffic routing configuration and associated tunnel or domain.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    endpointId: z.string().describe('Endpoint ID (e.g., ep_xxx)')
-  }))
+export let getEndpoint = SlateTool.create(spec, {
+  name: 'Get Endpoint',
+  key: 'get_endpoint',
+  description: `Retrieve details of a specific endpoint by ID, including its traffic routing configuration and associated tunnel or domain.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      endpointId: z.string().describe('Endpoint ID (e.g., ep_xxx)')
+    })
+  )
   .output(endpointOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let e = await client.getEndpoint(ctx.input.endpointId);
     return {
       output: mapEndpoint(e),
       message: `Retrieved endpoint **${e.id}** (${e.url || e.hostport}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createEndpoint = SlateTool.create(
-  spec,
-  {
-    name: 'Create Cloud Endpoint',
-    key: 'create_endpoint',
-    description: `Create a new cloud endpoint with a URL and optional traffic policy. Cloud endpoints allow you to route traffic without running an ngrok agent.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    url: z.string().describe('URL for the endpoint (e.g., https://example.ngrok.app)'),
-    trafficPolicy: z.string().optional().describe('Traffic policy YAML or JSON configuration'),
-    description: z.string().optional().describe('Description (max 255 bytes)'),
-    metadata: z.string().optional().describe('Metadata (max 4096 bytes)'),
-    bindings: z.array(z.string()).optional().describe('Endpoint bindings (e.g., ["public"])')
-  }))
+export let createEndpoint = SlateTool.create(spec, {
+  name: 'Create Cloud Endpoint',
+  key: 'create_endpoint',
+  description: `Create a new cloud endpoint with a URL and optional traffic policy. Cloud endpoints allow you to route traffic without running an ngrok agent.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      url: z.string().describe('URL for the endpoint (e.g., https://example.ngrok.app)'),
+      trafficPolicy: z
+        .string()
+        .optional()
+        .describe('Traffic policy YAML or JSON configuration'),
+      description: z.string().optional().describe('Description (max 255 bytes)'),
+      metadata: z.string().optional().describe('Metadata (max 4096 bytes)'),
+      bindings: z.array(z.string()).optional().describe('Endpoint bindings (e.g., ["public"])')
+    })
+  )
   .output(endpointOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let e = await client.createEndpoint({
       url: ctx.input.url,
@@ -131,27 +140,27 @@ export let createEndpoint = SlateTool.create(
       output: mapEndpoint(e),
       message: `Created cloud endpoint **${e.id}** at ${e.url || e.hostport}.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateEndpoint = SlateTool.create(
-  spec,
-  {
-    name: 'Update Endpoint',
-    key: 'update_endpoint',
-    description: `Update an existing endpoint's URL, traffic policy, description, metadata, or bindings.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    endpointId: z.string().describe('Endpoint ID to update'),
-    url: z.string().optional().describe('New URL'),
-    trafficPolicy: z.string().optional().describe('New traffic policy'),
-    description: z.string().optional().describe('New description'),
-    metadata: z.string().optional().describe('New metadata'),
-    bindings: z.array(z.string()).optional().describe('New bindings')
-  }))
+export let updateEndpoint = SlateTool.create(spec, {
+  name: 'Update Endpoint',
+  key: 'update_endpoint',
+  description: `Update an existing endpoint's URL, traffic policy, description, metadata, or bindings.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      endpointId: z.string().describe('Endpoint ID to update'),
+      url: z.string().optional().describe('New URL'),
+      trafficPolicy: z.string().optional().describe('New traffic policy'),
+      description: z.string().optional().describe('New description'),
+      metadata: z.string().optional().describe('New metadata'),
+      bindings: z.array(z.string()).optional().describe('New bindings')
+    })
+  )
   .output(endpointOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     let e = await client.updateEndpoint(ctx.input.endpointId, {
       url: ctx.input.url,
@@ -164,28 +173,31 @@ export let updateEndpoint = SlateTool.create(
       output: mapEndpoint(e),
       message: `Updated endpoint **${e.id}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteEndpoint = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Endpoint',
-    key: 'delete_endpoint',
-    description: `Delete a cloud endpoint. This will stop routing traffic to this endpoint.`,
-    tags: { destructive: true }
-  }
-)
-  .input(z.object({
-    endpointId: z.string().describe('Endpoint ID to delete')
-  }))
-  .output(z.object({
-    success: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteEndpoint = SlateTool.create(spec, {
+  name: 'Delete Endpoint',
+  key: 'delete_endpoint',
+  description: `Delete a cloud endpoint. This will stop routing traffic to this endpoint.`,
+  tags: { destructive: true }
+})
+  .input(
+    z.object({
+      endpointId: z.string().describe('Endpoint ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NgrokClient(ctx.auth.token);
     await client.deleteEndpoint(ctx.input.endpointId);
     return {
       output: { success: true },
       message: `Deleted endpoint **${ctx.input.endpointId}**.`
     };
-  }).build();
+  })
+  .build();

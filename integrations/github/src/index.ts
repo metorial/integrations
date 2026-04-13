@@ -24,7 +24,7 @@ import {
   manageGist,
   manageCollaborators,
   getUser,
-  createCommitStatus,
+  createCommitStatus
 } from './tools';
 import {
   pushTrigger,
@@ -34,7 +34,7 @@ import {
   issueCommentTrigger,
   workflowRunTrigger,
   releaseTrigger,
-  starTrigger,
+  starTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -63,7 +63,7 @@ export let provider = Slate.create({
     manageGist,
     manageCollaborators,
     getUser,
-    createCommitStatus,
+    createCommitStatus
   ],
   triggers: [
     pushTrigger,
@@ -73,6 +73,6 @@ export let provider = Slate.create({
     issueCommentTrigger,
     workflowRunTrigger,
     releaseTrigger,
-    starTrigger,
-  ],
+    starTrigger
+  ]
 });

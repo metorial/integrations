@@ -3,46 +3,62 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Update Account',
-    key: 'update_account',
-    description: `Update an existing account in Salesflare. Modify name, domain, website, description, address, phone numbers, tags, custom fields, and manage associated contacts and users.`,
-    tags: {
-      destructive: false,
-    },
+export let updateAccount = SlateTool.create(spec, {
+  name: 'Update Account',
+  key: 'update_account',
+  description: `Update an existing account in Salesflare. Modify name, domain, website, description, address, phone numbers, tags, custom fields, and manage associated contacts and users.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    accountId: z.number().describe('ID of the account to update'),
-    name: z.string().optional().describe('Updated company name'),
-    domain: z.string().optional().describe('Updated domain'),
-    website: z.string().optional().describe('Updated website URL'),
-    description: z.string().optional().describe('Updated description'),
-    owner: z.number().optional().describe('User ID of the new owner'),
-    size: z.number().optional().describe('Updated company size'),
-    email: z.string().optional().describe('Updated primary email'),
-    phoneNumber: z.string().optional().describe('Updated primary phone number'),
-    socialProfiles: z.array(z.string()).optional().describe('Updated social profile URLs'),
-    tags: z.array(z.string()).optional().describe('Updated tag names'),
-    custom: z.record(z.string(), z.any()).optional().describe('Updated custom field values'),
-    address: z.object({
-      city: z.string().optional(),
-      country: z.string().optional(),
-      stateRegion: z.string().optional(),
-      street: z.string().optional(),
-      zip: z.string().optional(),
-    }).optional().describe('Updated primary address'),
-    contactIds: z.array(z.number()).optional().describe('Contact IDs to associate with this account'),
-    removeContactIds: z.array(z.number()).optional().describe('Contact IDs to remove from this account'),
-    userIds: z.array(z.number()).optional().describe('User IDs to associate with this account'),
-    removeUserIds: z.array(z.number()).optional().describe('User IDs to remove from this account'),
-  }))
-  .output(z.object({
-    account: z.record(z.string(), z.any()).describe('Updated account data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z.number().describe('ID of the account to update'),
+      name: z.string().optional().describe('Updated company name'),
+      domain: z.string().optional().describe('Updated domain'),
+      website: z.string().optional().describe('Updated website URL'),
+      description: z.string().optional().describe('Updated description'),
+      owner: z.number().optional().describe('User ID of the new owner'),
+      size: z.number().optional().describe('Updated company size'),
+      email: z.string().optional().describe('Updated primary email'),
+      phoneNumber: z.string().optional().describe('Updated primary phone number'),
+      socialProfiles: z.array(z.string()).optional().describe('Updated social profile URLs'),
+      tags: z.array(z.string()).optional().describe('Updated tag names'),
+      custom: z.record(z.string(), z.any()).optional().describe('Updated custom field values'),
+      address: z
+        .object({
+          city: z.string().optional(),
+          country: z.string().optional(),
+          stateRegion: z.string().optional(),
+          street: z.string().optional(),
+          zip: z.string().optional()
+        })
+        .optional()
+        .describe('Updated primary address'),
+      contactIds: z
+        .array(z.number())
+        .optional()
+        .describe('Contact IDs to associate with this account'),
+      removeContactIds: z
+        .array(z.number())
+        .optional()
+        .describe('Contact IDs to remove from this account'),
+      userIds: z
+        .array(z.number())
+        .optional()
+        .describe('User IDs to associate with this account'),
+      removeUserIds: z
+        .array(z.number())
+        .optional()
+        .describe('User IDs to remove from this account')
+    })
+  )
+  .output(
+    z.object({
+      account: z.record(z.string(), z.any()).describe('Updated account data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let data: Record<string, any> = {};
@@ -54,7 +70,8 @@ export let updateAccount = SlateTool.create(
     if (ctx.input.size !== undefined) data.size = ctx.input.size;
     if (ctx.input.email !== undefined) data.email = ctx.input.email;
     if (ctx.input.phoneNumber !== undefined) data.phone_number = ctx.input.phoneNumber;
-    if (ctx.input.socialProfiles !== undefined) data.social_profiles = ctx.input.socialProfiles;
+    if (ctx.input.socialProfiles !== undefined)
+      data.social_profiles = ctx.input.socialProfiles;
     if (ctx.input.tags !== undefined) data.tags = ctx.input.tags;
     if (ctx.input.custom !== undefined) data.custom = ctx.input.custom;
     if (ctx.input.address) {
@@ -63,7 +80,7 @@ export let updateAccount = SlateTool.create(
         country: ctx.input.address.country,
         state_region: ctx.input.address.stateRegion,
         street: ctx.input.address.street,
-        zip: ctx.input.address.zip,
+        zip: ctx.input.address.zip
       };
     }
 
@@ -99,7 +116,7 @@ export let updateAccount = SlateTool.create(
 
     return {
       output: { account: result },
-      message: `Updated account **${ctx.input.accountId}**.`,
+      message: `Updated account **${ctx.input.accountId}**.`
     };
   })
   .build();

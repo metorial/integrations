@@ -87,8 +87,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

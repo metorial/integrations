@@ -2,24 +2,30 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your Formcarry team API key, found under the Integrations section of the dashboard.'),
+      apiKey: z
+        .string()
+        .describe(
+          'Your Formcarry team API key, found under the Integrations section of the dashboard.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let axios = createAxios({
         baseURL: 'https://formcarry.com/api',
         headers: {
-          'api_key': ctx.input.apiKey,
-        },
+          api_key: ctx.input.apiKey
+        }
       });
 
       let response = await axios.get('/auth');
@@ -30,8 +36,8 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
-    },
+    }
   });

@@ -32,7 +32,14 @@ export interface SharedRequestOptions {
   rejectResourceTypes?: string[];
   rejectRequestPattern?: string[];
   userAgent?: string;
-  cookies?: Array<{ name: string; value: string; domain?: string; path?: string; httpOnly?: boolean; secure?: boolean }>;
+  cookies?: Array<{
+    name: string;
+    value: string;
+    domain?: string;
+    path?: string;
+    httpOnly?: boolean;
+    secure?: boolean;
+  }>;
   headers?: Record<string, string>;
 }
 
@@ -104,7 +111,14 @@ export interface UnblockRequest {
 
 export interface UnblockResponse {
   content: string | null;
-  cookies: Array<{ name: string; value: string; domain: string; path: string; httpOnly: boolean; secure: boolean }>;
+  cookies: Array<{
+    name: string;
+    value: string;
+    domain: string;
+    path: string;
+    httpOnly: boolean;
+    secure: boolean;
+  }>;
   screenshot: string | null;
   browserWSEndpoint: string | null;
 }
@@ -147,7 +161,7 @@ export class BrowserlessClient {
     this.token = config.token;
     this.baseUrl = `https://production-${config.region}.browserless.io`;
     this.http = createAxios({
-      baseURL: this.baseUrl,
+      baseURL: this.baseUrl
     });
   }
 
@@ -157,14 +171,14 @@ export class BrowserlessClient {
 
   async scrape(request: ScrapeRequest): Promise<any> {
     let response = await this.http.post(this.buildUrl('/scrape'), request, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async getContent(request: ContentRequest): Promise<string> {
     let response = await this.http.post(this.buildUrl('/content'), request, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -172,9 +186,8 @@ export class BrowserlessClient {
   async generatePdf(request: PdfRequest): Promise<string> {
     let response = await this.http.post(this.buildUrl('/pdf'), request, {
       headers: { 'Content-Type': 'application/json' },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(response.data);
     return buffer.toString('base64');
   }
@@ -182,37 +195,36 @@ export class BrowserlessClient {
   async takeScreenshot(request: ScreenshotRequest): Promise<string> {
     let response = await this.http.post(this.buildUrl('/screenshot'), request, {
       headers: { 'Content-Type': 'application/json' },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(response.data);
     return buffer.toString('base64');
   }
 
   async unblock(request: UnblockRequest): Promise<UnblockResponse> {
     let response = await this.http.post(this.buildUrl('/unblock'), request, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async runPerformanceAudit(request: PerformanceRequest): Promise<any> {
     let response = await this.http.post(this.buildUrl('/performance'), request, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async search(request: SearchRequest): Promise<any> {
     let response = await this.http.post(this.buildUrl('/search'), request, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
 
   async runFunction(request: FunctionRequest): Promise<any> {
     let response = await this.http.post(this.buildUrl('/function'), request, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }

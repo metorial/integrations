@@ -14,44 +14,56 @@ let challengeOutputSchema = z.object({
   memberCount: z.number().optional().describe('Number of participants'),
   prize: z.number().optional().describe('Gem prize amount'),
   createdAt: z.string().optional().describe('When the challenge was created'),
-  updatedAt: z.string().optional().describe('When the challenge was last updated'),
+  updatedAt: z.string().optional().describe('When the challenge was last updated')
 });
 
-export let manageChallenge = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Challenge',
-    key: 'manage_challenge',
-    description: `List, get, create, update, delete, join, or leave challenges in Habitica. Challenges are community-driven task sets where participants compete or collaborate within guilds or parties.`,
-    instructions: [
-      'Use action "list" to see challenges available to the user.',
-      'Use action "join" or "leave" with a challengeId to participate.',
-      'Creating a challenge requires a groupId and a name.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'join', 'leave']).describe('Action to perform'),
-    challengeId: z.string().optional().describe('Challenge ID (required for get, update, delete, join, leave)'),
-    groupId: z.string().optional().describe('Group ID for creating a challenge or listing group challenges'),
-    name: z.string().optional().describe('Challenge name (for create/update)'),
-    shortName: z.string().optional().describe('Short name (for create/update)'),
-    description: z.string().optional().describe('Challenge description (for create/update)'),
-    prize: z.number().optional().describe('Gem prize for the challenge (for create/update)'),
-    keepTasks: z.enum(['keep-all', 'remove-all']).optional().describe('What to do with challenge tasks when leaving'),
-  }))
-  .output(z.object({
-    challenges: z.array(challengeOutputSchema).describe('Challenge(s) returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageChallenge = SlateTool.create(spec, {
+  name: 'Manage Challenge',
+  key: 'manage_challenge',
+  description: `List, get, create, update, delete, join, or leave challenges in Habitica. Challenges are community-driven task sets where participants compete or collaborate within guilds or parties.`,
+  instructions: [
+    'Use action "list" to see challenges available to the user.',
+    'Use action "join" or "leave" with a challengeId to participate.',
+    'Creating a challenge requires a groupId and a name.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete', 'join', 'leave'])
+        .describe('Action to perform'),
+      challengeId: z
+        .string()
+        .optional()
+        .describe('Challenge ID (required for get, update, delete, join, leave)'),
+      groupId: z
+        .string()
+        .optional()
+        .describe('Group ID for creating a challenge or listing group challenges'),
+      name: z.string().optional().describe('Challenge name (for create/update)'),
+      shortName: z.string().optional().describe('Short name (for create/update)'),
+      description: z.string().optional().describe('Challenge description (for create/update)'),
+      prize: z.number().optional().describe('Gem prize for the challenge (for create/update)'),
+      keepTasks: z
+        .enum(['keep-all', 'remove-all'])
+        .optional()
+        .describe('What to do with challenge tasks when leaving')
+    })
+  )
+  .output(
+    z.object({
+      challenges: z.array(challengeOutputSchema).describe('Challenge(s) returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new HabiticaClient({
       userId: ctx.auth.userId,
       token: ctx.auth.token,
-      xClient: ctx.config.xClient,
+      xClient: ctx.config.xClient
     });
 
     let mapChallenge = (c: Record<string, any>) => ({
@@ -65,7 +77,7 @@ export let manageChallenge = SlateTool.create(
       memberCount: c.memberCount,
       prize: c.prize,
       createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
+      updatedAt: c.updatedAt
     });
 
     if (ctx.input.action === 'list') {
@@ -74,7 +86,7 @@ export let manageChallenge = SlateTool.create(
         : await client.getChallenges();
       return {
         output: { challenges: challenges.map(mapChallenge) },
-        message: `Retrieved **${challenges.length}** challenge(s)`,
+        message: `Retrieved **${challenges.length}** challenge(s)`
       };
     }
 
@@ -83,7 +95,7 @@ export let manageChallenge = SlateTool.create(
       let challenge = await client.getChallenge(ctx.input.challengeId);
       return {
         output: { challenges: [mapChallenge(challenge)] },
-        message: `Retrieved challenge **${challenge.name}**`,
+        message: `Retrieved challenge **${challenge.name}**`
       };
     }
 
@@ -98,7 +110,7 @@ export let manageChallenge = SlateTool.create(
       let challenge = await client.createChallenge(challengeData);
       return {
         output: { challenges: [mapChallenge(challenge)] },
-        message: `Created challenge **${challenge.name}**`,
+        message: `Created challenge **${challenge.name}**`
       };
     }
 
@@ -113,7 +125,7 @@ export let manageChallenge = SlateTool.create(
       let challenge = await client.updateChallenge(ctx.input.challengeId, challengeData);
       return {
         output: { challenges: [mapChallenge(challenge)] },
-        message: `Updated challenge **${challenge.name}**`,
+        message: `Updated challenge **${challenge.name}**`
       };
     }
 
@@ -122,7 +134,7 @@ export let manageChallenge = SlateTool.create(
       await client.deleteChallenge(ctx.input.challengeId);
       return {
         output: { challenges: [] },
-        message: `Deleted challenge **${ctx.input.challengeId}**`,
+        message: `Deleted challenge **${ctx.input.challengeId}**`
       };
     }
 
@@ -131,7 +143,7 @@ export let manageChallenge = SlateTool.create(
       let challenge = await client.joinChallenge(ctx.input.challengeId);
       return {
         output: { challenges: [mapChallenge(challenge)] },
-        message: `Joined challenge **${challenge.name}**`,
+        message: `Joined challenge **${challenge.name}**`
       };
     }
 
@@ -140,9 +152,10 @@ export let manageChallenge = SlateTool.create(
       await client.leaveChallenge(ctx.input.challengeId, ctx.input.keepTasks);
       return {
         output: { challenges: [] },
-        message: `Left challenge **${ctx.input.challengeId}**`,
+        message: `Left challenge **${ctx.input.challengeId}**`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

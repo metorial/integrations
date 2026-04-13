@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listTemplates,
@@ -11,11 +10,9 @@ import {
   createShortLink,
   enrichData,
   listImpressions,
-  createClientAccount,
+  createClientAccount
 } from './tools';
-import { newImageImpression,
-  inboundWebhook,
-} from './triggers';
+import { newImageImpression, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     createShortLink,
     enrichData,
     listImpressions,
-    createClientAccount,
+    createClientAccount
   ],
-  triggers: [
-    inboundWebhook,
-    newImageImpression,
-  ],
+  triggers: [inboundWebhook, newImageImpression]
 });

@@ -15,40 +15,53 @@ let projectOutputSchema = z.object({
   estimatedHours: z.number().nullable().describe('Estimated hours for the project'),
   rate: z.number().nullable().describe('Hourly rate for the project'),
   currency: z.string().nullable().describe('Currency for billing'),
-  createdAt: z.string().describe('Creation timestamp'),
+  createdAt: z.string().describe('Creation timestamp')
 });
 
-export let manageProject = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Create, update, or delete a project in Toggl Track. Projects group time entries and can be assigned to clients, set as billable, and configured with hourly rates.
+export let manageProject = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Create, update, or delete a project in Toggl Track. Projects group time entries and can be assigned to clients, set as billable, and configured with hourly rates.
 To **create**: provide a name. To **update**: provide a projectId and fields to change. To **delete**: provide a projectId and set \`delete\` to true.`,
-    tags: {
-      destructive: false,
-    },
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID. Uses the configured default if not provided.'),
-    projectId: z.string().optional().describe('Project ID (required for update/delete, omit for create)'),
-    delete: z.boolean().optional().describe('Set to true to delete the project'),
-    name: z.string().optional().describe('Project name (required for create)'),
-    clientId: z.number().nullable().optional().describe('Client ID to associate (null to remove)'),
-    isPrivate: z.boolean().optional().describe('Whether the project is private'),
-    active: z.boolean().optional().describe('Whether the project is active'),
-    color: z.string().optional().describe('Project color hex code (e.g., "#ff0000")'),
-    billable: z.boolean().optional().describe('Whether the project is billable'),
-    estimatedHours: z.number().optional().describe('Estimated hours'),
-    rate: z.number().optional().describe('Hourly rate'),
-    currency: z.string().optional().describe('Currency code (e.g., "USD")'),
-  }))
-  .output(z.object({
-    project: projectOutputSchema.nullable().describe('The created/updated project, null if deleted'),
-    deleted: z.boolean().describe('Whether a project was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe('Workspace ID. Uses the configured default if not provided.'),
+      projectId: z
+        .string()
+        .optional()
+        .describe('Project ID (required for update/delete, omit for create)'),
+      delete: z.boolean().optional().describe('Set to true to delete the project'),
+      name: z.string().optional().describe('Project name (required for create)'),
+      clientId: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('Client ID to associate (null to remove)'),
+      isPrivate: z.boolean().optional().describe('Whether the project is private'),
+      active: z.boolean().optional().describe('Whether the project is active'),
+      color: z.string().optional().describe('Project color hex code (e.g., "#ff0000")'),
+      billable: z.boolean().optional().describe('Whether the project is billable'),
+      estimatedHours: z.number().optional().describe('Estimated hours'),
+      rate: z.number().optional().describe('Hourly rate'),
+      currency: z.string().optional().describe('Currency code (e.g., "USD")')
+    })
+  )
+  .output(
+    z.object({
+      project: projectOutputSchema
+        .nullable()
+        .describe('The created/updated project, null if deleted'),
+      deleted: z.boolean().describe('Whether a project was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TogglClient(ctx.auth.token);
     let wsId = ctx.input.workspaceId ?? ctx.config.workspaceId;
 
@@ -56,7 +69,7 @@ To **create**: provide a name. To **update**: provide a projectId and fields to 
       await client.deleteProject(wsId, ctx.input.projectId);
       return {
         output: { project: null, deleted: true },
-        message: `Deleted project **#${ctx.input.projectId}**`,
+        message: `Deleted project **#${ctx.input.projectId}**`
       };
     }
 
@@ -71,10 +84,11 @@ To **create**: provide a name. To **update**: provide a projectId and fields to 
         billable: ctx.input.billable,
         estimatedHours: ctx.input.estimatedHours,
         rate: ctx.input.rate,
-        currency: ctx.input.currency,
+        currency: ctx.input.currency
       });
     } else {
-      if (!ctx.input.name) throw new Error('Project name is required when creating a new project.');
+      if (!ctx.input.name)
+        throw new Error('Project name is required when creating a new project.');
       project = await client.createProject(wsId, {
         name: ctx.input.name,
         clientId: ctx.input.clientId ?? undefined,
@@ -84,7 +98,7 @@ To **create**: provide a name. To **update**: provide a projectId and fields to 
         billable: ctx.input.billable,
         estimatedHours: ctx.input.estimatedHours,
         rate: ctx.input.rate,
-        currency: ctx.input.currency,
+        currency: ctx.input.currency
       });
     }
 
@@ -100,13 +114,14 @@ To **create**: provide a name. To **update**: provide a projectId and fields to 
       estimatedHours: project.estimated_hours ?? null,
       rate: project.rate ?? null,
       currency: project.currency ?? null,
-      createdAt: project.created_at ?? project.at,
+      createdAt: project.created_at ?? project.at
     };
 
     return {
       output: { project: mapped, deleted: false },
       message: ctx.input.projectId
         ? `Updated project **${project.name}**`
-        : `Created project **${project.name}**`,
+        : `Created project **${project.name}**`
     };
-  }).build();
+  })
+  .build();

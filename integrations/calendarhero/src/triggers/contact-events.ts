@@ -3,29 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Contact via Scheduling Link',
-    key: 'contact_events',
-    description: 'Triggers when a new contact is added through one of your personal scheduling links (e.g. when an external invitee books a meeting).'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The CalendarHero event type'),
-    payload: z.any().describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('Contact ID'),
-    name: z.string().optional().describe('Contact name'),
-    email: z.string().optional().describe('Contact email address'),
-    title: z.string().optional().describe('Job title'),
-    organization: z.string().optional().describe('Organization name'),
-    schedulingLink: z.string().optional().describe('The scheduling link the contact used'),
-    raw: z.any().optional().describe('Full event payload')
-  }))
+export let contactEvents = SlateTrigger.create(spec, {
+  name: 'New Contact via Scheduling Link',
+  key: 'contact_events',
+  description:
+    'Triggers when a new contact is added through one of your personal scheduling links (e.g. when an external invitee books a meeting).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The CalendarHero event type'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('Contact ID'),
+      name: z.string().optional().describe('Contact name'),
+      email: z.string().optional().describe('Contact email address'),
+      title: z.string().optional().describe('Job title'),
+      organization: z.string().optional().describe('Organization name'),
+      schedulingLink: z.string().optional().describe('The scheduling link the contact used'),
+      raw: z.any().optional().describe('Full event payload')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
       let hookUrl = `${ctx.input.webhookBaseUrl}/new_contact_added`;
       await client.createWebhook('new_contact_added', hookUrl);
@@ -35,7 +37,7 @@ export let contactEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth.token);
       try {
         await client.deleteWebhook('new_contact_added');
@@ -44,7 +46,7 @@ export let contactEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       return {
@@ -57,7 +59,7 @@ export let contactEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p: any = ctx.input.payload || {};
       let contact: any = p.contact || p.data || p;
 

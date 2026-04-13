@@ -3,40 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSubscriber = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Subscriber',
-    key: 'manage_subscriber',
-    description: `List, create, update, or delete newsletter subscribers. Subscribers are email addresses registered to receive store newsletters.`,
-    instructions: [
-      'Use action "list" to retrieve subscribers with optional filtering.',
-      'Use action "create" to add a new subscriber.',
-      'Use action "update" to modify an existing subscriber.',
-      'Use action "delete" to remove a subscriber.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    subscriberId: z.number().optional().describe('Subscriber ID (required for update/delete)'),
-    email: z.string().optional().describe('Subscriber email address (required for create)'),
-    firstName: z.string().optional().describe('Subscriber first name'),
-    lastName: z.string().optional().describe('Subscriber last name'),
-    source: z.string().optional().describe('Source of subscription'),
-    orderId: z.number().optional().describe('Associated order ID'),
-    page: z.number().optional().describe('Page number for list pagination'),
-    limit: z.number().optional().describe('Results per page for list'),
-  }))
-  .output(z.object({
-    subscriber: z.any().optional().describe('The subscriber object'),
-    subscribers: z.array(z.any()).optional().describe('List of subscribers'),
-    deleted: z.boolean().optional().describe('Whether the subscriber was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSubscriber = SlateTool.create(spec, {
+  name: 'Manage Subscriber',
+  key: 'manage_subscriber',
+  description: `List, create, update, or delete newsletter subscribers. Subscribers are email addresses registered to receive store newsletters.`,
+  instructions: [
+    'Use action "list" to retrieve subscribers with optional filtering.',
+    'Use action "create" to add a new subscriber.',
+    'Use action "update" to modify an existing subscriber.',
+    'Use action "delete" to remove a subscriber.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      subscriberId: z
+        .number()
+        .optional()
+        .describe('Subscriber ID (required for update/delete)'),
+      email: z.string().optional().describe('Subscriber email address (required for create)'),
+      firstName: z.string().optional().describe('Subscriber first name'),
+      lastName: z.string().optional().describe('Subscriber last name'),
+      source: z.string().optional().describe('Source of subscription'),
+      orderId: z.number().optional().describe('Associated order ID'),
+      page: z.number().optional().describe('Page number for list pagination'),
+      limit: z.number().optional().describe('Results per page for list')
+    })
+  )
+  .output(
+    z.object({
+      subscriber: z.any().optional().describe('The subscriber object'),
+      subscribers: z.array(z.any()).optional().describe('List of subscribers'),
+      deleted: z.boolean().optional().describe('Whether the subscriber was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      storeHash: ctx.config.storeHash,
+      storeHash: ctx.config.storeHash
     });
 
     if (ctx.input.action === 'list') {
@@ -47,7 +51,7 @@ export let manageSubscriber = SlateTool.create(
       let result = await client.listSubscribers(params);
       return {
         output: { subscribers: result.data },
-        message: `Found ${result.data.length} subscribers.`,
+        message: `Found ${result.data.length} subscribers.`
       };
     }
 
@@ -56,7 +60,7 @@ export let manageSubscriber = SlateTool.create(
       await client.deleteSubscriber(ctx.input.subscriberId);
       return {
         output: { deleted: true },
-        message: `Deleted subscriber with ID ${ctx.input.subscriberId}.`,
+        message: `Deleted subscriber with ID ${ctx.input.subscriberId}.`
       };
     }
 
@@ -71,7 +75,7 @@ export let manageSubscriber = SlateTool.create(
       let result = await client.createSubscriber(data);
       return {
         output: { subscriber: result.data },
-        message: `Created subscriber **${result.data.email}** (ID: ${result.data.id}).`,
+        message: `Created subscriber **${result.data.email}** (ID: ${result.data.id}).`
       };
     }
 
@@ -79,7 +83,7 @@ export let manageSubscriber = SlateTool.create(
     let result = await client.updateSubscriber(ctx.input.subscriberId, data);
     return {
       output: { subscriber: result.data },
-      message: `Updated subscriber **${result.data.email}** (ID: ${result.data.id}).`,
+      message: `Updated subscriber **${result.data.email}** (ID: ${result.data.id}).`
     };
   })
   .build();

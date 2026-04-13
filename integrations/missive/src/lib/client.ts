@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://public.missiveapp.com/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -34,7 +34,10 @@ export class Client {
 
   // ─── Messages ───
 
-  async listConversationMessages(conversationId: string, params?: Record<string, string | number>) {
+  async listConversationMessages(
+    conversationId: string,
+    params?: Record<string, string | number>
+  ) {
     let res = await this.axios.get(`/conversations/${conversationId}/messages`, { params });
     return res.data;
   }
@@ -51,7 +54,10 @@ export class Client {
 
   // ─── Drafts ───
 
-  async listConversationDrafts(conversationId: string, params?: Record<string, string | number>) {
+  async listConversationDrafts(
+    conversationId: string,
+    params?: Record<string, string | number>
+  ) {
     let res = await this.axios.get(`/conversations/${conversationId}/drafts`, { params });
     return res.data;
   }
@@ -68,7 +74,10 @@ export class Client {
 
   // ─── Posts ───
 
-  async listConversationPosts(conversationId: string, params?: Record<string, string | number>) {
+  async listConversationPosts(
+    conversationId: string,
+    params?: Record<string, string | number>
+  ) {
     let res = await this.axios.get(`/conversations/${conversationId}/posts`, { params });
     return res.data;
   }
@@ -85,7 +94,10 @@ export class Client {
 
   // ─── Comments ───
 
-  async listConversationComments(conversationId: string, params?: Record<string, string | number>) {
+  async listConversationComments(
+    conversationId: string,
+    params?: Record<string, string | number>
+  ) {
     let res = await this.axios.get(`/conversations/${conversationId}/comments`, { params });
     return res.data;
   }
@@ -139,7 +151,9 @@ export class Client {
   }
 
   async updateSharedLabels(labelIds: string[], data: Record<string, any>) {
-    let res = await this.axios.patch(`/shared_labels/${labelIds.join(',')}`, { shared_labels: data });
+    let res = await this.axios.patch(`/shared_labels/${labelIds.join(',')}`, {
+      shared_labels: data
+    });
     return res.data;
   }
 
@@ -200,7 +214,9 @@ export class Client {
   }
 
   async updateResponses(responseIds: string[], data: Record<string, any>) {
-    let res = await this.axios.patch(`/responses/${responseIds.join(',')}`, { responses: data });
+    let res = await this.axios.patch(`/responses/${responseIds.join(',')}`, {
+      responses: data
+    });
     return res.data;
   }
 

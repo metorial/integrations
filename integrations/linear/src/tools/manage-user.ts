@@ -33,36 +33,35 @@ let mapUserToOutput = (user: any) => ({
   lastSeen: user.lastSeen || null
 });
 
-export let getViewerTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_viewer',
-    description: `Retrieves the profile of the currently authenticated user, including their organization info.`,
-    tags: {
-      readOnly: true
-    }
+export let getViewerTool = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_viewer',
+  description: `Retrieves the profile of the currently authenticated user, including their organization info.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string(),
-    name: z.string(),
-    displayName: z.string().nullable(),
-    email: z.string(),
-    avatarUrl: z.string().nullable(),
-    active: z.boolean(),
-    admin: z.boolean(),
-    guest: z.boolean(),
-    url: z.string(),
-    organizationId: z.string().nullable(),
-    organizationName: z.string().nullable(),
-    organizationUrlKey: z.string().nullable(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    lastSeen: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string(),
+      name: z.string(),
+      displayName: z.string().nullable(),
+      email: z.string(),
+      avatarUrl: z.string().nullable(),
+      active: z.boolean(),
+      admin: z.boolean(),
+      guest: z.boolean(),
+      url: z.string(),
+      organizationId: z.string().nullable(),
+      organizationName: z.string().nullable(),
+      organizationUrlKey: z.string().nullable(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      lastSeen: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let viewer = await client.getViewer();
 
@@ -75,29 +74,31 @@ export let getViewerTool = SlateTool.create(
       },
       message: `Authenticated as **${viewer.displayName || viewer.name}** (${viewer.email})`
     };
-  }).build();
+  })
+  .build();
 
-export let listUsersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Lists all users in the workspace. Useful for finding user IDs for assigning issues.`,
-    tags: {
-      readOnly: true
-    }
+export let listUsersTool = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Lists all users in the workspace. Useful for finding user IDs for assigning issues.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    first: z.number().optional().describe('Number of users to return (default: 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    users: z.array(userOutputSchema),
-    hasNextPage: z.boolean(),
-    nextCursor: z.string().nullable()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      first: z.number().optional().describe('Number of users to return (default: 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userOutputSchema),
+      hasNextPage: z.boolean(),
+      nextCursor: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new LinearClient(ctx.auth.token);
     let result = await client.listUsers({
       first: ctx.input.first,
@@ -114,4 +115,5 @@ export let listUsersTool = SlateTool.create(
       },
       message: `Found **${users.length}** users`
     };
-  }).build();
+  })
+  .build();

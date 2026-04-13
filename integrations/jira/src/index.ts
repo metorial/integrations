@@ -22,7 +22,7 @@ import {
   createFilterTool,
   listFavouriteFiltersTool,
   searchUsersTool,
-  getTransitionsTool,
+  getTransitionsTool
 } from './tools';
 import {
   issueEventsTrigger,
@@ -31,7 +31,7 @@ import {
   projectEventsTrigger,
   versionEventsTrigger,
   worklogEventsTrigger,
-  boardEventsTrigger,
+  boardEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -58,7 +58,7 @@ export let provider = Slate.create({
     createFilterTool,
     listFavouriteFiltersTool,
     searchUsersTool,
-    getTransitionsTool,
+    getTransitionsTool
   ],
   triggers: [
     issueEventsTrigger,
@@ -67,6 +67,6 @@ export let provider = Slate.create({
     projectEventsTrigger,
     versionEventsTrigger,
     worklogEventsTrigger,
-    boardEventsTrigger,
-  ],
+    boardEventsTrigger
+  ]
 });

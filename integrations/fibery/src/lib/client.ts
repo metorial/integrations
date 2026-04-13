@@ -25,8 +25,8 @@ export class Client {
       baseURL: this.baseUrl,
       headers: {
         Authorization: `Token ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -54,7 +54,7 @@ export class Client {
   async getSchema(): Promise<any> {
     let result = await this.executeCommand({
       command: 'fibery.schema/query',
-      args: { 'with-description?': true },
+      args: { 'with-description?': true }
     });
     return result.result;
   }
@@ -72,7 +72,7 @@ export class Client {
   }): Promise<any[]> {
     let query: Record<string, any> = {
       'q/from': params.typeName,
-      'q/select': params.select,
+      'q/select': params.select
     };
 
     if (params.where) {
@@ -92,8 +92,8 @@ export class Client {
       command: 'fibery.entity/query',
       args: {
         query,
-        params: params.queryParams || {},
-      },
+        params: params.queryParams || {}
+      }
     });
 
     return result.result || [];
@@ -102,7 +102,7 @@ export class Client {
   async createEntity(typeName: string, entity: Record<string, any>): Promise<any> {
     let result = await this.executeCommand({
       command: 'fibery.entity/create',
-      args: { type: typeName, entity },
+      args: { type: typeName, entity }
     });
     return result.result;
   }
@@ -110,7 +110,7 @@ export class Client {
   async updateEntity(typeName: string, entity: Record<string, any>): Promise<any> {
     let result = await this.executeCommand({
       command: 'fibery.entity/update',
-      args: { type: typeName, entity },
+      args: { type: typeName, entity }
     });
     return result.result;
   }
@@ -120,8 +120,8 @@ export class Client {
       command: 'fibery.entity/delete',
       args: {
         type: typeName,
-        entity: { 'fibery/id': entityId },
-      },
+        entity: { 'fibery/id': entityId }
+      }
     });
     return result.result;
   }
@@ -140,8 +140,8 @@ export class Client {
         type: params.typeName,
         field: params.field,
         entity: { 'fibery/id': params.entityId },
-        items: params.itemIds.map((id) => ({ 'fibery/id': id })),
-      },
+        items: params.itemIds.map(id => ({ 'fibery/id': id }))
+      }
     });
     return result.result;
   }
@@ -158,8 +158,8 @@ export class Client {
         type: params.typeName,
         field: params.field,
         entity: { 'fibery/id': params.entityId },
-        items: params.itemIds.map((id) => ({ 'fibery/id': id })),
-      },
+        items: params.itemIds.map(id => ({ 'fibery/id': id }))
+      }
     });
     return result.result;
   }
@@ -171,7 +171,7 @@ export class Client {
     format: 'md' | 'html' | 'json' | 'plain-text' = 'md'
   ): Promise<{ secret: string; content: string }> {
     let response = await this.axios.get(`/api/documents/${documentSecret}`, {
-      params: { format },
+      params: { format }
     });
     return response.data;
   }
@@ -181,24 +181,25 @@ export class Client {
     content: string,
     format: 'md' | 'html' | 'json' | 'plain-text' = 'md'
   ): Promise<any> {
-    let response = await this.axios.post(`/api/documents/commands`, {
-      command: 'create-or-update-documents',
-      args: [{ secret: documentSecret, content }],
-    }, {
-      params: { format },
-    });
+    let response = await this.axios.post(
+      `/api/documents/commands`,
+      {
+        command: 'create-or-update-documents',
+        args: [{ secret: documentSecret, content }]
+      },
+      {
+        params: { format }
+      }
+    );
     return response.data;
   }
 
   // ─── File API ─────────────────────────────────────────────────
 
-  async uploadFileFromUrl(params: {
-    url: string;
-    name?: string;
-  }): Promise<any> {
+  async uploadFileFromUrl(params: { url: string; name?: string }): Promise<any> {
     let response = await this.axios.post('/api/files/from-url', {
       url: params.url,
-      name: params.name,
+      name: params.name
     });
     return response.data;
   }
@@ -213,7 +214,7 @@ export class Client {
   async createWebhook(url: string, typeName: string): Promise<any> {
     let response = await this.axios.post('/api/webhooks/v2', {
       url,
-      type: typeName,
+      type: typeName
     });
     return response.data;
   }
@@ -232,7 +233,7 @@ export class Client {
   async batchSchemaCommands(commands: any[]): Promise<any> {
     let result = await this.executeCommand({
       command: 'fibery.schema/batch',
-      args: { commands },
+      args: { commands }
     });
     return result.result;
   }
@@ -247,7 +248,7 @@ export class Client {
   }): Promise<any> {
     let args: Record<string, any> = {
       type: params.typeName,
-      entities: params.entities,
+      entities: params.entities
     };
     if (params.conflictField) {
       args['conflict-field'] = params.conflictField;
@@ -257,7 +258,7 @@ export class Client {
     }
     let result = await this.executeCommand({
       command: 'fibery.entity.batch/create-or-update',
-      args,
+      args
     });
     return result.result;
   }

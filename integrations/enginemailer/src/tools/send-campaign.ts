@@ -3,39 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let sendCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Send or Schedule Campaign',
-    key: 'send_campaign',
-    description: `Send a campaign immediately, schedule it for a specific time, or pause a running campaign. Optionally assign a recipient list before sending.`,
-    instructions: [
-      'Use **action** "send" to send immediately, "schedule" to send at a specific time, or "pause" to pause.',
-      'When scheduling, provide **scheduleTime** in the format "ddMMyyyy hh:mmtt" (e.g., "14032026 02:30PM").',
-      'You can assign recipients before sending by providing **recipientFilterBy** and **recipientCategories**.',
-    ],
-    constraints: [
-      'Campaign API is only available to paid plan users.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let sendCampaign = SlateTool.create(spec, {
+  name: 'Send or Schedule Campaign',
+  key: 'send_campaign',
+  description: `Send a campaign immediately, schedule it for a specific time, or pause a running campaign. Optionally assign a recipient list before sending.`,
+  instructions: [
+    'Use **action** "send" to send immediately, "schedule" to send at a specific time, or "pause" to pause.',
+    'When scheduling, provide **scheduleTime** in the format "ddMMyyyy hh:mmtt" (e.g., "14032026 02:30PM").',
+    'You can assign recipients before sending by providing **recipientFilterBy** and **recipientCategories**.'
+  ],
+  constraints: ['Campaign API is only available to paid plan users.'],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    campaignId: z.string().describe('ID of the campaign to send, schedule, or pause'),
-    action: z.enum(['send', 'schedule', 'pause']).describe('Action to perform on the campaign'),
-    scheduleTime: z.string().optional().describe('Schedule time in "ddMMyyyy hh:mmtt" format, e.g. "14032026 02:30PM" (required when action is "schedule")'),
-    recipientFilterBy: z.string().optional().describe('Filter type for recipient assignment'),
-    recipientCategories: z.array(z.string()).optional().describe('Category IDs for recipient list assignment'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status'),
-    statusCode: z.string().describe('Response status code'),
-    message: z.string().optional().describe('Response message'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('ID of the campaign to send, schedule, or pause'),
+      action: z
+        .enum(['send', 'schedule', 'pause'])
+        .describe('Action to perform on the campaign'),
+      scheduleTime: z
+        .string()
+        .optional()
+        .describe(
+          'Schedule time in "ddMMyyyy hh:mmtt" format, e.g. "14032026 02:30PM" (required when action is "schedule")'
+        ),
+      recipientFilterBy: z
+        .string()
+        .optional()
+        .describe('Filter type for recipient assignment'),
+      recipientCategories: z
+        .array(z.string())
+        .optional()
+        .describe('Category IDs for recipient list assignment')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status'),
+      statusCode: z.string().describe('Response status code'),
+      message: z.string().optional().describe('Response message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     // Assign recipients if provided
@@ -43,7 +55,7 @@ export let sendCampaign = SlateTool.create(
       await client.assignRecipientList({
         campaignId: ctx.input.campaignId,
         filterBy: ctx.input.recipientFilterBy,
-        categoryList: ctx.input.recipientCategories,
+        categoryList: ctx.input.recipientCategories
       });
       ctx.info('Assigned recipient list to campaign');
     }
@@ -73,9 +85,9 @@ export let sendCampaign = SlateTool.create(
       output: {
         status: result.Result?.Status ?? 'Unknown',
         statusCode: result.Result?.StatusCode ?? 'Unknown',
-        message: result.Result?.Message ?? result.Result?.ErrorMessage,
+        message: result.Result?.Message ?? result.Result?.ErrorMessage
       },
-      message: `Campaign **${ctx.input.campaignId}** ${actionLabel}.`,
+      message: `Campaign **${ctx.input.campaignId}** ${actionLabel}.`
     };
   })
   .build();

@@ -3,48 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fixtureResultsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Fixture Results',
-    key: 'fixture_results',
-    description: 'Triggers when new fixture results become available for a configured league and season. Polls for recently finished fixtures and emits events for each new result. Useful for tracking completed matches.',
-  }
-)
-  .input(z.object({
-    fixtureId: z.number().describe('Fixture ID'),
-    homeTeamName: z.string().nullable().describe('Home team name'),
-    awayTeamName: z.string().nullable().describe('Away team name'),
-    homeTeamId: z.number().nullable().describe('Home team ID'),
-    awayTeamId: z.number().nullable().describe('Away team ID'),
-    leagueName: z.string().nullable().describe('League name'),
-    leagueId: z.number().nullable().describe('League ID'),
-    homeScore: z.number().nullable().describe('Home team final score'),
-    awayScore: z.number().nullable().describe('Away team final score'),
-    date: z.string().nullable().describe('Fixture date'),
-    round: z.string().nullable().describe('Round or matchday'),
-    venueName: z.string().nullable().describe('Venue name'),
-  }))
-  .output(z.object({
-    fixtureId: z.number().describe('Fixture ID'),
-    homeTeamName: z.string().nullable().describe('Home team name'),
-    awayTeamName: z.string().nullable().describe('Away team name'),
-    homeTeamId: z.number().nullable().describe('Home team ID'),
-    awayTeamId: z.number().nullable().describe('Away team ID'),
-    leagueName: z.string().nullable().describe('League name'),
-    leagueId: z.number().nullable().describe('League ID'),
-    homeScore: z.number().nullable().describe('Home team final score'),
-    awayScore: z.number().nullable().describe('Away team final score'),
-    date: z.string().nullable().describe('Fixture date'),
-    round: z.string().nullable().describe('Round or matchday'),
-    venueName: z.string().nullable().describe('Venue name'),
-  }))
+export let fixtureResultsTrigger = SlateTrigger.create(spec, {
+  name: 'Fixture Results',
+  key: 'fixture_results',
+  description:
+    'Triggers when new fixture results become available for a configured league and season. Polls for recently finished fixtures and emits events for each new result. Useful for tracking completed matches.'
+})
+  .input(
+    z.object({
+      fixtureId: z.number().describe('Fixture ID'),
+      homeTeamName: z.string().nullable().describe('Home team name'),
+      awayTeamName: z.string().nullable().describe('Away team name'),
+      homeTeamId: z.number().nullable().describe('Home team ID'),
+      awayTeamId: z.number().nullable().describe('Away team ID'),
+      leagueName: z.string().nullable().describe('League name'),
+      leagueId: z.number().nullable().describe('League ID'),
+      homeScore: z.number().nullable().describe('Home team final score'),
+      awayScore: z.number().nullable().describe('Away team final score'),
+      date: z.string().nullable().describe('Fixture date'),
+      round: z.string().nullable().describe('Round or matchday'),
+      venueName: z.string().nullable().describe('Venue name')
+    })
+  )
+  .output(
+    z.object({
+      fixtureId: z.number().describe('Fixture ID'),
+      homeTeamName: z.string().nullable().describe('Home team name'),
+      awayTeamName: z.string().nullable().describe('Away team name'),
+      homeTeamId: z.number().nullable().describe('Home team ID'),
+      awayTeamId: z.number().nullable().describe('Away team ID'),
+      leagueName: z.string().nullable().describe('League name'),
+      leagueId: z.number().nullable().describe('League ID'),
+      homeScore: z.number().nullable().describe('Home team final score'),
+      awayScore: z.number().nullable().describe('Away team final score'),
+      date: z.string().nullable().describe('Fixture date'),
+      round: z.string().nullable().describe('Round or matchday'),
+      venueName: z.string().nullable().describe('Venue name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let sport = ctx.config.sport;
       let client = new Client({ token: ctx.auth.token, sport });
       let seenFixtures: Record<string, boolean> = ctx.state?.seenFixtures ?? {};
@@ -62,7 +64,7 @@ export let fixtureResultsTrigger = SlateTrigger.create(
       let inputs: any[] = [];
       let updatedSeen = { ...seenFixtures };
 
-      for (let item of (data.response ?? [])) {
+      for (let item of data.response ?? []) {
         let isFootball = sport === 'football';
         let fixtureId = isFootball ? item.fixture?.id : item.id;
         if (!fixtureId) continue;
@@ -82,11 +84,15 @@ export let fixtureResultsTrigger = SlateTrigger.create(
           awayTeamId: teams.away?.id ?? null,
           leagueName: item.league?.name ?? null,
           leagueId: item.league?.id ?? null,
-          homeScore: isFootball ? (goals.home ?? null) : (goals.home?.total ?? goals.home ?? null),
-          awayScore: isFootball ? (goals.away ?? null) : (goals.away?.total ?? goals.away ?? null),
+          homeScore: isFootball
+            ? (goals.home ?? null)
+            : (goals.home?.total ?? goals.home ?? null),
+          awayScore: isFootball
+            ? (goals.away ?? null)
+            : (goals.away?.total ?? goals.away ?? null),
           date: isFootball ? (item.fixture?.date ?? null) : (item.date ?? null),
           round: isFootball ? (item.league?.round ?? null) : null,
-          venueName: isFootball ? (item.fixture?.venue?.name ?? null) : null,
+          venueName: isFootball ? (item.fixture?.venue?.name ?? null) : null
         });
       }
 
@@ -103,12 +109,12 @@ export let fixtureResultsTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          seenFixtures: updatedSeen,
-        },
+          seenFixtures: updatedSeen
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       return {
         type: 'fixture.finished',
@@ -125,8 +131,9 @@ export let fixtureResultsTrigger = SlateTrigger.create(
           awayScore: input.awayScore,
           date: input.date,
           round: input.round,
-          venueName: input.venueName,
-        },
+          venueName: input.venueName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

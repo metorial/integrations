@@ -6,5 +6,5 @@ import { surveyResponseTrigger, recordingTrigger } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [listSurveys, getSurveyResponses, userLookup],
-  triggers: [surveyResponseTrigger, recordingTrigger],
+  triggers: [surveyResponseTrigger, recordingTrigger]
 });

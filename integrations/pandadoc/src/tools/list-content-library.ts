@@ -3,34 +3,39 @@ import { PandaDocClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listContentLibrary = SlateTool.create(
-  spec,
-  {
-    name: 'List Content Library',
-    key: 'list_content_library',
-    description: `List and search content library items in PandaDoc. Content library items are reusable content blocks that can be inserted into documents via content placeholders.`,
-    tags: {
-      readOnly: true,
-    },
+export let listContentLibrary = SlateTool.create(spec, {
+  name: 'List Content Library',
+  key: 'list_content_library',
+  description: `List and search content library items in PandaDoc. Content library items are reusable content blocks that can be inserted into documents via content placeholders.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search by content library item name'),
-    page: z.number().optional().describe('Page number'),
-    count: z.number().optional().describe('Items per page'),
-  }))
-  .output(z.object({
-    items: z.array(z.object({
-      contentLibraryItemId: z.string().describe('Content library item UUID'),
-      contentLibraryItemName: z.string().describe('Item name'),
-      dateCreated: z.string().optional().describe('ISO 8601 creation date'),
-      dateModified: z.string().optional().describe('ISO 8601 last modified date'),
-    })).describe('List of content library items'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Search by content library item name'),
+      page: z.number().optional().describe('Page number'),
+      count: z.number().optional().describe('Items per page')
+    })
+  )
+  .output(
+    z.object({
+      items: z
+        .array(
+          z.object({
+            contentLibraryItemId: z.string().describe('Content library item UUID'),
+            contentLibraryItemName: z.string().describe('Item name'),
+            dateCreated: z.string().optional().describe('ISO 8601 creation date'),
+            dateModified: z.string().optional().describe('ISO 8601 last modified date')
+          })
+        )
+        .describe('List of content library items')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PandaDocClient({
       token: ctx.auth.token,
-      authType: ctx.auth.authType,
+      authType: ctx.auth.authType
     });
 
     let params: any = {};
@@ -44,12 +49,12 @@ export let listContentLibrary = SlateTool.create(
       contentLibraryItemId: item.id,
       contentLibraryItemName: item.name,
       dateCreated: item.date_created,
-      dateModified: item.date_modified,
+      dateModified: item.date_modified
     }));
 
     return {
       output: { items },
-      message: `Found **${items.length}** content library item(s).`,
+      message: `Found **${items.length}** content library item(s).`
     };
   })
   .build();

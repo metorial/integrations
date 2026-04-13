@@ -99,7 +99,7 @@ let fromSnakeCaseEvent = (data: any): FomoEvent => {
     message: data.message,
     link: data.link,
     customEventFieldsAttributes: data.custom_event_fields_attributes,
-    createdAt: data.created_at,
+    createdAt: data.created_at
   };
 };
 
@@ -112,7 +112,7 @@ let fromSnakeCaseTemplate = (data: any): FomoTemplate => {
     markdownEnabled: data.markdown_enabled,
     imageUrl: data.image_url,
     useAvatar: data.use_avatar,
-    useIpMapping: data.use_ip_mapping,
+    useIpMapping: data.use_ip_mapping
   };
 };
 
@@ -124,8 +124,8 @@ export class Client {
       baseURL: 'https://api.fomo.com/api/v1/applications/me',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${config.token}`,
-      },
+        Authorization: `Token ${config.token}`
+      }
     });
   }
 
@@ -159,7 +159,8 @@ export class Client {
     if (event.title !== undefined) body.title = event.title;
     if (event.url !== undefined) body.url = event.url;
     if (event.imageUrl !== undefined) body.image_url = event.imageUrl;
-    if (event.customEventFieldsAttributes !== undefined) body.custom_event_fields_attributes = event.customEventFieldsAttributes;
+    if (event.customEventFieldsAttributes !== undefined)
+      body.custom_event_fields_attributes = event.customEventFieldsAttributes;
     if (event.createdAt !== undefined) body.created_at = event.createdAt;
 
     let response = await this.axios.post('/events', { event: body });
@@ -189,12 +190,14 @@ export class Client {
     if (response.data?.events) {
       return {
         events: response.data.events.map(fromSnakeCaseEvent),
-        meta: response.data.meta ? {
-          page: response.data.meta.page,
-          totalPages: response.data.meta.total_pages,
-          perPage: response.data.meta.per_page,
-          totalCount: response.data.meta.total_count,
-        } : undefined,
+        meta: response.data.meta
+          ? {
+              page: response.data.meta.page,
+              totalPages: response.data.meta.total_pages,
+              perPage: response.data.meta.per_page,
+              totalCount: response.data.meta.total_count
+            }
+          : undefined
       };
     }
 
@@ -205,28 +208,31 @@ export class Client {
 
   async searchEvent(field: string, query: string): Promise<FomoEvent | null> {
     let response = await this.axios.get('/events/find', {
-      params: { field, q: query },
+      params: { field, q: query }
     });
-    if (!response.data || (response.data.success === false)) return null;
+    if (!response.data || response.data.success === false) return null;
     return fromSnakeCaseEvent(response.data);
   }
 
-  async updateEvent(eventId: number, event: {
-    eventTypeId?: string;
-    eventTypeTag?: string;
-    externalId?: string;
-    firstName?: string;
-    emailAddress?: string;
-    ipAddress?: string;
-    city?: string;
-    province?: string;
-    country?: string;
-    title?: string;
-    url?: string;
-    imageUrl?: string;
-    customEventFieldsAttributes?: Array<{ key: string; value: string }>;
-    createdAt?: string;
-  }): Promise<FomoEvent> {
+  async updateEvent(
+    eventId: number,
+    event: {
+      eventTypeId?: string;
+      eventTypeTag?: string;
+      externalId?: string;
+      firstName?: string;
+      emailAddress?: string;
+      ipAddress?: string;
+      city?: string;
+      province?: string;
+      country?: string;
+      title?: string;
+      url?: string;
+      imageUrl?: string;
+      customEventFieldsAttributes?: Array<{ key: string; value: string }>;
+      createdAt?: string;
+    }
+  ): Promise<FomoEvent> {
     let body: Record<string, any> = {};
 
     if (event.eventTypeId !== undefined) body.event_type_id = event.eventTypeId;
@@ -241,7 +247,8 @@ export class Client {
     if (event.title !== undefined) body.title = event.title;
     if (event.url !== undefined) body.url = event.url;
     if (event.imageUrl !== undefined) body.image_url = event.imageUrl;
-    if (event.customEventFieldsAttributes !== undefined) body.custom_event_fields_attributes = event.customEventFieldsAttributes;
+    if (event.customEventFieldsAttributes !== undefined)
+      body.custom_event_fields_attributes = event.customEventFieldsAttributes;
     if (event.createdAt !== undefined) body.created_at = event.createdAt;
 
     let response = await this.axios.patch(`/events/${eventId}`, { event: body });
@@ -263,9 +270,10 @@ export class Client {
   }): Promise<FomoTemplate> {
     let body: Record<string, any> = {
       name: template.name,
-      message: template.message,
+      message: template.message
     };
-    if (template.markdownEnabled !== undefined) body.markdown_enabled = template.markdownEnabled;
+    if (template.markdownEnabled !== undefined)
+      body.markdown_enabled = template.markdownEnabled;
     if (template.imageUrl !== undefined) body.image_url = template.imageUrl;
     if (template.useAvatar !== undefined) body.use_avatar = template.useAvatar;
     if (template.useIpMapping !== undefined) body.use_ip_mapping = template.useIpMapping;
@@ -278,8 +286,8 @@ export class Client {
     let response = await this.axios.get('/dashboard', {
       params: {
         'date_range[from]': dateFrom,
-        'date_range[to]': dateTo,
-      },
+        'date_range[to]': dateTo
+      }
     });
 
     let data = response.data;
@@ -290,7 +298,7 @@ export class Client {
       conversionsCount: entry.conversions_count ?? 0,
       clickCount: entry.click_count ?? 0,
       impressionsCount: entry.impr_count ?? 0,
-      hoverCount: entry.hover_count ?? 0,
+      hoverCount: entry.hover_count ?? 0
     }));
 
     let totals = data.totals || {};
@@ -304,17 +312,20 @@ export class Client {
         impressionsCount: totals.impr_count ?? 0,
         hoverCount: totals.hover_count ?? 0,
         goalConversionCount: totals.goal_conversion_count ?? 0,
-        goalConvertedSaleInDollars: totals.goal_converted_sale_in_dollars ?? 0,
+        goalConvertedSaleInDollars: totals.goal_converted_sale_in_dollars ?? 0
       },
       dateRange: {
         from: data.date_range?.from ?? dateFrom,
-        to: data.date_range?.to ?? dateTo,
+        to: data.date_range?.to ?? dateTo
       },
-      hasGaConversions: data.has_ga_conversions ?? false,
+      hasGaConversions: data.has_ga_conversions ?? false
     };
   }
 
-  async updateApplication(applicationId: number, settings: FomoApplicationSettings): Promise<Record<string, any>> {
+  async updateApplication(
+    applicationId: number,
+    settings: FomoApplicationSettings
+  ): Promise<Record<string, any>> {
     let body: Record<string, any> = {};
 
     if (settings.name !== undefined) body.name = settings.name;
@@ -323,7 +334,8 @@ export class Client {
     if (settings.pageLoad !== undefined) body.page_load = settings.pageLoad;
     if (settings.maximumPerPage !== undefined) body.maximum_per_page = settings.maximumPerPage;
     if (settings.displayFor !== undefined) body.display_for = settings.displayFor;
-    if (settings.displayInterval !== undefined) body.display_interval = settings.displayInterval;
+    if (settings.displayInterval !== undefined)
+      body.display_interval = settings.displayInterval;
     if (settings.randomize !== undefined) body.randomize = settings.randomize;
     if (settings.closable !== undefined) body.closable = settings.closable;
     if (settings.position !== undefined) body.position = settings.position;
@@ -343,8 +355,8 @@ export class FomoOpenClient {
     this.axios = createAxios({
       baseURL: 'https://fomo.com/api/v1',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

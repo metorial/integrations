@@ -3,30 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProject = SlateTool.create(
-  spec,
-  {
-    name: 'Get Project',
-    key: 'get_project',
-    description: `Retrieve information about a CircleCI project, including its VCS URL, organization, and settings.`,
-    tags: {
-      readOnly: true
-    }
+export let getProject = SlateTool.create(spec, {
+  name: 'Get Project',
+  key: 'get_project',
+  description: `Retrieve information about a CircleCI project, including its VCS URL, organization, and settings.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectSlug: z.string().describe('Project slug in the format vcs-slug/org-name/repo-name')
-  }))
-  .output(z.object({
-    projectSlug: z.string(),
-    projectName: z.string().optional(),
-    organizationName: z.string().optional(),
-    organizationId: z.string().optional(),
-    vcsUrl: z.string().optional(),
-    vcsProvider: z.string().optional(),
-    vcsDefaultBranch: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectSlug: z
+        .string()
+        .describe('Project slug in the format vcs-slug/org-name/repo-name')
+    })
+  )
+  .output(
+    z.object({
+      projectSlug: z.string(),
+      projectName: z.string().optional(),
+      organizationName: z.string().optional(),
+      organizationId: z.string().optional(),
+      vcsUrl: z.string().optional(),
+      vcsProvider: z.string().optional(),
+      vcsDefaultBranch: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let project = await client.getProject(ctx.input.projectSlug);
 

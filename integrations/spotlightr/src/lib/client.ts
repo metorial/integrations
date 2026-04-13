@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.spotlightr.com',
+  baseURL: 'https://api.spotlightr.com'
 });
 
 export interface Video {
@@ -40,9 +40,7 @@ export interface Group {
 }
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   private get authParams() {
     return { vooKey: this.config.token };
@@ -53,8 +51,8 @@ export class Client {
       params: {
         ...this.authParams,
         ...(params?.videoId ? { videoID: params.videoId } : {}),
-        ...(params?.videoGroup ? { videoGroup: params.videoGroup } : {}),
-      },
+        ...(params?.videoGroup ? { videoGroup: params.videoGroup } : {})
+      }
     });
     return response.data;
   }
@@ -68,7 +66,7 @@ export class Client {
   }): Promise<any> {
     let formData: Record<string, any> = {
       vooKey: this.config.token,
-      name: params.name,
+      name: params.name
     };
 
     if (params.url) {
@@ -85,18 +83,22 @@ export class Client {
     }
 
     let response = await apiAxios.post('/api/createVideo', formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async deleteVideos(videoIds: string[]): Promise<any> {
-    let response = await apiAxios.post('/api/deleteVideo', {
-      vooKey: this.config.token,
-      IDs: videoIds,
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await apiAxios.post(
+      '/api/deleteVideo',
+      {
+        vooKey: this.config.token,
+        IDs: videoIds
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -104,8 +106,8 @@ export class Client {
     let response = await apiAxios.get('/api/video/metrics', {
       params: {
         ...this.authParams,
-        videoID: videoId,
-      },
+        videoID: videoId
+      }
     });
     return response.data;
   }
@@ -122,8 +124,8 @@ export class Client {
         videoID: params.videoId,
         ...(params.customViewerId ? { customViewerID: params.customViewerId } : {}),
         ...(params.onlyWatched !== undefined ? { onlyWatched: params.onlyWatched } : {}),
-        ...(params.allViews !== undefined ? { allViews: params.allViews } : {}),
-      },
+        ...(params.allViews !== undefined ? { allViews: params.allViews } : {})
+      }
     });
     return response.data;
   }
@@ -133,8 +135,8 @@ export class Client {
       params: {
         ...this.authParams,
         ...(params?.days ? { days: params.days } : {}),
-        ...(params?.total ? { total: params.total } : {}),
-      },
+        ...(params?.total ? { total: params.total } : {})
+      }
     });
     return response.data;
   }
@@ -144,64 +146,80 @@ export class Client {
       params: {
         ...this.authParams,
         id: videoId,
-        URL: url,
-      },
+        URL: url
+      }
     });
     return response.data;
   }
 
   async getGroups(): Promise<any> {
     let response = await apiAxios.get('/groups', {
-      params: this.authParams,
+      params: this.authParams
     });
     return response.data;
   }
 
   async createGroup(name: string): Promise<any> {
-    let response = await apiAxios.post('/groups', {
-      vooKey: this.config.token,
-      name,
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await apiAxios.post(
+      '/groups',
+      {
+        vooKey: this.config.token,
+        name
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async updatePlayerSettings(videoId: string, settings: Record<string, any>): Promise<any> {
-    let response = await apiAxios.post('/video/updateSettings', {
-      vooKey: this.config.token,
-      id: videoId,
-      settings: JSON.stringify(settings),
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await apiAxios.post(
+      '/video/updateSettings',
+      {
+        vooKey: this.config.token,
+        id: videoId,
+        settings: JSON.stringify(settings)
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async getWhitelistedDomains(): Promise<any> {
     let response = await apiAxios.get('/api/user/domain', {
-      params: this.authParams,
+      params: this.authParams
     });
     return response.data;
   }
 
   async addWhitelistedDomain(domain: string): Promise<any> {
-    let response = await apiAxios.post('/api/user/domain', {
-      vooKey: this.config.token,
-      domain,
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await apiAxios.post(
+      '/api/user/domain',
+      {
+        vooKey: this.config.token,
+        domain
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async globalSearch(query: string): Promise<any> {
-    let response = await apiAxios.post('/search/global', {
-      vooKey: this.config.token,
-      query,
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await apiAxios.post(
+      '/search/global',
+      {
+        vooKey: this.config.token,
+        query
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -216,7 +234,7 @@ export class Client {
     let body: Record<string, any> = {
       vooKey: this.config.token,
       id: params.galleryId,
-      quantity: params.quantity,
+      quantity: params.quantity
     };
     if (params.never !== undefined) body.never = params.never;
     if (params.unlocks !== undefined) body.unlocks = params.unlocks;
@@ -224,29 +242,37 @@ export class Client {
     if (params.expires) body.expires = params.expires;
 
     let response = await apiAxios.post('/spotlight/codes', body, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async updateAccessCode(codeId: string, expires: string): Promise<any> {
-    let response = await apiAxios.post('/spotlight/updateCode', {
-      vooKey: this.config.token,
-      id: codeId,
-      expires,
-    }, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await apiAxios.post(
+      '/spotlight/updateCode',
+      {
+        vooKey: this.config.token,
+        id: codeId,
+        expires
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async uploadAsset(file: any): Promise<any> {
-    let response = await apiAxios.post('/assets', {
-      vooKey: this.config.token,
-      file,
-    }, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    let response = await apiAxios.post(
+      '/assets',
+      {
+        vooKey: this.config.token,
+        file
+      },
+      {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }
+    );
     return response.data;
   }
 }

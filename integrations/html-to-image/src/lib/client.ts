@@ -113,7 +113,8 @@ export class Client {
     if (params.fullScreen !== undefined) body.full_screen = params.fullScreen;
     if (params.colorScheme) body.color_scheme = params.colorScheme;
     if (params.timezone) body.timezone = params.timezone;
-    if (params.blockConsentBanners !== undefined) body.block_consent_banners = params.blockConsentBanners;
+    if (params.blockConsentBanners !== undefined)
+      body.block_consent_banners = params.blockConsentBanners;
 
     let endpoint = '/image';
     if (params.templateId) {
@@ -140,7 +141,7 @@ export class Client {
     let response = await this.axios.get('/image', { params });
     let items = response.data as Array<Record<string, unknown>>;
 
-    return items.map((item) => this.mapImageItem(item));
+    return items.map(item => this.mapImageItem(item));
   }
 
   async deleteImage(imageId: string): Promise<void> {
@@ -180,7 +181,10 @@ export class Client {
     };
   }
 
-  async updateTemplate(templateId: string, params: CreateTemplateParams): Promise<TemplateResult> {
+  async updateTemplate(
+    templateId: string,
+    params: CreateTemplateParams
+  ): Promise<TemplateResult> {
     let body: Record<string, unknown> = {
       html: params.html
     };
@@ -211,7 +215,7 @@ export class Client {
     let response = await this.axios.get('/template');
     let items = response.data as Array<Record<string, unknown>>;
 
-    return items.map((item) => ({
+    return items.map(item => ({
       templateId: item.template_id as string,
       name: item.name as string | undefined,
       description: item.description as string | undefined,
@@ -231,7 +235,7 @@ export class Client {
     let response = await this.axios.get(`/template/${templateId}`);
     let items = response.data as Array<Record<string, unknown>>;
 
-    return items.map((item) => ({
+    return items.map(item => ({
       templateId: item.template_id as string,
       name: item.name as string | undefined,
       description: item.description as string | undefined,

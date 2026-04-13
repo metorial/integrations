@@ -24,12 +24,9 @@ import {
   removeFromSuppressions,
   listRecipients,
   getRecipient,
-  deleteRecipient,
+  deleteRecipient
 } from './tools';
-import {
-  emailEvents,
-  smsEvents,
-} from './triggers';
+import { emailEvents, smsEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -57,10 +54,7 @@ export let provider = Slate.create({
     removeFromSuppressions,
     listRecipients,
     getRecipient,
-    deleteRecipient,
+    deleteRecipient
   ],
-  triggers: [
-    emailEvents,
-    smsEvents,
-  ],
+  triggers: [emailEvents, smsEvents]
 });

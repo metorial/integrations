@@ -3,58 +3,76 @@ import { ElasticsearchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let watcherAlertTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Watcher Alert',
-    key: 'watcher_alert',
-    description: 'Polls the Watcher execution history for new alert executions. Detects when watches fire and reports the watch ID, execution state, and results.',
-  }
-)
-  .input(z.object({
-    executionId: z.string().describe('Unique execution ID'),
-    watchId: z.string().describe('ID of the watch that fired'),
-    executionState: z.string().describe('State of the execution (executed, throttled, etc.)'),
-    triggeredTime: z.string().describe('When the watch was triggered'),
-    executionTime: z.string().describe('When the watch was executed'),
-    conditionMet: z.boolean().describe('Whether the watch condition was met'),
-    actionResults: z.record(z.string(), z.any()).optional().describe('Results of executed actions'),
-    watchInput: z.record(z.string(), z.any()).optional().describe('Input data that triggered the watch'),
-  }))
-  .output(z.object({
-    watchId: z.string().describe('ID of the watch that fired'),
-    executionState: z.string().describe('Execution state (executed, throttled, execution_not_needed)'),
-    triggeredTime: z.string().describe('Timestamp when the watch was triggered'),
-    executionTime: z.string().describe('Timestamp when the watch finished executing'),
-    conditionMet: z.boolean().describe('Whether the condition was met'),
-    actionResults: z.record(z.string(), z.any()).optional().describe('Results from actions that were executed'),
-    watchInput: z.record(z.string(), z.any()).optional().describe('Input data from the watch query'),
-  }))
+export let watcherAlertTrigger = SlateTrigger.create(spec, {
+  name: 'Watcher Alert',
+  key: 'watcher_alert',
+  description:
+    'Polls the Watcher execution history for new alert executions. Detects when watches fire and reports the watch ID, execution state, and results.'
+})
+  .input(
+    z.object({
+      executionId: z.string().describe('Unique execution ID'),
+      watchId: z.string().describe('ID of the watch that fired'),
+      executionState: z
+        .string()
+        .describe('State of the execution (executed, throttled, etc.)'),
+      triggeredTime: z.string().describe('When the watch was triggered'),
+      executionTime: z.string().describe('When the watch was executed'),
+      conditionMet: z.boolean().describe('Whether the watch condition was met'),
+      actionResults: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Results of executed actions'),
+      watchInput: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Input data that triggered the watch')
+    })
+  )
+  .output(
+    z.object({
+      watchId: z.string().describe('ID of the watch that fired'),
+      executionState: z
+        .string()
+        .describe('Execution state (executed, throttled, execution_not_needed)'),
+      triggeredTime: z.string().describe('Timestamp when the watch was triggered'),
+      executionTime: z.string().describe('Timestamp when the watch finished executing'),
+      conditionMet: z.boolean().describe('Whether the condition was met'),
+      actionResults: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Results from actions that were executed'),
+      watchInput: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Input data from the watch query')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ElasticsearchClient({
         baseUrl: ctx.auth.baseUrl,
-        authHeader: ctx.auth.authHeader,
+        authHeader: ctx.auth.authHeader
       });
 
       let lastPolledTime = (ctx.state as any)?.lastPolledTime as string | undefined;
 
       let body: Record<string, any> = {
         sort: [{ 'trigger_event.triggered_time': { order: 'desc' } }],
-        size: 100,
+        size: 100
       };
 
       if (lastPolledTime) {
         body.query = {
           range: {
             'trigger_event.triggered_time': {
-              gt: lastPolledTime,
-            },
-          },
+              gt: lastPolledTime
+            }
+          }
         };
       }
 
@@ -67,7 +85,7 @@ export let watcherAlertTrigger = SlateTrigger.create(
       } catch {
         return {
           inputs: [],
-          updatedState: ctx.state || {},
+          updatedState: ctx.state || {}
         };
       }
 
@@ -85,7 +103,7 @@ export let watcherAlertTrigger = SlateTrigger.create(
           executionTime: source.execution_time || triggerEvent.triggered_time || '',
           conditionMet: executionResult.condition?.met ?? false,
           actionResults: executionResult.actions,
-          watchInput: executionResult.input,
+          watchInput: executionResult.input
         };
       });
 
@@ -100,12 +118,12 @@ export let watcherAlertTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastPolledTime: newLastPolledTime || new Date().toISOString(),
-        },
+          lastPolledTime: newLastPolledTime || new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `watch.${ctx.input.executionState}`,
         id: ctx.input.executionId,
@@ -116,9 +134,9 @@ export let watcherAlertTrigger = SlateTrigger.create(
           executionTime: ctx.input.executionTime,
           conditionMet: ctx.input.conditionMet,
           actionResults: ctx.input.actionResults,
-          watchInput: ctx.input.watchInput,
-        },
+          watchInput: ctx.input.watchInput
+        }
       };
-    },
+    }
   })
   .build();

@@ -34,11 +34,7 @@ export class Client {
     return response.data as T;
   }
 
-  async sendChat(opts: {
-    to: string;
-    customUid: string;
-    text: string;
-  }) {
+  async sendChat(opts: { to: string; customUid: string; text: string }) {
     return this.request({
       method: 'POST',
       path: '/send/chat',

@@ -16,15 +16,18 @@ Keyword.com uses **API token-based authentication** via secure HTTP headers.
 - There are no OAuth flows or scopes; the single API token provides access to all resources associated with your account.
 
 The Keyword.com API has two separate API products:
+
 1. **SERP Tracker API** — for Google SERP keyword tracking, project management, ranking data, and share of voice metrics.
 2. **AI Visibility Tracker API** — for AI search engine visibility tracking across ChatGPT, Perplexity, AI Overviews, and more.
 
 ## Features
 
 ### Project Management
+
 Create and manage tracking projects that organize your keyword monitoring. Projects serve as the top-level container for grouping keywords, domains, and tracking settings. The API provides RESTful endpoints for managing projects and keywords.
 
 ### Keyword Rank Tracking
+
 Choose your update frequency on keyword rankings — click and see your rankings update live. Track keyword positions across Google search results for specific domains. Track local keyword rankings with ZIP-code accuracy, including Google Business Profile results. Measure keyword rankings across desktop and mobile devices to accurately compare SERP performance.
 
 - Configurable update frequency: daily, weekly, or on-demand.
@@ -32,21 +35,27 @@ Choose your update frequency on keyword rankings — click and see your rankings
 - Device type selection (desktop/mobile).
 
 ### SERP Data & History
+
 Get top 100 search results and competitor URLs per keyword. The API gives full account exports and 30-day historical SERPs access. Discover if your keywords trigger a SERP feature. Identify what search intent is associated with your keywords.
 
 ### Share of Voice
+
 Retrieve visibility scores for all tracked keywords. Quantify your search visibility against competitors at both the keyword and overall site level, as well as across mobile and desktop devices.
 
 ### Competitor Analysis
+
 Discover who your competitors are for your keywords. Benchmark against other domains, identify threats, and track organic ranking fluctuations over time.
 
 ### AI Visibility Tracking
+
 Track brand visibility across all major AI search platforms, including ChatGPT, AI Mode, Perplexity, and Gemini. Monitor visibility, sentiment, citations, and competitors to understand why they're ranking — and how to outperform them.
 
 ### Reporting & Data Export
+
 Share live keyword performance reports with a link. Export ranking data in various formats for integration with dashboards, BI tools, or client reports. Agency-friendly features like white-label/embedded tables and customized exports to CSV/PDF.
 
 ### Search Volume & Intent Data
+
 Understand the frequency of searches for specific terms. Access search intent classification for tracked keywords to understand user intent behind queries.
 
 ## Events

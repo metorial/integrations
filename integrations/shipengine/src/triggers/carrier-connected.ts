@@ -3,31 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let carrierConnectedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Carrier Connected',
-    key: 'carrier_connected',
-    description: 'Fires when a new carrier account is connected to your ShipEngine account.'
-  }
-)
-  .input(z.object({
-    resourceUrl: z.string().optional().describe('URL to the carrier resource'),
-    carrierId: z.string().describe('Carrier ID'),
-    carrierCode: z.string().optional().describe('Carrier code'),
-    nickname: z.string().optional().describe('Carrier nickname'),
-    friendlyName: z.string().optional().describe('Carrier friendly name')
-  }))
-  .output(z.object({
-    carrierId: z.string().describe('Carrier ID'),
-    carrierCode: z.string().describe('Carrier code'),
-    nickname: z.string().describe('Carrier nickname'),
-    friendlyName: z.string().describe('Carrier friendly name'),
-    accountNumber: z.string().optional().describe('Account number'),
-    balance: z.number().optional().describe('Account balance')
-  }))
+export let carrierConnectedTrigger = SlateTrigger.create(spec, {
+  name: 'Carrier Connected',
+  key: 'carrier_connected',
+  description: 'Fires when a new carrier account is connected to your ShipEngine account.'
+})
+  .input(
+    z.object({
+      resourceUrl: z.string().optional().describe('URL to the carrier resource'),
+      carrierId: z.string().describe('Carrier ID'),
+      carrierCode: z.string().optional().describe('Carrier code'),
+      nickname: z.string().optional().describe('Carrier nickname'),
+      friendlyName: z.string().optional().describe('Carrier friendly name')
+    })
+  )
+  .output(
+    z.object({
+      carrierId: z.string().describe('Carrier ID'),
+      carrierCode: z.string().describe('Carrier code'),
+      nickname: z.string().describe('Carrier nickname'),
+      friendlyName: z.string().describe('Carrier friendly name'),
+      accountNumber: z.string().optional().describe('Account number'),
+      balance: z.number().optional().describe('Account balance')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -45,7 +46,7 @@ export let carrierConnectedTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -54,23 +55,25 @@ export let carrierConnectedTrigger = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let carrierData = data?.data ?? data ?? {};
 
       return {
-        inputs: [{
-          resourceUrl: data?.resource_url ?? '',
-          carrierId: carrierData.carrier_id ?? '',
-          carrierCode: carrierData.carrier_code,
-          nickname: carrierData.nickname,
-          friendlyName: carrierData.friendly_name
-        }]
+        inputs: [
+          {
+            resourceUrl: data?.resource_url ?? '',
+            carrierId: carrierData.carrier_id ?? '',
+            carrierCode: carrierData.carrier_code,
+            nickname: carrierData.nickname,
+            friendlyName: carrierData.friendly_name
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUrl: ctx.config.baseUrl
@@ -96,4 +99,5 @@ export let carrierConnectedTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

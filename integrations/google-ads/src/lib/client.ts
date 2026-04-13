@@ -29,9 +29,9 @@ export class GoogleAdsClient {
 
   constructor(config: GoogleAdsClientConfig) {
     let headers: Record<string, string> = {
-      'Authorization': `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`,
       'developer-token': config.developerToken,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.loginCustomerId) {
@@ -40,7 +40,7 @@ export class GoogleAdsClient {
 
     this.http = createAxios({
       baseURL: BASE_URL,
-      headers,
+      headers
     });
   }
 
@@ -54,7 +54,7 @@ export class GoogleAdsClient {
   async getCustomer(customerId: string): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/googleAds:search`, {
-      query: `SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone, customer.manager, customer.status FROM customer LIMIT 1`,
+      query: `SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone, customer.manager, customer.status FROM customer LIMIT 1`
     });
     let results = response.data.results || [];
     return results[0]?.customer || {};
@@ -62,7 +62,12 @@ export class GoogleAdsClient {
 
   // GAQL Search
 
-  async search(customerId: string, query: string, pageSize?: number, pageToken?: string): Promise<SearchResponse> {
+  async search(
+    customerId: string,
+    query: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<SearchResponse> {
     let cid = customerId.replace(/-/g, '');
     let body: Record<string, any> = { query };
     if (pageSize) body.pageSize = pageSize;
@@ -88,96 +93,123 @@ export class GoogleAdsClient {
 
   // Campaign Management
 
-  async mutateCampaigns(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateCampaigns(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/campaigns:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Campaign Budget Management
 
-  async mutateCampaignBudgets(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateCampaignBudgets(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/campaignBudgets:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Ad Group Management
 
-  async mutateAdGroups(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateAdGroups(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/adGroups:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Ad Group Ad Management
 
-  async mutateAdGroupAds(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateAdGroupAds(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/adGroupAds:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Ad Group Criterion (Keywords) Management
 
-  async mutateAdGroupCriteria(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateAdGroupCriteria(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/adGroupCriteria:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Campaign Criterion (Negative Keywords, Targeting) Management
 
-  async mutateCampaignCriteria(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateCampaignCriteria(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/campaignCriteria:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Bidding Strategy Management
 
-  async mutateBiddingStrategies(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateBiddingStrategies(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/biddingStrategies:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Conversion Action Management
 
-  async mutateConversionActions(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateConversionActions(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/conversionActions:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }
 
   // Keyword Planning
 
-  async generateKeywordIdeas(customerId: string, params: {
-    language?: string;
-    geoTargetConstants?: string[];
-    keywordSeed?: { keywords: string[] };
-    urlSeed?: { url: string };
-    keywordAndUrlSeed?: { keywords: string[]; url: string };
-    includeAdultKeywords?: boolean;
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<Record<string, any>> {
+  async generateKeywordIdeas(
+    customerId: string,
+    params: {
+      language?: string;
+      geoTargetConstants?: string[];
+      keywordSeed?: { keywords: string[] };
+      urlSeed?: { url: string };
+      keywordAndUrlSeed?: { keywords: string[]; url: string };
+      includeAdultKeywords?: boolean;
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}:generateKeywordIdeas`, params);
     return response.data;
@@ -185,21 +217,28 @@ export class GoogleAdsClient {
 
   // Offline Conversion Upload
 
-  async uploadClickConversions(customerId: string, conversions: Record<string, any>[], partialFailure?: boolean): Promise<Record<string, any>> {
+  async uploadClickConversions(
+    customerId: string,
+    conversions: Record<string, any>[],
+    partialFailure?: boolean
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}:uploadClickConversions`, {
       conversions,
-      partialFailure: partialFailure ?? true,
+      partialFailure: partialFailure ?? true
     });
     return response.data;
   }
 
   // Audience / User List Management
 
-  async mutateUserLists(customerId: string, operations: MutateOperation[]): Promise<Record<string, any>> {
+  async mutateUserLists(
+    customerId: string,
+    operations: MutateOperation[]
+  ): Promise<Record<string, any>> {
     let cid = customerId.replace(/-/g, '');
     let response = await this.http.post(`/customers/${cid}/userLists:mutate`, {
-      operations,
+      operations
     });
     return response.data;
   }

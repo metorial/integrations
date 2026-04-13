@@ -12,41 +12,54 @@ let signatureSecret = () => {
   return result;
 };
 
-export let sandboxLifecycleTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sandbox Lifecycle',
-    key: 'sandbox_lifecycle',
-    description: 'Receive real-time notifications for sandbox lifecycle events including creation, termination, updates, pause, resume, and snapshots.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The lifecycle event type (e.g., sandbox.lifecycle.created).'),
-    eventId: z.string().describe('Unique identifier of the event.'),
-    sandboxId: z.string().describe('ID of the sandbox that triggered the event.'),
-    sandboxTemplateId: z.string().describe('Template ID of the sandbox.'),
-    sandboxTeamId: z.string().describe('Team ID that owns the sandbox.'),
-    sandboxBuildId: z.string().describe('Build ID of the sandbox.'),
-    sandboxExecutionId: z.string().describe('Execution ID of the sandbox.'),
-    timestamp: z.string().describe('ISO 8601 timestamp of the event.'),
-    eventData: z.any().optional().describe('Event-specific metadata.'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Unique identifier of the event.'),
-    sandboxId: z.string().describe('ID of the affected sandbox.'),
-    sandboxTemplateId: z.string().describe('Template ID of the sandbox.'),
-    sandboxTeamId: z.string().describe('Team ID that owns the sandbox.'),
-    sandboxBuildId: z.string().describe('Build ID of the sandbox.'),
-    sandboxExecutionId: z.string().describe('Execution ID of the sandbox.'),
-    timestamp: z.string().describe('ISO 8601 timestamp of the event.'),
-    sandboxMetadata: z.record(z.string(), z.string()).optional().describe('Custom metadata attached to the sandbox.'),
-    executionStartedAt: z.string().optional().describe('UTC timestamp when the sandbox execution started.'),
-    vcpuCount: z.number().optional().describe('Number of vCPUs allocated to the sandbox.'),
-    memoryMb: z.number().optional().describe('Memory allocated to the sandbox in megabytes.'),
-    executionTimeMs: z.number().optional().describe('Total execution time in milliseconds.'),
-  }))
+export let sandboxLifecycleTrigger = SlateTrigger.create(spec, {
+  name: 'Sandbox Lifecycle',
+  key: 'sandbox_lifecycle',
+  description:
+    'Receive real-time notifications for sandbox lifecycle events including creation, termination, updates, pause, resume, and snapshots.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The lifecycle event type (e.g., sandbox.lifecycle.created).'),
+      eventId: z.string().describe('Unique identifier of the event.'),
+      sandboxId: z.string().describe('ID of the sandbox that triggered the event.'),
+      sandboxTemplateId: z.string().describe('Template ID of the sandbox.'),
+      sandboxTeamId: z.string().describe('Team ID that owns the sandbox.'),
+      sandboxBuildId: z.string().describe('Build ID of the sandbox.'),
+      sandboxExecutionId: z.string().describe('Execution ID of the sandbox.'),
+      timestamp: z.string().describe('ISO 8601 timestamp of the event.'),
+      eventData: z.any().optional().describe('Event-specific metadata.')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Unique identifier of the event.'),
+      sandboxId: z.string().describe('ID of the affected sandbox.'),
+      sandboxTemplateId: z.string().describe('Template ID of the sandbox.'),
+      sandboxTeamId: z.string().describe('Team ID that owns the sandbox.'),
+      sandboxBuildId: z.string().describe('Build ID of the sandbox.'),
+      sandboxExecutionId: z.string().describe('Execution ID of the sandbox.'),
+      timestamp: z.string().describe('ISO 8601 timestamp of the event.'),
+      sandboxMetadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom metadata attached to the sandbox.'),
+      executionStartedAt: z
+        .string()
+        .optional()
+        .describe('UTC timestamp when the sandbox execution started.'),
+      vcpuCount: z.number().optional().describe('Number of vCPUs allocated to the sandbox.'),
+      memoryMb: z
+        .number()
+        .optional()
+        .describe('Memory allocated to the sandbox in megabytes.'),
+      executionTimeMs: z.number().optional().describe('Total execution time in milliseconds.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new E2BClient({ token: ctx.auth.token });
       let secret = signatureSecret();
 
@@ -60,27 +73,27 @@ export let sandboxLifecycleTrigger = SlateTrigger.create(
           'sandbox.lifecycle.killed',
           'sandbox.lifecycle.paused',
           'sandbox.lifecycle.resumed',
-          'sandbox.lifecycle.checkpointed',
+          'sandbox.lifecycle.checkpointed'
         ],
-        signatureSecret: secret,
+        signatureSecret: secret
       });
 
       return {
         registrationDetails: {
           webhookId: webhook.webhookId,
-          signatureSecret: secret,
-        },
+          signatureSecret: secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new E2BClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
@@ -93,13 +106,13 @@ export let sandboxLifecycleTrigger = SlateTrigger.create(
             sandboxBuildId: data.sandboxBuildId || data.sandboxBuildID || '',
             sandboxExecutionId: data.sandboxExecutionId || data.sandboxExecutionID || '',
             timestamp: data.timestamp || '',
-            eventData: data.eventData,
-          },
-        ],
+            eventData: data.eventData
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventData = ctx.input.eventData || {};
       let execution = eventData?.execution || {};
       let sandboxMetadata = eventData?.sandbox_metadata;
@@ -119,8 +132,9 @@ export let sandboxLifecycleTrigger = SlateTrigger.create(
           executionStartedAt: execution.started_at,
           vcpuCount: execution.vcpu_count,
           memoryMb: execution.memory_mb,
-          executionTimeMs: execution.execution_time,
-        },
+          executionTimeMs: execution.execution_time
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

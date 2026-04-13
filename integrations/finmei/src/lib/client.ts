@@ -9,20 +9,24 @@ export class FinmeiClient {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
-  private async request<T = any>(method: string, url: string, options?: {
-    data?: any;
-    params?: Record<string, any>;
-  }): Promise<T> {
+  private async request<T = any>(
+    method: string,
+    url: string,
+    options?: {
+      data?: any;
+      params?: Record<string, any>;
+    }
+  ): Promise<T> {
     let response = await this.axios.request({
       method,
       url,
       data: options?.data,
-      params: options?.params,
+      params: options?.params
     });
     return response.data as T;
   }
@@ -35,10 +39,7 @@ export class FinmeiClient {
 
   // ========== Invoices ==========
 
-  async listInvoices(params?: {
-    page?: number;
-    per_page?: number;
-  }): Promise<any> {
+  async listInvoices(params?: { page?: number; per_page?: number }): Promise<any> {
     return this.request('GET', '/invoices', { params });
   }
 
@@ -71,13 +72,16 @@ export class FinmeiClient {
     return this.request('GET', '/customers', { params });
   }
 
-  async updateCustomer(customerId: string, data: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: Record<string, any>;
-    [key: string]: any;
-  }): Promise<any> {
+  async updateCustomer(
+    customerId: string,
+    data: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      address?: Record<string, any>;
+      [key: string]: any;
+    }
+  ): Promise<any> {
     return this.request('PUT', `/customers/${customerId}`, { data });
   }
 
@@ -110,13 +114,16 @@ export class FinmeiClient {
     return this.request('POST', '/products', { data });
   }
 
-  async updateProduct(productId: string, data: {
-    name?: string;
-    price?: number;
-    currency?: string;
-    description?: string;
-    [key: string]: any;
-  }): Promise<any> {
+  async updateProduct(
+    productId: string,
+    data: {
+      name?: string;
+      price?: number;
+      currency?: string;
+      description?: string;
+      [key: string]: any;
+    }
+  ): Promise<any> {
     return this.request('PUT', `/products/${productId}`, { data });
   }
 
@@ -158,10 +165,7 @@ export class FinmeiClient {
 
   // ========== Expenses ==========
 
-  async listExpenses(params?: {
-    page?: number;
-    per_page?: number;
-  }): Promise<any> {
+  async listExpenses(params?: { page?: number; per_page?: number }): Promise<any> {
     return this.request('GET', '/expenses', { params });
   }
 

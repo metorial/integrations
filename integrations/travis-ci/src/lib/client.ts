@@ -8,10 +8,10 @@ export class TravisCIClient {
     this.axios = createAxios({
       baseURL: params.baseUrl,
       headers: {
-        'Authorization': `token ${params.token}`,
+        Authorization: `token ${params.token}`,
         'Travis-API-Version': '3',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -114,35 +114,37 @@ export class TravisCIClient {
 
   // ---- Trigger Build (Requests) ----
 
-  async triggerBuild(repoSlugOrId: string, params: {
-    message?: string;
-    branch?: string;
-    config?: Record<string, any>;
-  }): Promise<any> {
+  async triggerBuild(
+    repoSlugOrId: string,
+    params: {
+      message?: string;
+      branch?: string;
+      config?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = { request: {} };
     if (params.message) body.request.message = params.message;
     if (params.branch) body.request.branch = params.branch;
     if (params.config) body.request.config = params.config;
-    let response = await this.axios.post(
-      `${this.repoPath(repoSlugOrId)}/requests`,
-      body,
-    );
+    let response = await this.axios.post(`${this.repoPath(repoSlugOrId)}/requests`, body);
     return response.data;
   }
 
   // ---- Build Requests ----
 
-  async listRequests(repoSlugOrId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
+  async listRequests(
+    repoSlugOrId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.limit !== undefined) query['limit'] = params.limit;
     if (params?.offset !== undefined) query['offset'] = params.offset;
-    let response = await this.axios.get(
-      `${this.repoPath(repoSlugOrId)}/requests`,
-      { params: query },
-    );
+    let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/requests`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -177,7 +179,7 @@ export class TravisCIClient {
 
   async getJobLogText(jobId: string): Promise<string> {
     let response = await this.axios.get(`/job/${jobId}/log.txt`, {
-      headers: { 'Accept': 'text/plain' },
+      headers: { Accept: 'text/plain' }
     });
     return response.data;
   }
@@ -198,31 +200,35 @@ export class TravisCIClient {
     return response.data;
   }
 
-  async createEnvVar(repoSlugOrId: string, params: {
-    name: string;
-    value: string;
-    isPublic?: boolean;
-    branch?: string;
-  }): Promise<any> {
+  async createEnvVar(
+    repoSlugOrId: string,
+    params: {
+      name: string;
+      value: string;
+      isPublic?: boolean;
+      branch?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       'env_var.name': params.name,
       'env_var.value': params.value,
-      'env_var.public': params.isPublic ?? false,
+      'env_var.public': params.isPublic ?? false
     };
     if (params.branch) body['env_var.branch'] = params.branch;
-    let response = await this.axios.post(
-      `${this.repoPath(repoSlugOrId)}/env_vars`,
-      body,
-    );
+    let response = await this.axios.post(`${this.repoPath(repoSlugOrId)}/env_vars`, body);
     return response.data;
   }
 
-  async updateEnvVar(repoSlugOrId: string, envVarId: string, params: {
-    name?: string;
-    value?: string;
-    isPublic?: boolean;
-    branch?: string;
-  }): Promise<any> {
+  async updateEnvVar(
+    repoSlugOrId: string,
+    envVarId: string,
+    params: {
+      name?: string;
+      value?: string;
+      isPublic?: boolean;
+      branch?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body['env_var.name'] = params.name;
     if (params.value !== undefined) body['env_var.value'] = params.value;
@@ -230,7 +236,7 @@ export class TravisCIClient {
     if (params.branch !== undefined) body['env_var.branch'] = params.branch;
     let response = await this.axios.patch(
       `${this.repoPath(repoSlugOrId)}/env_var/${envVarId}`,
-      body,
+      body
     );
     return response.data;
   }
@@ -241,17 +247,19 @@ export class TravisCIClient {
 
   // ---- Cron Jobs ----
 
-  async listCrons(repoSlugOrId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
+  async listCrons(
+    repoSlugOrId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.limit !== undefined) query['limit'] = params.limit;
     if (params?.offset !== undefined) query['offset'] = params.offset;
-    let response = await this.axios.get(
-      `${this.repoPath(repoSlugOrId)}/crons`,
-      { params: query },
-    );
+    let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/crons`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -260,19 +268,23 @@ export class TravisCIClient {
     return response.data;
   }
 
-  async createCron(repoSlugOrId: string, branchName: string, params: {
-    interval: 'daily' | 'weekly' | 'monthly';
-    dontRunIfRecentBuildExists?: boolean;
-  }): Promise<any> {
+  async createCron(
+    repoSlugOrId: string,
+    branchName: string,
+    params: {
+      interval: 'daily' | 'weekly' | 'monthly';
+      dontRunIfRecentBuildExists?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      'cron.interval': params.interval,
+      'cron.interval': params.interval
     };
     if (params.dontRunIfRecentBuildExists !== undefined) {
       body['cron.dont_run_if_recent_build_exists'] = params.dontRunIfRecentBuildExists;
     }
     let response = await this.axios.post(
       `${this.repoPath(repoSlugOrId)}/branch/${encodeURIComponent(branchName)}/cron`,
-      body,
+      body
     );
     return response.data;
   }
@@ -283,57 +295,62 @@ export class TravisCIClient {
 
   // ---- Caches ----
 
-  async listCaches(repoSlugOrId: string, params?: {
-    branch?: string;
-    match?: string;
-  }): Promise<any> {
+  async listCaches(
+    repoSlugOrId: string,
+    params?: {
+      branch?: string;
+      match?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.branch) query['branch'] = params.branch;
     if (params?.match) query['match'] = params.match;
-    let response = await this.axios.get(
-      `${this.repoPath(repoSlugOrId)}/caches`,
-      { params: query },
-    );
+    let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/caches`, {
+      params: query
+    });
     return response.data;
   }
 
-  async deleteCaches(repoSlugOrId: string, params?: {
-    branch?: string;
-    match?: string;
-  }): Promise<void> {
+  async deleteCaches(
+    repoSlugOrId: string,
+    params?: {
+      branch?: string;
+      match?: string;
+    }
+  ): Promise<void> {
     let query: Record<string, any> = {};
     if (params?.branch) query['branch'] = params.branch;
     if (params?.match) query['match'] = params.match;
-    await this.axios.delete(
-      `${this.repoPath(repoSlugOrId)}/caches`,
-      { params: query },
-    );
+    await this.axios.delete(`${this.repoPath(repoSlugOrId)}/caches`, { params: query });
   }
 
   // ---- Branches ----
 
   async getBranch(repoSlugOrId: string, branchName: string): Promise<any> {
     let response = await this.axios.get(
-      `${this.repoPath(repoSlugOrId)}/branch/${encodeURIComponent(branchName)}`,
+      `${this.repoPath(repoSlugOrId)}/branch/${encodeURIComponent(branchName)}`
     );
     return response.data;
   }
 
-  async listBranches(repoSlugOrId: string, params?: {
-    existsOnGithub?: boolean;
-    limit?: number;
-    offset?: number;
-    sortBy?: string;
-  }): Promise<any> {
+  async listBranches(
+    repoSlugOrId: string,
+    params?: {
+      existsOnGithub?: boolean;
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
-    if (params?.existsOnGithub !== undefined) query['exists_on_github'] = params.existsOnGithub;
+    if (params?.existsOnGithub !== undefined)
+      query['exists_on_github'] = params.existsOnGithub;
     if (params?.limit !== undefined) query['limit'] = params.limit;
     if (params?.offset !== undefined) query['offset'] = params.offset;
     if (params?.sortBy) query['sort_by'] = params.sortBy;
-    let response = await this.axios.get(
-      `${this.repoPath(repoSlugOrId)}/branches`,
-      { params: query },
-    );
+    let response = await this.axios.get(`${this.repoPath(repoSlugOrId)}/branches`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -358,7 +375,7 @@ export class TravisCIClient {
 
   async lintTravisYml(content: string): Promise<any> {
     let response = await this.axios.post('/lint', content, {
-      headers: { 'Content-Type': 'text/yaml' },
+      headers: { 'Content-Type': 'text/yaml' }
     });
     return response.data;
   }

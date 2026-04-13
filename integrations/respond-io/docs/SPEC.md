@@ -13,6 +13,7 @@ To obtain an access token:
 1. From the Settings Module, navigate to the menu item **Integrations**. From the list, search for **Developer API** and press Edit. Press **Add Access Token** to add a new access token. This token is needed to access the API endpoints.
 
 The token is passed as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer <your_access_token>
 ```

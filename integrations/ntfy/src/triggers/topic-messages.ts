@@ -3,44 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let topicMessages = SlateTrigger.create(
-  spec,
-  {
-    name: 'Topic Messages',
-    key: 'topic_messages',
-    description: 'Triggers when new messages are published to the configured ntfy topic. Polls for new messages and emits each one as a separate event. Configure the topic in the integration settings.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Unique ID of the message'),
-    time: z.number().describe('Unix timestamp when the message was published'),
-    topic: z.string().describe('Topic the message was published to'),
-    title: z.string().optional().describe('Notification title'),
-    message: z.string().optional().describe('Notification message body'),
-    priority: z.number().optional().describe('Priority level (1-5)'),
-    tags: z.array(z.string()).optional().describe('Tags assigned to the message'),
-    clickUrl: z.string().optional().describe('Click action URL'),
-    iconUrl: z.string().optional().describe('Notification icon URL'),
-    expires: z.number().optional().describe('Unix timestamp when the message expires'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Unique ID of the message'),
-    time: z.number().describe('Unix timestamp when the message was published'),
-    topic: z.string().describe('Topic the message was published to'),
-    title: z.string().optional().describe('Notification title'),
-    message: z.string().optional().describe('Notification message body'),
-    priority: z.number().optional().describe('Priority level (1-5)'),
-    tags: z.array(z.string()).optional().describe('Tags assigned to the message'),
-    clickUrl: z.string().optional().describe('Click action URL'),
-    iconUrl: z.string().optional().describe('Notification icon URL'),
-    expires: z.number().optional().describe('Unix timestamp when the message expires'),
-  }))
+export let topicMessages = SlateTrigger.create(spec, {
+  name: 'Topic Messages',
+  key: 'topic_messages',
+  description:
+    'Triggers when new messages are published to the configured ntfy topic. Polls for new messages and emits each one as a separate event. Configure the topic in the integration settings.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Unique ID of the message'),
+      time: z.number().describe('Unix timestamp when the message was published'),
+      topic: z.string().describe('Topic the message was published to'),
+      title: z.string().optional().describe('Notification title'),
+      message: z.string().optional().describe('Notification message body'),
+      priority: z.number().optional().describe('Priority level (1-5)'),
+      tags: z.array(z.string()).optional().describe('Tags assigned to the message'),
+      clickUrl: z.string().optional().describe('Click action URL'),
+      iconUrl: z.string().optional().describe('Notification icon URL'),
+      expires: z.number().optional().describe('Unix timestamp when the message expires')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Unique ID of the message'),
+      time: z.number().describe('Unix timestamp when the message was published'),
+      topic: z.string().describe('Topic the message was published to'),
+      title: z.string().optional().describe('Notification title'),
+      message: z.string().optional().describe('Notification message body'),
+      priority: z.number().optional().describe('Priority level (1-5)'),
+      tags: z.array(z.string()).optional().describe('Tags assigned to the message'),
+      clickUrl: z.string().optional().describe('Click action URL'),
+      iconUrl: z.string().optional().describe('Notification icon URL'),
+      expires: z.number().optional().describe('Unix timestamp when the message expires')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let topic = ctx.config.topic;
       if (!topic) {
         return { inputs: [], updatedState: ctx.state };
@@ -48,14 +50,14 @@ export let topicMessages = SlateTrigger.create(
 
       let client = new Client({
         serverUrl: ctx.config.serverUrl,
-        auth: ctx.auth,
+        auth: ctx.auth
       });
 
       let lastMessageId = ctx.state?.lastMessageId as string | undefined;
 
       let messages = await client.pollMessages({
         topic,
-        since: lastMessageId || 'all',
+        since: lastMessageId || 'all'
       });
 
       // Sort by time ascending so we process oldest first
@@ -67,7 +69,7 @@ export let topicMessages = SlateTrigger.create(
       }
 
       return {
-        inputs: messages.map((m) => ({
+        inputs: messages.map(m => ({
           messageId: m.messageId,
           time: m.time,
           topic: m.topic,
@@ -77,15 +79,15 @@ export let topicMessages = SlateTrigger.create(
           tags: m.tags,
           clickUrl: m.clickUrl,
           iconUrl: m.iconUrl,
-          expires: m.expires,
+          expires: m.expires
         })),
         updatedState: {
-          lastMessageId: newLastMessageId,
-        },
+          lastMessageId: newLastMessageId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'message.published',
         id: ctx.input.messageId,
@@ -99,9 +101,9 @@ export let topicMessages = SlateTrigger.create(
           tags: ctx.input.tags,
           clickUrl: ctx.input.clickUrl,
           iconUrl: ctx.input.iconUrl,
-          expires: ctx.input.expires,
-        },
+          expires: ctx.input.expires
+        }
       };
-    },
+    }
   })
   .build();

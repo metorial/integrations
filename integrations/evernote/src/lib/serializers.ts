@@ -16,7 +16,7 @@ import type {
   EvernoteSavedSearch,
   EvernoteUser,
   EvernoteSyncState,
-  EvernoteNoteResultSpec,
+  EvernoteNoteResultSpec
 } from './types';
 
 // -- Writers --
@@ -58,7 +58,10 @@ export let writeNoteFilter = (w: ThriftWriter, filter: EvernoteNoteFilter) => {
   w.writeStructEnd();
 };
 
-export let writeNotesMetadataResultSpec = (w: ThriftWriter, spec: EvernoteNotesMetadataResultSpec) => {
+export let writeNotesMetadataResultSpec = (
+  w: ThriftWriter,
+  spec: EvernoteNotesMetadataResultSpec
+) => {
   w.writeStructBegin();
   if (spec.includeTitle !== undefined) {
     w.writeFieldBegin(TType.BOOL, 2);
@@ -458,21 +461,50 @@ export let readNoteAttributes = (r: ThriftReader): EvernoteNoteAttributes => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: attrs.subjectDate = r.readI64(); break;
-      case 10: attrs.latitude = r.readDouble(); break;
-      case 11: attrs.longitude = r.readDouble(); break;
-      case 12: attrs.altitude = r.readDouble(); break;
-      case 13: attrs.author = r.readString(); break;
-      case 14: attrs.source = r.readString(); break;
-      case 15: attrs.sourceUrl = r.readString(); break;
-      case 16: attrs.sourceApplication = r.readString(); break;
-      case 17: attrs.shareDate = r.readI64(); break;
-      case 18: attrs.reminderOrder = r.readI64(); break;
-      case 19: attrs.reminderDoneTime = r.readI64(); break;
-      case 20: attrs.reminderTime = r.readI64(); break;
-      case 21: attrs.placeName = r.readString(); break;
-      case 22: attrs.contentClass = r.readString(); break;
-      default: r.skip(field.type);
+      case 1:
+        attrs.subjectDate = r.readI64();
+        break;
+      case 10:
+        attrs.latitude = r.readDouble();
+        break;
+      case 11:
+        attrs.longitude = r.readDouble();
+        break;
+      case 12:
+        attrs.altitude = r.readDouble();
+        break;
+      case 13:
+        attrs.author = r.readString();
+        break;
+      case 14:
+        attrs.source = r.readString();
+        break;
+      case 15:
+        attrs.sourceUrl = r.readString();
+        break;
+      case 16:
+        attrs.sourceApplication = r.readString();
+        break;
+      case 17:
+        attrs.shareDate = r.readI64();
+        break;
+      case 18:
+        attrs.reminderOrder = r.readI64();
+        break;
+      case 19:
+        attrs.reminderDoneTime = r.readI64();
+        break;
+      case 20:
+        attrs.reminderTime = r.readI64();
+        break;
+      case 21:
+        attrs.placeName = r.readString();
+        break;
+      case 22:
+        attrs.contentClass = r.readString();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return attrs;
@@ -484,16 +516,35 @@ export let readResourceAttributes = (r: ThriftReader): EvernoteResourceAttribute
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: attrs.sourceUrl = r.readString(); break;
-      case 2: attrs.timestamp = r.readI64(); break;
-      case 3: attrs.latitude = r.readDouble(); break;
-      case 4: attrs.longitude = r.readDouble(); break;
-      case 5: attrs.altitude = r.readDouble(); break;
-      case 6: attrs.cameraMake = r.readString(); break;
-      case 7: attrs.cameraModel = r.readString(); break;
-      case 10: attrs.fileName = r.readString(); break;
-      case 11: attrs.attachment = r.readBool(); break;
-      default: r.skip(field.type);
+      case 1:
+        attrs.sourceUrl = r.readString();
+        break;
+      case 2:
+        attrs.timestamp = r.readI64();
+        break;
+      case 3:
+        attrs.latitude = r.readDouble();
+        break;
+      case 4:
+        attrs.longitude = r.readDouble();
+        break;
+      case 5:
+        attrs.altitude = r.readDouble();
+        break;
+      case 6:
+        attrs.cameraMake = r.readString();
+        break;
+      case 7:
+        attrs.cameraModel = r.readString();
+        break;
+      case 10:
+        attrs.fileName = r.readString();
+        break;
+      case 11:
+        attrs.attachment = r.readBool();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return attrs;
@@ -505,10 +556,17 @@ export let readData = (r: ThriftReader): EvernoteData => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: data.bodyHash = r.readBinary(); break;
-      case 2: data.size = r.readI32(); break;
-      case 3: data.body = r.readBinary(); break;
-      default: r.skip(field.type);
+      case 1:
+        data.bodyHash = r.readBinary();
+        break;
+      case 2:
+        data.size = r.readI32();
+        break;
+      case 3:
+        data.body = r.readBinary();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return data;
@@ -520,15 +578,32 @@ export let readResource = (r: ThriftReader): EvernoteResource => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: resource.resourceGuid = r.readString(); break;
-      case 2: resource.noteGuid = r.readString(); break;
-      case 3: resource.data = readData(r); break;
-      case 4: resource.mime = r.readString(); break;
-      case 5: resource.width = r.readI16(); break;
-      case 6: resource.height = r.readI16(); break;
-      case 8: resource.active = r.readBool(); break;
-      case 11: resource.attributes = readResourceAttributes(r); break;
-      default: r.skip(field.type);
+      case 1:
+        resource.resourceGuid = r.readString();
+        break;
+      case 2:
+        resource.noteGuid = r.readString();
+        break;
+      case 3:
+        resource.data = readData(r);
+        break;
+      case 4:
+        resource.mime = r.readString();
+        break;
+      case 5:
+        resource.width = r.readI16();
+        break;
+      case 6:
+        resource.height = r.readI16();
+        break;
+      case 8:
+        resource.active = r.readBool();
+        break;
+      case 11:
+        resource.attributes = readResourceAttributes(r);
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return resource;
@@ -540,17 +615,39 @@ export let readNote = (r: ThriftReader): EvernoteNote => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: note.noteGuid = r.readString(); break;
-      case 2: note.title = r.readString(); break;
-      case 3: note.content = r.readString(); break;
-      case 4: note.contentHash = uint8ArrayToHex(r.readBinary()); break;
-      case 5: note.contentLength = r.readI32(); break;
-      case 6: note.created = r.readI64(); break;
-      case 7: note.updated = r.readI64(); break;
-      case 8: note.deleted = r.readI64(); break;
-      case 9: note.active = r.readBool(); break;
-      case 10: note.updateSequenceNum = r.readI32(); break;
-      case 11: note.notebookGuid = r.readString(); break;
+      case 1:
+        note.noteGuid = r.readString();
+        break;
+      case 2:
+        note.title = r.readString();
+        break;
+      case 3:
+        note.content = r.readString();
+        break;
+      case 4:
+        note.contentHash = uint8ArrayToHex(r.readBinary());
+        break;
+      case 5:
+        note.contentLength = r.readI32();
+        break;
+      case 6:
+        note.created = r.readI64();
+        break;
+      case 7:
+        note.updated = r.readI64();
+        break;
+      case 8:
+        note.deleted = r.readI64();
+        break;
+      case 9:
+        note.active = r.readBool();
+        break;
+      case 10:
+        note.updateSequenceNum = r.readI32();
+        break;
+      case 11:
+        note.notebookGuid = r.readString();
+        break;
       case 12: {
         let list = r.readListBegin();
         note.tagGuids = [];
@@ -567,7 +664,9 @@ export let readNote = (r: ThriftReader): EvernoteNote => {
         }
         break;
       }
-      case 14: note.attributes = readNoteAttributes(r); break;
+      case 14:
+        note.attributes = readNoteAttributes(r);
+        break;
       case 15: {
         let list = r.readListBegin();
         note.tagNames = [];
@@ -576,7 +675,8 @@ export let readNote = (r: ThriftReader): EvernoteNote => {
         }
         break;
       }
-      default: r.skip(field.type);
+      default:
+        r.skip(field.type);
     }
   }
   return note;
@@ -588,14 +688,29 @@ export let readNotebook = (r: ThriftReader): EvernoteNotebook => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: notebook.notebookGuid = r.readString(); break;
-      case 2: notebook.name = r.readString(); break;
-      case 5: notebook.defaultNotebook = r.readBool(); break;
-      case 6: notebook.serviceCreated = r.readI64(); break;
-      case 7: notebook.serviceUpdated = r.readI64(); break;
-      case 8: notebook.updateSequenceNum = r.readI32(); break;
-      case 10: notebook.stack = r.readString(); break;
-      default: r.skip(field.type);
+      case 1:
+        notebook.notebookGuid = r.readString();
+        break;
+      case 2:
+        notebook.name = r.readString();
+        break;
+      case 5:
+        notebook.defaultNotebook = r.readBool();
+        break;
+      case 6:
+        notebook.serviceCreated = r.readI64();
+        break;
+      case 7:
+        notebook.serviceUpdated = r.readI64();
+        break;
+      case 8:
+        notebook.updateSequenceNum = r.readI32();
+        break;
+      case 10:
+        notebook.stack = r.readString();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return notebook;
@@ -607,11 +722,20 @@ export let readTag = (r: ThriftReader): EvernoteTag => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: tag.tagGuid = r.readString(); break;
-      case 2: tag.name = r.readString(); break;
-      case 3: tag.parentGuid = r.readString(); break;
-      case 4: tag.updateSequenceNum = r.readI32(); break;
-      default: r.skip(field.type);
+      case 1:
+        tag.tagGuid = r.readString();
+        break;
+      case 2:
+        tag.name = r.readString();
+        break;
+      case 3:
+        tag.parentGuid = r.readString();
+        break;
+      case 4:
+        tag.updateSequenceNum = r.readI32();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return tag;
@@ -623,12 +747,23 @@ export let readSavedSearch = (r: ThriftReader): EvernoteSavedSearch => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: search.searchGuid = r.readString(); break;
-      case 2: search.name = r.readString(); break;
-      case 3: search.query = r.readString(); break;
-      case 4: search.format = r.readI32(); break;
-      case 5: search.updateSequenceNum = r.readI32(); break;
-      default: r.skip(field.type);
+      case 1:
+        search.searchGuid = r.readString();
+        break;
+      case 2:
+        search.name = r.readString();
+        break;
+      case 3:
+        search.query = r.readString();
+        break;
+      case 4:
+        search.format = r.readI32();
+        break;
+      case 5:
+        search.updateSequenceNum = r.readI32();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return search;
@@ -640,19 +775,44 @@ export let readUser = (r: ThriftReader): EvernoteUser => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: user.userId = r.readI32(); break;
-      case 2: user.username = r.readString(); break;
-      case 3: user.email = r.readString(); break;
-      case 4: user.name = r.readString(); break;
-      case 6: user.timezone = r.readString(); break;
-      case 7: user.privilege = r.readI32(); break;
-      case 9: user.serviceLevel = r.readI32(); break;
-      case 10: user.created = r.readI64(); break;
-      case 11: user.updated = r.readI64(); break;
-      case 13: user.active = r.readBool(); break;
-      case 14: user.shardId = r.readString(); break;
-      case 16: user.photoUrl = r.readString(); break;
-      default: r.skip(field.type);
+      case 1:
+        user.userId = r.readI32();
+        break;
+      case 2:
+        user.username = r.readString();
+        break;
+      case 3:
+        user.email = r.readString();
+        break;
+      case 4:
+        user.name = r.readString();
+        break;
+      case 6:
+        user.timezone = r.readString();
+        break;
+      case 7:
+        user.privilege = r.readI32();
+        break;
+      case 9:
+        user.serviceLevel = r.readI32();
+        break;
+      case 10:
+        user.created = r.readI64();
+        break;
+      case 11:
+        user.updated = r.readI64();
+        break;
+      case 13:
+        user.active = r.readBool();
+        break;
+      case 14:
+        user.shardId = r.readString();
+        break;
+      case 16:
+        user.photoUrl = r.readString();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return user;
@@ -664,14 +824,30 @@ export let readNoteMetadata = (r: ThriftReader): EvernoteNoteMetadata => {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: meta.noteGuid = r.readString(); break;
-      case 2: meta.title = r.readString(); break;
-      case 5: meta.contentLength = r.readI32(); break;
-      case 6: meta.created = r.readI64(); break;
-      case 7: meta.updated = r.readI64(); break;
-      case 8: meta.deleted = r.readI64(); break;
-      case 10: meta.updateSequenceNum = r.readI32(); break;
-      case 11: meta.notebookGuid = r.readString(); break;
+      case 1:
+        meta.noteGuid = r.readString();
+        break;
+      case 2:
+        meta.title = r.readString();
+        break;
+      case 5:
+        meta.contentLength = r.readI32();
+        break;
+      case 6:
+        meta.created = r.readI64();
+        break;
+      case 7:
+        meta.updated = r.readI64();
+        break;
+      case 8:
+        meta.deleted = r.readI64();
+        break;
+      case 10:
+        meta.updateSequenceNum = r.readI32();
+        break;
+      case 11:
+        meta.notebookGuid = r.readString();
+        break;
       case 12: {
         let list = r.readListBegin();
         meta.tagGuids = [];
@@ -680,10 +856,17 @@ export let readNoteMetadata = (r: ThriftReader): EvernoteNoteMetadata => {
         }
         break;
       }
-      case 14: meta.attributes = readNoteAttributes(r); break;
-      case 20: meta.largestResourceMime = r.readString(); break;
-      case 21: meta.largestResourceSize = r.readI32(); break;
-      default: r.skip(field.type);
+      case 14:
+        meta.attributes = readNoteAttributes(r);
+        break;
+      case 20:
+        meta.largestResourceMime = r.readString();
+        break;
+      case 21:
+        meta.largestResourceSize = r.readI32();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return meta;
@@ -695,8 +878,12 @@ export let readNotesMetadataList = (r: ThriftReader): EvernoteNotesMetadataList 
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: result.startIndex = r.readI32(); break;
-      case 2: result.totalNotes = r.readI32(); break;
+      case 1:
+        result.startIndex = r.readI32();
+        break;
+      case 2:
+        result.totalNotes = r.readI32();
+        break;
       case 3: {
         let list = r.readListBegin();
         result.notes = [];
@@ -721,68 +908,110 @@ export let readNotesMetadataList = (r: ThriftReader): EvernoteNotesMetadataList 
         }
         break;
       }
-      case 6: result.updateCount = r.readI32(); break;
-      default: r.skip(field.type);
+      case 6:
+        result.updateCount = r.readI32();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return result;
 };
 
 export let readSyncState = (r: ThriftReader): EvernoteSyncState => {
-  let state: EvernoteSyncState = { currentTime: 0, fullSyncBefore: 0, updateCount: 0, uploaded: 0 };
+  let state: EvernoteSyncState = {
+    currentTime: 0,
+    fullSyncBefore: 0,
+    updateCount: 0,
+    uploaded: 0
+  };
   while (true) {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: state.currentTime = r.readI64(); break;
-      case 2: state.fullSyncBefore = r.readI64(); break;
-      case 3: state.updateCount = r.readI32(); break;
-      case 4: state.uploaded = r.readI64(); break;
-      default: r.skip(field.type);
+      case 1:
+        state.currentTime = r.readI64();
+        break;
+      case 2:
+        state.fullSyncBefore = r.readI64();
+        break;
+      case 3:
+        state.updateCount = r.readI32();
+        break;
+      case 4:
+        state.uploaded = r.readI64();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return state;
 };
 
 // Utility: read a Thrift exception (EDAMUserException, EDAMSystemException, EDAMNotFoundException)
-export let readEDAMUserException = (r: ThriftReader): { errorCode: number; parameter?: string } => {
+export let readEDAMUserException = (
+  r: ThriftReader
+): { errorCode: number; parameter?: string } => {
   let exc: { errorCode: number; parameter?: string } = { errorCode: 0 };
   while (true) {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: exc.errorCode = r.readI32(); break;
-      case 2: exc.parameter = r.readString(); break;
-      default: r.skip(field.type);
+      case 1:
+        exc.errorCode = r.readI32();
+        break;
+      case 2:
+        exc.parameter = r.readString();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return exc;
 };
 
-export let readEDAMSystemException = (r: ThriftReader): { errorCode: number; message?: string; rateLimitDuration?: number } => {
-  let exc: { errorCode: number; message?: string; rateLimitDuration?: number } = { errorCode: 0 };
+export let readEDAMSystemException = (
+  r: ThriftReader
+): { errorCode: number; message?: string; rateLimitDuration?: number } => {
+  let exc: { errorCode: number; message?: string; rateLimitDuration?: number } = {
+    errorCode: 0
+  };
   while (true) {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: exc.errorCode = r.readI32(); break;
-      case 2: exc.message = r.readString(); break;
-      case 3: exc.rateLimitDuration = r.readI32(); break;
-      default: r.skip(field.type);
+      case 1:
+        exc.errorCode = r.readI32();
+        break;
+      case 2:
+        exc.message = r.readString();
+        break;
+      case 3:
+        exc.rateLimitDuration = r.readI32();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return exc;
 };
 
-export let readEDAMNotFoundException = (r: ThriftReader): { identifier?: string; key?: string } => {
+export let readEDAMNotFoundException = (
+  r: ThriftReader
+): { identifier?: string; key?: string } => {
   let exc: { identifier?: string; key?: string } = {};
   while (true) {
     let field = r.readFieldBegin();
     if (field.type === TType.STOP) break;
     switch (field.id) {
-      case 1: exc.identifier = r.readString(); break;
-      case 2: exc.key = r.readString(); break;
-      default: r.skip(field.type);
+      case 1:
+        exc.identifier = r.readString();
+        break;
+      case 2:
+        exc.key = r.readString();
+        break;
+      default:
+        r.skip(field.type);
     }
   }
   return exc;

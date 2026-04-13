@@ -5,7 +5,7 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://felt.com/api/v2',
+      baseURL: 'https://felt.com/api/v2'
     });
     this.axios.defaults.headers.common['Authorization'] = `Bearer ${config.token}`;
   }
@@ -41,21 +41,24 @@ export class Client {
     return response.data;
   }
 
-  async updateMap(mapId: string, params: {
-    title?: string;
-    description?: string;
-    basemap?: string;
-    publicAccess?: string;
-    tableSettings?: {
-      defaultTableLayerId?: string;
-      viewersCanOpenTable?: boolean;
-    };
-    viewerPermissions?: {
-      canDuplicateMap?: boolean;
-      canExportData?: boolean;
-      canSeeMapPresence?: boolean;
-    };
-  }) {
+  async updateMap(
+    mapId: string,
+    params: {
+      title?: string;
+      description?: string;
+      basemap?: string;
+      publicAccess?: string;
+      tableSettings?: {
+        defaultTableLayerId?: string;
+        viewersCanOpenTable?: boolean;
+      };
+      viewerPermissions?: {
+        canDuplicateMap?: boolean;
+        canExportData?: boolean;
+        canSeeMapPresence?: boolean;
+      };
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.title !== undefined) body.title = params.title;
     if (params.description !== undefined) body.description = params.description;
@@ -63,15 +66,20 @@ export class Client {
     if (params.publicAccess !== undefined) body.public_access = params.publicAccess;
     if (params.tableSettings !== undefined) {
       let ts: Record<string, unknown> = {};
-      if (params.tableSettings.defaultTableLayerId !== undefined) ts.default_table_layer_id = params.tableSettings.defaultTableLayerId;
-      if (params.tableSettings.viewersCanOpenTable !== undefined) ts.viewers_can_open_table = params.tableSettings.viewersCanOpenTable;
+      if (params.tableSettings.defaultTableLayerId !== undefined)
+        ts.default_table_layer_id = params.tableSettings.defaultTableLayerId;
+      if (params.tableSettings.viewersCanOpenTable !== undefined)
+        ts.viewers_can_open_table = params.tableSettings.viewersCanOpenTable;
       body.table_settings = ts;
     }
     if (params.viewerPermissions !== undefined) {
       let vp: Record<string, unknown> = {};
-      if (params.viewerPermissions.canDuplicateMap !== undefined) vp.can_duplicate_map = params.viewerPermissions.canDuplicateMap;
-      if (params.viewerPermissions.canExportData !== undefined) vp.can_export_data = params.viewerPermissions.canExportData;
-      if (params.viewerPermissions.canSeeMapPresence !== undefined) vp.can_see_map_presence = params.viewerPermissions.canSeeMapPresence;
+      if (params.viewerPermissions.canDuplicateMap !== undefined)
+        vp.can_duplicate_map = params.viewerPermissions.canDuplicateMap;
+      if (params.viewerPermissions.canExportData !== undefined)
+        vp.can_export_data = params.viewerPermissions.canExportData;
+      if (params.viewerPermissions.canSeeMapPresence !== undefined)
+        vp.can_see_map_presence = params.viewerPermissions.canSeeMapPresence;
       body.viewer_permissions = vp;
     }
 
@@ -93,13 +101,18 @@ export class Client {
     return response.data;
   }
 
-  async duplicateMap(mapId: string, params?: { title?: string; destination?: { projectId?: string; folderId?: string } }) {
+  async duplicateMap(
+    mapId: string,
+    params?: { title?: string; destination?: { projectId?: string; folderId?: string } }
+  ) {
     let body: Record<string, unknown> = {};
     if (params?.title !== undefined) body.title = params.title;
     if (params?.destination) {
       let dest: Record<string, unknown> = {};
-      if (params.destination.projectId !== undefined) dest.project_id = params.destination.projectId;
-      if (params.destination.folderId !== undefined) dest.folder_id = params.destination.folderId;
+      if (params.destination.projectId !== undefined)
+        dest.project_id = params.destination.projectId;
+      if (params.destination.folderId !== undefined)
+        dest.folder_id = params.destination.folderId;
       body.destination = dest;
     }
 
@@ -119,18 +132,21 @@ export class Client {
     return response.data;
   }
 
-  async updateLayers(mapId: string, layers: Array<{
-    id: string;
-    name?: string;
-    caption?: string;
-    layerGroupId?: string;
-    legendDisplay?: string;
-    legendVisibility?: string;
-    ordering_key?: string;
-    refreshPeriod?: string;
-    subtitle?: string;
-    metadata?: Record<string, unknown>;
-  }>) {
+  async updateLayers(
+    mapId: string,
+    layers: Array<{
+      id: string;
+      name?: string;
+      caption?: string;
+      layerGroupId?: string;
+      legendDisplay?: string;
+      legendVisibility?: string;
+      ordering_key?: string;
+      refreshPeriod?: string;
+      subtitle?: string;
+      metadata?: Record<string, unknown>;
+    }>
+  ) {
     let body = layers.map(l => {
       let item: Record<string, unknown> = { id: l.id };
       if (l.name !== undefined) item.name = l.name;
@@ -155,7 +171,9 @@ export class Client {
   }
 
   async updateLayerStyle(mapId: string, layerId: string, style: Record<string, unknown>) {
-    let response = await this.axios.post(`/maps/${mapId}/layers/${layerId}/update_style`, { style });
+    let response = await this.axios.post(`/maps/${mapId}/layers/${layerId}/update_style`, {
+      style
+    });
     return response.data;
   }
 
@@ -189,13 +207,16 @@ export class Client {
     return response.data;
   }
 
-  async createOrUpdateLayerGroups(mapId: string, groups: Array<{
-    id?: string;
-    name: string;
-    caption?: string;
-    orderingKey?: string;
-    legendVisibility?: string;
-  }>) {
+  async createOrUpdateLayerGroups(
+    mapId: string,
+    groups: Array<{
+      id?: string;
+      name: string;
+      caption?: string;
+      orderingKey?: string;
+      legendVisibility?: string;
+    }>
+  ) {
     let body = groups.map(g => {
       let item: Record<string, unknown> = { name: g.name };
       if (g.id !== undefined) item.id = g.id;
@@ -243,12 +264,15 @@ export class Client {
     return response.data;
   }
 
-  async createOrUpdateElementGroups(mapId: string, groups: Array<{
-    id?: string;
-    name: string;
-    color?: string;
-    symbol?: string;
-  }>) {
+  async createOrUpdateElementGroups(
+    mapId: string,
+    groups: Array<{
+      id?: string;
+      name: string;
+      color?: string;
+      symbol?: string;
+    }>
+  ) {
     let response = await this.axios.post(`/maps/${mapId}/element_groups`, groups);
     return response.data;
   }
@@ -257,7 +281,7 @@ export class Client {
 
   async exportComments(mapId: string, format: string = 'json') {
     let response = await this.axios.get(`/maps/${mapId}/comments/export`, {
-      params: { format },
+      params: { format }
     });
     return response.data;
   }
@@ -283,7 +307,7 @@ export class Client {
 
   async createEmbedToken(mapId: string, userEmail: string) {
     let response = await this.axios.post(`/maps/${mapId}/embed_token`, null, {
-      params: { user_email: userEmail },
+      params: { user_email: userEmail }
     });
     return response.data;
   }
@@ -349,23 +373,28 @@ export class Client {
   }) {
     let body: Record<string, unknown> = {
       name: params.name,
-      visibility: params.visibility,
+      visibility: params.visibility
     };
-    if (params.maxInheritedPermission !== undefined) body.max_inherited_permission = params.maxInheritedPermission;
+    if (params.maxInheritedPermission !== undefined)
+      body.max_inherited_permission = params.maxInheritedPermission;
 
     let response = await this.axios.post('/projects', body);
     return response.data;
   }
 
-  async updateProject(projectId: string, params: {
-    name?: string;
-    visibility?: string;
-    maxInheritedPermission?: string;
-  }) {
+  async updateProject(
+    projectId: string,
+    params: {
+      name?: string;
+      visibility?: string;
+      maxInheritedPermission?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.visibility !== undefined) body.visibility = params.visibility;
-    if (params.maxInheritedPermission !== undefined) body.max_inherited_permission = params.maxInheritedPermission;
+    if (params.maxInheritedPermission !== undefined)
+      body.max_inherited_permission = params.maxInheritedPermission;
 
     let response = await this.axios.post(`/projects/${projectId}/update`, body);
     return response.data;

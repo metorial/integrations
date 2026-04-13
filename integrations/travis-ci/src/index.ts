@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listRepositories,
@@ -15,11 +14,9 @@ import {
   manageCaches,
   listBranches,
   lintTravisYml,
-  listBuildRequests,
+  listBuildRequests
 } from './tools';
-import { buildEvents,
-  inboundWebhook,
-} from './triggers';
+import { buildEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     manageCaches,
     listBranches,
     lintTravisYml,
-    listBuildRequests,
+    listBuildRequests
   ],
-  triggers: [
-    inboundWebhook,
-    buildEvents,
-  ],
+  triggers: [inboundWebhook, buildEvents]
 });

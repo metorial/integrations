@@ -2,35 +2,37 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string(),
+      token: z.string()
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let axios = createAxios({
-        baseURL: 'https://console.neon.tech/api/v2',
+        baseURL: 'https://console.neon.tech/api/v2'
       });
 
       let response = await axios.get('/users/me', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       return {
@@ -38,8 +40,8 @@ export let auth = SlateAuth.create()
           id: response.data.id,
           email: response.data.email,
           name: response.data.name,
-          imageUrl: response.data.image,
-        },
+          imageUrl: response.data.image
+        }
       };
-    },
+    }
   });

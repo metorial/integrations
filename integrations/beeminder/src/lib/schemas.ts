@@ -3,7 +3,9 @@ import { z } from 'zod';
 export let goalSchema = z.object({
   slug: z.string().describe('URL-friendly name for the goal'),
   title: z.string().describe('Human-readable title'),
-  goalType: z.string().describe('Goal type (hustler, biker, fatloser, gainer, inboxer, drinker, custom)'),
+  goalType: z
+    .string()
+    .describe('Goal type (hustler, biker, fatloser, gainer, inboxer, drinker, custom)'),
   gunits: z.string().describe('Units for the goal'),
   goaldate: z.number().nullable().optional().describe('Unix timestamp of the goal end date'),
   goalval: z.number().nullable().optional().describe('Target value at the goal date'),
@@ -14,7 +16,10 @@ export let goalSchema = z.object({
   yaxis: z.string().optional().describe('Y-axis label'),
   safebuf: z.number().optional().describe('Number of safe days before derailment'),
   safesum: z.string().optional().describe('Human-readable summary of the safety buffer'),
-  losedate: z.number().optional().describe('Unix timestamp when the goal will derail if no data is added'),
+  losedate: z
+    .number()
+    .optional()
+    .describe('Unix timestamp when the goal will derail if no data is added'),
   limsum: z.string().optional().describe('Summary of how much is needed before the deadline'),
   deadline: z.number().optional().describe('Seconds after midnight for the goal deadline'),
   secret: z.boolean().optional().describe('Whether the goal is secret'),
@@ -22,11 +27,21 @@ export let goalSchema = z.object({
   tags: z.array(z.string()).optional().describe('Tags associated with the goal'),
   updatedAt: z.number().optional().describe('Unix timestamp of last update'),
   burner: z.string().optional().describe('Whether the goal is on the front or back burner'),
-  roadall: z.array(z.any()).optional().describe('Full road matrix (bright red line specification)'),
-  callbackUrl: z.string().nullable().optional().describe('Webhook URL for derail notifications'),
+  roadall: z
+    .array(z.any())
+    .optional()
+    .describe('Full road matrix (bright red line specification)'),
+  callbackUrl: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Webhook URL for derail notifications'),
   autodata: z.string().nullable().optional().describe('Automatic data source name'),
   won: z.boolean().optional().describe('Whether the goal has been won'),
-  lane: z.number().optional().describe('Current lane position (1=red, 2=orange, 3=blue, 4=green)'),
+  lane: z
+    .number()
+    .optional()
+    .describe('Current lane position (1=red, 2=orange, 3=blue, 4=green)'),
   mathishard: z.array(z.number()).optional().describe('Summary of the road ahead'),
   headsum: z.string().optional().describe('Summary of the goal status'),
   lastDatapoint: z.any().optional().describe('Most recent datapoint'),
@@ -43,7 +58,11 @@ export let datapointSchema = z.object({
   daystamp: z.string().describe('Date stamp in YYYYMMDD format'),
   value: z.number().describe('Numeric value of the datapoint'),
   comment: z.string().optional().describe('Optional comment on the datapoint'),
-  requestid: z.string().nullable().optional().describe('Client-provided unique ID for idempotent upserts'),
+  requestid: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Client-provided unique ID for idempotent upserts'),
   updatedAt: z.number().optional().describe('Unix timestamp of last update'),
   goalSlug: z.string().optional().describe('Slug of the parent goal')
 });
@@ -54,7 +73,10 @@ export let userSchema = z.object({
   updatedAt: z.number().optional().describe('Unix timestamp of last update'),
   deadbeat: z.boolean().optional().describe('Whether the user has failed to pay'),
   urgencyLoad: z.number().optional().describe('Total urgency across all goals'),
-  hasAuthorizedSources: z.boolean().optional().describe('Whether user has authorized third-party sources')
+  hasAuthorizedSources: z
+    .boolean()
+    .optional()
+    .describe('Whether user has authorized third-party sources')
 });
 
 export let chargeSchema = z.object({

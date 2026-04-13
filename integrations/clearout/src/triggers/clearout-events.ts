@@ -7,70 +7,88 @@ let webhookPayloadSchema = z.object({
   eventType: z.string().describe('Event type (e.g., email_verifier.instant.completed)'),
   eventMode: z.string().optional().describe('Event mode: live or test'),
   eventCreatedOn: z.string().optional().describe('Timestamp of when the event was created'),
-  payload: z.record(z.string(), z.unknown()).optional().describe('Raw event payload from Clearout'),
+  payload: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('Raw event payload from Clearout')
 });
 
 let verificationResultSchema = z.object({
   emailAddress: z.string().optional().describe('Verified email address'),
-  status: z.string().optional().describe('Verification status (valid, invalid, unknown, catch_all)'),
+  status: z
+    .string()
+    .optional()
+    .describe('Verification status (valid, invalid, unknown, catch_all)'),
   safeToSend: z.string().optional().describe('Whether the email is safe to send to (yes/no)'),
   disposable: z.string().optional().describe('Whether the email is disposable (yes/no)'),
   free: z.string().optional().describe('Whether the email is from a free provider (yes/no)'),
   role: z.string().optional().describe('Whether the email is role-based (yes/no)'),
   gibberish: z.string().optional().describe('Whether the email appears gibberish (yes/no)'),
   aiVerdict: z.string().optional().describe('AI-generated verdict'),
-  suggestedEmailAddress: z.string().optional().describe('Suggested correction if typo detected'),
+  suggestedEmailAddress: z
+    .string()
+    .optional()
+    .describe('Suggested correction if typo detected')
 });
 
 let finderResultSchema = z.object({
-  emails: z.array(z.object({
-    emailAddress: z.string().optional().describe('Discovered email address'),
-    role: z.string().optional().describe('Whether role-based (yes/no)'),
-    business: z.string().optional().describe('Whether business email (yes/no)'),
-  })).optional().describe('Discovered email addresses'),
+  emails: z
+    .array(
+      z.object({
+        emailAddress: z.string().optional().describe('Discovered email address'),
+        role: z.string().optional().describe('Whether role-based (yes/no)'),
+        business: z.string().optional().describe('Whether business email (yes/no)')
+      })
+    )
+    .optional()
+    .describe('Discovered email addresses'),
   confidenceScore: z.number().optional().describe('Confidence score'),
   domain: z.string().optional().describe('Domain searched'),
   firstName: z.string().optional().describe('First name'),
   lastName: z.string().optional().describe('Last name'),
-  companyName: z.string().optional().describe('Company name'),
+  companyName: z.string().optional().describe('Company name')
 });
 
 let bulkResultSchema = z.object({
   listId: z.string().optional().describe('Bulk list ID'),
-  listName: z.string().optional().describe('Bulk list name'),
+  listName: z.string().optional().describe('Bulk list name')
 });
 
-export let clearoutEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Clearout Events',
-    key: 'clearout_events',
-    description: 'Receive real-time notifications when email verifications, email finder operations, or form guard validations complete. Covers instant and bulk operations across all Clearout services.',
-  },
-)
+export let clearoutEvents = SlateTrigger.create(spec, {
+  name: 'Clearout Events',
+  key: 'clearout_events',
+  description:
+    'Receive real-time notifications when email verifications, email finder operations, or form guard validations complete. Covers instant and bulk operations across all Clearout services.'
+})
   .input(webhookPayloadSchema)
-  .output(z.object({
-    eventType: z.string().describe('Event type identifier'),
-    eventMode: z.string().optional().describe('Event mode: live or test'),
-    eventCreatedOn: z.string().optional().describe('Event creation timestamp'),
+  .output(
+    z.object({
+      eventType: z.string().describe('Event type identifier'),
+      eventMode: z.string().optional().describe('Event mode: live or test'),
+      eventCreatedOn: z.string().optional().describe('Event creation timestamp'),
 
-    // Verification fields (instant verification & form guard)
-    verification: verificationResultSchema.optional().describe('Email verification result (for verification and form guard events)'),
+      // Verification fields (instant verification & form guard)
+      verification: verificationResultSchema
+        .optional()
+        .describe('Email verification result (for verification and form guard events)'),
 
-    // Finder fields (instant finder)
-    finder: finderResultSchema.optional().describe('Email finder result (for finder events)'),
+      // Finder fields (instant finder)
+      finder: finderResultSchema
+        .optional()
+        .describe('Email finder result (for finder events)'),
 
-    // Bulk fields (bulk verification & bulk finder)
-    bulk: bulkResultSchema.optional().describe('Bulk operation result (for bulk events)'),
+      // Bulk fields (bulk verification & bulk finder)
+      bulk: bulkResultSchema.optional().describe('Bulk operation result (for bulk events)'),
 
-    rawPayload: z.record(z.string(), z.unknown()).optional().describe('Raw event payload'),
-  }))
+      rawPayload: z.record(z.string(), z.unknown()).optional().describe('Raw event payload')
+    })
+  )
   .webhook({
     // Clearout webhooks are configured manually via the dashboard UI, not via API
     // No autoRegisterWebhook or autoUnregisterWebhook
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, unknown>;
 
       let eventId = String(body.event_id ?? `evt_${Date.now()}`);
       let eventType = String(body.event_type ?? 'unknown');
@@ -85,13 +103,13 @@ export let clearoutEvents = SlateTrigger.create(
             eventType,
             eventMode,
             eventCreatedOn,
-            payload: payload ?? body,
-          },
-        ],
+            payload: payload ?? body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, eventId, eventMode, eventCreatedOn, payload } = ctx.input;
 
       let payloadData = (payload?.data ?? payload) as Record<string, unknown> | undefined;
@@ -100,7 +118,10 @@ export let clearoutEvents = SlateTrigger.create(
       let finder: z.infer<typeof finderResultSchema> | undefined;
       let bulk: z.infer<typeof bulkResultSchema> | undefined;
 
-      if (eventType === 'email_verifier.instant.completed' || eventType === 'form_guard.email_validation.completed') {
+      if (
+        eventType === 'email_verifier.instant.completed' ||
+        eventType === 'form_guard.email_validation.completed'
+      ) {
         let data = payloadData ?? {};
         verification = {
           emailAddress: data.email_address as string | undefined,
@@ -111,29 +132,32 @@ export let clearoutEvents = SlateTrigger.create(
           role: data.role as string | undefined,
           gibberish: data.gibberish as string | undefined,
           aiVerdict: data.ai_verdict as string | undefined,
-          suggestedEmailAddress: data.suggested_email_address as string | undefined,
+          suggestedEmailAddress: data.suggested_email_address as string | undefined
         };
       } else if (eventType === 'email_finder.instant.completed') {
         let data = payloadData ?? {};
         let emailsRaw = (data.emails ?? []) as Array<Record<string, unknown>>;
         let company = data.company as Record<string, unknown> | undefined;
         finder = {
-          emails: emailsRaw.map((e) => ({
+          emails: emailsRaw.map(e => ({
             emailAddress: e.email_address as string | undefined,
             role: e.role as string | undefined,
-            business: e.business as string | undefined,
+            business: e.business as string | undefined
           })),
           confidenceScore: data.confidence_score as number | undefined,
           domain: data.domain as string | undefined,
           firstName: data.first_name as string | undefined,
           lastName: data.last_name as string | undefined,
-          companyName: company?.name as string | undefined,
+          companyName: company?.name as string | undefined
         };
-      } else if (eventType === 'email_verifier.bulk.completed' || eventType === 'email_finder.bulk.completed') {
+      } else if (
+        eventType === 'email_verifier.bulk.completed' ||
+        eventType === 'email_finder.bulk.completed'
+      ) {
         let data = payloadData ?? {};
         bulk = {
           listId: data.list_id as string | undefined,
-          listName: data.list_name as string | undefined,
+          listName: data.list_name as string | undefined
         };
       }
 
@@ -147,8 +171,9 @@ export let clearoutEvents = SlateTrigger.create(
           verification,
           finder,
           bulk,
-          rawPayload: payload,
-        },
+          rawPayload: payload
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

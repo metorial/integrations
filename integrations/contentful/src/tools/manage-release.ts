@@ -3,41 +3,62 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 
-export let manageRelease = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Release',
-    key: 'manage_release',
-    description: `Create, list, publish, unpublish, or delete releases. A release groups multiple entries and assets for bulk publishing.`,
-    tags: {
-      destructive: true
-    }
+export let manageRelease = SlateTool.create(spec, {
+  name: 'Manage Release',
+  key: 'manage_release',
+  description: `Create, list, publish, unpublish, or delete releases. A release groups multiple entries and assets for bulk publishing.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'publish', 'unpublish', 'delete']).describe('Action to perform on releases.'),
-    releaseId: z.string().optional().describe('Release ID. Required for get, publish, unpublish, and delete.'),
-    title: z.string().optional().describe('Release title. Required for create.'),
-    description: z.string().optional().describe('Release description. Used for create.'),
-    entities: z.array(z.object({
-      entityId: z.string().describe('Entity ID.'),
-      entityType: z.enum(['Entry', 'Asset']).describe('Type of entity.')
-    })).optional().describe('Entities to include in the release. Required for create.'),
-    version: z.number().optional().describe('Current release version. Required for publish/unpublish (fetched automatically if omitted).')
-  }))
-  .output(z.object({
-    action: z.string().describe('Action performed.'),
-    releaseId: z.string().optional().describe('Release ID.'),
-    title: z.string().optional().describe('Release title.'),
-    releases: z.array(z.object({
-      releaseId: z.string().describe('Release ID.'),
-      title: z.string().describe('Release title.'),
-      description: z.string().optional().describe('Release description.'),
-      entityCount: z.number().optional().describe('Number of entities in the release.'),
-      createdAt: z.string().optional().describe('ISO 8601 creation timestamp.')
-    })).optional().describe('List of releases (only for list action).')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'publish', 'unpublish', 'delete'])
+        .describe('Action to perform on releases.'),
+      releaseId: z
+        .string()
+        .optional()
+        .describe('Release ID. Required for get, publish, unpublish, and delete.'),
+      title: z.string().optional().describe('Release title. Required for create.'),
+      description: z.string().optional().describe('Release description. Used for create.'),
+      entities: z
+        .array(
+          z.object({
+            entityId: z.string().describe('Entity ID.'),
+            entityType: z.enum(['Entry', 'Asset']).describe('Type of entity.')
+          })
+        )
+        .optional()
+        .describe('Entities to include in the release. Required for create.'),
+      version: z
+        .number()
+        .optional()
+        .describe(
+          'Current release version. Required for publish/unpublish (fetched automatically if omitted).'
+        )
+    })
+  )
+  .output(
+    z.object({
+      action: z.string().describe('Action performed.'),
+      releaseId: z.string().optional().describe('Release ID.'),
+      title: z.string().optional().describe('Release title.'),
+      releases: z
+        .array(
+          z.object({
+            releaseId: z.string().describe('Release ID.'),
+            title: z.string().describe('Release title.'),
+            description: z.string().optional().describe('Release description.'),
+            entityCount: z.number().optional().describe('Number of entities in the release.'),
+            createdAt: z.string().optional().describe('ISO 8601 creation timestamp.')
+          })
+        )
+        .optional()
+        .describe('List of releases (only for list action).')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
 
     switch (ctx.input.action) {
@@ -119,4 +140,5 @@ export let manageRelease = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

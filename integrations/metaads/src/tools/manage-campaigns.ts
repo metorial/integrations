@@ -19,27 +19,34 @@ let campaignSchema = z.object({
   buyingType: z.string().optional().describe('Buying type')
 });
 
-export let listCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'List Campaigns',
-    key: 'list_campaigns',
-    description: `Retrieve campaigns from the configured ad account. Supports pagination and filtering by status. Use this to browse existing campaigns and get their IDs for further operations.`,
-    tags: {
-      readOnly: true
-    }
+export let listCampaigns = SlateTool.create(spec, {
+  name: 'List Campaigns',
+  key: 'list_campaigns',
+  description: `Retrieve campaigns from the configured ad account. Supports pagination and filtering by status. Use this to browse existing campaigns and get their IDs for further operations.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    statusFilter: z.enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED']).optional().describe('Filter campaigns by status'),
-    limit: z.number().optional().describe('Max number of campaigns to return (default 25)'),
-    afterCursor: z.string().optional().describe('Pagination cursor for fetching the next page')
-  }))
-  .output(z.object({
-    campaigns: z.array(campaignSchema),
-    nextCursor: z.string().optional().describe('Cursor for the next page of results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      statusFilter: z
+        .enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED'])
+        .optional()
+        .describe('Filter campaigns by status'),
+      limit: z.number().optional().describe('Max number of campaigns to return (default 25)'),
+      afterCursor: z
+        .string()
+        .optional()
+        .describe('Pagination cursor for fetching the next page')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(campaignSchema),
+      nextCursor: z.string().optional().describe('Cursor for the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -79,24 +86,24 @@ export let listCampaigns = SlateTool.create(
       },
       message: `Retrieved **${campaigns.length}** campaigns.`
     };
-  }).build();
+  })
+  .build();
 
-export let getCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Get Campaign',
-    key: 'get_campaign',
-    description: `Retrieve detailed information about a specific campaign by its ID.`,
-    tags: {
-      readOnly: true
-    }
+export let getCampaign = SlateTool.create(spec, {
+  name: 'Get Campaign',
+  key: 'get_campaign',
+  description: `Retrieve detailed information about a specific campaign by its ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    campaignId: z.string().describe('The campaign ID to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('The campaign ID to retrieve')
+    })
+  )
   .output(campaignSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -123,50 +130,72 @@ export let getCampaign = SlateTool.create(
       },
       message: `Retrieved campaign **${c.name}** (${c.id}) with status **${c.status}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let createCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Create Campaign',
-    key: 'create_campaign',
-    description: `Create a new advertising campaign. Campaigns are the top-level container in Meta's ad hierarchy defining the objective. After creating a campaign, create ad sets and ads within it.`,
-    instructions: [
-      'The specialAdCategories field is required. Pass an empty array if no special categories apply.',
-      'Budget can be set at the campaign level (with campaign budget optimization) or at the ad set level.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let createCampaign = SlateTool.create(spec, {
+  name: 'Create Campaign',
+  key: 'create_campaign',
+  description: `Create a new advertising campaign. Campaigns are the top-level container in Meta's ad hierarchy defining the objective. After creating a campaign, create ad sets and ads within it.`,
+  instructions: [
+    'The specialAdCategories field is required. Pass an empty array if no special categories apply.',
+    'Budget can be set at the campaign level (with campaign budget optimization) or at the ad set level.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Campaign name'),
-    objective: z.enum([
-      'OUTCOME_AWARENESS',
-      'OUTCOME_ENGAGEMENT',
-      'OUTCOME_LEADS',
-      'OUTCOME_SALES',
-      'OUTCOME_TRAFFIC',
-      'OUTCOME_APP_PROMOTION'
-    ]).describe('Campaign objective'),
-    status: z.enum(['ACTIVE', 'PAUSED']).default('PAUSED').describe('Initial campaign status'),
-    specialAdCategories: z.array(z.enum([
-      'NONE',
-      'EMPLOYMENT',
-      'HOUSING',
-      'CREDIT',
-      'ISSUES_ELECTIONS_POLITICS'
-    ])).default([]).describe('Special ad categories (pass empty array if none)'),
-    dailyBudget: z.string().optional().describe('Daily budget in cents (e.g., "5000" for $50.00). Requires campaign budget optimization.'),
-    lifetimeBudget: z.string().optional().describe('Lifetime budget in cents. Requires campaign budget optimization and end date.'),
-    buyingType: z.enum(['AUCTION', 'RESERVED']).optional().describe('Buying type (default AUCTION)'),
-    bidStrategy: z.enum(['LOWEST_COST_WITHOUT_CAP', 'LOWEST_COST_WITH_BID_CAP', 'COST_CAP']).optional().describe('Bid strategy for campaign budget optimization')
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('ID of the newly created campaign')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Campaign name'),
+      objective: z
+        .enum([
+          'OUTCOME_AWARENESS',
+          'OUTCOME_ENGAGEMENT',
+          'OUTCOME_LEADS',
+          'OUTCOME_SALES',
+          'OUTCOME_TRAFFIC',
+          'OUTCOME_APP_PROMOTION'
+        ])
+        .describe('Campaign objective'),
+      status: z
+        .enum(['ACTIVE', 'PAUSED'])
+        .default('PAUSED')
+        .describe('Initial campaign status'),
+      specialAdCategories: z
+        .array(
+          z.enum(['NONE', 'EMPLOYMENT', 'HOUSING', 'CREDIT', 'ISSUES_ELECTIONS_POLITICS'])
+        )
+        .default([])
+        .describe('Special ad categories (pass empty array if none)'),
+      dailyBudget: z
+        .string()
+        .optional()
+        .describe(
+          'Daily budget in cents (e.g., "5000" for $50.00). Requires campaign budget optimization.'
+        ),
+      lifetimeBudget: z
+        .string()
+        .optional()
+        .describe(
+          'Lifetime budget in cents. Requires campaign budget optimization and end date.'
+        ),
+      buyingType: z
+        .enum(['AUCTION', 'RESERVED'])
+        .optional()
+        .describe('Buying type (default AUCTION)'),
+      bidStrategy: z
+        .enum(['LOWEST_COST_WITHOUT_CAP', 'LOWEST_COST_WITH_BID_CAP', 'COST_CAP'])
+        .optional()
+        .describe('Bid strategy for campaign budget optimization')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('ID of the newly created campaign')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -193,31 +222,39 @@ export let createCampaign = SlateTool.create(
       },
       message: `Created campaign **${ctx.input.name}** with ID \`${result.id}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Update Campaign',
-    key: 'update_campaign',
-    description: `Update an existing campaign's settings including name, status, budget, and bid strategy. Only provided fields will be updated.`,
-    tags: {
-      destructive: false
-    }
+export let updateCampaign = SlateTool.create(spec, {
+  name: 'Update Campaign',
+  key: 'update_campaign',
+  description: `Update an existing campaign's settings including name, status, budget, and bid strategy. Only provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    campaignId: z.string().describe('ID of the campaign to update'),
-    name: z.string().optional().describe('New campaign name'),
-    status: z.enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED']).optional().describe('New campaign status'),
-    dailyBudget: z.string().optional().describe('New daily budget in cents'),
-    lifetimeBudget: z.string().optional().describe('New lifetime budget in cents'),
-    bidStrategy: z.enum(['LOWEST_COST_WITHOUT_CAP', 'LOWEST_COST_WITH_BID_CAP', 'COST_CAP']).optional().describe('New bid strategy')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('ID of the campaign to update'),
+      name: z.string().optional().describe('New campaign name'),
+      status: z
+        .enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED'])
+        .optional()
+        .describe('New campaign status'),
+      dailyBudget: z.string().optional().describe('New daily budget in cents'),
+      lifetimeBudget: z.string().optional().describe('New lifetime budget in cents'),
+      bidStrategy: z
+        .enum(['LOWEST_COST_WITHOUT_CAP', 'LOWEST_COST_WITH_BID_CAP', 'COST_CAP'])
+        .optional()
+        .describe('New bid strategy')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -239,26 +276,28 @@ export let updateCampaign = SlateTool.create(
       },
       message: `Updated campaign \`${ctx.input.campaignId}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Campaign',
-    key: 'delete_campaign',
-    description: `Delete a campaign. This sets the campaign status to DELETED. Deleted campaigns cannot be reactivated.`,
-    tags: {
-      destructive: true
-    }
+export let deleteCampaign = SlateTool.create(spec, {
+  name: 'Delete Campaign',
+  key: 'delete_campaign',
+  description: `Delete a campaign. This sets the campaign status to DELETED. Deleted campaigns cannot be reactivated.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    campaignId: z.string().describe('ID of the campaign to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('ID of the campaign to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -273,4 +312,5 @@ export let deleteCampaign = SlateTool.create(
       },
       message: `Deleted campaign \`${ctx.input.campaignId}\`.`
     };
-  }).build();
+  })
+  .build();

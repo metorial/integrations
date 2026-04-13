@@ -3,41 +3,53 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let executeWhizzml = SlateTool.create(
-  spec,
-  {
-    name: 'Execute WhizzML',
-    key: 'execute_whizzml',
-    description: `Execute a WhizzML script on BigML's servers. WhizzML is a domain-specific language for automating ML workflows. Provide either an existing script ID or inline source code to execute.
+export let executeWhizzml = SlateTool.create(spec, {
+  name: 'Execute WhizzML',
+  key: 'execute_whizzml',
+  description: `Execute a WhizzML script on BigML's servers. WhizzML is a domain-specific language for automating ML workflows. Provide either an existing script ID or inline source code to execute.
 Executions run asynchronously — check the execution status and retrieve results when finished.`,
-    instructions: [
-      'To run an existing script, provide the scriptId.',
-      'To run inline code, provide sourceCode directly.',
-      'Pass input arguments as key-value pairs in the inputs field.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'To run an existing script, provide the scriptId.',
+    'To run inline code, provide sourceCode directly.',
+    'Pass input arguments as key-value pairs in the inputs field.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    scriptId: z.string().optional().describe('Existing WhizzML script resource ID to execute (e.g., "script/abc123")'),
-    sourceCode: z.string().optional().describe('Inline WhizzML source code to create and execute'),
-    name: z.string().optional().describe('Name for the execution'),
-    inputs: z.array(z.array(z.any())).optional().describe('Input arguments as [name, value] pairs (e.g., [["dataset-id", "dataset/abc123"]])'),
-    tags: z.array(z.string()).optional().describe('Tags to assign'),
-    projectId: z.string().optional().describe('Project to associate with')
-  }))
-  .output(z.object({
-    executionId: z.string().describe('BigML resource ID for the execution'),
-    scriptId: z.string().optional().describe('Script ID that was executed'),
-    statusCode: z.number().describe('Status code'),
-    statusMessage: z.string().describe('Status message'),
-    outputs: z.array(z.any()).optional().describe('Execution output values (if finished)'),
-    created: z.string().describe('Creation timestamp')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scriptId: z
+        .string()
+        .optional()
+        .describe('Existing WhizzML script resource ID to execute (e.g., "script/abc123")'),
+      sourceCode: z
+        .string()
+        .optional()
+        .describe('Inline WhizzML source code to create and execute'),
+      name: z.string().optional().describe('Name for the execution'),
+      inputs: z
+        .array(z.array(z.any()))
+        .optional()
+        .describe(
+          'Input arguments as [name, value] pairs (e.g., [["dataset-id", "dataset/abc123"]])'
+        ),
+      tags: z.array(z.string()).optional().describe('Tags to assign'),
+      projectId: z.string().optional().describe('Project to associate with')
+    })
+  )
+  .output(
+    z.object({
+      executionId: z.string().describe('BigML resource ID for the execution'),
+      scriptId: z.string().optional().describe('Script ID that was executed'),
+      statusCode: z.number().describe('Status code'),
+      statusMessage: z.string().describe('Status message'),
+      outputs: z.array(z.any()).optional().describe('Execution output values (if finished)'),
+      created: z.string().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let scriptId = ctx.input.scriptId;
@@ -81,4 +93,5 @@ Executions run asynchronously — check the execution status and retrieve result
       },
       message: `Execution **${result.resource}** created for script ${scriptId}. Status: ${result.status?.message ?? 'pending'}. Execution is asynchronous — retrieve the resource when finished to see outputs.`
     };
-  }).build();
+  })
+  .build();

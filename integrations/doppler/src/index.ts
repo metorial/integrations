@@ -11,7 +11,7 @@ import {
   shareSecret,
   manageWebhooks,
   manageTrustedIps,
-  getWorkplace,
+  getWorkplace
 } from './tools';
 import { secretChanged } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     shareSecret,
     manageWebhooks,
     manageTrustedIps,
-    getWorkplace,
+    getWorkplace
   ],
-  triggers: [
-    secretChanged,
-  ],
+  triggers: [secretChanged]
 });

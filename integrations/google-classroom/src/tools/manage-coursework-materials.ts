@@ -4,27 +4,37 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let materialAttachmentSchema = z.object({
-  driveFile: z.object({
-    driveFile: z.object({
-      driveId: z.string().optional(),
+  driveFile: z
+    .object({
+      driveFile: z
+        .object({
+          driveId: z.string().optional(),
+          title: z.string().optional(),
+          alternateLink: z.string().optional()
+        })
+        .optional(),
+      shareMode: z.enum(['STUDENT_COPY', 'VIEW', 'EDIT']).optional()
+    })
+    .optional(),
+  youtubeVideo: z
+    .object({
+      id: z.string().optional(),
       title: z.string().optional(),
-      alternateLink: z.string().optional(),
-    }).optional(),
-    shareMode: z.enum(['STUDENT_COPY', 'VIEW', 'EDIT']).optional(),
-  }).optional(),
-  youtubeVideo: z.object({
-    id: z.string().optional(),
-    title: z.string().optional(),
-    alternateLink: z.string().optional(),
-  }).optional(),
-  link: z.object({
-    url: z.string().optional(),
-    title: z.string().optional(),
-  }).optional(),
-  form: z.object({
-    formUrl: z.string().optional(),
-    title: z.string().optional(),
-  }).optional(),
+      alternateLink: z.string().optional()
+    })
+    .optional(),
+  link: z
+    .object({
+      url: z.string().optional(),
+      title: z.string().optional()
+    })
+    .optional(),
+  form: z
+    .object({
+      formUrl: z.string().optional(),
+      title: z.string().optional()
+    })
+    .optional()
 });
 
 let courseWorkMaterialSchema = z.object({
@@ -36,41 +46,47 @@ let courseWorkMaterialSchema = z.object({
   topicId: z.string().optional().describe('Associated topic ID'),
   alternateLink: z.string().optional().describe('URL to the material'),
   creationTime: z.string().optional().describe('Creation time'),
-  updateTime: z.string().optional().describe('Last update time'),
+  updateTime: z.string().optional().describe('Last update time')
 });
 
-export let manageCourseworkMaterials = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Coursework Materials',
-    key: 'manage_coursework_materials',
-    description: `Create, list, update, or delete coursework materials in a Google Classroom course. Materials are educational resources (links, Drive files, videos) shared with students without requiring submission.`,
-    tags: {
-      destructive: false,
-    },
+export let manageCourseworkMaterials = SlateTool.create(spec, {
+  name: 'Manage Coursework Materials',
+  key: 'manage_coursework_materials',
+  description: `Create, list, update, or delete coursework materials in a Google Classroom course. Materials are educational resources (links, Drive files, videos) shared with students without requiring submission.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    courseId: z.string().describe('ID of the course'),
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('The action to perform'),
-    materialId: z.string().optional().describe('Material ID (required for get, update, delete)'),
-    title: z.string().optional().describe('Title of the material (required for create)'),
-    description: z.string().optional().describe('Description of the material'),
-    state: z.enum(['PUBLISHED', 'DRAFT']).optional().describe('State of the material'),
-    topicId: z.string().optional().describe('Topic to assign the material to'),
-    materials: z.array(materialAttachmentSchema).optional().describe('Material attachments'),
-    assigneeMode: z.enum(['ALL_STUDENTS', 'INDIVIDUAL_STUDENTS']).optional(),
-    individualStudentIds: z.array(z.string()).optional(),
-    pageSize: z.number().optional().describe('Maximum results (for list)'),
-    pageToken: z.string().optional().describe('Token for next page (for list)'),
-  }))
-  .output(z.object({
-    material: courseWorkMaterialSchema.optional().describe('The material'),
-    materials: z.array(courseWorkMaterialSchema).optional().describe('List of materials'),
-    nextPageToken: z.string().optional().describe('Token for the next page'),
-    success: z.boolean().optional().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      courseId: z.string().describe('ID of the course'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('The action to perform'),
+      materialId: z
+        .string()
+        .optional()
+        .describe('Material ID (required for get, update, delete)'),
+      title: z.string().optional().describe('Title of the material (required for create)'),
+      description: z.string().optional().describe('Description of the material'),
+      state: z.enum(['PUBLISHED', 'DRAFT']).optional().describe('State of the material'),
+      topicId: z.string().optional().describe('Topic to assign the material to'),
+      materials: z.array(materialAttachmentSchema).optional().describe('Material attachments'),
+      assigneeMode: z.enum(['ALL_STUDENTS', 'INDIVIDUAL_STUDENTS']).optional(),
+      individualStudentIds: z.array(z.string()).optional(),
+      pageSize: z.number().optional().describe('Maximum results (for list)'),
+      pageToken: z.string().optional().describe('Token for next page (for list)')
+    })
+  )
+  .output(
+    z.object({
+      material: courseWorkMaterialSchema.optional().describe('The material'),
+      materials: z.array(courseWorkMaterialSchema).optional().describe('List of materials'),
+      nextPageToken: z.string().optional().describe('Token for the next page'),
+      success: z.boolean().optional().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClassroomClient({ token: ctx.auth.token });
     let { courseId, action, materialId } = ctx.input;
 
@@ -83,18 +99,18 @@ export let manageCourseworkMaterials = SlateTool.create(
       topicId: m.topicId,
       alternateLink: m.alternateLink,
       creationTime: m.creationTime,
-      updateTime: m.updateTime,
+      updateTime: m.updateTime
     });
 
     if (action === 'list') {
       let result = await client.listCourseWorkMaterials(courseId, {
         pageSize: ctx.input.pageSize,
-        pageToken: ctx.input.pageToken,
+        pageToken: ctx.input.pageToken
       });
       let materials = (result.courseWorkMaterial || []).map(mapMaterial);
       return {
         output: { materials, nextPageToken: result.nextPageToken, success: true },
-        message: `Found **${materials.length}** coursework material(s).`,
+        message: `Found **${materials.length}** coursework material(s).`
       };
     }
 
@@ -103,7 +119,7 @@ export let manageCourseworkMaterials = SlateTool.create(
       let result = await client.getCourseWorkMaterial(courseId, materialId);
       return {
         output: { material: mapMaterial(result), success: true },
-        message: `Retrieved material **${result.title}**.`,
+        message: `Retrieved material **${result.title}**.`
       };
     }
 
@@ -116,14 +132,17 @@ export let manageCourseworkMaterials = SlateTool.create(
       if (ctx.input.materials) body.materials = ctx.input.materials;
       if (ctx.input.assigneeMode) {
         body.assigneeMode = ctx.input.assigneeMode;
-        if (ctx.input.assigneeMode === 'INDIVIDUAL_STUDENTS' && ctx.input.individualStudentIds) {
+        if (
+          ctx.input.assigneeMode === 'INDIVIDUAL_STUDENTS' &&
+          ctx.input.individualStudentIds
+        ) {
           body.individualStudentsOptions = { studentIds: ctx.input.individualStudentIds };
         }
       }
       let result = await client.createCourseWorkMaterial(courseId, body);
       return {
         output: { material: mapMaterial(result), success: true },
-        message: `Created material **${result.title}** (${result.state}).`,
+        message: `Created material **${result.title}** (${result.state}).`
       };
     }
 
@@ -131,16 +150,36 @@ export let manageCourseworkMaterials = SlateTool.create(
       if (!materialId) throw new Error('materialId is required');
       let updateFields: Record<string, any> = {};
       let maskParts: string[] = [];
-      if (ctx.input.title !== undefined) { updateFields.title = ctx.input.title; maskParts.push('title'); }
-      if (ctx.input.description !== undefined) { updateFields.description = ctx.input.description; maskParts.push('description'); }
-      if (ctx.input.state !== undefined) { updateFields.state = ctx.input.state; maskParts.push('state'); }
-      if (ctx.input.topicId !== undefined) { updateFields.topicId = ctx.input.topicId; maskParts.push('topicId'); }
-      if (ctx.input.materials !== undefined) { updateFields.materials = ctx.input.materials; maskParts.push('materials'); }
+      if (ctx.input.title !== undefined) {
+        updateFields.title = ctx.input.title;
+        maskParts.push('title');
+      }
+      if (ctx.input.description !== undefined) {
+        updateFields.description = ctx.input.description;
+        maskParts.push('description');
+      }
+      if (ctx.input.state !== undefined) {
+        updateFields.state = ctx.input.state;
+        maskParts.push('state');
+      }
+      if (ctx.input.topicId !== undefined) {
+        updateFields.topicId = ctx.input.topicId;
+        maskParts.push('topicId');
+      }
+      if (ctx.input.materials !== undefined) {
+        updateFields.materials = ctx.input.materials;
+        maskParts.push('materials');
+      }
 
-      let result = await client.updateCourseWorkMaterial(courseId, materialId, updateFields, maskParts.join(','));
+      let result = await client.updateCourseWorkMaterial(
+        courseId,
+        materialId,
+        updateFields,
+        maskParts.join(',')
+      );
       return {
         output: { material: mapMaterial(result), success: true },
-        message: `Updated material **${result.title}**.`,
+        message: `Updated material **${result.title}**.`
       };
     }
 
@@ -149,7 +188,7 @@ export let manageCourseworkMaterials = SlateTool.create(
       await client.deleteCourseWorkMaterial(courseId, materialId);
       return {
         output: { success: true },
-        message: `Deleted material \`${materialId}\`.`,
+        message: `Deleted material \`${materialId}\`.`
       };
     }
 

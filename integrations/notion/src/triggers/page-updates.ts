@@ -3,35 +3,37 @@ import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let pageUpdates = SlateTrigger.create(
-  spec,
-  {
-    name: 'Page Updates',
-    key: 'page_updates',
-    description: '[Polling fallback] Polls for recently updated pages in the workspace. Detects new and modified pages shared with the integration by checking for changes since the last poll.',
-  }
-)
-  .input(z.object({
-    pageId: z.string().describe('ID of the page'),
-    lastEditedTime: z.string().describe('When the page was last edited'),
-    objectType: z.string().describe('Object type (page or database)'),
-  }))
-  .output(z.object({
-    pageId: z.string().describe('ID of the updated page'),
-    title: z.string().optional().describe('Title of the page'),
-    url: z.string().optional().describe('URL of the page'),
-    lastEditedTime: z.string().optional().describe('When the page was last edited'),
-    createdTime: z.string().optional().describe('When the page was created'),
-    archived: z.boolean().optional().describe('Whether the page is archived'),
-    properties: z.record(z.string(), z.any()).optional().describe('Page properties'),
-    parent: z.any().optional().describe('Parent reference'),
-  }))
+export let pageUpdates = SlateTrigger.create(spec, {
+  name: 'Page Updates',
+  key: 'page_updates',
+  description:
+    '[Polling fallback] Polls for recently updated pages in the workspace. Detects new and modified pages shared with the integration by checking for changes since the last poll.'
+})
+  .input(
+    z.object({
+      pageId: z.string().describe('ID of the page'),
+      lastEditedTime: z.string().describe('When the page was last edited'),
+      objectType: z.string().describe('Object type (page or database)')
+    })
+  )
+  .output(
+    z.object({
+      pageId: z.string().describe('ID of the updated page'),
+      title: z.string().optional().describe('Title of the page'),
+      url: z.string().optional().describe('URL of the page'),
+      lastEditedTime: z.string().optional().describe('When the page was last edited'),
+      createdTime: z.string().optional().describe('When the page was created'),
+      archived: z.boolean().optional().describe('Whether the page is archived'),
+      properties: z.record(z.string(), z.any()).optional().describe('Page properties'),
+      parent: z.any().optional().describe('Parent reference')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new NotionClient({ token: ctx.auth.token });
 
       let lastPolled = (ctx.state as any)?.lastPolledTime as string | undefined;
@@ -39,7 +41,7 @@ export let pageUpdates = SlateTrigger.create(
       let result = await client.search({
         filter: { property: 'object', value: 'page' },
         sort: { timestamp: 'last_edited_time', direction: 'descending' },
-        pageSize: 50,
+        pageSize: 50
       });
 
       let inputs: Array<{
@@ -59,23 +61,24 @@ export let pageUpdates = SlateTrigger.create(
         inputs.push({
           pageId: item.id,
           lastEditedTime: editedTime,
-          objectType: item.object,
+          objectType: item.object
         });
       }
 
-      let newLastPolled = result.results.length > 0 && result.results[0]?.last_edited_time
-        ? result.results[0].last_edited_time
-        : lastPolled ?? new Date().toISOString();
+      let newLastPolled =
+        result.results.length > 0 && result.results[0]?.last_edited_time
+          ? result.results[0].last_edited_time
+          : (lastPolled ?? new Date().toISOString());
 
       return {
         inputs,
         updatedState: {
-          lastPolledTime: newLastPolled,
-        },
+          lastPolledTime: newLastPolled
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new NotionClient({ token: ctx.auth.token });
 
       let page: any = null;
@@ -107,8 +110,9 @@ export let pageUpdates = SlateTrigger.create(
           createdTime: page?.created_time,
           archived: page?.archived,
           properties: page?.properties,
-          parent: page?.parent,
-        },
+          parent: page?.parent
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

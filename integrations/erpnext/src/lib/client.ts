@@ -46,8 +46,8 @@ export class Client {
     this.http = createAxios({
       baseURL: siteUrl,
       headers: {
-        ...(authHeader ? { 'Authorization': authHeader } : {}),
-        ...(isSessionToken ? { 'Cookie': `sid=${config.token}` } : {}),
+        ...(authHeader ? { Authorization: authHeader } : {}),
+        ...(isSessionToken ? { Cookie: `sid=${config.token}` } : {}),
         'Content-Type': 'application/json'
       }
     });
@@ -60,7 +60,10 @@ export class Client {
     if (fields && fields.length > 0) {
       params['fields'] = JSON.stringify(fields);
     }
-    let response = await this.http.get(`/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`, { params });
+    let response = await this.http.get(
+      `/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`,
+      { params }
+    );
     return response.data.data;
   }
 
@@ -84,7 +87,9 @@ export class Client {
     if (params.limitStart !== undefined) {
       queryParams['limit_start'] = String(params.limitStart);
     }
-    let response = await this.http.get(`/api/resource/${encodeURIComponent(params.doctype)}`, { params: queryParams });
+    let response = await this.http.get(`/api/resource/${encodeURIComponent(params.doctype)}`, {
+      params: queryParams
+    });
     return response.data.data;
   }
 
@@ -93,34 +98,56 @@ export class Client {
     return response.data.data;
   }
 
-  async updateDocument(doctype: string, name: string, data: DocumentData): Promise<DocumentData> {
-    let response = await this.http.put(`/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`, data);
+  async updateDocument(
+    doctype: string,
+    name: string,
+    data: DocumentData
+  ): Promise<DocumentData> {
+    let response = await this.http.put(
+      `/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`,
+      data
+    );
     return response.data.data;
   }
 
   async deleteDocument(doctype: string, name: string): Promise<void> {
-    await this.http.delete(`/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`);
+    await this.http.delete(
+      `/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`
+    );
   }
 
   // --- Document Workflow ---
 
   async submitDocument(doctype: string, name: string): Promise<DocumentData> {
-    let response = await this.http.put(`/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`, { docstatus: 1 });
+    let response = await this.http.put(
+      `/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`,
+      { docstatus: 1 }
+    );
     return response.data.data;
   }
 
   async cancelDocument(doctype: string, name: string): Promise<DocumentData> {
-    let response = await this.http.put(`/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`, { docstatus: 2 });
+    let response = await this.http.put(
+      `/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`,
+      { docstatus: 2 }
+    );
     return response.data.data;
   }
 
-  async amendDocument(doctype: string, name: string, data?: DocumentData): Promise<DocumentData> {
+  async amendDocument(
+    doctype: string,
+    name: string,
+    data?: DocumentData
+  ): Promise<DocumentData> {
     let original = await this.getDocument(doctype, name);
     let newDoc: DocumentData = { ...original, ...data };
     delete newDoc.name;
     newDoc.amended_from = name;
     newDoc.docstatus = 0;
-    let response = await this.http.post(`/api/resource/${encodeURIComponent(doctype)}`, newDoc);
+    let response = await this.http.post(
+      `/api/resource/${encodeURIComponent(doctype)}`,
+      newDoc
+    );
     return response.data.data;
   }
 

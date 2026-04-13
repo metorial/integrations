@@ -9,7 +9,7 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.headers = {
-      'APIKEY': config.token,
+      APIKEY: config.token,
       'Content-Type': 'application/json'
     };
   }
@@ -26,10 +26,13 @@ export class Client {
     return response.data;
   }
 
-  async getSubdomains(hostname: string, params?: {
-    childrenOnly?: boolean;
-    includeInactive?: boolean;
-  }): Promise<any> {
+  async getSubdomains(
+    hostname: string,
+    params?: {
+      childrenOnly?: boolean;
+      includeInactive?: boolean;
+    }
+  ): Promise<any> {
     let response = await http.get(`/domain/${hostname}/subdomains`, {
       headers: this.headers,
       params: {
@@ -50,9 +53,12 @@ export class Client {
     return response.data;
   }
 
-  async getAssociatedDomains(hostname: string, params?: {
-    page?: number;
-  }): Promise<any> {
+  async getAssociatedDomains(
+    hostname: string,
+    params?: {
+      page?: number;
+    }
+  ): Promise<any> {
     let response = await http.get(`/domain/${hostname}/associated`, {
       headers: this.headers,
       params: {
@@ -68,9 +74,13 @@ export class Client {
   }
 
   // History endpoints
-  async getDnsHistory(hostname: string, type: string, params?: {
-    page?: number;
-  }): Promise<any> {
+  async getDnsHistory(
+    hostname: string,
+    type: string,
+    params?: {
+      page?: number;
+    }
+  ): Promise<any> {
     let response = await http.get(`/history/${hostname}/dns/${type}`, {
       headers: this.headers,
       params: {
@@ -80,9 +90,12 @@ export class Client {
     return response.data;
   }
 
-  async getWhoisHistory(hostname: string, params?: {
-    page?: number;
-  }): Promise<any> {
+  async getWhoisHistory(
+    hostname: string,
+    params?: {
+      page?: number;
+    }
+  ): Promise<any> {
     let response = await http.get(`/history/${hostname}/whois`, {
       headers: this.headers,
       params: {
@@ -93,37 +106,51 @@ export class Client {
   }
 
   // Search endpoints
-  async searchDomainsDsl(query: string, params?: {
-    includeIps?: boolean;
-    page?: number;
-    scroll?: boolean;
-  }): Promise<any> {
-    let response = await http.post('/domains/list', {
-      query
-    }, {
-      headers: this.headers,
-      params: {
-        include_ips: params?.includeIps,
-        page: params?.page,
-        scroll: params?.scroll
+  async searchDomainsDsl(
+    query: string,
+    params?: {
+      includeIps?: boolean;
+      page?: number;
+      scroll?: boolean;
+    }
+  ): Promise<any> {
+    let response = await http.post(
+      '/domains/list',
+      {
+        query
+      },
+      {
+        headers: this.headers,
+        params: {
+          include_ips: params?.includeIps,
+          page: params?.page,
+          scroll: params?.scroll
+        }
       }
-    });
+    );
     return response.data;
   }
 
-  async searchDomainsFilter(filter: Record<string, any>, params?: {
-    includeIps?: boolean;
-    page?: number;
-  }): Promise<any> {
-    let response = await http.post('/domains/list', {
-      filter
-    }, {
-      headers: this.headers,
-      params: {
-        include_ips: params?.includeIps,
-        page: params?.page
+  async searchDomainsFilter(
+    filter: Record<string, any>,
+    params?: {
+      includeIps?: boolean;
+      page?: number;
+    }
+  ): Promise<any> {
+    let response = await http.post(
+      '/domains/list',
+      {
+        filter
+      },
+      {
+        headers: this.headers,
+        params: {
+          include_ips: params?.includeIps,
+          page: params?.page
+        }
       }
-    });
+    );
     return response.data;
   }
 
@@ -144,26 +171,37 @@ export class Client {
   }
 
   // IP endpoints
-  async searchIps(query: string, params?: {
-    page?: number;
-  }): Promise<any> {
-    let response = await http.post('/ips/list', {
-      query
-    }, {
-      headers: this.headers,
-      params: {
-        page: params?.page
+  async searchIps(
+    query: string,
+    params?: {
+      page?: number;
+    }
+  ): Promise<any> {
+    let response = await http.post(
+      '/ips/list',
+      {
+        query
+      },
+      {
+        headers: this.headers,
+        params: {
+          page: params?.page
+        }
       }
-    });
+    );
     return response.data;
   }
 
   async getIpStats(query: string): Promise<any> {
-    let response = await http.post('/ips/stats', {
-      query
-    }, {
-      headers: this.headers
-    });
+    let response = await http.post(
+      '/ips/stats',
+      {
+        query
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -177,9 +215,12 @@ export class Client {
     return response.data;
   }
 
-  async getIpUserAgents(ipAddress: string, params?: {
-    page?: number;
-  }): Promise<any> {
+  async getIpUserAgents(
+    ipAddress: string,
+    params?: {
+      page?: number;
+    }
+  ): Promise<any> {
     let response = await http.get(`/ips/${ipAddress}/useragents`, {
       headers: this.headers,
       params: {

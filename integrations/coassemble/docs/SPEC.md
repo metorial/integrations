@@ -30,6 +30,7 @@ Allows listing, retrieving, duplicating, deleting (soft-delete), and restoring c
 ### Embeddable Course Viewing and Building
 
 Generates signed URLs that can be used to embed the Coassemble interface into your application within an iframe. Two modes are available:
+
 - **View mode**: Embeds the course player for learners. Supports language override and feedback opt-out.
 - **Edit mode**: Embeds the course builder for content creators. Supports multiple creation flows: AI-powered generation (`generate`), document conversion (`transform`), presentation conversion (`convert`), and preview-only mode (`preview`). Various options allow toggling features like Google Drive integration, OneDrive integration, Loom, AI features, narrations, translations, and custom theming via primary color.
 

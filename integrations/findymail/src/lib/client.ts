@@ -7,16 +7,16 @@ export class FindymailClient {
     this.http = createAxios({
       baseURL: 'https://app.findymail.com/api',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async findEmailByName(params: { name: string; domain: string }) {
     let res = await this.http.post('/search/name', {
       name: params.name,
-      domain: params.domain,
+      domain: params.domain
     });
     return res.data;
   }
@@ -24,21 +24,21 @@ export class FindymailClient {
   async findEmailByDomain(params: { name: string; domain: string }) {
     let res = await this.http.post('/search/domain', {
       name: params.name,
-      domain: params.domain,
+      domain: params.domain
     });
     return res.data;
   }
 
   async findEmailByLinkedIn(params: { linkedinUrl: string }) {
     let res = await this.http.post('/search/linkedin', {
-      linkedin_url: params.linkedinUrl,
+      linkedin_url: params.linkedinUrl
     });
     return res.data;
   }
 
   async verifyEmail(params: { email: string }) {
     let res = await this.http.post('/verify', {
-      email: params.email,
+      email: params.email
     });
     return res.data;
   }
@@ -46,14 +46,14 @@ export class FindymailClient {
   async reverseEmailLookup(params: { email: string; withProfile?: boolean }) {
     let res = await this.http.post('/search/reverse-email', {
       email: params.email,
-      with_profile: params.withProfile ?? false,
+      with_profile: params.withProfile ?? false
     });
     return res.data;
   }
 
   async findPhone(params: { linkedinUrl: string }) {
     let res = await this.http.post('/search/phone', {
-      linkedin_url: params.linkedinUrl,
+      linkedin_url: params.linkedinUrl
     });
     return res.data;
   }
@@ -71,7 +71,7 @@ export class FindymailClient {
     let res = await this.http.post('/search/employees', {
       website: params.website,
       job_titles: params.jobTitles,
-      count: params.count,
+      count: params.count
     });
     return res.data;
   }
@@ -87,22 +87,22 @@ export class FindymailClient {
       limit: params.limit,
       config: {
         find_contact: params.findContact ?? false,
-        find_email: params.findEmail ?? false,
-      },
+        find_email: params.findEmail ?? false
+      }
     });
     return res.data;
   }
 
   async getIntellimatchStatus(params: { searchId: string }) {
     let res = await this.http.get('/intellimatch/status', {
-      params: { search_id: params.searchId },
+      params: { search_id: params.searchId }
     });
     return res.data;
   }
 
   async getIntellimatchData(params: { searchId: string }) {
     let res = await this.http.get('/intellimatch/data', {
-      params: { search_id: params.searchId },
+      params: { search_id: params.searchId }
     });
     return res.data;
   }

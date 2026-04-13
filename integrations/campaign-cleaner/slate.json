@@ -2,10 +2,7 @@
   "name": "@metorial/campaign-cleaner",
   "version": "0.1.1",
   "description": "Analyze, clean, and optimize HTML email campaigns to improve deliverability and avoid spam filters. Submit campaign HTML for automated processing that inlines CSS, sanitizes HTML, replaces spam-triggering characters and font colors, detects broken and blacklisted links, analyzes spam keywords, optimizes images, and generates detailed deliverability reports. Retrieve cleaned HTML output, spam analysis scores, link and image diagnostics, and content metrics. Download PDF analysis reports, manage saved campaigns, check processing status, and monitor account credit usage. Supports webhooks for asynchronous processing notifications.",
-  "categories": [
-    "crm-and-sales-tools",
-    "email-and-messaging"
-  ],
+  "categories": ["crm-and-sales-tools", "email-and-messaging"],
   "skills": [
     "clean and optimize email HTML",
     "inline CSS for email clients",

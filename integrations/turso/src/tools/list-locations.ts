@@ -3,28 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listLocations = SlateTool.create(
-  spec,
-  {
-    name: 'List Locations',
-    key: 'list_locations',
-    description: `List all available deployment locations for database groups. Also identifies the closest location to the requester.`,
-    tags: {
-      readOnly: true,
-    },
+export let listLocations = SlateTool.create(spec, {
+  name: 'List Locations',
+  key: 'list_locations',
+  description: `List all available deployment locations for database groups. Also identifies the closest location to the requester.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeClosest: z.boolean().optional().describe('Whether to also return the closest location to the requester'),
-  }))
-  .output(z.object({
-    locations: z.record(z.string(), z.string()).describe('Map of location codes to descriptive names'),
-    closestLocation: z.string().optional().describe('The location code closest to the requester'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeClosest: z
+        .boolean()
+        .optional()
+        .describe('Whether to also return the closest location to the requester')
+    })
+  )
+  .output(
+    z.object({
+      locations: z
+        .record(z.string(), z.string())
+        .describe('Map of location codes to descriptive names'),
+      closestLocation: z
+        .string()
+        .optional()
+        .describe('The location code closest to the requester')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationSlug: ctx.config.organizationSlug,
+      organizationSlug: ctx.config.organizationSlug
     });
 
     let result = await client.listLocations();
@@ -40,8 +49,9 @@ export let listLocations = SlateTool.create(
     return {
       output: {
         locations: result.locations,
-        closestLocation,
+        closestLocation
       },
-      message: `Found **${locationCount}** available locations.${closestLocation ? ` Closest: **${closestLocation}**.` : ''}`,
+      message: `Found **${locationCount}** available locations.${closestLocation ? ` Closest: **${closestLocation}**.` : ''}`
     };
-  }).build();
+  })
+  .build();

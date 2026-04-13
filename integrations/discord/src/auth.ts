@@ -6,12 +6,14 @@ let discordApi = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    tokenType: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      tokenType: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth2',
@@ -30,7 +32,7 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Guilds',
-        description: 'List the user\'s guilds',
+        description: "List the user's guilds",
         scope: 'guilds'
       },
       {
@@ -40,12 +42,12 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Guild Members Read',
-        description: 'Read a user\'s guild member info',
+        description: "Read a user's guild member info",
         scope: 'guilds.members.read'
       },
       {
         title: 'Connections',
-        description: 'Access user\'s linked third-party accounts',
+        description: "Access user's linked third-party accounts",
         scope: 'connections'
       },
       {
@@ -65,12 +67,12 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Role Connections',
-        description: 'Update a user\'s role connection metadata',
+        description: "Update a user's role connection metadata",
         scope: 'role_connections.write'
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -84,7 +86,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
@@ -115,7 +117,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -180,7 +182,7 @@ export let auth = SlateAuth.create()
       botToken: z.string().describe('Bot token from the Discord Developer Portal')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.botToken,

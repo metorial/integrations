@@ -3,65 +3,80 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let pollutantDetailSchema = z.object({
-  concentration: z.number().describe('Pollutant concentration in ug/m3 (CO in mg/m3)'),
-  aqiUs: z.number().describe('AQI value based on US EPA standard'),
-  aqiChina: z.number().describe('AQI value based on China MEP standard'),
-}).optional();
+let pollutantDetailSchema = z
+  .object({
+    concentration: z.number().describe('Pollutant concentration in ug/m3 (CO in mg/m3)'),
+    aqiUs: z.number().describe('AQI value based on US EPA standard'),
+    aqiChina: z.number().describe('AQI value based on China MEP standard')
+  })
+  .optional();
 
-export let getNearestAirQuality = SlateTool.create(
-  spec,
-  {
-    name: 'Get Nearest Air Quality',
-    key: 'get_nearest_air_quality',
-    description: `Retrieve air quality and weather data for the nearest city to a given location. Supports lookup by GPS coordinates (latitude/longitude) or by IP-based geolocation when no coordinates are provided. Useful when the exact city name is unknown.`,
-    instructions: [
-      'Provide latitude and longitude for precise location lookup, or omit both to use IP-based geolocation.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getNearestAirQuality = SlateTool.create(spec, {
+  name: 'Get Nearest Air Quality',
+  key: 'get_nearest_air_quality',
+  description: `Retrieve air quality and weather data for the nearest city to a given location. Supports lookup by GPS coordinates (latitude/longitude) or by IP-based geolocation when no coordinates are provided. Useful when the exact city name is unknown.`,
+  instructions: [
+    'Provide latitude and longitude for precise location lookup, or omit both to use IP-based geolocation.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    latitude: z.number().optional().describe('Latitude coordinate (e.g. 34.0522). Omit for IP-based geolocation.'),
-    longitude: z.number().optional().describe('Longitude coordinate (e.g. -118.2437). Omit for IP-based geolocation.'),
-  }))
-  .output(z.object({
-    city: z.string().describe('Nearest city name'),
-    state: z.string().describe('State/province name'),
-    country: z.string().describe('Country name'),
-    longitude: z.number().describe('Longitude coordinate'),
-    latitude: z.number().describe('Latitude coordinate'),
-    weather: z.object({
-      timestamp: z.string().describe('Measurement timestamp (ISO 8601)'),
-      temperatureCelsius: z.number().describe('Temperature in Celsius'),
-      pressureHpa: z.number().describe('Atmospheric pressure in hPa'),
-      humidityPercent: z.number().describe('Humidity percentage'),
-      windSpeedMs: z.number().describe('Wind speed in m/s'),
-      windDirectionDegrees: z.number().describe('Wind direction in degrees (0-360)'),
-      iconCode: z.string().describe('Weather icon code'),
-    }),
-    pollution: z.object({
-      timestamp: z.string().describe('Measurement timestamp (ISO 8601)'),
-      aqiUs: z.number().describe('AQI value based on US EPA standard'),
-      mainPollutantUs: z.string().describe('Main pollutant for US AQI'),
-      aqiChina: z.number().describe('AQI value based on China MEP standard'),
-      mainPollutantChina: z.string().describe('Main pollutant for China AQI'),
-      pm25: pollutantDetailSchema.describe('PM2.5 details (Startup+ plans)'),
-      pm10: pollutantDetailSchema.describe('PM10 details (Startup+ plans)'),
-      ozone: pollutantDetailSchema.describe('Ozone details (Startup+ plans)'),
-      nitrogenDioxide: pollutantDetailSchema.describe('NO2 details (Startup+ plans)'),
-      sulfurDioxide: pollutantDetailSchema.describe('SO2 details (Startup+ plans)'),
-      carbonMonoxide: pollutantDetailSchema.describe('CO details (Startup+ plans)'),
-    }),
-    forecasts: z.array(z.record(z.string(), z.any())).optional().describe('AQI/weather forecasts (Enterprise plan)'),
-    history: z.object({
-      weather: z.array(z.record(z.string(), z.any())).optional(),
-      pollution: z.array(z.record(z.string(), z.any())).optional(),
-    }).optional().describe('Historical data (Enterprise plan)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      latitude: z
+        .number()
+        .optional()
+        .describe('Latitude coordinate (e.g. 34.0522). Omit for IP-based geolocation.'),
+      longitude: z
+        .number()
+        .optional()
+        .describe('Longitude coordinate (e.g. -118.2437). Omit for IP-based geolocation.')
+    })
+  )
+  .output(
+    z.object({
+      city: z.string().describe('Nearest city name'),
+      state: z.string().describe('State/province name'),
+      country: z.string().describe('Country name'),
+      longitude: z.number().describe('Longitude coordinate'),
+      latitude: z.number().describe('Latitude coordinate'),
+      weather: z.object({
+        timestamp: z.string().describe('Measurement timestamp (ISO 8601)'),
+        temperatureCelsius: z.number().describe('Temperature in Celsius'),
+        pressureHpa: z.number().describe('Atmospheric pressure in hPa'),
+        humidityPercent: z.number().describe('Humidity percentage'),
+        windSpeedMs: z.number().describe('Wind speed in m/s'),
+        windDirectionDegrees: z.number().describe('Wind direction in degrees (0-360)'),
+        iconCode: z.string().describe('Weather icon code')
+      }),
+      pollution: z.object({
+        timestamp: z.string().describe('Measurement timestamp (ISO 8601)'),
+        aqiUs: z.number().describe('AQI value based on US EPA standard'),
+        mainPollutantUs: z.string().describe('Main pollutant for US AQI'),
+        aqiChina: z.number().describe('AQI value based on China MEP standard'),
+        mainPollutantChina: z.string().describe('Main pollutant for China AQI'),
+        pm25: pollutantDetailSchema.describe('PM2.5 details (Startup+ plans)'),
+        pm10: pollutantDetailSchema.describe('PM10 details (Startup+ plans)'),
+        ozone: pollutantDetailSchema.describe('Ozone details (Startup+ plans)'),
+        nitrogenDioxide: pollutantDetailSchema.describe('NO2 details (Startup+ plans)'),
+        sulfurDioxide: pollutantDetailSchema.describe('SO2 details (Startup+ plans)'),
+        carbonMonoxide: pollutantDetailSchema.describe('CO details (Startup+ plans)')
+      }),
+      forecasts: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('AQI/weather forecasts (Enterprise plan)'),
+      history: z
+        .object({
+          weather: z.array(z.record(z.string(), z.any())).optional(),
+          pollution: z.array(z.record(z.string(), z.any())).optional()
+        })
+        .optional()
+        .describe('Historical data (Enterprise plan)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let method = ctx.input.latitude !== undefined ? 'GPS coordinates' : 'IP geolocation';
@@ -87,7 +102,7 @@ export let getNearestAirQuality = SlateTool.create(
         humidityPercent: data.current.weather.hu,
         windSpeedMs: data.current.weather.ws,
         windDirectionDegrees: data.current.weather.wd,
-        iconCode: data.current.weather.ic,
+        iconCode: data.current.weather.ic
       },
       pollution: {
         timestamp: data.current.pollution.ts,
@@ -100,17 +115,17 @@ export let getNearestAirQuality = SlateTool.create(
         ozone: mapPollutant(data.current.pollution.o3),
         nitrogenDioxide: mapPollutant(data.current.pollution.n2),
         sulfurDioxide: mapPollutant(data.current.pollution.s2),
-        carbonMonoxide: mapPollutant(data.current.pollution.co),
+        carbonMonoxide: mapPollutant(data.current.pollution.co)
       },
       forecasts: data.forecasts,
-      history: data.history,
+      history: data.history
     };
 
     let aqiLabel = getAqiLabel(output.pollution.aqiUs);
 
     return {
       output,
-      message: `Nearest city: **${data.city}, ${data.state}, ${data.country}** — AQI (US): **${output.pollution.aqiUs}** (${aqiLabel}), Temperature: ${output.weather.temperatureCelsius}°C, Humidity: ${output.weather.humidityPercent}%`,
+      message: `Nearest city: **${data.city}, ${data.state}, ${data.country}** — AQI (US): **${output.pollution.aqiUs}** (${aqiLabel}), Temperature: ${output.weather.temperatureCelsius}°C, Humidity: ${output.weather.humidityPercent}%`
     };
   })
   .build();

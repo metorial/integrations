@@ -15,7 +15,7 @@ import {
   sendInvoiceTool,
   answerCallbackQueryTool,
   answerInlineQueryTool,
-  getFileTool,
+  getFileTool
 } from './tools';
 import {
   messageReceivedTrigger,
@@ -25,7 +25,7 @@ import {
   pollUpdatedTrigger,
   paymentReceivedTrigger,
   chatBoostUpdatedTrigger,
-  reactionUpdatedTrigger,
+  reactionUpdatedTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -45,7 +45,7 @@ export let provider = Slate.create({
     sendInvoiceTool,
     answerCallbackQueryTool,
     answerInlineQueryTool,
-    getFileTool,
+    getFileTool
   ],
   triggers: [
     messageReceivedTrigger,
@@ -55,6 +55,6 @@ export let provider = Slate.create({
     pollUpdatedTrigger,
     paymentReceivedTrigger,
     chatBoostUpdatedTrigger,
-    reactionUpdatedTrigger,
-  ],
+    reactionUpdatedTrigger
+  ]
 });

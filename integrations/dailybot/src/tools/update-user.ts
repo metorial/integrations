@@ -3,32 +3,39 @@ import { DailyBotClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUser = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update a user's profile information including name, occupation, timezone, work schedule, time-off dates, and active status.`,
-    tags: {
-      destructive: false,
-    },
-  },
-)
-  .input(z.object({
-    userUuid: z.string().describe('UUID of the user to update'),
-    fullName: z.string().optional().describe('New full name'),
-    occupation: z.string().optional().describe('New occupation or job title'),
-    timezone: z.string().optional().describe('New timezone (e.g., "America/New_York")'),
-    workDays: z.array(z.number()).optional().describe('Working days of the week (0=Sunday, 6=Saturday)'),
-    workStartTime: z.string().optional().describe('Work start time (HH:MM format)'),
-    timeOffDates: z.array(z.string()).optional().describe('Dates when user is off (YYYY-MM-DD format)'),
-    isActive: z.boolean().optional().describe('Whether the user should be active'),
-    isBotEnabled: z.boolean().optional().describe('Whether the bot is enabled for this user'),
-  }))
-  .output(z.object({
-    updated: z.boolean().describe('Whether the user was successfully updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateUser = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update a user's profile information including name, occupation, timezone, work schedule, time-off dates, and active status.`,
+  tags: {
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      userUuid: z.string().describe('UUID of the user to update'),
+      fullName: z.string().optional().describe('New full name'),
+      occupation: z.string().optional().describe('New occupation or job title'),
+      timezone: z.string().optional().describe('New timezone (e.g., "America/New_York")'),
+      workDays: z
+        .array(z.number())
+        .optional()
+        .describe('Working days of the week (0=Sunday, 6=Saturday)'),
+      workStartTime: z.string().optional().describe('Work start time (HH:MM format)'),
+      timeOffDates: z
+        .array(z.string())
+        .optional()
+        .describe('Dates when user is off (YYYY-MM-DD format)'),
+      isActive: z.boolean().optional().describe('Whether the user should be active'),
+      isBotEnabled: z.boolean().optional().describe('Whether the bot is enabled for this user')
+    })
+  )
+  .output(
+    z.object({
+      updated: z.boolean().describe('Whether the user was successfully updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DailyBotClient({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -45,7 +52,7 @@ export let updateUser = SlateTool.create(
 
     return {
       output: { updated: true },
-      message: `Updated user \`${ctx.input.userUuid}\`.`,
+      message: `Updated user \`${ctx.input.userUuid}\`.`
     };
   })
   .build();

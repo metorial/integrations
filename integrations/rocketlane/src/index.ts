@@ -36,7 +36,7 @@ import {
   createCustomField,
   deleteCustomField,
   listResourceAllocations,
-  searchInvoices,
+  searchInvoices
 } from './tools';
 import { taskEvents } from './triggers';
 
@@ -78,9 +78,7 @@ export let provider = Slate.create({
     createCustomField,
     deleteCustomField,
     listResourceAllocations,
-    searchInvoices,
+    searchInvoices
   ],
-  triggers: [
-    taskEvents,
-  ],
+  triggers: [taskEvents]
 });

@@ -10,12 +10,9 @@ import {
   addRevenue,
   updateSalesStatus,
   executeTrigger,
-  addSessionNote,
+  addSessionNote
 } from './tools';
-import {
-  listRowCreated,
-  listRowUpdated,
-} from './triggers';
+import { listRowCreated, listRowUpdated } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     addRevenue,
     updateSalesStatus,
     executeTrigger,
-    addSessionNote,
+    addSessionNote
   ],
-  triggers: [
-    listRowCreated,
-    listRowUpdated,
-  ],
+  triggers: [listRowCreated, listRowUpdated]
 });

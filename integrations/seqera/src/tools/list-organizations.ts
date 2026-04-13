@@ -3,33 +3,36 @@ import { SeqeraClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listOrganizations = SlateTool.create(
-  spec,
-  {
-    name: 'List Organizations',
-    key: 'list_organizations',
-    description: `List organizations accessible to the authenticated user. Organizations are top-level entities containing workspaces, teams, and members.`,
-    tags: {
-      readOnly: true,
-    },
+export let listOrganizations = SlateTool.create(spec, {
+  name: 'List Organizations',
+  key: 'list_organizations',
+  description: `List organizations accessible to the authenticated user. Organizations are top-level entities containing workspaces, teams, and members.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    organizations: z.array(z.object({
-      orgId: z.number().optional().describe('Organization ID'),
-      name: z.string().optional().describe('Organization short name'),
-      fullName: z.string().optional().describe('Organization full name'),
-      description: z.string().optional().describe('Organization description'),
-      website: z.string().optional().describe('Organization website URL'),
-      memberRole: z.string().optional().describe('Current user role in the organization'),
-    })).describe('List of organizations'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      organizations: z
+        .array(
+          z.object({
+            orgId: z.number().optional().describe('Organization ID'),
+            name: z.string().optional().describe('Organization short name'),
+            fullName: z.string().optional().describe('Organization full name'),
+            description: z.string().optional().describe('Organization description'),
+            website: z.string().optional().describe('Organization website URL'),
+            memberRole: z.string().optional().describe('Current user role in the organization')
+          })
+        )
+        .describe('List of organizations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SeqeraClient({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl,
-      workspaceId: ctx.config.workspaceId,
+      workspaceId: ctx.config.workspaceId
     });
 
     let orgs = await client.listOrganizations();
@@ -40,12 +43,12 @@ export let listOrganizations = SlateTool.create(
       fullName: o.fullName,
       description: o.description,
       website: o.website,
-      memberRole: o.memberRole,
+      memberRole: o.memberRole
     }));
 
     return {
       output: { organizations },
-      message: `Found **${organizations.length}** organizations.`,
+      message: `Found **${organizations.length}** organizations.`
     };
   })
   .build();

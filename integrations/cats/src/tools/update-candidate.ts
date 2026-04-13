@@ -3,49 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateCandidate = SlateTool.create(
-  spec,
-  {
-    name: 'Update Candidate',
-    key: 'update_candidate',
-    description: `Update an existing candidate record. Only provide the fields you want to change. Supports updating contact info, address, employment, skills, and other profile details.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateCandidate = SlateTool.create(spec, {
+  name: 'Update Candidate',
+  key: 'update_candidate',
+  description: `Update an existing candidate record. Only provide the fields you want to change. Supports updating contact info, address, employment, skills, and other profile details.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    candidateId: z.string().describe('ID of the candidate to update'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    middleName: z.string().optional().describe('Middle name'),
-    title: z.string().optional().describe('Professional title'),
-    currentEmployer: z.string().optional().describe('Current employer name'),
-    dateAvailable: z.string().optional().describe('Date available (RFC 3339)'),
-    currentPay: z.string().optional().describe('Current pay/salary'),
-    desiredPay: z.string().optional().describe('Desired pay/salary'),
-    isWillingToRelocate: z.boolean().optional().describe('Willing to relocate'),
-    keySkills: z.string().optional().describe('Key skills'),
-    notes: z.string().optional().describe('Notes'),
-    source: z.string().optional().describe('Candidate source'),
-    website: z.string().optional().describe('Website URL'),
-    countryCode: z.string().optional().describe('ISO 3166 Alpha-2 country code'),
-    ownerId: z.number().optional().describe('Owner/recruiter user ID'),
-    isActive: z.boolean().optional().describe('Whether active'),
-    isHot: z.boolean().optional().describe('Whether hot'),
-    address: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postalCode: z.string().optional(),
-    }).optional().describe('Address to update'),
-  }))
-  .output(z.object({
-    candidateId: z.string().describe('ID of the updated candidate'),
-    updated: z.boolean().describe('Whether the update was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      candidateId: z.string().describe('ID of the candidate to update'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      middleName: z.string().optional().describe('Middle name'),
+      title: z.string().optional().describe('Professional title'),
+      currentEmployer: z.string().optional().describe('Current employer name'),
+      dateAvailable: z.string().optional().describe('Date available (RFC 3339)'),
+      currentPay: z.string().optional().describe('Current pay/salary'),
+      desiredPay: z.string().optional().describe('Desired pay/salary'),
+      isWillingToRelocate: z.boolean().optional().describe('Willing to relocate'),
+      keySkills: z.string().optional().describe('Key skills'),
+      notes: z.string().optional().describe('Notes'),
+      source: z.string().optional().describe('Candidate source'),
+      website: z.string().optional().describe('Website URL'),
+      countryCode: z.string().optional().describe('ISO 3166 Alpha-2 country code'),
+      ownerId: z.number().optional().describe('Owner/recruiter user ID'),
+      isActive: z.boolean().optional().describe('Whether active'),
+      isHot: z.boolean().optional().describe('Whether hot'),
+      address: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postalCode: z.string().optional()
+        })
+        .optional()
+        .describe('Address to update')
+    })
+  )
+  .output(
+    z.object({
+      candidateId: z.string().describe('ID of the updated candidate'),
+      updated: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -58,7 +62,8 @@ export let updateCandidate = SlateTool.create(
     if (ctx.input.dateAvailable) body.date_available = ctx.input.dateAvailable;
     if (ctx.input.currentPay) body.current_pay = ctx.input.currentPay;
     if (ctx.input.desiredPay) body.desired_pay = ctx.input.desiredPay;
-    if (ctx.input.isWillingToRelocate !== undefined) body.is_willing_to_relocate = ctx.input.isWillingToRelocate;
+    if (ctx.input.isWillingToRelocate !== undefined)
+      body.is_willing_to_relocate = ctx.input.isWillingToRelocate;
     if (ctx.input.keySkills) body.key_skills = ctx.input.keySkills;
     if (ctx.input.notes) body.notes = ctx.input.notes;
     if (ctx.input.source) body.source = ctx.input.source;
@@ -72,7 +77,7 @@ export let updateCandidate = SlateTool.create(
         street: ctx.input.address.street,
         city: ctx.input.address.city,
         state: ctx.input.address.state,
-        postal_code: ctx.input.address.postalCode,
+        postal_code: ctx.input.address.postalCode
       };
     }
 
@@ -81,8 +86,9 @@ export let updateCandidate = SlateTool.create(
     return {
       output: {
         candidateId: ctx.input.candidateId,
-        updated: true,
+        updated: true
       },
-      message: `Updated candidate **${ctx.input.candidateId}**.`,
+      message: `Updated candidate **${ctx.input.candidateId}**.`
     };
-  }).build();
+  })
+  .build();

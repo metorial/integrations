@@ -12,7 +12,7 @@ import {
   searchLocations,
   listLanguages,
   listDomains,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
 import { scheduledTaskCompleted } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     searchLocations,
     listLanguages,
     listDomains,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    scheduledTaskCompleted,
-  ],
+  triggers: [scheduledTaskCompleted]
 });

@@ -7,61 +7,63 @@ let COMMENT_EVENT_TYPES = [
   'comment.created',
   'comment.resolved',
   'comment.unresolved',
-  'comment.deleted',
+  'comment.deleted'
 ] as const;
 
-export let commentEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Comment Events',
-    key: 'comment_events',
-    description: 'Triggers when comments are created, resolved, unresolved, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of comment event'),
-    eventId: z.string().describe('Unique event identifier'),
-    commentId: z.string().describe('The comment ID'),
-    threadId: z.string().optional().describe('The thread ID'),
-    objectId: z.string().optional().describe('Object ID of the record'),
-    recordId: z.string().optional().describe('Record ID the comment is on'),
-    listId: z.string().optional().describe('List ID (for entry-level comments)'),
-    entryId: z.string().optional().describe('Entry ID (for entry-level comments)'),
-    actorType: z.string().optional().describe('Type of actor that triggered the event'),
-    actorId: z.string().optional().describe('ID of the actor that triggered the event'),
-  }))
-  .output(z.object({
-    commentId: z.string().describe('The comment ID'),
-    threadId: z.string().optional().describe('The thread ID'),
-    objectId: z.string().optional().describe('Object ID of the record'),
-    recordId: z.string().optional().describe('Record ID the comment is on'),
-    listId: z.string().optional().describe('List ID (for entry-level comments)'),
-    entryId: z.string().optional().describe('Entry ID (for entry-level comments)'),
-    actorType: z.string().optional().describe('Type of actor that triggered the event'),
-    actorId: z.string().optional().describe('ID of the actor that triggered the event'),
-  }))
+export let commentEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Comment Events',
+  key: 'comment_events',
+  description: 'Triggers when comments are created, resolved, unresolved, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of comment event'),
+      eventId: z.string().describe('Unique event identifier'),
+      commentId: z.string().describe('The comment ID'),
+      threadId: z.string().optional().describe('The thread ID'),
+      objectId: z.string().optional().describe('Object ID of the record'),
+      recordId: z.string().optional().describe('Record ID the comment is on'),
+      listId: z.string().optional().describe('List ID (for entry-level comments)'),
+      entryId: z.string().optional().describe('Entry ID (for entry-level comments)'),
+      actorType: z.string().optional().describe('Type of actor that triggered the event'),
+      actorId: z.string().optional().describe('ID of the actor that triggered the event')
+    })
+  )
+  .output(
+    z.object({
+      commentId: z.string().describe('The comment ID'),
+      threadId: z.string().optional().describe('The thread ID'),
+      objectId: z.string().optional().describe('Object ID of the record'),
+      recordId: z.string().optional().describe('Record ID the comment is on'),
+      listId: z.string().optional().describe('List ID (for entry-level comments)'),
+      entryId: z.string().optional().describe('Entry ID (for entry-level comments)'),
+      actorType: z.string().optional().describe('Type of actor that triggered the event'),
+      actorId: z.string().optional().describe('ID of the actor that triggered the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AttioClient({ token: ctx.auth.token });
 
-      let webhook = await client.createWebhook(ctx.input.webhookBaseUrl,
+      let webhook = await client.createWebhook(
+        ctx.input.webhookBaseUrl,
         COMMENT_EVENT_TYPES.map(eventType => ({ eventType }))
       );
 
       return {
         registrationDetails: {
-          webhookId: webhook.id?.webhook_id ?? webhook.webhook_id,
-        },
+          webhookId: webhook.id?.webhook_id ?? webhook.webhook_id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AttioClient({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let events = body.events ?? [];
 
       let inputs = events
@@ -76,13 +78,13 @@ export let commentEventsTrigger = SlateTrigger.create(
           listId: e.id?.list_id,
           entryId: e.id?.entry_id,
           actorType: e.actor?.type,
-          actorId: e.actor?.id,
+          actorId: e.actor?.id
         }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -94,8 +96,9 @@ export let commentEventsTrigger = SlateTrigger.create(
           listId: ctx.input.listId,
           entryId: ctx.input.entryId,
           actorType: ctx.input.actorType,
-          actorId: ctx.input.actorId,
-        },
+          actorId: ctx.input.actorId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

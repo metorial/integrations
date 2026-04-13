@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://app.appointo.me/api',
+  baseURL: 'https://app.appointo.me/api'
 });
 
 export class Client {
@@ -10,24 +10,20 @@ export class Client {
   constructor(private config: { token: string }) {
     this.headers = {
       'APPOINTO-TOKEN': config.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   // ─── Products ─────────────────────────────────────────────────
 
-  async listProducts(params?: {
-    limit?: number;
-    offset?: number;
-    searchTerm?: string;
-  }) {
+  async listProducts(params?: { limit?: number; offset?: number; searchTerm?: string }) {
     let response = await http.get('/products', {
       headers: this.headers,
       params: {
         limit: params?.limit,
         offset: params?.offset,
-        search_term: params?.searchTerm,
-      },
+        search_term: params?.searchTerm
+      }
     });
     return response.data;
   }
@@ -48,8 +44,8 @@ export class Client {
         offset: params?.offset,
         status: params?.status,
         booking_id: params?.bookingId,
-        search_term: params?.searchTerm,
-      },
+        search_term: params?.searchTerm
+      }
     });
     return response.data;
   }
@@ -70,7 +66,7 @@ export class Client {
         name: data.name,
         email: data.email,
         phone: data.phone,
-        quantity: data.quantity,
+        quantity: data.quantity
       },
       { headers: this.headers }
     );
@@ -89,22 +85,19 @@ export class Client {
         booking_id: data.bookingId,
         timestring: data.timestring,
         customer_ids: data.customerIds,
-        override: data.override,
+        override: data.override
       },
       { headers: this.headers }
     );
     return response.data;
   }
 
-  async cancelBooking(data: {
-    bookingId: number;
-    customerIds?: number[];
-  }) {
+  async cancelBooking(data: { bookingId: number; customerIds?: number[] }) {
     let response = await http.put(
       '/bookings/cancel',
       {
         booking_id: data.bookingId,
-        customer_ids: data.customerIds,
+        customer_ids: data.customerIds
       },
       { headers: this.headers }
     );
@@ -123,7 +116,7 @@ export class Client {
       {
         booking_id: bookingId,
         start_buffer_time: data.startBufferTime,
-        end_buffer_time: data.endBufferTime,
+        end_buffer_time: data.endBufferTime
       },
       { headers: this.headers }
     );
@@ -144,8 +137,8 @@ export class Client {
         appointment_id: params?.appointmentId,
         product_id: params?.productId,
         limit: params?.limit,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
@@ -158,17 +151,14 @@ export class Client {
       impersonatedTms?: number[];
     }
   ) {
-    let response = await http.get(
-      `/appointments/${appointmentId}/calendar_availability`,
-      {
-        headers: this.headers,
-        params: {
-          start_date: params.startDate,
-          end_date: params.endDate,
-          impersonated_tms: params.impersonatedTms,
-        },
+    let response = await http.get(`/appointments/${appointmentId}/calendar_availability`, {
+      headers: this.headers,
+      params: {
+        start_date: params.startDate,
+        end_date: params.endDate,
+        impersonated_tms: params.impersonatedTms
       }
-    );
+    });
     return response.data;
   }
 
@@ -185,7 +175,7 @@ export class Client {
       {
         config: data.config,
         availabilities: data.availabilities,
-        override: data.override,
+        override: data.override
       },
       { headers: this.headers }
     );
@@ -198,8 +188,8 @@ export class Client {
     let response = await http.get('/appointment_subscriptions', {
       headers: this.headers,
       params: {
-        search_term: params?.searchTerm,
-      },
+        search_term: params?.searchTerm
+      }
     });
     return response.data;
   }

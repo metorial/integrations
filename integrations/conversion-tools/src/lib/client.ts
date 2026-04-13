@@ -9,7 +9,7 @@ import type {
   TaskDeleteResponse,
   ConfigResponse,
   AuthResponse,
-  FileInfo,
+  FileInfo
 } from './types';
 
 let BASE_URL = 'https://api.conversiontools.io/v1';
@@ -21,8 +21,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -31,11 +31,15 @@ export class Client {
     let blob = new Blob([fileBuffer]);
     formData.append('file', blob, fileName);
 
-    let response = await this.axios.post<{ error: string | null; file_id: string }>('/files', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    let response = await this.axios.post<{ error: string | null; file_id: string }>(
+      '/files',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
 
     if (response.data.error) {
       throw new Error(`File upload failed: ${response.data.error}`);
@@ -61,8 +65,8 @@ export class Client {
 
     let response = await this.axios.post<TaskCreateResponse>('/tasks', body, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     if (response.data.error) {
@@ -106,8 +110,8 @@ export class Client {
       { retentionMode },
       {
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
 
@@ -119,11 +123,15 @@ export class Client {
   }
 
   async deleteTask(taskId: string): Promise<TaskDeleteResponse> {
-    let response = await this.axios.post<TaskDeleteResponse>(`/tasks/${taskId}/delete`, {}, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    let response = await this.axios.post<TaskDeleteResponse>(
+      `/tasks/${taskId}/delete`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     if (response.data.error) {
       throw new Error(`Failed to delete task: ${response.data.error}`);
@@ -152,7 +160,11 @@ export class Client {
     return response.data;
   }
 
-  async pollUntilComplete(taskId: string, maxAttempts: number = 120, intervalMs: number = 5000): Promise<TaskStatus> {
+  async pollUntilComplete(
+    taskId: string,
+    maxAttempts: number = 120,
+    intervalMs: number = 5000
+  ): Promise<TaskStatus> {
     for (let i = 0; i < maxAttempts; i++) {
       let status = await this.getTaskStatus(taskId);
 
@@ -160,7 +172,7 @@ export class Client {
         return status;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
 
     throw new Error(`Task ${taskId} did not complete within the maximum polling time`);

@@ -3,45 +3,50 @@ import { DatabricksClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobRunsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Run Events',
-    key: 'job_run_events',
-    description: '[Polling fallback] Polls for completed, failed, or timed-out job runs. Fires when a job run reaches a terminal state.',
-  }
-)
-  .input(z.object({
-    runId: z.string().describe('Run ID'),
-    jobId: z.string().describe('Job ID'),
-    state: z.string().describe('Lifecycle state'),
-    resultState: z.string().optional().describe('Result state'),
-    startTime: z.string().optional().describe('Run start time in epoch ms'),
-    endTime: z.string().optional().describe('Run end time in epoch ms'),
-    runName: z.string().optional().describe('Run name'),
-    executionDurationMs: z.number().optional().describe('Execution duration in ms'),
-  }))
-  .output(z.object({
-    runId: z.string().describe('Unique run identifier'),
-    jobId: z.string().describe('Job ID'),
-    jobName: z.string().optional().describe('Job name'),
-    state: z.string().describe('Final lifecycle state'),
-    resultState: z.string().optional().describe('Result: SUCCESS, FAILED, TIMEDOUT, CANCELED'),
-    startTime: z.string().optional().describe('Run start time in epoch ms'),
-    endTime: z.string().optional().describe('Run end time in epoch ms'),
-    runName: z.string().optional().describe('Run name'),
-    executionDurationMs: z.number().optional().describe('Execution duration in ms'),
-    triggerType: z.string().optional().describe('What triggered the run'),
-  }))
+export let jobRunsTrigger = SlateTrigger.create(spec, {
+  name: 'Job Run Events',
+  key: 'job_run_events',
+  description:
+    '[Polling fallback] Polls for completed, failed, or timed-out job runs. Fires when a job run reaches a terminal state.'
+})
+  .input(
+    z.object({
+      runId: z.string().describe('Run ID'),
+      jobId: z.string().describe('Job ID'),
+      state: z.string().describe('Lifecycle state'),
+      resultState: z.string().optional().describe('Result state'),
+      startTime: z.string().optional().describe('Run start time in epoch ms'),
+      endTime: z.string().optional().describe('Run end time in epoch ms'),
+      runName: z.string().optional().describe('Run name'),
+      executionDurationMs: z.number().optional().describe('Execution duration in ms')
+    })
+  )
+  .output(
+    z.object({
+      runId: z.string().describe('Unique run identifier'),
+      jobId: z.string().describe('Job ID'),
+      jobName: z.string().optional().describe('Job name'),
+      state: z.string().describe('Final lifecycle state'),
+      resultState: z
+        .string()
+        .optional()
+        .describe('Result: SUCCESS, FAILED, TIMEDOUT, CANCELED'),
+      startTime: z.string().optional().describe('Run start time in epoch ms'),
+      endTime: z.string().optional().describe('Run end time in epoch ms'),
+      runName: z.string().optional().describe('Run name'),
+      executionDurationMs: z.number().optional().describe('Execution duration in ms'),
+      triggerType: z.string().optional().describe('What triggered the run')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DatabricksClient({
         workspaceUrl: ctx.config.workspaceUrl,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let lastPollTime = (ctx.state as any)?.lastPollTime ?? 0;
@@ -49,7 +54,7 @@ export let jobRunsTrigger = SlateTrigger.create(
 
       let result = await client.listJobRuns({
         completedOnly: true,
-        limit: 25,
+        limit: 25
       });
 
       let runs = (result.runs ?? []).filter((r: any) => {
@@ -65,18 +70,18 @@ export let jobRunsTrigger = SlateTrigger.create(
         startTime: r.start_time ? String(r.start_time) : undefined,
         endTime: r.end_time ? String(r.end_time) : undefined,
         runName: r.run_name,
-        executionDurationMs: r.execution_duration,
+        executionDurationMs: r.execution_duration
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollTime: now,
-        },
+          lastPollTime: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resultType = ctx.input.resultState?.toLowerCase() ?? 'completed';
 
       return {
@@ -90,9 +95,9 @@ export let jobRunsTrigger = SlateTrigger.create(
           startTime: ctx.input.startTime,
           endTime: ctx.input.endTime,
           runName: ctx.input.runName,
-          executionDurationMs: ctx.input.executionDurationMs,
-        },
+          executionDurationMs: ctx.input.executionDurationMs
+        }
       };
-    },
+    }
   })
   .build();

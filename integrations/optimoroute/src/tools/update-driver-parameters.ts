@@ -19,41 +19,46 @@ let singleDriverSchema = z.object({
   startAddress: z.string().optional().describe('Custom start location address'),
   endLatitude: z.number().optional().describe('Custom end location latitude'),
   endLongitude: z.number().optional().describe('Custom end location longitude'),
-  endAddress: z.string().optional().describe('Custom end location address'),
+  endAddress: z.string().optional().describe('Custom end location address')
 });
 
-export let updateDriverParameters = SlateTool.create(
-  spec,
-  {
-    name: 'Update Driver Parameters',
-    key: 'update_driver_parameters',
-    description: `Update driver parameters for a specific date, including enabling/disabling drivers, adjusting working hours, assigning vehicles, setting load capacities, and changing start/end locations. Supports both single and bulk updates.
+export let updateDriverParameters = SlateTool.create(spec, {
+  name: 'Update Driver Parameters',
+  key: 'update_driver_parameters',
+  description: `Update driver parameters for a specific date, including enabling/disabling drivers, adjusting working hours, assigning vehicles, setting load capacities, and changing start/end locations. Supports both single and bulk updates.
 
 **Warning:** Updating driver parameters for a date unschedules any existing routes for that driver on that date.`,
-    constraints: [
-      'Maximum 500 driver updates per bulk request',
-      'Updating parameters will unschedule existing routes for the driver on that date',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  constraints: [
+    'Maximum 500 driver updates per bulk request',
+    'Updating parameters will unschedule existing routes for the driver on that date'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    drivers: z.array(singleDriverSchema).describe('One or more driver parameter updates'),
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    results: z.array(z.object({
+})
+  .input(
+    z.object({
+      drivers: z.array(singleDriverSchema).describe('One or more driver parameter updates')
+    })
+  )
+  .output(
+    z.object({
       success: z.boolean(),
-      driverExternalId: z.string().optional(),
-      date: z.string().optional(),
-      code: z.string().optional(),
-      message: z.string().optional(),
-    })).describe('Per-driver update results'),
-  }))
-  .handleInvocation(async (ctx) => {
+      results: z
+        .array(
+          z.object({
+            success: z.boolean(),
+            driverExternalId: z.string().optional(),
+            date: z.string().optional(),
+            code: z.string().optional(),
+            message: z.string().optional()
+          })
+        )
+        .describe('Per-driver update results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.drivers.length === 1) {
@@ -62,30 +67,32 @@ export let updateDriverParameters = SlateTool.create(
       return {
         output: {
           success: result.success,
-          results: [{
-            success: result.success,
-            driverExternalId: d.externalId,
-            date: d.date,
-            code: result.code,
-            message: result.message,
-          }],
+          results: [
+            {
+              success: result.success,
+              driverExternalId: d.externalId,
+              date: d.date,
+              code: result.code,
+              message: result.message
+            }
+          ]
         },
         message: result.success
           ? `Driver **${d.externalId}** parameters updated for ${d.date}.`
-          : `Failed to update driver: ${result.message || result.code}`,
+          : `Failed to update driver: ${result.message || result.code}`
       };
     }
 
-    let updates = ctx.input.drivers.map((d) => {
+    let updates = ctx.input.drivers.map(d => {
       let update: Record<string, unknown> = {
         driver: { externalId: d.externalId },
-        date: d.date,
+        date: d.date
       };
       if (d.enabled !== undefined) update.enabled = d.enabled;
       if (d.workTimeFrom || d.workTimeTo) {
         update.workTime = {
           from: d.workTimeFrom,
-          to: d.workTimeTo,
+          to: d.workTimeTo
         };
       }
       if (d.assignedVehicle) update.assignedVehicle = d.assignedVehicle;
@@ -98,7 +105,7 @@ export let updateDriverParameters = SlateTool.create(
           type: 'custom',
           latitude: d.startLatitude,
           longitude: d.startLongitude,
-          address: d.startAddress,
+          address: d.startAddress
         };
       }
       if (d.endLatitude !== undefined && d.endLongitude !== undefined) {
@@ -106,7 +113,7 @@ export let updateDriverParameters = SlateTool.create(
           type: 'custom',
           latitude: d.endLatitude,
           longitude: d.endLongitude,
-          address: d.endAddress,
+          address: d.endAddress
         };
       }
       return update;
@@ -116,10 +123,12 @@ export let updateDriverParameters = SlateTool.create(
 
     let results = (result.updates || []).map((u: Record<string, unknown>) => ({
       success: u.success as boolean,
-      driverExternalId: (u.driver as Record<string, unknown> | undefined)?.externalId as string | undefined,
+      driverExternalId: (u.driver as Record<string, unknown> | undefined)?.externalId as
+        | string
+        | undefined,
       date: u.date as string | undefined,
       code: u.code as string | undefined,
-      message: u.message as string | undefined,
+      message: u.message as string | undefined
     }));
 
     let successCount = results.filter((r: { success: boolean }) => r.success).length;
@@ -127,8 +136,9 @@ export let updateDriverParameters = SlateTool.create(
     return {
       output: {
         success: result.success,
-        results,
+        results
       },
-      message: `Updated **${successCount}** of **${results.length}** driver parameter sets.`,
+      message: `Updated **${successCount}** of **${results.length}** driver parameter sets.`
     };
-  }).build();
+  })
+  .build();

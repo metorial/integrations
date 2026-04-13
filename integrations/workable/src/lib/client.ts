@@ -59,7 +59,10 @@ export class WorkableClient {
     return response.data;
   }
 
-  async getJobActivities(shortcode: string, params?: { limit?: number; since_id?: string }): Promise<any> {
+  async getJobActivities(
+    shortcode: string,
+    params?: { limit?: number; since_id?: string }
+  ): Promise<any> {
     let response = await this.axios.get(`/jobs/${shortcode}/activities`, { params });
     return response.data;
   }
@@ -79,7 +82,9 @@ export class WorkableClient {
     if (params?.job_shortcode) {
       let shortcode = params.job_shortcode;
       delete allParams.job_shortcode;
-      let response = await this.axios.get(`/jobs/${shortcode}/candidates`, { params: allParams });
+      let response = await this.axios.get(`/jobs/${shortcode}/candidates`, {
+        params: allParams
+      });
       return response.data;
     }
     let response = await this.axios.get('/candidates', { params: allParams });
@@ -96,58 +101,110 @@ export class WorkableClient {
     return response.data;
   }
 
-  async moveCandidate(jobShortcode: string, candidateId: string, stageSlug: string): Promise<any> {
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/move`, {
-      stage: stageSlug
-    });
+  async moveCandidate(
+    jobShortcode: string,
+    candidateId: string,
+    stageSlug: string
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/move`,
+      {
+        stage: stageSlug
+      }
+    );
     return response.data;
   }
 
-  async copyCandidate(jobShortcode: string, candidateId: string, targetJobShortcode: string, stageSlug?: string): Promise<any> {
+  async copyCandidate(
+    jobShortcode: string,
+    candidateId: string,
+    targetJobShortcode: string,
+    stageSlug?: string
+  ): Promise<any> {
     let body: any = { target_job: targetJobShortcode };
     if (stageSlug) body.target_stage = stageSlug;
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/copy`, body);
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/copy`,
+      body
+    );
     return response.data;
   }
 
-  async relocateCandidate(jobShortcode: string, candidateId: string, targetJobShortcode: string, stageSlug?: string): Promise<any> {
+  async relocateCandidate(
+    jobShortcode: string,
+    candidateId: string,
+    targetJobShortcode: string,
+    stageSlug?: string
+  ): Promise<any> {
     let body: any = { target_job: targetJobShortcode };
     if (stageSlug) body.target_stage = stageSlug;
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/relocate`, body);
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/relocate`,
+      body
+    );
     return response.data;
   }
 
-  async disqualifyCandidate(jobShortcode: string, candidateId: string, reason?: string): Promise<any> {
+  async disqualifyCandidate(
+    jobShortcode: string,
+    candidateId: string,
+    reason?: string
+  ): Promise<any> {
     let body: any = {};
     if (reason) body.disqualification_reason = reason;
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/disqualify`, body);
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/disqualify`,
+      body
+    );
     return response.data;
   }
 
   async revertDisqualification(jobShortcode: string, candidateId: string): Promise<any> {
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/revert`);
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/revert`
+    );
     return response.data;
   }
 
-  async addCandidateComment(jobShortcode: string, candidateId: string, body: string, policyName?: string): Promise<any> {
+  async addCandidateComment(
+    jobShortcode: string,
+    candidateId: string,
+    body: string,
+    policyName?: string
+  ): Promise<any> {
     let payload: any = { body };
     if (policyName) payload.policy = policyName;
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/comments`, payload);
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/comments`,
+      payload
+    );
     return response.data;
   }
 
   async addCandidateTag(jobShortcode: string, candidateId: string, tag: string): Promise<any> {
-    let response = await this.axios.post(`/jobs/${jobShortcode}/candidates/${candidateId}/tags`, { tag });
+    let response = await this.axios.post(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/tags`,
+      { tag }
+    );
     return response.data;
   }
 
-  async getCandidateActivities(jobShortcode: string, candidateId: string, params?: { limit?: number; since_id?: string }): Promise<any> {
-    let response = await this.axios.get(`/jobs/${jobShortcode}/candidates/${candidateId}/activities`, { params });
+  async getCandidateActivities(
+    jobShortcode: string,
+    candidateId: string,
+    params?: { limit?: number; since_id?: string }
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/activities`,
+      { params }
+    );
     return response.data;
   }
 
   async getCandidateOffer(jobShortcode: string, candidateId: string): Promise<any> {
-    let response = await this.axios.get(`/jobs/${jobShortcode}/candidates/${candidateId}/offer`);
+    let response = await this.axios.get(
+      `/jobs/${jobShortcode}/candidates/${candidateId}/offer`
+    );
     return response.data;
   }
 
@@ -226,7 +283,11 @@ export class WorkableClient {
 
   // ─── Requisitions ─────────────────────────────────────────
 
-  async listRequisitions(params?: { limit?: number; cursor?: string; state?: string }): Promise<any> {
+  async listRequisitions(params?: {
+    limit?: number;
+    cursor?: string;
+    state?: string;
+  }): Promise<any> {
     let response = await this.axios.get('/requisitions', { params });
     return response.data;
   }

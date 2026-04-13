@@ -74,29 +74,36 @@ export class Client {
     commute?: boolean;
     hideFromHome?: boolean;
   }): Promise<any> {
-    let response = await api.post('/activities', {
-      name: params.name,
-      sport_type: params.sportType,
-      start_date_local: params.startDateLocal,
-      elapsed_time: params.elapsedTime,
-      description: params.description,
-      distance: params.distance,
-      trainer: params.trainer ? 1 : 0,
-      commute: params.commute ? 1 : 0,
-      hide_from_home: params.hideFromHome
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/activities',
+      {
+        name: params.name,
+        sport_type: params.sportType,
+        start_date_local: params.startDateLocal,
+        elapsed_time: params.elapsedTime,
+        description: params.description,
+        distance: params.distance,
+        trainer: params.trainer ? 1 : 0,
+        commute: params.commute ? 1 : 0,
+        hide_from_home: params.hideFromHome
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
-  async updateActivity(activityId: number, params: {
-    name?: string;
-    sportType?: string;
-    description?: string;
-    trainer?: boolean;
-    commute?: boolean;
-    hideFromHome?: boolean;
-    gearId?: string;
-  }): Promise<any> {
+  async updateActivity(
+    activityId: number,
+    params: {
+      name?: string;
+      sportType?: string;
+      description?: string;
+      trainer?: boolean;
+      commute?: boolean;
+      hideFromHome?: boolean;
+      gearId?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.sportType !== undefined) body.sport_type = params.sportType;
@@ -110,12 +117,15 @@ export class Client {
     return response.data;
   }
 
-  async getActivityComments(activityId: number, params?: {
-    page?: number;
-    perPage?: number;
-    pageSize?: number;
-    afterCursor?: string;
-  }): Promise<any[]> {
+  async getActivityComments(
+    activityId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+      pageSize?: number;
+      afterCursor?: string;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/activities/${activityId}/comments`, {
       headers: this.headers,
       params: {
@@ -128,10 +138,13 @@ export class Client {
     return response.data;
   }
 
-  async getActivityKudoers(activityId: number, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async getActivityKudoers(
+    activityId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/activities/${activityId}/kudos`, {
       headers: this.headers,
       params: {
@@ -176,15 +189,19 @@ export class Client {
     dataType: string;
     externalId?: string;
   }): Promise<any> {
-    let response = await api.post('/uploads', {
-      file: params.file,
-      name: params.name,
-      description: params.description,
-      trainer: params.trainer ? '1' : '0',
-      commute: params.commute ? '1' : '0',
-      data_type: params.dataType,
-      external_id: params.externalId
-    }, { headers: this.headers });
+    let response = await api.post(
+      '/uploads',
+      {
+        file: params.file,
+        name: params.name,
+        description: params.description,
+        trainer: params.trainer ? '1' : '0',
+        commute: params.commute ? '1' : '0',
+        data_type: params.dataType,
+        external_id: params.externalId
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -218,10 +235,7 @@ export class Client {
     return response.data;
   }
 
-  async getStarredSegments(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async getStarredSegments(params?: { page?: number; perPage?: number }): Promise<any[]> {
     let response = await api.get('/segments/starred', {
       headers: this.headers,
       params: {
@@ -233,9 +247,13 @@ export class Client {
   }
 
   async starSegment(segmentId: number, starred: boolean): Promise<any> {
-    let response = await api.put(`/segments/${segmentId}/starred`, {
-      starred
-    }, { headers: this.headers });
+    let response = await api.put(
+      `/segments/${segmentId}/starred`,
+      {
+        starred
+      },
+      { headers: this.headers }
+    );
     return response.data;
   }
 
@@ -246,11 +264,14 @@ export class Client {
     return response.data;
   }
 
-  async listSegmentEfforts(segmentId: number, params?: {
-    startDateLocal?: string;
-    endDateLocal?: string;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listSegmentEfforts(
+    segmentId: number,
+    params?: {
+      startDateLocal?: string;
+      endDateLocal?: string;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/segments/${segmentId}/all_efforts`, {
       headers: this.headers,
       params: {
@@ -280,10 +301,13 @@ export class Client {
     return response.data;
   }
 
-  async listAthleteRoutes(athleteId: number, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listAthleteRoutes(
+    athleteId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/athletes/${athleteId}/routes`, {
       headers: this.headers,
       params: {
@@ -322,10 +346,7 @@ export class Client {
     return response.data;
   }
 
-  async listAthleteClubs(params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listAthleteClubs(params?: { page?: number; perPage?: number }): Promise<any[]> {
     let response = await api.get('/athlete/clubs', {
       headers: this.headers,
       params: {
@@ -336,10 +357,13 @@ export class Client {
     return response.data;
   }
 
-  async listClubMembers(clubId: number, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listClubMembers(
+    clubId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/clubs/${clubId}/members`, {
       headers: this.headers,
       params: {
@@ -350,10 +374,13 @@ export class Client {
     return response.data;
   }
 
-  async listClubActivities(clubId: number, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listClubActivities(
+    clubId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/clubs/${clubId}/activities`, {
       headers: this.headers,
       params: {
@@ -364,10 +391,13 @@ export class Client {
     return response.data;
   }
 
-  async listClubAdmins(clubId: number, params?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any[]> {
+  async listClubAdmins(
+    clubId: number,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any[]> {
     let response = await api.get(`/clubs/${clubId}/admins`, {
       headers: this.headers,
       params: {

@@ -9,41 +9,60 @@ export let manageProjects = SlateTool.create(spec, {
   description: `List, create, update, or delete projects. Projects organize workbooks, data sources, and other content in Tableau.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
-    projectId: z.string().optional().describe('Project LUID (required for update, delete)'),
-    name: z.string().optional().describe('Project name (required for create, optional for update)'),
-    description: z.string().optional().describe('Project description'),
-    parentProjectId: z.string().optional().describe('Parent project LUID for nested projects'),
-    contentPermissions: z.enum(['ManagedByOwner', 'LockedToProject', 'LockedToProjectWithoutNested']).optional().describe('Content permission model'),
-    pageSize: z.number().optional().describe('Number of items per page'),
-    pageNumber: z.number().optional().describe('Page number (1-based)'),
-    filter: z.string().optional().describe('Filter expression for list'),
-    sort: z.string().optional().describe('Sort expression for list')
-  }))
-  .output(z.object({
-    projects: z.array(z.object({
-      projectId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      parentProjectId: z.string().optional(),
-      contentPermissions: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })).optional(),
-    project: z.object({
-      projectId: z.string(),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      parentProjectId: z.string().optional(),
-      contentPermissions: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    }).optional(),
-    totalCount: z.number().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
+      projectId: z.string().optional().describe('Project LUID (required for update, delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Project name (required for create, optional for update)'),
+      description: z.string().optional().describe('Project description'),
+      parentProjectId: z
+        .string()
+        .optional()
+        .describe('Parent project LUID for nested projects'),
+      contentPermissions: z
+        .enum(['ManagedByOwner', 'LockedToProject', 'LockedToProjectWithoutNested'])
+        .optional()
+        .describe('Content permission model'),
+      pageSize: z.number().optional().describe('Number of items per page'),
+      pageNumber: z.number().optional().describe('Page number (1-based)'),
+      filter: z.string().optional().describe('Filter expression for list'),
+      sort: z.string().optional().describe('Sort expression for list')
+    })
+  )
+  .output(
+    z.object({
+      projects: z
+        .array(
+          z.object({
+            projectId: z.string(),
+            name: z.string().optional(),
+            description: z.string().optional(),
+            parentProjectId: z.string().optional(),
+            contentPermissions: z.string().optional(),
+            createdAt: z.string().optional(),
+            updatedAt: z.string().optional()
+          })
+        )
+        .optional(),
+      project: z
+        .object({
+          projectId: z.string(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          parentProjectId: z.string().optional(),
+          contentPermissions: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -120,4 +139,5 @@ export let manageProjects = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

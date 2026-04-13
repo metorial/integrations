@@ -3,27 +3,28 @@ import { MgmtClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listContainers = SlateTool.create(
-  spec,
-  {
-    name: 'List Containers',
-    key: 'list_containers',
-    description: `Lists all content containers in the Agility CMS instance. Containers hold content lists and define how content models are used. Requires OAuth authentication.`,
-    tags: {
-      readOnly: true,
-    },
+export let listContainers = SlateTool.create(spec, {
+  name: 'List Containers',
+  key: 'list_containers',
+  description: `Lists all content containers in the Agility CMS instance. Containers hold content lists and define how content models are used. Requires OAuth authentication.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    containers: z.array(z.record(z.string(), z.any())).describe('Array of container definitions'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      containers: z
+        .array(z.record(z.string(), z.any()))
+        .describe('Array of container definitions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MgmtClient({
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.config.locale,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let result = await client.listContainers();
@@ -31,7 +32,7 @@ export let listContainers = SlateTool.create(
 
     return {
       output: { containers },
-      message: `Retrieved **${containers.length}** container(s)`,
+      message: `Retrieved **${containers.length}** container(s)`
     };
   })
   .build();

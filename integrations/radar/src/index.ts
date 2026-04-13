@@ -24,12 +24,9 @@ import {
   verifyEventTool,
   validateAddressTool,
   trackUserTool,
-  getContextTool,
+  getContextTool
 } from './tools';
-import {
-  locationEventsTrigger,
-  webhookEventsTrigger,
-} from './triggers';
+import { locationEventsTrigger, webhookEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -57,10 +54,7 @@ export let provider = Slate.create({
     verifyEventTool,
     validateAddressTool,
     trackUserTool,
-    getContextTool,
+    getContextTool
   ],
-  triggers: [
-    locationEventsTrigger,
-    webhookEventsTrigger,
-  ],
+  triggers: [locationEventsTrigger, webhookEventsTrigger]
 });

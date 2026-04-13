@@ -176,13 +176,13 @@ let mapStorefront = (raw: any): Storefront => ({
   storefrontType: raw.type ?? '',
   subdomain: raw.subdomain ?? '',
   createdAt: raw.created_at ?? 0,
-  updatedAt: raw.updated_at ?? 0,
+  updatedAt: raw.updated_at ?? 0
 });
 
 let mapProductPrice = (raw: any): ProductPrice => ({
   priceId: raw.id,
   name: raw.name ?? '',
-  price: raw.price ?? '0',
+  price: raw.price ?? '0'
 });
 
 let mapProduct = (raw: any): Product => ({
@@ -202,14 +202,14 @@ let mapProduct = (raw: any): Product => ({
   prices: Array.isArray(raw.prices) ? raw.prices.map(mapProductPrice) : [],
   createdAt: raw.created_at ?? 0,
   updatedAt: raw.updated_at ?? 0,
-  imageUpdatedAt: raw.image_updated_at ?? 0,
+  imageUpdatedAt: raw.image_updated_at ?? 0
 });
 
 let mapCustomerSummary = (raw: any): CustomerSummary => ({
   customerId: raw.id,
   firstname: raw.firstname ?? raw.first_name ?? '',
   lastname: raw.lastname ?? raw.last_name ?? '',
-  email: raw.email ?? '',
+  email: raw.email ?? ''
 });
 
 let mapCustomer = (raw: any): Customer => ({
@@ -219,7 +219,7 @@ let mapCustomer = (raw: any): Customer => ({
   email: raw.email ?? '',
   receivesEmail: raw.receives_email ?? false,
   createdAt: raw.created_at ?? 0,
-  updatedAt: raw.updated_at ?? 0,
+  updatedAt: raw.updated_at ?? 0
 });
 
 let mapLineItem = (raw: any): PurchaseLineItem => ({
@@ -230,19 +230,19 @@ let mapLineItem = (raw: any): PurchaseLineItem => ({
   downloadLimit: raw.download_limit ?? 0,
   downloadCount: raw.download_count ?? 0,
   expiresAt: raw.expires_at ?? null,
-  productKeys: Array.isArray(raw.product_keys) ? raw.product_keys : [],
+  productKeys: Array.isArray(raw.product_keys) ? raw.product_keys : []
 });
 
 let mapCustomField = (raw: any): PurchaseCustomField => ({
   label: raw.label ?? '',
-  response: raw.response ?? '',
+  response: raw.response ?? ''
 });
 
 let mapCoupon = (raw: any): PurchaseCoupon => ({
   name: raw.name ?? '',
   code: raw.code ?? '',
   discountAmount: raw.discount_amount ?? '0',
-  discountType: raw.discount_type ?? '',
+  discountType: raw.discount_type ?? ''
 });
 
 let mapPurchase = (raw: any): Purchase => ({
@@ -261,12 +261,14 @@ let mapPurchase = (raw: any): Purchase => ({
   ipAddress: raw.ip_address ?? '',
   marketingOptin: raw.marketing_optin ?? false,
   tangiblesToshIp: raw.tangibles_to_ship ?? 0,
-  customer: raw.customer ? mapCustomerSummary(raw.customer) : { customerId: 0, firstname: '', lastname: '', email: '' },
+  customer: raw.customer
+    ? mapCustomerSummary(raw.customer)
+    : { customerId: 0, firstname: '', lastname: '', email: '' },
   lineItems: Array.isArray(raw.line_items) ? raw.line_items.map(mapLineItem) : [],
   customFields: Array.isArray(raw.custom_fields) ? raw.custom_fields.map(mapCustomField) : [],
   coupons: Array.isArray(raw.coupons) ? raw.coupons.map(mapCoupon) : [],
   createdAt: raw.created_at ?? 0,
-  updatedAt: raw.updated_at ?? 0,
+  updatedAt: raw.updated_at ?? 0
 });
 
 let mapSubscription = (raw: any): Subscription => ({
@@ -286,21 +288,36 @@ let mapSubscription = (raw: any): Subscription => ({
   endedAt: raw.ended_at ?? null,
   trialStartedAt: raw.trial_started_at ?? null,
   lastPaymentAt: raw.last_payment_at ?? 0,
-  nextPaymentAt: raw.next_payment_at ?? 0,
+  nextPaymentAt: raw.next_payment_at ?? 0
 });
 
 let mapSubscriber = (raw: any): Subscriber => ({
   subscriberId: raw.id,
   username: raw.username ?? '',
-  subscription: raw.subscription ? mapSubscription(raw.subscription) : {
-    subscriptionId: 0, status: '', price: '0', period: 0, unit: '',
-    taxAmount: '0', trialTaxAmount: '0', trialPrice: '0', trialPeriod: 0,
-    trialUnit: '', createdAt: 0, updatedAt: 0, startedAt: 0, endedAt: null,
-    trialStartedAt: null, lastPaymentAt: 0, nextPaymentAt: 0,
-  },
+  subscription: raw.subscription
+    ? mapSubscription(raw.subscription)
+    : {
+        subscriptionId: 0,
+        status: '',
+        price: '0',
+        period: 0,
+        unit: '',
+        taxAmount: '0',
+        trialTaxAmount: '0',
+        trialPrice: '0',
+        trialPeriod: 0,
+        trialUnit: '',
+        createdAt: 0,
+        updatedAt: 0,
+        startedAt: 0,
+        endedAt: null,
+        trialStartedAt: null,
+        lastPaymentAt: 0,
+        nextPaymentAt: 0
+      },
   createdAt: raw.created_at ?? 0,
   updatedAt: raw.updated_at ?? 0,
-  lastLoginAt: raw.last_login_at ?? null,
+  lastLoginAt: raw.last_login_at ?? null
 });
 
 export class Client {
@@ -311,8 +328,8 @@ export class Client {
       baseURL: 'https://api.getdpd.com/v2/',
       auth: {
         username: config.username,
-        password: config.token,
-      },
+        password: config.token
+      }
     });
   }
 
@@ -336,7 +353,9 @@ export class Client {
 
   // Products
 
-  async listProducts(storefrontId?: number): Promise<Array<{ productId: number; name: string }>> {
+  async listProducts(
+    storefrontId?: number
+  ): Promise<Array<{ productId: number; name: string }>> {
     let params: any = {};
     if (storefrontId) params.storefront_id = storefrontId;
     let response = await this.axios.get('/products', { params });
@@ -351,7 +370,9 @@ export class Client {
 
   // Purchases
 
-  async listPurchases(params: PurchaseListParams = {}): Promise<Array<{ purchaseId: number; status: string }>> {
+  async listPurchases(
+    params: PurchaseListParams = {}
+  ): Promise<Array<{ purchaseId: number; status: string }>> {
     let queryParams: any = {};
     if (params.status) queryParams.status = params.status;
     if (params.productId) queryParams.product_id = params.productId;
@@ -378,7 +399,11 @@ export class Client {
     return mapPurchase(response.data);
   }
 
-  async reactivatePurchase(purchaseId: number, customerEmail?: string, refulfill?: boolean): Promise<{ status: string }> {
+  async reactivatePurchase(
+    purchaseId: number,
+    customerEmail?: string,
+    refulfill?: boolean
+  ): Promise<{ status: string }> {
     let params: any = {};
     if (customerEmail) params.customer_email = customerEmail;
     if (refulfill !== undefined) params.refulfill = refulfill;
@@ -388,13 +413,16 @@ export class Client {
 
   // Customers
 
-  async listCustomers(params: CustomerListParams = {}): Promise<Array<{ customerId: number; status: string }>> {
+  async listCustomers(
+    params: CustomerListParams = {}
+  ): Promise<Array<{ customerId: number; status: string }>> {
     let queryParams: any = {};
     if (params.email) queryParams.email = params.email;
     if (params.firstName) queryParams.first_name = params.firstName;
     if (params.lastName) queryParams.last_name = params.lastName;
     if (params.productId) queryParams.product_id = params.productId;
-    if (params.receivesNewsletters !== undefined) queryParams.receives_newsletters = params.receivesNewsletters;
+    if (params.receivesNewsletters !== undefined)
+      queryParams.receives_newsletters = params.receivesNewsletters;
     if (params.dateMin) queryParams.date_min = params.dateMin;
     if (params.dateMax) queryParams.date_max = params.dateMax;
     if (params.page) queryParams.page = params.page;
@@ -411,35 +439,52 @@ export class Client {
 
   // Subscribers
 
-  async listSubscribers(storefrontId: number, username?: string): Promise<Array<{ subscriberId: number; username: string }>> {
+  async listSubscribers(
+    storefrontId: number,
+    username?: string
+  ): Promise<Array<{ subscriberId: number; username: string }>> {
     let params: any = {};
     if (username) params.username = username;
-    let response = await this.axios.get(`/storefronts/${storefrontId}/subscribers`, { params });
+    let response = await this.axios.get(`/storefronts/${storefrontId}/subscribers`, {
+      params
+    });
     let data = Array.isArray(response.data) ? response.data : [];
     return data.map((s: any) => ({ subscriberId: s.id, username: s.username ?? '' }));
   }
 
   async getSubscriber(storefrontId: number, subscriberId: number): Promise<Subscriber> {
-    let response = await this.axios.get(`/storefronts/${storefrontId}/subscribers/${subscriberId}`);
+    let response = await this.axios.get(
+      `/storefronts/${storefrontId}/subscribers/${subscriberId}`
+    );
     return mapSubscriber(response.data);
   }
 
-  async verifySubscriber(storefrontId: number, params: { username?: string; subscriberId?: number }): Promise<{ status: string }> {
+  async verifySubscriber(
+    storefrontId: number,
+    params: { username?: string; subscriberId?: number }
+  ): Promise<{ status: string }> {
     let queryParams: any = {};
     if (params.username) queryParams.username = params.username;
     if (params.subscriberId) queryParams.id = params.subscriberId;
-    let response = await this.axios.get(`/storefronts/${storefrontId}/subscribers/verify`, { params: queryParams });
-    return { status: typeof response.data === 'string' ? response.data : response.data?.status ?? '' };
+    let response = await this.axios.get(`/storefronts/${storefrontId}/subscribers/verify`, {
+      params: queryParams
+    });
+    return {
+      status: typeof response.data === 'string' ? response.data : (response.data?.status ?? '')
+    };
   }
 
   // Notification Verification
 
-  async verifyNotification(notificationParams: Record<string, any>): Promise<{ verified: boolean; result: string }> {
+  async verifyNotification(
+    notificationParams: Record<string, any>
+  ): Promise<{ verified: boolean; result: string }> {
     let response = await this.axios.post('/notification/verify', notificationParams);
-    let result = typeof response.data === 'string' ? response.data.trim() : String(response.data);
+    let result =
+      typeof response.data === 'string' ? response.data.trim() : String(response.data);
     return {
       verified: result === 'VERIFIED',
-      result,
+      result
     };
   }
 }

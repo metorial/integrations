@@ -3,34 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group',
-    key: 'manage_group',
-    description: `Creates, retrieves, or deletes a subscriber group. Groups function as mailing lists in Sender. You can create a new group, get details of an existing one, or delete a group by ID.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageGroup = SlateTool.create(spec, {
+  name: 'Manage Group',
+  key: 'manage_group',
+  description: `Creates, retrieves, or deletes a subscriber group. Groups function as mailing lists in Sender. You can create a new group, get details of an existing one, or delete a group by ID.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'delete']).describe('Action to perform on the group'),
-    groupId: z.string().optional().describe('Group ID (required for "get" and "delete" actions)'),
-    title: z.string().optional().describe('Group title (required for "create" action)'),
-  }))
-  .output(z.object({
-    groupId: z.string().optional().describe('Group ID'),
-    title: z.string().optional().describe('Group title'),
-    recipientCount: z.number().optional().describe('Total subscriber count in the group'),
-    activeSubscribers: z.number().optional().describe('Number of active subscribers'),
-    opensRate: z.number().optional().describe('Open rate for campaigns sent to this group'),
-    clickRate: z.number().optional().describe('Click rate for campaigns sent to this group'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    deleted: z.boolean().optional().describe('Whether the group was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'delete']).describe('Action to perform on the group'),
+      groupId: z
+        .string()
+        .optional()
+        .describe('Group ID (required for "get" and "delete" actions)'),
+      title: z.string().optional().describe('Group title (required for "create" action)')
+    })
+  )
+  .output(
+    z.object({
+      groupId: z.string().optional().describe('Group ID'),
+      title: z.string().optional().describe('Group title'),
+      recipientCount: z.number().optional().describe('Total subscriber count in the group'),
+      activeSubscribers: z.number().optional().describe('Number of active subscribers'),
+      opensRate: z.number().optional().describe('Open rate for campaigns sent to this group'),
+      clickRate: z.number().optional().describe('Click rate for campaigns sent to this group'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      deleted: z.boolean().optional().describe('Whether the group was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
@@ -47,9 +51,9 @@ export let manageGroup = SlateTool.create(
           activeSubscribers: group.active_subscribers,
           opensRate: group.opens_rate,
           clickRate: group.click_rate,
-          createdAt: group.created,
+          createdAt: group.created
         },
-        message: `Group **${group.title}** created with ID \`${group.id}\`.`,
+        message: `Group **${group.title}** created with ID \`${group.id}\`.`
       };
     }
 
@@ -67,9 +71,9 @@ export let manageGroup = SlateTool.create(
           activeSubscribers: group.active_subscribers,
           opensRate: group.opens_rate,
           clickRate: group.click_rate,
-          createdAt: group.created,
+          createdAt: group.created
         },
-        message: `Group **${group.title}** has **${group.active_subscribers}** active subscriber(s).`,
+        message: `Group **${group.title}** has **${group.active_subscribers}** active subscriber(s).`
       };
     }
 
@@ -81,9 +85,9 @@ export let manageGroup = SlateTool.create(
     return {
       output: {
         groupId: ctx.input.groupId,
-        deleted: true,
+        deleted: true
       },
-      message: `Group \`${ctx.input.groupId}\` deleted successfully.`,
+      message: `Group \`${ctx.input.groupId}\` deleted successfully.`
     };
   })
   .build();

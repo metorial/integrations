@@ -2,45 +2,49 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let timeEntryEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Time Entry Events',
-    key: 'time_entry_events',
-    description: 'Triggers when a time entry is created, updated, or deleted in Timelink. Provides the full time entry details for created and updated events.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of time entry event'),
-    eventId: z.string().describe('Unique identifier for this event'),
-    timeEntryId: z.number().describe('ID of the affected time entry'),
-    start: z.string().optional().describe('Start time of the entry'),
-    end: z.string().optional().describe('End time of the entry'),
-    description: z.string().optional().describe('Description of the work performed'),
-    clientId: z.number().optional().describe('ID of the associated client'),
-    projectId: z.number().optional().describe('ID of the associated project'),
-    serviceId: z.number().optional().describe('ID of the associated service'),
-    userId: z.number().optional().describe('ID of the user'),
-    paid: z.boolean().optional().describe('Whether the time entry has been paid'),
-    billable: z.boolean().optional().describe('Whether the time entry is billable'),
-    externalId: z.string().optional().describe('External ID for syncing')
-  }))
-  .output(z.object({
-    timeEntryId: z.number().describe('ID of the affected time entry'),
-    start: z.string().optional().describe('Start time of the entry (ISO 8601 format)'),
-    end: z.string().optional().describe('End time of the entry (ISO 8601 format)'),
-    description: z.string().optional().describe('Description of the work performed'),
-    clientId: z.number().optional().describe('ID of the associated client'),
-    projectId: z.number().optional().describe('ID of the associated project'),
-    serviceId: z.number().optional().describe('ID of the associated service'),
-    userId: z.number().optional().describe('ID of the user who created/owns the entry'),
-    paid: z.boolean().optional().describe('Whether the time entry has been paid'),
-    billable: z.boolean().optional().describe('Whether the time entry is billable'),
-    externalId: z.string().optional().describe('External ID for syncing with other systems')
-  }))
+export let timeEntryEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Time Entry Events',
+  key: 'time_entry_events',
+  description:
+    'Triggers when a time entry is created, updated, or deleted in Timelink. Provides the full time entry details for created and updated events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of time entry event'),
+      eventId: z.string().describe('Unique identifier for this event'),
+      timeEntryId: z.number().describe('ID of the affected time entry'),
+      start: z.string().optional().describe('Start time of the entry'),
+      end: z.string().optional().describe('End time of the entry'),
+      description: z.string().optional().describe('Description of the work performed'),
+      clientId: z.number().optional().describe('ID of the associated client'),
+      projectId: z.number().optional().describe('ID of the associated project'),
+      serviceId: z.number().optional().describe('ID of the associated service'),
+      userId: z.number().optional().describe('ID of the user'),
+      paid: z.boolean().optional().describe('Whether the time entry has been paid'),
+      billable: z.boolean().optional().describe('Whether the time entry is billable'),
+      externalId: z.string().optional().describe('External ID for syncing')
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.number().describe('ID of the affected time entry'),
+      start: z.string().optional().describe('Start time of the entry (ISO 8601 format)'),
+      end: z.string().optional().describe('End time of the entry (ISO 8601 format)'),
+      description: z.string().optional().describe('Description of the work performed'),
+      clientId: z.number().optional().describe('ID of the associated client'),
+      projectId: z.number().optional().describe('ID of the associated project'),
+      serviceId: z.number().optional().describe('ID of the associated service'),
+      userId: z.number().optional().describe('ID of the user who created/owns the entry'),
+      paid: z.boolean().optional().describe('Whether the time entry has been paid'),
+      billable: z.boolean().optional().describe('Whether the time entry is billable'),
+      externalId: z.string().optional().describe('External ID for syncing with other systems')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       // Determine event type from webhook payload
       let eventType: 'created' | 'updated' | 'deleted' = 'created';
@@ -76,7 +80,7 @@ export let timeEntryEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `time_entry.${ctx.input.eventType}`,
         id: ctx.input.eventId,

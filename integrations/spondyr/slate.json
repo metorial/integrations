@@ -2,11 +2,7 @@
   "name": "@metorial/spondyr",
   "version": "0.1.1",
   "description": "Generate template-driven correspondence and deliver it across multiple channels including email, internet fax, U.S. postal mail, SMS, and batch file download. Submit JSON transaction data to merge with configured templates and produce PDF or HTML documents. Manage transaction types and event types to control template selection rules. Track correspondence processing and delivery status via reference ID. Supports generate-only mode to defer delivery, multi-language template selection, automatic delivery channel fallback, and cloud storage integration for document backup.",
-  "categories": [
-    "document-processing",
-    "email-and-messaging",
-    "task-and-project-management"
-  ],
+  "categories": ["document-processing", "email-and-messaging", "task-and-project-management"],
   "skills": [
     "generate template correspondence",
     "deliver via email",

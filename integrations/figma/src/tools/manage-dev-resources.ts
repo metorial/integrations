@@ -11,25 +11,26 @@ let devResourceSchema = z.object({
   nodeId: z.string().optional().describe('Node ID this resource is attached to')
 });
 
-export let getDevResources = SlateTool.create(
-  spec,
-  {
-    name: 'Get Dev Resources',
-    key: 'get_dev_resources',
-    description: `Retrieve developer resources attached to nodes in a Figma file. Dev resources are URLs shown in Dev Mode that link to code, documentation, or other developer resources.`,
-    tags: {
-      readOnly: true
-    }
+export let getDevResources = SlateTool.create(spec, {
+  name: 'Get Dev Resources',
+  key: 'get_dev_resources',
+  description: `Retrieve developer resources attached to nodes in a Figma file. Dev resources are URLs shown in Dev Mode that link to code, documentation, or other developer resources.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    fileKey: z.string().describe('The key of the Figma file'),
-    nodeId: z.string().optional().describe('Filter by specific node ID')
-  }))
-  .output(z.object({
-    devResources: z.array(devResourceSchema).describe('List of dev resources')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileKey: z.string().describe('The key of the Figma file'),
+      nodeId: z.string().optional().describe('Filter by specific node ID')
+    })
+  )
+  .output(
+    z.object({
+      devResources: z.array(devResourceSchema).describe('List of dev resources')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
     let result = await client.getDevResources(ctx.input.fileKey, {
       nodeId: ctx.input.nodeId
@@ -50,29 +51,34 @@ export let getDevResources = SlateTool.create(
   })
   .build();
 
-export let createDevResource = SlateTool.create(
-  spec,
-  {
-    name: 'Create Dev Resources',
-    key: 'create_dev_resources',
-    description: `Attach developer resource URLs to nodes in Figma files. Supports creating multiple dev resources in one request across different files and nodes.`,
-    tags: {
-      destructive: false
-    }
+export let createDevResource = SlateTool.create(spec, {
+  name: 'Create Dev Resources',
+  key: 'create_dev_resources',
+  description: `Attach developer resource URLs to nodes in Figma files. Supports creating multiple dev resources in one request across different files and nodes.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    resources: z.array(z.object({
-      fileKey: z.string().describe('The file key'),
-      nodeId: z.string().describe('The node ID to attach the resource to'),
-      name: z.string().describe('Display name for the resource'),
-      url: z.string().describe('URL of the resource')
-    })).describe('List of dev resources to create')
-  }))
-  .output(z.object({
-    devResources: z.array(devResourceSchema).describe('Created dev resources')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      resources: z
+        .array(
+          z.object({
+            fileKey: z.string().describe('The file key'),
+            nodeId: z.string().describe('The node ID to attach the resource to'),
+            name: z.string().describe('Display name for the resource'),
+            url: z.string().describe('URL of the resource')
+          })
+        )
+        .describe('List of dev resources to create')
+    })
+  )
+  .output(
+    z.object({
+      devResources: z.array(devResourceSchema).describe('Created dev resources')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
     let result = await client.createDevResources(ctx.input.resources);
 
@@ -91,25 +97,26 @@ export let createDevResource = SlateTool.create(
   })
   .build();
 
-export let deleteDevResource = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Dev Resource',
-    key: 'delete_dev_resource',
-    description: `Remove a developer resource from a Figma file node.`,
-    tags: {
-      destructive: true
-    }
+export let deleteDevResource = SlateTool.create(spec, {
+  name: 'Delete Dev Resource',
+  key: 'delete_dev_resource',
+  description: `Remove a developer resource from a Figma file node.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    fileKey: z.string().describe('The key of the Figma file'),
-    devResourceId: z.string().describe('The ID of the dev resource to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the dev resource was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileKey: z.string().describe('The key of the Figma file'),
+      devResourceId: z.string().describe('The ID of the dev resource to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the dev resource was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FigmaClient(ctx.auth.token);
     await client.deleteDevResource(ctx.input.fileKey, ctx.input.devResourceId);
 

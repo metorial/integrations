@@ -19,12 +19,9 @@ import {
   listLeaveTypes,
   getLeaveBalances,
   getCurrentUser,
-  listCustomFields,
+  listCustomFields
 } from './tools';
-import {
-  employeeLifecycle,
-  companyActivity,
-} from './triggers';
+import { employeeLifecycle, companyActivity } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +44,7 @@ export let provider = Slate.create({
     listLeaveTypes,
     getLeaveBalances,
     getCurrentUser,
-    listCustomFields,
+    listCustomFields
   ],
-  triggers: [
-    employeeLifecycle,
-    companyActivity,
-  ],
+  triggers: [employeeLifecycle, companyActivity]
 });

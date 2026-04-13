@@ -37,9 +37,9 @@ export class L2sClient {
     this.axios = createAxios({
       baseURL: 'https://api.l2s.is',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 

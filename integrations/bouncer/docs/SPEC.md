@@ -13,6 +13,7 @@ All calls made to the Bouncer API have to be made using HTTPS.
 Bouncer API supports 2 methods of authentication:
 
 1. **API Key in Header**: Pass the API key via the `x-api-key` header:
+
    ```
    curl https://api.usebouncer.com/v1.1/email/verify?email=john@usebouncer.com -H 'x-api-key: API-KEY'
    ```

@@ -7,18 +7,22 @@ export class EosGameServicesClient {
     this.http = createAxios({
       baseURL: 'https://api.epicgames.dev',
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // --- Connect / Product Users ---
 
-  async queryExternalAccounts(accountIds: string[], identityProviderId: string, environment?: string) {
+  async queryExternalAccounts(
+    accountIds: string[],
+    identityProviderId: string,
+    environment?: string
+  ) {
     let params: Record<string, string | string[]> = {
       accountId: accountIds,
-      identityProviderId,
+      identityProviderId
     };
     if (environment) {
       params['environment'] = environment;
@@ -29,7 +33,7 @@ export class EosGameServicesClient {
 
   async queryProductUsers(productUserIds: string[]) {
     let response = await this.http.get('/user/v1/product-users', {
-      params: { productUserId: productUserIds },
+      params: { productUserId: productUserIds }
     });
     return response.data;
   }
@@ -41,7 +45,9 @@ export class EosGameServicesClient {
     if (actions && actions.length > 0) {
       params['action'] = actions;
     }
-    let response = await this.http.get(`/sanctions/v1/productUser/${productUserId}/active`, { params });
+    let response = await this.http.get(`/sanctions/v1/productUser/${productUserId}/active`, {
+      params
+    });
     return response.data;
   }
 
@@ -55,28 +61,33 @@ export class EosGameServicesClient {
   }
 
   async bulkQueryActiveSanctions(productUserIds: string[], actions: string[]) {
-    let response = await this.http.get(`/sanctions/v1/${this.params.deploymentId}/active-sanctions`, {
-      params: {
-        productUserId: productUserIds,
-        action: actions,
-      },
-    });
+    let response = await this.http.get(
+      `/sanctions/v1/${this.params.deploymentId}/active-sanctions`,
+      {
+        params: {
+          productUserId: productUserIds,
+          action: actions
+        }
+      }
+    );
     return response.data;
   }
 
-  async createSanctions(sanctions: Array<{
-    productUserId: string;
-    action: string;
-    justification: string;
-    source: string;
-    tags?: string[];
-    pending?: boolean;
-    metadata?: Record<string, string>;
-    displayName?: string;
-    identityProvider?: string;
-    accountId?: string;
-    duration?: number;
-  }>) {
+  async createSanctions(
+    sanctions: Array<{
+      productUserId: string;
+      action: string;
+      justification: string;
+      source: string;
+      tags?: string[];
+      pending?: boolean;
+      metadata?: Record<string, string>;
+      displayName?: string;
+      identityProvider?: string;
+      accountId?: string;
+      duration?: number;
+    }>
+  ) {
     let response = await this.http.post(
       `/sanctions/v1/${this.params.deploymentId}/sanctions`,
       sanctions
@@ -86,26 +97,31 @@ export class EosGameServicesClient {
 
   async querySanctions(limit?: number, offset?: number) {
     let response = await this.http.get(`/sanctions/v1/${this.params.deploymentId}/sanctions`, {
-      params: { limit, offset },
+      params: { limit, offset }
     });
     return response.data;
   }
 
   async queryPlayerSanctions(productUserId: string, limit?: number, offset?: number) {
-    let response = await this.http.get(`/sanctions/v1/${this.params.deploymentId}/users/${productUserId}`, {
-      params: { limit, offset },
-    });
+    let response = await this.http.get(
+      `/sanctions/v1/${this.params.deploymentId}/users/${productUserId}`,
+      {
+        params: { limit, offset }
+      }
+    );
     return response.data;
   }
 
-  async updateSanctions(updates: Array<{
-    referenceId: string;
-    updates: {
-      tags?: string[];
-      metadata?: Record<string, string>;
-      justification?: string;
-    };
-  }>) {
+  async updateSanctions(
+    updates: Array<{
+      referenceId: string;
+      updates: {
+        tags?: string[];
+        metadata?: Record<string, string>;
+        justification?: string;
+      };
+    }>
+  ) {
     let response = await this.http.patch(
       `/sanctions/v1/${this.params.deploymentId}/sanctions`,
       updates
@@ -146,9 +162,12 @@ export class EosGameServicesClient {
     limit?: number;
     order?: string;
   }) {
-    let response = await this.http.get(`/player-reports/v1/report/${this.params.deploymentId}`, {
-      params,
-    });
+    let response = await this.http.get(
+      `/player-reports/v1/report/${this.params.deploymentId}`,
+      {
+        params
+      }
+    );
     return response.data;
   }
 
@@ -166,15 +185,17 @@ export class EosGameServicesClient {
 
   // --- Voice ---
 
-  async createVoiceRoomTokens(roomId: string, participants: Array<{
-    puid: string;
-    clientIp?: string;
-    hardMuted?: boolean;
-  }>) {
-    let response = await this.http.post(
-      `/rtc/v1/${this.params.deploymentId}/room/${roomId}`,
-      { participants }
-    );
+  async createVoiceRoomTokens(
+    roomId: string,
+    participants: Array<{
+      puid: string;
+      clientIp?: string;
+      hardMuted?: boolean;
+    }>
+  ) {
+    let response = await this.http.post(`/rtc/v1/${this.params.deploymentId}/room/${roomId}`, {
+      participants
+    });
     return response.data;
   }
 
@@ -201,9 +222,9 @@ export class EosAccountServicesClient {
     this.http = createAxios({
       baseURL: 'https://api.epicgames.dev',
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -211,7 +232,7 @@ export class EosAccountServicesClient {
 
   async getAccounts(accountIds: string[]) {
     let response = await this.http.get('/epic/id/v2/accounts', {
-      params: { accountId: accountIds },
+      params: { accountId: accountIds }
     });
     return response.data;
   }
@@ -250,7 +271,12 @@ export class EosAccountServicesClient {
     return response.data;
   }
 
-  async getEntitlements(accountId: string, sandboxId: string, entitlementNames?: string[], includeRedeemed?: boolean) {
+  async getEntitlements(
+    accountId: string,
+    sandboxId: string,
+    entitlementNames?: string[],
+    includeRedeemed?: boolean
+  ) {
     let params: Record<string, string | string[] | boolean> = { sandboxId };
     if (entitlementNames && entitlementNames.length > 0) {
       params['entitlementName'] = entitlementNames;
@@ -258,10 +284,9 @@ export class EosAccountServicesClient {
     if (includeRedeemed !== undefined) {
       params['includeRedeemed'] = includeRedeemed;
     }
-    let response = await this.http.get(
-      `/epic/ecom/v4/identities/${accountId}/entitlements`,
-      { params }
-    );
+    let response = await this.http.get(`/epic/ecom/v4/identities/${accountId}/entitlements`, {
+      params
+    });
     return response.data;
   }
 

@@ -3,27 +3,30 @@ import { CrowTerminalClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updatePost = SlateTool.create(
-  spec,
-  {
-    name: 'Update Post',
-    key: 'update_post',
-    description: `Update an existing post's text, media, or scheduled time. Only posts that have not yet been published (status: queued or scheduled) can be updated.`,
-    constraints: [
-      'Only posts with status "queued" or "scheduled" can be updated. Published or processing posts cannot be modified.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updatePost = SlateTool.create(spec, {
+  name: 'Update Post',
+  key: 'update_post',
+  description: `Update an existing post's text, media, or scheduled time. Only posts that have not yet been published (status: queued or scheduled) can be updated.`,
+  constraints: [
+    'Only posts with status "queued" or "scheduled" can be updated. Published or processing posts cannot be modified.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
+})
   .input(
     z.object({
       postId: z.string().describe('Unique identifier of the post to update'),
       text: z.string().optional().describe('Updated text content'),
-      mediaUrls: z.array(z.string()).optional().describe('Updated list of media URLs (replaces existing media)'),
-      scheduledAt: z.string().optional().describe('Updated ISO 8601 datetime for scheduled publishing'),
+      mediaUrls: z
+        .array(z.string())
+        .optional()
+        .describe('Updated list of media URLs (replaces existing media)'),
+      scheduledAt: z
+        .string()
+        .optional()
+        .describe('Updated ISO 8601 datetime for scheduled publishing')
     })
   )
   .output(
@@ -35,13 +38,13 @@ export let updatePost = SlateTool.create(
       status: z.string().describe('Current status of the post'),
       scheduledAt: z.string().nullable().describe('Scheduled publish time'),
       updatedAt: z.string().describe('Timestamp of the update'),
-      accountId: z.string().describe('Account ID the post belongs to'),
+      accountId: z.string().describe('Account ID the post belongs to')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new CrowTerminalClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     ctx.info({ message: 'Updating post', postId: ctx.input.postId });
@@ -49,7 +52,7 @@ export let updatePost = SlateTool.create(
     let post = await client.updatePost(ctx.input.postId, {
       text: ctx.input.text,
       mediaUrls: ctx.input.mediaUrls,
-      scheduledAt: ctx.input.scheduledAt,
+      scheduledAt: ctx.input.scheduledAt
     });
 
     return {
@@ -61,9 +64,9 @@ export let updatePost = SlateTool.create(
         status: post.status,
         scheduledAt: post.scheduledAt,
         updatedAt: post.updatedAt,
-        accountId: post.accountId,
+        accountId: post.accountId
       },
-      message: `Post **${post.postId}** updated successfully on **${post.platform}**.`,
+      message: `Post **${post.postId}** updated successfully on **${post.platform}**.`
     };
   })
   .build();

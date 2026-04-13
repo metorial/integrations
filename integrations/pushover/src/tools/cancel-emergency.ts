@@ -3,29 +3,36 @@ import { PushoverClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let cancelEmergency = SlateTool.create(
-  spec,
-  {
-    name: 'Cancel Emergency Retries',
-    key: 'cancel_emergency',
-    description: `Cancel retries for an emergency-priority notification. You can cancel by a specific receipt ID or by a tag that was assigned when the notification was sent. Canceling by tag will stop all emergency notifications matching that tag.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let cancelEmergency = SlateTool.create(spec, {
+  name: 'Cancel Emergency Retries',
+  key: 'cancel_emergency',
+  description: `Cancel retries for an emergency-priority notification. You can cancel by a specific receipt ID or by a tag that was assigned when the notification was sent. Canceling by tag will stop all emergency notifications matching that tag.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    receiptId: z.string().optional().describe('Receipt ID of the emergency notification to cancel'),
-    tag: z.string().optional().describe('Tag to cancel all emergency notifications matching this tag'),
-  }))
-  .output(z.object({
-    requestId: z.string().describe('Unique request identifier'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      receiptId: z
+        .string()
+        .optional()
+        .describe('Receipt ID of the emergency notification to cancel'),
+      tag: z
+        .string()
+        .optional()
+        .describe('Tag to cancel all emergency notifications matching this tag')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().describe('Unique request identifier')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PushoverClient({
       token: ctx.auth.token,
-      userKey: ctx.auth.userKey,
+      userKey: ctx.auth.userKey
     });
 
     if (!ctx.input.receiptId && !ctx.input.tag) {
@@ -46,9 +53,9 @@ export let cancelEmergency = SlateTool.create(
 
     return {
       output: {
-        requestId: result.request,
+        requestId: result.request
       },
-      message,
+      message
     };
   })
   .build();

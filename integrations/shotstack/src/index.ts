@@ -20,7 +20,7 @@ import {
   deleteSourceTool,
   requestUploadUrlTool,
   generateAssetTool,
-  getGeneratedAssetTool,
+  getGeneratedAssetTool
 } from './tools';
 import { shotstackEventsTrigger } from './triggers';
 
@@ -46,9 +46,7 @@ export let provider = Slate.create({
     deleteSourceTool,
     requestUploadUrlTool,
     generateAssetTool,
-    getGeneratedAssetTool,
+    getGeneratedAssetTool
   ],
-  triggers: [
-    shotstackEventsTrigger,
-  ],
+  triggers: [shotstackEventsTrigger]
 });

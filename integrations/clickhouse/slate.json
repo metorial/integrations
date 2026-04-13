@@ -2,9 +2,7 @@
   "name": "@metorial/clickhouse",
   "version": "0.1.1",
   "description": "Manage ClickHouse Cloud organizations, services, and infrastructure via the REST API. Create, start, stop, and delete analytical database services. Configure scaling policies, replicas, and resource allocation. Manage backups, API keys, and organization members. Create and manage ClickPipes data ingestion pipelines from sources like Kafka, S3, Kinesis, PostgreSQL, and MySQL. Set up query API endpoints from saved SQL queries. Manage private endpoints, retrieve usage and cost metrics, fetch Prometheus metrics, and configure BYOC (Bring Your Own Cloud) infrastructure. Create and manage observability dashboards, alerts, and webhook notifications via ClickStack.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "manage database services",
     "configure scaling policies",

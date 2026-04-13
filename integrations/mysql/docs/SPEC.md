@@ -43,29 +43,39 @@ Many integration platforms support connecting to MySQL through an SSH tunnel for
 ## Features
 
 ### SQL Query Execution
+
 Execute arbitrary SQL statements against the database, including `SELECT`, `INSERT`, `UPDATE`, `DELETE`, and DDL statements (`CREATE`, `ALTER`, `DROP`). Supports parameterized queries to prevent SQL injection.
 
 ### Schema and Metadata Inspection
+
 Retrieve information about databases, tables, columns, indexes, constraints, and other schema objects via the `INFORMATION_SCHEMA` system database. Useful for dynamic discovery of database structure.
 
 ### Database and Table Management
+
 Create, alter, and drop databases and tables. Manage indexes, foreign keys, views, and other schema objects. Supports multiple storage engines (InnoDB, MyISAM, etc.) with different characteristics.
 
 ### Stored Procedures and Functions
+
 Create and execute stored procedures and user-defined functions. Useful for encapsulating complex business logic on the server side.
 
 ### User and Permission Management
+
 Create and manage user accounts, assign privileges at the global, database, table, or column level. Supports role-based access control in MySQL 8.0+.
 
 ### Transactions
+
 Execute multiple statements within a transaction with full ACID compliance (when using InnoDB). Supports `BEGIN`, `COMMIT`, `ROLLBACK`, and savepoints.
 
 ### Data Import and Export
+
 Bulk load data from files using `LOAD DATA INFILE` or export query results. Supports CSV and other delimited formats.
+
 - The `LOAD DATA LOCAL INFILE` feature must be explicitly enabled on both client and server for security reasons.
 
 ### Replication and Binary Log Access
+
 MySQL offers the Binlog for efficiently and safely replicating data between different database instances on possibly different physical machines. The binlog can be accessed programmatically to implement change data capture (CDC) workflows.
+
 - The user is granted `REPLICATION SLAVE`, `REPLICATION CLIENT` privileges.
 - Binlog format should be set to `ROW` for row-level change tracking.
 

@@ -3,37 +3,49 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Update Product',
-    key: 'update_product',
-    description: `Update an existing product's details including title, description, vendor, type, tags, status, and images. To manage variants use the dedicated variant tools.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    productId: z.string().describe('Shopify product ID to update'),
-    title: z.string().optional().describe('New product title'),
-    bodyHtml: z.string().optional().describe('New product description in HTML'),
-    vendor: z.string().optional().describe('New vendor name'),
-    productType: z.string().optional().describe('New product type'),
-    tags: z.string().optional().describe('New comma-separated tags (replaces all existing tags)'),
-    status: z.enum(['active', 'draft', 'archived']).optional().describe('New product status'),
-    images: z.array(z.object({
-      src: z.string().describe('Image URL'),
-      alt: z.string().optional().describe('Image alt text'),
-      position: z.number().optional().describe('Image position')
-    })).optional().describe('Replace all images with these (by URL)')
-  }))
-  .output(z.object({
-    productId: z.string(),
-    title: z.string(),
-    handle: z.string(),
-    status: z.string(),
-    updatedAt: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateProduct = SlateTool.create(spec, {
+  name: 'Update Product',
+  key: 'update_product',
+  description: `Update an existing product's details including title, description, vendor, type, tags, status, and images. To manage variants use the dedicated variant tools.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      productId: z.string().describe('Shopify product ID to update'),
+      title: z.string().optional().describe('New product title'),
+      bodyHtml: z.string().optional().describe('New product description in HTML'),
+      vendor: z.string().optional().describe('New vendor name'),
+      productType: z.string().optional().describe('New product type'),
+      tags: z
+        .string()
+        .optional()
+        .describe('New comma-separated tags (replaces all existing tags)'),
+      status: z
+        .enum(['active', 'draft', 'archived'])
+        .optional()
+        .describe('New product status'),
+      images: z
+        .array(
+          z.object({
+            src: z.string().describe('Image URL'),
+            alt: z.string().optional().describe('Image alt text'),
+            position: z.number().optional().describe('Image position')
+          })
+        )
+        .optional()
+        .describe('Replace all images with these (by URL)')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string(),
+      title: z.string(),
+      handle: z.string(),
+      status: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -69,4 +81,5 @@ export let updateProduct = SlateTool.create(
       },
       message: `Updated product **${product.title}**.`
     };
-  }).build();
+  })
+  .build();

@@ -9,12 +9,23 @@ let webhookQuestionSchema = z.object({
   pointsAvailable: z.number().optional().describe('Points available for this question'),
   question: z.string().describe('The question text'),
   options: z.any().optional().describe('Answer options'),
-  correctOption: z.string().optional().describe('The correct option key (for single-answer questions)'),
-  correctOptions: z.array(z.string()).optional().describe('Correct option keys (for multi-answer questions)'),
+  correctOption: z
+    .string()
+    .optional()
+    .describe('The correct option key (for single-answer questions)'),
+  correctOptions: z
+    .array(z.string())
+    .optional()
+    .describe('Correct option keys (for multi-answer questions)'),
   pointsScored: z.number().optional().describe('Points scored by the user'),
-  userResponse: z.any().optional().describe('The user\'s response'),
-  result: z.string().optional().describe('Result status (correct, incorrect, partial_correct, requires_grading, unanswered)'),
-  feedback: z.string().optional().describe('Feedback shown to the user'),
+  userResponse: z.any().optional().describe("The user's response"),
+  result: z
+    .string()
+    .optional()
+    .describe(
+      'Result status (correct, incorrect, partial_correct, requires_grading, unanswered)'
+    ),
+  feedback: z.string().optional().describe('Feedback shown to the user')
 });
 
 let categoryResultSchema = z.object({
@@ -22,55 +33,71 @@ let categoryResultSchema = z.object({
   name: z.string().describe('Category name'),
   percentage: z.number().describe('Score percentage for this category'),
   pointsAvailable: z.number().describe('Total points available in this category'),
-  pointsScored: z.number().describe('Points scored in this category'),
+  pointsScored: z.number().describe('Points scored in this category')
 });
 
-export let examResultsCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Exam Results Completed',
-    key: 'exam_results_completed',
-    description: 'Triggers when an exam is completed. Delivers real-time results including user details, scores, individual question responses, and category-level breakdowns. Supports both group and link-based exams.',
-  }
-)
-  .input(z.object({
-    payloadType: z.string().describe('Type of payload (group or link results)'),
-    payloadStatus: z.string().describe('Whether this is a live result or a verification test'),
-    rawPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    payloadType: z.enum(['group', 'link']).describe('Whether this result is from a group or link exam'),
-    payloadStatus: z.enum(['live', 'verify']).describe('Whether this is a live result or verification test'),
-    testId: z.number().describe('ID of the test'),
-    testName: z.string().describe('Name of the test'),
-    groupId: z.number().optional().describe('ID of the group (for group results)'),
-    groupName: z.string().optional().describe('Name of the group (for group results)'),
-    linkId: z.number().optional().describe('ID of the link (for link results)'),
-    linkName: z.string().optional().describe('Name of the link (for link results)'),
-    linkUrlId: z.string().optional().describe('URL identifier of the link (for link results)'),
-    linkResultId: z.number().optional().describe('Unique result ID (for link results)'),
-    userId: z.string().optional().describe('User ID of the exam taker'),
-    firstName: z.string().optional().describe('First name of the exam taker'),
-    lastName: z.string().optional().describe('Last name of the exam taker'),
-    email: z.string().optional().describe('Email of the exam taker'),
-    percentage: z.number().describe('Score percentage'),
-    pointsScored: z.number().describe('Points scored'),
-    pointsAvailable: z.number().describe('Total points available'),
-    requiresGrading: z.string().optional().describe('Whether the result requires manual grading'),
-    timeStarted: z.number().describe('Unix timestamp when the test was started'),
-    timeFinished: z.number().describe('Unix timestamp when the test was finished'),
-    duration: z.string().describe('Duration of the test in HH:MM:SS format'),
-    percentagePassmark: z.number().optional().describe('Passmark percentage'),
-    passed: z.boolean().optional().describe('Whether the exam taker passed'),
-    cmUserId: z.string().optional().describe('Custom user ID passed via URL parameter'),
-    accessCodeUsed: z.string().optional().describe('Access code used (for link results)'),
-    certificateUrl: z.string().optional().describe('URL to the certificate PDF'),
-    viewResultsUrl: z.string().optional().describe('URL to view formatted results'),
-    questions: z.array(webhookQuestionSchema).describe('Individual question responses'),
-    categoryResults: z.array(categoryResultSchema).describe('Category-level score breakdowns'),
-  }))
+export let examResultsCompleted = SlateTrigger.create(spec, {
+  name: 'Exam Results Completed',
+  key: 'exam_results_completed',
+  description:
+    'Triggers when an exam is completed. Delivers real-time results including user details, scores, individual question responses, and category-level breakdowns. Supports both group and link-based exams.'
+})
+  .input(
+    z.object({
+      payloadType: z.string().describe('Type of payload (group or link results)'),
+      payloadStatus: z
+        .string()
+        .describe('Whether this is a live result or a verification test'),
+      rawPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      payloadType: z
+        .enum(['group', 'link'])
+        .describe('Whether this result is from a group or link exam'),
+      payloadStatus: z
+        .enum(['live', 'verify'])
+        .describe('Whether this is a live result or verification test'),
+      testId: z.number().describe('ID of the test'),
+      testName: z.string().describe('Name of the test'),
+      groupId: z.number().optional().describe('ID of the group (for group results)'),
+      groupName: z.string().optional().describe('Name of the group (for group results)'),
+      linkId: z.number().optional().describe('ID of the link (for link results)'),
+      linkName: z.string().optional().describe('Name of the link (for link results)'),
+      linkUrlId: z
+        .string()
+        .optional()
+        .describe('URL identifier of the link (for link results)'),
+      linkResultId: z.number().optional().describe('Unique result ID (for link results)'),
+      userId: z.string().optional().describe('User ID of the exam taker'),
+      firstName: z.string().optional().describe('First name of the exam taker'),
+      lastName: z.string().optional().describe('Last name of the exam taker'),
+      email: z.string().optional().describe('Email of the exam taker'),
+      percentage: z.number().describe('Score percentage'),
+      pointsScored: z.number().describe('Points scored'),
+      pointsAvailable: z.number().describe('Total points available'),
+      requiresGrading: z
+        .string()
+        .optional()
+        .describe('Whether the result requires manual grading'),
+      timeStarted: z.number().describe('Unix timestamp when the test was started'),
+      timeFinished: z.number().describe('Unix timestamp when the test was finished'),
+      duration: z.string().describe('Duration of the test in HH:MM:SS format'),
+      percentagePassmark: z.number().optional().describe('Passmark percentage'),
+      passed: z.boolean().optional().describe('Whether the exam taker passed'),
+      cmUserId: z.string().optional().describe('Custom user ID passed via URL parameter'),
+      accessCodeUsed: z.string().optional().describe('Access code used (for link results)'),
+      certificateUrl: z.string().optional().describe('URL to the certificate PDF'),
+      viewResultsUrl: z.string().optional().describe('URL to view formatted results'),
+      questions: z.array(webhookQuestionSchema).describe('Individual question responses'),
+      categoryResults: z
+        .array(categoryResultSchema)
+        .describe('Category-level score breakdowns')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body = await ctx.request.text();
       let data = JSON.parse(body);
 
@@ -79,13 +106,13 @@ export let examResultsCompleted = SlateTrigger.create(
           {
             payloadType: data.payload_type || 'unknown',
             payloadStatus: data.payload_status || 'live',
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.rawPayload;
       let result = data.result || {};
       let test = data.test || {};
@@ -106,7 +133,7 @@ export let examResultsCompleted = SlateTrigger.create(
         pointsScored: q.points_scored,
         userResponse: q.user_response,
         result: q.result,
-        feedback: q.feedback,
+        feedback: q.feedback
       }));
 
       let categoryResults = (data.category_results || []).map((c: any) => ({
@@ -114,7 +141,7 @@ export let examResultsCompleted = SlateTrigger.create(
         name: c.name,
         percentage: c.percentage,
         pointsAvailable: c.points_available,
-        pointsScored: c.points_scored,
+        pointsScored: c.points_scored
       }));
 
       // Build a unique event ID for deduplication
@@ -127,7 +154,8 @@ export let examResultsCompleted = SlateTrigger.create(
         id: eventId,
         output: {
           payloadType,
-          payloadStatus: ctx.input.payloadStatus === 'verify' ? 'verify' as const : 'live' as const,
+          payloadStatus:
+            ctx.input.payloadStatus === 'verify' ? ('verify' as const) : ('live' as const),
           testId: test.test_id,
           testName: test.test_name,
           groupId: group?.group_id,
@@ -154,9 +182,9 @@ export let examResultsCompleted = SlateTrigger.create(
           certificateUrl: result.certificate_url,
           viewResultsUrl: result.view_results_url,
           questions,
-          categoryResults,
-        },
+          categoryResults
+        }
       };
-    },
+    }
   })
   .build();

@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   'us-central': 'https://llmwhisperer-api.us-central.unstract.com/api/v2',
-  'eu-west': 'https://llmwhisperer-api.eu-west.unstract.com/api/v2',
+  'eu-west': 'https://llmwhisperer-api.eu-west.unstract.com/api/v2'
 };
 
 export type ExtractionMode = 'native_text' | 'low_cost' | 'high_quality' | 'form' | 'table';
@@ -88,8 +88,8 @@ export class Client {
     return createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'unstract-key': this.token,
-      },
+        'unstract-key': this.token
+      }
     });
   }
 
@@ -101,56 +101,61 @@ export class Client {
     let response = await ax.post('/whisper', url, {
       params,
       headers: {
-        'Content-Type': 'text/plain',
-      },
+        'Content-Type': 'text/plain'
+      }
     });
 
     return {
       message: response.data.message,
       status: response.data.status,
-      whisperHash: response.data.whisper_hash,
+      whisperHash: response.data.whisper_hash
     };
   }
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-  async whisperFromFile(fileBuffer: Buffer, options: WhisperOptions = {}): Promise<WhisperResponse> {
+  async whisperFromFile(
+    fileBuffer: Buffer,
+    options: WhisperOptions = {}
+  ): Promise<WhisperResponse> {
     let ax = this.getAxios();
     let params = this.buildWhisperParams(options);
 
     let response = await ax.post('/whisper', fileBuffer, {
       params,
       headers: {
-        'Content-Type': 'application/octet-stream',
-      },
+        'Content-Type': 'application/octet-stream'
+      }
     });
 
     return {
       message: response.data.message,
       status: response.data.status,
-      whisperHash: response.data.whisper_hash,
+      whisperHash: response.data.whisper_hash
     };
   }
 
   async getWhisperStatus(whisperHash: string): Promise<WhisperStatusResponse> {
     let ax = this.getAxios();
     let response = await ax.get('/whisper-status', {
-      params: { whisper_hash: whisperHash },
+      params: { whisper_hash: whisperHash }
     });
 
     let detail = (response.data.detail || []).map((d: any) => ({
       executionTimeInSeconds: d.execution_time_in_seconds,
       message: d.message,
-      pageNo: d.page_no,
+      pageNo: d.page_no
     }));
 
     return {
       status: response.data.status,
       message: response.data.message,
-      detail,
+      detail
     };
   }
 
-  async retrieveWhisper(whisperHash: string, textOnly?: boolean): Promise<WhisperRetrieveResponse> {
+  async retrieveWhisper(
+    whisperHash: string,
+    textOnly?: boolean
+  ): Promise<WhisperRetrieveResponse> {
     let ax = this.getAxios();
     let params: Record<string, any> = { whisper_hash: whisperHash };
     if (textOnly) {
@@ -161,10 +166,11 @@ export class Client {
 
     if (textOnly) {
       return {
-        resultText: typeof response.data === 'string' ? response.data : response.data.result_text,
+        resultText:
+          typeof response.data === 'string' ? response.data : response.data.result_text,
         confidenceMetadata: null,
         metadata: null,
-        webhookMetadata: '',
+        webhookMetadata: ''
       };
     }
 
@@ -172,17 +178,20 @@ export class Client {
       resultText: response.data.result_text,
       confidenceMetadata: response.data.confidence_metadata,
       metadata: response.data.metadata,
-      webhookMetadata: response.data.webhook_metadata,
+      webhookMetadata: response.data.webhook_metadata
     };
   }
 
-  async getHighlights(whisperHash: string, lines: string): Promise<Record<string, HighlightEntry>> {
+  async getHighlights(
+    whisperHash: string,
+    lines: string
+  ): Promise<Record<string, HighlightEntry>> {
     let ax = this.getAxios();
     let response = await ax.get('/highlights', {
       params: {
         whisper_hash: whisperHash,
-        lines,
-      },
+        lines
+      }
     });
 
     let result: Record<string, HighlightEntry> = {};
@@ -194,7 +203,7 @@ export class Client {
         heightPercent: value.height_percent,
         page: value.page,
         pageHeight: value.page_height,
-        raw: value.raw,
+        raw: value.raw
       };
     }
     return result;
@@ -210,19 +219,23 @@ export class Client {
       currentPageCount: response.data.current_page_count,
       overagePageCount: response.data.overage_page_count,
       todayPageCount: response.data.today_page_count,
-      dailyQuota: response.data.daily_quota,
+      dailyQuota: response.data.daily_quota
     };
   }
 
   async registerWebhook(webhookConfig: WebhookConfig): Promise<{ message: string }> {
     let ax = this.getAxios();
-    let response = await ax.post('/whisper-manage-callback', {
-      url: webhookConfig.url,
-      auth_token: webhookConfig.authToken,
-      webhook_name: webhookConfig.webhookName,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await ax.post(
+      '/whisper-manage-callback',
+      {
+        url: webhookConfig.url,
+        auth_token: webhookConfig.authToken,
+        webhook_name: webhookConfig.webhookName
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
 
     return { message: response.data.message };
   }
@@ -230,25 +243,29 @@ export class Client {
   async getWebhookDetails(webhookName: string): Promise<WebhookConfig> {
     let ax = this.getAxios();
     let response = await ax.get('/whisper-manage-callback', {
-      params: { webhook_name: webhookName },
+      params: { webhook_name: webhookName }
     });
 
     return {
       url: response.data.url,
       authToken: response.data.auth_token,
-      webhookName: response.data.webhook_name,
+      webhookName: response.data.webhook_name
     };
   }
 
   async updateWebhook(webhookConfig: WebhookConfig): Promise<{ message: string }> {
     let ax = this.getAxios();
-    let response = await ax.put('/whisper-manage-callback', {
-      url: webhookConfig.url,
-      auth_token: webhookConfig.authToken,
-      webhook_name: webhookConfig.webhookName,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await ax.put(
+      '/whisper-manage-callback',
+      {
+        url: webhookConfig.url,
+        auth_token: webhookConfig.authToken,
+        webhook_name: webhookConfig.webhookName
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
 
     return { message: response.data.message };
   }
@@ -256,7 +273,7 @@ export class Client {
   async deleteWebhook(webhookName: string): Promise<{ message: string }> {
     let ax = this.getAxios();
     let response = await ax.delete('/whisper-manage-callback', {
-      params: { webhook_name: webhookName },
+      params: { webhook_name: webhookName }
     });
 
     return { message: response.data.message };
@@ -269,13 +286,20 @@ export class Client {
     if (options.outputMode) params['output_mode'] = options.outputMode;
     if (options.pageSeparator !== undefined) params['page_seperator'] = options.pageSeparator;
     if (options.pagesToExtract) params['pages_to_extract'] = options.pagesToExtract;
-    if (options.medianFilterSize !== undefined) params['median_filter_size'] = options.medianFilterSize;
-    if (options.gaussianBlurRadius !== undefined) params['gaussian_blur_radius'] = options.gaussianBlurRadius;
-    if (options.lineSplitterTolerance !== undefined) params['line_splitter_tolerance'] = options.lineSplitterTolerance;
-    if (options.lineSplitterStrategy) params['line_splitter_strategy'] = options.lineSplitterStrategy;
-    if (options.horizontalStretchFactor !== undefined) params['horizontal_stretch_factor'] = options.horizontalStretchFactor;
-    if (options.markVerticalLines !== undefined) params['mark_vertical_lines'] = options.markVerticalLines;
-    if (options.markHorizontalLines !== undefined) params['mark_horizontal_lines'] = options.markHorizontalLines;
+    if (options.medianFilterSize !== undefined)
+      params['median_filter_size'] = options.medianFilterSize;
+    if (options.gaussianBlurRadius !== undefined)
+      params['gaussian_blur_radius'] = options.gaussianBlurRadius;
+    if (options.lineSplitterTolerance !== undefined)
+      params['line_splitter_tolerance'] = options.lineSplitterTolerance;
+    if (options.lineSplitterStrategy)
+      params['line_splitter_strategy'] = options.lineSplitterStrategy;
+    if (options.horizontalStretchFactor !== undefined)
+      params['horizontal_stretch_factor'] = options.horizontalStretchFactor;
+    if (options.markVerticalLines !== undefined)
+      params['mark_vertical_lines'] = options.markVerticalLines;
+    if (options.markHorizontalLines !== undefined)
+      params['mark_horizontal_lines'] = options.markHorizontalLines;
     if (options.tag) params['tag'] = options.tag;
     if (options.fileName) params['file_name'] = options.fileName;
     if (options.useWebhook) params['use_webhook'] = options.useWebhook;

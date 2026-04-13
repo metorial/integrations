@@ -15,6 +15,7 @@ All API requests use this root URL: `https://api.fivetran.com/v1/`
 A Scoped API key is a key-secret pair tied to a specific user. These keys link actions to user permissions and can be generated in the Fivetran dashboard's API Keys section. The permissions of the key are determined by the user's RBAC (role-based access control) roles.
 
 To generate a Scoped API key:
+
 1. In the Fivetran dashboard, click your username → click API Key → click Generate new API key → click Generate new secret.
 
 ### System Key
@@ -26,11 +27,13 @@ A System key is an organization-managed API key–secret pair. Use System keys t
 For each request to the API, send the Base64-encoded string `api_key:api_secret` in the Authorization HTTP header.
 
 Example header:
+
 ```
 Authorization: Basic <base64-encoded api_key:api_secret>
 ```
 
 Or using curl:
+
 ```
 curl -u "api_key:api_secret" https://api.fivetran.com/v1/...
 ```
@@ -48,6 +51,7 @@ You can create destinations within a specified group. Groups and destinations ar
 ### Connection (Connector) Management
 
 The API allows you to automate the deployment, configuration and management of connectors. You can create, update, pause, delete, and list connections. Key configuration options include:
+
 - Sync frequency and schedule type (automatic or manual)
 - Schema configuration (include/exclude specific tables and columns)
 - Triggering manual syncs and historical re-syncs

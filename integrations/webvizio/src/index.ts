@@ -11,13 +11,9 @@ import {
   deleteTask,
   createComment,
   findComment,
-  deleteComment,
+  deleteComment
 } from './tools';
-import {
-  projectEvents,
-  taskEvents,
-  commentEvents,
-} from './triggers';
+import { projectEvents, taskEvents, commentEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -32,11 +28,7 @@ export let provider = Slate.create({
     deleteTask,
     createComment,
     findComment,
-    deleteComment,
+    deleteComment
   ],
-  triggers: [
-    projectEvents,
-    taskEvents,
-    commentEvents,
-  ],
+  triggers: [projectEvents, taskEvents, commentEvents]
 });

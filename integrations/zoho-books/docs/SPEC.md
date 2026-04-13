@@ -31,6 +31,7 @@ Zoho Books uses the OAuth 2.0 protocol for authentication, enabling third-party 
 **Self Client flow:** For backend applications without a redirect URL, generate a grant token directly via the Zoho Developer Console by selecting the "Self Client" type, specifying scopes, and exchanging the code for tokens.
 
 **Token Validity:**
+
 - Each access token is only valid for one hour and can be used only for the operations defined in the scope.
 - A refresh token does not expire. Maximum of 20 refresh tokens per user.
 
@@ -40,82 +41,101 @@ Zoho Books uses the OAuth 2.0 protocol for authentication, enabling third-party 
 
 **Scopes:** Format is `ZohoBooks.{scope_name}.{operation}` where operation is `CREATE`, `READ`, `UPDATE`, `DELETE`, or `ALL`. Available scope names:
 
-| Scope Name | Covers |
-|---|---|
-| `contacts` | Customers and Vendors |
-| `settings` | Items, Expense Categories, Users, Taxes, Currencies, Opening Balances |
-| `estimates` | Quotes/Estimates |
-| `invoices` | Invoices |
-| `customerpayments` | Payments Received |
-| `creditnotes` | Credit Notes |
-| `projects` | Projects |
-| `expenses` | Expenses |
-| `salesorders` | Sales Orders |
-| `purchaseorders` | Purchase Orders |
-| `bills` | Bills |
-| `debitnotes` | Vendor Credits |
-| `vendorpayments` | Payments Made |
-| `banking` | Banking |
-| `accountants` | Accountant module |
-| `fullaccess` | Full access to all resources (use `ZohoBooks.fullaccess.all`) |
+| Scope Name         | Covers                                                                |
+| ------------------ | --------------------------------------------------------------------- |
+| `contacts`         | Customers and Vendors                                                 |
+| `settings`         | Items, Expense Categories, Users, Taxes, Currencies, Opening Balances |
+| `estimates`        | Quotes/Estimates                                                      |
+| `invoices`         | Invoices                                                              |
+| `customerpayments` | Payments Received                                                     |
+| `creditnotes`      | Credit Notes                                                          |
+| `projects`         | Projects                                                              |
+| `expenses`         | Expenses                                                              |
+| `salesorders`      | Sales Orders                                                          |
+| `purchaseorders`   | Purchase Orders                                                       |
+| `bills`            | Bills                                                                 |
+| `debitnotes`       | Vendor Credits                                                        |
+| `vendorpayments`   | Payments Made                                                         |
+| `banking`          | Banking                                                               |
+| `accountants`      | Accountant module                                                     |
+| `fullaccess`       | Full access to all resources (use `ZohoBooks.fullaccess.all`)         |
 
 ## Features
 
 ### Contact Management
+
 Manage customers and vendors including company details, contact persons, billing/shipping addresses, payment terms, and credit limits. Contacts can be classified as `customer` or `vendor` and further as `individual` or `business`. Supports enabling portal access, payment reminders, emailing statements, and 1099 tracking (US).
 
 ### Invoicing
+
 Create, send, and manage invoices with line items, taxes, discounts, and custom fields. Supports invoice lifecycle management (draft, sent, paid, void, write-off), applying credits, recording payments, email reminders, bulk operations, approval workflows, and payment link generation. Recurring invoices can be configured with custom repeat intervals.
 
 ### Estimates and Quotes
+
 Create and manage estimates/quotes with full lifecycle support (draft, sent, accepted, declined). Estimates can be submitted for approval and converted to invoices or sales orders.
 
 ### Sales Orders
+
 Manage sales orders with lifecycle status tracking (draft, open, void), approval workflows, and conversion to invoices.
 
 ### Purchase Orders and Bills
+
 Create and manage purchase orders and bills for vendor transactions. Purchase orders support approval workflows and can be converted to bills. Bills support payment recording, credit application, and approval workflows.
 
 ### Expense Tracking
+
 Record and manage expenses with receipt attachments, employee management, and categorization. Supports recurring expenses with configurable schedules.
 
 ### Payments
+
 Record and manage both customer payments (payments received) and vendor payments (payments made). Supports excess payment refunds and linking payments to specific invoices or bills.
 
 ### Credit Notes and Vendor Credits
+
 Issue credit notes to customers and manage vendor credits. Credits can be applied to invoices or bills, and refunds can be issued.
 
 ### Project Accounting
+
 Create and manage projects with user assignments, tasks, and time tracking. Supports time entry logging with start/stop timers and billing against projects.
 
 ### Banking
+
 Manage bank accounts and credit card accounts. Import bank statements, categorize transactions, match transactions against invoices/bills/expenses, and manage bank rules for automatic categorization.
 
 ### Chart of Accounts and Journals
+
 Manage the chart of accounts (general ledger accounts) and create manual journal entries for adjustments and complex accounting transactions.
 
 ### Fixed Assets
+
 Track fixed assets with depreciation forecasting, lifecycle management (active, draft, written off, sold), and asset type configuration.
 
 ### Items and Inventory
+
 Manage products and services as line items that can be used across invoices, estimates, bills, and other transaction documents. Items support custom fields and active/inactive status.
 
 ### Tax Configuration
+
 Create and manage taxes, tax groups, tax authorities (US/CA), and tax exemptions (US). Taxes can be applied to transactions and items.
 
 ### Currency and Exchange Rates
+
 Manage multiple currencies and exchange rates. Supports base currency adjustments for multi-currency organizations.
 
 ### Organization and Settings
+
 Manage organization details, user accounts and roles, locations/branches, reporting tags, and opening balances.
 
 ### Custom Modules
+
 Create and manage records in custom modules defined within Zoho Books, enabling extension of the data model beyond standard accounting entities.
 
 ### Zoho CRM Integration
+
 Import customers, vendors, and items from Zoho CRM using CRM account, contact, vendor, or product IDs.
 
 ### Document Management
+
 Attach files and receipts to invoices, bills, expenses, purchase orders, sales orders, and other transaction documents. Supports email delivery of documents with customizable templates.
 
 ## Events
@@ -141,6 +161,7 @@ Webhooks are tied to workflow rules, which can be configured for the following m
 - **Projects** — Triggered on project creation or updates.
 
 Each workflow rule can specify:
+
 - **Trigger timing:** When a record is created, edited, or both; or on a date-based schedule.
 - **Criteria/conditions:** Filter conditions on fields (e.g., total amount > $10,000).
 - **Immediate vs. time-based actions:** Webhooks can fire immediately or be scheduled relative to a date field.

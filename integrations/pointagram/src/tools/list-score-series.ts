@@ -3,33 +3,44 @@ import { PointagramClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listScoreSeries = SlateTool.create(
-  spec,
-  {
-    name: 'List Score Series',
-    key: 'list_score_series',
-    description: `Retrieves all score series in your Pointagram account. Optionally fetches the point types configured for a specific score series.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listScoreSeries = SlateTool.create(spec, {
+  name: 'List Score Series',
+  key: 'list_score_series',
+  description: `Retrieves all score series in your Pointagram account. Optionally fetches the point types configured for a specific score series.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    scoreseriesId: z.string().optional().describe('If provided, also fetches the point types configured for this score series'),
-  }))
-  .output(z.object({
-    scoreSeries: z.array(z.any()).describe('List of score series'),
-    pointTypes: z.array(z.any()).optional().describe('Point types for the specified score series (only if scoreseriesId was provided)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scoreseriesId: z
+        .string()
+        .optional()
+        .describe('If provided, also fetches the point types configured for this score series')
+    })
+  )
+  .output(
+    z.object({
+      scoreSeries: z.array(z.any()).describe('List of score series'),
+      pointTypes: z
+        .array(z.any())
+        .optional()
+        .describe(
+          'Point types for the specified score series (only if scoreseriesId was provided)'
+        )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PointagramClient({
       token: ctx.auth.token,
-      apiUser: ctx.auth.apiUser,
+      apiUser: ctx.auth.apiUser
     });
 
     let seriesResult = await client.listScoreSeries();
-    let scoreSeries = Array.isArray(seriesResult) ? seriesResult : (seriesResult?.scoreseries ?? [seriesResult]);
+    let scoreSeries = Array.isArray(seriesResult)
+      ? seriesResult
+      : (seriesResult?.scoreseries ?? [seriesResult]);
 
     let pointTypes: unknown[] | undefined;
     if (ctx.input.scoreseriesId) {
@@ -44,6 +55,7 @@ export let listScoreSeries = SlateTool.create(
 
     return {
       output: { scoreSeries, pointTypes },
-      message,
+      message
     };
-  }).build();
+  })
+  .build();

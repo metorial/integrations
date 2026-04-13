@@ -1,10 +1,12 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
-import { listTransactionTypes, createCorrespondence, getCorrespondenceStatus, deliverCorrespondence } from './tools';
-import { correspondenceProcessed,
-  inboundWebhook,
-} from './triggers';
+import {
+  listTransactionTypes,
+  createCorrespondence,
+  getCorrespondenceStatus,
+  deliverCorrespondence
+} from './tools';
+import { correspondenceProcessed, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -12,10 +14,7 @@ export let provider = Slate.create({
     listTransactionTypes,
     createCorrespondence,
     getCorrespondenceStatus,
-    deliverCorrespondence,
+    deliverCorrespondence
   ],
-  triggers: [
-    inboundWebhook,
-    correspondenceProcessed,
-  ],
+  triggers: [inboundWebhook, correspondenceProcessed]
 });

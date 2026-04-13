@@ -5,11 +5,14 @@ import { encodeFormBody } from './client';
 export class TaskRouterClient {
   private axios: AxiosInstance;
 
-  constructor(private token: string, private accountSid: string) {
+  constructor(
+    private token: string,
+    private accountSid: string
+  ) {
     this.axios = createAxios({
       baseURL: `https://taskrouter.twilio.com/v1/Workspaces`,
       headers: {
-        'Authorization': `Basic ${token}`,
+        Authorization: `Basic ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
@@ -28,13 +31,19 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async updateWorkspace(workspaceSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateWorkspace(
+    workspaceSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(`/${workspaceSid}`, encodeFormBody(params));
     return response.data;
   }
 
   // Workers
-  async listWorkers(workspaceSid: string, params?: Record<string, string | undefined>): Promise<any> {
+  async listWorkers(
+    workspaceSid: string,
+    params?: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.get(`/${workspaceSid}/Workers`, { params });
     return response.data;
   }
@@ -44,13 +53,23 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async createWorker(workspaceSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async createWorker(
+    workspaceSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(`/${workspaceSid}/Workers`, encodeFormBody(params));
     return response.data;
   }
 
-  async updateWorker(workspaceSid: string, workerSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/Workers/${workerSid}`, encodeFormBody(params));
+  async updateWorker(
+    workspaceSid: string,
+    workerSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/Workers/${workerSid}`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -71,13 +90,26 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async createActivity(workspaceSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/Activities`, encodeFormBody(params));
+  async createActivity(
+    workspaceSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/Activities`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
-  async updateActivity(workspaceSid: string, activitySid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/Activities/${activitySid}`, encodeFormBody(params));
+  async updateActivity(
+    workspaceSid: string,
+    activitySid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/Activities/${activitySid}`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -98,13 +130,26 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async createTaskQueue(workspaceSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/TaskQueues`, encodeFormBody(params));
+  async createTaskQueue(
+    workspaceSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/TaskQueues`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
-  async updateTaskQueue(workspaceSid: string, taskQueueSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/TaskQueues/${taskQueueSid}`, encodeFormBody(params));
+  async updateTaskQueue(
+    workspaceSid: string,
+    taskQueueSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/TaskQueues/${taskQueueSid}`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -125,13 +170,23 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async createWorkflow(workspaceSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async createWorkflow(
+    workspaceSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(`/${workspaceSid}/Workflows`, encodeFormBody(params));
     return response.data;
   }
 
-  async updateWorkflow(workspaceSid: string, workflowSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/Workflows/${workflowSid}`, encodeFormBody(params));
+  async updateWorkflow(
+    workspaceSid: string,
+    workflowSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/Workflows/${workflowSid}`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -140,7 +195,10 @@ export class TaskRouterClient {
   }
 
   // Tasks
-  async listTasks(workspaceSid: string, params?: Record<string, string | undefined>): Promise<any> {
+  async listTasks(
+    workspaceSid: string,
+    params?: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.get(`/${workspaceSid}/Tasks`, { params });
     return response.data;
   }
@@ -150,13 +208,23 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async createTask(workspaceSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async createTask(
+    workspaceSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(`/${workspaceSid}/Tasks`, encodeFormBody(params));
     return response.data;
   }
 
-  async updateTask(workspaceSid: string, taskSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/${workspaceSid}/Tasks/${taskSid}`, encodeFormBody(params));
+  async updateTask(
+    workspaceSid: string,
+    taskSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${workspaceSid}/Tasks/${taskSid}`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -170,12 +238,23 @@ export class TaskRouterClient {
     return response.data;
   }
 
-  async getReservation(workspaceSid: string, taskSid: string, reservationSid: string): Promise<any> {
-    let response = await this.axios.get(`/${workspaceSid}/Tasks/${taskSid}/Reservations/${reservationSid}`);
+  async getReservation(
+    workspaceSid: string,
+    taskSid: string,
+    reservationSid: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/${workspaceSid}/Tasks/${taskSid}/Reservations/${reservationSid}`
+    );
     return response.data;
   }
 
-  async updateReservation(workspaceSid: string, taskSid: string, reservationSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateReservation(
+    workspaceSid: string,
+    taskSid: string,
+    reservationSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/${workspaceSid}/Tasks/${taskSid}/Reservations/${reservationSid}`,
       encodeFormBody(params)
@@ -190,18 +269,34 @@ export class TaskRouterClient {
   }
 
   // Statistics
-  async getWorkspaceStatistics(workspaceSid: string, params?: Record<string, string | undefined>): Promise<any> {
+  async getWorkspaceStatistics(
+    workspaceSid: string,
+    params?: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.get(`/${workspaceSid}/Statistics`, { params });
     return response.data;
   }
 
-  async getTaskQueueStatistics(workspaceSid: string, taskQueueSid: string, params?: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.get(`/${workspaceSid}/TaskQueues/${taskQueueSid}/Statistics`, { params });
+  async getTaskQueueStatistics(
+    workspaceSid: string,
+    taskQueueSid: string,
+    params?: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/${workspaceSid}/TaskQueues/${taskQueueSid}/Statistics`,
+      { params }
+    );
     return response.data;
   }
 
-  async getWorkerStatistics(workspaceSid: string, workerSid: string, params?: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.get(`/${workspaceSid}/Workers/${workerSid}/Statistics`, { params });
+  async getWorkerStatistics(
+    workspaceSid: string,
+    workerSid: string,
+    params?: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.get(`/${workspaceSid}/Workers/${workerSid}/Statistics`, {
+      params
+    });
     return response.data;
   }
 }

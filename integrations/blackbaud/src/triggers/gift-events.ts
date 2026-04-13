@@ -6,40 +6,47 @@ import { z } from 'zod';
 let GIFT_EVENT_TYPES = [
   'com.blackbaud.gift.add.v1',
   'com.blackbaud.gift.change.v1',
-  'com.blackbaud.gift.delete.v1',
+  'com.blackbaud.gift.delete.v1'
 ] as const;
 
-export let giftEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Gift Events',
-    key: 'gift_events',
-    description: 'Triggers when gifts (donations) are added, changed, or deleted in Blackbaud. Useful for triggering workflows when donations are received or modified.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The CloudEvents event type (e.g., com.blackbaud.gift.add.v1).'),
-    eventId: z.string().describe('Unique event ID.'),
-    giftId: z.string().optional().describe('System record ID of the affected gift.'),
-    rawEvent: z.any().describe('Full CloudEvents payload.'),
-  }))
-  .output(z.object({
-    giftId: z.string().optional().describe('System record ID of the affected gift.'),
-    action: z.string().describe('The action performed (add, change, delete).'),
-    gift: z.any().optional().describe('The gift record if available.'),
-  }))
+export let giftEvents = SlateTrigger.create(spec, {
+  name: 'Gift Events',
+  key: 'gift_events',
+  description:
+    'Triggers when gifts (donations) are added, changed, or deleted in Blackbaud. Useful for triggering workflows when donations are received or modified.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The CloudEvents event type (e.g., com.blackbaud.gift.add.v1).'),
+      eventId: z.string().describe('Unique event ID.'),
+      giftId: z.string().optional().describe('System record ID of the affected gift.'),
+      rawEvent: z.any().describe('Full CloudEvents payload.')
+    })
+  )
+  .output(
+    z.object({
+      giftId: z.string().optional().describe('System record ID of the affected gift.'),
+      action: z.string().describe('The action performed (add, change, delete).'),
+      gift: z.any().optional().describe('The gift record if available.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        subscriptionKey: ctx.auth.subscriptionKey,
+        subscriptionKey: ctx.auth.subscriptionKey
       });
 
       let subscriptionIds: string[] = [];
 
       for (let eventType of GIFT_EVENT_TYPES) {
         try {
-          let result = await client.createWebhookSubscription(ctx.input.webhookBaseUrl, eventType);
+          let result = await client.createWebhookSubscription(
+            ctx.input.webhookBaseUrl,
+            eventType
+          );
           if (result?.id) {
             subscriptionIds.push(result.id);
           }
@@ -49,14 +56,14 @@ export let giftEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { subscriptionIds },
+        registrationDetails: { subscriptionIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        subscriptionKey: ctx.auth.subscriptionKey,
+        subscriptionKey: ctx.auth.subscriptionKey
       });
 
       let ids = ctx.input.registrationDetails?.subscriptionIds || [];
@@ -69,7 +76,7 @@ export let giftEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       if (ctx.request.method === 'OPTIONS') {
         return { inputs: [] };
       }
@@ -84,23 +91,24 @@ export let giftEvents = SlateTrigger.create(
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events.map((event: any) => {
-        let giftId = event?.data?.gift_id
-          || event?.data?.id
-          || event?.subject;
+        let giftId = event?.data?.gift_id || event?.data?.id || event?.subject;
 
         return {
           eventType: event?.type || '',
           eventId: event?.id || `${event?.type}-${Date.now()}`,
           giftId: giftId ? String(giftId) : undefined,
-          rawEvent: event,
+          rawEvent: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
-      let parts = ctx.input.eventType.replace('com.blackbaud.', '').replace('.v1', '').split('.');
+    handleEvent: async ctx => {
+      let parts = ctx.input.eventType
+        .replace('com.blackbaud.', '')
+        .replace('.v1', '')
+        .split('.');
       let action = parts[parts.length - 1] ?? 'unknown';
 
       let type = `gift.${action === 'add' ? 'created' : action === 'change' ? 'updated' : action === 'delete' ? 'deleted' : action}`;
@@ -111,14 +119,14 @@ export let giftEvents = SlateTrigger.create(
         gift?: any;
       } = {
         giftId: ctx.input.giftId,
-        action,
+        action
       };
 
       if (ctx.input.giftId && action !== 'delete') {
         try {
           let client = new Client({
             token: ctx.auth.token,
-            subscriptionKey: ctx.auth.subscriptionKey,
+            subscriptionKey: ctx.auth.subscriptionKey
           });
           output.gift = await client.getGift(ctx.input.giftId);
         } catch {
@@ -129,8 +137,8 @@ export let giftEvents = SlateTrigger.create(
       return {
         type,
         id: ctx.input.eventId,
-        output,
+        output
       };
-    },
+    }
   })
   .build();

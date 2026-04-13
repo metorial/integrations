@@ -44,21 +44,21 @@ export class Client {
 
   private getAxios() {
     return createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
   private getHeaders() {
     return {
-      'Authorization': `Api-Key ${this.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Api-Key ${this.token}`,
+      'Content-Type': 'application/json'
     };
   }
 
   async getUser() {
     let axios = this.getAxios();
     let response = await axios.get(`${VERSION_PATH}/user/by-api`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -73,8 +73,8 @@ export class Client {
         searchType: params.searchType || 'documents',
         ...(params.status ? { status: params.status } : {}),
         ...(params.limit ? { limit: params.limit } : {}),
-        ...(params.offset ? { offset: params.offset } : {}),
-      },
+        ...(params.offset ? { offset: params.offset } : {})
+      }
     });
     return response.data;
   }
@@ -82,7 +82,7 @@ export class Client {
   async listTemplates() {
     let axios = this.getAxios();
     let response = await axios.get(`${VERSION_PATH}/documents/api/templates`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
@@ -90,23 +90,27 @@ export class Client {
   async getDocumentSigners(documentId: string) {
     let axios = this.getAxios();
     let response = await axios.get(`${VERSION_PATH}/documents/${documentId}/signers`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
     return response.data;
   }
 
   async createSignatureRequest(params: CreateSignatureRequestParams) {
     let axios = this.getAxios();
-    let response = await axios.post('/document_sign/api/request_by_template', {
-      templateId: params.templateId,
-      signers: params.signers,
-      ...(params.title ? { title: params.title } : {}),
-      ...(params.message ? { message: params.message } : {}),
-      ...(params.isOrdered !== undefined ? { isOrdered: params.isOrdered } : {}),
-      ...(params.testMode !== undefined ? { testMode: params.testMode } : {}),
-    }, {
-      headers: this.getHeaders(),
-    });
+    let response = await axios.post(
+      '/document_sign/api/request_by_template',
+      {
+        templateId: params.templateId,
+        signers: params.signers,
+        ...(params.title ? { title: params.title } : {}),
+        ...(params.message ? { message: params.message } : {}),
+        ...(params.isOrdered !== undefined ? { isOrdered: params.isOrdered } : {}),
+        ...(params.testMode !== undefined ? { testMode: params.testMode } : {})
+      },
+      {
+        headers: this.getHeaders()
+      }
+    );
     return response.data;
   }
 }

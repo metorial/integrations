@@ -3,27 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLibrariesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Libraries',
-    key: 'manage_libraries',
-    description: `List, link, or unlink shared design libraries for a file. Libraries provide reusable components, colors, and typographies across files.`,
-    tags: {
-      readOnly: false,
-    },
+export let manageLibrariesTool = SlateTool.create(spec, {
+  name: 'Manage Libraries',
+  key: 'manage_libraries',
+  description: `List, link, or unlink shared design libraries for a file. Libraries provide reusable components, colors, and typographies across files.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'link', 'unlink']).describe('Operation: "list" returns linked libraries, "link" connects a library, "unlink" disconnects a library'),
-    fileId: z.string().describe('ID of the file'),
-    libraryId: z.string().optional().describe('ID of the library file to link/unlink (required for "link" and "unlink")'),
-  }))
-  .output(z.object({
-    libraries: z.array(z.any()).optional().describe('List of linked libraries (for "list" action)'),
-    success: z.boolean().optional().describe('Whether the link/unlink operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'link', 'unlink'])
+        .describe(
+          'Operation: "list" returns linked libraries, "link" connects a library, "unlink" disconnects a library'
+        ),
+      fileId: z.string().describe('ID of the file'),
+      libraryId: z
+        .string()
+        .optional()
+        .describe('ID of the library file to link/unlink (required for "link" and "unlink")')
+    })
+  )
+  .output(
+    z.object({
+      libraries: z
+        .array(z.any())
+        .optional()
+        .describe('List of linked libraries (for "list" action)'),
+      success: z.boolean().optional().describe('Whether the link/unlink operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
     let { action, fileId, libraryId } = ctx.input;
 
@@ -33,7 +44,7 @@ export let manageLibrariesTool = SlateTool.create(
         let libArray = Array.isArray(libraries) ? libraries : [];
         return {
           output: { libraries: libArray },
-          message: `Found **${libArray.length}** linked library(ies).`,
+          message: `Found **${libArray.length}** linked library(ies).`
         };
       }
       case 'link': {
@@ -41,7 +52,7 @@ export let manageLibrariesTool = SlateTool.create(
         await client.linkFileToLibrary(fileId, libraryId);
         return {
           output: { success: true },
-          message: `Linked library \`${libraryId}\` to file.`,
+          message: `Linked library \`${libraryId}\` to file.`
         };
       }
       case 'unlink': {
@@ -49,8 +60,9 @@ export let manageLibrariesTool = SlateTool.create(
         await client.unlinkFileFromLibrary(fileId, libraryId);
         return {
           output: { success: true },
-          message: `Unlinked library \`${libraryId}\` from file.`,
+          message: `Unlinked library \`${libraryId}\` from file.`
         };
       }
     }
-  }).build();
+  })
+  .build();

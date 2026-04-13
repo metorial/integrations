@@ -4,34 +4,41 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let campaignEventTypes = [
-  'sent', 'open', 'click', 'reply',
-  'forward', 'share', 'bounce'
+  'sent',
+  'open',
+  'click',
+  'reply',
+  'forward',
+  'share',
+  'bounce'
 ] as const;
 
-export let campaignEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Events',
-    key: 'campaign_events',
-    description: 'Triggers when a campaign is sent, opened, clicked, replied to, forwarded, shared, or bounced.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of campaign event'),
-    payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('ID of the contact'),
-    contactEmail: z.string().optional().describe('Email of the contact'),
-    campaignId: z.string().optional().describe('ID of the campaign'),
-    campaignName: z.string().optional().describe('Name of the campaign'),
-    listId: z.string().optional().describe('ID of the list the campaign was sent to'),
-    linkUrl: z.string().optional().describe('URL of the clicked link (for click events)'),
-    initiatedBy: z.string().optional().describe('Who initiated the action'),
-    occurredAt: z.string().optional().describe('When the event occurred')
-  }))
+export let campaignEvents = SlateTrigger.create(spec, {
+  name: 'Campaign Events',
+  key: 'campaign_events',
+  description:
+    'Triggers when a campaign is sent, opened, clicked, replied to, forwarded, shared, or bounced.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of campaign event'),
+      payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('ID of the contact'),
+      contactEmail: z.string().optional().describe('Email of the contact'),
+      campaignId: z.string().optional().describe('ID of the campaign'),
+      campaignName: z.string().optional().describe('Name of the campaign'),
+      listId: z.string().optional().describe('ID of the list the campaign was sent to'),
+      linkUrl: z.string().optional().describe('URL of the clicked link (for click events)'),
+      initiatedBy: z.string().optional().describe('Who initiated the action'),
+      occurredAt: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -51,7 +58,7 @@ export let campaignEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -60,7 +67,7 @@ export let campaignEvents = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       let contentType = ctx.request.headers.get('content-type') || '';
 
@@ -75,14 +82,16 @@ export let campaignEvents = SlateTrigger.create(
       let eventType = data.type || data['type'] || 'unknown';
 
       return {
-        inputs: [{
-          eventType,
-          payload: data
-        }]
+        inputs: [
+          {
+            eventType,
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
       let contactId = String(p['contact[id]'] || p['contactId'] || '');
@@ -111,4 +120,5 @@ export let campaignEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

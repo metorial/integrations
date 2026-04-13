@@ -3,40 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let opportunityChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Opportunity Changes',
-    key: 'opportunity_changes',
-    description: 'Triggers when sales opportunities are created or updated in ForceManager.',
-  }
-)
-  .input(z.object({
-    opportunityId: z.number().describe('Opportunity ID'),
-    record: z.any().describe('Full opportunity record'),
-    detectedAt: z.string().describe('Timestamp when the change was detected')
-  }))
-  .output(z.object({
-    opportunityId: z.number().describe('Opportunity ID'),
-    reference: z.string().nullable().describe('Opportunity reference'),
-    total: z.number().nullable().describe('Opportunity amount'),
-    salesProbability: z.number().nullable().describe('Win probability percentage'),
-    statusId: z.any().nullable().describe('Opportunity status'),
-    accountId1: z.any().nullable().describe('Primary account'),
-    salesRepId: z.any().nullable().describe('Assigned sales rep'),
-    salesForecastDate: z.string().nullable().describe('Expected closing date'),
-    wonDate: z.string().nullable().describe('Won date'),
-    lostDate: z.string().nullable().describe('Lost date'),
-    dateCreated: z.string().nullable().describe('Record creation date'),
-    dateUpdated: z.string().nullable().describe('Record last update date'),
-    record: z.any().describe('Full opportunity record')
-  }))
+export let opportunityChanges = SlateTrigger.create(spec, {
+  name: 'Opportunity Changes',
+  key: 'opportunity_changes',
+  description: 'Triggers when sales opportunities are created or updated in ForceManager.'
+})
+  .input(
+    z.object({
+      opportunityId: z.number().describe('Opportunity ID'),
+      record: z.any().describe('Full opportunity record'),
+      detectedAt: z.string().describe('Timestamp when the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      opportunityId: z.number().describe('Opportunity ID'),
+      reference: z.string().nullable().describe('Opportunity reference'),
+      total: z.number().nullable().describe('Opportunity amount'),
+      salesProbability: z.number().nullable().describe('Win probability percentage'),
+      statusId: z.any().nullable().describe('Opportunity status'),
+      accountId1: z.any().nullable().describe('Primary account'),
+      salesRepId: z.any().nullable().describe('Assigned sales rep'),
+      salesForecastDate: z.string().nullable().describe('Expected closing date'),
+      wonDate: z.string().nullable().describe('Won date'),
+      lostDate: z.string().nullable().describe('Lost date'),
+      dateCreated: z.string().nullable().describe('Record creation date'),
+      dateUpdated: z.string().nullable().describe('Record last update date'),
+      record: z.any().describe('Full opportunity record')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth);
       let lastPollTime = ctx.state?.lastPollTime || new Date().toISOString().replace('Z', '');
 
@@ -54,7 +55,7 @@ export let opportunityChanges = SlateTrigger.create(
       let now = new Date().toISOString().replace('Z', '');
 
       return {
-        inputs: allRecords.map((record) => ({
+        inputs: allRecords.map(record => ({
           opportunityId: record.id,
           record,
           detectedAt: now
@@ -65,7 +66,7 @@ export let opportunityChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let record = ctx.input.record;
       let isNew = record.dateCreated === record.dateUpdated;
 
@@ -89,4 +90,5 @@ export let opportunityChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

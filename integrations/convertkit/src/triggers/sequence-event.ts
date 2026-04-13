@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let sequenceEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sequence Event',
-    key: 'sequence_event',
-    description: 'Fires when a subscriber is added to or completes a sequence. Registers webhooks for all sequences.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('The webhook event name'),
-    sequenceId: z.number().describe('Sequence ID'),
-    subscriberId: z.number().describe('Subscriber ID'),
-    firstName: z.string().nullable().describe('Subscriber first name'),
-    emailAddress: z.string().describe('Subscriber email address'),
-    state: z.string().describe('Subscriber state'),
-    createdAt: z.string().describe('Subscriber creation timestamp'),
-    fields: z.record(z.string(), z.string().nullable()).describe('Custom field values'),
-  }))
-  .output(z.object({
-    sequenceId: z.number().describe('Sequence ID'),
-    subscriberId: z.number().describe('Subscriber ID'),
-    firstName: z.string().nullable().describe('First name'),
-    emailAddress: z.string().describe('Email address'),
-    state: z.string().describe('Current subscriber state'),
-    createdAt: z.string().describe('When the subscriber was created'),
-    fields: z.record(z.string(), z.string().nullable()).describe('Custom field values'),
-  }))
+export let sequenceEvent = SlateTrigger.create(spec, {
+  name: 'Sequence Event',
+  key: 'sequence_event',
+  description:
+    'Fires when a subscriber is added to or completes a sequence. Registers webhooks for all sequences.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('The webhook event name'),
+      sequenceId: z.number().describe('Sequence ID'),
+      subscriberId: z.number().describe('Subscriber ID'),
+      firstName: z.string().nullable().describe('Subscriber first name'),
+      emailAddress: z.string().describe('Subscriber email address'),
+      state: z.string().describe('Subscriber state'),
+      createdAt: z.string().describe('Subscriber creation timestamp'),
+      fields: z.record(z.string(), z.string().nullable()).describe('Custom field values')
+    })
+  )
+  .output(
+    z.object({
+      sequenceId: z.number().describe('Sequence ID'),
+      subscriberId: z.number().describe('Subscriber ID'),
+      firstName: z.string().nullable().describe('First name'),
+      emailAddress: z.string().describe('Email address'),
+      state: z.string().describe('Current subscriber state'),
+      createdAt: z.string().describe('When the subscriber was created'),
+      fields: z.record(z.string(), z.string().nullable()).describe('Custom field values')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let sequencesResult = await client.listSequences({ perPage: 500 });
       let webhookIds: number[] = [];
@@ -39,23 +41,23 @@ export let sequenceEvent = SlateTrigger.create(
       for (let seq of sequencesResult.sequences) {
         let subscribeWebhook = await client.createWebhook(ctx.input.webhookBaseUrl, {
           name: 'subscriber.course_subscribe',
-          sequenceId: seq.id,
+          sequenceId: seq.id
         });
         webhookIds.push(subscribeWebhook.id);
 
         let completeWebhook = await client.createWebhook(ctx.input.webhookBaseUrl, {
           name: 'subscriber.course_complete',
-          sequenceId: seq.id,
+          sequenceId: seq.id
         });
         webhookIds.push(completeWebhook.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: number[] };
 
@@ -68,8 +70,8 @@ export let sequenceEvent = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
       let subscriber = body.subscriber;
 
       if (!subscriber) {
@@ -89,13 +91,13 @@ export let sequenceEvent = SlateTrigger.create(
             emailAddress: subscriber.email_address,
             state: subscriber.state,
             createdAt: subscriber.created_at,
-            fields: subscriber.fields || {},
-          },
-        ],
+            fields: subscriber.fields || {}
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventName.includes('complete')
         ? 'sequence.completed'
         : 'sequence.subscribed';
@@ -110,8 +112,8 @@ export let sequenceEvent = SlateTrigger.create(
           emailAddress: ctx.input.emailAddress,
           state: ctx.input.state,
           createdAt: ctx.input.createdAt,
-          fields: ctx.input.fields,
-        },
+          fields: ctx.input.fields
+        }
       };
-    },
+    }
   });

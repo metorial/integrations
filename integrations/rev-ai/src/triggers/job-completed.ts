@@ -3,43 +3,45 @@ import { RevAIClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Completed',
-    key: 'job_completed',
-    description: 'Triggers when a Rev AI job completes processing. Set the webhook URL as the notification_config.url when submitting any job (transcription, sentiment analysis, topic extraction, language identification, or custom vocabulary).',
-  },
-)
-  .input(z.object({
-    jobId: z.string().describe('ID of the completed job'),
-    jobStatus: z.string().describe('Job status: "transcribed", "completed", or "failed"'),
-    jobType: z.string().optional().describe('Type of job that completed'),
-    failure: z.string().optional().describe('Failure reason if the job failed'),
-    failureDetail: z.string().optional().describe('Detailed failure information'),
-    createdOn: z.string().optional().describe('ISO 8601 job creation timestamp'),
-    completedOn: z.string().optional().describe('ISO 8601 job completion timestamp'),
-    mediaUrl: z.string().optional().describe('Media URL of the job'),
-    metadata: z.string().optional().describe('Metadata associated with the job'),
-    language: z.string().optional().describe('Language used for the job'),
-    durationSeconds: z.number().optional().describe('Duration of the media in seconds'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('ID of the completed job'),
-    jobStatus: z.string().describe('Job status'),
-    jobType: z.string().optional().describe('Type of job'),
-    failure: z.string().optional().describe('Failure reason'),
-    failureDetail: z.string().optional().describe('Detailed failure information'),
-    createdOn: z.string().optional().describe('ISO 8601 job creation timestamp'),
-    completedOn: z.string().optional().describe('ISO 8601 job completion timestamp'),
-    mediaUrl: z.string().optional().describe('Media URL of the job'),
-    metadata: z.string().optional().describe('Metadata associated with the job'),
-    language: z.string().optional().describe('Language used for the job'),
-    durationSeconds: z.number().optional().describe('Duration of the media in seconds'),
-  }))
+export let jobCompleted = SlateTrigger.create(spec, {
+  name: 'Job Completed',
+  key: 'job_completed',
+  description:
+    'Triggers when a Rev AI job completes processing. Set the webhook URL as the notification_config.url when submitting any job (transcription, sentiment analysis, topic extraction, language identification, or custom vocabulary).'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('ID of the completed job'),
+      jobStatus: z.string().describe('Job status: "transcribed", "completed", or "failed"'),
+      jobType: z.string().optional().describe('Type of job that completed'),
+      failure: z.string().optional().describe('Failure reason if the job failed'),
+      failureDetail: z.string().optional().describe('Detailed failure information'),
+      createdOn: z.string().optional().describe('ISO 8601 job creation timestamp'),
+      completedOn: z.string().optional().describe('ISO 8601 job completion timestamp'),
+      mediaUrl: z.string().optional().describe('Media URL of the job'),
+      metadata: z.string().optional().describe('Metadata associated with the job'),
+      language: z.string().optional().describe('Language used for the job'),
+      durationSeconds: z.number().optional().describe('Duration of the media in seconds')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('ID of the completed job'),
+      jobStatus: z.string().describe('Job status'),
+      jobType: z.string().optional().describe('Type of job'),
+      failure: z.string().optional().describe('Failure reason'),
+      failureDetail: z.string().optional().describe('Detailed failure information'),
+      createdOn: z.string().optional().describe('ISO 8601 job creation timestamp'),
+      completedOn: z.string().optional().describe('ISO 8601 job completion timestamp'),
+      mediaUrl: z.string().optional().describe('Media URL of the job'),
+      metadata: z.string().optional().describe('Metadata associated with the job'),
+      language: z.string().optional().describe('Language used for the job'),
+      durationSeconds: z.number().optional().describe('Duration of the media in seconds')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Record<string, unknown>;
 
       let job = body.job as Record<string, unknown> | undefined;
 
@@ -53,29 +55,31 @@ export let jobCompleted = SlateTrigger.create(
       let mediaUrl = (job?.media_url ?? body.media_url) as string | undefined;
       let metadata = (job?.metadata ?? body.metadata) as string | undefined;
       let language = (job?.language ?? body.language) as string | undefined;
-      let durationSeconds = (job?.duration_seconds ?? body.duration_seconds) as number | undefined;
+      let durationSeconds = (job?.duration_seconds ?? body.duration_seconds) as
+        | number
+        | undefined;
 
       return {
-        inputs: [{
-          jobId,
-          jobStatus,
-          jobType,
-          failure,
-          failureDetail,
-          createdOn,
-          completedOn,
-          mediaUrl,
-          metadata,
-          language,
-          durationSeconds,
-        }],
+        inputs: [
+          {
+            jobId,
+            jobStatus,
+            jobType,
+            failure,
+            failureDetail,
+            createdOn,
+            completedOn,
+            mediaUrl,
+            metadata,
+            language,
+            durationSeconds
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let eventType = ctx.input.jobStatus === 'failed'
-        ? 'job.failed'
-        : 'job.completed';
+    handleEvent: async ctx => {
+      let eventType = ctx.input.jobStatus === 'failed' ? 'job.failed' : 'job.completed';
 
       return {
         type: eventType,
@@ -91,8 +95,9 @@ export let jobCompleted = SlateTrigger.create(
           mediaUrl: ctx.input.mediaUrl,
           metadata: ctx.input.metadata,
           language: ctx.input.language,
-          durationSeconds: ctx.input.durationSeconds,
-        },
+          durationSeconds: ctx.input.durationSeconds
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

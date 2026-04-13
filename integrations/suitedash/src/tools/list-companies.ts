@@ -3,30 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCompanies = SlateTool.create(
-  spec,
-  {
-    name: 'List Companies',
-    key: 'list_companies',
-    description: `Retrieves companies from SuiteDash CRM. Returns a paginated list of companies. Specify a page number to navigate through results, or fetch all companies at once.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listCompanies = SlateTool.create(spec, {
+  name: 'List Companies',
+  key: 'list_companies',
+  description: `Retrieves companies from SuiteDash CRM. Returns a paginated list of companies. Specify a page number to navigate through results, or fetch all companies at once.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number to retrieve (starts at 1). If omitted, returns all companies.'),
-  }))
-  .output(z.object({
-    companies: z.array(z.record(z.string(), z.unknown())).describe('List of company records'),
-    totalPages: z.number().optional().describe('Total number of pages available'),
-    total: z.number().optional().describe('Total number of companies'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z
+        .number()
+        .optional()
+        .describe('Page number to retrieve (starts at 1). If omitted, returns all companies.')
+    })
+  )
+  .output(
+    z.object({
+      companies: z
+        .array(z.record(z.string(), z.unknown()))
+        .describe('List of company records'),
+      totalPages: z.number().optional().describe('Total number of pages available'),
+      total: z.number().optional().describe('Total number of companies')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       publicId: ctx.auth.publicId,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     if (ctx.input.page !== undefined) {
@@ -35,9 +41,9 @@ export let listCompanies = SlateTool.create(
         output: {
           companies: response.data,
           totalPages: response.meta?.pagination?.totalPages,
-          total: response.meta?.pagination?.total,
+          total: response.meta?.pagination?.total
         },
-        message: `Retrieved **${response.data.length}** companies (page ${ctx.input.page} of ${response.meta?.pagination?.totalPages ?? 1}).`,
+        message: `Retrieved **${response.data.length}** companies (page ${ctx.input.page} of ${response.meta?.pagination?.totalPages ?? 1}).`
       };
     }
 
@@ -46,9 +52,9 @@ export let listCompanies = SlateTool.create(
       output: {
         companies,
         totalPages: undefined,
-        total: companies.length,
+        total: companies.length
       },
-      message: `Retrieved all **${companies.length}** companies.`,
+      message: `Retrieved all **${companies.length}** companies.`
     };
   })
   .build();

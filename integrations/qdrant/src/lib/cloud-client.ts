@@ -9,9 +9,9 @@ export class QdrantCloudClient {
     this.http = createAxios({
       baseURL: 'https://api.cloud.qdrant.io',
       headers: {
-        'Authorization': `apikey ${config.managementToken}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `apikey ${config.managementToken}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -51,8 +51,8 @@ export class QdrantCloudClient {
       {
         cluster: {
           accountId: this.accountId,
-          ...params,
-        },
+          ...params
+        }
       }
     );
     return response.data;

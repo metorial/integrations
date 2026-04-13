@@ -3,67 +3,88 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMessageStreams = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Message Streams',
-    key: 'manage_message_streams',
-    description: `List, get, create, update, archive, or unarchive Postmark message streams. Message streams separate your email sending into categories (Transactional, Broadcasts, Inbound) for better organization and deliverability.`,
-    instructions: [
-      'Set **action** to "list", "get", "create", "update", "archive", or "unarchive".',
-      'Stream types are "Transactional", "Broadcasts", or "Inbound".',
-    ],
-    constraints: [
-      'Maximum 10 streams per server.',
-      'Only one Inbound stream per server.',
-      'Default streams cannot be archived.',
-      'Archived streams are purged after 45 days.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageMessageStreams = SlateTool.create(spec, {
+  name: 'Manage Message Streams',
+  key: 'manage_message_streams',
+  description: `List, get, create, update, archive, or unarchive Postmark message streams. Message streams separate your email sending into categories (Transactional, Broadcasts, Inbound) for better organization and deliverability.`,
+  instructions: [
+    'Set **action** to "list", "get", "create", "update", "archive", or "unarchive".',
+    'Stream types are "Transactional", "Broadcasts", or "Inbound".'
+  ],
+  constraints: [
+    'Maximum 10 streams per server.',
+    'Only one Inbound stream per server.',
+    'Default streams cannot be archived.',
+    'Archived streams are purged after 45 days.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'archive', 'unarchive']).describe('Action to perform.'),
-    streamId: z.string().optional().describe('Message stream ID (for get/update/archive/unarchive).'),
-    name: z.string().optional().describe('Stream name (for create/update).'),
-    description: z.string().optional().describe('Stream description (for create/update).'),
-    messageStreamType: z.enum(['Transactional', 'Broadcasts', 'Inbound']).optional().describe('Stream type (for create).'),
-    includeArchived: z.boolean().optional().default(false).describe('Include archived streams in list results.'),
-  }))
-  .output(z.object({
-    totalCount: z.number().optional().describe('Total message streams.'),
-    streams: z.array(z.object({
-      streamId: z.string().describe('Stream ID.'),
-      name: z.string().describe('Stream name.'),
-      description: z.string().describe('Stream description.'),
-      messageStreamType: z.string().describe('Stream type.'),
-      createdAt: z.string().describe('Creation timestamp.'),
-      archivedAt: z.string().nullable().describe('Archive timestamp, if archived.'),
-    })).optional().describe('List of message streams.'),
-    stream: z.object({
-      streamId: z.string().describe('Stream ID.'),
-      name: z.string().describe('Stream name.'),
-      description: z.string().describe('Stream description.'),
-      messageStreamType: z.string().describe('Stream type.'),
-      createdAt: z.string().describe('Creation timestamp.'),
-      updatedAt: z.string().describe('Last update timestamp.'),
-      archivedAt: z.string().nullable().describe('Archive timestamp.'),
-    }).optional().describe('Stream details.'),
-    archived: z.boolean().optional().describe('Whether the stream was archived.'),
-    unarchived: z.boolean().optional().describe('Whether the stream was unarchived.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'archive', 'unarchive'])
+        .describe('Action to perform.'),
+      streamId: z
+        .string()
+        .optional()
+        .describe('Message stream ID (for get/update/archive/unarchive).'),
+      name: z.string().optional().describe('Stream name (for create/update).'),
+      description: z.string().optional().describe('Stream description (for create/update).'),
+      messageStreamType: z
+        .enum(['Transactional', 'Broadcasts', 'Inbound'])
+        .optional()
+        .describe('Stream type (for create).'),
+      includeArchived: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include archived streams in list results.')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().optional().describe('Total message streams.'),
+      streams: z
+        .array(
+          z.object({
+            streamId: z.string().describe('Stream ID.'),
+            name: z.string().describe('Stream name.'),
+            description: z.string().describe('Stream description.'),
+            messageStreamType: z.string().describe('Stream type.'),
+            createdAt: z.string().describe('Creation timestamp.'),
+            archivedAt: z.string().nullable().describe('Archive timestamp, if archived.')
+          })
+        )
+        .optional()
+        .describe('List of message streams.'),
+      stream: z
+        .object({
+          streamId: z.string().describe('Stream ID.'),
+          name: z.string().describe('Stream name.'),
+          description: z.string().describe('Stream description.'),
+          messageStreamType: z.string().describe('Stream type.'),
+          createdAt: z.string().describe('Creation timestamp.'),
+          updatedAt: z.string().describe('Last update timestamp.'),
+          archivedAt: z.string().nullable().describe('Archive timestamp.')
+        })
+        .optional()
+        .describe('Stream details.'),
+      archived: z.boolean().optional().describe('Whether the stream was archived.'),
+      unarchived: z.boolean().optional().describe('Whether the stream was unarchived.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountToken: ctx.auth.accountToken,
+      accountToken: ctx.auth.accountToken
     });
 
     if (ctx.input.action === 'list') {
       let result = await client.listMessageStreams({
-        includeArchivedStreams: ctx.input.includeArchived,
+        includeArchivedStreams: ctx.input.includeArchived
       });
 
       return {
@@ -75,10 +96,10 @@ export let manageMessageStreams = SlateTool.create(
             description: s.Description,
             messageStreamType: s.MessageStreamType,
             createdAt: s.CreatedAt,
-            archivedAt: s.ArchivedAt,
-          })),
+            archivedAt: s.ArchivedAt
+          }))
         },
-        message: `Found **${result.TotalCount}** message streams.`,
+        message: `Found **${result.TotalCount}** message streams.`
       };
     }
 
@@ -96,10 +117,10 @@ export let manageMessageStreams = SlateTool.create(
             messageStreamType: s.MessageStreamType,
             createdAt: s.CreatedAt,
             updatedAt: s.UpdatedAt,
-            archivedAt: s.ArchivedAt,
-          },
+            archivedAt: s.ArchivedAt
+          }
         },
-        message: `Retrieved stream **${s.Name}** (${s.MessageStreamType}).`,
+        message: `Retrieved stream **${s.Name}** (${s.MessageStreamType}).`
       };
     }
 
@@ -112,7 +133,7 @@ export let manageMessageStreams = SlateTool.create(
         id: ctx.input.streamId,
         name: ctx.input.name,
         messageStreamType: ctx.input.messageStreamType,
-        description: ctx.input.description,
+        description: ctx.input.description
       });
 
       return {
@@ -124,10 +145,10 @@ export let manageMessageStreams = SlateTool.create(
             messageStreamType: s.MessageStreamType,
             createdAt: s.CreatedAt,
             updatedAt: s.UpdatedAt,
-            archivedAt: s.ArchivedAt,
-          },
+            archivedAt: s.ArchivedAt
+          }
         },
-        message: `Created stream **${s.Name}** (ID: ${s.ID}, Type: ${s.MessageStreamType}).`,
+        message: `Created stream **${s.Name}** (ID: ${s.ID}, Type: ${s.MessageStreamType}).`
       };
     }
 
@@ -136,7 +157,7 @@ export let manageMessageStreams = SlateTool.create(
 
       let s = await client.updateMessageStream(ctx.input.streamId, {
         name: ctx.input.name,
-        description: ctx.input.description,
+        description: ctx.input.description
       });
 
       return {
@@ -148,10 +169,10 @@ export let manageMessageStreams = SlateTool.create(
             messageStreamType: s.MessageStreamType,
             createdAt: s.CreatedAt,
             updatedAt: s.UpdatedAt,
-            archivedAt: s.ArchivedAt,
-          },
+            archivedAt: s.ArchivedAt
+          }
         },
-        message: `Updated stream **${s.Name}**.`,
+        message: `Updated stream **${s.Name}**.`
       };
     }
 
@@ -162,9 +183,9 @@ export let manageMessageStreams = SlateTool.create(
 
       return {
         output: {
-          archived: true,
+          archived: true
         },
-        message: `Archived stream **${ctx.input.streamId}**.`,
+        message: `Archived stream **${ctx.input.streamId}**.`
       };
     }
 
@@ -183,9 +204,9 @@ export let manageMessageStreams = SlateTool.create(
           messageStreamType: s.MessageStreamType,
           createdAt: s.CreatedAt,
           updatedAt: s.UpdatedAt,
-          archivedAt: s.ArchivedAt,
-        },
+          archivedAt: s.ArchivedAt
+        }
       },
-      message: `Unarchived stream **${s.ID}**.`,
+      message: `Unarchived stream **${s.ID}**.`
     };
   });

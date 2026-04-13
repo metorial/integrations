@@ -16,6 +16,7 @@ ByteForms uses API keys for authentication. The API key is passed in the `Author
 The API key can be obtained from your ByteForms account settings. No OAuth flow or additional scopes are required.
 
 **Example request:**
+
 ```
 GET https://api.forms.bytesuite.io/api/form
 Authorization: YOUR_API_KEY
@@ -24,11 +25,13 @@ Authorization: YOUR_API_KEY
 ## Features
 
 ### Form Management
+
 Retrieve a list of forms associated with your account. This allows you to programmatically access form metadata and configuration. You can access ByteForms forms through the programming interface provided by ByteForms.
 
 - Forms can be identified by a unique form ID.
 
 ### Submission Management
+
 Access and retrieve form submissions (responses) for a specific form. All form submissions are stored in the ByteForms Inbox, where you can view submissions, access daily analytics reports, and export data to CSV or JSON formats.
 
 - Submissions can be listed per form using the form ID.
@@ -36,12 +39,15 @@ Access and retrieve form submissions (responses) for a specific form. All form s
 - Results are returned in a cursor-based paginated format.
 
 ### Third-Party Integrations
+
 ByteForms can send form submission data as messages to Slack channels. Forms can be connected with dozens of popular third-party services to ensure data is delivered to the right destinations.
 
 ### Payment Collection
+
 ByteForms supports collecting payments online through forms. This feature may have limited availability as some payment features are marked as coming soon.
 
 ### Calendar Booking
+
 Users can manage calendar appointments and bookings directly through their forms.
 
 ## Events

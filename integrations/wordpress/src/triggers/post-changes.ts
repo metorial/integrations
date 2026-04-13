@@ -3,47 +3,51 @@ import { spec } from '../spec';
 import { createClient, extractPostSummary } from '../lib/helpers';
 import { z } from 'zod';
 
-export let postChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Post Changes',
-    key: 'post_changes',
-    description: 'Triggers when a post is created or updated. Polls for new and modified posts at regular intervals.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Whether the post was newly created or updated'),
-    postId: z.string().describe('ID of the affected post'),
-    title: z.string().describe('Post title'),
-    status: z.string().describe('Post status'),
-    url: z.string().describe('Post URL'),
-    slug: z.string().describe('URL slug'),
-    excerpt: z.string().describe('Post excerpt'),
-    date: z.string().describe('Publication date'),
-    modifiedDate: z.string().describe('Last modified date'),
-    authorName: z.string().describe('Author display name'),
-    format: z.string().describe('Post format'),
-    type: z.string().describe('Content type')
-  }))
-  .output(z.object({
-    postId: z.string().describe('ID of the affected post'),
-    title: z.string().describe('Post title'),
-    status: z.string().describe('Post status'),
-    url: z.string().describe('Post URL'),
-    slug: z.string().describe('URL slug'),
-    excerpt: z.string().describe('Post excerpt'),
-    date: z.string().describe('Publication date'),
-    modifiedDate: z.string().describe('Last modified date'),
-    authorName: z.string().describe('Author display name'),
-    format: z.string().describe('Post format'),
-    type: z.string().describe('Content type')
-  }))
+export let postChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Post Changes',
+  key: 'post_changes',
+  description:
+    'Triggers when a post is created or updated. Polls for new and modified posts at regular intervals.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the post was newly created or updated'),
+      postId: z.string().describe('ID of the affected post'),
+      title: z.string().describe('Post title'),
+      status: z.string().describe('Post status'),
+      url: z.string().describe('Post URL'),
+      slug: z.string().describe('URL slug'),
+      excerpt: z.string().describe('Post excerpt'),
+      date: z.string().describe('Publication date'),
+      modifiedDate: z.string().describe('Last modified date'),
+      authorName: z.string().describe('Author display name'),
+      format: z.string().describe('Post format'),
+      type: z.string().describe('Content type')
+    })
+  )
+  .output(
+    z.object({
+      postId: z.string().describe('ID of the affected post'),
+      title: z.string().describe('Post title'),
+      status: z.string().describe('Post status'),
+      url: z.string().describe('Post URL'),
+      slug: z.string().describe('URL slug'),
+      excerpt: z.string().describe('Post excerpt'),
+      date: z.string().describe('Publication date'),
+      modifiedDate: z.string().describe('Last modified date'),
+      authorName: z.string().describe('Author display name'),
+      format: z.string().describe('Post format'),
+      type: z.string().describe('Content type')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -64,7 +68,10 @@ export let postChangesTrigger = SlateTrigger.create(
 
       let posts: any[];
       try {
-        posts = await client.listPosts({ ...params, status: 'publish,draft,pending,private,future' });
+        posts = await client.listPosts({
+          ...params,
+          status: 'publish,draft,pending,private,future'
+        });
       } catch {
         // Fallback if status filtering fails
         posts = await client.listPosts(params);
@@ -74,15 +81,14 @@ export let postChangesTrigger = SlateTrigger.create(
         let summary = extractPostSummary(post, ctx.config.apiType);
         let isNew = !knownPostIds.includes(summary.postId);
         return {
-          eventType: isNew ? 'created' as const : 'updated' as const,
+          eventType: isNew ? ('created' as const) : ('updated' as const),
           ...summary
         };
       });
 
-      let newKnownIds = [...new Set([
-        ...knownPostIds,
-        ...inputs.map(i => i.postId)
-      ])].slice(-500); // Keep last 500 IDs
+      let newKnownIds = [...new Set([...knownPostIds, ...inputs.map(i => i.postId)])].slice(
+        -500
+      ); // Keep last 500 IDs
 
       return {
         inputs,
@@ -93,7 +99,7 @@ export let postChangesTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `post.${ctx.input.eventType}`,
         id: `post-${ctx.input.postId}-${ctx.input.modifiedDate}`,

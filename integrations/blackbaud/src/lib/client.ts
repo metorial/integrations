@@ -15,26 +15,22 @@ export class Client {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Bb-Api-Subscription-Key': config.subscriptionKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Constituents ──
 
-  async searchConstituents(params: {
-    searchText: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async searchConstituents(params: { searchText: string; limit?: number; offset?: number }) {
     let response = await this.http.get('/constituent/v1/constituents/search', {
       params: {
         search_text: params.searchText,
         limit: params.limit,
-        offset: params.offset,
-      },
+        offset: params.offset
+      }
     });
     return response.data;
   }
@@ -60,8 +56,8 @@ export class Client {
         constituent_code_id: params?.constituentCodeId,
         list_id: params?.constituentListId,
         include_deceased: params?.includeDeceased,
-        include_inactive: params?.includeInactive,
-      },
+        include_inactive: params?.includeInactive
+      }
     });
     return response.data;
   }
@@ -77,34 +73,41 @@ export class Client {
   }
 
   async updateConstituent(constituentId: string, data: Record<string, any>) {
-    let response = await this.http.patch(`/constituent/v1/constituents/${constituentId}`, data);
+    let response = await this.http.patch(
+      `/constituent/v1/constituents/${constituentId}`,
+      data
+    );
     return response.data;
   }
 
   // ── Constituent Sub-records ──
 
   async listConstituentAddresses(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/addresses`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/addresses`
+    );
     return response.data;
   }
 
   async createConstituentAddress(constituentId: string, data: Record<string, any>) {
     let response = await this.http.post('/constituent/v1/addresses', {
       constituent_id: constituentId,
-      ...data,
+      ...data
     });
     return response.data;
   }
 
   async listConstituentEmailAddresses(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/emailaddresses`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/emailaddresses`
+    );
     return response.data;
   }
 
   async createConstituentEmailAddress(constituentId: string, data: Record<string, any>) {
     let response = await this.http.post('/constituent/v1/emailaddresses', {
       constituent_id: constituentId,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -117,7 +120,7 @@ export class Client {
   async createConstituentPhone(constituentId: string, data: Record<string, any>) {
     let response = await this.http.post('/constituent/v1/phones', {
       constituent_id: constituentId,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -130,45 +133,59 @@ export class Client {
   async createConstituentNote(constituentId: string, data: Record<string, any>) {
     let response = await this.http.post('/constituent/v1/notes', {
       constituent_id: constituentId,
-      ...data,
+      ...data
     });
     return response.data;
   }
 
   async listConstituentCodes(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/constituentcodes`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/constituentcodes`
+    );
     return response.data;
   }
 
   async listConstituentRelationships(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/relationships`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/relationships`
+    );
     return response.data;
   }
 
   async listConstituentCustomFields(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/customfields`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/customfields`
+    );
     return response.data;
   }
 
   // ── Giving Summaries ──
 
   async getConstituentFirstGift(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/givingsummary/first`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/givingsummary/first`
+    );
     return response.data;
   }
 
   async getConstituentLatestGift(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/givingsummary/latest`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/givingsummary/latest`
+    );
     return response.data;
   }
 
   async getConstituentGreatestGift(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/givingsummary/greatest`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/givingsummary/greatest`
+    );
     return response.data;
   }
 
   async getConstituentLifetimeGiving(constituentId: string) {
-    let response = await this.http.get(`/constituent/v1/constituents/${constituentId}/givingsummary/lifetimegiving`);
+    let response = await this.http.get(
+      `/constituent/v1/constituents/${constituentId}/givingsummary/lifetimegiving`
+    );
     return response.data;
   }
 
@@ -203,8 +220,8 @@ export class Client {
         date_added: params?.dateAdded,
         last_modified: params?.lastModified,
         sort: params?.sort,
-        list_id: params?.listId,
-      },
+        list_id: params?.listId
+      }
     });
     return response.data;
   }
@@ -228,8 +245,8 @@ export class Client {
     let response = await this.http.get(`/nxt-data-integration/v1/re/gifts/${giftId}/notes`, {
       params: {
         limit: params?.limit,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
@@ -253,8 +270,8 @@ export class Client {
         date_added: params?.dateAdded,
         last_modified: params?.lastModified,
         list_id: params?.listId,
-        sort: params?.sort,
-      },
+        sort: params?.sort
+      }
     });
     return response.data;
   }
@@ -289,8 +306,8 @@ export class Client {
         offset: params?.offset,
         include_inactive: params?.includeInactive,
         date_added: params?.dateAdded,
-        last_modified: params?.lastModified,
-      },
+        last_modified: params?.lastModified
+      }
     });
     return response.data;
   }
@@ -306,7 +323,10 @@ export class Client {
   }
 
   async updateCampaign(campaignId: string, data: Record<string, any>) {
-    let response = await this.http.patch(`/nxt-data-integration/v1/re/campaigns/${campaignId}`, data);
+    let response = await this.http.patch(
+      `/nxt-data-integration/v1/re/campaigns/${campaignId}`,
+      data
+    );
     return response.data;
   }
 
@@ -325,8 +345,8 @@ export class Client {
         offset: params?.offset,
         include_inactive: params?.includeInactive,
         date_added: params?.dateAdded,
-        last_modified: params?.lastModified,
-      },
+        last_modified: params?.lastModified
+      }
     });
     return response.data;
   }
@@ -361,8 +381,8 @@ export class Client {
         offset: params?.offset,
         include_inactive: params?.includeInactive,
         date_added: params?.dateAdded,
-        last_modified: params?.lastModified,
-      },
+        last_modified: params?.lastModified
+      }
     });
     return response.data;
   }
@@ -378,7 +398,10 @@ export class Client {
   }
 
   async updateAppeal(appealId: string, data: Record<string, any>) {
-    let response = await this.http.patch(`/nxt-data-integration/v1/re/appeals/${appealId}`, data);
+    let response = await this.http.patch(
+      `/nxt-data-integration/v1/re/appeals/${appealId}`,
+      data
+    );
     return response.data;
   }
 
@@ -397,8 +420,8 @@ export class Client {
         offset: params?.offset,
         constituent_id: params?.constituentId,
         date_added: params?.dateAdded,
-        last_modified: params?.lastModified,
-      },
+        last_modified: params?.lastModified
+      }
     });
     return response.data;
   }
@@ -413,7 +436,7 @@ export class Client {
   async createWebhookSubscription(webhookUrl: string, eventType: string) {
     let response = await this.http.post('/webhook/v1/subscriptions', {
       webhook_url: webhookUrl,
-      event_type: eventType,
+      event_type: eventType
     });
     return response.data;
   }
@@ -430,28 +453,28 @@ export class Client {
 
   // ── Lists ──
 
-  async listLists(params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async listLists(params?: { limit?: number; offset?: number }) {
     let response = await this.http.get('/list/v1/lists', {
       params: {
         limit: params?.limit,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
 
-  async getListResults(listId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async getListResults(
+    listId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let response = await this.http.get(`/list/v1/lists/${listId}`, {
       params: {
         limit: params?.limit,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }

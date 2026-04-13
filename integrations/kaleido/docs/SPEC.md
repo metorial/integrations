@@ -123,6 +123,7 @@ Two delivery mechanisms are supported:
 - **WebSockets**: Events are sent over WebSocket connections, useful if the application does not have a publicly accessible HTTP server or wants to receive many events over a single long-lived connection. Clients subscribe to specific topics.
 
 Key configuration options:
+
 - Configure which block to start receiving events from (including historical events from block 0).
 - Optionally filter events to a specific contract instance; otherwise all events matching the signature are delivered.
 - A single event stream instance can encapsulate multiple subscriptions.

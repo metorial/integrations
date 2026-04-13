@@ -3,30 +3,31 @@ import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let timeoffEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Time Off Events',
-    key: 'timeoff_events',
-    description: 'Triggered when a time-off request is updated for an employee.'
-  }
-)
-  .input(z.object({
-    eventType: z.literal('timeoff_updated').describe('Type of time-off event'),
-    timeoff: z.any().describe('Time-off request payload from the webhook')
-  }))
-  .output(z.object({
-    requestId: z.string().describe('Time-off request ID'),
-    employeeId: z.string().optional().describe('Employee ID'),
-    employeeName: z.string().optional().describe('Employee name'),
-    categoryName: z.string().optional().describe('Time-off category name'),
-    startDate: z.string().optional().describe('Start date'),
-    endDate: z.string().optional().describe('End date'),
-    status: z.string().optional().describe('Request status'),
-    notes: z.string().optional().describe('Request notes')
-  }))
+export let timeoffEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Time Off Events',
+  key: 'timeoff_events',
+  description: 'Triggered when a time-off request is updated for an employee.'
+})
+  .input(
+    z.object({
+      eventType: z.literal('timeoff_updated').describe('Type of time-off event'),
+      timeoff: z.any().describe('Time-off request payload from the webhook')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().describe('Time-off request ID'),
+      employeeId: z.string().optional().describe('Employee ID'),
+      employeeName: z.string().optional().describe('Employee name'),
+      categoryName: z.string().optional().describe('Time-off category name'),
+      startDate: z.string().optional().describe('Start date'),
+      endDate: z.string().optional().describe('End date'),
+      status: z.string().optional().describe('Request status'),
+      notes: z.string().optional().describe('Request notes')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WorkableClient({
         token: ctx.auth.token,
         subdomain: ctx.config.subdomain
@@ -42,7 +43,7 @@ export let timeoffEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WorkableClient({
         token: ctx.auth.token,
         subdomain: ctx.config.subdomain
@@ -58,8 +59,8 @@ export let timeoffEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data.event || data.type || 'timeoff_updated';
       let timeoff = data.data || data.timeoff || data;
@@ -74,7 +75,7 @@ export let timeoffEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let t = ctx.input.timeoff;
 
       return {
@@ -92,4 +93,5 @@ export let timeoffEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

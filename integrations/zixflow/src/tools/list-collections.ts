@@ -9,21 +9,36 @@ export let listCollections = SlateTool.create(spec, {
   description: `Retrieve all CRM collections in the workspace. Collections are data containers like People, Companies, Deals, or custom types. Returns each collection's ID, name, slug, and type. Use this to discover collection IDs needed for record operations.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    collectionId: z.string().optional().describe('Specific collection ID to retrieve details for. If omitted, returns all collections.'),
-  }))
-  .output(z.object({
-    collections: z.array(z.object({
-      collectionId: z.string().describe('Collection ID'),
-      name: z.string().describe('Collection name'),
-      slug: z.string().describe('Collection slug'),
-      collectionType: z.string().describe('Collection type (people, company, deals, custom)'),
-    })).describe('List of collections'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      collectionId: z
+        .string()
+        .optional()
+        .describe(
+          'Specific collection ID to retrieve details for. If omitted, returns all collections.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      collections: z
+        .array(
+          z.object({
+            collectionId: z.string().describe('Collection ID'),
+            name: z.string().describe('Collection name'),
+            slug: z.string().describe('Collection slug'),
+            collectionType: z
+              .string()
+              .describe('Collection type (people, company, deals, custom)')
+          })
+        )
+        .describe('List of collections')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZixflowClient({ token: ctx.auth.token });
 
     if (ctx.input.collectionId) {
@@ -31,14 +46,20 @@ export let listCollections = SlateTool.create(spec, {
       let col = result.data;
       return {
         output: {
-          collections: col ? [{
-            collectionId: col._id,
-            name: col.name,
-            slug: col.slug,
-            collectionType: col.collectionType,
-          }] : [],
+          collections: col
+            ? [
+                {
+                  collectionId: col._id,
+                  name: col.name,
+                  slug: col.slug,
+                  collectionType: col.collectionType
+                }
+              ]
+            : []
         },
-        message: col ? `Retrieved collection: **${col.name}** (${col.collectionType}).` : 'Collection not found.',
+        message: col
+          ? `Retrieved collection: **${col.name}** (${col.collectionType}).`
+          : 'Collection not found.'
       };
     }
 
@@ -47,12 +68,12 @@ export let listCollections = SlateTool.create(spec, {
       collectionId: col._id,
       name: col.name,
       slug: col.slug,
-      collectionType: col.collectionType,
+      collectionType: col.collectionType
     }));
 
     return {
       output: { collections },
-      message: `Found ${collections.length} collection(s): ${collections.map((c: any) => c.name).join(', ')}.`,
+      message: `Found ${collections.length} collection(s): ${collections.map((c: any) => c.name).join(', ')}.`
     };
   })
   .build();

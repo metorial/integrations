@@ -9,8 +9,8 @@ export class QdrantClient {
       baseURL,
       headers: {
         'api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -27,37 +27,52 @@ export class QdrantClient {
   }
 
   async collectionExists(collectionName: string): Promise<boolean> {
-    let response = await this.http.get(`/collections/${encodeURIComponent(collectionName)}/exists`);
+    let response = await this.http.get(
+      `/collections/${encodeURIComponent(collectionName)}/exists`
+    );
     return response.data.result.exists;
   }
 
-  async createCollection(collectionName: string, params: {
-    vectors: any;
-    shardNumber?: number;
-    replicationFactor?: number;
-    onDiskPayload?: boolean;
-    hnswConfig?: any;
-    quantizationConfig?: any;
-    sparseVectors?: any;
-  }): Promise<any> {
+  async createCollection(
+    collectionName: string,
+    params: {
+      vectors: any;
+      shardNumber?: number;
+      replicationFactor?: number;
+      onDiskPayload?: boolean;
+      hnswConfig?: any;
+      quantizationConfig?: any;
+      sparseVectors?: any;
+    }
+  ): Promise<any> {
     let body: any = { vectors: params.vectors };
     if (params.shardNumber !== undefined) body.shard_number = params.shardNumber;
-    if (params.replicationFactor !== undefined) body.replication_factor = params.replicationFactor;
+    if (params.replicationFactor !== undefined)
+      body.replication_factor = params.replicationFactor;
     if (params.onDiskPayload !== undefined) body.on_disk_payload = params.onDiskPayload;
     if (params.hnswConfig !== undefined) body.hnsw_config = params.hnswConfig;
-    if (params.quantizationConfig !== undefined) body.quantization_config = params.quantizationConfig;
+    if (params.quantizationConfig !== undefined)
+      body.quantization_config = params.quantizationConfig;
     if (params.sparseVectors !== undefined) body.sparse_vectors = params.sparseVectors;
-    let response = await this.http.put(`/collections/${encodeURIComponent(collectionName)}`, body);
+    let response = await this.http.put(
+      `/collections/${encodeURIComponent(collectionName)}`,
+      body
+    );
     return response.data;
   }
 
   async updateCollection(collectionName: string, params: any): Promise<any> {
-    let response = await this.http.patch(`/collections/${encodeURIComponent(collectionName)}`, params);
+    let response = await this.http.patch(
+      `/collections/${encodeURIComponent(collectionName)}`,
+      params
+    );
     return response.data;
   }
 
   async deleteCollection(collectionName: string): Promise<any> {
-    let response = await this.http.delete(`/collections/${encodeURIComponent(collectionName)}`);
+    let response = await this.http.delete(
+      `/collections/${encodeURIComponent(collectionName)}`
+    );
     return response.data;
   }
 
@@ -69,7 +84,9 @@ export class QdrantClient {
   }
 
   async listCollectionAliases(collectionName: string): Promise<any> {
-    let response = await this.http.get(`/collections/${encodeURIComponent(collectionName)}/aliases`);
+    let response = await this.http.get(
+      `/collections/${encodeURIComponent(collectionName)}/aliases`
+    );
     return response.data.result;
   }
 
@@ -91,19 +108,28 @@ export class QdrantClient {
     return response.data;
   }
 
-  async getPoints(collectionName: string, ids: Array<string | number>, withPayload?: boolean, withVector?: boolean): Promise<any[]> {
+  async getPoints(
+    collectionName: string,
+    ids: Array<string | number>,
+    withPayload?: boolean,
+    withVector?: boolean
+  ): Promise<any[]> {
     let response = await this.http.post(
       `/collections/${encodeURIComponent(collectionName)}/points`,
       {
         ids,
         with_payload: withPayload ?? true,
-        with_vector: withVector ?? false,
+        with_vector: withVector ?? false
       }
     );
     return response.data.result;
   }
 
-  async deletePoints(collectionName: string, selector: { points?: Array<string | number>; filter?: any }, wait?: boolean): Promise<any> {
+  async deletePoints(
+    collectionName: string,
+    selector: { points?: Array<string | number>; filter?: any },
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
     let response = await this.http.post(
@@ -114,14 +140,17 @@ export class QdrantClient {
     return response.data;
   }
 
-  async scrollPoints(collectionName: string, options: {
-    offset?: string | number | null;
-    limit?: number;
-    filter?: any;
-    withPayload?: boolean;
-    withVector?: boolean;
-    orderBy?: any;
-  }): Promise<{ points: any[]; nextPageOffset: any }> {
+  async scrollPoints(
+    collectionName: string,
+    options: {
+      offset?: string | number | null;
+      limit?: number;
+      filter?: any;
+      withPayload?: boolean;
+      withVector?: boolean;
+      orderBy?: any;
+    }
+  ): Promise<{ points: any[]; nextPageOffset: any }> {
     let response = await this.http.post(
       `/collections/${encodeURIComponent(collectionName)}/points/scroll`,
       {
@@ -130,12 +159,12 @@ export class QdrantClient {
         filter: options.filter,
         with_payload: options.withPayload ?? true,
         with_vector: options.withVector ?? false,
-        order_by: options.orderBy,
+        order_by: options.orderBy
       }
     );
     return {
       points: response.data.result.points,
-      nextPageOffset: response.data.result.next_page_offset,
+      nextPageOffset: response.data.result.next_page_offset
     };
   }
 
@@ -144,7 +173,7 @@ export class QdrantClient {
       `/collections/${encodeURIComponent(collectionName)}/points/count`,
       {
         filter: filter ?? null,
-        exact: exact ?? true,
+        exact: exact ?? true
       }
     );
     return response.data.result.count;
@@ -152,18 +181,21 @@ export class QdrantClient {
 
   // ========== Search ==========
 
-  async queryPoints(collectionName: string, options: {
-    query?: any;
-    filter?: any;
-    limit?: number;
-    offset?: number;
-    withPayload?: boolean;
-    withVector?: boolean;
-    scoreThreshold?: number;
-    using?: string;
-    params?: any;
-    prefetch?: any;
-  }): Promise<any[]> {
+  async queryPoints(
+    collectionName: string,
+    options: {
+      query?: any;
+      filter?: any;
+      limit?: number;
+      offset?: number;
+      withPayload?: boolean;
+      withVector?: boolean;
+      scoreThreshold?: number;
+      using?: string;
+      params?: any;
+      prefetch?: any;
+    }
+  ): Promise<any[]> {
     let body: any = {};
     if (options.query !== undefined) body.query = options.query;
     if (options.filter !== undefined) body.filter = options.filter;
@@ -183,21 +215,24 @@ export class QdrantClient {
     return response.data.result.points;
   }
 
-  async recommendPoints(collectionName: string, options: {
-    positive: Array<string | number | number[]>;
-    negative?: Array<string | number | number[]>;
-    strategy?: string;
-    filter?: any;
-    limit?: number;
-    offset?: number;
-    withPayload?: boolean;
-    withVector?: boolean;
-    scoreThreshold?: number;
-    using?: string;
-    params?: any;
-  }): Promise<any[]> {
+  async recommendPoints(
+    collectionName: string,
+    options: {
+      positive: Array<string | number | number[]>;
+      negative?: Array<string | number | number[]>;
+      strategy?: string;
+      filter?: any;
+      limit?: number;
+      offset?: number;
+      withPayload?: boolean;
+      withVector?: boolean;
+      scoreThreshold?: number;
+      using?: string;
+      params?: any;
+    }
+  ): Promise<any[]> {
     let body: any = {
-      positive: options.positive,
+      positive: options.positive
     };
     if (options.negative !== undefined) body.negative = options.negative;
     if (options.strategy !== undefined) body.strategy = options.strategy;
@@ -217,19 +252,22 @@ export class QdrantClient {
     return response.data.result;
   }
 
-  async discoverPoints(collectionName: string, options: {
-    target?: any;
-    context: Array<{ positive: any; negative: any }>;
-    filter?: any;
-    limit?: number;
-    offset?: number;
-    withPayload?: boolean;
-    withVector?: boolean;
-    using?: string;
-    params?: any;
-  }): Promise<any[]> {
+  async discoverPoints(
+    collectionName: string,
+    options: {
+      target?: any;
+      context: Array<{ positive: any; negative: any }>;
+      filter?: any;
+      limit?: number;
+      offset?: number;
+      withPayload?: boolean;
+      withVector?: boolean;
+      using?: string;
+      params?: any;
+    }
+  ): Promise<any[]> {
     let body: any = {
-      context: options.context,
+      context: options.context
     };
     if (options.target !== undefined) body.target = options.target;
     if (options.filter !== undefined) body.filter = options.filter;
@@ -249,12 +287,16 @@ export class QdrantClient {
 
   // ========== Payload ==========
 
-  async setPayload(collectionName: string, options: {
-    payload: any;
-    points?: Array<string | number>;
-    filter?: any;
-    key?: string;
-  }, wait?: boolean): Promise<any> {
+  async setPayload(
+    collectionName: string,
+    options: {
+      payload: any;
+      points?: Array<string | number>;
+      filter?: any;
+      key?: string;
+    },
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
     let body: any = { payload: options.payload };
@@ -270,11 +312,15 @@ export class QdrantClient {
     return response.data;
   }
 
-  async overwritePayload(collectionName: string, options: {
-    payload: any;
-    points?: Array<string | number>;
-    filter?: any;
-  }, wait?: boolean): Promise<any> {
+  async overwritePayload(
+    collectionName: string,
+    options: {
+      payload: any;
+      points?: Array<string | number>;
+      filter?: any;
+    },
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
     let body: any = { payload: options.payload };
@@ -289,11 +335,15 @@ export class QdrantClient {
     return response.data;
   }
 
-  async deletePayloadKeys(collectionName: string, options: {
-    keys: string[];
-    points?: Array<string | number>;
-    filter?: any;
-  }, wait?: boolean): Promise<any> {
+  async deletePayloadKeys(
+    collectionName: string,
+    options: {
+      keys: string[];
+      points?: Array<string | number>;
+      filter?: any;
+    },
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
@@ -305,10 +355,14 @@ export class QdrantClient {
     return response.data;
   }
 
-  async clearPayload(collectionName: string, options: {
-    points?: Array<string | number>;
-    filter?: any;
-  }, wait?: boolean): Promise<any> {
+  async clearPayload(
+    collectionName: string,
+    options: {
+      points?: Array<string | number>;
+      filter?: any;
+    },
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
@@ -322,7 +376,12 @@ export class QdrantClient {
 
   // ========== Payload Index ==========
 
-  async createPayloadIndex(collectionName: string, fieldName: string, fieldSchema: any, wait?: boolean): Promise<any> {
+  async createPayloadIndex(
+    collectionName: string,
+    fieldName: string,
+    fieldSchema: any,
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
@@ -334,7 +393,11 @@ export class QdrantClient {
     return response.data;
   }
 
-  async deletePayloadIndex(collectionName: string, fieldName: string, wait?: boolean): Promise<any> {
+  async deletePayloadIndex(
+    collectionName: string,
+    fieldName: string,
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
@@ -366,7 +429,11 @@ export class QdrantClient {
     return response.data.result;
   }
 
-  async deleteSnapshot(collectionName: string, snapshotName: string, wait?: boolean): Promise<any> {
+  async deleteSnapshot(
+    collectionName: string,
+    snapshotName: string,
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
@@ -377,12 +444,16 @@ export class QdrantClient {
     return response.data;
   }
 
-  async recoverSnapshot(collectionName: string, options: {
-    location: string;
-    priority?: string;
-    checksum?: string;
-    apiKey?: string;
-  }, wait?: boolean): Promise<any> {
+  async recoverSnapshot(
+    collectionName: string,
+    options: {
+      location: string;
+      priority?: string;
+      checksum?: string;
+      apiKey?: string;
+    },
+    wait?: boolean
+  ): Promise<any> {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
@@ -418,7 +489,9 @@ export class QdrantClient {
     let params: any = {};
     if (wait !== undefined) params.wait = wait;
 
-    let response = await this.http.delete(`/snapshots/${encodeURIComponent(snapshotName)}`, { params });
+    let response = await this.http.delete(`/snapshots/${encodeURIComponent(snapshotName)}`, {
+      params
+    });
     return response.data;
   }
 }

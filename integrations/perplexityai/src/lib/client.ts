@@ -9,9 +9,9 @@ export class PerplexityClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -43,7 +43,9 @@ export class PerplexityClient {
     return response.data;
   }
 
-  async createContextualizedEmbeddings(params: ContextualizedEmbeddingsRequest): Promise<EmbeddingsResponse> {
+  async createContextualizedEmbeddings(
+    params: ContextualizedEmbeddingsRequest
+  ): Promise<EmbeddingsResponse> {
     let response = await this.axios.post('/v1/contextualizedembeddings', params);
     return response.data;
   }

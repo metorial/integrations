@@ -2,23 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Starton API key from the Developer section of your project'),
+      apiKey: z.string().describe('Starton API key from the Developer section of your project')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -26,8 +28,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://api.starton.com/v3',
         headers: {
-          'x-api-key': ctx.output.token,
-        },
+          'x-api-key': ctx.output.token
+        }
       });
 
       let response = await axios.get('/project');
@@ -36,8 +38,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: project.id,
-          name: project.name,
-        },
+          name: project.name
+        }
       };
-    },
+    }
   });

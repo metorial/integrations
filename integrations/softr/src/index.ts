@@ -15,7 +15,7 @@ import {
   createRecord,
   updateRecord,
   deleteRecord,
-  searchRecords,
+  searchRecords
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     createRecord,
     updateRecord,
     deleteRecord,
-    searchRecords,
+    searchRecords
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

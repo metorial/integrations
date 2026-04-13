@@ -17,30 +17,33 @@ let employeeSummarySchema = z.object({
   createdAt: z.string().optional().describe('Record creation timestamp')
 });
 
-export let listEmployeesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Employees',
-    key: 'list_employees',
-    description: `List employees from the Workable HR module. Optionally filter by email address. Use this to browse employee records, verify employment status, or find employee IDs for further operations.`,
-    tags: {
-      readOnly: true
-    }
+export let listEmployeesTool = SlateTool.create(spec, {
+  name: 'List Employees',
+  key: 'list_employees',
+  description: `List employees from the Workable HR module. Optionally filter by email address. Use this to browse employee records, verify employment status, or find employee IDs for further operations.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Filter by personal email'),
-    workEmail: z.string().optional().describe('Filter by work email'),
-    limit: z.number().optional().describe('Maximum number of employees to return'),
-    cursor: z.string().optional().describe('Cursor for pagination')
-  }))
-  .output(z.object({
-    employees: z.array(employeeSummarySchema).describe('List of employees'),
-    paging: z.object({
-      next: z.string().optional().describe('Cursor for the next page')
-    }).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Filter by personal email'),
+      workEmail: z.string().optional().describe('Filter by work email'),
+      limit: z.number().optional().describe('Maximum number of employees to return'),
+      cursor: z.string().optional().describe('Cursor for pagination')
+    })
+  )
+  .output(
+    z.object({
+      employees: z.array(employeeSummarySchema).describe('List of employees'),
+      paging: z
+        .object({
+          next: z.string().optional().describe('Cursor for the next page')
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WorkableClient({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain
@@ -74,4 +77,5 @@ export let listEmployeesTool = SlateTool.create(
       },
       message: `Found **${employees.length}** employee(s).`
     };
-  }).build();
+  })
+  .build();

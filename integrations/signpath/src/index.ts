@@ -28,7 +28,5 @@ export let provider = Slate.create({
     getSigningPolicies,
     getAuditLog
   ],
-  triggers: [
-    signingRequestStatusChange
-  ]
+  triggers: [signingRequestStatusChange]
 });

@@ -9,7 +9,7 @@ export let getViewerUrlSignature = (
   let policy = JSON.stringify({
     account_id: accountId,
     identifier: identifier,
-    valid_until: validUntil,
+    valid_until: validUntil
   });
   let hmac = crypto.createHmac('sha256', authToken);
   hmac.update(policy, 'utf8');

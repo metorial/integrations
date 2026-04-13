@@ -22,7 +22,7 @@ import {
   listUsers,
   getUser,
   manageService,
-  listServices,
+  listServices
 } from './tools';
 import { alertActivityTrigger } from './triggers';
 
@@ -50,9 +50,7 @@ export let provider = Slate.create({
     listUsers,
     getUser,
     manageService,
-    listServices,
+    listServices
   ],
-  triggers: [
-    alertActivityTrigger,
-  ],
+  triggers: [alertActivityTrigger]
 });

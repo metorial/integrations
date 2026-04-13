@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   deployCollection,
@@ -15,13 +14,9 @@ import {
   listUsers,
   getContractMetadata,
   updateContractMetadata,
-  listContracts,
+  listContracts
 } from './tools';
-import {
-  newContracts,
-  newUsers,
-  inboundWebhook,
-} from './triggers';
+import { newContracts, newUsers, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,11 +34,7 @@ export let provider = Slate.create({
     listUsers,
     getContractMetadata,
     updateContractMetadata,
-    listContracts,
+    listContracts
   ],
-  triggers: [
-    inboundWebhook,
-    newContracts,
-    newUsers,
-  ],
+  triggers: [inboundWebhook, newContracts, newUsers]
 });

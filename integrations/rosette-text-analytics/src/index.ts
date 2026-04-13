@@ -17,7 +17,7 @@ import {
   transliterateTextTool,
   getTextEmbeddingTool,
   compareAddressesTool,
-  compareRecordsTool,
+  compareRecordsTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -41,9 +41,7 @@ export let provider = Slate.create({
     transliterateTextTool,
     getTextEmbeddingTool,
     compareAddressesTool,
-    compareRecordsTool,
+    compareRecordsTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

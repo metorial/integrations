@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let googleAuthAxios = createAxios({
-  baseURL: 'https://oauth2.googleapis.com',
+  baseURL: 'https://oauth2.googleapis.com'
 });
 
 let base64UrlEncode = (str: string): string => {
@@ -37,7 +37,7 @@ let importPrivateKey = async (pem: string) => {
     keyData,
     {
       name: 'RSASSA-PKCS1-v1_5',
-      hash: 'SHA-256',
+      hash: 'SHA-256'
     },
     false,
     ['sign']
@@ -53,7 +53,7 @@ export let createSignedJwt = async (params: {
 
   let header = {
     alg: 'RS256',
-    typ: 'JWT',
+    typ: 'JWT'
   };
 
   let payload = {
@@ -61,7 +61,7 @@ export let createSignedJwt = async (params: {
     scope: params.scopes.join(' '),
     aud: 'https://oauth2.googleapis.com/token',
     iat: now,
-    exp: now + 3600,
+    exp: now + 3600
   };
 
   let headerEncoded = base64UrlEncode(JSON.stringify(header));
@@ -80,22 +80,28 @@ export let createSignedJwt = async (params: {
   return `${signingInput}.${signatureEncoded}`;
 };
 
-export let exchangeJwtForAccessToken = async (jwt: string): Promise<{
+export let exchangeJwtForAccessToken = async (
+  jwt: string
+): Promise<{
   accessToken: string;
   expiresIn: number;
 }> => {
-  let response = await googleAuthAxios.post('/token', new URLSearchParams({
-    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-    assertion: jwt,
-  }).toString(), {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  });
+  let response = await googleAuthAxios.post(
+    '/token',
+    new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt
+    }).toString(),
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }
+  );
 
   return {
     accessToken: response.data.access_token,
-    expiresIn: response.data.expires_in,
+    expiresIn: response.data.expires_in
   };
 };
 
@@ -112,6 +118,6 @@ export let getAccessTokenFromServiceAccount = async (params: {
   let expiresAt = new Date(Date.now() + result.expiresIn * 1000).toISOString();
   return {
     accessToken: result.accessToken,
-    expiresAt,
+    expiresAt
   };
 };

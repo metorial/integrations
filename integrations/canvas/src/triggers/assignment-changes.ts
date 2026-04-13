@@ -3,51 +3,56 @@ import { CanvasClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let assignmentChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Assignment Changes',
-    key: 'assignment_changes',
-    description: 'Detects new or updated assignments across enrolled courses. Triggers when assignments are created, due dates change, or assignment settings are modified.',
-  }
-)
-  .input(z.object({
-    assignmentId: z.string().describe('Assignment ID'),
-    courseId: z.string().describe('Course ID'),
-    name: z.string().describe('Assignment name'),
-    dueAt: z.string().optional().nullable().describe('Due date'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-    workflowState: z.string().optional().describe('published or unpublished'),
-    changeType: z.enum(['new', 'updated']).describe('Type of change'),
-  }))
-  .output(z.object({
-    assignmentId: z.string().describe('Assignment ID'),
-    courseId: z.string().describe('Course ID'),
-    courseName: z.string().optional().describe('Course name'),
-    name: z.string().describe('Assignment name'),
-    dueAt: z.string().optional().nullable().describe('Due date'),
-    pointsPossible: z.number().optional().nullable().describe('Maximum points'),
-    gradingType: z.string().optional().describe('Grading type'),
-    submissionTypes: z.array(z.string()).optional().describe('Submission types'),
-    workflowState: z.string().optional().describe('Workflow state'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
+export let assignmentChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Assignment Changes',
+  key: 'assignment_changes',
+  description:
+    'Detects new or updated assignments across enrolled courses. Triggers when assignments are created, due dates change, or assignment settings are modified.'
+})
+  .input(
+    z.object({
+      assignmentId: z.string().describe('Assignment ID'),
+      courseId: z.string().describe('Course ID'),
+      name: z.string().describe('Assignment name'),
+      dueAt: z.string().optional().nullable().describe('Due date'),
+      updatedAt: z.string().optional().describe('Last updated timestamp'),
+      workflowState: z.string().optional().describe('published or unpublished'),
+      changeType: z.enum(['new', 'updated']).describe('Type of change')
+    })
+  )
+  .output(
+    z.object({
+      assignmentId: z.string().describe('Assignment ID'),
+      courseId: z.string().describe('Course ID'),
+      courseName: z.string().optional().describe('Course name'),
+      name: z.string().describe('Assignment name'),
+      dueAt: z.string().optional().nullable().describe('Due date'),
+      pointsPossible: z.number().optional().nullable().describe('Maximum points'),
+      gradingType: z.string().optional().describe('Grading type'),
+      submissionTypes: z.array(z.string()).optional().describe('Submission types'),
+      workflowState: z.string().optional().describe('Workflow state'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CanvasClient({
         token: ctx.auth.token,
-        canvasDomain: ctx.auth.canvasDomain,
+        canvasDomain: ctx.auth.canvasDomain
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
-      let knownAssignmentStates = (ctx.state?.knownAssignmentStates || {}) as Record<string, string>;
+      let knownAssignmentStates = (ctx.state?.knownAssignmentStates || {}) as Record<
+        string,
+        string
+      >;
 
       let courses = await client.listCourses({
-        enrollmentState: 'active',
+        enrollmentState: 'active'
       });
 
       let inputs: Array<{
@@ -82,7 +87,7 @@ export let assignmentChangesTrigger = SlateTrigger.create(
               dueAt: assignment.due_at,
               updatedAt: assignment.updated_at,
               workflowState: assignment.workflow_state,
-              changeType: 'new',
+              changeType: 'new'
             });
           } else if (previousState !== stateKey) {
             inputs.push({
@@ -92,7 +97,7 @@ export let assignmentChangesTrigger = SlateTrigger.create(
               dueAt: assignment.due_at,
               updatedAt: assignment.updated_at,
               workflowState: assignment.workflow_state,
-              changeType: 'updated',
+              changeType: 'updated'
             });
           }
         }
@@ -102,15 +107,15 @@ export let assignmentChangesTrigger = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: new Date().toISOString(),
-          knownAssignmentStates: newKnownStates,
-        },
+          knownAssignmentStates: newKnownStates
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new CanvasClient({
         token: ctx.auth.token,
-        canvasDomain: ctx.auth.canvasDomain,
+        canvasDomain: ctx.auth.canvasDomain
       });
 
       let assignment: any = null;
@@ -132,9 +137,9 @@ export let assignmentChangesTrigger = SlateTrigger.create(
           gradingType: assignment?.grading_type,
           submissionTypes: assignment?.submission_types,
           workflowState: assignment?.workflow_state || ctx.input.workflowState,
-          updatedAt: assignment?.updated_at || ctx.input.updatedAt,
-        },
+          updatedAt: assignment?.updated_at || ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

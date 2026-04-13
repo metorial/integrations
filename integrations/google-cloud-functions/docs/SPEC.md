@@ -19,13 +19,16 @@ The primary method for programmatic access. An application typically uses a serv
 **Token endpoint:** `https://oauth2.googleapis.com/token`
 
 **Required OAuth 2.0 scopes:**
+
 - `https://www.googleapis.com/auth/cloud-platform` — Full access to all Google Cloud resources.
 
 **Required IAM roles for managing functions:**
+
 - `roles/cloudfunctions.developer` — Create, update, and delete functions.
 - `roles/cloudfunctions.viewer` — View functions.
 
 **Required IAM roles for invoking functions:**
+
 - To invoke an authenticated function, the principal must have the invoker IAM permission `run.routes.invoke`, usually through the Cloud Run Invoker role (`roles/run.invoker`).
 
 ### OAuth 2.0 Authorization Code Flow
@@ -42,6 +45,7 @@ To invoke an authenticated function, the underlying principal must have permissi
 **API Base URL:** `https://cloudfunctions.googleapis.com`
 
 **Required inputs:**
+
 - Google Cloud Project ID
 - Region/location where functions are deployed
 

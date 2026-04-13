@@ -99,8 +99,8 @@ export class Client {
       baseURL: `https://${params.accountName}.centralstationcrm.net/api`,
       headers: {
         'X-apikey': params.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -133,7 +133,7 @@ export class Client {
 
   async searchPeople(query: string, params?: PaginationParams) {
     let response = await this.axios.get('/people.json', {
-      params: { ...params, q: query },
+      params: { ...params, q: query }
     });
     return response.data;
   }
@@ -156,17 +156,28 @@ export class Client {
   }
 
   async createPersonContactDetail(personId: number, data: ContactDetailData) {
-    let response = await this.axios.post(`/people/${personId}/contact_details.json`, { contact_detail: data });
+    let response = await this.axios.post(`/people/${personId}/contact_details.json`, {
+      contact_detail: data
+    });
     return response.data;
   }
 
-  async updatePersonContactDetail(personId: number, contactDetailId: number, data: ContactDetailData) {
-    let response = await this.axios.put(`/people/${personId}/contact_details/${contactDetailId}.json`, { contact_detail: data });
+  async updatePersonContactDetail(
+    personId: number,
+    contactDetailId: number,
+    data: ContactDetailData
+  ) {
+    let response = await this.axios.put(
+      `/people/${personId}/contact_details/${contactDetailId}.json`,
+      { contact_detail: data }
+    );
     return response.data;
   }
 
   async deletePersonContactDetail(personId: number, contactDetailId: number) {
-    let response = await this.axios.delete(`/people/${personId}/contact_details/${contactDetailId}.json`);
+    let response = await this.axios.delete(
+      `/people/${personId}/contact_details/${contactDetailId}.json`
+    );
     return response.data;
   }
 
@@ -183,7 +194,9 @@ export class Client {
   }
 
   async updatePersonAddress(personId: number, addressId: number, data: AddressData) {
-    let response = await this.axios.put(`/people/${personId}/addrs/${addressId}.json`, { addr: data });
+    let response = await this.axios.put(`/people/${personId}/addrs/${addressId}.json`, {
+      addr: data
+    });
     return response.data;
   }
 
@@ -217,17 +230,24 @@ export class Client {
   }
 
   async createPersonHistoricEvent(personId: number, data: HistoricEventData) {
-    let response = await this.axios.post(`/people/${personId}/historic_events.json`, { historic_event: data });
+    let response = await this.axios.post(`/people/${personId}/historic_events.json`, {
+      historic_event: data
+    });
     return response.data;
   }
 
   async updatePersonHistoricEvent(personId: number, eventId: number, data: HistoricEventData) {
-    let response = await this.axios.put(`/people/${personId}/historic_events/${eventId}.json`, { historic_event: data });
+    let response = await this.axios.put(
+      `/people/${personId}/historic_events/${eventId}.json`,
+      { historic_event: data }
+    );
     return response.data;
   }
 
   async deletePersonHistoricEvent(personId: number, eventId: number) {
-    let response = await this.axios.delete(`/people/${personId}/historic_events/${eventId}.json`);
+    let response = await this.axios.delete(
+      `/people/${personId}/historic_events/${eventId}.json`
+    );
     return response.data;
   }
 
@@ -260,7 +280,7 @@ export class Client {
 
   async searchCompanies(query: string, params?: PaginationParams) {
     let response = await this.axios.get('/companies.json', {
-      params: { ...params, q: query },
+      params: { ...params, q: query }
     });
     return response.data;
   }
@@ -355,7 +375,9 @@ export class Client {
 
   // ====== Notes ======
 
-  async listNotes(params?: PaginationParams & { attachable_type?: string; attachable_id?: number }) {
+  async listNotes(
+    params?: PaginationParams & { attachable_type?: string; attachable_id?: number }
+  ) {
     let response = await this.axios.get('/actions.json', { params });
     return response.data;
   }

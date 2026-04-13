@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   enrichCompany,
@@ -11,13 +10,9 @@ import {
   getSocialPosts,
   webSearch,
   getInvestorPortfolio,
-  findDecisionMakers,
+  findDecisionMakers
 } from './tools';
-import {
-  companyScreeningPoll,
-  peopleChangesPoll,
-  inboundWebhook,
-} from './triggers';
+import { companyScreeningPoll, peopleChangesPoll, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,11 +26,7 @@ export let provider = Slate.create({
     getSocialPosts,
     webSearch,
     getInvestorPortfolio,
-    findDecisionMakers,
+    findDecisionMakers
   ],
-  triggers: [
-    inboundWebhook,
-    companyScreeningPoll,
-    peopleChangesPoll,
-  ],
+  triggers: [inboundWebhook, companyScreeningPoll, peopleChangesPoll]
 });

@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Teamcamp API key. Generate one from your Teamcamp Account Settings at https://dash.teamcamp.app/settings/apikey'),
+      token: z
+        .string()
+        .describe(
+          'Your Teamcamp API key. Generate one from your Teamcamp Account Settings at https://dash.teamcamp.app/settings/apikey'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://api.teamcamp.app/v1.0',
         headers: {
-          apiKey: ctx.output.token,
-        },
+          apiKey: ctx.output.token
+        }
       });
 
       let response = await axios.get('/verify');
@@ -38,8 +44,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: firstUser?.id,
           email: firstUser?.email,
-          name: firstUser?.name,
-        },
+          name: firstUser?.name
+        }
       };
-    },
+    }
   });

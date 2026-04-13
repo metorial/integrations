@@ -12,12 +12,9 @@ import {
   manageShareLink,
   manageAutomation,
   manageNotification,
-  searchHistory,
+  searchHistory
 } from './tools';
-import {
-  fileActivity,
-  actionLog,
-} from './triggers';
+import { fileActivity, actionLog } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     manageShareLink,
     manageAutomation,
     manageNotification,
-    searchHistory,
+    searchHistory
   ],
-  triggers: [
-    fileActivity,
-    actionLog,
-  ],
+  triggers: [fileActivity, actionLog]
 });

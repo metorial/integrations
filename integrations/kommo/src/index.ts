@@ -24,13 +24,13 @@ import {
   listCustomFieldsTool,
   manageEntityLinksTool,
   getAccountTool,
-  listEventsTool,
+  listEventsTool
 } from './tools';
 import {
   leadEventsTrigger,
   contactEventsTrigger,
   companyEventsTrigger,
-  taskEventsTrigger,
+  taskEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -59,12 +59,7 @@ export let provider = Slate.create({
     listCustomFieldsTool,
     manageEntityLinksTool,
     getAccountTool,
-    listEventsTool,
+    listEventsTool
   ],
-  triggers: [
-    leadEventsTrigger,
-    contactEventsTrigger,
-    companyEventsTrigger,
-    taskEventsTrigger,
-  ],
+  triggers: [leadEventsTrigger, contactEventsTrigger, companyEventsTrigger, taskEventsTrigger]
 });

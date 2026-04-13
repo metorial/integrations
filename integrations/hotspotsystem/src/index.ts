@@ -6,7 +6,7 @@ import {
   listSubscribers,
   listVouchers,
   listTransactions,
-  verifyCredentials,
+  verifyCredentials
 } from './tools';
 import {
   customerCreated,
@@ -14,7 +14,7 @@ import {
   macTransactionCreated,
   voucherTransactionCreated,
   socialTransactionCreated,
-  paidTransactionCreated,
+  paidTransactionCreated
 } from './triggers';
 
 export let provider = Slate.create({
@@ -25,7 +25,7 @@ export let provider = Slate.create({
     listSubscribers,
     listVouchers,
     listTransactions,
-    verifyCredentials,
+    verifyCredentials
   ],
   triggers: [
     customerCreated,
@@ -33,6 +33,6 @@ export let provider = Slate.create({
     macTransactionCreated,
     voucherTransactionCreated,
     socialTransactionCreated,
-    paidTransactionCreated,
-  ],
+    paidTransactionCreated
+  ]
 });

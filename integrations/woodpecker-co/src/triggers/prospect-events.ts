@@ -15,12 +15,12 @@ let PROSPECT_EVENTS = [
   'prospect_interested',
   'prospect_maybe_later',
   'prospect_not_interested',
-  'secondary_replied',
+  'secondary_replied'
 ] as const;
 
 let webhookInputSchema = z.object({
   eventType: z.string().describe('Webhook event type'),
-  eventPayload: z.any().describe('Raw webhook event payload'),
+  eventPayload: z.any().describe('Raw webhook event payload')
 });
 
 let prospectOutputSchema = z.object({
@@ -34,30 +34,31 @@ let prospectOutputSchema = z.object({
   phone: z.string().optional().describe('Phone number'),
   tags: z.string().optional().describe('Tags'),
   status: z.string().optional().describe('Prospect status'),
-  interestLevel: z.string().optional().describe('Interest level (INTERESTED, NOT_INTERESTED, MAYBE_LATER)'),
+  interestLevel: z
+    .string()
+    .optional()
+    .describe('Interest level (INTERESTED, NOT_INTERESTED, MAYBE_LATER)'),
   campaignId: z.number().optional().describe('Related campaign ID'),
   campaignName: z.string().optional().describe('Related campaign name'),
   replySubject: z.string().optional().describe('Reply email subject (for reply events)'),
   replyMessage: z.string().optional().describe('Reply email body (for reply events)'),
   replyDate: z.string().optional().describe('Reply date (for reply events)'),
-  timestamp: z.string().optional().describe('Event timestamp'),
+  timestamp: z.string().optional().describe('Event timestamp')
 });
 
-export let prospectEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Prospect Events',
-    key: 'prospect_events',
-    description: 'Triggered when a prospect\'s status, interest level, or engagement changes. Covers replies, bounces, blacklisting, interest changes, opt-outs, and more.',
-  }
-)
+export let prospectEvents = SlateTrigger.create(spec, {
+  name: 'Prospect Events',
+  key: 'prospect_events',
+  description:
+    "Triggered when a prospect's status, interest level, or engagement changes. Covers replies, bounces, blacklisting, interest changes, opt-outs, and more."
+})
   .input(webhookInputSchema)
   .output(prospectOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let registeredEvents: string[] = [];
@@ -75,14 +76,14 @@ export let prospectEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl },
+        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let details = ctx.input.registrationDetails as { events: string[]; targetUrl: string };
@@ -95,7 +96,7 @@ export let prospectEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
 
       // Woodpecker sends events as arrays (batched, up to 100 per payload)
@@ -104,12 +105,12 @@ export let prospectEvents = SlateTrigger.create(
       return {
         inputs: events.map((event: any) => ({
           eventType: event.method ?? event.event ?? 'unknown',
-          eventPayload: event,
-        })),
+          eventPayload: event
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.eventPayload;
       let prospect = payload.prospect ?? {};
       let email = payload.email ?? {};
@@ -136,9 +137,9 @@ export let prospectEvents = SlateTrigger.create(
           replySubject: email.subject,
           replyMessage: email.message,
           replyDate: email.date,
-          timestamp: payload.timestamp,
-        },
+          timestamp: payload.timestamp
+        }
       };
-    },
+    }
   })
   .build();

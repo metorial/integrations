@@ -2,14 +2,16 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let http = createAxios({
-  baseURL: 'https://api.timelyapp.com/1.1',
+  baseURL: 'https://api.timelyapp.com/1.1'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -17,55 +19,59 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://api.timelyapp.com/1.1/oauth/authorize?${params.toString()}`,
+        url: `https://api.timelyapp.com/1.1/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await http.post('/oauth/token', {
         grant_type: 'authorization_code',
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         code: ctx.code,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       return {
         output: {
           token: response.data.access_token,
-          refreshToken: response.data.refresh_token,
-        },
+          refreshToken: response.data.refresh_token
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await http.post('/oauth/token', {
         grant_type: 'refresh_token',
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken,
+        refresh_token: ctx.output.refreshToken
       });
 
       return {
         output: {
           token: response.data.access_token,
-          refreshToken: response.data.refresh_token || ctx.output.refreshToken,
-        },
+          refreshToken: response.data.refresh_token || ctx.output.refreshToken
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string }; input: Record<string, never>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string };
+      input: Record<string, never>;
+      scopes: string[];
+    }) => {
       let accountsRes = await http.get('/accounts', {
-        headers: { Authorization: `Bearer ${ctx.output.token}` },
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let accounts = accountsRes.data;
@@ -76,7 +82,7 @@ export let auth = SlateAuth.create()
       }
 
       let userRes = await http.get(`/${accountId}/users/current`, {
-        headers: { Authorization: `Bearer ${ctx.output.token}` },
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let user = userRes.data;
@@ -86,8 +92,8 @@ export let auth = SlateAuth.create()
           id: String(user.id),
           email: user.email,
           name: user.name,
-          imageUrl: user.avatar?.large_retina,
-        },
+          imageUrl: user.avatar?.large_retina
+        }
       };
-    },
+    }
   });

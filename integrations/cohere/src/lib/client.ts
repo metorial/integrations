@@ -13,7 +13,7 @@ export class CohereClient {
 
   private headers() {
     return {
-      'Authorization': `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`,
       'Content-Type': 'application/json'
     };
   }
@@ -47,7 +47,8 @@ export class CohereClient {
     if (params.temperature !== undefined) body.temperature = params.temperature;
     if (params.maxTokens !== undefined) body.max_tokens = params.maxTokens;
     if (params.stopSequences !== undefined) body.stop_sequences = params.stopSequences;
-    if (params.frequencyPenalty !== undefined) body.frequency_penalty = params.frequencyPenalty;
+    if (params.frequencyPenalty !== undefined)
+      body.frequency_penalty = params.frequencyPenalty;
     if (params.presencePenalty !== undefined) body.presence_penalty = params.presencePenalty;
     if (params.seed !== undefined) body.seed = params.seed;
     if (params.safetyMode !== undefined) body.safety_mode = params.safetyMode;
@@ -120,23 +121,31 @@ export class CohereClient {
   // ==================== Tokenize / Detokenize (v1) ====================
 
   async tokenize(params: { text: string; model: string }) {
-    let response = await http.post('/v1/tokenize', {
-      text: params.text,
-      model: params.model
-    }, {
-      headers: this.headers()
-    });
+    let response = await http.post(
+      '/v1/tokenize',
+      {
+        text: params.text,
+        model: params.model
+      },
+      {
+        headers: this.headers()
+      }
+    );
 
     return response.data;
   }
 
   async detokenize(params: { tokens: number[]; model: string }) {
-    let response = await http.post('/v1/detokenize', {
-      tokens: params.tokens,
-      model: params.model
-    }, {
-      headers: this.headers()
-    });
+    let response = await http.post(
+      '/v1/detokenize',
+      {
+        tokens: params.tokens,
+        model: params.model
+      },
+      {
+        headers: this.headers()
+      }
+    );
 
     return response.data;
   }
@@ -181,7 +190,8 @@ export class CohereClient {
     if (params?.after !== undefined) queryParams.after = params.after;
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.offset !== undefined) queryParams.offset = params.offset;
-    if (params?.validationStatus !== undefined) queryParams.validationStatus = params.validationStatus;
+    if (params?.validationStatus !== undefined)
+      queryParams.validationStatus = params.validationStatus;
 
     let response = await http.get('/v1/datasets', {
       headers: this.headers(),
@@ -251,9 +261,13 @@ export class CohereClient {
   }
 
   async cancelEmbedJob(jobId: string) {
-    let response = await http.post(`/v1/embed-jobs/${jobId}/cancel`, {}, {
-      headers: this.headers()
-    });
+    let response = await http.post(
+      `/v1/embed-jobs/${jobId}/cancel`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
 
     return response.data;
   }

@@ -13,7 +13,7 @@ import {
   getBalance,
   manageCoupons,
   manageDisputes,
-  searchCharges,
+  searchCharges
 } from './tools';
 import {
   paymentEvents,
@@ -21,7 +21,7 @@ import {
   invoiceEvents,
   customerEvents,
   checkoutEvents,
-  payoutEvents,
+  payoutEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -39,7 +39,7 @@ export let provider = Slate.create({
     getBalance,
     manageCoupons,
     manageDisputes,
-    searchCharges,
+    searchCharges
   ],
   triggers: [
     paymentEvents,
@@ -47,6 +47,6 @@ export let provider = Slate.create({
     invoiceEvents,
     customerEvents,
     checkoutEvents,
-    payoutEvents,
-  ],
+    payoutEvents
+  ]
 });

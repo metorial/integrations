@@ -3,37 +3,39 @@ import { LinkedInClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let organizationSocialActions = SlateTrigger.create(
-  spec,
-  {
-    name: 'Organization Post Activity',
-    key: 'organization_post_activity',
-    description: 'Monitors posts on a LinkedIn organization page for new activity. Polls for new posts and tracks changes to comments and reactions on existing posts.',
-  }
-)
-  .input(z.object({
-    postUrn: z.string().describe('URN of the post'),
-    authorUrn: z.string().describe('URN of the post author'),
-    text: z.string().optional().describe('Post text/commentary'),
-    visibility: z.string().describe('Post visibility setting'),
-    lifecycleState: z.string().describe('Post lifecycle state'),
-    publishedAt: z.string().optional().describe('Timestamp when the post was published'),
-    eventType: z.enum(['post.created', 'post.updated']).describe('Type of activity detected'),
-  }))
-  .output(z.object({
-    postUrn: z.string().describe('URN of the post'),
-    authorUrn: z.string().describe('URN of the post author'),
-    text: z.string().optional().describe('Post text/commentary'),
-    visibility: z.string().describe('Post visibility'),
-    lifecycleState: z.string().describe('Post lifecycle state'),
-    publishedAt: z.string().optional().describe('Timestamp when the post was published'),
-  }))
+export let organizationSocialActions = SlateTrigger.create(spec, {
+  name: 'Organization Post Activity',
+  key: 'organization_post_activity',
+  description:
+    'Monitors posts on a LinkedIn organization page for new activity. Polls for new posts and tracks changes to comments and reactions on existing posts.'
+})
+  .input(
+    z.object({
+      postUrn: z.string().describe('URN of the post'),
+      authorUrn: z.string().describe('URN of the post author'),
+      text: z.string().optional().describe('Post text/commentary'),
+      visibility: z.string().describe('Post visibility setting'),
+      lifecycleState: z.string().describe('Post lifecycle state'),
+      publishedAt: z.string().optional().describe('Timestamp when the post was published'),
+      eventType: z.enum(['post.created', 'post.updated']).describe('Type of activity detected')
+    })
+  )
+  .output(
+    z.object({
+      postUrn: z.string().describe('URN of the post'),
+      authorUrn: z.string().describe('URN of the post author'),
+      text: z.string().optional().describe('Post text/commentary'),
+      visibility: z.string().describe('Post visibility'),
+      lifecycleState: z.string().describe('Post lifecycle state'),
+      publishedAt: z.string().optional().describe('Timestamp when the post was published')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new LinkedInClient({ token: ctx.auth.token });
 
       let state = (ctx.state ?? {}) as Record<string, unknown>;
@@ -85,7 +87,7 @@ export let organizationSocialActions = SlateTrigger.create(
             visibility: post.visibility,
             lifecycleState: post.lifecycleState,
             publishedAt: post.publishedAt,
-            eventType: 'post.created',
+            eventType: 'post.created'
           });
         }
       }
@@ -95,12 +97,12 @@ export let organizationSocialActions = SlateTrigger.create(
         updatedState: {
           organizationUrn,
           lastPollTime: new Date().toISOString(),
-          knownPostUrns: currentPostUrns,
-        },
+          knownPostUrns: currentPostUrns
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.postUrn}:${ctx.input.eventType}:${Date.now()}`,
@@ -110,9 +112,9 @@ export let organizationSocialActions = SlateTrigger.create(
           text: ctx.input.text,
           visibility: ctx.input.visibility,
           lifecycleState: ctx.input.lifecycleState,
-          publishedAt: ctx.input.publishedAt,
-        },
+          publishedAt: ctx.input.publishedAt
+        }
       };
-    },
+    }
   })
   .build();

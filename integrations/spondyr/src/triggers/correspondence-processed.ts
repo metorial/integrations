@@ -3,44 +3,53 @@ import { SpondyrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let correspondenceProcessed = SlateTrigger.create(
-  spec,
-  {
-    name: 'Correspondence Processed',
-    key: 'correspondence_processed',
-    description: 'Emits an event when a tracked correspondence has been processed successfully. Polls the Spondyr Status API to detect when the status becomes "OK".',
-    instructions: [
-      'You must provide at least one reference ID to track. Add reference IDs of correspondence you want to monitor.',
-    ],
-  }
-)
-  .input(z.object({
-    referenceId: z.string().describe('Reference ID of the correspondence'),
-    apiStatus: z.string().describe('Current API status of the correspondence'),
-    createdDate: z.string().describe('Date the correspondence was created'),
-    transactionData: z.record(z.string(), z.unknown()).optional().describe('Associated transaction data'),
-  }))
-  .output(z.object({
-    referenceId: z.string().describe('Reference ID of the processed correspondence'),
-    apiStatus: z.string().describe('Current status of the correspondence'),
-    createdDate: z.string().describe('Date when the correspondence was created'),
-    transactionData: z.record(z.string(), z.unknown()).optional().describe('Original transaction data snapshot'),
-  }))
+export let correspondenceProcessed = SlateTrigger.create(spec, {
+  name: 'Correspondence Processed',
+  key: 'correspondence_processed',
+  description:
+    'Emits an event when a tracked correspondence has been processed successfully. Polls the Spondyr Status API to detect when the status becomes "OK".',
+  instructions: [
+    'You must provide at least one reference ID to track. Add reference IDs of correspondence you want to monitor.'
+  ]
+})
+  .input(
+    z.object({
+      referenceId: z.string().describe('Reference ID of the correspondence'),
+      apiStatus: z.string().describe('Current API status of the correspondence'),
+      createdDate: z.string().describe('Date the correspondence was created'),
+      transactionData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Associated transaction data')
+    })
+  )
+  .output(
+    z.object({
+      referenceId: z.string().describe('Reference ID of the processed correspondence'),
+      apiStatus: z.string().describe('Current status of the correspondence'),
+      createdDate: z.string().describe('Date when the correspondence was created'),
+      transactionData: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Original transaction data snapshot')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SpondyrClient({
         token: ctx.auth.token,
-        applicationToken: ctx.auth.applicationToken,
+        applicationToken: ctx.auth.applicationToken
       });
 
-      let state = ctx.state as {
-        referenceIds?: string[];
-        processedIds?: string[];
-      } ?? {};
+      let state =
+        (ctx.state as {
+          referenceIds?: string[];
+          processedIds?: string[];
+        }) ?? {};
 
       let referenceIds: string[] = state.referenceIds ?? [];
       let processedIds: string[] = state.processedIds ?? [];
@@ -59,7 +68,7 @@ export let correspondenceProcessed = SlateTrigger.create(
         try {
           let status = await client.getCorrespondenceStatus({
             referenceId: refId,
-            includeData: true,
+            includeData: true
           });
 
           if (status.apiStatus === 'OK') {
@@ -67,7 +76,7 @@ export let correspondenceProcessed = SlateTrigger.create(
               referenceId: status.referenceId,
               apiStatus: status.apiStatus,
               createdDate: status.createdDate,
-              transactionData: status.transactionData,
+              transactionData: status.transactionData
             });
             processedIds.push(refId);
           }
@@ -81,12 +90,12 @@ export let correspondenceProcessed = SlateTrigger.create(
         inputs,
         updatedState: {
           referenceIds,
-          processedIds,
-        },
+          processedIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'correspondence.processed',
         id: `${ctx.input.referenceId}-${ctx.input.apiStatus}`,
@@ -94,9 +103,9 @@ export let correspondenceProcessed = SlateTrigger.create(
           referenceId: ctx.input.referenceId,
           apiStatus: ctx.input.apiStatus,
           createdDate: ctx.input.createdDate,
-          transactionData: ctx.input.transactionData,
-        },
+          transactionData: ctx.input.transactionData
+        }
       };
-    },
+    }
   })
   .build();

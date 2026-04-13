@@ -15,37 +15,41 @@ let saleSchema = z.object({
   refunded: z.boolean().optional().describe('Whether the sale was refunded'),
   disputed: z.boolean().optional().describe('Whether the sale is disputed'),
   createdAt: z.string().optional().describe('Sale creation timestamp'),
-  orderNumber: z.number().optional().describe('Order number'),
+  orderNumber: z.number().optional().describe('Order number')
 });
 
-export let listSales = SlateTool.create(
-  spec,
-  {
-    name: 'List Sales',
-    key: 'list_sales',
-    description: `Retrieve sales from your Gumroad account with optional filtering by date range, email, product, or order ID. Returns up to 10 sales per page with cursor-based pagination.`,
-    instructions: [
-      'Use after/before dates in YYYY-MM-DD format.',
-      'Use pageKey from a previous response to get the next page of results.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let listSales = SlateTool.create(spec, {
+  name: 'List Sales',
+  key: 'list_sales',
+  description: `Retrieve sales from your Gumroad account with optional filtering by date range, email, product, or order ID. Returns up to 10 sales per page with cursor-based pagination.`,
+  instructions: [
+    'Use after/before dates in YYYY-MM-DD format.',
+    'Use pageKey from a previous response to get the next page of results.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    after: z.string().optional().describe('Only return sales after this date (YYYY-MM-DD)'),
-    before: z.string().optional().describe('Only return sales before this date (YYYY-MM-DD)'),
-    email: z.string().optional().describe('Filter by buyer email address'),
-    productId: z.string().optional().describe('Filter by product ID'),
-    orderId: z.string().optional().describe('Filter by order ID'),
-    pageKey: z.string().optional().describe('Pagination cursor from previous response'),
-  }))
-  .output(z.object({
-    sales: z.array(saleSchema).describe('List of sales'),
-    nextPageKey: z.string().optional().describe('Cursor for next page of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      after: z.string().optional().describe('Only return sales after this date (YYYY-MM-DD)'),
+      before: z
+        .string()
+        .optional()
+        .describe('Only return sales before this date (YYYY-MM-DD)'),
+      email: z.string().optional().describe('Filter by buyer email address'),
+      productId: z.string().optional().describe('Filter by product ID'),
+      orderId: z.string().optional().describe('Filter by order ID'),
+      pageKey: z.string().optional().describe('Pagination cursor from previous response')
+    })
+  )
+  .output(
+    z.object({
+      sales: z.array(saleSchema).describe('List of sales'),
+      nextPageKey: z.string().optional().describe('Cursor for next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GumroadClient({ token: ctx.auth.token });
     let result = await client.listSales({
       after: ctx.input.after,
@@ -53,7 +57,7 @@ export let listSales = SlateTool.create(
       email: ctx.input.email,
       productId: ctx.input.productId,
       orderId: ctx.input.orderId,
-      pageKey: ctx.input.pageKey,
+      pageKey: ctx.input.pageKey
     });
 
     let mapped = result.sales.map((s: any) => ({
@@ -68,7 +72,7 @@ export let listSales = SlateTool.create(
       refunded: s.refunded,
       disputed: s.disputed,
       createdAt: s.created_at || undefined,
-      orderNumber: s.order_number || undefined,
+      orderNumber: s.order_number || undefined
     }));
 
     return {

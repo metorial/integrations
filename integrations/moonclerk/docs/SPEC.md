@@ -15,6 +15,7 @@ MoonClerk uses **API Key** authentication.
 - All URLs start with `https://api.moonclerk.com/`. SSL only.
 
 Example request:
+
 ```
 curl -H "Authorization: Token token=YOUR_API_KEY" \
      -H "Accept: application/vnd.moonclerk+json;version=1" \

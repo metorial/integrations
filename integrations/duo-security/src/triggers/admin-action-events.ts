@@ -3,40 +3,42 @@ import { DuoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let adminActionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Admin Action Events',
-    key: 'admin_action_events',
-    description: 'Polls Duo for administrator action logs including user creation, policy changes, configuration updates, and other administrative operations.',
-  }
-)
-  .input(z.object({
-    timestamp: z.number().describe('Unix timestamp of the event'),
-    action: z.string().optional().describe('Action performed'),
-    username: z.string().optional().describe('Administrator who performed the action'),
-    objectType: z.string().optional().describe('Type of object affected'),
-    objectName: z.string().optional().describe('Name of the object affected'),
-    description: z.string().optional().describe('Description of the action'),
-  }))
-  .output(z.object({
-    timestamp: z.number().describe('Unix timestamp of the event'),
-    action: z.string().optional().describe('Action performed'),
-    username: z.string().optional().describe('Administrator who performed the action'),
-    objectType: z.string().optional().describe('Type of object affected'),
-    objectName: z.string().optional().describe('Name of the object affected'),
-    description: z.string().optional().describe('Description of the action'),
-  }))
+export let adminActionEvents = SlateTrigger.create(spec, {
+  name: 'Admin Action Events',
+  key: 'admin_action_events',
+  description:
+    'Polls Duo for administrator action logs including user creation, policy changes, configuration updates, and other administrative operations.'
+})
+  .input(
+    z.object({
+      timestamp: z.number().describe('Unix timestamp of the event'),
+      action: z.string().optional().describe('Action performed'),
+      username: z.string().optional().describe('Administrator who performed the action'),
+      objectType: z.string().optional().describe('Type of object affected'),
+      objectName: z.string().optional().describe('Name of the object affected'),
+      description: z.string().optional().describe('Description of the action')
+    })
+  )
+  .output(
+    z.object({
+      timestamp: z.number().describe('Unix timestamp of the event'),
+      action: z.string().optional().describe('Action performed'),
+      username: z.string().optional().describe('Administrator who performed the action'),
+      objectType: z.string().optional().describe('Type of object affected'),
+      objectName: z.string().optional().describe('Name of the object affected'),
+      description: z.string().optional().describe('Description of the action')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DuoClient({
         integrationKey: ctx.auth.integrationKey,
         secretKey: ctx.auth.secretKey,
-        apiHostname: ctx.auth.apiHostname,
+        apiHostname: ctx.auth.apiHostname
       });
 
       let nowSecs = Math.floor(Date.now() / 1000);
@@ -46,7 +48,7 @@ export let adminActionEvents = SlateTrigger.create(
 
       let result = await client.getAdministratorLogs({
         mintime,
-        limit: 1000,
+        limit: 1000
       });
 
       let logs = result.response || [];
@@ -57,23 +59,24 @@ export let adminActionEvents = SlateTrigger.create(
         username: log.username || undefined,
         objectType: log.object || undefined,
         objectName: log.object_name || undefined,
-        description: log.description ? JSON.stringify(log.description) : undefined,
+        description: log.description ? JSON.stringify(log.description) : undefined
       }));
 
       // Advance mintime to latest timestamp + 1 to avoid duplicates
-      let latestTimestamp = logs.length > 0
-        ? Math.max(...logs.map((l: any) => l.timestamp || 0))
-        : parseInt(mintime);
+      let latestTimestamp =
+        logs.length > 0
+          ? Math.max(...logs.map((l: any) => l.timestamp || 0))
+          : parseInt(mintime);
 
       return {
         inputs,
         updatedState: {
-          lastMintime: String(latestTimestamp + 1),
-        },
+          lastMintime: String(latestTimestamp + 1)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let actionType = (ctx.input.action || 'unknown').toLowerCase().replace(/\s+/g, '_');
       return {
         type: `admin.${actionType}`,
@@ -84,8 +87,9 @@ export let adminActionEvents = SlateTrigger.create(
           username: ctx.input.username,
           objectType: ctx.input.objectType,
           objectName: ctx.input.objectName,
-          description: ctx.input.description,
-        },
+          description: ctx.input.description
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

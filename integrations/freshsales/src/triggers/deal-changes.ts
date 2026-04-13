@@ -3,47 +3,50 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dealChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Deal Changes',
-    key: 'deal_changes',
-    description: 'Triggers when deals are created or updated in Freshsales. Monitors deals via the default or first available view.',
-  }
-)
-  .input(z.object({
-    dealId: z.number().describe('ID of the deal'),
-    name: z.string().nullable().optional(),
-    amount: z.number().nullable().optional(),
-    expectedClose: z.string().nullable().optional(),
-    dealStageId: z.number().nullable().optional(),
-    ownerId: z.number().nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-    isNew: z.boolean().describe('Whether this deal is newly created since last poll'),
-  }))
-  .output(z.object({
-    dealId: z.number().describe('ID of the deal'),
-    name: z.string().nullable().optional(),
-    amount: z.number().nullable().optional(),
-    expectedClose: z.string().nullable().optional(),
-    dealStageId: z.number().nullable().optional(),
-    ownerId: z.number().nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-  }))
+export let dealChanges = SlateTrigger.create(spec, {
+  name: 'Deal Changes',
+  key: 'deal_changes',
+  description:
+    'Triggers when deals are created or updated in Freshsales. Monitors deals via the default or first available view.'
+})
+  .input(
+    z.object({
+      dealId: z.number().describe('ID of the deal'),
+      name: z.string().nullable().optional(),
+      amount: z.number().nullable().optional(),
+      expectedClose: z.string().nullable().optional(),
+      dealStageId: z.number().nullable().optional(),
+      ownerId: z.number().nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional(),
+      isNew: z.boolean().describe('Whether this deal is newly created since last poll')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.number().describe('ID of the deal'),
+      name: z.string().nullable().optional(),
+      amount: z.number().nullable().optional(),
+      expectedClose: z.string().nullable().optional(),
+      dealStageId: z.number().nullable().optional(),
+      ownerId: z.number().nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let viewId = ctx.state?.viewId;
       if (!viewId) {
         let filters = await client.getDealFilters();
-        let defaultFilter = filters.find((f: Record<string, any>) => f.is_default) || filters[0];
+        let defaultFilter =
+          filters.find((f: Record<string, any>) => f.is_default) || filters[0];
         if (!defaultFilter) {
           return { inputs: [], updatedState: ctx.state || {} };
         }
@@ -54,7 +57,7 @@ export let dealChanges = SlateTrigger.create(
       let result = await client.listDeals(viewId, {
         sort: 'updated_at',
         sortType: 'desc',
-        page: 1,
+        page: 1
       });
 
       let deals = result.deals || [];
@@ -74,24 +77,23 @@ export let dealChanges = SlateTrigger.create(
           ownerId: deal.owner_id,
           createdAt: deal.created_at,
           updatedAt: deal.updated_at,
-          isNew,
+          isNew
         });
       }
 
-      let updatedLastPolledAt = (deals.length > 0 && deals[0]?.updated_at)
-        ? deals[0].updated_at
-        : lastPolledAt;
+      let updatedLastPolledAt =
+        deals.length > 0 && deals[0]?.updated_at ? deals[0].updated_at : lastPolledAt;
 
       return {
         inputs: newInputs,
         updatedState: {
           viewId,
-          lastPolledAt: updatedLastPolledAt,
-        },
+          lastPolledAt: updatedLastPolledAt
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNew ? 'deal.created' : 'deal.updated';
       return {
         type: eventType,
@@ -104,8 +106,9 @@ export let dealChanges = SlateTrigger.create(
           dealStageId: ctx.input.dealStageId,
           ownerId: ctx.input.ownerId,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

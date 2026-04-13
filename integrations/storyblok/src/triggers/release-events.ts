@@ -3,51 +3,52 @@ import { StoryblokClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let releaseEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Release Events',
-    key: 'release_events',
-    description: 'Triggers when a release is merged (published) into the current content.',
-  }
-)
-  .input(z.object({
-    releaseId: z.number().optional().describe('ID of the merged release'),
-    spaceId: z.number().optional().describe('Space ID'),
-    webhookId: z.string().describe('Unique ID for deduplication'),
-  }))
-  .output(z.object({
-    releaseId: z.number().optional().describe('ID of the merged release'),
-    name: z.string().optional().describe('Name of the release'),
-    released: z.boolean().optional().describe('Whether the release was merged'),
-  }))
+export let releaseEvents = SlateTrigger.create(spec, {
+  name: 'Release Events',
+  key: 'release_events',
+  description: 'Triggers when a release is merged (published) into the current content.'
+})
+  .input(
+    z.object({
+      releaseId: z.number().optional().describe('ID of the merged release'),
+      spaceId: z.number().optional().describe('Space ID'),
+      webhookId: z.string().describe('Unique ID for deduplication')
+    })
+  )
+  .output(
+    z.object({
+      releaseId: z.number().optional().describe('ID of the merged release'),
+      name: z.string().optional().describe('Name of the release'),
+      released: z.boolean().optional().describe('Whether the release was merged')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new StoryblokClient({
         token: ctx.auth.token,
         region: ctx.config.region,
-        spaceId: ctx.config.spaceId,
+        spaceId: ctx.config.spaceId
       });
 
       let webhook = await client.createWebhook({
         name: 'Slates - Release Events',
         endpoint: ctx.input.webhookBaseUrl,
         actions: ['release.merged'],
-        activated: true,
+        activated: true
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id?.toString(),
-        },
+          webhookId: webhook.id?.toString()
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new StoryblokClient({
         token: ctx.auth.token,
         region: ctx.config.region,
-        spaceId: ctx.config.spaceId,
+        spaceId: ctx.config.spaceId
       });
 
       let details = ctx.input.registrationDetails as { webhookId?: string };
@@ -56,8 +57,8 @@ export let releaseEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as {
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as {
         action?: string;
         release_id?: number;
         space_id?: number;
@@ -68,18 +69,20 @@ export let releaseEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          releaseId: body.release_id,
-          spaceId: body.space_id,
-          webhookId: `release-${body.release_id}-merged-${Date.now()}`,
-        }],
+        inputs: [
+          {
+            releaseId: body.release_id,
+            spaceId: body.space_id,
+            webhookId: `release-${body.release_id}-merged-${Date.now()}`
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let output: Record<string, any> = {
         releaseId: ctx.input.releaseId,
-        released: true,
+        released: true
       };
 
       if (ctx.input.releaseId) {
@@ -87,7 +90,7 @@ export let releaseEvents = SlateTrigger.create(
           let client = new StoryblokClient({
             token: ctx.auth.token,
             region: ctx.config.region,
-            spaceId: ctx.config.spaceId,
+            spaceId: ctx.config.spaceId
           });
           let release = await client.getRelease(ctx.input.releaseId.toString());
           output.name = release.name;
@@ -99,8 +102,8 @@ export let releaseEvents = SlateTrigger.create(
       return {
         type: 'release.merged',
         id: ctx.input.webhookId,
-        output: output as any,
+        output: output as any
       };
-    },
+    }
   })
   .build();

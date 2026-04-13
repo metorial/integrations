@@ -9,8 +9,8 @@ export class PerigonClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -30,12 +30,16 @@ export class PerigonClient {
   }
 
   async searchCompanies(params: CompanySearchParams) {
-    let response = await this.axios.get('/companies/all', { params: this.cleanParams(params) });
+    let response = await this.axios.get('/companies/all', {
+      params: this.cleanParams(params)
+    });
     return response.data as CompaniesResponse;
   }
 
   async searchJournalists(params: JournalistSearchParams) {
-    let response = await this.axios.get('/journalists/all', { params: this.cleanParams(params) });
+    let response = await this.axios.get('/journalists/all', {
+      params: this.cleanParams(params)
+    });
     return response.data as JournalistsResponse;
   }
 

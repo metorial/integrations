@@ -23,6 +23,7 @@ Formdesk uses **API Key** authentication via a Bearer token.
 The Connect method must be called first to determine the correct server for subsequent API calls. It returns the proper host, domain, and full API URL. An alternative authentication method is also available using **domain**, **username**, and **password** parameters via the Connect method.
 
 **Required credentials:**
+
 - **API Key**: Generated in User Management within the Formdesk account
 - **Domain (folder of forms)**: The unique account name
 - **Host**: Determined dynamically via the Connect method
@@ -30,9 +31,11 @@ The Connect method must be called first to determine the correct server for subs
 ## Features
 
 ### Form Management
+
 - Retrieve a list of all forms in the account, including form IDs and names.
 
 ### Form Result (Submission) Management
+
 - Retrieve lists of form result entry IDs, with extensive filtering by date ranges (created, changed, completed), status, sync status, visitor, and pre-defined views/filters.
 - Get detailed individual result entries including all submitted field data and system metadata.
 - Add new result entries to a form programmatically, including file uploads (base64-encoded).
@@ -43,23 +46,28 @@ The Connect method must be called first to determine the correct server for subs
 - Generate and retrieve PDF documents from result entries with configurable paper size, orientation, scaling, margins, and password protection.
 
 ### Visitor Management
+
 - Visitors are registered users who can log in to forms that support entry maintenance.
 - List, add, update, and remove visitors, including their name, email, username, and password.
 - Authenticate visitors by username and password.
 - Retrieve all form results associated with a specific visitor across multiple forms.
 
 ### Single Sign-On (SSO)
+
 - Sign on users or form visitors without requiring them to enter credentials, enabling SSO integration from external systems.
 - Returns a redirect URL with a session token that grants access to Formdesk.
 
 ### Form Data Parking
+
 - Push data to Formdesk temporarily and receive a ticket. When the ticket is used to open a form, the form is pre-filled with the parked data.
 - Configurable expiration time and options for single/multi-use tickets and preventing field changes.
 
 ### File Management
+
 - Retrieve uploaded files associated with form submissions by file name or ID.
 
 ### Pre-defined Filters
+
 - Retrieve the list of pre-defined filters (views) configured on a form, which can then be used to filter result queries.
 
 ## Events
@@ -67,6 +75,7 @@ The Connect method must be called first to determine the correct server for subs
 When a visitor completes and submits a form, the data is sent to the Formdesk database. Formdesk Webhooks allow you to send this data to one or more other systems at the same time.
 
 ### Form Submission Webhooks
+
 - Directly submit entered data to one or more other systems using Webhooks.
 - Webhooks are configured per form in the form settings. Formdesk supports almost any standard method for exchanging data and offers a number of pre-defined Webhooks with commonly used systems such as Salesforce and Mailchimp.
 - Using the Webhook's sending criteria, you can execute them selectively. For example, consider an order form that inquires whether the user would like to receive your newsletter. The Webhooks should then only be executed when the visitor indicates they want to receive the newsletter. Or you can execute the Webhooks only once the completed form is approved in the workflow.

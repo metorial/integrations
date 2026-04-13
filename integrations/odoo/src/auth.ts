@@ -22,11 +22,13 @@ type PasswordInput = {
 };
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    username: z.string(),
-    uid: z.number(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      username: z.string(),
+      uid: z.number()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key',
@@ -34,9 +36,15 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       username: z.string().describe('Login email for the Odoo user'),
-      token: z.string().describe('API Key generated from user profile settings (Odoo v14+). Used in place of password.'),
-      instanceUrl: z.string().describe('The URL of the Odoo instance (e.g., https://mycompany.odoo.com)'),
-      database: z.string().describe('The Odoo database name'),
+      token: z
+        .string()
+        .describe(
+          'API Key generated from user profile settings (Odoo v14+). Used in place of password.'
+        ),
+      instanceUrl: z
+        .string()
+        .describe('The URL of the Odoo instance (e.g., https://mycompany.odoo.com)'),
+      database: z.string().describe('The Odoo database name')
     }),
 
     getOutput: async (ctx: { input: ApiKeyInput }) => {
@@ -48,21 +56,23 @@ export let auth = SlateAuth.create()
         params: {
           service: 'common',
           method: 'authenticate',
-          args: [ctx.input.database, ctx.input.username, ctx.input.token, {}],
-        },
+          args: [ctx.input.database, ctx.input.username, ctx.input.token, {}]
+        }
       });
 
       let uid = response.data?.result;
       if (!uid || typeof uid !== 'number') {
-        throw new Error('Authentication failed. Please check your credentials, instance URL, and database name.');
+        throw new Error(
+          'Authentication failed. Please check your credentials, instance URL, and database name.'
+        );
       }
 
       return {
         output: {
           token: ctx.input.token,
           username: ctx.input.username,
-          uid,
-        },
+          uid
+        }
       };
     },
 
@@ -71,10 +81,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(ctx.output.uid),
           email: ctx.output.username,
-          name: ctx.output.username,
-        },
+          name: ctx.output.username
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -84,8 +94,10 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       username: z.string().describe('Login email for the Odoo user'),
       password: z.string().describe('Password for the Odoo user'),
-      instanceUrl: z.string().describe('The URL of the Odoo instance (e.g., https://mycompany.odoo.com)'),
-      database: z.string().describe('The Odoo database name'),
+      instanceUrl: z
+        .string()
+        .describe('The URL of the Odoo instance (e.g., https://mycompany.odoo.com)'),
+      database: z.string().describe('The Odoo database name')
     }),
 
     getOutput: async (ctx: { input: PasswordInput }) => {
@@ -97,21 +109,23 @@ export let auth = SlateAuth.create()
         params: {
           service: 'common',
           method: 'authenticate',
-          args: [ctx.input.database, ctx.input.username, ctx.input.password, {}],
-        },
+          args: [ctx.input.database, ctx.input.username, ctx.input.password, {}]
+        }
       });
 
       let uid = response.data?.result;
       if (!uid || typeof uid !== 'number') {
-        throw new Error('Authentication failed. Please check your credentials, instance URL, and database name.');
+        throw new Error(
+          'Authentication failed. Please check your credentials, instance URL, and database name.'
+        );
       }
 
       return {
         output: {
           token: ctx.input.password,
           username: ctx.input.username,
-          uid,
-        },
+          uid
+        }
       };
     },
 
@@ -120,8 +134,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(ctx.output.uid),
           email: ctx.output.username,
-          name: ctx.output.username,
-        },
+          name: ctx.output.username
+        }
       };
-    },
+    }
   });

@@ -16,10 +16,7 @@ import {
   deleteCodeMonitor,
   getCurrentUser
 } from './tools';
-import {
-  batchChangeEvents,
-  codeMonitorNotification
-} from './triggers';
+import { batchChangeEvents, codeMonitorNotification } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,8 +36,5 @@ export let provider = Slate.create({
     deleteCodeMonitor,
     getCurrentUser
   ],
-  triggers: [
-    batchChangeEvents,
-    codeMonitorNotification
-  ]
+  triggers: [batchChangeEvents, codeMonitorNotification]
 });

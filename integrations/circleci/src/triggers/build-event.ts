@@ -2,85 +2,91 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let vcsInfoSchema = z.object({
-  providerName: z.string().optional(),
-  branch: z.string().optional(),
-  tag: z.string().optional(),
-  revision: z.string().optional(),
-  repositoryUrl: z.string().optional(),
-  commitSubject: z.string().optional(),
-  commitBody: z.string().optional(),
-  authorName: z.string().optional(),
-  authorEmail: z.string().optional()
-}).optional();
-
-export let buildEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Build Event',
-    key: 'build_event',
-    description: 'Triggered when a workflow or job completes in a CircleCI project. Covers both workflow-completed and job-completed events with full pipeline, workflow, job, and VCS details.',
-    instructions: [
-      'Configure the webhook URL in your CircleCI project settings under Webhooks, subscribing to workflow-completed and/or job-completed events.'
-    ]
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['workflow-completed', 'job-completed']).describe('Type of CircleCI event'),
-    eventId: z.string().describe('Unique event ID for deduplication'),
-    happenedAt: z.string().describe('When the event occurred'),
-    projectId: z.string(),
-    projectName: z.string().optional(),
-    projectSlug: z.string().optional(),
-    organizationId: z.string().optional(),
-    organizationName: z.string().optional(),
-    pipelineId: z.string(),
-    pipelineNumber: z.number().optional(),
-    workflowId: z.string(),
-    workflowName: z.string().optional(),
-    workflowStatus: z.string().optional(),
-    workflowCreatedAt: z.string().optional(),
-    workflowStoppedAt: z.string().optional(),
-    workflowUrl: z.string().optional(),
-    jobId: z.string().optional(),
-    jobName: z.string().optional(),
-    jobStatus: z.string().optional(),
-    jobNumber: z.number().optional(),
-    jobStartedAt: z.string().optional(),
-    jobStoppedAt: z.string().optional(),
-    vcs: vcsInfoSchema
-  }))
-  .output(z.object({
-    projectId: z.string(),
-    projectName: z.string().optional(),
-    projectSlug: z.string().optional(),
-    organizationId: z.string().optional(),
-    organizationName: z.string().optional(),
-    pipelineId: z.string(),
-    pipelineNumber: z.number().optional(),
-    workflowId: z.string(),
-    workflowName: z.string().optional(),
-    workflowStatus: z.string().optional(),
-    workflowCreatedAt: z.string().optional(),
-    workflowStoppedAt: z.string().optional(),
-    workflowUrl: z.string().optional(),
-    jobId: z.string().optional(),
-    jobName: z.string().optional(),
-    jobStatus: z.string().optional(),
-    jobNumber: z.number().optional(),
-    jobStartedAt: z.string().optional(),
-    jobStoppedAt: z.string().optional(),
+let vcsInfoSchema = z
+  .object({
+    providerName: z.string().optional(),
     branch: z.string().optional(),
     tag: z.string().optional(),
     revision: z.string().optional(),
     repositoryUrl: z.string().optional(),
     commitSubject: z.string().optional(),
+    commitBody: z.string().optional(),
     authorName: z.string().optional(),
     authorEmail: z.string().optional()
-  }))
+  })
+  .optional();
+
+export let buildEvent = SlateTrigger.create(spec, {
+  name: 'Build Event',
+  key: 'build_event',
+  description:
+    'Triggered when a workflow or job completes in a CircleCI project. Covers both workflow-completed and job-completed events with full pipeline, workflow, job, and VCS details.',
+  instructions: [
+    'Configure the webhook URL in your CircleCI project settings under Webhooks, subscribing to workflow-completed and/or job-completed events.'
+  ]
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['workflow-completed', 'job-completed'])
+        .describe('Type of CircleCI event'),
+      eventId: z.string().describe('Unique event ID for deduplication'),
+      happenedAt: z.string().describe('When the event occurred'),
+      projectId: z.string(),
+      projectName: z.string().optional(),
+      projectSlug: z.string().optional(),
+      organizationId: z.string().optional(),
+      organizationName: z.string().optional(),
+      pipelineId: z.string(),
+      pipelineNumber: z.number().optional(),
+      workflowId: z.string(),
+      workflowName: z.string().optional(),
+      workflowStatus: z.string().optional(),
+      workflowCreatedAt: z.string().optional(),
+      workflowStoppedAt: z.string().optional(),
+      workflowUrl: z.string().optional(),
+      jobId: z.string().optional(),
+      jobName: z.string().optional(),
+      jobStatus: z.string().optional(),
+      jobNumber: z.number().optional(),
+      jobStartedAt: z.string().optional(),
+      jobStoppedAt: z.string().optional(),
+      vcs: vcsInfoSchema
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string(),
+      projectName: z.string().optional(),
+      projectSlug: z.string().optional(),
+      organizationId: z.string().optional(),
+      organizationName: z.string().optional(),
+      pipelineId: z.string(),
+      pipelineNumber: z.number().optional(),
+      workflowId: z.string(),
+      workflowName: z.string().optional(),
+      workflowStatus: z.string().optional(),
+      workflowCreatedAt: z.string().optional(),
+      workflowStoppedAt: z.string().optional(),
+      workflowUrl: z.string().optional(),
+      jobId: z.string().optional(),
+      jobName: z.string().optional(),
+      jobStatus: z.string().optional(),
+      jobNumber: z.number().optional(),
+      jobStartedAt: z.string().optional(),
+      jobStoppedAt: z.string().optional(),
+      branch: z.string().optional(),
+      tag: z.string().optional(),
+      revision: z.string().optional(),
+      repositoryUrl: z.string().optional(),
+      commitSubject: z.string().optional(),
+      authorName: z.string().optional(),
+      authorEmail: z.string().optional()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
 
       let eventType = body.type as 'workflow-completed' | 'job-completed';
 
@@ -93,8 +99,10 @@ export let buildEvent = SlateTrigger.create(
       let repositoryUrl = vcsData?.origin_repository_url || triggerParams?.git?.checkout_url;
       let commitSubject = vcsData?.commit?.subject || triggerParams?.gitlab?.commit_title;
       let commitBody = vcsData?.commit?.body || triggerParams?.gitlab?.commit_message;
-      let authorName = vcsData?.commit?.author?.name || triggerParams?.gitlab?.commit_author_name;
-      let authorEmail = vcsData?.commit?.author?.email || triggerParams?.gitlab?.commit_author_email;
+      let authorName =
+        vcsData?.commit?.author?.name || triggerParams?.gitlab?.commit_author_name;
+      let authorEmail =
+        vcsData?.commit?.author?.email || triggerParams?.gitlab?.commit_author_email;
 
       let input: any = {
         eventType,
@@ -141,10 +149,9 @@ export let buildEvent = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
-      let type = ctx.input.eventType === 'workflow-completed'
-        ? 'workflow.completed'
-        : 'job.completed';
+    handleEvent: async ctx => {
+      let type =
+        ctx.input.eventType === 'workflow-completed' ? 'workflow.completed' : 'job.completed';
 
       return {
         type,

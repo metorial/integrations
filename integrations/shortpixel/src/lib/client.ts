@@ -4,7 +4,7 @@ import type {
   OptimizationResult,
   ApiStatusResponse,
   DomainStatusResponse,
-  DomainCdnUsageResponse,
+  DomainCdnUsageResponse
 } from './types';
 
 export class ShortPixelClient {
@@ -16,13 +16,13 @@ export class ShortPixelClient {
 
   private getReducerAxios() {
     return createAxios({
-      baseURL: 'https://api.shortpixel.com/v2',
+      baseURL: 'https://api.shortpixel.com/v2'
     });
   }
 
   private getCdnAxios() {
     return createAxios({
-      baseURL: 'https://no-cdn.shortpixel.ai',
+      baseURL: 'https://no-cdn.shortpixel.ai'
     });
   }
 
@@ -42,7 +42,8 @@ export class ShortPixelClient {
   }): Promise<OptimizationResult[]> {
     let axios = this.getReducerAxios();
 
-    let lossyValue = params.compression === 'lossy' ? 1 : params.compression === 'glossy' ? 2 : 0;
+    let lossyValue =
+      params.compression === 'lossy' ? 1 : params.compression === 'glossy' ? 2 : 0;
 
     let resizeValue = 0;
     if (params.resize === 'outer') resizeValue = 1;
@@ -53,7 +54,7 @@ export class ShortPixelClient {
       key: this.apiKey,
       plugin_version: 'SLATS',
       lossy: lossyValue,
-      urllist: params.urls,
+      urllist: params.urls
     };
 
     if (params.waitSeconds !== undefined) body.wait = params.waitSeconds;
@@ -88,14 +89,15 @@ export class ShortPixelClient {
   }): Promise<OptimizationResult[]> {
     let axios = this.getReducerAxios();
 
-    let lossyValue = params.compression === 'lossy' ? 1 : params.compression === 'glossy' ? 2 : 0;
+    let lossyValue =
+      params.compression === 'lossy' ? 1 : params.compression === 'glossy' ? 2 : 0;
 
     let body: ReducerRequest = {
       key: this.apiKey,
       plugin_version: 'SLATS',
       lossy: lossyValue,
       urllist: params.urls,
-      wait: params.waitSeconds ?? 20,
+      wait: params.waitSeconds ?? 20
     };
 
     if (params.convertTo) body.convertto = params.convertTo;
@@ -113,7 +115,7 @@ export class ShortPixelClient {
     let axios = this.getReducerAxios();
 
     let response = await axios.get('/api-status.php', {
-      params: { key: this.apiKey },
+      params: { key: this.apiKey }
     });
 
     return response.data as ApiStatusResponse;

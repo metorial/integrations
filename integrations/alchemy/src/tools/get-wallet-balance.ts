@@ -9,30 +9,42 @@ export let getWalletBalance = SlateTool.create(spec, {
   description: `Get the native currency balance (ETH, MATIC, etc.) for a wallet address, along with transaction count and current gas price.
 Use this to quickly check how much native currency an address holds.`,
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    walletAddress: z.string().describe('The wallet address to get the balance for'),
-    blockTag: z.string().optional().default('latest').describe('Block tag to query at (e.g., "latest", "earliest", "pending", or hex block number)'),
-  }))
-  .output(z.object({
-    walletAddress: z.string().describe('The queried wallet address'),
-    balanceWei: z.string().describe('Balance in wei (hex)'),
-    balanceEth: z.string().describe('Balance in ETH (or native currency, decimal string)'),
-    transactionCount: z.string().describe('Number of transactions sent from this address (hex)'),
-    gasPrice: z.string().describe('Current gas price in hex wei'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      walletAddress: z.string().describe('The wallet address to get the balance for'),
+      blockTag: z
+        .string()
+        .optional()
+        .default('latest')
+        .describe(
+          'Block tag to query at (e.g., "latest", "earliest", "pending", or hex block number)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      walletAddress: z.string().describe('The queried wallet address'),
+      balanceWei: z.string().describe('Balance in wei (hex)'),
+      balanceEth: z.string().describe('Balance in ETH (or native currency, decimal string)'),
+      transactionCount: z
+        .string()
+        .describe('Number of transactions sent from this address (hex)'),
+      gasPrice: z.string().describe('Current gas price in hex wei')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AlchemyClient({
       token: ctx.auth.token,
-      network: ctx.config.network,
+      network: ctx.config.network
     });
 
     let [balance, txCount, gasPrice] = await Promise.all([
       client.getBalance(ctx.input.walletAddress, ctx.input.blockTag),
       client.getTransactionCount(ctx.input.walletAddress, ctx.input.blockTag),
-      client.getGasPrice(),
+      client.getGasPrice()
     ]);
 
     let balanceBigInt = BigInt(balance);
@@ -45,9 +57,9 @@ Use this to quickly check how much native currency an address holds.`,
         balanceWei: balance,
         balanceEth,
         transactionCount: txCount,
-        gasPrice,
+        gasPrice
       },
-      message: `Wallet \`${ctx.input.walletAddress}\` has **${balanceEth}** native tokens (${parseInt(txCount, 16)} transactions).`,
+      message: `Wallet \`${ctx.input.walletAddress}\` has **${balanceEth}** native tokens (${parseInt(txCount, 16)} transactions).`
     };
   })
   .build();

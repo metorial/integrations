@@ -91,8 +91,8 @@ export class Client {
       baseURL: 'https://api.mailbluster.com/api',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -108,7 +108,10 @@ export class Client {
     return response.data;
   }
 
-  async updateLead(email: string, input: Partial<Omit<LeadInput, 'email' | 'overrideExisting'>>): Promise<LeadResponse> {
+  async updateLead(
+    email: string,
+    input: Partial<Omit<LeadInput, 'email' | 'overrideExisting'>>
+  ): Promise<LeadResponse> {
     let response = await this.axios.put(`/leads/${encodeURIComponent(email)}`, input);
     return response.data;
   }
@@ -139,7 +142,9 @@ export class Client {
   }
 
   async updateProduct(productId: string, name: string): Promise<ProductResponse> {
-    let response = await this.axios.put(`/products/${encodeURIComponent(productId)}`, { name });
+    let response = await this.axios.put(`/products/${encodeURIComponent(productId)}`, {
+      name
+    });
     return response.data;
   }
 
@@ -156,11 +161,11 @@ export class Client {
       customer: {
         email: input.customerEmail,
         ...(input.customerFirstName && { firstName: input.customerFirstName }),
-        ...(input.customerLastName && { lastName: input.customerLastName }),
+        ...(input.customerLastName && { lastName: input.customerLastName })
       },
       currency: input.currency,
       totalPrice: input.totalPrice,
-      items: input.items,
+      items: input.items
     };
     if (input.campaignId) {
       body.campaignId = input.campaignId;
@@ -182,13 +187,16 @@ export class Client {
     return response.data.orders || response.data;
   }
 
-  async updateOrder(orderId: string, input: Partial<Omit<OrderInput, 'id'>>): Promise<OrderResponse> {
+  async updateOrder(
+    orderId: string,
+    input: Partial<Omit<OrderInput, 'id'>>
+  ): Promise<OrderResponse> {
     let body: Record<string, any> = {};
     if (input.customerEmail) {
       body.customer = {
         email: input.customerEmail,
         ...(input.customerFirstName && { firstName: input.customerFirstName }),
-        ...(input.customerLastName && { lastName: input.customerLastName }),
+        ...(input.customerLastName && { lastName: input.customerLastName })
       };
     }
     if (input.currency) body.currency = input.currency;

@@ -10,8 +10,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -21,7 +21,7 @@ export class Client {
   }): Promise<{ fileContent: string; fileName: string }> {
     let response = await this.axios.post('/api/v2/ConvertToPdf', {
       docContent: params.docContent,
-      docName: params.docName,
+      docName: params.docName
     });
     return response.data;
   }
@@ -91,7 +91,7 @@ export class Client {
   }): Promise<{ fileContent: string; fileName: string }> {
     let response = await this.axios.post('/api/v2/Merge', {
       docContent: params.docContent,
-      docName: params.docName,
+      docName: params.docName
     });
     return response.data;
   }
@@ -115,7 +115,9 @@ export class Client {
     text: string;
     splitTextPage: string;
     fileNaming?: string;
-  }): Promise<{ splitedDocuments: Array<{ fileName: string; docText: string; streamFile: string }> }> {
+  }): Promise<{
+    splitedDocuments: Array<{ fileName: string; docText: string; streamFile: string }>;
+  }> {
     let response = await this.axios.post('/api/v2/SplitByText', params);
     return response.data;
   }
@@ -129,7 +131,9 @@ export class Client {
     splitBarcodePage: string;
     combinePagesWithSameConsecutiveBarcodes?: boolean;
     pdfRenderDpi?: string;
-  }): Promise<{ splitedDocuments: Array<{ fileName: string; barcodeText: string; streamFile: string }> }> {
+  }): Promise<{
+    splitedDocuments: Array<{ fileName: string; barcodeText: string; streamFile: string }>;
+  }> {
     let response = await this.axios.post('/api/v2/SplitByBarcode', params);
     return response.data;
   }
@@ -153,7 +157,7 @@ export class Client {
       docContent: params.docContent,
       docName: params.docName,
       extractText: params.extractText ?? true,
-      extractImage: params.extractImage ?? false,
+      extractImage: params.extractImage ?? false
     });
     return response.data;
   }
@@ -291,10 +295,7 @@ export class Client {
     return response.data;
   }
 
-  async getPdfMetadata(params: {
-    docContent: string;
-    docName: string;
-  }): Promise<{
+  async getPdfMetadata(params: { docContent: string; docName: string }): Promise<{
     Title: string;
     Subject: string;
     PageCount: string;

@@ -17,6 +17,7 @@ Campaign Cleaner uses API key authentication. The API key is passed via a custom
 - **Base URL:** `https://api.campaigncleaner.com/v1/`
 
 Example header:
+
 ```
 X-CC-API-Key: your_api_key_here
 ```

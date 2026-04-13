@@ -7,48 +7,49 @@ let DID_EVENTS = [
   'did_create',
   'did_update_key',
   'did_update_controller',
-  'did_delete',
+  'did_delete'
 ] as const;
 
-export let didEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'DID Events',
-    key: 'did_events',
-    description: 'Triggers when a DID is created, updated (key or controller), or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of DID event'),
-    webhookPayload: z.any().describe('Raw webhook payload from Truvera'),
-  }))
-  .output(z.object({
-    did: z.string().optional().describe('The affected DID identifier'),
-    didType: z.string().optional().describe('DID method type'),
-    controller: z.string().optional().describe('Controller DID'),
-    keyType: z.string().optional().describe('Key type'),
-    didData: z.any().optional().describe('Additional DID data from the event'),
-  }))
+export let didEvents = SlateTrigger.create(spec, {
+  name: 'DID Events',
+  key: 'did_events',
+  description: 'Triggers when a DID is created, updated (key or controller), or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of DID event'),
+      webhookPayload: z.any().describe('Raw webhook payload from Truvera')
+    })
+  )
+  .output(
+    z.object({
+      did: z.string().optional().describe('The affected DID identifier'),
+      didType: z.string().optional().describe('DID method type'),
+      controller: z.string().optional().describe('Controller DID'),
+      keyType: z.string().optional().describe('Key type'),
+      didData: z.any().optional().describe('Additional DID data from the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
         events: [...DID_EVENTS],
         description: 'Slates DID events webhook',
-        status: 1,
+        status: 1
       });
 
       return {
         registrationDetails: {
           webhookId: result?.id,
-          secret: result?.secret,
-        },
+          secret: result?.secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let webhookId = ctx.input.registrationDetails?.webhookId;
       if (webhookId) {
@@ -56,20 +57,20 @@ export let didEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
         inputs: [
           {
             eventType: body.event || 'unknown',
-            webhookPayload: body,
-          },
-        ],
+            webhookPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.webhookPayload;
       let data = payload?.data || {};
 
@@ -84,9 +85,9 @@ export let didEvents = SlateTrigger.create(
           didType: data?.type,
           controller: data?.controller,
           keyType: data?.keyType,
-          didData: data,
-        },
+          didData: data
+        }
       };
-    },
+    }
   })
   .build();

@@ -12,12 +12,9 @@ import {
   getPerformanceAdvisorTool,
   manageNetworkPeeringTool,
   listEventsTool,
-  manageOnlineArchiveTool,
+  manageOnlineArchiveTool
 } from './tools';
-import {
-  alertWebhookTrigger,
-  projectEventsTrigger,
-} from './triggers';
+import { alertWebhookTrigger, projectEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     getPerformanceAdvisorTool,
     manageNetworkPeeringTool,
     listEventsTool,
-    manageOnlineArchiveTool,
+    manageOnlineArchiveTool
   ],
-  triggers: [
-    alertWebhookTrigger,
-    projectEventsTrigger,
-  ],
+  triggers: [alertWebhookTrigger, projectEventsTrigger]
 });

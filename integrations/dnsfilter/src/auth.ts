@@ -2,21 +2,27 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('DNSFilter API token (JWT). Generate from DNSFilter Dashboard > Account Icon > API Keys.'),
+      token: z
+        .string()
+        .describe(
+          'DNSFilter API token (JWT). Generate from DNSFilter Dashboard > Account Icon > API Keys.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   });

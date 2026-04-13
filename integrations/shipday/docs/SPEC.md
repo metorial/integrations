@@ -13,6 +13,7 @@ Shipday API uses API key to authenticate requests. You can obtain your API key u
 The API is secured with HTTP Basic authentication. While making the request, you need to send the API key value with the `Authorization` key in the request header.
 
 The header format is:
+
 ```
 Authorization: Basic <YOUR_API_KEY>
 ```

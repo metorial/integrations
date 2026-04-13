@@ -3,29 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account',
-    description: `Retrieve information about the authenticated Acuity Scheduling account, including the account owner name, email, and timezone.`,
-    tags: {
-      readOnly: true,
-    },
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account',
+  description: `Retrieve information about the authenticated Acuity Scheduling account, including the account owner name, email, and timezone.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accountId: z.number().describe('Account ID'),
-    name: z.string().describe('Account owner name'),
-    email: z.string().describe('Account email'),
-    timezone: z.string().optional().describe('Account timezone'),
-    schedulingPage: z.string().optional().describe('Public scheduling page URL'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountId: z.number().describe('Account ID'),
+      name: z.string().describe('Account owner name'),
+      email: z.string().describe('Account email'),
+      timezone: z.string().optional().describe('Account timezone'),
+      schedulingPage: z.string().optional().describe('Public scheduling page URL')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      authMethod: ctx.auth.authMethod,
+      authMethod: ctx.auth.authMethod
     });
 
     let me = await client.getMe();
@@ -36,8 +35,9 @@ export let getAccount = SlateTool.create(
         name: me.name || '',
         email: me.email || '',
         timezone: me.timezone || undefined,
-        schedulingPage: me.schedulingPage || undefined,
+        schedulingPage: me.schedulingPage || undefined
       },
-      message: `Account: **${me.name}** (${me.email}).`,
+      message: `Account: **${me.name}** (${me.email}).`
     };
-  }).build();
+  })
+  .build();

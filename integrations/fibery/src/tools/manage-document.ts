@@ -11,18 +11,20 @@ export let manageDocumentTool = SlateTool.create(spec, {
     'To get the document secret, first query the entity selecting the document field with its nested secret: {"TypeName/Description": ["Collaboration~Documents/secret"]}.',
     'If you already have the document secret, provide it directly via documentSecret.',
     'If you provide typeName, entityId, and documentField, the tool will retrieve the secret automatically.',
-    'When writing content, specify the format matching your content (default: md for Markdown).',
+    'When writing content, specify the format matching your content (default: md for Markdown).'
   ],
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
   .input(
     z.object({
       documentSecret: z
         .string()
         .optional()
-        .describe('The document secret UUID. If not provided, typeName, entityId, and documentField are required to look it up.'),
+        .describe(
+          'The document secret UUID. If not provided, typeName, entityId, and documentField are required to look it up.'
+        ),
       typeName: z
         .string()
         .optional()
@@ -34,7 +36,9 @@ export let manageDocumentTool = SlateTool.create(spec, {
       documentField: z
         .string()
         .optional()
-        .describe('Fully qualified document field name, e.g., "Project/Description" (required if documentSecret is not provided)'),
+        .describe(
+          'Fully qualified document field name, e.g., "Project/Description" (required if documentSecret is not provided)'
+        ),
       action: z.enum(['read', 'write']).describe('Whether to read or write the document'),
       content: z
         .string()
@@ -44,20 +48,23 @@ export let manageDocumentTool = SlateTool.create(spec, {
         .enum(['md', 'html', 'json', 'plain-text'])
         .optional()
         .default('md')
-        .describe('Content format (default: md)'),
+        .describe('Content format (default: md)')
     })
   )
   .output(
     z.object({
       documentSecret: z.string().describe('The document secret UUID'),
       content: z.string().optional().describe('The document content (for read action)'),
-      updated: z.boolean().optional().describe('Whether the document was updated (for write action)'),
+      updated: z
+        .boolean()
+        .optional()
+        .describe('Whether the document was updated (for write action)')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       accountName: ctx.config.accountName,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let secret = ctx.input.documentSecret;
@@ -74,11 +81,11 @@ export let manageDocumentTool = SlateTool.create(spec, {
         typeName: ctx.input.typeName,
         select: [
           'fibery/id',
-          { [ctx.input.documentField]: ['Collaboration~Documents/secret'] },
+          { [ctx.input.documentField]: ['Collaboration~Documents/secret'] }
         ],
         where: ['=', ['fibery/id'], '$id'],
         limit: 1,
-        queryParams: { $id: ctx.input.entityId },
+        queryParams: { $id: ctx.input.entityId }
       });
 
       let entity = entities[0];
@@ -97,9 +104,9 @@ export let manageDocumentTool = SlateTool.create(spec, {
       return {
         output: {
           documentSecret: secret,
-          content: doc.content,
+          content: doc.content
         },
-        message: `Read document content (${ctx.input.format} format, ${doc.content.length} chars).`,
+        message: `Read document content (${ctx.input.format} format, ${doc.content.length} chars).`
       };
     } else {
       if (!ctx.input.content) {
@@ -109,9 +116,9 @@ export let manageDocumentTool = SlateTool.create(spec, {
       return {
         output: {
           documentSecret: secret,
-          updated: true,
+          updated: true
         },
-        message: `Updated document content (${ctx.input.format} format).`,
+        message: `Updated document content (${ctx.input.format} format).`
       };
     }
   })

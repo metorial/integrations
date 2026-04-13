@@ -5,7 +5,8 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'railway',
   name: 'Railway',
-  description: 'Deploy and manage web applications, databases, and infrastructure on Railway\'s cloud platform.',
+  description:
+    "Deploy and manage web applications, databases, and infrastructure on Railway's cloud platform.",
   metadata: {},
   config,
   auth

@@ -3,27 +3,26 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Get Profile',
-    key: 'get_profile',
-    description: `Retrieve the authenticated user's profile information from Finmei, including business details and account info.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getProfile = SlateTool.create(spec, {
+  name: 'Get Profile',
+  key: 'get_profile',
+  description: `Retrieve the authenticated user's profile information from Finmei, including business details and account info.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string().optional().describe('User ID'),
-    name: z.string().optional().describe('User or business name'),
-    email: z.string().optional().describe('Email address'),
-    businessName: z.string().optional().describe('Business name'),
-    rawProfile: z.any().optional().describe('Full profile data from API'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string().optional().describe('User ID'),
+      name: z.string().optional().describe('User or business name'),
+      email: z.string().optional().describe('Email address'),
+      businessName: z.string().optional().describe('Business name'),
+      rawProfile: z.any().optional().describe('Full profile data from API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FinmeiClient(ctx.auth.token);
 
     let result = await client.getProfile();
@@ -35,9 +34,9 @@ export let getProfile = SlateTool.create(
         name: profile?.name,
         email: profile?.email,
         businessName: profile?.business_name ?? profile?.company_name,
-        rawProfile: profile,
+        rawProfile: profile
       },
-      message: `Retrieved profile for **${profile?.name ?? profile?.email ?? 'current user'}**.`,
+      message: `Retrieved profile for **${profile?.name ?? profile?.email ?? 'current user'}**.`
     };
   })
   .build();

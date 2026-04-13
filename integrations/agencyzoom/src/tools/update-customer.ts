@@ -3,44 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Update Customer',
-    key: 'update_customer',
-    description: `Update an existing customer's details or tags in AgencyZoom. Provide only the fields you want to change. If tags are provided, the customer's tags will be replaced via a separate tags endpoint. Returns the updated customer record.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    customerId: z.string().describe('Unique identifier of the customer to update'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    email: z.string().optional().describe('Updated primary email address'),
-    phone: z.string().optional().describe('Updated primary phone number'),
-    address: z.object({
-      street: z.string().optional().describe('Street address line'),
-      city: z.string().optional().describe('City name'),
-      state: z.string().optional().describe('State or province code'),
-      zip: z.string().optional().describe('ZIP or postal code'),
-      country: z.string().optional().describe('Country name or code'),
-    }).optional().describe('Updated mailing address'),
-    companyName: z.string().optional().describe('Updated company name'),
-    fein: z.string().optional().describe('Updated Federal Employer Identification Number'),
-    tags: z.array(z.string()).optional().describe('Array of tag names to set on the customer (replaces existing tags)'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Key-value pairs of custom field names and their updated values'),
-  }))
-  .output(z.object({
-    customer: z.record(z.string(), z.any()).describe('The updated customer record with all fields'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateCustomer = SlateTool.create(spec, {
+  name: 'Update Customer',
+  key: 'update_customer',
+  description: `Update an existing customer's details or tags in AgencyZoom. Provide only the fields you want to change. If tags are provided, the customer's tags will be replaced via a separate tags endpoint. Returns the updated customer record.`,
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('Unique identifier of the customer to update'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      email: z.string().optional().describe('Updated primary email address'),
+      phone: z.string().optional().describe('Updated primary phone number'),
+      address: z
+        .object({
+          street: z.string().optional().describe('Street address line'),
+          city: z.string().optional().describe('City name'),
+          state: z.string().optional().describe('State or province code'),
+          zip: z.string().optional().describe('ZIP or postal code'),
+          country: z.string().optional().describe('Country name or code')
+        })
+        .optional()
+        .describe('Updated mailing address'),
+      companyName: z.string().optional().describe('Updated company name'),
+      fein: z.string().optional().describe('Updated Federal Employer Identification Number'),
+      tags: z
+        .array(z.string())
+        .optional()
+        .describe('Array of tag names to set on the customer (replaces existing tags)'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Key-value pairs of custom field names and their updated values')
+    })
+  )
+  .output(
+    z.object({
+      customer: z
+        .record(z.string(), z.any())
+        .describe('The updated customer record with all fields')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let data: Record<string, any> = {};
@@ -71,10 +83,12 @@ export let updateCustomer = SlateTool.create(
       customer = await client.getCustomer(ctx.input.customerId);
     }
 
-    let customerName = `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || ctx.input.customerId;
+    let customerName =
+      `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || ctx.input.customerId;
 
     return {
       output: { customer },
-      message: `Updated ${updatedParts.join(' and ')} for customer **${customerName}**.`,
+      message: `Updated ${updatedParts.join(' and ')} for customer **${customerName}**.`
     };
-  }).build();
+  })
+  .build();

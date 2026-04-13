@@ -47,6 +47,7 @@ Programmatically retrieve detailed analytics and performance data, including met
 - Designed for integration with third-party reporting dashboards and analytical tools like Looker, Microsoft BI, Oracle Analytics Cloud, SAP Analytics Cloud, and Tableau.
 
 **Limitations:**
+
 - There is no public API for Later's core social media scheduling product (Later Social). The API is limited to the Later Influence (campaign reporting) product.
 - API access requires an enterprise Later Influence subscription and credentials must be provisioned by an Account Manager.
 

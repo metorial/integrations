@@ -14,48 +14,77 @@ let productSchema = z.object({
   tags: z.string().describe('Comma-separated list of tags'),
   createdAt: z.string().describe('When the product was created'),
   updatedAt: z.string().describe('When the product was last updated'),
-  variants: z.array(z.object({
-    variantId: z.string().describe('Variant ID'),
-    title: z.string().describe('Variant title'),
-    price: z.string().describe('Variant price'),
-    sku: z.string().nullable().describe('SKU'),
-    inventoryQuantity: z.number().describe('Available inventory quantity'),
-    inventoryItemId: z.string().describe('Inventory item ID for stock management')
-  })).describe('Product variants'),
-  images: z.array(z.object({
-    imageId: z.string().describe('Image ID'),
-    src: z.string().describe('Image URL'),
-    alt: z.string().nullable().describe('Image alt text')
-  })).describe('Product images')
+  variants: z
+    .array(
+      z.object({
+        variantId: z.string().describe('Variant ID'),
+        title: z.string().describe('Variant title'),
+        price: z.string().describe('Variant price'),
+        sku: z.string().nullable().describe('SKU'),
+        inventoryQuantity: z.number().describe('Available inventory quantity'),
+        inventoryItemId: z.string().describe('Inventory item ID for stock management')
+      })
+    )
+    .describe('Product variants'),
+  images: z
+    .array(
+      z.object({
+        imageId: z.string().describe('Image ID'),
+        src: z.string().describe('Image URL'),
+        alt: z.string().nullable().describe('Image alt text')
+      })
+    )
+    .describe('Product images')
 });
 
-export let listProducts = SlateTool.create(
-  spec,
-  {
-    name: 'List Products',
-    key: 'list_products',
-    description: `Search and list products from the Shopify store. Filter by title, vendor, product type, collection, status, or date range. Returns products with their variants and images.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional().describe('Number of products to return (max 250)'),
-    title: z.string().optional().describe('Filter by exact product title'),
-    vendor: z.string().optional().describe('Filter by vendor name'),
-    productType: z.string().optional().describe('Filter by product type'),
-    collectionId: z.string().optional().describe('Filter by collection ID'),
-    status: z.enum(['active', 'archived', 'draft']).optional().describe('Filter by product status'),
-    createdAtMin: z.string().optional().describe('Show products created after this date (ISO 8601)'),
-    createdAtMax: z.string().optional().describe('Show products created before this date (ISO 8601)'),
-    updatedAtMin: z.string().optional().describe('Show products updated after this date (ISO 8601)'),
-    updatedAtMax: z.string().optional().describe('Show products updated before this date (ISO 8601)'),
-    sinceId: z.string().optional().describe('Show products after this ID for pagination'),
-    handle: z.string().optional().describe('Filter by product handle')
-  }))
-  .output(z.object({
-    products: z.array(productSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+export let listProducts = SlateTool.create(spec, {
+  name: 'List Products',
+  key: 'list_products',
+  description: `Search and list products from the Shopify store. Filter by title, vendor, product type, collection, status, or date range. Returns products with their variants and images.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of products to return (max 250)'),
+      title: z.string().optional().describe('Filter by exact product title'),
+      vendor: z.string().optional().describe('Filter by vendor name'),
+      productType: z.string().optional().describe('Filter by product type'),
+      collectionId: z.string().optional().describe('Filter by collection ID'),
+      status: z
+        .enum(['active', 'archived', 'draft'])
+        .optional()
+        .describe('Filter by product status'),
+      createdAtMin: z
+        .string()
+        .optional()
+        .describe('Show products created after this date (ISO 8601)'),
+      createdAtMax: z
+        .string()
+        .optional()
+        .describe('Show products created before this date (ISO 8601)'),
+      updatedAtMin: z
+        .string()
+        .optional()
+        .describe('Show products updated after this date (ISO 8601)'),
+      updatedAtMax: z
+        .string()
+        .optional()
+        .describe('Show products updated before this date (ISO 8601)'),
+      sinceId: z.string().optional().describe('Show products after this ID for pagination'),
+      handle: z.string().optional().describe('Filter by product handle')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(productSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -107,4 +136,5 @@ export let listProducts = SlateTool.create(
       output: { products: mapped },
       message: `Found **${mapped.length}** product(s).`
     };
-  }).build();
+  })
+  .build();

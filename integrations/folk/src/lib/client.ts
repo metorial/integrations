@@ -244,14 +244,16 @@ export class Client {
       baseURL: 'https://api.folk.app/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── People ───
 
-  async listPeople(params?: PaginationParams & FilterParams): Promise<PaginatedResponse<PersonData>> {
+  async listPeople(
+    params?: PaginationParams & FilterParams
+  ): Promise<PaginatedResponse<PersonData>> {
     let response = await this.http.get('/people', { params });
     return response.data.data;
   }
@@ -278,7 +280,9 @@ export class Client {
 
   // ─── Companies ───
 
-  async listCompanies(params?: PaginationParams & FilterParams): Promise<PaginatedResponse<CompanyData>> {
+  async listCompanies(
+    params?: PaginationParams & FilterParams
+  ): Promise<PaginatedResponse<CompanyData>> {
     let response = await this.http.get('/companies', { params });
     return response.data.data;
   }
@@ -305,7 +309,11 @@ export class Client {
 
   // ─── Deals ───
 
-  async listDeals(groupId: string, objectType: string, params?: PaginationParams & FilterParams): Promise<PaginatedResponse<DealData>> {
+  async listDeals(
+    groupId: string,
+    objectType: string,
+    params?: PaginationParams & FilterParams
+  ): Promise<PaginatedResponse<DealData>> {
     let response = await this.http.get(`/groups/${groupId}/${objectType}`, { params });
     return response.data.data;
   }
@@ -315,17 +323,30 @@ export class Client {
     return response.data.data;
   }
 
-  async createDeal(groupId: string, objectType: string, input: CreateDealInput): Promise<DealData> {
+  async createDeal(
+    groupId: string,
+    objectType: string,
+    input: CreateDealInput
+  ): Promise<DealData> {
     let response = await this.http.post(`/groups/${groupId}/${objectType}`, input);
     return response.data.data;
   }
 
-  async updateDeal(groupId: string, objectType: string, dealId: string, input: UpdateDealInput): Promise<DealData> {
+  async updateDeal(
+    groupId: string,
+    objectType: string,
+    dealId: string,
+    input: UpdateDealInput
+  ): Promise<DealData> {
     let response = await this.http.patch(`/groups/${groupId}/${objectType}/${dealId}`, input);
     return response.data.data;
   }
 
-  async deleteDeal(groupId: string, objectType: string, dealId: string): Promise<{ id: string }> {
+  async deleteDeal(
+    groupId: string,
+    objectType: string,
+    dealId: string
+  ): Promise<{ id: string }> {
     let response = await this.http.delete(`/groups/${groupId}/${objectType}/${dealId}`);
     return response.data.data;
   }
@@ -337,16 +358,25 @@ export class Client {
     return response.data.data;
   }
 
-  async listGroupCustomFields(groupId: string, entityType: string, params?: PaginationParams): Promise<PaginatedResponse<CustomFieldData>> {
-    let response = await this.http.get(`/groups/${groupId}/custom-fields/${entityType}`, { params });
+  async listGroupCustomFields(
+    groupId: string,
+    entityType: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<CustomFieldData>> {
+    let response = await this.http.get(`/groups/${groupId}/custom-fields/${entityType}`, {
+      params
+    });
     return response.data.data;
   }
 
   // ─── Notes ───
 
-  async listNotes(entityId: string, params?: PaginationParams): Promise<PaginatedResponse<NoteData>> {
+  async listNotes(
+    entityId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<NoteData>> {
     let response = await this.http.get('/notes', {
-      params: { ...params, entityId },
+      params: { ...params, entityId }
     });
     return response.data.data;
   }
@@ -373,9 +403,12 @@ export class Client {
 
   // ─── Reminders ───
 
-  async listReminders(entityId: string, params?: PaginationParams): Promise<PaginatedResponse<ReminderData>> {
+  async listReminders(
+    entityId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<ReminderData>> {
     let response = await this.http.get('/reminders', {
-      params: { ...params, entityId },
+      params: { ...params, entityId }
     });
     return response.data.data;
   }

@@ -1,6 +1,8 @@
 import { FreshBooksClient } from './client';
 
-export let parseWebhookRequest = async (request: Request): Promise<{
+export let parseWebhookRequest = async (
+  request: Request
+): Promise<{
   isVerification: boolean;
   verifier?: string;
   verifyObjectId?: number;
@@ -22,12 +24,12 @@ export let parseWebhookRequest = async (request: Request): Promise<{
       objectId: params.get('object_id') || '',
       accountId: params.get('account_id') || '',
       businessId: params.get('business_id') || '',
-      identityId: params.get('identity_id') || '',
+      identityId: params.get('identity_id') || ''
     };
   }
 
   // JSON payloads are typically verification requests
-  let data = await request.json() as any;
+  let data = (await request.json()) as any;
   if (data?.verifier) {
     return {
       isVerification: true,
@@ -37,7 +39,7 @@ export let parseWebhookRequest = async (request: Request): Promise<{
       objectId: '',
       accountId: '',
       businessId: '',
-      identityId: '',
+      identityId: ''
     };
   }
 
@@ -47,7 +49,7 @@ export let parseWebhookRequest = async (request: Request): Promise<{
     objectId: '',
     accountId: '',
     businessId: '',
-    identityId: '',
+    identityId: ''
   };
 };
 

@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let codegenAxios = createAxios({
-  baseURL: 'https://codegen.plasmic.app/api/v1',
+  baseURL: 'https://codegen.plasmic.app/api/v1'
 });
 
 let studioAxios = createAxios({
-  baseURL: 'https://studio.plasmic.app/api/v1',
+  baseURL: 'https://studio.plasmic.app/api/v1'
 });
 
 export class ProjectClient {
@@ -25,7 +25,7 @@ export class ProjectClient {
 
   private get readHeaders() {
     return {
-      'x-plasmic-api-project-tokens': `${this.projectId}:${this.projectToken}`,
+      'x-plasmic-api-project-tokens': `${this.projectId}:${this.projectToken}`
     };
   }
 
@@ -35,7 +35,7 @@ export class ProjectClient {
     }
     return {
       'x-plasmic-api-project-tokens': `${this.projectId}:${this.projectSecretToken}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -50,9 +50,10 @@ export class ProjectClient {
     componentProps?: Record<string, unknown>;
     globalVariants?: Array<{ name: string; value: string }>;
   }): Promise<{ html: string }> {
-    let projectSegment = params.mode === 'versioned' && params.version
-      ? `${this.projectId}@${params.version}`
-      : this.projectId;
+    let projectSegment =
+      params.mode === 'versioned' && params.version
+        ? `${this.projectId}@${params.version}`
+        : this.projectId;
 
     let queryParams: Record<string, string> = {};
     if (params.hydrate) queryParams['hydrate'] = '1';
@@ -70,7 +71,7 @@ export class ProjectClient {
       `/loader/html/${params.mode}/${projectSegment}/${encodeURIComponent(params.componentName)}`,
       {
         headers: this.readHeaders,
-        params: queryParams,
+        params: queryParams
       }
     );
 
@@ -81,16 +82,14 @@ export class ProjectClient {
     mode: 'preview' | 'published' | 'versioned';
     version?: string;
   }): Promise<Record<string, unknown>> {
-    let projectSegment = params.mode === 'versioned' && params.version
-      ? `${this.projectId}@${params.version}`
-      : this.projectId;
+    let projectSegment =
+      params.mode === 'versioned' && params.version
+        ? `${this.projectId}@${params.version}`
+        : this.projectId;
 
-    let response = await codegenAxios.get(
-      `/loader/repr-v3/${params.mode}/${projectSegment}`,
-      {
-        headers: this.readHeaders,
-      }
-    );
+    let response = await codegenAxios.get(`/loader/repr-v3/${params.mode}/${projectSegment}`, {
+      headers: this.readHeaders
+    });
 
     return response.data;
   }
@@ -109,13 +108,9 @@ export class ProjectClient {
       value: string;
     }>;
   }): Promise<Record<string, unknown>> {
-    let response = await studioAxios.post(
-      `/projects/${this.projectId}`,
-      body,
-      {
-        headers: this.writeHeaders,
-      }
-    );
+    let response = await studioAxios.post(`/projects/${this.projectId}`, body, {
+      headers: this.writeHeaders
+    });
 
     return response.data;
   }

@@ -17,7 +17,12 @@ export let getCloud = async (auth: AuthType, cloudId: string) => {
   return response.data;
 };
 
-export let listFolders = async (auth: AuthType, cloudId: string, pageSize?: number, pageToken?: string) => {
+export let listFolders = async (
+  auth: AuthType,
+  cloudId: string,
+  pageSize?: number,
+  pageToken?: string
+) => {
   let client = createServiceClient(BASE_URL, auth);
   let params: Record<string, string | number> = { cloudId };
   if (pageSize) params.pageSize = pageSize;
@@ -32,12 +37,15 @@ export let getFolder = async (auth: AuthType, folderId: string) => {
   return response.data;
 };
 
-export let createFolder = async (auth: AuthType, params: {
-  cloudId: string;
-  name: string;
-  description?: string;
-  labels?: Record<string, string>;
-}) => {
+export let createFolder = async (
+  auth: AuthType,
+  params: {
+    cloudId: string;
+    name: string;
+    description?: string;
+    labels?: Record<string, string>;
+  }
+) => {
   let client = createServiceClient(BASE_URL, auth);
   let response = await client.post('/resource-manager/v1/folders', params);
   return response.data;
@@ -49,12 +57,16 @@ export let deleteFolder = async (auth: AuthType, folderId: string) => {
   return response.data;
 };
 
-export let updateFolder = async (auth: AuthType, folderId: string, params: {
-  name?: string;
-  description?: string;
-  labels?: Record<string, string>;
-  updateMask: string;
-}) => {
+export let updateFolder = async (
+  auth: AuthType,
+  folderId: string,
+  params: {
+    name?: string;
+    description?: string;
+    labels?: Record<string, string>;
+    updateMask: string;
+  }
+) => {
   let client = createServiceClient(BASE_URL, auth);
   let response = await client.patch(`/resource-manager/v1/folders/${folderId}`, params);
   return response.data;

@@ -16,34 +16,35 @@ let eventSchema = z.object({
   region: z.any().optional().describe('Region involved in the event'),
   trip: z.any().optional().describe('Trip involved in the event'),
   location: z.any().optional().describe('Location as GeoJSON Point'),
-  locationAccuracy: z.number().optional().describe('Location accuracy in meters'),
+  locationAccuracy: z.number().optional().describe('Location accuracy in meters')
 });
 
-export let listEventsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Events',
-    key: 'list_events',
-    description: `List location events in your Radar project. Includes geofence entries/exits, place visits, trip events, and region crossings. Results are sorted by creation date descending.`,
-    tags: {
-      readOnly: true,
-    },
+export let listEventsTool = SlateTool.create(spec, {
+  name: 'List Events',
+  key: 'list_events',
+  description: `List location events in your Radar project. Includes geofence entries/exits, place visits, trip events, and region crossings. Results are sorted by creation date descending.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Max events to return (default 100)'),
-    createdBefore: z.string().optional().describe('ISO 8601 datetime cursor for pagination'),
-    createdAfter: z.string().optional().describe('ISO 8601 datetime cursor'),
-  }))
-  .output(z.object({
-    events: z.array(eventSchema).describe('List of events'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Max events to return (default 100)'),
+      createdBefore: z.string().optional().describe('ISO 8601 datetime cursor for pagination'),
+      createdAfter: z.string().optional().describe('ISO 8601 datetime cursor')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(eventSchema).describe('List of events')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RadarClient({ token: ctx.auth.token });
     let result = await client.listEvents({
       limit: ctx.input.limit,
       createdBefore: ctx.input.createdBefore,
-      createdAfter: ctx.input.createdAfter,
+      createdAfter: ctx.input.createdAfter
     });
 
     let events = (result.events || []).map((e: any) => ({
@@ -59,31 +60,31 @@ export let listEventsTool = SlateTool.create(
       region: e.region,
       trip: e.trip,
       location: e.location,
-      locationAccuracy: e.locationAccuracy,
+      locationAccuracy: e.locationAccuracy
     }));
 
     return {
       output: { events },
-      message: `Found **${events.length}** event(s).`,
+      message: `Found **${events.length}** event(s).`
     };
-  }).build();
+  })
+  .build();
 
-export let getEventTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event',
-    key: 'get_event',
-    description: `Retrieve a specific event by its Radar ID. Returns full event details including type, confidence, user, geofence/place/region context, and location.`,
-    tags: {
-      readOnly: true,
-    },
+export let getEventTool = SlateTool.create(spec, {
+  name: 'Get Event',
+  key: 'get_event',
+  description: `Retrieve a specific event by its Radar ID. Returns full event details including type, confidence, user, geofence/place/region context, and location.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('Radar event ID'),
-  }))
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Radar event ID')
+    })
+  )
   .output(eventSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new RadarClient({ token: ctx.auth.token });
     let result = await client.getEvent(ctx.input.eventId);
     let e = result.event;
@@ -102,41 +103,46 @@ export let getEventTool = SlateTool.create(
         region: e.region,
         trip: e.trip,
         location: e.location,
-        locationAccuracy: e.locationAccuracy,
+        locationAccuracy: e.locationAccuracy
       },
-      message: `Retrieved event **${e._id}** (type: ${e.type}).`,
+      message: `Retrieved event **${e._id}** (type: ${e.type}).`
     };
-  }).build();
+  })
+  .build();
 
-export let verifyEventTool = SlateTool.create(
-  spec,
-  {
-    name: 'Verify Event',
-    key: 'verify_event',
-    description: `Accept, reject, or unverify a Radar event. Useful for training Radar's confidence model by confirming or denying whether an event actually occurred.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let verifyEventTool = SlateTool.create(spec, {
+  name: 'Verify Event',
+  key: 'verify_event',
+  description: `Accept, reject, or unverify a Radar event. Useful for training Radar's confidence model by confirming or denying whether an event actually occurred.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('Radar event ID to verify'),
-    verification: z.enum(['accept', 'reject', 'unverify']).describe('Verification action: accept (1), reject (-1), or unverify (0)'),
-    verifiedPlaceId: z.string().optional().describe('Correct place ID if rejecting a place event'),
-  }))
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Radar event ID to verify'),
+      verification: z
+        .enum(['accept', 'reject', 'unverify'])
+        .describe('Verification action: accept (1), reject (-1), or unverify (0)'),
+      verifiedPlaceId: z
+        .string()
+        .optional()
+        .describe('Correct place ID if rejecting a place event')
+    })
+  )
   .output(eventSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new RadarClient({ token: ctx.auth.token });
     let verificationMap: Record<string, number> = {
       accept: 1,
       reject: -1,
-      unverify: 0,
+      unverify: 0
     };
 
     let result = await client.verifyEvent(ctx.input.eventId, {
       verification: verificationMap[ctx.input.verification]!,
-      verifiedPlaceId: ctx.input.verifiedPlaceId,
+      verifiedPlaceId: ctx.input.verifiedPlaceId
     });
     let e = result.event;
 
@@ -154,8 +160,9 @@ export let verifyEventTool = SlateTool.create(
         region: e.region,
         trip: e.trip,
         location: e.location,
-        locationAccuracy: e.locationAccuracy,
+        locationAccuracy: e.locationAccuracy
       },
-      message: `Event **${e._id}** marked as **${ctx.input.verification}**.`,
+      message: `Event **${e._id}** marked as **${ctx.input.verification}**.`
     };
-  }).build();
+  })
+  .build();

@@ -3,48 +3,58 @@ import { SnapchatClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignStatusChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Updates',
-    key: 'campaign_updates',
-    description: 'Triggers when campaigns are created or updated in a Snapchat ad account. Detects changes to campaign status, budgets, schedules, and other properties by polling the campaigns endpoint.',
-    instructions: [
-      'Set the adAccountId in the global configuration to specify which ad account to monitor.'
-    ]
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Whether the campaign was created or updated'),
-    campaignId: z.string().describe('ID of the campaign'),
-    name: z.string().optional().describe('Campaign name'),
-    status: z.string().optional().describe('Campaign status'),
-    objective: z.string().optional().describe('Campaign objective'),
-    dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
-    lifetimeSpendCapMicro: z.number().optional().describe('Lifetime spend cap in micro-currency'),
-    startTime: z.string().optional().describe('Campaign start time'),
-    endTime: z.string().optional().describe('Campaign end time'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp')
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('ID of the campaign'),
-    name: z.string().optional().describe('Campaign name'),
-    status: z.string().optional().describe('Campaign status'),
-    objective: z.string().optional().describe('Campaign objective'),
-    dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
-    lifetimeSpendCapMicro: z.number().optional().describe('Lifetime spend cap in micro-currency'),
-    startTime: z.string().optional().describe('Campaign start time'),
-    endTime: z.string().optional().describe('Campaign end time'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    createdAt: z.string().optional().describe('Creation timestamp')
-  }))
+export let campaignStatusChange = SlateTrigger.create(spec, {
+  name: 'Campaign Updates',
+  key: 'campaign_updates',
+  description:
+    'Triggers when campaigns are created or updated in a Snapchat ad account. Detects changes to campaign status, budgets, schedules, and other properties by polling the campaigns endpoint.',
+  instructions: [
+    'Set the adAccountId in the global configuration to specify which ad account to monitor.'
+  ]
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the campaign was created or updated'),
+      campaignId: z.string().describe('ID of the campaign'),
+      name: z.string().optional().describe('Campaign name'),
+      status: z.string().optional().describe('Campaign status'),
+      objective: z.string().optional().describe('Campaign objective'),
+      dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
+      lifetimeSpendCapMicro: z
+        .number()
+        .optional()
+        .describe('Lifetime spend cap in micro-currency'),
+      startTime: z.string().optional().describe('Campaign start time'),
+      endTime: z.string().optional().describe('Campaign end time'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('ID of the campaign'),
+      name: z.string().optional().describe('Campaign name'),
+      status: z.string().optional().describe('Campaign status'),
+      objective: z.string().optional().describe('Campaign objective'),
+      dailyBudgetMicro: z.number().optional().describe('Daily budget in micro-currency'),
+      lifetimeSpendCapMicro: z
+        .number()
+        .optional()
+        .describe('Lifetime spend cap in micro-currency'),
+      startTime: z.string().optional().describe('Campaign start time'),
+      endTime: z.string().optional().describe('Campaign end time'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let adAccountId = ctx.config.adAccountId;
       if (!adAccountId) {
         return { inputs: [] };
@@ -53,7 +63,8 @@ export let campaignStatusChange = SlateTrigger.create(
       let client = new SnapchatClient(ctx.auth.token);
       let campaigns = await client.listCampaigns(adAccountId);
 
-      let previousState: Record<string, string> = (ctx.input.state as Record<string, string>) ?? {};
+      let previousState: Record<string, string> =
+        (ctx.input.state as Record<string, string>) ?? {};
       let inputs: any[] = [];
 
       for (let campaign of campaigns) {
@@ -104,7 +115,7 @@ export let campaignStatusChange = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `campaign.${ctx.input.eventType}`,
         id: `${ctx.input.campaignId}-${ctx.input.updatedAt || ctx.input.createdAt || Date.now()}`,

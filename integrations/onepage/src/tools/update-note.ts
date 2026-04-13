@@ -4,29 +4,28 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { noteSchema } from '../lib/schemas';
 
-export let updateNote = SlateTool.create(
-  spec,
-  {
-    name: 'Update Note',
-    key: 'update_note',
-    description: `Update an existing note's text, linked deal, or date. Only provided fields are updated.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateNote = SlateTool.create(spec, {
+  name: 'Update Note',
+  key: 'update_note',
+  description: `Update an existing note's text, linked deal, or date. Only provided fields are updated.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    noteId: z.string().describe('ID of the note to update'),
-    text: z.string().optional().describe('Updated note content'),
-    linkedDealId: z.string().optional().describe('ID of a deal to link the note to'),
-    date: z.string().optional().describe('Updated note date (YYYY-MM-DD)'),
-  }))
+})
+  .input(
+    z.object({
+      noteId: z.string().describe('ID of the note to update'),
+      text: z.string().optional().describe('Updated note content'),
+      linkedDealId: z.string().optional().describe('ID of a deal to link the note to'),
+      date: z.string().optional().describe('Updated note date (YYYY-MM-DD)')
+    })
+  )
   .output(noteSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       userId: ctx.auth.userId,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let { noteId, ...updateData } = ctx.input;
@@ -34,7 +33,7 @@ export let updateNote = SlateTool.create(
 
     return {
       output: note,
-      message: `Updated note (${note.noteId}).`,
+      message: `Updated note (${note.noteId}).`
     };
   })
   .build();

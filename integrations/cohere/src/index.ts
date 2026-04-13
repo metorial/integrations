@@ -35,7 +35,5 @@ export let provider = Slate.create({
     getEmbedJobTool,
     cancelEmbedJobTool
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

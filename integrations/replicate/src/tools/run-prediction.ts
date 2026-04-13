@@ -7,52 +7,77 @@ let predictionSchema = z.object({
   predictionId: z.string().describe('Unique identifier of the prediction'),
   model: z.string().optional().describe('Model identifier (owner/name)'),
   version: z.string().optional().describe('Model version ID used'),
-  status: z.string().describe('Current status: starting, processing, succeeded, failed, canceled'),
+  status: z
+    .string()
+    .describe('Current status: starting, processing, succeeded, failed, canceled'),
   input: z.any().optional().describe('Input provided to the model'),
   output: z.any().optional().describe('Model output (null until completed)'),
   error: z.string().optional().nullable().describe('Error message if prediction failed'),
   logs: z.string().optional().describe('Log output from the prediction'),
-  metrics: z.record(z.string(), z.any()).optional().describe('Prediction metrics like predict_time and total_time'),
+  metrics: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Prediction metrics like predict_time and total_time'),
   createdAt: z.string().describe('When the prediction was created'),
-  startedAt: z.string().optional().nullable().describe('When the prediction started processing'),
+  startedAt: z
+    .string()
+    .optional()
+    .nullable()
+    .describe('When the prediction started processing'),
   completedAt: z.string().optional().nullable().describe('When the prediction completed'),
-  urls: z.record(z.string(), z.string()).optional().describe('Related URLs (get, cancel, stream)')
+  urls: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe('Related URLs (get, cancel, stream)')
 });
 
-export let runPrediction = SlateTool.create(
-  spec,
-  {
-    name: 'Run Prediction',
-    key: 'run_prediction',
-    description: `Run an AI model prediction on Replicate. Provide either a **model** identifier (e.g. \`stability-ai/sdxl\`) or a specific **version** ID. You can also target a **deployment** for production workloads.
+export let runPrediction = SlateTool.create(spec, {
+  name: 'Run Prediction',
+  key: 'run_prediction',
+  description: `Run an AI model prediction on Replicate. Provide either a **model** identifier (e.g. \`stability-ai/sdxl\`) or a specific **version** ID. You can also target a **deployment** for production workloads.
 Use this to generate images, text, audio, or any output supported by the model.`,
-    instructions: [
-      'Provide either "model" (owner/name format) or "version" (full version hash) to identify what to run.',
-      'For deployment predictions, provide "deploymentOwner" and "deploymentName" instead.',
-      'Input fields vary by model — check the model\'s API tab for available inputs.'
-    ],
-    constraints: [
-      'Prediction inputs and outputs are automatically deleted after 1 hour.',
-      'Rate limit: 600 prediction creation requests per minute.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'Provide either "model" (owner/name format) or "version" (full version hash) to identify what to run.',
+    'For deployment predictions, provide "deploymentOwner" and "deploymentName" instead.',
+    "Input fields vary by model — check the model's API tab for available inputs."
+  ],
+  constraints: [
+    'Prediction inputs and outputs are automatically deleted after 1 hour.',
+    'Rate limit: 600 prediction creation requests per minute.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    model: z.string().optional().describe('Model identifier in owner/name format (e.g. "stability-ai/sdxl")'),
-    version: z.string().optional().describe('Specific model version ID to run'),
-    deploymentOwner: z.string().optional().describe('Deployment owner for running on a deployment'),
-    deploymentName: z.string().optional().describe('Deployment name for running on a deployment'),
-    input: z.record(z.string(), z.any()).describe('Model input parameters (varies by model)'),
-    webhook: z.string().optional().describe('URL to receive webhook notifications'),
-    webhookEventsFilter: z.array(z.enum(['start', 'output', 'logs', 'completed'])).optional().describe('Which lifecycle events trigger webhooks'),
-    stream: z.boolean().optional().describe('Request streaming output for supported models')
-  }))
+})
+  .input(
+    z.object({
+      model: z
+        .string()
+        .optional()
+        .describe('Model identifier in owner/name format (e.g. "stability-ai/sdxl")'),
+      version: z.string().optional().describe('Specific model version ID to run'),
+      deploymentOwner: z
+        .string()
+        .optional()
+        .describe('Deployment owner for running on a deployment'),
+      deploymentName: z
+        .string()
+        .optional()
+        .describe('Deployment name for running on a deployment'),
+      input: z
+        .record(z.string(), z.any())
+        .describe('Model input parameters (varies by model)'),
+      webhook: z.string().optional().describe('URL to receive webhook notifications'),
+      webhookEventsFilter: z
+        .array(z.enum(['start', 'output', 'logs', 'completed']))
+        .optional()
+        .describe('Which lifecycle events trigger webhooks'),
+      stream: z.boolean().optional().describe('Request streaming output for supported models')
+    })
+  )
   .output(predictionSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result: any;
 
@@ -114,4 +139,5 @@ Use this to generate images, text, audio, or any output supported by the model.`
       },
       message: `Prediction **${result.id}** created with status **${result.status}**.`
     };
-  }).build();
+  })
+  .build();

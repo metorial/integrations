@@ -19,24 +19,25 @@ let adSquadSchema = z.object({
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listAdSquads = SlateTool.create(
-  spec,
-  {
-    name: 'List Ad Squads',
-    key: 'list_ad_squads',
-    description: `List all ad squads (ad sets) under a Snapchat campaign. Returns ad squad IDs, names, statuses, budgets, bids, and targeting details.`,
-    tags: {
-      readOnly: true
-    }
+export let listAdSquads = SlateTool.create(spec, {
+  name: 'List Ad Squads',
+  key: 'list_ad_squads',
+  description: `List all ad squads (ad sets) under a Snapchat campaign. Returns ad squad IDs, names, statuses, budgets, bids, and targeting details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    campaignId: z.string().describe('Campaign ID to list ad squads for')
-  }))
-  .output(z.object({
-    adSquads: z.array(adSquadSchema).describe('List of ad squads')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('Campaign ID to list ad squads for')
+    })
+  )
+  .output(
+    z.object({
+      adSquads: z.array(adSquadSchema).describe('List of ad squads')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let results = await client.listAdSquads(ctx.input.campaignId);
 

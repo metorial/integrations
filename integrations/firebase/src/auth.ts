@@ -3,19 +3,21 @@ import { z } from 'zod';
 import { getAccessTokenFromServiceAccount } from './lib/jwt';
 
 let googleOAuthAxios = createAxios({
-  baseURL: 'https://oauth2.googleapis.com',
+  baseURL: 'https://oauth2.googleapis.com'
 });
 
 let googleUserInfoAxios = createAxios({
-  baseURL: 'https://www.googleapis.com',
+  baseURL: 'https://www.googleapis.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Google OAuth',
@@ -24,27 +26,28 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Cloud Platform',
-        description: 'Full access to Google Cloud Platform resources including Firestore, Cloud Messaging, Cloud Storage, Cloud Functions, and Remote Config',
-        scope: 'https://www.googleapis.com/auth/cloud-platform',
+        description:
+          'Full access to Google Cloud Platform resources including Firestore, Cloud Messaging, Cloud Storage, Cloud Functions, and Remote Config',
+        scope: 'https://www.googleapis.com/auth/cloud-platform'
       },
       {
         title: 'Realtime Database',
         description: 'Read and write access to Firebase Realtime Database',
-        scope: 'https://www.googleapis.com/auth/firebase.database',
+        scope: 'https://www.googleapis.com/auth/firebase.database'
       },
       {
         title: 'User Email',
         description: 'View your email address (required for Realtime Database authentication)',
-        scope: 'https://www.googleapis.com/auth/userinfo.email',
+        scope: 'https://www.googleapis.com/auth/userinfo.email'
       },
       {
         title: 'User Profile',
         description: 'View your basic profile information',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile',
-      },
+        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -52,26 +55,30 @@ export let auth = SlateAuth.create()
         scope: ctx.scopes.join(' '),
         state: ctx.state,
         access_type: 'offline',
-        prompt: 'consent',
+        prompt: 'consent'
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await googleOAuthAxios.post('/token', new URLSearchParams({
-        code: ctx.code,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+    handleCallback: async ctx => {
+      let response = await googleOAuthAxios.post(
+        '/token',
+        new URLSearchParams({
+          code: ctx.code,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
 
@@ -79,26 +86,30 @@ export let auth = SlateAuth.create()
         output: {
           token: response.data.access_token,
           refreshToken: response.data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await googleOAuthAxios.post('/token', new URLSearchParams({
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        grant_type: 'refresh_token',
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await googleOAuthAxios.post(
+        '/token',
+        new URLSearchParams({
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          grant_type: 'refresh_token'
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let expiresAt = new Date(Date.now() + response.data.expires_in * 1000).toISOString();
 
@@ -106,16 +117,16 @@ export let auth = SlateAuth.create()
         output: {
           token: response.data.access_token,
           refreshToken: ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: {}; scopes: string[] }) => {
       let response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       return {
@@ -123,10 +134,10 @@ export let auth = SlateAuth.create()
           id: response.data.id,
           email: response.data.email,
           name: response.data.name,
-          imageUrl: response.data.picture,
-        },
+          imageUrl: response.data.picture
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -134,7 +145,9 @@ export let auth = SlateAuth.create()
     key: 'service_account',
 
     inputSchema: z.object({
-      serviceAccountJson: z.string().describe('Full JSON content of the Firebase service account key file'),
+      serviceAccountJson: z
+        .string()
+        .describe('Full JSON content of the Firebase service account key file')
     }),
 
     getOutput: async (ctx: { input: { serviceAccountJson: string } }) => {
@@ -152,28 +165,31 @@ export let auth = SlateAuth.create()
       let scopes = [
         'https://www.googleapis.com/auth/cloud-platform',
         'https://www.googleapis.com/auth/firebase.database',
-        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.email'
       ];
 
       let result = await getAccessTokenFromServiceAccount({
         clientEmail: serviceAccount.client_email,
         privateKey: serviceAccount.private_key,
-        scopes,
+        scopes
       });
 
       return {
         output: {
           token: result.accessToken,
-          expiresAt: result.expiresAt,
-        },
+          expiresAt: result.expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { serviceAccountJson: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { serviceAccountJson: string };
+    }) => {
       let response = await googleUserInfoAxios.get('/oauth2/v2/userinfo', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       return {
@@ -181,8 +197,8 @@ export let auth = SlateAuth.create()
           id: response.data.id,
           email: response.data.email,
           name: response.data.name,
-          imageUrl: response.data.picture,
-        },
+          imageUrl: response.data.picture
+        }
       };
-    },
+    }
   });

@@ -5,7 +5,8 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'gatherup',
   name: 'GatherUp',
-  description: 'Customer feedback and online review management platform for businesses and agencies.',
+  description:
+    'Customer feedback and online review management platform for businesses and agencies.',
   metadata: {},
   config,
   auth

@@ -3,57 +3,67 @@ import { GoogleDriveClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let driveUserSchema = z.object({
-  displayName: z.string().optional(),
-  emailAddress: z.string().optional(),
-  photoLink: z.string().optional(),
-  permissionId: z.string().optional()
-}).optional();
+let driveUserSchema = z
+  .object({
+    displayName: z.string().optional(),
+    emailAddress: z.string().optional(),
+    photoLink: z.string().optional(),
+    permissionId: z.string().optional()
+  })
+  .optional();
 
-export let fileChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'File Changes',
-    key: 'file_changes',
-    description: 'Triggers when files in Google Drive are created, updated, trashed, or deleted. Detects changes across My Drive and shared drives.'
-  }
-)
-  .input(z.object({
-    changeType: z.string().describe('Type of change detected'),
-    fileId: z.string().optional().describe('ID of the changed file'),
-    removed: z.boolean().describe('Whether the file was removed'),
-    time: z.string().describe('Timestamp of the change'),
-    fileName: z.string().optional(),
-    mimeType: z.string().optional(),
-    trashed: z.boolean().optional(),
-    parents: z.array(z.string()).optional(),
-    webViewLink: z.string().optional(),
-    modifiedTime: z.string().optional(),
-    lastModifyingUser: driveUserSchema,
-    driveId: z.string().optional(),
-    driveName: z.string().optional()
-  }))
-  .output(z.object({
-    fileId: z.string().optional().describe('ID of the changed file'),
-    fileName: z.string().optional().describe('Name of the changed file'),
-    mimeType: z.string().optional().describe('MIME type of the file'),
-    trashed: z.boolean().optional().describe('Whether the file is in trash'),
-    removed: z.boolean().describe('Whether the file was permanently removed'),
-    parents: z.array(z.string()).optional().describe('Parent folder IDs'),
-    webViewLink: z.string().optional().describe('Link to view the file'),
-    modifiedTime: z.string().optional().describe('Last modification timestamp'),
-    lastModifyingUserName: z.string().optional().describe('Name of the user who last modified the file'),
-    lastModifyingUserEmail: z.string().optional().describe('Email of the user who last modified the file'),
-    driveId: z.string().optional().describe('ID of the shared drive (if applicable)'),
-    driveName: z.string().optional().describe('Name of the shared drive (if applicable)'),
-    changeTime: z.string().describe('Timestamp when the change was detected')
-  }))
+export let fileChangesTrigger = SlateTrigger.create(spec, {
+  name: 'File Changes',
+  key: 'file_changes',
+  description:
+    'Triggers when files in Google Drive are created, updated, trashed, or deleted. Detects changes across My Drive and shared drives.'
+})
+  .input(
+    z.object({
+      changeType: z.string().describe('Type of change detected'),
+      fileId: z.string().optional().describe('ID of the changed file'),
+      removed: z.boolean().describe('Whether the file was removed'),
+      time: z.string().describe('Timestamp of the change'),
+      fileName: z.string().optional(),
+      mimeType: z.string().optional(),
+      trashed: z.boolean().optional(),
+      parents: z.array(z.string()).optional(),
+      webViewLink: z.string().optional(),
+      modifiedTime: z.string().optional(),
+      lastModifyingUser: driveUserSchema,
+      driveId: z.string().optional(),
+      driveName: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      fileId: z.string().optional().describe('ID of the changed file'),
+      fileName: z.string().optional().describe('Name of the changed file'),
+      mimeType: z.string().optional().describe('MIME type of the file'),
+      trashed: z.boolean().optional().describe('Whether the file is in trash'),
+      removed: z.boolean().describe('Whether the file was permanently removed'),
+      parents: z.array(z.string()).optional().describe('Parent folder IDs'),
+      webViewLink: z.string().optional().describe('Link to view the file'),
+      modifiedTime: z.string().optional().describe('Last modification timestamp'),
+      lastModifyingUserName: z
+        .string()
+        .optional()
+        .describe('Name of the user who last modified the file'),
+      lastModifyingUserEmail: z
+        .string()
+        .optional()
+        .describe('Email of the user who last modified the file'),
+      driveId: z.string().optional().describe('ID of the shared drive (if applicable)'),
+      driveName: z.string().optional().describe('Name of the shared drive (if applicable)'),
+      changeTime: z.string().describe('Timestamp when the change was detected')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new GoogleDriveClient(ctx.auth.token);
       let state = ctx.state as { pageToken?: string } | null;
 
@@ -114,7 +124,7 @@ export let fileChangesTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventId = `${ctx.input.fileId || 'unknown'}-${ctx.input.time}-${ctx.input.changeType}`;
 
       return {
@@ -137,4 +147,5 @@ export let fileChangesTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

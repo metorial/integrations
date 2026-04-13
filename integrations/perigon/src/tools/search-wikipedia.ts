@@ -12,37 +12,44 @@ let wikipediaPageSchema = z.object({
   wikiCode: z.string().describe('Wikipedia language code'),
   wikiRevisionTs: z.string().describe('Last revision timestamp (ISO 8601)'),
   wikidataInstanceOf: z.array(z.string()).describe('Wikidata instance-of classifications'),
-  categories: z.array(z.string()).describe('Wikipedia categories'),
+  categories: z.array(z.string()).describe('Wikipedia categories')
 });
 
-export let searchWikipedia = SlateTool.create(
-  spec,
-  {
-    name: 'Search Wikipedia',
-    key: 'search_wikipedia',
-    description: `Search Wikipedia pages for information on any topic. Returns page summaries, full content, categories, pageview data, and Wikidata metadata. Supports filtering by language, pageview threshold, Wikidata entity type, and Wikipedia category.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchWikipedia = SlateTool.create(spec, {
+  name: 'Search Wikipedia',
+  key: 'search_wikipedia',
+  description: `Search Wikipedia pages for information on any topic. Returns page summaries, full content, categories, pageview data, and Wikidata metadata. Supports filtering by language, pageview threshold, Wikidata entity type, and Wikipedia category.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search keywords'),
-    language: z.string().optional().describe('Wikipedia language code (e.g. "en", "es")'),
-    pageviewsFrom: z.number().optional().describe('Minimum daily pageviews threshold'),
-    wikidataId: z.string().optional().describe('Filter by specific Wikidata entity ID'),
-    wikidataInstanceOfLabel: z.string().optional().describe('Filter by Wikidata instance type (e.g. "academic discipline")'),
-    category: z.string().optional().describe('Filter by Wikipedia category (e.g. "Computer science")'),
-    withPageviews: z.boolean().optional().describe('Only return pages with pageview data'),
-    sortBy: z.string().optional().describe('Sort order (e.g. "relevance")'),
-    page: z.number().optional().describe('Page number (zero-based)'),
-    size: z.number().optional().describe('Results per page'),
-  }))
-  .output(z.object({
-    numResults: z.number().describe('Total number of matching pages'),
-    pages: z.array(wikipediaPageSchema).describe('List of matching Wikipedia pages'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search keywords'),
+      language: z.string().optional().describe('Wikipedia language code (e.g. "en", "es")'),
+      pageviewsFrom: z.number().optional().describe('Minimum daily pageviews threshold'),
+      wikidataId: z.string().optional().describe('Filter by specific Wikidata entity ID'),
+      wikidataInstanceOfLabel: z
+        .string()
+        .optional()
+        .describe('Filter by Wikidata instance type (e.g. "academic discipline")'),
+      category: z
+        .string()
+        .optional()
+        .describe('Filter by Wikipedia category (e.g. "Computer science")'),
+      withPageviews: z.boolean().optional().describe('Only return pages with pageview data'),
+      sortBy: z.string().optional().describe('Sort order (e.g. "relevance")'),
+      page: z.number().optional().describe('Page number (zero-based)'),
+      size: z.number().optional().describe('Results per page')
+    })
+  )
+  .output(
+    z.object({
+      numResults: z.number().describe('Total number of matching pages'),
+      pages: z.array(wikipediaPageSchema).describe('List of matching Wikipedia pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PerigonClient(ctx.auth.token);
 
     let result = await client.searchWikipedia({
@@ -55,10 +62,10 @@ export let searchWikipedia = SlateTool.create(
       withPageviews: ctx.input.withPageviews,
       sortBy: ctx.input.sortBy,
       page: ctx.input.page,
-      size: ctx.input.size,
+      size: ctx.input.size
     });
 
-    let pages = (result.results || []).map((p) => ({
+    let pages = (result.results || []).map(p => ({
       title: p.title || '',
       summary: p.summary || '',
       content: p.content || '',
@@ -67,15 +74,15 @@ export let searchWikipedia = SlateTool.create(
       wikiCode: p.wikiCode || '',
       wikiRevisionTs: p.wikiRevisionTs || '',
       wikidataInstanceOf: p.wikidataInstanceOf || [],
-      categories: p.categories || [],
+      categories: p.categories || []
     }));
 
     return {
       output: {
         numResults: result.numResults || 0,
-        pages,
+        pages
       },
-      message: `Found **${result.numResults || 0}** Wikipedia pages matching "${ctx.input.query}" (showing ${pages.length}).`,
+      message: `Found **${result.numResults || 0}** Wikipedia pages matching "${ctx.input.query}" (showing ${pages.length}).`
     };
   })
   .build();

@@ -3,31 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateIssue = SlateTool.create(
-  spec,
-  {
-    name: 'Update Issue',
-    key: 'update_issue',
-    description: `Update an existing issue (incident). Modify its title, description, status, priority, due date, category, site, or collaborators. Only provided fields will be updated.`,
-  }
-)
-  .input(z.object({
-    issueId: z.string().describe('ID of the issue to update'),
-    title: z.string().optional().describe('New title'),
-    description: z.string().optional().describe('New description'),
-    status: z.string().optional().describe('New status'),
-    priority: z.string().optional().describe('New priority (e.g., "NONE", "LOW", "MEDIUM", "HIGH")'),
-    dueAt: z.string().optional().describe('New due date in ISO 8601 format'),
-    categoryId: z.string().optional().describe('New category ID'),
-    siteId: z.string().optional().describe('New site ID'),
-    addCollaboratorIds: z.array(z.string()).optional().describe('User IDs to add as collaborators'),
-    removeCollaboratorIds: z.array(z.string()).optional().describe('User IDs to remove from collaborators'),
-  }))
-  .output(z.object({
-    issueId: z.string().describe('ID of the updated issue'),
-    updatedFields: z.array(z.string()).describe('List of fields that were updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateIssue = SlateTool.create(spec, {
+  name: 'Update Issue',
+  key: 'update_issue',
+  description: `Update an existing issue (incident). Modify its title, description, status, priority, due date, category, site, or collaborators. Only provided fields will be updated.`
+})
+  .input(
+    z.object({
+      issueId: z.string().describe('ID of the issue to update'),
+      title: z.string().optional().describe('New title'),
+      description: z.string().optional().describe('New description'),
+      status: z.string().optional().describe('New status'),
+      priority: z
+        .string()
+        .optional()
+        .describe('New priority (e.g., "NONE", "LOW", "MEDIUM", "HIGH")'),
+      dueAt: z.string().optional().describe('New due date in ISO 8601 format'),
+      categoryId: z.string().optional().describe('New category ID'),
+      siteId: z.string().optional().describe('New site ID'),
+      addCollaboratorIds: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to add as collaborators'),
+      removeCollaboratorIds: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to remove from collaborators')
+    })
+  )
+  .output(
+    z.object({
+      issueId: z.string().describe('ID of the updated issue'),
+      updatedFields: z.array(z.string()).describe('List of fields that were updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { issueId } = ctx.input;
     let updatedFields: string[] = [];
@@ -71,6 +81,7 @@ export let updateIssue = SlateTool.create(
 
     return {
       output: { issueId, updatedFields },
-      message: `Updated issue **${issueId}**: modified ${updatedFields.join(', ')}.`,
+      message: `Updated issue **${issueId}**: modified ${updatedFields.join(', ')}.`
     };
-  }).build();
+  })
+  .build();

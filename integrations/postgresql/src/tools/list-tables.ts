@@ -3,35 +3,61 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let listTables = SlateTool.create(
-  spec,
-  {
-    name: 'List Tables',
-    key: 'list_tables',
-    description: `List all tables in the PostgreSQL database, optionally filtered by schema. Returns table names, schemas, row estimates, and size information.
+export let listTables = SlateTool.create(spec, {
+  name: 'List Tables',
+  key: 'list_tables',
+  description: `List all tables in the PostgreSQL database, optionally filtered by schema. Returns table names, schemas, row estimates, and size information.
 Also supports listing views and materialized views.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    schemaName: z.string().optional().describe('Filter tables by schema name. If not specified, uses the default schema from config.'),
-    includeViews: z.boolean().optional().default(false).describe('Include views and materialized views in the results'),
-    includeSystemTables: z.boolean().optional().default(false).describe('Include system tables from pg_catalog and information_schema'),
-  }))
-  .output(z.object({
-    tables: z.array(z.object({
-      tableName: z.string().describe('Name of the table'),
-      schemaName: z.string().describe('Schema containing the table'),
-      tableType: z.string().describe('Type of table (BASE TABLE, VIEW, MATERIALIZED VIEW)'),
-      estimatedRowCount: z.number().nullable().describe('Estimated number of rows from pg_stat'),
-      sizeBytes: z.number().nullable().describe('Table size in bytes including indexes and TOAST'),
-      sizeFormatted: z.string().nullable().describe('Human-readable table size'),
-    })).describe('List of tables in the database'),
-    totalCount: z.number().describe('Total number of tables found'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      schemaName: z
+        .string()
+        .optional()
+        .describe(
+          'Filter tables by schema name. If not specified, uses the default schema from config.'
+        ),
+      includeViews: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include views and materialized views in the results'),
+      includeSystemTables: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include system tables from pg_catalog and information_schema')
+    })
+  )
+  .output(
+    z.object({
+      tables: z
+        .array(
+          z.object({
+            tableName: z.string().describe('Name of the table'),
+            schemaName: z.string().describe('Schema containing the table'),
+            tableType: z
+              .string()
+              .describe('Type of table (BASE TABLE, VIEW, MATERIALIZED VIEW)'),
+            estimatedRowCount: z
+              .number()
+              .nullable()
+              .describe('Estimated number of rows from pg_stat'),
+            sizeBytes: z
+              .number()
+              .nullable()
+              .describe('Table size in bytes including indexes and TOAST'),
+            sizeFormatted: z.string().nullable().describe('Human-readable table size')
+          })
+        )
+        .describe('List of tables in the database'),
+      totalCount: z.number().describe('Total number of tables found')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let schema = ctx.input.schemaName || ctx.config.defaultSchema;
 
@@ -76,17 +102,18 @@ Also supports listing views and materialized views.`,
       tableName: row.table_name as string,
       schemaName: row.schema_name as string,
       tableType: row.table_type as string,
-      estimatedRowCount: row.estimated_row_count != null ? Number(row.estimated_row_count) : null,
+      estimatedRowCount:
+        row.estimated_row_count != null ? Number(row.estimated_row_count) : null,
       sizeBytes: row.size_bytes != null ? Number(row.size_bytes) : null,
-      sizeFormatted: row.size_formatted as string | null,
+      sizeFormatted: row.size_formatted as string | null
     }));
 
     return {
       output: {
         tables,
-        totalCount: tables.length,
+        totalCount: tables.length
       },
-      message: `Found **${tables.length}** table(s) in ${schema ? `schema \`${schema}\`` : 'the database'}.`,
+      message: `Found **${tables.length}** table(s) in ${schema ? `schema \`${schema}\`` : 'the database'}.`
     };
   })
   .build();

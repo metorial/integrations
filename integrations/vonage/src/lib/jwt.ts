@@ -41,7 +41,10 @@ let generateJti = (): string => {
   return result;
 };
 
-export let generateVonageJwt = async (applicationId: string, privateKey: string): Promise<string> => {
+export let generateVonageJwt = async (
+  applicationId: string,
+  privateKey: string
+): Promise<string> => {
   let now = Math.floor(Date.now() / 1000);
 
   let header = {
@@ -53,7 +56,7 @@ export let generateVonageJwt = async (applicationId: string, privateKey: string)
     application_id: applicationId,
     iat: now,
     jti: generateJti(),
-    exp: now + (15 * 60), // 15 minutes TTL
+    exp: now + 15 * 60, // 15 minutes TTL
     acl: {
       paths: {
         '/*/users/**': {},
@@ -65,7 +68,7 @@ export let generateVonageJwt = async (applicationId: string, privateKey: string)
         '/*/applications/**': {},
         '/*/push/**': {},
         '/*/knocking/**': {},
-        '/*/legs/**': {},
+        '/*/legs/**': {}
       }
     }
   };

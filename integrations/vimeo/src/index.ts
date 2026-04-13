@@ -33,10 +33,7 @@ import {
   listCategoryVideosTool
 } from './tools';
 
-import {
-  videoEventsTrigger,
-  newVideoTrigger
-} from './triggers';
+import { videoEventsTrigger, newVideoTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -71,8 +68,5 @@ export let provider = Slate.create({
     listCategoriesTool,
     listCategoryVideosTool
   ],
-  triggers: [
-    videoEventsTrigger,
-    newVideoTrigger
-  ]
+  triggers: [videoEventsTrigger, newVideoTrigger]
 });

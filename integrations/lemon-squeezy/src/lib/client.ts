@@ -8,10 +8,10 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.lemonsqueezy.com/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json'
+      }
     });
   }
 
@@ -78,13 +78,18 @@ export class Client {
   }
 
   async refundOrder(orderId: string, amount?: number) {
-    let response = await this.http.post(`/orders/${orderId}/refund`, amount ? {
-      data: {
-        type: 'orders',
-        id: orderId,
-        attributes: { amount },
-      },
-    } : undefined);
+    let response = await this.http.post(
+      `/orders/${orderId}/refund`,
+      amount
+        ? {
+            data: {
+              type: 'orders',
+              id: orderId,
+              attributes: { amount }
+            }
+          }
+        : undefined
+    );
     return response.data;
   }
 
@@ -112,15 +117,24 @@ export class Client {
     return response.data;
   }
 
-  async createCustomer(storeId: string, attributes: { name: string; email: string; city?: string; region?: string; country?: string }) {
+  async createCustomer(
+    storeId: string,
+    attributes: {
+      name: string;
+      email: string;
+      city?: string;
+      region?: string;
+      country?: string;
+    }
+  ) {
     let response = await this.http.post('/customers', {
       data: {
         type: 'customers',
         attributes,
         relationships: {
-          store: { data: { type: 'stores', id: storeId } },
-        },
-      },
+          store: { data: { type: 'stores', id: storeId } }
+        }
+      }
     });
     return response.data;
   }
@@ -130,8 +144,8 @@ export class Client {
       data: {
         type: 'customers',
         id: customerId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -143,7 +157,15 @@ export class Client {
     return response.data;
   }
 
-  async listSubscriptions(params?: ListParams & { storeId?: string; orderId?: string; productId?: string; variantId?: string; status?: string }) {
+  async listSubscriptions(
+    params?: ListParams & {
+      storeId?: string;
+      orderId?: string;
+      productId?: string;
+      variantId?: string;
+      status?: string;
+    }
+  ) {
     let queryParams = buildListParams(params);
     if (params?.storeId) queryParams['filter[store_id]'] = params.storeId;
     if (params?.orderId) queryParams['filter[order_id]'] = params.orderId;
@@ -159,8 +181,8 @@ export class Client {
       data: {
         type: 'subscriptions',
         id: subscriptionId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -172,7 +194,9 @@ export class Client {
 
   // ── Subscription Invoices ──
 
-  async listSubscriptionInvoices(params?: ListParams & { storeId?: string; subscriptionId?: string; status?: string }) {
+  async listSubscriptionInvoices(
+    params?: ListParams & { storeId?: string; subscriptionId?: string; status?: string }
+  ) {
     let queryParams = buildListParams(params);
     if (params?.storeId) queryParams['filter[store_id]'] = params.storeId;
     if (params?.subscriptionId) queryParams['filter[subscription_id]'] = params.subscriptionId;
@@ -200,27 +224,31 @@ export class Client {
     return response.data;
   }
 
-  async createDiscount(storeId: string, attributes: {
-    name: string;
-    code: string;
-    amount: number;
-    amountType: 'percent' | 'fixed';
-    isLimitedToProducts?: boolean;
-    isLimitedRedemptions?: boolean;
-    maxRedemptions?: number;
-    startsAt?: string;
-    expiresAt?: string;
-    duration?: 'once' | 'repeating' | 'forever';
-    durationInMonths?: number;
-    testMode?: boolean;
-  }, variantIds?: string[]) {
+  async createDiscount(
+    storeId: string,
+    attributes: {
+      name: string;
+      code: string;
+      amount: number;
+      amountType: 'percent' | 'fixed';
+      isLimitedToProducts?: boolean;
+      isLimitedRedemptions?: boolean;
+      maxRedemptions?: number;
+      startsAt?: string;
+      expiresAt?: string;
+      duration?: 'once' | 'repeating' | 'forever';
+      durationInMonths?: number;
+      testMode?: boolean;
+    },
+    variantIds?: string[]
+  ) {
     let relationships: Record<string, unknown> = {
-      store: { data: { type: 'stores', id: storeId } },
+      store: { data: { type: 'stores', id: storeId } }
     };
 
     if (variantIds && variantIds.length > 0) {
       relationships.variants = {
-        data: variantIds.map((id) => ({ type: 'variants', id })),
+        data: variantIds.map(id => ({ type: 'variants', id }))
       };
     }
 
@@ -239,10 +267,10 @@ export class Client {
           expires_at: attributes.expiresAt,
           duration: attributes.duration,
           duration_in_months: attributes.durationInMonths,
-          test_mode: attributes.testMode,
+          test_mode: attributes.testMode
         },
-        relationships,
-      },
+        relationships
+      }
     });
     return response.data;
   }
@@ -258,7 +286,9 @@ export class Client {
     return response.data;
   }
 
-  async listLicenseKeys(params?: ListParams & { storeId?: string; orderId?: string; productId?: string }) {
+  async listLicenseKeys(
+    params?: ListParams & { storeId?: string; orderId?: string; productId?: string }
+  ) {
     let queryParams = buildListParams(params);
     if (params?.storeId) queryParams['filter[store_id]'] = params.storeId;
     if (params?.orderId) queryParams['filter[order_id]'] = params.orderId;
@@ -272,8 +302,8 @@ export class Client {
       data: {
         type: 'license-keys',
         id: licenseKeyId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -289,15 +319,19 @@ export class Client {
 
   // ── Checkouts ──
 
-  async createCheckout(storeId: string, variantId: string, attributes?: {
-    customPrice?: number;
-    productOptions?: Record<string, unknown>;
-    checkoutOptions?: Record<string, unknown>;
-    checkoutData?: Record<string, unknown>;
-    expiresAt?: string;
-    preview?: boolean;
-    testMode?: boolean;
-  }) {
+  async createCheckout(
+    storeId: string,
+    variantId: string,
+    attributes?: {
+      customPrice?: number;
+      productOptions?: Record<string, unknown>;
+      checkoutOptions?: Record<string, unknown>;
+      checkoutData?: Record<string, unknown>;
+      expiresAt?: string;
+      preview?: boolean;
+      testMode?: boolean;
+    }
+  ) {
     let response = await this.http.post('/checkouts', {
       data: {
         type: 'checkouts',
@@ -308,13 +342,13 @@ export class Client {
           checkout_data: attributes?.checkoutData,
           expires_at: attributes?.expiresAt,
           preview: attributes?.preview,
-          test_mode: attributes?.testMode,
+          test_mode: attributes?.testMode
         },
         relationships: {
           store: { data: { type: 'stores', id: storeId } },
-          variant: { data: { type: 'variants', id: variantId } },
-        },
-      },
+          variant: { data: { type: 'variants', id: variantId } }
+        }
+      }
     });
     return response.data;
   }
@@ -347,7 +381,13 @@ export class Client {
 
   // ── Webhooks ──
 
-  async createWebhook(storeId: string, url: string, events: string[], secret: string, testMode?: boolean) {
+  async createWebhook(
+    storeId: string,
+    url: string,
+    events: string[],
+    secret: string,
+    testMode?: boolean
+  ) {
     let response = await this.http.post('/webhooks', {
       data: {
         type: 'webhooks',
@@ -355,23 +395,26 @@ export class Client {
           url,
           events,
           secret,
-          test_mode: testMode,
+          test_mode: testMode
         },
         relationships: {
-          store: { data: { type: 'stores', id: storeId } },
-        },
-      },
+          store: { data: { type: 'stores', id: storeId } }
+        }
+      }
     });
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, attributes: { url?: string; events?: string[]; secret?: string }) {
+  async updateWebhook(
+    webhookId: string,
+    attributes: { url?: string; events?: string[]; secret?: string }
+  ) {
     let response = await this.http.patch(`/webhooks/${webhookId}`, {
       data: {
         type: 'webhooks',
         id: webhookId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }

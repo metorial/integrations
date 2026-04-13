@@ -12,28 +12,28 @@ import type {
   PagerDutyPriority,
   PagerDutyWebhookSubscription,
   PagerDutyAnalyticsIncidentData,
-  PagerDutyReference,
+  PagerDutyReference
 } from './types';
 
 export class PagerDutyClient {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; tokenType?: string; region?: string }) {
-    let baseURL = params.region === 'eu'
-      ? 'https://api.eu.pagerduty.com'
-      : 'https://api.pagerduty.com';
+    let baseURL =
+      params.region === 'eu' ? 'https://api.eu.pagerduty.com' : 'https://api.pagerduty.com';
 
-    let authHeader = params.tokenType === 'api_key'
-      ? `Token token=${params.token}`
-      : `Bearer ${params.token}`;
+    let authHeader =
+      params.tokenType === 'api_key'
+        ? `Token token=${params.token}`
+        : `Bearer ${params.token}`;
 
     this.axios = createAxios({
       baseURL,
       headers: {
         Authorization: authHeader,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -86,7 +86,11 @@ export class PagerDutyClient {
     if (params?.offset) query.offset = params.offset;
     if (params?.includeFields) query['include[]'] = params.includeFields;
 
-    let data = await this.get<{ incidents: PagerDutyIncident[]; more: boolean; total: number }>('/incidents', query);
+    let data = await this.get<{
+      incidents: PagerDutyIncident[];
+      more: boolean;
+      total: number;
+    }>('/incidents', query);
     return data;
   }
 
@@ -95,32 +99,38 @@ export class PagerDutyClient {
     return data.incident;
   }
 
-  async createIncident(params: {
-    title: string;
-    serviceId: string;
-    urgency?: string;
-    body?: string;
-    escalationPolicyId?: string;
-    assignmentIds?: string[];
-    priorityId?: string;
-    incidentKey?: string;
-    conferenceNumber?: string;
-    conferenceUrl?: string;
-  }, fromEmail: string): Promise<PagerDutyIncident> {
+  async createIncident(
+    params: {
+      title: string;
+      serviceId: string;
+      urgency?: string;
+      body?: string;
+      escalationPolicyId?: string;
+      assignmentIds?: string[];
+      priorityId?: string;
+      incidentKey?: string;
+      conferenceNumber?: string;
+      conferenceUrl?: string;
+    },
+    fromEmail: string
+  ): Promise<PagerDutyIncident> {
     let incident: Record<string, any> = {
       type: 'incident',
       title: params.title,
-      service: { id: params.serviceId, type: 'service_reference' },
+      service: { id: params.serviceId, type: 'service_reference' }
     };
 
     if (params.urgency) incident.urgency = params.urgency;
     if (params.body) incident.body = { type: 'incident_body', details: params.body };
     if (params.escalationPolicyId) {
-      incident.escalation_policy = { id: params.escalationPolicyId, type: 'escalation_policy_reference' };
+      incident.escalation_policy = {
+        id: params.escalationPolicyId,
+        type: 'escalation_policy_reference'
+      };
     }
     if (params.assignmentIds) {
       incident.assignments = params.assignmentIds.map(id => ({
-        assignee: { id, type: 'user_reference' },
+        assignee: { id, type: 'user_reference' }
       }));
     }
     if (params.priorityId) {
@@ -129,39 +139,48 @@ export class PagerDutyClient {
     if (params.incidentKey) incident.incident_key = params.incidentKey;
     if (params.conferenceNumber || params.conferenceUrl) {
       incident.conference_bridge = {};
-      if (params.conferenceNumber) incident.conference_bridge.conference_number = params.conferenceNumber;
-      if (params.conferenceUrl) incident.conference_bridge.conference_url = params.conferenceUrl;
+      if (params.conferenceNumber)
+        incident.conference_bridge.conference_number = params.conferenceNumber;
+      if (params.conferenceUrl)
+        incident.conference_bridge.conference_url = params.conferenceUrl;
     }
 
     let data = await this.post<{ incident: PagerDutyIncident }>('/incidents', { incident });
     return data.incident;
   }
 
-  async updateIncident(incidentId: string, params: {
-    status?: string;
-    title?: string;
-    urgency?: string;
-    escalationPolicyId?: string;
-    assignmentIds?: string[];
-    priorityId?: string;
-    conferenceNumber?: string;
-    conferenceUrl?: string;
-    resolution?: string;
-  }, fromEmail: string): Promise<PagerDutyIncident> {
+  async updateIncident(
+    incidentId: string,
+    params: {
+      status?: string;
+      title?: string;
+      urgency?: string;
+      escalationPolicyId?: string;
+      assignmentIds?: string[];
+      priorityId?: string;
+      conferenceNumber?: string;
+      conferenceUrl?: string;
+      resolution?: string;
+    },
+    fromEmail: string
+  ): Promise<PagerDutyIncident> {
     let incident: Record<string, any> = {
       id: incidentId,
-      type: 'incident',
+      type: 'incident'
     };
 
     if (params.status) incident.status = params.status;
     if (params.title) incident.title = params.title;
     if (params.urgency) incident.urgency = params.urgency;
     if (params.escalationPolicyId) {
-      incident.escalation_policy = { id: params.escalationPolicyId, type: 'escalation_policy_reference' };
+      incident.escalation_policy = {
+        id: params.escalationPolicyId,
+        type: 'escalation_policy_reference'
+      };
     }
     if (params.assignmentIds) {
       incident.assignments = params.assignmentIds.map(id => ({
-        assignee: { id, type: 'user_reference' },
+        assignee: { id, type: 'user_reference' }
       }));
     }
     if (params.priorityId) {
@@ -169,34 +188,54 @@ export class PagerDutyClient {
     }
     if (params.conferenceNumber || params.conferenceUrl) {
       incident.conference_bridge = {};
-      if (params.conferenceNumber) incident.conference_bridge.conference_number = params.conferenceNumber;
-      if (params.conferenceUrl) incident.conference_bridge.conference_url = params.conferenceUrl;
+      if (params.conferenceNumber)
+        incident.conference_bridge.conference_number = params.conferenceNumber;
+      if (params.conferenceUrl)
+        incident.conference_bridge.conference_url = params.conferenceUrl;
     }
     if (params.resolution) {
       incident.body = { type: 'incident_body', details: params.resolution };
     }
 
-    let response = await this.axios.put(`/incidents/${incidentId}`, { incident }, {
-      headers: { From: fromEmail },
-    });
+    let response = await this.axios.put(
+      `/incidents/${incidentId}`,
+      { incident },
+      {
+        headers: { From: fromEmail }
+      }
+    );
     return (response.data as { incident: PagerDutyIncident }).incident;
   }
 
-  async manageIncidents(incidents: { incidentId: string; status?: string; title?: string; urgency?: string; escalationPolicyId?: string; assignmentIds?: string[]; priorityId?: string }[], fromEmail: string): Promise<PagerDutyIncident[]> {
+  async manageIncidents(
+    incidents: {
+      incidentId: string;
+      status?: string;
+      title?: string;
+      urgency?: string;
+      escalationPolicyId?: string;
+      assignmentIds?: string[];
+      priorityId?: string;
+    }[],
+    fromEmail: string
+  ): Promise<PagerDutyIncident[]> {
     let body = incidents.map(inc => {
       let item: Record<string, any> = {
         id: inc.incidentId,
-        type: 'incident_reference',
+        type: 'incident_reference'
       };
       if (inc.status) item.status = inc.status;
       if (inc.title) item.title = inc.title;
       if (inc.urgency) item.urgency = inc.urgency;
       if (inc.escalationPolicyId) {
-        item.escalation_policy = { id: inc.escalationPolicyId, type: 'escalation_policy_reference' };
+        item.escalation_policy = {
+          id: inc.escalationPolicyId,
+          type: 'escalation_policy_reference'
+        };
       }
       if (inc.assignmentIds) {
         item.assignments = inc.assignmentIds.map(id => ({
-          assignee: { id, type: 'user_reference' },
+          assignee: { id, type: 'user_reference' }
         }));
       }
       if (inc.priorityId) {
@@ -205,44 +244,74 @@ export class PagerDutyClient {
       return item;
     });
 
-    let response = await this.axios.put('/incidents', { incidents: body }, {
-      headers: { From: fromEmail },
-    });
+    let response = await this.axios.put(
+      '/incidents',
+      { incidents: body },
+      {
+        headers: { From: fromEmail }
+      }
+    );
     return (response.data as { incidents: PagerDutyIncident[] }).incidents;
   }
 
-  async mergeIncidents(targetIncidentId: string, sourceIncidentIds: string[], fromEmail: string): Promise<PagerDutyIncident> {
-    let response = await this.axios.put(`/incidents/${targetIncidentId}/merge`, {
-      source_incidents: sourceIncidentIds.map(id => ({
-        id,
-        type: 'incident_reference',
-      })),
-    }, {
-      headers: { From: fromEmail },
-    });
+  async mergeIncidents(
+    targetIncidentId: string,
+    sourceIncidentIds: string[],
+    fromEmail: string
+  ): Promise<PagerDutyIncident> {
+    let response = await this.axios.put(
+      `/incidents/${targetIncidentId}/merge`,
+      {
+        source_incidents: sourceIncidentIds.map(id => ({
+          id,
+          type: 'incident_reference'
+        }))
+      },
+      {
+        headers: { From: fromEmail }
+      }
+    );
     return (response.data as { incident: PagerDutyIncident }).incident;
   }
 
-  async addIncidentNote(incidentId: string, content: string, fromEmail: string): Promise<PagerDutyIncidentNote> {
-    let response = await this.axios.post(`/incidents/${incidentId}/notes`, {
-      note: { content },
-    }, {
-      headers: { From: fromEmail },
-    });
+  async addIncidentNote(
+    incidentId: string,
+    content: string,
+    fromEmail: string
+  ): Promise<PagerDutyIncidentNote> {
+    let response = await this.axios.post(
+      `/incidents/${incidentId}/notes`,
+      {
+        note: { content }
+      },
+      {
+        headers: { From: fromEmail }
+      }
+    );
     return (response.data as { note: PagerDutyIncidentNote }).note;
   }
 
   async listIncidentNotes(incidentId: string): Promise<PagerDutyIncidentNote[]> {
-    let data = await this.get<{ notes: PagerDutyIncidentNote[] }>(`/incidents/${incidentId}/notes`);
+    let data = await this.get<{ notes: PagerDutyIncidentNote[] }>(
+      `/incidents/${incidentId}/notes`
+    );
     return data.notes;
   }
 
-  async snoozeIncident(incidentId: string, durationSeconds: number, fromEmail: string): Promise<PagerDutyIncident> {
-    let response = await this.axios.post(`/incidents/${incidentId}/snooze`, {
-      duration: durationSeconds,
-    }, {
-      headers: { From: fromEmail },
-    });
+  async snoozeIncident(
+    incidentId: string,
+    durationSeconds: number,
+    fromEmail: string
+  ): Promise<PagerDutyIncident> {
+    let response = await this.axios.post(
+      `/incidents/${incidentId}/snooze`,
+      {
+        duration: durationSeconds
+      },
+      {
+        headers: { From: fromEmail }
+      }
+    );
     return (response.data as { incident: PagerDutyIncident }).incident;
   }
 
@@ -264,7 +333,10 @@ export class PagerDutyClient {
     if (params?.offset) query.offset = params.offset;
     if (params?.sortBy) query.sort_by = params.sortBy;
 
-    let data = await this.get<{ services: PagerDutyService[]; more: boolean; total: number }>('/services', query);
+    let data = await this.get<{ services: PagerDutyService[]; more: boolean; total: number }>(
+      '/services',
+      query
+    );
     return data;
   }
 
@@ -287,12 +359,14 @@ export class PagerDutyClient {
     let service: Record<string, any> = {
       type: 'service',
       name: params.name,
-      escalation_policy: { id: params.escalationPolicyId, type: 'escalation_policy_reference' },
+      escalation_policy: { id: params.escalationPolicyId, type: 'escalation_policy_reference' }
     };
 
     if (params.description !== undefined) service.description = params.description;
-    if (params.autoResolveTimeout !== undefined) service.auto_resolve_timeout = params.autoResolveTimeout;
-    if (params.acknowledgementTimeout !== undefined) service.acknowledgement_timeout = params.acknowledgementTimeout;
+    if (params.autoResolveTimeout !== undefined)
+      service.auto_resolve_timeout = params.autoResolveTimeout;
+    if (params.acknowledgementTimeout !== undefined)
+      service.acknowledgement_timeout = params.acknowledgementTimeout;
     if (params.alertCreation) service.alert_creation = params.alertCreation;
     if (params.urgency) {
       service.incident_urgency_rule = { type: 'constant', urgency: params.urgency };
@@ -302,32 +376,42 @@ export class PagerDutyClient {
     return data.service;
   }
 
-  async updateService(serviceId: string, params: {
-    name?: string;
-    description?: string;
-    escalationPolicyId?: string;
-    autoResolveTimeout?: number | null;
-    acknowledgementTimeout?: number | null;
-    alertCreation?: string;
-    urgency?: string;
-  }): Promise<PagerDutyService> {
+  async updateService(
+    serviceId: string,
+    params: {
+      name?: string;
+      description?: string;
+      escalationPolicyId?: string;
+      autoResolveTimeout?: number | null;
+      acknowledgementTimeout?: number | null;
+      alertCreation?: string;
+      urgency?: string;
+    }
+  ): Promise<PagerDutyService> {
     let service: Record<string, any> = {
-      type: 'service',
+      type: 'service'
     };
 
     if (params.name !== undefined) service.name = params.name;
     if (params.description !== undefined) service.description = params.description;
     if (params.escalationPolicyId) {
-      service.escalation_policy = { id: params.escalationPolicyId, type: 'escalation_policy_reference' };
+      service.escalation_policy = {
+        id: params.escalationPolicyId,
+        type: 'escalation_policy_reference'
+      };
     }
-    if (params.autoResolveTimeout !== undefined) service.auto_resolve_timeout = params.autoResolveTimeout;
-    if (params.acknowledgementTimeout !== undefined) service.acknowledgement_timeout = params.acknowledgementTimeout;
+    if (params.autoResolveTimeout !== undefined)
+      service.auto_resolve_timeout = params.autoResolveTimeout;
+    if (params.acknowledgementTimeout !== undefined)
+      service.acknowledgement_timeout = params.acknowledgementTimeout;
     if (params.alertCreation) service.alert_creation = params.alertCreation;
     if (params.urgency) {
       service.incident_urgency_rule = { type: 'constant', urgency: params.urgency };
     }
 
-    let data = await this.put<{ service: PagerDutyService }>(`/services/${serviceId}`, { service });
+    let data = await this.put<{ service: PagerDutyService }>(`/services/${serviceId}`, {
+      service
+    });
     return data.service;
   }
 
@@ -351,7 +435,10 @@ export class PagerDutyClient {
     if (params?.limit) query.limit = params.limit;
     if (params?.offset) query.offset = params.offset;
 
-    let data = await this.get<{ users: PagerDutyUser[]; more: boolean; total: number }>('/users', query);
+    let data = await this.get<{ users: PagerDutyUser[]; more: boolean; total: number }>(
+      '/users',
+      query
+    );
     return data;
   }
 
@@ -381,7 +468,10 @@ export class PagerDutyClient {
     if (params?.limit) query.limit = params.limit;
     if (params?.offset) query.offset = params.offset;
 
-    let data = await this.get<{ teams: PagerDutyTeam[]; more: boolean; total: number }>('/teams', query);
+    let data = await this.get<{ teams: PagerDutyTeam[]; more: boolean; total: number }>(
+      '/teams',
+      query
+    );
     return data;
   }
 
@@ -400,7 +490,11 @@ export class PagerDutyClient {
     limit?: number;
     offset?: number;
     sortBy?: string;
-  }): Promise<{ escalation_policies: PagerDutyEscalationPolicy[]; more: boolean; total: number }> {
+  }): Promise<{
+    escalation_policies: PagerDutyEscalationPolicy[];
+    more: boolean;
+    total: number;
+  }> {
     let query: Record<string, any> = {};
     if (params?.query) query.query = params.query;
     if (params?.userIds) query['user_ids[]'] = params.userIds;
@@ -410,14 +504,24 @@ export class PagerDutyClient {
     if (params?.offset) query.offset = params.offset;
     if (params?.sortBy) query.sort_by = params.sortBy;
 
-    let data = await this.get<{ escalation_policies: PagerDutyEscalationPolicy[]; more: boolean; total: number }>('/escalation_policies', query);
+    let data = await this.get<{
+      escalation_policies: PagerDutyEscalationPolicy[];
+      more: boolean;
+      total: number;
+    }>('/escalation_policies', query);
     return data;
   }
 
-  async getEscalationPolicy(policyId: string, includeFields?: string[]): Promise<PagerDutyEscalationPolicy> {
+  async getEscalationPolicy(
+    policyId: string,
+    includeFields?: string[]
+  ): Promise<PagerDutyEscalationPolicy> {
     let params: Record<string, any> = {};
     if (includeFields) params['include[]'] = includeFields;
-    let data = await this.get<{ escalation_policy: PagerDutyEscalationPolicy }>(`/escalation_policies/${policyId}`, params);
+    let data = await this.get<{ escalation_policy: PagerDutyEscalationPolicy }>(
+      `/escalation_policies/${policyId}`,
+      params
+    );
     return data.escalation_policy;
   }
 
@@ -433,17 +537,27 @@ export class PagerDutyClient {
     if (params?.limit) query.limit = params.limit;
     if (params?.offset) query.offset = params.offset;
 
-    let data = await this.get<{ schedules: PagerDutySchedule[]; more: boolean; total: number }>('/schedules', query);
+    let data = await this.get<{
+      schedules: PagerDutySchedule[];
+      more: boolean;
+      total: number;
+    }>('/schedules', query);
     return data;
   }
 
-  async getSchedule(scheduleId: string, params?: { since?: string; until?: string; timeZone?: string }): Promise<PagerDutySchedule> {
+  async getSchedule(
+    scheduleId: string,
+    params?: { since?: string; until?: string; timeZone?: string }
+  ): Promise<PagerDutySchedule> {
     let query: Record<string, any> = {};
     if (params?.since) query.since = params.since;
     if (params?.until) query.until = params.until;
     if (params?.timeZone) query.time_zone = params.timeZone;
 
-    let data = await this.get<{ schedule: PagerDutySchedule }>(`/schedules/${scheduleId}`, query);
+    let data = await this.get<{ schedule: PagerDutySchedule }>(
+      `/schedules/${scheduleId}`,
+      query
+    );
     return data.schedule;
   }
 
@@ -463,7 +577,8 @@ export class PagerDutyClient {
     let query: Record<string, any> = {};
     if (params?.scheduleIds) query['schedule_ids[]'] = params.scheduleIds;
     if (params?.userIds) query['user_ids[]'] = params.userIds;
-    if (params?.escalationPolicyIds) query['escalation_policy_ids[]'] = params.escalationPolicyIds;
+    if (params?.escalationPolicyIds)
+      query['escalation_policy_ids[]'] = params.escalationPolicyIds;
     if (params?.since) query.since = params.since;
     if (params?.until) query.until = params.until;
     if (params?.earliest !== undefined) query.earliest = params.earliest;
@@ -471,7 +586,10 @@ export class PagerDutyClient {
     if (params?.offset) query.offset = params.offset;
     if (params?.includeFields) query['include[]'] = params.includeFields;
 
-    let data = await this.get<{ oncalls: PagerDutyOnCall[]; more: boolean }>('/oncalls', query);
+    let data = await this.get<{ oncalls: PagerDutyOnCall[]; more: boolean }>(
+      '/oncalls',
+      query
+    );
     return data;
   }
 
@@ -485,7 +603,11 @@ export class PagerDutyClient {
     limit?: number;
     offset?: number;
     includeFields?: string[];
-  }): Promise<{ maintenance_windows: PagerDutyMaintenanceWindow[]; more: boolean; total: number }> {
+  }): Promise<{
+    maintenance_windows: PagerDutyMaintenanceWindow[];
+    more: boolean;
+    total: number;
+  }> {
     let query: Record<string, any> = {};
     if (params?.serviceIds) query['service_ids[]'] = params.serviceIds;
     if (params?.teamIds) query['team_ids[]'] = params.teamIds;
@@ -495,28 +617,40 @@ export class PagerDutyClient {
     if (params?.offset) query.offset = params.offset;
     if (params?.includeFields) query['include[]'] = params.includeFields;
 
-    let data = await this.get<{ maintenance_windows: PagerDutyMaintenanceWindow[]; more: boolean; total: number }>('/maintenance_windows', query);
+    let data = await this.get<{
+      maintenance_windows: PagerDutyMaintenanceWindow[];
+      more: boolean;
+      total: number;
+    }>('/maintenance_windows', query);
     return data;
   }
 
-  async createMaintenanceWindow(params: {
-    startTime: string;
-    endTime: string;
-    description?: string;
-    serviceIds: string[];
-  }, fromEmail: string): Promise<PagerDutyMaintenanceWindow> {
+  async createMaintenanceWindow(
+    params: {
+      startTime: string;
+      endTime: string;
+      description?: string;
+      serviceIds: string[];
+    },
+    fromEmail: string
+  ): Promise<PagerDutyMaintenanceWindow> {
     let maintenanceWindow: Record<string, any> = {
       type: 'maintenance_window',
       start_time: params.startTime,
       end_time: params.endTime,
-      services: params.serviceIds.map(id => ({ id, type: 'service_reference' })),
+      services: params.serviceIds.map(id => ({ id, type: 'service_reference' }))
     };
     if (params.description) maintenanceWindow.description = params.description;
 
-    let response = await this.axios.post('/maintenance_windows', { maintenance_window: maintenanceWindow }, {
-      headers: { From: fromEmail },
-    });
-    return (response.data as { maintenance_window: PagerDutyMaintenanceWindow }).maintenance_window;
+    let response = await this.axios.post(
+      '/maintenance_windows',
+      { maintenance_window: maintenanceWindow },
+      {
+        headers: { From: fromEmail }
+      }
+    );
+    return (response.data as { maintenance_window: PagerDutyMaintenanceWindow })
+      .maintenance_window;
   }
 
   async deleteMaintenanceWindow(windowId: string): Promise<void> {
@@ -549,7 +683,10 @@ export class PagerDutyClient {
       if (params?.urgency) body.filters.urgency = params.urgency;
     }
 
-    let data = await this.post<{ data: PagerDutyAnalyticsIncidentData[] }>('/analytics/metrics/incidents/all', body);
+    let data = await this.post<{ data: PagerDutyAnalyticsIncidentData[] }>(
+      '/analytics/metrics/incidents/all',
+      body
+    );
     return data.data;
   }
 
@@ -558,12 +695,20 @@ export class PagerDutyClient {
   async listWebhookSubscriptions(params?: {
     limit?: number;
     offset?: number;
-  }): Promise<{ webhook_subscriptions: PagerDutyWebhookSubscription[]; more: boolean; total: number }> {
+  }): Promise<{
+    webhook_subscriptions: PagerDutyWebhookSubscription[];
+    more: boolean;
+    total: number;
+  }> {
     let query: Record<string, any> = {};
     if (params?.limit) query.limit = params.limit;
     if (params?.offset) query.offset = params.offset;
 
-    let data = await this.get<{ webhook_subscriptions: PagerDutyWebhookSubscription[]; more: boolean; total: number }>('/webhook_subscriptions', query);
+    let data = await this.get<{
+      webhook_subscriptions: PagerDutyWebhookSubscription[];
+      more: boolean;
+      total: number;
+    }>('/webhook_subscriptions', query);
     return data;
   }
 
@@ -579,12 +724,12 @@ export class PagerDutyClient {
       type: 'webhook_subscription',
       delivery_method: {
         type: 'http_delivery_method',
-        url: params.deliveryUrl,
+        url: params.deliveryUrl
       },
       events: params.events,
       filter: {
-        type: params.filterType,
-      },
+        type: params.filterType
+      }
     };
 
     if (params.filterId) subscription.filter.id = params.filterId;
@@ -593,7 +738,10 @@ export class PagerDutyClient {
       subscription.delivery_method.custom_headers = params.customHeaders;
     }
 
-    let data = await this.post<{ webhook_subscription: PagerDutyWebhookSubscription }>('/webhook_subscriptions', { webhook_subscription: subscription });
+    let data = await this.post<{ webhook_subscription: PagerDutyWebhookSubscription }>(
+      '/webhook_subscriptions',
+      { webhook_subscription: subscription }
+    );
     return data.webhook_subscription;
   }
 
@@ -617,12 +765,12 @@ export class PagerDutyClient {
   }): Promise<{ status: string; message: string; dedup_key: string }> {
     let eventsAxios = createAxios({
       baseURL: 'https://events.pagerduty.com',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     let body: Record<string, any> = {
       routing_key: params.routingKey,
-      event_action: params.eventAction,
+      event_action: params.eventAction
     };
 
     if (params.dedupKey) body.dedup_key = params.dedupKey;
@@ -631,7 +779,7 @@ export class PagerDutyClient {
       body.payload = {
         summary: params.summary || 'Triggered via API',
         severity: params.severity || 'critical',
-        source: params.source || 'Slates Integration',
+        source: params.source || 'Slates Integration'
       };
       if (params.component) body.payload.component = params.component;
       if (params.group) body.payload.group = params.group;
@@ -653,15 +801,15 @@ export class PagerDutyClient {
   }): Promise<{ status: string; message: string }> {
     let eventsAxios = createAxios({
       baseURL: 'https://events.pagerduty.com',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     let body: Record<string, any> = {
       routing_key: params.routingKey,
       payload: {
         summary: params.summary,
-        source: params.source || 'Slates Integration',
-      },
+        source: params.source || 'Slates Integration'
+      }
     };
 
     if (params.timestamp) body.payload.timestamp = params.timestamp;

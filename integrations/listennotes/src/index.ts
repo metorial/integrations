@@ -13,7 +13,7 @@ import {
   submitPodcast,
   deletePodcast,
   getGenresAndRegions,
-  randomEpisode,
+  randomEpisode
 } from './tools';
 import { podcastSubmission } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     submitPodcast,
     deletePodcast,
     getGenresAndRegions,
-    randomEpisode,
+    randomEpisode
   ],
-  triggers: [
-    podcastSubmission,
-  ],
+  triggers: [podcastSubmission]
 });

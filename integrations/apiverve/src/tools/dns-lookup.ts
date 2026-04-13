@@ -3,42 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dnsLookup = SlateTool.create(
-  spec,
-  {
-    name: 'DNS Lookup',
-    key: 'dns_lookup',
-    description: `Look up DNS records for a domain including A, AAAA, MX, NS, SOA, TXT, and CNAME records. Useful for domain verification, email deliverability checks, and infrastructure analysis.`,
-    tags: {
-      readOnly: true,
-    },
+export let dnsLookup = SlateTool.create(spec, {
+  name: 'DNS Lookup',
+  key: 'dns_lookup',
+  description: `Look up DNS records for a domain including A, AAAA, MX, NS, SOA, TXT, and CNAME records. Useful for domain verification, email deliverability checks, and infrastructure analysis.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().describe('The domain name to look up (e.g. "example.com", no protocol or subdomains)'),
-  }))
-  .output(z.object({
-    domain: z.string().describe('The queried domain'),
-    aRecords: z.array(z.string()).optional().describe('IPv4 address records'),
-    aaaaRecords: z.array(z.string()).optional().describe('IPv6 address records'),
-    mxRecords: z.array(z.object({
-      exchange: z.string().describe('Mail server hostname'),
-      priority: z.number().describe('Priority value'),
-    })).optional().describe('Mail exchange records'),
-    nsRecords: z.array(z.string()).optional().describe('Nameserver records'),
-    txtRecords: z.array(z.string()).optional().describe('TXT records (SPF, DKIM, etc.)'),
-    cnameRecords: z.array(z.string()).optional().describe('CNAME alias records'),
-    soaRecord: z.object({
-      nsname: z.string().describe('Primary nameserver'),
-      hostmaster: z.string().describe('Hostmaster email'),
-      serial: z.number().describe('Zone serial number'),
-      refresh: z.number().describe('Refresh interval in seconds'),
-      retry: z.number().describe('Retry interval in seconds'),
-      expire: z.number().describe('Expiry time in seconds'),
-      minttl: z.number().describe('Minimum TTL in seconds'),
-    }).optional().describe('Start of Authority record'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z
+        .string()
+        .describe('The domain name to look up (e.g. "example.com", no protocol or subdomains)')
+    })
+  )
+  .output(
+    z.object({
+      domain: z.string().describe('The queried domain'),
+      aRecords: z.array(z.string()).optional().describe('IPv4 address records'),
+      aaaaRecords: z.array(z.string()).optional().describe('IPv6 address records'),
+      mxRecords: z
+        .array(
+          z.object({
+            exchange: z.string().describe('Mail server hostname'),
+            priority: z.number().describe('Priority value')
+          })
+        )
+        .optional()
+        .describe('Mail exchange records'),
+      nsRecords: z.array(z.string()).optional().describe('Nameserver records'),
+      txtRecords: z.array(z.string()).optional().describe('TXT records (SPF, DKIM, etc.)'),
+      cnameRecords: z.array(z.string()).optional().describe('CNAME alias records'),
+      soaRecord: z
+        .object({
+          nsname: z.string().describe('Primary nameserver'),
+          hostmaster: z.string().describe('Hostmaster email'),
+          serial: z.number().describe('Zone serial number'),
+          refresh: z.number().describe('Refresh interval in seconds'),
+          retry: z.number().describe('Retry interval in seconds'),
+          expire: z.number().describe('Expiry time in seconds'),
+          minttl: z.number().describe('Minimum TTL in seconds')
+        })
+        .optional()
+        .describe('Start of Authority record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.dnsLookup(ctx.input.domain);
 
@@ -57,7 +68,7 @@ export let dnsLookup = SlateTool.create(
       nsRecords: records.NS,
       txtRecords: records.TXT,
       cnameRecords: records.CNAME,
-      soaRecord: records.SOA,
+      soaRecord: records.SOA
     };
 
     let recordSummary: string[] = [];
@@ -68,7 +79,7 @@ export let dnsLookup = SlateTool.create(
 
     return {
       output,
-      message: `DNS records for **${data.domain}**: ${recordSummary.join(', ') || 'no records found'}.`,
+      message: `DNS records for **${data.domain}**: ${recordSummary.join(', ') || 'no records found'}.`
     };
   })
   .build();

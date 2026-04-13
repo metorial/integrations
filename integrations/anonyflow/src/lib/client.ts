@@ -10,9 +10,9 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': config.token,
-        'accept': 'application/json',
-        'content-type': 'application/json',
-      },
+        accept: 'application/json',
+        'content-type': 'application/json'
+      }
     });
   }
 
@@ -21,12 +21,18 @@ export class Client {
     return response.data;
   }
 
-  async anonymizePacket(data: Record<string, unknown>, keys: string[]): Promise<AnonymizePacketResponse> {
+  async anonymizePacket(
+    data: Record<string, unknown>,
+    keys: string[]
+  ): Promise<AnonymizePacketResponse> {
     let response = await this.axios.post('/anony-packet', { data, keys });
     return response.data;
   }
 
-  async deanonymizePacket(data: Record<string, unknown>, keys: string[]): Promise<DeanonymizePacketResponse> {
+  async deanonymizePacket(
+    data: Record<string, unknown>,
+    keys: string[]
+  ): Promise<DeanonymizePacketResponse> {
     let response = await this.axios.post('/deanony-packet', { data, keys });
     return response.data;
   }

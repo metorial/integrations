@@ -13,26 +13,25 @@ let returnAddressSchema = z.object({
   city: z.string().optional().describe('City'),
   state: z.string().optional().describe('State/province'),
   zip: z.string().optional().describe('Postal/ZIP code'),
-  isDefault: z.boolean().optional().describe('Whether this is the default return address'),
+  isDefault: z.boolean().optional().describe('Whether this is the default return address')
 });
 
-export let listReturnAddresses = SlateTool.create(
-  spec,
-  {
-    name: 'List Return Addresses',
-    key: 'list_return_addresses',
-    description: `Retrieve all saved return (sender) addresses on the account. Use the address ID as returnAddressId when adding orders to the basket.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listReturnAddresses = SlateTool.create(spec, {
+  name: 'List Return Addresses',
+  key: 'list_return_addresses',
+  description: `Retrieve all saved return (sender) addresses on the account. Use the address ID as returnAddressId when adding orders to the basket.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    addresses: z.array(returnAddressSchema).describe('Saved return addresses'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      addresses: z.array(returnAddressSchema).describe('Saved return addresses')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listReturnAddresses();
@@ -48,12 +47,12 @@ export let listReturnAddresses = SlateTool.create(
       city: a.city ?? undefined,
       state: a.state ?? undefined,
       zip: a.zip ?? undefined,
-      isDefault: a.default === 1 || a.default === '1' || a.is_default === true || undefined,
+      isDefault: a.default === 1 || a.default === '1' || a.is_default === true || undefined
     }));
 
     return {
       output: { addresses },
-      message: `Found **${addresses.length}** return addresses.`,
+      message: `Found **${addresses.length}** return addresses.`
     };
   })
   .build();

@@ -18,6 +18,7 @@ Go to your BetterContact dashboard. Navigate to the API section. Your API key wi
 The base URL for API requests is `https://app.bettercontact.rocks/api/v2`.
 
 Example header usage:
+
 ```
 X-API-Key: your-api-key-here
 ```

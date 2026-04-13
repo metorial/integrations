@@ -3,45 +3,55 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let routingFormSubmission = SlateTrigger.create(
-  spec,
-  {
-    name: 'Routing Form Submission',
-    key: 'routing_form_submission',
-    description: 'Triggers when someone submits a routing form, whether they book a meeting or not. Only supports organization-scoped subscriptions.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type'),
-    submissionUri: z.string().describe('URI of the submission'),
-    routingFormUri: z.string().describe('URI of the routing form'),
-    questionsAndAnswers: z.array(z.object({
-      questionUuid: z.string(),
-      question: z.string(),
-      answer: z.string()
-    })).describe('Questions and answers from the submission'),
-    tracking: z.any().optional().describe('Tracking data'),
-    result: z.any().optional().describe('Where the submitter was routed'),
-    submitter: z.string().nullable().describe('Submitter identifier'),
-    submitterType: z.string().nullable().describe('Type of submitter'),
-    createdAt: z.string().describe('When the submission was created')
-  }))
-  .output(z.object({
-    submissionUri: z.string().describe('URI of the routing form submission'),
-    routingFormUri: z.string().describe('URI of the routing form'),
-    questionsAndAnswers: z.array(z.object({
-      questionUuid: z.string(),
-      question: z.string(),
-      answer: z.string()
-    })).describe('Questions and answers from the submission'),
-    tracking: z.any().optional().describe('UTM tracking data'),
-    result: z.any().optional().describe('Routing result (where the submitter was directed)'),
-    submitter: z.string().nullable().describe('Submitter identifier'),
-    submitterType: z.string().nullable().describe('Type of submitter (e.g., Invitee)'),
-    createdAt: z.string().describe('When the submission was created (ISO 8601)')
-  }))
+export let routingFormSubmission = SlateTrigger.create(spec, {
+  name: 'Routing Form Submission',
+  key: 'routing_form_submission',
+  description:
+    'Triggers when someone submits a routing form, whether they book a meeting or not. Only supports organization-scoped subscriptions.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The webhook event type'),
+      submissionUri: z.string().describe('URI of the submission'),
+      routingFormUri: z.string().describe('URI of the routing form'),
+      questionsAndAnswers: z
+        .array(
+          z.object({
+            questionUuid: z.string(),
+            question: z.string(),
+            answer: z.string()
+          })
+        )
+        .describe('Questions and answers from the submission'),
+      tracking: z.any().optional().describe('Tracking data'),
+      result: z.any().optional().describe('Where the submitter was routed'),
+      submitter: z.string().nullable().describe('Submitter identifier'),
+      submitterType: z.string().nullable().describe('Type of submitter'),
+      createdAt: z.string().describe('When the submission was created')
+    })
+  )
+  .output(
+    z.object({
+      submissionUri: z.string().describe('URI of the routing form submission'),
+      routingFormUri: z.string().describe('URI of the routing form'),
+      questionsAndAnswers: z
+        .array(
+          z.object({
+            questionUuid: z.string(),
+            question: z.string(),
+            answer: z.string()
+          })
+        )
+        .describe('Questions and answers from the submission'),
+      tracking: z.any().optional().describe('UTM tracking data'),
+      result: z.any().optional().describe('Routing result (where the submitter was directed)'),
+      submitter: z.string().nullable().describe('Submitter identifier'),
+      submitterType: z.string().nullable().describe('Type of submitter (e.g., Invitee)'),
+      createdAt: z.string().describe('When the submission was created (ISO 8601)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let organizationUri = ctx.auth.organizationUri;
@@ -65,14 +75,14 @@ export let routingFormSubmission = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookUri: string };
       await client.deleteWebhookSubscription(details.webhookUri);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let payload = body.payload || {};
       let questionsAndAnswers = (payload.questions_and_answers || []).map((qa: any) => ({
@@ -98,7 +108,7 @@ export let routingFormSubmission = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'routing_form_submission.created',
         id: ctx.input.submissionUri || `routing-${ctx.input.createdAt}`,

@@ -40,13 +40,13 @@ import {
   deleteInitiativeTool,
   listCustomFieldsTool,
   getCustomFieldValuesTool,
-  setCustomFieldValueTool,
+  setCustomFieldValueTool
 } from './tools';
 import {
   featureEventsTrigger,
   noteEventsTrigger,
   componentEventsTrigger,
-  productEventsTrigger,
+  productEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -91,12 +91,12 @@ export let provider = Slate.create({
     deleteInitiativeTool,
     listCustomFieldsTool,
     getCustomFieldValuesTool,
-    setCustomFieldValueTool,
+    setCustomFieldValueTool
   ],
   triggers: [
     featureEventsTrigger,
     noteEventsTrigger,
     componentEventsTrigger,
-    productEventsTrigger,
-  ],
+    productEventsTrigger
+  ]
 });

@@ -9,7 +9,7 @@ import {
   getTranscript,
   listSpaces,
   listUsers,
-  removeUser,
+  removeUser
 } from './tools';
 import { spaceEvents } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     getTranscript,
     listSpaces,
     listUsers,
-    removeUser,
+    removeUser
   ],
-  triggers: [
-    spaceEvents,
-  ],
+  triggers: [spaceEvents]
 });

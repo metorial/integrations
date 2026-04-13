@@ -15,9 +15,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.onesignal.com',
       headers: {
-        'Authorization': `Key ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Key ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -26,7 +26,7 @@ export class Client {
   async sendNotification(params: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/notifications', {
       app_id: this.appId,
-      ...params,
+      ...params
     });
     return response.data;
   }
@@ -39,33 +39,36 @@ export class Client {
     let response = await this.axios.get('/notifications', {
       params: {
         app_id: this.appId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
 
-  async getNotification(messageId: string, params?: {
-    outcomeNames?: string[];
-    outcomeTimeRange?: string;
-    outcomePlatforms?: string;
-    outcomeAttribution?: string;
-  }): Promise<any> {
+  async getNotification(
+    messageId: string,
+    params?: {
+      outcomeNames?: string[];
+      outcomeTimeRange?: string;
+      outcomePlatforms?: string;
+      outcomeAttribution?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/notifications/${messageId}`, {
       params: {
         app_id: this.appId,
         outcome_names: params?.outcomeNames,
         outcome_time_range: params?.outcomeTimeRange,
         outcome_platforms: params?.outcomePlatforms,
-        outcome_attribution: params?.outcomeAttribution,
-      },
+        outcome_attribution: params?.outcomeAttribution
+      }
     });
     return response.data;
   }
 
   async cancelNotification(messageId: string): Promise<any> {
     let response = await this.axios.delete(`/notifications/${messageId}`, {
-      params: { app_id: this.appId },
+      params: { app_id: this.appId }
     });
     return response.data;
   }
@@ -84,7 +87,11 @@ export class Client {
     return response.data;
   }
 
-  async updateUser(aliasLabel: string, aliasId: string, properties: Record<string, any>): Promise<any> {
+  async updateUser(
+    aliasLabel: string,
+    aliasId: string,
+    properties: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.patch(
       `/apps/${this.appId}/users/by/${aliasLabel}/${aliasId}`,
       { properties }
@@ -147,25 +154,20 @@ export class Client {
   async createSegment(name: string, filters: any[]): Promise<any> {
     let response = await this.axios.post(`/apps/${this.appId}/segments`, {
       name,
-      filters,
+      filters
     });
     return response.data;
   }
 
-  async listSegments(params?: {
-    offset?: number;
-    limit?: number;
-  }): Promise<any> {
+  async listSegments(params?: { offset?: number; limit?: number }): Promise<any> {
     let response = await this.axios.get(`/apps/${this.appId}/segments`, {
-      params,
+      params
     });
     return response.data;
   }
 
   async deleteSegment(segmentId: string): Promise<any> {
-    let response = await this.axios.delete(
-      `/apps/${this.appId}/segments/${segmentId}`
-    );
+    let response = await this.axios.delete(`/apps/${this.appId}/segments/${segmentId}`);
     return response.data;
   }
 
@@ -174,7 +176,7 @@ export class Client {
   async createTemplate(params: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/templates', {
       app_id: this.appId,
-      ...params,
+      ...params
     });
     return response.data;
   }
@@ -187,32 +189,36 @@ export class Client {
     let response = await this.axios.get('/templates', {
       params: {
         app_id: this.appId,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
 
   async getTemplate(templateId: string): Promise<any> {
     let response = await this.axios.get(`/templates/${templateId}`, {
-      params: { app_id: this.appId },
+      params: { app_id: this.appId }
     });
     return response.data;
   }
 
   async updateTemplate(templateId: string, params: Record<string, any>): Promise<any> {
-    let response = await this.axios.patch(`/templates/${templateId}`, {
-      app_id: this.appId,
-      ...params,
-    }, {
-      params: { app_id: this.appId },
-    });
+    let response = await this.axios.patch(
+      `/templates/${templateId}`,
+      {
+        app_id: this.appId,
+        ...params
+      },
+      {
+        params: { app_id: this.appId }
+      }
+    );
     return response.data;
   }
 
   async deleteTemplate(templateId: string): Promise<any> {
     let response = await this.axios.delete(`/templates/${templateId}`, {
-      params: { app_id: this.appId },
+      params: { app_id: this.appId }
     });
     return response.data;
   }
@@ -252,7 +258,7 @@ export class Client {
     if (params?.extraFields) body.extra_fields = params.extraFields;
 
     let response = await this.axios.post('/players/csv_export', body, {
-      params: { app_id: this.appId },
+      params: { app_id: this.appId }
     });
     return response.data;
   }

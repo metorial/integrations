@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    pixelId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      pixelId: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -17,88 +19,91 @@ export let auth = SlateAuth.create()
       {
         title: 'Ads Read',
         description: 'Read access to ad accounts, campaigns, ad groups, ads, and reporting',
-        scope: 'adsread',
+        scope: 'adsread'
       },
       {
         title: 'Ads Edit',
-        description: 'Write access to create and manage campaigns, ad groups, ads, and audiences',
-        scope: 'adsedit',
+        description:
+          'Write access to create and manage campaigns, ad groups, ads, and audiences',
+        scope: 'adsedit'
       },
       {
         title: 'History',
         description: 'Access to account history',
-        scope: 'history',
-      },
+        scope: 'history'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join(',');
       let url = `https://www.reddit.com/api/v1/authorize?client_id=${encodeURIComponent(ctx.clientId)}&response_type=code&state=${encodeURIComponent(ctx.state)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&duration=permanent&scope=${encodeURIComponent(scopeString)}`;
       return { url };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let ax = createAxios();
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await ax.post('https://www.reddit.com/api/v1/access_token',
+      let response = await ax.post(
+        'https://www.reddit.com/api/v1/access_token',
         new URLSearchParams({
           grant_type: 'authorization_code',
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: ctx.redirectUri
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let ax = createAxios();
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await ax.post('https://www.reddit.com/api/v1/access_token',
+      let response = await ax.post(
+        'https://www.reddit.com/api/v1/access_token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken,
+          refresh_token: ctx.output.refreshToken
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -106,8 +111,8 @@ export let auth = SlateAuth.create()
       let ax = createAxios({
         baseURL: 'https://ads-api.reddit.com/api/v3',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await ax.get('/me');
@@ -116,10 +121,10 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: user.id,
-          name: user.name,
-        },
+          name: user.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -127,16 +132,18 @@ export let auth = SlateAuth.create()
     key: 'conversion_token',
 
     inputSchema: z.object({
-      conversionToken: z.string().describe('Conversion access token generated from Reddit Ads Events Manager'),
-      pixelId: z.string().describe('Reddit Pixel ID associated with your account'),
+      conversionToken: z
+        .string()
+        .describe('Conversion access token generated from Reddit Ads Events Manager'),
+      pixelId: z.string().describe('Reddit Pixel ID associated with your account')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.conversionToken,
-          pixelId: ctx.input.pixelId,
-        },
+          pixelId: ctx.input.pixelId
+        }
       };
-    },
+    }
   });

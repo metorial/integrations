@@ -8,8 +8,8 @@ export class Client {
       baseURL: `https://${config.apiHost}/v1`,
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -252,7 +252,12 @@ export class Client {
     return res.data;
   }
 
-  async rescheduleAppointment(data: { appointmentId: string; date: string; time: string; staffId?: string }) {
+  async rescheduleAppointment(data: {
+    appointmentId: string;
+    date: string;
+    time: string;
+    staffId?: string;
+  }) {
     let res = await this.axios.post('/appointments/reschedule', data);
     return res.data;
   }
@@ -312,7 +317,10 @@ export class Client {
     return res.data;
   }
 
-  async getClientClassBookings(clientId: string, params?: { page?: number; pageSize?: number }) {
+  async getClientClassBookings(
+    clientId: string,
+    params?: { page?: number; pageSize?: number }
+  ) {
     let res = await this.axios.get(`/classes/clients/${clientId}/bookings`, { params });
     return res.data;
   }
@@ -373,7 +381,10 @@ export class Client {
     return res.data;
   }
 
-  async getStaffAvailabilityBlocks(staffId: string, params?: { fromDate?: string; toDate?: string }) {
+  async getStaffAvailabilityBlocks(
+    staffId: string,
+    params?: { fromDate?: string; toDate?: string }
+  ) {
     let res = await this.axios.get(`/staffs/${staffId}/availabilityBlocks`, { params });
     return res.data;
   }

@@ -3,38 +3,40 @@ import { RedditClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMessage = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Message',
-    key: 'new_message',
-    description: 'Triggers when a new private message is received in the authenticated user\'s inbox.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Message fullname'),
-    author: z.string().optional().describe('Message sender username'),
-    recipient: z.string().optional().describe('Message recipient username'),
-    subject: z.string().optional().describe('Message subject'),
-    body: z.string().optional().describe('Message body text'),
-    createdUtc: z.number().optional().describe('Creation timestamp in UTC seconds'),
-    isNew: z.boolean().optional().describe('Whether the message is unread'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Message fullname'),
-    author: z.string().optional().describe('Message sender username'),
-    recipient: z.string().optional().describe('Message recipient username'),
-    subject: z.string().optional().describe('Message subject'),
-    body: z.string().optional().describe('Message body text'),
-    createdAt: z.string().optional().describe('When the message was sent'),
-    isNew: z.boolean().optional().describe('Whether the message is unread'),
-  }))
+export let newMessage = SlateTrigger.create(spec, {
+  name: 'New Message',
+  key: 'new_message',
+  description:
+    "Triggers when a new private message is received in the authenticated user's inbox."
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Message fullname'),
+      author: z.string().optional().describe('Message sender username'),
+      recipient: z.string().optional().describe('Message recipient username'),
+      subject: z.string().optional().describe('Message subject'),
+      body: z.string().optional().describe('Message body text'),
+      createdUtc: z.number().optional().describe('Creation timestamp in UTC seconds'),
+      isNew: z.boolean().optional().describe('Whether the message is unread')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Message fullname'),
+      author: z.string().optional().describe('Message sender username'),
+      recipient: z.string().optional().describe('Message recipient username'),
+      subject: z.string().optional().describe('Message subject'),
+      body: z.string().optional().describe('Message body text'),
+      createdAt: z.string().optional().describe('When the message was sent'),
+      isNew: z.boolean().optional().describe('Whether the message is unread')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new RedditClient(ctx.auth.token);
       let state = ctx.state as { lastCreatedUtc?: number; seenIds?: string[] } | null;
       let lastCreatedUtc = state?.lastCreatedUtc ?? 0;
@@ -63,7 +65,7 @@ export let newMessage = SlateTrigger.create(
           subject: d.subject,
           body: d.body,
           createdUtc: d.created_utc,
-          isNew: d.new,
+          isNew: d.new
         });
 
         newSeenIds.push(d.name);
@@ -77,12 +79,12 @@ export let newMessage = SlateTrigger.create(
         inputs: allInputs,
         updatedState: {
           lastCreatedUtc: newestCreatedUtc,
-          seenIds: newSeenIds.slice(-200),
-        },
+          seenIds: newSeenIds.slice(-200)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'message.received',
         id: ctx.input.messageId,
@@ -92,10 +94,12 @@ export let newMessage = SlateTrigger.create(
           recipient: ctx.input.recipient,
           subject: ctx.input.subject,
           body: ctx.input.body,
-          createdAt: ctx.input.createdUtc ? new Date(ctx.input.createdUtc * 1000).toISOString() : undefined,
-          isNew: ctx.input.isNew,
-        },
+          createdAt: ctx.input.createdUtc
+            ? new Date(ctx.input.createdUtc * 1000).toISOString()
+            : undefined,
+          isNew: ctx.input.isNew
+        }
       };
-    },
+    }
   })
   .build();

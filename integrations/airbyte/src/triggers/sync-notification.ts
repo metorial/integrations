@@ -2,45 +2,47 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let syncNotificationTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Sync Notification',
-    key: 'sync_notification',
-    description: 'Receive webhook notifications for Airbyte sync events including sync success, sync failure, schema changes, sync disabled warnings, and sync disabled events. Configure the webhook URL in your Airbyte workspace notification settings.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the notification event.'),
-    eventId: z.string().describe('Unique identifier for this event.'),
-    connectionId: z.string().optional().describe('UUID of the associated connection.'),
-    connectionName: z.string().optional().describe('Name of the associated connection.'),
-    sourceId: z.string().optional().describe('UUID of the associated source.'),
-    destinationId: z.string().optional().describe('UUID of the associated destination.'),
-    workspaceId: z.string().optional().describe('UUID of the workspace.'),
-    errorMessage: z.string().optional().describe('Error message if the event is a failure.'),
-    recordsEmitted: z.number().optional().describe('Number of records emitted.'),
-    recordsCommitted: z.number().optional().describe('Number of records committed.'),
-    bytesEmitted: z.number().optional().describe('Number of bytes emitted.'),
-    bytesCommitted: z.number().optional().describe('Number of bytes committed.'),
-    duration: z.string().optional().describe('Sync duration.'),
-    rawPayload: z.any().optional().describe('Full raw webhook payload.'),
-  }))
-  .output(z.object({
-    connectionId: z.string().optional(),
-    connectionName: z.string().optional(),
-    sourceId: z.string().optional(),
-    destinationId: z.string().optional(),
-    workspaceId: z.string().optional(),
-    errorMessage: z.string().optional(),
-    recordsEmitted: z.number().optional(),
-    recordsCommitted: z.number().optional(),
-    bytesEmitted: z.number().optional(),
-    bytesCommitted: z.number().optional(),
-    duration: z.string().optional(),
-  }))
+export let syncNotificationTrigger = SlateTrigger.create(spec, {
+  name: 'Sync Notification',
+  key: 'sync_notification',
+  description:
+    'Receive webhook notifications for Airbyte sync events including sync success, sync failure, schema changes, sync disabled warnings, and sync disabled events. Configure the webhook URL in your Airbyte workspace notification settings.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of the notification event.'),
+      eventId: z.string().describe('Unique identifier for this event.'),
+      connectionId: z.string().optional().describe('UUID of the associated connection.'),
+      connectionName: z.string().optional().describe('Name of the associated connection.'),
+      sourceId: z.string().optional().describe('UUID of the associated source.'),
+      destinationId: z.string().optional().describe('UUID of the associated destination.'),
+      workspaceId: z.string().optional().describe('UUID of the workspace.'),
+      errorMessage: z.string().optional().describe('Error message if the event is a failure.'),
+      recordsEmitted: z.number().optional().describe('Number of records emitted.'),
+      recordsCommitted: z.number().optional().describe('Number of records committed.'),
+      bytesEmitted: z.number().optional().describe('Number of bytes emitted.'),
+      bytesCommitted: z.number().optional().describe('Number of bytes committed.'),
+      duration: z.string().optional().describe('Sync duration.'),
+      rawPayload: z.any().optional().describe('Full raw webhook payload.')
+    })
+  )
+  .output(
+    z.object({
+      connectionId: z.string().optional(),
+      connectionName: z.string().optional(),
+      sourceId: z.string().optional(),
+      destinationId: z.string().optional(),
+      workspaceId: z.string().optional(),
+      errorMessage: z.string().optional(),
+      recordsEmitted: z.number().optional(),
+      recordsCommitted: z.number().optional(),
+      bytesEmitted: z.number().optional(),
+      bytesCommitted: z.number().optional(),
+      duration: z.string().optional()
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -68,7 +70,8 @@ export let syncNotificationTrigger = SlateTrigger.create(
       let duration = data.duration ?? data.syncStats?.duration;
 
       // Extract error info if present
-      let errorMessage = data.errorMessage ?? data.error?.message ?? data.failureReason?.externalMessage;
+      let errorMessage =
+        data.errorMessage ?? data.error?.message ?? data.failureReason?.externalMessage;
 
       return {
         inputs: [
@@ -86,13 +89,13 @@ export let syncNotificationTrigger = SlateTrigger.create(
             bytesEmitted,
             bytesCommitted,
             duration,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let normalizedType = normalizeEventType(ctx.input.eventType);
 
       return {
@@ -109,17 +112,19 @@ export let syncNotificationTrigger = SlateTrigger.create(
           recordsCommitted: ctx.input.recordsCommitted,
           bytesEmitted: ctx.input.bytesEmitted,
           bytesCommitted: ctx.input.bytesCommitted,
-          duration: ctx.input.duration,
-        },
+          duration: ctx.input.duration
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();
 
 let normalizeEventType = (eventType: string): string => {
   let lower = eventType.toLowerCase();
   if (lower.includes('success') || lower.includes('succeeded')) return 'sync.succeeded';
   if (lower.includes('fail')) return 'sync.failed';
-  if (lower.includes('schema') && lower.includes('action')) return 'connection.schema_change_action_required';
+  if (lower.includes('schema') && lower.includes('action'))
+    return 'connection.schema_change_action_required';
   if (lower.includes('schema')) return 'connection.schema_change';
   if (lower.includes('disabled') && lower.includes('warn')) return 'sync.disabled_warning';
   if (lower.includes('disabled')) return 'sync.disabled';

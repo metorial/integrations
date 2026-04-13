@@ -3,39 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Update Company',
-    key: 'update_company',
-    description: `Update an existing company record. Only provide the fields you want to change.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateCompany = SlateTool.create(spec, {
+  name: 'Update Company',
+  key: 'update_company',
+  description: `Update an existing company record. Only provide the fields you want to change.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    companyId: z.string().describe('ID of the company to update'),
-    name: z.string().optional().describe('Company name'),
-    address: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      postalCode: z.string().optional(),
-    }).optional().describe('Address'),
-    countryCode: z.string().optional().describe('Country code'),
-    website: z.string().optional().describe('Website'),
-    notes: z.string().optional().describe('Notes'),
-    ownerId: z.number().optional().describe('Owner user ID'),
-    isHot: z.boolean().optional().describe('Whether hot'),
-    keyTechnologies: z.string().optional().describe('Key technologies'),
-  }))
-  .output(z.object({
-    companyId: z.string().describe('Updated company ID'),
-    updated: z.boolean().describe('Whether the update was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      companyId: z.string().describe('ID of the company to update'),
+      name: z.string().optional().describe('Company name'),
+      address: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          postalCode: z.string().optional()
+        })
+        .optional()
+        .describe('Address'),
+      countryCode: z.string().optional().describe('Country code'),
+      website: z.string().optional().describe('Website'),
+      notes: z.string().optional().describe('Notes'),
+      ownerId: z.number().optional().describe('Owner user ID'),
+      isHot: z.boolean().optional().describe('Whether hot'),
+      keyTechnologies: z.string().optional().describe('Key technologies')
+    })
+  )
+  .output(
+    z.object({
+      companyId: z.string().describe('Updated company ID'),
+      updated: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -45,7 +49,7 @@ export let updateCompany = SlateTool.create(
         street: ctx.input.address.street,
         city: ctx.input.address.city,
         state: ctx.input.address.state,
-        postal_code: ctx.input.address.postalCode,
+        postal_code: ctx.input.address.postalCode
       };
     }
     if (ctx.input.countryCode) body.country_code = ctx.input.countryCode;
@@ -60,8 +64,9 @@ export let updateCompany = SlateTool.create(
     return {
       output: {
         companyId: ctx.input.companyId,
-        updated: true,
+        updated: true
       },
-      message: `Updated company **${ctx.input.companyId}**.`,
+      message: `Updated company **${ctx.input.companyId}**.`
     };
-  }).build();
+  })
+  .build();

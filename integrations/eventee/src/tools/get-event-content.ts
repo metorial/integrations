@@ -6,13 +6,13 @@ import { z } from 'zod';
 let stageSchema = z.object({
   stageId: z.number().describe('Unique identifier for the stage'),
   name: z.string().describe('Name of the stage/room'),
-  order: z.number().describe('Display order of the stage'),
+  order: z.number().describe('Display order of the stage')
 });
 
 let trackSchema = z.object({
   trackId: z.number().describe('Unique identifier for the track'),
   name: z.string().describe('Name of the track'),
-  color: z.string().describe('Color code for the track'),
+  color: z.string().describe('Color code for the track')
 });
 
 let sessionSchema = z.object({
@@ -23,7 +23,7 @@ let sessionSchema = z.object({
   end: z.string().describe('End time of the session (ISO 8601)'),
   stageId: z.number().describe('ID of the stage where the session takes place'),
   trackId: z.number().nullable().describe('ID of the track the session belongs to, or null'),
-  speakers: z.array(z.number()).describe('List of speaker IDs assigned to this session'),
+  speakers: z.array(z.number()).describe('List of speaker IDs assigned to this session')
 });
 
 let speakerSchema = z.object({
@@ -34,33 +34,32 @@ let speakerSchema = z.object({
   bio: z.string().describe('Biography of the speaker'),
   photoUrl: z.string().describe('URL of the speaker photo'),
   company: z.string().describe('Company the speaker is affiliated with'),
-  jobPosition: z.string().describe('Job position/title of the speaker'),
+  jobPosition: z.string().describe('Job position/title of the speaker')
 });
 
-export let getEventContent = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event Content',
-    key: 'get_event_content',
-    description: `Retrieves the full event content including event details, agenda with sessions, stages/rooms, tracks, and speakers.
+export let getEventContent = SlateTool.create(spec, {
+  name: 'Get Event Content',
+  key: 'get_event_content',
+  description: `Retrieves the full event content including event details, agenda with sessions, stages/rooms, tracks, and speakers.
 Use this to get a complete snapshot of an event's schedule and lineup.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    eventName: z.string().describe('Name of the event'),
-    eventDescription: z.string().describe('Description of the event'),
-    eventStart: z.string().describe('Start date/time of the event (ISO 8601)'),
-    eventEnd: z.string().describe('End date/time of the event (ISO 8601)'),
-    stages: z.array(stageSchema).describe('List of stages/rooms at the event'),
-    tracks: z.array(trackSchema).describe('List of session tracks'),
-    sessions: z.array(sessionSchema).describe('List of sessions in the agenda'),
-    speakers: z.array(speakerSchema).describe('List of speakers'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      eventName: z.string().describe('Name of the event'),
+      eventDescription: z.string().describe('Description of the event'),
+      eventStart: z.string().describe('Start date/time of the event (ISO 8601)'),
+      eventEnd: z.string().describe('End date/time of the event (ISO 8601)'),
+      stages: z.array(stageSchema).describe('List of stages/rooms at the event'),
+      tracks: z.array(trackSchema).describe('List of session tracks'),
+      sessions: z.array(sessionSchema).describe('List of sessions in the agenda'),
+      speakers: z.array(speakerSchema).describe('List of speakers')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let content = await client.getContent();
 
@@ -73,9 +72,9 @@ Use this to get a complete snapshot of an event's schedule and lineup.`,
         stages: content.stages,
         tracks: content.tracks,
         sessions: content.sessions,
-        speakers: content.speakers,
+        speakers: content.speakers
       },
-      message: `Retrieved event content for **${content.eventName}** with ${content.sessions.length} session(s), ${content.speakers.length} speaker(s), ${content.stages.length} stage(s), and ${content.tracks.length} track(s).`,
+      message: `Retrieved event content for **${content.eventName}** with ${content.sessions.length} session(s), ${content.speakers.length} speaker(s), ${content.stages.length} stage(s), and ${content.tracks.length} track(s).`
     };
   })
   .build();

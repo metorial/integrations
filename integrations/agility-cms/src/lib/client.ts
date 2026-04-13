@@ -31,8 +31,8 @@ export class FetchClient {
     this.axios = createAxios({
       baseURL: getFetchBaseUrl(config.region),
       headers: {
-        'APIKey': config.token,
-      },
+        APIKey: config.token
+      }
     });
   }
 
@@ -45,18 +45,21 @@ export class FetchClient {
     return response.data;
   }
 
-  async getContentList(referenceName: string, params?: {
-    skip?: number;
-    take?: number;
-    sort?: string;
-    direction?: string;
-    filter?: string;
-    fields?: string;
-    contentLinkDepth?: number;
-    expandAllContentLinks?: boolean;
-  }): Promise<any> {
+  async getContentList(
+    referenceName: string,
+    params?: {
+      skip?: number;
+      take?: number;
+      sort?: string;
+      direction?: string;
+      filter?: string;
+      fields?: string;
+      contentLinkDepth?: number;
+      expandAllContentLinks?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`${this.basePath()}/list/${referenceName}`, {
-      params,
+      params
     });
     return response.data;
   }
@@ -78,14 +81,14 @@ export class FetchClient {
 
   async syncContentItems(syncToken: string, pageSize?: number): Promise<any> {
     let response = await this.axios.get(`${this.basePath()}/sync/items`, {
-      params: { syncToken, pageSize },
+      params: { syncToken, pageSize }
     });
     return response.data;
   }
 
   async syncPages(syncToken: string, pageSize?: number): Promise<any> {
     let response = await this.axios.get(`${this.basePath()}/sync/pages`, {
-      params: { syncToken, pageSize },
+      params: { syncToken, pageSize }
     });
     return response.data;
   }
@@ -98,7 +101,7 @@ export class FetchClient {
   async executeGraphQL(query: string, variables?: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`${this.basePath()}/graphql`, {
       query,
-      variables,
+      variables
     });
     return response.data;
   }
@@ -117,9 +120,9 @@ export class MgmtClient {
     this.axios = createAxios({
       baseURL: getMgmtBaseUrl(config.region),
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Cache-Control': 'no-cache',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Cache-Control': 'no-cache'
+      }
     });
   }
 
@@ -150,42 +153,45 @@ export class MgmtClient {
 
   async deleteContentItem(contentId: number, comments?: string): Promise<any> {
     let response = await this.axios.delete(`${this.localePath()}/item/${contentId}`, {
-      params: { comments },
+      params: { comments }
     });
     return response.data;
   }
 
   async publishContentItem(contentId: number, comments?: string): Promise<any> {
     let response = await this.axios.get(`${this.localePath()}/item/${contentId}/publish`, {
-      params: { comments },
+      params: { comments }
     });
     return response.data;
   }
 
   async unpublishContentItem(contentId: number, comments?: string): Promise<any> {
     let response = await this.axios.get(`${this.localePath()}/item/${contentId}/unpublish`, {
-      params: { comments },
+      params: { comments }
     });
     return response.data;
   }
 
   async requestApproval(contentId: number, comments?: string): Promise<any> {
-    let response = await this.axios.get(`${this.localePath()}/item/${contentId}/request-approval`, {
-      params: { comments },
-    });
+    let response = await this.axios.get(
+      `${this.localePath()}/item/${contentId}/request-approval`,
+      {
+        params: { comments }
+      }
+    );
     return response.data;
   }
 
   async approveContentItem(contentId: number, comments?: string): Promise<any> {
     let response = await this.axios.get(`${this.localePath()}/item/${contentId}/approve`, {
-      params: { comments },
+      params: { comments }
     });
     return response.data;
   }
 
   async declineContentItem(contentId: number, comments?: string): Promise<any> {
     let response = await this.axios.get(`${this.localePath()}/item/${contentId}/decline`, {
-      params: { comments },
+      params: { comments }
     });
     return response.data;
   }
@@ -194,30 +200,45 @@ export class MgmtClient {
     let response = await this.axios.post(`${this.localePath()}/item/batch-workflow`, null, {
       params: {
         contentIDs: contentIds.join(','),
-        operation,
-      },
+        operation
+      }
     });
     return response.data;
   }
 
-  async getContentList(referenceName: string, params?: {
-    skip?: number;
-    take?: number;
-    sort?: string;
-    direction?: string;
-    filter?: string;
-  }): Promise<any> {
-    let response = await this.axios.get(`${this.localePath()}/list/${referenceName}`, { params });
+  async getContentList(
+    referenceName: string,
+    params?: {
+      skip?: number;
+      take?: number;
+      sort?: string;
+      direction?: string;
+      filter?: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.get(`${this.localePath()}/list/${referenceName}`, {
+      params
+    });
     return response.data;
   }
 
-  async getContentHistory(contentId: number, params?: { take?: number; skip?: number }): Promise<any> {
-    let response = await this.axios.get(`${this.localePath()}/item/${contentId}/history`, { params });
+  async getContentHistory(
+    contentId: number,
+    params?: { take?: number; skip?: number }
+  ): Promise<any> {
+    let response = await this.axios.get(`${this.localePath()}/item/${contentId}/history`, {
+      params
+    });
     return response.data;
   }
 
-  async getContentComments(contentId: number, params?: { take?: number; skip?: number }): Promise<any> {
-    let response = await this.axios.get(`${this.localePath()}/item/${contentId}/comments`, { params });
+  async getContentComments(
+    contentId: number,
+    params?: { take?: number; skip?: number }
+  ): Promise<any> {
+    let response = await this.axios.get(`${this.localePath()}/item/${contentId}/comments`, {
+      params
+    });
     return response.data;
   }
 
@@ -275,7 +296,12 @@ export class MgmtClient {
 
   // -- Assets / Media --
 
-  async listAssets(params?: { search?: string; pageSize?: number; recordOffset?: number; galleryID?: number }): Promise<any> {
+  async listAssets(params?: {
+    search?: string;
+    pageSize?: number;
+    recordOffset?: number;
+    galleryID?: number;
+  }): Promise<any> {
     let response = await this.axios.get(`${this.basePath()}/asset/list`, { params });
     return response.data;
   }
@@ -296,21 +322,23 @@ export class MgmtClient {
   }
 
   async moveAsset(mediaId: number, destinationFolder: string): Promise<any> {
-    let response = await this.axios.post(`${this.basePath()}/asset/move/${mediaId}`, { folder: destinationFolder });
+    let response = await this.axios.post(`${this.basePath()}/asset/move/${mediaId}`, {
+      folder: destinationFolder
+    });
     return response.data;
   }
 
   async createFolder(folderName: string, parentFolder?: string): Promise<any> {
     let response = await this.axios.post(`${this.basePath()}/asset/folder`, {
       name: folderName,
-      parentFolder,
+      parentFolder
     });
     return response.data;
   }
 
   async deleteFolder(folderPath: string): Promise<any> {
     let response = await this.axios.post(`${this.basePath()}/asset/folder/delete`, {
-      folder: folderPath,
+      folder: folderPath
     });
     return response.data;
   }
@@ -318,7 +346,7 @@ export class MgmtClient {
   async renameFolder(folderPath: string, newName: string): Promise<any> {
     let response = await this.axios.post(`${this.basePath()}/asset/folder/rename`, {
       folder: folderPath,
-      newName,
+      newName
     });
     return response.data;
   }
@@ -346,12 +374,16 @@ export class MgmtClient {
   // -- Content Models --
 
   async listContentModels(includeDefaults?: boolean): Promise<any> {
-    let response = await this.axios.get(`${this.basePath()}/model/list/${includeDefaults ?? false}`);
+    let response = await this.axios.get(
+      `${this.basePath()}/model/list/${includeDefaults ?? false}`
+    );
     return response.data;
   }
 
   async listPageModules(includeDefaults?: boolean): Promise<any> {
-    let response = await this.axios.get(`${this.basePath()}/model/list-page-modules/${includeDefaults ?? false}`);
+    let response = await this.axios.get(
+      `${this.basePath()}/model/list-page-modules/${includeDefaults ?? false}`
+    );
     return response.data;
   }
 

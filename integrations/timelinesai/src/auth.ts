@@ -6,22 +6,24 @@ let axios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('TimelinesAI API token from Settings > API Access'),
+      token: z.string().describe('TimelinesAI API token from Settings > API Access')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
     },
@@ -29,7 +31,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let response = await axios.get('/workspace/teammates', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
 
@@ -40,7 +42,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: owner?.user_id?.toString(),
           email: owner?.email,
-          name: owner?.display_name,
+          name: owner?.display_name
         }
       };
     }

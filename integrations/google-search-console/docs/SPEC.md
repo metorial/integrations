@@ -25,6 +25,7 @@ Applications interacting with the Google Search Console API must use OAuth 2.0 f
 **Scopes:**
 
 For the Google Search Console API, use the following scopes:
+
 - `https://www.googleapis.com/auth/webmasters` — read/write access
 - `https://www.googleapis.com/auth/webmasters.readonly` — read-only access
 

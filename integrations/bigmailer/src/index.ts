@@ -40,7 +40,5 @@ export let provider = Slate.create({
     createBulkCampaign,
     listBulkCampaigns
   ],
-  triggers: [
-    emailEvents
-  ]
+  triggers: [emailEvents]
 });

@@ -3,41 +3,44 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
 
-export let runSqlQuery = SlateTool.create(
-  spec,
-  {
-    name: 'Run SQL Query',
-    key: 'run_sql_query',
-    description: `Execute raw SQL against a database connection using Looker's SQL Runner. Provide the connection name and SQL statement to run arbitrary queries. Results are returned in JSON format.`,
-    tags: {
-      readOnly: true,
-    },
+export let runSqlQuery = SlateTool.create(spec, {
+  name: 'Run SQL Query',
+  key: 'run_sql_query',
+  description: `Execute raw SQL against a database connection using Looker's SQL Runner. Provide the connection name and SQL statement to run arbitrary queries. Results are returned in JSON format.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
       connectionName: z.string().describe('Name of the database connection to use'),
       sql: z.string().describe('The SQL query to execute'),
-      modelName: z.string().optional().describe('LookML model name for model-level permissions'),
-      resultFormat: z.enum(['json', 'csv', 'txt']).optional().describe('Output format (default "json")'),
+      modelName: z
+        .string()
+        .optional()
+        .describe('LookML model name for model-level permissions'),
+      resultFormat: z
+        .enum(['json', 'csv', 'txt'])
+        .optional()
+        .describe('Output format (default "json")')
     })
   )
   .output(
     z.object({
       slug: z.string().describe('Unique slug identifier of the created SQL query'),
-      results: z.any().describe('Query results'),
+      results: z.any().describe('Query results')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LookerClient({
       instanceUrl: ctx.config.instanceUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let sqlQuery = await client.createSqlQuery({
       connection_name: ctx.input.connectionName,
       sql: ctx.input.sql,
-      model_name: ctx.input.modelName,
+      model_name: ctx.input.modelName
     });
 
     let format = ctx.input.resultFormat || 'json';
@@ -45,6 +48,7 @@ export let runSqlQuery = SlateTool.create(
 
     return {
       output: { slug: sqlQuery.slug, results },
-      message: `SQL query executed on connection **${ctx.input.connectionName}**.`,
+      message: `SQL query executed on connection **${ctx.input.connectionName}**.`
     };
-  }).build();
+  })
+  .build();

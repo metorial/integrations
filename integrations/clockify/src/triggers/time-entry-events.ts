@@ -14,42 +14,44 @@ let timeEntryEventTypes = [
 ] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'NEW_TIME_ENTRY': 'time_entry.created',
-  'NEW_TIMER_STARTED': 'time_entry.timer_started',
-  'TIMER_STOPPED': 'time_entry.timer_stopped',
-  'TIME_ENTRY_UPDATED': 'time_entry.updated',
-  'TIME_ENTRY_DELETED': 'time_entry.deleted',
-  'TIME_ENTRY_SPLIT': 'time_entry.split',
-  'TIME_ENTRY_RESTORED': 'time_entry.restored'
+  NEW_TIME_ENTRY: 'time_entry.created',
+  NEW_TIMER_STARTED: 'time_entry.timer_started',
+  TIMER_STOPPED: 'time_entry.timer_stopped',
+  TIME_ENTRY_UPDATED: 'time_entry.updated',
+  TIME_ENTRY_DELETED: 'time_entry.deleted',
+  TIME_ENTRY_SPLIT: 'time_entry.split',
+  TIME_ENTRY_RESTORED: 'time_entry.restored'
 };
 
-export let timeEntryEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Time Entry Events',
-    key: 'time_entry_events',
-    description: 'Triggered when time entries are created, updated, deleted, split, restored, or when timers are started/stopped.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    webhookId: z.string().optional().describe('Webhook ID'),
-    timeEntry: z.any().describe('Time entry data from webhook payload')
-  }))
-  .output(z.object({
-    timeEntryId: z.string(),
-    description: z.string().optional(),
-    projectId: z.string().optional(),
-    taskId: z.string().optional(),
-    userId: z.string().optional(),
-    billable: z.boolean().optional(),
-    start: z.string().optional(),
-    end: z.string().optional(),
-    tagIds: z.array(z.string()).optional(),
-    workspaceId: z.string().optional()
-  }))
+export let timeEntryEvents = SlateTrigger.create(spec, {
+  name: 'Time Entry Events',
+  key: 'time_entry_events',
+  description:
+    'Triggered when time entries are created, updated, deleted, split, restored, or when timers are started/stopped.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      webhookId: z.string().optional().describe('Webhook ID'),
+      timeEntry: z.any().describe('Time entry data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.string(),
+      description: z.string().optional(),
+      projectId: z.string().optional(),
+      taskId: z.string().optional(),
+      userId: z.string().optional(),
+      billable: z.boolean().optional(),
+      start: z.string().optional(),
+      end: z.string().optional(),
+      tagIds: z.array(z.string()).optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -71,7 +73,7 @@ export let timeEntryEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -88,22 +90,25 @@ export let timeEntryEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          webhookId: data.webhookId || undefined,
-          timeEntry: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            webhookId: data.webhookId || undefined,
+            timeEntry: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let entry = ctx.input.timeEntry;
       let timeEntryId = entry.id || entry.timeEntryId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `time_entry.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `time_entry.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

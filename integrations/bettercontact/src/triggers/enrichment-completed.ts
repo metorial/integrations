@@ -14,7 +14,10 @@ let enrichedContactSchema = z.object({
   contactPhoneNumber: z.string().nullable().describe('Enriched mobile phone number'),
   contactGender: z.string().nullable().describe('Detected gender of the contact'),
   contactJobTitle: z.string().nullable().describe('Job title of the contact'),
-  customFields: z.record(z.string(), z.string()).nullable().describe('Custom fields passed during enrichment submission'),
+  customFields: z
+    .record(z.string(), z.string())
+    .nullable()
+    .describe('Custom fields passed during enrichment submission')
 });
 
 let summarySchema = z.object({
@@ -24,39 +27,41 @@ let summarySchema = z.object({
   catchAllSafe: z.number().describe('Number of safe catch-all email results'),
   catchAllNotSafe: z.number().describe('Number of unsafe catch-all email results'),
   undeliverable: z.number().describe('Number of undeliverable results'),
-  notFound: z.number().describe('Number of contacts where no data was found'),
+  notFound: z.number().describe('Number of contacts where no data was found')
 });
 
-export let enrichmentCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Enrichment Completed',
-    key: 'enrichment_completed',
-    description: 'Triggers when a contact enrichment request finishes processing and results are pushed to the webhook URL. Configure the webhook URL when submitting enrichment requests via the Enrich Contacts tool.',
-    instructions: [
-      'Use the provided webhook URL as the webhookUrl parameter when calling the Enrich Contacts tool.',
-    ],
-  }
-)
-  .input(z.object({
-    requestId: z.string().describe('The enrichment request ID'),
-    status: z.string().describe('Processing status'),
-    creditsConsumed: z.number().describe('Credits consumed by this request'),
-    creditsLeft: z.number().describe('Remaining credit balance'),
-    summary: summarySchema.describe('Aggregate statistics of enrichment results'),
-    contacts: z.array(enrichedContactSchema).describe('Array of enriched contact records'),
-  }))
-  .output(z.object({
-    requestId: z.string().describe('The enrichment request ID'),
-    status: z.string().describe('Processing status'),
-    creditsConsumed: z.number().describe('Credits consumed by this request'),
-    creditsLeft: z.number().describe('Remaining credit balance'),
-    summary: summarySchema.describe('Aggregate statistics of enrichment results'),
-    contacts: z.array(enrichedContactSchema).describe('Array of enriched contact records'),
-  }))
+export let enrichmentCompleted = SlateTrigger.create(spec, {
+  name: 'Enrichment Completed',
+  key: 'enrichment_completed',
+  description:
+    'Triggers when a contact enrichment request finishes processing and results are pushed to the webhook URL. Configure the webhook URL when submitting enrichment requests via the Enrich Contacts tool.',
+  instructions: [
+    'Use the provided webhook URL as the webhookUrl parameter when calling the Enrich Contacts tool.'
+  ]
+})
+  .input(
+    z.object({
+      requestId: z.string().describe('The enrichment request ID'),
+      status: z.string().describe('Processing status'),
+      creditsConsumed: z.number().describe('Credits consumed by this request'),
+      creditsLeft: z.number().describe('Remaining credit balance'),
+      summary: summarySchema.describe('Aggregate statistics of enrichment results'),
+      contacts: z.array(enrichedContactSchema).describe('Array of enriched contact records')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().describe('The enrichment request ID'),
+      status: z.string().describe('Processing status'),
+      creditsConsumed: z.number().describe('Credits consumed by this request'),
+      creditsLeft: z.number().describe('Remaining credit balance'),
+      summary: summarySchema.describe('Aggregate statistics of enrichment results'),
+      contacts: z.array(enrichedContactSchema).describe('Array of enriched contact records')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
       let contacts = ((data.data ?? []) as Record<string, unknown>[]).map(mapEnrichedContact);
 
@@ -74,15 +79,15 @@ export let enrichmentCompleted = SlateTrigger.create(
               catchAllSafe: data.summary?.catch_all_safe ?? 0,
               catchAllNotSafe: data.summary?.catch_all_not_safe ?? 0,
               undeliverable: data.summary?.undeliverable ?? 0,
-              notFound: data.summary?.not_found ?? 0,
+              notFound: data.summary?.not_found ?? 0
             },
-            contacts,
-          },
-        ],
+            contacts
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'enrichment.completed',
         id: ctx.input.requestId,
@@ -92,9 +97,9 @@ export let enrichmentCompleted = SlateTrigger.create(
           creditsConsumed: ctx.input.creditsConsumed,
           creditsLeft: ctx.input.creditsLeft,
           summary: ctx.input.summary,
-          contacts: ctx.input.contacts,
-        },
+          contacts: ctx.input.contacts
+        }
       };
-    },
+    }
   })
   .build();

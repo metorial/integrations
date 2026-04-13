@@ -3,34 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let conversionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conversion Events',
-    key: 'conversion_events',
-    description: 'Triggers when a lead or sale conversion event is tracked. Fires for lead.created and sale.created events.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of conversion event (lead.created or sale.created)'),
-    eventId: z.string().describe('Unique event ID'),
-    conversionData: z.any().describe('Conversion data from the webhook payload'),
-    timestamp: z.string().describe('Event timestamp')
-  }))
-  .output(z.object({
-    eventName: z.string().describe('Name of the conversion event'),
-    linkId: z.string().describe('ID of the attributed link'),
-    shortLink: z.string().describe('Short link that drove the conversion'),
-    clickId: z.string().describe('ID of the attributed click'),
-    customerName: z.string().nullable().describe('Customer name'),
-    customerEmail: z.string().nullable().describe('Customer email'),
-    customerExternalId: z.string().nullable().describe('External customer ID'),
-    saleAmount: z.number().nullable().describe('Sale amount in cents (for sale events)'),
-    saleCurrency: z.string().nullable().describe('Currency code (for sale events)'),
-    timestamp: z.string().describe('Event timestamp')
-  }))
+export let conversionEvents = SlateTrigger.create(spec, {
+  name: 'Conversion Events',
+  key: 'conversion_events',
+  description:
+    'Triggers when a lead or sale conversion event is tracked. Fires for lead.created and sale.created events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Type of conversion event (lead.created or sale.created)'),
+      eventId: z.string().describe('Unique event ID'),
+      conversionData: z.any().describe('Conversion data from the webhook payload'),
+      timestamp: z.string().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      eventName: z.string().describe('Name of the conversion event'),
+      linkId: z.string().describe('ID of the attributed link'),
+      shortLink: z.string().describe('Short link that drove the conversion'),
+      clickId: z.string().describe('ID of the attributed click'),
+      customerName: z.string().nullable().describe('Customer name'),
+      customerEmail: z.string().nullable().describe('Customer email'),
+      customerExternalId: z.string().nullable().describe('External customer ID'),
+      saleAmount: z.number().nullable().describe('Sale amount in cents (for sale events)'),
+      saleCurrency: z.string().nullable().describe('Currency code (for sale events)'),
+      timestamp: z.string().describe('Event timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let webhook = await client.createWebhook({
@@ -47,14 +51,14 @@ export let conversionEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as {
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as {
         id: string;
         event: string;
         createdAt: string;
@@ -62,16 +66,18 @@ export let conversionEvents = SlateTrigger.create(
       };
 
       return {
-        inputs: [{
-          eventType: body.event,
-          eventId: body.id,
-          conversionData: body.data,
-          timestamp: body.createdAt
-        }]
+        inputs: [
+          {
+            eventType: body.event,
+            eventId: body.id,
+            conversionData: body.data,
+            timestamp: body.createdAt
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.conversionData;
       let link = data.link ?? {};
       let click = data.click ?? {};

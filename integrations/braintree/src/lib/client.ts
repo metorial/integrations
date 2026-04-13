@@ -3,12 +3,12 @@ import type { AxiosInstance } from 'axios';
 
 let GRAPHQL_URLS: Record<string, string> = {
   sandbox: 'https://payments.sandbox.braintree-api.com/graphql',
-  production: 'https://payments.braintree-api.com/graphql',
+  production: 'https://payments.braintree-api.com/graphql'
 };
 
 let REST_URLS: Record<string, string> = {
   sandbox: 'https://api.sandbox.braintreegateway.com:443',
-  production: 'https://api.braintreegateway.com:443',
+  production: 'https://api.braintreegateway.com:443'
 };
 
 let BRAINTREE_VERSION = '2024-09-01';
@@ -16,19 +16,21 @@ let BRAINTREE_VERSION = '2024-09-01';
 export class BraintreeGraphQLClient {
   private http: AxiosInstance;
 
-  constructor(private params: {
-    token: string;
-    environment: string;
-  }) {
+  constructor(
+    private params: {
+      token: string;
+      environment: string;
+    }
+  ) {
     let baseURL = GRAPHQL_URLS[params.environment] || GRAPHQL_URLS.production;
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Basic ${params.token}`,
+        Authorization: `Basic ${params.token}`,
         'Braintree-Version': BRAINTREE_VERSION,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      timeout: 60000,
+      timeout: 60000
     });
   }
 
@@ -51,48 +53,50 @@ export class BraintreeRestClient {
   private http: AxiosInstance;
   private merchantPath: string;
 
-  constructor(private params: {
-    token: string;
-    merchantId: string;
-    environment: string;
-  }) {
+  constructor(
+    private params: {
+      token: string;
+      merchantId: string;
+      environment: string;
+    }
+  ) {
     let baseURL = REST_URLS[params.environment] || REST_URLS.production;
     this.merchantPath = `/merchants/${params.merchantId}`;
     this.http = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Basic ${params.token}`,
+        Authorization: `Basic ${params.token}`,
         'Content-Type': 'application/xml',
-        'Accept': 'application/xml',
+        Accept: 'application/xml'
       },
-      timeout: 60000,
+      timeout: 60000
     });
   }
 
   async get(path: string): Promise<string> {
     let response = await this.http.get(`${this.merchantPath}${path}`, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
 
   async post(path: string, body: string): Promise<string> {
     let response = await this.http.post(`${this.merchantPath}${path}`, body, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
 
   async put(path: string, body: string): Promise<string> {
     let response = await this.http.put(`${this.merchantPath}${path}`, body, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }
 
   async delete(path: string): Promise<string> {
     let response = await this.http.delete(`${this.merchantPath}${path}`, {
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data;
   }

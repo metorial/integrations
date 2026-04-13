@@ -44,16 +44,19 @@ Ably Pub/Sub enables you to implement the publish-subscribe pattern. Any number 
 ### Presence
 
 The presence feature enables clients to be aware of other clients that are currently "present" on a channel. Subscribers receive updates when a client joins, leaves, or updates an optional payload associated with each member. The payload can be used to describe their status.
+
 - Presence is commonly used as an online indicator to create an avatar stack or to notify occupants of a chat room.
 
 ### Message History
 
 Messages and presence events are persisted and can be retrieved historically. This enables clients to retrieve messages they may have missed while disconnected.
+
 - Messages are stored in memory for 2 minutes, enabling SDKs to automatically retrieve them in the event of network connectivity issues.
 
 ### Channel Metadata and Status
 
 You can query the status and occupancy of channels, enumerate active channels, and subscribe to metadata changes about channels (lifecycle and occupancy).
+
 - The channel-metadata capability allows querying channel status. When associated with the wildcard resource `*`, it also allows enumerating all active channels.
 
 ### Statistics
@@ -71,12 +74,14 @@ Set up queue rules to republish messages, presence events, or channel events fro
 ### Firehose (Outbound Streaming)
 
 Ably's Firehose can stream realtime data published within the Ably platform directly to another streaming or queueing service, for example to Amazon Kinesis.
+
 - Supported targets include Kafka, Amazon Kinesis, Amazon SQS, AMQP, and Apache Pulsar.
 - Using configurable rules, you can stream messages, presence events, occupancy, and channel lifecycle events.
 
 ### Account and App Management (Control API)
 
 Using the Control API you can automate the provisioning, management, and testing of your Ably realtime infrastructure. You can dynamically create Ably apps, configure them, and delete them if necessary.
+
 - Repetitive operations such as creating, updating or deleting Ably apps, enumerating queues, creation of rules, and other tasks can be automated.
 - Manage API keys, namespaces, integration rules, and queues programmatically.
 
@@ -93,15 +98,19 @@ Ably supports outbound webhooks that notify external systems when events occur w
 The following event sources can trigger webhook notifications:
 
 **Channel Messages (`channel.message`):**
+
 - If the source `channel.message` is selected, you receive notifications when messages are published on a channel.
 
 **Channel Presence (`channel.presence`):**
+
 - If the source `channel.presence` is selected, you receive notifications of presence events when clients enter, update their data, or leave channels.
 
 **Channel Lifecycle (`channel.lifecycle`):**
+
 - Get notified when a channel is created (following the first client attaching to this channel) or discarded (when there are no more clients attached to the channel).
 
 **Channel Occupancy (`channel.occupancy`):**
+
 - Receive events when channel occupancy changes (number of connections, subscribers, publishers, or presence members).
 
 ### Configuration Options

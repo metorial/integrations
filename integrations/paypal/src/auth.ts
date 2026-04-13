@@ -2,17 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let getBaseUrl = (environment?: string) =>
-  environment === 'sandbox'
-    ? 'https://api-m.sandbox.paypal.com'
-    : 'https://api-m.paypal.com';
+  environment === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    clientId: z.string(),
-    clientSecret: z.string(),
-    environment: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      clientId: z.string(),
+      clientSecret: z.string(),
+      environment: z.string().optional()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Client Credentials',
@@ -21,10 +21,13 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       clientId: z.string().describe('PayPal REST API Client ID'),
       clientSecret: z.string().describe('PayPal REST API Client Secret'),
-      environment: z.enum(['sandbox', 'production']).default('production').describe('PayPal environment'),
+      environment: z
+        .enum(['sandbox', 'production'])
+        .default('production')
+        .describe('PayPal environment')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let baseUrl = getBaseUrl(ctx.input.environment);
       let client = createAxios({ baseURL: baseUrl });
 
@@ -32,33 +35,40 @@ export let auth = SlateAuth.create()
 
       let response = await client.post('/v1/oauth2/token', 'grant_type=client_credentials', {
         headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          Authorization: `Basic ${credentials}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
-      let data = response.data as { access_token: string; token_type: string; expires_in: number };
+      let data = response.data as {
+        access_token: string;
+        token_type: string;
+        expires_in: number;
+      };
 
       return {
         output: {
           token: data.access_token,
           clientId: ctx.input.clientId,
           clientSecret: ctx.input.clientSecret,
-          environment: ctx.input.environment,
-        },
+          environment: ctx.input.environment
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; clientId: string; clientSecret: string; environment?: string }; input: { clientId: string; clientSecret: string; environment: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; clientId: string; clientSecret: string; environment?: string };
+      input: { clientId: string; clientSecret: string; environment: string };
+    }) => {
       let baseUrl = getBaseUrl(ctx.output.environment);
       let client = createAxios({ baseURL: baseUrl });
 
       try {
         let response = await client.get('/v1/identity/oauth2/userinfo?schema=paypalv1.1', {
           headers: {
-            'Authorization': `Bearer ${ctx.output.token}`,
-            'Content-Type': 'application/json',
-          },
+            Authorization: `Bearer ${ctx.output.token}`,
+            'Content-Type': 'application/json'
+          }
         });
 
         let data = response.data as {
@@ -74,16 +84,16 @@ export let auth = SlateAuth.create()
           profile: {
             id: data.payer_id || data.user_id,
             name: data.name,
-            email: primaryEmail,
-          },
+            email: primaryEmail
+          }
         };
       } catch {
         return {
           profile: {
             id: ctx.output.clientId,
-            name: 'PayPal Merchant',
-          },
+            name: 'PayPal Merchant'
+          }
         };
       }
-    },
+    }
   });

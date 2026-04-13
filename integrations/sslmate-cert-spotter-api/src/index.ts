@@ -5,7 +5,7 @@ import {
   listMonitoredDomains,
   manageMonitoredDomain,
   authorizeCertificate,
-  authorizePublicKey,
+  authorizePublicKey
 } from './tools';
 import { certificateEvents } from './triggers';
 
@@ -16,9 +16,7 @@ export let provider = Slate.create({
     listMonitoredDomains,
     manageMonitoredDomain,
     authorizeCertificate,
-    authorizePublicKey,
+    authorizePublicKey
   ],
-  triggers: [
-    certificateEvents,
-  ],
+  triggers: [certificateEvents]
 });

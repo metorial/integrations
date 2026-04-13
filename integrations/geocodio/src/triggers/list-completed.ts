@@ -3,38 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'List Processing Completed',
-    key: 'list_completed',
-    description: 'Triggers when a geocoding list job finishes processing. Polls for newly completed lists.',
-  }
-)
-  .input(z.object({
-    listId: z.number().describe('ID of the completed list'),
-    filename: z.string().optional().describe('Filename of the list'),
-    status: z.string().describe('Final status of the list'),
-    rows: z.number().optional().describe('Total rows in the list'),
-    geocodedRows: z.number().optional().describe('Number of rows geocoded'),
-    fields: z.array(z.string()).optional().describe('Fields that were appended'),
-    expiresAt: z.string().optional().describe('When the results will expire'),
-  }))
-  .output(z.object({
-    listId: z.number().describe('ID of the completed list'),
-    filename: z.string().optional().describe('Filename of the list'),
-    status: z.string().describe('Final status of the list'),
-    rows: z.number().optional().describe('Total rows'),
-    geocodedRows: z.number().optional().describe('Number of rows geocoded'),
-    fields: z.array(z.string()).optional().describe('Enrichment fields appended'),
-    expiresAt: z.string().optional().describe('When results expire'),
-  }))
+export let listCompleted = SlateTrigger.create(spec, {
+  name: 'List Processing Completed',
+  key: 'list_completed',
+  description:
+    'Triggers when a geocoding list job finishes processing. Polls for newly completed lists.'
+})
+  .input(
+    z.object({
+      listId: z.number().describe('ID of the completed list'),
+      filename: z.string().optional().describe('Filename of the list'),
+      status: z.string().describe('Final status of the list'),
+      rows: z.number().optional().describe('Total rows in the list'),
+      geocodedRows: z.number().optional().describe('Number of rows geocoded'),
+      fields: z.array(z.string()).optional().describe('Fields that were appended'),
+      expiresAt: z.string().optional().describe('When the results will expire')
+    })
+  )
+  .output(
+    z.object({
+      listId: z.number().describe('ID of the completed list'),
+      filename: z.string().optional().describe('Filename of the list'),
+      status: z.string().describe('Final status of the list'),
+      rows: z.number().optional().describe('Total rows'),
+      geocodedRows: z.number().optional().describe('Number of rows geocoded'),
+      fields: z.array(z.string()).optional().describe('Enrichment fields appended'),
+      expiresAt: z.string().optional().describe('When results expire')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let completedIds: Set<number> = new Set(ctx.state?.completedListIds || []);
@@ -42,8 +44,10 @@ export let listCompleted = SlateTrigger.create(
       let response = await client.getLists();
       let allLists = response.data || response.lists || [];
 
-      let newlyCompleted = allLists.filter((list: any) =>
-        (list.status === 'completed' || list.status === 'failed') && !completedIds.has(list.id)
+      let newlyCompleted = allLists.filter(
+        (list: any) =>
+          (list.status === 'completed' || list.status === 'failed') &&
+          !completedIds.has(list.id)
       );
 
       let inputs = newlyCompleted.map((list: any) => ({
@@ -53,7 +57,7 @@ export let listCompleted = SlateTrigger.create(
         rows: list.file?.estimated_rows_count,
         geocodedRows: list.file?.geocoded_rows_count,
         fields: list.fields,
-        expiresAt: list.expires_at,
+        expiresAt: list.expires_at
       }));
 
       let updatedCompletedIds = [...completedIds];
@@ -69,12 +73,12 @@ export let listCompleted = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          completedListIds: updatedCompletedIds,
-        },
+          completedListIds: updatedCompletedIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `list.${ctx.input.status}`,
         id: `list-${ctx.input.listId}`,
@@ -85,9 +89,9 @@ export let listCompleted = SlateTrigger.create(
           rows: ctx.input.rows,
           geocodedRows: ctx.input.geocodedRows,
           fields: ctx.input.fields,
-          expiresAt: ctx.input.expiresAt,
-        },
+          expiresAt: ctx.input.expiresAt
+        }
       };
-    },
+    }
   })
   .build();

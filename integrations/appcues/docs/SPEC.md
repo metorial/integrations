@@ -13,10 +13,12 @@ API keys and secrets can be created by Account Admins at `https://studio.appcues
 Most API URLs require an Appcues Account ID as part of the URL path. You can find your account ID on your Studio account page at `https://studio.appcues.com/account`.
 
 The API is available in two regions:
+
 - **US Region**: `https://api.appcues.com` — for accounts hosted in the United States.
 - **EU Region**: `https://api.eu.appcues.com` — for accounts hosted in the European Union.
 
 **Required credentials:**
+
 - API Key
 - API Secret
 - Account ID

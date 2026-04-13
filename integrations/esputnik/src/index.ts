@@ -42,7 +42,5 @@ export let provider = Slate.create({
     getAccountInfo,
     manageUnsubscribes
   ],
-  triggers: [
-    messageActivity
-  ]
+  triggers: [messageActivity]
 });

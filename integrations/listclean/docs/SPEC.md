@@ -25,6 +25,7 @@ The API key must be passed in the `X-Auth-Token` HTTP header with every request.
 You get multiple API keys per account, which allows you to use Listclean for multiple sites. Separate keys can be created for apps, environments, and teammates for easier control and tracking.
 
 Example request:
+
 ```
 GET https://api.listclean.xyz/v1/account/profile/
 X-Auth-Token: your-api-key-here

@@ -17,7 +17,7 @@ let orderSummarySchema = z.object({
   paymentMethodTitle: z.string(),
   lineItemCount: z.number(),
   dateCreated: z.string(),
-  dateModified: z.string(),
+  dateModified: z.string()
 });
 
 export let listOrders = SlateTool.create(spec, {
@@ -26,32 +26,49 @@ export let listOrders = SlateTool.create(spec, {
   description: `Search and list orders from the store. Filter by status, customer, product, date range, and more. Supports pagination.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    page: z.number().optional().default(1).describe('Page number'),
-    perPage: z.number().optional().default(10).describe('Results per page, max 100'),
-    search: z.string().optional().describe('Search orders'),
-    status: z.enum(['any', 'pending', 'processing', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed', 'trash']).optional().describe('Filter by order status'),
-    customerId: z.number().optional().describe('Filter by customer ID'),
-    product: z.number().optional().describe('Filter by product ID'),
-    after: z.string().optional().describe('Show orders after this date (ISO 8601)'),
-    before: z.string().optional().describe('Show orders before this date (ISO 8601)'),
-    orderby: z.enum(['date', 'id', 'title', 'slug']).optional().describe('Sort by field'),
-    order: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-  }))
-  .output(z.object({
-    orders: z.array(orderSummarySchema),
-    page: z.number(),
-    perPage: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      page: z.number().optional().default(1).describe('Page number'),
+      perPage: z.number().optional().default(10).describe('Results per page, max 100'),
+      search: z.string().optional().describe('Search orders'),
+      status: z
+        .enum([
+          'any',
+          'pending',
+          'processing',
+          'on-hold',
+          'completed',
+          'cancelled',
+          'refunded',
+          'failed',
+          'trash'
+        ])
+        .optional()
+        .describe('Filter by order status'),
+      customerId: z.number().optional().describe('Filter by customer ID'),
+      product: z.number().optional().describe('Filter by product ID'),
+      after: z.string().optional().describe('Show orders after this date (ISO 8601)'),
+      before: z.string().optional().describe('Show orders before this date (ISO 8601)'),
+      orderby: z.enum(['date', 'id', 'title', 'slug']).optional().describe('Sort by field'),
+      order: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z.object({
+      orders: z.array(orderSummarySchema),
+      page: z.number(),
+      perPage: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let params: Record<string, any> = {
       page: ctx.input.page,
-      per_page: ctx.input.perPage,
+      per_page: ctx.input.perPage
     };
 
     if (ctx.input.search) params.search = ctx.input.search;
@@ -79,16 +96,16 @@ export let listOrders = SlateTool.create(spec, {
       paymentMethodTitle: o.payment_method_title || '',
       lineItemCount: (o.line_items || []).length,
       dateCreated: o.date_created || '',
-      dateModified: o.date_modified || '',
+      dateModified: o.date_modified || ''
     }));
 
     return {
       output: {
         orders: mapped,
         page: ctx.input.page || 1,
-        perPage: ctx.input.perPage || 10,
+        perPage: ctx.input.perPage || 10
       },
-      message: `Found **${mapped.length}** orders (page ${ctx.input.page || 1}).`,
+      message: `Found **${mapped.length}** orders (page ${ctx.input.page || 1}).`
     };
   })
   .build();

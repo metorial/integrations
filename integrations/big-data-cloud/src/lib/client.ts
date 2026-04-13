@@ -13,14 +13,14 @@ export class Client {
 
   private createAxiosInstance() {
     return createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
   private defaultParams() {
     return {
       key: this.token,
-      localityLanguage: this.localityLanguage,
+      localityLanguage: this.localityLanguage
     };
   }
 
@@ -29,8 +29,8 @@ export class Client {
     let response = await axios.get('/data/ip-geolocation-full', {
       params: {
         ...this.defaultParams(),
-        ...(params.ip ? { ip: params.ip } : {}),
-      },
+        ...(params.ip ? { ip: params.ip } : {})
+      }
     });
     return response.data;
   }
@@ -41,8 +41,8 @@ export class Client {
       params: {
         ...this.defaultParams(),
         latitude: params.latitude,
-        longitude: params.longitude,
-      },
+        longitude: params.longitude
+      }
     });
     return response.data;
   }
@@ -52,8 +52,8 @@ export class Client {
     let response = await axios.get('/data/ip-geolocation-full', {
       params: {
         ...this.defaultParams(),
-        ...(params.ip ? { ip: params.ip } : {}),
-      },
+        ...(params.ip ? { ip: params.ip } : {})
+      }
     });
     return response.data;
   }
@@ -64,8 +64,8 @@ export class Client {
       params: {
         ...this.defaultParams(),
         number: params.number,
-        ...(params.countryCode ? { countryCode: params.countryCode } : {}),
-      },
+        ...(params.countryCode ? { countryCode: params.countryCode } : {})
+      }
     });
     return response.data;
   }
@@ -75,8 +75,8 @@ export class Client {
     let response = await axios.get('/data/email-verify', {
       params: {
         key: this.token,
-        emailAddress: params.emailAddress,
-      },
+        emailAddress: params.emailAddress
+      }
     });
     return response.data;
   }
@@ -87,8 +87,8 @@ export class Client {
       params: {
         ...this.defaultParams(),
         asn: params.asn,
-        ...(params.limit !== undefined ? { limit: params.limit } : {}),
-      },
+        ...(params.limit !== undefined ? { limit: params.limit } : {})
+      }
     });
     return response.data;
   }
@@ -98,8 +98,8 @@ export class Client {
     let response = await axios.get('/data/network-by-ip', {
       params: {
         ...this.defaultParams(),
-        ...(params.ip ? { ip: params.ip } : {}),
-      },
+        ...(params.ip ? { ip: params.ip } : {})
+      }
     });
     return response.data;
   }

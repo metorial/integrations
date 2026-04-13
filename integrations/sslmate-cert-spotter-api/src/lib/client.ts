@@ -67,14 +67,14 @@ export class CertSpotterClient {
     this.ctSearchApi = createAxios({
       baseURL: 'https://api.certspotter.com/v1',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
     this.monitoringApi = createAxios({
       baseURL: 'https://sslmate.com/api/v3/monitoring',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -82,7 +82,7 @@ export class CertSpotterClient {
 
   async searchIssuances(query: IssuanceQuery): Promise<Issuance[]> {
     let params: Record<string, string> = {
-      domain: query.domain,
+      domain: query.domain
     };
 
     if (query.includeSubdomains) {
@@ -105,7 +105,7 @@ export class CertSpotterClient {
       .join('&');
 
     let response = await this.ctSearchApi.get<Issuance[]>(
-      `/issuances?${queryString}${expandParams}`,
+      `/issuances?${queryString}${expandParams}`
     );
     return response.data;
   }
@@ -113,62 +113,53 @@ export class CertSpotterClient {
   // --- Monitored Domains API ---
 
   async listMonitoredDomains(): Promise<MonitoredDomain[]> {
-    let response = await this.monitoringApi.get<MonitoredDomain[]>(
-      '/monitored_domains',
-    );
+    let response = await this.monitoringApi.get<MonitoredDomain[]>('/monitored_domains');
     return response.data;
   }
 
   async getMonitoredDomain(name: string): Promise<MonitoredDomain> {
     let response = await this.monitoringApi.get<MonitoredDomain>(
-      `/monitored_domains/${encodeURIComponent(name)}`,
+      `/monitored_domains/${encodeURIComponent(name)}`
     );
     return response.data;
   }
 
-  async upsertMonitoredDomain(name: string, settings: { enabled?: boolean }): Promise<MonitoredDomain> {
+  async upsertMonitoredDomain(
+    name: string,
+    settings: { enabled?: boolean }
+  ): Promise<MonitoredDomain> {
     let response = await this.monitoringApi.post<MonitoredDomain>(
       `/monitored_domains/${encodeURIComponent(name)}`,
       settings,
       {
         headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+          'Content-Type': 'application/json'
+        }
+      }
     );
     return response.data;
   }
 
   async deleteMonitoredDomain(name: string): Promise<void> {
-    await this.monitoringApi.delete(
-      `/monitored_domains/${encodeURIComponent(name)}`,
-    );
+    await this.monitoringApi.delete(`/monitored_domains/${encodeURIComponent(name)}`);
   }
 
   // --- Authorization API ---
 
   async authorizeCertificate(pemCertificate: string): Promise<void> {
-    await this.monitoringApi.post(
-      '/known_certs',
-      pemCertificate,
-      {
-        headers: {
-          'Content-Type': 'application/x-pem-file',
-        },
-      },
-    );
+    await this.monitoringApi.post('/known_certs', pemCertificate, {
+      headers: {
+        'Content-Type': 'application/x-pem-file'
+      }
+    });
   }
 
   async authorizePublicKeyByCSR(pemCSR: string): Promise<void> {
-    await this.monitoringApi.post(
-      '/known_keys',
-      pemCSR,
-      {
-        headers: {
-          'Content-Type': 'application/x-pem-file',
-        },
-      },
-    );
+    await this.monitoringApi.post('/known_keys', pemCSR, {
+      headers: {
+        'Content-Type': 'application/x-pem-file'
+      }
+    });
   }
 
   async authorizePublicKeyByHash(pubkeySha256: string, dnsNames: string[]): Promise<void> {
@@ -176,13 +167,13 @@ export class CertSpotterClient {
       '/known_keys',
       {
         pubkey_sha256: pubkeySha256,
-        dns_names: dnsNames,
+        dns_names: dnsNames
       },
       {
         headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+          'Content-Type': 'application/json'
+        }
+      }
     );
   }
 }

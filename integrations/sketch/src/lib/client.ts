@@ -154,10 +154,13 @@ export type SketchDocumentJson = {
 
 export type SketchMetaJson = {
   commit: string;
-  pagesAndArtboards: Record<string, {
-    name: string;
-    artboards: Record<string, { name: string }>;
-  }>;
+  pagesAndArtboards: Record<
+    string,
+    {
+      name: string;
+      artboards: Record<string, { name: string }>;
+    }
+  >;
   version: number;
   compatibilityVersion?: number;
   app: string;
@@ -185,10 +188,18 @@ export type SketchUserJson = {
 };
 
 export let colorToHex = (color: SketchColor): string => {
-  let r = Math.round(color.red * 255).toString(16).padStart(2, '0');
-  let g = Math.round(color.green * 255).toString(16).padStart(2, '0');
-  let b = Math.round(color.blue * 255).toString(16).padStart(2, '0');
-  let a = Math.round(color.alpha * 255).toString(16).padStart(2, '0');
+  let r = Math.round(color.red * 255)
+    .toString(16)
+    .padStart(2, '0');
+  let g = Math.round(color.green * 255)
+    .toString(16)
+    .padStart(2, '0');
+  let b = Math.round(color.blue * 255)
+    .toString(16)
+    .padStart(2, '0');
+  let a = Math.round(color.alpha * 255)
+    .toString(16)
+    .padStart(2, '0');
   if (a === 'ff') {
     return `#${r}${g}${b}`.toUpperCase();
   }
@@ -236,7 +247,10 @@ export let flattenLayers = (layers: SketchLayer[]): SketchLayer[] => {
   return result;
 };
 
-export let findLayerById = (layers: SketchLayer[], objectId: string): SketchLayer | undefined => {
+export let findLayerById = (
+  layers: SketchLayer[],
+  objectId: string
+): SketchLayer | undefined => {
   for (let layer of layers) {
     if (layer.do_objectID === objectId) {
       return layer;
@@ -262,7 +276,10 @@ export let findLayersByName = (layers: SketchLayer[], name: string): SketchLayer
   return results;
 };
 
-export let findLayersByClass = (layers: SketchLayer[], layerClass: SketchLayerClass): SketchLayer[] => {
+export let findLayersByClass = (
+  layers: SketchLayer[],
+  layerClass: SketchLayerClass
+): SketchLayer[] => {
   let results: SketchLayer[] = [];
   for (let layer of layers) {
     if (layer._class === layerClass) {
@@ -281,7 +298,7 @@ export let summarizeLayer = (layer: SketchLayer): Record<string, unknown> => {
     objectId: layer.do_objectID,
     name: layer.name,
     isVisible: layer.isVisible,
-    isLocked: layer.isLocked,
+    isLocked: layer.isLocked
   };
 
   if (layer.frame) {
@@ -289,7 +306,7 @@ export let summarizeLayer = (layer: SketchLayer): Record<string, unknown> => {
       x: layer.frame.x,
       y: layer.frame.y,
       width: layer.frame.width,
-      height: layer.frame.height,
+      height: layer.frame.height
     };
   }
 
@@ -315,21 +332,28 @@ export let summarizeLayer = (layer: SketchLayer): Record<string, unknown> => {
 export let generateObjectId = (): string => {
   let chars = 'ABCDEF0123456789';
   let segments = [8, 4, 4, 4, 12];
-  return segments.map(len => {
-    let seg = '';
-    for (let i = 0; i < len; i++) {
-      seg += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return seg;
-  }).join('-');
+  return segments
+    .map(len => {
+      let seg = '';
+      for (let i = 0; i < len; i++) {
+        seg += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return seg;
+    })
+    .join('-');
 };
 
-export let createColor = (red: number, green: number, blue: number, alpha: number = 1): SketchColor => ({
+export let createColor = (
+  red: number,
+  green: number,
+  blue: number,
+  alpha: number = 1
+): SketchColor => ({
   _class: 'color',
   red: Math.max(0, Math.min(1, red)),
   green: Math.max(0, Math.min(1, green)),
   blue: Math.max(0, Math.min(1, blue)),
-  alpha: Math.max(0, Math.min(1, alpha)),
+  alpha: Math.max(0, Math.min(1, alpha))
 });
 
 export let hexToColor = (hex: string): SketchColor => {
@@ -347,7 +371,7 @@ export let createRect = (x: number, y: number, width: number, height: number): S
   y,
   width,
   height,
-  constrainProportions: false,
+  constrainProportions: false
 });
 
 export let createStyle = (options?: {
@@ -358,33 +382,37 @@ export let createStyle = (options?: {
 }): SketchStyle => {
   let style: SketchStyle = {
     _class: 'style',
-    do_objectID: generateObjectId(),
+    do_objectID: generateObjectId()
   };
 
   if (options?.fillColor) {
-    style.fills = [{
-      _class: 'fill',
-      isEnabled: true,
-      fillType: 0,
-      color: options.fillColor,
-    }];
+    style.fills = [
+      {
+        _class: 'fill',
+        isEnabled: true,
+        fillType: 0,
+        color: options.fillColor
+      }
+    ];
   }
 
   if (options?.borderColor) {
-    style.borders = [{
-      _class: 'border',
-      isEnabled: true,
-      color: options.borderColor,
-      thickness: options?.borderThickness ?? 1,
-      position: 1,
-    }];
+    style.borders = [
+      {
+        _class: 'border',
+        isEnabled: true,
+        color: options.borderColor,
+        thickness: options?.borderThickness ?? 1,
+        position: 1
+      }
+    ];
   }
 
   if (options?.opacity !== undefined) {
     style.contextSettings = {
       _class: 'graphicsContextSettings',
       opacity: options.opacity,
-      blendMode: 0,
+      blendMode: 0
     };
   }
 
@@ -417,7 +445,7 @@ export let createLayer = (options: {
     options.height ?? 100
   ),
   style: options.style ?? createStyle(),
-  layers: options.layers,
+  layers: options.layers
 });
 
 export let createArtboard = (options: {
@@ -427,20 +455,18 @@ export let createArtboard = (options: {
   width?: number;
   height?: number;
   layers?: SketchLayer[];
-}): SketchLayer => createLayer({
-  layerClass: 'artboard',
-  name: options.name,
-  x: options.x ?? 0,
-  y: options.y ?? 0,
-  width: options.width ?? 375,
-  height: options.height ?? 812,
-  layers: options.layers ?? [],
-});
+}): SketchLayer =>
+  createLayer({
+    layerClass: 'artboard',
+    name: options.name,
+    x: options.x ?? 0,
+    y: options.y ?? 0,
+    width: options.width ?? 375,
+    height: options.height ?? 812,
+    layers: options.layers ?? []
+  });
 
-export let createPage = (options: {
-  name: string;
-  layers?: SketchLayer[];
-}): SketchPage => ({
+export let createPage = (options: { name: string; layers?: SketchLayer[] }): SketchPage => ({
   ...createLayer({
     layerClass: 'page',
     name: options.name,
@@ -448,10 +474,10 @@ export let createPage = (options: {
     y: 0,
     width: 0,
     height: 0,
-    layers: options.layers ?? [],
+    layers: options.layers ?? []
   }),
   _class: 'page' as const,
-  layers: options.layers ?? [],
+  layers: options.layers ?? []
 });
 
 export let createDocumentJson = (options: {
@@ -471,35 +497,38 @@ export let createDocumentJson = (options: {
       _class: 'MSImmutableColorAsset' as const,
       do_objectID: generateObjectId(),
       name: ca.name,
-      color: ca.color,
+      color: ca.color
     })),
     colors: options.colorAssets?.map(ca => ca.color) ?? [],
     gradientAssets: [],
     gradients: [],
-    images: [],
+    images: []
   },
   layerStyles: {
     _class: 'sharedStyleContainer',
     do_objectID: generateObjectId(),
-    objects: options.sharedStyles ?? [],
+    objects: options.sharedStyles ?? []
   },
   layerTextStyles: {
     _class: 'sharedTextStyleContainer',
     do_objectID: generateObjectId(),
-    objects: options.sharedTextStyles ?? [],
+    objects: options.sharedTextStyles ?? []
   },
   pages: options.pages.map(page => ({
     _class: 'MSJSONFileReference' as const,
     _ref_class: 'MSImmutablePage' as const,
-    _ref: `pages/${page.do_objectID}`,
-  })),
+    _ref: `pages/${page.do_objectID}`
+  }))
 });
 
 export let createMetaJson = (options: {
   pages: SketchPage[];
   appVersion?: string;
 }): SketchMetaJson => {
-  let pagesAndArtboards: Record<string, { name: string; artboards: Record<string, { name: string }> }> = {};
+  let pagesAndArtboards: Record<
+    string,
+    { name: string; artboards: Record<string, { name: string }> }
+  > = {};
 
   for (let page of options.pages) {
     let artboards: Record<string, { name: string }> = {};
@@ -509,7 +538,7 @@ export let createMetaJson = (options: {
     }
     pagesAndArtboards[page.do_objectID] = {
       name: page.name,
-      artboards,
+      artboards
     };
   }
 
@@ -528,13 +557,16 @@ export let createMetaJson = (options: {
       app: 'com.bohemiancoding.sketch3',
       compatibilityVersion: 99,
       version: 145,
-      variant: 'NONAPPSTORE',
+      variant: 'NONAPPSTORE'
     },
-    fonts: [],
+    fonts: []
   };
 };
 
-export let collectAllColors = (pages: SketchPage[], documentJson?: SketchDocumentJson): Array<{
+export let collectAllColors = (
+  pages: SketchPage[],
+  documentJson?: SketchDocumentJson
+): Array<{
   hex: string;
   rgba: string;
   source: string;
@@ -552,7 +584,7 @@ export let collectAllColors = (pages: SketchPage[], documentJson?: SketchDocumen
         hex,
         rgba: colorToRgba(color),
         source,
-        layerName,
+        layerName
       });
     }
   };
@@ -600,7 +632,9 @@ export let collectAllColors = (pages: SketchPage[], documentJson?: SketchDocumen
   return colors;
 };
 
-export let collectAllSymbols = (pages: SketchPage[]): Array<{
+export let collectAllSymbols = (
+  pages: SketchPage[]
+): Array<{
   symbolId: string;
   objectId: string;
   name: string;
@@ -626,7 +660,7 @@ export let collectAllSymbols = (pages: SketchPage[]): Array<{
         name: master.name,
         pageName: page.name,
         width: master.frame?.width ?? 0,
-        height: master.frame?.height ?? 0,
+        height: master.frame?.height ?? 0
       });
     }
   }
@@ -634,7 +668,9 @@ export let collectAllSymbols = (pages: SketchPage[]): Array<{
   return symbols;
 };
 
-export let collectTextContent = (pages: SketchPage[]): Array<{
+export let collectTextContent = (
+  pages: SketchPage[]
+): Array<{
   objectId: string;
   layerName: string;
   textContent: string;
@@ -655,7 +691,7 @@ export let collectTextContent = (pages: SketchPage[]): Array<{
           objectId: layer.do_objectID,
           layerName: layer.name,
           textContent: layer.attributedString.string,
-          pageName: page.name,
+          pageName: page.name
         });
       }
     }

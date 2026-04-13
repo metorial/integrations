@@ -2,12 +2,14 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    instanceName: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      instanceName: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -17,20 +19,24 @@ export let auth = SlateAuth.create()
       {
         title: 'User Account',
         description: 'Access to user account information and preferences',
-        scope: 'useraccount',
-      },
+        scope: 'useraccount'
+      }
     ],
 
     inputSchema: z.object({
-      instanceName: z.string().describe('ServiceNow instance name (subdomain), e.g. "mycompany" for mycompany.service-now.com'),
+      instanceName: z
+        .string()
+        .describe(
+          'ServiceNow instance name (subdomain), e.g. "mycompany" for mycompany.service-now.com'
+        )
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       if (ctx.scopes.length > 0) {
@@ -41,26 +47,30 @@ export let auth = SlateAuth.create()
 
       return {
         url,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let ax = createAxios({
-        baseURL: `https://${ctx.input.instanceName}.service-now.com`,
+        baseURL: `https://${ctx.input.instanceName}.service-now.com`
       });
 
-      let response = await ax.post('/oauth_token.do', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await ax.post(
+        '/oauth_token.do',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -74,31 +84,35 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          instanceName: ctx.input.instanceName,
+          instanceName: ctx.input.instanceName
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
       let ax = createAxios({
-        baseURL: `https://${ctx.output.instanceName}.service-now.com`,
+        baseURL: `https://${ctx.output.instanceName}.service-now.com`
       });
 
-      let response = await ax.post('/oauth_token.do', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await ax.post(
+        '/oauth_token.do',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -112,9 +126,9 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          instanceName: ctx.output.instanceName,
+          instanceName: ctx.output.instanceName
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
@@ -122,17 +136,17 @@ export let auth = SlateAuth.create()
       let ax = createAxios({
         baseURL: `https://${ctx.output.instanceName}.service-now.com`,
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-          'Accept': 'application/json',
-        },
+          Authorization: `Bearer ${ctx.output.token}`,
+          Accept: 'application/json'
+        }
       });
 
       let response = await ax.get('/api/now/table/sys_user', {
         params: {
           sysparm_query: 'user_name=javascript:gs.getUserName()',
           sysparm_limit: 1,
-          sysparm_fields: 'sys_id,user_name,email,name,photo',
-        },
+          sysparm_fields: 'sys_id,user_name,email,name,photo'
+        }
       });
 
       let user = response.data?.result?.[0];
@@ -142,10 +156,10 @@ export let auth = SlateAuth.create()
           id: user?.sys_id,
           email: user?.email,
           name: user?.name,
-          imageUrl: user?.photo || undefined,
-        },
+          imageUrl: user?.photo || undefined
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -153,20 +167,25 @@ export let auth = SlateAuth.create()
     key: 'basic_auth',
 
     inputSchema: z.object({
-      instanceName: z.string().describe('ServiceNow instance name (subdomain), e.g. "mycompany" for mycompany.service-now.com'),
+      instanceName: z
+        .string()
+        .describe(
+          'ServiceNow instance name (subdomain), e.g. "mycompany" for mycompany.service-now.com'
+        ),
       username: z.string().describe('ServiceNow username'),
-      password: z.string().describe('ServiceNow password'),
+      password: z.string().describe('ServiceNow password')
     }),
 
-    getOutput: async (ctx) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let basicToken = Buffer.from(`${ctx.input.username}:${ctx.input.password}`).toString('base64');
+    getOutput: async ctx => {
+      let basicToken = Buffer.from(`${ctx.input.username}:${ctx.input.password}`).toString(
+        'base64'
+      );
 
       return {
         output: {
           token: basicToken,
-          instanceName: ctx.input.instanceName,
-        },
+          instanceName: ctx.input.instanceName
+        }
       };
     },
 
@@ -174,17 +193,17 @@ export let auth = SlateAuth.create()
       let ax = createAxios({
         baseURL: `https://${ctx.output.instanceName}.service-now.com`,
         headers: {
-          'Authorization': `Basic ${ctx.output.token}`,
-          'Accept': 'application/json',
-        },
+          Authorization: `Basic ${ctx.output.token}`,
+          Accept: 'application/json'
+        }
       });
 
       let response = await ax.get('/api/now/table/sys_user', {
         params: {
           sysparm_query: `user_name=${ctx.input.username}`,
           sysparm_limit: 1,
-          sysparm_fields: 'sys_id,user_name,email,name,photo',
-        },
+          sysparm_fields: 'sys_id,user_name,email,name,photo'
+        }
       });
 
       let user = response.data?.result?.[0];
@@ -194,8 +213,8 @@ export let auth = SlateAuth.create()
           id: user?.sys_id,
           email: user?.email,
           name: user?.name,
-          imageUrl: user?.photo || undefined,
-        },
+          imageUrl: user?.photo || undefined
+        }
       };
-    },
+    }
   });

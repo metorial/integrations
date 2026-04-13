@@ -6,22 +6,28 @@ let http = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Project Access Token',
     key: 'project_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Rollbar project access token. Found in Project → Settings → Project Access Tokens.'),
+      token: z
+        .string()
+        .describe(
+          'Rollbar project access token. Found in Project → Settings → Project Access Tokens.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
     },
@@ -29,7 +35,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let response = await http.get('/user', {
         headers: {
-          'X-Rollbar-Access-Token': ctx.output.token,
+          'X-Rollbar-Access-Token': ctx.output.token
         }
       });
 
@@ -39,7 +45,7 @@ export let auth = SlateAuth.create()
         profile: {
           id: user?.id?.toString(),
           email: user?.email,
-          name: user?.username,
+          name: user?.username
         }
       };
     }
@@ -50,14 +56,18 @@ export let auth = SlateAuth.create()
     key: 'account_access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Rollbar account access token. Found in Account Settings → Account Access Tokens.'),
+      token: z
+        .string()
+        .describe(
+          'Rollbar account access token. Found in Account Settings → Account Access Tokens.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
-    },
+    }
   });

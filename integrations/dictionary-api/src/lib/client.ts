@@ -14,7 +14,9 @@ export class DictionaryClient {
 
   async lookupWord(word: string, languageCode?: string): Promise<DictionaryEntry[]> {
     let lang = languageCode || this.languageCode;
-    let response = await http.get<DictionaryEntry[]>(`/entries/${encodeURIComponent(lang)}/${encodeURIComponent(word)}`);
+    let response = await http.get<DictionaryEntry[]>(
+      `/entries/${encodeURIComponent(lang)}/${encodeURIComponent(word)}`
+    );
     return response.data;
   }
 }

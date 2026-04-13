@@ -3,50 +3,55 @@ import { BigQueryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Completed',
-    key: 'job_completed',
-    description: 'Triggers when a BigQuery job (query, load, extract, or copy) completes, either successfully or with errors.'
-  }
-)
-  .input(z.object({
-    jobId: z.string(),
-    projectId: z.string(),
-    state: z.string(),
-    jobType: z.string().optional(),
-    errorResult: z.any().optional(),
-    configuration: z.any().optional(),
-    statistics: z.any().optional(),
-    userEmail: z.string().optional(),
-    creationTime: z.string().optional(),
-    startTime: z.string().optional(),
-    endTime: z.string().optional()
-  }))
-  .output(z.object({
-    jobId: z.string().describe('BigQuery job ID'),
-    projectId: z.string().describe('Project ID'),
-    jobType: z.string().optional().describe('Type of job (query, load, extract, copy)'),
-    state: z.string().describe('Final state of the job'),
-    succeeded: z.boolean().describe('Whether the job completed without errors'),
-    errorMessage: z.string().optional().describe('Error message if the job failed'),
-    userEmail: z.string().optional().describe('Email of the user who created the job'),
-    creationTime: z.string().optional().describe('Job creation time'),
-    startTime: z.string().optional().describe('Job start time'),
-    endTime: z.string().optional().describe('Job completion time'),
-    totalBytesProcessed: z.string().optional().describe('Total bytes processed'),
-    query: z.string().optional().describe('SQL query text (for query jobs)'),
-    destinationTable: z.string().optional().describe('Destination table reference'),
-    sourceUris: z.array(z.string()).optional().describe('Source URIs (for load jobs)'),
-    destinationUris: z.array(z.string()).optional().describe('Destination URIs (for export jobs)')
-  }))
+export let jobCompleted = SlateTrigger.create(spec, {
+  name: 'Job Completed',
+  key: 'job_completed',
+  description:
+    'Triggers when a BigQuery job (query, load, extract, or copy) completes, either successfully or with errors.'
+})
+  .input(
+    z.object({
+      jobId: z.string(),
+      projectId: z.string(),
+      state: z.string(),
+      jobType: z.string().optional(),
+      errorResult: z.any().optional(),
+      configuration: z.any().optional(),
+      statistics: z.any().optional(),
+      userEmail: z.string().optional(),
+      creationTime: z.string().optional(),
+      startTime: z.string().optional(),
+      endTime: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('BigQuery job ID'),
+      projectId: z.string().describe('Project ID'),
+      jobType: z.string().optional().describe('Type of job (query, load, extract, copy)'),
+      state: z.string().describe('Final state of the job'),
+      succeeded: z.boolean().describe('Whether the job completed without errors'),
+      errorMessage: z.string().optional().describe('Error message if the job failed'),
+      userEmail: z.string().optional().describe('Email of the user who created the job'),
+      creationTime: z.string().optional().describe('Job creation time'),
+      startTime: z.string().optional().describe('Job start time'),
+      endTime: z.string().optional().describe('Job completion time'),
+      totalBytesProcessed: z.string().optional().describe('Total bytes processed'),
+      query: z.string().optional().describe('SQL query text (for query jobs)'),
+      destinationTable: z.string().optional().describe('Destination table reference'),
+      sourceUris: z.array(z.string()).optional().describe('Source URIs (for load jobs)'),
+      destinationUris: z
+        .array(z.string())
+        .optional()
+        .describe('Destination URIs (for export jobs)')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BigQueryClient({
         token: ctx.auth.token,
         projectId: ctx.config.projectId,
@@ -81,7 +86,15 @@ export let jobCompleted = SlateTrigger.create(
 
       let inputs = newJobs.map((j: any) => {
         let config = j.configuration || {};
-        let jobType = config.query ? 'query' : config.load ? 'load' : config.extract ? 'extract' : config.copy ? 'copy' : undefined;
+        let jobType = config.query
+          ? 'query'
+          : config.load
+            ? 'load'
+            : config.extract
+              ? 'extract'
+              : config.copy
+                ? 'copy'
+                : undefined;
 
         return {
           jobId: j.jobReference.jobId,
@@ -107,7 +120,7 @@ export let jobCompleted = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       let config = input.configuration || {};
       let stats = input.statistics || {};

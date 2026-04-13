@@ -3,31 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateRepositoryTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Repository',
-    key: 'update_repository',
-    description: `Update repository settings such as name, description, privacy, language, fork policy, project assignment, and issue/wiki toggles.`,
-  }
-)
-  .input(z.object({
-    repoSlug: z.string().describe('Repository slug to update'),
-    name: z.string().optional().describe('New display name'),
-    description: z.string().optional().describe('New description'),
-    isPrivate: z.boolean().optional().describe('Set repository privacy'),
-    language: z.string().optional().describe('Primary programming language'),
-    projectKey: z.string().optional().describe('Move repository to a different project'),
-    forkPolicy: z.enum(['allow_forks', 'no_public_forks', 'no_forks']).optional().describe('Fork policy'),
-    hasIssues: z.boolean().optional().describe('Enable or disable the issue tracker'),
-    hasWiki: z.boolean().optional().describe('Enable or disable the wiki'),
-  }))
-  .output(z.object({
-    repoSlug: z.string(),
-    fullName: z.string(),
-    htmlUrl: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateRepositoryTool = SlateTool.create(spec, {
+  name: 'Update Repository',
+  key: 'update_repository',
+  description: `Update repository settings such as name, description, privacy, language, fork policy, project assignment, and issue/wiki toggles.`
+})
+  .input(
+    z.object({
+      repoSlug: z.string().describe('Repository slug to update'),
+      name: z.string().optional().describe('New display name'),
+      description: z.string().optional().describe('New description'),
+      isPrivate: z.boolean().optional().describe('Set repository privacy'),
+      language: z.string().optional().describe('Primary programming language'),
+      projectKey: z.string().optional().describe('Move repository to a different project'),
+      forkPolicy: z
+        .enum(['allow_forks', 'no_public_forks', 'no_forks'])
+        .optional()
+        .describe('Fork policy'),
+      hasIssues: z.boolean().optional().describe('Enable or disable the issue tracker'),
+      hasWiki: z.boolean().optional().describe('Enable or disable the wiki')
+    })
+  )
+  .output(
+    z.object({
+      repoSlug: z.string(),
+      fullName: z.string(),
+      htmlUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
     let body: Record<string, any> = {};
@@ -46,8 +50,9 @@ export let updateRepositoryTool = SlateTool.create(
       output: {
         repoSlug: r.slug,
         fullName: r.full_name,
-        htmlUrl: r.links?.html?.href || undefined,
+        htmlUrl: r.links?.html?.href || undefined
       },
-      message: `Updated repository **${r.full_name}**.`,
+      message: `Updated repository **${r.full_name}**.`
     };
-  }).build();
+  })
+  .build();

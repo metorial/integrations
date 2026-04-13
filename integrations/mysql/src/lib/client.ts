@@ -1,41 +1,35 @@
-// @ts-ignore
-import * as net from 'node:net';
-// @ts-ignore
-import * as tls from 'node:tls';
-// @ts-ignore
-import * as crypto from 'node:crypto';
+import * as crypto from 'crypto';
+import * as net from 'net';
+import * as tls from 'tls';
 import {
-  parsePackets,
-  buildPacket,
-  parseHandshakeV10,
-  buildHandshakeResponse41,
-  buildSSLRequest,
   buildComQuery,
   buildComQuit,
-  parseOkPacket,
-  parseErrPacket,
-  parseColumnDefinition41,
-  parseTextResultRow,
-  getFullAuthPluginData,
-  isEofPacket,
-  isOkPacket,
-  isErrPacket,
-  mysqlTypeToName,
-  readLenencInt,
-  ByteWriter,
-  CLIENT_LONG_PASSWORD,
+  buildHandshakeResponse41,
+  buildPacket,
+  buildSSLRequest,
+  CLIENT_CONNECT_WITH_DB,
+  CLIENT_DEPRECATE_EOF,
   CLIENT_FOUND_ROWS,
   CLIENT_LONG_FLAG,
-  CLIENT_CONNECT_WITH_DB,
-  CLIENT_PROTOCOL_41,
-  CLIENT_SECURE_CONNECTION,
+  CLIENT_LONG_PASSWORD,
   CLIENT_PLUGIN_AUTH,
   CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA,
-  CLIENT_DEPRECATE_EOF,
+  CLIENT_PROTOCOL_41,
+  CLIENT_SECURE_CONNECTION,
   CLIENT_SSL,
+  getFullAuthPluginData,
+  isEofPacket,
+  isErrPacket,
+  isOkPacket,
+  mysqlTypeToName,
+  parseColumnDefinition41,
+  parseErrPacket,
+  parseHandshakeV10,
+  parseOkPacket,
+  parsePackets,
+  parseTextResultRow,
+  readLenencInt,
   UTF8MB4_GENERAL_CI,
-  ERR_PACKET,
-  type MySQLPacket,
   type ColumnDefinition,
   type HandshakeV10
 } from './protocol';

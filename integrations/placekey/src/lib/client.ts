@@ -75,14 +75,16 @@ let toApiQuery = (query: PlaceQuery): Record<string, unknown> => {
 let fromApiResult = (data: Record<string, unknown>): PlacekeyResult => {
   let result: PlacekeyResult = {
     queryId: (data.query_id as string) ?? '',
-    placekey: (data.placekey as string) ?? '',
+    placekey: (data.placekey as string) ?? ''
   };
 
   if (data.error) result.error = data.error as string;
   if (data.address_placekey) result.addressPlacekey = data.address_placekey as string;
   if (data.building_placekey) result.buildingPlacekey = data.building_placekey as string;
-  if (data.confidence_score !== undefined) result.confidenceScore = data.confidence_score as number;
-  if (data.normalized_address) result.normalizedAddress = data.normalized_address as Record<string, unknown>;
+  if (data.confidence_score !== undefined)
+    result.confidenceScore = data.confidence_score as number;
+  if (data.normalized_address)
+    result.normalizedAddress = data.normalized_address as Record<string, unknown>;
   if (data.geocode) result.geocode = data.geocode as Record<string, unknown>;
   if (data.upi) result.upi = data.upi as string;
   if (data.parcel) result.parcel = data.parcel as string;
@@ -99,15 +101,15 @@ export class PlacekeyClient {
     this.axios = createAxios({
       baseURL: 'https://api.placekey.io',
       headers: {
-        'apikey': config.token,
-        'Content-Type': 'application/json',
-      },
+        apikey: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async lookupPlacekey(query: PlaceQuery, fields?: OptionalField[]): Promise<PlacekeyResult> {
     let body: Record<string, unknown> = {
-      query: toApiQuery(query),
+      query: toApiQuery(query)
     };
 
     if (fields && fields.length > 0) {
@@ -118,7 +120,10 @@ export class PlacekeyClient {
     return fromApiResult(response.data);
   }
 
-  async bulkLookupPlacekeys(queries: PlaceQuery[], fields?: OptionalField[]): Promise<PlacekeyResult[]> {
+  async bulkLookupPlacekeys(
+    queries: PlaceQuery[],
+    fields?: OptionalField[]
+  ): Promise<PlacekeyResult[]> {
     let body: Record<string, unknown> = {
       queries: queries.map((q, i) => {
         let apiQuery = toApiQuery(q);
@@ -126,7 +131,7 @@ export class PlacekeyClient {
           apiQuery.query_id = q.queryId ?? String(i);
         }
         return apiQuery;
-      }),
+      })
     };
 
     if (fields && fields.length > 0) {

@@ -11,6 +11,7 @@ Grafbase is a GraphQL Federation platform that provides a gateway for composing 
 Grafbase uses **Bearer token authentication** via access tokens. There are two types of access tokens:
 
 ### Personal Access Tokens
+
 - Used for the Grafbase CLI and Management API.
 - Inherit the same permissions as the corresponding user account.
 - Created from the [account settings > access tokens](https://app.grafbase.com/settings/access-tokens) page.
@@ -18,6 +19,7 @@ Grafbase uses **Bearer token authentication** via access tokens. There are two t
 - Tokens cannot be read or modified after creation.
 
 ### Organization Access Tokens
+
 - Used for the Grafbase Gateway telemetry and Graph Delivery Network.
 - Belong to an organization (persist even if the creating user is removed).
 - Scopes:
@@ -45,27 +47,35 @@ For self-hosted Enterprise Platform instances, the API URL will be specific to y
 ## Features
 
 ### Account and Organization Management
+
 Manage user accounts and organizations programmatically. This includes creating organizations, managing memberships, and configuring organization settings.
 
 ### Graph and Project Management
+
 Create, configure, and manage federated graphs and projects. Everything available in the Grafbase Dashboard can be done through the API.
 
 ### Schema Registry
+
 Publish and manage subgraph schemas. The schema registry tracks all subgraph schemas and composes them into a unified supergraph. Supports branch-aware development environments for schema versioning.
 
 ### Schema Checks
+
 Run composition checks against the federated graph schema to detect breaking changes before they go live. Integrates into CI/CD workflows.
 
 ### Schema Proposals
+
 Design, discuss, and govern schema changes through collaborative proposal workflows. Supports approval processes for schema modifications.
 
 ### Access Token Management
+
 Create and revoke personal and organization access tokens programmatically.
 
 ### Audit Logs
+
 Access audit logs for tracking actions and changes within the organization for compliance and security purposes.
 
 ### Observability and Analytics
+
 Access traces, metrics, logs, and operation analytics for your federated graphs. The platform integrates with OpenTelemetry.
 
 - The API is GraphQL-based with introspection enabled, so the full schema can be explored via any GraphQL playground.

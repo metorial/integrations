@@ -31,7 +31,7 @@ import {
   enhanceTransactions,
   requestWidgetUrl,
   listInsights,
-  listCategories,
+  listCategories
 } from './tools';
 import {
   aggregationEvents,
@@ -41,7 +41,7 @@ import {
   transactionEvents,
   statementEvents,
   userEvents,
-  holdingEvents,
+  holdingEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -77,7 +77,7 @@ export let provider = Slate.create({
     enhanceTransactions,
     requestWidgetUrl,
     listInsights,
-    listCategories,
+    listCategories
   ],
   triggers: [
     aggregationEvents,
@@ -87,6 +87,6 @@ export let provider = Slate.create({
     transactionEvents,
     statementEvents,
     userEvents,
-    holdingEvents,
-  ],
+    holdingEvents
+  ]
 });

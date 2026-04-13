@@ -25,6 +25,7 @@ The Connect APIs use OAuth 2.0 to authenticate requests and authorize access to 
 **Token endpoint:** `POST https://connect.instacart.com/v2/oauth/token`
 
 **Request body parameters:**
+
 - `client_id` — Your client ID provided by Instacart
 - `client_secret` — Your client secret provided by Instacart
 - `grant_type` — Typically `client_credentials`; can also be `authorization_code` or `fulfillment_user_assertion` depending on the API
@@ -33,6 +34,7 @@ The Connect APIs use OAuth 2.0 to authenticate requests and authorize access to 
 The token is valid for 24 hours. During this period, reuse the same token. After 24 hours, you must generate a new token.
 
 **Available scopes:**
+
 - `connect:fulfillment` — Access stores, service options, orders, and order management
 - `connect:compliance` — Manage customer data in accordance with privacy laws
 - `connect:post_checkout` — Access order detail and status (uses `fulfillment_user_assertion` grant type)

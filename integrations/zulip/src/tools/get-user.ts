@@ -3,36 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User',
-    key: 'get_user',
-    description: `Get detailed profile information for a specific user by their user ID or email address. Use "me" as the identifier to get the authenticated user's profile.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User',
+  key: 'get_user',
+  description: `Get detailed profile information for a specific user by their user ID or email address. Use "me" as the identifier to get the authenticated user's profile.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.number().optional().describe('User ID to look up'),
-    email: z.string().optional().describe('Email address to look up'),
-    includeCustomProfileFields: z.boolean().optional().describe('Whether to include custom profile field data')
-  }))
-  .output(z.object({
-    userId: z.number().describe('Unique user ID'),
-    email: z.string().describe('User email address'),
-    fullName: z.string().describe('Full display name'),
-    isBot: z.boolean().describe('Whether the user is a bot'),
-    isActive: z.boolean().describe('Whether the user account is active'),
-    role: z.number().describe('User role: 100=Organization owner, 200=Administrator, 300=Moderator, 400=Member, 600=Guest'),
-    avatarUrl: z.string().nullable().optional().describe('URL of the user avatar'),
-    timezone: z.string().optional().describe('User timezone'),
-    dateJoined: z.string().optional().describe('ISO date string when the user joined'),
-    customProfileFields: z.array(z.any()).optional().describe('Custom profile field values if requested')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.number().optional().describe('User ID to look up'),
+      email: z.string().optional().describe('Email address to look up'),
+      includeCustomProfileFields: z
+        .boolean()
+        .optional()
+        .describe('Whether to include custom profile field data')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('Unique user ID'),
+      email: z.string().describe('User email address'),
+      fullName: z.string().describe('Full display name'),
+      isBot: z.boolean().describe('Whether the user is a bot'),
+      isActive: z.boolean().describe('Whether the user account is active'),
+      role: z
+        .number()
+        .describe(
+          'User role: 100=Organization owner, 200=Administrator, 300=Moderator, 400=Member, 600=Guest'
+        ),
+      avatarUrl: z.string().nullable().optional().describe('URL of the user avatar'),
+      timezone: z.string().optional().describe('User timezone'),
+      dateJoined: z.string().optional().describe('ISO date string when the user joined'),
+      customProfileFields: z
+        .array(z.any())
+        .optional()
+        .describe('Custom profile field values if requested')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       serverUrl: ctx.auth.serverUrl,
       email: ctx.auth.email,
@@ -70,4 +81,5 @@ export let getUser = SlateTool.create(
       },
       message: `User: **${user.full_name}** (${user.email})`
     };
-  }).build();
+  })
+  .build();

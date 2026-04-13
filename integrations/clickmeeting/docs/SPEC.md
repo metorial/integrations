@@ -15,6 +15,7 @@ ClickMeeting uses **API Key** authentication.
 - For security reasons, the API is available under SSL certificate.
 
 **Example request header:**
+
 ```
 X-Api-Key: YOUR_API_KEY
 ```

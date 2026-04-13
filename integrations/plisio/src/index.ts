@@ -9,7 +9,7 @@ import {
   getCurrencies,
   estimateFee,
   getFeePlans,
-  createDeposit,
+  createDeposit
 } from './tools';
 import { invoiceStatus } from './triggers';
 
@@ -24,9 +24,7 @@ export let provider = Slate.create({
     getCurrencies,
     estimateFee,
     getFeePlans,
-    createDeposit,
+    createDeposit
   ],
-  triggers: [
-    invoiceStatus,
-  ],
+  triggers: [invoiceStatus]
 });

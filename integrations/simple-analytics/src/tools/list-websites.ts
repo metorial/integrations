@@ -3,28 +3,34 @@ import { spec } from '../spec';
 import { listWebsites } from '../lib/admin';
 import { z } from 'zod';
 
-export let listWebsitesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Websites',
-    key: 'list_websites',
-    description: `List all websites tracked in your Simple Analytics account. Returns each website's hostname, creation date, and configuration. Requires both API key and User-Id authentication.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWebsitesTool = SlateTool.create(spec, {
+  name: 'List Websites',
+  key: 'list_websites',
+  description: `List all websites tracked in your Simple Analytics account. Returns each website's hostname, creation date, and configuration. Requires both API key and User-Id authentication.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    websites: z.array(z.object({
-      hostname: z.string().describe('Website domain name'),
-      isPublic: z.boolean().optional().describe('Whether the analytics data is publicly accessible'),
-      timezone: z.string().optional().describe('Configured timezone for the website'),
-      label: z.string().optional().describe('Custom label assigned to the website'),
-      createdAt: z.string().optional().describe('When the website was added'),
-    })).describe('List of tracked websites'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      websites: z
+        .array(
+          z.object({
+            hostname: z.string().describe('Website domain name'),
+            isPublic: z
+              .boolean()
+              .optional()
+              .describe('Whether the analytics data is publicly accessible'),
+            timezone: z.string().optional().describe('Configured timezone for the website'),
+            label: z.string().optional().describe('Custom label assigned to the website'),
+            createdAt: z.string().optional().describe('When the website was added')
+          })
+        )
+        .describe('List of tracked websites')
+    })
+  )
+  .handleInvocation(async ctx => {
     let data = await listWebsites({ token: ctx.auth.token, userId: ctx.auth.userId });
 
     let websites: Array<Record<string, unknown>> = [];
@@ -36,12 +42,13 @@ export let listWebsitesTool = SlateTool.create(
         isPublic: site.public ?? site.isPublic,
         timezone: site.timezone,
         label: site.label,
-        createdAt: site.created_at ?? site.createdAt,
+        createdAt: site.created_at ?? site.createdAt
       });
     }
 
     return {
       output: { websites: websites as any },
-      message: `Found **${websites.length}** website(s) in your Simple Analytics account.`,
+      message: `Found **${websites.length}** website(s) in your Simple Analytics account.`
     };
-  }).build();
+  })
+  .build();

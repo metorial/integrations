@@ -17,6 +17,7 @@ When you sign up, an access key is automatically created. You can manage all you
 **Base endpoint:** `https://api.apiflash.com/v1/urltoimage`
 
 **Example (GET):**
+
 ```
 GET https://api.apiflash.com/v1/urltoimage?access_key=YOUR_ACCESS_KEY&url=https://example.com
 ```

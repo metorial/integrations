@@ -21,7 +21,5 @@ export let provider = Slate.create({
     inspectUrl,
     runMobileFriendlyTest
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

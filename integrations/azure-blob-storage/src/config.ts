@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 export let config = SlateConfig.create(
   z.object({
-    storageAccountName: z.string().describe('The name of the Azure Storage account (e.g. "mystorageaccount")'),
+    storageAccountName: z
+      .string()
+      .describe('The name of the Azure Storage account (e.g. "mystorageaccount")')
   })
 );

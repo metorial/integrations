@@ -17,10 +17,10 @@ export class NotionClient {
     this.axios = createAxios({
       baseURL: 'https://api.notion.com/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Notion-Version': NOTION_API_VERSION,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -35,7 +35,7 @@ export class NotionClient {
   }): Promise<any> {
     let body: Record<string, any> = {
       parent: params.parent,
-      properties: params.properties,
+      properties: params.properties
     };
     if (params.children) body.children = params.children;
     if (params.icon) body.icon = params.icon;
@@ -50,14 +50,17 @@ export class NotionClient {
     return response.data;
   }
 
-  async updatePage(pageId: string, params: {
-    properties?: Record<string, any>;
-    icon?: Record<string, any> | null;
-    cover?: Record<string, any> | null;
-    archived?: boolean;
-    inTrash?: boolean;
-    isLocked?: boolean;
-  }): Promise<any> {
+  async updatePage(
+    pageId: string,
+    params: {
+      properties?: Record<string, any>;
+      icon?: Record<string, any> | null;
+      cover?: Record<string, any> | null;
+      archived?: boolean;
+      inTrash?: boolean;
+      isLocked?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.properties !== undefined) body.properties = params.properties;
     if (params.icon !== undefined) body.icon = params.icon;
@@ -70,11 +73,17 @@ export class NotionClient {
     return response.data;
   }
 
-  async getPageProperty(pageId: string, propertyId: string, startCursor?: string): Promise<any> {
+  async getPageProperty(
+    pageId: string,
+    propertyId: string,
+    startCursor?: string
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (startCursor) params.start_cursor = startCursor;
 
-    let response = await this.axios.get(`/pages/${pageId}/properties/${propertyId}`, { params });
+    let response = await this.axios.get(`/pages/${pageId}/properties/${propertyId}`, {
+      params
+    });
     return response.data;
   }
 
@@ -85,7 +94,11 @@ export class NotionClient {
     return response.data;
   }
 
-  async getBlockChildren(blockId: string, startCursor?: string, pageSize?: number): Promise<PaginatedResponse<any>> {
+  async getBlockChildren(
+    blockId: string,
+    startCursor?: string,
+    pageSize?: number
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = {};
     if (startCursor) params.start_cursor = startCursor;
     if (pageSize) params.page_size = pageSize;
@@ -94,7 +107,11 @@ export class NotionClient {
     return response.data;
   }
 
-  async appendBlockChildren(blockId: string, children: any[], position?: Record<string, any>): Promise<PaginatedResponse<any>> {
+  async appendBlockChildren(
+    blockId: string,
+    children: any[],
+    position?: Record<string, any>
+  ): Promise<PaginatedResponse<any>> {
     let body: Record<string, any> = { children };
     if (position) body.position = position;
 
@@ -131,7 +148,7 @@ export class NotionClient {
     let body: Record<string, any> = {
       parent: params.parent,
       title: params.title,
-      properties: params.properties,
+      properties: params.properties
     };
     if (params.description) body.description = params.description;
     if (params.isInline !== undefined) body.is_inline = params.isInline;
@@ -142,15 +159,18 @@ export class NotionClient {
     return response.data;
   }
 
-  async updateDatabase(databaseId: string, params: {
-    title?: any[];
-    description?: any[];
-    properties?: Record<string, any>;
-    icon?: Record<string, any> | null;
-    cover?: Record<string, any> | null;
-    isInline?: boolean;
-    archived?: boolean;
-  }): Promise<any> {
+  async updateDatabase(
+    databaseId: string,
+    params: {
+      title?: any[];
+      description?: any[];
+      properties?: Record<string, any>;
+      icon?: Record<string, any> | null;
+      cover?: Record<string, any> | null;
+      isInline?: boolean;
+      archived?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.title !== undefined) body.title = params.title;
     if (params.description !== undefined) body.description = params.description;
@@ -164,12 +184,15 @@ export class NotionClient {
     return response.data;
   }
 
-  async queryDatabase(databaseId: string, params?: {
-    filter?: Record<string, any>;
-    sorts?: any[];
-    startCursor?: string;
-    pageSize?: number;
-  }): Promise<PaginatedResponse<any>> {
+  async queryDatabase(
+    databaseId: string,
+    params?: {
+      filter?: Record<string, any>;
+      sorts?: any[];
+      startCursor?: string;
+      pageSize?: number;
+    }
+  ): Promise<PaginatedResponse<any>> {
     let body: Record<string, any> = {};
     if (params?.filter) body.filter = params.filter;
     if (params?.sorts) body.sorts = params.sorts;
@@ -209,7 +232,7 @@ export class NotionClient {
     richText: any[];
   }): Promise<any> {
     let body: Record<string, any> = {
-      rich_text: params.richText,
+      rich_text: params.richText
     };
     if (params.parentPageId) {
       body.parent = { page_id: params.parentPageId };
@@ -224,7 +247,11 @@ export class NotionClient {
     return response.data;
   }
 
-  async listComments(blockId: string, startCursor?: string, pageSize?: number): Promise<PaginatedResponse<any>> {
+  async listComments(
+    blockId: string,
+    startCursor?: string,
+    pageSize?: number
+  ): Promise<PaginatedResponse<any>> {
     let params: Record<string, any> = { block_id: blockId };
     if (startCursor) params.start_cursor = startCursor;
     if (pageSize) params.page_size = pageSize;

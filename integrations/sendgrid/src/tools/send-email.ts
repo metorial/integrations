@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 let emailAddressSchema = z.object({
   email: z.string().describe('Email address'),
-  name: z.string().optional().describe('Display name'),
+  name: z.string().optional().describe('Display name')
 });
 
 let personalizationSchema = z.object({
@@ -13,9 +13,18 @@ let personalizationSchema = z.object({
   cc: z.array(emailAddressSchema).optional().describe('CC recipients'),
   bcc: z.array(emailAddressSchema).optional().describe('BCC recipients'),
   subject: z.string().optional().describe('Subject override for this personalization'),
-  dynamicTemplateData: z.record(z.string(), z.any()).optional().describe('Dynamic template data (Handlebars variables) for this personalization'),
-  customArgs: z.record(z.string(), z.string()).optional().describe('Custom arguments for analytics/tracking'),
-  sendAt: z.number().optional().describe('Unix timestamp to schedule delivery for this personalization'),
+  dynamicTemplateData: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Dynamic template data (Handlebars variables) for this personalization'),
+  customArgs: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe('Custom arguments for analytics/tracking'),
+  sendAt: z
+    .number()
+    .optional()
+    .describe('Unix timestamp to schedule delivery for this personalization')
 });
 
 let attachmentSchema = z.object({
@@ -23,60 +32,72 @@ let attachmentSchema = z.object({
   filename: z.string().describe('Filename of the attachment'),
   type: z.string().optional().describe('MIME type (e.g. "application/pdf")'),
   disposition: z.enum(['attachment', 'inline']).optional().describe('Content disposition'),
-  contentId: z.string().optional().describe('Content ID for inline attachments'),
+  contentId: z.string().optional().describe('Content ID for inline attachments')
 });
 
-export let sendEmail = SlateTool.create(
-  spec,
-  {
-    name: 'Send Email',
-    key: 'send_email',
-    description: `Send an email via SendGrid. Supports plain text, HTML, dynamic templates with Handlebars substitution, multiple recipients with personalizations, attachments, scheduling, and tracking settings. Each personalization can target different recipients with different dynamic data.`,
-    instructions: [
-      'Either provide **content** (text/HTML) or a **templateId** for dynamic templates, not both.',
-      'When using a template, pass dynamic data via **personalizations[].dynamicTemplateData**.',
-      'A top-level **subject** is required unless each personalization has its own subject or a template defines one.',
-      'Attachments must be base64-encoded.',
-    ],
-    constraints: [
-      'Maximum 1000 personalizations per request.',
-      'Total message size (including attachments) must not exceed 30MB.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let sendEmail = SlateTool.create(spec, {
+  name: 'Send Email',
+  key: 'send_email',
+  description: `Send an email via SendGrid. Supports plain text, HTML, dynamic templates with Handlebars substitution, multiple recipients with personalizations, attachments, scheduling, and tracking settings. Each personalization can target different recipients with different dynamic data.`,
+  instructions: [
+    'Either provide **content** (text/HTML) or a **templateId** for dynamic templates, not both.',
+    'When using a template, pass dynamic data via **personalizations[].dynamicTemplateData**.',
+    'A top-level **subject** is required unless each personalization has its own subject or a template defines one.',
+    'Attachments must be base64-encoded.'
+  ],
+  constraints: [
+    'Maximum 1000 personalizations per request.',
+    'Total message size (including attachments) must not exceed 30MB.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
+})
   .input(
     z.object({
       from: emailAddressSchema.describe('Sender email address and optional name'),
-      personalizations: z.array(personalizationSchema).min(1).describe('Array of personalizations, each targeting a set of recipients'),
-      subject: z.string().optional().describe('Global email subject (can be overridden per personalization)'),
+      personalizations: z
+        .array(personalizationSchema)
+        .min(1)
+        .describe('Array of personalizations, each targeting a set of recipients'),
+      subject: z
+        .string()
+        .optional()
+        .describe('Global email subject (can be overridden per personalization)'),
       textContent: z.string().optional().describe('Plain text email body'),
       htmlContent: z.string().optional().describe('HTML email body'),
-      templateId: z.string().optional().describe('Dynamic template ID to use instead of inline content'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Dynamic template ID to use instead of inline content'),
       replyTo: emailAddressSchema.optional().describe('Reply-to address'),
       attachments: z.array(attachmentSchema).optional().describe('File attachments'),
-      categories: z.array(z.string()).optional().describe('Categories for email statistics grouping'),
+      categories: z
+        .array(z.string())
+        .optional()
+        .describe('Categories for email statistics grouping'),
       sendAt: z.number().optional().describe('Unix timestamp to schedule delivery'),
       batchId: z.string().optional().describe('Batch ID for grouping scheduled sends'),
       suppressionGroupId: z.number().optional().describe('Unsubscribe/suppression group ID'),
-      sandboxMode: z.boolean().optional().describe('Enable sandbox mode to validate without sending'),
+      sandboxMode: z
+        .boolean()
+        .optional()
+        .describe('Enable sandbox mode to validate without sending'),
       clickTracking: z.boolean().optional().describe('Enable click tracking'),
-      openTracking: z.boolean().optional().describe('Enable open tracking'),
+      openTracking: z.boolean().optional().describe('Enable open tracking')
     })
   )
   .output(
     z.object({
       accepted: z.boolean().describe('Whether the email was accepted for delivery'),
-      messageId: z.string().optional().describe('Message ID from SendGrid response headers'),
+      messageId: z.string().optional().describe('Message ID from SendGrid response headers')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let content: Array<{ type: string; value: string }> | undefined;
@@ -124,7 +145,7 @@ export let sendEmail = SlateTool.create(
       batchId: ctx.input.batchId,
       asm,
       mailSettings,
-      trackingSettings,
+      trackingSettings
     });
 
     let messageId = response.headers?.['x-message-id'] || undefined;
@@ -137,8 +158,8 @@ export let sendEmail = SlateTool.create(
     return {
       output: {
         accepted: response.status === 202,
-        messageId,
+        messageId
       },
-      message: `Email ${ctx.input.sandboxMode ? 'validated (sandbox mode)' : 'accepted for delivery'} to **${recipientCount}** recipient(s)${messageId ? ` with message ID \`${messageId}\`` : ''}.`,
+      message: `Email ${ctx.input.sandboxMode ? 'validated (sandbox mode)' : 'accepted for delivery'} to **${recipientCount}** recipient(s)${messageId ? ` with message ID \`${messageId}\`` : ''}.`
     };
   });

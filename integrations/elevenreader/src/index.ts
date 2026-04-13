@@ -15,12 +15,12 @@ import {
   listModelsTool,
   listHistoryTool,
   getUserTool,
-  listPronunciationDictionariesTool,
+  listPronunciationDictionariesTool
 } from './tools';
 import {
   conversationEventsTrigger,
   voiceEventsTrigger,
-  transcriptionCompletedTrigger,
+  transcriptionCompletedTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -40,11 +40,7 @@ export let provider = Slate.create({
     listModelsTool,
     listHistoryTool,
     getUserTool,
-    listPronunciationDictionariesTool,
+    listPronunciationDictionariesTool
   ],
-  triggers: [
-    conversationEventsTrigger,
-    voiceEventsTrigger,
-    transcriptionCompletedTrigger,
-  ],
+  triggers: [conversationEventsTrigger, voiceEventsTrigger, transcriptionCompletedTrigger]
 });

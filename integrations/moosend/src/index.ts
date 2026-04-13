@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createCampaign,
@@ -13,13 +12,9 @@ import {
   listSubscribers,
   manageCustomField,
   manageSegment,
-  sendTransactionalEmail,
+  sendTransactionalEmail
 } from './tools';
-import {
-  newSubscriber,
-  campaignSent,
-  inboundWebhook,
-} from './triggers';
+import { newSubscriber, campaignSent, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,11 +30,7 @@ export let provider = Slate.create({
     listSubscribers,
     manageCustomField,
     manageSegment,
-    sendTransactionalEmail,
+    sendTransactionalEmail
   ],
-  triggers: [
-    inboundWebhook,
-    newSubscriber,
-    campaignSent,
-  ],
+  triggers: [inboundWebhook, newSubscriber, campaignSent]
 });

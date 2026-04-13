@@ -41,7 +41,7 @@ export let buildOAuth1Header = (
     oauth_timestamp: timestamp,
     oauth_token: credentials.token,
     oauth_version: '1.0',
-    ...extraParams,
+    ...extraParams
   };
 
   let urlObj = new URL(url);
@@ -54,14 +54,15 @@ export let buildOAuth1Header = (
 
   let sortedKeys = Object.keys(allParams).sort();
   let paramString = sortedKeys
-    .map((key) => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
+    .map(key => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
     .join('&');
 
   let signatureBaseString = `${method.toUpperCase()}&${percentEncode(baseUrl)}&${percentEncode(paramString)}`;
 
   let signingKey = `${percentEncode(credentials.consumerSecret)}&${percentEncode(credentials.tokenSecret)}`;
 
-  let signature = crypto.createHmac('sha1', signingKey)
+  let signature = crypto
+    .createHmac('sha1', signingKey)
     .update(signatureBaseString)
     .digest('base64');
 
@@ -72,7 +73,7 @@ export let buildOAuth1Header = (
     `oauth_signature_method="HMAC-SHA1"`,
     `oauth_timestamp="${percentEncode(timestamp)}"`,
     `oauth_token="${percentEncode(params.oauth_token!)}"`,
-    `oauth_version="1.0"`,
+    `oauth_version="1.0"`
   ];
 
   return `OAuth ${headerParts.join(', ')}`;
@@ -94,7 +95,7 @@ export let buildOAuth1HeaderForRequestToken = (
     oauth_nonce: nonce,
     oauth_signature_method: 'HMAC-SHA1',
     oauth_timestamp: timestamp,
-    oauth_version: '1.0',
+    oauth_version: '1.0'
   };
 
   let urlObj = new URL(url);
@@ -107,14 +108,15 @@ export let buildOAuth1HeaderForRequestToken = (
 
   let sortedKeys = Object.keys(allParams).sort();
   let paramString = sortedKeys
-    .map((key) => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
+    .map(key => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
     .join('&');
 
   let signatureBaseString = `${method.toUpperCase()}&${percentEncode(baseUrl)}&${percentEncode(paramString)}`;
 
   let signingKey = `${percentEncode(consumerSecret)}&`;
 
-  let signature = crypto.createHmac('sha1', signingKey)
+  let signature = crypto
+    .createHmac('sha1', signingKey)
     .update(signatureBaseString)
     .digest('base64');
 
@@ -125,7 +127,7 @@ export let buildOAuth1HeaderForRequestToken = (
     `oauth_signature="${percentEncode(signature)}"`,
     `oauth_signature_method="HMAC-SHA1"`,
     `oauth_timestamp="${percentEncode(timestamp)}"`,
-    `oauth_version="1.0"`,
+    `oauth_version="1.0"`
   ];
 
   return `OAuth ${headerParts.join(', ')}`;
@@ -150,7 +152,7 @@ export let buildOAuth1HeaderForAccessToken = (
     oauth_timestamp: timestamp,
     oauth_token: requestToken,
     oauth_verifier: verifier,
-    oauth_version: '1.0',
+    oauth_version: '1.0'
   };
 
   let urlObj = new URL(url);
@@ -163,14 +165,15 @@ export let buildOAuth1HeaderForAccessToken = (
 
   let sortedKeys = Object.keys(allParams).sort();
   let paramString = sortedKeys
-    .map((key) => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
+    .map(key => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
     .join('&');
 
   let signatureBaseString = `${method.toUpperCase()}&${percentEncode(baseUrl)}&${percentEncode(paramString)}`;
 
   let signingKey = `${percentEncode(consumerSecret)}&${percentEncode(requestTokenSecret)}`;
 
-  let signature = crypto.createHmac('sha1', signingKey)
+  let signature = crypto
+    .createHmac('sha1', signingKey)
     .update(signatureBaseString)
     .digest('base64');
 
@@ -182,7 +185,7 @@ export let buildOAuth1HeaderForAccessToken = (
     `oauth_timestamp="${percentEncode(timestamp)}"`,
     `oauth_token="${percentEncode(requestToken)}"`,
     `oauth_verifier="${percentEncode(verifier)}"`,
-    `oauth_version="1.0"`,
+    `oauth_version="1.0"`
   ];
 
   return `OAuth ${headerParts.join(', ')}`;
@@ -194,13 +197,19 @@ export let getRequestToken = async (
   callbackUrl: string
 ): Promise<{ oauthToken: string; oauthTokenSecret: string }> => {
   let url = 'https://secure.smugmug.com/services/oauth/1.0a/getRequestToken';
-  let authHeader = buildOAuth1HeaderForRequestToken('POST', url, consumerKey, consumerSecret, callbackUrl);
+  let authHeader = buildOAuth1HeaderForRequestToken(
+    'POST',
+    url,
+    consumerKey,
+    consumerSecret,
+    callbackUrl
+  );
 
   let httpClient = createAxios();
   let response = await httpClient.post(url, null, {
     headers: {
-      'Authorization': authHeader,
-    },
+      Authorization: authHeader
+    }
   });
 
   let params = new URLSearchParams(response.data);
@@ -223,14 +232,20 @@ export let getAccessToken = async (
 ): Promise<{ oauthToken: string; oauthTokenSecret: string }> => {
   let url = 'https://secure.smugmug.com/services/oauth/1.0a/getAccessToken';
   let authHeader = buildOAuth1HeaderForAccessToken(
-    'POST', url, consumerKey, consumerSecret, requestToken, requestTokenSecret, verifier
+    'POST',
+    url,
+    consumerKey,
+    consumerSecret,
+    requestToken,
+    requestTokenSecret,
+    verifier
   );
 
   let httpClient = createAxios();
   let response = await httpClient.post(url, null, {
     headers: {
-      'Authorization': authHeader,
-    },
+      Authorization: authHeader
+    }
   });
 
   let params = new URLSearchParams(response.data);

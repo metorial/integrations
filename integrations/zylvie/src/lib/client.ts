@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.zylvie.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -34,7 +34,7 @@ export class Client {
 
   async deleteProduct(productId: string): Promise<{ status: string; message: string }> {
     let response = await this.axios.delete('/products/delete', {
-      data: { id: productId },
+      data: { id: productId }
     });
     return response.data;
   }
@@ -53,12 +53,14 @@ export class Client {
 
   async deleteCoupon(couponId: string): Promise<{ status: string; message: string }> {
     let response = await this.axios.delete('/coupons/delete', {
-      data: { id: couponId },
+      data: { id: couponId }
     });
     return response.data;
   }
 
-  async listCoupons(archived?: boolean): Promise<{ count: number; coupons: Record<string, unknown>[] }> {
+  async listCoupons(
+    archived?: boolean
+  ): Promise<{ count: number; coupons: Record<string, unknown>[] }> {
     let params: Record<string, unknown> = {};
     if (archived !== undefined) {
       params.archived = archived;
@@ -69,23 +71,26 @@ export class Client {
 
   // ---- License Keys ----
 
-  async verifyLicenseKey(productId: string, licenseKey: string): Promise<Record<string, unknown>> {
+  async verifyLicenseKey(
+    productId: string,
+    licenseKey: string
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/licensekeys/verify', {
-      params: { product_id: productId, license_key: licenseKey },
+      params: { product_id: productId, license_key: licenseKey }
     });
     return response.data;
   }
 
   async redeemLicenseKey(licenseKey: string): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/licensekeys/redeem', {
-      license_key: licenseKey,
+      license_key: licenseKey
     });
     return response.data;
   }
 
   async refundLicenseKey(licenseKey: string): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/licensekeys/refund', {
-      license_key: licenseKey,
+      license_key: licenseKey
     });
     return response.data;
   }
@@ -94,14 +99,17 @@ export class Client {
 
   async verifySubscription(email: string): Promise<Record<string, unknown>[]> {
     let response = await this.axios.get('/subscriptions/verify', {
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
 
   // ---- Webhooks ----
 
-  async subscribeWebhook(trigger: string, webhookUrl: string): Promise<{
+  async subscribeWebhook(
+    trigger: string,
+    webhookUrl: string
+  ): Promise<{
     name: string;
     trigger: string;
     webhook: string;
@@ -110,14 +118,14 @@ export class Client {
   }> {
     let response = await this.axios.post('/webhooks/subscribe', {
       trigger,
-      webhook_url: webhookUrl,
+      webhook_url: webhookUrl
     });
     return response.data;
   }
 
   async unsubscribeWebhook(webhookUrl: string): Promise<void> {
     await this.axios.post('/webhooks/unsubscribe', {
-      webhook_url: webhookUrl,
+      webhook_url: webhookUrl
     });
   }
 }

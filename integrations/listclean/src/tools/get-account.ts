@@ -3,26 +3,25 @@ import { ListcleanClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account',
-    key: 'get_account',
-    description: `Retrieve your Listclean account profile and remaining credit balance. Credits operate on a pay-as-you-go model and never expire.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account',
+  key: 'get_account',
+  description: `Retrieve your Listclean account profile and remaining credit balance. Credits operate on a pay-as-you-go model and never expire.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    accountId: z.string().describe('Unique account identifier'),
-    email: z.string().describe('Account email address'),
-    name: z.string().describe('Account holder name'),
-    credits: z.number().describe('Remaining verification credits')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      accountId: z.string().describe('Unique account identifier'),
+      email: z.string().describe('Account email address'),
+      name: z.string().describe('Account holder name'),
+      credits: z.number().describe('Remaining verification credits')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ListcleanClient({
       token: ctx.auth.token
     });

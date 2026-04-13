@@ -1,9 +1,7 @@
 import { createAxios } from 'slates';
 
 let getBaseUrl = (environment: string) =>
-  environment === 'development'
-    ? 'https://apiuat.veo.co.uk/api'
-    : 'https://api.veo.co.uk/api';
+  environment === 'development' ? 'https://apiuat.veo.co.uk/api' : 'https://api.veo.co.uk/api';
 
 export interface PaginationParams {
   pageSize?: number;
@@ -27,8 +25,8 @@ export class Client {
       baseURL: getBaseUrl(opts.environment),
       headers: {
         Authorization: `Bearer ${opts.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -41,27 +39,29 @@ export class Client {
     orderByDirection?: 'ASC' | 'DESC';
     orderBy?: string;
   }) {
-    let response = await this.http.get('/videos/v3/get-all', { params: {
-      createdByMe: params.createdByMe ?? true,
-      pageSize: params.pageSize ?? 20,
-      pageNumber: params.pageNumber ?? 1,
-      orderByDirection: params.orderByDirection ?? 'DESC',
-      orderBy: params.orderBy ?? 'UPLOADEDSTAMP',
-    }});
+    let response = await this.http.get('/videos/v3/get-all', {
+      params: {
+        createdByMe: params.createdByMe ?? true,
+        pageSize: params.pageSize ?? 20,
+        pageNumber: params.pageNumber ?? 1,
+        orderByDirection: params.orderByDirection ?? 'DESC',
+        orderBy: params.orderBy ?? 'UPLOADEDSTAMP'
+      }
+    });
     return response.data;
   }
 
   async createVideo(title: string, recordedStamp: string) {
     let response = await this.http.post('/videos/', {
       Title: title,
-      RecordedStamp: recordedStamp,
+      RecordedStamp: recordedStamp
     });
     return response.data;
   }
 
   async getVideoUploadToken(videoId: string, mimeType: string) {
     let response = await this.http.get(`/videos/${videoId}/uploadtoken`, {
-      params: { mimetype: mimeType },
+      params: { mimetype: mimeType }
     });
     return response.data;
   }
@@ -85,13 +85,15 @@ export class Client {
     pageNumber?: number;
     orderByDirection?: 'ASC' | 'DESC';
   }) {
-    let response = await this.http.get('/users/get-all', { params: {
-      SearchTerm: params.searchTerm,
-      OrganisationId: params.organisationId,
-      pageSize: params.pageSize ?? 20,
-      pageNumber: params.pageNumber ?? 1,
-      orderByDirection: params.orderByDirection ?? 'ASC',
-    }});
+    let response = await this.http.get('/users/get-all', {
+      params: {
+        SearchTerm: params.searchTerm,
+        OrganisationId: params.organisationId,
+        pageSize: params.pageSize ?? 20,
+        pageNumber: params.pageNumber ?? 1,
+        orderByDirection: params.orderByDirection ?? 'ASC'
+      }
+    });
     return response.data;
   }
 
@@ -114,7 +116,7 @@ export class Client {
       Roles: data.roles,
       RegionId: data.regionId ?? 1,
       AcceptsPrivacyPolicy: true,
-      AcceptsTermsAndConditions: true,
+      AcceptsTermsAndConditions: true
     });
     return response.data;
   }
@@ -129,23 +131,26 @@ export class Client {
   }) {
     let response = await this.http.post('/userinvites/multiple', {
       OrganisationId: data.organisationId,
-      Users: data.users.map((u) => ({
+      Users: data.users.map(u => ({
         Email: u.email,
         IsOrgAdmin: u.isOrgAdmin ?? false,
-        Communities: u.communities ?? [],
-      })),
+        Communities: u.communities ?? []
+      }))
     });
     return response.data;
   }
 
-  async updateUser(userId: string, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    password?: string;
-    isActive?: boolean;
-    roles?: Array<{ organisationId: string; roles: number[] }>;
-  }) {
+  async updateUser(
+    userId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      password?: string;
+      isActive?: boolean;
+      roles?: Array<{ organisationId: string; roles: number[] }>;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.firstName !== undefined) body.FirstName = data.firstName;
     if (data.lastName !== undefined) body.LastName = data.lastName;
@@ -153,9 +158,9 @@ export class Client {
     if (data.password !== undefined) body.Password = data.password;
     if (data.isActive !== undefined) body.IsActive = data.isActive;
     if (data.roles !== undefined) {
-      body.Roles = data.roles.map((r) => ({
+      body.Roles = data.roles.map(r => ({
         OrganisationId: r.organisationId,
-        Roles: r.roles,
+        Roles: r.roles
       }));
     }
     let response = await this.http.put(`/v2/users/${userId}`, body);
@@ -176,13 +181,15 @@ export class Client {
     pageSize?: number;
     pageNumber?: number;
   }) {
-    let response = await this.http.get('/communities', { params: {
-      name: params.name,
-      OrganisationId: params.organisationId,
-      createdByMe: params.createdByMe,
-      pageSize: params.pageSize ?? 20,
-      pageNumber: params.pageNumber ?? 1,
-    }});
+    let response = await this.http.get('/communities', {
+      params: {
+        name: params.name,
+        OrganisationId: params.organisationId,
+        createdByMe: params.createdByMe,
+        pageSize: params.pageSize ?? 20,
+        pageNumber: params.pageNumber ?? 1
+      }
+    });
     return response.data;
   }
 
@@ -209,25 +216,28 @@ export class Client {
       VisibilityId: data.visibilityId ?? 3,
       InviteTypeId: data.inviteTypeId ?? 2,
       PostingPermissionTypeId: data.postingPermissionTypeId ?? 1,
-      CommentPostsType: data.commentPostsType ?? true,
+      CommentPostsType: data.commentPostsType ?? true
     });
     return response.data;
   }
 
-  async updateGroup(groupId: string, data: {
-    name?: string;
-    description?: string;
-    typeId?: number;
-    privacyLevelId?: number;
-    visibilityId?: number;
-    inviteTypeId?: number;
-    postingPermissionTypeId?: number;
-    commentPostsType?: boolean;
-    featureActivity?: boolean;
-    featureTimeline?: boolean;
-    featureVideo?: boolean;
-    featureFile?: boolean;
-  }) {
+  async updateGroup(
+    groupId: string,
+    data: {
+      name?: string;
+      description?: string;
+      typeId?: number;
+      privacyLevelId?: number;
+      visibilityId?: number;
+      inviteTypeId?: number;
+      postingPermissionTypeId?: number;
+      commentPostsType?: boolean;
+      featureActivity?: boolean;
+      featureTimeline?: boolean;
+      featureVideo?: boolean;
+      featureFile?: boolean;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.name !== undefined) body.Name = data.name;
     if (data.description !== undefined) body.Description = data.description;
@@ -235,7 +245,8 @@ export class Client {
     if (data.privacyLevelId !== undefined) body.PrivacyLevelId = data.privacyLevelId;
     if (data.visibilityId !== undefined) body.VisibilityId = data.visibilityId;
     if (data.inviteTypeId !== undefined) body.InviteTypeId = data.inviteTypeId;
-    if (data.postingPermissionTypeId !== undefined) body.PostingPermissionTypeId = data.postingPermissionTypeId;
+    if (data.postingPermissionTypeId !== undefined)
+      body.PostingPermissionTypeId = data.postingPermissionTypeId;
     if (data.commentPostsType !== undefined) body.CommentPostsType = data.commentPostsType;
     if (data.featureActivity !== undefined) body.FeatureActivity = data.featureActivity;
     if (data.featureTimeline !== undefined) body.FeatureTimeline = data.featureTimeline;
@@ -290,26 +301,38 @@ export class Client {
     return response.data;
   }
 
-  async createTagSessionNote(taggedVideoId: string, tagId: string, message: string, parentCommentId?: number) {
+  async createTagSessionNote(
+    taggedVideoId: string,
+    tagId: string,
+    message: string,
+    parentCommentId?: number
+  ) {
     let body: Record<string, unknown> = { Message: message };
     if (parentCommentId !== undefined) body.ParentCommentId = parentCommentId;
-    let response = await this.http.post(`/taggedvideo/${taggedVideoId}/tags/${tagId}/Notes`, body);
+    let response = await this.http.post(
+      `/taggedvideo/${taggedVideoId}/tags/${tagId}/Notes`,
+      body
+    );
     return response.data;
   }
 
   async deleteTagSessionNote(taggedVideoId: string, tagId: string, noteId: string) {
-    let response = await this.http.delete(`/taggedvideo/${taggedVideoId}/tags/${tagId}/notes/${noteId}`);
+    let response = await this.http.delete(
+      `/taggedvideo/${taggedVideoId}/tags/${tagId}/notes/${noteId}`
+    );
     return response.data;
   }
 
   // ── Portfolios ─────────────────────────────────────────────────────────
 
   async listPortfolios(params?: PaginationParams) {
-    let response = await this.http.get('/portfolios', { params: {
-      pageSize: params?.pageSize ?? 20,
-      pageNumber: params?.pageNumber ?? 1,
-      orderByDirection: params?.orderByDirection ?? 'DESC',
-    }});
+    let response = await this.http.get('/portfolios', {
+      params: {
+        pageSize: params?.pageSize ?? 20,
+        pageNumber: params?.pageNumber ?? 1,
+        orderByDirection: params?.orderByDirection ?? 'DESC'
+      }
+    });
     return response.data;
   }
 

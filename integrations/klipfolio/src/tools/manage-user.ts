@@ -3,42 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Create, update, or delete a user. Also supports managing group memberships and dashboard assignments for a user.`,
-    instructions: [
-      'Use action "create" to invite a new user, "update" to modify, or "delete" to remove.',
-      'You can add/remove users from groups and assign/unassign dashboards in the same call.',
-    ],
-    constraints: [
-      'Cannot delete your own account, the super admin, or technical/business contacts.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    userId: z.string().optional().describe('User ID (required for update and delete)'),
-    firstName: z.string().optional().describe('First name (required for create)'),
-    lastName: z.string().optional().describe('Last name (required for create)'),
-    email: z.string().optional().describe('Email address (required for create)'),
-    externalId: z.string().optional().describe('External identifier'),
-    roles: z.array(z.string()).optional().describe('Role IDs to assign (for create)'),
-    password: z.string().optional().describe('Password (for create)'),
-    clientId: z.string().optional().describe('Client ID (for create)'),
-    sendEmail: z.boolean().optional().describe('Send invitation email (for create)'),
-    addToGroupIds: z.array(z.string()).optional().describe('Group IDs to add the user to'),
-    removeFromGroupIds: z.array(z.string()).optional().describe('Group IDs to remove the user from'),
-    assignTabIds: z.array(z.string()).optional().describe('Dashboard (tab) IDs to assign to the user'),
-    unassignTabInstanceIds: z.array(z.string()).optional().describe('Tab instance IDs to remove from the user'),
-  }))
-  .output(z.object({
-    userId: z.string().optional(),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Create, update, or delete a user. Also supports managing group memberships and dashboard assignments for a user.`,
+  instructions: [
+    'Use action "create" to invite a new user, "update" to modify, or "delete" to remove.',
+    'You can add/remove users from groups and assign/unassign dashboards in the same call.'
+  ],
+  constraints: [
+    'Cannot delete your own account, the super admin, or technical/business contacts.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      userId: z.string().optional().describe('User ID (required for update and delete)'),
+      firstName: z.string().optional().describe('First name (required for create)'),
+      lastName: z.string().optional().describe('Last name (required for create)'),
+      email: z.string().optional().describe('Email address (required for create)'),
+      externalId: z.string().optional().describe('External identifier'),
+      roles: z.array(z.string()).optional().describe('Role IDs to assign (for create)'),
+      password: z.string().optional().describe('Password (for create)'),
+      clientId: z.string().optional().describe('Client ID (for create)'),
+      sendEmail: z.boolean().optional().describe('Send invitation email (for create)'),
+      addToGroupIds: z.array(z.string()).optional().describe('Group IDs to add the user to'),
+      removeFromGroupIds: z
+        .array(z.string())
+        .optional()
+        .describe('Group IDs to remove the user from'),
+      assignTabIds: z
+        .array(z.string())
+        .optional()
+        .describe('Dashboard (tab) IDs to assign to the user'),
+      unassignTabInstanceIds: z
+        .array(z.string())
+        .optional()
+        .describe('Tab instance IDs to remove from the user')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().optional(),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
@@ -54,7 +64,7 @@ export let manageUser = SlateTool.create(
         password: ctx.input.password,
         externalId: ctx.input.externalId,
         clientId: ctx.input.clientId,
-        sendEmail: ctx.input.sendEmail,
+        sendEmail: ctx.input.sendEmail
       });
 
       let location = result?.meta?.location;
@@ -72,19 +82,24 @@ export let manageUser = SlateTool.create(
 
       return {
         output: { userId, success: true },
-        message: `Created user **${ctx.input.firstName} ${ctx.input.lastName}** (${ctx.input.email})${userId ? ` with ID \`${userId}\`` : ''}.`,
+        message: `Created user **${ctx.input.firstName} ${ctx.input.lastName}** (${ctx.input.email})${userId ? ` with ID \`${userId}\`` : ''}.`
       };
     }
 
     if (ctx.input.action === 'update') {
       if (!ctx.input.userId) throw new Error('userId is required when updating a user');
 
-      if (ctx.input.firstName !== undefined || ctx.input.lastName !== undefined || ctx.input.email !== undefined || ctx.input.externalId !== undefined) {
+      if (
+        ctx.input.firstName !== undefined ||
+        ctx.input.lastName !== undefined ||
+        ctx.input.email !== undefined ||
+        ctx.input.externalId !== undefined
+      ) {
         await client.updateUser(ctx.input.userId, {
           firstName: ctx.input.firstName,
           lastName: ctx.input.lastName,
           email: ctx.input.email,
-          externalId: ctx.input.externalId,
+          externalId: ctx.input.externalId
         });
       }
 
@@ -112,7 +127,7 @@ export let manageUser = SlateTool.create(
 
       return {
         output: { userId: ctx.input.userId, success: true },
-        message: `Updated user \`${ctx.input.userId}\`.`,
+        message: `Updated user \`${ctx.input.userId}\`.`
       };
     }
 
@@ -122,7 +137,7 @@ export let manageUser = SlateTool.create(
 
       return {
         output: { userId: ctx.input.userId, success: true },
-        message: `Deleted user \`${ctx.input.userId}\`.`,
+        message: `Deleted user \`${ctx.input.userId}\`.`
       };
     }
 

@@ -14,61 +14,65 @@ let CONVERSATION_EVENTS = [
   'convo.custom-fields',
   'convo.customer.reply.created',
   'convo.agent.reply.created',
-  'convo.note.created',
+  'convo.note.created'
 ] as const;
 
-export let conversationEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Conversation Events',
-    key: 'conversation_events',
-    description: 'Triggered when conversations are created, updated, assigned, merged, moved, or when replies and notes are added.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Help Scout event type (e.g. convo.created, convo.assigned)'),
-    conversationId: z.number().describe('Conversation ID'),
-    subject: z.string().nullable().describe('Conversation subject'),
-    status: z.string().nullable().describe('Conversation status'),
-    mailboxId: z.number().nullable().describe('Mailbox ID'),
-    assigneeId: z.number().nullable().describe('Assigned user ID'),
-    customerEmail: z.string().nullable().describe('Customer email'),
-    tags: z.array(z.string()).describe('Conversation tags'),
-    threadBody: z.string().nullable().describe('Thread body (for reply/note events)'),
-    threadType: z.string().nullable().describe('Thread type (for reply/note events)'),
-    webhookId: z.string().describe('Webhook delivery identifier'),
-  }))
-  .output(z.object({
-    conversationId: z.number().describe('Conversation ID'),
-    subject: z.string().nullable().describe('Conversation subject'),
-    status: z.string().nullable().describe('Conversation status'),
-    mailboxId: z.number().nullable().describe('Mailbox ID'),
-    assigneeId: z.number().nullable().describe('Assigned user ID'),
-    customerEmail: z.string().nullable().describe('Customer email'),
-    tags: z.array(z.string()).describe('Conversation tags'),
-    threadBody: z.string().nullable().describe('Thread body (for reply/note events)'),
-    threadType: z.string().nullable().describe('Thread type (for reply/note events)'),
-  }))
+export let conversationEvents = SlateTrigger.create(spec, {
+  name: 'Conversation Events',
+  key: 'conversation_events',
+  description:
+    'Triggered when conversations are created, updated, assigned, merged, moved, or when replies and notes are added.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Help Scout event type (e.g. convo.created, convo.assigned)'),
+      conversationId: z.number().describe('Conversation ID'),
+      subject: z.string().nullable().describe('Conversation subject'),
+      status: z.string().nullable().describe('Conversation status'),
+      mailboxId: z.number().nullable().describe('Mailbox ID'),
+      assigneeId: z.number().nullable().describe('Assigned user ID'),
+      customerEmail: z.string().nullable().describe('Customer email'),
+      tags: z.array(z.string()).describe('Conversation tags'),
+      threadBody: z.string().nullable().describe('Thread body (for reply/note events)'),
+      threadType: z.string().nullable().describe('Thread type (for reply/note events)'),
+      webhookId: z.string().describe('Webhook delivery identifier')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.number().describe('Conversation ID'),
+      subject: z.string().nullable().describe('Conversation subject'),
+      status: z.string().nullable().describe('Conversation status'),
+      mailboxId: z.number().nullable().describe('Mailbox ID'),
+      assigneeId: z.number().nullable().describe('Assigned user ID'),
+      customerEmail: z.string().nullable().describe('Customer email'),
+      tags: z.array(z.string()).describe('Conversation tags'),
+      threadBody: z.string().nullable().describe('Thread body (for reply/note events)'),
+      threadType: z.string().nullable().describe('Thread type (for reply/note events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new HelpScoutClient(ctx.auth.token);
       let secret = crypto.randomUUID();
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
         events: [...CONVERSATION_EVENTS],
         secret,
-        payloadVersion: 'V2',
+        payloadVersion: 'V2'
       });
 
       return {
         registrationDetails: {
           webhookId: result.webhookId,
-          secret,
-        },
+          secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new HelpScoutClient(ctx.auth.token);
       let webhookId = ctx.input.registrationDetails?.webhookId;
       if (webhookId) {
@@ -76,8 +80,8 @@ export let conversationEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       let eventType = data?.event ?? data?.eventType ?? '';
       let conversation = data?.payload?.conversation ?? data?.conversation ?? data ?? {};
@@ -88,8 +92,11 @@ export let conversationEvents = SlateTrigger.create(
       let status = conversation.status ?? null;
       let mailboxId = conversation.mailboxId ?? null;
       let assigneeId = conversation.assignee?.id ?? null;
-      let customerEmail = conversation.primaryCustomer?.email ?? conversation.customer?.email ?? null;
-      let tags = (conversation.tags ?? []).map((t: any) => typeof t === 'string' ? t : t.tag ?? t.name ?? '');
+      let customerEmail =
+        conversation.primaryCustomer?.email ?? conversation.customer?.email ?? null;
+      let tags = (conversation.tags ?? []).map((t: any) =>
+        typeof t === 'string' ? t : (t.tag ?? t.name ?? '')
+      );
 
       let threadBody = thread?.body ?? null;
       let threadType = thread?.type ?? null;
@@ -97,23 +104,25 @@ export let conversationEvents = SlateTrigger.create(
       let webhookId = `${eventType}-${conversationId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          conversationId,
-          subject,
-          status,
-          mailboxId,
-          assigneeId,
-          customerEmail,
-          tags,
-          threadBody,
-          threadType,
-          webhookId,
-        }],
+        inputs: [
+          {
+            eventType,
+            conversationId,
+            subject,
+            status,
+            mailboxId,
+            assigneeId,
+            customerEmail,
+            tags,
+            threadBody,
+            threadType,
+            webhookId
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
         'convo.assigned': 'conversation.assigned',
         'convo.created': 'conversation.created',
@@ -125,7 +134,7 @@ export let conversationEvents = SlateTrigger.create(
         'convo.custom-fields': 'conversation.custom_fields_updated',
         'convo.customer.reply.created': 'conversation.customer_reply',
         'convo.agent.reply.created': 'conversation.agent_reply',
-        'convo.note.created': 'conversation.note_created',
+        'convo.note.created': 'conversation.note_created'
       };
 
       return {
@@ -140,8 +149,9 @@ export let conversationEvents = SlateTrigger.create(
           customerEmail: ctx.input.customerEmail,
           tags: ctx.input.tags,
           threadBody: ctx.input.threadBody,
-          threadType: ctx.input.threadType,
-        },
+          threadType: ctx.input.threadType
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

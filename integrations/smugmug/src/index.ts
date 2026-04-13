@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getUserTool,
@@ -21,13 +20,9 @@ import {
   getCommentsTool,
   getWatermarksTool,
   getShareUrisTool,
-  browseFolderTool,
+  browseFolderTool
 } from './tools';
-import {
-  newImagesTrigger,
-  albumUpdatedTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newImagesTrigger, albumUpdatedTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,11 +46,7 @@ export let provider = Slate.create({
     getCommentsTool,
     getWatermarksTool,
     getShareUrisTool,
-    browseFolderTool,
+    browseFolderTool
   ],
-  triggers: [
-    inboundWebhook,
-    newImagesTrigger,
-    albumUpdatedTrigger,
-  ],
+  triggers: [inboundWebhook, newImagesTrigger, albumUpdatedTrigger]
 });

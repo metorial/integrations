@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listFonts = SlateTool.create(
-  spec,
-  {
-    name: 'List Fonts',
-    key: 'list_fonts',
-    description: `List all available fonts, including both Google Fonts and custom uploaded fonts.`,
-    tags: {
-      readOnly: true
-    }
+export let listFonts = SlateTool.create(spec, {
+  name: 'List Fonts',
+  key: 'list_fonts',
+  description: `List all available fonts, including both Google Fonts and custom uploaded fonts.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    fonts: z.array(z.object({
-      fontName: z.string().optional(),
-      isGoogleFont: z.boolean().optional(),
-      isUploadedFont: z.boolean().optional()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      fonts: z.array(
+        z.object({
+          fontName: z.string().optional(),
+          isGoogleFont: z.boolean().optional(),
+          isUploadedFont: z.boolean().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let fonts = await client.listFonts();
 
@@ -38,4 +39,5 @@ export let listFonts = SlateTool.create(
       },
       message: `Found **${items.length}** font(s).`
     };
-  }).build();
+  })
+  .build();

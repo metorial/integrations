@@ -60,9 +60,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -81,15 +81,15 @@ export class Client {
         description: params.description,
         language: params.language,
         fields: params.fields,
-        options: params.options,
-      },
+        options: params.options
+      }
     });
     return response.data;
   }
 
   async viewExtraction(extractionId: string) {
     let response = await this.axios.post('/viewExtraction', {
-      extractionId,
+      extractionId
     });
     return response.data;
   }
@@ -113,29 +113,21 @@ export class Client {
 
     let response = await this.axios.patch('/updateExtraction', {
       extractionId,
-      extractionDetails,
+      extractionDetails
     });
     return response.data;
   }
 
-  async deleteExtraction(params: {
-    extractionId: string;
-    batchId?: string;
-    fileId?: string;
-  }) {
+  async deleteExtraction(params: { extractionId: string; batchId?: string; fileId?: string }) {
     let response = await this.axios.delete('/deleteExtraction', {
-      data: params,
+      data: params
     });
     return response.data;
   }
 
   // ─── File Upload & Results ────────────────────────────────────────
 
-  async uploadFiles(params: {
-    extractionId: string;
-    batchId?: string;
-    fileUrls: string[];
-  }) {
+  async uploadFiles(params: { extractionId: string; batchId?: string; fileUrls: string[] }) {
     let formData = new FormData();
     formData.append('extractionId', params.extractionId);
     if (params.batchId) {
@@ -151,17 +143,13 @@ export class Client {
 
     let response = await this.axios.post('/uploadFiles', formData, {
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
+        Authorization: `Bearer ${this.token}`
+      }
     });
     return response.data;
   }
 
-  async getBatchResults(params: {
-    extractionId: string;
-    batchId: string;
-    fileId?: string;
-  }) {
+  async getBatchResults(params: { extractionId: string; batchId: string; fileId?: string }) {
     let response = await this.axios.post('/getBatchResults', params);
     return response.data;
   }
@@ -177,15 +165,15 @@ export class Client {
       classificationDetails: {
         name: params.name,
         description: params.description,
-        documentTypes: params.documentTypes,
-      },
+        documentTypes: params.documentTypes
+      }
     });
     return response.data;
   }
 
   async viewClassification(classificationId: string) {
     let response = await this.axios.post('/documentClassification/viewClassification', {
-      classificationId,
+      classificationId
     });
     return response.data;
   }
@@ -200,19 +188,21 @@ export class Client {
     let classificationDetails: Record<string, unknown> = {};
 
     if (details.name !== undefined) classificationDetails.name = details.name;
-    if (details.description !== undefined) classificationDetails.description = details.description;
-    if (details.documentTypes !== undefined) classificationDetails.documentTypes = details.documentTypes;
+    if (details.description !== undefined)
+      classificationDetails.description = details.description;
+    if (details.documentTypes !== undefined)
+      classificationDetails.documentTypes = details.documentTypes;
 
     let response = await this.axios.patch('/documentClassification/updateClassification', {
       classificationId,
-      classificationDetails,
+      classificationDetails
     });
     return response.data;
   }
 
   async deleteClassification(classificationId: string) {
     let response = await this.axios.delete('/documentClassification/deleteClassification', {
-      data: { classificationId },
+      data: { classificationId }
     });
     return response.data;
   }
@@ -237,8 +227,8 @@ export class Client {
 
     let response = await this.axios.post('/documentClassification/uploadFiles', formData, {
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
+        Authorization: `Bearer ${this.token}`
+      }
     });
     return response.data;
   }

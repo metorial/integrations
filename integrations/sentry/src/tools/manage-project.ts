@@ -3,38 +3,42 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProjectTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Create, update, or delete a Sentry project. When creating, a team slug is required. When updating, provide the project slug and the fields to change.`,
-    instructions: [
-      'To create: provide teamSlug, name, and optionally platform and slug',
-      'To update: provide projectSlug and any fields to update (name, slug, platform)',
-      'To delete: provide projectSlug and set action to "delete"'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageProjectTool = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Create, update, or delete a Sentry project. When creating, a team slug is required. When updating, provide the project slug and the fields to change.`,
+  instructions: [
+    'To create: provide teamSlug, name, and optionally platform and slug',
+    'To update: provide projectSlug and any fields to update (name, slug, platform)',
+    'To delete: provide projectSlug and set action to "delete"'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    projectSlug: z.string().optional().describe('Project slug (required for update/delete)'),
-    teamSlug: z.string().optional().describe('Team slug (required for create)'),
-    name: z.string().optional().describe('Project name'),
-    slug: z.string().optional().describe('Project slug to set'),
-    platform: z.string().optional().describe('Platform identifier (e.g. "python", "javascript", "node")')
-  }))
-  .output(z.object({
-    projectId: z.string().optional(),
-    projectSlug: z.string().optional(),
-    name: z.string().optional(),
-    platform: z.string().optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      projectSlug: z.string().optional().describe('Project slug (required for update/delete)'),
+      teamSlug: z.string().optional().describe('Team slug (required for create)'),
+      name: z.string().optional().describe('Project name'),
+      slug: z.string().optional().describe('Project slug to set'),
+      platform: z
+        .string()
+        .optional()
+        .describe('Platform identifier (e.g. "python", "javascript", "node")')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().optional(),
+      projectSlug: z.string().optional(),
+      name: z.string().optional(),
+      platform: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'create') {
@@ -59,7 +63,8 @@ export let manageProjectTool = SlateTool.create(
     }
 
     if (ctx.input.action === 'update') {
-      if (!ctx.input.projectSlug) throw new Error('projectSlug is required when updating a project');
+      if (!ctx.input.projectSlug)
+        throw new Error('projectSlug is required when updating a project');
 
       let updateData: Record<string, any> = {};
       if (ctx.input.name) updateData.name = ctx.input.name;
@@ -80,7 +85,8 @@ export let manageProjectTool = SlateTool.create(
     }
 
     if (ctx.input.action === 'delete') {
-      if (!ctx.input.projectSlug) throw new Error('projectSlug is required when deleting a project');
+      if (!ctx.input.projectSlug)
+        throw new Error('projectSlug is required when deleting a project');
 
       await client.deleteProject(ctx.input.projectSlug);
 
@@ -94,4 +100,5 @@ export let manageProjectTool = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

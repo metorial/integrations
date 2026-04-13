@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDataConnection = SlateTool.create(
-  spec,
-  {
-    name: 'Get Data Connection',
-    key: 'get_data_connection',
-    description: `Retrieve detailed configuration for a specific data connection, including connection type, description, and metadata.`,
-    tags: {
-      readOnly: true,
-    },
+export let getDataConnection = SlateTool.create(spec, {
+  name: 'Get Data Connection',
+  key: 'get_data_connection',
+  description: `Retrieve detailed configuration for a specific data connection, including connection type, description, and metadata.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    dataConnectionId: z.string().describe('UUID of the data connection to retrieve'),
-  }))
-  .output(z.object({
-    dataConnectionId: z.string(),
-    name: z.string(),
-    type: z.string(),
-    description: z.string().nullable(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dataConnectionId: z.string().describe('UUID of the data connection to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      dataConnectionId: z.string(),
+      name: z.string(),
+      type: z.string(),
+      description: z.string().nullable(),
+      createdAt: z.string(),
+      updatedAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
     let connection = await client.getDataConnection(ctx.input.dataConnectionId);
 
@@ -36,9 +37,9 @@ export let getDataConnection = SlateTool.create(
         type: connection.type,
         description: connection.description,
         createdAt: connection.createdAt,
-        updatedAt: connection.updatedAt,
+        updatedAt: connection.updatedAt
       },
-      message: `Retrieved data connection **${connection.name}** (${connection.type}).`,
+      message: `Retrieved data connection **${connection.name}** (${connection.type}).`
     };
   })
   .build();

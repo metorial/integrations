@@ -20,6 +20,7 @@ You can access, manage, and extract recruiting data from your Workable account b
 - Workable requires a user-specific subdomain for the API base URL. The base URL format is `https://{subdomain}.workable.com/spi/v3/`.
 
 Available scopes include:
+
 - `r_jobs` — Read access to jobs
 - `r_candidates` — Read access to candidates
 - `w_candidates` — Write access to candidates
@@ -45,36 +46,47 @@ The Partner Token is an authorization token used specifically for an integration
 ## Features
 
 ### Account & Team Management
+
 Retrieve account information, list and manage hiring team members (with roles and permissions), manage recruiters, and view pipeline stages. You can also manage requisition data including fields, approval status, and workflow. Admins can invite members, update access levels, and deactivate or restore members.
 
 ### Job Management
+
 Access job listings with details such as title, department, location, state (draft, published, closed, archived), and salary. Retrieve job-specific application forms, custom questions, custom attributes, pipeline stages, and assigned team members. Jobs can be filtered by state, creation date, and update date.
 
 ### Candidate Management
+
 Manage your candidates by fetching candidates, extracting detailed candidate info, creating candidates, and updating candidates. Perform actions such as copying candidates between jobs, relocating, moving between stages, disqualifying, and reverting disqualification. Add comments, ratings, and tags to candidate profiles. Answers to custom questions and custom fields are included in candidate detail responses.
 
 ### Requisition Management
+
 Create, update, list, approve, and reject requisitions. Requisitions support custom fields and workflow-based approval processes.
 
 ### Offer Management
+
 Retrieve offer details for candidates and approve or reject offers through the API.
 
 ### Department Management
+
 Create, merge, or delete departments. List departments and legal entities associated with the account.
 
 ### Employee Management (HR)
+
 List employees, get information about a specific employee, create a specific employee, update a specific employee, and get documents about a specific employee. Manage employee fields and upload employee documents. Access work schedules configured for the account.
 
 ### Time Off Management
+
 Retrieve time-off categories, create and list time-off requests, and view time-off balances for employees.
 
 ### Scheduled Events
+
 Retrieve a collection of scheduled events (e.g., interviews). Optional query parameters include type, candidate_id, job shortcode, member_id, date range, and context. The response includes event details such as title, description, type, start/end times, cancellation status, associated job, members, candidate, and conference details.
 
 ### Activity Feeds
+
 Retrieve activity logs for both jobs and individual candidates, providing an audit trail of actions taken during the recruiting process.
 
 ### Custom Careers Page
+
 Build a custom careers page using Workable's API by fetching job listings and displaying them on your website. Public endpoints are available that don't require authentication for listing published jobs, locations, and departments.
 
 ## Events

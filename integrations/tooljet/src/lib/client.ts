@@ -7,9 +7,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: `${options.baseUrl.replace(/\/+$/, '')}/api/ext`,
       headers: {
-        'Authorization': `Basic ${options.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${options.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -57,7 +57,10 @@ export class Client {
     workspaceId: string,
     body: { newRole: string; email: string }
   ): Promise<any> {
-    let response = await this.axios.put(`/update-user-role/workspace/${encodeURIComponent(workspaceId)}`, body);
+    let response = await this.axios.put(
+      `/update-user-role/workspace/${encodeURIComponent(workspaceId)}`,
+      body
+    );
     return response.data;
   }
 
@@ -69,7 +72,10 @@ export class Client {
   }
 
   async replaceUserWorkspaces(userId: string, workspaces: any[]): Promise<any> {
-    let response = await this.axios.put(`/user/${encodeURIComponent(userId)}/workspaces`, workspaces);
+    let response = await this.axios.put(
+      `/user/${encodeURIComponent(userId)}/workspaces`,
+      workspaces
+    );
     return response.data;
   }
 
@@ -124,10 +130,7 @@ export class Client {
     return response.data;
   }
 
-  async importApp(
-    workspaceId: string,
-    body: any
-  ): Promise<any> {
+  async importApp(workspaceId: string, body: any): Promise<any> {
     let response = await this.axios.post(
       `/import/workspace/${encodeURIComponent(workspaceId)}/apps`,
       body

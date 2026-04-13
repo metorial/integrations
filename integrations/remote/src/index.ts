@@ -15,7 +15,7 @@ import {
   getCountryFormSchema,
   estimateEmploymentCost,
   listPayslips,
-  listContractAmendments,
+  listContractAmendments
 } from './tools';
 import {
   employmentEvents,
@@ -24,7 +24,7 @@ import {
   offboardingEvents,
   payslipEvents,
   incentiveEvents,
-  companyEvents,
+  companyEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -44,7 +44,7 @@ export let provider = Slate.create({
     getCountryFormSchema,
     estimateEmploymentCost,
     listPayslips,
-    listContractAmendments,
+    listContractAmendments
   ] as any,
   triggers: [
     employmentEvents,
@@ -53,6 +53,6 @@ export let provider = Slate.create({
     offboardingEvents,
     payslipEvents,
     incentiveEvents,
-    companyEvents,
-  ] as any,
+    companyEvents
+  ] as any
 });

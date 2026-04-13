@@ -21,9 +21,11 @@ Used for campaign management, audience management, and reporting.
 5. The response returns an `access_token` and a `refresh_token`. Access tokens are valid only for 1 hour.
 
 **Key OAuth endpoints:**
+
 - Authorize URL: `https://www.reddit.com/api/v1/authorize`; Token URL: `https://www.reddit.com/api/v1/access_token`; Refresh URL: `https://www.reddit.com/api/v1/access_token`
 
 **Scopes:**
+
 - Scopes dictate which actions may be performed with the access token. Each endpoint's documentation lists the scopes required. You may set scopes to `adsread,history` if you would like your token to access everything in the Ads API.
 - To update audiences, you need the `adsedit` scope. To add multiple scopes, separate the values by commas.
 
@@ -80,4 +82,4 @@ Manage advertiser account settings and access. The API allows retrieval of accou
 
 ## Events
 
-The provider does not support webhooks or event subscription mechanisms. The Conversions API is a one-way data ingestion endpoint for sending conversion events *to* Reddit, not for receiving events from Reddit. There is no built-in webhook or push notification system for campaign status changes or other advertising events.
+The provider does not support webhooks or event subscription mechanisms. The Conversions API is a one-way data ingestion endpoint for sending conversion events _to_ Reddit, not for receiving events from Reddit. There is no built-in webhook or push notification system for campaign status changes or other advertising events.

@@ -7,35 +7,48 @@ let audienceSchema = z.object({
   audienceId: z.string().describe('Custom audience ID'),
   name: z.string().optional().describe('Audience name'),
   description: z.string().optional().describe('Audience description'),
-  subtype: z.string().optional().describe('Audience subtype (CUSTOM, WEBSITE, LOOKALIKE, etc.)'),
-  approximateCountLowerBound: z.number().optional().describe('Approximate lower bound of audience size'),
-  approximateCountUpperBound: z.number().optional().describe('Approximate upper bound of audience size'),
-  deliveryStatus: z.any().optional().describe('Delivery status (code 200=active, 300=too small, 400+=unusable)'),
+  subtype: z
+    .string()
+    .optional()
+    .describe('Audience subtype (CUSTOM, WEBSITE, LOOKALIKE, etc.)'),
+  approximateCountLowerBound: z
+    .number()
+    .optional()
+    .describe('Approximate lower bound of audience size'),
+  approximateCountUpperBound: z
+    .number()
+    .optional()
+    .describe('Approximate upper bound of audience size'),
+  deliveryStatus: z
+    .any()
+    .optional()
+    .describe('Delivery status (code 200=active, 300=too small, 400+=unusable)'),
   operationStatus: z.any().optional().describe('Operation status'),
   timeCreated: z.string().optional().describe('Creation timestamp'),
   timeUpdated: z.string().optional().describe('Last update timestamp')
 });
 
-export let listCustomAudiences = SlateTool.create(
-  spec,
-  {
-    name: 'List Custom Audiences',
-    key: 'list_custom_audiences',
-    description: `Retrieve custom audiences from the ad account. Custom audiences enable targeting specific groups of people based on customer data, website traffic, app activity, or engagement.`,
-    tags: {
-      readOnly: true
-    }
+export let listCustomAudiences = SlateTool.create(spec, {
+  name: 'List Custom Audiences',
+  key: 'list_custom_audiences',
+  description: `Retrieve custom audiences from the ad account. Custom audiences enable targeting specific groups of people based on customer data, website traffic, app activity, or engagement.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Max number of audiences to return (default 25)'),
-    afterCursor: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    audiences: z.array(audienceSchema),
-    nextCursor: z.string().optional().describe('Cursor for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Max number of audiences to return (default 25)'),
+      afterCursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      audiences: z.array(audienceSchema),
+      nextCursor: z.string().optional().describe('Cursor for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -67,24 +80,24 @@ export let listCustomAudiences = SlateTool.create(
       },
       message: `Retrieved **${audiences.length}** custom audiences.`
     };
-  }).build();
+  })
+  .build();
 
-export let getCustomAudience = SlateTool.create(
-  spec,
-  {
-    name: 'Get Custom Audience',
-    key: 'get_custom_audience',
-    description: `Retrieve detailed information about a specific custom audience.`,
-    tags: {
-      readOnly: true
-    }
+export let getCustomAudience = SlateTool.create(spec, {
+  name: 'Get Custom Audience',
+  key: 'get_custom_audience',
+  description: `Retrieve detailed information about a specific custom audience.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    audienceId: z.string().describe('The custom audience ID to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      audienceId: z.string().describe('The custom audience ID to retrieve')
+    })
+  )
   .output(audienceSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -108,43 +121,61 @@ export let getCustomAudience = SlateTool.create(
       },
       message: `Retrieved custom audience **${a.name}** (${a.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createCustomAudience = SlateTool.create(
-  spec,
-  {
-    name: 'Create Custom Audience',
-    key: 'create_custom_audience',
-    description: `Create a new custom audience. After creation, add users to it using the "Add Users to Audience" tool. You can create up to 500 custom audiences per ad account.`,
-    instructions: [
-      'After creating the audience, use the Add Users to Audience tool to populate it.',
-      'You must accept Meta Custom Audience Terms of Service in Ads Manager before using this feature.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let createCustomAudience = SlateTool.create(spec, {
+  name: 'Create Custom Audience',
+  key: 'create_custom_audience',
+  description: `Create a new custom audience. After creation, add users to it using the "Add Users to Audience" tool. You can create up to 500 custom audiences per ad account.`,
+  instructions: [
+    'After creating the audience, use the Add Users to Audience tool to populate it.',
+    'You must accept Meta Custom Audience Terms of Service in Ads Manager before using this feature.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Audience name'),
-    description: z.string().optional().describe('Audience description'),
-    subtype: z.enum(['CUSTOM', 'WEBSITE', 'LOOKALIKE', 'ENGAGEMENT']).default('CUSTOM').describe('Audience subtype'),
-    customerFileSource: z.enum([
-      'USER_PROVIDED_ONLY',
-      'PARTNER_PROVIDED_ONLY',
-      'BOTH_USER_AND_PARTNER_PROVIDED'
-    ]).optional().describe('Source of customer data (required for CUSTOM subtype)'),
-    lookalikeSpec: z.object({
-      originAudienceId: z.string().describe('Source audience ID'),
-      targetCountries: z.array(z.string()).describe('Target countries (ISO codes)'),
-      ratio: z.number().min(0.01).max(0.20).describe('Lookalike ratio (0.01-0.20, where 0.01 = top 1%)')
-    }).optional().describe('Configuration for lookalike audiences'),
-    rule: z.record(z.string(), z.any()).optional().describe('Rule-based audience definition (for WEBSITE subtype, uses pixel data)')
-  }))
-  .output(z.object({
-    audienceId: z.string().describe('ID of the newly created audience')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Audience name'),
+      description: z.string().optional().describe('Audience description'),
+      subtype: z
+        .enum(['CUSTOM', 'WEBSITE', 'LOOKALIKE', 'ENGAGEMENT'])
+        .default('CUSTOM')
+        .describe('Audience subtype'),
+      customerFileSource: z
+        .enum([
+          'USER_PROVIDED_ONLY',
+          'PARTNER_PROVIDED_ONLY',
+          'BOTH_USER_AND_PARTNER_PROVIDED'
+        ])
+        .optional()
+        .describe('Source of customer data (required for CUSTOM subtype)'),
+      lookalikeSpec: z
+        .object({
+          originAudienceId: z.string().describe('Source audience ID'),
+          targetCountries: z.array(z.string()).describe('Target countries (ISO codes)'),
+          ratio: z
+            .number()
+            .min(0.01)
+            .max(0.2)
+            .describe('Lookalike ratio (0.01-0.20, where 0.01 = top 1%)')
+        })
+        .optional()
+        .describe('Configuration for lookalike audiences'),
+      rule: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Rule-based audience definition (for WEBSITE subtype, uses pixel data)')
+    })
+  )
+  .output(
+    z.object({
+      audienceId: z.string().describe('ID of the newly created audience')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -157,7 +188,8 @@ export let createCustomAudience = SlateTool.create(
     };
 
     if (ctx.input.description) params.description = ctx.input.description;
-    if (ctx.input.customerFileSource) params.customer_file_source = ctx.input.customerFileSource;
+    if (ctx.input.customerFileSource)
+      params.customer_file_source = ctx.input.customerFileSource;
 
     if (ctx.input.lookalikeSpec) {
       params.lookalike_spec = JSON.stringify({
@@ -177,35 +209,45 @@ export let createCustomAudience = SlateTool.create(
       },
       message: `Created custom audience **${ctx.input.name}** with ID \`${result.id}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let addUsersToAudience = SlateTool.create(
-  spec,
-  {
-    name: 'Add Users to Audience',
-    key: 'add_users_to_audience',
-    description: `Add users to an existing custom audience using hashed identifiers. All PII (emails, phone numbers, etc.) must be SHA-256 hashed before sending. Meta will match these against their user database.`,
-    instructions: [
-      'All PII values must be SHA-256 hashed before including them.',
-      'Emails should be lowercased and trimmed before hashing.',
-      'Phone numbers should include country code, no dashes or symbols, before hashing.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let addUsersToAudience = SlateTool.create(spec, {
+  name: 'Add Users to Audience',
+  key: 'add_users_to_audience',
+  description: `Add users to an existing custom audience using hashed identifiers. All PII (emails, phone numbers, etc.) must be SHA-256 hashed before sending. Meta will match these against their user database.`,
+  instructions: [
+    'All PII values must be SHA-256 hashed before including them.',
+    'Emails should be lowercased and trimmed before hashing.',
+    'Phone numbers should include country code, no dashes or symbols, before hashing.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    audienceId: z.string().describe('Custom audience ID to add users to'),
-    schema: z.array(z.string()).describe('Array of field names in the data (e.g., ["EMAIL", "PHONE", "FN", "LN", "COUNTRY"])'),
-    userData: z.array(z.array(z.string())).describe('Array of user records, each an array of SHA-256 hashed values matching the schema order')
-  }))
-  .output(z.object({
-    audienceId: z.string().describe('The audience ID'),
-    numReceived: z.number().optional().describe('Number of records received'),
-    numInvalid: z.number().optional().describe('Number of invalid records')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      audienceId: z.string().describe('Custom audience ID to add users to'),
+      schema: z
+        .array(z.string())
+        .describe(
+          'Array of field names in the data (e.g., ["EMAIL", "PHONE", "FN", "LN", "COUNTRY"])'
+        ),
+      userData: z
+        .array(z.array(z.string()))
+        .describe(
+          'Array of user records, each an array of SHA-256 hashed values matching the schema order'
+        )
+    })
+  )
+  .output(
+    z.object({
+      audienceId: z.string().describe('The audience ID'),
+      numReceived: z.number().optional().describe('Number of records received'),
+      numInvalid: z.number().optional().describe('Number of invalid records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -227,26 +269,28 @@ export let addUsersToAudience = SlateTool.create(
       },
       message: `Added users to audience \`${ctx.input.audienceId}\`: **${result.num_received || 0}** received, **${result.num_invalid_entries || 0}** invalid.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteCustomAudience = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Custom Audience',
-    key: 'delete_custom_audience',
-    description: `Delete a custom audience. This cannot be undone.`,
-    tags: {
-      destructive: true
-    }
+export let deleteCustomAudience = SlateTool.create(spec, {
+  name: 'Delete Custom Audience',
+  key: 'delete_custom_audience',
+  description: `Delete a custom audience. This cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    audienceId: z.string().describe('ID of the audience to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      audienceId: z.string().describe('ID of the audience to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -261,4 +305,5 @@ export let deleteCustomAudience = SlateTool.create(
       },
       message: `Deleted custom audience \`${ctx.input.audienceId}\`.`
     };
-  }).build();
+  })
+  .build();

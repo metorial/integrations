@@ -3,36 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDashboardUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Dashboard User',
-    key: 'manage_dashboard_user',
-    description: `Create, list, enable, disable, or remove dashboard users. Provision user accounts with role-based access control and organizational permissions.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageDashboardUser = SlateTool.create(spec, {
+  name: 'Manage Dashboard User',
+  key: 'manage_dashboard_user',
+  description: `Create, list, enable, disable, or remove dashboard users. Provision user accounts with role-based access control and organizational permissions.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'enable', 'disable', 'remove']).describe('Action to perform'),
-    username: z.string().optional().describe('Username (required for enable, disable, remove)'),
-    email: z.string().optional().describe('User email (required for create)'),
-    name: z.string().optional().describe('User display name'),
-    roles: z.array(z.string()).optional().describe('Roles to assign to the user'),
-    organisations: z.array(z.string()).optional().describe('Organisation IDs the user has access to'),
-    page: z.number().optional().describe('Page number for listing'),
-    size: z.number().optional().describe('Page size for listing'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction')
-  }))
-  .output(z.object({
-    user: z.any().optional().describe('User record'),
-    users: z.array(z.any()).optional().describe('List of user records'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'enable', 'disable', 'remove'])
+        .describe('Action to perform'),
+      username: z
+        .string()
+        .optional()
+        .describe('Username (required for enable, disable, remove)'),
+      email: z.string().optional().describe('User email (required for create)'),
+      name: z.string().optional().describe('User display name'),
+      roles: z.array(z.string()).optional().describe('Roles to assign to the user'),
+      organisations: z
+        .array(z.string())
+        .optional()
+        .describe('Organisation IDs the user has access to'),
+      page: z.number().optional().describe('Page number for listing'),
+      size: z.number().optional().describe('Page size for listing'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z
+      .object({
+        user: z.any().optional().describe('User record'),
+        users: z.array(z.any()).optional().describe('List of user records'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -42,7 +53,8 @@ export let manageDashboardUser = SlateTool.create(
 
     switch (action) {
       case 'create': {
-        if (!ctx.input.email) throw new Error('email is required for creating a dashboard user');
+        if (!ctx.input.email)
+          throw new Error('email is required for creating a dashboard user');
         let result = await client.createDashboardUser({
           email: ctx.input.email,
           name: ctx.input.name,
@@ -63,7 +75,7 @@ export let manageDashboardUser = SlateTool.create(
           sortOrder: ctx.input.sortOrder
         });
         let data = result?.data ?? result;
-        let users = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+        let users = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
         return {
           output: { users, success: true },
           message: `Found **${users.length}** dashboard user(s).`
@@ -96,4 +108,5 @@ export let manageDashboardUser = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

@@ -22,7 +22,9 @@ let orderSchema = z.object({
   firstName: z.string().optional().describe('Customer first name'),
   lastName: z.string().optional().describe('Customer last name'),
   totalCost: z.number().describe('Total order cost'),
-  status: z.enum(['INITIALIZED', 'IN_PROGRESS', 'DELIVERED', 'CANCELLED', 'ABANDONED_SHOPPING_CART']).describe('Order status'),
+  status: z
+    .enum(['INITIALIZED', 'IN_PROGRESS', 'DELIVERED', 'CANCELLED', 'ABANDONED_SHOPPING_CART'])
+    .describe('Order status'),
   date: z.string().describe('Order date in ISO 8601 format'),
   currency: z.string().describe('ISO 4217 currency code (e.g., "USD", "EUR")'),
   shipping: z.number().optional().describe('Shipping cost'),
@@ -33,30 +35,29 @@ let orderSchema = z.object({
   items: z.array(orderItemSchema).optional().describe('Order line items')
 });
 
-export let addOrders = SlateTool.create(
-  spec,
-  {
-    name: 'Add Orders',
-    key: 'add_orders',
-    description: `Submit orders to eSputnik for tracking and automated workflows. Each order automatically generates an event (e.g., orderDELIVERED, orderCANCELLED) that can trigger workflows.
+export let addOrders = SlateTool.create(spec, {
+  name: 'Add Orders',
+  key: 'add_orders',
+  description: `Submit orders to eSputnik for tracking and automated workflows. Each order automatically generates an event (e.g., orderDELIVERED, orderCANCELLED) that can trigger workflows.
 Orders require a contact identifier (externalCustomerId, email, or phone) to associate with a contact.
 Only **DELIVERED** orders count toward RFM analysis and revenue reporting.`,
-    constraints: [
-      'Maximum 1,000 orders per request'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  constraints: ['Maximum 1,000 orders per request'],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    orders: z.array(orderSchema).min(1).max(1000).describe('Orders to submit')
-  }))
-  .output(z.object({
-    submitted: z.boolean().describe('Whether the orders were submitted successfully')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      orders: z.array(orderSchema).min(1).max(1000).describe('Orders to submit')
+    })
+  )
+  .output(
+    z.object({
+      submitted: z.boolean().describe('Whether the orders were submitted successfully')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.addOrders(ctx.input.orders);
 
@@ -64,27 +65,29 @@ Only **DELIVERED** orders count toward RFM analysis and revenue reporting.`,
       output: { submitted: true },
       message: `**${ctx.input.orders.length}** order(s) submitted successfully.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteOrders = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Orders',
-    key: 'delete_orders',
-    description: `Delete orders from eSputnik by their external order IDs.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteOrders = SlateTool.create(spec, {
+  name: 'Delete Orders',
+  key: 'delete_orders',
+  description: `Delete orders from eSputnik by their external order IDs.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    externalOrderIds: z.array(z.string()).min(1).describe('External order IDs to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the orders were deleted successfully')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      externalOrderIds: z.array(z.string()).min(1).describe('External order IDs to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the orders were deleted successfully')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deleteOrders(ctx.input.externalOrderIds);
 
@@ -92,4 +95,5 @@ export let deleteOrders = SlateTool.create(
       output: { deleted: true },
       message: `**${ctx.input.externalOrderIds.length}** order(s) deleted successfully.`
     };
-  }).build();
+  })
+  .build();

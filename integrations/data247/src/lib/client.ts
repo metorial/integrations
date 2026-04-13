@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.data247.com/v3.0',
+  baseURL: 'https://api.data247.com/v3.0'
 });
 
 export interface Data247Response {
@@ -13,23 +13,23 @@ export interface Data247Response {
 }
 
 export class Client {
-  constructor(
-    private token: string,
-  ) {}
+  constructor(private token: string) {}
 
   private async request(params: Record<string, string>): Promise<Data247Response> {
     let response = await http.get<Data247Response>('', {
       params: {
         key: this.token,
-        ...params,
-      },
+        ...params
+      }
     });
     return response.data;
   }
 
   private validateResponse(data: Data247Response): Array<Record<string, string>> {
     if (data.response.status !== 'OK') {
-      throw new Error(`Data247 API error: ${data.response.status} - ${data.response.message || 'Unknown error'}`);
+      throw new Error(
+        `Data247 API error: ${data.response.status} - ${data.response.message || 'Unknown error'}`
+      );
     }
     return data.response.results || [];
   }
@@ -80,7 +80,9 @@ export class Client {
     return results[0] || {};
   }
 
-  async carrierLookupInternationalBatch(phones: string[]): Promise<Array<Record<string, string>>> {
+  async carrierLookupInternationalBatch(
+    phones: string[]
+  ): Promise<Array<Record<string, string>>> {
     let params: Record<string, string> = { api: 'CI' };
     phones.forEach((phone, i) => {
       params[`p${i + 1}`] = phone;
@@ -133,7 +135,7 @@ export class Client {
       address: address.address,
       city: address.city,
       state: address.state,
-      zip: address.zip,
+      zip: address.zip
     });
     let results = this.validateResponse(data);
     return results[0] || {};
@@ -164,7 +166,11 @@ export class Client {
     state?: string;
     zip?: string;
   }): Promise<Record<string, string>> {
-    let reqParams: Record<string, string> = { api: 'AP', firstname: params.firstname, lastname: params.lastname };
+    let reqParams: Record<string, string> = {
+      api: 'AP',
+      firstname: params.firstname,
+      lastname: params.lastname
+    };
     if (params.address) reqParams.address = params.address;
     if (params.city) reqParams.city = params.city;
     if (params.state) reqParams.state = params.state;
@@ -184,7 +190,11 @@ export class Client {
     zip?: string;
     phone?: string;
   }): Promise<Record<string, string>> {
-    let reqParams: Record<string, string> = { api: 'AE', firstname: params.firstname, lastname: params.lastname };
+    let reqParams: Record<string, string> = {
+      api: 'AE',
+      firstname: params.firstname,
+      lastname: params.lastname
+    };
     if (params.address) reqParams.address = params.address;
     if (params.city) reqParams.city = params.city;
     if (params.state) reqParams.state = params.state;
@@ -251,7 +261,7 @@ export class Client {
       api: 'ZA',
       address: params.address,
       city: params.city,
-      state: params.state,
+      state: params.state
     });
     let results = this.validateResponse(data);
     return results[0] || {};
@@ -280,7 +290,7 @@ export class Client {
       address: params.address,
       city: params.city,
       state: params.state,
-      zip: params.zip,
+      zip: params.zip
     });
     let results = this.validateResponse(data);
     return results[0] || {};
@@ -298,7 +308,7 @@ export class Client {
       address: params.address,
       city: params.city,
       state: params.state,
-      zip: params.zip,
+      zip: params.zip
     });
     let results = this.validateResponse(data);
     return results[0] || {};
@@ -321,7 +331,11 @@ export class Client {
   }
 
   // Do-Not-Call Check
-  async dncCheck(phone: string, orgId?: string, san?: string): Promise<Record<string, string>> {
+  async dncCheck(
+    phone: string,
+    orgId?: string,
+    san?: string
+  ): Promise<Record<string, string>> {
     let params: Record<string, string> = { api: 'DC', phone };
     if (orgId) params.org_id = orgId;
     if (san) params.san = san;
@@ -330,7 +344,11 @@ export class Client {
     return results[0] || {};
   }
 
-  async dncCheckBatch(phones: string[], orgId?: string, san?: string): Promise<Array<Record<string, string>>> {
+  async dncCheckBatch(
+    phones: string[],
+    orgId?: string,
+    san?: string
+  ): Promise<Array<Record<string, string>>> {
     let params: Record<string, string> = { api: 'DC' };
     if (orgId) params.org_id = orgId;
     if (san) params.san = san;

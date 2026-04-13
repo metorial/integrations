@@ -3,33 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let boothChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Booth Changes',
-    key: 'booth_changes',
-    description: 'Polls for changes to booths on an event. Detects when booth exhibitor assignments change or new booths appear. Requires the eventId to be set in the provider configuration.',
-  }
-)
-  .input(z.object({
-    eventId: z.number().describe('Event ID'),
-    changeType: z.enum(['added', 'removed', 'updated']).describe('Type of change detected'),
-    boothName: z.string().describe('Booth name'),
-    exhibitors: z.array(z.string()).describe('Current exhibitor assignments'),
-    isSpecialSection: z.boolean().describe('Whether booth is special section'),
-  }))
-  .output(z.object({
-    boothName: z.string().describe('Booth name'),
-    exhibitors: z.array(z.string()).describe('Current exhibitor assignments'),
-    isSpecialSection: z.boolean().describe('Whether booth is a special section'),
-    eventId: z.number().describe('Event ID'),
-  }))
+export let boothChanges = SlateTrigger.create(spec, {
+  name: 'Booth Changes',
+  key: 'booth_changes',
+  description:
+    'Polls for changes to booths on an event. Detects when booth exhibitor assignments change or new booths appear. Requires the eventId to be set in the provider configuration.'
+})
+  .input(
+    z.object({
+      eventId: z.number().describe('Event ID'),
+      changeType: z.enum(['added', 'removed', 'updated']).describe('Type of change detected'),
+      boothName: z.string().describe('Booth name'),
+      exhibitors: z.array(z.string()).describe('Current exhibitor assignments'),
+      isSpecialSection: z.boolean().describe('Whether booth is special section')
+    })
+  )
+  .output(
+    z.object({
+      boothName: z.string().describe('Booth name'),
+      exhibitors: z.array(z.string()).describe('Current exhibitor assignments'),
+      isSpecialSection: z.boolean().describe('Whether booth is a special section'),
+      eventId: z.number().describe('Event ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let eventId = ctx.config.eventId;
       if (!eventId) {
         return { inputs: [], updatedState: ctx.state ?? {} };
@@ -39,7 +41,10 @@ export let boothChanges = SlateTrigger.create(
       let booths = await client.listBooths(eventId);
 
       let previousState: Record<string, { exhibitors: string[]; isSpecialSection: boolean }> =
-        (ctx.state?.boothMap as Record<string, { exhibitors: string[]; isSpecialSection: boolean }>) ?? {};
+        (ctx.state?.boothMap as Record<
+          string,
+          { exhibitors: string[]; isSpecialSection: boolean }
+        >) ?? {};
 
       let currentMap: Record<string, { exhibitors: string[]; isSpecialSection: boolean }> = {};
       let inputs: Array<{
@@ -53,7 +58,7 @@ export let boothChanges = SlateTrigger.create(
       for (let booth of booths) {
         currentMap[booth.name] = {
           exhibitors: booth.exhibitors ?? [],
-          isSpecialSection: booth.isSpecialSection ?? false,
+          isSpecialSection: booth.isSpecialSection ?? false
         };
 
         let prev = previousState[booth.name];
@@ -63,7 +68,7 @@ export let boothChanges = SlateTrigger.create(
             changeType: 'added',
             boothName: booth.name,
             exhibitors: booth.exhibitors ?? [],
-            isSpecialSection: booth.isSpecialSection ?? false,
+            isSpecialSection: booth.isSpecialSection ?? false
           });
         } else if (
           JSON.stringify(prev.exhibitors) !== JSON.stringify(booth.exhibitors ?? []) ||
@@ -74,7 +79,7 @@ export let boothChanges = SlateTrigger.create(
             changeType: 'updated',
             boothName: booth.name,
             exhibitors: booth.exhibitors ?? [],
-            isSpecialSection: booth.isSpecialSection ?? false,
+            isSpecialSection: booth.isSpecialSection ?? false
           });
         }
       }
@@ -87,7 +92,7 @@ export let boothChanges = SlateTrigger.create(
             changeType: 'removed',
             boothName: name,
             exhibitors: prev.exhibitors,
-            isSpecialSection: prev.isSpecialSection,
+            isSpecialSection: prev.isSpecialSection
           });
         }
       }
@@ -95,12 +100,12 @@ export let boothChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          boothMap: currentMap,
-        },
+          boothMap: currentMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `booth.${ctx.input.changeType}`,
         id: `${ctx.input.eventId}-${ctx.input.boothName}-${ctx.input.changeType}-${Date.now()}`,
@@ -108,9 +113,9 @@ export let boothChanges = SlateTrigger.create(
           boothName: ctx.input.boothName,
           exhibitors: ctx.input.exhibitors,
           isSpecialSection: ctx.input.isSpecialSection,
-          eventId: ctx.input.eventId,
-        },
+          eventId: ctx.input.eventId
+        }
       };
-    },
+    }
   })
   .build();

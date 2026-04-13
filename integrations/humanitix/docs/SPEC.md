@@ -16,6 +16,7 @@ Humanitix uses API key authentication.
 - **Base URL**: `https://api.humanitix.com/v1`
 
 Example request header:
+
 ```
 x-api-key: your_api_key_here
 Content-Type: application/json
@@ -38,11 +39,13 @@ Fetch ticket information for events, allowing you to inspect individual ticket d
 ### Tag Management
 
 Tags can be used to help categorise and filter your events in a collection page and widget or passed as an additional data point via an API. Tags are created on account-level and can then be applied to individual events.
+
 - Tags are not enabled by default for an account. If you would like tags enabled for your account please contact the Humanitix support team.
 
 ### Event Creation and Updates (Beta)
 
 Looking to create and update events in Humanitix through an API connected to your app? Contact the Humanitix support team to request that a beta version of the create and update events API be enabled for your account.
+
 - This is not available by default and requires explicit approval from Humanitix.
 - You need to share your use-case with the team in your request.
 

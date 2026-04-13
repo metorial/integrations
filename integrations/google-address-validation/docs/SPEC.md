@@ -13,6 +13,7 @@ The Google Address Validation API supports two authentication methods:
 API keys are used for securing Google Maps Platform products, linking usage and billing to your project. To create an API key, navigate to the Credentials page in the Google Cloud console and select "Create credentials." To call the Address Validation API you need to include an API key in the URL and use HTTPS protocol.
 
 The API key is passed as a query parameter:
+
 ```
 POST https://addressvalidation.googleapis.com/v1:validateAddress?key=YOUR_API_KEY
 ```
@@ -26,6 +27,7 @@ The Address Validation API requires enabled billing and an API key or OAuth toke
 For server-to-server integration, a Google Cloud service account can be used. The service account JSON key file provides credentials that are exchanged for OAuth 2.0 access tokens. The relevant OAuth scope is `https://www.googleapis.com/auth/cloud-platform`.
 
 **Prerequisites:**
+
 - A Google Cloud project with billing enabled
 - The Address Validation API enabled on the project
 

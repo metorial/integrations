@@ -7,62 +7,80 @@ export class LaunchDarklyClient {
     this.http = createAxios({
       baseURL: 'https://app.launchdarkly.com/api/v2',
       headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Feature Flags ──────────────────────────────────────────────
 
-  async listFeatureFlags(projectKey: string, params: {
-    env?: string;
-    tag?: string;
-    limit?: number;
-    offset?: number;
-    filter?: string;
-    sort?: string;
-    summary?: boolean;
-  } = {}) {
+  async listFeatureFlags(
+    projectKey: string,
+    params: {
+      env?: string;
+      tag?: string;
+      limit?: number;
+      offset?: number;
+      filter?: string;
+      sort?: string;
+      summary?: boolean;
+    } = {}
+  ) {
     let response = await this.http.get(`/flags/${projectKey}`, { params });
     return response.data;
   }
 
-  async getFeatureFlag(projectKey: string, flagKey: string, params: {
-    env?: string;
-  } = {}) {
+  async getFeatureFlag(
+    projectKey: string,
+    flagKey: string,
+    params: {
+      env?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/flags/${projectKey}/${flagKey}`, { params });
     return response.data;
   }
 
-  async createFeatureFlag(projectKey: string, data: {
-    key: string;
-    name: string;
-    description?: string;
-    tags?: string[];
-    variations?: Array<{ value: any; name?: string; description?: string }>;
-    temporary?: boolean;
-    clientSideAvailability?: {
-      usingMobileKey?: boolean;
-      usingEnvironmentId?: boolean;
-    };
-    defaults?: {
-      onVariation: number;
-      offVariation: number;
-    };
-  }) {
+  async createFeatureFlag(
+    projectKey: string,
+    data: {
+      key: string;
+      name: string;
+      description?: string;
+      tags?: string[];
+      variations?: Array<{ value: any; name?: string; description?: string }>;
+      temporary?: boolean;
+      clientSideAvailability?: {
+        usingMobileKey?: boolean;
+        usingEnvironmentId?: boolean;
+      };
+      defaults?: {
+        onVariation: number;
+        offVariation: number;
+      };
+    }
+  ) {
     let response = await this.http.post(`/flags/${projectKey}`, data);
     return response.data;
   }
 
-  async updateFeatureFlag(projectKey: string, flagKey: string, instructions: Array<Record<string, any>>) {
-    let response = await this.http.patch(`/flags/${projectKey}/${flagKey}`, {
-      instructions,
-    }, {
-      headers: {
-        'Content-Type': 'application/json; domain-model=launchdarkly.semanticpatch',
+  async updateFeatureFlag(
+    projectKey: string,
+    flagKey: string,
+    instructions: Array<Record<string, any>>
+  ) {
+    let response = await this.http.patch(
+      `/flags/${projectKey}/${flagKey}`,
+      {
+        instructions
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json; domain-model=launchdarkly.semanticpatch'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -72,12 +90,14 @@ export class LaunchDarklyClient {
 
   // ─── Projects ───────────────────────────────────────────────────
 
-  async listProjects(params: {
-    limit?: number;
-    offset?: number;
-    filter?: string;
-    sort?: string;
-  } = {}) {
+  async listProjects(
+    params: {
+      limit?: number;
+      offset?: number;
+      filter?: string;
+      sort?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/projects', { params });
     return response.data;
   }
@@ -101,11 +121,14 @@ export class LaunchDarklyClient {
     return response.data;
   }
 
-  async updateProject(projectKey: string, patches: Array<{ op: string; path: string; value: any }>) {
+  async updateProject(
+    projectKey: string,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
     let response = await this.http.patch(`/projects/${projectKey}`, patches, {
       headers: {
-        'Content-Type': 'application/json-patch+json',
-      },
+        'Content-Type': 'application/json-patch+json'
+      }
     });
     return response.data;
   }
@@ -116,40 +139,56 @@ export class LaunchDarklyClient {
 
   // ─── Environments ──────────────────────────────────────────────
 
-  async listEnvironments(projectKey: string, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listEnvironments(
+    projectKey: string,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/projects/${projectKey}/environments`, { params });
     return response.data;
   }
 
   async getEnvironment(projectKey: string, environmentKey: string) {
-    let response = await this.http.get(`/projects/${projectKey}/environments/${environmentKey}`);
+    let response = await this.http.get(
+      `/projects/${projectKey}/environments/${environmentKey}`
+    );
     return response.data;
   }
 
-  async createEnvironment(projectKey: string, data: {
-    key: string;
-    name: string;
-    color: string;
-    tags?: string[];
-    defaultTtl?: number;
-    secureMode?: boolean;
-    defaultTrackEvents?: boolean;
-    requireComments?: boolean;
-    confirmChanges?: boolean;
-  }) {
+  async createEnvironment(
+    projectKey: string,
+    data: {
+      key: string;
+      name: string;
+      color: string;
+      tags?: string[];
+      defaultTtl?: number;
+      secureMode?: boolean;
+      defaultTrackEvents?: boolean;
+      requireComments?: boolean;
+      confirmChanges?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/projects/${projectKey}/environments`, data);
     return response.data;
   }
 
-  async updateEnvironment(projectKey: string, environmentKey: string, patches: Array<{ op: string; path: string; value: any }>) {
-    let response = await this.http.patch(`/projects/${projectKey}/environments/${environmentKey}`, patches, {
-      headers: {
-        'Content-Type': 'application/json-patch+json',
-      },
-    });
+  async updateEnvironment(
+    projectKey: string,
+    environmentKey: string,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
+    let response = await this.http.patch(
+      `/projects/${projectKey}/environments/${environmentKey}`,
+      patches,
+      {
+        headers: {
+          'Content-Type': 'application/json-patch+json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -159,41 +198,62 @@ export class LaunchDarklyClient {
 
   // ─── Segments ──────────────────────────────────────────────────
 
-  async listSegments(projectKey: string, environmentKey: string, params: {
-    limit?: number;
-    offset?: number;
-    filter?: string;
-    sort?: string;
-  } = {}) {
-    let response = await this.http.get(`/segments/${projectKey}/${environmentKey}`, { params });
+  async listSegments(
+    projectKey: string,
+    environmentKey: string,
+    params: {
+      limit?: number;
+      offset?: number;
+      filter?: string;
+      sort?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(`/segments/${projectKey}/${environmentKey}`, {
+      params
+    });
     return response.data;
   }
 
   async getSegment(projectKey: string, environmentKey: string, segmentKey: string) {
-    let response = await this.http.get(`/segments/${projectKey}/${environmentKey}/${segmentKey}`);
+    let response = await this.http.get(
+      `/segments/${projectKey}/${environmentKey}/${segmentKey}`
+    );
     return response.data;
   }
 
-  async createSegment(projectKey: string, environmentKey: string, data: {
-    key: string;
-    name: string;
-    description?: string;
-    tags?: string[];
-    unbounded?: boolean;
-    unboundedContextKind?: string;
-  }) {
+  async createSegment(
+    projectKey: string,
+    environmentKey: string,
+    data: {
+      key: string;
+      name: string;
+      description?: string;
+      tags?: string[];
+      unbounded?: boolean;
+      unboundedContextKind?: string;
+    }
+  ) {
     let response = await this.http.post(`/segments/${projectKey}/${environmentKey}`, data);
     return response.data;
   }
 
-  async updateSegment(projectKey: string, environmentKey: string, segmentKey: string, instructions: Array<Record<string, any>>) {
-    let response = await this.http.patch(`/segments/${projectKey}/${environmentKey}/${segmentKey}`, {
-      instructions,
-    }, {
-      headers: {
-        'Content-Type': 'application/json; domain-model=launchdarkly.semanticpatch',
+  async updateSegment(
+    projectKey: string,
+    environmentKey: string,
+    segmentKey: string,
+    instructions: Array<Record<string, any>>
+  ) {
+    let response = await this.http.patch(
+      `/segments/${projectKey}/${environmentKey}/${segmentKey}`,
+      {
+        instructions
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json; domain-model=launchdarkly.semanticpatch'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -203,13 +263,15 @@ export class LaunchDarklyClient {
 
   // ─── Audit Log ─────────────────────────────────────────────────
 
-  async getAuditLogEntries(params: {
-    before?: number;
-    after?: number;
-    q?: string;
-    limit?: number;
-    spec?: string;
-  } = {}) {
+  async getAuditLogEntries(
+    params: {
+      before?: number;
+      after?: number;
+      q?: string;
+      limit?: number;
+      spec?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/auditlog', { params });
     return response.data;
   }
@@ -250,11 +312,14 @@ export class LaunchDarklyClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, patches: Array<{ op: string; path: string; value: any }>) {
+  async updateWebhook(
+    webhookId: string,
+    patches: Array<{ op: string; path: string; value: any }>
+  ) {
     let response = await this.http.patch(`/webhooks/${webhookId}`, patches, {
       headers: {
-        'Content-Type': 'application/json-patch+json',
-      },
+        'Content-Type': 'application/json-patch+json'
+      }
     });
     return response.data;
   }
@@ -265,12 +330,14 @@ export class LaunchDarklyClient {
 
   // ─── Account Members ──────────────────────────────────────────
 
-  async listMembers(params: {
-    limit?: number;
-    offset?: number;
-    filter?: string;
-    sort?: string;
-  } = {}) {
+  async listMembers(
+    params: {
+      limit?: number;
+      offset?: number;
+      filter?: string;
+      sort?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/members', { params });
     return response.data;
   }
@@ -280,21 +347,26 @@ export class LaunchDarklyClient {
     return response.data;
   }
 
-  async inviteMembers(members: Array<{
-    email: string;
-    role?: string;
-    customRoles?: string[];
-  }>) {
+  async inviteMembers(
+    members: Array<{
+      email: string;
+      role?: string;
+      customRoles?: string[];
+    }>
+  ) {
     let response = await this.http.post('/members', members);
     return response.data;
   }
 
   // ─── Metrics ───────────────────────────────────────────────────
 
-  async listMetrics(projectKey: string, params: {
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async listMetrics(
+    projectKey: string,
+    params: {
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     let response = await this.http.get(`/metrics/${projectKey}`, { params });
     return response.data;
   }
@@ -304,20 +376,23 @@ export class LaunchDarklyClient {
     return response.data;
   }
 
-  async createMetric(projectKey: string, data: {
-    key: string;
-    name?: string;
-    description?: string;
-    kind: string;
-    selector?: string;
-    urls?: Array<{ kind: string; url?: string; substring?: string; pattern?: string }>;
-    eventKey?: string;
-    tags?: string[];
-    isActive?: boolean;
-    isNumeric?: boolean;
-    unit?: string;
-    successCriteria?: string;
-  }) {
+  async createMetric(
+    projectKey: string,
+    data: {
+      key: string;
+      name?: string;
+      description?: string;
+      kind: string;
+      selector?: string;
+      urls?: Array<{ kind: string; url?: string; substring?: string; pattern?: string }>;
+      eventKey?: string;
+      tags?: string[];
+      isActive?: boolean;
+      isNumeric?: boolean;
+      unit?: string;
+      successCriteria?: string;
+    }
+  ) {
     let response = await this.http.post(`/metrics/${projectKey}`, data);
     return response.data;
   }
@@ -328,81 +403,117 @@ export class LaunchDarklyClient {
 
   // ─── Experiments ───────────────────────────────────────────────
 
-  async listExperiments(projectKey: string, environmentKey: string, params: {
-    limit?: number;
-    offset?: number;
-    filter?: string;
-  } = {}) {
-    let response = await this.http.get(`/projects/${projectKey}/environments/${environmentKey}/experiments`, { params });
+  async listExperiments(
+    projectKey: string,
+    environmentKey: string,
+    params: {
+      limit?: number;
+      offset?: number;
+      filter?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(
+      `/projects/${projectKey}/environments/${environmentKey}/experiments`,
+      { params }
+    );
     return response.data;
   }
 
   async getExperiment(projectKey: string, environmentKey: string, experimentKey: string) {
-    let response = await this.http.get(`/projects/${projectKey}/environments/${environmentKey}/experiments/${experimentKey}`);
+    let response = await this.http.get(
+      `/projects/${projectKey}/environments/${environmentKey}/experiments/${experimentKey}`
+    );
     return response.data;
   }
 
-  async createExperiment(projectKey: string, environmentKey: string, data: {
-    name: string;
-    key: string;
-    description?: string;
-    maintainerId?: string;
-    iteration: {
-      hypothesis: string;
-      canReshuffleTraffic: boolean;
-      metrics: Array<{
-        key: string;
-        isGroup?: boolean;
-      }>;
-      primarySingleMetricKey?: string;
-      primaryFunnelKey?: string;
-      treatments: Array<{
-        name: string;
-        baseline: boolean;
-        allocationPercent: string;
-        parameters: Array<{
-          flagKey: string;
-          variationId: string;
+  async createExperiment(
+    projectKey: string,
+    environmentKey: string,
+    data: {
+      name: string;
+      key: string;
+      description?: string;
+      maintainerId?: string;
+      iteration: {
+        hypothesis: string;
+        canReshuffleTraffic: boolean;
+        metrics: Array<{
+          key: string;
+          isGroup?: boolean;
         }>;
-      }>;
-      flags: Record<string, {
-        ruleId: string;
-        flagConfigVersion: number;
-      }>;
-      randomizationUnit?: string;
-    };
-  }) {
-    let response = await this.http.post(`/projects/${projectKey}/environments/${environmentKey}/experiments`, data);
+        primarySingleMetricKey?: string;
+        primaryFunnelKey?: string;
+        treatments: Array<{
+          name: string;
+          baseline: boolean;
+          allocationPercent: string;
+          parameters: Array<{
+            flagKey: string;
+            variationId: string;
+          }>;
+        }>;
+        flags: Record<
+          string,
+          {
+            ruleId: string;
+            flagConfigVersion: number;
+          }
+        >;
+        randomizationUnit?: string;
+      };
+    }
+  ) {
+    let response = await this.http.post(
+      `/projects/${projectKey}/environments/${environmentKey}/experiments`,
+      data
+    );
     return response.data;
   }
 
   // ─── Contexts ──────────────────────────────────────────────────
 
-  async searchContexts(projectKey: string, environmentKey: string, data: {
-    filter?: string;
-    sort?: string;
-    limit?: number;
-    continuationToken?: string;
-  }) {
-    let response = await this.http.post(`/projects/${projectKey}/environments/${environmentKey}/contexts/search`, data);
+  async searchContexts(
+    projectKey: string,
+    environmentKey: string,
+    data: {
+      filter?: string;
+      sort?: string;
+      limit?: number;
+      continuationToken?: string;
+    }
+  ) {
+    let response = await this.http.post(
+      `/projects/${projectKey}/environments/${environmentKey}/contexts/search`,
+      data
+    );
     return response.data;
   }
 
-  async getContextInstances(projectKey: string, environmentKey: string, contextId: string, params: {
-    limit?: number;
-    continuationToken?: string;
-  } = {}) {
-    let response = await this.http.get(`/projects/${projectKey}/environments/${environmentKey}/contexts/${contextId}`, { params });
+  async getContextInstances(
+    projectKey: string,
+    environmentKey: string,
+    contextId: string,
+    params: {
+      limit?: number;
+      continuationToken?: string;
+    } = {}
+  ) {
+    let response = await this.http.get(
+      `/projects/${projectKey}/environments/${environmentKey}/contexts/${contextId}`,
+      { params }
+    );
     return response.data;
   }
 
   // ─── Teams ─────────────────────────────────────────────────────
 
-  async listTeams(params: {
-    limit?: number;
-    offset?: number;
-    filter?: string;
-  } = {}) {
+  async listTeams(
+    params: {
+      limit?: number;
+      offset?: number;
+      filter?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/teams', { params });
     return response.data;
   }

@@ -3,65 +3,105 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageRoles = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Roles',
-    key: 'manage_roles',
-    description: `List, create, or delete admin roles, and manage role assignments. Roles define sets of admin privileges that can be assigned to users for delegated administration.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageRoles = SlateTool.create(spec, {
+  name: 'Manage Roles',
+  key: 'manage_roles',
+  description: `List, create, or delete admin roles, and manage role assignments. Roles define sets of admin privileges that can be assigned to users for delegated administration.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list_roles', 'get_role', 'create_role', 'delete_role', 'list_assignments', 'assign_role', 'unassign_role']).describe('Action to perform'),
-    roleId: z.string().optional().describe('Role ID (for get_role, delete_role, list_assignments, assign_role)'),
-    roleName: z.string().optional().describe('Name for the new role (for create_role)'),
-    roleDescription: z.string().optional().describe('Description for the new role'),
-    rolePrivileges: z.array(z.object({
-      privilegeName: z.string().describe('Name of the privilege'),
-      serviceId: z.string().describe('Service ID the privilege belongs to')
-    })).optional().describe('Privileges for the new role (for create_role)'),
-    assignedTo: z.string().optional().describe('User ID to assign/unassign the role to (for assign_role/unassign_role)'),
-    roleAssignmentId: z.string().optional().describe('Role assignment ID (for unassign_role)'),
-    scopeType: z.enum(['CUSTOMER', 'ORG_UNIT']).optional().describe('Scope of the role assignment'),
-    orgUnitId: z.string().optional().describe('Org unit ID if scope is ORG_UNIT'),
-    maxResults: z.number().optional(),
-    pageToken: z.string().optional()
-  }))
-  .output(z.object({
-    roles: z.array(z.object({
-      roleId: z.string().optional(),
-      roleName: z.string().optional(),
-      roleDescription: z.string().optional(),
-      isSystemRole: z.boolean().optional(),
-      isSuperAdminRole: z.boolean().optional()
-    })).optional(),
-    role: z.object({
-      roleId: z.string().optional(),
-      roleName: z.string().optional(),
-      roleDescription: z.string().optional(),
-      rolePrivileges: z.array(z.any()).optional()
-    }).optional(),
-    assignments: z.array(z.object({
-      roleAssignmentId: z.string().optional(),
-      roleId: z.string().optional(),
-      assignedTo: z.string().optional(),
-      scopeType: z.string().optional(),
-      orgUnitId: z.string().optional()
-    })).optional(),
-    assignment: z.object({
-      roleAssignmentId: z.string().optional(),
-      roleId: z.string().optional(),
-      assignedTo: z.string().optional()
-    }).optional(),
-    deleted: z.boolean().optional(),
-    nextPageToken: z.string().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'list_roles',
+          'get_role',
+          'create_role',
+          'delete_role',
+          'list_assignments',
+          'assign_role',
+          'unassign_role'
+        ])
+        .describe('Action to perform'),
+      roleId: z
+        .string()
+        .optional()
+        .describe('Role ID (for get_role, delete_role, list_assignments, assign_role)'),
+      roleName: z.string().optional().describe('Name for the new role (for create_role)'),
+      roleDescription: z.string().optional().describe('Description for the new role'),
+      rolePrivileges: z
+        .array(
+          z.object({
+            privilegeName: z.string().describe('Name of the privilege'),
+            serviceId: z.string().describe('Service ID the privilege belongs to')
+          })
+        )
+        .optional()
+        .describe('Privileges for the new role (for create_role)'),
+      assignedTo: z
+        .string()
+        .optional()
+        .describe('User ID to assign/unassign the role to (for assign_role/unassign_role)'),
+      roleAssignmentId: z
+        .string()
+        .optional()
+        .describe('Role assignment ID (for unassign_role)'),
+      scopeType: z
+        .enum(['CUSTOMER', 'ORG_UNIT'])
+        .optional()
+        .describe('Scope of the role assignment'),
+      orgUnitId: z.string().optional().describe('Org unit ID if scope is ORG_UNIT'),
+      maxResults: z.number().optional(),
+      pageToken: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      roles: z
+        .array(
+          z.object({
+            roleId: z.string().optional(),
+            roleName: z.string().optional(),
+            roleDescription: z.string().optional(),
+            isSystemRole: z.boolean().optional(),
+            isSuperAdminRole: z.boolean().optional()
+          })
+        )
+        .optional(),
+      role: z
+        .object({
+          roleId: z.string().optional(),
+          roleName: z.string().optional(),
+          roleDescription: z.string().optional(),
+          rolePrivileges: z.array(z.any()).optional()
+        })
+        .optional(),
+      assignments: z
+        .array(
+          z.object({
+            roleAssignmentId: z.string().optional(),
+            roleId: z.string().optional(),
+            assignedTo: z.string().optional(),
+            scopeType: z.string().optional(),
+            orgUnitId: z.string().optional()
+          })
+        )
+        .optional(),
+      assignment: z
+        .object({
+          roleAssignmentId: z.string().optional(),
+          roleId: z.string().optional(),
+          assignedTo: z.string().optional()
+        })
+        .optional(),
+      deleted: z.boolean().optional(),
+      nextPageToken: z.string().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -69,7 +109,10 @@ export let manageRoles = SlateTool.create(
     });
 
     if (ctx.input.action === 'list_roles') {
-      let result = await client.listRoles({ maxResults: ctx.input.maxResults, pageToken: ctx.input.pageToken });
+      let result = await client.listRoles({
+        maxResults: ctx.input.maxResults,
+        pageToken: ctx.input.pageToken
+      });
       let roles = (result.items || []).map((r: any) => ({
         roleId: r.roleId,
         roleName: r.roleName,
@@ -147,7 +190,11 @@ export let manageRoles = SlateTool.create(
         orgUnitId: a.orgUnitId
       }));
       return {
-        output: { assignments, nextPageToken: result.nextPageToken, action: 'list_assignments' },
+        output: {
+          assignments,
+          nextPageToken: result.nextPageToken,
+          action: 'list_assignments'
+        },
         message: `Found **${assignments.length}** role assignments.`
       };
     }

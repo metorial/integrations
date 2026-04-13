@@ -4,70 +4,99 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let templateParameterSchema = z.object({
-  type: z.enum(['text', 'image', 'video', 'document', 'currency', 'date_time', 'payload']).describe('Parameter type'),
+  type: z
+    .enum(['text', 'image', 'video', 'document', 'currency', 'date_time', 'payload'])
+    .describe('Parameter type'),
   text: z.string().optional().describe('Text value (for type "text" or button URL suffix)'),
-  image: z.object({
-    link: z.string().optional(),
-    mediaId: z.string().optional()
-  }).optional().describe('Image source (for type "image")'),
-  video: z.object({
-    link: z.string().optional(),
-    mediaId: z.string().optional()
-  }).optional().describe('Video source (for type "video")'),
-  document: z.object({
-    link: z.string().optional(),
-    mediaId: z.string().optional(),
-    filename: z.string().optional()
-  }).optional().describe('Document source (for type "document")'),
-  currency: z.object({
-    fallbackValue: z.string(),
-    code: z.string(),
-    amount1000: z.number()
-  }).optional().describe('Currency value (for type "currency")'),
-  dateTime: z.object({
-    fallbackValue: z.string()
-  }).optional().describe('Date/time value (for type "date_time")'),
+  image: z
+    .object({
+      link: z.string().optional(),
+      mediaId: z.string().optional()
+    })
+    .optional()
+    .describe('Image source (for type "image")'),
+  video: z
+    .object({
+      link: z.string().optional(),
+      mediaId: z.string().optional()
+    })
+    .optional()
+    .describe('Video source (for type "video")'),
+  document: z
+    .object({
+      link: z.string().optional(),
+      mediaId: z.string().optional(),
+      filename: z.string().optional()
+    })
+    .optional()
+    .describe('Document source (for type "document")'),
+  currency: z
+    .object({
+      fallbackValue: z.string(),
+      code: z.string(),
+      amount1000: z.number()
+    })
+    .optional()
+    .describe('Currency value (for type "currency")'),
+  dateTime: z
+    .object({
+      fallbackValue: z.string()
+    })
+    .optional()
+    .describe('Date/time value (for type "date_time")'),
   payload: z.string().optional().describe('Payload value (for button type "payload")')
 });
 
 let templateComponentSchema = z.object({
   type: z.enum(['header', 'body', 'button']).describe('Component type'),
-  subType: z.enum(['quick_reply', 'url']).optional().describe('Button sub-type (required for button components)'),
-  index: z.number().optional().describe('Button index (required for button components, 0-based)'),
+  subType: z
+    .enum(['quick_reply', 'url'])
+    .optional()
+    .describe('Button sub-type (required for button components)'),
+  index: z
+    .number()
+    .optional()
+    .describe('Button index (required for button components, 0-based)'),
   parameters: z.array(templateParameterSchema).describe('Component parameters')
 });
 
-export let sendTemplateMessage = SlateTool.create(
-  spec,
-  {
-    name: 'Send Template Message',
-    key: 'send_template_message',
-    description: `Send a pre-approved WhatsApp message template to a recipient. Templates can be sent **outside the 24-hour messaging window** and are required for business-initiated conversations.
+export let sendTemplateMessage = SlateTool.create(spec, {
+  name: 'Send Template Message',
+  key: 'send_template_message',
+  description: `Send a pre-approved WhatsApp message template to a recipient. Templates can be sent **outside the 24-hour messaging window** and are required for business-initiated conversations.
 Templates must be created and approved in the Meta dashboard before use. Use the List Templates tool to find available templates.`,
-    instructions: [
-      'The template name and language code must exactly match an approved template',
-      'Template parameters are positional - provide them in the order defined in the template',
-      'For media headers, provide either a link or mediaId in the header component parameters',
-      'Button components require a subType and index (0-based)'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  instructions: [
+    'The template name and language code must exactly match an approved template',
+    'Template parameters are positional - provide them in the order defined in the template',
+    'For media headers, provide either a link or mediaId in the header component parameters',
+    'Button components require a subType and index (0-based)'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    to: z.string().describe('Recipient phone number with country code'),
-    templateName: z.string().describe('Name of the approved message template'),
-    languageCode: z.string().describe('Language code of the template (e.g. en_US, es, pt_BR)'),
-    components: z.array(templateComponentSchema).optional().describe('Template components with dynamic parameter values')
-  }))
-  .output(z.object({
-    messageId: z.string().describe('ID of the sent message'),
-    recipientPhone: z.string().optional().describe('Recipient phone number'),
-    recipientWaId: z.string().optional().describe('Recipient WhatsApp ID')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      to: z.string().describe('Recipient phone number with country code'),
+      templateName: z.string().describe('Name of the approved message template'),
+      languageCode: z
+        .string()
+        .describe('Language code of the template (e.g. en_US, es, pt_BR)'),
+      components: z
+        .array(templateComponentSchema)
+        .optional()
+        .describe('Template components with dynamic parameter values')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('ID of the sent message'),
+      recipientPhone: z.string().optional().describe('Recipient phone number'),
+      recipientWaId: z.string().optional().describe('Recipient WhatsApp ID')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       phoneNumberId: ctx.config.phoneNumberId,

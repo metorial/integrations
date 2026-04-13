@@ -6,7 +6,7 @@ import {
   historicalSearchVolumeTool,
   productDatabaseTool,
   salesEstimatesTool,
-  shareOfVoiceTool,
+  shareOfVoiceTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     historicalSearchVolumeTool,
     productDatabaseTool,
     salesEstimatesTool,
-    shareOfVoiceTool,
+    shareOfVoiceTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

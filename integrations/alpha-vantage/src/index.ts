@@ -16,7 +16,7 @@ import {
   getNewsSentiment,
   getOptionsChain,
   getTopMovers,
-  getMarketStatus,
+  getMarketStatus
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -39,9 +39,7 @@ export let provider = Slate.create({
     getNewsSentiment,
     getOptionsChain,
     getTopMovers,
-    getMarketStatus,
+    getMarketStatus
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

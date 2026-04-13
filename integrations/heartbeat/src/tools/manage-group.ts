@@ -3,34 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group',
-    key: 'manage_group',
-    description: `Creates a new group or manages group membership in your Heartbeat community. Can create groups, add users to groups, or remove users from groups. When adding a user, you can optionally remove them from sibling groups (groups sharing a parent), useful for moving users between stages.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageGroup = SlateTool.create(spec, {
+  name: 'Manage Group',
+  key: 'manage_group',
+  description: `Creates a new group or manages group membership in your Heartbeat community. Can create groups, add users to groups, or remove users from groups. When adding a user, you can optionally remove them from sibling groups (groups sharing a parent), useful for moving users between stages.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'add_user', 'remove_user']).describe('Action to perform'),
-    groupId: z.string().optional().describe('Group ID (required for add_user and remove_user)'),
-    userId: z.string().optional().describe('User ID to add or remove (required for add_user and remove_user)'),
-    removeFromSiblingGroups: z.boolean().optional().describe('When adding a user, remove them from sibling groups (groups with the same parent)'),
-    name: z.string().optional().describe('Group name (required for create)'),
-    description: z.string().optional().describe('Group description (for create)'),
-    parentGroupId: z.string().optional().describe('Parent group ID (for create)'),
-    isJoinable: z.boolean().optional().describe('Whether users can join the group themselves (for create)'),
-  }))
-  .output(z.object({
-    groupId: z.string().optional().describe('ID of the group'),
-    groupName: z.string().optional().describe('Name of the group'),
-    action: z.string().describe('Action that was performed'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'add_user', 'remove_user']).describe('Action to perform'),
+      groupId: z
+        .string()
+        .optional()
+        .describe('Group ID (required for add_user and remove_user)'),
+      userId: z
+        .string()
+        .optional()
+        .describe('User ID to add or remove (required for add_user and remove_user)'),
+      removeFromSiblingGroups: z
+        .boolean()
+        .optional()
+        .describe(
+          'When adding a user, remove them from sibling groups (groups with the same parent)'
+        ),
+      name: z.string().optional().describe('Group name (required for create)'),
+      description: z.string().optional().describe('Group description (for create)'),
+      parentGroupId: z.string().optional().describe('Parent group ID (for create)'),
+      isJoinable: z
+        .boolean()
+        .optional()
+        .describe('Whether users can join the group themselves (for create)')
+    })
+  )
+  .output(
+    z.object({
+      groupId: z.string().optional().describe('ID of the group'),
+      groupName: z.string().optional().describe('Name of the group'),
+      action: z.string().describe('Action that was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
@@ -41,15 +56,15 @@ export let manageGroup = SlateTool.create(
         name: ctx.input.name,
         description: ctx.input.description,
         parentGroupId: ctx.input.parentGroupId,
-        isJoinable: ctx.input.isJoinable,
+        isJoinable: ctx.input.isJoinable
       });
       return {
         output: {
           groupId: group.id,
           groupName: group.name,
-          action: 'created',
+          action: 'created'
         },
-        message: `Created group **${group.name}**.`,
+        message: `Created group **${group.name}**.`
       };
     }
 
@@ -59,14 +74,14 @@ export let manageGroup = SlateTool.create(
       }
       await client.addUserToGroup(ctx.input.groupId, {
         userId: ctx.input.userId,
-        removeFromSiblingGroups: ctx.input.removeFromSiblingGroups,
+        removeFromSiblingGroups: ctx.input.removeFromSiblingGroups
       });
       return {
         output: {
           groupId: ctx.input.groupId,
-          action: 'user_added',
+          action: 'user_added'
         },
-        message: `Added user **${ctx.input.userId}** to group **${ctx.input.groupId}**.${ctx.input.removeFromSiblingGroups ? ' Removed from sibling groups.' : ''}`,
+        message: `Added user **${ctx.input.userId}** to group **${ctx.input.groupId}**.${ctx.input.removeFromSiblingGroups ? ' Removed from sibling groups.' : ''}`
       };
     }
 
@@ -78,9 +93,9 @@ export let manageGroup = SlateTool.create(
       return {
         output: {
           groupId: ctx.input.groupId,
-          action: 'user_removed',
+          action: 'user_removed'
         },
-        message: `Removed user **${ctx.input.userId}** from group **${ctx.input.groupId}**.`,
+        message: `Removed user **${ctx.input.userId}** from group **${ctx.input.groupId}**.`
       };
     }
 

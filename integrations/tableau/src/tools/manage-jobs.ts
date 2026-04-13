@@ -6,41 +6,54 @@ import { createClient } from '../lib/helpers';
 export let manageJobs = SlateTool.create(spec, {
   name: 'Manage Jobs',
   key: 'manage_jobs',
-  description: `List, get details, or cancel background jobs (extract refreshes, flow runs, subscriptions). Use the **action** field to select the operation.`,
+  description: `List, get details, or cancel background jobs (extract refreshes, flow runs, subscriptions). Use the **action** field to select the operation.`
 })
-  .input(z.object({
-    action: z.enum(['list', 'get', 'cancel']).describe('Operation to perform'),
-    jobId: z.string().optional().describe('Job LUID (required for get, cancel)'),
-    pageSize: z.number().optional().describe('Page size for list'),
-    pageNumber: z.number().optional().describe('Page number for list'),
-    filter: z.string().optional().describe('Filter expression for list (e.g., "jobType:eq:refresh_extracts")')
-  }))
-  .output(z.object({
-    jobs: z.array(z.object({
-      jobId: z.string(),
-      jobType: z.string().optional(),
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-      startedAt: z.string().optional(),
-      endedAt: z.string().optional(),
-      progress: z.number().optional(),
-      title: z.string().optional()
-    })).optional(),
-    job: z.object({
-      jobId: z.string(),
-      jobType: z.string().optional(),
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-      startedAt: z.string().optional(),
-      endedAt: z.string().optional(),
-      progress: z.number().optional(),
-      title: z.string().optional(),
-      finishCode: z.number().optional()
-    }).optional(),
-    totalCount: z.number().optional(),
-    cancelled: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'cancel']).describe('Operation to perform'),
+      jobId: z.string().optional().describe('Job LUID (required for get, cancel)'),
+      pageSize: z.number().optional().describe('Page size for list'),
+      pageNumber: z.number().optional().describe('Page number for list'),
+      filter: z
+        .string()
+        .optional()
+        .describe('Filter expression for list (e.g., "jobType:eq:refresh_extracts")')
+    })
+  )
+  .output(
+    z.object({
+      jobs: z
+        .array(
+          z.object({
+            jobId: z.string(),
+            jobType: z.string().optional(),
+            status: z.string().optional(),
+            createdAt: z.string().optional(),
+            startedAt: z.string().optional(),
+            endedAt: z.string().optional(),
+            progress: z.number().optional(),
+            title: z.string().optional()
+          })
+        )
+        .optional(),
+      job: z
+        .object({
+          jobId: z.string(),
+          jobType: z.string().optional(),
+          status: z.string().optional(),
+          createdAt: z.string().optional(),
+          startedAt: z.string().optional(),
+          endedAt: z.string().optional(),
+          progress: z.number().optional(),
+          title: z.string().optional(),
+          finishCode: z.number().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional(),
+      cancelled: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action } = ctx.input;
 
@@ -98,4 +111,5 @@ export let manageJobs = SlateTool.create(spec, {
     }
 
     return { output: {}, message: `Unknown action: ${action}` };
-  }).build();
+  })
+  .build();

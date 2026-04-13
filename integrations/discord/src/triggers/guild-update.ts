@@ -21,43 +21,47 @@ let trackedFields = [
   'nsfw_level',
   'vanity_url_code',
   'banner',
-  'splash',
+  'splash'
 ] as const;
 
 type GuildSnapshot = Record<string, any>;
 
-export let guildUpdate = SlateTrigger.create(
-  spec,
-  {
-    name: 'Guild Update',
-    key: 'guild_update',
-    description: 'Triggers when a guild (server) setting changes, such as name, description, icon, verification level, owner, or other server-level properties. Polls guilds to detect changes.',
-  }
-)
-  .input(z.object({
-    guildId: z.string().describe('Guild ID'),
-    guildName: z.string().describe('Guild name'),
-    changeType: z.string().describe('The field that changed (e.g. name, icon, description, verification_level)'),
-    previousValue: z.string().optional().describe('Previous value of the changed field'),
-    newValue: z.string().optional().describe('New value of the changed field'),
-  }))
-  .output(z.object({
-    guildId: z.string().describe('Guild ID'),
-    guildName: z.string().describe('Guild name'),
-    changeType: z.string().describe('The field that changed'),
-    previousValue: z.string().optional().describe('Previous value of the changed field'),
-    newValue: z.string().optional().describe('New value of the changed field'),
-    ownerId: z.string().optional().describe('Current owner user ID'),
-    icon: z.string().optional().describe('Current guild icon hash'),
-    verificationLevel: z.number().optional().describe('Current verification level'),
-    memberCount: z.number().optional().describe('Approximate member count'),
-  }))
+export let guildUpdate = SlateTrigger.create(spec, {
+  name: 'Guild Update',
+  key: 'guild_update',
+  description:
+    'Triggers when a guild (server) setting changes, such as name, description, icon, verification level, owner, or other server-level properties. Polls guilds to detect changes.'
+})
+  .input(
+    z.object({
+      guildId: z.string().describe('Guild ID'),
+      guildName: z.string().describe('Guild name'),
+      changeType: z
+        .string()
+        .describe('The field that changed (e.g. name, icon, description, verification_level)'),
+      previousValue: z.string().optional().describe('Previous value of the changed field'),
+      newValue: z.string().optional().describe('New value of the changed field')
+    })
+  )
+  .output(
+    z.object({
+      guildId: z.string().describe('Guild ID'),
+      guildName: z.string().describe('Guild name'),
+      changeType: z.string().describe('The field that changed'),
+      previousValue: z.string().optional().describe('Previous value of the changed field'),
+      newValue: z.string().optional().describe('New value of the changed field'),
+      ownerId: z.string().optional().describe('Current owner user ID'),
+      icon: z.string().optional().describe('Current guild icon hash'),
+      verificationLevel: z.number().optional().describe('Current verification level'),
+      memberCount: z.number().optional().describe('Approximate member count')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 2,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 2
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DiscordClient({ token: ctx.auth.token, tokenType: ctx.auth.tokenType });
       let state = ctx.state as { knownGuilds?: Record<string, GuildSnapshot> } | null;
       let knownGuilds = state?.knownGuilds || {};
@@ -109,7 +113,7 @@ export let guildUpdate = SlateTrigger.create(
               guildName: fullGuild.name,
               changeType: field,
               previousValue: prev != null ? String(prev) : undefined,
-              newValue: curr != null ? String(curr) : undefined,
+              newValue: curr != null ? String(curr) : undefined
             });
           }
         }
@@ -118,12 +122,12 @@ export let guildUpdate = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownGuilds: updatedKnownGuilds,
-        },
+          knownGuilds: updatedKnownGuilds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new DiscordClient({ token: ctx.auth.token, tokenType: ctx.auth.tokenType });
 
       let guildInfo: any = {};
@@ -145,9 +149,9 @@ export let guildUpdate = SlateTrigger.create(
           ownerId: guildInfo.owner_id,
           icon: guildInfo.icon,
           verificationLevel: guildInfo.verification_level,
-          memberCount: guildInfo.approximate_member_count,
-        },
+          memberCount: guildInfo.approximate_member_count
+        }
       };
-    },
+    }
   })
   .build();

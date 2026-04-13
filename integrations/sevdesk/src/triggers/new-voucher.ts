@@ -3,43 +3,44 @@ import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newVoucher = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Voucher',
-    key: 'new_voucher',
-    description: 'Triggers when a new voucher (incoming invoice/receipt) is created in sevDesk.',
-  }
-)
-  .input(z.object({
-    voucherId: z.string().describe('Voucher ID'),
-    voucherData: z.any().describe('Full voucher data from sevDesk'),
-  }))
-  .output(z.object({
-    voucherId: z.string().describe('Voucher ID'),
-    voucherNumber: z.string().optional(),
-    description: z.string().optional(),
-    voucherDate: z.string().optional(),
-    status: z.string().optional(),
-    totalNet: z.string().optional(),
-    totalGross: z.string().optional(),
-    supplierContactId: z.string().optional(),
-    creditDebit: z.string().optional(),
-    createdAt: z.string().optional(),
-  }))
+export let newVoucher = SlateTrigger.create(spec, {
+  name: 'New Voucher',
+  key: 'new_voucher',
+  description: 'Triggers when a new voucher (incoming invoice/receipt) is created in sevDesk.'
+})
+  .input(
+    z.object({
+      voucherId: z.string().describe('Voucher ID'),
+      voucherData: z.any().describe('Full voucher data from sevDesk')
+    })
+  )
+  .output(
+    z.object({
+      voucherId: z.string().describe('Voucher ID'),
+      voucherNumber: z.string().optional(),
+      description: z.string().optional(),
+      voucherDate: z.string().optional(),
+      status: z.string().optional(),
+      totalNet: z.string().optional(),
+      totalGross: z.string().optional(),
+      supplierContactId: z.string().optional(),
+      creditDebit: z.string().optional(),
+      createdAt: z.string().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SevdeskClient({ token: ctx.auth.token });
 
       let lastSeenId: string | undefined = ctx.state?.lastSeenId;
 
       let vouchers = await client.listVouchers({
         limit: 50,
-        offset: 0,
+        offset: 0
       });
 
       let sorted = (vouchers ?? []).sort((a: any, b: any) => Number(b.id) - Number(a.id));
@@ -56,15 +57,15 @@ export let newVoucher = SlateTrigger.create(
       return {
         inputs: newVouchers.map((v: any) => ({
           voucherId: String(v.id),
-          voucherData: v,
+          voucherData: v
         })),
         updatedState: {
-          lastSeenId: updatedLastSeenId,
-        },
+          lastSeenId: updatedLastSeenId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let v = ctx.input.voucherData;
 
       return {
@@ -80,8 +81,9 @@ export let newVoucher = SlateTrigger.create(
           totalGross: v.sumGross ?? undefined,
           supplierContactId: v.supplier?.id ? String(v.supplier.id) : undefined,
           creditDebit: v.creditDebit ?? undefined,
-          createdAt: v.create ?? undefined,
-        },
+          createdAt: v.create ?? undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

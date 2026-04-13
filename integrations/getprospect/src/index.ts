@@ -30,7 +30,7 @@ import {
   deleteNote,
   getDomains,
   createDomain,
-  deleteDomain,
+  deleteDomain
 } from './tools';
 import { contactEvent } from './triggers';
 
@@ -66,9 +66,7 @@ export let provider = Slate.create({
     deleteNote,
     getDomains,
     createDomain,
-    deleteDomain,
+    deleteDomain
   ],
-  triggers: [
-    contactEvent,
-  ],
+  triggers: [contactEvent]
 });

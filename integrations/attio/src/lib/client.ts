@@ -8,8 +8,8 @@ export class AttioClient {
       baseURL: 'https://api.attio.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -33,7 +33,9 @@ export class AttioClient {
   }
 
   async getObjectAttribute(objectSlugOrId: string, attributeSlugOrId: string): Promise<any> {
-    let response = await this.axios.get(`/v2/objects/${objectSlugOrId}/attributes/${attributeSlugOrId}`);
+    let response = await this.axios.get(
+      `/v2/objects/${objectSlugOrId}/attributes/${attributeSlugOrId}`
+    );
     return response.data.data;
   }
 
@@ -46,30 +48,49 @@ export class AttioClient {
 
   async createRecord(objectSlugOrId: string, values: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/v2/objects/${objectSlugOrId}/records`, {
-      data: { values },
+      data: { values }
     });
     return response.data.data;
   }
 
-  async assertRecord(objectSlugOrId: string, matchingAttribute: string, values: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/v2/objects/${objectSlugOrId}/records`, {
-      data: { values },
-    }, {
-      params: { matching_attribute: matchingAttribute },
-    });
+  async assertRecord(
+    objectSlugOrId: string,
+    matchingAttribute: string,
+    values: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/v2/objects/${objectSlugOrId}/records`,
+      {
+        data: { values }
+      },
+      {
+        params: { matching_attribute: matchingAttribute }
+      }
+    );
     return response.data.data;
   }
 
-  async updateRecord(objectSlugOrId: string, recordId: string, values: Record<string, any>, overwrite: boolean = false): Promise<any> {
+  async updateRecord(
+    objectSlugOrId: string,
+    recordId: string,
+    values: Record<string, any>,
+    overwrite: boolean = false
+  ): Promise<any> {
     if (overwrite) {
-      let response = await this.axios.put(`/v2/objects/${objectSlugOrId}/records/${recordId}`, {
-        data: { values },
-      });
+      let response = await this.axios.put(
+        `/v2/objects/${objectSlugOrId}/records/${recordId}`,
+        {
+          data: { values }
+        }
+      );
       return response.data.data;
     }
-    let response = await this.axios.patch(`/v2/objects/${objectSlugOrId}/records/${recordId}`, {
-      data: { values },
-    });
+    let response = await this.axios.patch(
+      `/v2/objects/${objectSlugOrId}/records/${recordId}`,
+      {
+        data: { values }
+      }
+    );
     return response.data.data;
   }
 
@@ -77,23 +98,32 @@ export class AttioClient {
     await this.axios.delete(`/v2/objects/${objectSlugOrId}/records/${recordId}`);
   }
 
-  async queryRecords(objectSlugOrId: string, params: {
-    filter?: any;
-    sorts?: any[];
-    limit?: number;
-    offset?: number;
-  }): Promise<any[]> {
-    let response = await this.axios.post(`/v2/objects/${objectSlugOrId}/records/query`, params);
+  async queryRecords(
+    objectSlugOrId: string,
+    params: {
+      filter?: any;
+      sorts?: any[];
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any[]> {
+    let response = await this.axios.post(
+      `/v2/objects/${objectSlugOrId}/records/query`,
+      params
+    );
     return response.data.data ?? [];
   }
 
-  async searchRecords(query: string, params?: {
-    objects?: string[];
-    limit?: number;
-  }): Promise<any[]> {
+  async searchRecords(
+    query: string,
+    params?: {
+      objects?: string[];
+      limit?: number;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.post('/v2/objects/records/search', {
       query,
-      ...params,
+      ...params
     });
     return response.data.data ?? [];
   }
@@ -124,37 +154,52 @@ export class AttioClient {
     return response.data.data;
   }
 
-  async createListEntry(listSlugOrId: string, parentRecordId: string, parentObject: string, entryValues?: Record<string, any>): Promise<any> {
+  async createListEntry(
+    listSlugOrId: string,
+    parentRecordId: string,
+    parentObject: string,
+    entryValues?: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.post(`/v2/lists/${listSlugOrId}/entries`, {
       data: {
         parent_record_id: parentRecordId,
         parent_object: parentObject,
-        entry_values: entryValues ?? {},
-      },
+        entry_values: entryValues ?? {}
+      }
     });
     return response.data.data;
   }
 
-  async assertListEntry(listSlugOrId: string, parentRecordId: string, parentObject: string, entryValues?: Record<string, any>): Promise<any> {
+  async assertListEntry(
+    listSlugOrId: string,
+    parentRecordId: string,
+    parentObject: string,
+    entryValues?: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/v2/lists/${listSlugOrId}/entries`, {
       data: {
         parent_record_id: parentRecordId,
         parent_object: parentObject,
-        entry_values: entryValues ?? {},
-      },
+        entry_values: entryValues ?? {}
+      }
     });
     return response.data.data;
   }
 
-  async updateListEntry(listSlugOrId: string, entryId: string, entryValues: Record<string, any>, overwrite: boolean = false): Promise<any> {
+  async updateListEntry(
+    listSlugOrId: string,
+    entryId: string,
+    entryValues: Record<string, any>,
+    overwrite: boolean = false
+  ): Promise<any> {
     if (overwrite) {
       let response = await this.axios.put(`/v2/lists/${listSlugOrId}/entries/${entryId}`, {
-        data: { entry_values: entryValues },
+        data: { entry_values: entryValues }
       });
       return response.data.data;
     }
     let response = await this.axios.patch(`/v2/lists/${listSlugOrId}/entries/${entryId}`, {
-      data: { entry_values: entryValues },
+      data: { entry_values: entryValues }
     });
     return response.data.data;
   }
@@ -163,12 +208,15 @@ export class AttioClient {
     await this.axios.delete(`/v2/lists/${listSlugOrId}/entries/${entryId}`);
   }
 
-  async queryListEntries(listSlugOrId: string, params: {
-    filter?: any;
-    sorts?: any[];
-    limit?: number;
-    offset?: number;
-  }): Promise<any[]> {
+  async queryListEntries(
+    listSlugOrId: string,
+    params: {
+      filter?: any;
+      sorts?: any[];
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.post(`/v2/lists/${listSlugOrId}/entries/query`, params);
     return response.data.data ?? [];
   }
@@ -207,7 +255,7 @@ export class AttioClient {
     let body: Record<string, any> = {
       parent_object: params.parentObject,
       parent_record_id: params.parentRecordId,
-      title: params.title,
+      title: params.title
     };
     if (params.format) body.format = params.format;
     if (params.content) body.content = params.content;
@@ -261,19 +309,19 @@ export class AttioClient {
     let body: Record<string, any> = {
       content: params.content,
       format: params.format ?? 'plaintext',
-      is_completed: params.isCompleted ?? false,
+      is_completed: params.isCompleted ?? false
     };
     if (params.deadlineAt) body.deadline_at = params.deadlineAt;
     if (params.linkedRecords) {
       body.linked_records = params.linkedRecords.map(r => ({
         target_object: r.targetObject,
-        target_record_id: r.targetRecordId,
+        target_record_id: r.targetRecordId
       }));
     }
     if (params.assignees) {
       body.assignees = params.assignees.map(a => ({
         referenced_actor_type: a.referencedActorType,
-        referenced_actor_id: a.referencedActorId,
+        referenced_actor_id: a.referencedActorId
       }));
     }
 
@@ -281,25 +329,28 @@ export class AttioClient {
     return response.data.data;
   }
 
-  async updateTask(taskId: string, params: {
-    deadlineAt?: string | null;
-    isCompleted?: boolean;
-    linkedRecords?: Array<{ targetObject: string; targetRecordId: string }>;
-    assignees?: Array<{ referencedActorType: string; referencedActorId: string }>;
-  }): Promise<any> {
+  async updateTask(
+    taskId: string,
+    params: {
+      deadlineAt?: string | null;
+      isCompleted?: boolean;
+      linkedRecords?: Array<{ targetObject: string; targetRecordId: string }>;
+      assignees?: Array<{ referencedActorType: string; referencedActorId: string }>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.deadlineAt !== undefined) body.deadline_at = params.deadlineAt;
     if (params.isCompleted !== undefined) body.is_completed = params.isCompleted;
     if (params.linkedRecords) {
       body.linked_records = params.linkedRecords.map(r => ({
         target_object: r.targetObject,
-        target_record_id: r.targetRecordId,
+        target_record_id: r.targetRecordId
       }));
     }
     if (params.assignees) {
       body.assignees = params.assignees.map(a => ({
         referenced_actor_type: a.referencedActorType,
-        referenced_actor_id: a.referencedActorId,
+        referenced_actor_id: a.referencedActorId
       }));
     }
 
@@ -328,19 +379,19 @@ export class AttioClient {
   }): Promise<any> {
     let body: Record<string, any> = {
       content: params.content,
-      format: params.format ?? 'plaintext',
+      format: params.format ?? 'plaintext'
     };
     if (params.threadId) body.thread_id = params.threadId;
     if (params.record) {
       body.record = {
         object: params.record.object,
-        record_id: params.record.recordId,
+        record_id: params.record.recordId
       };
     }
     if (params.entry) {
       body.entry = {
         list: params.entry.list,
-        entry_id: params.entry.entryId,
+        entry_id: params.entry.entryId
       };
     }
     if (params.author) body.author = params.author;
@@ -394,18 +445,21 @@ export class AttioClient {
 
   // ---- Webhooks ----
 
-  async createWebhook(targetUrl: string, subscriptions: Array<{
-    eventType: string;
-    filter?: any;
-  }>): Promise<any> {
+  async createWebhook(
+    targetUrl: string,
+    subscriptions: Array<{
+      eventType: string;
+      filter?: any;
+    }>
+  ): Promise<any> {
     let response = await this.axios.post('/v2/webhooks', {
       data: {
         target_url: targetUrl,
         subscriptions: subscriptions.map(s => ({
           event_type: s.eventType,
-          ...(s.filter ? { filter: s.filter } : {}),
-        })),
-      },
+          ...(s.filter ? { filter: s.filter } : {})
+        }))
+      }
     });
     return response.data.data;
   }
@@ -420,16 +474,19 @@ export class AttioClient {
     return response.data.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    targetUrl?: string;
-    subscriptions?: Array<{ eventType: string; filter?: any }>;
-  }): Promise<any> {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      targetUrl?: string;
+      subscriptions?: Array<{ eventType: string; filter?: any }>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.targetUrl) body.target_url = params.targetUrl;
     if (params.subscriptions) {
       body.subscriptions = params.subscriptions.map(s => ({
         event_type: s.eventType,
-        ...(s.filter ? { filter: s.filter } : {}),
+        ...(s.filter ? { filter: s.filter } : {})
       }));
     }
 

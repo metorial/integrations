@@ -3,72 +3,85 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let responseEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Response Event',
-    key: 'response_event',
-    description: 'Triggers when a survey response is created, updated, or completed. Webhooks can be scoped to specific surveys.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['responseCreated', 'responseUpdated', 'responseFinished']).describe('Type of response event'),
-    webhookId: z.string().describe('ID of the webhook that sent this event'),
-    responseId: z.string().describe('ID of the response'),
-    surveyId: z.string().describe('ID of the associated survey'),
-    finished: z.boolean().describe('Whether the response is complete'),
-    answers: z.record(z.string(), z.any()).describe('Response answers keyed by question ID'),
-    meta: z.any().optional().describe('Response metadata (country, browser, OS, device)'),
-    contactAttributes: z.any().optional().describe('Contact attributes of the respondent'),
-    ttc: z.record(z.string(), z.any()).optional().describe('Time-to-completion per question'),
-    surveyName: z.string().optional().describe('Name of the associated survey'),
-    surveyStatus: z.string().optional().describe('Status of the associated survey'),
-    surveyType: z.string().optional().describe('Type of the associated survey'),
-    createdAt: z.string().optional().describe('Response creation timestamp'),
-    updatedAt: z.string().optional().describe('Response last update timestamp'),
-    endingId: z.string().optional().describe('ID of the ending shown (for finished responses)'),
-  }))
-  .output(z.object({
-    responseId: z.string().describe('ID of the response'),
-    surveyId: z.string().describe('ID of the associated survey'),
-    surveyName: z.string().optional().describe('Name of the associated survey'),
-    finished: z.boolean().describe('Whether the response is complete'),
-    answers: z.record(z.string(), z.any()).describe('Response answers keyed by question ID'),
-    meta: z.any().optional().describe('Response metadata'),
-    contactAttributes: z.any().optional().describe('Respondent contact attributes'),
-    ttc: z.record(z.string(), z.any()).optional().describe('Time-to-completion per question'),
-    createdAt: z.string().optional().describe('Response creation timestamp'),
-    updatedAt: z.string().optional().describe('Response last update timestamp'),
-  }))
+export let responseEvent = SlateTrigger.create(spec, {
+  name: 'Response Event',
+  key: 'response_event',
+  description:
+    'Triggers when a survey response is created, updated, or completed. Webhooks can be scoped to specific surveys.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['responseCreated', 'responseUpdated', 'responseFinished'])
+        .describe('Type of response event'),
+      webhookId: z.string().describe('ID of the webhook that sent this event'),
+      responseId: z.string().describe('ID of the response'),
+      surveyId: z.string().describe('ID of the associated survey'),
+      finished: z.boolean().describe('Whether the response is complete'),
+      answers: z.record(z.string(), z.any()).describe('Response answers keyed by question ID'),
+      meta: z.any().optional().describe('Response metadata (country, browser, OS, device)'),
+      contactAttributes: z.any().optional().describe('Contact attributes of the respondent'),
+      ttc: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Time-to-completion per question'),
+      surveyName: z.string().optional().describe('Name of the associated survey'),
+      surveyStatus: z.string().optional().describe('Status of the associated survey'),
+      surveyType: z.string().optional().describe('Type of the associated survey'),
+      createdAt: z.string().optional().describe('Response creation timestamp'),
+      updatedAt: z.string().optional().describe('Response last update timestamp'),
+      endingId: z
+        .string()
+        .optional()
+        .describe('ID of the ending shown (for finished responses)')
+    })
+  )
+  .output(
+    z.object({
+      responseId: z.string().describe('ID of the response'),
+      surveyId: z.string().describe('ID of the associated survey'),
+      surveyName: z.string().optional().describe('Name of the associated survey'),
+      finished: z.boolean().describe('Whether the response is complete'),
+      answers: z.record(z.string(), z.any()).describe('Response answers keyed by question ID'),
+      meta: z.any().optional().describe('Response metadata'),
+      contactAttributes: z.any().optional().describe('Respondent contact attributes'),
+      ttc: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Time-to-completion per question'),
+      createdAt: z.string().optional().describe('Response creation timestamp'),
+      updatedAt: z.string().optional().describe('Response last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let webhook = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        triggers: ['responseCreated', 'responseUpdated', 'responseFinished'],
+        triggers: ['responseCreated', 'responseUpdated', 'responseFinished']
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body = await ctx.request.json();
 
       // Formbricks sends an array of webhook event objects
@@ -93,18 +106,18 @@ export let responseEvent = SlateTrigger.create(
           surveyType: survey.type,
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
-          endingId: data.endingId,
+          endingId: data.endingId
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventTypeMap: Record<string, string> = {
         responseCreated: 'response.created',
         responseUpdated: 'response.updated',
-        responseFinished: 'response.finished',
+        responseFinished: 'response.finished'
       };
 
       return {
@@ -120,9 +133,9 @@ export let responseEvent = SlateTrigger.create(
           contactAttributes: ctx.input.contactAttributes,
           ttc: ctx.input.ttc,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

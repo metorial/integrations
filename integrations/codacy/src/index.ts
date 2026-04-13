@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listOrganizations,
@@ -18,13 +17,9 @@ import {
   listCodingStandards,
   listPeople,
   getCommitAnalysis,
-  manageRepositoryToken,
+  manageRepositoryToken
 } from './tools';
-import {
-  newPullRequests,
-  newSecurityItems,
-  inboundWebhook,
-} from './triggers';
+import { newPullRequests, newSecurityItems, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,11 +40,7 @@ export let provider = Slate.create({
     listCodingStandards,
     listPeople,
     getCommitAnalysis,
-    manageRepositoryToken,
+    manageRepositoryToken
   ],
-  triggers: [
-    inboundWebhook,
-    newPullRequests,
-    newSecurityItems,
-  ],
+  triggers: [inboundWebhook, newPullRequests, newSecurityItems]
 });

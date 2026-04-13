@@ -3,48 +3,51 @@ import { MapulusClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let layerSchema = z.object({
-  layerId: z.string().describe('Unique identifier of the layer'),
-  name: z.string().describe('Name of the layer'),
-  style: z.string().optional().describe('Display style'),
-  color: z.string().optional().describe('Marker color'),
-}).passthrough();
+let layerSchema = z
+  .object({
+    layerId: z.string().describe('Unique identifier of the layer'),
+    name: z.string().describe('Name of the layer'),
+    style: z.string().optional().describe('Display style'),
+    color: z.string().optional().describe('Marker color')
+  })
+  .passthrough();
 
-export let newMap = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Map',
-    key: 'new_map',
-    description: 'Triggers when a new map is created in Mapulus.',
-  }
-)
-  .input(z.object({
-    mapId: z.string().describe('ID of the new map'),
-    name: z.string().describe('Name of the map'),
-    description: z.string().optional().describe('Description of the map'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    layers: z.array(layerSchema).optional().describe('Layers in the map'),
-  }))
-  .output(z.object({
-    mapId: z.string().describe('Unique identifier of the new map'),
-    name: z.string().describe('Name of the map'),
-    description: z.string().optional().describe('Description of the map'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    layers: z.array(layerSchema).optional().describe('Layers belonging to this map'),
-  }))
+export let newMap = SlateTrigger.create(spec, {
+  name: 'New Map',
+  key: 'new_map',
+  description: 'Triggers when a new map is created in Mapulus.'
+})
+  .input(
+    z.object({
+      mapId: z.string().describe('ID of the new map'),
+      name: z.string().describe('Name of the map'),
+      description: z.string().optional().describe('Description of the map'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      layers: z.array(layerSchema).optional().describe('Layers in the map')
+    })
+  )
+  .output(
+    z.object({
+      mapId: z.string().describe('Unique identifier of the new map'),
+      name: z.string().describe('Name of the map'),
+      description: z.string().optional().describe('Description of the map'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      layers: z.array(layerSchema).optional().describe('Layers belonging to this map')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MapulusClient(ctx.auth.token);
       let lastSeenIds: string[] = ctx.state?.lastSeenIds ?? [];
 
       let maps = await client.listMaps(true);
 
       // Filter to only new maps
-      let newMaps = maps.filter((m) => !lastSeenIds.includes(m.id));
+      let newMaps = maps.filter(m => !lastSeenIds.includes(m.id));
 
       // Sort newest first
       newMaps.sort((a, b) => {
@@ -54,10 +57,10 @@ export let newMap = SlateTrigger.create(
       });
 
       // Track all current IDs for deduplication
-      let currentIds = maps.map((m) => m.id);
+      let currentIds = maps.map(m => m.id);
 
       return {
-        inputs: newMaps.map((m) => ({
+        inputs: newMaps.map(m => ({
           mapId: m.id,
           name: m.name,
           description: m.description,
@@ -66,16 +69,16 @@ export let newMap = SlateTrigger.create(
             layerId: l.id,
             name: l.name,
             style: l.style,
-            color: l.color,
-          })),
+            color: l.color
+          }))
         })),
         updatedState: {
-          lastSeenIds: currentIds,
-        },
+          lastSeenIds: currentIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'map.created',
         id: ctx.input.mapId,
@@ -84,9 +87,9 @@ export let newMap = SlateTrigger.create(
           name: ctx.input.name,
           description: ctx.input.description,
           createdAt: ctx.input.createdAt,
-          layers: ctx.input.layers,
-        },
+          layers: ctx.input.layers
+        }
       };
-    },
+    }
   })
   .build();

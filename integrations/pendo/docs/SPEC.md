@@ -20,6 +20,7 @@ You must have Pendo admin permissions and integration key access to set up integ
 The integration key isn't tied to a specific application in your subscription. The integration key provides access to all applications in the Pendo subscription.
 
 **Base URL** depends on your data center region:
+
 - US: `https://app.pendo.io/api/v1/`
 - EU: `https://app.eu.pendo.io/api/v1/`
 
@@ -28,6 +29,7 @@ The integration key isn't tied to a specific application in your subscription. T
 Generate an API Key at the Feedback vendor settings page. This key should then be added to every request as a request header named `auth-token` (preferred), or as a query parameter named `auth-token`.
 
 **Base URL** depends on your data center:
+
 - API endpoint is `https://api.feedback.eu.pendo.io` or `https://api.feedback.us.pendo.io` depending on where your datacenter is located.
 
 ## Features
@@ -49,6 +51,7 @@ Segments let you group visitors and accounts based on metadata and product usage
 Aggregations are a query language for accessing and processing Pendo data. They take sources of Pendo data and apply operators to do computations. They run in the context of a given Pendo subscription and are written in JSON. Data querying is performed using a flexible aggregation pipeline modeled after MongoDB.
 
 Available data sources for aggregation include:
+
 - **Page events** — page views and time on page per visitor/account.
 - **Feature events** — feature click interactions.
 - **Guide events** — guide display and interaction data.

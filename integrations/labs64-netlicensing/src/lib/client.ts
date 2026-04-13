@@ -5,7 +5,11 @@ let BASE_URL = 'https://go.netlicensing.io/core/v2/rest';
 export interface NetLicensingItem {
   type: string;
   property: Array<{ name: string; value: string }>;
-  list?: Array<{ name: string; property?: Array<{ name: string; value: string }>; list?: Array<any> }>;
+  list?: Array<{
+    name: string;
+    property?: Array<{ name: string; value: string }>;
+    list?: Array<any>;
+  }>;
 }
 
 export interface NetLicensingResponse {
@@ -58,16 +62,22 @@ export let parseItem = (item: NetLicensingItem): Record<string, any> => {
   return result;
 };
 
-export let parseItems = (response: NetLicensingResponse, type?: string): Record<string, any>[] => {
+export let parseItems = (
+  response: NetLicensingResponse,
+  type?: string
+): Record<string, any>[] => {
   let items = response?.items?.item;
   if (!items || !Array.isArray(items)) {
     return [];
   }
-  let filtered = type ? items.filter((item) => item.type === type) : items;
+  let filtered = type ? items.filter(item => item.type === type) : items;
   return filtered.map(parseItem);
 };
 
-export let parseFirstItem = (response: NetLicensingResponse, type?: string): Record<string, any> | null => {
+export let parseFirstItem = (
+  response: NetLicensingResponse,
+  type?: string
+): Record<string, any> | null => {
   let items = parseItems(response, type);
   return items.length > 0 ? (items[0] ?? null) : null;
 };
@@ -94,9 +104,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Basic ${authToken}`,
-        'Accept': 'application/json',
-      },
+        Authorization: `Basic ${authToken}`,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -114,15 +124,22 @@ export class Client {
 
   async createProduct(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/product', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'Product');
   }
 
-  async updateProduct(productNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/product/${encodeURIComponent(productNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateProduct(
+    productNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/product/${encodeURIComponent(productNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'Product');
   }
 
@@ -140,25 +157,37 @@ export class Client {
   }
 
   async getProductModule(productModuleNumber: string): Promise<Record<string, any> | null> {
-    let res = await this.axios.get(`/productmodule/${encodeURIComponent(productModuleNumber)}`);
+    let res = await this.axios.get(
+      `/productmodule/${encodeURIComponent(productModuleNumber)}`
+    );
     return parseFirstItem(res.data, 'ProductModule');
   }
 
   async createProductModule(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/productmodule', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'ProductModule');
   }
 
-  async updateProductModule(productModuleNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/productmodule/${encodeURIComponent(productModuleNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateProductModule(
+    productModuleNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/productmodule/${encodeURIComponent(productModuleNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'ProductModule');
   }
 
-  async deleteProductModule(productModuleNumber: string, forceCascade?: boolean): Promise<void> {
+  async deleteProductModule(
+    productModuleNumber: string,
+    forceCascade?: boolean
+  ): Promise<void> {
     let url = `/productmodule/${encodeURIComponent(productModuleNumber)}`;
     if (forceCascade) url += '?forceCascade=true';
     await this.axios.delete(url);
@@ -171,26 +200,42 @@ export class Client {
     return parseItems(res.data, 'LicenseTemplate');
   }
 
-  async getLicenseTemplate(licenseTemplateNumber: string): Promise<Record<string, any> | null> {
-    let res = await this.axios.get(`/licensetemplate/${encodeURIComponent(licenseTemplateNumber)}`);
+  async getLicenseTemplate(
+    licenseTemplateNumber: string
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.get(
+      `/licensetemplate/${encodeURIComponent(licenseTemplateNumber)}`
+    );
     return parseFirstItem(res.data, 'LicenseTemplate');
   }
 
-  async createLicenseTemplate(params: Record<string, any>): Promise<Record<string, any> | null> {
+  async createLicenseTemplate(
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/licensetemplate', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'LicenseTemplate');
   }
 
-  async updateLicenseTemplate(licenseTemplateNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/licensetemplate/${encodeURIComponent(licenseTemplateNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateLicenseTemplate(
+    licenseTemplateNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/licensetemplate/${encodeURIComponent(licenseTemplateNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'LicenseTemplate');
   }
 
-  async deleteLicenseTemplate(licenseTemplateNumber: string, forceCascade?: boolean): Promise<void> {
+  async deleteLicenseTemplate(
+    licenseTemplateNumber: string,
+    forceCascade?: boolean
+  ): Promise<void> {
     let url = `/licensetemplate/${encodeURIComponent(licenseTemplateNumber)}`;
     if (forceCascade) url += '?forceCascade=true';
     await this.axios.delete(url);
@@ -210,15 +255,22 @@ export class Client {
 
   async createLicensee(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/licensee', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'Licensee');
   }
 
-  async updateLicensee(licenseeNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/licensee/${encodeURIComponent(licenseeNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateLicensee(
+    licenseeNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/licensee/${encodeURIComponent(licenseeNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'Licensee');
   }
 
@@ -228,22 +280,28 @@ export class Client {
     await this.axios.delete(url);
   }
 
-  async validateLicensee(licenseeNumber: string, params?: Record<string, any>): Promise<NetLicensingResponse> {
+  async validateLicensee(
+    licenseeNumber: string,
+    params?: Record<string, any>
+  ): Promise<NetLicensingResponse> {
     let body = params ? buildFormData(params) : '';
     let res = await this.axios.post(
       `/licensee/${encodeURIComponent(licenseeNumber)}/validate`,
       body,
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
     return res.data;
   }
 
-  async transferLicenses(targetLicenseeNumber: string, sourceLicenseeNumber: string): Promise<void> {
+  async transferLicenses(
+    targetLicenseeNumber: string,
+    sourceLicenseeNumber: string
+  ): Promise<void> {
     let body = buildFormData({ sourceLicenseeNumber });
     await this.axios.post(
       `/licensee/${encodeURIComponent(targetLicenseeNumber)}/transfer`,
       body,
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
   }
 
@@ -261,15 +319,22 @@ export class Client {
 
   async createLicense(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/license', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'License');
   }
 
-  async updateLicense(licenseNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/license/${encodeURIComponent(licenseNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateLicense(
+    licenseNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/license/${encodeURIComponent(licenseNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'License');
   }
 
@@ -291,15 +356,22 @@ export class Client {
 
   async createBundle(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/bundle', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'Bundle');
   }
 
-  async updateBundle(bundleNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/bundle/${encodeURIComponent(bundleNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateBundle(
+    bundleNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/bundle/${encodeURIComponent(bundleNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'Bundle');
   }
 
@@ -307,12 +379,15 @@ export class Client {
     await this.axios.delete(`/bundle/${encodeURIComponent(bundleNumber)}`);
   }
 
-  async obtainBundle(bundleNumber: string, licenseeNumber: string): Promise<Record<string, any>[]> {
+  async obtainBundle(
+    bundleNumber: string,
+    licenseeNumber: string
+  ): Promise<Record<string, any>[]> {
     let body = buildFormData({ licenseeNumber });
     let res = await this.axios.post(
       `/bundle/${encodeURIComponent(bundleNumber)}/obtain`,
       body,
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
     return parseItems(res.data, 'License');
   }
@@ -331,7 +406,7 @@ export class Client {
 
   async createToken(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/token', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'Token');
   }
@@ -354,15 +429,22 @@ export class Client {
 
   async createTransaction(params: Record<string, any>): Promise<Record<string, any> | null> {
     let res = await this.axios.post('/transaction', buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return parseFirstItem(res.data, 'Transaction');
   }
 
-  async updateTransaction(transactionNumber: string, params: Record<string, any>): Promise<Record<string, any> | null> {
-    let res = await this.axios.post(`/transaction/${encodeURIComponent(transactionNumber)}`, buildFormData(params), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async updateTransaction(
+    transactionNumber: string,
+    params: Record<string, any>
+  ): Promise<Record<string, any> | null> {
+    let res = await this.axios.post(
+      `/transaction/${encodeURIComponent(transactionNumber)}`,
+      buildFormData(params),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return parseFirstItem(res.data, 'Transaction');
   }
 }

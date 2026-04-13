@@ -9,7 +9,7 @@ import {
   listWhatsAppGroups,
   getWhatsAppMessages,
   manageContacts,
-  deleteWhatsAppMessage,
+  deleteWhatsAppMessage
 } from './tools';
 import {
   whatsappMessageTrigger,
@@ -19,7 +19,7 @@ import {
   whatsappCallTrigger,
   whatsappNumberStatusTrigger,
   whatsappOrderTrigger,
-  phoneCallTrigger,
+  phoneCallTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -33,7 +33,7 @@ export let provider = Slate.create({
     listWhatsAppGroups,
     getWhatsAppMessages,
     manageContacts,
-    deleteWhatsAppMessage,
+    deleteWhatsAppMessage
   ],
   triggers: [
     whatsappMessageTrigger,
@@ -43,6 +43,6 @@ export let provider = Slate.create({
     whatsappCallTrigger,
     whatsappNumberStatusTrigger,
     whatsappOrderTrigger,
-    phoneCallTrigger,
-  ],
+    phoneCallTrigger
+  ]
 });

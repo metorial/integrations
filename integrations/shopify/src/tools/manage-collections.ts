@@ -14,42 +14,80 @@ let collectionSchema = z.object({
   updatedAt: z.string()
 });
 
-export let manageCollections = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Collections',
-    key: 'manage_collections',
-    description: `List, create, update, or delete product collections. Supports both **custom** (manual) and **smart** (automated/rule-based) collections.
+export let manageCollections = SlateTool.create(spec, {
+  name: 'Manage Collections',
+  key: 'manage_collections',
+  description: `List, create, update, or delete product collections. Supports both **custom** (manual) and **smart** (automated/rule-based) collections.
 - **list**: List collections of a given type
 - **get**: Get a single collection by ID
 - **create**: Create a new collection
 - **update**: Update an existing collection
 - **delete**: Delete a collection`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    collectionType: z.enum(['custom', 'smart']).optional().describe('Type of collection (required for list/create)'),
-    collectionId: z.string().optional().describe('Collection ID (required for get/update/delete)'),
-    title: z.string().optional().describe('Collection title (for create/update)'),
-    bodyHtml: z.string().optional().describe('Collection description in HTML (for create/update)'),
-    sortOrder: z.string().optional().describe('Sort order: alpha-asc, alpha-desc, best-selling, created, created-desc, manual, price-asc, price-desc'),
-    published: z.boolean().optional().describe('Whether collection is published'),
-    rules: z.array(z.object({
-      column: z.string().describe('Rule column: title, type, vendor, variant_price, tag, etc.'),
-      relation: z.string().describe('Rule relation: equals, greater_than, less_than, starts_with, ends_with, contains'),
-      condition: z.string().describe('Rule condition value')
-    })).optional().describe('Smart collection rules (only for smart collections)'),
-    disjunctive: z.boolean().optional().describe('Whether products must match any rule (true) or all rules (false) for smart collections'),
-    limit: z.number().min(1).max(250).optional().describe('Number of results (for list action)')
-  }))
-  .output(z.object({
-    collections: z.array(collectionSchema).optional(),
-    collection: collectionSchema.optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Operation to perform'),
+      collectionType: z
+        .enum(['custom', 'smart'])
+        .optional()
+        .describe('Type of collection (required for list/create)'),
+      collectionId: z
+        .string()
+        .optional()
+        .describe('Collection ID (required for get/update/delete)'),
+      title: z.string().optional().describe('Collection title (for create/update)'),
+      bodyHtml: z
+        .string()
+        .optional()
+        .describe('Collection description in HTML (for create/update)'),
+      sortOrder: z
+        .string()
+        .optional()
+        .describe(
+          'Sort order: alpha-asc, alpha-desc, best-selling, created, created-desc, manual, price-asc, price-desc'
+        ),
+      published: z.boolean().optional().describe('Whether collection is published'),
+      rules: z
+        .array(
+          z.object({
+            column: z
+              .string()
+              .describe('Rule column: title, type, vendor, variant_price, tag, etc.'),
+            relation: z
+              .string()
+              .describe(
+                'Rule relation: equals, greater_than, less_than, starts_with, ends_with, contains'
+              ),
+            condition: z.string().describe('Rule condition value')
+          })
+        )
+        .optional()
+        .describe('Smart collection rules (only for smart collections)'),
+      disjunctive: z
+        .boolean()
+        .optional()
+        .describe(
+          'Whether products must match any rule (true) or all rules (false) for smart collections'
+        ),
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of results (for list action)')
+    })
+  )
+  .output(
+    z.object({
+      collections: z.array(collectionSchema).optional(),
+      collection: collectionSchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -88,9 +126,10 @@ export let manageCollections = SlateTool.create(
     if (ctx.input.action === 'get') {
       if (!ctx.input.collectionId) throw new Error('collectionId is required');
       let type = ctx.input.collectionType || 'custom';
-      let c = type === 'custom'
-        ? await client.getCustomCollection(ctx.input.collectionId)
-        : await client.getSmartCollection(ctx.input.collectionId);
+      let c =
+        type === 'custom'
+          ? await client.getCustomCollection(ctx.input.collectionId)
+          : await client.getSmartCollection(ctx.input.collectionId);
       return {
         output: { collection: mapCollection(c, type) },
         message: `Retrieved ${type} collection **${c.title}**.`
@@ -163,4 +202,5 @@ export let manageCollections = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

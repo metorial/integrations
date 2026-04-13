@@ -10,9 +10,9 @@ export let createAuthenticatedAxios = (token: string, environment: string) => {
   return createAxios({
     baseURL: getBaseUrl(environment),
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
   });
 };

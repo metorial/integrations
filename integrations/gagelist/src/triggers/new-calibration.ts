@@ -3,46 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newCalibration = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Calibration Created',
-    key: 'new_calibration_created',
-    description: 'Triggers when a new calibration record is created in GageList.',
-  }
-)
-  .input(z.object({
-    calibrationId: z.number().describe('ID of the calibration record'),
-    recordNumber: z.string().optional().describe('Calibration record number'),
-    equipmentRefId: z.number().optional().describe('ID of the associated gage'),
-    type: z.string().optional().describe('Equipment type'),
-    manufacturer: z.string().optional().describe('Manufacturer name'),
-    serialNumber: z.string().optional().describe('Serial number'),
-    controlNumber: z.string().optional().describe('Control number'),
-    responsibleUser: z.string().optional().describe('Person who performed calibration'),
-    createdBy: z.string().optional().describe('Created by user'),
-    createdDate: z.string().optional().describe('Date created'),
-    updatedDate: z.string().optional().describe('Date last updated'),
-  }))
-  .output(z.object({
-    calibrationId: z.number().describe('ID of the new calibration record'),
-    recordNumber: z.string().optional().describe('Calibration record number'),
-    equipmentRefId: z.number().optional().describe('ID of the associated gage'),
-    type: z.string().optional().describe('Equipment type'),
-    manufacturer: z.string().optional().describe('Manufacturer name'),
-    serialNumber: z.string().optional().describe('Serial number'),
-    controlNumber: z.string().optional().describe('Control number'),
-    responsibleUser: z.string().optional().describe('Person who performed calibration'),
-    createdBy: z.string().optional().describe('Created by user'),
-    createdDate: z.string().optional().describe('Date created'),
-    updatedDate: z.string().optional().describe('Date last updated'),
-  }))
+export let newCalibration = SlateTrigger.create(spec, {
+  name: 'New Calibration Created',
+  key: 'new_calibration_created',
+  description: 'Triggers when a new calibration record is created in GageList.'
+})
+  .input(
+    z.object({
+      calibrationId: z.number().describe('ID of the calibration record'),
+      recordNumber: z.string().optional().describe('Calibration record number'),
+      equipmentRefId: z.number().optional().describe('ID of the associated gage'),
+      type: z.string().optional().describe('Equipment type'),
+      manufacturer: z.string().optional().describe('Manufacturer name'),
+      serialNumber: z.string().optional().describe('Serial number'),
+      controlNumber: z.string().optional().describe('Control number'),
+      responsibleUser: z.string().optional().describe('Person who performed calibration'),
+      createdBy: z.string().optional().describe('Created by user'),
+      createdDate: z.string().optional().describe('Date created'),
+      updatedDate: z.string().optional().describe('Date last updated')
+    })
+  )
+  .output(
+    z.object({
+      calibrationId: z.number().describe('ID of the new calibration record'),
+      recordNumber: z.string().optional().describe('Calibration record number'),
+      equipmentRefId: z.number().optional().describe('ID of the associated gage'),
+      type: z.string().optional().describe('Equipment type'),
+      manufacturer: z.string().optional().describe('Manufacturer name'),
+      serialNumber: z.string().optional().describe('Serial number'),
+      controlNumber: z.string().optional().describe('Control number'),
+      responsibleUser: z.string().optional().describe('Person who performed calibration'),
+      createdBy: z.string().optional().describe('Created by user'),
+      createdDate: z.string().optional().describe('Date created'),
+      updatedDate: z.string().optional().describe('Date last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastTs: number = ctx.state?.lastTs ?? 0;
@@ -72,16 +73,16 @@ export let newCalibration = SlateTrigger.create(
         responsibleUser: c.ResponsibleUser,
         createdBy: c.CreatedBy,
         createdDate: c.CreatedDate,
-        updatedDate: c.UpdatedDate,
+        updatedDate: c.UpdatedDate
       }));
 
       return {
         inputs,
-        updatedState: { lastTs: maxTs },
+        updatedState: { lastTs: maxTs }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'calibration.created',
         id: `calibration-${ctx.input.calibrationId}`,
@@ -96,9 +97,9 @@ export let newCalibration = SlateTrigger.create(
           responsibleUser: ctx.input.responsibleUser,
           createdBy: ctx.input.createdBy,
           createdDate: ctx.input.createdDate,
-          updatedDate: ctx.input.updatedDate,
-        },
+          updatedDate: ctx.input.updatedDate
+        }
       };
-    },
+    }
   })
   .build();

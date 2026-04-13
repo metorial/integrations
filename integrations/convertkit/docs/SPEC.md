@@ -39,33 +39,43 @@ ConvertKit supports multiple authentication methods depending on the API version
 ## Features
 
 ### Subscriber Management
+
 Create, update, list, and search subscribers. Subscribers can be filtered by status (active, inactive, bounced, complained, cancelled), date ranges, and custom fields. You can unsubscribe subscribers or update their information such as name, email, and custom field values.
 
 ### Tags
+
 Create and manage tags to organize and segment subscribers. Tags can be added to or removed from individual subscribers. You can list all subscribers associated with a specific tag.
 
 ### Forms and Landing Pages
+
 List and retrieve forms and landing pages. Add subscribers directly to forms, which can trigger opt-in confirmation depending on form settings.
 
 ### Email Sequences
+
 List and manage email sequences (automated drip campaigns). Add subscribers to sequences to enroll them in automated email series. You can view sequence details and list subscribers in a sequence.
 
 ### Broadcasts
+
 Create, update, list, and delete email broadcasts (one-time email sends). You can create and send broadcasts to your subscribers. V4 includes improved HTML support and access to subscriber filters for targeting.
 
 ### Custom Fields
+
 Create, update, list, and delete custom fields for storing additional subscriber data. Custom field values can be set when creating or updating subscribers.
 
 ### Purchases
+
 Import purchase/transaction data, including product details, pricing, and transaction metadata. Purchase creation endpoints require OAuth authentication.
 
 ### Segments
+
 Access subscriber segments, which are saved filters for grouping subscribers based on various criteria.
 
 ### Email Templates
+
 List available email templates that can be used with broadcasts.
 
 ### Account Information
+
 Retrieve account-level information such as account name and plan details.
 
 ## Events
@@ -73,37 +83,49 @@ Retrieve account-level information such as account name and plan details.
 ConvertKit supports webhooks that send a POST request with a JSON payload to a specified URL when subscriber events occur.
 
 ### Subscriber Activation
+
 Webhooks are automations that will receive subscriber data when a subscriber event is triggered. Fires when a subscriber becomes active. No additional parameters required.
 
 ### Subscriber Unsubscribe
+
 Fires when a subscriber unsubscribes. No additional parameters required.
 
 ### Subscriber Bounce
+
 Fires when a subscriber's email bounces. No additional parameters required.
 
 ### Subscriber Complaint
+
 Fires when a subscriber marks an email as spam. No additional parameters required.
 
 ### Form Subscription
+
 Fires when a subscriber subscribes to a specific form. Requires specifying a `form_id`.
 
 ### Sequence Subscription
+
 Fires when a subscriber is added to a specific sequence. Requires specifying a `sequence_id`.
 
 ### Sequence Completion
+
 Fires when a subscriber completes a specific sequence. Requires specifying a `sequence_id`.
 
 ### Link Click
+
 Fires when a subscriber clicks a specific link in an email. Requires specifying the link URL via `initiator_value`.
 
 ### Product Purchase
+
 Fires when a subscriber purchases a specific product. Requires specifying a `product_id`.
 
 ### Tag Added
+
 Fires when a specific tag is added to a subscriber. Requires specifying a `tag_id`.
 
 ### Tag Removed
+
 Fires when a specific tag is removed from a subscriber. Requires specifying a `tag_id`.
 
 ### Purchase Created
+
 Fires when a new purchase record is created. No additional parameters required.

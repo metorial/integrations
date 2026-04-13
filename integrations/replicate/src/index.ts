@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   runPrediction,
@@ -29,11 +28,7 @@ import {
   listHardware,
   getAccount
 } from './tools';
-import {
-  predictionCompleted,
-  trainingCompleted,
-  inboundWebhook,
-} from './triggers';
+import { predictionCompleted, trainingCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -65,9 +60,5 @@ export let provider = Slate.create({
     listHardware,
     getAccount
   ],
-  triggers: [
-    inboundWebhook,
-    predictionCompleted,
-    trainingCompleted
-  ]
+  triggers: [inboundWebhook, predictionCompleted, trainingCompleted]
 });

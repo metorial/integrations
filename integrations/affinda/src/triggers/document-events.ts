@@ -3,33 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let documentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Events',
-    key: 'document_events',
-    description: 'Triggers when a document is parsed or validated in Affinda. Covers both document.parse.completed and document.validate.completed events.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The event type (e.g., "document.parse.completed", "document.validate.completed").'),
-    documentIdentifier: z.string().describe('Identifier of the affected document.'),
-    fileName: z.string().optional().describe('Name of the document file.'),
-    workspaceIdentifier: z.string().optional().describe('Workspace the document belongs to.'),
-    workspaceName: z.string().optional().describe('Name of the workspace.'),
-    collectionIdentifier: z.string().optional().describe('Collection the document belongs to.'),
-    customIdentifier: z.string().optional().describe('Custom identifier of the document.')
-  }))
-  .output(z.object({
-    documentIdentifier: z.string().describe('Identifier of the affected document.'),
-    fileName: z.string().optional().describe('Name of the document file.'),
-    workspaceIdentifier: z.string().optional().describe('Workspace identifier.'),
-    workspaceName: z.string().optional().describe('Name of the workspace.'),
-    collectionIdentifier: z.string().optional().describe('Collection identifier.'),
-    customIdentifier: z.string().optional().describe('Custom identifier.')
-  }))
+export let documentEvents = SlateTrigger.create(spec, {
+  name: 'Document Events',
+  key: 'document_events',
+  description:
+    'Triggers when a document is parsed or validated in Affinda. Covers both document.parse.completed and document.validate.completed events.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The event type (e.g., "document.parse.completed", "document.validate.completed").'
+        ),
+      documentIdentifier: z.string().describe('Identifier of the affected document.'),
+      fileName: z.string().optional().describe('Name of the document file.'),
+      workspaceIdentifier: z
+        .string()
+        .optional()
+        .describe('Workspace the document belongs to.'),
+      workspaceName: z.string().optional().describe('Name of the workspace.'),
+      collectionIdentifier: z
+        .string()
+        .optional()
+        .describe('Collection the document belongs to.'),
+      customIdentifier: z.string().optional().describe('Custom identifier of the document.')
+    })
+  )
+  .output(
+    z.object({
+      documentIdentifier: z.string().describe('Identifier of the affected document.'),
+      fileName: z.string().optional().describe('Name of the document file.'),
+      workspaceIdentifier: z.string().optional().describe('Workspace identifier.'),
+      workspaceName: z.string().optional().describe('Name of the workspace.'),
+      collectionIdentifier: z.string().optional().describe('Collection identifier.'),
+      customIdentifier: z.string().optional().describe('Custom identifier.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         region: ctx.config.region
@@ -37,11 +49,13 @@ export let documentEvents = SlateTrigger.create(
 
       // Get the first organization to register webhook at org level
       let orgs = await client.listOrganizations();
-      let orgList = Array.isArray(orgs) ? orgs : orgs.results ?? [];
+      let orgList = Array.isArray(orgs) ? orgs : (orgs.results ?? []);
       let orgIdentifier = orgList[0]?.identifier;
 
       if (!orgIdentifier) {
-        throw new Error('No organization found. An organization is required to register webhooks.');
+        throw new Error(
+          'No organization found. An organization is required to register webhooks.'
+        );
       }
 
       // Register webhook for parse completed
@@ -69,7 +83,7 @@ export let documentEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         region: ctx.config.region
@@ -84,11 +98,13 @@ export let documentEvents = SlateTrigger.create(
         await client.deleteResthookSubscription(details.parseSubscriptionId).catch(() => {});
       }
       if (details.validateSubscriptionId) {
-        await client.deleteResthookSubscription(details.validateSubscriptionId).catch(() => {});
+        await client
+          .deleteResthookSubscription(details.validateSubscriptionId)
+          .catch(() => {});
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let request = ctx.request;
 
       // Handle subscription activation: Affinda sends X-Hook-Secret header for confirmation
@@ -142,7 +158,7 @@ export let documentEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: `${ctx.input.eventType}-${ctx.input.documentIdentifier}-${Date.now()}`,

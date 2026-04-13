@@ -5,9 +5,7 @@ let http = createAxios({
 });
 
 export class Client {
-  constructor(
-    private token: string
-  ) {}
+  constructor(private token: string) {}
 
   private async post<T = any>(path: string, data: Record<string, any> = {}): Promise<T> {
     let response = await http.post(path, {
@@ -63,11 +61,19 @@ export class Client {
     return this.post<void>('/update-booth', params);
   }
 
-  async addExhibitorBooth(eventId: number, exhibitorId: number, boothName: string): Promise<void> {
+  async addExhibitorBooth(
+    eventId: number,
+    exhibitorId: number,
+    boothName: string
+  ): Promise<void> {
     return this.post<void>('/add-exhibitor-booth', { eventId, exhibitorId, boothName });
   }
 
-  async removeExhibitorBooth(eventId: number, exhibitorId: number, boothName: string): Promise<void> {
+  async removeExhibitorBooth(
+    eventId: number,
+    exhibitorId: number,
+    boothName: string
+  ): Promise<void> {
     return this.post<void>('/remove-exhibitor-booth', { eventId, exhibitorId, boothName });
   }
 
@@ -99,7 +105,11 @@ export class Client {
     return this.post<ExhibitorExtra[]>('/list-exhibitor-extras', { id: exhibitorId });
   }
 
-  async addExhibitorExtra(exhibitorId: number, extraId: number, quantity: number): Promise<void> {
+  async addExhibitorExtra(
+    exhibitorId: number,
+    extraId: number,
+    quantity: number
+  ): Promise<void> {
     return this.post<void>('/add-exhibitor-extra', { exhibitorId, extraId, quantity });
   }
 
@@ -141,7 +151,10 @@ export class Client {
     return this.post<SessionSpeaker[]>('/session-speakers/get', { expoId });
   }
 
-  async upsertSessionSpeakers(expoId: number, speakers: SessionSpeakerUpsert[]): Promise<void> {
+  async upsertSessionSpeakers(
+    expoId: number,
+    speakers: SessionSpeakerUpsert[]
+  ): Promise<void> {
     return this.post<void>('/session-speakers/upsert', { expoId, speakers });
   }
 

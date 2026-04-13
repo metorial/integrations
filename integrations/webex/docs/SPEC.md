@@ -17,18 +17,22 @@ Webex currently supports the following OAuth flows for integrations: Authorizati
 Authorization_code is the only supported grant type and there are currently no plans to add others. The client credentials grant is not supported.
 
 **Endpoints:**
+
 - Authorization: `https://webexapis.com/v1/authorize`
 - Token exchange: `https://webexapis.com/v1/access_token`
 
 **Credentials required:**
+
 - Client ID and Client Secret (generated when registering an integration at developer.webex.com)
 - Redirect URI
 
 **Token lifecycle:**
+
 - By default, the access token is valid for 12 hours and the refresh token is valid for 60 days. Refreshing the access token also renews the refresh token lifetime.
 
 **Scopes:**
 Scopes define access levels. Key scope categories include:
+
 - `spark:messages_read`, `spark:messages_write` — messaging
 - `spark:rooms_read`, `spark:rooms_write` — spaces/rooms
 - `spark:memberships_read`, `spark:memberships_write` — space memberships

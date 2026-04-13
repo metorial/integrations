@@ -3,44 +3,52 @@ import { MakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let scenarioExecution = SlateTrigger.create(
-  spec,
-  {
-    name: 'Scenario Execution',
-    key: 'scenario_execution',
-    description: 'Triggers when scenarios are executed. Polls for new execution log entries across one or more scenarios within a team.',
-  }
-)
-  .input(z.object({
-    scenarioId: z.number().describe('Scenario ID that was executed'),
-    executionId: z.string().describe('Unique execution identifier'),
-    status: z.string().optional().describe('Execution status'),
-    timestamp: z.string().optional().describe('Execution timestamp'),
-    operations: z.number().optional().describe('Operations consumed'),
-    duration: z.number().optional().describe('Duration in milliseconds'),
-    transfer: z.number().optional().describe('Data transfer in bytes'),
-  }))
-  .output(z.object({
-    scenarioId: z.number().describe('Scenario ID that was executed'),
-    executionId: z.string().describe('Unique execution identifier'),
-    status: z.string().optional().describe('Execution status (e.g. success, warning, error)'),
-    timestamp: z.string().optional().describe('When the execution occurred'),
-    operations: z.number().optional().describe('Number of operations consumed'),
-    duration: z.number().optional().describe('Execution duration in milliseconds'),
-    transfer: z.number().optional().describe('Data transfer in bytes'),
-  }))
+export let scenarioExecution = SlateTrigger.create(spec, {
+  name: 'Scenario Execution',
+  key: 'scenario_execution',
+  description:
+    'Triggers when scenarios are executed. Polls for new execution log entries across one or more scenarios within a team.'
+})
+  .input(
+    z.object({
+      scenarioId: z.number().describe('Scenario ID that was executed'),
+      executionId: z.string().describe('Unique execution identifier'),
+      status: z.string().optional().describe('Execution status'),
+      timestamp: z.string().optional().describe('Execution timestamp'),
+      operations: z.number().optional().describe('Operations consumed'),
+      duration: z.number().optional().describe('Duration in milliseconds'),
+      transfer: z.number().optional().describe('Data transfer in bytes')
+    })
+  )
+  .output(
+    z.object({
+      scenarioId: z.number().describe('Scenario ID that was executed'),
+      executionId: z.string().describe('Unique execution identifier'),
+      status: z
+        .string()
+        .optional()
+        .describe('Execution status (e.g. success, warning, error)'),
+      timestamp: z.string().optional().describe('When the execution occurred'),
+      operations: z.number().optional().describe('Number of operations consumed'),
+      duration: z.number().optional().describe('Execution duration in milliseconds'),
+      transfer: z.number().optional().describe('Data transfer in bytes')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MakeClient({
         token: ctx.auth.token,
-        zoneUrl: ctx.config.zoneUrl,
+        zoneUrl: ctx.config.zoneUrl
       });
 
-      let state = ctx.state as { lastSeenIds?: Record<string, string>; scenarioIds?: number[] } | null;
+      let state = ctx.state as {
+        lastSeenIds?: Record<string, string>;
+        scenarioIds?: number[];
+      } | null;
       let lastSeenIds = state?.lastSeenIds ?? {};
       let scenarioIds = state?.scenarioIds ?? [];
 
@@ -103,7 +111,7 @@ export let scenarioExecution = SlateTrigger.create(
               timestamp: log.timestamp ?? log.created,
               operations: log.operations,
               duration: log.duration,
-              transfer: log.transfer,
+              transfer: log.transfer
             });
           }
 
@@ -120,12 +128,12 @@ export let scenarioExecution = SlateTrigger.create(
         inputs,
         updatedState: {
           lastSeenIds: updatedLastSeenIds,
-          scenarioIds,
-        },
+          scenarioIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let status = ctx.input.status ?? 'unknown';
       return {
         type: `scenario.${status}`,
@@ -137,9 +145,9 @@ export let scenarioExecution = SlateTrigger.create(
           timestamp: ctx.input.timestamp,
           operations: ctx.input.operations,
           duration: ctx.input.duration,
-          transfer: ctx.input.transfer,
-        },
+          transfer: ctx.input.transfer
+        }
       };
-    },
+    }
   })
   .build();

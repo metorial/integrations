@@ -9,7 +9,7 @@ let leadListSchema = z.object({
   favorite: z.boolean().nullable().optional().describe('Whether this list is favorited'),
   size: z.number().nullable().optional().describe('Number of leads in the list'),
   createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-  updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
+  updatedAt: z.string().nullable().optional().describe('Last update timestamp')
 });
 
 let mapList = (l: any) => ({
@@ -18,61 +18,60 @@ let mapList = (l: any) => ({
   favorite: l.favorite,
   size: l.size,
   createdAt: l.created_at,
-  updatedAt: l.updated_at,
+  updatedAt: l.updated_at
 });
 
-export let listLeadLists = SlateTool.create(
-  spec,
-  {
-    name: 'List Lead Lists',
-    key: 'list_lead_lists',
-    description: `Retrieve all lead lists. Each list contains a collection of leads for campaign targeting.`,
-    tags: {
-      readOnly: true,
-    },
+export let listLeadLists = SlateTool.create(spec, {
+  name: 'List Lead Lists',
+  key: 'list_lead_lists',
+  description: `Retrieve all lead lists. Each list contains a collection of leads for campaign targeting.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    lists: z.array(leadListSchema).describe('All lead lists'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      lists: z.array(leadListSchema).describe('All lead lists')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.listLeadLists();
     let data = result.data || result;
-    let lists = Array.isArray(data) ? data : (data.leads_lists || data.lists || []);
+    let lists = Array.isArray(data) ? data : data.leads_lists || data.lists || [];
 
     return {
       output: {
-        lists: lists.map(mapList),
+        lists: lists.map(mapList)
       },
-      message: `Retrieved **${lists.length}** lead lists.`,
+      message: `Retrieved **${lists.length}** lead lists.`
     };
-  }).build();
+  })
+  .build();
 
-export let createLeadList = SlateTool.create(
-  spec,
-  {
-    name: 'Create Lead List',
-    key: 'create_lead_list',
-    description: `Create a new lead list for organizing leads into groups for campaign targeting. List names must be unique.`,
-    tags: {
-      destructive: false,
-    },
+export let createLeadList = SlateTool.create(spec, {
+  name: 'Create Lead List',
+  key: 'create_lead_list',
+  description: `Create a new lead list for organizing leads into groups for campaign targeting. List names must be unique.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Name for the new lead list'),
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().describe('Name for the new lead list')
+    })
+  )
   .output(leadListSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.createLeadList(ctx.input.name);
@@ -80,30 +79,30 @@ export let createLeadList = SlateTool.create(
 
     return {
       output: mapList(data),
-      message: `Created lead list **${ctx.input.name}**.`,
+      message: `Created lead list **${ctx.input.name}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateLeadList = SlateTool.create(
-  spec,
-  {
-    name: 'Update Lead List',
-    key: 'update_lead_list',
-    description: `Update the name of an existing lead list.`,
-    tags: {
-      destructive: false,
-    },
+export let updateLeadList = SlateTool.create(spec, {
+  name: 'Update Lead List',
+  key: 'update_lead_list',
+  description: `Update the name of an existing lead list.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    listId: z.string().describe('The lead list ID to update'),
-    name: z.string().describe('New name for the lead list'),
-  }))
+})
+  .input(
+    z.object({
+      listId: z.string().describe('The lead list ID to update'),
+      name: z.string().describe('New name for the lead list')
+    })
+  )
   .output(leadListSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let result = await client.updateLeadList(ctx.input.listId, ctx.input.name);
@@ -111,39 +110,42 @@ export let updateLeadList = SlateTool.create(
 
     return {
       output: mapList(data),
-      message: `Updated lead list **${ctx.input.listId}** to name **${ctx.input.name}**.`,
+      message: `Updated lead list **${ctx.input.listId}** to name **${ctx.input.name}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteLeadList = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Lead List',
-    key: 'delete_lead_list',
-    description: `Delete a lead list by its ID. **Warning:** This also deletes all leads in the list. This action is permanent.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteLeadList = SlateTool.create(spec, {
+  name: 'Delete Lead List',
+  key: 'delete_lead_list',
+  description: `Delete a lead list by its ID. **Warning:** This also deletes all leads in the list. This action is permanent.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    listId: z.string().describe('The lead list ID to delete'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      listId: z.string().describe('The lead list ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TombaClient({
       apiKey: ctx.auth.apiKey,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     await client.deleteLeadList(ctx.input.listId);
 
     return {
       output: {
-        success: true,
+        success: true
       },
-      message: `Deleted lead list **${ctx.input.listId}** and all its leads.`,
+      message: `Deleted lead list **${ctx.input.listId}** and all its leads.`
     };
-  }).build();
+  })
+  .build();

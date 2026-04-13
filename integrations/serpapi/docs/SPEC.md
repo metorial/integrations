@@ -21,12 +21,14 @@ There are no OAuth flows, scopes, or additional credentials required. A single A
 ### Web Search
 
 Query search engines (Google, Bing, DuckDuckGo, Yahoo, Yandex, Baidu, Naver) and receive structured results including organic results, answer boxes, knowledge graphs, featured snippets, related questions, and related searches.
+
 - **Parameters**: query (`q`), search engine (`engine`), location, language (`hl`), country (`gl`), device type (desktop/tablet/mobile), Google domain.
 - Results include rich structured data such as links, addresses, ratings, reviews, thumbnails, prices, and rich snippets.
 
 ### Image Search
 
 Search for images across Google Images, Bing Images, Yahoo Images, and Yandex Images. Returns image titles, thumbnails, source URLs, and related content.
+
 - Supports Google Lens and Google Reverse Image search for visual lookups.
 
 ### News Search

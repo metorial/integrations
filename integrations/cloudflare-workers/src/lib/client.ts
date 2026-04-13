@@ -24,7 +24,7 @@ export class CloudflareClient {
 
     this.http = createAxios({
       baseURL: 'https://api.cloudflare.com/client/v4',
-      headers,
+      headers
     });
   }
 
@@ -48,7 +48,7 @@ export class CloudflareClient {
 
   async getScriptContent(scriptName: string) {
     let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/content/v2`, {
-      headers: { 'Accept': 'application/javascript' },
+      headers: { Accept: 'application/javascript' }
     });
     return response.data;
   }
@@ -58,7 +58,9 @@ export class CloudflareClient {
     if (force) {
       params['force'] = 'true';
     }
-    let response = await this.http.delete(`${this.basePath}/scripts/${scriptName}`, { params });
+    let response = await this.http.delete(`${this.basePath}/scripts/${scriptName}`, {
+      params
+    });
     return response.data;
   }
 
@@ -66,17 +68,24 @@ export class CloudflareClient {
   // Versions
   // =====================
 
-  async listVersions(scriptName: string, options?: { page?: number; perPage?: number; deployable?: boolean }) {
+  async listVersions(
+    scriptName: string,
+    options?: { page?: number; perPage?: number; deployable?: boolean }
+  ) {
     let params: Record<string, string | number | boolean> = {};
     if (options?.page) params['page'] = options.page;
     if (options?.perPage) params['per_page'] = options.perPage;
     if (options?.deployable !== undefined) params['deployable'] = options.deployable;
-    let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/versions`, { params });
+    let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/versions`, {
+      params
+    });
     return response.data.result;
   }
 
   async getVersion(scriptName: string, versionId: string) {
-    let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/versions/${versionId}`);
+    let response = await this.http.get(
+      `${this.basePath}/scripts/${scriptName}/versions/${versionId}`
+    );
     return response.data.result;
   }
 
@@ -90,22 +99,34 @@ export class CloudflareClient {
   }
 
   async getDeployment(scriptName: string, deploymentId: string) {
-    let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/deployments/${deploymentId}`);
+    let response = await this.http.get(
+      `${this.basePath}/scripts/${scriptName}/deployments/${deploymentId}`
+    );
     return response.data.result;
   }
 
-  async createDeployment(scriptName: string, versions: Array<{ versionId: string; percentage: number }>, force?: boolean) {
+  async createDeployment(
+    scriptName: string,
+    versions: Array<{ versionId: string; percentage: number }>,
+    force?: boolean
+  ) {
     let params: Record<string, string> = {};
     if (force) params['force'] = 'true';
-    let response = await this.http.post(`${this.basePath}/scripts/${scriptName}/deployments`, {
-      strategy: 'percentage',
-      versions: versions.map(v => ({ version_id: v.versionId, percentage: v.percentage })),
-    }, { params });
+    let response = await this.http.post(
+      `${this.basePath}/scripts/${scriptName}/deployments`,
+      {
+        strategy: 'percentage',
+        versions: versions.map(v => ({ version_id: v.versionId, percentage: v.percentage }))
+      },
+      { params }
+    );
     return response.data.result;
   }
 
   async deleteDeployment(scriptName: string, deploymentId: string) {
-    let response = await this.http.delete(`${this.basePath}/scripts/${scriptName}/deployments/${deploymentId}`);
+    let response = await this.http.delete(
+      `${this.basePath}/scripts/${scriptName}/deployments/${deploymentId}`
+    );
     return response.data;
   }
 
@@ -122,13 +143,15 @@ export class CloudflareClient {
     let response = await this.http.put(`${this.basePath}/scripts/${scriptName}/secrets`, {
       name,
       text: value,
-      type: 'secret_text',
+      type: 'secret_text'
     });
     return response.data.result;
   }
 
   async deleteSecret(scriptName: string, secretName: string) {
-    let response = await this.http.delete(`${this.basePath}/scripts/${scriptName}/secrets/${secretName}`);
+    let response = await this.http.delete(
+      `${this.basePath}/scripts/${scriptName}/secrets/${secretName}`
+    );
     return response.data;
   }
 
@@ -142,12 +165,17 @@ export class CloudflareClient {
   }
 
   async getScriptSettings(scriptName: string) {
-    let response = await this.http.get(`${this.basePath}/scripts/${scriptName}/script-settings`);
+    let response = await this.http.get(
+      `${this.basePath}/scripts/${scriptName}/script-settings`
+    );
     return response.data.result;
   }
 
   async patchScriptSettings(scriptName: string, settings: Record<string, any>) {
-    let response = await this.http.patch(`${this.basePath}/scripts/${scriptName}/script-settings`, settings);
+    let response = await this.http.patch(
+      `${this.basePath}/scripts/${scriptName}/script-settings`,
+      settings
+    );
     return response.data.result;
   }
 
@@ -161,7 +189,10 @@ export class CloudflareClient {
   }
 
   async updateSchedules(scriptName: string, schedules: Array<{ cron: string }>) {
-    let response = await this.http.put(`${this.basePath}/scripts/${scriptName}/schedules`, schedules);
+    let response = await this.http.put(
+      `${this.basePath}/scripts/${scriptName}/schedules`,
+      schedules
+    );
     return response.data.result;
   }
 
@@ -184,7 +215,7 @@ export class CloudflareClient {
       hostname,
       service,
       zone_id: zoneId,
-      environment: environment || 'production',
+      environment: environment || 'production'
     });
     return response.data.result;
   }
@@ -211,7 +242,7 @@ export class CloudflareClient {
   async createRoute(zoneId: string, pattern: string, scriptName: string) {
     let response = await this.http.post(`/zones/${zoneId}/workers/routes`, {
       pattern,
-      script: scriptName,
+      script: scriptName
     });
     return response.data.result;
   }
@@ -219,7 +250,7 @@ export class CloudflareClient {
   async updateRoute(zoneId: string, routeId: string, pattern: string, scriptName: string) {
     let response = await this.http.put(`/zones/${zoneId}/workers/routes/${routeId}`, {
       pattern,
-      script: scriptName,
+      script: scriptName
     });
     return response.data.result;
   }
@@ -251,7 +282,7 @@ export class CloudflareClient {
   async setScriptSubdomain(scriptName: string, enabled: boolean, previewsEnabled?: boolean) {
     let response = await this.http.post(`${this.basePath}/scripts/${scriptName}/subdomain`, {
       enabled,
-      previews_enabled: previewsEnabled ?? false,
+      previews_enabled: previewsEnabled ?? false
     });
     return response.data.result;
   }
@@ -271,7 +302,9 @@ export class CloudflareClient {
   }
 
   async deleteTail(scriptName: string, tailId: string) {
-    let response = await this.http.delete(`${this.basePath}/scripts/${scriptName}/tails/${tailId}`);
+    let response = await this.http.delete(
+      `${this.basePath}/scripts/${scriptName}/tails/${tailId}`
+    );
     return response.data;
   }
 
@@ -280,12 +313,18 @@ export class CloudflareClient {
   // =====================
 
   async queryTelemetry(query: Record<string, any>) {
-    let response = await this.http.post(`${this.basePath}/observability/telemetry/query`, query);
+    let response = await this.http.post(
+      `${this.basePath}/observability/telemetry/query`,
+      query
+    );
     return response.data.result;
   }
 
   async listTelemetryKeys(body?: Record<string, any>) {
-    let response = await this.http.post(`${this.basePath}/observability/telemetry/keys`, body || {});
+    let response = await this.http.post(
+      `${this.basePath}/observability/telemetry/keys`,
+      body || {}
+    );
     return response.data.result;
   }
 
@@ -298,9 +337,13 @@ export class CloudflareClient {
     return response.data.result;
   }
 
-  async updateAccountSettings(settings: { defaultUsageModel?: string; greenCompute?: boolean }) {
+  async updateAccountSettings(settings: {
+    defaultUsageModel?: string;
+    greenCompute?: boolean;
+  }) {
     let body: Record<string, any> = {};
-    if (settings.defaultUsageModel !== undefined) body['default_usage_model'] = settings.defaultUsageModel;
+    if (settings.defaultUsageModel !== undefined)
+      body['default_usage_model'] = settings.defaultUsageModel;
     if (settings.greenCompute !== undefined) body['green_compute'] = settings.greenCompute;
     let response = await this.http.put(`${this.basePath}/account-settings`, body);
     return response.data.result;

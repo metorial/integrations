@@ -22,12 +22,9 @@ import {
   listWorkspaces,
   listProjects,
   createPersonalizedVideos,
-  getVideoStatus,
+  getVideoStatus
 } from './tools';
-import {
-  playgroundWebhook,
-  studioVideoWebhook,
-} from './triggers';
+import { playgroundWebhook, studioVideoWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,10 +50,7 @@ export let provider = Slate.create({
     listWorkspaces,
     listProjects,
     createPersonalizedVideos,
-    getVideoStatus,
+    getVideoStatus
   ],
-  triggers: [
-    playgroundWebhook,
-    studioVideoWebhook,
-  ],
+  triggers: [playgroundWebhook, studioVideoWebhook]
 });

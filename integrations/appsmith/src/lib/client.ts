@@ -11,7 +11,7 @@ export class Client {
 
   private getAxios() {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (this.token) {
@@ -20,7 +20,7 @@ export class Client {
 
     return createAxios({
       baseURL: this.instanceUrl,
-      headers,
+      headers
     });
   }
 
@@ -32,12 +32,13 @@ export class Client {
       let response = await ax.get('/api/v1/health');
       return {
         isHealthy: response.status === 200,
-        status: typeof response.data === 'string' ? response.data : JSON.stringify(response.data),
+        status:
+          typeof response.data === 'string' ? response.data : JSON.stringify(response.data)
       };
     } catch (err: any) {
       return {
         isHealthy: false,
-        status: err?.message ?? 'Unknown error',
+        status: err?.message ?? 'Unknown error'
       };
     }
   }
@@ -68,7 +69,10 @@ export class Client {
     return response.data?.data ?? {};
   }
 
-  async updateWorkspace(workspaceId: string, updates: { name?: string; website?: string; logo?: string }): Promise<any> {
+  async updateWorkspace(
+    workspaceId: string,
+    updates: { name?: string; website?: string; logo?: string }
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.put(`/api/v1/workspaces/${workspaceId}`, updates);
     return response.data?.data ?? {};
@@ -90,7 +94,7 @@ export class Client {
   async listApplications(workspaceId: string): Promise<any[]> {
     let ax = this.getAxios();
     let response = await ax.get('/api/v1/applications', {
-      params: { workspaceId },
+      params: { workspaceId }
     });
     return response.data?.data ?? [];
   }
@@ -101,7 +105,12 @@ export class Client {
     return response.data?.data ?? {};
   }
 
-  async createApplication(workspaceId: string, name: string, color?: string, icon?: string): Promise<any> {
+  async createApplication(
+    workspaceId: string,
+    name: string,
+    color?: string,
+    icon?: string
+  ): Promise<any> {
     let ax = this.getAxios();
     let body: Record<string, any> = { workspaceId, name };
     if (color) body.color = color;
@@ -110,7 +119,10 @@ export class Client {
     return response.data?.data ?? {};
   }
 
-  async updateApplication(applicationId: string, updates: { name?: string; isPublic?: boolean }): Promise<any> {
+  async updateApplication(
+    applicationId: string,
+    updates: { name?: string; isPublic?: boolean }
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.put(`/api/v1/applications/${applicationId}`, updates);
     return response.data?.data ?? {};
@@ -135,7 +147,9 @@ export class Client {
 
   async forkApplication(applicationId: string, targetWorkspaceId: string): Promise<any> {
     let ax = this.getAxios();
-    let response = await ax.post(`/api/v1/applications/${applicationId}/fork/${targetWorkspaceId}`);
+    let response = await ax.post(
+      `/api/v1/applications/${applicationId}/fork/${targetWorkspaceId}`
+    );
     return response.data?.data ?? {};
   }
 
@@ -147,7 +161,10 @@ export class Client {
 
   async importApplication(workspaceId: string, applicationJson: any): Promise<any> {
     let ax = this.getAxios();
-    let response = await ax.post(`/api/v1/applications/import/${workspaceId}`, applicationJson);
+    let response = await ax.post(
+      `/api/v1/applications/import/${workspaceId}`,
+      applicationJson
+    );
     return response.data?.data ?? {};
   }
 
@@ -171,7 +188,10 @@ export class Client {
     return response.data?.data ?? {};
   }
 
-  async updatePage(pageId: string, updates: { name?: string; isHidden?: boolean }): Promise<any> {
+  async updatePage(
+    pageId: string,
+    updates: { name?: string; isHidden?: boolean }
+  ): Promise<any> {
     let ax = this.getAxios();
     let response = await ax.put(`/api/v1/pages/${pageId}`, updates);
     return response.data?.data ?? {};
@@ -187,7 +207,7 @@ export class Client {
   async listDatasources(workspaceId: string): Promise<any[]> {
     let ax = this.getAxios();
     let response = await ax.get('/api/v1/datasources', {
-      params: { workspaceId },
+      params: { workspaceId }
     });
     return response.data?.data ?? [];
   }
@@ -231,7 +251,7 @@ export class Client {
   async triggerWorkflow(webhookUrl: string, payload: any): Promise<any> {
     let ax = createAxios({});
     let response = await ax.post(webhookUrl, payload, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }

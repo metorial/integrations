@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    apiKey: z.string(),
-    apiSecret: z.string(),
-  }))
+  .output(
+    z.object({
+      apiKey: z.string(),
+      apiSecret: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -14,28 +16,31 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       apiKey: z.string().describe('Your Tomba API key (starts with ta_)'),
-      apiSecret: z.string().describe('Your Tomba API secret (starts with ts_)'),
+      apiSecret: z.string().describe('Your Tomba API secret (starts with ts_)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           apiKey: ctx.input.apiKey,
-          apiSecret: ctx.input.apiSecret,
-        },
+          apiSecret: ctx.input.apiSecret
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { apiKey: string; apiSecret: string }; input: { apiKey: string; apiSecret: string } }) => {
+    getProfile: async (ctx: {
+      output: { apiKey: string; apiSecret: string };
+      input: { apiKey: string; apiSecret: string };
+    }) => {
       let http = createAxios({
-        baseURL: 'https://api.tomba.io/v1',
+        baseURL: 'https://api.tomba.io/v1'
       });
 
       let response = await http.get('/me', {
         headers: {
           'X-Tomba-Key': ctx.output.apiKey,
-          'X-Tomba-Secret': ctx.output.apiSecret,
-        },
+          'X-Tomba-Secret': ctx.output.apiSecret
+        }
       });
 
       let data = response.data?.data;
@@ -45,8 +50,8 @@ export let auth = SlateAuth.create()
           id: data?.user_id?.toString(),
           email: data?.email,
           name: [data?.first_name, data?.last_name].filter(Boolean).join(' ') || undefined,
-          imageUrl: data?.image || undefined,
-        },
+          imageUrl: data?.image || undefined
+        }
       };
-    },
+    }
   });

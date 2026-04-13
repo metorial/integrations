@@ -35,7 +35,7 @@ export class AppDragClient {
       to: opts.to,
       subject: opts.subject,
       content: opts.content,
-      isHtml: opts.isHtml ? '1' : '0',
+      isHtml: opts.isHtml ? '1' : '0'
     });
   }
 
@@ -91,7 +91,7 @@ export class AppDragClient {
       listsToAdd: opts.listsToAdd,
       contactsMail: opts.contactsMail,
       contactsFirstName: opts.contactsFirstName,
-      contactsLastName: opts.contactsLastName,
+      contactsLastName: opts.contactsLastName
     });
   }
 
@@ -105,7 +105,7 @@ export class AppDragClient {
   }): Promise<any> {
     return this.backendCommand('NewslettersDeleteContactsFromLists', {
       listsToDelete: opts.listsToDelete,
-      contactsMail: opts.contactsMail,
+      contactsMail: opts.contactsMail
     });
   }
 
@@ -128,7 +128,7 @@ export class AppDragClient {
 
     let authData: Record<string, string> = {
       APIKey: this.apiKey,
-      appID: this.appId,
+      appID: this.appId
     };
 
     let ax = createAxios({});
@@ -136,16 +136,19 @@ export class AppDragClient {
     if (opts.method.toUpperCase() === 'GET') {
       let response = await ax.get(url, {
         params: { ...authData, ...(opts.data || {}) },
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return response.data;
     } else {
-      let body = new URLSearchParams({ ...authData, ...(opts.data || {}) } as Record<string, string>).toString();
+      let body = new URLSearchParams({ ...authData, ...(opts.data || {}) } as Record<
+        string,
+        string
+      >).toString();
       let response = await ax({
         method: opts.method.toUpperCase(),
         url,
         data: body,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return response.data;
     }
@@ -155,18 +158,18 @@ export class AppDragClient {
 
   private async backendCommand(command: string, params: Record<string, string>): Promise<any> {
     let ax = createAxios({
-      baseURL: 'https://api.appdrag.com',
+      baseURL: 'https://api.appdrag.com'
     });
 
     let body = new URLSearchParams({
       command,
       APIKey: this.apiKey,
       appID: this.appId,
-      ...params,
+      ...params
     }).toString();
 
     let response = await ax.post('/CloudBackend.aspx', body, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
     return response.data;

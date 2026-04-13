@@ -3,36 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDataSources = SlateTool.create(
-  spec,
-  {
-    name: 'List Data Sources',
-    key: 'list_data_sources',
-    description: `Retrieve a paginated list of data sources (knowledge bases), or get a specific data source by ID including its files.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDataSources = SlateTool.create(spec, {
+  name: 'List Data Sources',
+  key: 'list_data_sources',
+  description: `Retrieve a paginated list of data sources (knowledge bases), or get a specific data source by ID including its files.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    datasourceId: z.string().optional().describe('Specific data source ID to retrieve details for'),
-    includeFiles: z.boolean().optional().describe('Include files for the specified data source'),
-    page: z.number().optional().describe('Page number (default 1)'),
-    size: z.number().optional().describe('Items per page (default 50, max 100)'),
-  }))
-  .output(z.object({
-    dataSources: z.array(z.object({
-      datasourceId: z.string(),
-      name: z.string().optional(),
-    })).optional(),
-    dataSource: z.object({
-      datasourceId: z.string(),
-      name: z.string().optional(),
-      files: z.array(z.any()).optional(),
-    }).optional(),
-    totalCount: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasourceId: z
+        .string()
+        .optional()
+        .describe('Specific data source ID to retrieve details for'),
+      includeFiles: z
+        .boolean()
+        .optional()
+        .describe('Include files for the specified data source'),
+      page: z.number().optional().describe('Page number (default 1)'),
+      size: z.number().optional().describe('Items per page (default 50, max 100)')
+    })
+  )
+  .output(
+    z.object({
+      dataSources: z
+        .array(
+          z.object({
+            datasourceId: z.string(),
+            name: z.string().optional()
+          })
+        )
+        .optional(),
+      dataSource: z
+        .object({
+          datasourceId: z.string(),
+          name: z.string().optional(),
+          files: z.array(z.any()).optional()
+        })
+        .optional(),
+      totalCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.datasourceId) {
@@ -50,10 +63,10 @@ export let listDataSources = SlateTool.create(
           dataSource: {
             datasourceId: data.id,
             name: data.name,
-            files,
-          },
+            files
+          }
         },
-        message: `Retrieved data source **${data.name || data.id}**.`,
+        message: `Retrieved data source **${data.name || data.id}**.`
       };
     }
 
@@ -64,11 +77,11 @@ export let listDataSources = SlateTool.create(
       output: {
         dataSources: list.map((d: any) => ({
           datasourceId: d.id,
-          name: d.name,
+          name: d.name
         })),
-        totalCount: result.total || list.length,
+        totalCount: result.total || list.length
       },
-      message: `Found **${list.length}** data source(s).`,
+      message: `Found **${list.length}** data source(s).`
     };
   })
   .build();

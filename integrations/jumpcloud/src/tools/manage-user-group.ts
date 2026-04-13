@@ -3,34 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUserGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User Group',
-    key: 'manage_user_group',
-    description: `Create, update, or delete a JumpCloud user group. User groups are the primary way to organize users and control access to systems, applications, RADIUS servers, and directories. Provide a name at minimum when creating.`,
-    tags: {
-      destructive: true,
-    },
+export let manageUserGroup = SlateTool.create(spec, {
+  name: 'Manage User Group',
+  key: 'manage_user_group',
+  description: `Create, update, or delete a JumpCloud user group. User groups are the primary way to organize users and control access to systems, applications, RADIUS servers, and directories. Provide a name at minimum when creating.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    groupId: z.string().optional().describe('Group ID (required for update and delete)'),
-    name: z.string().optional().describe('Group name (required for create)'),
-    description: z.string().optional().describe('Group description'),
-    email: z.string().optional().describe('Group email address'),
-  }))
-  .output(z.object({
-    groupId: z.string().describe('Group ID'),
-    name: z.string().describe('Group name'),
-    description: z.string().optional().describe('Group description'),
-    type: z.string().optional().describe('Group type'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      groupId: z.string().optional().describe('Group ID (required for update and delete)'),
+      name: z.string().optional().describe('Group name (required for create)'),
+      description: z.string().optional().describe('Group description'),
+      email: z.string().optional().describe('Group email address')
+    })
+  )
+  .output(
+    z.object({
+      groupId: z.string().describe('Group ID'),
+      name: z.string().describe('Group name'),
+      description: z.string().optional().describe('Group description'),
+      type: z.string().optional().describe('Group type')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      orgId: ctx.config.orgId,
+      orgId: ctx.config.orgId
     });
 
     let group: any;
@@ -41,7 +42,7 @@ export let manageUserGroup = SlateTool.create(
       group = await client.createUserGroup({
         name: ctx.input.name,
         description: ctx.input.description,
-        email: ctx.input.email,
+        email: ctx.input.email
       });
       actionMessage = `Created user group **${group.name}**`;
     } else if (ctx.input.action === 'update') {
@@ -65,8 +66,9 @@ export let manageUserGroup = SlateTool.create(
         groupId: group.id,
         name: group.name,
         description: group.description,
-        type: group.type,
+        type: group.type
       },
-      message: actionMessage,
+      message: actionMessage
     };
-  }).build();
+  })
+  .build();

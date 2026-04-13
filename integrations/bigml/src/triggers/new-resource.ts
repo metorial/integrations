@@ -4,49 +4,72 @@ import { createClient, statusLabel } from '../lib/helpers';
 import { z } from 'zod';
 
 let resourceTypeEnum = z.enum([
-  'source', 'dataset', 'model', 'ensemble', 'deepnet',
-  'logisticregression', 'linearregression', 'prediction',
-  'evaluation', 'cluster', 'anomaly', 'association',
-  'topicmodel', 'timeseries', 'pca', 'fusion', 'optiml',
-  'script', 'execution', 'project'
+  'source',
+  'dataset',
+  'model',
+  'ensemble',
+  'deepnet',
+  'logisticregression',
+  'linearregression',
+  'prediction',
+  'evaluation',
+  'cluster',
+  'anomaly',
+  'association',
+  'topicmodel',
+  'timeseries',
+  'pca',
+  'fusion',
+  'optiml',
+  'script',
+  'execution',
+  'project'
 ]);
 
 let DEFAULT_RESOURCE_TYPES = [
-  'source', 'dataset', 'model', 'ensemble', 'deepnet', 'prediction', 'evaluation'
+  'source',
+  'dataset',
+  'model',
+  'ensemble',
+  'deepnet',
+  'prediction',
+  'evaluation'
 ];
 
-export let newResource = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Resource',
-    key: 'new_resource',
-    description: 'Triggers when a new BigML resource is created. Polls for recently created sources, datasets, models, ensembles, deepnets, predictions, and evaluations.'
-  }
-)
-  .input(z.object({
-    resourceType: resourceTypeEnum.describe('Type of the new resource'),
-    resourceId: z.string().describe('Full resource ID'),
-    name: z.string().optional().describe('Name of the resource'),
-    statusCode: z.number().optional().describe('Resource status code'),
-    statusMessage: z.string().optional().describe('Resource status message'),
-    created: z.string().describe('Creation timestamp'),
-    tags: z.array(z.string()).optional().describe('Resource tags')
-  }))
-  .output(z.object({
-    resourceId: z.string().describe('Full BigML resource ID'),
-    resourceType: z.string().describe('Type of resource (e.g., "source", "model")'),
-    name: z.string().optional().describe('Name of the resource'),
-    statusCode: z.number().optional().describe('Resource status code'),
-    statusLabel: z.string().optional().describe('Human-readable status label'),
-    created: z.string().describe('Creation timestamp'),
-    tags: z.array(z.string()).optional().describe('Resource tags')
-  }))
+export let newResource = SlateTrigger.create(spec, {
+  name: 'New Resource',
+  key: 'new_resource',
+  description:
+    'Triggers when a new BigML resource is created. Polls for recently created sources, datasets, models, ensembles, deepnets, predictions, and evaluations.'
+})
+  .input(
+    z.object({
+      resourceType: resourceTypeEnum.describe('Type of the new resource'),
+      resourceId: z.string().describe('Full resource ID'),
+      name: z.string().optional().describe('Name of the resource'),
+      statusCode: z.number().optional().describe('Resource status code'),
+      statusMessage: z.string().optional().describe('Resource status message'),
+      created: z.string().describe('Creation timestamp'),
+      tags: z.array(z.string()).optional().describe('Resource tags')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string().describe('Full BigML resource ID'),
+      resourceType: z.string().describe('Type of resource (e.g., "source", "model")'),
+      name: z.string().optional().describe('Name of the resource'),
+      statusCode: z.number().optional().describe('Resource status code'),
+      statusLabel: z.string().optional().describe('Human-readable status label'),
+      created: z.string().describe('Creation timestamp'),
+      tags: z.array(z.string()).optional().describe('Resource tags')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let lastChecked = ctx.state?.lastChecked as string | undefined;
@@ -98,8 +121,9 @@ export let newResource = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
-      let sLabel = ctx.input.statusCode !== undefined ? statusLabel(ctx.input.statusCode) : undefined;
+    handleEvent: async ctx => {
+      let sLabel =
+        ctx.input.statusCode !== undefined ? statusLabel(ctx.input.statusCode) : undefined;
 
       return {
         type: `${ctx.input.resourceType}.created`,
@@ -115,4 +139,5 @@ export let newResource = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.enginemailer.com',
+  baseURL: 'https://api.enginemailer.com'
 });
 
 let connectorAxios = createAxios({
-  baseURL: 'https://connect.enginemailer.com/api/N8N/v1',
+  baseURL: 'https://connect.enginemailer.com/api/N8N/v1'
 });
 
 export interface CustomField {
@@ -42,9 +42,9 @@ export class Client {
 
   private get headers() {
     return {
-      'APIKEY': this.token,
+      APIKEY: this.token,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json'
     };
   }
 
@@ -53,7 +53,7 @@ export class Client {
   async getSubscriber(email: string): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/subscriber/emsubscriber/getSubscriber', {
       params: { email },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -64,9 +64,13 @@ export class Client {
     customfields?: CustomField[];
     sourcetype?: string;
   }): Promise<EngineMailerResult> {
-    let response = await apiAxios.post('/restapi/subscriber/emsubscriber/insertSubscriber', params, {
-      headers: this.headers,
-    });
+    let response = await apiAxios.post(
+      '/restapi/subscriber/emsubscriber/insertSubscriber',
+      params,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -77,65 +81,85 @@ export class Client {
     customfields?: CustomField[];
     customfield_type?: string;
   }): Promise<EngineMailerResult> {
-    let response = await apiAxios.post('/restapi/subscriber/emsubscriber/updateSubscriber', params, {
-      headers: this.headers,
-    });
+    let response = await apiAxios.post(
+      '/restapi/subscriber/emsubscriber/updateSubscriber',
+      params,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async unsubscribeSubscriber(email: string): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/subscriber/emsubscriber/unSubSubscriber', {
       params: { email },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async activateSubscriber(email: string): Promise<EngineMailerResult> {
-    let response = await apiAxios.post('/restapi/subscriber/emsubscriber/activateSubscriber', {}, {
-      params: { email },
-      headers: this.headers,
-    });
+    let response = await apiAxios.post(
+      '/restapi/subscriber/emsubscriber/activateSubscriber',
+      {},
+      {
+        params: { email },
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteSubscriber(email: string): Promise<EngineMailerResult> {
-    let response = await connectorAxios.post('/deletesubscriber', { email }, {
-      headers: this.headers,
-    });
+    let response = await connectorAxios.post(
+      '/deletesubscriber',
+      { email },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async tagSubscriber(email: string, subcategories: string[]): Promise<EngineMailerResult> {
-    let response = await connectorAxios.post('/tagtosubcategory', {
-      email,
-      subcategories,
-    }, {
-      headers: this.headers,
-    });
+    let response = await connectorAxios.post(
+      '/tagtosubcategory',
+      {
+        email,
+        subcategories
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async untagSubscriber(email: string, subcategories: string[]): Promise<EngineMailerResult> {
-    let response = await connectorAxios.post('/untagtosubcategory', {
-      email,
-      subcategories,
-    }, {
-      headers: this.headers,
-    });
+    let response = await connectorAxios.post(
+      '/untagtosubcategory',
+      {
+        email,
+        subcategories
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async getCustomFields(): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/subscriber/emsubscriber/getCustomField', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getSubcategories(): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/subscriber/emsubscriber/getSubcategory', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -158,7 +182,7 @@ export class Client {
       ToEmail: params.toEmail,
       SenderEmail: params.senderEmail,
       SenderName: params.senderName,
-      Subject: params.subject,
+      Subject: params.subject
     };
 
     if (params.submittedContent) {
@@ -181,7 +205,7 @@ export class Client {
     }
 
     let response = await apiAxios.post('/RESTAPI/V2/Submission/SendEmail', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -195,15 +219,19 @@ export class Client {
     subject: string;
     content: string;
   }): Promise<EngineMailerResult> {
-    let response = await apiAxios.post('/restapi/Campaign/EMCampaign/CreateCampaign', {
-      CampaignName: params.campaignName,
-      SenderName: params.senderName,
-      SenderEmail: params.senderEmail,
-      Subject: params.subject,
-      Content: params.content,
-    }, {
-      headers: this.headers,
-    });
+    let response = await apiAxios.post(
+      '/restapi/Campaign/EMCampaign/CreateCampaign',
+      {
+        CampaignName: params.campaignName,
+        SenderName: params.senderName,
+        SenderEmail: params.senderEmail,
+        Subject: params.subject,
+        Content: params.content
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -216,7 +244,7 @@ export class Client {
     content?: string;
   }): Promise<EngineMailerResult> {
     let body: Record<string, any> = {
-      CampaignID: params.campaignId,
+      CampaignID: params.campaignId
     };
     if (params.campaignName) body.CampaignName = params.campaignName;
     if (params.senderName) body.SenderName = params.senderName;
@@ -225,7 +253,7 @@ export class Client {
     if (params.content) body.Content = params.content;
 
     let response = await apiAxios.post('/restapi/Campaign/EMCampaign/UpdateCampaign', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -233,7 +261,7 @@ export class Client {
   async deleteCampaign(campaignId: string): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/campaign/emcampaign/deletecampaign', {
       params: { campaignid: campaignId },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -247,20 +275,24 @@ export class Client {
     let body: Record<string, any> = {
       campaignid: params.campaignId,
       FilterBy: params.filterBy,
-      CategoryList: params.categoryList,
+      CategoryList: params.categoryList
     };
     if (params.filterType) body.FilterType = params.filterType;
 
-    let response = await apiAxios.post('/restapi/campaign/emcampaign/AssignRecipientList', body, {
-      headers: this.headers,
-    });
+    let response = await apiAxios.post(
+      '/restapi/campaign/emcampaign/AssignRecipientList',
+      body,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteRecipientList(campaignId: string): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/campaign/emcampaign/deleteRecipientList', {
       params: { campaignid: campaignId },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -268,15 +300,18 @@ export class Client {
   async sendCampaign(campaignId: string): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/campaign/emcampaign/SendCampaign', {
       params: { campaignid: campaignId },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async scheduleCampaign(campaignId: string, scheduleTime: string): Promise<EngineMailerResult> {
+  async scheduleCampaign(
+    campaignId: string,
+    scheduleTime: string
+  ): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/campaign/emcampaign/ScheduleCampaign', {
       params: { campaignid: campaignId, scheduletime: scheduleTime },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -284,7 +319,7 @@ export class Client {
   async pauseCampaign(campaignId: string): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/campaign/emcampaign/PauseCampaign', {
       params: { campaignid: campaignId },
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -296,7 +331,7 @@ export class Client {
 
     let response = await apiAxios.get('/restapi/campaign/emcampaign/ListCampaign', {
       params,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -305,28 +340,28 @@ export class Client {
 
   async getCategoryList(): Promise<EngineMailerResult> {
     let response = await apiAxios.get('/restapi/campaign/emcampaign/GetCategoryList', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async listSubcategories(): Promise<any> {
     let response = await connectorAxios.get('/listsubcategories', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async listTemplates(): Promise<any> {
     let response = await connectorAxios.get('/listtemplates', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async listDomains(): Promise<any> {
     let response = await connectorAxios.get('/listdomains', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -345,22 +380,19 @@ export class Client {
 
     let response = await connectorAxios.get('/newsubscribers', {
       params: queryParams,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async getUnsubscribes(params: {
-    lastPollingDate?: string;
-    limit?: number;
-  }): Promise<any> {
+  async getUnsubscribes(params: { lastPollingDate?: string; limit?: number }): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params.lastPollingDate) queryParams.lastpollingdate = params.lastPollingDate;
     if (params.limit) queryParams.limit = params.limit;
 
     let response = await connectorAxios.get('/unsubscribe', {
       params: queryParams,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -375,7 +407,7 @@ export class Client {
 
     let response = await connectorAxios.get('/subscribersmodified', {
       params: queryParams,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -390,7 +422,7 @@ export class Client {
 
     let response = await connectorAxios.get('/subscribersdeleted', {
       params: queryParams,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -407,7 +439,7 @@ export class Client {
 
     let response = await connectorAxios.get('/subscriberstagged', {
       params: queryParams,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -424,7 +456,7 @@ export class Client {
 
     let response = await connectorAxios.get('/subscribersuntagged', {
       params: queryParams,
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

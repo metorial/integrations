@@ -3,45 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let exportRecord = SlateTool.create(
-  spec,
-  {
-    name: 'Export Record',
-    key: 'export_record',
-    description: `Export a single record from a Ragic sheet in various formats: HTML, PDF, Excel, Mail Merge, or Custom Print Report. Returns the download URL for the exported file.`,
-    instructions: [
-      'For **Mail Merge**, provide the `mailMergeTemplateId` (the template/cid number).',
-      'For **Custom Print Report**, provide both `customPrintTemplateId` and optionally `customPrintFileFormat` (defaults to pdf).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    tabFolder: z.string().describe('The tab/folder path in the Ragic URL'),
-    sheetIndex: z.number().describe('The numeric sheet index from the Ragic URL'),
-    recordId: z.number().describe('The ID of the record to export'),
-    format: z.enum(['html', 'pdf', 'xlsx', 'mailMerge', 'customPrint']).describe('Export format'),
-    mailMergeTemplateId: z.string().optional().describe('Template ID for Mail Merge export (required when format is "mailMerge")'),
-    customPrintTemplateId: z.string().optional().describe('Template ID for Custom Print Report (required when format is "customPrint")'),
-    customPrintFileFormat: z.string().optional().default('pdf').describe('Output format for Custom Print Report (e.g., pdf, png, docx)'),
-  }))
-  .output(z.object({
-    exportUrl: z.string().describe('URL to download the exported file'),
-    contentType: z.string().describe('MIME type of the exported file'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let exportRecord = SlateTool.create(spec, {
+  name: 'Export Record',
+  key: 'export_record',
+  description: `Export a single record from a Ragic sheet in various formats: HTML, PDF, Excel, Mail Merge, or Custom Print Report. Returns the download URL for the exported file.`,
+  instructions: [
+    'For **Mail Merge**, provide the `mailMergeTemplateId` (the template/cid number).',
+    'For **Custom Print Report**, provide both `customPrintTemplateId` and optionally `customPrintFileFormat` (defaults to pdf).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      tabFolder: z.string().describe('The tab/folder path in the Ragic URL'),
+      sheetIndex: z.number().describe('The numeric sheet index from the Ragic URL'),
+      recordId: z.number().describe('The ID of the record to export'),
+      format: z
+        .enum(['html', 'pdf', 'xlsx', 'mailMerge', 'customPrint'])
+        .describe('Export format'),
+      mailMergeTemplateId: z
+        .string()
+        .optional()
+        .describe('Template ID for Mail Merge export (required when format is "mailMerge")'),
+      customPrintTemplateId: z
+        .string()
+        .optional()
+        .describe(
+          'Template ID for Custom Print Report (required when format is "customPrint")'
+        ),
+      customPrintFileFormat: z
+        .string()
+        .optional()
+        .default('pdf')
+        .describe('Output format for Custom Print Report (e.g., pdf, png, docx)')
+    })
+  )
+  .output(
+    z.object({
+      exportUrl: z.string().describe('URL to download the exported file'),
+      contentType: z.string().describe('MIME type of the exported file')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       serverDomain: ctx.config.serverDomain,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     let sheet = {
       tabFolder: ctx.input.tabFolder,
-      sheetIndex: ctx.input.sheetIndex,
+      sheetIndex: ctx.input.sheetIndex
     };
 
     let format: string;
@@ -90,9 +105,9 @@ export let exportRecord = SlateTool.create(
     return {
       output: {
         exportUrl: recordUrl,
-        contentType: result.contentType,
+        contentType: result.contentType
       },
-      message: `Exported record **${ctx.input.recordId}** as **${ctx.input.format}** from sheet **${ctx.input.tabFolder}/${ctx.input.sheetIndex}**. [Download](${recordUrl})`,
+      message: `Exported record **${ctx.input.recordId}** as **${ctx.input.format}** from sheet **${ctx.input.tabFolder}/${ctx.input.sheetIndex}**. [Download](${recordUrl})`
     };
   })
   .build();

@@ -12,31 +12,42 @@ let sectionSchema = z.object({
   archivedAt: z.number().nullable().optional().describe('Archive timestamp (null if active)')
 });
 
-export let manageProjectSection = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project Sections',
-    key: 'manage_project_section',
-    description: `List, create, update, or delete project sections in Nozbe Teams. Sections organize tasks within a project into groups.`,
-    tags: {
-      destructive: false
-    }
+export let manageProjectSection = SlateTool.create(spec, {
+  name: 'Manage Project Sections',
+  key: 'manage_project_section',
+  description: `List, create, update, or delete project sections in Nozbe Teams. Sections organize tasks within a project into groups.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    projectId: z.string().optional().describe('Project ID (required for list and create)'),
-    sectionId: z.string().optional().describe('Section ID (required for update and delete)'),
-    name: z.string().optional().describe('Section name (required for create, optional for update)'),
-    position: z.number().optional().describe('Section position/order'),
-    archivedAt: z.number().nullable().optional().describe('Set archive timestamp to archive, null to unarchive')
-  }))
-  .output(z.object({
-    sections: z.array(sectionSchema).optional().describe('List of sections (for list action)'),
-    section: sectionSchema.optional().describe('Created or updated section'),
-    deleted: z.boolean().optional().describe('Whether deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      projectId: z.string().optional().describe('Project ID (required for list and create)'),
+      sectionId: z.string().optional().describe('Section ID (required for update and delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Section name (required for create, optional for update)'),
+      position: z.number().optional().describe('Section position/order'),
+      archivedAt: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('Set archive timestamp to archive, null to unarchive')
+    })
+  )
+  .output(
+    z.object({
+      sections: z
+        .array(sectionSchema)
+        .optional()
+        .describe('List of sections (for list action)'),
+      section: sectionSchema.optional().describe('Created or updated section'),
+      deleted: z.boolean().optional().describe('Whether deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -119,4 +130,5 @@ export let manageProjectSection = SlateTool.create(
       output: { deleted: true },
       message: `Deleted section **${ctx.input.sectionId}**.`
     };
-  }).build();
+  })
+  .build();

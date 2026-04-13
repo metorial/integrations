@@ -4,17 +4,17 @@ export class BlazeMeterClient {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(params: { token: string; apiKeyId?: string; apiKeySecret?: string }) {
-    let authHeader = params.apiKeyId && params.apiKeySecret
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      ? `Basic ${Buffer.from(`${params.apiKeyId}:${params.apiKeySecret}`).toString('base64')}`
-      : `Basic ${params.token}`;
+    let authHeader =
+      params.apiKeyId && params.apiKeySecret
+        ? `Basic ${Buffer.from(`${params.apiKeyId}:${params.apiKeySecret}`).toString('base64')}`
+        : `Basic ${params.token}`;
 
     this.axios = createAxios({
       baseURL: 'https://a.blazemeter.com/api/v4',
       headers: {
         Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -55,7 +55,7 @@ export class BlazeMeterClient {
   async createProject(workspaceId: number, name: string): Promise<any> {
     let response = await this.axios.post('/projects', {
       name,
-      workspaceId,
+      workspaceId
     });
     return response.data?.result;
   }
@@ -71,7 +71,12 @@ export class BlazeMeterClient {
 
   // ─── Tests (Performance) ─────────────────────────────────────
 
-  async listTests(projectId?: number, workspaceId?: number, limit?: number, skip?: number): Promise<any[]> {
+  async listTests(
+    projectId?: number,
+    workspaceId?: number,
+    limit?: number,
+    skip?: number
+  ): Promise<any[]> {
     let params: Record<string, any> = {};
     if (projectId) params.projectId = projectId;
     if (workspaceId) params.workspaceId = workspaceId;
@@ -93,7 +98,7 @@ export class BlazeMeterClient {
   }): Promise<any> {
     let body: Record<string, any> = {
       name: params.name,
-      projectId: params.projectId,
+      projectId: params.projectId
     };
     if (params.configuration) {
       body.configuration = params.configuration;
@@ -102,10 +107,13 @@ export class BlazeMeterClient {
     return response.data?.result;
   }
 
-  async updateTest(testId: number, params: {
-    name?: string;
-    configuration?: Record<string, any>;
-  }): Promise<any> {
+  async updateTest(
+    testId: number,
+    params: {
+      name?: string;
+      configuration?: Record<string, any>;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/tests/${testId}`, params);
     return response.data?.result;
   }
@@ -120,9 +128,7 @@ export class BlazeMeterClient {
   }
 
   async stopTest(testId: number, sessionId?: string): Promise<any> {
-    let url = sessionId
-      ? `/sessions/${sessionId}/stop`
-      : `/tests/${testId}/stop`;
+    let url = sessionId ? `/sessions/${sessionId}/stop` : `/tests/${testId}/stop`;
     let response = await this.axios.post(url);
     return response.data?.result;
   }
@@ -196,10 +202,14 @@ export class BlazeMeterClient {
     return response.data?.result || [];
   }
 
-  async uploadToSharedFolder(sharedFolderId: number, fileName: string, fileContent: string): Promise<any> {
+  async uploadToSharedFolder(
+    sharedFolderId: number,
+    fileName: string,
+    fileContent: string
+  ): Promise<any> {
     let response = await this.axios.post(`/shared-folders/${sharedFolderId}/files`, {
       fileName,
-      content: fileContent,
+      content: fileContent
     });
     return response.data?.result;
   }
@@ -211,11 +221,14 @@ export class BlazeMeterClient {
     return response.data?.result || [];
   }
 
-  async createSchedule(testId: number, params: {
-    cronExpression?: string;
-    nextRun?: string;
-    enabled?: boolean;
-  }): Promise<any> {
+  async createSchedule(
+    testId: number,
+    params: {
+      cronExpression?: string;
+      nextRun?: string;
+      enabled?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/tests/${testId}/schedules`, params);
     return response.data?.result;
   }
@@ -231,11 +244,17 @@ export class BlazeMeterClient {
     return response.data?.result || [];
   }
 
-  async createPrivateLocation(workspaceId: number, params: {
-    name: string;
-    ships?: any[];
-  }): Promise<any> {
-    let response = await this.axios.post(`/workspaces/${workspaceId}/private-locations`, params);
+  async createPrivateLocation(
+    workspaceId: number,
+    params: {
+      name: string;
+      ships?: any[];
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/workspaces/${workspaceId}/private-locations`,
+      params
+    );
     return response.data?.result;
   }
 

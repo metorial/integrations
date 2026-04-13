@@ -6,5 +6,5 @@ import { placementTestCompleted } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [getLanguages, sendTestInvitation],
-  triggers: [placementTestCompleted],
+  triggers: [placementTestCompleted]
 });

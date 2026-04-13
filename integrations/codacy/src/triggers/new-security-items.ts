@@ -3,44 +3,46 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newSecurityItems = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Security Items',
-    key: 'new_security_items',
-    description: 'Triggers when new security findings (SRM items) are detected in the organization. Monitors SAST, SCA, secrets, IaC, DAST, and other security scan results.',
-  },
-)
-  .input(z.object({
-    srmItemId: z.string().describe('SRM item identifier.'),
-    title: z.string().optional().describe('Security item title.'),
-    priority: z.string().optional().describe('Priority level.'),
-    status: z.string().optional().describe('Item status.'),
-    scanType: z.string().optional().describe('Scan type.'),
-    repository: z.string().optional().describe('Repository name.'),
-    securityCategory: z.string().optional().describe('Security category.'),
-    openedAt: z.string().optional().describe('Date opened.'),
-    cve: z.string().optional().describe('CVE identifier.'),
-    htmlUrl: z.string().optional().describe('URL to view in Codacy.'),
-  }))
-  .output(z.object({
-    srmItemId: z.string().describe('SRM item identifier.'),
-    title: z.string().optional().describe('Security item title.'),
-    priority: z.string().optional().describe('Priority level.'),
-    status: z.string().optional().describe('Item status.'),
-    scanType: z.string().optional().describe('Scan type.'),
-    repository: z.string().optional().describe('Repository name.'),
-    securityCategory: z.string().optional().describe('Security category.'),
-    openedAt: z.string().optional().describe('Date opened.'),
-    cve: z.string().optional().describe('CVE identifier.'),
-    htmlUrl: z.string().optional().describe('URL to view in Codacy.'),
-  }))
+export let newSecurityItems = SlateTrigger.create(spec, {
+  name: 'New Security Items',
+  key: 'new_security_items',
+  description:
+    'Triggers when new security findings (SRM items) are detected in the organization. Monitors SAST, SCA, secrets, IaC, DAST, and other security scan results.'
+})
+  .input(
+    z.object({
+      srmItemId: z.string().describe('SRM item identifier.'),
+      title: z.string().optional().describe('Security item title.'),
+      priority: z.string().optional().describe('Priority level.'),
+      status: z.string().optional().describe('Item status.'),
+      scanType: z.string().optional().describe('Scan type.'),
+      repository: z.string().optional().describe('Repository name.'),
+      securityCategory: z.string().optional().describe('Security category.'),
+      openedAt: z.string().optional().describe('Date opened.'),
+      cve: z.string().optional().describe('CVE identifier.'),
+      htmlUrl: z.string().optional().describe('URL to view in Codacy.')
+    })
+  )
+  .output(
+    z.object({
+      srmItemId: z.string().describe('SRM item identifier.'),
+      title: z.string().optional().describe('Security item title.'),
+      priority: z.string().optional().describe('Priority level.'),
+      status: z.string().optional().describe('Item status.'),
+      scanType: z.string().optional().describe('Scan type.'),
+      repository: z.string().optional().describe('Repository name.'),
+      securityCategory: z.string().optional().describe('Security category.'),
+      openedAt: z.string().optional().describe('Date opened.'),
+      cve: z.string().optional().describe('CVE identifier.'),
+      htmlUrl: z.string().optional().describe('URL to view in Codacy.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let response = await client.searchSecurityItems({}, { limit: 50 });
@@ -67,15 +69,15 @@ export let newSecurityItems = SlateTrigger.create(
           securityCategory: item.securityCategory ?? undefined,
           openedAt: item.openedAt ?? undefined,
           cve: item.cve ?? undefined,
-          htmlUrl: item.htmlUrl ?? undefined,
+          htmlUrl: item.htmlUrl ?? undefined
         })),
         updatedState: {
-          knownItemIds: allIds,
-        },
+          knownItemIds: allIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'security_item.created',
         id: `srm-${ctx.input.srmItemId}`,
@@ -89,9 +91,9 @@ export let newSecurityItems = SlateTrigger.create(
           securityCategory: ctx.input.securityCategory,
           openedAt: ctx.input.openedAt,
           cve: ctx.input.cve,
-          htmlUrl: ctx.input.htmlUrl,
-        },
+          htmlUrl: ctx.input.htmlUrl
+        }
       };
-    },
+    }
   })
   .build();

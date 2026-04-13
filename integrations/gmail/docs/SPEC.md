@@ -29,18 +29,18 @@ Gmail API uses **OAuth 2.0** exclusively for authentication and authorization.
 
 Gmail API offers granular scopes to limit access:
 
-| Scope | Description |
-|---|---|
-| `https://www.googleapis.com/auth/gmail.readonly` | Read all resources and their metadata (restricted) |
-| `https://www.googleapis.com/auth/gmail.send` | Send messages only, no read or modify (sensitive) |
-| `https://www.googleapis.com/auth/gmail.compose` | Create, read, update, and delete drafts; send messages and drafts (restricted) |
-| `https://www.googleapis.com/auth/gmail.modify` | All read/write operations except permanent deletion bypassing Trash (restricted) |
-| `https://www.googleapis.com/auth/gmail.labels` | Create, read, update, and delete labels only (non-sensitive) |
-| `https://www.googleapis.com/auth/gmail.insert` | Insert and import messages only (restricted) |
-| `https://www.googleapis.com/auth/gmail.metadata` | Read metadata including labels, history records, and email headers, but not the body or attachments (restricted) |
-| `https://www.googleapis.com/auth/gmail.settings.basic` | Manage basic mail settings (restricted) |
+| Scope                                                    | Description                                                                                                                                    |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/gmail.readonly`         | Read all resources and their metadata (restricted)                                                                                             |
+| `https://www.googleapis.com/auth/gmail.send`             | Send messages only, no read or modify (sensitive)                                                                                              |
+| `https://www.googleapis.com/auth/gmail.compose`          | Create, read, update, and delete drafts; send messages and drafts (restricted)                                                                 |
+| `https://www.googleapis.com/auth/gmail.modify`           | All read/write operations except permanent deletion bypassing Trash (restricted)                                                               |
+| `https://www.googleapis.com/auth/gmail.labels`           | Create, read, update, and delete labels only (non-sensitive)                                                                                   |
+| `https://www.googleapis.com/auth/gmail.insert`           | Insert and import messages only (restricted)                                                                                                   |
+| `https://www.googleapis.com/auth/gmail.metadata`         | Read metadata including labels, history records, and email headers, but not the body or attachments (restricted)                               |
+| `https://www.googleapis.com/auth/gmail.settings.basic`   | Manage basic mail settings (restricted)                                                                                                        |
 | `https://www.googleapis.com/auth/gmail.settings.sharing` | Manage sensitive mail settings including forwarding rules and aliases; restricted to service accounts with domain-wide delegation (restricted) |
-| `https://mail.google.com/` | Full access including permanent deletion of threads and messages (restricted) |
+| `https://mail.google.com/`                               | Full access including permanent deletion of threads and messages (restricted)                                                                  |
 
 Restricted scopes provide wide access to Google User Data and require a restricted scope verification process, and if you store restricted scope data on servers, you need to go through a security assessment.
 
@@ -65,6 +65,7 @@ Labels are a mechanism for organizing messages and threads. For example, the lab
 ### Mail Settings Management
 
 Manage various mailbox settings programmatically:
+
 - **Aliases and Signatures:** Manage send-as aliases and email signatures.
 - **Forwarding:** Configure email forwarding addresses and rules.
 - **Filters:** Create and manage mail filters that automatically label, archive, or forward incoming mail.

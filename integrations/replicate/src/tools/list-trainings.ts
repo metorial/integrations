@@ -3,32 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTrainings = SlateTool.create(
-  spec,
-  {
-    name: 'List Trainings',
-    key: 'list_trainings',
-    description: `List recent training jobs for your account, sorted by creation time (newest first).`,
-    tags: {
-      readOnly: true
-    }
+export let listTrainings = SlateTool.create(spec, {
+  name: 'List Trainings',
+  key: 'list_trainings',
+  description: `List recent training jobs for your account, sorted by creation time (newest first).`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cursor: z.string().optional().describe('Pagination cursor from a previous response')
-  }))
-  .output(z.object({
-    trainings: z.array(z.object({
-      trainingId: z.string().describe('Training ID'),
-      model: z.string().optional().describe('Base model'),
-      version: z.string().optional().describe('Base model version'),
-      status: z.string().describe('Training status'),
-      createdAt: z.string().describe('Creation timestamp'),
-      completedAt: z.string().optional().nullable().describe('Completion timestamp')
-    })),
-    nextCursor: z.string().optional().nullable().describe('Cursor for next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cursor: z.string().optional().describe('Pagination cursor from a previous response')
+    })
+  )
+  .output(
+    z.object({
+      trainings: z.array(
+        z.object({
+          trainingId: z.string().describe('Training ID'),
+          model: z.string().optional().describe('Base model'),
+          version: z.string().optional().describe('Base model version'),
+          status: z.string().describe('Training status'),
+          createdAt: z.string().describe('Creation timestamp'),
+          completedAt: z.string().optional().nullable().describe('Completion timestamp')
+        })
+      ),
+      nextCursor: z.string().optional().nullable().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listTrainings({ cursor: ctx.input.cursor });
 
@@ -47,4 +50,5 @@ export let listTrainings = SlateTool.create(
       output: { trainings, nextCursor },
       message: `Found **${trainings.length}** trainings.`
     };
-  }).build();
+  })
+  .build();

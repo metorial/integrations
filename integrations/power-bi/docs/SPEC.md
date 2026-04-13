@@ -9,17 +9,20 @@ Power BI is Microsoft's business intelligence platform that enables users to con
 Power BI uses **OAuth 2.0** via Microsoft Entra ID (formerly Azure Active Directory). To use the Power BI REST APIs, you need to register an Azure Active Directory (Azure AD) application in Azure.
 
 **Prerequisites:**
+
 - A Microsoft Entra ID (Azure AD) app registration
 - A Client ID and Client Secret from the registered app
 - A Tenant ID for your Azure AD directory
 
 **OAuth 2.0 Endpoints (Microsoft Identity Platform v2.0):**
+
 - Authorization URL: `https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/authorize`
 - Token URL: `https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token`
 
 **Scope:** Use `https://analysis.windows.net/powerbi/api/.default` as the scope value. Each API has the list of required scopes, so it depends on which API you are using.
 
 **Available delegated permission scopes** include (prefixed with `https://analysis.windows.net/powerbi/api/`):
+
 - `Dataset.ReadWrite.All`, `Dataset.Read.All`
 - `Dashboard.Read.All`
 - `Report.Read.All`, `Report.ReadWrite.All`
@@ -40,48 +43,63 @@ The `offline_access` scope must be included in the app registration. Without thi
 ## Features
 
 ### Workspace Management
+
 Create, list, update, and delete workspaces (also referred to as "groups" in the API). Manage workspace membership by adding or removing users and configuring their roles (Admin, Member, Contributor, Viewer).
 
 ### Dataset Management
+
 Create and update datasets to ensure reports stay current. Trigger and monitor dataset refreshes, manage data source credentials, configure refresh schedules, and manage dataset parameters. Supports taking over ownership of a dataset.
 
 ### Push Datasets
+
 Push data directly into Power BI in real-time by creating push datasets and adding rows to tables. Useful for streaming/real-time dashboard scenarios without needing an underlying data source.
 
 ### Report Management
+
 Retrieve and export reports for easy data sharing. Clone, rebind (change the underlying dataset), and export reports to file formats (PDF, PPTX, PNG). Manage report pages and permissions.
 
 ### Dashboard Management
+
 Create and access dashboards to consolidate insights. Manage tiles on dashboards to reflect the latest data. Clone dashboards across workspaces and add or remove tiles.
 
 ### Embedding
+
 Generate embed tokens and embed Power BI content in custom applications. Supports two embedding scenarios: "embed for your organization" (users authenticate with their own Power BI credentials) and "embed for your customers" (app owns the data, users don't need Power BI licenses).
 
 ### DAX Query Execution
+
 Execute Data Analysis Expressions (DAX) queries against datasets. Only DAX queries are supported at this time. The user must have dataset read and build permissions.
 
 ### Deployment Pipelines
+
 Deployment pipelines provide a structured way to manage the lifecycle of Power BI content across development, test, and production environments. They help enforce change control, reduce risk, and ensure consistent deployment practices. Developers can publish datasets and reports to the development stage. Using the REST API, content can then be promoted to test and production stages.
 
 ### Dataflows
+
 Create and manage Power BI dataflows for reusable data preparation logic. Retrieve dataflow metadata, refresh dataflows, and manage dataflow storage accounts.
 
 ### Imports
+
 Import Power BI Desktop files (.pbix), Excel files, or other supported formats into workspaces programmatically.
 
 ### Gateways
+
 Manage on-premises data gateways and their data sources. List gateways, add or remove data sources, and manage gateway users.
 
 ### Admin Operations
+
 Tenant-wide administrative operations available to Power BI admins or service principals. Includes scanning workspaces, listing all datasets/reports/dashboards/users across the tenant, managing encryption keys, and auditing capacity assignments. Some API features are only available to Pro or Premium users, limiting functionality for those on a free account.
 
 ### Apps
+
 Retrieve published Power BI apps and their contents (dashboards, reports, tiles). Apps are read-only collections of content shared with an audience.
 
 ### Template Apps
+
 Manage template apps that can be installed and customized by other organizations. Useful for ISVs distributing Power BI content.
 
 ### Capacities
+
 List and manage Power BI Premium and Embedded capacities. Assign or unassign workspaces to capacities.
 
 ## Events

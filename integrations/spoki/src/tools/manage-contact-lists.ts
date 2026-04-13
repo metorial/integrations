@@ -3,30 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContactLists = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact Lists',
-    key: 'manage_contact_lists',
-    description: `Adds or removes a contact from a Spoki list. Lists are used to organize contacts into groups for campaigns and automations.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageContactLists = SlateTool.create(spec, {
+  name: 'Manage Contact Lists',
+  key: 'manage_contact_lists',
+  description: `Adds or removes a contact from a Spoki list. Lists are used to organize contacts into groups for campaigns and automations.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    action: z.enum(['add', 'remove']).describe('Whether to add or remove the contact from the list'),
-    listId: z.string().describe('ID of the list'),
-  }))
-  .output(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    listId: z.string().describe('ID of the list'),
-    action: z.string().describe('The action performed'),
-    raw: z.any().optional().describe('Full API response'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      action: z
+        .enum(['add', 'remove'])
+        .describe('Whether to add or remove the contact from the list'),
+      listId: z.string().describe('ID of the list')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      listId: z.string().describe('ID of the list'),
+      action: z.string().describe('The action performed'),
+      raw: z.any().optional().describe('Full API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result: any;
@@ -43,11 +46,12 @@ export let manageContactLists = SlateTool.create(
         contactId: ctx.input.contactId,
         listId: ctx.input.listId,
         action: ctx.input.action,
-        raw: result,
+        raw: result
       },
-      message: ctx.input.action === 'add'
-        ? `Added contact ${ctx.input.contactId} to list **${ctx.input.listId}**`
-        : `Removed contact ${ctx.input.contactId} from list **${ctx.input.listId}**`,
+      message:
+        ctx.input.action === 'add'
+          ? `Added contact ${ctx.input.contactId} to list **${ctx.input.listId}**`
+          : `Removed contact ${ctx.input.contactId} from list **${ctx.input.listId}**`
     };
   })
   .build();

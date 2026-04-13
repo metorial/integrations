@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.parsera.org/v1',
+  baseURL: 'https://api.parsera.org/v1'
 });
 
 export interface Attribute {
@@ -71,13 +71,13 @@ export class Client {
   private headers() {
     return {
       'Content-Type': 'application/json',
-      'X-API-KEY': this.token,
+      'X-API-KEY': this.token
     };
   }
 
   async extract(params: ExtractParams): Promise<Record<string, unknown>[]> {
     let body: Record<string, unknown> = {
-      url: params.url,
+      url: params.url
     };
     if (params.prompt) body.prompt = params.prompt;
     if (params.attributes && params.attributes.length > 0) body.attributes = params.attributes;
@@ -86,56 +86,60 @@ export class Client {
     if (params.cookies && params.cookies.length > 0) body.cookies = params.cookies;
 
     let response = await http.post('/extract', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async parse(params: ParseParams): Promise<Record<string, unknown>[]> {
     let body: Record<string, unknown> = {
-      content: params.content,
+      content: params.content
     };
     if (params.prompt) body.prompt = params.prompt;
     if (params.attributes && params.attributes.length > 0) body.attributes = params.attributes;
     if (params.mode) body.mode = params.mode;
 
     let response = await http.post('/parse', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async extractMarkdown(params: ExtractMarkdownParams): Promise<string> {
     let body: Record<string, unknown> = {
-      url: params.url,
+      url: params.url
     };
     if (params.proxyCountry) body.proxy_country = params.proxyCountry;
     if (params.cookies && params.cookies.length > 0) body.cookies = params.cookies;
 
     let response = await http.post('/extract_markdown', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async listScrapers(): Promise<ScraperSummary[]> {
     let response = await http.get('/scrapers', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async createScraper(): Promise<string> {
-    let response = await http.post('/scrapers/new', {}, {
-      headers: this.headers(),
-    });
+    let response = await http.post(
+      '/scrapers/new',
+      {},
+      {
+        headers: this.headers()
+      }
+    );
     return response.data.scraper_id;
   }
 
   async generateScraper(params: GenerateScraperParams): Promise<string> {
     let body: Record<string, unknown> = {
       scraper_id: params.scraperId,
-      attributes: params.attributes,
+      attributes: params.attributes
     };
     if (params.url) body.url = params.url;
     if (params.content) body.content = params.content;
@@ -144,7 +148,7 @@ export class Client {
     if (params.cookies && params.cookies.length > 0) body.cookies = params.cookies;
 
     let response = await http.post('/scrapers/generate', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data.message;
   }
@@ -152,20 +156,20 @@ export class Client {
   async runScraper(params: RunScraperParams): Promise<Record<string, unknown>[]> {
     let body: Record<string, unknown> = {
       scraper_id: params.scraperId,
-      url: params.urls.length === 1 ? params.urls[0] : params.urls,
+      url: params.urls.length === 1 ? params.urls[0] : params.urls
     };
     if (params.proxyCountry) body.proxy_country = params.proxyCountry;
     if (params.cookies && params.cookies.length > 0) body.cookies = params.cookies;
 
     let response = await http.post('/scrapers/run', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async deleteScraper(scraperId: string): Promise<string> {
     let response = await http.delete(`/scrapers/${encodeURIComponent(scraperId)}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data.message;
   }

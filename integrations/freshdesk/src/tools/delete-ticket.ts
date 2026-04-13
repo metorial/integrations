@@ -3,26 +3,27 @@ import { FreshdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Ticket',
-    key: 'delete_ticket',
-    description: `Deletes a ticket from Freshdesk. The ticket is moved to trash and can be restored from the Freshdesk UI within 30 days.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteTicket = SlateTool.create(spec, {
+  name: 'Delete Ticket',
+  key: 'delete_ticket',
+  description: `Deletes a ticket from Freshdesk. The ticket is moved to trash and can be restored from the Freshdesk UI within 30 days.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    ticketId: z.number().describe('ID of the ticket to delete')
-  }))
-  .output(z.object({
-    ticketId: z.number().describe('ID of the deleted ticket'),
-    deleted: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticketId: z.number().describe('ID of the ticket to delete')
+    })
+  )
+  .output(
+    z.object({
+      ticketId: z.number().describe('ID of the deleted ticket'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FreshdeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token
@@ -37,4 +38,5 @@ export let deleteTicket = SlateTool.create(
       },
       message: `Deleted ticket **#${ctx.input.ticketId}**`
     };
-  }).build();
+  })
+  .build();

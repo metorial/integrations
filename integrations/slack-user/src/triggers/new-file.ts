@@ -3,50 +3,52 @@ import { SlackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFile = SlateTrigger.create(
-  spec,
-  {
-    name: 'New File',
-    key: 'new_file',
-    description: '[Polling fallback] Triggers when a new file is uploaded or shared in the workspace. Polls the files list for newly created files.',
-  }
-)
-  .input(z.object({
-    fileId: z.string().describe('File ID'),
-    name: z.string().optional().describe('Filename'),
-    title: z.string().optional().describe('File title'),
-    mimetype: z.string().optional().describe('MIME type'),
-    filetype: z.string().optional().describe('File type'),
-    size: z.number().optional().describe('File size in bytes'),
-    userId: z.string().optional().describe('Uploader user ID'),
-    created: z.number().optional().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    fileId: z.string().describe('File ID'),
-    name: z.string().optional().describe('Filename'),
-    title: z.string().optional().describe('File title'),
-    mimetype: z.string().optional().describe('MIME type'),
-    filetype: z.string().optional().describe('File type'),
-    size: z.number().optional().describe('File size in bytes'),
-    userId: z.string().optional().describe('Uploader user ID'),
-    permalink: z.string().optional().describe('Permalink to the file'),
-    urlPrivate: z.string().optional().describe('Private download URL'),
-    created: z.number().optional().describe('Unix timestamp when the file was created'),
-    channels: z.array(z.string()).optional().describe('Channel IDs where the file is shared'),
-  }))
+export let newFile = SlateTrigger.create(spec, {
+  name: 'New File',
+  key: 'new_file',
+  description:
+    '[Polling fallback] Triggers when a new file is uploaded or shared in the workspace. Polls the files list for newly created files.'
+})
+  .input(
+    z.object({
+      fileId: z.string().describe('File ID'),
+      name: z.string().optional().describe('Filename'),
+      title: z.string().optional().describe('File title'),
+      mimetype: z.string().optional().describe('MIME type'),
+      filetype: z.string().optional().describe('File type'),
+      size: z.number().optional().describe('File size in bytes'),
+      userId: z.string().optional().describe('Uploader user ID'),
+      created: z.number().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      fileId: z.string().describe('File ID'),
+      name: z.string().optional().describe('Filename'),
+      title: z.string().optional().describe('File title'),
+      mimetype: z.string().optional().describe('MIME type'),
+      filetype: z.string().optional().describe('File type'),
+      size: z.number().optional().describe('File size in bytes'),
+      userId: z.string().optional().describe('Uploader user ID'),
+      permalink: z.string().optional().describe('Permalink to the file'),
+      urlPrivate: z.string().optional().describe('Private download URL'),
+      created: z.number().optional().describe('Unix timestamp when the file was created'),
+      channels: z.array(z.string()).optional().describe('Channel IDs where the file is shared')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SlackClient(ctx.auth.token);
       let state = ctx.state as { lastTs?: string } | null;
       let lastTs = state?.lastTs;
 
       let result = await client.listFiles({
         count: 50,
-        tsFrom: lastTs,
+        tsFrom: lastTs
       });
 
       let newLastTs = lastTs;
@@ -73,7 +75,7 @@ export let newFile = SlateTrigger.create(
           filetype: file.filetype,
           size: file.size,
           userId: file.user,
-          created: file.created || file.timestamp,
+          created: file.created || file.timestamp
         });
 
         if (!newLastTs || fileTs > newLastTs) {
@@ -84,12 +86,12 @@ export let newFile = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastTs: newLastTs || lastTs,
-        },
+          lastTs: newLastTs || lastTs
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let fileDetails: any = {};
       try {
         let client = new SlackClient(ctx.auth.token);
@@ -112,9 +114,9 @@ export let newFile = SlateTrigger.create(
           permalink: fileDetails.permalink,
           urlPrivate: fileDetails.url_private,
           created: ctx.input.created || fileDetails.created,
-          channels: fileDetails.channels,
-        },
+          channels: fileDetails.channels
+        }
       };
-    },
+    }
   })
   .build();

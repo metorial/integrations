@@ -3,39 +3,52 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listEmailAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'List Email Accounts',
-    key: 'list_email_accounts',
-    description: `List connected email sending accounts in the workspace. Supports searching, filtering by status and tags, and pagination.`,
-    tags: {
-      readOnly: true,
-    },
+export let listEmailAccounts = SlateTool.create(spec, {
+  name: 'List Email Accounts',
+  key: 'list_email_accounts',
+  description: `List connected email sending accounts in the workspace. Supports searching, filtering by status and tags, and pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(100).optional().describe('Number of accounts to return (1-100).'),
-    startingAfter: z.string().optional().describe('Cursor for pagination (datetime from previous response).'),
-    search: z.string().optional().describe('Search accounts by email address.'),
-    status: z.number().optional().describe('Filter by account status.'),
-    tagIds: z.string().optional().describe('Comma-separated tag UUIDs to filter accounts.'),
-  }))
-  .output(z.object({
-    accounts: z.array(z.object({
-      email: z.string().describe('Account email address'),
-      firstName: z.string().optional().describe('First name'),
-      lastName: z.string().optional().describe('Last name'),
-      status: z.number().optional().describe('Account status'),
-      dailyLimit: z.number().optional().describe('Daily sending limit'),
-      warmupScore: z.number().optional().describe('Warmup score'),
-      providerCode: z.number().optional().describe('Email provider code'),
-      setupPending: z.boolean().optional().describe('Whether setup is pending'),
-      timestampCreated: z.string().optional().describe('Creation timestamp'),
-    })).describe('List of email accounts'),
-    nextStartingAfter: z.string().nullable().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Number of accounts to return (1-100).'),
+      startingAfter: z
+        .string()
+        .optional()
+        .describe('Cursor for pagination (datetime from previous response).'),
+      search: z.string().optional().describe('Search accounts by email address.'),
+      status: z.number().optional().describe('Filter by account status.'),
+      tagIds: z.string().optional().describe('Comma-separated tag UUIDs to filter accounts.')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z
+        .array(
+          z.object({
+            email: z.string().describe('Account email address'),
+            firstName: z.string().optional().describe('First name'),
+            lastName: z.string().optional().describe('Last name'),
+            status: z.number().optional().describe('Account status'),
+            dailyLimit: z.number().optional().describe('Daily sending limit'),
+            warmupScore: z.number().optional().describe('Warmup score'),
+            providerCode: z.number().optional().describe('Email provider code'),
+            setupPending: z.boolean().optional().describe('Whether setup is pending'),
+            timestampCreated: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .describe('List of email accounts'),
+      nextStartingAfter: z.string().nullable().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listAccounts({
@@ -43,7 +56,7 @@ export let listEmailAccounts = SlateTool.create(
       startingAfter: ctx.input.startingAfter,
       search: ctx.input.search,
       status: ctx.input.status,
-      tagIds: ctx.input.tagIds,
+      tagIds: ctx.input.tagIds
     });
 
     let accounts = result.items.map((a: any) => ({
@@ -55,15 +68,15 @@ export let listEmailAccounts = SlateTool.create(
       warmupScore: a.stat_warmup_score,
       providerCode: a.provider_code,
       setupPending: a.setup_pending,
-      timestampCreated: a.timestamp_created,
+      timestampCreated: a.timestamp_created
     }));
 
     return {
       output: {
         accounts,
-        nextStartingAfter: result.next_starting_after,
+        nextStartingAfter: result.next_starting_after
       },
-      message: `Found **${accounts.length}** email account(s).${result.next_starting_after ? ' More pages available.' : ''}`,
+      message: `Found **${accounts.length}** email account(s).${result.next_starting_after ? ' More pages available.' : ''}`
     };
   })
   .build();

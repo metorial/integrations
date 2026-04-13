@@ -23,36 +23,44 @@ let workerOutputSchema = z.object({
   revenueDualUsd: z.number().describe('Estimated USD/day for dual coin'),
   acceptedSharesMain: z.number().describe('Accepted shares for main coin'),
   rejectedSharesMain: z.number().describe('Rejected shares for main coin'),
-  hardware: z.array(z.object({
-    name: z.string().describe('Hardware device name'),
-    temperature: z.number().describe('Temperature in Celsius'),
-    fan: z.number().describe('Fan speed in % or RPM'),
-    power: z.number().describe('Power consumption in watts')
-  })).describe('List of hardware devices')
+  hardware: z
+    .array(
+      z.object({
+        name: z.string().describe('Hardware device name'),
+        temperature: z.number().describe('Temperature in Celsius'),
+        fan: z.number().describe('Fan speed in % or RPM'),
+        power: z.number().describe('Power consumption in watts')
+      })
+    )
+    .describe('List of hardware devices')
 });
 
-export let listWorkersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Workers',
-    key: 'list_workers',
-    description: `Retrieve real-time status for all mining workers or a specific worker. Returns hashrate, hardware temperatures, fan speeds, power consumption, mining coin, estimated earnings, shares, and system information. Use this for monitoring your mining fleet.`,
-    instructions: [
-      'To get all workers, leave workerName empty. To get a specific worker, provide its name.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listWorkersTool = SlateTool.create(spec, {
+  name: 'List Workers',
+  key: 'list_workers',
+  description: `Retrieve real-time status for all mining workers or a specific worker. Returns hashrate, hardware temperatures, fan speeds, power consumption, mining coin, estimated earnings, shares, and system information. Use this for monitoring your mining fleet.`,
+  instructions: [
+    'To get all workers, leave workerName empty. To get a specific worker, provide its name.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workerName: z.string().optional().describe('Specific worker name to retrieve. Leave empty to list all workers.')
-  }))
-  .output(z.object({
-    workers: z.array(workerOutputSchema),
-    totalCount: z.number().describe('Number of workers returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workerName: z
+        .string()
+        .optional()
+        .describe('Specific worker name to retrieve. Leave empty to list all workers.')
+    })
+  )
+  .output(
+    z.object({
+      workers: z.array(workerOutputSchema),
+      totalCount: z.number().describe('Number of workers returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MonitoringClient({ accessKey: ctx.auth.accessKey });
 
     ctx.progress('Fetching worker data...');
@@ -101,4 +109,5 @@ export let listWorkersTool = SlateTool.create(
       },
       message: `Retrieved **${workers.length}** worker(s): **${onlineCount}** online, **${offlineCount}** offline.`
     };
-  }).build();
+  })
+  .build();

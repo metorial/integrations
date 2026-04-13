@@ -3,42 +3,46 @@ import { DiscoveryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let eventStatusChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Status Changes',
-    key: 'event_status_changes',
-    description: 'Polls for status changes on recently discovered events. Detects when events go onsale, offsale, get canceled, postponed, or rescheduled.',
-  }
-)
-  .input(z.object({
-    eventId: z.string(),
-    name: z.string(),
-    previousStatus: z.string(),
-    currentStatus: z.string(),
-    url: z.string(),
-    startDate: z.string(),
-    venueName: z.string(),
-  }))
-  .output(z.object({
-    eventId: z.string(),
-    name: z.string(),
-    previousStatus: z.string().describe('Previous event status'),
-    currentStatus: z.string().describe('New event status: onsale, offsale, canceled, postponed, rescheduled'),
-    url: z.string(),
-    startDate: z.string(),
-    venueName: z.string(),
-  }))
+export let eventStatusChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Event Status Changes',
+  key: 'event_status_changes',
+  description:
+    'Polls for status changes on recently discovered events. Detects when events go onsale, offsale, get canceled, postponed, or rescheduled.'
+})
+  .input(
+    z.object({
+      eventId: z.string(),
+      name: z.string(),
+      previousStatus: z.string(),
+      currentStatus: z.string(),
+      url: z.string(),
+      startDate: z.string(),
+      venueName: z.string()
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string(),
+      name: z.string(),
+      previousStatus: z.string().describe('Previous event status'),
+      currentStatus: z
+        .string()
+        .describe('New event status: onsale, offsale, canceled, postponed, rescheduled'),
+      url: z.string(),
+      startDate: z.string(),
+      venueName: z.string()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DiscoveryClient({
         token: ctx.auth.token,
         countryCode: ctx.config.countryCode,
-        locale: ctx.config.locale,
+        locale: ctx.config.locale
       });
 
       let previousStatuses = (ctx.state?.statuses as Record<string, string>) || {};
@@ -54,7 +58,7 @@ export let eventStatusChangesTrigger = SlateTrigger.create(
         }
         return {
           inputs: [],
-          updatedState: { statuses: newStatuses },
+          updatedState: { statuses: newStatuses }
         };
       }
 
@@ -86,7 +90,7 @@ export let eventStatusChangesTrigger = SlateTrigger.create(
               currentStatus,
               url: event?.url || '',
               startDate: event?.dates?.start?.dateTime || event?.dates?.start?.localDate || '',
-              venueName: event?._embedded?.venues?.[0]?.name || '',
+              venueName: event?._embedded?.venues?.[0]?.name || ''
             });
           }
         } catch (_err) {
@@ -113,12 +117,12 @@ export let eventStatusChangesTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          statuses: updatedStatuses,
-        },
+          statuses: updatedStatuses
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'event.status_changed',
         id: `${ctx.input.eventId}-${ctx.input.currentStatus}-${Date.now()}`,
@@ -129,8 +133,9 @@ export let eventStatusChangesTrigger = SlateTrigger.create(
           currentStatus: ctx.input.currentStatus,
           url: ctx.input.url,
           startDate: ctx.input.startDate,
-          venueName: ctx.input.venueName,
-        },
+          venueName: ctx.input.venueName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

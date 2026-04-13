@@ -52,9 +52,9 @@ export class Client {
       headers: {
         'x-api-key': auth.apiKey,
         'x-api-secret': auth.apiSecret,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -70,12 +70,16 @@ export class Client {
     if (options?.filters) params.filters = options.filters;
     if (options?.search) params.search = options.search;
 
-    let response = await this.axios.get(`/workspaces/${this.workspaceId}/dynamics`, { params });
+    let response = await this.axios.get(`/workspaces/${this.workspaceId}/dynamics`, {
+      params
+    });
     return response.data;
   }
 
   async getCampaign(campaignId: string): Promise<any> {
-    let response = await this.axios.get(`/workspaces/${this.workspaceId}/dynamics/${campaignId}`);
+    let response = await this.axios.get(
+      `/workspaces/${this.workspaceId}/dynamics/${campaignId}`
+    );
     return response.data;
   }
 

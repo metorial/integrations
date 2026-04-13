@@ -4,15 +4,18 @@ let createTwitterClient = (token: string) => {
   return createAxios({
     baseURL: 'https://api.x.com/2',
     headers: {
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`
     }
   });
 };
 
-export let DEFAULT_POST_FIELDS = 'id,text,created_at,author_id,conversation_id,in_reply_to_user_id,lang,public_metrics,source,edit_history_tweet_ids';
-export let DEFAULT_USER_FIELDS = 'id,name,username,created_at,description,profile_image_url,public_metrics,verified,location,url,protected';
+export let DEFAULT_POST_FIELDS =
+  'id,text,created_at,author_id,conversation_id,in_reply_to_user_id,lang,public_metrics,source,edit_history_tweet_ids';
+export let DEFAULT_USER_FIELDS =
+  'id,name,username,created_at,description,profile_image_url,public_metrics,verified,location,url,protected';
 export let DEFAULT_MEDIA_FIELDS = 'media_key,type,url,preview_image_url,alt_text,width,height';
-export let DEFAULT_EXPANSIONS = 'author_id,referenced_tweets.id,attachments.media_keys,in_reply_to_user_id';
+export let DEFAULT_EXPANSIONS =
+  'author_id,referenced_tweets.id,attachments.media_keys,in_reply_to_user_id';
 
 export class TwitterClient {
   private api: ReturnType<typeof createAxios>;
@@ -127,15 +130,18 @@ export class TwitterClient {
 
   // ==================== Timelines ====================
 
-  async getUserTimeline(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-    sinceId?: string;
-    untilId?: string;
-    startTime?: string;
-    endTime?: string;
-    exclude?: string[];
-  }) {
+  async getUserTimeline(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+      sinceId?: string;
+      untilId?: string;
+      startTime?: string;
+      endTime?: string;
+      exclude?: string[];
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/tweets`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
@@ -154,14 +160,17 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getUserMentions(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-    sinceId?: string;
-    untilId?: string;
-    startTime?: string;
-    endTime?: string;
-  }) {
+  async getUserMentions(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+      sinceId?: string;
+      untilId?: string;
+      startTime?: string;
+      endTime?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/mentions`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
@@ -179,15 +188,18 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getReverseChronologicalTimeline(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-    sinceId?: string;
-    untilId?: string;
-    startTime?: string;
-    endTime?: string;
-    exclude?: string[];
-  }) {
+  async getReverseChronologicalTimeline(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+      sinceId?: string;
+      untilId?: string;
+      startTime?: string;
+      endTime?: string;
+      exclude?: string[];
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/reverse_chronological`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
@@ -208,15 +220,18 @@ export class TwitterClient {
 
   // ==================== Search ====================
 
-  async searchRecentPosts(query: string, params?: {
-    maxResults?: number;
-    nextToken?: string;
-    sinceId?: string;
-    untilId?: string;
-    startTime?: string;
-    endTime?: string;
-    sortOrder?: string;
-  }) {
+  async searchRecentPosts(
+    query: string,
+    params?: {
+      maxResults?: number;
+      nextToken?: string;
+      sinceId?: string;
+      untilId?: string;
+      startTime?: string;
+      endTime?: string;
+      sortOrder?: string;
+    }
+  ) {
     let response = await this.api.get('/tweets/search/recent', {
       params: {
         query,
@@ -250,10 +265,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getLikedPosts(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getLikedPosts(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/liked_tweets`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
@@ -265,10 +283,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getPostLikingUsers(postId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getPostLikingUsers(
+    postId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/tweets/${postId}/liking_users`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -293,10 +314,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getRetweetedByUsers(postId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getRetweetedByUsers(
+    postId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/tweets/${postId}/retweeted_by`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -309,10 +333,13 @@ export class TwitterClient {
 
   // ==================== Bookmarks ====================
 
-  async getBookmarks(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getBookmarks(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/bookmarks`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
@@ -350,10 +377,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getFollowers(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getFollowers(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/followers`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -364,10 +394,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getFollowing(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getFollowing(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/following`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -392,10 +425,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getBlockedUsers(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getBlockedUsers(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/blocking`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -420,10 +456,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getMutedUsers(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getMutedUsers(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/muting`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -444,7 +483,9 @@ export class TwitterClient {
   }) {
     let response = await this.api.get('/dm_events', {
       params: {
-        'dm_event.fields': params?.dmEventFields || 'id,text,created_at,sender_id,dm_conversation_id,event_type,attachments,referenced_tweets',
+        'dm_event.fields':
+          params?.dmEventFields ||
+          'id,text,created_at,sender_id,dm_conversation_id,event_type,attachments,referenced_tweets',
         'user.fields': DEFAULT_USER_FIELDS,
         expansions: 'sender_id,referenced_tweets.id',
         max_results: params?.maxResults || 20,
@@ -455,10 +496,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getDmConversationEvents(conversationId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getDmConversationEvents(
+    conversationId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/dm_conversations/${conversationId}/dm_events`, {
       params: {
         'dm_event.fields': 'id,text,created_at,sender_id,dm_conversation_id,event_type',
@@ -499,19 +543,24 @@ export class TwitterClient {
   async getList(listId: string) {
     let response = await this.api.get(`/lists/${listId}`, {
       params: {
-        'list.fields': 'id,name,description,owner_id,created_at,follower_count,member_count,private'
+        'list.fields':
+          'id,name,description,owner_id,created_at,follower_count,member_count,private'
       }
     });
     return response.data;
   }
 
-  async getUserOwnedLists(userId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getUserOwnedLists(
+    userId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/users/${userId}/owned_lists`, {
       params: {
-        'list.fields': 'id,name,description,owner_id,created_at,follower_count,member_count,private',
+        'list.fields':
+          'id,name,description,owner_id,created_at,follower_count,member_count,private',
         max_results: params?.maxResults || 100,
         pagination_token: params?.paginationToken
       }
@@ -528,7 +577,10 @@ export class TwitterClient {
     return response.data;
   }
 
-  async updateList(listId: string, params: { name?: string; description?: string; isPrivate?: boolean }) {
+  async updateList(
+    listId: string,
+    params: { name?: string; description?: string; isPrivate?: boolean }
+  ) {
     let body: Record<string, any> = {};
     if (params.name !== undefined) body.name = params.name;
     if (params.description !== undefined) body.description = params.description;
@@ -555,10 +607,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getListMembers(listId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getListMembers(
+    listId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/lists/${listId}/members`, {
       params: {
         'user.fields': DEFAULT_USER_FIELDS,
@@ -569,10 +624,13 @@ export class TwitterClient {
     return response.data;
   }
 
-  async getListPosts(listId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getListPosts(
+    listId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/lists/${listId}/tweets`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,
@@ -587,10 +645,13 @@ export class TwitterClient {
 
   // ==================== Quote Tweets ====================
 
-  async getQuotePosts(postId: string, params?: {
-    maxResults?: number;
-    paginationToken?: string;
-  }) {
+  async getQuotePosts(
+    postId: string,
+    params?: {
+      maxResults?: number;
+      paginationToken?: string;
+    }
+  ) {
     let response = await this.api.get(`/tweets/${postId}/quote_tweets`, {
       params: {
         'tweet.fields': DEFAULT_POST_FIELDS,

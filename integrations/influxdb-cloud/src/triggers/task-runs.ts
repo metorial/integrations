@@ -3,44 +3,48 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskRunsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Run Updates',
-    key: 'task_run_updates',
-    description: 'Polls for new task runs and their completion status. Detects when scheduled Flux tasks complete, fail, or are canceled.',
-  }
-)
-  .input(z.object({
-    runId: z.string().describe('Unique run ID'),
-    taskId: z.string().describe('Task ID'),
-    taskName: z.string().describe('Task name'),
-    status: z.string().describe('Run status (e.g. success, failed, canceled)'),
-    scheduledFor: z.string().optional().describe('Scheduled execution time'),
-    startedAt: z.string().optional().describe('Actual start time'),
-    finishedAt: z.string().optional().describe('Finish time'),
-  }))
-  .output(z.object({
-    runId: z.string().describe('Unique run ID'),
-    taskId: z.string().describe('Associated task ID'),
-    taskName: z.string().describe('Task name'),
-    status: z.string().describe('Run status'),
-    scheduledFor: z.string().optional().describe('Scheduled execution time'),
-    startedAt: z.string().optional().describe('Actual start time'),
-    finishedAt: z.string().optional().describe('Finish time'),
-  }))
+export let taskRunsTrigger = SlateTrigger.create(spec, {
+  name: 'Task Run Updates',
+  key: 'task_run_updates',
+  description:
+    'Polls for new task runs and their completion status. Detects when scheduled Flux tasks complete, fail, or are canceled.'
+})
+  .input(
+    z.object({
+      runId: z.string().describe('Unique run ID'),
+      taskId: z.string().describe('Task ID'),
+      taskName: z.string().describe('Task name'),
+      status: z.string().describe('Run status (e.g. success, failed, canceled)'),
+      scheduledFor: z.string().optional().describe('Scheduled execution time'),
+      startedAt: z.string().optional().describe('Actual start time'),
+      finishedAt: z.string().optional().describe('Finish time')
+    })
+  )
+  .output(
+    z.object({
+      runId: z.string().describe('Unique run ID'),
+      taskId: z.string().describe('Associated task ID'),
+      taskName: z.string().describe('Task name'),
+      status: z.string().describe('Run status'),
+      scheduledFor: z.string().optional().describe('Scheduled execution time'),
+      startedAt: z.string().optional().describe('Actual start time'),
+      finishedAt: z.string().optional().describe('Finish time')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let tasksResult = await client.listTasks({ limit: 100 });
       let tasks = tasksResult.tasks || [];
 
-      let lastPollTime = (ctx.state as any)?.lastPollTime || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      let lastPollTime =
+        (ctx.state as any)?.lastPollTime ||
+        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       let inputs: any[] = [];
       let latestFinished = lastPollTime;
 
@@ -48,7 +52,7 @@ export let taskRunsTrigger = SlateTrigger.create(
         try {
           let runsResult = await client.getTaskRuns(task.id, {
             afterTime: lastPollTime,
-            limit: 50,
+            limit: 50
           });
 
           let runs = runsResult.runs || [];
@@ -63,7 +67,7 @@ export let taskRunsTrigger = SlateTrigger.create(
               status: run.status,
               scheduledFor: run.scheduledFor,
               startedAt: run.startedAt,
-              finishedAt: run.finishedAt,
+              finishedAt: run.finishedAt
             });
 
             if (run.finishedAt && run.finishedAt > latestFinished) {
@@ -78,12 +82,12 @@ export let taskRunsTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastPollTime: latestFinished,
-        },
+          lastPollTime: latestFinished
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `task_run.${ctx.input.status}`,
         id: ctx.input.runId,
@@ -94,9 +98,9 @@ export let taskRunsTrigger = SlateTrigger.create(
           status: ctx.input.status,
           scheduledFor: ctx.input.scheduledFor,
           startedAt: ctx.input.startedAt,
-          finishedAt: ctx.input.finishedAt,
-        },
+          finishedAt: ctx.input.finishedAt
+        }
       };
-    },
+    }
   })
   .build();

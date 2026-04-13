@@ -3,29 +3,36 @@ import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTeam = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Team',
-    key: 'manage_team',
-    description: `Create, update, or delete teams within a project. Teams can be used to organize agents and assign tickets.`,
-    tags: {
-      destructive: false
-    }
+export let manageTeam = SlateTool.create(spec, {
+  name: 'Manage Team',
+  key: 'manage_team',
+  description: `Create, update, or delete teams within a project. Teams can be used to organize agents and assign tickets.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'list']).describe('Action to perform'),
-    teamId: z.string().optional().describe('Team ID (required for update and delete)'),
-    name: z.string().optional().describe('Team name (required for create)'),
-    teamData: z.record(z.string(), z.any()).optional().describe('Additional team data')
-  }))
-  .output(z.object({
-    team: z.record(z.string(), z.any()).optional().describe('The team object (for create/update)'),
-    teams: z.array(z.record(z.string(), z.any())).optional().describe('List of teams (for list)'),
-    deleted: z.boolean().optional().describe('Whether the team was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete', 'list']).describe('Action to perform'),
+      teamId: z.string().optional().describe('Team ID (required for update and delete)'),
+      name: z.string().optional().describe('Team name (required for create)'),
+      teamData: z.record(z.string(), z.any()).optional().describe('Additional team data')
+    })
+  )
+  .output(
+    z.object({
+      team: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('The team object (for create/update)'),
+      teams: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of teams (for list)'),
+      deleted: z.boolean().optional().describe('Whether the team was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GleapClient({
       token: ctx.auth.token,
       projectId: ctx.auth.projectId

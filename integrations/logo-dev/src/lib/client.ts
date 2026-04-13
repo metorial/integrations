@@ -38,12 +38,15 @@ export class LogoDevClient {
     this.axios = createAxios({
       baseURL: 'https://api.logo.dev',
       headers: {
-        'Authorization': `Bearer ${secretKey}`,
-      },
+        Authorization: `Bearer ${secretKey}`
+      }
     });
   }
 
-  async searchBrands(query: string, strategy?: 'typeahead' | 'match'): Promise<SearchResult[]> {
+  async searchBrands(
+    query: string,
+    strategy?: 'typeahead' | 'match'
+  ): Promise<SearchResult[]> {
     let params: Record<string, string> = { q: query };
     if (strategy) {
       params.strategy = strategy;
@@ -63,7 +66,7 @@ export class LogoDevClient {
       socials: data.socials ?? {},
       logo: data.logo,
       blurhash: data.blurhash,
-      colors: data.colors ?? [],
+      colors: data.colors ?? []
     };
   }
 }
@@ -72,7 +75,7 @@ export let buildLogoUrl = (
   identifier: string,
   lookupType: 'domain' | 'ticker' | 'crypto' | 'isin' | 'name',
   publishableToken?: string,
-  options?: LogoImageOptions,
+  options?: LogoImageOptions
 ): string => {
   let basePath: string;
   switch (lookupType) {

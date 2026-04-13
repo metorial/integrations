@@ -4,22 +4,21 @@ import { ticketSchema } from '../lib/types';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Get Ticket',
-    key: 'get_ticket',
-    description: `Retrieve a single support ticket by its ID, including all details such as subject, requester, assignee, labels, content, and status flags.`,
-    tags: {
-      readOnly: true
-    }
+export let getTicket = SlateTool.create(spec, {
+  name: 'Get Ticket',
+  key: 'get_ticket',
+  description: `Retrieve a single support ticket by its ID, including all details such as subject, requester, assignee, labels, content, and status flags.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ticketId: z.number().describe('The ID of the ticket to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      ticketId: z.number().describe('The ID of the ticket to retrieve')
+    })
+  )
   .output(ticketSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       companySubdomain: ctx.config.companySubdomain
@@ -31,4 +30,5 @@ export let getTicket = SlateTool.create(
       output: ticket,
       message: `Retrieved ticket **#${ticket.ticketId}**: "${ticket.subject}"`
     };
-  }).build();
+  })
+  .build();

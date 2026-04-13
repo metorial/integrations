@@ -18,14 +18,14 @@ API keys are created in the CloudConvert dashboard under **Authorization > API K
 
 **Available Scopes:**
 
-| Scope | Description |
-|-------|-------------|
-| `user.read` | Read account data, remaining credits, and usage charts |
-| `user.write` | Update account data |
-| `task.read` | Read tasks and jobs |
-| `task.write` | Create, update, and delete tasks and jobs |
-| `webhook.read` | Read webhook settings |
-| `webhook.write` | Update webhook settings |
+| Scope           | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| `user.read`     | Read account data, remaining credits, and usage charts |
+| `user.write`    | Update account data                                    |
+| `task.read`     | Read tasks and jobs                                    |
+| `task.write`    | Create, update, and delete tasks and jobs              |
+| `webhook.read`  | Read webhook settings                                  |
+| `webhook.write` | Update webhook settings                                |
 
 ### OAuth 2.0
 
@@ -71,6 +71,7 @@ Merge multiple input files into a single PDF.
 ### PDF Operations
 
 Dedicated operations for PDF-specific processing:
+
 - Convert to PDF/A
 - PDF OCR (optical character recognition)
 - Encrypt and decrypt PDFs
@@ -91,6 +92,7 @@ Execute arbitrary FFmpeg, ImageMagick, and GraphicsMagick commands. It is also s
 ### File Import and Export
 
 Files can be imported from and exported to multiple sources:
+
 - **Import:** URL, direct upload, Base64, raw data, Amazon S3, Azure Blob Storage, Google Cloud Storage, OpenStack Swift, SFTP
 - **Export:** Temporary URL, Amazon S3, Azure Blob Storage, Google Cloud Storage, OpenStack Swift, SFTP, HTTP PUT upload
 
@@ -111,6 +113,7 @@ CloudConvert supports webhooks to notify your application about the status of jo
 CloudConvert can notify your application about the status of jobs. You can create and manage your webhooks on the CloudConvert dashboard. Webhooks can also be created via the API or configured inline when creating a job.
 
 Available webhook events:
+
 - **`job.created`** — A job has been created.
 - **`job.updated`** — A job has been updated (e.g., task progress).
 - **`job.finished`** — A job has completed successfully.

@@ -24,14 +24,14 @@ import {
   listReminders,
   deleteReminder,
   listGroups,
-  listCustomFields,
+  listCustomFields
 } from './tools';
 import {
   personEvents,
   companyEvents,
   dealEvents,
   noteEvents,
-  reminderEvents,
+  reminderEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -60,13 +60,7 @@ export let provider = Slate.create({
     listReminders,
     deleteReminder,
     listGroups,
-    listCustomFields,
+    listCustomFields
   ],
-  triggers: [
-    personEvents,
-    companyEvents,
-    dealEvents,
-    noteEvents,
-    reminderEvents,
-  ],
+  triggers: [personEvents, companyEvents, dealEvents, noteEvents, reminderEvents]
 });

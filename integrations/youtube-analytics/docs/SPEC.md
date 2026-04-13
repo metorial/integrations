@@ -18,13 +18,13 @@ The YouTube Reporting API and YouTube Analytics API support the OAuth 2.0 protoc
 
 The available OAuth 2.0 scopes are:
 
-| Scope | Description |
-|---|---|
-| `https://www.googleapis.com/auth/yt-analytics.readonly` | View YouTube Analytics reports for your YouTube content |
+| Scope                                                            | Description                                                                       |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/yt-analytics.readonly`          | View YouTube Analytics reports for your YouTube content                           |
 | `https://www.googleapis.com/auth/yt-analytics-monetary.readonly` | View monetary and non-monetary YouTube Analytics reports for your YouTube content |
-| `https://www.googleapis.com/auth/youtube` | Manage your YouTube account |
-| `https://www.googleapis.com/auth/youtube.readonly` | View your YouTube account (required for the reports.query method) |
-| `https://www.googleapis.com/auth/youtubepartner` | View and manage your assets and associated content on YouTube |
+| `https://www.googleapis.com/auth/youtube`                        | Manage your YouTube account                                                       |
+| `https://www.googleapis.com/auth/youtube.readonly`               | View your YouTube account (required for the reports.query method)                 |
+| `https://www.googleapis.com/auth/youtubepartner`                 | View and manage your assets and associated content on YouTube                     |
 
 API requests to the reports.query method now require access to the `https://www.googleapis.com/auth/youtube.readonly` scope. Ad performance reports require an authorization token that grants access to the `yt-analytics-monetary.readonly` scope.
 

@@ -11,9 +11,10 @@ export class Client {
   private axios;
 
   constructor(private clientConfig: ClientConfig) {
-    let baseURL = clientConfig.environment === 'sandbox'
-      ? 'https://sandbox.api.test-headout.com'
-      : 'https://www.headout.com';
+    let baseURL =
+      clientConfig.environment === 'sandbox'
+        ? 'https://sandbox.api.test-headout.com'
+        : 'https://www.headout.com';
 
     this.axios = createAxios({
       baseURL,
@@ -33,11 +34,14 @@ export class Client {
 
   // ── Products (v1) ────────────────────────────────────────────────
 
-  async getProduct(productId: string, params?: {
-    currencyCode?: string;
-    fetchVariants?: boolean;
-    language?: string;
-  }) {
+  async getProduct(
+    productId: string,
+    params?: {
+      currencyCode?: string;
+      fetchVariants?: boolean;
+      language?: string;
+    }
+  ) {
     let queryParams: Record<string, string | boolean | undefined> = {};
     if (params?.currencyCode || this.clientConfig.currencyCode) {
       queryParams.currencyCode = params?.currencyCode ?? this.clientConfig.currencyCode;
@@ -49,16 +53,21 @@ export class Client {
       queryParams.language = params?.language ?? this.clientConfig.languageCode;
     }
 
-    let response = await this.axios.get(`/api/public/v1/product/get/${productId}`, { params: queryParams });
+    let response = await this.axios.get(`/api/public/v1/product/get/${productId}`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async listProductsByCity(cityCode: string, params?: {
-    currencyCode?: string;
-    language?: string;
-    offset?: number;
-    limit?: number;
-  }) {
+  async listProductsByCity(
+    cityCode: string,
+    params?: {
+      currencyCode?: string;
+      language?: string;
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let queryParams: Record<string, string | number | undefined> = {
       cityCode,
       currencyCode: params?.currencyCode ?? this.clientConfig.currencyCode,
@@ -67,16 +76,21 @@ export class Client {
       limit: params?.limit
     };
 
-    let response = await this.axios.get('/api/public/v1/product/listing/list-by/city', { params: queryParams });
+    let response = await this.axios.get('/api/public/v1/product/listing/list-by/city', {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async listProductsByCategory(categoryId: string, params?: {
-    currencyCode?: string;
-    language?: string;
-    offset?: number;
-    limit?: number;
-  }) {
+  async listProductsByCategory(
+    categoryId: string,
+    params?: {
+      currencyCode?: string;
+      language?: string;
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let queryParams: Record<string, string | number | undefined> = {
       categoryId,
       currencyCode: params?.currencyCode ?? this.clientConfig.currencyCode,
@@ -85,7 +99,9 @@ export class Client {
       limit: params?.limit
     };
 
-    let response = await this.axios.get('/api/public/v1/product/listing/list-by/category', { params: queryParams });
+    let response = await this.axios.get('/api/public/v1/product/listing/list-by/category', {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -132,17 +148,22 @@ export class Client {
       languageCode: params?.languageCode ?? this.clientConfig.languageCode
     };
 
-    let response = await this.axios.get('/api/public/v2/subcategories', { params: queryParams });
+    let response = await this.axios.get('/api/public/v2/subcategories', {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Collections ──────────────────────────────────────────────────
 
-  async listCollections(cityCode: string, params?: {
-    languageCode?: string;
-    offset?: number;
-    limit?: number;
-  }) {
+  async listCollections(
+    cityCode: string,
+    params?: {
+      languageCode?: string;
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let queryParams = {
       cityCode,
       languageCode: params?.languageCode ?? this.clientConfig.languageCode,
@@ -156,13 +177,16 @@ export class Client {
 
   // ── Inventory & Pricing ──────────────────────────────────────────
 
-  async getInventory(variantId: string, params?: {
-    startDateTime?: string;
-    endDateTime?: string;
-    offset?: number;
-    limit?: number;
-    currencyCode?: string;
-  }) {
+  async getInventory(
+    variantId: string,
+    params?: {
+      startDateTime?: string;
+      endDateTime?: string;
+      offset?: number;
+      limit?: number;
+      currencyCode?: string;
+    }
+  ) {
     let queryParams: Record<string, string | number | undefined> = {
       variantId,
       startDateTime: params?.startDateTime,
@@ -172,7 +196,9 @@ export class Client {
       currencyCode: params?.currencyCode ?? this.clientConfig.currencyCode
     };
 
-    let response = await this.axios.get('/api/public/v1/inventory/list-by/variant', { params: queryParams });
+    let response = await this.axios.get('/api/public/v1/inventory/list-by/variant', {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -205,10 +231,13 @@ export class Client {
     return response.data;
   }
 
-  async captureBooking(bookingId: string, body?: {
-    status?: string;
-    partnerReferenceId?: string;
-  }) {
+  async captureBooking(
+    bookingId: string,
+    body?: {
+      status?: string;
+      partnerReferenceId?: string;
+    }
+  ) {
     let response = await this.axios.put(`/api/public/v1/booking/${bookingId}`, {
       status: 'PENDING',
       ...body
@@ -221,10 +250,7 @@ export class Client {
     return response.data;
   }
 
-  async listBookings(params?: {
-    offset?: number;
-    limit?: number;
-  }) {
+  async listBookings(params?: { offset?: number; limit?: number }) {
     let response = await this.axios.get('/api/public/v1/booking', { params });
     return response.data;
   }

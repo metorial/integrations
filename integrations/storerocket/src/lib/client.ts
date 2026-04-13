@@ -1,24 +1,22 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://storerocket.io/api/v2',
+  baseURL: 'https://storerocket.io/api/v2'
 });
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   private get headers() {
     return {
       Authorization: `Bearer ${this.config.token}`,
-      Accept: 'application/json',
+      Accept: 'application/json'
     };
   }
 
   async getUserInfo(): Promise<Record<string, any>> {
     let response = await http.get('/user', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -28,8 +26,8 @@ export class Client {
       headers: this.headers,
       params: {
         ...(params?.limit !== undefined ? { limit: params.limit } : {}),
-        ...(params?.offset !== undefined ? { offset: params.offset } : {}),
-      },
+        ...(params?.offset !== undefined ? { offset: params.offset } : {})
+      }
     });
     return response.data;
   }
@@ -50,15 +48,15 @@ export class Client {
         ...(params?.lng !== undefined ? { lng: params.lng } : {}),
         ...(params?.radius !== undefined ? { radius: params.radius } : {}),
         ...(params?.limit !== undefined ? { limit: params.limit } : {}),
-        ...(params?.offset !== undefined ? { offset: params.offset } : {}),
-      },
+        ...(params?.offset !== undefined ? { offset: params.offset } : {})
+      }
     });
     return response.data;
   }
 
   async ping(): Promise<Record<string, any>> {
     let response = await http.get('/ping', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

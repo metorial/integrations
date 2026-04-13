@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    accountName: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      accountName: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key',
@@ -13,35 +15,40 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       accountName: z.string().describe('Your SuperSaaS account name (not your email address)'),
-      apiKey: z.string().describe('API key generated from the Account Info page in your SuperSaaS dashboard'),
+      apiKey: z
+        .string()
+        .describe('API key generated from the Account Info page in your SuperSaaS dashboard')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,
-          accountName: ctx.input.accountName,
-        },
+          accountName: ctx.input.accountName
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; accountName: string }; input: { accountName: string; apiKey: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; accountName: string };
+      input: { accountName: string; apiKey: string };
+    }) => {
       let axiosInstance = createAxios({
-        baseURL: 'https://www.supersaas.com',
+        baseURL: 'https://www.supersaas.com'
       });
 
       await axiosInstance.get('/api/users.json', {
         params: {
           account: ctx.output.accountName,
           api_key: ctx.output.token,
-          limit: 1,
-        },
+          limit: 1
+        }
       });
 
       return {
         profile: {
-          name: ctx.output.accountName,
-        },
+          name: ctx.output.accountName
+        }
       };
-    },
+    }
   });

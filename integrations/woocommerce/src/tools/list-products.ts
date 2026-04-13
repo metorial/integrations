@@ -16,19 +16,27 @@ let productSchema = z.object({
   onSale: z.boolean().describe('Whether the product is on sale'),
   stockStatus: z.string().describe('Stock status (instock, outofstock, onbackorder)'),
   stockQuantity: z.number().nullable().describe('Stock quantity'),
-  categories: z.array(z.object({
-    categoryId: z.number(),
-    name: z.string(),
-    slug: z.string(),
-  })).describe('Product categories'),
-  tags: z.array(z.object({
-    tagId: z.number(),
-    name: z.string(),
-    slug: z.string(),
-  })).describe('Product tags'),
+  categories: z
+    .array(
+      z.object({
+        categoryId: z.number(),
+        name: z.string(),
+        slug: z.string()
+      })
+    )
+    .describe('Product categories'),
+  tags: z
+    .array(
+      z.object({
+        tagId: z.number(),
+        name: z.string(),
+        slug: z.string()
+      })
+    )
+    .describe('Product tags'),
   permalink: z.string().describe('Product URL'),
   dateCreated: z.string().describe('Date created (ISO 8601)'),
-  dateModified: z.string().describe('Date last modified (ISO 8601)'),
+  dateModified: z.string().describe('Date last modified (ISO 8601)')
 });
 
 export let listProducts = SlateTool.create(spec, {
@@ -37,36 +45,56 @@ export let listProducts = SlateTool.create(spec, {
   description: `Search and list products from the WooCommerce store. Filter by status, type, category, tag, SKU, and more. Supports pagination for browsing large catalogs.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    page: z.number().optional().default(1).describe('Page number (default: 1)'),
-    perPage: z.number().optional().default(10).describe('Results per page, max 100 (default: 10)'),
-    search: z.string().optional().describe('Search term to filter products by name'),
-    status: z.enum(['draft', 'pending', 'publish', 'private', 'any']).optional().describe('Filter by product status'),
-    type: z.enum(['simple', 'grouped', 'external', 'variable']).optional().describe('Filter by product type'),
-    sku: z.string().optional().describe('Filter by exact SKU'),
-    category: z.string().optional().describe('Filter by category ID'),
-    tag: z.string().optional().describe('Filter by tag ID'),
-    onSale: z.boolean().optional().describe('Filter to only on-sale products'),
-    minPrice: z.string().optional().describe('Minimum price filter'),
-    maxPrice: z.string().optional().describe('Maximum price filter'),
-    stockStatus: z.enum(['instock', 'outofstock', 'onbackorder']).optional().describe('Filter by stock status'),
-    orderby: z.enum(['date', 'id', 'title', 'slug', 'price', 'popularity', 'rating']).optional().describe('Sort by field'),
-    order: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-  }))
-  .output(z.object({
-    products: z.array(productSchema),
-    page: z.number(),
-    perPage: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      page: z.number().optional().default(1).describe('Page number (default: 1)'),
+      perPage: z
+        .number()
+        .optional()
+        .default(10)
+        .describe('Results per page, max 100 (default: 10)'),
+      search: z.string().optional().describe('Search term to filter products by name'),
+      status: z
+        .enum(['draft', 'pending', 'publish', 'private', 'any'])
+        .optional()
+        .describe('Filter by product status'),
+      type: z
+        .enum(['simple', 'grouped', 'external', 'variable'])
+        .optional()
+        .describe('Filter by product type'),
+      sku: z.string().optional().describe('Filter by exact SKU'),
+      category: z.string().optional().describe('Filter by category ID'),
+      tag: z.string().optional().describe('Filter by tag ID'),
+      onSale: z.boolean().optional().describe('Filter to only on-sale products'),
+      minPrice: z.string().optional().describe('Minimum price filter'),
+      maxPrice: z.string().optional().describe('Maximum price filter'),
+      stockStatus: z
+        .enum(['instock', 'outofstock', 'onbackorder'])
+        .optional()
+        .describe('Filter by stock status'),
+      orderby: z
+        .enum(['date', 'id', 'title', 'slug', 'price', 'popularity', 'rating'])
+        .optional()
+        .describe('Sort by field'),
+      order: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(productSchema),
+      page: z.number(),
+      perPage: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let params: Record<string, any> = {
       page: ctx.input.page,
-      per_page: ctx.input.perPage,
+      per_page: ctx.input.perPage
     };
 
     if (ctx.input.search) params.search = ctx.input.search;
@@ -100,25 +128,25 @@ export let listProducts = SlateTool.create(spec, {
       categories: (p.categories || []).map((c: any) => ({
         categoryId: c.id,
         name: c.name,
-        slug: c.slug,
+        slug: c.slug
       })),
       tags: (p.tags || []).map((t: any) => ({
         tagId: t.id,
         name: t.name,
-        slug: t.slug,
+        slug: t.slug
       })),
       permalink: p.permalink || '',
       dateCreated: p.date_created || '',
-      dateModified: p.date_modified || '',
+      dateModified: p.date_modified || ''
     }));
 
     return {
       output: {
         products: mapped,
         page: ctx.input.page || 1,
-        perPage: ctx.input.perPage || 10,
+        perPage: ctx.input.perPage || 10
       },
-      message: `Found **${mapped.length}** products (page ${ctx.input.page || 1}).`,
+      message: `Found **${mapped.length}** products (page ${ctx.input.page || 1}).`
     };
   })
   .build();

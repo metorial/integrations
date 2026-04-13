@@ -2,31 +2,35 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let batchWebhookTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Batch Processing Webhook',
-    key: 'batch_webhook',
-    description: 'Receives webhook notifications for batch data ingestion status updates and batch job completion events from Roboflow.',
-  }
-)
-  .input(z.object({
-    eventCategory: z.string().describe('Category of the event (e.g., ingest-status, job-completion)'),
-    eventId: z.string().describe('Unique event identifier'),
-    status: z.string().optional().describe('Status of the batch operation'),
-    batchId: z.string().optional().describe('Batch identifier'),
-    successCount: z.number().optional().describe('Number of successfully processed items'),
-    failureCount: z.number().optional().describe('Number of failed items'),
-    rawPayload: z.any().optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    batchId: z.string().optional().describe('Batch identifier'),
-    status: z.string().optional().describe('Status of the batch operation'),
-    successCount: z.number().optional().describe('Number of successfully processed items'),
-    failureCount: z.number().optional().describe('Number of failed items'),
-  }))
+export let batchWebhookTrigger = SlateTrigger.create(spec, {
+  name: 'Batch Processing Webhook',
+  key: 'batch_webhook',
+  description:
+    'Receives webhook notifications for batch data ingestion status updates and batch job completion events from Roboflow.'
+})
+  .input(
+    z.object({
+      eventCategory: z
+        .string()
+        .describe('Category of the event (e.g., ingest-status, job-completion)'),
+      eventId: z.string().describe('Unique event identifier'),
+      status: z.string().optional().describe('Status of the batch operation'),
+      batchId: z.string().optional().describe('Batch identifier'),
+      successCount: z.number().optional().describe('Number of successfully processed items'),
+      failureCount: z.number().optional().describe('Number of failed items'),
+      rawPayload: z.any().optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      batchId: z.string().optional().describe('Batch identifier'),
+      status: z.string().optional().describe('Status of the batch operation'),
+      successCount: z.number().optional().describe('Number of successfully processed items'),
+      failureCount: z.number().optional().describe('Number of failed items')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -42,19 +46,21 @@ export let batchWebhookTrigger = SlateTrigger.create(
       let failureCount = body.failure_count ?? body.failureCount;
 
       return {
-        inputs: [{
-          eventCategory,
-          eventId,
-          status,
-          batchId,
-          successCount,
-          failureCount,
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            eventCategory,
+            eventId,
+            status,
+            batchId,
+            successCount,
+            failureCount,
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `batch.${ctx.input.eventCategory}`,
         id: ctx.input.eventId,
@@ -62,8 +68,9 @@ export let batchWebhookTrigger = SlateTrigger.create(
           batchId: ctx.input.batchId,
           status: ctx.input.status,
           successCount: ctx.input.successCount,
-          failureCount: ctx.input.failureCount,
-        },
+          failureCount: ctx.input.failureCount
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

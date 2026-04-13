@@ -33,15 +33,15 @@ export class Client {
   constructor(config: { token: string; subdomain: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: `https://${config.subdomain}.mvsite.app/api`,
+      baseURL: `https://${config.subdomain}.mvsite.app/api`
     });
   }
 
   async listProducts(): Promise<MemberVaultProduct[]> {
     let response = await this.axios.get('/courses', {
       params: {
-        apikey: this.token,
-      },
+        apikey: this.token
+      }
     });
     return response.data;
   }
@@ -50,7 +50,7 @@ export class Client {
     let queryParams: Record<string, string> = {
       apikey: this.token,
       email: params.email,
-      course_id: params.productId,
+      course_id: params.productId
     };
 
     if (params.firstName) {
@@ -61,7 +61,7 @@ export class Client {
     }
 
     let response = await this.axios.get('/adduser', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -71,8 +71,8 @@ export class Client {
       params: {
         apikey: this.token,
         email: params.email,
-        course_id: params.productId,
-      },
+        course_id: params.productId
+      }
     });
     return response.data;
   }
@@ -81,8 +81,8 @@ export class Client {
     let response = await this.axios.get('/deleteuser', {
       params: {
         apikey: this.token,
-        email: params.email,
-      },
+        email: params.email
+      }
     });
     return response.data;
   }

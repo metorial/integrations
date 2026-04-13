@@ -92,6 +92,7 @@ Webhook setup requires providing a **Callback URL** (HTTPS with valid TLS/SSL) a
 ### Page Events
 
 Subscribe to changes on Facebook Pages. Available fields include:
+
 - **feed:** Notifications for new posts, comments, reactions, and shares on the Page.
 - **messages / messaging_postbacks:** Notifications when users send messages to the Page via Messenger, or interact with message buttons.
 - **leadgen:** Notifications when new leads are generated from Lead Ads associated with the Page.
@@ -103,6 +104,7 @@ Requires the Page to install the app via the `/{page-id}/subscribed_apps` endpoi
 ### User Events
 
 Subscribe to changes on User objects for app users. Available fields include:
+
 - **photos:** Notifications when a user uploads a new photo.
 - **email:** Notifications when a user changes their email address.
 - **friends:** Notifications about changes to a user's friend list (limited to app users).
@@ -115,6 +117,7 @@ Subscribe to changes in app permissions granted by users. Notifies when users gr
 ### Application Events
 
 Subscribe to application-level events such as:
+
 - **order_status:** Notifications for in-app purchases, refunds, or chargebacks.
 - **subscription_started / subscription_renewal_success:** Notifications for subscription lifecycle events.
 

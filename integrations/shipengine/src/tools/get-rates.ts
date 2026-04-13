@@ -54,31 +54,41 @@ let rateOutputSchema = z.object({
   warnings: z.array(z.string()).describe('Warning messages')
 });
 
-export let getRates = SlateTool.create(
-  spec,
-  {
-    name: 'Get Shipping Rates',
-    key: 'get_rates',
-    description: `Compare shipping rates across carriers for a shipment. Provide origin/destination addresses and package details to receive rate quotes from connected carriers. Rates can be filtered by carrier or service. Use the returned rateId to create a label at that rate.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let getRates = SlateTool.create(spec, {
+  name: 'Get Shipping Rates',
+  key: 'get_rates',
+  description: `Compare shipping rates across carriers for a shipment. Provide origin/destination addresses and package details to receive rate quotes from connected carriers. Rates can be filtered by carrier or service. Use the returned rateId to create a label at that rate.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    shipFrom: addressSchema.describe('Origin address'),
-    shipTo: addressSchema.describe('Destination address'),
-    packages: z.array(packageSchema).min(1).describe('Packages in the shipment'),
-    carrierIds: z.array(z.string()).optional().describe('Filter rates to specific carrier IDs'),
-    serviceCodes: z.array(z.string()).optional().describe('Filter rates to specific service codes')
-  }))
-  .output(z.object({
-    shipmentId: z.string().describe('Shipment ID created for this rate request'),
-    rates: z.array(rateOutputSchema),
-    errors: z.array(z.any()).optional().describe('Any errors from carriers that could not provide rates')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      shipFrom: addressSchema.describe('Origin address'),
+      shipTo: addressSchema.describe('Destination address'),
+      packages: z.array(packageSchema).min(1).describe('Packages in the shipment'),
+      carrierIds: z
+        .array(z.string())
+        .optional()
+        .describe('Filter rates to specific carrier IDs'),
+      serviceCodes: z
+        .array(z.string())
+        .optional()
+        .describe('Filter rates to specific service codes')
+    })
+  )
+  .output(
+    z.object({
+      shipmentId: z.string().describe('Shipment ID created for this rate request'),
+      rates: z.array(rateOutputSchema),
+      errors: z
+        .array(z.any())
+        .optional()
+        .describe('Any errors from carriers that could not provide rates')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -88,7 +98,7 @@ export let getRates = SlateTool.create(
       shipment: {
         ship_from: mapAddressToApi(ctx.input.shipFrom),
         ship_to: mapAddressToApi(ctx.input.shipTo),
-        packages: ctx.input.packages.map((p) => ({
+        packages: ctx.input.packages.map(p => ({
           weight: p.weight,
           dimensions: p.dimensions,
           package_code: p.packageCode,
@@ -101,7 +111,7 @@ export let getRates = SlateTool.create(
       }
     });
 
-    let rates = result.rate_response.rates.map((r) => ({
+    let rates = result.rate_response.rates.map(r => ({
       rateId: r.rate_id,
       carrierCode: r.carrier_code,
       carrierName: r.carrier_friendly_name,
@@ -121,7 +131,10 @@ export let getRates = SlateTool.create(
       warnings: r.warning_messages
     }));
 
-    let cheapest = rates.length > 0 ? rates.reduce((a, b) => a.shippingAmount < b.shippingAmount ? a : b) : null;
+    let cheapest =
+      rates.length > 0
+        ? rates.reduce((a, b) => (a.shippingAmount < b.shippingAmount ? a : b))
+        : null;
 
     return {
       output: {
@@ -131,7 +144,8 @@ export let getRates = SlateTool.create(
       },
       message: `Found **${rates.length}** rate(s).${cheapest ? ` Cheapest: **${cheapest.carrierName} ${cheapest.serviceType}** at **${cheapest.currency} ${cheapest.shippingAmount.toFixed(2)}**${cheapest.deliveryDays ? ` (${cheapest.deliveryDays} days)` : ''}.` : ''}`
     };
-  }).build();
+  })
+  .build();
 
 let mapAddressToApi = (addr: any) => ({
   name: addr.name,

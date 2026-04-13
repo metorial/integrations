@@ -3,40 +3,55 @@ import { RaiselyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Profile',
-    key: 'manage_profile',
-    description: `Create, update, or delete a fundraising profile (page) in a campaign. Profiles can be individual fundraising pages or team pages. Supports setting goals, descriptions, and custom fields. Can also add or remove team members.`,
-    instructions: [
-      'To create a profile, provide campaignUuid and the profile data. A userUuid is required for individual profiles.',
-      'To update a profile, provide profileUuid and the fields to update.',
-      'To delete a profile, set action to "delete" and provide profileUuid.',
-      'To add/remove team members, set action to "add_member" or "remove_member".',
-    ],
-  },
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'add_member', 'remove_member']).describe('Action to perform on the profile'),
-    campaignUuid: z.string().optional().describe('Campaign UUID (required for create)'),
-    profileUuid: z.string().optional().describe('Profile UUID (required for update, delete, add_member, remove_member)'),
-    userUuid: z.string().optional().describe('User UUID for the profile owner or member to add/remove'),
-    name: z.string().optional().describe('Profile display name'),
-    description: z.string().optional().describe('Profile description/story'),
-    goal: z.number().optional().describe('Fundraising goal amount in cents'),
-    currency: z.string().optional().describe('Currency code (e.g. "AUD", "USD")'),
-    type: z.enum(['individual', 'team', 'group']).optional().describe('Profile type'),
-    parentUuid: z.string().optional().describe('Parent profile UUID (for joining a team)'),
-    photoUrl: z.string().optional().describe('URL for the profile photo'),
-    isActive: z.boolean().optional().describe('Whether the profile is active'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values (public and private)'),
-  }))
-  .output(z.object({
-    profile: z.record(z.string(), z.any()).optional().describe('The created/updated profile object'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageProfile = SlateTool.create(spec, {
+  name: 'Manage Profile',
+  key: 'manage_profile',
+  description: `Create, update, or delete a fundraising profile (page) in a campaign. Profiles can be individual fundraising pages or team pages. Supports setting goals, descriptions, and custom fields. Can also add or remove team members.`,
+  instructions: [
+    'To create a profile, provide campaignUuid and the profile data. A userUuid is required for individual profiles.',
+    'To update a profile, provide profileUuid and the fields to update.',
+    'To delete a profile, set action to "delete" and provide profileUuid.',
+    'To add/remove team members, set action to "add_member" or "remove_member".'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'add_member', 'remove_member'])
+        .describe('Action to perform on the profile'),
+      campaignUuid: z.string().optional().describe('Campaign UUID (required for create)'),
+      profileUuid: z
+        .string()
+        .optional()
+        .describe('Profile UUID (required for update, delete, add_member, remove_member)'),
+      userUuid: z
+        .string()
+        .optional()
+        .describe('User UUID for the profile owner or member to add/remove'),
+      name: z.string().optional().describe('Profile display name'),
+      description: z.string().optional().describe('Profile description/story'),
+      goal: z.number().optional().describe('Fundraising goal amount in cents'),
+      currency: z.string().optional().describe('Currency code (e.g. "AUD", "USD")'),
+      type: z.enum(['individual', 'team', 'group']).optional().describe('Profile type'),
+      parentUuid: z.string().optional().describe('Parent profile UUID (for joining a team)'),
+      photoUrl: z.string().optional().describe('URL for the profile photo'),
+      isActive: z.boolean().optional().describe('Whether the profile is active'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values (public and private)')
+    })
+  )
+  .output(
+    z.object({
+      profile: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('The created/updated profile object'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RaiselyClient({ token: ctx.auth.token });
     let { action } = ctx.input;
 
@@ -62,7 +77,7 @@ export let manageProfile = SlateTool.create(
       let profile = result.data || result;
       return {
         output: { profile, success: true },
-        message: `Created profile **${profile.name || 'New Profile'}**.`,
+        message: `Created profile **${profile.name || 'New Profile'}**.`
       };
     }
 
@@ -86,7 +101,7 @@ export let manageProfile = SlateTool.create(
       let profile = result.data || result;
       return {
         output: { profile, success: true },
-        message: `Updated profile **${profile.name || ctx.input.profileUuid}**.`,
+        message: `Updated profile **${profile.name || ctx.input.profileUuid}**.`
       };
     }
 
@@ -97,7 +112,7 @@ export let manageProfile = SlateTool.create(
       await client.deleteProfile(ctx.input.profileUuid);
       return {
         output: { success: true },
-        message: `Deleted profile **${ctx.input.profileUuid}**.`,
+        message: `Deleted profile **${ctx.input.profileUuid}**.`
       };
     }
 
@@ -109,7 +124,7 @@ export let manageProfile = SlateTool.create(
       let profile = result.data || result;
       return {
         output: { profile, success: true },
-        message: `Added member **${ctx.input.userUuid}** to profile **${ctx.input.profileUuid}**.`,
+        message: `Added member **${ctx.input.userUuid}** to profile **${ctx.input.profileUuid}**.`
       };
     }
 
@@ -120,9 +135,10 @@ export let manageProfile = SlateTool.create(
       await client.removeProfileMember(ctx.input.profileUuid, ctx.input.userUuid);
       return {
         output: { success: true },
-        message: `Removed member **${ctx.input.userUuid}** from profile **${ctx.input.profileUuid}**.`,
+        message: `Removed member **${ctx.input.userUuid}** from profile **${ctx.input.profileUuid}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

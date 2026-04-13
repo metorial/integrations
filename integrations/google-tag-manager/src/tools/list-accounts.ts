@@ -15,36 +15,53 @@ let containerSchema = z.object({
   containerId: z.string().optional().describe('GTM container ID'),
   name: z.string().optional().describe('Container name'),
   publicId: z.string().optional().describe('Container public ID (e.g., GTM-XXXX)'),
-  usageContext: z.array(z.string()).optional().describe('Container usage contexts (web, android, ios, amp, server)'),
+  usageContext: z
+    .array(z.string())
+    .optional()
+    .describe('Container usage contexts (web, android, ios, amp, server)'),
   domainName: z.array(z.string()).optional().describe('Associated domain names'),
   notes: z.string().optional().describe('Container notes'),
   fingerprint: z.string().optional().describe('Container fingerprint'),
   tagManagerUrl: z.string().optional().describe('URL to the GTM UI for this container')
 });
 
-export let listAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'List Accounts & Containers',
-    key: 'list_accounts',
-    description: `Lists GTM accounts you have access to, optionally including their containers. Use this to discover account and container IDs needed for other operations.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listAccounts = SlateTool.create(spec, {
+  name: 'List Accounts & Containers',
+  key: 'list_accounts',
+  description: `Lists GTM accounts you have access to, optionally including their containers. Use this to discover account and container IDs needed for other operations.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeContainers: z.boolean().optional().describe('Whether to also list containers for each account (default: false)'),
-    accountId: z.string().optional().describe('If provided, only list containers for this specific account')
-  }))
-  .output(z.object({
-    accounts: z.array(z.object({
-      account: accountSchema,
-      containers: z.array(containerSchema).optional().describe('Containers under this account (only if includeContainers is true)')
-    })).describe('List of GTM accounts')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeContainers: z
+        .boolean()
+        .optional()
+        .describe('Whether to also list containers for each account (default: false)'),
+      accountId: z
+        .string()
+        .optional()
+        .describe('If provided, only list containers for this specific account')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z
+        .array(
+          z.object({
+            account: accountSchema,
+            containers: z
+              .array(containerSchema)
+              .optional()
+              .describe('Containers under this account (only if includeContainers is true)')
+          })
+        )
+        .describe('List of GTM accounts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GtmClient(ctx.auth.token);
 
     let accounts: Array<{

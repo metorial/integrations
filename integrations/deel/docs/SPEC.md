@@ -20,6 +20,7 @@ There are two types of API tokens:
 Tokens are generated from the Developer Center in the Deel dashboard (More → Developer → Access Tokens tab). When creating a token, you select scopes (permissions) following the pattern `{resource}:read` or `{resource}:write` (e.g., `contracts:read`, `timesheets:write`).
 
 Usage: Include the token as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer YOUR-TOKEN-HERE
 ```
@@ -48,45 +49,59 @@ Scopes follow the same `{resource}:read` / `{resource}:write` pattern as API tok
 ## Features
 
 ### Contract Management
+
 Create, retrieve, amend, duplicate, sign, and terminate contracts. Supports multiple contract types: fixed rate, pay-as-you-go (fixed and task-based), and milestone-based contracts. EOR contract creation is also available. Contractors can be invited to sign contracts. Custom fields can be associated with contracts.
 
 ### Employer of Record (EOR)
+
 Hire employees abroad through Deel's EOR service. Includes creating and signing EOR contracts, managing employee onboarding, handling EOR amendments, and accessing country-specific guides and cost calculators.
 
 ### Global Payroll
+
 Run payroll in 120+ countries. Create and manage global payroll contracts. Includes time tracking capabilities for payroll employees.
 
 ### People & Worker Management
+
 Manage workers across the organization. Access worker profiles, documents, and download worker documents. Includes candidate management for onboarding pipelines.
 
 ### Timesheets & Time Tracking
+
 Create and manage timesheets for contractors. Submit timesheets for review (approval or denial).
 
 ### Time Off Management
+
 Create, update, and manage time off requests. Requests go through a review workflow (approval or denial).
 
 ### Payments & Invoicing
+
 Automate salary and invoice processing. Manage payment statements, off-cycle payments, and invoice adjustments. Adjustment categories can be configured per organization.
 
 ### Accounting
+
 Access billing invoices, download links, and accounting-related data for financial integration purposes.
 
 ### Immigration
+
 Global visa support through the immigration API, allowing tracking of immigration cases and process statuses.
 
 ### Deel IT (Device & App Management)
+
 Subscribe to webhooks for events like asset created, approved, or shipped to trigger downstream actions. Manage IT orders, track asset locations, and handle device lifecycle.
 
 ### Deel Engage (Learning)
+
 Manage learning journey assignments and reminders for employee engagement and training.
 
 ### Organization Management
+
 Manage organizations, legal entities, groups, and managers. Includes support for child organizations (white-label use cases).
 
 ### SCIM User Provisioning
+
 Deel SCIM API uses Organization tokens to authenticate requests. Provision and sync users between Deel and identity providers. The SCIM API doesn't currently support user groups.
 
 ### Background Checks & Compliance
+
 KYC and AML screening. Background check results are available through the platform.
 
 ## Events
@@ -96,52 +111,69 @@ Deel Webhooks deliver real-time notifications for key platform events, allowing 
 When creating a webhook, you specify an endpoint URL, select the events to subscribe to, and choose an API version.
 
 ### Contract Events
+
 Notifications for contract lifecycle changes: contract created, amended, duplicated, status updated, terminated, and team member invited to sign.
 
 ### Deel HR / Worker Events
+
 Notifications when workers are created, updated, or deleted. Includes specific events for direct employees, contractors, and EOR employees being created.
 
 ### Deel HR SCIM Events
+
 Notification when a user is created in Deel HR (for SCIM provisioning).
 
 ### Deel Engage Events
+
 Notifications for learning journey assignment creation and reminders.
 
 ### Deel IT Events
+
 Notifications when an IT order is created or when an asset's location is updated.
 
 ### EOR Events
+
 Notifications for EOR quote creation and EOR amendment status updates.
 
 ### Global Payroll Events
+
 Notification when a global payroll employee termination is confirmed.
 
 ### Immigration Events
+
 Notification when the status of an immigration case or process changes.
 
 ### Invoice Adjustment Events
+
 Notifications when invoice adjustments are created, reviewed (approved/denied), or pending for approval.
 
 ### OAuth2 Events
+
 Notification when an OAuth2 token is revoked.
 
 ### Onboarding Events
+
 Notifications for onboarding checklist and status updates.
 
 ### Payment Events
+
 Notifications when a payment statement is initiated or marked as paid.
 
 ### Payslip Events
+
 Notifications when EOR or global payroll payslips are available.
 
 ### Profile Events
+
 Notification when a profile's KYC status changes.
 
 ### Timesheet Events
+
 Notifications when timesheets are created or reviewed (approved/denied).
 
 ### Time Off Events
+
 Notifications for time off requests being created, reviewed (approved/denied), updated, or deleted/cancelled.
 
 ### Verification Events
+
 Notification when a background check is completed and results are available.

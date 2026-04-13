@@ -120,8 +120,8 @@ export class TypefullyClient {
       baseURL: 'https://api.typefully.com/v2',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -141,7 +141,7 @@ export class TypefullyClient {
 
   async createDraft(socialSetId: string, params: CreateDraftParams): Promise<Draft> {
     let body: Record<string, unknown> = {
-      platforms: params.platforms,
+      platforms: params.platforms
     };
 
     if (params.publishAt !== undefined) {
@@ -175,12 +175,16 @@ export class TypefullyClient {
     if (params.offset !== undefined) queryParams.offset = params.offset;
 
     let response = await this.http.get(`/social-sets/${params.socialSetId}/drafts`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async updateDraft(socialSetId: string, draftId: string, params: Partial<CreateDraftParams>): Promise<Draft> {
+  async updateDraft(
+    socialSetId: string,
+    draftId: string,
+    params: Partial<CreateDraftParams>
+  ): Promise<Draft> {
     let body: Record<string, unknown> = {};
 
     if (params.platforms !== undefined) {
@@ -199,7 +203,10 @@ export class TypefullyClient {
       body.draft_title = params.draftTitle;
     }
 
-    let response = await this.http.patch(`/social-sets/${socialSetId}/drafts/${draftId}`, body);
+    let response = await this.http.patch(
+      `/social-sets/${socialSetId}/drafts/${draftId}`,
+      body
+    );
     return response.data;
   }
 
@@ -221,9 +228,12 @@ export class TypefullyClient {
 
   // Media
 
-  async initiateMediaUpload(socialSetId: string, fileName: string): Promise<MediaUploadResponse> {
+  async initiateMediaUpload(
+    socialSetId: string,
+    fileName: string
+  ): Promise<MediaUploadResponse> {
     let response = await this.http.post(`/social-sets/${socialSetId}/media/upload`, {
-      file_name: fileName,
+      file_name: fileName
     });
     return response.data;
   }

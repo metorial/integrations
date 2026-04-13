@@ -10,8 +10,8 @@ export class Client {
       baseURL: 'https://api.buildkite.com/v2',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,8 +28,8 @@ export class Client {
     let response = await this.http.get(`/organizations/${this.org}/pipelines`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -65,36 +65,45 @@ export class Client {
       team_uuids: data.teamUuids,
       cluster_id: data.clusterUuid,
       tags: data.tags,
-      visibility: data.visibility,
+      visibility: data.visibility
     });
     return response.data;
   }
 
-  async updatePipeline(pipelineSlug: string, data: {
-    name?: string;
-    repository?: string;
-    configuration?: string;
-    description?: string;
-    defaultBranch?: string;
-    branchConfiguration?: string;
-    skipQueuedBranchBuilds?: boolean;
-    cancelRunningBranchBuilds?: boolean;
-    tags?: string[];
-    visibility?: string;
-  }) {
+  async updatePipeline(
+    pipelineSlug: string,
+    data: {
+      name?: string;
+      repository?: string;
+      configuration?: string;
+      description?: string;
+      defaultBranch?: string;
+      branchConfiguration?: string;
+      skipQueuedBranchBuilds?: boolean;
+      cancelRunningBranchBuilds?: boolean;
+      tags?: string[];
+      visibility?: string;
+    }
+  ) {
     let body: Record<string, unknown> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.repository !== undefined) body.repository = data.repository;
     if (data.configuration !== undefined) body.configuration = data.configuration;
     if (data.description !== undefined) body.description = data.description;
     if (data.defaultBranch !== undefined) body.default_branch = data.defaultBranch;
-    if (data.branchConfiguration !== undefined) body.branch_configuration = data.branchConfiguration;
-    if (data.skipQueuedBranchBuilds !== undefined) body.skip_queued_branch_builds = data.skipQueuedBranchBuilds;
-    if (data.cancelRunningBranchBuilds !== undefined) body.cancel_running_branch_builds = data.cancelRunningBranchBuilds;
+    if (data.branchConfiguration !== undefined)
+      body.branch_configuration = data.branchConfiguration;
+    if (data.skipQueuedBranchBuilds !== undefined)
+      body.skip_queued_branch_builds = data.skipQueuedBranchBuilds;
+    if (data.cancelRunningBranchBuilds !== undefined)
+      body.cancel_running_branch_builds = data.cancelRunningBranchBuilds;
     if (data.tags !== undefined) body.tags = data.tags;
     if (data.visibility !== undefined) body.visibility = data.visibility;
 
-    let response = await this.http.patch(`/organizations/${this.org}/pipelines/${pipelineSlug}`, body);
+    let response = await this.http.patch(
+      `/organizations/${this.org}/pipelines/${pipelineSlug}`,
+      body
+    );
     return response.data;
   }
 
@@ -103,12 +112,16 @@ export class Client {
   }
 
   async archivePipeline(pipelineSlug: string) {
-    let response = await this.http.post(`/organizations/${this.org}/pipelines/${pipelineSlug}/archive`);
+    let response = await this.http.post(
+      `/organizations/${this.org}/pipelines/${pipelineSlug}/archive`
+    );
     return response.data;
   }
 
   async unarchivePipeline(pipelineSlug: string) {
-    let response = await this.http.post(`/organizations/${this.org}/pipelines/${pipelineSlug}/unarchive`);
+    let response = await this.http.post(
+      `/organizations/${this.org}/pipelines/${pipelineSlug}/unarchive`
+    );
     return response.data;
   }
 
@@ -136,12 +149,12 @@ export class Client {
         branch: params?.branch,
         commit: params?.commit,
         creator: params?.creator,
-        'created_from': params?.createdFrom,
-        'created_to': params?.createdTo,
-        'finished_from': params?.finishedFrom,
+        created_from: params?.createdFrom,
+        created_to: params?.createdTo,
+        finished_from: params?.finishedFrom,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -153,15 +166,18 @@ export class Client {
     return response.data;
   }
 
-  async createBuild(pipelineSlug: string, data: {
-    commit: string;
-    branch: string;
-    message?: string;
-    env?: Record<string, string>;
-    metaData?: Record<string, string>;
-    ignorePipelineBranchFilters?: boolean;
-    cleanCheckout?: boolean;
-  }) {
+  async createBuild(
+    pipelineSlug: string,
+    data: {
+      commit: string;
+      branch: string;
+      message?: string;
+      env?: Record<string, string>;
+      metaData?: Record<string, string>;
+      ignorePipelineBranchFilters?: boolean;
+      cleanCheckout?: boolean;
+    }
+  ) {
     let response = await this.http.post(
       `/organizations/${this.org}/pipelines/${pipelineSlug}/builds`,
       {
@@ -171,7 +187,7 @@ export class Client {
         env: data.env,
         meta_data: data.metaData,
         ignore_pipeline_branch_filters: data.ignorePipelineBranchFilters,
-        clean_checkout: data.cleanCheckout,
+        clean_checkout: data.cleanCheckout
       }
     );
     return response.data;
@@ -206,12 +222,18 @@ export class Client {
     return response.data;
   }
 
-  async unblockJob(pipelineSlug: string, buildNumber: number, jobId: string, fields?: Record<string, string>, unblockedBy?: string) {
+  async unblockJob(
+    pipelineSlug: string,
+    buildNumber: number,
+    jobId: string,
+    fields?: Record<string, string>,
+    unblockedBy?: string
+  ) {
     let response = await this.http.put(
       `/organizations/${this.org}/pipelines/${pipelineSlug}/builds/${buildNumber}/jobs/${jobId}/unblock`,
       {
         fields,
-        unblocker: unblockedBy,
+        unblocker: unblockedBy
       }
     );
     return response.data;
@@ -238,8 +260,8 @@ export class Client {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        name: params?.name,
-      },
+        name: params?.name
+      }
     });
     return response.data;
   }
@@ -251,21 +273,25 @@ export class Client {
 
   async stopAgent(agentId: string, force?: boolean) {
     let response = await this.http.put(`/organizations/${this.org}/agents/${agentId}/stop`, {
-      force: force ?? false,
+      force: force ?? false
     });
     return response.data;
   }
 
   // ── Artifacts ──
 
-  async listArtifacts(pipelineSlug: string, buildNumber: number, params?: { page?: number; perPage?: number }) {
+  async listArtifacts(
+    pipelineSlug: string,
+    buildNumber: number,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.http.get(
       `/organizations/${this.org}/pipelines/${pipelineSlug}/builds/${buildNumber}/artifacts`,
       {
         params: {
           page: params?.page,
-          per_page: params?.perPage,
-        },
+          per_page: params?.perPage
+        }
       }
     );
     return response.data;
@@ -287,32 +313,40 @@ export class Client {
 
   // ── Annotations ──
 
-  async listAnnotations(pipelineSlug: string, buildNumber: number, params?: { page?: number; perPage?: number }) {
+  async listAnnotations(
+    pipelineSlug: string,
+    buildNumber: number,
+    params?: { page?: number; perPage?: number }
+  ) {
     let response = await this.http.get(
       `/organizations/${this.org}/pipelines/${pipelineSlug}/builds/${buildNumber}/annotations`,
       {
         params: {
           page: params?.page,
-          per_page: params?.perPage,
-        },
+          per_page: params?.perPage
+        }
       }
     );
     return response.data;
   }
 
-  async createAnnotation(pipelineSlug: string, buildNumber: number, data: {
-    body: string;
-    context?: string;
-    style?: string;
-    append?: boolean;
-  }) {
+  async createAnnotation(
+    pipelineSlug: string,
+    buildNumber: number,
+    data: {
+      body: string;
+      context?: string;
+      style?: string;
+      append?: boolean;
+    }
+  ) {
     let response = await this.http.post(
       `/organizations/${this.org}/pipelines/${pipelineSlug}/builds/${buildNumber}/annotations`,
       {
         body: data.body,
         context: data.context,
         style: data.style,
-        append: data.append,
+        append: data.append
       }
     );
     return response.data;
@@ -324,8 +358,8 @@ export class Client {
     let response = await this.http.get(`/organizations/${this.org}/teams`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -336,8 +370,8 @@ export class Client {
     let response = await this.http.get(`/organizations/${this.org}/clusters`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -347,13 +381,24 @@ export class Client {
     return response.data;
   }
 
-  async createCluster(data: { name: string; description?: string; emoji?: string; color?: string }) {
+  async createCluster(data: {
+    name: string;
+    description?: string;
+    emoji?: string;
+    color?: string;
+  }) {
     let response = await this.http.post(`/organizations/${this.org}/clusters`, data);
     return response.data;
   }
 
-  async updateCluster(clusterId: string, data: { name?: string; description?: string; emoji?: string; color?: string }) {
-    let response = await this.http.patch(`/organizations/${this.org}/clusters/${clusterId}`, data);
+  async updateCluster(
+    clusterId: string,
+    data: { name?: string; description?: string; emoji?: string; color?: string }
+  ) {
+    let response = await this.http.patch(
+      `/organizations/${this.org}/clusters/${clusterId}`,
+      data
+    );
     return response.data;
   }
 
@@ -364,17 +409,23 @@ export class Client {
   // ── Cluster Queues ──
 
   async listClusterQueues(clusterId: string, params?: { page?: number; perPage?: number }) {
-    let response = await this.http.get(`/organizations/${this.org}/clusters/${clusterId}/queues`, {
-      params: {
-        page: params?.page,
-        per_page: params?.perPage,
-      },
-    });
+    let response = await this.http.get(
+      `/organizations/${this.org}/clusters/${clusterId}/queues`,
+      {
+        params: {
+          page: params?.page,
+          per_page: params?.perPage
+        }
+      }
+    );
     return response.data;
   }
 
   async createClusterQueue(clusterId: string, data: { key: string; description?: string }) {
-    let response = await this.http.post(`/organizations/${this.org}/clusters/${clusterId}/queues`, data);
+    let response = await this.http.post(
+      `/organizations/${this.org}/clusters/${clusterId}/queues`,
+      data
+    );
     return response.data;
   }
 
@@ -384,14 +435,16 @@ export class Client {
     let response = await this.http.get(`/organizations/${this.org}/analytics/suites`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
 
   async getTestSuite(testSuiteSlug: string) {
-    let response = await this.http.get(`/organizations/${this.org}/analytics/suites/${testSuiteSlug}`);
+    let response = await this.http.get(
+      `/organizations/${this.org}/analytics/suites/${testSuiteSlug}`
+    );
     return response.data;
   }
 
@@ -401,14 +454,16 @@ export class Client {
     let response = await this.http.get(`/organizations/${this.org}/packages/registries`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
 
   async getRegistry(registrySlug: string) {
-    let response = await this.http.get(`/organizations/${this.org}/packages/registries/${registrySlug}`);
+    let response = await this.http.get(
+      `/organizations/${this.org}/packages/registries/${registrySlug}`
+    );
     return response.data;
   }
 }

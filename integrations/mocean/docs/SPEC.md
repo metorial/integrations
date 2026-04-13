@@ -15,9 +15,11 @@ Mocean supports two authentication methods:
 An API Token is a secure access credential generated from the Dashboard and included in every request. It's a simple and secure way to integrate with Mocean's REST APIs.
 
 To obtain an API Token:
+
 - Log in to the Dashboard. Go to **API Account → Generate Token**. Copy and store the token securely (it will only be shown once).
 
 The token is passed as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer API_TOKEN_HERE
 ```

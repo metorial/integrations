@@ -13,12 +13,9 @@ import {
   manageListEntries,
   listLists,
   manageActivities,
-  listWorkspaceMembers,
+  listWorkspaceMembers
 } from './tools';
-import {
-  incomingWhatsAppMessage,
-  incomingRcsMessage,
-} from './triggers';
+import { incomingWhatsAppMessage, incomingRcsMessage } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     manageListEntries,
     listLists,
     manageActivities,
-    listWorkspaceMembers,
+    listWorkspaceMembers
   ],
-  triggers: [
-    incomingWhatsAppMessage,
-    incomingRcsMessage,
-  ],
+  triggers: [incomingWhatsAppMessage, incomingRcsMessage]
 });

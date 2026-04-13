@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createObject,
@@ -15,11 +14,7 @@ import {
   manageCounter,
   manageCache
 } from './tools';
-import {
-  dataChanges,
-  newUser,
-  inboundWebhook,
-} from './triggers';
+import { dataChanges, newUser, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,9 +32,5 @@ export let provider = Slate.create({
     manageCounter,
     manageCache
   ],
-  triggers: [
-    inboundWebhook,
-    dataChanges,
-    newUser
-  ]
+  triggers: [inboundWebhook, dataChanges, newUser]
 });

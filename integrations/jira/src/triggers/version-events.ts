@@ -10,64 +10,63 @@ let webhookEvents = [
   'jira:version_unreleased',
   'jira:version_moved',
   'jira:version_deleted',
-  'jira:version_merged',
+  'jira:version_merged'
 ] as const;
 
-export let versionEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Version Events',
-    key: 'version_events',
-    description: 'Triggers when a project version (release) is created, updated, released, unreleased, moved, deleted, or merged.',
-  }
-)
-  .input(z.object({
-    webhookEvent: z.string().describe('The webhook event name.'),
-    timestamp: z.number().optional().describe('Event timestamp.'),
-    versionId: z.string().describe('The version ID.'),
-    versionName: z.string().describe('The version name.'),
-    projectId: z.string().optional().describe('The project ID.'),
-    released: z.boolean().optional().describe('Whether the version is released.'),
-    archived: z.boolean().optional().describe('Whether the version is archived.'),
-    releaseDate: z.string().optional().describe('The release date.'),
-    description: z.string().optional().describe('The version description.'),
-  }))
-  .output(z.object({
-    versionId: z.string().describe('The version ID.'),
-    versionName: z.string().describe('The version name.'),
-    projectId: z.string().optional().describe('The project ID.'),
-    released: z.boolean().optional().describe('Whether the version is released.'),
-    archived: z.boolean().optional().describe('Whether the version is archived.'),
-    releaseDate: z.string().optional().describe('The release date.'),
-    description: z.string().optional().describe('The version description.'),
-  }))
+export let versionEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Version Events',
+  key: 'version_events',
+  description:
+    'Triggers when a project version (release) is created, updated, released, unreleased, moved, deleted, or merged.'
+})
+  .input(
+    z.object({
+      webhookEvent: z.string().describe('The webhook event name.'),
+      timestamp: z.number().optional().describe('Event timestamp.'),
+      versionId: z.string().describe('The version ID.'),
+      versionName: z.string().describe('The version name.'),
+      projectId: z.string().optional().describe('The project ID.'),
+      released: z.boolean().optional().describe('Whether the version is released.'),
+      archived: z.boolean().optional().describe('Whether the version is archived.'),
+      releaseDate: z.string().optional().describe('The release date.'),
+      description: z.string().optional().describe('The version description.')
+    })
+  )
+  .output(
+    z.object({
+      versionId: z.string().describe('The version ID.'),
+      versionName: z.string().describe('The version name.'),
+      projectId: z.string().optional().describe('The project ID.'),
+      released: z.boolean().optional().describe('Whether the version is released.'),
+      archived: z.boolean().optional().describe('Whether the version is archived.'),
+      releaseDate: z.string().optional().describe('The release date.'),
+      description: z.string().optional().describe('The version description.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new JiraClient({
         token: ctx.auth.token,
         cloudId: ctx.config.cloudId,
-        refreshToken: ctx.auth.refreshToken,
+        refreshToken: ctx.auth.refreshToken
       });
 
-      let result = await client.registerWebhook(
-        ctx.input.webhookBaseUrl,
-        [...webhookEvents],
-      );
+      let result = await client.registerWebhook(ctx.input.webhookBaseUrl, [...webhookEvents]);
 
       let webhookIds = (result.webhookRegistrationResult ?? [])
         .filter((r: any) => r.createdWebhookId)
         .map((r: any) => r.createdWebhookId);
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new JiraClient({
         token: ctx.auth.token,
         cloudId: ctx.config.cloudId,
-        refreshToken: ctx.auth.refreshToken,
+        refreshToken: ctx.auth.refreshToken
       });
 
       let webhookIds = ctx.input.registrationDetails?.webhookIds ?? [];
@@ -76,27 +75,29 @@ export let versionEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let version = data.version ?? {};
 
       return {
-        inputs: [{
-          webhookEvent: data.webhookEvent ?? '',
-          timestamp: data.timestamp,
-          versionId: String(version.id ?? ''),
-          versionName: version.name ?? '',
-          projectId: version.projectId != null ? String(version.projectId) : undefined,
-          released: version.released,
-          archived: version.archived,
-          releaseDate: version.releaseDate,
-          description: version.description,
-        }],
+        inputs: [
+          {
+            webhookEvent: data.webhookEvent ?? '',
+            timestamp: data.timestamp,
+            versionId: String(version.id ?? ''),
+            versionName: version.name ?? '',
+            projectId: version.projectId != null ? String(version.projectId) : undefined,
+            released: version.released,
+            archived: version.archived,
+            releaseDate: version.releaseDate,
+            description: version.description
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventName = ctx.input.webhookEvent;
       let typeMap: Record<string, string> = {
         'jira:version_created': 'version.created',
@@ -105,7 +106,7 @@ export let versionEventsTrigger = SlateTrigger.create(
         'jira:version_unreleased': 'version.unreleased',
         'jira:version_moved': 'version.moved',
         'jira:version_deleted': 'version.deleted',
-        'jira:version_merged': 'version.merged',
+        'jira:version_merged': 'version.merged'
       };
       let eventType = typeMap[eventName] ?? 'version.updated';
 
@@ -119,9 +120,9 @@ export let versionEventsTrigger = SlateTrigger.create(
           released: ctx.input.released,
           archived: ctx.input.archived,
           releaseDate: ctx.input.releaseDate,
-          description: ctx.input.description,
-        },
+          description: ctx.input.description
+        }
       };
-    },
+    }
   })
   .build();

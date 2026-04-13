@@ -11,8 +11,8 @@ export class MoneybirdClient {
       baseURL: `https://moneybird.com/api/v2/${config.administrationId}`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -29,8 +29,8 @@ export class MoneybirdClient {
         page: params?.page,
         per_page: params?.perPage,
         query: params?.query,
-        include_archived: params?.includeArchived,
-      },
+        include_archived: params?.includeArchived
+      }
     });
     return response.data;
   }
@@ -66,7 +66,7 @@ export class MoneybirdClient {
   async filterContacts(filters: Record<string, string>) {
     let filterParts = Object.entries(filters).map(([k, v]) => `${k}:${v}`);
     let response = await this.http.get('/contacts/filter.json', {
-      params: { filter: filterParts.join(',') },
+      params: { filter: filterParts.join(',') }
     });
     return response.data;
   }
@@ -88,8 +88,8 @@ export class MoneybirdClient {
         state: params?.state,
         period: params?.period,
         contact_id: params?.contactId,
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -110,7 +110,9 @@ export class MoneybirdClient {
   }
 
   async updateSalesInvoice(invoiceId: string, invoice: Record<string, any>) {
-    let response = await this.http.patch(`/sales_invoices/${invoiceId}.json`, { sales_invoice: invoice });
+    let response = await this.http.patch(`/sales_invoices/${invoiceId}.json`, {
+      sales_invoice: invoice
+    });
     return response.data;
   }
 
@@ -119,21 +121,29 @@ export class MoneybirdClient {
   }
 
   async sendSalesInvoice(invoiceId: string, sendOptions?: Record<string, any>) {
-    let response = await this.http.patch(`/sales_invoices/${invoiceId}/sends_an_invoice.json`, {
-      sales_invoice_sending: sendOptions || {},
-    });
+    let response = await this.http.patch(
+      `/sales_invoices/${invoiceId}/sends_an_invoice.json`,
+      {
+        sales_invoice_sending: sendOptions || {}
+      }
+    );
     return response.data;
   }
 
   async registerPayment(invoiceId: string, payment: Record<string, any>) {
-    let response = await this.http.patch(`/sales_invoices/${invoiceId}/register_a_payment.json`, {
-      payment,
-    });
+    let response = await this.http.patch(
+      `/sales_invoices/${invoiceId}/register_a_payment.json`,
+      {
+        payment
+      }
+    );
     return response.data;
   }
 
   async createCreditInvoice(invoiceId: string) {
-    let response = await this.http.patch(`/sales_invoices/${invoiceId}/duplicate_creditinvoice.json`);
+    let response = await this.http.patch(
+      `/sales_invoices/${invoiceId}/duplicate_creditinvoice.json`
+    );
     return response.data;
   }
 
@@ -158,8 +168,8 @@ export class MoneybirdClient {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -170,12 +180,17 @@ export class MoneybirdClient {
   }
 
   async createRecurringSalesInvoice(invoice: Record<string, any>) {
-    let response = await this.http.post('/recurring_sales_invoices.json', { recurring_sales_invoice: invoice });
+    let response = await this.http.post('/recurring_sales_invoices.json', {
+      recurring_sales_invoice: invoice
+    });
     return response.data;
   }
 
   async updateRecurringSalesInvoice(recurringInvoiceId: string, invoice: Record<string, any>) {
-    let response = await this.http.patch(`/recurring_sales_invoices/${recurringInvoiceId}.json`, { recurring_sales_invoice: invoice });
+    let response = await this.http.patch(
+      `/recurring_sales_invoices/${recurringInvoiceId}.json`,
+      { recurring_sales_invoice: invoice }
+    );
     return response.data;
   }
 
@@ -198,8 +213,8 @@ export class MoneybirdClient {
         per_page: params?.perPage,
         state: params?.state,
         period: params?.period,
-        contact_id: params?.contactId,
-      },
+        contact_id: params?.contactId
+      }
     });
     return response.data;
   }
@@ -225,14 +240,14 @@ export class MoneybirdClient {
 
   async sendEstimate(estimateId: string, sendOptions?: Record<string, any>) {
     let response = await this.http.patch(`/estimates/${estimateId}/send_estimate.json`, {
-      estimate_sending: sendOptions || {},
+      estimate_sending: sendOptions || {}
     });
     return response.data;
   }
 
   async changeEstimateState(estimateId: string, state: string) {
     let response = await this.http.patch(`/estimates/${estimateId}/change_state.json`, {
-      state,
+      state
     });
     return response.data;
   }
@@ -255,8 +270,8 @@ export class MoneybirdClient {
         page: params?.page,
         per_page: params?.perPage,
         query: params?.query,
-        currency: params?.currency,
-      },
+        currency: params?.currency
+      }
     });
     return response.data;
   }
@@ -298,12 +313,16 @@ export class MoneybirdClient {
   }
 
   async createLedgerAccount(ledgerAccount: Record<string, any>) {
-    let response = await this.http.post('/ledger_accounts.json', { ledger_account: ledgerAccount });
+    let response = await this.http.post('/ledger_accounts.json', {
+      ledger_account: ledgerAccount
+    });
     return response.data;
   }
 
   async updateLedgerAccount(ledgerAccountId: string, ledgerAccount: Record<string, any>) {
-    let response = await this.http.patch(`/ledger_accounts/${ledgerAccountId}.json`, { ledger_account: ledgerAccount });
+    let response = await this.http.patch(`/ledger_accounts/${ledgerAccountId}.json`, {
+      ledger_account: ledgerAccount
+    });
     return response.data;
   }
 
@@ -331,8 +350,8 @@ export class MoneybirdClient {
         page: params?.page,
         per_page: params?.perPage,
         filter: params?.filter,
-        query: params?.query,
-      },
+        query: params?.query
+      }
     });
     return response.data;
   }
@@ -348,7 +367,9 @@ export class MoneybirdClient {
   }
 
   async updateTimeEntry(timeEntryId: string, timeEntry: Record<string, any>) {
-    let response = await this.http.patch(`/time_entries/${timeEntryId}.json`, { time_entry: timeEntry });
+    let response = await this.http.patch(`/time_entries/${timeEntryId}.json`, {
+      time_entry: timeEntry
+    });
     return response.data;
   }
 
@@ -358,17 +379,13 @@ export class MoneybirdClient {
 
   // ─── Projects ──────────────────────────────────────────────────
 
-  async listProjects(params?: {
-    page?: number;
-    perPage?: number;
-    filter?: string;
-  }) {
+  async listProjects(params?: { page?: number; perPage?: number; filter?: string }) {
     let response = await this.http.get('/projects.json', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -394,17 +411,13 @@ export class MoneybirdClient {
 
   // ─── Financial Mutations ───────────────────────────────────────
 
-  async listFinancialMutations(params?: {
-    page?: number;
-    perPage?: number;
-    filter?: string;
-  }) {
+  async listFinancialMutations(params?: { page?: number; perPage?: number; filter?: string }) {
     let response = await this.http.get('/financial_mutations.json', {
       params: {
         page: params?.page,
         per_page: params?.perPage,
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -415,14 +428,20 @@ export class MoneybirdClient {
   }
 
   async linkBooking(mutationId: string, booking: Record<string, any>) {
-    let response = await this.http.patch(`/financial_mutations/${mutationId}/link_booking.json`, booking);
+    let response = await this.http.patch(
+      `/financial_mutations/${mutationId}/link_booking.json`,
+      booking
+    );
     return response.data;
   }
 
   async unlinkBooking(mutationId: string, booking: Record<string, any>) {
-    let response = await this.http.delete(`/financial_mutations/${mutationId}/unlink_booking.json`, {
-      data: booking,
-    });
+    let response = await this.http.delete(
+      `/financial_mutations/${mutationId}/unlink_booking.json`,
+      {
+        data: booking
+      }
+    );
     return response.data;
   }
 

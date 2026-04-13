@@ -49,4 +49,4 @@ Buttons in Softr apps can trigger an action to send POST, PUT, PATCH, or DELETE 
 
 ## Events
 
-The provider does not support events. Softr does not offer inbound webhooks or event subscription mechanisms through its API. While Softr apps can *send* outbound webhook calls via button actions and workflows, there is no API-based mechanism to subscribe to or receive events from Softr about changes to users, databases, or records.
+The provider does not support events. Softr does not offer inbound webhooks or event subscription mechanisms through its API. While Softr apps can _send_ outbound webhook calls via button actions and workflows, there is no API-based mechanism to subscribe to or receive events from Softr about changes to users, databases, or records.

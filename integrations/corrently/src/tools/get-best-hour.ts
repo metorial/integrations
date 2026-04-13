@@ -3,31 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getBestHour = SlateTool.create(
-  spec,
-  {
-    name: 'Best Hour for Energy Use',
-    key: 'get_best_hour',
-    description: `Finds the best hour to consume energy based on renewable energy availability and low CO2 emissions for a given German location. Returns whether a device should be turned on now, based on the greenest hours within the specified timeframe.`,
-    constraints: [
-      'Only supports German postal codes.',
-      'Timeframe is limited to 1-168 hours (1 week).'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getBestHour = SlateTool.create(spec, {
+  name: 'Best Hour for Energy Use',
+  key: 'get_best_hour',
+  description: `Finds the best hour to consume energy based on renewable energy availability and low CO2 emissions for a given German location. Returns whether a device should be turned on now, based on the greenest hours within the specified timeframe.`,
+  constraints: [
+    'Only supports German postal codes.',
+    'Timeframe is limited to 1-168 hours (1 week).'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    zip: z.string().describe('German postal code (Postleitzahl), 5 digits'),
-    lookAheadHours: z.number().min(1).max(168).optional().describe('Number of hours to look ahead (default: 24, max: 168)'),
-    requiredHours: z.number().min(1).optional().describe('Number of consecutive hours the device needs to run')
-  }))
-  .output(z.object({
-    shouldActivateNow: z.boolean().optional().describe('Whether the device should be activated now for optimal green energy usage'),
-    bestHour: z.number().optional().describe('Best starting hour (epoch time)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      zip: z.string().describe('German postal code (Postleitzahl), 5 digits'),
+      lookAheadHours: z
+        .number()
+        .min(1)
+        .max(168)
+        .optional()
+        .describe('Number of hours to look ahead (default: 24, max: 168)'),
+      requiredHours: z
+        .number()
+        .min(1)
+        .optional()
+        .describe('Number of consecutive hours the device needs to run')
+    })
+  )
+  .output(
+    z.object({
+      shouldActivateNow: z
+        .boolean()
+        .optional()
+        .describe('Whether the device should be activated now for optimal green energy usage'),
+      bestHour: z.number().optional().describe('Best starting hour (epoch time)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let zip = ctx.input.zip || ctx.config.zip;
     if (!zip) {
       throw new Error('A German postal code (zip) is required.');

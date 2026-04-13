@@ -10,11 +10,13 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -23,7 +25,8 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Read Summaries',
-        description: 'Access coding activity summaries (categories, dependencies, editors, languages, machines, operating systems, projects)',
+        description:
+          'Access coding activity summaries (categories, dependencies, editors, languages, machines, operating systems, projects)',
         scope: 'read_summaries'
       },
       {
@@ -68,12 +71,12 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Email',
-        description: 'Access user\'s private email address',
+        description: "Access user's private email address",
         scope: 'email'
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
@@ -87,18 +90,22 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await authAxios.post('/oauth/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-        code: ctx.code
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await authAxios.post(
+        '/oauth/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code',
+          code: ctx.code
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
 
@@ -116,22 +123,26 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await authAxios.post('/oauth/token', new URLSearchParams({
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        redirect_uri: '',
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      let response = await authAxios.post(
+        '/oauth/token',
+        new URLSearchParams({
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          redirect_uri: '',
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
 
       let data = response.data;
 
@@ -174,10 +185,12 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Your WakaTime API Key (found at https://wakatime.com/api-key)')
+      token: z
+        .string()
+        .describe('Your WakaTime API Key (found at https://wakatime.com/api-key)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -186,7 +199,6 @@ export let auth = SlateAuth.create()
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let encoded = Buffer.from(ctx.output.token).toString('base64');
 
       let response = await apiAxios.get('/users/current', {

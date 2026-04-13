@@ -3,43 +3,66 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDynos = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Dynos',
-    key: 'manage_dynos',
-    description: `List running dynos, run one-off dynos, or restart dynos for a Heroku app. Use **action** to specify the operation:
+export let manageDynos = SlateTool.create(spec, {
+  name: 'Manage Dynos',
+  key: 'manage_dynos',
+  description: `List running dynos, run one-off dynos, or restart dynos for a Heroku app. Use **action** to specify the operation:
 - \`list\`: List all running dynos.
 - \`run\`: Run a one-off dyno with a command (e.g., \`bash\`, \`rails console\`).
 - \`restart\`: Restart a specific dyno or all dynos.`,
-    instructions: [
-      'To restart all dynos, use action "restart" without specifying a dynoIdOrName.'
-    ]
-  }
-)
-  .input(z.object({
-    appIdOrName: z.string().describe('App name or unique identifier'),
-    action: z.enum(['list', 'run', 'restart']).describe('Operation to perform'),
-    command: z.string().optional().describe('Command to execute (required for "run" action)'),
-    dynoIdOrName: z.string().optional().describe('Specific dyno name or ID (for "restart" action, omit to restart all)'),
-    size: z.string().optional().describe('Dyno size for "run" action (e.g., "standard-1X", "standard-2X", "performance-m")'),
-    env: z.record(z.string(), z.string()).optional().describe('Environment variables for "run" action'),
-    timeToLive: z.number().optional().describe('Seconds until the one-off dyno expires (for "run" action)')
-  }))
-  .output(z.object({
-    dynos: z.array(z.object({
-      dynoId: z.string().describe('Unique identifier of the dyno'),
-      command: z.string().describe('Command the dyno is running'),
-      name: z.string().describe('Name of the dyno'),
-      size: z.string().describe('Size of the dyno'),
-      state: z.string().describe('Current state of the dyno'),
-      type: z.string().describe('Process type'),
-      createdAt: z.string().describe('When the dyno was created'),
-      attachUrl: z.string().nullable().describe('URL to attach to the dyno session')
-    })).optional().describe('List of dynos (for "list" and "run" actions)'),
-    restarted: z.boolean().optional().describe('Whether dynos were successfully restarted')
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'To restart all dynos, use action "restart" without specifying a dynoIdOrName.'
+  ]
+})
+  .input(
+    z.object({
+      appIdOrName: z.string().describe('App name or unique identifier'),
+      action: z.enum(['list', 'run', 'restart']).describe('Operation to perform'),
+      command: z
+        .string()
+        .optional()
+        .describe('Command to execute (required for "run" action)'),
+      dynoIdOrName: z
+        .string()
+        .optional()
+        .describe('Specific dyno name or ID (for "restart" action, omit to restart all)'),
+      size: z
+        .string()
+        .optional()
+        .describe(
+          'Dyno size for "run" action (e.g., "standard-1X", "standard-2X", "performance-m")'
+        ),
+      env: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Environment variables for "run" action'),
+      timeToLive: z
+        .number()
+        .optional()
+        .describe('Seconds until the one-off dyno expires (for "run" action)')
+    })
+  )
+  .output(
+    z.object({
+      dynos: z
+        .array(
+          z.object({
+            dynoId: z.string().describe('Unique identifier of the dyno'),
+            command: z.string().describe('Command the dyno is running'),
+            name: z.string().describe('Name of the dyno'),
+            size: z.string().describe('Size of the dyno'),
+            state: z.string().describe('Current state of the dyno'),
+            type: z.string().describe('Process type'),
+            createdAt: z.string().describe('When the dyno was created'),
+            attachUrl: z.string().nullable().describe('URL to attach to the dyno session')
+          })
+        )
+        .optional()
+        .describe('List of dynos (for "list" and "run" actions)'),
+      restarted: z.boolean().optional().describe('Whether dynos were successfully restarted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { appIdOrName, action } = ctx.input;
 
@@ -74,16 +97,18 @@ export let manageDynos = SlateTool.create(
       });
       return {
         output: {
-          dynos: [{
-            dynoId: dyno.dynoId,
-            command: dyno.command,
-            name: dyno.name,
-            size: dyno.size,
-            state: dyno.state,
-            type: dyno.type,
-            createdAt: dyno.createdAt,
-            attachUrl: dyno.attachUrl
-          }]
+          dynos: [
+            {
+              dynoId: dyno.dynoId,
+              command: dyno.command,
+              name: dyno.name,
+              size: dyno.size,
+              state: dyno.state,
+              type: dyno.type,
+              createdAt: dyno.createdAt,
+              attachUrl: dyno.attachUrl
+            }
+          ]
         },
         message: `Started one-off dyno **${dyno.name}** running \`${dyno.command}\`.`
       };

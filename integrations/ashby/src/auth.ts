@@ -2,23 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Ashby API key from Developer Settings'),
+      token: z.string().describe('Ashby API key from Developer Settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -27,16 +29,16 @@ export let auth = SlateAuth.create()
         baseURL: 'https://api.ashbyhq.com',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(ctx.output.token + ':')}`,
-        },
+          Authorization: `Basic ${btoa(ctx.output.token + ':')}`
+        }
       });
 
       let response = await axios.post('/apiKey.info', {});
 
       return {
         profile: {
-          name: response.data.results.title,
-        },
+          name: response.data.results.title
+        }
       };
-    },
+    }
   });

@@ -3,38 +3,40 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newExpense = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Expense',
-    key: 'new_expense',
-    description: 'Triggers when a new expense is recorded in Finmei. Polls the expenses list and detects newly added expenses.',
-  }
-)
-  .input(z.object({
-    expenseId: z.string().describe('Expense ID'),
-    date: z.string().optional().describe('Expense date'),
-    amount: z.number().optional().describe('Expense amount'),
-    currency: z.string().optional().describe('Currency code'),
-    sellerName: z.string().optional().describe('Seller/vendor name'),
-    description: z.string().optional().describe('Expense description'),
-    category: z.string().optional().describe('Expense category'),
-  }))
-  .output(z.object({
-    expenseId: z.string().describe('Expense ID'),
-    date: z.string().optional().describe('Expense date'),
-    amount: z.number().optional().describe('Expense amount'),
-    currency: z.string().optional().describe('Currency code'),
-    sellerName: z.string().optional().describe('Seller or vendor name'),
-    description: z.string().optional().describe('Expense description'),
-    category: z.string().optional().describe('Expense category'),
-  }))
+export let newExpense = SlateTrigger.create(spec, {
+  name: 'New Expense',
+  key: 'new_expense',
+  description:
+    'Triggers when a new expense is recorded in Finmei. Polls the expenses list and detects newly added expenses.'
+})
+  .input(
+    z.object({
+      expenseId: z.string().describe('Expense ID'),
+      date: z.string().optional().describe('Expense date'),
+      amount: z.number().optional().describe('Expense amount'),
+      currency: z.string().optional().describe('Currency code'),
+      sellerName: z.string().optional().describe('Seller/vendor name'),
+      description: z.string().optional().describe('Expense description'),
+      category: z.string().optional().describe('Expense category')
+    })
+  )
+  .output(
+    z.object({
+      expenseId: z.string().describe('Expense ID'),
+      date: z.string().optional().describe('Expense date'),
+      amount: z.number().optional().describe('Expense amount'),
+      currency: z.string().optional().describe('Currency code'),
+      sellerName: z.string().optional().describe('Seller or vendor name'),
+      description: z.string().optional().describe('Expense description'),
+      category: z.string().optional().describe('Expense category')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FinmeiClient(ctx.auth.token);
 
       let state = ctx.state as { knownExpenseIds?: string[] } | null;
@@ -68,7 +70,7 @@ export let newExpense = SlateTrigger.create(
             currency: e.currency,
             sellerName: e.seller_name ?? e.seller,
             description: e.description,
-            category: e.category,
+            category: e.category
           });
         }
       }
@@ -76,12 +78,12 @@ export let newExpense = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownExpenseIds: allIds,
-        },
+          knownExpenseIds: allIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'expense.created',
         id: `expense-${ctx.input.expenseId}`,
@@ -92,9 +94,9 @@ export let newExpense = SlateTrigger.create(
           currency: ctx.input.currency,
           sellerName: ctx.input.sellerName,
           description: ctx.input.description,
-          category: ctx.input.category,
-        },
+          category: ctx.input.category
+        }
       };
-    },
+    }
   })
   .build();

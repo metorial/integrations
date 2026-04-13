@@ -11,36 +11,37 @@ let reviewSchema = z.object({
   content: z.any().nullable().describe('Review text (multi-language)'),
   source: z.string().nullable().describe('Review platform origin'),
   status: z.string().describe('Review status'),
-  createdAt: z.string().describe('Creation timestamp'),
+  createdAt: z.string().describe('Creation timestamp')
 });
 
-export let listReviews = SlateTool.create(
-  spec,
-  {
-    name: 'List Reviews',
-    key: 'list_reviews',
-    description: `Lists guest reviews with optional filtering and pagination. Filter by rating, status, source, or booking.`,
-    constraints: ['Maximum 1000 results per request.'],
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    filters: z.record(z.string(), z.string()).optional().describe('PostgREST-style filters'),
-    order: z.string().optional().describe('Sort order'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Number of results to skip'),
-  }))
-  .output(z.object({
-    reviews: z.array(reviewSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listReviews = SlateTool.create(spec, {
+  name: 'List Reviews',
+  key: 'list_reviews',
+  description: `Lists guest reviews with optional filtering and pagination. Filter by rating, status, source, or booking.`,
+  constraints: ['Maximum 1000 results per request.'],
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      filters: z.record(z.string(), z.string()).optional().describe('PostgREST-style filters'),
+      order: z.string().optional().describe('Sort order'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Number of results to skip')
+    })
+  )
+  .output(
+    z.object({
+      reviews: z.array(reviewSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BookingmoodClient(ctx.auth.token);
     let reviews = await client.listReviews({
       select: 'id,booking_id,author_name,rating,content,source,status,created_at',
       filters: ctx.input.filters,
       order: ctx.input.order,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let mapped = (reviews || []).map((r: any) => ({
@@ -51,12 +52,12 @@ export let listReviews = SlateTool.create(
       content: r.content ?? null,
       source: r.source ?? null,
       status: r.status,
-      createdAt: r.created_at,
+      createdAt: r.created_at
     }));
 
     return {
       output: { reviews: mapped },
-      message: `Found **${mapped.length}** review(s).`,
+      message: `Found **${mapped.length}** review(s).`
     };
   })
   .build();

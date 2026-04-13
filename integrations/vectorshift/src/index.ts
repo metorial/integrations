@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   runPipelineTool,
@@ -25,14 +24,14 @@ import {
   listTransformationsTool,
   getTransformationTool,
   createTransformationTool,
-  deleteTransformationTool,
+  deleteTransformationTool
 } from './tools';
 import {
   pipelineChangesTrigger,
   knowledgeBaseChangesTrigger,
   chatbotChangesTrigger,
   transformationChangesTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -61,13 +60,13 @@ export let provider = Slate.create({
     listTransformationsTool,
     getTransformationTool,
     createTransformationTool,
-    deleteTransformationTool,
+    deleteTransformationTool
   ],
   triggers: [
     inboundWebhook,
     pipelineChangesTrigger,
     knowledgeBaseChangesTrigger,
     chatbotChangesTrigger,
-    transformationChangesTrigger,
-  ],
+    transformationChangesTrigger
+  ]
 });

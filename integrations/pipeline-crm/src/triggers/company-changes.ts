@@ -3,36 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let companyChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Company Changes',
-    key: 'company_changes',
-    description: 'Triggers when a company is created or updated in Pipeline CRM.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated']).describe('Type of change detected'),
-    companyId: z.number().describe('ID of the affected company'),
-    company: z.any().describe('Full company record from the API')
-  }))
-  .output(z.object({
-    companyId: z.number().describe('Unique company ID'),
-    name: z.string().describe('Company name'),
-    address: z.string().nullable().optional().describe('Company address'),
-    phone: z.string().nullable().optional().describe('Phone number'),
-    website: z.string().nullable().optional().describe('Website URL'),
-    industry: z.string().nullable().optional().describe('Industry classification'),
-    userId: z.number().nullable().optional().describe('Owner user ID'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp')
-  }))
+export let companyChanges = SlateTrigger.create(spec, {
+  name: 'Company Changes',
+  key: 'company_changes',
+  description: 'Triggers when a company is created or updated in Pipeline CRM.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated']).describe('Type of change detected'),
+      companyId: z.number().describe('ID of the affected company'),
+      company: z.any().describe('Full company record from the API')
+    })
+  )
+  .output(
+    z.object({
+      companyId: z.number().describe('Unique company ID'),
+      name: z.string().describe('Company name'),
+      address: z.string().nullable().optional().describe('Company address'),
+      phone: z.string().nullable().optional().describe('Phone number'),
+      website: z.string().nullable().optional().describe('Website URL'),
+      industry: z.string().nullable().optional().describe('Industry classification'),
+      userId: z.number().nullable().optional().describe('Owner user ID'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         appKey: ctx.auth.appKey
@@ -49,21 +50,27 @@ export let companyChanges = SlateTrigger.create(
       let entries = result.entries ?? [];
 
       let newEntries = lastPolledAt
-        ? entries.filter((company: any) => company.updated_at && company.updated_at > lastPolledAt)
+        ? entries.filter(
+            (company: any) => company.updated_at && company.updated_at > lastPolledAt
+          )
         : entries;
 
       let inputs = newEntries.map((company: any) => {
         let isNew = !lastPolledAt || (company.created_at && company.created_at > lastPolledAt);
         return {
-          eventType: isNew ? 'created' as const : 'updated' as const,
+          eventType: isNew ? ('created' as const) : ('updated' as const),
           companyId: company.id,
           company
         };
       });
 
-      let latestTimestamp = entries.length > 0
-        ? entries.reduce((max: string, c: any) => c.updated_at > max ? c.updated_at : max, entries[0]!.updated_at)
-        : lastPolledAt;
+      let latestTimestamp =
+        entries.length > 0
+          ? entries.reduce(
+              (max: string, c: any) => (c.updated_at > max ? c.updated_at : max),
+              entries[0]!.updated_at
+            )
+          : lastPolledAt;
 
       return {
         inputs,
@@ -73,7 +80,7 @@ export let companyChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let company = ctx.input.company;
 
       return {
@@ -92,4 +99,5 @@ export let companyChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

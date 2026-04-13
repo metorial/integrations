@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createQueue,
@@ -13,11 +12,9 @@ import {
   deleteMessage,
   purgeQueue,
   changeMessageVisibility,
-  manageMessageMoveTask,
+  manageMessageMoveTask
 } from './tools';
-import { newMessage,
-  inboundWebhook,
-} from './triggers';
+import { newMessage, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     deleteMessage,
     purgeQueue,
     changeMessageVisibility,
-    manageMessageMoveTask,
+    manageMessageMoveTask
   ],
-  triggers: [
-    inboundWebhook,
-    newMessage,
-  ],
+  triggers: [inboundWebhook, newMessage]
 });

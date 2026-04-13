@@ -12,27 +12,36 @@ let driveSchema = z.object({
   quotaTotal: z.number().optional().describe('Total storage quota in bytes'),
   quotaUsed: z.number().optional().describe('Storage used in bytes'),
   quotaRemaining: z.number().optional().describe('Storage remaining in bytes'),
-  quotaState: z.string().optional().describe('Quota state (normal, nearing, critical, exceeded)'),
+  quotaState: z
+    .string()
+    .optional()
+    .describe('Quota state (normal, nearing, critical, exceeded)')
 });
 
-export let listDrivesTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Drives',
-    key: 'list_drives',
-    description: `Retrieves all available drives for the authenticated user, including their personal OneDrive and any shared drives or SharePoint document libraries they have access to. Returns drive metadata including storage quota information.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDrivesTool = SlateTool.create(spec, {
+  name: 'List Drives',
+  key: 'list_drives',
+  description: `Retrieves all available drives for the authenticated user, including their personal OneDrive and any shared drives or SharePoint document libraries they have access to. Returns drive metadata including storage quota information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    driveId: z.string().optional().describe('If provided, retrieves details for a specific drive by ID instead of listing all drives'),
-  }))
-  .output(z.object({
-    drives: z.array(driveSchema).describe('List of available drives'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      driveId: z
+        .string()
+        .optional()
+        .describe(
+          'If provided, retrieves details for a specific drive by ID instead of listing all drives'
+        )
+    })
+  )
+  .output(
+    z.object({
+      drives: z.array(driveSchema).describe('List of available drives')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.driveId) {
@@ -46,18 +55,15 @@ export let listDrivesTool = SlateTool.create(
         quotaTotal: drive.quota?.total,
         quotaUsed: drive.quota?.used,
         quotaRemaining: drive.quota?.remaining,
-        quotaState: drive.quota?.state,
+        quotaState: drive.quota?.state
       };
       return {
         output: { drives: [mapped] },
-        message: `Retrieved drive **${drive.name}** (${drive.driveType}).`,
+        message: `Retrieved drive **${drive.name}** (${drive.driveType}).`
       };
     }
 
-    let [myDrive, otherDrives] = await Promise.all([
-      client.getDrive(),
-      client.listDrives(),
-    ]);
+    let [myDrive, otherDrives] = await Promise.all([client.getDrive(), client.listDrives()]);
 
     let allDrives = [myDrive, ...otherDrives.filter(d => d.id !== myDrive.id)];
     let drives = allDrives.map(drive => ({
@@ -69,12 +75,12 @@ export let listDrivesTool = SlateTool.create(
       quotaTotal: drive.quota?.total,
       quotaUsed: drive.quota?.used,
       quotaRemaining: drive.quota?.remaining,
-      quotaState: drive.quota?.state,
+      quotaState: drive.quota?.state
     }));
 
     return {
       output: { drives },
-      message: `Found **${drives.length}** drive(s).`,
+      message: `Found **${drives.length}** drive(s).`
     };
   })
   .build();

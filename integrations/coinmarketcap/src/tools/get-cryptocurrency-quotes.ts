@@ -14,7 +14,7 @@ let quoteSchema = z.object({
   marketCap: z.number().nullable().describe('Market capitalization'),
   marketCapDominance: z.number().nullable().describe('Market cap dominance percentage'),
   fullyDilutedMarketCap: z.number().nullable().describe('Fully diluted market cap'),
-  lastUpdated: z.string().nullable().describe('Last updated timestamp'),
+  lastUpdated: z.string().nullable().describe('Last updated timestamp')
 });
 
 let cryptocurrencyQuoteSchema = z.object({
@@ -30,45 +30,57 @@ let cryptocurrencyQuoteSchema = z.object({
   isActive: z.number().describe('Whether the cryptocurrency is active (1) or not (0)'),
   lastUpdated: z.string().describe('Last updated timestamp'),
   dateAdded: z.string().describe('Date added to CoinMarketCap'),
-  quote: z.record(z.string(), quoteSchema).describe('Market quote data keyed by currency'),
+  quote: z.record(z.string(), quoteSchema).describe('Market quote data keyed by currency')
 });
 
-export let getCryptocurrencyQuotes = SlateTool.create(
-  spec,
-  {
-    name: 'Get Cryptocurrency Quotes',
-    key: 'get_cryptocurrency_quotes',
-    description: `Retrieve the latest market quotes for one or more specific cryptocurrencies. Returns current price, volume, market cap, and percentage changes. Cryptocurrencies can be identified by CoinMarketCap ID, symbol, or slug.`,
-    instructions: [
-      'Provide at least one of: cryptocurrencyIds, symbols, or slugs.',
-      'Multiple values can be comma-separated (e.g., symbols: "BTC,ETH,SOL").',
-      'When using symbols, the API defaults to the highest market cap match. Use cryptocurrencyIds for precision.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getCryptocurrencyQuotes = SlateTool.create(spec, {
+  name: 'Get Cryptocurrency Quotes',
+  key: 'get_cryptocurrency_quotes',
+  description: `Retrieve the latest market quotes for one or more specific cryptocurrencies. Returns current price, volume, market cap, and percentage changes. Cryptocurrencies can be identified by CoinMarketCap ID, symbol, or slug.`,
+  instructions: [
+    'Provide at least one of: cryptocurrencyIds, symbols, or slugs.',
+    'Multiple values can be comma-separated (e.g., symbols: "BTC,ETH,SOL").',
+    'When using symbols, the API defaults to the highest market cap match. Use cryptocurrencyIds for precision.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cryptocurrencyIds: z.string().optional().describe('Comma-separated CoinMarketCap IDs (e.g., "1,1027")'),
-    symbols: z.string().optional().describe('Comma-separated symbols (e.g., "BTC,ETH")'),
-    slugs: z.string().optional().describe('Comma-separated slugs (e.g., "bitcoin,ethereum")'),
-    convert: z.string().optional().describe('Target currency for quotes (e.g., "USD", "EUR", "BTC"). Default: USD'),
-  }))
-  .output(z.object({
-    cryptocurrencies: z.array(cryptocurrencyQuoteSchema).describe('List of cryptocurrency quotes'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cryptocurrencyIds: z
+        .string()
+        .optional()
+        .describe('Comma-separated CoinMarketCap IDs (e.g., "1,1027")'),
+      symbols: z.string().optional().describe('Comma-separated symbols (e.g., "BTC,ETH")'),
+      slugs: z
+        .string()
+        .optional()
+        .describe('Comma-separated slugs (e.g., "bitcoin,ethereum")'),
+      convert: z
+        .string()
+        .optional()
+        .describe('Target currency for quotes (e.g., "USD", "EUR", "BTC"). Default: USD')
+    })
+  )
+  .output(
+    z.object({
+      cryptocurrencies: z
+        .array(cryptocurrencyQuoteSchema)
+        .describe('List of cryptocurrency quotes')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let data = await client.getCryptocurrencyQuotesLatest({
       id: ctx.input.cryptocurrencyIds,
       slug: ctx.input.slugs,
       symbol: ctx.input.symbols,
-      convert: ctx.input.convert,
+      convert: ctx.input.convert
     });
 
     let cryptocurrencies: z.infer<typeof cryptocurrencyQuoteSchema>[] = [];
@@ -88,18 +100,20 @@ export let getCryptocurrencyQuotes = SlateTool.create(
           isActive: item.isActive,
           lastUpdated: item.lastUpdated,
           dateAdded: item.dateAdded,
-          quote: item.quote || {},
+          quote: item.quote || {}
         });
       }
     }
 
     let names = cryptocurrencies.map(c => `**${c.name}** (${c.symbol})`).join(', ');
-    let message = cryptocurrencies.length > 0
-      ? `Retrieved quotes for ${cryptocurrencies.length} cryptocurrency(ies): ${names}.`
-      : `No quotes found for the specified cryptocurrencies.`;
+    let message =
+      cryptocurrencies.length > 0
+        ? `Retrieved quotes for ${cryptocurrencies.length} cryptocurrency(ies): ${names}.`
+        : `No quotes found for the specified cryptocurrencies.`;
 
     return {
       output: { cryptocurrencies },
-      message,
+      message
     };
-  }).build();
+  })
+  .build();

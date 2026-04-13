@@ -8,7 +8,7 @@ export class UnisenderClient {
     let locale = config.locale || 'en';
     this.apiKey = config.token;
     this.ax = createAxios({
-      baseURL: `https://api.unisender.com/${locale}/api`,
+      baseURL: `https://api.unisender.com/${locale}/api`
     });
   }
 
@@ -37,8 +37,8 @@ export class UnisenderClient {
 
     let response = await this.ax.post(`/${method}`, formParams.toString(), {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     let data = response.data;
@@ -55,11 +55,20 @@ export class UnisenderClient {
     return this.call('getLists');
   }
 
-  async createList(params: { title: string; before_subscribe_url?: string; after_subscribe_url?: string }): Promise<{ id: number }> {
+  async createList(params: {
+    title: string;
+    before_subscribe_url?: string;
+    after_subscribe_url?: string;
+  }): Promise<{ id: number }> {
     return this.call('createList', params);
   }
 
-  async updateList(params: { list_id: number; title: string; before_subscribe_url?: string; after_subscribe_url?: string }): Promise<void> {
+  async updateList(params: {
+    list_id: number;
+    title: string;
+    before_subscribe_url?: string;
+    after_subscribe_url?: string;
+  }): Promise<void> {
     return this.call('updateList', params);
   }
 
@@ -88,7 +97,7 @@ export class UnisenderClient {
       request_ip: params.request_ip,
       request_time: params.request_time,
       confirm_ip: params.confirm_ip,
-      confirm_time: params.confirm_time,
+      confirm_time: params.confirm_time
     };
 
     if (params.fields) {
@@ -100,11 +109,19 @@ export class UnisenderClient {
     return this.call('subscribe', formattedParams);
   }
 
-  async unsubscribe(params: { contact: string; contact_type?: string; list_ids?: string }): Promise<void> {
+  async unsubscribe(params: {
+    contact: string;
+    contact_type?: string;
+    list_ids?: string;
+  }): Promise<void> {
     return this.call('unsubscribe', params);
   }
 
-  async exclude(params: { contact: string; contact_type?: string; list_ids?: string }): Promise<void> {
+  async exclude(params: {
+    contact: string;
+    contact_type?: string;
+    list_ids?: string;
+  }): Promise<void> {
     return this.call('exclude', params);
   }
 
@@ -112,11 +129,18 @@ export class UnisenderClient {
     return this.call('getContact', { email });
   }
 
-  async getContactCount(listId: number, params?: { tag_id?: number; type?: string; search?: string }): Promise<{ count: number }> {
+  async getContactCount(
+    listId: number,
+    params?: { tag_id?: number; type?: string; search?: string }
+  ): Promise<{ count: number }> {
     return this.call('getContactCount', { list_id: listId, ...params });
   }
 
-  async isContactInList(params: { email: string; list_ids: string; condition?: string }): Promise<any> {
+  async isContactInList(params: {
+    email: string;
+    list_ids: string;
+    condition?: string;
+  }): Promise<any> {
     return this.call('isContactInList', params);
   }
 
@@ -130,11 +154,19 @@ export class UnisenderClient {
     overwrite_tags?: number;
     overwrite_lists?: number;
     double_optin?: number;
-  }): Promise<{ total: number; inserted: number; updated: number; deleted: number; new_emails: number; invalid: number; log?: any[] }> {
+  }): Promise<{
+    total: number;
+    inserted: number;
+    updated: number;
+    deleted: number;
+    new_emails: number;
+    invalid: number;
+    log?: any[];
+  }> {
     let formattedParams: Record<string, any> = {
       overwrite_tags: params.overwrite_tags,
       overwrite_lists: params.overwrite_lists,
-      double_optin: params.double_optin,
+      double_optin: params.double_optin
     };
 
     for (let i = 0; i < params.field_names.length; i++) {
@@ -165,7 +197,7 @@ export class UnisenderClient {
       phone_status: params?.phone_status,
       tag: params?.tag,
       offset: params?.offset,
-      limit: params?.limit,
+      limit: params?.limit
     };
 
     if (params?.field_names) {
@@ -179,15 +211,25 @@ export class UnisenderClient {
 
   // === Custom Fields ===
 
-  async getFields(): Promise<Array<{ id: number; name: string; type: string; is_visible: number; view_pos: number }>> {
+  async getFields(): Promise<
+    Array<{ id: number; name: string; type: string; is_visible: number; view_pos: number }>
+  > {
     return this.call('getFields');
   }
 
-  async createField(params: { name: string; type?: string; public_name?: string }): Promise<{ id: number }> {
+  async createField(params: {
+    name: string;
+    type?: string;
+    public_name?: string;
+  }): Promise<{ id: number }> {
     return this.call('createField', params);
   }
 
-  async updateField(params: { id: number; name?: string; public_name?: string }): Promise<void> {
+  async updateField(params: {
+    id: number;
+    name?: string;
+    public_name?: string;
+  }): Promise<void> {
     return this.call('updateField', params);
   }
 
@@ -252,11 +294,23 @@ export class UnisenderClient {
     return this.call('getMessage', { id: messageId });
   }
 
-  async getMessages(params?: { date_from?: string; date_to?: string; format?: string; limit?: number; offset?: number }): Promise<any> {
+  async getMessages(params?: {
+    date_from?: string;
+    date_to?: string;
+    format?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any> {
     return this.call('getMessages', params || {});
   }
 
-  async listMessages(params?: { date_from?: string; date_to?: string; format?: string; limit?: number; offset?: number }): Promise<any> {
+  async listMessages(params?: {
+    date_from?: string;
+    date_to?: string;
+    format?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any> {
     return this.call('listMessages', params || {});
   }
 
@@ -281,7 +335,9 @@ export class UnisenderClient {
     return this.call('cancelCampaign', { campaign_id: campaignId });
   }
 
-  async getCampaignStatus(campaignId: number): Promise<{ status: string; creation_time?: string; start_time?: string }> {
+  async getCampaignStatus(
+    campaignId: number
+  ): Promise<{ status: string; creation_time?: string; start_time?: string }> {
     return this.call('getCampaignStatus', { campaign_id: campaignId });
   }
 
@@ -303,7 +359,13 @@ export class UnisenderClient {
     return this.call('getVisitedLinks', params);
   }
 
-  async getCampaigns(params?: { from?: string; to?: string; limit?: number; offset?: number; status?: string }): Promise<any> {
+  async getCampaigns(params?: {
+    from?: string;
+    to?: string;
+    limit?: number;
+    offset?: number;
+    status?: string;
+  }): Promise<any> {
     return this.call('getCampaigns', params || {});
   }
 
@@ -342,7 +404,12 @@ export class UnisenderClient {
 
   // === SMS ===
 
-  async createSmsMessage(params: { sender: string; body: string; list_id: number; tag?: string }): Promise<{ message_id: number }> {
+  async createSmsMessage(params: {
+    sender: string;
+    body: string;
+    list_id: number;
+    tag?: string;
+  }): Promise<{ message_id: number }> {
     return this.call('createSmsMessage', params);
   }
 
@@ -389,11 +456,23 @@ export class UnisenderClient {
     return this.call('getTemplate', { template_id: templateId });
   }
 
-  async getTemplates(params?: { type?: string; date_from?: string; date_to?: string; limit?: number; offset?: number }): Promise<any> {
+  async getTemplates(params?: {
+    type?: string;
+    date_from?: string;
+    date_to?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any> {
     return this.call('getTemplates', params || {});
   }
 
-  async listTemplates(params?: { type?: string; date_from?: string; date_to?: string; limit?: number; offset?: number }): Promise<any> {
+  async listTemplates(params?: {
+    type?: string;
+    date_from?: string;
+    date_to?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<any> {
     return this.call('listTemplates', params || {});
   }
 
@@ -412,7 +491,7 @@ export class UnisenderClient {
       event_format: params.event_format,
       single_event: params.single_event,
       max_parallel: params.max_parallel,
-      status: params.status,
+      status: params.status
     };
 
     if (params.events) {
@@ -424,7 +503,9 @@ export class UnisenderClient {
     return this.call('setHook', formattedParams);
   }
 
-  async listHooks(): Promise<Array<{ id: number; url: string; event_format: string; status: string; events: any }>> {
+  async listHooks(): Promise<
+    Array<{ id: number; url: string; event_format: string; status: string; events: any }>
+  > {
     return this.call('listHooks');
   }
 

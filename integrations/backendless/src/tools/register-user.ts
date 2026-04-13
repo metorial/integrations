@@ -3,33 +3,37 @@ import { BackendlessClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let registerUser = SlateTool.create(
-  spec,
-  {
-    name: 'Register User',
-    key: 'register_user',
-    description: `Registers a new user in the Backendless Users table. Requires at minimum the identity property (typically email) and a password. Additional custom user properties can be included.`,
-    constraints: [
-      'The identity property (usually email) and password are required.',
-      'Registration does not automatically log the user in.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let registerUser = SlateTool.create(spec, {
+  name: 'Register User',
+  key: 'register_user',
+  description: `Registers a new user in the Backendless Users table. Requires at minimum the identity property (typically email) and a password. Additional custom user properties can be included.`,
+  constraints: [
+    'The identity property (usually email) and password are required.',
+    'Registration does not automatically log the user in.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    email: z.string().describe('Email address for the new user (identity property)'),
-    password: z.string().describe('Password for the new user'),
-    name: z.string().optional().describe('Display name for the user'),
-    additionalProperties: z.record(z.string(), z.unknown()).optional().describe('Any additional custom properties to set on the user')
-  }))
-  .output(z.object({
-    userId: z.string().describe('The objectId assigned to the new user'),
-    user: z.record(z.string(), z.unknown()).describe('The complete registered user object')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().describe('Email address for the new user (identity property)'),
+      password: z.string().describe('Password for the new user'),
+      name: z.string().optional().describe('Display name for the user'),
+      additionalProperties: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Any additional custom properties to set on the user')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('The objectId assigned to the new user'),
+      user: z.record(z.string(), z.unknown()).describe('The complete registered user object')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BackendlessClient({
       applicationId: ctx.auth.applicationId,
       token: ctx.auth.token,
@@ -55,4 +59,5 @@ export let registerUser = SlateTool.create(
       },
       message: `Registered new user **${ctx.input.email}** with ID **${user.objectId}**.`
     };
-  }).build();
+  })
+  .build();

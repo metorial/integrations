@@ -3,35 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEnvironmentTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Environment',
-    key: 'get_environment',
-    description: `Retrieve a specific Postman environment with its full variable set, including key, value, type, and enabled status.`,
-    tags: {
-      readOnly: true,
-    },
+export let getEnvironmentTool = SlateTool.create(spec, {
+  name: 'Get Environment',
+  key: 'get_environment',
+  description: `Retrieve a specific Postman environment with its full variable set, including key, value, type, and enabled status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    environmentId: z.string().describe('Environment ID or UID'),
-  }))
-  .output(z.object({
-    environmentId: z.string(),
-    name: z.string(),
-    uid: z.string().optional(),
-    isPublic: z.boolean().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    values: z.array(z.object({
-      key: z.string(),
-      value: z.string(),
-      type: z.string().optional(),
-      enabled: z.boolean().optional(),
-    })).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      environmentId: z.string().describe('Environment ID or UID')
+    })
+  )
+  .output(
+    z.object({
+      environmentId: z.string(),
+      name: z.string(),
+      uid: z.string().optional(),
+      isPublic: z.boolean().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      values: z
+        .array(
+          z.object({
+            key: z.string(),
+            value: z.string(),
+            type: z.string().optional(),
+            enabled: z.boolean().optional()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let env = await client.getEnvironment(ctx.input.environmentId);
 
@@ -47,10 +52,10 @@ export let getEnvironmentTool = SlateTool.create(
           key: v.key,
           value: v.value,
           type: v.type,
-          enabled: v.enabled,
-        })),
+          enabled: v.enabled
+        }))
       },
-      message: `Retrieved environment **"${env.name}"** with ${env.values?.length ?? 0} variable(s).`,
+      message: `Retrieved environment **"${env.name}"** with ${env.values?.length ?? 0} variable(s).`
     };
   })
   .build();

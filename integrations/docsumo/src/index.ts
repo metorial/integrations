@@ -8,7 +8,7 @@ import {
   deleteDocument,
   updateReviewStatus,
   listDocumentTypes,
-  getReviewUrl,
+  getReviewUrl
 } from './tools';
 import { documentStatusChanged } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     deleteDocument,
     updateReviewStatus,
     listDocumentTypes,
-    getReviewUrl,
+    getReviewUrl
   ],
-  triggers: [
-    documentStatusChanged,
-  ],
+  triggers: [documentStatusChanged]
 });

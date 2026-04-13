@@ -3,53 +3,55 @@ import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let buildCompleteEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Build & Pipeline Events',
-    key: 'build_pipeline_events',
-    description: 'Fires when builds complete or pipeline run states change. Covers both classic builds and YAML pipelines.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Azure DevOps event type'),
-    resourceId: z.string().describe('Unique event resource identifier'),
-    resource: z.any().describe('Event resource payload'),
-  }))
-  .output(z.object({
-    buildId: z.number().optional(),
-    buildNumber: z.string().optional(),
-    status: z.string().optional(),
-    result: z.string().optional(),
-    definitionName: z.string().optional(),
-    definitionId: z.number().optional(),
-    projectName: z.string().optional(),
-    sourceBranch: z.string().optional(),
-    sourceVersion: z.string().optional(),
-    requestedBy: z.string().optional(),
-    startTime: z.string().optional(),
-    finishTime: z.string().optional(),
-    reason: z.string().optional(),
-    url: z.string().optional(),
-    pipelineId: z.number().optional(),
-    pipelineName: z.string().optional(),
-    runState: z.string().optional(),
-    runResult: z.string().optional(),
-    stageName: z.string().optional(),
-    stageState: z.string().optional(),
-    stageResult: z.string().optional(),
-  }))
+export let buildCompleteEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Build & Pipeline Events',
+  key: 'build_pipeline_events',
+  description:
+    'Fires when builds complete or pipeline run states change. Covers both classic builds and YAML pipelines.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Azure DevOps event type'),
+      resourceId: z.string().describe('Unique event resource identifier'),
+      resource: z.any().describe('Event resource payload')
+    })
+  )
+  .output(
+    z.object({
+      buildId: z.number().optional(),
+      buildNumber: z.string().optional(),
+      status: z.string().optional(),
+      result: z.string().optional(),
+      definitionName: z.string().optional(),
+      definitionId: z.number().optional(),
+      projectName: z.string().optional(),
+      sourceBranch: z.string().optional(),
+      sourceVersion: z.string().optional(),
+      requestedBy: z.string().optional(),
+      startTime: z.string().optional(),
+      finishTime: z.string().optional(),
+      reason: z.string().optional(),
+      url: z.string().optional(),
+      pipelineId: z.number().optional(),
+      pipelineName: z.string().optional(),
+      runState: z.string().optional(),
+      runResult: z.string().optional(),
+      stageName: z.string().optional(),
+      stageState: z.string().optional(),
+      stageResult: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AzureDevOpsClient({
         token: ctx.auth.token,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let eventTypes = [
         'build.complete',
         'ms.vss-pipelines.run-state-changed-event',
-        'ms.vss-pipelines.stage-state-changed-event',
+        'ms.vss-pipelines.stage-state-changed-event'
       ];
 
       let subscriptionIds: string[] = [];
@@ -70,22 +72,22 @@ export let buildCompleteEventsTrigger = SlateTrigger.create(
           consumerActionId: 'httpRequest',
           publisherInputs,
           consumerInputs: {
-            url: ctx.input.webhookBaseUrl,
+            url: ctx.input.webhookBaseUrl
           },
-          resourceVersion: '1.0',
+          resourceVersion: '1.0'
         });
         subscriptionIds.push(sub.id);
       }
 
       return {
-        registrationDetails: { subscriptionIds },
+        registrationDetails: { subscriptionIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AzureDevOpsClient({
         token: ctx.auth.token,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let details = ctx.input.registrationDetails as { subscriptionIds: string[] };
@@ -98,20 +100,22 @@ export let buildCompleteEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let resource = data.resource || {};
 
       return {
-        inputs: [{
-          eventType: data.eventType || '',
-          resourceId: data.id || resource.id?.toString() || `build-${Date.now()}`,
-          resource,
-        }],
+        inputs: [
+          {
+            eventType: data.eventType || '',
+            resourceId: data.id || resource.id?.toString() || `build-${Date.now()}`,
+            resource
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resource = ctx.input.resource || {};
       let eventType = ctx.input.eventType;
 
@@ -146,9 +150,12 @@ export let buildCompleteEventsTrigger = SlateTrigger.create(
           runState: resource.state,
           runResult: resource.result,
           stageName: resource.stageName || resource.name,
-          stageState: resource.stageState || (eventType.includes('stage') ? resource.state : undefined),
-          stageResult: resource.stageResult || (eventType.includes('stage') ? resource.result : undefined),
-        },
+          stageState:
+            resource.stageState || (eventType.includes('stage') ? resource.state : undefined),
+          stageResult:
+            resource.stageResult || (eventType.includes('stage') ? resource.result : undefined)
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

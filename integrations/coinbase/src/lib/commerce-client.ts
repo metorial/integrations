@@ -14,8 +14,8 @@ export class CommerceClient {
       headers: {
         'X-CC-Api-Key': config.token,
         'X-CC-Version': '2018-03-22',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -33,7 +33,7 @@ export class CommerceClient {
     let body: Record<string, any> = {
       name: params.name,
       description: params.description,
-      pricing_type: params.pricingType,
+      pricing_type: params.pricingType
     };
     if (params.localPrice) body.local_price = params.localPrice;
     if (params.metadata) body.metadata = params.metadata;
@@ -80,7 +80,7 @@ export class CommerceClient {
     let body: Record<string, any> = {
       name: params.name,
       description: params.description,
-      pricing_type: params.pricingType,
+      pricing_type: params.pricingType
     };
     if (params.localPrice) body.local_price = params.localPrice;
     if (params.requestedInfo) body.requested_info = params.requestedInfo;

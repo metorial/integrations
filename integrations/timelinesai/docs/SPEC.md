@@ -62,6 +62,7 @@ Based on integration platform listings, the following specific event types are a
 - **New WhatsApp Account**: Triggers when new whatsapp_accounts is created.
 
 Configuration options:
+
 - Each webhook endpoint is assigned a specific event type and URL.
 - Webhooks can be activated or deactivated individually.
 - You can download webhook logs to track all changes made to webhook endpoints, including details like the webhook ID, Webhook URL, Event type, and Timestamp.

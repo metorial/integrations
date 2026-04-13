@@ -25,7 +25,5 @@ export let provider = Slate.create({
     listCategories,
     listCollections
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

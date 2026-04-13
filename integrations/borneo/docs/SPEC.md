@@ -21,35 +21,49 @@ For dashboard user management via API, users are created with specified roles, o
 ## Features
 
 ### Sensitive Data Discovery and Classification
+
 Scan structured and unstructured data sources across cloud environments and SaaS applications to discover sensitive data including PII, PFI, PHI, API tokens, keys, and credentials. Automatically discover all sensitive data across databases, clouds and SaaS apps, and categorize it with ML-based classifiers to act on them based on their severity score.
+
 - Choose between Surface scans, Audit scans, and in-depth Forensic Scans, designed to provide control over inspection depth and resource efficiency.
 - Scans can be configured and scheduled across various cloud resources, supporting both one-time and recurring scans with customization options for resource selection, data inspection policies, and scan limits.
 - Custom infotype categories can be created to organize and group related sensitive data types.
 
 ### Data Security Posture Management (DSPM)
+
 Get real-time visibility into data exposure, usage, and vulnerabilities while continuously assessing and monitoring your data's security posture.
+
 - Maintain privacy baselines and detect anomalies.
 - Global search allows querying across the entire data footprint.
 
 ### Data Remediation
+
 Supports data masking, access changes, and encryption — automatically fix data risks by implementing the right security controls.
+
 - Reduce risk surface area by getting timely triggers for automatic anonymization of sensitive data.
 
 ### Data Breach Management
+
 Manage and track data breach evaluation records for compliance and risk management purposes.
+
 - Create, retrieve, and delete data breach evaluation records.
 
 ### Privacy Compliance and DPIA
+
 Manage personal data responsibly and comply with global privacy regulations (GDPR, CCPA, DPDP, HIPAA) through automated processes, continuous compliance monitoring, and reporting.
+
 - Create Data Protection Impact Assessments (DPIAs) for processing activities, including comprehensive risk assessments for confidentiality, integrity, and availability.
 - Export processing activities in specified formats and languages.
 
 ### Inventory and Asset Management
+
 Export filtered and sorted lists of inventory resources with customization including field selection, sorting, and filtering based on account, region, resource type, and tags, with options to include violation metrics and framework exception counts.
+
 - Create and manage assets within the platform.
 
 ### Organizational Management
+
 Manage organizational entities including:
+
 - **Employees**: Create employee records with personal information, job-related data, and organizational structure for HR systems integration.
 - **Departments**: Create departments with translation support.
 - **Headquarters**: Register office locations.
@@ -57,13 +71,17 @@ Manage organizational entities including:
 - **Dashboard Users**: Create users with specified roles and organizational access.
 
 ### Legal Document Management
+
 Create and manage legal documents with associated metadata within the platform.
 
 ### Recipient Management
+
 Manage discovered data recipients — add discovered recipients as confirmed recipients or archive them.
 
 ### Application Data Privacy Management
+
 Borneo Code Analyser analyzes code pull requests and adds intelligent nudges for code reviewers to pay attention to sensitive data handling, identifying code handling sensitive data ahead of production with context for remediation.
+
 - Data Privacy Test Suite pinpoints APIs that are oversharing sensitive data via their responses based on approved data sharing guidelines.
 
 ## Events

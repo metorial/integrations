@@ -3,21 +3,18 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEventTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event',
-    key: 'get_event',
-    description: `Retrieve details for a specific event by its ID, including title, dates, venue, ticket counts, status, branding, and categories.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getEventTool = SlateTool.create(spec, {
+  name: 'Get Event',
+  key: 'get_event',
+  description: `Retrieve details for a specific event by its ID, including title, dates, venue, ticket counts, status, branding, and categories.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
-      eventId: z.string().describe('The unique event ID'),
-    }),
+      eventId: z.string().describe('The unique event ID')
+    })
   )
   .output(
     z.object({
@@ -35,8 +32,14 @@ export let getEventTool = SlateTool.create(
       timezoneCode: z.string().optional().describe('Timezone code'),
       ticketsSold: z.number().optional().describe('Number of tickets sold'),
       ticketsTotal: z.number().optional().describe('Total number of tickets'),
-      status: z.string().optional().describe('Event status: Live, Draft, Unpublished, or Completed'),
-      showRemaining: z.boolean().optional().describe('Whether remaining ticket count is displayed'),
+      status: z
+        .string()
+        .optional()
+        .describe('Event status: Live, Draft, Unpublished, or Completed'),
+      showRemaining: z
+        .boolean()
+        .optional()
+        .describe('Whether remaining ticket count is displayed'),
       twitterHashtag: z.string().optional().describe('Twitter hashtag'),
       utcOffset: z.string().optional().describe('UTC offset'),
       inviteCode: z.string().optional().describe('Invite code'),
@@ -45,14 +48,18 @@ export let getEventTool = SlateTool.create(
       bgImageUrl: z.string().optional().describe('Event background image URL'),
       venue: z.string().optional().describe('Event venue'),
       categories: z.string().optional().describe('Comma-separated event categories'),
-      language: z.string().optional().describe('Event language'),
-    }),
+      language: z.string().optional().describe('Event language')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.getEvent(ctx.input.eventId);
-    let e = Array.isArray(data?.events) ? data.events[0] : Array.isArray(data) ? data[0] : data;
+    let e = Array.isArray(data?.events)
+      ? data.events[0]
+      : Array.isArray(data)
+        ? data[0]
+        : data;
 
     let output = {
       eventId: e.id,
@@ -79,11 +86,12 @@ export let getEventTool = SlateTool.create(
       bgImageUrl: e.bgimage_url,
       venue: e.venue,
       categories: e.categories,
-      language: e.language,
+      language: e.language
     };
 
     return {
       output,
-      message: `Retrieved event **${output.title}** (status: ${output.status}).`,
+      message: `Retrieved event **${output.title}** (status: ${output.status}).`
     };
-  }).build();
+  })
+  .build();

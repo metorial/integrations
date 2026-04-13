@@ -2,23 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('SendGrid API Key'),
+      token: z.string().describe('SendGrid API Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +28,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.sendgrid.com/v3',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/user/profile');
@@ -36,8 +38,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
-          email: profile.email,
-        },
+          email: profile.email
+        }
       };
-    },
+    }
   });

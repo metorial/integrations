@@ -3,28 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCategoryGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Category Group',
-    key: 'manage_category_group',
-    description: `Create or rename a category group. Groups organize categories in the budget.`,
-    tags: {
-      destructive: false,
-    },
+export let manageCategoryGroup = SlateTool.create(spec, {
+  name: 'Manage Category Group',
+  key: 'manage_category_group',
+  description: `Create or rename a category group. Groups organize categories in the budget.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.'),
-    action: z.enum(['create', 'update']).describe('Action to perform'),
-    categoryGroupId: z.string().optional().describe('Category group ID (required for update)'),
-    name: z.string().describe('Category group name'),
-  }))
-  .output(z.object({
-    categoryGroupId: z.string().describe('Category group ID'),
-    name: z.string().describe('Category group name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      budgetId: z
+        .string()
+        .optional()
+        .describe('Budget ID. Defaults to the configured budget.'),
+      action: z.enum(['create', 'update']).describe('Action to perform'),
+      categoryGroupId: z
+        .string()
+        .optional()
+        .describe('Category group ID (required for update)'),
+      name: z.string().describe('Category group name')
+    })
+  )
+  .output(
+    z.object({
+      categoryGroupId: z.string().describe('Category group ID'),
+      name: z.string().describe('Category group name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let budgetId = ctx.input.budgetId ?? ctx.config.budgetId;
 
@@ -35,15 +42,17 @@ export let manageCategoryGroup = SlateTool.create(
       if (!ctx.input.categoryGroupId) {
         throw new Error('categoryGroupId is required for update action');
       }
-      group = await client.updateCategoryGroup(budgetId, ctx.input.categoryGroupId, { name: ctx.input.name });
+      group = await client.updateCategoryGroup(budgetId, ctx.input.categoryGroupId, {
+        name: ctx.input.name
+      });
     }
 
     return {
       output: {
         categoryGroupId: group.id,
-        name: group.name,
+        name: group.name
       },
-      message: `${ctx.input.action === 'create' ? 'Created' : 'Updated'} category group **${group.name}**`,
+      message: `${ctx.input.action === 'create' ? 'Created' : 'Updated'} category group **${group.name}**`
     };
   })
   .build();

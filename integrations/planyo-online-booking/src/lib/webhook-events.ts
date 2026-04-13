@@ -16,34 +16,32 @@ export let RESERVATION_EVENTS = [
   'noshow',
   'confirmed_cleared',
   'added_to_waitlist',
-  'new_price_quotation',
+  'new_price_quotation'
 ] as const;
 
 export let PAYMENT_EVENTS = [
   'reservation_payment_received',
   'reservation_payment_removed',
   'coupon_payment_received',
-  'coupon_payment_removed',
+  'coupon_payment_removed'
 ] as const;
 
-export let USER_EVENTS = [
-  'user_updated',
-] as const;
+export let USER_EVENTS = ['user_updated'] as const;
 
 export let RESOURCE_EVENTS = [
   'resource_settings_changed',
   'resource_removed',
-  'vacation_modified',
+  'vacation_modified'
 ] as const;
 
 export let ALL_EVENTS = [
   ...RESERVATION_EVENTS,
   ...PAYMENT_EVENTS,
   ...USER_EVENTS,
-  ...RESOURCE_EVENTS,
+  ...RESOURCE_EVENTS
 ] as const;
 
-export type ReservationEventCode = typeof RESERVATION_EVENTS[number];
-export type PaymentEventCode = typeof PAYMENT_EVENTS[number];
-export type UserEventCode = typeof USER_EVENTS[number];
-export type ResourceEventCode = typeof RESOURCE_EVENTS[number];
+export type ReservationEventCode = (typeof RESERVATION_EVENTS)[number];
+export type PaymentEventCode = (typeof PAYMENT_EVENTS)[number];
+export type UserEventCode = (typeof USER_EVENTS)[number];
+export type ResourceEventCode = (typeof RESOURCE_EVENTS)[number];

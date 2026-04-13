@@ -51,41 +51,52 @@ let mapPerson = (raw: any) => ({
   updatedAt: raw.updated_at
 });
 
-export let createPerson = SlateTool.create(
-  spec,
-  {
-    name: 'Create Person',
-    key: 'create_person',
-    description: `Create a new person (contact) in SalesLoft. Requires either an email address or both phone and last name. Supports setting contact details, job information, account association, tags, and custom fields.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createPerson = SlateTool.create(spec, {
+  name: 'Create Person',
+  key: 'create_person',
+  description: `Create a new person (contact) in SalesLoft. Requires either an email address or both phone and last name. Supports setting contact details, job information, account association, tags, and custom fields.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    emailAddress: z.string().optional().describe('Primary email address (required if phone + lastName not provided)'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name (required if emailAddress not provided)'),
-    phone: z.string().optional().describe('Phone number (required with lastName if emailAddress not provided)'),
-    phoneExtension: z.string().optional().describe('Phone extension'),
-    mobilePhone: z.string().optional().describe('Mobile phone number'),
-    homePhone: z.string().optional().describe('Home phone number'),
-    title: z.string().optional().describe('Job title'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State/Province'),
-    country: z.string().optional().describe('Country'),
-    linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
-    personalWebsite: z.string().optional().describe('Personal website URL'),
-    jobSeniority: z.string().optional().describe('Job seniority level'),
-    accountId: z.number().optional().describe('ID of the account to associate with'),
-    ownerId: z.number().optional().describe('ID of the user who owns this person'),
-    tags: z.array(z.string()).optional().describe('Tags to apply'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Custom field values as key-value pairs'),
-    doNotContact: z.boolean().optional().describe('Mark as do-not-contact')
-  }))
+})
+  .input(
+    z.object({
+      emailAddress: z
+        .string()
+        .optional()
+        .describe('Primary email address (required if phone + lastName not provided)'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z
+        .string()
+        .optional()
+        .describe('Last name (required if emailAddress not provided)'),
+      phone: z
+        .string()
+        .optional()
+        .describe('Phone number (required with lastName if emailAddress not provided)'),
+      phoneExtension: z.string().optional().describe('Phone extension'),
+      mobilePhone: z.string().optional().describe('Mobile phone number'),
+      homePhone: z.string().optional().describe('Home phone number'),
+      title: z.string().optional().describe('Job title'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State/Province'),
+      country: z.string().optional().describe('Country'),
+      linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
+      personalWebsite: z.string().optional().describe('Personal website URL'),
+      jobSeniority: z.string().optional().describe('Job seniority level'),
+      accountId: z.number().optional().describe('ID of the account to associate with'),
+      ownerId: z.number().optional().describe('ID of the user who owns this person'),
+      tags: z.array(z.string()).optional().describe('Tags to apply'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom field values as key-value pairs'),
+      doNotContact: z.boolean().optional().describe('Mark as do-not-contact')
+    })
+  )
   .output(personOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -116,41 +127,41 @@ export let createPerson = SlateTool.create(
       output,
       message: `Created person **${output.displayName || output.emailAddress || 'Unknown'}** (ID: ${output.personId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let updatePerson = SlateTool.create(
-  spec,
-  {
-    name: 'Update Person',
-    key: 'update_person',
-    description: `Update an existing person (contact) in SalesLoft. Provide the person ID and any fields to update. Only provided fields will be changed.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updatePerson = SlateTool.create(spec, {
+  name: 'Update Person',
+  key: 'update_person',
+  description: `Update an existing person (contact) in SalesLoft. Provide the person ID and any fields to update. Only provided fields will be changed.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    personId: z.number().describe('ID of the person to update'),
-    emailAddress: z.string().optional().describe('Updated primary email address'),
-    firstName: z.string().optional().describe('Updated first name'),
-    lastName: z.string().optional().describe('Updated last name'),
-    phone: z.string().optional().describe('Updated phone number'),
-    mobilePhone: z.string().optional().describe('Updated mobile phone number'),
-    title: z.string().optional().describe('Updated job title'),
-    city: z.string().optional().describe('Updated city'),
-    state: z.string().optional().describe('Updated state'),
-    country: z.string().optional().describe('Updated country'),
-    linkedinUrl: z.string().optional().describe('Updated LinkedIn URL'),
-    jobSeniority: z.string().optional().describe('Updated job seniority'),
-    accountId: z.number().optional().describe('Updated account ID'),
-    ownerId: z.number().optional().describe('Updated owner user ID'),
-    tags: z.array(z.string()).optional().describe('Updated tags'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Updated custom fields'),
-    doNotContact: z.boolean().optional().describe('Updated do-not-contact flag')
-  }))
+})
+  .input(
+    z.object({
+      personId: z.number().describe('ID of the person to update'),
+      emailAddress: z.string().optional().describe('Updated primary email address'),
+      firstName: z.string().optional().describe('Updated first name'),
+      lastName: z.string().optional().describe('Updated last name'),
+      phone: z.string().optional().describe('Updated phone number'),
+      mobilePhone: z.string().optional().describe('Updated mobile phone number'),
+      title: z.string().optional().describe('Updated job title'),
+      city: z.string().optional().describe('Updated city'),
+      state: z.string().optional().describe('Updated state'),
+      country: z.string().optional().describe('Updated country'),
+      linkedinUrl: z.string().optional().describe('Updated LinkedIn URL'),
+      jobSeniority: z.string().optional().describe('Updated job seniority'),
+      accountId: z.number().optional().describe('Updated account ID'),
+      ownerId: z.number().optional().describe('Updated owner user ID'),
+      tags: z.array(z.string()).optional().describe('Updated tags'),
+      customFields: z.record(z.string(), z.any()).optional().describe('Updated custom fields'),
+      doNotContact: z.boolean().optional().describe('Updated do-not-contact flag')
+    })
+  )
   .output(personOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -178,24 +189,24 @@ export let updatePerson = SlateTool.create(
       output,
       message: `Updated person **${output.displayName || output.emailAddress || 'Unknown'}** (ID: ${output.personId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let getPerson = SlateTool.create(
-  spec,
-  {
-    name: 'Get Person',
-    key: 'get_person',
-    description: `Fetch a single person (contact) from SalesLoft by their ID. Returns full contact details including email, phone, job info, account association, tags, and custom fields.`,
-    tags: {
-      readOnly: true
-    }
+export let getPerson = SlateTool.create(spec, {
+  name: 'Get Person',
+  key: 'get_person',
+  description: `Fetch a single person (contact) from SalesLoft by their ID. Returns full contact details including email, phone, job info, account association, tags, and custom fields.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    personId: z.number().describe('ID of the person to fetch')
-  }))
+})
+  .input(
+    z.object({
+      personId: z.number().describe('ID of the person to fetch')
+    })
+  )
   .output(personOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let person = await client.getPerson(ctx.input.personId);
     let output = mapPerson(person);
@@ -204,28 +215,30 @@ export let getPerson = SlateTool.create(
       output,
       message: `Fetched person **${output.displayName || output.emailAddress || 'Unknown'}** (ID: ${output.personId}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deletePerson = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Person',
-    key: 'delete_person',
-    description: `Permanently delete a person (contact) from SalesLoft. This action is irreversible.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deletePerson = SlateTool.create(spec, {
+  name: 'Delete Person',
+  key: 'delete_person',
+  description: `Permanently delete a person (contact) from SalesLoft. This action is irreversible.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    personId: z.number().describe('ID of the person to delete')
-  }))
-  .output(z.object({
-    personId: z.number().describe('ID of the deleted person'),
-    deleted: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      personId: z.number().describe('ID of the person to delete')
+    })
+  )
+  .output(
+    z.object({
+      personId: z.number().describe('ID of the deleted person'),
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     await client.deletePerson(ctx.input.personId);
 
@@ -236,7 +249,8 @@ export let deletePerson = SlateTool.create(
       },
       message: `Deleted person with ID ${ctx.input.personId}.`
     };
-  }).build();
+  })
+  .build();
 
 let paginationOutputSchema = z.object({
   perPage: z.number().describe('Results per page'),
@@ -245,33 +259,37 @@ let paginationOutputSchema = z.object({
   prevPage: z.number().nullable().describe('Previous page number, null if first page')
 });
 
-export let listPeople = SlateTool.create(
-  spec,
-  {
-    name: 'List People',
-    key: 'list_people',
-    description: `List people (contacts) in SalesLoft with optional filtering by email, tag, cadence, account, or owner. Supports pagination and sorting.`,
-    tags: {
-      readOnly: true
-    }
+export let listPeople = SlateTool.create(spec, {
+  name: 'List People',
+  key: 'list_people',
+  description: `List people (contacts) in SalesLoft with optional filtering by email, tag, cadence, account, or owner. Supports pagination and sorting.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
-    sortBy: z.string().optional().describe('Field to sort by (e.g., "updated_at", "created_at")'),
-    sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
-    emailAddresses: z.array(z.string()).optional().describe('Filter by email addresses'),
-    tagId: z.number().optional().describe('Filter by tag ID'),
-    cadenceId: z.number().optional().describe('Filter by cadence membership'),
-    accountId: z.number().optional().describe('Filter by account ID'),
-    ownerId: z.number().optional().describe('Filter by owner user ID')
-  }))
-  .output(z.object({
-    people: z.array(personOutputSchema).describe('List of people'),
-    paging: paginationOutputSchema
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (1-100, default: 25)'),
+      sortBy: z
+        .string()
+        .optional()
+        .describe('Field to sort by (e.g., "updated_at", "created_at")'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
+      emailAddresses: z.array(z.string()).optional().describe('Filter by email addresses'),
+      tagId: z.number().optional().describe('Filter by tag ID'),
+      cadenceId: z.number().optional().describe('Filter by cadence membership'),
+      accountId: z.number().optional().describe('Filter by account ID'),
+      ownerId: z.number().optional().describe('Filter by owner user ID')
+    })
+  )
+  .output(
+    z.object({
+      people: z.array(personOutputSchema).describe('List of people'),
+      paging: paginationOutputSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listPeople(ctx.input);
     let people = result.data.map(mapPerson);
@@ -283,4 +301,5 @@ export let listPeople = SlateTool.create(
       },
       message: `Found **${people.length}** people (page ${result.metadata.paging.currentPage}).`
     };
-  }).build();
+  })
+  .build();

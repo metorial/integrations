@@ -9,7 +9,7 @@ export class PushoverClient {
     this.token = config.token;
     this.userKey = config.userKey;
     this.axios = createAxios({
-      baseURL: 'https://api.pushover.net/1',
+      baseURL: 'https://api.pushover.net/1'
     });
   }
 
@@ -42,7 +42,7 @@ export class PushoverClient {
     let data: Record<string, string | number> = {
       token: this.token,
       user: params.user ?? this.userKey,
-      message: params.message,
+      message: params.message
     };
 
     if (params.title !== undefined) data.title = params.title;
@@ -59,7 +59,8 @@ export class PushoverClient {
     if (params.expire !== undefined) data.expire = params.expire;
     if (params.callback !== undefined) data.callback = params.callback;
     if (params.tags !== undefined) data.tags = params.tags;
-    if (params.attachmentBase64 !== undefined) data.attachment_base64 = params.attachmentBase64;
+    if (params.attachmentBase64 !== undefined)
+      data.attachment_base64 = params.attachmentBase64;
     if (params.attachmentType !== undefined) data.attachment_type = params.attachmentType;
 
     let response = await this.axios.post('/messages.json', data);
@@ -82,7 +83,7 @@ export class PushoverClient {
     request: string;
   }> {
     let response = await this.axios.get(`/receipts/${receiptId}.json`, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     let d = response.data;
     return {
@@ -96,20 +97,20 @@ export class PushoverClient {
       expiresAt: d.expires_at,
       calledBack: d.called_back,
       calledBackAt: d.called_back_at,
-      request: d.request,
+      request: d.request
     };
   }
 
   async cancelReceipt(receiptId: string): Promise<{ status: number; request: string }> {
     let response = await this.axios.post(`/receipts/${receiptId}/cancel.json`, {
-      token: this.token,
+      token: this.token
     });
     return response.data;
   }
 
   async cancelReceiptByTag(tag: string): Promise<{ status: number; request: string }> {
     let response = await this.axios.post(`/receipts/cancel_by_tag/${tag}.json`, {
-      token: this.token,
+      token: this.token
     });
     return response.data;
   }
@@ -122,7 +123,7 @@ export class PushoverClient {
     request: string;
   }> {
     let response = await this.axios.get('/groups.json', {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return response.data;
   }
@@ -134,7 +135,7 @@ export class PushoverClient {
   }> {
     let response = await this.axios.post('/groups.json', {
       token: this.token,
-      name,
+      name
     });
     return response.data;
   }
@@ -151,19 +152,22 @@ export class PushoverClient {
     request: string;
   }> {
     let response = await this.axios.get(`/groups/${groupKey}.json`, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return response.data;
   }
 
-  async addUserToGroup(groupKey: string, params: {
-    userKey: string;
-    device?: string;
-    memo?: string;
-  }): Promise<{ status: number; request: string }> {
+  async addUserToGroup(
+    groupKey: string,
+    params: {
+      userKey: string;
+      device?: string;
+      memo?: string;
+    }
+  ): Promise<{ status: number; request: string }> {
     let data: Record<string, string> = {
       token: this.token,
-      user: params.userKey,
+      user: params.userKey
     };
     if (params.device !== undefined) data.device = params.device;
     if (params.memo !== undefined) data.memo = params.memo;
@@ -172,13 +176,16 @@ export class PushoverClient {
     return response.data;
   }
 
-  async removeUserFromGroup(groupKey: string, params: {
-    userKey: string;
-    device?: string;
-  }): Promise<{ status: number; request: string }> {
+  async removeUserFromGroup(
+    groupKey: string,
+    params: {
+      userKey: string;
+      device?: string;
+    }
+  ): Promise<{ status: number; request: string }> {
     let data: Record<string, string> = {
       token: this.token,
-      user: params.userKey,
+      user: params.userKey
     };
     if (params.device !== undefined) data.device = params.device;
 
@@ -186,13 +193,16 @@ export class PushoverClient {
     return response.data;
   }
 
-  async disableUserInGroup(groupKey: string, params: {
-    userKey: string;
-    device?: string;
-  }): Promise<{ status: number; request: string }> {
+  async disableUserInGroup(
+    groupKey: string,
+    params: {
+      userKey: string;
+      device?: string;
+    }
+  ): Promise<{ status: number; request: string }> {
     let data: Record<string, string> = {
       token: this.token,
-      user: params.userKey,
+      user: params.userKey
     };
     if (params.device !== undefined) data.device = params.device;
 
@@ -200,13 +210,16 @@ export class PushoverClient {
     return response.data;
   }
 
-  async enableUserInGroup(groupKey: string, params: {
-    userKey: string;
-    device?: string;
-  }): Promise<{ status: number; request: string }> {
+  async enableUserInGroup(
+    groupKey: string,
+    params: {
+      userKey: string;
+      device?: string;
+    }
+  ): Promise<{ status: number; request: string }> {
     let data: Record<string, string> = {
       token: this.token,
-      user: params.userKey,
+      user: params.userKey
     };
     if (params.device !== undefined) data.device = params.device;
 
@@ -214,20 +227,20 @@ export class PushoverClient {
     return response.data;
   }
 
-  async renameGroup(groupKey: string, name: string): Promise<{ status: number; request: string }> {
+  async renameGroup(
+    groupKey: string,
+    name: string
+  ): Promise<{ status: number; request: string }> {
     let response = await this.axios.post(`/groups/${groupKey}/rename.json`, {
       token: this.token,
-      name,
+      name
     });
     return response.data;
   }
 
   // ─── Validation ────────────────────────────────────────────
 
-  async validateUser(params: {
-    userKey?: string;
-    device?: string;
-  }): Promise<{
+  async validateUser(params: { userKey?: string; device?: string }): Promise<{
     status: number;
     group: number;
     devices: string[];
@@ -236,7 +249,7 @@ export class PushoverClient {
   }> {
     let data: Record<string, string> = {
       token: this.token,
-      user: params.userKey ?? this.userKey,
+      user: params.userKey ?? this.userKey
     };
     if (params.device !== undefined) data.device = params.device;
 
@@ -257,7 +270,7 @@ export class PushoverClient {
   }): Promise<{ status: number; request: string }> {
     let data: Record<string, string | number> = {
       token: this.token,
-      user: params.user ?? this.userKey,
+      user: params.user ?? this.userKey
     };
     if (params.device !== undefined) data.device = params.device;
     if (params.title !== undefined) data.title = params.title;
@@ -278,7 +291,7 @@ export class PushoverClient {
     request: string;
   }> {
     let response = await this.axios.get('/sounds.json', {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return response.data;
   }
@@ -293,7 +306,7 @@ export class PushoverClient {
     request: string;
   }> {
     let response = await this.axios.get('/apps/limits.json', {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return response.data;
   }
@@ -313,7 +326,7 @@ export class PushoverClient {
     let data: Record<string, string> = {
       token: this.token,
       subscription: params.subscription,
-      user: params.userKey ?? this.userKey,
+      user: params.userKey ?? this.userKey
     };
     if (params.deviceName !== undefined) data.device_name = params.deviceName;
     if (params.sound !== undefined) data.sound = params.sound;
@@ -323,7 +336,7 @@ export class PushoverClient {
     return {
       status: d.status,
       subscribedUserKey: d.subscribed_user_key,
-      request: d.request,
+      request: d.request
     };
   }
 }

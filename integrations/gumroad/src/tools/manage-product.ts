@@ -3,33 +3,36 @@ import { GumroadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Product',
-    key: 'manage_product',
-    description: `Enable, disable, or delete a Gumroad product. Use this to control product visibility and lifecycle. Note: creating new products is not supported via the API.`,
-    instructions: [
-      'Use "enable" to publish/make a product visible.',
-      'Use "disable" to unpublish/hide a product.',
-      'Use "delete" to permanently remove a product.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageProduct = SlateTool.create(spec, {
+  name: 'Manage Product',
+  key: 'manage_product',
+  description: `Enable, disable, or delete a Gumroad product. Use this to control product visibility and lifecycle. Note: creating new products is not supported via the API.`,
+  instructions: [
+    'Use "enable" to publish/make a product visible.',
+    'Use "disable" to unpublish/hide a product.',
+    'Use "delete" to permanently remove a product.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    productId: z.string().describe('The product ID to manage'),
-    action: z.enum(['enable', 'disable', 'delete']).describe('Action to perform on the product'),
-  }))
-  .output(z.object({
-    productId: z.string().describe('The managed product ID'),
-    name: z.string().optional().describe('Product name'),
-    published: z.boolean().optional().describe('Whether the product is now published'),
-    deleted: z.boolean().optional().describe('Whether the product was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productId: z.string().describe('The product ID to manage'),
+      action: z
+        .enum(['enable', 'disable', 'delete'])
+        .describe('Action to perform on the product')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string().describe('The managed product ID'),
+      name: z.string().optional().describe('Product name'),
+      published: z.boolean().optional().describe('Whether the product is now published'),
+      deleted: z.boolean().optional().describe('Whether the product was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GumroadClient({ token: ctx.auth.token });
     let { productId, action } = ctx.input;
 
@@ -52,7 +55,7 @@ export let manageProduct = SlateTool.create(
       output: {
         productId: product.id || productId,
         name: product.name || undefined,
-        published: product.published,
+        published: product.published
       },
       message: `Product **${product.name || productId}** has been ${action}d.`
     };

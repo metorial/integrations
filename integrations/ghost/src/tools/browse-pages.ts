@@ -15,16 +15,26 @@ let pageSchema = z.object({
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp'),
   url: z.string().describe('Full URL of the page'),
-  tags: z.array(z.object({
-    tagId: z.string(),
-    name: z.string(),
-    slug: z.string(),
-  })).optional().describe('Associated tags'),
-  authors: z.array(z.object({
-    authorId: z.string(),
-    name: z.string(),
-    slug: z.string(),
-  })).optional().describe('Page authors'),
+  tags: z
+    .array(
+      z.object({
+        tagId: z.string(),
+        name: z.string(),
+        slug: z.string()
+      })
+    )
+    .optional()
+    .describe('Associated tags'),
+  authors: z
+    .array(
+      z.object({
+        authorId: z.string(),
+        name: z.string(),
+        slug: z.string()
+      })
+    )
+    .optional()
+    .describe('Page authors')
 });
 
 let paginationSchema = z.object({
@@ -33,38 +43,42 @@ let paginationSchema = z.object({
   pages: z.number().describe('Total pages'),
   total: z.number().describe('Total items'),
   next: z.number().nullable().describe('Next page number'),
-  prev: z.number().nullable().describe('Previous page number'),
+  prev: z.number().nullable().describe('Previous page number')
 });
 
-export let browsePages = SlateTool.create(
-  spec,
-  {
-    name: 'Browse Pages',
-    key: 'browse_pages',
-    description: `List and search static pages from your Ghost site. Pages are standalone content (e.g., About, Contact) separate from the blog post feed. Supports filtering, pagination, and including related resources.`,
-    instructions: [
-      'Use **include** to embed related resources: `tags`, `authors`, or `tags,authors`.',
-      'Use **filter** with Ghost NQL syntax, e.g., `status:published`, `tag:about`.',
-    ],
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    filter: z.string().optional().describe('Ghost NQL filter expression'),
-    include: z.string().optional().describe('Comma-separated list of related resources to include'),
-    formats: z.string().optional().describe('Comma-separated content formats to include'),
-    limit: z.number().optional().describe('Number of pages per page (default 15)'),
-    page: z.number().optional().describe('Page number for pagination'),
-    order: z.string().optional().describe('Sort order (e.g., "title asc")'),
-  }))
-  .output(z.object({
-    pages: z.array(pageSchema).describe('List of pages'),
-    pagination: paginationSchema.describe('Pagination metadata'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let browsePages = SlateTool.create(spec, {
+  name: 'Browse Pages',
+  key: 'browse_pages',
+  description: `List and search static pages from your Ghost site. Pages are standalone content (e.g., About, Contact) separate from the blog post feed. Supports filtering, pagination, and including related resources.`,
+  instructions: [
+    'Use **include** to embed related resources: `tags`, `authors`, or `tags,authors`.',
+    'Use **filter** with Ghost NQL syntax, e.g., `status:published`, `tag:about`.'
+  ],
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      filter: z.string().optional().describe('Ghost NQL filter expression'),
+      include: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of related resources to include'),
+      formats: z.string().optional().describe('Comma-separated content formats to include'),
+      limit: z.number().optional().describe('Number of pages per page (default 15)'),
+      page: z.number().optional().describe('Page number for pagination'),
+      order: z.string().optional().describe('Sort order (e.g., "title asc")')
+    })
+  )
+  .output(
+    z.object({
+      pages: z.array(pageSchema).describe('List of pages'),
+      pagination: paginationSchema.describe('Pagination metadata')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let result = await client.browsePages({
@@ -73,7 +87,7 @@ export let browsePages = SlateTool.create(
       formats: ctx.input.formats,
       limit: ctx.input.limit,
       page: ctx.input.page,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
     let pages = (result.pages ?? []).map((p: any) => ({
@@ -91,21 +105,27 @@ export let browsePages = SlateTool.create(
       tags: p.tags?.map((t: any) => ({
         tagId: t.id,
         name: t.name,
-        slug: t.slug,
+        slug: t.slug
       })),
       authors: p.authors?.map((a: any) => ({
         authorId: a.id,
         name: a.name,
-        slug: a.slug,
-      })),
+        slug: a.slug
+      }))
     }));
 
     let pagination = result.meta?.pagination ?? {
-      page: 1, limit: 15, pages: 1, total: pages.length, next: null, prev: null,
+      page: 1,
+      limit: 15,
+      pages: 1,
+      total: pages.length,
+      next: null,
+      prev: null
     };
 
     return {
       output: { pages, pagination },
-      message: `Found **${pagination.total}** pages (page ${pagination.page} of ${pagination.pages}).`,
+      message: `Found **${pagination.total}** pages (page ${pagination.page} of ${pagination.pages}).`
     };
-  }).build();
+  })
+  .build();

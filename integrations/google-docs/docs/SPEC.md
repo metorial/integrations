@@ -15,24 +15,26 @@ Google APIs use the OAuth 2.0 protocol for authentication and authorization. The
 OAuth2 allows you to make API calls on behalf of a given user. In this model, the user visits your application, signs in with their Google account, and provides your application with authorization against a set of scopes.
 
 **Endpoints:**
+
 - Authorization endpoint: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token endpoint: `https://oauth2.googleapis.com/token`
 - Revoke endpoint: `https://oauth2.googleapis.com/revoke`
 
 **Required credentials:**
+
 - Client ID
 - Client Secret
 - Redirect URI (must be registered in Google Cloud Console)
 
 **OAuth 2.0 Scopes:**
 
-| Scope | Description | Sensitivity |
-|-------|-------------|-------------|
-| `https://www.googleapis.com/auth/documents` | See, edit, create, and delete all Google Docs documents | Sensitive |
-| `https://www.googleapis.com/auth/documents.readonly` | See all Google Docs documents | Sensitive |
-| `https://www.googleapis.com/auth/drive.file` | See, edit, create, and delete only specific Drive files used with the app | Non-sensitive (Recommended) |
-| `https://www.googleapis.com/auth/drive` | See, edit, create, and delete all Google Drive files | Restricted |
-| `https://www.googleapis.com/auth/drive.readonly` | See and download all Google Drive files | Restricted |
+| Scope                                                | Description                                                               | Sensitivity                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------- | --------------------------- |
+| `https://www.googleapis.com/auth/documents`          | See, edit, create, and delete all Google Docs documents                   | Sensitive                   |
+| `https://www.googleapis.com/auth/documents.readonly` | See all Google Docs documents                                             | Sensitive                   |
+| `https://www.googleapis.com/auth/drive.file`         | See, edit, create, and delete only specific Drive files used with the app | Non-sensitive (Recommended) |
+| `https://www.googleapis.com/auth/drive`              | See, edit, create, and delete all Google Drive files                      | Restricted                  |
+| `https://www.googleapis.com/auth/drive.readonly`     | See and download all Google Drive files                                   | Restricted                  |
 
 ### Service Account (Server-to-Server)
 
@@ -41,6 +43,7 @@ Service account credentials allow your application to talk directly to Google AP
 Service accounts use JWT-based authentication. They can access documents owned by the service account or documents shared with the service account. For Google Workspace users, service accounts can use domain-wide delegation to impersonate users.
 
 **Setup requirements:**
+
 1. Create a Google Cloud project
 2. Enable the Google Docs API
 3. Create a service account and download credentials JSON
@@ -139,11 +142,13 @@ To receive notifications when a Google Doc changes:
 4. Notifications include file metadata changes but require additional API calls to retrieve actual content changes
 
 **Configuration options:**
+
 - `address`: HTTPS webhook callback URL
 - `token`: Optional verification token for message routing
 - `expiration`: Channel expiration time (must be renewed)
 
 **Limitations:**
+
 - Requires Google Drive API scope in addition to Docs API scopes
 - Notifications indicate that a change occurred but don't include document content
 - Channels expire and must be renewed periodically

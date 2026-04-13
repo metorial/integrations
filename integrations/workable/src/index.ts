@@ -38,9 +38,5 @@ export let provider = Slate.create({
     manageTimeOffTool,
     getAccountTool
   ],
-  triggers: [
-    candidateEventsTrigger,
-    employeeEventsTrigger,
-    timeoffEventsTrigger
-  ]
+  triggers: [candidateEventsTrigger, employeeEventsTrigger, timeoffEventsTrigger]
 });

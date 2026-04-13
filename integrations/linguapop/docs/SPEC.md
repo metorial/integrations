@@ -44,6 +44,7 @@ The API returns a direct URL to the placement test and the invitation ID for tra
 Upon the completion of a placement test, Linguapop can optionally send the results back to your software. All you need to do to enable this is provide the `callbackUrl` property as part of your request body.
 
 Results include:
+
 - The candidate's final CEFR level (e.g., B2 High) and a machine-readable level code (e.g., `B2H`).
 - A numeric rating that maps to 16 fine-grained sub-levels across the A1–C2 CEFR scale.
 - Reading and listening scores (if those sections were included).

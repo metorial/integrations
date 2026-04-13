@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let formChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Form Changes',
-    key: 'form_changes',
-    description: 'Fires when stand-alone forms are submitted or updated. Covers new form submissions, edits, deletions, and restorations. Only applies to stand-alone forms, not forms attached to appointments.',
-  }
-)
-  .input(z.object({
-    event: z.string().describe('Event type (e.g. new, change, delete, restore)'),
-    role: z.string().optional().describe('Role of the actor'),
-    formEntryId: z.string().optional().describe('Form entry ID'),
-    formTemplateId: z.string().optional().describe('Form template ID'),
-    userId: z.string().optional().describe('User ID who submitted the form'),
-    content: z.any().optional().describe('Form field values'),
-    createdOn: z.string().optional().describe('UTC creation timestamp'),
-    updatedOn: z.string().optional().describe('UTC last update timestamp'),
-    rawPayload: z.any().optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    formEntryId: z.string().describe('Form entry ID'),
-    formTemplateId: z.string().optional().describe('Form template ID'),
-    userId: z.string().optional().describe('User ID who submitted the form'),
-    content: z.any().optional().describe('Form field values'),
-    createdOn: z.string().optional().describe('UTC creation timestamp'),
-    updatedOn: z.string().optional().describe('UTC last update timestamp'),
-  }))
+export let formChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Form Changes',
+  key: 'form_changes',
+  description:
+    'Fires when stand-alone forms are submitted or updated. Covers new form submissions, edits, deletions, and restorations. Only applies to stand-alone forms, not forms attached to appointments.'
+})
+  .input(
+    z.object({
+      event: z.string().describe('Event type (e.g. new, change, delete, restore)'),
+      role: z.string().optional().describe('Role of the actor'),
+      formEntryId: z.string().optional().describe('Form entry ID'),
+      formTemplateId: z.string().optional().describe('Form template ID'),
+      userId: z.string().optional().describe('User ID who submitted the form'),
+      content: z.any().optional().describe('Form field values'),
+      createdOn: z.string().optional().describe('UTC creation timestamp'),
+      updatedOn: z.string().optional().describe('UTC last update timestamp'),
+      rawPayload: z.any().optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      formEntryId: z.string().describe('Form entry ID'),
+      formTemplateId: z.string().optional().describe('Form template ID'),
+      userId: z.string().optional().describe('User ID who submitted the form'),
+      content: z.any().optional().describe('Form field values'),
+      createdOn: z.string().optional().describe('UTC creation timestamp'),
+      updatedOn: z.string().optional().describe('UTC last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
 
       // Register for "Updated stand-alone form" (code: O) which covers all form events
@@ -50,13 +52,15 @@ export let formChangesTrigger = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(ctx.auth);
-      let details = ctx.input.registrationDetails as { registrations: Array<{ webhookId: string; parentId: string }> };
+      let details = ctx.input.registrationDetails as {
+        registrations: Array<{ webhookId: string; parentId: string }>;
+      };
 
       if (details?.registrations) {
         for (let reg of details.registrations) {
@@ -69,8 +73,8 @@ export let formChangesTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events.map((item: any) => ({
@@ -82,13 +86,13 @@ export let formChangesTrigger = SlateTrigger.create(
         content: item.content ?? undefined,
         createdOn: item.created_on ?? undefined,
         updatedOn: item.updated_on ?? undefined,
-        rawPayload: item,
+        rawPayload: item
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.event || 'unknown';
       let formEntryId = ctx.input.formEntryId || `unknown-${Date.now()}`;
 
@@ -101,8 +105,9 @@ export let formChangesTrigger = SlateTrigger.create(
           userId: ctx.input.userId,
           content: ctx.input.content,
           createdOn: ctx.input.createdOn,
-          updatedOn: ctx.input.updatedOn,
-        },
+          updatedOn: ctx.input.updatedOn
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

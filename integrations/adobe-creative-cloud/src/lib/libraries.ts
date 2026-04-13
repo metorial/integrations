@@ -13,8 +13,8 @@ export class LibrariesClient {
     let response = await this.http.get('/api/v1/libraries', {
       params: {
         limit: params?.limit || 50,
-        ...(params?.start ? { start: params.start } : {}),
-      },
+        ...(params?.start ? { start: params.start } : {})
+      }
     });
     return response.data;
   }
@@ -38,8 +38,8 @@ export class LibrariesClient {
     let response = await this.http.get(`/api/v1/libraries/${libraryId}/elements`, {
       params: {
         limit: params?.limit || 50,
-        ...(params?.start ? { start: params.start } : {}),
-      },
+        ...(params?.start ? { start: params.start } : {})
+      }
     });
     return response.data;
   }
@@ -49,17 +49,22 @@ export class LibrariesClient {
     return response.data;
   }
 
-  async createElement(libraryId: string, element: {
-    name: string;
-    type: string;
-    representations?: any[];
-  }) {
+  async createElement(
+    libraryId: string,
+    element: {
+      name: string;
+      type: string;
+      representations?: any[];
+    }
+  ) {
     let response = await this.http.post(`/api/v1/libraries/${libraryId}/elements`, element);
     return response.data;
   }
 
   async deleteElement(libraryId: string, elementId: string) {
-    let response = await this.http.delete(`/api/v1/libraries/${libraryId}/elements/${elementId}`);
+    let response = await this.http.delete(
+      `/api/v1/libraries/${libraryId}/elements/${elementId}`
+    );
     return response.data;
   }
 }

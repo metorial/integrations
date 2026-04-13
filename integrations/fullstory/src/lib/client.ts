@@ -136,7 +136,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.fullstory.com',
       headers: {
-        'Authorization': `Basic ${config.token}`,
+        Authorization: `Basic ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -276,7 +276,9 @@ export class Client {
     };
   }
 
-  async createSegmentExport(params: CreateSegmentExportParams): Promise<{ operationId: string }> {
+  async createSegmentExport(
+    params: CreateSegmentExportParams
+  ): Promise<{ operationId: string }> {
     let body: Record<string, any> = {
       segmentId: params.segmentId,
       type: params.type,
@@ -320,7 +322,9 @@ export class Client {
   // ===== Search Export Results (v1) =====
 
   async getExportResults(exportId: string): Promise<{ downloadUrl: string }> {
-    let response = await this.axios.get(`/search/v1/exports/${encodeURIComponent(exportId)}/results`);
+    let response = await this.axios.get(
+      `/search/v1/exports/${encodeURIComponent(exportId)}/results`
+    );
     return { downloadUrl: response.data?.url || response.data?.downloadUrl || '' };
   }
 
@@ -343,7 +347,9 @@ export class Client {
 
   // ===== Webhook Endpoints API (v1) =====
 
-  async createWebhookEndpoint(params: CreateWebhookEndpointParams): Promise<FullStoryWebhookEndpoint> {
+  async createWebhookEndpoint(
+    params: CreateWebhookEndpointParams
+  ): Promise<FullStoryWebhookEndpoint> {
     let body: Record<string, any> = {
       url: params.url,
       eventTypes: params.eventTypes.map(e => {
@@ -359,7 +365,9 @@ export class Client {
   }
 
   async getWebhookEndpoint(endpointId: string): Promise<FullStoryWebhookEndpoint> {
-    let response = await this.axios.get(`/webhooks/v1/endpoints/${encodeURIComponent(endpointId)}`);
+    let response = await this.axios.get(
+      `/webhooks/v1/endpoints/${encodeURIComponent(endpointId)}`
+    );
     return mapResponseEndpoint(response.data);
   }
 
@@ -380,7 +388,10 @@ export class Client {
     };
   }
 
-  async updateWebhookEndpoint(endpointId: string, params: UpdateWebhookEndpointParams): Promise<FullStoryWebhookEndpoint> {
+  async updateWebhookEndpoint(
+    endpointId: string,
+    params: UpdateWebhookEndpointParams
+  ): Promise<FullStoryWebhookEndpoint> {
     let body: Record<string, any> = {};
     if (params.url !== undefined) body.url = params.url;
     if (params.enabled !== undefined) body.enabled = params.enabled;
@@ -393,7 +404,10 @@ export class Client {
       });
     }
 
-    let response = await this.axios.post(`/webhooks/v1/endpoints/${encodeURIComponent(endpointId)}`, body);
+    let response = await this.axios.post(
+      `/webhooks/v1/endpoints/${encodeURIComponent(endpointId)}`,
+      body
+    );
     return mapResponseEndpoint(response.data);
   }
 

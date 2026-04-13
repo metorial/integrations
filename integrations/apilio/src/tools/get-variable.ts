@@ -3,30 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getVariable = SlateTool.create(
-  spec,
-  {
-    name: 'Get Variable',
-    key: 'get_variable',
-    description: `Retrieve the current value and details of a specific variable in Apilio by its ID. Supports boolean, string, and numeric variable types. Useful for checking a variable's current state before updating it or making automation decisions.`,
-    tags: {
-      readOnly: true,
-    },
+export let getVariable = SlateTool.create(spec, {
+  name: 'Get Variable',
+  key: 'get_variable',
+  description: `Retrieve the current value and details of a specific variable in Apilio by its ID. Supports boolean, string, and numeric variable types. Useful for checking a variable's current state before updating it or making automation decisions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    variableId: z.string().describe('ID (UUID) of the variable to retrieve'),
-    variableType: z.enum(['boolean', 'string', 'numeric']).describe('Type of the variable'),
-  }))
-  .output(z.object({
-    variableId: z.string().describe('Unique identifier of the variable'),
-    name: z.string().describe('Name of the variable'),
-    variableType: z.enum(['boolean', 'string', 'numeric']).describe('Type of the variable'),
-    value: z.union([z.boolean(), z.string(), z.number()]).nullable().describe('Current value of the variable'),
-    createdAt: z.string().describe('When the variable was created'),
-    updatedAt: z.string().describe('When the variable was last updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      variableId: z.string().describe('ID (UUID) of the variable to retrieve'),
+      variableType: z.enum(['boolean', 'string', 'numeric']).describe('Type of the variable')
+    })
+  )
+  .output(
+    z.object({
+      variableId: z.string().describe('Unique identifier of the variable'),
+      name: z.string().describe('Name of the variable'),
+      variableType: z.enum(['boolean', 'string', 'numeric']).describe('Type of the variable'),
+      value: z
+        .union([z.boolean(), z.string(), z.number()])
+        .nullable()
+        .describe('Current value of the variable'),
+      createdAt: z.string().describe('When the variable was created'),
+      updatedAt: z.string().describe('When the variable was last updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let variableId: string;
@@ -65,9 +69,9 @@ export let getVariable = SlateTool.create(
         variableType: ctx.input.variableType,
         value,
         createdAt,
-        updatedAt,
+        updatedAt
       },
-      message: `**${ctx.input.variableType}** variable **${name}** = **${value === null ? '(empty)' : String(value)}**.`,
+      message: `**${ctx.input.variableType}** variable **${name}** = **${value === null ? '(empty)' : String(value)}**.`
     };
   })
   .build();

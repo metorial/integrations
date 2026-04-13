@@ -8,59 +8,63 @@ let labelEventTypes = ['labels:created', 'labels:updated', 'labels:deleted'] as 
 export let labelEvents = SlateTrigger.create(spec, {
   name: 'Label Events',
   key: 'label_events',
-  description: 'Triggers when labels (tags) are created, updated, or deleted in Timely.',
+  description: 'Triggers when labels (tags) are created, updated, or deleted in Timely.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Webhook event type'),
-    rawPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    labelId: z.number().describe('Label ID'),
-    name: z.string().nullable().describe('Label name'),
-    parentId: z.number().nullable().describe('Parent label ID'),
-    emoji: z.string().nullable().describe('Custom emoji'),
-    active: z.boolean().nullable().describe('Whether the label is active'),
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Webhook event type'),
+      rawPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      labelId: z.number().describe('Label ID'),
+      name: z.string().nullable().describe('Label name'),
+      parentId: z.number().nullable().describe('Parent label ID'),
+      emoji: z.string().nullable().describe('Custom emoji'),
+      active: z.boolean().nullable().describe('Whether the label is active')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new TimelyClient({
         accountId: ctx.config.accountId,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let webhook = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        eventTypes: [...labelEventTypes],
+        eventTypes: [...labelEventTypes]
       });
 
       return {
-        registrationDetails: { webhookId: String(webhook.id) },
+        registrationDetails: { webhookId: String(webhook.id) }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new TimelyClient({
         accountId: ctx.config.accountId,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
           {
             eventType: data.event ?? data.event_type ?? 'labels:updated',
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.rawPayload;
       let label = payload.data ?? payload;
 
@@ -68,7 +72,7 @@ export let labelEvents = SlateTrigger.create(spec, {
       let typeMap: Record<string, string> = {
         'labels:created': 'label.created',
         'labels:updated': 'label.updated',
-        'labels:deleted': 'label.deleted',
+        'labels:deleted': 'label.deleted'
       };
 
       return {
@@ -79,8 +83,9 @@ export let labelEvents = SlateTrigger.create(spec, {
           name: label.name ?? null,
           parentId: label.parent_id ?? null,
           emoji: label.emoji ?? null,
-          active: label.active ?? null,
-        },
+          active: label.active ?? null
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -27,7 +27,11 @@ export interface ConnectionSchedule {
 
 export interface StreamConfiguration {
   name: string;
-  syncMode?: 'full_refresh_overwrite' | 'full_refresh_append' | 'incremental_append' | 'incremental_deduped_history';
+  syncMode?:
+    | 'full_refresh_overwrite'
+    | 'full_refresh_append'
+    | 'incremental_append'
+    | 'incremental_deduped_history';
   cursorField?: string[];
   primaryKey?: string[][];
   selectedFields?: Array<{ fieldPath: string[] }>;
@@ -50,7 +54,11 @@ export interface Connection {
   namespaceDefinition?: 'source' | 'destination' | 'custom_format';
   namespaceFormat?: string;
   prefix?: string;
-  nonBreakingSchemaUpdatesBehavior?: 'ignore' | 'disable_connection' | 'propagate_columns' | 'propagate_fully';
+  nonBreakingSchemaUpdatesBehavior?:
+    | 'ignore'
+    | 'disable_connection'
+    | 'propagate_columns'
+    | 'propagate_fully';
   createdAt?: number;
 }
 

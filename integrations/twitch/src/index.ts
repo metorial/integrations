@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getUserInfo,
@@ -19,14 +18,9 @@ import {
   manageRoles,
   startCommercial,
   sendShoutout,
-  getVideos,
+  getVideos
 } from './tools';
-import {
-  streamStatus,
-  newFollower,
-  channelUpdate,
-  inboundWebhook,
-} from './triggers';
+import { streamStatus, newFollower, channelUpdate, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -48,12 +42,7 @@ export let provider = Slate.create({
     manageRoles,
     startCommercial,
     sendShoutout,
-    getVideos,
+    getVideos
   ],
-  triggers: [
-    inboundWebhook,
-    streamStatus,
-    newFollower,
-    channelUpdate,
-  ],
+  triggers: [inboundWebhook, streamStatus, newFollower, channelUpdate]
 });

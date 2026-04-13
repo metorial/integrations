@@ -6,22 +6,24 @@ let axiosInstance = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your Serpdog API key'),
+      apiKey: z.string().describe('Your Serpdog API key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
+          token: ctx.input.apiKey
         }
       };
     },
@@ -29,7 +31,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: { output: { token: string }; input: { apiKey: string } }) => {
       let response = await axiosInstance.get('/account_info', {
         params: {
-          api_key: ctx.output.token,
+          api_key: ctx.output.token
         }
       });
 
@@ -39,7 +41,7 @@ export let auth = SlateAuth.create()
         profile: {
           email: data.email,
           name: data.name || data.email,
-          plan: data.plan_name,
+          plan: data.plan_name
         }
       };
     }

@@ -3,31 +3,38 @@ import { ServerAvatarClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageApplication = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Application',
-    key: 'manage_application',
-    description: `Perform management actions on an application: delete it, view logs, or get SFTP credentials.
+export let manageApplication = SlateTool.create(spec, {
+  name: 'Manage Application',
+  key: 'manage_application',
+  description: `Perform management actions on an application: delete it, view logs, or get SFTP credentials.
 Choose an action to execute against a specific application on a server.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    organizationId: z.string().describe('Organization ID'),
-    serverId: z.string().describe('Server ID'),
-    applicationId: z.string().describe('Application ID'),
-    action: z.enum(['destroy', 'logs', 'sftpCredentials']).describe('Action to perform'),
-  }))
-  .output(z.object({
-    responseMessage: z.string().optional().describe('API response message'),
-    logs: z.record(z.string(), z.unknown()).optional().describe('Application logs (for logs action)'),
-    sftpCredentials: z.record(z.string(), z.unknown()).optional().describe('SFTP credentials (for sftpCredentials action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      organizationId: z.string().describe('Organization ID'),
+      serverId: z.string().describe('Server ID'),
+      applicationId: z.string().describe('Application ID'),
+      action: z.enum(['destroy', 'logs', 'sftpCredentials']).describe('Action to perform')
+    })
+  )
+  .output(
+    z.object({
+      responseMessage: z.string().optional().describe('API response message'),
+      logs: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Application logs (for logs action)'),
+      sftpCredentials: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('SFTP credentials (for sftpCredentials action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ServerAvatarClient({ token: ctx.auth.token });
     let orgId = ctx.input.organizationId || ctx.config.organizationId;
     if (!orgId) throw new Error('organizationId is required either in input or config');
@@ -38,11 +45,12 @@ Choose an action to execute against a specific application on a server.`,
       let result = await client.destroyApplication(orgId, serverId, applicationId);
       return {
         output: {
-          responseMessage: (result as Record<string, unknown>).message as string || 'Application deleted',
+          responseMessage:
+            ((result as Record<string, unknown>).message as string) || 'Application deleted',
           logs: undefined,
-          sftpCredentials: undefined,
+          sftpCredentials: undefined
         },
-        message: `Application **${applicationId}** has been deleted.`,
+        message: `Application **${applicationId}** has been deleted.`
       };
     }
 
@@ -50,7 +58,7 @@ Choose an action to execute against a specific application on a server.`,
       let logs = await client.getApplicationLogs(orgId, serverId, applicationId);
       return {
         output: { logs, responseMessage: undefined, sftpCredentials: undefined },
-        message: `Retrieved logs for application **${applicationId}**.`,
+        message: `Retrieved logs for application **${applicationId}**.`
       };
     }
 
@@ -58,9 +66,10 @@ Choose an action to execute against a specific application on a server.`,
       let sftpCredentials = await client.getSftpCredentials(orgId, serverId, applicationId);
       return {
         output: { sftpCredentials, responseMessage: undefined, logs: undefined },
-        message: `Retrieved SFTP credentials for application **${applicationId}**.`,
+        message: `Retrieved SFTP credentials for application **${applicationId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

@@ -15,7 +15,7 @@ import {
   updateImages,
   deleteImages,
   browseFraming,
-  listOrderStatusDefinitions,
+  listOrderStatusDefinitions
 } from './tools';
 import { orderStatusUpdate } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     updateImages,
     deleteImages,
     browseFraming,
-    listOrderStatusDefinitions,
+    listOrderStatusDefinitions
   ],
-  triggers: [
-    orderStatusUpdate,
-  ],
+  triggers: [orderStatusUpdate]
 });

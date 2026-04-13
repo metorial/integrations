@@ -15,8 +15,8 @@ export class MotionClient {
       baseURL: BASE_URL,
       headers: {
         'X-API-Key': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,8 +25,8 @@ export class MotionClient {
       baseURL: BETA_BASE_URL,
       headers: {
         'X-API-Key': this.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -58,36 +58,41 @@ export class MotionClient {
     return response.data;
   }
 
-  async listTasks(params: {
-    workspaceId?: string;
-    projectId?: string;
-    assigneeId?: string;
-    status?: string[];
-    includeAllStatuses?: boolean;
-    label?: string;
-    name?: string;
-    cursor?: string;
-  } = {}) {
+  async listTasks(
+    params: {
+      workspaceId?: string;
+      projectId?: string;
+      assigneeId?: string;
+      status?: string[];
+      includeAllStatuses?: boolean;
+      label?: string;
+      name?: string;
+      cursor?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/tasks', { params });
     return response.data;
   }
 
-  async updateTask(taskId: string, data: {
-    name?: string;
-    dueDate?: string;
-    duration?: number | string;
-    status?: string;
-    projectId?: string;
-    description?: string;
-    priority?: string;
-    labels?: string[];
-    assigneeId?: string;
-    autoScheduled?: {
-      startDate?: string;
-      deadlineType?: string;
-      schedule?: string;
-    } | null;
-  }) {
+  async updateTask(
+    taskId: string,
+    data: {
+      name?: string;
+      dueDate?: string;
+      duration?: number | string;
+      status?: string;
+      projectId?: string;
+      description?: string;
+      priority?: string;
+      labels?: string[];
+      assigneeId?: string;
+      autoScheduled?: {
+        startDate?: string;
+        deadlineType?: string;
+        schedule?: string;
+      } | null;
+    }
+  ) {
     let response = await this.axios.patch(`/tasks/${taskId}`, data);
     return response.data;
   }
@@ -97,10 +102,13 @@ export class MotionClient {
     return response.data;
   }
 
-  async moveTask(taskId: string, data: {
-    workspaceId: string;
-    assigneeId?: string;
-  }) {
+  async moveTask(
+    taskId: string,
+    data: {
+      workspaceId: string;
+      assigneeId?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/tasks/${taskId}/move`, data);
     return response.data;
   }
@@ -129,10 +137,12 @@ export class MotionClient {
     return response.data;
   }
 
-  async listProjects(params: {
-    workspaceId?: string;
-    cursor?: string;
-  } = {}) {
+  async listProjects(
+    params: {
+      workspaceId?: string;
+      cursor?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/projects', { params });
     return response.data;
   }
@@ -156,10 +166,7 @@ export class MotionClient {
     return response.data;
   }
 
-  async listRecurringTasks(params: {
-    workspaceId: string;
-    cursor?: string;
-  }) {
+  async listRecurringTasks(params: { workspaceId: string; cursor?: string }) {
     let response = await this.axios.get('/recurring-tasks', { params });
     return response.data;
   }
@@ -171,30 +178,30 @@ export class MotionClient {
 
   // ─── Comments ───────────────────────────────────────────
 
-  async createComment(data: {
-    taskId: string;
-    content?: string;
-  }) {
+  async createComment(data: { taskId: string; content?: string }) {
     let response = await this.axios.post('/comments', data);
     return response.data;
   }
 
-  async listComments(params: {
-    taskId: string;
-    cursor?: string;
-  }) {
+  async listComments(params: { taskId: string; cursor?: string }) {
     let response = await this.axios.get('/comments', { params });
     return response.data;
   }
 
   // ─── Custom Fields ──────────────────────────────────────
 
-  async createCustomField(workspaceId: string, data: {
-    type: string;
-    name: string;
-    metadata?: Record<string, unknown>;
-  }) {
-    let response = await this.betaAxios.post(`/beta/workspaces/${workspaceId}/custom-fields`, data);
+  async createCustomField(
+    workspaceId: string,
+    data: {
+      type: string;
+      name: string;
+      metadata?: Record<string, unknown>;
+    }
+  ) {
+    let response = await this.betaAxios.post(
+      `/beta/workspaces/${workspaceId}/custom-fields`,
+      data
+    );
     return response.data;
   }
 
@@ -204,33 +211,48 @@ export class MotionClient {
   }
 
   async deleteCustomField(workspaceId: string, customFieldId: string) {
-    let response = await this.betaAxios.delete(`/beta/workspaces/${workspaceId}/custom-fields/${customFieldId}`);
+    let response = await this.betaAxios.delete(
+      `/beta/workspaces/${workspaceId}/custom-fields/${customFieldId}`
+    );
     return response.data;
   }
 
-  async addCustomFieldToTask(taskId: string, data: {
-    customFieldInstanceId: string;
-    value: { type: string; value: string | number };
-  }) {
+  async addCustomFieldToTask(
+    taskId: string,
+    data: {
+      customFieldInstanceId: string;
+      value: { type: string; value: string | number };
+    }
+  ) {
     let response = await this.betaAxios.post(`/beta/custom-field-values/task/${taskId}`, data);
     return response.data;
   }
 
-  async addCustomFieldToProject(projectId: string, data: {
-    customFieldInstanceId: string;
-    value: { type: string; value: string | number };
-  }) {
-    let response = await this.betaAxios.post(`/beta/custom-field-values/project/${projectId}`, data);
+  async addCustomFieldToProject(
+    projectId: string,
+    data: {
+      customFieldInstanceId: string;
+      value: { type: string; value: string | number };
+    }
+  ) {
+    let response = await this.betaAxios.post(
+      `/beta/custom-field-values/project/${projectId}`,
+      data
+    );
     return response.data;
   }
 
   async removeCustomFieldFromTask(taskId: string, valueId: string) {
-    let response = await this.betaAxios.delete(`/beta/custom-field-values/task/${taskId}/custom-fields/${valueId}`);
+    let response = await this.betaAxios.delete(
+      `/beta/custom-field-values/task/${taskId}/custom-fields/${valueId}`
+    );
     return response.data;
   }
 
   async removeCustomFieldFromProject(projectId: string, valueId: string) {
-    let response = await this.betaAxios.delete(`/beta/custom-field-values/project/${projectId}/custom-fields/${valueId}`);
+    let response = await this.betaAxios.delete(
+      `/beta/custom-field-values/project/${projectId}/custom-fields/${valueId}`
+    );
     return response.data;
   }
 
@@ -250,21 +272,25 @@ export class MotionClient {
 
   // ─── Workspaces ─────────────────────────────────────────
 
-  async listWorkspaces(params: {
-    cursor?: string;
-    ids?: string[];
-  } = {}) {
+  async listWorkspaces(
+    params: {
+      cursor?: string;
+      ids?: string[];
+    } = {}
+  ) {
     let response = await this.axios.get('/workspaces', { params });
     return response.data;
   }
 
   // ─── Users ──────────────────────────────────────────────
 
-  async listUsers(params: {
-    workspaceId?: string;
-    teamId?: string;
-    cursor?: string;
-  } = {}) {
+  async listUsers(
+    params: {
+      workspaceId?: string;
+      teamId?: string;
+      cursor?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/users', { params });
     return response.data;
   }

@@ -3,51 +3,58 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageActivities = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Activities',
-    key: 'manage_activities',
-    description: `Create, update, or delete activities (calls, meetings, tasks, etc.) in Pipedrive. Activities can be linked to deals, persons, and organizations.
+export let manageActivities = SlateTool.create(spec, {
+  name: 'Manage Activities',
+  key: 'manage_activities',
+  description: `Create, update, or delete activities (calls, meetings, tasks, etc.) in Pipedrive. Activities can be linked to deals, persons, and organizations.
 Supports setting subject, type, due date/time, duration, location, notes, and completion status.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    activityId: z.number().optional().describe('Activity ID (required for update and delete)'),
-    subject: z.string().optional().describe('Activity subject/title'),
-    type: z.string().optional().describe('Activity type key (e.g. "call", "meeting", "task", "email")'),
-    dueDate: z.string().optional().describe('Due date (YYYY-MM-DD)'),
-    dueTime: z.string().optional().describe('Due time (HH:MM)'),
-    duration: z.string().optional().describe('Duration (HH:MM)'),
-    dealId: z.number().optional().describe('Deal ID to link'),
-    personId: z.number().optional().describe('Person ID to link'),
-    organizationId: z.number().optional().describe('Organization ID to link'),
-    note: z.string().optional().describe('Additional notes (HTML allowed)'),
-    location: z.string().optional().describe('Activity location'),
-    done: z.enum(['0', '1']).optional().describe('Completion status: 0=not done, 1=done'),
-    busyFlag: z.boolean().optional().describe('Whether the activity is marked as busy'),
-  }))
-  .output(z.object({
-    activityId: z.number().describe('Activity ID'),
-    subject: z.string().optional().describe('Activity subject'),
-    type: z.string().optional().describe('Activity type'),
-    dueDate: z.string().optional().nullable().describe('Due date'),
-    dueTime: z.string().optional().nullable().describe('Due time'),
-    duration: z.string().optional().nullable().describe('Duration'),
-    done: z.boolean().optional().describe('Whether the activity is done'),
-    dealId: z.number().optional().nullable().describe('Linked deal ID'),
-    personId: z.number().optional().nullable().describe('Linked person ID'),
-    organizationId: z.number().optional().nullable().describe('Linked organization ID'),
-    addTime: z.string().optional().describe('Creation timestamp'),
-    updateTime: z.string().optional().nullable().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the activity was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      activityId: z
+        .number()
+        .optional()
+        .describe('Activity ID (required for update and delete)'),
+      subject: z.string().optional().describe('Activity subject/title'),
+      type: z
+        .string()
+        .optional()
+        .describe('Activity type key (e.g. "call", "meeting", "task", "email")'),
+      dueDate: z.string().optional().describe('Due date (YYYY-MM-DD)'),
+      dueTime: z.string().optional().describe('Due time (HH:MM)'),
+      duration: z.string().optional().describe('Duration (HH:MM)'),
+      dealId: z.number().optional().describe('Deal ID to link'),
+      personId: z.number().optional().describe('Person ID to link'),
+      organizationId: z.number().optional().describe('Organization ID to link'),
+      note: z.string().optional().describe('Additional notes (HTML allowed)'),
+      location: z.string().optional().describe('Activity location'),
+      done: z.enum(['0', '1']).optional().describe('Completion status: 0=not done, 1=done'),
+      busyFlag: z.boolean().optional().describe('Whether the activity is marked as busy')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.number().describe('Activity ID'),
+      subject: z.string().optional().describe('Activity subject'),
+      type: z.string().optional().describe('Activity type'),
+      dueDate: z.string().optional().nullable().describe('Due date'),
+      dueTime: z.string().optional().nullable().describe('Due time'),
+      duration: z.string().optional().nullable().describe('Duration'),
+      done: z.boolean().optional().describe('Whether the activity is done'),
+      dealId: z.number().optional().nullable().describe('Linked deal ID'),
+      personId: z.number().optional().nullable().describe('Linked person ID'),
+      organizationId: z.number().optional().nullable().describe('Linked organization ID'),
+      addTime: z.string().optional().describe('Creation timestamp'),
+      updateTime: z.string().optional().nullable().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the activity was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'delete') {
@@ -55,7 +62,7 @@ Supports setting subject, type, due date/time, duration, location, notes, and co
       await client.deleteActivity(ctx.input.activityId);
       return {
         output: { activityId: ctx.input.activityId, deleted: true },
-        message: `Activity **#${ctx.input.activityId}** has been deleted.`,
+        message: `Activity **#${ctx.input.activityId}** has been deleted.`
       };
     }
 
@@ -97,8 +104,8 @@ Supports setting subject, type, due date/time, duration, location, notes, and co
         personId: activity?.person_id,
         organizationId: activity?.org_id,
         addTime: activity?.add_time,
-        updateTime: activity?.update_time,
+        updateTime: activity?.update_time
       },
-      message: `Activity **"${activity?.subject}"** (ID: ${activity?.id}) has been ${action}.`,
+      message: `Activity **"${activity?.subject}"** (ID: ${activity?.id}) has been ${action}.`
     };
   });

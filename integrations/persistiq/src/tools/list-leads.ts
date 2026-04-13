@@ -7,8 +7,16 @@ let leadSchema = z.object({
   leadId: z.string().describe('Unique identifier for the lead'),
   ownerId: z.string().optional().describe('ID of the user who owns this lead'),
   creatorId: z.string().optional().nullable().describe('ID of the user who created this lead'),
-  status: z.string().optional().nullable().describe('Current status of the lead (e.g. replied)'),
-  bounced: z.boolean().optional().nullable().describe('Whether emails to this lead have bounced'),
+  status: z
+    .string()
+    .optional()
+    .nullable()
+    .describe('Current status of the lead (e.g. replied)'),
+  bounced: z
+    .boolean()
+    .optional()
+    .nullable()
+    .describe('Whether emails to this lead have bounced'),
   optedOut: z.boolean().optional().nullable().describe('Whether the lead has opted out'),
   sentCount: z.number().optional().nullable().describe('Number of emails sent to this lead'),
   repliedCount: z.number().optional().nullable().describe('Number of replies from this lead'),
@@ -19,28 +27,29 @@ let leadSchema = z.object({
   companyName: z.string().optional().nullable().describe('Company name of the lead'),
   title: z.string().optional().nullable().describe('Job title of the lead'),
   phone: z.string().optional().nullable().describe('Phone number of the lead'),
-  industry: z.string().optional().nullable().describe('Industry of the lead'),
+  industry: z.string().optional().nullable().describe('Industry of the lead')
 });
 
-export let listLeads = SlateTool.create(
-  spec,
-  {
-    name: 'List Leads',
-    key: 'list_leads',
-    description: `List leads (prospects) in your PersistIQ account. Returns lead contact information, engagement metrics, and status. Supports pagination to retrieve large lead lists.`,
-    tags: {
-      readOnly: true,
-    },
+export let listLeads = SlateTool.create(spec, {
+  name: 'List Leads',
+  key: 'list_leads',
+  description: `List leads (prospects) in your PersistIQ account. Returns lead contact information, engagement metrics, and status. Supports pagination to retrieve large lead lists.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (starts at 0)'),
-  }))
-  .output(z.object({
-    leads: z.array(leadSchema).describe('List of leads'),
-    hasMore: z.boolean().describe('Whether there are more pages of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (starts at 0)')
+    })
+  )
+  .output(
+    z.object({
+      leads: z.array(leadSchema).describe('List of leads'),
+      hasMore: z.boolean().describe('Whether there are more pages of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listLeads({ page: ctx.input.page });
 
@@ -60,13 +69,14 @@ export let listLeads = SlateTool.create(
       companyName: lead.data?.company_name,
       title: lead.data?.title,
       phone: lead.data?.phone,
-      industry: lead.data?.industry,
+      industry: lead.data?.industry
     }));
 
     let hasMore = !!result.next_page;
 
     return {
       output: { leads, hasMore },
-      message: `Retrieved **${leads.length}** leads${hasMore ? ' (more pages available)' : ''}.`,
+      message: `Retrieved **${leads.length}** leads${hasMore ? ' (more pages available)' : ''}.`
     };
-  }).build();
+  })
+  .build();

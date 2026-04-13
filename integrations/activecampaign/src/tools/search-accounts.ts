@@ -3,34 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchAccounts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Accounts',
-    key: 'search_accounts',
-    description: `Searches and lists company/organization accounts. Supports text search and pagination.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let searchAccounts = SlateTool.create(spec, {
+  name: 'Search Accounts',
+  key: 'search_accounts',
+  description: `Searches and lists company/organization accounts. Supports text search and pagination.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Search term to filter accounts by name'),
-    limit: z.number().optional().describe('Maximum number of accounts to return'),
-    offset: z.number().optional().describe('Pagination offset')
-  }))
-  .output(z.object({
-    accounts: z.array(z.object({
-      accountId: z.string(),
-      name: z.string(),
-      accountUrl: z.string().optional(),
-      contactCount: z.number().optional(),
-      dealCount: z.number().optional()
-    })),
-    totalCount: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Search term to filter accounts by name'),
+      limit: z.number().optional().describe('Maximum number of accounts to return'),
+      offset: z.number().optional().describe('Pagination offset')
+    })
+  )
+  .output(
+    z.object({
+      accounts: z.array(
+        z.object({
+          accountId: z.string(),
+          name: z.string(),
+          accountUrl: z.string().optional(),
+          contactCount: z.number().optional(),
+          dealCount: z.number().optional()
+        })
+      ),
+      totalCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -57,4 +60,5 @@ export let searchAccounts = SlateTool.create(
       output: { accounts, totalCount },
       message: `Found **${accounts.length}** accounts.`
     };
-  }).build();
+  })
+  .build();

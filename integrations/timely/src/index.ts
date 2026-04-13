@@ -24,14 +24,9 @@ import {
   manageForecast,
   deleteForecast,
   getReport,
-  manageDayLock,
+  manageDayLock
 } from './tools';
-import {
-  timeEntryEvents,
-  projectEvents,
-  forecastEvents,
-  labelEvents,
-} from './triggers';
+import { timeEntryEvents, projectEvents, forecastEvents, labelEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,12 +54,7 @@ export let provider = Slate.create({
     manageForecast,
     deleteForecast,
     getReport,
-    manageDayLock,
+    manageDayLock
   ],
-  triggers: [
-    timeEntryEvents,
-    projectEvents,
-    forecastEvents,
-    labelEvents,
-  ],
+  triggers: [timeEntryEvents, projectEvents, forecastEvents, labelEvents]
 });

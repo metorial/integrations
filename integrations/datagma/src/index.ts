@@ -9,7 +9,7 @@ import {
   detectJobChange,
   findPeople,
   enrichTwitter,
-  getCreditBalance,
+  getCreditBalance
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -25,9 +25,7 @@ export let provider = Slate.create({
     detectJobChange,
     findPeople,
     enrichTwitter,
-    getCreditBalance,
+    getCreditBalance
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

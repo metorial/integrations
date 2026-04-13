@@ -12,9 +12,7 @@ export let createSubmissionTool = SlateTool.create(spec, {
     'For simple fields (text, email, number), provide the value directly as a string.',
     'For compound fields (name, address), provide an object with sub-field keys (e.g., {"first": "John", "last": "Doe"}).'
   ],
-  constraints: [
-    'API-created submissions do not trigger form webhooks.'
-  ]
+  constraints: ['API-created submissions do not trigger form webhooks.']
 })
   .input(
     z.object({
@@ -31,7 +29,7 @@ export let createSubmissionTool = SlateTool.create(spec, {
       submissionId: z.string().describe('ID of the newly created submission')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

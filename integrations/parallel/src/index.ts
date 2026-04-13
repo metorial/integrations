@@ -11,12 +11,9 @@ import {
   ingestFindall,
   enrichFindall,
   createMonitor,
-  manageMonitor,
+  manageMonitor
 } from './tools';
-import {
-  monitorEvents,
-  taskRunEvents,
-} from './triggers';
+import { monitorEvents, taskRunEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     ingestFindall,
     enrichFindall,
     createMonitor,
-    manageMonitor,
+    manageMonitor
   ],
-  triggers: [
-    monitorEvents,
-    taskRunEvents,
-  ],
+  triggers: [monitorEvents, taskRunEvents]
 });

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchNewsTool,
@@ -9,11 +8,9 @@ import {
   extractNewsLinksTool,
   searchNewsSourcesTool,
   newspaperFrontPagesTool,
-  geoCoordinatesTool,
+  geoCoordinatesTool
 } from './tools';
-import { newArticlesTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newArticlesTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -25,10 +22,7 @@ export let provider = Slate.create({
     extractNewsLinksTool,
     searchNewsSourcesTool,
     newspaperFrontPagesTool,
-    geoCoordinatesTool,
+    geoCoordinatesTool
   ],
-  triggers: [
-    inboundWebhook,
-    newArticlesTrigger,
-  ],
+  triggers: [inboundWebhook, newArticlesTrigger]
 });

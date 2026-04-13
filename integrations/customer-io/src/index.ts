@@ -17,12 +17,9 @@ import {
   triggerBroadcast,
   sendTransactionalMessage,
   manageCollection,
-  listCollections,
+  listCollections
 } from './tools';
-import {
-  messageEvent,
-  subscriptionEvent,
-} from './triggers';
+import { messageEvent, subscriptionEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,10 +40,7 @@ export let provider = Slate.create({
     triggerBroadcast,
     sendTransactionalMessage,
     manageCollection,
-    listCollections,
+    listCollections
   ],
-  triggers: [
-    messageEvent,
-    subscriptionEvent,
-  ],
+  triggers: [messageEvent, subscriptionEvent]
 });

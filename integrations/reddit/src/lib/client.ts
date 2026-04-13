@@ -7,8 +7,8 @@ export class RedditClient {
     this.http = createAxios({
       baseURL: 'https://oauth.reddit.com',
       headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
@@ -24,24 +24,30 @@ export class RedditClient {
     return response.data?.data ?? response.data;
   }
 
-  async getUserPosts(username: string, params: {
-    sort?: string;
-    t?: string;
-    limit?: number;
-    after?: string;
-    before?: string;
-  } = {}) {
+  async getUserPosts(
+    username: string,
+    params: {
+      sort?: string;
+      t?: string;
+      limit?: number;
+      after?: string;
+      before?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/user/${username}/submitted`, { params });
     return response.data;
   }
 
-  async getUserComments(username: string, params: {
-    sort?: string;
-    t?: string;
-    limit?: number;
-    after?: string;
-    before?: string;
-  } = {}) {
+  async getUserComments(
+    username: string,
+    params: {
+      sort?: string;
+      t?: string;
+      limit?: number;
+      after?: string;
+      before?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/user/${username}/comments`, { params });
     return response.data;
   }
@@ -63,60 +69,79 @@ export class RedditClient {
     return response.data;
   }
 
-  async getSubredditPosts(subreddit: string, sort: string = 'hot', params: {
-    t?: string;
-    limit?: number;
-    after?: string;
-    before?: string;
-  } = {}) {
+  async getSubredditPosts(
+    subreddit: string,
+    sort: string = 'hot',
+    params: {
+      t?: string;
+      limit?: number;
+      after?: string;
+      before?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/r/${subreddit}/${sort}`, { params });
     return response.data;
   }
 
-  async getMySubreddits(params: {
-    limit?: number;
-    after?: string;
-    before?: string;
-  } = {}) {
+  async getMySubreddits(
+    params: {
+      limit?: number;
+      after?: string;
+      before?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/subreddits/mine/subscriber', { params });
     return response.data;
   }
 
-  async getMyModeratedSubreddits(params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getMyModeratedSubreddits(
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/subreddits/mine/moderator', { params });
     return response.data;
   }
 
-  async searchSubreddits(query: string, params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async searchSubreddits(
+    query: string,
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/subreddits/search', {
-      params: { q: query, ...params },
+      params: { q: query, ...params }
     });
     return response.data;
   }
 
   async subscribe(subreddit: string) {
-    let response = await this.http.post('/api/subscribe', new URLSearchParams({
-      action: 'sub',
-      sr_name: subreddit,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/subscribe',
+      new URLSearchParams({
+        action: 'sub',
+        sr_name: subreddit
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async unsubscribe(subreddit: string) {
-    let response = await this.http.post('/api/subscribe', new URLSearchParams({
-      action: 'unsub',
-      sr_name: subreddit,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/subscribe',
+      new URLSearchParams({
+        action: 'unsub',
+        sr_name: subreddit
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -165,17 +190,18 @@ export class RedditClient {
       kind: 'self',
       title: params.title,
       text: params.text,
-      api_type: 'json',
+      api_type: 'json'
     });
 
     if (params.flairId) body.append('flair_id', params.flairId);
     if (params.flairText) body.append('flair_text', params.flairText);
     if (params.nsfw) body.append('nsfw', 'true');
     if (params.spoiler) body.append('spoiler', 'true');
-    if (params.sendreplies !== undefined) body.append('sendreplies', String(params.sendreplies));
+    if (params.sendreplies !== undefined)
+      body.append('sendreplies', String(params.sendreplies));
 
     let response = await this.http.post('/api/submit', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -196,7 +222,7 @@ export class RedditClient {
       kind: 'link',
       title: params.title,
       url: params.url,
-      api_type: 'json',
+      api_type: 'json'
     });
 
     if (params.flairId) body.append('flair_id', params.flairId);
@@ -204,108 +230,148 @@ export class RedditClient {
     if (params.nsfw) body.append('nsfw', 'true');
     if (params.spoiler) body.append('spoiler', 'true');
     if (params.resubmit) body.append('resubmit', 'true');
-    if (params.sendreplies !== undefined) body.append('sendreplies', String(params.sendreplies));
+    if (params.sendreplies !== undefined)
+      body.append('sendreplies', String(params.sendreplies));
 
     let response = await this.http.post('/api/submit', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async editPost(thingId: string, text: string) {
-    let response = await this.http.post('/api/editusertext', new URLSearchParams({
-      thing_id: thingId,
-      text,
-      api_type: 'json',
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/editusertext',
+      new URLSearchParams({
+        thing_id: thingId,
+        text,
+        api_type: 'json'
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async deletePost(thingId: string) {
-    let response = await this.http.post('/api/del', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/del',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async hidePost(thingId: string) {
-    let response = await this.http.post('/api/hide', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/hide',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async unhidePost(thingId: string) {
-    let response = await this.http.post('/api/unhide', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/unhide',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async markNsfw(thingId: string) {
-    let response = await this.http.post('/api/marknsfw', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/marknsfw',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async unmarkNsfw(thingId: string) {
-    let response = await this.http.post('/api/unmarknsfw', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/unmarknsfw',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async markSpoiler(thingId: string) {
-    let response = await this.http.post('/api/spoiler', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/spoiler',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async unmarkSpoiler(thingId: string) {
-    let response = await this.http.post('/api/unspoiler', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/unspoiler',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   // ─── Comments ──────────────────────────────────────────────────
 
-  async getComments(postId: string, params: {
-    sort?: string;
-    limit?: number;
-    depth?: number;
-  } = {}) {
+  async getComments(
+    postId: string,
+    params: {
+      sort?: string;
+      limit?: number;
+      depth?: number;
+    } = {}
+  ) {
     let id = postId.startsWith('t3_') ? postId.slice(3) : postId;
     let response = await this.http.get(`/comments/${id}`, { params });
     return response.data;
   }
 
   async submitComment(parentFullname: string, text: string) {
-    let response = await this.http.post('/api/comment', new URLSearchParams({
-      thing_id: parentFullname,
-      text,
-      api_type: 'json',
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/comment',
+      new URLSearchParams({
+        thing_id: parentFullname,
+        text,
+        api_type: 'json'
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -320,12 +386,16 @@ export class RedditClient {
   // ─── Voting ────────────────────────────────────────────────────
 
   async vote(thingId: string, direction: number) {
-    let response = await this.http.post('/api/vote', new URLSearchParams({
-      id: thingId,
-      dir: String(direction),
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/vote',
+      new URLSearchParams({
+        id: thingId,
+        dir: String(direction)
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -336,150 +406,192 @@ export class RedditClient {
     if (category) body.append('category', category);
 
     let response = await this.http.post('/api/save', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async unsave(thingId: string) {
-    let response = await this.http.post('/api/unsave', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/unsave',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   // ─── Private Messages ─────────────────────────────────────────
 
-  async getInbox(params: {
-    mark?: boolean;
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getInbox(
+    params: {
+      mark?: boolean;
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/message/inbox', { params });
     return response.data;
   }
 
-  async getUnread(params: {
-    mark?: boolean;
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getUnread(
+    params: {
+      mark?: boolean;
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/message/unread', { params });
     return response.data;
   }
 
-  async getSent(params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getSent(
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/message/sent', { params });
     return response.data;
   }
 
-  async sendMessage(params: {
-    to: string;
-    subject: string;
-    text: string;
-  }) {
-    let response = await this.http.post('/api/compose', new URLSearchParams({
-      to: params.to,
-      subject: params.subject,
-      text: params.text,
-      api_type: 'json',
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+  async sendMessage(params: { to: string; subject: string; text: string }) {
+    let response = await this.http.post(
+      '/api/compose',
+      new URLSearchParams({
+        to: params.to,
+        subject: params.subject,
+        text: params.text,
+        api_type: 'json'
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async markMessagesRead(ids: string[]) {
-    let response = await this.http.post('/api/read_message', new URLSearchParams({
-      id: ids.join(','),
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/read_message',
+      new URLSearchParams({
+        id: ids.join(',')
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async markMessagesUnread(ids: string[]) {
-    let response = await this.http.post('/api/unread_message', new URLSearchParams({
-      id: ids.join(','),
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/unread_message',
+      new URLSearchParams({
+        id: ids.join(',')
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   // ─── Moderation ────────────────────────────────────────────────
 
   async approve(thingId: string) {
-    let response = await this.http.post('/api/approve', new URLSearchParams({
-      id: thingId,
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/approve',
+      new URLSearchParams({
+        id: thingId
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async remove(thingId: string, spam: boolean = false) {
-    let response = await this.http.post('/api/remove', new URLSearchParams({
-      id: thingId,
-      spam: String(spam),
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/remove',
+      new URLSearchParams({
+        id: thingId,
+        spam: String(spam)
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
   async distinguish(thingId: string, how: string = 'yes') {
-    let response = await this.http.post('/api/distinguish', new URLSearchParams({
-      id: thingId,
-      how,
-      api_type: 'json',
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      '/api/distinguish',
+      new URLSearchParams({
+        id: thingId,
+        how,
+        api_type: 'json'
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
-  async getModLog(subreddit: string, params: {
-    type?: string;
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getModLog(
+    subreddit: string,
+    params: {
+      type?: string;
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/r/${subreddit}/about/log`, { params });
     return response.data;
   }
 
-  async getModQueue(subreddit: string, params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getModQueue(
+    subreddit: string,
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/r/${subreddit}/about/modqueue`, { params });
     return response.data;
   }
 
-  async getReports(subreddit: string, params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getReports(
+    subreddit: string,
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/r/${subreddit}/about/reports`, { params });
     return response.data;
   }
 
-  async banUser(subreddit: string, params: {
-    name: string;
-    banReason?: string;
-    banMessage?: string;
-    note?: string;
-    duration?: number;
-  }) {
+  async banUser(
+    subreddit: string,
+    params: {
+      name: string;
+      banReason?: string;
+      banMessage?: string;
+      note?: string;
+      duration?: number;
+    }
+  ) {
     let body = new URLSearchParams({
       name: params.name,
       type: 'banned',
-      api_type: 'json',
+      api_type: 'json'
     });
     if (params.banReason) body.append('ban_reason', params.banReason);
     if (params.banMessage) body.append('ban_message', params.banMessage);
@@ -487,25 +599,32 @@ export class RedditClient {
     if (params.duration !== undefined) body.append('duration', String(params.duration));
 
     let response = await this.http.post(`/r/${subreddit}/api/friend`, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
   async unbanUser(subreddit: string, username: string) {
-    let response = await this.http.post(`/r/${subreddit}/api/unfriend`, new URLSearchParams({
-      name: username,
-      type: 'banned',
-    }).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
+    let response = await this.http.post(
+      `/r/${subreddit}/api/unfriend`,
+      new URLSearchParams({
+        name: username,
+        type: 'banned'
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
-  async getBannedUsers(subreddit: string, params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getBannedUsers(
+    subreddit: string,
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/r/${subreddit}/about/banned`, { params });
     return response.data;
   }
@@ -522,42 +641,48 @@ export class RedditClient {
     return response.data;
   }
 
-  async setUserFlair(subreddit: string, params: {
-    name: string;
-    text?: string;
-    flairTemplateId?: string;
-    cssClass?: string;
-  }) {
+  async setUserFlair(
+    subreddit: string,
+    params: {
+      name: string;
+      text?: string;
+      flairTemplateId?: string;
+      cssClass?: string;
+    }
+  ) {
     let body = new URLSearchParams({
       name: params.name,
-      api_type: 'json',
+      api_type: 'json'
     });
     if (params.text) body.append('text', params.text);
     if (params.flairTemplateId) body.append('flair_template_id', params.flairTemplateId);
     if (params.cssClass) body.append('css_class', params.cssClass);
 
     let response = await this.http.post(`/r/${subreddit}/api/selectflair`, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
 
-  async setPostFlair(subreddit: string, params: {
-    linkFullname: string;
-    text?: string;
-    flairTemplateId?: string;
-    cssClass?: string;
-  }) {
+  async setPostFlair(
+    subreddit: string,
+    params: {
+      linkFullname: string;
+      text?: string;
+      flairTemplateId?: string;
+      cssClass?: string;
+    }
+  ) {
     let body = new URLSearchParams({
       link: params.linkFullname,
-      api_type: 'json',
+      api_type: 'json'
     });
     if (params.text) body.append('text', params.text);
     if (params.flairTemplateId) body.append('flair_template_id', params.flairTemplateId);
     if (params.cssClass) body.append('css_class', params.cssClass);
 
     let response = await this.http.post(`/r/${subreddit}/api/selectflair`, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -569,18 +694,22 @@ export class RedditClient {
     return response.data;
   }
 
-  async editWikiPage(subreddit: string, page: string, params: {
-    content: string;
-    reason?: string;
-  }) {
+  async editWikiPage(
+    subreddit: string,
+    page: string,
+    params: {
+      content: string;
+      reason?: string;
+    }
+  ) {
     let body = new URLSearchParams({
       page,
-      content: params.content,
+      content: params.content
     });
     if (params.reason) body.append('reason', params.reason);
 
     let response = await this.http.post(`/r/${subreddit}/api/wiki/edit`, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -590,10 +719,14 @@ export class RedditClient {
     return response.data;
   }
 
-  async getWikiRevisions(subreddit: string, page: string, params: {
-    limit?: number;
-    after?: string;
-  } = {}) {
+  async getWikiRevisions(
+    subreddit: string,
+    page: string,
+    params: {
+      limit?: number;
+      after?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/r/${subreddit}/wiki/revisions/${page}`, { params });
     return response.data;
   }

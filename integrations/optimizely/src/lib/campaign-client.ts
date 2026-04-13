@@ -8,9 +8,9 @@ export class CampaignClient {
     this.axios = createAxios({
       baseURL: `https://api.campaign.optimizely.com/rest/v2/${clientId}`,
       headers: {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -69,13 +69,18 @@ export class CampaignClient {
   }
 
   // Recipients
-  async addRecipient(listId: number, data: { email: string; attributes?: Record<string, any> }) {
+  async addRecipient(
+    listId: number,
+    data: { email: string; attributes?: Record<string, any> }
+  ) {
     let response = await this.axios.post(`/recipientlists/${listId}/recipients`, data);
     return response.data;
   }
 
   async removeRecipient(listId: number, recipientId: number) {
-    let response = await this.axios.delete(`/recipientlists/${listId}/recipients/${recipientId}`);
+    let response = await this.axios.delete(
+      `/recipientlists/${listId}/recipients/${recipientId}`
+    );
     return response.data;
   }
 
@@ -102,10 +107,7 @@ export class CampaignClient {
     return response.data;
   }
 
-  async createWebhook(data: {
-    url: string;
-    events: string[];
-  }) {
+  async createWebhook(data: { url: string; events: string[] }) {
     let response = await this.axios.post('/webhooks', data);
     return response.data;
   }

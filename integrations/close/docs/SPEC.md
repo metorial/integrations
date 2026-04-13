@@ -21,9 +21,11 @@ To create an API key: go to Settings > Developer > API Keys and click + New API 
 To start integrating with Close using OAuth 2.0, a developer must have a Close account and acquire a client ID and client secret. Those can be obtained by accessing the Settings page, navigating to Developer → OAuth Apps, and clicking Create App.
 
 **Authorization endpoint:** `https://app.close.com/oauth2/authorize/`
+
 - Parameters: `client_id`, `response_type=code`, `redirect_uri`
 
 **Token endpoint:** `https://api.close.com/oauth2/token/`
+
 - The Authorization Code can be exchanged for an Access Token by performing a POST request with form-encoded parameters. Parameters: `client_id`, `client_secret`, `grant_type=authorization_code`, `code`.
 - The Access Token has a limited lifetime and expires in `expires_in` seconds (default 3600).
 

@@ -5,60 +5,33 @@ import {
   getInstance,
   createInstance,
   controlInstance,
-  updateInstance,
+  updateInstance
 } from './tools/manage-instance';
-import {
-  listBuckets,
-  manageBucket,
-  listObjects,
-} from './tools/manage-storage';
+import { listBuckets, manageBucket, listObjects } from './tools/manage-storage';
 import {
   listFunctions,
   getFunction,
   createFunction,
   deleteFunction,
-  invokeFunction,
+  invokeFunction
 } from './tools/manage-functions';
-import {
-  translateText,
-  detectLanguage,
-  listLanguages,
-} from './tools/translate-text';
-import {
-  listServiceAccounts,
-  manageServiceAccount,
-  manageApiKeys,
-} from './tools/manage-iam';
-import {
-  listNetworks,
-  listSubnets,
-  manageNetwork,
-  manageSubnet,
-} from './tools/manage-vpc';
+import { translateText, detectLanguage, listLanguages } from './tools/translate-text';
+import { listServiceAccounts, manageServiceAccount, manageApiKeys } from './tools/manage-iam';
+import { listNetworks, listSubnets, manageNetwork, manageSubnet } from './tools/manage-vpc';
 import {
   listDnsZones,
   manageDnsZone,
   listRecordSets,
-  upsertDnsRecords,
+  upsertDnsRecords
 } from './tools/manage-dns';
-import {
-  listClouds,
-  listFolders,
-  manageFolder,
-} from './tools/manage-resources';
-import {
-  listDisks,
-  manageDisk,
-} from './tools/manage-disks';
+import { listClouds, listFolders, manageFolder } from './tools/manage-resources';
+import { listDisks, manageDisk } from './tools/manage-disks';
 import {
   listRegistries,
   manageRegistry,
-  listContainerImages,
+  listContainerImages
 } from './tools/manage-container-registry';
-import {
-  readLogs,
-  writeLogs,
-} from './tools/manage-logging';
+import { readLogs, writeLogs } from './tools/manage-logging';
 import { instanceChanges } from './triggers/instance-changes';
 import { functionChanges } from './triggers/function-changes';
 import { dnsZoneChanges } from './triggers/dns-zone-changes';
@@ -104,12 +77,7 @@ export let provider = Slate.create({
     manageRegistry,
     listContainerImages,
     readLogs,
-    writeLogs,
+    writeLogs
   ],
-  triggers: [
-    inboundWebhook,
-    instanceChanges,
-    functionChanges,
-    dnsZoneChanges,
-  ],
+  triggers: [inboundWebhook, instanceChanges, functionChanges, dnsZoneChanges]
 });

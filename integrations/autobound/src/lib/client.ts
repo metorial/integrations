@@ -2,11 +2,11 @@ import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
 
 let contentApi = createAxios({
-  baseURL: 'https://api.autobound.ai/api',
+  baseURL: 'https://api.autobound.ai/api'
 });
 
 let signalsApi = createAxios({
-  baseURL: 'https://signals.autobound.ai/v1',
+  baseURL: 'https://signals.autobound.ai/v1'
 });
 
 export interface GenerateContentParams {
@@ -148,32 +148,28 @@ export class AutoboundClient {
   private contentHeaders() {
     return {
       'X-API-KEY': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   private signalHeaders() {
     return {
       'X-API-KEY': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   async generateContent(params: GenerateContentParams): Promise<GenerateContentResponse> {
-    let response = await this.contentAxios.post(
-      '/external/generate-content/v3.6',
-      params,
-      { headers: this.contentHeaders() }
-    );
+    let response = await this.contentAxios.post('/external/generate-content/v3.6', params, {
+      headers: this.contentHeaders()
+    });
     return response.data;
   }
 
   async generateInsights(params: GenerateInsightsParams): Promise<GenerateInsightsResponse> {
-    let response = await this.contentAxios.post(
-      '/external/generate-insights/v1.4',
-      params,
-      { headers: this.contentHeaders() }
-    );
+    let response = await this.contentAxios.post('/external/generate-insights/v1.4', params, {
+      headers: this.contentHeaders()
+    });
     return response.data;
   }
 
@@ -188,43 +184,42 @@ export class AutoboundClient {
   }
 
   async enrichCompany(params: EnrichCompanyParams): Promise<any> {
-    let response = await this.signalsAxios.post(
-      '/companies/enrich',
-      params,
-      { headers: this.signalHeaders() }
-    );
+    let response = await this.signalsAxios.post('/companies/enrich', params, {
+      headers: this.signalHeaders()
+    });
     return response.data;
   }
 
-  async createWebhookSubscription(params: CreateWebhookParams): Promise<CreateWebhookResponse> {
-    let response = await this.signalsAxios.post(
-      '/webhooks/subscriptions',
-      params,
-      { headers: this.signalHeaders() }
-    );
+  async createWebhookSubscription(
+    params: CreateWebhookParams
+  ): Promise<CreateWebhookResponse> {
+    let response = await this.signalsAxios.post('/webhooks/subscriptions', params, {
+      headers: this.signalHeaders()
+    });
     return response.data;
   }
 
   async listWebhookSubscriptions(): Promise<WebhookSubscription[]> {
-    let response = await this.signalsAxios.get(
-      '/webhooks/subscriptions',
-      { headers: this.signalHeaders() }
-    );
+    let response = await this.signalsAxios.get('/webhooks/subscriptions', {
+      headers: this.signalHeaders()
+    });
     return response.data;
   }
 
   async deleteWebhookSubscription(subscriptionId: string): Promise<void> {
-    await this.signalsAxios.delete(
-      `/webhooks/subscriptions/${subscriptionId}`,
-      { headers: this.signalHeaders() }
-    );
+    await this.signalsAxios.delete(`/webhooks/subscriptions/${subscriptionId}`, {
+      headers: this.signalHeaders()
+    });
   }
 
-  async updateWebhookSubscription(subscriptionId: string, params: {
-    endpointUrl?: string;
-    signalTypes?: string[];
-    status?: string;
-  }): Promise<any> {
+  async updateWebhookSubscription(
+    subscriptionId: string,
+    params: {
+      endpointUrl?: string;
+      signalTypes?: string[];
+      status?: string;
+    }
+  ): Promise<any> {
     let response = await this.signalsAxios.patch(
       `/webhooks/subscriptions/${subscriptionId}`,
       params,
@@ -233,7 +228,9 @@ export class AutoboundClient {
     return response.data;
   }
 
-  async rotateWebhookSigningSecret(subscriptionId: string): Promise<{ signingSecret: string }> {
+  async rotateWebhookSigningSecret(
+    subscriptionId: string
+  ): Promise<{ signingSecret: string }> {
     let response = await this.signalsAxios.post(
       `/webhooks/subscriptions/${subscriptionId}/rotate-secret`,
       {},

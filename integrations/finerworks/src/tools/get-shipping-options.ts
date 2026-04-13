@@ -12,62 +12,75 @@ let productPricingSchema = z.object({
   addMat1Price: z.number().optional().describe('Mat 1 add-on price'),
   addMat2Price: z.number().optional().describe('Mat 2 add-on price'),
   addGlazingPrice: z.number().optional().describe('Glazing add-on price'),
-  totalPrice: z.number().describe('Total line item price'),
+  totalPrice: z.number().describe('Total line item price')
 });
 
 let shippingOptionSchema = z.object({
   rate: z.number().describe('Shipping rate'),
   shippingMethod: z.string().describe('Shipping method description'),
   shippingCode: z.string().describe('Shipping code to use when submitting orders'),
-  calculatedTotal: z.object({
-    orderPo: z.string().optional().describe('Purchase order reference'),
-    orderSubtotal: z.number().describe('Order subtotal before shipping'),
-    orderShippingRate: z.number().describe('Shipping cost'),
-    orderDiscount: z.number().optional().describe('Discount amount'),
-    orderSalesTax: z.number().optional().describe('Sales tax amount'),
-    orderSalesTaxRate: z.number().optional().describe('Sales tax rate'),
-    orderCreditsUsed: z.number().optional().describe('Credits applied'),
-    orderGrandTotal: z.number().describe('Total including shipping and tax'),
-    productPricing: z.array(productPricingSchema).optional().describe('Per-item pricing breakdown'),
-  }).describe('Full cost breakdown for this shipping option'),
+  calculatedTotal: z
+    .object({
+      orderPo: z.string().optional().describe('Purchase order reference'),
+      orderSubtotal: z.number().describe('Order subtotal before shipping'),
+      orderShippingRate: z.number().describe('Shipping cost'),
+      orderDiscount: z.number().optional().describe('Discount amount'),
+      orderSalesTax: z.number().optional().describe('Sales tax amount'),
+      orderSalesTaxRate: z.number().optional().describe('Sales tax rate'),
+      orderCreditsUsed: z.number().optional().describe('Credits applied'),
+      orderGrandTotal: z.number().describe('Total including shipping and tax'),
+      productPricing: z
+        .array(productPricingSchema)
+        .optional()
+        .describe('Per-item pricing breakdown')
+    })
+    .describe('Full cost breakdown for this shipping option')
 });
 
-export let getShippingOptions = SlateTool.create(
-  spec,
-  {
-    name: 'Get Shipping Options',
-    key: 'get_shipping_options',
-    description: `Retrieve available shipping options and pricing for an order. Provide the recipient address and order items to get shipping methods with their costs and full pricing breakdowns. The returned \`shippingCode\` values are used when submitting orders.`,
-    tags: {
-      readOnly: true,
-    },
+export let getShippingOptions = SlateTool.create(spec, {
+  name: 'Get Shipping Options',
+  key: 'get_shipping_options',
+  description: `Retrieve available shipping options and pricing for an order. Provide the recipient address and order items to get shipping methods with their costs and full pricing breakdowns. The returned \`shippingCode\` values are used when submitting orders.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    orderPo: z.string().describe('Purchase order reference'),
-    recipient: z.object({
-      firstName: z.string().describe('Recipient first name'),
-      lastName: z.string().describe('Recipient last name'),
-      address1: z.string().describe('Primary address line'),
-      city: z.string().describe('City'),
-      stateCode: z.string().optional().describe('State/province code'),
-      zipPostalCode: z.string().describe('Postal/ZIP code'),
-      countryCode: z.string().describe('Country code'),
-      phone: z.string().optional().describe('Phone number'),
-    }).describe('Recipient address'),
-    orderItems: z.array(z.object({
-      productSku: z.string().describe('Product SKU'),
-      productQty: z.number().int().min(1).describe('Quantity'),
-    })).min(1).describe('Line items'),
-  }))
-  .output(z.object({
-    options: z.array(shippingOptionSchema).describe('Available shipping options'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      orderPo: z.string().describe('Purchase order reference'),
+      recipient: z
+        .object({
+          firstName: z.string().describe('Recipient first name'),
+          lastName: z.string().describe('Recipient last name'),
+          address1: z.string().describe('Primary address line'),
+          city: z.string().describe('City'),
+          stateCode: z.string().optional().describe('State/province code'),
+          zipPostalCode: z.string().describe('Postal/ZIP code'),
+          countryCode: z.string().describe('Country code'),
+          phone: z.string().optional().describe('Phone number')
+        })
+        .describe('Recipient address'),
+      orderItems: z
+        .array(
+          z.object({
+            productSku: z.string().describe('Product SKU'),
+            productQty: z.number().int().min(1).describe('Quantity')
+          })
+        )
+        .min(1)
+        .describe('Line items')
+    })
+  )
+  .output(
+    z.object({
+      options: z.array(shippingOptionSchema).describe('Available shipping options')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       webApiKey: ctx.auth.webApiKey,
       appKey: ctx.auth.appKey,
-      testMode: ctx.config.testMode,
+      testMode: ctx.config.testMode
     });
 
     let orderPayload = {
@@ -86,17 +99,17 @@ export let getShippingOptions = SlateTool.create(
         country_code: ctx.input.recipient.countryCode,
         phone: ctx.input.recipient.phone ?? '',
         email: null,
-        address_order_po: ctx.input.orderPo,
+        address_order_po: ctx.input.orderPo
       },
-      order_items: ctx.input.orderItems.map((item) => ({
+      order_items: ctx.input.orderItems.map(item => ({
         product_sku: item.productSku,
         product_qty: item.productQty,
         product_title: '',
         product_image: null,
         product_guid: '',
-        product_order_po: ctx.input.orderPo,
+        product_order_po: ctx.input.orderPo
       })),
-      shipping_code: 'SD',
+      shipping_code: 'SD'
     };
 
     let data = await client.listShippingOptions(orderPayload);
@@ -127,13 +140,14 @@ export let getShippingOptions = SlateTool.create(
           addMat1Price: p.add_mat_1_price,
           addMat2Price: p.add_mat_2_price,
           addGlazingPrice: p.add_glazing_price,
-          totalPrice: p.total_price ?? 0,
-        })),
-      },
+          totalPrice: p.total_price ?? 0
+        }))
+      }
     }));
 
     return {
       output: { options },
-      message: `Found **${options.length}** shipping option(s). ${options.map((o: any) => `${o.shippingMethod} (\`${o.shippingCode}\`): $${o.calculatedTotal.orderGrandTotal.toFixed(2)}`).join(', ')}`,
+      message: `Found **${options.length}** shipping option(s). ${options.map((o: any) => `${o.shippingMethod} (\`${o.shippingCode}\`): $${o.calculatedTotal.orderGrandTotal.toFixed(2)}`).join(', ')}`
     };
-  }).build();
+  })
+  .build();

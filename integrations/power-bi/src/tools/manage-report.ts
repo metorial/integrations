@@ -9,38 +9,42 @@ let pageSchema = z.object({
   order: z.number().optional().describe('Page order')
 });
 
-export let manageReport = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Report',
-    key: 'manage_report',
-    description: `Get report details, list pages, clone a report, rebind to a different dataset, or delete a report.`,
-    instructions: [
-      'Use "get" to retrieve full report details and pages.',
-      'Use "clone" to duplicate a report, optionally to another workspace.',
-      'Use "rebind" to change the underlying dataset of a report.',
-      'Use "delete" to permanently remove a report.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum(['get', 'clone', 'rebind', 'delete']).describe('Action to perform'),
-    reportId: z.string().describe('ID of the report'),
-    workspaceId: z.string().optional().describe('Workspace ID containing the report'),
-    cloneName: z.string().optional().describe('Name for the cloned report (required for clone)'),
-    targetWorkspaceId: z.string().optional().describe('Target workspace ID for clone'),
-    targetDatasetId: z.string().optional().describe('Target dataset ID for clone or rebind')
-  }))
-  .output(z.object({
-    reportId: z.string().optional().describe('Report ID'),
-    name: z.string().optional().describe('Report name'),
-    datasetId: z.string().optional().describe('Underlying dataset ID'),
-    webUrl: z.string().optional().describe('Web URL'),
-    embedUrl: z.string().optional().describe('Embed URL'),
-    pages: z.array(pageSchema).optional().describe('Report pages'),
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageReport = SlateTool.create(spec, {
+  name: 'Manage Report',
+  key: 'manage_report',
+  description: `Get report details, list pages, clone a report, rebind to a different dataset, or delete a report.`,
+  instructions: [
+    'Use "get" to retrieve full report details and pages.',
+    'Use "clone" to duplicate a report, optionally to another workspace.',
+    'Use "rebind" to change the underlying dataset of a report.',
+    'Use "delete" to permanently remove a report.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['get', 'clone', 'rebind', 'delete']).describe('Action to perform'),
+      reportId: z.string().describe('ID of the report'),
+      workspaceId: z.string().optional().describe('Workspace ID containing the report'),
+      cloneName: z
+        .string()
+        .optional()
+        .describe('Name for the cloned report (required for clone)'),
+      targetWorkspaceId: z.string().optional().describe('Target workspace ID for clone'),
+      targetDatasetId: z.string().optional().describe('Target dataset ID for clone or rebind')
+    })
+  )
+  .output(
+    z.object({
+      reportId: z.string().optional().describe('Report ID'),
+      name: z.string().optional().describe('Report name'),
+      datasetId: z.string().optional().describe('Underlying dataset ID'),
+      webUrl: z.string().optional().describe('Web URL'),
+      embedUrl: z.string().optional().describe('Embed URL'),
+      pages: z.array(pageSchema).optional().describe('Report pages'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let { action, reportId, workspaceId } = ctx.input;
 
@@ -49,7 +53,9 @@ export let manageReport = SlateTool.create(
       let pages: any[] = [];
       try {
         pages = await client.getReportPages(reportId, workspaceId);
-      } catch { /* pages may not be available */ }
+      } catch {
+        /* pages may not be available */
+      }
 
       return {
         output: {
@@ -71,11 +77,15 @@ export let manageReport = SlateTool.create(
 
     if (action === 'clone') {
       if (!ctx.input.cloneName) throw new Error('cloneName is required for clone');
-      let cloned = await client.cloneReport(reportId, {
-        name: ctx.input.cloneName,
-        targetWorkspaceId: ctx.input.targetWorkspaceId,
-        targetModelId: ctx.input.targetDatasetId
-      }, workspaceId);
+      let cloned = await client.cloneReport(
+        reportId,
+        {
+          name: ctx.input.cloneName,
+          targetWorkspaceId: ctx.input.targetWorkspaceId,
+          targetModelId: ctx.input.targetDatasetId
+        },
+        workspaceId
+      );
       return {
         output: {
           reportId: cloned.id,
@@ -90,7 +100,8 @@ export let manageReport = SlateTool.create(
     }
 
     if (action === 'rebind') {
-      if (!ctx.input.targetDatasetId) throw new Error('targetDatasetId is required for rebind');
+      if (!ctx.input.targetDatasetId)
+        throw new Error('targetDatasetId is required for rebind');
       await client.rebindReport(reportId, ctx.input.targetDatasetId, workspaceId);
       return {
         output: { reportId, datasetId: ctx.input.targetDatasetId, success: true },

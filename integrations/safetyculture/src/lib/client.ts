@@ -8,20 +8,22 @@ export class Client {
       baseURL: 'https://api.safetyculture.io',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Inspections ───
 
-  async searchInspections(params: {
-    modifiedAfter?: string;
-    templateId?: string[];
-    archived?: string;
-    completed?: string;
-    limit?: number;
-  } = {}): Promise<{ inspections: any[]; total?: number }> {
+  async searchInspections(
+    params: {
+      modifiedAfter?: string;
+      templateId?: string[];
+      archived?: string;
+      completed?: string;
+      limit?: number;
+    } = {}
+  ): Promise<{ inspections: any[]; total?: number }> {
     let queryParams: Record<string, string> = {};
     if (params.modifiedAfter) queryParams['modified_after'] = params.modifiedAfter;
     if (params.archived) queryParams['archived'] = params.archived;
@@ -42,7 +44,7 @@ export class Client {
     let response = await this.http.get(`/audits/search?${queryStr}`);
     return {
       inspections: response.data.audits || [],
-      total: response.data.total,
+      total: response.data.total
     };
   }
 
@@ -51,12 +53,15 @@ export class Client {
     return response.data;
   }
 
-  async startInspection(templateId: string, options: {
-    headerItems?: any[];
-    siteId?: string;
-  } = {}): Promise<any> {
+  async startInspection(
+    templateId: string,
+    options: {
+      headerItems?: any[];
+      siteId?: string;
+    } = {}
+  ): Promise<any> {
     let body: Record<string, any> = {
-      template_id: templateId,
+      template_id: templateId
     };
     if (options.headerItems) body['header_items'] = options.headerItems;
     if (options.siteId) body['site_id'] = options.siteId;
@@ -66,7 +71,9 @@ export class Client {
   }
 
   async completeInspection(inspectionId: string): Promise<any> {
-    let response = await this.http.post(`/inspections/v1/inspections/${inspectionId}/complete`);
+    let response = await this.http.post(
+      `/inspections/v1/inspections/${inspectionId}/complete`
+    );
     return response.data;
   }
 
@@ -87,32 +94,35 @@ export class Client {
 
   async exportInspection(inspectionId: string, format: 'pdf' | 'word' = 'pdf'): Promise<any> {
     let response = await this.http.post(`/inspections/v1/inspections/${inspectionId}/export`, {
-      format,
+      format
     });
     return response.data;
   }
 
   async setInspectionOwner(inspectionId: string, ownerId: string): Promise<any> {
     let response = await this.http.put(`/inspections/v1/inspections/${inspectionId}/owner`, {
-      owner_id: ownerId,
+      owner_id: ownerId
     });
     return response.data;
   }
 
   async setInspectionSite(inspectionId: string, siteId: string): Promise<any> {
     let response = await this.http.put(`/inspections/v1/inspections/${inspectionId}/site`, {
-      site_id: siteId,
+      site_id: siteId
     });
     return response.data;
   }
 
   // ─── Templates ───
 
-  async searchTemplates(params: {
-    modifiedAfter?: string;
-  } = {}): Promise<any[]> {
+  async searchTemplates(
+    params: {
+      modifiedAfter?: string;
+    } = {}
+  ): Promise<any[]> {
     let queryStr = 'field=template_id&field=name&field=modified_at&field=description';
-    if (params.modifiedAfter) queryStr += `&modified_after=${encodeURIComponent(params.modifiedAfter)}`;
+    if (params.modifiedAfter)
+      queryStr += `&modified_after=${encodeURIComponent(params.modifiedAfter)}`;
 
     let response = await this.http.get(`/templates/search?${queryStr}`);
     return response.data.templates || response.data.template_list || [];
@@ -130,14 +140,16 @@ export class Client {
 
   // ─── Actions ───
 
-  async listActions(params: {
-    pageSize?: number;
-    pageToken?: string;
-    status?: string[];
-    priority?: string[];
-    assigneeIds?: string[];
-    searchValue?: string;
-  } = {}): Promise<{ actions: any[]; nextPageToken?: string }> {
+  async listActions(
+    params: {
+      pageSize?: number;
+      pageToken?: string;
+      status?: string[];
+      priority?: string[];
+      assigneeIds?: string[];
+      searchValue?: string;
+    } = {}
+  ): Promise<{ actions: any[]; nextPageToken?: string }> {
     let body: Record<string, any> = {};
     if (params.pageSize) body['page_size'] = params.pageSize;
     if (params.pageToken) body['page_token'] = params.pageToken;
@@ -152,7 +164,7 @@ export class Client {
     let response = await this.http.post('/tasks/v1/actions/list', body);
     return {
       actions: response.data.actions || [],
-      nextPageToken: response.data.next_page_token,
+      nextPageToken: response.data.next_page_token
     };
   }
 
@@ -173,7 +185,7 @@ export class Client {
     labels?: string[];
   }): Promise<any> {
     let body: Record<string, any> = {
-      title: data.title,
+      title: data.title
     };
     if (data.description) body['description'] = data.description;
     if (data.assigneeIds) body['assignee_ids'] = data.assigneeIds;
@@ -194,32 +206,44 @@ export class Client {
   }
 
   async updateActionDescription(actionId: string, description: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/actions/${actionId}/description`, { description });
+    let response = await this.http.put(`/tasks/v1/actions/${actionId}/description`, {
+      description
+    });
     return response.data;
   }
 
   async updateActionStatus(actionId: string, status: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/actions/${actionId}/status`, { status_id: status });
+    let response = await this.http.put(`/tasks/v1/actions/${actionId}/status`, {
+      status_id: status
+    });
     return response.data;
   }
 
   async updateActionPriority(actionId: string, priority: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/actions/${actionId}/priority`, { priority_id: priority });
+    let response = await this.http.put(`/tasks/v1/actions/${actionId}/priority`, {
+      priority_id: priority
+    });
     return response.data;
   }
 
   async updateActionDueDate(actionId: string, dueAt: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/actions/${actionId}/due_at`, { due_at: dueAt });
+    let response = await this.http.put(`/tasks/v1/actions/${actionId}/due_at`, {
+      due_at: dueAt
+    });
     return response.data;
   }
 
   async updateActionAssignees(actionId: string, assigneeIds: string[]): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/actions/${actionId}/assignees`, { assignee_ids: assigneeIds });
+    let response = await this.http.put(`/tasks/v1/actions/${actionId}/assignees`, {
+      assignee_ids: assigneeIds
+    });
     return response.data;
   }
 
   async updateActionSite(actionId: string, siteId: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/actions/${actionId}/site`, { site_id: siteId });
+    let response = await this.http.put(`/tasks/v1/actions/${actionId}/site`, {
+      site_id: siteId
+    });
     return response.data;
   }
 
@@ -230,14 +254,16 @@ export class Client {
 
   // ─── Issues ───
 
-  async listIssues(params: {
-    pageSize?: number;
-    pageToken?: string;
-    status?: string[];
-    priority?: string[];
-    categoryIds?: string[];
-    siteIds?: string[];
-  } = {}): Promise<{ issues: any[]; nextPageToken?: string }> {
+  async listIssues(
+    params: {
+      pageSize?: number;
+      pageToken?: string;
+      status?: string[];
+      priority?: string[];
+      categoryIds?: string[];
+      siteIds?: string[];
+    } = {}
+  ): Promise<{ issues: any[]; nextPageToken?: string }> {
     let body: Record<string, any> = {};
     if (params.pageSize) body['page_size'] = params.pageSize;
     if (params.pageToken) body['page_token'] = params.pageToken;
@@ -252,7 +278,7 @@ export class Client {
     let response = await this.http.post('/tasks/v1/incidents/list', body);
     return {
       issues: response.data.incidents || response.data.issues || [],
-      nextPageToken: response.data.next_page_token,
+      nextPageToken: response.data.next_page_token
     };
   }
 
@@ -273,7 +299,7 @@ export class Client {
     occurredAt?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      title: data.title,
+      title: data.title
     };
     if (data.description) body['description'] = data.description;
     if (data.categoryId) body['category_id'] = data.categoryId;
@@ -294,7 +320,9 @@ export class Client {
   }
 
   async updateIssueDescription(issueId: string, description: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/description`, { description });
+    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/description`, {
+      description
+    });
     return response.data;
   }
 
@@ -304,37 +332,52 @@ export class Client {
   }
 
   async updateIssuePriority(issueId: string, priority: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/priority`, { priority });
+    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/priority`, {
+      priority
+    });
     return response.data;
   }
 
   async updateIssueDueDate(issueId: string, dueAt: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/due_at`, { due_at: dueAt });
+    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/due_at`, {
+      due_at: dueAt
+    });
     return response.data;
   }
 
   async updateIssueCategory(issueId: string, categoryId: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/category`, { category_id: categoryId });
+    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/category`, {
+      category_id: categoryId
+    });
     return response.data;
   }
 
   async updateIssueSite(issueId: string, siteId: string): Promise<any> {
-    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/site`, { site_id: siteId });
+    let response = await this.http.put(`/tasks/v1/incidents/${issueId}/site`, {
+      site_id: siteId
+    });
     return response.data;
   }
 
   async addIssueCollaborators(issueId: string, userIds: string[]): Promise<any> {
-    let response = await this.http.post(`/tasks/v1/incidents/${issueId}/collaborators/add`, { user_ids: userIds });
+    let response = await this.http.post(`/tasks/v1/incidents/${issueId}/collaborators/add`, {
+      user_ids: userIds
+    });
     return response.data;
   }
 
   async removeIssueCollaborators(issueId: string, userIds: string[]): Promise<any> {
-    let response = await this.http.post(`/tasks/v1/incidents/${issueId}/collaborators/remove`, { user_ids: userIds });
+    let response = await this.http.post(
+      `/tasks/v1/incidents/${issueId}/collaborators/remove`,
+      { user_ids: userIds }
+    );
     return response.data;
   }
 
   async deleteIssues(issueIds: string[]): Promise<any> {
-    let response = await this.http.post('/tasks/v1/incidents/delete', { incident_ids: issueIds });
+    let response = await this.http.post('/tasks/v1/incidents/delete', {
+      incident_ids: issueIds
+    });
     return response.data;
   }
 
@@ -344,7 +387,9 @@ export class Client {
   }
 
   async addIssueComment(issueId: string, comment: string): Promise<any> {
-    let response = await this.http.post(`/tasks/v1/incidents/${issueId}/timeline/comment`, { comment });
+    let response = await this.http.post(`/tasks/v1/incidents/${issueId}/timeline/comment`, {
+      comment
+    });
     return response.data;
   }
 
@@ -377,21 +422,25 @@ export class Client {
 
   // ─── Schedules ───
 
-  async listSchedules(params: {
-    pageSize?: number;
-    pageToken?: string;
-    templateId?: string;
-  } = {}): Promise<{ schedules: any[]; nextPageToken?: string }> {
+  async listSchedules(
+    params: {
+      pageSize?: number;
+      pageToken?: string;
+      templateId?: string;
+    } = {}
+  ): Promise<{ schedules: any[]; nextPageToken?: string }> {
     let queryParams: string[] = [];
     if (params.pageSize) queryParams.push(`page_size=${params.pageSize}`);
-    if (params.pageToken) queryParams.push(`page_token=${encodeURIComponent(params.pageToken)}`);
-    if (params.templateId) queryParams.push(`template_id=${encodeURIComponent(params.templateId)}`);
+    if (params.pageToken)
+      queryParams.push(`page_token=${encodeURIComponent(params.pageToken)}`);
+    if (params.templateId)
+      queryParams.push(`template_id=${encodeURIComponent(params.templateId)}`);
 
     let queryStr = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
     let response = await this.http.get(`/schedules/v1/schedule-items${queryStr}`);
     return {
       schedules: response.data.schedule_items || [],
-      nextPageToken: response.data.next_page_token,
+      nextPageToken: response.data.next_page_token
     };
   }
 
@@ -405,7 +454,7 @@ export class Client {
     let body: Record<string, any> = {
       template_id: data.templateId,
       assignee_ids: data.assigneeIds,
-      frequency: data.frequency,
+      frequency: data.frequency
     };
     if (data.startTime) body['start_time'] = data.startTime;
     if (data.siteId) body['site_id'] = data.siteId;
@@ -421,19 +470,22 @@ export class Client {
 
   // ─── Assets ───
 
-  async listAssets(params: {
-    pageSize?: number;
-    pageToken?: string;
-  } = {}): Promise<{ assets: any[]; nextPageToken?: string }> {
+  async listAssets(
+    params: {
+      pageSize?: number;
+      pageToken?: string;
+    } = {}
+  ): Promise<{ assets: any[]; nextPageToken?: string }> {
     let queryParams: string[] = [];
     if (params.pageSize) queryParams.push(`page_size=${params.pageSize}`);
-    if (params.pageToken) queryParams.push(`page_token=${encodeURIComponent(params.pageToken)}`);
+    if (params.pageToken)
+      queryParams.push(`page_token=${encodeURIComponent(params.pageToken)}`);
 
     let queryStr = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
     let response = await this.http.get(`/assets/v1/assets${queryStr}`);
     return {
       assets: response.data.assets || [],
-      nextPageToken: response.data.next_page_token,
+      nextPageToken: response.data.next_page_token
     };
   }
 
@@ -449,7 +501,7 @@ export class Client {
     siteId?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      type_id: data.typeId,
+      type_id: data.typeId
     };
     if (data.code) body['code'] = data.code;
     if (data.fields) body['fields'] = data.fields;
@@ -466,26 +518,26 @@ export class Client {
 
   // ─── Data Feeds ───
 
-  async getDataFeed(feedType: string, params: {
-    afterToken?: string;
-  } = {}): Promise<{ data: any[]; nextToken?: string }> {
+  async getDataFeed(
+    feedType: string,
+    params: {
+      afterToken?: string;
+    } = {}
+  ): Promise<{ data: any[]; nextToken?: string }> {
     let queryStr = params.afterToken ? `?after=${encodeURIComponent(params.afterToken)}` : '';
     let response = await this.http.get(`/feed/${feedType}${queryStr}`);
     return {
       data: response.data.data || [],
-      nextToken: response.data.metadata?.next_page,
+      nextToken: response.data.metadata?.next_page
     };
   }
 
   // ─── Webhooks ───
 
-  async createWebhook(data: {
-    url: string;
-    triggerEvents: string[];
-  }): Promise<any> {
+  async createWebhook(data: { url: string; triggerEvents: string[] }): Promise<any> {
     let response = await this.http.post('/webhooks/v1/webhooks', {
       url: data.url,
-      trigger_events: data.triggerEvents,
+      trigger_events: data.triggerEvents
     });
     return response.data;
   }
@@ -514,19 +566,22 @@ export class Client {
 
   // ─── Sites / Directory ───
 
-  async listSites(params: {
-    pageSize?: number;
-    pageToken?: string;
-  } = {}): Promise<{ sites: any[]; nextPageToken?: string }> {
+  async listSites(
+    params: {
+      pageSize?: number;
+      pageToken?: string;
+    } = {}
+  ): Promise<{ sites: any[]; nextPageToken?: string }> {
     let queryParams: string[] = [];
     if (params.pageSize) queryParams.push(`page_size=${params.pageSize}`);
-    if (params.pageToken) queryParams.push(`page_token=${encodeURIComponent(params.pageToken)}`);
+    if (params.pageToken)
+      queryParams.push(`page_token=${encodeURIComponent(params.pageToken)}`);
 
     let queryStr = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
     let response = await this.http.get(`/directory/v1/folders${queryStr}`);
     return {
       sites: response.data.folders || [],
-      nextPageToken: response.data.next_page_token,
+      nextPageToken: response.data.next_page_token
     };
   }
 }

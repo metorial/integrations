@@ -22,12 +22,9 @@ import {
   getReport,
   queryEntities,
   searchCustomersAndVendors,
-  getCompanyInfo,
+  getCompanyInfo
 } from './tools';
-import {
-  entityWebhook,
-  entityPolling,
-} from './triggers';
+import { entityWebhook, entityPolling } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,10 +50,7 @@ export let provider = Slate.create({
     getReport,
     queryEntities,
     searchCustomersAndVendors,
-    getCompanyInfo,
+    getCompanyInfo
   ],
-  triggers: [
-    entityWebhook,
-    entityPolling,
-  ],
+  triggers: [entityWebhook, entityPolling]
 });

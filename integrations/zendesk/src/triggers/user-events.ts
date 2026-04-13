@@ -3,38 +3,40 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
 
-export let userEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Events',
-    key: 'user_events',
-    description: 'Triggers when user activity occurs, including user creation, deletion, role changes, and profile modifications.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of user event'),
-    eventId: z.string().describe('Unique event identifier'),
-    userId: z.string().describe('The user ID'),
-    name: z.string().nullable().describe('The user name'),
-    email: z.string().nullable().describe('The user email'),
-    role: z.string().nullable().describe('The user role'),
-    suspended: z.boolean().nullable().describe('Whether the user is suspended'),
-    updatedAt: z.string().nullable().describe('When the user was last updated'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('The user ID'),
-    name: z.string().nullable().describe('The user name'),
-    email: z.string().nullable().describe('The user email'),
-    role: z.string().nullable().describe('The user role'),
-    suspended: z.boolean().nullable().describe('Whether the user is suspended'),
-    updatedAt: z.string().nullable().describe('When the user was last updated'),
-  }))
+export let userEvents = SlateTrigger.create(spec, {
+  name: 'User Events',
+  key: 'user_events',
+  description:
+    'Triggers when user activity occurs, including user creation, deletion, role changes, and profile modifications.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of user event'),
+      eventId: z.string().describe('Unique event identifier'),
+      userId: z.string().describe('The user ID'),
+      name: z.string().nullable().describe('The user name'),
+      email: z.string().nullable().describe('The user email'),
+      role: z.string().nullable().describe('The user role'),
+      suspended: z.boolean().nullable().describe('Whether the user is suspended'),
+      updatedAt: z.string().nullable().describe('When the user was last updated')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('The user ID'),
+      name: z.string().nullable().describe('The user name'),
+      email: z.string().nullable().describe('The user email'),
+      role: z.string().nullable().describe('The user role'),
+      suspended: z.boolean().nullable().describe('Whether the user is suspended'),
+      updatedAt: z.string().nullable().describe('When the user was last updated')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let webhook = await client.createWebhook({
@@ -54,28 +56,28 @@ export let userEvents = SlateTrigger.create(
           'zen:event-type:user.CustomFieldChanged',
           'zen:event-type:user.TagsChanged',
           'zen:event-type:user.OrganizationMembershipCreated',
-          'zen:event-type:user.OrganizationMembershipDeleted',
-        ],
+          'zen:event-type:user.OrganizationMembershipDeleted'
+        ]
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let eventType = 'user.updated';
@@ -100,13 +102,13 @@ export let userEvents = SlateTrigger.create(
             email: user.email || null,
             role: user.role || null,
             suspended: user.suspended ?? null,
-            updatedAt: user.updated_at || null,
-          },
-        ],
+            updatedAt: user.updated_at || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType.toLowerCase().replace(/\s+/g, '_');
       if (!eventType.startsWith('user.')) {
         eventType = `user.${eventType}`;
@@ -121,9 +123,9 @@ export let userEvents = SlateTrigger.create(
           email: ctx.input.email,
           role: ctx.input.role,
           suspended: ctx.input.suspended,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

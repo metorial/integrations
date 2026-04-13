@@ -14,7 +14,7 @@ import {
   getDataQuality,
   getProblematicUrls,
   manageScheduler,
-  getAccount,
+  getAccount
 } from './tools';
 import { scrapingJobCompleted } from './triggers';
 
@@ -34,9 +34,7 @@ export let provider = Slate.create({
     getDataQuality,
     getProblematicUrls,
     manageScheduler,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    scrapingJobCompleted,
-  ],
+  triggers: [scrapingJobCompleted]
 });

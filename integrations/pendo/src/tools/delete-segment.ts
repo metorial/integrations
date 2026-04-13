@@ -3,28 +3,29 @@ import { PendoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteSegment = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Segment',
-    key: 'delete_segment',
-    description: `Delete a segment from Pendo by segment ID. This permanently removes the segment definition. Requires an integration key with write access.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteSegment = SlateTool.create(spec, {
+  name: 'Delete Segment',
+  key: 'delete_segment',
+  description: `Delete a segment from Pendo by segment ID. This permanently removes the segment definition. Requires an integration key with write access.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    segmentId: z.string().describe('The ID of the segment to delete'),
-  }))
-  .output(z.object({
-    segmentId: z.string().describe('The segment ID that was deleted'),
-    success: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      segmentId: z.string().describe('The ID of the segment to delete')
+    })
+  )
+  .output(
+    z.object({
+      segmentId: z.string().describe('The segment ID that was deleted'),
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PendoClient({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     await client.deleteSegment(ctx.input.segmentId);
@@ -32,8 +33,9 @@ export let deleteSegment = SlateTool.create(
     return {
       output: {
         segmentId: ctx.input.segmentId,
-        success: true,
+        success: true
       },
-      message: `Deleted segment **${ctx.input.segmentId}** from Pendo.`,
+      message: `Deleted segment **${ctx.input.segmentId}** from Pendo.`
     };
-  }).build();
+  })
+  .build();

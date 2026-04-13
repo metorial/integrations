@@ -8,20 +8,23 @@ export class FivetranClient {
       baseURL: 'https://api.fivetran.com/v1',
       headers: {
         Authorization: `Basic ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Pagination Helper ────────────────────────────────────────────
 
-  async paginate<T>(path: string, params?: Record<string, string | number | boolean | undefined>): Promise<T[]> {
+  async paginate<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>
+  ): Promise<T[]> {
     let items: T[] = [];
     let cursor: string | undefined;
 
     do {
       let response = await this.http.get(path, {
-        params: { ...params, cursor, limit: 100 },
+        params: { ...params, cursor, limit: 100 }
       });
       let data = response.data?.data;
       if (data?.items) {

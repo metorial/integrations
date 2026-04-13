@@ -19,6 +19,7 @@ Keep your API key secure and do not share it publicly. If you need to refresh yo
 For **streaming (WebSocket) use in client-side applications**, AssemblyAI supports temporary authentication tokens to avoid exposing the main API key. You can generate a temporary authentication token for use with streaming services, with a configurable expiration time in seconds (1–600).
 
 **Base URLs:**
+
 - REST API: `https://api.assemblyai.com`
 - For EU servers, replace `api.assemblyai.com` with `api.eu.assemblyai.com`. The EU endpoint for Streaming STT is `streaming.eu.assemblyai.com`.
 - LLM Gateway: `https://llm-gateway.assemblyai.com`

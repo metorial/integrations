@@ -3,35 +3,39 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let featureFlagChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Feature Flag Changes',
-    key: 'feature_flag_changes',
-    description: 'Triggers when feature flags are created or updated. Polls for feature flags and detects changes by comparing with the previously known state.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Whether the flag was created or updated'),
-    flagId: z.string().describe('Feature flag ID'),
-    key: z.string().describe('Feature flag key'),
-    name: z.string().optional().describe('Feature flag name'),
-    active: z.boolean().describe('Whether the flag is active'),
-  }))
-  .output(z.object({
-    flagId: z.string().describe('Feature flag ID'),
-    key: z.string().describe('Feature flag key used in code'),
-    name: z.string().optional().describe('Feature flag display name'),
-    active: z.boolean().describe('Whether the flag is currently active'),
-    rolloutPercentage: z.number().optional().describe('Rollout percentage'),
-    filters: z.record(z.string(), z.any()).optional().describe('Flag targeting filters'),
-  }))
+export let featureFlagChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Feature Flag Changes',
+  key: 'feature_flag_changes',
+  description:
+    'Triggers when feature flags are created or updated. Polls for feature flags and detects changes by comparing with the previously known state.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the flag was created or updated'),
+      flagId: z.string().describe('Feature flag ID'),
+      key: z.string().describe('Feature flag key'),
+      name: z.string().optional().describe('Feature flag name'),
+      active: z.boolean().describe('Whether the flag is active')
+    })
+  )
+  .output(
+    z.object({
+      flagId: z.string().describe('Feature flag ID'),
+      key: z.string().describe('Feature flag key used in code'),
+      name: z.string().optional().describe('Feature flag display name'),
+      active: z.boolean().describe('Whether the flag is currently active'),
+      rolloutPercentage: z.number().optional().describe('Rollout percentage'),
+      filters: z.record(z.string(), z.any()).optional().describe('Flag targeting filters')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
 
       let data = await client.listFeatureFlags({ limit: 100 });
@@ -63,7 +67,7 @@ export let featureFlagChangesTrigger = SlateTrigger.create(
             name: flag.name,
             active: flag.active,
             rolloutPercentage: flag.rollout_percentage,
-            filters: flag.filters,
+            filters: flag.filters
           });
         } else if (knownFlags[flagId] !== updatedAt) {
           inputs.push({
@@ -73,18 +77,18 @@ export let featureFlagChangesTrigger = SlateTrigger.create(
             name: flag.name,
             active: flag.active,
             rolloutPercentage: flag.rollout_percentage,
-            filters: flag.filters,
+            filters: flag.filters
           });
         }
       }
 
       return {
         inputs,
-        updatedState: { knownFlags: newKnownFlags },
+        updatedState: { knownFlags: newKnownFlags }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `feature_flag.${ctx.input.changeType}`,
         id: `${ctx.input.flagId}-${ctx.input.changeType}-${Date.now()}`,
@@ -94,9 +98,9 @@ export let featureFlagChangesTrigger = SlateTrigger.create(
           name: ctx.input.name,
           active: ctx.input.active,
           rolloutPercentage: (ctx.input as any).rolloutPercentage,
-          filters: (ctx.input as any).filters,
-        },
+          filters: (ctx.input as any).filters
+        }
       };
-    },
+    }
   })
   .build();

@@ -6,36 +6,45 @@ import { z } from 'zod';
 let customFieldSchema = z.object({
   name: z.string().describe('Custom field name'),
   required: z.boolean().optional().describe('Whether the field is required at checkout'),
-  type: z.string().optional().describe('Field type'),
+  type: z.string().optional().describe('Field type')
 });
 
-export let manageCustomFields = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Custom Fields',
-    key: 'manage_custom_fields',
-    description: `List, create, update, or delete custom fields on a Gumroad product. Custom fields collect additional buyer information at checkout (e.g., shipping address, size preference).`,
-    instructions: [
-      'Custom fields are identified by name, not by a separate ID.',
-      'When updating or deleting, use the field name as the identifier.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageCustomFields = SlateTool.create(spec, {
+  name: 'Manage Custom Fields',
+  key: 'manage_custom_fields',
+  description: `List, create, update, or delete custom fields on a Gumroad product. Custom fields collect additional buyer information at checkout (e.g., shipping address, size preference).`,
+  instructions: [
+    'Custom fields are identified by name, not by a separate ID.',
+    'When updating or deleting, use the field name as the identifier.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    productId: z.string().describe('The product ID'),
-    name: z.string().optional().describe('Custom field name (required for create, update, delete)'),
-    required: z.boolean().optional().describe('Whether the field is required at checkout'),
-  }))
-  .output(z.object({
-    customField: customFieldSchema.optional().describe('Single custom field (for create, update)'),
-    customFields: z.array(customFieldSchema).optional().describe('List of custom fields (for list)'),
-    deleted: z.boolean().optional().describe('Whether the field was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      productId: z.string().describe('The product ID'),
+      name: z
+        .string()
+        .optional()
+        .describe('Custom field name (required for create, update, delete)'),
+      required: z.boolean().optional().describe('Whether the field is required at checkout')
+    })
+  )
+  .output(
+    z.object({
+      customField: customFieldSchema
+        .optional()
+        .describe('Single custom field (for create, update)'),
+      customFields: z
+        .array(customFieldSchema)
+        .optional()
+        .describe('List of custom fields (for list)'),
+      deleted: z.boolean().optional().describe('Whether the field was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GumroadClient({ token: ctx.auth.token });
     let { action, productId, name } = ctx.input;
 
@@ -44,7 +53,7 @@ export let manageCustomFields = SlateTool.create(
       let mapped = fields.map((f: any) => ({
         name: f.name || '',
         required: f.required,
-        type: f.type || undefined,
+        type: f.type || undefined
       }));
       return {
         output: { customFields: mapped },
@@ -56,14 +65,14 @@ export let manageCustomFields = SlateTool.create(
       if (!name) throw new Error('name is required for create action');
       let field = await client.createCustomField(productId, {
         name,
-        required: ctx.input.required,
+        required: ctx.input.required
       });
       return {
         output: {
           customField: {
             name: field.name || name,
             required: field.required,
-            type: field.type || undefined,
+            type: field.type || undefined
           }
         },
         message: `Created custom field **${name}**.`
@@ -73,14 +82,14 @@ export let manageCustomFields = SlateTool.create(
     if (action === 'update') {
       if (!name) throw new Error('name is required for update action');
       let field = await client.updateCustomField(productId, name, {
-        required: ctx.input.required,
+        required: ctx.input.required
       });
       return {
         output: {
           customField: {
             name: field.name || name,
             required: field.required,
-            type: field.type || undefined,
+            type: field.type || undefined
           }
         },
         message: `Updated custom field **${name}**.`

@@ -8,7 +8,7 @@ import {
   reverseLookup,
   domainLookup,
   autocompleteCompany,
-  getCredits,
+  getCredits
 } from './tools';
 import { clearoutEvents } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     reverseLookup,
     domainLookup,
     autocompleteCompany,
-    getCredits,
+    getCredits
   ],
-  triggers: [
-    clearoutEvents,
-  ],
+  triggers: [clearoutEvents]
 });

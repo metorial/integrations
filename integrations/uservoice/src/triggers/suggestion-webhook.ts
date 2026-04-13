@@ -2,37 +2,48 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let suggestionWebhook = SlateTrigger.create(
-  spec,
-  {
-    name: 'Suggestion Events',
-    key: 'suggestion_events',
-    description: 'Receives webhook events for new suggestions, vote updates, and status changes from UserVoice service hooks. Configure the webhook URL in Admin Console > Settings > Integrations > Service Hooks.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of event (e.g., new_suggestion, suggestion_status_update, suggestion_votes_update)'),
-    eventId: z.string().describe('Unique ID for deduplication'),
-    suggestion: z.record(z.string(), z.any()).describe('Suggestion data from the webhook payload'),
-    rawPayload: z.record(z.string(), z.any()).describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    suggestionId: z.number().describe('ID of the suggestion'),
-    title: z.string().describe('Title of the suggestion'),
-    body: z.string().nullable().describe('Body/description of the suggestion'),
-    state: z.string().nullable().describe('Current state of the suggestion'),
-    status: z.string().nullable().describe('Current status name if available'),
-    votesCount: z.number().nullable().describe('Number of votes'),
-    supportersCount: z.number().nullable().describe('Number of supporters'),
-    forumName: z.string().nullable().describe('Name of the forum'),
-    creatorName: z.string().nullable().describe('Name of the user who created the suggestion'),
-    creatorEmail: z.string().nullable().describe('Email of the creator'),
-    url: z.string().nullable().describe('Public URL of the suggestion'),
-    createdAt: z.string().nullable().describe('When the suggestion was created'),
-    updatedAt: z.string().nullable().describe('When the suggestion was last updated'),
-  }))
+export let suggestionWebhook = SlateTrigger.create(spec, {
+  name: 'Suggestion Events',
+  key: 'suggestion_events',
+  description:
+    'Receives webhook events for new suggestions, vote updates, and status changes from UserVoice service hooks. Configure the webhook URL in Admin Console > Settings > Integrations > Service Hooks.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Type of event (e.g., new_suggestion, suggestion_status_update, suggestion_votes_update)'
+        ),
+      eventId: z.string().describe('Unique ID for deduplication'),
+      suggestion: z
+        .record(z.string(), z.any())
+        .describe('Suggestion data from the webhook payload'),
+      rawPayload: z.record(z.string(), z.any()).describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      suggestionId: z.number().describe('ID of the suggestion'),
+      title: z.string().describe('Title of the suggestion'),
+      body: z.string().nullable().describe('Body/description of the suggestion'),
+      state: z.string().nullable().describe('Current state of the suggestion'),
+      status: z.string().nullable().describe('Current status name if available'),
+      votesCount: z.number().nullable().describe('Number of votes'),
+      supportersCount: z.number().nullable().describe('Number of supporters'),
+      forumName: z.string().nullable().describe('Name of the forum'),
+      creatorName: z
+        .string()
+        .nullable()
+        .describe('Name of the user who created the suggestion'),
+      creatorEmail: z.string().nullable().describe('Email of the creator'),
+      url: z.string().nullable().describe('Public URL of the suggestion'),
+      createdAt: z.string().nullable().describe('When the suggestion was created'),
+      updatedAt: z.string().nullable().describe('When the suggestion was last updated')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         let text = await ctx.request.text();
@@ -77,16 +88,18 @@ export let suggestionWebhook = SlateTrigger.create(
       let eventId = `${eventType}_${suggestion.id || 'unknown'}_${suggestion.updated_at || new Date().toISOString()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          suggestion,
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            suggestion,
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let s = ctx.input.suggestion as any;
 
       let type: string;
@@ -120,8 +133,9 @@ export let suggestionWebhook = SlateTrigger.create(
           creatorEmail: s.creator?.email || s.user?.email || null,
           url: s.url || s.portal_url || null,
           createdAt: s.created_at || null,
-          updatedAt: s.updated_at || null,
-        },
+          updatedAt: s.updated_at || null
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

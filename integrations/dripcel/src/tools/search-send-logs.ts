@@ -3,31 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchSendLogs = SlateTool.create(
-  spec,
-  {
-    name: 'Search Send Logs',
-    key: 'search_send_logs',
-    description: `View metadata about past sends including campaign, template, trigger type, delivery start time, and destination count. Can search by campaign and delivery date range, or fetch a specific send log by ID.`,
-    tags: {
-      readOnly: true
-    }
+export let searchSendLogs = SlateTool.create(spec, {
+  name: 'Search Send Logs',
+  key: 'search_send_logs',
+  description: `View metadata about past sends including campaign, template, trigger type, delivery start time, and destination count. Can search by campaign and delivery date range, or fetch a specific send log by ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    sendLogId: z.string().optional().describe('Fetch a specific send log by its ID'),
-    campaignIds: z.array(z.string()).optional().describe('Filter by campaign IDs'),
-    deliveryAfter: z.string().optional().describe('Filter sends that started on or after this date (ISO 8601)'),
-    deliveryBefore: z.string().optional().describe('Filter sends that started on or before this date (ISO 8601)'),
-    groupDestinations: z.enum(['count', 'list']).optional().describe('Format destinations as a count or list of cell numbers'),
-    skip: z.number().optional().describe('Number of records to skip for pagination'),
-    limit: z.number().optional().describe('Maximum number of send logs to return')
-  }))
-  .output(z.object({
-    sendLogs: z.array(z.any()).describe('Array of send log records'),
-    total: z.number().optional().describe('Total number of matching records (for search results)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sendLogId: z.string().optional().describe('Fetch a specific send log by its ID'),
+      campaignIds: z.array(z.string()).optional().describe('Filter by campaign IDs'),
+      deliveryAfter: z
+        .string()
+        .optional()
+        .describe('Filter sends that started on or after this date (ISO 8601)'),
+      deliveryBefore: z
+        .string()
+        .optional()
+        .describe('Filter sends that started on or before this date (ISO 8601)'),
+      groupDestinations: z
+        .enum(['count', 'list'])
+        .optional()
+        .describe('Format destinations as a count or list of cell numbers'),
+      skip: z.number().optional().describe('Number of records to skip for pagination'),
+      limit: z.number().optional().describe('Maximum number of send logs to return')
+    })
+  )
+  .output(
+    z.object({
+      sendLogs: z.array(z.any()).describe('Array of send log records'),
+      total: z
+        .number()
+        .optional()
+        .describe('Total number of matching records (for search results)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.sendLogId) {

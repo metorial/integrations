@@ -3,33 +3,39 @@ import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let unisenderEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Unisender Events',
-    key: 'unisender_events',
-    description: 'Receive real-time notifications for email delivery status changes, subscribe/unsubscribe events, campaign status changes, email verification, and user info changes via Unisender webhooks.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the event (e.g., email_status, unsubscribe, subscribe, campaign_status)'),
-    eventData: z.any().describe('Raw event data from Unisender webhook'),
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Type of the event'),
-    email: z.string().optional().describe('Email address associated with the event'),
-    phone: z.string().optional().describe('Phone number associated with the event'),
-    campaignId: z.number().optional().describe('Campaign ID associated with the event'),
-    messageId: z.number().optional().describe('Message ID associated with the event'),
-    status: z.string().optional().describe('Status value (for status change events)'),
-    listId: z.number().optional().describe('List ID associated with the event'),
-    rawData: z.any().describe('Full raw event data from the webhook'),
-  }))
+export let unisenderEvents = SlateTrigger.create(spec, {
+  name: 'Unisender Events',
+  key: 'unisender_events',
+  description:
+    'Receive real-time notifications for email delivery status changes, subscribe/unsubscribe events, campaign status changes, email verification, and user info changes via Unisender webhooks.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Type of the event (e.g., email_status, unsubscribe, subscribe, campaign_status)'
+        ),
+      eventData: z.any().describe('Raw event data from Unisender webhook')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('Type of the event'),
+      email: z.string().optional().describe('Email address associated with the event'),
+      phone: z.string().optional().describe('Phone number associated with the event'),
+      campaignId: z.number().optional().describe('Campaign ID associated with the event'),
+      messageId: z.number().optional().describe('Message ID associated with the event'),
+      status: z.string().optional().describe('Status value (for status change events)'),
+      listId: z.number().optional().describe('List ID associated with the event'),
+      rawData: z.any().describe('Full raw event data from the webhook')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new UnisenderClient({
         token: ctx.auth.token,
-        locale: ctx.config.locale,
+        locale: ctx.config.locale
       });
 
       let result = await client.setHook({
@@ -43,28 +49,28 @@ export let unisenderEvents = SlateTrigger.create(
           subscribe: '*',
           campaign_status: '*',
           email_check: '*',
-          user_info_changed: '*',
-        },
+          user_info_changed: '*'
+        }
       });
 
       return {
         registrationDetails: {
-          hookId: result.id,
-        },
+          hookId: result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new UnisenderClient({
         token: ctx.auth.token,
-        locale: ctx.config.locale,
+        locale: ctx.config.locale
       });
 
       let details = ctx.input.registrationDetails as { hookId: number };
       await client.removeHook(details.hookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let contentType = ctx.request.headers.get('content-type') || '';
       let events: any[] = [];
 
@@ -92,14 +98,14 @@ export let unisenderEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: events.map((event) => ({
+        inputs: events.map(event => ({
           eventType: event.event_name || event.status || 'unknown',
-          eventData: event,
-        })),
+          eventData: event
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.eventData;
       let eventType = ctx.input.eventType;
 
@@ -110,12 +116,29 @@ export let unisenderEvents = SlateTrigger.create(
       let status = data.status || data.event_name || undefined;
       let listId = data.list_id ? Number(data.list_id) : undefined;
 
-      let eventId = [eventType, email, phone, campaignId, messageId, data.event_time || Date.now()].filter(Boolean).join('-');
+      let eventId = [
+        eventType,
+        email,
+        phone,
+        campaignId,
+        messageId,
+        data.event_time || Date.now()
+      ]
+        .filter(Boolean)
+        .join('-');
 
       let type: string;
-      if (eventType.startsWith('ok_') || eventType.startsWith('err_') || eventType === 'not_sent') {
+      if (
+        eventType.startsWith('ok_') ||
+        eventType.startsWith('err_') ||
+        eventType === 'not_sent'
+      ) {
         type = `email_status.${eventType}`;
-      } else if (eventType === 'unsubscribe' || eventType === 'subscribe' || eventType === 'subscribe_primary') {
+      } else if (
+        eventType === 'unsubscribe' ||
+        eventType === 'subscribe' ||
+        eventType === 'subscribe_primary'
+      ) {
         type = `contact.${eventType}`;
       } else if (eventType === 'campaign_status') {
         type = `campaign.status_changed`;
@@ -138,9 +161,9 @@ export let unisenderEvents = SlateTrigger.create(
           messageId,
           status,
           listId,
-          rawData: data,
-        },
+          rawData: data
+        }
       };
-    },
+    }
   })
   .build();

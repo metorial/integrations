@@ -12,24 +12,25 @@ let dataflowSchema = z.object({
   modifiedDateTime: z.string().optional().describe('Last modification timestamp')
 });
 
-export let listDataflows = SlateTool.create(
-  spec,
-  {
-    name: 'List Dataflows',
-    key: 'list_dataflows',
-    description: `List all Power BI dataflows in a workspace. Returns dataflow names, IDs, and configuration details.`,
-    tags: {
-      readOnly: true
-    }
+export let listDataflows = SlateTool.create(spec, {
+  name: 'List Dataflows',
+  key: 'list_dataflows',
+  description: `List all Power BI dataflows in a workspace. Returns dataflow names, IDs, and configuration details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().describe('Workspace ID to list dataflows from')
-  }))
-  .output(z.object({
-    dataflows: z.array(dataflowSchema).describe('List of dataflows')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z.string().describe('Workspace ID to list dataflows from')
+    })
+  )
+  .output(
+    z.object({
+      dataflows: z.array(dataflowSchema).describe('List of dataflows')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PowerBIClient({ token: ctx.auth.token });
     let dataflows = await client.listDataflows(ctx.input.workspaceId);
 

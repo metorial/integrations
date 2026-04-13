@@ -3,42 +3,50 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Customer',
-    key: 'manage_customer',
-    description: `Update or delete a customer in Finmei. Use this to modify customer details such as name, email, phone, and address, or to permanently remove a customer record.`,
-    instructions: [
-      'To update a customer, provide the **customerId** and the fields you want to change.',
-      'To delete a customer, provide the **customerId** and set **action** to "delete".',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let manageCustomer = SlateTool.create(spec, {
+  name: 'Manage Customer',
+  key: 'manage_customer',
+  description: `Update or delete a customer in Finmei. Use this to modify customer details such as name, email, phone, and address, or to permanently remove a customer record.`,
+  instructions: [
+    'To update a customer, provide the **customerId** and the fields you want to change.',
+    'To delete a customer, provide the **customerId** and set **action** to "delete".'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['update', 'delete']).describe('Action to perform: "update" to modify details, "delete" to remove the customer'),
-    customerId: z.string().describe('ID of the customer to manage'),
-    name: z.string().optional().describe('Updated customer name'),
-    email: z.string().optional().describe('Updated customer email address'),
-    phone: z.string().optional().describe('Updated customer phone number'),
-    address: z.object({
-      street: z.string().optional().describe('Street address'),
-      city: z.string().optional().describe('City'),
-      state: z.string().optional().describe('State or region'),
-      country: z.string().optional().describe('Country'),
-      postalCode: z.string().optional().describe('Postal/zip code'),
-    }).optional().describe('Updated address details'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    customerId: z.string().describe('ID of the customer'),
-    customer: z.any().optional().describe('Updated customer details (for update action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['update', 'delete'])
+        .describe(
+          'Action to perform: "update" to modify details, "delete" to remove the customer'
+        ),
+      customerId: z.string().describe('ID of the customer to manage'),
+      name: z.string().optional().describe('Updated customer name'),
+      email: z.string().optional().describe('Updated customer email address'),
+      phone: z.string().optional().describe('Updated customer phone number'),
+      address: z
+        .object({
+          street: z.string().optional().describe('Street address'),
+          city: z.string().optional().describe('City'),
+          state: z.string().optional().describe('State or region'),
+          country: z.string().optional().describe('Country'),
+          postalCode: z.string().optional().describe('Postal/zip code')
+        })
+        .optional()
+        .describe('Updated address details')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      customerId: z.string().describe('ID of the customer'),
+      customer: z.any().optional().describe('Updated customer details (for update action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FinmeiClient(ctx.auth.token);
 
     if (ctx.input.action === 'delete') {
@@ -47,9 +55,9 @@ export let manageCustomer = SlateTool.create(
       return {
         output: {
           success: true,
-          customerId: ctx.input.customerId,
+          customerId: ctx.input.customerId
         },
-        message: `Deleted customer \`${ctx.input.customerId}\`.`,
+        message: `Deleted customer \`${ctx.input.customerId}\`.`
       };
     }
 
@@ -63,7 +71,7 @@ export let manageCustomer = SlateTool.create(
         city: ctx.input.address.city,
         state: ctx.input.address.state,
         country: ctx.input.address.country,
-        postal_code: ctx.input.address.postalCode,
+        postal_code: ctx.input.address.postalCode
       };
     }
 
@@ -74,9 +82,9 @@ export let manageCustomer = SlateTool.create(
       output: {
         success: true,
         customerId: ctx.input.customerId,
-        customer,
+        customer
       },
-      message: `Updated customer \`${ctx.input.customerId}\`.`,
+      message: `Updated customer \`${ctx.input.customerId}\`.`
     };
   })
   .build();

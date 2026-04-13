@@ -3,37 +3,42 @@ import { ServerAvatarClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let applicationChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Application Changes',
-    key: 'application_changes',
-    description: 'Polls for changes to applications in an organization, detecting new applications, removed applications, and status/configuration changes.',
-  },
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'removed', 'updated']).describe('Type of change detected'),
-    applicationId: z.string().describe('Application ID'),
-    applicationName: z.string().describe('Application name'),
-    primaryDomain: z.string().optional().describe('Primary domain'),
-    framework: z.string().optional().describe('Application framework'),
-    sslType: z.string().optional().describe('SSL type'),
-    changedFields: z.array(z.string()).optional().describe('List of fields that changed (for updated events)'),
-  }))
-  .output(z.object({
-    applicationId: z.string().describe('Application ID'),
-    applicationName: z.string().describe('Application name'),
-    primaryDomain: z.string().optional().describe('Primary domain'),
-    framework: z.string().optional().describe('Application framework'),
-    sslType: z.string().optional().describe('SSL type'),
-    changedFields: z.array(z.string()).optional().describe('Fields that changed'),
-  }))
+export let applicationChanges = SlateTrigger.create(spec, {
+  name: 'Application Changes',
+  key: 'application_changes',
+  description:
+    'Polls for changes to applications in an organization, detecting new applications, removed applications, and status/configuration changes.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'removed', 'updated']).describe('Type of change detected'),
+      applicationId: z.string().describe('Application ID'),
+      applicationName: z.string().describe('Application name'),
+      primaryDomain: z.string().optional().describe('Primary domain'),
+      framework: z.string().optional().describe('Application framework'),
+      sslType: z.string().optional().describe('SSL type'),
+      changedFields: z
+        .array(z.string())
+        .optional()
+        .describe('List of fields that changed (for updated events)')
+    })
+  )
+  .output(
+    z.object({
+      applicationId: z.string().describe('Application ID'),
+      applicationName: z.string().describe('Application name'),
+      primaryDomain: z.string().optional().describe('Primary domain'),
+      framework: z.string().optional().describe('Application framework'),
+      sslType: z.string().optional().describe('SSL type'),
+      changedFields: z.array(z.string()).optional().describe('Fields that changed')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ServerAvatarClient({ token: ctx.auth.token });
       let orgId = ctx.config.organizationId;
       if (!orgId) return { inputs: [], updatedState: ctx.state };
@@ -41,7 +46,8 @@ export let applicationChanges = SlateTrigger.create(
       let result = await client.listApplications(orgId);
       let currentApps = result.applications;
 
-      let previousAppMap: Record<string, Record<string, unknown>> = (ctx.state?.appMap as Record<string, Record<string, unknown>>) || {};
+      let previousAppMap: Record<string, Record<string, unknown>> = (ctx.state
+        ?.appMap as Record<string, Record<string, unknown>>) || {};
       let currentAppMap: Record<string, Record<string, unknown>> = {};
       let inputs: Array<{
         eventType: 'created' | 'removed' | 'updated';
@@ -59,7 +65,7 @@ export let applicationChanges = SlateTrigger.create(
           name: app.name,
           primary_domain: app.primary_domain,
           framework: app.framework,
-          ssl_type: app.ssl_type,
+          ssl_type: app.ssl_type
         };
 
         let prev = previousAppMap[id];
@@ -67,10 +73,10 @@ export let applicationChanges = SlateTrigger.create(
           inputs.push({
             eventType: 'created',
             applicationId: id,
-            applicationName: app.name as string || '',
+            applicationName: (app.name as string) || '',
             primaryDomain: app.primary_domain as string | undefined,
             framework: app.framework as string | undefined,
-            sslType: app.ssl_type as string | undefined,
+            sslType: app.ssl_type as string | undefined
           });
         } else {
           let trackedFields = ['name', 'primary_domain', 'framework', 'ssl_type'] as const;
@@ -84,11 +90,11 @@ export let applicationChanges = SlateTrigger.create(
             inputs.push({
               eventType: 'updated',
               applicationId: id,
-              applicationName: app.name as string || '',
+              applicationName: (app.name as string) || '',
               primaryDomain: app.primary_domain as string | undefined,
               framework: app.framework as string | undefined,
               sslType: app.ssl_type as string | undefined,
-              changedFields,
+              changedFields
             });
           }
         }
@@ -102,10 +108,10 @@ export let applicationChanges = SlateTrigger.create(
           inputs.push({
             eventType: 'removed',
             applicationId: prevId,
-            applicationName: prevApp.name as string || '',
+            applicationName: (prevApp.name as string) || '',
             primaryDomain: prevApp.primary_domain as string | undefined,
             framework: prevApp.framework as string | undefined,
-            sslType: undefined,
+            sslType: undefined
           });
         }
       }
@@ -114,12 +120,12 @@ export let applicationChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           appMap: currentAppMap,
-          lastPolled: new Date().toISOString(),
-        },
+          lastPolled: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, applicationId } = ctx.input;
       let timestamp = new Date().toISOString();
 
@@ -132,8 +138,9 @@ export let applicationChanges = SlateTrigger.create(
           primaryDomain: ctx.input.primaryDomain,
           framework: ctx.input.framework,
           sslType: ctx.input.sslType,
-          changedFields: ctx.input.changedFields,
-        },
+          changedFields: ctx.input.changedFields
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

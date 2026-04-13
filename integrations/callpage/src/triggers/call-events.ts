@@ -2,50 +2,58 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let callEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Call Events',
-    key: 'call_events',
-    description: 'Receives webhook events for call lifecycle changes including new calls, scheduled calls, completed calls, missed calls, and data submissions from visitors.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of call event'),
-    callId: z.string().describe('ID of the call'),
-    widgetId: z.string().optional().describe('ID of the widget'),
-    phoneNumber: z.string().optional().describe('Caller phone number'),
-    status: z.string().optional().describe('Call status'),
-    scheduledAt: z.string().optional().describe('Scheduled time for the call'),
-    attempts: z.number().optional().describe('Number of call attempts'),
-    managerName: z.string().optional().describe('Name of the manager who handled the call'),
-    billingTime: z.number().optional().describe('Billing time in seconds'),
-    recordingUrl: z.string().optional().describe('URL to call recording'),
-    direction: z.string().optional().describe('Call direction'),
-    email: z.string().optional().describe('Visitor email address'),
-    messageContent: z.string().optional().describe('Message content from visitor'),
-    formFields: z.array(z.any()).optional().describe('Additional form field data submitted by visitor'),
-    rawPayload: z.any().describe('The complete raw webhook payload')
-  }))
-  .output(z.object({
-    callId: z.string().describe('ID of the call'),
-    widgetId: z.string().optional().describe('ID of the widget'),
-    phoneNumber: z.string().optional().describe('Caller phone number'),
-    status: z.string().optional().describe('Call status'),
-    scheduledAt: z.string().optional().describe('Scheduled time for the call'),
-    attempts: z.number().optional().describe('Number of call attempts'),
-    managerName: z.string().optional().describe('Name of the handling manager'),
-    billingTime: z.number().optional().describe('Billing time in seconds'),
-    recordingUrl: z.string().optional().describe('URL to call recording'),
-    direction: z.string().optional().describe('Call direction'),
-    email: z.string().optional().describe('Visitor email address'),
-    messageContent: z.string().optional().describe('Visitor message content'),
-    formFields: z.array(z.any()).optional().describe('Additional form field data'),
-    dashboardUrl: z.string().optional().describe('Link to the call in the CallPage dashboard')
-  }))
+export let callEvents = SlateTrigger.create(spec, {
+  name: 'Call Events',
+  key: 'call_events',
+  description:
+    'Receives webhook events for call lifecycle changes including new calls, scheduled calls, completed calls, missed calls, and data submissions from visitors.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of call event'),
+      callId: z.string().describe('ID of the call'),
+      widgetId: z.string().optional().describe('ID of the widget'),
+      phoneNumber: z.string().optional().describe('Caller phone number'),
+      status: z.string().optional().describe('Call status'),
+      scheduledAt: z.string().optional().describe('Scheduled time for the call'),
+      attempts: z.number().optional().describe('Number of call attempts'),
+      managerName: z.string().optional().describe('Name of the manager who handled the call'),
+      billingTime: z.number().optional().describe('Billing time in seconds'),
+      recordingUrl: z.string().optional().describe('URL to call recording'),
+      direction: z.string().optional().describe('Call direction'),
+      email: z.string().optional().describe('Visitor email address'),
+      messageContent: z.string().optional().describe('Message content from visitor'),
+      formFields: z
+        .array(z.any())
+        .optional()
+        .describe('Additional form field data submitted by visitor'),
+      rawPayload: z.any().describe('The complete raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      callId: z.string().describe('ID of the call'),
+      widgetId: z.string().optional().describe('ID of the widget'),
+      phoneNumber: z.string().optional().describe('Caller phone number'),
+      status: z.string().optional().describe('Call status'),
+      scheduledAt: z.string().optional().describe('Scheduled time for the call'),
+      attempts: z.number().optional().describe('Number of call attempts'),
+      managerName: z.string().optional().describe('Name of the handling manager'),
+      billingTime: z.number().optional().describe('Billing time in seconds'),
+      recordingUrl: z.string().optional().describe('URL to call recording'),
+      direction: z.string().optional().describe('Call direction'),
+      email: z.string().optional().describe('Visitor email address'),
+      messageContent: z.string().optional().describe('Visitor message content'),
+      formFields: z.array(z.any()).optional().describe('Additional form field data'),
+      dashboardUrl: z
+        .string()
+        .optional()
+        .describe('Link to the call in the CallPage dashboard')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       let eventType = inferEventType(data);
       let callId = String(data.call_id || data.id || '');
@@ -74,7 +82,7 @@ export let callEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -94,7 +102,8 @@ export let callEvents = SlateTrigger.create(
           email: input.email,
           messageContent: input.messageContent,
           formFields: input.formFields,
-          dashboardUrl: input.rawPayload?.dashboard_url || input.rawPayload?.call_url || undefined
+          dashboardUrl:
+            input.rawPayload?.dashboard_url || input.rawPayload?.call_url || undefined
         }
       };
     }

@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTimeEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Update Time Entry',
-    key: 'update_time_entry',
-    description: `Update an existing time entry in Clockify. Modify its start/end times, description, project, task, tags, or billable status. The start time is always required by the API.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateTimeEntry = SlateTool.create(spec, {
+  name: 'Update Time Entry',
+  key: 'update_time_entry',
+  description: `Update an existing time entry in Clockify. Modify its start/end times, description, project, task, tags, or billable status. The start time is always required by the API.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    timeEntryId: z.string().describe('ID of the time entry to update'),
-    start: z.string().describe('Start time in ISO 8601 format (required)'),
-    end: z.string().optional().describe('End time in ISO 8601 format'),
-    description: z.string().optional().describe('Updated description'),
-    projectId: z.string().optional().describe('Updated project ID'),
-    taskId: z.string().optional().describe('Updated task ID'),
-    tagIds: z.array(z.string()).optional().describe('Updated array of tag IDs'),
-    billable: z.boolean().optional().describe('Updated billable status')
-  }))
-  .output(z.object({
-    timeEntryId: z.string(),
-    description: z.string().optional(),
-    projectId: z.string().optional(),
-    taskId: z.string().optional(),
-    billable: z.boolean(),
-    start: z.string(),
-    end: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      timeEntryId: z.string().describe('ID of the time entry to update'),
+      start: z.string().describe('Start time in ISO 8601 format (required)'),
+      end: z.string().optional().describe('End time in ISO 8601 format'),
+      description: z.string().optional().describe('Updated description'),
+      projectId: z.string().optional().describe('Updated project ID'),
+      taskId: z.string().optional().describe('Updated task ID'),
+      tagIds: z.array(z.string()).optional().describe('Updated array of tag IDs'),
+      billable: z.boolean().optional().describe('Updated billable status')
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.string(),
+      description: z.string().optional(),
+      projectId: z.string().optional(),
+      taskId: z.string().optional(),
+      billable: z.boolean(),
+      start: z.string(),
+      end: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

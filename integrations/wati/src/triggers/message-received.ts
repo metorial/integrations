@@ -2,47 +2,58 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let messageReceived = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Received',
-    key: 'message_received',
-    description: 'Triggered when a WhatsApp message is received, including messages from new contacts.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type.'),
-    messageId: z.string().describe('Unique message identifier.'),
-    whatsappMessageId: z.string().optional().describe('WhatsApp message ID (WAMID).'),
-    conversationId: z.string().optional().describe('Conversation identifier.'),
-    ticketId: z.string().optional().describe('Ticket identifier.'),
-    text: z.string().optional().describe('Message text content.'),
-    messageType: z.string().optional().describe('Message content type (text, image, document, etc.).'),
-    timestamp: z.string().optional().describe('Unix timestamp of the message.'),
-    waId: z.string().optional().describe('Sender WhatsApp ID.'),
-    senderName: z.string().optional().describe('Sender display name.'),
-    operatorName: z.string().optional().describe('Assigned operator name.'),
-    operatorEmail: z.string().optional().describe('Assigned operator email.'),
-    channelPhoneNumber: z.string().optional().describe('Receiving channel phone number.'),
-    isNewContact: z.boolean().optional().describe('Whether this is a message from a new contact.'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Unique message identifier.'),
-    whatsappMessageId: z.string().optional().describe('WhatsApp message ID (WAMID).'),
-    conversationId: z.string().optional().describe('Conversation identifier.'),
-    ticketId: z.string().optional().describe('Ticket identifier.'),
-    text: z.string().optional().describe('Message text content.'),
-    messageType: z.string().optional().describe('Message content type (text, image, document, etc.).'),
-    timestamp: z.string().optional().describe('Unix timestamp of the message.'),
-    senderWaId: z.string().optional().describe('Sender WhatsApp ID.'),
-    senderName: z.string().optional().describe('Sender display name.'),
-    operatorName: z.string().optional().describe('Assigned operator name.'),
-    operatorEmail: z.string().optional().describe('Assigned operator email.'),
-    channelPhoneNumber: z.string().optional().describe('Receiving channel phone number.'),
-  }))
+export let messageReceived = SlateTrigger.create(spec, {
+  name: 'Message Received',
+  key: 'message_received',
+  description:
+    'Triggered when a WhatsApp message is received, including messages from new contacts.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The webhook event type.'),
+      messageId: z.string().describe('Unique message identifier.'),
+      whatsappMessageId: z.string().optional().describe('WhatsApp message ID (WAMID).'),
+      conversationId: z.string().optional().describe('Conversation identifier.'),
+      ticketId: z.string().optional().describe('Ticket identifier.'),
+      text: z.string().optional().describe('Message text content.'),
+      messageType: z
+        .string()
+        .optional()
+        .describe('Message content type (text, image, document, etc.).'),
+      timestamp: z.string().optional().describe('Unix timestamp of the message.'),
+      waId: z.string().optional().describe('Sender WhatsApp ID.'),
+      senderName: z.string().optional().describe('Sender display name.'),
+      operatorName: z.string().optional().describe('Assigned operator name.'),
+      operatorEmail: z.string().optional().describe('Assigned operator email.'),
+      channelPhoneNumber: z.string().optional().describe('Receiving channel phone number.'),
+      isNewContact: z
+        .boolean()
+        .optional()
+        .describe('Whether this is a message from a new contact.')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Unique message identifier.'),
+      whatsappMessageId: z.string().optional().describe('WhatsApp message ID (WAMID).'),
+      conversationId: z.string().optional().describe('Conversation identifier.'),
+      ticketId: z.string().optional().describe('Ticket identifier.'),
+      text: z.string().optional().describe('Message text content.'),
+      messageType: z
+        .string()
+        .optional()
+        .describe('Message content type (text, image, document, etc.).'),
+      timestamp: z.string().optional().describe('Unix timestamp of the message.'),
+      senderWaId: z.string().optional().describe('Sender WhatsApp ID.'),
+      senderName: z.string().optional().describe('Sender display name.'),
+      operatorName: z.string().optional().describe('Assigned operator name.'),
+      operatorEmail: z.string().optional().describe('Assigned operator email.'),
+      channelPhoneNumber: z.string().optional().describe('Receiving channel phone number.')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data?.eventType || '';
       let isMessage = eventType === 'message' || eventType === 'newContactMessageReceived';
@@ -67,13 +78,13 @@ export let messageReceived = SlateTrigger.create(
             operatorName: data.operatorName,
             operatorEmail: data.operatorEmail,
             channelPhoneNumber: data.channelPhoneNumber,
-            isNewContact: eventType === 'newContactMessageReceived',
-          },
-        ],
+            isNewContact: eventType === 'newContactMessageReceived'
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let type = ctx.input.isNewContact ? 'message.new_contact' : 'message.received';
 
       return {
@@ -91,9 +102,9 @@ export let messageReceived = SlateTrigger.create(
           senderName: ctx.input.senderName,
           operatorName: ctx.input.operatorName,
           operatorEmail: ctx.input.operatorEmail,
-          channelPhoneNumber: ctx.input.channelPhoneNumber,
-        },
+          channelPhoneNumber: ctx.input.channelPhoneNumber
+        }
       };
-    },
+    }
   })
   .build();

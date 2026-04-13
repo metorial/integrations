@@ -18,7 +18,7 @@ import {
   yelpSearch,
   linkedinJobs,
   webScraper,
-  accountInfo,
+  accountInfo
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -43,9 +43,7 @@ export let provider = Slate.create({
     yelpSearch,
     linkedinJobs,
     webScraper,
-    accountInfo,
+    accountInfo
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

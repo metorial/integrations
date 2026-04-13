@@ -146,7 +146,14 @@ export class Client {
     return response.data;
   }
 
-  async getTrackStreams(trackId: string): Promise<{ http_mp3_128_url?: string; hls_mp3_128_url?: string; hls_aac_160_url?: string; [key: string]: string | undefined }> {
+  async getTrackStreams(
+    trackId: string
+  ): Promise<{
+    http_mp3_128_url?: string;
+    hls_mp3_128_url?: string;
+    hls_aac_160_url?: string;
+    [key: string]: string | undefined;
+  }> {
     let response = await this.http.get(`/tracks/${trackId}/streams`);
     return response.data;
   }
@@ -193,15 +200,18 @@ export class Client {
     return response.data;
   }
 
-  async updateTrack(trackId: string, updates: {
-    title?: string;
-    description?: string;
-    sharing?: 'public' | 'private';
-    genre?: string;
-    tagList?: string;
-    license?: string;
-    permalinkUrl?: string;
-  }): Promise<SoundCloudTrack> {
+  async updateTrack(
+    trackId: string,
+    updates: {
+      title?: string;
+      description?: string;
+      sharing?: 'public' | 'private';
+      genre?: string;
+      tagList?: string;
+      license?: string;
+      permalinkUrl?: string;
+    }
+  ): Promise<SoundCloudTrack> {
     let body: Record<string, any> = {};
     if (updates.title !== undefined) body['track[title]'] = updates.title;
     if (updates.description !== undefined) body['track[description]'] = updates.description;
@@ -210,9 +220,13 @@ export class Client {
     if (updates.tagList !== undefined) body['track[tag_list]'] = updates.tagList;
     if (updates.license !== undefined) body['track[license]'] = updates.license;
 
-    let response = await this.http.put(`/tracks/${trackId}`, new URLSearchParams(body).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    let response = await this.http.put(
+      `/tracks/${trackId}`,
+      new URLSearchParams(body).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -222,20 +236,31 @@ export class Client {
 
   // ---- Track Comments ----
 
-  async getTrackComments(trackId: string, params?: { limit?: number; offset?: number }): Promise<PaginatedResponse<SoundCloudComment>> {
+  async getTrackComments(
+    trackId: string,
+    params?: { limit?: number; offset?: number }
+  ): Promise<PaginatedResponse<SoundCloudComment>> {
     let response = await this.http.get(`/tracks/${trackId}/comments`, {
       params: { limit: params?.limit || 50, offset: params?.offset, linked_partitioning: true }
     });
     return response.data;
   }
 
-  async createComment(trackId: string, body: string, timestamp?: number): Promise<SoundCloudComment> {
+  async createComment(
+    trackId: string,
+    body: string,
+    timestamp?: number
+  ): Promise<SoundCloudComment> {
     let payload: Record<string, any> = { 'comment[body]': body };
     if (timestamp !== undefined) payload['comment[timestamp]'] = timestamp;
 
-    let response = await this.http.post(`/tracks/${trackId}/comments`, new URLSearchParams(payload).toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
+    let response = await this.http.post(
+      `/tracks/${trackId}/comments`,
+      new URLSearchParams(payload).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
     return response.data;
   }
 
@@ -289,13 +314,16 @@ export class Client {
     return response.data;
   }
 
-  async updatePlaylist(playlistId: string, updates: {
-    title?: string;
-    description?: string;
-    sharing?: 'public' | 'private';
-    trackIds?: string[];
-    isAlbum?: boolean;
-  }): Promise<SoundCloudPlaylist> {
+  async updatePlaylist(
+    playlistId: string,
+    updates: {
+      title?: string;
+      description?: string;
+      sharing?: 'public' | 'private';
+      trackIds?: string[];
+      isAlbum?: boolean;
+    }
+  ): Promise<SoundCloudPlaylist> {
     let body: Record<string, any> = { playlist: {} };
     if (updates.title !== undefined) body.playlist.title = updates.title;
     if (updates.description !== undefined) body.playlist.description = updates.description;
@@ -345,28 +373,40 @@ export class Client {
     return response.data;
   }
 
-  async getUserTracks(userId: string, params?: { limit?: number; linked_partitioning?: boolean }): Promise<PaginatedResponse<SoundCloudTrack>> {
+  async getUserTracks(
+    userId: string,
+    params?: { limit?: number; linked_partitioning?: boolean }
+  ): Promise<PaginatedResponse<SoundCloudTrack>> {
     let response = await this.http.get(`/users/${userId}/tracks`, {
       params: { limit: params?.limit || 50, linked_partitioning: true }
     });
     return response.data;
   }
 
-  async getUserPlaylists(userId: string, params?: { limit?: number }): Promise<PaginatedResponse<SoundCloudPlaylist>> {
+  async getUserPlaylists(
+    userId: string,
+    params?: { limit?: number }
+  ): Promise<PaginatedResponse<SoundCloudPlaylist>> {
     let response = await this.http.get(`/users/${userId}/playlists`, {
       params: { limit: params?.limit || 50, linked_partitioning: true }
     });
     return response.data;
   }
 
-  async getUserFollowers(userId: string, params?: { limit?: number }): Promise<PaginatedResponse<SoundCloudUser>> {
+  async getUserFollowers(
+    userId: string,
+    params?: { limit?: number }
+  ): Promise<PaginatedResponse<SoundCloudUser>> {
     let response = await this.http.get(`/users/${userId}/followers`, {
       params: { limit: params?.limit || 50, linked_partitioning: true }
     });
     return response.data;
   }
 
-  async getUserFollowings(userId: string, params?: { limit?: number }): Promise<PaginatedResponse<SoundCloudUser>> {
+  async getUserFollowings(
+    userId: string,
+    params?: { limit?: number }
+  ): Promise<PaginatedResponse<SoundCloudUser>> {
     let response = await this.http.get(`/users/${userId}/followings`, {
       params: { limit: params?.limit || 50, linked_partitioning: true }
     });
@@ -380,14 +420,18 @@ export class Client {
     return response.data;
   }
 
-  async getMyPlaylists(params?: { limit?: number }): Promise<PaginatedResponse<SoundCloudPlaylist>> {
+  async getMyPlaylists(params?: {
+    limit?: number;
+  }): Promise<PaginatedResponse<SoundCloudPlaylist>> {
     let response = await this.http.get('/me/playlists', {
       params: { limit: params?.limit || 50, linked_partitioning: true }
     });
     return response.data;
   }
 
-  async getMyLikedTracks(params?: { limit?: number }): Promise<PaginatedResponse<SoundCloudTrack>> {
+  async getMyLikedTracks(params?: {
+    limit?: number;
+  }): Promise<PaginatedResponse<SoundCloudTrack>> {
     let response = await this.http.get('/me/favorites', {
       params: { limit: params?.limit || 50, linked_partitioning: true }
     });
@@ -406,18 +450,21 @@ export class Client {
 
   // ---- Search ----
 
-  async searchTracks(query: string, params?: {
-    limit?: number;
-    offset?: number;
-    access?: string;
-    genres?: string;
-    bpmFrom?: number;
-    bpmTo?: number;
-    durationFrom?: number;
-    durationTo?: number;
-    createdAtFrom?: string;
-    createdAtTo?: string;
-  }): Promise<PaginatedResponse<SoundCloudTrack>> {
+  async searchTracks(
+    query: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+      access?: string;
+      genres?: string;
+      bpmFrom?: number;
+      bpmTo?: number;
+      durationFrom?: number;
+      durationTo?: number;
+      createdAtFrom?: string;
+      createdAtTo?: string;
+    }
+  ): Promise<PaginatedResponse<SoundCloudTrack>> {
     let queryParams: Record<string, any> = {
       q: query,
       limit: params?.limit || 50,
@@ -437,16 +484,32 @@ export class Client {
     return response.data;
   }
 
-  async searchPlaylists(query: string, params?: { limit?: number; offset?: number }): Promise<PaginatedResponse<SoundCloudPlaylist>> {
+  async searchPlaylists(
+    query: string,
+    params?: { limit?: number; offset?: number }
+  ): Promise<PaginatedResponse<SoundCloudPlaylist>> {
     let response = await this.http.get('/playlists', {
-      params: { q: query, limit: params?.limit || 50, offset: params?.offset, linked_partitioning: true }
+      params: {
+        q: query,
+        limit: params?.limit || 50,
+        offset: params?.offset,
+        linked_partitioning: true
+      }
     });
     return response.data;
   }
 
-  async searchUsers(query: string, params?: { limit?: number; offset?: number }): Promise<PaginatedResponse<SoundCloudUser>> {
+  async searchUsers(
+    query: string,
+    params?: { limit?: number; offset?: number }
+  ): Promise<PaginatedResponse<SoundCloudUser>> {
     let response = await this.http.get('/users', {
-      params: { q: query, limit: params?.limit || 50, offset: params?.offset, linked_partitioning: true }
+      params: {
+        q: query,
+        limit: params?.limit || 50,
+        offset: params?.offset,
+        linked_partitioning: true
+      }
     });
     return response.data;
   }
@@ -460,13 +523,16 @@ export class Client {
 
   // ---- oEmbed ----
 
-  async getOEmbed(url: string, params?: {
-    maxWidth?: number;
-    maxHeight?: number;
-    autoPlay?: boolean;
-    showComments?: boolean;
-    color?: string;
-  }): Promise<SoundCloudOEmbed> {
+  async getOEmbed(
+    url: string,
+    params?: {
+      maxWidth?: number;
+      maxHeight?: number;
+      autoPlay?: boolean;
+      showComments?: boolean;
+      color?: string;
+    }
+  ): Promise<SoundCloudOEmbed> {
     let oembedClient = createAxios({
       baseURL: 'https://soundcloud.com'
     });

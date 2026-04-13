@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -29,7 +31,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'History',
-        description: 'Access your voting history and comments/submissions you\'ve saved or hidden',
+        description:
+          "Access your voting history and comments/submissions you've saved or hidden",
         scope: 'history'
       },
       {
@@ -49,7 +52,8 @@ export let auth = SlateAuth.create()
       },
       {
         title: 'Mod Posts',
-        description: 'Approve, remove, mark NSFW, and distinguish content in subreddits you moderate',
+        description:
+          'Approve, remove, mark NSFW, and distinguish content in subreddits you moderate',
         scope: 'modposts'
       },
       {
@@ -106,31 +110,31 @@ export let auth = SlateAuth.create()
         title: 'Wiki Read',
         description: 'Read wiki pages through your account',
         scope: 'wikiread'
-      },
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         state: ctx.state,
         redirect_uri: ctx.redirectUri,
         duration: 'permanent',
-        scope: ctx.scopes.join(' '),
+        scope: ctx.scopes.join(' ')
       });
 
       return {
-        url: `https://www.reddit.com/api/v1/authorize?${params.toString()}`,
+        url: `https://www.reddit.com/api/v1/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
       let params = new URLSearchParams({
         grant_type: 'authorization_code',
         code: ctx.code,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
@@ -140,9 +144,9 @@ export let auth = SlateAuth.create()
         params.toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -151,12 +155,12 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          refreshToken: data.refresh_token,
-        },
+          refreshToken: data.refresh_token
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -165,7 +169,7 @@ export let auth = SlateAuth.create()
 
       let params = new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
+        refresh_token: ctx.output.refreshToken
       });
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
@@ -175,9 +179,9 @@ export let auth = SlateAuth.create()
         params.toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -186,8 +190,8 @@ export let auth = SlateAuth.create()
       return {
         output: {
           token: data.access_token,
-          refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-        },
+          refreshToken: data.refresh_token ?? ctx.output.refreshToken
+        }
       };
     },
 
@@ -195,8 +199,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://oauth.reddit.com',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/api/v1/me');
@@ -206,8 +210,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           name: user.name,
-          imageUrl: user.icon_img?.split('?')[0],
-        },
+          imageUrl: user.icon_img?.split('?')[0]
+        }
       };
-    },
+    }
   });

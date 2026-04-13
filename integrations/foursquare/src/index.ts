@@ -9,12 +9,9 @@ import {
   getPlaceTips,
   findNearbyPlaces,
   submitPlaceFeedback,
-  getFeedbackStatus,
+  getFeedbackStatus
 } from './tools';
-import {
-  userCheckin,
-  venueEvent,
-} from './triggers';
+import { userCheckin, venueEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -27,10 +24,7 @@ export let provider = Slate.create({
     getPlaceTips,
     findNearbyPlaces,
     submitPlaceFeedback,
-    getFeedbackStatus,
+    getFeedbackStatus
   ],
-  triggers: [
-    userCheckin,
-    venueEvent,
-  ],
+  triggers: [userCheckin, venueEvent]
 });

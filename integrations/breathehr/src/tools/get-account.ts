@@ -3,25 +3,24 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account',
-    key: 'get_account',
-    description: `Retrieve account details from Breathe HR, including the account's unique identifier, name, domain, and UUID.`,
-    tags: {
-      readOnly: true,
-    },
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account',
+  key: 'get_account',
+  description: `Retrieve account details from Breathe HR, including the account's unique identifier, name, domain, and UUID.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    account: z.record(z.string(), z.any()).describe('Account details'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      account: z.record(z.string(), z.any()).describe('Account details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let result = await client.getAccount();
@@ -29,7 +28,7 @@ export let getAccount = SlateTool.create(
 
     return {
       output: { account },
-      message: `Retrieved account **${account?.name || 'unknown'}**.`,
+      message: `Retrieved account **${account?.name || 'unknown'}**.`
     };
   })
   .build();

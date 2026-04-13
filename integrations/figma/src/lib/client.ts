@@ -8,7 +8,7 @@ export class FigmaClient {
     this.api = createAxios({
       baseURL: 'https://api.figma.com',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'X-Figma-Token': token
       }
     });
@@ -23,14 +23,17 @@ export class FigmaClient {
 
   // ── Files ──
 
-  async getFile(fileKey: string, params?: {
-    version?: string;
-    ids?: string[];
-    depth?: number;
-    geometry?: string;
-    pluginData?: string;
-    branchData?: boolean;
-  }): Promise<any> {
+  async getFile(
+    fileKey: string,
+    params?: {
+      version?: string;
+      ids?: string[];
+      depth?: number;
+      geometry?: string;
+      pluginData?: string;
+      branchData?: boolean;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.version) queryParams.version = params.version;
     if (params?.ids?.length) queryParams.ids = params.ids.join(',');
@@ -43,12 +46,16 @@ export class FigmaClient {
     return response.data;
   }
 
-  async getFileNodes(fileKey: string, nodeIds: string[], params?: {
-    version?: string;
-    depth?: number;
-    geometry?: string;
-    pluginData?: string;
-  }): Promise<any> {
+  async getFileNodes(
+    fileKey: string,
+    nodeIds: string[],
+    params?: {
+      version?: string;
+      depth?: number;
+      geometry?: string;
+      pluginData?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {
       ids: nodeIds.join(',')
     };
@@ -63,28 +70,35 @@ export class FigmaClient {
 
   // ── Images ──
 
-  async getImages(fileKey: string, params: {
-    ids: string[];
-    scale?: number;
-    format?: 'jpg' | 'png' | 'svg' | 'pdf';
-    svgOutlineText?: boolean;
-    svgIncludeId?: boolean;
-    svgIncludeNodeId?: boolean;
-    svgSimplifyStroke?: boolean;
-    contentsOnly?: boolean;
-    useAbsoluteBounds?: boolean;
-  }): Promise<any> {
+  async getImages(
+    fileKey: string,
+    params: {
+      ids: string[];
+      scale?: number;
+      format?: 'jpg' | 'png' | 'svg' | 'pdf';
+      svgOutlineText?: boolean;
+      svgIncludeId?: boolean;
+      svgIncludeNodeId?: boolean;
+      svgSimplifyStroke?: boolean;
+      contentsOnly?: boolean;
+      useAbsoluteBounds?: boolean;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {
       ids: params.ids.join(',')
     };
     if (params.scale !== undefined) queryParams.scale = params.scale;
     if (params.format) queryParams.format = params.format;
-    if (params.svgOutlineText !== undefined) queryParams.svg_outline_text = params.svgOutlineText;
+    if (params.svgOutlineText !== undefined)
+      queryParams.svg_outline_text = params.svgOutlineText;
     if (params.svgIncludeId !== undefined) queryParams.svg_include_id = params.svgIncludeId;
-    if (params.svgIncludeNodeId !== undefined) queryParams.svg_include_node_id = params.svgIncludeNodeId;
-    if (params.svgSimplifyStroke !== undefined) queryParams.svg_simplify_stroke = params.svgSimplifyStroke;
+    if (params.svgIncludeNodeId !== undefined)
+      queryParams.svg_include_node_id = params.svgIncludeNodeId;
+    if (params.svgSimplifyStroke !== undefined)
+      queryParams.svg_simplify_stroke = params.svgSimplifyStroke;
     if (params.contentsOnly !== undefined) queryParams.contents_only = params.contentsOnly;
-    if (params.useAbsoluteBounds !== undefined) queryParams.use_absolute_bounds = params.useAbsoluteBounds;
+    if (params.useAbsoluteBounds !== undefined)
+      queryParams.use_absolute_bounds = params.useAbsoluteBounds;
 
     let response = await this.api.get(`/v1/images/${fileKey}`, { params: queryParams });
     return response.data;
@@ -97,21 +111,31 @@ export class FigmaClient {
 
   // ── Comments ──
 
-  async getComments(fileKey: string, params?: {
-    asBefore?: string;
-  }): Promise<any> {
+  async getComments(
+    fileKey: string,
+    params?: {
+      asBefore?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.asBefore) queryParams.as_md = params.asBefore;
 
-    let response = await this.api.get(`/v1/files/${fileKey}/comments`, { params: queryParams });
+    let response = await this.api.get(`/v1/files/${fileKey}/comments`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async postComment(fileKey: string, params: {
-    message: string;
-    commentId?: string;
-    clientMeta?: { x: number; y: number } | { nodeId: string; nodeOffset: { x: number; y: number } };
-  }): Promise<any> {
+  async postComment(
+    fileKey: string,
+    params: {
+      message: string;
+      commentId?: string;
+      clientMeta?:
+        | { x: number; y: number }
+        | { nodeId: string; nodeOffset: { x: number; y: number } };
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
       message: params.message
     };
@@ -126,22 +150,35 @@ export class FigmaClient {
     await this.api.delete(`/v1/files/${fileKey}/comments/${commentId}`);
   }
 
-  async getCommentReactions(fileKey: string, commentId: string, params?: {
-    cursor?: string;
-  }): Promise<any> {
+  async getCommentReactions(
+    fileKey: string,
+    commentId: string,
+    params?: {
+      cursor?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.cursor) queryParams.cursor = params.cursor;
 
-    let response = await this.api.get(`/v1/files/${fileKey}/comments/${commentId}/reactions`, { params: queryParams });
+    let response = await this.api.get(`/v1/files/${fileKey}/comments/${commentId}/reactions`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   async postCommentReaction(fileKey: string, commentId: string, emoji: string): Promise<any> {
-    let response = await this.api.post(`/v1/files/${fileKey}/comments/${commentId}/reactions`, { emoji });
+    let response = await this.api.post(
+      `/v1/files/${fileKey}/comments/${commentId}/reactions`,
+      { emoji }
+    );
     return response.data;
   }
 
-  async deleteCommentReaction(fileKey: string, commentId: string, emoji: string): Promise<void> {
+  async deleteCommentReaction(
+    fileKey: string,
+    commentId: string,
+    emoji: string
+  ): Promise<void> {
     await this.api.delete(`/v1/files/${fileKey}/comments/${commentId}/reactions`, {
       params: { emoji }
     });
@@ -149,17 +186,22 @@ export class FigmaClient {
 
   // ── Versions ──
 
-  async getFileVersions(fileKey: string, params?: {
-    pageSize?: number;
-    before?: string;
-    after?: string;
-  }): Promise<any> {
+  async getFileVersions(
+    fileKey: string,
+    params?: {
+      pageSize?: number;
+      before?: string;
+      after?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.before) queryParams.before = params.before;
     if (params?.after) queryParams.after = params.after;
 
-    let response = await this.api.get(`/v1/files/${fileKey}/versions`, { params: queryParams });
+    let response = await this.api.get(`/v1/files/${fileKey}/versions`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -170,29 +212,39 @@ export class FigmaClient {
     return response.data;
   }
 
-  async getProjectFiles(projectId: string, params?: {
-    branchData?: boolean;
-  }): Promise<any> {
+  async getProjectFiles(
+    projectId: string,
+    params?: {
+      branchData?: boolean;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.branchData) queryParams.branch_data = params.branchData;
 
-    let response = await this.api.get(`/v1/projects/${projectId}/files`, { params: queryParams });
+    let response = await this.api.get(`/v1/projects/${projectId}/files`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Components & Styles ──
 
-  async getTeamComponents(teamId: string, params?: {
-    pageSize?: number;
-    after?: number;
-    before?: number;
-  }): Promise<any> {
+  async getTeamComponents(
+    teamId: string,
+    params?: {
+      pageSize?: number;
+      after?: number;
+      before?: number;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.after) queryParams.after = params.after;
     if (params?.before) queryParams.before = params.before;
 
-    let response = await this.api.get(`/v1/teams/${teamId}/components`, { params: queryParams });
+    let response = await this.api.get(`/v1/teams/${teamId}/components`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -206,17 +258,22 @@ export class FigmaClient {
     return response.data;
   }
 
-  async getTeamComponentSets(teamId: string, params?: {
-    pageSize?: number;
-    after?: number;
-    before?: number;
-  }): Promise<any> {
+  async getTeamComponentSets(
+    teamId: string,
+    params?: {
+      pageSize?: number;
+      after?: number;
+      before?: number;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.after) queryParams.after = params.after;
     if (params?.before) queryParams.before = params.before;
 
-    let response = await this.api.get(`/v1/teams/${teamId}/component_sets`, { params: queryParams });
+    let response = await this.api.get(`/v1/teams/${teamId}/component_sets`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -225,11 +282,14 @@ export class FigmaClient {
     return response.data;
   }
 
-  async getTeamStyles(teamId: string, params?: {
-    pageSize?: number;
-    after?: number;
-    before?: number;
-  }): Promise<any> {
+  async getTeamStyles(
+    teamId: string,
+    params?: {
+      pageSize?: number;
+      after?: number;
+      before?: number;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.after) queryParams.after = params.after;
@@ -261,33 +321,43 @@ export class FigmaClient {
     return response.data;
   }
 
-  async postVariables(fileKey: string, body: {
-    variableCollections?: any[];
-    variables?: any[];
-    variableModes?: any[];
-  }): Promise<any> {
+  async postVariables(
+    fileKey: string,
+    body: {
+      variableCollections?: any[];
+      variables?: any[];
+      variableModes?: any[];
+    }
+  ): Promise<any> {
     let response = await this.api.post(`/v1/files/${fileKey}/variables`, body);
     return response.data;
   }
 
   // ── Dev Resources ──
 
-  async getDevResources(fileKey: string, params?: {
-    nodeId?: string;
-  }): Promise<any> {
+  async getDevResources(
+    fileKey: string,
+    params?: {
+      nodeId?: string;
+    }
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params?.nodeId) queryParams.node_id = params.nodeId;
 
-    let response = await this.api.get(`/v1/files/${fileKey}/dev_resources`, { params: queryParams });
+    let response = await this.api.get(`/v1/files/${fileKey}/dev_resources`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async createDevResources(devResources: {
-    fileKey: string;
-    nodeId: string;
-    name: string;
-    url: string;
-  }[]): Promise<any> {
+  async createDevResources(
+    devResources: {
+      fileKey: string;
+      nodeId: string;
+      name: string;
+      url: string;
+    }[]
+  ): Promise<any> {
     let response = await this.api.post('/v1/dev_resources', {
       dev_resources: devResources.map(r => ({
         file_key: r.fileKey,
@@ -299,10 +369,13 @@ export class FigmaClient {
     return response.data;
   }
 
-  async updateDevResource(devResourceId: string, params: {
-    name?: string;
-    url?: string;
-  }): Promise<any> {
+  async updateDevResource(
+    devResourceId: string,
+    params: {
+      name?: string;
+      url?: string;
+    }
+  ): Promise<any> {
     let response = await this.api.put(`/v1/dev_resources/${devResourceId}`, params);
     return response.data;
   }
@@ -335,13 +408,16 @@ export class FigmaClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    eventType?: string;
-    endpoint?: string;
-    passcode?: string;
-    description?: string;
-    status?: string;
-  }): Promise<any> {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      eventType?: string;
+      endpoint?: string;
+      passcode?: string;
+      description?: string;
+      status?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.eventType) body.event_type = params.eventType;
     if (params.endpoint) body.endpoint = params.endpoint;

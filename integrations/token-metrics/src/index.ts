@@ -14,7 +14,7 @@ import {
   getAiReports,
   getIndices,
   getCryptoInvestors,
-  askAiAgent,
+  askAiAgent
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     getAiReports,
     getIndices,
     getCryptoInvestors,
-    askAiAgent,
+    askAiAgent
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

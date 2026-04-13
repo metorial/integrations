@@ -24,6 +24,7 @@ Authorization: Bearer <your_api_key>
 ```
 
 Example:
+
 ```
 curl --request GET \
   --url https://api.vectorshift.ai/v1/pipelines \

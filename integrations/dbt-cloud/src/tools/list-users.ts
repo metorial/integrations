@@ -3,31 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listUsersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `List all users in the dbt Cloud account. Returns user names, email addresses, and license information. Useful for auditing account membership and permissions.`,
-    tags: {
-      readOnly: true
-    }
+export let listUsersTool = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `List all users in the dbt Cloud account. Returns user names, email addresses, and license information. Useful for auditing account membership and permissions.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum number of users to return (max 100)'),
-    offset: z.number().optional().describe('Number of users to skip for pagination')
-  }))
-  .output(z.object({
-    users: z.array(z.object({
-      userId: z.number().describe('Unique user identifier'),
-      name: z.string().nullable().optional().describe('User full name'),
-      email: z.string().describe('User email address'),
-      isActive: z.boolean().optional().describe('Whether the user is active'),
-      permissions: z.array(z.any()).optional().describe('User permission assignments')
-    })).describe('List of users')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Maximum number of users to return (max 100)'),
+      offset: z.number().optional().describe('Number of users to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      users: z
+        .array(
+          z.object({
+            userId: z.number().describe('Unique user identifier'),
+            name: z.string().nullable().optional().describe('User full name'),
+            email: z.string().describe('User email address'),
+            isActive: z.boolean().optional().describe('Whether the user is active'),
+            permissions: z.array(z.any()).optional().describe('User permission assignments')
+          })
+        )
+        .describe('List of users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
@@ -51,4 +56,5 @@ export let listUsersTool = SlateTool.create(
       output: { users: mapped },
       message: `Found **${mapped.length}** user(s).`
     };
-  }).build();
+  })
+  .build();

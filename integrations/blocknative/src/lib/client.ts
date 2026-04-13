@@ -220,7 +220,7 @@ export class BlocknativeClient {
 
   private authHeader(): Record<string, string> {
     if (this.token) {
-      return { 'Authorization': this.token };
+      return { Authorization: this.token };
     }
     return {};
   }

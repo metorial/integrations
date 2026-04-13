@@ -9,10 +9,10 @@ export class Client {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -62,10 +62,14 @@ export class Client {
 
   // ── Invoices ──
 
-  async createInvoice(invoice: any, options?: { finalize?: boolean; precedingSalesVoucherId?: string }): Promise<any> {
+  async createInvoice(
+    invoice: any,
+    options?: { finalize?: boolean; precedingSalesVoucherId?: string }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.finalize) params.finalize = 'true';
-    if (options?.precedingSalesVoucherId) params.precedingSalesVoucherId = options.precedingSalesVoucherId;
+    if (options?.precedingSalesVoucherId)
+      params.precedingSalesVoucherId = options.precedingSalesVoucherId;
 
     let response = await this.http.post('/invoices', invoice, { params });
     return response.data;
@@ -78,17 +82,21 @@ export class Client {
 
   async downloadInvoiceFile(invoiceId: string): Promise<any> {
     let response = await this.http.get(`/invoices/${invoiceId}/file`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
 
   // ── Credit Notes ──
 
-  async createCreditNote(creditNote: any, options?: { finalize?: boolean; precedingSalesVoucherId?: string }): Promise<any> {
+  async createCreditNote(
+    creditNote: any,
+    options?: { finalize?: boolean; precedingSalesVoucherId?: string }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.finalize) params.finalize = 'true';
-    if (options?.precedingSalesVoucherId) params.precedingSalesVoucherId = options.precedingSalesVoucherId;
+    if (options?.precedingSalesVoucherId)
+      params.precedingSalesVoucherId = options.precedingSalesVoucherId;
 
     let response = await this.http.post('/credit-notes', creditNote, { params });
     return response.data;
@@ -116,10 +124,14 @@ export class Client {
 
   // ── Order Confirmations ──
 
-  async createOrderConfirmation(orderConfirmation: any, options?: { finalize?: boolean; precedingSalesVoucherId?: string }): Promise<any> {
+  async createOrderConfirmation(
+    orderConfirmation: any,
+    options?: { finalize?: boolean; precedingSalesVoucherId?: string }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.finalize) params.finalize = 'true';
-    if (options?.precedingSalesVoucherId) params.precedingSalesVoucherId = options.precedingSalesVoucherId;
+    if (options?.precedingSalesVoucherId)
+      params.precedingSalesVoucherId = options.precedingSalesVoucherId;
 
     let response = await this.http.post('/order-confirmations', orderConfirmation, { params });
     return response.data;
@@ -132,10 +144,14 @@ export class Client {
 
   // ── Delivery Notes ──
 
-  async createDeliveryNote(deliveryNote: any, options?: { finalize?: boolean; precedingSalesVoucherId?: string }): Promise<any> {
+  async createDeliveryNote(
+    deliveryNote: any,
+    options?: { finalize?: boolean; precedingSalesVoucherId?: string }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.finalize) params.finalize = 'true';
-    if (options?.precedingSalesVoucherId) params.precedingSalesVoucherId = options.precedingSalesVoucherId;
+    if (options?.precedingSalesVoucherId)
+      params.precedingSalesVoucherId = options.precedingSalesVoucherId;
 
     let response = await this.http.post('/delivery-notes', deliveryNote, { params });
     return response.data;
@@ -148,10 +164,14 @@ export class Client {
 
   // ── Dunnings ──
 
-  async createDunning(dunning: any, options?: { finalize?: boolean; precedingSalesVoucherId?: string }): Promise<any> {
+  async createDunning(
+    dunning: any,
+    options?: { finalize?: boolean; precedingSalesVoucherId?: string }
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (options?.finalize) params.finalize = 'true';
-    if (options?.precedingSalesVoucherId) params.precedingSalesVoucherId = options.precedingSalesVoucherId;
+    if (options?.precedingSalesVoucherId)
+      params.precedingSalesVoucherId = options.precedingSalesVoucherId;
 
     let response = await this.http.post('/dunnings', dunning, { params });
     return response.data;
@@ -224,16 +244,20 @@ export class Client {
     return response.data;
   }
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-  async uploadVoucherFile(voucherId: string, file: Buffer, filename: string, contentType: string): Promise<any> {
+  async uploadVoucherFile(
+    voucherId: string,
+    file: Buffer,
+    filename: string,
+    contentType: string
+  ): Promise<any> {
     let formData = new FormData();
     let blob = new Blob([file], { type: contentType });
     formData.append('file', blob, filename);
 
     let response = await this.http.post(`/vouchers/${voucherId}/files`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }
@@ -276,7 +300,6 @@ export class Client {
 
   // ── Files ──
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
   async uploadFile(file: Buffer, filename: string, contentType: string): Promise<any> {
     let formData = new FormData();
     let blob = new Blob([file], { type: contentType });
@@ -284,15 +307,15 @@ export class Client {
 
     let response = await this.http.post('/files', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }
 
   async downloadFile(fileId: string): Promise<any> {
     let response = await this.http.get(`/files/${fileId}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -349,7 +372,7 @@ export class Client {
   async createEventSubscription(eventType: string, callbackUrl: string): Promise<any> {
     let response = await this.http.post('/event-subscriptions', {
       eventType,
-      callbackUrl,
+      callbackUrl
     });
     return response.data;
   }

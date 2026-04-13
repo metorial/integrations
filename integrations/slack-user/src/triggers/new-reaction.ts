@@ -3,43 +3,47 @@ import { SlackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newReaction = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Reaction',
-    key: 'new_reaction',
-    description: '[Polling fallback] Triggers when a new emoji reaction is added to a message. Polls recent messages in channels the bot is a member of to detect new reactions.',
-  }
-)
-  .input(z.object({
-    channelId: z.string().describe('Channel ID'),
-    messageTs: z.string().describe('Message timestamp that was reacted to'),
-    emoji: z.string().describe('Emoji name'),
-    reactedUserIds: z.array(z.string()).describe('User IDs who reacted with this emoji'),
-    count: z.number().describe('Reaction count'),
-  }))
-  .output(z.object({
-    channelId: z.string().describe('Channel ID'),
-    messageTs: z.string().describe('Message timestamp'),
-    messageText: z.string().optional().describe('Text of the message that was reacted to'),
-    emoji: z.string().describe('Emoji name'),
-    reactedUserIds: z.array(z.string()).describe('User IDs who reacted'),
-    count: z.number().describe('Total reaction count for this emoji'),
-  }))
+export let newReaction = SlateTrigger.create(spec, {
+  name: 'New Reaction',
+  key: 'new_reaction',
+  description:
+    '[Polling fallback] Triggers when a new emoji reaction is added to a message. Polls recent messages in channels the bot is a member of to detect new reactions.'
+})
+  .input(
+    z.object({
+      channelId: z.string().describe('Channel ID'),
+      messageTs: z.string().describe('Message timestamp that was reacted to'),
+      emoji: z.string().describe('Emoji name'),
+      reactedUserIds: z.array(z.string()).describe('User IDs who reacted with this emoji'),
+      count: z.number().describe('Reaction count')
+    })
+  )
+  .output(
+    z.object({
+      channelId: z.string().describe('Channel ID'),
+      messageTs: z.string().describe('Message timestamp'),
+      messageText: z.string().optional().describe('Text of the message that was reacted to'),
+      emoji: z.string().describe('Emoji name'),
+      reactedUserIds: z.array(z.string()).describe('User IDs who reacted'),
+      count: z.number().describe('Total reaction count for this emoji')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SlackClient(ctx.auth.token);
-      let state = ctx.state as { trackedReactions?: Record<string, Record<string, number>> } | null;
+      let state = ctx.state as {
+        trackedReactions?: Record<string, Record<string, number>>;
+      } | null;
       let trackedReactions = state?.trackedReactions || {};
 
       let channelResult = await client.listConversations({
         types: 'public_channel,private_channel',
         excludeArchived: true,
-        limit: 50,
+        limit: 50
       });
 
       let memberChannels = channelResult.channels.filter(c => c.is_member);
@@ -57,7 +61,7 @@ export let newReaction = SlateTrigger.create(
         try {
           let history = await client.getConversationHistory({
             channel: channel.id,
-            limit: 20,
+            limit: 20
           });
 
           for (let msg of history.messages) {
@@ -77,7 +81,7 @@ export let newReaction = SlateTrigger.create(
                   messageTs: msg.ts,
                   emoji: reaction.name,
                   reactedUserIds: reaction.users,
-                  count: reaction.count,
+                  count: reaction.count
                 });
               }
             }
@@ -92,18 +96,18 @@ export let newReaction = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          trackedReactions: updatedTracked,
-        },
+          trackedReactions: updatedTracked
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let messageText: string | undefined;
       try {
         let client = new SlackClient(ctx.auth.token);
         let msgData = await client.getReactions({
           channel: ctx.input.channelId,
-          timestamp: ctx.input.messageTs,
+          timestamp: ctx.input.messageTs
         });
         messageText = msgData.text;
       } catch {
@@ -119,9 +123,9 @@ export let newReaction = SlateTrigger.create(
           messageText,
           emoji: ctx.input.emoji,
           reactedUserIds: ctx.input.reactedUserIds,
-          count: ctx.input.count,
-        },
+          count: ctx.input.count
+        }
       };
-    },
+    }
   })
   .build();

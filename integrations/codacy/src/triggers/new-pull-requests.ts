@@ -3,48 +3,50 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newPullRequests = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Pull Requests',
-    key: 'new_pull_requests',
-    description: 'Triggers when new pull requests are detected in a repository, including their analysis results and quality gate status.',
-  },
-)
-  .input(z.object({
-    repositoryName: z.string().describe('Repository name.'),
-    pullRequestNumber: z.number().describe('Pull request number.'),
-    title: z.string().optional().describe('Pull request title.'),
-    status: z.string().optional().describe('PR status.'),
-    originBranch: z.string().optional().describe('Source branch.'),
-    targetBranch: z.string().optional().describe('Target branch.'),
-    ownerName: z.string().optional().describe('PR author.'),
-    isUpToStandards: z.boolean().optional().describe('Whether the PR passes quality gates.'),
-    newIssues: z.number().optional().describe('New issues introduced.'),
-    fixedIssues: z.number().optional().describe('Issues fixed.'),
-    updated: z.string().optional().describe('Last update timestamp.'),
-    gitHref: z.string().optional().describe('Link to the PR on the Git provider.'),
-  }))
-  .output(z.object({
-    pullRequestNumber: z.number().describe('Pull request number.'),
-    title: z.string().optional().describe('Pull request title.'),
-    status: z.string().optional().describe('PR status.'),
-    originBranch: z.string().optional().describe('Source branch.'),
-    targetBranch: z.string().optional().describe('Target branch.'),
-    ownerName: z.string().optional().describe('PR author.'),
-    isUpToStandards: z.boolean().optional().describe('Whether the PR passes quality gates.'),
-    newIssues: z.number().optional().describe('New issues introduced.'),
-    fixedIssues: z.number().optional().describe('Issues fixed.'),
-    updated: z.string().optional().describe('Last update timestamp.'),
-    gitHref: z.string().optional().describe('Link to the PR on the Git provider.'),
-    repositoryName: z.string().describe('Repository name.'),
-  }))
+export let newPullRequests = SlateTrigger.create(spec, {
+  name: 'New Pull Requests',
+  key: 'new_pull_requests',
+  description:
+    'Triggers when new pull requests are detected in a repository, including their analysis results and quality gate status.'
+})
+  .input(
+    z.object({
+      repositoryName: z.string().describe('Repository name.'),
+      pullRequestNumber: z.number().describe('Pull request number.'),
+      title: z.string().optional().describe('Pull request title.'),
+      status: z.string().optional().describe('PR status.'),
+      originBranch: z.string().optional().describe('Source branch.'),
+      targetBranch: z.string().optional().describe('Target branch.'),
+      ownerName: z.string().optional().describe('PR author.'),
+      isUpToStandards: z.boolean().optional().describe('Whether the PR passes quality gates.'),
+      newIssues: z.number().optional().describe('New issues introduced.'),
+      fixedIssues: z.number().optional().describe('Issues fixed.'),
+      updated: z.string().optional().describe('Last update timestamp.'),
+      gitHref: z.string().optional().describe('Link to the PR on the Git provider.')
+    })
+  )
+  .output(
+    z.object({
+      pullRequestNumber: z.number().describe('Pull request number.'),
+      title: z.string().optional().describe('Pull request title.'),
+      status: z.string().optional().describe('PR status.'),
+      originBranch: z.string().optional().describe('Source branch.'),
+      targetBranch: z.string().optional().describe('Target branch.'),
+      ownerName: z.string().optional().describe('PR author.'),
+      isUpToStandards: z.boolean().optional().describe('Whether the PR passes quality gates.'),
+      newIssues: z.number().optional().describe('New issues introduced.'),
+      fixedIssues: z.number().optional().describe('Issues fixed.'),
+      updated: z.string().optional().describe('Last update timestamp.'),
+      gitHref: z.string().optional().describe('Link to the PR on the Git provider.'),
+      repositoryName: z.string().describe('Repository name.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let repositoryName = (ctx.state as any)?.repositoryName;
 
@@ -63,7 +65,9 @@ export let newPullRequests = SlateTrigger.create(
         return prNumber && !knownSet.has(String(prNumber));
       });
 
-      let allIds = pullRequests.map((pr: any) => String(pr.pullRequest?.number ?? pr.number)).filter(Boolean);
+      let allIds = pullRequests
+        .map((pr: any) => String(pr.pullRequest?.number ?? pr.number))
+        .filter(Boolean);
 
       return {
         inputs: newPrs.map((pr: any) => ({
@@ -78,16 +82,16 @@ export let newPullRequests = SlateTrigger.create(
           newIssues: pr.newIssues ?? undefined,
           fixedIssues: pr.fixedIssues ?? undefined,
           updated: pr.pullRequest?.updated ?? pr.updated ?? undefined,
-          gitHref: pr.pullRequest?.gitHref ?? pr.gitHref ?? undefined,
+          gitHref: pr.pullRequest?.gitHref ?? pr.gitHref ?? undefined
         })),
         updatedState: {
           repositoryName,
-          knownPullRequestIds: allIds,
-        },
+          knownPullRequestIds: allIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'pull_request.created',
         id: `pr-${ctx.input.repositoryName}-${ctx.input.pullRequestNumber}`,
@@ -103,9 +107,9 @@ export let newPullRequests = SlateTrigger.create(
           fixedIssues: ctx.input.fixedIssues,
           updated: ctx.input.updated,
           gitHref: ctx.input.gitHref,
-          repositoryName: ctx.input.repositoryName,
-        },
+          repositoryName: ctx.input.repositoryName
+        }
       };
-    },
+    }
   })
   .build();

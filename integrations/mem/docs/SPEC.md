@@ -11,6 +11,7 @@ Mem is an AI-powered note-taking and personal knowledge management application. 
 The Mem API uses API keys for authentication. To obtain a key, visit the API section in your Mem settings.
 
 To generate an API key:
+
 1. Log in to your Mem account, in the left sidebar, click on Flows, click on the API option, then the "+ Create API Key" button.
 2. Enter a label for the API key and click "Create API Key".
 3. Copy the API key value and store it securely — you will not be able to view it again.
@@ -28,6 +29,7 @@ The base URL for all API requests is `https://api.mem.ai/v2`.
 ### Note Management
 
 Create, read, list, and delete notes in your Mem knowledge base. Notes accept markdown-formatted content (up to ~200k characters), where the first line is automatically interpreted as the title. When creating a note, you can optionally:
+
 - Assign it to one or more collections by ID or by title (case-insensitive exact match).
 - Provide a custom UUID for the note.
 - Set custom `created_at` and `updated_at` timestamps.
@@ -37,6 +39,7 @@ Mem automatically processes note content — for example, it may extract action 
 ### Note Search
 
 Search across your notes using a text query. Results can be filtered by:
+
 - Collection IDs — only return notes belonging to specific collections.
 - Whether notes contain open tasks, any tasks, images, or file attachments.
 
@@ -45,6 +48,7 @@ Search results include a snippet and relevance-ranked results.
 ### Collection Management
 
 Collections are used to organize notes into groups. You can create, read, list, search, and delete collections. When creating a collection, you can provide:
+
 - A title (required, up to ~1k characters) and an optional description (up to ~10k characters).
 - A custom UUID, and custom `created_at`/`updated_at` timestamps.
 
@@ -53,6 +57,7 @@ Collections can also be searched by text query.
 ### Mem It (AI Content Processing)
 
 An AI-powered feature that accepts any raw content — web pages, emails, transcripts, articles, or simple text (up to ~1M characters) — and intelligently processes it into your knowledge base. You can provide:
+
 - **Instructions**: guidance on how the information should be processed (e.g., "Extract the key findings and save as a research note").
 - **Context**: background information to help Mem understand how the input relates to existing knowledge (e.g., "This is related to my Project Alpha research").
 - **Timestamp**: when the information was originally encountered.

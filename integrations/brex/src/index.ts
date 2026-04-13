@@ -15,7 +15,7 @@ import {
   manageBudget,
   listTransactions,
   listAccounts,
-  listDepartmentsLocations,
+  listDepartmentsLocations
 } from './tools';
 import { brexEvents } from './triggers';
 
@@ -36,9 +36,7 @@ export let provider = Slate.create({
     manageBudget,
     listTransactions,
     listAccounts,
-    listDepartmentsLocations,
+    listDepartmentsLocations
   ],
-  triggers: [
-    brexEvents,
-  ],
+  triggers: [brexEvents]
 });

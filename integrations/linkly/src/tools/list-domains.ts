@@ -3,26 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDomains = SlateTool.create(
-  spec,
-  {
-    name: 'List Domains',
-    key: 'list_domains',
-    description: `Lists all custom domains configured in the workspace. Custom domains are used as branded short link hosts.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listDomains = SlateTool.create(spec, {
+  name: 'List Domains',
+  key: 'list_domains',
+  description: `Lists all custom domains configured in the workspace. Custom domains are used as branded short link hosts.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    domains: z.array(z.object({
-      name: z.string().describe('Domain name'),
-      faviconUrl: z.string().optional().nullable().describe('Favicon URL for the domain')
-    })).describe('Configured custom domains')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      domains: z
+        .array(
+          z.object({
+            name: z.string().describe('Domain name'),
+            faviconUrl: z.string().optional().nullable().describe('Favicon URL for the domain')
+          })
+        )
+        .describe('Configured custom domains')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.auth.workspaceId
@@ -38,4 +41,5 @@ export let listDomains = SlateTool.create(
       output: { domains },
       message: `Found **${domains.length}** custom domain(s)`
     };
-  }).build();
+  })
+  .build();

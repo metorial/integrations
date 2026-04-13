@@ -3,52 +3,58 @@ import { AzureDevOpsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let pullRequestEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Pull Request Events',
-    key: 'pull_request_events',
-    description: 'Fires when pull requests are created, updated, merge-attempted, or commented on.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Azure DevOps event type'),
-    resourceId: z.string().describe('Unique event resource identifier'),
-    resource: z.any().describe('Event resource payload'),
-  }))
-  .output(z.object({
-    pullRequestId: z.number(),
-    repositoryId: z.string().optional(),
-    repositoryName: z.string().optional(),
-    projectName: z.string().optional(),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    status: z.string().optional(),
-    sourceRefName: z.string().optional(),
-    targetRefName: z.string().optional(),
-    createdBy: z.string().optional(),
-    creationDate: z.string().optional(),
-    mergeStatus: z.string().optional(),
-    isDraft: z.boolean().optional(),
-    reviewers: z.array(z.object({
-      reviewerId: z.string().optional(),
-      displayName: z.string().optional(),
-      vote: z.number().optional(),
-    })).optional(),
-    url: z.string().optional(),
-  }))
+export let pullRequestEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Pull Request Events',
+  key: 'pull_request_events',
+  description:
+    'Fires when pull requests are created, updated, merge-attempted, or commented on.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Azure DevOps event type'),
+      resourceId: z.string().describe('Unique event resource identifier'),
+      resource: z.any().describe('Event resource payload')
+    })
+  )
+  .output(
+    z.object({
+      pullRequestId: z.number(),
+      repositoryId: z.string().optional(),
+      repositoryName: z.string().optional(),
+      projectName: z.string().optional(),
+      title: z.string().optional(),
+      description: z.string().optional(),
+      status: z.string().optional(),
+      sourceRefName: z.string().optional(),
+      targetRefName: z.string().optional(),
+      createdBy: z.string().optional(),
+      creationDate: z.string().optional(),
+      mergeStatus: z.string().optional(),
+      isDraft: z.boolean().optional(),
+      reviewers: z
+        .array(
+          z.object({
+            reviewerId: z.string().optional(),
+            displayName: z.string().optional(),
+            vote: z.number().optional()
+          })
+        )
+        .optional(),
+      url: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AzureDevOpsClient({
         token: ctx.auth.token,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let eventTypes = [
         'git.pullrequest.created',
         'git.pullrequest.updated',
         'git.pullrequest.merged',
-        'ms.vss-code.git-pullrequest-comment-event',
+        'ms.vss-code.git-pullrequest-comment-event'
       ];
 
       let subscriptionIds: string[] = [];
@@ -66,22 +72,22 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
           consumerActionId: 'httpRequest',
           publisherInputs,
           consumerInputs: {
-            url: ctx.input.webhookBaseUrl,
+            url: ctx.input.webhookBaseUrl
           },
-          resourceVersion: '1.0',
+          resourceVersion: '1.0'
         });
         subscriptionIds.push(sub.id);
       }
 
       return {
-        registrationDetails: { subscriptionIds },
+        registrationDetails: { subscriptionIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AzureDevOpsClient({
         token: ctx.auth.token,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let details = ctx.input.registrationDetails as { subscriptionIds: string[] };
@@ -94,20 +100,22 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let resource = data.resource || {};
 
       return {
-        inputs: [{
-          eventType: data.eventType || '',
-          resourceId: data.id || resource.pullRequestId?.toString() || `pr-${Date.now()}`,
-          resource,
-        }],
+        inputs: [
+          {
+            eventType: data.eventType || '',
+            resourceId: data.id || resource.pullRequestId?.toString() || `pr-${Date.now()}`,
+            resource
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let resource = ctx.input.resource || {};
       let repo = resource.repository || {};
 
@@ -137,10 +145,11 @@ export let pullRequestEventsTrigger = SlateTrigger.create(
           reviewers: (resource.reviewers || []).map((r: any) => ({
             reviewerId: r.id,
             displayName: r.displayName,
-            vote: r.vote,
+            vote: r.vote
           })),
-          url: resource._links?.web?.href || resource.url,
-        },
+          url: resource._links?.web?.href || resource.url
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

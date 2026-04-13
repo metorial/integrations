@@ -76,15 +76,22 @@ export class Client {
     await this.axios.delete(`/droplets/${dropletId}`);
   }
 
-  async performDropletAction(dropletId: number, action: {
-    type: string;
-    [key: string]: any;
-  }): Promise<any> {
+  async performDropletAction(
+    dropletId: number,
+    action: {
+      type: string;
+      [key: string]: any;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/droplets/${dropletId}/actions`, action);
     return response.data.action;
   }
 
-  async resizeDroplet(dropletId: number, size: string, resizeDisk: boolean = true): Promise<any> {
+  async resizeDroplet(
+    dropletId: number,
+    size: string,
+    resizeDisk: boolean = true
+  ): Promise<any> {
     return this.performDropletAction(dropletId, {
       type: 'resize',
       size,
@@ -156,12 +163,15 @@ export class Client {
     await this.axios.delete(`/domains/${domainName}`);
   }
 
-  async listDomainRecords(domainName: string, params?: {
-    page?: number;
-    perPage?: number;
-    type?: string;
-    name?: string;
-  }): Promise<{ records: any[]; meta: any }> {
+  async listDomainRecords(
+    domainName: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+      type?: string;
+      name?: string;
+    }
+  ): Promise<{ records: any[]; meta: any }> {
     let response = await this.axios.get(`/domains/${domainName}/records`, {
       params: {
         page: params?.page || 1,
@@ -173,33 +183,43 @@ export class Client {
     return { records: response.data.domain_records, meta: response.data.meta };
   }
 
-  async createDomainRecord(domainName: string, params: {
-    type: string;
-    name: string;
-    data: string;
-    priority?: number;
-    port?: number;
-    ttl?: number;
-    weight?: number;
-    flags?: number;
-    tag?: string;
-  }): Promise<any> {
+  async createDomainRecord(
+    domainName: string,
+    params: {
+      type: string;
+      name: string;
+      data: string;
+      priority?: number;
+      port?: number;
+      ttl?: number;
+      weight?: number;
+      flags?: number;
+      tag?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/domains/${domainName}/records`, params);
     return response.data.domain_record;
   }
 
-  async updateDomainRecord(domainName: string, recordId: number, params: {
-    type?: string;
-    name?: string;
-    data?: string;
-    priority?: number;
-    port?: number;
-    ttl?: number;
-    weight?: number;
-    flags?: number;
-    tag?: string;
-  }): Promise<any> {
-    let response = await this.axios.patch(`/domains/${domainName}/records/${recordId}`, params);
+  async updateDomainRecord(
+    domainName: string,
+    recordId: number,
+    params: {
+      type?: string;
+      name?: string;
+      data?: string;
+      priority?: number;
+      port?: number;
+      ttl?: number;
+      weight?: number;
+      flags?: number;
+      tag?: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      `/domains/${domainName}/records/${recordId}`,
+      params
+    );
     return response.data.domain_record;
   }
 
@@ -256,10 +276,13 @@ export class Client {
     await this.axios.delete(`/databases/${databaseId}`);
   }
 
-  async resizeDatabaseCluster(databaseId: string, params: {
-    size: string;
-    numNodes: number;
-  }): Promise<void> {
+  async resizeDatabaseCluster(
+    databaseId: string,
+    params: {
+      size: string;
+      numNodes: number;
+    }
+  ): Promise<void> {
     await this.axios.put(`/databases/${databaseId}/resize`, {
       size: params.size,
       num_nodes: params.numNodes
@@ -271,9 +294,12 @@ export class Client {
     return response.data.users;
   }
 
-  async createDatabaseUser(databaseId: string, params: {
-    name: string;
-  }): Promise<any> {
+  async createDatabaseUser(
+    databaseId: string,
+    params: {
+      name: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/databases/${databaseId}/users`, {
       name: params.name
     });
@@ -303,10 +329,13 @@ export class Client {
     return response.data.rules;
   }
 
-  async updateDatabaseFirewallRules(databaseId: string, rules: Array<{
-    type: string;
-    value: string;
-  }>): Promise<void> {
+  async updateDatabaseFirewallRules(
+    databaseId: string,
+    rules: Array<{
+      type: string;
+      value: string;
+    }>
+  ): Promise<void> {
     await this.axios.put(`/databases/${databaseId}/firewall`, { rules });
   }
 
@@ -357,10 +386,12 @@ export class Client {
       })),
       tags: params.tags,
       vpc_uuid: params.vpcUuid,
-      maintenance_policy: params.maintenancePolicy ? {
-        start_time: params.maintenancePolicy.startTime,
-        day: params.maintenancePolicy.day
-      } : undefined
+      maintenance_policy: params.maintenancePolicy
+        ? {
+            start_time: params.maintenancePolicy.startTime,
+            day: params.maintenancePolicy.day
+          }
+        : undefined
     });
     return response.data.kubernetes_cluster;
   }
@@ -379,15 +410,18 @@ export class Client {
     return response.data.node_pools;
   }
 
-  async addKubernetesNodePool(clusterId: string, params: {
-    name: string;
-    size: string;
-    count: number;
-    tags?: string[];
-    autoScale?: boolean;
-    minNodes?: number;
-    maxNodes?: number;
-  }): Promise<any> {
+  async addKubernetesNodePool(
+    clusterId: string,
+    params: {
+      name: string;
+      size: string;
+      count: number;
+      tags?: string[];
+      autoScale?: boolean;
+      minNodes?: number;
+      maxNodes?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/kubernetes/clusters/${clusterId}/node_pools`, {
       name: params.name,
       size: params.size,
@@ -411,7 +445,10 @@ export class Client {
 
   // ─── App Platform ──────────────────────────────────────────────
 
-  async listApps(params?: { page?: number; perPage?: number }): Promise<{ apps: any[]; meta: any }> {
+  async listApps(params?: {
+    page?: number;
+    perPage?: number;
+  }): Promise<{ apps: any[]; meta: any }> {
     let response = await this.axios.get('/apps', {
       params: {
         page: params?.page || 1,
@@ -440,7 +477,10 @@ export class Client {
     await this.axios.delete(`/apps/${appId}`);
   }
 
-  async listAppDeployments(appId: string, params?: { page?: number; perPage?: number }): Promise<{ deployments: any[]; meta: any }> {
+  async listAppDeployments(
+    appId: string,
+    params?: { page?: number; perPage?: number }
+  ): Promise<{ deployments: any[]; meta: any }> {
     let response = await this.axios.get(`/apps/${appId}/deployments`, {
       params: {
         page: params?.page || 1,
@@ -586,24 +626,28 @@ export class Client {
         certificate_id: r.certificateId,
         tls_passthrough: r.tlsPassthrough
       })),
-      health_check: params.healthCheck ? {
-        protocol: params.healthCheck.protocol,
-        port: params.healthCheck.port,
-        path: params.healthCheck.path,
-        check_interval_seconds: params.healthCheck.checkIntervalSeconds,
-        response_timeout_seconds: params.healthCheck.responseTimeoutSeconds,
-        unhealthy_threshold: params.healthCheck.unhealthyThreshold,
-        healthy_threshold: params.healthCheck.healthyThreshold
-      } : undefined,
+      health_check: params.healthCheck
+        ? {
+            protocol: params.healthCheck.protocol,
+            port: params.healthCheck.port,
+            path: params.healthCheck.path,
+            check_interval_seconds: params.healthCheck.checkIntervalSeconds,
+            response_timeout_seconds: params.healthCheck.responseTimeoutSeconds,
+            unhealthy_threshold: params.healthCheck.unhealthyThreshold,
+            healthy_threshold: params.healthCheck.healthyThreshold
+          }
+        : undefined,
       droplet_ids: params.dropletIds,
       tag: params.tag,
       vpc_uuid: params.vpcUuid,
       algorithm: params.algorithm,
-      sticky_sessions: params.stickySession ? {
-        type: params.stickySession.type,
-        cookie_name: params.stickySession.cookieName,
-        cookie_ttl_seconds: params.stickySession.cookieTtlSeconds
-      } : undefined
+      sticky_sessions: params.stickySession
+        ? {
+            type: params.stickySession.type,
+            cookie_name: params.stickySession.cookieName,
+            cookie_ttl_seconds: params.stickySession.cookieTtlSeconds
+          }
+        : undefined
     });
     return response.data.load_balancer;
   }
@@ -617,13 +661,19 @@ export class Client {
     return response.data.load_balancer;
   }
 
-  async addDropletsToLoadBalancer(loadBalancerId: string, dropletIds: number[]): Promise<void> {
+  async addDropletsToLoadBalancer(
+    loadBalancerId: string,
+    dropletIds: number[]
+  ): Promise<void> {
     await this.axios.post(`/load_balancers/${loadBalancerId}/droplets`, {
       droplet_ids: dropletIds
     });
   }
 
-  async removeDropletsFromLoadBalancer(loadBalancerId: string, dropletIds: number[]): Promise<void> {
+  async removeDropletsFromLoadBalancer(
+    loadBalancerId: string,
+    dropletIds: number[]
+  ): Promise<void> {
     await this.axios.delete(`/load_balancers/${loadBalancerId}/droplets`, {
       data: { droplet_ids: dropletIds }
     });
@@ -646,12 +696,22 @@ export class Client {
     inboundRules?: Array<{
       protocol: string;
       ports: string;
-      sources: { addresses?: string[]; dropletIds?: number[]; tags?: string[]; loadBalancerUids?: string[] };
+      sources: {
+        addresses?: string[];
+        dropletIds?: number[];
+        tags?: string[];
+        loadBalancerUids?: string[];
+      };
     }>;
     outboundRules?: Array<{
       protocol: string;
       ports: string;
-      destinations: { addresses?: string[]; dropletIds?: number[]; tags?: string[]; loadBalancerUids?: string[] };
+      destinations: {
+        addresses?: string[];
+        dropletIds?: number[];
+        tags?: string[];
+        loadBalancerUids?: string[];
+      };
     }>;
     dropletIds?: number[];
     tags?: string[];
@@ -724,10 +784,13 @@ export class Client {
     await this.axios.delete(`/vpcs/${vpcId}`);
   }
 
-  async updateVPC(vpcId: string, params: {
-    name?: string;
-    description?: string;
-  }): Promise<any> {
+  async updateVPC(
+    vpcId: string,
+    params: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/vpcs/${vpcId}`, params);
     return response.data.vpc;
   }
@@ -754,13 +817,16 @@ export class Client {
     return response.data.project;
   }
 
-  async updateProject(projectId: string, params: {
-    name?: string;
-    description?: string;
-    purpose?: string;
-    environment?: string;
-    isDefault?: boolean;
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    params: {
+      name?: string;
+      description?: string;
+      purpose?: string;
+      environment?: string;
+      isDefault?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/projects/${projectId}`, {
       name: params.name,
       description: params.description,
@@ -803,10 +869,13 @@ export class Client {
     await this.axios.delete(`/tags/${tagName}`);
   }
 
-  async tagResources(tagName: string, resources: Array<{
-    resourceId: string;
-    resourceType: string;
-  }>): Promise<void> {
+  async tagResources(
+    tagName: string,
+    resources: Array<{
+      resourceId: string;
+      resourceType: string;
+    }>
+  ): Promise<void> {
     await this.axios.post(`/tags/${tagName}/resources`, {
       resources: resources.map(r => ({
         resource_id: r.resourceId,
@@ -815,10 +884,13 @@ export class Client {
     });
   }
 
-  async untagResources(tagName: string, resources: Array<{
-    resourceId: string;
-    resourceType: string;
-  }>): Promise<void> {
+  async untagResources(
+    tagName: string,
+    resources: Array<{
+      resourceId: string;
+      resourceType: string;
+    }>
+  ): Promise<void> {
     await this.axios.delete(`/tags/${tagName}/resources`, {
       data: {
         resources: resources.map(r => ({
@@ -931,13 +1003,24 @@ export class Client {
     return response.data.repositories;
   }
 
-  async listRegistryRepositoryTags(registryName: string, repositoryName: string): Promise<any[]> {
-    let response = await this.axios.get(`/registry/${registryName}/repositories/${repositoryName}/tags`);
+  async listRegistryRepositoryTags(
+    registryName: string,
+    repositoryName: string
+  ): Promise<any[]> {
+    let response = await this.axios.get(
+      `/registry/${registryName}/repositories/${repositoryName}/tags`
+    );
     return response.data.tags;
   }
 
-  async deleteRegistryRepositoryTag(registryName: string, repositoryName: string, tag: string): Promise<void> {
-    await this.axios.delete(`/registry/${registryName}/repositories/${repositoryName}/tags/${tag}`);
+  async deleteRegistryRepositoryTag(
+    registryName: string,
+    repositoryName: string,
+    tag: string
+  ): Promise<void> {
+    await this.axios.delete(
+      `/registry/${registryName}/repositories/${repositoryName}/tags/${tag}`
+    );
   }
 
   async runRegistryGarbageCollection(registryName: string): Promise<any> {
@@ -1006,13 +1089,16 @@ export class Client {
     await this.axios.delete(`/uptime/checks/${checkId}`);
   }
 
-  async updateUptimeCheck(checkId: string, params: {
-    name?: string;
-    target?: string;
-    type?: string;
-    regions?: string[];
-    enabled?: boolean;
-  }): Promise<any> {
+  async updateUptimeCheck(
+    checkId: string,
+    params: {
+      name?: string;
+      target?: string;
+      type?: string;
+      regions?: string[];
+      enabled?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/uptime/checks/${checkId}`, params);
     return response.data.check;
   }
@@ -1074,10 +1160,7 @@ export class Client {
     return response.data.namespace;
   }
 
-  async createFunctionNamespace(params: {
-    label: string;
-    region: string;
-  }): Promise<any> {
+  async createFunctionNamespace(params: { label: string; region: string }): Promise<any> {
     let response = await this.axios.post('/functions/namespaces', params);
     return response.data.namespace;
   }
@@ -1091,13 +1174,16 @@ export class Client {
     return response.data.triggers;
   }
 
-  async createFunctionTrigger(namespaceId: string, params: {
-    name: string;
-    function: string;
-    type: string;
-    isEnabled: boolean;
-    scheduledDetails?: { cron: string; body: any };
-  }): Promise<any> {
+  async createFunctionTrigger(
+    namespaceId: string,
+    params: {
+      name: string;
+      function: string;
+      type: string;
+      isEnabled: boolean;
+      scheduledDetails?: { cron: string; body: any };
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/functions/namespaces/${namespaceId}/triggers`, {
       name: params.name,
       function: params.function,

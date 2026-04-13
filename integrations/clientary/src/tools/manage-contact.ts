@@ -14,29 +14,28 @@ let contactSchema = z.object({
   extension: z.string().optional().describe('Phone extension')
 });
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact within a client organization. Contacts represent individual people associated with a client.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact within a client organization. Contacts represent individual people associated with a client.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    clientId: z.number().describe('ID of the client to add the contact to'),
-    name: z.string().describe('Full name of the contact (required)'),
-    email: z.string().describe('Email address (required)'),
-    phone: z.string().optional().describe('Phone number'),
-    mobile: z.string().optional().describe('Mobile phone number'),
-    title: z.string().optional().describe('Job title'),
-    extension: z.string().optional().describe('Phone extension')
-  }))
+})
+  .input(
+    z.object({
+      clientId: z.number().describe('ID of the client to add the contact to'),
+      name: z.string().describe('Full name of the contact (required)'),
+      email: z.string().describe('Email address (required)'),
+      phone: z.string().optional().describe('Phone number'),
+      mobile: z.string().optional().describe('Mobile phone number'),
+      title: z.string().optional().describe('Job title'),
+      extension: z.string().optional().describe('Phone extension')
+    })
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {
@@ -67,29 +66,28 @@ export let createContact = SlateTool.create(
   })
   .build();
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact's information.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact's information.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the contact to update'),
-    name: z.string().optional().describe('Full name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    mobile: z.string().optional().describe('Mobile phone number'),
-    title: z.string().optional().describe('Job title'),
-    extension: z.string().optional().describe('Phone extension')
-  }))
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the contact to update'),
+      name: z.string().optional().describe('Full name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      mobile: z.string().optional().describe('Mobile phone number'),
+      title: z.string().optional().describe('Job title'),
+      extension: z.string().optional().describe('Phone extension')
+    })
+  )
   .output(contactSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let data: Record<string, any> = {};
@@ -119,27 +117,28 @@ export let updateContact = SlateTool.create(
   })
   .build();
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `List contacts, optionally filtered by client. Returns paginated results.`,
-    tags: {
-      readOnly: true
-    }
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `List contacts, optionally filtered by client. Returns paginated results.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    clientId: z.number().optional().describe('Filter contacts by client ID'),
-    page: z.number().optional().describe('Page number for pagination')
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema).describe('List of contacts'),
-    totalCount: z.number().optional().describe('Total number of matching contacts'),
-    pageCount: z.number().optional().describe('Total number of pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clientId: z.number().optional().describe('Filter contacts by client ID'),
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSchema).describe('List of contacts'),
+      totalCount: z.number().optional().describe('Total number of matching contacts'),
+      pageCount: z.number().optional().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
 
     let result = await client.listContacts({
@@ -169,25 +168,26 @@ export let listContacts = SlateTool.create(
   })
   .build();
 
-export let deleteContact = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Contact',
-    key: 'delete_contact',
-    description: `Permanently delete a contact. This also removes associated comments.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteContact = SlateTool.create(spec, {
+  name: 'Delete Contact',
+  key: 'delete_contact',
+  description: `Permanently delete a contact. This also removes associated comments.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.number().describe('ID of the contact to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.number().describe('ID of the contact to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, subdomain: ctx.config.subdomain });
     await client.deleteContact(ctx.input.contactId);
 

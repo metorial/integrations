@@ -2,10 +2,7 @@
   "name": "@metorial/mailersend",
   "version": "0.1.1",
   "description": "Send transactional emails and SMS messages. Manage email templates, sending domains, and sender identities. Verify email addresses individually or in bulk. Configure inbound email and SMS routing. Track email delivery activity and analytics including opens, clicks, bounces, and spam complaints. Manage recipient suppression lists, API tokens, SMTP users, and team member access. Schedule emails for future delivery and send bulk email batches. Monitor DMARC reports for sending domains.",
-  "categories": [
-    "crm-and-sales-tools",
-    "email-and-messaging"
-  ],
+  "categories": ["crm-and-sales-tools", "email-and-messaging"],
   "skills": [
     "send transactional emails",
     "send SMS messages",

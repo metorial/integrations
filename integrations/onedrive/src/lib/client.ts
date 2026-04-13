@@ -49,7 +49,9 @@ export interface Permission {
   id: string;
   roles: string[];
   grantedTo?: { user?: { displayName?: string; id?: string; email?: string } };
-  grantedToIdentities?: Array<{ user?: { displayName?: string; id?: string; email?: string } }>;
+  grantedToIdentities?: Array<{
+    user?: { displayName?: string; id?: string; email?: string };
+  }>;
   grantedToV2?: Record<string, any>;
   link?: { type: string; scope: string; webUrl: string };
   invitation?: { email?: string };
@@ -86,8 +88,8 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://graph.microsoft.com/v1.0',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -128,7 +130,7 @@ export class Client {
     let response = await this.api.get(path, { params });
     return {
       items: response.data.value,
-      nextLink: response.data['@odata.nextLink'],
+      nextLink: response.data['@odata.nextLink']
     };
   }
 
@@ -161,7 +163,7 @@ export class Client {
     let response = await this.api.get(path, {
       params,
       maxRedirects: 0,
-      validateStatus: (status: number) => status >= 200 && status < 400,
+      validateStatus: (status: number) => status >= 200 && status < 400
     });
 
     let downloadUrl = response.headers['location'] || response.request?.responseURL || '';
@@ -190,13 +192,14 @@ export class Client {
     }
 
     let params: Record<string, string> = {};
-    if (opts.conflictBehavior) params['@microsoft.graph.conflictBehavior'] = opts.conflictBehavior;
+    if (opts.conflictBehavior)
+      params['@microsoft.graph.conflictBehavior'] = opts.conflictBehavior;
 
     let response = await this.api.put(basePath, opts.content, {
       params,
       headers: {
-        'Content-Type': opts.contentType || 'application/octet-stream',
-      },
+        'Content-Type': opts.contentType || 'application/octet-stream'
+      }
     });
 
     return response.data;
@@ -229,7 +232,7 @@ export class Client {
     let response = await this.api.post(basePath, body);
     return {
       uploadUrl: response.data.uploadUrl,
-      expirationDateTime: response.data.expirationDateTime,
+      expirationDateTime: response.data.expirationDateTime
     };
   }
 
@@ -244,7 +247,7 @@ export class Client {
 
     let body: Record<string, any> = {
       name: opts.folderName,
-      folder: {},
+      folder: {}
     };
     if (opts.conflictBehavior) {
       body['@microsoft.graph.conflictBehavior'] = opts.conflictBehavior;
@@ -266,8 +269,8 @@ export class Client {
 
     let body: Record<string, any> = {
       parentReference: {
-        id: opts.destinationFolderId,
-      },
+        id: opts.destinationFolderId
+      }
     };
     if (opts.destinationDriveId) {
       body.parentReference.driveId = opts.destinationDriveId;
@@ -332,7 +335,7 @@ export class Client {
     let response = await this.api.get(path, { params });
     return {
       items: response.data.value,
-      nextLink: response.data['@odata.nextLink'],
+      nextLink: response.data['@odata.nextLink']
     };
   }
 
@@ -350,7 +353,7 @@ export class Client {
     let path = this.buildItemPath(opts.driveId, opts.itemId, opts.itemPath, '/createLink');
 
     let body: Record<string, any> = {
-      type: opts.type,
+      type: opts.type
     };
     if (opts.scope) body.scope = opts.scope;
     if (opts.expirationDateTime) body.expirationDateTime = opts.expirationDateTime;
@@ -386,7 +389,7 @@ export class Client {
       recipients: recipients(opts.recipients),
       roles: opts.roles,
       requireSignIn: opts.requireSignIn !== false,
-      sendInvitation: opts.sendInvitation !== false,
+      sendInvitation: opts.sendInvitation !== false
     };
     if (opts.message) body.message = opts.message;
 
@@ -416,7 +419,7 @@ export class Client {
       return {
         value: response.data.value,
         deltaLink: response.data['@odata.deltaLink'],
-        nextLink: response.data['@odata.nextLink'],
+        nextLink: response.data['@odata.nextLink']
       };
     }
 
@@ -430,7 +433,7 @@ export class Client {
     return {
       value: response.data.value,
       deltaLink: response.data['@odata.deltaLink'],
-      nextLink: response.data['@odata.nextLink'],
+      nextLink: response.data['@odata.nextLink']
     };
   }
 
@@ -449,20 +452,27 @@ export class Client {
       headers['Prefer'] = 'includesecuritywebhooks';
     }
 
-    let response = await this.api.post('/subscriptions', {
-      changeType: opts.changeType,
-      notificationUrl: opts.notificationUrl,
-      resource: opts.resource,
-      expirationDateTime: opts.expirationDateTime,
-      clientState: opts.clientState,
-    }, { headers });
+    let response = await this.api.post(
+      '/subscriptions',
+      {
+        changeType: opts.changeType,
+        notificationUrl: opts.notificationUrl,
+        resource: opts.resource,
+        expirationDateTime: opts.expirationDateTime,
+        clientState: opts.clientState
+      },
+      { headers }
+    );
 
     return response.data;
   }
 
-  async updateSubscription(subscriptionId: string, expirationDateTime: string): Promise<SubscriptionResponse> {
+  async updateSubscription(
+    subscriptionId: string,
+    expirationDateTime: string
+  ): Promise<SubscriptionResponse> {
     let response = await this.api.patch(`/subscriptions/${subscriptionId}`, {
-      expirationDateTime,
+      expirationDateTime
     });
     return response.data;
   }
@@ -477,7 +487,14 @@ export class Client {
     driveId?: string;
     itemId?: string;
     itemPath?: string;
-  }): Promise<Array<{ id: string; small?: { url: string; width: number; height: number }; medium?: { url: string; width: number; height: number }; large?: { url: string; width: number; height: number } }>> {
+  }): Promise<
+    Array<{
+      id: string;
+      small?: { url: string; width: number; height: number };
+      medium?: { url: string; width: number; height: number };
+      large?: { url: string; width: number; height: number };
+    }>
+  > {
     let path = this.buildItemPath(opts.driveId, opts.itemId, opts.itemPath, '/thumbnails');
     let response = await this.api.get(path);
     return response.data.value;
@@ -497,7 +514,12 @@ export class Client {
 
   // --- Helpers ---
 
-  private buildItemPath(driveId?: string, itemId?: string, itemPath?: string, suffix: string = ''): string {
+  private buildItemPath(
+    driveId?: string,
+    itemId?: string,
+    itemPath?: string,
+    suffix: string = ''
+  ): string {
     let drivePart = driveId ? `/drives/${driveId}` : '/me/drive';
 
     if (itemPath) {

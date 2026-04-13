@@ -3,25 +3,29 @@ import { TogglClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteTimeEntry = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Time Entry',
-    key: 'delete_time_entry',
-    description: `Permanently delete a time entry from Toggl Track. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteTimeEntry = SlateTool.create(spec, {
+  name: 'Delete Time Entry',
+  key: 'delete_time_entry',
+  description: `Permanently delete a time entry from Toggl Track. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    workspaceId: z.string().optional().describe('Workspace ID. Uses the configured default if not provided.'),
-    timeEntryId: z.string().describe('ID of the time entry to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the deletion was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workspaceId: z
+        .string()
+        .optional()
+        .describe('Workspace ID. Uses the configured default if not provided.'),
+      timeEntryId: z.string().describe('ID of the time entry to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TogglClient(ctx.auth.token);
     let wsId = ctx.input.workspaceId ?? ctx.config.workspaceId;
 
@@ -29,6 +33,7 @@ export let deleteTimeEntry = SlateTool.create(
 
     return {
       output: { deleted: true },
-      message: `Deleted time entry **#${ctx.input.timeEntryId}**`,
+      message: `Deleted time entry **#${ctx.input.timeEntryId}**`
     };
-  }).build();
+  })
+  .build();

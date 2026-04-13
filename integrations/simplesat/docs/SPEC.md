@@ -17,6 +17,7 @@ To find your key, log into your Simplesat account and head over to **Admin** > *
 To authenticate, use the API key in a `X-Simplesat-Token` header.
 
 Example:
+
 ```
 X-Simplesat-Token: your_api_key_here
 ```
@@ -28,24 +29,31 @@ No OAuth or other authentication methods are supported. Only a single API key me
 ## Features
 
 ### Survey Management
+
 Retrieve information about surveys configured in your Simplesat account. Surveys can be of type CSAT, NPS, CES, or 5-star rating and support conditional follow-up questions based on sentiment, rating, or choice.
 
 ### Question Management
+
 Access the questions associated with surveys. Questions can be of various types including multiple choice, multi-select, sliding scale, and comment box.
 
 ### Feedback Answers
+
 Retrieve individual answers to survey questions. For the answers endpoint, you can specify a start_date and end_date for replicating data between these dates.
 
 ### Survey Responses
+
 Access complete survey responses, which aggregate the answers a customer provided in a single survey session. Responses can also be filtered by date range.
 
 ### Customer Management
+
 Create or update customers through the API using a single upsert endpoint. The customer's email address is used as the key. Any custom_attribute fields that didn't previously exist will be created. This is useful for syncing customer data from CRMs that don't have a native Simplesat integration.
 
 ### Event-Based Email Surveys
+
 Event-based email surveys let you easily send a survey email from Simplesat by making an API request. This is a great way to get feedback from customers after important moments, like when they buy something or when their support issue gets fixed. The request can include customer info, ticket numbers, team member fields, and other metadata. To prevent overwhelming customers with too many surveys, Simplesat has an email suppression feature to control how often customers receive surveys.
 
 ### Team Member Lookup
+
 Look up team members by ID to associate feedback with specific agents or employees.
 
 ## Events
@@ -53,6 +61,7 @@ Look up team members by ID to associate feedback with specific agents or employe
 Simplesat supports a "New Feedback" trigger that fires instantly when new feedback is received. This is available through Zapier's integration and functions as a webhook-based instant trigger.
 
 ### New Feedback
+
 Triggers when a customer submits new survey feedback (rating, comment, or full response). This event can be used to forward feedback to other systems in real time, such as posting to Slack/Teams channels or updating CRM records.
 
 - The feedback payload includes customer details, rating, comments, survey information, and associated metadata (e.g., ticket ID, team member).

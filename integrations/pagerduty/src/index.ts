@@ -15,12 +15,9 @@ import {
   sendEvent,
   manageMaintenanceWindow,
   getAnalytics,
-  listPriorities,
+  listPriorities
 } from './tools';
-import {
-  incidentEvents,
-  serviceEvents,
-} from './triggers';
+import { incidentEvents, serviceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     sendEvent,
     manageMaintenanceWindow,
     getAnalytics,
-    listPriorities,
+    listPriorities
   ],
-  triggers: [
-    incidentEvents,
-    serviceEvents,
-  ],
+  triggers: [incidentEvents, serviceEvents]
 });

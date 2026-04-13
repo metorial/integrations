@@ -3,48 +3,50 @@ import { DocsBotAdminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newConversations = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Conversations',
-    key: 'new_conversations',
-    description: 'Triggers when new conversation sessions are created with a bot. Polls for new conversations. Monitors the bot specified in the global config botId, or all bots if not set.',
-  }
-)
-  .input(z.object({
-    botId: z.string().describe('Bot ID the conversation belongs to'),
-    conversationId: z.string().describe('Conversation identifier'),
-    title: z.string().optional().describe('Conversation title'),
-    createdAt: z.string().describe('ISO 8601 creation timestamp'),
-    updatedAt: z.string().describe('ISO 8601 last update timestamp'),
-    model: z.string().optional().describe('AI model used'),
-    answered: z.boolean().optional().describe('Whether the bot answered'),
-    summary: z.string().optional().describe('Conversation summary'),
-    sentiment: z.string().optional().describe('Conversation sentiment'),
-    resolved: z.string().optional().describe('Resolution status'),
-    escalated: z.string().optional().describe('Escalation status'),
-    alias: z.string().optional().describe('Anonymous username'),
-  }))
-  .output(z.object({
-    conversationId: z.string().describe('Conversation identifier'),
-    botId: z.string().describe('Bot ID the conversation belongs to'),
-    title: z.string().optional().describe('Conversation title'),
-    createdAt: z.string().describe('ISO 8601 creation timestamp'),
-    updatedAt: z.string().describe('ISO 8601 last update timestamp'),
-    model: z.string().optional().describe('AI model used'),
-    answered: z.boolean().optional().describe('Whether the bot answered'),
-    summary: z.string().optional().describe('Conversation summary'),
-    sentiment: z.string().optional().describe('Sentiment: positive, negative, neutral'),
-    resolved: z.string().optional().describe('Resolution status'),
-    escalated: z.string().optional().describe('Escalation status'),
-    alias: z.string().optional().describe('Anonymous username'),
-  }))
+export let newConversations = SlateTrigger.create(spec, {
+  name: 'New Conversations',
+  key: 'new_conversations',
+  description:
+    'Triggers when new conversation sessions are created with a bot. Polls for new conversations. Monitors the bot specified in the global config botId, or all bots if not set.'
+})
+  .input(
+    z.object({
+      botId: z.string().describe('Bot ID the conversation belongs to'),
+      conversationId: z.string().describe('Conversation identifier'),
+      title: z.string().optional().describe('Conversation title'),
+      createdAt: z.string().describe('ISO 8601 creation timestamp'),
+      updatedAt: z.string().describe('ISO 8601 last update timestamp'),
+      model: z.string().optional().describe('AI model used'),
+      answered: z.boolean().optional().describe('Whether the bot answered'),
+      summary: z.string().optional().describe('Conversation summary'),
+      sentiment: z.string().optional().describe('Conversation sentiment'),
+      resolved: z.string().optional().describe('Resolution status'),
+      escalated: z.string().optional().describe('Escalation status'),
+      alias: z.string().optional().describe('Anonymous username')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string().describe('Conversation identifier'),
+      botId: z.string().describe('Bot ID the conversation belongs to'),
+      title: z.string().optional().describe('Conversation title'),
+      createdAt: z.string().describe('ISO 8601 creation timestamp'),
+      updatedAt: z.string().describe('ISO 8601 last update timestamp'),
+      model: z.string().optional().describe('AI model used'),
+      answered: z.boolean().optional().describe('Whether the bot answered'),
+      summary: z.string().optional().describe('Conversation summary'),
+      sentiment: z.string().optional().describe('Sentiment: positive, negative, neutral'),
+      resolved: z.string().optional().describe('Resolution status'),
+      escalated: z.string().optional().describe('Escalation status'),
+      alias: z.string().optional().describe('Anonymous username')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DocsBotAdminClient(ctx.auth.token);
       let teamId = ctx.config.teamId;
       let lastSeenTimestamp = ctx.state?.lastSeenTimestamp as string | undefined;
@@ -54,7 +56,7 @@ export let newConversations = SlateTrigger.create(
         botIds = [ctx.config.botId];
       } else {
         let bots = await client.listBots(teamId);
-        botIds = bots.map((b) => b.id);
+        botIds = bots.map(b => b.id);
       }
 
       let allInputs: Array<{
@@ -76,12 +78,12 @@ export let newConversations = SlateTrigger.create(
 
       for (let botId of botIds) {
         let result = await client.listConversations(teamId, botId, {
-          perPage: 25,
+          perPage: 25
         });
 
         let conversations = result.conversations;
         if (lastSeenTimestamp) {
-          conversations = conversations.filter((c) => c.createdAt > lastSeenTimestamp);
+          conversations = conversations.filter(c => c.createdAt > lastSeenTimestamp);
         }
 
         for (let c of conversations) {
@@ -100,7 +102,7 @@ export let newConversations = SlateTrigger.create(
             sentiment: c.sentiment ?? undefined,
             resolved: c.resolved,
             escalated: c.escalated,
-            alias: c.alias,
+            alias: c.alias
           });
         }
       }
@@ -108,12 +110,12 @@ export let newConversations = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          lastSeenTimestamp: newestTimestamp,
-        },
+          lastSeenTimestamp: newestTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'conversation.created',
         id: ctx.input.conversationId,
@@ -129,9 +131,9 @@ export let newConversations = SlateTrigger.create(
           sentiment: ctx.input.sentiment,
           resolved: ctx.input.resolved,
           escalated: ctx.input.escalated,
-          alias: ctx.input.alias,
-        },
+          alias: ctx.input.alias
+        }
       };
-    },
+    }
   })
   .build();

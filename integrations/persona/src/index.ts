@@ -36,7 +36,7 @@ import {
   createListItem,
   archiveListItem,
   listEvents,
-  getEvent,
+  getEvent
 } from './tools';
 import {
   inquiryEvents,
@@ -44,7 +44,7 @@ import {
   verificationEvents,
   reportEvents,
   transactionEvents,
-  caseEvents,
+  caseEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -85,7 +85,7 @@ export let provider = Slate.create({
     createListItem,
     archiveListItem,
     listEvents,
-    getEvent,
+    getEvent
   ],
   triggers: [
     inquiryEvents,
@@ -93,6 +93,6 @@ export let provider = Slate.create({
     verificationEvents,
     reportEvents,
     transactionEvents,
-    caseEvents,
-  ],
+    caseEvents
+  ]
 });

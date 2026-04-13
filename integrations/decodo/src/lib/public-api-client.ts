@@ -50,14 +50,14 @@ let mapSubUser = (raw: any): SubUser => ({
   traffic: raw.traffic,
   trafficLimit: raw.traffic_limit,
   serviceType: raw.service_type,
-  autoDisable: raw.auto_disable,
+  autoDisable: raw.auto_disable
 });
 
 let mapWhitelistedIp = (raw: any): WhitelistedIp => ({
   whitelistId: raw.id,
   ip: raw.ip,
   enabled: raw.enabled,
-  createdAt: raw.created_at,
+  createdAt: raw.created_at
 });
 
 export class PublicApiClient {
@@ -67,10 +67,10 @@ export class PublicApiClient {
     this.axios = createAxios({
       baseURL: 'https://api.decodo.com/v2',
       headers: {
-        'Authorization': apiKey,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: apiKey,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -96,7 +96,7 @@ export class PublicApiClient {
   }): Promise<SubUser> {
     let body: Record<string, any> = {
       username: params.username,
-      password: params.password,
+      password: params.password
     };
     if (params.trafficLimit !== undefined) body.traffic_limit = params.trafficLimit;
     if (params.serviceType !== undefined) body.service_type = params.serviceType;
@@ -105,11 +105,14 @@ export class PublicApiClient {
     return mapSubUser(response.data);
   }
 
-  async updateSubUser(subUserId: number, params: {
-    password?: string;
-    trafficLimit?: number;
-    autoDisable?: boolean;
-  }): Promise<SubUser> {
+  async updateSubUser(
+    subUserId: number,
+    params: {
+      password?: string;
+      trafficLimit?: number;
+      autoDisable?: boolean;
+    }
+  ): Promise<SubUser> {
     let body: Record<string, any> = {};
     if (params.password !== undefined) body.password = params.password;
     if (params.trafficLimit !== undefined) body.traffic_limit = params.trafficLimit;
@@ -122,12 +125,15 @@ export class PublicApiClient {
     await this.axios.delete(`/sub-users/${subUserId}`);
   }
 
-  async getSubUserTraffic(subUserId: number, params: {
-    type: string;
-    from?: string;
-    to?: string;
-    serviceType?: string;
-  }): Promise<SubUserTraffic> {
+  async getSubUserTraffic(
+    subUserId: number,
+    params: {
+      type: string;
+      from?: string;
+      to?: string;
+      serviceType?: string;
+    }
+  ): Promise<SubUserTraffic> {
     let query: Record<string, string> = { type: params.type };
     if (params.from) query.from = params.from;
     if (params.to) query.to = params.to;
@@ -137,7 +143,7 @@ export class PublicApiClient {
     return {
       traffic: data.traffic,
       trafficRx: data.traffic_rx,
-      trafficTx: data.traffic_tx,
+      trafficTx: data.traffic_tx
     };
   }
 
@@ -170,7 +176,7 @@ export class PublicApiClient {
       validFrom: s.valid_from,
       validUntil: s.valid_until,
       serviceType: s.service_type,
-      ...s,
+      ...s
     }));
   }
 
@@ -182,7 +188,7 @@ export class PublicApiClient {
     return data.map((e: any) => ({
       type: e.type,
       availableLocations: e.available_locations || [],
-      url: e.url,
+      url: e.url
     }));
   }
 
@@ -192,7 +198,7 @@ export class PublicApiClient {
     return {
       type: e.type,
       availableLocations: e.available_locations || [],
-      url: e.url,
+      url: e.url
     };
   }
 

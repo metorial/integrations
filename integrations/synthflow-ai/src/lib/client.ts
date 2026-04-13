@@ -9,8 +9,8 @@ export class Client {
       baseURL: 'https://api.synthflow.ai/v2',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -161,7 +161,7 @@ export class Client {
   async attachActions(modelId: string, actionIds: string[]) {
     let res = await this.axios.post('/actions/attach', {
       model_id: modelId,
-      actions: actionIds,
+      actions: actionIds
     });
     return res.data;
   }
@@ -169,7 +169,7 @@ export class Client {
   async detachActions(modelId: string, actionIds: string[]) {
     let res = await this.axios.post('/actions/detach', {
       model_id: modelId,
-      actions: actionIds,
+      actions: actionIds
     });
     return res.data;
   }
@@ -188,7 +188,10 @@ export class Client {
     return res.data;
   }
 
-  async executeSimulationSuite(suiteId: string, params: { target_agent_id: string; max_turns?: number }) {
+  async executeSimulationSuite(
+    suiteId: string,
+    params: { target_agent_id: string; max_turns?: number }
+  ) {
     let res = await this.axios.post(`/simulation_suites/${suiteId}/execute`, {}, { params });
     return res.data;
   }

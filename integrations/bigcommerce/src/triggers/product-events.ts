@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let productEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Product Events',
-    key: 'product_events',
-    description: 'Triggers when products are created, updated, deleted, or when inventory changes. Fetches the full product details for each event.',
-  }
-)
-  .input(z.object({
-    scope: z.string().describe('The webhook scope (e.g., store/product/created)'),
-    productId: z.number().describe('The product ID from the webhook payload'),
-    webhookEventHash: z.string().describe('Unique hash for the webhook event'),
-  }))
-  .output(z.object({
-    productId: z.number().describe('The product ID'),
-    name: z.string().optional().describe('Product name'),
-    sku: z.string().optional().describe('Product SKU'),
-    price: z.number().optional().describe('Product price'),
-    inventoryLevel: z.number().optional().describe('Current inventory level'),
-    isVisible: z.boolean().optional().describe('Product visibility'),
-    availability: z.string().optional().describe('Product availability status'),
-    dateModified: z.string().optional().describe('Date the product was last modified'),
-    productDetails: z.any().optional().describe('Full product object from the API'),
-  }))
+export let productEvents = SlateTrigger.create(spec, {
+  name: 'Product Events',
+  key: 'product_events',
+  description:
+    'Triggers when products are created, updated, deleted, or when inventory changes. Fetches the full product details for each event.'
+})
+  .input(
+    z.object({
+      scope: z.string().describe('The webhook scope (e.g., store/product/created)'),
+      productId: z.number().describe('The product ID from the webhook payload'),
+      webhookEventHash: z.string().describe('Unique hash for the webhook event')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.number().describe('The product ID'),
+      name: z.string().optional().describe('Product name'),
+      sku: z.string().optional().describe('Product SKU'),
+      price: z.number().optional().describe('Product price'),
+      inventoryLevel: z.number().optional().describe('Current inventory level'),
+      isVisible: z.boolean().optional().describe('Product visibility'),
+      availability: z.string().optional().describe('Product availability status'),
+      dateModified: z.string().optional().describe('Date the product was last modified'),
+      productDetails: z.any().optional().describe('Full product object from the API')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let scopes = [
@@ -39,7 +41,7 @@ export let productEvents = SlateTrigger.create(
         'store/product/updated',
         'store/product/deleted',
         'store/product/inventory/updated',
-        'store/product/inventory/order/updated',
+        'store/product/inventory/order/updated'
       ];
 
       let webhookIds: number[] = [];
@@ -47,20 +49,20 @@ export let productEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           scope,
           destination: ctx.input.webhookBaseUrl,
-          is_active: true,
+          is_active: true
         });
         webhookIds.push(result.data.id);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let { webhookIds } = ctx.input.registrationDetails as { webhookIds: number[] };
@@ -73,26 +75,28 @@ export let productEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let scope = body.scope as string;
       let productId = body.data?.id as number;
-      let hash = body.hash as string || `${scope}-${productId}-${Date.now()}`;
+      let hash = (body.hash as string) || `${scope}-${productId}-${Date.now()}`;
 
       return {
-        inputs: [{
-          scope,
-          productId,
-          webhookEventHash: hash,
-        }],
+        inputs: [
+          {
+            scope,
+            productId,
+            webhookEventHash: hash
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        storeHash: ctx.config.storeHash,
+        storeHash: ctx.config.storeHash
       });
 
       let scopeParts = ctx.input.scope.replace('store/product/', '');
@@ -120,9 +124,9 @@ export let productEvents = SlateTrigger.create(
           isVisible: productDetails?.is_visible,
           availability: productDetails?.availability,
           dateModified: productDetails?.date_modified,
-          productDetails,
-        },
+          productDetails
+        }
       };
-    },
+    }
   })
   .build();

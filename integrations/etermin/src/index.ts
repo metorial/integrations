@@ -20,7 +20,7 @@ import {
   listServiceGroups,
   createVoucher,
   listVouchers,
-  getCompanyInfo,
+  getCompanyInfo
 } from './tools';
 import { appointmentEvent } from './triggers';
 
@@ -46,9 +46,7 @@ export let provider = Slate.create({
     listServiceGroups,
     createVoucher,
     listVouchers,
-    getCompanyInfo,
+    getCompanyInfo
   ],
-  triggers: [
-    appointmentEvent,
-  ],
+  triggers: [appointmentEvent]
 });

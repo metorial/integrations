@@ -21,42 +21,49 @@ let transactionSchema = z.object({
   merchantGuid: z.string().optional().nullable().describe('Merchant GUID'),
   merchantName: z.string().optional().nullable().describe('Merchant name'),
   currencyCode: z.string().optional().nullable().describe('Currency code'),
-  isExpense: z.boolean().optional().nullable().describe('Whether the transaction is an expense'),
+  isExpense: z
+    .boolean()
+    .optional()
+    .nullable()
+    .describe('Whether the transaction is an expense'),
   isIncome: z.boolean().optional().nullable().describe('Whether the transaction is income'),
   memo: z.string().optional().nullable().describe('Transaction memo'),
-  checkNumberString: z.string().optional().nullable().describe('Check number if applicable'),
+  checkNumberString: z.string().optional().nullable().describe('Check number if applicable')
 });
 
-export let listTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'List Transactions',
-    key: 'list_transactions',
-    description: `List transactions for a user with optional filtering by account, member, and date range. Transactions include MX-enhanced data such as cleaned descriptions, categories, and merchant information.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTransactions = SlateTool.create(spec, {
+  name: 'List Transactions',
+  key: 'list_transactions',
+  description: `List transactions for a user with optional filtering by account, member, and date range. Transactions include MX-enhanced data such as cleaned descriptions, categories, and merchant information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userGuid: z.string().describe('MX GUID of the user'),
-    accountGuid: z.string().optional().describe('Filter by account GUID'),
-    memberGuid: z.string().optional().describe('Filter by member GUID'),
-    fromDate: z.string().optional().describe('Start date filter (YYYY-MM-DD)'),
-    toDate: z.string().optional().describe('End date filter (YYYY-MM-DD)'),
-    page: z.number().optional().describe('Page number'),
-    recordsPerPage: z.number().optional().describe('Records per page (max: 100)'),
-  }))
-  .output(z.object({
-    transactions: z.array(transactionSchema),
-    pagination: z.object({
-      currentPage: z.number().optional(),
-      perPage: z.number().optional(),
-      totalEntries: z.number().optional(),
-      totalPages: z.number().optional(),
-    }).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userGuid: z.string().describe('MX GUID of the user'),
+      accountGuid: z.string().optional().describe('Filter by account GUID'),
+      memberGuid: z.string().optional().describe('Filter by member GUID'),
+      fromDate: z.string().optional().describe('Start date filter (YYYY-MM-DD)'),
+      toDate: z.string().optional().describe('End date filter (YYYY-MM-DD)'),
+      page: z.number().optional().describe('Page number'),
+      recordsPerPage: z.number().optional().describe('Records per page (max: 100)')
+    })
+  )
+  .output(
+    z.object({
+      transactions: z.array(transactionSchema),
+      pagination: z
+        .object({
+          currentPage: z.number().optional(),
+          perPage: z.number().optional(),
+          totalEntries: z.number().optional(),
+          totalPages: z.number().optional()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MxClient({ token: ctx.auth.token, environment: ctx.config.environment });
 
     let result;
@@ -64,13 +71,21 @@ export let listTransactions = SlateTool.create(
       page: ctx.input.page,
       recordsPerPage: ctx.input.recordsPerPage,
       fromDate: ctx.input.fromDate,
-      toDate: ctx.input.toDate,
+      toDate: ctx.input.toDate
     };
 
     if (ctx.input.accountGuid) {
-      result = await client.listTransactionsByAccount(ctx.input.userGuid, ctx.input.accountGuid, paginationParams);
+      result = await client.listTransactionsByAccount(
+        ctx.input.userGuid,
+        ctx.input.accountGuid,
+        paginationParams
+      );
     } else if (ctx.input.memberGuid) {
-      result = await client.listTransactionsByMember(ctx.input.userGuid, ctx.input.memberGuid, paginationParams);
+      result = await client.listTransactionsByMember(
+        ctx.input.userGuid,
+        ctx.input.memberGuid,
+        paginationParams
+      );
     } else {
       result = await client.listTransactions(ctx.input.userGuid, paginationParams);
     }
@@ -96,40 +111,42 @@ export let listTransactions = SlateTool.create(
       isExpense: t.is_expense,
       isIncome: t.is_income,
       memo: t.memo,
-      checkNumberString: t.check_number_string,
+      checkNumberString: t.check_number_string
     }));
 
     return {
       output: {
         transactions,
-        pagination: result.pagination ? {
-          currentPage: result.pagination.current_page,
-          perPage: result.pagination.per_page,
-          totalEntries: result.pagination.total_entries,
-          totalPages: result.pagination.total_pages,
-        } : undefined,
+        pagination: result.pagination
+          ? {
+              currentPage: result.pagination.current_page,
+              perPage: result.pagination.per_page,
+              totalEntries: result.pagination.total_entries,
+              totalPages: result.pagination.total_pages
+            }
+          : undefined
       },
-      message: `Found **${transactions.length}** transactions.`,
+      message: `Found **${transactions.length}** transactions.`
     };
-  }).build();
+  })
+  .build();
 
-export let readTransaction = SlateTool.create(
-  spec,
-  {
-    name: 'Read Transaction',
-    key: 'read_transaction',
-    description: `Retrieve full details of a specific transaction including amount, category, merchant, cleaned description, and date information.`,
-    tags: {
-      readOnly: true,
-    },
+export let readTransaction = SlateTool.create(spec, {
+  name: 'Read Transaction',
+  key: 'read_transaction',
+  description: `Retrieve full details of a specific transaction including amount, category, merchant, cleaned description, and date information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userGuid: z.string().describe('MX GUID of the user'),
-    transactionGuid: z.string().describe('MX GUID of the transaction'),
-  }))
+})
+  .input(
+    z.object({
+      userGuid: z.string().describe('MX GUID of the user'),
+      transactionGuid: z.string().describe('MX GUID of the transaction')
+    })
+  )
   .output(transactionSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MxClient({ token: ctx.auth.token, environment: ctx.config.environment });
     let t = await client.readTransaction(ctx.input.userGuid, ctx.input.transactionGuid);
 
@@ -155,8 +172,9 @@ export let readTransaction = SlateTool.create(
         isExpense: t.is_expense,
         isIncome: t.is_income,
         memo: t.memo,
-        checkNumberString: t.check_number_string,
+        checkNumberString: t.check_number_string
       },
-      message: `Transaction **${t.guid}**: ${t.cleansed_description || t.description} — ${t.amount} ${t.currency_code || ''} (${t.date}).`,
+      message: `Transaction **${t.guid}**: ${t.cleansed_description || t.description} — ${t.amount} ${t.currency_code || ''} (${t.date}).`
     };
-  }).build();
+  })
+  .build();

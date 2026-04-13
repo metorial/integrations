@@ -3,39 +3,43 @@ import { FirmaoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Update Customer',
-    key: 'update_customer',
-    description: `Update an existing customer (counterparty) record in Firmao. Only provided fields will be updated; omitted fields remain unchanged.`,
-  }
-)
-  .input(z.object({
-    customerId: z.number().describe('ID of the customer to update'),
-    name: z.string().optional().describe('Updated customer name'),
-    label: z.string().optional().describe('Updated label'),
-    customerType: z.string().optional().describe('Updated customer type'),
-    nipNumber: z.string().optional().describe('Updated NIP/tax number'),
-    bankAccountNumber: z.string().optional().describe('Updated bank account number'),
-    emails: z.array(z.string()).optional().describe('Updated email addresses'),
-    phones: z.array(z.string()).optional().describe('Updated phone numbers'),
-    website: z.string().optional().describe('Updated website URL'),
-    description: z.string().optional().describe('Updated description'),
-    officeStreet: z.string().optional().describe('Updated office street'),
-    officeCity: z.string().optional().describe('Updated office city'),
-    officePostCode: z.string().optional().describe('Updated office post code'),
-    officeCountry: z.string().optional().describe('Updated office country'),
-    customFields: z.record(z.string(), z.string()).optional().describe('Custom fields to update'),
-  }))
-  .output(z.object({
-    customerId: z.number(),
-    updated: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateCustomer = SlateTool.create(spec, {
+  name: 'Update Customer',
+  key: 'update_customer',
+  description: `Update an existing customer (counterparty) record in Firmao. Only provided fields will be updated; omitted fields remain unchanged.`
+})
+  .input(
+    z.object({
+      customerId: z.number().describe('ID of the customer to update'),
+      name: z.string().optional().describe('Updated customer name'),
+      label: z.string().optional().describe('Updated label'),
+      customerType: z.string().optional().describe('Updated customer type'),
+      nipNumber: z.string().optional().describe('Updated NIP/tax number'),
+      bankAccountNumber: z.string().optional().describe('Updated bank account number'),
+      emails: z.array(z.string()).optional().describe('Updated email addresses'),
+      phones: z.array(z.string()).optional().describe('Updated phone numbers'),
+      website: z.string().optional().describe('Updated website URL'),
+      description: z.string().optional().describe('Updated description'),
+      officeStreet: z.string().optional().describe('Updated office street'),
+      officeCity: z.string().optional().describe('Updated office city'),
+      officePostCode: z.string().optional().describe('Updated office post code'),
+      officeCountry: z.string().optional().describe('Updated office country'),
+      customFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom fields to update')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.number(),
+      updated: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FirmaoClient({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let body: Record<string, any> = {};
@@ -50,10 +54,13 @@ export let updateCustomer = SlateTool.create(
     if (ctx.input.website) body.website = ctx.input.website;
     if (ctx.input.description) body.description = ctx.input.description;
 
-    if (ctx.input.officeStreet !== undefined) body['officeAddress.street'] = ctx.input.officeStreet;
+    if (ctx.input.officeStreet !== undefined)
+      body['officeAddress.street'] = ctx.input.officeStreet;
     if (ctx.input.officeCity !== undefined) body['officeAddress.city'] = ctx.input.officeCity;
-    if (ctx.input.officePostCode !== undefined) body['officeAddress.postCode'] = ctx.input.officePostCode;
-    if (ctx.input.officeCountry !== undefined) body['officeAddress.country'] = ctx.input.officeCountry;
+    if (ctx.input.officePostCode !== undefined)
+      body['officeAddress.postCode'] = ctx.input.officePostCode;
+    if (ctx.input.officeCountry !== undefined)
+      body['officeAddress.country'] = ctx.input.officeCountry;
 
     if (ctx.input.customFields) {
       for (let [key, value] of Object.entries(ctx.input.customFields)) {
@@ -66,9 +73,9 @@ export let updateCustomer = SlateTool.create(
     return {
       output: {
         customerId: ctx.input.customerId,
-        updated: true,
+        updated: true
       },
-      message: `Updated customer ID **${ctx.input.customerId}**.`,
+      message: `Updated customer ID **${ctx.input.customerId}**.`
     };
   })
   .build();

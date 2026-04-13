@@ -15,22 +15,21 @@ let renderSchema = z.object({
   externalId: z.string().nullable().optional()
 });
 
-export let listRenders = SlateTool.create(
-  spec,
-  {
-    name: 'List Renders',
-    key: 'list_renders',
-    description: `Retrieve all renders from your account. Returns a list of generated outputs including their URLs, formats, dimensions, and associated template information.`,
-    tags: {
-      readOnly: true
-    }
+export let listRenders = SlateTool.create(spec, {
+  name: 'List Renders',
+  key: 'list_renders',
+  description: `Retrieve all renders from your account. Returns a list of generated outputs including their URLs, formats, dimensions, and associated template information.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    renders: z.array(renderSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      renders: z.array(renderSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let renders = await client.listRenders();
 
@@ -52,4 +51,5 @@ export let listRenders = SlateTool.create(
       },
       message: `Found **${items.length}** render(s).`
     };
-  }).build();
+  })
+  .build();

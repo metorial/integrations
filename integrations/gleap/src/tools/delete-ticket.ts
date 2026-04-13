@@ -3,24 +3,25 @@ import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Ticket',
-    key: 'delete_ticket',
-    description: `Permanently delete a support ticket by its ID. This action cannot be undone.`,
-    tags: {
-      destructive: true
-    }
+export let deleteTicket = SlateTool.create(spec, {
+  name: 'Delete Ticket',
+  key: 'delete_ticket',
+  description: `Permanently delete a support ticket by its ID. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    ticketId: z.string().describe('The ID of the ticket to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the ticket was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticketId: z.string().describe('The ID of the ticket to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the ticket was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GleapClient({
       token: ctx.auth.token,
       projectId: ctx.auth.projectId

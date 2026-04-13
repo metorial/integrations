@@ -3,33 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWorkflow = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Workflow',
-    key: 'manage_workflow',
-    description: `Cancel, rerun, or approve a pending job within a workflow. Use this to control workflow execution — stop a running workflow, rerun it (optionally from failed jobs only), or approve a held approval job.`,
-    instructions: [
-      'For approval, provide the approvalRequestId from the job details (available via Get Workflow tool).',
-      'When rerunning from failed, only the failed jobs and their downstream dependencies will be rerun.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageWorkflow = SlateTool.create(spec, {
+  name: 'Manage Workflow',
+  key: 'manage_workflow',
+  description: `Cancel, rerun, or approve a pending job within a workflow. Use this to control workflow execution — stop a running workflow, rerun it (optionally from failed jobs only), or approve a held approval job.`,
+  instructions: [
+    'For approval, provide the approvalRequestId from the job details (available via Get Workflow tool).',
+    'When rerunning from failed, only the failed jobs and their downstream dependencies will be rerun.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    workflowId: z.string().describe('The UUID of the workflow'),
-    action: z.enum(['cancel', 'rerun', 'approve']).describe('Action to perform on the workflow'),
-    fromFailed: z.boolean().optional().describe('When rerunning, only rerun from failed jobs'),
-    approvalRequestId: z.string().optional().describe('The approval request ID of the job to approve (required for approve action)')
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    message: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workflowId: z.string().describe('The UUID of the workflow'),
+      action: z
+        .enum(['cancel', 'rerun', 'approve'])
+        .describe('Action to perform on the workflow'),
+      fromFailed: z
+        .boolean()
+        .optional()
+        .describe('When rerunning, only rerun from failed jobs'),
+      approvalRequestId: z
+        .string()
+        .optional()
+        .describe(
+          'The approval request ID of the job to approve (required for approve action)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      message: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'cancel') {

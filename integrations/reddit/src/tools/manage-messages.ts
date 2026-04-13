@@ -3,42 +3,62 @@ import { RedditClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMessages = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Messages',
-    key: 'manage_messages',
-    description: `Send private messages, read your inbox or unread messages, and mark messages as read or unread.
+export let manageMessages = SlateTool.create(spec, {
+  name: 'Manage Messages',
+  key: 'manage_messages',
+  description: `Send private messages, read your inbox or unread messages, and mark messages as read or unread.
 Supports retrieving inbox, unread, and sent message folders.`,
-    instructions: [
-      'Use action "send" with a recipient username, subject, and message body to send a new private message.',
-      'Use action "list" to retrieve messages from inbox, unread, or sent folders.',
-      'Use action "mark_read" or "mark_unread" with message fullnames to update read status.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['send', 'list', 'mark_read', 'mark_unread']).describe('Action to perform'),
-    recipientUsername: z.string().optional().describe('Recipient username for sending messages'),
-    subject: z.string().optional().describe('Message subject (required for send)'),
-    text: z.string().optional().describe('Message body text (required for send, markdown supported)'),
-    folder: z.enum(['inbox', 'unread', 'sent']).optional().describe('Message folder to list (default: inbox)'),
-    messageIds: z.array(z.string()).optional().describe('Message fullnames for mark_read/mark_unread actions'),
-    limit: z.number().optional().describe('Maximum number of messages to return'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    messages: z.array(z.object({
-      messageId: z.string().describe('Message fullname'),
-      author: z.string().optional().describe('Author username'),
-      recipient: z.string().optional().describe('Recipient username'),
-      subject: z.string().optional().describe('Message subject'),
-      body: z.string().optional().describe('Message body'),
-      createdAt: z.string().optional().describe('When the message was sent'),
-      isNew: z.boolean().optional().describe('Whether the message is unread'),
-    })).optional().describe('List of messages (for list action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Use action "send" with a recipient username, subject, and message body to send a new private message.',
+    'Use action "list" to retrieve messages from inbox, unread, or sent folders.',
+    'Use action "mark_read" or "mark_unread" with message fullnames to update read status.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['send', 'list', 'mark_read', 'mark_unread'])
+        .describe('Action to perform'),
+      recipientUsername: z
+        .string()
+        .optional()
+        .describe('Recipient username for sending messages'),
+      subject: z.string().optional().describe('Message subject (required for send)'),
+      text: z
+        .string()
+        .optional()
+        .describe('Message body text (required for send, markdown supported)'),
+      folder: z
+        .enum(['inbox', 'unread', 'sent'])
+        .optional()
+        .describe('Message folder to list (default: inbox)'),
+      messageIds: z
+        .array(z.string())
+        .optional()
+        .describe('Message fullnames for mark_read/mark_unread actions'),
+      limit: z.number().optional().describe('Maximum number of messages to return')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      messages: z
+        .array(
+          z.object({
+            messageId: z.string().describe('Message fullname'),
+            author: z.string().optional().describe('Author username'),
+            recipient: z.string().optional().describe('Recipient username'),
+            subject: z.string().optional().describe('Message subject'),
+            body: z.string().optional().describe('Message body'),
+            createdAt: z.string().optional().describe('When the message was sent'),
+            isNew: z.boolean().optional().describe('Whether the message is unread')
+          })
+        )
+        .optional()
+        .describe('List of messages (for list action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RedditClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -46,14 +66,14 @@ Supports retrieving inbox, unread, and sent message folders.`,
       await client.sendMessage({
         to: ctx.input.recipientUsername!,
         subject: ctx.input.subject!,
-        text: ctx.input.text!,
+        text: ctx.input.text!
       });
 
       return {
         output: {
-          success: true,
+          success: true
         },
-        message: `Message sent to u/${ctx.input.recipientUsername} with subject "${ctx.input.subject}".`,
+        message: `Message sent to u/${ctx.input.recipientUsername} with subject "${ctx.input.subject}".`
       };
     }
 
@@ -61,9 +81,9 @@ Supports retrieving inbox, unread, and sent message folders.`,
       await client.markMessagesRead(ctx.input.messageIds!);
       return {
         output: {
-          success: true,
+          success: true
         },
-        message: `Marked ${ctx.input.messageIds!.length} message(s) as read.`,
+        message: `Marked ${ctx.input.messageIds!.length} message(s) as read.`
       };
     }
 
@@ -71,9 +91,9 @@ Supports retrieving inbox, unread, and sent message folders.`,
       await client.markMessagesUnread(ctx.input.messageIds!);
       return {
         output: {
-          success: true,
+          success: true
         },
-        message: `Marked ${ctx.input.messageIds!.length} message(s) as unread.`,
+        message: `Marked ${ctx.input.messageIds!.length} message(s) as unread.`
       };
     }
 
@@ -100,16 +120,16 @@ Supports retrieving inbox, unread, and sent message folders.`,
         subject: d.subject,
         body: d.body,
         createdAt: d.created_utc ? new Date(d.created_utc * 1000).toISOString() : undefined,
-        isNew: d.new,
+        isNew: d.new
       };
     });
 
     return {
       output: {
         success: true,
-        messages,
+        messages
       },
-      message: `Retrieved ${messages.length} messages from ${folder}.`,
+      message: `Retrieved ${messages.length} messages from ${folder}.`
     };
   })
   .build();

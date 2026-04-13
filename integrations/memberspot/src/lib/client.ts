@@ -49,9 +49,9 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'X-API-KEY': config.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -62,8 +62,8 @@ export class Client {
         pageLength: params?.pageLength,
         offerId: params?.offerId,
         courseId: params?.courseId,
-        active: params?.active,
-      },
+        active: params?.active
+      }
     });
     return response.data;
   }
@@ -79,7 +79,7 @@ export class Client {
       name: params.lastname,
       email: params.email,
       grantOffer: params.offerId,
-      orderId: params.orderId,
+      orderId: params.orderId
     });
     return response.data;
   }
@@ -88,7 +88,7 @@ export class Client {
     let response = await this.axios.post('/users/set-offer-state', {
       email: params.email,
       offerId: params.offerId,
-      active: params.active,
+      active: params.active
     });
     return response.data;
   }
@@ -97,14 +97,14 @@ export class Client {
     let response = await this.axios.post('/users/set-order-state', {
       email: params.email,
       orderId: params.orderId,
-      active: params.active,
+      active: params.active
     });
     return response.data;
   }
 
   async deleteUsers(emails: string[]) {
     let response = await this.axios.delete('/users/delete-users', {
-      data: { emails },
+      data: { emails }
     });
     return response.data;
   }
@@ -112,7 +112,7 @@ export class Client {
   async setCustomProperties(params: SetCustomPropertiesParams) {
     let response = await this.axios.post('/users/set-custom-user-properties', {
       email: params.email,
-      properties: params.properties,
+      properties: params.properties
     });
     return response.data;
   }
@@ -123,12 +123,16 @@ export class Client {
   }
 
   async listCourseProgress(email: string) {
-    let response = await this.axios.get(`/users/course-progress/list/${encodeURIComponent(email)}`);
+    let response = await this.axios.get(
+      `/users/course-progress/list/${encodeURIComponent(email)}`
+    );
     return response.data;
   }
 
   async getCourseProgress(courseId: string, email: string) {
-    let response = await this.axios.get(`/users/course-progress/${encodeURIComponent(courseId)}/${encodeURIComponent(email)}`);
+    let response = await this.axios.get(
+      `/users/course-progress/${encodeURIComponent(courseId)}/${encodeURIComponent(email)}`
+    );
     return response.data;
   }
 
@@ -136,7 +140,7 @@ export class Client {
     let response = await this.axios.post('/chapters/chapter-access/enable', {
       email: params.email,
       courseId: params.courseId,
-      chapterId: params.chapterId,
+      chapterId: params.chapterId
     });
     return response.data;
   }

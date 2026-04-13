@@ -16,8 +16,8 @@ export let createServiceClient = (baseURL: string, auth: AuthType) => {
   return createAxios({
     baseURL,
     headers: {
-      'Authorization': getAuthHeader(auth),
-      'Content-Type': 'application/json',
-    },
+      Authorization: getAuthHeader(auth),
+      'Content-Type': 'application/json'
+    }
   });
 };

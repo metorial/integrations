@@ -17,38 +17,39 @@ let crewSchema = z.object({
   function: z.string().optional().describe('Primary function/role'),
   tags: z.string().optional(),
   createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  updatedAt: z.string().optional()
 });
 
-export let listCrew = SlateTool.create(
-  spec,
-  {
-    name: 'List Crew',
-    key: 'list_crew',
-    description: `Retrieve a list of crew members from Rentman. Browse all crew members, their roles, and contact information.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().optional().default(25).describe('Maximum number of results (max 300)'),
-    offset: z.number().optional().default(0).describe('Number of results to skip'),
-    sort: z.string().optional().describe('Sort field with + or - prefix'),
-    fields: z.string().optional().describe('Comma-separated fields to return'),
-  }))
-  .output(z.object({
-    crew: z.array(crewSchema),
-    itemCount: z.number(),
-    limit: z.number(),
-    offset: z.number(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listCrew = SlateTool.create(spec, {
+  name: 'List Crew',
+  key: 'list_crew',
+  description: `Retrieve a list of crew members from Rentman. Browse all crew members, their roles, and contact information.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z.number().optional().default(25).describe('Maximum number of results (max 300)'),
+      offset: z.number().optional().default(0).describe('Number of results to skip'),
+      sort: z.string().optional().describe('Sort field with + or - prefix'),
+      fields: z.string().optional().describe('Comma-separated fields to return')
+    })
+  )
+  .output(
+    z.object({
+      crew: z.array(crewSchema),
+      itemCount: z.number(),
+      limit: z.number(),
+      offset: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.list('crew', {
       limit: ctx.input.limit,
       offset: ctx.input.offset,
       sort: ctx.input.sort,
-      fields: ctx.input.fields,
+      fields: ctx.input.fields
     });
 
     let crew = result.data.map((c: any) => ({
@@ -65,7 +66,7 @@ export let listCrew = SlateTool.create(
       function: c.function,
       tags: c.tags,
       createdAt: c.created,
-      updatedAt: c.modified,
+      updatedAt: c.modified
     }));
 
     return {
@@ -73,8 +74,9 @@ export let listCrew = SlateTool.create(
         crew,
         itemCount: result.itemCount,
         limit: result.limit,
-        offset: result.offset,
+        offset: result.offset
       },
-      message: `Found **${result.itemCount}** crew members. Returned ${crew.length} members (offset: ${result.offset}).`,
+      message: `Found **${result.itemCount}** crew members. Returned ${crew.length} members (offset: ${result.offset}).`
     };
-  }).build();
+  })
+  .build();

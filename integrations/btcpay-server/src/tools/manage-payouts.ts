@@ -10,38 +10,42 @@ let payoutSchema = z.object({
   amount: z.string().optional().describe('Payout amount'),
   destination: z.string().optional().nullable().describe('Payout destination'),
   pullPaymentId: z.string().optional().nullable().describe('Associated pull payment ID'),
-  createdDate: z.string().optional().describe('Creation date'),
+  createdDate: z.string().optional().describe('Creation date')
 });
 
-export let managePayouts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Payouts',
-    key: 'manage_payouts',
-    description: `List, approve, cancel, or mark payouts as paid. Payouts represent claims against pull payments that need to be processed. Supports both on-chain and Lightning payouts.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let managePayouts = SlateTool.create(spec, {
+  name: 'Manage Payouts',
+  key: 'manage_payouts',
+  description: `List, approve, cancel, or mark payouts as paid. Payouts represent claims against pull payments that need to be processed. Supports both on-chain and Lightning payouts.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'approve', 'cancel', 'mark_paid']).describe('Action to perform'),
-    storeId: z.string().describe('Store ID'),
-    payoutId: z.string().optional().describe('Payout ID (for approve, cancel, mark_paid)'),
-    includeCancelled: z.boolean().optional().describe('Include cancelled payouts (for list)'),
-    paymentMethodId: z.string().optional().describe('Filter by payment method (for list)'),
-  }))
-  .output(z.object({
-    payout: payoutSchema.optional().describe('Payout details (for approve)'),
-    payouts: z.array(payoutSchema).optional().describe('List of payouts'),
-    cancelled: z.boolean().optional().describe('Whether the payout was cancelled'),
-    markedPaid: z.boolean().optional().describe('Whether the payout was marked as paid'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'approve', 'cancel', 'mark_paid']).describe('Action to perform'),
+      storeId: z.string().describe('Store ID'),
+      payoutId: z.string().optional().describe('Payout ID (for approve, cancel, mark_paid)'),
+      includeCancelled: z
+        .boolean()
+        .optional()
+        .describe('Include cancelled payouts (for list)'),
+      paymentMethodId: z.string().optional().describe('Filter by payment method (for list)')
+    })
+  )
+  .output(
+    z.object({
+      payout: payoutSchema.optional().describe('Payout details (for approve)'),
+      payouts: z.array(payoutSchema).optional().describe('List of payouts'),
+      cancelled: z.boolean().optional().describe('Whether the payout was cancelled'),
+      markedPaid: z.boolean().optional().describe('Whether the payout was marked as paid')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BTCPayClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let { action, storeId } = ctx.input;
@@ -53,18 +57,18 @@ export let managePayouts = SlateTool.create(
       amount: p.amount as string | undefined,
       destination: p.destination as string | undefined,
       pullPaymentId: p.pullPaymentId as string | undefined,
-      createdDate: p.date !== undefined ? String(p.date) : undefined,
+      createdDate: p.date !== undefined ? String(p.date) : undefined
     });
 
     if (action === 'list') {
       let payouts = await client.getPayouts(storeId, {
         includeCancelled: ctx.input.includeCancelled,
-        paymentMethodId: ctx.input.paymentMethodId,
+        paymentMethodId: ctx.input.paymentMethodId
       });
       let mapped = payouts.map(mapPayout);
       return {
         output: { payouts: mapped },
-        message: `Found **${mapped.length}** payout(s).`,
+        message: `Found **${mapped.length}** payout(s).`
       };
     }
 
@@ -72,7 +76,7 @@ export let managePayouts = SlateTool.create(
       let payout = await client.approvePayout(storeId, ctx.input.payoutId!);
       return {
         output: { payout: mapPayout(payout) },
-        message: `Approved payout **${ctx.input.payoutId}**.`,
+        message: `Approved payout **${ctx.input.payoutId}**.`
       };
     }
 
@@ -80,7 +84,7 @@ export let managePayouts = SlateTool.create(
       await client.cancelPayout(storeId, ctx.input.payoutId!);
       return {
         output: { cancelled: true },
-        message: `Cancelled payout **${ctx.input.payoutId}**.`,
+        message: `Cancelled payout **${ctx.input.payoutId}**.`
       };
     }
 
@@ -88,6 +92,7 @@ export let managePayouts = SlateTool.create(
     await client.markPayoutPaid(storeId, ctx.input.payoutId!);
     return {
       output: { markedPaid: true },
-      message: `Marked payout **${ctx.input.payoutId}** as paid.`,
+      message: `Marked payout **${ctx.input.payoutId}** as paid.`
     };
-  }).build();
+  })
+  .build();

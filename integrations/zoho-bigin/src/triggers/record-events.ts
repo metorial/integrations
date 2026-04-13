@@ -3,34 +3,36 @@ import { BiginClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Events',
-    key: 'record_events',
-    description: 'Receive real-time notifications when records are created, edited, or deleted in any Bigin module (Contacts, Accounts, Pipelines, Products, Tasks, Events, Calls).',
-  }
-)
-  .input(z.object({
-    moduleName: z.string().describe('Module API name where the event occurred'),
-    operation: z.string().describe('Operation type: create, edit, or delete'),
-    resourceUri: z.string().optional().describe('API URI of the affected resource'),
-    channelId: z.string().optional().describe('Notification channel identifier'),
-    recordIds: z.array(z.string()).optional().describe('IDs of the affected records'),
-    token: z.string().optional().describe('Verification token'),
-  }))
-  .output(z.object({
-    moduleName: z.string().describe('Module where the event occurred'),
-    operation: z.string().describe('Operation type (create, edit, delete)'),
-    recordIds: z.array(z.string()).describe('IDs of the affected records'),
-    channelId: z.string().optional().describe('Notification channel identifier'),
-    resourceUri: z.string().optional().describe('API URI of the affected resource'),
-  }))
+export let recordEvents = SlateTrigger.create(spec, {
+  name: 'Record Events',
+  key: 'record_events',
+  description:
+    'Receive real-time notifications when records are created, edited, or deleted in any Bigin module (Contacts, Accounts, Pipelines, Products, Tasks, Events, Calls).'
+})
+  .input(
+    z.object({
+      moduleName: z.string().describe('Module API name where the event occurred'),
+      operation: z.string().describe('Operation type: create, edit, or delete'),
+      resourceUri: z.string().optional().describe('API URI of the affected resource'),
+      channelId: z.string().optional().describe('Notification channel identifier'),
+      recordIds: z.array(z.string()).optional().describe('IDs of the affected records'),
+      token: z.string().optional().describe('Verification token')
+    })
+  )
+  .output(
+    z.object({
+      moduleName: z.string().describe('Module where the event occurred'),
+      operation: z.string().describe('Operation type (create, edit, delete)'),
+      recordIds: z.array(z.string()).describe('IDs of the affected records'),
+      channelId: z.string().optional().describe('Notification channel identifier'),
+      resourceUri: z.string().optional().describe('API URI of the affected resource')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new BiginClient({
         token: ctx.auth.token,
-        apiDomain: ctx.auth.apiDomain,
+        apiDomain: ctx.auth.apiDomain
       });
 
       let channelId = `${Date.now()}`;
@@ -43,7 +45,7 @@ export let recordEvents = SlateTrigger.create(
         'Products.all',
         'Tasks.all',
         'Events.all',
-        'Calls.all',
+        'Calls.all'
       ];
 
       let channelExpiry = new Date(Date.now() + 23 * 60 * 60 * 1000).toISOString();
@@ -53,7 +55,7 @@ export let recordEvents = SlateTrigger.create(
         events,
         channelId,
         verificationToken,
-        channelExpiry,
+        channelExpiry
       );
 
       return {
@@ -61,15 +63,15 @@ export let recordEvents = SlateTrigger.create(
           channelId,
           verificationToken,
           events,
-          response: result,
-        },
+          response: result
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new BiginClient({
         token: ctx.auth.token,
-        apiDomain: ctx.auth.apiDomain,
+        apiDomain: ctx.auth.apiDomain
       });
 
       let channelId = ctx.input.registrationDetails?.channelId;
@@ -78,7 +80,7 @@ export let recordEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -92,14 +94,16 @@ export let recordEvents = SlateTrigger.create(
 
       if (notifications.length === 0 && body.query_map) {
         // Alternative payload format from Bigin
-        notifications = [{
-          module: body.module || body.query_map?.module,
-          operation: body.operation || body.query_map?.operation,
-          channel_id: body.channel_id || body.query_map?.channel_id,
-          resource_uri: body.resource_uri,
-          ids: body.ids || [],
-          token: body.token,
-        }];
+        notifications = [
+          {
+            module: body.module || body.query_map?.module,
+            operation: body.operation || body.query_map?.operation,
+            channel_id: body.channel_id || body.query_map?.channel_id,
+            resource_uri: body.resource_uri,
+            ids: body.ids || [],
+            token: body.token
+          }
+        ];
       }
 
       let inputs = notifications
@@ -118,14 +122,14 @@ export let recordEvents = SlateTrigger.create(
             resourceUri: n.resource_uri,
             channelId: n.channel_id ? String(n.channel_id) : undefined,
             recordIds,
-            token: n.token,
+            token: n.token
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let moduleLower = (ctx.input.moduleName || 'record').toLowerCase();
       let operation = (ctx.input.operation || 'unknown').toLowerCase();
       let recordIds = ctx.input.recordIds || [];
@@ -139,8 +143,9 @@ export let recordEvents = SlateTrigger.create(
           operation,
           recordIds,
           channelId: ctx.input.channelId,
-          resourceUri: ctx.input.resourceUri,
-        },
+          resourceUri: ctx.input.resourceUri
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

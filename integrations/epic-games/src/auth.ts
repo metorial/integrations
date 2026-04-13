@@ -2,14 +2,16 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    accountId: z.string().optional(),
-    clientId: z.string().optional(),
-    authType: z.enum(['oauth', 'client_credentials']).optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      accountId: z.string().optional(),
+      clientId: z.string().optional(),
+      authType: z.enum(['oauth', 'client_credentials']).optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Epic Account OAuth',
@@ -19,56 +21,56 @@ export let auth = SlateAuth.create()
       {
         title: 'Basic Profile',
         description: 'Access to basic account information such as display name',
-        scope: 'basic_profile',
+        scope: 'basic_profile'
       },
       {
         title: 'Friends List',
-        description: 'Access to the user\'s friends list and block list',
-        scope: 'friends_list',
+        description: "Access to the user's friends list and block list",
+        scope: 'friends_list'
       },
       {
         title: 'Presence',
         description: 'Access to user presence information (online status, current activity)',
-        scope: 'presence',
+        scope: 'presence'
       },
       {
         title: 'Offline Access',
         description: 'Allows refresh tokens for persistent access without re-authentication',
-        scope: 'offline_access',
-      },
+        scope: 'offline_access'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         scope: ctx.scopes.join(' '),
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://www.epicgames.com/id/authorize?${params.toString()}`,
+        url: `https://www.epicgames.com/id/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({ baseURL: 'https://api.epicgames.dev' });
 
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post('/epic/oauth/v2/token',
+      let response = await http.post(
+        '/epic/oauth/v2/token',
         new URLSearchParams({
           grant_type: 'authorization_code',
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: ctx.redirectUri
         }).toString(),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${credentials}`,
-          },
+            Authorization: `Basic ${credentials}`
+          }
         }
       );
 
@@ -81,30 +83,30 @@ export let auth = SlateAuth.create()
           expiresAt: data.expires_at,
           accountId: data.account_id,
           clientId: ctx.clientId,
-          authType: 'oauth' as const,
-        },
+          authType: 'oauth' as const
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let http = createAxios({ baseURL: 'https://api.epicgames.dev' });
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post('/epic/oauth/v2/token',
+      let response = await http.post(
+        '/epic/oauth/v2/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken,
+          refresh_token: ctx.output.refreshToken
         }).toString(),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${credentials}`,
-          },
+            Authorization: `Basic ${credentials}`
+          }
         }
       );
 
@@ -117,12 +119,16 @@ export let auth = SlateAuth.create()
           expiresAt: data.expires_at,
           accountId: data.account_id ?? ctx.output.accountId,
           clientId: ctx.clientId,
-          authType: 'oauth' as const,
-        },
+          authType: 'oauth' as const
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; accountId?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; accountId?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       if (!ctx.output.accountId) {
         return { profile: {} };
       }
@@ -132,8 +138,8 @@ export let auth = SlateAuth.create()
       let response = await http.get('/epic/id/v2/accounts', {
         params: { accountId: ctx.output.accountId },
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let accounts = response.data;
@@ -143,10 +149,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: account?.accountId,
           name: account?.displayName,
-          email: account?.email,
-        },
+          email: account?.email
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -155,23 +161,25 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('EOS Client ID from the Developer Portal'),
-      clientSecret: z.string().describe('EOS Client Secret from the Developer Portal'),
+      clientSecret: z.string().describe('EOS Client Secret from the Developer Portal')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let http = createAxios({ baseURL: 'https://api.epicgames.dev' });
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let credentials = Buffer.from(`${ctx.input.clientId}:${ctx.input.clientSecret}`).toString('base64');
+      let credentials = Buffer.from(
+        `${ctx.input.clientId}:${ctx.input.clientSecret}`
+      ).toString('base64');
 
-      let response = await http.post('/auth/v1/oauth/token',
+      let response = await http.post(
+        '/auth/v1/oauth/token',
         new URLSearchParams({
-          grant_type: 'client_credentials',
+          grant_type: 'client_credentials'
         }).toString(),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${credentials}`,
-          },
+            Authorization: `Basic ${credentials}`
+          }
         }
       );
 
@@ -182,8 +190,8 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           expiresAt: data.expires_at,
           clientId: ctx.input.clientId,
-          authType: 'client_credentials' as const,
-        },
+          authType: 'client_credentials' as const
+        }
       };
-    },
+    }
   });

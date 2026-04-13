@@ -3,32 +3,38 @@ import { MopinionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDataset = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Dataset',
-    key: 'manage_dataset',
-    description: `Create, update, or delete a Mopinion dataset. Datasets belong to reports and represent structured collections of feedback data. For creating, provide a name and reportId. For updating, provide the dataset ID and fields to change. For deleting, provide the dataset ID.`,
-    tags: {
-      destructive: true
-    }
+export let manageDataset = SlateTool.create(spec, {
+  name: 'Manage Dataset',
+  key: 'manage_dataset',
+  description: `Create, update, or delete a Mopinion dataset. Datasets belong to reports and represent structured collections of feedback data. For creating, provide a name and reportId. For updating, provide the dataset ID and fields to change. For deleting, provide the dataset ID.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform on the dataset'),
-    datasetId: z.number().optional().describe('Dataset ID (required for update and delete)'),
-    reportId: z.number().optional().describe('Parent report ID (required for create)'),
-    name: z.string().optional().describe('Dataset name (required for create, optional for update)'),
-    description: z.string().optional().describe('Dataset description'),
-    dataSource: z.string().optional().describe('Data source identifier')
-  }))
-  .output(z.object({
-    datasetId: z.number().optional().describe('ID of the affected dataset'),
-    name: z.string().optional().describe('Dataset name'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-    result: z.any().optional().describe('Full API response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('Operation to perform on the dataset'),
+      datasetId: z.number().optional().describe('Dataset ID (required for update and delete)'),
+      reportId: z.number().optional().describe('Parent report ID (required for create)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Dataset name (required for create, optional for update)'),
+      description: z.string().optional().describe('Dataset description'),
+      dataSource: z.string().optional().describe('Data source identifier')
+    })
+  )
+  .output(
+    z.object({
+      datasetId: z.number().optional().describe('ID of the affected dataset'),
+      name: z.string().optional().describe('Dataset name'),
+      success: z.boolean().describe('Whether the operation succeeded'),
+      result: z.any().optional().describe('Full API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MopinionClient({
       publicKey: ctx.auth.publicKey,
       signatureToken: ctx.auth.signatureToken

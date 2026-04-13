@@ -3,44 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateSubtask = SlateTool.create(
-  spec,
-  {
-    name: 'Update Subtask',
-    key: 'update_subtask',
-    description: `Update an existing subtask in Project Bubble. Modify its name, description, dates, progress, or assignments. Also supports completing or resuming a subtask.`,
-    instructions: [
-      'To complete a subtask, set "completed" to true. Completing a subtask updates the parent task progress.',
-      'To resume a completed subtask, set "resume" to true.',
-    ],
-  }
-)
-  .input(z.object({
-    subtaskId: z.string().describe('ID of the subtask to update'),
-    subtaskName: z.string().optional().describe('New subtask name'),
-    description: z.string().optional().describe('New description'),
-    color: z.string().optional().describe('Subtask color (hex code)'),
-    notes: z.string().optional().describe('Additional notes'),
-    startDate: z.string().optional().describe('New start date (yyyymmdd format)'),
-    dueDate: z.string().optional().describe('New due date (yyyymmdd format)'),
-    progress: z.number().min(0).max(100).optional().describe('Progress percentage (0-100)'),
-    active: z.boolean().optional().describe('Whether the subtask is active'),
-    important: z.boolean().optional().describe('Whether the subtask is important'),
-    notifications: z.boolean().optional().describe('Whether notifications are enabled'),
-    recurring: z.enum(['D', 'W', 'M', 'Q', 'S', 'Y']).optional().describe('Recurrence pattern'),
-    completed: z.boolean().optional().describe('Set to true to mark the subtask as completed'),
-    resume: z.boolean().optional().describe('Set to true to resume a completed subtask'),
-    userIds: z.array(z.number()).optional().describe('Array of user IDs to assign'),
-    teamIds: z.array(z.number()).optional().describe('Array of team IDs to assign'),
-  }))
-  .output(z.object({
-    subtaskId: z.string().describe('ID of the updated subtask'),
-    subtaskName: z.string().describe('Name of the updated subtask'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateSubtask = SlateTool.create(spec, {
+  name: 'Update Subtask',
+  key: 'update_subtask',
+  description: `Update an existing subtask in Project Bubble. Modify its name, description, dates, progress, or assignments. Also supports completing or resuming a subtask.`,
+  instructions: [
+    'To complete a subtask, set "completed" to true. Completing a subtask updates the parent task progress.',
+    'To resume a completed subtask, set "resume" to true.'
+  ]
+})
+  .input(
+    z.object({
+      subtaskId: z.string().describe('ID of the subtask to update'),
+      subtaskName: z.string().optional().describe('New subtask name'),
+      description: z.string().optional().describe('New description'),
+      color: z.string().optional().describe('Subtask color (hex code)'),
+      notes: z.string().optional().describe('Additional notes'),
+      startDate: z.string().optional().describe('New start date (yyyymmdd format)'),
+      dueDate: z.string().optional().describe('New due date (yyyymmdd format)'),
+      progress: z.number().min(0).max(100).optional().describe('Progress percentage (0-100)'),
+      active: z.boolean().optional().describe('Whether the subtask is active'),
+      important: z.boolean().optional().describe('Whether the subtask is important'),
+      notifications: z.boolean().optional().describe('Whether notifications are enabled'),
+      recurring: z
+        .enum(['D', 'W', 'M', 'Q', 'S', 'Y'])
+        .optional()
+        .describe('Recurrence pattern'),
+      completed: z
+        .boolean()
+        .optional()
+        .describe('Set to true to mark the subtask as completed'),
+      resume: z.boolean().optional().describe('Set to true to resume a completed subtask'),
+      userIds: z.array(z.number()).optional().describe('Array of user IDs to assign'),
+      teamIds: z.array(z.number()).optional().describe('Array of team IDs to assign')
+    })
+  )
+  .output(
+    z.object({
+      subtaskId: z.string().describe('ID of the updated subtask'),
+      subtaskName: z.string().describe('Name of the updated subtask')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.domain,
+      domain: ctx.config.domain
     });
 
     let result: any;
@@ -63,7 +70,7 @@ export let updateSubtask = SlateTool.create(
         notifications: ctx.input.notifications,
         recurring: ctx.input.recurring,
         users: ctx.input.userIds,
-        teams: ctx.input.teamIds,
+        teams: ctx.input.teamIds
       });
     }
 
@@ -74,8 +81,9 @@ export let updateSubtask = SlateTool.create(
     return {
       output: {
         subtaskId: String(s.subtask_id || ctx.input.subtaskId),
-        subtaskName: s.subtask_name || '',
+        subtaskName: s.subtask_name || ''
       },
-      message: `${action} subtask **${s.subtask_name || ctx.input.subtaskId}**.`,
+      message: `${action} subtask **${s.subtask_name || ctx.input.subtaskId}**.`
     };
-  }).build();
+  })
+  .build();

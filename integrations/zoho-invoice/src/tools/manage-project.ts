@@ -3,50 +3,79 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
-export let manageProject = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Project',
-    key: 'manage_project',
-    description: `Creates or updates a project in Zoho Invoice. If projectId is provided, the existing project is updated; otherwise a new project is created. Projects can be linked to a customer and configured with billing type, rate, and budget settings.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageProject = SlateTool.create(spec, {
+  name: 'Manage Project',
+  key: 'manage_project',
+  description: `Creates or updates a project in Zoho Invoice. If projectId is provided, the existing project is updated; otherwise a new project is created. Projects can be linked to a customer and configured with billing type, rate, and budget settings.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    projectId: z.string().optional().describe('ID of the project to update. If omitted, a new project is created.'),
-    projectName: z.string().optional().describe('Name of the project (required when creating)'),
-    customerId: z.string().optional().describe('Customer ID to associate with the project (required when creating)'),
-    description: z.string().optional().describe('Description of the project'),
-    billingType: z.enum(['based_on_project_hours', 'based_on_task_hours', 'based_on_staff_hours', 'fixed_cost_for_project']).optional().describe('How the project is billed'),
-    rate: z.number().optional().describe('Hourly rate or fixed cost for the project'),
-    budgetType: z.enum(['total_project_cost', 'total_project_hours', 'hours_per_task', 'hours_per_staff']).optional().describe('Type of budget tracking'),
-    budgetHours: z.number().optional().describe('Budget hours for the project'),
-    budgetAmount: z.number().optional().describe('Budget amount for the project'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Unique ID of the project'),
-    projectName: z.string().optional().describe('Name of the project'),
-    customerId: z.string().optional().describe('Associated customer ID'),
-    customerName: z.string().optional().describe('Associated customer name'),
-    description: z.string().optional().describe('Project description'),
-    status: z.string().optional().describe('Current status of the project'),
-    billingType: z.string().optional().describe('Billing type of the project'),
-    rate: z.number().optional().describe('Hourly rate or fixed cost'),
-    totalHours: z.string().optional().describe('Total logged hours'),
-    billableHours: z.string().optional().describe('Total billable hours'),
-    billedHours: z.string().optional().describe('Total billed hours'),
-    unbilledHours: z.string().optional().describe('Total unbilled hours'),
-    createdTime: z.string().optional().describe('Timestamp when the project was created'),
-    lastModifiedTime: z.string().optional().describe('Timestamp when the project was last modified'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z
+        .string()
+        .optional()
+        .describe('ID of the project to update. If omitted, a new project is created.'),
+      projectName: z
+        .string()
+        .optional()
+        .describe('Name of the project (required when creating)'),
+      customerId: z
+        .string()
+        .optional()
+        .describe('Customer ID to associate with the project (required when creating)'),
+      description: z.string().optional().describe('Description of the project'),
+      billingType: z
+        .enum([
+          'based_on_project_hours',
+          'based_on_task_hours',
+          'based_on_staff_hours',
+          'fixed_cost_for_project'
+        ])
+        .optional()
+        .describe('How the project is billed'),
+      rate: z.number().optional().describe('Hourly rate or fixed cost for the project'),
+      budgetType: z
+        .enum([
+          'total_project_cost',
+          'total_project_hours',
+          'hours_per_task',
+          'hours_per_staff'
+        ])
+        .optional()
+        .describe('Type of budget tracking'),
+      budgetHours: z.number().optional().describe('Budget hours for the project'),
+      budgetAmount: z.number().optional().describe('Budget amount for the project')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Unique ID of the project'),
+      projectName: z.string().optional().describe('Name of the project'),
+      customerId: z.string().optional().describe('Associated customer ID'),
+      customerName: z.string().optional().describe('Associated customer name'),
+      description: z.string().optional().describe('Project description'),
+      status: z.string().optional().describe('Current status of the project'),
+      billingType: z.string().optional().describe('Billing type of the project'),
+      rate: z.number().optional().describe('Hourly rate or fixed cost'),
+      totalHours: z.string().optional().describe('Total logged hours'),
+      billableHours: z.string().optional().describe('Total billable hours'),
+      billedHours: z.string().optional().describe('Total billed hours'),
+      unbilledHours: z.string().optional().describe('Total unbilled hours'),
+      createdTime: z.string().optional().describe('Timestamp when the project was created'),
+      lastModifiedTime: z
+        .string()
+        .optional()
+        .describe('Timestamp when the project was last modified')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       organizationId: ctx.config.organizationId,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let payload: Record<string, any> = {};
@@ -82,13 +111,14 @@ export let manageProject = SlateTool.create(
       billedHours: project.billed_hours,
       unbilledHours: project.un_billed_hours,
       createdTime: project.created_time,
-      lastModifiedTime: project.last_modified_time,
+      lastModifiedTime: project.last_modified_time
     };
 
     let action = ctx.input.projectId ? 'Updated' : 'Created';
 
     return {
       output,
-      message: `${action} project **${output.projectName}** (${output.projectId}).`,
+      message: `${action} project **${output.projectName}** (${output.projectId}).`
     };
-  }).build();
+  })
+  .build();

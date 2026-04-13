@@ -12,13 +12,9 @@ import {
   updateTemplate,
   copyTemplate,
   deleteTemplate,
-  manageCollaborators,
+  manageCollaborators
 } from './tools';
-import {
-  contractEvents,
-  signerEvents,
-  errorEvents,
-} from './triggers';
+import { contractEvents, signerEvents, errorEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -34,11 +30,7 @@ export let provider = Slate.create({
     updateTemplate,
     copyTemplate,
     deleteTemplate,
-    manageCollaborators,
+    manageCollaborators
   ],
-  triggers: [
-    contractEvents,
-    signerEvents,
-    errorEvents,
-  ],
+  triggers: [contractEvents, signerEvents, errorEvents]
 });

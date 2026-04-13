@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://app.linguapop.eu/api/actions',
+  baseURL: 'https://app.linguapop.eu/api/actions'
 });
 
 export interface Language {
@@ -29,15 +29,13 @@ export interface InvitationResponse {
 }
 
 export class Client {
-  constructor(
-    private token: string,
-  ) {}
+  constructor(private token: string) {}
 
   async getLanguages(): Promise<Language[]> {
     let response = await http.get('/getLanguages', {
       params: {
-        apiKey: this.token,
-      },
+        apiKey: this.token
+      }
     });
     return response.data;
   }
@@ -47,7 +45,7 @@ export class Client {
       apiKey: this.token,
       candidateName: params.candidateName,
       candidateEmail: params.candidateEmail,
-      language: params.languageCode,
+      language: params.languageCode
     };
 
     if (params.externalId !== undefined) {

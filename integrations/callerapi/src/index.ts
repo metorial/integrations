@@ -8,7 +8,7 @@ import {
   getPortingHistory,
   assessPortFraudRisk,
   checkOnlinePresence,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     getPortingHistory,
     assessPortFraudRisk,
     checkOnlinePresence,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

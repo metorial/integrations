@@ -5,7 +5,7 @@ let apiBaseUrls: Record<DataCenter, string> = {
   eu: 'https://app.eu.workato.com/api',
   jp: 'https://app.jp.workato.com/api',
   sg: 'https://app.sg.workato.com/api',
-  au: 'https://app.au.workato.com/api',
+  au: 'https://app.au.workato.com/api'
 };
 
 let dataTablesBaseUrls: Record<DataCenter, string> = {
@@ -13,7 +13,7 @@ let dataTablesBaseUrls: Record<DataCenter, string> = {
   eu: 'https://data-tables.eu.workato.com',
   jp: 'https://data-tables.jp.workato.com',
   sg: 'https://data-tables.sg.workato.com',
-  au: 'https://data-tables.au.workato.com',
+  au: 'https://data-tables.au.workato.com'
 };
 
 let eventStreamsBaseUrls: Record<DataCenter, string> = {
@@ -21,7 +21,7 @@ let eventStreamsBaseUrls: Record<DataCenter, string> = {
   eu: 'https://event-streams.eu.workato.com',
   jp: 'https://event-streams.jp.workato.com',
   sg: 'https://event-streams.sg.workato.com',
-  au: 'https://event-streams.au.workato.com',
+  au: 'https://event-streams.au.workato.com'
 };
 
 export let getApiBaseUrl = (dc: string): string => {

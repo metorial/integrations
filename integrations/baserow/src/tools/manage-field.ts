@@ -3,39 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageField = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Field',
-    key: 'manage_field',
-    description: `Create, update, or delete a field (column) in a Baserow table. Use \`action\` to specify the operation. Requires JWT authentication.`,
-    instructions: [
-      'For creating a field, provide `tableId`, `name`, and `type`. Additional type-specific options can go in `options`.',
-      'Supported field types include: text, long_text, number, boolean, date, url, email, file, single_select, multiple_select, link_row, lookup, rollup, count, formula, rating, duration, uuid, autonumber, and more.',
-      'For single_select/multiple_select, include `select_options` in `options` with an array of `{ value, color }` objects.'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageField = SlateTool.create(spec, {
+  name: 'Manage Field',
+  key: 'manage_field',
+  description: `Create, update, or delete a field (column) in a Baserow table. Use \`action\` to specify the operation. Requires JWT authentication.`,
+  instructions: [
+    'For creating a field, provide `tableId`, `name`, and `type`. Additional type-specific options can go in `options`.',
+    'Supported field types include: text, long_text, number, boolean, date, url, email, file, single_select, multiple_select, link_row, lookup, rollup, count, formula, rating, duration, uuid, autonumber, and more.',
+    'For single_select/multiple_select, include `select_options` in `options` with an array of `{ value, color }` objects.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
-    tableId: z.number().optional().describe('Table ID (required for create)'),
-    fieldId: z.number().optional().describe('Field ID (required for update and delete)'),
-    name: z.string().optional().describe('Field name (required for create, optional for update)'),
-    type: z.string().optional().describe('Field type (required for create, e.g. text, number, boolean, date, single_select)'),
-    options: z.record(z.string(), z.any()).optional().describe('Additional type-specific field options (e.g. number_decimal_places, date_format, select_options)')
-  }))
-  .output(z.object({
-    field: z.object({
-      fieldId: z.number().describe('Field ID'),
-      name: z.string().describe('Field name'),
-      type: z.string().describe('Field type'),
-    }).catchall(z.any()).optional().describe('The created or updated field (not returned for delete)'),
-    deleted: z.boolean().optional().describe('True if the field was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform'),
+      tableId: z.number().optional().describe('Table ID (required for create)'),
+      fieldId: z.number().optional().describe('Field ID (required for update and delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Field name (required for create, optional for update)'),
+      type: z
+        .string()
+        .optional()
+        .describe(
+          'Field type (required for create, e.g. text, number, boolean, date, single_select)'
+        ),
+      options: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe(
+          'Additional type-specific field options (e.g. number_decimal_places, date_format, select_options)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      field: z
+        .object({
+          fieldId: z.number().describe('Field ID'),
+          name: z.string().describe('Field name'),
+          type: z.string().describe('Field type')
+        })
+        .catchall(z.any())
+        .optional()
+        .describe('The created or updated field (not returned for delete)'),
+      deleted: z.boolean().optional().describe('True if the field was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       authType: ctx.auth.authType,

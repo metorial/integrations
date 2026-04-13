@@ -3,48 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let eventParticipant = SlateTrigger.create(
-  spec,
-  {
-    name: 'New or Updated Participant',
-    key: 'event_participant',
-    description: 'Triggers when a participant is added or updated on a specific Evenium event. Detects both new participants and modifications to existing ones.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']),
-    contactId: z.string(),
-    eventId: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string(),
-    company: z.string().optional(),
-    gender: z.string().optional(),
-    status: z.string().optional(),
-    lastUpdate: z.string().optional(),
-    categoryLabel: z.string().optional()
-  }))
-  .output(z.object({
-    contactId: z.string().describe('Contact ID of the participant'),
-    eventId: z.string().describe('Event ID'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    email: z.string().describe('Email address'),
-    company: z.string().optional().describe('Company name'),
-    gender: z.string().optional().describe('Gender'),
-    status: z.string().optional().describe('Registration status'),
-    lastUpdate: z.string().optional().describe('Last update timestamp'),
-    categoryLabel: z.string().optional().describe('Category label')
-  }))
+export let eventParticipant = SlateTrigger.create(spec, {
+  name: 'New or Updated Participant',
+  key: 'event_participant',
+  description:
+    'Triggers when a participant is added or updated on a specific Evenium event. Detects both new participants and modifications to existing ones.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['created', 'updated']),
+      contactId: z.string(),
+      eventId: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      email: z.string(),
+      company: z.string().optional(),
+      gender: z.string().optional(),
+      status: z.string().optional(),
+      lastUpdate: z.string().optional(),
+      categoryLabel: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().describe('Contact ID of the participant'),
+      eventId: z.string().describe('Event ID'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      email: z.string().describe('Email address'),
+      company: z.string().optional().describe('Company name'),
+      gender: z.string().optional().describe('Gender'),
+      status: z.string().optional().describe('Registration status'),
+      lastUpdate: z.string().optional().describe('Last update timestamp'),
+      categoryLabel: z.string().optional().describe('Category label')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client(ctx.auth.token);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
-      let knownParticipants = (ctx.state?.knownParticipants as Record<string, string> | undefined) ?? {};
+      let knownParticipants =
+        (ctx.state?.knownParticipants as Record<string, string> | undefined) ?? {};
 
       // Get all events to poll participants from
       let eventsResult = await client.listEvents();
@@ -87,7 +90,9 @@ export let eventParticipant = SlateTrigger.create(
               gender: guest.gender,
               status: guest.status,
               lastUpdate: guest.lastUpdate,
-              categoryLabel: guest.categoryLabel ?? (typeof guest.category === 'object' ? guest.category?.label : guest.category)
+              categoryLabel:
+                guest.categoryLabel ??
+                (typeof guest.category === 'object' ? guest.category?.label : guest.category)
             });
           }
 
@@ -104,7 +109,7 @@ export let eventParticipant = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `participant.${ctx.input.changeType}`,
         id: `${ctx.input.eventId}:${ctx.input.contactId}:${ctx.input.lastUpdate ?? Date.now()}`,
@@ -122,4 +127,5 @@ export let eventParticipant = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

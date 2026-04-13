@@ -15,7 +15,7 @@ let tagSchema = z.object({
   postCount: z.number().optional().describe('Number of posts with this tag'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp'),
-  url: z.string().describe('Tag URL'),
+  url: z.string().describe('Tag URL')
 });
 
 let paginationSchema = z.object({
@@ -24,33 +24,37 @@ let paginationSchema = z.object({
   pages: z.number(),
   total: z.number(),
   next: z.number().nullable(),
-  prev: z.number().nullable(),
+  prev: z.number().nullable()
 });
 
-export let browseTags = SlateTool.create(
-  spec,
-  {
-    name: 'Browse Tags',
-    key: 'browse_tags',
-    description: `List tags from your Ghost site. Tags are used to organize posts and pages. Use **include** with \`count.posts\` to see how many posts each tag has.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    filter: z.string().optional().describe('Ghost NQL filter expression (e.g., "visibility:public")'),
-    include: z.string().optional().describe('Include related data (e.g., "count.posts")'),
-    limit: z.number().optional().describe('Number of tags per page (default 15)'),
-    page: z.number().optional().describe('Page number for pagination'),
-    order: z.string().optional().describe('Sort order (e.g., "name asc")'),
-  }))
-  .output(z.object({
-    tags: z.array(tagSchema).describe('List of tags'),
-    pagination: paginationSchema,
-  }))
-  .handleInvocation(async (ctx) => {
+export let browseTags = SlateTool.create(spec, {
+  name: 'Browse Tags',
+  key: 'browse_tags',
+  description: `List tags from your Ghost site. Tags are used to organize posts and pages. Use **include** with \`count.posts\` to see how many posts each tag has.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      filter: z
+        .string()
+        .optional()
+        .describe('Ghost NQL filter expression (e.g., "visibility:public")'),
+      include: z.string().optional().describe('Include related data (e.g., "count.posts")'),
+      limit: z.number().optional().describe('Number of tags per page (default 15)'),
+      page: z.number().optional().describe('Page number for pagination'),
+      order: z.string().optional().describe('Sort order (e.g., "name asc")')
+    })
+  )
+  .output(
+    z.object({
+      tags: z.array(tagSchema).describe('List of tags'),
+      pagination: paginationSchema
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GhostAdminClient({
       domain: ctx.config.adminDomain,
-      apiKey: ctx.auth.token,
+      apiKey: ctx.auth.token
     });
 
     let result = await client.browseTags({
@@ -58,7 +62,7 @@ export let browseTags = SlateTool.create(
       include: ctx.input.include,
       limit: ctx.input.limit,
       page: ctx.input.page,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
     let tags = (result.tags ?? []).map((t: any) => ({
@@ -73,15 +77,21 @@ export let browseTags = SlateTool.create(
       postCount: t.count?.posts,
       createdAt: t.created_at,
       updatedAt: t.updated_at,
-      url: t.url,
+      url: t.url
     }));
 
     let pagination = result.meta?.pagination ?? {
-      page: 1, limit: 15, pages: 1, total: tags.length, next: null, prev: null,
+      page: 1,
+      limit: 15,
+      pages: 1,
+      total: tags.length,
+      next: null,
+      prev: null
     };
 
     return {
       output: { tags, pagination },
-      message: `Found **${pagination.total}** tags (page ${pagination.page} of ${pagination.pages}).`,
+      message: `Found **${pagination.total}** tags (page ${pagination.page} of ${pagination.pages}).`
     };
-  }).build();
+  })
+  .build();

@@ -18,11 +18,13 @@ export let upsertCustomerTool = SlateTool.create(spec, {
   }
 })
   .input(customerSchema)
-  .output(z.object({
-    success: z.boolean().describe('Whether the event was sent successfully'),
-    eventType: z.string().describe('The event type that was sent')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the event was sent successfully'),
+      eventType: z.string().describe('The event type that was sent')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RemarketyClient({
       token: ctx.auth.token,
       storeId: ctx.auth.storeId,

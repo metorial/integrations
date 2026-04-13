@@ -66,10 +66,10 @@ export class IdentityCheckClient {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -82,7 +82,7 @@ export class IdentityCheckClient {
       last_name: request.lastName,
       verification_type: request.verificationType || 'biometric',
       callback_url: request.callbackUrl,
-      reference_id: request.referenceId,
+      reference_id: request.referenceId
     });
     return response.data;
   }
@@ -99,19 +99,23 @@ export class IdentityCheckClient {
         limit: params?.limit,
         status: params?.status,
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return response.data;
   }
 
   async cancelVerification(verificationId: string): Promise<Record<string, any>> {
-    let response = await this.http.post(`/identitycheck/verifications/${verificationId}/cancel`);
+    let response = await this.http.post(
+      `/identitycheck/verifications/${verificationId}/cancel`
+    );
     return response.data;
   }
 
   async resendVerificationEmail(verificationId: string): Promise<Record<string, any>> {
-    let response = await this.http.post(`/identitycheck/verifications/${verificationId}/resend`);
+    let response = await this.http.post(
+      `/identitycheck/verifications/${verificationId}/resend`
+    );
     return response.data;
   }
 
@@ -123,7 +127,7 @@ export class IdentityCheckClient {
       last_name: request.lastName,
       date_of_birth: request.dateOfBirth,
       screening_types: request.screeningTypes || ['pep', 'sanctions', 'adverse_media'],
-      reference_id: request.referenceId,
+      reference_id: request.referenceId
     });
     return response.data;
   }
@@ -140,8 +144,8 @@ export class IdentityCheckClient {
         limit: params?.limit,
         status: params?.status,
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return response.data;
   }
@@ -153,7 +157,7 @@ export class IdentityCheckClient {
       email: request.email,
       first_name: request.firstName,
       last_name: request.lastName,
-      reference_id: request.referenceId,
+      reference_id: request.referenceId
     });
     return response.data;
   }
@@ -171,7 +175,7 @@ export class IdentityCheckClient {
       first_name: request.firstName,
       last_name: request.lastName,
       date_of_birth: request.dateOfBirth,
-      reference_id: request.referenceId,
+      reference_id: request.referenceId
     });
     return response.data;
   }
@@ -190,7 +194,7 @@ export class IdentityCheckClient {
       last_name: request.lastName,
       date_of_birth: request.dateOfBirth,
       check_type: request.checkType || 'report',
-      reference_id: request.referenceId,
+      reference_id: request.referenceId
     });
     return response.data;
   }
@@ -208,7 +212,7 @@ export class IdentityCheckClient {
       registration_number: request.registrationNumber,
       country: request.country,
       report_type: request.reportType || 'kyb',
-      reference_id: request.referenceId,
+      reference_id: request.referenceId
     });
     return response.data;
   }
@@ -225,8 +229,8 @@ export class IdentityCheckClient {
         limit: params?.limit,
         status: params?.status,
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return response.data;
   }
@@ -236,7 +240,7 @@ export class IdentityCheckClient {
   async registerWebhook(url: string, events: string[]): Promise<Record<string, any>> {
     let response = await this.http.post('/identitycheck/webhooks', {
       url,
-      events,
+      events
     });
     return response.data;
   }

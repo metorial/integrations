@@ -34,18 +34,23 @@ If the user has already created a provisioning hash, then generating a new one w
 ## Features
 
 ### User Management
+
 Administrators can provision and deprovision users through the API. Our powerful API can be used to create users, deprovision users, manage groups and auto-add users to shared folders. This includes creating new user accounts (individually or in batch), disabling/deleting accounts, and requiring master password changes. When a user is provisioned, an email is sent to the user with their temporary password or an activation link (if their account exists already).
 
 ### User Data Retrieval
+
 User Data is used to get account details about the user. This includes retrieving information such as admin status, number of stored sites, last login time, last password change, security score, group memberships, and whether the account is active or disabled.
 
 ### Group Management
+
 The API allows creating, managing, and deleting groups. Groups can be used to organize users and assign policies or shared folders to groups of users at once. The LastPass Provisioning API does not support managing groups for pre-configured SSO (Cloud) apps for LastPass Business accounts.
 
 ### Shared Folder Management
+
 Detailed Shared Folder Data is used to get a detailed list of all shared folders, the sites within them, and the permissions granted to them. The API allows retrieving shared folder details including folder names, contained sites, user permissions (read-only, admin, give access), and security scores.
 
 ### Event Reporting
+
 Event Report is used to gather information about events that have taken place in the user's LastPass Business account. Administrators can query audit logs by specifying date ranges and optionally filtering by user. Events include actions such as login attempts (successful and failed), password changes, shared folder activity, and administrative actions. Each event includes a timestamp, username, action type, IP address, and associated data.
 
 ## Events

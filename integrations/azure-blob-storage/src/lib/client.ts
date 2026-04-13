@@ -1,5 +1,11 @@
 import { createAxios } from 'slates';
-import { getTagContent, getAllElements, getAllTagContents, extractMetadata, escapeXml } from './xml';
+import {
+  getTagContent,
+  getAllElements,
+  getAllTagContents,
+  extractMetadata,
+  escapeXml
+} from './xml';
 
 let API_VERSION = '2024-11-04';
 
@@ -80,7 +86,7 @@ export class Client {
   private getHeaders(): Record<string, string> {
     let headers: Record<string, string> = {
       'x-ms-version': API_VERSION,
-      'x-ms-date': new Date().toUTCString(),
+      'x-ms-date': new Date().toUTCString()
     };
 
     if (!this.isSasToken) {
@@ -101,13 +107,16 @@ export class Client {
 
   private createAxiosInstance() {
     return createAxios({
-      baseURL: this.baseUrl,
+      baseURL: this.baseUrl
     });
   }
 
   // ==================== Container Operations ====================
 
-  async listContainers(prefix?: string, maxResults?: number): Promise<{ containers: ContainerInfo[]; nextMarker?: string }> {
+  async listContainers(
+    prefix?: string,
+    maxResults?: number
+  ): Promise<{ containers: ContainerInfo[]; nextMarker?: string }> {
     let http = this.createAxiosInstance();
     let params: Record<string, string> = { comp: 'list' };
     if (prefix) params['prefix'] = prefix;
@@ -116,30 +125,36 @@ export class Client {
     let url = this.appendSas('/');
     let response = await http.get(url, {
       headers: this.getHeaders(),
-      params,
+      params
     });
 
     let xml = response.data as string;
     let containerElements = getAllElements(xml, 'Container');
-    let containers = containerElements.map((el): ContainerInfo => ({
-      containerName: getTagContent(el, 'Name') ?? '',
-      lastModified: getTagContent(el, 'Last-Modified') ?? '',
-      eTag: getTagContent(el, 'Etag') ?? '',
-      leaseStatus: getTagContent(el, 'LeaseStatus') ?? '',
-      leaseState: getTagContent(el, 'LeaseState') ?? '',
-      hasImmutabilityPolicy: getTagContent(el, 'HasImmutabilityPolicy') === 'true',
-      hasLegalHold: getTagContent(el, 'HasLegalHold') === 'true',
-      defaultEncryptionScope: getTagContent(el, 'DefaultEncryptionScope') ?? '',
-      publicAccess: getTagContent(el, 'PublicAccess') ?? 'private',
-      metadata: extractMetadata(el),
-    }));
+    let containers = containerElements.map(
+      (el): ContainerInfo => ({
+        containerName: getTagContent(el, 'Name') ?? '',
+        lastModified: getTagContent(el, 'Last-Modified') ?? '',
+        eTag: getTagContent(el, 'Etag') ?? '',
+        leaseStatus: getTagContent(el, 'LeaseStatus') ?? '',
+        leaseState: getTagContent(el, 'LeaseState') ?? '',
+        hasImmutabilityPolicy: getTagContent(el, 'HasImmutabilityPolicy') === 'true',
+        hasLegalHold: getTagContent(el, 'HasLegalHold') === 'true',
+        defaultEncryptionScope: getTagContent(el, 'DefaultEncryptionScope') ?? '',
+        publicAccess: getTagContent(el, 'PublicAccess') ?? 'private',
+        metadata: extractMetadata(el)
+      })
+    );
 
     let nextMarker = getTagContent(xml, 'NextMarker') || undefined;
 
     return { containers, nextMarker };
   }
 
-  async createContainer(containerName: string, publicAccess?: 'container' | 'blob', metadata?: Record<string, string>): Promise<void> {
+  async createContainer(
+    containerName: string,
+    publicAccess?: 'container' | 'blob',
+    metadata?: Record<string, string>
+  ): Promise<void> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
@@ -163,7 +178,9 @@ export class Client {
     await http.delete(url, { headers: this.getHeaders() });
   }
 
-  async getContainerProperties(containerName: string): Promise<{ metadata: Record<string, string>; properties: Record<string, string> }> {
+  async getContainerProperties(
+    containerName: string
+  ): Promise<{ metadata: Record<string, string>; properties: Record<string, string> }> {
     let http = this.createAxiosInstance();
     let url = this.appendSas(`/${containerName}?restype=container`);
     let response = await http.get(url, { headers: this.getHeaders() });
@@ -183,13 +200,17 @@ export class Client {
     properties['leaseStatus'] = responseHeaders['x-ms-lease-status'] ?? '';
     properties['leaseState'] = responseHeaders['x-ms-lease-state'] ?? '';
     properties['publicAccess'] = responseHeaders['x-ms-blob-public-access'] ?? 'private';
-    properties['hasImmutabilityPolicy'] = responseHeaders['x-ms-has-immutability-policy'] ?? 'false';
+    properties['hasImmutabilityPolicy'] =
+      responseHeaders['x-ms-has-immutability-policy'] ?? 'false';
     properties['hasLegalHold'] = responseHeaders['x-ms-has-legal-hold'] ?? 'false';
 
     return { metadata, properties };
   }
 
-  async setContainerMetadata(containerName: string, metadata: Record<string, string>): Promise<void> {
+  async setContainerMetadata(
+    containerName: string,
+    metadata: Record<string, string>
+  ): Promise<void> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
@@ -203,17 +224,20 @@ export class Client {
 
   // ==================== Blob Operations ====================
 
-  async listBlobs(containerName: string, options?: {
-    prefix?: string;
-    maxResults?: number;
-    marker?: string;
-    delimiter?: string;
-    include?: string[];
-  }): Promise<{ blobs: BlobInfo[]; nextMarker?: string; blobPrefixes: string[] }> {
+  async listBlobs(
+    containerName: string,
+    options?: {
+      prefix?: string;
+      maxResults?: number;
+      marker?: string;
+      delimiter?: string;
+      include?: string[];
+    }
+  ): Promise<{ blobs: BlobInfo[]; nextMarker?: string; blobPrefixes: string[] }> {
     let http = this.createAxiosInstance();
     let params: Record<string, string> = {
       restype: 'container',
-      comp: 'list',
+      comp: 'list'
     };
 
     if (options?.prefix) params['prefix'] = options.prefix;
@@ -227,22 +251,24 @@ export class Client {
 
     let xml = response.data as string;
     let blobElements = getAllElements(xml, 'Blob');
-    let blobs = blobElements.map((el): BlobInfo => ({
-      blobName: getTagContent(el, 'Name') ?? '',
-      containerName,
-      creationTime: getTagContent(el, 'Creation-Time') ?? '',
-      lastModified: getTagContent(el, 'Last-Modified') ?? '',
-      eTag: getTagContent(el, 'Etag') ?? '',
-      contentLength: parseInt(getTagContent(el, 'Content-Length') ?? '0', 10),
-      contentType: getTagContent(el, 'Content-Type') ?? '',
-      contentEncoding: getTagContent(el, 'Content-Encoding') ?? '',
-      blobType: getTagContent(el, 'BlobType') ?? '',
-      accessTier: getTagContent(el, 'AccessTier') ?? '',
-      leaseStatus: getTagContent(el, 'LeaseStatus') ?? '',
-      leaseState: getTagContent(el, 'LeaseState') ?? '',
-      serverEncrypted: getTagContent(el, 'ServerEncrypted') === 'true',
-      metadata: extractMetadata(el),
-    }));
+    let blobs = blobElements.map(
+      (el): BlobInfo => ({
+        blobName: getTagContent(el, 'Name') ?? '',
+        containerName,
+        creationTime: getTagContent(el, 'Creation-Time') ?? '',
+        lastModified: getTagContent(el, 'Last-Modified') ?? '',
+        eTag: getTagContent(el, 'Etag') ?? '',
+        contentLength: parseInt(getTagContent(el, 'Content-Length') ?? '0', 10),
+        contentType: getTagContent(el, 'Content-Type') ?? '',
+        contentEncoding: getTagContent(el, 'Content-Encoding') ?? '',
+        blobType: getTagContent(el, 'BlobType') ?? '',
+        accessTier: getTagContent(el, 'AccessTier') ?? '',
+        leaseStatus: getTagContent(el, 'LeaseStatus') ?? '',
+        leaseState: getTagContent(el, 'LeaseState') ?? '',
+        serverEncrypted: getTagContent(el, 'ServerEncrypted') === 'true',
+        metadata: extractMetadata(el)
+      })
+    );
 
     let nextMarker = getTagContent(xml, 'NextMarker') || undefined;
     let prefixElements = getAllElements(xml, 'BlobPrefix');
@@ -251,15 +277,20 @@ export class Client {
     return { blobs, nextMarker, blobPrefixes };
   }
 
-  async uploadBlob(containerName: string, blobName: string, content: string, options?: {
-    contentType?: string;
-    blobType?: 'BlockBlob' | 'AppendBlob' | 'PageBlob';
-    accessTier?: string;
-    metadata?: Record<string, string>;
-    contentEncoding?: string;
-    cacheControl?: string;
-    contentDisposition?: string;
-  }): Promise<{ eTag: string; lastModified: string }> {
+  async uploadBlob(
+    containerName: string,
+    blobName: string,
+    content: string,
+    options?: {
+      contentType?: string;
+      blobType?: 'BlockBlob' | 'AppendBlob' | 'PageBlob';
+      accessTier?: string;
+      metadata?: Record<string, string>;
+      contentEncoding?: string;
+      cacheControl?: string;
+      contentDisposition?: string;
+    }
+  ): Promise<{ eTag: string; lastModified: string }> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     let blobType = options?.blobType ?? 'BlockBlob';
@@ -292,11 +323,20 @@ export class Client {
     let responseHeaders = response.headers as Record<string, string>;
     return {
       eTag: responseHeaders['etag'] ?? '',
-      lastModified: responseHeaders['last-modified'] ?? '',
+      lastModified: responseHeaders['last-modified'] ?? ''
     };
   }
 
-  async downloadBlob(containerName: string, blobName: string, range?: { offset: number; length?: number }): Promise<{ content: string; contentType: string; contentLength: number; metadata: Record<string, string> }> {
+  async downloadBlob(
+    containerName: string,
+    blobName: string,
+    range?: { offset: number; length?: number }
+  ): Promise<{
+    content: string;
+    contentType: string;
+    contentLength: number;
+    metadata: Record<string, string>;
+  }> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
@@ -321,11 +361,15 @@ export class Client {
       content: response.data as string,
       contentType: responseHeaders['content-type'] ?? '',
       contentLength: parseInt(responseHeaders['content-length'] ?? '0', 10),
-      metadata,
+      metadata
     };
   }
 
-  async deleteBlob(containerName: string, blobName: string, options?: { deleteSnapshots?: 'include' | 'only' }): Promise<void> {
+  async deleteBlob(
+    containerName: string,
+    blobName: string,
+    options?: { deleteSnapshots?: 'include' | 'only' }
+  ): Promise<void> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
@@ -373,24 +417,31 @@ export class Client {
       copySource: h['x-ms-copy-source'] ?? '',
       copyProgress: h['x-ms-copy-progress'] ?? '',
       serverEncrypted: h['x-ms-server-encrypted'] === 'true',
-      metadata,
+      metadata
     };
   }
 
-  async setBlobProperties(containerName: string, blobName: string, properties: {
-    contentType?: string;
-    contentEncoding?: string;
-    contentLanguage?: string;
-    contentDisposition?: string;
-    cacheControl?: string;
-  }): Promise<void> {
+  async setBlobProperties(
+    containerName: string,
+    blobName: string,
+    properties: {
+      contentType?: string;
+      contentEncoding?: string;
+      contentLanguage?: string;
+      contentDisposition?: string;
+      cacheControl?: string;
+    }
+  ): Promise<void> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
     if (properties.contentType) headers['x-ms-blob-content-type'] = properties.contentType;
-    if (properties.contentEncoding) headers['x-ms-blob-content-encoding'] = properties.contentEncoding;
-    if (properties.contentLanguage) headers['x-ms-blob-content-language'] = properties.contentLanguage;
-    if (properties.contentDisposition) headers['x-ms-blob-content-disposition'] = properties.contentDisposition;
+    if (properties.contentEncoding)
+      headers['x-ms-blob-content-encoding'] = properties.contentEncoding;
+    if (properties.contentLanguage)
+      headers['x-ms-blob-content-language'] = properties.contentLanguage;
+    if (properties.contentDisposition)
+      headers['x-ms-blob-content-disposition'] = properties.contentDisposition;
     if (properties.cacheControl) headers['x-ms-blob-cache-control'] = properties.cacheControl;
 
     let encodedBlobName = blobName.split('/').map(encodeURIComponent).join('/');
@@ -398,7 +449,11 @@ export class Client {
     await http.put(url, null, { headers });
   }
 
-  async setBlobMetadata(containerName: string, blobName: string, metadata: Record<string, string>): Promise<void> {
+  async setBlobMetadata(
+    containerName: string,
+    blobName: string,
+    metadata: Record<string, string>
+  ): Promise<void> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
@@ -425,10 +480,15 @@ export class Client {
 
   // ==================== Copy Operations ====================
 
-  async copyBlob(containerName: string, blobName: string, sourceUrl: string, options?: {
-    metadata?: Record<string, string>;
-    accessTier?: string;
-  }): Promise<{ copyId: string; copyStatus: string }> {
+  async copyBlob(
+    containerName: string,
+    blobName: string,
+    sourceUrl: string,
+    options?: {
+      metadata?: Record<string, string>;
+      accessTier?: string;
+    }
+  ): Promise<{ copyId: string; copyStatus: string }> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     headers['x-ms-copy-source'] = sourceUrl;
@@ -449,7 +509,7 @@ export class Client {
     let responseHeaders = response.headers as Record<string, string>;
     return {
       copyId: responseHeaders['x-ms-copy-id'] ?? '',
-      copyStatus: responseHeaders['x-ms-copy-status'] ?? '',
+      copyStatus: responseHeaders['x-ms-copy-status'] ?? ''
     };
   }
 
@@ -460,7 +520,11 @@ export class Client {
 
   // ==================== Snapshot Operations ====================
 
-  async createSnapshot(containerName: string, blobName: string, metadata?: Record<string, string>): Promise<{ snapshotId: string }> {
+  async createSnapshot(
+    containerName: string,
+    blobName: string,
+    metadata?: Record<string, string>
+  ): Promise<{ snapshotId: string }> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
 
@@ -476,13 +540,18 @@ export class Client {
 
     let responseHeaders = response.headers as Record<string, string>;
     return {
-      snapshotId: responseHeaders['x-ms-snapshot'] ?? '',
+      snapshotId: responseHeaders['x-ms-snapshot'] ?? ''
     };
   }
 
   // ==================== Lease Operations ====================
 
-  async acquireLease(containerName: string, blobName?: string, durationSeconds?: number, proposedLeaseId?: string): Promise<LeaseResult> {
+  async acquireLease(
+    containerName: string,
+    blobName?: string,
+    durationSeconds?: number,
+    proposedLeaseId?: string
+  ): Promise<LeaseResult> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     headers['x-ms-lease-action'] = 'acquire';
@@ -505,11 +574,15 @@ export class Client {
 
     let responseHeaders = response.headers as Record<string, string>;
     return {
-      leaseId: responseHeaders['x-ms-lease-id'] ?? '',
+      leaseId: responseHeaders['x-ms-lease-id'] ?? ''
     };
   }
 
-  async renewLease(containerName: string, leaseId: string, blobName?: string): Promise<LeaseResult> {
+  async renewLease(
+    containerName: string,
+    leaseId: string,
+    blobName?: string
+  ): Promise<LeaseResult> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     headers['x-ms-lease-action'] = 'renew';
@@ -528,11 +601,15 @@ export class Client {
 
     let responseHeaders = response.headers as Record<string, string>;
     return {
-      leaseId: responseHeaders['x-ms-lease-id'] ?? '',
+      leaseId: responseHeaders['x-ms-lease-id'] ?? ''
     };
   }
 
-  async releaseLease(containerName: string, leaseId: string, blobName?: string): Promise<void> {
+  async releaseLease(
+    containerName: string,
+    leaseId: string,
+    blobName?: string
+  ): Promise<void> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     headers['x-ms-lease-action'] = 'release';
@@ -550,7 +627,11 @@ export class Client {
     await http.put(url, null, { headers });
   }
 
-  async breakLease(containerName: string, blobName?: string, breakPeriod?: number): Promise<{ leaseTime: number }> {
+  async breakLease(
+    containerName: string,
+    blobName?: string,
+    breakPeriod?: number
+  ): Promise<{ leaseTime: number }> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     headers['x-ms-lease-action'] = 'break';
@@ -572,13 +653,17 @@ export class Client {
 
     let responseHeaders = response.headers as Record<string, string>;
     return {
-      leaseTime: parseInt(responseHeaders['x-ms-lease-time'] ?? '0', 10),
+      leaseTime: parseInt(responseHeaders['x-ms-lease-time'] ?? '0', 10)
     };
   }
 
   // ==================== Append Blob ====================
 
-  async appendBlock(containerName: string, blobName: string, content: string): Promise<{ appendOffset: string; committedBlockCount: number }> {
+  async appendBlock(
+    containerName: string,
+    blobName: string,
+    content: string
+  ): Promise<{ appendOffset: string; committedBlockCount: number }> {
     let http = this.createAxiosInstance();
     let headers = this.getHeaders();
     headers['Content-Type'] = 'application/octet-stream';
@@ -590,23 +675,31 @@ export class Client {
     let responseHeaders = response.headers as Record<string, string>;
     return {
       appendOffset: responseHeaders['x-ms-blob-append-offset'] ?? '0',
-      committedBlockCount: parseInt(responseHeaders['x-ms-blob-committed-block-count'] ?? '0', 10),
+      committedBlockCount: parseInt(
+        responseHeaders['x-ms-blob-committed-block-count'] ?? '0',
+        10
+      )
     };
   }
 
   // ==================== Lifecycle Management ====================
 
-  async getLifecyclePolicy(accountName: string, token: string, subscriptionId: string, resourceGroupName: string): Promise<any> {
+  async getLifecyclePolicy(
+    accountName: string,
+    token: string,
+    subscriptionId: string,
+    resourceGroupName: string
+  ): Promise<any> {
     let http = createAxios({
-      baseURL: 'https://management.azure.com',
+      baseURL: 'https://management.azure.com'
     });
 
     let response = await http.get(
       `/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.Storage/storageAccounts/${accountName}/managementPolicies/default?api-version=2023-05-01`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       }
     );
 

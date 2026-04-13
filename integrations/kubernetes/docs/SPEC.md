@@ -11,6 +11,7 @@ Kubernetes supports multiple authentication methods, and clusters can enable sev
 ### X.509 Client Certificates
 
 Any user that presents a valid certificate signed by the cluster's Certificate Authority is considered authenticated. This requires:
+
 - The cluster's CA certificate (typically found in the kubeconfig file)
 - A client certificate signed by the cluster CA
 - The corresponding client private key
@@ -42,6 +43,7 @@ In practice, most clients authenticate using a **kubeconfig** file (typically at
 ### Workload Management
 
 Workloads are objects you use to manage and run your containers on the cluster. This includes creating, updating, scaling, and deleting:
+
 - **Pods** — the smallest deployable unit containing one or more containers
 - **Deployments** — for managing stateless applications with rolling updates and rollback
 - **StatefulSets** — for stateful applications requiring stable identifiers and persistent storage
@@ -52,6 +54,7 @@ Workloads are objects you use to manage and run your containers on the cluster. 
 ### Service Discovery and Load Balancing
 
 Discovery & LB resources are objects you use to "stitch" your workloads together into an externally accessible, load-balanced Service. This includes:
+
 - **Services** — provide a stable IP and DNS name for a set of pods
 - **Ingress** — HTTP(S) routing rules to expose services externally
 - **Endpoints / EndpointSlices** — track the network addresses of pods backing a service
@@ -59,6 +62,7 @@ Discovery & LB resources are objects you use to "stitch" your workloads together
 ### Configuration and Storage
 
 Config & Storage resources are objects you use to inject initialization data into your applications, and to persist data that is external to your container. This includes:
+
 - **ConfigMaps** — key-value configuration data for pods
 - **Secrets** — sensitive data such as passwords, tokens, or certificates
 - **PersistentVolumes and PersistentVolumeClaims** — provisioning and requesting persistent storage
@@ -67,6 +71,7 @@ Config & Storage resources are objects you use to inject initialization data int
 ### Namespace and Access Control
 
 Cluster resources objects define how the cluster itself is configured; these are typically used only by cluster operators. This includes:
+
 - **Namespaces** — logical partitioning of cluster resources for multi-tenancy
 - **RBAC resources** (Roles, ClusterRoles, RoleBindings, ClusterRoleBindings) — defining who can do what on which resources
 - **ServiceAccounts** — identities for processes running in pods
@@ -75,6 +80,7 @@ Cluster resources objects define how the cluster itself is configured; these are
 ### Cluster Administration
 
 Manage the cluster infrastructure itself:
+
 - **Nodes** — view and manage worker nodes
 - **ResourceQuotas and LimitRanges** — control resource consumption per namespace
 - **PriorityClasses** — define scheduling priority for pods
@@ -83,6 +89,7 @@ Manage the cluster infrastructure itself:
 ### Autoscaling
 
 Scale workloads dynamically based on metrics:
+
 - **HorizontalPodAutoscaler** — adjusts the number of pod replicas based on CPU, memory, or custom metrics
 - **VerticalPodAutoscaler** (if installed) — adjusts resource requests/limits for containers
 

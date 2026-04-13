@@ -3,42 +3,52 @@ import { AnthropicClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageApiKeys = SlateTool.create(
-  spec,
-  {
-    name: 'Manage API Keys',
-    key: 'manage_api_keys',
-    description: `List and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them.
+export let manageApiKeys = SlateTool.create(spec, {
+  name: 'Manage API Keys',
+  key: 'manage_api_keys',
+  description: `List and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them.
 Requires an Admin API key (sk-ant-admin...).`,
-    constraints: [
-      'Requires an Admin API key (sk-ant-admin...).',
-      'Cannot create or delete API keys via this endpoint—only list and update.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'update']).describe('Operation to perform'),
-    apiKeyId: z.string().optional().describe('API key ID (required for "update")'),
-    status: z.enum(['active', 'inactive', 'archived']).optional().describe('Filter keys by status (for "list")'),
-    workspaceId: z.string().optional().describe('Filter keys by workspace ID (for "list")'),
-    name: z.string().optional().describe('New name for the API key (for "update")'),
-    keyStatus: z.enum(['active', 'inactive']).optional().describe('New status for the API key (for "update")'),
-    limit: z.number().optional().describe('Max results for "list"'),
-    afterId: z.string().optional().describe('Pagination cursor for "list"'),
-  }))
-  .output(z.object({
-    apiKeys: z.array(z.record(z.string(), z.unknown())).optional().describe('List of API keys'),
-    apiKey: z.record(z.string(), z.unknown()).optional().describe('Updated API key details'),
-    hasMore: z.boolean().optional().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+  constraints: [
+    'Requires an Admin API key (sk-ant-admin...).',
+    'Cannot create or delete API keys via this endpoint—only list and update.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'update']).describe('Operation to perform'),
+      apiKeyId: z.string().optional().describe('API key ID (required for "update")'),
+      status: z
+        .enum(['active', 'inactive', 'archived'])
+        .optional()
+        .describe('Filter keys by status (for "list")'),
+      workspaceId: z.string().optional().describe('Filter keys by workspace ID (for "list")'),
+      name: z.string().optional().describe('New name for the API key (for "update")'),
+      keyStatus: z
+        .enum(['active', 'inactive'])
+        .optional()
+        .describe('New status for the API key (for "update")'),
+      limit: z.number().optional().describe('Max results for "list"'),
+      afterId: z.string().optional().describe('Pagination cursor for "list"')
+    })
+  )
+  .output(
+    z.object({
+      apiKeys: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('List of API keys'),
+      apiKey: z.record(z.string(), z.unknown()).optional().describe('Updated API key details'),
+      hasMore: z.boolean().optional().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AnthropicClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion,
+      apiVersion: ctx.config.apiVersion
     });
 
     switch (ctx.input.action) {
@@ -47,11 +57,11 @@ Requires an Admin API key (sk-ant-admin...).`,
           limit: ctx.input.limit,
           afterId: ctx.input.afterId,
           status: ctx.input.status,
-          workspaceId: ctx.input.workspaceId,
+          workspaceId: ctx.input.workspaceId
         });
         return {
           output: { apiKeys: result.apiKeys, hasMore: result.hasMore },
-          message: `Found **${result.apiKeys.length}** API key(s).${result.hasMore ? ' More available with pagination.' : ''}`,
+          message: `Found **${result.apiKeys.length}** API key(s).${result.hasMore ? ' More available with pagination.' : ''}`
         };
       }
       case 'update': {
@@ -65,8 +75,9 @@ Requires an Admin API key (sk-ant-admin...).`,
         let apiKey = await client.updateApiKey(ctx.input.apiKeyId, params);
         return {
           output: { apiKey },
-          message: `Updated API key **${ctx.input.apiKeyId}**.`,
+          message: `Updated API key **${ctx.input.apiKeyId}**.`
         };
       }
     }
-  }).build();
+  })
+  .build();

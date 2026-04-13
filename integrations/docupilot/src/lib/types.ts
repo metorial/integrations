@@ -2,7 +2,15 @@ export interface DocupilotTemplate {
   id: number;
   title: string;
   description?: string | null;
-  type: 'docx' | 'html' | 'fillable_pdf' | 'pptx' | 'xlsx' | 'g_document' | 'g_presentation' | 'g_spreadsheet';
+  type:
+    | 'docx'
+    | 'html'
+    | 'fillable_pdf'
+    | 'pptx'
+    | 'xlsx'
+    | 'g_document'
+    | 'g_presentation'
+    | 'g_spreadsheet';
   document_status?: 'active' | 'test';
   created_time: string;
   updated_time: string | null;

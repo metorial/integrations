@@ -19,12 +19,10 @@ let draftOrderSummarySchema = z.object({
   lineItemCount: z.number()
 });
 
-export let manageDraftOrders = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Draft Orders',
-    key: 'manage_draft_orders',
-    description: `Create, list, update, complete, or delete draft orders. Draft orders are useful for wholesale, custom pricing, B2B scenarios, and manual order creation.
+export let manageDraftOrders = SlateTool.create(spec, {
+  name: 'Manage Draft Orders',
+  key: 'manage_draft_orders',
+  description: `Create, list, update, complete, or delete draft orders. Draft orders are useful for wholesale, custom pricing, B2B scenarios, and manual order creation.
 Supports:
 - **list**: List draft orders with optional status filter
 - **get**: Get a single draft order by ID
@@ -33,48 +31,73 @@ Supports:
 - **complete**: Convert a draft order into a real order
 - **send_invoice**: Email the invoice to the customer
 - **delete**: Delete a draft order`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'complete', 'send_invoice', 'delete']).describe('Operation to perform'),
-    draftOrderId: z.string().optional().describe('Draft order ID (required for get/update/complete/send_invoice/delete)'),
-    status: z.enum(['open', 'invoice_sent', 'completed']).optional().describe('Filter by status (for list)'),
-    lineItems: z.array(z.object({
-      variantId: z.string().optional().describe('Product variant ID'),
-      title: z.string().optional().describe('Custom line item title (when not using a variant)'),
-      price: z.string().optional().describe('Custom line item price'),
-      quantity: z.number().describe('Quantity'),
-      taxable: z.boolean().optional().describe('Whether the item is taxable')
-    })).optional().describe('Line items (for create/update)'),
-    customerEmail: z.string().optional().describe('Customer email'),
-    customerId: z.string().optional().describe('Existing customer ID to associate'),
-    note: z.string().optional().describe('Internal note'),
-    tags: z.string().optional().describe('Comma-separated tags'),
-    shippingAddress: z.object({
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      address1: z.string().optional(),
-      address2: z.string().optional(),
-      city: z.string().optional(),
-      province: z.string().optional(),
-      country: z.string().optional(),
-      zip: z.string().optional(),
-      phone: z.string().optional()
-    }).optional().describe('Shipping address'),
-    paymentPending: z.boolean().optional().describe('Mark payment as pending when completing (defaults to false)'),
-    invoiceTo: z.string().optional().describe('Email to send invoice to (for send_invoice)'),
-    invoiceSubject: z.string().optional().describe('Custom subject for the invoice email'),
-    invoiceMessage: z.string().optional().describe('Custom message in the invoice email'),
-    limit: z.number().min(1).max(250).optional().describe('Number of results (for list)')
-  }))
-  .output(z.object({
-    draftOrders: z.array(draftOrderSummarySchema).optional(),
-    draftOrder: draftOrderSummarySchema.optional(),
-    deleted: z.boolean().optional(),
-    invoiceSent: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'complete', 'send_invoice', 'delete'])
+        .describe('Operation to perform'),
+      draftOrderId: z
+        .string()
+        .optional()
+        .describe('Draft order ID (required for get/update/complete/send_invoice/delete)'),
+      status: z
+        .enum(['open', 'invoice_sent', 'completed'])
+        .optional()
+        .describe('Filter by status (for list)'),
+      lineItems: z
+        .array(
+          z.object({
+            variantId: z.string().optional().describe('Product variant ID'),
+            title: z
+              .string()
+              .optional()
+              .describe('Custom line item title (when not using a variant)'),
+            price: z.string().optional().describe('Custom line item price'),
+            quantity: z.number().describe('Quantity'),
+            taxable: z.boolean().optional().describe('Whether the item is taxable')
+          })
+        )
+        .optional()
+        .describe('Line items (for create/update)'),
+      customerEmail: z.string().optional().describe('Customer email'),
+      customerId: z.string().optional().describe('Existing customer ID to associate'),
+      note: z.string().optional().describe('Internal note'),
+      tags: z.string().optional().describe('Comma-separated tags'),
+      shippingAddress: z
+        .object({
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          address1: z.string().optional(),
+          address2: z.string().optional(),
+          city: z.string().optional(),
+          province: z.string().optional(),
+          country: z.string().optional(),
+          zip: z.string().optional(),
+          phone: z.string().optional()
+        })
+        .optional()
+        .describe('Shipping address'),
+      paymentPending: z
+        .boolean()
+        .optional()
+        .describe('Mark payment as pending when completing (defaults to false)'),
+      invoiceTo: z.string().optional().describe('Email to send invoice to (for send_invoice)'),
+      invoiceSubject: z.string().optional().describe('Custom subject for the invoice email'),
+      invoiceMessage: z.string().optional().describe('Custom message in the invoice email'),
+      limit: z.number().min(1).max(250).optional().describe('Number of results (for list)')
+    })
+  )
+  .output(
+    z.object({
+      draftOrders: z.array(draftOrderSummarySchema).optional(),
+      draftOrder: draftOrderSummarySchema.optional(),
+      deleted: z.boolean().optional(),
+      invoiceSent: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -98,7 +121,10 @@ Supports:
     });
 
     if (ctx.input.action === 'list') {
-      let draftOrders = await client.listDraftOrders({ limit: ctx.input.limit, status: ctx.input.status });
+      let draftOrders = await client.listDraftOrders({
+        limit: ctx.input.limit,
+        status: ctx.input.status
+      });
       return {
         output: { draftOrders: draftOrders.map(mapDraftOrder) },
         message: `Found **${draftOrders.length}** draft order(s).`
@@ -177,7 +203,10 @@ Supports:
 
     if (ctx.input.action === 'complete') {
       if (!ctx.input.draftOrderId) throw new Error('draftOrderId is required');
-      let d = await client.completeDraftOrder(ctx.input.draftOrderId, ctx.input.paymentPending);
+      let d = await client.completeDraftOrder(
+        ctx.input.draftOrderId,
+        ctx.input.paymentPending
+      );
       return {
         output: { draftOrder: mapDraftOrder(d) },
         message: `Completed draft order **${d.name}** — converted to order.`
@@ -208,4 +237,5 @@ Supports:
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

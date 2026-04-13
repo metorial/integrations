@@ -8,7 +8,7 @@ import {
   generateEmbeddings,
   moderateContent,
   generateVideo,
-  listModels,
+  listModels
 } from './tools';
 import { responseEvent } from './triggers';
 
@@ -22,9 +22,7 @@ export let provider = Slate.create({
     generateEmbeddings,
     moderateContent,
     generateVideo,
-    listModels,
+    listModels
   ],
-  triggers: [
-    responseEvent,
-  ],
+  triggers: [responseEvent]
 });

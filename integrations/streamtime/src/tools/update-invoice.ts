@@ -3,30 +3,31 @@ import { StreamtimeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Update Invoice',
-    key: 'update_invoice',
-    description: `Update an existing invoice's details. You can modify descriptions, labels, discount, payment terms, and other metadata.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateInvoice = SlateTool.create(spec, {
+  name: 'Update Invoice',
+  key: 'update_invoice',
+  description: `Update an existing invoice's details. You can modify descriptions, labels, discount, payment terms, and other metadata.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('ID of the invoice to update'),
-    description: z.string().optional().describe('Updated description'),
-    discount: z.number().optional().describe('Discount amount or percentage'),
-    poNumber: z.string().optional().describe('Purchase order number'),
-    paymentTerms: z.string().optional().describe('Payment terms text'),
-  }))
-  .output(z.object({
-    invoiceId: z.number().describe('ID of the updated invoice'),
-    raw: z.record(z.string(), z.any()).describe('Full updated invoice object'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('ID of the invoice to update'),
+      description: z.string().optional().describe('Updated description'),
+      discount: z.number().optional().describe('Discount amount or percentage'),
+      poNumber: z.string().optional().describe('Purchase order number'),
+      paymentTerms: z.string().optional().describe('Payment terms text')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.number().describe('ID of the updated invoice'),
+      raw: z.record(z.string(), z.any()).describe('Full updated invoice object')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StreamtimeClient({ token: ctx.auth.token });
 
     let body: Record<string, any> = {};
@@ -40,9 +41,9 @@ export let updateInvoice = SlateTool.create(
     return {
       output: {
         invoiceId: result.id,
-        raw: result,
+        raw: result
       },
-      message: `Updated invoice (ID: ${result.id}).`,
+      message: `Updated invoice (ID: ${result.id}).`
     };
   })
   .build();

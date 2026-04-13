@@ -20,15 +20,15 @@ export class PostHogClient {
       baseURL: getPrivateBaseUrl(config.region, config.instanceUrl),
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     this.publicHttp = createAxios({
       baseURL: getPublicBaseUrl(config.region, config.instanceUrl),
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -51,7 +51,7 @@ export class PostHogClient {
       api_key: params.apiKey,
       distinct_id: params.distinctId,
       event: params.event,
-      properties: params.properties || {},
+      properties: params.properties || {}
     };
     if (params.timestamp) body.timestamp = params.timestamp;
     if (params.set) body['$set'] = params.set;
@@ -74,12 +74,12 @@ export class PostHogClient {
       distinct_id: e.distinctId,
       event: e.event,
       properties: e.properties || {},
-      ...(e.timestamp ? { timestamp: e.timestamp } : {}),
+      ...(e.timestamp ? { timestamp: e.timestamp } : {})
     }));
 
     let response = await this.publicHttp.post('/batch', {
       api_key: params.apiKey,
-      batch,
+      batch
     });
     return response.data;
   }
@@ -98,7 +98,9 @@ export class PostHogClient {
     if (params?.offset) queryParams.offset = String(params.offset);
     if (params?.properties) queryParams.properties = JSON.stringify(params.properties);
 
-    let response = await this.privateHttp.get(this.envPath('/persons/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/persons/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -119,7 +121,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/feature_flags/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/feature_flags/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -134,7 +138,10 @@ export class PostHogClient {
   }
 
   async updateFeatureFlag(flagId: string, data: Record<string, any>) {
-    let response = await this.privateHttp.patch(this.envPath(`/feature_flags/${flagId}/`), data);
+    let response = await this.privateHttp.patch(
+      this.envPath(`/feature_flags/${flagId}/`),
+      data
+    );
     return response.data;
   }
 
@@ -150,7 +157,7 @@ export class PostHogClient {
   }) {
     let body: Record<string, any> = {
       api_key: params.apiKey,
-      distinct_id: params.distinctId,
+      distinct_id: params.distinctId
     };
     if (params.personProperties) body.person_properties = params.personProperties;
     if (params.groupProperties) body.group_properties = params.groupProperties;
@@ -166,7 +173,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/experiments/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/experiments/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -181,7 +190,10 @@ export class PostHogClient {
   }
 
   async updateExperiment(experimentId: string, data: Record<string, any>) {
-    let response = await this.privateHttp.patch(this.envPath(`/experiments/${experimentId}/`), data);
+    let response = await this.privateHttp.patch(
+      this.envPath(`/experiments/${experimentId}/`),
+      data
+    );
     return response.data;
   }
 
@@ -192,7 +204,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/surveys/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/surveys/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -217,14 +231,21 @@ export class PostHogClient {
 
   // ── Insights ─────────────────────────────────────────────────────────
 
-  async listInsights(params?: { limit?: number; offset?: number; search?: string; savedOnly?: boolean }) {
+  async listInsights(params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    savedOnly?: boolean;
+  }) {
     let queryParams: Record<string, string> = {};
     if (params?.search) queryParams.search = params.search;
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
     if (params?.savedOnly) queryParams.saved = 'true';
 
-    let response = await this.privateHttp.get(this.envPath('/insights/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/insights/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -241,7 +262,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/dashboards/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/dashboards/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -256,7 +279,10 @@ export class PostHogClient {
   }
 
   async updateDashboard(dashboardId: string, data: Record<string, any>) {
-    let response = await this.privateHttp.patch(this.envPath(`/dashboards/${dashboardId}/`), data);
+    let response = await this.privateHttp.patch(
+      this.envPath(`/dashboards/${dashboardId}/`),
+      data
+    );
     return response.data;
   }
 
@@ -271,7 +297,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/cohorts/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/cohorts/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -298,7 +326,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/annotations/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/annotations/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -308,7 +338,10 @@ export class PostHogClient {
   }
 
   async updateAnnotation(annotationId: string, data: Record<string, any>) {
-    let response = await this.privateHttp.patch(this.envPath(`/annotations/${annotationId}/`), data);
+    let response = await this.privateHttp.patch(
+      this.envPath(`/annotations/${annotationId}/`),
+      data
+    );
     return response.data;
   }
 
@@ -323,7 +356,9 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/actions/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/actions/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -348,12 +383,16 @@ export class PostHogClient {
     if (params?.dateFrom) queryParams.date_from = params.dateFrom;
     if (params?.dateTo) queryParams.date_to = params.dateTo;
 
-    let response = await this.privateHttp.get(this.envPath('/session_recordings/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/session_recordings/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
   async getSessionRecording(recordingId: string) {
-    let response = await this.privateHttp.get(this.envPath(`/session_recordings/${recordingId}/`));
+    let response = await this.privateHttp.get(
+      this.envPath(`/session_recordings/${recordingId}/`)
+    );
     return response.data;
   }
 
@@ -372,20 +411,29 @@ export class PostHogClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let response = await this.privateHttp.get(this.envPath('/event_definitions/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/event_definitions/'), {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Property Definitions ─────────────────────────────────────────────
 
-  async listPropertyDefinitions(params?: { limit?: number; offset?: number; search?: string; type?: string }) {
+  async listPropertyDefinitions(params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    type?: string;
+  }) {
     let queryParams: Record<string, string> = {};
     if (params?.search) queryParams.search = params.search;
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
     if (params?.type) queryParams.type = params.type;
 
-    let response = await this.privateHttp.get(this.envPath('/property_definitions/'), { params: queryParams });
+    let response = await this.privateHttp.get(this.envPath('/property_definitions/'), {
+      params: queryParams
+    });
     return response.data;
   }
 

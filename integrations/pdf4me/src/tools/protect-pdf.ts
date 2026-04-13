@@ -3,76 +3,90 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let protectPdf = SlateTool.create(
-  spec,
-  {
-    name: 'Protect PDF',
-    key: 'protect_pdf',
-    description: `Set password protection on a PDF document with customizable permissions. Control what users can do with the document (print, copy, annotate, etc.).`,
-    tags: {
-      readOnly: false,
-    },
+export let protectPdf = SlateTool.create(spec, {
+  name: 'Protect PDF',
+  key: 'protect_pdf',
+  description: `Set password protection on a PDF document with customizable permissions. Control what users can do with the document (print, copy, annotate, etc.).`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    fileContent: z.string().describe('Base64-encoded PDF file content'),
-    fileName: z.string().describe('PDF file name with extension'),
-    password: z.string().describe('Password to protect the document with'),
-    permission: z.enum(['All', 'None', 'Copy', 'Annotate', 'FillForms', 'SupportDisabilities', 'Assemble', 'DigitalPrint'])
-      .default('All')
-      .describe('Permission level for the protected document'),
-  }))
-  .output(z.object({
-    fileContent: z.string().describe('Base64-encoded protected PDF content'),
-    fileName: z.string().describe('Output file name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileContent: z.string().describe('Base64-encoded PDF file content'),
+      fileName: z.string().describe('PDF file name with extension'),
+      password: z.string().describe('Password to protect the document with'),
+      permission: z
+        .enum([
+          'All',
+          'None',
+          'Copy',
+          'Annotate',
+          'FillForms',
+          'SupportDisabilities',
+          'Assemble',
+          'DigitalPrint'
+        ])
+        .default('All')
+        .describe('Permission level for the protected document')
+    })
+  )
+  .output(
+    z.object({
+      fileContent: z.string().describe('Base64-encoded protected PDF content'),
+      fileName: z.string().describe('Output file name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.protect({
       docContent: ctx.input.fileContent,
       docName: ctx.input.fileName,
       password: ctx.input.password,
-      pdfPermission: ctx.input.permission,
+      pdfPermission: ctx.input.permission
     });
 
     return {
       output: result,
-      message: `Successfully protected PDF with **${ctx.input.permission}** permissions: **${result.fileName}**`,
+      message: `Successfully protected PDF with **${ctx.input.permission}** permissions: **${result.fileName}**`
     };
-  }).build();
+  })
+  .build();
 
-export let unlockPdf = SlateTool.create(
-  spec,
-  {
-    name: 'Unlock PDF',
-    key: 'unlock_pdf',
-    description: `Remove password protection from a PDF document. Requires the current password to unlock.`,
-    tags: {
-      readOnly: false,
-    },
+export let unlockPdf = SlateTool.create(spec, {
+  name: 'Unlock PDF',
+  key: 'unlock_pdf',
+  description: `Remove password protection from a PDF document. Requires the current password to unlock.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    fileContent: z.string().describe('Base64-encoded protected PDF file content'),
-    fileName: z.string().describe('PDF file name with extension'),
-    password: z.string().describe('Current password of the protected PDF'),
-  }))
-  .output(z.object({
-    fileContent: z.string().describe('Base64-encoded unlocked PDF content'),
-    fileName: z.string().describe('Output file name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      fileContent: z.string().describe('Base64-encoded protected PDF file content'),
+      fileName: z.string().describe('PDF file name with extension'),
+      password: z.string().describe('Current password of the protected PDF')
+    })
+  )
+  .output(
+    z.object({
+      fileContent: z.string().describe('Base64-encoded unlocked PDF content'),
+      fileName: z.string().describe('Output file name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.unlock({
       docContent: ctx.input.fileContent,
       docName: ctx.input.fileName,
-      password: ctx.input.password,
+      password: ctx.input.password
     });
 
     return {
       output: result,
-      message: `Successfully removed password protection from **${result.fileName}**`,
+      message: `Successfully removed password protection from **${result.fileName}**`
     };
-  }).build();
+  })
+  .build();

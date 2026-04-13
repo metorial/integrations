@@ -3,63 +3,81 @@ import { ImportClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let upsertContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create or Update Contact',
-    key: 'upsert_contact',
-    description: `Creates a new contact or updates an existing one in a SegMetrics integration. Contacts are matched by **contact_id** (priority) or **email**.
+export let upsertContact = SlateTool.create(spec, {
+  name: 'Create or Update Contact',
+  key: 'upsert_contact',
+  description: `Creates a new contact or updates an existing one in a SegMetrics integration. Contacts are matched by **contact_id** (priority) or **email**.
 Supports setting name, status, UTM parameters, geographic data, custom fields, and tags.
 When updating custom fields, values are appended to existing data — set a value to \`null\` to remove it.
 When tags are provided here, they **replace** existing tags. Use the dedicated tag tools to add/remove tags incrementally.`,
-    instructions: [
-      'Provide either contactId or email (or both) to identify the contact.',
-      'All amounts and dates should be strings in the format "YYYY-MM-DD HH:MM:SS".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Provide either contactId or email (or both) to identify the contact.',
+    'All amounts and dates should be strings in the format "YYYY-MM-DD HH:MM:SS".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().optional().describe('Unique identifier for the contact in your system.'),
-    email: z.string().optional().describe('Email address of the contact.'),
-    firstName: z.string().optional().describe('First name of the contact.'),
-    lastName: z.string().optional().describe('Last name of the contact.'),
-    status: z.string().optional().describe('Contact status, e.g. "active".'),
-    dateCreated: z.string().optional().describe('Date the contact was created (YYYY-MM-DD HH:MM:SS).'),
-    lastUpdated: z.string().optional().describe('Date the contact was last updated (YYYY-MM-DD HH:MM:SS).'),
-    utmSource: z.string().optional().describe('UTM source parameter.'),
-    utmMedium: z.string().optional().describe('UTM medium parameter.'),
-    utmCampaign: z.string().optional().describe('UTM campaign parameter.'),
-    utmContent: z.string().optional().describe('UTM content parameter.'),
-    utmTerm: z.string().optional().describe('UTM term parameter.'),
-    referringUrl: z.string().optional().describe('The referring URL.'),
-    optinUrl: z.string().optional().describe('The opt-in URL.'),
-    ipAddress: z.string().optional().describe('IP address of the contact.'),
-    affiliateId: z.string().optional().describe('Affiliate identifier.'),
-    geoLat: z.number().optional().describe('Geographic latitude.'),
-    geoLon: z.number().optional().describe('Geographic longitude.'),
-    tags: z.array(z.union([
-      z.string(),
-      z.object({
-        id: z.string().optional(),
-        name: z.string().optional(),
-        date: z.string().optional(),
-      }),
-    ])).optional().describe('Tags to set on the contact. Replaces existing tags.'),
-    customFields: z.record(z.string(), z.unknown()).optional().describe('Custom fields as key-value pairs. Set a value to null to remove it.'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful.'),
-    response: z.unknown().optional().describe('Raw API response.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z
+        .string()
+        .optional()
+        .describe('Unique identifier for the contact in your system.'),
+      email: z.string().optional().describe('Email address of the contact.'),
+      firstName: z.string().optional().describe('First name of the contact.'),
+      lastName: z.string().optional().describe('Last name of the contact.'),
+      status: z.string().optional().describe('Contact status, e.g. "active".'),
+      dateCreated: z
+        .string()
+        .optional()
+        .describe('Date the contact was created (YYYY-MM-DD HH:MM:SS).'),
+      lastUpdated: z
+        .string()
+        .optional()
+        .describe('Date the contact was last updated (YYYY-MM-DD HH:MM:SS).'),
+      utmSource: z.string().optional().describe('UTM source parameter.'),
+      utmMedium: z.string().optional().describe('UTM medium parameter.'),
+      utmCampaign: z.string().optional().describe('UTM campaign parameter.'),
+      utmContent: z.string().optional().describe('UTM content parameter.'),
+      utmTerm: z.string().optional().describe('UTM term parameter.'),
+      referringUrl: z.string().optional().describe('The referring URL.'),
+      optinUrl: z.string().optional().describe('The opt-in URL.'),
+      ipAddress: z.string().optional().describe('IP address of the contact.'),
+      affiliateId: z.string().optional().describe('Affiliate identifier.'),
+      geoLat: z.number().optional().describe('Geographic latitude.'),
+      geoLon: z.number().optional().describe('Geographic longitude.'),
+      tags: z
+        .array(
+          z.union([
+            z.string(),
+            z.object({
+              id: z.string().optional(),
+              name: z.string().optional(),
+              date: z.string().optional()
+            })
+          ])
+        )
+        .optional()
+        .describe('Tags to set on the contact. Replaces existing tags.'),
+      customFields: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Custom fields as key-value pairs. Set a value to null to remove it.')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful.'),
+      response: z.unknown().optional().describe('Raw API response.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ImportClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      integrationId: ctx.config.integrationId!,
+      integrationId: ctx.config.integrationId!
     });
 
     let body: Record<string, unknown> = {};
@@ -91,8 +109,9 @@ When tags are provided here, they **replace** existing tags. Use the dedicated t
     return {
       output: {
         success: true,
-        response,
+        response
       },
-      message: `Contact **${identifier}** has been created or updated successfully.`,
+      message: `Contact **${identifier}** has been created or updated successfully.`
     };
-  }).build();
+  })
+  .build();

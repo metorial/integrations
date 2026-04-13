@@ -13,6 +13,7 @@ FreeAgent is online accounting software primarily aimed at UK-based freelancers 
 FreeAgent uses OAuth 2.0 as its sole authentication method. There are no API keys or other alternatives.
 
 **Setup:**
+
 1. Register a new app at the FreeAgent Developer Dashboard (dev.freeagent.com) to obtain an OAuth Client ID and Secret.
 2. Configure one or more redirect URIs in the Developer Dashboard.
 
@@ -36,48 +37,63 @@ FreeAgent uses OAuth 2.0 as its sole authentication method. There are no API key
 ## Features
 
 ### Invoicing & Billing
+
 Create, manage, and track invoices and credit notes. Supports recurring invoices for automated billing. Invoices can be filtered by status (e.g., open, overdue, paid). Estimates can also be created and managed. Price list items can be maintained for use across invoices.
 
 ### Expense Management
+
 Record and categorize business expenses. Supports file attachments (e.g., receipts) on expenses.
 
 ### Banking
+
 Manage bank accounts, import bank transactions, and create bank transaction explanations (reconciliations). Supports bank feeds for automatic transaction imports. Credit note reconciliations can be tracked.
 
 ### Contacts
+
 Manage contacts (customers, suppliers, etc.) with full CRUD operations. Contacts can include company and individual details, addresses, and invoice preferences.
 
 ### Projects & Time Tracking
+
 Create and manage projects linked to contacts. Track time using timeslips, and define tasks that can be associated with projects. Timeslips can be billed to invoices.
 
 ### Financial Reporting
+
 Access key financial reports including Profit & Loss, Balance Sheet, Trial Balance, and Cashflow statements. These can be retrieved for specific date ranges.
 
 ### Tax & Compliance
+
 Access and manage UK-specific tax data including VAT Returns, Sales Tax Periods, Self Assessment Returns, Corporation Tax Returns, Income Tax Returns, and CIS Bands. Final accounts reports are also available.
 
 ### Payroll
+
 Manage payroll runs and payroll profiles for employees.
 
 ### Capital Assets
+
 Track capital assets and their types, including depreciation profiles for asset depreciation calculations.
 
 ### Company Management
+
 Access and update company-level settings and information. Manage users and their permission levels within the account.
 
 ### Categories & Accounting
+
 Access the chart of accounts (categories) used for classifying transactions. Create journal sets for manual accounting entries.
 
 ### Stock Items
+
 Manage stock/inventory items that can be used on invoices and bills.
 
 ### Properties
+
 Manage property records, relevant for landlord accounting scenarios.
 
 ### Hire Purchases
+
 Track hire purchase agreements as a financing mechanism for assets.
 
 ### Notes
+
 Attach notes to various resources for record-keeping.
 
 ## Events

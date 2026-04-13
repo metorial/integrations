@@ -22,7 +22,7 @@ export let deleteSubmissionTool = SlateTool.create(spec, {
       deleted: z.boolean().describe('Whether deletion was successful')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

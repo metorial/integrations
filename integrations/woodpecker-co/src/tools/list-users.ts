@@ -3,31 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Retrieve all users associated with the Woodpecker account, including their roles and email addresses.`,
-    tags: {
-      readOnly: true,
-    },
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Retrieve all users associated with the Woodpecker account, including their roles and email addresses.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    users: z.array(z.object({
-      userId: z.number().optional().describe('User ID'),
-      email: z.string().optional().describe('User email address'),
-      firstName: z.string().optional().describe('First name'),
-      lastName: z.string().optional().describe('Last name'),
-      role: z.string().optional().describe('User role'),
-    })).describe('List of users'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      users: z
+        .array(
+          z.object({
+            userId: z.number().optional().describe('User ID'),
+            email: z.string().optional().describe('User email address'),
+            firstName: z.string().optional().describe('First name'),
+            lastName: z.string().optional().describe('Last name'),
+            role: z.string().optional().describe('User role')
+          })
+        )
+        .describe('List of users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      companyId: ctx.config.companyId,
+      companyId: ctx.config.companyId
     });
 
     let data: any = await client.listUsers();
@@ -38,12 +41,12 @@ export let listUsers = SlateTool.create(
       email: u.email,
       firstName: u.first_name,
       lastName: u.last_name,
-      role: u.role,
+      role: u.role
     }));
 
     return {
       output: { users: mapped },
-      message: `Found **${mapped.length}** user(s).`,
+      message: `Found **${mapped.length}** user(s).`
     };
   })
   .build();

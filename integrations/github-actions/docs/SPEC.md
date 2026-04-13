@@ -18,6 +18,7 @@ GitHub recommends using a fine-grained personal access token instead of a person
 - **Classic PAT**: OAuth tokens and personal access tokens (classic) need the `repo` scope for most Actions endpoints. Organization-level secrets require the `admin:org` scope.
 
 Tokens are passed via the `Authorization` header:
+
 ```
 Authorization: Bearer <YOUR-TOKEN>
 ```

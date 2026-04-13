@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.fraudlabspro.com/v2',
+  baseURL: 'https://api.fraudlabspro.com/v2'
 });
 
 export interface ScreenOrderParams {
@@ -65,9 +65,7 @@ export interface VerifyOtpParams {
 }
 
 export class Client {
-  constructor(
-    private token: string
-  ) {}
+  constructor(private token: string) {}
 
   async screenOrder(params: ScreenOrderParams) {
     let body = new URLSearchParams();
@@ -110,7 +108,7 @@ export class Client {
     if (params.flpChecksum) body.append('flp_checksum', params.flpChecksum);
 
     let response = await http.post('/order/screen', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -124,7 +122,7 @@ export class Client {
     if (params.note) body.append('note', params.note);
 
     let response = await http.post('/order/feedback', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -133,7 +131,7 @@ export class Client {
     let queryParams: Record<string, string> = {
       key: this.token,
       format: 'json',
-      id: params.transactionId,
+      id: params.transactionId
     };
     if (params.idType) {
       queryParams['id_type'] = params.idType;
@@ -153,7 +151,7 @@ export class Client {
     if (params.otpTimeout !== undefined) body.append('otp_timeout', String(params.otpTimeout));
 
     let response = await http.post('/verification/send', body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
   }
@@ -163,7 +161,7 @@ export class Client {
       key: this.token,
       format: 'json',
       tran_id: params.transactionId,
-      otp: params.otp,
+      otp: params.otp
     };
 
     let response = await http.get('/verification/result', { params: queryParams });

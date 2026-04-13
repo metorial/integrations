@@ -31,7 +31,7 @@ export let getUserTool = SlateTool.create(spec, {
         .describe('Account usage statistics')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain
@@ -51,8 +51,12 @@ export let getUserTool = SlateTool.create(spec, {
         usage: usage
           ? {
               submissions: usage.submissions ? Number(usage.submissions) : undefined,
-              sslSubmissions: usage.ssl_submissions ? Number(usage.ssl_submissions) : undefined,
-              paymentSubmissions: usage.payment_submissions ? Number(usage.payment_submissions) : undefined,
+              sslSubmissions: usage.ssl_submissions
+                ? Number(usage.ssl_submissions)
+                : undefined,
+              paymentSubmissions: usage.payment_submissions
+                ? Number(usage.payment_submissions)
+                : undefined,
               uploads: usage.uploads ? Number(usage.uploads) : undefined
             }
           : undefined

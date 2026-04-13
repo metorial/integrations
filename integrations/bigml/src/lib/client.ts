@@ -84,7 +84,10 @@ export class Client {
     });
   }
 
-  async createResource(resourceType: string, body: Record<string, any>): Promise<BigMLResource> {
+  async createResource(
+    resourceType: string,
+    body: Record<string, any>
+  ): Promise<BigMLResource> {
     let ax = this.createAxiosInstance();
     let response = await ax.post(`${this.pathPrefix}/${resourceType}`, body, {
       params: this.getAuthParams(),
@@ -111,15 +114,18 @@ export class Client {
     return response.data;
   }
 
-  async listResources(resourceType: string, options?: {
-    limit?: number;
-    offset?: number;
-    orderBy?: string;
-    filters?: Record<string, string>;
-    tags?: string;
-    name?: string;
-    project?: string;
-  }): Promise<BigMLListResponse> {
+  async listResources(
+    resourceType: string,
+    options?: {
+      limit?: number;
+      offset?: number;
+      orderBy?: string;
+      filters?: Record<string, string>;
+      tags?: string;
+      name?: string;
+      project?: string;
+    }
+  ): Promise<BigMLListResponse> {
     let ax = this.createAxiosInstance();
     let params: Record<string, string> = { ...this.getAuthParams() };
 

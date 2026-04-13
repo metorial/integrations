@@ -3,44 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deploymentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Deployment Events',
-    key: 'deployment_events',
-    description: 'Triggers when a deployment is completed or fails in a DeployHQ project. Polls for new deployments and detects status changes.',
-  },
-)
-  .input(z.object({
-    projectPermalink: z.string().describe('Project permalink'),
-    deploymentIdentifier: z.string().describe('Deployment identifier'),
-    status: z.string().describe('Deployment status'),
-    deployer: z.string().optional().describe('Who triggered the deployment'),
-    branch: z.string().optional().describe('Deployed branch'),
-    endRevisionRef: z.string().optional().describe('End revision SHA'),
-    endRevisionMessage: z.string().optional().describe('End revision commit message'),
-    completedAt: z.string().nullable().optional().describe('Completion timestamp'),
-  }))
-  .output(z.object({
-    projectPermalink: z.string().describe('Project permalink'),
-    deploymentIdentifier: z.string().describe('Deployment identifier'),
-    status: z.string().describe('Deployment status (completed, failed, etc.)'),
-    deployer: z.string().optional().describe('Who triggered the deployment'),
-    branch: z.string().optional().describe('Deployed branch'),
-    endRevisionRef: z.string().optional().describe('End revision SHA'),
-    endRevisionMessage: z.string().optional().describe('End revision commit message'),
-    completedAt: z.string().nullable().optional().describe('Completion timestamp'),
-  }))
+export let deploymentEvents = SlateTrigger.create(spec, {
+  name: 'Deployment Events',
+  key: 'deployment_events',
+  description:
+    'Triggers when a deployment is completed or fails in a DeployHQ project. Polls for new deployments and detects status changes.'
+})
+  .input(
+    z.object({
+      projectPermalink: z.string().describe('Project permalink'),
+      deploymentIdentifier: z.string().describe('Deployment identifier'),
+      status: z.string().describe('Deployment status'),
+      deployer: z.string().optional().describe('Who triggered the deployment'),
+      branch: z.string().optional().describe('Deployed branch'),
+      endRevisionRef: z.string().optional().describe('End revision SHA'),
+      endRevisionMessage: z.string().optional().describe('End revision commit message'),
+      completedAt: z.string().nullable().optional().describe('Completion timestamp')
+    })
+  )
+  .output(
+    z.object({
+      projectPermalink: z.string().describe('Project permalink'),
+      deploymentIdentifier: z.string().describe('Deployment identifier'),
+      status: z.string().describe('Deployment status (completed, failed, etc.)'),
+      deployer: z.string().optional().describe('Who triggered the deployment'),
+      branch: z.string().optional().describe('Deployed branch'),
+      endRevisionRef: z.string().optional().describe('End revision SHA'),
+      endRevisionMessage: z.string().optional().describe('End revision commit message'),
+      completedAt: z.string().nullable().optional().describe('Completion timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         email: ctx.auth.email,
-        accountName: ctx.config.accountName,
+        accountName: ctx.config.accountName
       });
 
       let lastSeenIds: string[] = (ctx.state as any)?.lastSeenIds || [];
@@ -85,7 +87,7 @@ export let deploymentEvents = SlateTrigger.create(
                 branch: d.branch,
                 endRevisionRef: d.end_revision?.ref,
                 endRevisionMessage: d.end_revision?.message,
-                completedAt: d.completed_at ?? null,
+                completedAt: d.completed_at ?? null
               });
             }
           }
@@ -98,12 +100,12 @@ export let deploymentEvents = SlateTrigger.create(
         inputs,
         updatedState: {
           lastSeenIds: newSeenIds,
-          projectPermalinks,
-        },
+          projectPermalinks
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `deployment.${ctx.input.status}`,
         id: ctx.input.deploymentIdentifier,
@@ -115,8 +117,9 @@ export let deploymentEvents = SlateTrigger.create(
           branch: ctx.input.branch,
           endRevisionRef: ctx.input.endRevisionRef,
           endRevisionMessage: ctx.input.endRevisionMessage,
-          completedAt: ctx.input.completedAt,
-        },
+          completedAt: ctx.input.completedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

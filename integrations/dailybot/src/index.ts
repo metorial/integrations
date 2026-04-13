@@ -20,13 +20,13 @@ import {
   sendMessage,
   sendEmail,
   giveKudos,
-  getOrganization,
+  getOrganization
 } from './tools';
 import {
   checkinResponseTrigger,
   formResponseTrigger,
   kudosPostedTrigger,
-  organizationEventTrigger,
+  organizationEventTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -51,12 +51,12 @@ export let provider = Slate.create({
     sendMessage,
     sendEmail,
     giveKudos,
-    getOrganization,
+    getOrganization
   ],
   triggers: [
     checkinResponseTrigger,
     formResponseTrigger,
     kudosPostedTrigger,
-    organizationEventTrigger,
-  ],
+    organizationEventTrigger
+  ]
 });

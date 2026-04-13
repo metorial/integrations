@@ -28,8 +28,8 @@ export class Client {
       baseURL: `https://${config.subdomain}.uservoice.com/api/v2/admin`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -39,7 +39,7 @@ export class Client {
       perPage: raw?.per_page || 20,
       totalPages: raw?.total_pages || 0,
       totalRecords: raw?.total_records || 0,
-      cursor: raw?.cursor,
+      cursor: raw?.cursor
     };
   }
 
@@ -59,7 +59,18 @@ export class Client {
     if (params.updatedBefore) result['updated_before'] = params.updatedBefore;
 
     for (let [key, value] of Object.entries(params)) {
-      if (['page', 'perPage', 'sort', 'cursor', 'includes', 'updatedAfter', 'updatedBefore'].includes(key)) continue;
+      if (
+        [
+          'page',
+          'perPage',
+          'sort',
+          'cursor',
+          'includes',
+          'updatedAfter',
+          'updatedBefore'
+        ].includes(key)
+      )
+        continue;
       if (value !== undefined && value !== null) {
         result[key] = String(value);
       }
@@ -69,9 +80,14 @@ export class Client {
   }
 
   // Suggestions
-  async listSuggestions(params?: ListParams): Promise<{ suggestions: any[]; pagination: PaginationResult }> {
+  async listSuggestions(
+    params?: ListParams
+  ): Promise<{ suggestions: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/suggestions', { params: this.buildParams(params) });
-    return { suggestions: response.data.suggestions || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      suggestions: response.data.suggestions || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async getSuggestion(suggestionId: number, includes?: string[]): Promise<any> {
@@ -90,7 +106,7 @@ export class Client {
   }): Promise<any> {
     let payload: Record<string, any> = {
       title: data.title,
-      links: { forum: data.forumId },
+      links: { forum: data.forumId }
     };
     if (data.body) payload['body'] = data.body;
     if (data.categoryId) payload['links']['category'] = data.categoryId;
@@ -100,13 +116,16 @@ export class Client {
     return response.data.suggestions?.[0];
   }
 
-  async updateSuggestion(suggestionId: number, data: {
-    title?: string;
-    body?: string;
-    categoryId?: number | null;
-    labelIds?: number[];
-    statusId?: number;
-  }): Promise<any> {
+  async updateSuggestion(
+    suggestionId: number,
+    data: {
+      title?: string;
+      body?: string;
+      categoryId?: number | null;
+      labelIds?: number[];
+      statusId?: number;
+    }
+  ): Promise<any> {
     let payload: Record<string, any> = {};
     if (data.title !== undefined) payload['title'] = data.title;
     if (data.body !== undefined) payload['body'] = data.body;
@@ -126,33 +145,49 @@ export class Client {
   }
 
   // Status Updates
-  async createStatusUpdate(suggestionId: number, data: {
-    statusId: number;
-    body?: string;
-    notifySupporters?: boolean;
-  }): Promise<any> {
+  async createStatusUpdate(
+    suggestionId: number,
+    data: {
+      statusId: number;
+      body?: string;
+      notifySupporters?: boolean;
+    }
+  ): Promise<any> {
     let payload: Record<string, any> = {
       links: {
         suggestion: suggestionId,
-        new_status: data.statusId,
-      },
+        new_status: data.statusId
+      }
     };
     if (data.body) payload['body'] = data.body;
-    if (data.notifySupporters !== undefined) payload['notify_subscribers'] = data.notifySupporters;
+    if (data.notifySupporters !== undefined)
+      payload['notify_subscribers'] = data.notifySupporters;
 
     let response = await this.http.post('/status_updates', payload);
     return response.data.status_updates?.[0];
   }
 
-  async listStatusUpdates(params?: ListParams): Promise<{ statusUpdates: any[]; pagination: PaginationResult }> {
-    let response = await this.http.get('/status_updates', { params: this.buildParams(params) });
-    return { statusUpdates: response.data.status_updates || [], pagination: this.mapPagination(response.data.pagination) };
+  async listStatusUpdates(
+    params?: ListParams
+  ): Promise<{ statusUpdates: any[]; pagination: PaginationResult }> {
+    let response = await this.http.get('/status_updates', {
+      params: this.buildParams(params)
+    });
+    return {
+      statusUpdates: response.data.status_updates || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   // Forums
-  async listForums(params?: ListParams): Promise<{ forums: any[]; pagination: PaginationResult }> {
+  async listForums(
+    params?: ListParams
+  ): Promise<{ forums: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/forums', { params: this.buildParams(params) });
-    return { forums: response.data.forums || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      forums: response.data.forums || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async getForum(forumId: number): Promise<any> {
@@ -175,12 +210,15 @@ export class Client {
     return response.data.forums?.[0];
   }
 
-  async updateForum(forumId: number, data: {
-    name?: string;
-    welcomeMessage?: string;
-    prompt?: string;
-    isPublic?: boolean;
-  }): Promise<any> {
+  async updateForum(
+    forumId: number,
+    data: {
+      name?: string;
+      welcomeMessage?: string;
+      prompt?: string;
+      isPublic?: boolean;
+    }
+  ): Promise<any> {
     let payload: Record<string, any> = {};
     if (data.name !== undefined) payload['name'] = data.name;
     if (data.welcomeMessage !== undefined) payload['welcome_message'] = data.welcomeMessage;
@@ -192,9 +230,14 @@ export class Client {
   }
 
   // Users
-  async listUsers(params?: ListParams): Promise<{ users: any[]; pagination: PaginationResult }> {
+  async listUsers(
+    params?: ListParams
+  ): Promise<{ users: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/users', { params: this.buildParams(params) });
-    return { users: response.data.users || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      users: response.data.users || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async getUser(userId: number): Promise<any> {
@@ -203,14 +246,19 @@ export class Client {
   }
 
   // Supporters
-  async listSupporters(params?: ListParams): Promise<{ supporters: any[]; pagination: PaginationResult }> {
+  async listSupporters(
+    params?: ListParams
+  ): Promise<{ supporters: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/supporters', { params: this.buildParams(params) });
-    return { supporters: response.data.supporters || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      supporters: response.data.supporters || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async createSupporter(data: { suggestionId: number; userId?: number }): Promise<any> {
     let payload: Record<string, any> = {
-      links: { suggestion: data.suggestionId },
+      links: { suggestion: data.suggestionId }
     };
     if (data.userId) payload['links']['user'] = data.userId;
 
@@ -223,9 +271,14 @@ export class Client {
   }
 
   // Labels
-  async listLabels(params?: ListParams): Promise<{ labels: any[]; pagination: PaginationResult }> {
+  async listLabels(
+    params?: ListParams
+  ): Promise<{ labels: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/labels', { params: this.buildParams(params) });
-    return { labels: response.data.labels || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      labels: response.data.labels || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async createLabel(name: string): Promise<any> {
@@ -234,41 +287,66 @@ export class Client {
   }
 
   // Categories
-  async listCategories(params?: ListParams): Promise<{ categories: any[]; pagination: PaginationResult }> {
+  async listCategories(
+    params?: ListParams
+  ): Promise<{ categories: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/categories', { params: this.buildParams(params) });
-    return { categories: response.data.categories || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      categories: response.data.categories || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async createCategory(name: string, forumId: number): Promise<any> {
     let response = await this.http.post('/categories', {
       name,
-      links: { forum: forumId },
+      links: { forum: forumId }
     });
     return response.data.categories?.[0];
   }
 
   // Statuses
-  async listStatuses(params?: ListParams): Promise<{ statuses: any[]; pagination: PaginationResult }> {
+  async listStatuses(
+    params?: ListParams
+  ): Promise<{ statuses: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/statuses', { params: this.buildParams(params) });
-    return { statuses: response.data.statuses || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      statuses: response.data.statuses || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   // Comments
-  async listComments(params?: ListParams): Promise<{ comments: any[]; pagination: PaginationResult }> {
+  async listComments(
+    params?: ListParams
+  ): Promise<{ comments: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/comments', { params: this.buildParams(params) });
-    return { comments: response.data.comments || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      comments: response.data.comments || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   // NPS Ratings
-  async listNpsRatings(params?: ListParams): Promise<{ npsRatings: any[]; pagination: PaginationResult }> {
+  async listNpsRatings(
+    params?: ListParams
+  ): Promise<{ npsRatings: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/nps_ratings', { params: this.buildParams(params) });
-    return { npsRatings: response.data.nps_ratings || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      npsRatings: response.data.nps_ratings || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   // Features
-  async listFeatures(params?: ListParams): Promise<{ features: any[]; pagination: PaginationResult }> {
+  async listFeatures(
+    params?: ListParams
+  ): Promise<{ features: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/features', { params: this.buildParams(params) });
-    return { features: response.data.features || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      features: response.data.features || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   async getFeature(featureId: number): Promise<any> {
@@ -277,9 +355,14 @@ export class Client {
   }
 
   // Teams
-  async listTeams(params?: ListParams): Promise<{ teams: any[]; pagination: PaginationResult }> {
+  async listTeams(
+    params?: ListParams
+  ): Promise<{ teams: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/teams', { params: this.buildParams(params) });
-    return { teams: response.data.teams || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      teams: response.data.teams || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   // External Users Import
@@ -289,23 +372,35 @@ export class Client {
   }
 
   // External Accounts
-  async listExternalAccounts(params?: ListParams): Promise<{ externalAccounts: any[]; pagination: PaginationResult }> {
-    let response = await this.http.get('/external_accounts', { params: this.buildParams(params) });
-    return { externalAccounts: response.data.external_accounts || [], pagination: this.mapPagination(response.data.pagination) };
+  async listExternalAccounts(
+    params?: ListParams
+  ): Promise<{ externalAccounts: any[]; pagination: PaginationResult }> {
+    let response = await this.http.get('/external_accounts', {
+      params: this.buildParams(params)
+    });
+    return {
+      externalAccounts: response.data.external_accounts || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 
   // Notes
   async createNote(suggestionId: number, body: string): Promise<any> {
     let response = await this.http.post('/notes', {
       body,
-      links: { suggestion: suggestionId },
+      links: { suggestion: suggestionId }
     });
     return response.data.notes?.[0];
   }
 
   // Segments
-  async listSegments(params?: ListParams): Promise<{ segments: any[]; pagination: PaginationResult }> {
+  async listSegments(
+    params?: ListParams
+  ): Promise<{ segments: any[]; pagination: PaginationResult }> {
     let response = await this.http.get('/segments', { params: this.buildParams(params) });
-    return { segments: response.data.segments || [], pagination: this.mapPagination(response.data.pagination) };
+    return {
+      segments: response.data.segments || [],
+      pagination: this.mapPagination(response.data.pagination)
+    };
   }
 }

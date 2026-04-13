@@ -3,40 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDomains = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Domains',
-    key: 'manage_domains',
-    description: `List, get, add, or delete domains associated with the Google Workspace account. Allows viewing domain verification status and managing secondary domains.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageDomains = SlateTool.create(spec, {
+  name: 'Manage Domains',
+  key: 'manage_domains',
+  description: `List, get, add, or delete domains associated with the Google Workspace account. Allows viewing domain verification status and managing secondary domains.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'add', 'delete']).describe('Action to perform'),
-    domainName: z.string().optional().describe('Domain name (required for get, add, delete)')
-  }))
-  .output(z.object({
-    domains: z.array(z.object({
-      domainName: z.string().optional(),
-      isPrimary: z.boolean().optional(),
-      verified: z.boolean().optional(),
-      creationTime: z.string().optional()
-    })).optional(),
-    domain: z.object({
-      domainName: z.string().optional(),
-      isPrimary: z.boolean().optional(),
-      verified: z.boolean().optional(),
-      creationTime: z.string().optional(),
-      domainAliases: z.array(z.any()).optional()
-    }).optional(),
-    deleted: z.boolean().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'add', 'delete']).describe('Action to perform'),
+      domainName: z.string().optional().describe('Domain name (required for get, add, delete)')
+    })
+  )
+  .output(
+    z.object({
+      domains: z
+        .array(
+          z.object({
+            domainName: z.string().optional(),
+            isPrimary: z.boolean().optional(),
+            verified: z.boolean().optional(),
+            creationTime: z.string().optional()
+          })
+        )
+        .optional(),
+      domain: z
+        .object({
+          domainName: z.string().optional(),
+          isPrimary: z.boolean().optional(),
+          verified: z.boolean().optional(),
+          creationTime: z.string().optional(),
+          domainAliases: z.array(z.any()).optional()
+        })
+        .optional(),
+      deleted: z.boolean().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,

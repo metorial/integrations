@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listUsers,
@@ -22,13 +21,9 @@ import {
   getAuthenticationLogs,
   getAdminLogs,
   getTelephonyLogs,
-  getAccountSummary,
+  getAccountSummary
 } from './tools';
-import {
-  authenticationEvents,
-  adminActionEvents,
-  inboundWebhook,
-} from './triggers';
+import { authenticationEvents, adminActionEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,11 +48,7 @@ export let provider = Slate.create({
     getAuthenticationLogs,
     getAdminLogs,
     getTelephonyLogs,
-    getAccountSummary,
+    getAccountSummary
   ],
-  triggers: [
-    inboundWebhook,
-    authenticationEvents,
-    adminActionEvents,
-  ],
+  triggers: [inboundWebhook, authenticationEvents, adminActionEvents]
 });

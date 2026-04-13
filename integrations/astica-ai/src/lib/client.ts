@@ -22,7 +22,7 @@ export class AsticaVisionClient {
       visionParams: params.visionParams || 'describe,tags,objects',
       gpt_prompt: params.gptPrompt || '',
       prompt_length: params.promptLength || 90,
-      objects_custom_kw: params.customObjectKeywords || '',
+      objects_custom_kw: params.customObjectKeywords || ''
     });
     return response.data;
   }
@@ -54,7 +54,7 @@ export class AsticaDesignClient {
       generate_lossless: params.lossless ?? 0,
       seed: params.seed ?? 0,
       moderate: params.moderate ?? 1,
-      low_priority: params.lowPriority ?? 0,
+      low_priority: params.lowPriority ?? 0
     });
     return response.data;
   }
@@ -81,21 +81,21 @@ export class AsticaVoiceClient {
       stream: false,
       timestamps: params.timestamps ?? false,
       prompt: params.prompt || '',
-      low_priority: params.lowPriority ?? false,
+      low_priority: params.lowPriority ?? false
     });
     return response.data;
   }
 
   async listVoices() {
     let response = await this.http.post('/api/voice_list', {
-      tkn: this.token,
+      tkn: this.token
     });
     return response.data;
   }
 
   async listVoiceClones() {
     let response = await this.http.post('/api/voice_clone_list', {
-      tkn: this.token,
+      tkn: this.token
     });
     return response.data;
   }
@@ -118,7 +118,7 @@ export class AsticaListenClient {
       modelVersion: params.modelVersion || '1.0_full',
       input: params.audioInput,
       doStream: 0,
-      low_priority: params.lowPriority ?? 0,
+      low_priority: params.lowPriority ?? 0
     });
     return response.data;
   }
@@ -153,7 +153,7 @@ export class AsticaNlpClient {
       token_limit: params.tokenLimit ?? 256,
       stop_sequence: params.stopSequence || '',
       stream_output: 0,
-      low_priority: params.lowPriority ?? 0,
+      low_priority: params.lowPriority ?? 0
     });
     return response.data;
   }

@@ -3,34 +3,35 @@ import { OneLoginClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageRole = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Role',
-    key: 'manage_role',
-    description: `Create, update, or delete a role in OneLogin. Roles control which applications users have access to. When creating, provide a name and optionally associate apps, users, and admins. When updating, provide the role ID and fields to change. When deleting, provide the role ID and set action to "delete".`,
-    tags: {
-      destructive: true,
-    },
+export let manageRole = SlateTool.create(spec, {
+  name: 'Manage Role',
+  key: 'manage_role',
+  description: `Create, update, or delete a role in OneLogin. Roles control which applications users have access to. When creating, provide a name and optionally associate apps, users, and admins. When updating, provide the role ID and fields to change. When deleting, provide the role ID and set action to "delete".`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    roleId: z.number().optional().describe('Role ID (required for update and delete)'),
-    name: z.string().optional().describe('Role name (required for create)'),
-    apps: z.array(z.number()).optional().describe('App IDs to associate with the role'),
-    users: z.array(z.number()).optional().describe('User IDs to assign to the role'),
-    admins: z.array(z.number()).optional().describe('Admin user IDs for the role'),
-  }))
-  .output(z.object({
-    roleId: z.number().optional().describe('Role ID'),
-    name: z.string().optional().describe('Role name'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      roleId: z.number().optional().describe('Role ID (required for update and delete)'),
+      name: z.string().optional().describe('Role name (required for create)'),
+      apps: z.array(z.number()).optional().describe('App IDs to associate with the role'),
+      users: z.array(z.number()).optional().describe('User IDs to assign to the role'),
+      admins: z.array(z.number()).optional().describe('Admin user IDs for the role')
+    })
+  )
+  .output(
+    z.object({
+      roleId: z.number().optional().describe('Role ID'),
+      name: z.string().optional().describe('Role name'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OneLoginClient({
       token: ctx.auth.token,
-      subdomain: ctx.config.subdomain,
+      subdomain: ctx.config.subdomain
     });
 
     if (ctx.input.action === 'create') {
@@ -42,7 +43,7 @@ export let manageRole = SlateTool.create(
       let result = await client.createRole(body);
       return {
         output: { roleId: result.id, name: ctx.input.name, success: true },
-        message: `Created role **${ctx.input.name}** (ID: ${result.id}).`,
+        message: `Created role **${ctx.input.name}** (ID: ${result.id}).`
       };
     }
 
@@ -57,7 +58,7 @@ export let manageRole = SlateTool.create(
       await client.updateRole(ctx.input.roleId, body);
       return {
         output: { roleId: ctx.input.roleId, name: ctx.input.name, success: true },
-        message: `Updated role **${ctx.input.roleId}**.`,
+        message: `Updated role **${ctx.input.roleId}**.`
       };
     }
 
@@ -66,7 +67,7 @@ export let manageRole = SlateTool.create(
       await client.deleteRole(ctx.input.roleId);
       return {
         output: { roleId: ctx.input.roleId, success: true },
-        message: `Deleted role **${ctx.input.roleId}**.`,
+        message: `Deleted role **${ctx.input.roleId}**.`
       };
     }
 

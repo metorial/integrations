@@ -20,9 +20,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -133,7 +133,12 @@ export class Client {
 
   // ── Expenses ──
 
-  async listCardExpenses(params?: { cursor?: string; limit?: number; expand?: string[]; updated_at_start?: string }) {
+  async listCardExpenses(params?: {
+    cursor?: string;
+    limit?: number;
+    expand?: string[];
+    updated_at_start?: string;
+  }) {
     let queryParams: Record<string, any> = { ...params };
     if (params?.expand) {
       queryParams['expand[]'] = params.expand;
@@ -171,7 +176,7 @@ export class Client {
 
   async createVendor(vendorData: Record<string, any>, idempotencyKey: string) {
     let response = await this.axios.post('/v1/vendors', vendorData, {
-      headers: { 'Idempotency-Key': idempotencyKey },
+      headers: { 'Idempotency-Key': idempotencyKey }
     });
     return response.data;
   }
@@ -199,7 +204,7 @@ export class Client {
 
   async createTransfer(transferData: Record<string, any>, idempotencyKey: string) {
     let response = await this.axios.post('/v1/transfers', transferData, {
-      headers: { 'Idempotency-Key': idempotencyKey },
+      headers: { 'Idempotency-Key': idempotencyKey }
     });
     return response.data;
   }
@@ -233,17 +238,27 @@ export class Client {
 
   // ── Transactions ──
 
-  async listCardTransactions(params?: { cursor?: string; limit?: number; user_ids?: string[]; posted_at_start?: string }) {
+  async listCardTransactions(params?: {
+    cursor?: string;
+    limit?: number;
+    user_ids?: string[];
+    posted_at_start?: string;
+  }) {
     let queryParams: Record<string, any> = { ...params };
     if (params?.user_ids) {
       queryParams['user_ids[]'] = params.user_ids;
       delete queryParams.user_ids;
     }
-    let response = await this.axios.get('/v2/transactions/card/primary', { params: queryParams });
+    let response = await this.axios.get('/v2/transactions/card/primary', {
+      params: queryParams
+    });
     return response.data as PaginatedResponse<any>;
   }
 
-  async listCashTransactions(accountId: string, params?: { cursor?: string; limit?: number; posted_at_start?: string }) {
+  async listCashTransactions(
+    accountId: string,
+    params?: { cursor?: string; limit?: number; posted_at_start?: string }
+  ) {
     let response = await this.axios.get(`/v2/transactions/cash/${accountId}`, { params });
     return response.data as PaginatedResponse<any>;
   }

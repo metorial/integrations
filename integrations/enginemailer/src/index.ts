@@ -14,12 +14,9 @@ import {
   deleteCampaign,
   listCampaigns,
   listSubcategories,
-  listCustomFields,
+  listCustomFields
 } from './tools';
-import {
-  emailEvent,
-  subscriberChange,
-} from './triggers';
+import { emailEvent, subscriberChange } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     deleteCampaign,
     listCampaigns,
     listSubcategories,
-    listCustomFields,
+    listCustomFields
   ],
-  triggers: [
-    emailEvent,
-    subscriberChange,
-  ],
+  triggers: [emailEvent, subscriberChange]
 });

@@ -8,8 +8,8 @@ export class SuperchatClient {
       baseURL: 'https://api.superchat.com/v1.0',
       headers: {
         'X-API-KEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -25,9 +25,9 @@ export class SuperchatClient {
       to: params.to,
       from: {
         channel_id: params.from.channelId,
-        ...(params.from.name ? { name: params.from.name } : {}),
+        ...(params.from.name ? { name: params.from.name } : {})
       },
-      content: params.content,
+      content: params.content
     };
 
     if (params.inReplyTo) {
@@ -38,13 +38,16 @@ export class SuperchatClient {
     return response.data;
   }
 
-  async getMessageAnalytics(messageIds: string[], params?: { limit?: number; after?: string; before?: string }) {
+  async getMessageAnalytics(
+    messageIds: string[],
+    params?: { limit?: number; after?: string; before?: string }
+  ) {
     let response = await this.axios.post('/messages/analytics', messageIds, {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -59,7 +62,7 @@ export class SuperchatClient {
     customAttributes?: Array<Record<string, any>>;
   }) {
     let body: Record<string, any> = {
-      handles: params.handles,
+      handles: params.handles
     };
     if (params.firstName) body.first_name = params.firstName;
     if (params.lastName) body.last_name = params.lastName;
@@ -75,8 +78,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -86,17 +89,21 @@ export class SuperchatClient {
     return response.data;
   }
 
-  async updateContact(contactId: string, params: {
-    firstName?: string;
-    lastName?: string;
-    gender?: string;
-    customAttributes?: Array<Record<string, any>>;
-  }) {
+  async updateContact(
+    contactId: string,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      gender?: string;
+      customAttributes?: Array<Record<string, any>>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.firstName !== undefined) body.first_name = params.firstName;
     if (params.lastName !== undefined) body.last_name = params.lastName;
     if (params.gender !== undefined) body.gender = params.gender;
-    if (params.customAttributes !== undefined) body.custom_attributes = params.customAttributes;
+    if (params.customAttributes !== undefined)
+      body.custom_attributes = params.customAttributes;
 
     let response = await this.axios.patch(`/contacts/${contactId}`, body);
     return response.data;
@@ -114,21 +121,24 @@ export class SuperchatClient {
           {
             field,
             operator: '=',
-            value,
-          },
-        ],
-      },
+            value
+          }
+        ]
+      }
     });
     return response.data;
   }
 
-  async getContactConversations(contactId: string, params?: { limit?: number; after?: string; before?: string }) {
+  async getContactConversations(
+    contactId: string,
+    params?: { limit?: number; after?: string; before?: string }
+  ) {
     let response = await this.axios.get(`/contacts/${contactId}/conversations`, {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -140,8 +150,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -151,13 +161,16 @@ export class SuperchatClient {
     return response.data;
   }
 
-  async getContactListContacts(listId: string, params?: { limit?: number; after?: string; before?: string }) {
+  async getContactListContacts(
+    listId: string,
+    params?: { limit?: number; after?: string; before?: string }
+  ) {
     let response = await this.axios.get(`/contact-lists/${listId}/contacts`, {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -169,7 +182,7 @@ export class SuperchatClient {
 
   async addContactToList(contactId: string, listId: string) {
     let response = await this.axios.post(`/contacts/${contactId}/contact-lists`, {
-      contact_list_id: listId,
+      contact_list_id: listId
     });
     return response.data;
   }
@@ -186,8 +199,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -197,13 +210,16 @@ export class SuperchatClient {
     return response.data;
   }
 
-  async updateConversation(conversationId: string, params: {
-    status?: string;
-    snoozedUntil?: string;
-    assignedUsers?: string[];
-    labels?: string[];
-    inboxId?: string;
-  }) {
+  async updateConversation(
+    conversationId: string,
+    params: {
+      status?: string;
+      snoozedUntil?: string;
+      assignedUsers?: string[];
+      labels?: string[];
+      inboxId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.status !== undefined) body.status = params.status;
     if (params.snoozedUntil !== undefined) body.snoozed_until = params.snoozedUntil;
@@ -222,7 +238,7 @@ export class SuperchatClient {
 
   async createConversationExport(conversationId: string) {
     let response = await this.axios.post('/conversations/exports', {
-      conversation_id: conversationId,
+      conversation_id: conversationId
     });
     return response.data;
   }
@@ -235,17 +251,22 @@ export class SuperchatClient {
   // ─── Notes ───
 
   async createNote(conversationId: string, content: string) {
-    let response = await this.axios.post(`/conversations/${conversationId}/notes`, { content });
+    let response = await this.axios.post(`/conversations/${conversationId}/notes`, {
+      content
+    });
     return response.data;
   }
 
-  async listNotes(conversationId: string, params?: { limit?: number; after?: string; before?: string }) {
+  async listNotes(
+    conversationId: string,
+    params?: { limit?: number; after?: string; before?: string }
+  ) {
     let response = await this.axios.get(`/conversations/${conversationId}/notes`, {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -256,7 +277,9 @@ export class SuperchatClient {
   }
 
   async updateNote(conversationId: string, noteId: string, content: string) {
-    let response = await this.axios.put(`/conversations/${conversationId}/notes/${noteId}`, { content });
+    let response = await this.axios.put(`/conversations/${conversationId}/notes/${noteId}`, {
+      content
+    });
     return response.data;
   }
 
@@ -272,8 +295,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -310,8 +333,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -338,8 +361,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -356,8 +379,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -374,8 +397,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -389,7 +412,7 @@ export class SuperchatClient {
 
   async uploadFile(formData: any) {
     let response = await this.axios.post('/files', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
@@ -399,8 +422,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -427,8 +450,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -447,10 +470,13 @@ export class SuperchatClient {
 
   // ─── Webhooks ───
 
-  async createWebhook(targetUrl: string, events: Array<{ type: string; filters?: Array<Record<string, any>> }>) {
+  async createWebhook(
+    targetUrl: string,
+    events: Array<{ type: string; filters?: Array<Record<string, any>> }>
+  ) {
     let response = await this.axios.post('/webhooks', {
       target_url: targetUrl,
-      events,
+      events
     });
     return response.data;
   }
@@ -460,8 +486,8 @@ export class SuperchatClient {
       params: {
         ...(params?.limit ? { limit: params.limit } : {}),
         ...(params?.after ? { after: params.after } : {}),
-        ...(params?.before ? { before: params.before } : {}),
-      },
+        ...(params?.before ? { before: params.before } : {})
+      }
     });
     return response.data;
   }
@@ -471,10 +497,13 @@ export class SuperchatClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    targetUrl?: string;
-    events?: Array<{ type: string; filters?: Array<Record<string, any>> }>;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      targetUrl?: string;
+      events?: Array<{ type: string; filters?: Array<Record<string, any>> }>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.targetUrl !== undefined) body.target_url = params.targetUrl;
     if (params.events !== undefined) body.events = params.events;

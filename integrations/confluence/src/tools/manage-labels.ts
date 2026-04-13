@@ -9,16 +9,22 @@ export let getLabels = SlateTool.create(spec, {
   description: `Get all labels on a Confluence content item (page, blog post, or attachment).`,
   tags: { readOnly: true }
 })
-  .input(z.object({
-    contentId: z.string().describe('The content ID (page, blog post, or attachment)')
-  }))
-  .output(z.object({
-    labels: z.array(z.object({
-      name: z.string(),
-      prefix: z.string()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      contentId: z.string().describe('The content ID (page, blog post, or attachment)')
+    })
+  )
+  .output(
+    z.object({
+      labels: z.array(
+        z.object({
+          name: z.string(),
+          prefix: z.string()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let response = await client.getContentLabels(ctx.input.contentId);
 
@@ -40,17 +46,23 @@ export let addLabels = SlateTool.create(spec, {
   description: `Add one or more labels to a Confluence content item (page, blog post, or attachment). Labels are useful for categorization and discovery.`,
   tags: { destructive: false }
 })
-  .input(z.object({
-    contentId: z.string().describe('The content ID to add labels to'),
-    labels: z.array(z.string()).min(1).describe('Label names to add')
-  }))
-  .output(z.object({
-    addedLabels: z.array(z.object({
-      name: z.string(),
-      prefix: z.string()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      contentId: z.string().describe('The content ID to add labels to'),
+      labels: z.array(z.string()).min(1).describe('Label names to add')
+    })
+  )
+  .output(
+    z.object({
+      addedLabels: z.array(
+        z.object({
+          name: z.string(),
+          prefix: z.string()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     let result = await client.addContentLabels(ctx.input.contentId, ctx.input.labels);
 
@@ -69,14 +81,18 @@ export let removeLabel = SlateTool.create(spec, {
   description: `Remove a label from a Confluence content item.`,
   tags: { destructive: true }
 })
-  .input(z.object({
-    contentId: z.string().describe('The content ID to remove the label from'),
-    label: z.string().describe('The label name to remove')
-  }))
-  .output(z.object({
-    removed: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      contentId: z.string().describe('The content ID to remove the label from'),
+      label: z.string().describe('The label name to remove')
+    })
+  )
+  .output(
+    z.object({
+      removed: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
     await client.removeContentLabel(ctx.input.contentId, ctx.input.label);
 

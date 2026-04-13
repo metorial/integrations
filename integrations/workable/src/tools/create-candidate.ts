@@ -3,55 +3,76 @@ import { WorkableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createCandidateTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Candidate',
-    key: 'create_candidate',
-    description: `Add a new candidate to a specific job in Workable. Provide the candidate's basic information, and optionally include social profiles, education, experience, and answers to application questions.`,
-    tags: {
-      destructive: false
-    }
+export let createCandidateTool = SlateTool.create(spec, {
+  name: 'Create Candidate',
+  key: 'create_candidate',
+  description: `Add a new candidate to a specific job in Workable. Provide the candidate's basic information, and optionally include social profiles, education, experience, and answers to application questions.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    jobShortcode: z.string().describe('The shortcode of the job to add the candidate to'),
-    firstname: z.string().describe('Candidate first name'),
-    lastname: z.string().describe('Candidate last name'),
-    email: z.string().describe('Candidate email address'),
-    phone: z.string().optional().describe('Phone number'),
-    headline: z.string().optional().describe('Professional headline'),
-    summary: z.string().optional().describe('Candidate summary'),
-    address: z.string().optional().describe('Address'),
-    stage: z.string().optional().describe('Pipeline stage slug to place the candidate in'),
-    sourced: z.boolean().optional().describe('Whether this candidate was sourced (not applied)'),
-    socialProfiles: z.array(z.object({
-      type: z.enum(['twitter', 'linkedin', 'facebook', 'github', 'other']).describe('Social network type'),
-      url: z.string().describe('Profile URL')
-    })).optional().describe('Social profiles'),
-    education: z.array(z.object({
-      school: z.string().optional(),
-      degree: z.string().optional(),
-      fieldOfStudy: z.string().optional(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional()
-    })).optional().describe('Education entries'),
-    experience: z.array(z.object({
-      title: z.string().optional(),
-      company: z.string().optional(),
-      industry: z.string().optional(),
-      summary: z.string().optional(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      current: z.boolean().optional()
-    })).optional().describe('Experience entries'),
-    tags: z.array(z.string()).optional().describe('Tags to add to the candidate')
-  }))
-  .output(z.object({
-    candidateId: z.string().describe('ID of the created candidate'),
-    status: z.string().describe('Creation status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jobShortcode: z.string().describe('The shortcode of the job to add the candidate to'),
+      firstname: z.string().describe('Candidate first name'),
+      lastname: z.string().describe('Candidate last name'),
+      email: z.string().describe('Candidate email address'),
+      phone: z.string().optional().describe('Phone number'),
+      headline: z.string().optional().describe('Professional headline'),
+      summary: z.string().optional().describe('Candidate summary'),
+      address: z.string().optional().describe('Address'),
+      stage: z.string().optional().describe('Pipeline stage slug to place the candidate in'),
+      sourced: z
+        .boolean()
+        .optional()
+        .describe('Whether this candidate was sourced (not applied)'),
+      socialProfiles: z
+        .array(
+          z.object({
+            type: z
+              .enum(['twitter', 'linkedin', 'facebook', 'github', 'other'])
+              .describe('Social network type'),
+            url: z.string().describe('Profile URL')
+          })
+        )
+        .optional()
+        .describe('Social profiles'),
+      education: z
+        .array(
+          z.object({
+            school: z.string().optional(),
+            degree: z.string().optional(),
+            fieldOfStudy: z.string().optional(),
+            startDate: z.string().optional(),
+            endDate: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Education entries'),
+      experience: z
+        .array(
+          z.object({
+            title: z.string().optional(),
+            company: z.string().optional(),
+            industry: z.string().optional(),
+            summary: z.string().optional(),
+            startDate: z.string().optional(),
+            endDate: z.string().optional(),
+            current: z.boolean().optional()
+          })
+        )
+        .optional()
+        .describe('Experience entries'),
+      tags: z.array(z.string()).optional().describe('Tags to add to the candidate')
+    })
+  )
+  .output(
+    z.object({
+      candidateId: z.string().describe('ID of the created candidate'),
+      status: z.string().describe('Creation status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WorkableClient({
       token: ctx.auth.token,
       subdomain: ctx.config.subdomain
@@ -105,4 +126,5 @@ export let createCandidateTool = SlateTool.create(
       },
       message: `Created candidate **"${ctx.input.firstname} ${ctx.input.lastname}"** for job ${ctx.input.jobShortcode}.`
     };
-  }).build();
+  })
+  .build();

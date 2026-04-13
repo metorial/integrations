@@ -16,44 +16,63 @@ let meetingOutputSchema = z.object({
   webLink: z.string().optional().describe('URL to join the meeting'),
   sipAddress: z.string().optional().describe('SIP address for the meeting'),
   state: z.string().optional().describe('Meeting state (active, scheduled, etc.)'),
-  meetingType: z.string().optional().describe('Type of meeting (scheduledMeeting, meeting, etc.)'),
+  meetingType: z
+    .string()
+    .optional()
+    .describe('Type of meeting (scheduledMeeting, meeting, etc.)'),
   recurrence: z.string().optional().describe('Recurrence pattern'),
   created: z.string().optional().describe('Creation timestamp')
 });
 
-export let createMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Create Meeting',
-    key: 'create_meeting',
-    description: `Schedule a new Webex meeting with a title, time, and optional settings like agenda, recurrence, auto-recording, and invitees. Returns the meeting details including the join link.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createMeeting = SlateTool.create(spec, {
+  name: 'Create Meeting',
+  key: 'create_meeting',
+  description: `Schedule a new Webex meeting with a title, time, and optional settings like agenda, recurrence, auto-recording, and invitees. Returns the meeting details including the join link.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    title: z.string().describe('Title of the meeting'),
-    agenda: z.string().optional().describe('Meeting agenda or description'),
-    password: z.string().optional().describe('Meeting password'),
-    start: z.string().optional().describe('Start time in ISO 8601 format'),
-    end: z.string().optional().describe('End time in ISO 8601 format'),
-    timezone: z.string().optional().describe('Timezone (e.g. "America/New_York")'),
-    recurrence: z.string().optional().describe('Recurrence pattern (RFC 5545 RRULE)'),
-    enabledAutoRecordMeeting: z.boolean().optional().describe('Automatically record the meeting'),
-    allowAnyUserToBeCoHost: z.boolean().optional().describe('Allow any participant to be co-host'),
-    enabledJoinBeforeHost: z.boolean().optional().describe('Allow participants to join before the host'),
-    sendEmail: z.boolean().optional().describe('Send email invitations'),
-    hostEmail: z.string().optional().describe('Host email (admin use for scheduling on behalf of others)'),
-    invitees: z.array(z.object({
-      email: z.string().describe('Invitee email address'),
-      displayName: z.string().optional().describe('Invitee display name'),
-      coHost: z.boolean().optional().describe('Make the invitee a co-host')
-    })).optional().describe('List of meeting invitees')
-  }))
+})
+  .input(
+    z.object({
+      title: z.string().describe('Title of the meeting'),
+      agenda: z.string().optional().describe('Meeting agenda or description'),
+      password: z.string().optional().describe('Meeting password'),
+      start: z.string().optional().describe('Start time in ISO 8601 format'),
+      end: z.string().optional().describe('End time in ISO 8601 format'),
+      timezone: z.string().optional().describe('Timezone (e.g. "America/New_York")'),
+      recurrence: z.string().optional().describe('Recurrence pattern (RFC 5545 RRULE)'),
+      enabledAutoRecordMeeting: z
+        .boolean()
+        .optional()
+        .describe('Automatically record the meeting'),
+      allowAnyUserToBeCoHost: z
+        .boolean()
+        .optional()
+        .describe('Allow any participant to be co-host'),
+      enabledJoinBeforeHost: z
+        .boolean()
+        .optional()
+        .describe('Allow participants to join before the host'),
+      sendEmail: z.boolean().optional().describe('Send email invitations'),
+      hostEmail: z
+        .string()
+        .optional()
+        .describe('Host email (admin use for scheduling on behalf of others)'),
+      invitees: z
+        .array(
+          z.object({
+            email: z.string().describe('Invitee email address'),
+            displayName: z.string().optional().describe('Invitee display name'),
+            coHost: z.boolean().optional().describe('Make the invitee a co-host')
+          })
+        )
+        .optional()
+        .describe('List of meeting invitees')
+    })
+  )
   .output(meetingOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.createMeeting({
@@ -95,33 +114,32 @@ export let createMeeting = SlateTool.create(
   })
   .build();
 
-export let updateMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Update Meeting',
-    key: 'update_meeting',
-    description: `Update a scheduled Webex meeting's details including title, agenda, times, recurrence, and recording settings.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateMeeting = SlateTool.create(spec, {
+  name: 'Update Meeting',
+  key: 'update_meeting',
+  description: `Update a scheduled Webex meeting's details including title, agenda, times, recurrence, and recording settings.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    meetingId: z.string().describe('ID of the meeting to update'),
-    title: z.string().optional().describe('Updated meeting title'),
-    agenda: z.string().optional().describe('Updated agenda'),
-    password: z.string().optional().describe('Updated meeting password'),
-    start: z.string().optional().describe('Updated start time (ISO 8601)'),
-    end: z.string().optional().describe('Updated end time (ISO 8601)'),
-    timezone: z.string().optional().describe('Updated timezone'),
-    recurrence: z.string().optional().describe('Updated recurrence pattern'),
-    enabledAutoRecordMeeting: z.boolean().optional().describe('Toggle auto-recording'),
-    allowAnyUserToBeCoHost: z.boolean().optional().describe('Toggle co-host for any user'),
-    sendEmail: z.boolean().optional().describe('Send update notifications')
-  }))
+})
+  .input(
+    z.object({
+      meetingId: z.string().describe('ID of the meeting to update'),
+      title: z.string().optional().describe('Updated meeting title'),
+      agenda: z.string().optional().describe('Updated agenda'),
+      password: z.string().optional().describe('Updated meeting password'),
+      start: z.string().optional().describe('Updated start time (ISO 8601)'),
+      end: z.string().optional().describe('Updated end time (ISO 8601)'),
+      timezone: z.string().optional().describe('Updated timezone'),
+      recurrence: z.string().optional().describe('Updated recurrence pattern'),
+      enabledAutoRecordMeeting: z.boolean().optional().describe('Toggle auto-recording'),
+      allowAnyUserToBeCoHost: z.boolean().optional().describe('Toggle co-host for any user'),
+      sendEmail: z.boolean().optional().describe('Send update notifications')
+    })
+  )
   .output(meetingOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     let result = await client.updateMeeting(ctx.input.meetingId, {
@@ -160,27 +178,28 @@ export let updateMeeting = SlateTool.create(
   })
   .build();
 
-export let deleteMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Meeting',
-    key: 'delete_meeting',
-    description: `Cancel and delete a scheduled Webex meeting or meeting series. Optionally notify attendees via email.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteMeeting = SlateTool.create(spec, {
+  name: 'Delete Meeting',
+  key: 'delete_meeting',
+  description: `Cancel and delete a scheduled Webex meeting or meeting series. Optionally notify attendees via email.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    meetingId: z.string().describe('ID of the meeting to delete'),
-    hostEmail: z.string().optional().describe('Host email (admin use)'),
-    sendEmail: z.boolean().optional().describe('Send cancellation email to attendees')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the meeting was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      meetingId: z.string().describe('ID of the meeting to delete'),
+      hostEmail: z.string().optional().describe('Host email (admin use)'),
+      sendEmail: z.boolean().optional().describe('Send cancellation email to attendees')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the meeting was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebexClient({ token: ctx.auth.token });
 
     await client.deleteMeeting(ctx.input.meetingId, {

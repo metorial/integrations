@@ -16,39 +16,60 @@ let contactOutputSchema = z.object({
   marketingStatus: z.string(),
   source: z.string().nullable(),
   createdAt: z.string(),
-  updatedAt: z.string(),
+  updatedAt: z.string()
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `List site contacts (customers/clients) with filtering and search capabilities. Contacts represent people who interact with your business through the site.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    siteId: z.string().describe('ID of the site to list contacts for'),
-    search: z.string().optional().describe('Search term to filter contacts'),
-    marketingStatuses: z.array(z.enum(['SUBSCRIBED', 'UNSUBSCRIBED', 'CLEANED', 'PENDING', 'TRANSACTIONAL', 'ARCHIVED'])).optional().describe('Filter by marketing statuses'),
-    createdAfter: z.string().optional().describe('Filter contacts created after this date (ISO 8601)'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    pageSize: z.number().optional().describe('Number of items per page (default: 10, max: 25)'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactOutputSchema.extend({
-      rating: z.number().nullable(),
-      formResponsesCount: z.number(),
-      appointmentsCount: z.number(),
-      ordersCount: z.number(),
-      invoicesCount: z.number(),
-    })),
-    total: z.number(),
-    hasNextPage: z.boolean(),
-    endCursor: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `List site contacts (customers/clients) with filtering and search capabilities. Contacts represent people who interact with your business through the site.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      siteId: z.string().describe('ID of the site to list contacts for'),
+      search: z.string().optional().describe('Search term to filter contacts'),
+      marketingStatuses: z
+        .array(
+          z.enum([
+            'SUBSCRIBED',
+            'UNSUBSCRIBED',
+            'CLEANED',
+            'PENDING',
+            'TRANSACTIONAL',
+            'ARCHIVED'
+          ])
+        )
+        .optional()
+        .describe('Filter by marketing statuses'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe('Filter contacts created after this date (ISO 8601)'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      pageSize: z
+        .number()
+        .optional()
+        .describe('Number of items per page (default: 10, max: 25)')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(
+        contactOutputSchema.extend({
+          rating: z.number().nullable(),
+          formResponsesCount: z.number(),
+          appointmentsCount: z.number(),
+          ordersCount: z.number(),
+          invoicesCount: z.number()
+        })
+      ),
+      total: z.number(),
+      hasNextPage: z.boolean(),
+      endCursor: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FingertipClient(ctx.auth.token);
     let result = await client.listSiteContacts({
       siteId: ctx.input.siteId,
@@ -56,10 +77,10 @@ export let listContacts = SlateTool.create(
       marketingStatuses: ctx.input.marketingStatuses,
       createdAfter: ctx.input.createdAfter,
       cursor: ctx.input.cursor,
-      pageSize: ctx.input.pageSize,
+      pageSize: ctx.input.pageSize
     });
 
-    let contacts = result.items.map((item) => ({
+    let contacts = result.items.map(item => ({
       contactId: item.siteContact.id,
       siteId: item.siteContact.siteId,
       email: item.siteContact.email,
@@ -77,7 +98,7 @@ export let listContacts = SlateTool.create(
       formResponsesCount: item.formResponsesCount,
       appointmentsCount: item.appointmentsCount,
       ordersCount: item.ordersCount,
-      invoicesCount: item.invoicesCount,
+      invoicesCount: item.invoicesCount
     }));
 
     return {
@@ -85,31 +106,41 @@ export let listContacts = SlateTool.create(
         contacts,
         total: result.total,
         hasNextPage: result.pageInfo.hasNextPage,
-        endCursor: result.pageInfo.endCursor,
+        endCursor: result.pageInfo.endCursor
       },
-      message: `Found **${result.total}** contact(s). Returned ${contacts.length} on this page.`,
+      message: `Found **${result.total}** contact(s). Returned ${contacts.length} on this page.`
     };
-  }).build();
+  })
+  .build();
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new site contact (customer/client) associated with a site. Contacts track people who interact with your business.`,
-  }
-)
-  .input(z.object({
-    siteId: z.string().describe('ID of the site to add the contact to'),
-    email: z.string().describe('Email address of the contact'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    phone: z.string().optional().describe('Phone number'),
-    notes: z.string().optional().describe('Additional notes about the contact'),
-    marketingStatus: z.enum(['SUBSCRIBED', 'UNSUBSCRIBED', 'CLEANED', 'PENDING', 'TRANSACTIONAL', 'ARCHIVED']).optional().describe('Marketing communication status'),
-  }))
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new site contact (customer/client) associated with a site. Contacts track people who interact with your business.`
+})
+  .input(
+    z.object({
+      siteId: z.string().describe('ID of the site to add the contact to'),
+      email: z.string().describe('Email address of the contact'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      phone: z.string().optional().describe('Phone number'),
+      notes: z.string().optional().describe('Additional notes about the contact'),
+      marketingStatus: z
+        .enum([
+          'SUBSCRIBED',
+          'UNSUBSCRIBED',
+          'CLEANED',
+          'PENDING',
+          'TRANSACTIONAL',
+          'ARCHIVED'
+        ])
+        .optional()
+        .describe('Marketing communication status')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new FingertipClient(ctx.auth.token);
     let contact = await client.createSiteContact({
       siteId: ctx.input.siteId,
@@ -118,7 +149,7 @@ export let createContact = SlateTool.create(
       lastName: ctx.input.lastName,
       phone: ctx.input.phone,
       notes: ctx.input.notes,
-      marketingStatus: ctx.input.marketingStatus,
+      marketingStatus: ctx.input.marketingStatus
     });
 
     return {
@@ -135,8 +166,9 @@ export let createContact = SlateTool.create(
         marketingStatus: contact.marketingStatus,
         source: contact.source,
         createdAt: contact.createdAt,
-        updatedAt: contact.updatedAt,
+        updatedAt: contact.updatedAt
       },
-      message: `Created contact **${contact.email}**.`,
+      message: `Created contact **${contact.email}**.`
     };
-  }).build();
+  })
+  .build();

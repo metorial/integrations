@@ -7,15 +7,20 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.bitbucket.org/2.0',
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Repositories ───
 
-  async listRepositories(opts?: { query?: string; page?: number; pageLen?: number; sort?: string }) {
+  async listRepositories(opts?: {
+    query?: string;
+    page?: number;
+    pageLen?: number;
+    sort?: string;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.query) params.q = opts.query;
     if (opts?.page) params.page = String(opts.page);
@@ -32,12 +37,18 @@ export class Client {
   }
 
   async createRepository(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}`,
+      body
+    );
     return response.data;
   }
 
   async updateRepository(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.put(`/repositories/${this.params.workspace}/${repoSlug}`, body);
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}`,
+      body
+    );
     return response.data;
   }
 
@@ -46,89 +57,134 @@ export class Client {
   }
 
   async forkRepository(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/forks`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/forks`,
+      body
+    );
     return response.data;
   }
 
   // ─── Pull Requests ───
 
-  async listPullRequests(repoSlug: string, opts?: { state?: string; page?: number; pageLen?: number }) {
+  async listPullRequests(
+    repoSlug: string,
+    opts?: { state?: string; page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.state) params.state = opts.state;
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests`,
+      { params }
+    );
     return response.data;
   }
 
   async getPullRequest(repoSlug: string, prId: number) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}`
+    );
     return response.data;
   }
 
   async createPullRequest(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests`,
+      body
+    );
     return response.data;
   }
 
   async updatePullRequest(repoSlug: string, prId: number, body: Record<string, any>) {
-    let response = await this.api.put(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}`, body);
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}`,
+      body
+    );
     return response.data;
   }
 
   async approvePullRequest(repoSlug: string, prId: number) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/approve`);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/approve`
+    );
     return response.data;
   }
 
   async unapprovePullRequest(repoSlug: string, prId: number) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/approve`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/approve`
+    );
   }
 
   async mergePullRequest(repoSlug: string, prId: number, body?: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/merge`, body || {});
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/merge`,
+      body || {}
+    );
     return response.data;
   }
 
   async declinePullRequest(repoSlug: string, prId: number) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/decline`);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/decline`
+    );
     return response.data;
   }
 
   async requestChanges(repoSlug: string, prId: number) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/request-changes`);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/request-changes`
+    );
     return response.data;
   }
 
   async removeChangeRequest(repoSlug: string, prId: number) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/request-changes`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/request-changes`
+    );
   }
 
   // ─── Pull Request Comments ───
 
-  async listPullRequestComments(repoSlug: string, prId: number, opts?: { page?: number; pageLen?: number }) {
+  async listPullRequestComments(
+    repoSlug: string,
+    prId: number,
+    opts?: { page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/comments`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/comments`,
+      { params }
+    );
     return response.data;
   }
 
   async createPullRequestComment(repoSlug: string, prId: number, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/comments`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/comments`,
+      body
+    );
     return response.data;
   }
 
   async getPullRequestDiff(repoSlug: string, prId: number) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/diff`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pullrequests/${prId}/diff`
+    );
     return response.data;
   }
 
   // ─── Commits ───
 
-  async listCommits(repoSlug: string, opts?: { branch?: string; page?: number; pageLen?: number }) {
+  async listCommits(
+    repoSlug: string,
+    opts?: { branch?: string; page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
@@ -142,158 +198,244 @@ export class Client {
   }
 
   async getCommit(repoSlug: string, commitHash: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}`
+    );
     return response.data;
   }
 
   async createCommitComment(repoSlug: string, commitHash: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}/comments`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}/comments`,
+      body
+    );
     return response.data;
   }
 
-  async listCommitStatuses(repoSlug: string, commitHash: string, opts?: { page?: number; pageLen?: number }) {
+  async listCommitStatuses(
+    repoSlug: string,
+    commitHash: string,
+    opts?: { page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}/statuses`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}/statuses`,
+      { params }
+    );
     return response.data;
   }
 
   async createCommitStatus(repoSlug: string, commitHash: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}/statuses/build`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/commit/${commitHash}/statuses/build`,
+      body
+    );
     return response.data;
   }
 
   // ─── Branches & Tags ───
 
-  async listBranches(repoSlug: string, opts?: { query?: string; page?: number; pageLen?: number; sort?: string }) {
+  async listBranches(
+    repoSlug: string,
+    opts?: { query?: string; page?: number; pageLen?: number; sort?: string }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.query) params.q = opts.query;
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
     if (opts?.sort) params.sort = opts.sort;
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/refs/branches`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/refs/branches`,
+      { params }
+    );
     return response.data;
   }
 
   async createBranch(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/refs/branches`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/refs/branches`,
+      body
+    );
     return response.data;
   }
 
   async deleteBranch(repoSlug: string, branchName: string) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/refs/branches/${branchName}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/refs/branches/${branchName}`
+    );
   }
 
-  async listTags(repoSlug: string, opts?: { query?: string; page?: number; pageLen?: number; sort?: string }) {
+  async listTags(
+    repoSlug: string,
+    opts?: { query?: string; page?: number; pageLen?: number; sort?: string }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.query) params.q = opts.query;
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
     if (opts?.sort) params.sort = opts.sort;
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/refs/tags`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/refs/tags`,
+      { params }
+    );
     return response.data;
   }
 
   async createTag(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/refs/tags`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/refs/tags`,
+      body
+    );
     return response.data;
   }
 
   async deleteTag(repoSlug: string, tagName: string) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/refs/tags/${tagName}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/refs/tags/${tagName}`
+    );
   }
 
   // ─── Issues ───
 
-  async listIssues(repoSlug: string, opts?: { query?: string; page?: number; pageLen?: number; sort?: string }) {
+  async listIssues(
+    repoSlug: string,
+    opts?: { query?: string; page?: number; pageLen?: number; sort?: string }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.query) params.q = opts.query;
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
     if (opts?.sort) params.sort = opts.sort;
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/issues`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues`,
+      { params }
+    );
     return response.data;
   }
 
   async getIssue(repoSlug: string, issueId: number) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}`
+    );
     return response.data;
   }
 
   async createIssue(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/issues`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues`,
+      body
+    );
     return response.data;
   }
 
   async updateIssue(repoSlug: string, issueId: number, body: Record<string, any>) {
-    let response = await this.api.put(`/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}`, body);
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}`,
+      body
+    );
     return response.data;
   }
 
   async deleteIssue(repoSlug: string, issueId: number) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}`
+    );
   }
 
   async createIssueComment(repoSlug: string, issueId: number, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}/comments`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}/comments`,
+      body
+    );
     return response.data;
   }
 
-  async listIssueComments(repoSlug: string, issueId: number, opts?: { page?: number; pageLen?: number }) {
+  async listIssueComments(
+    repoSlug: string,
+    issueId: number,
+    opts?: { page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}/comments`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/issues/${issueId}/comments`,
+      { params }
+    );
     return response.data;
   }
 
   // ─── Pipelines ───
 
-  async listPipelines(repoSlug: string, opts?: { page?: number; pageLen?: number; sort?: string }) {
+  async listPipelines(
+    repoSlug: string,
+    opts?: { page?: number; pageLen?: number; sort?: string }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
     if (opts?.sort) params.sort = opts.sort;
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pipelines`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines`,
+      { params }
+    );
     return response.data;
   }
 
   async getPipeline(repoSlug: string, pipelineUuid: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}`
+    );
     return response.data;
   }
 
   async triggerPipeline(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pipelines`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines`,
+      body
+    );
     return response.data;
   }
 
   async stopPipeline(repoSlug: string, pipelineUuid: string) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}/stopPipeline`);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}/stopPipeline`
+    );
     return response.data;
   }
 
-  async listPipelineSteps(repoSlug: string, pipelineUuid: string, opts?: { page?: number; pageLen?: number }) {
+  async listPipelineSteps(
+    repoSlug: string,
+    pipelineUuid: string,
+    opts?: { page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}/steps`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}/steps`,
+      { params }
+    );
     return response.data;
   }
 
   async getPipelineStepLog(repoSlug: string, pipelineUuid: string, stepUuid: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}/steps/${stepUuid}/log`, {
-      headers: { 'Accept': 'application/octet-stream' },
-      responseType: 'text',
-    });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines/${pipelineUuid}/steps/${stepUuid}/log`,
+      {
+        headers: { Accept: 'application/octet-stream' },
+        responseType: 'text'
+      }
+    );
     return response.data;
   }
 
@@ -304,58 +446,88 @@ export class Client {
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables`,
+      { params }
+    );
     return response.data;
   }
 
   async createPipelineVariable(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables`,
+      body
+    );
     return response.data;
   }
 
-  async updatePipelineVariable(repoSlug: string, variableUuid: string, body: Record<string, any>) {
-    let response = await this.api.put(`/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables/${variableUuid}`, body);
+  async updatePipelineVariable(
+    repoSlug: string,
+    variableUuid: string,
+    body: Record<string, any>
+  ) {
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables/${variableUuid}`,
+      body
+    );
     return response.data;
   }
 
   async deletePipelineVariable(repoSlug: string, variableUuid: string) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables/${variableUuid}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/pipelines_config/variables/${variableUuid}`
+    );
   }
 
   // ─── Deployments ───
 
-  async listDeploymentEnvironments(repoSlug: string, opts?: { page?: number; pageLen?: number }) {
+  async listDeploymentEnvironments(
+    repoSlug: string,
+    opts?: { page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {};
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/environments`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/environments`,
+      { params }
+    );
     return response.data;
   }
 
   async getDeploymentEnvironment(repoSlug: string, environmentUuid: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/environments/${environmentUuid}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/environments/${environmentUuid}`
+    );
     return response.data;
   }
 
   // ─── Source / File Browsing ───
 
   async getSource(repoSlug: string, opts: { revision: string; path: string }) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/src/${opts.revision}/${opts.path}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/src/${opts.revision}/${opts.path}`
+    );
     return response.data;
   }
 
   async getFileContent(repoSlug: string, opts: { revision: string; path: string }) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/src/${opts.revision}/${opts.path}`, {
-      headers: { 'Accept': 'application/json' },
-    });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/src/${opts.revision}/${opts.path}`,
+      {
+        headers: { Accept: 'application/json' }
+      }
+    );
     return response.data;
   }
 
   // ─── Diff ───
 
   async getDiff(repoSlug: string, diffSpec: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/diff/${diffSpec}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/diff/${diffSpec}`
+    );
     return response.data;
   }
 
@@ -366,27 +538,40 @@ export class Client {
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/hooks`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/hooks`,
+      { params }
+    );
     return response.data;
   }
 
   async createWebhook(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/hooks`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/hooks`,
+      body
+    );
     return response.data;
   }
 
   async getWebhook(repoSlug: string, webhookUuid: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/hooks/${webhookUuid}`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/hooks/${webhookUuid}`
+    );
     return response.data;
   }
 
   async updateWebhook(repoSlug: string, webhookUuid: string, body: Record<string, any>) {
-    let response = await this.api.put(`/repositories/${this.params.workspace}/${repoSlug}/hooks/${webhookUuid}`, body);
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}/hooks/${webhookUuid}`,
+      body
+    );
     return response.data;
   }
 
   async deleteWebhook(repoSlug: string, webhookUuid: string) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/hooks/${webhookUuid}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/hooks/${webhookUuid}`
+    );
   }
 
   // ─── Workspace Webhooks ───
@@ -396,7 +581,9 @@ export class Client {
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/workspaces/${this.params.workspace}/hooks`, { params });
+    let response = await this.api.get(`/workspaces/${this.params.workspace}/hooks`, {
+      params
+    });
     return response.data;
   }
 
@@ -416,7 +603,9 @@ export class Client {
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/workspaces/${this.params.workspace}/members`, { params });
+    let response = await this.api.get(`/workspaces/${this.params.workspace}/members`, {
+      params
+    });
     return response.data;
   }
 
@@ -427,12 +616,16 @@ export class Client {
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/workspaces/${this.params.workspace}/projects`, { params });
+    let response = await this.api.get(`/workspaces/${this.params.workspace}/projects`, {
+      params
+    });
     return response.data;
   }
 
   async getProject(projectKey: string) {
-    let response = await this.api.get(`/workspaces/${this.params.workspace}/projects/${projectKey}`);
+    let response = await this.api.get(
+      `/workspaces/${this.params.workspace}/projects/${projectKey}`
+    );
     return response.data;
   }
 
@@ -442,7 +635,10 @@ export class Client {
   }
 
   async updateProject(projectKey: string, body: Record<string, any>) {
-    let response = await this.api.put(`/workspaces/${this.params.workspace}/projects/${projectKey}`, body);
+    let response = await this.api.put(
+      `/workspaces/${this.params.workspace}/projects/${projectKey}`,
+      body
+    );
     return response.data;
   }
 
@@ -452,14 +648,20 @@ export class Client {
 
   // ─── Code Search ───
 
-  async searchCode(repoSlug: string, searchQuery: string, opts?: { page?: number; pageLen?: number }) {
+  async searchCode(
+    repoSlug: string,
+    searchQuery: string,
+    opts?: { page?: number; pageLen?: number }
+  ) {
     let params: Record<string, string> = {
-      search_query: searchQuery,
+      search_query: searchQuery
     };
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/workspaces/${this.params.workspace}/search/code`, { params });
+    let response = await this.api.get(`/workspaces/${this.params.workspace}/search/code`, {
+      params
+    });
     return response.data;
   }
 
@@ -473,17 +675,23 @@ export class Client {
   // ─── Default Reviewers ───
 
   async listDefaultReviewers(repoSlug: string) {
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/default-reviewers`);
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers`
+    );
     return response.data;
   }
 
   async addDefaultReviewer(repoSlug: string, userSlug: string) {
-    let response = await this.api.put(`/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${userSlug}`);
+    let response = await this.api.put(
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${userSlug}`
+    );
     return response.data;
   }
 
   async removeDefaultReviewer(repoSlug: string, userSlug: string) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${userSlug}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/default-reviewers/${userSlug}`
+    );
   }
 
   // ─── Branch Restrictions ───
@@ -493,16 +701,24 @@ export class Client {
     if (opts?.page) params.page = String(opts.page);
     if (opts?.pageLen) params.pagelen = String(opts.pageLen);
 
-    let response = await this.api.get(`/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions`, { params });
+    let response = await this.api.get(
+      `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions`,
+      { params }
+    );
     return response.data;
   }
 
   async createBranchRestriction(repoSlug: string, body: Record<string, any>) {
-    let response = await this.api.post(`/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions`, body);
+    let response = await this.api.post(
+      `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions`,
+      body
+    );
     return response.data;
   }
 
   async deleteBranchRestriction(repoSlug: string, restrictionId: number) {
-    await this.api.delete(`/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions/${restrictionId}`);
+    await this.api.delete(
+      `/repositories/${this.params.workspace}/${repoSlug}/branch-restrictions/${restrictionId}`
+    );
   }
 }

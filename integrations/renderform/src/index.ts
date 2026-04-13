@@ -6,5 +6,5 @@ import { renderformEvents } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [renderImage, takeScreenshot, listTemplates, getTemplate, listResults],
-  triggers: [renderformEvents],
+  triggers: [renderformEvents]
 });

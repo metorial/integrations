@@ -17,48 +17,58 @@ let issueSchema = z.object({
   projectKey: z.string().optional().describe('Project key'),
   projectName: z.string().optional().describe('Project name'),
   created: z.string().optional().describe('Creation timestamp'),
-  updated: z.string().optional().describe('Last updated timestamp'),
+  updated: z.string().optional().describe('Last updated timestamp')
 });
 
-export let searchIssuesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Search Issues',
-    key: 'search_issues',
-    description: `Search for Jira issues using JQL (Jira Query Language). Supports filtering by project, status, assignee, priority, labels, and any other issue fields.
+export let searchIssuesTool = SlateTool.create(spec, {
+  name: 'Search Issues',
+  key: 'search_issues',
+  description: `Search for Jira issues using JQL (Jira Query Language). Supports filtering by project, status, assignee, priority, labels, and any other issue fields.
 Use JQL syntax like \`project = "KEY" AND status = "Open"\` or \`assignee = currentUser() ORDER BY updated DESC\`.`,
-    instructions: [
-      'Use JQL syntax for the query parameter. Examples: `project = PROJ`, `status = "In Progress"`, `assignee = accountId`.',
-      'Combine conditions with AND/OR and sort with ORDER BY.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Use JQL syntax for the query parameter. Examples: `project = PROJ`, `status = "In Progress"`, `assignee = accountId`.',
+    'Combine conditions with AND/OR and sort with ORDER BY.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    jql: z.string().describe('JQL query string to search issues'),
-    fields: z.array(z.string()).optional().describe('Specific fields to return (e.g., ["summary", "status", "assignee"])'),
-    maxResults: z.number().optional().describe('Maximum number of results to return (default: 50, max: 100)'),
-    startAt: z.number().optional().describe('Index of the first result to return for pagination'),
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of matching issues'),
-    startAt: z.number().describe('Index of the first returned result'),
-    maxResults: z.number().describe('Maximum results returned'),
-    issues: z.array(issueSchema).describe('List of matching issues'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      jql: z.string().describe('JQL query string to search issues'),
+      fields: z
+        .array(z.string())
+        .optional()
+        .describe('Specific fields to return (e.g., ["summary", "status", "assignee"])'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return (default: 50, max: 100)'),
+      startAt: z
+        .number()
+        .optional()
+        .describe('Index of the first result to return for pagination')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of matching issues'),
+      startAt: z.number().describe('Index of the first returned result'),
+      maxResults: z.number().describe('Maximum results returned'),
+      issues: z.array(issueSchema).describe('List of matching issues')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new JiraClient({
       token: ctx.auth.token,
-      cloudId: ctx.config.cloudId,
+      cloudId: ctx.config.cloudId
     });
 
     let result = await client.searchIssues(
       ctx.input.jql,
       ctx.input.fields,
       ctx.input.maxResults,
-      ctx.input.startAt,
+      ctx.input.startAt
     );
 
     let issues = (result.issues || []).map((issue: any) => ({
@@ -75,7 +85,7 @@ Use JQL syntax like \`project = "KEY" AND status = "Open"\` or \`assignee = curr
       projectKey: issue.fields?.project?.key,
       projectName: issue.fields?.project?.name,
       created: issue.fields?.created,
-      updated: issue.fields?.updated,
+      updated: issue.fields?.updated
     }));
 
     return {
@@ -83,9 +93,9 @@ Use JQL syntax like \`project = "KEY" AND status = "Open"\` or \`assignee = curr
         total: result.total,
         startAt: result.startAt,
         maxResults: result.maxResults,
-        issues,
+        issues
       },
-      message: `Found **${result.total}** issues matching the query. Returned ${issues.length} results starting at index ${result.startAt}.`,
+      message: `Found **${result.total}** issues matching the query. Returned ${issues.length} results starting at index ${result.startAt}.`
     };
   })
   .build();

@@ -7,7 +7,7 @@ import {
   createScraperTool,
   runScraperTool,
   listScrapersTool,
-  deleteScraperTool,
+  deleteScraperTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     createScraperTool,
     runScraperTool,
     listScrapersTool,
-    deleteScraperTool,
+    deleteScraperTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

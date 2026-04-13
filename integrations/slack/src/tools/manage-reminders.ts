@@ -9,34 +9,48 @@ let reminderSchema = z.object({
   userId: z.string().optional().describe('User the reminder is for'),
   time: z.number().optional().describe('Unix timestamp when the reminder triggers'),
   recurring: z.boolean().optional().describe('Whether the reminder is recurring'),
-  completedAt: z.number().optional().describe('Unix timestamp when the reminder was completed'),
+  completedAt: z.number().optional().describe('Unix timestamp when the reminder was completed')
 });
 
-export let manageReminders = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Reminders',
-    key: 'manage_reminders',
-    description: `Create, complete, delete, or list Slack reminders. Reminders notify a user at a specified time with a custom message.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageReminders = SlateTool.create(spec, {
+  name: 'Manage Reminders',
+  key: 'manage_reminders',
+  description: `Create, complete, delete, or list Slack reminders. Reminders notify a user at a specified time with a custom message.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'complete', 'delete', 'list']).describe('Reminder action to perform'),
-    reminderId: z.string().optional().describe('Reminder ID (for complete/delete actions)'),
-    text: z.string().optional().describe('Reminder text (for create action)'),
-    time: z.string().optional().describe('When to trigger: Unix timestamp, natural language (e.g. "in 15 minutes"), or ISO datetime'),
-    userId: z.string().optional().describe('User to remind (defaults to the authenticated user)'),
-  }))
-  .output(z.object({
-    reminder: reminderSchema.optional().describe('Created/modified reminder'),
-    reminders: z.array(reminderSchema).optional().describe('List of reminders (for list action)'),
-    deleted: z.boolean().optional().describe('Whether the reminder was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'complete', 'delete', 'list'])
+        .describe('Reminder action to perform'),
+      reminderId: z.string().optional().describe('Reminder ID (for complete/delete actions)'),
+      text: z.string().optional().describe('Reminder text (for create action)'),
+      time: z
+        .string()
+        .optional()
+        .describe(
+          'When to trigger: Unix timestamp, natural language (e.g. "in 15 minutes"), or ISO datetime'
+        ),
+      userId: z
+        .string()
+        .optional()
+        .describe('User to remind (defaults to the authenticated user)')
+    })
+  )
+  .output(
+    z.object({
+      reminder: reminderSchema.optional().describe('Created/modified reminder'),
+      reminders: z
+        .array(reminderSchema)
+        .optional()
+        .describe('List of reminders (for list action)'),
+      deleted: z.boolean().optional().describe('Whether the reminder was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
     let { action } = ctx.input;
 
@@ -46,7 +60,7 @@ export let manageReminders = SlateTool.create(
       userId: r.user,
       time: r.time,
       recurring: r.recurring,
-      completedAt: r.complete_ts,
+      completedAt: r.complete_ts
     });
 
     if (action === 'create') {
@@ -55,11 +69,11 @@ export let manageReminders = SlateTool.create(
       let reminder = await client.addReminder({
         text: ctx.input.text,
         time: ctx.input.time,
-        user: ctx.input.userId,
+        user: ctx.input.userId
       });
       return {
         output: { reminder: mapReminder(reminder) },
-        message: `Created reminder: "${ctx.input.text}".`,
+        message: `Created reminder: "${ctx.input.text}".`
       };
     }
 
@@ -68,7 +82,7 @@ export let manageReminders = SlateTool.create(
       await client.completeReminder(ctx.input.reminderId);
       return {
         output: { reminder: { reminderId: ctx.input.reminderId } },
-        message: `Completed reminder \`${ctx.input.reminderId}\`.`,
+        message: `Completed reminder \`${ctx.input.reminderId}\`.`
       };
     }
 
@@ -77,7 +91,7 @@ export let manageReminders = SlateTool.create(
       await client.deleteReminder(ctx.input.reminderId);
       return {
         output: { deleted: true },
-        message: `Deleted reminder \`${ctx.input.reminderId}\`.`,
+        message: `Deleted reminder \`${ctx.input.reminderId}\`.`
       };
     }
 
@@ -85,7 +99,7 @@ export let manageReminders = SlateTool.create(
     let reminders = await client.listReminders();
     return {
       output: { reminders: reminders.map(mapReminder) },
-      message: `Found ${reminders.length} reminder(s).`,
+      message: `Found ${reminders.length} reminder(s).`
     };
   })
   .build();

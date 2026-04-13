@@ -3,79 +3,81 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let leadCreated = SlateTrigger.create(
-  spec,
-  {
-    name: 'Lead Created',
-    key: 'lead_created',
-    description: 'Fires when a new lead is created. Can optionally be filtered to only trigger when a specific lead field is present and matches a given value.',
-  }
-)
-  .input(z.object({
-    leadId: z.string().describe('ID of the created lead'),
-    raw: z.record(z.string(), z.any()).optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('ID of the new lead'),
-    firstName: z.string().optional().describe('Lead first name'),
-    lastName: z.string().optional().describe('Lead last name'),
-    email: z.string().optional().describe('Lead email'),
-    phoneNumber: z.string().optional().describe('Lead phone number'),
-    company: z.string().optional().describe('Lead company'),
-    category: z.string().optional().describe('Lead category'),
-    source: z.string().optional().describe('Lead source'),
-    status: z.string().optional().describe('Lead status'),
-    result: z.string().optional().describe('Lead result'),
-    stage: z.string().optional().describe('Lead stage'),
-    tags: z.any().optional().describe('Lead tags'),
-    leadOwnerId: z.string().optional().describe('Assigned lead owner ID'),
-    teamId: z.string().optional().describe('Assigned team ID'),
-    teamName: z.string().optional().describe('Assigned team name'),
-    createdAt: z.string().optional().describe('When the lead was created'),
-  }))
+export let leadCreated = SlateTrigger.create(spec, {
+  name: 'Lead Created',
+  key: 'lead_created',
+  description:
+    'Fires when a new lead is created. Can optionally be filtered to only trigger when a specific lead field is present and matches a given value.'
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('ID of the created lead'),
+      raw: z.record(z.string(), z.any()).optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('ID of the new lead'),
+      firstName: z.string().optional().describe('Lead first name'),
+      lastName: z.string().optional().describe('Lead last name'),
+      email: z.string().optional().describe('Lead email'),
+      phoneNumber: z.string().optional().describe('Lead phone number'),
+      company: z.string().optional().describe('Lead company'),
+      category: z.string().optional().describe('Lead category'),
+      source: z.string().optional().describe('Lead source'),
+      status: z.string().optional().describe('Lead status'),
+      result: z.string().optional().describe('Lead result'),
+      stage: z.string().optional().describe('Lead stage'),
+      tags: z.any().optional().describe('Lead tags'),
+      leadOwnerId: z.string().optional().describe('Assigned lead owner ID'),
+      teamId: z.string().optional().describe('Assigned team ID'),
+      teamName: z.string().optional().describe('Assigned team name'),
+      createdAt: z.string().optional().describe('When the lead was created')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       let result = await client.createWebhook({
         name: 'Slates - Lead Created',
         event: 'lead_created',
-        targetUrl: ctx.input.webhookBaseUrl,
+        targetUrl: ctx.input.webhookBaseUrl
       });
 
       return {
         registrationDetails: {
-          webhookId: String(result.id),
-        },
+          webhookId: String(result.id)
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
           {
             leadId: String(data.id ?? data.lead_id ?? ''),
-            raw: data,
-          },
-        ],
+            raw: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.raw ?? {};
       let team = raw.team ?? {};
 
@@ -98,9 +100,9 @@ export let leadCreated = SlateTrigger.create(
           leadOwnerId: raw.lead_owner_id ? String(raw.lead_owner_id) : undefined,
           teamId: team.id ? String(team.id) : undefined,
           teamName: team.name,
-          createdAt: raw.created_at,
-        },
+          createdAt: raw.created_at
+        }
       };
-    },
+    }
   })
   .build();

@@ -15,6 +15,7 @@ Click your profile picture and select Profile Settings. Click the API Settings t
 Include your API key in the Authorization header of your HTTP requests, formatted as `Token token=YOUR_API_KEY`.
 
 Example:
+
 ```
 Authorization: Token token=sfg999666t673t7t82
 Content-Type: application/json
@@ -30,33 +31,43 @@ Using the APIs, users would only be able to view data that they have access to.
 ## Features
 
 ### Lead Management
+
 Create, view, update, delete, and list leads. You can create or update a lead based on a unique identifier value — it searches for a record with the value mentioned and updates it if found, else it creates the record. Leads can be converted to contacts. You can add, update, or remove team members of the lead team. Leads support custom fields, filtering via views, sorting, and activity tracking.
 
 ### Contact Management
+
 Create, view, update, delete, and list contacts. Contacts can be associated with multiple accounts. Contacts support custom fields, filtered views, and activity history retrieval.
 
 ### Account (Company) Management
+
 Companies with whom you have an existing business relationship are saved as Accounts. Usually one or more individuals (contacts) are associated to the account with whom you pursue sales opportunities. Full CRUD operations are supported, along with filtering and sorting.
 
 ### Deal Management
+
 Create, view, update, delete, and list deals. You can manage deals with the pipeline view and drive more deals to closure. Deals can be associated with contacts and accounts.
 
 ### Tasks and Appointments
+
 Create, view, update, delete, and list tasks and appointments. Tasks are organized according to status and due date (open, due today, due tomorrow, overdue, completed). Appointments are divided into past and upcoming.
 
 ### Notes and Activities
+
 Create notes for leads, contacts, accounts, and deals. Track sales activities and retrieve activity timelines for contacts and leads.
 
 ### Search and Filtering
+
 Search across entities (leads, contacts, etc.) using keywords. Filter records based on certain conditions using the filterize option in real-time, applicable for contacts, accounts, and deals. Use saved views to retrieve filtered record sets.
 
 ### Sales Activities
+
 Log and manage sales activities such as calls, emails, and custom activities associated with leads, contacts, and deals.
 
 ### Files and Documents
+
 List and manage file and document associations on records.
 
 ### Settings and Customization
+
 Retrieve field metadata for contacts, leads, deals, accounts, and sales activities. Create and manage custom modules.
 
 ## Events

@@ -5,14 +5,14 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://app.klipfolio.com/api/1.0',
+      baseURL: 'https://app.klipfolio.com/api/1.0'
     });
   }
 
   private get headers() {
     return {
       'kf-api-key': this.config.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -27,7 +27,13 @@ export class Client {
 
   // ── Clients ──
 
-  async listClients(opts?: { status?: string; externalId?: string; full?: boolean; limit?: number; offset?: number }) {
+  async listClients(opts?: {
+    status?: string;
+    externalId?: string;
+    full?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.status) params.status = opts.status;
     if (opts?.externalId) params.external_id = opts.externalId;
@@ -41,11 +47,20 @@ export class Client {
   async getClient(clientId: string, full?: boolean) {
     let params: Record<string, string> = {};
     if (full) params.full = 'true';
-    let response = await this.axios.get(`/clients/${clientId}`, { headers: this.headers, params });
+    let response = await this.axios.get(`/clients/${clientId}`, {
+      headers: this.headers,
+      params
+    });
     return response.data?.data;
   }
 
-  async createClient(data: { name: string; description?: string; status?: string; seats?: number; externalId?: string }) {
+  async createClient(data: {
+    name: string;
+    description?: string;
+    status?: string;
+    seats?: number;
+    externalId?: string;
+  }) {
     let body: Record<string, any> = { name: data.name };
     if (data.description !== undefined) body.description = data.description;
     if (data.status !== undefined) body.status = data.status;
@@ -55,14 +70,25 @@ export class Client {
     return response.data;
   }
 
-  async updateClient(clientId: string, data: { name?: string; description?: string; status?: string; seats?: number; externalId?: string }) {
+  async updateClient(
+    clientId: string,
+    data: {
+      name?: string;
+      description?: string;
+      status?: string;
+      seats?: number;
+      externalId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
     if (data.status !== undefined) body.status = data.status;
     if (data.seats !== undefined) body.seats = data.seats;
     if (data.externalId !== undefined) body.external_id = data.externalId;
-    let response = await this.axios.put(`/clients/${clientId}`, body, { headers: this.headers });
+    let response = await this.axios.put(`/clients/${clientId}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -73,7 +99,12 @@ export class Client {
 
   // ── Tabs (Dashboards) ──
 
-  async listTabs(opts?: { clientId?: string; full?: boolean; limit?: number; offset?: number }) {
+  async listTabs(opts?: {
+    clientId?: string;
+    full?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.full) params.full = 'true';
@@ -114,34 +145,54 @@ export class Client {
   // ── Tab Sub-Resources ──
 
   async getTabShareRights(tabId: string) {
-    let response = await this.axios.get(`/tabs/${tabId}/share-rights`, { headers: this.headers });
+    let response = await this.axios.get(`/tabs/${tabId}/share-rights`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
-  async updateTabShareRights(tabId: string, groups: Array<{ groupId: string; canEdit: boolean }>) {
+  async updateTabShareRights(
+    tabId: string,
+    groups: Array<{ groupId: string; canEdit: boolean }>
+  ) {
     let body = { groups: groups.map(g => ({ group_id: g.groupId, can_edit: g.canEdit })) };
-    let response = await this.axios.put(`/tabs/${tabId}/share-rights`, body, { headers: this.headers });
+    let response = await this.axios.put(`/tabs/${tabId}/share-rights`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deleteTabShareRight(tabId: string, groupId: string) {
-    let response = await this.axios.delete(`/tabs/${tabId}/share-rights/${groupId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/tabs/${tabId}/share-rights/${groupId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getTabKlipInstances(tabId: string) {
-    let response = await this.axios.get(`/tabs/${tabId}/klip-instances`, { headers: this.headers });
+    let response = await this.axios.get(`/tabs/${tabId}/klip-instances`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
-  async addKlipsToTab(tabId: string, klips: Array<{ klipId: string; region?: number; position?: number }>) {
-    let body = { klips: klips.map(k => ({ klip_id: k.klipId, region: k.region, position: k.position })) };
-    let response = await this.axios.put(`/tabs/${tabId}/klip-instances`, body, { headers: this.headers });
+  async addKlipsToTab(
+    tabId: string,
+    klips: Array<{ klipId: string; region?: number; position?: number }>
+  ) {
+    let body = {
+      klips: klips.map(k => ({ klip_id: k.klipId, region: k.region, position: k.position }))
+    };
+    let response = await this.axios.put(`/tabs/${tabId}/klip-instances`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async removeKlipFromTab(tabId: string, instanceId: string) {
-    let response = await this.axios.delete(`/tabs/${tabId}/klip-instances/${instanceId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/tabs/${tabId}/klip-instances/${instanceId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -151,13 +202,20 @@ export class Client {
   }
 
   async updateTabLayout(tabId: string, layout: { type: string; state: Record<string, any> }) {
-    let response = await this.axios.put(`/tabs/${tabId}/layout`, layout, { headers: this.headers });
+    let response = await this.axios.put(`/tabs/${tabId}/layout`, layout, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   // ── Klips ──
 
-  async listKlips(opts?: { clientId?: string; datasourceId?: string; limit?: number; offset?: number }) {
+  async listKlips(opts?: {
+    clientId?: string;
+    datasourceId?: string;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.datasourceId) params.datasource_id = opts.datasourceId;
@@ -174,7 +232,12 @@ export class Client {
     return response.data?.data;
   }
 
-  async createKlip(data: { name: string; description?: string; clientId?: string; schema?: any }) {
+  async createKlip(data: {
+    name: string;
+    description?: string;
+    clientId?: string;
+    schema?: any;
+  }) {
     let body: Record<string, any> = { name: data.name };
     if (data.description !== undefined) body.description = data.description;
     if (data.clientId !== undefined) body.client_id = data.clientId;
@@ -202,18 +265,27 @@ export class Client {
   }
 
   async updateKlipSchema(klipId: string, schema: any) {
-    let response = await this.axios.put(`/klips/${klipId}/schema`, schema, { headers: this.headers });
+    let response = await this.axios.put(`/klips/${klipId}/schema`, schema, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getKlipShareRights(klipId: string) {
-    let response = await this.axios.get(`/klips/${klipId}/share-rights`, { headers: this.headers });
+    let response = await this.axios.get(`/klips/${klipId}/share-rights`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
   // ── Data Sources ──
 
-  async listDatasources(opts?: { clientId?: string; full?: boolean; limit?: number; offset?: number }) {
+  async listDatasources(opts?: {
+    clientId?: string;
+    full?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.full) params.full = 'true';
@@ -226,7 +298,10 @@ export class Client {
   async getDatasource(datasourceId: string, full?: boolean) {
     let params: Record<string, string> = {};
     if (full) params.full = 'true';
-    let response = await this.axios.get(`/datasources/${datasourceId}`, { headers: this.headers, params });
+    let response = await this.axios.get(`/datasources/${datasourceId}`, {
+      headers: this.headers,
+      params
+    });
     return response.data?.data;
   }
 
@@ -241,7 +316,7 @@ export class Client {
   }) {
     let body: Record<string, any> = {
       name: data.name,
-      connector: data.connector,
+      connector: data.connector
     };
     if (data.description !== undefined) body.description = data.description;
     if (data.format !== undefined) body.format = data.format;
@@ -252,96 +327,153 @@ export class Client {
     return response.data;
   }
 
-  async updateDatasource(datasourceId: string, data: { name?: string; description?: string; refreshInterval?: number }) {
+  async updateDatasource(
+    datasourceId: string,
+    data: { name?: string; description?: string; refreshInterval?: number }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
     if (data.refreshInterval !== undefined) body.refresh_interval = data.refreshInterval;
-    let response = await this.axios.put(`/datasources/${datasourceId}`, body, { headers: this.headers });
+    let response = await this.axios.put(`/datasources/${datasourceId}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deleteDatasource(datasourceId: string) {
-    let response = await this.axios.delete(`/datasources/${datasourceId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/datasources/${datasourceId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async refreshDatasources(datasourceIds: string[]) {
     let body = { datasources: datasourceIds };
-    let response = await this.axios.post('/datasources/@/refresh', body, { headers: this.headers });
+    let response = await this.axios.post('/datasources/@/refresh', body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async enableDatasource(datasourceId: string) {
-    let response = await this.axios.post(`/datasources/${datasourceId}/@/enable`, {}, { headers: this.headers });
+    let response = await this.axios.post(
+      `/datasources/${datasourceId}/@/enable`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async disableDatasource(datasourceId: string) {
-    let response = await this.axios.post(`/datasources/${datasourceId}/@/disable`, {}, { headers: this.headers });
+    let response = await this.axios.post(
+      `/datasources/${datasourceId}/@/disable`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async getDatasourceProperties(datasourceId: string) {
-    let response = await this.axios.get(`/datasources/${datasourceId}/properties`, { headers: this.headers });
+    let response = await this.axios.get(`/datasources/${datasourceId}/properties`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
   async updateDatasourceProperties(datasourceId: string, properties: Record<string, any>) {
-    let response = await this.axios.put(`/datasources/${datasourceId}/properties`, properties, { headers: this.headers });
+    let response = await this.axios.put(
+      `/datasources/${datasourceId}/properties`,
+      properties,
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async getDatasourceShareRights(datasourceId: string) {
-    let response = await this.axios.get(`/datasources/${datasourceId}/share-rights`, { headers: this.headers });
+    let response = await this.axios.get(`/datasources/${datasourceId}/share-rights`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
-  async updateDatasourceShareRights(datasourceId: string, shareRights: {
-    users?: Array<{ userId: string; canEdit: boolean }>;
-    groups?: Array<{ groupId: string; canEdit: boolean }>;
-  }) {
+  async updateDatasourceShareRights(
+    datasourceId: string,
+    shareRights: {
+      users?: Array<{ userId: string; canEdit: boolean }>;
+      groups?: Array<{ groupId: string; canEdit: boolean }>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (shareRights.users) {
       body.users = shareRights.users.map(u => ({ user_id: u.userId, can_edit: u.canEdit }));
     }
     if (shareRights.groups) {
-      body.groups = shareRights.groups.map(g => ({ group_id: g.groupId, can_edit: g.canEdit }));
+      body.groups = shareRights.groups.map(g => ({
+        group_id: g.groupId,
+        can_edit: g.canEdit
+      }));
     }
-    let response = await this.axios.put(`/datasources/${datasourceId}/share-rights`, body, { headers: this.headers });
+    let response = await this.axios.put(`/datasources/${datasourceId}/share-rights`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   // ── Data Source Instances ──
 
-  async listDatasourceInstances(opts?: { clientId?: string; datasourceId?: string; limit?: number; offset?: number }) {
+  async listDatasourceInstances(opts?: {
+    clientId?: string;
+    datasourceId?: string;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.datasourceId) params.datasource_id = opts.datasourceId;
     if (opts?.limit !== undefined) params.limit = String(opts.limit);
     if (opts?.offset !== undefined) params.offset = String(opts.offset);
-    let response = await this.axios.get('/datasource-instances', { headers: this.headers, params });
+    let response = await this.axios.get('/datasource-instances', {
+      headers: this.headers,
+      params
+    });
     return response.data;
   }
 
   async getDatasourceInstance(instanceId: string) {
-    let response = await this.axios.get(`/datasource-instances/${instanceId}`, { headers: this.headers });
+    let response = await this.axios.get(`/datasource-instances/${instanceId}`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
   async getDatasourceInstanceData(instanceId: string) {
-    let response = await this.axios.get(`/datasource-instances/${instanceId}/data`, { headers: this.headers });
+    let response = await this.axios.get(`/datasource-instances/${instanceId}/data`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
   async refreshDatasourceInstance(instanceId: string) {
-    let response = await this.axios.post(`/datasource-instances/${instanceId}/@/refresh`, {}, { headers: this.headers });
+    let response = await this.axios.post(
+      `/datasource-instances/${instanceId}/@/refresh`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   // ── Users ──
 
-  async listUsers(opts?: { clientId?: string; email?: string; full?: boolean; includeRoles?: boolean; includeGroups?: boolean; limit?: number; offset?: number }) {
+  async listUsers(opts?: {
+    clientId?: string;
+    email?: string;
+    full?: boolean;
+    includeRoles?: boolean;
+    includeGroups?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.email) params.email = opts.email;
@@ -376,7 +508,7 @@ export class Client {
     let body: Record<string, any> = {
       first_name: data.firstName,
       last_name: data.lastName,
-      email: data.email,
+      email: data.email
     };
     if (data.roles !== undefined) body.roles = data.roles;
     if (data.password !== undefined) body.password = data.password;
@@ -386,7 +518,10 @@ export class Client {
     return response.data;
   }
 
-  async updateUser(userId: string, data: { firstName?: string; lastName?: string; email?: string; externalId?: string }) {
+  async updateUser(
+    userId: string,
+    data: { firstName?: string; lastName?: string; email?: string; externalId?: string }
+  ) {
     let body: Record<string, any> = {};
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -407,34 +542,51 @@ export class Client {
   }
 
   async addUserToGroup(userId: string, groupId: string) {
-    let response = await this.axios.put(`/users/${userId}/groups/${groupId}`, {}, { headers: this.headers });
+    let response = await this.axios.put(
+      `/users/${userId}/groups/${groupId}`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async removeUserFromGroup(userId: string, groupId: string) {
-    let response = await this.axios.delete(`/users/${userId}/groups/${groupId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/users/${userId}/groups/${groupId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getUserTabInstances(userId: string) {
-    let response = await this.axios.get(`/users/${userId}/tab-instances`, { headers: this.headers });
+    let response = await this.axios.get(`/users/${userId}/tab-instances`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
   async addTabsToUser(userId: string, tabIds: string[]) {
     let body = { tab_ids: tabIds };
-    let response = await this.axios.put(`/users/${userId}/tab-instances`, body, { headers: this.headers });
+    let response = await this.axios.put(`/users/${userId}/tab-instances`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async removeTabFromUser(userId: string, tabInstanceId: string) {
-    let response = await this.axios.delete(`/users/${userId}/tab-instances/${tabInstanceId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/users/${userId}/tab-instances/${tabInstanceId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   // ── Roles ──
 
-  async listRoles(opts?: { clientId?: string; full?: boolean; limit?: number; offset?: number }) {
+  async listRoles(opts?: {
+    clientId?: string;
+    full?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.full) params.full = 'true';
@@ -459,7 +611,10 @@ export class Client {
     return response.data;
   }
 
-  async updateRole(roleId: string, data: { name?: string; description?: string; permissions?: string[] }) {
+  async updateRole(
+    roleId: string,
+    data: { name?: string; description?: string; permissions?: string[] }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.description !== undefined) body.description = data.description;
@@ -474,12 +629,16 @@ export class Client {
   }
 
   async getRolePermissions(roleId: string) {
-    let response = await this.axios.get(`/roles/${roleId}/permissions`, { headers: this.headers });
+    let response = await this.axios.get(`/roles/${roleId}/permissions`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
   async updateRolePermissions(roleId: string, permissions: Record<string, any>) {
-    let response = await this.axios.put(`/roles/${roleId}/permissions`, permissions, { headers: this.headers });
+    let response = await this.axios.put(`/roles/${roleId}/permissions`, permissions, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -491,68 +650,104 @@ export class Client {
   }
 
   async addUserToGroupDirect(groupId: string, userId: string) {
-    let response = await this.axios.put(`/groups/${groupId}/users/${userId}`, {}, { headers: this.headers });
+    let response = await this.axios.put(
+      `/groups/${groupId}/users/${userId}`,
+      {},
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async removeUserFromGroupDirect(groupId: string, userId: string) {
-    let response = await this.axios.delete(`/groups/${groupId}/users/${userId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/groups/${groupId}/users/${userId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async getGroupDefaultTabs(groupId: string) {
-    let response = await this.axios.get(`/groups/${groupId}/default-tabs`, { headers: this.headers });
+    let response = await this.axios.get(`/groups/${groupId}/default-tabs`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
-  async addGroupDefaultTab(groupId: string, data: { tabId: string; canEdit?: boolean; visibility?: string; index?: number }) {
+  async addGroupDefaultTab(
+    groupId: string,
+    data: { tabId: string; canEdit?: boolean; visibility?: string; index?: number }
+  ) {
     let body: Record<string, any> = { tab_id: data.tabId };
     if (data.canEdit !== undefined) body.can_edit = data.canEdit;
     if (data.visibility !== undefined) body.visibility = data.visibility;
     if (data.index !== undefined) body.index = data.index;
-    let response = await this.axios.post(`/groups/${groupId}/default-tabs`, body, { headers: this.headers });
+    let response = await this.axios.post(`/groups/${groupId}/default-tabs`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async updateGroupDefaultTab(groupId: string, defaultTabId: string, data: { canEdit?: boolean; visibility?: string; index?: number }) {
+  async updateGroupDefaultTab(
+    groupId: string,
+    defaultTabId: string,
+    data: { canEdit?: boolean; visibility?: string; index?: number }
+  ) {
     let body: Record<string, any> = {};
     if (data.canEdit !== undefined) body.can_edit = data.canEdit;
     if (data.visibility !== undefined) body.visibility = data.visibility;
     if (data.index !== undefined) body.index = data.index;
-    let response = await this.axios.put(`/groups/${groupId}/default-tabs/${defaultTabId}`, body, { headers: this.headers });
+    let response = await this.axios.put(
+      `/groups/${groupId}/default-tabs/${defaultTabId}`,
+      body,
+      { headers: this.headers }
+    );
     return response.data;
   }
 
   async deleteGroupDefaultTab(groupId: string, defaultTabId: string) {
-    let response = await this.axios.delete(`/groups/${groupId}/default-tabs/${defaultTabId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/groups/${groupId}/default-tabs/${defaultTabId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   // ── Published Links ──
 
-  async listPublishedLinks(opts?: { clientId?: string; dashboardId?: string; limit?: number; offset?: number }) {
+  async listPublishedLinks(opts?: {
+    clientId?: string;
+    dashboardId?: string;
+    limit?: number;
+    offset?: number;
+  }) {
     let params: Record<string, string> = {};
     if (opts?.clientId) params.client_id = opts.clientId;
     if (opts?.dashboardId) params.dashboard_id = opts.dashboardId;
     if (opts?.limit !== undefined) params.limit = String(opts.limit);
     if (opts?.offset !== undefined) params.offset = String(opts.offset);
-    let response = await this.axios.get('/dashboard-published-links', { headers: this.headers, params });
+    let response = await this.axios.get('/dashboard-published-links', {
+      headers: this.headers,
+      params
+    });
     return response.data;
   }
 
   async getPublishedLink(linkId: string) {
-    let response = await this.axios.get(`/dashboard-published-links/${linkId}`, { headers: this.headers });
+    let response = await this.axios.get(`/dashboard-published-links/${linkId}`, {
+      headers: this.headers
+    });
     return response.data?.data;
   }
 
-  async createPublishedLink(dashboardId: string, data: {
-    name?: string;
-    password?: string;
-    description?: string;
-    isPublic?: boolean;
-    theme?: string;
-    logo?: string;
-  }) {
+  async createPublishedLink(
+    dashboardId: string,
+    data: {
+      name?: string;
+      password?: string;
+      description?: string;
+      isPublic?: boolean;
+      theme?: string;
+      logo?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.password !== undefined) body.password = data.password;
@@ -560,18 +755,23 @@ export class Client {
     if (data.isPublic !== undefined) body.isPublic = data.isPublic;
     if (data.theme !== undefined) body.theme = data.theme;
     if (data.logo !== undefined) body.logo = data.logo;
-    let response = await this.axios.post(`/dashboard-published-links/${dashboardId}`, body, { headers: this.headers });
+    let response = await this.axios.post(`/dashboard-published-links/${dashboardId}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
-  async updatePublishedLink(linkId: string, data: {
-    name?: string;
-    password?: string;
-    description?: string;
-    isPublic?: boolean;
-    theme?: string;
-    logo?: string;
-  }) {
+  async updatePublishedLink(
+    linkId: string,
+    data: {
+      name?: string;
+      password?: string;
+      description?: string;
+      isPublic?: boolean;
+      theme?: string;
+      logo?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.password !== undefined) body.password = data.password;
@@ -579,12 +779,16 @@ export class Client {
     if (data.isPublic !== undefined) body.isPublic = data.isPublic;
     if (data.theme !== undefined) body.theme = data.theme;
     if (data.logo !== undefined) body.logo = data.logo;
-    let response = await this.axios.put(`/dashboard-published-links/${linkId}`, body, { headers: this.headers });
+    let response = await this.axios.put(`/dashboard-published-links/${linkId}`, body, {
+      headers: this.headers
+    });
     return response.data;
   }
 
   async deletePublishedLink(linkId: string) {
-    let response = await this.axios.delete(`/dashboard-published-links/${linkId}`, { headers: this.headers });
+    let response = await this.axios.delete(`/dashboard-published-links/${linkId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 }

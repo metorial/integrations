@@ -6,7 +6,9 @@ import { z } from 'zod';
 let addressComponentSchema = z.object({
   longName: z.string().describe('Full text of the address component'),
   shortName: z.string().describe('Abbreviated form of the component'),
-  types: z.array(z.string()).describe('Types for this component (e.g. street_number, route, locality)'),
+  types: z
+    .array(z.string())
+    .describe('Types for this component (e.g. street_number, route, locality)')
 });
 
 let geocodeResultSchema = z.object({
@@ -14,39 +16,64 @@ let geocodeResultSchema = z.object({
   placeId: z.string().describe('Unique place identifier'),
   latitude: z.number().describe('Latitude coordinate'),
   longitude: z.number().describe('Longitude coordinate'),
-  locationType: z.string().describe('Accuracy of the geocode (ROOFTOP, RANGE_INTERPOLATED, GEOMETRIC_CENTER, APPROXIMATE)'),
+  locationType: z
+    .string()
+    .describe(
+      'Accuracy of the geocode (ROOFTOP, RANGE_INTERPOLATED, GEOMETRIC_CENTER, APPROXIMATE)'
+    ),
   types: z.array(z.string()).describe('Address types (e.g. street_address, locality)'),
-  addressComponents: z.array(addressComponentSchema).describe('Broken-down address components'),
+  addressComponents: z.array(addressComponentSchema).describe('Broken-down address components')
 });
 
-export let geocodeTool = SlateTool.create(
-  spec,
-  {
-    name: 'Geocode',
-    key: 'geocode',
-    description: `Convert between addresses and geographic coordinates. Supports **forward geocoding** (address → lat/lng) and **reverse geocoding** (lat/lng → address). Use forward mode to find the coordinates of a street address, or reverse mode to find what address corresponds to a given location.`,
-    instructions: [
-      'Provide either an address (forward geocoding) or latitude/longitude (reverse geocoding), but not both.',
-      'Use the components filter to bias results to a specific country or region (e.g. "country:US").',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let geocodeTool = SlateTool.create(spec, {
+  name: 'Geocode',
+  key: 'geocode',
+  description: `Convert between addresses and geographic coordinates. Supports **forward geocoding** (address → lat/lng) and **reverse geocoding** (lat/lng → address). Use forward mode to find the coordinates of a street address, or reverse mode to find what address corresponds to a given location.`,
+  instructions: [
+    'Provide either an address (forward geocoding) or latitude/longitude (reverse geocoding), but not both.',
+    'Use the components filter to bias results to a specific country or region (e.g. "country:US").'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    address: z.string().optional().describe('Street address to geocode (forward geocoding). Omit for reverse geocoding.'),
-    latitude: z.number().optional().describe('Latitude for reverse geocoding. Omit for forward geocoding.'),
-    longitude: z.number().optional().describe('Longitude for reverse geocoding. Omit for forward geocoding.'),
-    components: z.string().optional().describe('Component filter to bias results, pipe-separated (e.g. "country:US")'),
-    bounds: z.string().optional().describe('Bounding box to bias results (format: "south,west|north,east")'),
-    language: z.string().optional().describe('Language code for results (e.g. "en", "fr", "de")'),
-    region: z.string().optional().describe('Region bias as ccTLD code (e.g. "us", "uk")'),
-  }))
-  .output(z.object({
-    results: z.array(geocodeResultSchema).describe('Geocoding results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      address: z
+        .string()
+        .optional()
+        .describe(
+          'Street address to geocode (forward geocoding). Omit for reverse geocoding.'
+        ),
+      latitude: z
+        .number()
+        .optional()
+        .describe('Latitude for reverse geocoding. Omit for forward geocoding.'),
+      longitude: z
+        .number()
+        .optional()
+        .describe('Longitude for reverse geocoding. Omit for forward geocoding.'),
+      components: z
+        .string()
+        .optional()
+        .describe('Component filter to bias results, pipe-separated (e.g. "country:US")'),
+      bounds: z
+        .string()
+        .optional()
+        .describe('Bounding box to bias results (format: "south,west|north,east")'),
+      language: z
+        .string()
+        .optional()
+        .describe('Language code for results (e.g. "en", "fr", "de")'),
+      region: z.string().optional().describe('Region bias as ccTLD code (e.g. "us", "uk")')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(geocodeResultSchema).describe('Geocoding results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleMapsClient({ token: ctx.auth.token });
 
     let response: { status: string; results: Array<Record<string, unknown>> };
@@ -57,16 +84,18 @@ export let geocodeTool = SlateTool.create(
         components: ctx.input.components,
         bounds: ctx.input.bounds,
         language: ctx.input.language,
-        region: ctx.input.region,
+        region: ctx.input.region
       });
     } else if (ctx.input.latitude !== undefined && ctx.input.longitude !== undefined) {
       response = await client.reverseGeocode({
         latitude: ctx.input.latitude,
         longitude: ctx.input.longitude,
-        language: ctx.input.language,
+        language: ctx.input.language
       });
     } else {
-      throw new Error('Either address (forward geocoding) or latitude/longitude (reverse geocoding) is required.');
+      throw new Error(
+        'Either address (forward geocoding) or latitude/longitude (reverse geocoding) is required.'
+      );
     }
 
     if (response.status !== 'OK' && response.status !== 'ZERO_RESULTS') {
@@ -76,11 +105,13 @@ export let geocodeTool = SlateTool.create(
     let results = (response.results || []).map((r: Record<string, unknown>) => {
       let geometry = r.geometry as Record<string, unknown>;
       let location = geometry.location as { lat: number; lng: number };
-      let components = (r.address_components as Array<Record<string, unknown>> || []).map((c) => ({
-        longName: c.long_name as string,
-        shortName: c.short_name as string,
-        types: c.types as string[],
-      }));
+      let components = ((r.address_components as Array<Record<string, unknown>>) || []).map(
+        c => ({
+          longName: c.long_name as string,
+          shortName: c.short_name as string,
+          types: c.types as string[]
+        })
+      );
 
       return {
         formattedAddress: r.formatted_address as string,
@@ -89,7 +120,7 @@ export let geocodeTool = SlateTool.create(
         longitude: location.lng,
         locationType: (geometry.location_type as string) || 'APPROXIMATE',
         types: (r.types as string[]) || [],
-        addressComponents: components,
+        addressComponents: components
       };
     });
 
@@ -100,7 +131,7 @@ export let geocodeTool = SlateTool.create(
 
     return {
       output: { results },
-      message,
+      message
     };
   })
   .build();

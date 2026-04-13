@@ -3,34 +3,36 @@ import { FinmeiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newCustomer = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Customer',
-    key: 'new_customer',
-    description: 'Triggers when a new customer is added in Finmei. Polls the customers list and detects newly added customers.',
-  }
-)
-  .input(z.object({
-    customerId: z.string().describe('Customer ID'),
-    name: z.string().optional().describe('Customer name'),
-    email: z.string().optional().describe('Customer email'),
-    phone: z.string().optional().describe('Customer phone'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    customerId: z.string().describe('Customer ID'),
-    name: z.string().optional().describe('Customer name'),
-    email: z.string().optional().describe('Customer email address'),
-    phone: z.string().optional().describe('Customer phone number'),
-    createdAt: z.string().optional().describe('When the customer was created'),
-  }))
+export let newCustomer = SlateTrigger.create(spec, {
+  name: 'New Customer',
+  key: 'new_customer',
+  description:
+    'Triggers when a new customer is added in Finmei. Polls the customers list and detects newly added customers.'
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('Customer ID'),
+      name: z.string().optional().describe('Customer name'),
+      email: z.string().optional().describe('Customer email'),
+      phone: z.string().optional().describe('Customer phone'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().describe('Customer ID'),
+      name: z.string().optional().describe('Customer name'),
+      email: z.string().optional().describe('Customer email address'),
+      phone: z.string().optional().describe('Customer phone number'),
+      createdAt: z.string().optional().describe('When the customer was created')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new FinmeiClient(ctx.auth.token);
 
       let state = ctx.state as { knownCustomerIds?: string[] } | null;
@@ -60,7 +62,7 @@ export let newCustomer = SlateTrigger.create(
             name: c.name,
             email: c.email,
             phone: c.phone,
-            createdAt: c.created_at,
+            createdAt: c.created_at
           });
         }
       }
@@ -68,12 +70,12 @@ export let newCustomer = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownCustomerIds: allIds,
-        },
+          knownCustomerIds: allIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'customer.created',
         id: `customer-${ctx.input.customerId}`,
@@ -82,9 +84,9 @@ export let newCustomer = SlateTrigger.create(
           name: ctx.input.name,
           email: ctx.input.email,
           phone: ctx.input.phone,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
+    }
   })
   .build();

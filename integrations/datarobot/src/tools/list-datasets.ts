@@ -12,37 +12,38 @@ let datasetSchema = z.object({
   datasetSize: z.number().optional().nullable().describe('Dataset size in bytes'),
   rowCount: z.number().optional().nullable().describe('Number of rows'),
   columnCount: z.number().optional().nullable().describe('Number of columns'),
-  processingState: z.string().optional().describe('Processing state of the dataset'),
+  processingState: z.string().optional().describe('Processing state of the dataset')
 });
 
-export let listDatasets = SlateTool.create(
-  spec,
-  {
-    name: 'List Datasets',
-    key: 'list_datasets',
-    description: `List datasets in the DataRobot AI Catalog. Returns metadata including name, size, row/column counts, and processing state.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDatasets = SlateTool.create(spec, {
+  name: 'List Datasets',
+  key: 'list_datasets',
+  description: `List datasets in the DataRobot AI Catalog. Returns metadata including name, size, row/column counts, and processing state.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    offset: z.number().optional().describe('Pagination offset'),
-    limit: z.number().optional().describe('Maximum number of datasets to return'),
-  }))
-  .output(z.object({
-    datasets: z.array(datasetSchema).describe('List of datasets in the catalog'),
-    totalCount: z.number().optional().describe('Total number of datasets available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      offset: z.number().optional().describe('Pagination offset'),
+      limit: z.number().optional().describe('Maximum number of datasets to return')
+    })
+  )
+  .output(
+    z.object({
+      datasets: z.array(datasetSchema).describe('List of datasets in the catalog'),
+      totalCount: z.number().optional().describe('Total number of datasets available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DataRobotClient({
       token: ctx.auth.token,
-      endpointUrl: ctx.config.endpointUrl,
+      endpointUrl: ctx.config.endpointUrl
     });
 
     let result = await client.listDatasets({
       offset: ctx.input.offset,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
     let items = result.data || result;
@@ -55,15 +56,15 @@ export let listDatasets = SlateTool.create(
       datasetSize: d.datasetSize,
       rowCount: d.rowCount,
       columnCount: d.columnCount,
-      processingState: d.processingState,
+      processingState: d.processingState
     }));
 
     return {
       output: {
         datasets,
-        totalCount: result.totalCount || result.count || datasets.length,
+        totalCount: result.totalCount || result.count || datasets.length
       },
-      message: `Found **${datasets.length}** dataset(s) in the AI Catalog.`,
+      message: `Found **${datasets.length}** dataset(s) in the AI Catalog.`
     };
   })
   .build();

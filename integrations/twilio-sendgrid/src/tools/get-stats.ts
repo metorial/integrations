@@ -17,7 +17,7 @@ let statsMetricsSchema = z.object({
   unsubscribes: z.number().describe('Number of unsubscribes'),
   processed: z.number().describe('Number of processed emails'),
   invalidEmails: z.number().describe('Number of invalid email addresses'),
-  drops: z.number().describe('Number of dropped emails'),
+  drops: z.number().describe('Number of dropped emails')
 });
 
 let mapStats = (metrics: any) => ({
@@ -34,34 +34,45 @@ let mapStats = (metrics: any) => ({
   unsubscribes: metrics.unsubscribes || 0,
   processed: metrics.processed || 0,
   invalidEmails: metrics.invalid_emails || 0,
-  drops: metrics.drops || 0,
+  drops: metrics.drops || 0
 });
 
-export let getStats = SlateTool.create(
-  spec,
-  {
-    name: 'Get Email Statistics',
-    key: 'get_stats',
-    description: `Retrieve email sending statistics for your SendGrid account. Get global stats or filter by categories. Data includes delivery rates, engagement metrics (opens, clicks), bounces, and more. Useful for monitoring email performance and deliverability.`,
-    tags: {
-      readOnly: true,
-    },
+export let getStats = SlateTool.create(spec, {
+  name: 'Get Email Statistics',
+  key: 'get_stats',
+  description: `Retrieve email sending statistics for your SendGrid account. Get global stats or filter by categories. Data includes delivery rates, engagement metrics (opens, clicks), bounces, and more. Useful for monitoring email performance and deliverability.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    startDate: z.string().describe('Start date in YYYY-MM-DD format'),
-    endDate: z.string().optional().describe('End date in YYYY-MM-DD format'),
-    aggregatedBy: z.enum(['day', 'week', 'month']).optional().describe('Time period to aggregate stats by'),
-    categories: z.array(z.string()).optional().describe('Filter stats by categories. If omitted, returns global stats.'),
-  }))
-  .output(z.object({
-    stats: z.array(z.object({
-      date: z.string().describe('Date for this stats entry'),
-      name: z.string().optional().describe('Category name (for category stats)'),
-      metrics: statsMetricsSchema,
-    })).describe('Statistics entries'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      startDate: z.string().describe('Start date in YYYY-MM-DD format'),
+      endDate: z.string().optional().describe('End date in YYYY-MM-DD format'),
+      aggregatedBy: z
+        .enum(['day', 'week', 'month'])
+        .optional()
+        .describe('Time period to aggregate stats by'),
+      categories: z
+        .array(z.string())
+        .optional()
+        .describe('Filter stats by categories. If omitted, returns global stats.')
+    })
+  )
+  .output(
+    z.object({
+      stats: z
+        .array(
+          z.object({
+            date: z.string().describe('Date for this stats entry'),
+            name: z.string().optional().describe('Category name (for category stats)'),
+            metrics: statsMetricsSchema
+          })
+        )
+        .describe('Statistics entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
 
     let rawStats: any[];
@@ -70,13 +81,13 @@ export let getStats = SlateTool.create(
         ctx.input.categories,
         ctx.input.startDate,
         ctx.input.endDate,
-        ctx.input.aggregatedBy,
+        ctx.input.aggregatedBy
       );
     } else {
       rawStats = await client.getGlobalStats(
         ctx.input.startDate,
         ctx.input.endDate,
-        ctx.input.aggregatedBy,
+        ctx.input.aggregatedBy
       );
     }
 
@@ -84,12 +95,13 @@ export let getStats = SlateTool.create(
       (entry.stats || []).map((s: any) => ({
         date: entry.date,
         name: s.name || undefined,
-        metrics: mapStats(s.metrics || {}),
+        metrics: mapStats(s.metrics || {})
       }))
     );
 
     return {
       output: { stats },
-      message: `Retrieved **${stats.length}** stats entries from ${ctx.input.startDate}${ctx.input.endDate ? ` to ${ctx.input.endDate}` : ''}.`,
+      message: `Retrieved **${stats.length}** stats entries from ${ctx.input.startDate}${ctx.input.endDate ? ` to ${ctx.input.endDate}` : ''}.`
     };
-  }).build();
+  })
+  .build();

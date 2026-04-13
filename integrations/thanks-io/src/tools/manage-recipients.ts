@@ -3,69 +3,74 @@ import { ThanksIoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageRecipients = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Recipients',
-    key: 'manage_recipients',
-    description: `Create, retrieve, update, or delete recipients in a mailing list. Supports single and bulk creation, deletion by ID or by address/email.
+export let manageRecipients = SlateTool.create(spec, {
+  name: 'Manage Recipients',
+  key: 'manage_recipients',
+  description: `Create, retrieve, update, or delete recipients in a mailing list. Supports single and bulk creation, deletion by ID or by address/email.
 If no valid address is provided but an email is, Thanks.io can attempt to look up the mailing address from the email (for a fee).`,
-    instructions: [
-      'Set action to "create", "get", "update", "delete", or "delete_by_address".',
-      'For "create", mailingListId is required along with address or email.',
-      'For "get", "update", or "delete", recipientId is required.',
-      'For "delete_by_address", mailingListId and either address fields or email are required.',
-    ],
-    constraints: [
-      'Only US and Canadian addresses are accepted.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Set action to "create", "get", "update", "delete", or "delete_by_address".',
+    'For "create", mailingListId is required along with address or email.',
+    'For "get", "update", or "delete", recipientId is required.',
+    'For "delete_by_address", mailingListId and either address fields or email are required.'
+  ],
+  constraints: ['Only US and Canadian addresses are accepted.'],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'delete_by_address']).describe('Action to perform'),
-    recipientId: z.number().optional().describe('Recipient ID (for get, update, delete)'),
-    mailingListId: z.number().optional().describe('Mailing list ID (required for create and delete_by_address)'),
-    name: z.string().optional().describe('Recipient full name'),
-    company: z.string().optional().describe('Company name'),
-    address: z.string().optional().describe('Street address'),
-    address2: z.string().optional().describe('Address line 2'),
-    city: z.string().optional().describe('City'),
-    province: z.string().optional().describe('State/province code'),
-    postalCode: z.string().optional().describe('ZIP/postal code'),
-    country: z.string().optional().describe('Country code (US or CA)'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    dob: z.string().optional().describe('Date of birth (YYYY-MM-DD)'),
-    custom1: z.string().optional().describe('Custom field 1'),
-    custom2: z.string().optional().describe('Custom field 2'),
-    custom3: z.string().optional().describe('Custom field 3'),
-    custom4: z.string().optional().describe('Custom field 4'),
-  }))
-  .output(z.object({
-    recipientId: z.number().optional().describe('Recipient ID'),
-    mailingListId: z.number().optional().describe('Mailing list ID'),
-    name: z.string().optional().nullable().describe('Recipient name'),
-    company: z.string().optional().nullable().describe('Company name'),
-    address: z.string().optional().nullable().describe('Street address'),
-    city: z.string().optional().nullable().describe('City'),
-    province: z.string().optional().nullable().describe('State/province'),
-    postalCode: z.string().optional().nullable().describe('ZIP/postal code'),
-    country: z.string().optional().nullable().describe('Country'),
-    email: z.string().optional().nullable().describe('Email'),
-    phone: z.string().optional().nullable().describe('Phone'),
-    deleted: z.boolean().optional().describe('Whether the recipient was deleted'),
-    statusMessage: z.string().optional().describe('Status message for delete operations'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'delete_by_address'])
+        .describe('Action to perform'),
+      recipientId: z.number().optional().describe('Recipient ID (for get, update, delete)'),
+      mailingListId: z
+        .number()
+        .optional()
+        .describe('Mailing list ID (required for create and delete_by_address)'),
+      name: z.string().optional().describe('Recipient full name'),
+      company: z.string().optional().describe('Company name'),
+      address: z.string().optional().describe('Street address'),
+      address2: z.string().optional().describe('Address line 2'),
+      city: z.string().optional().describe('City'),
+      province: z.string().optional().describe('State/province code'),
+      postalCode: z.string().optional().describe('ZIP/postal code'),
+      country: z.string().optional().describe('Country code (US or CA)'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      dob: z.string().optional().describe('Date of birth (YYYY-MM-DD)'),
+      custom1: z.string().optional().describe('Custom field 1'),
+      custom2: z.string().optional().describe('Custom field 2'),
+      custom3: z.string().optional().describe('Custom field 3'),
+      custom4: z.string().optional().describe('Custom field 4')
+    })
+  )
+  .output(
+    z.object({
+      recipientId: z.number().optional().describe('Recipient ID'),
+      mailingListId: z.number().optional().describe('Mailing list ID'),
+      name: z.string().optional().nullable().describe('Recipient name'),
+      company: z.string().optional().nullable().describe('Company name'),
+      address: z.string().optional().nullable().describe('Street address'),
+      city: z.string().optional().nullable().describe('City'),
+      province: z.string().optional().nullable().describe('State/province'),
+      postalCode: z.string().optional().nullable().describe('ZIP/postal code'),
+      country: z.string().optional().nullable().describe('Country'),
+      email: z.string().optional().nullable().describe('Email'),
+      phone: z.string().optional().nullable().describe('Phone'),
+      deleted: z.boolean().optional().describe('Whether the recipient was deleted'),
+      statusMessage: z.string().optional().describe('Status message for delete operations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ThanksIoClient({ token: ctx.auth.token });
     let { action } = ctx.input;
 
     if (action === 'create') {
-      if (!ctx.input.mailingListId) throw new Error('mailingListId is required for create action');
+      if (!ctx.input.mailingListId)
+        throw new Error('mailingListId is required for create action');
       let result = await client.createRecipient({
         mailingListId: ctx.input.mailingListId,
         name: ctx.input.name,
@@ -82,7 +87,7 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
         custom1: ctx.input.custom1,
         custom2: ctx.input.custom2,
         custom3: ctx.input.custom3,
-        custom4: ctx.input.custom4,
+        custom4: ctx.input.custom4
       });
       return {
         output: {
@@ -96,9 +101,9 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
           postalCode: result.postal_code as string | null,
           country: result.country as string | null,
           email: result.email as string | null,
-          phone: result.phone as string | null,
+          phone: result.phone as string | null
         },
-        message: `Created recipient **#${result.id}** in mailing list **#${result.mailing_list_id}**.`,
+        message: `Created recipient **#${result.id}** in mailing list **#${result.mailing_list_id}**.`
       };
     }
 
@@ -117,9 +122,9 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
           postalCode: result.postal_code as string | null,
           country: result.country as string | null,
           email: result.email as string | null,
-          phone: result.phone as string | null,
+          phone: result.phone as string | null
         },
-        message: `Retrieved recipient **#${result.id}**: ${result.name || 'unnamed'}.`,
+        message: `Retrieved recipient **#${result.id}**: ${result.name || 'unnamed'}.`
       };
     }
 
@@ -140,7 +145,7 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
         custom1: ctx.input.custom1,
         custom2: ctx.input.custom2,
         custom3: ctx.input.custom3,
-        custom4: ctx.input.custom4,
+        custom4: ctx.input.custom4
       });
       return {
         output: {
@@ -154,9 +159,9 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
           postalCode: result.postal_code as string | null,
           country: result.country as string | null,
           email: result.email as string | null,
-          phone: result.phone as string | null,
+          phone: result.phone as string | null
         },
-        message: `Updated recipient **#${result.id}**.`,
+        message: `Updated recipient **#${result.id}**.`
       };
     }
 
@@ -167,14 +172,15 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
         output: {
           recipientId: ctx.input.recipientId,
           deleted: true,
-          statusMessage: 'Recipient deleted successfully.',
+          statusMessage: 'Recipient deleted successfully.'
         },
-        message: `Deleted recipient **#${ctx.input.recipientId}**.`,
+        message: `Deleted recipient **#${ctx.input.recipientId}**.`
       };
     }
 
     if (action === 'delete_by_address') {
-      if (!ctx.input.mailingListId) throw new Error('mailingListId is required for delete_by_address action');
+      if (!ctx.input.mailingListId)
+        throw new Error('mailingListId is required for delete_by_address action');
       let result = await client.deleteRecipientByAddress({
         mailingListId: ctx.input.mailingListId,
         address: ctx.input.address,
@@ -183,16 +189,17 @@ If no valid address is provided but an email is, Thanks.io can attempt to look u
         province: ctx.input.province,
         postalCode: ctx.input.postalCode,
         country: ctx.input.country,
-        email: ctx.input.email,
+        email: ctx.input.email
       });
       return {
         output: {
           deleted: true,
-          statusMessage: result.message as string || 'Recipient deleted by address.',
+          statusMessage: (result.message as string) || 'Recipient deleted by address.'
         },
-        message: `Deleted recipient by address/email from mailing list **#${ctx.input.mailingListId}**.`,
+        message: `Deleted recipient by address/email from mailing list **#${ctx.input.mailingListId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

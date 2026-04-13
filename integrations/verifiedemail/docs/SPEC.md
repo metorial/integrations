@@ -11,6 +11,7 @@ VerifiedEmail is a real-time email verification and bulk email list cleaning ser
 VerifiedEmail uses **API key** authentication. On the API Keys page, you can create and manage API keys for use with VerifiedEmail's API. You can create as many or as few API keys as needed. You can customize the access allowed for each by explicitly permitting or blocking the key's access to each API function.
 
 To authenticate:
+
 1. Create an account at app.verified.email.
 2. Navigate to the API Keys page in the dashboard and click "Create."
 3. Give the key a name and configure permissions by selecting which API functions the key is allowed to access (e.g., verification, webhooks, etc.).
@@ -63,4 +64,4 @@ Webhooks can be used to receive notifications when asynchronous verification ope
 - Webhook endpoints can be configured and managed via the API.
 - API key permissions can be scoped specifically to webhook management functions.
 
-*Note: The detailed webhook event types and payload formats are documented at https://developer.verified.email/, which was not fully accessible during research. The above is based on publicly available information from the help documentation and services pages.*
+_Note: The detailed webhook event types and payload formats are documented at https://developer.verified.email/, which was not fully accessible during research. The above is based on publicly available information from the help documentation and services pages._

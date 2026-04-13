@@ -3,29 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccountInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account_info',
-    description: `Retrieves current OCR Web Service account details including available page balance, subscription plan, and license expiration date.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getAccountInfo = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account_info',
+  description: `Retrieves current OCR Web Service account details including available page balance, subscription plan, and license expiration date.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    availablePages: z.number().describe('Number of pages remaining in the account balance'),
-    maxPages: z.number().describe('Maximum pages allowed for the subscription plan'),
-    subscriptionPlan: z.string().describe('Current subscription plan name'),
-    expirationDate: z.string().describe('License expiration date'),
-    lastProcessingTime: z.string().describe('Timestamp of the last OCR processing request'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      availablePages: z.number().describe('Number of pages remaining in the account balance'),
+      maxPages: z.number().describe('Maximum pages allowed for the subscription plan'),
+      subscriptionPlan: z.string().describe('Current subscription plan name'),
+      expirationDate: z.string().describe('License expiration date'),
+      lastProcessingTime: z.string().describe('Timestamp of the last OCR processing request')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       username: ctx.auth.username,
-      licenseCode: ctx.auth.licenseCode,
+      licenseCode: ctx.auth.licenseCode
     });
 
     ctx.progress('Fetching account information...');
@@ -38,8 +37,9 @@ export let getAccountInfo = SlateTool.create(
         maxPages: result.MaxPages,
         subscriptionPlan: result.SubcriptionPlan,
         expirationDate: result.ExpirationDate,
-        lastProcessingTime: result.LastProcessingTime,
+        lastProcessingTime: result.LastProcessingTime
       },
-      message: `Account: **${result.SubcriptionPlan}** plan. **${result.AvailablePages}** / ${result.MaxPages} pages remaining. Expires: ${result.ExpirationDate}.`,
+      message: `Account: **${result.SubcriptionPlan}** plan. **${result.AvailablePages}** / ${result.MaxPages} pages remaining. Expires: ${result.ExpirationDate}.`
     };
-  }).build();
+  })
+  .build();

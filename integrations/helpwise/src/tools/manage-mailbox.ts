@@ -3,28 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMailbox = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Mailbox',
-    key: 'manage_mailbox',
-    description: `Create, retrieve, update, or delete a shared mailbox. Use this to set up new shared inboxes (e.g., support@, sales@), modify existing ones, or remove mailboxes no longer needed.`,
-    tags: {
-      destructive: true,
-    },
+export let manageMailbox = SlateTool.create(spec, {
+  name: 'Manage Mailbox',
+  key: 'manage_mailbox',
+  description: `Create, retrieve, update, or delete a shared mailbox. Use this to set up new shared inboxes (e.g., support@, sales@), modify existing ones, or remove mailboxes no longer needed.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'create', 'update', 'delete']).describe('The operation to perform on the mailbox'),
-    mailboxId: z.string().optional().describe('Mailbox ID (required for get, update, delete)'),
-    email: z.string().optional().describe('Email address for the mailbox (required for create)'),
-    displayName: z.string().optional().describe('Display name for the mailbox (required for create, optional for update)'),
-  }))
-  .output(z.object({
-    mailbox: z.record(z.string(), z.any()).optional().describe('Mailbox details (for get, create, update)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'create', 'update', 'delete'])
+        .describe('The operation to perform on the mailbox'),
+      mailboxId: z
+        .string()
+        .optional()
+        .describe('Mailbox ID (required for get, update, delete)'),
+      email: z
+        .string()
+        .optional()
+        .describe('Email address for the mailbox (required for create)'),
+      displayName: z
+        .string()
+        .optional()
+        .describe('Display name for the mailbox (required for create, optional for update)')
+    })
+  )
+  .output(
+    z.object({
+      mailbox: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Mailbox details (for get, create, update)'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, mailboxId, email, displayName } = ctx.input;
 
@@ -33,7 +48,7 @@ export let manageMailbox = SlateTool.create(
       let mailbox = await client.getMailbox(mailboxId);
       return {
         output: { mailbox, success: true },
-        message: `Retrieved mailbox **${mailboxId}**.`,
+        message: `Retrieved mailbox **${mailboxId}**.`
       };
     }
 
@@ -43,7 +58,7 @@ export let manageMailbox = SlateTool.create(
       let mailbox = await client.createMailbox({ email, display_name: displayName });
       return {
         output: { mailbox, success: true },
-        message: `Created mailbox **${email}** (${displayName}).`,
+        message: `Created mailbox **${email}** (${displayName}).`
       };
     }
 
@@ -55,7 +70,7 @@ export let manageMailbox = SlateTool.create(
       let mailbox = await client.updateMailbox(mailboxId, updateData);
       return {
         output: { mailbox, success: true },
-        message: `Updated mailbox **${mailboxId}**.`,
+        message: `Updated mailbox **${mailboxId}**.`
       };
     }
 
@@ -64,9 +79,10 @@ export let manageMailbox = SlateTool.create(
       await client.deleteMailbox(mailboxId);
       return {
         output: { success: true },
-        message: `Deleted mailbox **${mailboxId}**.`,
+        message: `Deleted mailbox **${mailboxId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

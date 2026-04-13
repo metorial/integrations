@@ -15,12 +15,12 @@ import {
   manageDnsTool,
   manageTeamsTool,
   manageEdgeConfigTool,
-  promoteDeploymentTool,
+  promoteDeploymentTool
 } from './tools';
 import {
   deploymentEventsTrigger,
   projectEventsTrigger,
-  domainEventsTrigger,
+  domainEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -40,11 +40,7 @@ export let provider = Slate.create({
     manageDnsTool,
     manageTeamsTool,
     manageEdgeConfigTool,
-    promoteDeploymentTool,
+    promoteDeploymentTool
   ],
-  triggers: [
-    deploymentEventsTrigger,
-    projectEventsTrigger,
-    domainEventsTrigger,
-  ],
+  triggers: [deploymentEventsTrigger, projectEventsTrigger, domainEventsTrigger]
 });

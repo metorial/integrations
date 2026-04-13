@@ -14,14 +14,18 @@ export class AzureDevOpsClient {
     this.axios = createAxios({
       baseURL: `https://dev.azure.com/${config.organization}`,
       headers: {
-        Authorization: authHeader,
-      },
+        Authorization: authHeader
+      }
     });
   }
 
   // ─── Projects ──────────────────────────────────────────────
 
-  async listProjects(params?: { top?: number; skip?: number; stateFilter?: string }): Promise<any> {
+  async listProjects(params?: {
+    top?: number;
+    skip?: number;
+    stateFilter?: string;
+  }): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
     if (params?.top) query['$top'] = String(params.top);
     if (params?.skip) query['$skip'] = String(params.skip);
@@ -33,14 +37,18 @@ export class AzureDevOpsClient {
 
   async getProject(projectId: string): Promise<any> {
     let response = await this.axios.get(`/_apis/projects/${encodeURIComponent(projectId)}`, {
-      params: { 'api-version': '7.1', includeCapabilities: 'true' },
+      params: { 'api-version': '7.1', includeCapabilities: 'true' }
     });
     return response.data;
   }
 
   // ─── Work Items ────────────────────────────────────────────
 
-  async getWorkItem(project: string, workItemId: number, params?: { expand?: string; fields?: string[] }): Promise<any> {
+  async getWorkItem(
+    project: string,
+    workItemId: number,
+    params?: { expand?: string; fields?: string[] }
+  ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
     if (params?.expand) query['$expand'] = params.expand;
     if (params?.fields) query['fields'] = params.fields.join(',');
@@ -58,7 +66,7 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/wit/workitemsbatch?api-version=7.1`,
-      body,
+      body
     );
     return response.data;
   }
@@ -66,18 +74,18 @@ export class AzureDevOpsClient {
   async createWorkItem(
     project: string,
     workItemType: string,
-    fields: Record<string, any>,
+    fields: Record<string, any>
   ): Promise<any> {
     let operations = Object.entries(fields).map(([path, value]) => ({
       op: 'add',
       path: path.startsWith('/') ? path : `/fields/${path}`,
-      value,
+      value
     }));
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/wit/workitems/$${encodeURIComponent(workItemType)}?api-version=7.1`,
       operations,
-      { headers: { 'Content-Type': 'application/json-patch+json' } },
+      { headers: { 'Content-Type': 'application/json-patch+json' } }
     );
     return response.data;
   }
@@ -85,12 +93,12 @@ export class AzureDevOpsClient {
   async updateWorkItem(
     project: string,
     workItemId: number,
-    operations: Array<{ op: string; path: string; value?: any; from?: string }>,
+    operations: Array<{ op: string; path: string; value?: any; from?: string }>
   ): Promise<any> {
     let response = await this.axios.patch(
       `/${encodeURIComponent(project)}/_apis/wit/workitems/${workItemId}?api-version=7.1`,
       operations,
-      { headers: { 'Content-Type': 'application/json-patch+json' } },
+      { headers: { 'Content-Type': 'application/json-patch+json' } }
     );
     return response.data;
   }
@@ -98,7 +106,7 @@ export class AzureDevOpsClient {
   async deleteWorkItem(project: string, workItemId: number, destroy?: boolean): Promise<any> {
     let response = await this.axios.delete(
       `/${encodeURIComponent(project)}/_apis/wit/workitems/${workItemId}`,
-      { params: { 'api-version': '7.1', destroy: destroy ? 'true' : 'false' } },
+      { params: { 'api-version': '7.1', destroy: destroy ? 'true' : 'false' } }
     );
     return response.data;
   }
@@ -110,7 +118,7 @@ export class AzureDevOpsClient {
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/wit/wiql`,
       { query: wiql },
-      { params: query },
+      { params: query }
     );
     return response.data;
   }
@@ -120,7 +128,7 @@ export class AzureDevOpsClient {
   async listRepositories(project: string): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -128,7 +136,7 @@ export class AzureDevOpsClient {
   async getRepository(project: string, repositoryId: string): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -137,7 +145,7 @@ export class AzureDevOpsClient {
     let projectInfo = await this.getProject(project);
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/git/repositories?api-version=7.1`,
-      { name, project: { id: projectInfo.id } },
+      { name, project: { id: projectInfo.id } }
     );
     return response.data;
   }
@@ -150,7 +158,7 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/refs`,
-      { params },
+      { params }
     );
     return response.data;
   }
@@ -168,7 +176,7 @@ export class AzureDevOpsClient {
       targetRefName?: string;
       top?: number;
       skip?: number;
-    },
+    }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
     if (params?.status) query['searchCriteria.status'] = params.status;
@@ -181,15 +189,19 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests`,
-      { params: query },
+      { params: query }
     );
     return response.data;
   }
 
-  async getPullRequest(project: string, repositoryId: string, pullRequestId: number): Promise<any> {
+  async getPullRequest(
+    project: string,
+    repositoryId: string,
+    pullRequestId: number
+  ): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests/${pullRequestId}`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -204,14 +216,14 @@ export class AzureDevOpsClient {
       description?: string;
       reviewerIds?: string[];
       isDraft?: boolean;
-    },
+    }
   ): Promise<any> {
     let body: Record<string, any> = {
       sourceRefName: data.sourceRefName,
       targetRefName: data.targetRefName,
       title: data.title,
       description: data.description || '',
-      isDraft: data.isDraft || false,
+      isDraft: data.isDraft || false
     };
 
     if (data.reviewerIds && data.reviewerIds.length > 0) {
@@ -220,7 +232,7 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests?api-version=7.1`,
-      body,
+      body
     );
     return response.data;
   }
@@ -236,11 +248,11 @@ export class AzureDevOpsClient {
       targetRefName?: string;
       autoCompleteSetBy?: { id: string };
       completionOptions?: Record<string, any>;
-    },
+    }
   ): Promise<any> {
     let response = await this.axios.patch(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests/${pullRequestId}?api-version=7.1`,
-      data,
+      data
     );
     return response.data;
   }
@@ -250,11 +262,11 @@ export class AzureDevOpsClient {
     repositoryId: string,
     pullRequestId: number,
     reviewerId: string,
-    vote?: number,
+    vote?: number
   ): Promise<any> {
     let response = await this.axios.put(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests/${pullRequestId}/reviewers/${encodeURIComponent(reviewerId)}?api-version=7.1`,
-      { vote: vote ?? 0 },
+      { vote: vote ?? 0 }
     );
     return response.data;
   }
@@ -266,29 +278,31 @@ export class AzureDevOpsClient {
     repositoryId: string,
     pullRequestId: number,
     content: string,
-    status?: number,
+    status?: number
   ): Promise<any> {
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/pullrequests/${pullRequestId}/threads?api-version=7.1`,
       {
         comments: [{ parentCommentId: 0, content, commentType: 1 }],
-        status: status ?? 1,
-      },
+        status: status ?? 1
+      }
     );
     return response.data;
   }
 
   // ─── Pipelines ─────────────────────────────────────────────
 
-  async listPipelines(project: string, params?: { top?: number; continuationToken?: string }): Promise<any> {
+  async listPipelines(
+    project: string,
+    params?: { top?: number; continuationToken?: string }
+  ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
     if (params?.top) query['$top'] = String(params.top);
     if (params?.continuationToken) query['continuationToken'] = params.continuationToken;
 
-    let response = await this.axios.get(
-      `/${encodeURIComponent(project)}/_apis/pipelines`,
-      { params: query },
-    );
+    let response = await this.axios.get(`/${encodeURIComponent(project)}/_apis/pipelines`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -299,14 +313,18 @@ export class AzureDevOpsClient {
       branch?: string;
       variables?: Record<string, { value: string; isSecret?: boolean }>;
       templateParameters?: Record<string, string>;
-    },
+    }
   ): Promise<any> {
     let body: Record<string, any> = {};
     if (params?.branch) {
       body['resources'] = {
         repositories: {
-          self: { refName: params.branch.startsWith('refs/') ? params.branch : `refs/heads/${params.branch}` },
-        },
+          self: {
+            refName: params.branch.startsWith('refs/')
+              ? params.branch
+              : `refs/heads/${params.branch}`
+          }
+        }
       };
     }
     if (params?.variables) body['variables'] = params.variables;
@@ -314,7 +332,7 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.post(
       `/${encodeURIComponent(project)}/_apis/pipelines/${pipelineId}/runs?api-version=7.1`,
-      body,
+      body
     );
     return response.data;
   }
@@ -322,7 +340,7 @@ export class AzureDevOpsClient {
   async getPipelineRun(project: string, pipelineId: number, runId: number): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/pipelines/${pipelineId}/runs/${runId}`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -333,7 +351,7 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/pipelines/${pipelineId}/runs`,
-      { params: query },
+      { params: query }
     );
     return response.data;
   }
@@ -350,7 +368,7 @@ export class AzureDevOpsClient {
       branchName?: string;
       requestedFor?: string;
       minTime?: string;
-    },
+    }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
     if (params?.definitions) query['definitions'] = params.definitions.join(',');
@@ -361,17 +379,16 @@ export class AzureDevOpsClient {
     if (params?.requestedFor) query['requestedFor'] = params.requestedFor;
     if (params?.minTime) query['minTime'] = params.minTime;
 
-    let response = await this.axios.get(
-      `/${encodeURIComponent(project)}/_apis/build/builds`,
-      { params: query },
-    );
+    let response = await this.axios.get(`/${encodeURIComponent(project)}/_apis/build/builds`, {
+      params: query
+    });
     return response.data;
   }
 
   async getBuild(project: string, buildId: number): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/build/builds/${buildId}`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -379,7 +396,7 @@ export class AzureDevOpsClient {
   async getBuildTimeline(project: string, buildId: number): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/build/builds/${buildId}/timeline`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -387,24 +404,28 @@ export class AzureDevOpsClient {
   // ─── Wiki ──────────────────────────────────────────────────
 
   async listWikis(project: string): Promise<any> {
-    let response = await this.axios.get(
-      `/${encodeURIComponent(project)}/_apis/wiki/wikis`,
-      { params: { 'api-version': '7.1' } },
-    );
+    let response = await this.axios.get(`/${encodeURIComponent(project)}/_apis/wiki/wikis`, {
+      params: { 'api-version': '7.1' }
+    });
     return response.data;
   }
 
-  async getWikiPage(project: string, wikiIdentifier: string, path: string, params?: { includeContent?: boolean; recursionLevel?: string }): Promise<any> {
+  async getWikiPage(
+    project: string,
+    wikiIdentifier: string,
+    path: string,
+    params?: { includeContent?: boolean; recursionLevel?: string }
+  ): Promise<any> {
     let query: Record<string, string> = {
       'api-version': '7.1',
-      path,
+      path
     };
     if (params?.includeContent) query['includeContent'] = 'true';
     if (params?.recursionLevel) query['recursionLevel'] = params.recursionLevel;
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/wiki/wikis/${encodeURIComponent(wikiIdentifier)}/pages`,
-      { params: query },
+      { params: query }
     );
     return response.data;
   }
@@ -414,7 +435,7 @@ export class AzureDevOpsClient {
     wikiIdentifier: string,
     path: string,
     content: string,
-    version?: string,
+    version?: string
   ): Promise<any> {
     let headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (version) headers['If-Match'] = version;
@@ -422,7 +443,7 @@ export class AzureDevOpsClient {
     let response = await this.axios.put(
       `/${encodeURIComponent(project)}/_apis/wiki/wikis/${encodeURIComponent(wikiIdentifier)}/pages?path=${encodeURIComponent(path)}&api-version=7.1`,
       { content },
-      { headers },
+      { headers }
     );
     return response.data;
   }
@@ -438,24 +459,20 @@ export class AzureDevOpsClient {
     consumerInputs: Record<string, string>;
     resourceVersion?: string;
   }): Promise<any> {
-    let response = await this.axios.post(
-      '/_apis/hooks/subscriptions?api-version=7.1',
-      data,
-    );
+    let response = await this.axios.post('/_apis/hooks/subscriptions?api-version=7.1', data);
     return response.data;
   }
 
   async deleteServiceHookSubscription(subscriptionId: string): Promise<void> {
     await this.axios.delete(
-      `/_apis/hooks/subscriptions/${encodeURIComponent(subscriptionId)}?api-version=7.1`,
+      `/_apis/hooks/subscriptions/${encodeURIComponent(subscriptionId)}?api-version=7.1`
     );
   }
 
   async listServiceHookSubscriptions(): Promise<any> {
-    let response = await this.axios.get(
-      '/_apis/hooks/subscriptions',
-      { params: { 'api-version': '7.1' } },
-    );
+    let response = await this.axios.get('/_apis/hooks/subscriptions', {
+      params: { 'api-version': '7.1' }
+    });
     return response.data;
   }
 
@@ -464,7 +481,7 @@ export class AzureDevOpsClient {
   async listTeams(project: string): Promise<any> {
     let response = await this.axios.get(
       `/_apis/projects/${encodeURIComponent(project)}/teams`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
@@ -474,23 +491,29 @@ export class AzureDevOpsClient {
   async listIterations(project: string, team: string): Promise<any> {
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/${encodeURIComponent(team)}/_apis/work/teamsettings/iterations`,
-      { params: { 'api-version': '7.1' } },
+      { params: { 'api-version': '7.1' } }
     );
     return response.data;
   }
 
   // ─── File content (Items) ─────────────────────────────────
 
-  async getFileContent(project: string, repositoryId: string, path: string, params?: { versionDescriptor?: string }): Promise<any> {
+  async getFileContent(
+    project: string,
+    repositoryId: string,
+    path: string,
+    params?: { versionDescriptor?: string }
+  ): Promise<any> {
     let query: Record<string, string> = {
       'api-version': '7.1',
-      path,
+      path
     };
-    if (params?.versionDescriptor) query['versionDescriptor.version'] = params.versionDescriptor;
+    if (params?.versionDescriptor)
+      query['versionDescriptor.version'] = params.versionDescriptor;
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/items`,
-      { params: query },
+      { params: query }
     );
     return response.data;
   }
@@ -498,7 +521,14 @@ export class AzureDevOpsClient {
   async getCommits(
     project: string,
     repositoryId: string,
-    params?: { top?: number; skip?: number; branch?: string; fromDate?: string; toDate?: string; author?: string },
+    params?: {
+      top?: number;
+      skip?: number;
+      branch?: string;
+      fromDate?: string;
+      toDate?: string;
+      author?: string;
+    }
   ): Promise<any> {
     let query: Record<string, string> = { 'api-version': '7.1' };
     if (params?.top) query['$top'] = String(params.top);
@@ -510,7 +540,7 @@ export class AzureDevOpsClient {
 
     let response = await this.axios.get(
       `/${encodeURIComponent(project)}/_apis/git/repositories/${encodeURIComponent(repositoryId)}/commits`,
-      { params: query },
+      { params: query }
     );
     return response.data;
   }

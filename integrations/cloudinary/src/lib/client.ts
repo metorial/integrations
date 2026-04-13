@@ -1,14 +1,14 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 import type {
   CloudinaryConfig,
-  CloudinaryResource,
-  CloudinaryUploadResponse,
-  CloudinarySearchResult,
-  CloudinaryListResult,
   CloudinaryFolder,
   CloudinaryFolderListResult,
+  CloudinaryListResult,
+  CloudinaryResource,
+  CloudinarySearchResult,
   CloudinaryTrigger,
+  CloudinaryUploadResponse
 } from './types';
 
 let getBaseUrl = (region: 'us' | 'eu' | 'ap'): string => {
@@ -18,7 +18,7 @@ let getBaseUrl = (region: 'us' | 'eu' | 'ap'): string => {
 };
 
 let toSnakeCase = (str: string): string =>
-  str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
 let keysToSnakeCase = (obj: Record<string, any>): Record<string, any> => {
   let result: Record<string, any> = {};
@@ -66,7 +66,7 @@ let normalizeResource = (raw: any): CloudinaryResource => {
     tags: r.tags,
     context: r.context,
     metadata: r.metadata,
-    accessMode: r.accessMode,
+    accessMode: r.accessMode
   };
 };
 
@@ -91,7 +91,7 @@ let normalizeUploadResponse = (raw: any): CloudinaryUploadResponse => {
     folder: r.folder ?? '',
     assetFolder: r.assetFolder,
     displayName: r.displayName,
-    originalFilename: r.originalFilename,
+    originalFilename: r.originalFilename
   };
 };
 
@@ -101,14 +101,13 @@ export class Client {
 
   constructor(config: CloudinaryConfig) {
     this.cloudName = config.cloudName;
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let basicAuth = Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString('base64');
 
     this.axios = createAxios({
       baseURL: `${getBaseUrl(config.region)}/v1_1/${config.cloudName}`,
       headers: {
-        Authorization: `Basic ${basicAuth}`,
-      },
+        Authorization: `Basic ${basicAuth}`
+      }
     });
   }
 
@@ -133,7 +132,7 @@ export class Client {
     let resourceType = params.resourceType || 'auto';
 
     let formData: Record<string, any> = {
-      file: params.file,
+      file: params.file
     };
     if (params.publicId) formData.public_id = params.publicId;
     if (params.folder) formData.folder = params.folder;
@@ -157,12 +156,16 @@ export class Client {
     if (params.format) formData.format = params.format;
 
     let response = await this.axios.post(`/${resourceType}/upload`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return normalizeUploadResponse(response.data);
   }
 
-  async destroy(publicId: string, resourceType?: string, type?: string): Promise<{ result: string }> {
+  async destroy(
+    publicId: string,
+    resourceType?: string,
+    type?: string
+  ): Promise<{ result: string }> {
     let rt = resourceType || 'image';
     let formData: Record<string, any> = { public_id: publicId };
     if (type) formData.type = type;
@@ -180,7 +183,7 @@ export class Client {
     let rt = resourceType || 'image';
     let formData: Record<string, any> = {
       from_public_id: fromPublicId,
-      to_public_id: toPublicId,
+      to_public_id: toPublicId
     };
     if (overwrite !== undefined) formData.overwrite = overwrite;
 
@@ -198,7 +201,7 @@ export class Client {
     let formData: Record<string, any> = {
       tag: params.tag,
       public_ids: params.publicIds,
-      command: params.command,
+      command: params.command
     };
 
     let response = await this.axios.post(`/${rt}/tags`, formData);
@@ -232,7 +235,7 @@ export class Client {
     let response = await this.axios.get(`/resources/${rt}/${t}`, { params: query });
     return {
       resources: (response.data.resources || []).map(normalizeResource),
-      nextCursor: response.data.next_cursor,
+      nextCursor: response.data.next_cursor
     };
   }
 
@@ -247,25 +250,31 @@ export class Client {
     if (params.maxResults) query.max_results = params.maxResults;
     if (params.nextCursor) query.next_cursor = params.nextCursor;
 
-    let response = await this.axios.get(`/resources/${rt}/tags/${params.tag}`, { params: query });
+    let response = await this.axios.get(`/resources/${rt}/tags/${params.tag}`, {
+      params: query
+    });
     return {
       resources: (response.data.resources || []).map(normalizeResource),
-      nextCursor: response.data.next_cursor,
+      nextCursor: response.data.next_cursor
     };
   }
 
-  async getResource(publicId: string, resourceType?: string, type?: string): Promise<CloudinaryResource> {
+  async getResource(
+    publicId: string,
+    resourceType?: string,
+    type?: string
+  ): Promise<CloudinaryResource> {
     let rt = resourceType || 'image';
     let t = type || 'upload';
     let response = await this.axios.get(`/resources/${rt}/${t}/${publicId}`, {
-      params: { tags: true, context: true, metadata: true },
+      params: { tags: true, context: true, metadata: true }
     });
     return normalizeResource(response.data);
   }
 
   async getResourceByAssetId(assetId: string): Promise<CloudinaryResource> {
     let response = await this.axios.get(`/resources/${assetId}`, {
-      params: { tags: true, context: true, metadata: true },
+      params: { tags: true, context: true, metadata: true }
     });
     return normalizeResource(response.data);
   }
@@ -315,11 +324,11 @@ export class Client {
     let rt = params.resourceType || 'image';
     let t = params.type || 'upload';
     let response = await this.axios.delete(`/resources/${rt}/${t}`, {
-      data: { public_ids: params.publicIds },
+      data: { public_ids: params.publicIds }
     });
     return {
       deleted: response.data.deleted ?? {},
-      partial: response.data.partial ?? false,
+      partial: response.data.partial ?? false
     };
   }
 
@@ -331,11 +340,11 @@ export class Client {
     let rt = params.resourceType || 'image';
     let t = params.type || 'upload';
     let response = await this.axios.delete(`/resources/${rt}/${t}`, {
-      data: { prefix: params.prefix },
+      data: { prefix: params.prefix }
     });
     return {
       deleted: response.data.deleted ?? {},
-      partial: response.data.partial ?? false,
+      partial: response.data.partial ?? false
     };
   }
 
@@ -347,7 +356,7 @@ export class Client {
     let response = await this.axios.delete(`/resources/${rt}/tags/${params.tag}`);
     return {
       deleted: response.data.deleted ?? {},
-      partial: response.data.partial ?? false,
+      partial: response.data.partial ?? false
     };
   }
 
@@ -364,7 +373,7 @@ export class Client {
     let body: Record<string, any> = {};
     if (params.expression) body.expression = params.expression;
     if (params.sortBy) {
-      body.sort_by = params.sortBy.map((s) => ({ [s.field]: s.direction }));
+      body.sort_by = params.sortBy.map(s => ({ [s.field]: s.direction }));
     }
     if (params.maxResults) body.max_results = params.maxResults;
     if (params.nextCursor) body.next_cursor = params.nextCursor;
@@ -372,13 +381,13 @@ export class Client {
     if (params.aggregate) body.aggregate = params.aggregate;
 
     let response = await this.axios.post('/resources/search', body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return {
       totalCount: response.data.total_count ?? 0,
       time: response.data.time ?? 0,
       nextCursor: response.data.next_cursor,
-      resources: (response.data.resources || []).map(normalizeResource),
+      resources: (response.data.resources || []).map(normalizeResource)
     };
   }
 
@@ -396,14 +405,17 @@ export class Client {
     return {
       folders: (response.data.folders || []).map((f: any) => keysToCamelCase(f)),
       nextCursor: response.data.next_cursor,
-      totalCount: response.data.total_count,
+      totalCount: response.data.total_count
     };
   }
 
-  async listSubfolders(folder: string, params?: {
-    maxResults?: number;
-    nextCursor?: string;
-  }): Promise<CloudinaryFolderListResult> {
+  async listSubfolders(
+    folder: string,
+    params?: {
+      maxResults?: number;
+      nextCursor?: string;
+    }
+  ): Promise<CloudinaryFolderListResult> {
     let query: Record<string, any> = {};
     if (params?.maxResults) query.max_results = params.maxResults;
     if (params?.nextCursor) query.next_cursor = params.nextCursor;
@@ -412,7 +424,7 @@ export class Client {
     return {
       folders: (response.data.folders || []).map((f: any) => keysToCamelCase(f)),
       nextCursor: response.data.next_cursor,
-      totalCount: response.data.total_count,
+      totalCount: response.data.total_count
     };
   }
 
@@ -434,20 +446,20 @@ export class Client {
     return triggers.map((t: any) => ({
       triggerId: t.id ?? t.trigger_id ?? '',
       notificationUrl: t.notification_url ?? t.url ?? '',
-      eventType: t.event_type ?? '',
+      eventType: t.event_type ?? ''
     }));
   }
 
   async createTrigger(notificationUrl: string, eventType: string): Promise<CloudinaryTrigger> {
     let response = await this.axios.post('/notification_triggers', {
       notification_url: notificationUrl,
-      event_type: eventType,
+      event_type: eventType
     });
     let t = response.data;
     return {
       triggerId: t.id ?? t.trigger_id ?? '',
       notificationUrl: t.notification_url ?? t.url ?? '',
-      eventType: t.event_type ?? '',
+      eventType: t.event_type ?? ''
     };
   }
 

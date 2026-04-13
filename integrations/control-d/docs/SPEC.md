@@ -20,6 +20,7 @@ Control D uses API keys for authentication. API tokens are generated from the Co
 For **organization accounts** managing sub-organizations, you can "impersonate" an admin of a child sub-organization by supplying the `X-Force-Org-Id: org_id_goes_here` HTTP header along with API calls. This allows you to view, create, and modify resources within the target sub-organization using the parent organization's API token.
 
 Example request:
+
 ```
 GET https://api.controld.com/users
 Authorization: Bearer YOUR_API_TOKEN

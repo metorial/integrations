@@ -11,6 +11,7 @@ Kickbox uses API key authentication. You need to sign up for a free Kickbox acco
 When you're ready, make an HTTPS request to the Kickbox API. You'll need to include your API key with each call, either as a query string parameter or in the authorization header.
 
 To obtain your API key:
+
 1. Hop over to app.kickbox.com and create a free account. Once you've signed up and logged in, click on API Settings and then click Add API Key. Copy the generated API Key.
 
 Example API call with key as query parameter:

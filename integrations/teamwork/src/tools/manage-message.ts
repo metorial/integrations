@@ -3,36 +3,37 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let manageMessage = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Message',
-    key: 'manage_message',
-    description: `Create, update, or delete a message (discussion post) in a Teamwork project. Messages support titles, body content, categories, and tags.`,
-    instructions: [
-      'For "create", provide projectId, title, and body.',
-      'For "update" and "delete", provide the messageId.',
-    ],
-    tags: { destructive: true, readOnly: false },
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The action to perform'),
-    messageId: z.string().optional().describe('Message ID (required for update/delete)'),
-    projectId: z.string().optional().describe('Project ID (required for create)'),
-    title: z.string().optional().describe('Message title'),
-    body: z.string().optional().describe('Message body (HTML supported)'),
-    categoryId: z.string().optional().describe('Message category ID'),
-    tags: z.string().optional().describe('Comma-separated tags'),
-  }))
-  .output(z.object({
-    messageId: z.string().optional().describe('ID of the message'),
-    title: z.string().optional().describe('Message title'),
-    created: z.boolean().optional().describe('Whether the message was created'),
-    updated: z.boolean().optional().describe('Whether the message was updated'),
-    deleted: z.boolean().optional().describe('Whether the message was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageMessage = SlateTool.create(spec, {
+  name: 'Manage Message',
+  key: 'manage_message',
+  description: `Create, update, or delete a message (discussion post) in a Teamwork project. Messages support titles, body content, categories, and tags.`,
+  instructions: [
+    'For "create", provide projectId, title, and body.',
+    'For "update" and "delete", provide the messageId.'
+  ],
+  tags: { destructive: true, readOnly: false }
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The action to perform'),
+      messageId: z.string().optional().describe('Message ID (required for update/delete)'),
+      projectId: z.string().optional().describe('Project ID (required for create)'),
+      title: z.string().optional().describe('Message title'),
+      body: z.string().optional().describe('Message body (HTML supported)'),
+      categoryId: z.string().optional().describe('Message category ID'),
+      tags: z.string().optional().describe('Comma-separated tags')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().optional().describe('ID of the message'),
+      title: z.string().optional().describe('Message title'),
+      created: z.boolean().optional().describe('Whether the message was created'),
+      updated: z.boolean().optional().describe('Whether the message was updated'),
+      deleted: z.boolean().optional().describe('Whether the message was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action } = ctx.input;
 
@@ -44,12 +45,16 @@ export let manageMessage = SlateTool.create(
         title: ctx.input.title,
         body: ctx.input.body,
         categoryId: ctx.input.categoryId,
-        tags: ctx.input.tags,
+        tags: ctx.input.tags
       });
       let messageId = result.messageId || result.id;
       return {
-        output: { messageId: messageId ? String(messageId) : undefined, title: ctx.input.title, created: true },
-        message: `Created message **${ctx.input.title}**.`,
+        output: {
+          messageId: messageId ? String(messageId) : undefined,
+          title: ctx.input.title,
+          created: true
+        },
+        message: `Created message **${ctx.input.title}**.`
       };
     }
 
@@ -59,11 +64,11 @@ export let manageMessage = SlateTool.create(
         title: ctx.input.title,
         body: ctx.input.body,
         categoryId: ctx.input.categoryId,
-        tags: ctx.input.tags,
+        tags: ctx.input.tags
       });
       return {
         output: { messageId: ctx.input.messageId, title: ctx.input.title, updated: true },
-        message: `Updated message **${ctx.input.messageId}**.`,
+        message: `Updated message **${ctx.input.messageId}**.`
       };
     }
 
@@ -72,7 +77,7 @@ export let manageMessage = SlateTool.create(
       await client.deleteMessage(ctx.input.messageId);
       return {
         output: { messageId: ctx.input.messageId, deleted: true },
-        message: `Deleted message **${ctx.input.messageId}**.`,
+        message: `Deleted message **${ctx.input.messageId}**.`
       };
     }
 

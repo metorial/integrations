@@ -3,44 +3,46 @@ import { ApaleoWebhookClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Events',
-    key: 'invoice_events',
-    description: 'Triggers on invoice events: created, canceled, paid, written off, signed (fiscal), and rendered (fiscal).',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of invoice event'),
-    eventId: z.string().describe('Unique event ID'),
-    invoiceId: z.string().describe('Invoice ID'),
-    propertyId: z.string().optional(),
-    timestamp: z.string().optional(),
-    payload: z.any().optional(),
-  }))
-  .output(z.object({
-    invoiceId: z.string().describe('Affected invoice ID'),
-    propertyId: z.string().optional(),
-    timestamp: z.string().optional(),
-  }))
+export let invoiceEvents = SlateTrigger.create(spec, {
+  name: 'Invoice Events',
+  key: 'invoice_events',
+  description:
+    'Triggers on invoice events: created, canceled, paid, written off, signed (fiscal), and rendered (fiscal).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of invoice event'),
+      eventId: z.string().describe('Unique event ID'),
+      invoiceId: z.string().describe('Invoice ID'),
+      propertyId: z.string().optional(),
+      timestamp: z.string().optional(),
+      payload: z.any().optional()
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string().describe('Affected invoice ID'),
+      propertyId: z.string().optional(),
+      timestamp: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let webhookClient = new ApaleoWebhookClient(ctx.auth.token);
       let result = await webhookClient.createSubscription({
         endpointUrl: ctx.input.webhookBaseUrl,
-        topics: ['Invoice/*'],
+        topics: ['Invoice/*']
       });
       return { registrationDetails: { subscriptionId: result.id } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let webhookClient = new ApaleoWebhookClient(ctx.auth.token);
       await webhookClient.deleteSubscription(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events
@@ -51,13 +53,13 @@ export let invoiceEvents = SlateTrigger.create(
           invoiceId: e.entityId || '',
           propertyId: e.propertyId,
           timestamp: e.timestamp,
-          payload: e,
+          payload: e
         }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType
         .replace('Invoice/', '')
         .replace(/([A-Z])/g, '_$1')
@@ -70,9 +72,9 @@ export let invoiceEvents = SlateTrigger.create(
         output: {
           invoiceId: ctx.input.invoiceId,
           propertyId: ctx.input.propertyId,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
+    }
   })
   .build();

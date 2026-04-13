@@ -14,7 +14,7 @@ import {
   listProfiles,
   deleteProfile,
   runBrowserAgent,
-  getSessionRecording,
+  getSessionRecording
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     listProfiles,
     deleteProfile,
     runBrowserAgent,
-    getSessionRecording,
+    getSessionRecording
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

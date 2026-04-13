@@ -3,40 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTask = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Task',
-    key: 'manage_task',
-    description: `Update or delete a Microsoft To Do task. Use **action** to specify the operation. For updates, only the provided fields will be changed. Supports changing title, status, due date, importance, and more.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageTask = SlateTool.create(spec, {
+  name: 'Manage Task',
+  key: 'manage_task',
+  description: `Update or delete a Microsoft To Do task. Use **action** to specify the operation. For updates, only the provided fields will be changed. Supports changing title, status, due date, importance, and more.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    taskListId: z.string().describe('The ID of the task list containing the task'),
-    taskId: z.string().describe('The ID of the task to manage'),
-    action: z.enum(['update', 'delete']).describe('The action to perform'),
-    title: z.string().optional(),
-    bodyContent: z.string().optional(),
-    bodyContentType: z.enum(['text', 'html']).optional(),
-    importance: z.enum(['low', 'normal', 'high']).optional(),
-    status: z.enum(['notStarted', 'inProgress', 'completed', 'waitingOnOthers', 'deferred']).optional(),
-    dueDateTime: z.string().optional().describe('Due date/time in ISO 8601 format. Set to empty string to clear.'),
-    dueTimeZone: z.string().optional(),
-    reminderDateTime: z.string().optional().describe('Reminder date/time in ISO 8601 format. Set to empty string to clear.'),
-    reminderTimeZone: z.string().optional(),
-    categories: z.array(z.string()).optional(),
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    taskId: z.string(),
-    title: z.string().optional(),
-    status: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      taskListId: z.string().describe('The ID of the task list containing the task'),
+      taskId: z.string().describe('The ID of the task to manage'),
+      action: z.enum(['update', 'delete']).describe('The action to perform'),
+      title: z.string().optional(),
+      bodyContent: z.string().optional(),
+      bodyContentType: z.enum(['text', 'html']).optional(),
+      importance: z.enum(['low', 'normal', 'high']).optional(),
+      status: z
+        .enum(['notStarted', 'inProgress', 'completed', 'waitingOnOthers', 'deferred'])
+        .optional(),
+      dueDateTime: z
+        .string()
+        .optional()
+        .describe('Due date/time in ISO 8601 format. Set to empty string to clear.'),
+      dueTimeZone: z.string().optional(),
+      reminderDateTime: z
+        .string()
+        .optional()
+        .describe('Reminder date/time in ISO 8601 format. Set to empty string to clear.'),
+      reminderTimeZone: z.string().optional(),
+      categories: z.array(z.string()).optional()
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      taskId: z.string(),
+      title: z.string().optional(),
+      status: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { taskListId, taskId, action } = ctx.input;
 
@@ -44,7 +53,7 @@ export let manageTask = SlateTool.create(
       await client.deleteTask(taskListId, taskId);
       return {
         output: { success: true, taskId },
-        message: `Deleted task **${taskId}**.`,
+        message: `Deleted task **${taskId}**.`
       };
     }
 
@@ -53,7 +62,7 @@ export let manageTask = SlateTool.create(
     if (ctx.input.bodyContent !== undefined) {
       updates.body = {
         contentType: ctx.input.bodyContentType || 'text',
-        content: ctx.input.bodyContent,
+        content: ctx.input.bodyContent
       };
     }
     if (ctx.input.importance !== undefined) updates.importance = ctx.input.importance;
@@ -66,7 +75,7 @@ export let manageTask = SlateTool.create(
       } else if (ctx.input.dueTimeZone) {
         updates.dueDateTime = {
           dateTime: ctx.input.dueDateTime,
-          timeZone: ctx.input.dueTimeZone,
+          timeZone: ctx.input.dueTimeZone
         };
       }
     }
@@ -78,7 +87,7 @@ export let manageTask = SlateTool.create(
       } else if (ctx.input.reminderTimeZone) {
         updates.reminderDateTime = {
           dateTime: ctx.input.reminderDateTime,
-          timeZone: ctx.input.reminderTimeZone,
+          timeZone: ctx.input.reminderTimeZone
         };
         updates.isReminderOn = true;
       }
@@ -91,9 +100,9 @@ export let manageTask = SlateTool.create(
         success: true,
         taskId: updated.id,
         title: updated.title,
-        status: updated.status,
+        status: updated.status
       },
-      message: `Updated task **"${updated.title}"**.`,
+      message: `Updated task **"${updated.title}"**.`
     };
   })
   .build();

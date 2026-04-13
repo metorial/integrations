@@ -3,7 +3,9 @@
  * Worksnaps returns XML responses and expects XML request bodies.
  */
 
-export type XmlObject = { [key: string]: string | number | boolean | null | undefined | XmlObject | XmlObject[] };
+export type XmlObject = {
+  [key: string]: string | number | boolean | null | undefined | XmlObject | XmlObject[];
+};
 
 /**
  * Parse a simple XML string into a JavaScript object.
@@ -188,7 +190,7 @@ export let toCamelCase = (str: string): string => {
  * Convert camelCase keys to XML-style hyphenated keys.
  */
 export let toHyphenated = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 };
 
 /**

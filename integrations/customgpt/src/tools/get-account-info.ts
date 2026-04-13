@@ -3,23 +3,22 @@ import { CustomGPTClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccountInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account Info',
-    key: 'get_account_info',
-    description: `Retrieve the current user's profile and account usage limits. Provides information about the authenticated user and their subscription capacity.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getAccountInfo = SlateTool.create(spec, {
+  name: 'Get Account Info',
+  key: 'get_account_info',
+  description: `Retrieve the current user's profile and account usage limits. Provides information about the authenticated user and their subscription capacity.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    user: z.record(z.string(), z.unknown()).nullable().describe('User profile information'),
-    limits: z.record(z.string(), z.unknown()).nullable().describe('Account usage and limits'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      user: z.record(z.string(), z.unknown()).nullable().describe('User profile information'),
+      limits: z.record(z.string(), z.unknown()).nullable().describe('Account usage and limits')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CustomGPTClient({ token: ctx.auth.token });
 
     let user: Record<string, unknown> | null = null;
@@ -41,6 +40,7 @@ export let getAccountInfo = SlateTool.create(
 
     return {
       output: { user, limits },
-      message: `Retrieved account info for **${userName}**.`,
+      message: `Retrieved account info for **${userName}**.`
     };
-  }).build();
+  })
+  .build();

@@ -9,8 +9,8 @@ export class DriftClient {
       baseURL: 'https://driftapi.com',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,7 +28,7 @@ export class DriftClient {
 
   async getContactsByEmail(email: string): Promise<any[]> {
     let response = await this.axios.get('/contacts', {
-      params: { email },
+      params: { email }
     });
     return response.data?.data || [];
   }
@@ -58,10 +58,13 @@ export class DriftClient {
 
   // ── Conversations ──
 
-  async createConversation(email: string, message: { body: string; attributes?: Record<string, any> }): Promise<any> {
+  async createConversation(
+    email: string,
+    message: { body: string; attributes?: Record<string, any> }
+  ): Promise<any> {
     let response = await this.axios.post('/conversations/new', {
       email,
-      message,
+      message
     });
     return response.data?.data || response.data;
   }
@@ -71,11 +74,13 @@ export class DriftClient {
     return response.data?.data;
   }
 
-  async listConversations(params: {
-    limit?: number;
-    next?: string;
-    statusId?: number[];
-  } = {}): Promise<{ conversations: any[]; pagination?: { more: boolean; next: string } }> {
+  async listConversations(
+    params: {
+      limit?: number;
+      next?: string;
+      statusId?: number[];
+    } = {}
+  ): Promise<{ conversations: any[]; pagination?: { more: boolean; next: string } }> {
     let queryParams: Record<string, any> = {};
     if (params.limit) queryParams.limit = params.limit;
     if (params.next) queryParams.next = params.next;
@@ -86,18 +91,23 @@ export class DriftClient {
     let response = await this.axios.get('/conversations/list', { params: queryParams });
     return {
       conversations: response.data?.data || [],
-      pagination: response.data?.pagination,
+      pagination: response.data?.pagination
     };
   }
 
-  async getConversationMessages(conversationId: string, next?: string): Promise<{ messages: any[]; pagination?: { more: boolean; next: string } }> {
+  async getConversationMessages(
+    conversationId: string,
+    next?: string
+  ): Promise<{ messages: any[]; pagination?: { more: boolean; next: string } }> {
     let params: Record<string, any> = {};
     if (next) params.next = next;
 
-    let response = await this.axios.get(`/conversations/${conversationId}/messages`, { params });
+    let response = await this.axios.get(`/conversations/${conversationId}/messages`, {
+      params
+    });
     return {
       messages: response.data?.data?.messages || response.data?.data || [],
-      pagination: response.data?.pagination,
+      pagination: response.data?.pagination
     };
   }
 
@@ -111,19 +121,28 @@ export class DriftClient {
     return response.data?.data || [];
   }
 
-  async sendMessage(conversationId: string, message: {
-    type: 'chat' | 'private_note';
-    body?: string;
-    buttons?: Array<{ label: string; value: string; type?: string; style?: string; reaction?: { type: string; message: string } }>;
-    userId?: number;
-  }): Promise<any> {
+  async sendMessage(
+    conversationId: string,
+    message: {
+      type: 'chat' | 'private_note';
+      body?: string;
+      buttons?: Array<{
+        label: string;
+        value: string;
+        type?: string;
+        style?: string;
+        reaction?: { type: string; message: string };
+      }>;
+      userId?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/conversations/${conversationId}/messages`, message);
     return response.data?.data;
   }
 
   async bulkConversationStatuses(conversationIds: number[]): Promise<any> {
     let response = await this.axios.post('/conversations/statuses', {
-      conversationIds,
+      conversationIds
     });
     return response.data?.data;
   }
@@ -143,7 +162,7 @@ export class DriftClient {
   async updateUser(userId: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.patch(`/users/update`, {
       userId: Number(userId),
-      ...data,
+      ...data
     });
     return response.data?.data;
   }
@@ -174,7 +193,7 @@ export class DriftClient {
   async updateAccount(accountId: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.patch(`/accounts/update`, {
       accountId,
-      ...data,
+      ...data
     });
     return response.data?.data;
   }
@@ -194,8 +213,8 @@ export class DriftClient {
       params: {
         min_start_time: params.minStartTime,
         max_start_time: params.maxStartTime,
-        ...(params.limit ? { limit: params.limit } : {}),
-      },
+        ...(params.limit ? { limit: params.limit } : {})
+      }
     });
     return response.data?.data || [];
   }

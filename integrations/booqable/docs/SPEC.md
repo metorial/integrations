@@ -33,36 +33,45 @@ Generates a JWT token per request for enhanced security. Supports `ES256`, `RS25
 ### Company-Specific Endpoint
 
 All API requests must target the company-specific base URL:
+
 ```
 https://{company_slug}.booqable.com/api/4/
 ```
+
 The `company_slug` is your Booqable subdomain (the part before `.booqable.com` in your account URL).
 
 ## Features
 
 ### Customer Management
+
 Manage customer records including contact information, addresses, custom properties, tax profiles, default discounts, and deposit settings. Customers can be searched, tagged, and archived. Customer settings (discount percentage, deposit type, tax region) are automatically applied when assigned to orders.
 
 ### Product & Inventory Management
+
 Manage rental products organized into product groups, with support for product variations (e.g., size, color), bulk and trackable inventory types, and sales items. Products support barcodes (QR, EAN, Code 128, etc.), photos, custom properties, and configurable pricing. Bundles allow grouping multiple products into a single bookable package. Collections organize products into hierarchical categories for the online store.
 
 - **Stock management:** Add or remove stock at specific locations, track individual stock items with unique identifiers, and manage temporary/expected stock with date ranges.
 - **Availability:** Query real-time inventory levels and breakdowns by location, product, and date range.
 
 ### Order Management
+
 Create and manage rental orders through their full lifecycle: new → draft → reserved → started → stopped → archived. Orders support customer assignment, rental period configuration, pickup/delivery fulfillment, discounts (percentage or fixed), deposits, coupons, tax regions, custom line items, and tags.
 
 - **Order fulfillment:** Book products, bundles, or specific stock items onto orders. Start (pick up) and stop (return) items individually or in bulk. Supports partial pickups and returns.
 - **Shortage handling:** The system tracks inventory shortages at both location and cluster levels, with configurable warnings and overrides.
 
 ### Pricing & Tax
+
 Configure flexible pricing through simple per-period rates, tiered price structures with tiles, or advanced price rulesets with date-based and day-of-week rules. Tax categories and tax regions with multiple rates support both inclusive and exclusive tax strategies. Coupons provide percentage or fixed-amount discounts redeemable online or in the back office.
 
 ### Documents (Invoices, Quotes, Contracts)
+
 Generate and manage invoices, quotes, and contracts linked to orders. Invoices auto-generate and update with order changes; they can be finalized and revised. Quotes and contracts can be confirmed and signed with digital signatures. All document types support custom prefixes, numbering, footers, and body content.
 
 ### Payments
+
 Process payments through multiple providers (Stripe, third-party apps, or manual). Supports three payment types:
+
 - **Payment Charges:** Direct charges with multiple modes (manual, off-session, request, terminal, capture).
 - **Payment Authorizations:** Pre-authorize funds for later capture, with tracking of capturable/captured amounts.
 - **Payment Refunds:** Full or partial refunds against previous charges, with provider or manual processing.
@@ -70,18 +79,23 @@ Process payments through multiple providers (Stripe, third-party apps, or manual
 Payment methods can be saved per customer for recurring use.
 
 ### Locations & Clusters
+
 Manage multiple pickup/return locations and warehouses. Locations can be grouped into clusters that share inventory, enabling cross-location availability and automatic transfer suggestions when shortages occur at specific locations.
 
 ### Email & Communication
+
 Send emails to customers using customizable templates with dynamic variables (order data, customer data, document data). Track email history per order and customer. Attach documents as PDF attachments.
 
 ### Employee & User Management
+
 Manage team member accounts with configurable permissions (reports, products, settings, exports, etc.). Invite employees via email. Manage customer-facing user accounts for the online store, with support for invitations, email verification, and account disabling.
 
 ### Settings & Configuration
+
 Configure global settings including currency, date formats, default pricing/deposit/tax behavior, order time defaults, online store options (availability display, payment strategies, checkout scripts), document formatting, and security settings (SSO, IP restrictions).
 
 ### Custom Properties
+
 Define custom fields (text, email, phone, address, date, select) for customers, orders, and product groups. Properties can be linked to default property templates for consistent configuration across resources.
 
 ## Events
@@ -89,6 +103,7 @@ Define custom fields (text, email, phone, address, date, select) for customers, 
 Booqable supports webhooks for real-time event notifications. Webhook endpoints can be registered via the API to receive HTTP POST notifications when specific events occur. Payloads are available in v1 (form-encoded) or v4 (JSON) format.
 
 ### Order Events
+
 - `order.saved_as_draft` — Order saved as draft
 - `order.reserved` — Order reserved (items become unavailable)
 - `order.started` — Order started (items picked up/delivered)
@@ -98,17 +113,20 @@ Booqable supports webhooks for real-time event notifications. Webhook endpoints 
 - `order.archived` — Order archived
 
 ### Customer Events
+
 - `customer.created` — New customer created
 - `customer.updated` — Customer details updated
 - `customer.archived` — Customer archived
 
 ### Product Events
+
 - `product_group.created` — Product group created
 - `product_group.updated` — Product group updated
 - `product_group.archived` — Product group archived
 - `product.created` — Product variation created
 
 ### Bundle Events
+
 - `bundle.created` — Bundle created
 - `bundle.updated` — Bundle updated
 - `bundle.archived` — Bundle archived
@@ -117,6 +135,7 @@ Booqable supports webhooks for real-time event notifications. Webhook endpoints 
 - `bundle_item.archived` — Bundle item archived
 
 ### Document Events
+
 - `invoice.created` — Invoice created
 - `invoice.updated` — Invoice updated
 - `invoice.finalized` — Invoice finalized
@@ -126,9 +145,11 @@ Booqable supports webhooks for real-time event notifications. Webhook endpoints 
 - `contract.created` / `contract.updated` / `contract.confirmed` / `contract.signed` / `contract.archived`
 
 ### Payment Events
+
 - `payment.completed` — Payment completed
 
 ### Other Events
+
 - `app.installed` / `app.uninstalled` / `app.configured` / `app.plan_changed` — App lifecycle events
 - `cart.completed_checkout` — Cart checkout completed
 - `company.destroyed` — Company account destroyed

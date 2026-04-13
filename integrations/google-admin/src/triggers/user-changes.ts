@@ -3,38 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Changes',
-    key: 'user_changes',
-    description: 'Receive real-time notifications when user accounts are created, updated, deleted, restored, or have their admin status changed in the Google Workspace domain.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of user change event'),
-    channelId: z.string().describe('ID of the notification channel'),
-    resourceId: z.string().describe('Resource ID from the notification'),
-    resourceState: z.string().describe('State of the resource change'),
-    resourceUri: z.string().optional().describe('URI of the changed resource'),
-    messageNumber: z.string().optional().describe('Notification message number'),
-    channelToken: z.string().optional().describe('Channel verification token')
-  }))
-  .output(z.object({
-    userId: z.string().optional().describe('ID of the affected user'),
-    primaryEmail: z.string().optional().describe('Primary email of the affected user'),
-    name: z.object({
-      givenName: z.string().optional(),
-      familyName: z.string().optional(),
-      fullName: z.string().optional()
-    }).optional().describe('Name of the affected user'),
-    orgUnitPath: z.string().optional().describe('Org unit path of the user'),
-    isAdmin: z.boolean().optional().describe('Whether the user is an admin'),
-    suspended: z.boolean().optional().describe('Whether the user is suspended'),
-    changeType: z.string().describe('Type of change that occurred')
-  }))
+export let userChanges = SlateTrigger.create(spec, {
+  name: 'User Changes',
+  key: 'user_changes',
+  description:
+    'Receive real-time notifications when user accounts are created, updated, deleted, restored, or have their admin status changed in the Google Workspace domain.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of user change event'),
+      channelId: z.string().describe('ID of the notification channel'),
+      resourceId: z.string().describe('Resource ID from the notification'),
+      resourceState: z.string().describe('State of the resource change'),
+      resourceUri: z.string().optional().describe('URI of the changed resource'),
+      messageNumber: z.string().optional().describe('Notification message number'),
+      channelToken: z.string().optional().describe('Channel verification token')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().optional().describe('ID of the affected user'),
+      primaryEmail: z.string().optional().describe('Primary email of the affected user'),
+      name: z
+        .object({
+          givenName: z.string().optional(),
+          familyName: z.string().optional(),
+          fullName: z.string().optional()
+        })
+        .optional()
+        .describe('Name of the affected user'),
+      orgUnitPath: z.string().optional().describe('Org unit path of the user'),
+      isAdmin: z.boolean().optional().describe('Whether the user is an admin'),
+      suspended: z.boolean().optional().describe('Whether the user is suspended'),
+      changeType: z.string().describe('Type of change that occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         customerId: ctx.config.customerId,
@@ -59,7 +64,7 @@ export let userChanges = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         customerId: ctx.config.customerId,
@@ -72,7 +77,7 @@ export let userChanges = SlateTrigger.create(
       );
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let resourceState = ctx.request.headers.get('x-goog-resource-state') || '';
 
       // Google sends a "sync" message when the channel is first created - acknowledge but don't process
@@ -90,19 +95,21 @@ export let userChanges = SlateTrigger.create(
       let eventType = resourceState;
 
       return {
-        inputs: [{
-          eventType,
-          channelId,
-          resourceId,
-          resourceState,
-          resourceUri: resourceUri || undefined,
-          messageNumber: messageNumber || undefined,
-          channelToken: channelToken || undefined
-        }]
+        inputs: [
+          {
+            eventType,
+            channelId,
+            resourceId,
+            resourceState,
+            resourceUri: resourceUri || undefined,
+            messageNumber: messageNumber || undefined,
+            channelToken: channelToken || undefined
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         customerId: ctx.config.customerId,
@@ -132,11 +139,13 @@ export let userChanges = SlateTrigger.create(
         output: {
           userId: user.id,
           primaryEmail: user.primaryEmail,
-          name: user.name ? {
-            givenName: user.name.givenName,
-            familyName: user.name.familyName,
-            fullName: user.name.fullName
-          } : undefined,
+          name: user.name
+            ? {
+                givenName: user.name.givenName,
+                familyName: user.name.familyName,
+                fullName: user.name.fullName
+              }
+            : undefined,
           orgUnitPath: user.orgUnitPath,
           isAdmin: user.isAdmin,
           suspended: user.suspended,

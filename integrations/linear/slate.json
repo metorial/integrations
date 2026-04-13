@@ -2,9 +2,7 @@
   "name": "@metorial/linear",
   "version": "0.1.1",
   "description": "Create, read, update, and delete issues across teams with support for priorities, labels, assignees, due dates, and workflow states. Manage projects that group related issues, and organize work into time-boxed cycles (sprints). Create and manage documents, comments, and file attachments. Search issues using vector similarity or rich filters. Configure teams, workflow states, and labels. Track customers and link them to issues. Subscribe to real-time webhooks for changes to issues, projects, cycles, comments, documents, and more.",
-  "categories": [
-    "task-and-project-management"
-  ],
+  "categories": ["task-and-project-management"],
   "skills": [
     "create and manage issues",
     "manage projects and milestones",

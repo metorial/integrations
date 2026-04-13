@@ -17,7 +17,7 @@ import {
   manageProtectedRanges,
   manageNamedRanges,
   createFilterView,
-  mergeCells,
+  mergeCells
 } from './tools';
 import { spreadsheetChanged } from './triggers';
 
@@ -40,9 +40,7 @@ export let provider = Slate.create({
     manageProtectedRanges,
     manageNamedRanges,
     createFilterView,
-    mergeCells,
+    mergeCells
   ],
-  triggers: [
-    spreadsheetChanged,
-  ],
+  triggers: [spreadsheetChanged]
 });

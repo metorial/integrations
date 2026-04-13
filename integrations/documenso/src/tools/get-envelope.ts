@@ -9,7 +9,7 @@ let recipientSchema = z.object({
   name: z.string().describe('Recipient name'),
   role: z.string().describe('Recipient role (SIGNER, VIEWER, APPROVER, CC)'),
   signingStatus: z.string().describe('Current signing status'),
-  signingOrder: z.number().optional().describe('Order in which the recipient signs'),
+  signingOrder: z.number().optional().describe('Order in which the recipient signs')
 });
 
 let envelopeDetailSchema = z.object({
@@ -21,28 +21,27 @@ let envelopeDetailSchema = z.object({
   updatedAt: z.string().describe('ISO timestamp when the envelope was last updated'),
   recipients: z.array(recipientSchema).describe('List of recipients'),
   subject: z.string().optional().describe('Email subject line'),
-  message: z.string().optional().describe('Email message body'),
+  message: z.string().optional().describe('Email message body')
 });
 
-export let getEnvelopeTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Envelope',
-    key: 'get_envelope',
-    description: `Retrieve detailed information about a specific envelope including its recipients, status, and metadata. Use this to check the current state of a document or template.`,
-    tags: {
-      readOnly: true,
-    },
+export let getEnvelopeTool = SlateTool.create(spec, {
+  name: 'Get Envelope',
+  key: 'get_envelope',
+  description: `Retrieve detailed information about a specific envelope including its recipients, status, and metadata. Use this to check the current state of a document or template.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    envelopeId: z.string().describe('ID of the envelope to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      envelopeId: z.string().describe('ID of the envelope to retrieve')
+    })
+  )
   .output(envelopeDetailSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let envelope = await client.getEnvelope(ctx.input.envelopeId);
@@ -63,12 +62,12 @@ export let getEnvelopeTool = SlateTool.create(
           name: String(r.name ?? ''),
           role: String(r.role ?? ''),
           signingStatus: String(r.signingStatus ?? r.status ?? ''),
-          signingOrder: r.signingOrder != null ? Number(r.signingOrder) : undefined,
+          signingOrder: r.signingOrder != null ? Number(r.signingOrder) : undefined
         })),
         subject: envelope.meta?.subject ? String(envelope.meta.subject) : undefined,
-        message: envelope.meta?.message ? String(envelope.meta.message) : undefined,
+        message: envelope.meta?.message ? String(envelope.meta.message) : undefined
       },
-      message: `Retrieved envelope "${envelope.title}" (status: ${envelope.status}).`,
+      message: `Retrieved envelope "${envelope.title}" (status: ${envelope.status}).`
     };
   })
   .build();

@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://api.stitchdata.com',
-  eu: 'https://api.eu-central-1.stitchdata.com',
+  eu: 'https://api.eu-central-1.stitchdata.com'
 };
 
 export class StitchConnectClient {
@@ -14,9 +14,9 @@ export class StitchConnectClient {
     this.axios = createAxios({
       baseURL: BASE_URLS[params.region] || BASE_URLS['us'],
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -170,7 +170,9 @@ export class StitchConnectClient {
   }
 
   async updateCustomEmail(emailId: number, disabled: boolean): Promise<any> {
-    let res = await this.axios.put(`/notifications/public/v1/api/custom-emails/${emailId}`, { disabled });
+    let res = await this.axios.put(`/notifications/public/v1/api/custom-emails/${emailId}`, {
+      disabled
+    });
     return res.data;
   }
 
@@ -192,7 +194,9 @@ export class StitchConnectClient {
   }
 
   async updateHook(hookId: number, disabled: boolean): Promise<any> {
-    let res = await this.axios.put(`/notifications/public/v1/api/hooks/${hookId}`, { disabled });
+    let res = await this.axios.put(`/notifications/public/v1/api/hooks/${hookId}`, {
+      disabled
+    });
     return res.data;
   }
 
@@ -205,7 +209,9 @@ export class StitchConnectClient {
 
   private getClientIdOrThrow(): string {
     if (!this.clientId) {
-      throw new Error('Stitch client ID is required for this operation. Set it in the configuration.');
+      throw new Error(
+        'Stitch client ID is required for this operation. Set it in the configuration.'
+      );
     }
     return this.clientId;
   }
@@ -220,9 +226,9 @@ export class StitchImportClient {
     this.axios = createAxios({
       baseURL: BASE_URLS[params.region] || BASE_URLS['us'],
       headers: {
-        'Authorization': `Bearer ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -245,26 +251,30 @@ export class StitchImportClient {
     return res.data;
   }
 
-  async pushData(records: Array<{
-    client_id: number;
-    table_name: string;
-    sequence: number;
-    action: string;
-    key_names?: string[];
-    data: Record<string, any>;
-  }>): Promise<any> {
+  async pushData(
+    records: Array<{
+      client_id: number;
+      table_name: string;
+      sequence: number;
+      action: string;
+      key_names?: string[];
+      data: Record<string, any>;
+    }>
+  ): Promise<any> {
     let res = await this.axios.post('/v2/import/push', records);
     return res.data;
   }
 
-  async validatePush(records: Array<{
-    client_id: number;
-    table_name: string;
-    sequence: number;
-    action: string;
-    key_names?: string[];
-    data: Record<string, any>;
-  }>): Promise<any> {
+  async validatePush(
+    records: Array<{
+      client_id: number;
+      table_name: string;
+      sequence: number;
+      action: string;
+      key_names?: string[];
+      data: Record<string, any>;
+    }>
+  ): Promise<any> {
     let res = await this.axios.post('/v2/import/validate', records);
     return res.data;
   }

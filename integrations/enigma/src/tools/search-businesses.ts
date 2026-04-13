@@ -7,47 +7,65 @@ let businessResultSchema = z.object({
   enigmaId: z.string().optional().describe('Enigma ID of the business'),
   entityType: z.string().optional().describe('Entity type (e.g., BRAND, OPERATING_LOCATION)'),
   names: z.array(z.string()).optional().describe('Business names'),
-  addresses: z.array(z.object({
-    fullAddress: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    postalCode: z.string().optional(),
-  })).optional().describe('Business addresses'),
+  addresses: z
+    .array(
+      z.object({
+        fullAddress: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+        postalCode: z.string().optional()
+      })
+    )
+    .optional()
+    .describe('Business addresses'),
   websites: z.array(z.string()).optional().describe('Business websites'),
-  industries: z.array(z.string()).optional().describe('Industry descriptions'),
+  industries: z.array(z.string()).optional().describe('Industry descriptions')
 });
 
-export let searchBusinesses = SlateTool.create(
-  spec,
-  {
-    name: 'Search Businesses',
-    key: 'search_businesses',
-    description: `Search for businesses in Enigma's database using the GraphQL API. Find businesses by name, entity type, and location, with support for pagination.
+export let searchBusinesses = SlateTool.create(spec, {
+  name: 'Search Businesses',
+  key: 'search_businesses',
+  description: `Search for businesses in Enigma's database using the GraphQL API. Find businesses by name, entity type, and location, with support for pagination.
 
 Returns a list of matching business profiles including names, addresses, websites, and industry information. Useful for building prospect lists or exploring businesses in a specific area or industry.`,
-    instructions: [
-      'Provide a business name or partial name to search for.',
-      'Optionally filter by entity type (BRAND or OPERATING_LOCATION) and state.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Provide a business name or partial name to search for.',
+    'Optionally filter by entity type (BRAND or OPERATING_LOCATION) and state.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().describe('Business name or partial name to search for'),
-    entityType: z.enum(['BRAND', 'OPERATING_LOCATION']).optional().describe('Filter by entity type'),
-    state: z.string().optional().describe('Two-letter state code to filter by (e.g., NY, CA)'),
-    limit: z.number().int().min(1).max(50).default(10).describe('Maximum number of results to return (1-50)'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous search result'),
-  }))
-  .output(z.object({
-    businesses: z.array(businessResultSchema).describe('List of matching businesses'),
-    totalCount: z.number().optional().describe('Total number of matching results'),
-    hasNextPage: z.boolean().describe('Whether more results are available'),
-    endCursor: z.string().optional().describe('Cursor for fetching the next page of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Business name or partial name to search for'),
+      entityType: z
+        .enum(['BRAND', 'OPERATING_LOCATION'])
+        .optional()
+        .describe('Filter by entity type'),
+      state: z
+        .string()
+        .optional()
+        .describe('Two-letter state code to filter by (e.g., NY, CA)'),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(50)
+        .default(10)
+        .describe('Maximum number of results to return (1-50)'),
+      cursor: z.string().optional().describe('Pagination cursor from a previous search result')
+    })
+  )
+  .output(
+    z.object({
+      businesses: z.array(businessResultSchema).describe('List of matching businesses'),
+      totalCount: z.number().optional().describe('Total number of matching results'),
+      hasNextPage: z.boolean().describe('Whether more results are available'),
+      endCursor: z.string().optional().describe('Cursor for fetching the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let searchInputParts: string[] = [];
@@ -168,16 +186,21 @@ Returns a list of matching business profiles including names, addresses, website
         let node = edge.node;
         if (!node) continue;
 
-        let names = node.names?.edges?.map((e: Record<string, { name?: string }>) => e.node?.name).filter(Boolean) || [];
+        let names =
+          node.names?.edges
+            ?.map((e: Record<string, { name?: string }>) => e.node?.name)
+            .filter(Boolean) || [];
 
         let addresses: Array<Record<string, unknown>> = [];
         if (node.addresses?.edges) {
-          addresses = node.addresses.edges.map((e: Record<string, Record<string, unknown>>) => ({
-            fullAddress: e.node?.fullAddress,
-            city: e.node?.city,
-            state: e.node?.state,
-            postalCode: e.node?.postalCode,
-          }));
+          addresses = node.addresses.edges.map(
+            (e: Record<string, Record<string, unknown>>) => ({
+              fullAddress: e.node?.fullAddress,
+              city: e.node?.city,
+              state: e.node?.state,
+              postalCode: e.node?.postalCode
+            })
+          );
         } else if (node.operatingLocations?.edges) {
           for (let locEdge of node.operatingLocations.edges) {
             let locAddresses = locEdge.node?.addresses?.edges || [];
@@ -186,15 +209,21 @@ Returns a list of matching business profiles including names, addresses, website
                 fullAddress: addrEdge.node?.fullAddress,
                 city: addrEdge.node?.city,
                 state: addrEdge.node?.state,
-                postalCode: addrEdge.node?.postalCode,
+                postalCode: addrEdge.node?.postalCode
               });
             }
           }
         }
 
-        let websites = node.websites?.edges?.map((e: Record<string, { url?: string }>) => e.node?.url).filter(Boolean) || [];
+        let websites =
+          node.websites?.edges
+            ?.map((e: Record<string, { url?: string }>) => e.node?.url)
+            .filter(Boolean) || [];
 
-        let industries = node.industries?.edges?.map((e: Record<string, { description?: string }>) => e.node?.description).filter(Boolean) || [];
+        let industries =
+          node.industries?.edges
+            ?.map((e: Record<string, { description?: string }>) => e.node?.description)
+            .filter(Boolean) || [];
 
         businesses.push({
           enigmaId: node.enigmaId,
@@ -202,7 +231,7 @@ Returns a list of matching business profiles including names, addresses, website
           names,
           addresses,
           websites,
-          industries,
+          industries
         });
       }
     }
@@ -212,9 +241,9 @@ Returns a list of matching business profiles including names, addresses, website
         businesses,
         totalCount,
         hasNextPage,
-        endCursor,
+        endCursor
       },
-      message: `Found **${businesses.length}** business(es)${totalCount ? ` out of ${totalCount} total` : ''} matching "${ctx.input.name}".${hasNextPage ? ' More results available.' : ''}`,
+      message: `Found **${businesses.length}** business(es)${totalCount ? ` out of ${totalCount} total` : ''} matching "${ctx.input.name}".${hasNextPage ? ' More results available.' : ''}`
     };
   })
   .build();

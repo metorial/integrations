@@ -49,8 +49,8 @@ export class Client {
     return createAxios({
       baseURL: this.baseURL,
       headers: {
-        'Authorization': `Basic ${this.token}`,
-      },
+        Authorization: `Basic ${this.token}`
+      }
     });
   }
 
@@ -65,13 +65,11 @@ export class Client {
   private buildQueryParams(params: ListRecordsParams): Record<string, string | string[]> {
     let query: Record<string, string | string[]> = {
       v: '3',
-      api: '',
+      api: ''
     };
 
     if (params.where && params.where.length > 0) {
-      query['where'] = params.where.map(
-        (w) => `${w.fieldId},${w.operator},${w.value}`
-      );
+      query['where'] = params.where.map(w => `${w.fieldId},${w.operator},${w.value}`);
     }
 
     if (params.fts) {
@@ -120,7 +118,7 @@ export class Client {
   private buildWriteParams(params?: WriteParams): Record<string, string> {
     let query: Record<string, string> = {
       v: '3',
-      api: '',
+      api: ''
     };
 
     if (params?.doFormula) {
@@ -150,31 +148,42 @@ export class Client {
     return query;
   }
 
-  async listRecords(sheet: SheetPath, params: ListRecordsParams = {}): Promise<Record<string, any>> {
+  async listRecords(
+    sheet: SheetPath,
+    params: ListRecordsParams = {}
+  ): Promise<Record<string, any>> {
     let ax = this.createAxiosInstance();
     let url = this.buildSheetUrl(sheet);
     let queryParams = this.buildQueryParams(params);
 
     let response = await ax.get(url, {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async getRecord(sheet: SheetPath, recordId: number, params: ListRecordsParams = {}): Promise<Record<string, any>> {
+  async getRecord(
+    sheet: SheetPath,
+    recordId: number,
+    params: ListRecordsParams = {}
+  ): Promise<Record<string, any>> {
     let ax = this.createAxiosInstance();
     let url = this.buildRecordUrl(sheet, recordId);
     let queryParams = this.buildQueryParams(params);
 
     let response = await ax.get(url, {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
   }
 
-  async createRecord(sheet: SheetPath, fields: Record<string, any>, writeParams?: WriteParams): Promise<Record<string, any>> {
+  async createRecord(
+    sheet: SheetPath,
+    fields: Record<string, any>,
+    writeParams?: WriteParams
+  ): Promise<Record<string, any>> {
     let ax = this.createAxiosInstance();
     let url = this.buildSheetUrl(sheet);
     let queryParams = this.buildWriteParams(writeParams);
@@ -182,14 +191,19 @@ export class Client {
     let response = await ax.post(url, fields, {
       params: queryParams,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     return response.data;
   }
 
-  async updateRecord(sheet: SheetPath, recordId: number, fields: Record<string, any>, writeParams?: WriteParams): Promise<Record<string, any>> {
+  async updateRecord(
+    sheet: SheetPath,
+    recordId: number,
+    fields: Record<string, any>,
+    writeParams?: WriteParams
+  ): Promise<Record<string, any>> {
     let ax = this.createAxiosInstance();
     let url = this.buildRecordUrl(sheet, recordId);
     let queryParams = this.buildWriteParams(writeParams);
@@ -197,8 +211,8 @@ export class Client {
     let response = await ax.post(url, fields, {
       params: queryParams,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     return response.data;
@@ -211,14 +225,18 @@ export class Client {
     let response = await ax.delete(url, {
       params: {
         v: '3',
-        api: '',
-      },
+        api: ''
+      }
     });
 
     return response.data;
   }
 
-  async addComment(sheet: SheetPath, recordId: number, comment: string): Promise<Record<string, any>> {
+  async addComment(
+    sheet: SheetPath,
+    recordId: number,
+    comment: string
+  ): Promise<Record<string, any>> {
     let ax = this.createAxiosInstance();
     let url = this.buildRecordUrl(sheet, recordId);
 
@@ -228,11 +246,11 @@ export class Client {
 
     let response = await ax.post(url, formData.toString(), {
       params: {
-        api: '',
+        api: ''
       },
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     return response.data;
@@ -245,8 +263,8 @@ export class Client {
     let response = await ax.post(url, null, {
       params: {
         api: '',
-        lock: '',
-      },
+        lock: ''
+      }
     });
 
     return response.data;
@@ -259,22 +277,26 @@ export class Client {
     let response = await ax.post(url, null, {
       params: {
         api: '',
-        unlock: '',
-      },
+        unlock: ''
+      }
     });
 
     return response.data;
   }
 
-  async executeActionButton(sheet: SheetPath, recordId: number, buttonId: string): Promise<Record<string, any>> {
+  async executeActionButton(
+    sheet: SheetPath,
+    recordId: number,
+    buttonId: string
+  ): Promise<Record<string, any>> {
     let ax = this.createAxiosInstance();
     let url = this.buildRecordUrl(sheet, recordId);
 
     let response = await ax.post(url, null, {
       params: {
         api: '',
-        bId: buttonId,
-      },
+        bId: buttonId
+      }
     });
 
     return response.data;
@@ -294,7 +316,12 @@ export class Client {
     return response.data;
   }
 
-  async exportRecord(sheet: SheetPath, recordId: number, format: string, exportParams?: Record<string, string>): Promise<{ contentType: string; data: any }> {
+  async exportRecord(
+    sheet: SheetPath,
+    recordId: number,
+    format: string,
+    exportParams?: Record<string, string>
+  ): Promise<{ contentType: string; data: any }> {
     let ax = this.createAxiosInstance();
     let url = `${this.buildRecordUrl(sheet, recordId)}.${format}`;
 
@@ -302,12 +329,12 @@ export class Client {
 
     let response = await ax.get(url, {
       params,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     return {
       contentType: response.headers?.['content-type'] || 'application/octet-stream',
-      data: response.data,
+      data: response.data
     };
   }
 

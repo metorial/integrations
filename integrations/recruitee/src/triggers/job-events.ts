@@ -3,68 +3,80 @@ import { RecruiteeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Events',
-    key: 'job_events',
-    description: 'Fires when a job offer is published, unpublished, or updated (including status changes and tag changes).',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type identifier'),
-    eventSubtype: z.string().nullable().describe('Event subtype (offer_changed, status_changed, tags_changed)'),
-    webhookEventId: z.number().describe('Unique webhook event ID'),
-    offer: z.any().describe('Raw offer data from webhook'),
-    companyId: z.number().nullable().describe('Company ID'),
-  }))
-  .output(z.object({
-    offerId: z.number().describe('Job offer ID'),
-    title: z.string().describe('Job title'),
-    kind: z.string().describe('Type: job or talent_pool'),
-    status: z.string().nullable().describe('Current status'),
-    slug: z.string().nullable().describe('URL slug'),
-    department: z.string().nullable().describe('Department name'),
-    locations: z.array(z.object({
-      locationId: z.number().describe('Location ID'),
-      fullAddress: z.string().describe('Full address'),
-    })).describe('Office locations'),
-    tags: z.array(z.string()).describe('Tags'),
-    eventSubtype: z.string().nullable().describe('Specific change type: offer_changed, status_changed, tags_changed'),
-    createdAt: z.string().describe('Offer creation timestamp'),
-    updatedAt: z.string().describe('Offer last update timestamp'),
-  }))
+export let jobEvents = SlateTrigger.create(spec, {
+  name: 'Job Events',
+  key: 'job_events',
+  description:
+    'Fires when a job offer is published, unpublished, or updated (including status changes and tag changes).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type identifier'),
+      eventSubtype: z
+        .string()
+        .nullable()
+        .describe('Event subtype (offer_changed, status_changed, tags_changed)'),
+      webhookEventId: z.number().describe('Unique webhook event ID'),
+      offer: z.any().describe('Raw offer data from webhook'),
+      companyId: z.number().nullable().describe('Company ID')
+    })
+  )
+  .output(
+    z.object({
+      offerId: z.number().describe('Job offer ID'),
+      title: z.string().describe('Job title'),
+      kind: z.string().describe('Type: job or talent_pool'),
+      status: z.string().nullable().describe('Current status'),
+      slug: z.string().nullable().describe('URL slug'),
+      department: z.string().nullable().describe('Department name'),
+      locations: z
+        .array(
+          z.object({
+            locationId: z.number().describe('Location ID'),
+            fullAddress: z.string().describe('Full address')
+          })
+        )
+        .describe('Office locations'),
+      tags: z.array(z.string()).describe('Tags'),
+      eventSubtype: z
+        .string()
+        .nullable()
+        .describe('Specific change type: offer_changed, status_changed, tags_changed'),
+      createdAt: z.string().describe('Offer creation timestamp'),
+      updatedAt: z.string().describe('Offer last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new RecruiteeClient({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let result = await client.createWebhook(ctx.input.webhookBaseUrl, [
         'offer_published',
         'offer_unpublished',
-        'offer_updated',
+        'offer_updated'
       ]);
 
       return {
         registrationDetails: {
-          webhookId: result.webhook?.id || result.id,
-        },
+          webhookId: result.webhook?.id || result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new RecruiteeClient({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
@@ -73,13 +85,13 @@ export let jobEvents = SlateTrigger.create(
             eventSubtype: data.event_subtype || null,
             webhookEventId: data.id,
             offer: data.payload?.offer || null,
-            companyId: data.payload?.company?.id || null,
-          },
-        ],
+            companyId: data.payload?.company?.id || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
       let offerData = input.offer || {};
 
@@ -100,7 +112,7 @@ export let jobEvents = SlateTrigger.create(
 
       let locations = (offerData.locations || []).map((l: any) => ({
         locationId: l.id,
-        fullAddress: l.full_address || '',
+        fullAddress: l.full_address || ''
       }));
 
       let tags = (offerData.tags || []).map((t: any) =>
@@ -121,8 +133,9 @@ export let jobEvents = SlateTrigger.create(
           tags,
           eventSubtype: input.eventSubtype,
           createdAt: offerData.created_at || '',
-          updatedAt: offerData.updated_at || '',
-        },
+          updatedAt: offerData.updated_at || ''
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

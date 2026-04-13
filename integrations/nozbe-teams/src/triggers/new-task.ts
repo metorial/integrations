@@ -3,40 +3,42 @@ import { Client, ListParams } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newTaskTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Task',
-    key: 'new_task',
-    description: 'Triggers when a new task is created in Nozbe Teams. Optionally filter by project or responsible user.'
-  }
-)
-  .input(z.object({
-    taskId: z.string().describe('Task ID'),
-    name: z.string().describe('Task name'),
-    projectId: z.string().optional().describe('Project ID'),
-    authorId: z.string().optional().describe('Author user ID'),
-    responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    dueAt: z.number().nullable().optional().describe('Due date timestamp'),
-    priorityPosition: z.number().nullable().optional().describe('Priority position')
-  }))
-  .output(z.object({
-    taskId: z.string().describe('Task ID'),
-    name: z.string().describe('Task name'),
-    projectId: z.string().optional().describe('Project ID'),
-    authorId: z.string().optional().describe('Author user ID'),
-    responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
-    createdAt: z.number().optional().describe('Creation timestamp'),
-    dueAt: z.number().nullable().optional().describe('Due date timestamp'),
-    priorityPosition: z.number().nullable().optional().describe('Priority position')
-  }))
+export let newTaskTrigger = SlateTrigger.create(spec, {
+  name: 'New Task',
+  key: 'new_task',
+  description:
+    'Triggers when a new task is created in Nozbe Teams. Optionally filter by project or responsible user.'
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      name: z.string().describe('Task name'),
+      projectId: z.string().optional().describe('Project ID'),
+      authorId: z.string().optional().describe('Author user ID'),
+      responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      dueAt: z.number().nullable().optional().describe('Due date timestamp'),
+      priorityPosition: z.number().nullable().optional().describe('Priority position')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('Task ID'),
+      name: z.string().describe('Task name'),
+      projectId: z.string().optional().describe('Project ID'),
+      authorId: z.string().optional().describe('Author user ID'),
+      responsibleId: z.string().nullable().optional().describe('Responsible user ID'),
+      createdAt: z.number().optional().describe('Creation timestamp'),
+      dueAt: z.number().nullable().optional().describe('Due date timestamp'),
+      priorityPosition: z.number().nullable().optional().describe('Priority position')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let params: ListParams = {
@@ -74,7 +76,7 @@ export let newTaskTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'task.created',
         id: ctx.input.taskId,
@@ -90,4 +92,5 @@ export let newTaskTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

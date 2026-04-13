@@ -49,13 +49,15 @@ export class Client {
       baseURL: 'https://developers.coinmarketcal.com/v1',
       headers: {
         'x-api-key': config.token,
-        'Accept': 'application/json',
-        'Accept-Encoding': 'deflate, gzip',
-      },
+        Accept: 'application/json',
+        'Accept-Encoding': 'deflate, gzip'
+      }
     });
   }
 
-  async getEvents(params: EventsParams = {}): Promise<{ events: CoinMarketCalEvent[]; pageCount: number }> {
+  async getEvents(
+    params: EventsParams = {}
+  ): Promise<{ events: CoinMarketCalEvent[]; pageCount: number }> {
     let queryParams: Record<string, string> = {};
 
     if (params.page !== undefined) queryParams.page = String(params.page);
@@ -73,7 +75,7 @@ export class Client {
 
     return {
       events: Array.isArray(body) ? body : [],
-      pageCount: response.data?._metadata?.page_count ?? 1,
+      pageCount: response.data?._metadata?.page_count ?? 1
     };
   }
 

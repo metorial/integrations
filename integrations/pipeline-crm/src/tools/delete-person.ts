@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deletePerson = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Person',
-    key: 'delete_person',
-    description: `Permanently delete a person (contact) from Pipeline CRM. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deletePerson = SlateTool.create(spec, {
+  name: 'Delete Person',
+  key: 'delete_person',
+  description: `Permanently delete a person (contact) from Pipeline CRM. This action cannot be undone.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    personId: z.number().describe('ID of the person to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the person was successfully deleted'),
-    personId: z.number().describe('ID of the deleted person')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      personId: z.number().describe('ID of the person to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the person was successfully deleted'),
+      personId: z.number().describe('ID of the deleted person')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       appKey: ctx.auth.appKey
@@ -37,4 +38,5 @@ export let deletePerson = SlateTool.create(
       },
       message: `Deleted person with ID **${ctx.input.personId}**`
     };
-  }).build();
+  })
+  .build();

@@ -24,7 +24,7 @@ export let createClient = (auth: AuthOutput, config: ConfigOutput): MySQLClient 
     username: auth.username,
     password: auth.password,
     sslMode: auth.sslMode,
-    queryTimeout: config.queryTimeout,
+    queryTimeout: config.queryTimeout
   };
   return new MySQLClient(connectionConfig);
 };

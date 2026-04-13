@@ -15,14 +15,9 @@ import {
   deleteBlock,
   addComment,
   listComments,
-  listUsers,
+  listUsers
 } from './tools';
-import {
-  pageEvents,
-  commentEvents,
-  databaseEvents,
-  pageUpdates,
-} from './triggers';
+import { pageEvents, commentEvents, databaseEvents, pageUpdates } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,12 +36,7 @@ export let provider = Slate.create({
     deleteBlock,
     addComment,
     listComments,
-    listUsers,
+    listUsers
   ],
-  triggers: [
-    pageEvents,
-    commentEvents,
-    databaseEvents,
-    pageUpdates,
-  ],
+  triggers: [pageEvents, commentEvents, databaseEvents, pageUpdates]
 });

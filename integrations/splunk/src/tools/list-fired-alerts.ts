@@ -3,32 +3,38 @@ import { spec } from '../spec';
 import { createSplunkClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let listFiredAlerts = SlateTool.create(
-  spec,
-  {
-    name: 'List Fired Alerts',
-    key: 'list_fired_alerts',
-    description: `List recently fired alerts on the Splunk instance. Returns alert names, trigger counts, and identifiers. Useful for monitoring alert activity.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    count: z.number().optional().describe('Number of alerts to return (default 30)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-    namespace: z.object({
-      owner: z.string().optional().describe('Namespace owner'),
-      app: z.string().optional().describe('Namespace app context')
-    }).optional().describe('Optional app/owner namespace context')
-  }))
-  .output(z.object({
-    alerts: z.array(z.object({
-      name: z.string().optional(),
-      triggeredAlertCount: z.any().optional(),
-      alertId: z.string().optional()
-    })),
-    total: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+export let listFiredAlerts = SlateTool.create(spec, {
+  name: 'List Fired Alerts',
+  key: 'list_fired_alerts',
+  description: `List recently fired alerts on the Splunk instance. Returns alert names, trigger counts, and identifiers. Useful for monitoring alert activity.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      count: z.number().optional().describe('Number of alerts to return (default 30)'),
+      offset: z.number().optional().describe('Offset for pagination'),
+      namespace: z
+        .object({
+          owner: z.string().optional().describe('Namespace owner'),
+          app: z.string().optional().describe('Namespace app context')
+        })
+        .optional()
+        .describe('Optional app/owner namespace context')
+    })
+  )
+  .output(
+    z.object({
+      alerts: z.array(
+        z.object({
+          name: z.string().optional(),
+          triggeredAlertCount: z.any().optional(),
+          alertId: z.string().optional()
+        })
+      ),
+      total: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createSplunkClient(ctx);
     let response = await client.listFiredAlerts({
       count: ctx.input.count,
@@ -47,4 +53,5 @@ export let listFiredAlerts = SlateTool.create(
       },
       message: `Found **${response.total}** fired alerts. Returned **${response.alerts.length}**.`
     };
-  }).build();
+  })
+  .build();

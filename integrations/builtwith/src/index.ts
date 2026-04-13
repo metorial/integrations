@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   lookupDomain,
@@ -15,11 +14,9 @@ import {
   searchProducts,
   getDomainTags,
   freeLookup,
-  getFinancialData,
+  getFinancialData
 } from './tools';
-import { newTechnologyDetection,
-  inboundWebhook,
-} from './triggers';
+import { newTechnologyDetection, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     searchProducts,
     getDomainTags,
     freeLookup,
-    getFinancialData,
+    getFinancialData
   ] as any,
-  triggers: [
-    inboundWebhook,
-    newTechnologyDetection,
-  ] as any,
+  triggers: [inboundWebhook, newTechnologyDetection] as any
 });

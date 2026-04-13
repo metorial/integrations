@@ -7,53 +7,54 @@ import { z } from 'zod';
 let customerEventTypes = [
   'customer.created',
   'customer.updated',
-  'customer.archived',
+  'customer.archived'
 ] as const;
 
-export let customerEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Events',
-    key: 'customer_events',
-    description: 'Triggers when a customer is created, updated, or archived.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of customer event'),
-    webhookId: z.string().describe('The webhook delivery ID'),
-    customerId: z.string().describe('The affected customer ID'),
-    payload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    customerId: z.string().describe('The customer ID'),
-    name: z.string().optional().describe('Customer name'),
-    email: z.string().optional().describe('Customer email'),
-    discountPercentage: z.number().optional().describe('Default discount percentage'),
-    depositType: z.string().optional().describe('Default deposit type'),
-    archived: z.boolean().optional().describe('Whether the customer is archived'),
-    createdAt: z.string().optional().describe('Customer creation timestamp'),
-    updatedAt: z.string().optional().describe('Customer last updated timestamp'),
-  }))
+export let customerEvents = SlateTrigger.create(spec, {
+  name: 'Customer Events',
+  key: 'customer_events',
+  description: 'Triggers when a customer is created, updated, or archived.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of customer event'),
+      webhookId: z.string().describe('The webhook delivery ID'),
+      customerId: z.string().describe('The affected customer ID'),
+      payload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string().describe('The customer ID'),
+      name: z.string().optional().describe('Customer name'),
+      email: z.string().optional().describe('Customer email'),
+      discountPercentage: z.number().optional().describe('Default discount percentage'),
+      depositType: z.string().optional().describe('Default deposit type'),
+      archived: z.boolean().optional().describe('Whether the customer is archived'),
+      createdAt: z.string().optional().describe('Customer creation timestamp'),
+      updatedAt: z.string().optional().describe('Customer last updated timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client(buildClientConfig(ctx));
 
       let response = await client.createWebhookEndpoint({
         url: ctx.input.webhookBaseUrl,
         events: [...customerEventTypes],
-        version: 4,
+        version: 4
       });
 
       let endpointId = response?.data?.id;
 
       return {
         registrationDetails: {
-          webhookEndpointId: endpointId,
-        },
+          webhookEndpointId: endpointId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client(buildClientConfig(ctx));
       let endpointId = ctx.input.registrationDetails?.webhookEndpointId;
       if (endpointId) {
@@ -61,8 +62,8 @@ export let customerEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let eventType = data?.event || data?.type || 'customer.updated';
       let customerData = data?.data?.attributes || data?.data || data?.customer || data;
@@ -75,14 +76,18 @@ export let customerEvents = SlateTrigger.create(
             eventType: String(eventType),
             webhookId: String(webhookId),
             customerId: String(customerId),
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let attrs = ctx.input.payload?.data?.attributes || ctx.input.payload?.customer || ctx.input.payload || {};
+    handleEvent: async ctx => {
+      let attrs =
+        ctx.input.payload?.data?.attributes ||
+        ctx.input.payload?.customer ||
+        ctx.input.payload ||
+        {};
 
       return {
         type: ctx.input.eventType,
@@ -95,8 +100,9 @@ export let customerEvents = SlateTrigger.create(
           depositType: attrs.deposit_type,
           archived: attrs.archived,
           createdAt: attrs.created_at,
-          updatedAt: attrs.updated_at,
-        },
+          updatedAt: attrs.updated_at
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

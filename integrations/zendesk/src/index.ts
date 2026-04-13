@@ -24,14 +24,9 @@ import {
   deleteArticle,
   listViews,
   listGroups,
-  listHelpCenterCategories,
+  listHelpCenterCategories
 } from './tools';
-import {
-  ticketEvents,
-  userEvents,
-  organizationEvents,
-  articleEvents,
-} from './triggers';
+import { ticketEvents, userEvents, organizationEvents, articleEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,12 +54,7 @@ export let provider = Slate.create({
     deleteArticle,
     listViews,
     listGroups,
-    listHelpCenterCategories,
+    listHelpCenterCategories
   ],
-  triggers: [
-    ticketEvents,
-    userEvents,
-    organizationEvents,
-    articleEvents,
-  ],
+  triggers: [ticketEvents, userEvents, organizationEvents, articleEvents]
 });

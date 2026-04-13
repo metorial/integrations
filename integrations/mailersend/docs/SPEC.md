@@ -15,6 +15,7 @@ Authentication is done by adding an `Authorization` header containing a Bearer t
 API tokens are generated for sending domains and can have different permissions to limit which areas of your account they may be used to access.
 
 To obtain an API token:
+
 1. Navigate to the Integrations page in the MailerSend dashboard.
 2. Click "Manage" next to MailerSend API.
 3. Click "Create new token", name it, select the domain, and choose permissions.
@@ -25,6 +26,7 @@ To obtain an API token:
 You can choose between Full access and Custom access permissions. Full access allows the API token to access GET, PUT, DELETE and POST endpoints for all parts of your account. Custom access allows you to choose which access to provide for the token.
 
 Available custom scopes:
+
 - `email_full` — Full email sending access
 - `domains_read`, `domains_full` — Read or full access to domain management
 - `activity_read`, `activity_full` — Read or full access to activity data
@@ -44,39 +46,51 @@ Available custom scopes:
 ## Features
 
 ### Email Sending
+
 Send transactional emails via the API with support for HTML and plain text content, attachments, custom headers, CC/BCC recipients, reply-to addresses, and tags. MailerSend also supports PGP-encrypted emails. Bulk email sending is available for sending multiple messages in a single request. Emails can be scheduled for future delivery.
 
 ### SMS Messaging
+
 MailerSend's transactional SMS service is currently available in the US and Canada. Send transactional SMS messages such as OTPs, appointment reminders, order confirmations, and delivery updates. Manage phone numbers and SMS recipients, and view SMS activity.
 
 ### Email Templates
+
 Create and manage reusable email templates. The Personalization feature allows you to personalize email messages by generating dynamic content for each recipient. Uses a Twig-based templating engine for variables, conditionals, and loops. Email survey templates are also supported for collecting feedback.
 
 ### Domain Management
+
 Add and manage sending domains, including DNS configuration for SPF, DKIM, and DMARC authentication records. Use multiple domains to manage different brands or products with one MailerSend account.
 
 ### Sender Identities
+
 Create and manage verified sender identities (name and email address) used as the "From" address when sending emails.
 
 ### Inbound Routing (Email and SMS)
+
 Automatically parse incoming emails. Inbound email routes enable MailerSend to receive emails on your behalf, integrating them into your application. With MailerSend's inbound routing feature, you can create inbound routes to have MailerSend receive incoming messages on your behalf and integrate them into your app. SMS inbound routing is also available.
 
 ### Email Verification
+
 Verify a single email address or upload an entire email list to verify in bulk. Helps clean recipient lists and validate emails at the point of collection to reduce bounces.
 
 ### Activity and Analytics
+
 View email and SMS activity in real-time. Access analytics data on email delivery, opens, clicks, bounces, and other engagement metrics. Create custom analytics reports.
 
 ### Recipients and Suppression Management
+
 Manage recipient data and suppression lists (hard bounces, spam complaints, unsubscribes). Suppressions automatically prevent sending to problematic addresses.
 
 ### User Management
+
 Invite team members and manage user permissions and access levels for your MailerSend account.
 
 ### API Token and SMTP User Management
+
 Programmatically create, list, update, pause/unpause, and delete API tokens and SMTP user credentials.
 
 ### DMARC Monitoring
+
 Monitor DMARC reports for your sending domains.
 
 ## Events
@@ -84,7 +98,9 @@ Monitor DMARC reports for your sending domains.
 MailerSend supports webhooks for both email and SMS events. Webhooks are configured per domain (for email) or per phone number (for SMS) and deliver JSON payloads to a specified endpoint URL. Each webhook includes a `Signature` header for verification using HMAC-SHA256 with a signing secret.
 
 ### Email Activity Events
+
 Real-time notifications for email lifecycle events:
+
 - **Sent** (`activity.sent`) — Email sent from MailerSend's servers.
 - **Delivered** (`activity.delivered`) — Email successfully delivered.
 - **Soft Bounced** (`activity.soft_bounced`) — Email soft bounced.
@@ -100,6 +116,7 @@ Real-time notifications for email lifecycle events:
 - **Survey Submitted** (`activity.survey_submitted`) — Recipient completed a survey or after 30 minutes of idle time.
 
 ### Email Operational Events
+
 - **Sender Identity Verified** (`sender_identity.verified`) — A sender identity has been verified.
 - **Inbound Forward Failed** (`inbound_forward.failed`) — An inbound email message failed to forward.
 - **Bulk Email Completed** (`bulk_email.completed`) — A bulk email batch has completed processing.
@@ -107,11 +124,14 @@ Real-time notifications for email lifecycle events:
 - **Email List Verified** (`email_list.verified`) — A bulk email verification list completed processing.
 
 ### Maintenance Events
+
 - **Maintenance Start** (`maintenance.start`) — A scheduled maintenance period has begun.
 - **Maintenance End** (`maintenance.end`) — A maintenance period has ended.
 
 ### SMS Events
+
 Separate webhook configuration for SMS events, scoped per phone number:
+
 - **SMS Sent** (`sms.sent`) — SMS sent from MailerSend's servers.
 - **SMS Delivered** (`sms.delivered`) — SMS successfully delivered.
 - **SMS Failed** (`sms.failed`) — SMS failed to deliver.

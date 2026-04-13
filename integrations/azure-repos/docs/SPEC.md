@@ -47,6 +47,7 @@ Azure DevOps OAuth is deprecated and scheduled for removal in 2026. This documen
 ### Required Inputs
 
 All API calls require:
+
 - **Organization**: The Azure DevOps organization name (e.g., `dev.azure.com/{organization}`).
 - **Project**: The team project name or ID (for project-scoped operations).
 

@@ -13,36 +13,66 @@ export let manageActivities = SlateTool.create(spec, {
     'For "list": provide limit/offset for pagination.',
     'For "update": provide activityId and the fields to update.',
     'For "delete": provide activityId.',
-    'iconType can be "emoji", "interaction", or "messaging_app". iconValue depends on the type (e.g., "📞" for emoji).',
+    'iconType can be "emoji", "interaction", or "messaging_app". iconValue depends on the type (e.g., "📞" for emoji).'
   ],
   tags: {
     destructive: false,
-    readOnly: false,
-  },
+    readOnly: false
+  }
 })
-  .input(z.object({
-    action: z.enum(['create', 'get', 'list', 'update', 'delete']).describe('Operation to perform'),
-    activityId: z.string().optional().describe('Activity ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Activity name/title (for create/update)'),
-    iconType: z.string().optional().describe('Icon type: "emoji", "interaction", or "messaging_app" (for create)'),
-    iconValue: z.string().optional().describe('Icon value based on type, e.g., "📞" (for create)'),
-    scheduleAt: z.string().optional().describe('Scheduled time in ISO 8601 format (for create/update)'),
-    description: z.string().optional().describe('Activity description (for create/update)'),
-    associatedRecordId: z.string().optional().describe('Collection record ID to associate with (for create/update)'),
-    statusId: z.string().optional().describe('Status attribute ID (for create/update)'),
-    limit: z.number().optional().describe('Number of activities to return (for list, default: 10)'),
-    offset: z.number().optional().describe('Pagination offset (for list, default: 0)'),
-    filter: z.array(z.any()).optional().describe('Filter criteria array (for list)'),
-    sort: z.array(z.any()).optional().describe('Sort criteria array (for list)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation was successful'),
-    responseMessage: z.string().describe('Response message from the API'),
-    activityId: z.string().optional().describe('ID of the created/affected activity'),
-    activity: z.record(z.string(), z.any()).optional().describe('Activity data (for get/create)'),
-    activities: z.array(z.record(z.string(), z.any())).optional().describe('List of activities (for list)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'list', 'update', 'delete'])
+        .describe('Operation to perform'),
+      activityId: z
+        .string()
+        .optional()
+        .describe('Activity ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Activity name/title (for create/update)'),
+      iconType: z
+        .string()
+        .optional()
+        .describe('Icon type: "emoji", "interaction", or "messaging_app" (for create)'),
+      iconValue: z
+        .string()
+        .optional()
+        .describe('Icon value based on type, e.g., "📞" (for create)'),
+      scheduleAt: z
+        .string()
+        .optional()
+        .describe('Scheduled time in ISO 8601 format (for create/update)'),
+      description: z.string().optional().describe('Activity description (for create/update)'),
+      associatedRecordId: z
+        .string()
+        .optional()
+        .describe('Collection record ID to associate with (for create/update)'),
+      statusId: z.string().optional().describe('Status attribute ID (for create/update)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Number of activities to return (for list, default: 10)'),
+      offset: z.number().optional().describe('Pagination offset (for list, default: 0)'),
+      filter: z.array(z.any()).optional().describe('Filter criteria array (for list)'),
+      sort: z.array(z.any()).optional().describe('Sort criteria array (for list)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation was successful'),
+      responseMessage: z.string().describe('Response message from the API'),
+      activityId: z.string().optional().describe('ID of the created/affected activity'),
+      activity: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Activity data (for get/create)'),
+      activities: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of activities (for list)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZixflowClient({ token: ctx.auth.token });
     let { action } = ctx.input;
     let result: any;
@@ -55,16 +85,16 @@ export let manageActivities = SlateTool.create(spec, {
         scheduleAt: ctx.input.scheduleAt!,
         description: ctx.input.description,
         associated: ctx.input.associatedRecordId,
-        status: ctx.input.statusId,
+        status: ctx.input.statusId
       });
       return {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
           activityId: result._id ?? result.data?._id,
-          activity: result.data,
+          activity: result.data
         },
-        message: `Activity "${ctx.input.name}" created.`,
+        message: `Activity "${ctx.input.name}" created.`
       };
     }
 
@@ -75,9 +105,9 @@ export let manageActivities = SlateTool.create(spec, {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
           activityId: ctx.input.activityId,
-          activity: result.data,
+          activity: result.data
         },
-        message: `Fetched activity ${ctx.input.activityId}.`,
+        message: `Fetched activity ${ctx.input.activityId}.`
       };
     }
 
@@ -86,16 +116,16 @@ export let manageActivities = SlateTool.create(spec, {
         limit: ctx.input.limit ?? 10,
         offset: ctx.input.offset ?? 0,
         filter: ctx.input.filter,
-        sort: ctx.input.sort,
+        sort: ctx.input.sort
       });
       let activities = Array.isArray(result.data) ? result.data : [];
       return {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
-          activities,
+          activities
         },
-        message: `Fetched ${activities.length} activity(ies).`,
+        message: `Fetched ${activities.length} activity(ies).`
       };
     }
 
@@ -104,7 +134,8 @@ export let manageActivities = SlateTool.create(spec, {
       if (ctx.input.name !== undefined) updateData.name = ctx.input.name;
       if (ctx.input.scheduleAt !== undefined) updateData.scheduleAt = ctx.input.scheduleAt;
       if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
-      if (ctx.input.associatedRecordId !== undefined) updateData.associated = ctx.input.associatedRecordId;
+      if (ctx.input.associatedRecordId !== undefined)
+        updateData.associated = ctx.input.associatedRecordId;
       if (ctx.input.statusId !== undefined) updateData.status = ctx.input.statusId;
 
       result = await client.updateActivity(ctx.input.activityId!, updateData);
@@ -112,9 +143,9 @@ export let manageActivities = SlateTool.create(spec, {
         output: {
           success: result.status === true,
           responseMessage: result.message ?? 'Unknown response',
-          activityId: ctx.input.activityId,
+          activityId: ctx.input.activityId
         },
-        message: `Updated activity ${ctx.input.activityId}.`,
+        message: `Updated activity ${ctx.input.activityId}.`
       };
     }
 
@@ -124,9 +155,9 @@ export let manageActivities = SlateTool.create(spec, {
       output: {
         success: result.status === true,
         responseMessage: result.message ?? 'Unknown response',
-        activityId: ctx.input.activityId,
+        activityId: ctx.input.activityId
       },
-      message: `Deleted activity ${ctx.input.activityId}.`,
+      message: `Deleted activity ${ctx.input.activityId}.`
     };
   })
   .build();

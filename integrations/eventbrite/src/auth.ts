@@ -2,13 +2,15 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let api = createAxios({
-  baseURL: 'https://www.eventbriteapi.com/v3',
+  baseURL: 'https://www.eventbriteapi.com/v3'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,46 +18,50 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://www.eventbrite.com/oauth/authorize?${params.toString()}`,
+        url: `https://www.eventbrite.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let params = new URLSearchParams({
         grant_type: 'authorization_code',
         code: ctx.code,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
-      let response = await api.post('https://www.eventbrite.com/oauth/token', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await api.post(
+        'https://www.eventbrite.com/oauth/token',
+        params.toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       return {
         output: {
-          token: response.data.access_token,
-        },
+          token: response.data.access_token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: any; scopes: string[] }) => {
       let response = await api.get('/users/me/', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data;
@@ -64,10 +70,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           email: user.emails?.[0]?.email,
-          name: user.name,
-        },
+          name: user.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -75,22 +81,24 @@ export let auth = SlateAuth.create()
     key: 'personal_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your personal OAuth token from the Eventbrite developer portal.'),
+      token: z
+        .string()
+        .describe('Your personal OAuth token from the Eventbrite developer portal.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: any }) => {
       let response = await api.get('/users/me/', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data;
@@ -99,8 +107,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           email: user.emails?.[0]?.email,
-          name: user.name,
-        },
+          name: user.name
+        }
       };
-    },
+    }
   });

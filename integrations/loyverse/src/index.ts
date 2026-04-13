@@ -33,14 +33,14 @@ import {
   listStores,
   listShifts,
   listPaymentTypes,
-  getMerchant,
+  getMerchant
 } from './tools';
 import {
   receiptEvents,
   itemEvents,
   inventoryEvents,
   customerEvents,
-  shiftEvents,
+  shiftEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -78,13 +78,7 @@ export let provider = Slate.create({
     listStores,
     listShifts,
     listPaymentTypes,
-    getMerchant,
+    getMerchant
   ],
-  triggers: [
-    receiptEvents,
-    itemEvents,
-    inventoryEvents,
-    customerEvents,
-    shiftEvents,
-  ],
+  triggers: [receiptEvents, itemEvents, inventoryEvents, customerEvents, shiftEvents]
 });

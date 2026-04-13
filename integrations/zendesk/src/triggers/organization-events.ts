@@ -3,36 +3,38 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { ZendeskClient } from '../lib/client';
 
-export let organizationEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Organization Events',
-    key: 'organization_events',
-    description: 'Triggers when organization activity occurs, including creation, deletion, name changes, tag changes, and custom field modifications.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of organization event'),
-    eventId: z.string().describe('Unique event identifier'),
-    organizationId: z.string().describe('The organization ID'),
-    name: z.string().nullable().describe('The organization name'),
-    tags: z.array(z.string()).describe('Tags on the organization'),
-    externalId: z.string().nullable().describe('External system ID'),
-    updatedAt: z.string().nullable().describe('When the organization was last updated'),
-  }))
-  .output(z.object({
-    organizationId: z.string().describe('The organization ID'),
-    name: z.string().nullable().describe('The organization name'),
-    tags: z.array(z.string()).describe('Tags on the organization'),
-    externalId: z.string().nullable().describe('External system ID'),
-    updatedAt: z.string().nullable().describe('When the organization was last updated'),
-  }))
+export let organizationEvents = SlateTrigger.create(spec, {
+  name: 'Organization Events',
+  key: 'organization_events',
+  description:
+    'Triggers when organization activity occurs, including creation, deletion, name changes, tag changes, and custom field modifications.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of organization event'),
+      eventId: z.string().describe('Unique event identifier'),
+      organizationId: z.string().describe('The organization ID'),
+      name: z.string().nullable().describe('The organization name'),
+      tags: z.array(z.string()).describe('Tags on the organization'),
+      externalId: z.string().nullable().describe('External system ID'),
+      updatedAt: z.string().nullable().describe('When the organization was last updated')
+    })
+  )
+  .output(
+    z.object({
+      organizationId: z.string().describe('The organization ID'),
+      name: z.string().nullable().describe('The organization name'),
+      tags: z.array(z.string()).describe('Tags on the organization'),
+      externalId: z.string().nullable().describe('External system ID'),
+      updatedAt: z.string().nullable().describe('When the organization was last updated')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let webhook = await client.createWebhook({
@@ -47,28 +49,28 @@ export let organizationEvents = SlateTrigger.create(
           'zen:event-type:organization.ExternalIdChanged',
           'zen:event-type:organization.CustomFieldChanged',
           'zen:event-type:organization.TagsChanged',
-          'zen:event-type:organization.NameChanged',
-        ],
+          'zen:event-type:organization.NameChanged'
+        ]
       });
 
       return {
         registrationDetails: {
-          webhookId: webhook.id,
-        },
+          webhookId: webhook.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ZendeskClient({
         subdomain: ctx.config.subdomain,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let eventType = 'organization.updated';
@@ -92,13 +94,13 @@ export let organizationEvents = SlateTrigger.create(
             name: org.name || null,
             tags: org.tags || [],
             externalId: org.external_id || null,
-            updatedAt: org.updated_at || null,
-          },
-        ],
+            updatedAt: org.updated_at || null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType.toLowerCase().replace(/\s+/g, '_');
       if (!eventType.startsWith('organization.')) {
         eventType = `organization.${eventType}`;
@@ -112,9 +114,9 @@ export let organizationEvents = SlateTrigger.create(
           name: ctx.input.name,
           tags: ctx.input.tags,
           externalId: ctx.input.externalId,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

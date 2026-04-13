@@ -8,8 +8,8 @@ export class NextDnsClient {
       baseURL: 'https://api.nextdns.io',
       headers: {
         'X-Api-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -85,12 +85,16 @@ export class NextDnsClient {
   }
 
   async addBlocklist(profileId: string, blocklistId: string) {
-    let response = await this.axios.post(`/profiles/${profileId}/privacy/blocklists`, { id: blocklistId });
+    let response = await this.axios.post(`/profiles/${profileId}/privacy/blocklists`, {
+      id: blocklistId
+    });
     return response.data;
   }
 
   async removeBlocklist(profileId: string, blocklistId: string) {
-    let response = await this.axios.delete(`/profiles/${profileId}/privacy/blocklists/${blocklistId}`);
+    let response = await this.axios.delete(
+      `/profiles/${profileId}/privacy/blocklists/${blocklistId}`
+    );
     return response.data;
   }
 
@@ -100,12 +104,16 @@ export class NextDnsClient {
   }
 
   async addNativeTracker(profileId: string, nativeId: string) {
-    let response = await this.axios.post(`/profiles/${profileId}/privacy/natives`, { id: nativeId });
+    let response = await this.axios.post(`/profiles/${profileId}/privacy/natives`, {
+      id: nativeId
+    });
     return response.data;
   }
 
   async removeNativeTracker(profileId: string, nativeId: string) {
-    let response = await this.axios.delete(`/profiles/${profileId}/privacy/natives/${nativeId}`);
+    let response = await this.axios.delete(
+      `/profiles/${profileId}/privacy/natives/${nativeId}`
+    );
     return response.data;
   }
 
@@ -127,17 +135,25 @@ export class NextDnsClient {
   }
 
   async addBlockedService(profileId: string, serviceId: string, active: boolean = true) {
-    let response = await this.axios.post(`/profiles/${profileId}/parentalControl/services`, { id: serviceId, active });
+    let response = await this.axios.post(`/profiles/${profileId}/parentalControl/services`, {
+      id: serviceId,
+      active
+    });
     return response.data;
   }
 
   async updateBlockedService(profileId: string, serviceId: string, active: boolean) {
-    let response = await this.axios.patch(`/profiles/${profileId}/parentalControl/services/${serviceId}`, { active });
+    let response = await this.axios.patch(
+      `/profiles/${profileId}/parentalControl/services/${serviceId}`,
+      { active }
+    );
     return response.data;
   }
 
   async removeBlockedService(profileId: string, serviceId: string) {
-    let response = await this.axios.delete(`/profiles/${profileId}/parentalControl/services/${serviceId}`);
+    let response = await this.axios.delete(
+      `/profiles/${profileId}/parentalControl/services/${serviceId}`
+    );
     return response.data;
   }
 
@@ -147,17 +163,25 @@ export class NextDnsClient {
   }
 
   async addBlockedCategory(profileId: string, categoryId: string, active: boolean = true) {
-    let response = await this.axios.post(`/profiles/${profileId}/parentalControl/categories`, { id: categoryId, active });
+    let response = await this.axios.post(`/profiles/${profileId}/parentalControl/categories`, {
+      id: categoryId,
+      active
+    });
     return response.data;
   }
 
   async updateBlockedCategory(profileId: string, categoryId: string, active: boolean) {
-    let response = await this.axios.patch(`/profiles/${profileId}/parentalControl/categories/${categoryId}`, { active });
+    let response = await this.axios.patch(
+      `/profiles/${profileId}/parentalControl/categories/${categoryId}`,
+      { active }
+    );
     return response.data;
   }
 
   async removeBlockedCategory(profileId: string, categoryId: string) {
-    let response = await this.axios.delete(`/profiles/${profileId}/parentalControl/categories/${categoryId}`);
+    let response = await this.axios.delete(
+      `/profiles/${profileId}/parentalControl/categories/${categoryId}`
+    );
     return response.data;
   }
 
@@ -169,12 +193,17 @@ export class NextDnsClient {
   }
 
   async addToDenylist(profileId: string, domain: string, active: boolean = true) {
-    let response = await this.axios.post(`/profiles/${profileId}/denylist`, { id: domain, active });
+    let response = await this.axios.post(`/profiles/${profileId}/denylist`, {
+      id: domain,
+      active
+    });
     return response.data;
   }
 
   async updateDenylistEntry(profileId: string, domain: string, active: boolean) {
-    let response = await this.axios.patch(`/profiles/${profileId}/denylist/${domain}`, { active });
+    let response = await this.axios.patch(`/profiles/${profileId}/denylist/${domain}`, {
+      active
+    });
     return response.data;
   }
 
@@ -191,12 +220,17 @@ export class NextDnsClient {
   }
 
   async addToAllowlist(profileId: string, domain: string, active: boolean = true) {
-    let response = await this.axios.post(`/profiles/${profileId}/allowlist`, { id: domain, active });
+    let response = await this.axios.post(`/profiles/${profileId}/allowlist`, {
+      id: domain,
+      active
+    });
     return response.data;
   }
 
   async updateAllowlistEntry(profileId: string, domain: string, active: boolean) {
-    let response = await this.axios.patch(`/profiles/${profileId}/allowlist/${domain}`, { active });
+    let response = await this.axios.patch(`/profiles/${profileId}/allowlist/${domain}`, {
+      active
+    });
     return response.data;
   }
 
@@ -258,27 +292,38 @@ export class NextDnsClient {
 
   // ── Analytics ─────────────────────────────────────────
 
-  async getAnalytics(profileId: string, dimension: string, params: Record<string, string | number | undefined> = {}) {
+  async getAnalytics(
+    profileId: string,
+    dimension: string,
+    params: Record<string, string | number | undefined> = {}
+  ) {
     let queryParams: Record<string, string> = {};
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined) {
         queryParams[key] = String(value);
       }
     }
-    let response = await this.axios.get(`/profiles/${profileId}/analytics/${dimension}`, { params: queryParams });
+    let response = await this.axios.get(`/profiles/${profileId}/analytics/${dimension}`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Logs ──────────────────────────────────────────────
 
-  async getLogs(profileId: string, params: Record<string, string | number | boolean | undefined> = {}) {
+  async getLogs(
+    profileId: string,
+    params: Record<string, string | number | boolean | undefined> = {}
+  ) {
     let queryParams: Record<string, string> = {};
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined) {
         queryParams[key] = String(value);
       }
     }
-    let response = await this.axios.get(`/profiles/${profileId}/logs`, { params: queryParams });
+    let response = await this.axios.get(`/profiles/${profileId}/logs`, {
+      params: queryParams
+    });
     return response.data;
   }
 

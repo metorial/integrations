@@ -8,7 +8,7 @@ import {
   unblockPage,
   runPerformanceAudit,
   webSearch,
-  runFunction,
+  runFunction
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     unblockPage,
     runPerformanceAudit,
     webSearch,
-    runFunction,
+    runFunction
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

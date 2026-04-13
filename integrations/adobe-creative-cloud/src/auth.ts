@@ -6,13 +6,15 @@ let imsAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    clientId: z.string(),
-    orgId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      clientId: z.string(),
+      orgId: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Adobe OAuth',
@@ -22,99 +24,103 @@ export let auth = SlateAuth.create()
       {
         title: 'OpenID',
         description: 'OpenID Connect authentication',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Adobe ID',
         description: 'Access to Adobe ID profile information',
-        scope: 'AdobeID',
+        scope: 'AdobeID'
       },
       {
         title: 'Profile',
         description: 'Access to user profile information',
-        scope: 'profile',
+        scope: 'profile'
       },
       {
         title: 'Email',
         description: 'Access to user email address',
-        scope: 'email',
+        scope: 'email'
       },
       {
         title: 'Creative Cloud Files',
         description: 'Access to Creative Cloud file storage',
-        scope: 'cc_files',
+        scope: 'cc_files'
       },
       {
         title: 'Creative Cloud Libraries',
         description: 'Access to Creative Cloud Libraries',
-        scope: 'cc_libraries',
+        scope: 'cc_libraries'
       },
       {
         title: 'Creative SDK',
         description: 'Access to Creative SDK features',
-        scope: 'creative_sdk',
+        scope: 'creative_sdk'
       },
       {
         title: 'Firefly API',
         description: 'Access to Firefly generative AI services',
-        scope: 'firefly_api',
+        scope: 'firefly_api'
       },
       {
         title: 'Firefly APIs',
         description: 'Access to additional Firefly service APIs',
-        scope: 'ff_apis',
+        scope: 'ff_apis'
       },
       {
         title: 'Session',
         description: 'Session management scope',
-        scope: 'session',
+        scope: 'session'
       },
       {
         title: 'Additional Info',
         description: 'Access to additional user information',
-        scope: 'additional_info',
+        scope: 'additional_info'
       },
       {
         title: 'Read Organizations',
         description: 'Access to organization information',
-        scope: 'read_organizations',
-      },
+        scope: 'read_organizations'
+      }
     ],
 
     inputSchema: z.object({
-      orgId: z.string().optional().describe('Adobe Organization ID (for enterprise features)'),
+      orgId: z.string().optional().describe('Adobe Organization ID (for enterprise features)')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         scope: ctx.scopes.join(','),
         response_type: 'code',
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
         url: `https://ims-na1.adobelogin.com/ims/authorize/v2?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
-      let response = await imsAxios.post('/ims/token/v3', new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+    handleCallback: async ctx => {
+      let response = await imsAxios.post(
+        '/ims/token/v3',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
@@ -122,30 +128,34 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt,
           clientId: ctx.clientId,
-          orgId: ctx.input.orgId,
+          orgId: ctx.input.orgId
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
 
-      let response = await imsAxios.post('/ims/token/v3', new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await imsAxios.post(
+        '/ims/token/v3',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
@@ -153,16 +163,16 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
           clientId: ctx.output.clientId,
-          orgId: ctx.output.orgId,
-        },
+          orgId: ctx.output.orgId
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let response = await imsAxios.get('/ims/userinfo/v2', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -172,10 +182,10 @@ export let auth = SlateAuth.create()
           id: data.sub || data.userId,
           email: data.email,
           name: data.name || data.displayName,
-          imageUrl: data.picture,
-        },
+          imageUrl: data.picture
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -185,32 +195,38 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       clientId: z.string().describe('Client ID from Adobe Developer Console'),
       clientSecret: z.string().describe('Client Secret from Adobe Developer Console'),
-      scopes: z.string().describe('Comma-separated scopes (e.g. openid,AdobeID,firefly_api,ff_apis)'),
-      orgId: z.string().optional().describe('Adobe Organization ID'),
+      scopes: z
+        .string()
+        .describe('Comma-separated scopes (e.g. openid,AdobeID,firefly_api,ff_apis)'),
+      orgId: z.string().optional().describe('Adobe Organization ID')
     }),
 
-    getOutput: async (ctx) => {
-      let response = await imsAxios.post('/ims/token/v3', new URLSearchParams({
-        grant_type: 'client_credentials',
-        client_id: ctx.input.clientId,
-        client_secret: ctx.input.clientSecret,
-        scope: ctx.input.scopes,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+    getOutput: async ctx => {
+      let response = await imsAxios.post(
+        '/ims/token/v3',
+        new URLSearchParams({
+          grant_type: 'client_credentials',
+          client_id: ctx.input.clientId,
+          client_secret: ctx.input.clientSecret,
+          scope: ctx.input.scopes
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
-      let expiresAt = new Date(Date.now() + (data.expires_in * 1000)).toISOString();
+      let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
 
       return {
         output: {
           token: data.access_token,
           expiresAt,
           clientId: ctx.input.clientId,
-          orgId: ctx.input.orgId,
-        },
+          orgId: ctx.input.orgId
+        }
       };
-    },
+    }
   });

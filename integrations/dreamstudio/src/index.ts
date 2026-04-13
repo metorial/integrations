@@ -8,7 +8,7 @@ import {
   controlImage,
   generateVideo,
   generate3D,
-  getAccount,
+  getAccount
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     controlImage,
     generateVideo,
     generate3D,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

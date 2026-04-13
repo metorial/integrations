@@ -3,33 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update a contact's tags or opt-out status. Supports adding/removing tags by ID or name, and opting a contact out of specific campaigns or all campaigns.`,
-    tags: {
-      destructive: false
-    }
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update a contact's tags or opt-out status. Supports adding/removing tags by ID or name, and opting a contact out of specific campaigns or all campaigns.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    cell: z.string().describe('Cell number (MSISDN) of the contact'),
-    addTagIds: z.array(z.string()).optional().describe('Tag IDs to add to the contact'),
-    addTagNames: z.array(z.string()).optional().describe('Tag names to add to the contact'),
-    removeTagIds: z.array(z.string()).optional().describe('Tag IDs to remove from the contact'),
-    removeTagNames: z.array(z.string()).optional().describe('Tag names to remove from the contact'),
-    optOutCampaignIds: z.array(z.string()).optional().describe('Campaign IDs to opt the contact out of'),
-    optOutAll: z.boolean().optional().describe('Opt the contact out of all campaigns'),
-    createMissingContact: z.boolean().optional().describe('Create the contact if it does not exist (for tag add and opt-out operations)')
-  }))
-  .output(z.object({
-    tagsAdded: z.boolean().describe('Whether tags were added'),
-    tagsRemoved: z.boolean().describe('Whether tags were removed'),
-    optedOut: z.boolean().describe('Whether an opt-out was performed')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cell: z.string().describe('Cell number (MSISDN) of the contact'),
+      addTagIds: z.array(z.string()).optional().describe('Tag IDs to add to the contact'),
+      addTagNames: z.array(z.string()).optional().describe('Tag names to add to the contact'),
+      removeTagIds: z
+        .array(z.string())
+        .optional()
+        .describe('Tag IDs to remove from the contact'),
+      removeTagNames: z
+        .array(z.string())
+        .optional()
+        .describe('Tag names to remove from the contact'),
+      optOutCampaignIds: z
+        .array(z.string())
+        .optional()
+        .describe('Campaign IDs to opt the contact out of'),
+      optOutAll: z.boolean().optional().describe('Opt the contact out of all campaigns'),
+      createMissingContact: z
+        .boolean()
+        .optional()
+        .describe(
+          'Create the contact if it does not exist (for tag add and opt-out operations)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      tagsAdded: z.boolean().describe('Whether tags were added'),
+      tagsRemoved: z.boolean().describe('Whether tags were removed'),
+      optedOut: z.boolean().describe('Whether an opt-out was performed')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let tagsAdded = false;
     let tagsRemoved = false;
@@ -68,9 +83,10 @@ export let updateContact = SlateTool.create(
 
     return {
       output: { tagsAdded, tagsRemoved, optedOut },
-      message: actions.length > 0
-        ? `Updated contact **${ctx.input.cell}**: ${actions.join(', ')}.`
-        : `No updates performed for contact **${ctx.input.cell}** — no operations specified.`
+      message:
+        actions.length > 0
+          ? `Updated contact **${ctx.input.cell}**: ${actions.join(', ')}.`
+          : `No updates performed for contact **${ctx.input.cell}** — no operations specified.`
     };
   })
   .build();

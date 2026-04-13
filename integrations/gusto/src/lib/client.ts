@@ -9,8 +9,8 @@ export class Client {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'X-Gusto-API-Version': '2024-04-01',
-      },
+        'X-Gusto-API-Version': '2024-04-01'
+      }
     });
   }
 
@@ -98,17 +98,23 @@ export class Client {
   }
 
   async getPayroll(companyId: string, payrollId: string, params?: any) {
-    let response = await this.http.get(`/v1/companies/${companyId}/payrolls/${payrollId}`, { params });
+    let response = await this.http.get(`/v1/companies/${companyId}/payrolls/${payrollId}`, {
+      params
+    });
     return response.data;
   }
 
   async calculatePayroll(companyId: string, payrollId: string) {
-    let response = await this.http.put(`/v1/companies/${companyId}/payrolls/${payrollId}/calculate`);
+    let response = await this.http.put(
+      `/v1/companies/${companyId}/payrolls/${payrollId}/calculate`
+    );
     return response.data;
   }
 
   async submitPayroll(companyId: string, payrollId: string) {
-    let response = await this.http.put(`/v1/companies/${companyId}/payrolls/${payrollId}/submit`);
+    let response = await this.http.put(
+      `/v1/companies/${companyId}/payrolls/${payrollId}/submit`
+    );
     return response.data;
   }
 
@@ -125,24 +131,33 @@ export class Client {
   }
 
   async getPaySchedule(companyId: string, payScheduleId: string) {
-    let response = await this.http.get(`/v1/companies/${companyId}/pay_schedules/${payScheduleId}`);
+    let response = await this.http.get(
+      `/v1/companies/${companyId}/pay_schedules/${payScheduleId}`
+    );
     return response.data;
   }
 
   // ─── Contractor Payments ──────────────────────────────────────
 
   async listContractorPayments(companyId: string, params: any) {
-    let response = await this.http.get(`/v1/companies/${companyId}/contractor_payments`, { params });
+    let response = await this.http.get(`/v1/companies/${companyId}/contractor_payments`, {
+      params
+    });
     return response.data;
   }
 
   async createContractorPayment(companyId: string, data: any) {
-    let response = await this.http.post(`/v1/companies/${companyId}/contractor_payments`, data);
+    let response = await this.http.post(
+      `/v1/companies/${companyId}/contractor_payments`,
+      data
+    );
     return response.data;
   }
 
   async cancelContractorPayment(companyId: string, contractorPaymentId: string) {
-    let response = await this.http.delete(`/v1/companies/${companyId}/contractor_payments/${contractorPaymentId}`);
+    let response = await this.http.delete(
+      `/v1/companies/${companyId}/contractor_payments/${contractorPaymentId}`
+    );
     return response.data;
   }
 
@@ -196,7 +211,10 @@ export class Client {
   }
 
   async updateEarningType(companyId: string, earningTypeId: string, data: any) {
-    let response = await this.http.put(`/v1/companies/${companyId}/earning_types/${earningTypeId}`, data);
+    let response = await this.http.put(
+      `/v1/companies/${companyId}/earning_types/${earningTypeId}`,
+      data
+    );
     return response.data;
   }
 
@@ -271,7 +289,9 @@ export class Client {
   }
 
   async deleteWebhookSubscription(webhookSubscriptionId: string) {
-    let response = await this.http.delete(`/v1/webhook_subscriptions/${webhookSubscriptionId}`);
+    let response = await this.http.delete(
+      `/v1/webhook_subscriptions/${webhookSubscriptionId}`
+    );
     return response.data;
   }
 
@@ -281,9 +301,12 @@ export class Client {
   }
 
   async verifyWebhookSubscription(webhookSubscriptionId: string, verificationToken: string) {
-    let response = await this.http.put(`/v1/webhook_subscriptions/${webhookSubscriptionId}/verify`, {
-      verification_token: verificationToken,
-    });
+    let response = await this.http.put(
+      `/v1/webhook_subscriptions/${webhookSubscriptionId}/verify`,
+      {
+        verification_token: verificationToken
+      }
+    );
     return response.data;
   }
 

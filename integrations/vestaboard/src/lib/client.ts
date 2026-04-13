@@ -40,8 +40,8 @@ export class CloudClient {
       baseURL: 'https://cloud.vestaboard.com',
       headers: {
         'X-Vestaboard-Token': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -50,7 +50,7 @@ export class CloudClient {
     let data = response.data;
     return {
       layout: data.currentMessage?.layout ?? data.layout ?? data,
-      messageId: data.currentMessage?.id ?? data.id,
+      messageId: data.currentMessage?.id ?? data.id
     };
   }
 
@@ -63,11 +63,14 @@ export class CloudClient {
     return {
       status: response.data?.status ?? 'ok',
       messageId: response.data?.id,
-      created: response.data?.created,
+      created: response.data?.created
     };
   }
 
-  async sendCharacters(characters: CharacterGrid, forced?: boolean): Promise<SendMessageResult> {
+  async sendCharacters(
+    characters: CharacterGrid,
+    forced?: boolean
+  ): Promise<SendMessageResult> {
     let body: Record<string, unknown> = { characters };
     if (forced) {
       body.forced = true;
@@ -76,7 +79,7 @@ export class CloudClient {
     return {
       status: response.data?.status ?? 'ok',
       messageId: response.data?.id,
-      created: response.data?.created,
+      created: response.data?.created
     };
   }
 
@@ -84,7 +87,7 @@ export class CloudClient {
     let response = await this.http.get('/transition');
     return {
       transition: response.data.transition,
-      transitionSpeed: response.data.transitionSpeed,
+      transitionSpeed: response.data.transitionSpeed
     };
   }
 
@@ -92,7 +95,7 @@ export class CloudClient {
     let response = await this.http.put('/transition', transition);
     return {
       transition: response.data.transition ?? transition.transition,
-      transitionSpeed: response.data.transitionSpeed ?? transition.transitionSpeed,
+      transitionSpeed: response.data.transitionSpeed ?? transition.transitionSpeed
     };
   }
 }
@@ -100,23 +103,28 @@ export class CloudClient {
 export class SubscriptionClient {
   private http;
 
-  constructor(private apiKey: string, private apiSecret: string) {
+  constructor(
+    private apiKey: string,
+    private apiSecret: string
+  ) {
     this.http = createAxios({
       baseURL: 'https://subscriptions.vestaboard.com',
       headers: {
         'x-vestaboard-api-key': apiKey,
         'x-vestaboard-api-secret': apiSecret,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async listSubscriptions(): Promise<Subscription[]> {
     let response = await this.http.get('/subscriptions');
-    let subs = Array.isArray(response.data) ? response.data : response.data?.subscriptions ?? [];
+    let subs = Array.isArray(response.data)
+      ? response.data
+      : (response.data?.subscriptions ?? []);
     return subs.map((s: any) => ({
       subscriptionId: s.id ?? s._id,
-      boardId: s.boardId,
+      boardId: s.boardId
     }));
   }
 
@@ -125,16 +133,21 @@ export class SubscriptionClient {
     return {
       status: response.data?.status ?? 'ok',
       messageId: response.data?.id,
-      created: response.data?.created,
+      created: response.data?.created
     };
   }
 
-  async sendCharacters(subscriptionId: string, characters: CharacterGrid): Promise<SendMessageResult> {
-    let response = await this.http.post(`/subscriptions/${subscriptionId}/message`, { characters });
+  async sendCharacters(
+    subscriptionId: string,
+    characters: CharacterGrid
+  ): Promise<SendMessageResult> {
+    let response = await this.http.post(`/subscriptions/${subscriptionId}/message`, {
+      characters
+    });
     return {
       status: response.data?.status ?? 'ok',
       messageId: response.data?.id,
-      created: response.data?.created,
+      created: response.data?.created
     };
   }
 }
@@ -142,14 +155,17 @@ export class SubscriptionClient {
 export class LocalClient {
   private http;
 
-  constructor(private token: string, baseUrl: string) {
+  constructor(
+    private token: string,
+    baseUrl: string
+  ) {
     let normalizedUrl = baseUrl.replace(/\/$/, '');
     this.http = createAxios({
       baseURL: normalizedUrl,
       headers: {
         'X-Vestaboard-Local-Api-Key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -157,7 +173,7 @@ export class LocalClient {
     let response = await this.http.get('/local-api/message');
     let data = response.data;
     return {
-      layout: data.message ?? data.layout ?? data,
+      layout: data.message ?? data.layout ?? data
     };
   }
 
@@ -165,7 +181,7 @@ export class LocalClient {
     let response = await this.http.post('/local-api/message', characters);
     return {
       status: response.data?.status ?? 'ok',
-      messageId: response.data?.id,
+      messageId: response.data?.id
     };
   }
 }

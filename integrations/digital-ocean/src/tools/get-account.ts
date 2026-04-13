@@ -3,32 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAccount = SlateTool.create(
-  spec,
-  {
-    name: 'Get Account',
-    key: 'get_account',
-    description: `Get your DigitalOcean account information including email, Droplet limit, billing status, and team details.`,
-    tags: {
-      readOnly: true
-    }
+export let getAccount = SlateTool.create(spec, {
+  name: 'Get Account',
+  key: 'get_account',
+  description: `Get your DigitalOcean account information including email, Droplet limit, billing status, and team details.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    email: z.string().describe('Account email'),
-    uuid: z.string().describe('Account UUID'),
-    name: z.string().optional().describe('Account name'),
-    dropletLimit: z.number().describe('Maximum number of Droplets allowed'),
-    volumeLimit: z.number().describe('Maximum number of volumes allowed'),
-    emailVerified: z.boolean().describe('Whether email is verified'),
-    status: z.string().describe('Account status'),
-    team: z.object({
-      name: z.string().describe('Team name'),
-      uuid: z.string().describe('Team UUID')
-    }).optional().describe('Team details')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      email: z.string().describe('Account email'),
+      uuid: z.string().describe('Account UUID'),
+      name: z.string().optional().describe('Account name'),
+      dropletLimit: z.number().describe('Maximum number of Droplets allowed'),
+      volumeLimit: z.number().describe('Maximum number of volumes allowed'),
+      emailVerified: z.boolean().describe('Whether email is verified'),
+      status: z.string().describe('Account status'),
+      team: z
+        .object({
+          name: z.string().describe('Team name'),
+          uuid: z.string().describe('Team UUID')
+        })
+        .optional()
+        .describe('Team details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let account = await client.getAccount();
 
@@ -41,45 +43,53 @@ export let getAccount = SlateTool.create(
         volumeLimit: account.volume_limit,
         emailVerified: account.email_verified,
         status: account.status,
-        team: account.team ? {
-          name: account.team.name,
-          uuid: account.team.uuid
-        } : undefined
+        team: account.team
+          ? {
+              name: account.team.name,
+              uuid: account.team.uuid
+            }
+          : undefined
       },
       message: `Account **${account.email}** — Status: ${account.status}, Droplet limit: ${account.droplet_limit}.`
     };
   })
   .build();
 
-export let getBilling = SlateTool.create(
-  spec,
-  {
-    name: 'Get Billing',
-    key: 'get_billing',
-    description: `Get your current DigitalOcean account balance and billing history. Shows month-to-date usage, balance, and recent invoices.`,
-    tags: {
-      readOnly: true
-    }
+export let getBilling = SlateTool.create(spec, {
+  name: 'Get Billing',
+  key: 'get_billing',
+  description: `Get your current DigitalOcean account balance and billing history. Shows month-to-date usage, balance, and recent invoices.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeHistory: z.boolean().optional().describe('Include billing history entries'),
-    page: z.number().optional().describe('Page for billing history'),
-    perPage: z.number().optional().describe('Results per page for billing history')
-  }))
-  .output(z.object({
-    monthToDateBalance: z.string().describe('Current month-to-date balance'),
-    accountBalance: z.string().describe('Account balance'),
-    monthToDateUsage: z.string().describe('Current month usage'),
-    generatedAt: z.string().describe('When the balance was generated'),
-    billingHistory: z.array(z.object({
-      description: z.string().describe('Billing entry description'),
-      amount: z.string().describe('Amount'),
-      invoiceId: z.string().optional().describe('Invoice ID'),
-      date: z.string().describe('Entry date')
-    })).optional().describe('Billing history entries')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeHistory: z.boolean().optional().describe('Include billing history entries'),
+      page: z.number().optional().describe('Page for billing history'),
+      perPage: z.number().optional().describe('Results per page for billing history')
+    })
+  )
+  .output(
+    z.object({
+      monthToDateBalance: z.string().describe('Current month-to-date balance'),
+      accountBalance: z.string().describe('Account balance'),
+      monthToDateUsage: z.string().describe('Current month usage'),
+      generatedAt: z.string().describe('When the balance was generated'),
+      billingHistory: z
+        .array(
+          z.object({
+            description: z.string().describe('Billing entry description'),
+            amount: z.string().describe('Amount'),
+            invoiceId: z.string().optional().describe('Invoice ID'),
+            date: z.string().describe('Entry date')
+          })
+        )
+        .optional()
+        .describe('Billing history entries')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let balance = await client.getBalance();
 

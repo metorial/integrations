@@ -26,31 +26,35 @@ let batchChangeSchema = z.object({
   changesetStats: changesetStatsSchema.optional().describe('Statistics about changesets')
 });
 
-export let listBatchChanges = SlateTool.create(
-  spec,
-  {
-    name: 'List Batch Changes',
-    key: 'list_batch_changes',
-    description: `List batch changes on the Sourcegraph instance. Batch changes are large-scale code changes that create pull requests across many repositories.
+export let listBatchChanges = SlateTool.create(spec, {
+  name: 'List Batch Changes',
+  key: 'list_batch_changes',
+  description: `List batch changes on the Sourcegraph instance. Batch changes are large-scale code changes that create pull requests across many repositories.
 Returns batch change metadata and changeset statistics.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    state: z.enum(['OPEN', 'CLOSED', 'DRAFT']).optional().describe('Filter by batch change state'),
-    first: z.number().optional().describe('Number of batch changes to return (default 50)'),
-    after: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    batchChanges: z.array(batchChangeSchema),
-    totalCount: z.number(),
-    hasNextPage: z.boolean(),
-    endCursor: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      state: z
+        .enum(['OPEN', 'CLOSED', 'DRAFT'])
+        .optional()
+        .describe('Filter by batch change state'),
+      first: z.number().optional().describe('Number of batch changes to return (default 50)'),
+      after: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      batchChanges: z.array(batchChangeSchema),
+      totalCount: z.number(),
+      hasNextPage: z.boolean(),
+      endCursor: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -86,52 +90,58 @@ Returns batch change metadata and changeset statistics.`,
       },
       message: `Found **${bc.totalCount}** batch changes${ctx.input.state ? ` with state ${ctx.input.state}` : ''}. Showing ${batchChanges.length}.`
     };
-  }).build();
+  })
+  .build();
 
-export let getBatchChange = SlateTool.create(
-  spec,
-  {
-    name: 'Get Batch Change',
-    key: 'get_batch_change',
-    description: `Get detailed information about a specific batch change including its changesets (pull requests/merge requests).
+export let getBatchChange = SlateTool.create(spec, {
+  name: 'Get Batch Change',
+  key: 'get_batch_change',
+  description: `Get detailed information about a specific batch change including its changesets (pull requests/merge requests).
 Returns the batch change metadata, changeset statistics, and a list of associated changesets with their status.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    batchChangeId: z.string().describe('GraphQL ID of the batch change')
-  }))
-  .output(z.object({
-    batchChangeId: z.string(),
-    name: z.string(),
-    description: z.string().optional(),
-    state: z.string(),
-    url: z.string().optional(),
-    namespace: z.string().optional(),
-    creator: z.string().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    closedAt: z.string().optional(),
-    changesetStats: changesetStatsSchema.optional(),
-    changesets: z.array(z.object({
-      changesetId: z.string(),
+})
+  .input(
+    z.object({
+      batchChangeId: z.string().describe('GraphQL ID of the batch change')
+    })
+  )
+  .output(
+    z.object({
+      batchChangeId: z.string(),
+      name: z.string(),
+      description: z.string().optional(),
       state: z.string(),
-      externalId: z.string().optional(),
-      title: z.string().optional(),
-      body: z.string().optional(),
-      reviewState: z.string().optional(),
-      checkState: z.string().optional(),
-      repositoryName: z.string().optional(),
-      externalUrl: z.string().optional(),
+      url: z.string().optional(),
+      namespace: z.string().optional(),
+      creator: z.string().optional(),
       createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })).optional(),
-    changesetCount: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+      updatedAt: z.string().optional(),
+      closedAt: z.string().optional(),
+      changesetStats: changesetStatsSchema.optional(),
+      changesets: z
+        .array(
+          z.object({
+            changesetId: z.string(),
+            state: z.string(),
+            externalId: z.string().optional(),
+            title: z.string().optional(),
+            body: z.string().optional(),
+            reviewState: z.string().optional(),
+            checkState: z.string().optional(),
+            repositoryName: z.string().optional(),
+            externalUrl: z.string().optional(),
+            createdAt: z.string().optional(),
+            updatedAt: z.string().optional()
+          })
+        )
+        .optional(),
+      changesetCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -176,37 +186,45 @@ Returns the batch change metadata, changeset statistics, and a list of associate
       },
       message: `Batch change **${bc.name}** (${bc.state}) — ${bc.changesetsStats?.total || 0} changesets: ${bc.changesetsStats?.merged || 0} merged, ${bc.changesetsStats?.open || 0} open, ${bc.changesetsStats?.closed || 0} closed.`
     };
-  }).build();
+  })
+  .build();
 
-export let closeBatchChange = SlateTool.create(
-  spec,
-  {
-    name: 'Close Batch Change',
-    key: 'close_batch_change',
-    description: `Close a batch change. Optionally close all associated changesets (pull requests) on the code host as well.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let closeBatchChange = SlateTool.create(spec, {
+  name: 'Close Batch Change',
+  key: 'close_batch_change',
+  description: `Close a batch change. Optionally close all associated changesets (pull requests) on the code host as well.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    batchChangeId: z.string().describe('GraphQL ID of the batch change to close'),
-    closeChangesets: z.boolean().optional().describe('Also close all associated changesets on the code host. Defaults to false.')
-  }))
-  .output(z.object({
-    batchChangeId: z.string(),
-    name: z.string(),
-    state: z.string(),
-    closedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      batchChangeId: z.string().describe('GraphQL ID of the batch change to close'),
+      closeChangesets: z
+        .boolean()
+        .optional()
+        .describe('Also close all associated changesets on the code host. Defaults to false.')
+    })
+  )
+  .output(
+    z.object({
+      batchChangeId: z.string(),
+      name: z.string(),
+      state: z.string(),
+      closedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
     });
 
-    let data = await client.closeBatchChange(ctx.input.batchChangeId, ctx.input.closeChangesets || false);
+    let data = await client.closeBatchChange(
+      ctx.input.batchChangeId,
+      ctx.input.closeChangesets || false
+    );
     let bc = data.closeBatchChange;
 
     return {
@@ -218,4 +236,5 @@ export let closeBatchChange = SlateTool.create(
       },
       message: `Closed batch change **${bc.name}**${ctx.input.closeChangesets ? ' and all associated changesets' : ''}.`
     };
-  }).build();
+  })
+  .build();

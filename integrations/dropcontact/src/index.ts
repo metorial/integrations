@@ -6,5 +6,5 @@ import { enrichmentResult } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [enrichContacts, getEnrichmentResults, checkCredits, manageWebhook],
-  triggers: [enrichmentResult],
+  triggers: [enrichmentResult]
 });

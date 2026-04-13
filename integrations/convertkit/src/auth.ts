@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,16 +18,16 @@ export let auth = SlateAuth.create()
       {
         title: 'Public',
         description: 'Full access to your Kit account data and functionality',
-        scope: 'public',
-      },
+        scope: 'public'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       if (ctx.scopes.length > 0) {
@@ -33,13 +35,13 @@ export let auth = SlateAuth.create()
       }
 
       return {
-        url: `https://app.kit.com/oauth/authorize?${params.toString()}`,
+        url: `https://app.kit.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({
-        baseURL: 'https://api.kit.com',
+        baseURL: 'https://api.kit.com'
       });
 
       let response = await http.post('/oauth/token', {
@@ -47,7 +49,7 @@ export let auth = SlateAuth.create()
         client_secret: ctx.clientSecret,
         grant_type: 'authorization_code',
         code: ctx.code,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let data = response.data as {
@@ -63,20 +65,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let http = createAxios({
-        baseURL: 'https://api.kit.com',
+        baseURL: 'https://api.kit.com'
       });
 
       let response = await http.post('/oauth/token', {
         client_id: ctx.clientId,
         grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
+        refresh_token: ctx.output.refreshToken
       });
 
       let data = response.data as {
@@ -92,8 +94,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -101,8 +103,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.kit.com/v4',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/account');
@@ -115,10 +117,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(data.user.id),
           email: data.user.email,
-          name: data.account.name,
-        },
+          name: data.account.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -126,14 +128,16 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your Kit V4 API Key (found in Developer tab of account settings)'),
+      apiKey: z
+        .string()
+        .describe('Your Kit V4 API Key (found in Developer tab of account settings)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -141,8 +145,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.kit.com/v4',
         headers: {
-          'X-Kit-Api-Key': ctx.output.token,
-        },
+          'X-Kit-Api-Key': ctx.output.token
+        }
       });
 
       let response = await http.get('/account');
@@ -155,8 +159,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(data.user.id),
           email: data.user.email,
-          name: data.account.name,
-        },
+          name: data.account.name
+        }
       };
-    },
+    }
   });

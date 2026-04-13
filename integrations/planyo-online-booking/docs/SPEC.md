@@ -23,6 +23,7 @@ The API key must be kept secret and should never be used in client-side code.
 ## Features
 
 ### Reservation Management
+
 Create, modify, cancel, delete, and query reservations. Check if a reservation can be made based on availability and constraints (start/end weekday rules, buffer time between rentals, etc.). Search reservations by customer details, reservation ID, or custom form item values. Perform administrative actions like confirmation or cancellation.
 
 - Reservations can be grouped into **shopping carts** for multi-resource bookings.
@@ -30,6 +31,7 @@ Create, modify, cancel, delete, and query reservations. Check if a reservation c
 - Reservation colors and notes (user and admin) can be set.
 
 ### Resource Management
+
 Create, modify, and remove bookable resources. Resources can be regular (continuous availability) or event-type (fixed scheduled times). Resources support packages (bundles of other resources), custom properties, images, unit names, and form item definitions.
 
 - Resources can be duplicated from a template resource when creating new ones.
@@ -37,46 +39,57 @@ Create, modify, and remove bookable resources. Resources can be regular (continu
 - Custom property definitions can be added to make properties searchable or filterable.
 
 ### Availability & Scheduling
+
 Query resource availability for specific time periods, get usage information by month, and search for available resources. Manage vacations (periods of unavailability) — both one-time and recurring — at the resource or site level. Configure weekly schedules (working/unavailable hours).
 
 - iCal feed URLs can be generated for syncing with external calendars.
 - Event-type resources have specific event time management.
 
 ### Pricing
+
 Configure pricing through Pricing Manager rules, including daily pricing, seasonal pricing, and custom rules. Calculate rental prices for given time periods and resource parameters. Set custom prices on individual reservations and recalculate prices when rules change.
 
 - Simplified daily pricing export is available for channel manager integration (accommodations).
 - Daily restrictions can also be exported for channel managers.
 
 ### Payments
+
 Record payments against reservations, list payments with filters, modify payment statuses, and remove payments. Query outstanding amounts. Credit card numbers cannot be passed through the API.
 
 - Payment gateways can be configured per site via the API.
 
 ### User Management
+
 Create, modify, search, and remove users (customers). Assign roles such as agents, moderators, and resource administrators. Query user data and manage custom user properties.
 
 - Users can be searched by custom property values.
 
 ### Additional Products
+
 Define and manage add-on products that can be attached to reservations (e.g., airport transfer, insurance). Manage product images, set product usage per reservation, and create one-off custom products.
 
 ### Coupons & Vouchers
+
 Create and manage coupon types, generate individual coupons, and apply them to reservations. Create vouchers with various restrictions (site-wide, resource-specific, date-limited). List and modify both coupons and vouchers.
 
 ### Seasons
+
 Define seasonal settings for resources or entire sites, controlling time-based rules like minimum stay, pricing adjustments, and availability constraints.
 
 ### Site & Meta Site Management
+
 Manage site-level settings, images, and properties. For meta sites (multi-site setups), create new child sites, list sites, and manage site-level moderators. Configure payment gateways.
 
 ### Invoices
+
 Generate invoices for reservations, list invoice items (including additional and custom products), and retrieve invoices by reservation or date range. Uses a parent & corrective invoice model.
 
 ### Notifications & Messaging
+
 Send emails to customers with messages recorded in reservation history. Add or remove webhook callbacks for specific events. Requires a custom SMTP server for the email sending function.
 
 ### Templates & Translations
+
 Process notification templates with dynamic tags based on reservation/resource context. Manage custom translations for sites and meta sites.
 
 ## Events
@@ -86,6 +99,7 @@ Planyo supports **webhooks** (notification callbacks) that can be configured per
 Webhooks are managed via the API (`add_notification_callback` / `remove_notification_callback`) or through the Planyo backend under Site Settings > Notifications > Notification Callbacks.
 
 ### Reservation Lifecycle Events
+
 - **New reservation**: Triggered when a new reservation with a verified email is entered.
 - **Reservation confirmed**: Triggered when an admin confirms a reservation (includes confirmation method: payment, coupon, or manual).
 - **Reservation cancelled by admin**: Triggered when an admin cancels a reservation.
@@ -99,23 +113,28 @@ Webhooks are managed via the API (`add_notification_callback` / `remove_notifica
 - **Price updated**: Triggered when a reservation's price changes.
 
 ### Check-in/Check-out Events
+
 - **Checked in**: Triggered when a reservation status changes to checked-in.
 - **Checked out**: Triggered when a reservation status changes to checked-out.
 - **No-show**: Triggered when a reservation status changes to no-show.
 
 ### Payment Events
+
 - **Reservation payment received**: Triggered when an online payment is received for a reservation. Includes payment amount, mode, and time.
 - **Reservation payment removed**: Triggered when a payment is removed by an admin.
 - **Coupon payment received**: Triggered when an online payment for a coupon purchase is received.
 - **Coupon payment removed**: Triggered when a coupon payment is removed by an admin.
 
 ### Scheduling Events
+
 - **Vacation modified**: Triggered when a vacation (unavailability period) is added, removed, or modified via the admin panel. Includes vacation type (one-time, recurring) and time details.
 
 ### Timed Events
+
 - **Before/after events (#1–#6)**: Up to six configurable time-relative triggers that fire a given number of hours/days before or after the reservation start, end, or creation time. Configured in the Notifications section of the Planyo backend.
 
 ### Other Events
+
 - **User updated**: Triggered when a new user is added or user settings are updated. Includes a flag indicating if the user is new.
 - **Resource settings changed**: Triggered when settings of a resource are modified.
 - **Resource removed**: Triggered when a resource is removed.

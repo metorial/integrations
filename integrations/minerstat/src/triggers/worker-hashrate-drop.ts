@@ -3,39 +3,41 @@ import { MonitoringClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workerHashrateDropTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Worker Hashrate Drop',
-    key: 'worker_hashrate_drop',
-    description: 'Fires when a worker\'s hashrate drops significantly compared to the previously recorded hashrate. Detects mining performance degradation. The drop threshold is based on the percentage change between polling intervals.'
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    workerName: z.string().describe('Name of the worker with hashrate drop'),
-    previousHashrate: z.number().describe('Previous hashrate value'),
-    currentHashrate: z.number().describe('Current hashrate value'),
-    hashrateUnit: z.string().describe('Hashrate unit'),
-    dropPercentage: z.number().describe('Percentage drop in hashrate'),
-    mainCoin: z.string().describe('Main coin being mined')
-  }))
-  .output(z.object({
-    workerName: z.string().describe('Name of the affected worker'),
-    previousHashrate: z.number().describe('Previous hashrate value'),
-    currentHashrate: z.number().describe('Current hashrate value'),
-    hashrateUnit: z.string().describe('Hashrate unit'),
-    dropPercentage: z.number().describe('Percentage drop'),
-    mainCoin: z.string().describe('Coin being mined'),
-    status: z.string().describe('Current worker status'),
-    deviceCount: z.number().describe('Number of devices in the rig')
-  }))
+export let workerHashrateDropTrigger = SlateTrigger.create(spec, {
+  name: 'Worker Hashrate Drop',
+  key: 'worker_hashrate_drop',
+  description:
+    "Fires when a worker's hashrate drops significantly compared to the previously recorded hashrate. Detects mining performance degradation. The drop threshold is based on the percentage change between polling intervals."
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      workerName: z.string().describe('Name of the worker with hashrate drop'),
+      previousHashrate: z.number().describe('Previous hashrate value'),
+      currentHashrate: z.number().describe('Current hashrate value'),
+      hashrateUnit: z.string().describe('Hashrate unit'),
+      dropPercentage: z.number().describe('Percentage drop in hashrate'),
+      mainCoin: z.string().describe('Main coin being mined')
+    })
+  )
+  .output(
+    z.object({
+      workerName: z.string().describe('Name of the affected worker'),
+      previousHashrate: z.number().describe('Previous hashrate value'),
+      currentHashrate: z.number().describe('Current hashrate value'),
+      hashrateUnit: z.string().describe('Hashrate unit'),
+      dropPercentage: z.number().describe('Percentage drop'),
+      mainCoin: z.string().describe('Coin being mined'),
+      status: z.string().describe('Current worker status'),
+      deviceCount: z.number().describe('Number of devices in the rig')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MonitoringClient({ accessKey: ctx.auth.accessKey });
       let workers = await client.listWorkers();
 
@@ -61,7 +63,11 @@ export let workerHashrateDropTrigger = SlateTrigger.create(
         currentHashrates[name] = currentHashrate;
 
         let previousHashrate = previousHashrates[name];
-        if (previousHashrate !== undefined && previousHashrate > 0 && currentHashrate < previousHashrate) {
+        if (
+          previousHashrate !== undefined &&
+          previousHashrate > 0 &&
+          currentHashrate < previousHashrate
+        ) {
           let dropPercentage = ((previousHashrate - currentHashrate) / previousHashrate) * 100;
 
           if (dropPercentage >= dropThreshold) {
@@ -87,7 +93,7 @@ export let workerHashrateDropTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'worker.hashrate_drop',
         id: ctx.input.eventId,
@@ -103,4 +109,5 @@ export let workerHashrateDropTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

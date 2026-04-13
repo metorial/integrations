@@ -17,38 +17,37 @@ let participantSchema = z.object({
   linkedinUrl: z.string().describe('LinkedIn profile URL'),
   jobPosition: z.string().describe('Job position/title'),
   company: z.string().describe('Company name'),
-  checkedIn: z.boolean().describe('Whether the participant has checked in'),
+  checkedIn: z.boolean().describe('Whether the participant has checked in')
 });
 
-export let listParticipants = SlateTool.create(
-  spec,
-  {
-    name: 'List Participants',
-    key: 'list_participants',
-    description: `Retrieves all participants (attendees who have joined the event) with their profile information and check-in status.
+export let listParticipants = SlateTool.create(spec, {
+  name: 'List Participants',
+  key: 'list_participants',
+  description: `Retrieves all participants (attendees who have joined the event) with their profile information and check-in status.
 Use this to get a complete list of people currently participating in the event.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    participants: z.array(participantSchema).describe('List of event participants'),
-    totalCount: z.number().describe('Total number of participants'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      participants: z.array(participantSchema).describe('List of event participants'),
+      totalCount: z.number().describe('Total number of participants')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let participants = await client.listParticipants();
 
-    let checkedInCount = participants.filter((p) => p.checkedIn).length;
+    let checkedInCount = participants.filter(p => p.checkedIn).length;
 
     return {
       output: {
         participants,
-        totalCount: participants.length,
+        totalCount: participants.length
       },
-      message: `Retrieved **${participants.length}** participant(s). **${checkedInCount}** currently checked in.`,
+      message: `Retrieved **${participants.length}** participant(s). **${checkedInCount}** currently checked in.`
     };
   })
   .build();

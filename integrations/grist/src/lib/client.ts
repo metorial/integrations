@@ -8,9 +8,9 @@ export class GristClient {
     this.axios = createAxios({
       baseURL: `${config.serverUrl}/api`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -68,7 +68,7 @@ export class GristClient {
   async deleteWorkspace(workspaceId: number, permanent?: boolean): Promise<void> {
     if (permanent) {
       await this.axios.post(`/workspaces/${workspaceId}/remove`, null, {
-        params: { permanent: true },
+        params: { permanent: true }
       });
     } else {
       await this.axios.post(`/workspaces/${workspaceId}/remove`);
@@ -95,10 +95,13 @@ export class GristClient {
     return response.data;
   }
 
-  async createDocument(workspaceId: number, params: {
-    name?: string;
-    isPinned?: boolean;
-  }): Promise<string> {
+  async createDocument(
+    workspaceId: number,
+    params: {
+      name?: string;
+      isPinned?: boolean;
+    }
+  ): Promise<string> {
     let response = await this.axios.post(`/workspaces/${workspaceId}/docs`, params);
     return response.data;
   }
@@ -110,7 +113,7 @@ export class GristClient {
   async deleteDocument(docId: string, permanent?: boolean): Promise<void> {
     if (permanent) {
       await this.axios.post(`/docs/${docId}/remove`, null, {
-        params: { permanent: true },
+        params: { permanent: true }
       });
     } else {
       await this.axios.post(`/docs/${docId}/remove`);
@@ -149,42 +152,62 @@ export class GristClient {
     return response.data;
   }
 
-  async createTables(docId: string, tables: Array<{
-    id?: string;
-    columns: Array<Record<string, any>>;
-  }>): Promise<Record<string, any>> {
+  async createTables(
+    docId: string,
+    tables: Array<{
+      id?: string;
+      columns: Array<Record<string, any>>;
+    }>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/docs/${docId}/tables`, { tables });
     return response.data;
   }
 
-  async updateTables(docId: string, tables: Array<{
-    id: string;
-    fields: Record<string, any>;
-  }>): Promise<void> {
+  async updateTables(
+    docId: string,
+    tables: Array<{
+      id: string;
+      fields: Record<string, any>;
+    }>
+  ): Promise<void> {
     await this.axios.patch(`/docs/${docId}/tables`, { tables });
   }
 
   // ---- Columns ----
 
-  async listColumns(docId: string, tableId: string, hidden?: boolean): Promise<Record<string, any>> {
+  async listColumns(
+    docId: string,
+    tableId: string,
+    hidden?: boolean
+  ): Promise<Record<string, any>> {
     let response = await this.axios.get(`/docs/${docId}/tables/${tableId}/columns`, {
-      params: hidden !== undefined ? { hidden } : undefined,
+      params: hidden !== undefined ? { hidden } : undefined
     });
     return response.data;
   }
 
-  async createColumns(docId: string, tableId: string, columns: Array<{
-    id?: string;
-    fields?: Record<string, any>;
-  }>): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/docs/${docId}/tables/${tableId}/columns`, { columns });
+  async createColumns(
+    docId: string,
+    tableId: string,
+    columns: Array<{
+      id?: string;
+      fields?: Record<string, any>;
+    }>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post(`/docs/${docId}/tables/${tableId}/columns`, {
+      columns
+    });
     return response.data;
   }
 
-  async updateColumns(docId: string, tableId: string, columns: Array<{
-    id: string;
-    fields: Record<string, any>;
-  }>): Promise<void> {
+  async updateColumns(
+    docId: string,
+    tableId: string,
+    columns: Array<{
+      id: string;
+      fields: Record<string, any>;
+    }>
+  ): Promise<void> {
     await this.axios.patch(`/docs/${docId}/tables/${tableId}/columns`, { columns });
   }
 
@@ -194,51 +217,78 @@ export class GristClient {
 
   // ---- Records ----
 
-  async listRecords(docId: string, tableId: string, params?: {
-    filter?: Record<string, any>;
-    sort?: string;
-    limit?: number;
-    hidden?: boolean;
-  }): Promise<Record<string, any>> {
+  async listRecords(
+    docId: string,
+    tableId: string,
+    params?: {
+      filter?: Record<string, any>;
+      sort?: string;
+      limit?: number;
+      hidden?: boolean;
+    }
+  ): Promise<Record<string, any>> {
     let queryParams: Record<string, any> = {};
     if (params?.filter) queryParams.filter = JSON.stringify(params.filter);
     if (params?.sort) queryParams.sort = params.sort;
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.hidden !== undefined) queryParams.hidden = params.hidden;
     let response = await this.axios.get(`/docs/${docId}/tables/${tableId}/records`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async addRecords(docId: string, tableId: string, records: Array<{
-    fields: Record<string, any>;
-  }>, noparse?: boolean): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/docs/${docId}/tables/${tableId}/records`, { records }, {
-      params: noparse ? { noparse: true } : undefined,
-    });
+  async addRecords(
+    docId: string,
+    tableId: string,
+    records: Array<{
+      fields: Record<string, any>;
+    }>,
+    noparse?: boolean
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post(
+      `/docs/${docId}/tables/${tableId}/records`,
+      { records },
+      {
+        params: noparse ? { noparse: true } : undefined
+      }
+    );
     return response.data;
   }
 
-  async updateRecords(docId: string, tableId: string, records: Array<{
-    id: number;
-    fields: Record<string, any>;
-  }>, noparse?: boolean): Promise<void> {
-    await this.axios.patch(`/docs/${docId}/tables/${tableId}/records`, { records }, {
-      params: noparse ? { noparse: true } : undefined,
-    });
+  async updateRecords(
+    docId: string,
+    tableId: string,
+    records: Array<{
+      id: number;
+      fields: Record<string, any>;
+    }>,
+    noparse?: boolean
+  ): Promise<void> {
+    await this.axios.patch(
+      `/docs/${docId}/tables/${tableId}/records`,
+      { records },
+      {
+        params: noparse ? { noparse: true } : undefined
+      }
+    );
   }
 
-  async addOrUpdateRecords(docId: string, tableId: string, records: Array<{
-    require: Record<string, any>;
-    fields?: Record<string, any>;
-  }>, options?: {
-    noparse?: boolean;
-    onmany?: 'first' | 'none' | 'all';
-    noadd?: boolean;
-    noupdate?: boolean;
-    allowEmptyRequire?: boolean;
-  }): Promise<void> {
+  async addOrUpdateRecords(
+    docId: string,
+    tableId: string,
+    records: Array<{
+      require: Record<string, any>;
+      fields?: Record<string, any>;
+    }>,
+    options?: {
+      noparse?: boolean;
+      onmany?: 'first' | 'none' | 'all';
+      noadd?: boolean;
+      noupdate?: boolean;
+      allowEmptyRequire?: boolean;
+    }
+  ): Promise<void> {
     let params: Record<string, any> = {};
     if (options?.noparse) params.noparse = true;
     if (options?.onmany) params.onmany = options.onmany;
@@ -254,11 +304,14 @@ export class GristClient {
 
   // ---- Attachments ----
 
-  async listAttachments(docId: string, params?: {
-    filter?: Record<string, any>;
-    sort?: string;
-    limit?: number;
-  }): Promise<Record<string, any>> {
+  async listAttachments(
+    docId: string,
+    params?: {
+      filter?: Record<string, any>;
+      sort?: string;
+      limit?: number;
+    }
+  ): Promise<Record<string, any>> {
     let queryParams: Record<string, any> = {};
     if (params?.filter) queryParams.filter = JSON.stringify(params.filter);
     if (params?.sort) queryParams.sort = params.sort;
@@ -267,20 +320,28 @@ export class GristClient {
     return response.data;
   }
 
-  async getAttachmentMetadata(docId: string, attachmentId: number): Promise<Record<string, any>> {
+  async getAttachmentMetadata(
+    docId: string,
+    attachmentId: number
+  ): Promise<Record<string, any>> {
     let response = await this.axios.get(`/docs/${docId}/attachments/${attachmentId}`);
     return response.data;
   }
 
   async removeUnusedAttachments(docId: string, expiredOnly?: boolean): Promise<void> {
     await this.axios.post(`/docs/${docId}/attachments/removeUnused`, null, {
-      params: expiredOnly ? { expiredOnly: true } : undefined,
+      params: expiredOnly ? { expiredOnly: true } : undefined
     });
   }
 
   // ---- SQL ----
 
-  async runSql(docId: string, sql: string, args?: Array<string | number>, timeout?: number): Promise<Record<string, any>> {
+  async runSql(
+    docId: string,
+    sql: string,
+    args?: Array<string | number>,
+    timeout?: number
+  ): Promise<Record<string, any>> {
     if (args || timeout) {
       let body: Record<string, any> = { sql };
       if (args) body.args = args;
@@ -289,7 +350,7 @@ export class GristClient {
       return response.data;
     }
     let response = await this.axios.get(`/docs/${docId}/sql`, {
-      params: { q: sql },
+      params: { q: sql }
     });
     return response.data;
   }
@@ -301,14 +362,21 @@ export class GristClient {
     return response.data;
   }
 
-  async createWebhooks(docId: string, webhooks: Array<{
-    fields: Record<string, any>;
-  }>): Promise<Record<string, any>> {
+  async createWebhooks(
+    docId: string,
+    webhooks: Array<{
+      fields: Record<string, any>;
+    }>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/docs/${docId}/webhooks`, { webhooks });
     return response.data;
   }
 
-  async updateWebhook(docId: string, webhookId: string, fields: Record<string, any>): Promise<void> {
+  async updateWebhook(
+    docId: string,
+    webhookId: string,
+    fields: Record<string, any>
+  ): Promise<void> {
     await this.axios.patch(`/docs/${docId}/webhooks/${webhookId}`, fields);
   }
 
@@ -326,9 +394,13 @@ export class GristClient {
 
   // ---- User Actions (Batch) ----
 
-  async applyUserActions(docId: string, actions: Array<any[]>, noparse?: boolean): Promise<Record<string, any>> {
+  async applyUserActions(
+    docId: string,
+    actions: Array<any[]>,
+    noparse?: boolean
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/docs/${docId}/apply`, actions, {
-      params: noparse ? { noparse: true } : undefined,
+      params: noparse ? { noparse: true } : undefined
     });
     return response.data;
   }

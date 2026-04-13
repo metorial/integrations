@@ -3,35 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let checkCompliance = SlateTool.create(
-  spec,
-  {
-    name: 'Check Compliance',
-    key: 'check_compliance',
-    description: `Verify whether a list of cell numbers is compliant with a campaign's targeting criteria before sending. Returns a per-number compliance status. This is a **paid endpoint** costing 0.14 credits per cell number.`,
-    constraints: [
-      'Costs 0.14 credits per cell number queried',
-      'Returns HTTP 402 if you have insufficient balance'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let checkCompliance = SlateTool.create(spec, {
+  name: 'Check Compliance',
+  key: 'check_compliance',
+  description: `Verify whether a list of cell numbers is compliant with a campaign's targeting criteria before sending. Returns a per-number compliance status. This is a **paid endpoint** costing 0.14 credits per cell number.`,
+  constraints: [
+    'Costs 0.14 credits per cell number queried',
+    'Returns HTTP 402 if you have insufficient balance'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    cells: z.array(z.string()).describe('Array of cell numbers (MSISDNs) to check'),
-    country: z.string().describe('Country code for the cell numbers (e.g. "ZA", "US")'),
-    campaignId: z.string().optional().describe('Campaign ID to check against. If omitted, only global opt-outs are checked.')
-  }))
-  .output(z.object({
-    results: z.array(z.object({
-      cell: z.string().describe('Cell number checked'),
-      canSend: z.boolean().describe('Whether sending to this number is compliant')
-    })).describe('Per-number compliance results'),
-    creditsUsed: z.number().describe('Number of credits consumed by this check'),
-    campaignId: z.string().optional().describe('Campaign ID checked against, if provided')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      cells: z.array(z.string()).describe('Array of cell numbers (MSISDNs) to check'),
+      country: z.string().describe('Country code for the cell numbers (e.g. "ZA", "US")'),
+      campaignId: z
+        .string()
+        .optional()
+        .describe(
+          'Campaign ID to check against. If omitted, only global opt-outs are checked.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      results: z
+        .array(
+          z.object({
+            cell: z.string().describe('Cell number checked'),
+            canSend: z.boolean().describe('Whether sending to this number is compliant')
+          })
+        )
+        .describe('Per-number compliance results'),
+      creditsUsed: z.number().describe('Number of credits consumed by this check'),
+      campaignId: z.string().optional().describe('Campaign ID checked against, if provided')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.checkCompliance({
       cells: ctx.input.cells,

@@ -2,15 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let httpClient = createAxios({
-  baseURL: 'https://api.pinterest.com/v5',
+  baseURL: 'https://api.pinterest.com/v5'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -20,97 +22,101 @@ export let auth = SlateAuth.create()
       {
         title: 'Read Ads',
         description: 'Read access to advertising data',
-        scope: 'ads:read',
+        scope: 'ads:read'
       },
       {
         title: 'Write Ads',
         description: 'Write access to advertising data',
-        scope: 'ads:write',
+        scope: 'ads:write'
       },
       {
         title: 'Read Boards',
         description: 'Read access to boards',
-        scope: 'boards:read',
+        scope: 'boards:read'
       },
       {
         title: 'Read Secret Boards',
         description: 'Read access to secret boards',
-        scope: 'boards:read_secret',
+        scope: 'boards:read_secret'
       },
       {
         title: 'Write Boards',
         description: 'Write access to create, update, or delete boards',
-        scope: 'boards:write',
+        scope: 'boards:write'
       },
       {
         title: 'Write Secret Boards',
         description: 'Write access to create, update, or delete secret boards',
-        scope: 'boards:write_secret',
+        scope: 'boards:write_secret'
       },
       {
         title: 'Read Catalogs',
         description: 'Read access to catalog information',
-        scope: 'catalogs:read',
+        scope: 'catalogs:read'
       },
       {
         title: 'Write Catalogs',
         description: 'Create or update catalog contents',
-        scope: 'catalogs:write',
+        scope: 'catalogs:write'
       },
       {
         title: 'Read Pins',
         description: 'Read access to Pins',
-        scope: 'pins:read',
+        scope: 'pins:read'
       },
       {
         title: 'Read Secret Pins',
         description: 'Read access to secret Pins',
-        scope: 'pins:read_secret',
+        scope: 'pins:read_secret'
       },
       {
         title: 'Write Pins',
         description: 'Write access to create, update, or delete Pins',
-        scope: 'pins:write',
+        scope: 'pins:write'
       },
       {
         title: 'Write Secret Pins',
         description: 'Write access to create, update, or delete secret Pins',
-        scope: 'pins:write_secret',
+        scope: 'pins:write_secret'
       },
       {
         title: 'Read User Accounts',
         description: 'Read access to user accounts',
-        scope: 'user_accounts:read',
-      },
+        scope: 'user_accounts:read'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         scope: ctx.scopes.join(','),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://www.pinterest.com/oauth/?${params.toString()}`,
+        url: `https://www.pinterest.com/oauth/?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await httpClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await httpClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -119,27 +125,31 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await httpClient.post('/oauth/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await httpClient.post(
+        '/oauth/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + data.expires_in * 1000).toISOString();
@@ -148,16 +158,16 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let response = await httpClient.get('/user_account', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data;
@@ -166,8 +176,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.username,
           name: user.username,
-          imageUrl: user.profile_image,
-        },
+          imageUrl: user.profile_image
+        }
       };
-    },
+    }
   });

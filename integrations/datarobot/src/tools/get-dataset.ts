@@ -3,37 +3,38 @@ import { DataRobotClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDataset = SlateTool.create(
-  spec,
-  {
-    name: 'Get Dataset',
-    key: 'get_dataset',
-    description: `Retrieve detailed information about a specific dataset in the AI Catalog including its schema, feature types, size, and processing state.`,
-    tags: {
-      readOnly: true,
-    },
+export let getDataset = SlateTool.create(spec, {
+  name: 'Get Dataset',
+  key: 'get_dataset',
+  description: `Retrieve detailed information about a specific dataset in the AI Catalog including its schema, feature types, size, and processing state.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    datasetId: z.string().describe('ID of the dataset to retrieve'),
-  }))
-  .output(z.object({
-    datasetId: z.string().describe('Unique dataset identifier'),
-    name: z.string().optional().describe('Dataset name'),
-    categories: z.array(z.string()).optional().describe('Dataset categories'),
-    createdBy: z.string().optional().describe('User who created the dataset'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    datasetSize: z.number().optional().nullable().describe('Dataset size in bytes'),
-    rowCount: z.number().optional().nullable().describe('Number of rows'),
-    columnCount: z.number().optional().nullable().describe('Number of columns'),
-    processingState: z.string().optional().describe('Processing state'),
-    featureCount: z.number().optional().nullable().describe('Number of features detected'),
-    isLatestVersion: z.boolean().optional().describe('Whether this is the latest version'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      datasetId: z.string().describe('ID of the dataset to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      datasetId: z.string().describe('Unique dataset identifier'),
+      name: z.string().optional().describe('Dataset name'),
+      categories: z.array(z.string()).optional().describe('Dataset categories'),
+      createdBy: z.string().optional().describe('User who created the dataset'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      datasetSize: z.number().optional().nullable().describe('Dataset size in bytes'),
+      rowCount: z.number().optional().nullable().describe('Number of rows'),
+      columnCount: z.number().optional().nullable().describe('Number of columns'),
+      processingState: z.string().optional().describe('Processing state'),
+      featureCount: z.number().optional().nullable().describe('Number of features detected'),
+      isLatestVersion: z.boolean().optional().describe('Whether this is the latest version')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DataRobotClient({
       token: ctx.auth.token,
-      endpointUrl: ctx.config.endpointUrl,
+      endpointUrl: ctx.config.endpointUrl
     });
 
     let d = await client.getDataset(ctx.input.datasetId);
@@ -50,9 +51,9 @@ export let getDataset = SlateTool.create(
         columnCount: d.columnCount,
         processingState: d.processingState,
         featureCount: d.featureCount,
-        isLatestVersion: d.isLatestVersion,
+        isLatestVersion: d.isLatestVersion
       },
-      message: `Dataset **${d.name}** — ${d.rowCount ?? '?'} rows, ${d.columnCount ?? '?'} columns.`,
+      message: `Dataset **${d.name}** — ${d.rowCount ?? '?'} rows, ${d.columnCount ?? '?'} columns.`
     };
   })
   .build();

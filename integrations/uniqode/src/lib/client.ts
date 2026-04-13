@@ -11,7 +11,7 @@ import type {
   MarkdownCard,
   AnalyticsOverview,
   AnalyticsPerformance,
-  BulkQrCode,
+  BulkQrCode
 } from './types';
 
 export class BeaconstacClient {
@@ -21,9 +21,9 @@ export class BeaconstacClient {
     this.axios = createAxios({
       baseURL: 'https://api.beaconstac.com/api/2.0',
       headers: {
-        'Authorization': `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -75,15 +75,20 @@ export class BeaconstacClient {
     await this.axios.delete(`/qrcodes/${qrCodeId}/`);
   }
 
-  async downloadQrCode(qrCodeId: number, params?: {
-    format?: string;
-    size?: number;
-  }): Promise<string> {
+  async downloadQrCode(
+    qrCodeId: number,
+    params?: {
+      format?: string;
+      size?: number;
+    }
+  ): Promise<string> {
     let queryParams: Record<string, string> = {};
     if (params?.format) queryParams.format = params.format;
     if (params?.size !== undefined) queryParams.size = String(params.size);
 
-    let response = await this.axios.get(`/qrcodes/${qrCodeId}/download/`, { params: queryParams });
+    let response = await this.axios.get(`/qrcodes/${qrCodeId}/download/`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -140,7 +145,10 @@ export class BeaconstacClient {
     return response.data;
   }
 
-  async updateMarkdownCard(cardId: number, data: Record<string, unknown>): Promise<MarkdownCard> {
+  async updateMarkdownCard(
+    cardId: number,
+    data: Record<string, unknown>
+  ): Promise<MarkdownCard> {
     let response = await this.axios.put(`/markdowncards/${cardId}/`, data);
     return response.data;
   }
@@ -327,14 +335,14 @@ export class BeaconstacClient {
       {
         product_type: params.productType,
         start_date: params.startDate,
-        end_date: params.endDate,
+        end_date: params.endDate
       },
       {
         params: {
           organization: params.organizationId,
-          method: 'Overview.getPeriodOverview',
+          method: 'Overview.getPeriodOverview'
         },
-        baseURL: 'https://api.beaconstac.com/reporting/2.0',
+        baseURL: 'https://api.beaconstac.com/reporting/2.0'
       }
     );
     return response.data;
@@ -352,7 +360,7 @@ export class BeaconstacClient {
     let body: Record<string, unknown> = {
       product_type: params.productType,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.interval) body.interval = params.interval;
     if (params.timezone) body.timezone = params.timezone;
@@ -361,9 +369,9 @@ export class BeaconstacClient {
     let response = await this.axios.post('/', body, {
       params: {
         organization: params.organizationId,
-        method: 'Products.getPerformance',
+        method: 'Products.getPerformance'
       },
-      baseURL: 'https://api.beaconstac.com/reporting/2.0',
+      baseURL: 'https://api.beaconstac.com/reporting/2.0'
     });
     return response.data;
   }
@@ -381,7 +389,7 @@ export class BeaconstacClient {
     let body: Record<string, unknown> = {
       product_type: params.productType,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.productId !== undefined) body.product_id = params.productId;
     if (params.placeId !== undefined) body.place_id = params.placeId;
@@ -391,24 +399,29 @@ export class BeaconstacClient {
     let response = await this.axios.post('/', body, {
       params: {
         organization: params.organizationId,
-        method: 'Products.getImpressions',
+        method: 'Products.getImpressions'
       },
-      baseURL: 'https://api.beaconstac.com/reporting/2.0',
+      baseURL: 'https://api.beaconstac.com/reporting/2.0'
     });
     return response.data;
   }
 
   // ---- Form Responses ----
 
-  async listFormResponses(formId: number, params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<PaginatedResponse<Record<string, unknown>>> {
+  async listFormResponses(
+    formId: number,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<PaginatedResponse<Record<string, unknown>>> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
 
-    let response = await this.axios.get(`/forms/${formId}/responses/`, { params: queryParams });
+    let response = await this.axios.get(`/forms/${formId}/responses/`, {
+      params: queryParams
+    });
     return response.data;
   }
 }

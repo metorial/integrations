@@ -6,10 +6,12 @@ let apiClient = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    email: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      email: z.string().optional()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -17,14 +19,17 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       token: z.string().describe('Your Algodocs API key from account settings')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
         }
       };
     },
-    getProfile: async (ctx: { output: { token: string; email?: string }; input: { token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; email?: string };
+      input: { token: string };
+    }) => {
       let response = await apiClient.get('/me', {
         headers: {
           'x-api-key': ctx.output.token
@@ -46,7 +51,7 @@ export let auth = SlateAuth.create()
       email: z.string().describe('Your registered Algodocs email address'),
       token: z.string().describe('Your Algodocs API key from account settings')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -54,12 +59,16 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    getProfile: async (ctx: { output: { token: string; email?: string }; input: { email: string; token: string } }) => {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-      let credentials = Buffer.from(`${ctx.output.email}:${ctx.output.token}`).toString('base64');
+    getProfile: async (ctx: {
+      output: { token: string; email?: string };
+      input: { email: string; token: string };
+    }) => {
+      let credentials = Buffer.from(`${ctx.output.email}:${ctx.output.token}`).toString(
+        'base64'
+      );
       let response = await apiClient.get('/me', {
         headers: {
-          'Authorization': `Basic ${credentials}`
+          Authorization: `Basic ${credentials}`
         }
       });
       return {

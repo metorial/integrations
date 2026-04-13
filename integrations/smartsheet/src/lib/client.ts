@@ -20,17 +20,20 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async getSheet(sheetId: string, params?: {
-    include?: string;
-    exclude?: string;
-    columnIds?: string;
-    rowIds?: string;
-    rowNumbers?: string;
-    filterId?: string;
-    level?: number;
-    page?: number;
-    pageSize?: number;
-  }) {
+  async getSheet(
+    sheetId: string,
+    params?: {
+      include?: string;
+      exclude?: string;
+      columnIds?: string;
+      rowIds?: string;
+      rowNumbers?: string;
+      filterId?: string;
+      level?: number;
+      page?: number;
+      pageSize?: number;
+    }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}`, { params });
     return response.data;
   }
@@ -49,30 +52,36 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async createSheetInFolder(folderId: string, body: {
-    name: string;
-    columns: Array<{
-      title: string;
-      type: string;
-      primary?: boolean;
-      options?: string[];
-      width?: number;
-    }>;
-  }) {
+  async createSheetInFolder(
+    folderId: string,
+    body: {
+      name: string;
+      columns: Array<{
+        title: string;
+        type: string;
+        primary?: boolean;
+        options?: string[];
+        width?: number;
+      }>;
+    }
+  ) {
     let response = await this.api.post(`/folders/${folderId}/sheets`, body);
     return response.data;
   }
 
-  async createSheetInWorkspace(workspaceId: string, body: {
-    name: string;
-    columns: Array<{
-      title: string;
-      type: string;
-      primary?: boolean;
-      options?: string[];
-      width?: number;
-    }>;
-  }) {
+  async createSheetInWorkspace(
+    workspaceId: string,
+    body: {
+      name: string;
+      columns: Array<{
+        title: string;
+        type: string;
+        primary?: boolean;
+        options?: string[];
+        width?: number;
+      }>;
+    }
+  ) {
     let response = await this.api.post(`/workspaces/${workspaceId}/sheets`, body);
     return response.data;
   }
@@ -87,26 +96,35 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async copySheet(sheetId: string, body: {
-    destinationType: string;
-    destinationId?: string;
-    newName: string;
-  }) {
+  async copySheet(
+    sheetId: string,
+    body: {
+      destinationType: string;
+      destinationId?: string;
+      newName: string;
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/copy`, body);
     return response.data;
   }
 
-  async moveSheet(sheetId: string, body: {
-    destinationType: string;
-    destinationId?: string;
-  }) {
+  async moveSheet(
+    sheetId: string,
+    body: {
+      destinationType: string;
+      destinationId?: string;
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/move`, body);
     return response.data;
   }
 
   // ── Columns ───────────────────────────────────────────────
 
-  async listColumns(sheetId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean; level?: number }) {
+  async listColumns(
+    sheetId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean; level?: number }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/columns`, { params });
     return response.data;
   }
@@ -116,27 +134,34 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async addColumns(sheetId: string, columns: Array<{
-    title: string;
-    type: string;
-    index?: number;
-    primary?: boolean;
-    options?: string[];
-    width?: number;
-    formula?: string;
-  }>) {
+  async addColumns(
+    sheetId: string,
+    columns: Array<{
+      title: string;
+      type: string;
+      index?: number;
+      primary?: boolean;
+      options?: string[];
+      width?: number;
+      formula?: string;
+    }>
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/columns`, columns);
     return response.data;
   }
 
-  async updateColumn(sheetId: string, columnId: string, body: {
-    title?: string;
-    type?: string;
-    index?: number;
-    options?: string[];
-    width?: number;
-    formula?: string;
-  }) {
+  async updateColumn(
+    sheetId: string,
+    columnId: string,
+    body: {
+      title?: string;
+      type?: string;
+      index?: number;
+      options?: string[];
+      width?: number;
+      formula?: string;
+    }
+  ) {
     let response = await this.api.put(`/sheets/${sheetId}/columns/${columnId}`, body);
     return response.data;
   }
@@ -148,51 +173,65 @@ export class SmartsheetClient {
 
   // ── Rows ──────────────────────────────────────────────────
 
-  async getRow(sheetId: string, rowId: string, params?: { include?: string; exclude?: string }) {
+  async getRow(
+    sheetId: string,
+    rowId: string,
+    params?: { include?: string; exclude?: string }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/rows/${rowId}`, { params });
     return response.data;
   }
 
-  async addRows(sheetId: string, rows: Array<{
-    toTop?: boolean;
-    toBottom?: boolean;
-    parentId?: number;
-    siblingId?: number;
-    above?: boolean;
-    cells: Array<{
-      columnId: number;
-      value?: any;
-      formula?: string;
-      hyperlink?: { url?: string; sheetId?: number; reportId?: string };
-      strict?: boolean;
-    }>;
-  }>) {
+  async addRows(
+    sheetId: string,
+    rows: Array<{
+      toTop?: boolean;
+      toBottom?: boolean;
+      parentId?: number;
+      siblingId?: number;
+      above?: boolean;
+      cells: Array<{
+        columnId: number;
+        value?: any;
+        formula?: string;
+        hyperlink?: { url?: string; sheetId?: number; reportId?: string };
+        strict?: boolean;
+      }>;
+    }>
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/rows`, rows);
     return response.data;
   }
 
-  async updateRows(sheetId: string, rows: Array<{
-    id: number;
-    toTop?: boolean;
-    toBottom?: boolean;
-    parentId?: number;
-    siblingId?: number;
-    above?: boolean;
-    expanded?: boolean;
-    locked?: boolean;
-    cells?: Array<{
-      columnId: number;
-      value?: any;
-      formula?: string;
-      hyperlink?: { url?: string; sheetId?: number; reportId?: string };
-      strict?: boolean;
-    }>;
-  }>) {
+  async updateRows(
+    sheetId: string,
+    rows: Array<{
+      id: number;
+      toTop?: boolean;
+      toBottom?: boolean;
+      parentId?: number;
+      siblingId?: number;
+      above?: boolean;
+      expanded?: boolean;
+      locked?: boolean;
+      cells?: Array<{
+        columnId: number;
+        value?: any;
+        formula?: string;
+        hyperlink?: { url?: string; sheetId?: number; reportId?: string };
+        strict?: boolean;
+      }>;
+    }>
+  ) {
     let response = await this.api.put(`/sheets/${sheetId}/rows`, rows);
     return response.data;
   }
 
-  async deleteRows(sheetId: string, rowIds: string[], params?: { ignoreRowsNotFound?: boolean }) {
+  async deleteRows(
+    sheetId: string,
+    rowIds: string[],
+    params?: { ignoreRowsNotFound?: boolean }
+  ) {
     let response = await this.api.delete(`/sheets/${sheetId}/rows`, {
       params: {
         ids: rowIds.join(','),
@@ -236,7 +275,10 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async listWorkspaceFolders(workspaceId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listWorkspaceFolders(
+    workspaceId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/workspaces/${workspaceId}/folders`, { params });
     return response.data;
   }
@@ -273,17 +315,24 @@ export class SmartsheetClient {
 
   // ── Sharing ───────────────────────────────────────────────
 
-  async listSheetShares(sheetId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listSheetShares(
+    sheetId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/shares`, { params });
     return response.data;
   }
 
-  async shareSheet(sheetId: string, shares: Array<{
-    email: string;
-    accessLevel: string;
-    subject?: string;
-    message?: string;
-  }>, params?: { sendEmail?: boolean }) {
+  async shareSheet(
+    sheetId: string,
+    shares: Array<{
+      email: string;
+      accessLevel: string;
+      subject?: string;
+      message?: string;
+    }>,
+    params?: { sendEmail?: boolean }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/shares`, shares, { params });
     return response.data;
   }
@@ -298,13 +347,19 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async shareWorkspace(workspaceId: string, shares: Array<{
-    email: string;
-    accessLevel: string;
-    subject?: string;
-    message?: string;
-  }>, params?: { sendEmail?: boolean }) {
-    let response = await this.api.post(`/workspaces/${workspaceId}/shares`, shares, { params });
+  async shareWorkspace(
+    workspaceId: string,
+    shares: Array<{
+      email: string;
+      accessLevel: string;
+      subject?: string;
+      message?: string;
+    }>,
+    params?: { sendEmail?: boolean }
+  ) {
+    let response = await this.api.post(`/workspaces/${workspaceId}/shares`, shares, {
+      params
+    });
     return response.data;
   }
 
@@ -327,7 +382,12 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async listUsers(params?: { page?: number; pageSize?: number; includeAll?: boolean; email?: string }) {
+  async listUsers(params?: {
+    page?: number;
+    pageSize?: number;
+    includeAll?: boolean;
+    email?: string;
+  }) {
     let response = await this.api.get('/users', { params });
     return response.data;
   }
@@ -350,32 +410,47 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async updateUser(userId: string, body: {
-    admin?: boolean;
-    licensedSheetCreator?: boolean;
-    firstName?: string;
-    lastName?: string;
-    groupAdmin?: boolean;
-    resourceViewer?: boolean;
-  }) {
+  async updateUser(
+    userId: string,
+    body: {
+      admin?: boolean;
+      licensedSheetCreator?: boolean;
+      firstName?: string;
+      lastName?: string;
+      groupAdmin?: boolean;
+      resourceViewer?: boolean;
+    }
+  ) {
     let response = await this.api.put(`/users/${userId}`, body);
     return response.data;
   }
 
-  async removeUser(userId: string, params?: { transferTo?: string; removeFromSharing?: boolean }) {
+  async removeUser(
+    userId: string,
+    params?: { transferTo?: string; removeFromSharing?: boolean }
+  ) {
     let response = await this.api.delete(`/users/${userId}`, { params });
     return response.data;
   }
 
   // ── Discussions and Comments ──────────────────────────────
 
-  async listSheetDiscussions(sheetId: string, params?: { include?: string; page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listSheetDiscussions(
+    sheetId: string,
+    params?: { include?: string; page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/discussions`, { params });
     return response.data;
   }
 
-  async listRowDiscussions(sheetId: string, rowId: string, params?: { include?: string; page?: number; pageSize?: number; includeAll?: boolean }) {
-    let response = await this.api.get(`/sheets/${sheetId}/rows/${rowId}/discussions`, { params });
+  async listRowDiscussions(
+    sheetId: string,
+    rowId: string,
+    params?: { include?: string; page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
+    let response = await this.api.get(`/sheets/${sheetId}/rows/${rowId}/discussions`, {
+      params
+    });
     return response.data;
   }
 
@@ -384,13 +459,20 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async createDiscussionOnRow(sheetId: string, rowId: string, body: { comment: { text: string } }) {
+  async createDiscussionOnRow(
+    sheetId: string,
+    rowId: string,
+    body: { comment: { text: string } }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/rows/${rowId}/discussions`, body);
     return response.data;
   }
 
   async addComment(sheetId: string, discussionId: string, body: { text: string }) {
-    let response = await this.api.post(`/sheets/${sheetId}/discussions/${discussionId}/comments`, body);
+    let response = await this.api.post(
+      `/sheets/${sheetId}/discussions/${discussionId}/comments`,
+      body
+    );
     return response.data;
   }
 
@@ -424,13 +506,16 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, body: {
-    enabled?: boolean;
-    events?: string[];
-    callbackUrl?: string;
-    name?: string;
-    version?: number;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    body: {
+      enabled?: boolean;
+      events?: string[];
+      callbackUrl?: string;
+      name?: string;
+      version?: number;
+    }
+  ) {
     let response = await this.api.put(`/webhooks/${webhookId}`, body);
     return response.data;
   }
@@ -452,7 +537,10 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async getReport(reportId: string, params?: { page?: number; pageSize?: number; include?: string }) {
+  async getReport(
+    reportId: string,
+    params?: { page?: number; pageSize?: number; include?: string }
+  ) {
     let response = await this.api.get(`/reports/${reportId}`, { params });
     return response.data;
   }
@@ -474,19 +562,25 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async copyDashboard(dashboardId: string, body: {
-    destinationType: string;
-    destinationId?: string;
-    newName: string;
-  }) {
+  async copyDashboard(
+    dashboardId: string,
+    body: {
+      destinationType: string;
+      destinationId?: string;
+      newName: string;
+    }
+  ) {
     let response = await this.api.post(`/sights/${dashboardId}/copy`, body);
     return response.data;
   }
 
-  async moveDashboard(dashboardId: string, body: {
-    destinationType: string;
-    destinationId?: string;
-  }) {
+  async moveDashboard(
+    dashboardId: string,
+    body: {
+      destinationType: string;
+      destinationId?: string;
+    }
+  ) {
     let response = await this.api.post(`/sights/${dashboardId}/move`, body);
     return response.data;
   }
@@ -498,22 +592,28 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async addSheetSummaryFields(sheetId: string, fields: Array<{
-    title: string;
-    type: string;
-    formula?: string;
-    objectValue?: any;
-  }>) {
+  async addSheetSummaryFields(
+    sheetId: string,
+    fields: Array<{
+      title: string;
+      type: string;
+      formula?: string;
+      objectValue?: any;
+    }>
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/summary/fields`, fields);
     return response.data;
   }
 
-  async updateSheetSummaryFields(sheetId: string, fields: Array<{
-    fieldId: number;
-    title?: string;
-    formula?: string;
-    objectValue?: any;
-  }>) {
+  async updateSheetSummaryFields(
+    sheetId: string,
+    fields: Array<{
+      fieldId: number;
+      title?: string;
+      formula?: string;
+      objectValue?: any;
+    }>
+  ) {
     let response = await this.api.put(`/sheets/${sheetId}/summary/fields`, fields);
     return response.data;
   }
@@ -544,49 +644,61 @@ export class SmartsheetClient {
 
   // ── Send via Email ────────────────────────────────────────
 
-  async sendSheetViaEmail(sheetId: string, body: {
-    to: Array<{ email: string }>;
-    subject: string;
-    message?: string;
-    ccMe?: boolean;
-    format?: string;
-    formatDetails?: { paperSize?: string };
-  }) {
+  async sendSheetViaEmail(
+    sheetId: string,
+    body: {
+      to: Array<{ email: string }>;
+      subject: string;
+      message?: string;
+      ccMe?: boolean;
+      format?: string;
+      formatDetails?: { paperSize?: string };
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/emails`, body);
     return response.data;
   }
 
-  async sendRowsViaEmail(sheetId: string, body: {
-    to: Array<{ email: string }>;
-    subject: string;
-    message?: string;
-    ccMe?: boolean;
-    rowIds: number[];
-    columnIds?: number[];
-    includeAttachments?: boolean;
-    includeDiscussions?: boolean;
-  }) {
+  async sendRowsViaEmail(
+    sheetId: string,
+    body: {
+      to: Array<{ email: string }>;
+      subject: string;
+      message?: string;
+      ccMe?: boolean;
+      rowIds: number[];
+      columnIds?: number[];
+      includeAttachments?: boolean;
+      includeDiscussions?: boolean;
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/rows/emails`, body);
     return response.data;
   }
 
   // ── Update Requests ───────────────────────────────────────
 
-  async createUpdateRequest(sheetId: string, body: {
-    rowIds: number[];
-    sendTo: Array<{ email: string }>;
-    subject?: string;
-    message?: string;
-    ccMe?: boolean;
-    includeAttachments?: boolean;
-    includeDiscussions?: boolean;
-    columnIds?: number[];
-  }) {
+  async createUpdateRequest(
+    sheetId: string,
+    body: {
+      rowIds: number[];
+      sendTo: Array<{ email: string }>;
+      subject?: string;
+      message?: string;
+      ccMe?: boolean;
+      includeAttachments?: boolean;
+      includeDiscussions?: boolean;
+      columnIds?: number[];
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/updaterequests`, body);
     return response.data;
   }
 
-  async listUpdateRequests(sheetId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listUpdateRequests(
+    sheetId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/updaterequests`, { params });
     return response.data;
   }
@@ -605,26 +717,35 @@ export class SmartsheetClient {
 
   // ── Automation Rules ──────────────────────────────────────
 
-  async listAutomationRules(sheetId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listAutomationRules(
+    sheetId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/automationrules`, { params });
     return response.data;
   }
 
   // ── Cross-Sheet References ────────────────────────────────
 
-  async listCrossSheetReferences(sheetId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listCrossSheetReferences(
+    sheetId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/crosssheetreferences`, { params });
     return response.data;
   }
 
-  async createCrossSheetReference(sheetId: string, body: {
-    name: string;
-    sourceSheetId: number;
-    startRowId?: number;
-    endRowId?: number;
-    startColumnId?: number;
-    endColumnId?: number;
-  }) {
+  async createCrossSheetReference(
+    sheetId: string,
+    body: {
+      name: string;
+      sourceSheetId: number;
+      startRowId?: number;
+      endRowId?: number;
+      startColumnId?: number;
+      endColumnId?: number;
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/crosssheetreferences`, body);
     return response.data;
   }
@@ -650,10 +771,13 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async updateGroup(groupId: string, body: {
-    name?: string;
-    description?: string;
-  }) {
+  async updateGroup(
+    groupId: string,
+    body: {
+      name?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.api.put(`/groups/${groupId}`, body);
     return response.data;
   }
@@ -675,28 +799,35 @@ export class SmartsheetClient {
 
   // ── Templates ─────────────────────────────────────────────
 
-  async listPublicTemplates(params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listPublicTemplates(params?: {
+    page?: number;
+    pageSize?: number;
+    includeAll?: boolean;
+  }) {
     let response = await this.api.get('/templates/public', { params });
     return response.data;
   }
 
-  async listUserTemplates(params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listUserTemplates(params?: {
+    page?: number;
+    pageSize?: number;
+    includeAll?: boolean;
+  }) {
     let response = await this.api.get('/templates', { params });
     return response.data;
   }
 
-  async createSheetFromTemplate(body: {
-    name: string;
-    fromId: number;
-    includes?: string[];
-  }) {
+  async createSheetFromTemplate(body: { name: string; fromId: number; includes?: string[] }) {
     let response = await this.api.post('/sheets', body);
     return response.data;
   }
 
   // ── Attachments ───────────────────────────────────────────
 
-  async listSheetAttachments(sheetId: string, params?: { page?: number; pageSize?: number; includeAll?: boolean }) {
+  async listSheetAttachments(
+    sheetId: string,
+    params?: { page?: number; pageSize?: number; includeAll?: boolean }
+  ) {
     let response = await this.api.get(`/sheets/${sheetId}/attachments`, { params });
     return response.data;
   }
@@ -711,33 +842,47 @@ export class SmartsheetClient {
     return response.data;
   }
 
-  async attachUrlToSheet(sheetId: string, body: {
-    name: string;
-    url: string;
-    attachmentType: string;
-    attachmentSubType?: string;
-  }) {
+  async attachUrlToSheet(
+    sheetId: string,
+    body: {
+      name: string;
+      url: string;
+      attachmentType: string;
+      attachmentSubType?: string;
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/attachments`, body);
     return response.data;
   }
 
-  async attachUrlToRow(sheetId: string, rowId: string, body: {
-    name: string;
-    url: string;
-    attachmentType: string;
-    attachmentSubType?: string;
-  }) {
+  async attachUrlToRow(
+    sheetId: string,
+    rowId: string,
+    body: {
+      name: string;
+      url: string;
+      attachmentType: string;
+      attachmentSubType?: string;
+    }
+  ) {
     let response = await this.api.post(`/sheets/${sheetId}/rows/${rowId}/attachments`, body);
     return response.data;
   }
 
-  async attachUrlToComment(sheetId: string, commentId: string, body: {
-    name: string;
-    url: string;
-    attachmentType: string;
-    attachmentSubType?: string;
-  }) {
-    let response = await this.api.post(`/sheets/${sheetId}/comments/${commentId}/attachments`, body);
+  async attachUrlToComment(
+    sheetId: string,
+    commentId: string,
+    body: {
+      name: string;
+      url: string;
+      attachmentType: string;
+      attachmentSubType?: string;
+    }
+  ) {
+    let response = await this.api.post(
+      `/sheets/${sheetId}/comments/${commentId}/attachments`,
+      body
+    );
     return response.data;
   }
 }

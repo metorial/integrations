@@ -2,15 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let axiosInstance = createAxios({
-  baseURL: 'https://api.vercel.com',
+  baseURL: 'https://api.vercel.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Vercel OAuth',
@@ -20,26 +22,26 @@ export let auth = SlateAuth.create()
       {
         title: 'OpenID',
         description: 'Required for user identification via ID Token',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Email',
-        description: 'Access to the user\'s email address',
-        scope: 'email',
+        description: "Access to the user's email address",
+        scope: 'email'
       },
       {
         title: 'Profile',
-        description: 'Access to the user\'s basic profile information',
-        scope: 'profile',
+        description: "Access to the user's basic profile information",
+        scope: 'profile'
       },
       {
         title: 'Offline Access',
         description: 'Issue a refresh token for long-lived access',
-        scope: 'offline_access',
-      },
+        scope: 'offline_access'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -47,28 +49,28 @@ export let auth = SlateAuth.create()
         response_type: 'code',
         scope: ctx.scopes.join(' '),
         code_challenge: ctx.state,
-        code_challenge_method: 'S256',
+        code_challenge_method: 'S256'
       });
 
       return {
-        url: `https://vercel.com/oauth/authorize?${params.toString()}`,
+        url: `https://vercel.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let params = new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         code: ctx.code,
         redirect_uri: ctx.redirectUri,
-        code_verifier: ctx.state,
+        code_verifier: ctx.state
       });
 
       let response = await axiosInstance.post('/login/oauth/token', params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data;
@@ -80,12 +82,12 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -94,13 +96,13 @@ export let auth = SlateAuth.create()
         grant_type: 'refresh_token',
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken,
+        refresh_token: ctx.output.refreshToken
       });
 
       let response = await axiosInstance.post('/login/oauth/token', params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data;
@@ -112,16 +114,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await axiosInstance.get('/v2/user', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -134,10 +140,10 @@ export let auth = SlateAuth.create()
           imageUrl: user.avatar
             ? `https://api.vercel.com/www/avatar/${user.avatar}`
             : undefined,
-          username: user.username,
-        },
+          username: user.username
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -145,22 +151,25 @@ export let auth = SlateAuth.create()
     key: 'access_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Vercel Access Token (Bearer token)'),
+      token: z.string().describe('Vercel Access Token (Bearer token)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { token: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { token: string };
+    }) => {
       let response = await axiosInstance.get('/v2/user', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data.user;
@@ -173,8 +182,8 @@ export let auth = SlateAuth.create()
           imageUrl: user.avatar
             ? `https://api.vercel.com/www/avatar/${user.avatar}`
             : undefined,
-          username: user.username,
-        },
+          username: user.username
+        }
       };
-    },
+    }
   });

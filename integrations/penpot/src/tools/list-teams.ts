@@ -10,25 +10,24 @@ let teamSchema = z.object({
   createdAt: z.string().optional().describe('When the team was created'),
   membersCount: z.number().optional().describe('Number of team members'),
   projectsCount: z.number().optional().describe('Number of projects in the team'),
-  filesCount: z.number().optional().describe('Number of files in the team'),
+  filesCount: z.number().optional().describe('Number of files in the team')
 });
 
-export let listTeamsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Teams',
-    key: 'list_teams',
-    description: `List all teams the current user belongs to, including owned teams and teams they've been invited to. Includes team metadata and member counts.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTeamsTool = SlateTool.create(spec, {
+  name: 'List Teams',
+  key: 'list_teams',
+  description: `List all teams the current user belongs to, including owned teams and teams they've been invited to. Includes team metadata and member counts.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    teams: z.array(teamSchema).describe('List of teams'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      teams: z.array(teamSchema).describe('List of teams')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
     let teams = await client.getTeams();
 
@@ -39,11 +38,12 @@ export let listTeamsTool = SlateTool.create(
       createdAt: t['created-at'] ?? t.createdAt,
       membersCount: t['members-count'] ?? t.membersCount,
       projectsCount: t['projects-count'] ?? t.projectsCount,
-      filesCount: t['files-count'] ?? t.filesCount,
+      filesCount: t['files-count'] ?? t.filesCount
     }));
 
     return {
       output: { teams: mappedTeams },
-      message: `Found **${mappedTeams.length}** team(s).`,
+      message: `Found **${mappedTeams.length}** team(s).`
     };
-  }).build();
+  })
+  .build();

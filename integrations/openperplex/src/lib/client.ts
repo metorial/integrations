@@ -9,7 +9,7 @@ import type {
   QueryFromUrlResponse,
   WebsiteTextResponse,
   WebsiteMarkdownResponse,
-  WebsiteScreenshotResponse,
+  WebsiteScreenshotResponse
 } from './types';
 
 export class Client {
@@ -19,8 +19,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.openperplex.com',
       headers: {
-        'X-API-Key': config.token,
-      },
+        'X-API-Key': config.token
+      }
     });
   }
 
@@ -37,8 +37,8 @@ export class Client {
         return_citations: params.returnCitations ?? false,
         return_sources: params.returnSources ?? false,
         return_images: params.returnImages ?? false,
-        recency_filter: params.recencyFilter ?? 'anytime',
-      },
+        recency_filter: params.recencyFilter ?? 'anytime'
+      }
     });
 
     let data = response.data;
@@ -46,7 +46,7 @@ export class Client {
       llmResponse: data.llm_response ?? data.response ?? '',
       sources: data.sources,
       images: data.images,
-      responseTime: data.response_time,
+      responseTime: data.response_time
     };
   }
 
@@ -62,7 +62,7 @@ export class Client {
       top_p: params.topP ?? 0.9,
       return_sources: params.returnSources ?? false,
       return_images: params.returnImages ?? false,
-      recency_filter: params.recencyFilter ?? 'anytime',
+      recency_filter: params.recencyFilter ?? 'anytime'
     });
 
     let data = response.data;
@@ -70,7 +70,7 @@ export class Client {
       llmResponse: data.llm_response ?? data.response ?? '',
       sources: data.sources,
       images: data.images,
-      responseTime: data.response_time,
+      responseTime: data.response_time
     };
   }
 
@@ -81,50 +81,50 @@ export class Client {
         query: params.query,
         model: params.model ?? 'gpt-4o-mini',
         response_language: params.responseLanguage ?? 'auto',
-        answer_type: params.answerType ?? 'text',
-      },
+        answer_type: params.answerType ?? 'text'
+      }
     });
 
     let data = response.data;
     return {
       llmResponse: data.llm_response ?? data.response ?? '',
-      responseTime: data.response_time,
+      responseTime: data.response_time
     };
   }
 
   async getWebsiteText(url: string): Promise<WebsiteTextResponse> {
     let response = await this.axios.get('/get_website_text', {
-      params: { url },
+      params: { url }
     });
 
     let data = response.data;
     return {
       websiteUrl: url,
-      text: typeof data === 'string' ? data : (data.text ?? data.content ?? ''),
+      text: typeof data === 'string' ? data : (data.text ?? data.content ?? '')
     };
   }
 
   async getWebsiteMarkdown(url: string): Promise<WebsiteMarkdownResponse> {
     let response = await this.axios.get('/get_website_markdown', {
-      params: { url },
+      params: { url }
     });
 
     let data = response.data;
     return {
       websiteUrl: url,
-      markdown: typeof data === 'string' ? data : (data.markdown ?? data.content ?? ''),
+      markdown: typeof data === 'string' ? data : (data.markdown ?? data.content ?? '')
     };
   }
 
   async getWebsiteScreenshot(url: string): Promise<WebsiteScreenshotResponse> {
     let response = await this.axios.get('/get_website_screenshot', {
-      params: { url },
+      params: { url }
     });
 
     let data = response.data;
     return {
       websiteUrl: url,
-      screenshotUrl: typeof data === 'string' ? data : (data.screenshot_url ?? data.url ?? ''),
+      screenshotUrl: typeof data === 'string' ? data : (data.screenshot_url ?? data.url ?? '')
     };
   }
 }

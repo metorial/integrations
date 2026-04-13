@@ -18,58 +18,69 @@ let WORKSPACE_WEBHOOK_EVENTS = [
   'goalDeleted',
   'keyResultCreated',
   'keyResultUpdated',
-  'keyResultDeleted',
+  'keyResultDeleted'
 ];
 
-export let workspaceEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Workspace Events',
-    key: 'workspace_events',
-    description: 'Triggered when workspace structure changes: spaces, folders, lists, goals, or key results are created, updated, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The ClickUp webhook event type'),
-    webhookId: z.string().describe('The webhook ID that triggered this event'),
-    resourceId: z.string().describe('The ID of the affected resource'),
-    resourceType: z.string().describe('The type of resource (space, folder, list, goal, key_result)'),
-    historyItems: z.array(z.any()).optional().describe('History items describing what changed'),
-    rawPayload: z.any().optional().describe('The full raw webhook payload'),
-  }))
-  .output(z.object({
-    resourceId: z.string(),
-    resourceType: z.string(),
-    resourceName: z.string().optional(),
-    parentId: z.string().optional(),
-    changes: z.array(z.object({
-      field: z.string(),
-      previousValue: z.any().optional(),
-      newValue: z.any().optional(),
-    })).optional(),
-  }))
+export let workspaceEvents = SlateTrigger.create(spec, {
+  name: 'Workspace Events',
+  key: 'workspace_events',
+  description:
+    'Triggered when workspace structure changes: spaces, folders, lists, goals, or key results are created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The ClickUp webhook event type'),
+      webhookId: z.string().describe('The webhook ID that triggered this event'),
+      resourceId: z.string().describe('The ID of the affected resource'),
+      resourceType: z
+        .string()
+        .describe('The type of resource (space, folder, list, goal, key_result)'),
+      historyItems: z
+        .array(z.any())
+        .optional()
+        .describe('History items describing what changed'),
+      rawPayload: z.any().optional().describe('The full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      resourceId: z.string(),
+      resourceType: z.string(),
+      resourceName: z.string().optional(),
+      parentId: z.string().optional(),
+      changes: z
+        .array(
+          z.object({
+            field: z.string(),
+            previousValue: z.any().optional(),
+            newValue: z.any().optional()
+          })
+        )
+        .optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ClickUpClient(ctx.auth.token);
       let result = await client.createWebhook(ctx.config.workspaceId, {
         endpoint: ctx.input.webhookBaseUrl,
-        events: WORKSPACE_WEBHOOK_EVENTS,
+        events: WORKSPACE_WEBHOOK_EVENTS
       });
 
       return {
         registrationDetails: {
-          webhookId: result.id ?? result.webhook?.id,
-        },
+          webhookId: result.id ?? result.webhook?.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ClickUpClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       if (!body.event) {
         return { inputs: [] };
@@ -99,25 +110,27 @@ export let workspaceEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          webhookId: body.webhook_id ?? '',
-          resourceId,
-          resourceType,
-          historyItems: body.history_items ?? [],
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            webhookId: body.webhook_id ?? '',
+            resourceId,
+            resourceType,
+            historyItems: body.history_items ?? [],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.eventType;
       let historyItems = ctx.input.historyItems ?? [];
 
       let changes = historyItems.map((item: any) => ({
         field: item.field,
         previousValue: item.before,
-        newValue: item.after,
+        newValue: item.after
       }));
 
       // Map event names to our type format
@@ -136,7 +149,7 @@ export let workspaceEvents = SlateTrigger.create(
         goalDeleted: 'goal.deleted',
         keyResultCreated: 'key_result.created',
         keyResultUpdated: 'key_result.updated',
-        keyResultDeleted: 'key_result.deleted',
+        keyResultDeleted: 'key_result.deleted'
       };
 
       let type = typeMap[eventType] ?? `${ctx.input.resourceType}.${eventType}`;
@@ -156,9 +169,9 @@ export let workspaceEvents = SlateTrigger.create(
           resourceType: ctx.input.resourceType,
           resourceName,
           parentId: undefined,
-          changes,
-        },
+          changes
+        }
       };
-    },
+    }
   })
   .build();

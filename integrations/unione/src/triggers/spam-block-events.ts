@@ -3,41 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let spamBlockTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Spam Block Event',
-    key: 'spam_block_event',
-    description: 'Triggers when sending is blocked or unblocked by a recipient domain SMTP server. Includes domain name, block type, and whether it is a block or unblock event.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('Event type name'),
-    eventId: z.string().describe('Unique event identifier'),
-    domain: z.string().describe('Blocked domain name'),
-    blockType: z.string().optional().describe('Block type (single or multiple SMTP)'),
-    blockedSmtpCount: z.number().optional().describe('Number of blocked SMTPs'),
-    isBlock: z.boolean().describe('Whether this is a block (true) or unblock (false) event'),
-    eventTime: z.string().optional().describe('Event timestamp'),
-    userId: z.number().optional().describe('UniOne user ID'),
-    projectId: z.string().optional().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-  }))
-  .output(z.object({
-    domain: z.string().describe('Affected domain name'),
-    blockType: z.string().optional().describe('Type of block (single or multiple SMTP)'),
-    blockedSmtpCount: z.number().optional().describe('Number of blocked SMTP connections'),
-    isBlock: z.boolean().describe('True if sending is blocked, false if unblocked'),
-    eventTime: z.string().optional().describe('Event timestamp'),
-    userId: z.number().optional().describe('UniOne user ID'),
-    projectId: z.string().optional().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-  }))
+export let spamBlockTrigger = SlateTrigger.create(spec, {
+  name: 'Spam Block Event',
+  key: 'spam_block_event',
+  description:
+    'Triggers when sending is blocked or unblocked by a recipient domain SMTP server. Includes domain name, block type, and whether it is a block or unblock event.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('Event type name'),
+      eventId: z.string().describe('Unique event identifier'),
+      domain: z.string().describe('Blocked domain name'),
+      blockType: z.string().optional().describe('Block type (single or multiple SMTP)'),
+      blockedSmtpCount: z.number().optional().describe('Number of blocked SMTPs'),
+      isBlock: z.boolean().describe('Whether this is a block (true) or unblock (false) event'),
+      eventTime: z.string().optional().describe('Event timestamp'),
+      userId: z.number().optional().describe('UniOne user ID'),
+      projectId: z.string().optional().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name')
+    })
+  )
+  .output(
+    z.object({
+      domain: z.string().describe('Affected domain name'),
+      blockType: z.string().optional().describe('Type of block (single or multiple SMTP)'),
+      blockedSmtpCount: z.number().optional().describe('Number of blocked SMTP connections'),
+      isBlock: z.boolean().describe('True if sending is blocked, false if unblocked'),
+      eventTime: z.string().optional().describe('Event timestamp'),
+      userId: z.number().optional().describe('UniOne user ID'),
+      projectId: z.string().optional().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        datacenter: ctx.config.datacenter,
+        datacenter: ctx.config.datacenter
       });
 
       let result = await client.setWebhook({
@@ -48,30 +50,30 @@ export let spamBlockTrigger = SlateTrigger.create(
         single_event: 0,
         max_parallel: 10,
         events: {
-          spam_block: ['*'],
-        },
+          spam_block: ['*']
+        }
       });
 
       return {
         registrationDetails: {
           webhookUrl: ctx.input.webhookBaseUrl,
-          webhookId: result.object?.id,
-        },
+          webhookId: result.object?.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        datacenter: ctx.config.datacenter,
+        datacenter: ctx.config.datacenter
       });
 
       let webhookUrl = ctx.input.registrationDetails?.webhookUrl ?? ctx.input.webhookBaseUrl;
       await client.deleteWebhook(webhookUrl);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let inputs: Array<{
         eventName: string;
@@ -105,7 +107,7 @@ export let spamBlockTrigger = SlateTrigger.create(
             eventTime: eventData.block_time ?? eventData.event_time,
             userId: userGroup.user_id,
             projectId: userGroup.project_id,
-            projectName: userGroup.project_name,
+            projectName: userGroup.project_name
           });
         }
       }
@@ -113,7 +115,7 @@ export let spamBlockTrigger = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isBlock ? 'spam_block.blocked' : 'spam_block.unblocked';
 
       return {
@@ -127,8 +129,9 @@ export let spamBlockTrigger = SlateTrigger.create(
           eventTime: ctx.input.eventTime,
           userId: ctx.input.userId,
           projectId: ctx.input.projectId,
-          projectName: ctx.input.projectName,
-        },
+          projectName: ctx.input.projectName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

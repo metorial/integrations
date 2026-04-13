@@ -36,8 +36,8 @@ export class Client {
       baseURL: `${baseUrl}/v1/api`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -60,24 +60,34 @@ export class Client {
     if (params?.status) queryParams['status'] = params.status;
     if (params?.sort) queryParams['sort'] = params.sort;
     if (params?.search) queryParams['search'] = params.search;
-    if (params?.includeEditLink !== undefined) queryParams['includeEditLink'] = String(params.includeEditLink);
-    if (params?.includePreview !== undefined) queryParams['includePreview'] = String(params.includePreview);
+    if (params?.includeEditLink !== undefined)
+      queryParams['includeEditLink'] = String(params.includeEditLink);
+    if (params?.includePreview !== undefined)
+      queryParams['includePreview'] = String(params.includePreview);
 
-    let response = await this.axios.get(`/forms/${formId}/submissions`, { params: queryParams });
+    let response = await this.axios.get(`/forms/${formId}/submissions`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async getSubmission(formId: string, submissionId: string, includeEditLink?: boolean): Promise<any> {
+  async getSubmission(
+    formId: string,
+    submissionId: string,
+    includeEditLink?: boolean
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (includeEditLink !== undefined) params['includeEditLink'] = String(includeEditLink);
 
-    let response = await this.axios.get(`/forms/${formId}/submissions/${submissionId}`, { params });
+    let response = await this.axios.get(`/forms/${formId}/submissions/${submissionId}`, {
+      params
+    });
     return response.data;
   }
 
   async createSubmissions(formId: string, submissions: CreateSubmissionInput[]): Promise<any> {
     let response = await this.axios.post(`/forms/${formId}/submissions`, {
-      submissions,
+      submissions
     });
     return response.data;
   }

@@ -3,15 +3,11 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let TASK_EVENTS = [
-  'task_created',
-  'task_done',
-  'task_ignored',
-] as const;
+let TASK_EVENTS = ['task_created', 'task_done', 'task_ignored'] as const;
 
 let webhookInputSchema = z.object({
   eventType: z.string().describe('Webhook event type'),
-  eventPayload: z.any().describe('Raw webhook event payload'),
+  eventPayload: z.any().describe('Raw webhook event payload')
 });
 
 let taskEventOutputSchema = z.object({
@@ -23,24 +19,22 @@ let taskEventOutputSchema = z.object({
   taskName: z.string().optional().describe('Task name'),
   taskMessage: z.string().optional().describe('Task description'),
   dueDate: z.string().optional().describe('Task due date'),
-  timestamp: z.string().optional().describe('Event timestamp'),
+  timestamp: z.string().optional().describe('Event timestamp')
 });
 
-export let taskEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Events',
-    key: 'task_events',
-    description: 'Triggered when a manual task is created, marked as done, or ignored for a prospect within a campaign.',
-  }
-)
+export let taskEvents = SlateTrigger.create(spec, {
+  name: 'Task Events',
+  key: 'task_events',
+  description:
+    'Triggered when a manual task is created, marked as done, or ignored for a prospect within a campaign.'
+})
   .input(webhookInputSchema)
   .output(taskEventOutputSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let registeredEvents: string[] = [];
@@ -57,14 +51,14 @@ export let taskEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl },
+        registrationDetails: { events: registeredEvents, targetUrl: ctx.input.webhookBaseUrl }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        companyId: ctx.config.companyId,
+        companyId: ctx.config.companyId
       });
 
       let details = ctx.input.registrationDetails as { events: string[]; targetUrl: string };
@@ -77,19 +71,19 @@ export let taskEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
       let events = Array.isArray(data) ? data : [data];
 
       return {
         inputs: events.map((event: any) => ({
           eventType: event.method ?? event.event ?? 'unknown',
-          eventPayload: event,
-        })),
+          eventPayload: event
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.eventPayload;
       let prospect = payload.prospect ?? {};
       let campaign = payload.campaign ?? {};
@@ -109,9 +103,9 @@ export let taskEvents = SlateTrigger.create(
           taskName: task.name,
           taskMessage: task.message,
           dueDate: task.due_date,
-          timestamp: payload.timestamp,
-        },
+          timestamp: payload.timestamp
+        }
       };
-    },
+    }
   })
   .build();

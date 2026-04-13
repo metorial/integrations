@@ -3,40 +3,42 @@ import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let siteChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Site Changed',
-    key: 'site_changed',
-    description: 'Triggered whenever any content changes in site data or settings. Useful for triggering static site rebuilds or cache invalidation.',
-  }
-)
-  .input(z.object({
-    timestamp: z.string().describe('Timestamp of the change event'),
-  }))
-  .output(z.object({
-    timestamp: z.string().describe('Timestamp when the site change was detected'),
-  }))
+export let siteChanged = SlateTrigger.create(spec, {
+  name: 'Site Changed',
+  key: 'site_changed',
+  description:
+    'Triggered whenever any content changes in site data or settings. Useful for triggering static site rebuilds or cache invalidation.'
+})
+  .input(
+    z.object({
+      timestamp: z.string().describe('Timestamp of the change event')
+    })
+  )
+  .output(
+    z.object({
+      timestamp: z.string().describe('Timestamp when the site change was detected')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let result = await client.createWebhook({
         event: 'site.changed',
         targetUrl: ctx.input.webhookBaseUrl,
-        name: 'Slates: site.changed',
+        name: 'Slates: site.changed'
       });
 
       return { registrationDetails: { webhookId: result.webhooks[0].id } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let details = ctx.input.registrationDetails as { webhookId: string };
@@ -47,22 +49,25 @@ export let siteChanged = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let timestamp = new Date().toISOString();
       return {
-        inputs: [{
-          timestamp,
-        }],
+        inputs: [
+          {
+            timestamp
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'site.changed',
         id: `site.changed-${ctx.input.timestamp}`,
         output: {
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

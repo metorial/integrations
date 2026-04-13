@@ -3,38 +3,40 @@ import { AhaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let ideaChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Idea Changes',
-    key: 'idea_changes',
-    description: 'Triggers when ideas are created or updated in Aha!. Polls for recently modified ideas across all products.',
-  }
-)
-  .input(z.object({
-    ideaId: z.string().describe('Idea ID'),
-    referenceNum: z.string().describe('Idea reference number'),
-    name: z.string().describe('Idea name'),
-    status: z.string().optional().describe('Workflow status name'),
-    numEndorsements: z.number().optional().describe('Number of votes/endorsements'),
-    url: z.string().optional().describe('Idea URL'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
-  .output(z.object({
-    ideaId: z.string().describe('Idea ID'),
-    referenceNum: z.string().describe('Idea reference number'),
-    name: z.string().describe('Idea name'),
-    status: z.string().optional().describe('Workflow status name'),
-    numEndorsements: z.number().optional().describe('Number of votes/endorsements'),
-    url: z.string().optional().describe('Idea URL'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let ideaChanges = SlateTrigger.create(spec, {
+  name: 'Idea Changes',
+  key: 'idea_changes',
+  description:
+    'Triggers when ideas are created or updated in Aha!. Polls for recently modified ideas across all products.'
+})
+  .input(
+    z.object({
+      ideaId: z.string().describe('Idea ID'),
+      referenceNum: z.string().describe('Idea reference number'),
+      name: z.string().describe('Idea name'),
+      status: z.string().optional().describe('Workflow status name'),
+      numEndorsements: z.number().optional().describe('Number of votes/endorsements'),
+      url: z.string().optional().describe('Idea URL'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      ideaId: z.string().describe('Idea ID'),
+      referenceNum: z.string().describe('Idea reference number'),
+      name: z.string().describe('Idea name'),
+      status: z.string().optional().describe('Workflow status name'),
+      numEndorsements: z.number().optional().describe('Number of votes/endorsements'),
+      url: z.string().optional().describe('Idea URL'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new AhaClient(ctx.config.subdomain, ctx.auth.token);
       let state = ctx.state as { lastPollTime?: string } | null;
 
@@ -44,7 +46,7 @@ export let ideaChanges = SlateTrigger.create(
       try {
         let result = await client.listIdeas({
           updatedSince,
-          perPage: 100,
+          perPage: 100
         });
 
         let inputs = result.ideas.map(i => ({
@@ -54,26 +56,26 @@ export let ideaChanges = SlateTrigger.create(
           status: i.workflow_status?.name,
           numEndorsements: i.num_endorsements,
           url: i.url,
-          updatedAt: i.updated_at,
+          updatedAt: i.updated_at
         }));
 
         return {
           inputs,
           updatedState: {
-            lastPollTime: now,
-          },
+            lastPollTime: now
+          }
         };
       } catch {
         return {
           inputs: [],
           updatedState: {
-            lastPollTime: updatedSince || now,
-          },
+            lastPollTime: updatedSince || now
+          }
         };
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'idea.updated',
         id: `idea-${ctx.input.ideaId}-${ctx.input.updatedAt || Date.now()}`,
@@ -84,9 +86,9 @@ export let ideaChanges = SlateTrigger.create(
           status: ctx.input.status,
           numEndorsements: ctx.input.numEndorsements,
           url: ctx.input.url,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

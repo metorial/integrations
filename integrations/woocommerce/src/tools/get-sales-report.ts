@@ -9,35 +9,50 @@ export let getSalesReport = SlateTool.create(spec, {
   description: `Retrieve sales reports and top sellers data. Get total sales, order counts, average order value, and top-selling products for a given period.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    reportType: z.enum(['sales', 'top_sellers']).describe('Type of report to retrieve'),
-    period: z.enum(['week', 'month', 'last_month', 'year']).optional().describe('Predefined time period'),
-    dateMin: z.string().optional().describe('Start date (YYYY-MM-DD) — overrides period'),
-    dateMax: z.string().optional().describe('End date (YYYY-MM-DD) — overrides period'),
-  }))
-  .output(z.object({
-    salesReport: z.object({
-      totalSales: z.string(),
-      netSales: z.string(),
-      averageSales: z.string(),
-      totalOrders: z.number(),
-      totalItems: z.number(),
-      totalTax: z.string(),
-      totalShipping: z.string(),
-      totalRefunds: z.number(),
-      totalDiscount: z.string(),
-      totalCustomers: z.number(),
-    }).optional().describe('Sales summary (for sales report type)'),
-    topSellers: z.array(z.object({
-      productId: z.number(),
-      name: z.string(),
-      quantity: z.number(),
-    })).optional().describe('Top selling products (for top_sellers report type)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      reportType: z.enum(['sales', 'top_sellers']).describe('Type of report to retrieve'),
+      period: z
+        .enum(['week', 'month', 'last_month', 'year'])
+        .optional()
+        .describe('Predefined time period'),
+      dateMin: z.string().optional().describe('Start date (YYYY-MM-DD) — overrides period'),
+      dateMax: z.string().optional().describe('End date (YYYY-MM-DD) — overrides period')
+    })
+  )
+  .output(
+    z.object({
+      salesReport: z
+        .object({
+          totalSales: z.string(),
+          netSales: z.string(),
+          averageSales: z.string(),
+          totalOrders: z.number(),
+          totalItems: z.number(),
+          totalTax: z.string(),
+          totalShipping: z.string(),
+          totalRefunds: z.number(),
+          totalDiscount: z.string(),
+          totalCustomers: z.number()
+        })
+        .optional()
+        .describe('Sales summary (for sales report type)'),
+      topSellers: z
+        .array(
+          z.object({
+            productId: z.number(),
+            name: z.string(),
+            quantity: z.number()
+          })
+        )
+        .optional()
+        .describe('Top selling products (for top_sellers report type)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let params: Record<string, any> = {};
@@ -61,10 +76,10 @@ export let getSalesReport = SlateTool.create(spec, {
             totalShipping: r?.total_shipping || '0',
             totalRefunds: r?.total_refunds || 0,
             totalDiscount: r?.total_discount || '0',
-            totalCustomers: r?.total_customers || 0,
-          },
+            totalCustomers: r?.total_customers || 0
+          }
         },
-        message: `Sales report: **${r?.total_orders || 0}** orders, total sales **${r?.total_sales || '0'}**.`,
+        message: `Sales report: **${r?.total_orders || 0}** orders, total sales **${r?.total_sales || '0'}**.`
       };
     }
 
@@ -73,12 +88,12 @@ export let getSalesReport = SlateTool.create(spec, {
     let mapped = (Array.isArray(topSellers) ? topSellers : []).map((p: any) => ({
       productId: p.product_id,
       name: p.title || '',
-      quantity: p.quantity || 0,
+      quantity: p.quantity || 0
     }));
 
     return {
       output: { topSellers: mapped },
-      message: `Retrieved **${mapped.length}** top-selling products.`,
+      message: `Retrieved **${mapped.length}** top-selling products.`
     };
   })
   .build();

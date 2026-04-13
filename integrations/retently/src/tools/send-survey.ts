@@ -9,11 +9,18 @@ let surveyRecipientSchema = z.object({
   lastName: z.string().optional().describe('Recipient last name'),
   company: z.string().optional().describe('Recipient company name'),
   tags: z.array(z.string()).optional().describe('Tags to assign to the recipient'),
-  properties: z.array(z.object({
-    label: z.string().describe('Property label'),
-    type: z.enum(['string', 'date', 'integer', 'collection', 'boolean']).describe('Property type'),
-    value: z.union([z.string(), z.number(), z.boolean()]).describe('Property value')
-  })).optional().describe('Custom properties for the recipient')
+  properties: z
+    .array(
+      z.object({
+        label: z.string().describe('Property label'),
+        type: z
+          .enum(['string', 'date', 'integer', 'collection', 'boolean'])
+          .describe('Property type'),
+        value: z.union([z.string(), z.number(), z.boolean()]).describe('Property value')
+      })
+    )
+    .optional()
+    .describe('Custom properties for the recipient')
 });
 
 let normalizeProperties = (
@@ -25,42 +32,46 @@ let normalizeProperties = (
 ) => {
   if (!properties) return undefined;
   let normalized = properties
-    .filter((p) => p.value !== undefined)
-    .map((p) => ({
+    .filter(p => p.value !== undefined)
+    .map(p => ({
       label: p.label,
       type: p.type,
-      value: p.value as string | number | boolean,
+      value: p.value as string | number | boolean
     }));
   return normalized.length > 0 ? normalized : undefined;
 };
 
-export let sendSurvey = SlateTool.create(
-  spec,
-  {
-    name: 'Send Survey',
-    key: 'send_survey',
-    description: `Send a transactional survey (NPS, CSAT, CES, or 5-Star) to one or more customers via a specified campaign.
+export let sendSurvey = SlateTool.create(spec, {
+  name: 'Send Survey',
+  key: 'send_survey',
+  description: `Send a transactional survey (NPS, CSAT, CES, or 5-Star) to one or more customers via a specified campaign.
 The campaign must be a transactional campaign and must be active. Optionally delay sending by a specified number of days.
 Recipients that don't exist will be automatically created as customers.`,
-    constraints: [
-      'Maximum 100 recipients per request',
-      'Campaign must be transactional and active'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  constraints: [
+    'Maximum 100 recipients per request',
+    'Campaign must be transactional and active'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    campaignId: z.string().describe('ID of the transactional campaign to use for sending'),
-    delay: z.number().optional().describe('Number of days to delay sending the survey'),
-    recipients: z.array(surveyRecipientSchema).min(1).describe('List of recipients to survey')
-  }))
-  .output(z.object({
-    results: z.record(z.string(), z.any()).describe('Map of email addresses to send status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('ID of the transactional campaign to use for sending'),
+      delay: z.number().optional().describe('Number of days to delay sending the survey'),
+      recipients: z
+        .array(surveyRecipientSchema)
+        .min(1)
+        .describe('List of recipients to survey')
+    })
+  )
+  .output(
+    z.object({
+      results: z.record(z.string(), z.any()).describe('Map of email addresses to send status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let subscribers = ctx.input.recipients.map(r => ({
@@ -69,7 +80,7 @@ Recipients that don't exist will be automatically created as customers.`,
       last_name: r.lastName,
       company: r.company,
       tags: r.tags,
-      properties: normalizeProperties(r.properties),
+      properties: normalizeProperties(r.properties)
     }));
 
     let result = await client.sendSurvey(ctx.input.campaignId, subscribers, ctx.input.delay);

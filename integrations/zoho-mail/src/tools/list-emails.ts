@@ -19,41 +19,57 @@ let emailSchema = z.object({
   threadId: z.string().optional().describe('Thread ID'),
   threadCount: z.number().optional().describe('Number of messages in the thread'),
   priority: z.string().optional().describe('Email priority'),
-  size: z.number().optional().describe('Email size in bytes'),
+  size: z.number().optional().describe('Email size in bytes')
 });
 
-export let listEmails = SlateTool.create(
-  spec,
-  {
-    name: 'List Emails',
-    key: 'list_emails',
-    description: `Retrieve a list of emails from a Zoho Mail folder. Returns email metadata including subject, sender, recipient, timestamps, and attachment info. Supports pagination and filtering by folder and flag status.`,
-    constraints: [
-      'Maximum 200 emails per request (limit parameter).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listEmails = SlateTool.create(spec, {
+  name: 'List Emails',
+  key: 'list_emails',
+  description: `Retrieve a list of emails from a Zoho Mail folder. Returns email metadata including subject, sender, recipient, timestamps, and attachment info. Supports pagination and filtering by folder and flag status.`,
+  constraints: ['Maximum 200 emails per request (limit parameter).'],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    accountId: z.string().describe('Zoho Mail account ID'),
-    folderId: z.string().optional().describe('Folder ID to list emails from. If omitted, returns emails from all folders.'),
-    start: z.number().optional().default(1).describe('Starting position for pagination (1-based)'),
-    limit: z.number().optional().default(10).describe('Number of emails to retrieve (1-200)'),
-    includeTo: z.boolean().optional().default(true).describe('Include recipient details in the response'),
-    threadedMails: z.boolean().optional().describe('Group emails by thread'),
-    flagId: z.number().optional().describe('Filter by flag ID (0-9)'),
-  }))
-  .output(z.object({
-    emails: z.array(emailSchema).describe('List of email messages'),
-    count: z.number().describe('Number of emails returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z.string().describe('Zoho Mail account ID'),
+      folderId: z
+        .string()
+        .optional()
+        .describe(
+          'Folder ID to list emails from. If omitted, returns emails from all folders.'
+        ),
+      start: z
+        .number()
+        .optional()
+        .default(1)
+        .describe('Starting position for pagination (1-based)'),
+      limit: z
+        .number()
+        .optional()
+        .default(10)
+        .describe('Number of emails to retrieve (1-200)'),
+      includeTo: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Include recipient details in the response'),
+      threadedMails: z.boolean().optional().describe('Group emails by thread'),
+      flagId: z.number().optional().describe('Filter by flag ID (0-9)')
+    })
+  )
+  .output(
+    z.object({
+      emails: z.array(emailSchema).describe('List of email messages'),
+      count: z.number().describe('Number of emails returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      domain: ctx.config.dataCenterDomain,
+      domain: ctx.config.dataCenterDomain
     });
 
     let messages = await client.listMessages(ctx.input.accountId, {
@@ -62,7 +78,7 @@ export let listEmails = SlateTool.create(
       limit: ctx.input.limit,
       includeto: ctx.input.includeTo,
       threadedMails: ctx.input.threadedMails,
-      flagid: ctx.input.flagId,
+      flagid: ctx.input.flagId
     });
 
     let emails = messages.map((m: any) => ({
@@ -81,15 +97,15 @@ export let listEmails = SlateTool.create(
       threadId: m.threadId ? String(m.threadId) : undefined,
       threadCount: m.threadCount ? Number(m.threadCount) : undefined,
       priority: m.priority,
-      size: m.size ? Number(m.size) : undefined,
+      size: m.size ? Number(m.size) : undefined
     }));
 
     return {
       output: {
         emails,
-        count: emails.length,
+        count: emails.length
       },
-      message: `Retrieved **${emails.length}** email(s)${ctx.input.folderId ? ` from folder ${ctx.input.folderId}` : ''}.`,
+      message: `Retrieved **${emails.length}** email(s)${ctx.input.folderId ? ` from folder ${ctx.input.folderId}` : ''}.`
     };
   })
   .build();

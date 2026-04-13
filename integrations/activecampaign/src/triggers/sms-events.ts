@@ -5,28 +5,30 @@ import { z } from 'zod';
 
 let smsEventTypes = ['sms_sent', 'sms_reply', 'sms_unsub'] as const;
 
-export let smsEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'SMS Events',
-    key: 'sms_events',
-    description: 'Triggers when an SMS message is sent, a contact replies to an SMS, or a contact unsubscribes from SMS.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of SMS event'),
-    payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('ID of the contact'),
-    contactEmail: z.string().optional().describe('Email of the contact'),
-    contactPhone: z.string().optional().describe('Phone number of the contact'),
-    messageContent: z.string().optional().describe('Content of the SMS (for reply events)'),
-    initiatedBy: z.string().optional().describe('Who initiated the action'),
-    occurredAt: z.string().optional().describe('When the event occurred')
-  }))
+export let smsEvents = SlateTrigger.create(spec, {
+  name: 'SMS Events',
+  key: 'sms_events',
+  description:
+    'Triggers when an SMS message is sent, a contact replies to an SMS, or a contact unsubscribes from SMS.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of SMS event'),
+      payload: z.record(z.string(), z.any()).describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('ID of the contact'),
+      contactEmail: z.string().optional().describe('Email of the contact'),
+      contactPhone: z.string().optional().describe('Phone number of the contact'),
+      messageContent: z.string().optional().describe('Content of the SMS (for reply events)'),
+      initiatedBy: z.string().optional().describe('Who initiated the action'),
+      occurredAt: z.string().optional().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -46,7 +48,7 @@ export let smsEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiUrl: ctx.config.apiUrl
@@ -55,7 +57,7 @@ export let smsEvents = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       let contentType = ctx.request.headers.get('content-type') || '';
 
@@ -70,14 +72,16 @@ export let smsEvents = SlateTrigger.create(
       let eventType = data.type || data['type'] || 'unknown';
 
       return {
-        inputs: [{
-          eventType,
-          payload: data
-        }]
+        inputs: [
+          {
+            eventType,
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload as Record<string, any>;
 
       let contactId = String(p['contact[id]'] || p['contactId'] || '');
@@ -102,4 +106,5 @@ export let smsEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

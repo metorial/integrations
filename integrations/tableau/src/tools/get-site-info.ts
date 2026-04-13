@@ -10,19 +10,21 @@ export let getSiteInfo = SlateTool.create(spec, {
   tags: { readOnly: true }
 })
   .input(z.object({}))
-  .output(z.object({
-    siteId: z.string(),
-    name: z.string().optional(),
-    contentUrl: z.string().optional(),
-    adminMode: z.string().optional(),
-    state: z.string().optional(),
-    storageQuota: z.number().optional(),
-    numCreators: z.number().optional(),
-    numExplorers: z.number().optional(),
-    numViewers: z.number().optional(),
-    revisionHistoryEnabled: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      siteId: z.string(),
+      name: z.string().optional(),
+      contentUrl: z.string().optional(),
+      adminMode: z.string().optional(),
+      state: z.string().optional(),
+      storageQuota: z.number().optional(),
+      numCreators: z.number().optional(),
+      numExplorers: z.number().optional(),
+      numViewers: z.number().optional(),
+      revisionHistoryEnabled: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let site = await client.getSiteInfo();
 
@@ -41,4 +43,5 @@ export let getSiteInfo = SlateTool.create(spec, {
       },
       message: `Site **${site.name}** (state: ${site.state || 'active'}).`
     };
-  }).build();
+  })
+  .build();

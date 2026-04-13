@@ -11,7 +11,7 @@ import {
   getSuggestedMessages,
   getSources,
   listChatbots,
-  getAccount,
+  getAccount
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     getSuggestedMessages,
     getSources,
     listChatbots,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

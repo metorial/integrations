@@ -8,7 +8,7 @@ import {
   matchBusiness,
   searchByPhone,
   searchTransactions,
-  aiChat,
+  aiChat
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -23,9 +23,7 @@ export let provider = Slate.create({
     matchBusiness,
     searchByPhone,
     searchTransactions,
-    aiChat,
+    aiChat
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

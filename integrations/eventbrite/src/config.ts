@@ -3,6 +3,11 @@ import { z } from 'zod';
 
 export let config = SlateConfig.create(
   z.object({
-    organizationId: z.string().optional().describe('The Eventbrite organization ID to scope API requests to. Required for most operations.'),
+    organizationId: z
+      .string()
+      .optional()
+      .describe(
+        'The Eventbrite organization ID to scope API requests to. Required for most operations.'
+      )
   })
 );

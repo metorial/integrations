@@ -3,35 +3,37 @@ import { ToneDenClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newLink = SlateTrigger.create(
-  spec,
-  {
-    name: 'New FanLink Created',
-    key: 'new_link',
-    description: 'Triggers when a new FanLink (smart link) is created. Polls the user profile for new links and detects additions since the last check.',
-  }
-)
-  .input(z.object({
-    linkId: z.number().describe('Link ID'),
-    title: z.string().optional().describe('Link title'),
-    targetType: z.string().optional().describe('Link type'),
-    targetUrl: z.string().optional().describe('Destination URL'),
-    shortenedPath: z.string().optional().describe('Short URL path'),
-  }))
-  .output(z.object({
-    linkId: z.number().describe('Link ID'),
-    title: z.string().optional().describe('Link title'),
-    targetType: z.string().optional().describe('Link type (music, podcast, event, etc.)'),
-    targetUrl: z.string().optional().describe('Destination URL'),
-    shortenedPath: z.string().optional().describe('Short URL path'),
-    subdomain: z.string().optional().describe('Link subdomain'),
-  }))
+export let newLink = SlateTrigger.create(spec, {
+  name: 'New FanLink Created',
+  key: 'new_link',
+  description:
+    'Triggers when a new FanLink (smart link) is created. Polls the user profile for new links and detects additions since the last check.'
+})
+  .input(
+    z.object({
+      linkId: z.number().describe('Link ID'),
+      title: z.string().optional().describe('Link title'),
+      targetType: z.string().optional().describe('Link type'),
+      targetUrl: z.string().optional().describe('Destination URL'),
+      shortenedPath: z.string().optional().describe('Short URL path')
+    })
+  )
+  .output(
+    z.object({
+      linkId: z.number().describe('Link ID'),
+      title: z.string().optional().describe('Link title'),
+      targetType: z.string().optional().describe('Link type (music, podcast, event, etc.)'),
+      targetUrl: z.string().optional().describe('Destination URL'),
+      shortenedPath: z.string().optional().describe('Short URL path'),
+      subdomain: z.string().optional().describe('Link subdomain')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ToneDenClient({ token: ctx.auth.token });
 
       let knownIds: number[] = ctx.state?.knownLinkIds || [];
@@ -45,18 +47,18 @@ export let newLink = SlateTrigger.create(
         title: l.title,
         targetType: l.target_type,
         targetUrl: l.target_url,
-        shortenedPath: l.shortened_path,
+        shortenedPath: l.shortened_path
       }));
 
       return {
         inputs,
         updatedState: {
-          knownLinkIds: [...new Set([...knownIds, ...currentIds])],
-        },
+          knownLinkIds: [...new Set([...knownIds, ...currentIds])]
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new ToneDenClient({ token: ctx.auth.token });
 
       let link: any = {};
@@ -75,8 +77,9 @@ export let newLink = SlateTrigger.create(
           targetType: link?.target_type || ctx.input.targetType,
           targetUrl: link?.target_url || ctx.input.targetUrl,
           shortenedPath: link?.shortened_path || ctx.input.shortenedPath,
-          subdomain: link?.subdomain,
-        },
+          subdomain: link?.subdomain
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

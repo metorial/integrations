@@ -15,7 +15,7 @@ import {
   grammarCheck,
   segmentText,
   contextualAnswer,
-  textCompletion,
+  textCompletion
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     grammarCheck,
     segmentText,
     contextualAnswer,
-    textCompletion,
+    textCompletion
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

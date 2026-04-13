@@ -39,45 +39,59 @@ Every request to the API should include the registered 'X-System' and 'X-System-
 ## Features
 
 ### Contact (People) Management
+
 Create, read, update, and delete contacts in the CRM. Follow Up Boss will automatically search for an existing contact and update it to avoid duplicates. Supports managing contact details including name, emails, phones, addresses, tags, stages, and custom fields. Contacts can be assigned to agents or lenders, and collaborators can be added. Supports checking for duplicates, claiming unclaimed leads, and managing file attachments on contacts.
 
 ### Lead & Event Ingestion
+
 Send in a lead or an event related to a lead. You can notify Follow Up Boss when certain events occur on your website or system. For example: A user fills out a registration form on an IDX website, sends an inquiry about a property or submits a Contact Us form. Supported event types include Registration, Property Inquiry, Seller Inquiry, General Inquiry, and Visited Open House. New leads created by this method will only trigger action plans if they are of the specified types. Campaign/source tracking data can be included for marketing reports.
 
 ### People Relationships
+
 Manage relationships between contacts (e.g., spouse, business partner). Create, read, update, and delete relationship records between people in the CRM.
 
 ### Deals & Pipelines
+
 Manage real estate deals (transactions) with associated properties, prices, and commission fields. Create and manage pipelines with customizable stages to track deal progress. Supports file attachments on deals and deal-specific custom fields.
 
 ### Tasks & Appointments
+
 Create and manage tasks assigned to users for contact follow-up. Create and manage appointments with configurable types and outcomes. Appointment types and outcomes can be customized.
 
 ### Communication Tracking
+
 Log and retrieve calls, text messages, and emails associated with contacts. Supports creating call logs, sending text messages, and tracking email interactions.
 
 ### Notes & Collaboration
+
 Add notes to contacts. Supports reactions (emoji responses) on notes and threaded replies for team collaboration on notes.
 
 ### Action Plans & Automations
+
 Retrieve available action plans and enroll/manage people in action plans. Retrieve automations and manage people enrollment in automations. Action plans can be paused or resumed for specific contacts.
 
 ### Email Marketing
+
 Manage email marketing campaigns and track email marketing events (opens, clicks, unsubscribes).
 
 ### Templates
+
 Create and manage email templates and text message templates. Supports merge fields for personalization.
 
 ### Team & User Management
+
 Retrieve users and their roles (Agent, Broker/Admin, Owner). Manage teams, groups (for round-robin lead distribution), and ponds (shared lead pools). View team inboxes.
 
 ### Smart Lists
+
 Retrieve saved smart lists (filtered views of contacts).
 
 ### Custom Fields & Stages
+
 Create and manage custom fields for contacts and deals. Create and manage pipeline stages and contact lifecycle stages.
 
 ### Inbox Apps
+
 Build custom messaging channel integrations that appear in the Follow Up Boss inbox. Manage conversations, messages, participants, and notes within inbox app channels.
 
 ## Events
@@ -87,51 +101,66 @@ Follow Up Boss supports webhooks for real-time event notifications. Use webhooks
 Webhooks are registered via the API by specifying an event type and a callback URL. Each webhook payload includes an `eventId`, timestamp, event type, affected resource IDs, and a URI to fetch the full resource. A `FUB-Signature` header is included for verification using HMAC-SHA256 with the X-System-Key. There is a limit of two webhooks per event per system.
 
 ### People Events
+
 - `peopleCreated`, `peopleUpdated`, `peopleDeleted` — Triggered when contacts are created, updated (name, email, phone, address, stage, tags, assignment, custom fields, etc.), or deleted.
 - `peopleTagsCreated` — Triggered when tags are added to a contact; includes tag names in the payload.
 - `peopleStageUpdated` — Triggered when a contact's stage changes; includes the new stage name.
 - `peopleRelationshipCreated`, `peopleRelationshipUpdated`, `peopleRelationshipDeleted` — Triggered when relationships between contacts change.
 
 ### Notes Events
+
 - `notesCreated`, `notesUpdated`, `notesDeleted` — Triggered when notes are created, updated, or deleted.
 
 ### Reactions Events (Beta)
+
 - `reactionCreated`, `reactionDeleted` — Triggered when reactions are added to or removed from notes.
 
 ### Threaded Replies Events (Beta)
+
 - `threadedReplyCreated`, `threadedReplyUpdated`, `threadedReplyDeleted` — Triggered when threaded replies on notes are created, updated, or deleted.
 
 ### Email Events
+
 - `emailsCreated`, `emailsUpdated`, `emailsDeleted` — Triggered on email activity changes.
 
 ### Task Events
+
 - `tasksCreated`, `tasksUpdated`, `tasksDeleted` — Triggered when tasks are created, modified, or removed.
 
 ### Appointment Events
+
 - `appointmentsCreated`, `appointmentsUpdated`, `appointmentsDeleted` — Triggered when appointments change. Only fires for appointments created in Follow Up Boss, not synced calendar appointments.
 
 ### Text Message Events
+
 - `textMessagesCreated`, `textMessagesUpdated`, `textMessagesDeleted` — Triggered on text message activity.
 
 ### Call Events
+
 - `callsCreated`, `callsUpdated`, `callsDeleted` — Triggered when call records change.
 
 ### Email Marketing Events
+
 - `emEventsOpened`, `emEventsClicked`, `emEventsUnsubscribed` — Triggered when contacts open, click, or unsubscribe from marketing emails.
 
 ### Deal Events
+
 - `dealsCreated`, `dealsUpdated`, `dealsDeleted` — Triggered when deals change. The updated event does not fire for file changes on deals.
 
 ### Stage Configuration Events
+
 - `stageCreated`, `stageUpdated`, `stageDeleted` — Triggered when stage definitions are added, renamed, or removed in admin settings (not when a contact's stage changes).
 
 ### Pipeline Events
+
 - `pipelineCreated`, `pipelineUpdated`, `pipelineDeleted` — Triggered when pipelines are created, modified, or deleted.
 - `pipelineStageCreated`, `pipelineStageUpdated`, `pipelineStageDeleted` — Triggered when pipeline stages change.
 
 ### Custom Fields Configuration Events
+
 - `customFieldsCreated`, `customFieldsUpdated`, `customFieldsDeleted` — Triggered when contact custom field definitions change (not field values).
 - `dealCustomFieldsCreated`, `dealCustomFieldsUpdated`, `dealCustomFieldsDeleted` — Triggered when deal custom field definitions change.
 
 ### People Activity Events
+
 - `eventsCreated` — Triggered when people perform actions on IDX websites (e.g., view a property, save a favorite).

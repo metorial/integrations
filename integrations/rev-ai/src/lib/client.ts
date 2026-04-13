@@ -92,28 +92,28 @@ export class RevAIClient {
 
   constructor(private config: { token: string }) {
     let headers = {
-      'Authorization': `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.token}`,
+      'Content-Type': 'application/json'
     };
 
     this.sttAxios = createAxios({
       baseURL: 'https://api.rev.ai/speechtotext/v1',
-      headers,
+      headers
     });
 
     this.sentimentAxios = createAxios({
       baseURL: 'https://api.rev.ai/sentiment_analysis/v1',
-      headers,
+      headers
     });
 
     this.topicAxios = createAxios({
       baseURL: 'https://api.rev.ai/topic_extraction/v1',
-      headers,
+      headers
     });
 
     this.langIdAxios = createAxios({
       baseURL: 'https://api.rev.ai/languageid/v1',
-      headers,
+      headers
     });
   }
 
@@ -123,7 +123,7 @@ export class RevAIClient {
     let response = await this.sttAxios.get('/account');
     return {
       email: response.data.email,
-      balanceSeconds: response.data.balance_seconds,
+      balanceSeconds: response.data.balance_seconds
     };
   }
 
@@ -158,25 +158,33 @@ export class RevAIClient {
     if (params.skipDiarization !== undefined) body.skip_diarization = params.skipDiarization;
     if (params.skipPunctuation !== undefined) body.skip_punctuation = params.skipPunctuation;
     if (params.filterProfanity !== undefined) body.filter_profanity = params.filterProfanity;
-    if (params.removeDisfluencies !== undefined) body.remove_disfluencies = params.removeDisfluencies;
-    if (params.removeAtmospherics !== undefined) body.remove_atmospherics = params.removeAtmospherics;
-    if (params.speakerChannelsCount !== undefined) body.speaker_channels_count = params.speakerChannelsCount;
-    if (params.customVocabularyId !== undefined) body.custom_vocabulary_id = params.customVocabularyId;
-    if (params.customVocabularies !== undefined) body.custom_vocabularies = params.customVocabularies;
-    if (params.deleteAfterSeconds !== undefined) body.delete_after_seconds = params.deleteAfterSeconds;
+    if (params.removeDisfluencies !== undefined)
+      body.remove_disfluencies = params.removeDisfluencies;
+    if (params.removeAtmospherics !== undefined)
+      body.remove_atmospherics = params.removeAtmospherics;
+    if (params.speakerChannelsCount !== undefined)
+      body.speaker_channels_count = params.speakerChannelsCount;
+    if (params.customVocabularyId !== undefined)
+      body.custom_vocabulary_id = params.customVocabularyId;
+    if (params.customVocabularies !== undefined)
+      body.custom_vocabularies = params.customVocabularies;
+    if (params.deleteAfterSeconds !== undefined)
+      body.delete_after_seconds = params.deleteAfterSeconds;
     if (params.transcriber !== undefined) body.transcriber = params.transcriber;
     if (params.verbatim !== undefined) body.verbatim = params.verbatim;
-    if (params.skipPostprocessing !== undefined) body.skip_postprocessing = params.skipPostprocessing;
+    if (params.skipPostprocessing !== undefined)
+      body.skip_postprocessing = params.skipPostprocessing;
 
     if (params.notificationConfig) {
       let nc: Record<string, unknown> = { url: params.notificationConfig.url };
-      if (params.notificationConfig.authHeaders) nc.auth_headers = params.notificationConfig.authHeaders;
+      if (params.notificationConfig.authHeaders)
+        nc.auth_headers = params.notificationConfig.authHeaders;
       body.notification_config = nc;
     }
 
     if (params.translationConfig) {
       body.translation_config = {
-        target_languages: params.translationConfig.targetLanguages,
+        target_languages: params.translationConfig.targetLanguages
       };
     }
 
@@ -191,7 +199,8 @@ export class RevAIClient {
     if (params.diarizationConfig) {
       let dc: Record<string, unknown> = {};
       if (params.diarizationConfig.type) dc.type = params.diarizationConfig.type;
-      if (params.diarizationConfig.speakerCount) dc.speaker_count = params.diarizationConfig.speakerCount;
+      if (params.diarizationConfig.speakerCount)
+        dc.speaker_count = params.diarizationConfig.speakerCount;
       body.diarization_config = dc;
     }
 
@@ -213,7 +222,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.sttAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map((j) => this.normalizeJob(j));
+    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
   }
 
   async deleteTranscriptionJob(jobId: string): Promise<void> {
@@ -222,50 +231,57 @@ export class RevAIClient {
 
   async getTranscriptJson(jobId: string): Promise<{ monologues: TranscriptMonologue[] }> {
     let response = await this.sttAxios.get(`/jobs/${jobId}/transcript`, {
-      headers: { 'Accept': 'application/vnd.rev.transcript.v1.0+json' },
+      headers: { Accept: 'application/vnd.rev.transcript.v1.0+json' }
     });
     let monologues = (response.data.monologues || []).map((m: Record<string, unknown>) => ({
       speaker: m.speaker as number,
-      elements: ((m.elements || []) as Array<Record<string, unknown>>).map((e) => ({
+      elements: ((m.elements || []) as Array<Record<string, unknown>>).map(e => ({
         type: e.type as string,
         value: e.value as string,
         ts: e.ts as number | undefined,
         endTs: e.end_ts as number | undefined,
-        confidence: e.confidence as number | undefined,
-      })),
+        confidence: e.confidence as number | undefined
+      }))
     }));
     return { monologues };
   }
 
   async getTranscriptText(jobId: string): Promise<string> {
     let response = await this.sttAxios.get(`/jobs/${jobId}/transcript`, {
-      headers: { 'Accept': 'text/plain' },
+      headers: { Accept: 'text/plain' }
     });
     return response.data as string;
   }
 
   async getTranslatedTranscriptText(jobId: string, language: string): Promise<string> {
-    let response = await this.sttAxios.get(`/jobs/${jobId}/transcript/translation/${language}`, {
-      headers: { 'Accept': 'text/plain' },
-    });
+    let response = await this.sttAxios.get(
+      `/jobs/${jobId}/transcript/translation/${language}`,
+      {
+        headers: { Accept: 'text/plain' }
+      }
+    );
     return response.data as string;
   }
 
   async getTranscriptSummary(jobId: string): Promise<string> {
     let response = await this.sttAxios.get(`/jobs/${jobId}/transcript/summary`, {
-      headers: { 'Accept': 'text/plain' },
+      headers: { Accept: 'text/plain' }
     });
     return response.data as string;
   }
 
-  async getCaptions(jobId: string, format: 'srt' | 'vtt', speakerChannel?: number): Promise<string> {
+  async getCaptions(
+    jobId: string,
+    format: 'srt' | 'vtt',
+    speakerChannel?: number
+  ): Promise<string> {
     let accept = format === 'srt' ? 'application/x-subrip' : 'text/vtt';
     let queryParams: Record<string, string> = {};
     if (speakerChannel !== undefined) queryParams.speaker_channel = String(speakerChannel);
 
     let response = await this.sttAxios.get(`/jobs/${jobId}/captions`, {
-      headers: { 'Accept': accept },
-      params: queryParams,
+      headers: { Accept: accept },
+      params: queryParams
     });
     return response.data as string;
   }
@@ -278,12 +294,13 @@ export class RevAIClient {
     notificationConfig?: { url: string; authHeaders?: Record<string, string> };
   }): Promise<CustomVocabulary> {
     let body: Record<string, unknown> = {
-      custom_vocabularies: params.customVocabularies,
+      custom_vocabularies: params.customVocabularies
     };
     if (params.metadata !== undefined) body.metadata = params.metadata;
     if (params.notificationConfig) {
       let nc: Record<string, unknown> = { url: params.notificationConfig.url };
-      if (params.notificationConfig.authHeaders) nc.auth_headers = params.notificationConfig.authHeaders;
+      if (params.notificationConfig.authHeaders)
+        nc.auth_headers = params.notificationConfig.authHeaders;
       body.notification_config = nc;
     }
 
@@ -296,14 +313,14 @@ export class RevAIClient {
     return this.normalizeVocabulary(response.data);
   }
 
-  async listCustomVocabularies(params?: {
-    limit?: number;
-  }): Promise<CustomVocabulary[]> {
+  async listCustomVocabularies(params?: { limit?: number }): Promise<CustomVocabulary[]> {
     let queryParams: Record<string, string> = {};
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
 
     let response = await this.sttAxios.get('/vocabularies', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map((v) => this.normalizeVocabulary(v));
+    return (response.data as Array<Record<string, unknown>>).map(v =>
+      this.normalizeVocabulary(v)
+    );
   }
 
   async deleteCustomVocabulary(vocabularyId: string): Promise<void> {
@@ -326,7 +343,8 @@ export class RevAIClient {
     if (params.language !== undefined) body.language = params.language;
     if (params.notificationConfig) {
       let nc: Record<string, unknown> = { url: params.notificationConfig.url };
-      if (params.notificationConfig.authHeaders) nc.auth_headers = params.notificationConfig.authHeaders;
+      if (params.notificationConfig.authHeaders)
+        nc.auth_headers = params.notificationConfig.authHeaders;
       body.notification_config = nc;
     }
 
@@ -341,15 +359,17 @@ export class RevAIClient {
 
   async getSentimentAnalysisResult(jobId: string): Promise<{ messages: SentimentMessage[] }> {
     let response = await this.sentimentAxios.get(`/jobs/${jobId}/result`, {
-      headers: { 'Accept': 'application/vnd.rev.sentiment.v1.0+json' },
+      headers: { Accept: 'application/vnd.rev.sentiment.v1.0+json' }
     });
-    let messages = ((response.data.messages || []) as Array<Record<string, unknown>>).map((m) => ({
-      content: m.content as string,
-      score: m.score as number,
-      sentiment: m.sentiment as string,
-      ts: m.ts as number | undefined,
-      endTs: m.end_ts as number | undefined,
-    }));
+    let messages = ((response.data.messages || []) as Array<Record<string, unknown>>).map(
+      m => ({
+        content: m.content as string,
+        score: m.score as number,
+        sentiment: m.sentiment as string,
+        ts: m.ts as number | undefined,
+        endTs: m.end_ts as number | undefined
+      })
+    );
     return { messages };
   }
 
@@ -362,7 +382,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.sentimentAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map((j) => this.normalizeJob(j));
+    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
   }
 
   async deleteSentimentAnalysisJob(jobId: string): Promise<void> {
@@ -385,7 +405,8 @@ export class RevAIClient {
     if (params.language !== undefined) body.language = params.language;
     if (params.notificationConfig) {
       let nc: Record<string, unknown> = { url: params.notificationConfig.url };
-      if (params.notificationConfig.authHeaders) nc.auth_headers = params.notificationConfig.authHeaders;
+      if (params.notificationConfig.authHeaders)
+        nc.auth_headers = params.notificationConfig.authHeaders;
       body.notification_config = nc;
     }
 
@@ -398,22 +419,25 @@ export class RevAIClient {
     return this.normalizeJob(response.data);
   }
 
-  async getTopicExtractionResult(jobId: string, threshold?: number): Promise<{ topics: Topic[] }> {
+  async getTopicExtractionResult(
+    jobId: string,
+    threshold?: number
+  ): Promise<{ topics: Topic[] }> {
     let queryParams: Record<string, string> = {};
     if (threshold !== undefined) queryParams.threshold = String(threshold);
 
     let response = await this.topicAxios.get(`/jobs/${jobId}/result`, {
-      headers: { 'Accept': 'application/vnd.rev.topic.v1.0+json' },
-      params: queryParams,
+      headers: { Accept: 'application/vnd.rev.topic.v1.0+json' },
+      params: queryParams
     });
-    let topics = ((response.data.topics || []) as Array<Record<string, unknown>>).map((t) => ({
+    let topics = ((response.data.topics || []) as Array<Record<string, unknown>>).map(t => ({
       topicName: t.topic_name as string,
       score: t.score as number,
-      informants: ((t.informants || []) as Array<Record<string, unknown>>).map((inf) => ({
+      informants: ((t.informants || []) as Array<Record<string, unknown>>).map(inf => ({
         content: inf.content as string,
         ts: inf.ts as number | undefined,
-        endTs: inf.end_ts as number | undefined,
-      })),
+        endTs: inf.end_ts as number | undefined
+      }))
     }));
     return { topics };
   }
@@ -427,7 +451,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.topicAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map((j) => this.normalizeJob(j));
+    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
   }
 
   async deleteTopicExtractionJob(jobId: string): Promise<void> {
@@ -445,7 +469,8 @@ export class RevAIClient {
   }): Promise<RevAIJob> {
     let body: Record<string, unknown> = {};
     if (params.metadata !== undefined) body.metadata = params.metadata;
-    if (params.deleteAfterSeconds !== undefined) body.delete_after_seconds = params.deleteAfterSeconds;
+    if (params.deleteAfterSeconds !== undefined)
+      body.delete_after_seconds = params.deleteAfterSeconds;
 
     if (params.sourceConfig) {
       let sc: Record<string, unknown> = { url: params.sourceConfig.url };
@@ -457,7 +482,8 @@ export class RevAIClient {
 
     if (params.notificationConfig) {
       let nc: Record<string, unknown> = { url: params.notificationConfig.url };
-      if (params.notificationConfig.authHeaders) nc.auth_headers = params.notificationConfig.authHeaders;
+      if (params.notificationConfig.authHeaders)
+        nc.auth_headers = params.notificationConfig.authHeaders;
       body.notification_config = nc;
     }
 
@@ -472,14 +498,16 @@ export class RevAIClient {
 
   async getLanguageIdentificationResult(jobId: string): Promise<LanguageIdResult> {
     let response = await this.langIdAxios.get(`/jobs/${jobId}/result`, {
-      headers: { 'Accept': 'application/vnd.rev.languageid.v1.0+json' },
+      headers: { Accept: 'application/vnd.rev.languageid.v1.0+json' }
     });
     return {
       topLanguage: response.data.top_language as string,
-      languageConfidences: ((response.data.language_confidences || []) as Array<Record<string, unknown>>).map((lc) => ({
+      languageConfidences: (
+        (response.data.language_confidences || []) as Array<Record<string, unknown>>
+      ).map(lc => ({
         language: lc.language as string,
-        confidence: lc.confidence as number,
-      })),
+        confidence: lc.confidence as number
+      }))
     };
   }
 
@@ -492,7 +520,7 @@ export class RevAIClient {
     if (params?.startingAfter !== undefined) queryParams.starting_after = params.startingAfter;
 
     let response = await this.langIdAxios.get('/jobs', { params: queryParams });
-    return (response.data as Array<Record<string, unknown>>).map((j) => this.normalizeJob(j));
+    return (response.data as Array<Record<string, unknown>>).map(j => this.normalizeJob(j));
   }
 
   async deleteLanguageIdentificationJob(jobId: string): Promise<void> {
@@ -523,7 +551,7 @@ export class RevAIClient {
       removeAtmospherics: data.remove_atmospherics as boolean | undefined,
       speakerChannelsCount: data.speaker_channels_count as number | undefined,
       transcriber: data.transcriber as string | undefined,
-      verbatim: data.verbatim as boolean | undefined,
+      verbatim: data.verbatim as boolean | undefined
     };
   }
 
@@ -535,7 +563,7 @@ export class RevAIClient {
       completedOn: data.completed_on as string | undefined,
       metadata: data.metadata as string | undefined,
       failure: data.failure as string | undefined,
-      failureDetail: data.failure_detail as string | undefined,
+      failureDetail: data.failure_detail as string | undefined
     };
   }
 }

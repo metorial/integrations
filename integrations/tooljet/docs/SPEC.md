@@ -11,6 +11,7 @@ ToolJet uses a static access token for API authentication. By default, the ToolJ
 You need to pass the access token in the `Authorization` header to authenticate your requests. The access token should be sent in the format `Basic <access_token>`.
 
 Example:
+
 ```
 Authorization: Basic <access_token>
 ```
@@ -58,6 +59,6 @@ ToolJet Workflows enable users to create complex, data-centric automations using
 
 ## Events
 
-ToolJet's API does not provide outbound webhook subscriptions or event notification mechanisms for listening to platform changes (e.g., user created, app deployed). ToolJet supports webhook and manual triggers, but these are *inbound* — they allow external systems to trigger ToolJet workflows, not for ToolJet to notify external systems of events.
+ToolJet's API does not provide outbound webhook subscriptions or event notification mechanisms for listening to platform changes (e.g., user created, app deployed). ToolJet supports webhook and manual triggers, but these are _inbound_ — they allow external systems to trigger ToolJet workflows, not for ToolJet to notify external systems of events.
 
 The provider does not support events.

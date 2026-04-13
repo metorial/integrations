@@ -70,7 +70,7 @@ export class Client {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: 'https://api.wolframalpha.com',
+      baseURL: 'https://api.wolframalpha.com'
     });
   }
 
@@ -78,7 +78,7 @@ export class Client {
     let queryParams: Record<string, string | number | boolean> = {
       appid: this.token,
       input: params.input,
-      output: params.output ?? 'json',
+      output: params.output ?? 'json'
     };
 
     if (params.format) queryParams['format'] = params.format;
@@ -110,7 +110,7 @@ export class Client {
     }
 
     let response = await this.axios.get('/v2/query', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -119,14 +119,14 @@ export class Client {
   async shortAnswer(params: ShortAnswerParams): Promise<string> {
     let queryParams: Record<string, string | number> = {
       appid: this.token,
-      i: params.input,
+      i: params.input
     };
 
     if (params.units) queryParams['units'] = params.units;
     if (params.timeout != null) queryParams['timeout'] = params.timeout;
 
     let response = await this.axios.get('/v1/result', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -135,14 +135,14 @@ export class Client {
   async spokenResult(params: SpokenResultParams): Promise<string> {
     let queryParams: Record<string, string | number> = {
       appid: this.token,
-      i: params.input,
+      i: params.input
     };
 
     if (params.units) queryParams['units'] = params.units;
     if (params.timeout != null) queryParams['timeout'] = params.timeout;
 
     let response = await this.axios.get('/v1/spoken', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -151,7 +151,7 @@ export class Client {
   async simpleImage(params: SimpleImageParams): Promise<string> {
     let queryParams: Record<string, string | number> = {
       appid: this.token,
-      i: params.input,
+      i: params.input
     };
 
     if (params.layout) queryParams['layout'] = params.layout;
@@ -174,14 +174,14 @@ export class Client {
   async llmQuery(params: LlmQueryParams): Promise<string> {
     let queryParams: Record<string, string | number> = {
       appid: this.token,
-      input: params.input,
+      input: params.input
     };
 
     if (params.maxchars != null) queryParams['maxchars'] = params.maxchars;
     if (params.units) queryParams['units'] = params.units;
 
     let response = await this.axios.get('/api/v1/llm-api', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -191,11 +191,11 @@ export class Client {
     let queryParams: Record<string, string> = {
       appid: this.token,
       input: params.input,
-      output: 'json',
+      output: 'json'
     };
 
     let response = await this.axios.get('/v2/validatequery', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -205,13 +205,13 @@ export class Client {
     let queryParams: Record<string, string> = {
       appid: this.token,
       i: params.input,
-      output: 'json',
+      output: 'json'
     };
 
     if (params.mode) queryParams['mode'] = params.mode;
 
     let response = await this.axios.get('/queryrecognizer/query.jsp', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;

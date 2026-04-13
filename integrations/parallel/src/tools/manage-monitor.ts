@@ -3,25 +3,22 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMonitor = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Monitor',
-    key: 'manage_monitor',
-    description: `Retrieve, update, or delete an existing web monitor. Can also list all monitors or fetch events for a specific monitor.
+export let manageMonitor = SlateTool.create(spec, {
+  name: 'Manage Monitor',
+  key: 'manage_monitor',
+  description: `Retrieve, update, or delete an existing web monitor. Can also list all monitors or fetch events for a specific monitor.
 Use the monitor ID from the **Create Monitor** tool.`,
-    instructions: [
-      'Use action "get" to retrieve monitor details.',
-      'Use action "list" to list all monitors (monitorId is not required).',
-      'Use action "update" to change frequency or metadata.',
-      'Use action "delete" to stop and remove a monitor.',
-      'Use action "get_events" to retrieve detected events for a monitor.',
-    ],
-    tags: {
-      destructive: false,
-    },
-  },
-)
+  instructions: [
+    'Use action "get" to retrieve monitor details.',
+    'Use action "list" to list all monitors (monitorId is not required).',
+    'Use action "update" to change frequency or metadata.',
+    'Use action "delete" to stop and remove a monitor.',
+    'Use action "get_events" to retrieve detected events for a monitor.'
+  ],
+  tags: {
+    destructive: false
+  }
+})
   .input(
     z.object({
       action: z
@@ -38,8 +35,8 @@ Use the monitor ID from the **Create Monitor** tool.`,
       metadata: z
         .record(z.string(), z.string())
         .optional()
-        .describe('New metadata for update action'),
-    }),
+        .describe('New metadata for update action')
+    })
   )
   .output(
     z.object({
@@ -51,7 +48,7 @@ Use the monitor ID from the **Create Monitor** tool.`,
           frequency: z.string().describe('Check frequency'),
           createdAt: z.string().describe('Creation timestamp'),
           lastRunAt: z.string().nullable().describe('Last run timestamp'),
-          metadata: z.record(z.string(), z.string()).nullable().describe('Metadata'),
+          metadata: z.record(z.string(), z.string()).nullable().describe('Metadata')
         })
         .nullable()
         .describe('Monitor details (null for list/delete/get_events actions)'),
@@ -63,8 +60,8 @@ Use the monitor ID from the **Create Monitor** tool.`,
             status: z.string().describe('Status'),
             frequency: z.string().describe('Check frequency'),
             createdAt: z.string().describe('Creation timestamp'),
-            lastRunAt: z.string().nullable().describe('Last run timestamp'),
-          }),
+            lastRunAt: z.string().nullable().describe('Last run timestamp')
+          })
         )
         .nullable()
         .describe('List of monitors (only for list action)'),
@@ -75,15 +72,15 @@ Use the monitor ID from the **Create Monitor** tool.`,
             eventGroupId: z.string().describe('Event group ID'),
             output: z.unknown().describe('Event output'),
             eventDate: z.string().describe('Event date'),
-            sourceUrls: z.array(z.string()).describe('Source URLs'),
-          }),
+            sourceUrls: z.array(z.string()).describe('Source URLs')
+          })
         )
         .nullable()
         .describe('Events list (only for get_events action)'),
-      deleted: z.boolean().describe('Whether a monitor was deleted'),
-    }),
+      deleted: z.boolean().describe('Whether a monitor was deleted')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, monitorId } = ctx.input;
 
@@ -92,18 +89,18 @@ Use the monitor ID from the **Create Monitor** tool.`,
       return {
         output: {
           monitor: null,
-          monitors: monitors.map((m) => ({
+          monitors: monitors.map(m => ({
             monitorId: m.monitorId,
             query: m.query,
             status: m.status,
             frequency: m.frequency,
             createdAt: m.createdAt,
-            lastRunAt: m.lastRunAt,
+            lastRunAt: m.lastRunAt
           })),
           events: null,
-          deleted: false,
+          deleted: false
         },
-        message: `Found **${monitors.length}** monitor${monitors.length !== 1 ? 's' : ''}.`,
+        message: `Found **${monitors.length}** monitor${monitors.length !== 1 ? 's' : ''}.`
       };
     }
 
@@ -122,20 +119,20 @@ Use the monitor ID from the **Create Monitor** tool.`,
             frequency: monitor.frequency,
             createdAt: monitor.createdAt,
             lastRunAt: monitor.lastRunAt,
-            metadata: monitor.metadata,
+            metadata: monitor.metadata
           },
           monitors: null,
           events: null,
-          deleted: false,
+          deleted: false
         },
-        message: `Monitor **${monitor.monitorId}** — status: **${monitor.status}**, frequency: **${monitor.frequency}**.`,
+        message: `Monitor **${monitor.monitorId}** — status: **${monitor.status}**, frequency: **${monitor.frequency}**.`
       };
     }
 
     if (action === 'update') {
       let monitor = await client.updateMonitor(monitorId, {
         frequency: ctx.input.frequency,
-        metadata: ctx.input.metadata,
+        metadata: ctx.input.metadata
       });
       return {
         output: {
@@ -146,13 +143,13 @@ Use the monitor ID from the **Create Monitor** tool.`,
             frequency: monitor.frequency,
             createdAt: monitor.createdAt,
             lastRunAt: monitor.lastRunAt,
-            metadata: monitor.metadata,
+            metadata: monitor.metadata
           },
           monitors: null,
           events: null,
-          deleted: false,
+          deleted: false
         },
-        message: `Monitor **${monitor.monitorId}** updated. Frequency: **${monitor.frequency}**.`,
+        message: `Monitor **${monitor.monitorId}** updated. Frequency: **${monitor.frequency}**.`
       };
     }
 
@@ -163,9 +160,9 @@ Use the monitor ID from the **Create Monitor** tool.`,
           monitor: null,
           monitors: null,
           events: null,
-          deleted: true,
+          deleted: true
         },
-        message: `Monitor **${monitorId}** deleted.`,
+        message: `Monitor **${monitorId}** deleted.`
       };
     }
 
@@ -176,9 +173,9 @@ Use the monitor ID from the **Create Monitor** tool.`,
           monitor: null,
           monitors: null,
           events,
-          deleted: false,
+          deleted: false
         },
-        message: `Found **${events.length}** event${events.length !== 1 ? 's' : ''} for monitor **${monitorId}**.`,
+        message: `Found **${events.length}** event${events.length !== 1 ? 's' : ''} for monitor **${monitorId}**.`
       };
     }
 

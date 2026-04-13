@@ -21,44 +21,44 @@ let invoiceEventSchema = z.object({
   subTotal: z.number().optional().describe('Subtotal'),
   totalTax: z.number().optional().describe('Total tax'),
   lineAmountTypes: z.string().optional().describe('Line amount types'),
-  sentToContact: z.boolean().optional().describe('Whether emailed to contact'),
+  sentToContact: z.boolean().optional().describe('Whether emailed to contact')
 });
 
-export let invoiceChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Changes',
-    key: 'invoice_changes',
-    description: 'Triggers when invoices or bills are created or updated in Xero, including status changes (authorised, paid, voided).',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string().describe('Xero invoice ID'),
-    invoiceNumber: z.string().optional(),
-    type: z.string().optional(),
-    status: z.string().optional(),
-    contactName: z.string().optional(),
-    contactId: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    amountDue: z.number().optional(),
-    amountPaid: z.number().optional(),
-    currencyCode: z.string().optional(),
-    updatedDate: z.string().optional(),
-    reference: z.string().optional(),
-    subTotal: z.number().optional(),
-    totalTax: z.number().optional(),
-    lineAmountTypes: z.string().optional(),
-    sentToContact: z.boolean().optional(),
-  }))
+export let invoiceChanges = SlateTrigger.create(spec, {
+  name: 'Invoice Changes',
+  key: 'invoice_changes',
+  description:
+    'Triggers when invoices or bills are created or updated in Xero, including status changes (authorised, paid, voided).'
+})
+  .input(
+    z.object({
+      invoiceId: z.string().describe('Xero invoice ID'),
+      invoiceNumber: z.string().optional(),
+      type: z.string().optional(),
+      status: z.string().optional(),
+      contactName: z.string().optional(),
+      contactId: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      amountDue: z.number().optional(),
+      amountPaid: z.number().optional(),
+      currencyCode: z.string().optional(),
+      updatedDate: z.string().optional(),
+      reference: z.string().optional(),
+      subTotal: z.number().optional(),
+      totalTax: z.number().optional(),
+      lineAmountTypes: z.string().optional(),
+      sentToContact: z.boolean().optional()
+    })
+  )
   .output(invoiceEventSchema)
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClientFromContext(ctx);
 
       let lastModified = (ctx.state as any)?.lastModified as string | undefined;
@@ -66,7 +66,7 @@ export let invoiceChanges = SlateTrigger.create(
       let result = await client.getInvoices({
         modifiedAfter: lastModified,
         order: 'UpdatedDateUTC ASC',
-        summaryOnly: true,
+        summaryOnly: true
       });
 
       let invoices = result.Invoices || [];
@@ -98,15 +98,15 @@ export let invoiceChanges = SlateTrigger.create(
           subTotal: inv.SubTotal,
           totalTax: inv.TotalTax,
           lineAmountTypes: inv.LineAmountTypes,
-          sentToContact: inv.SentToContact,
+          sentToContact: inv.SentToContact
         })),
         updatedState: {
-          lastModified: newLastModified,
-        },
+          lastModified: newLastModified
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'invoice.updated',
         id: `${ctx.input.invoiceId}-${ctx.input.updatedDate || Date.now()}`,
@@ -128,9 +128,9 @@ export let invoiceChanges = SlateTrigger.create(
           subTotal: ctx.input.subTotal,
           totalTax: ctx.input.totalTax,
           lineAmountTypes: ctx.input.lineAmountTypes,
-          sentToContact: ctx.input.sentToContact,
-        },
+          sentToContact: ctx.input.sentToContact
+        }
       };
-    },
+    }
   })
   .build();

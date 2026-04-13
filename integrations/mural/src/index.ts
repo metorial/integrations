@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listWorkspacesTool,
@@ -35,13 +34,9 @@ import {
   listVotingSessionsTool,
   manageTimerTool,
   managePrivateModeTool,
-  getChatHistoryTool,
+  getChatHistoryTool
 } from './tools';
-import {
-  newMuralTrigger,
-  newWidgetTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newMuralTrigger, newWidgetTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -79,11 +74,7 @@ export let provider = Slate.create({
     listVotingSessionsTool,
     manageTimerTool,
     managePrivateModeTool,
-    getChatHistoryTool,
+    getChatHistoryTool
   ],
-  triggers: [
-    inboundWebhook,
-    newMuralTrigger,
-    newWidgetTrigger,
-  ],
+  triggers: [inboundWebhook, newMuralTrigger, newWidgetTrigger]
 });

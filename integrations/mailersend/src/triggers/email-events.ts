@@ -23,33 +23,37 @@ let emailEventTypes = [
   'email_single.verified',
   'email_list.verified',
   'maintenance.start',
-  'maintenance.end',
+  'maintenance.end'
 ] as const;
 
-export let emailEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Email Events',
-    key: 'email_events',
-    description: 'Receive real-time notifications for email lifecycle events including delivery, opens, clicks, bounces, spam complaints, and operational events like sender verification and maintenance.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of email event.'),
-    eventTimestamp: z.string().describe('ISO 8601 timestamp of the event.'),
-    webhookPayload: z.record(z.string(), z.unknown()).describe('Full webhook payload from MailerSend.'),
-  }))
-  .output(z.object({
-    messageId: z.string().nullable().describe('Message ID associated with the event.'),
-    recipientEmail: z.string().nullable().describe('Recipient email address.'),
-    senderEmail: z.string().nullable().describe('Sender email address.'),
-    subject: z.string().nullable().describe('Email subject line.'),
-    domainId: z.string().nullable().describe('Domain ID.'),
-    eventTimestamp: z.string().describe('When the event occurred.'),
-    eventData: z.record(z.string(), z.unknown()).describe('Full event data from MailerSend.'),
-  }))
+export let emailEvents = SlateTrigger.create(spec, {
+  name: 'Email Events',
+  key: 'email_events',
+  description:
+    'Receive real-time notifications for email lifecycle events including delivery, opens, clicks, bounces, spam complaints, and operational events like sender verification and maintenance.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of email event.'),
+      eventTimestamp: z.string().describe('ISO 8601 timestamp of the event.'),
+      webhookPayload: z
+        .record(z.string(), z.unknown())
+        .describe('Full webhook payload from MailerSend.')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().nullable().describe('Message ID associated with the event.'),
+      recipientEmail: z.string().nullable().describe('Recipient email address.'),
+      senderEmail: z.string().nullable().describe('Sender email address.'),
+      subject: z.string().nullable().describe('Email subject line.'),
+      domainId: z.string().nullable().describe('Domain ID.'),
+      eventTimestamp: z.string().describe('When the event occurred.'),
+      eventData: z.record(z.string(), z.unknown()).describe('Full event data from MailerSend.')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // We need a domain_id to register. List domains and register for the first verified one,
@@ -69,12 +73,12 @@ export let emailEvents = SlateTrigger.create(
             name: `Slates Email Events - ${domain.name}`,
             events: [...emailEventTypes],
             domainId,
-            enabled: true,
+            enabled: true
           });
 
           registeredWebhooks.push({
             webhookId: String(result.data.id || ''),
-            domainId,
+            domainId
           });
         } catch (err) {
           // Continue with other domains if one fails
@@ -82,15 +86,17 @@ export let emailEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { webhooks: registeredWebhooks },
+        registrationDetails: { webhooks: registeredWebhooks }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { webhooks: Array<{ webhookId: string; domainId: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhooks: Array<{ webhookId: string; domainId: string }>;
+      };
 
-      for (let webhook of (details.webhooks || [])) {
+      for (let webhook of details.webhooks || []) {
         try {
           await client.deleteWebhook(webhook.webhookId);
         } catch (err) {
@@ -99,42 +105,37 @@ export let emailEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, unknown>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, unknown>;
 
       return {
         inputs: [
           {
             eventType: String(data.type || ''),
             eventTimestamp: String(data.created_at || new Date().toISOString()),
-            webhookPayload: data,
-          },
-        ],
+            webhookPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.webhookPayload;
       let eventData = (payload.data || {}) as Record<string, unknown>;
       let email = eventData.email as Record<string, unknown> | undefined;
       let message = (eventData.message || email) as Record<string, unknown> | undefined;
 
       let messageId = String(eventData.message_id || message?.id || eventData.id || '');
-      let recipientEmail = String(
-        eventData.recipient?.toString() ||
-        (eventData.email as Record<string, unknown>)?.recipient?.toString() ||
-        ''
-      ) || null;
-      let senderEmail = String(
-        (message?.from as string) ||
-        (eventData.from as string) ||
-        ''
-      ) || null;
-      let subject = String(
-        (message?.subject as string) ||
-        (eventData.subject as string) ||
-        ''
-      ) || null;
+      let recipientEmail =
+        String(
+          eventData.recipient?.toString() ||
+            (eventData.email as Record<string, unknown>)?.recipient?.toString() ||
+            ''
+        ) || null;
+      let senderEmail =
+        String((message?.from as string) || (eventData.from as string) || '') || null;
+      let subject =
+        String((message?.subject as string) || (eventData.subject as string) || '') || null;
       let domainId = String(eventData.domain_id || '') || null;
 
       // Build a unique event ID from available data
@@ -150,9 +151,9 @@ export let emailEvents = SlateTrigger.create(
           subject,
           domainId,
           eventTimestamp: ctx.input.eventTimestamp,
-          eventData,
-        },
+          eventData
+        }
       };
-    },
+    }
   })
   .build();

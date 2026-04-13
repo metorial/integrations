@@ -11,11 +11,13 @@ Hookdeck uses **API Key** authentication for its REST API and Publish API.
 Your API key is located in your project settings. To include your API key in requests, use either Bearer Token Authentication or Basic Authentication.
 
 **Bearer Token Authentication:**
+
 ```
 Authorization: Bearer $API_KEY
 ```
 
 **Basic Authentication:**
+
 ```
 Authorization: Basic BASE64_API_TOKEN
 ```

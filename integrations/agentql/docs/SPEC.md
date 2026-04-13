@@ -9,6 +9,7 @@ AgentQL is an AI-powered web data extraction and automation platform. Its REST A
 AgentQL uses API key authentication. All requests to the AgentQL API must include an `X-API-Key` header with your API key. You can generate an API key through the [Dev Portal](https://dev.agentql.com).
 
 The API key is passed as a request header:
+
 ```
 X-API-Key: YOUR_AGENTQL_API_KEY
 ```

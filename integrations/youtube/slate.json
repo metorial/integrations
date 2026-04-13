@@ -2,11 +2,7 @@
   "name": "@google/youtube",
   "version": "0.1.1",
   "description": "Search, upload, and manage YouTube videos, playlists, channels, and live streams. Update video metadata (title, description, tags, privacy), manage captions, moderate comments, and handle subscriptions. Rate videos, set thumbnails and watermarks, report abusive content, and manage live broadcasts with chat moderation. Receive push notifications when channels upload or update videos.",
-  "categories": [
-    "document-processing",
-    "news-and-media",
-    "scheduling-and-calendars"
-  ],
+  "categories": ["document-processing", "news-and-media", "scheduling-and-calendars"],
   "skills": [
     "search videos and channels",
     "upload and manage videos",

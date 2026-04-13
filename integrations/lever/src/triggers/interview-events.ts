@@ -3,57 +3,55 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let interviewEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Interview Events',
-    key: 'interview_events',
-    description: 'Triggers when an interview is created, updated, or deleted in Lever. Includes interview, panel, and opportunity details.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of interview event'),
-    triggeredAt: z.string().describe('When the event occurred (ISO 8601)'),
-    interviewId: z.string().describe('Interview ID'),
-    panelId: z.string().optional().describe('Panel ID'),
-    opportunityId: z.string().optional().describe('Opportunity ID'),
-    rawEvent: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    interviewId: z.string().describe('ID of the affected interview'),
-    panelId: z.string().optional().describe('ID of the interview panel'),
-    opportunityId: z.string().optional().describe('ID of the related opportunity'),
-    eventTimestamp: z.string().optional().describe('Timestamp of the event'),
-  }))
+export let interviewEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Interview Events',
+  key: 'interview_events',
+  description:
+    'Triggers when an interview is created, updated, or deleted in Lever. Includes interview, panel, and opportunity details.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of interview event'),
+      triggeredAt: z.string().describe('When the event occurred (ISO 8601)'),
+      interviewId: z.string().describe('Interview ID'),
+      panelId: z.string().optional().describe('Panel ID'),
+      opportunityId: z.string().optional().describe('Opportunity ID'),
+      rawEvent: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      interviewId: z.string().describe('ID of the affected interview'),
+      panelId: z.string().optional().describe('ID of the interview panel'),
+      opportunityId: z.string().optional().describe('ID of the related opportunity'),
+      eventTimestamp: z.string().optional().describe('Timestamp of the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
 
-      let eventTypes = [
-        'interviewCreated',
-        'interviewUpdated',
-        'interviewDeleted',
-      ];
+      let eventTypes = ['interviewCreated', 'interviewUpdated', 'interviewDeleted'];
 
       let registrations: Array<{ webhookId: string; event: string }> = [];
 
       for (let event of eventTypes) {
         let result = await client.createWebhook({
           url: `${ctx.input.webhookBaseUrl}/${event}`,
-          event: event,
+          event: event
         });
         registrations.push({
           webhookId: result.data.id,
-          event: event,
+          event: event
         });
       }
 
       return {
-        registrationDetails: { webhooks: registrations },
+        registrationDetails: { webhooks: registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token, environment: ctx.config.environment });
       let webhooks = ctx.input.registrationDetails?.webhooks || [];
 
@@ -66,8 +64,8 @@ export let interviewEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
       let eventSuffix = pathParts[pathParts.length - 1] || 'unknown';
@@ -84,17 +82,17 @@ export let interviewEventsTrigger = SlateTrigger.create(
             interviewId: eventData.interviewId || eventData.id || '',
             panelId: eventData.panelId,
             opportunityId: eventData.opportunityId,
-            rawEvent: body,
-          },
-        ],
+            rawEvent: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let typeMap: Record<string, string> = {
-        'interviewCreated': 'interview.created',
-        'interviewUpdated': 'interview.updated',
-        'interviewDeleted': 'interview.deleted',
+        interviewCreated: 'interview.created',
+        interviewUpdated: 'interview.updated',
+        interviewDeleted: 'interview.deleted'
       };
 
       return {
@@ -104,9 +102,9 @@ export let interviewEventsTrigger = SlateTrigger.create(
           interviewId: ctx.input.interviewId,
           panelId: ctx.input.panelId,
           opportunityId: ctx.input.opportunityId,
-          eventTimestamp: ctx.input.triggeredAt,
-        },
+          eventTimestamp: ctx.input.triggeredAt
+        }
       };
-    },
+    }
   })
   .build();

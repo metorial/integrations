@@ -2,23 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('OpsGenie API key (Integration API key or Account-level API key)'),
+      token: z
+        .string()
+        .describe('OpsGenie API key (Integration API key or Account-level API key)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +30,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.opsgenie.com',
         headers: {
-          'Authorization': `GenieKey ${ctx.output.token}`,
-        },
+          Authorization: `GenieKey ${ctx.output.token}`
+        }
       });
 
       try {
@@ -36,13 +40,13 @@ export let auth = SlateAuth.create()
         return {
           profile: {
             id: account.id ?? undefined,
-            name: account.name ?? undefined,
-          },
+            name: account.name ?? undefined
+          }
         };
       } catch {
         return {
-          profile: {},
+          profile: {}
         };
       }
-    },
+    }
   });

@@ -2,10 +2,7 @@
   "name": "@metorial/sendspark",
   "version": "0.1.1",
   "description": "Create, manage, and personalize AI-generated dynamic video campaigns for sales outreach and marketing. Add prospects individually or in bulk to automatically generate personalized videos with viewer-specific details like names, companies, and website screenshots. Retrieve campaign details, look up prospect video status and share URLs, and track video engagement through webhooks for events like video viewed, played, watched percentage, liked, and CTA clicked.",
-  "categories": [
-    "crm-and-sales-tools",
-    "scheduling-and-calendars"
-  ],
+  "categories": ["crm-and-sales-tools", "scheduling-and-calendars"],
   "skills": [
     "create dynamic video campaigns",
     "add prospects to campaigns",

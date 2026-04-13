@@ -3,31 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createTask = SlateTool.create(
-  spec,
-  {
-    name: 'Create Task',
-    key: 'create_task',
-    description: `Create a new task in JobNimbus. Tasks can be associated with contacts or jobs and include priority levels, dates, and assignees.`
-  }
-)
-  .input(z.object({
-    title: z.string().describe('Task title'),
-    description: z.string().optional().describe('Task description'),
-    parentRecordId: z.string().optional().describe('Contact or job ID to associate this task with'),
-    recordTypeName: z.string().optional().describe('Record type name'),
-    priority: z.number().optional().describe('Task priority (numeric value)'),
-    dateStart: z.number().optional().describe('Start date as Unix timestamp'),
-    dateEnd: z.number().optional().describe('Due date as Unix timestamp'),
-    owners: z.array(z.string()).optional().describe('Assignee user IDs'),
-    tags: z.array(z.string()).optional().describe('Tags to assign')
-  }))
-  .output(z.object({
-    taskId: z.string().describe('Unique JobNimbus ID of the created task'),
-    title: z.string().optional().describe('Task title'),
-    dateCreated: z.number().optional().describe('Unix timestamp of creation')
-  }))
-  .handleInvocation(async (ctx) => {
+export let createTask = SlateTool.create(spec, {
+  name: 'Create Task',
+  key: 'create_task',
+  description: `Create a new task in JobNimbus. Tasks can be associated with contacts or jobs and include priority levels, dates, and assignees.`
+})
+  .input(
+    z.object({
+      title: z.string().describe('Task title'),
+      description: z.string().optional().describe('Task description'),
+      parentRecordId: z
+        .string()
+        .optional()
+        .describe('Contact or job ID to associate this task with'),
+      recordTypeName: z.string().optional().describe('Record type name'),
+      priority: z.number().optional().describe('Task priority (numeric value)'),
+      dateStart: z.number().optional().describe('Start date as Unix timestamp'),
+      dateEnd: z.number().optional().describe('Due date as Unix timestamp'),
+      owners: z.array(z.string()).optional().describe('Assignee user IDs'),
+      tags: z.array(z.string()).optional().describe('Tags to assign')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('Unique JobNimbus ID of the created task'),
+      title: z.string().optional().describe('Task title'),
+      dateCreated: z.number().optional().describe('Unix timestamp of creation')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: Record<string, any> = {
@@ -53,4 +57,5 @@ export let createTask = SlateTool.create(
       },
       message: `Created task **${result.title || result.jnid}**.`
     };
-  }).build();
+  })
+  .build();

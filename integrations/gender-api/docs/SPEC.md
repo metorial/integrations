@@ -32,6 +32,7 @@ You can query gender using an email address. The API extracts the first and last
 ### Localization
 
 Improve prediction accuracy by providing geographic context. Localization can be specified via:
+
 - **Country code**: An ISO 3166-1 alpha-2 country code (e.g., `IT` for Italy, `DE` for Germany). This is important because some names differ by country — for example, "Andrea" is predicted as male in Italy but female in Germany.
 - **IP address**: The API geolocates the IP to determine the country.
 - **Browser locale**: A locale string (e.g., `en_US`, `de_DE`) is used to infer the country.

@@ -18,7 +18,7 @@ export class Client {
     return createAxios({
       baseURL: this.instanceUrl,
       headers: {
-        'Authorization': this.authorizationHeader,
+        Authorization: this.authorizationHeader,
         'Content-Type': 'application/json'
       }
     });
@@ -39,11 +39,14 @@ export class Client {
     return response.data.data;
   }
 
-  async streamSearch(query: string, options?: {
-    version?: string;
-    patternType?: string;
-    maxMatchCount?: number;
-  }): Promise<any[]> {
+  async streamSearch(
+    query: string,
+    options?: {
+      version?: string;
+      patternType?: string;
+      maxMatchCount?: number;
+    }
+  ): Promise<any[]> {
     let axios = this.getAxios();
     let params: Record<string, string> = { q: query };
     if (options?.version) params['v'] = options.version;
@@ -53,7 +56,7 @@ export class Client {
     let response = await axios.get('/.api/search/stream', {
       params,
       headers: {
-        'Accept': 'text/event-stream'
+        Accept: 'text/event-stream'
       },
       responseType: 'text'
     });
@@ -148,7 +151,8 @@ export class Client {
   }
 
   async getRepository(name: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       query($name: String!) {
         repository(name: $name) {
           id
@@ -192,12 +196,15 @@ export class Client {
           }
         }
       }
-    `, { name });
+    `,
+      { name }
+    );
   }
 
   async getFileContent(repoName: string, filePath: string, revision?: string): Promise<any> {
     let rev = revision || 'HEAD';
-    return this.graphql(`
+    return this.graphql(
+      `
       query($repoName: String!, $rev: String!, $filePath: String!) {
         repository(name: $repoName) {
           commit(rev: $rev) {
@@ -210,12 +217,19 @@ export class Client {
           }
         }
       }
-    `, { repoName, rev, filePath });
+    `,
+      { repoName, rev, filePath }
+    );
   }
 
-  async listDirectoryContents(repoName: string, dirPath: string, revision?: string): Promise<any> {
+  async listDirectoryContents(
+    repoName: string,
+    dirPath: string,
+    revision?: string
+  ): Promise<any> {
     let rev = revision || 'HEAD';
-    return this.graphql(`
+    return this.graphql(
+      `
       query($repoName: String!, $rev: String!, $dirPath: String!) {
         repository(name: $repoName) {
           commit(rev: $rev) {
@@ -229,26 +243,34 @@ export class Client {
           }
         }
       }
-    `, { repoName, rev, dirPath });
+    `,
+      { repoName, rev, dirPath }
+    );
   }
 
   async refreshRepository(repoName: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($repo: ID!) {
         scheduleRepositoryPermissionsSync(repository: $repo) {
           alwaysNil
         }
       }
-    `, { repo: repoName });
+    `,
+      { repo: repoName }
+    );
   }
 
   // Search operations
 
-  async graphqlSearch(query: string, options?: {
-    patternType?: string;
-    first?: number;
-    after?: string;
-  }): Promise<any> {
+  async graphqlSearch(
+    query: string,
+    options?: {
+      patternType?: string;
+      first?: number;
+      after?: string;
+    }
+  ): Promise<any> {
     let searchArgs = [`query: $query`];
     if (options?.patternType) searchArgs.push(`patternType: ${options.patternType}`);
 
@@ -258,7 +280,8 @@ export class Client {
 
     let resultArgsStr = resultArgs.length > 0 ? `(${resultArgs.join(', ')})` : '';
 
-    return this.graphql(`
+    return this.graphql(
+      `
       query($query: String!) {
         search(query: $query) {
           results${resultArgsStr} {
@@ -307,7 +330,9 @@ export class Client {
           }
         }
       }
-    `, { query });
+    `,
+      { query }
+    );
   }
 
   // Batch Changes operations
@@ -365,7 +390,8 @@ export class Client {
   }
 
   async getBatchChange(batchChangeId: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       query($id: ID!) {
         node(id: $id) {
           ... on BatchChange {
@@ -416,11 +442,14 @@ export class Client {
           }
         }
       }
-    `, { id: batchChangeId });
+    `,
+      { id: batchChangeId }
+    );
   }
 
   async createBatchSpec(spec: string, namespace: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($spec: String!, $namespace: ID!) {
         createBatchSpec(batchSpec: $spec, namespace: $namespace) {
           id
@@ -428,11 +457,14 @@ export class Client {
           createdAt
         }
       }
-    `, { spec, namespace });
+    `,
+      { spec, namespace }
+    );
   }
 
   async applyBatchChange(batchSpecId: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($batchSpec: ID!) {
         applyBatchChange(batchSpec: $batchSpec) {
           id
@@ -441,11 +473,17 @@ export class Client {
           state
         }
       }
-    `, { batchSpec: batchSpecId });
+    `,
+      { batchSpec: batchSpecId }
+    );
   }
 
-  async closeBatchChange(batchChangeId: string, closeChangesets: boolean = false): Promise<any> {
-    return this.graphql(`
+  async closeBatchChange(
+    batchChangeId: string,
+    closeChangesets: boolean = false
+  ): Promise<any> {
+    return this.graphql(
+      `
       mutation($batchChange: ID!, $closeChangesets: Boolean!) {
         closeBatchChange(batchChange: $batchChange, closeChangesets: $closeChangesets) {
           id
@@ -454,25 +492,27 @@ export class Client {
           closedAt
         }
       }
-    `, { batchChange: batchChangeId, closeChangesets });
+    `,
+      { batchChange: batchChangeId, closeChangesets }
+    );
   }
 
   async deleteBatchChange(batchChangeId: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($batchChange: ID!) {
         deleteBatchChange(batchChange: $batchChange) {
           alwaysNil
         }
       }
-    `, { batchChange: batchChangeId });
+    `,
+      { batchChange: batchChangeId }
+    );
   }
 
   // Code Insights operations
 
-  async listInsightViews(options?: {
-    first?: number;
-    after?: string;
-  }): Promise<any> {
+  async listInsightViews(options?: { first?: number; after?: string }): Promise<any> {
     let args: string[] = [];
     if (options?.first) args.push(`first: ${options.first}`);
     if (options?.after) args.push(`after: "${options.after}"`);
@@ -525,7 +565,8 @@ export class Client {
     }>;
     dashboardIds?: string[];
   }): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($input: LineChartSearchInsightInput!) {
         createLineChartSearchInsight(input: $input) {
           view {
@@ -541,20 +582,26 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
   }
 
-  async updateLineChartInsight(insightViewId: string, input: {
-    title?: string;
-    dataSeries?: Array<{
-      query?: string;
-      label?: string;
-      repositoryScope?: { repositories: string[] };
-      timeScope?: { stepInterval: string; stepValue: number };
-      lineColor?: string;
-    }>;
-  }): Promise<any> {
-    return this.graphql(`
+  async updateLineChartInsight(
+    insightViewId: string,
+    input: {
+      title?: string;
+      dataSeries?: Array<{
+        query?: string;
+        label?: string;
+        repositoryScope?: { repositories: string[] };
+        timeScope?: { stepInterval: string; stepValue: number };
+        lineColor?: string;
+      }>;
+    }
+  ): Promise<any> {
+    return this.graphql(
+      `
       mutation($id: ID!, $input: UpdateLineChartSearchInsightInput!) {
         updateLineChartSearchInsight(id: $id, input: $input) {
           view {
@@ -570,25 +617,27 @@ export class Client {
           }
         }
       }
-    `, { id: insightViewId, input });
+    `,
+      { id: insightViewId, input }
+    );
   }
 
   async deleteInsightView(insightViewId: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($id: ID!) {
         deleteInsightView(id: $id) {
           alwaysNil
         }
       }
-    `, { id: insightViewId });
+    `,
+      { id: insightViewId }
+    );
   }
 
   // Insights Dashboards
 
-  async listInsightsDashboards(options?: {
-    first?: number;
-    after?: string;
-  }): Promise<any> {
+  async listInsightsDashboards(options?: { first?: number; after?: string }): Promise<any> {
     let args: string[] = [];
     if (options?.first) args.push(`first: ${options.first}`);
     if (options?.after) args.push(`after: "${options.after}"`);
@@ -627,7 +676,8 @@ export class Client {
     title: string;
     grants: { users?: string[]; organizations?: string[]; global?: boolean };
   }): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($input: CreateInsightsDashboardInput!) {
         createInsightsDashboard(input: $input) {
           dashboard {
@@ -636,15 +686,14 @@ export class Client {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
   }
 
   // Code Monitors operations
 
-  async listCodeMonitors(options?: {
-    first?: number;
-    after?: string;
-  }): Promise<any> {
+  async listCodeMonitors(options?: { first?: number; after?: string }): Promise<any> {
     let args: string[] = [];
     if (options?.first) args.push(`first: ${options.first}`);
     if (options?.after) args.push(`after: "${options.after}"`);
@@ -716,7 +765,8 @@ export class Client {
       webhook?: { enabled: boolean; url: string };
     }>;
   }): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($monitor: MonitorInput!, $trigger: MonitorTriggerInput!, $actions: [MonitorActionInput!]!) {
         createCodeMonitor(monitor: $monitor, trigger: $trigger, actions: $actions) {
           id
@@ -748,29 +798,35 @@ export class Client {
           }
         }
       }
-    `, {
-      monitor: {
-        namespace: input.namespace,
-        description: input.description,
-        enabled: input.enabled
-      },
-      trigger: { query: input.trigger.query },
-      actions: input.actions
-    });
+    `,
+      {
+        monitor: {
+          namespace: input.namespace,
+          description: input.description,
+          enabled: input.enabled
+        },
+        trigger: { query: input.trigger.query },
+        actions: input.actions
+      }
+    );
   }
 
   async deleteCodeMonitor(monitorId: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($id: ID!) {
         deleteCodeMonitor(id: $id) {
           alwaysNil
         }
       }
-    `, { id: monitorId });
+    `,
+      { id: monitorId }
+    );
   }
 
   async toggleCodeMonitor(monitorId: string, enabled: boolean): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($id: ID!, $update: MonitorEditInput!) {
         updateCodeMonitor(monitor: $id, update: $update) {
           id
@@ -778,7 +834,9 @@ export class Client {
           enabled
         }
       }
-    `, { id: monitorId, update: { enabled } });
+    `,
+      { id: monitorId, update: { enabled } }
+    );
   }
 
   // User operations
@@ -805,11 +863,7 @@ export class Client {
     `);
   }
 
-  async listUsers(options?: {
-    first?: number;
-    after?: string;
-    query?: string;
-  }): Promise<any> {
+  async listUsers(options?: { first?: number; after?: string; query?: string }): Promise<any> {
     let args: string[] = [];
     if (options?.first) args.push(`first: ${options.first}`);
     if (options?.after) args.push(`after: "${options.after}"`);
@@ -877,7 +931,8 @@ export class Client {
     eventTypes: string[];
     secret?: string;
   }): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($input: OutgoingWebhookInput!) {
         createOutgoingWebhook(input: $input) {
           id
@@ -887,23 +942,28 @@ export class Client {
           }
         }
       }
-    `, {
-      input: {
-        url: input.url,
-        eventTypes: input.eventTypes.map(et => ({ eventType: et })),
-        secret: input.secret || ''
+    `,
+      {
+        input: {
+          url: input.url,
+          eventTypes: input.eventTypes.map(et => ({ eventType: et })),
+          secret: input.secret || ''
+        }
       }
-    });
+    );
   }
 
   async deleteOutgoingWebhook(webhookId: string): Promise<any> {
-    return this.graphql(`
+    return this.graphql(
+      `
       mutation($id: ID!) {
         deleteOutgoingWebhook(id: $id) {
           alwaysNil
         }
       }
-    `, { id: webhookId });
+    `,
+      { id: webhookId }
+    );
   }
 
   // Search Contexts

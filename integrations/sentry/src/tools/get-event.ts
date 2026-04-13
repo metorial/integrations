@@ -3,34 +3,44 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getEventTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Event',
-    key: 'get_event',
-    description: `Retrieve a specific error event by ID, or list events for an issue. Returns full event details including stack traces, exception data, breadcrumbs, and contextual information.`,
-    instructions: [
-      'To get a specific event: provide projectSlug and eventId',
-      'To list events for an issue: provide issueId',
-      'To get the latest event for an issue: provide issueId and set latest to true'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let getEventTool = SlateTool.create(spec, {
+  name: 'Get Event',
+  key: 'get_event',
+  description: `Retrieve a specific error event by ID, or list events for an issue. Returns full event details including stack traces, exception data, breadcrumbs, and contextual information.`,
+  instructions: [
+    'To get a specific event: provide projectSlug and eventId',
+    'To list events for an issue: provide issueId',
+    'To get the latest event for an issue: provide issueId and set latest to true'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    eventId: z.string().optional().describe('Specific event ID to retrieve'),
-    projectSlug: z.string().optional().describe('Project slug (required when getting event by ID)'),
-    issueId: z.string().optional().describe('Issue ID to list events for or get latest event'),
-    latest: z.boolean().optional().describe('If true and issueId provided, fetch only the latest event'),
-    cursor: z.string().optional().describe('Pagination cursor for listing events')
-  }))
-  .output(z.object({
-    event: z.any().optional().describe('Single event data with stack trace and context'),
-    events: z.array(z.any()).optional().describe('List of events for an issue')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z.string().optional().describe('Specific event ID to retrieve'),
+      projectSlug: z
+        .string()
+        .optional()
+        .describe('Project slug (required when getting event by ID)'),
+      issueId: z
+        .string()
+        .optional()
+        .describe('Issue ID to list events for or get latest event'),
+      latest: z
+        .boolean()
+        .optional()
+        .describe('If true and issueId provided, fetch only the latest event'),
+      cursor: z.string().optional().describe('Pagination cursor for listing events')
+    })
+  )
+  .output(
+    z.object({
+      event: z.any().optional().describe('Single event data with stack trace and context'),
+      events: z.array(z.any()).optional().describe('List of events for an issue')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.eventId && ctx.input.projectSlug) {
@@ -60,4 +70,5 @@ export let getEventTool = SlateTool.create(
     }
 
     throw new Error('Provide either eventId+projectSlug or issueId');
-  }).build();
+  })
+  .build();

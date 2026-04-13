@@ -18,8 +18,8 @@ export class Client {
       baseURL,
       headers: {
         'X-Api-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -32,7 +32,7 @@ export class Client {
   // Person Bulk Enrichment
   async bulkEnrichPerson(requests: Record<string, unknown>[]) {
     let response = await this.axios.post('/person/bulk', {
-      requests,
+      requests
     });
     return response.data;
   }
@@ -104,7 +104,7 @@ export class Client {
   // IP Enrichment
   async enrichIp(ip: string, params?: Record<string, unknown>) {
     let response = await this.axios.get('/ip/enrich', {
-      params: { ip, ...params },
+      params: { ip, ...params }
     });
     return response.data;
   }
@@ -112,7 +112,7 @@ export class Client {
   // Job Title Enrichment
   async enrichJobTitle(jobTitle: string, params?: Record<string, unknown>) {
     let response = await this.axios.get('/job_title/enrich', {
-      params: { job_title: jobTitle, ...params },
+      params: { job_title: jobTitle, ...params }
     });
     return response.data;
   }
@@ -120,7 +120,7 @@ export class Client {
   // Skill Enrichment
   async enrichSkill(skill: string, params?: Record<string, unknown>) {
     let response = await this.axios.get('/skill/enrich', {
-      params: { skill, ...params },
+      params: { skill, ...params }
     });
     return response.data;
   }
@@ -128,7 +128,7 @@ export class Client {
   // Company Cleaner
   async cleanCompany(name: string) {
     let response = await this.axios.get('/company/clean', {
-      params: { name },
+      params: { name }
     });
     return response.data;
   }
@@ -136,7 +136,7 @@ export class Client {
   // Location Cleaner
   async cleanLocation(location: string) {
     let response = await this.axios.get('/location/clean', {
-      params: { location },
+      params: { location }
     });
     return response.data;
   }
@@ -144,7 +144,7 @@ export class Client {
   // School Cleaner
   async cleanSchool(name: string) {
     let response = await this.axios.get('/school/clean', {
-      params: { name },
+      params: { name }
     });
     return response.data;
   }
@@ -157,7 +157,7 @@ export class Client {
     titlecase?: boolean;
   }) {
     let response = await this.axios.get('/autocomplete', {
-      params,
+      params
     });
     return response.data;
   }

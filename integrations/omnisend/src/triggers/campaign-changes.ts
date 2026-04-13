@@ -3,45 +3,47 @@ import { OmnisendClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Changes',
-    key: 'campaign_changes',
-    description: 'Triggers when campaigns are created or updated in Omnisend. Polls for recently modified campaigns across email, SMS, and push channels.',
-  }
-)
-  .input(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    name: z.string().optional().describe('Campaign name'),
-    channel: z.string().optional().describe('Channel (email, sms, push)'),
-    type: z.string().optional().describe('Campaign type'),
-    status: z.string().optional().describe('Campaign status'),
-    subjectLine: z.string().optional().describe('Email subject line'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    name: z.string().optional().describe('Campaign name'),
-    channel: z.string().optional().describe('Channel (email, sms, push)'),
-    type: z.string().optional().describe('Campaign type'),
-    status: z.string().optional().describe('Campaign status'),
-    subjectLine: z.string().optional().describe('Email subject line'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last updated timestamp'),
-  }))
+export let campaignChanges = SlateTrigger.create(spec, {
+  name: 'Campaign Changes',
+  key: 'campaign_changes',
+  description:
+    'Triggers when campaigns are created or updated in Omnisend. Polls for recently modified campaigns across email, SMS, and push channels.'
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      name: z.string().optional().describe('Campaign name'),
+      channel: z.string().optional().describe('Channel (email, sms, push)'),
+      type: z.string().optional().describe('Campaign type'),
+      status: z.string().optional().describe('Campaign status'),
+      subjectLine: z.string().optional().describe('Email subject line'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      name: z.string().optional().describe('Campaign name'),
+      channel: z.string().optional().describe('Channel (email, sms, push)'),
+      type: z.string().optional().describe('Campaign type'),
+      status: z.string().optional().describe('Campaign status'),
+      subjectLine: z.string().optional().describe('Email subject line'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last updated timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new OmnisendClient(ctx.auth.token);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
 
       let result = await client.listCampaigns({
-        updatedAtFrom: lastPollTime,
+        updatedAtFrom: lastPollTime
       });
 
       let campaigns = result.campaigns || [];
@@ -70,7 +72,7 @@ export let campaignChanges = SlateTrigger.create(
           status: campaign.status,
           subjectLine: campaign.subjectLine,
           createdAt: campaign.createdAt,
-          updatedAt,
+          updatedAt
         });
 
         seenIds[campaign.id] = true;
@@ -88,12 +90,12 @@ export let campaignChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           lastPollTime: newLastPollTime || new Date().toISOString(),
-          seenIds,
-        },
+          seenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `campaign.updated`,
         id: `campaign-${ctx.input.campaignId}-${ctx.input.updatedAt || Date.now()}`,
@@ -105,8 +107,9 @@ export let campaignChanges = SlateTrigger.create(
           status: ctx.input.status,
           subjectLine: ctx.input.subjectLine,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

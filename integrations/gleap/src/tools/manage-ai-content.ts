@@ -3,27 +3,34 @@ import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAiContent = SlateTool.create(
-  spec,
-  {
-    name: 'Manage AI Content',
-    key: 'manage_ai_content',
-    description: `Create, update, retrieve, or delete AI content that powers Gleap's AI assistant (Kai). AI content is used for automated customer support responses.`,
-    tags: {
-      destructive: false
-    }
+export let manageAiContent = SlateTool.create(spec, {
+  name: 'Manage AI Content',
+  key: 'manage_ai_content',
+  description: `Create, update, retrieve, or delete AI content that powers Gleap's AI assistant (Kai). AI content is used for automated customer support responses.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('Action to perform'),
-    contentId: z.string().optional().describe('Content ID (required for get, update, delete)'),
-    contentData: z.record(z.string(), z.any()).optional().describe('AI content data (required for create and update)')
-  }))
-  .output(z.object({
-    content: z.record(z.string(), z.any()).optional().describe('The AI content object'),
-    deleted: z.boolean().optional().describe('Whether the content was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'get', 'update', 'delete']).describe('Action to perform'),
+      contentId: z
+        .string()
+        .optional()
+        .describe('Content ID (required for get, update, delete)'),
+      contentData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('AI content data (required for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      content: z.record(z.string(), z.any()).optional().describe('The AI content object'),
+      deleted: z.boolean().optional().describe('Whether the content was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GleapClient({
       token: ctx.auth.token,
       projectId: ctx.auth.projectId
@@ -55,7 +62,10 @@ export let manageAiContent = SlateTool.create(
       if (!ctx.input.contentId) {
         throw new Error('contentId is required when updating AI content');
       }
-      let content = await client.updateAiContent(ctx.input.contentId, ctx.input.contentData || {});
+      let content = await client.updateAiContent(
+        ctx.input.contentId,
+        ctx.input.contentData || {}
+      );
       return {
         output: { content },
         message: `Updated AI content **${ctx.input.contentId}**.`

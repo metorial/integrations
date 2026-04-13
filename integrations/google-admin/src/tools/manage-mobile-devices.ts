@@ -3,58 +3,80 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMobileDevices = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Mobile Devices',
-    key: 'manage_mobile_devices',
-    description: `List, get, perform actions on, or delete mobile devices. Supports searching and remote actions like approve, block, wipe, and account wipe.`,
-    tags: {
-      readOnly: false,
-      destructive: false
-    }
+export let manageMobileDevices = SlateTool.create(spec, {
+  name: 'Manage Mobile Devices',
+  key: 'manage_mobile_devices',
+  description: `List, get, perform actions on, or delete mobile devices. Supports searching and remote actions like approve, block, wipe, and account wipe.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'device_action', 'delete']).describe('Action to perform'),
-    resourceId: z.string().optional().describe('Mobile device resource ID (required for get, device_action, delete)'),
-    query: z.string().optional().describe('Search query for listing devices'),
-    deviceAction: z.enum(['admin_remote_wipe', 'admin_account_wipe', 'approve', 'block', 'cancel_remote_wipe_then_activate', 'cancel_remote_wipe_then_block']).optional().describe('Remote action to perform on the device'),
-    maxResults: z.number().optional(),
-    pageToken: z.string().optional(),
-    orderBy: z.enum(['deviceId', 'email', 'lastSync', 'model', 'name', 'os', 'status', 'type']).optional()
-  }))
-  .output(z.object({
-    devices: z.array(z.object({
-      resourceId: z.string().optional(),
-      deviceId: z.string().optional(),
-      name: z.array(z.string()).optional(),
-      email: z.array(z.string()).optional(),
-      model: z.string().optional(),
-      os: z.string().optional(),
-      type: z.string().optional(),
-      status: z.string().optional(),
-      lastSync: z.string().optional()
-    })).optional(),
-    device: z.object({
-      resourceId: z.string().optional(),
-      deviceId: z.string().optional(),
-      name: z.array(z.string()).optional(),
-      email: z.array(z.string()).optional(),
-      model: z.string().optional(),
-      os: z.string().optional(),
-      type: z.string().optional(),
-      status: z.string().optional(),
-      lastSync: z.string().optional(),
-      firstSync: z.string().optional(),
-      userAgent: z.string().optional()
-    }).optional(),
-    nextPageToken: z.string().optional(),
-    actionPerformed: z.string().optional(),
-    deleted: z.boolean().optional(),
-    action: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'device_action', 'delete']).describe('Action to perform'),
+      resourceId: z
+        .string()
+        .optional()
+        .describe('Mobile device resource ID (required for get, device_action, delete)'),
+      query: z.string().optional().describe('Search query for listing devices'),
+      deviceAction: z
+        .enum([
+          'admin_remote_wipe',
+          'admin_account_wipe',
+          'approve',
+          'block',
+          'cancel_remote_wipe_then_activate',
+          'cancel_remote_wipe_then_block'
+        ])
+        .optional()
+        .describe('Remote action to perform on the device'),
+      maxResults: z.number().optional(),
+      pageToken: z.string().optional(),
+      orderBy: z
+        .enum(['deviceId', 'email', 'lastSync', 'model', 'name', 'os', 'status', 'type'])
+        .optional()
+    })
+  )
+  .output(
+    z.object({
+      devices: z
+        .array(
+          z.object({
+            resourceId: z.string().optional(),
+            deviceId: z.string().optional(),
+            name: z.array(z.string()).optional(),
+            email: z.array(z.string()).optional(),
+            model: z.string().optional(),
+            os: z.string().optional(),
+            type: z.string().optional(),
+            status: z.string().optional(),
+            lastSync: z.string().optional()
+          })
+        )
+        .optional(),
+      device: z
+        .object({
+          resourceId: z.string().optional(),
+          deviceId: z.string().optional(),
+          name: z.array(z.string()).optional(),
+          email: z.array(z.string()).optional(),
+          model: z.string().optional(),
+          os: z.string().optional(),
+          type: z.string().optional(),
+          status: z.string().optional(),
+          lastSync: z.string().optional(),
+          firstSync: z.string().optional(),
+          userAgent: z.string().optional()
+        })
+        .optional(),
+      nextPageToken: z.string().optional(),
+      actionPerformed: z.string().optional(),
+      deleted: z.boolean().optional(),
+      action: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,

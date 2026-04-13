@@ -3,23 +3,24 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPrintJobs = SlateTool.create(
-  spec,
-  {
-    name: 'List Print Jobs',
-    key: 'list_print_jobs',
-    description: `Retrieves print jobs from your PrintAutopilot account. Use this to monitor and track the status of submitted documents across your print queues.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
+export let listPrintJobs = SlateTool.create(spec, {
+  name: 'List Print Jobs',
+  key: 'list_print_jobs',
+  description: `Retrieves print jobs from your PrintAutopilot account. Use this to monitor and track the status of submitted documents across your print queues.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    printJobs: z.array(z.any()).describe('List of print jobs from the PrintAutopilot account.'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      printJobs: z
+        .array(z.any())
+        .describe('List of print jobs from the PrintAutopilot account.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     ctx.progress('Fetching print jobs...');
@@ -30,8 +31,9 @@ export let listPrintJobs = SlateTool.create(
 
     return {
       output: {
-        printJobs,
+        printJobs
       },
-      message: `Retrieved **${printJobs.length}** print job(s).`,
+      message: `Retrieved **${printJobs.length}** print job(s).`
     };
-  }).build();
+  })
+  .build();

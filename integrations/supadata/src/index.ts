@@ -14,7 +14,7 @@ import {
   getYouTubeChannel,
   getYouTubePlaylist,
   getYouTubeVideo,
-  translateYouTubeTranscript,
+  translateYouTubeTranscript
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     getYouTubeChannel,
     getYouTubePlaylist,
     getYouTubeVideo,
-    translateYouTubeTranscript,
+    translateYouTubeTranscript
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

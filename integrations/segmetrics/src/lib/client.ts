@@ -8,9 +8,9 @@ export class ImportClient {
     this.axios = createAxios({
       baseURL: `https://import.segmetrics.io/api/v1/${config.accountId}/${config.integrationId}`,
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,7 +28,11 @@ export class ImportClient {
 
   // --- Tags ---
 
-  async addTags(params: { contactId?: string; email?: string; tags: unknown[] }): Promise<Record<string, unknown>> {
+  async addTags(params: {
+    contactId?: string;
+    email?: string;
+    tags: unknown[];
+  }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { tags: params.tags };
     if (params.contactId) body.contact_id = params.contactId;
     if (params.email) body.email = params.email;
@@ -36,7 +40,11 @@ export class ImportClient {
     return response.data;
   }
 
-  async removeTags(params: { contactId?: string; email?: string; tags: unknown[] }): Promise<Record<string, unknown>> {
+  async removeTags(params: {
+    contactId?: string;
+    email?: string;
+    tags: unknown[];
+  }): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = { tags: params.tags };
     if (params.contactId) body.contact_id = params.contactId;
     if (params.email) body.email = params.email;
@@ -58,26 +66,35 @@ export class ImportClient {
 
   // --- Subscriptions ---
 
-  async upsertSubscription(subscription: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async upsertSubscription(
+    subscription: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/subscription', subscription);
     return response.data;
   }
 
   async deleteSubscription(subscriptionId: string): Promise<Record<string, unknown>> {
-    let response = await this.axios.delete(`/subscription/${encodeURIComponent(subscriptionId)}`);
+    let response = await this.axios.delete(
+      `/subscription/${encodeURIComponent(subscriptionId)}`
+    );
     return response.data;
   }
 
   // --- Products ---
 
-  async upsertProduct(product: { id: string; name: string }): Promise<Record<string, unknown>> {
+  async upsertProduct(product: {
+    id: string;
+    name: string;
+  }): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/product', product);
     return response.data;
   }
 
   // --- Ad Performance ---
 
-  async recordAdPerformance(adPerformance: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async recordAdPerformance(
+    adPerformance: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.post('/ad/performance', adPerformance);
     return response.data;
   }
@@ -90,9 +107,9 @@ export class ReportingClient {
     this.axios = createAxios({
       baseURL: `https://api.segmetrics.io/${config.accountId}`,
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -111,7 +128,7 @@ export class ReportingClient {
     if (params.scale) queryParams.scale = params.scale;
 
     let response = await this.axios.get(`/report/${params.reportType}/${params.reportId}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -129,12 +146,16 @@ export class ReportingClient {
     let queryParams: Record<string, string> = {};
     if (params.start) queryParams.start = params.start;
     if (params.end) queryParams.end = params.end;
-    if (params.extend && params.extend.length > 0) queryParams.extend = params.extend.join(',');
+    if (params.extend && params.extend.length > 0)
+      queryParams.extend = params.extend.join(',');
     if (params.page) queryParams.page = String(params.page);
 
-    let response = await this.axios.get(`/report/${params.reportType}/${params.reportId}/contacts`, {
-      params: queryParams,
-    });
+    let response = await this.axios.get(
+      `/report/${params.reportType}/${params.reportId}/contacts`,
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 
@@ -145,11 +166,15 @@ export class ReportingClient {
     extend?: string[];
   }): Promise<Record<string, unknown>> {
     let queryParams: Record<string, string> = {};
-    if (params.extend && params.extend.length > 0) queryParams.extend = params.extend.join(',');
+    if (params.extend && params.extend.length > 0)
+      queryParams.extend = params.extend.join(',');
 
-    let response = await this.axios.get(`/contact/${encodeURIComponent(params.contactIdOrEmail)}`, {
-      params: queryParams,
-    });
+    let response = await this.axios.get(
+      `/contact/${encodeURIComponent(params.contactIdOrEmail)}`,
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 }
@@ -159,20 +184,23 @@ export class TrackingClient {
 
   constructor(config: { accountId: string }) {
     this.axios = createAxios({
-      baseURL: 'https://track.segmetrics.io',
+      baseURL: 'https://track.segmetrics.io'
     });
     this.accountId = config.accountId;
   }
 
   private accountId: string;
 
-  async identifyVisitor(params: { segUid: string; email: string }): Promise<Record<string, unknown>> {
+  async identifyVisitor(params: {
+    segUid: string;
+    email: string;
+  }): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/identify', {
       params: {
         account_id: this.accountId,
         seg_uid: params.segUid,
-        email: params.email,
-      },
+        email: params.email
+      }
     });
     return response.data;
   }

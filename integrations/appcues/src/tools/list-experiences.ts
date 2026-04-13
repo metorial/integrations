@@ -7,36 +7,43 @@ let experienceSchema = z.object({
   experienceId: z.string().describe('Unique identifier for the experience'),
   name: z.string().describe('Name of the experience'),
   published: z.boolean().describe('Whether the experience is currently published'),
-  experienceType: z.string().describe('Type of experience (flow, pin, banner, launchpad, checklist, mobile, nps, embed)'),
+  experienceType: z
+    .string()
+    .describe(
+      'Type of experience (flow, pin, banner, launchpad, checklist, mobile, nps, embed)'
+    ),
   createdAt: z.string().optional().describe('When the experience was created'),
   updatedAt: z.string().optional().describe('When the experience was last updated'),
   frequency: z.string().optional().describe('Frequency setting (e.g. once, every_time)'),
-  tags: z.array(z.string()).optional().describe('Tags associated with the experience'),
+  tags: z.array(z.string()).optional().describe('Tags associated with the experience')
 });
 
-export let listExperiences = SlateTool.create(
-  spec,
-  {
-    name: 'List Experiences',
-    key: 'list_experiences',
-    description: `List all experiences in your Appcues account. Supports filtering by experience type to retrieve flows, pins, banners, launchpads, checklists, mobile experiences, NPS surveys, or embeds. Returns key metadata including publish status, name, and tags.`,
-    tags: {
-      readOnly: true,
-    },
+export let listExperiences = SlateTool.create(spec, {
+  name: 'List Experiences',
+  key: 'list_experiences',
+  description: `List all experiences in your Appcues account. Supports filtering by experience type to retrieve flows, pins, banners, launchpads, checklists, mobile experiences, NPS surveys, or embeds. Returns key metadata including publish status, name, and tags.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    experienceType: z.enum(['flow', 'pin', 'banner', 'launchpad', 'checklist', 'mobile', 'nps', 'embed']).optional()
-      .describe('Filter by experience type. If omitted, returns all experience types.'),
-  }))
-  .output(z.object({
-    experiences: z.array(experienceSchema).describe('List of experiences'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      experienceType: z
+        .enum(['flow', 'pin', 'banner', 'launchpad', 'checklist', 'mobile', 'nps', 'embed'])
+        .optional()
+        .describe('Filter by experience type. If omitted, returns all experience types.')
+    })
+  )
+  .output(
+    z.object({
+      experiences: z.array(experienceSchema).describe('List of experiences')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AppcuesClient({
       token: ctx.auth.token,
       accountId: ctx.config.accountId,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let types = ctx.input.experienceType
@@ -53,7 +60,7 @@ export let listExperiences = SlateTool.create(
       checklist: () => client.listChecklists(),
       mobile: () => client.listMobileExperiences(),
       nps: () => client.listNps(),
-      embed: () => client.listEmbeds(),
+      embed: () => client.listEmbeds()
     };
 
     for (let type of types) {
@@ -71,7 +78,11 @@ export let listExperiences = SlateTool.create(
               createdAt: item.created_at || item.createdAt || undefined,
               updatedAt: item.updated_at || item.updatedAt || undefined,
               frequency: item.frequency || undefined,
-              tags: item.tags ? (Array.isArray(item.tags) ? item.tags.map((t: any) => t.name || t) : undefined) : undefined,
+              tags: item.tags
+                ? Array.isArray(item.tags)
+                  ? item.tags.map((t: any) => t.name || t)
+                  : undefined
+                : undefined
             });
           }
         }
@@ -82,7 +93,7 @@ export let listExperiences = SlateTool.create(
 
     return {
       output: { experiences: allExperiences },
-      message: `Found **${allExperiences.length}** experience(s)${ctx.input.experienceType ? ` of type **${ctx.input.experienceType}**` : ' across all types'}.`,
+      message: `Found **${allExperiences.length}** experience(s)${ctx.input.experienceType ? ` of type **${ctx.input.experienceType}**` : ' across all types'}.`
     };
   })
   .build();

@@ -19,12 +19,9 @@ import {
   manageAccessTokens,
   manageServiceLinks,
   listUsers,
-  getVersion,
+  getVersion
 } from './tools';
-import {
-  itemEvent,
-  deployEvent,
-} from './triggers';
+import { itemEvent, deployEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +44,7 @@ export let provider = Slate.create({
     manageAccessTokens,
     manageServiceLinks,
     listUsers,
-    getVersion,
+    getVersion
   ],
-  triggers: [
-    itemEvent,
-    deployEvent,
-  ],
+  triggers: [itemEvent, deployEvent]
 });

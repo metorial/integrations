@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface ShortLink {
   id: number;
@@ -177,18 +177,18 @@ export class Client {
     this.api = createAxios({
       baseURL: 'https://api.short.io',
       headers: {
-        'Authorization': config.token,
+        Authorization: config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     this.statsApi = createAxios({
       baseURL: 'https://api-v2.short.io',
       headers: {
-        'Authorization': config.token,
-        'Accept': 'application/json',
-      },
+        Authorization: config.token,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -214,14 +214,14 @@ export class Client {
 
   async expandLink(domain: string, path: string): Promise<ShortLink> {
     let response = await this.api.get('/links/expand', {
-      params: { domain, path },
+      params: { domain, path }
     });
     return response.data;
   }
 
   async getLinkByOriginalUrl(domain: string, originalURL: string): Promise<ShortLink> {
     let response = await this.api.get('/links/by-original-url', {
-      params: { domain, originalURL },
+      params: { domain, originalURL }
     });
     return response.data;
   }
@@ -229,7 +229,7 @@ export class Client {
   async listLinks(params: ListLinksParams): Promise<ListLinksResponse> {
     let { domainId, ...rest } = params;
     let response = await this.api.get('/api/links', {
-      params: { domain_id: domainId, ...rest },
+      params: { domain_id: domainId, ...rest }
     });
     return response.data;
   }
@@ -257,47 +257,53 @@ export class Client {
   async getLinkStatistics(linkId: string, params: StatisticsParams): Promise<LinkStatistics> {
     let queryParams: Record<string, unknown> = {
       period: params.period,
-      tzOffset: params.tzOffset ?? 0,
+      tzOffset: params.tzOffset ?? 0
     };
     if (params.period === 'custom') {
       queryParams.startDate = params.startDate;
       queryParams.endDate = params.endDate;
     }
     let response = await this.statsApi.get(`/statistics/link/${linkId}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async getDomainStatistics(domainId: number, params: StatisticsParams): Promise<DomainStatistics> {
+  async getDomainStatistics(
+    domainId: number,
+    params: StatisticsParams
+  ): Promise<DomainStatistics> {
     let queryParams: Record<string, unknown> = {
       period: params.period,
-      tzOffset: params.tzOffset ?? 0,
+      tzOffset: params.tzOffset ?? 0
     };
     if (params.period === 'custom') {
       queryParams.startDate = params.startDate;
       queryParams.endDate = params.endDate;
     }
     let response = await this.statsApi.get(`/statistics/domain/${domainId}`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   async generateQrCode(linkIdString: string, params?: QrCodeParams): Promise<string> {
-    let response = await this.api.post(`/links/qr/${linkIdString}`, {
-      ...params,
-      useDomainSettings: true,
-    }, {
-      responseType: 'arraybuffer',
-    });
+    let response = await this.api.post(
+      `/links/qr/${linkIdString}`,
+      {
+        ...params,
+        useDomainSettings: true
+      },
+      {
+        responseType: 'arraybuffer'
+      }
+    );
 
     let contentType = response.headers?.['content-type'] || 'image/png';
     if (contentType.includes('svg')) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       return Buffer.from(response.data).toString('utf-8');
     }
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     let base64 = Buffer.from(response.data).toString('base64');
     return `data:${contentType};base64,${base64}`;
   }
@@ -307,7 +313,11 @@ export class Client {
     return response.data;
   }
 
-  async setOpenGraph(domainId: number, linkId: string, ogData: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async setOpenGraph(
+    domainId: number,
+    linkId: string,
+    ogData: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await this.api.put(`/links/opengraph/${domainId}/${linkId}`, ogData);
     return response.data;
   }

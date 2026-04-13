@@ -13,6 +13,7 @@ To obtain your API Key, you will need to log into your account. Go to the API Ma
 The API Key needs to be added to the header of each request. The name of the header is `X-API-Key` and the value will be the key which begins with `cl-`.
 
 Example:
+
 ```
 X-API-Key: cl-your-api-key-here
 ```

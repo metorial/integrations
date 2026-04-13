@@ -11,7 +11,7 @@ export class Client {
 
   constructor(private config: ClientConfig) {
     let headers: Record<string, string> = {
-      Authorization: `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`
     };
 
     if (config.organizationId) {
@@ -24,7 +24,7 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: 'https://api.openai.com/v1',
-      headers,
+      headers
     });
   }
 
@@ -34,7 +34,9 @@ export class Client {
     model: string;
     messages: Array<{
       role: string;
-      content: string | Array<{ type: string; text?: string; image_url?: { url: string; detail?: string } }>;
+      content:
+        | string
+        | Array<{ type: string; text?: string; image_url?: { url: string; detail?: string } }>;
       name?: string;
     }>;
     temperature?: number;
@@ -54,13 +56,14 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       model: params.model,
-      messages: params.messages,
+      messages: params.messages
     };
 
     if (params.temperature !== undefined) body.temperature = params.temperature;
     if (params.maxTokens !== undefined) body.max_tokens = params.maxTokens;
     if (params.topP !== undefined) body.top_p = params.topP;
-    if (params.frequencyPenalty !== undefined) body.frequency_penalty = params.frequencyPenalty;
+    if (params.frequencyPenalty !== undefined)
+      body.frequency_penalty = params.frequencyPenalty;
     if (params.presencePenalty !== undefined) body.presence_penalty = params.presencePenalty;
     if (params.stop !== undefined) body.stop = params.stop;
     if (params.responseFormat !== undefined) body.response_format = params.responseFormat;
@@ -92,7 +95,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       model: params.model,
-      input: params.input,
+      input: params.input
     };
 
     if (params.instructions !== undefined) body.instructions = params.instructions;
@@ -132,7 +135,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       model: params.model,
-      input: params.input,
+      input: params.input
     };
 
     if (params.dimensions !== undefined) body.dimensions = params.dimensions;
@@ -156,7 +159,7 @@ export class Client {
     user?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      prompt: params.prompt,
+      prompt: params.prompt
     };
 
     if (params.model !== undefined) body.model = params.model;
@@ -183,14 +186,14 @@ export class Client {
     let body: Record<string, any> = {
       model: params.model,
       input: params.input,
-      voice: params.voice,
+      voice: params.voice
     };
 
     if (params.responseFormat !== undefined) body.response_format = params.responseFormat;
     if (params.speed !== undefined) body.speed = params.speed;
 
     let response = await this.axios.post('/audio/speech', body, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -205,20 +208,17 @@ export class Client {
   }): Promise<any> {
     let response = await this.axios.post('/audio/transcriptions', params.file, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   }
 
   // ─── Content Moderation ───
 
-  async createModeration(params: {
-    input: string | string[];
-    model?: string;
-  }): Promise<any> {
+  async createModeration(params: { input: string | string[]; model?: string }): Promise<any> {
     let body: Record<string, any> = {
-      input: params.input,
+      input: params.input
     };
 
     if (params.model !== undefined) body.model = params.model;
@@ -280,7 +280,7 @@ export class Client {
   }): Promise<any> {
     let body: Record<string, any> = {
       model: params.model,
-      training_file: params.trainingFile,
+      training_file: params.trainingFile
     };
 
     if (params.validationFile !== undefined) body.validation_file = params.validationFile;
@@ -289,9 +289,12 @@ export class Client {
 
     if (params.hyperparameters) {
       let hp: Record<string, any> = {};
-      if (params.hyperparameters.nEpochs !== undefined) hp.n_epochs = params.hyperparameters.nEpochs;
-      if (params.hyperparameters.batchSize !== undefined) hp.batch_size = params.hyperparameters.batchSize;
-      if (params.hyperparameters.learningRateMultiplier !== undefined) hp.learning_rate_multiplier = params.hyperparameters.learningRateMultiplier;
+      if (params.hyperparameters.nEpochs !== undefined)
+        hp.n_epochs = params.hyperparameters.nEpochs;
+      if (params.hyperparameters.batchSize !== undefined)
+        hp.batch_size = params.hyperparameters.batchSize;
+      if (params.hyperparameters.learningRateMultiplier !== undefined)
+        hp.learning_rate_multiplier = params.hyperparameters.learningRateMultiplier;
       body.hyperparameters = hp;
     }
 
@@ -318,12 +321,17 @@ export class Client {
     return response.data;
   }
 
-  async listFineTuningEvents(jobId: string, params?: { after?: string; limit?: number }): Promise<any> {
+  async listFineTuningEvents(
+    jobId: string,
+    params?: { after?: string; limit?: number }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.after) query.after = params.after;
     if (params?.limit) query.limit = params.limit;
 
-    let response = await this.axios.get(`/fine_tuning/jobs/${jobId}/events`, { params: query });
+    let response = await this.axios.get(`/fine_tuning/jobs/${jobId}/events`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -338,7 +346,7 @@ export class Client {
     let body: Record<string, any> = {
       input_file_id: params.inputFileId,
       endpoint: params.endpoint,
-      completion_window: params.completionWindow,
+      completion_window: params.completionWindow
     };
 
     if (params.metadata !== undefined) body.metadata = params.metadata;
@@ -376,14 +384,20 @@ export class Client {
     if (params.name !== undefined) body.name = params.name;
     if (params.fileIds !== undefined) body.file_ids = params.fileIds;
     if (params.expiresAfter !== undefined) body.expires_after = params.expiresAfter;
-    if (params.chunkingStrategy !== undefined) body.chunking_strategy = params.chunkingStrategy;
+    if (params.chunkingStrategy !== undefined)
+      body.chunking_strategy = params.chunkingStrategy;
     if (params.metadata !== undefined) body.metadata = params.metadata;
 
     let response = await this.axios.post('/vector_stores', body);
     return response.data;
   }
 
-  async listVectorStores(params?: { limit?: number; order?: string; after?: string; before?: string }): Promise<any> {
+  async listVectorStores(params?: {
+    limit?: number;
+    order?: string;
+    after?: string;
+    before?: string;
+  }): Promise<any> {
     let response = await this.axios.get('/vector_stores', { params });
     return response.data;
   }
@@ -393,11 +407,14 @@ export class Client {
     return response.data;
   }
 
-  async updateVectorStore(vectorStoreId: string, params: {
-    name?: string;
-    expiresAfter?: { anchor: string; days: number } | null;
-    metadata?: Record<string, string>;
-  }): Promise<any> {
+  async updateVectorStore(
+    vectorStoreId: string,
+    params: {
+      name?: string;
+      expiresAfter?: { anchor: string; days: number } | null;
+      metadata?: Record<string, string>;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/vector_stores/${vectorStoreId}`, params);
     return response.data;
   }
@@ -407,14 +424,17 @@ export class Client {
     return response.data;
   }
 
-  async searchVectorStore(vectorStoreId: string, params: {
-    query: string;
-    maxResults?: number;
-    filters?: any;
-    rankingOptions?: { ranker?: string; scoreThreshold?: number };
-  }): Promise<any> {
+  async searchVectorStore(
+    vectorStoreId: string,
+    params: {
+      query: string;
+      maxResults?: number;
+      filters?: any;
+      rankingOptions?: { ranker?: string; scoreThreshold?: number };
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
 
     if (params.maxResults !== undefined) body.max_num_results = params.maxResults;
@@ -427,27 +447,34 @@ export class Client {
 
   // ─── Vector Store Files ───
 
-  async addFileToVectorStore(vectorStoreId: string, params: {
-    fileId: string;
-    chunkingStrategy?: any;
-  }): Promise<any> {
+  async addFileToVectorStore(
+    vectorStoreId: string,
+    params: {
+      fileId: string;
+      chunkingStrategy?: any;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      file_id: params.fileId,
+      file_id: params.fileId
     };
 
-    if (params.chunkingStrategy !== undefined) body.chunking_strategy = params.chunkingStrategy;
+    if (params.chunkingStrategy !== undefined)
+      body.chunking_strategy = params.chunkingStrategy;
 
     let response = await this.axios.post(`/vector_stores/${vectorStoreId}/files`, body);
     return response.data;
   }
 
-  async listVectorStoreFiles(vectorStoreId: string, params?: {
-    limit?: number;
-    order?: string;
-    after?: string;
-    before?: string;
-    filter?: string;
-  }): Promise<any> {
+  async listVectorStoreFiles(
+    vectorStoreId: string,
+    params?: {
+      limit?: number;
+      order?: string;
+      after?: string;
+      before?: string;
+      filter?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/vector_stores/${vectorStoreId}/files`, { params });
     return response.data;
   }
@@ -459,13 +486,10 @@ export class Client {
 
   // ─── Webhooks ───
 
-  async createWebhook(params: {
-    url: string;
-    enabledEvents: string[];
-  }): Promise<any> {
+  async createWebhook(params: { url: string; enabledEvents: string[] }): Promise<any> {
     let response = await this.axios.post('/webhooks', {
       url: params.url,
-      enabled_events: params.enabledEvents,
+      enabled_events: params.enabledEvents
     });
     return response.data;
   }
@@ -475,11 +499,14 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, params: {
-    url?: string;
-    enabledEvents?: string[];
-    disabled?: boolean;
-  }): Promise<any> {
+  async updateWebhook(
+    webhookId: string,
+    params: {
+      url?: string;
+      enabledEvents?: string[];
+      disabled?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (params.url !== undefined) body.url = params.url;
     if (params.enabledEvents !== undefined) body.enabled_events = params.enabledEvents;

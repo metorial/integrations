@@ -7,8 +7,8 @@ export class Client {
     this.http = createAxios({
       baseURL: `https://${config.subdomain}.kanbanize.com/api/v2`,
       headers: {
-        apikey: config.token,
-      },
+        apikey: config.token
+      }
     });
   }
 
@@ -118,7 +118,7 @@ export class Client {
       workflow_id: data.workflowId,
       column_id: data.columnId,
       lane_id: data.laneId,
-      title: data.title,
+      title: data.title
     };
     if (data.description !== undefined) body.description = data.description;
     if (data.customId !== undefined) body.custom_id = data.customId;
@@ -132,21 +132,24 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateCard(cardId: number, data: {
-    title?: string;
-    description?: string;
-    ownerUserId?: number;
-    typeId?: number;
-    size?: number;
-    priority?: number;
-    color?: string;
-    deadline?: string;
-    columnId?: number;
-    laneId?: number;
-    workflowId?: number;
-    boardId?: number;
-    position?: number;
-  }) {
+  async updateCard(
+    cardId: number,
+    data: {
+      title?: string;
+      description?: string;
+      ownerUserId?: number;
+      typeId?: number;
+      size?: number;
+      priority?: number;
+      color?: string;
+      deadline?: string;
+      columnId?: number;
+      laneId?: number;
+      workflowId?: number;
+      boardId?: number;
+      position?: number;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.title !== undefined) body.title = data.title;
     if (data.description !== undefined) body.description = data.description;
@@ -219,11 +222,14 @@ export class Client {
     return response.data?.data;
   }
 
-  async createSubtask(cardId: number, data: {
-    description: string;
-    ownerUserId?: number;
-    isFinished?: number;
-  }) {
+  async createSubtask(
+    cardId: number,
+    data: {
+      description: string;
+      ownerUserId?: number;
+      isFinished?: number;
+    }
+  ) {
     let body: Record<string, any> = { description: data.description };
     if (data.ownerUserId !== undefined) body.owner_user_id = data.ownerUserId;
     if (data.isFinished !== undefined) body.is_finished = data.isFinished;
@@ -231,11 +237,15 @@ export class Client {
     return response.data?.data;
   }
 
-  async updateSubtask(cardId: number, subtaskId: number, data: {
-    description?: string;
-    ownerUserId?: number;
-    isFinished?: number;
-  }) {
+  async updateSubtask(
+    cardId: number,
+    subtaskId: number,
+    data: {
+      description?: string;
+      ownerUserId?: number;
+      isFinished?: number;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (data.description !== undefined) body.description = data.description;
     if (data.ownerUserId !== undefined) body.owner_user_id = data.ownerUserId;
@@ -259,14 +269,14 @@ export class Client {
   async linkCard(cardId: number, linkedCardId: number, linkType: number) {
     let response = await this.http.post(`/cards/${cardId}/linkedCards`, {
       linked_card_id: linkedCardId,
-      link_type: linkType,
+      link_type: linkType
     });
     return response.data?.data;
   }
 
   async unlinkCard(cardId: number, linkedCardId: number) {
     let response = await this.http.delete(`/cards/${cardId}/linkedCards`, {
-      data: { linked_card_id: linkedCardId },
+      data: { linked_card_id: linkedCardId }
     });
     return response.data;
   }
@@ -283,7 +293,7 @@ export class Client {
 
   async addParentCard(cardId: number, parentCardId: number) {
     let response = await this.http.post(`/cards/${cardId}/parents`, {
-      parent_card_id: parentCardId,
+      parent_card_id: parentCardId
     });
     return response.data?.data;
   }
@@ -318,7 +328,9 @@ export class Client {
   }
 
   async updateCustomField(cardId: number, fieldId: number, value: any) {
-    let response = await this.http.patch(`/cards/${cardId}/customFields/${fieldId}`, { value });
+    let response = await this.http.patch(`/cards/${cardId}/customFields/${fieldId}`, {
+      value
+    });
     return response.data?.data;
   }
 
@@ -369,7 +381,10 @@ export class Client {
 
   // ── Block / Unblock ──
 
-  async blockCard(cardId: number, data: { boardId: number; reasonId: number; comment?: string }) {
+  async blockCard(
+    cardId: number,
+    data: { boardId: number; reasonId: number; comment?: string }
+  ) {
     let body: Record<string, any> = { board_id: data.boardId, reason_id: data.reasonId };
     if (data.comment) body.comment = data.comment;
     let response = await this.http.post(`/cards/${cardId}/block`, body);

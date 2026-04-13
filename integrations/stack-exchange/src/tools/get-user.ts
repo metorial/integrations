@@ -6,52 +6,68 @@ import { z } from 'zod';
 let badgeCountSchema = z.object({
   gold: z.number().optional(),
   silver: z.number().optional(),
-  bronze: z.number().optional(),
+  bronze: z.number().optional()
 });
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get User Profile',
-    key: 'get_user',
-    description: `Retrieve a user's profile including reputation, badge counts, and top tags. Use "me" as the userId to get the authenticated user's profile. Can also search for users by display name.`,
-    tags: {
-      readOnly: true,
-    },
+export let getUser = SlateTool.create(spec, {
+  name: 'Get User Profile',
+  key: 'get_user',
+  description: `Retrieve a user's profile including reputation, badge counts, and top tags. Use "me" as the userId to get the authenticated user's profile. Can also search for users by display name.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('User ID to look up, or "me" for the authenticated user'),
-    displayName: z.string().optional().describe('Search for users by display name (used when userId is not provided)'),
-    includeTopTags: z.boolean().optional().default(false).describe('Whether to include the user\'s top answer tags'),
-  }))
-  .output(z.object({
-    userId: z.number().describe('Unique identifier of the user'),
-    displayName: z.string().describe('Display name of the user'),
-    profileImage: z.string().optional().describe('URL to the user\'s profile image'),
-    link: z.string().optional().describe('URL to the user\'s profile page'),
-    reputation: z.number().describe('User\'s reputation score'),
-    badgeCounts: badgeCountSchema.optional().describe('Number of badges by type'),
-    questionCount: z.number().optional().describe('Number of questions asked'),
-    answerCount: z.number().optional().describe('Number of answers posted'),
-    creationDate: z.string().describe('When the account was created (ISO 8601)'),
-    lastAccessDate: z.string().optional().describe('When the user last visited (ISO 8601)'),
-    location: z.string().optional().describe('User\'s stated location'),
-    websiteUrl: z.string().optional().describe('User\'s website URL'),
-    aboutMe: z.string().optional().describe('User\'s "About Me" text (HTML)'),
-    topTags: z.array(z.object({
-      tagName: z.string(),
-      answerCount: z.number(),
-      answerScore: z.number(),
-      questionCount: z.number(),
-      questionScore: z.number(),
-    })).optional().describe('User\'s top tags by answer score'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z
+        .string()
+        .optional()
+        .describe('User ID to look up, or "me" for the authenticated user'),
+      displayName: z
+        .string()
+        .optional()
+        .describe('Search for users by display name (used when userId is not provided)'),
+      includeTopTags: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe("Whether to include the user's top answer tags")
+    })
+  )
+  .output(
+    z.object({
+      userId: z.number().describe('Unique identifier of the user'),
+      displayName: z.string().describe('Display name of the user'),
+      profileImage: z.string().optional().describe("URL to the user's profile image"),
+      link: z.string().optional().describe("URL to the user's profile page"),
+      reputation: z.number().describe("User's reputation score"),
+      badgeCounts: badgeCountSchema.optional().describe('Number of badges by type'),
+      questionCount: z.number().optional().describe('Number of questions asked'),
+      answerCount: z.number().optional().describe('Number of answers posted'),
+      creationDate: z.string().describe('When the account was created (ISO 8601)'),
+      lastAccessDate: z.string().optional().describe('When the user last visited (ISO 8601)'),
+      location: z.string().optional().describe("User's stated location"),
+      websiteUrl: z.string().optional().describe("User's website URL"),
+      aboutMe: z.string().optional().describe('User\'s "About Me" text (HTML)'),
+      topTags: z
+        .array(
+          z.object({
+            tagName: z.string(),
+            answerCount: z.number(),
+            answerScore: z.number(),
+            questionCount: z.number(),
+            questionScore: z.number()
+          })
+        )
+        .optional()
+        .describe("User's top tags by answer score")
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       key: ctx.auth.key,
-      site: ctx.config.site,
+      site: ctx.config.site
     });
 
     let user: any;
@@ -82,7 +98,7 @@ export let getUser = SlateTool.create(
         answerCount: t.answer_count,
         answerScore: t.answer_score,
         questionCount: t.question_count,
-        questionScore: t.question_score,
+        questionScore: t.question_score
       }));
     }
 
@@ -92,23 +108,28 @@ export let getUser = SlateTool.create(
       profileImage: user.profile_image,
       link: user.link,
       reputation: user.reputation,
-      badgeCounts: user.badge_counts ? {
-        gold: user.badge_counts.gold,
-        silver: user.badge_counts.silver,
-        bronze: user.badge_counts.bronze,
-      } : undefined,
+      badgeCounts: user.badge_counts
+        ? {
+            gold: user.badge_counts.gold,
+            silver: user.badge_counts.silver,
+            bronze: user.badge_counts.bronze
+          }
+        : undefined,
       questionCount: user.question_count,
       answerCount: user.answer_count,
       creationDate: new Date(user.creation_date * 1000).toISOString(),
-      lastAccessDate: user.last_access_date ? new Date(user.last_access_date * 1000).toISOString() : undefined,
+      lastAccessDate: user.last_access_date
+        ? new Date(user.last_access_date * 1000).toISOString()
+        : undefined,
       location: user.location,
       websiteUrl: user.website_url,
       aboutMe: user.about_me,
-      topTags,
+      topTags
     };
 
     return {
       output,
-      message: `Retrieved profile for **${user.display_name}** (reputation: ${user.reputation}).`,
+      message: `Retrieved profile for **${user.display_name}** (reputation: ${user.reputation}).`
     };
-  }).build();
+  })
+  .build();

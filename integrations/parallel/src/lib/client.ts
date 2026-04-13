@@ -229,8 +229,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -245,14 +245,14 @@ export class Client {
     if (params.excerpts) {
       body.excerpts = {
         max_chars_per_result: params.excerpts.maxCharsPerResult,
-        max_chars_total: params.excerpts.maxCharsTotal,
+        max_chars_total: params.excerpts.maxCharsTotal
       };
     }
     if (params.sourcePolicy) {
       body.source_policy = {
         include_domains: params.sourcePolicy.includeDomains,
         exclude_domains: params.sourcePolicy.excludeDomains,
-        after_date: params.sourcePolicy.afterDate,
+        after_date: params.sourcePolicy.afterDate
       };
     }
 
@@ -264,9 +264,9 @@ export class Client {
         url: r.url,
         title: r.title,
         publishDate: r.publish_date ?? null,
-        excerpts: r.excerpts || [],
+        excerpts: r.excerpts || []
       })),
-      warnings: d.warnings ?? null,
+      warnings: d.warnings ?? null
     };
   }
 
@@ -274,7 +274,7 @@ export class Client {
 
   async extract(params: ExtractParams): Promise<ExtractResponse> {
     let body: Record<string, unknown> = {
-      urls: params.urls,
+      urls: params.urls
     };
     if (params.objective) body.objective = params.objective;
     if (params.searchQueries) body.search_queries = params.searchQueries;
@@ -284,7 +284,7 @@ export class Client {
       } else {
         body.excerpts = {
           max_chars_per_result: params.excerpts.maxCharsPerResult,
-          max_chars_total: params.excerpts.maxCharsTotal,
+          max_chars_total: params.excerpts.maxCharsTotal
         };
       }
     }
@@ -294,7 +294,7 @@ export class Client {
       } else {
         body.full_content = {
           max_chars_per_result: params.fullContent.maxCharsPerResult,
-          max_chars_total: params.fullContent.maxCharsTotal,
+          max_chars_total: params.fullContent.maxCharsTotal
         };
       }
     }
@@ -308,15 +308,15 @@ export class Client {
         title: r.title ?? null,
         publishDate: r.publish_date ?? null,
         excerpts: r.excerpts ?? null,
-        fullContent: r.full_content ?? null,
+        fullContent: r.full_content ?? null
       })),
       errors: (d.errors || []).map((e: any) => ({
         url: e.url,
         errorType: e.error_type,
         httpStatusCode: e.http_status_code ?? null,
-        content: e.content ?? null,
+        content: e.content ?? null
       })),
-      warnings: d.warnings ?? null,
+      warnings: d.warnings ?? null
     };
   }
 
@@ -325,7 +325,7 @@ export class Client {
   async createTaskRun(params: CreateTaskRunParams): Promise<TaskRun> {
     let body: Record<string, unknown> = {
       input: params.input,
-      processor: params.processor,
+      processor: params.processor
     };
     if (params.taskSpec) {
       let taskSpec: Record<string, unknown> = {};
@@ -338,13 +338,13 @@ export class Client {
       body.source_policy = {
         include_domains: params.sourcePolicy.includeDomains,
         exclude_domains: params.sourcePolicy.excludeDomains,
-        after_date: params.sourcePolicy.afterDate,
+        after_date: params.sourcePolicy.afterDate
       };
     }
     if (params.webhook) {
       body.webhook = {
         url: params.webhook.url,
-        event_types: params.webhook.eventTypes,
+        event_types: params.webhook.eventTypes
       };
     }
 
@@ -371,11 +371,11 @@ export class Client {
         field: b.field,
         citations: (b.citations || []).map((c: any) => ({
           url: c.url,
-          excerpts: c.excerpts || [],
+          excerpts: c.excerpts || []
         })),
         reasoning: b.reasoning,
-        confidence: b.confidence,
-      })),
+        confidence: b.confidence
+      }))
     };
   }
 
@@ -388,7 +388,7 @@ export class Client {
       processor: d.processor,
       metadata: d.metadata ?? null,
       createdAt: d.created_at,
-      modifiedAt: d.modified_at,
+      modifiedAt: d.modified_at
     };
   }
 
@@ -398,15 +398,16 @@ export class Client {
     let body: Record<string, unknown> = {
       model: params.model,
       messages: params.messages,
-      stream: false,
+      stream: false
     };
     if (params.responseFormat) body.response_format = params.responseFormat;
-    if (params.previousInteractionId) body.previous_interaction_id = params.previousInteractionId;
+    if (params.previousInteractionId)
+      body.previous_interaction_id = params.previousInteractionId;
 
     let resp = await this.axios.post('/v1beta/chat/completions', body, {
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
+        Authorization: `Bearer ${this.token}`
+      }
     });
     let d = resp.data;
     return {
@@ -417,42 +418,46 @@ export class Client {
       choices: (d.choices || []).map((c: any) => ({
         delta: {
           role: c.delta?.role ?? c.message?.role ?? 'assistant',
-          content: c.delta?.content ?? c.message?.content ?? '',
+          content: c.delta?.content ?? c.message?.content ?? ''
         },
-        finishReason: c.finish_reason,
+        finishReason: c.finish_reason
       })),
       usage: {
         promptTokens: d.usage?.prompt_tokens ?? 0,
         completionTokens: d.usage?.completion_tokens ?? 0,
-        totalTokens: d.usage?.total_tokens ?? 0,
+        totalTokens: d.usage?.total_tokens ?? 0
       },
       basis: d.basis
         ? d.basis.map((b: any) => ({
             citations: (b.citations || []).map((c: any) => ({
               url: c.url,
-              excerpts: c.excerpts || [],
+              excerpts: c.excerpts || []
             })),
             reasoning: b.reasoning,
-            confidence: b.confidence,
+            confidence: b.confidence
           }))
         : null,
-      interactionId: d.interaction_id,
+      interactionId: d.interaction_id
     };
   }
 
   // ─── FindAll API ───
 
   async ingestFindAll(objective: string): Promise<FindAllIngestResponse> {
-    let resp = await this.axios.post('/v1beta/findall/ingest', { objective }, {
-      headers: { 'parallel-beta': 'findall-2025-09-15' },
-    });
+    let resp = await this.axios.post(
+      '/v1beta/findall/ingest',
+      { objective },
+      {
+        headers: { 'parallel-beta': 'findall-2025-09-15' }
+      }
+    );
     let d = resp.data;
     return {
       entityType: d.entity_type,
       matchConditions: (d.match_conditions || []).map((m: any) => ({
         name: m.name,
-        description: m.description,
-      })),
+        description: m.description
+      }))
     };
   }
 
@@ -460,36 +465,36 @@ export class Client {
     let body: Record<string, unknown> = {
       objective: params.objective,
       entity_type: params.entityType,
-      match_conditions: params.matchConditions.map((m) => ({
+      match_conditions: params.matchConditions.map(m => ({
         name: m.name,
-        description: m.description,
+        description: m.description
       })),
       generator: params.generator,
-      match_limit: params.matchLimit,
+      match_limit: params.matchLimit
     };
     if (params.metadata) body.metadata = params.metadata;
     if (params.excludeList) {
-      body.exclude_list = params.excludeList.map((e) => ({
+      body.exclude_list = params.excludeList.map(e => ({
         name: e.name,
-        url: e.url,
+        url: e.url
       }));
     }
     if (params.webhook) {
       body.webhook = {
         url: params.webhook.url,
-        event_types: params.webhook.eventTypes,
+        event_types: params.webhook.eventTypes
       };
     }
 
     let resp = await this.axios.post('/v1beta/findall/runs', body, {
-      headers: { 'parallel-beta': 'findall-2025-09-15' },
+      headers: { 'parallel-beta': 'findall-2025-09-15' }
     });
     return { findallId: resp.data.findall_id };
   }
 
   async getFindAllRun(findallId: string): Promise<FindAllRun> {
     let resp = await this.axios.get(`/v1beta/findall/runs/${findallId}`, {
-      headers: { 'parallel-beta': 'findall-2025-09-15' },
+      headers: { 'parallel-beta': 'findall-2025-09-15' }
     });
     let d = resp.data;
     return {
@@ -497,16 +502,16 @@ export class Client {
       status: d.status,
       metrics: {
         generatedCandidatesCount: d.metrics?.generated_candidates_count ?? 0,
-        matchedCandidatesCount: d.metrics?.matched_candidates_count ?? 0,
+        matchedCandidatesCount: d.metrics?.matched_candidates_count ?? 0
       },
       createdAt: d.created_at,
-      modifiedAt: d.modified_at,
+      modifiedAt: d.modified_at
     };
   }
 
   async getFindAllResults(findallId: string): Promise<FindAllResultResponse> {
     let resp = await this.axios.get(`/v1beta/findall/runs/${findallId}/result`, {
-      headers: { 'parallel-beta': 'findall-2025-09-15' },
+      headers: { 'parallel-beta': 'findall-2025-09-15' }
     });
     let d = resp.data;
     return {
@@ -521,28 +526,36 @@ export class Client {
           field: b.field,
           citations: (b.citations || []).map((ci: any) => ({
             url: ci.url,
-            excerpts: ci.excerpts || [],
+            excerpts: ci.excerpts || []
           })),
           reasoning: b.reasoning,
-          confidence: b.confidence,
-        })),
-      })),
+          confidence: b.confidence
+        }))
+      }))
     };
   }
 
   async enrichFindAll(findallId: string, params: EnrichFindAllParams): Promise<void> {
-    await this.axios.post(`/v1beta/findall/runs/${findallId}/enrich`, {
-      processor: params.processor,
-      output_schema: params.outputSchema,
-    }, {
-      headers: { 'parallel-beta': 'findall-2025-09-15' },
-    });
+    await this.axios.post(
+      `/v1beta/findall/runs/${findallId}/enrich`,
+      {
+        processor: params.processor,
+        output_schema: params.outputSchema
+      },
+      {
+        headers: { 'parallel-beta': 'findall-2025-09-15' }
+      }
+    );
   }
 
   async cancelFindAll(findallId: string): Promise<void> {
-    await this.axios.post(`/v1beta/findall/runs/${findallId}/cancel`, {}, {
-      headers: { 'parallel-beta': 'findall-2025-09-15' },
-    });
+    await this.axios.post(
+      `/v1beta/findall/runs/${findallId}/cancel`,
+      {},
+      {
+        headers: { 'parallel-beta': 'findall-2025-09-15' }
+      }
+    );
   }
 
   // ─── Monitor API ───
@@ -550,12 +563,12 @@ export class Client {
   async createMonitor(params: CreateMonitorParams): Promise<Monitor> {
     let body: Record<string, unknown> = {
       query: params.query,
-      frequency: params.frequency,
+      frequency: params.frequency
     };
     if (params.webhook) {
       body.webhook = {
         url: params.webhook.url,
-        event_types: params.webhook.eventTypes,
+        event_types: params.webhook.eventTypes
       };
     }
     if (params.metadata) body.metadata = params.metadata;
@@ -583,7 +596,7 @@ export class Client {
     if (params.webhook) {
       body.webhook = {
         url: params.webhook.url,
-        event_types: params.webhook.eventTypes,
+        event_types: params.webhook.eventTypes
       };
     }
     if (params.metadata) body.metadata = params.metadata;
@@ -605,28 +618,35 @@ export class Client {
       eventGroupId: e.event_group_id,
       output: e.output,
       eventDate: e.event_date,
-      sourceUrls: e.source_urls || [],
+      sourceUrls: e.source_urls || []
     }));
   }
 
-  async getMonitorEventGroup(monitorId: string, eventGroupId: string): Promise<MonitorEvent[]> {
-    let resp = await this.axios.get(`/v1alpha/monitors/${monitorId}/event_groups/${eventGroupId}`);
+  async getMonitorEventGroup(
+    monitorId: string,
+    eventGroupId: string
+  ): Promise<MonitorEvent[]> {
+    let resp = await this.axios.get(
+      `/v1alpha/monitors/${monitorId}/event_groups/${eventGroupId}`
+    );
     let items = resp.data?.events ?? resp.data ?? [];
     if (!Array.isArray(items)) {
-      return [{
-        type: resp.data?.type ?? 'event',
-        eventGroupId: resp.data?.event_group_id ?? eventGroupId,
-        output: resp.data?.output,
-        eventDate: resp.data?.event_date ?? '',
-        sourceUrls: resp.data?.source_urls || [],
-      }];
+      return [
+        {
+          type: resp.data?.type ?? 'event',
+          eventGroupId: resp.data?.event_group_id ?? eventGroupId,
+          output: resp.data?.output,
+          eventDate: resp.data?.event_date ?? '',
+          sourceUrls: resp.data?.source_urls || []
+        }
+      ];
     }
     return items.map((e: any) => ({
       type: e.type,
       eventGroupId: e.event_group_id ?? eventGroupId,
       output: e.output,
       eventDate: e.event_date,
-      sourceUrls: e.source_urls || [],
+      sourceUrls: e.source_urls || []
     }));
   }
 
@@ -642,9 +662,9 @@ export class Client {
       webhook: d.webhook
         ? {
             url: d.webhook.url,
-            eventTypes: d.webhook.event_types || [],
+            eventTypes: d.webhook.event_types || []
           }
-        : null,
+        : null
     };
   }
 }

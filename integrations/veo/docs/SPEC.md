@@ -15,6 +15,7 @@ Before you get a token, you'll need a client ID and secret for your application.
 
 **Token Endpoints:**
 VEO offers separate environments for production and development. You'll need a separate Client ID and secret for each:
+
 - **Production:** `https://tokenapi.veo.co.uk/oauth2/token`
 - **Development/Testing:** `https://tokenapiuat.veo.co.uk/oauth2/token`
 
@@ -55,6 +56,7 @@ VEO Groups offer different types of interactive remote learning and collaboratio
 ### Comments and Notes
 
 Create, retrieve, update, delete, and list comments on videos or tag sessions. Two types of comments exist:
+
 - **Video comments:** Attached directly to a video, supporting threaded replies (maximum 2 levels deep).
 - **Tag session notes:** Attached to specific tags within a tag session, also supporting threaded replies.
 

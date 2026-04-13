@@ -5,7 +5,12 @@ import { z } from 'zod';
 
 let taskSchema = z.object({
   taskSid: z.string().describe('Task SID'),
-  assignmentStatus: z.string().optional().describe('Assignment status (pending, reserved, assigned, wrapping, completed, canceled)'),
+  assignmentStatus: z
+    .string()
+    .optional()
+    .describe(
+      'Assignment status (pending, reserved, assigned, wrapping, completed, canceled)'
+    ),
   attributes: z.string().optional().describe('Task attributes as JSON string'),
   priority: z.number().optional().describe('Task priority'),
   reason: z.string().optional().describe('Reason for the task status change'),
@@ -17,40 +22,48 @@ let taskSchema = z.object({
   dateUpdated: z.string().optional().describe('Date last updated')
 });
 
-export let manageTasksTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tasks',
-    key: 'manage_tasks',
-    description: `Create, read, update, cancel, or list tasks in a TaskRouter workspace. Tasks represent units of work that need to be routed to workers. You can create new tasks, update their attributes or priority, complete or cancel them, and filter the task list by status or assignment.`,
-    instructions: [
-      'To complete a task, set assignmentStatus to "completed" and provide a reason.',
-      'To cancel a task, set assignmentStatus to "canceled" and provide a reason.',
-      'Task attributes must be a valid JSON string.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageTasksTool = SlateTool.create(spec, {
+  name: 'Manage Tasks',
+  key: 'manage_tasks',
+  description: `Create, read, update, cancel, or list tasks in a TaskRouter workspace. Tasks represent units of work that need to be routed to workers. You can create new tasks, update their attributes or priority, complete or cancel them, and filter the task list by status or assignment.`,
+  instructions: [
+    'To complete a task, set assignmentStatus to "completed" and provide a reason.',
+    'To cancel a task, set assignmentStatus to "canceled" and provide a reason.',
+    'Task attributes must be a valid JSON string.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('Action to perform'),
-    workspaceSid: z.string().describe('Workspace SID'),
-    taskSid: z.string().optional().describe('Task SID (required for get/update/delete)'),
-    attributes: z.string().optional().describe('Task attributes as JSON string'),
-    workflowSid: z.string().optional().describe('Workflow SID for routing (used in create)'),
-    taskQueueSid: z.string().optional().describe('Task Queue SID to filter or assign'),
-    priority: z.number().optional().describe('Task priority (higher = more important)'),
-    timeout: z.number().optional().describe('Task timeout in seconds'),
-    assignmentStatus: z.string().optional().describe('Assignment status to filter by or set (pending, reserved, assigned, wrapping, completed, canceled)'),
-    reason: z.string().optional().describe('Reason for completing/canceling a task'),
-    pageSize: z.number().optional().describe('Number of results to return')
-  }))
-  .output(z.object({
-    tasks: z.array(taskSchema).describe('Task records')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('Action to perform'),
+      workspaceSid: z.string().describe('Workspace SID'),
+      taskSid: z.string().optional().describe('Task SID (required for get/update/delete)'),
+      attributes: z.string().optional().describe('Task attributes as JSON string'),
+      workflowSid: z.string().optional().describe('Workflow SID for routing (used in create)'),
+      taskQueueSid: z.string().optional().describe('Task Queue SID to filter or assign'),
+      priority: z.number().optional().describe('Task priority (higher = more important)'),
+      timeout: z.number().optional().describe('Task timeout in seconds'),
+      assignmentStatus: z
+        .string()
+        .optional()
+        .describe(
+          'Assignment status to filter by or set (pending, reserved, assigned, wrapping, completed, canceled)'
+        ),
+      reason: z.string().optional().describe('Reason for completing/canceling a task'),
+      pageSize: z.number().optional().describe('Number of results to return')
+    })
+  )
+  .output(
+    z.object({
+      tasks: z.array(taskSchema).describe('Task records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TaskRouterClient(ctx.auth.token, ctx.auth.accountSid);
 
     if (ctx.input.action === 'list') {
@@ -91,19 +104,21 @@ export let manageTasksTool = SlateTool.create(
       let t = await client.getTask(ctx.input.workspaceSid, ctx.input.taskSid);
       return {
         output: {
-          tasks: [{
-            taskSid: t.sid,
-            assignmentStatus: t.assignment_status,
-            attributes: t.attributes,
-            priority: t.priority,
-            reason: t.reason,
-            taskQueueFriendlyName: t.task_queue_friendly_name,
-            workerName: t.worker_name,
-            workflowFriendlyName: t.workflow_friendly_name,
-            age: t.age,
-            dateCreated: t.date_created,
-            dateUpdated: t.date_updated
-          }]
+          tasks: [
+            {
+              taskSid: t.sid,
+              assignmentStatus: t.assignment_status,
+              attributes: t.attributes,
+              priority: t.priority,
+              reason: t.reason,
+              taskQueueFriendlyName: t.task_queue_friendly_name,
+              workerName: t.worker_name,
+              workflowFriendlyName: t.workflow_friendly_name,
+              age: t.age,
+              dateCreated: t.date_created,
+              dateUpdated: t.date_updated
+            }
+          ]
         },
         message: `Task **${t.sid}** is **${t.assignment_status}**${t.worker_name ? ` (assigned to ${t.worker_name})` : ''}.`
       };
@@ -120,16 +135,18 @@ export let manageTasksTool = SlateTool.create(
       let t = await client.createTask(ctx.input.workspaceSid, params);
       return {
         output: {
-          tasks: [{
-            taskSid: t.sid,
-            assignmentStatus: t.assignment_status,
-            attributes: t.attributes,
-            priority: t.priority,
-            taskQueueFriendlyName: t.task_queue_friendly_name,
-            workflowFriendlyName: t.workflow_friendly_name,
-            dateCreated: t.date_created,
-            dateUpdated: t.date_updated
-          }]
+          tasks: [
+            {
+              taskSid: t.sid,
+              assignmentStatus: t.assignment_status,
+              attributes: t.attributes,
+              priority: t.priority,
+              taskQueueFriendlyName: t.task_queue_friendly_name,
+              workflowFriendlyName: t.workflow_friendly_name,
+              dateCreated: t.date_created,
+              dateUpdated: t.date_updated
+            }
+          ]
         },
         message: `Created task **${t.sid}** with status **${t.assignment_status}**.`
       };
@@ -147,19 +164,21 @@ export let manageTasksTool = SlateTool.create(
       let t = await client.updateTask(ctx.input.workspaceSid, ctx.input.taskSid, params);
       return {
         output: {
-          tasks: [{
-            taskSid: t.sid,
-            assignmentStatus: t.assignment_status,
-            attributes: t.attributes,
-            priority: t.priority,
-            reason: t.reason,
-            taskQueueFriendlyName: t.task_queue_friendly_name,
-            workerName: t.worker_name,
-            workflowFriendlyName: t.workflow_friendly_name,
-            age: t.age,
-            dateCreated: t.date_created,
-            dateUpdated: t.date_updated
-          }]
+          tasks: [
+            {
+              taskSid: t.sid,
+              assignmentStatus: t.assignment_status,
+              attributes: t.attributes,
+              priority: t.priority,
+              reason: t.reason,
+              taskQueueFriendlyName: t.task_queue_friendly_name,
+              workerName: t.worker_name,
+              workflowFriendlyName: t.workflow_friendly_name,
+              age: t.age,
+              dateCreated: t.date_created,
+              dateUpdated: t.date_updated
+            }
+          ]
         },
         message: `Updated task **${t.sid}** — status: **${t.assignment_status}**.`
       };
@@ -170,10 +189,13 @@ export let manageTasksTool = SlateTool.create(
     await client.deleteTask(ctx.input.workspaceSid, ctx.input.taskSid);
     return {
       output: {
-        tasks: [{
-          taskSid: ctx.input.taskSid
-        }]
+        tasks: [
+          {
+            taskSid: ctx.input.taskSid
+          }
+        ]
       },
       message: `Deleted task **${ctx.input.taskSid}**.`
     };
-  }).build();
+  })
+  .build();

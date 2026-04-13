@@ -3,44 +3,46 @@ import { SlackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'User Change',
-    key: 'user_change',
-    description: '[Polling fallback] Triggers when a user joins the workspace or when user profile/status changes. Polls the user list to detect new members and profile updates.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['joined', 'updated']).describe('Type of user event'),
-    userId: z.string().describe('User ID'),
-    name: z.string().optional().describe('Username'),
-    realName: z.string().optional().describe('Real name'),
-    email: z.string().optional().describe('Email address'),
-    isBot: z.boolean().optional().describe('Whether this is a bot'),
-    deleted: z.boolean().optional().describe('Whether the user is deactivated'),
-    updatedAt: z.number().optional().describe('Last update timestamp'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('User ID'),
-    name: z.string().optional().describe('Username'),
-    realName: z.string().optional().describe('Full name'),
-    displayName: z.string().optional().describe('Display name'),
-    email: z.string().optional().describe('Email address'),
-    title: z.string().optional().describe('Job title'),
-    statusText: z.string().optional().describe('Custom status text'),
-    statusEmoji: z.string().optional().describe('Custom status emoji'),
-    isAdmin: z.boolean().optional().describe('Whether the user is an admin'),
-    isBot: z.boolean().optional().describe('Whether this is a bot user'),
-    deleted: z.boolean().optional().describe('Whether the user is deactivated'),
-    avatarUrl: z.string().optional().describe('User avatar URL'),
-  }))
+export let userChange = SlateTrigger.create(spec, {
+  name: 'User Change',
+  key: 'user_change',
+  description:
+    '[Polling fallback] Triggers when a user joins the workspace or when user profile/status changes. Polls the user list to detect new members and profile updates.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['joined', 'updated']).describe('Type of user event'),
+      userId: z.string().describe('User ID'),
+      name: z.string().optional().describe('Username'),
+      realName: z.string().optional().describe('Real name'),
+      email: z.string().optional().describe('Email address'),
+      isBot: z.boolean().optional().describe('Whether this is a bot'),
+      deleted: z.boolean().optional().describe('Whether the user is deactivated'),
+      updatedAt: z.number().optional().describe('Last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('User ID'),
+      name: z.string().optional().describe('Username'),
+      realName: z.string().optional().describe('Full name'),
+      displayName: z.string().optional().describe('Display name'),
+      email: z.string().optional().describe('Email address'),
+      title: z.string().optional().describe('Job title'),
+      statusText: z.string().optional().describe('Custom status text'),
+      statusEmoji: z.string().optional().describe('Custom status emoji'),
+      isAdmin: z.boolean().optional().describe('Whether the user is an admin'),
+      isBot: z.boolean().optional().describe('Whether this is a bot user'),
+      deleted: z.boolean().optional().describe('Whether the user is deactivated'),
+      avatarUrl: z.string().optional().describe('User avatar URL')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 3,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 3
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SlackClient(ctx.auth.token);
       let state = ctx.state as { knownUsers?: Record<string, number> } | null;
       let knownUsers = state?.knownUsers || {};
@@ -75,7 +77,7 @@ export let userChange = SlateTrigger.create(
               email: user.profile?.email,
               isBot: user.is_bot,
               deleted: user.deleted,
-              updatedAt: updatedTs,
+              updatedAt: updatedTs
             });
           }
         } else if (updatedTs > previousTs) {
@@ -87,7 +89,7 @@ export let userChange = SlateTrigger.create(
             email: user.profile?.email,
             isBot: user.is_bot,
             deleted: user.deleted,
-            updatedAt: updatedTs,
+            updatedAt: updatedTs
           });
         }
       }
@@ -95,12 +97,12 @@ export let userChange = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownUsers: updatedKnown,
-        },
+          knownUsers: updatedKnown
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let userDetails: any = {};
       try {
         let client = new SlackClient(ctx.auth.token);
@@ -124,9 +126,9 @@ export let userChange = SlateTrigger.create(
           isAdmin: userDetails.is_admin,
           isBot: ctx.input.isBot || userDetails.is_bot,
           deleted: ctx.input.deleted || userDetails.deleted,
-          avatarUrl: userDetails.profile?.image_192,
-        },
+          avatarUrl: userDetails.profile?.image_192
+        }
       };
-    },
+    }
   })
   .build();

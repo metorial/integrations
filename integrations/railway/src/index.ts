@@ -66,7 +66,5 @@ export let provider = Slate.create({
     updateVolumeTool,
     deleteVolumeTool
   ],
-  triggers: [
-    projectWebhookTrigger
-  ]
+  triggers: [projectWebhookTrigger]
 });

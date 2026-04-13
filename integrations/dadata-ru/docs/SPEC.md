@@ -14,11 +14,13 @@ DaData.ru uses API keys for authentication. Two credentials are required:
 The secret key is automatically generated along with the API key, and it's available in the Account page at `https://dadata.ru/profile/`.
 
 The API uses three base URLs depending on the type of operation:
+
 - `https://suggestions.dadata.ru` — for suggestions/autocomplete API
 - `https://cleaner.dadata.ru` — for standardization/cleaning API (requires both API Key and Secret Key)
 - `https://dadata.ru/api/v2/` — for profile operations (balance, stats, versions)
 
 **Header examples:**
+
 - Suggestions API: `Authorization: Token <API_KEY>`
 - Cleaner API: `Authorization: Token <API_KEY>` and `X-Secret: <SECRET_KEY>`
 
@@ -55,6 +57,7 @@ Finds a bank by BIK, SWIFT, INN, INN+KPP (for branches), or Bank of Russia regis
 ### Reference Directory Search (Outward API)
 
 Provides search and lookup across various Russian government and reference directories, including:
+
 - Federal Tax Service (FNS) units
 - Federal Migration Service (FMS) units
 - Postal offices

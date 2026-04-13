@@ -17,21 +17,27 @@ To obtain an API key, sign up for an account at fixer.io. You can view and manag
 ## Features
 
 ### Latest Exchange Rates
+
 Returns real-time exchange rate data for all available or a specific set of currencies. Exchange rates delivered by the Fixer API are by default relative to EUR. You can specify a different base currency and filter output to specific currency symbols. Changing the base currency requires a paid plan.
 
 ### Currency Conversion
+
 Allows for conversion of any amount from one currency to another. You can specify a date (format YYYY-MM-DD) to use historical rates for the conversion. Requires specifying source currency, target currency, and amount.
 
 ### Historical Rates
+
 Returns historical exchange rate data for all available or a specific set of currencies. Query by appending a date in YYYY-MM-DD format. The Fixer API delivers EOD / End of Day historical exchange rates, which become available at 00:05am GMT for the previous day.
 
 ### Time-Series Data
+
 Returns daily historical exchange rate data between two specified dates for all available or a specific set of currencies. The time-series endpoint has a maximum time frame of 365 days.
 
 ### Fluctuation Data
+
 Returns fluctuation data between two specified dates for all available or a specific set of currencies. This provides information about how currencies fluctuate on a day-to-day basis, including change and change percentage values.
 
 ### Supported Currencies List
+
 The Fixer API comes with a constantly updated endpoint returning all available currencies. To access this list, make a request to the API's symbols endpoint. The Fixer API is capable of delivering accurate exchange rate data for 170 world currencies, including Bitcoin, Gold and Silver rates.
 
 ## Events

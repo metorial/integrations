@@ -1,4 +1,5 @@
 Now let me look at the actual API reference to understand the full set of features:Now I have a good understanding of Hightouch's API. Let me check if there are any webhook/event listening capabilities:I now have enough information to write the specification. Note that:
+
 - Hightouch's docs.hightouch.ai is a different product (a chatbot platform), not the same as hightouch.com
 - Hightouch (hightouch.com) is a data activation / reverse ETL platform
 - The REST API uses Bearer token auth with API keys

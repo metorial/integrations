@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://plisio.net/api/v1',
+  baseURL: 'https://plisio.net/api/v1'
 });
 
 export class PlisioClient {
@@ -69,7 +69,7 @@ export class PlisioClient {
       email: params.email,
       language: params.language,
       expire_min: params.expireMin,
-      redirect_to_invoice: params.redirectToInvoice,
+      redirect_to_invoice: params.redirectToInvoice
     });
   }
 
@@ -91,19 +91,21 @@ export class PlisioClient {
       type: params.type,
       to: params.to,
       amount: params.amount,
-      feePlan: params.feePlan,
+      feePlan: params.feePlan
     });
   }
 
-  async listOperations(params: {
-    page?: number;
-    limit?: number;
-    shopId?: string;
-    type?: string;
-    status?: string;
-    currency?: string;
-    search?: string;
-  } = {}) {
+  async listOperations(
+    params: {
+      page?: number;
+      limit?: number;
+      shopId?: string;
+      type?: string;
+      status?: string;
+      currency?: string;
+      search?: string;
+    } = {}
+  ) {
     return this.get('/operations', {
       page: params.page,
       limit: params.limit,
@@ -111,7 +113,7 @@ export class PlisioClient {
       type: params.type,
       status: params.status,
       currency: params.currency,
-      search: params.search,
+      search: params.search
     });
   }
 
@@ -143,7 +145,7 @@ export class PlisioClient {
     return this.get(`/operations/fee/${encodeURIComponent(params.currency)}`, {
       addresses: params.addresses,
       amounts: params.amounts,
-      feePlan: params.feePlan,
+      feePlan: params.feePlan
     });
   }
 
@@ -158,7 +160,7 @@ export class PlisioClient {
       addresses: params.addresses,
       amounts: params.amounts,
       type: params.type,
-      feePlan: params.feePlan,
+      feePlan: params.feePlan
     });
   }
 
@@ -173,7 +175,7 @@ export class PlisioClient {
   async createDeposit(params: { currency: string; uid: string }) {
     return this.get('/shops/deposit/new', {
       psys_cid: params.currency,
-      uid: params.uid,
+      uid: params.uid
     });
   }
 }

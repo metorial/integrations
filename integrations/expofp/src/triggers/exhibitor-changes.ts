@@ -3,35 +3,37 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let exhibitorChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Exhibitor Changes',
-    key: 'exhibitor_changes',
-    description: 'Polls for new or updated exhibitors on an event. Detects when exhibitors are added, removed, or their booth assignments change. Requires the eventId to be set in the provider configuration.',
-  }
-)
-  .input(z.object({
-    eventId: z.number().describe('Event ID'),
-    changeType: z.enum(['added', 'removed', 'updated']).describe('Type of change detected'),
-    exhibitorId: z.number().describe('Exhibitor ID'),
-    name: z.string().describe('Exhibitor name'),
-    externalId: z.string().describe('External ID'),
-    boothNames: z.array(z.string()).describe('Current booth assignments'),
-  }))
-  .output(z.object({
-    exhibitorId: z.number().describe('Exhibitor ID'),
-    name: z.string().describe('Exhibitor name'),
-    externalId: z.string().describe('External ID'),
-    boothNames: z.array(z.string()).describe('Current booth assignments'),
-    eventId: z.number().describe('Event ID'),
-  }))
+export let exhibitorChanges = SlateTrigger.create(spec, {
+  name: 'Exhibitor Changes',
+  key: 'exhibitor_changes',
+  description:
+    'Polls for new or updated exhibitors on an event. Detects when exhibitors are added, removed, or their booth assignments change. Requires the eventId to be set in the provider configuration.'
+})
+  .input(
+    z.object({
+      eventId: z.number().describe('Event ID'),
+      changeType: z.enum(['added', 'removed', 'updated']).describe('Type of change detected'),
+      exhibitorId: z.number().describe('Exhibitor ID'),
+      name: z.string().describe('Exhibitor name'),
+      externalId: z.string().describe('External ID'),
+      boothNames: z.array(z.string()).describe('Current booth assignments')
+    })
+  )
+  .output(
+    z.object({
+      exhibitorId: z.number().describe('Exhibitor ID'),
+      name: z.string().describe('Exhibitor name'),
+      externalId: z.string().describe('External ID'),
+      boothNames: z.array(z.string()).describe('Current booth assignments'),
+      eventId: z.number().describe('Event ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let eventId = ctx.config.eventId;
       if (!eventId) {
         return { inputs: [], updatedState: ctx.state ?? {} };
@@ -40,10 +42,19 @@ export let exhibitorChanges = SlateTrigger.create(
       let client = new Client(ctx.auth.token);
       let exhibitors = await client.listExhibitors(eventId);
 
-      let previousState: Record<string, { name: string; externalId: string; boothNames: string[] }> =
-        (ctx.state?.exhibitorMap as Record<string, { name: string; externalId: string; boothNames: string[] }>) ?? {};
+      let previousState: Record<
+        string,
+        { name: string; externalId: string; boothNames: string[] }
+      > =
+        (ctx.state?.exhibitorMap as Record<
+          string,
+          { name: string; externalId: string; boothNames: string[] }
+        >) ?? {};
 
-      let currentMap: Record<string, { name: string; externalId: string; boothNames: string[] }> = {};
+      let currentMap: Record<
+        string,
+        { name: string; externalId: string; boothNames: string[] }
+      > = {};
       let inputs: Array<{
         eventId: number;
         changeType: 'added' | 'removed' | 'updated';
@@ -58,7 +69,7 @@ export let exhibitorChanges = SlateTrigger.create(
         currentMap[key] = {
           name: exhibitor.name,
           externalId: exhibitor.externalId ?? '',
-          boothNames: exhibitor.boothNames ?? [],
+          boothNames: exhibitor.boothNames ?? []
         };
 
         let prev = previousState[key];
@@ -69,7 +80,7 @@ export let exhibitorChanges = SlateTrigger.create(
             exhibitorId: exhibitor.id,
             name: exhibitor.name,
             externalId: exhibitor.externalId ?? '',
-            boothNames: exhibitor.boothNames ?? [],
+            boothNames: exhibitor.boothNames ?? []
           });
         } else if (
           prev.name !== exhibitor.name ||
@@ -82,7 +93,7 @@ export let exhibitorChanges = SlateTrigger.create(
             exhibitorId: exhibitor.id,
             name: exhibitor.name,
             externalId: exhibitor.externalId ?? '',
-            boothNames: exhibitor.boothNames ?? [],
+            boothNames: exhibitor.boothNames ?? []
           });
         }
       }
@@ -96,7 +107,7 @@ export let exhibitorChanges = SlateTrigger.create(
             exhibitorId: Number(key),
             name: prev.name,
             externalId: prev.externalId,
-            boothNames: prev.boothNames,
+            boothNames: prev.boothNames
           });
         }
       }
@@ -104,12 +115,12 @@ export let exhibitorChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          exhibitorMap: currentMap,
-        },
+          exhibitorMap: currentMap
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `exhibitor.${ctx.input.changeType}`,
         id: `${ctx.input.eventId}-${ctx.input.exhibitorId}-${ctx.input.changeType}-${Date.now()}`,
@@ -118,9 +129,9 @@ export let exhibitorChanges = SlateTrigger.create(
           name: ctx.input.name,
           externalId: ctx.input.externalId,
           boothNames: ctx.input.boothNames,
-          eventId: ctx.input.eventId,
-        },
+          eventId: ctx.input.eventId
+        }
       };
-    },
+    }
   })
   .build();

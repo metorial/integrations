@@ -46,17 +46,17 @@ export class Client {
     this.token = config.token;
     this.searchApi = createAxios({
       baseURL: 'https://app.zenserp.com/api/v2',
-      headers: { apikey: this.token },
+      headers: { apikey: this.token }
     });
     this.v1Api = createAxios({
       baseURL: 'https://app.zenserp.com/api/v1',
-      headers: { apikey: this.token },
+      headers: { apikey: this.token }
     });
   }
 
   async search(params: SearchParams): Promise<any> {
     let queryParams: Record<string, string | number> = {
-      q: params.q,
+      q: params.q
     };
 
     if (params.searchEngine) queryParams['search_engine'] = params.searchEngine;
@@ -72,7 +72,7 @@ export class Client {
     if (params.device) queryParams['device'] = params.device;
 
     let response = await this.searchApi.get('/search', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -80,14 +80,14 @@ export class Client {
 
   async reverseImageSearch(params: ReverseImageSearchParams): Promise<any> {
     let queryParams: Record<string, string | number> = {
-      image_url: params.imageUrl,
+      image_url: params.imageUrl
     };
 
     if (params.num !== undefined) queryParams['num'] = params.num;
     if (params.start !== undefined) queryParams['start'] = params.start;
 
     let response = await this.searchApi.get('/search', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -105,7 +105,7 @@ export class Client {
     if (params.gl) queryParams['gl'] = params.gl;
 
     let response = await this.v1Api.get('/trends', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -114,7 +114,7 @@ export class Client {
   async getShoppingDetails(params: ShoppingDetailParams): Promise<any> {
     let queryParams: Record<string, string> = {
       product_id: params.productId,
-      tbm: 'shop',
+      tbm: 'shop'
     };
 
     if (params.location) queryParams['location'] = params.location;
@@ -122,7 +122,7 @@ export class Client {
     if (params.gl) queryParams['gl'] = params.gl;
 
     let response = await this.v1Api.get('/shopping', {
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;

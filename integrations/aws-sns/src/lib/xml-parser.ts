@@ -58,6 +58,6 @@ export let parseAwsError = (xml: string): { code: string; message: string } => {
   let messageMatch = /<Message>([\s\S]*?)<\/Message>/.exec(xml);
   return {
     code: codeMatch?.[1]?.trim() || 'UnknownError',
-    message: messageMatch?.[1]?.trim() || 'An unknown error occurred',
+    message: messageMatch?.[1]?.trim() || 'An unknown error occurred'
   };
 };

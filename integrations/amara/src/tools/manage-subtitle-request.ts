@@ -3,43 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSubtitleRequest = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Subtitle Request',
-    key: 'manage_subtitle_request',
-    description: `Create, update, or delete subtitle requests for collaboration teams. Requests track subtitle work through a multi-stage workflow: subtitling, review, approval, and completion. Assignees and status can be managed.`,
-    instructions: [
-      'To create: provide teamSlug, videoId, and languageCode.',
-      'To update: provide teamSlug and jobId along with fields to change.',
-      'To delete: provide teamSlug, jobId, and set "remove" to true.',
-      'To assign/unassign: set subtitler, reviewer, or approver to a username or null.'
-    ]
-  }
-)
-  .input(z.object({
-    teamSlug: z.string().describe('Team slug'),
-    jobId: z.string().optional().describe('Subtitle request job ID (for update/delete)'),
-    remove: z.boolean().optional().describe('Set to true to delete the request'),
-    videoId: z.string().optional().describe('Video ID (required for creation)'),
-    languageCode: z.string().optional().describe('Language code (required for creation)'),
-    subtitler: z.string().nullable().optional().describe('Subtitler username (null to unassign)'),
-    reviewer: z.string().nullable().optional().describe('Reviewer username (null to unassign)'),
-    approver: z.string().nullable().optional().describe('Approver username (null to unassign)'),
-    workStatus: z.string().optional().describe('Set work status (e.g. "complete")')
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('Subtitle request job ID'),
-    videoId: z.string().optional().describe('Video ID'),
-    languageCode: z.string().optional().describe('Language code'),
-    workStatus: z.string().optional().describe('Current work status'),
-    subtitler: z.string().nullable().optional().describe('Assigned subtitler'),
-    reviewer: z.string().nullable().optional().describe('Assigned reviewer'),
-    approver: z.string().nullable().optional().describe('Assigned approver'),
-    created: z.string().optional().describe('Creation date'),
-    removed: z.boolean().describe('Whether the request was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSubtitleRequest = SlateTool.create(spec, {
+  name: 'Manage Subtitle Request',
+  key: 'manage_subtitle_request',
+  description: `Create, update, or delete subtitle requests for collaboration teams. Requests track subtitle work through a multi-stage workflow: subtitling, review, approval, and completion. Assignees and status can be managed.`,
+  instructions: [
+    'To create: provide teamSlug, videoId, and languageCode.',
+    'To update: provide teamSlug and jobId along with fields to change.',
+    'To delete: provide teamSlug, jobId, and set "remove" to true.',
+    'To assign/unassign: set subtitler, reviewer, or approver to a username or null.'
+  ]
+})
+  .input(
+    z.object({
+      teamSlug: z.string().describe('Team slug'),
+      jobId: z.string().optional().describe('Subtitle request job ID (for update/delete)'),
+      remove: z.boolean().optional().describe('Set to true to delete the request'),
+      videoId: z.string().optional().describe('Video ID (required for creation)'),
+      languageCode: z.string().optional().describe('Language code (required for creation)'),
+      subtitler: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Subtitler username (null to unassign)'),
+      reviewer: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Reviewer username (null to unassign)'),
+      approver: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Approver username (null to unassign)'),
+      workStatus: z.string().optional().describe('Set work status (e.g. "complete")')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().optional().describe('Subtitle request job ID'),
+      videoId: z.string().optional().describe('Video ID'),
+      languageCode: z.string().optional().describe('Language code'),
+      workStatus: z.string().optional().describe('Current work status'),
+      subtitler: z.string().nullable().optional().describe('Assigned subtitler'),
+      reviewer: z.string().nullable().optional().describe('Assigned reviewer'),
+      approver: z.string().nullable().optional().describe('Assigned approver'),
+      created: z.string().optional().describe('Creation date'),
+      removed: z.boolean().describe('Whether the request was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       username: ctx.auth.username
@@ -78,7 +91,9 @@ export let manageSubtitleRequest = SlateTool.create(
     }
 
     if (!ctx.input.videoId || !ctx.input.languageCode) {
-      throw new Error('videoId and languageCode are required when creating a subtitle request');
+      throw new Error(
+        'videoId and languageCode are required when creating a subtitle request'
+      );
     }
 
     let req = await client.createSubtitleRequest(ctx.input.teamSlug, {
@@ -100,4 +115,5 @@ export let manageSubtitleRequest = SlateTool.create(
       },
       message: `Created subtitle request \`${req.job_id}\` for **${req.language}** on video \`${req.video}\`.`
     };
-  }).build();
+  })
+  .build();

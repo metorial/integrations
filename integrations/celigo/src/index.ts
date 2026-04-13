@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getTokenInfo,
@@ -25,11 +24,7 @@ import {
   manageUsers,
   manageState
 } from './tools';
-import {
-  jobCompleted,
-  flowErrorDetected,
-  inboundWebhook,
-} from './triggers';
+import { jobCompleted, flowErrorDetected, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -57,9 +52,5 @@ export let provider = Slate.create({
     manageUsers,
     manageState
   ],
-  triggers: [
-    inboundWebhook,
-    jobCompleted,
-    flowErrorDetected
-  ]
+  triggers: [inboundWebhook, jobCompleted, flowErrorDetected]
 });

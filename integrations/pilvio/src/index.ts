@@ -15,7 +15,7 @@ import {
   manageFirewalls,
   manageLoadBalancers,
   manageSshKeys,
-  listPlatformConfig,
+  listPlatformConfig
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     manageFirewalls,
     manageLoadBalancers,
     manageSshKeys,
-    listPlatformConfig,
+    listPlatformConfig
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

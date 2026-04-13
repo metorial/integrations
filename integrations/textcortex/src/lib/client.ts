@@ -129,8 +129,8 @@ export class Client {
       baseURL: 'https://api.textcortex.com/v1',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -142,7 +142,7 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
@@ -157,12 +157,14 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
 
-  async generateProductDescription(params: GenerateProductDescriptionParams): Promise<TextCortexResponse> {
+  async generateProductDescription(
+    params: GenerateProductDescriptionParams
+  ): Promise<TextCortexResponse> {
     let response = await this.axios.post('/texts/products-descriptions', {
       product_name: params.productName,
       product_category: params.productCategory || '',
@@ -173,7 +175,7 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
@@ -187,7 +189,7 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
@@ -201,12 +203,14 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
 
-  async generateSocialMediaPost(params: GenerateSocialMediaPostParams): Promise<TextCortexResponse> {
+  async generateSocialMediaPost(
+    params: GenerateSocialMediaPostParams
+  ): Promise<TextCortexResponse> {
     let response = await this.axios.post('/texts/social-media-posts', {
       context: params.context,
       keywords: params.keywords || [],
@@ -217,7 +221,7 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
@@ -231,7 +235,7 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     });
     return response.data;
   }
@@ -244,7 +248,7 @@ export class Client {
       temperature: params.temperature ?? 0.7,
       n: params.n || 1,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang || 'auto',
+      target_lang: params.targetLang || 'auto'
     };
 
     if (params.fileId) {
@@ -261,7 +265,7 @@ export class Client {
     let response = await this.axios.post('/texts/translations', {
       text: params.text,
       source_lang: params.sourceLang || 'auto',
-      target_lang: params.targetLang,
+      target_lang: params.targetLang
     });
     return response.data;
   }
@@ -273,7 +277,7 @@ export class Client {
       model: params.model || 'sophos-1',
       max_tokens: params.maxTokens || 1024,
       temperature: params.temperature ?? 0.7,
-      n: params.n || 1,
+      n: params.n || 1
     });
     return response.data;
   }

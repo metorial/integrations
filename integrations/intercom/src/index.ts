@@ -19,12 +19,7 @@ import {
   listAdmins,
   createNote
 } from './tools';
-import {
-  contactEvents,
-  conversationEvents,
-  ticketEvents,
-  companyEvents
-} from './triggers';
+import { contactEvents, conversationEvents, ticketEvents, companyEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +42,5 @@ export let provider = Slate.create({
     listAdmins,
     createNote
   ],
-  triggers: [
-    contactEvents,
-    conversationEvents,
-    ticketEvents,
-    companyEvents
-  ]
+  triggers: [contactEvents, conversationEvents, ticketEvents, companyEvents]
 });

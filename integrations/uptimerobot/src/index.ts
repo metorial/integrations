@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listMonitors,
@@ -17,9 +16,7 @@ import {
   deleteMaintenanceWindow,
   getAccountDetails
 } from './tools';
-import { monitorStatusChanges,
-  inboundWebhook,
-} from './triggers';
+import { monitorStatusChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,8 +36,5 @@ export let provider = Slate.create({
     deleteMaintenanceWindow,
     getAccountDetails
   ],
-  triggers: [
-    inboundWebhook,
-    monitorStatusChanges
-  ]
+  triggers: [inboundWebhook, monitorStatusChanges]
 });

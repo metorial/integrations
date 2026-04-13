@@ -3,41 +3,54 @@ import { SlackClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchMessages = SlateTool.create(
-  spec,
-  {
-    name: 'Search Messages',
-    key: 'search_messages',
-    description: `Search for messages across a Slack workspace by keyword query. Results include the message text, channel, sender, and timestamp. Requires a user token with \`search:read\` scope.`,
-    constraints: [
-      'This endpoint requires a **user token** (xoxp-), not a bot token.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let searchMessages = SlateTool.create(spec, {
+  name: 'Search Messages',
+  key: 'search_messages',
+  description: `Search for messages across a Slack workspace by keyword query. Results include the message text, channel, sender, and timestamp. Requires a user token with \`search:read\` scope.`,
+  constraints: ['This endpoint requires a **user token** (xoxp-), not a bot token.'],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query (supports Slack search modifiers like from:, in:, has:, before:, after:)'),
-    sort: z.enum(['score', 'timestamp']).optional().describe('Sort results by relevance score or timestamp'),
-    sortDir: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    count: z.number().optional().describe('Number of results per page (default 20)'),
-    page: z.number().optional().describe('Page number'),
-  }))
-  .output(z.object({
-    totalCount: z.number().describe('Total number of matching messages'),
-    matches: z.array(z.object({
-      text: z.string().optional().describe('Message text'),
-      channelId: z.string().optional().describe('Channel ID where the message was found'),
-      channelName: z.string().optional().describe('Channel name'),
-      userId: z.string().optional().describe('User ID of the message author'),
-      username: z.string().optional().describe('Username of the message author'),
-      ts: z.string().optional().describe('Message timestamp'),
-      permalink: z.string().optional().describe('Permalink to the message'),
-    })).describe('Matching messages'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .describe(
+          'Search query (supports Slack search modifiers like from:, in:, has:, before:, after:)'
+        ),
+      sort: z
+        .enum(['score', 'timestamp'])
+        .optional()
+        .describe('Sort results by relevance score or timestamp'),
+      sortDir: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      count: z.number().optional().describe('Number of results per page (default 20)'),
+      page: z.number().optional().describe('Page number')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().describe('Total number of matching messages'),
+      matches: z
+        .array(
+          z.object({
+            text: z.string().optional().describe('Message text'),
+            channelId: z
+              .string()
+              .optional()
+              .describe('Channel ID where the message was found'),
+            channelName: z.string().optional().describe('Channel name'),
+            userId: z.string().optional().describe('User ID of the message author'),
+            username: z.string().optional().describe('Username of the message author'),
+            ts: z.string().optional().describe('Message timestamp'),
+            permalink: z.string().optional().describe('Permalink to the message')
+          })
+        )
+        .describe('Matching messages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlackClient(ctx.auth.token);
 
     let result = await client.searchMessages({
@@ -45,7 +58,7 @@ export let searchMessages = SlateTool.create(
       sort: ctx.input.sort,
       sortDir: ctx.input.sortDir,
       count: ctx.input.count,
-      page: ctx.input.page,
+      page: ctx.input.page
     });
 
     let matches = result.messages.matches.map((m: any) => ({
@@ -55,15 +68,15 @@ export let searchMessages = SlateTool.create(
       userId: m.user,
       username: m.username,
       ts: m.ts,
-      permalink: m.permalink,
+      permalink: m.permalink
     }));
 
     return {
       output: {
         totalCount: result.messages.total,
-        matches,
+        matches
       },
-      message: `Found **${result.messages.total}** message(s) matching "${ctx.input.query}" (showing ${matches.length}).`,
+      message: `Found **${result.messages.total}** message(s) matching "${ctx.input.query}" (showing ${matches.length}).`
     };
   })
   .build();

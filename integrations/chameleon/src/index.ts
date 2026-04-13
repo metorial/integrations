@@ -19,13 +19,9 @@ import {
   manageDomains,
   manageEnvironments,
   manageWebhooks,
-  listTags,
+  listTags
 } from './tools';
-import {
-  tourEvents,
-  microsurveyEvents,
-  helpbarEvents,
-} from './triggers';
+import { tourEvents, microsurveyEvents, helpbarEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -48,11 +44,7 @@ export let provider = Slate.create({
     manageDomains,
     manageEnvironments,
     manageWebhooks,
-    listTags,
+    listTags
   ],
-  triggers: [
-    tourEvents,
-    microsurveyEvents,
-    helpbarEvents,
-  ],
+  triggers: [tourEvents, microsurveyEvents, helpbarEvents]
 });

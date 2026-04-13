@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getCoinsTool,
@@ -18,7 +17,7 @@ import {
   workerStatusChangeTrigger,
   workerTemperatureAlertTrigger,
   workerHashrateDropTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({

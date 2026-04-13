@@ -3,33 +3,36 @@ import { MgmtClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFolder = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Folder',
-    key: 'manage_folder',
-    description: `Creates, deletes, or renames a folder in the Agility CMS asset library. Requires OAuth authentication.`,
-    tags: {
-      destructive: true,
-    },
+export let manageFolder = SlateTool.create(spec, {
+  name: 'Manage Folder',
+  key: 'manage_folder',
+  description: `Creates, deletes, or renames a folder in the Agility CMS asset library. Requires OAuth authentication.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    operation: z.enum(['create', 'delete', 'rename']).describe('Operation: "create", "delete", or "rename"'),
-    folderName: z.string().optional().describe('Folder name for create operations'),
-    parentFolder: z.string().optional().describe('Parent folder path for create operations'),
-    folderPath: z.string().optional().describe('Folder path for delete/rename operations'),
-    newName: z.string().optional().describe('New folder name for rename operations'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      operation: z
+        .enum(['create', 'delete', 'rename'])
+        .describe('Operation: "create", "delete", or "rename"'),
+      folderName: z.string().optional().describe('Folder name for create operations'),
+      parentFolder: z.string().optional().describe('Parent folder path for create operations'),
+      folderPath: z.string().optional().describe('Folder path for delete/rename operations'),
+      newName: z.string().optional().describe('New folder name for rename operations')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MgmtClient({
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.config.locale,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     switch (ctx.input.operation) {
@@ -38,7 +41,7 @@ export let manageFolder = SlateTool.create(
         await client.createFolder(ctx.input.folderName, ctx.input.parentFolder);
         return {
           output: { success: true },
-          message: `Created folder **${ctx.input.folderName}**${ctx.input.parentFolder ? ` in ${ctx.input.parentFolder}` : ''}`,
+          message: `Created folder **${ctx.input.folderName}**${ctx.input.parentFolder ? ` in ${ctx.input.parentFolder}` : ''}`
         };
       }
       case 'delete': {
@@ -46,7 +49,7 @@ export let manageFolder = SlateTool.create(
         await client.deleteFolder(ctx.input.folderPath);
         return {
           output: { success: true },
-          message: `Deleted folder **${ctx.input.folderPath}**`,
+          message: `Deleted folder **${ctx.input.folderPath}**`
         };
       }
       case 'rename': {
@@ -55,7 +58,7 @@ export let manageFolder = SlateTool.create(
         await client.renameFolder(ctx.input.folderPath, ctx.input.newName);
         return {
           output: { success: true },
-          message: `Renamed folder **${ctx.input.folderPath}** to **${ctx.input.newName}**`,
+          message: `Renamed folder **${ctx.input.folderPath}** to **${ctx.input.newName}**`
         };
       }
     }

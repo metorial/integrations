@@ -53,19 +53,24 @@ export class Client {
   async getContact(identifier: string, identifierType?: string): Promise<any> {
     let params: Record<string, string> = {};
     if (identifierType) params.identifierType = identifierType;
-    let response = await this.axios.get(`/contacts/${encodeURIComponent(identifier)}`, { params });
+    let response = await this.axios.get(`/contacts/${encodeURIComponent(identifier)}`, {
+      params
+    });
     return response.data;
   }
 
-  async updateContact(identifier: string, data: {
-    identifierType?: string;
-    attributes?: Record<string, any>;
-    emailBlacklisted?: boolean;
-    smsBlacklisted?: boolean;
-    listIds?: number[];
-    unlinkListIds?: number[];
-    extId?: string;
-  }): Promise<void> {
+  async updateContact(
+    identifier: string,
+    data: {
+      identifierType?: string;
+      attributes?: Record<string, any>;
+      emailBlacklisted?: boolean;
+      smsBlacklisted?: boolean;
+      listIds?: number[];
+      unlinkListIds?: number[];
+      extId?: string;
+    }
+  ): Promise<void> {
     let params: Record<string, string> = {};
     if (data.identifierType) params.identifierType = data.identifierType;
 
@@ -140,10 +145,13 @@ export class Client {
     return { listId: response.data.id };
   }
 
-  async updateContactList(listId: number, params: {
-    name?: string;
-    folderId?: number;
-  }): Promise<void> {
+  async updateContactList(
+    listId: number,
+    params: {
+      name?: string;
+      folderId?: number;
+    }
+  ): Promise<void> {
     await this.axios.put(`/contacts/lists/${listId}`, params);
   }
 
@@ -151,18 +159,24 @@ export class Client {
     await this.axios.delete(`/contacts/lists/${listId}`);
   }
 
-  async addContactsToList(listId: number, params: {
-    emails?: string[];
-    ids?: number[];
-  }): Promise<any> {
+  async addContactsToList(
+    listId: number,
+    params: {
+      emails?: string[];
+      ids?: number[];
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/contacts/lists/${listId}/contacts/add`, params);
     return response.data;
   }
 
-  async removeContactsFromList(listId: number, params: {
-    emails?: string[];
-    ids?: number[];
-  }): Promise<any> {
+  async removeContactsFromList(
+    listId: number,
+    params: {
+      emails?: string[];
+      ids?: number[];
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/contacts/lists/${listId}/contacts/remove`, params);
     return response.data;
   }
@@ -309,12 +323,15 @@ export class Client {
     return response.data;
   }
 
-  async updateDeal(dealId: string, params: {
-    name?: string;
-    attributes?: Record<string, any>;
-    linkedContactsIds?: number[];
-    linkedCompaniesIds?: string[];
-  }): Promise<void> {
+  async updateDeal(
+    dealId: string,
+    params: {
+      name?: string;
+      attributes?: Record<string, any>;
+      linkedContactsIds?: number[];
+      linkedCompaniesIds?: string[];
+    }
+  ): Promise<void> {
     await this.axios.patch(`/crm/deals/${dealId}`, params);
   }
 
@@ -364,12 +381,15 @@ export class Client {
     return response.data;
   }
 
-  async updateCompany(companyId: string, params: {
-    name?: string;
-    attributes?: Record<string, any>;
-    linkedContactsIds?: number[];
-    linkedDealsIds?: string[];
-  }): Promise<void> {
+  async updateCompany(
+    companyId: string,
+    params: {
+      name?: string;
+      attributes?: Record<string, any>;
+      linkedContactsIds?: number[];
+      linkedDealsIds?: string[];
+    }
+  ): Promise<void> {
     await this.axios.patch(`/companies/${companyId}`, params);
   }
 
@@ -405,11 +425,14 @@ export class Client {
     await this.axios.delete(`/webhooks/${webhookId}`);
   }
 
-  async updateWebhook(webhookId: number, params: {
-    url?: string;
-    events?: string[];
-    description?: string;
-  }): Promise<void> {
+  async updateWebhook(
+    webhookId: number,
+    params: {
+      url?: string;
+      events?: string[];
+      description?: string;
+    }
+  ): Promise<void> {
     await this.axios.put(`/webhooks/${webhookId}`, params);
   }
 

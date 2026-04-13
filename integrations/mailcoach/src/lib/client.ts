@@ -9,8 +9,8 @@ export class Client {
       headers: {
         Authorization: `Bearer ${config.token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -48,20 +48,23 @@ export class Client {
     return response.data.data;
   }
 
-  async updateEmailList(emailListUuid: string, data: {
-    name: string;
-    default_from_email: string;
-    default_from_name?: string;
-    default_reply_to_email?: string;
-    default_reply_to_name?: string;
-    allow_form_subscriptions?: boolean;
-    requires_confirmation?: boolean;
-    campaigns_feed_enabled?: boolean;
-    report_recipients?: string;
-    report_campaign_sent?: boolean;
-    report_campaign_summary?: boolean;
-    report_email_list_summary?: boolean;
-  }) {
+  async updateEmailList(
+    emailListUuid: string,
+    data: {
+      name: string;
+      default_from_email: string;
+      default_from_name?: string;
+      default_reply_to_email?: string;
+      default_reply_to_name?: string;
+      allow_form_subscriptions?: boolean;
+      requires_confirmation?: boolean;
+      campaigns_feed_enabled?: boolean;
+      report_recipients?: string;
+      report_campaign_sent?: boolean;
+      report_campaign_summary?: boolean;
+      report_email_list_summary?: boolean;
+    }
+  ) {
     let response = await this.http.put(`/email-lists/${emailListUuid}`, data);
     return response.data.data;
   }
@@ -72,18 +75,23 @@ export class Client {
 
   // ── Subscribers ──
 
-  async listSubscribers(emailListUuid: string, params?: {
-    search?: string;
-    status?: string;
-    sort?: string;
-    page?: number;
-  }) {
+  async listSubscribers(
+    emailListUuid: string,
+    params?: {
+      search?: string;
+      status?: string;
+      sort?: string;
+      page?: number;
+    }
+  ) {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
     if (params?.status) query['filter[status]'] = params.status;
     if (params?.sort) query['sort'] = params.sort;
     if (params?.page) query['page'] = params.page.toString();
-    let response = await this.http.get(`/email-lists/${emailListUuid}/subscribers`, { params: query });
+    let response = await this.http.get(`/email-lists/${emailListUuid}/subscribers`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -92,25 +100,31 @@ export class Client {
     return response.data.data;
   }
 
-  async createSubscriber(emailListUuid: string, data: {
-    email: string;
-    first_name?: string;
-    last_name?: string;
-    tags?: string[];
-    extra_attributes?: Record<string, unknown>;
-    skip_confirmation?: boolean;
-  }) {
+  async createSubscriber(
+    emailListUuid: string,
+    data: {
+      email: string;
+      first_name?: string;
+      last_name?: string;
+      tags?: string[];
+      extra_attributes?: Record<string, unknown>;
+      skip_confirmation?: boolean;
+    }
+  ) {
     let response = await this.http.post(`/email-lists/${emailListUuid}/subscribers`, data);
     return response.data.data;
   }
 
-  async updateSubscriber(subscriberUuid: string, data: {
-    email?: string;
-    first_name?: string;
-    last_name?: string;
-    tags?: string[];
-    extra_attributes?: Record<string, unknown>;
-  }) {
+  async updateSubscriber(
+    subscriberUuid: string,
+    data: {
+      email?: string;
+      first_name?: string;
+      last_name?: string;
+      tags?: string[];
+      extra_attributes?: Record<string, unknown>;
+    }
+  ) {
     let response = await this.http.patch(`/subscribers/${subscriberUuid}`, data);
     return response.data.data;
   }
@@ -139,13 +153,20 @@ export class Client {
   }
 
   async removeTagsFromSubscriber(subscriberUuid: string, tags: string[]) {
-    let response = await this.http.delete(`/subscribers/${subscriberUuid}/tags`, { data: { tags } });
+    let response = await this.http.delete(`/subscribers/${subscriberUuid}/tags`, {
+      data: { tags }
+    });
     return response.data;
   }
 
   // ── Campaigns ──
 
-  async listCampaigns(params?: { search?: string; status?: string; sort?: string; page?: number }) {
+  async listCampaigns(params?: {
+    search?: string;
+    status?: string;
+    sort?: string;
+    page?: number;
+  }) {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
     if (params?.status) query['filter[status]'] = params.status;
@@ -180,21 +201,24 @@ export class Client {
     return response.data.data;
   }
 
-  async updateCampaign(campaignUuid: string, data: {
-    name?: string;
-    email_list_uuid?: string;
-    subject?: string;
-    html?: string;
-    template_uuid?: string;
-    fields?: Record<string, string>;
-    from_email?: string;
-    from_name?: string;
-    reply_to_email?: string;
-    reply_to_name?: string;
-    segment_uuid?: string;
-    utm_tags?: boolean;
-    schedule_at?: string;
-  }) {
+  async updateCampaign(
+    campaignUuid: string,
+    data: {
+      name?: string;
+      email_list_uuid?: string;
+      subject?: string;
+      html?: string;
+      template_uuid?: string;
+      fields?: Record<string, string>;
+      from_email?: string;
+      from_name?: string;
+      reply_to_email?: string;
+      reply_to_name?: string;
+      segment_uuid?: string;
+      utm_tags?: boolean;
+      schedule_at?: string;
+    }
+  ) {
     let response = await this.http.put(`/campaigns/${campaignUuid}`, data);
     return response.data.data;
   }
@@ -230,7 +254,9 @@ export class Client {
   async getCampaignUnsubscribes(campaignUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
     if (params?.page) query['page'] = params.page.toString();
-    let response = await this.http.get(`/campaigns/${campaignUuid}/unsubscribes`, { params: query });
+    let response = await this.http.get(`/campaigns/${campaignUuid}/unsubscribes`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -238,7 +264,9 @@ export class Client {
     let query: Record<string, string> = {};
     if (params?.type) query['filter[type]'] = params.type;
     if (params?.page) query['page'] = params.page.toString();
-    let response = await this.http.get(`/campaigns/${campaignUuid}/bounces`, { params: query });
+    let response = await this.http.get(`/campaigns/${campaignUuid}/bounces`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -263,7 +291,10 @@ export class Client {
     return response.data.data;
   }
 
-  async updateTemplate(templateUuid: string, data: { name: string; html?: string; structured_html?: string }) {
+  async updateTemplate(
+    templateUuid: string,
+    data: { name: string; html?: string; structured_html?: string }
+  ) {
     let response = await this.http.put(`/templates/${templateUuid}`, data);
     return response.data.data;
   }
@@ -296,7 +327,9 @@ export class Client {
   async listTags(emailListUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
     if (params?.page) query['page'] = params.page.toString();
-    let response = await this.http.get(`/email-lists/${emailListUuid}/tags`, { params: query });
+    let response = await this.http.get(`/email-lists/${emailListUuid}/tags`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -305,12 +338,19 @@ export class Client {
     return response.data.data;
   }
 
-  async createTag(emailListUuid: string, data: { name: string; visible_in_preferences?: boolean }) {
+  async createTag(
+    emailListUuid: string,
+    data: { name: string; visible_in_preferences?: boolean }
+  ) {
     let response = await this.http.post(`/email-lists/${emailListUuid}/tags`, data);
     return response.data.data;
   }
 
-  async updateTag(emailListUuid: string, tagUuid: string, data: { name: string; visible_in_preferences?: boolean }) {
+  async updateTag(
+    emailListUuid: string,
+    tagUuid: string,
+    data: { name: string; visible_in_preferences?: boolean }
+  ) {
     let response = await this.http.put(`/email-lists/${emailListUuid}/tags/${tagUuid}`, data);
     return response.data.data;
   }
@@ -324,34 +364,48 @@ export class Client {
   async listSegments(emailListUuid: string, params?: { page?: number }) {
     let query: Record<string, string> = {};
     if (params?.page) query['page'] = params.page.toString();
-    let response = await this.http.get(`/email-lists/${emailListUuid}/segments`, { params: query });
+    let response = await this.http.get(`/email-lists/${emailListUuid}/segments`, {
+      params: query
+    });
     return response.data;
   }
 
   async getSegment(emailListUuid: string, segmentUuid: string) {
-    let response = await this.http.get(`/email-lists/${emailListUuid}/segments/${segmentUuid}`);
+    let response = await this.http.get(
+      `/email-lists/${emailListUuid}/segments/${segmentUuid}`
+    );
     return response.data.data;
   }
 
-  async createSegment(emailListUuid: string, data: {
-    name: string;
-    all_positive_tags_required?: boolean;
-    all_negative_tags_required?: boolean;
-    positive_tags?: string[];
-    negative_tags?: string[];
-  }) {
+  async createSegment(
+    emailListUuid: string,
+    data: {
+      name: string;
+      all_positive_tags_required?: boolean;
+      all_negative_tags_required?: boolean;
+      positive_tags?: string[];
+      negative_tags?: string[];
+    }
+  ) {
     let response = await this.http.post(`/email-lists/${emailListUuid}/segments`, data);
     return response.data.data;
   }
 
-  async updateSegment(emailListUuid: string, segmentUuid: string, data: {
-    name: string;
-    all_positive_tags_required?: boolean;
-    all_negative_tags_required?: boolean;
-    positive_tags?: string[];
-    negative_tags?: string[];
-  }) {
-    let response = await this.http.put(`/email-lists/${emailListUuid}/segments/${segmentUuid}`, data);
+  async updateSegment(
+    emailListUuid: string,
+    segmentUuid: string,
+    data: {
+      name: string;
+      all_positive_tags_required?: boolean;
+      all_negative_tags_required?: boolean;
+      positive_tags?: string[];
+      negative_tags?: string[];
+    }
+  ) {
+    let response = await this.http.put(
+      `/email-lists/${emailListUuid}/segments/${segmentUuid}`,
+      data
+    );
     return response.data.data;
   }
 
@@ -361,7 +415,12 @@ export class Client {
 
   // ── Suppressions ──
 
-  async listSuppressions(params?: { search?: string; reason?: string; sort?: string; page?: number }) {
+  async listSuppressions(params?: {
+    search?: string;
+    reason?: string;
+    sort?: string;
+    page?: number;
+  }) {
     let query: Record<string, string> = {};
     if (params?.search) query['filter[search]'] = params.search;
     if (params?.reason) query['filter[reason]'] = params.reason;
@@ -387,11 +446,7 @@ export class Client {
 
   // ── Sends ──
 
-  async listSends(params?: {
-    subscriberUuid?: string;
-    campaignUuid?: string;
-    page?: number;
-  }) {
+  async listSends(params?: { subscriberUuid?: string; campaignUuid?: string; page?: number }) {
     let query: Record<string, string> = {};
     if (params?.subscriberUuid) query['filter[subscriber_uuid]'] = params.subscriberUuid;
     if (params?.campaignUuid) query['filter[campaign_uuid]'] = params.campaignUuid;

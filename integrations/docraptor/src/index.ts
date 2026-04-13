@@ -7,7 +7,7 @@ import {
   createHostedDocument,
   expireHostedDocument,
   listDocuments,
-  listIps,
+  listIps
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     createHostedDocument,
     expireHostedDocument,
     listDocuments,
-    listIps,
+    listIps
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

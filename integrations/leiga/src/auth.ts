@@ -6,9 +6,11 @@ let api = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Client Credentials',
@@ -16,13 +18,13 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('Client ID from Leiga API settings'),
-      secretKey: z.string().describe('Secret Key from Leiga API settings'),
+      secretKey: z.string().describe('Secret Key from Leiga API settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let response = await api.post('/authorize/access-permanent-token', {
         clientId: ctx.input.clientId,
-        secretKey: ctx.input.secretKey,
+        secretKey: ctx.input.secretKey
       });
 
       let data = response.data;
@@ -33,8 +35,8 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: data.data.accessToken,
-        },
+          token: data.data.accessToken
+        }
       };
-    },
+    }
   });

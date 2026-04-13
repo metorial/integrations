@@ -3,44 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let memberSchema = z.object({
-  assistantId: z.string().optional().describe('Assistant ID for this squad member'),
-  assistant: z.any().optional().describe('Inline assistant configuration for this member'),
-  assistantDestinations: z.array(z.object({
-    type: z.string().optional().describe('Destination type (e.g. assistant)'),
-    assistantName: z.string().optional().describe('Name of the assistant to transfer to'),
-    message: z.string().optional().describe('Message to say when transferring'),
-    description: z.string().optional().describe('Description of when to transfer')
-  })).optional().describe('Transfer destinations from this member')
-}).describe('Squad member configuration');
+let memberSchema = z
+  .object({
+    assistantId: z.string().optional().describe('Assistant ID for this squad member'),
+    assistant: z.any().optional().describe('Inline assistant configuration for this member'),
+    assistantDestinations: z
+      .array(
+        z.object({
+          type: z.string().optional().describe('Destination type (e.g. assistant)'),
+          assistantName: z
+            .string()
+            .optional()
+            .describe('Name of the assistant to transfer to'),
+          message: z.string().optional().describe('Message to say when transferring'),
+          description: z.string().optional().describe('Description of when to transfer')
+        })
+      )
+      .optional()
+      .describe('Transfer destinations from this member')
+  })
+  .describe('Squad member configuration');
 
-export let manageSquad = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Squad',
-    key: 'manage_squad',
-    description: `Create, update, retrieve, or delete a Vapi squad. Squads orchestrate multiple assistants with context-preserving transfers, enabling workflows where specialized assistants handle different parts of a conversation.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageSquad = SlateTool.create(spec, {
+  name: 'Manage Squad',
+  key: 'manage_squad',
+  description: `Create, update, retrieve, or delete a Vapi squad. Squads orchestrate multiple assistants with context-preserving transfers, enabling workflows where specialized assistants handle different parts of a conversation.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
-    squadId: z.string().optional().describe('Squad ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Name of the squad'),
-    members: z.array(memberSchema).optional().describe('Squad members with their assistants and transfer destinations')
-  }))
-  .output(z.object({
-    squadId: z.string().optional().describe('ID of the squad'),
-    name: z.string().optional().describe('Name of the squad'),
-    members: z.any().optional().describe('Squad members configuration'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the squad was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'get', 'delete']).describe('Action to perform'),
+      squadId: z.string().optional().describe('Squad ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Name of the squad'),
+      members: z
+        .array(memberSchema)
+        .optional()
+        .describe('Squad members with their assistants and transfer destinations')
+    })
+  )
+  .output(
+    z.object({
+      squadId: z.string().optional().describe('ID of the squad'),
+      name: z.string().optional().describe('Name of the squad'),
+      members: z.any().optional().describe('Squad members configuration'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the squad was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { action, squadId } = ctx.input;
 

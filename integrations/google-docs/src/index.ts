@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createDocument,
@@ -9,9 +8,7 @@ import {
   listDocuments,
   manageNamedRanges
 } from './tools';
-import { documentChanged,
-  inboundWebhook,
-} from './triggers';
+import { documentChanged, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -23,8 +20,5 @@ export let provider = Slate.create({
     listDocuments,
     manageNamedRanges
   ],
-  triggers: [
-    inboundWebhook,
-    documentChanged
-  ]
+  triggers: [inboundWebhook, documentChanged]
 });

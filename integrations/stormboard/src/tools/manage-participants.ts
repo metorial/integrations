@@ -3,27 +3,33 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { StormboardClient } from '../lib/client';
 
-export let manageParticipants = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Participants',
-    key: 'manage_participants',
-    description: `Manage Storm participants and invitations. List current participants, invite new people by email, accept or decline invitations, join a Storm with an access key, or check your access level.`,
-  }
-)
-  .input(z.object({
-    stormId: z.string().describe('ID of the Storm'),
-    action: z.enum(['list', 'invite', 'accept', 'decline', 'join', 'check_access']).describe('Action to perform'),
-    email: z.string().optional().describe('Email address to invite (required for invite)'),
-    accessKey: z.string().optional().describe('Access key to join a Storm (required for join)'),
-  }))
-  .output(z.object({
-    participants: z.array(z.any()).optional().describe('List of participants'),
-    accessLevel: z.any().optional().describe('User access level details'),
-    success: z.boolean().describe('Whether the action was successful'),
-    result: z.any().optional().describe('Response data from the action'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageParticipants = SlateTool.create(spec, {
+  name: 'Manage Participants',
+  key: 'manage_participants',
+  description: `Manage Storm participants and invitations. List current participants, invite new people by email, accept or decline invitations, join a Storm with an access key, or check your access level.`
+})
+  .input(
+    z.object({
+      stormId: z.string().describe('ID of the Storm'),
+      action: z
+        .enum(['list', 'invite', 'accept', 'decline', 'join', 'check_access'])
+        .describe('Action to perform'),
+      email: z.string().optional().describe('Email address to invite (required for invite)'),
+      accessKey: z
+        .string()
+        .optional()
+        .describe('Access key to join a Storm (required for join)')
+    })
+  )
+  .output(
+    z.object({
+      participants: z.array(z.any()).optional().describe('List of participants'),
+      accessLevel: z.any().optional().describe('User access level details'),
+      success: z.boolean().describe('Whether the action was successful'),
+      result: z.any().optional().describe('Response data from the action')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StormboardClient({ token: ctx.auth.token });
     let { stormId, action, email, accessKey } = ctx.input;
 
@@ -32,7 +38,7 @@ export let manageParticipants = SlateTool.create(
       let list = Array.isArray(participants) ? participants : [];
       return {
         output: { participants: list, success: true },
-        message: `Found **${list.length}** participant(s) in Storm ${stormId}.`,
+        message: `Found **${list.length}** participant(s) in Storm ${stormId}.`
       };
     }
 
@@ -43,7 +49,7 @@ export let manageParticipants = SlateTool.create(
       let result = await client.inviteParticipant(stormId, { email });
       return {
         output: { result, success: true },
-        message: `Invited **${email}** to Storm ${stormId}.`,
+        message: `Invited **${email}** to Storm ${stormId}.`
       };
     }
 
@@ -51,7 +57,7 @@ export let manageParticipants = SlateTool.create(
       let result = await client.acceptInvite(stormId);
       return {
         output: { result, success: true },
-        message: `Accepted invitation to Storm ${stormId}.`,
+        message: `Accepted invitation to Storm ${stormId}.`
       };
     }
 
@@ -59,7 +65,7 @@ export let manageParticipants = SlateTool.create(
       let result = await client.declineInvite(stormId);
       return {
         output: { result, success: true },
-        message: `Declined invitation to Storm ${stormId}.`,
+        message: `Declined invitation to Storm ${stormId}.`
       };
     }
 
@@ -70,7 +76,7 @@ export let manageParticipants = SlateTool.create(
       let result = await client.joinStorm(stormId, accessKey);
       return {
         output: { result, success: true },
-        message: `Joined Storm ${stormId}.`,
+        message: `Joined Storm ${stormId}.`
       };
     }
 
@@ -78,12 +84,13 @@ export let manageParticipants = SlateTool.create(
       let accessLevel = await client.getStormAccess(stormId);
       return {
         output: { accessLevel, success: true },
-        message: `Retrieved access level for Storm ${stormId}.`,
+        message: `Retrieved access level for Storm ${stormId}.`
       };
     }
 
     return {
       output: { success: false },
-      message: 'Unknown action.',
+      message: 'Unknown action.'
     };
-  }).build();
+  })
+  .build();

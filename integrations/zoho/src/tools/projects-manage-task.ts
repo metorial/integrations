@@ -8,35 +8,46 @@ export let projectsManageTask = SlateTool.create(spec, {
   name: 'Projects Manage Task',
   key: 'projects_manage_task',
   description: `Create, update, delete, or retrieve tasks within a Zoho Projects project. Set task names, descriptions, owners, priority, start/end dates, and status.`,
-  instructions: [
-    'Both portalId and projectId are required.',
-    'For create, name is required.',
-  ],
+  instructions: ['Both portalId and projectId are required.', 'For create, name is required.'],
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    portalId: z.string().describe('Zoho Projects portal ID'),
-    projectId: z.string().describe('Project ID containing the task'),
-    action: z.enum(['get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    taskId: z.string().optional().describe('Task ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Task name (required for create)'),
-    description: z.string().optional().describe('Task description'),
-    startDate: z.string().optional().describe('Start date (MM-dd-yyyy)'),
-    endDate: z.string().optional().describe('End date (MM-dd-yyyy)'),
-    priority: z.string().optional().describe('Task priority (e.g., "None", "Low", "Medium", "High")'),
-    status: z.string().optional().describe('Task status'),
-    owners: z.string().optional().describe('Comma-separated user IDs to assign as task owners'),
-    percentComplete: z.number().optional().describe('Completion percentage (0-100)'),
-  }))
-  .output(z.object({
-    task: z.record(z.string(), z.any()).optional().describe('Task record'),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      portalId: z.string().describe('Zoho Projects portal ID'),
+      projectId: z.string().describe('Project ID containing the task'),
+      action: z.enum(['get', 'create', 'update', 'delete']).describe('Operation to perform'),
+      taskId: z.string().optional().describe('Task ID (required for get, update, delete)'),
+      name: z.string().optional().describe('Task name (required for create)'),
+      description: z.string().optional().describe('Task description'),
+      startDate: z.string().optional().describe('Start date (MM-dd-yyyy)'),
+      endDate: z.string().optional().describe('End date (MM-dd-yyyy)'),
+      priority: z
+        .string()
+        .optional()
+        .describe('Task priority (e.g., "None", "Low", "Medium", "High")'),
+      status: z.string().optional().describe('Task status'),
+      owners: z
+        .string()
+        .optional()
+        .describe('Comma-separated user IDs to assign as task owners'),
+      percentComplete: z.number().optional().describe('Completion percentage (0-100)')
+    })
+  )
+  .output(
+    z.object({
+      task: z.record(z.string(), z.any()).optional().describe('Task record'),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
-    let client = new ZohoProjectsClient({ token: ctx.auth.token, datacenter: dc, portalId: ctx.input.portalId });
+    let client = new ZohoProjectsClient({
+      token: ctx.auth.token,
+      datacenter: dc,
+      portalId: ctx.input.portalId
+    });
 
     if (ctx.input.action === 'get') {
       if (!ctx.input.taskId) throw new Error('taskId is required for get');
@@ -44,7 +55,7 @@ export let projectsManageTask = SlateTool.create(spec, {
       let task = result?.tasks?.[0] || result;
       return {
         output: { task },
-        message: `Fetched task **${task?.name || ctx.input.taskId}**.`,
+        message: `Fetched task **${task?.name || ctx.input.taskId}**.`
       };
     }
 
@@ -57,7 +68,8 @@ export let projectsManageTask = SlateTool.create(spec, {
       if (ctx.input.priority) data.priority = ctx.input.priority;
       if (ctx.input.status) data.status_name = ctx.input.status;
       if (ctx.input.owners) data.persons = ctx.input.owners;
-      if (ctx.input.percentComplete !== undefined) data.percent_complete = ctx.input.percentComplete;
+      if (ctx.input.percentComplete !== undefined)
+        data.percent_complete = ctx.input.percentComplete;
       return data;
     };
 
@@ -66,7 +78,7 @@ export let projectsManageTask = SlateTool.create(spec, {
       let task = result?.tasks?.[0] || result;
       return {
         output: { task },
-        message: `Created task **${task?.name}** in project **${ctx.input.projectId}**.`,
+        message: `Created task **${task?.name}** in project **${ctx.input.projectId}**.`
       };
     }
 
@@ -76,7 +88,7 @@ export let projectsManageTask = SlateTool.create(spec, {
       let task = result?.tasks?.[0] || result;
       return {
         output: { task },
-        message: `Updated task **${ctx.input.taskId}**.`,
+        message: `Updated task **${ctx.input.taskId}**.`
       };
     }
 
@@ -85,9 +97,10 @@ export let projectsManageTask = SlateTool.create(spec, {
       await client.deleteTask(ctx.input.projectId, ctx.input.taskId);
       return {
         output: { deleted: true },
-        message: `Deleted task **${ctx.input.taskId}**.`,
+        message: `Deleted task **${ctx.input.taskId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

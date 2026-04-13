@@ -52,9 +52,9 @@ export class AssetApiClient {
     return createAxios({
       baseURL: 'https://asset-api.prismic.io',
       headers: {
-        'Authorization': `Bearer ${this.writeToken}`,
-        'repository': this.repositoryName,
-      },
+        Authorization: `Bearer ${this.writeToken}`,
+        repository: this.repositoryName
+      }
     });
   }
 
@@ -99,33 +99,40 @@ export class AssetApiClient {
   }): Promise<PrismicAsset> {
     let axios = this.getAxios();
 
-    let response = await axios.post('/assets', {
-      url: options.url,
-      filename: options.filename,
-      notes: options.notes,
-      credits: options.credits,
-      alt: options.alt,
-      tags: options.tags,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
+    let response = await axios.post(
+      '/assets',
+      {
+        url: options.url,
+        filename: options.filename,
+        notes: options.notes,
+        credits: options.credits,
+        alt: options.alt,
+        tags: options.tags
       },
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     return response.data as PrismicAsset;
   }
 
-  async updateAsset(assetId: string, updates: {
-    notes?: string;
-    credits?: string;
-    alt?: string;
-    tags?: string[];
-  }): Promise<PrismicAsset> {
+  async updateAsset(
+    assetId: string,
+    updates: {
+      notes?: string;
+      credits?: string;
+      alt?: string;
+      tags?: string[];
+    }
+  ): Promise<PrismicAsset> {
     let axios = this.getAxios();
     let response = await axios.patch(`/assets/${assetId}`, updates, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data as PrismicAsset;
   }
@@ -145,11 +152,15 @@ export class AssetApiClient {
 
   async createAssetTag(name: string): Promise<AssetTag> {
     let axios = this.getAxios();
-    let response = await axios.post('/tags', { name }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    let response = await axios.post(
+      '/tags',
+      { name },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data as AssetTag;
   }
 }

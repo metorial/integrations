@@ -4,7 +4,11 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let companyOutputSchema = z.object({
-  companyId: z.string().nullable().optional().describe('Unique PDL identifier for this company'),
+  companyId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Unique PDL identifier for this company'),
   name: z.string().nullable().optional(),
   displayName: z.string().nullable().optional(),
   size: z.string().nullable().optional().describe('Employee count range'),
@@ -20,7 +24,11 @@ let companyOutputSchema = z.object({
   facebookUrl: z.string().nullable().optional(),
   twitterUrl: z.string().nullable().optional(),
   ticker: z.string().nullable().optional(),
-  type: z.string().nullable().optional().describe('Company type (e.g. public, private, nonprofit)'),
+  type: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Company type (e.g. public, private, nonprofit)'),
   locationName: z.string().nullable().optional(),
   locationLocality: z.string().nullable().optional(),
   locationRegion: z.string().nullable().optional(),
@@ -42,42 +50,41 @@ let companyOutputSchema = z.object({
   grossAdditionsByMonth: z.any().nullable().optional(),
   grossDeparturesByMonth: z.any().nullable().optional(),
   topNextEmployers: z.any().nullable().optional(),
-  topPreviousEmployers: z.any().nullable().optional(),
+  topPreviousEmployers: z.any().nullable().optional()
 });
 
-export let enrichCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Enrich Company',
-    key: 'enrich_company',
-    description: `Enrich data on a company by matching against the company dataset. Provide a company name, website, LinkedIn URL, or ticker symbol to find a matching company profile.
+export let enrichCompany = SlateTool.create(spec, {
+  name: 'Enrich Company',
+  key: 'enrich_company',
+  description: `Enrich data on a company by matching against the company dataset. Provide a company name, website, LinkedIn URL, or ticker symbol to find a matching company profile.
 Returns comprehensive company information including size, industry, location, funding, and employee insights.`,
-    instructions: [
-      'Provide at least one identifying parameter (name, website, LinkedIn URL, or ticker).',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Provide at least one identifying parameter (name, website, LinkedIn URL, or ticker).'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Company name (e.g. "Google")'),
-    website: z.string().optional().describe('Company website URL (e.g. "google.com")'),
-    linkedinUrl: z.string().optional().describe('Company LinkedIn profile URL'),
-    ticker: z.string().optional().describe('Stock ticker symbol (e.g. "GOOGL")'),
-    location: z.string().optional().describe('Company headquarters location'),
-    locality: z.string().optional().describe('City/locality of the company'),
-    region: z.string().optional().describe('State/region of the company'),
-    country: z.string().optional().describe('Country of the company'),
-    streetAddress: z.string().optional().describe('Street address of the company'),
-    postalCode: z.string().optional().describe('Postal/zip code of the company'),
-    titlecase: z.boolean().optional().describe('Titlecase the output fields'),
-  }))
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Company name (e.g. "Google")'),
+      website: z.string().optional().describe('Company website URL (e.g. "google.com")'),
+      linkedinUrl: z.string().optional().describe('Company LinkedIn profile URL'),
+      ticker: z.string().optional().describe('Stock ticker symbol (e.g. "GOOGL")'),
+      location: z.string().optional().describe('Company headquarters location'),
+      locality: z.string().optional().describe('City/locality of the company'),
+      region: z.string().optional().describe('State/region of the company'),
+      country: z.string().optional().describe('Country of the company'),
+      streetAddress: z.string().optional().describe('Street address of the company'),
+      postalCode: z.string().optional().describe('Postal/zip code of the company'),
+      titlecase: z.boolean().optional().describe('Titlecase the output fields')
+    })
+  )
   .output(companyOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      sandbox: ctx.config.sandbox,
+      sandbox: ctx.config.sandbox
     });
 
     let params: Record<string, unknown> = {};
@@ -102,9 +109,10 @@ Returns comprehensive company information including size, industry, location, fu
       output,
       message: output.name
         ? `Found company: **${output.displayName || output.name}**${output.industry ? ` (${output.industry})` : ''}${output.size ? ` - ${output.size} employees` : ''}`
-        : 'No matching company found for the provided parameters.',
+        : 'No matching company found for the provided parameters.'
     };
-  }).build();
+  })
+  .build();
 
 export let mapCompanyData = (data: any) => {
   return {
@@ -146,6 +154,6 @@ export let mapCompanyData = (data: any) => {
     grossAdditionsByMonth: data.gross_additions_by_month ?? null,
     grossDeparturesByMonth: data.gross_departures_by_month ?? null,
     topNextEmployers: data.top_next_employers_by_role ?? null,
-    topPreviousEmployers: data.top_previous_employers_by_role ?? null,
+    topPreviousEmployers: data.top_previous_employers_by_role ?? null
   };
 };

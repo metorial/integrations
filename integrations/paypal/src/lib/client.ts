@@ -1,9 +1,7 @@
 import { createAxios } from 'slates';
 
 let getBaseUrl = (environment?: string) =>
-  environment === 'sandbox'
-    ? 'https://api-m.sandbox.paypal.com'
-    : 'https://api-m.paypal.com';
+  environment === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
 
 export class PayPalClient {
   private axios: ReturnType<typeof createAxios>;
@@ -25,9 +23,9 @@ export class PayPalClient {
     this.axios = createAxios({
       baseURL: getBaseUrl(this.environment),
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -40,9 +38,9 @@ export class PayPalClient {
 
     let response = await client.post('/v1/oauth2/token', 'grant_type=client_credentials', {
       headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     let data = response.data as { access_token: string };
@@ -50,9 +48,9 @@ export class PayPalClient {
     this.axios = createAxios({
       baseURL: baseUrl,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      }
     });
     return this.token;
   }
@@ -74,7 +72,7 @@ export class PayPalClient {
   }): Promise<Record<string, any>> {
     let body: Record<string, any> = {
       intent: params.intent,
-      purchase_units: params.purchaseUnits,
+      purchase_units: params.purchaseUnits
     };
     if (params.paymentSource) body.payment_source = params.paymentSource;
     if (params.applicationContext) body.application_context = params.applicationContext;
@@ -105,19 +103,25 @@ export class PayPalClient {
     return response.data as Record<string, any>;
   }
 
-  async captureAuthorization(authorizationId: string, params?: {
-    amount?: { currency_code: string; value: string };
-    finalCapture?: boolean;
-    invoiceId?: string;
-    noteToPayer?: string;
-  }): Promise<Record<string, any>> {
+  async captureAuthorization(
+    authorizationId: string,
+    params?: {
+      amount?: { currency_code: string; value: string };
+      finalCapture?: boolean;
+      invoiceId?: string;
+      noteToPayer?: string;
+    }
+  ): Promise<Record<string, any>> {
     let body: Record<string, any> = {};
     if (params?.amount) body.amount = params.amount;
     if (params?.finalCapture !== undefined) body.final_capture = params.finalCapture;
     if (params?.invoiceId) body.invoice_id = params.invoiceId;
     if (params?.noteToPayer) body.note_to_payer = params.noteToPayer;
 
-    let response = await this.axios.post(`/v2/payments/authorizations/${authorizationId}/capture`, body);
+    let response = await this.axios.post(
+      `/v2/payments/authorizations/${authorizationId}/capture`,
+      body
+    );
     return response.data as Record<string, any>;
   }
 
@@ -125,8 +129,14 @@ export class PayPalClient {
     await this.axios.post(`/v2/payments/authorizations/${authorizationId}/void`, {});
   }
 
-  async reauthorize(authorizationId: string, amount: { currency_code: string; value: string }): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/v2/payments/authorizations/${authorizationId}/reauthorize`, { amount });
+  async reauthorize(
+    authorizationId: string,
+    amount: { currency_code: string; value: string }
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post(
+      `/v2/payments/authorizations/${authorizationId}/reauthorize`,
+      { amount }
+    );
     return response.data as Record<string, any>;
   }
 
@@ -135,11 +145,14 @@ export class PayPalClient {
     return response.data as Record<string, any>;
   }
 
-  async refundCapture(captureId: string, params?: {
-    amount?: { currency_code: string; value: string };
-    invoiceId?: string;
-    noteToPayer?: string;
-  }): Promise<Record<string, any>> {
+  async refundCapture(
+    captureId: string,
+    params?: {
+      amount?: { currency_code: string; value: string };
+      invoiceId?: string;
+      noteToPayer?: string;
+    }
+  ): Promise<Record<string, any>> {
     let body: Record<string, any> = {};
     if (params?.amount) body.amount = params.amount;
     if (params?.invoiceId) body.invoice_id = params.invoiceId;
@@ -166,7 +179,7 @@ export class PayPalClient {
   }): Promise<Record<string, any>> {
     let body: Record<string, any> = {
       name: params.name,
-      type: params.type,
+      type: params.type
     };
     if (params.description) body.description = params.description;
     if (params.category) body.category = params.category;
@@ -177,7 +190,11 @@ export class PayPalClient {
     return response.data as Record<string, any>;
   }
 
-  async listProducts(params?: { page?: number; pageSize?: number; totalRequired?: boolean }): Promise<Record<string, any>> {
+  async listProducts(params?: {
+    page?: number;
+    pageSize?: number;
+    totalRequired?: boolean;
+  }): Promise<Record<string, any>> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.pageSize) query.page_size = params.pageSize;
@@ -210,7 +227,7 @@ export class PayPalClient {
     let body: Record<string, any> = {
       product_id: params.productId,
       name: params.name,
-      billing_cycles: params.billingCycles,
+      billing_cycles: params.billingCycles
     };
     if (params.description) body.description = params.description;
     if (params.status) body.status = params.status;
@@ -221,7 +238,12 @@ export class PayPalClient {
     return response.data as Record<string, any>;
   }
 
-  async listPlans(params?: { productId?: string; page?: number; pageSize?: number; totalRequired?: boolean }): Promise<Record<string, any>> {
+  async listPlans(params?: {
+    productId?: string;
+    page?: number;
+    pageSize?: number;
+    totalRequired?: boolean;
+  }): Promise<Record<string, any>> {
     let query: Record<string, any> = {};
     if (params?.productId) query.product_id = params.productId;
     if (params?.page) query.page = params.page;
@@ -253,7 +275,7 @@ export class PayPalClient {
     customId?: string;
   }): Promise<Record<string, any>> {
     let body: Record<string, any> = {
-      plan_id: params.planId,
+      plan_id: params.planId
     };
     if (params.startTime) body.start_time = params.startTime;
     if (params.subscriber) body.subscriber = params.subscriber;
@@ -281,13 +303,19 @@ export class PayPalClient {
     await this.axios.post(`/v1/billing/subscriptions/${subscriptionId}/activate`, { reason });
   }
 
-  async listSubscriptionTransactions(subscriptionId: string, params: {
-    startTime: string;
-    endTime: string;
-  }): Promise<Record<string, any>> {
-    let response = await this.axios.get(`/v1/billing/subscriptions/${subscriptionId}/transactions`, {
-      params: { start_time: params.startTime, end_time: params.endTime },
-    });
+  async listSubscriptionTransactions(
+    subscriptionId: string,
+    params: {
+      startTime: string;
+      endTime: string;
+    }
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.get(
+      `/v1/billing/subscriptions/${subscriptionId}/transactions`,
+      {
+        params: { start_time: params.startTime, end_time: params.endTime }
+      }
+    );
     return response.data as Record<string, any>;
   }
 
@@ -317,7 +345,7 @@ export class PayPalClient {
     amount?: Record<string, any>;
   }): Promise<Record<string, any>> {
     let body: Record<string, any> = {
-      detail: params.detail,
+      detail: params.detail
     };
     if (params.invoicer) body.invoicer = params.invoicer;
     if (params.primaryRecipients) body.primary_recipients = params.primaryRecipients;
@@ -350,13 +378,16 @@ export class PayPalClient {
     return response.data as Record<string, any>;
   }
 
-  async sendInvoice(invoiceId: string, params?: {
-    subject?: string;
-    note?: string;
-    sendToInvoicer?: boolean;
-    sendToRecipient?: boolean;
-    additionalRecipients?: string[];
-  }): Promise<void> {
+  async sendInvoice(
+    invoiceId: string,
+    params?: {
+      subject?: string;
+      note?: string;
+      sendToInvoicer?: boolean;
+      sendToRecipient?: boolean;
+      additionalRecipients?: string[];
+    }
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (params?.subject) body.subject = params.subject;
     if (params?.note) body.note = params.note;
@@ -367,12 +398,15 @@ export class PayPalClient {
     await this.axios.post(`/v2/invoicing/invoices/${invoiceId}/send`, body);
   }
 
-  async cancelInvoice(invoiceId: string, params?: {
-    subject?: string;
-    note?: string;
-    sendToInvoicer?: boolean;
-    sendToRecipient?: boolean;
-  }): Promise<void> {
+  async cancelInvoice(
+    invoiceId: string,
+    params?: {
+      subject?: string;
+      note?: string;
+      sendToInvoicer?: boolean;
+      sendToRecipient?: boolean;
+    }
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (params?.subject) body.subject = params.subject;
     if (params?.note) body.note = params.note;
@@ -382,14 +416,25 @@ export class PayPalClient {
     await this.axios.post(`/v2/invoicing/invoices/${invoiceId}/cancel`, body);
   }
 
-  async recordInvoicePayment(invoiceId: string, params: {
-    method: 'BANK_TRANSFER' | 'CASH' | 'CHECK' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'PAYPAL' | 'WIRE_TRANSFER' | 'OTHER';
-    date?: string;
-    amount?: { currency_code: string; value: string };
-    note?: string;
-  }): Promise<Record<string, any>> {
+  async recordInvoicePayment(
+    invoiceId: string,
+    params: {
+      method:
+        | 'BANK_TRANSFER'
+        | 'CASH'
+        | 'CHECK'
+        | 'CREDIT_CARD'
+        | 'DEBIT_CARD'
+        | 'PAYPAL'
+        | 'WIRE_TRANSFER'
+        | 'OTHER';
+      date?: string;
+      amount?: { currency_code: string; value: string };
+      note?: string;
+    }
+  ): Promise<Record<string, any>> {
     let body: Record<string, any> = {
-      method: params.method,
+      method: params.method
     };
     if (params.date) body.date = params.date;
     if (params.amount) body.amount = params.amount;
@@ -424,18 +469,23 @@ export class PayPalClient {
   }): Promise<Record<string, any>> {
     let response = await this.axios.post('/v1/payments/payouts', {
       sender_batch_header: params.senderBatchHeader,
-      items: params.items,
+      items: params.items
     });
     return response.data as Record<string, any>;
   }
 
-  async getPayoutBatch(payoutBatchId: string, params?: { page?: number; pageSize?: number; fields?: string }): Promise<Record<string, any>> {
+  async getPayoutBatch(
+    payoutBatchId: string,
+    params?: { page?: number; pageSize?: number; fields?: string }
+  ): Promise<Record<string, any>> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.pageSize) query.page_size = params.pageSize;
     if (params?.fields) query.fields = params.fields;
 
-    let response = await this.axios.get(`/v1/payments/payouts/${payoutBatchId}`, { params: query });
+    let response = await this.axios.get(`/v1/payments/payouts/${payoutBatchId}`, {
+      params: query
+    });
     return response.data as Record<string, any>;
   }
 
@@ -445,7 +495,10 @@ export class PayPalClient {
   }
 
   async cancelPayoutItem(payoutItemId: string): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/v1/payments/payouts-item/${payoutItemId}/cancel`, {});
+    let response = await this.axios.post(
+      `/v1/payments/payouts-item/${payoutItemId}/cancel`,
+      {}
+    );
     return response.data as Record<string, any>;
   }
 
@@ -463,7 +516,8 @@ export class PayPalClient {
     if (params?.disputeState) query.dispute_state = params.disputeState;
     if (params?.pageSize) query.page_size = params.pageSize;
     if (params?.nextPageToken) query.next_page_token = params.nextPageToken;
-    if (params?.disputedTransactionId) query.disputed_transaction_id = params.disputedTransactionId;
+    if (params?.disputedTransactionId)
+      query.disputed_transaction_id = params.disputedTransactionId;
 
     let response = await this.axios.get('/v1/customer/disputes', { params: query });
     return response.data as Record<string, any>;
@@ -474,35 +528,49 @@ export class PayPalClient {
     return response.data as Record<string, any>;
   }
 
-  async acceptDisputeClaim(disputeId: string, params?: {
-    note?: string;
-    acceptClaimReason?: string;
-    invoiceId?: string;
-    refundAmount?: { currency_code: string; value: string };
-  }): Promise<Record<string, any>> {
+  async acceptDisputeClaim(
+    disputeId: string,
+    params?: {
+      note?: string;
+      acceptClaimReason?: string;
+      invoiceId?: string;
+      refundAmount?: { currency_code: string; value: string };
+    }
+  ): Promise<Record<string, any>> {
     let body: Record<string, any> = {};
     if (params?.note) body.note = params.note;
     if (params?.acceptClaimReason) body.accept_claim_reason = params.acceptClaimReason;
     if (params?.invoiceId) body.invoice_id = params.invoiceId;
     if (params?.refundAmount) body.refund_amount = params.refundAmount;
 
-    let response = await this.axios.post(`/v1/customer/disputes/${disputeId}/accept-claim`, body);
+    let response = await this.axios.post(
+      `/v1/customer/disputes/${disputeId}/accept-claim`,
+      body
+    );
     return response.data as Record<string, any>;
   }
 
-  async provideDisputeEvidence(disputeId: string, params: {
-    evidences: Array<{
-      evidence_type: string;
-      notes?: string;
-      evidence_info?: Record<string, any>;
-    }>;
-  }): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/v1/customer/disputes/${disputeId}/provide-evidence`, params);
+  async provideDisputeEvidence(
+    disputeId: string,
+    params: {
+      evidences: Array<{
+        evidence_type: string;
+        notes?: string;
+        evidence_info?: Record<string, any>;
+      }>;
+    }
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post(
+      `/v1/customer/disputes/${disputeId}/provide-evidence`,
+      params
+    );
     return response.data as Record<string, any>;
   }
 
   async escalateDispute(disputeId: string, note: string): Promise<Record<string, any>> {
-    let response = await this.axios.post(`/v1/customer/disputes/${disputeId}/escalate`, { note });
+    let response = await this.axios.post(`/v1/customer/disputes/${disputeId}/escalate`, {
+      note
+    });
     return response.data as Record<string, any>;
   }
 
@@ -521,7 +589,7 @@ export class PayPalClient {
   }): Promise<Record<string, any>> {
     let query: Record<string, any> = {
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.transactionStatus) query.transaction_status = params.transactionStatus;
     if (params.transactionType) query.transaction_type = params.transactionType;
@@ -537,20 +605,25 @@ export class PayPalClient {
 
   // ─── Shipment Tracking ──────────────────────────────────────
 
-  async addTracking(captureId: string, params: {
-    trackingNumber: string;
-    carrier: string;
-    notifyPayer?: boolean;
-    status?: string;
-  }): Promise<Record<string, any>> {
+  async addTracking(
+    captureId: string,
+    params: {
+      trackingNumber: string;
+      carrier: string;
+      notifyPayer?: boolean;
+      status?: string;
+    }
+  ): Promise<Record<string, any>> {
     let body: Record<string, any> = {
-      trackers: [{
-        transaction_id: captureId,
-        tracking_number: params.trackingNumber,
-        carrier: params.carrier,
-        status: params.status || 'SHIPPED',
-        notify_payer: params.notifyPayer !== undefined ? params.notifyPayer : true,
-      }],
+      trackers: [
+        {
+          transaction_id: captureId,
+          tracking_number: params.trackingNumber,
+          carrier: params.carrier,
+          status: params.status || 'SHIPPED',
+          notify_payer: params.notifyPayer !== undefined ? params.notifyPayer : true
+        }
+      ]
     };
 
     let response = await this.axios.post('/v1/shipping/trackers-batch', body);
@@ -570,7 +643,7 @@ export class PayPalClient {
   }): Promise<Record<string, any>> {
     let body = {
       url: params.url,
-      event_types: params.eventTypes.map(t => ({ name: t })),
+      event_types: params.eventTypes.map(t => ({ name: t }))
     };
 
     let response = await this.axios.post('/v1/notifications/webhooks', body);
@@ -607,7 +680,7 @@ export class PayPalClient {
       transmission_sig: params.transmissionSig,
       transmission_time: params.transmissionTime,
       webhook_id: params.webhookId,
-      webhook_event: params.webhookEvent,
+      webhook_event: params.webhookEvent
     });
     let data = response.data as { verification_status: string };
     return { verificationStatus: data.verification_status };
@@ -626,7 +699,7 @@ export class PayPalClient {
     customer?: { id?: string };
   }): Promise<Record<string, any>> {
     let body: Record<string, any> = {
-      payment_source: params.paymentSource,
+      payment_source: params.paymentSource
     };
     if (params.customer) body.customer = params.customer;
 
@@ -636,7 +709,7 @@ export class PayPalClient {
 
   async listPaymentTokens(customerId: string): Promise<Record<string, any>> {
     let response = await this.axios.get('/v3/vault/payment-tokens', {
-      params: { customer_id: customerId },
+      params: { customer_id: customerId }
     });
     return response.data as Record<string, any>;
   }

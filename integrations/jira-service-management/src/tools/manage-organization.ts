@@ -3,53 +3,78 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { JiraClient } from '../lib/client';
 
-export let manageOrganizationTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Organization',
-    key: 'manage_organization',
-    description: `Create, list, get, or delete organizations. Also manage organization members by adding or removing users. Organizations group customers for service desk access management.`,
-    instructions: [
-      'Set action to "list" to list all organizations.',
-      'Set action to "get" to retrieve a specific organization and its members.',
-      'Set action to "create" to create a new organization (requires organizationName).',
-      'Set action to "delete" to delete an organization (requires organizationId).',
-      'Set action to "add_users" or "remove_users" to manage membership (requires organizationId and userAccountIds).',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageOrganizationTool = SlateTool.create(spec, {
+  name: 'Manage Organization',
+  key: 'manage_organization',
+  description: `Create, list, get, or delete organizations. Also manage organization members by adding or removing users. Organizations group customers for service desk access management.`,
+  instructions: [
+    'Set action to "list" to list all organizations.',
+    'Set action to "get" to retrieve a specific organization and its members.',
+    'Set action to "create" to create a new organization (requires organizationName).',
+    'Set action to "delete" to delete an organization (requires organizationId).',
+    'Set action to "add_users" or "remove_users" to manage membership (requires organizationId and userAccountIds).'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'delete', 'add_users', 'remove_users']).describe('Action to perform'),
-    organizationId: z.string().optional().describe('Organization ID (required for get, delete, add_users, remove_users)'),
-    organizationName: z.string().optional().describe('Name for the new organization (required for create)'),
-    userAccountIds: z.array(z.string()).optional().describe('Account IDs to add or remove (required for add_users, remove_users)'),
-    start: z.number().optional().describe('Pagination start index'),
-    limit: z.number().optional().describe('Pagination limit'),
-  }))
-  .output(z.object({
-    organizations: z.array(z.object({
-      organizationId: z.string().describe('Organization ID'),
-      name: z.string().describe('Organization name'),
-    })).optional().describe('List of organizations'),
-    organization: z.object({
-      organizationId: z.string().describe('Organization ID'),
-      name: z.string().describe('Organization name'),
-      members: z.array(z.object({
-        accountId: z.string().optional(),
-        displayName: z.string().optional(),
-        emailAddress: z.string().optional(),
-      })).optional().describe('Organization members'),
-    }).optional().describe('Single organization details'),
-    deleted: z.boolean().optional().describe('Whether the organization was deleted'),
-    membersUpdated: z.boolean().optional().describe('Whether members were updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'delete', 'add_users', 'remove_users'])
+        .describe('Action to perform'),
+      organizationId: z
+        .string()
+        .optional()
+        .describe('Organization ID (required for get, delete, add_users, remove_users)'),
+      organizationName: z
+        .string()
+        .optional()
+        .describe('Name for the new organization (required for create)'),
+      userAccountIds: z
+        .array(z.string())
+        .optional()
+        .describe('Account IDs to add or remove (required for add_users, remove_users)'),
+      start: z.number().optional().describe('Pagination start index'),
+      limit: z.number().optional().describe('Pagination limit')
+    })
+  )
+  .output(
+    z.object({
+      organizations: z
+        .array(
+          z.object({
+            organizationId: z.string().describe('Organization ID'),
+            name: z.string().describe('Organization name')
+          })
+        )
+        .optional()
+        .describe('List of organizations'),
+      organization: z
+        .object({
+          organizationId: z.string().describe('Organization ID'),
+          name: z.string().describe('Organization name'),
+          members: z
+            .array(
+              z.object({
+                accountId: z.string().optional(),
+                displayName: z.string().optional(),
+                emailAddress: z.string().optional()
+              })
+            )
+            .optional()
+            .describe('Organization members')
+        })
+        .optional()
+        .describe('Single organization details'),
+      deleted: z.boolean().optional().describe('Whether the organization was deleted'),
+      membersUpdated: z.boolean().optional().describe('Whether members were updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new JiraClient({
       token: ctx.auth.token,
-      cloudId: ctx.config.cloudId,
+      cloudId: ctx.config.cloudId
     });
 
     let { action } = ctx.input;
@@ -58,17 +83,18 @@ export let manageOrganizationTool = SlateTool.create(
       let result = await client.getOrganizations(ctx.input.start, ctx.input.limit);
       let organizations = (result.values || []).map((org: any) => ({
         organizationId: String(org.id),
-        name: org.name,
+        name: org.name
       }));
 
       return {
         output: { organizations },
-        message: `Found **${organizations.length}** organizations.`,
+        message: `Found **${organizations.length}** organizations.`
       };
     }
 
     if (action === 'get') {
-      if (!ctx.input.organizationId) throw new Error('organizationId is required for get action');
+      if (!ctx.input.organizationId)
+        throw new Error('organizationId is required for get action');
 
       let org = await client.getOrganization(ctx.input.organizationId);
       let usersResult = await client.getOrganizationUsers(ctx.input.organizationId);
@@ -76,7 +102,7 @@ export let manageOrganizationTool = SlateTool.create(
       let members = (usersResult.values || []).map((u: any) => ({
         accountId: u.accountId,
         displayName: u.displayName,
-        emailAddress: u.emailAddress,
+        emailAddress: u.emailAddress
       }));
 
       return {
@@ -84,15 +110,16 @@ export let manageOrganizationTool = SlateTool.create(
           organization: {
             organizationId: String(org.id),
             name: org.name,
-            members,
-          },
+            members
+          }
         },
-        message: `Organization "${org.name}" has **${members.length}** members.`,
+        message: `Organization "${org.name}" has **${members.length}** members.`
       };
     }
 
     if (action === 'create') {
-      if (!ctx.input.organizationName) throw new Error('organizationName is required for create action');
+      if (!ctx.input.organizationName)
+        throw new Error('organizationName is required for create action');
 
       let result = await client.createOrganization(ctx.input.organizationName);
 
@@ -100,21 +127,22 @@ export let manageOrganizationTool = SlateTool.create(
         output: {
           organization: {
             organizationId: String(result.id),
-            name: result.name,
-          },
+            name: result.name
+          }
         },
-        message: `Created organization "${result.name}" (ID: ${result.id}).`,
+        message: `Created organization "${result.name}" (ID: ${result.id}).`
       };
     }
 
     if (action === 'delete') {
-      if (!ctx.input.organizationId) throw new Error('organizationId is required for delete action');
+      if (!ctx.input.organizationId)
+        throw new Error('organizationId is required for delete action');
 
       await client.deleteOrganization(ctx.input.organizationId);
 
       return {
         output: { deleted: true },
-        message: `Deleted organization ${ctx.input.organizationId}.`,
+        message: `Deleted organization ${ctx.input.organizationId}.`
       };
     }
 
@@ -126,7 +154,7 @@ export let manageOrganizationTool = SlateTool.create(
 
       return {
         output: { membersUpdated: true },
-        message: `Added **${ctx.input.userAccountIds.length}** users to organization ${ctx.input.organizationId}.`,
+        message: `Added **${ctx.input.userAccountIds.length}** users to organization ${ctx.input.organizationId}.`
       };
     }
 
@@ -134,11 +162,14 @@ export let manageOrganizationTool = SlateTool.create(
       if (!ctx.input.organizationId) throw new Error('organizationId is required');
       if (!ctx.input.userAccountIds?.length) throw new Error('userAccountIds are required');
 
-      await client.removeUsersFromOrganization(ctx.input.organizationId, ctx.input.userAccountIds);
+      await client.removeUsersFromOrganization(
+        ctx.input.organizationId,
+        ctx.input.userAccountIds
+      );
 
       return {
         output: { membersUpdated: true },
-        message: `Removed **${ctx.input.userAccountIds.length}** users from organization ${ctx.input.organizationId}.`,
+        message: `Removed **${ctx.input.userAccountIds.length}** users from organization ${ctx.input.organizationId}.`
       };
     }
 

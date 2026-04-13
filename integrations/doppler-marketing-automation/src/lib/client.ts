@@ -114,10 +114,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://restapi.fromdoppler.com/accounts/${encodeURIComponent(config.accountEmail)}`,
       headers: {
-        'Authorization': `token ${config.token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `token ${config.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -175,8 +175,8 @@ export class Client {
   ): Promise<void> {
     await this.axios.post(`/lists/${listId}/subscribers`, subscriber, {
       headers: {
-        'X-Doppler-Subscriber-Origin': 'RestAPI',
-      },
+        'X-Doppler-Subscriber-Origin': 'RestAPI'
+      }
     });
   }
 
@@ -184,7 +184,11 @@ export class Client {
     await this.axios.delete(`/lists/${listId}/subscribers/${encodeURIComponent(email)}`);
   }
 
-  async unsubscribeFromAccount(email: string, reason?: string, comment?: string): Promise<void> {
+  async unsubscribeFromAccount(
+    email: string,
+    reason?: string,
+    comment?: string
+  ): Promise<void> {
     let body: Record<string, any> = { email };
     if (reason) body['manualUnsubscriptionReason'] = reason;
     if (comment) body['unsubscriptionComment'] = comment;
@@ -199,13 +203,13 @@ export class Client {
   ): Promise<ImportResult> {
     let body: Record<string, any> = {
       items,
-      fields: fields ?? [],
+      fields: fields ?? []
     };
     if (callbackUrl) body['callback'] = callbackUrl;
     let response = await this.axios.post(`/lists/${listId}/subscribers/import`, body, {
       headers: {
-        'X-Doppler-Subscriber-Origin': 'RestAPI',
-      },
+        'X-Doppler-Subscriber-Origin': 'RestAPI'
+      }
     });
     return response.data;
   }
@@ -217,12 +221,19 @@ export class Client {
     return response.data;
   }
 
-  async createField(field: { name: string; type: string; private?: boolean }): Promise<{ createdResourceId: string; message: string }> {
+  async createField(field: {
+    name: string;
+    type: string;
+    private?: boolean;
+  }): Promise<{ createdResourceId: string; message: string }> {
     let response = await this.axios.post('/fields', field);
     return response.data;
   }
 
-  async updateField(fieldName: string, updates: { name?: string; private?: boolean }): Promise<void> {
+  async updateField(
+    fieldName: string,
+    updates: { name?: string; private?: boolean }
+  ): Promise<void> {
     await this.axios.put(`/fields/${encodeURIComponent(fieldName)}`, updates);
   }
 
@@ -232,7 +243,11 @@ export class Client {
 
   // ---- Campaigns ----
 
-  async getCampaigns(page?: number, pageSize?: number, status?: string): Promise<DopplerCampaignCollection> {
+  async getCampaigns(
+    page?: number,
+    pageSize?: number,
+    status?: string
+  ): Promise<DopplerCampaignCollection> {
     let params: Record<string, any> = {};
     if (page !== undefined) params['page'] = page;
     if (pageSize !== undefined) params['per_page'] = pageSize;
@@ -258,14 +273,17 @@ export class Client {
     return response.data;
   }
 
-  async updateCampaign(campaignId: number, updates: {
-    name?: string;
-    fromName?: string;
-    fromEmail?: string;
-    subject?: string;
-    preheader?: string;
-    replyTo?: string;
-  }): Promise<void> {
+  async updateCampaign(
+    campaignId: number,
+    updates: {
+      name?: string;
+      fromName?: string;
+      fromEmail?: string;
+      subject?: string;
+      preheader?: string;
+      replyTo?: string;
+    }
+  ): Promise<void> {
     await this.axios.put(`/campaigns/${campaignId}`, updates);
   }
 
@@ -273,7 +291,11 @@ export class Client {
     await this.axios.delete(`/campaigns/${campaignId}`);
   }
 
-  async sendCampaign(campaignId: number, type: 'immediate' | 'scheduled', scheduledDate?: string): Promise<void> {
+  async sendCampaign(
+    campaignId: number,
+    type: 'immediate' | 'scheduled',
+    scheduledDate?: string
+  ): Promise<void> {
     let body: Record<string, any> = { type };
     if (type === 'scheduled' && scheduledDate) {
       body['scheduledDate'] = scheduledDate;
@@ -290,7 +312,12 @@ export class Client {
 
   // ---- Unsubscribed ----
 
-  async getUnsubscribed(options?: { from?: string; to?: string; page?: number; pageSize?: number }): Promise<{
+  async getUnsubscribed(options?: {
+    from?: string;
+    to?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<{
     items: UnsubscribedContact[];
     itemsCount: number;
     currentPage: number;

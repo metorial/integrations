@@ -21,20 +21,24 @@ export class WhoisFreaksClient {
       params: {
         apiKey: this.apiKey,
         whois: 'live',
-        domainName,
-      },
+        domainName
+      }
     });
     return response.data;
   }
 
   async bulkWhoisLookup(domainNames: string[]) {
     let http = this.createAxiosInstance();
-    let response = await http.post('/v1.0/bulkwhois', {
-      domainNames,
-    }, {
-      params: { apiKey: this.apiKey },
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await http.post(
+      '/v1.0/bulkwhois',
+      {
+        domainNames
+      },
+      {
+        params: { apiKey: this.apiKey },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -44,8 +48,8 @@ export class WhoisFreaksClient {
       params: {
         apiKey: this.apiKey,
         whois: 'historical',
-        domainName,
-      },
+        domainName
+      }
     });
     return response.data;
   }
@@ -61,7 +65,7 @@ export class WhoisFreaksClient {
     let http = this.createAxiosInstance();
     let queryParams: Record<string, string | number> = {
       apiKey: this.apiKey,
-      whois: 'reverse',
+      whois: 'reverse'
     };
 
     if (params.keyword) queryParams.keyword = params.keyword;
@@ -82,8 +86,8 @@ export class WhoisFreaksClient {
     let response = await http.get('/v1.0/whois/ip', {
       params: {
         apiKey: this.apiKey,
-        ip,
-      },
+        ip
+      }
     });
     return response.data;
   }
@@ -93,8 +97,8 @@ export class WhoisFreaksClient {
     let response = await http.get('/v1.0/whois/asn', {
       params: {
         apiKey: this.apiKey,
-        asn,
-      },
+        asn
+      }
     });
     return response.data;
   }
@@ -107,8 +111,8 @@ export class WhoisFreaksClient {
       params: {
         apiKey: this.apiKey,
         domainName,
-        type,
-      },
+        type
+      }
     });
     return response.data;
   }
@@ -118,7 +122,7 @@ export class WhoisFreaksClient {
     let params: Record<string, string | number> = {
       apiKey: this.apiKey,
       domainName,
-      type,
+      type
     };
     if (page) params.page = page;
 
@@ -131,7 +135,7 @@ export class WhoisFreaksClient {
     let params: Record<string, string | number> = {
       apiKey: this.apiKey,
       type,
-      value,
+      value
     };
     if (page) params.page = page;
 
@@ -141,15 +145,19 @@ export class WhoisFreaksClient {
 
   async bulkDnsLookup(domainNames: string[], type: string) {
     let http = this.createAxiosInstance();
-    let response = await http.post('/v1.0/bulkdns', {
-      domainNames,
-    }, {
-      params: {
-        apiKey: this.apiKey,
-        type,
+    let response = await http.post(
+      '/v1.0/bulkdns',
+      {
+        domainNames
       },
-      headers: { 'Content-Type': 'application/json' },
-    });
+      {
+        params: {
+          apiKey: this.apiKey,
+          type
+        },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -159,7 +167,7 @@ export class WhoisFreaksClient {
     let http = this.createAxiosInstance();
     let params: Record<string, string | number> = {
       apiKey: this.apiKey,
-      domainName,
+      domainName
     };
     if (page) params.page = page;
 
@@ -169,14 +177,17 @@ export class WhoisFreaksClient {
 
   // ─── Domain Availability ────────────────────────────────────────
 
-  async checkDomainAvailability(domain: string, options?: {
-    suggest?: boolean;
-    count?: number;
-  }) {
+  async checkDomainAvailability(
+    domain: string,
+    options?: {
+      suggest?: boolean;
+      count?: number;
+    }
+  ) {
     let http = this.createAxiosInstance();
     let params: Record<string, string | number | boolean> = {
       apiKey: this.apiKey,
-      domain,
+      domain
     };
     if (options?.suggest) params.sug = true;
     if (options?.count) params.count = options.count;
@@ -187,12 +198,16 @@ export class WhoisFreaksClient {
 
   async bulkDomainAvailability(domainNames: string[]) {
     let http = this.createAxiosInstance();
-    let response = await http.post('/v1.0/bulk-domain-availability', {
-      domainNames,
-    }, {
-      params: { apiKey: this.apiKey },
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await http.post(
+      '/v1.0/bulk-domain-availability',
+      {
+        domainNames
+      },
+      {
+        params: { apiKey: this.apiKey },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -200,7 +215,7 @@ export class WhoisFreaksClient {
     let http = this.createAxiosInstance();
     let params: Record<string, string | number> = {
       apiKey: this.apiKey,
-      keyword,
+      keyword
     };
     if (page) params.page = page;
 
@@ -210,14 +225,17 @@ export class WhoisFreaksClient {
 
   // ─── SSL ────────────────────────────────────────────────────────
 
-  async sslLookup(domainName: string, options?: {
-    chain?: boolean;
-    sslRaw?: boolean;
-  }) {
+  async sslLookup(
+    domainName: string,
+    options?: {
+      chain?: boolean;
+      sslRaw?: boolean;
+    }
+  ) {
     let http = this.createAxiosInstance();
     let params: Record<string, string | boolean> = {
       apiKey: this.apiKey,
-      domainName,
+      domainName
     };
     if (options?.chain) params.chain = true;
     if (options?.sslRaw) params.sslRaw = true;
@@ -233,20 +251,24 @@ export class WhoisFreaksClient {
     let response = await http.get('/v1.0/geolocation', {
       params: {
         apiKey: this.apiKey,
-        ip,
-      },
+        ip
+      }
     });
     return response.data;
   }
 
   async bulkIpGeolocation(ips: string[]) {
     let http = this.createAxiosInstance();
-    let response = await http.post('/v1.0/bulk-geolocation', {
-      ips,
-    }, {
-      params: { apiKey: this.apiKey },
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await http.post(
+      '/v1.0/bulk-geolocation',
+      {
+        ips
+      },
+      {
+        params: { apiKey: this.apiKey },
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 }

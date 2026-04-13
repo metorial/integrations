@@ -7,7 +7,7 @@ import {
   listProjects,
   manageDatasets,
   manageWebhooks,
-  uploadAsset,
+  uploadAsset
 } from './tools';
 import { documentChange } from './triggers';
 
@@ -20,9 +20,7 @@ export let provider = Slate.create({
     listProjects,
     manageDatasets,
     manageWebhooks,
-    uploadAsset,
+    uploadAsset
   ],
-  triggers: [
-    documentChange,
-  ],
+  triggers: [documentChange]
 });

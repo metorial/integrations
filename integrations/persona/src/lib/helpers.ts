@@ -3,7 +3,7 @@ export let normalizeResource = (data: any): Record<string, any> => {
   if (!data) return {};
   let result: Record<string, any> = {
     resourceId: data.id,
-    resourceType: data.type,
+    resourceType: data.type
   };
   if (data.attributes) {
     Object.assign(result, data.attributes);
@@ -21,7 +21,9 @@ export let normalizeResource = (data: any): Record<string, any> => {
 };
 
 // Helper to normalize a list response
-export let normalizeListResponse = (response: any): {
+export let normalizeListResponse = (
+  response: any
+): {
   items: Record<string, any>[];
   nextCursor: string | undefined;
   previousCursor: string | undefined;
@@ -35,7 +37,11 @@ export let normalizeListResponse = (response: any): {
 let extractCursor = (url: string): string | undefined => {
   try {
     let parsed = new URL(url, 'https://withpersona.com');
-    return parsed.searchParams.get('page[after]') || parsed.searchParams.get('page[before]') || undefined;
+    return (
+      parsed.searchParams.get('page[after]') ||
+      parsed.searchParams.get('page[before]') ||
+      undefined
+    );
   } catch {
     return undefined;
   }

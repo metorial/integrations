@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://www.api.faceup.com',
+  baseURL: 'https://www.api.faceup.com'
 });
 
 export class FaceUpClient {
@@ -14,16 +14,20 @@ export class FaceUpClient {
   }
 
   private async graphql<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
-    let response = await http.post('/graphql', {
-      query,
-      variables,
-    }, {
-      headers: {
-        'Authorization': this.token,
-        'X-Region': this.region,
-        'Content-Type': 'application/json',
+    let response = await http.post(
+      '/graphql',
+      {
+        query,
+        variables
       },
-    });
+      {
+        headers: {
+          Authorization: this.token,
+          'X-Region': this.region,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     let body = response.data;
 
@@ -35,7 +39,9 @@ export class FaceUpClient {
     return body.data as T;
   }
 
-  async getReportStatistics(dateFrom?: string): Promise<{ reportCountByMonth: Array<{ month: string; count: number }> }> {
+  async getReportStatistics(
+    dateFrom?: string
+  ): Promise<{ reportCountByMonth: Array<{ month: string; count: number }> }> {
     let variables: Record<string, any> = {};
     let dateArg = '';
 
@@ -54,11 +60,17 @@ export class FaceUpClient {
       }
     `;
 
-    let data = await this.graphql<{ publicStatistics: { reportCountByMonth: any } }>(query, variables);
+    let data = await this.graphql<{ publicStatistics: { reportCountByMonth: any } }>(
+      query,
+      variables
+    );
     return data.publicStatistics;
   }
 
-  async getReports(first?: number, after?: string): Promise<{
+  async getReports(
+    first?: number,
+    after?: string
+  ): Promise<{
     reports: Array<{
       reportId: string;
       tag: string;
@@ -129,13 +141,13 @@ export class FaceUpClient {
       priority: edge.node.priority,
       status: edge.node.status,
       source: edge.node.source,
-      createdAt: edge.node.created_at,
+      createdAt: edge.node.created_at
     }));
 
     return {
       reports,
       hasNextPage: data.reports.pageInfo.hasNextPage,
-      endCursor: data.reports.pageInfo.endCursor,
+      endCursor: data.reports.pageInfo.endCursor
     };
   }
 
@@ -174,7 +186,7 @@ export class FaceUpClient {
       priority: data.report.priority,
       status: data.report.status,
       source: data.report.source,
-      createdAt: data.report.created_at,
+      createdAt: data.report.created_at
     };
   }
 }

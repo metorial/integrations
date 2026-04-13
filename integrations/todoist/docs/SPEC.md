@@ -28,14 +28,14 @@ The response returns an `access_token` with `token_type: "Bearer"`.
 
 **Available Scopes:**
 
-| Scope | Description |
-|---|---|
-| `task:add` | Add new tasks only |
-| `data:read` | Read-only access to tasks, projects, labels, and filters |
+| Scope             | Description                                                 |
+| ----------------- | ----------------------------------------------------------- |
+| `task:add`        | Add new tasks only                                          |
+| `data:read`       | Read-only access to tasks, projects, labels, and filters    |
 | `data:read_write` | Read and write access (includes `task:add` and `data:read`) |
-| `data:delete` | Delete tasks, labels, and filters |
-| `project:delete` | Delete projects |
-| `backups:read` | List backups bypassing MFA requirements |
+| `data:delete`     | Delete tasks, labels, and filters                           |
+| `project:delete`  | Delete projects                                             |
+| `backups:read`    | List backups bypassing MFA requirements                     |
 
 **Token Revocation:** Access tokens can be revoked via `DELETE /api/v1/access_tokens` (passing `client_id`, `client_secret`, and `access_token`) or via the RFC 7009-compliant endpoint `POST /api/v1/revoke`.
 

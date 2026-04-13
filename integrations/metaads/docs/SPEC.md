@@ -34,6 +34,7 @@ The OAuth redirect URI must be registered under **Facebook Login > Settings > Va
 ### Required Permissions (Scopes)
 
 Three core permissions are needed:
+
 - `ads_management`: Allows your app to create, edit, and delete campaigns, ad sets, and ads (write access).
 - `ads_read`: Lets you pull performance data, campaign details, and insights (read access).
 - `business_management`: Enables management of business assets like ad accounts, pixels, and catalogs. Essential for tools that work across multiple ad accounts.

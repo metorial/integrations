@@ -15,7 +15,7 @@ import {
   listProxies,
   manageOrganization,
   getAnalyticsConfig,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     listProxies,
     manageOrganization,
     getAnalyticsConfig,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

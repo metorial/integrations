@@ -9,36 +9,38 @@ Google Calendar is Google's time-management and scheduling service. The Google C
 Google Calendar API exclusively uses **OAuth 2.0** for authentication. The application must use the OAuth 2.0 to authorize requests – other authorization protocols are not supported.
 
 **Setup Requirements:**
+
 1. Create a project in the Google Cloud Console and enable the Google Calendar API.
 2. Configure an OAuth consent screen (choose Internal for organization-only access, or External for public access).
 3. Create OAuth 2.0 client credentials (Client ID and Client Secret).
 4. For server-to-server access (e.g., Google Workspace domain-wide delegation), a **service account** can be used with domain-wide delegation enabled by a Workspace admin.
 
 **OAuth 2.0 Endpoints:**
+
 - Authorization: `https://accounts.google.com/o/oauth2/v2/auth`
 - Token: `https://oauth2.googleapis.com/token`
 
 **Available Scopes:**
 
-| Scope | Description |
-|---|---|
-| `https://www.googleapis.com/auth/calendar` | Full access: see, edit, share, and permanently delete all accessible calendars. |
-| `https://www.googleapis.com/auth/calendar.readonly` | Read-only access to all accessible calendars. |
-| `https://www.googleapis.com/auth/calendar.events` | View and edit events on all calendars. |
-| `https://www.googleapis.com/auth/calendar.events.readonly` | View events on all calendars. |
-| `https://www.googleapis.com/auth/calendar.events.owned` | Manage events only on calendars the user owns. |
-| `https://www.googleapis.com/auth/calendar.events.owned.readonly` | View events only on calendars the user owns. |
-| `https://www.googleapis.com/auth/calendar.events.freebusy` | View availability on accessible calendars. |
-| `https://www.googleapis.com/auth/calendar.events.public.readonly` | View events on public calendars. |
-| `https://www.googleapis.com/auth/calendar.freebusy` | View free/busy availability only. |
-| `https://www.googleapis.com/auth/calendar.settings.readonly` | View Calendar settings. |
-| `https://www.googleapis.com/auth/calendar.calendars` | See/change calendar properties and create secondary calendars. |
-| `https://www.googleapis.com/auth/calendar.calendars.readonly` | View calendar properties (title, description, timezone, etc.). |
-| `https://www.googleapis.com/auth/calendar.calendarlist` | See, add, and remove subscribed calendars. |
-| `https://www.googleapis.com/auth/calendar.calendarlist.readonly` | View the list of subscribed calendars. |
-| `https://www.googleapis.com/auth/calendar.acls` | View and change sharing permissions on owned calendars. |
-| `https://www.googleapis.com/auth/calendar.acls.readonly` | View sharing permissions on owned calendars. |
-| `https://www.googleapis.com/auth/calendar.app.created` | Manage secondary calendars and their events (app-created only). |
+| Scope                                                             | Description                                                                     |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `https://www.googleapis.com/auth/calendar`                        | Full access: see, edit, share, and permanently delete all accessible calendars. |
+| `https://www.googleapis.com/auth/calendar.readonly`               | Read-only access to all accessible calendars.                                   |
+| `https://www.googleapis.com/auth/calendar.events`                 | View and edit events on all calendars.                                          |
+| `https://www.googleapis.com/auth/calendar.events.readonly`        | View events on all calendars.                                                   |
+| `https://www.googleapis.com/auth/calendar.events.owned`           | Manage events only on calendars the user owns.                                  |
+| `https://www.googleapis.com/auth/calendar.events.owned.readonly`  | View events only on calendars the user owns.                                    |
+| `https://www.googleapis.com/auth/calendar.events.freebusy`        | View availability on accessible calendars.                                      |
+| `https://www.googleapis.com/auth/calendar.events.public.readonly` | View events on public calendars.                                                |
+| `https://www.googleapis.com/auth/calendar.freebusy`               | View free/busy availability only.                                               |
+| `https://www.googleapis.com/auth/calendar.settings.readonly`      | View Calendar settings.                                                         |
+| `https://www.googleapis.com/auth/calendar.calendars`              | See/change calendar properties and create secondary calendars.                  |
+| `https://www.googleapis.com/auth/calendar.calendars.readonly`     | View calendar properties (title, description, timezone, etc.).                  |
+| `https://www.googleapis.com/auth/calendar.calendarlist`           | See, add, and remove subscribed calendars.                                      |
+| `https://www.googleapis.com/auth/calendar.calendarlist.readonly`  | View the list of subscribed calendars.                                          |
+| `https://www.googleapis.com/auth/calendar.acls`                   | View and change sharing permissions on owned calendars.                         |
+| `https://www.googleapis.com/auth/calendar.acls.readonly`          | View sharing permissions on owned calendars.                                    |
+| `https://www.googleapis.com/auth/calendar.app.created`            | Manage secondary calendars and their events (app-created only).                 |
 
 **Service Accounts & Domain-Wide Delegation:**
 Internal apps (e.g., automation apps) can use service accounts with domain-wide delegation to access user data, for example adding events to users' calendars without individual user consent. This requires a Google Workspace super admin to authorize the service account's client ID with specific scopes.

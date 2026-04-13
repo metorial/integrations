@@ -11,7 +11,7 @@ import {
   listContactLists,
   manageContactList,
   listContacts,
-  manageContact,
+  manageContact
 } from './tools';
 import { contactListEvents } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     listContactLists,
     manageContactList,
     listContacts,
-    manageContact,
+    manageContact
   ],
-  triggers: [
-    contactListEvents,
-  ],
+  triggers: [contactListEvents]
 });

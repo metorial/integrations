@@ -12,59 +12,88 @@ let commentSchema = z.object({
   authorName: z.string().nullable().optional(),
   dateAdded: z.string().nullable().optional().describe('When the comment was posted'),
   totalReactions: z.number().nullable().optional(),
-  replies: z.array(z.object({
-    replyId: z.string(),
-    contentMarkdown: z.string().nullable().optional(),
-    contentHtml: z.string().nullable().optional(),
-    authorUsername: z.string().nullable().optional(),
-    authorName: z.string().nullable().optional(),
-    dateAdded: z.string().nullable().optional(),
-    totalReactions: z.number().nullable().optional(),
-  })).optional().describe('Replies to this comment'),
+  replies: z
+    .array(
+      z.object({
+        replyId: z.string(),
+        contentMarkdown: z.string().nullable().optional(),
+        contentHtml: z.string().nullable().optional(),
+        authorUsername: z.string().nullable().optional(),
+        authorName: z.string().nullable().optional(),
+        dateAdded: z.string().nullable().optional(),
+        totalReactions: z.number().nullable().optional()
+      })
+    )
+    .optional()
+    .describe('Replies to this comment')
 });
 
-export let manageComments = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Comments',
-    key: 'manage_comments',
-    description: `Interact with comments on blog posts. Supports listing comments, adding comments, replying to comments, and deleting comments or replies.
+export let manageComments = SlateTool.create(spec, {
+  name: 'Manage Comments',
+  key: 'manage_comments',
+  description: `Interact with comments on blog posts. Supports listing comments, adding comments, replying to comments, and deleting comments or replies.
 - **list**: Get all comments on a post with their replies.
 - **add**: Add a new comment to a post.
 - **reply**: Reply to an existing comment.
 - **delete_comment**: Remove a comment.
-- **delete_reply**: Remove a reply from a comment.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'add', 'reply', 'delete_comment', 'delete_reply']).describe('Operation to perform'),
-    postId: z.string().optional().describe('Post ID — required for "list" and "add"'),
-    commentId: z.string().optional().describe('Comment ID — required for "reply", "delete_comment", and "delete_reply"'),
-    replyId: z.string().optional().describe('Reply ID — required for "delete_reply"'),
-    contentMarkdown: z.string().optional().describe('Comment/reply content in Markdown — required for "add" and "reply"'),
-    first: z.number().optional().default(10).describe('Number of comments to return — used with "list"'),
-    after: z.string().optional().describe('Pagination cursor — used with "list"'),
-  }))
-  .output(z.object({
-    comment: commentSchema.nullable().optional().describe('Single comment — returned by "add"'),
-    reply: z.object({
-      replyId: z.string(),
-      contentMarkdown: z.string().nullable().optional(),
-      contentHtml: z.string().nullable().optional(),
-      authorUsername: z.string().nullable().optional(),
-      authorName: z.string().nullable().optional(),
-      dateAdded: z.string().nullable().optional(),
-    }).nullable().optional().describe('Single reply — returned by "reply"'),
-    comments: z.array(commentSchema).nullable().optional().describe('List of comments — returned by "list"'),
-    hasNextPage: z.boolean().optional(),
-    endCursor: z.string().nullable().optional(),
-    totalDocuments: z.number().nullable().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+- **delete_reply**: Remove a reply from a comment.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'add', 'reply', 'delete_comment', 'delete_reply'])
+        .describe('Operation to perform'),
+      postId: z.string().optional().describe('Post ID — required for "list" and "add"'),
+      commentId: z
+        .string()
+        .optional()
+        .describe('Comment ID — required for "reply", "delete_comment", and "delete_reply"'),
+      replyId: z.string().optional().describe('Reply ID — required for "delete_reply"'),
+      contentMarkdown: z
+        .string()
+        .optional()
+        .describe('Comment/reply content in Markdown — required for "add" and "reply"'),
+      first: z
+        .number()
+        .optional()
+        .default(10)
+        .describe('Number of comments to return — used with "list"'),
+      after: z.string().optional().describe('Pagination cursor — used with "list"')
+    })
+  )
+  .output(
+    z.object({
+      comment: commentSchema
+        .nullable()
+        .optional()
+        .describe('Single comment — returned by "add"'),
+      reply: z
+        .object({
+          replyId: z.string(),
+          contentMarkdown: z.string().nullable().optional(),
+          contentHtml: z.string().nullable().optional(),
+          authorUsername: z.string().nullable().optional(),
+          authorName: z.string().nullable().optional(),
+          dateAdded: z.string().nullable().optional()
+        })
+        .nullable()
+        .optional()
+        .describe('Single reply — returned by "reply"'),
+      comments: z
+        .array(commentSchema)
+        .nullable()
+        .optional()
+        .describe('List of comments — returned by "list"'),
+      hasNextPage: z.boolean().optional(),
+      endCursor: z.string().nullable().optional(),
+      totalDocuments: z.number().nullable().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      publicationHost: ctx.config.publicationHost,
+      publicationHost: ctx.config.publicationHost
     });
 
     let { action } = ctx.input;
@@ -74,7 +103,7 @@ export let manageComments = SlateTool.create(
 
       let result = await client.getComments(ctx.input.postId, {
         first: Math.min(ctx.input.first, 20),
-        after: ctx.input.after,
+        after: ctx.input.after
       });
 
       let comments = result.comments.map((c: any) => ({
@@ -93,8 +122,8 @@ export let manageComments = SlateTool.create(
           authorUsername: r.author?.username,
           authorName: r.author?.name,
           dateAdded: r.dateAdded,
-          totalReactions: r.totalReactions,
-        })),
+          totalReactions: r.totalReactions
+        }))
       }));
 
       return {
@@ -102,9 +131,9 @@ export let manageComments = SlateTool.create(
           comments,
           hasNextPage: result.pageInfo?.hasNextPage ?? false,
           endCursor: result.pageInfo?.endCursor,
-          totalDocuments: result.totalDocuments,
+          totalDocuments: result.totalDocuments
         },
-        message: `Found **${comments.length}** comments${result.totalDocuments ? ` (${result.totalDocuments} total)` : ''}`,
+        message: `Found **${comments.length}** comments${result.totalDocuments ? ` (${result.totalDocuments} total)` : ''}`
       };
     }
 
@@ -123,10 +152,10 @@ export let manageComments = SlateTool.create(
             authorId: comment.author?.id,
             authorUsername: comment.author?.username,
             authorName: comment.author?.name,
-            dateAdded: comment.dateAdded,
-          },
+            dateAdded: comment.dateAdded
+          }
         },
-        message: `Added comment by **${comment.author?.username || 'unknown'}**`,
+        message: `Added comment by **${comment.author?.username || 'unknown'}**`
       };
     }
 
@@ -144,10 +173,10 @@ export let manageComments = SlateTool.create(
             contentHtml: reply.content?.html,
             authorUsername: reply.author?.username,
             authorName: reply.author?.name,
-            dateAdded: reply.dateAdded,
-          },
+            dateAdded: reply.dateAdded
+          }
         },
-        message: `Added reply by **${reply.author?.username || 'unknown'}**`,
+        message: `Added reply by **${reply.author?.username || 'unknown'}**`
       };
     }
 
@@ -158,7 +187,7 @@ export let manageComments = SlateTool.create(
 
       return {
         output: { deleted: true },
-        message: `Deleted comment \`${ctx.input.commentId}\``,
+        message: `Deleted comment \`${ctx.input.commentId}\``
       };
     }
 
@@ -170,9 +199,10 @@ export let manageComments = SlateTool.create(
 
       return {
         output: { deleted: true },
-        message: `Deleted reply \`${ctx.input.replyId}\``,
+        message: `Deleted reply \`${ctx.input.replyId}\``
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

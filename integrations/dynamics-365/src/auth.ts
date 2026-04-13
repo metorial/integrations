@@ -2,13 +2,15 @@ import { SlateAuth, axios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    instanceUrl: z.string(),
-    tenantId: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      instanceUrl: z.string(),
+      tenantId: z.string()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth (Delegated)',
@@ -18,25 +20,27 @@ export let auth = SlateAuth.create()
       {
         title: 'User Impersonation',
         description: 'Access Dynamics 365 as the signed-in user',
-        scope: 'user_impersonation',
+        scope: 'user_impersonation'
       },
       {
         title: 'Offline Access',
         description: 'Maintain access with refresh tokens',
-        scope: 'offline_access',
-      },
+        scope: 'offline_access'
+      }
     ],
 
     inputSchema: z.object({
       tenantId: z.string().describe('Microsoft Entra ID tenant ID'),
-      instanceUrl: z.string().describe('Dynamics 365 instance URL (e.g., https://yourorg.crm.dynamics.com)'),
+      instanceUrl: z
+        .string()
+        .describe('Dynamics 365 instance URL (e.g., https://yourorg.crm.dynamics.com)')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let instanceUrl = ctx.input.instanceUrl.replace(/\/+$/, '');
       let scopes = ctx.scopes
-        .filter((s) => s !== 'offline_access')
-        .map((s) => `${instanceUrl}/${s}`);
+        .filter(s => s !== 'offline_access')
+        .map(s => `${instanceUrl}/${s}`);
       if (ctx.scopes.includes('offline_access')) {
         scopes.push('offline_access');
       }
@@ -46,20 +50,20 @@ export let auth = SlateAuth.create()
         response_type: 'code',
         redirect_uri: ctx.redirectUri,
         scope: scopes.join(' '),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
         url: `https://login.microsoftonline.com/${ctx.input.tenantId}/oauth2/v2.0/authorize?${params.toString()}`,
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let instanceUrl = ctx.input.instanceUrl.replace(/\/+$/, '');
       let scopes = ctx.scopes
-        .filter((s) => s !== 'offline_access')
-        .map((s) => `${instanceUrl}/${s}`);
+        .filter(s => s !== 'offline_access')
+        .map(s => `${instanceUrl}/${s}`);
       if (ctx.scopes.includes('offline_access')) {
         scopes.push('offline_access');
       }
@@ -72,10 +76,10 @@ export let auth = SlateAuth.create()
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           grant_type: 'authorization_code',
-          scope: scopes.join(' '),
+          scope: scopes.join(' ')
         }).toString(),
         {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -90,21 +94,21 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt,
           instanceUrl,
-          tenantId: ctx.input.tenantId,
+          tenantId: ctx.input.tenantId
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let instanceUrl = ctx.output.instanceUrl.replace(/\/+$/, '');
       let scopes = ctx.scopes
-        .filter((s) => s !== 'offline_access')
-        .map((s) => `${instanceUrl}/${s}`);
+        .filter(s => s !== 'offline_access')
+        .map(s => `${instanceUrl}/${s}`);
       if (ctx.scopes.includes('offline_access')) {
         scopes.push('offline_access');
       }
@@ -116,10 +120,10 @@ export let auth = SlateAuth.create()
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
           grant_type: 'refresh_token',
-          scope: scopes.join(' '),
+          scope: scopes.join(' ')
         }).toString(),
         {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -134,15 +138,25 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
           instanceUrl: ctx.output.instanceUrl,
-          tenantId: ctx.output.tenantId,
-        },
+          tenantId: ctx.output.tenantId
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; instanceUrl: string; tenantId: string; refreshToken?: string; expiresAt?: string }; input: { tenantId: string; instanceUrl: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        instanceUrl: string;
+        tenantId: string;
+        refreshToken?: string;
+        expiresAt?: string;
+      };
+      input: { tenantId: string; instanceUrl: string };
+      scopes: string[];
+    }) => {
       let instanceUrl = ctx.output.instanceUrl.replace(/\/+$/, '');
       let response = await axios.get(`${instanceUrl}/api/data/v9.2/WhoAmI`, {
-        headers: { Authorization: `Bearer ${ctx.output.token}` },
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let whoAmI = response.data;
@@ -159,10 +173,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.systemuserid,
           name: user.fullname,
-          email: user.internalemailaddress,
-        },
+          email: user.internalemailaddress
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -173,10 +187,12 @@ export let auth = SlateAuth.create()
       tenantId: z.string().describe('Microsoft Entra ID tenant ID'),
       clientId: z.string().describe('Application (client) ID from the app registration'),
       clientSecret: z.string().describe('Client secret from the app registration'),
-      instanceUrl: z.string().describe('Dynamics 365 instance URL (e.g., https://yourorg.crm.dynamics.com)'),
+      instanceUrl: z
+        .string()
+        .describe('Dynamics 365 instance URL (e.g., https://yourorg.crm.dynamics.com)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let instanceUrl = ctx.input.instanceUrl.replace(/\/+$/, '');
 
       let response = await axios.post(
@@ -185,10 +201,10 @@ export let auth = SlateAuth.create()
           client_id: ctx.input.clientId,
           client_secret: ctx.input.clientSecret,
           scope: `${instanceUrl}/.default`,
-          grant_type: 'client_credentials',
+          grant_type: 'client_credentials'
         }).toString(),
         {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
       );
 
@@ -203,15 +219,24 @@ export let auth = SlateAuth.create()
           refreshToken: undefined,
           expiresAt,
           instanceUrl,
-          tenantId: ctx.input.tenantId,
-        },
+          tenantId: ctx.input.tenantId
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; instanceUrl: string; tenantId: string; refreshToken?: string; expiresAt?: string }; input: { tenantId: string; clientId: string; clientSecret: string; instanceUrl: string } }) => {
+    getProfile: async (ctx: {
+      output: {
+        token: string;
+        instanceUrl: string;
+        tenantId: string;
+        refreshToken?: string;
+        expiresAt?: string;
+      };
+      input: { tenantId: string; clientId: string; clientSecret: string; instanceUrl: string };
+    }) => {
       let instanceUrl = ctx.output.instanceUrl.replace(/\/+$/, '');
       let response = await axios.get(`${instanceUrl}/api/data/v9.2/WhoAmI`, {
-        headers: { Authorization: `Bearer ${ctx.output.token}` },
+        headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
       let whoAmI = response.data;
@@ -219,8 +244,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: whoAmI.UserId,
-          name: `Application User (${whoAmI.OrganizationId})`,
-        },
+          name: `Application User (${whoAmI.OrganizationId})`
+        }
       };
-    },
+    }
   });

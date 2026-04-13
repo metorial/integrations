@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let axios = createAxios({
-  baseURL: 'https://api.ayrshare.com/api',
+  baseURL: 'https://api.ayrshare.com/api'
 });
 
 export interface ClientConfig {
@@ -15,7 +15,7 @@ export class Client {
   constructor(private config: ClientConfig) {
     this.headers = {
       Authorization: `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
     if (config.profileKey) {
       this.headers['Profile-Key'] = config.profileKey;
@@ -53,7 +53,7 @@ export class Client {
     snapchatOptions?: Record<string, unknown>;
   }) {
     let response = await axios.post('/post', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -70,23 +70,23 @@ export class Client {
 
     let response = await axios.delete('/post', {
       headers: this.headers,
-      data: body,
+      data: body
     });
     return response.data;
   }
 
-  async updatePost(params: {
-    postId: string;
-    approved?: boolean;
-    scheduleDate?: string;
-  }) {
-    let response = await axios.patch('/post', {
-      id: params.postId,
-      approved: params.approved,
-      scheduleDate: params.scheduleDate,
-    }, {
-      headers: this.headers,
-    });
+  async updatePost(params: { postId: string; approved?: boolean; scheduleDate?: string }) {
+    let response = await axios.patch(
+      '/post',
+      {
+        id: params.postId,
+        approved: params.approved,
+        scheduleDate: params.scheduleDate
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -112,23 +112,24 @@ export class Client {
 
     let response = await axios.get('/history', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   // --- Analytics ---
 
-  async getPostAnalytics(params: {
-    postId: string;
-    platforms?: string[];
-  }) {
-    let response = await axios.post('/analytics/post', {
-      id: params.postId,
-      platforms: params.platforms,
-    }, {
-      headers: this.headers,
-    });
+  async getPostAnalytics(params: { postId: string; platforms?: string[] }) {
+    let response = await axios.post(
+      '/analytics/post',
+      {
+        id: params.postId,
+        platforms: params.platforms
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -137,13 +138,17 @@ export class Client {
     daily?: boolean;
     quarters?: number;
   }) {
-    let response = await axios.post('/analytics/social', {
-      platforms: params.platforms,
-      daily: params.daily,
-      quarters: params.quarters,
-    }, {
-      headers: this.headers,
-    });
+    let response = await axios.post(
+      '/analytics/social',
+      {
+        platforms: params.platforms,
+        daily: params.daily,
+        quarters: params.quarters
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -162,7 +167,7 @@ export class Client {
 
     let response = await axios.get(`/comments/${params.postId}`, {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -174,28 +179,29 @@ export class Client {
     searchPlatformId?: boolean;
     mediaUrls?: string[];
   }) {
-    let response = await axios.post('/comments', {
-      id: params.postId,
-      comment: params.comment,
-      platforms: params.platforms,
-      searchPlatformId: params.searchPlatformId,
-      mediaUrls: params.mediaUrls,
-    }, {
-      headers: this.headers,
-    });
+    let response = await axios.post(
+      '/comments',
+      {
+        id: params.postId,
+        comment: params.comment,
+        platforms: params.platforms,
+        searchPlatformId: params.searchPlatformId,
+        mediaUrls: params.mediaUrls
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
-  async deleteComment(params: {
-    commentId: string;
-    platforms: string[];
-  }) {
+  async deleteComment(params: { commentId: string; platforms: string[] }) {
     let response = await axios.delete('/comments', {
       headers: this.headers,
       data: {
         id: params.commentId,
-        platforms: params.platforms,
-      },
+        platforms: params.platforms
+      }
     });
     return response.data;
   }
@@ -208,13 +214,17 @@ export class Client {
     message?: string;
     mediaUrls?: string[];
   }) {
-    let response = await axios.post(`/messages/${params.platform}`, {
-      recipientId: params.recipientId,
-      message: params.message,
-      mediaUrls: params.mediaUrls,
-    }, {
-      headers: this.headers,
-    });
+    let response = await axios.post(
+      `/messages/${params.platform}`,
+      {
+        recipientId: params.recipientId,
+        message: params.message,
+        mediaUrls: params.mediaUrls
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -231,25 +241,25 @@ export class Client {
 
     let response = await axios.get(`/messages/${params.platform}`, {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   // --- Media ---
 
-  async uploadMedia(params: {
-    file: string;
-    fileName?: string;
-    description?: string;
-  }) {
-    let response = await axios.post('/media/upload', {
-      file: params.file,
-      fileName: params.fileName,
-      description: params.description,
-    }, {
-      headers: this.headers,
-    });
+  async uploadMedia(params: { file: string; fileName?: string; description?: string }) {
+    let response = await axios.post(
+      '/media/upload',
+      {
+        file: params.file,
+        fileName: params.fileName,
+        description: params.description
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -262,7 +272,7 @@ export class Client {
     language?: string;
   }) {
     let response = await axios.post('/hashtags/auto', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -277,7 +287,7 @@ export class Client {
     email?: string;
   }) {
     let response = await axios.post('/profiles', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -300,74 +310,59 @@ export class Client {
 
     let response = await axios.get('/profiles', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
-  async deleteProfile(params: {
-    profileKey: string;
-    title?: string;
-  }) {
+  async deleteProfile(params: { profileKey: string; title?: string }) {
     let deleteHeaders = { ...this.headers, 'Profile-Key': params.profileKey };
     let response = await axios.delete('/profiles', {
       headers: deleteHeaders,
-      data: params.title ? { title: params.title } : undefined,
+      data: params.title ? { title: params.title } : undefined
     });
     return response.data;
   }
 
   // --- Reviews ---
 
-  async getReviews(params: {
-    platform: string;
-  }) {
+  async getReviews(params: { platform: string }) {
     let response = await axios.get('/reviews', {
       headers: this.headers,
-      params: { platform: params.platform },
+      params: { platform: params.platform }
     });
     return response.data;
   }
 
   // --- Webhooks ---
 
-  async registerWebhook(params: {
-    action: string;
-    url: string;
-    secret?: string;
-  }) {
+  async registerWebhook(params: { action: string; url: string; secret?: string }) {
     let response = await axios.post('/hook/webhook', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async unregisterWebhook(params: {
-    action: string;
-  }) {
+  async unregisterWebhook(params: { action: string }) {
     let response = await axios.delete('/hook/webhook', {
       headers: this.headers,
-      data: { action: params.action },
+      data: { action: params.action }
     });
     return response.data;
   }
 
   async getWebhooks() {
     let response = await axios.get('/hook/webhook', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // --- Validation ---
 
-  async validatePost(params: {
-    post: string;
-    platforms: string[];
-    mediaUrls?: string[];
-  }) {
+  async validatePost(params: { post: string; platforms: string[]; mediaUrls?: string[] }) {
     let response = await axios.post('/post/validate', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -381,14 +376,14 @@ export class Client {
     shortenLinks?: boolean;
   }) {
     let response = await axios.post('/feed', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getFeeds() {
     let response = await axios.get('/feed', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -396,7 +391,7 @@ export class Client {
   async deleteFeed(params: { feedId: string }) {
     let response = await axios.delete('/feed', {
       headers: this.headers,
-      data: { id: params.feedId },
+      data: { id: params.feedId }
     });
     return response.data;
   }
@@ -405,7 +400,7 @@ export class Client {
 
   async getUser() {
     let response = await axios.get('/user', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

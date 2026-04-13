@@ -12,7 +12,7 @@ let stationSummarySchema = z.object({
   city: z.string().describe('City'),
   county: z.string().describe('County'),
   state: z.string().describe('State'),
-  zipcode: z.string().describe('ZIP code'),
+  zipcode: z.string().describe('ZIP code')
 });
 
 let stationDetailSchema = stationSummarySchema.extend({
@@ -26,7 +26,7 @@ let stationDetailSchema = stationSummarySchema.extend({
   food: z.string().describe('Nearby food options'),
   shopping: z.string().describe('Nearby shopping options'),
   attraction: z.string().describe('Nearby attractions'),
-  link: z.string().describe('BART station webpage URL'),
+  link: z.string().describe('BART station webpage URL')
 });
 
 let stationAccessSchema = z.object({
@@ -41,40 +41,63 @@ let stationAccessSchema = z.object({
   parking: z.string().describe('Parking information'),
   lockers: z.string().describe('Locker information'),
   transitInfo: z.string().describe('Nearby transit connections'),
-  link: z.string().describe('BART station webpage URL'),
+  link: z.string().describe('BART station webpage URL')
 });
 
-export let getStationInfo = SlateTool.create(
-  spec,
-  {
-    name: 'Get Station Info',
-    key: 'get_station_info',
-    description: `Retrieve detailed information about BART stations. Can list all stations, get details about a specific station (address, routes, platforms, nearby amenities), or get station access information (parking, bike racks, lockers, entering/exiting directions, transit connections).`,
-    instructions: [
-      'Use station abbreviation codes (e.g., "12TH" for 12th St Oakland, "EMBR" for Embarcadero).',
-      'Set includeAccess to true to also retrieve parking, bike, locker, and transit connection information.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getStationInfo = SlateTool.create(spec, {
+  name: 'Get Station Info',
+  key: 'get_station_info',
+  description: `Retrieve detailed information about BART stations. Can list all stations, get details about a specific station (address, routes, platforms, nearby amenities), or get station access information (parking, bike racks, lockers, entering/exiting directions, transit connections).`,
+  instructions: [
+    'Use station abbreviation codes (e.g., "12TH" for 12th St Oakland, "EMBR" for Embarcadero).',
+    'Set includeAccess to true to also retrieve parking, bike, locker, and transit connection information.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    stationAbbr: z.string().optional().describe('Station abbreviation code. Omit to list all stations.'),
-    includeAccess: z.boolean().optional().default(false).describe('Whether to include access/neighborhood info (parking, bikes, lockers, transit connections)'),
-  }))
-  .output(z.object({
-    stations: z.array(stationSummarySchema).optional().describe('List of all stations (returned when no specific station is requested)'),
-    station: stationDetailSchema.optional().describe('Detailed station information (returned when a specific station is requested)'),
-    access: stationAccessSchema.optional().describe('Station access information (returned when includeAccess is true)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      stationAbbr: z
+        .string()
+        .optional()
+        .describe('Station abbreviation code. Omit to list all stations.'),
+      includeAccess: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe(
+          'Whether to include access/neighborhood info (parking, bikes, lockers, transit connections)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      stations: z
+        .array(stationSummarySchema)
+        .optional()
+        .describe('List of all stations (returned when no specific station is requested)'),
+      station: stationDetailSchema
+        .optional()
+        .describe(
+          'Detailed station information (returned when a specific station is requested)'
+        ),
+      access: stationAccessSchema
+        .optional()
+        .describe('Station access information (returned when includeAccess is true)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BartClient({ token: ctx.auth.token });
 
     if (!ctx.input.stationAbbr) {
       let result = await client.getStations();
       let stationData = result?.stations?.station;
-      let stations = Array.isArray(stationData) ? stationData : stationData ? [stationData] : [];
+      let stations = Array.isArray(stationData)
+        ? stationData
+        : stationData
+          ? [stationData]
+          : [];
 
       let mappedStations = stations.map((s: any) => ({
         stationName: s.name || '',
@@ -85,12 +108,12 @@ export let getStationInfo = SlateTool.create(
         city: s.city || '',
         county: s.county || '',
         state: s.state || '',
-        zipcode: s.zipcode || '',
+        zipcode: s.zipcode || ''
       }));
 
       return {
         output: { stations: mappedStations },
-        message: `Retrieved **${mappedStations.length}** BART stations.`,
+        message: `Retrieved **${mappedStations.length}** BART stations.`
       };
     }
 
@@ -112,7 +135,8 @@ export let getStationInfo = SlateTool.create(
     let extractCdata = (data: any): string => {
       if (!data) return '';
       if (typeof data === 'string') return data;
-      if (typeof data === 'object' && data['#cdata-section'] !== undefined) return data['#cdata-section'];
+      if (typeof data === 'object' && data['#cdata-section'] !== undefined)
+        return data['#cdata-section'];
       return '';
     };
 
@@ -136,7 +160,7 @@ export let getStationInfo = SlateTool.create(
       food: extractCdata(stn?.food) || '',
       shopping: extractCdata(stn?.shopping) || '',
       attraction: extractCdata(stn?.attraction) || '',
-      link: extractCdata(stn?.link) || '',
+      link: extractCdata(stn?.link) || ''
     };
 
     let output: any = { station };
@@ -157,13 +181,13 @@ export let getStationInfo = SlateTool.create(
         parking: extractCdata(acc?.parking) || '',
         lockers: extractCdata(acc?.lockers) || '',
         transitInfo: extractCdata(acc?.transit_info) || '',
-        link: acc?.link || '',
+        link: acc?.link || ''
       };
     }
 
     return {
       output,
-      message: `Retrieved details for **${station.stationName}** (${station.stationAbbr})${ctx.input.includeAccess ? ' including access information' : ''}.`,
+      message: `Retrieved details for **${station.stationName}** (${station.stationAbbr})${ctx.input.includeAccess ? ' including access information' : ''}.`
     };
   })
   .build();

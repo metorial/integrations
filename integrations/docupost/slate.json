@@ -2,10 +2,7 @@
   "name": "@metorial/docupost",
   "version": "0.1.2",
   "description": "Send physical postal mail programmatically, including letters and postcards, via U.S. mail. Provide recipient and sender addresses, supply content as a PDF URL or HTML, and send letters or postcards with specified images. Check account balance before sending. Cancel letters within one hour of submission. The service is HIPAA-compliant and supports sending checks via the dashboard.",
-  "categories": [
-    "document-processing",
-    "email-and-messaging"
-  ],
+  "categories": ["document-processing", "email-and-messaging"],
   "skills": [
     "send postal letters",
     "send postcards",

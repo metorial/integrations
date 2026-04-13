@@ -3,47 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let activityFields = z.object({
-  activityDateTime: z.string().optional().describe('Activity date/time (ISO 8601 format)'),
-  salesRepId: z.number().optional().describe('Sales rep performing the activity'),
-  accountId: z.number().optional().describe('Associated account/company ID'),
-  contactId: z.number().optional().describe('Associated contact ID'),
-  opportunityId: z.number().optional().describe('Associated opportunity ID'),
-  activityTypeId: z.number().optional().describe('Activity type ID (visit, call, meeting, etc.)'),
-  isCheckin: z.boolean().optional().describe('Whether this is a check-in activity'),
-  comment: z.string().optional().describe('Activity notes or comments'),
-  geocodeLatitude: z.number().optional().describe('Check-in latitude'),
-  geocodeLongitude: z.number().optional().describe('Check-in longitude'),
-  extId: z.string().optional().describe('External system ID for synchronization'),
-}).describe('Activity fields to set');
+let activityFields = z
+  .object({
+    activityDateTime: z.string().optional().describe('Activity date/time (ISO 8601 format)'),
+    salesRepId: z.number().optional().describe('Sales rep performing the activity'),
+    accountId: z.number().optional().describe('Associated account/company ID'),
+    contactId: z.number().optional().describe('Associated contact ID'),
+    opportunityId: z.number().optional().describe('Associated opportunity ID'),
+    activityTypeId: z
+      .number()
+      .optional()
+      .describe('Activity type ID (visit, call, meeting, etc.)'),
+    isCheckin: z.boolean().optional().describe('Whether this is a check-in activity'),
+    comment: z.string().optional().describe('Activity notes or comments'),
+    geocodeLatitude: z.number().optional().describe('Check-in latitude'),
+    geocodeLongitude: z.number().optional().describe('Check-in longitude'),
+    extId: z.string().optional().describe('External system ID for synchronization')
+  })
+  .describe('Activity fields to set');
 
-export let manageActivity = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Activity',
-    key: 'manage_activity',
-    description: `Create, update, or delete sales activity records (visits, calls, meetings) in ForceManager.
+export let manageActivity = SlateTool.create(spec, {
+  name: 'Manage Activity',
+  key: 'manage_activity',
+  description: `Create, update, or delete sales activity records (visits, calls, meetings) in ForceManager.
 Activities track sales interactions and can include check-in geolocation data.`,
-    instructions: [
-      'Use the "list of values" tool to look up valid activityTypeId values.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+  instructions: ['Use the "list of values" tool to look up valid activityTypeId values.'],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
-    activityId: z.number().optional().describe('Activity ID (required for update and delete)'),
-    fields: activityFields.optional().describe('Activity fields (required for create, optional for update)')
-  }))
-  .output(z.object({
-    activityId: z.number().optional().describe('ID of the affected activity'),
-    message: z.string().optional().describe('Status message'),
-    activity: z.any().optional().describe('Full activity record')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Operation to perform'),
+      activityId: z
+        .number()
+        .optional()
+        .describe('Activity ID (required for update and delete)'),
+      fields: activityFields
+        .optional()
+        .describe('Activity fields (required for create, optional for update)')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.number().optional().describe('ID of the affected activity'),
+      message: z.string().optional().describe('Status message'),
+      activity: z.any().optional().describe('Full activity record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.action === 'create') {
@@ -66,7 +75,11 @@ Activities track sales interactions and can include check-in geolocation data.`,
       await client.updateActivity(ctx.input.activityId, ctx.input.fields || {});
       let activity = await client.getActivity(ctx.input.activityId);
       return {
-        output: { activityId: ctx.input.activityId, message: 'Activity updated successfully', activity },
+        output: {
+          activityId: ctx.input.activityId,
+          message: 'Activity updated successfully',
+          activity
+        },
         message: `Updated activity ID **${ctx.input.activityId}**`
       };
     }
@@ -83,4 +96,5 @@ Activities track sales interactions and can include check-in geolocation data.`,
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

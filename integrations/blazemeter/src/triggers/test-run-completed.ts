@@ -3,41 +3,43 @@ import { BlazeMeterClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let testRunCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Performance Test Run Event',
-    key: 'test_run_event',
-    description: 'Triggers when a performance test run (master) changes status. Polls for recently completed, started, or failed test runs across your projects.',
-  }
-)
-  .input(z.object({
-    masterId: z.number().describe('Master (test run) ID'),
-    testId: z.number().optional().describe('Test ID'),
-    testName: z.string().optional().describe('Test name'),
-    status: z.string().describe('Run status'),
-    created: z.number().optional().describe('Creation timestamp'),
-    ended: z.number().optional().describe('End timestamp'),
-  }))
-  .output(z.object({
-    masterId: z.number().describe('Master (test run) ID'),
-    testId: z.number().optional().describe('Performance test ID'),
-    testName: z.string().optional().describe('Test name'),
-    status: z.string().describe('Current run status (e.g., ENDED, CREATED, RUNNING)'),
-    created: z.number().optional().describe('Creation timestamp'),
-    ended: z.number().optional().describe('End timestamp'),
-    isCompleted: z.boolean().describe('Whether the run has finished'),
-  }))
+export let testRunCompleted = SlateTrigger.create(spec, {
+  name: 'Performance Test Run Event',
+  key: 'test_run_event',
+  description:
+    'Triggers when a performance test run (master) changes status. Polls for recently completed, started, or failed test runs across your projects.'
+})
+  .input(
+    z.object({
+      masterId: z.number().describe('Master (test run) ID'),
+      testId: z.number().optional().describe('Test ID'),
+      testName: z.string().optional().describe('Test name'),
+      status: z.string().describe('Run status'),
+      created: z.number().optional().describe('Creation timestamp'),
+      ended: z.number().optional().describe('End timestamp')
+    })
+  )
+  .output(
+    z.object({
+      masterId: z.number().describe('Master (test run) ID'),
+      testId: z.number().optional().describe('Performance test ID'),
+      testName: z.string().optional().describe('Test name'),
+      status: z.string().describe('Current run status (e.g., ENDED, CREATED, RUNNING)'),
+      created: z.number().optional().describe('Creation timestamp'),
+      ended: z.number().optional().describe('End timestamp'),
+      isCompleted: z.boolean().describe('Whether the run has finished')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BlazeMeterClient({
         token: ctx.auth.token,
         apiKeyId: ctx.auth.apiKeyId,
-        apiKeySecret: ctx.auth.apiKeySecret,
+        apiKeySecret: ctx.auth.apiKeySecret
       });
 
       let state = ctx.state as { lastPollTime?: number; seenMasterIds?: number[] } | null;
@@ -69,7 +71,7 @@ export let testRunCompleted = SlateTrigger.create(
             testName: master.name,
             status: master.status || 'UNKNOWN',
             created: master.created,
-            ended: master.ended,
+            ended: master.ended
           });
 
           if (!updatedSeenIds.includes(master.id)) {
@@ -87,20 +89,21 @@ export let testRunCompleted = SlateTrigger.create(
         inputs: newInputs,
         updatedState: {
           lastPollTime: now,
-          seenMasterIds: updatedSeenIds,
-        },
+          seenMasterIds: updatedSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let status = ctx.input.status.toUpperCase();
-      let eventType = status === 'ENDED'
-        ? 'test_run.completed'
-        : status === 'CREATED'
-          ? 'test_run.started'
-          : status === 'ERROR' || status === 'FAILED'
-            ? 'test_run.failed'
-            : `test_run.${status.toLowerCase()}`;
+      let eventType =
+        status === 'ENDED'
+          ? 'test_run.completed'
+          : status === 'CREATED'
+            ? 'test_run.started'
+            : status === 'ERROR' || status === 'FAILED'
+              ? 'test_run.failed'
+              : `test_run.${status.toLowerCase()}`;
 
       let isCompleted = ['ENDED', 'ERROR', 'FAILED', 'TERMINATED'].includes(status);
 
@@ -114,9 +117,9 @@ export let testRunCompleted = SlateTrigger.create(
           status: ctx.input.status,
           created: ctx.input.created,
           ended: ctx.input.ended,
-          isCompleted,
-        },
+          isCompleted
+        }
       };
-    },
+    }
   })
   .build();

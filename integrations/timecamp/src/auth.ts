@@ -2,35 +2,41 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your TimeCamp API token. Find it in Profile Settings at https://app.timecamp.com/app#/settings/users/me'),
+      token: z
+        .string()
+        .describe(
+          'Your TimeCamp API token. Find it in Profile Settings at https://app.timecamp.com/app#/settings/users/me'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let axios = createAxios({
-        baseURL: 'https://www.timecamp.com/third_party/api',
+        baseURL: 'https://www.timecamp.com/third_party/api'
       });
 
       let response = await axios.get('/me', {
         headers: {
-          Authorization: ctx.output.token,
-        },
+          Authorization: ctx.output.token
+        }
       });
 
       let user = response.data;
@@ -39,8 +45,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(user.user_id),
           email: user.email,
-          name: user.display_name,
-        },
+          name: user.display_name
+        }
       };
-    },
+    }
   });

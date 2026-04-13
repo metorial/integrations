@@ -10,7 +10,7 @@ export class Client {
     }
   ) {
     this.axios = createAxios({
-      baseURL: 'https://api.callingly.com/v1',
+      baseURL: 'https://api.callingly.com/v1'
     });
   }
 
@@ -18,7 +18,7 @@ export class Client {
     return {
       Authorization: `Bearer ${this.options.token}`,
       Accept: 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -39,7 +39,7 @@ export class Client {
 
     let response = await this.axios.get('/leads', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -47,14 +47,14 @@ export class Client {
   async getLead(leadId: string) {
     let response = await this.axios.get(`/leads/${leadId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
 
   async updateLead(leadId: string, data: Record<string, any>) {
     let response = await this.axios.put(`/leads/${leadId}`, this.addAccountId(data), {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -62,14 +62,20 @@ export class Client {
   async deleteLead(leadId: string) {
     let response = await this.axios.delete(`/leads/${leadId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
 
   // ── Calls ──────────────────────────────────────────────
 
-  async listCalls(params?: { start?: string; end?: string; teamId?: string; limit?: number; page?: number }) {
+  async listCalls(params?: {
+    start?: string;
+    end?: string;
+    teamId?: string;
+    limit?: number;
+    page?: number;
+  }) {
     let queryParams: Record<string, any> = this.addAccountId();
     if (params?.start) queryParams.start = params.start;
     if (params?.end) queryParams.end = params.end;
@@ -79,7 +85,7 @@ export class Client {
 
     let response = await this.axios.get('/calls', {
       headers: this.headers,
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -87,7 +93,7 @@ export class Client {
   async getCall(callId: string) {
     let response = await this.axios.get(`/calls/${callId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -106,7 +112,7 @@ export class Client {
   }) {
     let body: Record<string, any> = this.addAccountId({
       team_id: data.teamId,
-      phone_number: data.phoneNumber,
+      phone_number: data.phoneNumber
     });
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -118,26 +124,22 @@ export class Client {
     if (data.scheduledAt) body.scheduled_at = data.scheduledAt;
 
     let response = await this.axios.post('/calls', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   // ── SMS ────────────────────────────────────────────────
 
-  async sendSms(data: {
-    phoneNumber: string;
-    smsNumber: string;
-    message: string;
-  }) {
+  async sendSms(data: { phoneNumber: string; smsNumber: string; message: string }) {
     let body: Record<string, any> = this.addAccountId({
       phone_number: data.phoneNumber,
       sms_number: data.smsNumber,
-      message: data.message,
+      message: data.message
     });
 
     let response = await this.axios.post('/sms', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -147,7 +149,7 @@ export class Client {
   async listTeams() {
     let response = await this.axios.get('/teams', {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -155,7 +157,7 @@ export class Client {
   async getTeam(teamId: string) {
     let response = await this.axios.get(`/teams/${teamId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -163,14 +165,14 @@ export class Client {
   async createTeam(data: Record<string, any>) {
     let body = this.addAccountId(data);
     let response = await this.axios.post('/teams', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async updateTeam(teamId: string, data: Record<string, any>) {
     let response = await this.axios.put(`/teams/${teamId}`, this.addAccountId(data), {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -180,7 +182,7 @@ export class Client {
   async listTeamAgents(teamId: string) {
     let response = await this.axios.get(`/teams/${teamId}/agents`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -188,7 +190,7 @@ export class Client {
   async assignAgentsToTeam(teamId: string, agentIds: string[]) {
     let body = this.addAccountId({ agents: agentIds });
     let response = await this.axios.put(`/teams/${teamId}/agents`, body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -196,18 +198,22 @@ export class Client {
   async removeAgentFromTeam(teamId: string, agentId: string) {
     let response = await this.axios.delete(`/teams/${teamId}/agents/${agentId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
 
-  async updateTeamAgent(teamId: string, agentId: string, data: { priority?: number; cap?: number }) {
+  async updateTeamAgent(
+    teamId: string,
+    agentId: string,
+    data: { priority?: number; cap?: number }
+  ) {
     let body: Record<string, any> = this.addAccountId();
     if (data.priority !== undefined) body.priority = data.priority;
     if (data.cap !== undefined) body.cap = data.cap;
 
     let response = await this.axios.put(`/teams/${teamId}/agents/${agentId}`, body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -217,7 +223,7 @@ export class Client {
   async listAgents() {
     let response = await this.axios.get('/agents', {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -232,20 +238,20 @@ export class Client {
     let body: Record<string, any> = this.addAccountId({
       fname: data.firstName,
       lname: data.lastName,
-      phone_number: data.phoneNumber,
+      phone_number: data.phoneNumber
     });
     if (data.ext) body.ext = data.ext;
     if (data.timezone) body.timezone = data.timezone;
 
     let response = await this.axios.post('/agents', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async updateAgent(agentId: string, data: Record<string, any>) {
     let response = await this.axios.put(`/agents/${agentId}`, this.addAccountId(data), {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -253,7 +259,7 @@ export class Client {
   async deleteAgent(agentId: string) {
     let response = await this.axios.delete(`/agents/${agentId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -261,7 +267,7 @@ export class Client {
   async getAgentSchedule(agentId: string) {
     let response = await this.axios.get(`/agents/${agentId}/schedule`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -269,7 +275,7 @@ export class Client {
   async updateAgentSchedule(agentId: string, schedule: any[]) {
     let body = this.addAccountId({ schedule });
     let response = await this.axios.put(`/agents/${agentId}/schedule`, body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -278,7 +284,7 @@ export class Client {
 
   async listClients() {
     let response = await this.axios.get('/clients', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -291,32 +297,40 @@ export class Client {
     phoneNumber: string;
     password: string;
   }) {
-    let response = await this.axios.post('/clients', {
-      fname: data.firstName,
-      lname: data.lastName,
-      company: data.company,
-      email: data.email,
-      phone_number: data.phoneNumber,
-      password: data.password,
-    }, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      '/clients',
+      {
+        fname: data.firstName,
+        lname: data.lastName,
+        company: data.company,
+        email: data.email,
+        phone_number: data.phoneNumber,
+        password: data.password
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteClient(clientId: string) {
     let response = await this.axios.delete(`/clients/${clientId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async setClientActive(clientId: string, isActive: boolean) {
-    let response = await this.axios.post(`/clients/${clientId}/active`, {
-      is_active: isActive ? 1 : 0,
-    }, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      `/clients/${clientId}/active`,
+      {
+        is_active: isActive ? 1 : 0
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -325,7 +339,7 @@ export class Client {
   async listWebhooks() {
     let response = await this.axios.get('/webhooks', {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -333,7 +347,7 @@ export class Client {
   async getWebhook(webhookId: string) {
     let response = await this.axios.get(`/webhooks/${webhookId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }
@@ -353,7 +367,7 @@ export class Client {
     let body: Record<string, any> = this.addAccountId({
       name: data.name,
       event: data.event,
-      target_url: data.targetUrl,
+      target_url: data.targetUrl
     });
     if (data.callDirection) body.call_direction = data.callDirection;
     if (data.callStatus) body.call_status = data.callStatus;
@@ -364,14 +378,14 @@ export class Client {
     if (data.filter) body.filter = data.filter;
 
     let response = await this.axios.post('/webhooks', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async updateWebhook(webhookId: string, data: Record<string, any>) {
     let response = await this.axios.put(`/webhooks/${webhookId}`, this.addAccountId(data), {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -379,7 +393,7 @@ export class Client {
   async deleteWebhook(webhookId: string) {
     let response = await this.axios.delete(`/webhooks/${webhookId}`, {
       headers: this.headers,
-      params: this.addAccountId(),
+      params: this.addAccountId()
     });
     return response.data;
   }

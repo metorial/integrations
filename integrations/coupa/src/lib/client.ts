@@ -24,11 +24,11 @@ export class CoupaClient {
     return createAxios({
       baseURL: `${this.instanceUrl}/api`,
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.token}`,
-        'X-COUPA-API-KEY': this.token,
-      },
+        Authorization: `Bearer ${this.token}`,
+        'X-COUPA-API-KEY': this.token
+      }
     });
   }
 
@@ -41,7 +41,8 @@ export class CoupaClient {
     if (params.limit !== undefined) query['limit'] = String(params.limit);
     if (params.orderBy) query['order_by'] = params.orderBy;
     if (params.dir) query['dir'] = params.dir;
-    if (params.fields && params.fields.length > 0) query['fields'] = JSON.stringify(params.fields);
+    if (params.fields && params.fields.length > 0)
+      query['fields'] = JSON.stringify(params.fields);
     if (params.returnObject) query['return_object'] = params.returnObject;
     if (params.exportedFlag !== undefined) query['exported'] = String(params.exportedFlag);
 
@@ -73,7 +74,11 @@ export class CoupaClient {
     return response.data;
   }
 
-  async updateResource(resource: string, resourceId: number | string, data: any): Promise<any> {
+  async updateResource(
+    resource: string,
+    resourceId: number | string,
+    data: any
+  ): Promise<any> {
     let ax = this.createAxiosInstance();
     let response = await ax.put(`/${resource}/${resourceId}`, data);
     return response.data;
@@ -84,7 +89,12 @@ export class CoupaClient {
     await ax.delete(`/${resource}/${resourceId}`);
   }
 
-  async performAction(resource: string, resourceId: number | string, action: string, data?: any): Promise<any> {
+  async performAction(
+    resource: string,
+    resourceId: number | string,
+    action: string,
+    data?: any
+  ): Promise<any> {
     let ax = this.createAxiosInstance();
     let response = await ax.put(`/${resource}/${resourceId}/${action}`, data || {});
     return response.data;
@@ -236,7 +246,12 @@ export class CoupaClient {
   }
 
   async approveApproval(approvalId: number | string, reason?: string): Promise<any> {
-    return this.performAction('approvals', approvalId, 'approve', reason ? { reason } : undefined);
+    return this.performAction(
+      'approvals',
+      approvalId,
+      'approve',
+      reason ? { reason } : undefined
+    );
   }
 
   async rejectApproval(approvalId: number | string, reason: string): Promise<any> {
@@ -298,8 +313,8 @@ export class CoupaClient {
       ...params,
       filters: {
         ...params?.filters,
-        'lookup_name': lookupName,
-      },
+        lookup_name: lookupName
+      }
     });
   }
 }

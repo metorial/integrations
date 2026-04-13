@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   trackUsers,
@@ -27,11 +26,7 @@ import {
   getCustomEventAnalytics,
   scheduleMessage
 } from './tools';
-import {
-  campaignActivity,
-  emailBlocklistActivity,
-  inboundWebhook,
-} from './triggers';
+import { campaignActivity, emailBlocklistActivity, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -61,9 +56,5 @@ export let provider = Slate.create({
     getCustomEventAnalytics,
     scheduleMessage
   ],
-  triggers: [
-    inboundWebhook,
-    campaignActivity,
-    emailBlocklistActivity
-  ]
+  triggers: [inboundWebhook, campaignActivity, emailBlocklistActivity]
 });

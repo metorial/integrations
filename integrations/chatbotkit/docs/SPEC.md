@@ -130,10 +130,13 @@ Webhooks are configured through the ChatBotKit dashboard or API. You select the 
 The platform automatically captures various types of events that can be subscribed to:
 
 ### Bot Activities
+
 Track bot creation, updates, and operational events.
 
 ### Conversation Events
+
 Monitor message flows and user interactions. This includes events such as when a user interacts with the bot.
 
 ### Integration Operations
+
 Observe third-party service connections and data synchronization.

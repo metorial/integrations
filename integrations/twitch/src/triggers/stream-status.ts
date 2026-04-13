@@ -3,48 +3,50 @@ import { TwitchClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let streamStatus = SlateTrigger.create(
-  spec,
-  {
-    name: 'Stream Status',
-    key: 'stream_status',
-    description: 'Triggers when a monitored channel goes live or offline. Polls for stream status changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['online', 'offline']).describe('Type of stream event'),
-    userId: z.string().describe('User ID of the streamer'),
-    userName: z.string().describe('Display name of the streamer'),
-    userLogin: z.string().describe('Login name of the streamer'),
-    streamId: z.string().optional().describe('Stream ID (available when going online)'),
-    title: z.string().optional().describe('Stream title'),
-    gameName: z.string().optional().describe('Game/category being played'),
-    gameId: z.string().optional().describe('Game/category ID'),
-    viewerCount: z.number().optional().describe('Current viewer count'),
-    startedAt: z.string().optional().describe('Stream start time'),
-    language: z.string().optional().describe('Stream language'),
-    thumbnailUrl: z.string().optional().describe('Stream thumbnail URL'),
-  }))
-  .output(z.object({
-    userId: z.string(),
-    userName: z.string(),
-    userLogin: z.string(),
-    streamId: z.string().optional(),
-    title: z.string().optional(),
-    gameName: z.string().optional(),
-    gameId: z.string().optional(),
-    viewerCount: z.number().optional(),
-    startedAt: z.string().optional(),
-    language: z.string().optional(),
-    thumbnailUrl: z.string().optional(),
-    isLive: z.boolean(),
-  }))
+export let streamStatus = SlateTrigger.create(spec, {
+  name: 'Stream Status',
+  key: 'stream_status',
+  description:
+    'Triggers when a monitored channel goes live or offline. Polls for stream status changes.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['online', 'offline']).describe('Type of stream event'),
+      userId: z.string().describe('User ID of the streamer'),
+      userName: z.string().describe('Display name of the streamer'),
+      userLogin: z.string().describe('Login name of the streamer'),
+      streamId: z.string().optional().describe('Stream ID (available when going online)'),
+      title: z.string().optional().describe('Stream title'),
+      gameName: z.string().optional().describe('Game/category being played'),
+      gameId: z.string().optional().describe('Game/category ID'),
+      viewerCount: z.number().optional().describe('Current viewer count'),
+      startedAt: z.string().optional().describe('Stream start time'),
+      language: z.string().optional().describe('Stream language'),
+      thumbnailUrl: z.string().optional().describe('Stream thumbnail URL')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string(),
+      userName: z.string(),
+      userLogin: z.string(),
+      streamId: z.string().optional(),
+      title: z.string().optional(),
+      gameName: z.string().optional(),
+      gameId: z.string().optional(),
+      viewerCount: z.number().optional(),
+      startedAt: z.string().optional(),
+      language: z.string().optional(),
+      thumbnailUrl: z.string().optional(),
+      isLive: z.boolean()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TwitchClient(ctx.auth.token, ctx.auth.clientId);
       let state = ctx.state as { trackedStreams?: Record<string, boolean> } | null;
       let trackedStreams = state?.trackedStreams || {};
@@ -86,7 +88,7 @@ export let streamStatus = SlateTrigger.create(
             viewerCount: stream.viewer_count,
             startedAt: stream.started_at,
             language: stream.language,
-            thumbnailUrl: stream.thumbnail_url,
+            thumbnailUrl: stream.thumbnail_url
           });
         }
       }
@@ -100,7 +102,7 @@ export let streamStatus = SlateTrigger.create(
             eventType: 'offline',
             userId,
             userName: offlineUser?.display_name || userId,
-            userLogin: offlineUser?.login || userId,
+            userLogin: offlineUser?.login || userId
           });
         }
       }
@@ -112,11 +114,11 @@ export let streamStatus = SlateTrigger.create(
 
       return {
         inputs,
-        updatedState: { trackedStreams: newTrackedStreams },
+        updatedState: { trackedStreams: newTrackedStreams }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `stream.${ctx.input.eventType}`,
         id: `${ctx.input.userId}-${ctx.input.eventType}-${ctx.input.streamId || Date.now()}`,
@@ -132,9 +134,9 @@ export let streamStatus = SlateTrigger.create(
           startedAt: ctx.input.startedAt,
           language: ctx.input.language,
           thumbnailUrl: ctx.input.thumbnailUrl,
-          isLive: ctx.input.eventType === 'online',
-        },
+          isLive: ctx.input.eventType === 'online'
+        }
       };
-    },
+    }
   })
   .build();

@@ -110,7 +110,7 @@ export interface UpdateSignerParams {
 }
 
 let toSnakeCase = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 let convertKeysToSnakeCase = (obj: any): any => {
@@ -152,7 +152,7 @@ export class Client {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.http = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
@@ -161,29 +161,37 @@ export class Client {
   async createContract(params: CreateContractParams): Promise<any> {
     let body = convertKeysToSnakeCase(params);
     let response = await this.http.post('/contracts', body, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async queryContract(contractId: string): Promise<any> {
     let response = await this.http.get(`/contracts/${contractId}`, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async withdrawContract(contractId: string): Promise<any> {
-    let response = await this.http.post(`/contracts/${contractId}/withdraw`, {}, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/contracts/${contractId}/withdraw`,
+      {},
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 
   async generatePdfPreview(contractId: string): Promise<any> {
-    let response = await this.http.post(`/contracts/${contractId}/generate_pdf_preview`, {}, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/contracts/${contractId}/generate_pdf_preview`,
+      {},
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 
@@ -192,30 +200,42 @@ export class Client {
   async addSigner(contractId: string, signer: Signer): Promise<any> {
     let body = convertKeysToSnakeCase(signer);
     let response = await this.http.post(`/contracts/${contractId}/signers`, body, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
-  async updateSigner(contractId: string, signerId: string, params: UpdateSignerParams): Promise<any> {
+  async updateSigner(
+    contractId: string,
+    signerId: string,
+    params: UpdateSignerParams
+  ): Promise<any> {
     let body = convertKeysToSnakeCase(params);
     let response = await this.http.post(`/contracts/${contractId}/signers/${signerId}`, body, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async sendContract(contractId: string, signerId: string): Promise<any> {
-    let response = await this.http.post(`/contracts/${contractId}/signers/${signerId}/send_contract`, {}, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/contracts/${contractId}/signers/${signerId}/send_contract`,
+      {},
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 
   async deleteSigner(contractId: string, signerId: string): Promise<any> {
-    let response = await this.http.post(`/contracts/${contractId}/signers/${signerId}/delete`, {}, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/contracts/${contractId}/signers/${signerId}/delete`,
+      {},
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 
@@ -224,7 +244,7 @@ export class Client {
   async createTemplate(params: CreateTemplateParams): Promise<any> {
     let body = convertKeysToSnakeCase(params);
     let response = await this.http.post('/templates', body, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
@@ -232,7 +252,7 @@ export class Client {
   async updateTemplate(templateId: string, params: UpdateTemplateParams): Promise<any> {
     let body = convertKeysToSnakeCase(params);
     let response = await this.http.post(`/templates/${templateId}`, body, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
@@ -240,52 +260,64 @@ export class Client {
   async copyTemplate(templateId: string, params: CopyTemplateParams): Promise<any> {
     let body = convertKeysToSnakeCase(params);
     let response = await this.http.post(`/templates/${templateId}/copy`, body, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async queryTemplate(templateId: string): Promise<any> {
     let response = await this.http.get(`/templates/${templateId}`, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async listTemplates(): Promise<any> {
     let response = await this.http.get('/templates', {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async deleteTemplate(templateId: string): Promise<any> {
-    let response = await this.http.post(`/templates/${templateId}/delete`, {}, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/templates/${templateId}/delete`,
+      {},
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 
   // --- Template Collaborators ---
 
   async addCollaborator(templateId: string, name: string): Promise<any> {
-    let response = await this.http.post(`/templates/${templateId}/collaborators`, { name }, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/templates/${templateId}/collaborators`,
+      { name },
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 
   async listCollaborators(templateId: string): Promise<any> {
     let response = await this.http.get(`/templates/${templateId}/collaborators`, {
-      params: { token: this.token },
+      params: { token: this.token }
     });
     return convertKeysToCamelCase(response.data);
   }
 
   async removeCollaborator(templateId: string, collaboratorId: string): Promise<any> {
-    let response = await this.http.post(`/templates/${templateId}/collaborators/${collaboratorId}/remove`, {}, {
-      params: { token: this.token },
-    });
+    let response = await this.http.post(
+      `/templates/${templateId}/collaborators/${collaboratorId}/remove`,
+      {},
+      {
+        params: { token: this.token }
+      }
+    );
     return convertKeysToCamelCase(response.data);
   }
 }

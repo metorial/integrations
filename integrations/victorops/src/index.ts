@@ -15,13 +15,9 @@ import {
   searchIncidentHistory,
   sendChatMessage,
   getTeamRotations,
-  getShiftLog,
+  getShiftLog
 } from './tools';
-import {
-  incidentEvents,
-  incidentWebhook,
-  onCallChange,
-} from './triggers';
+import { incidentEvents, incidentWebhook, onCallChange } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -40,11 +36,7 @@ export let provider = Slate.create({
     searchIncidentHistory,
     sendChatMessage,
     getTeamRotations,
-    getShiftLog,
+    getShiftLog
   ],
-  triggers: [
-    incidentEvents,
-    incidentWebhook,
-    onCallChange,
-  ],
+  triggers: [incidentEvents, incidentWebhook, onCallChange]
 });

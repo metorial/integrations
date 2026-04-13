@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.timelyapp.com/1.1',
+  baseURL: 'https://api.timelyapp.com/1.1'
 });
 
 export class TimelyClient {
@@ -89,7 +89,7 @@ export class TimelyClient {
     userId?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      day: event.day,
+      day: event.day
     };
     if (event.hours !== undefined) body.hours = event.hours;
     if (event.minutes !== undefined) body.minutes = event.minutes;
@@ -103,30 +103,31 @@ export class TimelyClient {
     if (event.estimatedMinutes !== undefined) body.estimated_minutes = event.estimatedMinutes;
     if (event.externalId) body.external_id = event.externalId;
 
-    let path = event.userId
-      ? this.url(`/users/${event.userId}/events`)
-      : this.url('/events');
+    let path = event.userId ? this.url(`/users/${event.userId}/events`) : this.url('/events');
 
     let res = await http.post(path, { event: body }, { headers: this.headers });
     return res.data;
   }
 
-  async updateEvent(eventId: string, event: {
-    hours?: number;
-    minutes?: number;
-    day?: string;
-    projectId?: string;
-    note?: string;
-    from?: string;
-    to?: string;
-    labelIds?: number[];
-    hourRate?: number;
-    estimatedHours?: number;
-    estimatedMinutes?: number;
-    externalId?: string;
-    billed?: boolean;
-    billable?: boolean;
-  }): Promise<any> {
+  async updateEvent(
+    eventId: string,
+    event: {
+      hours?: number;
+      minutes?: number;
+      day?: string;
+      projectId?: string;
+      note?: string;
+      from?: string;
+      to?: string;
+      labelIds?: number[];
+      hourRate?: number;
+      estimatedHours?: number;
+      estimatedMinutes?: number;
+      externalId?: string;
+      billed?: boolean;
+      billable?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (event.hours !== undefined) body.hours = event.hours;
     if (event.minutes !== undefined) body.minutes = event.minutes;
@@ -143,7 +144,11 @@ export class TimelyClient {
     if (event.billed !== undefined) body.billed = event.billed;
     if (event.billable !== undefined) body.billable = event.billable;
 
-    let res = await http.put(this.url(`/events/${eventId}`), { event: body }, { headers: this.headers });
+    let res = await http.put(
+      this.url(`/events/${eventId}`),
+      { event: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -152,12 +157,20 @@ export class TimelyClient {
   }
 
   async startTimer(eventId: string): Promise<any> {
-    let res = await http.post(this.url(`/events/${eventId}/start_timer`), {}, { headers: this.headers });
+    let res = await http.post(
+      this.url(`/events/${eventId}/start_timer`),
+      {},
+      { headers: this.headers }
+    );
     return res.data;
   }
 
   async stopTimer(eventId: string): Promise<any> {
-    let res = await http.post(this.url(`/events/${eventId}/stop_timer`), {}, { headers: this.headers });
+    let res = await http.post(
+      this.url(`/events/${eventId}/stop_timer`),
+      {},
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -175,7 +188,10 @@ export class TimelyClient {
     if (params?.order) queryParams.order = params.order;
     if (params?.filter) queryParams.filter = params.filter;
 
-    let res = await http.get(this.url('/projects'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/projects'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -218,35 +234,42 @@ export class TimelyClient {
     if (project.teamIds) body.team_ids = project.teamIds;
     if (project.labelIds) body.label_ids = project.labelIds;
     if (project.users) {
-      body.users = project.users.map((u) => ({
+      body.users = project.users.map(u => ({
         user_id: u.userId,
-        ...(u.hourRate !== undefined ? { hour_rate: u.hourRate } : {}),
+        ...(u.hourRate !== undefined ? { hour_rate: u.hourRate } : {})
       }));
     }
 
-    let res = await http.post(this.url('/projects'), { project: body }, { headers: this.headers });
+    let res = await http.post(
+      this.url('/projects'),
+      { project: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
-  async updateProject(projectId: string, project: {
-    name?: string;
-    description?: string;
-    clientId?: string;
-    color?: string;
-    billable?: boolean;
-    budget?: number;
-    budgetType?: string;
-    hourRate?: number;
-    rateType?: string;
-    requiredNotes?: boolean;
-    requiredLabels?: boolean;
-    enableLabels?: string;
-    externalId?: string;
-    teamIds?: number[];
-    labelIds?: number[];
-    users?: Array<{ userId: number; hourRate?: number }>;
-    active?: boolean;
-  }): Promise<any> {
+  async updateProject(
+    projectId: string,
+    project: {
+      name?: string;
+      description?: string;
+      clientId?: string;
+      color?: string;
+      billable?: boolean;
+      budget?: number;
+      budgetType?: string;
+      hourRate?: number;
+      rateType?: string;
+      requiredNotes?: boolean;
+      requiredLabels?: boolean;
+      enableLabels?: string;
+      externalId?: string;
+      teamIds?: number[];
+      labelIds?: number[];
+      users?: Array<{ userId: number; hourRate?: number }>;
+      active?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (project.name !== undefined) body.name = project.name;
     if (project.description !== undefined) body.description = project.description;
@@ -265,13 +288,17 @@ export class TimelyClient {
     if (project.labelIds) body.label_ids = project.labelIds;
     if (project.active !== undefined) body.active = project.active;
     if (project.users) {
-      body.users = project.users.map((u) => ({
+      body.users = project.users.map(u => ({
         user_id: u.userId,
-        ...(u.hourRate !== undefined ? { hour_rate: u.hourRate } : {}),
+        ...(u.hourRate !== undefined ? { hour_rate: u.hourRate } : {})
       }));
     }
 
-    let res = await http.put(this.url(`/projects/${projectId}`), { project: body }, { headers: this.headers });
+    let res = await http.put(
+      this.url(`/projects/${projectId}`),
+      { project: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -293,7 +320,10 @@ export class TimelyClient {
     if (params?.order) queryParams.order = params.order;
     if (params?.show) queryParams.show = params.show;
 
-    let res = await http.get(this.url('/clients'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/clients'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -313,37 +343,48 @@ export class TimelyClient {
     if (client.externalId) body.external_id = client.externalId;
     if (client.active !== undefined) body.active = client.active;
 
-    let res = await http.post(this.url('/clients'), { client: body }, { headers: this.headers });
+    let res = await http.post(
+      this.url('/clients'),
+      { client: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
-  async updateClient(clientId: string, client: {
-    name?: string;
-    color?: string;
-    externalId?: string;
-    active?: boolean;
-  }): Promise<any> {
+  async updateClient(
+    clientId: string,
+    client: {
+      name?: string;
+      color?: string;
+      externalId?: string;
+      active?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (client.name !== undefined) body.name = client.name;
     if (client.color) body.color = client.color;
     if (client.externalId) body.external_id = client.externalId;
     if (client.active !== undefined) body.active = client.active;
 
-    let res = await http.put(this.url(`/clients/${clientId}`), { client: body }, { headers: this.headers });
+    let res = await http.put(
+      this.url(`/clients/${clientId}`),
+      { client: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
   // ─── Labels ───
 
-  async listLabels(params?: {
-    limit?: number;
-    offset?: number;
-  }): Promise<any[]> {
+  async listLabels(params?: { limit?: number; offset?: number }): Promise<any[]> {
     let queryParams: Record<string, string> = {};
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let res = await http.get(this.url('/labels'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/labels'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -352,11 +393,7 @@ export class TimelyClient {
     return res.data;
   }
 
-  async createLabel(label: {
-    name: string;
-    parentId?: number;
-    emoji?: string;
-  }): Promise<any> {
+  async createLabel(label: { name: string; parentId?: number; emoji?: string }): Promise<any> {
     let body: Record<string, any> = { name: label.name };
     if (label.parentId !== undefined) body.parent_id = label.parentId;
     if (label.emoji) body.emoji = label.emoji;
@@ -365,19 +402,26 @@ export class TimelyClient {
     return res.data;
   }
 
-  async updateLabel(labelId: string, label: {
-    name?: string;
-    parentId?: number;
-    emoji?: string;
-    active?: boolean;
-  }): Promise<any> {
+  async updateLabel(
+    labelId: string,
+    label: {
+      name?: string;
+      parentId?: number;
+      emoji?: string;
+      active?: boolean;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (label.name !== undefined) body.name = label.name;
     if (label.parentId !== undefined) body.parent_id = label.parentId;
     if (label.emoji !== undefined) body.emoji = label.emoji;
     if (label.active !== undefined) body.active = label.active;
 
-    let res = await http.put(this.url(`/labels/${labelId}`), { label: body }, { headers: this.headers });
+    let res = await http.put(
+      this.url(`/labels/${labelId}`),
+      { label: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -397,7 +441,10 @@ export class TimelyClient {
     if (params?.offset) queryParams.offset = String(params.offset);
     if (params?.order) queryParams.order = params.order;
 
-    let res = await http.get(this.url('/teams'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/teams'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -406,11 +453,7 @@ export class TimelyClient {
     return res.data;
   }
 
-  async createTeam(team: {
-    name: string;
-    color?: string;
-    userIds?: number[];
-  }): Promise<any> {
+  async createTeam(team: { name: string; color?: string; userIds?: number[] }): Promise<any> {
     let body: Record<string, any> = { name: team.name };
     if (team.color) body.color = team.color;
     if (team.userIds) body.user_ids = team.userIds;
@@ -419,17 +462,24 @@ export class TimelyClient {
     return res.data;
   }
 
-  async updateTeam(teamId: string, team: {
-    name?: string;
-    color?: string;
-    userIds?: number[];
-  }): Promise<any> {
+  async updateTeam(
+    teamId: string,
+    team: {
+      name?: string;
+      color?: string;
+      userIds?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (team.name !== undefined) body.name = team.name;
     if (team.color) body.color = team.color;
     if (team.userIds) body.user_ids = team.userIds;
 
-    let res = await http.put(this.url(`/teams/${teamId}`), { team: body }, { headers: this.headers });
+    let res = await http.put(
+      this.url(`/teams/${teamId}`),
+      { team: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -451,7 +501,10 @@ export class TimelyClient {
     if (params?.order) queryParams.order = params.order;
     if (params?.show) queryParams.show = params.show;
 
-    let res = await http.get(this.url('/users'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/users'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -483,7 +536,10 @@ export class TimelyClient {
     if (params?.limit) queryParams.limit = String(params.limit);
     if (params?.offset) queryParams.offset = String(params.offset);
 
-    let res = await http.get(this.url('/forecasts'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/forecasts'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
@@ -501,50 +557,63 @@ export class TimelyClient {
     labelIds?: number[];
   }): Promise<any> {
     let body: Record<string, any> = {
-      project_id: Number(forecast.projectId),
+      project_id: Number(forecast.projectId)
     };
     if (forecast.userId) body.user_id = Number(forecast.userId);
     if (forecast.hours !== undefined) body.hours = forecast.hours;
     if (forecast.minutes !== undefined) body.minutes = forecast.minutes;
     if (forecast.estimatedHours !== undefined) body.estimated_hours = forecast.estimatedHours;
-    if (forecast.estimatedMinutes !== undefined) body.estimated_minutes = forecast.estimatedMinutes;
+    if (forecast.estimatedMinutes !== undefined)
+      body.estimated_minutes = forecast.estimatedMinutes;
     if (forecast.day) body.day = forecast.day;
     if (forecast.from) body.from = forecast.from;
     if (forecast.to) body.to = forecast.to;
     if (forecast.note !== undefined) body.note = forecast.note;
     if (forecast.labelIds) body.label_ids = forecast.labelIds;
 
-    let res = await http.post(this.url('/forecasts'), { forecast: body }, { headers: this.headers });
+    let res = await http.post(
+      this.url('/forecasts'),
+      { forecast: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
-  async updateForecast(forecastId: string, forecast: {
-    projectId?: string;
-    userId?: string;
-    hours?: number;
-    minutes?: number;
-    estimatedHours?: number;
-    estimatedMinutes?: number;
-    day?: string;
-    from?: string;
-    to?: string;
-    note?: string;
-    labelIds?: number[];
-  }): Promise<any> {
+  async updateForecast(
+    forecastId: string,
+    forecast: {
+      projectId?: string;
+      userId?: string;
+      hours?: number;
+      minutes?: number;
+      estimatedHours?: number;
+      estimatedMinutes?: number;
+      day?: string;
+      from?: string;
+      to?: string;
+      note?: string;
+      labelIds?: number[];
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (forecast.projectId) body.project_id = Number(forecast.projectId);
     if (forecast.userId) body.user_id = Number(forecast.userId);
     if (forecast.hours !== undefined) body.hours = forecast.hours;
     if (forecast.minutes !== undefined) body.minutes = forecast.minutes;
     if (forecast.estimatedHours !== undefined) body.estimated_hours = forecast.estimatedHours;
-    if (forecast.estimatedMinutes !== undefined) body.estimated_minutes = forecast.estimatedMinutes;
+    if (forecast.estimatedMinutes !== undefined)
+      body.estimated_minutes = forecast.estimatedMinutes;
     if (forecast.day) body.day = forecast.day;
     if (forecast.from) body.from = forecast.from;
     if (forecast.to) body.to = forecast.to;
     if (forecast.note !== undefined) body.note = forecast.note;
     if (forecast.labelIds) body.label_ids = forecast.labelIds;
 
-    let res = await http.put(this.url(`/forecasts/${forecastId}`), { forecast: body }, { headers: this.headers });
+    let res = await http.put(
+      this.url(`/forecasts/${forecastId}`),
+      { forecast: body },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -565,7 +634,7 @@ export class TimelyClient {
   }): Promise<any> {
     let queryParams: Record<string, string> = {
       since: params.since,
-      upto: params.upto,
+      upto: params.upto
     };
     if (params.userIds?.length) queryParams.user_ids = params.userIds.join(',');
     if (params.projectIds?.length) queryParams.project_ids = params.projectIds.join(',');
@@ -573,27 +642,38 @@ export class TimelyClient {
     if (params.teamIds?.length) queryParams.team_ids = params.teamIds.join(',');
     if (params.groupBy?.length) queryParams.group_by = params.groupBy.join(',');
 
-    let res = await http.get(this.url('/reports/filter'), { headers: this.headers, params: queryParams });
+    let res = await http.get(this.url('/reports/filter'), {
+      headers: this.headers,
+      params: queryParams
+    });
     return res.data;
   }
 
   // ─── Day Properties (Locking) ───
 
   async lockDays(userIds: number[], dates: string[]): Promise<any> {
-    let res = await http.post(this.url('/day_properties'), {
-      user_ids: userIds,
-      dates,
-      locked: true,
-    }, { headers: this.headers });
+    let res = await http.post(
+      this.url('/day_properties'),
+      {
+        user_ids: userIds,
+        dates,
+        locked: true
+      },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
   async unlockDays(userIds: number[], dates: string[]): Promise<any> {
-    let res = await http.put(this.url('/day_properties'), {
-      user_ids: userIds,
-      dates,
-      locked: false,
-    }, { headers: this.headers });
+    let res = await http.put(
+      this.url('/day_properties'),
+      {
+        user_ids: userIds,
+        dates,
+        locked: false
+      },
+      { headers: this.headers }
+    );
     return res.data;
   }
 
@@ -604,16 +684,17 @@ export class TimelyClient {
     return res.data;
   }
 
-  async createWebhook(webhook: {
-    url: string;
-    eventTypes: string[];
-  }): Promise<any> {
-    let res = await http.post(this.url('/webhooks'), {
-      webhook: {
-        url: webhook.url,
-        event_types: webhook.eventTypes,
+  async createWebhook(webhook: { url: string; eventTypes: string[] }): Promise<any> {
+    let res = await http.post(
+      this.url('/webhooks'),
+      {
+        webhook: {
+          url: webhook.url,
+          event_types: webhook.eventTypes
+        }
       },
-    }, { headers: this.headers });
+      { headers: this.headers }
+    );
     return res.data;
   }
 

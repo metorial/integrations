@@ -36,7 +36,5 @@ export let provider = Slate.create({
     sendCampaign,
     getCampaignReport
   ],
-  triggers: [
-    subscriberEvents
-  ]
+  triggers: [subscriberEvents]
 });

@@ -13,17 +13,20 @@ export let listBuckets = async (auth: AuthType) => {
   return response.data;
 };
 
-export let createBucket = async (auth: AuthType, params: {
-  folderId: string;
-  name: string;
-  defaultStorageClass?: string;
-  maxSize?: number;
-  anonymousAccessFlags?: {
-    read?: boolean;
-    list?: boolean;
-    configRead?: boolean;
-  };
-}) => {
+export let createBucket = async (
+  auth: AuthType,
+  params: {
+    folderId: string;
+    name: string;
+    defaultStorageClass?: string;
+    maxSize?: number;
+    anonymousAccessFlags?: {
+      read?: boolean;
+      list?: boolean;
+      configRead?: boolean;
+    };
+  }
+) => {
   let client = createServiceClient(STORAGE_API_URL, auth);
   let response = await client.post('/storage/v1/buckets', params);
   return response.data;
@@ -41,23 +44,33 @@ export let deleteBucket = async (auth: AuthType, bucketName: string) => {
   return response.data;
 };
 
-export let updateBucket = async (auth: AuthType, bucketName: string, params: {
-  anonymousAccessFlags?: {
-    read?: boolean;
-    list?: boolean;
-    configRead?: boolean;
-  };
-  defaultStorageClass?: string;
-  maxSize?: number;
-  versioning?: 'VERSIONING_DISABLED' | 'VERSIONING_ENABLED' | 'VERSIONING_SUSPENDED';
-  updateMask: string;
-}) => {
+export let updateBucket = async (
+  auth: AuthType,
+  bucketName: string,
+  params: {
+    anonymousAccessFlags?: {
+      read?: boolean;
+      list?: boolean;
+      configRead?: boolean;
+    };
+    defaultStorageClass?: string;
+    maxSize?: number;
+    versioning?: 'VERSIONING_DISABLED' | 'VERSIONING_ENABLED' | 'VERSIONING_SUSPENDED';
+    updateMask: string;
+  }
+) => {
   let client = createServiceClient(STORAGE_API_URL, auth);
   let response = await client.patch(`/storage/v1/buckets/${bucketName}`, params);
   return response.data;
 };
 
-export let listObjects = async (auth: AuthType, bucketName: string, prefix?: string, maxKeys?: number, continuationToken?: string) => {
+export let listObjects = async (
+  auth: AuthType,
+  bucketName: string,
+  prefix?: string,
+  maxKeys?: number,
+  continuationToken?: string
+) => {
   let client = createServiceClient(S3_BASE_URL, auth);
   let params: Record<string, string | number> = { 'list-type': 2 };
   if (prefix) params.prefix = prefix;

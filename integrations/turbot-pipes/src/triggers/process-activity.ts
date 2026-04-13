@@ -3,41 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let processActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Process Activity',
-    key: 'process_activity',
-    description: 'Monitors workspace processes for new activity. Tracks pipeline executions, scheduled snapshots, and other asynchronous tasks.',
-  }
-)
-  .input(z.object({
-    processId: z.string().describe('Process identifier'),
-    type: z.string().describe('Process type'),
-    state: z.string().describe('Process state'),
-    workspaceId: z.string().optional().describe('Workspace identifier'),
-    pipelineId: z.string().optional().describe('Associated pipeline ID'),
-    createdAt: z.string().describe('Process creation timestamp'),
-    updatedAt: z.string().describe('Process last update timestamp'),
-  }))
-  .output(z.object({
-    processId: z.string().describe('Process identifier'),
-    type: z.string().describe('Process type (e.g. pipeline_run, snapshot)'),
-    state: z.string().describe('Current process state'),
-    workspaceId: z.string().optional().describe('Workspace identifier'),
-    pipelineId: z.string().optional().describe('Associated pipeline ID'),
-    createdAt: z.string().describe('Process creation timestamp'),
-    updatedAt: z.string().describe('Process last update timestamp'),
-  }))
+export let processActivity = SlateTrigger.create(spec, {
+  name: 'Process Activity',
+  key: 'process_activity',
+  description:
+    'Monitors workspace processes for new activity. Tracks pipeline executions, scheduled snapshots, and other asynchronous tasks.'
+})
+  .input(
+    z.object({
+      processId: z.string().describe('Process identifier'),
+      type: z.string().describe('Process type'),
+      state: z.string().describe('Process state'),
+      workspaceId: z.string().optional().describe('Workspace identifier'),
+      pipelineId: z.string().optional().describe('Associated pipeline ID'),
+      createdAt: z.string().describe('Process creation timestamp'),
+      updatedAt: z.string().describe('Process last update timestamp')
+    })
+  )
+  .output(
+    z.object({
+      processId: z.string().describe('Process identifier'),
+      type: z.string().describe('Process type (e.g. pipeline_run, snapshot)'),
+      state: z.string().describe('Current process state'),
+      workspaceId: z.string().optional().describe('Workspace identifier'),
+      pipelineId: z.string().optional().describe('Associated pipeline ID'),
+      createdAt: z.string().describe('Process creation timestamp'),
+      updatedAt: z.string().describe('Process last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseUrl: ctx.config.baseUrl,
+        baseUrl: ctx.config.baseUrl
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -59,17 +61,17 @@ export let processActivity = SlateTrigger.create(
             updatedState: {
               lastPollTime: new Date().toISOString(),
               ownerHandle,
-              workspaceHandle,
-            },
+              workspaceHandle
+            }
           };
         }
       }
 
       let result = await client.listUserProcesses(ownerHandle, workspaceHandle, {
-        limit: 50,
+        limit: 50
       });
 
-      let newProcesses = result.items.filter((process) => {
+      let newProcesses = result.items.filter(process => {
         if (!lastPollTime) return true;
         return process.createdAt > lastPollTime || process.updatedAt > lastPollTime;
       });
@@ -77,24 +79,24 @@ export let processActivity = SlateTrigger.create(
       let now = new Date().toISOString();
 
       return {
-        inputs: newProcesses.map((process) => ({
+        inputs: newProcesses.map(process => ({
           processId: process.processId,
           type: process.type || 'unknown',
           state: process.state || 'unknown',
           workspaceId: process.workspaceId,
           pipelineId: process.pipelineId,
           createdAt: process.createdAt,
-          updatedAt: process.updatedAt,
+          updatedAt: process.updatedAt
         })),
         updatedState: {
           lastPollTime: now,
           ownerHandle,
-          workspaceHandle,
-        },
+          workspaceHandle
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `process.${ctx.input.state}`,
         id: `${ctx.input.processId}-${ctx.input.updatedAt}`,
@@ -105,9 +107,9 @@ export let processActivity = SlateTrigger.create(
           workspaceId: ctx.input.workspaceId,
           pipelineId: ctx.input.pipelineId,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

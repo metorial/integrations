@@ -8,8 +8,8 @@ export class PaystackClient {
       baseURL: 'https://api.paystack.co',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -43,13 +43,15 @@ export class PaystackClient {
       split_code: params.splitCode,
       subaccount: params.subaccount,
       transaction_charge: params.transactionCharge,
-      bearer: params.bearer,
+      bearer: params.bearer
     });
     return data;
   }
 
   async verifyTransaction(reference: string) {
-    let { data } = await this.axios.get(`/transaction/verify/${encodeURIComponent(reference)}`);
+    let { data } = await this.axios.get(
+      `/transaction/verify/${encodeURIComponent(reference)}`
+    );
     return data;
   }
 
@@ -85,7 +87,7 @@ export class PaystackClient {
       authorization_code: params.authorizationCode,
       currency: params.currency,
       reference: params.reference,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return data;
   }
@@ -111,16 +113,13 @@ export class PaystackClient {
         amount: params?.amount,
         settled: params?.settled,
         settlement: params?.settlement,
-        payment_page: params?.paymentPage,
-      },
+        payment_page: params?.paymentPage
+      }
     });
     return data;
   }
 
-  async getTransactionTotals(params?: {
-    from?: string;
-    to?: string;
-  }) {
+  async getTransactionTotals(params?: { from?: string; to?: string }) {
     let { data } = await this.axios.get('/transaction/totals', { params });
     return data;
   }
@@ -139,7 +138,7 @@ export class PaystackClient {
       first_name: params.firstName,
       last_name: params.lastName,
       phone: params.phone,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return data;
   }
@@ -159,46 +158,55 @@ export class PaystackClient {
     return data;
   }
 
-  async updateCustomer(customerCode: string, params: {
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    metadata?: Record<string, any>;
-  }) {
+  async updateCustomer(
+    customerCode: string,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      metadata?: Record<string, any>;
+    }
+  ) {
     let { data } = await this.axios.put(`/customer/${encodeURIComponent(customerCode)}`, {
       first_name: params.firstName,
       last_name: params.lastName,
       phone: params.phone,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return data;
   }
 
-  async validateCustomer(customerCode: string, params: {
-    country: string;
-    type: string;
-    accountNumber: string;
-    bvn: string;
-    bankCode: string;
-    firstName: string;
-    lastName: string;
-  }) {
-    let { data } = await this.axios.post(`/customer/${encodeURIComponent(customerCode)}/identification`, {
-      country: params.country,
-      type: params.type,
-      account_number: params.accountNumber,
-      bvn: params.bvn,
-      bank_code: params.bankCode,
-      first_name: params.firstName,
-      last_name: params.lastName,
-    });
+  async validateCustomer(
+    customerCode: string,
+    params: {
+      country: string;
+      type: string;
+      accountNumber: string;
+      bvn: string;
+      bankCode: string;
+      firstName: string;
+      lastName: string;
+    }
+  ) {
+    let { data } = await this.axios.post(
+      `/customer/${encodeURIComponent(customerCode)}/identification`,
+      {
+        country: params.country,
+        type: params.type,
+        account_number: params.accountNumber,
+        bvn: params.bvn,
+        bank_code: params.bankCode,
+        first_name: params.firstName,
+        last_name: params.lastName
+      }
+    );
     return data;
   }
 
   async setCustomerRiskAction(customerCode: string, riskAction: 'default' | 'allow' | 'deny') {
     let { data } = await this.axios.post('/customer/set_risk_action', {
       customer: customerCode,
-      risk_action: riskAction,
+      risk_action: riskAction
     });
     return data;
   }
@@ -223,7 +231,7 @@ export class PaystackClient {
       currency: params.currency,
       invoice_limit: params.invoiceLimit,
       send_invoices: params.sendInvoices,
-      send_sms: params.sendSms,
+      send_sms: params.sendSms
     });
     return data;
   }
@@ -244,16 +252,19 @@ export class PaystackClient {
     return data;
   }
 
-  async updatePlan(planIdOrCode: string, params: {
-    name?: string;
-    amount?: number;
-    interval?: string;
-    description?: string;
-    currency?: string;
-    invoiceLimit?: number;
-    sendInvoices?: boolean;
-    sendSms?: boolean;
-  }) {
+  async updatePlan(
+    planIdOrCode: string,
+    params: {
+      name?: string;
+      amount?: number;
+      interval?: string;
+      description?: string;
+      currency?: string;
+      invoiceLimit?: number;
+      sendInvoices?: boolean;
+      sendSms?: boolean;
+    }
+  ) {
     let { data } = await this.axios.put(`/plan/${encodeURIComponent(planIdOrCode)}`, {
       name: params.name,
       amount: params.amount,
@@ -262,7 +273,7 @@ export class PaystackClient {
       currency: params.currency,
       invoice_limit: params.invoiceLimit,
       send_invoices: params.sendInvoices,
-      send_sms: params.sendSms,
+      send_sms: params.sendSms
     });
     return data;
   }
@@ -279,7 +290,7 @@ export class PaystackClient {
       customer: params.customer,
       plan: params.plan,
       authorization: params.authorization,
-      start_date: params.startDate,
+      start_date: params.startDate
     });
     return data;
   }
@@ -295,28 +306,24 @@ export class PaystackClient {
   }
 
   async getSubscription(subscriptionIdOrCode: string) {
-    let { data } = await this.axios.get(`/subscription/${encodeURIComponent(subscriptionIdOrCode)}`);
+    let { data } = await this.axios.get(
+      `/subscription/${encodeURIComponent(subscriptionIdOrCode)}`
+    );
     return data;
   }
 
-  async enableSubscription(params: {
-    code: string;
-    token: string;
-  }) {
+  async enableSubscription(params: { code: string; token: string }) {
     let { data } = await this.axios.post('/subscription/enable', {
       code: params.code,
-      token: params.token,
+      token: params.token
     });
     return data;
   }
 
-  async disableSubscription(params: {
-    code: string;
-    token: string;
-  }) {
+  async disableSubscription(params: { code: string; token: string }) {
     let { data } = await this.axios.post('/subscription/disable', {
       code: params.code,
-      token: params.token,
+      token: params.token
     });
     return data;
   }
@@ -339,7 +346,7 @@ export class PaystackClient {
       bank_code: params.bankCode,
       currency: params.currency,
       description: params.description,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return data;
   }
@@ -355,12 +362,16 @@ export class PaystackClient {
   }
 
   async getTransferRecipient(recipientIdOrCode: string) {
-    let { data } = await this.axios.get(`/transferrecipient/${encodeURIComponent(recipientIdOrCode)}`);
+    let { data } = await this.axios.get(
+      `/transferrecipient/${encodeURIComponent(recipientIdOrCode)}`
+    );
     return data;
   }
 
   async deleteTransferRecipient(recipientIdOrCode: string) {
-    let { data } = await this.axios.delete(`/transferrecipient/${encodeURIComponent(recipientIdOrCode)}`);
+    let { data } = await this.axios.delete(
+      `/transferrecipient/${encodeURIComponent(recipientIdOrCode)}`
+    );
     return data;
   }
 
@@ -380,7 +391,7 @@ export class PaystackClient {
       recipient: params.recipient,
       reason: params.reason,
       currency: params.currency,
-      reference: params.reference,
+      reference: params.reference
     });
     return data;
   }
@@ -396,7 +407,7 @@ export class PaystackClient {
   }) {
     let { data } = await this.axios.post('/transfer/bulk', {
       source: params.source,
-      transfers: params.transfers,
+      transfers: params.transfers
     });
     return data;
   }
@@ -436,7 +447,7 @@ export class PaystackClient {
       amount: params.amount,
       currency: params.currency,
       customer_note: params.customerNote,
-      merchant_note: params.merchantNote,
+      merchant_note: params.merchantNote
     });
     return data;
   }
@@ -471,13 +482,19 @@ export class PaystackClient {
     return data;
   }
 
-  async getSettlementTransactions(settlementId: string, params?: {
-    perPage?: number;
-    page?: number;
-    from?: string;
-    to?: string;
-  }) {
-    let { data } = await this.axios.get(`/settlement/${encodeURIComponent(settlementId)}/transactions`, { params });
+  async getSettlementTransactions(
+    settlementId: string,
+    params?: {
+      perPage?: number;
+      page?: number;
+      from?: string;
+      to?: string;
+    }
+  ) {
+    let { data } = await this.axios.get(
+      `/settlement/${encodeURIComponent(settlementId)}/transactions`,
+      { params }
+    );
     return data;
   }
 
@@ -499,7 +516,7 @@ export class PaystackClient {
       slug: params.slug,
       metadata: params.metadata,
       redirect_url: params.redirectUrl,
-      custom_fields: params.customFields,
+      custom_fields: params.customFields
     });
     return data;
   }
@@ -519,17 +536,20 @@ export class PaystackClient {
     return data;
   }
 
-  async updatePaymentPage(pageIdOrSlug: string, params: {
-    name?: string;
-    description?: string;
-    amount?: number;
-    active?: boolean;
-  }) {
+  async updatePaymentPage(
+    pageIdOrSlug: string,
+    params: {
+      name?: string;
+      description?: string;
+      amount?: number;
+      active?: boolean;
+    }
+  ) {
     let { data } = await this.axios.put(`/page/${encodeURIComponent(pageIdOrSlug)}`, {
       name: params.name,
       description: params.description,
       amount: params.amount,
-      active: params.active,
+      active: params.active
     });
     return data;
   }
@@ -556,7 +576,7 @@ export class PaystackClient {
       primary_contact_email: params.primaryContactEmail,
       primary_contact_name: params.primaryContactName,
       primary_contact_phone: params.primaryContactPhone,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return data;
   }
@@ -572,36 +592,44 @@ export class PaystackClient {
   }
 
   async getSubaccount(subaccountIdOrCode: string) {
-    let { data } = await this.axios.get(`/subaccount/${encodeURIComponent(subaccountIdOrCode)}`);
+    let { data } = await this.axios.get(
+      `/subaccount/${encodeURIComponent(subaccountIdOrCode)}`
+    );
     return data;
   }
 
-  async updateSubaccount(subaccountIdOrCode: string, params: {
-    businessName?: string;
-    settlementBank?: string;
-    accountNumber?: string;
-    percentageCharge?: number;
-    description?: string;
-    primaryContactEmail?: string;
-    primaryContactName?: string;
-    primaryContactPhone?: string;
-    active?: boolean;
-    settlementSchedule?: string;
-    metadata?: Record<string, any>;
-  }) {
-    let { data } = await this.axios.put(`/subaccount/${encodeURIComponent(subaccountIdOrCode)}`, {
-      business_name: params.businessName,
-      settlement_bank: params.settlementBank,
-      account_number: params.accountNumber,
-      percentage_charge: params.percentageCharge,
-      description: params.description,
-      primary_contact_email: params.primaryContactEmail,
-      primary_contact_name: params.primaryContactName,
-      primary_contact_phone: params.primaryContactPhone,
-      active: params.active,
-      settlement_schedule: params.settlementSchedule,
-      metadata: params.metadata,
-    });
+  async updateSubaccount(
+    subaccountIdOrCode: string,
+    params: {
+      businessName?: string;
+      settlementBank?: string;
+      accountNumber?: string;
+      percentageCharge?: number;
+      description?: string;
+      primaryContactEmail?: string;
+      primaryContactName?: string;
+      primaryContactPhone?: string;
+      active?: boolean;
+      settlementSchedule?: string;
+      metadata?: Record<string, any>;
+    }
+  ) {
+    let { data } = await this.axios.put(
+      `/subaccount/${encodeURIComponent(subaccountIdOrCode)}`,
+      {
+        business_name: params.businessName,
+        settlement_bank: params.settlementBank,
+        account_number: params.accountNumber,
+        percentage_charge: params.percentageCharge,
+        description: params.description,
+        primary_contact_email: params.primaryContactEmail,
+        primary_contact_name: params.primaryContactName,
+        primary_contact_phone: params.primaryContactPhone,
+        active: params.active,
+        settlement_schedule: params.settlementSchedule,
+        metadata: params.metadata
+      }
+    );
     return data;
   }
 
@@ -624,7 +652,7 @@ export class PaystackClient {
       currency: params.currency,
       subaccounts: params.subaccounts,
       bearer_type: params.bearerType,
-      bearer_subaccount: params.bearerSubaccount,
+      bearer_subaccount: params.bearerSubaccount
     });
     return data;
   }
@@ -646,17 +674,20 @@ export class PaystackClient {
     return data;
   }
 
-  async updateTransactionSplit(splitId: string, params: {
-    name?: string;
-    active?: boolean;
-    bearerType?: string;
-    bearerSubaccount?: string;
-  }) {
+  async updateTransactionSplit(
+    splitId: string,
+    params: {
+      name?: string;
+      active?: boolean;
+      bearerType?: string;
+      bearerSubaccount?: string;
+    }
+  ) {
     let { data } = await this.axios.put(`/split/${encodeURIComponent(splitId)}`, {
       name: params.name,
       active: params.active,
       bearer_type: params.bearerType,
-      bearer_subaccount: params.bearerSubaccount,
+      bearer_subaccount: params.bearerSubaccount
     });
     return data;
   }
@@ -679,7 +710,7 @@ export class PaystackClient {
       split_code: params.splitCode,
       first_name: params.firstName,
       last_name: params.lastName,
-      phone: params.phone,
+      phone: params.phone
     });
     return data;
   }
@@ -691,23 +722,29 @@ export class PaystackClient {
     bankId?: string;
     customer?: string;
   }) {
-    let { data } = await this.axios.get('/dedicated_account', { params: {
-      active: params?.active,
-      currency: params?.currency,
-      provider_slug: params?.providerSlug,
-      bank_id: params?.bankId,
-      customer: params?.customer,
-    }});
+    let { data } = await this.axios.get('/dedicated_account', {
+      params: {
+        active: params?.active,
+        currency: params?.currency,
+        provider_slug: params?.providerSlug,
+        bank_id: params?.bankId,
+        customer: params?.customer
+      }
+    });
     return data;
   }
 
   async getDedicatedVirtualAccount(dedicatedAccountId: string) {
-    let { data } = await this.axios.get(`/dedicated_account/${encodeURIComponent(dedicatedAccountId)}`);
+    let { data } = await this.axios.get(
+      `/dedicated_account/${encodeURIComponent(dedicatedAccountId)}`
+    );
     return data;
   }
 
   async deactivateDedicatedVirtualAccount(dedicatedAccountId: string) {
-    let { data } = await this.axios.delete(`/dedicated_account/${encodeURIComponent(dedicatedAccountId)}`);
+    let { data } = await this.axios.delete(
+      `/dedicated_account/${encodeURIComponent(dedicatedAccountId)}`
+    );
     return data;
   }
 
@@ -730,19 +767,22 @@ export class PaystackClient {
     return data;
   }
 
-  async resolveDispute(disputeId: string, params: {
-    resolution: string;
-    message: string;
-    refundAmount?: number;
-    uploadedFilename?: string;
-    evidence?: number;
-  }) {
+  async resolveDispute(
+    disputeId: string,
+    params: {
+      resolution: string;
+      message: string;
+      refundAmount?: number;
+      uploadedFilename?: string;
+      evidence?: number;
+    }
+  ) {
     let { data } = await this.axios.put(`/dispute/${encodeURIComponent(disputeId)}/resolve`, {
       resolution: params.resolution,
       message: params.message,
       refund_amount: params.refundAmount,
       uploaded_filename: params.uploadedFilename,
-      evidence: params.evidence,
+      evidence: params.evidence
     });
     return data;
   }
@@ -775,7 +815,7 @@ export class PaystackClient {
       draft: params.draft,
       has_invoice: params.hasInvoice,
       invoice_number: params.invoiceNumber,
-      split_code: params.splitCode,
+      split_code: params.splitCode
     });
     return data;
   }
@@ -794,53 +834,61 @@ export class PaystackClient {
   }
 
   async getPaymentRequest(paymentRequestIdOrCode: string) {
-    let { data } = await this.axios.get(`/paymentrequest/${encodeURIComponent(paymentRequestIdOrCode)}`);
+    let { data } = await this.axios.get(
+      `/paymentrequest/${encodeURIComponent(paymentRequestIdOrCode)}`
+    );
     return data;
   }
 
-  async updatePaymentRequest(paymentRequestIdOrCode: string, params: {
-    customer?: string;
-    amount?: number;
-    dueDate?: string;
-    description?: string;
-    currency?: string;
-    lineItems?: Array<{ name: string; amount: number; quantity: number }>;
-    tax?: Array<{ name: string; amount: number }>;
-    sendNotification?: boolean;
-    draft?: boolean;
-  }) {
-    let { data } = await this.axios.put(`/paymentrequest/${encodeURIComponent(paymentRequestIdOrCode)}`, {
-      customer: params.customer,
-      amount: params.amount,
-      due_date: params.dueDate,
-      description: params.description,
-      currency: params.currency,
-      line_items: params.lineItems,
-      tax: params.tax,
-      send_notification: params.sendNotification,
-      draft: params.draft,
-    });
+  async updatePaymentRequest(
+    paymentRequestIdOrCode: string,
+    params: {
+      customer?: string;
+      amount?: number;
+      dueDate?: string;
+      description?: string;
+      currency?: string;
+      lineItems?: Array<{ name: string; amount: number; quantity: number }>;
+      tax?: Array<{ name: string; amount: number }>;
+      sendNotification?: boolean;
+      draft?: boolean;
+    }
+  ) {
+    let { data } = await this.axios.put(
+      `/paymentrequest/${encodeURIComponent(paymentRequestIdOrCode)}`,
+      {
+        customer: params.customer,
+        amount: params.amount,
+        due_date: params.dueDate,
+        description: params.description,
+        currency: params.currency,
+        line_items: params.lineItems,
+        tax: params.tax,
+        send_notification: params.sendNotification,
+        draft: params.draft
+      }
+    );
     return data;
   }
 
   async finalizePaymentRequest(paymentRequestIdOrCode: string, sendNotification?: boolean) {
-    let { data } = await this.axios.post(`/paymentrequest/finalize/${encodeURIComponent(paymentRequestIdOrCode)}`, {
-      send_notification: sendNotification,
-    });
+    let { data } = await this.axios.post(
+      `/paymentrequest/finalize/${encodeURIComponent(paymentRequestIdOrCode)}`,
+      {
+        send_notification: sendNotification
+      }
+    );
     return data;
   }
 
   // ── Verification ──────────────────────────────────────────────
 
-  async resolveAccountNumber(params: {
-    accountNumber: string;
-    bankCode: string;
-  }) {
+  async resolveAccountNumber(params: { accountNumber: string; bankCode: string }) {
     let { data } = await this.axios.get('/bank/resolve', {
       params: {
         account_number: params.accountNumber,
-        bank_code: params.bankCode,
-      },
+        bank_code: params.bankCode
+      }
     });
     return data;
   }
@@ -869,19 +917,21 @@ export class PaystackClient {
         previous: params?.previous,
         gateway: params?.gateway,
         type: params?.type,
-        currency: params?.currency,
-      },
+        currency: params?.currency
+      }
     });
     return data;
   }
 
   // ── Bulk Charges ──────────────────────────────────────────────
 
-  async initiateBulkCharge(charges: Array<{
-    authorization: string;
-    amount: number;
-    reference?: string;
-  }>) {
+  async initiateBulkCharge(
+    charges: Array<{
+      authorization: string;
+      amount: number;
+      reference?: string;
+    }>
+  ) {
     let { data } = await this.axios.post('/bulkcharge', charges);
     return data;
   }
@@ -901,12 +951,18 @@ export class PaystackClient {
     return data;
   }
 
-  async getBulkChargeCharges(batchIdOrCode: string, params?: {
-    status?: string;
-    perPage?: number;
-    page?: number;
-  }) {
-    let { data } = await this.axios.get(`/bulkcharge/${encodeURIComponent(batchIdOrCode)}/charges`, { params });
+  async getBulkChargeCharges(
+    batchIdOrCode: string,
+    params?: {
+      status?: string;
+      perPage?: number;
+      page?: number;
+    }
+  ) {
+    let { data } = await this.axios.get(
+      `/bulkcharge/${encodeURIComponent(batchIdOrCode)}/charges`,
+      { params }
+    );
     return data;
   }
 
@@ -939,14 +995,17 @@ export class PaystackClient {
     return data;
   }
 
-  async updateProduct(productId: string, params: {
-    name?: string;
-    description?: string;
-    price?: number;
-    currency?: string;
-    unlimited?: boolean;
-    quantity?: number;
-  }) {
+  async updateProduct(
+    productId: string,
+    params: {
+      name?: string;
+      description?: string;
+      price?: number;
+      currency?: string;
+      unlimited?: boolean;
+      quantity?: number;
+    }
+  ) {
     let { data } = await this.axios.put(`/product/${encodeURIComponent(productId)}`, params);
     return data;
   }

@@ -3,53 +3,56 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let leadChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Lead Changes',
-    key: 'lead_changes',
-    description: 'Triggers when leads are created or updated in Freshsales. Requires a view ID that includes the leads you want to monitor.',
-  }
-)
-  .input(z.object({
-    leadId: z.number().describe('ID of the lead'),
-    firstName: z.string().nullable().optional(),
-    lastName: z.string().nullable().optional(),
-    displayName: z.string().nullable().optional(),
-    email: z.string().nullable().optional(),
-    jobTitle: z.string().nullable().optional(),
-    city: z.string().nullable().optional(),
-    country: z.string().nullable().optional(),
-    leadScore: z.number().nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-    isNew: z.boolean().describe('Whether this lead is newly created since last poll'),
-  }))
-  .output(z.object({
-    leadId: z.number().describe('ID of the lead'),
-    firstName: z.string().nullable().optional(),
-    lastName: z.string().nullable().optional(),
-    displayName: z.string().nullable().optional(),
-    email: z.string().nullable().optional(),
-    jobTitle: z.string().nullable().optional(),
-    city: z.string().nullable().optional(),
-    country: z.string().nullable().optional(),
-    leadScore: z.number().nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-  }))
+export let leadChanges = SlateTrigger.create(spec, {
+  name: 'Lead Changes',
+  key: 'lead_changes',
+  description:
+    'Triggers when leads are created or updated in Freshsales. Requires a view ID that includes the leads you want to monitor.'
+})
+  .input(
+    z.object({
+      leadId: z.number().describe('ID of the lead'),
+      firstName: z.string().nullable().optional(),
+      lastName: z.string().nullable().optional(),
+      displayName: z.string().nullable().optional(),
+      email: z.string().nullable().optional(),
+      jobTitle: z.string().nullable().optional(),
+      city: z.string().nullable().optional(),
+      country: z.string().nullable().optional(),
+      leadScore: z.number().nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional(),
+      isNew: z.boolean().describe('Whether this lead is newly created since last poll')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.number().describe('ID of the lead'),
+      firstName: z.string().nullable().optional(),
+      lastName: z.string().nullable().optional(),
+      displayName: z.string().nullable().optional(),
+      email: z.string().nullable().optional(),
+      jobTitle: z.string().nullable().optional(),
+      city: z.string().nullable().optional(),
+      country: z.string().nullable().optional(),
+      leadScore: z.number().nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let viewId = ctx.state?.viewId;
       if (!viewId) {
         let filters = await client.getLeadFilters();
-        let defaultFilter = filters.find((f: Record<string, any>) => f.is_default) || filters[0];
+        let defaultFilter =
+          filters.find((f: Record<string, any>) => f.is_default) || filters[0];
         if (!defaultFilter) {
           return { inputs: [], updatedState: ctx.state || {} };
         }
@@ -60,7 +63,7 @@ export let leadChanges = SlateTrigger.create(
       let result = await client.listLeads(viewId, {
         sort: 'updated_at',
         sortType: 'desc',
-        page: 1,
+        page: 1
       });
 
       let leads = result.leads || [];
@@ -83,24 +86,23 @@ export let leadChanges = SlateTrigger.create(
           leadScore: lead.lead_score,
           createdAt: lead.created_at,
           updatedAt: lead.updated_at,
-          isNew,
+          isNew
         });
       }
 
-      let updatedLastPolledAt = (leads.length > 0 && leads[0]?.updated_at)
-        ? leads[0].updated_at
-        : lastPolledAt;
+      let updatedLastPolledAt =
+        leads.length > 0 && leads[0]?.updated_at ? leads[0].updated_at : lastPolledAt;
 
       return {
         inputs: newInputs,
         updatedState: {
           viewId,
-          lastPolledAt: updatedLastPolledAt,
-        },
+          lastPolledAt: updatedLastPolledAt
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNew ? 'lead.created' : 'lead.updated';
       return {
         type: eventType,
@@ -116,8 +118,9 @@ export let leadChanges = SlateTrigger.create(
           country: ctx.input.country,
           leadScore: ctx.input.leadScore,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

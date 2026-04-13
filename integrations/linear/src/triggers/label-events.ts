@@ -3,34 +3,35 @@ import { LinearClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let labelEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Label Events',
-    key: 'label_events',
-    description: 'Triggers when issue labels are created, updated, or removed in Linear.'
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'remove']).describe('The action that occurred'),
-    webhookId: z.string().describe('Delivery ID from the webhook'),
-    labelId: z.string().describe('Label ID'),
-    labelData: z.any().describe('Full label data from webhook payload'),
-    updatedFrom: z.any().optional().describe('Previous values for updated fields')
-  }))
-  .output(z.object({
-    labelId: z.string().describe('Label ID'),
-    name: z.string().nullable().describe('Label name'),
-    color: z.string().nullable().describe('Label color'),
-    description: z.string().nullable().describe('Label description'),
-    teamId: z.string().nullable().describe('Team ID'),
-    parentId: z.string().nullable().describe('Parent label group ID'),
-    createdAt: z.string().nullable(),
-    updatedAt: z.string().nullable(),
-    previousValues: z.any().nullable().describe('Previous field values (on update)')
-  }))
+export let labelEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Label Events',
+  key: 'label_events',
+  description: 'Triggers when issue labels are created, updated, or removed in Linear.'
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'remove']).describe('The action that occurred'),
+      webhookId: z.string().describe('Delivery ID from the webhook'),
+      labelId: z.string().describe('Label ID'),
+      labelData: z.any().describe('Full label data from webhook payload'),
+      updatedFrom: z.any().optional().describe('Previous values for updated fields')
+    })
+  )
+  .output(
+    z.object({
+      labelId: z.string().describe('Label ID'),
+      name: z.string().nullable().describe('Label name'),
+      color: z.string().nullable().describe('Label color'),
+      description: z.string().nullable().describe('Label description'),
+      teamId: z.string().nullable().describe('Team ID'),
+      parentId: z.string().nullable().describe('Parent label group ID'),
+      createdAt: z.string().nullable(),
+      updatedAt: z.string().nullable(),
+      previousValues: z.any().nullable().describe('Previous field values (on update)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new LinearClient(ctx.auth.token);
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
@@ -50,13 +51,13 @@ export let labelEventsTrigger = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new LinearClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let deliveryId = ctx.request.headers.get('Linear-Delivery') || body.webhookId || '';
       let eventType = ctx.request.headers.get('Linear-Event') || '';
 
@@ -65,17 +66,19 @@ export let labelEventsTrigger = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          action: body.action,
-          webhookId: deliveryId,
-          labelId: body.data?.id || '',
-          labelData: body.data,
-          updatedFrom: body.updatedFrom
-        }]
+        inputs: [
+          {
+            action: body.action,
+            webhookId: deliveryId,
+            labelId: body.data?.id || '',
+            labelData: body.data,
+            updatedFrom: body.updatedFrom
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.labelData || {};
 
       return {
@@ -94,4 +97,5 @@ export let labelEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

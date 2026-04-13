@@ -3,31 +3,40 @@ import { SlidesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSpeakerNotes = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Speaker Notes',
-    key: 'manage_speaker_notes',
-    description: `Read or update the speaker notes for a specific slide. When reading, returns the current notes text. When updating, replaces the entire notes content with the provided text.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageSpeakerNotes = SlateTool.create(spec, {
+  name: 'Manage Speaker Notes',
+  key: 'manage_speaker_notes',
+  description: `Read or update the speaker notes for a specific slide. When reading, returns the current notes text. When updating, replaces the entire notes content with the provided text.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    presentationId: z.string().describe('ID of the presentation'),
-    slideObjectId: z.string().describe('Object ID of the slide'),
-    action: z.enum(['read', 'update']).describe('Whether to read or update the speaker notes'),
-    notesText: z.string().optional().describe('New speaker notes content (required for update action)')
-  }))
-  .output(z.object({
-    presentationId: z.string().describe('ID of the presentation'),
-    slideObjectId: z.string().describe('Object ID of the slide'),
-    notesText: z.string().describe('Current speaker notes text'),
-    speakerNotesObjectId: z.string().optional().describe('Object ID of the speaker notes element')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      presentationId: z.string().describe('ID of the presentation'),
+      slideObjectId: z.string().describe('Object ID of the slide'),
+      action: z
+        .enum(['read', 'update'])
+        .describe('Whether to read or update the speaker notes'),
+      notesText: z
+        .string()
+        .optional()
+        .describe('New speaker notes content (required for update action)')
+    })
+  )
+  .output(
+    z.object({
+      presentationId: z.string().describe('ID of the presentation'),
+      slideObjectId: z.string().describe('Object ID of the slide'),
+      notesText: z.string().describe('Current speaker notes text'),
+      speakerNotesObjectId: z
+        .string()
+        .optional()
+        .describe('Object ID of the speaker notes element')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SlidesClient(ctx.auth.token);
     let { presentationId, slideObjectId, action } = ctx.input;
 

@@ -15,14 +15,9 @@ import {
   sendEvents,
   reportCheckIn,
   reportError,
-  manageEnvironments,
+  manageEnvironments
 } from './tools';
-import {
-  errorEvent,
-  uptimeEvent,
-  checkInEvent,
-  deployEvent,
-} from './triggers';
+import { errorEvent, uptimeEvent, checkInEvent, deployEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,12 +36,7 @@ export let provider = Slate.create({
     sendEvents,
     reportCheckIn,
     reportError,
-    manageEnvironments,
+    manageEnvironments
   ],
-  triggers: [
-    errorEvent,
-    uptimeEvent,
-    checkInEvent,
-    deployEvent,
-  ],
+  triggers: [errorEvent, uptimeEvent, checkInEvent, deployEvent]
 });

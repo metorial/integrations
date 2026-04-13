@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 let emailResultSchema = z.object({
   email: z.string().describe('The email address'),
-  qualification: z.string().describe('Email qualification (e.g. "nominative@pro")'),
+  qualification: z.string().describe('Email qualification (e.g. "nominative@pro")')
 });
 
 let enrichedContactSchema = z.object({
@@ -35,64 +35,71 @@ let enrichedContactSchema = z.object({
   jobTitle: z.string().optional().describe('Job title'),
   jobLevel: z.string().optional().describe('Job level'),
   jobFunction: z.string().optional().describe('Job function'),
-  customFields: z.record(z.string(), z.string()).optional().describe('Custom fields from the original request'),
+  customFields: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe('Custom fields from the original request')
 });
 
-export let enrichmentResult = SlateTrigger.create(
-  spec,
-  {
-    name: 'Enrichment Result Ready',
-    key: 'enrichment_result',
-    description: 'Triggers when a contact enrichment request has been processed and results are ready. Receives the enriched contact data via webhook.',
-  }
-)
-  .input(z.object({
-    webhookEventId: z.string().describe('Unique ID of the webhook event'),
-    requestId: z.string().describe('Original enrichment request ID'),
-    eventType: z.string().describe('Type of event (enrich_api_result)'),
-    occurredAt: z.number().describe('Timestamp when the event occurred'),
-    contacts: z.array(z.any()).describe('Array of enriched contact data from webhook payload'),
-  }))
-  .output(z.object({
-    requestId: z.string().describe('Original enrichment request ID'),
-    contacts: z.array(enrichedContactSchema).describe('Array of enriched contact data'),
-    contactCount: z.number().describe('Number of contacts in this result'),
-    occurredAt: z.string().describe('ISO timestamp when the enrichment completed'),
-  }))
+export let enrichmentResult = SlateTrigger.create(spec, {
+  name: 'Enrichment Result Ready',
+  key: 'enrichment_result',
+  description:
+    'Triggers when a contact enrichment request has been processed and results are ready. Receives the enriched contact data via webhook.'
+})
+  .input(
+    z.object({
+      webhookEventId: z.string().describe('Unique ID of the webhook event'),
+      requestId: z.string().describe('Original enrichment request ID'),
+      eventType: z.string().describe('Type of event (enrich_api_result)'),
+      occurredAt: z.number().describe('Timestamp when the event occurred'),
+      contacts: z
+        .array(z.any())
+        .describe('Array of enriched contact data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string().describe('Original enrichment request ID'),
+      contacts: z.array(enrichedContactSchema).describe('Array of enriched contact data'),
+      contactCount: z.number().describe('Number of contacts in this result'),
+      occurredAt: z.string().describe('ISO timestamp when the enrichment completed')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.setDefaultWebhookUrl(ctx.input.webhookBaseUrl);
       return {
         registrationDetails: {
-          callbackUrl: ctx.input.webhookBaseUrl,
-        },
+          callbackUrl: ctx.input.webhookBaseUrl
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteDefaultWebhookUrl();
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body = await ctx.input.request.json();
 
       // Dropcontact sends an array of webhook events
       let events: any[] = Array.isArray(body) ? body : [body];
 
-      let inputs = events.map((event) => ({
+      let inputs = events.map(event => ({
         webhookEventId: event.id || `${event.data?.request_id}_${event.occurred_at}`,
         requestId: event.data?.request_id || '',
         eventType: event.event_type || 'enrich_api_result',
         occurredAt: event.occurred_at || 0,
-        contacts: event.data?.data || [],
+        contacts: event.data?.data || []
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let contacts = (ctx.input.contacts || []).map((c: any) => ({
         civility: c.civility,
         firstName: c.first_name,
@@ -120,7 +127,7 @@ export let enrichmentResult = SlateTrigger.create(
         jobTitle: c.job,
         jobLevel: c.job_level,
         jobFunction: c.job_function,
-        customFields: c.custom_fields,
+        customFields: c.custom_fields
       }));
 
       let occurredAtStr = ctx.input.occurredAt
@@ -134,9 +141,9 @@ export let enrichmentResult = SlateTrigger.create(
           requestId: ctx.input.requestId,
           contacts,
           contactCount: contacts.length,
-          occurredAt: occurredAtStr,
-        },
+          occurredAt: occurredAtStr
+        }
       };
-    },
+    }
   })
   .build();

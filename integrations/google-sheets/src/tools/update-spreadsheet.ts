@@ -3,29 +3,30 @@ import { SheetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateSpreadsheet = SlateTool.create(
-  spec,
-  {
-    name: 'Update Spreadsheet',
-    key: 'update_spreadsheet',
-    description: `Updates the properties of a Google Sheets spreadsheet, such as its title, locale, or time zone.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateSpreadsheet = SlateTool.create(spec, {
+  name: 'Update Spreadsheet',
+  key: 'update_spreadsheet',
+  description: `Updates the properties of a Google Sheets spreadsheet, such as its title, locale, or time zone.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    spreadsheetId: z.string().describe('Unique ID of the spreadsheet to update'),
-    title: z.string().optional().describe('New title for the spreadsheet'),
-    locale: z.string().optional().describe('New locale (e.g., "en_US")'),
-    timeZone: z.string().optional().describe('New time zone (e.g., "America/New_York")'),
-  }))
-  .output(z.object({
-    spreadsheetId: z.string().describe('ID of the updated spreadsheet'),
-    updatedFields: z.array(z.string()).describe('List of fields that were updated'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      spreadsheetId: z.string().describe('Unique ID of the spreadsheet to update'),
+      title: z.string().optional().describe('New title for the spreadsheet'),
+      locale: z.string().optional().describe('New locale (e.g., "en_US")'),
+      timeZone: z.string().optional().describe('New time zone (e.g., "America/New_York")')
+    })
+  )
+  .output(
+    z.object({
+      spreadsheetId: z.string().describe('ID of the updated spreadsheet'),
+      updatedFields: z.array(z.string()).describe('List of fields that were updated')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SheetsClient(ctx.auth.token);
 
     let properties: Record<string, any> = {};
@@ -57,9 +58,9 @@ export let updateSpreadsheet = SlateTool.create(
     return {
       output: {
         spreadsheetId: ctx.input.spreadsheetId,
-        updatedFields: fields,
+        updatedFields: fields
       },
-      message: `Updated spreadsheet properties: ${fields.join(', ')}`,
+      message: `Updated spreadsheet properties: ${fields.join(', ')}`
     };
   })
   .build();

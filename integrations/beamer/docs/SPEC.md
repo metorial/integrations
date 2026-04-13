@@ -19,6 +19,7 @@ All requests to the API must include the API key in the `Beamer-Api-Key` header,
 - The key can be rotated on Beamer's website.
 
 **Example request:**
+
 ```
 curl --header "Content-Type: application/json" \
      --header "Beamer-Api-Key: YOUR-BEAMER-API-KEY" \

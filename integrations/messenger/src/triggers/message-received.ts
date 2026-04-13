@@ -2,55 +2,64 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let attachmentSchema = z.object({
-  type: z.string().describe('Attachment type (image, video, audio, file, location, fallback)'),
-  url: z.string().optional().describe('URL of the attachment')
-}).describe('A message attachment');
+let attachmentSchema = z
+  .object({
+    type: z
+      .string()
+      .describe('Attachment type (image, video, audio, file, location, fallback)'),
+    url: z.string().optional().describe('URL of the attachment')
+  })
+  .describe('A message attachment');
 
-export let messageReceived = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Received',
-    key: 'message_received',
-    description: 'Triggered when a user sends a message to your Page, including text messages, attachments, quick reply responses, and reactions.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of messaging event'),
-    eventId: z.string().describe('Unique event identifier'),
-    senderId: z.string().describe('PSID of the sender'),
-    recipientId: z.string().describe('Page ID of the recipient'),
-    timestamp: z.string().describe('Event timestamp'),
-    messageId: z.string().optional().describe('Message ID'),
-    text: z.string().optional().describe('Text content of the message'),
-    attachments: z.array(attachmentSchema).optional().describe('Message attachments'),
-    quickReplyPayload: z.string().optional().describe('Quick reply payload if user tapped a quick reply'),
-    postbackTitle: z.string().optional().describe('Title of the postback button'),
-    postbackPayload: z.string().optional().describe('Payload of the postback button'),
-    referralRef: z.string().optional().describe('Referral ref parameter'),
-    referralSource: z.string().optional().describe('Source of the referral'),
-    reactionAction: z.string().optional().describe('Reaction action (react or unreact)'),
-    reactionEmoji: z.string().optional().describe('Reaction emoji'),
-    reactionMessageId: z.string().optional().describe('Message ID the reaction is on')
-  }))
-  .output(z.object({
-    senderId: z.string().describe('PSID of the user who triggered the event'),
-    recipientPageId: z.string().describe('Page ID that received the event'),
-    timestamp: z.string().describe('Event timestamp'),
-    messageId: z.string().optional().describe('Message ID (for message events)'),
-    text: z.string().optional().describe('Text content of the message'),
-    attachments: z.array(attachmentSchema).optional().describe('Message attachments'),
-    quickReplyPayload: z.string().optional().describe('Quick reply payload'),
-    postbackTitle: z.string().optional().describe('Postback button title'),
-    postbackPayload: z.string().optional().describe('Postback button payload'),
-    referralRef: z.string().optional().describe('Referral ref parameter'),
-    referralSource: z.string().optional().describe('Source of the referral'),
-    reactionAction: z.string().optional().describe('Reaction action (react or unreact)'),
-    reactionEmoji: z.string().optional().describe('Reaction emoji'),
-    reactionMessageId: z.string().optional().describe('Message ID the reaction is on')
-  }))
+export let messageReceived = SlateTrigger.create(spec, {
+  name: 'Message Received',
+  key: 'message_received',
+  description:
+    'Triggered when a user sends a message to your Page, including text messages, attachments, quick reply responses, and reactions.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of messaging event'),
+      eventId: z.string().describe('Unique event identifier'),
+      senderId: z.string().describe('PSID of the sender'),
+      recipientId: z.string().describe('Page ID of the recipient'),
+      timestamp: z.string().describe('Event timestamp'),
+      messageId: z.string().optional().describe('Message ID'),
+      text: z.string().optional().describe('Text content of the message'),
+      attachments: z.array(attachmentSchema).optional().describe('Message attachments'),
+      quickReplyPayload: z
+        .string()
+        .optional()
+        .describe('Quick reply payload if user tapped a quick reply'),
+      postbackTitle: z.string().optional().describe('Title of the postback button'),
+      postbackPayload: z.string().optional().describe('Payload of the postback button'),
+      referralRef: z.string().optional().describe('Referral ref parameter'),
+      referralSource: z.string().optional().describe('Source of the referral'),
+      reactionAction: z.string().optional().describe('Reaction action (react or unreact)'),
+      reactionEmoji: z.string().optional().describe('Reaction emoji'),
+      reactionMessageId: z.string().optional().describe('Message ID the reaction is on')
+    })
+  )
+  .output(
+    z.object({
+      senderId: z.string().describe('PSID of the user who triggered the event'),
+      recipientPageId: z.string().describe('Page ID that received the event'),
+      timestamp: z.string().describe('Event timestamp'),
+      messageId: z.string().optional().describe('Message ID (for message events)'),
+      text: z.string().optional().describe('Text content of the message'),
+      attachments: z.array(attachmentSchema).optional().describe('Message attachments'),
+      quickReplyPayload: z.string().optional().describe('Quick reply payload'),
+      postbackTitle: z.string().optional().describe('Postback button title'),
+      postbackPayload: z.string().optional().describe('Postback button payload'),
+      referralRef: z.string().optional().describe('Referral ref parameter'),
+      referralSource: z.string().optional().describe('Source of the referral'),
+      reactionAction: z.string().optional().describe('Reaction action (react or unreact)'),
+      reactionEmoji: z.string().optional().describe('Reaction emoji'),
+      reactionMessageId: z.string().optional().describe('Message ID the reaction is on')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let request = ctx.request;
       let method = request.method;
 
@@ -61,7 +70,7 @@ export let messageReceived = SlateTrigger.create(
       }
 
       // Handle incoming events (POST request)
-      let body = await request.json() as any;
+      let body = (await request.json()) as any;
 
       if (body.object !== 'page') {
         return { inputs: [] };
@@ -69,12 +78,12 @@ export let messageReceived = SlateTrigger.create(
 
       let inputs: any[] = [];
 
-      for (let entry of (body.entry || [])) {
+      for (let entry of body.entry || []) {
         let pageId = entry.id as string;
 
-        for (let messagingEvent of (entry.messaging || [])) {
+        for (let messagingEvent of entry.messaging || []) {
           let senderId = messagingEvent.sender?.id as string;
-          let recipientId = messagingEvent.recipient?.id as string || pageId;
+          let recipientId = (messagingEvent.recipient?.id as string) || pageId;
           let timestamp = String(messagingEvent.timestamp || Date.now());
 
           if (messagingEvent.message) {
@@ -158,7 +167,7 @@ export let messageReceived = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { input } = ctx;
 
       return {
@@ -182,4 +191,5 @@ export let messageReceived = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

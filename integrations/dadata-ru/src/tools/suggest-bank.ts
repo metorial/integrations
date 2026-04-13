@@ -17,41 +17,54 @@ let bankSuggestionSchema = z.object({
   nameShort: z.string().nullable().describe('Short bank name'),
   bankType: z.string().nullable().describe('Type: BANK, NKO, BANK_BRANCH, NKO_BRANCH, CBR'),
   status: z.string().nullable().describe('Status: ACTIVE, LIQUIDATING, LIQUIDATED'),
-  address: z.string().nullable().describe('Bank address'),
+  address: z.string().nullable().describe('Bank address')
 });
 
-export let suggestBank = SlateTool.create(
-  spec,
-  {
-    name: 'Suggest Bank',
-    key: 'suggest_bank',
-    description: `Provides autocomplete suggestions for Russian banks. Search by BIK, SWIFT, INN, bank name, or address.
+export let suggestBank = SlateTool.create(spec, {
+  name: 'Suggest Bank',
+  key: 'suggest_bank',
+  description: `Provides autocomplete suggestions for Russian banks. Search by BIK, SWIFT, INN, bank name, or address.
 Returns bank details including BIK, SWIFT, correspondent account, registration number, and status.`,
-    instructions: [
-      'Search by BIK, SWIFT code, INN, bank name, or address.',
-      'Use status to filter by active or liquidated banks.',
-      'Use bankType to filter by institution type (BANK, NKO, BANK_BRANCH, etc.).',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Search by BIK, SWIFT code, INN, bank name, or address.',
+    'Use status to filter by active or liquidated banks.',
+    'Use bankType to filter by institution type (BANK, NKO, BANK_BRANCH, etc.).'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('BIK, SWIFT, INN, bank name, or address'),
-    count: z.number().optional().describe('Number of results (max 20, default 10)'),
-    status: z.array(z.enum(['ACTIVE', 'LIQUIDATING', 'LIQUIDATED'])).optional().describe('Filter by bank status'),
-    bankType: z.array(z.enum(['BANK', 'NKO', 'BANK_BRANCH', 'NKO_BRANCH', 'CBR'])).optional().describe('Filter by institution type'),
-    locations: z.array(z.record(z.string(), z.unknown())).optional().describe('Region constraints'),
-    locationsBoost: z.array(z.record(z.string(), z.unknown())).optional().describe('Boost priority for specific regions'),
-  }))
-  .output(z.object({
-    suggestions: z.array(bankSuggestionSchema).describe('List of bank suggestions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('BIK, SWIFT, INN, bank name, or address'),
+      count: z.number().optional().describe('Number of results (max 20, default 10)'),
+      status: z
+        .array(z.enum(['ACTIVE', 'LIQUIDATING', 'LIQUIDATED']))
+        .optional()
+        .describe('Filter by bank status'),
+      bankType: z
+        .array(z.enum(['BANK', 'NKO', 'BANK_BRANCH', 'NKO_BRANCH', 'CBR']))
+        .optional()
+        .describe('Filter by institution type'),
+      locations: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Region constraints'),
+      locationsBoost: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Boost priority for specific regions')
+    })
+  )
+  .output(
+    z.object({
+      suggestions: z.array(bankSuggestionSchema).describe('List of bank suggestions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SuggestionsClient({
       token: ctx.auth.token,
-      secretKey: ctx.auth.secretKey,
+      secretKey: ctx.auth.secretKey
     });
 
     let data = await client.suggestBank({
@@ -60,7 +73,7 @@ Returns bank details including BIK, SWIFT, correspondent account, registration n
       status: ctx.input.status,
       type: ctx.input.bankType,
       locations: ctx.input.locations,
-      locationsBoost: ctx.input.locationsBoost,
+      locationsBoost: ctx.input.locationsBoost
     });
 
     let suggestions = (data.suggestions || []).map((s: any) => ({
@@ -77,11 +90,12 @@ Returns bank details including BIK, SWIFT, correspondent account, registration n
       nameShort: s.data?.name?.short ?? null,
       bankType: s.data?.opf?.type ?? null,
       status: s.data?.state?.status ?? null,
-      address: s.data?.address?.value ?? null,
+      address: s.data?.address?.value ?? null
     }));
 
     return {
       output: { suggestions },
-      message: `Found **${suggestions.length}** bank suggestion(s) for "${ctx.input.query}".`,
+      message: `Found **${suggestions.length}** bank suggestion(s) for "${ctx.input.query}".`
     };
-  }).build();
+  })
+  .build();

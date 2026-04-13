@@ -21,6 +21,7 @@ NetLicensing supports HTTP Basic authentication (via SSL) using the vendor's use
 NetLicensing supports API key identification to allow limited API access on the vendor's behalf. API keys are used via Basic authentication where the username is the literal string `apiKey` and the password is the actual API key value.
 
 Example:
+
 ```
 curl -X POST --user apiKey:<YOUR_API_KEY> https://go.netlicensing.io/core/v2/rest/licensee/123/validate
 ```
@@ -29,13 +30,13 @@ API keys can be created via the NetLicensing Management Console or via the Token
 
 Each API key has an associated role that determines the level of access:
 
-| Role | Description |
-|------|-------------|
+| Role                   | Description                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | **Licensee** (default) | Minimum access: licensee validate, transfer, and create shop tokens. Intended for keys embedded in client software. |
-| **Analytics** | Read-only access to all entities plus validation. Intended for ERP/CRM integrations. |
-| **Operation** | Full CRUD for licensees and licenses, but cannot modify product configuration. |
-| **Maintenance** | Full product maintenance including products, modules, and license templates. |
-| **Admin** | Full access, equivalent to username/password authentication. |
+| **Analytics**          | Read-only access to all entities plus validation. Intended for ERP/CRM integrations.                                |
+| **Operation**          | Full CRUD for licensees and licenses, but cannot modify product configuration.                                      |
+| **Maintenance**        | Full product maintenance including products, modules, and license templates.                                        |
+| **Admin**              | Full access, equivalent to username/password authentication.                                                        |
 
 ## Features
 
@@ -46,6 +47,7 @@ Create and manage products, product modules, and license templates that define y
 ### Licensing Models
 
 Licensing models combine different parameters that define how a product can be used. Multiple licensing models can be assigned to a product to create composite licensing. Supported models include:
+
 - **Try & Buy**: Evaluation period followed by purchase requirement.
 - **Subscription**: Time-limited access with renewal options, including auto-renewal.
 - **Pricing Table**: Manage pricing plans and membership tiers.
@@ -63,12 +65,14 @@ Licensees represent end customers and must have a unique identifier. From the ve
 ### License Validation
 
 With a single API request, your software receives the complete licensing information for a specified customer, already processed and formatted for direct use in business logic. Validation checks all active licenses for a licensee against the configured licensing models and returns the licensing state per product module.
+
 - Custom properties can be passed during validation requests.
 - Validation responses can be cryptographically signed to prevent tampering.
 
 ### License Management
 
 Create, update, list, and delete individual licenses assigned to licensees. Licenses are created from license templates and always belong to a specific licensee. They are processed by licensing models during validation.
+
 - Licenses support custom properties.
 - Licenses can be transferred between licensees (source licensee must be marked for transfer).
 

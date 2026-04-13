@@ -3,35 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWebLink = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Web Link',
-    key: 'manage_web_link',
-    description: `Create, view, update, or delete web link bookmarks within Box folders. Web links are bookmarks to external URLs stored alongside files and folders.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let manageWebLink = SlateTool.create(spec, {
+  name: 'Manage Web Link',
+  key: 'manage_web_link',
+  description: `Create, view, update, or delete web link bookmarks within Box folders. Web links are bookmarks to external URLs stored alongside files and folders.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete']).describe('The web link operation to perform'),
-    webLinkId: z.string().optional().describe('Web link ID (required for get, update, delete)'),
-    url: z.string().optional().describe('URL for the web link (required for create, optional for update)'),
-    parentFolderId: z.string().optional().describe('Parent folder ID (required for create)'),
-    name: z.string().optional().describe('Display name for the web link'),
-    description: z.string().optional().describe('Description of the web link')
-  }))
-  .output(z.object({
-    webLinkId: z.string().optional().describe('ID of the web link'),
-    url: z.string().optional().describe('URL of the web link'),
-    name: z.string().optional().describe('Display name'),
-    description: z.string().optional().describe('Description'),
-    parentFolderId: z.string().optional().describe('Parent folder ID'),
-    deleted: z.boolean().optional().describe('True if the web link was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete'])
+        .describe('The web link operation to perform'),
+      webLinkId: z
+        .string()
+        .optional()
+        .describe('Web link ID (required for get, update, delete)'),
+      url: z
+        .string()
+        .optional()
+        .describe('URL for the web link (required for create, optional for update)'),
+      parentFolderId: z.string().optional().describe('Parent folder ID (required for create)'),
+      name: z.string().optional().describe('Display name for the web link'),
+      description: z.string().optional().describe('Description of the web link')
+    })
+  )
+  .output(
+    z.object({
+      webLinkId: z.string().optional().describe('ID of the web link'),
+      url: z.string().optional().describe('URL of the web link'),
+      name: z.string().optional().describe('Display name'),
+      description: z.string().optional().describe('Description'),
+      parentFolderId: z.string().optional().describe('Parent folder ID'),
+      deleted: z.boolean().optional().describe('True if the web link was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, webLinkId, url, parentFolderId, name, description } = ctx.input;
 

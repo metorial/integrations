@@ -3,42 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let channelActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Channel Activity',
-    key: 'channel_activity',
-    description: 'Triggers when a YouTube channel has new activity such as video uploads, likes, favorites, comments, subscriptions, and playlist additions.'
-  }
-)
-  .input(z.object({
-    activityId: z.string().describe('Unique activity ID'),
-    activityType: z.string().describe('Type of activity (e.g., upload, like, favorite, comment, subscription)'),
-    title: z.string().optional().describe('Activity title'),
-    description: z.string().optional().describe('Activity description'),
-    publishedAt: z.string().optional().describe('When the activity occurred'),
-    channelId: z.string().optional().describe('Channel that performed the activity'),
-    videoId: z.string().optional().describe('Related video ID if applicable'),
-    relatedChannelId: z.string().optional().describe('Related channel ID if applicable'),
-    playlistId: z.string().optional().describe('Related playlist ID if applicable')
-  }))
-  .output(z.object({
-    activityId: z.string().describe('Unique activity ID'),
-    activityType: z.string().describe('Type of activity'),
-    title: z.string().optional().describe('Activity title'),
-    description: z.string().optional().describe('Activity description'),
-    publishedAt: z.string().optional().describe('When the activity occurred'),
-    channelId: z.string().optional().describe('Channel that performed the activity'),
-    videoId: z.string().optional().describe('Related video ID if applicable'),
-    relatedChannelId: z.string().optional().describe('Related channel ID if applicable'),
-    playlistId: z.string().optional().describe('Related playlist ID if applicable')
-  }))
+export let channelActivity = SlateTrigger.create(spec, {
+  name: 'Channel Activity',
+  key: 'channel_activity',
+  description:
+    'Triggers when a YouTube channel has new activity such as video uploads, likes, favorites, comments, subscriptions, and playlist additions.'
+})
+  .input(
+    z.object({
+      activityId: z.string().describe('Unique activity ID'),
+      activityType: z
+        .string()
+        .describe('Type of activity (e.g., upload, like, favorite, comment, subscription)'),
+      title: z.string().optional().describe('Activity title'),
+      description: z.string().optional().describe('Activity description'),
+      publishedAt: z.string().optional().describe('When the activity occurred'),
+      channelId: z.string().optional().describe('Channel that performed the activity'),
+      videoId: z.string().optional().describe('Related video ID if applicable'),
+      relatedChannelId: z.string().optional().describe('Related channel ID if applicable'),
+      playlistId: z.string().optional().describe('Related playlist ID if applicable')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.string().describe('Unique activity ID'),
+      activityType: z.string().describe('Type of activity'),
+      title: z.string().optional().describe('Activity title'),
+      description: z.string().optional().describe('Activity description'),
+      publishedAt: z.string().optional().describe('When the activity occurred'),
+      channelId: z.string().optional().describe('Channel that performed the activity'),
+      videoId: z.string().optional().describe('Related video ID if applicable'),
+      relatedChannelId: z.string().optional().describe('Related channel ID if applicable'),
+      playlistId: z.string().optional().describe('Related playlist ID if applicable')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPolledAt = ctx.state?.lastPolledAt as string | undefined;
@@ -52,7 +56,7 @@ export let channelActivity = SlateTrigger.create(
 
       let now = new Date().toISOString();
 
-      let inputs = response.items.map((act) => {
+      let inputs = response.items.map(act => {
         let videoId: string | undefined;
         let relatedChannelId: string | undefined;
         let playlistId: string | undefined;
@@ -97,7 +101,7 @@ export let channelActivity = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `activity.${ctx.input.activityType}`,
         id: ctx.input.activityId,
@@ -114,4 +118,5 @@ export let channelActivity = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -3,67 +3,77 @@ import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newOrder = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Order',
-    key: 'new_order',
-    description: 'Triggers when a new order is placed or an existing order is updated. Polls for recent orders and detects new and changed orders.',
-  }
-)
-  .input(z.object({
-    orderId: z.number().describe('Order entity ID'),
-    incrementId: z.string().optional().describe('Human-readable order number'),
-    state: z.string().optional().describe('Order state'),
-    status: z.string().optional().describe('Order status'),
-    grandTotal: z.number().optional().describe('Grand total'),
-    customerEmail: z.string().optional().describe('Customer email'),
-    customerFirstname: z.string().optional().describe('Customer first name'),
-    customerLastname: z.string().optional().describe('Customer last name'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    isNew: z.boolean().describe('Whether this is a brand new order or an updated one'),
-  }))
-  .output(z.object({
-    orderId: z.number().describe('Order entity ID'),
-    incrementId: z.string().optional().describe('Human-readable order number'),
-    state: z.string().optional().describe('Order state'),
-    status: z.string().optional().describe('Order status'),
-    grandTotal: z.number().optional().describe('Grand total'),
-    subtotal: z.number().optional().describe('Subtotal'),
-    taxAmount: z.number().optional().describe('Tax amount'),
-    shippingAmount: z.number().optional().describe('Shipping amount'),
-    discountAmount: z.number().optional().describe('Discount amount'),
-    totalQtyOrdered: z.number().optional().describe('Total items ordered'),
-    customerEmail: z.string().optional().describe('Customer email'),
-    customerFirstname: z.string().optional().describe('Customer first name'),
-    customerLastname: z.string().optional().describe('Customer last name'),
-    customerId: z.number().optional().describe('Customer ID'),
-    currencyCode: z.string().optional().describe('Order currency code'),
-    createdAt: z.string().optional().describe('Order creation timestamp'),
-    updatedAt: z.string().optional().describe('Order last update timestamp'),
-    items: z.array(z.object({
-      orderItemId: z.number().optional().describe('Item ID'),
-      sku: z.string().optional().describe('Product SKU'),
-      name: z.string().optional().describe('Product name'),
-      qtyOrdered: z.number().optional().describe('Quantity ordered'),
-      price: z.number().optional().describe('Item price'),
-      rowTotal: z.number().optional().describe('Row total'),
-    })).optional().describe('Order line items'),
-  }))
+export let newOrder = SlateTrigger.create(spec, {
+  name: 'New Order',
+  key: 'new_order',
+  description:
+    'Triggers when a new order is placed or an existing order is updated. Polls for recent orders and detects new and changed orders.'
+})
+  .input(
+    z.object({
+      orderId: z.number().describe('Order entity ID'),
+      incrementId: z.string().optional().describe('Human-readable order number'),
+      state: z.string().optional().describe('Order state'),
+      status: z.string().optional().describe('Order status'),
+      grandTotal: z.number().optional().describe('Grand total'),
+      customerEmail: z.string().optional().describe('Customer email'),
+      customerFirstname: z.string().optional().describe('Customer first name'),
+      customerLastname: z.string().optional().describe('Customer last name'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      isNew: z.boolean().describe('Whether this is a brand new order or an updated one')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number().describe('Order entity ID'),
+      incrementId: z.string().optional().describe('Human-readable order number'),
+      state: z.string().optional().describe('Order state'),
+      status: z.string().optional().describe('Order status'),
+      grandTotal: z.number().optional().describe('Grand total'),
+      subtotal: z.number().optional().describe('Subtotal'),
+      taxAmount: z.number().optional().describe('Tax amount'),
+      shippingAmount: z.number().optional().describe('Shipping amount'),
+      discountAmount: z.number().optional().describe('Discount amount'),
+      totalQtyOrdered: z.number().optional().describe('Total items ordered'),
+      customerEmail: z.string().optional().describe('Customer email'),
+      customerFirstname: z.string().optional().describe('Customer first name'),
+      customerLastname: z.string().optional().describe('Customer last name'),
+      customerId: z.number().optional().describe('Customer ID'),
+      currencyCode: z.string().optional().describe('Order currency code'),
+      createdAt: z.string().optional().describe('Order creation timestamp'),
+      updatedAt: z.string().optional().describe('Order last update timestamp'),
+      items: z
+        .array(
+          z.object({
+            orderItemId: z.number().optional().describe('Item ID'),
+            sku: z.string().optional().describe('Product SKU'),
+            name: z.string().optional().describe('Product name'),
+            qtyOrdered: z.number().optional().describe('Quantity ordered'),
+            price: z.number().optional().describe('Item price'),
+            rowTotal: z.number().optional().describe('Row total')
+          })
+        )
+        .optional()
+        .describe('Order line items')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MagentoClient({
         storeUrl: ctx.config.storeUrl,
         storeCode: ctx.config.storeCode,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
-      let state = ctx.state as { lastUpdatedAt?: string; knownOrders?: Record<string, string> } | null;
+      let state = ctx.state as {
+        lastUpdatedAt?: string;
+        knownOrders?: Record<string, string>;
+      } | null;
       let lastUpdatedAt = state?.lastUpdatedAt;
       let knownOrders = state?.knownOrders || {};
 
@@ -76,7 +86,7 @@ export let newOrder = SlateTrigger.create(
         filters,
         sortField: 'updated_at',
         sortDirection: 'ASC',
-        pageSize: 50,
+        pageSize: 50
       });
 
       let inputs: Array<{
@@ -116,7 +126,7 @@ export let newOrder = SlateTrigger.create(
           customerLastname: order.customer_lastname,
           createdAt: order.created_at,
           updatedAt: order.updated_at,
-          isNew,
+          isNew
         });
 
         updatedKnownOrders[orderIdStr] = order.updated_at || '';
@@ -129,16 +139,16 @@ export let newOrder = SlateTrigger.create(
         inputs,
         updatedState: {
           lastUpdatedAt: newLastUpdatedAt,
-          knownOrders: updatedKnownOrders,
-        },
+          knownOrders: updatedKnownOrders
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new MagentoClient({
         storeUrl: ctx.config.storeUrl,
         storeCode: ctx.config.storeCode,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let fullOrder: any = {};
@@ -177,10 +187,10 @@ export let newOrder = SlateTrigger.create(
             name: i.name,
             qtyOrdered: i.qty_ordered,
             price: i.price,
-            rowTotal: i.row_total,
-          })),
-        },
+            rowTotal: i.row_total
+          }))
+        }
       };
-    },
+    }
   })
   .build();

@@ -115,16 +115,18 @@ export class Client {
   private api: ReturnType<typeof createAxios>;
   private ingestionApi: ReturnType<typeof createAxios>;
 
-  constructor(private options: {
-    serviceKey: string;
-    ingestionKey?: string;
-  }) {
+  constructor(
+    private options: {
+      serviceKey: string;
+      ingestionKey?: string;
+    }
+  ) {
     this.api = createAxios({
-      baseURL: 'https://api.logdna.com',
+      baseURL: 'https://api.logdna.com'
     });
 
     this.ingestionApi = createAxios({
-      baseURL: 'https://logs.logdna.com',
+      baseURL: 'https://logs.logdna.com'
     });
   }
 
@@ -142,19 +144,23 @@ export class Client {
   async ingestLogs(lines: LogLine[], opts: IngestOptions): Promise<any> {
     let params: Record<string, any> = {
       hostname: opts.hostname,
-      now: opts.now || Date.now(),
+      now: opts.now || Date.now()
     };
     if (opts.tags) params.tags = opts.tags;
     if (opts.ip) params.ip = opts.ip;
     if (opts.mac) params.mac = opts.mac;
 
-    let response = await this.ingestionApi.post('/logs/ingest', { lines }, {
-      params,
-      headers: {
-        ...this.ingestionHeaders(),
-        'Content-Type': 'application/json',
-      },
-    });
+    let response = await this.ingestionApi.post(
+      '/logs/ingest',
+      { lines },
+      {
+        params,
+        headers: {
+          ...this.ingestionHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -163,7 +169,7 @@ export class Client {
   async exportLogs(opts: ExportOptions): Promise<string> {
     let params: Record<string, any> = {
       from: opts.from,
-      to: opts.to,
+      to: opts.to
     };
     if (opts.query) params.query = opts.query;
     if (opts.hosts) params.hosts = opts.hosts;
@@ -175,7 +181,7 @@ export class Client {
 
     let response = await this.api.get('/v1/export', {
       params,
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -183,7 +189,7 @@ export class Client {
   async exportLogsV2(opts: ExportOptions): Promise<{ lines: string; paginationId?: string }> {
     let params: Record<string, any> = {
       from: opts.from,
-      to: opts.to,
+      to: opts.to
     };
     if (opts.query) params.query = opts.query;
     if (opts.hosts) params.hosts = opts.hosts;
@@ -196,11 +202,11 @@ export class Client {
 
     let response = await this.api.get('/v2/export', {
       params,
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return {
       lines: response.data,
-      paginationId: response.headers?.['pagination_id'] || undefined,
+      paginationId: response.headers?.['pagination_id'] || undefined
     };
   }
 
@@ -208,14 +214,14 @@ export class Client {
 
   async listViews(): Promise<any[]> {
     let response = await this.api.get('/v1/config/view', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
 
   async getView(viewId: string): Promise<any> {
     let response = await this.api.get(`/v1/config/view/${viewId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -224,8 +230,8 @@ export class Client {
     let response = await this.api.post('/v1/config/view', view, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -234,15 +240,15 @@ export class Client {
     let response = await this.api.put(`/v1/config/view/${viewId}`, view, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
   async deleteView(viewId: string): Promise<void> {
     await this.api.delete(`/v1/config/view/${viewId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
   }
 
@@ -250,14 +256,14 @@ export class Client {
 
   async listPresetAlerts(): Promise<any[]> {
     let response = await this.api.get('/v1/config/presetalert', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
 
   async getPresetAlert(alertId: string): Promise<any> {
     let response = await this.api.get(`/v1/config/presetalert/${alertId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -266,8 +272,8 @@ export class Client {
     let response = await this.api.post('/v1/config/presetalert', alert, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -276,15 +282,15 @@ export class Client {
     let response = await this.api.put(`/v1/config/presetalert/${alertId}`, alert, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
   async deletePresetAlert(alertId: string): Promise<void> {
     await this.api.delete(`/v1/config/presetalert/${alertId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
   }
 
@@ -292,14 +298,14 @@ export class Client {
 
   async listCategories(type: string): Promise<any[]> {
     let response = await this.api.get(`/v1/config/categories/${type}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
 
   async getCategory(type: string, categoryId: string): Promise<any> {
     let response = await this.api.get(`/v1/config/categories/${type}/${categoryId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -308,25 +314,33 @@ export class Client {
     let response = await this.api.post(`/v1/config/categories/${type}`, category, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
-  async updateCategory(type: string, categoryId: string, category: CategoryRequest): Promise<any> {
-    let response = await this.api.put(`/v1/config/categories/${type}/${categoryId}`, category, {
-      headers: {
-        ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
-    });
+  async updateCategory(
+    type: string,
+    categoryId: string,
+    category: CategoryRequest
+  ): Promise<any> {
+    let response = await this.api.put(
+      `/v1/config/categories/${type}/${categoryId}`,
+      category,
+      {
+        headers: {
+          ...this.serviceHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
   async deleteCategory(type: string, categoryId: string): Promise<void> {
     await this.api.delete(`/v1/config/categories/${type}/${categoryId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
   }
 
@@ -334,14 +348,14 @@ export class Client {
 
   async listBoards(): Promise<any[]> {
     let response = await this.api.get('/v1/config/boards', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
 
   async getBoard(boardId: string): Promise<any> {
     let response = await this.api.get(`/v1/config/boards/${boardId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -350,15 +364,15 @@ export class Client {
     let response = await this.api.post('/v1/config/boards', board, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
   async deleteBoard(boardId: string): Promise<void> {
     await this.api.delete(`/v1/config/boards/${boardId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
   }
 
@@ -366,14 +380,14 @@ export class Client {
 
   async listExclusionRules(): Promise<any[]> {
     let response = await this.api.get('/v1/config/ingestion/exclusions', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
 
   async getExclusionRule(ruleId: string): Promise<any> {
     let response = await this.api.get(`/v1/config/ingestion/exclusions/${ruleId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -382,25 +396,28 @@ export class Client {
     let response = await this.api.post('/v1/config/ingestion/exclusions', rule, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
-  async updateExclusionRule(ruleId: string, rule: Partial<ExclusionRuleRequest>): Promise<any> {
+  async updateExclusionRule(
+    ruleId: string,
+    rule: Partial<ExclusionRuleRequest>
+  ): Promise<any> {
     let response = await this.api.patch(`/v1/config/ingestion/exclusions/${ruleId}`, rule, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
   async deleteExclusionRule(ruleId: string): Promise<void> {
     await this.api.delete(`/v1/config/ingestion/exclusions/${ruleId}`, {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
   }
 
@@ -408,7 +425,7 @@ export class Client {
 
   async getArchiveConfig(): Promise<any> {
     let response = await this.api.get('/v1/config/archiving', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -417,8 +434,8 @@ export class Client {
     let response = await this.api.post('/v1/config/archiving', archive, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -427,15 +444,15 @@ export class Client {
     let response = await this.api.put('/v1/config/archiving', archive, {
       headers: {
         ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
 
   async deleteArchiveConfig(): Promise<void> {
     await this.api.delete('/v1/config/archiving', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
   }
 
@@ -443,32 +460,44 @@ export class Client {
 
   async getIngestionStatus(): Promise<any> {
     let response = await this.api.get('/v1/config/ingestion', {
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
 
   async suspendIngestion(): Promise<any> {
-    let response = await this.api.post('/v1/config/ingestion/suspend', {}, {
-      headers: this.serviceHeaders(),
-    });
+    let response = await this.api.post(
+      '/v1/config/ingestion/suspend',
+      {},
+      {
+        headers: this.serviceHeaders()
+      }
+    );
     return response.data;
   }
 
   async confirmSuspendIngestion(suspendToken: string): Promise<any> {
-    let response = await this.api.post('/v1/config/ingestion/suspend/confirm', { token: suspendToken }, {
-      headers: {
-        ...this.serviceHeaders(),
-        'Content-Type': 'application/json',
-      },
-    });
+    let response = await this.api.post(
+      '/v1/config/ingestion/suspend/confirm',
+      { token: suspendToken },
+      {
+        headers: {
+          ...this.serviceHeaders(),
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
   async resumeIngestion(): Promise<any> {
-    let response = await this.api.post('/v1/config/ingestion/resume', {}, {
-      headers: this.serviceHeaders(),
-    });
+    let response = await this.api.post(
+      '/v1/config/ingestion/resume',
+      {},
+      {
+        headers: this.serviceHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -477,7 +506,7 @@ export class Client {
   async getUsage(from: number, to: number): Promise<any> {
     let response = await this.api.get('/v1/usage', {
       params: { from, to },
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -485,7 +514,7 @@ export class Client {
   async getUsageByApps(from: number, to: number): Promise<any> {
     let response = await this.api.get('/v1/usage/apps', {
       params: { from, to },
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -493,7 +522,7 @@ export class Client {
   async getUsageByHosts(from: number, to: number): Promise<any> {
     let response = await this.api.get('/v1/usage/hosts', {
       params: { from, to },
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -501,7 +530,7 @@ export class Client {
   async getUsageByTags(from: number, to: number): Promise<any> {
     let response = await this.api.get('/v1/usage/tags', {
       params: { from, to },
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }
@@ -509,7 +538,7 @@ export class Client {
   async getUsageForApp(appName: string, from: number, to: number): Promise<any> {
     let response = await this.api.get(`/v1/usage/apps/${encodeURIComponent(appName)}`, {
       params: { from, to },
-      headers: this.serviceHeaders(),
+      headers: this.serviceHeaders()
     });
     return response.data;
   }

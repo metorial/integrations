@@ -11,19 +11,20 @@ The Google Meet REST API uses OAuth 2.0 with a user's Google credentials. Authen
 For the Meet REST API, you can only authenticate using user authentication.
 
 **Prerequisites:**
+
 - A Google Cloud project with the Google Meet REST API enabled.
 - A Google Workspace account with Google Meet enabled.
 - OAuth 2.0 client credentials (Client ID and Client Secret) configured in the Google Cloud console.
 
 **OAuth 2.0 Scopes:**
 
-| Scope | Description | Sensitivity |
-|---|---|---|
-| `https://www.googleapis.com/auth/meetings.space.created` | Create, modify, and read metadata about meeting spaces created by your app. | Sensitive |
-| `https://www.googleapis.com/auth/meetings.space.readonly` | Read metadata about any meeting space the user has access to. | Sensitive |
-| `https://www.googleapis.com/auth/meetings.space.settings` | Edit and see the settings for all Google Meet calls. | Non-sensitive |
-| `https://www.googleapis.com/auth/drive.readonly` | Download recording and transcript files from Google Drive. | Restricted |
-| `https://www.googleapis.com/auth/drive.meet.readonly` | View Drive files created or edited by Google Meet. | Restricted |
+| Scope                                                     | Description                                                                 | Sensitivity   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------- | ------------- |
+| `https://www.googleapis.com/auth/meetings.space.created`  | Create, modify, and read metadata about meeting spaces created by your app. | Sensitive     |
+| `https://www.googleapis.com/auth/meetings.space.readonly` | Read metadata about any meeting space the user has access to.               | Sensitive     |
+| `https://www.googleapis.com/auth/meetings.space.settings` | Edit and see the settings for all Google Meet calls.                        | Non-sensitive |
+| `https://www.googleapis.com/auth/drive.readonly`          | Download recording and transcript files from Google Drive.                  | Restricted    |
+| `https://www.googleapis.com/auth/drive.meet.readonly`     | View Drive files created or edited by Google Meet.                          | Restricted    |
 
 **Domain-Wide Delegation:**
 

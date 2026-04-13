@@ -2,32 +2,38 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('Rentman API token. Generate at Configuration > Account > Integrations in Rentman.'),
+      token: z
+        .string()
+        .describe(
+          'Rentman API token. Generate at Configuration > Account > Integrations in Rentman.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { token: string } }) => {
       let axios = createAxios({
-        baseURL: 'https://api.rentman.net',
+        baseURL: 'https://api.rentman.net'
       });
 
       let response = await axios.get('/crew/current', {
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data?.data;
@@ -36,8 +42,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user?.id?.toString(),
           name: [user?.firstname, user?.surname].filter(Boolean).join(' ') || undefined,
-          email: user?.email || undefined,
-        },
+          email: user?.email || undefined
+        }
       };
-    },
+    }
   });

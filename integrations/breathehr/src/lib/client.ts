@@ -77,7 +77,7 @@ export interface EmployeeListParams extends PaginationParams {
 }
 
 let toSnakeCase = (str: string): string => {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 let convertKeysToSnakeCase = (obj: Record<string, any>): Record<string, any> => {
@@ -92,16 +92,17 @@ export class Client {
   private axios: ReturnType<typeof createAxios>;
 
   constructor(config: { token: string; environment: string }) {
-    let baseURL = config.environment === 'sandbox'
-      ? 'https://api.sandbox.breathehr.info/v1'
-      : 'https://api.breathehr.com/v1';
+    let baseURL =
+      config.environment === 'sandbox'
+        ? 'https://api.sandbox.breathehr.info/v1'
+        : 'https://api.breathehr.com/v1';
 
     this.axios = createAxios({
       baseURL,
       headers: {
         'X-API-KEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -158,7 +159,8 @@ export class Client {
     if (params?.departmentId) query.department_id = params.departmentId;
     if (params?.startDate) query.start_date = params.startDate;
     if (params?.endDate) query.end_date = params.endDate;
-    if (params?.excludeCancelledAbsences !== undefined) query.exclude_cancelled_absences = params.excludeCancelledAbsences;
+    if (params?.excludeCancelledAbsences !== undefined)
+      query.exclude_cancelled_absences = params.excludeCancelledAbsences;
 
     let response = await this.axios.get('/absences', { params: query });
     return response.data;
@@ -178,7 +180,9 @@ export class Client {
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/employees/${employeeId}/absences`, { params: query });
+    let response = await this.axios.get(`/employees/${employeeId}/absences`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -197,17 +201,23 @@ export class Client {
     return response.data;
   }
 
-  async createLeaveRequest(employeeId: string, params: LeaveRequestCreateParams): Promise<any> {
+  async createLeaveRequest(
+    employeeId: string,
+    params: LeaveRequestCreateParams
+  ): Promise<any> {
     let leaveRequest: Record<string, any> = {
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     };
     if (params.halfDayStart !== undefined) leaveRequest.half_day_start = params.halfDayStart;
     if (params.halfDayEnd !== undefined) leaveRequest.half_day_end = params.halfDayEnd;
-    if (params.otherLeaveReasonId) leaveRequest.other_leave_reason_id = params.otherLeaveReasonId;
+    if (params.otherLeaveReasonId)
+      leaveRequest.other_leave_reason_id = params.otherLeaveReasonId;
     if (params.notes) leaveRequest.notes = params.notes;
 
-    let response = await this.axios.post(`/employees/${employeeId}/leave_requests`, { leave_request: leaveRequest });
+    let response = await this.axios.post(`/employees/${employeeId}/leave_requests`, {
+      leave_request: leaveRequest
+    });
     return response.data;
   }
 
@@ -240,10 +250,11 @@ export class Client {
 
   async createSickness(employeeId: string, params: SicknessCreateParams): Promise<any> {
     let sickness: Record<string, any> = {
-      start_date: params.startDate,
+      start_date: params.startDate
     };
     if (params.endDate) sickness.end_date = params.endDate;
-    if (params.companySicknessTypeId) sickness.company_sickness_type_id = params.companySicknessTypeId;
+    if (params.companySicknessTypeId)
+      sickness.company_sickness_type_id = params.companySicknessTypeId;
     if (params.reason) sickness.reason = params.reason;
 
     let response = await this.axios.post(`/employees/${employeeId}/sicknesses`, { sickness });
@@ -261,9 +272,10 @@ export class Client {
       employee_id: params.employeeId,
       expense_date: params.expenseDate,
       description: params.description,
-      amount: params.amount,
+      amount: params.amount
     };
-    if (params.payableToEmployee !== undefined) expense.payable_to_employee = params.payableToEmployee;
+    if (params.payableToEmployee !== undefined)
+      expense.payable_to_employee = params.payableToEmployee;
     if (params.chargeable !== undefined) expense.chargeable = params.chargeable;
 
     let response = await this.axios.post('/employee_expenses', { employee_expense: expense });
@@ -278,11 +290,13 @@ export class Client {
   // Expense Claims
   async createExpenseClaim(params: ExpenseClaimCreateParams): Promise<any> {
     let claim: Record<string, any> = {
-      employee_id: params.employeeId,
+      employee_id: params.employeeId
     };
     if (params.expenseIds) claim.expense_ids = params.expenseIds;
 
-    let response = await this.axios.post('/employee_expense_claims', { employee_expense_claim: claim });
+    let response = await this.axios.post('/employee_expense_claims', {
+      employee_expense_claim: claim
+    });
     return response.data;
   }
 
@@ -290,7 +304,9 @@ export class Client {
     let claim: Record<string, any> = {};
     if (params.status) claim.status = params.status;
 
-    let response = await this.axios.put(`/employee_expense_claims/${claimId}`, { employee_expense_claim: claim });
+    let response = await this.axios.put(`/employee_expense_claims/${claimId}`, {
+      employee_expense_claim: claim
+    });
     return response.data;
   }
 
@@ -320,7 +336,9 @@ export class Client {
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/employees/${employeeId}/benefits`, { params: query });
+    let response = await this.axios.get(`/employees/${employeeId}/benefits`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -334,13 +352,19 @@ export class Client {
     return response.data;
   }
 
-  async getDepartmentAbsences(departmentId: string, params?: PaginationParams & { excludeCancelledAbsences?: boolean }): Promise<any> {
+  async getDepartmentAbsences(
+    departmentId: string,
+    params?: PaginationParams & { excludeCancelledAbsences?: boolean }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
-    if (params?.excludeCancelledAbsences !== undefined) query.exclude_cancelled_absences = params.excludeCancelledAbsences;
+    if (params?.excludeCancelledAbsences !== undefined)
+      query.exclude_cancelled_absences = params.excludeCancelledAbsences;
 
-    let response = await this.axios.get(`/departments/${departmentId}/absences`, { params: query });
+    let response = await this.axios.get(`/departments/${departmentId}/absences`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -349,7 +373,9 @@ export class Client {
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/departments/${departmentId}/benefits`, { params: query });
+    let response = await this.axios.get(`/departments/${departmentId}/benefits`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -358,16 +384,23 @@ export class Client {
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/departments/${departmentId}/bonuses`, { params: query });
+    let response = await this.axios.get(`/departments/${departmentId}/bonuses`, {
+      params: query
+    });
     return response.data;
   }
 
-  async getDepartmentLeaveRequests(departmentId: string, params?: PaginationParams): Promise<any> {
+  async getDepartmentLeaveRequests(
+    departmentId: string,
+    params?: PaginationParams
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/departments/${departmentId}/leave_requests`, { params: query });
+    let response = await this.axios.get(`/departments/${departmentId}/leave_requests`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -376,7 +409,9 @@ export class Client {
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/departments/${departmentId}/salaries`, { params: query });
+    let response = await this.axios.get(`/departments/${departmentId}/salaries`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -465,12 +500,17 @@ export class Client {
   }
 
   // Employee Change Requests
-  async getEmployeeChangeRequests(employeeId: string, params?: PaginationParams): Promise<any> {
+  async getEmployeeChangeRequests(
+    employeeId: string,
+    params?: PaginationParams
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.perPage) query.per_page = params.perPage;
 
-    let response = await this.axios.get(`/employees/${employeeId}/change_requests`, { params: query });
+    let response = await this.axios.get(`/employees/${employeeId}/change_requests`, {
+      params: query
+    });
     return response.data;
   }
 

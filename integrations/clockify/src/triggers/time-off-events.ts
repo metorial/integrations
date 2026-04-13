@@ -13,38 +13,40 @@ let timeOffEventTypes = [
 ] as const;
 
 let eventTypeMap: Record<string, string> = {
-  'TIME_OFF_REQUESTED': 'time_off.requested',
-  'TIME_OFF_REQUEST_UPDATED': 'time_off.updated',
-  'TIME_OFF_REQUEST_APPROVED': 'time_off.approved',
-  'TIME_OFF_REQUEST_REJECTED': 'time_off.rejected',
-  'TIME_OFF_REQUEST_WITHDRAWN': 'time_off.withdrawn',
-  'BALANCE_UPDATED': 'time_off.balance_updated'
+  TIME_OFF_REQUESTED: 'time_off.requested',
+  TIME_OFF_REQUEST_UPDATED: 'time_off.updated',
+  TIME_OFF_REQUEST_APPROVED: 'time_off.approved',
+  TIME_OFF_REQUEST_REJECTED: 'time_off.rejected',
+  TIME_OFF_REQUEST_WITHDRAWN: 'time_off.withdrawn',
+  BALANCE_UPDATED: 'time_off.balance_updated'
 };
 
-export let timeOffEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Time Off Events',
-    key: 'time_off_events',
-    description: 'Triggered when time off requests are submitted, approved, rejected, withdrawn, updated, or when balances change.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Clockify webhook event type'),
-    timeOff: z.any().describe('Time off data from webhook payload')
-  }))
-  .output(z.object({
-    requestId: z.string(),
-    userId: z.string().optional(),
-    policyId: z.string().optional(),
-    status: z.string().optional(),
-    start: z.string().optional(),
-    end: z.string().optional(),
-    note: z.string().optional(),
-    workspaceId: z.string().optional()
-  }))
+export let timeOffEvents = SlateTrigger.create(spec, {
+  name: 'Time Off Events',
+  key: 'time_off_events',
+  description:
+    'Triggered when time off requests are submitted, approved, rejected, withdrawn, updated, or when balances change.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Clockify webhook event type'),
+      timeOff: z.any().describe('Time off data from webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string(),
+      userId: z.string().optional(),
+      policyId: z.string().optional(),
+      status: z.string().optional(),
+      start: z.string().optional(),
+      end: z.string().optional(),
+      note: z.string().optional(),
+      workspaceId: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -66,7 +68,7 @@ export let timeOffEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         workspaceId: ctx.config.workspaceId,
@@ -83,21 +85,24 @@ export let timeOffEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
-          timeOff: data
-        }]
+        inputs: [
+          {
+            eventType: data.triggerEvent || data.eventType || 'UNKNOWN',
+            timeOff: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let timeOff = ctx.input.timeOff;
       let requestId = timeOff.id || timeOff.requestId || 'unknown';
-      let mappedType = eventTypeMap[ctx.input.eventType] || `time_off.${ctx.input.eventType.toLowerCase()}`;
+      let mappedType =
+        eventTypeMap[ctx.input.eventType] || `time_off.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type: mappedType,

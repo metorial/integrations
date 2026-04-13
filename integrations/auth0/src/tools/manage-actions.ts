@@ -3,57 +3,86 @@ import { Auth0Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageActionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Actions',
-    key: 'manage_actions',
-    description: `Create, update, deploy, delete, or list Auth0 Actions. Actions are serverless functions that execute during authentication flows (login, registration, password change, etc.) to add custom logic.`,
-    instructions: [
-      'After creating or updating an action, use the "deploy" action to make it live.',
-      'The trigger ID determines when the action runs (e.g., "post-login", "pre-user-registration").',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageActionsTool = SlateTool.create(spec, {
+  name: 'Manage Actions',
+  key: 'manage_actions',
+  description: `Create, update, deploy, delete, or list Auth0 Actions. Actions are serverless functions that execute during authentication flows (login, registration, password change, etc.) to add custom logic.`,
+  instructions: [
+    'After creating or updating an action, use the "deploy" action to make it live.',
+    'The trigger ID determines when the action runs (e.g., "post-login", "pre-user-registration").'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'deploy', 'delete']).describe('Action to perform'),
-    actionId: z.string().optional().describe('Action ID (required for get, update, deploy, delete)'),
-    name: z.string().optional().describe('Action name (required for create)'),
-    triggerId: z.string().optional().describe('Trigger ID, e.g., "post-login", "pre-user-registration" (required for create)'),
-    triggerVersion: z.string().optional().describe('Trigger version (default "v3")'),
-    code: z.string().optional().describe('JavaScript code for the action'),
-    dependencies: z.array(z.object({
-      name: z.string().describe('NPM package name'),
-      version: z.string().describe('Package version'),
-    })).optional().describe('NPM dependencies for the action'),
-    secrets: z.array(z.object({
-      name: z.string().describe('Secret name'),
-      value: z.string().describe('Secret value'),
-    })).optional().describe('Environment secrets available to the action'),
-  }))
-  .output(z.object({
-    actionDetails: z.object({
-      actionId: z.string(),
-      name: z.string(),
-      status: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-    }).optional().describe('Action details'),
-    actions: z.array(z.object({
-      actionId: z.string(),
-      name: z.string(),
-      status: z.string().optional(),
-    })).optional().describe('List of actions'),
-    deployed: z.boolean().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'deploy', 'delete'])
+        .describe('Action to perform'),
+      actionId: z
+        .string()
+        .optional()
+        .describe('Action ID (required for get, update, deploy, delete)'),
+      name: z.string().optional().describe('Action name (required for create)'),
+      triggerId: z
+        .string()
+        .optional()
+        .describe(
+          'Trigger ID, e.g., "post-login", "pre-user-registration" (required for create)'
+        ),
+      triggerVersion: z.string().optional().describe('Trigger version (default "v3")'),
+      code: z.string().optional().describe('JavaScript code for the action'),
+      dependencies: z
+        .array(
+          z.object({
+            name: z.string().describe('NPM package name'),
+            version: z.string().describe('Package version')
+          })
+        )
+        .optional()
+        .describe('NPM dependencies for the action'),
+      secrets: z
+        .array(
+          z.object({
+            name: z.string().describe('Secret name'),
+            value: z.string().describe('Secret value')
+          })
+        )
+        .optional()
+        .describe('Environment secrets available to the action')
+    })
+  )
+  .output(
+    z.object({
+      actionDetails: z
+        .object({
+          actionId: z.string(),
+          name: z.string(),
+          status: z.string().optional(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional()
+        })
+        .optional()
+        .describe('Action details'),
+      actions: z
+        .array(
+          z.object({
+            actionId: z.string(),
+            name: z.string(),
+            status: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of actions'),
+      deployed: z.boolean().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Auth0Client({
       token: ctx.auth.token,
-      domain: ctx.auth.domain,
+      domain: ctx.auth.domain
     });
 
     let mapAction = (a: any) => ({
@@ -61,21 +90,21 @@ export let manageActionsTool = SlateTool.create(
       name: a.name,
       status: a.status,
       createdAt: a.created_at,
-      updatedAt: a.updated_at,
+      updatedAt: a.updated_at
     });
 
     if (ctx.input.action === 'list') {
       let result = await client.listActions({
-        triggerId: ctx.input.triggerId,
+        triggerId: ctx.input.triggerId
       });
       let actions = (result.actions ?? []).map((a: any) => ({
         actionId: a.id,
         name: a.name,
-        status: a.status,
+        status: a.status
       }));
       return {
         output: { actions },
-        message: `Found **${actions.length}** action(s).`,
+        message: `Found **${actions.length}** action(s).`
       };
     }
 
@@ -84,7 +113,7 @@ export let manageActionsTool = SlateTool.create(
       let a = await client.getAction(ctx.input.actionId);
       return {
         output: { actionDetails: mapAction(a) },
-        message: `Retrieved action **${a.name}** (${a.status}).`,
+        message: `Retrieved action **${a.name}** (${a.status}).`
       };
     }
 
@@ -94,14 +123,16 @@ export let manageActionsTool = SlateTool.create(
       if (!ctx.input.code) throw new Error('code is required for create action');
       let a = await client.createAction({
         name: ctx.input.name,
-        supportedTriggers: [{ id: ctx.input.triggerId, version: ctx.input.triggerVersion || 'v3' }],
+        supportedTriggers: [
+          { id: ctx.input.triggerId, version: ctx.input.triggerVersion || 'v3' }
+        ],
         code: ctx.input.code,
         dependencies: ctx.input.dependencies,
-        secrets: ctx.input.secrets,
+        secrets: ctx.input.secrets
       });
       return {
         output: { actionDetails: mapAction(a) },
-        message: `Created action **${a.name}**. Remember to deploy it to make it active.`,
+        message: `Created action **${a.name}**. Remember to deploy it to make it active.`
       };
     }
 
@@ -111,11 +142,11 @@ export let manageActionsTool = SlateTool.create(
         name: ctx.input.name,
         code: ctx.input.code,
         dependencies: ctx.input.dependencies,
-        secrets: ctx.input.secrets,
+        secrets: ctx.input.secrets
       });
       return {
         output: { actionDetails: mapAction(a) },
-        message: `Updated action **${a.name}**. Remember to deploy it to apply changes.`,
+        message: `Updated action **${a.name}**. Remember to deploy it to apply changes.`
       };
     }
 
@@ -124,7 +155,7 @@ export let manageActionsTool = SlateTool.create(
       let a = await client.deployAction(ctx.input.actionId);
       return {
         output: { deployed: true },
-        message: `Deployed action successfully.`,
+        message: `Deployed action successfully.`
       };
     }
 
@@ -133,7 +164,7 @@ export let manageActionsTool = SlateTool.create(
       await client.deleteAction(ctx.input.actionId);
       return {
         output: { deleted: true },
-        message: `Deleted action **${ctx.input.actionId}**.`,
+        message: `Deleted action **${ctx.input.actionId}**.`
       };
     }
 

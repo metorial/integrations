@@ -79,15 +79,18 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // --- Contacts ---
 
-  async listContacts(params?: { limit?: number; page?: number }): Promise<EndorsalListResponse<EndorsalContact>> {
+  async listContacts(params?: {
+    limit?: number;
+    page?: number;
+  }): Promise<EndorsalListResponse<EndorsalContact>> {
     let response = await this.axios.get('/contacts', { params });
     return response.data;
   }
@@ -97,35 +100,41 @@ export class Client {
     return response.data;
   }
 
-  async createContact(data: {
-    email?: string;
-    phone?: string;
-    name?: string;
-    externalID?: string;
-    importedFrom?: string;
-    avatar?: string;
-    location?: string;
-    position?: string;
-    company?: string;
-    website?: string;
-    propertyID?: string;
-    customAttributes?: Record<string, unknown>;
-  }, params?: { campaignID?: string }): Promise<EndorsalContact> {
+  async createContact(
+    data: {
+      email?: string;
+      phone?: string;
+      name?: string;
+      externalID?: string;
+      importedFrom?: string;
+      avatar?: string;
+      location?: string;
+      position?: string;
+      company?: string;
+      website?: string;
+      propertyID?: string;
+      customAttributes?: Record<string, unknown>;
+    },
+    params?: { campaignID?: string }
+  ): Promise<EndorsalContact> {
     let response = await this.axios.post('/contacts', data, { params });
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    avatar?: string;
-    location?: string;
-    position?: string;
-    company?: string;
-    website?: string;
-    customAttributes?: Record<string, unknown>;
-  }): Promise<EndorsalContact> {
+  async updateContact(
+    contactId: string,
+    data: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      avatar?: string;
+      location?: string;
+      position?: string;
+      company?: string;
+      website?: string;
+      customAttributes?: Record<string, unknown>;
+    }
+  ): Promise<EndorsalContact> {
     let response = await this.axios.patch(`/contacts/${contactId}`, data);
     return response.data;
   }
@@ -137,7 +146,10 @@ export class Client {
 
   // --- Testimonials ---
 
-  async listTestimonials(params?: { limit?: number; page?: number }): Promise<EndorsalListResponse<EndorsalTestimonial>> {
+  async listTestimonials(params?: {
+    limit?: number;
+    page?: number;
+  }): Promise<EndorsalListResponse<EndorsalTestimonial>> {
     let response = await this.axios.get('/testimonials', { params });
     return response.data;
   }
@@ -165,18 +177,21 @@ export class Client {
     return response.data;
   }
 
-  async updateTestimonial(testimonialId: string, data: {
-    name?: string;
-    comments?: string;
-    rating?: number;
-    avatar?: string;
-    email?: string;
-    location?: string;
-    position?: string;
-    company?: string;
-    approved?: number;
-    featured?: number;
-  }): Promise<EndorsalTestimonial> {
+  async updateTestimonial(
+    testimonialId: string,
+    data: {
+      name?: string;
+      comments?: string;
+      rating?: number;
+      avatar?: string;
+      email?: string;
+      location?: string;
+      position?: string;
+      company?: string;
+      approved?: number;
+      featured?: number;
+    }
+  ): Promise<EndorsalTestimonial> {
     let response = await this.axios.patch(`/testimonials/${testimonialId}`, data);
     return response.data;
   }
@@ -185,19 +200,26 @@ export class Client {
     await this.axios.delete(`/testimonials/${testimonialId}`);
   }
 
-  async getTestimonialsForContact(contactId: string): Promise<EndorsalListResponse<EndorsalTestimonial>> {
+  async getTestimonialsForContact(
+    contactId: string
+  ): Promise<EndorsalListResponse<EndorsalTestimonial>> {
     let response = await this.axios.get(`/contacts/${contactId}/testimonials`);
     return response.data;
   }
 
-  async getTestimonialsForTag(tagId: string): Promise<EndorsalListResponse<EndorsalTestimonial>> {
+  async getTestimonialsForTag(
+    tagId: string
+  ): Promise<EndorsalListResponse<EndorsalTestimonial>> {
     let response = await this.axios.get(`/tags/${tagId}/testimonials`);
     return response.data;
   }
 
   // --- AutoRequest Campaigns ---
 
-  async listCampaigns(params?: { limit?: number; page?: number }): Promise<EndorsalListResponse<EndorsalCampaign>> {
+  async listCampaigns(params?: {
+    limit?: number;
+    page?: number;
+  }): Promise<EndorsalListResponse<EndorsalCampaign>> {
     let response = await this.axios.get('/autorequests/campaigns', { params });
     return response.data;
   }
@@ -209,7 +231,10 @@ export class Client {
 
   // --- Widgets ---
 
-  async listWidgets(params?: { limit?: number; page?: number }): Promise<EndorsalListResponse<EndorsalWidget>> {
+  async listWidgets(params?: {
+    limit?: number;
+    page?: number;
+  }): Promise<EndorsalListResponse<EndorsalWidget>> {
     let response = await this.axios.get('/widgets', { params });
     return response.data;
   }

@@ -10,7 +10,7 @@ import {
   pushModel,
   createModel,
   copyModel,
-  deleteModel,
+  deleteModel
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -27,9 +27,7 @@ export let provider = Slate.create({
     pushModel,
     createModel,
     copyModel,
-    deleteModel,
+    deleteModel
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

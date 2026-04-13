@@ -36,7 +36,5 @@ export let provider = Slate.create({
     updateTicketTool,
     listAgentsTool
   ] as any,
-  triggers: [
-    conversationEventTrigger
-  ] as any
+  triggers: [conversationEventTrigger] as any
 });

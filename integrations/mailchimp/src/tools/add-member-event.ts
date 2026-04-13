@@ -4,40 +4,46 @@ import { getSubscriberHash } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let addMemberEventTool = SlateTool.create(
-  spec,
-  {
-    name: 'Add Member Event',
-    key: 'add_member_event',
-    description: `Post a custom event for a list member. Custom events can trigger automations and Customer Journeys. Provide the event name and optional key-value properties.`,
-    tags: {
-      destructive: false,
-    },
+export let addMemberEventTool = SlateTool.create(spec, {
+  name: 'Add Member Event',
+  key: 'add_member_event',
+  description: `Post a custom event for a list member. Custom events can trigger automations and Customer Journeys. Provide the event name and optional key-value properties.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    listId: z.string().describe('Audience ID'),
-    emailAddress: z.string().describe('Email address of the member'),
-    eventName: z.string().describe('Name of the custom event (e.g., "purchased_product", "viewed_page")'),
-    properties: z.record(z.string(), z.string()).optional().describe('Key-value properties for the event'),
-  }))
-  .output(z.object({
-    subscriberHash: z.string(),
-    emailAddress: z.string(),
-    eventName: z.string(),
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      listId: z.string().describe('Audience ID'),
+      emailAddress: z.string().describe('Email address of the member'),
+      eventName: z
+        .string()
+        .describe('Name of the custom event (e.g., "purchased_product", "viewed_page")'),
+      properties: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Key-value properties for the event')
+    })
+  )
+  .output(
+    z.object({
+      subscriberHash: z.string(),
+      emailAddress: z.string(),
+      eventName: z.string(),
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MailchimpClient({
       token: ctx.auth.token,
-      serverPrefix: ctx.auth.serverPrefix,
+      serverPrefix: ctx.auth.serverPrefix
     });
 
     let hash = getSubscriberHash(ctx.input.emailAddress);
 
     await client.addMemberEvent(ctx.input.listId, hash, {
       name: ctx.input.eventName,
-      properties: ctx.input.properties,
+      properties: ctx.input.properties
     });
 
     return {
@@ -45,8 +51,9 @@ export let addMemberEventTool = SlateTool.create(
         subscriberHash: hash,
         emailAddress: ctx.input.emailAddress,
         eventName: ctx.input.eventName,
-        success: true,
+        success: true
       },
-      message: `Event **${ctx.input.eventName}** posted for **${ctx.input.emailAddress}**.`,
+      message: `Event **${ctx.input.eventName}** posted for **${ctx.input.emailAddress}**.`
     };
-  }).build();
+  })
+  .build();

@@ -1,24 +1,21 @@
-// @ts-ignore
-import * as net from 'node:net';
-// @ts-ignore
-import * as tls from 'node:tls';
-// @ts-ignore
-import * as crypto from 'node:crypto';
+import * as crypto from 'crypto';
+import * as net from 'net';
+import * as tls from 'tls';
 import {
-  buildStartupMessage,
-  buildPasswordMessage,
-  buildQueryMessage,
-  buildTerminateMessage,
-  parseMessages,
-  parseErrorFields,
-  parseRowDescription,
-  parseDataRow,
-  parseCommandComplete,
-  oidToTypeName,
-  MessageTypes,
   AuthenticationTypes,
+  MessageTypes,
   MessageWriter,
   buildMessage,
+  buildPasswordMessage,
+  buildQueryMessage,
+  buildStartupMessage,
+  buildTerminateMessage,
+  oidToTypeName,
+  parseCommandComplete,
+  parseDataRow,
+  parseErrorFields,
+  parseMessages,
+  parseRowDescription,
   type ColumnDescription,
   type ParsedMessage
 } from './protocol';

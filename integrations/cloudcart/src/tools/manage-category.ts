@@ -3,38 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCategory = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Category',
-    key: 'manage_category',
-    description: `Create, update, or delete a product category. Use this to organize products into categories, build category hierarchies by setting parent categories, and manage SEO and display settings.`,
-    instructions: [
-      'To create a category, provide a name and set action to "create".',
-      'To update a category, provide the categoryId and any fields to change with action "update".',
-      'To delete a category, provide the categoryId with action "delete".',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The action to perform'),
-    categoryId: z.string().optional().describe('ID of the category (required for update/delete)'),
-    name: z.string().optional().describe('Category name (required for create)'),
-    parentId: z.string().optional().describe('Parent category ID for building hierarchy'),
-    description: z.string().optional().describe('Category description'),
-    urlHandle: z.string().optional().describe('URL-friendly slug'),
-    seoTitle: z.string().optional().describe('SEO title'),
-    seoDescription: z.string().optional().describe('SEO meta description'),
-    order: z.number().optional().describe('Display order'),
-    color: z.string().optional().describe('Category color'),
-    icon: z.string().optional().describe('Category icon'),
-  }))
-  .output(z.object({
-    categoryId: z.string().optional(),
-    name: z.string().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageCategory = SlateTool.create(spec, {
+  name: 'Manage Category',
+  key: 'manage_category',
+  description: `Create, update, or delete a product category. Use this to organize products into categories, build category hierarchies by setting parent categories, and manage SEO and display settings.`,
+  instructions: [
+    'To create a category, provide a name and set action to "create".',
+    'To update a category, provide the categoryId and any fields to change with action "update".',
+    'To delete a category, provide the categoryId with action "delete".'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The action to perform'),
+      categoryId: z
+        .string()
+        .optional()
+        .describe('ID of the category (required for update/delete)'),
+      name: z.string().optional().describe('Category name (required for create)'),
+      parentId: z.string().optional().describe('Parent category ID for building hierarchy'),
+      description: z.string().optional().describe('Category description'),
+      urlHandle: z.string().optional().describe('URL-friendly slug'),
+      seoTitle: z.string().optional().describe('SEO title'),
+      seoDescription: z.string().optional().describe('SEO meta description'),
+      order: z.number().optional().describe('Display order'),
+      color: z.string().optional().describe('Category color'),
+      icon: z.string().optional().describe('Category icon')
+    })
+  )
+  .output(
+    z.object({
+      categoryId: z.string().optional(),
+      name: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.config.domain });
 
     if (ctx.input.action === 'create') {
@@ -44,7 +48,8 @@ export let manageCategory = SlateTool.create(
       if (ctx.input.description !== undefined) attributes.description = ctx.input.description;
       if (ctx.input.urlHandle !== undefined) attributes.url_handle = ctx.input.urlHandle;
       if (ctx.input.seoTitle !== undefined) attributes.seo_title = ctx.input.seoTitle;
-      if (ctx.input.seoDescription !== undefined) attributes.seo_description = ctx.input.seoDescription;
+      if (ctx.input.seoDescription !== undefined)
+        attributes.seo_description = ctx.input.seoDescription;
       if (ctx.input.order !== undefined) attributes.order = ctx.input.order;
       if (ctx.input.color !== undefined) attributes.color = ctx.input.color;
       if (ctx.input.icon !== undefined) attributes.icon = ctx.input.icon;
@@ -54,8 +59,8 @@ export let manageCategory = SlateTool.create(
       if (ctx.input.parentId) {
         relationships = {
           parent: {
-            data: { type: 'categories', id: ctx.input.parentId },
-          },
+            data: { type: 'categories', id: ctx.input.parentId }
+          }
         };
       }
 
@@ -63,7 +68,7 @@ export let manageCategory = SlateTool.create(
       let c = res.data;
       return {
         output: { categoryId: c.id, name: c.attributes.name },
-        message: `Created category **${c.attributes.name}** (ID: ${c.id}).`,
+        message: `Created category **${c.attributes.name}** (ID: ${c.id}).`
       };
     }
 
@@ -75,7 +80,8 @@ export let manageCategory = SlateTool.create(
       if (ctx.input.description !== undefined) attributes.description = ctx.input.description;
       if (ctx.input.urlHandle !== undefined) attributes.url_handle = ctx.input.urlHandle;
       if (ctx.input.seoTitle !== undefined) attributes.seo_title = ctx.input.seoTitle;
-      if (ctx.input.seoDescription !== undefined) attributes.seo_description = ctx.input.seoDescription;
+      if (ctx.input.seoDescription !== undefined)
+        attributes.seo_description = ctx.input.seoDescription;
       if (ctx.input.order !== undefined) attributes.order = ctx.input.order;
       if (ctx.input.color !== undefined) attributes.color = ctx.input.color;
       if (ctx.input.icon !== undefined) attributes.icon = ctx.input.icon;
@@ -85,7 +91,7 @@ export let manageCategory = SlateTool.create(
       let c = res.data;
       return {
         output: { categoryId: c.id, name: c.attributes.name },
-        message: `Updated category **${c.attributes.name || c.id}**.`,
+        message: `Updated category **${c.attributes.name || c.id}**.`
       };
     }
 
@@ -94,7 +100,7 @@ export let manageCategory = SlateTool.create(
       await client.deleteCategory(ctx.input.categoryId);
       return {
         output: { deleted: true },
-        message: `Deleted category **${ctx.input.categoryId}**.`,
+        message: `Deleted category **${ctx.input.categoryId}**.`
       };
     }
 

@@ -3,40 +3,45 @@ import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getInvoice = SlateTool.create(
-  spec,
-  {
-    name: 'Get Invoice',
-    key: 'get_invoice',
-    description: `Retrieve a single invoice by its ID, including header fields, invoice lines, supplier info, and payment details.`,
-    tags: {
-      readOnly: true,
-    },
+export let getInvoice = SlateTool.create(spec, {
+  name: 'Get Invoice',
+  key: 'get_invoice',
+  description: `Retrieve a single invoice by its ID, including header fields, invoice lines, supplier info, and payment details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    invoiceId: z.number().describe('Coupa invoice ID'),
-  }))
-  .output(z.object({
-    invoiceId: z.number().describe('Coupa internal invoice ID'),
-    invoiceNumber: z.string().nullable().optional().describe('Invoice number'),
-    status: z.string().nullable().optional().describe('Invoice status'),
-    invoiceDate: z.string().nullable().optional().describe('Invoice date'),
-    dueDate: z.string().nullable().optional().describe('Payment due date'),
-    supplier: z.any().nullable().optional().describe('Supplier object'),
-    currency: z.any().nullable().optional().describe('Currency object'),
-    totalAmount: z.any().nullable().optional().describe('Total invoice amount'),
-    invoiceLines: z.array(z.any()).nullable().optional().describe('Invoice line items'),
-    paymentTerm: z.any().nullable().optional().describe('Payment terms'),
-    documentType: z.string().nullable().optional().describe('Document type (Invoice, Credit Note, etc.)'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-    rawData: z.any().optional().describe('Complete raw invoice data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      invoiceId: z.number().describe('Coupa invoice ID')
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.number().describe('Coupa internal invoice ID'),
+      invoiceNumber: z.string().nullable().optional().describe('Invoice number'),
+      status: z.string().nullable().optional().describe('Invoice status'),
+      invoiceDate: z.string().nullable().optional().describe('Invoice date'),
+      dueDate: z.string().nullable().optional().describe('Payment due date'),
+      supplier: z.any().nullable().optional().describe('Supplier object'),
+      currency: z.any().nullable().optional().describe('Currency object'),
+      totalAmount: z.any().nullable().optional().describe('Total invoice amount'),
+      invoiceLines: z.array(z.any()).nullable().optional().describe('Invoice line items'),
+      paymentTerm: z.any().nullable().optional().describe('Payment terms'),
+      documentType: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Document type (Invoice, Credit Note, etc.)'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
+      rawData: z.any().optional().describe('Complete raw invoice data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CoupaClient({
       token: ctx.auth.token,
-      instanceUrl: ctx.config.instanceUrl,
+      instanceUrl: ctx.config.instanceUrl
     });
 
     let inv = await client.getInvoice(ctx.input.invoiceId);
@@ -56,9 +61,9 @@ export let getInvoice = SlateTool.create(
         documentType: inv['document-type'] ?? inv.document_type ?? null,
         createdAt: inv['created-at'] ?? inv.created_at ?? null,
         updatedAt: inv['updated-at'] ?? inv.updated_at ?? null,
-        rawData: inv,
+        rawData: inv
       },
-      message: `Retrieved invoice **#${inv['invoice-number'] ?? inv.invoice_number ?? inv.id}** (status: ${inv.status}).`,
+      message: `Retrieved invoice **#${inv['invoice-number'] ?? inv.invoice_number ?? inv.id}** (status: ${inv.status}).`
     };
   })
   .build();

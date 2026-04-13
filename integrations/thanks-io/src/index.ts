@@ -12,13 +12,13 @@ import {
   listHandwritingStyles,
   listGiftcardBrands,
   manageSubAccounts,
-  radiusSearch,
+  radiusSearch
 } from './tools';
 import {
   orderStatusEvents,
   mailDeliveryEvents,
   mailStatusEvents,
-  qrScanEvents,
+  qrScanEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -35,12 +35,7 @@ export let provider = Slate.create({
     listHandwritingStyles,
     listGiftcardBrands,
     manageSubAccounts,
-    radiusSearch,
+    radiusSearch
   ],
-  triggers: [
-    orderStatusEvents,
-    mailDeliveryEvents,
-    mailStatusEvents,
-    qrScanEvents,
-  ],
+  triggers: [orderStatusEvents, mailDeliveryEvents, mailStatusEvents, qrScanEvents]
 });

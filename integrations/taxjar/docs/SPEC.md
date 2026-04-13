@@ -11,7 +11,7 @@ TaxJar is a sales tax automation platform that provides sales tax calculation, r
 TaxJar uses API keys to allow access to the API. TaxJar does not provide OAuth-based authentication; only token-based authentication is supported.
 
 **Obtaining an API Token:**
-If you're new to TaxJar, you'll need to sign up for an account to get your API key. Otherwise, log in and go to *Account > API Access* to generate a new API token.
+If you're new to TaxJar, you'll need to sign up for an account to get your API key. Otherwise, log in and go to _Account > API Access_ to generate a new API token.
 
 **Using the API Token:**
 TaxJar expects the API key to be included in all API requests to the server via the `Authorization` header in one of two formats:

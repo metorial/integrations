@@ -3,33 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let userCreated = SlateTrigger.create(
-  spec,
-  {
-    name: 'New User Created',
-    key: 'user_created',
-    description: 'Triggers when a new user or customer is created in OneDesk.',
-  }
-)
-  .input(z.object({
-    userExternalId: z.string().describe('External ID of the new user.'),
-    userName: z.string().describe('Name of the new user.'),
-    timestamp: z.string().describe('Timestamp of when the user was created.'),
-  }))
-  .output(z.object({
-    userExternalId: z.string().describe('External ID of the new user.'),
-    userName: z.string().describe('Name of the new user.'),
-    timestamp: z.string().describe('When the user was created.'),
-  }))
+export let userCreated = SlateTrigger.create(spec, {
+  name: 'New User Created',
+  key: 'user_created',
+  description: 'Triggers when a new user or customer is created in OneDesk.'
+})
+  .input(
+    z.object({
+      userExternalId: z.string().describe('External ID of the new user.'),
+      userName: z.string().describe('Name of the new user.'),
+      timestamp: z.string().describe('Timestamp of when the user was created.')
+    })
+  )
+  .output(
+    z.object({
+      userExternalId: z.string().describe('External ID of the new user.'),
+      userName: z.string().describe('Name of the new user.'),
+      timestamp: z.string().describe('When the user was created.')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        authMethod: ctx.auth.authMethod,
+        authMethod: ctx.auth.authMethod
       });
 
       let state = ctx.input.state as { lastTimestamp?: string } | null;
@@ -47,11 +48,11 @@ export let userCreated = SlateTrigger.create(
         activities = await client.searchActivities({
           properties: [
             { property: 'types', operation: 'EQ', value: 'CREATED_USER' },
-            timeFilter,
+            timeFilter
           ],
           isAsc: false,
           limit: 50,
-          offset: 0,
+          offset: 0
         });
       } catch (e) {
         ctx.warn('Failed to fetch new user activities');
@@ -69,23 +70,24 @@ export let userCreated = SlateTrigger.create(
         inputs: activities.map((activity: any) => ({
           userExternalId: activity.itemExternalId || activity.externalId || '',
           userName: activity.itemName || activity.name || '',
-          timestamp: activity.timestamp || activity.creationTime || '',
+          timestamp: activity.timestamp || activity.creationTime || ''
         })),
         updatedState: {
-          lastTimestamp: latestTimestamp || lastTimestamp,
-        },
+          lastTimestamp: latestTimestamp || lastTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'user.created',
         id: `${ctx.input.userExternalId}-${ctx.input.timestamp}`,
         output: {
           userExternalId: ctx.input.userExternalId,
           userName: ctx.input.userName,
-          timestamp: ctx.input.timestamp,
-        },
+          timestamp: ctx.input.timestamp
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

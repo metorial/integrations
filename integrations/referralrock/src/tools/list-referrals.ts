@@ -13,7 +13,10 @@ let referralSchema = z.object({
   phoneNumber: z.string().optional().describe('Phone number'),
   amount: z.number().optional().describe('Referral amount'),
   amountFormatted: z.string().optional().describe('Formatted referral amount'),
-  status: z.string().optional().describe('Referral status (pending, qualified, approved, denied)'),
+  status: z
+    .string()
+    .optional()
+    .describe('Referral status (pending, qualified, approved, denied)'),
   createDate: z.string().optional().describe('Creation date'),
   updateDate: z.string().optional().describe('Last updated date'),
   programId: z.string().optional().describe('Associated program ID'),
@@ -25,43 +28,63 @@ let referralSchema = z.object({
   companyName: z.string().optional().describe('Company name'),
   note: z.string().optional().describe('Internal note'),
   approvedDate: z.string().optional().describe('Approved date'),
-  qualifiedDate: z.string().optional().describe('Qualified date'),
+  qualifiedDate: z.string().optional().describe('Qualified date')
 });
 
-export let listReferrals = SlateTool.create(
-  spec,
-  {
-    name: 'List Referrals',
-    key: 'list_referrals',
-    description: `List and filter referrals across programs. Filter by program, referring member, status, date range, or search term. Supports multiple sort options and pagination.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    programId: z.string().optional().describe('Filter by program ID, name, or title'),
-    memberId: z.string().optional().describe('Filter by referring member ID'),
-    query: z.string().optional().describe('Search by email, internal ID, external ID, or referral code'),
-    status: z.enum(['pending', 'qualified', 'approved', 'denied']).optional().describe('Filter by referral status'),
-    sort: z.enum([
-      'Create_Dt_Desc', 'Create_Dt_Asc',
-      'Amount_Desc', 'Amount_Asc',
-      'Qualified_Dt_Desc', 'Qualified_Dt_Asc',
-      'Closed_Dt_Desc', 'Closed_Dt_Asc',
-    ]).optional().describe('Sort order'),
-    dateFrom: z.string().optional().describe('Referrals created after this date (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('Referrals created before this date (YYYY-MM-DD)'),
-    offset: z.number().optional().describe('Starting index for pagination (0-based)'),
-    count: z.number().optional().describe('Maximum number of referrals to return'),
-  }))
-  .output(z.object({
-    referrals: z.array(referralSchema).describe('List of referrals'),
-    total: z.number().optional().describe('Total number of referrals matching filters'),
-    offset: z.number().optional().describe('Current pagination offset'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listReferrals = SlateTool.create(spec, {
+  name: 'List Referrals',
+  key: 'list_referrals',
+  description: `List and filter referrals across programs. Filter by program, referring member, status, date range, or search term. Supports multiple sort options and pagination.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      programId: z.string().optional().describe('Filter by program ID, name, or title'),
+      memberId: z.string().optional().describe('Filter by referring member ID'),
+      query: z
+        .string()
+        .optional()
+        .describe('Search by email, internal ID, external ID, or referral code'),
+      status: z
+        .enum(['pending', 'qualified', 'approved', 'denied'])
+        .optional()
+        .describe('Filter by referral status'),
+      sort: z
+        .enum([
+          'Create_Dt_Desc',
+          'Create_Dt_Asc',
+          'Amount_Desc',
+          'Amount_Asc',
+          'Qualified_Dt_Desc',
+          'Qualified_Dt_Asc',
+          'Closed_Dt_Desc',
+          'Closed_Dt_Asc'
+        ])
+        .optional()
+        .describe('Sort order'),
+      dateFrom: z
+        .string()
+        .optional()
+        .describe('Referrals created after this date (YYYY-MM-DD)'),
+      dateTo: z
+        .string()
+        .optional()
+        .describe('Referrals created before this date (YYYY-MM-DD)'),
+      offset: z.number().optional().describe('Starting index for pagination (0-based)'),
+      count: z.number().optional().describe('Maximum number of referrals to return')
+    })
+  )
+  .output(
+    z.object({
+      referrals: z.array(referralSchema).describe('List of referrals'),
+      total: z.number().optional().describe('Total number of referrals matching filters'),
+      offset: z.number().optional().describe('Current pagination offset')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ReferralRockClient({ token: ctx.auth.token });
 
     let result = await client.listReferrals({
@@ -73,10 +96,10 @@ export let listReferrals = SlateTool.create(
       dateFrom: ctx.input.dateFrom,
       dateTo: ctx.input.dateTo,
       offset: ctx.input.offset,
-      count: ctx.input.count,
+      count: ctx.input.count
     });
 
-    let referrals = (result.referrals as Array<Record<string, unknown>> || []).map((r) => ({
+    let referrals = ((result.referrals as Array<Record<string, unknown>>) || []).map(r => ({
       referralId: r.id as string,
       displayName: r.displayName as string | undefined,
       firstName: r.firstName as string | undefined,
@@ -98,16 +121,16 @@ export let listReferrals = SlateTool.create(
       companyName: r.companyName as string | undefined,
       note: r.note as string | undefined,
       approvedDate: r.approvedDate as string | undefined,
-      qualifiedDate: r.qualifiedDate as string | undefined,
+      qualifiedDate: r.qualifiedDate as string | undefined
     }));
 
     return {
       output: {
         referrals,
         total: result.total as number | undefined,
-        offset: result.offset as number | undefined,
+        offset: result.offset as number | undefined
       },
-      message: `Retrieved **${referrals.length}** referral(s)${result.total ? ` out of ${result.total} total` : ''}.`,
+      message: `Retrieved **${referrals.length}** referral(s)${result.total ? ` out of ${result.total} total` : ''}.`
     };
   })
   .build();

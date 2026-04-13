@@ -1,17 +1,16 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export class Client {
   private axios: AxiosInstance;
 
   constructor(config: { token: string }) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let encoded = Buffer.from(`:${config.token}`).toString('base64');
 
     this.axios = createAxios({
       baseURL: 'https://api.lemlist.com/api',
       headers: {
-        'Authorization': `Basic ${encoded}`,
+        Authorization: `Basic ${encoded}`,
         'Content-Type': 'application/json'
       }
     });
@@ -60,12 +59,15 @@ export class Client {
     return response.data;
   }
 
-  async getCampaignStats(campaignId: string, params: {
-    startDate: string;
-    endDate: string;
-    sendUser?: string;
-    channels?: string[];
-  }) {
+  async getCampaignStats(
+    campaignId: string,
+    params: {
+      startDate: string;
+      endDate: string;
+      sendUser?: string;
+      channels?: string[];
+    }
+  ) {
     let response = await this.axios.get(`/v2/campaigns/${campaignId}/stats`, {
       params: {
         startDate: params.startDate,
@@ -79,24 +81,31 @@ export class Client {
 
   // ── Leads ──────────────────────────────────────────────
 
-  async addLeadToCampaign(campaignId: string, lead: Record<string, unknown>, options?: {
-    deduplicate?: boolean;
-    linkedinEnrichment?: boolean;
-    findEmail?: boolean;
-    verifyEmail?: boolean;
-    findPhone?: boolean;
-  }) {
+  async addLeadToCampaign(
+    campaignId: string,
+    lead: Record<string, unknown>,
+    options?: {
+      deduplicate?: boolean;
+      linkedinEnrichment?: boolean;
+      findEmail?: boolean;
+      verifyEmail?: boolean;
+      findPhone?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/campaigns/${campaignId}/leads/`, lead, {
       params: options
     });
     return response.data;
   }
 
-  async getCampaignLeads(campaignId: string, params?: {
-    state?: string;
-    offset?: number;
-    limit?: number;
-  }) {
+  async getCampaignLeads(
+    campaignId: string,
+    params?: {
+      state?: string;
+      offset?: number;
+      limit?: number;
+    }
+  ) {
     let response = await this.axios.get(`/campaigns/${campaignId}/leads`, {
       params
     });
@@ -173,10 +182,7 @@ export class Client {
 
   // ── Unsubscribes ───────────────────────────────────────
 
-  async listUnsubscribes(params?: {
-    offset?: number;
-    limit?: number;
-  }) {
+  async listUnsubscribes(params?: { offset?: number; limit?: number }) {
     let response = await this.axios.get('/unsubscribes', {
       params
     });
@@ -200,13 +206,21 @@ export class Client {
 
   // ── Webhooks ───────────────────────────────────────────
 
-  async createWebhook(targetUrl: string, type?: string, options?: {
-    campaignId?: string;
-    isFirst?: boolean;
-  }) {
-    let response = await this.axios.post('/hooks', { targetUrl, type }, {
-      params: options
-    });
+  async createWebhook(
+    targetUrl: string,
+    type?: string,
+    options?: {
+      campaignId?: string;
+      isFirst?: boolean;
+    }
+  ) {
+    let response = await this.axios.post(
+      '/hooks',
+      { targetUrl, type },
+      {
+        params: options
+      }
+    );
     return response.data;
   }
 

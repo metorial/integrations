@@ -11,7 +11,7 @@ import {
   manageConversionActions,
   generateKeywordIdeas,
   uploadOfflineConversions,
-  manageAudienceLists,
+  manageAudienceLists
 } from './tools';
 import { leadFormSubmit } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     manageConversionActions,
     generateKeywordIdeas,
     uploadOfflineConversions,
-    manageAudienceLists,
+    manageAudienceLists
   ] as any,
-  triggers: [
-    leadFormSubmit,
-  ] as any,
+  triggers: [leadFormSubmit] as any
 });

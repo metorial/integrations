@@ -3,14 +3,11 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newAttendeeTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Attendee',
-    key: 'new_attendee',
-    description: 'Triggers when a new attendee is added to an event.',
-  },
-)
+export let newAttendeeTrigger = SlateTrigger.create(spec, {
+  name: 'New Attendee',
+  key: 'new_attendee',
+  description: 'Triggers when a new attendee is added to an event.'
+})
   .input(
     z.object({
       attendeeId: z.number().describe('Attendee ID'),
@@ -22,8 +19,8 @@ export let newAttendeeTrigger = SlateTrigger.create(
       isAttended: z.string().optional().describe('Check-in status'),
       transactionRef: z.string().optional().describe('Transaction reference'),
       eventId: z.number().optional().describe('Event ID'),
-      eventTitle: z.string().optional().describe('Event title'),
-    }),
+      eventTitle: z.string().optional().describe('Event title')
+    })
   )
   .output(
     z.object({
@@ -36,24 +33,29 @@ export let newAttendeeTrigger = SlateTrigger.create(
       isAttended: z.string().optional().describe('Check-in status'),
       transactionRef: z.string().optional().describe('Transaction reference'),
       eventId: z.number().optional().describe('Event ID'),
-      eventTitle: z.string().optional().describe('Event title'),
-    }),
+      eventTitle: z.string().optional().describe('Event title')
+    })
   )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
-      let knownAttendeeIds: Record<string, boolean> = (ctx.state?.knownAttendeeIds as Record<string, boolean>) ?? {};
+      let knownAttendeeIds: Record<string, boolean> =
+        (ctx.state?.knownAttendeeIds as Record<string, boolean>) ?? {};
       let eventIds: string[] = (ctx.state?.eventIds as string[]) ?? [];
 
       // On first poll, discover events
       if (eventIds.length === 0) {
         let eventsData = await client.listEvents({ status: 'live', limit: 50 });
-        let events = Array.isArray(eventsData?.events) ? eventsData.events : Array.isArray(eventsData) ? eventsData : [];
+        let events = Array.isArray(eventsData?.events)
+          ? eventsData.events
+          : Array.isArray(eventsData)
+            ? eventsData
+            : [];
         eventIds = events.map((e: any) => String(e.id));
       }
 
@@ -62,7 +64,11 @@ export let newAttendeeTrigger = SlateTrigger.create(
       for (let eventId of eventIds) {
         try {
           let data = await client.listEventAttendees(eventId, { limit: 50 });
-          let attendees = Array.isArray(data?.attendees) ? data.attendees : Array.isArray(data) ? data : [];
+          let attendees = Array.isArray(data?.attendees)
+            ? data.attendees
+            : Array.isArray(data)
+              ? data
+              : [];
 
           for (let a of attendees) {
             let id = String(a.id);
@@ -80,7 +86,7 @@ export let newAttendeeTrigger = SlateTrigger.create(
                   isAttended: a.is_attended,
                   transactionRef: a.transaction_ref,
                   eventId: a.event_id,
-                  eventTitle: a.title,
+                  eventTitle: a.title
                 });
               }
             }
@@ -95,12 +101,12 @@ export let newAttendeeTrigger = SlateTrigger.create(
         updatedState: {
           knownAttendeeIds,
           eventIds,
-          initialized: true,
-        },
+          initialized: true
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'attendee.created',
         id: String(ctx.input.attendeeId),
@@ -114,8 +120,9 @@ export let newAttendeeTrigger = SlateTrigger.create(
           isAttended: ctx.input.isAttended,
           transactionRef: ctx.input.transactionRef,
           eventId: ctx.input.eventId,
-          eventTitle: ctx.input.eventTitle,
-        },
+          eventTitle: ctx.input.eventTitle
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -3,29 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateUser = SlateTool.create(
-  spec,
-  {
-    name: 'Update User',
-    key: 'update_user',
-    description: `Update a user account's profile information. Only the fields provided will be updated; omitted fields remain unchanged.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateUser = SlateTool.create(spec, {
+  name: 'Update User',
+  key: 'update_user',
+  description: `Update a user account's profile information. Only the fields provided will be updated; omitted fields remain unchanged.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    userId: z.string().describe('The ID of the user to update'),
-    firstName: z.string().optional().describe('New first name'),
-    lastName: z.string().optional().describe('New last name'),
-    email: z.string().optional().describe('New email address'),
-    timezoneId: z.number().optional().describe('New timezone ID'),
-  }))
-  .output(z.object({
-    user: z.record(z.string(), z.unknown()).describe('The updated user account'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z.string().describe('The ID of the user to update'),
+      firstName: z.string().optional().describe('New first name'),
+      lastName: z.string().optional().describe('New last name'),
+      email: z.string().optional().describe('New email address'),
+      timezoneId: z.number().optional().describe('New timezone ID')
+    })
+  )
+  .output(
+    z.object({
+      user: z.record(z.string(), z.unknown()).describe('The updated user account')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let data: Record<string, unknown> = {};
     if (ctx.input.firstName !== undefined) data['firstName'] = ctx.input.firstName;
@@ -37,7 +38,7 @@ export let updateUser = SlateTool.create(
 
     return {
       output: { user },
-      message: `Updated user **${ctx.input.userId}**.`,
+      message: `Updated user **${ctx.input.userId}**.`
     };
   })
   .build();

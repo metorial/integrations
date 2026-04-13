@@ -6,7 +6,8 @@ import { z } from 'zod';
 export let newSubmissionPollingTrigger = SlateTrigger.create(spec, {
   name: 'New Submission',
   key: 'new_submission',
-  description: '[Polling fallback] Polls for new form submissions at regular intervals. Detects both UI and API-created submissions. Can monitor a specific form or all forms in the account.',
+  description:
+    '[Polling fallback] Polls for new form submissions at regular intervals. Detects both UI and API-created submissions. Can monitor a specific form or all forms in the account.',
   instructions: [
     'Unlike the webhook trigger, this polling trigger also captures submissions created via the API.'
   ]
@@ -36,7 +37,7 @@ export let newSubmissionPollingTrigger = SlateTrigger.create(spec, {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         apiDomain: ctx.config.apiDomain
@@ -86,7 +87,7 @@ export let newSubmissionPollingTrigger = SlateTrigger.create(spec, {
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let answers = ctx.input.answers;
       if (!answers || Object.keys(answers).length === 0) {
         try {

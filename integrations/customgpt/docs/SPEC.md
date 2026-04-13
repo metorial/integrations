@@ -43,6 +43,7 @@ A conversation object represents a forum for communication between a user and th
 ### Message Analysis
 
 Individual messages can be inspected for detailed information including:
+
 - **Feedback**: Submit feedback (e.g., thumbs up/down) on message responses.
 - **Claims**: Retrieve claims made within a response.
 - **Trust Score**: Get a trust/accuracy score for a response.
@@ -67,6 +68,7 @@ Create, list, update, and delete licenses for agents, providing a mechanism to c
 ### Reports and Analytics
 
 Access analytics and intelligence data for agents, including:
+
 - **Customer Intelligence**: Insights into user behavior and needs.
 - **Traffic Analytics**: Usage and traffic data.
 - **Query Analytics**: Information about what users are asking.

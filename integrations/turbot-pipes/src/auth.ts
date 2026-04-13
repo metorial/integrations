@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Turbot Pipes API token (starts with tpt_). Generate from Settings > Advanced > Credentials & Access.'),
+      token: z
+        .string()
+        .describe(
+          'Turbot Pipes API token (starts with tpt_). Generate from Settings > Advanced > Credentials & Access.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://pipes.turbot.com/api/v0',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/actor');
@@ -39,8 +45,8 @@ export let auth = SlateAuth.create()
           name: actor.display_name,
           email: actor.email,
           handle: actor.handle,
-          imageUrl: actor.avatar_url,
-        },
+          imageUrl: actor.avatar_url
+        }
       };
-    },
+    }
   });

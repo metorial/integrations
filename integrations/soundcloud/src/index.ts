@@ -61,7 +61,5 @@ export let provider = Slate.create({
     resolveUrl,
     getOEmbed
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

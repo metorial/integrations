@@ -41,7 +41,10 @@ export class RemarketyClient {
     return headers;
   }
 
-  async sendEvent(eventType: string, payload: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async sendEvent(
+    eventType: string,
+    payload: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let response = await webhookAxios.post(
       `/webhooks/?storeId=${encodeURIComponent(this.storeId)}`,
       payload,
@@ -52,7 +55,10 @@ export class RemarketyClient {
     return response.data as Record<string, unknown>;
   }
 
-  async createOrUpdateCustomer(data: Record<string, unknown>, isCreate: boolean): Promise<Record<string, unknown>> {
+  async createOrUpdateCustomer(
+    data: Record<string, unknown>,
+    isCreate: boolean
+  ): Promise<Record<string, unknown>> {
     let eventType = isCreate ? 'customers/create' : 'customers/update';
     return this.sendEvent(eventType, data);
   }
@@ -65,28 +71,43 @@ export class RemarketyClient {
     return this.sendEvent('newsletter/subscribe', data);
   }
 
-  async createOrUpdateOrder(data: Record<string, unknown>, isCreate: boolean): Promise<Record<string, unknown>> {
+  async createOrUpdateOrder(
+    data: Record<string, unknown>,
+    isCreate: boolean
+  ): Promise<Record<string, unknown>> {
     let eventType = isCreate ? 'orders/create' : 'orders/update';
     return this.sendEvent(eventType, data);
   }
 
-  async sendProductEvent(data: Record<string, unknown>, eventType: 'products/create' | 'products/update' | 'products/delete'): Promise<Record<string, unknown>> {
+  async sendProductEvent(
+    data: Record<string, unknown>,
+    eventType: 'products/create' | 'products/update' | 'products/delete'
+  ): Promise<Record<string, unknown>> {
     return this.sendEvent(eventType, data);
   }
 
-  async createOrUpdateCart(data: Record<string, unknown>, isCreate: boolean): Promise<Record<string, unknown>> {
+  async createOrUpdateCart(
+    data: Record<string, unknown>,
+    isCreate: boolean
+  ): Promise<Record<string, unknown>> {
     let eventType = isCreate ? 'carts/create' : 'carts/update';
     return this.sendEvent(eventType, data);
   }
 
-  async sendCustomEvent(eventType: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async sendCustomEvent(
+    eventType: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     return this.sendEvent(eventType, data);
   }
 
-  async batchUploadContacts(contacts: Record<string, unknown>[], options: {
-    updateExisting?: boolean;
-    appendTags?: boolean;
-  }): Promise<Record<string, unknown>> {
+  async batchUploadContacts(
+    contacts: Record<string, unknown>[],
+    options: {
+      updateExisting?: boolean;
+      appendTags?: boolean;
+    }
+  ): Promise<Record<string, unknown>> {
     let response = await appAxios.post(
       `/api/v2/stores/${encodeURIComponent(this.storeId)}/contacts/batch`,
       {
@@ -109,11 +130,11 @@ export let toSnakeCase = (obj: Record<string, unknown>): Record<string, unknown>
   let result: Record<string, unknown> = {};
   for (let [key, value] of Object.entries(obj)) {
     if (value === undefined) continue;
-    let snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    let snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
     if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
       result[snakeKey] = toSnakeCase(value as Record<string, unknown>);
     } else if (Array.isArray(value)) {
-      result[snakeKey] = value.map((item) =>
+      result[snakeKey] = value.map(item =>
         item !== null && typeof item === 'object' && !Array.isArray(item)
           ? toSnakeCase(item as Record<string, unknown>)
           : item
@@ -125,7 +146,9 @@ export let toSnakeCase = (obj: Record<string, unknown>): Record<string, unknown>
   return result;
 };
 
-export let formatCustomerPayload = (data: Record<string, unknown>): Record<string, unknown> => {
+export let formatCustomerPayload = (
+  data: Record<string, unknown>
+): Record<string, unknown> => {
   let mapped: Record<string, unknown> = { ...data };
 
   if (mapped.customerId !== undefined) {
@@ -137,7 +160,7 @@ export let formatCustomerPayload = (data: Record<string, unknown>): Record<strin
     delete mapped.defaultAddress;
   }
   if (mapped.groups !== undefined) {
-    mapped.groups = (mapped.groups as Array<Record<string, unknown>>).map((g) => ({
+    mapped.groups = (mapped.groups as Array<Record<string, unknown>>).map(g => ({
       id: g.groupId,
       name: g.name
     }));
@@ -161,7 +184,7 @@ export let formatOrderPayload = (data: Record<string, unknown>): Record<string, 
     mapped.customer = formatCustomerPayload(mapped.customer as Record<string, unknown>);
   }
   if (mapped.lineItems !== undefined) {
-    mapped.line_items = (mapped.lineItems as Array<Record<string, unknown>>).map((item) => {
+    mapped.line_items = (mapped.lineItems as Array<Record<string, unknown>>).map(item => {
       let formatted: Record<string, unknown> = { ...item };
       if (formatted.productId !== undefined) {
         formatted.product_id = formatted.productId;
@@ -203,7 +226,7 @@ export let formatProductPayload = (data: Record<string, unknown>): Record<string
     delete mapped.imageUrl;
   }
   if (mapped.variants !== undefined) {
-    mapped.variants = (mapped.variants as Array<Record<string, unknown>>).map((v) => {
+    mapped.variants = (mapped.variants as Array<Record<string, unknown>>).map(v => {
       let formatted: Record<string, unknown> = { ...v };
       if (formatted.variantId !== undefined) {
         formatted.id = formatted.variantId;
@@ -231,7 +254,7 @@ export let formatCartPayload = (data: Record<string, unknown>): Record<string, u
     mapped.customer = formatCustomerPayload(mapped.customer as Record<string, unknown>);
   }
   if (mapped.lineItems !== undefined) {
-    mapped.line_items = (mapped.lineItems as Array<Record<string, unknown>>).map((item) => {
+    mapped.line_items = (mapped.lineItems as Array<Record<string, unknown>>).map(item => {
       let formatted: Record<string, unknown> = { ...item };
       if (formatted.productId !== undefined) {
         formatted.product_id = formatted.productId;
@@ -249,15 +272,19 @@ export let formatCartPayload = (data: Record<string, unknown>): Record<string, u
   return toSnakeCase(mapped);
 };
 
-export let formatContactForBatch = (contact: Record<string, unknown>): Record<string, unknown> => {
+export let formatContactForBatch = (
+  contact: Record<string, unknown>
+): Record<string, unknown> => {
   let result: Record<string, unknown> = {};
   if (contact.email !== undefined) result.email = contact.email;
   if (contact.firstName !== undefined) result.firstName = contact.firstName;
   if (contact.lastName !== undefined) result.lastName = contact.lastName;
   if (contact.smsPhoneNumber !== undefined) result.sms_phone_number = contact.smsPhoneNumber;
   if (contact.smsCountryCode !== undefined) result.sms_country_code = contact.smsCountryCode;
-  if (contact.acceptsMarketing !== undefined) result.accepts_marketing = contact.acceptsMarketing;
-  if (contact.acceptsSmsMarketing !== undefined) result.accepts_sms_marketing = contact.acceptsSmsMarketing;
+  if (contact.acceptsMarketing !== undefined)
+    result.accepts_marketing = contact.acceptsMarketing;
+  if (contact.acceptsSmsMarketing !== undefined)
+    result.accepts_sms_marketing = contact.acceptsSmsMarketing;
   if (contact.tags !== undefined) result.tags = contact.tags;
   if (contact.properties !== undefined) result.properties = contact.properties;
   return result;

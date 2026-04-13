@@ -22,6 +22,7 @@ Pingdom API 3.1 uses Bearer Authentication (token auth), allowing you to authent
 **Access Levels:**
 
 Tokens can be created with one of two access levels:
+
 - **Read access** — allows read-only operations
 - **Read-Write access** — allows both read and write operations
 
@@ -58,6 +59,7 @@ Retrieve detailed results for individual checks, including response times, statu
 ### Summary Reports
 
 Access aggregated performance summaries for checks, including:
+
 - **Average response time and uptime** for a given time period.
 - Performance data for a given interval in time, returned as sub-intervals with a given resolution. Useful for generating graphs. A sub interval may be a week, a day or an hour depending on the chosen resolution.
 - Status change history for a specified check and time period.

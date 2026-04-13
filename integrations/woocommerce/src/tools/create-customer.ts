@@ -14,7 +14,7 @@ let addressInputSchema = z.object({
   postcode: z.string().optional(),
   country: z.string().optional(),
   email: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().optional()
 });
 
 export let createCustomer = SlateTool.create(spec, {
@@ -22,28 +22,35 @@ export let createCustomer = SlateTool.create(spec, {
   key: 'create_customer',
   description: `Create a new customer account in the store with email, name, billing and shipping addresses.`,
   tags: {
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    email: z.string().describe('Customer email address (required, must be unique)'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    username: z.string().optional().describe('Username (auto-generated from email if not provided)'),
-    password: z.string().optional().describe('Customer password'),
-    billing: addressInputSchema.optional().describe('Billing address'),
-    shipping: addressInputSchema.optional().describe('Shipping address'),
-  }))
-  .output(z.object({
-    customerId: z.number(),
-    email: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-    username: z.string(),
-    role: z.string(),
-    dateCreated: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      email: z.string().describe('Customer email address (required, must be unique)'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      username: z
+        .string()
+        .optional()
+        .describe('Username (auto-generated from email if not provided)'),
+      password: z.string().optional().describe('Customer password'),
+      billing: addressInputSchema.optional().describe('Billing address'),
+      shipping: addressInputSchema.optional().describe('Shipping address')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.number(),
+      email: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      username: z.string(),
+      role: z.string(),
+      dateCreated: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let input = ctx.input;
 
@@ -82,9 +89,9 @@ export let createCustomer = SlateTool.create(spec, {
         lastName: customer.last_name || '',
         username: customer.username || '',
         role: customer.role || '',
-        dateCreated: customer.date_created || '',
+        dateCreated: customer.date_created || ''
       },
-      message: `Created customer **${customer.first_name || ''} ${customer.last_name || ''}** (ID: ${customer.id}, email: ${customer.email}).`,
+      message: `Created customer **${customer.first_name || ''} ${customer.last_name || ''}** (ID: ${customer.id}, email: ${customer.email}).`
     };
   })
   .build();

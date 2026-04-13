@@ -66,7 +66,13 @@ export interface SimlaCustomer {
   cumulativeDiscount?: number;
   sex?: string;
   birthday?: string;
-  source?: { source?: string; medium?: string; campaign?: string; keyword?: string; content?: string };
+  source?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    keyword?: string;
+    content?: string;
+  };
   segments?: Array<{ id?: number; code?: string; name?: string }>;
   type?: string;
   [key: string]: any;
@@ -84,7 +90,13 @@ export interface SimlaCorporateCustomer {
   tags?: Array<{ name?: string; color?: string }>;
   customFields?: Record<string, any>;
   personalDiscount?: number;
-  source?: { source?: string; medium?: string; campaign?: string; keyword?: string; content?: string };
+  source?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    keyword?: string;
+    content?: string;
+  };
   type?: string;
   companies?: Array<{
     id?: number;
@@ -173,7 +185,13 @@ export interface SimlaOrder {
   site?: string;
   status?: string;
   statusComment?: string;
-  source?: { source?: string; medium?: string; campaign?: string; keyword?: string; content?: string };
+  source?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    keyword?: string;
+    content?: string;
+  };
   items?: SimlaOrderItem[];
   delivery?: SimlaDelivery;
   payments?: Record<string, SimlaPayment>;

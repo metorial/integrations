@@ -9,6 +9,7 @@ Mails.so is an email verification and validation service. It allows users to val
 Mails.so uses API key authentication. Your API key is a unique identifier obtained upon registration that authenticates your requests. Include your API key in the `x-mails-api-key` HTTP header with every request.
 
 **Header format:**
+
 ```
 x-mails-api-key: YOUR_API_KEY
 ```

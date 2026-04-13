@@ -4,37 +4,38 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
 let eventNameMap: Record<string, string> = {
-  'AdminPromoted': 'user.admin_promoted',
-  'AdminDemoted': 'user.admin_demoted',
-  'UserDeleted': 'user.deleted'
+  AdminPromoted: 'user.admin_promoted',
+  AdminDemoted: 'user.admin_demoted',
+  UserDeleted: 'user.deleted'
 };
 
-let webhookEventNames = [
-  'AdminPromoted',
-  'AdminDemoted',
-  'UserDeleted'
-];
+let webhookEventNames = ['AdminPromoted', 'AdminDemoted', 'UserDeleted'];
 
 export let userEvents = SlateTrigger.create(spec, {
   name: 'User Events',
   key: 'user_events',
-  description: 'Triggers when a user is promoted to or demoted from Site Administrator, or when a user is deleted.'
+  description:
+    'Triggers when a user is promoted to or demoted from Site Administrator, or when a user is deleted.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Tableau webhook event type'),
-    resourceId: z.string().describe('LUID of the affected user'),
-    resourceName: z.string().describe('Name of the affected user'),
-    siteId: z.string().describe('LUID of the site'),
-    timestamp: z.string().describe('Event timestamp')
-  }))
-  .output(z.object({
-    userId: z.string().describe('LUID of the affected user'),
-    userName: z.string().describe('Name of the user'),
-    siteId: z.string().describe('LUID of the site'),
-    timestamp: z.string().describe('When the event occurred')
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Tableau webhook event type'),
+      resourceId: z.string().describe('LUID of the affected user'),
+      resourceName: z.string().describe('Name of the affected user'),
+      siteId: z.string().describe('LUID of the site'),
+      timestamp: z.string().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('LUID of the affected user'),
+      userName: z.string().describe('Name of the user'),
+      siteId: z.string().describe('LUID of the site'),
+      timestamp: z.string().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       let webhookIds: Record<string, string> = {};
 
@@ -50,7 +51,7 @@ export let userEvents = SlateTrigger.create(spec, {
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       let webhookIds = ctx.input.registrationDetails?.webhookIds || {};
 
@@ -63,21 +64,23 @@ export let userEvents = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType || body['webhook-source-event-name'] || 'unknown',
-          resourceId: body.resource_luid || body.resourceId || '',
-          resourceName: body.resource_name || body.resourceName || '',
-          siteId: body.site_luid || body.siteId || '',
-          timestamp: body.created_at || body.timestamp || new Date().toISOString()
-        }]
+        inputs: [
+          {
+            eventType: body.eventType || body['webhook-source-event-name'] || 'unknown',
+            resourceId: body.resource_luid || body.resourceId || '',
+            resourceName: body.resource_name || body.resourceName || '',
+            siteId: body.site_luid || body.siteId || '',
+            timestamp: body.created_at || body.timestamp || new Date().toISOString()
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let mappedType = eventNameMap[ctx.input.eventType] || `user.${ctx.input.eventType}`;
 
       return {
@@ -91,4 +94,5 @@ export let userEvents = SlateTrigger.create(spec, {
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -20,7 +20,7 @@ import {
   listWorkingPatterns,
   listHolidayAllowances,
   listOtherLeaveReasons,
-  getAccount,
+  getAccount
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -47,9 +47,7 @@ export let provider = Slate.create({
     listWorkingPatterns,
     listHolidayAllowances,
     listOtherLeaveReasons,
-    getAccount,
+    getAccount
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

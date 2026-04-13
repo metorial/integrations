@@ -3,39 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listRepositories = SlateTool.create(
-  spec,
-  {
-    name: 'List Repositories',
-    key: 'list_repositories',
-    description: `List repositories connected to the Sourcegraph instance. Supports filtering by name query, pagination, and ordering.
+export let listRepositories = SlateTool.create(spec, {
+  name: 'List Repositories',
+  key: 'list_repositories',
+  description: `List repositories connected to the Sourcegraph instance. Supports filtering by name query, pagination, and ordering.
 Returns repository metadata including clone status, external source, and default branch.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Filter repositories by name'),
-    first: z.number().optional().describe('Number of repositories to return (default 50)'),
-    after: z.string().optional().describe('Pagination cursor from previous response')
-  }))
-  .output(z.object({
-    repositories: z.array(z.object({
-      repositoryId: z.string().describe('Repository GraphQL ID'),
-      name: z.string().describe('Full repository name'),
-      url: z.string().describe('URL on the Sourcegraph instance'),
-      description: z.string().optional().describe('Repository description'),
-      cloned: z.boolean().optional().describe('Whether the repository has been cloned'),
-      serviceType: z.string().optional().describe('Code host type (e.g., github, gitlab)'),
-      defaultBranch: z.string().optional().describe('Default branch name')
-    })).describe('List of repositories'),
-    totalCount: z.number().describe('Total number of matching repositories'),
-    hasNextPage: z.boolean().describe('Whether more results are available'),
-    endCursor: z.string().optional().describe('Cursor for fetching the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Filter repositories by name'),
+      first: z.number().optional().describe('Number of repositories to return (default 50)'),
+      after: z.string().optional().describe('Pagination cursor from previous response')
+    })
+  )
+  .output(
+    z.object({
+      repositories: z
+        .array(
+          z.object({
+            repositoryId: z.string().describe('Repository GraphQL ID'),
+            name: z.string().describe('Full repository name'),
+            url: z.string().describe('URL on the Sourcegraph instance'),
+            description: z.string().optional().describe('Repository description'),
+            cloned: z.boolean().optional().describe('Whether the repository has been cloned'),
+            serviceType: z
+              .string()
+              .optional()
+              .describe('Code host type (e.g., github, gitlab)'),
+            defaultBranch: z.string().optional().describe('Default branch name')
+          })
+        )
+        .describe('List of repositories'),
+      totalCount: z.number().describe('Total number of matching repositories'),
+      hasNextPage: z.boolean().describe('Whether more results are available'),
+      endCursor: z.string().optional().describe('Cursor for fetching the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -67,4 +75,5 @@ Returns repository metadata including clone status, external source, and default
       },
       message: `Found **${repos.totalCount}** repositories${ctx.input.query ? ` matching "${ctx.input.query}"` : ''}. Showing ${repositories.length}.`
     };
-  }).build();
+  })
+  .build();

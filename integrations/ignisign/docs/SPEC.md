@@ -48,6 +48,7 @@ Automate document sealing processes with machine-to-machine (M2M) emitters. Cont
 ### Signature Session Integration
 
 Two integration modes exist for the actual signing experience:
+
 - **By-Side**: The signature session is fully managed by Ignisign, with emails sent to signers to invite them to sign.
 - **Embedded**: The signature session is embedded in your own application using Ignisign's JS, Android, or iOS SDKs. Requires receiving a session token via webhook.
 
@@ -62,12 +63,14 @@ Webhooks allow your application to receive real-time notifications about events 
 ### Signer Events
 
 Triggered when signer-related events occur. Actions include:
+
 - **CREATED**: When a signer is created.
 - **INPUTS_ADDED**: When new inputs (e.g., name, email, phone) are added to an existing signer.
 
 ### Signature Request Events
 
 Triggered when a signature request changes state. Actions include:
+
 - **INITIALIZED**: When a signature request is created.
 - **UPDATED**: When a signature request is updated.
 - **READY**: When a signature request is ready to be signed.
@@ -84,6 +87,7 @@ Triggered during the signing session lifecycle, tracking the status of individua
 ### Signature Proof Events
 
 Triggered when signature proof documents are generated. Actions include:
+
 - **GENERATED**: When a standard signature proof is generated.
 - **ADV_GENERATED**: When an advanced signature proof is generated.
 

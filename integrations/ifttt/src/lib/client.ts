@@ -5,7 +5,7 @@ export class ConnectClient {
 
   constructor(private serviceKey: string) {
     this.http = createAxios({
-      baseURL: 'https://connect.ifttt.com',
+      baseURL: 'https://connect.ifttt.com'
     });
   }
 
@@ -13,7 +13,7 @@ export class ConnectClient {
     return {
       'IFTTT-Service-Key': this.serviceKey,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json'
     };
   }
 
@@ -21,7 +21,7 @@ export class ConnectClient {
 
   async getServiceInfo() {
     let response = await this.http.get('/v2/me', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data?.data;
   }
@@ -34,7 +34,7 @@ export class ConnectClient {
 
     let response = await this.http.get(`/v2/connections/${connectionId}`, {
       headers: this.headers(),
-      params,
+      params
     });
     return response.data?.data;
   }
@@ -49,7 +49,7 @@ export class ConnectClient {
       configuration,
       {
         headers: this.headers(),
-        params: { user_id: userId },
+        params: { user_id: userId }
       }
     );
     return response.data?.data;
@@ -61,7 +61,7 @@ export class ConnectClient {
       {},
       {
         headers: this.headers(),
-        params: { user_id: userId },
+        params: { user_id: userId }
       }
     );
     return response.data?.data;
@@ -81,7 +81,7 @@ export class ConnectClient {
       `/v2/connections/${connectionId}/${type}/${typeId}/field_options/${fieldSlug}`,
       {
         headers: this.headers(),
-        params,
+        params
       }
     );
     return response.data?.data;
@@ -103,7 +103,7 @@ export class ConnectClient {
       body,
       {
         headers: this.headers(),
-        params: { user_id: userId },
+        params: { user_id: userId }
       }
     );
     return response.data;
@@ -127,7 +127,7 @@ export class ConnectClient {
       body,
       {
         headers: this.headers(),
-        params: { user_id: userId },
+        params: { user_id: userId }
       }
     );
     return response.data;
@@ -153,7 +153,7 @@ export class ConnectClient {
       body,
       {
         headers: this.headers(),
-        params: { user_id: userId },
+        params: { user_id: userId }
       }
     );
     return response.data?.data;
@@ -165,10 +165,10 @@ export class ConnectClient {
     notifications: Array<{ userId?: string; triggerIdentity?: string }>
   ) {
     let http = createAxios({
-      baseURL: 'https://realtime.ifttt.com',
+      baseURL: 'https://realtime.ifttt.com'
     });
 
-    let data = notifications.map((n) => {
+    let data = notifications.map(n => {
       let item: Record<string, string> = {};
       if (n.userId) item['user_id'] = n.userId;
       if (n.triggerIdentity) item['trigger_identity'] = n.triggerIdentity;
@@ -179,7 +179,7 @@ export class ConnectClient {
       '/v1/notifications',
       { data },
       {
-        headers: this.headers(),
+        headers: this.headers()
       }
     );
     return response.data;
@@ -193,7 +193,7 @@ export class ConnectClient {
       {},
       {
         headers: this.headers(),
-        params: { user_id: userId, access_token: accessToken },
+        params: { user_id: userId, access_token: accessToken }
       }
     );
     return response.data?.data;

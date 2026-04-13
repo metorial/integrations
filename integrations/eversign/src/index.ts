@@ -11,7 +11,7 @@ import {
   manageSigner,
   listBusinesses,
   createBulkJob,
-  getBulkJob,
+  getBulkJob
 } from './tools';
 import { documentEvent } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     manageSigner,
     listBusinesses,
     createBulkJob,
-    getBulkJob,
+    getBulkJob
   ],
-  triggers: [
-    documentEvent,
-  ],
+  triggers: [documentEvent]
 });

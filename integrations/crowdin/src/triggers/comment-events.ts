@@ -3,40 +3,46 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let commentEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'String Comment Events',
-    key: 'comment_events',
-    description: 'Triggered when string comments or issues are created, updated, deleted, or restored in a Crowdin project.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The event type (stringComment.created, stringComment.updated, stringComment.deleted, stringComment.restored)'),
-    eventId: z.string().describe('Unique event identifier'),
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    commentId: z.string().optional().describe('Comment ID'),
-    commentText: z.string().optional().describe('Comment text'),
-    commentType: z.string().optional().describe('Comment type (comment or issue)'),
-    issueStatus: z.string().optional().describe('Issue status (if applicable)'),
-    stringId: z.string().optional().describe('Source string ID'),
-    userId: z.string().optional().describe('User ID'),
-    languageId: z.string().optional().describe('Language ID'),
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-    commentId: z.string().optional().describe('Comment ID'),
-    commentText: z.string().optional().describe('Comment text'),
-    commentType: z.string().optional().describe('Comment type'),
-    issueStatus: z.string().optional().describe('Issue status'),
-    stringId: z.string().optional().describe('Source string ID'),
-    userId: z.string().optional().describe('User ID'),
-    languageId: z.string().optional().describe('Language ID'),
-  }))
+export let commentEventsTrigger = SlateTrigger.create(spec, {
+  name: 'String Comment Events',
+  key: 'comment_events',
+  description:
+    'Triggered when string comments or issues are created, updated, deleted, or restored in a Crowdin project.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The event type (stringComment.created, stringComment.updated, stringComment.deleted, stringComment.restored)'
+        ),
+      eventId: z.string().describe('Unique event identifier'),
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      commentId: z.string().optional().describe('Comment ID'),
+      commentText: z.string().optional().describe('Comment text'),
+      commentType: z.string().optional().describe('Comment type (comment or issue)'),
+      issueStatus: z.string().optional().describe('Issue status (if applicable)'),
+      stringId: z.string().optional().describe('Source string ID'),
+      userId: z.string().optional().describe('User ID'),
+      languageId: z.string().optional().describe('Language ID')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name'),
+      commentId: z.string().optional().describe('Comment ID'),
+      commentText: z.string().optional().describe('Comment text'),
+      commentType: z.string().optional().describe('Comment type'),
+      issueStatus: z.string().optional().describe('Issue status'),
+      stringId: z.string().optional().describe('Source string ID'),
+      userId: z.string().optional().describe('User ID'),
+      languageId: z.string().optional().describe('Language ID')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let projects = await client.listProjects({ limit: 500 });
@@ -48,10 +54,15 @@ export let commentEventsTrigger = SlateTrigger.create(
           let webhook = await client.createWebhook(projectId, {
             name: 'Slates Comment Events',
             url: ctx.input.webhookBaseUrl,
-            events: ['stringComment.created', 'stringComment.updated', 'stringComment.deleted', 'stringComment.restored'],
+            events: [
+              'stringComment.created',
+              'stringComment.updated',
+              'stringComment.deleted',
+              'stringComment.restored'
+            ],
             requestType: 'POST',
             contentType: 'application/json',
-            isActive: true,
+            isActive: true
           });
           registrations.push({ projectId, webhookId: webhook.id });
         } catch (e) {
@@ -62,7 +73,7 @@ export let commentEventsTrigger = SlateTrigger.create(
       return { registrationDetails: { registrations } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let registrations = ctx.input.registrationDetails?.registrations || [];
 
@@ -75,8 +86,8 @@ export let commentEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = data.events ? data.events : [data];
 
       let inputs = events
@@ -95,16 +106,24 @@ export let commentEventsTrigger = SlateTrigger.create(
             commentText: evt.comment?.text || undefined,
             commentType: evt.comment?.type || undefined,
             issueStatus: evt.comment?.issueStatus || undefined,
-            stringId: evt.comment?.stringId ? String(evt.comment.stringId) : (evt.string_id ? String(evt.string_id) : undefined),
-            userId: evt.user_id ? String(evt.user_id) : (evt.comment?.userId ? String(evt.comment.userId) : undefined),
-            languageId: evt.comment?.languageId || evt.language || undefined,
+            stringId: evt.comment?.stringId
+              ? String(evt.comment.stringId)
+              : evt.string_id
+                ? String(evt.string_id)
+                : undefined,
+            userId: evt.user_id
+              ? String(evt.user_id)
+              : evt.comment?.userId
+                ? String(evt.comment.userId)
+                : undefined,
+            languageId: evt.comment?.languageId || evt.language || undefined
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -117,9 +136,9 @@ export let commentEventsTrigger = SlateTrigger.create(
           issueStatus: ctx.input.issueStatus,
           stringId: ctx.input.stringId,
           userId: ctx.input.userId,
-          languageId: ctx.input.languageId,
-        },
+          languageId: ctx.input.languageId
+        }
       };
-    },
+    }
   })
   .build();

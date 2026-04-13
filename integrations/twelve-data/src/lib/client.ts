@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.twelvedata.com',
+  baseURL: 'https://api.twelvedata.com'
 });
 
 export class TwelveDataClient {
@@ -18,8 +18,8 @@ export class TwelveDataClient {
     let response = await http.get(path, {
       params: {
         ...cleanParams,
-        apikey: this.token,
-      },
+        apikey: this.token
+      }
     });
 
     return response.data as T;
@@ -60,7 +60,7 @@ export class TwelveDataClient {
       timezone: params.timezone,
       start_date: params.startDate,
       end_date: params.endDate,
-      previous_close: params.previousClose,
+      previous_close: params.previousClose
     });
   }
 
@@ -81,7 +81,7 @@ export class TwelveDataClient {
       country: params.country,
       type: params.type,
       dp: params.dp,
-      prepost: params.prepost,
+      prepost: params.prepost
     });
   }
 
@@ -106,7 +106,7 @@ export class TwelveDataClient {
       type: params.type,
       dp: params.dp,
       prepost: params.prepost,
-      volume_time_period: params.volume_time_period,
+      volume_time_period: params.volume_time_period
     });
   }
 
@@ -127,20 +127,16 @@ export class TwelveDataClient {
       country: params.country,
       type: params.type,
       dp: params.dp,
-      prepost: params.prepost,
+      prepost: params.prepost
     });
   }
 
   // Exchange Rate
-  async getExchangeRate(params: {
-    symbol: string;
-    dp?: number;
-    timezone?: string;
-  }) {
+  async getExchangeRate(params: { symbol: string; dp?: number; timezone?: string }) {
     return this.get('/exchange_rate', {
       symbol: params.symbol,
       dp: params.dp,
-      timezone: params.timezone,
+      timezone: params.timezone
     });
   }
 
@@ -155,20 +151,16 @@ export class TwelveDataClient {
       symbol: params.symbol,
       amount: params.amount,
       dp: params.dp,
-      timezone: params.timezone,
+      timezone: params.timezone
     });
   }
 
   // Symbol Search
-  async searchSymbols(params: {
-    symbol: string;
-    outputsize?: number;
-    show_plan?: boolean;
-  }) {
+  async searchSymbols(params: { symbol: string; outputsize?: number; show_plan?: boolean }) {
     return this.get('/symbol_search', {
       symbol: params.symbol,
       outputsize: params.outputsize,
-      show_plan: params.show_plan,
+      show_plan: params.show_plan
     });
   }
 
@@ -183,7 +175,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -204,7 +196,7 @@ export class TwelveDataClient {
       country: params.country,
       range: params.range,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     });
   }
 
@@ -225,7 +217,7 @@ export class TwelveDataClient {
       country: params.country,
       range: params.range,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     });
   }
 
@@ -250,7 +242,7 @@ export class TwelveDataClient {
       period: params.period,
       outputsize: params.outputsize,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     });
   }
 
@@ -271,7 +263,7 @@ export class TwelveDataClient {
       country: params.country,
       period: params.period,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     });
   }
 
@@ -292,7 +284,7 @@ export class TwelveDataClient {
       country: params.country,
       period: params.period,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     });
   }
 
@@ -313,7 +305,7 @@ export class TwelveDataClient {
       country: params.country,
       period: params.period,
       start_date: params.startDate,
-      end_date: params.endDate,
+      end_date: params.endDate
     });
   }
 
@@ -328,7 +320,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -343,7 +335,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -358,7 +350,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -373,7 +365,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -388,7 +380,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -403,7 +395,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -418,7 +410,7 @@ export class TwelveDataClient {
       symbol: params.symbol,
       exchange: params.exchange,
       mic_code: params.micCode,
-      country: params.country,
+      country: params.country
     });
   }
 
@@ -473,7 +465,7 @@ export class TwelveDataClient {
       slow_d_period: rest.slowDPeriod,
       ma_type: rest.maType,
       sd_type: rest.sdType,
-      sd: rest.sd,
+      sd: rest.sd
     });
   }
 
@@ -505,15 +497,11 @@ export class TwelveDataClient {
   }
 
   // Earnings Calendar
-  async getEarningsCalendar(params?: {
-    dp?: number;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async getEarningsCalendar(params?: { dp?: number; startDate?: string; endDate?: string }) {
     return this.get('/earnings_calendar', {
       dp: params?.dp,
       start_date: params?.startDate,
-      end_date: params?.endDate,
+      end_date: params?.endDate
     });
   }
 }

@@ -3,39 +3,43 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
 
-export let listRoles = SlateTool.create(
-  spec,
-  {
-    name: 'List Roles',
-    key: 'list_roles',
-    description: `List all available roles in the Looker instance, or get details for a specific role. Roles define permission sets and model access that can be assigned to users and groups.`,
-    tags: {
-      readOnly: true,
-    },
+export let listRoles = SlateTool.create(spec, {
+  name: 'List Roles',
+  key: 'list_roles',
+  description: `List all available roles in the Looker instance, or get details for a specific role. Roles define permission sets and model access that can be assigned to users and groups.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
-      roleId: z.string().optional().describe('Role ID to get details for a specific role. Omit to list all roles.'),
+      roleId: z
+        .string()
+        .optional()
+        .describe('Role ID to get details for a specific role. Omit to list all roles.')
     })
   )
   .output(
     z.object({
-      roles: z.array(z.object({
-        roleId: z.string().describe('Role ID'),
-        name: z.string().optional().describe('Role name'),
-        permissionSetName: z.string().optional().describe('Permission set name'),
-        permissionSetId: z.string().optional().describe('Permission set ID'),
-        modelSetName: z.string().optional().describe('Model set name'),
-        modelSetId: z.string().optional().describe('Model set ID'),
-        userCount: z.number().optional().describe('Number of users assigned this role'),
-      })).describe('List of roles'),
+      roles: z
+        .array(
+          z.object({
+            roleId: z.string().describe('Role ID'),
+            name: z.string().optional().describe('Role name'),
+            permissionSetName: z.string().optional().describe('Permission set name'),
+            permissionSetId: z.string().optional().describe('Permission set ID'),
+            modelSetName: z.string().optional().describe('Model set name'),
+            modelSetId: z.string().optional().describe('Model set ID'),
+            userCount: z.number().optional().describe('Number of users assigned this role')
+          })
+        )
+        .describe('List of roles')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LookerClient({
       instanceUrl: ctx.config.instanceUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     if (ctx.input.roleId) {
@@ -47,11 +51,11 @@ export let listRoles = SlateTool.create(
         permissionSetId: role.permission_set?.id ? String(role.permission_set.id) : undefined,
         modelSetName: role.model_set?.name,
         modelSetId: role.model_set?.id ? String(role.model_set.id) : undefined,
-        userCount: role.user_count,
+        userCount: role.user_count
       };
       return {
         output: { roles: [mapped] },
-        message: `Retrieved role **${role.name}**.`,
+        message: `Retrieved role **${role.name}**.`
       };
     }
 
@@ -63,11 +67,12 @@ export let listRoles = SlateTool.create(
       permissionSetId: r.permission_set?.id ? String(r.permission_set.id) : undefined,
       modelSetName: r.model_set?.name,
       modelSetId: r.model_set?.id ? String(r.model_set.id) : undefined,
-      userCount: r.user_count,
+      userCount: r.user_count
     }));
 
     return {
       output: { roles: mapped },
-      message: `Found **${mapped.length}** role(s).`,
+      message: `Found **${mapped.length}** role(s).`
     };
-  }).build();
+  })
+  .build();

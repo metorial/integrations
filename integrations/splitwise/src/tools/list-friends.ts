@@ -5,12 +5,14 @@ import { z } from 'zod';
 
 let balanceSchema = z.object({
   currencyCode: z.string().describe('Currency code'),
-  amount: z.string().describe('Balance amount (positive = they owe you, negative = you owe them)'),
+  amount: z
+    .string()
+    .describe('Balance amount (positive = they owe you, negative = you owe them)')
 });
 
 let groupBalanceSchema = z.object({
   groupId: z.number().describe('Group ID'),
-  balance: z.array(balanceSchema).optional().describe('Balances in this group'),
+  balance: z.array(balanceSchema).optional().describe('Balances in this group')
 });
 
 let friendSchema = z.object({
@@ -21,25 +23,24 @@ let friendSchema = z.object({
   registrationStatus: z.string().optional().describe('Registration status'),
   balance: z.array(balanceSchema).optional().describe('Overall balance with this friend'),
   groups: z.array(groupBalanceSchema).optional().describe('Balance broken down by group'),
-  updatedAt: z.string().optional().describe('Last updated timestamp'),
+  updatedAt: z.string().optional().describe('Last updated timestamp')
 });
 
-export let listFriends = SlateTool.create(
-  spec,
-  {
-    name: 'List Friends',
-    key: 'list_friends',
-    description: `List all friends of the authenticated user with their balances. Returns overall balances and per-group balances showing who owes whom.`,
-    tags: {
-      readOnly: true,
-    },
+export let listFriends = SlateTool.create(spec, {
+  name: 'List Friends',
+  key: 'list_friends',
+  description: `List all friends of the authenticated user with their balances. Returns overall balances and per-group balances showing who owes whom.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    friends: z.array(friendSchema).describe('List of friends'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      friends: z.array(friendSchema).describe('List of friends')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let friends = await client.getFriends();
 
@@ -51,21 +52,21 @@ export let listFriends = SlateTool.create(
       registrationStatus: f.registration_status,
       balance: f.balance?.map((b: any) => ({
         currencyCode: b.currency_code,
-        amount: b.amount,
+        amount: b.amount
       })),
       groups: f.groups?.map((g: any) => ({
         groupId: g.group_id,
         balance: g.balance?.map((b: any) => ({
           currencyCode: b.currency_code,
-          amount: b.amount,
-        })),
+          amount: b.amount
+        }))
       })),
-      updatedAt: f.updated_at,
+      updatedAt: f.updated_at
     }));
 
     return {
       output: { friends: mapped },
-      message: `Found **${mapped.length}** friend(s)`,
+      message: `Found **${mapped.length}** friend(s)`
     };
   })
   .build();

@@ -3,35 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContactIdentifiers = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact Identifiers',
-    key: 'manage_contact_identifiers',
-    description: `Create, find, link, or unlink contact identifiers. Contact identifiers are used to associate physical cards, QR codes, or other identifiers with contacts in the loyalty system.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['find', 'create', 'link', 'unlink', 'list']).describe('Action to perform on contact identifiers'),
-    contactIdentifierValue: z.string().optional().describe('The identifier value (required for find, create, link, unlink)'),
-    contactUuid: z.string().optional().describe('Contact UUID (required for link, optional for create, required for list)'),
-    contactIdentifierName: z.string().optional().describe('Display name for the identifier (used in create)'),
-  }))
-  .output(z.object({
-    identifiers: z.array(z.object({
-      identifierValue: z.string().optional().describe('The identifier value'),
-      contactUuid: z.string().optional().describe('Linked contact UUID'),
-      name: z.string().optional().describe('Identifier display name'),
-      active: z.boolean().optional().describe('Whether the identifier is active'),
-    }).passthrough()).optional().describe('List of identifiers (for list action)'),
-    identifier: z.object({
-      identifierValue: z.string().optional().describe('The identifier value'),
-      contactUuid: z.string().optional().describe('Linked contact UUID'),
-      name: z.string().optional().describe('Identifier display name'),
-      active: z.boolean().optional().describe('Whether the identifier is active'),
-    }).passthrough().optional().describe('Single identifier result'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageContactIdentifiers = SlateTool.create(spec, {
+  name: 'Manage Contact Identifiers',
+  key: 'manage_contact_identifiers',
+  description: `Create, find, link, or unlink contact identifiers. Contact identifiers are used to associate physical cards, QR codes, or other identifiers with contacts in the loyalty system.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['find', 'create', 'link', 'unlink', 'list'])
+        .describe('Action to perform on contact identifiers'),
+      contactIdentifierValue: z
+        .string()
+        .optional()
+        .describe('The identifier value (required for find, create, link, unlink)'),
+      contactUuid: z
+        .string()
+        .optional()
+        .describe('Contact UUID (required for link, optional for create, required for list)'),
+      contactIdentifierName: z
+        .string()
+        .optional()
+        .describe('Display name for the identifier (used in create)')
+    })
+  )
+  .output(
+    z.object({
+      identifiers: z
+        .array(
+          z
+            .object({
+              identifierValue: z.string().optional().describe('The identifier value'),
+              contactUuid: z.string().optional().describe('Linked contact UUID'),
+              name: z.string().optional().describe('Identifier display name'),
+              active: z.boolean().optional().describe('Whether the identifier is active')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('List of identifiers (for list action)'),
+      identifier: z
+        .object({
+          identifierValue: z.string().optional().describe('The identifier value'),
+          contactUuid: z.string().optional().describe('Linked contact UUID'),
+          name: z.string().optional().describe('Identifier display name'),
+          active: z.boolean().optional().describe('Whether the identifier is active')
+        })
+        .passthrough()
+        .optional()
+        .describe('Single identifier result')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, contactIdentifierValue, contactUuid, contactIdentifierName } = ctx.input;
 
@@ -43,15 +66,16 @@ export let manageContactIdentifiers = SlateTool.create(
         contactUuid: id.contact?.uuid,
         name: id.name || id.contact_identifier_name,
         active: id.active ?? id.contact_identifier_active,
-        ...id,
+        ...id
       }));
       return {
         output: { identifiers },
-        message: `Found **${identifiers.length}** identifier(s) for contact ${contactUuid}.`,
+        message: `Found **${identifiers.length}** identifier(s) for contact ${contactUuid}.`
       };
     }
 
-    if (!contactIdentifierValue) throw new Error('contactIdentifierValue is required for this action');
+    if (!contactIdentifierValue)
+      throw new Error('contactIdentifierValue is required for this action');
 
     if (action === 'find') {
       let result = await client.findContactIdentifier(contactIdentifierValue);
@@ -63,10 +87,10 @@ export let manageContactIdentifiers = SlateTool.create(
             contactUuid: id.contact?.uuid,
             name: id.name || id.contact_identifier_name,
             active: id.active ?? id.contact_identifier_active,
-            ...id,
-          },
+            ...id
+          }
         },
-        message: `Found identifier **${contactIdentifierValue}**.`,
+        message: `Found identifier **${contactIdentifierValue}**.`
       };
     }
 
@@ -74,7 +98,7 @@ export let manageContactIdentifiers = SlateTool.create(
       let result = await client.createContactIdentifier({
         contactIdentifierValue,
         contactUuid,
-        contactIdentifierName,
+        contactIdentifierName
       });
       let id = result.data || result;
       return {
@@ -84,10 +108,10 @@ export let manageContactIdentifiers = SlateTool.create(
             contactUuid: id.contact?.uuid || contactUuid,
             name: id.name || id.contact_identifier_name,
             active: id.active ?? id.contact_identifier_active,
-            ...id,
-          },
+            ...id
+          }
         },
-        message: `Created identifier **${contactIdentifierValue}**${contactUuid ? ` linked to ${contactUuid}` : ''}.`,
+        message: `Created identifier **${contactIdentifierValue}**${contactUuid ? ` linked to ${contactUuid}` : ''}.`
       };
     }
 
@@ -100,10 +124,10 @@ export let manageContactIdentifiers = SlateTool.create(
           identifier: {
             identifierValue: contactIdentifierValue,
             contactUuid,
-            ...id,
-          },
+            ...id
+          }
         },
-        message: `Linked identifier **${contactIdentifierValue}** to contact ${contactUuid}.`,
+        message: `Linked identifier **${contactIdentifierValue}** to contact ${contactUuid}.`
       };
     }
 
@@ -114,10 +138,10 @@ export let manageContactIdentifiers = SlateTool.create(
       output: {
         identifier: {
           identifierValue: contactIdentifierValue,
-          ...id,
-        },
+          ...id
+        }
       },
-      message: `Unlinked identifier **${contactIdentifierValue}** from its contact.`,
+      message: `Unlinked identifier **${contactIdentifierValue}** from its contact.`
     };
   })
   .build();

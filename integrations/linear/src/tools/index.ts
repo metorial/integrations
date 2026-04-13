@@ -4,7 +4,12 @@ export { getIssueTool } from './get-issue';
 export { listIssuesTool } from './list-issues';
 export { deleteIssueTool } from './delete-issue';
 export { searchIssuesTool } from './search-issues';
-export { createProjectTool, updateProjectTool, listProjectsTool, getProjectTool } from './manage-project';
+export {
+  createProjectTool,
+  updateProjectTool,
+  listProjectsTool,
+  getProjectTool
+} from './manage-project';
 export { createCommentTool, updateCommentTool, deleteCommentTool } from './manage-comment';
 export { createCycleTool, updateCycleTool, listCyclesTool } from './manage-cycle';
 export { listTeamsTool, getTeamTool } from './manage-team';

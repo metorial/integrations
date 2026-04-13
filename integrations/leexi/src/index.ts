@@ -11,7 +11,7 @@ import {
   getMeetingEvent,
   createMeetingEvent,
   deleteMeetingEvent,
-  launchMeetingAssistant,
+  launchMeetingAssistant
 } from './tools';
 import { callProcessed } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     getMeetingEvent,
     createMeetingEvent,
     deleteMeetingEvent,
-    launchMeetingAssistant,
+    launchMeetingAssistant
   ],
-  triggers: [
-    callProcessed,
-  ],
+  triggers: [callProcessed]
 });

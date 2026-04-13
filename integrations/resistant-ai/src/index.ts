@@ -11,7 +11,7 @@ import {
   requestBackgroundCheck,
   requestCreditCheck,
   requestKybReport,
-  getKybReport,
+  getKybReport
 } from './tools';
 import { verificationCompleted } from './triggers';
 
@@ -28,9 +28,7 @@ export let provider = Slate.create({
     requestBackgroundCheck,
     requestCreditCheck,
     requestKybReport,
-    getKybReport,
+    getKybReport
   ],
-  triggers: [
-    verificationCompleted,
-  ],
+  triggers: [verificationCompleted]
 });

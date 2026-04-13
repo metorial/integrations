@@ -23,14 +23,14 @@ export class Client {
 
   constructor(private config: ClientConfig) {
     let headers: Record<string, string> = {
-      Authorization: `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`
     };
     if (config.runAsUserId) {
       headers['X-RunAs-User-ID'] = config.runAsUserId;
     }
     this.axios = createAxios({
       baseURL: 'https://api.chatbotkit.com/v1',
-      headers,
+      headers
     });
   }
 
@@ -105,7 +105,10 @@ export class Client {
     return response.data;
   }
 
-  async sendMessage(conversationId: string, data: { text: string; meta?: Record<string, any> }): Promise<any> {
+  async sendMessage(
+    conversationId: string,
+    data: { text: string; meta?: Record<string, any> }
+  ): Promise<any> {
     let response = await this.axios.post(`/conversation/${conversationId}/send`, data);
     return response.data;
   }
@@ -136,16 +139,24 @@ export class Client {
   }
 
   async listMessages(conversationId: string, params?: ListParams): Promise<ListResponse<any>> {
-    let response = await this.axios.get(`/conversation/${conversationId}/message/list`, { params });
+    let response = await this.axios.get(`/conversation/${conversationId}/message/list`, {
+      params
+    });
     return response.data;
   }
 
-  async createMessage(conversationId: string, data: {
-    type: string;
-    text: string;
-    meta?: Record<string, any>;
-  }): Promise<any> {
-    let response = await this.axios.post(`/conversation/${conversationId}/message/create`, data);
+  async createMessage(
+    conversationId: string,
+    data: {
+      type: string;
+      text: string;
+      meta?: Record<string, any>;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/conversation/${conversationId}/message/create`,
+      data
+    );
     return response.data;
   }
 
@@ -188,10 +199,13 @@ export class Client {
     return response.data;
   }
 
-  async createRecord(datasetId: string, data: {
-    text: string;
-    meta?: Record<string, any>;
-  }): Promise<any> {
+  async createRecord(
+    datasetId: string,
+    data: {
+      text: string;
+      meta?: Record<string, any>;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/dataset/${datasetId}/record/create`, data);
     return response.data;
   }
@@ -201,8 +215,15 @@ export class Client {
     return response.data;
   }
 
-  async updateRecord(datasetId: string, recordId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/dataset/${datasetId}/record/${recordId}/update`, data);
+  async updateRecord(
+    datasetId: string,
+    recordId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/dataset/${datasetId}/record/${recordId}/update`,
+      data
+    );
     return response.data;
   }
 
@@ -254,23 +275,35 @@ export class Client {
     return response.data;
   }
 
-  async createAbility(skillsetId: string, data: {
-    name?: string;
-    description?: string;
-    instruction?: string;
-    meta?: Record<string, any>;
-  }): Promise<any> {
+  async createAbility(
+    skillsetId: string,
+    data: {
+      name?: string;
+      description?: string;
+      instruction?: string;
+      meta?: Record<string, any>;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/skillset/${skillsetId}/ability/create`, data);
     return response.data;
   }
 
-  async updateAbility(skillsetId: string, abilityId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/skillset/${skillsetId}/ability/${abilityId}/update`, data);
+  async updateAbility(
+    skillsetId: string,
+    abilityId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/skillset/${skillsetId}/ability/${abilityId}/update`,
+      data
+    );
     return response.data;
   }
 
   async deleteAbility(skillsetId: string, abilityId: string): Promise<any> {
-    let response = await this.axios.post(`/skillset/${skillsetId}/ability/${abilityId}/delete`);
+    let response = await this.axios.post(
+      `/skillset/${skillsetId}/ability/${abilityId}/delete`
+    );
     return response.data;
   }
 
@@ -316,7 +349,10 @@ export class Client {
     return response.data;
   }
 
-  async listContactConversations(contactId: string, params?: ListParams): Promise<ListResponse<any>> {
+  async listContactConversations(
+    contactId: string,
+    params?: ListParams
+  ): Promise<ListResponse<any>> {
     let response = await this.axios.get(`/contact/${contactId}/conversation/list`, { params });
     return response.data;
   }
@@ -549,12 +585,16 @@ export class Client {
   // ---- Message Voting ----
 
   async upvoteMessage(conversationId: string, messageId: string): Promise<any> {
-    let response = await this.axios.post(`/conversation/${conversationId}/message/${messageId}/upvote`);
+    let response = await this.axios.post(
+      `/conversation/${conversationId}/message/${messageId}/upvote`
+    );
     return response.data;
   }
 
   async downvoteMessage(conversationId: string, messageId: string): Promise<any> {
-    let response = await this.axios.post(`/conversation/${conversationId}/message/${messageId}/downvote`);
+    let response = await this.axios.post(
+      `/conversation/${conversationId}/message/${messageId}/downvote`
+    );
     return response.data;
   }
 }

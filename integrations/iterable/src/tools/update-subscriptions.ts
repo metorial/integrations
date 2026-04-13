@@ -3,32 +3,42 @@ import { IterableClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateSubscriptions = SlateTool.create(
-  spec,
-  {
-    name: 'Update Subscriptions',
-    key: 'update_subscriptions',
-    description: `Updates a user's subscription preferences in Iterable. Manage which email lists, channels, and message types a user is subscribed to or has opted out of.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateSubscriptions = SlateTool.create(spec, {
+  name: 'Update Subscriptions',
+  key: 'update_subscriptions',
+  description: `Updates a user's subscription preferences in Iterable. Manage which email lists, channels, and message types a user is subscribed to or has opted out of.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Email address of the user'),
-    userId: z.string().optional().describe('User ID'),
-    emailListIds: z.array(z.number()).optional().describe('Email list IDs to subscribe the user to'),
-    unsubscribedChannelIds: z.array(z.number()).optional().describe('Channel IDs to unsubscribe from'),
-    unsubscribedMessageTypeIds: z.array(z.number()).optional().describe('Message type IDs to unsubscribe from'),
-    campaignId: z.number().optional().describe('Campaign ID that prompted this change'),
-    templateId: z.number().optional().describe('Template ID that prompted this change')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update succeeded'),
-    message: z.string().describe('Response message')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Email address of the user'),
+      userId: z.string().optional().describe('User ID'),
+      emailListIds: z
+        .array(z.number())
+        .optional()
+        .describe('Email list IDs to subscribe the user to'),
+      unsubscribedChannelIds: z
+        .array(z.number())
+        .optional()
+        .describe('Channel IDs to unsubscribe from'),
+      unsubscribedMessageTypeIds: z
+        .array(z.number())
+        .optional()
+        .describe('Message type IDs to unsubscribe from'),
+      campaignId: z.number().optional().describe('Campaign ID that prompted this change'),
+      templateId: z.number().optional().describe('Template ID that prompted this change')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update succeeded'),
+      message: z.string().describe('Response message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new IterableClient({
       token: ctx.auth.token,
       dataCenter: ctx.config.dataCenter
@@ -51,4 +61,5 @@ export let updateSubscriptions = SlateTool.create(
       },
       message: `Updated subscription preferences for **${ctx.input.email || ctx.input.userId}**.`
     };
-  }).build();
+  })
+  .build();

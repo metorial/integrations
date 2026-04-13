@@ -15,11 +15,9 @@ import {
   manageImage,
   manageWebhook,
   manageTranslation,
-  getFormInsights,
+  getFormInsights
 } from './tools';
-import {
-  formResponse,
-} from './triggers';
+import { formResponse } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,9 +36,7 @@ export let provider = Slate.create({
     manageImage,
     manageWebhook,
     manageTranslation,
-    getFormInsights,
+    getFormInsights
   ],
-  triggers: [
-    formResponse,
-  ],
+  triggers: [formResponse]
 });

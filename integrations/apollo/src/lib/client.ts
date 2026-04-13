@@ -26,7 +26,9 @@ export class Client {
 
   // ========== People Search ==========
 
-  async searchPeople(filters: PeopleSearchFilters): Promise<{ people: ApolloPerson[]; pagination: any }> {
+  async searchPeople(
+    filters: PeopleSearchFilters
+  ): Promise<{ people: ApolloPerson[]; pagination: any }> {
     let response = await this.axios.post('/mixed_people/search', {
       person_titles: filters.personTitles,
       person_locations: filters.personLocations,
@@ -48,7 +50,9 @@ export class Client {
 
   // ========== Organization Search ==========
 
-  async searchOrganizations(filters: OrganizationSearchFilters): Promise<{ organizations: ApolloOrganization[]; pagination: any }> {
+  async searchOrganizations(
+    filters: OrganizationSearchFilters
+  ): Promise<{ organizations: ApolloOrganization[]; pagination: any }> {
     let response = await this.axios.post('/mixed_companies/search', {
       organization_num_employees_ranges: filters.organizationNumEmployeesRanges,
       organization_locations: filters.organizationLocations,
@@ -68,7 +72,9 @@ export class Client {
 
   // ========== People Enrichment ==========
 
-  async enrichPerson(params: PersonEnrichmentParams): Promise<{ person: ApolloPerson | null }> {
+  async enrichPerson(
+    params: PersonEnrichmentParams
+  ): Promise<{ person: ApolloPerson | null }> {
     let response = await this.axios.post('/people/match', {
       first_name: params.firstName,
       last_name: params.lastName,
@@ -176,31 +182,35 @@ export class Client {
     };
   }
 
-  async updateContact(contactId: string, updates: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    title?: string;
-    phone?: string;
-    organizationName?: string;
-    ownerId?: string;
-    accountId?: string;
-    contactStageId?: string;
-    websiteUrl?: string;
-    linkedinUrl?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    postalCode?: string;
-    labelIds?: string[];
-  }): Promise<{ contact: ApolloContact }> {
+  async updateContact(
+    contactId: string,
+    updates: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      title?: string;
+      phone?: string;
+      organizationName?: string;
+      ownerId?: string;
+      accountId?: string;
+      contactStageId?: string;
+      websiteUrl?: string;
+      linkedinUrl?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+      labelIds?: string[];
+    }
+  ): Promise<{ contact: ApolloContact }> {
     let body: Record<string, any> = {};
     if (updates.firstName !== undefined) body.first_name = updates.firstName;
     if (updates.lastName !== undefined) body.last_name = updates.lastName;
     if (updates.email !== undefined) body.email = updates.email;
     if (updates.title !== undefined) body.title = updates.title;
     if (updates.phone !== undefined) body.phone = updates.phone;
-    if (updates.organizationName !== undefined) body.organization_name = updates.organizationName;
+    if (updates.organizationName !== undefined)
+      body.organization_name = updates.organizationName;
     if (updates.ownerId !== undefined) body.owner_id = updates.ownerId;
     if (updates.accountId !== undefined) body.account_id = updates.accountId;
     if (updates.contactStageId !== undefined) body.contact_stage_id = updates.contactStageId;
@@ -219,7 +229,10 @@ export class Client {
     };
   }
 
-  async updateContactStages(contactIds: string[], contactStageId: string): Promise<{ contacts: ApolloContact[] }> {
+  async updateContactStages(
+    contactIds: string[],
+    contactStageId: string
+  ): Promise<{ contacts: ApolloContact[] }> {
     let response = await this.axios.post('/contacts/update_stages', {
       contact_ids: contactIds,
       contact_stage_id: contactStageId
@@ -285,18 +298,21 @@ export class Client {
     };
   }
 
-  async updateAccount(accountId: string, updates: {
-    name?: string;
-    domain?: string;
-    phone?: string;
-    ownerId?: string;
-    accountStageId?: string;
-    websiteUrl?: string;
-    linkedinUrl?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-  }): Promise<{ account: ApolloAccount }> {
+  async updateAccount(
+    accountId: string,
+    updates: {
+      name?: string;
+      domain?: string;
+      phone?: string;
+      ownerId?: string;
+      accountStageId?: string;
+      websiteUrl?: string;
+      linkedinUrl?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+    }
+  ): Promise<{ account: ApolloAccount }> {
     let body: Record<string, any> = {};
     if (updates.name !== undefined) body.name = updates.name;
     if (updates.domain !== undefined) body.domain = updates.domain;
@@ -367,16 +383,19 @@ export class Client {
     };
   }
 
-  async updateDeal(dealId: string, updates: {
-    name?: string;
-    amount?: number;
-    closedDate?: string;
-    ownerId?: string;
-    accountId?: string;
-    dealStageId?: string;
-    source?: string;
-    status?: string;
-  }): Promise<{ deal: ApolloDeal }> {
+  async updateDeal(
+    dealId: string,
+    updates: {
+      name?: string;
+      amount?: number;
+      closedDate?: string;
+      ownerId?: string;
+      accountId?: string;
+      dealStageId?: string;
+      source?: string;
+      status?: string;
+    }
+  ): Promise<{ deal: ApolloDeal }> {
     let body: Record<string, any> = {};
     if (updates.name !== undefined) body.name = updates.name;
     if (updates.amount !== undefined) body.amount = updates.amount;
@@ -394,7 +413,9 @@ export class Client {
     };
   }
 
-  async listDealStages(): Promise<{ dealStages: Array<{ id: string; name: string; [key: string]: any }> }> {
+  async listDealStages(): Promise<{
+    dealStages: Array<{ id: string; name: string; [key: string]: any }>;
+  }> {
     let response = await this.axios.get('/deal_stages');
 
     return {
@@ -421,7 +442,12 @@ export class Client {
     };
   }
 
-  async addContactsToSequence(sequenceId: string, contactIds: string[], emailAccountId?: string, userId?: string): Promise<any> {
+  async addContactsToSequence(
+    sequenceId: string,
+    contactIds: string[],
+    emailAccountId?: string,
+    userId?: string
+  ): Promise<any> {
     let response = await this.axios.post(`/emailer_campaigns/${sequenceId}/add_contact_ids`, {
       contact_ids: contactIds,
       emailer_campaign_id: sequenceId,
@@ -432,7 +458,11 @@ export class Client {
     return response.data;
   }
 
-  async updateContactStatusInSequence(contactIds: string[], sequenceId: string, status: 'finished' | 'active'): Promise<any> {
+  async updateContactStatusInSequence(
+    contactIds: string[],
+    sequenceId: string,
+    status: 'finished' | 'active'
+  ): Promise<any> {
     let response = await this.axios.post('/emailer_campaigns/remove_or_stop_contact_ids', {
       contact_ids: contactIds,
       emailer_campaign_id: sequenceId,
@@ -489,16 +519,18 @@ export class Client {
     return response.data;
   }
 
-  async bulkCreateTasks(tasks: Array<{
-    userId?: string;
-    contactId?: string;
-    accountId?: string;
-    type?: string;
-    priority?: string;
-    dueDate?: string;
-    note?: string;
-    status?: string;
-  }>): Promise<any> {
+  async bulkCreateTasks(
+    tasks: Array<{
+      userId?: string;
+      contactId?: string;
+      accountId?: string;
+      type?: string;
+      priority?: string;
+      dueDate?: string;
+      note?: string;
+      status?: string;
+    }>
+  ): Promise<any> {
     let response = await this.axios.post('/tasks/bulk_create', {
       tasks: tasks.map(t => ({
         user_id: t.userId,
@@ -527,7 +559,9 @@ export class Client {
 
   // ========== Contact Stages ==========
 
-  async listContactStages(): Promise<{ contactStages: Array<{ id: string; name: string; [key: string]: any }> }> {
+  async listContactStages(): Promise<{
+    contactStages: Array<{ id: string; name: string; [key: string]: any }>;
+  }> {
     let response = await this.axios.get('/contact_stages');
 
     return {
@@ -537,7 +571,9 @@ export class Client {
 
   // ========== Account Stages ==========
 
-  async listAccountStages(): Promise<{ accountStages: Array<{ id: string; name: string; [key: string]: any }> }> {
+  async listAccountStages(): Promise<{
+    accountStages: Array<{ id: string; name: string; [key: string]: any }>;
+  }> {
     let response = await this.axios.get('/account_stages');
 
     return {

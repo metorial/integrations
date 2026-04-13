@@ -3,38 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newSubmissionTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Form Submission',
-    key: 'new_form_submission',
-    description: 'Triggers when a new submission is received on any ByteForms form associated with your account. Polls for new submissions based on creation timestamp.',
-  }
-)
-  .input(z.object({
-    submissionId: z.number().describe('Unique identifier of the submission'),
-    formId: z.number().describe('ID of the form this submission belongs to'),
-    formName: z.string().describe('Name of the form this submission belongs to'),
-    responses: z.record(z.string(), z.any()).describe('Submission data as key-value pairs'),
-    ip: z.string().optional().describe('IP address of the submitter'),
-    createdAt: z.string().describe('ISO timestamp when the submission was created'),
-    updatedAt: z.string().describe('ISO timestamp when the submission was last updated'),
-  }))
-  .output(z.object({
-    submissionId: z.number().describe('Unique identifier of the submission'),
-    formId: z.number().describe('ID of the form this submission belongs to'),
-    formName: z.string().describe('Name of the form this submission belongs to'),
-    responses: z.record(z.string(), z.any()).describe('Submission data as key-value pairs'),
-    ip: z.string().optional().describe('IP address of the submitter'),
-    createdAt: z.string().describe('ISO timestamp when the submission was created'),
-    updatedAt: z.string().describe('ISO timestamp when the submission was last updated'),
-  }))
+export let newSubmissionTrigger = SlateTrigger.create(spec, {
+  name: 'New Form Submission',
+  key: 'new_form_submission',
+  description:
+    'Triggers when a new submission is received on any ByteForms form associated with your account. Polls for new submissions based on creation timestamp.'
+})
+  .input(
+    z.object({
+      submissionId: z.number().describe('Unique identifier of the submission'),
+      formId: z.number().describe('ID of the form this submission belongs to'),
+      formName: z.string().describe('Name of the form this submission belongs to'),
+      responses: z.record(z.string(), z.any()).describe('Submission data as key-value pairs'),
+      ip: z.string().optional().describe('IP address of the submitter'),
+      createdAt: z.string().describe('ISO timestamp when the submission was created'),
+      updatedAt: z.string().describe('ISO timestamp when the submission was last updated')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.number().describe('Unique identifier of the submission'),
+      formId: z.number().describe('ID of the form this submission belongs to'),
+      formName: z.string().describe('Name of the form this submission belongs to'),
+      responses: z.record(z.string(), z.any()).describe('Submission data as key-value pairs'),
+      ip: z.string().optional().describe('IP address of the submitter'),
+      createdAt: z.string().describe('ISO timestamp when the submission was created'),
+      updatedAt: z.string().describe('ISO timestamp when the submission was last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let state = (ctx.state ?? {}) as Record<string, any>;
@@ -44,7 +46,7 @@ export let newSubmissionTrigger = SlateTrigger.create(
       if (formsResult.data.length === 0) {
         return {
           inputs: [],
-          updatedState: { lastSeenTimestamp },
+          updatedState: { lastSeenTimestamp }
         };
       }
 
@@ -66,12 +68,14 @@ export let newSubmissionTrigger = SlateTrigger.create(
       for (let form of formsResult.data) {
         let result = await client.listFormResponses(String(form.id), {
           order: 'desc',
-          limit: 50,
+          limit: 50
         });
 
-        let newSubmissions = result.data.filter((submission) => {
+        let newSubmissions = result.data.filter(submission => {
           if (!lastSeenTimestamp) return true;
-          return new Date(submission.created_at).getTime() > new Date(lastSeenTimestamp).getTime();
+          return (
+            new Date(submission.created_at).getTime() > new Date(lastSeenTimestamp).getTime()
+          );
         });
 
         for (let submission of newSubmissions) {
@@ -82,14 +86,14 @@ export let newSubmissionTrigger = SlateTrigger.create(
             responses: submission.response,
             ip: submission.options?.ip as string | undefined,
             createdAt: submission.created_at,
-            updatedAt: submission.updated_at,
+            updatedAt: submission.updated_at
           });
         }
       }
 
       // Sort all submissions by created_at descending to find the latest timestamp
-      allNewSubmissions.sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      allNewSubmissions.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
       let updatedTimestamp = lastSeenTimestamp;
@@ -100,12 +104,12 @@ export let newSubmissionTrigger = SlateTrigger.create(
       return {
         inputs: allNewSubmissions,
         updatedState: {
-          lastSeenTimestamp: updatedTimestamp,
-        },
+          lastSeenTimestamp: updatedTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'submission.created',
         id: String(ctx.input.submissionId),
@@ -116,9 +120,9 @@ export let newSubmissionTrigger = SlateTrigger.create(
           responses: ctx.input.responses,
           ip: ctx.input.ip,
           createdAt: ctx.input.createdAt,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

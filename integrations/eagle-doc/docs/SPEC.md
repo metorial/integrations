@@ -15,6 +15,7 @@ Eagle Doc uses **API key authentication**. The API key is passed in the request 
 - **Base URL:** `https://de.eagle-doc.com` (hosted in Frankfurt, Germany). Enterprise customers can request dedicated instances or specific geographic locations.
 
 Example request:
+
 ```
 POST https://de.eagle-doc.com/api/invoice/v1/processing
 Headers:

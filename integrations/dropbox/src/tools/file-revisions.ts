@@ -3,40 +3,60 @@ import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fileRevisions = SlateTool.create(
-  spec,
-  {
-    name: 'File Revisions',
-    key: 'file_revisions',
-    description: `List or restore previous versions of a file. Use action "list" to see available revisions or "restore" to revert a file to a specific revision.`,
-    tags: {
-      destructive: false
-    }
+export let fileRevisions = SlateTool.create(spec, {
+  name: 'File Revisions',
+  key: 'file_revisions',
+  description: `List or restore previous versions of a file. Use action "list" to see available revisions or "restore" to revert a file to a specific revision.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'restore']).describe('Whether to list revisions or restore a specific one'),
-    path: z.string().describe('Path of the file'),
-    rev: z.string().optional().describe('Revision ID to restore (required for "restore" action)'),
-    limit: z.number().optional().describe('Maximum number of revisions to return (for "list")')
-  }))
-  .output(z.object({
-    revisions: z.array(z.object({
-      rev: z.string().describe('Revision identifier'),
-      name: z.string().describe('File name'),
-      size: z.number().describe('File size in bytes'),
-      serverModified: z.string().describe('Server modification timestamp'),
-      clientModified: z.string().optional().describe('Client modification timestamp'),
-      isDeleted: z.boolean().optional().describe('Whether this revision represents a deleted version')
-    })).optional().describe('List of file revisions'),
-    restored: z.object({
-      name: z.string().describe('Restored file name'),
-      pathDisplay: z.string().optional().describe('Display path'),
-      rev: z.string().describe('New revision after restore'),
-      size: z.number().describe('File size in bytes')
-    }).optional().describe('Details of the restored file')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'restore'])
+        .describe('Whether to list revisions or restore a specific one'),
+      path: z.string().describe('Path of the file'),
+      rev: z
+        .string()
+        .optional()
+        .describe('Revision ID to restore (required for "restore" action)'),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of revisions to return (for "list")')
+    })
+  )
+  .output(
+    z.object({
+      revisions: z
+        .array(
+          z.object({
+            rev: z.string().describe('Revision identifier'),
+            name: z.string().describe('File name'),
+            size: z.number().describe('File size in bytes'),
+            serverModified: z.string().describe('Server modification timestamp'),
+            clientModified: z.string().optional().describe('Client modification timestamp'),
+            isDeleted: z
+              .boolean()
+              .optional()
+              .describe('Whether this revision represents a deleted version')
+          })
+        )
+        .optional()
+        .describe('List of file revisions'),
+      restored: z
+        .object({
+          name: z.string().describe('Restored file name'),
+          pathDisplay: z.string().optional().describe('Display path'),
+          rev: z.string().describe('New revision after restore'),
+          size: z.number().describe('File size in bytes')
+        })
+        .optional()
+        .describe('Details of the restored file')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DropboxClient(ctx.auth.token);
 
     if (ctx.input.action === 'list') {
@@ -71,4 +91,5 @@ export let fileRevisions = SlateTool.create(
       },
       message: `Restored **${result.name}** to revision **${ctx.input.rev}**.`
     };
-  }).build();
+  })
+  .build();

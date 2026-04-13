@@ -3,42 +3,55 @@ import { AblyControlClient } from '../lib/control-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let channelEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Channel Events',
-    key: 'channel_events',
-    description: 'Receive webhook notifications for Ably channel events including messages, presence changes, lifecycle events, and occupancy changes. Configure via the Ably dashboard Integrations tab or use the Manage Integration Rules tool to set up an HTTP rule pointing to the webhook URL.',
-  }
-)
-  .input(z.object({
-    eventSource: z.string().describe('Event source type (channel.message, channel.presence, channel.lifecycle, channel.occupancy)'),
-    eventId: z.string().describe('Unique event identifier for deduplication'),
-    channelId: z.string().optional().describe('Channel the event occurred on'),
-    name: z.string().optional().describe('Event or message name'),
-    timestamp: z.number().optional().describe('Event timestamp'),
-    messageData: z.any().optional().describe('Event payload data'),
-    clientId: z.string().optional().describe('Client ID associated with the event'),
-    connectionId: z.string().optional().describe('Connection ID associated with the event'),
-    action: z.string().optional().describe('Presence action (enter, leave, update) or lifecycle action (attached, detached)'),
-    occupancy: z.any().optional().describe('Occupancy metrics for occupancy events'),
-    raw: z.any().optional().describe('Raw event payload from Ably'),
-  }))
-  .output(z.object({
-    channelId: z.string().optional().describe('Channel the event occurred on'),
-    name: z.string().optional().describe('Event or message name'),
-    timestamp: z.number().optional().describe('Event timestamp in milliseconds'),
-    messageData: z.any().optional().describe('Event payload data'),
-    clientId: z.string().optional().describe('Client ID associated with the event'),
-    connectionId: z.string().optional().describe('Connection ID associated with the event'),
-    action: z.string().optional().describe('Presence or lifecycle action'),
-    occupancy: z.any().optional().describe('Occupancy metrics (for occupancy events)'),
-  }))
+export let channelEvents = SlateTrigger.create(spec, {
+  name: 'Channel Events',
+  key: 'channel_events',
+  description:
+    'Receive webhook notifications for Ably channel events including messages, presence changes, lifecycle events, and occupancy changes. Configure via the Ably dashboard Integrations tab or use the Manage Integration Rules tool to set up an HTTP rule pointing to the webhook URL.'
+})
+  .input(
+    z.object({
+      eventSource: z
+        .string()
+        .describe(
+          'Event source type (channel.message, channel.presence, channel.lifecycle, channel.occupancy)'
+        ),
+      eventId: z.string().describe('Unique event identifier for deduplication'),
+      channelId: z.string().optional().describe('Channel the event occurred on'),
+      name: z.string().optional().describe('Event or message name'),
+      timestamp: z.number().optional().describe('Event timestamp'),
+      messageData: z.any().optional().describe('Event payload data'),
+      clientId: z.string().optional().describe('Client ID associated with the event'),
+      connectionId: z.string().optional().describe('Connection ID associated with the event'),
+      action: z
+        .string()
+        .optional()
+        .describe(
+          'Presence action (enter, leave, update) or lifecycle action (attached, detached)'
+        ),
+      occupancy: z.any().optional().describe('Occupancy metrics for occupancy events'),
+      raw: z.any().optional().describe('Raw event payload from Ably')
+    })
+  )
+  .output(
+    z.object({
+      channelId: z.string().optional().describe('Channel the event occurred on'),
+      name: z.string().optional().describe('Event or message name'),
+      timestamp: z.number().optional().describe('Event timestamp in milliseconds'),
+      messageData: z.any().optional().describe('Event payload data'),
+      clientId: z.string().optional().describe('Client ID associated with the event'),
+      connectionId: z.string().optional().describe('Connection ID associated with the event'),
+      action: z.string().optional().describe('Presence or lifecycle action'),
+      occupancy: z.any().optional().describe('Occupancy metrics (for occupancy events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       // Auto-register only works with Control API token auth
       if (ctx.auth.authType !== 'control_token') {
-        throw new Error('Auto-registering webhooks requires Control API Token authentication. Alternatively, configure the webhook manually in the Ably dashboard.');
+        throw new Error(
+          'Auto-registering webhooks requires Control API Token authentication. Alternatively, configure the webhook manually in the Ably dashboard.'
+        );
       }
 
       let appId = ctx.config.appId;
@@ -53,25 +66,25 @@ export let channelEvents = SlateTrigger.create(
         requestMode: 'single',
         source: {
           channelFilter: '.*',
-          type: 'channel.message',
+          type: 'channel.message'
         },
         target: {
           url: ctx.input.webhookBaseUrl,
           format: 'json',
-          enveloped: true,
+          enveloped: true
         },
-        status: 'enabled',
+        status: 'enabled'
       });
 
       return {
         registrationDetails: {
           ruleId: rule.id,
-          appId: appId,
-        },
+          appId: appId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       if (ctx.auth.authType !== 'control_token') return;
 
       let details = ctx.input.registrationDetails as { ruleId: string; appId: string };
@@ -81,7 +94,7 @@ export let channelEvents = SlateTrigger.create(
       await client.deleteRule(details.appId, details.ruleId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -117,7 +130,8 @@ export let channelEvents = SlateTrigger.create(
           if (!Array.isArray(messages)) messages = [messages];
 
           for (let msg of messages) {
-            let eventId = msg.id || `${channelId}-${msg.timestamp || timestamp}-${msg.name || ''}`;
+            let eventId =
+              msg.id || `${channelId}-${msg.timestamp || timestamp}-${msg.name || ''}`;
             inputs.push({
               eventSource: source,
               eventId,
@@ -128,7 +142,7 @@ export let channelEvents = SlateTrigger.create(
               clientId: msg.clientId,
               connectionId: msg.connectionId,
               action: msg.action,
-              raw: msg,
+              raw: msg
             });
           }
         } else if (source === 'channel.lifecycle') {
@@ -140,7 +154,7 @@ export let channelEvents = SlateTrigger.create(
             name: event.name,
             timestamp,
             action: event.action,
-            raw: event,
+            raw: event
           });
         } else if (source === 'channel.occupancy') {
           let eventId = event.id || `${channelId}-occupancy-${timestamp}`;
@@ -151,7 +165,7 @@ export let channelEvents = SlateTrigger.create(
             name: event.name,
             timestamp,
             occupancy: event.data?.metrics || event.data,
-            raw: event,
+            raw: event
           });
         } else {
           // Unknown source - still pass through
@@ -162,7 +176,7 @@ export let channelEvents = SlateTrigger.create(
             channelId,
             timestamp,
             messageData: event.data,
-            raw: event,
+            raw: event
           });
         }
       }
@@ -170,7 +184,7 @@ export let channelEvents = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventSource.replace('.', '_'),
         id: ctx.input.eventId,
@@ -182,9 +196,9 @@ export let channelEvents = SlateTrigger.create(
           clientId: ctx.input.clientId,
           connectionId: ctx.input.connectionId,
           action: ctx.input.action,
-          occupancy: ctx.input.occupancy,
-        },
+          occupancy: ctx.input.occupancy
+        }
       };
-    },
+    }
   })
   .build();

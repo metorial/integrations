@@ -19,14 +19,18 @@ export class DynamicsClient {
         'OData-MaxVersion': '4.0',
         'OData-Version': '4.0',
         Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-      },
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     });
   }
 
   // ---- Record CRUD ----
 
-  async createRecord(entitySetName: string, data: Record<string, any>, detectDuplicates?: boolean): Promise<any> {
+  async createRecord(
+    entitySetName: string,
+    data: Record<string, any>,
+    detectDuplicates?: boolean
+  ): Promise<any> {
     let http = this.getAxios();
     let headers: Record<string, string> = { Prefer: 'return=representation' };
     if (detectDuplicates === true) {
@@ -36,10 +40,14 @@ export class DynamicsClient {
     return response.data;
   }
 
-  async getRecord(entitySetName: string, recordId: string, options?: {
-    select?: string[];
-    expand?: string;
-  }): Promise<any> {
+  async getRecord(
+    entitySetName: string,
+    recordId: string,
+    options?: {
+      select?: string[];
+      expand?: string;
+    }
+  ): Promise<any> {
     let http = this.getAxios();
     let params: string[] = [];
     if (options?.select && options.select.length > 0) {
@@ -53,10 +61,14 @@ export class DynamicsClient {
     return response.data;
   }
 
-  async updateRecord(entitySetName: string, recordId: string, data: Record<string, any>): Promise<any> {
+  async updateRecord(
+    entitySetName: string,
+    recordId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let http = this.getAxios();
     let response = await http.patch(`/${entitySetName}(${recordId})`, data, {
-      headers: { Prefer: 'return=representation' },
+      headers: { Prefer: 'return=representation' }
     });
     return response.data;
   }
@@ -68,14 +80,17 @@ export class DynamicsClient {
 
   // ---- Query / List ----
 
-  async listRecords(entitySetName: string, options?: {
-    select?: string[];
-    filter?: string;
-    orderBy?: string;
-    top?: number;
-    expand?: string;
-    skipToken?: string;
-  }): Promise<{ records: any[]; nextLink: string | null }> {
+  async listRecords(
+    entitySetName: string,
+    options?: {
+      select?: string[];
+      filter?: string;
+      orderBy?: string;
+      top?: number;
+      expand?: string;
+      skipToken?: string;
+    }
+  ): Promise<{ records: any[]; nextLink: string | null }> {
     let http = this.getAxios();
 
     if (options?.skipToken) {
@@ -83,7 +98,7 @@ export class DynamicsClient {
       let data = response.data;
       return {
         records: data.value || [],
-        nextLink: data['@odata.nextLink'] || null,
+        nextLink: data['@odata.nextLink'] || null
       };
     }
 
@@ -110,7 +125,7 @@ export class DynamicsClient {
 
     return {
       records: data.value || [],
-      nextLink: data['@odata.nextLink'] || null,
+      nextLink: data['@odata.nextLink'] || null
     };
   }
 
@@ -131,10 +146,9 @@ export class DynamicsClient {
     targetRecordId: string
   ): Promise<void> {
     let http = this.getAxios();
-    await http.post(
-      `/${entitySetName}(${recordId})/${navigationProperty}/$ref`,
-      { '@odata.id': `${this.baseUrl}/${targetEntitySetName}(${targetRecordId})` }
-    );
+    await http.post(`/${entitySetName}(${recordId})/${navigationProperty}/$ref`, {
+      '@odata.id': `${this.baseUrl}/${targetEntitySetName}(${targetRecordId})`
+    });
   }
 
   async disassociateRecords(
@@ -168,17 +182,22 @@ export class DynamicsClient {
       params.push(`$top=${options.top}`);
     }
     let query = params.length > 0 ? `?${params.join('&')}` : '';
-    let response = await http.get(`/${entitySetName}(${recordId})/${navigationProperty}${query}`);
+    let response = await http.get(
+      `/${entitySetName}(${recordId})/${navigationProperty}${query}`
+    );
     return response.data.value || [];
   }
 
   // ---- Search ----
 
-  async search(searchTerm: string, options?: {
-    entities?: string[];
-    filter?: string;
-    top?: number;
-  }): Promise<any> {
+  async search(
+    searchTerm: string,
+    options?: {
+      entities?: string[];
+      filter?: string;
+      top?: number;
+    }
+  ): Promise<any> {
     let http = this.getAxios();
     let body: Record<string, any> = { search: searchTerm };
     if (options?.entities && options.entities.length > 0) {
@@ -194,8 +213,8 @@ export class DynamicsClient {
     let response = await http.post(`${instanceUrl}/api/search/v2.0/query`, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
     return response.data;
   }
@@ -219,10 +238,13 @@ export class DynamicsClient {
     return response.data.value || [];
   }
 
-  async getEntityDefinition(logicalName: string, options?: {
-    select?: string[];
-    expand?: string;
-  }): Promise<any> {
+  async getEntityDefinition(
+    logicalName: string,
+    options?: {
+      select?: string[];
+      expand?: string;
+    }
+  ): Promise<any> {
     let http = this.getAxios();
     let params: string[] = [];
     if (options?.select && options.select.length > 0) {
@@ -252,7 +274,10 @@ export class DynamicsClient {
     return response.data;
   }
 
-  async invokeUnboundFunction(functionName: string, parameters?: Record<string, any>): Promise<any> {
+  async invokeUnboundFunction(
+    functionName: string,
+    parameters?: Record<string, any>
+  ): Promise<any> {
     let http = this.getAxios();
     let paramStr = '';
     if (parameters && Object.keys(parameters).length > 0) {
@@ -294,18 +319,24 @@ export class DynamicsClient {
     let http = this.getAxios();
     let params = filter ? `?$filter=${filter}` : '';
     let response = await http.get(`/${entitySetName}${params}`, {
-      headers: { Prefer: 'odata.include-annotations="*"' },
+      headers: { Prefer: 'odata.include-annotations="*"' }
     });
-    return response.data['@odata.count'] || (response.data.value ? response.data.value.length : 0);
+    return (
+      response.data['@odata.count'] || (response.data.value ? response.data.value.length : 0)
+    );
   }
 
   // ---- Modified records for polling ----
 
-  async getModifiedRecords(entitySetName: string, since: string, options?: {
-    select?: string[];
-    top?: number;
-    orderBy?: string;
-  }): Promise<{ records: any[]; nextLink: string | null }> {
+  async getModifiedRecords(
+    entitySetName: string,
+    since: string,
+    options?: {
+      select?: string[];
+      top?: number;
+      orderBy?: string;
+    }
+  ): Promise<{ records: any[]; nextLink: string | null }> {
     let http = this.getAxios();
     let params: string[] = [];
     params.push(`$filter=modifiedon gt ${since}`);
@@ -321,7 +352,7 @@ export class DynamicsClient {
     let data = response.data;
     return {
       records: data.value || [],
-      nextLink: data['@odata.nextLink'] || null,
+      nextLink: data['@odata.nextLink'] || null
     };
   }
 }

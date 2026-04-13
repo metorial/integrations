@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   startTranscriptionJob,
@@ -11,12 +10,9 @@ import {
   startMedicalTranscriptionJob,
   manageVocabulary,
   manageVocabularyFilter,
-  listLanguageModels,
+  listLanguageModels
 } from './tools';
-import {
-  transcriptionJobStateChange,
-  inboundWebhook,
-} from './triggers';
+import { transcriptionJobStateChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -30,10 +26,7 @@ export let provider = Slate.create({
     startMedicalTranscriptionJob.build(),
     manageVocabulary.build(),
     manageVocabularyFilter.build(),
-    listLanguageModels.build(),
+    listLanguageModels.build()
   ],
-  triggers: [
-    inboundWebhook,
-    transcriptionJobStateChange.build(),
-  ],
+  triggers: [inboundWebhook, transcriptionJobStateChange.build()]
 });

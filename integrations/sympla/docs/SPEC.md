@@ -11,6 +11,7 @@ Sympla uses **API key (token) authentication**. Sympla uses API keys for authent
 The token must be included in all requests sent to the API. To generate an access key, log in to the Sympla platform, go to the "My Account" menu (accessible from your username), and navigate to the "Integrations" tab. Provide a name for identification and click "Create access key." You can generate more than one token for your events if desired.
 
 The token is passed as a header in each API request:
+
 - **Header name:** `s_token`
 - **Header value:** Your generated API token
 

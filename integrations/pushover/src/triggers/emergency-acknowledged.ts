@@ -2,28 +2,38 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let emergencyAcknowledged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Emergency Notification Acknowledged',
-    key: 'emergency_acknowledged',
-    description: 'Triggers when a user acknowledges an emergency-priority notification. Set the callback URL when sending an emergency notification to the webhook URL provided by this trigger.',
-  }
-)
-  .input(z.object({
-    receiptId: z.string().describe('Receipt ID of the acknowledged emergency notification'),
-    acknowledgedAt: z.number().describe('Unix timestamp when the notification was acknowledged'),
-    acknowledgedByUserKey: z.string().describe('User key of the person who acknowledged'),
-    acknowledgedByDevice: z.string().describe('Device name from which the notification was acknowledged'),
-  }))
-  .output(z.object({
-    receiptId: z.string().describe('Receipt ID of the acknowledged emergency notification'),
-    acknowledgedAt: z.number().describe('Unix timestamp when the notification was acknowledged'),
-    acknowledgedByUserKey: z.string().describe('User key of the person who acknowledged'),
-    acknowledgedByDevice: z.string().describe('Device name from which the notification was acknowledged'),
-  }))
+export let emergencyAcknowledged = SlateTrigger.create(spec, {
+  name: 'Emergency Notification Acknowledged',
+  key: 'emergency_acknowledged',
+  description:
+    'Triggers when a user acknowledges an emergency-priority notification. Set the callback URL when sending an emergency notification to the webhook URL provided by this trigger.'
+})
+  .input(
+    z.object({
+      receiptId: z.string().describe('Receipt ID of the acknowledged emergency notification'),
+      acknowledgedAt: z
+        .number()
+        .describe('Unix timestamp when the notification was acknowledged'),
+      acknowledgedByUserKey: z.string().describe('User key of the person who acknowledged'),
+      acknowledgedByDevice: z
+        .string()
+        .describe('Device name from which the notification was acknowledged')
+    })
+  )
+  .output(
+    z.object({
+      receiptId: z.string().describe('Receipt ID of the acknowledged emergency notification'),
+      acknowledgedAt: z
+        .number()
+        .describe('Unix timestamp when the notification was acknowledged'),
+      acknowledgedByUserKey: z.string().describe('User key of the person who acknowledged'),
+      acknowledgedByDevice: z
+        .string()
+        .describe('Device name from which the notification was acknowledged')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let contentType = ctx.request.headers.get('content-type') || '';
       let params: Record<string, string> = {};
 
@@ -36,7 +46,7 @@ export let emergencyAcknowledged = SlateTrigger.create(
       } else {
         // Try parsing as JSON as fallback
         try {
-          params = await ctx.request.json() as Record<string, string>;
+          params = (await ctx.request.json()) as Record<string, string>;
         } catch {
           let text = await ctx.request.text();
           let searchParams = new URLSearchParams(text);
@@ -57,13 +67,13 @@ export let emergencyAcknowledged = SlateTrigger.create(
             receiptId,
             acknowledgedAt,
             acknowledgedByUserKey,
-            acknowledgedByDevice,
-          },
-        ],
+            acknowledgedByDevice
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'emergency_notification.acknowledged',
         id: `${ctx.input.receiptId}-${ctx.input.acknowledgedAt}`,
@@ -71,9 +81,9 @@ export let emergencyAcknowledged = SlateTrigger.create(
           receiptId: ctx.input.receiptId,
           acknowledgedAt: ctx.input.acknowledgedAt,
           acknowledgedByUserKey: ctx.input.acknowledgedByUserKey,
-          acknowledgedByDevice: ctx.input.acknowledgedByDevice,
-        },
+          acknowledgedByDevice: ctx.input.acknowledgedByDevice
+        }
       };
-    },
+    }
   })
   .build();

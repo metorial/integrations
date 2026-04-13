@@ -12,7 +12,7 @@ import {
   purgeCache,
   getReports,
   generateSignedUrl,
-  buildRenderUrl,
+  buildRenderUrl
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     purgeCache,
     getReports,
     generateSignedUrl,
-    buildRenderUrl,
+    buildRenderUrl
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

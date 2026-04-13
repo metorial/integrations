@@ -10,30 +10,34 @@ let personSchema = z.object({
   title: z.string().nullable().describe('Job title'),
   company: z.string().nullable().describe('Company name'),
   admin: z.boolean().describe('Whether the person is an admin'),
-  avatarUrl: z.string().nullable().describe('URL to the person avatar image'),
+  avatarUrl: z.string().nullable().describe('URL to the person avatar image')
 });
 
-export let listPeopleTool = SlateTool.create(
-  spec,
-  {
-    name: 'List People',
-    key: 'list_people',
-    description: `List all people visible to the current user in the Basecamp account, or list people assigned to a specific project.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPeopleTool = SlateTool.create(spec, {
+  name: 'List People',
+  key: 'list_people',
+  description: `List all people visible to the current user in the Basecamp account, or list people assigned to a specific project.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    projectId: z.string().optional().describe('Optionally filter to people on a specific project'),
-  }))
-  .output(z.object({
-    people: z.array(personSchema).describe('List of people'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z
+        .string()
+        .optional()
+        .describe('Optionally filter to people on a specific project')
+    })
+  )
+  .output(
+    z.object({
+      people: z.array(personSchema).describe('List of people')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountId: ctx.config.accountId,
+      accountId: ctx.config.accountId
     });
 
     let people = ctx.input.projectId
@@ -47,12 +51,12 @@ export let listPeopleTool = SlateTool.create(
       title: p.title ?? null,
       company: p.company?.name ?? null,
       admin: p.admin ?? false,
-      avatarUrl: p.avatar_url ?? null,
+      avatarUrl: p.avatar_url ?? null
     }));
 
     return {
       output: { people: mapped },
-      message: `Found **${mapped.length}** person(s).`,
+      message: `Found **${mapped.length}** person(s).`
     };
   })
   .build();

@@ -3,36 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchSequences = SlateTool.create(
-  spec,
-  {
-    name: 'Search Sequences',
-    key: 'search_sequences',
-    description: `Search for email sequences in your Apollo account. Returns sequence names, step counts, and activity status. Use this to find a sequence before adding contacts to it.`,
-    tags: {
-      readOnly: true
-    }
+export let searchSequences = SlateTool.create(spec, {
+  name: 'Search Sequences',
+  key: 'search_sequences',
+  description: `Search for email sequences in your Apollo account. Returns sequence names, step counts, and activity status. Use this to find a sequence before adding contacts to it.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    keywords: z.string().optional().describe('Keywords to search sequences by name'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 25)')
-  }))
-  .output(z.object({
-    sequences: z.array(z.object({
-      sequenceId: z.string().optional(),
-      name: z.string().optional(),
-      active: z.boolean().optional(),
-      numSteps: z.number().optional(),
-      userId: z.string().optional(),
-      createdAt: z.string().optional()
-    })),
-    totalEntries: z.number().optional(),
-    currentPage: z.number().optional(),
-    totalPages: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      keywords: z.string().optional().describe('Keywords to search sequences by name'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 25)')
+    })
+  )
+  .output(
+    z.object({
+      sequences: z.array(
+        z.object({
+          sequenceId: z.string().optional(),
+          name: z.string().optional(),
+          active: z.boolean().optional(),
+          numSteps: z.number().optional(),
+          userId: z.string().optional(),
+          createdAt: z.string().optional()
+        })
+      ),
+      totalEntries: z.number().optional(),
+      currentPage: z.number().optional(),
+      totalPages: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchSequences({
@@ -62,32 +65,35 @@ export let searchSequences = SlateTool.create(
   })
   .build();
 
-export let addContactsToSequence = SlateTool.create(
-  spec,
-  {
-    name: 'Add Contacts to Sequence',
-    key: 'add_contacts_to_sequence',
-    description: `Add one or more contacts to an existing email sequence. Contacts must already exist in your Apollo database before being added to a sequence. Requires a master API key.`,
-    constraints: [
-      'Requires a master API key',
-      'Contacts must already exist in your Apollo database'
-    ],
-    tags: {
-      destructive: false
-    }
+export let addContactsToSequence = SlateTool.create(spec, {
+  name: 'Add Contacts to Sequence',
+  key: 'add_contacts_to_sequence',
+  description: `Add one or more contacts to an existing email sequence. Contacts must already exist in your Apollo database before being added to a sequence. Requires a master API key.`,
+  constraints: [
+    'Requires a master API key',
+    'Contacts must already exist in your Apollo database'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    sequenceId: z.string().describe('The Apollo sequence ID to add contacts to'),
-    contactIds: z.array(z.string()).describe('Array of Apollo contact IDs to add to the sequence'),
-    emailAccountId: z.string().optional().describe('Email account ID to send from'),
-    userId: z.string().optional().describe('Apollo user ID on whose behalf to send')
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    contactsAdded: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sequenceId: z.string().describe('The Apollo sequence ID to add contacts to'),
+      contactIds: z
+        .array(z.string())
+        .describe('Array of Apollo contact IDs to add to the sequence'),
+      emailAccountId: z.string().optional().describe('Email account ID to send from'),
+      userId: z.string().optional().describe('Apollo user ID on whose behalf to send')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      contactsAdded: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.addContactsToSequence(
@@ -107,30 +113,31 @@ export let addContactsToSequence = SlateTool.create(
   })
   .build();
 
-export let updateContactSequenceStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact Sequence Status',
-    key: 'update_contact_sequence_status',
-    description: `Mark contacts as "finished" in a sequence or re-activate them. Use this to manage contact progression through your email outreach sequences.`,
-    constraints: [
-      'Requires a master API key'
-    ],
-    tags: {
-      destructive: false
-    }
+export let updateContactSequenceStatus = SlateTool.create(spec, {
+  name: 'Update Contact Sequence Status',
+  key: 'update_contact_sequence_status',
+  description: `Mark contacts as "finished" in a sequence or re-activate them. Use this to manage contact progression through your email outreach sequences.`,
+  constraints: ['Requires a master API key'],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    sequenceId: z.string().describe('The Apollo sequence ID'),
-    contactIds: z.array(z.string()).describe('Array of contact IDs to update'),
-    status: z.enum(['finished', 'active']).describe('"finished" to mark as complete, "active" to re-activate')
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    contactsUpdated: z.number().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sequenceId: z.string().describe('The Apollo sequence ID'),
+      contactIds: z.array(z.string()).describe('Array of contact IDs to update'),
+      status: z
+        .enum(['finished', 'active'])
+        .describe('"finished" to mark as complete, "active" to re-activate')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      contactsUpdated: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.updateContactStatusInSequence(

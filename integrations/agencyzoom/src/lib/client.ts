@@ -9,7 +9,7 @@ export class Client {
       baseURL: 'https://api.agencyzoom.com/v1/api'
     });
 
-    this.api.interceptors.request.use((config) => {
+    this.api.interceptors.request.use(config => {
       const headers = AxiosHeaders.from(config.headers);
 
       if (authConfig.token) {
@@ -83,7 +83,11 @@ export class Client {
     return response.data;
   }
 
-  async updateLeadOpportunity(leadId: string, opportunityId: string, data: Record<string, any>): Promise<any> {
+  async updateLeadOpportunity(
+    leadId: string,
+    opportunityId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.put(`/leads/${leadId}/opportunities/${opportunityId}`, data);
     return response.data;
   }
@@ -103,7 +107,11 @@ export class Client {
     return response.data;
   }
 
-  async updateLeadQuote(leadId: string, quoteId: string, data: Record<string, any>): Promise<any> {
+  async updateLeadQuote(
+    leadId: string,
+    quoteId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.put(`/leads/${leadId}/quotes/${quoteId}`, data);
     return response.data;
   }
@@ -271,18 +279,30 @@ export class Client {
     return response.data;
   }
 
-  async createOpportunityDriver(opportunityId: string, data: Record<string, any>): Promise<any> {
+  async createOpportunityDriver(
+    opportunityId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.post(`/opportunities/${opportunityId}/drivers`, data);
     return response.data;
   }
 
-  async updateOpportunityDriver(opportunityId: string, driverId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.put(`/opportunities/${opportunityId}/drivers/${driverId}`, data);
+  async updateOpportunityDriver(
+    opportunityId: string,
+    driverId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.put(
+      `/opportunities/${opportunityId}/drivers/${driverId}`,
+      data
+    );
     return response.data;
   }
 
   async deleteOpportunityDriver(opportunityId: string, driverId: string): Promise<any> {
-    let response = await this.api.delete(`/opportunities/${opportunityId}/drivers/${driverId}`);
+    let response = await this.api.delete(
+      `/opportunities/${opportunityId}/drivers/${driverId}`
+    );
     return response.data;
   }
 
@@ -291,18 +311,30 @@ export class Client {
     return response.data;
   }
 
-  async createOpportunityVehicle(opportunityId: string, data: Record<string, any>): Promise<any> {
+  async createOpportunityVehicle(
+    opportunityId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.api.post(`/opportunities/${opportunityId}/vehicles`, data);
     return response.data;
   }
 
-  async updateOpportunityVehicle(opportunityId: string, vehicleId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.api.put(`/opportunities/${opportunityId}/vehicles/${vehicleId}`, data);
+  async updateOpportunityVehicle(
+    opportunityId: string,
+    vehicleId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.api.put(
+      `/opportunities/${opportunityId}/vehicles/${vehicleId}`,
+      data
+    );
     return response.data;
   }
 
   async deleteOpportunityVehicle(opportunityId: string, vehicleId: string): Promise<any> {
-    let response = await this.api.delete(`/opportunities/${opportunityId}/vehicles/${vehicleId}`);
+    let response = await this.api.delete(
+      `/opportunities/${opportunityId}/vehicles/${vehicleId}`
+    );
     return response.data;
   }
 

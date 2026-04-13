@@ -26,7 +26,9 @@ export class AbstractClient {
   private requireToken(tokenKey: keyof AbstractClient['tokens'], serviceName: string): string {
     let token = this.tokens[tokenKey];
     if (!token) {
-      throw new Error(`API key for ${serviceName} is not configured. Please provide the ${tokenKey} in your authentication settings.`);
+      throw new Error(
+        `API key for ${serviceName} is not configured. Please provide the ${tokenKey} in your authentication settings.`
+      );
     }
     return token;
   }
@@ -38,7 +40,7 @@ export class AbstractClient {
       params: {
         api_key: token,
         email: params.email,
-        auto_correct: params.autoCorrect ?? false,
+        auto_correct: params.autoCorrect ?? false
       }
     });
     return response.data;
@@ -50,7 +52,7 @@ export class AbstractClient {
     let response = await axios.get('', {
       params: {
         api_key: token,
-        phone: params.phone,
+        phone: params.phone
       }
     });
     return response.data;
@@ -81,7 +83,7 @@ export class AbstractClient {
     let axios = makeAxios('https://exchange-rates.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
-      base: params.base,
+      base: params.base
     };
     if (params.target) queryParams.target = params.target;
     let response = await axios.get('live', { params: queryParams });
@@ -94,20 +96,25 @@ export class AbstractClient {
     let queryParams: Record<string, string> = {
       api_key: token,
       base: params.base,
-      date: params.date,
+      date: params.date
     };
     if (params.target) queryParams.target = params.target;
     let response = await axios.get('historical', { params: queryParams });
     return response.data;
   }
 
-  async convertCurrency(params: { base: string; target: string; baseAmount?: number; date?: string }) {
+  async convertCurrency(params: {
+    base: string;
+    target: string;
+    baseAmount?: number;
+    date?: string;
+  }) {
     let token = this.requireToken('exchangeRatesToken', 'Exchange Rates');
     let axios = makeAxios('https://exchange-rates.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
       base: params.base,
-      target: params.target,
+      target: params.target
     };
     if (params.baseAmount !== undefined) queryParams.base_amount = String(params.baseAmount);
     if (params.date) queryParams.date = params.date;
@@ -120,7 +127,7 @@ export class AbstractClient {
     let axios = makeAxios('https://holidays.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
-      country: params.country,
+      country: params.country
     };
     if (params.year !== undefined) queryParams.year = String(params.year);
     if (params.month !== undefined) queryParams.month = String(params.month);
@@ -135,13 +142,17 @@ export class AbstractClient {
     let response = await axios.get('current_time', {
       params: {
         api_key: token,
-        location: params.location,
+        location: params.location
       }
     });
     return response.data;
   }
 
-  async convertTimezone(params: { baseLocation: string; baseDatetime: string; targetLocation: string }) {
+  async convertTimezone(params: {
+    baseLocation: string;
+    baseDatetime: string;
+    targetLocation: string;
+  }) {
     let token = this.requireToken('timezoneToken', 'Timezone');
     let axios = makeAxios('https://timezone.abstractapi.com/v1/');
     let response = await axios.get('convert_time', {
@@ -149,34 +160,48 @@ export class AbstractClient {
         api_key: token,
         base_location: params.baseLocation,
         base_datetime: params.baseDatetime,
-        target_location: params.targetLocation,
+        target_location: params.targetLocation
       }
     });
     return response.data;
   }
 
-  async scrapeWebsite(params: { url: string; renderJs?: boolean; proxyCountry?: string; premiumProxy?: boolean }) {
+  async scrapeWebsite(params: {
+    url: string;
+    renderJs?: boolean;
+    proxyCountry?: string;
+    premiumProxy?: boolean;
+  }) {
     let token = this.requireToken('webScrapingToken', 'Web Scraping');
     let axios = makeAxios('https://scrape.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
-      url: params.url,
+      url: params.url
     };
     if (params.renderJs !== undefined) queryParams.render_js = String(params.renderJs);
     if (params.proxyCountry) queryParams.proxy_country = params.proxyCountry;
-    if (params.premiumProxy !== undefined) queryParams.premium_proxy = String(params.premiumProxy);
+    if (params.premiumProxy !== undefined)
+      queryParams.premium_proxy = String(params.premiumProxy);
     let response = await axios.get('', { params: queryParams });
     return response.data;
   }
 
-  async captureScreenshot(params: { url: string; captureFullPage?: boolean; delay?: number; width?: number; height?: number; cssInjection?: string }) {
+  async captureScreenshot(params: {
+    url: string;
+    captureFullPage?: boolean;
+    delay?: number;
+    width?: number;
+    height?: number;
+    cssInjection?: string;
+  }) {
     let token = this.requireToken('screenshotToken', 'Website Screenshot');
     let axios = makeAxios('https://screenshot.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
-      url: params.url,
+      url: params.url
     };
-    if (params.captureFullPage !== undefined) queryParams.capture_full_page = String(params.captureFullPage);
+    if (params.captureFullPage !== undefined)
+      queryParams.capture_full_page = String(params.captureFullPage);
     if (params.delay !== undefined) queryParams.delay = String(params.delay);
     if (params.width !== undefined) queryParams.width = String(params.width);
     if (params.height !== undefined) queryParams.height = String(params.height);
@@ -191,19 +216,24 @@ export class AbstractClient {
     let response = await axios.get('validate', {
       params: {
         api_key: token,
-        vat_number: params.vatNumber,
+        vat_number: params.vatNumber
       }
     });
     return response.data;
   }
 
-  async calculateVat(params: { amount: number; countryCode: string; isVatIncl?: boolean; vatCategory?: string }) {
+  async calculateVat(params: {
+    amount: number;
+    countryCode: string;
+    isVatIncl?: boolean;
+    vatCategory?: string;
+  }) {
     let token = this.requireToken('vatToken', 'VAT Validation');
     let axios = makeAxios('https://vat.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
       amount: String(params.amount),
-      country_code: params.countryCode,
+      country_code: params.countryCode
     };
     if (params.isVatIncl !== undefined) queryParams.is_vat_incl = String(params.isVatIncl);
     if (params.vatCategory) queryParams.vat_category = params.vatCategory;
@@ -217,7 +247,7 @@ export class AbstractClient {
     let response = await axios.get('categories', {
       params: {
         api_key: token,
-        country_code: params.countryCode,
+        country_code: params.countryCode
       }
     });
     return response.data;
@@ -229,7 +259,7 @@ export class AbstractClient {
     let response = await axios.get('', {
       params: {
         api_key: token,
-        iban_number: params.ibanNumber,
+        iban_number: params.ibanNumber
       }
     });
     return response.data;
@@ -240,7 +270,7 @@ export class AbstractClient {
     let axios = makeAxios('https://images.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
-      url: params.url,
+      url: params.url
     };
     if (params.lossy !== undefined) queryParams.lossy = String(params.lossy);
     if (params.quality !== undefined) queryParams.quality = String(params.quality);
@@ -248,12 +278,19 @@ export class AbstractClient {
     return response.data;
   }
 
-  async generateAvatar(params: { name: string; imageSize?: number; fontSize?: number; charLimit?: number; background?: string; fontColor?: string }) {
+  async generateAvatar(params: {
+    name: string;
+    imageSize?: number;
+    fontSize?: number;
+    charLimit?: number;
+    background?: string;
+    fontColor?: string;
+  }) {
     let token = this.requireToken('avatarsToken', 'User Avatars');
     let axios = makeAxios('https://avatars.abstractapi.com/v1/');
     let queryParams: Record<string, string> = {
       api_key: token,
-      name: params.name,
+      name: params.name
     };
     if (params.imageSize !== undefined) queryParams.image_size = String(params.imageSize);
     if (params.fontSize !== undefined) queryParams.font_size = String(params.fontSize);

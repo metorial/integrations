@@ -2,19 +2,21 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let oauthAxios = createAxios({
-  baseURL: 'https://app.frontapp.com',
+  baseURL: 'https://app.frontapp.com'
 });
 
 let apiAxios = createAxios({
-  baseURL: 'https://api2.frontapp.com',
+  baseURL: 'https://api2.frontapp.com'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -23,87 +25,93 @@ export let auth = SlateAuth.create()
     scopes: [
       {
         title: 'Read Shared',
-        description: 'Read access to shared workspace resources (conversations, inboxes, tags, etc.)',
-        scope: 'shared:resources:read',
+        description:
+          'Read access to shared workspace resources (conversations, inboxes, tags, etc.)',
+        scope: 'shared:resources:read'
       },
       {
         title: 'Write Shared',
         description: 'Write access to shared workspace resources',
-        scope: 'shared:resources:write',
+        scope: 'shared:resources:write'
       },
       {
         title: 'Delete Shared',
         description: 'Delete access to shared workspace resources',
-        scope: 'shared:resources:delete',
+        scope: 'shared:resources:delete'
       },
       {
         title: 'Send Shared',
         description: 'Send messages from shared inboxes',
-        scope: 'shared:resources:send',
+        scope: 'shared:resources:send'
       },
       {
         title: 'Read Global',
-        description: 'Read access to global/company-level resources (teams, accounts, company rules)',
-        scope: 'global:resources:read',
+        description:
+          'Read access to global/company-level resources (teams, accounts, company rules)',
+        scope: 'global:resources:read'
       },
       {
         title: 'Write Global',
         description: 'Write access to global/company-level resources',
-        scope: 'global:resources:write',
+        scope: 'global:resources:write'
       },
       {
         title: 'Delete Global',
         description: 'Delete access to global/company-level resources',
-        scope: 'global:resources:delete',
+        scope: 'global:resources:delete'
       },
       {
         title: 'Read Private',
         description: 'Read access to private/individual teammate resources',
-        scope: 'private:resources:read',
+        scope: 'private:resources:read'
       },
       {
         title: 'Write Private',
         description: 'Write access to private/individual teammate resources',
-        scope: 'private:resources:write',
+        scope: 'private:resources:write'
       },
       {
         title: 'Delete Private',
         description: 'Delete access to private/individual teammate resources',
-        scope: 'private:resources:delete',
+        scope: 'private:resources:delete'
       },
       {
         title: 'Send Private',
         description: 'Send messages from private inboxes',
-        scope: 'private:resources:send',
-      },
+        scope: 'private:resources:send'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://app.frontapp.com/oauth/authorize?${params.toString()}`,
+        url: `https://app.frontapp.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await oauthAxios.post('/oauth/token', {
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        grant_type: 'authorization_code',
-      }, {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/json',
+      let response = await oauthAxios.post(
+        '/oauth/token',
+        {
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          grant_type: 'authorization_code'
         },
-      });
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -111,23 +119,27 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt: data.expires_at ? String(data.expires_at) : undefined,
-        },
+          expiresAt: data.expires_at ? String(data.expires_at) : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await oauthAxios.post('/oauth/token', {
-        refresh_token: ctx.output.refreshToken,
-        grant_type: 'refresh_token',
-      }, {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/json',
+      let response = await oauthAxios.post(
+        '/oauth/token',
+        {
+          refresh_token: ctx.output.refreshToken,
+          grant_type: 'refresh_token'
         },
-      });
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -135,16 +147,20 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt: data.expires_at ? String(data.expires_at) : undefined,
-        },
+          expiresAt: data.expires_at ? String(data.expires_at) : undefined
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await apiAxios.get('/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -152,10 +168,10 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: data.id,
-          name: data.name,
-        },
+          name: data.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -163,22 +179,27 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      apiToken: z.string().describe('Front API token created in Settings > Developers > API Tokens'),
+      apiToken: z
+        .string()
+        .describe('Front API token created in Settings > Developers > API Tokens')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiToken,
-        },
+          token: ctx.input.apiToken
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { apiToken: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { apiToken: string };
+    }) => {
       let response = await apiAxios.get('/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -186,8 +207,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: data.id,
-          name: data.name,
-        },
+          name: data.name
+        }
       };
-    },
+    }
   });

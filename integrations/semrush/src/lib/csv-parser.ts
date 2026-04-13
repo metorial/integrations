@@ -13,12 +13,12 @@ export let parseCsvResponse = (data: string): Record<string, unknown>[] => {
     throw new Error(`Semrush API error: ${trimmed}`);
   }
 
-  let lines = trimmed.split('\n').filter((line) => line.trim() !== '');
+  let lines = trimmed.split('\n').filter(line => line.trim() !== '');
   if (lines.length < 2) {
     return [];
   }
 
-  let headers = lines[0]!.split(';').map((h) => h.trim());
+  let headers = lines[0]!.split(';').map(h => h.trim());
   let results: Record<string, unknown>[] = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -102,7 +102,7 @@ export let columnNameMap: Record<string, string> = {
   P1: 'position1',
   P2: 'position2',
   P3: 'position3',
-  P4: 'position4',
+  P4: 'position4'
 };
 
 /**

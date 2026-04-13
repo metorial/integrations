@@ -16,32 +16,33 @@ let articleDetailSchema = z.object({
   category: z.string().nullable().describe('Article category'),
   language: z.string().describe('ISO 639-1 language code'),
   sourceCountry: z.string().describe('ISO 3166 country code of the news source'),
-  sentiment: z.number().nullable().describe('Sentiment score from -1 to +1'),
+  sentiment: z.number().nullable().describe('Sentiment score from -1 to +1')
 });
 
-export let retrieveArticleTool = SlateTool.create(
-  spec,
-  {
-    name: 'Retrieve Articles',
-    key: 'retrieve_articles',
-    description: `Fetch the full details of one or more news articles by their IDs. Article IDs are obtained from other tools like Search News or Top News. Returns complete article data including title, text, summary, images, videos, authors, publish date, sentiment, and category.`,
-    tags: {
-      readOnly: true,
-    },
+export let retrieveArticleTool = SlateTool.create(spec, {
+  name: 'Retrieve Articles',
+  key: 'retrieve_articles',
+  description: `Fetch the full details of one or more news articles by their IDs. Article IDs are obtained from other tools like Search News or Top News. Returns complete article data including title, text, summary, images, videos, authors, publish date, sentiment, and category.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    articleIds: z.array(z.number()).min(1).describe('List of article IDs to retrieve'),
-  }))
-  .output(z.object({
-    articles: z.array(articleDetailSchema).describe('Retrieved article details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      articleIds: z.array(z.number()).min(1).describe('List of article IDs to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      articles: z.array(articleDetailSchema).describe('Retrieved article details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.retrieveNews(ctx.input.articleIds);
 
-    let articles = (result.news || []).map((article) => ({
+    let articles = (result.news || []).map(article => ({
       articleId: article.id,
       title: article.title,
       text: article.text,
@@ -54,14 +55,14 @@ export let retrieveArticleTool = SlateTool.create(
       category: article.category,
       language: article.language,
       sourceCountry: article.source_country,
-      sentiment: article.sentiment,
+      sentiment: article.sentiment
     }));
 
     return {
       output: {
-        articles,
+        articles
       },
-      message: `Retrieved **${articles.length}** article(s).`,
+      message: `Retrieved **${articles.length}** article(s).`
     };
   })
   .build();

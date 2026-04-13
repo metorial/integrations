@@ -7,6 +7,6 @@ export let createClient = (ctx: {
   let baseUrl = ctx.auth.baseUrl || ctx.config.baseUrl;
   return new Client({
     token: ctx.auth.token,
-    baseUrl,
+    baseUrl
   });
 };

@@ -2,59 +2,63 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let invoiceStatus = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Status Update',
-    key: 'invoice_status_update',
-    description: 'Triggered when an invoice status changes. Receives webhook callbacks from Plisio for events like payment received, completed, expired, or failed.',
-  }
-)
-  .input(z.object({
-    transactionId: z.string().describe('Plisio transaction ID'),
-    status: z.string().describe('Invoice status'),
-    amount: z.string().optional().describe('Amount received'),
-    currency: z.string().optional().describe('Cryptocurrency code'),
-    orderName: z.string().optional().describe('Merchant order name'),
-    orderNumber: z.string().optional().describe('Merchant order number'),
-    sourceCurrency: z.string().optional().describe('Fiat currency code'),
-    sourceAmount: z.string().optional().describe('Fiat amount'),
-    sourceRate: z.string().optional().describe('Exchange rate'),
-    pendingAmount: z.string().optional().describe('Remaining unconfirmed amount'),
-    walletHash: z.string().optional().describe('Payment wallet address'),
-    confirmations: z.number().optional().describe('Number of confirmations'),
-    invoiceCommission: z.string().optional().describe('Plisio commission'),
-    invoiceSum: z.string().optional().describe('Invoice amount excluding commission'),
-    invoiceTotalSum: z.string().optional().describe('Total invoice amount'),
-    txUrls: z.string().optional().describe('Block explorer URL(s)'),
-    merchant: z.string().optional().describe('Merchant name'),
-    merchantId: z.string().optional().describe('Merchant identifier'),
-    expireUtc: z.string().optional().describe('Expiration timestamp'),
-    comment: z.string().optional().describe('Additional comment'),
-  }))
-  .output(z.object({
-    transactionId: z.string().describe('Plisio transaction ID'),
-    status: z.string().describe('Invoice status (new, pending, completed, expired, error, cancelled)'),
-    amount: z.string().optional().describe('Amount received in cryptocurrency'),
-    currency: z.string().optional().describe('Cryptocurrency code'),
-    orderName: z.string().optional().describe('Merchant order name'),
-    orderNumber: z.string().optional().describe('Merchant order number'),
-    sourceCurrency: z.string().optional().describe('Fiat currency code'),
-    sourceAmount: z.string().optional().describe('Original fiat amount'),
-    sourceRate: z.string().optional().describe('Exchange rate used'),
-    pendingAmount: z.string().optional().describe('Remaining unconfirmed amount'),
-    walletHash: z.string().optional().describe('Payment wallet address'),
-    confirmations: z.number().optional().describe('Number of blockchain confirmations'),
-    invoiceCommission: z.string().optional().describe('Plisio service commission'),
-    invoiceSum: z.string().optional().describe('Invoice amount excluding commission'),
-    invoiceTotalSum: z.string().optional().describe('Total invoice amount'),
-    txUrls: z.string().optional().describe('Block explorer URL(s)'),
-    merchant: z.string().optional().describe('Merchant name'),
-    merchantId: z.string().optional().describe('Merchant identifier'),
-    expireUtc: z.string().optional().describe('Expiration timestamp'),
-  }))
+export let invoiceStatus = SlateTrigger.create(spec, {
+  name: 'Invoice Status Update',
+  key: 'invoice_status_update',
+  description:
+    'Triggered when an invoice status changes. Receives webhook callbacks from Plisio for events like payment received, completed, expired, or failed.'
+})
+  .input(
+    z.object({
+      transactionId: z.string().describe('Plisio transaction ID'),
+      status: z.string().describe('Invoice status'),
+      amount: z.string().optional().describe('Amount received'),
+      currency: z.string().optional().describe('Cryptocurrency code'),
+      orderName: z.string().optional().describe('Merchant order name'),
+      orderNumber: z.string().optional().describe('Merchant order number'),
+      sourceCurrency: z.string().optional().describe('Fiat currency code'),
+      sourceAmount: z.string().optional().describe('Fiat amount'),
+      sourceRate: z.string().optional().describe('Exchange rate'),
+      pendingAmount: z.string().optional().describe('Remaining unconfirmed amount'),
+      walletHash: z.string().optional().describe('Payment wallet address'),
+      confirmations: z.number().optional().describe('Number of confirmations'),
+      invoiceCommission: z.string().optional().describe('Plisio commission'),
+      invoiceSum: z.string().optional().describe('Invoice amount excluding commission'),
+      invoiceTotalSum: z.string().optional().describe('Total invoice amount'),
+      txUrls: z.string().optional().describe('Block explorer URL(s)'),
+      merchant: z.string().optional().describe('Merchant name'),
+      merchantId: z.string().optional().describe('Merchant identifier'),
+      expireUtc: z.string().optional().describe('Expiration timestamp'),
+      comment: z.string().optional().describe('Additional comment')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().describe('Plisio transaction ID'),
+      status: z
+        .string()
+        .describe('Invoice status (new, pending, completed, expired, error, cancelled)'),
+      amount: z.string().optional().describe('Amount received in cryptocurrency'),
+      currency: z.string().optional().describe('Cryptocurrency code'),
+      orderName: z.string().optional().describe('Merchant order name'),
+      orderNumber: z.string().optional().describe('Merchant order number'),
+      sourceCurrency: z.string().optional().describe('Fiat currency code'),
+      sourceAmount: z.string().optional().describe('Original fiat amount'),
+      sourceRate: z.string().optional().describe('Exchange rate used'),
+      pendingAmount: z.string().optional().describe('Remaining unconfirmed amount'),
+      walletHash: z.string().optional().describe('Payment wallet address'),
+      confirmations: z.number().optional().describe('Number of blockchain confirmations'),
+      invoiceCommission: z.string().optional().describe('Plisio service commission'),
+      invoiceSum: z.string().optional().describe('Invoice amount excluding commission'),
+      invoiceTotalSum: z.string().optional().describe('Total invoice amount'),
+      txUrls: z.string().optional().describe('Block explorer URL(s)'),
+      merchant: z.string().optional().describe('Merchant name'),
+      merchantId: z.string().optional().describe('Merchant identifier'),
+      expireUtc: z.string().optional().describe('Expiration timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
 
       let contentType = ctx.request.headers.get('content-type') || '';
@@ -101,13 +105,13 @@ export let invoiceStatus = SlateTrigger.create(
             merchant: data.merchant,
             merchantId: data.merchant_id,
             expireUtc: data.expire_utc !== undefined ? String(data.expire_utc) : undefined,
-            comment: data.comment,
-          },
-        ],
+            comment: data.comment
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       return {
@@ -132,9 +136,9 @@ export let invoiceStatus = SlateTrigger.create(
           txUrls: input.txUrls,
           merchant: input.merchant,
           merchantId: input.merchantId,
-          expireUtc: input.expireUtc,
-        },
+          expireUtc: input.expireUtc
+        }
       };
-    },
+    }
   })
   .build();

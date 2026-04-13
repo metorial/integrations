@@ -32,7 +32,7 @@ import {
   updateTask,
   listTasks,
   listUsers,
-  manageTags,
+  manageTags
 } from './tools';
 import {
   candidateEvents,
@@ -40,7 +40,7 @@ import {
   contactEvents,
   companyEvents,
   pipelineEvents,
-  activityEvents,
+  activityEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -77,7 +77,7 @@ export let provider = Slate.create({
     updateTask,
     listTasks,
     listUsers,
-    manageTags,
+    manageTags
   ],
   triggers: [
     candidateEvents,
@@ -85,6 +85,6 @@ export let provider = Slate.create({
     contactEvents,
     companyEvents,
     pipelineEvents,
-    activityEvents,
-  ],
+    activityEvents
+  ]
 });

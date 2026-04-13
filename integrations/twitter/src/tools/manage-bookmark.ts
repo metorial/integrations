@@ -4,35 +4,36 @@ import { postSchema, mapPost } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBookmark = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Bookmark',
-    key: 'manage_bookmark',
-    description: `Add, remove, or list bookmarked posts for the authenticated user.`,
-    instructions: [
-      'Use action **add** or **remove** to bookmark/unbookmark a post.',
-      'Use action **list** to retrieve all bookmarked posts.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageBookmark = SlateTool.create(spec, {
+  name: 'Manage Bookmark',
+  key: 'manage_bookmark',
+  description: `Add, remove, or list bookmarked posts for the authenticated user.`,
+  instructions: [
+    'Use action **add** or **remove** to bookmark/unbookmark a post.',
+    'Use action **list** to retrieve all bookmarked posts.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['add', 'remove', 'list']).describe('Action to perform'),
-    userId: z.string().describe('Authenticated user ID'),
-    postId: z.string().optional().describe('Post ID (required for add/remove)'),
-    maxResults: z.number().optional().describe('Number of results for list action'),
-    paginationToken: z.string().optional().describe('Pagination token for list action')
-  }))
-  .output(z.object({
-    success: z.boolean().optional().describe('Whether the action was successful'),
-    posts: z.array(postSchema).optional().describe('Bookmarked posts (for list)'),
-    nextToken: z.string().optional().describe('Pagination token for next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['add', 'remove', 'list']).describe('Action to perform'),
+      userId: z.string().describe('Authenticated user ID'),
+      postId: z.string().optional().describe('Post ID (required for add/remove)'),
+      maxResults: z.number().optional().describe('Number of results for list action'),
+      paginationToken: z.string().optional().describe('Pagination token for list action')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().optional().describe('Whether the action was successful'),
+      posts: z.array(postSchema).optional().describe('Bookmarked posts (for list)'),
+      nextToken: z.string().optional().describe('Pagination token for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwitterClient(ctx.auth.token);
     let { action, userId, postId, maxResults, paginationToken } = ctx.input;
 
@@ -64,4 +65,5 @@ export let manageBookmark = SlateTool.create(
     }
 
     throw new Error('Invalid action.');
-  }).build();
+  })
+  .build();

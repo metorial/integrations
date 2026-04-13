@@ -3,48 +3,88 @@ import { WakaTimeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getOrganizations = SlateTool.create(
-  spec,
-  {
-    name: 'Get Organizations',
-    key: 'get_organizations',
-    description: `List organizations the user belongs to, along with their dashboards and members. Optionally drill into a specific organization to see its dashboards, or into a specific dashboard to see members and summaries.`,
-    tags: {
-      readOnly: true
-    }
+export let getOrganizations = SlateTool.create(spec, {
+  name: 'Get Organizations',
+  key: 'get_organizations',
+  description: `List organizations the user belongs to, along with their dashboards and members. Optionally drill into a specific organization to see its dashboards, or into a specific dashboard to see members and summaries.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    organizationId: z.string().optional().describe('Organization ID to get dashboards for'),
-    dashboardId: z.string().optional().describe('Dashboard ID to get members for (requires organizationId)'),
-    summaryStartDate: z.string().optional().describe('Start date (YYYY-MM-DD) for dashboard summaries (requires organizationId and dashboardId)'),
-    summaryEndDate: z.string().optional().describe('End date (YYYY-MM-DD) for dashboard summaries (requires organizationId and dashboardId)')
-  }))
-  .output(z.object({
-    organizations: z.array(z.object({
-      organizationId: z.string().describe('Organization ID'),
-      name: z.string().describe('Organization name'),
-      timeout: z.number().optional().describe('Keystroke timeout in seconds'),
-      createdAt: z.string().optional().describe('When the organization was created')
-    }).passthrough()).optional().describe('List of organizations (when no org ID is specified)'),
-    dashboards: z.array(z.object({
-      dashboardId: z.string().describe('Dashboard ID'),
-      name: z.string().describe('Dashboard name'),
-      createdAt: z.string().optional().describe('When the dashboard was created')
-    }).passthrough()).optional().describe('Dashboards for the specified organization'),
-    members: z.array(z.object({
-      userId: z.string().optional().describe('Member user ID'),
-      displayName: z.string().optional().describe('Member display name'),
-      email: z.string().optional().describe('Member email'),
-      photoUrl: z.string().optional().describe('Member photo URL')
-    }).passthrough()).optional().describe('Members of the specified dashboard'),
-    summaries: z.any().optional().describe('Coding activity summaries for the dashboard')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      organizationId: z.string().optional().describe('Organization ID to get dashboards for'),
+      dashboardId: z
+        .string()
+        .optional()
+        .describe('Dashboard ID to get members for (requires organizationId)'),
+      summaryStartDate: z
+        .string()
+        .optional()
+        .describe(
+          'Start date (YYYY-MM-DD) for dashboard summaries (requires organizationId and dashboardId)'
+        ),
+      summaryEndDate: z
+        .string()
+        .optional()
+        .describe(
+          'End date (YYYY-MM-DD) for dashboard summaries (requires organizationId and dashboardId)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      organizations: z
+        .array(
+          z
+            .object({
+              organizationId: z.string().describe('Organization ID'),
+              name: z.string().describe('Organization name'),
+              timeout: z.number().optional().describe('Keystroke timeout in seconds'),
+              createdAt: z.string().optional().describe('When the organization was created')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('List of organizations (when no org ID is specified)'),
+      dashboards: z
+        .array(
+          z
+            .object({
+              dashboardId: z.string().describe('Dashboard ID'),
+              name: z.string().describe('Dashboard name'),
+              createdAt: z.string().optional().describe('When the dashboard was created')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('Dashboards for the specified organization'),
+      members: z
+        .array(
+          z
+            .object({
+              userId: z.string().optional().describe('Member user ID'),
+              displayName: z.string().optional().describe('Member display name'),
+              email: z.string().optional().describe('Member email'),
+              photoUrl: z.string().optional().describe('Member photo URL')
+            })
+            .passthrough()
+        )
+        .optional()
+        .describe('Members of the specified dashboard'),
+      summaries: z.any().optional().describe('Coding activity summaries for the dashboard')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WakaTimeClient({ token: ctx.auth.token });
 
     // If we have summaryStartDate and summaryEndDate with org and dashboard, get summaries
-    if (ctx.input.organizationId && ctx.input.dashboardId && ctx.input.summaryStartDate && ctx.input.summaryEndDate) {
+    if (
+      ctx.input.organizationId &&
+      ctx.input.dashboardId &&
+      ctx.input.summaryStartDate &&
+      ctx.input.summaryEndDate
+    ) {
       let summaries = await client.getOrganizationDashboardSummaries(
         ctx.input.organizationId,
         ctx.input.dashboardId,

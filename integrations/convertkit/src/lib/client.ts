@@ -11,7 +11,7 @@ import type {
   EmailTemplate,
   Webhook,
   Account,
-  PaginationInfo,
+  PaginationInfo
 } from './types';
 
 interface ClientConfig {
@@ -24,7 +24,7 @@ export class Client {
 
   constructor(private config: ClientConfig) {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.authMethod === 'api_key') {
@@ -35,7 +35,7 @@ export class Client {
 
     this.http = createAxios({
       baseURL: 'https://api.kit.com/v4',
-      headers,
+      headers
     });
   }
 
@@ -90,7 +90,7 @@ export class Client {
     fields?: Record<string, string>;
   }): Promise<Subscriber> {
     let body: Record<string, any> = {
-      email_address: params.emailAddress,
+      email_address: params.emailAddress
     };
     if (params.firstName) body['first_name'] = params.firstName;
     if (params.state) body['state'] = params.state;
@@ -101,11 +101,14 @@ export class Client {
     return data.subscriber;
   }
 
-  async updateSubscriber(subscriberId: number, params: {
-    emailAddress?: string;
-    firstName?: string;
-    fields?: Record<string, string>;
-  }): Promise<Subscriber> {
+  async updateSubscriber(
+    subscriberId: number,
+    params: {
+      emailAddress?: string;
+      firstName?: string;
+      fields?: Record<string, string>;
+    }
+  ): Promise<Subscriber> {
     let body: Record<string, any> = {};
     if (params.emailAddress) body['email_address'] = params.emailAddress;
     if (params.firstName !== undefined) body['first_name'] = params.firstName;
@@ -120,7 +123,9 @@ export class Client {
     await this.http.post(`/subscribers/${subscriberId}/unsubscribe`, {});
   }
 
-  async getSubscriberTags(subscriberId: number): Promise<{ tags: Tag[]; pagination: PaginationInfo }> {
+  async getSubscriberTags(
+    subscriberId: number
+  ): Promise<{ tags: Tag[]; pagination: PaginationInfo }> {
     let response = await this.http.get(`/subscribers/${subscriberId}/tags`);
     return response.data as { tags: Tag[]; pagination: PaginationInfo };
   }
@@ -163,11 +168,14 @@ export class Client {
     await this.http.delete(`/tags/${tagId}/subscribers/${subscriberId}`);
   }
 
-  async listSubscribersForTag(tagId: number, params?: {
-    status?: string;
-    perPage?: number;
-    after?: string;
-  }): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
+  async listSubscribersForTag(
+    tagId: number,
+    params?: {
+      status?: string;
+      perPage?: number;
+      after?: string;
+    }
+  ): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
     if (params?.status) query['status'] = params.status;
     if (params?.perPage) query['per_page'] = String(params.perPage);
@@ -203,11 +211,14 @@ export class Client {
     await this.http.post(`/forms/${formId}/subscribers`, { email_address: emailAddress });
   }
 
-  async listSubscribersForForm(formId: number, params?: {
-    status?: string;
-    perPage?: number;
-    after?: string;
-  }): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
+  async listSubscribersForForm(
+    formId: number,
+    params?: {
+      status?: string;
+      perPage?: number;
+      after?: string;
+    }
+  ): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
     if (params?.status) query['status'] = params.status;
     if (params?.perPage) query['per_page'] = String(params.perPage);
@@ -235,21 +246,31 @@ export class Client {
     await this.http.post(`/sequences/${sequenceId}/subscribers/${subscriberId}`, {});
   }
 
-  async addSubscriberToSequenceByEmail(sequenceId: number, emailAddress: string): Promise<void> {
-    await this.http.post(`/sequences/${sequenceId}/subscribers`, { email_address: emailAddress });
+  async addSubscriberToSequenceByEmail(
+    sequenceId: number,
+    emailAddress: string
+  ): Promise<void> {
+    await this.http.post(`/sequences/${sequenceId}/subscribers`, {
+      email_address: emailAddress
+    });
   }
 
-  async listSubscribersForSequence(sequenceId: number, params?: {
-    status?: string;
-    perPage?: number;
-    after?: string;
-  }): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
+  async listSubscribersForSequence(
+    sequenceId: number,
+    params?: {
+      status?: string;
+      perPage?: number;
+      after?: string;
+    }
+  ): Promise<{ subscribers: Subscriber[]; pagination: PaginationInfo }> {
     let query: Record<string, string> = {};
     if (params?.status) query['status'] = params.status;
     if (params?.perPage) query['per_page'] = String(params.perPage);
     if (params?.after) query['after'] = params.after;
 
-    let response = await this.http.get(`/sequences/${sequenceId}/subscribers`, { params: query });
+    let response = await this.http.get(`/sequences/${sequenceId}/subscribers`, {
+      params: query
+    });
     return response.data as { subscribers: Subscriber[]; pagination: PaginationInfo };
   }
 
@@ -295,31 +316,36 @@ export class Client {
     if (params.isPublic !== undefined) body['public'] = params.isPublic;
     if (params.publishedAt !== undefined) body['published_at'] = params.publishedAt;
     if (params.sendAt !== undefined) body['send_at'] = params.sendAt;
-    if (params.emailTemplateId !== undefined) body['email_template_id'] = params.emailTemplateId;
+    if (params.emailTemplateId !== undefined)
+      body['email_template_id'] = params.emailTemplateId;
     if (params.emailAddress !== undefined) body['email_address'] = params.emailAddress;
     if (params.thumbnailUrl !== undefined) body['thumbnail_url'] = params.thumbnailUrl;
     if (params.thumbnailAlt !== undefined) body['thumbnail_alt'] = params.thumbnailAlt;
-    if (params.subscriberFilter !== undefined) body['subscriber_filter'] = params.subscriberFilter;
+    if (params.subscriberFilter !== undefined)
+      body['subscriber_filter'] = params.subscriberFilter;
 
     let response = await this.http.post('/broadcasts', body);
     let data = response.data as { broadcast: Broadcast };
     return data.broadcast;
   }
 
-  async updateBroadcast(broadcastId: number, params: {
-    subject?: string;
-    content?: string;
-    previewText?: string;
-    description?: string;
-    isPublic?: boolean;
-    publishedAt?: string;
-    sendAt?: string;
-    emailTemplateId?: number;
-    emailAddress?: string;
-    thumbnailUrl?: string;
-    thumbnailAlt?: string;
-    subscriberFilter?: any[];
-  }): Promise<Broadcast> {
+  async updateBroadcast(
+    broadcastId: number,
+    params: {
+      subject?: string;
+      content?: string;
+      previewText?: string;
+      description?: string;
+      isPublic?: boolean;
+      publishedAt?: string;
+      sendAt?: string;
+      emailTemplateId?: number;
+      emailAddress?: string;
+      thumbnailUrl?: string;
+      thumbnailAlt?: string;
+      subscriberFilter?: any[];
+    }
+  ): Promise<Broadcast> {
     let body: Record<string, any> = {};
     if (params.subject !== undefined) body['subject'] = params.subject;
     if (params.content !== undefined) body['content'] = params.content;
@@ -328,11 +354,13 @@ export class Client {
     if (params.isPublic !== undefined) body['public'] = params.isPublic;
     if (params.publishedAt !== undefined) body['published_at'] = params.publishedAt;
     if (params.sendAt !== undefined) body['send_at'] = params.sendAt;
-    if (params.emailTemplateId !== undefined) body['email_template_id'] = params.emailTemplateId;
+    if (params.emailTemplateId !== undefined)
+      body['email_template_id'] = params.emailTemplateId;
     if (params.emailAddress !== undefined) body['email_address'] = params.emailAddress;
     if (params.thumbnailUrl !== undefined) body['thumbnail_url'] = params.thumbnailUrl;
     if (params.thumbnailAlt !== undefined) body['thumbnail_alt'] = params.thumbnailAlt;
-    if (params.subscriberFilter !== undefined) body['subscriber_filter'] = params.subscriberFilter;
+    if (params.subscriberFilter !== undefined)
+      body['subscriber_filter'] = params.subscriberFilter;
 
     let response = await this.http.put(`/broadcasts/${broadcastId}`, body);
     let data = response.data as { broadcast: Broadcast };
@@ -432,9 +460,9 @@ export class Client {
           lid: p.lid,
           quantity: p.quantity,
           unit_price: p.unitPrice,
-          sku: p.sku,
-        })),
-      },
+          sku: p.sku
+        }))
+      }
     };
 
     let response = await this.http.post('/purchases', body);
@@ -467,7 +495,10 @@ export class Client {
     if (params?.after) query['after'] = params.after;
 
     let response = await this.http.get('/email_templates', { params: query });
-    let data = response.data as { email_templates: EmailTemplate[]; pagination: PaginationInfo };
+    let data = response.data as {
+      email_templates: EmailTemplate[];
+      pagination: PaginationInfo;
+    };
     return { emailTemplates: data.email_templates, pagination: data.pagination };
   }
 
@@ -478,24 +509,28 @@ export class Client {
     return response.data as { webhooks: Webhook[]; pagination: PaginationInfo };
   }
 
-  async createWebhook(targetUrl: string, event: {
-    name: string;
-    tagId?: number;
-    formId?: number;
-    sequenceId?: number;
-    productId?: number;
-    initiatorValue?: string;
-  }): Promise<Webhook> {
+  async createWebhook(
+    targetUrl: string,
+    event: {
+      name: string;
+      tagId?: number;
+      formId?: number;
+      sequenceId?: number;
+      productId?: number;
+      initiatorValue?: string;
+    }
+  ): Promise<Webhook> {
     let eventBody: Record<string, any> = { name: event.name };
     if (event.tagId !== undefined) eventBody['tag_id'] = event.tagId;
     if (event.formId !== undefined) eventBody['form_id'] = event.formId;
     if (event.sequenceId !== undefined) eventBody['sequence_id'] = event.sequenceId;
     if (event.productId !== undefined) eventBody['product_id'] = event.productId;
-    if (event.initiatorValue !== undefined) eventBody['initiator_value'] = event.initiatorValue;
+    if (event.initiatorValue !== undefined)
+      eventBody['initiator_value'] = event.initiatorValue;
 
     let response = await this.http.post('/webhooks', {
       target_url: targetUrl,
-      event: eventBody,
+      event: eventBody
     });
     let data = response.data as { webhook: Webhook };
     return data.webhook;

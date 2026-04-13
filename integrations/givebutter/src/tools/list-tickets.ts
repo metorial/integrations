@@ -16,30 +16,31 @@ let ticketSchema = z.object({
   price: z.number().nullable().describe('Ticket price'),
   pdf: z.string().nullable().describe('PDF ticket URL'),
   arrivedAt: z.string().nullable().describe('Check-in timestamp'),
-  createdAt: z.string().nullable().describe('When the ticket was created'),
+  createdAt: z.string().nullable().describe('When the ticket was created')
 });
 
-export let listTickets = SlateTool.create(
-  spec,
-  {
-    name: 'List Tickets',
-    key: 'list_tickets',
-    description: `Retrieve a paginated list of event tickets with attendee details, pricing, and check-in status.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTickets = SlateTool.create(spec, {
+  name: 'List Tickets',
+  key: 'list_tickets',
+  description: `Retrieve a paginated list of event tickets with attendee details, pricing, and check-in status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination'),
-  }))
-  .output(z.object({
-    tickets: z.array(ticketSchema).describe('List of tickets'),
-    totalCount: z.number().describe('Total number of tickets'),
-    currentPage: z.number().describe('Current page'),
-    lastPage: z.number().describe('Last page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination')
+    })
+  )
+  .output(
+    z.object({
+      tickets: z.array(ticketSchema).describe('List of tickets'),
+      totalCount: z.number().describe('Total number of tickets'),
+      currentPage: z.number().describe('Current page'),
+      lastPage: z.number().describe('Last page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listTickets({ page: ctx.input.page });
@@ -57,7 +58,7 @@ export let listTickets = SlateTool.create(
       price: t.price ?? null,
       pdf: t.pdf ?? null,
       arrivedAt: t.arrived_at ?? null,
-      createdAt: t.created_at ?? null,
+      createdAt: t.created_at ?? null
     }));
 
     return {
@@ -65,29 +66,28 @@ export let listTickets = SlateTool.create(
         tickets,
         totalCount: result.meta.total,
         currentPage: result.meta.current_page,
-        lastPage: result.meta.last_page,
+        lastPage: result.meta.last_page
       },
-      message: `Found **${result.meta.total}** tickets (page ${result.meta.current_page} of ${result.meta.last_page}).`,
+      message: `Found **${result.meta.total}** tickets (page ${result.meta.current_page} of ${result.meta.last_page}).`
     };
   })
   .build();
 
-export let getTicket = SlateTool.create(
-  spec,
-  {
-    name: 'Get Ticket',
-    key: 'get_ticket',
-    description: `Retrieve detailed information about a specific event ticket including attendee info and check-in status.`,
-    tags: {
-      readOnly: true,
-    },
+export let getTicket = SlateTool.create(spec, {
+  name: 'Get Ticket',
+  key: 'get_ticket',
+  description: `Retrieve detailed information about a specific event ticket including attendee info and check-in status.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ticketId: z.string().describe('ID of the ticket to retrieve'),
-  }))
+})
+  .input(
+    z.object({
+      ticketId: z.string().describe('ID of the ticket to retrieve')
+    })
+  )
   .output(ticketSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let t = await client.getTicket(ctx.input.ticketId);
@@ -106,9 +106,9 @@ export let getTicket = SlateTool.create(
         price: t.price ?? null,
         pdf: t.pdf ?? null,
         arrivedAt: t.arrived_at ?? null,
-        createdAt: t.created_at ?? null,
+        createdAt: t.created_at ?? null
       },
-      message: `Retrieved ticket **${t.id}** for ${t.name ?? 'unknown attendee'}${t.arrived_at ? ' (checked in)' : ''}.`,
+      message: `Retrieved ticket **${t.id}** for ${t.name ?? 'unknown attendee'}${t.arrived_at ? ' (checked in)' : ''}.`
     };
   })
   .build();

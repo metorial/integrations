@@ -27,7 +27,7 @@ export let formSubmissionWebhookTrigger = SlateTrigger.create(spec, {
     })
   )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       let contentType = ctx.request.headers.get('content-type') || '';
 
@@ -80,7 +80,7 @@ export let formSubmissionWebhookTrigger = SlateTrigger.create(spec, {
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'submission.created',
         id: ctx.input.submissionId,

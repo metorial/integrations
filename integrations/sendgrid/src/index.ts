@@ -25,12 +25,9 @@ import {
   listVerifiedSenders,
   createVerifiedSender,
   deleteVerifiedSender,
-  resendSenderVerification,
+  resendSenderVerification
 } from './tools';
-import {
-  emailEvents,
-  inboundEmail,
-} from './triggers';
+import { emailEvents, inboundEmail } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,10 +56,7 @@ export let provider = Slate.create({
     listVerifiedSenders.build(),
     createVerifiedSender.build(),
     deleteVerifiedSender.build(),
-    resendSenderVerification.build(),
+    resendSenderVerification.build()
   ],
-  triggers: [
-    emailEvents.build(),
-    inboundEmail.build(),
-  ],
+  triggers: [emailEvents.build(), inboundEmail.build()]
 });

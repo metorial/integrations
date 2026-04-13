@@ -15,6 +15,7 @@ HelloSign supports two authentication methods:
 You can authenticate with the Dropbox Sign API using an API key. The API key is passed as the username in HTTP Basic Authentication, with an empty password.
 
 Example:
+
 ```
 curl 'https://api.hellosign.com/v3/account' -u 'YOUR_API_KEY:'
 ```
@@ -35,20 +36,20 @@ Dropbox Sign uses OAuth 2.0 so that users can securely grant access to apps buil
 
 **OAuth Scopes (Charge Me / App Owner billed):**
 
-| Scope | Description |
-|---|---|
-| `basic_account_info` | Access basic account information (email, name). |
-| `request_signature` | Send signature requests, access statuses and document files. |
+| Scope                | Description                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| `basic_account_info` | Access basic account information (email, name).              |
+| `request_signature`  | Send signature requests, access statuses and document files. |
 
 **OAuth Scopes (Charge Users / User billed):**
 
-| Scope | Description |
-|---|---|
-| `account_access` | Access basic account information. |
+| Scope                      | Description                                               |
+| -------------------------- | --------------------------------------------------------- |
+| `account_access`           | Access basic account information.                         |
 | `signature_request_access` | Send, view, update signature requests and download files. |
-| `template_access` | View, create, and modify templates. |
-| `team_access` | View and modify team settings and members. |
-| `api_app_access` | View, create, and modify embedded API apps. |
+| `template_access`          | View, create, and modify templates.                       |
+| `team_access`              | View and modify team settings and members.                |
+| `api_app_access`           | View, create, and modify embedded API apps.               |
 
 ## Features
 

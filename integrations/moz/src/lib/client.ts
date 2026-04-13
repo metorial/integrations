@@ -16,11 +16,11 @@ export class MozClient {
     let isBasicAuth = config.token.startsWith('Basic ');
 
     let v2Headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     let v3Headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (isBasicAuth) {
@@ -33,12 +33,12 @@ export class MozClient {
 
     this.v2 = createAxios({
       baseURL: 'https://lsapi.seomoz.com/v2',
-      headers: v2Headers,
+      headers: v2Headers
     });
 
     this.v3 = createAxios({
       baseURL: 'https://api.moz.com',
-      headers: v3Headers,
+      headers: v3Headers
     });
   }
 
@@ -53,7 +53,7 @@ export class MozClient {
     distributions?: boolean;
   }): Promise<any> {
     let body: Record<string, any> = {
-      targets: params.targets,
+      targets: params.targets
     };
     if (params.dailyHistoryDeltas) body.daily_history_deltas = params.dailyHistoryDeltas;
     if (params.dailyHistoryValues) body.daily_history_values = params.dailyHistoryValues;
@@ -77,7 +77,7 @@ export class MozClient {
     nextToken?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      target: params.target,
+      target: params.target
     };
     if (params.targetScope) body.target_scope = params.targetScope;
     if (params.sourceScope) body.source_scope = params.sourceScope;
@@ -99,7 +99,7 @@ export class MozClient {
     nextToken?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      target: params.target,
+      target: params.target
     };
     if (params.scope) body.scope = params.scope;
     if (params.limit) body.limit = params.limit;
@@ -120,7 +120,7 @@ export class MozClient {
     endDate?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      target: params.target,
+      target: params.target
     };
     if (params.targetScope) body.target_scope = params.targetScope;
     if (params.sort) body.sort = params.sort;
@@ -143,7 +143,7 @@ export class MozClient {
     nextToken?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      target: params.target,
+      target: params.target
     };
     if (params.scope) body.scope = params.scope;
     if (params.sort) body.sort = params.sort;
@@ -155,10 +155,7 @@ export class MozClient {
     return response.data;
   }
 
-  async getGlobalTopPages(params: {
-    limit?: number;
-    nextToken?: string;
-  }): Promise<any> {
+  async getGlobalTopPages(params: { limit?: number; nextToken?: string }): Promise<any> {
     let body: Record<string, any> = {};
     if (params.limit) body.limit = params.limit;
     if (params.nextToken) body.next_token = params.nextToken;
@@ -167,10 +164,7 @@ export class MozClient {
     return response.data;
   }
 
-  async getGlobalTopRootDomains(params: {
-    limit?: number;
-    nextToken?: string;
-  }): Promise<any> {
+  async getGlobalTopRootDomains(params: { limit?: number; nextToken?: string }): Promise<any> {
     let body: Record<string, any> = {};
     if (params.limit) body.limit = params.limit;
     if (params.nextToken) body.next_token = params.nextToken;
@@ -189,7 +183,7 @@ export class MozClient {
     sort?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      is_linking_to: params.isLinkingTo,
+      is_linking_to: params.isLinkingTo
     };
     if (params.notLinkingTo) body.not_linking_to = params.notLinkingTo;
 
@@ -199,7 +193,8 @@ export class MozClient {
     if (Object.keys(offset).length > 0) body.offset = offset;
 
     let options: Record<string, any> = {};
-    if (params.minimumMatchingTargets) options.minimum_matching_targets = params.minimumMatchingTargets;
+    if (params.minimumMatchingTargets)
+      options.minimum_matching_targets = params.minimumMatchingTargets;
     if (params.sourceScope) options.scope = params.sourceScope;
     if (params.sort) options.sort = params.sort;
     if (Object.keys(options).length > 0) body.options = options;
@@ -216,7 +211,7 @@ export class MozClient {
   }): Promise<any> {
     let body: Record<string, any> = {
       target: params.target,
-      sources: params.sources,
+      sources: params.sources
     };
     if (params.targetScope) body.target_scope = params.targetScope;
     if (params.sourceScope) body.source_scope = params.sourceScope;
@@ -230,10 +225,7 @@ export class MozClient {
     return response.data;
   }
 
-  async getUsageData(params: {
-    start?: string;
-    end?: string;
-  }): Promise<any> {
+  async getUsageData(params: { start?: string; end?: string }): Promise<any> {
     let body: Record<string, any> = {};
     if (params.start) body.start = params.start;
     if (params.end) body.end = params.end;
@@ -247,13 +239,15 @@ export class MozClient {
   private generateId(): string {
     let chars = 'abcdef0123456789';
     let segments = [8, 4, 4, 4, 12];
-    return segments.map(len => {
-      let s = '';
-      for (let i = 0; i < len; i++) {
-        s += chars[Math.floor(Math.random() * chars.length)];
-      }
-      return s;
-    }).join('-');
+    return segments
+      .map(len => {
+        let s = '';
+        for (let i = 0; i < len; i++) {
+          s += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return s;
+      })
+      .join('-');
   }
 
   private async jsonrpc(method: string, data: Record<string, any>): Promise<any> {
@@ -261,7 +255,7 @@ export class MozClient {
       jsonrpc: '2.0',
       id: this.generateId(),
       method,
-      params: { data },
+      params: { data }
     });
     return response.data?.result;
   }
@@ -276,7 +270,7 @@ export class MozClient {
       keyword: params.keyword,
       locale: params.locale || 'en-US',
       device: params.device || 'desktop',
-      engine: params.engine || 'google',
+      engine: params.engine || 'google'
     });
   }
 
@@ -290,7 +284,7 @@ export class MozClient {
       keyword: params.keyword,
       locale: params.locale || 'en-US',
       device: params.device || 'desktop',
-      engine: params.engine || 'google',
+      engine: params.engine || 'google'
     });
   }
 
@@ -304,7 +298,7 @@ export class MozClient {
       keyword: params.keyword,
       locale: params.locale || 'en-US',
       device: params.device || 'desktop',
-      engine: params.engine || 'google',
+      engine: params.engine || 'google'
     });
   }
 
@@ -315,7 +309,7 @@ export class MozClient {
   }): Promise<any> {
     let data: Record<string, any> = {
       keyword: params.keyword,
-      locale: params.locale || 'en-US',
+      locale: params.locale || 'en-US'
     };
     if (params.limit) data.limit = params.limit;
     return this.jsonrpc('data.keyword.suggestions.list', data);
@@ -331,7 +325,7 @@ export class MozClient {
       keyword: params.keyword,
       locale: params.locale || 'en-US',
       device: params.device || 'desktop',
-      engine: params.engine || 'google',
+      engine: params.engine || 'google'
     });
   }
 
@@ -345,7 +339,7 @@ export class MozClient {
       keyword: params.keyword,
       locale: params.locale || 'en-US',
       device: params.device || 'desktop',
-      engine: params.engine || 'google',
+      engine: params.engine || 'google'
     });
   }
 
@@ -359,33 +353,25 @@ export class MozClient {
       keyword: params.keyword,
       locale: params.locale || 'en-US',
       device: params.device || 'desktop',
-      engine: params.engine || 'google',
+      engine: params.engine || 'google'
     });
   }
 
-  async getBrandAuthority(params: {
-    query: string;
-    scope?: string;
-  }): Promise<any> {
+  async getBrandAuthority(params: { query: string; scope?: string }): Promise<any> {
     let data: Record<string, any> = { query: params.query };
     if (params.scope) data.scope = params.scope;
     return this.jsonrpc('data.site.metrics.brand.authority.fetch', data);
   }
 
-  async getSiteMetrics(params: {
-    query: string;
-    scope?: string;
-  }): Promise<any> {
+  async getSiteMetrics(params: { query: string; scope?: string }): Promise<any> {
     let data: Record<string, any> = { query: params.query };
     if (params.scope) data.scope = params.scope;
     return this.jsonrpc('data.site.metrics.fetch', data);
   }
 
-  async getSiteMetricsMultiple(params: {
-    sites: string[];
-  }): Promise<any> {
+  async getSiteMetricsMultiple(params: { sites: string[] }): Promise<any> {
     return this.jsonrpc('data.site.metrics.fetch.multiple', {
-      sites: params.sites,
+      sites: params.sites
     });
   }
 
@@ -404,7 +390,7 @@ export class MozClient {
 
   async getQuota(): Promise<any> {
     return this.jsonrpc('quota.lookup', {
-      path: 'api.limits.data.rows',
+      path: 'api.limits.data.rows'
     });
   }
 }

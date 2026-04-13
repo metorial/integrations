@@ -16,6 +16,7 @@ SegMetrics uses API key authentication. The SegMetrics API uses two pieces of in
 You can find your Account ID and API Key in the SegMetrics Account page. Navigate to your Account Settings to retrieve both values. The API Key should be 22 characters long.
 
 There are two separate API base URLs depending on the operation:
+
 - **Import API** (for writing data): `https://import.segmetrics.io/api/v1/<account_id>/<integration_id>/`
 - **Reporting API** (for reading data): `https://api.segmetrics.io/<account_id>/`
 

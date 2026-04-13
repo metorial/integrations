@@ -14,35 +14,44 @@ let monitorSchema = z.object({
   checkFrequency: z.number().nullable().describe('Check frequency in seconds'),
   lastCheckedAt: z.string().nullable().describe('Timestamp of last check'),
   createdAt: z.string().nullable().describe('Creation timestamp'),
-  updatedAt: z.string().nullable().describe('Last update timestamp'),
+  updatedAt: z.string().nullable().describe('Last update timestamp')
 });
 
-export let listMonitors = SlateTool.create(
-  spec,
-  {
-    name: 'List Monitors',
-    key: 'list_monitors',
-    description: `List uptime monitors in your Better Stack account. Supports filtering by name, URL, monitor type, paused state, and monitor group. Returns paginated results with monitor status and configuration details.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    perPage: z.number().optional().describe('Number of results per page (default: 20, max: 50)'),
-    pronounceableName: z.string().optional().describe('Filter by pronounceable name'),
-    url: z.string().optional().describe('Filter by monitored URL'),
-    monitorType: z.string().optional().describe('Filter by monitor type (e.g., status, keyword, ping, tcp, udp, smtp, pop, imap)'),
-    paused: z.boolean().optional().describe('Filter by paused state'),
-    monitorGroupId: z.string().optional().describe('Filter by monitor group ID'),
-  }))
-  .output(z.object({
-    monitors: z.array(monitorSchema).describe('List of monitors'),
-    hasMore: z.boolean().describe('Whether more results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listMonitors = SlateTool.create(spec, {
+  name: 'List Monitors',
+  key: 'list_monitors',
+  description: `List uptime monitors in your Better Stack account. Supports filtering by name, URL, monitor type, paused state, and monitor group. Returns paginated results with monitor status and configuration details.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      perPage: z
+        .number()
+        .optional()
+        .describe('Number of results per page (default: 20, max: 50)'),
+      pronounceableName: z.string().optional().describe('Filter by pronounceable name'),
+      url: z.string().optional().describe('Filter by monitored URL'),
+      monitorType: z
+        .string()
+        .optional()
+        .describe(
+          'Filter by monitor type (e.g., status, keyword, ping, tcp, udp, smtp, pop, imap)'
+        ),
+      paused: z.boolean().optional().describe('Filter by paused state'),
+      monitorGroupId: z.string().optional().describe('Filter by monitor group ID')
+    })
+  )
+  .output(
+    z.object({
+      monitors: z.array(monitorSchema).describe('List of monitors'),
+      hasMore: z.boolean().describe('Whether more results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new UptimeClient({
       token: ctx.auth.token,
-      teamName: ctx.config.teamName,
+      teamName: ctx.config.teamName
     });
 
     let result = await client.listMonitors({
@@ -52,7 +61,7 @@ export let listMonitors = SlateTool.create(
       url: ctx.input.url,
       monitorType: ctx.input.monitorType,
       paused: ctx.input.paused,
-      monitorGroupId: ctx.input.monitorGroupId ? Number(ctx.input.monitorGroupId) : undefined,
+      monitorGroupId: ctx.input.monitorGroupId ? Number(ctx.input.monitorGroupId) : undefined
     });
 
     let monitors = (result.data || []).map((item: any) => {
@@ -68,7 +77,7 @@ export let listMonitors = SlateTool.create(
         checkFrequency: attrs.check_frequency ?? null,
         lastCheckedAt: attrs.last_checked_at || null,
         createdAt: attrs.created_at || null,
-        updatedAt: attrs.updated_at || null,
+        updatedAt: attrs.updated_at || null
       };
     });
 
@@ -76,7 +85,7 @@ export let listMonitors = SlateTool.create(
 
     return {
       output: { monitors, hasMore },
-      message: `Found **${monitors.length}** monitor(s)${hasMore ? ' (more available)' : ''}.`,
+      message: `Found **${monitors.length}** monitor(s)${hasMore ? ' (more available)' : ''}.`
     };
   })
   .build();

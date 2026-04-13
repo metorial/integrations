@@ -3,50 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let candidateStatusChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Candidate Status Change',
-    key: 'candidate_status_change',
-    description: 'Polls for candidate status changes across all tests. Detects when candidates are invited, start a test, complete a test, or change ATS status.',
-  }
-)
-  .input(z.object({
-    testId: z.string().describe('ID of the test'),
-    candidateId: z.string().describe('ID of the candidate'),
-    email: z.string().optional().describe('Email of the candidate'),
-    fullName: z.string().optional().describe('Full name of the candidate'),
-    status: z.string().describe('Current status of the candidate'),
-    atsState: z.string().optional().describe('Current ATS state of the candidate'),
-    score: z.number().optional().describe('Candidate score'),
-    completedAt: z.string().optional().describe('When the candidate completed the test'),
-    testName: z.string().optional().describe('Name of the test'),
-  }))
-  .output(z.object({
-    testId: z.string().describe('ID of the test'),
-    testName: z.string().optional().describe('Name of the test'),
-    candidateId: z.string().describe('ID of the candidate'),
-    email: z.string().optional().describe('Email of the candidate'),
-    fullName: z.string().optional().describe('Full name of the candidate'),
-    status: z.string().describe('Current status of the candidate'),
-    atsState: z.string().optional().describe('Current ATS state of the candidate'),
-    score: z.number().optional().describe('Candidate score'),
-    completedAt: z.string().optional().describe('When the candidate completed the test'),
-  }))
+export let candidateStatusChange = SlateTrigger.create(spec, {
+  name: 'Candidate Status Change',
+  key: 'candidate_status_change',
+  description:
+    'Polls for candidate status changes across all tests. Detects when candidates are invited, start a test, complete a test, or change ATS status.'
+})
+  .input(
+    z.object({
+      testId: z.string().describe('ID of the test'),
+      candidateId: z.string().describe('ID of the candidate'),
+      email: z.string().optional().describe('Email of the candidate'),
+      fullName: z.string().optional().describe('Full name of the candidate'),
+      status: z.string().describe('Current status of the candidate'),
+      atsState: z.string().optional().describe('Current ATS state of the candidate'),
+      score: z.number().optional().describe('Candidate score'),
+      completedAt: z.string().optional().describe('When the candidate completed the test'),
+      testName: z.string().optional().describe('Name of the test')
+    })
+  )
+  .output(
+    z.object({
+      testId: z.string().describe('ID of the test'),
+      testName: z.string().optional().describe('Name of the test'),
+      candidateId: z.string().describe('ID of the candidate'),
+      email: z.string().optional().describe('Email of the candidate'),
+      fullName: z.string().optional().describe('Full name of the candidate'),
+      status: z.string().describe('Current status of the candidate'),
+      atsState: z.string().optional().describe('Current ATS state of the candidate'),
+      score: z.number().optional().describe('Candidate score'),
+      completedAt: z.string().optional().describe('When the candidate completed the test')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
-      let previousCandidateStates: Record<string, string> = (ctx.state?.candidateStates as Record<string, string>) ?? {};
+      let previousCandidateStates: Record<string, string> =
+        (ctx.state?.candidateStates as Record<string, string>) ?? {};
       let trackedTestIds: string[] = (ctx.state?.trackedTestIds as string[]) ?? [];
       let lastFullScan: string | undefined = ctx.state?.lastFullScan as string | undefined;
 
       let now = new Date().toISOString();
-      let shouldFullScan = !lastFullScan || (Date.now() - new Date(lastFullScan).getTime()) > 30 * 60 * 1000;
+      let shouldFullScan =
+        !lastFullScan || Date.now() - new Date(lastFullScan).getTime() > 30 * 60 * 1000;
 
       // Periodically rescan all tests to pick up newly created ones
       if (shouldFullScan) {
@@ -75,7 +79,10 @@ export let candidateStatusChange = SlateTrigger.create(
 
       for (let testId of trackedTestIds) {
         try {
-          let candidatesResult = await client.listCandidates(testId, { limit: 100, offset: 0 });
+          let candidatesResult = await client.listCandidates(testId, {
+            limit: 100,
+            offset: 0
+          });
 
           for (let candidate of candidatesResult.data) {
             let candidateKey = `${testId}:${candidate.id}`;
@@ -92,7 +99,7 @@ export let candidateStatusChange = SlateTrigger.create(
                 atsState: candidate.ats_state,
                 score: candidate.score != null ? Number(candidate.score) : undefined,
                 completedAt: candidate.completed_at,
-                testName: candidate.test_name,
+                testName: candidate.test_name
               });
 
               updatedStates[candidateKey] = currentStateValue;
@@ -108,16 +115,20 @@ export let candidateStatusChange = SlateTrigger.create(
         updatedState: {
           candidateStates: updatedStates,
           trackedTestIds,
-          lastFullScan,
-        },
+          lastFullScan
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
-      let statusType = ctx.input.status === 'completed' ? 'completed'
-        : ctx.input.status === 'started' ? 'started'
-        : ctx.input.status === 'invited' ? 'invited'
-        : 'updated';
+    handleEvent: async ctx => {
+      let statusType =
+        ctx.input.status === 'completed'
+          ? 'completed'
+          : ctx.input.status === 'started'
+            ? 'started'
+            : ctx.input.status === 'invited'
+              ? 'invited'
+              : 'updated';
 
       return {
         type: `candidate.${statusType}`,
@@ -131,8 +142,8 @@ export let candidateStatusChange = SlateTrigger.create(
           status: ctx.input.status,
           atsState: ctx.input.atsState,
           score: ctx.input.score,
-          completedAt: ctx.input.completedAt,
-        },
+          completedAt: ctx.input.completedAt
+        }
       };
-    },
+    }
   });

@@ -14,12 +14,9 @@ import {
   listOrderBatchOrders,
   calculateBatchPrice,
   listPaymentMethods,
-  listWorkspaces,
+  listWorkspaces
 } from './tools';
-import {
-  orderEvents,
-  orderBatchEvents,
-} from './triggers';
+import { orderEvents, orderBatchEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     listOrderBatchOrders,
     calculateBatchPrice,
     listPaymentMethods,
-    listWorkspaces,
+    listWorkspaces
   ],
-  triggers: [
-    orderEvents,
-    orderBatchEvents,
-  ],
+  triggers: [orderEvents, orderBatchEvents]
 });

@@ -7,7 +7,7 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.livesession.io/v1',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -15,15 +15,17 @@ export class Client {
 
   // ── Sessions ──────────────────────────────────────────────────────
 
-  async listSessions(params: {
-    page?: number;
-    size?: number;
-    email?: string;
-    visitorId?: string;
-    timezone?: string;
-    dateFrom?: string;
-    dateTo?: string;
-  } = {}) {
+  async listSessions(
+    params: {
+      page?: number;
+      size?: number;
+      email?: string;
+      visitorId?: string;
+      timezone?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {}
+  ) {
     let response = await this.axios.get('/sessions', {
       params: {
         page: params.page,
@@ -62,13 +64,16 @@ export class Client {
     return response.data;
   }
 
-  async updateAlert(alertId: string, data: {
-    name?: string;
-    events?: Array<{ kind: number; value?: string }>;
-    provider?: string;
-    slackChannelId?: string;
-    webhookId?: string;
-  }) {
+  async updateAlert(
+    alertId: string,
+    data: {
+      name?: string;
+      events?: Array<{ kind: number; value?: string }>;
+      provider?: string;
+      slackChannelId?: string;
+      webhookId?: string;
+    }
+  ) {
     let response = await this.axios.put(`/alerts/${alertId}`, {
       name: data.name,
       events: data.events,
@@ -91,11 +96,7 @@ export class Client {
     return response.data;
   }
 
-  async createWebhook(data: {
-    url: string;
-    websiteId: string;
-    version?: string;
-  }) {
+  async createWebhook(data: { url: string; websiteId: string; version?: string }) {
     let response = await this.axios.post('/webhooks', {
       url: data.url,
       website_id: data.websiteId,
@@ -104,10 +105,13 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: {
-    url?: string;
-    enabled?: boolean;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      url?: string;
+      enabled?: boolean;
+    }
+  ) {
     let response = await this.axios.put(`/webhooks/${webhookId}`, data, {
       params: { version: 'v1.0' }
     });

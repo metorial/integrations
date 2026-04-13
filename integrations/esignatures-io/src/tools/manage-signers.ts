@@ -9,42 +9,59 @@ let signerDetailsSchema = z.object({
   mobile: z.string().optional().describe('Mobile phone number with country code'),
   companyName: z.string().optional().describe('Company name of the signer'),
   signingOrder: z.string().optional().describe('Order in which this signer should sign'),
-  signatureRequestDeliveryMethods: z.array(z.enum(['email', 'sms'])).optional().describe('Delivery methods for signature request'),
-  signedDocumentDeliveryMethod: z.enum(['email', 'no_delivery']).optional().describe('Delivery method for final signed document'),
-  multiFactorAuthentications: z.array(z.enum(['sms_verification_code', 'email_verification_code', 'photo_id'])).optional().describe('MFA methods for identity verification'),
-  redirectUrl: z.string().optional().describe('URL to redirect the signer to after signing'),
+  signatureRequestDeliveryMethods: z
+    .array(z.enum(['email', 'sms']))
+    .optional()
+    .describe('Delivery methods for signature request'),
+  signedDocumentDeliveryMethod: z
+    .enum(['email', 'no_delivery'])
+    .optional()
+    .describe('Delivery method for final signed document'),
+  multiFactorAuthentications: z
+    .array(z.enum(['sms_verification_code', 'email_verification_code', 'photo_id']))
+    .optional()
+    .describe('MFA methods for identity verification'),
+  redirectUrl: z.string().optional().describe('URL to redirect the signer to after signing')
 });
 
-export let manageSigners = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Signers',
-    key: 'manage_signers',
-    description: `Add, update, remove, or send/resend a contract to a signer. Use the \`action\` field to choose the operation. Adding a signer does not automatically send the contract — use "send" to deliver it.`,
-    instructions: [
-      'For "add", provide signer details in the `signer` field. Name is required.',
-      'For "update", provide the signerId and only the fields you want to change in `signer`.',
-      'For "delete", provide the signerId only.',
-      'For "send", provide the signerId to send or resend the contract to that signer.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageSigners = SlateTool.create(spec, {
+  name: 'Manage Signers',
+  key: 'manage_signers',
+  description: `Add, update, remove, or send/resend a contract to a signer. Use the \`action\` field to choose the operation. Adding a signer does not automatically send the contract — use "send" to deliver it.`,
+  instructions: [
+    'For "add", provide signer details in the `signer` field. Name is required.',
+    'For "update", provide the signerId and only the fields you want to change in `signer`.',
+    'For "delete", provide the signerId only.',
+    'For "send", provide the signerId to send or resend the contract to that signer.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contractId: z.string().describe('ID of the contract'),
-    action: z.enum(['add', 'update', 'delete', 'send']).describe('Action to perform on the signer'),
-    signerId: z.string().optional().describe('ID of the signer (required for update, delete, and send)'),
-    signer: signerDetailsSchema.optional().describe('Signer details (for add and update actions)'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Status of the operation'),
-    signerId: z.string().optional().describe('ID of the signer (for add operations)'),
-    signPageUrl: z.string().optional().describe('Sign page URL for the signer'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contractId: z.string().describe('ID of the contract'),
+      action: z
+        .enum(['add', 'update', 'delete', 'send'])
+        .describe('Action to perform on the signer'),
+      signerId: z
+        .string()
+        .optional()
+        .describe('ID of the signer (required for update, delete, and send)'),
+      signer: signerDetailsSchema
+        .optional()
+        .describe('Signer details (for add and update actions)')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Status of the operation'),
+      signerId: z.string().optional().describe('ID of the signer (for add operations)'),
+      signPageUrl: z.string().optional().describe('Sign page URL for the signer')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { contractId, action, signerId, signer } = ctx.input;
 
@@ -66,7 +83,7 @@ export let manageSigners = SlateTool.create(
           signatureRequestDeliveryMethods: signer.signatureRequestDeliveryMethods,
           signedDocumentDeliveryMethod: signer.signedDocumentDeliveryMethod,
           multiFactorAuthentications: signer.multiFactorAuthentications,
-          redirectUrl: signer.redirectUrl,
+          redirectUrl: signer.redirectUrl
         });
         message = `Signer **${signer.name}** added to contract **${contractId}**. Use "send" action to deliver the contract.`;
         break;
@@ -106,8 +123,9 @@ export let manageSigners = SlateTool.create(
       output: {
         status: result?.status || 'queued',
         signerId: signerData?.id,
-        signPageUrl: signerData?.signPageUrl,
+        signPageUrl: signerData?.signPageUrl
       },
-      message,
+      message
     };
-  }).build();
+  })
+  .build();

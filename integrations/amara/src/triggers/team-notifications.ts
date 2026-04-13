@@ -3,35 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let teamNotifications = SlateTrigger.create(
-  spec,
-  {
-    name: 'Team Notifications',
-    key: 'team_notifications',
-    description: 'Polls for new webhook notifications sent to a team. Covers video events (added, removed, primary change, project move, subtitles published/unpublished) and member events (added, removed, profile changed).'
-  }
-)
-  .input(z.object({
-    notificationNumber: z.number().describe('Sequential notification number'),
-    eventType: z.string().describe('Event type from the notification data'),
-    timestamp: z.string().describe('Notification timestamp'),
-    teamSlug: z.string().describe('Team slug'),
-    eventData: z.record(z.string(), z.any()).describe('Full notification event data')
-  }))
-  .output(z.object({
-    notificationNumber: z.number().describe('Sequential notification number'),
-    eventType: z.string().describe('Event type (e.g. video-added, subtitles-published, member-added)'),
-    timestamp: z.string().describe('When the notification was sent'),
-    teamSlug: z.string().describe('Team slug'),
-    videoId: z.string().nullable().describe('Related video ID if applicable'),
-    languageCode: z.string().nullable().describe('Related language code if applicable'),
-    username: z.string().nullable().describe('Related username if applicable')
-  }))
+export let teamNotifications = SlateTrigger.create(spec, {
+  name: 'Team Notifications',
+  key: 'team_notifications',
+  description:
+    'Polls for new webhook notifications sent to a team. Covers video events (added, removed, primary change, project move, subtitles published/unpublished) and member events (added, removed, profile changed).'
+})
+  .input(
+    z.object({
+      notificationNumber: z.number().describe('Sequential notification number'),
+      eventType: z.string().describe('Event type from the notification data'),
+      timestamp: z.string().describe('Notification timestamp'),
+      teamSlug: z.string().describe('Team slug'),
+      eventData: z.record(z.string(), z.any()).describe('Full notification event data')
+    })
+  )
+  .output(
+    z.object({
+      notificationNumber: z.number().describe('Sequential notification number'),
+      eventType: z
+        .string()
+        .describe('Event type (e.g. video-added, subtitles-published, member-added)'),
+      timestamp: z.string().describe('When the notification was sent'),
+      teamSlug: z.string().describe('Team slug'),
+      videoId: z.string().nullable().describe('Related video ID if applicable'),
+      languageCode: z.string().nullable().describe('Related language code if applicable'),
+      username: z.string().nullable().describe('Related username if applicable')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let teamSlug = ctx.state?.teamSlug;
       if (!teamSlug) {
         return { inputs: [], updatedState: ctx.state || {} };
@@ -46,9 +50,9 @@ export let teamNotifications = SlateTrigger.create(
 
       let result = await client.listNotifications(teamSlug, { limit: 50 });
 
-      let newNotifications = result.objects.filter((n) => n.number > lastNumber);
+      let newNotifications = result.objects.filter(n => n.number > lastNumber);
 
-      let inputs = newNotifications.map((n) => ({
+      let inputs = newNotifications.map(n => ({
         notificationNumber: n.number,
         eventType: n.data?.event || n.data?.type || 'unknown',
         timestamp: n.timestamp,
@@ -71,7 +75,7 @@ export let teamNotifications = SlateTrigger.create(
         }
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventData = ctx.input.eventData || {};
 
       return {
@@ -83,9 +87,12 @@ export let teamNotifications = SlateTrigger.create(
           timestamp: ctx.input.timestamp,
           teamSlug: ctx.input.teamSlug,
           videoId: (eventData.video_id || eventData.video || null) as string | null,
-          languageCode: (eventData.language_code || eventData.language || null) as string | null,
+          languageCode: (eventData.language_code || eventData.language || null) as
+            | string
+            | null,
           username: (eventData.username || eventData.user || null) as string | null
         }
       };
     }
-  }).build();
+  })
+  .build();

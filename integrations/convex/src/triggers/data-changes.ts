@@ -3,34 +3,42 @@ import { ConvexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let dataChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Data Changes',
-    key: 'data_changes',
-    description: 'Polls for document-level changes (inserts, updates, deletes) across all tables in a Convex deployment using the Streaming Export API. Requires deploy key authentication.',
-  }
-)
-  .input(z.object({
-    tableName: z.string().describe('The table where the change occurred'),
-    documentId: z.string().describe('The ID of the affected document'),
-    document: z.any().nullable().describe('The document data after the change, or null if deleted'),
-    deleted: z.boolean().describe('Whether the document was deleted'),
-    timestamp: z.string().describe('Timestamp of the change')
-  }))
-  .output(z.object({
-    tableName: z.string().describe('The table where the change occurred'),
-    documentId: z.string().describe('The ID of the affected document'),
-    document: z.any().nullable().describe('The document data after the change, or null if deleted'),
-    deleted: z.boolean().describe('Whether the document was deleted'),
-    timestamp: z.string().describe('Timestamp of the change')
-  }))
+export let dataChanges = SlateTrigger.create(spec, {
+  name: 'Data Changes',
+  key: 'data_changes',
+  description:
+    'Polls for document-level changes (inserts, updates, deletes) across all tables in a Convex deployment using the Streaming Export API. Requires deploy key authentication.'
+})
+  .input(
+    z.object({
+      tableName: z.string().describe('The table where the change occurred'),
+      documentId: z.string().describe('The ID of the affected document'),
+      document: z
+        .any()
+        .nullable()
+        .describe('The document data after the change, or null if deleted'),
+      deleted: z.boolean().describe('Whether the document was deleted'),
+      timestamp: z.string().describe('Timestamp of the change')
+    })
+  )
+  .output(
+    z.object({
+      tableName: z.string().describe('The table where the change occurred'),
+      documentId: z.string().describe('The ID of the affected document'),
+      document: z
+        .any()
+        .nullable()
+        .describe('The document data after the change, or null if deleted'),
+      deleted: z.boolean().describe('Whether the document was deleted'),
+      timestamp: z.string().describe('Timestamp of the change')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ConvexClient({
         deploymentUrl: ctx.config.deploymentUrl,
         token: ctx.auth.token,
@@ -70,7 +78,7 @@ export let dataChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let changeType = ctx.input.deleted ? 'deleted' : 'updated';
 
       return {
@@ -85,4 +93,5 @@ export let dataChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

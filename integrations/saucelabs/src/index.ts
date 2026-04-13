@@ -17,13 +17,9 @@ import {
   listUsers,
   listTeams,
   getUserConcurrency,
-  listStorageFiles,
+  listStorageFiles
 } from './tools';
-import {
-  testJobEvents,
-  visualTestingEvents,
-  jobMonitor,
-} from './triggers';
+import { testJobEvents, visualTestingEvents, jobMonitor } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -44,11 +40,7 @@ export let provider = Slate.create({
     listUsers,
     listTeams,
     getUserConcurrency,
-    listStorageFiles,
+    listStorageFiles
   ],
-  triggers: [
-    testJobEvents,
-    visualTestingEvents,
-    jobMonitor,
-  ],
+  triggers: [testJobEvents, visualTestingEvents, jobMonitor]
 });

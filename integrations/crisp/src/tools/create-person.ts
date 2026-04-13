@@ -3,22 +3,23 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createPerson = SlateTool.create(
-  spec,
-  {
-    name: 'Create Person',
-    key: 'create_person',
-    description: `Create a new contact profile in the Crisp CRM. At minimum, provide an email or nickname. Returns the new people ID.`,
-  }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Contact email address'),
-    nickname: z.string().optional().describe('Contact display name'),
-  }))
-  .output(z.object({
-    peopleId: z.string().describe('People profile ID of the newly created contact'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createPerson = SlateTool.create(spec, {
+  name: 'Create Person',
+  key: 'create_person',
+  description: `Create a new contact profile in the Crisp CRM. At minimum, provide an email or nickname. Returns the new people ID.`
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Contact email address'),
+      nickname: z.string().optional().describe('Contact display name')
+    })
+  )
+  .output(
+    z.object({
+      peopleId: z.string().describe('People profile ID of the newly created contact')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, websiteId: ctx.config.websiteId });
 
     let body: any = {};
@@ -29,9 +30,9 @@ export let createPerson = SlateTool.create(
 
     return {
       output: {
-        peopleId: result.people_id,
+        peopleId: result.people_id
       },
-      message: `Created new contact **${ctx.input.nickname || ctx.input.email || result.people_id}**.`,
+      message: `Created new contact **${ctx.input.nickname || ctx.input.email || result.people_id}**.`
     };
   })
   .build();

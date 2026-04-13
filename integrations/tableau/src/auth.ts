@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Tableau credentials token for API requests'),
-    siteId: z.string().describe('Site LUID returned from sign-in'),
-    userId: z.string().describe('User LUID returned from sign-in')
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Tableau credentials token for API requests'),
+      siteId: z.string().describe('Site LUID returned from sign-in'),
+      userId: z.string().describe('User LUID returned from sign-in')
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Personal Access Token',
@@ -20,7 +22,7 @@ export let auth = SlateAuth.create()
       tokenSecret: z.string().describe('Personal access token secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let { serverUrl, siteContentUrl, apiVersion, tokenName, tokenSecret } = ctx.input;
 
       let baseUrl = serverUrl.replace(/\/+$/, '');
@@ -47,7 +49,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; siteId: string; userId: string }; input: any }) => {
+    getProfile: async (ctx: {
+      output: { token: string; siteId: string; userId: string };
+      input: any;
+    }) => {
       return {
         profile: {
           id: ctx.output.userId,
@@ -69,7 +74,7 @@ export let auth = SlateAuth.create()
       password: z.string().describe('Tableau password')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let { serverUrl, siteContentUrl, apiVersion, username, password } = ctx.input;
 
       let baseUrl = serverUrl.replace(/\/+$/, '');
@@ -96,7 +101,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; siteId: string; userId: string }; input: any }) => {
+    getProfile: async (ctx: {
+      output: { token: string; siteId: string; userId: string };
+      input: any;
+    }) => {
       return {
         profile: {
           id: ctx.output.userId,

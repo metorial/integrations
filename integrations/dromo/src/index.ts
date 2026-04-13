@@ -12,7 +12,7 @@ import {
   createHeadlessImport,
   getHeadlessImport,
   listHeadlessImports,
-  deleteHeadlessImport,
+  deleteHeadlessImport
 } from './tools';
 import { importEvents } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     createHeadlessImport,
     getHeadlessImport,
     listHeadlessImports,
-    deleteHeadlessImport,
+    deleteHeadlessImport
   ],
-  triggers: [
-    importEvents,
-  ],
+  triggers: [importEvents]
 });

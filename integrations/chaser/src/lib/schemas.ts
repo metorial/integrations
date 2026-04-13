@@ -3,7 +3,10 @@ import { z } from 'zod';
 // --- Common ---
 
 export let addressSchema = z.object({
-  addressType: z.enum(['POBOX', 'Unknown', 'Delivery', 'Billing']).default('POBOX').describe('Type of address'),
+  addressType: z
+    .enum(['POBOX', 'Unknown', 'Delivery', 'Billing'])
+    .default('POBOX')
+    .describe('Type of address'),
   country: z.string().nullable().optional().describe('Country'),
   region: z.string().nullable().optional().describe('Region or state'),
   city: z.string().nullable().optional().describe('City'),
@@ -11,18 +14,18 @@ export let addressSchema = z.object({
   addressLine1: z.string().nullable().optional().describe('Address line 1'),
   addressLine2: z.string().nullable().optional().describe('Address line 2'),
   addressLine3: z.string().nullable().optional().describe('Address line 3'),
-  addressLine4: z.string().nullable().optional().describe('Address line 4'),
+  addressLine4: z.string().nullable().optional().describe('Address line 4')
 });
 
 export let groupSchema = z.object({
   name: z.string().describe('Group name'),
   groupId: z.string().nullable().optional().describe('Group ID'),
-  status: z.enum(['ACTIVE', 'ARCHIVED']).default('ACTIVE').describe('Group status'),
+  status: z.enum(['ACTIVE', 'ARCHIVED']).default('ACTIVE').describe('Group status')
 });
 
 export let paymentSchema = z.object({
   amount: z.number().describe('Payment amount'),
-  date: z.string().describe('Payment date (ISO 8601)'),
+  date: z.string().describe('Payment date (ISO 8601)')
 });
 
 // --- Customer ---
@@ -37,7 +40,7 @@ export let customerInputSchema = z.object({
   mobileNumber: z.string().nullable().optional().describe('Mobile number'),
   status: z.enum(['ACTIVE', 'ARCHIVED']).optional().describe('Customer status'),
   groups: z.array(groupSchema).optional().describe('Groups/tags assigned to the customer'),
-  addresses: z.array(addressSchema).optional().describe('Customer addresses'),
+  addresses: z.array(addressSchema).optional().describe('Customer addresses')
 });
 
 export let customerOutputSchema = z.object({
@@ -54,9 +57,21 @@ export let customerOutputSchema = z.object({
   addresses: z.array(addressSchema).optional().describe('Addresses'),
   paymentPortalLink: z.string().nullable().optional().describe('Payment portal link'),
   payerRating: z.number().nullable().optional().describe('Payer rating score'),
-  payerRatingUpdatedAt: z.string().nullable().optional().describe('When payer rating was last updated'),
-  payerRatingNumberInvoicesConsidered: z.number().nullable().optional().describe('Number of invoices considered for payer rating'),
-  averageDaysToPay: z.number().nullable().optional().describe('Average days customer takes to pay'),
+  payerRatingUpdatedAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('When payer rating was last updated'),
+  payerRatingNumberInvoicesConsidered: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('Number of invoices considered for payer rating'),
+  averageDaysToPay: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('Average days customer takes to pay')
 });
 
 // --- Contact Person ---
@@ -68,7 +83,7 @@ export let contactPersonInputSchema = z.object({
   contactEmailAddress: z.string().nullable().optional().describe('Email address'),
   phoneNumber: z.string().nullable().optional().describe('Phone number'),
   mobileNumber: z.string().nullable().optional().describe('Mobile number'),
-  status: z.enum(['ACTIVE', 'ARCHIVED']).optional().describe('Contact person status'),
+  status: z.enum(['ACTIVE', 'ARCHIVED']).optional().describe('Contact person status')
 });
 
 export let contactPersonOutputSchema = z.object({
@@ -78,12 +93,19 @@ export let contactPersonOutputSchema = z.object({
   contactEmailAddress: z.string().nullable().optional().describe('Email address'),
   phoneNumber: z.string().nullable().optional().describe('Phone number'),
   mobileNumber: z.string().nullable().optional().describe('Mobile number'),
-  status: z.string().optional().describe('Status'),
+  status: z.string().optional().describe('Status')
 });
 
 // --- Invoice ---
 
-export let invoiceStatusEnum = z.enum(['DRAFT', 'SUBMITTED', 'AUTHORISED', 'PAID', 'VOIDED', 'DELETED']);
+export let invoiceStatusEnum = z.enum([
+  'DRAFT',
+  'SUBMITTED',
+  'AUTHORISED',
+  'PAID',
+  'VOIDED',
+  'DELETED'
+]);
 
 export let invoiceInputSchema = z.object({
   invoiceId: z.string().describe('Unique external invoice identifier'),
@@ -96,8 +118,12 @@ export let invoiceInputSchema = z.object({
   subTotal: z.number().nullable().optional().describe('Subtotal before tax'),
   date: z.string().describe('Invoice issued date (ISO 8601)'),
   dueDate: z.string().describe('Invoice due date (ISO 8601)'),
-  fullyPaidDate: z.string().nullable().optional().describe('Date invoice was fully paid (ISO 8601)'),
-  customerExternalId: z.string().describe('External ID of the associated customer'),
+  fullyPaidDate: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Date invoice was fully paid (ISO 8601)'),
+  customerExternalId: z.string().describe('External ID of the associated customer')
 });
 
 export let invoiceOutputSchema = z.object({
@@ -117,7 +143,11 @@ export let invoiceOutputSchema = z.object({
   customerName: z.string().nullable().optional().describe('Customer name'),
   payments: z.array(paymentSchema).optional().describe('Payment history'),
   invoicePdfLink: z.string().nullable().optional().describe('URL to uploaded PDF'),
-  invoicePdfLinkUpdatedAt: z.string().nullable().optional().describe('When PDF was last updated'),
+  invoicePdfLinkUpdatedAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('When PDF was last updated')
 });
 
 // --- Credit Note ---
@@ -130,7 +160,7 @@ export let creditNoteInputSchema = z.object({
   status: invoiceStatusEnum.describe('Credit note status'),
   total: z.number().describe('Total credit note amount'),
   currencyCode: z.string().describe('3-letter currency code'),
-  customerExternalId: z.string().describe('External ID of the associated customer'),
+  customerExternalId: z.string().describe('External ID of the associated customer')
 });
 
 export let creditNoteOutputSchema = z.object({
@@ -143,7 +173,7 @@ export let creditNoteOutputSchema = z.object({
   total: z.number().describe('Total amount'),
   currencyCode: z.string().describe('Currency code'),
   customerExternalId: z.string().describe('Customer external ID'),
-  customerName: z.string().nullable().optional().describe('Customer name'),
+  customerName: z.string().nullable().optional().describe('Customer name')
 });
 
 // --- Overpayment ---
@@ -155,7 +185,7 @@ export let overpaymentInputSchema = z.object({
   status: invoiceStatusEnum.describe('Overpayment status'),
   total: z.number().describe('Total overpayment amount'),
   currencyCode: z.string().describe('3-letter currency code'),
-  customerExternalId: z.string().describe('External ID of the associated customer'),
+  customerExternalId: z.string().describe('External ID of the associated customer')
 });
 
 export let overpaymentOutputSchema = z.object({
@@ -167,7 +197,7 @@ export let overpaymentOutputSchema = z.object({
   total: z.number().describe('Total amount'),
   currencyCode: z.string().describe('Currency code'),
   customerExternalId: z.string().describe('Customer external ID'),
-  customerName: z.string().nullable().optional().describe('Customer name'),
+  customerName: z.string().nullable().optional().describe('Customer name')
 });
 
 // --- Organisation ---
@@ -180,7 +210,7 @@ export let organisationOutputSchema = z.object({
   baseCurrency: z.string().describe('Base currency code'),
   countryCode: z.string().describe('Country code'),
   timezone: z.string().describe('Timezone'),
-  lastSyncDate: z.string().nullable().optional().describe('Last sync date (ISO 8601)'),
+  lastSyncDate: z.string().nullable().optional().describe('Last sync date (ISO 8601)')
 });
 
 export let syncTaskEnum = z.enum([
@@ -189,5 +219,5 @@ export let syncTaskEnum = z.enum([
   'CALCULATE_CONTACT_BALANCES',
   'VERIFY_CONTACT_CREDIT_LIMIT',
   'CALCULATE_TASK_REMINDERS',
-  'CALCULATE_TOTAL_REVENUE',
+  'CALCULATE_TOTAL_REVENUE'
 ]);

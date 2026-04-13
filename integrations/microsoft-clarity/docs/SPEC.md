@@ -19,6 +19,7 @@ Authorization: Bearer <Your_API_Token>
 ```
 
 **Important details:**
+
 - Token names must be at least 4 characters long.
 - Only project admins can generate and manage access tokens.
 - To ensure security, promptly replace API tokens if a user with access is removed from the project.

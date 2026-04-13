@@ -3,50 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transactionChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transaction Changes',
-    key: 'transaction_changes',
-    description: 'Polls for new, updated, or deleted transactions in a budget using delta requests.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    transactionId: z.string().describe('Transaction ID'),
-    date: z.string().describe('Transaction date'),
-    amount: z.number().describe('Amount in milliunits'),
-    memo: z.string().nullable().optional().describe('Memo'),
-    cleared: z.string().describe('Cleared status'),
-    approved: z.boolean().describe('Whether approved'),
-    accountId: z.string().describe('Account ID'),
-    accountName: z.string().optional().describe('Account name'),
-    payeeId: z.string().nullable().optional().describe('Payee ID'),
-    payeeName: z.string().nullable().optional().describe('Payee name'),
-    categoryId: z.string().nullable().optional().describe('Category ID'),
-    categoryName: z.string().nullable().optional().describe('Category name'),
-    deleted: z.boolean().describe('Whether deleted'),
-  }))
-  .output(z.object({
-    transactionId: z.string().describe('Transaction ID'),
-    date: z.string().describe('Transaction date'),
-    amount: z.number().describe('Amount in milliunits'),
-    memo: z.string().nullable().optional().describe('Memo'),
-    cleared: z.string().describe('Cleared status'),
-    approved: z.boolean().describe('Whether approved'),
-    accountId: z.string().describe('Account ID'),
-    accountName: z.string().optional().describe('Account name'),
-    payeeId: z.string().nullable().optional().describe('Payee ID'),
-    payeeName: z.string().nullable().optional().describe('Payee name'),
-    categoryId: z.string().nullable().optional().describe('Category ID'),
-    categoryName: z.string().nullable().optional().describe('Category name'),
-  }))
+export let transactionChanges = SlateTrigger.create(spec, {
+  name: 'Transaction Changes',
+  key: 'transaction_changes',
+  description:
+    'Polls for new, updated, or deleted transactions in a budget using delta requests.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      transactionId: z.string().describe('Transaction ID'),
+      date: z.string().describe('Transaction date'),
+      amount: z.number().describe('Amount in milliunits'),
+      memo: z.string().nullable().optional().describe('Memo'),
+      cleared: z.string().describe('Cleared status'),
+      approved: z.boolean().describe('Whether approved'),
+      accountId: z.string().describe('Account ID'),
+      accountName: z.string().optional().describe('Account name'),
+      payeeId: z.string().nullable().optional().describe('Payee ID'),
+      payeeName: z.string().nullable().optional().describe('Payee name'),
+      categoryId: z.string().nullable().optional().describe('Category ID'),
+      categoryName: z.string().nullable().optional().describe('Category name'),
+      deleted: z.boolean().describe('Whether deleted')
+    })
+  )
+  .output(
+    z.object({
+      transactionId: z.string().describe('Transaction ID'),
+      date: z.string().describe('Transaction date'),
+      amount: z.number().describe('Amount in milliunits'),
+      memo: z.string().nullable().optional().describe('Memo'),
+      cleared: z.string().describe('Cleared status'),
+      approved: z.boolean().describe('Whether approved'),
+      accountId: z.string().describe('Account ID'),
+      accountName: z.string().optional().describe('Account name'),
+      payeeId: z.string().nullable().optional().describe('Payee ID'),
+      payeeName: z.string().nullable().optional().describe('Payee name'),
+      categoryId: z.string().nullable().optional().describe('Category ID'),
+      categoryName: z.string().nullable().optional().describe('Category name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let budgetId = ctx.config.budgetId;
 
@@ -54,7 +58,7 @@ export let transactionChanges = SlateTrigger.create(
       let previousIds = (ctx.state?.knownTransactionIds as string[] | undefined) ?? [];
 
       let result = await client.getTransactions(budgetId, {
-        lastKnowledge,
+        lastKnowledge
       });
 
       let inputs = result.transactions.map((t: any) => {
@@ -80,7 +84,7 @@ export let transactionChanges = SlateTrigger.create(
           payeeName: t.payee_name,
           categoryId: t.category_id,
           categoryName: t.category_name,
-          deleted: t.deleted,
+          deleted: t.deleted
         };
       });
 
@@ -98,12 +102,12 @@ export let transactionChanges = SlateTrigger.create(
         inputs,
         updatedState: {
           serverKnowledge: result.serverKnowledge,
-          knownTransactionIds: Array.from(newIds),
-        },
+          knownTransactionIds: Array.from(newIds)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `transaction.${ctx.input.changeType}`,
         id: `${ctx.input.transactionId}-${ctx.input.changeType}`,
@@ -119,9 +123,9 @@ export let transactionChanges = SlateTrigger.create(
           payeeId: ctx.input.payeeId,
           payeeName: ctx.input.payeeName,
           categoryId: ctx.input.categoryId,
-          categoryName: ctx.input.categoryName,
-        },
+          categoryName: ctx.input.categoryName
+        }
       };
-    },
+    }
   })
   .build();

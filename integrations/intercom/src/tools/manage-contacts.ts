@@ -3,53 +3,77 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contacts',
-    key: 'manage_contacts',
-    description: `Create, update, archive, unarchive, merge, or delete contacts (users and leads) in Intercom.
+export let manageContacts = SlateTool.create(spec, {
+  name: 'Manage Contacts',
+  key: 'manage_contacts',
+  description: `Create, update, archive, unarchive, merge, or delete contacts (users and leads) in Intercom.
 Use **action** to specify the operation. Supports custom attributes and contact ownership assignment.
 For merging, provide both a lead ID and a user ID — the lead will be merged into the user.`,
-    instructions: [
-      'When creating a contact, provide at least a role ("user" or "lead") and either an email or externalId.',
-      'When merging, the "from" contact (leadContactId) must be a lead and the "into" contact (userContactId) must be a user.'
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+  instructions: [
+    'When creating a contact, provide at least a role ("user" or "lead") and either an email or externalId.',
+    'When merging, the "from" contact (leadContactId) must be a lead and the "into" contact (userContactId) must be a user.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'archive', 'unarchive', 'delete', 'merge']).describe('The operation to perform on the contact'),
-    contactId: z.string().optional().describe('Intercom contact ID (required for update, archive, unarchive, delete)'),
-    leadContactId: z.string().optional().describe('Lead contact ID to merge from (required for merge)'),
-    userContactId: z.string().optional().describe('User contact ID to merge into (required for merge)'),
-    role: z.enum(['user', 'lead']).optional().describe('Contact role (required for create)'),
-    externalId: z.string().optional().describe('External ID from your system'),
-    email: z.string().optional().describe('Contact email address'),
-    phone: z.string().optional().describe('Contact phone number'),
-    name: z.string().optional().describe('Contact full name'),
-    avatar: z.string().optional().describe('URL to contact avatar image'),
-    signedUpAt: z.string().optional().describe('ISO 8601 timestamp of when the contact signed up'),
-    lastSeenAt: z.string().optional().describe('ISO 8601 timestamp of when the contact was last seen'),
-    ownerId: z.string().optional().describe('Admin ID to assign as contact owner'),
-    unsubscribedFromEmails: z.boolean().optional().describe('Whether contact has unsubscribed from emails'),
-    customAttributes: z.record(z.string(), z.any()).optional().describe('Custom attributes as key-value pairs')
-  }))
-  .output(z.object({
-    contactId: z.string().optional().describe('Intercom contact ID'),
-    role: z.string().optional().describe('Contact role (user or lead)'),
-    email: z.string().optional().describe('Contact email'),
-    name: z.string().optional().describe('Contact name'),
-    phone: z.string().optional().describe('Contact phone'),
-    externalId: z.string().optional().describe('External ID'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    deleted: z.boolean().optional().describe('Whether the contact was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'archive', 'unarchive', 'delete', 'merge'])
+        .describe('The operation to perform on the contact'),
+      contactId: z
+        .string()
+        .optional()
+        .describe('Intercom contact ID (required for update, archive, unarchive, delete)'),
+      leadContactId: z
+        .string()
+        .optional()
+        .describe('Lead contact ID to merge from (required for merge)'),
+      userContactId: z
+        .string()
+        .optional()
+        .describe('User contact ID to merge into (required for merge)'),
+      role: z.enum(['user', 'lead']).optional().describe('Contact role (required for create)'),
+      externalId: z.string().optional().describe('External ID from your system'),
+      email: z.string().optional().describe('Contact email address'),
+      phone: z.string().optional().describe('Contact phone number'),
+      name: z.string().optional().describe('Contact full name'),
+      avatar: z.string().optional().describe('URL to contact avatar image'),
+      signedUpAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp of when the contact signed up'),
+      lastSeenAt: z
+        .string()
+        .optional()
+        .describe('ISO 8601 timestamp of when the contact was last seen'),
+      ownerId: z.string().optional().describe('Admin ID to assign as contact owner'),
+      unsubscribedFromEmails: z
+        .boolean()
+        .optional()
+        .describe('Whether contact has unsubscribed from emails'),
+      customAttributes: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Custom attributes as key-value pairs')
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string().optional().describe('Intercom contact ID'),
+      role: z.string().optional().describe('Contact role (user or lead)'),
+      email: z.string().optional().describe('Contact email'),
+      name: z.string().optional().describe('Contact name'),
+      phone: z.string().optional().describe('Contact phone'),
+      externalId: z.string().optional().describe('External ID'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      deleted: z.boolean().optional().describe('Whether the contact was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, region: ctx.config.region });
     let { action } = ctx.input;
 
@@ -125,7 +149,10 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
       if (!ctx.input.leadContactId || !ctx.input.userContactId) {
         throw new Error('Both leadContactId and userContactId are required for merge');
       }
-      let result = await client.mergeContacts(ctx.input.leadContactId, ctx.input.userContactId);
+      let result = await client.mergeContacts(
+        ctx.input.leadContactId,
+        ctx.input.userContactId
+      );
       return {
         output: mapContact(result),
         message: `Merged lead **${ctx.input.leadContactId}** into user **${ctx.input.userContactId}**`
@@ -133,7 +160,8 @@ For merging, provide both a lead ID and a user ID — the lead will be merged in
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();
 
 let mapContact = (data: any) => ({
   contactId: data.id,

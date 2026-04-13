@@ -13,14 +13,14 @@ import {
   manageTasks,
   sendChatMessage,
   listConversations,
-  manageOnboarding,
+  manageOnboarding
 } from './tools';
 import {
   userEvents,
   timeActivityEvents,
   formSubmissionEvents,
   schedulerEvents,
-  taskEvents,
+  taskEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -38,13 +38,7 @@ export let provider = Slate.create({
     manageTasks,
     sendChatMessage,
     listConversations,
-    manageOnboarding,
+    manageOnboarding
   ],
-  triggers: [
-    userEvents,
-    timeActivityEvents,
-    formSubmissionEvents,
-    schedulerEvents,
-    taskEvents,
-  ],
+  triggers: [userEvents, timeActivityEvents, formSubmissionEvents, schedulerEvents, taskEvents]
 });

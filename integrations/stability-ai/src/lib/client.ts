@@ -9,13 +9,13 @@ export class Client {
 
   private createAxiosInstance() {
     return createAxios({
-      baseURL: 'https://api.stability.ai',
+      baseURL: 'https://api.stability.ai'
     });
   }
 
   private authHeaders() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
@@ -29,7 +29,7 @@ export class Client {
   }> {
     let axios = this.createAxiosInstance();
     let response = await axios.get('/v1/user/account', {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
     return {
       id: response.data.id,
@@ -39,15 +39,15 @@ export class Client {
         id: org.id,
         name: org.name,
         role: org.role,
-        isDefault: org.is_default,
-      })),
+        isDefault: org.is_default
+      }))
     };
   }
 
   async getBalance(): Promise<{ credits: number }> {
     let axios = this.createAxiosInstance();
     let response = await axios.get('/v1/user/balance', {
-      headers: this.authHeaders(),
+      headers: this.authHeaders()
     });
     return { credits: response.data.credits };
   }
@@ -79,14 +79,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/generate/ultra', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -110,14 +110,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/generate/core', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -150,14 +150,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/generate/sd3', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -179,14 +179,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/edit/erase', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -210,14 +210,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/edit/inpaint', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -245,14 +245,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/edit/outpaint', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -276,14 +276,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/edit/search-and-replace', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -307,14 +307,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/edit/search-and-recolor', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -330,13 +330,13 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/edit/remove-background', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -354,19 +354,30 @@ export class Client {
     let formData = new FormData();
     formData.append('subject_image', this.base64ToBlob(params.subjectImage), 'subject.png');
     if (params.backgroundPrompt) formData.append('background_prompt', params.backgroundPrompt);
-    if (params.backgroundReference) formData.append('background_reference', this.base64ToBlob(params.backgroundReference), 'bg_reference.png');
+    if (params.backgroundReference)
+      formData.append(
+        'background_reference',
+        this.base64ToBlob(params.backgroundReference),
+        'bg_reference.png'
+      );
     if (params.foregroundPrompt) formData.append('foreground_prompt', params.foregroundPrompt);
-    if (params.lightSourceDirection) formData.append('light_source_direction', params.lightSourceDirection);
-    if (params.lightSourceStrength !== undefined) formData.append('light_source_strength', String(params.lightSourceStrength));
+    if (params.lightSourceDirection)
+      formData.append('light_source_direction', params.lightSourceDirection);
+    if (params.lightSourceStrength !== undefined)
+      formData.append('light_source_strength', String(params.lightSourceStrength));
     if (params.outputFormat) formData.append('output_format', params.outputFormat);
     if (params.seed !== undefined) formData.append('seed', String(params.seed));
 
-    let response = await axios.post('/v2beta/stable-image/edit/replace-background-and-relight', formData, {
-      headers: {
-        ...this.authHeaders(),
-        Accept: 'application/json',
-      },
-    });
+    let response = await axios.post(
+      '/v2beta/stable-image/edit/replace-background-and-relight',
+      formData,
+      {
+        headers: {
+          ...this.authHeaders(),
+          Accept: 'application/json'
+        }
+      }
+    );
 
     // This endpoint may be async - handle both sync and async responses
     if (response.data.id) {
@@ -376,7 +387,7 @@ export class Client {
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -394,13 +405,13 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/upscale/fast', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -419,19 +430,20 @@ export class Client {
     if (params.negativePrompt) formData.append('negative_prompt', params.negativePrompt);
     if (params.outputFormat) formData.append('output_format', params.outputFormat);
     if (params.seed !== undefined) formData.append('seed', String(params.seed));
-    if (params.creativity !== undefined) formData.append('creativity', String(params.creativity));
+    if (params.creativity !== undefined)
+      formData.append('creativity', String(params.creativity));
 
     let response = await axios.post('/v2beta/stable-image/upscale/conservative', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -450,17 +462,18 @@ export class Client {
     if (params.negativePrompt) formData.append('negative_prompt', params.negativePrompt);
     if (params.outputFormat) formData.append('output_format', params.outputFormat);
     if (params.seed !== undefined) formData.append('seed', String(params.seed));
-    if (params.creativity !== undefined) formData.append('creativity', String(params.creativity));
+    if (params.creativity !== undefined)
+      formData.append('creativity', String(params.creativity));
 
     let response = await axios.post('/v2beta/stable-image/upscale/creative', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
-      generationId: response.data.id,
+      generationId: response.data.id
     };
   }
 
@@ -474,9 +487,9 @@ export class Client {
     let response = await axios.get(`/v2beta/results/${generationId}`, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
+        Accept: 'application/json'
       },
-      validateStatus: (status: number) => status === 200 || status === 202,
+      validateStatus: (status: number) => status === 200 || status === 202
     });
 
     if (response.status === 202) {
@@ -487,11 +500,15 @@ export class Client {
       status: 'complete',
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
-  async pollAsyncResult(generationId: string, maxAttempts: number = 30, intervalMs: number = 10000): Promise<{
+  async pollAsyncResult(
+    generationId: string,
+    maxAttempts: number = 30,
+    intervalMs: number = 10000
+  ): Promise<{
     base64Image: string;
     seed: number;
     finishReason: string;
@@ -502,12 +519,14 @@ export class Client {
         return {
           base64Image: result.base64Image,
           seed: result.seed!,
-          finishReason: result.finishReason!,
+          finishReason: result.finishReason!
         };
       }
       await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
-    throw new Error(`Async generation ${generationId} did not complete within the expected time.`);
+    throw new Error(
+      `Async generation ${generationId} did not complete within the expected time.`
+    );
   }
 
   // ─── Image Control ─────────────────────────────────────
@@ -525,21 +544,22 @@ export class Client {
     formData.append('image', this.base64ToBlob(params.image), 'image.png');
     formData.append('prompt', params.prompt);
     if (params.negativePrompt) formData.append('negative_prompt', params.negativePrompt);
-    if (params.controlStrength !== undefined) formData.append('control_strength', String(params.controlStrength));
+    if (params.controlStrength !== undefined)
+      formData.append('control_strength', String(params.controlStrength));
     if (params.seed !== undefined) formData.append('seed', String(params.seed));
     if (params.outputFormat) formData.append('output_format', params.outputFormat);
 
     let response = await axios.post('/v2beta/stable-image/control/sketch', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -556,21 +576,22 @@ export class Client {
     formData.append('image', this.base64ToBlob(params.image), 'image.png');
     formData.append('prompt', params.prompt);
     if (params.negativePrompt) formData.append('negative_prompt', params.negativePrompt);
-    if (params.controlStrength !== undefined) formData.append('control_strength', String(params.controlStrength));
+    if (params.controlStrength !== undefined)
+      formData.append('control_strength', String(params.controlStrength));
     if (params.seed !== undefined) formData.append('seed', String(params.seed));
     if (params.outputFormat) formData.append('output_format', params.outputFormat);
 
     let response = await axios.post('/v2beta/stable-image/control/structure', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -594,14 +615,14 @@ export class Client {
     let response = await axios.post('/v2beta/stable-image/control/style', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64Image: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -621,12 +642,12 @@ export class Client {
     let response = await axios.post('/v2beta/audio/stable-audio/generate', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
-      base64Audio: response.data.audio,
+      base64Audio: response.data.audio
     };
   }
 
@@ -641,16 +662,18 @@ export class Client {
     let axios = this.createAxiosInstance();
     let formData = new FormData();
     formData.append('image', this.base64ToBlob(params.image), 'image.png');
-    if (params.textureResolution) formData.append('texture_resolution', params.textureResolution);
-    if (params.foregroundRatio !== undefined) formData.append('foreground_ratio', String(params.foregroundRatio));
+    if (params.textureResolution)
+      formData.append('texture_resolution', params.textureResolution);
+    if (params.foregroundRatio !== undefined)
+      formData.append('foreground_ratio', String(params.foregroundRatio));
     if (params.remesh) formData.append('remesh', params.remesh);
 
     let response = await axios.post('/v2beta/3d/stable-fast-3d', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
+        Accept: 'application/json'
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     // Response is a GLB binary, encode it as base64
@@ -673,16 +696,18 @@ export class Client {
     let axios = this.createAxiosInstance();
     let formData = new FormData();
     formData.append('image', this.base64ToBlob(params.image), 'image.png');
-    if (params.textureResolution) formData.append('texture_resolution', params.textureResolution);
-    if (params.foregroundRatio !== undefined) formData.append('foreground_ratio', String(params.foregroundRatio));
+    if (params.textureResolution)
+      formData.append('texture_resolution', params.textureResolution);
+    if (params.foregroundRatio !== undefined)
+      formData.append('foreground_ratio', String(params.foregroundRatio));
     if (params.remesh) formData.append('remesh', params.remesh);
 
     let response = await axios.post('/v2beta/3d/stable-point-aware-3d', formData, {
       headers: {
         ...this.authHeaders(),
-        Accept: 'application/json',
+        Accept: 'application/json'
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     let bytes = new Uint8Array(response.data);

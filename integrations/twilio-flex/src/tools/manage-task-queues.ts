@@ -14,33 +14,51 @@ let taskQueueSchema = z.object({
   dateUpdated: z.string().optional().describe('Date last updated')
 });
 
-export let manageTaskQueuesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Task Queues',
-    key: 'manage_task_queues',
-    description: `Create, read, update, delete, or list task queues in a TaskRouter workspace. Task queues hold tasks waiting to be assigned to workers. Each queue has a target worker expression that determines which workers are eligible to receive tasks from it.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageTaskQueuesTool = SlateTool.create(spec, {
+  name: 'Manage Task Queues',
+  key: 'manage_task_queues',
+  description: `Create, read, update, delete, or list task queues in a TaskRouter workspace. Task queues hold tasks waiting to be assigned to workers. Each queue has a target worker expression that determines which workers are eligible to receive tasks from it.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('Action to perform'),
-    workspaceSid: z.string().describe('Workspace SID'),
-    taskQueueSid: z.string().optional().describe('Task Queue SID (required for get/update/delete)'),
-    friendlyName: z.string().optional().describe('Friendly name for the queue'),
-    targetWorkers: z.string().optional().describe('Worker target expression (e.g., "skills HAS \'billing\'")'),
-    maxReservedWorkers: z.number().optional().describe('Max number of workers reserved for a task'),
-    reservationActivitySid: z.string().optional().describe('Activity SID for reserved workers'),
-    assignmentActivitySid: z.string().optional().describe('Activity SID for assigned workers'),
-    pageSize: z.number().optional().describe('Number of results to return')
-  }))
-  .output(z.object({
-    taskQueues: z.array(taskQueueSchema).describe('Task queue records')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('Action to perform'),
+      workspaceSid: z.string().describe('Workspace SID'),
+      taskQueueSid: z
+        .string()
+        .optional()
+        .describe('Task Queue SID (required for get/update/delete)'),
+      friendlyName: z.string().optional().describe('Friendly name for the queue'),
+      targetWorkers: z
+        .string()
+        .optional()
+        .describe('Worker target expression (e.g., "skills HAS \'billing\'")'),
+      maxReservedWorkers: z
+        .number()
+        .optional()
+        .describe('Max number of workers reserved for a task'),
+      reservationActivitySid: z
+        .string()
+        .optional()
+        .describe('Activity SID for reserved workers'),
+      assignmentActivitySid: z
+        .string()
+        .optional()
+        .describe('Activity SID for assigned workers'),
+      pageSize: z.number().optional().describe('Number of results to return')
+    })
+  )
+  .output(
+    z.object({
+      taskQueues: z.array(taskQueueSchema).describe('Task queue records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TaskRouterClient(ctx.auth.token, ctx.auth.accountSid);
 
     if (ctx.input.action === 'list') {
@@ -66,16 +84,18 @@ export let manageTaskQueuesTool = SlateTool.create(
       let q = await client.getTaskQueue(ctx.input.workspaceSid, ctx.input.taskQueueSid);
       return {
         output: {
-          taskQueues: [{
-            taskQueueSid: q.sid,
-            friendlyName: q.friendly_name,
-            targetWorkers: q.target_workers,
-            maxReservedWorkers: q.max_reserved_workers,
-            reservationActivitySid: q.reservation_activity_sid,
-            assignmentActivitySid: q.assignment_activity_sid,
-            dateCreated: q.date_created,
-            dateUpdated: q.date_updated
-          }]
+          taskQueues: [
+            {
+              taskQueueSid: q.sid,
+              friendlyName: q.friendly_name,
+              targetWorkers: q.target_workers,
+              maxReservedWorkers: q.max_reserved_workers,
+              reservationActivitySid: q.reservation_activity_sid,
+              assignmentActivitySid: q.assignment_activity_sid,
+              dateCreated: q.date_created,
+              dateUpdated: q.date_updated
+            }
+          ]
         },
         message: `Task queue **${q.friendly_name}** (${q.sid}).`
       };
@@ -93,16 +113,18 @@ export let manageTaskQueuesTool = SlateTool.create(
       let q = await client.createTaskQueue(ctx.input.workspaceSid, params);
       return {
         output: {
-          taskQueues: [{
-            taskQueueSid: q.sid,
-            friendlyName: q.friendly_name,
-            targetWorkers: q.target_workers,
-            maxReservedWorkers: q.max_reserved_workers,
-            reservationActivitySid: q.reservation_activity_sid,
-            assignmentActivitySid: q.assignment_activity_sid,
-            dateCreated: q.date_created,
-            dateUpdated: q.date_updated
-          }]
+          taskQueues: [
+            {
+              taskQueueSid: q.sid,
+              friendlyName: q.friendly_name,
+              targetWorkers: q.target_workers,
+              maxReservedWorkers: q.max_reserved_workers,
+              reservationActivitySid: q.reservation_activity_sid,
+              assignmentActivitySid: q.assignment_activity_sid,
+              dateCreated: q.date_created,
+              dateUpdated: q.date_updated
+            }
+          ]
         },
         message: `Created task queue **${q.friendly_name}** (${q.sid}).`
       };
@@ -117,19 +139,25 @@ export let manageTaskQueuesTool = SlateTool.create(
         ReservationActivitySid: ctx.input.reservationActivitySid,
         AssignmentActivitySid: ctx.input.assignmentActivitySid
       };
-      let q = await client.updateTaskQueue(ctx.input.workspaceSid, ctx.input.taskQueueSid, params);
+      let q = await client.updateTaskQueue(
+        ctx.input.workspaceSid,
+        ctx.input.taskQueueSid,
+        params
+      );
       return {
         output: {
-          taskQueues: [{
-            taskQueueSid: q.sid,
-            friendlyName: q.friendly_name,
-            targetWorkers: q.target_workers,
-            maxReservedWorkers: q.max_reserved_workers,
-            reservationActivitySid: q.reservation_activity_sid,
-            assignmentActivitySid: q.assignment_activity_sid,
-            dateCreated: q.date_created,
-            dateUpdated: q.date_updated
-          }]
+          taskQueues: [
+            {
+              taskQueueSid: q.sid,
+              friendlyName: q.friendly_name,
+              targetWorkers: q.target_workers,
+              maxReservedWorkers: q.max_reserved_workers,
+              reservationActivitySid: q.reservation_activity_sid,
+              assignmentActivitySid: q.assignment_activity_sid,
+              dateCreated: q.date_created,
+              dateUpdated: q.date_updated
+            }
+          ]
         },
         message: `Updated task queue **${q.friendly_name}** (${q.sid}).`
       };
@@ -140,10 +168,13 @@ export let manageTaskQueuesTool = SlateTool.create(
     await client.deleteTaskQueue(ctx.input.workspaceSid, ctx.input.taskQueueSid);
     return {
       output: {
-        taskQueues: [{
-          taskQueueSid: ctx.input.taskQueueSid
-        }]
+        taskQueues: [
+          {
+            taskQueueSid: ctx.input.taskQueueSid
+          }
+        ]
       },
       message: `Deleted task queue **${ctx.input.taskQueueSid}**.`
     };
-  }).build();
+  })
+  .build();

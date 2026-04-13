@@ -17,14 +17,14 @@ import {
   searchLeads,
   listSmartViews,
   listPipelinesAndStatuses,
-  listUsers,
+  listUsers
 } from './tools';
 import {
   leadEventsTrigger,
   contactEventsTrigger,
   opportunityEventsTrigger,
   activityEventsTrigger,
-  taskEventsTrigger,
+  taskEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,13 +46,13 @@ export let provider = Slate.create({
     searchLeads,
     listSmartViews,
     listPipelinesAndStatuses,
-    listUsers,
+    listUsers
   ],
   triggers: [
     leadEventsTrigger,
     contactEventsTrigger,
     opportunityEventsTrigger,
     activityEventsTrigger,
-    taskEventsTrigger,
+    taskEventsTrigger
   ]
 });

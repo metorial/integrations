@@ -92,8 +92,8 @@ export class TldvClient {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -130,7 +130,7 @@ export class TldvClient {
   async getDownloadUrl(meetingId: string): Promise<DownloadResponse> {
     let response = await this.axios.get(`/meetings/${meetingId}/download`, {
       maxRedirects: 0,
-      validateStatus: (status: number) => status >= 200 && status < 400,
+      validateStatus: (status: number) => status >= 200 && status < 400
     });
 
     if (response.status === 302 || response.status === 301) {
@@ -143,7 +143,7 @@ export class TldvClient {
 
   async importMeeting(params: ImportMeetingParams): Promise<Meeting> {
     let response = await this.axios.post('/meetings/import', {
-      url: params.url,
+      url: params.url
     });
     return response.data;
   }

@@ -96,8 +96,8 @@ export class RoamClient {
       baseURL: `https://api.roamresearch.com/api/graph/${this.graphName}`,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'X-Authorization': `Bearer ${this.token}`,
-      },
+        'X-Authorization': `Bearer ${this.token}`
+      }
     });
   }
 
@@ -133,7 +133,7 @@ export class RoamClient {
     let http = this.getAxios();
     let response = await http.post('/write', {
       action: 'batch-actions',
-      actions,
+      actions
     });
     return { success: response.data?.ok ?? true };
   }
@@ -143,7 +143,7 @@ export class RoamClient {
       action: 'create-block',
       location: {
         'parent-uid': location.parentUid,
-        order: location.order,
+        order: location.order
       },
       block: {
         string: block.string,
@@ -151,19 +151,22 @@ export class RoamClient {
         ...(block.open !== undefined ? { open: block.open } : {}),
         ...(block.heading ? { heading: block.heading } : {}),
         ...(block.textAlign ? { 'text-align': block.textAlign } : {}),
-        ...(block.childrenViewType ? { 'children-view-type': block.childrenViewType } : {}),
-      },
+        ...(block.childrenViewType ? { 'children-view-type': block.childrenViewType } : {})
+      }
     };
     return this.write(action);
   }
 
-  async updateBlock(uid: string, updates: {
-    string?: string;
-    open?: boolean;
-    heading?: number;
-    textAlign?: string;
-    childrenViewType?: string;
-  }): Promise<{ success: boolean }> {
+  async updateBlock(
+    uid: string,
+    updates: {
+      string?: string;
+      open?: boolean;
+      heading?: number;
+      textAlign?: string;
+      childrenViewType?: string;
+    }
+  ): Promise<{ success: boolean }> {
     let action: UpdateBlockAction = {
       action: 'update-block',
       block: {
@@ -172,8 +175,10 @@ export class RoamClient {
         ...(updates.open !== undefined ? { open: updates.open } : {}),
         ...(updates.heading !== undefined ? { heading: updates.heading } : {}),
         ...(updates.textAlign !== undefined ? { 'text-align': updates.textAlign } : {}),
-        ...(updates.childrenViewType !== undefined ? { 'children-view-type': updates.childrenViewType } : {}),
-      },
+        ...(updates.childrenViewType !== undefined
+          ? { 'children-view-type': updates.childrenViewType }
+          : {})
+      }
     };
     return this.write(action);
   }
@@ -183,9 +188,9 @@ export class RoamClient {
       action: 'move-block',
       location: {
         'parent-uid': location.parentUid,
-        order: location.order,
+        order: location.order
       },
-      block: { uid },
+      block: { uid }
     };
     return this.write(action);
   }
@@ -193,7 +198,7 @@ export class RoamClient {
   async deleteBlock(uid: string): Promise<{ success: boolean }> {
     let action: DeleteBlockAction = {
       action: 'delete-block',
-      block: { uid },
+      block: { uid }
     };
     return this.write(action);
   }
@@ -203,8 +208,8 @@ export class RoamClient {
       action: 'create-page',
       page: {
         title,
-        ...(uid ? { uid } : {}),
-      },
+        ...(uid ? { uid } : {})
+      }
     };
     return this.write(action);
   }
@@ -212,7 +217,7 @@ export class RoamClient {
   async updatePage(uid: string, title: string): Promise<{ success: boolean }> {
     let action: UpdatePageAction = {
       action: 'update-page',
-      page: { uid, title },
+      page: { uid, title }
     };
     return this.write(action);
   }
@@ -220,7 +225,7 @@ export class RoamClient {
   async deletePage(uid: string): Promise<{ success: boolean }> {
     let action: DeletePageAction = {
       action: 'delete-page',
-      page: { uid },
+      page: { uid }
     };
     return this.write(action);
   }

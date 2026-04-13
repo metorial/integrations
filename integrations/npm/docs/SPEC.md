@@ -35,6 +35,7 @@ Search for packages by text query at the `/-/v1/search` endpoint. The values of 
 ### Download Counts
 
 There is a public API that gives you download counts by package and time range. Available via `api.npmjs.org`. Two modes are available:
+
 - **Point**: Gets the total downloads for a given period, for all packages or a specific package.
 - **Range**: Gets the downloads per day for a given period, for all packages or a specific package.
 - **Per-version downloads**: Download count for specific versions of a package are only available for the previous 7 days.
@@ -47,6 +48,7 @@ Packages can be published to the registry via the API (PUT request). Specific ve
 ### Access Token Management
 
 Token management endpoints for creating, listing, and deleting npm access tokens. Tokens can be configured with:
+
 - Specific package, scope, and organization access
 - Read-only or read-write permissions
 - CIDR IP range restrictions

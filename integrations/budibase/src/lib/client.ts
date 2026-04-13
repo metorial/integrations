@@ -7,7 +7,7 @@ export class Client {
   constructor(private params: { token: string; baseUrl: string; appId?: string }) {
     let headers: Record<string, string> = {
       'x-budibase-api-key': params.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
     if (params.appId) {
       headers['x-budibase-app-id'] = params.appId;
@@ -15,7 +15,7 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: params.baseUrl,
-      headers,
+      headers
     });
   }
 
@@ -56,7 +56,11 @@ export class Client {
 
   // ── Tables ──
 
-  async createTable(data: { name: string; primaryDisplay?: string; schema?: Record<string, any> }): Promise<any> {
+  async createTable(data: {
+    name: string;
+    primaryDisplay?: string;
+    schema?: Record<string, any>;
+  }): Promise<any> {
     let res = await this.axios.post('/tables', data);
     return res.data.data;
   }
@@ -66,7 +70,10 @@ export class Client {
     return res.data.data;
   }
 
-  async updateTable(tableId: string, data: { name?: string; primaryDisplay?: string; schema?: Record<string, any> }): Promise<any> {
+  async updateTable(
+    tableId: string,
+    data: { name?: string; primaryDisplay?: string; schema?: Record<string, any> }
+  ): Promise<any> {
     let res = await this.axios.put(`/tables/${tableId}`, { _id: tableId, ...data });
     return res.data.data;
   }
@@ -101,22 +108,25 @@ export class Client {
     await this.axios.delete(`/tables/${tableId}/rows/${rowId}`);
   }
 
-  async searchRows(tableId: string, body: {
-    query?: Record<string, any>;
-    paginate?: boolean;
-    bookmark?: string | number;
-    limit?: number;
-    sort?: {
-      column?: string;
-      order?: 'ascending' | 'descending';
-      type?: 'string' | 'number';
-    };
-  } = {}): Promise<{ rows: any[]; bookmark?: string | number; hasNextPage?: boolean }> {
+  async searchRows(
+    tableId: string,
+    body: {
+      query?: Record<string, any>;
+      paginate?: boolean;
+      bookmark?: string | number;
+      limit?: number;
+      sort?: {
+        column?: string;
+        order?: 'ascending' | 'descending';
+        type?: 'string' | 'number';
+      };
+    } = {}
+  ): Promise<{ rows: any[]; bookmark?: string | number; hasNextPage?: boolean }> {
     let res = await this.axios.post(`/tables/${tableId}/rows/search`, body);
     return {
       rows: res.data.data || [],
       bookmark: res.data.bookmark,
-      hasNextPage: res.data.hasNextPage,
+      hasNextPage: res.data.hasNextPage
     };
   }
 
@@ -142,17 +152,20 @@ export class Client {
     return res.data.data;
   }
 
-  async updateUser(userId: string, data: {
-    email?: string;
-    password?: string;
-    status?: string;
-    firstName?: string;
-    lastName?: string;
-    forceResetPassword?: boolean;
-    builder?: { global?: boolean };
-    admin?: { global?: boolean };
-    roles?: Record<string, string>;
-  }): Promise<any> {
+  async updateUser(
+    userId: string,
+    data: {
+      email?: string;
+      password?: string;
+      status?: string;
+      firstName?: string;
+      lastName?: string;
+      forceResetPassword?: boolean;
+      builder?: { global?: boolean };
+      admin?: { global?: boolean };
+      roles?: Record<string, string>;
+    }
+  ): Promise<any> {
     let res = await this.axios.put(`/users/${userId}`, data);
     return res.data.data;
   }

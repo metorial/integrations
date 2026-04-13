@@ -20,7 +20,7 @@ import {
   listTaxes,
   manageItems,
   listItems,
-  manageCreditNotes,
+  manageCreditNotes
 } from './tools';
 import {
   invoiceEvents,
@@ -33,7 +33,7 @@ import {
   billEvents,
   creditNoteEvents,
   itemEvents,
-  taxEvents,
+  taxEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -58,7 +58,7 @@ export let provider = Slate.create({
     listTaxes,
     manageItems,
     listItems,
-    manageCreditNotes,
+    manageCreditNotes
   ],
   triggers: [
     invoiceEvents,
@@ -71,6 +71,6 @@ export let provider = Slate.create({
     billEvents,
     creditNoteEvents,
     itemEvents,
-    taxEvents,
-  ],
+    taxEvents
+  ]
 });

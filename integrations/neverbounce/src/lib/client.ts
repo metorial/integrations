@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.neverbounce.com/v4.2',
+  baseURL: 'https://api.neverbounce.com/v4.2'
 });
 
 export interface SingleCheckParams {
@@ -205,8 +205,8 @@ export class Client {
         email: params.email,
         address_info: params.addressInfo ? 1 : 0,
         credits_info: params.creditsInfo ? 1 : 0,
-        ...(params.timeout !== undefined ? { timeout: params.timeout } : {}),
-      },
+        ...(params.timeout !== undefined ? { timeout: params.timeout } : {})
+      }
     });
 
     let data = response.data;
@@ -215,7 +215,7 @@ export class Client {
       result: this.mapResultCode(data.result),
       flags: data.flags || [],
       suggestedCorrection: data.suggested_correction || '',
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
 
     if (params.addressInfo && data.address_info) {
@@ -228,7 +228,7 @@ export class Client {
         fqdn: data.address_info.fqdn,
         domain: data.address_info.domain,
         subdomain: data.address_info.subdomain,
-        tld: data.address_info.tld,
+        tld: data.address_info.tld
       };
     }
 
@@ -237,7 +237,7 @@ export class Client {
         paidCreditsUsed: data.credits_info.paid_credits_used,
         freeCreditsUsed: data.credits_info.free_credits_used,
         paidCreditsRemaining: data.credits_info.paid_credits_remaining,
-        freeCreditsRemaining: data.credits_info.free_credits_remaining,
+        freeCreditsRemaining: data.credits_info.free_credits_remaining
       };
     }
 
@@ -248,14 +248,15 @@ export class Client {
     let body: Record<string, any> = {
       key: this.token,
       input_location: params.inputLocation,
-      input: params.input,
+      input: params.input
     };
 
     if (params.filename !== undefined) body.filename = params.filename;
     if (params.autoParse !== undefined) body.auto_parse = params.autoParse;
     if (params.autoStart !== undefined) body.auto_start = params.autoStart;
     if (params.runSample !== undefined) body.run_sample = params.runSample;
-    if (params.allowManualReview !== undefined) body.allow_manual_review = params.allowManualReview;
+    if (params.allowManualReview !== undefined)
+      body.allow_manual_review = params.allowManualReview;
     if (params.callbackUrl !== undefined) body.callback_url = params.callbackUrl;
     if (params.callbackHeaders !== undefined) body.callback_headers = params.callbackHeaders;
 
@@ -265,37 +266,43 @@ export class Client {
     return {
       status: data.status,
       jobId: data.job_id,
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
-  async parseJob(jobId: number, autoStart?: boolean): Promise<{ status: string; queueId: string; executionTime: number }> {
+  async parseJob(
+    jobId: number,
+    autoStart?: boolean
+  ): Promise<{ status: string; queueId: string; executionTime: number }> {
     let response = await http.post('/jobs/parse', {
       key: this.token,
       job_id: jobId,
-      ...(autoStart !== undefined ? { auto_start: autoStart } : {}),
+      ...(autoStart !== undefined ? { auto_start: autoStart } : {})
     });
 
     let data = response.data;
     return {
       status: data.status,
       queueId: data.queue_id,
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
-  async startJob(jobId: number, runSample?: boolean): Promise<{ status: string; queueId: string; executionTime: number }> {
+  async startJob(
+    jobId: number,
+    runSample?: boolean
+  ): Promise<{ status: string; queueId: string; executionTime: number }> {
     let response = await http.post('/jobs/start', {
       key: this.token,
       job_id: jobId,
-      ...(runSample !== undefined ? { run_sample: runSample } : {}),
+      ...(runSample !== undefined ? { run_sample: runSample } : {})
     });
 
     let data = response.data;
     return {
       status: data.status,
       queueId: data.queue_id,
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
@@ -303,8 +310,8 @@ export class Client {
     let response = await http.get('/jobs/status', {
       params: {
         key: this.token,
-        job_id: jobId,
-      },
+        job_id: jobId
+      }
     });
 
     let data = response.data;
@@ -326,11 +333,11 @@ export class Client {
         disposable: data.total?.disposable ?? 0,
         unknown: data.total?.unknown ?? 0,
         duplicates: data.total?.duplicates ?? 0,
-        badSyntax: data.total?.bad_syntax ?? 0,
+        badSyntax: data.total?.bad_syntax ?? 0
       },
       bounceEstimate: data.bounce_estimate ?? 0,
       percentComplete: data.percent_complete ?? 0,
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
@@ -340,8 +347,8 @@ export class Client {
         key: this.token,
         job_id: params.jobId,
         page: params.page ?? 1,
-        items_per_page: params.itemsPerPage ?? 10,
-      },
+        items_per_page: params.itemsPerPage ?? 10
+      }
     });
 
     let data = response.data;
@@ -352,7 +359,7 @@ export class Client {
       query: {
         jobId: data.query?.job_id,
         page: data.query?.page,
-        itemsPerPage: data.query?.items_per_page,
+        itemsPerPage: data.query?.items_per_page
       },
       results: (data.results || []).map((item: any) => ({
         data: item.data,
@@ -360,26 +367,28 @@ export class Client {
           result: this.mapResultCode(item.verification?.result),
           flags: item.verification?.flags || [],
           suggestedCorrection: item.verification?.suggested_correction || '',
-          addressInfo: item.verification?.address_info ? {
-            originalEmail: item.verification.address_info.original_email,
-            normalizedEmail: item.verification.address_info.normalized_email,
-            addr: item.verification.address_info.addr,
-            alias: item.verification.address_info.alias,
-            host: item.verification.address_info.host,
-            fqdn: item.verification.address_info.fqdn,
-            domain: item.verification.address_info.domain,
-            subdomain: item.verification.address_info.subdomain,
-            tld: item.verification.address_info.tld,
-          } : undefined,
-        },
+          addressInfo: item.verification?.address_info
+            ? {
+                originalEmail: item.verification.address_info.original_email,
+                normalizedEmail: item.verification.address_info.normalized_email,
+                addr: item.verification.address_info.addr,
+                alias: item.verification.address_info.alias,
+                host: item.verification.address_info.host,
+                fqdn: item.verification.address_info.fqdn,
+                domain: item.verification.address_info.domain,
+                subdomain: item.verification.address_info.subdomain,
+                tld: item.verification.address_info.tld
+              }
+            : undefined
+        }
       })),
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
   async searchJobs(params: JobSearchParams): Promise<JobSearchResult> {
     let queryParams: Record<string, any> = {
-      key: this.token,
+      key: this.token
     };
 
     if (params.jobId !== undefined) queryParams.job_id = params.jobId;
@@ -397,7 +406,7 @@ export class Client {
       totalPages: data.total_pages,
       query: {
         page: data.query?.page,
-        itemsPerPage: data.query?.items_per_page,
+        itemsPerPage: data.query?.items_per_page
       },
       results: (data.results || []).map((item: any) => ({
         jobId: item.id,
@@ -416,33 +425,33 @@ export class Client {
           disposable: item.total?.disposable ?? 0,
           unknown: item.total?.unknown ?? 0,
           duplicates: item.total?.duplicates ?? 0,
-          badSyntax: item.total?.bad_syntax ?? 0,
+          badSyntax: item.total?.bad_syntax ?? 0
         },
         bounceEstimate: item.bounce_estimate ?? 0,
-        percentComplete: item.percent_complete ?? 0,
+        percentComplete: item.percent_complete ?? 0
       })),
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
   async deleteJob(jobId: number): Promise<{ status: string; executionTime: number }> {
     let response = await http.post('/jobs/delete', {
       key: this.token,
-      job_id: jobId,
+      job_id: jobId
     });
 
     let data = response.data;
     return {
       status: data.status,
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
   async getAccountInfo(): Promise<AccountInfoResult> {
     let response = await http.get('/account/info', {
       params: {
-        key: this.token,
-      },
+        key: this.token
+      }
     });
 
     let data = response.data;
@@ -452,15 +461,15 @@ export class Client {
         paidCreditsUsed: data.credits_info?.paid_credits_used ?? 0,
         freeCreditsUsed: data.credits_info?.free_credits_used ?? 0,
         paidCreditsRemaining: data.credits_info?.paid_credits_remaining ?? 0,
-        freeCreditsRemaining: data.credits_info?.free_credits_remaining ?? 0,
+        freeCreditsRemaining: data.credits_info?.free_credits_remaining ?? 0
       },
       jobCounts: {
         completed: data.job_counts?.completed ?? 0,
         underReview: data.job_counts?.under_review ?? 0,
         queued: data.job_counts?.queued ?? 0,
-        processing: data.job_counts?.processing ?? 0,
+        processing: data.job_counts?.processing ?? 0
       },
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
@@ -470,14 +479,14 @@ export class Client {
       email: params.email,
       result: params.result,
       transaction_id: params.transactionId,
-      confirmation_token: params.confirmationToken,
+      confirmation_token: params.confirmationToken
     });
 
     let data = response.data;
     return {
       status: data.status,
       tokenConfirmed: data.token_confirmed,
-      executionTime: data.execution_time,
+      executionTime: data.execution_time
     };
   }
 
@@ -487,7 +496,7 @@ export class Client {
       1: 'invalid',
       2: 'disposable',
       3: 'catchall',
-      4: 'unknown',
+      4: 'unknown'
     };
 
     if (typeof code === 'number') {

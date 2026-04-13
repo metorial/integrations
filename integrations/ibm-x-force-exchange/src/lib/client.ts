@@ -9,11 +9,11 @@ export class XForceClient {
       baseURL: 'https://api.xforce.ibmcloud.com',
       auth: {
         username: config.token,
-        password: config.password,
+        password: config.password
       },
       headers: {
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -77,12 +77,16 @@ export class XForceClient {
 
   async searchVulnerabilities(query: string): Promise<any> {
     let res = await this.http.get(`/vulnerabilities/fulltext`, {
-      params: { q: query },
+      params: { q: query }
     });
     return res.data;
   }
 
-  async getRecentVulnerabilities(startDate?: string, endDate?: string, limit?: number): Promise<any> {
+  async getRecentVulnerabilities(
+    startDate?: string,
+    endDate?: string,
+    limit?: number
+  ): Promise<any> {
     let params: Record<string, string | number> = {};
     if (startDate) params['startDate'] = startDate;
     if (endDate) params['endDate'] = endDate;
@@ -107,7 +111,7 @@ export class XForceClient {
 
   async searchCollections(query: string): Promise<any> {
     let res = await this.http.get(`/casefiles/fulltext`, {
-      params: { q: query },
+      params: { q: query }
     });
     return res.data;
   }
@@ -137,7 +141,7 @@ export class XForceClient {
       title: collection.title,
       description: collection.description,
       tlp: collection.tlp,
-      tags: collection.tags,
+      tags: collection.tags
     });
     return res.data;
   }
@@ -151,7 +155,7 @@ export class XForceClient {
 
   async searchAppProfiles(query: string): Promise<any> {
     let res = await this.http.get(`/app/fulltext`, {
-      params: { q: query },
+      params: { q: query }
     });
     return res.data;
   }

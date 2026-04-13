@@ -3,29 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let stopTimer = SlateTool.create(
-  spec,
-  {
-    name: 'Stop Timer',
-    key: 'stop_timer',
-    description: `Stop the currently running timer for a user. If no userId is provided, stops the timer for the authenticated user. Optionally specify a custom end time.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let stopTimer = SlateTool.create(spec, {
+  name: 'Stop Timer',
+  key: 'stop_timer',
+  description: `Stop the currently running timer for a user. If no userId is provided, stops the timer for the authenticated user. Optionally specify a custom end time.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    userId: z.string().optional().describe('User ID whose timer to stop. Defaults to the authenticated user.'),
-    end: z.string().optional().describe('End time in ISO 8601 format. Defaults to the current time.')
-  }))
-  .output(z.object({
-    timeEntryId: z.string().describe('ID of the stopped time entry'),
-    description: z.string().optional(),
-    start: z.string(),
-    end: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userId: z
+        .string()
+        .optional()
+        .describe('User ID whose timer to stop. Defaults to the authenticated user.'),
+      end: z
+        .string()
+        .optional()
+        .describe('End time in ISO 8601 format. Defaults to the current time.')
+    })
+  )
+  .output(
+    z.object({
+      timeEntryId: z.string().describe('ID of the stopped time entry'),
+      description: z.string().optional(),
+      start: z.string(),
+      end: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

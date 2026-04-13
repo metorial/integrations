@@ -12,33 +12,37 @@ let supporterSchema = z.object({
   commentsCount: z.number().describe('Number of comments from this supporter'),
   createdAt: z.string().describe('When the supporter was added'),
   updatedAt: z.string().describe('When the supporter record was last updated'),
-  links: z.record(z.string(), z.any()).optional().describe('Associated resource links (suggestion, user)'),
+  links: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Associated resource links (suggestion, user)')
 });
 
-export let listSupporters = SlateTool.create(
-  spec,
-  {
-    name: 'List Supporters',
-    key: 'list_supporters',
-    description: `List supporters across suggestions. Supporters are end users who have voted for or supported an idea. Filter by suggestion to see who supports a specific idea.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    suggestionId: z.number().optional().describe('Filter supporters by suggestion ID'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
-    sort: z.string().optional().describe('Sort field. Examples: "-created_at"'),
-  }))
-  .output(z.object({
-    supporters: z.array(supporterSchema),
-    totalRecords: z.number().describe('Total number of matching supporters'),
-    totalPages: z.number().describe('Total number of pages'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listSupporters = SlateTool.create(spec, {
+  name: 'List Supporters',
+  key: 'list_supporters',
+  description: `List supporters across suggestions. Supporters are end users who have voted for or supported an idea. Filter by suggestion to see who supports a specific idea.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      suggestionId: z.number().optional().describe('Filter supporters by suggestion ID'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
+      sort: z.string().optional().describe('Sort field. Examples: "-created_at"')
+    })
+  )
+  .output(
+    z.object({
+      supporters: z.array(supporterSchema),
+      totalRecords: z.number().describe('Total number of matching supporters'),
+      totalPages: z.number().describe('Total number of pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.auth.subdomain,
+      subdomain: ctx.auth.subdomain
     });
 
     let params: Record<string, unknown> = {};
@@ -58,15 +62,16 @@ export let listSupporters = SlateTool.create(
       commentsCount: s.comments_count || 0,
       createdAt: s.created_at,
       updatedAt: s.updated_at,
-      links: s.links,
+      links: s.links
     }));
 
     return {
       output: {
         supporters,
         totalRecords: result.pagination?.totalRecords || 0,
-        totalPages: result.pagination?.totalPages || 0,
+        totalPages: result.pagination?.totalPages || 0
       },
-      message: `Found **${supporters.length}** supporters.`,
+      message: `Found **${supporters.length}** supporters.`
     };
-  }).build();
+  })
+  .build();

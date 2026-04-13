@@ -10,8 +10,8 @@ export class LookerClient {
       baseURL: `${baseUrl}/api/4.0`,
       headers: {
         Authorization: `token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -42,22 +42,25 @@ export class LookerClient {
     return response.data;
   }
 
-  async runInlineQuery(body: {
-    model: string;
-    view: string;
-    fields?: string[];
-    pivots?: string[];
-    fill_fields?: string[];
-    filters?: Record<string, string>;
-    sorts?: string[];
-    limit?: string;
-    column_limit?: string;
-    total?: boolean;
-    row_total?: string;
-    subtotals?: string[];
-    dynamic_fields?: string;
-    query_timezone?: string;
-  }, resultFormat: string) {
+  async runInlineQuery(
+    body: {
+      model: string;
+      view: string;
+      fields?: string[];
+      pivots?: string[];
+      fill_fields?: string[];
+      filters?: Record<string, string>;
+      sorts?: string[];
+      limit?: string;
+      column_limit?: string;
+      total?: boolean;
+      row_total?: string;
+      subtotals?: string[];
+      dynamic_fields?: string;
+      query_timezone?: string;
+    },
+    resultFormat: string
+  ) {
     let response = await this.axios.post(`/queries/run/${resultFormat}`, body);
     return response.data;
   }
@@ -69,11 +72,7 @@ export class LookerClient {
 
   // ─── SQL Runner ────────────────────────────────────────
 
-  async createSqlQuery(body: {
-    connection_name: string;
-    sql: string;
-    model_name?: string;
-  }) {
+  async createSqlQuery(body: { connection_name: string; sql: string; model_name?: string }) {
     let response = await this.axios.post('/sql_queries', body);
     return response.data;
   }
@@ -125,11 +124,15 @@ export class LookerClient {
     return response.data;
   }
 
-  async runLook(lookId: string, resultFormat: string, params?: {
-    limit?: number;
-    apply_formatting?: boolean;
-    apply_vis?: boolean;
-  }) {
+  async runLook(
+    lookId: string,
+    resultFormat: string,
+    params?: {
+      limit?: number;
+      apply_formatting?: boolean;
+      apply_vis?: boolean;
+    }
+  ) {
     let response = await this.axios.get(`/looks/${lookId}/run/${resultFormat}`, { params });
     return response.data;
   }
@@ -206,20 +209,20 @@ export class LookerClient {
     return response.data;
   }
 
-  async getFolderChildren(folderId: string, params?: {
-    fields?: string;
-    page?: number;
-    per_page?: number;
-    sorts?: string;
-  }) {
+  async getFolderChildren(
+    folderId: string,
+    params?: {
+      fields?: string;
+      page?: number;
+      per_page?: number;
+      sorts?: string;
+    }
+  ) {
     let response = await this.axios.get(`/folders/${folderId}/children`, { params });
     return response.data;
   }
 
-  async createFolder(body: {
-    name: string;
-    parent_id: string;
-  }) {
+  async createFolder(body: { name: string; parent_id: string }) {
     let response = await this.axios.post('/folders', body);
     return response.data;
   }
@@ -337,9 +340,7 @@ export class LookerClient {
 
   // ─── Roles ─────────────────────────────────────────────
 
-  async listRoles(params?: {
-    fields?: string;
-  }) {
+  async listRoles(params?: { fields?: string }) {
     let response = await this.axios.get('/roles', { params });
     return response.data;
   }
@@ -408,13 +409,21 @@ export class LookerClient {
     return response.data;
   }
 
-  async getScheduledPlansForLook(lookId: string, params?: { fields?: string; all_users?: boolean }) {
+  async getScheduledPlansForLook(
+    lookId: string,
+    params?: { fields?: string; all_users?: boolean }
+  ) {
     let response = await this.axios.get(`/scheduled_plans/look/${lookId}`, { params });
     return response.data;
   }
 
-  async getScheduledPlansForDashboard(dashboardId: string, params?: { fields?: string; all_users?: boolean }) {
-    let response = await this.axios.get(`/scheduled_plans/dashboard/${dashboardId}`, { params });
+  async getScheduledPlansForDashboard(
+    dashboardId: string,
+    params?: { fields?: string; all_users?: boolean }
+  ) {
+    let response = await this.axios.get(`/scheduled_plans/dashboard/${dashboardId}`, {
+      params
+    });
     return response.data;
   }
 
@@ -486,11 +495,7 @@ export class LookerClient {
 
   // ─── LookML Models ────────────────────────────────────
 
-  async listLookmlModels(params?: {
-    fields?: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  async listLookmlModels(params?: { fields?: string; limit?: number; offset?: number }) {
     let response = await this.axios.get('/lookml_models', { params });
     return response.data;
   }
@@ -500,10 +505,17 @@ export class LookerClient {
     return response.data;
   }
 
-  async getLookmlModelExplore(modelName: string, exploreName: string, params?: {
-    fields?: string;
-  }) {
-    let response = await this.axios.get(`/lookml_models/${modelName}/explores/${exploreName}`, { params });
+  async getLookmlModelExplore(
+    modelName: string,
+    exploreName: string,
+    params?: {
+      fields?: string;
+    }
+  ) {
+    let response = await this.axios.get(
+      `/lookml_models/${modelName}/explores/${exploreName}`,
+      { params }
+    );
     return response.data;
   }
 
@@ -600,20 +612,39 @@ export class LookerClient {
 
   // ─── Render Tasks ──────────────────────────────────────
 
-  async createRenderTaskForLook(lookId: string, resultFormat: string, width: number, height: number) {
-    let response = await this.axios.post(`/render_tasks/looks/${lookId}/${resultFormat}`, null, {
-      params: { width, height },
-    });
+  async createRenderTaskForLook(
+    lookId: string,
+    resultFormat: string,
+    width: number,
+    height: number
+  ) {
+    let response = await this.axios.post(
+      `/render_tasks/looks/${lookId}/${resultFormat}`,
+      null,
+      {
+        params: { width, height }
+      }
+    );
     return response.data;
   }
 
-  async createRenderTaskForDashboard(dashboardId: string, resultFormat: string, width: number, height: number, body?: {
-    dashboard_filters?: string;
-    dashboard_style?: string;
-  }) {
-    let response = await this.axios.post(`/render_tasks/dashboards/${dashboardId}/${resultFormat}`, body || {}, {
-      params: { width, height },
-    });
+  async createRenderTaskForDashboard(
+    dashboardId: string,
+    resultFormat: string,
+    width: number,
+    height: number,
+    body?: {
+      dashboard_filters?: string;
+      dashboard_style?: string;
+    }
+  ) {
+    let response = await this.axios.post(
+      `/render_tasks/dashboards/${dashboardId}/${resultFormat}`,
+      body || {},
+      {
+        params: { width, height }
+      }
+    );
     return response.data;
   }
 
@@ -624,7 +655,7 @@ export class LookerClient {
 
   async getRenderTaskResults(renderTaskId: string) {
     let response = await this.axios.get(`/render_tasks/${renderTaskId}/results`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -662,42 +693,54 @@ export class LookerClient {
 
   // ─── Derived Tables ────────────────────────────────────
 
-  async graphDerivedTablesForModel(modelName: string, params?: {
-    format?: string;
-    color?: string;
-  }) {
+  async graphDerivedTablesForModel(
+    modelName: string,
+    params?: {
+      format?: string;
+      color?: string;
+    }
+  ) {
     let response = await this.axios.get(`/derived_table/graph/model/${modelName}`, { params });
     return response.data;
   }
 
   // ─── Metadata / Explore ────────────────────────────────
 
-  async connectionSchemas(connectionName: string, params?: {
-    database?: string;
-    cache?: boolean;
-    fields?: string;
-  }) {
+  async connectionSchemas(
+    connectionName: string,
+    params?: {
+      database?: string;
+      cache?: boolean;
+      fields?: string;
+    }
+  ) {
     let response = await this.axios.get(`/connections/${connectionName}/schemas`, { params });
     return response.data;
   }
 
-  async connectionTables(connectionName: string, params?: {
-    database?: string;
-    schema_name?: string;
-    cache?: boolean;
-    fields?: string;
-  }) {
+  async connectionTables(
+    connectionName: string,
+    params?: {
+      database?: string;
+      schema_name?: string;
+      cache?: boolean;
+      fields?: string;
+    }
+  ) {
     let response = await this.axios.get(`/connections/${connectionName}/tables`, { params });
     return response.data;
   }
 
-  async connectionColumns(connectionName: string, params?: {
-    database?: string;
-    schema_name?: string;
-    table_name?: string;
-    cache?: boolean;
-    fields?: string;
-  }) {
+  async connectionColumns(
+    connectionName: string,
+    params?: {
+      database?: string;
+      schema_name?: string;
+      table_name?: string;
+      cache?: boolean;
+      fields?: string;
+    }
+  ) {
     let response = await this.axios.get(`/connections/${connectionName}/columns`, { params });
     return response.data;
   }

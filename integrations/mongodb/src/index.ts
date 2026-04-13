@@ -15,12 +15,9 @@ import {
   getMetricsTool,
   getNetworkInfoTool,
   listEventsTool,
-  getBillingTool,
+  getBillingTool
 } from './tools';
-import {
-  alertWebhookTrigger,
-  projectEventsTrigger,
-} from './triggers';
+import { alertWebhookTrigger, projectEventsTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,10 +36,7 @@ export let provider = Slate.create({
     getMetricsTool,
     getNetworkInfoTool,
     listEventsTool,
-    getBillingTool,
+    getBillingTool
   ],
-  triggers: [
-    alertWebhookTrigger,
-    projectEventsTrigger,
-  ],
+  triggers: [alertWebhookTrigger, projectEventsTrigger]
 });

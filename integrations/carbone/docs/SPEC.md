@@ -17,6 +17,7 @@ The authentication method is **Bearer Token (API Key)**:
 - It is recommended to specify an API version by using the `carbone-version` HTTP header, for example: `{ "carbone-version": 5 }`.
 
 Example request header:
+
 ```
 Authorization: Bearer test_eyJhbG....o3wfR
 Content-Type: application/json

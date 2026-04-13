@@ -3,28 +3,35 @@ import { GoogleCalendarClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Event',
-    key: 'delete_event',
-    description: `Permanently delete an event from a Google Calendar. For recurring events, this deletes the entire series unless a specific instance ID is provided.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteEvent = SlateTool.create(spec, {
+  name: 'Delete Event',
+  key: 'delete_event',
+  description: `Permanently delete an event from a Google Calendar. For recurring events, this deletes the entire series unless a specific instance ID is provided.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    calendarId: z.string().default('primary').describe('Calendar ID. Use "primary" for the user\'s primary calendar.'),
-    eventId: z.string().describe('The event ID to delete'),
-    sendUpdates: z.enum(['all', 'externalOnly', 'none']).optional().describe('Whether to send cancellation notifications to attendees')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the event was successfully deleted'),
-    eventId: z.string().describe('The deleted event ID')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      calendarId: z
+        .string()
+        .default('primary')
+        .describe('Calendar ID. Use "primary" for the user\'s primary calendar.'),
+      eventId: z.string().describe('The event ID to delete'),
+      sendUpdates: z
+        .enum(['all', 'externalOnly', 'none'])
+        .optional()
+        .describe('Whether to send cancellation notifications to attendees')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the event was successfully deleted'),
+      eventId: z.string().describe('The deleted event ID')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GoogleCalendarClient(ctx.auth.token);
 
     await client.deleteEvent(ctx.input.calendarId, ctx.input.eventId, {
@@ -38,4 +45,5 @@ export let deleteEvent = SlateTool.create(
       },
       message: `Deleted event \`${ctx.input.eventId}\` from calendar \`${ctx.input.calendarId}\`.`
     };
-  }).build();
+  })
+  .build();

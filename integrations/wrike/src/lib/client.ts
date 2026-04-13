@@ -22,7 +22,7 @@ export class WrikeClient {
     this.axios = createAxios({
       baseURL: `https://${config.host}/api/v4`,
       headers: {
-        'Authorization': `bearer ${config.token}`
+        Authorization: `bearer ${config.token}`
       }
     });
   }
@@ -65,7 +65,8 @@ export class WrikeClient {
     if (params?.sortField) queryParams.sortField = params.sortField;
     if (params?.sortOrder) queryParams.sortOrder = params.sortOrder;
     if (params?.responsibles) queryParams.responsibles = JSON.stringify(params.responsibles);
-    if (params?.customStatuses) queryParams.customStatuses = JSON.stringify(params.customStatuses);
+    if (params?.customStatuses)
+      queryParams.customStatuses = JSON.stringify(params.customStatuses);
     if (params?.updatedDate) queryParams.updatedDate = JSON.stringify(params.updatedDate);
     if (params?.createdDate) queryParams.createdDate = JSON.stringify(params.createdDate);
 
@@ -73,47 +74,65 @@ export class WrikeClient {
     return response.data;
   }
 
-  async createTask(folderId: string, data: {
-    title: string;
-    description?: string;
-    status?: string;
-    importance?: string;
-    dates?: { start?: string; due?: string; duration?: number; type?: string; workOnWeekends?: boolean };
-    responsibles?: string[];
-    followers?: string[];
-    follow?: boolean;
-    priorityBefore?: string;
-    priorityAfter?: string;
-    superTasks?: string[];
-    metadata?: Array<{ key: string; value: string }>;
-    customFields?: Array<{ id: string; value: string }>;
-    customStatus?: string;
-  }): Promise<WrikeTask> {
+  async createTask(
+    folderId: string,
+    data: {
+      title: string;
+      description?: string;
+      status?: string;
+      importance?: string;
+      dates?: {
+        start?: string;
+        due?: string;
+        duration?: number;
+        type?: string;
+        workOnWeekends?: boolean;
+      };
+      responsibles?: string[];
+      followers?: string[];
+      follow?: boolean;
+      priorityBefore?: string;
+      priorityAfter?: string;
+      superTasks?: string[];
+      metadata?: Array<{ key: string; value: string }>;
+      customFields?: Array<{ id: string; value: string }>;
+      customStatus?: string;
+    }
+  ): Promise<WrikeTask> {
     let response = await this.axios.post(`/folders/${folderId}/tasks`, data);
     return response.data.data[0];
   }
 
-  async updateTask(taskId: string, data: {
-    title?: string;
-    description?: string;
-    status?: string;
-    importance?: string;
-    dates?: { start?: string; due?: string; duration?: number; type?: string; workOnWeekends?: boolean };
-    addResponsibles?: string[];
-    removeResponsibles?: string[];
-    addParents?: string[];
-    removeParents?: string[];
-    addFollowers?: string[];
-    follow?: boolean;
-    priorityBefore?: string;
-    priorityAfter?: string;
-    addSuperTasks?: string[];
-    removeSuperTasks?: string[];
-    metadata?: Array<{ key: string; value: string }>;
-    customFields?: Array<{ id: string; value: string }>;
-    customStatus?: string;
-    restore?: boolean;
-  }): Promise<WrikeTask> {
+  async updateTask(
+    taskId: string,
+    data: {
+      title?: string;
+      description?: string;
+      status?: string;
+      importance?: string;
+      dates?: {
+        start?: string;
+        due?: string;
+        duration?: number;
+        type?: string;
+        workOnWeekends?: boolean;
+      };
+      addResponsibles?: string[];
+      removeResponsibles?: string[];
+      addParents?: string[];
+      removeParents?: string[];
+      addFollowers?: string[];
+      follow?: boolean;
+      priorityBefore?: string;
+      priorityAfter?: string;
+      addSuperTasks?: string[];
+      removeSuperTasks?: string[];
+      metadata?: Array<{ key: string; value: string }>;
+      customFields?: Array<{ id: string; value: string }>;
+      customStatus?: string;
+      restore?: boolean;
+    }
+  ): Promise<WrikeTask> {
     let response = await this.axios.put(`/tasks/${taskId}`, data);
     return response.data.data[0];
   }
@@ -160,42 +179,48 @@ export class WrikeClient {
     return response.data;
   }
 
-  async createFolder(parentFolderId: string, data: {
-    title: string;
-    description?: string;
-    shareds?: string[];
-    metadata?: Array<{ key: string; value: string }>;
-    customFields?: Array<{ id: string; value: string }>;
-    customColumns?: string[];
-    project?: {
-      ownerIds?: string[];
-      status?: string;
-      startDate?: string;
-      endDate?: string;
-    };
-  }): Promise<WrikeFolder> {
+  async createFolder(
+    parentFolderId: string,
+    data: {
+      title: string;
+      description?: string;
+      shareds?: string[];
+      metadata?: Array<{ key: string; value: string }>;
+      customFields?: Array<{ id: string; value: string }>;
+      customColumns?: string[];
+      project?: {
+        ownerIds?: string[];
+        status?: string;
+        startDate?: string;
+        endDate?: string;
+      };
+    }
+  ): Promise<WrikeFolder> {
     let response = await this.axios.post(`/folders/${parentFolderId}/folders`, data);
     return response.data.data[0];
   }
 
-  async updateFolder(folderId: string, data: {
-    title?: string;
-    description?: string;
-    addParents?: string[];
-    removeParents?: string[];
-    addShareds?: string[];
-    removeShareds?: string[];
-    metadata?: Array<{ key: string; value: string }>;
-    customFields?: Array<{ id: string; value: string }>;
-    customColumns?: string[];
-    restore?: boolean;
-    project?: {
-      ownerIds?: string[];
-      status?: string;
-      startDate?: string;
-      endDate?: string;
-    };
-  }): Promise<WrikeFolder> {
+  async updateFolder(
+    folderId: string,
+    data: {
+      title?: string;
+      description?: string;
+      addParents?: string[];
+      removeParents?: string[];
+      addShareds?: string[];
+      removeShareds?: string[];
+      metadata?: Array<{ key: string; value: string }>;
+      customFields?: Array<{ id: string; value: string }>;
+      customColumns?: string[];
+      restore?: boolean;
+      project?: {
+        ownerIds?: string[];
+        status?: string;
+        startDate?: string;
+        endDate?: string;
+      };
+    }
+  ): Promise<WrikeFolder> {
     let response = await this.axios.put(`/folders/${folderId}`, data);
     return response.data.data[0];
   }
@@ -317,22 +342,28 @@ export class WrikeClient {
     return response.data;
   }
 
-  async createTimelog(taskId: string, data: {
-    hours: number;
-    trackedDate: string;
-    comment?: string;
-    categoryId?: string;
-  }): Promise<WrikeTimelog> {
+  async createTimelog(
+    taskId: string,
+    data: {
+      hours: number;
+      trackedDate: string;
+      comment?: string;
+      categoryId?: string;
+    }
+  ): Promise<WrikeTimelog> {
     let response = await this.axios.post(`/tasks/${taskId}/timelogs`, data);
     return response.data.data[0];
   }
 
-  async updateTimelog(timelogId: string, data: {
-    hours?: number;
-    trackedDate?: string;
-    comment?: string;
-    categoryId?: string;
-  }): Promise<WrikeTimelog> {
+  async updateTimelog(
+    timelogId: string,
+    data: {
+      hours?: number;
+      trackedDate?: string;
+      comment?: string;
+      categoryId?: string;
+    }
+  ): Promise<WrikeTimelog> {
     let response = await this.axios.put(`/timelogs/${timelogId}`, data);
     return response.data.data[0];
   }
@@ -386,12 +417,15 @@ export class WrikeClient {
     return response.data.data[0];
   }
 
-  async updateCustomField(customFieldId: string, data: {
-    title?: string;
-    type?: string;
-    shareds?: string[];
-    settings?: Record<string, unknown>;
-  }): Promise<WrikeCustomField> {
+  async updateCustomField(
+    customFieldId: string,
+    data: {
+      title?: string;
+      type?: string;
+      shareds?: string[];
+      settings?: Record<string, unknown>;
+    }
+  ): Promise<WrikeCustomField> {
     let response = await this.axios.put(`/customfields/${customFieldId}`, data);
     return response.data.data[0];
   }
@@ -403,23 +437,24 @@ export class WrikeClient {
     return response.data;
   }
 
-  async createWorkflow(data: {
-    name: string;
-  }): Promise<WrikeWorkflow> {
+  async createWorkflow(data: { name: string }): Promise<WrikeWorkflow> {
     let response = await this.axios.post('/workflows', data);
     return response.data.data[0];
   }
 
-  async updateWorkflow(workflowId: string, data: {
-    name?: string;
-    hidden?: boolean;
-    customStatus?: {
-      name: string;
-      color: string;
-      group: string;
+  async updateWorkflow(
+    workflowId: string,
+    data: {
+      name?: string;
       hidden?: boolean;
-    };
-  }): Promise<WrikeWorkflow> {
+      customStatus?: {
+        name: string;
+        color: string;
+        group: string;
+        hidden?: boolean;
+      };
+    }
+  ): Promise<WrikeWorkflow> {
     let response = await this.axios.put(`/workflows/${workflowId}`, data);
     return response.data.data[0];
   }
@@ -441,10 +476,13 @@ export class WrikeClient {
     return response.data;
   }
 
-  async createDependency(taskId: string, data: {
-    predecessorId: string;
-    relationType: string;
-  }): Promise<WrikeDependency> {
+  async createDependency(
+    taskId: string,
+    data: {
+      predecessorId: string;
+      relationType: string;
+    }
+  ): Promise<WrikeDependency> {
     let response = await this.axios.post(`/tasks/${taskId}/dependencies`, data);
     return response.data.data[0];
   }
@@ -529,10 +567,13 @@ export class WrikeClient {
     return response.data.data[0];
   }
 
-  async updateWebhook(webhookId: string, data: {
-    status?: string;
-    events?: string[];
-  }): Promise<WrikeWebhook> {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      status?: string;
+      events?: string[];
+    }
+  ): Promise<WrikeWebhook> {
     let response = await this.axios.put(`/webhooks/${webhookId}`, data);
     return response.data.data[0];
   }

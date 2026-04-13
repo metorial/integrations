@@ -3,51 +3,78 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listExecutions = SlateTool.create(
-  spec,
-  {
-    name: 'List Executions',
-    key: 'list_executions',
-    description: `List call executions for an agent or batch with filtering by status, call type, date range, and pagination. Returns transcripts, costs, and telephony metadata for each call.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listExecutions = SlateTool.create(spec, {
+  name: 'List Executions',
+  key: 'list_executions',
+  description: `List call executions for an agent or batch with filtering by status, call type, date range, and pagination. Returns transcripts, costs, and telephony metadata for each call.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    agentId: z.string().optional().describe('Agent ID to list executions for'),
-    batchId: z.string().optional().describe('Batch ID to list executions for (can be used alone or with agentId as a filter)'),
-    pageNumber: z.number().optional().describe('Page number (default: 1)'),
-    pageSize: z.number().optional().describe('Page size, max 50 (default: 20)'),
-    status: z.enum([
-      'queued', 'ringing', 'initiated', 'in-progress', 'call-disconnected',
-      'completed', 'balance-low', 'busy', 'no-answer', 'canceled', 'failed', 'stopped', 'error'
-    ]).optional().describe('Filter by call status'),
-    callType: z.enum(['inbound', 'outbound']).optional().describe('Filter by call type'),
-    telephonyProvider: z.enum(['plivo', 'twilio', 'websocket', 'web-call']).optional().describe('Filter by telephony provider'),
-    answeredByVoiceMail: z.boolean().optional().describe('Filter by voicemail detection'),
-    from: z.string().optional().describe('Start date filter (ISO 8601 UTC)'),
-    to: z.string().optional().describe('End date filter (ISO 8601 UTC)')
-  }))
-  .output(z.object({
-    executions: z.array(z.object({
-      executionId: z.string().describe('Execution ID'),
-      agentId: z.string().optional(),
-      status: z.string().optional(),
-      transcript: z.string().optional(),
-      conversationTime: z.number().optional(),
-      totalCost: z.number().optional(),
-      createdAt: z.string().optional(),
-      toNumber: z.string().optional(),
-      fromNumber: z.string().optional(),
-      callType: z.string().optional()
-    })).describe('List of call executions'),
-    totalCount: z.number().optional().describe('Total number of matching executions'),
-    hasMore: z.boolean().optional().describe('Whether more pages are available'),
-    pageNumber: z.number().optional().describe('Current page number')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      agentId: z.string().optional().describe('Agent ID to list executions for'),
+      batchId: z
+        .string()
+        .optional()
+        .describe(
+          'Batch ID to list executions for (can be used alone or with agentId as a filter)'
+        ),
+      pageNumber: z.number().optional().describe('Page number (default: 1)'),
+      pageSize: z.number().optional().describe('Page size, max 50 (default: 20)'),
+      status: z
+        .enum([
+          'queued',
+          'ringing',
+          'initiated',
+          'in-progress',
+          'call-disconnected',
+          'completed',
+          'balance-low',
+          'busy',
+          'no-answer',
+          'canceled',
+          'failed',
+          'stopped',
+          'error'
+        ])
+        .optional()
+        .describe('Filter by call status'),
+      callType: z.enum(['inbound', 'outbound']).optional().describe('Filter by call type'),
+      telephonyProvider: z
+        .enum(['plivo', 'twilio', 'websocket', 'web-call'])
+        .optional()
+        .describe('Filter by telephony provider'),
+      answeredByVoiceMail: z.boolean().optional().describe('Filter by voicemail detection'),
+      from: z.string().optional().describe('Start date filter (ISO 8601 UTC)'),
+      to: z.string().optional().describe('End date filter (ISO 8601 UTC)')
+    })
+  )
+  .output(
+    z.object({
+      executions: z
+        .array(
+          z.object({
+            executionId: z.string().describe('Execution ID'),
+            agentId: z.string().optional(),
+            status: z.string().optional(),
+            transcript: z.string().optional(),
+            conversationTime: z.number().optional(),
+            totalCost: z.number().optional(),
+            createdAt: z.string().optional(),
+            toNumber: z.string().optional(),
+            fromNumber: z.string().optional(),
+            callType: z.string().optional()
+          })
+        )
+        .describe('List of call executions'),
+      totalCount: z.number().optional().describe('Total number of matching executions'),
+      hasMore: z.boolean().optional().describe('Whether more pages are available'),
+      pageNumber: z.number().optional().describe('Current page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let input = ctx.input;
 
@@ -116,4 +143,5 @@ export let listExecutions = SlateTool.create(
       },
       message: `Found **${result.total || executions.length}** execution(s) for agent \`${input.agentId}\`. Showing page ${result.page_number || 1} (${executions.length} results).`
     };
-  }).build();
+  })
+  .build();

@@ -3,23 +3,26 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { StormboardClient } from '../lib/client';
 
-export let manageStormStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Storm Status',
-    key: 'manage_storm_status',
-    description: `Close, reopen, duplicate, favorite, or unfavorite a Storm. Closing a Storm makes it read-only; reopening restores full access. Duplicating creates a copy of the workspace.`,
-  }
-)
-  .input(z.object({
-    stormId: z.string().describe('ID of the Storm'),
-    action: z.enum(['close', 'reopen', 'duplicate', 'favorite', 'unfavorite']).describe('Action to perform on the Storm'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    result: z.any().optional().describe('Response data from the action'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageStormStatus = SlateTool.create(spec, {
+  name: 'Manage Storm Status',
+  key: 'manage_storm_status',
+  description: `Close, reopen, duplicate, favorite, or unfavorite a Storm. Closing a Storm makes it read-only; reopening restores full access. Duplicating creates a copy of the workspace.`
+})
+  .input(
+    z.object({
+      stormId: z.string().describe('ID of the Storm'),
+      action: z
+        .enum(['close', 'reopen', 'duplicate', 'favorite', 'unfavorite'])
+        .describe('Action to perform on the Storm')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      result: z.any().optional().describe('Response data from the action')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StormboardClient({ token: ctx.auth.token });
     let result: any;
 
@@ -46,14 +49,15 @@ export let manageStormStatus = SlateTool.create(
       reopen: 'Reopened',
       duplicate: 'Duplicated',
       favorite: 'Favorited',
-      unfavorite: 'Unfavorited',
+      unfavorite: 'Unfavorited'
     };
 
     return {
       output: {
         success: true,
-        result,
+        result
       },
-      message: `${actionLabels[ctx.input.action]} Storm **${ctx.input.stormId}**.`,
+      message: `${actionLabels[ctx.input.action]} Storm **${ctx.input.stormId}**.`
     };
-  }).build();
+  })
+  .build();

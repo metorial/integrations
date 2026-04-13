@@ -3,46 +3,58 @@ import { TwilioClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let modifyCall = SlateTool.create(
-  spec,
-  {
-    name: 'Modify Call',
-    key: 'modify_call',
-    description: `Modify an in-progress call. Redirect the call to new TwiML instructions, end the call, or cancel a queued call. Useful for programmatic call control like transferring, hanging up, or changing the call flow mid-call.`,
-    instructions: [
-      'To end a call, set "status" to "completed".',
-      'To cancel a queued call, set "status" to "canceled".',
-      'To redirect, provide a new "twimlUrl" or "twiml".',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let modifyCall = SlateTool.create(spec, {
+  name: 'Modify Call',
+  key: 'modify_call',
+  description: `Modify an in-progress call. Redirect the call to new TwiML instructions, end the call, or cancel a queued call. Useful for programmatic call control like transferring, hanging up, or changing the call flow mid-call.`,
+  instructions: [
+    'To end a call, set "status" to "completed".',
+    'To cancel a queued call, set "status" to "canceled".',
+    'To redirect, provide a new "twimlUrl" or "twiml".'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    callSid: z.string().describe('SID of the call to modify (starts with CA).'),
-    status: z.enum(['completed', 'canceled']).optional().describe('Set to "completed" to end an in-progress call, or "canceled" to cancel a queued call.'),
-    twimlUrl: z.string().optional().describe('New URL returning TwiML instructions to redirect the call to.'),
-    twiml: z.string().optional().describe('Inline TwiML instructions to redirect the call to.'),
-  }))
-  .output(z.object({
-    callSid: z.string().describe('SID of the modified call'),
-    status: z.string().describe('Updated call status'),
-    to: z.string().describe('Called party number'),
-    from: z.string().describe('Caller number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      callSid: z.string().describe('SID of the call to modify (starts with CA).'),
+      status: z
+        .enum(['completed', 'canceled'])
+        .optional()
+        .describe(
+          'Set to "completed" to end an in-progress call, or "canceled" to cancel a queued call.'
+        ),
+      twimlUrl: z
+        .string()
+        .optional()
+        .describe('New URL returning TwiML instructions to redirect the call to.'),
+      twiml: z
+        .string()
+        .optional()
+        .describe('Inline TwiML instructions to redirect the call to.')
+    })
+  )
+  .output(
+    z.object({
+      callSid: z.string().describe('SID of the modified call'),
+      status: z.string().describe('Updated call status'),
+      to: z.string().describe('Called party number'),
+      from: z.string().describe('Caller number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TwilioClient({
       accountSid: ctx.config.accountSid,
       token: ctx.auth.token,
-      apiKeySid: ctx.auth.apiKeySid,
+      apiKeySid: ctx.auth.apiKeySid
     });
 
     let result = await client.updateCall(ctx.input.callSid, {
       status: ctx.input.status,
       url: ctx.input.twimlUrl,
-      twiml: ctx.input.twiml,
+      twiml: ctx.input.twiml
     });
 
     return {
@@ -50,9 +62,9 @@ export let modifyCall = SlateTool.create(
         callSid: result.sid,
         status: result.status,
         to: result.to,
-        from: result.from,
+        from: result.from
       },
-      message: `Call **${result.sid}** updated to status **${result.status}**.`,
+      message: `Call **${result.sid}** updated to status **${result.status}**.`
     };
   })
   .build();

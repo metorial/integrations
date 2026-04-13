@@ -157,9 +157,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: `${BASE_URL}${VERSION_PATH}`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -170,7 +170,7 @@ export class Client {
       url: input.url,
       name: input.name,
       screenshot: input.screenshot,
-      externalId: input.externalId,
+      externalId: input.externalId
     });
     return response.data;
   }
@@ -211,7 +211,7 @@ export class Client {
 
   async createTask(input: TaskCreateInput): Promise<TaskResponse> {
     let body: Record<string, unknown> = {
-      name: input.name,
+      name: input.name
     };
     if (input.projectId) body.projectId = input.projectId;
     if (input.projectUuid) body.projectUuid = input.projectUuid;
@@ -303,7 +303,7 @@ export class Client {
   async subscribeWebhook(input: WebhookSubscribeInput): Promise<WebhookSubscribeResponse> {
     let response = await this.axios.post('/webhook', {
       url: input.url,
-      event: input.event,
+      event: input.event
     });
     return response.data;
   }

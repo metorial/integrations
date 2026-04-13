@@ -9,6 +9,7 @@ Abyssale is a creative automation platform that allows users to programmatically
 Abyssale uses API Key Authentication: your API key is passed along with every API call, allowing Abyssale to identify your company account and access your data.
 
 To obtain an API key:
+
 1. Go to app.abyssale.com and log in.
 2. Click Workspace settings on the left menu.
 3. Click API Key on the left menu.

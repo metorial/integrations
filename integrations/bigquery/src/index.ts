@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   executeQuery,
@@ -26,11 +25,7 @@ import {
   createRoutine,
   deleteRoutine
 } from './tools';
-import {
-  jobCompleted,
-  datasetUpdated,
-  inboundWebhook,
-} from './triggers';
+import { jobCompleted, datasetUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -59,9 +54,5 @@ export let provider = Slate.create({
     createRoutine,
     deleteRoutine
   ],
-  triggers: [
-    inboundWebhook,
-    jobCompleted,
-    datasetUpdated
-  ]
+  triggers: [inboundWebhook, jobCompleted, datasetUpdated]
 });

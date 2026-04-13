@@ -22,7 +22,7 @@ import {
   vaultPaymentMethod,
   findPaymentMethod,
   deletePaymentMethod,
-  getSettlementReport,
+  getSettlementReport
 } from './tools';
 import { webhookEvents } from './triggers';
 
@@ -50,9 +50,7 @@ export let provider = Slate.create({
     vaultPaymentMethod,
     findPaymentMethod,
     deletePaymentMethod,
-    getSettlementReport,
+    getSettlementReport
   ],
-  triggers: [
-    webhookEvents,
-  ],
+  triggers: [webhookEvents]
 });

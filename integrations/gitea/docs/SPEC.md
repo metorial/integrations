@@ -17,6 +17,7 @@ Tokens can be created via the Gitea web interface under Settings → Application
 Tokens are passed via the `Authorization` header. For historical reasons, Gitea needs the word `token` included before the API key token: `Authorization: token <YOUR_TOKEN>`.
 
 Available token scopes (each with `read` and `write` levels):
+
 - `activitypub` — ActivityPub operations
 - `admin` — Site-wide admin operations
 - `issue` — Issues, labels, milestones
@@ -49,33 +50,43 @@ Gitea supports HTTP Basic Authentication with username and password. When two-fa
 ## Features
 
 ### Repository Management
+
 Create, list, update, delete, fork, mirror, star, watch, and transfer repositories. Manage branches, tags, releases, collaborators, and deploy keys. Read and write repository files and commit history. Supports repository search and topic management.
 
 ### Pull Requests and Code Review
+
 Create and manage pull requests including reviews, review comments, and merge operations. Supports assigning reviewers, labels, and milestones to pull requests.
 
 ### Issue Tracking
+
 Create and manage issues with support for labels, milestones, assignees, comments, attachments, reactions, dependencies, and time tracking. Includes a stopwatch feature for tracking time spent on issues.
 
 ### Organization and Team Management
+
 Create and manage organizations, list org visibility, and manage teams including team members and permissions. Control team access to repositories.
 
 ### User Management
+
 Manage user profiles, email addresses, SSH and GPG keys, followers, starred repositories, and user settings. Admin users can manage all user accounts on the instance.
 
 ### Package Registry
+
 Gitea supports more than 20 different kinds of public or private package management, including Cargo, Chef, Composer, Conan, Conda, Container, Helm, Maven, NPM, NuGet, Pub, PyPI, RubyGems, Vagrant, etc. Packages can be listed, downloaded, and published via the API.
 
 ### CI/CD (Gitea Actions)
+
 Gitea features an integrated CI/CD system, Gitea Actions, that is compatible with GitHub Actions. Users can create workflows using YAML format or utilize existing plugins. Manage action secrets, variables, runners, and workflow runs via the API.
 
 ### Notifications
+
 Read and manage user notifications, mark notifications as read, and manage repository subscription settings.
 
 ### Administration
+
 Instance-level admin operations including managing users, organizations, cron jobs, and system settings. The API allows admin users to sudo API requests as another user.
 
 ### Wiki
+
 Manage repository wiki pages including creating, reading, updating, and deleting wiki content.
 
 ## Events
@@ -87,25 +98,33 @@ Webhooks deliver a JSON payload to a configured URL with an `X-Gitea-Event` head
 The following webhook event categories are supported:
 
 ### Push Events
+
 Triggered when commits are pushed to a repository.
 
 ### Repository Events
+
 Triggered on repository-level actions such as creation, deletion, or forking.
 
 ### Branch/Tag Lifecycle
+
 `create` and `delete` events are triggered when branches or tags are created or deleted.
 
 ### Issue Events
+
 Covers issue creation and updates. Sub-events include issue assignment changes (`issue_assign`), label changes (`issue_label`), milestone changes (`issue_milestone`), and new comments (`issue_comment`).
 
 ### Pull Request Events
+
 Covers pull request creation and updates. Sub-events include assignment changes (`pull_request_assign`), label changes (`pull_request_label`), milestone changes (`pull_request_milestone`), comments (`pull_request_comment`), reviews (`pull_request_review`), and sync/update events (`pull_request_sync`).
 
 ### Release Events
+
 Triggered when a release is created, updated, or deleted.
 
 ### Wiki Events
+
 Triggered when wiki pages are created, edited, renamed, or deleted.
 
 ### Package Events
+
 Triggered when packages are created or deleted.

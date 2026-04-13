@@ -3,48 +3,57 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTrack = SlateTool.create(
-  spec,
-  {
-    name: 'Get Track',
-    key: 'get_track',
-    description: `Retrieve detailed information about a SoundCloud track by its ID or URN. Includes metadata, play counts, access level, and available stream URLs.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    trackId: z.string().describe('Track ID or URN (e.g., "123456" or "soundcloud:tracks:123456")'),
-    includeStreams: z.boolean().optional().describe('Whether to include stream URLs in the response (default false)')
-  }))
-  .output(z.object({
-    trackId: z.string().describe('Unique identifier (URN) of the track'),
-    title: z.string().describe('Title of the track'),
-    description: z.string().nullable().describe('Track description'),
-    permalinkUrl: z.string().describe('URL to the track on SoundCloud'),
-    duration: z.number().describe('Duration in milliseconds'),
-    genre: z.string().nullable().describe('Genre'),
-    tags: z.string().describe('Space-separated list of tags'),
-    artworkUrl: z.string().nullable().describe('URL to track artwork'),
-    waveformUrl: z.string().nullable().describe('URL to waveform image'),
-    playbackCount: z.number().describe('Number of plays'),
-    likesCount: z.number().describe('Number of likes'),
-    repostsCount: z.number().describe('Number of reposts'),
-    commentsCount: z.number().describe('Number of comments'),
-    downloadCount: z.number().describe('Number of downloads'),
-    access: z.string().describe('Access level: playable, preview, or blocked'),
-    sharing: z.string().describe('Sharing setting: public or private'),
-    streamable: z.boolean().describe('Whether the track is streamable'),
-    downloadable: z.boolean().describe('Whether the track is downloadable'),
-    license: z.string().describe('License type'),
-    bpm: z.number().nullable().describe('Beats per minute'),
-    isrc: z.string().nullable().describe('International Standard Recording Code'),
-    createdAt: z.string().describe('When the track was created'),
-    lastModified: z.string().describe('When the track was last modified'),
-    username: z.string().describe('Username of the track uploader'),
-    userId: z.string().describe('User ID of the track uploader'),
-    streams: z.record(z.string(), z.string()).optional().describe('Available stream URLs keyed by format')
-  }))
-  .handleInvocation(async (ctx) => {
+export let getTrack = SlateTool.create(spec, {
+  name: 'Get Track',
+  key: 'get_track',
+  description: `Retrieve detailed information about a SoundCloud track by its ID or URN. Includes metadata, play counts, access level, and available stream URLs.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      trackId: z
+        .string()
+        .describe('Track ID or URN (e.g., "123456" or "soundcloud:tracks:123456")'),
+      includeStreams: z
+        .boolean()
+        .optional()
+        .describe('Whether to include stream URLs in the response (default false)')
+    })
+  )
+  .output(
+    z.object({
+      trackId: z.string().describe('Unique identifier (URN) of the track'),
+      title: z.string().describe('Title of the track'),
+      description: z.string().nullable().describe('Track description'),
+      permalinkUrl: z.string().describe('URL to the track on SoundCloud'),
+      duration: z.number().describe('Duration in milliseconds'),
+      genre: z.string().nullable().describe('Genre'),
+      tags: z.string().describe('Space-separated list of tags'),
+      artworkUrl: z.string().nullable().describe('URL to track artwork'),
+      waveformUrl: z.string().nullable().describe('URL to waveform image'),
+      playbackCount: z.number().describe('Number of plays'),
+      likesCount: z.number().describe('Number of likes'),
+      repostsCount: z.number().describe('Number of reposts'),
+      commentsCount: z.number().describe('Number of comments'),
+      downloadCount: z.number().describe('Number of downloads'),
+      access: z.string().describe('Access level: playable, preview, or blocked'),
+      sharing: z.string().describe('Sharing setting: public or private'),
+      streamable: z.boolean().describe('Whether the track is streamable'),
+      downloadable: z.boolean().describe('Whether the track is downloadable'),
+      license: z.string().describe('License type'),
+      bpm: z.number().nullable().describe('Beats per minute'),
+      isrc: z.string().nullable().describe('International Standard Recording Code'),
+      createdAt: z.string().describe('When the track was created'),
+      lastModified: z.string().describe('When the track was last modified'),
+      username: z.string().describe('Username of the track uploader'),
+      userId: z.string().describe('User ID of the track uploader'),
+      streams: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Available stream URLs keyed by format')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let track = await client.getTrack(ctx.input.trackId);

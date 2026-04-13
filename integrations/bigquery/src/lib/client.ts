@@ -19,7 +19,12 @@ export class BigQueryClient {
 
   // ── Datasets ──────────────────────────────────────────────────────────
 
-  async listDatasets(params?: { maxResults?: number; pageToken?: string; all?: boolean; filter?: string }) {
+  async listDatasets(params?: {
+    maxResults?: number;
+    pageToken?: string;
+    all?: boolean;
+    filter?: string;
+  }) {
     let response = await this.http.get(`/projects/${this.projectId}/datasets`, {
       params: {
         maxResults: params?.maxResults,
@@ -60,14 +65,20 @@ export class BigQueryClient {
     return response.data;
   }
 
-  async updateDataset(datasetId: string, updates: {
-    friendlyName?: string;
-    description?: string;
-    defaultTableExpirationMs?: string;
-    defaultPartitionExpirationMs?: string;
-    labels?: Record<string, string>;
-  }) {
-    let response = await this.http.patch(`/projects/${this.projectId}/datasets/${datasetId}`, updates);
+  async updateDataset(
+    datasetId: string,
+    updates: {
+      friendlyName?: string;
+      description?: string;
+      defaultTableExpirationMs?: string;
+      defaultPartitionExpirationMs?: string;
+      labels?: Record<string, string>;
+    }
+  ) {
+    let response = await this.http.patch(
+      `/projects/${this.projectId}/datasets/${datasetId}`,
+      updates
+    );
     return response.data;
   }
 
@@ -80,34 +91,49 @@ export class BigQueryClient {
   // ── Tables ────────────────────────────────────────────────────────────
 
   async listTables(datasetId: string, params?: { maxResults?: number; pageToken?: string }) {
-    let response = await this.http.get(`/projects/${this.projectId}/datasets/${datasetId}/tables`, {
-      params: {
-        maxResults: params?.maxResults,
-        pageToken: params?.pageToken
+    let response = await this.http.get(
+      `/projects/${this.projectId}/datasets/${datasetId}/tables`,
+      {
+        params: {
+          maxResults: params?.maxResults,
+          pageToken: params?.pageToken
+        }
       }
-    });
+    );
     return response.data;
   }
 
   async getTable(datasetId: string, tableId: string) {
-    let response = await this.http.get(`/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}`);
+    let response = await this.http.get(
+      `/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}`
+    );
     return response.data;
   }
 
-  async createTable(datasetId: string, table: {
-    tableId: string;
-    friendlyName?: string;
-    description?: string;
-    schema?: { fields: Array<any> };
-    expirationTime?: string;
-    timePartitioning?: { type: string; field?: string; expirationMs?: string };
-    rangePartitioning?: { field: string; range: { start: string; end: string; interval: string } };
-    clustering?: { fields: string[] };
-    labels?: Record<string, string>;
-    view?: { query: string; useLegacySql?: boolean };
-    materializedView?: { query: string; enableRefresh?: boolean; refreshIntervalMs?: string };
-    externalDataConfiguration?: any;
-  }) {
+  async createTable(
+    datasetId: string,
+    table: {
+      tableId: string;
+      friendlyName?: string;
+      description?: string;
+      schema?: { fields: Array<any> };
+      expirationTime?: string;
+      timePartitioning?: { type: string; field?: string; expirationMs?: string };
+      rangePartitioning?: {
+        field: string;
+        range: { start: string; end: string; interval: string };
+      };
+      clustering?: { fields: string[] };
+      labels?: Record<string, string>;
+      view?: { query: string; useLegacySql?: boolean };
+      materializedView?: {
+        query: string;
+        enableRefresh?: boolean;
+        refreshIntervalMs?: string;
+      };
+      externalDataConfiguration?: any;
+    }
+  ) {
     let body: any = {
       tableReference: {
         projectId: this.projectId,
@@ -134,17 +160,24 @@ export class BigQueryClient {
       body.externalDataConfiguration = table.externalDataConfiguration;
     }
 
-    let response = await this.http.post(`/projects/${this.projectId}/datasets/${datasetId}/tables`, body);
+    let response = await this.http.post(
+      `/projects/${this.projectId}/datasets/${datasetId}/tables`,
+      body
+    );
     return response.data;
   }
 
-  async updateTable(datasetId: string, tableId: string, updates: {
-    friendlyName?: string;
-    description?: string;
-    schema?: { fields: Array<any> };
-    expirationTime?: string;
-    labels?: Record<string, string>;
-  }) {
+  async updateTable(
+    datasetId: string,
+    tableId: string,
+    updates: {
+      friendlyName?: string;
+      description?: string;
+      schema?: { fields: Array<any> };
+      expirationTime?: string;
+      labels?: Record<string, string>;
+    }
+  ) {
     let response = await this.http.patch(
       `/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}`,
       updates
@@ -153,7 +186,9 @@ export class BigQueryClient {
   }
 
   async deleteTable(datasetId: string, tableId: string) {
-    await this.http.delete(`/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}`);
+    await this.http.delete(
+      `/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}`
+    );
   }
 
   // ── Jobs / Queries ────────────────────────────────────────────────────
@@ -205,7 +240,8 @@ export class BigQueryClient {
         tableId: params.destinationTable.tableId
       };
       body.configuration.query.writeDisposition = params.writeDisposition || 'WRITE_TRUNCATE';
-      body.configuration.query.createDisposition = params.createDisposition || 'CREATE_IF_NEEDED';
+      body.configuration.query.createDisposition =
+        params.createDisposition || 'CREATE_IF_NEEDED';
     }
 
     let response = await this.http.post(`/projects/${this.projectId}/jobs`, body);
@@ -219,13 +255,16 @@ export class BigQueryClient {
     return response.data;
   }
 
-  async getQueryResults(jobId: string, params?: {
-    maxResults?: number;
-    pageToken?: string;
-    startIndex?: string;
-    timeoutMs?: number;
-    location?: string;
-  }) {
+  async getQueryResults(
+    jobId: string,
+    params?: {
+      maxResults?: number;
+      pageToken?: string;
+      startIndex?: string;
+      timeoutMs?: number;
+      location?: string;
+    }
+  ) {
     let response = await this.http.get(`/projects/${this.projectId}/queries/${jobId}`, {
       params: {
         maxResults: params?.maxResults,
@@ -274,12 +313,16 @@ export class BigQueryClient {
 
   // ── Table Data ────────────────────────────────────────────────────────
 
-  async listTableData(datasetId: string, tableId: string, params?: {
-    maxResults?: number;
-    pageToken?: string;
-    startIndex?: string;
-    selectedFields?: string;
-  }) {
+  async listTableData(
+    datasetId: string,
+    tableId: string,
+    params?: {
+      maxResults?: number;
+      pageToken?: string;
+      startIndex?: string;
+      selectedFields?: string;
+    }
+  ) {
     let response = await this.http.get(
       `/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}/data`,
       {
@@ -294,11 +337,16 @@ export class BigQueryClient {
     return response.data;
   }
 
-  async insertTableData(datasetId: string, tableId: string, rows: Array<{ insertId?: string; json: Record<string, any> }>, options?: {
-    skipInvalidRows?: boolean;
-    ignoreUnknownValues?: boolean;
-    templateSuffix?: string;
-  }) {
+  async insertTableData(
+    datasetId: string,
+    tableId: string,
+    rows: Array<{ insertId?: string; json: Record<string, any> }>,
+    options?: {
+      skipInvalidRows?: boolean;
+      ignoreUnknownValues?: boolean;
+      templateSuffix?: string;
+    }
+  ) {
     let response = await this.http.post(
       `/projects/${this.projectId}/datasets/${datasetId}/tables/${tableId}/insertAll`,
       {
@@ -439,14 +487,20 @@ export class BigQueryClient {
 
   // ── Routines ──────────────────────────────────────────────────────────
 
-  async listRoutines(datasetId: string, params?: { maxResults?: number; pageToken?: string; filter?: string }) {
-    let response = await this.http.get(`/projects/${this.projectId}/datasets/${datasetId}/routines`, {
-      params: {
-        maxResults: params?.maxResults,
-        pageToken: params?.pageToken,
-        filter: params?.filter
+  async listRoutines(
+    datasetId: string,
+    params?: { maxResults?: number; pageToken?: string; filter?: string }
+  ) {
+    let response = await this.http.get(
+      `/projects/${this.projectId}/datasets/${datasetId}/routines`,
+      {
+        params: {
+          maxResults: params?.maxResults,
+          pageToken: params?.pageToken,
+          filter: params?.filter
+        }
       }
-    });
+    );
     return response.data;
   }
 
@@ -457,15 +511,18 @@ export class BigQueryClient {
     return response.data;
   }
 
-  async createRoutine(datasetId: string, routine: {
-    routineId: string;
-    routineType: string;
-    language?: string;
-    definitionBody: string;
-    arguments?: Array<{ name: string; dataType: any; mode?: string }>;
-    returnType?: any;
-    description?: string;
-  }) {
+  async createRoutine(
+    datasetId: string,
+    routine: {
+      routineId: string;
+      routineType: string;
+      language?: string;
+      definitionBody: string;
+      arguments?: Array<{ name: string; dataType: any; mode?: string }>;
+      returnType?: any;
+      description?: string;
+    }
+  ) {
     let response = await this.http.post(
       `/projects/${this.projectId}/datasets/${datasetId}/routines`,
       {
@@ -493,7 +550,11 @@ export class BigQueryClient {
 
   // ── Helpers ───────────────────────────────────────────────────────────
 
-  async waitForJob(jobId: string, timeoutMs: number = 60000, intervalMs: number = 2000): Promise<any> {
+  async waitForJob(
+    jobId: string,
+    timeoutMs: number = 60000,
+    intervalMs: number = 2000
+  ): Promise<any> {
     let startTime = Date.now();
     while (Date.now() - startTime < timeoutMs) {
       let job = await this.getJob(jobId);

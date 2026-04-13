@@ -3,43 +3,45 @@ import { InstagramClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMediaTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Media',
-    key: 'new_media',
-    description: '[Polling fallback] Triggers when new photos, videos, reels, or carousel posts are published to your Instagram account. Uses polling since Instagram does not provide a webhook for new posts.',
-  }
-)
-  .input(z.object({
-    mediaId: z.string().describe('ID of the new media'),
-    mediaType: z.string().optional().describe('Type of media'),
-    caption: z.string().optional().describe('Caption text'),
-    mediaUrl: z.string().optional().describe('Media URL'),
-    permalink: z.string().optional().describe('Permanent link'),
-    timestamp: z.string().optional().describe('Published timestamp'),
-    likeCount: z.number().optional().describe('Number of likes'),
-    commentsCount: z.number().optional().describe('Number of comments'),
-  }))
-  .output(z.object({
-    mediaId: z.string().describe('ID of the new media'),
-    mediaType: z.string().optional().describe('Type: IMAGE, VIDEO, CAROUSEL_ALBUM'),
-    caption: z.string().optional().describe('Caption text'),
-    mediaUrl: z.string().optional().describe('Media URL'),
-    permalink: z.string().optional().describe('Permanent link to the post'),
-    timestamp: z.string().optional().describe('Published timestamp'),
-    likeCount: z.number().optional().describe('Number of likes'),
-    commentsCount: z.number().optional().describe('Number of comments'),
-  }))
+export let newMediaTrigger = SlateTrigger.create(spec, {
+  name: 'New Media',
+  key: 'new_media',
+  description:
+    '[Polling fallback] Triggers when new photos, videos, reels, or carousel posts are published to your Instagram account. Uses polling since Instagram does not provide a webhook for new posts.'
+})
+  .input(
+    z.object({
+      mediaId: z.string().describe('ID of the new media'),
+      mediaType: z.string().optional().describe('Type of media'),
+      caption: z.string().optional().describe('Caption text'),
+      mediaUrl: z.string().optional().describe('Media URL'),
+      permalink: z.string().optional().describe('Permanent link'),
+      timestamp: z.string().optional().describe('Published timestamp'),
+      likeCount: z.number().optional().describe('Number of likes'),
+      commentsCount: z.number().optional().describe('Number of comments')
+    })
+  )
+  .output(
+    z.object({
+      mediaId: z.string().describe('ID of the new media'),
+      mediaType: z.string().optional().describe('Type: IMAGE, VIDEO, CAROUSEL_ALBUM'),
+      caption: z.string().optional().describe('Caption text'),
+      mediaUrl: z.string().optional().describe('Media URL'),
+      permalink: z.string().optional().describe('Permanent link to the post'),
+      timestamp: z.string().optional().describe('Published timestamp'),
+      likeCount: z.number().optional().describe('Number of likes'),
+      commentsCount: z.number().optional().describe('Number of comments')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new InstagramClient({
         token: ctx.auth.token,
-        apiVersion: ctx.config.apiVersion,
+        apiVersion: ctx.config.apiVersion
       });
 
       let effectiveUserId = ctx.auth.userId || 'me';
@@ -64,15 +66,15 @@ export let newMediaTrigger = SlateTrigger.create(
           permalink: m.permalink,
           timestamp: m.timestamp,
           likeCount: m.like_count,
-          commentsCount: m.comments_count,
+          commentsCount: m.comments_count
         })),
         updatedState: {
-          lastSeenTimestamp: latestTimestamp || lastSeenTimestamp,
-        },
+          lastSeenTimestamp: latestTimestamp || lastSeenTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'media.created',
         id: ctx.input.mediaId,
@@ -84,8 +86,9 @@ export let newMediaTrigger = SlateTrigger.create(
           permalink: ctx.input.permalink,
           timestamp: ctx.input.timestamp,
           likeCount: ctx.input.likeCount,
-          commentsCount: ctx.input.commentsCount,
-        },
+          commentsCount: ctx.input.commentsCount
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

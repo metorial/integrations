@@ -26,6 +26,7 @@ The API URL is `https://core-api.uk.plain.com/graphql/v1`. The required headers 
 ### Permissions
 
 API keys use fine-grained, resource-level permissions. Examples include:
+
 - `customer:read` — Read customer data
 - `customerEvent:create` — Create customer timeline events
 - Permissions exist for threads, labels, messaging, and other resources
@@ -35,33 +36,43 @@ Each API key should be granted only the permissions needed for its use case.
 ## Features
 
 ### Customer Management
+
 Manage customers, each with a name, short name, and email address. Email addresses are unique across all customers. Customers can have an `externalId` to correlate them with customers in your own systems. Customers can be created, updated, deleted, and queried by email or external ID.
 
 ### Company Management
+
 Companies are automatically set based on the customer's email domain. The company of a customer can be changed manually and via the API. You can filter and organize support by company.
 
 ### Tenant Management
+
 Tenants allow you to organize your customers in the same way they are organized in your product. For example, if your product's users are organized into teams, then every team would be one tenant within Plain. Tenants can only be created programmatically and are useful for advanced integrations. Customers can belong to multiple tenants. You can specify a tenant when creating a thread, which is useful for building support portals as it allows you to fetch threads specific to a team.
 
 ### Thread Management
+
 Threads are the core unit of support in Plain — each representing a customer conversation. You can create threads, reply to them, assign them to users, change their status (Todo, Snoozed, Done), set priority levels, and filter them by various criteria such as tenant, customer, status, and labels. Support portals allow customers to view, create, and reply to support requests directly. Plain provides powerful APIs for this, and you build the UI — fully white-label with no separate login needed.
 
 ### Tier and SLA Management
+
 Tiers allow you to organize companies and tenants into groups that match your product's pricing (e.g., "Enterprise", "Pro", "Free"). Within tiers you can define SLAs so you can stay on top of your queue and prioritize.
 
 ### Labels
+
 Labels are a lightweight way of categorizing threads by topic (e.g., bugs, feature requests, demo requests). A thread can have one or more labels, each with a name and icon. You can filter threads by label in any queue.
 
 ### Timeline Events
+
 Create custom events on a customer's timeline that appear in all their threads, or target a specific thread. Events support rich UI components (text, spacers, link buttons) and can include an external ID for idempotency and correlation with your own systems.
 
 ### Messaging
+
 Send and receive messages across multiple channels including email, chat, Slack, and more. The API supports replying to threads, sending emails (with Cc/Bcc), and handling chat messages programmatically.
 
 ### Customer Cards
+
 Display live customer data from your own backend systems directly within the Plain UI. Customer cards are fetched in real time, showing information such as subscription status, plan details, and usage metrics.
 
 ### Customer Groups
+
 Organize customers into groups for segmentation and access control. Group memberships can be managed via the API.
 
 ## Events
@@ -71,6 +82,7 @@ Plain supports webhooks that can be configured in your workspace settings. The T
 The following webhook event categories are available:
 
 ### Thread Events
+
 - **Thread created** — Fired when a new thread is created.
 - **Thread status transitioned** — Fired when a thread's status changes (e.g., from Todo to Done).
 - **Thread assignment transitioned** — Fired when a thread is assigned or unassigned.
@@ -80,6 +92,7 @@ The following webhook event categories are available:
 - **Thread Field created/updated/deleted** — Fired when custom fields on a thread are modified.
 
 ### Message Events
+
 - **Email received** — Fired when an inbound email is received.
 - **Email sent** — Fired when an email is sent from Plain.
 - **Slack message received** — Fired when a message is received from Slack.
@@ -89,6 +102,7 @@ The following webhook event categories are available:
 - **Note created** — Fired when an internal note is created on a thread.
 
 ### Customer Events
+
 - **Customer created** — Fired when a new customer is created.
 - **Customer updated** — Fired when customer details are updated.
 - **Customer deleted** — Fired when a customer is deleted.

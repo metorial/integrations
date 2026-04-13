@@ -12,8 +12,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        Authorization: config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -38,42 +38,47 @@ export class Client {
     return response.data;
   }
 
-  async createEnvelope(payload: {
-    title: string;
-    type: 'DOCUMENT' | 'TEMPLATE';
-    folderId?: string;
-    recipients?: Array<{
-      email: string;
-      name?: string;
-      role?: string;
-      signingOrder?: number;
-    }>;
-    meta?: Record<string, unknown>;
-  }, files?: Array<{ name: string; data: string }>) {
+  async createEnvelope(
+    payload: {
+      title: string;
+      type: 'DOCUMENT' | 'TEMPLATE';
+      folderId?: string;
+      recipients?: Array<{
+        email: string;
+        name?: string;
+        role?: string;
+        signingOrder?: number;
+      }>;
+      meta?: Record<string, unknown>;
+    },
+    files?: Array<{ name: string; data: string }>
+  ) {
     let formData = new FormData();
     formData.append('payload', JSON.stringify(payload));
 
     if (files) {
       for (let file of files) {
-        // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
         let blob = new Blob([Buffer.from(file.data, 'base64')], { type: 'application/pdf' });
         formData.append('files', blob, file.name);
       }
     }
 
     let response = await this.axios.post('/envelope/create', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
 
-  async updateEnvelope(envelopeId: string, data: {
-    title?: string;
-    meta?: Record<string, unknown>;
-  }) {
+  async updateEnvelope(
+    envelopeId: string,
+    data: {
+      title?: string;
+      meta?: Record<string, unknown>;
+    }
+  ) {
     let response = await this.axios.post('/envelope/update', {
       envelopeId,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -98,10 +103,13 @@ export class Client {
     return response.data;
   }
 
-  async getEnvelopeAuditLog(envelopeId: string, params?: {
-    page?: number;
-    perPage?: number;
-  }) {
+  async getEnvelopeAuditLog(
+    envelopeId: string,
+    params?: {
+      page?: number;
+      perPage?: number;
+    }
+  ) {
     let response = await this.axios.get(`/envelope/${envelopeId}/audit-log`, { params });
     return response.data;
   }
@@ -148,31 +156,37 @@ export class Client {
     return response.data;
   }
 
-  async createRecipients(envelopeId: string, data: Array<{
-    email: string;
-    name?: string;
-    role?: string;
-    signingOrder?: number;
-    accessAuth?: Record<string, unknown>;
-    actionAuth?: Record<string, unknown>;
-  }>) {
+  async createRecipients(
+    envelopeId: string,
+    data: Array<{
+      email: string;
+      name?: string;
+      role?: string;
+      signingOrder?: number;
+      accessAuth?: Record<string, unknown>;
+      actionAuth?: Record<string, unknown>;
+    }>
+  ) {
     let response = await this.axios.post('/envelope/recipient/create-many', {
       envelopeId,
-      data,
+      data
     });
     return response.data;
   }
 
-  async updateRecipients(envelopeId: string, data: Array<{
-    recipientId: number;
-    email?: string;
-    name?: string;
-    role?: string;
-    signingOrder?: number;
-  }>) {
+  async updateRecipients(
+    envelopeId: string,
+    data: Array<{
+      recipientId: number;
+      email?: string;
+      name?: string;
+      role?: string;
+      signingOrder?: number;
+    }>
+  ) {
     let response = await this.axios.post('/envelope/recipient/update-many', {
       envelopeId,
-      data,
+      data
     });
     return response.data;
   }
@@ -189,37 +203,43 @@ export class Client {
     return response.data;
   }
 
-  async createFields(envelopeId: string, data: Array<{
-    type: string;
-    recipientId: number;
-    envelopeItemId?: string;
-    pageNumber: number;
-    pageX: number;
-    pageY: number;
-    width: number;
-    height: number;
-    fieldMeta?: Record<string, unknown>;
-  }>) {
+  async createFields(
+    envelopeId: string,
+    data: Array<{
+      type: string;
+      recipientId: number;
+      envelopeItemId?: string;
+      pageNumber: number;
+      pageX: number;
+      pageY: number;
+      width: number;
+      height: number;
+      fieldMeta?: Record<string, unknown>;
+    }>
+  ) {
     let response = await this.axios.post('/envelope/field/create-many', {
       envelopeId,
-      data,
+      data
     });
     return response.data;
   }
 
-  async updateFields(envelopeId: string, data: Array<{
-    fieldId: number;
-    type?: string;
-    pageNumber?: number;
-    pageX?: number;
-    pageY?: number;
-    width?: number;
-    height?: number;
-    fieldMeta?: Record<string, unknown>;
-  }>) {
+  async updateFields(
+    envelopeId: string,
+    data: Array<{
+      fieldId: number;
+      type?: string;
+      pageNumber?: number;
+      pageX?: number;
+      pageY?: number;
+      width?: number;
+      height?: number;
+      fieldMeta?: Record<string, unknown>;
+    }>
+  ) {
     let response = await this.axios.post('/envelope/field/update-many', {
       envelopeId,
-      data,
+      data
     });
     return response.data;
   }
@@ -236,25 +256,27 @@ export class Client {
     formData.append('payload', JSON.stringify({ envelopeId }));
 
     for (let file of files) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let blob = new Blob([Buffer.from(file.data, 'base64')], { type: 'application/pdf' });
       formData.append('files', blob, file.name);
     }
 
     let response = await this.axios.post('/envelope/item/create-many', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
   }
 
-  async updateEnvelopeItems(envelopeId: string, data: Array<{
-    envelopeItemId: string;
-    title?: string;
-    order?: number;
-  }>) {
+  async updateEnvelopeItems(
+    envelopeId: string,
+    data: Array<{
+      envelopeItemId: string;
+      title?: string;
+      order?: number;
+    }>
+  ) {
     let response = await this.axios.post('/envelope/item/update-many', {
       envelopeId,
-      data,
+      data
     });
     return response.data;
   }
@@ -262,7 +284,7 @@ export class Client {
   async deleteEnvelopeItem(envelopeId: string, envelopeItemId: string) {
     let response = await this.axios.post('/envelope/item/delete', {
       envelopeId,
-      envelopeItemId,
+      envelopeItemId
     });
     return response.data;
   }
@@ -271,7 +293,7 @@ export class Client {
 
   async findAttachments(envelopeId: string) {
     let response = await this.axios.get('/envelope/attachment', {
-      params: { envelopeId },
+      params: { envelopeId }
     });
     return response.data;
   }
@@ -279,7 +301,7 @@ export class Client {
   async createAttachment(envelopeId: string, data: { label: string; data: string }) {
     let response = await this.axios.post('/envelope/attachment/create', {
       envelopeId,
-      data,
+      data
     });
     return response.data;
   }
@@ -298,25 +320,28 @@ export class Client {
     folderId?: string;
   }) {
     let response = await this.axios.get('/envelope', {
-      params: { ...params, type: 'TEMPLATE' },
+      params: { ...params, type: 'TEMPLATE' }
     });
     return response.data;
   }
 
-  async useTemplate(templateId: string, data: {
-    recipients?: Array<{
-      recipientId: number;
-      email?: string;
-      name?: string;
-    }>;
-    prefillFields?: Array<{
-      fieldId: number;
-      value: string;
-    }>;
-  }) {
+  async useTemplate(
+    templateId: string,
+    data: {
+      recipients?: Array<{
+        recipientId: number;
+        email?: string;
+        name?: string;
+      }>;
+      prefillFields?: Array<{
+        fieldId: number;
+        value: string;
+      }>;
+    }
+  ) {
     let response = await this.axios.post('/envelope/use', {
       envelopeId: templateId,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -333,10 +358,7 @@ export class Client {
     return response.data;
   }
 
-  async createFolder(data: {
-    name: string;
-    parentFolderId?: string;
-  }) {
+  async createFolder(data: { name: string; parentFolderId?: string }) {
     let response = await this.axios.post('/folder/create', data);
     return response.data;
   }
@@ -356,7 +378,7 @@ export class Client {
   async createEmbeddingPresignToken(envelopeId: string, recipientId?: number) {
     let response = await this.axios.post('/embedding/presign', {
       envelopeId,
-      recipientId,
+      recipientId
     });
     return response.data;
   }

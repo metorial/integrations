@@ -9,8 +9,8 @@ export class BugsnagClient {
       baseURL: 'https://api.bugsnag.com',
       headers: {
         Authorization: `token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,12 +28,15 @@ export class BugsnagClient {
 
   // ─── Projects ───────────────────────────────────────────────
 
-  async listProjects(organizationId: string, params?: { perPage?: number; offset?: string }): Promise<any[]> {
+  async listProjects(
+    organizationId: string,
+    params?: { perPage?: number; offset?: string }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/organizations/${organizationId}/projects`, {
       params: {
         per_page: params?.perPage,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
@@ -43,7 +46,10 @@ export class BugsnagClient {
     return response.data;
   }
 
-  async createProject(organizationId: string, data: { name: string; type?: string }): Promise<any> {
+  async createProject(
+    organizationId: string,
+    data: { name: string; type?: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/organizations/${organizationId}/projects`, data);
     return response.data;
   }
@@ -59,18 +65,21 @@ export class BugsnagClient {
 
   // ─── Errors ─────────────────────────────────────────────────
 
-  async listErrors(projectId: string, params?: {
-    perPage?: number;
-    offset?: string;
-    sort?: string;
-    direction?: string;
-    filters?: Record<string, any>;
-  }): Promise<any[]> {
+  async listErrors(
+    projectId: string,
+    params?: {
+      perPage?: number;
+      offset?: string;
+      sort?: string;
+      direction?: string;
+      filters?: Record<string, any>;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {
       per_page: params?.perPage,
       offset: params?.offset,
       sort: params?.sort,
-      direction: params?.direction,
+      direction: params?.direction
     };
 
     if (params?.filters) {
@@ -79,7 +88,9 @@ export class BugsnagClient {
       }
     }
 
-    let response = await this.axios.get(`/projects/${projectId}/errors`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/errors`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -88,7 +99,11 @@ export class BugsnagClient {
     return response.data;
   }
 
-  async updateError(projectId: string, errorId: string, data: Record<string, any>): Promise<any> {
+  async updateError(
+    projectId: string,
+    errorId: string,
+    data: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.patch(`/projects/${projectId}/errors/${errorId}`, data);
     return response.data;
   }
@@ -97,29 +112,35 @@ export class BugsnagClient {
     await this.axios.delete(`/projects/${projectId}/errors/${errorId}`);
   }
 
-  async bulkUpdateErrors(projectId: string, data: {
-    operation: string;
-    query?: Record<string, any>;
-    errorIds?: string[];
-  }): Promise<any> {
+  async bulkUpdateErrors(
+    projectId: string,
+    data: {
+      operation: string;
+      query?: Record<string, any>;
+      errorIds?: string[];
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/projects/${projectId}/errors`, data);
     return response.data;
   }
 
   // ─── Events ─────────────────────────────────────────────────
 
-  async listEvents(projectId: string, params?: {
-    perPage?: number;
-    offset?: string;
-    sort?: string;
-    direction?: string;
-    filters?: Record<string, any>;
-  }): Promise<any[]> {
+  async listEvents(
+    projectId: string,
+    params?: {
+      perPage?: number;
+      offset?: string;
+      sort?: string;
+      direction?: string;
+      filters?: Record<string, any>;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {
       per_page: params?.perPage,
       offset: params?.offset,
       sort: params?.sort,
-      direction: params?.direction,
+      direction: params?.direction
     };
 
     if (params?.filters) {
@@ -128,19 +149,25 @@ export class BugsnagClient {
       }
     }
 
-    let response = await this.axios.get(`/projects/${projectId}/events`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/events`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async listErrorEvents(projectId: string, errorId: string, params?: {
-    perPage?: number;
-    offset?: string;
-  }): Promise<any[]> {
+  async listErrorEvents(
+    projectId: string,
+    errorId: string,
+    params?: {
+      perPage?: number;
+      offset?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/projects/${projectId}/errors/${errorId}/events`, {
       params: {
         per_page: params?.perPage,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
@@ -156,12 +183,15 @@ export class BugsnagClient {
 
   // ─── Trends ─────────────────────────────────────────────────
 
-  async getProjectTrends(projectId: string, params?: {
-    filters?: Record<string, any>;
-    resolution?: string;
-  }): Promise<any[]> {
+  async getProjectTrends(
+    projectId: string,
+    params?: {
+      filters?: Record<string, any>;
+      resolution?: string;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {
-      resolution: params?.resolution,
+      resolution: params?.resolution
     };
 
     if (params?.filters) {
@@ -170,7 +200,9 @@ export class BugsnagClient {
       }
     }
 
-    let response = await this.axios.get(`/projects/${projectId}/trends`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/trends`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -181,9 +213,12 @@ export class BugsnagClient {
 
   // ─── Pivots ─────────────────────────────────────────────────
 
-  async listProjectPivots(projectId: string, params?: {
-    filters?: Record<string, any>;
-  }): Promise<any[]> {
+  async listProjectPivots(
+    projectId: string,
+    params?: {
+      filters?: Record<string, any>;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
 
     if (params?.filters) {
@@ -192,13 +227,19 @@ export class BugsnagClient {
       }
     }
 
-    let response = await this.axios.get(`/projects/${projectId}/pivots`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/pivots`, {
+      params: queryParams
+    });
     return response.data;
   }
 
-  async getPivotValues(projectId: string, displayId: string, params?: {
-    filters?: Record<string, any>;
-  }): Promise<any[]> {
+  async getPivotValues(
+    projectId: string,
+    displayId: string,
+    params?: {
+      filters?: Record<string, any>;
+    }
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
 
     if (params?.filters) {
@@ -207,23 +248,28 @@ export class BugsnagClient {
       }
     }
 
-    let response = await this.axios.get(`/projects/${projectId}/pivots/${displayId}`, { params: queryParams });
+    let response = await this.axios.get(`/projects/${projectId}/pivots/${displayId}`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ─── Releases ───────────────────────────────────────────────
 
-  async listReleases(projectId: string, params?: {
-    perPage?: number;
-    offset?: string;
-    releaseStage?: string;
-  }): Promise<any[]> {
+  async listReleases(
+    projectId: string,
+    params?: {
+      perPage?: number;
+      offset?: string;
+      releaseStage?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/projects/${projectId}/releases`, {
       params: {
         per_page: params?.perPage,
         offset: params?.offset,
-        release_stage: params?.releaseStage,
-      },
+        release_stage: params?.releaseStage
+      }
     });
     return response.data;
   }
@@ -240,43 +286,62 @@ export class BugsnagClient {
 
   // ─── Stability ──────────────────────────────────────────────
 
-  async getProjectStability(projectId: string, params?: {
-    releaseStage?: string;
-  }): Promise<any> {
+  async getProjectStability(
+    projectId: string,
+    params?: {
+      releaseStage?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/projects/${projectId}/stability_trend`, {
       params: {
-        release_stage: params?.releaseStage,
-      },
+        release_stage: params?.releaseStage
+      }
     });
     return response.data;
   }
 
   // ─── Collaborators ─────────────────────────────────────────
 
-  async listOrganizationCollaborators(organizationId: string, params?: {
-    perPage?: number;
-    offset?: string;
-  }): Promise<any[]> {
+  async listOrganizationCollaborators(
+    organizationId: string,
+    params?: {
+      perPage?: number;
+      offset?: string;
+    }
+  ): Promise<any[]> {
     let response = await this.axios.get(`/organizations/${organizationId}/collaborators`, {
       params: {
         per_page: params?.perPage,
-        offset: params?.offset,
-      },
+        offset: params?.offset
+      }
     });
     return response.data;
   }
 
-  async inviteCollaborator(organizationId: string, data: {
-    email: string;
-    admin?: boolean;
-    project_ids?: string[];
-  }): Promise<any> {
-    let response = await this.axios.post(`/organizations/${organizationId}/collaborators`, data);
+  async inviteCollaborator(
+    organizationId: string,
+    data: {
+      email: string;
+      admin?: boolean;
+      project_ids?: string[];
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/organizations/${organizationId}/collaborators`,
+      data
+    );
     return response.data;
   }
 
-  async updateCollaborator(organizationId: string, userId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.patch(`/organizations/${organizationId}/collaborators/${userId}`, data);
+  async updateCollaborator(
+    organizationId: string,
+    userId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.patch(
+      `/organizations/${organizationId}/collaborators/${userId}`,
+      data
+    );
     return response.data;
   }
 
@@ -292,7 +357,9 @@ export class BugsnagClient {
   }
 
   async createComment(projectId: string, errorId: string, message: string): Promise<any> {
-    let response = await this.axios.post(`/projects/${projectId}/errors/${errorId}/comments`, { message });
+    let response = await this.axios.post(`/projects/${projectId}/errors/${errorId}/comments`, {
+      message
+    });
     return response.data;
   }
 
@@ -324,10 +391,13 @@ export class BugsnagClient {
     return response.data;
   }
 
-  async createSavedSearch(projectId: string, data: {
-    name: string;
-    search_filters: Record<string, any>;
-  }): Promise<any> {
+  async createSavedSearch(
+    projectId: string,
+    data: {
+      name: string;
+      search_filters: Record<string, any>;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/projects/${projectId}/saved_searches`, data);
     return response.data;
   }

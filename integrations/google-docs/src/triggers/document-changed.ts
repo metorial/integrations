@@ -3,44 +3,52 @@ import { GoogleDocsClient, DriveChange } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let documentChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Changed',
-    key: 'document_changed',
-    description: 'Triggers when a Google Docs document is created, modified, or deleted. Uses the Google Drive API to monitor changes to documents.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['file', 'user']).describe('Type of change detected'),
-    changeTime: z.string().describe('Time when the change occurred'),
-    documentId: z.string().optional().describe('ID of the changed document'),
-    documentName: z.string().optional().describe('Name of the changed document'),
-    removed: z.boolean().describe('Whether the document was removed/deleted'),
-    modifiedTime: z.string().optional().describe('Last modification time of the document'),
-    webViewLink: z.string().optional().describe('URL to view the document'),
-    lastModifiedBy: z.object({
-      name: z.string().optional(),
-      email: z.string().optional()
-    }).optional().describe('User who made the change')
-  }))
-  .output(z.object({
-    documentId: z.string().describe('ID of the changed document'),
-    documentName: z.string().describe('Name of the changed document'),
-    changeType: z.enum(['created', 'modified', 'deleted']).describe('Type of change'),
-    modifiedTime: z.string().optional().describe('Last modification time'),
-    webViewLink: z.string().optional().describe('URL to view the document'),
-    lastModifiedBy: z.object({
-      name: z.string().optional(),
-      email: z.string().optional()
-    }).optional().describe('User who made the change')
-  }))
+export let documentChanged = SlateTrigger.create(spec, {
+  name: 'Document Changed',
+  key: 'document_changed',
+  description:
+    'Triggers when a Google Docs document is created, modified, or deleted. Uses the Google Drive API to monitor changes to documents.'
+})
+  .input(
+    z.object({
+      changeType: z.enum(['file', 'user']).describe('Type of change detected'),
+      changeTime: z.string().describe('Time when the change occurred'),
+      documentId: z.string().optional().describe('ID of the changed document'),
+      documentName: z.string().optional().describe('Name of the changed document'),
+      removed: z.boolean().describe('Whether the document was removed/deleted'),
+      modifiedTime: z.string().optional().describe('Last modification time of the document'),
+      webViewLink: z.string().optional().describe('URL to view the document'),
+      lastModifiedBy: z
+        .object({
+          name: z.string().optional(),
+          email: z.string().optional()
+        })
+        .optional()
+        .describe('User who made the change')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('ID of the changed document'),
+      documentName: z.string().describe('Name of the changed document'),
+      changeType: z.enum(['created', 'modified', 'deleted']).describe('Type of change'),
+      modifiedTime: z.string().optional().describe('Last modification time'),
+      webViewLink: z.string().optional().describe('URL to view the document'),
+      lastModifiedBy: z
+        .object({
+          name: z.string().optional(),
+          email: z.string().optional()
+        })
+        .optional()
+        .describe('User who made the change')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new GoogleDocsClient({
         token: ctx.auth.token
       });
@@ -104,10 +112,12 @@ export let documentChanged = SlateTrigger.create(
               removed: change.removed,
               modifiedTime: change.file?.modifiedTime,
               webViewLink: change.file?.webViewLink,
-              lastModifiedBy: change.file?.lastModifyingUser ? {
-                name: change.file.lastModifyingUser.displayName,
-                email: change.file.lastModifyingUser.emailAddress
-              } : undefined
+              lastModifiedBy: change.file?.lastModifyingUser
+                ? {
+                    name: change.file.lastModifyingUser.displayName,
+                    email: change.file.lastModifyingUser.emailAddress
+                  }
+                : undefined
             });
 
             // Update known documents
@@ -141,7 +151,7 @@ export let documentChanged = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType: 'created' | 'modified' | 'deleted';
 
       if (ctx.input.removed) {

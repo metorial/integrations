@@ -23,43 +23,57 @@ There are no OAuth flows or scopes. Authentication is solely API key-based. All 
 ## Features
 
 ### Project Management
+
 Create and manage projects, which serve as the top-level organizational unit for all traces, evaluations, datasets, and prompts. Projects group related AI application data together.
 
 ### Tracing (Sessions & Events)
+
 Log and manage distributed traces of AI application execution. A trace consists of a root session event and nested child events (model, tool, and chain types). Traces capture inputs, outputs, errors, duration, metadata, user properties, and feedback. Events can be created individually or in batches.
+
 - Sessions represent complete interactions or requests.
 - Model events track LLM inference calls.
 - Tool events track external API calls, database queries, etc.
 - Chain events group multiple steps into composable units.
 
 ### Monitoring & Dashboards
+
 Query and analyze production traces with custom charts and filters. Aggregate cost, latency, token usage, and custom quality metrics across traces. Build custom queries to explore data and validate hypotheses about system behavior.
 
 ### Evaluations & Experiments
+
 Run offline experiments to evaluate AI application performance against curated datasets. Supports programmatic evaluation via SDK with custom evaluator functions. Compare experiment results across multiple runs to detect regressions.
+
 - Evaluators can be code-based or LLM-as-a-judge.
 - Experiments can use local datasets or server-managed datasets referenced by ID.
 - Online evaluations can run against live production traces.
 
 ### Datasets
+
 Create, manage, and version datasets for use in experiments and evaluations. Datasets consist of input/output pairs with optional ground truths. They can be uploaded via the UI (JSON, JSONL, CSV) or via the SDK/API. Production traces can be converted into datasets for iterative improvement.
 
 ### Prompt Management
+
 Centrally manage and version prompts outside of application code. Prompts can be deployed to specific environments (dev, staging, prod) and fetched dynamically at runtime via the API. Supports YAML export for local use. Domain experts can iterate on prompts independently through the UI.
+
 - Prompts are scoped to projects and environments.
 - Configurations can be retrieved by project, environment, and name.
 
 ### Annotation Queues
+
 Collect human feedback from domain experts on traces. Turn qualitative insights into labeled datasets for evaluation or fine-tuning.
 
 ### Feedback & Metrics
+
 Post user feedback and custom metrics against specific sessions or events. This data can be used for monitoring quality and building evaluation datasets.
 
 ### Alerts
+
 Set up alerts to monitor critical failures or metric drift over time. Alerts trigger when quality metrics degrade based on configured conditions.
+
 - Alerts are configured in the HoneyHive dashboard.
 
 ### Administration
+
 Manage workspace settings, invite teammates, and configure role-based access control (RBAC). Supports SSO and SAML for enterprise authentication.
 
 ## Events

@@ -104,11 +104,11 @@ export class Client {
     return createAxios({
       baseURL: 'https://developer.junglescout.com',
       headers: {
-        'Authorization': this.token,
+        Authorization: this.token,
         'X-API-Type': this.apiType,
-        'Accept': 'application/vnd.junglescout.v1+json',
-        'Content-Type': 'application/vnd.api+json',
-      },
+        Accept: 'application/vnd.junglescout.v1+json',
+        'Content-Type': 'application/vnd.api+json'
+      }
     });
   }
 
@@ -127,31 +127,42 @@ export class Client {
     let http = this.createAxiosInstance();
 
     let attributes: Record<string, any> = {
-      asins: params.asins,
+      asins: params.asins
     };
 
-    if (params.includeVariants !== undefined) attributes.include_variants = params.includeVariants;
-    if (params.minMonthlySearchVolumeExact !== undefined) attributes.min_monthly_search_volume_exact = params.minMonthlySearchVolumeExact;
-    if (params.maxMonthlySearchVolumeExact !== undefined) attributes.max_monthly_search_volume_exact = params.maxMonthlySearchVolumeExact;
-    if (params.minMonthlySearchVolumeBroad !== undefined) attributes.min_monthly_search_volume_broad = params.minMonthlySearchVolumeBroad;
-    if (params.maxMonthlySearchVolumeBroad !== undefined) attributes.max_monthly_search_volume_broad = params.maxMonthlySearchVolumeBroad;
+    if (params.includeVariants !== undefined)
+      attributes.include_variants = params.includeVariants;
+    if (params.minMonthlySearchVolumeExact !== undefined)
+      attributes.min_monthly_search_volume_exact = params.minMonthlySearchVolumeExact;
+    if (params.maxMonthlySearchVolumeExact !== undefined)
+      attributes.max_monthly_search_volume_exact = params.maxMonthlySearchVolumeExact;
+    if (params.minMonthlySearchVolumeBroad !== undefined)
+      attributes.min_monthly_search_volume_broad = params.minMonthlySearchVolumeBroad;
+    if (params.maxMonthlySearchVolumeBroad !== undefined)
+      attributes.max_monthly_search_volume_broad = params.maxMonthlySearchVolumeBroad;
     if (params.minWordCount !== undefined) attributes.min_word_count = params.minWordCount;
     if (params.maxWordCount !== undefined) attributes.max_word_count = params.maxWordCount;
-    if (params.minOrganicProductCount !== undefined) attributes.min_organic_product_count = params.minOrganicProductCount;
-    if (params.maxOrganicProductCount !== undefined) attributes.max_organic_product_count = params.maxOrganicProductCount;
+    if (params.minOrganicProductCount !== undefined)
+      attributes.min_organic_product_count = params.minOrganicProductCount;
+    if (params.maxOrganicProductCount !== undefined)
+      attributes.max_organic_product_count = params.maxOrganicProductCount;
 
     let queryParams: Record<string, string> = {
       marketplace: this.marketplace,
-      ...this.buildPaginationParams(params.pagination),
+      ...this.buildPaginationParams(params.pagination)
     };
     if (params.sort) queryParams.sort = params.sort;
 
-    let response = await http.post('/api/keywords/keywords_by_asin_query', {
-      data: {
-        type: 'keywords_by_asin_query',
-        attributes,
+    let response = await http.post(
+      '/api/keywords/keywords_by_asin_query',
+      {
+        data: {
+          type: 'keywords_by_asin_query',
+          attributes
+        }
       },
-    }, { params: queryParams });
+      { params: queryParams }
+    );
 
     return response.data;
   }
@@ -160,31 +171,41 @@ export class Client {
     let http = this.createAxiosInstance();
 
     let attributes: Record<string, any> = {
-      search_terms: params.searchTerms,
+      search_terms: params.searchTerms
     };
 
     if (params.categories?.length) attributes.categories = params.categories;
-    if (params.minMonthlySearchVolumeExact !== undefined) attributes.min_monthly_search_volume_exact = params.minMonthlySearchVolumeExact;
-    if (params.maxMonthlySearchVolumeExact !== undefined) attributes.max_monthly_search_volume_exact = params.maxMonthlySearchVolumeExact;
-    if (params.minMonthlySearchVolumeBroad !== undefined) attributes.min_monthly_search_volume_broad = params.minMonthlySearchVolumeBroad;
-    if (params.maxMonthlySearchVolumeBroad !== undefined) attributes.max_monthly_search_volume_broad = params.maxMonthlySearchVolumeBroad;
+    if (params.minMonthlySearchVolumeExact !== undefined)
+      attributes.min_monthly_search_volume_exact = params.minMonthlySearchVolumeExact;
+    if (params.maxMonthlySearchVolumeExact !== undefined)
+      attributes.max_monthly_search_volume_exact = params.maxMonthlySearchVolumeExact;
+    if (params.minMonthlySearchVolumeBroad !== undefined)
+      attributes.min_monthly_search_volume_broad = params.minMonthlySearchVolumeBroad;
+    if (params.maxMonthlySearchVolumeBroad !== undefined)
+      attributes.max_monthly_search_volume_broad = params.maxMonthlySearchVolumeBroad;
     if (params.minWordCount !== undefined) attributes.min_word_count = params.minWordCount;
     if (params.maxWordCount !== undefined) attributes.max_word_count = params.maxWordCount;
-    if (params.minOrganicProductCount !== undefined) attributes.min_organic_product_count = params.minOrganicProductCount;
-    if (params.maxOrganicProductCount !== undefined) attributes.max_organic_product_count = params.maxOrganicProductCount;
+    if (params.minOrganicProductCount !== undefined)
+      attributes.min_organic_product_count = params.minOrganicProductCount;
+    if (params.maxOrganicProductCount !== undefined)
+      attributes.max_organic_product_count = params.maxOrganicProductCount;
 
     let queryParams: Record<string, string> = {
       marketplace: this.marketplace,
-      ...this.buildPaginationParams(params.pagination),
+      ...this.buildPaginationParams(params.pagination)
     };
     if (params.sort) queryParams.sort = params.sort;
 
-    let response = await http.post('/api/keywords/keywords_by_keyword_query', {
-      data: {
-        type: 'keywords_by_keyword_query',
-        attributes,
+    let response = await http.post(
+      '/api/keywords/keywords_by_keyword_query',
+      {
+        data: {
+          type: 'keywords_by_keyword_query',
+          attributes
+        }
       },
-    }, { params: queryParams });
+      { params: queryParams }
+    );
 
     return response.data;
   }
@@ -197,8 +218,8 @@ export class Client {
         marketplace: this.marketplace,
         keyword: params.keyword,
         start_date: params.startDate,
-        end_date: params.endDate,
-      },
+        end_date: params.endDate
+      }
     });
 
     return response.data;
@@ -214,8 +235,10 @@ export class Client {
     if (params.categories?.length) attributes.categories = params.categories;
     if (params.productTiers?.length) attributes.product_tiers = params.productTiers;
     if (params.sellerTypes?.length) attributes.seller_types = params.sellerTypes;
-    if (params.excludeTopBrands !== undefined) attributes.exclude_top_brands = params.excludeTopBrands;
-    if (params.excludeUnavailableProducts !== undefined) attributes.exclude_unavailable_products = params.excludeUnavailableProducts;
+    if (params.excludeTopBrands !== undefined)
+      attributes.exclude_top_brands = params.excludeTopBrands;
+    if (params.excludeUnavailableProducts !== undefined)
+      attributes.exclude_unavailable_products = params.excludeUnavailableProducts;
     if (params.minPrice !== undefined) attributes.min_price = params.minPrice;
     if (params.maxPrice !== undefined) attributes.max_price = params.maxPrice;
     if (params.minNet !== undefined) attributes.min_net = params.minNet;
@@ -239,16 +262,20 @@ export class Client {
 
     let queryParams: Record<string, string> = {
       marketplace: this.marketplace,
-      ...this.buildPaginationParams(params.pagination),
+      ...this.buildPaginationParams(params.pagination)
     };
     if (params.sort) queryParams.sort = params.sort;
 
-    let response = await http.post('/api/product_database_query', {
-      data: {
-        type: 'product_database_query',
-        attributes,
+    let response = await http.post(
+      '/api/product_database_query',
+      {
+        data: {
+          type: 'product_database_query',
+          attributes
+        }
       },
-    }, { params: queryParams });
+      { params: queryParams }
+    );
 
     return response.data;
   }
@@ -261,8 +288,8 @@ export class Client {
         marketplace: this.marketplace,
         asin: params.asin,
         start_date: params.startDate,
-        end_date: params.endDate,
-      },
+        end_date: params.endDate
+      }
     });
 
     return response.data;
@@ -274,8 +301,8 @@ export class Client {
     let response = await http.get('/api/share_of_voice', {
       params: {
         marketplace: this.marketplace,
-        keyword: params.keyword,
-      },
+        keyword: params.keyword
+      }
     });
 
     return response.data;

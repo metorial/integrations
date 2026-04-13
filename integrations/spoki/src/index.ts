@@ -13,13 +13,9 @@ import {
   manageDeal,
   deleteDeal,
   listDeals,
-  manageLists,
+  manageLists
 } from './tools';
-import {
-  contactEvents,
-  messageEvents,
-  chatEvents,
-} from './triggers';
+import { contactEvents, messageEvents, chatEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,11 +32,7 @@ export let provider = Slate.create({
     manageDeal,
     deleteDeal,
     listDeals,
-    manageLists,
+    manageLists
   ],
-  triggers: [
-    contactEvents,
-    messageEvents,
-    chatEvents,
-  ],
+  triggers: [contactEvents, messageEvents, chatEvents]
 });

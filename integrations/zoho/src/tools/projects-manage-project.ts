@@ -10,46 +10,67 @@ export let projectsManageProject = SlateTool.create(spec, {
   description: `Create, update, delete, or list projects in Zoho Projects. Manage project names, descriptions, status, start/end dates, and owners. Also supports listing tasks and milestones within a project.`,
   instructions: [
     'The portalId is required for all Zoho Projects operations.',
-    'Use action "list_tasks" or "list_milestones" with a projectId to view items within a project.',
+    'Use action "list_tasks" or "list_milestones" with a projectId to view items within a project.'
   ],
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    portalId: z.string().describe('Zoho Projects portal ID'),
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'list_tasks', 'list_milestones']).describe('Operation to perform'),
-    projectId: z.string().optional().describe('Project ID (required for get, update, delete, list_tasks, list_milestones)'),
-    name: z.string().optional().describe('Project name (required for create)'),
-    description: z.string().optional().describe('Project description'),
-    status: z.string().optional().describe('Project status (e.g., "active", "archived")'),
-    startDate: z.string().optional().describe('Start date (MM-dd-yyyy)'),
-    endDate: z.string().optional().describe('End date (MM-dd-yyyy)'),
-    ownerId: z.string().optional().describe('Project owner user ID'),
-    index: z.number().optional().describe('Start index for pagination'),
-    range: z.number().optional().describe('Number of records to return'),
-  }))
-  .output(z.object({
-    projects: z.array(z.record(z.string(), z.any())).optional().describe('List of projects'),
-    project: z.record(z.string(), z.any()).optional().describe('Single project'),
-    tasks: z.array(z.record(z.string(), z.any())).optional().describe('Tasks within a project'),
-    milestones: z.array(z.record(z.string(), z.any())).optional().describe('Milestones within a project'),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      portalId: z.string().describe('Zoho Projects portal ID'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete', 'list_tasks', 'list_milestones'])
+        .describe('Operation to perform'),
+      projectId: z
+        .string()
+        .optional()
+        .describe(
+          'Project ID (required for get, update, delete, list_tasks, list_milestones)'
+        ),
+      name: z.string().optional().describe('Project name (required for create)'),
+      description: z.string().optional().describe('Project description'),
+      status: z.string().optional().describe('Project status (e.g., "active", "archived")'),
+      startDate: z.string().optional().describe('Start date (MM-dd-yyyy)'),
+      endDate: z.string().optional().describe('End date (MM-dd-yyyy)'),
+      ownerId: z.string().optional().describe('Project owner user ID'),
+      index: z.number().optional().describe('Start index for pagination'),
+      range: z.number().optional().describe('Number of records to return')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(z.record(z.string(), z.any())).optional().describe('List of projects'),
+      project: z.record(z.string(), z.any()).optional().describe('Single project'),
+      tasks: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Tasks within a project'),
+      milestones: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Milestones within a project'),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
-    let client = new ZohoProjectsClient({ token: ctx.auth.token, datacenter: dc, portalId: ctx.input.portalId });
+    let client = new ZohoProjectsClient({
+      token: ctx.auth.token,
+      datacenter: dc,
+      portalId: ctx.input.portalId
+    });
 
     if (ctx.input.action === 'list') {
       let result = await client.listProjects({
         index: ctx.input.index,
         range: ctx.input.range,
-        status: ctx.input.status,
+        status: ctx.input.status
       });
       let projects = result?.projects || [];
       return {
         output: { projects },
-        message: `Retrieved **${projects.length}** projects.`,
+        message: `Retrieved **${projects.length}** projects.`
       };
     }
 
@@ -59,7 +80,7 @@ export let projectsManageProject = SlateTool.create(spec, {
       let project = result?.projects?.[0] || result;
       return {
         output: { project },
-        message: `Fetched project **${project?.name || ctx.input.projectId}**.`,
+        message: `Fetched project **${project?.name || ctx.input.projectId}**.`
       };
     }
 
@@ -76,7 +97,7 @@ export let projectsManageProject = SlateTool.create(spec, {
       let project = result?.projects?.[0] || result;
       return {
         output: { project },
-        message: `Created project **${project?.name}**.`,
+        message: `Created project **${project?.name}**.`
       };
     }
 
@@ -94,7 +115,7 @@ export let projectsManageProject = SlateTool.create(spec, {
       let project = result?.projects?.[0] || result;
       return {
         output: { project },
-        message: `Updated project **${ctx.input.projectId}**.`,
+        message: `Updated project **${ctx.input.projectId}**.`
       };
     }
 
@@ -103,7 +124,7 @@ export let projectsManageProject = SlateTool.create(spec, {
       await client.deleteProject(ctx.input.projectId);
       return {
         output: { deleted: true },
-        message: `Deleted project **${ctx.input.projectId}**.`,
+        message: `Deleted project **${ctx.input.projectId}**.`
       };
     }
 
@@ -112,12 +133,12 @@ export let projectsManageProject = SlateTool.create(spec, {
       let result = await client.listTasks(ctx.input.projectId, {
         index: ctx.input.index,
         range: ctx.input.range,
-        status: ctx.input.status,
+        status: ctx.input.status
       });
       let tasks = result?.tasks || [];
       return {
         output: { tasks },
-        message: `Retrieved **${tasks.length}** tasks from project **${ctx.input.projectId}**.`,
+        message: `Retrieved **${tasks.length}** tasks from project **${ctx.input.projectId}**.`
       };
     }
 
@@ -126,14 +147,15 @@ export let projectsManageProject = SlateTool.create(spec, {
       let result = await client.listMilestones(ctx.input.projectId, {
         index: ctx.input.index,
         range: ctx.input.range,
-        status: ctx.input.status,
+        status: ctx.input.status
       });
       let milestones = result?.milestones || [];
       return {
         output: { milestones },
-        message: `Retrieved **${milestones.length}** milestones from project **${ctx.input.projectId}**.`,
+        message: `Retrieved **${milestones.length}** milestones from project **${ctx.input.projectId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

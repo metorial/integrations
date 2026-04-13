@@ -11,7 +11,7 @@ import {
   analyzeSentiment,
   checkSpelling,
   generateQrCode,
-  callApi,
+  callApi
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     analyzeSentiment,
     checkSpelling,
     generateQrCode,
-    callApi,
+    callApi
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

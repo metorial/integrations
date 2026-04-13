@@ -3,33 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createVendor = SlateTool.create(
-  spec,
-  {
-    name: 'Create Vendor',
-    key: 'create_vendor',
-    description: `Creates a new vendor in MaintainX. Vendors supply parts and services and can be linked to purchase orders and assets.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let createVendor = SlateTool.create(spec, {
+  name: 'Create Vendor',
+  key: 'create_vendor',
+  description: `Creates a new vendor in MaintainX. Vendors supply parts and services and can be linked to purchase orders and assets.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Vendor name'),
-    email: z.string().optional().describe('Contact email address'),
-    phone: z.string().optional().describe('Contact phone number'),
-    address: z.string().optional().describe('Vendor address'),
-    website: z.string().optional().describe('Vendor website URL'),
-  }))
-  .output(z.object({
-    vendorId: z.number().describe('ID of the created vendor'),
-    name: z.string().describe('Vendor name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Vendor name'),
+      email: z.string().optional().describe('Contact email address'),
+      phone: z.string().optional().describe('Contact phone number'),
+      address: z.string().optional().describe('Vendor address'),
+      website: z.string().optional().describe('Vendor website URL')
+    })
+  )
+  .output(
+    z.object({
+      vendorId: z.number().describe('ID of the created vendor'),
+      name: z.string().describe('Vendor name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      organizationId: ctx.config.organizationId,
+      organizationId: ctx.config.organizationId
     });
 
     let result = await client.createVendor({
@@ -37,7 +38,7 @@ export let createVendor = SlateTool.create(
       email: ctx.input.email,
       phone: ctx.input.phone,
       address: ctx.input.address,
-      website: ctx.input.website,
+      website: ctx.input.website
     });
 
     let vendorId = result.id ?? result.vendor?.id;
@@ -45,8 +46,9 @@ export let createVendor = SlateTool.create(
     return {
       output: {
         vendorId,
-        name: ctx.input.name,
+        name: ctx.input.name
       },
-      message: `Created vendor **"${ctx.input.name}"** (ID: ${vendorId}).`,
+      message: `Created vendor **"${ctx.input.name}"** (ID: ${vendorId}).`
     };
-  }).build();
+  })
+  .build();

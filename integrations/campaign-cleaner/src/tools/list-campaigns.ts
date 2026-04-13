@@ -10,23 +10,24 @@ let campaignListItemSchema = z.object({
   dateAdded: z.string().describe('Timestamp when the campaign was submitted')
 });
 
-export let listCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'List Campaigns',
-    key: 'list_campaigns',
-    description: `Retrieve a list of all campaigns in your Campaign Cleaner account with their current processing status. Use this to find campaign IDs, check which campaigns are completed, or get an overview of all submitted campaigns.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listCampaigns = SlateTool.create(spec, {
+  name: 'List Campaigns',
+  key: 'list_campaigns',
+  description: `Retrieve a list of all campaigns in your Campaign Cleaner account with their current processing status. Use this to find campaign IDs, check which campaigns are completed, or get an overview of all submitted campaigns.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    campaigns: z.array(campaignListItemSchema).describe('List of all campaigns in the account')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      campaigns: z
+        .array(campaignListItemSchema)
+        .describe('List of all campaigns in the account')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let campaigns = await client.getCampaignList();
@@ -45,4 +46,5 @@ export let listCampaigns = SlateTool.create(
       output: { campaigns: mapped },
       message: `Found **${mapped.length}** campaigns: ${completed} completed, ${processing} processing.`
     };
-  }).build();
+  })
+  .build();

@@ -3,35 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContact = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact',
-    key: 'manage_contact',
-    description: `Add, update, or remove a contact from a contact list. When adding a contact, provide at minimum an email address. Supports custom fields (Field1 through Field24).`,
-    instructions: [
-      'When adding a contact, `emailPermission` should be set to true to indicate the contact has opted in to receive emails.',
-      'Custom fields are stored as `field1` through `field24` in the `customFields` object.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['add', 'update', 'remove']).describe('Action to perform on the contact'),
-    listId: z.string().describe('ID of the contact list'),
-    contactId: z.string().optional().describe('ID of the contact (required for update and remove)'),
-    email: z.string().optional().describe('Contact email address (required for add)'),
-    firstName: z.string().optional().describe('Contact first name'),
-    lastName: z.string().optional().describe('Contact last name'),
-    middleName: z.string().optional().describe('Contact middle name'),
-    emailPermission: z.boolean().optional().describe('Whether the contact has opted in to receive emails'),
-    customFields: z.record(z.string(), z.string()).optional()
-      .describe('Custom field values, keyed as "field1" through "field24"'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the action was successful'),
-    contactId: z.string().optional().describe('ID of the created or updated contact'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageContact = SlateTool.create(spec, {
+  name: 'Manage Contact',
+  key: 'manage_contact',
+  description: `Add, update, or remove a contact from a contact list. When adding a contact, provide at minimum an email address. Supports custom fields (Field1 through Field24).`,
+  instructions: [
+    'When adding a contact, `emailPermission` should be set to true to indicate the contact has opted in to receive emails.',
+    'Custom fields are stored as `field1` through `field24` in the `customFields` object.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['add', 'update', 'remove']).describe('Action to perform on the contact'),
+      listId: z.string().describe('ID of the contact list'),
+      contactId: z
+        .string()
+        .optional()
+        .describe('ID of the contact (required for update and remove)'),
+      email: z.string().optional().describe('Contact email address (required for add)'),
+      firstName: z.string().optional().describe('Contact first name'),
+      lastName: z.string().optional().describe('Contact last name'),
+      middleName: z.string().optional().describe('Contact middle name'),
+      emailPermission: z
+        .boolean()
+        .optional()
+        .describe('Whether the contact has opted in to receive emails'),
+      customFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom field values, keyed as "field1" through "field24"')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the action was successful'),
+      contactId: z.string().optional().describe('ID of the created or updated contact')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, listId, contactId } = ctx.input;
     let success = false;
@@ -44,7 +53,8 @@ export let manageContact = SlateTool.create(
       if (ctx.input.firstName) data.FirstName = ctx.input.firstName;
       if (ctx.input.lastName) data.LastName = ctx.input.lastName;
       if (ctx.input.middleName) data.MiddleName = ctx.input.middleName;
-      if (ctx.input.emailPermission !== undefined) data.EmailPerm = ctx.input.emailPermission ? '1' : '0';
+      if (ctx.input.emailPermission !== undefined)
+        data.EmailPerm = ctx.input.emailPermission ? '1' : '0';
 
       if (ctx.input.customFields) {
         for (let [key, value] of Object.entries(ctx.input.customFields)) {
@@ -95,7 +105,7 @@ export let manageContact = SlateTool.create(
 
     return {
       output: { success, contactId: resultContactId },
-      message,
+      message
     };
   })
   .build();

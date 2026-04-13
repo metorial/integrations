@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'render',
   name: 'Render',
-  description: 'Deploy and manage cloud infrastructure on Render, including web services, APIs, databases, cron jobs, and background workers.',
+  description:
+    'Deploy and manage cloud infrastructure on Render, including web services, APIs, databases, cron jobs, and background workers.',
   metadata: {},
   config,
-  auth,
+  auth
 });

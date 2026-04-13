@@ -30,7 +30,8 @@ export class DriveClient {
     let params: any = {
       q: query,
       pageSize: options?.pageSize || 50,
-      fields: 'nextPageToken,files(id,name,createdTime,modifiedTime,owners,lastModifyingUser,webViewLink,thumbnailLink)',
+      fields:
+        'nextPageToken,files(id,name,createdTime,modifiedTime,owners,lastModifyingUser,webViewLink,thumbnailLink)',
       orderBy: options?.orderBy || 'modifiedTime desc'
     };
 

@@ -14,7 +14,7 @@ import {
   documentVersions,
   documentCheckinCheckout,
   documentPreview,
-  createFolder,
+  createFolder
 } from './tools';
 import { driveItemChanges } from './triggers';
 
@@ -34,9 +34,7 @@ export let provider = Slate.create({
     documentVersions,
     documentCheckinCheckout,
     documentPreview,
-    createFolder,
+    createFolder
   ],
-  triggers: [
-    driveItemChanges,
-  ],
+  triggers: [driveItemChanges]
 });

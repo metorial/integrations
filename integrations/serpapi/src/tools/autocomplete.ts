@@ -3,35 +3,40 @@ import { SerpApiClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let autocompleteTool = SlateTool.create(
-  spec,
-  {
-    name: 'Autocomplete',
-    key: 'autocomplete',
-    description: `Get search query suggestions from Google Autocomplete. Returns a list of suggested completions for a partial query. Useful for keyword research, understanding search intent, and building search interfaces.`,
-    tags: {
-      readOnly: true,
-    },
+export let autocompleteTool = SlateTool.create(spec, {
+  name: 'Autocomplete',
+  key: 'autocomplete',
+  description: `Get search query suggestions from Google Autocomplete. Returns a list of suggested completions for a partial query. Useful for keyword research, understanding search intent, and building search interfaces.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Partial search query to get suggestions for'),
-    language: z.string().optional().describe('Language code (e.g., "en")'),
-    country: z.string().optional().describe('Country code (e.g., "us")'),
-    noCache: z.boolean().optional().describe('Force fresh results'),
-  }))
-  .output(z.object({
-    suggestions: z.array(z.object({
-      value: z.string().optional().describe('Suggested query text'),
-      type: z.string().optional().describe('Suggestion type (e.g., "regular", "entity")'),
-    })).describe('Autocomplete suggestions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Partial search query to get suggestions for'),
+      language: z.string().optional().describe('Language code (e.g., "en")'),
+      country: z.string().optional().describe('Country code (e.g., "us")'),
+      noCache: z.boolean().optional().describe('Force fresh results')
+    })
+  )
+  .output(
+    z.object({
+      suggestions: z
+        .array(
+          z.object({
+            value: z.string().optional().describe('Suggested query text'),
+            type: z.string().optional().describe('Suggestion type (e.g., "regular", "entity")')
+          })
+        )
+        .describe('Autocomplete suggestions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SerpApiClient({ apiKey: ctx.auth.token });
 
     let params: Record<string, any> = {
       engine: 'google_autocomplete',
-      q: ctx.input.query,
+      q: ctx.input.query
     };
 
     if (ctx.input.language) params.hl = ctx.input.language;
@@ -42,13 +47,14 @@ export let autocompleteTool = SlateTool.create(
 
     let suggestions = (data.suggestions || []).map((s: any) => ({
       value: s.value,
-      type: s.type,
+      type: s.type
     }));
 
     return {
       output: {
-        suggestions,
+        suggestions
       },
-      message: `Autocomplete for "${ctx.input.query}" returned **${suggestions.length}** suggestions.`,
+      message: `Autocomplete for "${ctx.input.query}" returned **${suggestions.length}** suggestions.`
     };
-  }).build();
+  })
+  .build();

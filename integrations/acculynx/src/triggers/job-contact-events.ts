@@ -3,48 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let JOB_CONTACT_TOPICS = [
-  'job.primary.contact_changed',
-  'job.contacts.primary_changed',
-];
+let JOB_CONTACT_TOPICS = ['job.primary.contact_changed', 'job.contacts.primary_changed'];
 
-export let jobContactEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Contact Events',
-    key: 'job_contact_events',
-    description: 'Triggered when the primary contact on a job is changed or when primary contact details are modified.',
-  }
-)
-  .input(z.object({
-    topicName: z.string().describe('The webhook topic name'),
-    eventId: z.string().describe('Unique event identifier'),
-    jobId: z.string().optional().describe('ID of the affected job'),
-    payload: z.record(z.string(), z.any()).describe('Raw event payload'),
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('ID of the affected job'),
-    topicName: z.string().describe('The webhook topic that fired'),
-    eventData: z.record(z.string(), z.any()).describe('Full event data from AccuLynx'),
-  }))
+export let jobContactEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Job Contact Events',
+  key: 'job_contact_events',
+  description:
+    'Triggered when the primary contact on a job is changed or when primary contact details are modified.'
+})
+  .input(
+    z.object({
+      topicName: z.string().describe('The webhook topic name'),
+      eventId: z.string().describe('Unique event identifier'),
+      jobId: z.string().optional().describe('ID of the affected job'),
+      payload: z.record(z.string(), z.any()).describe('Raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().optional().describe('ID of the affected job'),
+      topicName: z.string().describe('The webhook topic that fired'),
+      eventData: z.record(z.string(), z.any()).describe('Full event data from AccuLynx')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let subscription = await client.createSubscription({
         consumerUrl: ctx.input.webhookBaseUrl,
         techContact: 'webhooks@slates.dev',
-        topicNames: JOB_CONTACT_TOPICS,
+        topicNames: JOB_CONTACT_TOPICS
       });
 
       return {
         registrationDetails: {
-          subscriptionId: subscription.subscriptionId ?? subscription.id,
-        },
+          subscriptionId: subscription.subscriptionId ?? subscription.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let subscriptionId = ctx.input.registrationDetails?.subscriptionId;
       if (subscriptionId) {
@@ -52,25 +51,27 @@ export let jobContactEventsTrigger = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let events = Array.isArray(data) ? data : [data];
 
       let inputs = events.map((event: any) => ({
-        topicName: event.topicName ?? event.topic ?? event.type ?? 'job.primary.contact_changed',
+        topicName:
+          event.topicName ?? event.topic ?? event.type ?? 'job.primary.contact_changed',
         eventId: event.eventId ?? event.id ?? crypto.randomUUID(),
         jobId: event.jobId ?? event.data?.jobId ?? event.data?.id,
-        payload: event,
+        payload: event
       }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let topicName = ctx.input.topicName;
-      let type = topicName === 'job.contacts.primary_changed'
-        ? 'job.contact_details.changed'
-        : 'job.primary_contact.changed';
+      let type =
+        topicName === 'job.contacts.primary_changed'
+          ? 'job.contact_details.changed'
+          : 'job.primary_contact.changed';
 
       return {
         type,
@@ -78,9 +79,9 @@ export let jobContactEventsTrigger = SlateTrigger.create(
         output: {
           jobId: ctx.input.jobId,
           topicName,
-          eventData: ctx.input.payload,
-        },
+          eventData: ctx.input.payload
+        }
       };
-    },
+    }
   })
   .build();

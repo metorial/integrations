@@ -40,14 +40,14 @@ import {
   listPolls,
   getPoll,
   searchSalesforce,
-  manageSalesforceRecord,
+  manageSalesforceRecord
 } from './tools';
 import {
   messageEvents,
   engagementEvents,
   pollEvents,
   meetingEvents,
-  unsubscribeEvents,
+  unsubscribeEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -92,13 +92,7 @@ export let provider = Slate.create({
     listPolls,
     getPoll,
     searchSalesforce,
-    manageSalesforceRecord,
+    manageSalesforceRecord
   ],
-  triggers: [
-    messageEvents,
-    engagementEvents,
-    pollEvents,
-    meetingEvents,
-    unsubscribeEvents,
-  ],
+  triggers: [messageEvents, engagementEvents, pollEvents, meetingEvents, unsubscribeEvents]
 });

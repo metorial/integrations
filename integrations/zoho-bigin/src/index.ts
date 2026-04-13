@@ -20,7 +20,7 @@ import {
   getModuleLayouts,
   getCustomViews,
   getRelatedRecords,
-  getUsers,
+  getUsers
 } from './tools';
 import { recordEvents } from './triggers';
 
@@ -46,9 +46,7 @@ export let provider = Slate.create({
     getModuleLayouts,
     getCustomViews,
     getRelatedRecords,
-    getUsers,
+    getUsers
   ],
-  triggers: [
-    recordEvents,
-  ],
+  triggers: [recordEvents]
 });

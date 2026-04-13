@@ -3,52 +3,65 @@ import { CampaignClient } from '../lib/campaign-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageMailing = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Mailing',
-    key: 'manage_mailing',
-    description: `Create, update, retrieve, send, copy, or list mailings in Optimizely Campaign.
+export let manageMailing = SlateTool.create(spec, {
+  name: 'Manage Mailing',
+  key: 'manage_mailing',
+  description: `Create, update, retrieve, send, copy, or list mailings in Optimizely Campaign.
 Mailings are email messages that can be designed, configured, and sent to recipient lists.`,
-    instructions: [
-      'The config must have campaignClientId set for Campaign API calls.',
-      'Use "send" action to trigger the sending of a prepared mailing.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'The config must have campaignClientId set for Campaign API calls.',
+    'Use "send" action to trigger the sending of a prepared mailing.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'list', 'send', 'copy']).describe('Action to perform'),
-    mailingId: z.number().optional().describe('Mailing ID (required for get, update, send, copy)'),
-    name: z.string().optional().describe('Mailing name (for create/update)'),
-    subject: z.string().optional().describe('Email subject (for create/update)'),
-    senderAddress: z.string().optional().describe('Sender email address (for create/update)'),
-    senderName: z.string().optional().describe('Sender display name (for create/update)'),
-    recipientListId: z.number().optional().describe('Recipient list ID (for create/update)'),
-    content: z.record(z.string(), z.any()).optional().describe('Mailing content data (for create/update)'),
-    page: z.number().optional().describe('Page number (for list)'),
-    pageSize: z.number().optional().describe('Items per page (for list)'),
-  }))
-  .output(z.object({
-    mailing: z.any().optional().describe('Mailing data'),
-    mailings: z.array(z.any()).optional().describe('List of mailings'),
-  }))
-  .handleInvocation(async (ctx) => {
-    if (!ctx.config.campaignClientId) throw new Error('campaignClientId must be set in config for Campaign API');
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'get', 'list', 'send', 'copy'])
+        .describe('Action to perform'),
+      mailingId: z
+        .number()
+        .optional()
+        .describe('Mailing ID (required for get, update, send, copy)'),
+      name: z.string().optional().describe('Mailing name (for create/update)'),
+      subject: z.string().optional().describe('Email subject (for create/update)'),
+      senderAddress: z
+        .string()
+        .optional()
+        .describe('Sender email address (for create/update)'),
+      senderName: z.string().optional().describe('Sender display name (for create/update)'),
+      recipientListId: z.number().optional().describe('Recipient list ID (for create/update)'),
+      content: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Mailing content data (for create/update)'),
+      page: z.number().optional().describe('Page number (for list)'),
+      pageSize: z.number().optional().describe('Items per page (for list)')
+    })
+  )
+  .output(
+    z.object({
+      mailing: z.any().optional().describe('Mailing data'),
+      mailings: z.array(z.any()).optional().describe('List of mailings')
+    })
+  )
+  .handleInvocation(async ctx => {
+    if (!ctx.config.campaignClientId)
+      throw new Error('campaignClientId must be set in config for Campaign API');
     let client = new CampaignClient(ctx.auth.token, ctx.config.campaignClientId);
 
     switch (ctx.input.action) {
       case 'list': {
         let mailings = await client.listMailings({
           page: ctx.input.page,
-          pageSize: ctx.input.pageSize,
+          pageSize: ctx.input.pageSize
         });
         return {
           output: { mailings: Array.isArray(mailings) ? mailings : [] },
-          message: `Listed Campaign mailings.`,
+          message: `Listed Campaign mailings.`
         };
       }
       case 'get': {
@@ -56,7 +69,7 @@ Mailings are email messages that can be designed, configured, and sent to recipi
         let mailing = await client.getMailing(ctx.input.mailingId);
         return {
           output: { mailing },
-          message: `Retrieved mailing **${mailing.name || ctx.input.mailingId}**.`,
+          message: `Retrieved mailing **${mailing.name || ctx.input.mailingId}**.`
         };
       }
       case 'create': {
@@ -67,11 +80,11 @@ Mailings are email messages that can be designed, configured, and sent to recipi
           senderAddress: ctx.input.senderAddress,
           senderName: ctx.input.senderName,
           recipientListId: ctx.input.recipientListId,
-          content: ctx.input.content,
+          content: ctx.input.content
         });
         return {
           output: { mailing },
-          message: `Created mailing **${mailing.name}**.`,
+          message: `Created mailing **${mailing.name}**.`
         };
       }
       case 'update': {
@@ -79,14 +92,16 @@ Mailings are email messages that can be designed, configured, and sent to recipi
         let updateData: Record<string, any> = {};
         if (ctx.input.name !== undefined) updateData.name = ctx.input.name;
         if (ctx.input.subject !== undefined) updateData.subject = ctx.input.subject;
-        if (ctx.input.senderAddress !== undefined) updateData.senderAddress = ctx.input.senderAddress;
+        if (ctx.input.senderAddress !== undefined)
+          updateData.senderAddress = ctx.input.senderAddress;
         if (ctx.input.senderName !== undefined) updateData.senderName = ctx.input.senderName;
-        if (ctx.input.recipientListId !== undefined) updateData.recipientListId = ctx.input.recipientListId;
+        if (ctx.input.recipientListId !== undefined)
+          updateData.recipientListId = ctx.input.recipientListId;
         if (ctx.input.content !== undefined) updateData.content = ctx.input.content;
         let mailing = await client.updateMailing(ctx.input.mailingId, updateData);
         return {
           output: { mailing },
-          message: `Updated mailing **${mailing.name || ctx.input.mailingId}**.`,
+          message: `Updated mailing **${mailing.name || ctx.input.mailingId}**.`
         };
       }
       case 'send': {
@@ -94,7 +109,7 @@ Mailings are email messages that can be designed, configured, and sent to recipi
         let result = await client.sendMailing(ctx.input.mailingId);
         return {
           output: { mailing: result },
-          message: `Sent mailing ${ctx.input.mailingId}.`,
+          message: `Sent mailing ${ctx.input.mailingId}.`
         };
       }
       case 'copy': {
@@ -102,8 +117,9 @@ Mailings are email messages that can be designed, configured, and sent to recipi
         let mailing = await client.copyMailing(ctx.input.mailingId);
         return {
           output: { mailing },
-          message: `Copied mailing ${ctx.input.mailingId}.`,
+          message: `Copied mailing ${ctx.input.mailingId}.`
         };
       }
     }
-  }).build();
+  })
+  .build();

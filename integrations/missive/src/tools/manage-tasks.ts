@@ -9,45 +9,60 @@ let taskOutputSchema = z.object({
   dueAt: z.number().optional().describe('Due date as Unix timestamp'),
   conversationId: z.string().optional().describe('Parent conversation ID'),
   teamId: z.string().optional().describe('Team ID'),
-  assignees: z.array(z.object({
-    userId: z.string(),
-    name: z.string().optional(),
-  })).optional(),
-  createdAt: z.number().optional().describe('Creation timestamp'),
+  assignees: z
+    .array(
+      z.object({
+        userId: z.string(),
+        name: z.string().optional()
+      })
+    )
+    .optional(),
+  createdAt: z.number().optional().describe('Creation timestamp')
 });
 
-export let manageTasks = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tasks',
-    key: 'manage_tasks',
-    description: `Create or update tasks. Tasks can be standalone or subtasks within conversations. They support states (todo, in_progress, closed), due dates, assignees, and team associations.`,
-    instructions: [
-      'For standalone tasks, provide either teamId or assignees.',
-      'For subtasks within a conversation, set subtask=true and provide conversationId.',
-    ],
-    tags: {
-      destructive: false,
-    },
+export let manageTasks = SlateTool.create(spec, {
+  name: 'Manage Tasks',
+  key: 'manage_tasks',
+  description: `Create or update tasks. Tasks can be standalone or subtasks within conversations. They support states (todo, in_progress, closed), due dates, assignees, and team associations.`,
+  instructions: [
+    'For standalone tasks, provide either teamId or assignees.',
+    'For subtasks within a conversation, set subtask=true and provide conversationId.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update']).describe('Action to perform'),
-    taskId: z.string().optional().describe('Task ID (required for update)'),
-    organizationId: z.string().optional().describe('Organization ID (required when using team or assignees)'),
-    teamId: z.string().optional().describe('Team ID'),
-    assignees: z.array(z.string()).optional().describe('User IDs to assign'),
-    dueAt: z.number().optional().describe('Due date as Unix timestamp'),
-    state: z.enum(['todo', 'in_progress', 'closed']).optional().describe('Task state'),
-    subtask: z.boolean().optional().describe('Create as subtask within a conversation'),
-    conversationId: z.string().optional().describe('Parent conversation ID (for subtasks)'),
-    references: z.array(z.string()).optional().describe('Reference strings to find parent conversation'),
-    subject: z.string().optional().describe('Subject for new conversation if created via references'),
-    addUsers: z.array(z.string()).optional().describe('User IDs to grant conversation access'),
-    addToInbox: z.boolean().optional().describe('Move parent conversation to inbox'),
-  }))
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update']).describe('Action to perform'),
+      taskId: z.string().optional().describe('Task ID (required for update)'),
+      organizationId: z
+        .string()
+        .optional()
+        .describe('Organization ID (required when using team or assignees)'),
+      teamId: z.string().optional().describe('Team ID'),
+      assignees: z.array(z.string()).optional().describe('User IDs to assign'),
+      dueAt: z.number().optional().describe('Due date as Unix timestamp'),
+      state: z.enum(['todo', 'in_progress', 'closed']).optional().describe('Task state'),
+      subtask: z.boolean().optional().describe('Create as subtask within a conversation'),
+      conversationId: z.string().optional().describe('Parent conversation ID (for subtasks)'),
+      references: z
+        .array(z.string())
+        .optional()
+        .describe('Reference strings to find parent conversation'),
+      subject: z
+        .string()
+        .optional()
+        .describe('Subject for new conversation if created via references'),
+      addUsers: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to grant conversation access'),
+      addToInbox: z.boolean().optional().describe('Move parent conversation to inbox')
+    })
+  )
   .output(taskOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let fields: Record<string, any> = {};
@@ -74,9 +89,9 @@ export let manageTasks = SlateTool.create(
           conversationId: t.conversation?.id,
           teamId: t.team?.id,
           assignees: t.assignees?.map((a: any) => ({ userId: a.id, name: a.name })),
-          createdAt: t.created_at,
+          createdAt: t.created_at
         },
-        message: `Created task **${t.id}**.`,
+        message: `Created task **${t.id}**.`
       };
     }
 
@@ -92,9 +107,9 @@ export let manageTasks = SlateTool.create(
         conversationId: t.conversation?.id,
         teamId: t.team?.id,
         assignees: t.assignees?.map((a: any) => ({ userId: a.id, name: a.name })),
-        createdAt: t.created_at,
+        createdAt: t.created_at
       },
-      message: `Updated task **${ctx.input.taskId}**.`,
+      message: `Updated task **${ctx.input.taskId}**.`
     };
   })
   .build();

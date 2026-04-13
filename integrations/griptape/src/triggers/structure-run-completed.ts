@@ -3,36 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let structureRunCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Structure Run Completed',
-    key: 'structure_run_completed',
-    description: 'Triggers when a structure run reaches a terminal state (succeeded, failed, error, or cancelled).',
-  }
-)
-  .input(z.object({
-    structureRunId: z.string().describe('ID of the completed run'),
-    structureId: z.string().describe('ID of the structure'),
-    status: z.string().describe('Terminal status of the run'),
-    output: z.any().optional().describe('Output of the run'),
-    createdAt: z.string().describe('When the run was created'),
-    completedAt: z.string().optional().describe('When the run completed'),
-  }))
-  .output(z.object({
-    structureRunId: z.string().describe('ID of the completed run'),
-    structureId: z.string().describe('ID of the structure'),
-    status: z.string().describe('Terminal status of the run'),
-    output: z.any().optional().describe('Output of the run'),
-    createdAt: z.string().describe('When the run was created'),
-    completedAt: z.string().optional().describe('When the run completed'),
-  }))
+export let structureRunCompleted = SlateTrigger.create(spec, {
+  name: 'Structure Run Completed',
+  key: 'structure_run_completed',
+  description:
+    'Triggers when a structure run reaches a terminal state (succeeded, failed, error, or cancelled).'
+})
+  .input(
+    z.object({
+      structureRunId: z.string().describe('ID of the completed run'),
+      structureId: z.string().describe('ID of the structure'),
+      status: z.string().describe('Terminal status of the run'),
+      output: z.any().optional().describe('Output of the run'),
+      createdAt: z.string().describe('When the run was created'),
+      completedAt: z.string().optional().describe('When the run completed')
+    })
+  )
+  .output(
+    z.object({
+      structureRunId: z.string().describe('ID of the completed run'),
+      structureId: z.string().describe('ID of the structure'),
+      status: z.string().describe('Terminal status of the run'),
+      output: z.any().optional().describe('Output of the run'),
+      createdAt: z.string().describe('When the run was created'),
+      completedAt: z.string().optional().describe('When the run completed')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
 
       let knownCompletedIds: string[] = ctx.state?.knownCompletedIds ?? [];
@@ -59,7 +61,7 @@ export let structureRunCompleted = SlateTrigger.create(
         try {
           let runsResult = await client.listStructureRuns(structureId, {
             pageSize: 20,
-            status: ['SUCCEEDED', 'FAILED', 'ERROR', 'CANCELLED'],
+            status: ['SUCCEEDED', 'FAILED', 'ERROR', 'CANCELLED']
           });
 
           for (let run of runsResult.items) {
@@ -70,7 +72,7 @@ export let structureRunCompleted = SlateTrigger.create(
                 status: run.status,
                 output: run.output,
                 createdAt: run.created_at,
-                completedAt: run.completed_at,
+                completedAt: run.completed_at
               });
               newCompletedIds.push(run.structure_run_id);
             }
@@ -89,12 +91,12 @@ export let structureRunCompleted = SlateTrigger.create(
         inputs,
         updatedState: {
           knownCompletedIds: newCompletedIds,
-          structureIds,
-        },
+          structureIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `structure_run.${ctx.input.status.toLowerCase()}`,
         id: ctx.input.structureRunId,
@@ -104,9 +106,9 @@ export let structureRunCompleted = SlateTrigger.create(
           status: ctx.input.status,
           output: ctx.input.output,
           createdAt: ctx.input.createdAt,
-          completedAt: ctx.input.completedAt,
-        },
+          completedAt: ctx.input.completedAt
+        }
       };
-    },
+    }
   })
   .build();

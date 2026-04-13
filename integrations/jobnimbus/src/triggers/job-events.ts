@@ -3,48 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Events',
-    key: 'job_events',
-    description: 'Triggers when jobs are created or updated in JobNimbus. Polls for recently modified jobs.'
-  }
-)
-  .input(z.object({
-    jobId: z.string().describe('Unique JobNimbus ID of the job'),
-    name: z.string().optional().describe('Job name'),
-    description: z.string().optional().describe('Job description'),
-    number: z.string().optional().describe('Job number'),
-    statusName: z.string().optional().describe('Current workflow status'),
-    recordTypeName: z.string().optional().describe('Workflow type name'),
-    primaryContactId: z.string().optional().describe('Primary contact ID'),
-    primaryContactName: z.string().optional().describe('Primary contact name'),
-    tags: z.array(z.string()).optional().describe('Tags'),
-    salesRepName: z.string().optional().describe('Sales rep name'),
-    dateCreated: z.number().describe('Unix timestamp of creation'),
-    dateUpdated: z.number().describe('Unix timestamp of last update')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Unique JobNimbus ID of the job'),
-    name: z.string().optional().describe('Job name'),
-    description: z.string().optional().describe('Job description'),
-    number: z.string().optional().describe('Job number'),
-    statusName: z.string().optional().describe('Current workflow status'),
-    recordTypeName: z.string().optional().describe('Workflow type name'),
-    primaryContactId: z.string().optional().describe('Primary contact ID'),
-    primaryContactName: z.string().optional().describe('Primary contact name'),
-    tags: z.array(z.string()).optional().describe('Tags'),
-    salesRepName: z.string().optional().describe('Sales rep name'),
-    dateCreated: z.number().describe('Unix timestamp of creation'),
-    dateUpdated: z.number().describe('Unix timestamp of last update')
-  }))
+export let jobEvents = SlateTrigger.create(spec, {
+  name: 'Job Events',
+  key: 'job_events',
+  description:
+    'Triggers when jobs are created or updated in JobNimbus. Polls for recently modified jobs.'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('Unique JobNimbus ID of the job'),
+      name: z.string().optional().describe('Job name'),
+      description: z.string().optional().describe('Job description'),
+      number: z.string().optional().describe('Job number'),
+      statusName: z.string().optional().describe('Current workflow status'),
+      recordTypeName: z.string().optional().describe('Workflow type name'),
+      primaryContactId: z.string().optional().describe('Primary contact ID'),
+      primaryContactName: z.string().optional().describe('Primary contact name'),
+      tags: z.array(z.string()).optional().describe('Tags'),
+      salesRepName: z.string().optional().describe('Sales rep name'),
+      dateCreated: z.number().describe('Unix timestamp of creation'),
+      dateUpdated: z.number().describe('Unix timestamp of last update')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Unique JobNimbus ID of the job'),
+      name: z.string().optional().describe('Job name'),
+      description: z.string().optional().describe('Job description'),
+      number: z.string().optional().describe('Job number'),
+      statusName: z.string().optional().describe('Current workflow status'),
+      recordTypeName: z.string().optional().describe('Workflow type name'),
+      primaryContactId: z.string().optional().describe('Primary contact ID'),
+      primaryContactName: z.string().optional().describe('Primary contact name'),
+      tags: z.array(z.string()).optional().describe('Tags'),
+      salesRepName: z.string().optional().describe('Sales rep name'),
+      dateCreated: z.number().describe('Unix timestamp of creation'),
+      dateUpdated: z.number().describe('Unix timestamp of last update')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPolledAt = (ctx.state as any)?.lastPolledAt as number | undefined;
@@ -82,7 +84,7 @@ export let jobEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let isNew = ctx.input.dateCreated === ctx.input.dateUpdated;
       let eventType = isNew ? 'job.created' : 'job.updated';
 
@@ -105,4 +107,5 @@ export let jobEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

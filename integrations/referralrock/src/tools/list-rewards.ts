@@ -22,34 +22,35 @@ let rewardSchema = z.object({
   eligibilityDate: z.string().optional().describe('Eligibility date'),
   source: z.string().optional().describe('Source (Referral Action, Status Based, Manual)'),
   payoutDescription: z.string().optional().describe('Payout description'),
-  paymentType: z.string().optional().describe('Payment type'),
+  paymentType: z.string().optional().describe('Payment type')
 });
 
-export let listRewards = SlateTool.create(
-  spec,
-  {
-    name: 'List Rewards',
-    key: 'list_rewards',
-    description: `List rewards across programs, members, or referrals. Filter by program, member, or referral to see earned, pending, and issued rewards.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    programId: z.string().optional().describe('Filter by program ID'),
-    memberId: z.string().optional().describe('Filter by member ID'),
-    referralId: z.string().optional().describe('Filter by referral ID'),
-    offset: z.number().optional().describe('Starting index for pagination (0-based)'),
-    count: z.number().optional().describe('Maximum number of rewards to return'),
-  }))
-  .output(z.object({
-    rewards: z.array(rewardSchema).describe('List of rewards'),
-    total: z.number().optional().describe('Total number of rewards matching filters'),
-    offset: z.number().optional().describe('Current pagination offset'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listRewards = SlateTool.create(spec, {
+  name: 'List Rewards',
+  key: 'list_rewards',
+  description: `List rewards across programs, members, or referrals. Filter by program, member, or referral to see earned, pending, and issued rewards.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      programId: z.string().optional().describe('Filter by program ID'),
+      memberId: z.string().optional().describe('Filter by member ID'),
+      referralId: z.string().optional().describe('Filter by referral ID'),
+      offset: z.number().optional().describe('Starting index for pagination (0-based)'),
+      count: z.number().optional().describe('Maximum number of rewards to return')
+    })
+  )
+  .output(
+    z.object({
+      rewards: z.array(rewardSchema).describe('List of rewards'),
+      total: z.number().optional().describe('Total number of rewards matching filters'),
+      offset: z.number().optional().describe('Current pagination offset')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ReferralRockClient({ token: ctx.auth.token });
 
     let result = await client.listRewards({
@@ -57,10 +58,10 @@ export let listRewards = SlateTool.create(
       memberId: ctx.input.memberId,
       referralId: ctx.input.referralId,
       offset: ctx.input.offset,
-      count: ctx.input.count,
+      count: ctx.input.count
     });
 
-    let rewards = (result.rewards as Array<Record<string, unknown>> || []).map((r) => ({
+    let rewards = ((result.rewards as Array<Record<string, unknown>>) || []).map(r => ({
       rewardId: r.id as string,
       programId: r.programId as string | undefined,
       programName: r.programName as string | undefined,
@@ -79,16 +80,16 @@ export let listRewards = SlateTool.create(
       eligibilityDate: r.eligibilityDate as string | undefined,
       source: r.source as string | undefined,
       payoutDescription: r.payoutDescription as string | undefined,
-      paymentType: r.paymentType as string | undefined,
+      paymentType: r.paymentType as string | undefined
     }));
 
     return {
       output: {
         rewards,
         total: result.total as number | undefined,
-        offset: result.offset as number | undefined,
+        offset: result.offset as number | undefined
       },
-      message: `Retrieved **${rewards.length}** reward(s)${result.total ? ` out of ${result.total} total` : ''}.`,
+      message: `Retrieved **${rewards.length}** reward(s)${result.total ? ` out of ${result.total} total` : ''}.`
     };
   })
   .build();

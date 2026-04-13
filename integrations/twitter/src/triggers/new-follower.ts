@@ -4,31 +4,30 @@ import { userSchema, mapUser } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newFollower = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Follower',
-    key: 'new_follower',
-    description: 'Triggers when a new user follows the authenticated user.'
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('ID of the new follower'),
-    name: z.string().describe('Display name of the new follower'),
-    username: z.string().describe('Username of the new follower'),
-    description: z.string().optional().describe('Bio of the new follower'),
-    profileImageUrl: z.string().optional().describe('Profile image URL'),
-    followersCount: z.number().optional().describe('Follower count of the new follower'),
-    followingCount: z.number().optional().describe('Following count of the new follower'),
-    postCount: z.number().optional().describe('Post count of the new follower')
-  }))
+export let newFollower = SlateTrigger.create(spec, {
+  name: 'New Follower',
+  key: 'new_follower',
+  description: 'Triggers when a new user follows the authenticated user.'
+})
+  .input(
+    z.object({
+      userId: z.string().describe('ID of the new follower'),
+      name: z.string().describe('Display name of the new follower'),
+      username: z.string().describe('Username of the new follower'),
+      description: z.string().optional().describe('Bio of the new follower'),
+      profileImageUrl: z.string().optional().describe('Profile image URL'),
+      followersCount: z.number().optional().describe('Follower count of the new follower'),
+      followingCount: z.number().optional().describe('Following count of the new follower'),
+      postCount: z.number().optional().describe('Post count of the new follower')
+    })
+  )
   .output(userSchema)
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new TwitterClient(ctx.auth.token);
 
       let me = await client.getMe();
@@ -38,9 +37,10 @@ export let newFollower = SlateTrigger.create(
       let followers = (result.data || []).map(mapUser);
 
       let knownFollowerIds: string[] = ctx.state?.knownFollowerIds || [];
-      let newFollowers = knownFollowerIds.length > 0
-        ? followers.filter((f: any) => !knownFollowerIds.includes(f.userId))
-        : [];
+      let newFollowers =
+        knownFollowerIds.length > 0
+          ? followers.filter((f: any) => !knownFollowerIds.includes(f.userId))
+          : [];
 
       let updatedIds = followers.map((f: any) => f.userId);
 
@@ -63,7 +63,7 @@ export let newFollower = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'user.followed',
         id: `follow_${ctx.input.userId}_${Date.now()}`,
@@ -79,4 +79,5 @@ export let newFollower = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

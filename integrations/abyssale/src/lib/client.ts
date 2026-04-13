@@ -8,8 +8,8 @@ export class AbyssaleClient {
       baseURL: 'https://api.abyssale.com',
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -50,13 +50,16 @@ export class AbyssaleClient {
 
   // ── Synchronous Generation ──
 
-  async generateSingleImage(designId: string, params: {
-    templateFormatName: string;
-    elements?: Record<string, any>;
-    imageFileType?: string;
-  }) {
+  async generateSingleImage(
+    designId: string,
+    params: {
+      templateFormatName: string;
+      elements?: Record<string, any>;
+      imageFileType?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      template_format_name: params.templateFormatName,
+      template_format_name: params.templateFormatName
     };
     if (params.elements) body.elements = params.elements;
     if (params.imageFileType) body.image_file_type = params.imageFileType;
@@ -88,19 +91,22 @@ export class AbyssaleClient {
 
   // ── Asynchronous Generation ──
 
-  async generateMultiFormat(designId: string, params: {
-    callbackUrl?: string;
-    templateFormatNames?: string[];
-    elements?: Record<string, any>;
-    imageFileType?: string;
-    html5?: {
-      clickTag?: string;
-      pageTitle?: string;
-      adNetwork?: string;
-      repeat?: number;
-      includeBackupImage?: boolean;
-    };
-  }) {
+  async generateMultiFormat(
+    designId: string,
+    params: {
+      callbackUrl?: string;
+      templateFormatNames?: string[];
+      elements?: Record<string, any>;
+      imageFileType?: string;
+      html5?: {
+        clickTag?: string;
+        pageTitle?: string;
+        adNetwork?: string;
+        repeat?: number;
+        includeBackupImage?: boolean;
+      };
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.callbackUrl) body.callback_url = params.callbackUrl;
     if (params.templateFormatNames) body.template_format_names = params.templateFormatNames;
@@ -112,7 +118,9 @@ export class AbyssaleClient {
         ...(params.html5.pageTitle !== undefined && { page_title: params.html5.pageTitle }),
         ...(params.html5.adNetwork !== undefined && { ad_network: params.html5.adNetwork }),
         ...(params.html5.repeat !== undefined && { repeat: params.html5.repeat }),
-        ...(params.html5.includeBackupImage !== undefined && { include_backup_image: params.html5.includeBackupImage }),
+        ...(params.html5.includeBackupImage !== undefined && {
+          include_backup_image: params.html5.includeBackupImage
+        })
       };
     }
 
@@ -156,13 +164,17 @@ export class AbyssaleClient {
 
   // ── Dynamic Images ──
 
-  async createDynamicImage(designId: string, params?: {
-    enableRateLimit?: boolean;
-    enableProductionMode?: boolean;
-  }) {
+  async createDynamicImage(
+    designId: string,
+    params?: {
+      enableRateLimit?: boolean;
+      enableProductionMode?: boolean;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params?.enableRateLimit !== undefined) body.enable_rate_limit = params.enableRateLimit;
-    if (params?.enableProductionMode !== undefined) body.enable_production_mode = params.enableProductionMode;
+    if (params?.enableProductionMode !== undefined)
+      body.enable_production_mode = params.enableProductionMode;
 
     let response = await this.axios.post(`/designs/${designId}/dynamic-image-url`, body);
     return response.data as {
@@ -181,13 +193,10 @@ export class AbyssaleClient {
 
   // ── Export ──
 
-  async exportBanners(params: {
-    bannerIds: string[];
-    callbackUrl: string;
-  }) {
+  async exportBanners(params: { bannerIds: string[]; callbackUrl: string }) {
     let response = await this.axios.post('/async/banners/export', {
       ids: params.bannerIds,
-      callback_url: params.callbackUrl,
+      callback_url: params.callbackUrl
     });
     return response.data as {
       export_id: string;
@@ -228,16 +237,22 @@ export class AbyssaleClient {
 
   // ── Workspace Templates ──
 
-  async duplicateWorkspaceTemplate(companyTemplateId: string, params: {
-    projectId: string;
-    name?: string;
-  }) {
+  async duplicateWorkspaceTemplate(
+    companyTemplateId: string,
+    params: {
+      projectId: string;
+      name?: string;
+    }
+  ) {
     let body: Record<string, any> = {
-      project_id: params.projectId,
+      project_id: params.projectId
     };
     if (params.name) body.name = params.name;
 
-    let response = await this.axios.post(`/workspace-templates/${companyTemplateId}/use`, body);
+    let response = await this.axios.post(
+      `/workspace-templates/${companyTemplateId}/use`,
+      body
+    );
     return response.data as {
       duplication_request_id: string;
     };

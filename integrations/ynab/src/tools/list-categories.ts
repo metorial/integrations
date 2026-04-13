@@ -16,9 +16,17 @@ let categorySchema = z.object({
   goalType: z.string().nullable().optional().describe('Goal type: TB, TBD, MF, NEED, DEBT'),
   goalTarget: z.number().nullable().optional().describe('Goal target amount in milliunits'),
   goalTargetDate: z.string().nullable().optional().describe('Goal target date'),
-  goalPercentageComplete: z.number().nullable().optional().describe('Goal progress percentage'),
-  goalUnderFunded: z.number().nullable().optional().describe('Amount underfunded in milliunits'),
-  deleted: z.boolean().describe('Whether deleted'),
+  goalPercentageComplete: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('Goal progress percentage'),
+  goalUnderFunded: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('Amount underfunded in milliunits'),
+  deleted: z.boolean().describe('Whether deleted')
 });
 
 let categoryGroupSchema = z.object({
@@ -26,27 +34,30 @@ let categoryGroupSchema = z.object({
   name: z.string().describe('Category group name'),
   hidden: z.boolean().describe('Whether hidden'),
   deleted: z.boolean().describe('Whether deleted'),
-  categories: z.array(categorySchema).describe('Categories in this group'),
+  categories: z.array(categorySchema).describe('Categories in this group')
 });
 
-export let listCategories = SlateTool.create(
-  spec,
-  {
-    name: 'List Categories',
-    key: 'list_categories',
-    description: `Retrieve all category groups and their categories for a budget. Includes budgeted amounts, activity, available balances, and goal information.`,
-    tags: {
-      readOnly: true,
-    },
+export let listCategories = SlateTool.create(spec, {
+  name: 'List Categories',
+  key: 'list_categories',
+  description: `Retrieve all category groups and their categories for a budget. Includes budgeted amounts, activity, available balances, and goal information.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.'),
-  }))
-  .output(z.object({
-    categoryGroups: z.array(categoryGroupSchema).describe('Category groups with their categories'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.')
+    })
+  )
+  .output(
+    z.object({
+      categoryGroups: z
+        .array(categoryGroupSchema)
+        .describe('Category groups with their categories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let budgetId = ctx.input.budgetId ?? ctx.config.budgetId;
 
@@ -72,15 +83,15 @@ export let listCategories = SlateTool.create(
         goalTargetDate: c.goal_target_date,
         goalPercentageComplete: c.goal_percentage_complete,
         goalUnderFunded: c.goal_under_funded,
-        deleted: c.deleted,
-      })),
+        deleted: c.deleted
+      }))
     }));
 
     let totalCategories = mapped.reduce((sum: number, g: any) => sum + g.categories.length, 0);
 
     return {
       output: { categoryGroups: mapped },
-      message: `Found **${mapped.length}** category group(s) with **${totalCategories}** total categories`,
+      message: `Found **${mapped.length}** category group(s) with **${totalCategories}** total categories`
     };
   })
   .build();

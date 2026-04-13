@@ -12,7 +12,7 @@ import {
   listSubscriptions,
   updateSubscription,
   confirmSubscription,
-  sendSms,
+  sendSms
 } from './tools';
 import { topicNotification } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     listSubscriptions,
     updateSubscription,
     confirmSubscription,
-    sendSms,
+    sendSms
   ],
-  triggers: [
-    topicNotification,
-  ],
+  triggers: [topicNotification]
 });

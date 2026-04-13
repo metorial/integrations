@@ -13,14 +13,14 @@ import {
   manageAccount,
   getBookedMeetings,
   listPlaybooks,
-  listTeams,
+  listTeams
 } from './tools';
 import {
   conversationEvent,
   contactEvent,
   meetingEvent,
   userEvent,
-  playbookEvent,
+  playbookEvent
 } from './triggers';
 
 export let provider = Slate.create({
@@ -38,13 +38,7 @@ export let provider = Slate.create({
     manageAccount,
     getBookedMeetings,
     listPlaybooks,
-    listTeams,
+    listTeams
   ],
-  triggers: [
-    conversationEvent,
-    contactEvent,
-    meetingEvent,
-    userEvent,
-    playbookEvent,
-  ],
+  triggers: [conversationEvent, contactEvent, meetingEvent, userEvent, playbookEvent]
 });

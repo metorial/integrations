@@ -3,73 +3,81 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let baseChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Base Changes',
-    key: 'base_changes',
-    description: 'Listen for real-time changes in an Airtable base including record creates, updates, deletes, and schema changes (field and table modifications).',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of change event'),
-    tableId: z.string().describe('Table ID where the change occurred'),
-    changePayload: z.any().describe('Raw change data from Airtable'),
-    transactionNumber: z.number().describe('Base transaction number'),
-    timestamp: z.string().describe('Timestamp of the event'),
-    source: z.string().describe('Source of the change'),
-  }))
-  .output(z.object({
-    tableId: z.string().describe('Table ID where the change occurred'),
-    changeType: z.string().describe('Type of change (e.g. record.created, record.updated, record.deleted, field.created, field.updated, field.deleted)'),
-    transactionNumber: z.number().describe('Base transaction number for ordering'),
-    timestamp: z.string().describe('Timestamp of the change'),
-    source: z.string().describe('Source of the change (e.g. client, publicApi, formSubmission)'),
-    recordIds: z.array(z.string()).optional().describe('Affected record IDs'),
-    fieldIds: z.array(z.string()).optional().describe('Affected field IDs'),
-    changes: z.any().optional().describe('Detailed change data'),
-  }))
+export let baseChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Base Changes',
+  key: 'base_changes',
+  description:
+    'Listen for real-time changes in an Airtable base including record creates, updates, deletes, and schema changes (field and table modifications).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of change event'),
+      tableId: z.string().describe('Table ID where the change occurred'),
+      changePayload: z.any().describe('Raw change data from Airtable'),
+      transactionNumber: z.number().describe('Base transaction number'),
+      timestamp: z.string().describe('Timestamp of the event'),
+      source: z.string().describe('Source of the change')
+    })
+  )
+  .output(
+    z.object({
+      tableId: z.string().describe('Table ID where the change occurred'),
+      changeType: z
+        .string()
+        .describe(
+          'Type of change (e.g. record.created, record.updated, record.deleted, field.created, field.updated, field.deleted)'
+        ),
+      transactionNumber: z.number().describe('Base transaction number for ordering'),
+      timestamp: z.string().describe('Timestamp of the change'),
+      source: z
+        .string()
+        .describe('Source of the change (e.g. client, publicApi, formSubmission)'),
+      recordIds: z.array(z.string()).optional().describe('Affected record IDs'),
+      fieldIds: z.array(z.string()).optional().describe('Affected field IDs'),
+      changes: z.any().optional().describe('Detailed change data')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseId: ctx.config.baseId,
+        baseId: ctx.config.baseId
       });
 
       let result = await client.createWebhook(ctx.input.webhookBaseUrl, {
         options: {
           filters: {
-            dataTypes: ['tableData', 'tableFields', 'tableMetadata'],
-          },
-        },
+            dataTypes: ['tableData', 'tableFields', 'tableMetadata']
+          }
+        }
       });
 
       return {
         registrationDetails: {
           webhookId: result.id,
           macSecret: result.macSecretBase64,
-          expirationTime: result.expirationTime,
+          expirationTime: result.expirationTime
         },
         state: {
           cursor: 1,
-          webhookId: result.id,
-        },
+          webhookId: result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseId: ctx.config.baseId,
+        baseId: ctx.config.baseId
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        baseId: ctx.config.baseId,
+        baseId: ctx.config.baseId
       });
 
       // The webhookId is stored in state during autoRegisterWebhook
@@ -105,7 +113,7 @@ export let baseChangesTrigger = SlateTrigger.create(
                   changePayload: { recordId, ...tableChanges.createdRecordsById[recordId] },
                   transactionNumber: payload.baseTransactionNumber,
                   timestamp: payload.timestamp,
-                  source: payload.actionMetadata?.source || 'unknown',
+                  source: payload.actionMetadata?.source || 'unknown'
                 });
               }
             }
@@ -120,7 +128,7 @@ export let baseChangesTrigger = SlateTrigger.create(
                   changePayload: { recordId, ...tableChanges.changedRecordsById[recordId] },
                   transactionNumber: payload.baseTransactionNumber,
                   timestamp: payload.timestamp,
-                  source: payload.actionMetadata?.source || 'unknown',
+                  source: payload.actionMetadata?.source || 'unknown'
                 });
               }
             }
@@ -134,7 +142,7 @@ export let baseChangesTrigger = SlateTrigger.create(
                   changePayload: { recordId },
                   transactionNumber: payload.baseTransactionNumber,
                   timestamp: payload.timestamp,
-                  source: payload.actionMetadata?.source || 'unknown',
+                  source: payload.actionMetadata?.source || 'unknown'
                 });
               }
             }
@@ -149,7 +157,7 @@ export let baseChangesTrigger = SlateTrigger.create(
                   changePayload: { fieldId, ...tableChanges.createdFieldsById[fieldId] },
                   transactionNumber: payload.baseTransactionNumber,
                   timestamp: payload.timestamp,
-                  source: payload.actionMetadata?.source || 'unknown',
+                  source: payload.actionMetadata?.source || 'unknown'
                 });
               }
             }
@@ -164,7 +172,7 @@ export let baseChangesTrigger = SlateTrigger.create(
                   changePayload: { fieldId, ...tableChanges.changedFieldsById[fieldId] },
                   transactionNumber: payload.baseTransactionNumber,
                   timestamp: payload.timestamp,
-                  source: payload.actionMetadata?.source || 'unknown',
+                  source: payload.actionMetadata?.source || 'unknown'
                 });
               }
             }
@@ -178,7 +186,7 @@ export let baseChangesTrigger = SlateTrigger.create(
                   changePayload: { fieldId },
                   transactionNumber: payload.baseTransactionNumber,
                   timestamp: payload.timestamp,
-                  source: payload.actionMetadata?.source || 'unknown',
+                  source: payload.actionMetadata?.source || 'unknown'
                 });
               }
             }
@@ -193,12 +201,12 @@ export let baseChangesTrigger = SlateTrigger.create(
         inputs: allInputs,
         updatedState: {
           cursor,
-          webhookId,
-        },
+          webhookId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let recordIds: string[] | undefined;
       let fieldIds: string[] | undefined;
 
@@ -222,9 +230,9 @@ export let baseChangesTrigger = SlateTrigger.create(
           source: ctx.input.source,
           recordIds,
           fieldIds,
-          changes: ctx.input.changePayload,
-        },
+          changes: ctx.input.changePayload
+        }
       };
-    },
+    }
   })
   .build();

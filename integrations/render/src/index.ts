@@ -19,14 +19,9 @@ import {
   queryLogs,
   getMetrics,
   manageProjects,
-  listWorkspaces,
+  listWorkspaces
 } from './tools';
-import {
-  deploymentEvents,
-  serviceEvents,
-  databaseEvents,
-  diskEvents,
-} from './triggers';
+import { deploymentEvents, serviceEvents, databaseEvents, diskEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,12 +44,7 @@ export let provider = Slate.create({
     queryLogs,
     getMetrics,
     manageProjects,
-    listWorkspaces,
+    listWorkspaces
   ],
-  triggers: [
-    deploymentEvents,
-    serviceEvents,
-    databaseEvents,
-    diskEvents,
-  ],
+  triggers: [deploymentEvents, serviceEvents, databaseEvents, diskEvents]
 });

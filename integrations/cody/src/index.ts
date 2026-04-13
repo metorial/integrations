@@ -21,7 +21,7 @@ import {
   sendMessage,
   sendMessageForStream,
   listMessages,
-  getMessage,
+  getMessage
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -49,9 +49,7 @@ export let provider = Slate.create({
     sendMessage.build(),
     sendMessageForStream.build(),
     listMessages.build(),
-    getMessage.build(),
+    getMessage.build()
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

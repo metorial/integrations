@@ -15,43 +15,51 @@ let generateSecretKey = (): string => {
   return result;
 };
 
-export let webhookEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Webhook Events',
-    key: 'webhook_events',
-    description: 'Receives real-time webhook notifications from Klaviyo for email, SMS, push notification, review, and consent events. Automatically registers and manages the webhook subscription.',
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic identifier (e.g., klaviyo.received_email)'),
-    eventId: z.string().describe('Unique event identifier'),
-    timestamp: z.string().describe('Event timestamp'),
-    eventProperties: z.record(z.string(), z.any()).optional().describe('Event-specific properties'),
-    profileId: z.string().optional().describe('Associated profile ID'),
-    metricId: z.string().optional().describe('Associated metric ID'),
-    rawPayload: z.any().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    topic: z.string().describe('Webhook topic'),
-    profileId: z.string().optional().describe('Associated profile ID'),
-    email: z.string().optional().describe('Profile email address'),
-    phoneNumber: z.string().optional().describe('Profile phone number'),
-    metricId: z.string().optional().describe('Metric ID'),
-    campaignId: z.string().optional().describe('Campaign ID if applicable'),
-    flowId: z.string().optional().describe('Flow ID if applicable'),
-    messageId: z.string().optional().describe('Message ID if applicable'),
-    listId: z.string().optional().describe('List ID if applicable'),
-    subject: z.string().optional().describe('Email subject if applicable'),
-    url: z.string().optional().describe('Clicked URL if applicable'),
-    eventTimestamp: z.string().optional().describe('When the event occurred'),
-    properties: z.record(z.string(), z.any()).optional().describe('Additional event properties'),
-  }))
+export let webhookEvents = SlateTrigger.create(spec, {
+  name: 'Webhook Events',
+  key: 'webhook_events',
+  description:
+    'Receives real-time webhook notifications from Klaviyo for email, SMS, push notification, review, and consent events. Automatically registers and manages the webhook subscription.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic identifier (e.g., klaviyo.received_email)'),
+      eventId: z.string().describe('Unique event identifier'),
+      timestamp: z.string().describe('Event timestamp'),
+      eventProperties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Event-specific properties'),
+      profileId: z.string().optional().describe('Associated profile ID'),
+      metricId: z.string().optional().describe('Associated metric ID'),
+      rawPayload: z.any().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      topic: z.string().describe('Webhook topic'),
+      profileId: z.string().optional().describe('Associated profile ID'),
+      email: z.string().optional().describe('Profile email address'),
+      phoneNumber: z.string().optional().describe('Profile phone number'),
+      metricId: z.string().optional().describe('Metric ID'),
+      campaignId: z.string().optional().describe('Campaign ID if applicable'),
+      flowId: z.string().optional().describe('Flow ID if applicable'),
+      messageId: z.string().optional().describe('Message ID if applicable'),
+      listId: z.string().optional().describe('List ID if applicable'),
+      subject: z.string().optional().describe('Email subject if applicable'),
+      url: z.string().optional().describe('Clicked URL if applicable'),
+      eventTimestamp: z.string().optional().describe('When the event occurred'),
+      properties: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Additional event properties')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new KlaviyoClient({
         token: ctx.auth.token,
-        revision: ctx.config.revision,
+        revision: ctx.config.revision
       });
 
       let secretKey = generateSecretKey();
@@ -74,7 +82,7 @@ export let webhookEvents = SlateTrigger.create(
         'klaviyo/subscribed_to_sms_marketing',
         'klaviyo/unsubscribed_from_email_marketing',
         'klaviyo/unsubscribed_from_sms_marketing',
-        'klaviyo/review_submitted',
+        'klaviyo/review_submitted'
       ];
 
       let result = await client.createWebhook({
@@ -83,7 +91,7 @@ export let webhookEvents = SlateTrigger.create(
         secret_key: secretKey,
         topics,
         description: 'Auto-registered by Slates integration',
-        enabled: true,
+        enabled: true
       });
 
       let webhook = Array.isArray(result.data) ? result.data[0] : result.data;
@@ -91,15 +99,15 @@ export let webhookEvents = SlateTrigger.create(
       return {
         registrationDetails: {
           webhookId: webhook?.id,
-          secretKey,
-        },
+          secretKey
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new KlaviyoClient({
         token: ctx.auth.token,
-        revision: ctx.config.revision,
+        revision: ctx.config.revision
       });
 
       let details = ctx.input.registrationDetails as { webhookId?: string };
@@ -108,7 +116,7 @@ export let webhookEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -139,19 +147,21 @@ export let webhookEvents = SlateTrigger.create(
 
         return {
           topic: attributes.topic ?? attributes.event_name ?? event.type ?? 'unknown',
-          eventId: event.id ?? `${attributes.topic ?? 'event'}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+          eventId:
+            event.id ??
+            `${attributes.topic ?? 'event'}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
           timestamp: attributes.timestamp ?? attributes.datetime ?? new Date().toISOString(),
           eventProperties: attributes.event_properties ?? attributes.properties ?? {},
           profileId: relationships.profile?.data?.id ?? attributes.profile_id ?? undefined,
           metricId: relationships.metric?.data?.id ?? attributes.metric_id ?? undefined,
-          rawPayload: event,
+          rawPayload: event
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw = ctx.input.rawPayload;
       let attributes = raw?.attributes ?? raw ?? {};
       let eventProps = ctx.input.eventProperties ?? {};
@@ -175,8 +185,9 @@ export let webhookEvents = SlateTrigger.create(
           subject: eventProps.subject ?? eventProps.$subject ?? undefined,
           url: eventProps.url ?? eventProps.$url ?? undefined,
           eventTimestamp: ctx.input.timestamp,
-          properties: eventProps,
-        },
+          properties: eventProps
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -25,8 +25,8 @@ export class BrightspaceClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -87,15 +87,18 @@ export class BrightspaceClient {
     return response.data;
   }
 
-  async updateUser(userId: string, userData: {
-    OrgDefinedId?: string;
-    FirstName?: string;
-    MiddleName?: string;
-    LastName?: string;
-    ExternalEmail?: string;
-    UserName?: string;
-    Activation?: { IsActive: boolean };
-  }): Promise<any> {
+  async updateUser(
+    userId: string,
+    userData: {
+      OrgDefinedId?: string;
+      FirstName?: string;
+      MiddleName?: string;
+      LastName?: string;
+      ExternalEmail?: string;
+      UserName?: string;
+      Activation?: { IsActive: boolean };
+    }
+  ): Promise<any> {
     let response = await this.axios.put(this.lpUrl(`/users/${userId}`), userData);
     return response.data;
   }
@@ -152,7 +155,10 @@ export class BrightspaceClient {
   async getOrgUnitChildren(orgUnitId: string, params?: { bookmark?: string }): Promise<any> {
     let query: Record<string, string> = {};
     if (params?.bookmark) query.bookmark = params.bookmark;
-    let response = await this.axios.get(this.lpUrl(`/orgstructure/${orgUnitId}/children/paged/`), { params: query });
+    let response = await this.axios.get(
+      this.lpUrl(`/orgstructure/${orgUnitId}/children/paged/`),
+      { params: query }
+    );
     return response.data;
   }
 
@@ -186,15 +192,18 @@ export class BrightspaceClient {
     return response.data;
   }
 
-  async updateCourse(orgUnitId: string, courseData: {
-    Name?: string;
-    Code?: string;
-    StartDate?: string | null;
-    EndDate?: string | null;
-    IsActive?: boolean;
-    Description?: { Content?: string; Type?: string } | null;
-    CanSelfRegister?: boolean;
-  }): Promise<any> {
+  async updateCourse(
+    orgUnitId: string,
+    courseData: {
+      Name?: string;
+      Code?: string;
+      StartDate?: string | null;
+      EndDate?: string | null;
+      IsActive?: boolean;
+      Description?: { Content?: string; Type?: string } | null;
+      CanSelfRegister?: boolean;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(this.lpUrl(`/courses/${orgUnitId}`), courseData);
     return response.data;
   }
@@ -232,35 +241,48 @@ export class BrightspaceClient {
   }
 
   async deleteEnrollment(orgUnitId: string, userId: string): Promise<any> {
-    let response = await this.axios.delete(this.lpUrl(`/enrollments/orgUnits/${orgUnitId}/users/${userId}`));
+    let response = await this.axios.delete(
+      this.lpUrl(`/enrollments/orgUnits/${orgUnitId}/users/${userId}`)
+    );
     return response.data;
   }
 
-  async getUserEnrollments(userId: string, params?: {
-    orgUnitTypeId?: string;
-    roleId?: string;
-    bookmark?: string;
-  }): Promise<any> {
+  async getUserEnrollments(
+    userId: string,
+    params?: {
+      orgUnitTypeId?: string;
+      roleId?: string;
+      bookmark?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, string> = {};
     if (params?.orgUnitTypeId) query.orgUnitTypeId = params.orgUnitTypeId;
     if (params?.roleId) query.roleId = params.roleId;
     if (params?.bookmark) query.bookmark = params.bookmark;
 
-    let response = await this.axios.get(this.lpUrl(`/enrollments/users/${userId}/orgUnits/`), { params: query });
+    let response = await this.axios.get(this.lpUrl(`/enrollments/users/${userId}/orgUnits/`), {
+      params: query
+    });
     return response.data;
   }
 
-  async getOrgUnitEnrollments(orgUnitId: string, params?: {
-    roleId?: string;
-    isActive?: string;
-    bookmark?: string;
-  }): Promise<any> {
+  async getOrgUnitEnrollments(
+    orgUnitId: string,
+    params?: {
+      roleId?: string;
+      isActive?: string;
+      bookmark?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, string> = {};
     if (params?.roleId) query.roleId = params.roleId;
     if (params?.isActive) query.isActive = params.isActive;
     if (params?.bookmark) query.bookmark = params.bookmark;
 
-    let response = await this.axios.get(this.lpUrl(`/enrollments/orgUnits/${orgUnitId}/users/`), { params: query });
+    let response = await this.axios.get(
+      this.lpUrl(`/enrollments/orgUnits/${orgUnitId}/users/`),
+      { params: query }
+    );
     return response.data;
   }
 
@@ -278,7 +300,9 @@ export class BrightspaceClient {
     if (params?.isActive) query.isActive = params.isActive;
     if (params?.canAccess) query.canAccess = params.canAccess;
 
-    let response = await this.axios.get(this.lpUrl('/enrollments/myenrollments/'), { params: query });
+    let response = await this.axios.get(this.lpUrl('/enrollments/myenrollments/'), {
+      params: query
+    });
     return response.data;
   }
 
@@ -304,8 +328,15 @@ export class BrightspaceClient {
     return response.data;
   }
 
-  async updateGradeObject(orgUnitId: string, gradeObjectId: string, gradeData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}`), gradeData);
+  async updateGradeObject(
+    orgUnitId: string,
+    gradeObjectId: string,
+    gradeData: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}`),
+      gradeData
+    );
     return response.data;
   }
 
@@ -314,17 +345,29 @@ export class BrightspaceClient {
   }
 
   async getGradeValue(orgUnitId: string, gradeObjectId: string, userId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}/values/${userId}`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}/values/${userId}`)
+    );
     return response.data;
   }
 
-  async setGradeValue(orgUnitId: string, gradeObjectId: string, userId: string, gradeValue: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}/values/${userId}`), gradeValue);
+  async setGradeValue(
+    orgUnitId: string,
+    gradeObjectId: string,
+    userId: string,
+    gradeValue: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}/values/${userId}`),
+      gradeValue
+    );
     return response.data;
   }
 
   async getGradeValues(orgUnitId: string, gradeObjectId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}/values/`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/grades/${gradeObjectId}/values/`)
+    );
     return response.data;
   }
 
@@ -346,45 +389,69 @@ export class BrightspaceClient {
   }
 
   async getContentModule(orgUnitId: string, moduleId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/content/modules/${moduleId}`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/content/modules/${moduleId}`)
+    );
     return response.data;
   }
 
   async getModuleStructure(orgUnitId: string, moduleId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/content/modules/${moduleId}/structure/`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/content/modules/${moduleId}/structure/`)
+    );
     return response.data;
   }
 
-  async createContentModule(orgUnitId: string, moduleData: {
-    Title: string;
-    ShortTitle?: string;
-    Description?: { Content?: string; Type?: string };
-    IsHidden?: boolean;
-    IsLocked?: boolean;
-    ModuleStartDate?: string | null;
-    ModuleEndDate?: string | null;
-    ModuleDueDate?: string | null;
-  }): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/content/root/`), moduleData);
+  async createContentModule(
+    orgUnitId: string,
+    moduleData: {
+      Title: string;
+      ShortTitle?: string;
+      Description?: { Content?: string; Type?: string };
+      IsHidden?: boolean;
+      IsLocked?: boolean;
+      ModuleStartDate?: string | null;
+      ModuleEndDate?: string | null;
+      ModuleDueDate?: string | null;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/content/root/`),
+      moduleData
+    );
     return response.data;
   }
 
-  async createChildModule(orgUnitId: string, parentModuleId: string, moduleData: {
-    Title: string;
-    ShortTitle?: string;
-    Description?: { Content?: string; Type?: string };
-    IsHidden?: boolean;
-    IsLocked?: boolean;
-    ModuleStartDate?: string | null;
-    ModuleEndDate?: string | null;
-    ModuleDueDate?: string | null;
-  }): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/content/modules/${parentModuleId}/structure/`), moduleData);
+  async createChildModule(
+    orgUnitId: string,
+    parentModuleId: string,
+    moduleData: {
+      Title: string;
+      ShortTitle?: string;
+      Description?: { Content?: string; Type?: string };
+      IsHidden?: boolean;
+      IsLocked?: boolean;
+      ModuleStartDate?: string | null;
+      ModuleEndDate?: string | null;
+      ModuleDueDate?: string | null;
+    }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/content/modules/${parentModuleId}/structure/`),
+      moduleData
+    );
     return response.data;
   }
 
-  async updateContentModule(orgUnitId: string, moduleId: string, moduleData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/content/modules/${moduleId}`), moduleData);
+  async updateContentModule(
+    orgUnitId: string,
+    moduleId: string,
+    moduleData: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/content/modules/${moduleId}`),
+      moduleData
+    );
     return response.data;
   }
 
@@ -398,7 +465,10 @@ export class BrightspaceClient {
   }
 
   async updateContentTopic(orgUnitId: string, topicId: string, topicData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/content/topics/${topicId}`), topicData);
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/content/topics/${topicId}`),
+      topicData
+    );
     return response.data;
   }
 
@@ -414,17 +484,29 @@ export class BrightspaceClient {
   }
 
   async getDropboxFolder(orgUnitId: string, folderId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}`)
+    );
     return response.data;
   }
 
   async createDropboxFolder(orgUnitId: string, folderData: any): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/dropbox/folders/`), folderData);
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/dropbox/folders/`),
+      folderData
+    );
     return response.data;
   }
 
-  async updateDropboxFolder(orgUnitId: string, folderId: string, folderData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}`), folderData);
+  async updateDropboxFolder(
+    orgUnitId: string,
+    folderId: string,
+    folderData: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}`),
+      folderData
+    );
     return response.data;
   }
 
@@ -433,22 +515,50 @@ export class BrightspaceClient {
   }
 
   async getDropboxSubmissions(orgUnitId: string, folderId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}/submissions/`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}/submissions/`)
+    );
     return response.data;
   }
 
-  async getDropboxUserSubmissions(orgUnitId: string, folderId: string, userId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}/submissions/user/${userId}`));
+  async getDropboxUserSubmissions(
+    orgUnitId: string,
+    folderId: string,
+    userId: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}/submissions/user/${userId}`)
+    );
     return response.data;
   }
 
-  async getDropboxFeedback(orgUnitId: string, folderId: string, entityType: string, entityId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}/feedback/${entityType}/${entityId}`));
+  async getDropboxFeedback(
+    orgUnitId: string,
+    folderId: string,
+    entityType: string,
+    entityId: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      this.leUrl(
+        `/${orgUnitId}/dropbox/folders/${folderId}/feedback/${entityType}/${entityId}`
+      )
+    );
     return response.data;
   }
 
-  async postDropboxFeedback(orgUnitId: string, folderId: string, entityType: string, entityId: string, feedback: any): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/dropbox/folders/${folderId}/feedback/${entityType}/${entityId}`), feedback);
+  async postDropboxFeedback(
+    orgUnitId: string,
+    folderId: string,
+    entityType: string,
+    entityId: string,
+    feedback: any
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.leUrl(
+        `/${orgUnitId}/dropbox/folders/${folderId}/feedback/${entityType}/${entityId}`
+      ),
+      feedback
+    );
     return response.data;
   }
 
@@ -470,7 +580,10 @@ export class BrightspaceClient {
   }
 
   async updateQuiz(orgUnitId: string, quizId: string, quizData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/quizzes/${quizId}`), quizData);
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/quizzes/${quizId}`),
+      quizData
+    );
     return response.data;
   }
 
@@ -479,12 +592,16 @@ export class BrightspaceClient {
   }
 
   async getQuizAttempts(orgUnitId: string, quizId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/quizzes/${quizId}/attempts/`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/quizzes/${quizId}/attempts/`)
+    );
     return response.data;
   }
 
   async getQuizQuestions(orgUnitId: string, quizId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/quizzes/${quizId}/questions/`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/quizzes/${quizId}/questions/`)
+    );
     return response.data;
   }
 
@@ -496,17 +613,29 @@ export class BrightspaceClient {
   }
 
   async getDiscussionForum(orgUnitId: string, forumId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}`)
+    );
     return response.data;
   }
 
   async createDiscussionForum(orgUnitId: string, forumData: any): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/discussions/forums/`), forumData);
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/discussions/forums/`),
+      forumData
+    );
     return response.data;
   }
 
-  async updateDiscussionForum(orgUnitId: string, forumId: string, forumData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}`), forumData);
+  async updateDiscussionForum(
+    orgUnitId: string,
+    forumId: string,
+    forumData: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}`),
+      forumData
+    );
     return response.data;
   }
 
@@ -515,42 +644,81 @@ export class BrightspaceClient {
   }
 
   async listDiscussionTopics(orgUnitId: string, forumId: string): Promise<any> {
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/`));
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/`)
+    );
     return response.data;
   }
 
-  async createDiscussionTopic(orgUnitId: string, forumId: string, topicData: any): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/`), topicData);
+  async createDiscussionTopic(
+    orgUnitId: string,
+    forumId: string,
+    topicData: any
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/`),
+      topicData
+    );
     return response.data;
   }
 
-  async updateDiscussionTopic(orgUnitId: string, forumId: string, topicId: string, topicData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}`), topicData);
+  async updateDiscussionTopic(
+    orgUnitId: string,
+    forumId: string,
+    topicId: string,
+    topicData: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}`),
+      topicData
+    );
     return response.data;
   }
 
-  async deleteDiscussionTopic(orgUnitId: string, forumId: string, topicId: string): Promise<void> {
-    await this.axios.delete(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}`));
+  async deleteDiscussionTopic(
+    orgUnitId: string,
+    forumId: string,
+    topicId: string
+  ): Promise<void> {
+    await this.axios.delete(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}`)
+    );
   }
 
-  async listDiscussionPosts(orgUnitId: string, forumId: string, topicId: string, params?: {
-    pageSize?: number;
-    pageNumber?: number;
-    threadsOnly?: boolean;
-    sort?: string;
-  }): Promise<any> {
+  async listDiscussionPosts(
+    orgUnitId: string,
+    forumId: string,
+    topicId: string,
+    params?: {
+      pageSize?: number;
+      pageNumber?: number;
+      threadsOnly?: boolean;
+      sort?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, string> = {};
     if (params?.pageSize) query.pageSize = String(params.pageSize);
     if (params?.pageNumber) query.pageNumber = String(params.pageNumber);
     if (params?.threadsOnly) query.threadsOnly = 'true';
     if (params?.sort) query.sort = params.sort;
 
-    let response = await this.axios.get(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}/posts/`), { params: query });
+    let response = await this.axios.get(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}/posts/`),
+      { params: query }
+    );
     return response.data;
   }
 
-  async createDiscussionPost(orgUnitId: string, forumId: string, topicId: string, postData: any): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}/posts/`), postData);
+  async createDiscussionPost(
+    orgUnitId: string,
+    forumId: string,
+    topicId: string,
+    postData: any
+  ): Promise<any> {
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/discussions/forums/${forumId}/topics/${topicId}/posts/`),
+      postData
+    );
     return response.data;
   }
 
@@ -572,7 +740,10 @@ export class BrightspaceClient {
   }
 
   async updateNewsItem(orgUnitId: string, newsItemId: string, newsData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/news/${newsItemId}`), newsData);
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/news/${newsItemId}`),
+      newsData
+    );
     return response.data;
   }
 
@@ -593,12 +764,18 @@ export class BrightspaceClient {
   }
 
   async createCalendarEvent(orgUnitId: string, eventData: any): Promise<any> {
-    let response = await this.axios.post(this.leUrl(`/${orgUnitId}/calendar/event/`), eventData);
+    let response = await this.axios.post(
+      this.leUrl(`/${orgUnitId}/calendar/event/`),
+      eventData
+    );
     return response.data;
   }
 
   async updateCalendarEvent(orgUnitId: string, eventId: string, eventData: any): Promise<any> {
-    let response = await this.axios.put(this.leUrl(`/${orgUnitId}/calendar/event/${eventId}`), eventData);
+    let response = await this.axios.put(
+      this.leUrl(`/${orgUnitId}/calendar/event/${eventId}`),
+      eventData
+    );
     return response.data;
   }
 
@@ -619,7 +796,10 @@ export class BrightspaceClient {
   }
 
   async issueAward(orgUnitId: string, issueData: any): Promise<any> {
-    let response = await this.axios.post(this.basUrl(`/orgunits/${orgUnitId}/issued/`), issueData);
+    let response = await this.axios.post(
+      this.basUrl(`/orgunits/${orgUnitId}/issued/`),
+      issueData
+    );
     return response.data;
   }
 
@@ -645,21 +825,44 @@ export class BrightspaceClient {
   }
 
   async getGroupCategory(orgUnitId: string, groupCategoryId: string): Promise<any> {
-    let response = await this.axios.get(this.lpUrl(`/${orgUnitId}/groupcategories/${groupCategoryId}`));
+    let response = await this.axios.get(
+      this.lpUrl(`/${orgUnitId}/groupcategories/${groupCategoryId}`)
+    );
     return response.data;
   }
 
   async listGroups(orgUnitId: string, groupCategoryId: string): Promise<any> {
-    let response = await this.axios.get(this.lpUrl(`/${orgUnitId}/groupcategories/${groupCategoryId}/groups/`));
+    let response = await this.axios.get(
+      this.lpUrl(`/${orgUnitId}/groupcategories/${groupCategoryId}/groups/`)
+    );
     return response.data;
   }
 
-  async enrollUserInGroup(orgUnitId: string, groupCategoryId: string, groupId: string, userId: number): Promise<void> {
-    await this.axios.post(this.lpUrl(`/${orgUnitId}/groupcategories/${groupCategoryId}/groups/${groupId}/enrollments/`), { UserId: userId });
+  async enrollUserInGroup(
+    orgUnitId: string,
+    groupCategoryId: string,
+    groupId: string,
+    userId: number
+  ): Promise<void> {
+    await this.axios.post(
+      this.lpUrl(
+        `/${orgUnitId}/groupcategories/${groupCategoryId}/groups/${groupId}/enrollments/`
+      ),
+      { UserId: userId }
+    );
   }
 
-  async removeUserFromGroup(orgUnitId: string, groupCategoryId: string, groupId: string, userId: string): Promise<void> {
-    await this.axios.delete(this.lpUrl(`/${orgUnitId}/groupcategories/${groupCategoryId}/groups/${groupId}/enrollments/${userId}`));
+  async removeUserFromGroup(
+    orgUnitId: string,
+    groupCategoryId: string,
+    groupId: string,
+    userId: string
+  ): Promise<void> {
+    await this.axios.delete(
+      this.lpUrl(
+        `/${orgUnitId}/groupcategories/${groupCategoryId}/groups/${groupId}/enrollments/${userId}`
+      )
+    );
   }
 
   // ─── Sections ───────────────────────────────────────────────────
@@ -679,8 +882,15 @@ export class BrightspaceClient {
     return response.data;
   }
 
-  async enrollUserInSection(orgUnitId: string, sectionId: string, enrollmentData: any): Promise<void> {
-    await this.axios.post(this.lpUrl(`/${orgUnitId}/sections/${sectionId}/enrollments/`), enrollmentData);
+  async enrollUserInSection(
+    orgUnitId: string,
+    sectionId: string,
+    enrollmentData: any
+  ): Promise<void> {
+    await this.axios.post(
+      this.lpUrl(`/${orgUnitId}/sections/${sectionId}/enrollments/`),
+      enrollmentData
+    );
   }
 
   // ─── Roles ──────────────────────────────────────────────────────

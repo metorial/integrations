@@ -19,7 +19,7 @@ import {
   manageCompanyLocation,
   manageDepartment,
   listForms,
-  manageJobCompensation,
+  manageJobCompensation
 } from './tools';
 import {
   employeeEvents,
@@ -28,7 +28,7 @@ import {
   contractorEvents,
   benefitEvents,
   formEvents,
-  generalEvents,
+  generalEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -52,7 +52,7 @@ export let provider = Slate.create({
     manageCompanyLocation,
     manageDepartment,
     listForms,
-    manageJobCompensation,
+    manageJobCompensation
   ],
   triggers: [
     employeeEvents,
@@ -61,6 +61,6 @@ export let provider = Slate.create({
     contractorEvents,
     benefitEvents,
     formEvents,
-    generalEvents,
-  ],
+    generalEvents
+  ]
 });

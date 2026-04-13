@@ -2,9 +2,7 @@
   "name": "@metorial/planetscale",
   "version": "0.1.1",
   "description": "Manage PlanetScale databases, branches, and schema changes programmatically. Create, read, update, and delete databases and branches. Manage deploy requests for non-blocking schema migrations (Vitess). Create and rotate connection credentials (passwords) for branches. Create and restore backups. Monitor query performance with insights and anomaly detection. Manage organization members, teams, service tokens, and webhooks. Configure sharding, keyspaces, VSchemas, and Vitess workflows. Manage PostgreSQL-specific features like cluster extensions, PgBouncers, IP restrictions, and database roles.",
-  "categories": [
-    "apis-and-http-requests"
-  ],
+  "categories": ["apis-and-http-requests"],
   "skills": [
     "manage databases",
     "manage database branches",

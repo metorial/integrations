@@ -10,7 +10,7 @@ import type {
   CreateListParams,
   UpdateListParams,
   SubscribeToListParams,
-  PaginatedResponse,
+  PaginatedResponse
 } from './types';
 
 export class Client {
@@ -21,11 +21,11 @@ export class Client {
       baseURL: 'https://api.engage.so/v1',
       auth: {
         username: credentials.token,
-        password: credentials.secret,
+        password: credentials.secret
       },
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -75,7 +75,7 @@ export class Client {
   async mergeUsers(sourceUid: string, destinationUid: string): Promise<unknown> {
     let res = await this.http.post('/users/merge', {
       source: sourceUid,
-      destination: destinationUid,
+      destination: destinationUid
     });
     return res.data;
   }
@@ -135,14 +135,14 @@ export class Client {
 
   async addUserToLists(uid: string, listIds: string[]): Promise<unknown> {
     let res = await this.http.post(`/users/${encodeURIComponent(uid)}/lists`, {
-      lists: listIds,
+      lists: listIds
     });
     return res.data;
   }
 
   async removeUserFromLists(uid: string, listIds: string[]): Promise<unknown> {
     let res = await this.http.delete(`/users/${encodeURIComponent(uid)}/lists`, {
-      data: { lists: listIds },
+      data: { lists: listIds }
     });
     return res.data;
   }
@@ -201,7 +201,10 @@ export class Client {
     return res.data;
   }
 
-  async subscribeToList(listId: string, params: SubscribeToListParams): Promise<{ uid: string }> {
+  async subscribeToList(
+    listId: string,
+    params: SubscribeToListParams
+  ): Promise<{ uid: string }> {
     let res = await this.http.post(`/lists/${encodeURIComponent(listId)}/subscribers`, params);
     return res.data;
   }
@@ -231,12 +234,13 @@ export class Client {
     let body: Record<string, unknown> = {
       from: params.from,
       to: params.to,
-      subject: params.subject,
+      subject: params.subject
     };
     if (params.html !== undefined) body.html = params.html;
     if (params.text !== undefined) body.text = params.text;
     if (params.template !== undefined) body.template = params.template;
-    if (params.templateVariables !== undefined) body.template_variables = params.templateVariables;
+    if (params.templateVariables !== undefined)
+      body.template_variables = params.templateVariables;
     if (params.cc !== undefined) body.cc = params.cc;
     if (params.bcc !== undefined) body.bcc = params.bcc;
     if (params.replyTo !== undefined) body.reply_to = params.replyTo;
@@ -252,7 +256,7 @@ export class Client {
       from: params.from,
       to: params.to,
       body: params.body,
-      source: params.source,
+      source: params.source
     };
     if (params.trackClicks !== undefined) body.track_clicks = params.trackClicks;
     if (params.channel !== undefined) body.channel = params.channel;

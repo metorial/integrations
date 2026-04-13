@@ -18,36 +18,40 @@ let campaignSchema = z.object({
   status: z.string().nullable().describe('Campaign status: active, inactive, or unpublished'),
   endAt: z.string().nullable().describe('Campaign end date'),
   createdAt: z.string().nullable().describe('When the campaign was created'),
-  updatedAt: z.string().nullable().describe('When the campaign was last updated'),
+  updatedAt: z.string().nullable().describe('When the campaign was last updated')
 });
 
-export let listCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'List Campaigns',
-    key: 'list_campaigns',
-    description: `Retrieve a paginated list of fundraising campaigns. Supports filtering by scope for beneficiary or chapter account campaigns.`,
-    tags: {
-      readOnly: true,
-    },
+export let listCampaigns = SlateTool.create(spec, {
+  name: 'List Campaigns',
+  key: 'list_campaigns',
+  description: `Retrieve a paginated list of fundraising campaigns. Supports filtering by scope for beneficiary or chapter account campaigns.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    scope: z.string().optional().describe('Scope filter for campaigns (e.g. "beneficiary" or "chapter")'),
-  }))
-  .output(z.object({
-    campaigns: z.array(campaignSchema).describe('List of campaigns'),
-    totalCount: z.number().describe('Total number of campaigns'),
-    currentPage: z.number().describe('Current page number'),
-    lastPage: z.number().describe('Last page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      scope: z
+        .string()
+        .optional()
+        .describe('Scope filter for campaigns (e.g. "beneficiary" or "chapter")')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(campaignSchema).describe('List of campaigns'),
+      totalCount: z.number().describe('Total number of campaigns'),
+      currentPage: z.number().describe('Current page number'),
+      lastPage: z.number().describe('Last page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listCampaigns({
       page: ctx.input.page,
-      scope: ctx.input.scope,
+      scope: ctx.input.scope
     });
 
     let campaigns = result.data.map((c: any) => ({
@@ -65,7 +69,7 @@ export let listCampaigns = SlateTool.create(
       status: c.status ?? null,
       endAt: c.end_at ?? null,
       createdAt: c.created_at ?? null,
-      updatedAt: c.updated_at ?? null,
+      updatedAt: c.updated_at ?? null
     }));
 
     return {
@@ -73,9 +77,9 @@ export let listCampaigns = SlateTool.create(
         campaigns,
         totalCount: result.meta.total,
         currentPage: result.meta.current_page,
-        lastPage: result.meta.last_page,
+        lastPage: result.meta.last_page
       },
-      message: `Found **${result.meta.total}** campaigns (page ${result.meta.current_page} of ${result.meta.last_page}).`,
+      message: `Found **${result.meta.total}** campaigns (page ${result.meta.current_page} of ${result.meta.last_page}).`
     };
   })
   .build();

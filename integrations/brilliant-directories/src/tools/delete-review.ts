@@ -3,28 +3,29 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteReview = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Review',
-    key: 'delete_review',
-    description: `Permanently delete a review from the directory.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteReview = SlateTool.create(spec, {
+  name: 'Delete Review',
+  key: 'delete_review',
+  description: `Permanently delete a review from the directory.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    reviewId: z.string().describe('The review ID to delete.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    confirmation: z.string().describe('Confirmation message from the API.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      reviewId: z.string().describe('The review ID to delete.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      confirmation: z.string().describe('Confirmation message from the API.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let result = await client.deleteReview(ctx.input.reviewId);
@@ -32,8 +33,10 @@ export let deleteReview = SlateTool.create(
     return {
       output: {
         status: result.status,
-        confirmation: typeof result.message === 'string' ? result.message : JSON.stringify(result.message),
+        confirmation:
+          typeof result.message === 'string' ? result.message : JSON.stringify(result.message)
       },
-      message: `Deleted review **${ctx.input.reviewId}**.`,
+      message: `Deleted review **${ctx.input.reviewId}**.`
     };
-  }).build();
+  })
+  .build();

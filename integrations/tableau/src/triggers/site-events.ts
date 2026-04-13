@@ -4,37 +4,37 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
 let eventNameMap: Record<string, string> = {
-  'SiteCreated': 'site.created',
-  'SiteUpdated': 'site.updated',
-  'SiteDeleted': 'site.deleted'
+  SiteCreated: 'site.created',
+  SiteUpdated: 'site.updated',
+  SiteDeleted: 'site.deleted'
 };
 
-let webhookEventNames = [
-  'SiteCreated',
-  'SiteUpdated',
-  'SiteDeleted'
-];
+let webhookEventNames = ['SiteCreated', 'SiteUpdated', 'SiteDeleted'];
 
 export let siteEvents = SlateTrigger.create(spec, {
   name: 'Site Events',
   key: 'site_events',
   description: 'Triggers when a site is created, updated, or deleted.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Tableau webhook event type'),
-    resourceId: z.string().describe('LUID of the affected site'),
-    resourceName: z.string().describe('Name of the affected site'),
-    siteId: z.string().describe('LUID of the site'),
-    timestamp: z.string().describe('Event timestamp')
-  }))
-  .output(z.object({
-    affectedSiteId: z.string().describe('LUID of the affected site'),
-    siteName: z.string().describe('Name of the site'),
-    siteId: z.string().describe('LUID of the site context'),
-    timestamp: z.string().describe('When the event occurred')
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Tableau webhook event type'),
+      resourceId: z.string().describe('LUID of the affected site'),
+      resourceName: z.string().describe('Name of the affected site'),
+      siteId: z.string().describe('LUID of the site'),
+      timestamp: z.string().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      affectedSiteId: z.string().describe('LUID of the affected site'),
+      siteName: z.string().describe('Name of the site'),
+      siteId: z.string().describe('LUID of the site context'),
+      timestamp: z.string().describe('When the event occurred')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       let webhookIds: Record<string, string> = {};
 
@@ -50,7 +50,7 @@ export let siteEvents = SlateTrigger.create(spec, {
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx.config, ctx.auth);
       let webhookIds = ctx.input.registrationDetails?.webhookIds || {};
 
@@ -63,21 +63,23 @@ export let siteEvents = SlateTrigger.create(spec, {
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       return {
-        inputs: [{
-          eventType: body.eventType || body['webhook-source-event-name'] || 'unknown',
-          resourceId: body.resource_luid || body.resourceId || '',
-          resourceName: body.resource_name || body.resourceName || '',
-          siteId: body.site_luid || body.siteId || '',
-          timestamp: body.created_at || body.timestamp || new Date().toISOString()
-        }]
+        inputs: [
+          {
+            eventType: body.eventType || body['webhook-source-event-name'] || 'unknown',
+            resourceId: body.resource_luid || body.resourceId || '',
+            resourceName: body.resource_name || body.resourceName || '',
+            siteId: body.site_luid || body.siteId || '',
+            timestamp: body.created_at || body.timestamp || new Date().toISOString()
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let mappedType = eventNameMap[ctx.input.eventType] || `site.${ctx.input.eventType}`;
 
       return {
@@ -91,4 +93,5 @@ export let siteEvents = SlateTrigger.create(spec, {
         }
       };
     }
-  }).build();
+  })
+  .build();

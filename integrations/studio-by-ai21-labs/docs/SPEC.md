@@ -9,10 +9,12 @@ AI21 Studio is a platform by AI21 Labs that provides API access to their Jamba f
 Studio by AI21 Labs uses API keys for authentication.
 
 To obtain an API key:
+
 1. Go to https://studio.ai21.com/sign-up to create an account.
 2. In your AI21 Labs account, navigate to the API Keys section. Locate your API key. If you don't have one or need to regenerate it, you can do so in this section.
 
 The API key is passed as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer <YOUR_API_KEY>
 ```

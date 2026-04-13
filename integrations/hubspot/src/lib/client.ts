@@ -9,14 +9,18 @@ export class HubSpotClient {
       baseURL: 'https://api.hubapi.com',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── CRM Objects (generic) ──
 
-  async createObject(objectType: string, properties: Record<string, any>, associations?: any[]): Promise<any> {
+  async createObject(
+    objectType: string,
+    properties: Record<string, any>,
+    associations?: any[]
+  ): Promise<any> {
     let body: Record<string, any> = { properties };
     if (associations && associations.length > 0) {
       body.associations = associations;
@@ -25,7 +29,12 @@ export class HubSpotClient {
     return response.data;
   }
 
-  async getObject(objectType: string, objectId: string, properties?: string[], associations?: string[]): Promise<any> {
+  async getObject(
+    objectType: string,
+    objectId: string,
+    properties?: string[],
+    associations?: string[]
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (properties && properties.length > 0) {
       params.properties = properties.join(',');
@@ -33,12 +42,20 @@ export class HubSpotClient {
     if (associations && associations.length > 0) {
       params.associations = associations.join(',');
     }
-    let response = await this.http.get(`/crm/v3/objects/${objectType}/${objectId}`, { params });
+    let response = await this.http.get(`/crm/v3/objects/${objectType}/${objectId}`, {
+      params
+    });
     return response.data;
   }
 
-  async updateObject(objectType: string, objectId: string, properties: Record<string, any>): Promise<any> {
-    let response = await this.http.patch(`/crm/v3/objects/${objectType}/${objectId}`, { properties });
+  async updateObject(
+    objectType: string,
+    objectId: string,
+    properties: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.patch(`/crm/v3/objects/${objectType}/${objectId}`, {
+      properties
+    });
     return response.data;
   }
 
@@ -46,7 +63,12 @@ export class HubSpotClient {
     await this.http.delete(`/crm/v3/objects/${objectType}/${objectId}`);
   }
 
-  async listObjects(objectType: string, limit: number = 10, after?: string, properties?: string[]): Promise<any> {
+  async listObjects(
+    objectType: string,
+    limit: number = 10,
+    after?: string,
+    properties?: string[]
+  ): Promise<any> {
     let params: Record<string, any> = { limit };
     if (after) {
       params.after = after;
@@ -58,34 +80,47 @@ export class HubSpotClient {
     return response.data;
   }
 
-  async batchCreateObjects(objectType: string, inputs: Array<{ properties: Record<string, any>; associations?: any[] }>): Promise<any> {
-    let response = await this.http.post(`/crm/v3/objects/${objectType}/batch/create`, { inputs });
+  async batchCreateObjects(
+    objectType: string,
+    inputs: Array<{ properties: Record<string, any>; associations?: any[] }>
+  ): Promise<any> {
+    let response = await this.http.post(`/crm/v3/objects/${objectType}/batch/create`, {
+      inputs
+    });
     return response.data;
   }
 
-  async batchUpdateObjects(objectType: string, inputs: Array<{ id: string; properties: Record<string, any> }>): Promise<any> {
-    let response = await this.http.post(`/crm/v3/objects/${objectType}/batch/update`, { inputs });
+  async batchUpdateObjects(
+    objectType: string,
+    inputs: Array<{ id: string; properties: Record<string, any> }>
+  ): Promise<any> {
+    let response = await this.http.post(`/crm/v3/objects/${objectType}/batch/update`, {
+      inputs
+    });
     return response.data;
   }
 
   // ── Search ──
 
-  async searchObjects(objectType: string, searchRequest: {
-    filterGroups?: Array<{
-      filters: Array<{
-        propertyName: string;
-        operator: string;
-        value?: string;
-        values?: string[];
-        highValue?: string;
+  async searchObjects(
+    objectType: string,
+    searchRequest: {
+      filterGroups?: Array<{
+        filters: Array<{
+          propertyName: string;
+          operator: string;
+          value?: string;
+          values?: string[];
+          highValue?: string;
+        }>;
       }>;
-    }>;
-    sorts?: Array<{ propertyName: string; direction: string }>;
-    query?: string;
-    properties?: string[];
-    limit?: number;
-    after?: number;
-  }): Promise<any> {
+      sorts?: Array<{ propertyName: string; direction: string }>;
+      query?: string;
+      properties?: string[];
+      limit?: number;
+      after?: number;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/crm/v3/objects/${objectType}/search`, searchRequest);
     return response.data;
   }
@@ -131,7 +166,11 @@ export class HubSpotClient {
 
   // ── Engagements ──
 
-  async createEngagement(engagementType: string, properties: Record<string, any>, associations?: any[]): Promise<any> {
+  async createEngagement(
+    engagementType: string,
+    properties: Record<string, any>,
+    associations?: any[]
+  ): Promise<any> {
     let body: Record<string, any> = { properties };
     if (associations && associations.length > 0) {
       body.associations = associations;
@@ -140,17 +179,29 @@ export class HubSpotClient {
     return response.data;
   }
 
-  async getEngagement(engagementType: string, engagementId: string, properties?: string[]): Promise<any> {
+  async getEngagement(
+    engagementType: string,
+    engagementId: string,
+    properties?: string[]
+  ): Promise<any> {
     let params: Record<string, string> = {};
     if (properties && properties.length > 0) {
       params.properties = properties.join(',');
     }
-    let response = await this.http.get(`/crm/v3/objects/${engagementType}/${engagementId}`, { params });
+    let response = await this.http.get(`/crm/v3/objects/${engagementType}/${engagementId}`, {
+      params
+    });
     return response.data;
   }
 
-  async updateEngagement(engagementType: string, engagementId: string, properties: Record<string, any>): Promise<any> {
-    let response = await this.http.patch(`/crm/v3/objects/${engagementType}/${engagementId}`, { properties });
+  async updateEngagement(
+    engagementType: string,
+    engagementId: string,
+    properties: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.patch(`/crm/v3/objects/${engagementType}/${engagementId}`, {
+      properties
+    });
     return response.data;
   }
 
@@ -165,21 +216,36 @@ export class HubSpotClient {
     return response.data;
   }
 
-  async createProperty(objectType: string, property: {
-    name: string;
-    label: string;
-    type: string;
-    fieldType: string;
-    groupName: string;
-    description?: string;
-    options?: Array<{ label: string; value: string; description?: string; displayOrder?: number }>;
-  }): Promise<any> {
+  async createProperty(
+    objectType: string,
+    property: {
+      name: string;
+      label: string;
+      type: string;
+      fieldType: string;
+      groupName: string;
+      description?: string;
+      options?: Array<{
+        label: string;
+        value: string;
+        description?: string;
+        displayOrder?: number;
+      }>;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/crm/v3/properties/${objectType}`, property);
     return response.data;
   }
 
-  async updateProperty(objectType: string, propertyName: string, updates: Record<string, any>): Promise<any> {
-    let response = await this.http.patch(`/crm/v3/properties/${objectType}/${propertyName}`, updates);
+  async updateProperty(
+    objectType: string,
+    propertyName: string,
+    updates: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.patch(
+      `/crm/v3/properties/${objectType}/${propertyName}`,
+      updates
+    );
     return response.data;
   }
 
@@ -195,17 +261,27 @@ export class HubSpotClient {
     return response.data;
   }
 
-  async createPipeline(objectType: string, pipeline: {
-    label: string;
-    displayOrder: number;
-    stages: Array<{ label: string; displayOrder: number; metadata: Record<string, string> }>;
-  }): Promise<any> {
+  async createPipeline(
+    objectType: string,
+    pipeline: {
+      label: string;
+      displayOrder: number;
+      stages: Array<{ label: string; displayOrder: number; metadata: Record<string, string> }>;
+    }
+  ): Promise<any> {
     let response = await this.http.post(`/crm/v3/pipelines/${objectType}`, pipeline);
     return response.data;
   }
 
-  async updatePipeline(objectType: string, pipelineId: string, updates: Record<string, any>): Promise<any> {
-    let response = await this.http.patch(`/crm/v3/pipelines/${objectType}/${pipelineId}`, updates);
+  async updatePipeline(
+    objectType: string,
+    pipelineId: string,
+    updates: Record<string, any>
+  ): Promise<any> {
+    let response = await this.http.patch(
+      `/crm/v3/pipelines/${objectType}/${pipelineId}`,
+      updates
+    );
     return response.data;
   }
 
@@ -215,7 +291,12 @@ export class HubSpotClient {
 
   // ── Lists ──
 
-  async createList(name: string, processingType: string, objectTypeId: string, filterBranch?: any): Promise<any> {
+  async createList(
+    name: string,
+    processingType: string,
+    objectTypeId: string,
+    filterBranch?: any
+  ): Promise<any> {
     let body: Record<string, any> = { name, processingType, objectTypeId };
     if (filterBranch) {
       body.filterBranch = filterBranch;
@@ -231,7 +312,7 @@ export class HubSpotClient {
 
   async updateListName(listId: string, name: string): Promise<any> {
     let response = await this.http.put(`/crm/v3/lists/${listId}/update-list-name`, null, {
-      params: { listName: name },
+      params: { listName: name }
     });
     return response.data;
   }
@@ -246,7 +327,10 @@ export class HubSpotClient {
   }
 
   async removeFromList(listId: string, recordIds: string[]): Promise<any> {
-    let response = await this.http.put(`/crm/v3/lists/${listId}/memberships/remove`, recordIds);
+    let response = await this.http.put(
+      `/crm/v3/lists/${listId}/memberships/remove`,
+      recordIds
+    );
     return response.data;
   }
 
@@ -289,21 +373,29 @@ export class HubSpotClient {
 
   // ── Recently Modified (for polling) ──
 
-  async getRecentlyModified(objectType: string, since?: string, limit: number = 50): Promise<any> {
+  async getRecentlyModified(
+    objectType: string,
+    since?: string,
+    limit: number = 50
+  ): Promise<any> {
     let searchRequest: any = {
       sorts: [{ propertyName: 'hs_lastmodifieddate', direction: 'DESCENDING' }],
       properties: ['hs_lastmodifieddate', 'hs_object_id', 'createdate'],
-      limit,
+      limit
     };
 
     if (since) {
-      searchRequest.filterGroups = [{
-        filters: [{
-          propertyName: 'hs_lastmodifieddate',
-          operator: 'GTE',
-          value: since,
-        }],
-      }];
+      searchRequest.filterGroups = [
+        {
+          filters: [
+            {
+              propertyName: 'hs_lastmodifieddate',
+              operator: 'GTE',
+              value: since
+            }
+          ]
+        }
+      ];
     }
 
     let response = await this.http.post(`/crm/v3/objects/${objectType}/search`, searchRequest);
@@ -312,10 +404,15 @@ export class HubSpotClient {
 
   // ── Email (Transactional) ──
 
-  async sendTransactionalEmail(emailId: number, to: string, properties?: Record<string, string>, contactProperties?: Record<string, string>): Promise<any> {
+  async sendTransactionalEmail(
+    emailId: number,
+    to: string,
+    properties?: Record<string, string>,
+    contactProperties?: Record<string, string>
+  ): Promise<any> {
     let body: Record<string, any> = {
       emailId,
-      message: { to },
+      message: { to }
     };
     if (properties) {
       body.customProperties = properties;

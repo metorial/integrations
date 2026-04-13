@@ -39,29 +39,32 @@ let mapParticipant = (p: any) => {
   };
 };
 
-export let listParticipantsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Participants',
-    key: 'list_participants',
-    description: `List participants of a conference. Returns signed-in users, anonymous users, and phone users with their join/leave times. Available during and up to 30 days after a conference.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listParticipantsTool = SlateTool.create(spec, {
+  name: 'List Participants',
+  key: 'list_participants',
+  description: `List participants of a conference. Returns signed-in users, anonymous users, and phone users with their join/leave times. Available during and up to 30 days after a conference.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    conferenceRecordName: z.string().describe('Conference record resource name (e.g., "conferenceRecords/abc123")'),
-    filter: z.string().optional().describe('Filter expression for participants'),
-    pageSize: z.number().optional().describe('Maximum number of participants to return'),
-    pageToken: z.string().optional().describe('Page token for pagination')
-  }))
-  .output(z.object({
-    participants: z.array(participantSchema),
-    nextPageToken: z.string().optional().describe('Token for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conferenceRecordName: z
+        .string()
+        .describe('Conference record resource name (e.g., "conferenceRecords/abc123")'),
+      filter: z.string().optional().describe('Filter expression for participants'),
+      pageSize: z.number().optional().describe('Maximum number of participants to return'),
+      pageToken: z.string().optional().describe('Page token for pagination')
+    })
+  )
+  .output(
+    z.object({
+      participants: z.array(participantSchema),
+      nextPageToken: z.string().optional().describe('Token for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
 
     let result = await client.listParticipants(
@@ -80,34 +83,45 @@ export let listParticipantsTool = SlateTool.create(
       },
       message: `Found **${participants.length}** participant(s) in the conference.${result.nextPageToken ? ' More results available.' : ''}`
     };
-  }).build();
+  })
+  .build();
 
-export let getParticipantSessionsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Participant Sessions',
-    key: 'get_participant_sessions',
-    description: `Retrieve the individual join/leave sessions for a specific participant in a conference. Each session represents a unique connection — a participant may have multiple sessions if they join, leave, and rejoin.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getParticipantSessionsTool = SlateTool.create(spec, {
+  name: 'Get Participant Sessions',
+  key: 'get_participant_sessions',
+  description: `Retrieve the individual join/leave sessions for a specific participant in a conference. Each session represents a unique connection — a participant may have multiple sessions if they join, leave, and rejoin.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    participantName: z.string().describe('Participant resource name (e.g., "conferenceRecords/abc123/participants/def456")'),
-    pageSize: z.number().optional().describe('Maximum number of sessions to return'),
-    pageToken: z.string().optional().describe('Page token for pagination')
-  }))
-  .output(z.object({
-    sessions: z.array(z.object({
-      sessionName: z.string().describe('Resource name of the session'),
-      startTime: z.string().optional().describe('When the session started'),
-      endTime: z.string().optional().describe('When the session ended (empty if still active)')
-    })),
-    nextPageToken: z.string().optional().describe('Token for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      participantName: z
+        .string()
+        .describe(
+          'Participant resource name (e.g., "conferenceRecords/abc123/participants/def456")'
+        ),
+      pageSize: z.number().optional().describe('Maximum number of sessions to return'),
+      pageToken: z.string().optional().describe('Page token for pagination')
+    })
+  )
+  .output(
+    z.object({
+      sessions: z.array(
+        z.object({
+          sessionName: z.string().describe('Resource name of the session'),
+          startTime: z.string().optional().describe('When the session started'),
+          endTime: z
+            .string()
+            .optional()
+            .describe('When the session ended (empty if still active)')
+        })
+      ),
+      nextPageToken: z.string().optional().describe('Token for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MeetClient({ token: ctx.auth.token });
 
     let result = await client.listParticipantSessions(
@@ -129,4 +143,5 @@ export let getParticipantSessionsTool = SlateTool.create(
       },
       message: `Found **${sessions.length}** session(s) for the participant.`
     };
-  }).build();
+  })
+  .build();

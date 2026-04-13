@@ -4,7 +4,11 @@ export { updateContact } from './update-contact';
 export { deleteContact } from './delete-contact';
 export { listContacts } from './list-contacts';
 export { searchContacts } from './search-contacts';
-export { createContactGroup, updateContactGroup, deleteContactGroup } from './manage-contact-group';
+export {
+  createContactGroup,
+  updateContactGroup,
+  deleteContactGroup
+} from './manage-contact-group';
 export { listContactGroups } from './list-contact-groups';
 export { getContactGroup } from './get-contact-group';
 export { modifyGroupMembers } from './modify-group-members';

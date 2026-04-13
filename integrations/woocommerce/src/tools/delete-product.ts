@@ -8,19 +8,27 @@ export let deleteProduct = SlateTool.create(spec, {
   key: 'delete_product',
   description: `Delete a product from the WooCommerce store. By default moves to trash; use force to permanently delete.`,
   tags: {
-    destructive: true,
-  },
+    destructive: true
+  }
 })
-  .input(z.object({
-    productId: z.number().describe('The product ID to delete'),
-    force: z.boolean().optional().default(false).describe('True to permanently delete instead of moving to trash'),
-  }))
-  .output(z.object({
-    productId: z.number(),
-    name: z.string(),
-    deleted: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      productId: z.number().describe('The product ID to delete'),
+      force: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('True to permanently delete instead of moving to trash')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.number(),
+      name: z.string(),
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let result = await client.deleteProduct(ctx.input.productId, ctx.input.force);
 
@@ -28,9 +36,9 @@ export let deleteProduct = SlateTool.create(spec, {
       output: {
         productId: result.id,
         name: result.name,
-        deleted: true,
+        deleted: true
       },
-      message: `${ctx.input.force ? 'Permanently deleted' : 'Trashed'} product **"${result.name}"** (ID: ${result.id}).`,
+      message: `${ctx.input.force ? 'Permanently deleted' : 'Trashed'} product **"${result.name}"** (ID: ${result.id}).`
     };
   })
   .build();

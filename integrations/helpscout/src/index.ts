@@ -19,7 +19,7 @@ import {
   manageWorkflow,
   getReport,
   listSatisfactionRatings,
-  manageDocs,
+  manageDocs
 } from './tools';
 import {
   conversationEvents,
@@ -28,7 +28,7 @@ import {
   organizationEvents,
   tagEvents,
   beaconChatEvents,
-  userEvents,
+  userEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -52,7 +52,7 @@ export let provider = Slate.create({
     manageWorkflow,
     getReport,
     listSatisfactionRatings,
-    manageDocs,
+    manageDocs
   ],
   triggers: [
     conversationEvents,
@@ -61,6 +61,6 @@ export let provider = Slate.create({
     organizationEvents,
     tagEvents,
     beaconChatEvents,
-    userEvents,
-  ],
+    userEvents
+  ]
 });

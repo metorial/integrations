@@ -49,25 +49,33 @@ Webhooks can also be configured per-prospect when adding prospects via the API, 
 The following event types are available:
 
 ### Video Created
+
 Triggered when a new personalized video is successfully generated in a dynamic video campaign.
 
 ### Video Ready to Download
+
 Fires when the video .mp4 file is ready for download, which may take a few minutes longer than the "Video Created" event. Useful for retrieving the .mp4 to download or upload elsewhere.
 
 ### Video Failed to Generate
+
 Fires when a dynamic video generates with an error.
 
 ### Video Viewed
+
 Triggered when a viewer opens or accesses a video page, regardless of whether they play the video.
 
 ### Video Played
+
 Triggered when a viewer initiates playback of a video.
 
 ### Video Watched %
+
 Tracks the percentage of the video a viewer has watched before pausing or closing playback.
 
 ### Video Liked
+
 Triggered when a viewer clicks the "Like" button on a video.
 
 ### Video CTA Clicked
+
 Triggered when a viewer clicks a Call-to-Action button on the video share page.

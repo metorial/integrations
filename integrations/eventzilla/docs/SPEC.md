@@ -27,31 +27,40 @@ There are no OAuth flows, scopes, or additional credentials required. A single A
 ## Features
 
 ### Event Management
+
 Retrieve a list of all events in your Eventzilla account or get details for a specific event. Events include information such as title, description, dates, venue, ticket availability, status (Live/Draft/Unpublished/Completed), categories, and branding assets (logo, background image). You can filter events by status and category. You can also publish or unpublish an event's sale page via the toggle sales feature.
 
 ### Ticket Configuration
+
 Retrieve ticket types (categories) for a specific event, including pricing, sale dates, quantity limits, group discounts, partial payment options, unlock codes, and visibility settings. Ticket types include paid, free, partial, add-on, donation, and approval-based tickets.
 
 ### Registration & Checkout
+
 Process end-to-end registrations programmatically through a multi-step checkout flow:
+
 - **Prepare checkout**: Retrieve available ticket types, payment options, custom questions, discount/tax settings for an event.
 - **Create checkout**: Initiate a checkout with selected ticket types and optional discount codes.
 - **Fill order**: Submit buyer details, attendee information, and answers to custom registration questions.
 - **Confirm checkout**: Finalize the order with payment status and optional email confirmation to the buyer.
 
 ### Order Management
+
 Confirm or cancel existing orders for events. When confirming or cancelling, you can provide comments and optionally suppress confirmation emails.
 
 ### Attendee Management
+
 Retrieve attendee details for a specific event or individual attendee, including name, ticket type, barcode, check-in status, custom question responses, and associated transaction details. Supports checking in or reverting check-in for attendees using their unique barcode.
 
 ### Transaction Management
+
 Retrieve transaction details for a specific event or look up individual transactions by checkout ID or order reference number. Transaction data includes buyer information, amount, status (Confirmed/Pending/Cancelled/Incomplete), payment type, discount codes, tax, and fees.
 
 ### User Management
+
 Retrieve organizer and sub-organizer account details, including contact information, company, address, timezone, social media profiles, and user type.
 
 ### Event Categories
+
 Retrieve the list of available event categories (e.g., Business, Music, Conferences, Training) used for organizing and filtering events.
 
 ## Events

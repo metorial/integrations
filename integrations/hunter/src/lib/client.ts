@@ -5,14 +5,14 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.http = createAxios({
-      baseURL: 'https://api.hunter.io/v2',
+      baseURL: 'https://api.hunter.io/v2'
     });
   }
 
   private get headers() {
     return {
       'X-API-KEY': this.config.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -53,7 +53,7 @@ export class Client {
 
     let response = await this.http.get('/domain-search', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
@@ -80,7 +80,7 @@ export class Client {
 
     let response = await this.http.get('/email-finder', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
@@ -90,18 +90,14 @@ export class Client {
   async verifyEmail(email: string) {
     let response = await this.http.get('/email-verifier', {
       headers: this.headers,
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
 
   // ── Email Count ──────────────────────────────────────────
 
-  async getEmailCount(params: {
-    domain?: string;
-    company?: string;
-    type?: string;
-  }) {
+  async getEmailCount(params: { domain?: string; company?: string; type?: string }) {
     let query: Record<string, any> = {};
     if (params.domain) query.domain = params.domain;
     if (params.company) query.company = params.company;
@@ -109,7 +105,7 @@ export class Client {
 
     let response = await this.http.get('/email-count', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
@@ -123,7 +119,7 @@ export class Client {
 
     let response = await this.http.get('/people/find', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
@@ -131,7 +127,7 @@ export class Client {
   async enrichCompany(domain: string) {
     let response = await this.http.get('/companies/find', {
       headers: this.headers,
-      params: { domain },
+      params: { domain }
     });
     return response.data;
   }
@@ -139,7 +135,7 @@ export class Client {
   async enrichCombined(email: string) {
     let response = await this.http.get('/combined/find', {
       headers: this.headers,
-      params: { email },
+      params: { email }
     });
     return response.data;
   }
@@ -167,7 +163,7 @@ export class Client {
     if (params.offset) body.offset = params.offset;
 
     let response = await this.http.post('/discover', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -200,42 +196,42 @@ export class Client {
 
     let response = await this.http.get('/leads', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
 
   async getLead(leadId: number) {
     let response = await this.http.get(`/leads/${leadId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createLead(data: Record<string, any>) {
     let response = await this.http.post('/leads', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async updateLead(leadId: number, data: Record<string, any>) {
     let response = await this.http.put(`/leads/${leadId}`, data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async upsertLead(data: Record<string, any>) {
     let response = await this.http.put('/leads', data, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async deleteLead(leadId: number) {
     let response = await this.http.delete(`/leads/${leadId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -249,35 +245,43 @@ export class Client {
 
     let response = await this.http.get('/leads_lists', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
 
   async getLeadsList(listId: number) {
     let response = await this.http.get(`/leads_lists/${listId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createLeadsList(name: string) {
-    let response = await this.http.post('/leads_lists', { name }, {
-      headers: this.headers,
-    });
+    let response = await this.http.post(
+      '/leads_lists',
+      { name },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async updateLeadsList(listId: number, name: string) {
-    let response = await this.http.put(`/leads_lists/${listId}`, { name }, {
-      headers: this.headers,
-    });
+    let response = await this.http.put(
+      `/leads_lists/${listId}`,
+      { name },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteLeadsList(listId: number) {
     let response = await this.http.delete(`/leads_lists/${listId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -291,30 +295,36 @@ export class Client {
 
     let response = await this.http.get('/campaigns', {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
 
-  async listSequenceRecipients(sequenceId: number, params?: { limit?: number; offset?: number }) {
+  async listSequenceRecipients(
+    sequenceId: number,
+    params?: { limit?: number; offset?: number }
+  ) {
     let query: Record<string, any> = {};
     if (params?.limit) query.limit = params.limit;
     if (params?.offset) query.offset = params.offset;
 
     let response = await this.http.get(`/campaigns/${sequenceId}/recipients`, {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
 
-  async addSequenceRecipients(sequenceId: number, data: { emails?: string[]; leadIds?: number[] }) {
+  async addSequenceRecipients(
+    sequenceId: number,
+    data: { emails?: string[]; leadIds?: number[] }
+  ) {
     let body: Record<string, any> = {};
     if (data.emails) body.emails = data.emails;
     if (data.leadIds) body.lead_ids = data.leadIds;
 
     let response = await this.http.post(`/campaigns/${sequenceId}/recipients`, body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -322,15 +332,19 @@ export class Client {
   async cancelSequenceRecipient(sequenceId: number, recipientEmail: string) {
     let response = await this.http.delete(`/campaigns/${sequenceId}/recipients`, {
       headers: this.headers,
-      data: { email: recipientEmail },
+      data: { email: recipientEmail }
     });
     return response.data;
   }
 
   async startSequence(sequenceId: number) {
-    let response = await this.http.post(`/campaigns/${sequenceId}/start`, {}, {
-      headers: this.headers,
-    });
+    let response = await this.http.post(
+      `/campaigns/${sequenceId}/start`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 }

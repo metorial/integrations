@@ -3,35 +3,33 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-let ALL_THRESHOLD_EVENTS = [
-  'threshold.warning',
-  'threshold.exceeded',
-  'threshold.eu.100k'
-];
+let ALL_THRESHOLD_EVENTS = ['threshold.warning', 'threshold.exceeded', 'threshold.eu.100k'];
 
-export let thresholdEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Tax Threshold Events',
-    key: 'threshold_events',
-    description: 'Triggered when tax thresholds are approaching, exceeded, or when EU digital services sales reach certain limits.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type'),
-    eventId: z.string().describe('Unique event identifier'),
-    thresholdData: z.any().describe('Full threshold payload from webhook')
-  }))
-  .output(z.object({
-    country: z.string().optional().describe('Country code'),
-    region: z.string().optional().describe('Region/state'),
-    thresholdAmount: z.string().optional().describe('Threshold amount'),
-    currentAmount: z.string().optional().describe('Current sales amount towards threshold'),
-    currency: z.string().optional().describe('Currency code'),
-    jurisdictionName: z.string().optional().describe('Jurisdiction name')
-  }))
+export let thresholdEvents = SlateTrigger.create(spec, {
+  name: 'Tax Threshold Events',
+  key: 'threshold_events',
+  description:
+    'Triggered when tax thresholds are approaching, exceeded, or when EU digital services sales reach certain limits.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type'),
+      eventId: z.string().describe('Unique event identifier'),
+      thresholdData: z.any().describe('Full threshold payload from webhook')
+    })
+  )
+  .output(
+    z.object({
+      country: z.string().optional().describe('Country code'),
+      region: z.string().optional().describe('Region/state'),
+      thresholdAmount: z.string().optional().describe('Threshold amount'),
+      currentAmount: z.string().optional().describe('Current sales amount towards threshold'),
+      currency: z.string().optional().describe('Currency code'),
+      jurisdictionName: z.string().optional().describe('Jurisdiction name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = createClient(ctx);
 
       let webhook = await client.createWebhook({
@@ -46,14 +44,14 @@ export let thresholdEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = createClient(ctx);
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let eventType = body.event_type || body.type || '';
       let data = body.data || body;
       let eventId = `${eventType}-${data.country || ''}-${Date.now()}`;
@@ -69,7 +67,7 @@ export let thresholdEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.thresholdData;
 
       return {
@@ -85,4 +83,5 @@ export let thresholdEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

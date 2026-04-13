@@ -3,30 +3,31 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Get Product',
-    key: 'get_product',
-    description: `Retrieve one or more product records from the ForceManager catalog.
+export let getProduct = SlateTool.create(spec, {
+  name: 'Get Product',
+  key: 'get_product',
+  description: `Retrieve one or more product records from the ForceManager catalog.
 Fetch by ID or list/search products with filtering by model name or custom queries.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    productId: z.number().optional().describe('Specific product ID to retrieve'),
-    query: z.string().optional().describe('ForceManager query language filter'),
-    model: z.string().optional().describe('Search by model name (LIKE match)'),
-    page: z.number().optional().describe('Page number (0-indexed)')
-  }))
-  .output(z.object({
-    products: z.array(z.any()).describe('List of matching product records'),
-    totalCount: z.number().describe('Number of records returned'),
-    nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productId: z.number().optional().describe('Specific product ID to retrieve'),
+      query: z.string().optional().describe('ForceManager query language filter'),
+      model: z.string().optional().describe('Search by model name (LIKE match)'),
+      page: z.number().optional().describe('Page number (0-indexed)')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(z.any()).describe('List of matching product records'),
+      totalCount: z.number().describe('Number of records returned'),
+      nextPage: z.number().nullable().describe('Next page number, or null if no more pages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth);
 
     if (ctx.input.productId) {
@@ -51,4 +52,5 @@ Fetch by ID or list/search products with filtering by model name or custom queri
       },
       message: `Found **${result.entityCount}** product(s)${result.nextPage !== null ? ` (more pages available)` : ''}`
     };
-  }).build();
+  })
+  .build();

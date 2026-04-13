@@ -3,63 +3,65 @@ import { IgnisignClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let signerEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Signer Events',
-    key: 'signer_events',
-    description: 'Triggered when signer-related events occur, such as signer creation or when new inputs/claims are added.',
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic'),
-    action: z.string().describe('Webhook action'),
-    msgNature: z.string().optional().describe('Message nature'),
-    appId: z.string().optional().describe('Application ID'),
-    appEnv: z.string().optional().describe('Application environment'),
-    verificationToken: z.string().optional().describe('Token for verification'),
-    content: z.any().describe('Event payload content'),
-  }))
-  .output(z.object({
-    signerId: z.string().describe('Signer ID'),
-    action: z.string().describe('Event action (CREATED or CLAIM_UPDATED)'),
-    msgNature: z.string().optional().describe('Message nature'),
-    appId: z.string().optional().describe('Application ID'),
-    appEnv: z.string().optional().describe('Application environment'),
-    content: z.any().optional().describe('Full event content'),
-  }))
+export let signerEvents = SlateTrigger.create(spec, {
+  name: 'Signer Events',
+  key: 'signer_events',
+  description:
+    'Triggered when signer-related events occur, such as signer creation or when new inputs/claims are added.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic'),
+      action: z.string().describe('Webhook action'),
+      msgNature: z.string().optional().describe('Message nature'),
+      appId: z.string().optional().describe('Application ID'),
+      appEnv: z.string().optional().describe('Application environment'),
+      verificationToken: z.string().optional().describe('Token for verification'),
+      content: z.any().describe('Event payload content')
+    })
+  )
+  .output(
+    z.object({
+      signerId: z.string().describe('Signer ID'),
+      action: z.string().describe('Event action (CREATED or CLAIM_UPDATED)'),
+      msgNature: z.string().optional().describe('Message nature'),
+      appId: z.string().optional().describe('Application ID'),
+      appEnv: z.string().optional().describe('Application environment'),
+      content: z.any().optional().describe('Full event content')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new IgnisignClient({
         token: ctx.auth.token,
         appId: ctx.config.appId,
-        appEnv: ctx.config.appEnv,
+        appEnv: ctx.config.appEnv
       });
 
       let result = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        description: 'Slates - Signer Events',
+        description: 'Slates - Signer Events'
       });
 
       return {
         registrationDetails: {
-          webhookId: result.webhookId || result._id,
-        },
+          webhookId: result.webhookId || result._id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new IgnisignClient({
         token: ctx.auth.token,
         appId: ctx.config.appId,
-        appEnv: ctx.config.appEnv,
+        appEnv: ctx.config.appEnv
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       if (data.topic !== 'SIGNER') {
         return { inputs: [] };
@@ -74,13 +76,13 @@ export let signerEvents = SlateTrigger.create(
             appId: data.appId,
             appEnv: data.appEnv,
             verificationToken: data.verificationToken,
-            content: data.content,
-          },
-        ],
+            content: data.content
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let content = ctx.input.content || {};
 
       return {
@@ -92,8 +94,9 @@ export let signerEvents = SlateTrigger.create(
           msgNature: ctx.input.msgNature,
           appId: ctx.input.appId,
           appEnv: ctx.input.appEnv,
-          content,
-        },
+          content
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

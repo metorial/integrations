@@ -599,16 +599,20 @@ export class GoogleDocsClient {
 
   private getAuthHeaders() {
     return {
-      'Authorization': `Bearer ${this.config.token}`,
+      Authorization: `Bearer ${this.config.token}`,
       'Content-Type': 'application/json'
     };
   }
 
   // Document Management
   async createDocument(title: string): Promise<Document> {
-    let response = await this.docsAxios.post('/documents', { title }, {
-      headers: this.getAuthHeaders()
-    });
+    let response = await this.docsAxios.post(
+      '/documents',
+      { title },
+      {
+        headers: this.getAuthHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -620,11 +624,15 @@ export class GoogleDocsClient {
   }
 
   async batchUpdate(documentId: string, requests: Request[]): Promise<BatchUpdateResponse> {
-    let response = await this.docsAxios.post(`/documents/${documentId}:batchUpdate`, {
-      requests
-    }, {
-      headers: this.getAuthHeaders()
-    });
+    let response = await this.docsAxios.post(
+      `/documents/${documentId}:batchUpdate`,
+      {
+        requests
+      },
+      {
+        headers: this.getAuthHeaders()
+      }
+    );
     return response.data;
   }
 
@@ -632,21 +640,25 @@ export class GoogleDocsClient {
   async getDriveFile(fileId: string): Promise<DriveFile> {
     let response = await this.driveAxios.get(`/files/${fileId}`, {
       params: {
-        fields: 'id,name,mimeType,modifiedTime,createdTime,owners,lastModifyingUser,webViewLink'
+        fields:
+          'id,name,mimeType,modifiedTime,createdTime,owners,lastModifyingUser,webViewLink'
       },
       headers: this.getAuthHeaders()
     });
     return response.data;
   }
 
-  async listDriveFiles(options: {
-    query?: string;
-    pageSize?: number;
-    pageToken?: string;
-    orderBy?: string;
-  } = {}): Promise<{ files: DriveFile[]; nextPageToken?: string }> {
+  async listDriveFiles(
+    options: {
+      query?: string;
+      pageSize?: number;
+      pageToken?: string;
+      orderBy?: string;
+    } = {}
+  ): Promise<{ files: DriveFile[]; nextPageToken?: string }> {
     let params: Record<string, string | number> = {
-      fields: 'nextPageToken,files(id,name,mimeType,modifiedTime,createdTime,owners,lastModifyingUser,webViewLink)',
+      fields:
+        'nextPageToken,files(id,name,mimeType,modifiedTime,createdTime,owners,lastModifyingUser,webViewLink)',
       pageSize: options.pageSize || 100
     };
 
@@ -667,7 +679,12 @@ export class GoogleDocsClient {
     return response.data;
   }
 
-  async watchFile(fileId: string, webhookUrl: string, channelId: string, expiration?: number): Promise<DriveWatchChannel> {
+  async watchFile(
+    fileId: string,
+    webhookUrl: string,
+    channelId: string,
+    expiration?: number
+  ): Promise<DriveWatchChannel> {
     let body: Record<string, unknown> = {
       id: channelId,
       type: 'web_hook',
@@ -685,12 +702,16 @@ export class GoogleDocsClient {
   }
 
   async stopWatchChannel(channelId: string, resourceId: string): Promise<void> {
-    await this.driveAxios.post('/channels/stop', {
-      id: channelId,
-      resourceId
-    }, {
-      headers: this.getAuthHeaders()
-    });
+    await this.driveAxios.post(
+      '/channels/stop',
+      {
+        id: channelId,
+        resourceId
+      },
+      {
+        headers: this.getAuthHeaders()
+      }
+    );
   }
 
   async getStartPageToken(): Promise<string> {
@@ -705,7 +726,8 @@ export class GoogleDocsClient {
       params: {
         pageToken,
         pageSize,
-        fields: 'kind,nextPageToken,newStartPageToken,changes(kind,changeType,time,removed,fileId,file(id,name,mimeType,modifiedTime,createdTime,owners,lastModifyingUser,webViewLink))'
+        fields:
+          'kind,nextPageToken,newStartPageToken,changes(kind,changeType,time,removed,fileId,file(id,name,mimeType,modifiedTime,createdTime,owners,lastModifyingUser,webViewLink))'
       },
       headers: this.getAuthHeaders()
     });
@@ -713,48 +735,75 @@ export class GoogleDocsClient {
   }
 
   // Helper methods for common operations
-  async insertText(documentId: string, text: string, index: number): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      insertText: {
-        text,
-        location: { index }
+  async insertText(
+    documentId: string,
+    text: string,
+    index: number
+  ): Promise<BatchUpdateResponse> {
+    return this.batchUpdate(documentId, [
+      {
+        insertText: {
+          text,
+          location: { index }
+        }
       }
-    }]);
+    ]);
   }
 
   async appendText(documentId: string, text: string): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      insertText: {
-        text,
-        endOfSegmentLocation: {}
-      }
-    }]);
-  }
-
-  async deleteText(documentId: string, startIndex: number, endIndex: number): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      deleteContentRange: {
-        range: {
-          startIndex,
-          endIndex
+    return this.batchUpdate(documentId, [
+      {
+        insertText: {
+          text,
+          endOfSegmentLocation: {}
         }
       }
-    }]);
+    ]);
   }
 
-  async replaceAllText(documentId: string, searchText: string, replaceText: string, matchCase: boolean = false): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      replaceAllText: {
-        replaceText,
-        containsText: {
-          text: searchText,
-          matchCase
+  async deleteText(
+    documentId: string,
+    startIndex: number,
+    endIndex: number
+  ): Promise<BatchUpdateResponse> {
+    return this.batchUpdate(documentId, [
+      {
+        deleteContentRange: {
+          range: {
+            startIndex,
+            endIndex
+          }
         }
       }
-    }]);
+    ]);
   }
 
-  async insertImage(documentId: string, imageUri: string, index: number, width?: number, height?: number): Promise<BatchUpdateResponse> {
+  async replaceAllText(
+    documentId: string,
+    searchText: string,
+    replaceText: string,
+    matchCase: boolean = false
+  ): Promise<BatchUpdateResponse> {
+    return this.batchUpdate(documentId, [
+      {
+        replaceAllText: {
+          replaceText,
+          containsText: {
+            text: searchText,
+            matchCase
+          }
+        }
+      }
+    ]);
+  }
+
+  async insertImage(
+    documentId: string,
+    imageUri: string,
+    index: number,
+    width?: number,
+    height?: number
+  ): Promise<BatchUpdateResponse> {
     let request: InsertInlineImageRequest = {
       uri: imageUri,
       location: { index }
@@ -770,46 +819,78 @@ export class GoogleDocsClient {
     return this.batchUpdate(documentId, [{ insertInlineImage: request }]);
   }
 
-  async insertTable(documentId: string, rows: number, columns: number, index: number): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      insertTable: {
-        rows,
-        columns,
-        location: { index }
+  async insertTable(
+    documentId: string,
+    rows: number,
+    columns: number,
+    index: number
+  ): Promise<BatchUpdateResponse> {
+    return this.batchUpdate(documentId, [
+      {
+        insertTable: {
+          rows,
+          columns,
+          location: { index }
+        }
       }
-    }]);
+    ]);
   }
 
-  async updateTextStyle(documentId: string, startIndex: number, endIndex: number, style: TextStyle): Promise<BatchUpdateResponse> {
+  async updateTextStyle(
+    documentId: string,
+    startIndex: number,
+    endIndex: number,
+    style: TextStyle
+  ): Promise<BatchUpdateResponse> {
     let fields = Object.keys(style).join(',');
-    return this.batchUpdate(documentId, [{
-      updateTextStyle: {
-        range: { startIndex, endIndex },
-        textStyle: style,
-        fields
+    return this.batchUpdate(documentId, [
+      {
+        updateTextStyle: {
+          range: { startIndex, endIndex },
+          textStyle: style,
+          fields
+        }
       }
-    }]);
+    ]);
   }
 
-  async createBulletList(documentId: string, startIndex: number, endIndex: number, bulletPreset: string = 'BULLET_DISC_CIRCLE_SQUARE'): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      createParagraphBullets: {
-        range: { startIndex, endIndex },
-        bulletPreset
+  async createBulletList(
+    documentId: string,
+    startIndex: number,
+    endIndex: number,
+    bulletPreset: string = 'BULLET_DISC_CIRCLE_SQUARE'
+  ): Promise<BatchUpdateResponse> {
+    return this.batchUpdate(documentId, [
+      {
+        createParagraphBullets: {
+          range: { startIndex, endIndex },
+          bulletPreset
+        }
       }
-    }]);
+    ]);
   }
 
-  async createNamedRange(documentId: string, name: string, startIndex: number, endIndex: number): Promise<BatchUpdateResponse> {
-    return this.batchUpdate(documentId, [{
-      createNamedRange: {
-        name,
-        range: { startIndex, endIndex }
+  async createNamedRange(
+    documentId: string,
+    name: string,
+    startIndex: number,
+    endIndex: number
+  ): Promise<BatchUpdateResponse> {
+    return this.batchUpdate(documentId, [
+      {
+        createNamedRange: {
+          name,
+          range: { startIndex, endIndex }
+        }
       }
-    }]);
+    ]);
   }
 
-  async deleteNamedRange(documentId: string, namedRangeId?: string, name?: string): Promise<BatchUpdateResponse> {
+  async deleteNamedRange(
+    documentId: string,
+    namedRangeId?: string,
+    name?: string
+  ): Promise<BatchUpdateResponse> {
     let request: DeleteNamedRangeRequest = {};
     if (namedRangeId) {
       request.namedRangeId = namedRangeId;

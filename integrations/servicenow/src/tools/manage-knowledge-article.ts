@@ -3,31 +3,47 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageKnowledgeArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Knowledge Article',
-    key: 'manage_knowledge_article',
-    description: `Create, update, or search knowledge base articles in ServiceNow. Use the search action to find articles by keyword, or create/update articles with title, body, and metadata.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['search', 'create', 'update']).describe('Action to perform'),
-    searchQuery: z.string().optional().describe('Search text to find articles (required for search action)'),
-    articleId: z.string().optional().describe('sys_id of the article to update (required for update action)'),
-    shortDescription: z.string().optional().describe('Article title/short description'),
-    text: z.string().optional().describe('Article body content (HTML supported)'),
-    knowledgeBaseId: z.string().optional().describe('sys_id of the knowledge base'),
-    category: z.string().optional().describe('Article category'),
-    workflowState: z.enum(['draft', 'review', 'published', 'retired']).optional().describe('Publishing workflow state'),
-    limit: z.number().optional().default(20).describe('Maximum results for search'),
-  }))
-  .output(z.object({
-    articles: z.array(z.record(z.string(), z.any())).optional().describe('Search results (for search action)'),
-    record: z.record(z.string(), z.any()).optional().describe('The created or updated article (for create/update actions)'),
-    articleId: z.string().optional().describe('sys_id of the created/updated article'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageKnowledgeArticle = SlateTool.create(spec, {
+  name: 'Manage Knowledge Article',
+  key: 'manage_knowledge_article',
+  description: `Create, update, or search knowledge base articles in ServiceNow. Use the search action to find articles by keyword, or create/update articles with title, body, and metadata.`
+})
+  .input(
+    z.object({
+      action: z.enum(['search', 'create', 'update']).describe('Action to perform'),
+      searchQuery: z
+        .string()
+        .optional()
+        .describe('Search text to find articles (required for search action)'),
+      articleId: z
+        .string()
+        .optional()
+        .describe('sys_id of the article to update (required for update action)'),
+      shortDescription: z.string().optional().describe('Article title/short description'),
+      text: z.string().optional().describe('Article body content (HTML supported)'),
+      knowledgeBaseId: z.string().optional().describe('sys_id of the knowledge base'),
+      category: z.string().optional().describe('Article category'),
+      workflowState: z
+        .enum(['draft', 'review', 'published', 'retired'])
+        .optional()
+        .describe('Publishing workflow state'),
+      limit: z.number().optional().default(20).describe('Maximum results for search')
+    })
+  )
+  .output(
+    z.object({
+      articles: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Search results (for search action)'),
+      record: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('The created or updated article (for create/update actions)'),
+      articleId: z.string().optional().describe('sys_id of the created/updated article')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
 
     if (ctx.input.action === 'search') {
@@ -37,12 +53,12 @@ export let manageKnowledgeArticle = SlateTool.create(
       let articles = await client.searchKnowledge({
         query: ctx.input.searchQuery,
         limit: ctx.input.limit,
-        knowledgeBaseId: ctx.input.knowledgeBaseId,
+        knowledgeBaseId: ctx.input.knowledgeBaseId
       });
 
       return {
         output: { articles },
-        message: `Found **${articles.length}** knowledge articles matching "${ctx.input.searchQuery}".`,
+        message: `Found **${articles.length}** knowledge articles matching "${ctx.input.searchQuery}".`
       };
     }
 
@@ -58,9 +74,9 @@ export let manageKnowledgeArticle = SlateTool.create(
       return {
         output: {
           record,
-          articleId: record.sys_id,
+          articleId: record.sys_id
         },
-        message: `Created knowledge article **${record.number || record.sys_id}**: ${record.short_description || 'No title'}`,
+        message: `Created knowledge article **${record.number || record.sys_id}**: ${record.short_description || 'No title'}`
       };
     }
 
@@ -72,9 +88,9 @@ export let manageKnowledgeArticle = SlateTool.create(
       return {
         output: {
           record,
-          articleId: record.sys_id,
+          articleId: record.sys_id
         },
-        message: `Updated knowledge article **${record.number || record.sys_id}**: ${record.short_description || 'No title'}`,
+        message: `Updated knowledge article **${record.number || record.sys_id}**: ${record.short_description || 'No title'}`
       };
     }
 

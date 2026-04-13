@@ -3,29 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageContactTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact Tags',
-    key: 'manage_contact_tags',
-    description: `Adds or removes tags from a contact. Use the action field to specify whether to add or remove tags. When removing, provide the contactTag IDs (not tag IDs) — these can be obtained from the Get Contact tool.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageContactTags = SlateTool.create(spec, {
+  name: 'Manage Contact Tags',
+  key: 'manage_contact_tags',
+  description: `Adds or removes tags from a contact. Use the action field to specify whether to add or remove tags. When removing, provide the contactTag IDs (not tag IDs) — these can be obtained from the Get Contact tool.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('ID of the contact'),
-    action: z.enum(['add', 'remove']).describe('Whether to add or remove the tag'),
-    tagId: z.string().optional().describe('ID of the tag to add (required when action is "add")'),
-    contactTagId: z.string().optional().describe('ID of the contactTag association to remove (required when action is "remove")')
-  }))
-  .output(z.object({
-    success: z.boolean(),
-    contactTagId: z.string().optional().describe('ID of the new contact-tag association (when adding)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('ID of the contact'),
+      action: z.enum(['add', 'remove']).describe('Whether to add or remove the tag'),
+      tagId: z
+        .string()
+        .optional()
+        .describe('ID of the tag to add (required when action is "add")'),
+      contactTagId: z
+        .string()
+        .optional()
+        .describe(
+          'ID of the contactTag association to remove (required when action is "remove")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      contactTagId: z
+        .string()
+        .optional()
+        .describe('ID of the new contact-tag association (when adding)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiUrl: ctx.config.apiUrl
@@ -53,4 +65,5 @@ export let manageContactTags = SlateTool.create(
         message: `Tag removed from contact (ID: ${ctx.input.contactId}).`
       };
     }
-  }).build();
+  })
+  .build();

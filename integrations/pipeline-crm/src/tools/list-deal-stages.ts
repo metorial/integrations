@@ -3,27 +3,30 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDealStages = SlateTool.create(
-  spec,
-  {
-    name: 'List Deal Stages',
-    key: 'list_deal_stages',
-    description: `Retrieve all deal pipeline stages configured in Pipeline CRM. Useful for finding stage IDs when creating or updating deals.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listDealStages = SlateTool.create(spec, {
+  name: 'List Deal Stages',
+  key: 'list_deal_stages',
+  description: `Retrieve all deal pipeline stages configured in Pipeline CRM. Useful for finding stage IDs when creating or updating deals.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    stages: z.array(z.object({
-      stageId: z.number().describe('Unique stage ID'),
-      name: z.string().nullable().optional().describe('Stage name'),
-      position: z.number().nullable().optional().describe('Stage position/order')
-    })).describe('List of deal pipeline stages')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      stages: z
+        .array(
+          z.object({
+            stageId: z.number().describe('Unique stage ID'),
+            name: z.string().nullable().optional().describe('Stage name'),
+            position: z.number().nullable().optional().describe('Stage position/order')
+          })
+        )
+        .describe('List of deal pipeline stages')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       appKey: ctx.auth.appKey
@@ -43,4 +46,5 @@ export let listDealStages = SlateTool.create(
       },
       message: `Found **${stageList.length}** deal stages`
     };
-  }).build();
+  })
+  .build();

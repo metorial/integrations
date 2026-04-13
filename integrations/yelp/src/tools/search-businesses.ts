@@ -5,12 +5,12 @@ import { z } from 'zod';
 
 let categorySchema = z.object({
   alias: z.string().describe('Category alias identifier'),
-  title: z.string().describe('Display title of the category'),
+  title: z.string().describe('Display title of the category')
 });
 
 let coordinatesSchema = z.object({
   latitude: z.number().nullable().optional().describe('Latitude'),
-  longitude: z.number().nullable().optional().describe('Longitude'),
+  longitude: z.number().nullable().optional().describe('Longitude')
 });
 
 let locationSchema = z.object({
@@ -21,7 +21,7 @@ let locationSchema = z.object({
   zipCode: z.string().nullable().optional().describe('Zip code'),
   country: z.string().nullable().optional().describe('Country code'),
   state: z.string().nullable().optional().describe('State code'),
-  displayAddress: z.array(z.string()).optional().describe('Formatted display address lines'),
+  displayAddress: z.array(z.string()).optional().describe('Formatted display address lines')
 });
 
 let businessSchema = z.object({
@@ -35,12 +35,15 @@ let businessSchema = z.object({
   categories: z.array(categorySchema).optional().describe('Business categories'),
   rating: z.number().optional().describe('Yelp rating (1-5)'),
   coordinates: coordinatesSchema.optional().describe('Business coordinates'),
-  transactions: z.array(z.string()).optional().describe('Supported transactions (e.g., delivery, pickup)'),
+  transactions: z
+    .array(z.string())
+    .optional()
+    .describe('Supported transactions (e.g., delivery, pickup)'),
   price: z.string().optional().describe('Price level ($ to $$$$)'),
   location: locationSchema.optional().describe('Business location'),
   phone: z.string().optional().describe('Phone number in E.164 format'),
   displayPhone: z.string().optional().describe('Formatted phone number'),
-  distance: z.number().optional().describe('Distance from search location in meters'),
+  distance: z.number().optional().describe('Distance from search location in meters')
 });
 
 let mapBusiness = (b: any) => ({
@@ -56,63 +59,100 @@ let mapBusiness = (b: any) => ({
   coordinates: b.coordinates,
   transactions: b.transactions,
   price: b.price,
-  location: b.location ? {
-    address1: b.location.address1,
-    address2: b.location.address2,
-    address3: b.location.address3,
-    city: b.location.city,
-    zipCode: b.location.zip_code,
-    country: b.location.country,
-    state: b.location.state,
-    displayAddress: b.location.display_address,
-  } : undefined,
+  location: b.location
+    ? {
+        address1: b.location.address1,
+        address2: b.location.address2,
+        address3: b.location.address3,
+        city: b.location.city,
+        zipCode: b.location.zip_code,
+        country: b.location.country,
+        state: b.location.state,
+        displayAddress: b.location.display_address
+      }
+    : undefined,
   phone: b.phone,
   displayPhone: b.display_phone,
-  distance: b.distance,
+  distance: b.distance
 });
 
 export { businessSchema, mapBusiness, categorySchema, coordinatesSchema, locationSchema };
 
-export let searchBusinesses = SlateTool.create(
-  spec,
-  {
-    name: 'Search Businesses',
-    key: 'search_businesses',
-    description: `Search for businesses on Yelp by keyword, category, location, price level, and more. Supports searching by text query with location (address or coordinates), filtering by price, open status, and business attributes. Results are sorted by best match by default but can be sorted by rating, review count, or distance.`,
-    constraints: [
-      'Requires either location (address) or latitude/longitude coordinates.',
-      'Maximum 50 results per request, up to 240 total results via pagination.',
-      'Businesses with zero reviews are not included in results.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let searchBusinesses = SlateTool.create(spec, {
+  name: 'Search Businesses',
+  key: 'search_businesses',
+  description: `Search for businesses on Yelp by keyword, category, location, price level, and more. Supports searching by text query with location (address or coordinates), filtering by price, open status, and business attributes. Results are sorted by best match by default but can be sorted by rating, review count, or distance.`,
+  constraints: [
+    'Requires either location (address) or latitude/longitude coordinates.',
+    'Maximum 50 results per request, up to 240 total results via pagination.',
+    'Businesses with zero reviews are not included in results.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    term: z.string().optional().describe('Search keyword (e.g., "food", "restaurants", "pizza")'),
-    location: z.string().optional().describe('Address, city, state, or zip code. Required if latitude/longitude not provided.'),
-    latitude: z.number().optional().describe('Latitude coordinate. Required if location not provided.'),
-    longitude: z.number().optional().describe('Longitude coordinate. Required if location not provided.'),
-    radius: z.number().optional().describe('Search radius in meters (max 40000)'),
-    categories: z.string().optional().describe('Comma-delimited category aliases (e.g., "bars,french")'),
-    locale: z.string().optional().describe('Locale code (e.g., "en_US")'),
-    limit: z.number().optional().describe('Number of results to return (1-50, default 20)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-    sortBy: z.enum(['best_match', 'rating', 'review_count', 'distance']).optional().describe('Sort order for results'),
-    price: z.string().optional().describe('Comma-delimited price levels to filter by (e.g., "1,2" for $ and $$)'),
-    openNow: z.boolean().optional().describe('Filter for currently-open businesses'),
-    openAt: z.number().optional().describe('Unix timestamp to filter businesses open at that time'),
-    attributes: z.string().optional().describe('Comma-delimited attributes (e.g., "hot_and_new,reservation,wheelchair_accessible")'),
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of matching businesses'),
-    businesses: z.array(businessSchema).describe('List of matching businesses'),
-    region: z.object({
-      center: coordinatesSchema.optional(),
-    }).optional().describe('Center of the search region'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      term: z
+        .string()
+        .optional()
+        .describe('Search keyword (e.g., "food", "restaurants", "pizza")'),
+      location: z
+        .string()
+        .optional()
+        .describe(
+          'Address, city, state, or zip code. Required if latitude/longitude not provided.'
+        ),
+      latitude: z
+        .number()
+        .optional()
+        .describe('Latitude coordinate. Required if location not provided.'),
+      longitude: z
+        .number()
+        .optional()
+        .describe('Longitude coordinate. Required if location not provided.'),
+      radius: z.number().optional().describe('Search radius in meters (max 40000)'),
+      categories: z
+        .string()
+        .optional()
+        .describe('Comma-delimited category aliases (e.g., "bars,french")'),
+      locale: z.string().optional().describe('Locale code (e.g., "en_US")'),
+      limit: z.number().optional().describe('Number of results to return (1-50, default 20)'),
+      offset: z.number().optional().describe('Offset for pagination'),
+      sortBy: z
+        .enum(['best_match', 'rating', 'review_count', 'distance'])
+        .optional()
+        .describe('Sort order for results'),
+      price: z
+        .string()
+        .optional()
+        .describe('Comma-delimited price levels to filter by (e.g., "1,2" for $ and $$)'),
+      openNow: z.boolean().optional().describe('Filter for currently-open businesses'),
+      openAt: z
+        .number()
+        .optional()
+        .describe('Unix timestamp to filter businesses open at that time'),
+      attributes: z
+        .string()
+        .optional()
+        .describe(
+          'Comma-delimited attributes (e.g., "hot_and_new,reservation,wheelchair_accessible")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of matching businesses'),
+      businesses: z.array(businessSchema).describe('List of matching businesses'),
+      region: z
+        .object({
+          center: coordinatesSchema.optional()
+        })
+        .optional()
+        .describe('Center of the search region')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.searchBusinesses({
@@ -129,7 +169,7 @@ export let searchBusinesses = SlateTool.create(
       price: ctx.input.price,
       openNow: ctx.input.openNow,
       openAt: ctx.input.openAt,
-      attributes: ctx.input.attributes,
+      attributes: ctx.input.attributes
     });
 
     let businesses = (result.businesses || []).map(mapBusiness);
@@ -138,9 +178,9 @@ export let searchBusinesses = SlateTool.create(
       output: {
         total: result.total,
         businesses,
-        region: result.region,
+        region: result.region
       },
-      message: `Found **${result.total}** businesses${ctx.input.term ? ` matching "${ctx.input.term}"` : ''}${ctx.input.location ? ` near ${ctx.input.location}` : ''}. Returned ${businesses.length} results.`,
+      message: `Found **${result.total}** businesses${ctx.input.term ? ` matching "${ctx.input.term}"` : ''}${ctx.input.location ? ` near ${ctx.input.location}` : ''}. Returned ${businesses.length} results.`
     };
   })
   .build();

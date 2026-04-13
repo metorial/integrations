@@ -24,7 +24,7 @@ export class PhotoshopClient {
   async removeBackground(input: StorageReference, output: StorageReference) {
     let response = await this.http.post('/sensei/cutout', {
       input,
-      output,
+      output
     });
     return response.data as PhotoshopJobStatus;
   }
@@ -32,7 +32,7 @@ export class PhotoshopClient {
   async autoTone(input: StorageReference, output: StorageReference) {
     let response = await this.http.post('/lrService/autoTone', {
       inputs: input,
-      outputs: [output],
+      outputs: [output]
     });
     return response.data as PhotoshopJobStatus;
   }
@@ -40,76 +40,95 @@ export class PhotoshopClient {
   async autoStraighten(input: StorageReference, output: StorageReference) {
     let response = await this.http.post('/lrService/autoStraighten', {
       inputs: input,
-      outputs: [output],
+      outputs: [output]
     });
     return response.data as PhotoshopJobStatus;
   }
 
-  async smartCrop(input: StorageReference, output: StorageReference, options?: {
-    width?: number;
-    height?: number;
-  }) {
+  async smartCrop(
+    input: StorageReference,
+    output: StorageReference,
+    options?: {
+      width?: number;
+      height?: number;
+    }
+  ) {
     let response = await this.http.post('/sensei/smartCrop', {
       input,
       output,
       options: {
         width: options?.width || 100,
-        height: options?.height || 100,
-      },
+        height: options?.height || 100
+      }
     });
     return response.data as PhotoshopJobStatus;
   }
 
   async getDocumentManifest(input: StorageReference) {
     let response = await this.http.post('/pie/psdService/documentManifest', {
-      inputs: [input],
+      inputs: [input]
     });
     return response.data;
   }
 
-  async applyPsdEdits(input: StorageReference, outputs: StorageReference[], options: {
-    layers?: any[];
-    globalOptions?: any;
-  }) {
+  async applyPsdEdits(
+    input: StorageReference,
+    outputs: StorageReference[],
+    options: {
+      layers?: any[];
+      globalOptions?: any;
+    }
+  ) {
     let response = await this.http.post('/pie/psdService/documentOperations', {
       inputs: [input],
       options: {
         layers: options.layers,
-        ...(options.globalOptions || {}),
+        ...(options.globalOptions || {})
       },
-      outputs,
+      outputs
     });
     return response.data as PhotoshopJobStatus;
   }
 
-  async createRendition(input: StorageReference, outputs: Array<StorageReference & {
-    type?: string;
-    width?: number;
-    quality?: number;
-  }>) {
+  async createRendition(
+    input: StorageReference,
+    outputs: Array<
+      StorageReference & {
+        type?: string;
+        width?: number;
+        quality?: number;
+      }
+    >
+  ) {
     let response = await this.http.post('/pie/psdService/renditionCreate', {
       inputs: [input],
-      outputs,
+      outputs
     });
     return response.data as PhotoshopJobStatus;
   }
 
-  async replaceSmartObject(input: StorageReference, output: StorageReference, smartObjectLayer: {
-    name?: string;
-    layerId?: number;
-    replacement: StorageReference;
-  }) {
+  async replaceSmartObject(
+    input: StorageReference,
+    output: StorageReference,
+    smartObjectLayer: {
+      name?: string;
+      layerId?: number;
+      replacement: StorageReference;
+    }
+  ) {
     let response = await this.http.post('/pie/psdService/smartObject', {
       inputs: [input],
       options: {
-        layers: [{
-          ...(smartObjectLayer.name ? { name: smartObjectLayer.name } : {}),
-          ...(smartObjectLayer.layerId ? { id: smartObjectLayer.layerId } : {}),
-          input: smartObjectLayer.replacement,
-          edit: {},
-        }],
+        layers: [
+          {
+            ...(smartObjectLayer.name ? { name: smartObjectLayer.name } : {}),
+            ...(smartObjectLayer.layerId ? { id: smartObjectLayer.layerId } : {}),
+            input: smartObjectLayer.replacement,
+            edit: {}
+          }
+        ]
       },
-      outputs: [output],
+      outputs: [output]
     });
     return response.data as PhotoshopJobStatus;
   }
@@ -118,32 +137,36 @@ export class PhotoshopClient {
     let response = await this.http.post('/pie/psdService/actionJSON', {
       inputs: [input],
       options: {
-        actionJSON: actions,
+        actionJSON: actions
       },
-      outputs: [output],
+      outputs: [output]
     });
     return response.data as PhotoshopJobStatus;
   }
 
-  async editTextLayers(input: StorageReference, output: StorageReference, layers: Array<{
-    name?: string;
-    layerId?: number;
-    text: {
-      content: string;
-      characterStyles?: any[];
-      paragraphStyles?: any[];
-    };
-  }>) {
+  async editTextLayers(
+    input: StorageReference,
+    output: StorageReference,
+    layers: Array<{
+      name?: string;
+      layerId?: number;
+      text: {
+        content: string;
+        characterStyles?: any[];
+        paragraphStyles?: any[];
+      };
+    }>
+  ) {
     let response = await this.http.post('/pie/psdService/text', {
       inputs: [input],
       options: {
-        layers: layers.map((layer) => ({
+        layers: layers.map(layer => ({
           ...(layer.name ? { name: layer.name } : {}),
           ...(layer.layerId ? { id: layer.layerId } : {}),
-          text: layer.text,
-        })),
+          text: layer.text
+        }))
       },
-      outputs: [output],
+      outputs: [output]
     });
     return response.data as PhotoshopJobStatus;
   }

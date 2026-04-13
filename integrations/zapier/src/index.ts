@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listApps,
@@ -12,11 +11,9 @@ import {
   getZapTemplates,
   listCategories,
   getZapRuns,
-  createWorkflowStep,
+  createWorkflowStep
 } from './tools';
-import { zapRunActivity,
-  inboundWebhook,
-} from './triggers';
+import { zapRunActivity, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     getZapTemplates,
     listCategories,
     getZapRuns,
-    createWorkflowStep,
+    createWorkflowStep
   ],
-  triggers: [
-    inboundWebhook,
-    zapRunActivity,
-  ],
+  triggers: [inboundWebhook, zapRunActivity]
 });

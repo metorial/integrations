@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://api.prerender.io',
+  baseURL: 'https://api.prerender.io'
 });
 
 let serviceAxios = createAxios({
-  baseURL: 'https://service.prerender.io',
+  baseURL: 'https://service.prerender.io'
 });
 
 export interface RecacheParams {
@@ -99,7 +99,7 @@ export class PrerenderClient {
 
   async recache(params: RecacheParams): Promise<RecacheResponse> {
     let body: Record<string, unknown> = {
-      prerenderToken: this.token,
+      prerenderToken: this.token
     };
 
     if (params.urls && params.urls.length > 0) {
@@ -120,7 +120,7 @@ export class PrerenderClient {
 
   async searchCache(params: SearchParams): Promise<SearchResponse> {
     let body: Record<string, unknown> = {
-      prerenderToken: this.token,
+      prerenderToken: this.token
     };
 
     if (params.exactMatch) {
@@ -146,7 +146,7 @@ export class PrerenderClient {
   async clearCache(params: ClearCacheParams): Promise<ClearCacheResponse> {
     let body = {
       prerenderToken: this.token,
-      query: params.query,
+      query: params.query
     };
 
     let response = await apiAxios.post('/cache-clear', body);
@@ -163,7 +163,7 @@ export class PrerenderClient {
   async addSitemap(params: SitemapCreateParams): Promise<SitemapResponse> {
     let body: Record<string, unknown> = {
       prerenderToken: this.token,
-      url: params.url,
+      url: params.url
     };
 
     let response = await apiAxios.post('/sitemap', body);
@@ -176,52 +176,67 @@ export class PrerenderClient {
     let response = await apiAxios.get('/v3/sitemap', {
       params: {
         page: page ?? 0,
-        pageSize: pageSize ?? 20,
+        pageSize: pageSize ?? 20
       },
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
 
-  async createSitemapV3(params: { url: string; adaptiveType?: string; revisitInterval?: string }): Promise<unknown> {
-    let response = await apiAxios.post('/v3/sitemap', {
-      url: params.url,
-      adaptiveType: params.adaptiveType ?? 'desktop',
-      revisitInterval: params.revisitInterval ?? 'weekly',
-    }, {
-      headers: {
-        'x-prerender-api-key': this.token,
+  async createSitemapV3(params: {
+    url: string;
+    adaptiveType?: string;
+    revisitInterval?: string;
+  }): Promise<unknown> {
+    let response = await apiAxios.post(
+      '/v3/sitemap',
+      {
+        url: params.url,
+        adaptiveType: params.adaptiveType ?? 'desktop',
+        revisitInterval: params.revisitInterval ?? 'weekly'
       },
-    });
+      {
+        headers: {
+          'x-prerender-api-key': this.token
+        }
+      }
+    );
     return response.data;
   }
 
   async deleteSitemap(sitemapId: string): Promise<unknown> {
     let response = await apiAxios.delete(`/v3/sitemap/${sitemapId}`, {
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
 
-  async updateSitemap(sitemapId: string, params: { revisitInterval?: string; adaptiveType?: string }): Promise<unknown> {
+  async updateSitemap(
+    sitemapId: string,
+    params: { revisitInterval?: string; adaptiveType?: string }
+  ): Promise<unknown> {
     let response = await apiAxios.patch(`/v3/sitemap/${sitemapId}`, params, {
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
 
   async triggerSitemapCrawl(sitemapId: string): Promise<unknown> {
-    let response = await apiAxios.post(`/v3/sitemap/${sitemapId}/crawl`, {}, {
-      headers: {
-        'x-prerender-api-key': this.token,
-      },
-    });
+    let response = await apiAxios.post(
+      `/v3/sitemap/${sitemapId}/crawl`,
+      {},
+      {
+        headers: {
+          'x-prerender-api-key': this.token
+        }
+      }
+    );
     return response.data;
   }
 
@@ -230,7 +245,7 @@ export class PrerenderClient {
   async changeRecacheSpeed(params: RecacheSpeedParams): Promise<RecacheSpeedResponse> {
     let body = {
       prerenderToken: this.token,
-      urlsPerHour: params.urlsPerHour,
+      urlsPerHour: params.urlsPerHour
     };
 
     let response = await apiAxios.post('/change-recache-speed', body);
@@ -243,8 +258,8 @@ export class PrerenderClient {
     let response = await apiAxios.get('/v3/domains', {
       params: query ? { query } : undefined,
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
@@ -252,26 +267,30 @@ export class PrerenderClient {
   async getDomainConfig(domain: string): Promise<unknown> {
     let response = await apiAxios.get(`/v3/domains/${encodeURIComponent(domain)}/config`, {
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
 
   async updateDomainConfig(domain: string, config: Record<string, unknown>): Promise<unknown> {
-    let response = await apiAxios.patch(`/v3/domains/${encodeURIComponent(domain)}/config`, config, {
-      headers: {
-        'x-prerender-api-key': this.token,
-      },
-    });
+    let response = await apiAxios.patch(
+      `/v3/domains/${encodeURIComponent(domain)}/config`,
+      config,
+      {
+        headers: {
+          'x-prerender-api-key': this.token
+        }
+      }
+    );
     return response.data;
   }
 
   async getDomainStatistics(): Promise<unknown> {
     let response = await apiAxios.get('/v3/domain-statistics', {
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
@@ -282,8 +301,8 @@ export class PrerenderClient {
     let response = await apiAxios.get('/v3/urls/count', {
       params: query ? { query } : undefined,
       headers: {
-        'x-prerender-api-key': this.token,
-      },
+        'x-prerender-api-key': this.token
+      }
     });
     return response.data;
   }
@@ -293,9 +312,9 @@ export class PrerenderClient {
   async renderPage(url: string): Promise<string> {
     let response = await serviceAxios.get(`/${url}`, {
       headers: {
-        'X-Prerender-Token': this.token,
+        'X-Prerender-Token': this.token
       },
-      responseType: 'text',
+      responseType: 'text'
     });
     return response.data as string;
   }

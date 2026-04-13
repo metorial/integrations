@@ -80,8 +80,8 @@ export class Client {
     this.http = createAxios({
       baseURL: BASE_URL,
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -115,14 +115,14 @@ export class Client {
       audioUrl: raw.audio ?? '',
       thumbnailUrl: raw.thumb ?? '',
       durationSeconds: raw.duration ?? 0,
-      attempts: (raw.attempts ?? []).map((a) => ({
+      attempts: (raw.attempts ?? []).map(a => ({
         attemptId: a.attempt_id,
         durationSeconds: a.duration,
         videoUrl: a.video ?? '',
         thumbnailUrl: a.thumb ?? '',
         streamingVideoUrl: a.streaming_video ?? '',
-        recordedAt: a.recorded_at ?? '',
-      })),
+        recordedAt: a.recorded_at ?? ''
+      }))
     };
   }
 }

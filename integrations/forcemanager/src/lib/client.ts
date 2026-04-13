@@ -1,7 +1,6 @@
-import { createAxios } from 'slates';
-// @ts-ignore
-import crypto from 'crypto';
 import { AxiosInstance } from 'axios';
+import crypto from 'crypto';
+import { createAxios } from 'slates';
 
 export interface AuthConfig {
   token: string;

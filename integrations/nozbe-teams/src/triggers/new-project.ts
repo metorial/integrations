@@ -3,36 +3,37 @@ import { Client, ListParams } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newProjectTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Project',
-    key: 'new_project',
-    description: 'Triggers when a new project is created in Nozbe Teams.'
-  }
-)
-  .input(z.object({
-    projectId: z.string().describe('Project ID'),
-    name: z.string().describe('Project name'),
-    teamId: z.string().optional().describe('Team ID'),
-    description: z.string().nullable().optional().describe('Project description'),
-    isOpen: z.boolean().optional().describe('Whether the project is open'),
-    createdAt: z.number().optional().describe('Creation timestamp')
-  }))
-  .output(z.object({
-    projectId: z.string().describe('Project ID'),
-    name: z.string().describe('Project name'),
-    teamId: z.string().optional().describe('Team ID'),
-    description: z.string().nullable().optional().describe('Project description'),
-    isOpen: z.boolean().optional().describe('Whether the project is open'),
-    createdAt: z.number().optional().describe('Creation timestamp')
-  }))
+export let newProjectTrigger = SlateTrigger.create(spec, {
+  name: 'New Project',
+  key: 'new_project',
+  description: 'Triggers when a new project is created in Nozbe Teams.'
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      name: z.string().describe('Project name'),
+      teamId: z.string().optional().describe('Team ID'),
+      description: z.string().nullable().optional().describe('Project description'),
+      isOpen: z.boolean().optional().describe('Whether the project is open'),
+      createdAt: z.number().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.string().describe('Project ID'),
+      name: z.string().describe('Project name'),
+      teamId: z.string().optional().describe('Team ID'),
+      description: z.string().nullable().optional().describe('Project description'),
+      isOpen: z.boolean().optional().describe('Whether the project is open'),
+      createdAt: z.number().optional().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let params: ListParams = {
@@ -67,7 +68,7 @@ export let newProjectTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'project.created',
         id: ctx.input.projectId,
@@ -81,4 +82,5 @@ export let newProjectTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -19,7 +19,7 @@ export let exportDataPoints = async (config: ClientConfig, params: ExportParams)
     hostname: params.hostname,
     start: params.start,
     end: params.end,
-    fields: params.fields.join(','),
+    fields: params.fields.join(',')
   };
 
   if (params.format) queryParams['format'] = params.format;

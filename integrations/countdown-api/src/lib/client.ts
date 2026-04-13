@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.countdownapi.com',
+  baseURL: 'https://api.countdownapi.com'
 });
 
 export class CountdownClient {
@@ -35,7 +35,7 @@ export class CountdownClient {
   }): Promise<any> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      type: 'search',
+      type: 'search'
     };
 
     if (params.ebayDomain) queryParams['ebay_domain'] = params.ebayDomain;
@@ -49,15 +49,22 @@ export class CountdownClient {
     if (params.maxPage !== undefined) queryParams['max_page'] = String(params.maxPage);
     if (params.num !== undefined) queryParams['num'] = String(params.num);
     if (params.soldItems !== undefined) queryParams['sold_items'] = String(params.soldItems);
-    if (params.completedItems !== undefined) queryParams['completed_items'] = String(params.completedItems);
-    if (params.authorizedSellers !== undefined) queryParams['authorized_sellers'] = String(params.authorizedSellers);
-    if (params.returnsAccepted !== undefined) queryParams['returns_accepted'] = String(params.returnsAccepted);
-    if (params.freeReturns !== undefined) queryParams['free_returns'] = String(params.freeReturns);
-    if (params.authenticityVerified !== undefined) queryParams['authenticity_verified'] = String(params.authenticityVerified);
-    if (params.dealsAndSavings !== undefined) queryParams['deals_and_savings'] = String(params.dealsAndSavings);
+    if (params.completedItems !== undefined)
+      queryParams['completed_items'] = String(params.completedItems);
+    if (params.authorizedSellers !== undefined)
+      queryParams['authorized_sellers'] = String(params.authorizedSellers);
+    if (params.returnsAccepted !== undefined)
+      queryParams['returns_accepted'] = String(params.returnsAccepted);
+    if (params.freeReturns !== undefined)
+      queryParams['free_returns'] = String(params.freeReturns);
+    if (params.authenticityVerified !== undefined)
+      queryParams['authenticity_verified'] = String(params.authenticityVerified);
+    if (params.dealsAndSavings !== undefined)
+      queryParams['deals_and_savings'] = String(params.dealsAndSavings);
     if (params.saleItems !== undefined) queryParams['sale_items'] = String(params.saleItems);
     if (params.facets) queryParams['facets'] = params.facets;
-    if (params.allowRewrittenResults !== undefined) queryParams['allow_rewritten_results'] = String(params.allowRewrittenResults);
+    if (params.allowRewrittenResults !== undefined)
+      queryParams['allow_rewritten_results'] = String(params.allowRewrittenResults);
 
     let response = await api.get('/request', { params: queryParams });
     return response.data;
@@ -73,15 +80,17 @@ export class CountdownClient {
   }): Promise<any> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      type: 'product',
+      type: 'product'
     };
 
     if (params.ebayDomain) queryParams['ebay_domain'] = params.ebayDomain;
     if (params.epid) queryParams['epid'] = params.epid;
     if (params.gtin) queryParams['gtin'] = params.gtin;
     if (params.url) queryParams['url'] = params.url;
-    if (params.skipGtinCache !== undefined) queryParams['skip_gtin_cache'] = String(params.skipGtinCache);
-    if (params.includePartsCompatibility !== undefined) queryParams['include_parts_compatibility'] = String(params.includePartsCompatibility);
+    if (params.skipGtinCache !== undefined)
+      queryParams['skip_gtin_cache'] = String(params.skipGtinCache);
+    if (params.includePartsCompatibility !== undefined)
+      queryParams['include_parts_compatibility'] = String(params.includePartsCompatibility);
 
     let response = await api.get('/request', { params: queryParams });
     return response.data;
@@ -101,14 +110,15 @@ export class CountdownClient {
   }): Promise<any> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      type: 'reviews',
+      type: 'reviews'
     };
 
     if (params.ebayDomain) queryParams['ebay_domain'] = params.ebayDomain;
     if (params.epid) queryParams['epid'] = params.epid;
     if (params.gtin) queryParams['gtin'] = params.gtin;
     if (params.url) queryParams['url'] = params.url;
-    if (params.skipGtinCache !== undefined) queryParams['skip_gtin_cache'] = String(params.skipGtinCache);
+    if (params.skipGtinCache !== undefined)
+      queryParams['skip_gtin_cache'] = String(params.skipGtinCache);
     if (params.condition) queryParams['condition'] = params.condition;
     if (params.sortBy) queryParams['sort_by'] = params.sortBy;
     if (params.searchTerm) queryParams['search_term'] = params.searchTerm;
@@ -127,7 +137,7 @@ export class CountdownClient {
   }): Promise<any> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      type: 'seller_profile',
+      type: 'seller_profile'
     };
 
     if (params.ebayDomain) queryParams['ebay_domain'] = params.ebayDomain;
@@ -153,7 +163,7 @@ export class CountdownClient {
   }): Promise<any> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
-      type: 'seller_feedback',
+      type: 'seller_feedback'
     };
 
     if (params.ebayDomain) queryParams['ebay_domain'] = params.ebayDomain;
@@ -162,7 +172,8 @@ export class CountdownClient {
     if (params.feedbackType) queryParams['seller_feedback_type'] = params.feedbackType;
     if (params.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params.timePeriod) queryParams['seller_feedback_time_period'] = params.timePeriod;
-    if (params.overallRating) queryParams['seller_feedback_overall_rating'] = params.overallRating;
+    if (params.overallRating)
+      queryParams['seller_feedback_overall_rating'] = params.overallRating;
     if (params.page !== undefined) queryParams['page'] = String(params.page);
     if (params.maxPage !== undefined) queryParams['max_page'] = String(params.maxPage);
     if (params.num !== undefined) queryParams['num'] = String(params.num);
@@ -171,15 +182,12 @@ export class CountdownClient {
     return response.data;
   }
 
-  async getAutocomplete(params: {
-    ebayDomain: string;
-    searchTerm: string;
-  }): Promise<any> {
+  async getAutocomplete(params: { ebayDomain: string; searchTerm: string }): Promise<any> {
     let queryParams: Record<string, string> = {
       api_key: this.apiKey,
       type: 'autocomplete',
       ebay_domain: params.ebayDomain,
-      search_term: params.searchTerm,
+      search_term: params.searchTerm
     };
 
     let response = await api.get('/request', { params: queryParams });
@@ -188,7 +196,7 @@ export class CountdownClient {
 
   async getAccount(): Promise<any> {
     let response = await api.get('/account', {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
@@ -214,75 +222,88 @@ export class CountdownClient {
     requestsType?: string;
   }): Promise<any> {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
 
     if (params.enabled !== undefined) body['enabled'] = params.enabled;
     if (params.scheduleType) body['schedule_type'] = params.scheduleType;
     if (params.priority) body['priority'] = params.priority;
-    if (params.scheduleDaysOfMonth) body['schedule_days_of_month'] = params.scheduleDaysOfMonth;
+    if (params.scheduleDaysOfMonth)
+      body['schedule_days_of_month'] = params.scheduleDaysOfMonth;
     if (params.scheduleDaysOfWeek) body['schedule_days_of_week'] = params.scheduleDaysOfWeek;
     if (params.scheduleHours) body['schedule_hours'] = params.scheduleHours;
     if (params.scheduleMinutes) body['schedule_minutes'] = params.scheduleMinutes;
     if (params.destinationIds) body['destination_ids'] = params.destinationIds;
     if (params.notificationEmail) body['notification_email'] = params.notificationEmail;
     if (params.notificationWebhook) body['notification_webhook'] = params.notificationWebhook;
-    if (params.notificationAsJson !== undefined) body['notification_as_json'] = params.notificationAsJson;
-    if (params.notificationAsJsonlines !== undefined) body['notification_as_jsonlines'] = params.notificationAsJsonlines;
-    if (params.notificationAsCsv !== undefined) body['notification_as_csv'] = params.notificationAsCsv;
-    if (params.notificationCsvFields) body['notification_csv_fields'] = params.notificationCsvFields;
+    if (params.notificationAsJson !== undefined)
+      body['notification_as_json'] = params.notificationAsJson;
+    if (params.notificationAsJsonlines !== undefined)
+      body['notification_as_jsonlines'] = params.notificationAsJsonlines;
+    if (params.notificationAsCsv !== undefined)
+      body['notification_as_csv'] = params.notificationAsCsv;
+    if (params.notificationCsvFields)
+      body['notification_csv_fields'] = params.notificationCsvFields;
     if (params.requestsType) body['requests_type'] = params.requestsType;
 
     let response = await api.post('/collections', body, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
-  async updateCollection(collectionId: string, params: {
-    name?: string;
-    enabled?: boolean;
-    scheduleType?: string;
-    priority?: string;
-    scheduleDaysOfMonth?: number[];
-    scheduleDaysOfWeek?: number[];
-    scheduleHours?: number[];
-    scheduleMinutes?: string;
-    destinationIds?: string[];
-    notificationEmail?: string;
-    notificationWebhook?: string;
-    notificationAsJson?: boolean;
-    notificationAsJsonlines?: boolean;
-    notificationAsCsv?: boolean;
-    notificationCsvFields?: string;
-  }): Promise<any> {
+  async updateCollection(
+    collectionId: string,
+    params: {
+      name?: string;
+      enabled?: boolean;
+      scheduleType?: string;
+      priority?: string;
+      scheduleDaysOfMonth?: number[];
+      scheduleDaysOfWeek?: number[];
+      scheduleHours?: number[];
+      scheduleMinutes?: string;
+      destinationIds?: string[];
+      notificationEmail?: string;
+      notificationWebhook?: string;
+      notificationAsJson?: boolean;
+      notificationAsJsonlines?: boolean;
+      notificationAsCsv?: boolean;
+      notificationCsvFields?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
 
     if (params.name) body['name'] = params.name;
     if (params.enabled !== undefined) body['enabled'] = params.enabled;
     if (params.scheduleType) body['schedule_type'] = params.scheduleType;
     if (params.priority) body['priority'] = params.priority;
-    if (params.scheduleDaysOfMonth) body['schedule_days_of_month'] = params.scheduleDaysOfMonth;
+    if (params.scheduleDaysOfMonth)
+      body['schedule_days_of_month'] = params.scheduleDaysOfMonth;
     if (params.scheduleDaysOfWeek) body['schedule_days_of_week'] = params.scheduleDaysOfWeek;
     if (params.scheduleHours) body['schedule_hours'] = params.scheduleHours;
     if (params.scheduleMinutes) body['schedule_minutes'] = params.scheduleMinutes;
     if (params.destinationIds) body['destination_ids'] = params.destinationIds;
     if (params.notificationEmail) body['notification_email'] = params.notificationEmail;
     if (params.notificationWebhook) body['notification_webhook'] = params.notificationWebhook;
-    if (params.notificationAsJson !== undefined) body['notification_as_json'] = params.notificationAsJson;
-    if (params.notificationAsJsonlines !== undefined) body['notification_as_jsonlines'] = params.notificationAsJsonlines;
-    if (params.notificationAsCsv !== undefined) body['notification_as_csv'] = params.notificationAsCsv;
-    if (params.notificationCsvFields) body['notification_csv_fields'] = params.notificationCsvFields;
+    if (params.notificationAsJson !== undefined)
+      body['notification_as_json'] = params.notificationAsJson;
+    if (params.notificationAsJsonlines !== undefined)
+      body['notification_as_jsonlines'] = params.notificationAsJsonlines;
+    if (params.notificationAsCsv !== undefined)
+      body['notification_as_csv'] = params.notificationAsCsv;
+    if (params.notificationCsvFields)
+      body['notification_csv_fields'] = params.notificationCsvFields;
 
     let response = await api.put(`/collections/${collectionId}`, body, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async getCollection(collectionId: string): Promise<any> {
     let response = await api.get(`/collections/${collectionId}`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
@@ -304,14 +325,16 @@ export class CountdownClient {
     sortDirection?: string;
   }): Promise<any> {
     let queryParams: Record<string, string> = {
-      api_key: this.apiKey,
+      api_key: this.apiKey
     };
 
     if (params?.status) queryParams['status'] = params.status;
     if (params?.searchTerm) queryParams['search_term'] = params.searchTerm;
     if (params?.searchType) queryParams['search_type'] = params.searchType;
-    if (params?.onlyWithResults !== undefined) queryParams['only_with_results'] = String(params.onlyWithResults);
-    if (params?.onlyWithoutResults !== undefined) queryParams['only_without_results'] = String(params.onlyWithoutResults);
+    if (params?.onlyWithResults !== undefined)
+      queryParams['only_with_results'] = String(params.onlyWithResults);
+    if (params?.onlyWithoutResults !== undefined)
+      queryParams['only_without_results'] = String(params.onlyWithoutResults);
     if (params?.createdBefore) queryParams['created_before'] = params.createdBefore;
     if (params?.createdAfter) queryParams['created_after'] = params.createdAfter;
     if (params?.lastRunBefore) queryParams['last_run_before'] = params.lastRunBefore;
@@ -328,43 +351,46 @@ export class CountdownClient {
 
   async startCollection(collectionId: string): Promise<any> {
     let response = await api.get(`/collections/${collectionId}/start`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async stopCollection(collectionId: string): Promise<any> {
     let response = await api.get(`/collections/${collectionId}/stop`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async deleteCollection(collectionId: string): Promise<any> {
     let response = await api.delete(`/collections/${collectionId}`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async listResultSets(collectionId: string): Promise<any> {
     let response = await api.get(`/collections/${collectionId}/results`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async getResultSet(collectionId: string, resultSetId: number): Promise<any> {
     let response = await api.get(`/collections/${collectionId}/results/${resultSetId}`, {
-      params: { api_key: this.apiKey },
+      params: { api_key: this.apiKey }
     });
     return response.data;
   }
 
   async resendWebhook(collectionId: string, resultSetId: number): Promise<any> {
-    let response = await api.get(`/collections/${collectionId}/results/${resultSetId}/resend_webhook`, {
-      params: { api_key: this.apiKey },
-    });
+    let response = await api.get(
+      `/collections/${collectionId}/results/${resultSetId}/resend_webhook`,
+      {
+        params: { api_key: this.apiKey }
+      }
+    );
     return response.data;
   }
 }

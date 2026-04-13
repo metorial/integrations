@@ -3,33 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageScan = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Scan',
-    key: 'manage_scan',
-    description: `Retrieve scan details, list scans, or control scan execution (pause, resume, stop). Use this to monitor and manage ongoing or completed data discovery scans.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageScan = SlateTool.create(spec, {
+  name: 'Manage Scan',
+  key: 'manage_scan',
+  description: `Retrieve scan details, list scans, or control scan execution (pause, resume, stop). Use this to monitor and manage ongoing or completed data discovery scans.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['get', 'list', 'pause', 'resume', 'stop']).describe('Action to perform on the scan'),
-    scanId: z.string().optional().describe('Scan ID (required for get, pause, resume, stop)'),
-    page: z.number().optional().describe('Page number for listing'),
-    size: z.number().optional().describe('Page size for listing'),
-    sortBy: z.string().optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    status: z.string().optional().describe('Filter by scan status')
-  }))
-  .output(z.object({
-    scan: z.any().optional().describe('Scan details (for get action)'),
-    scans: z.array(z.any()).optional().describe('List of scans (for list action)'),
-    success: z.boolean().optional().describe('Whether the action succeeded')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'list', 'pause', 'resume', 'stop'])
+        .describe('Action to perform on the scan'),
+      scanId: z
+        .string()
+        .optional()
+        .describe('Scan ID (required for get, pause, resume, stop)'),
+      page: z.number().optional().describe('Page number for listing'),
+      size: z.number().optional().describe('Page size for listing'),
+      sortBy: z.string().optional().describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      status: z.string().optional().describe('Filter by scan status')
+    })
+  )
+  .output(
+    z
+      .object({
+        scan: z.any().optional().describe('Scan details (for get action)'),
+        scans: z.array(z.any()).optional().describe('List of scans (for list action)'),
+        success: z.boolean().optional().describe('Whether the action succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -59,7 +67,7 @@ export let manageScan = SlateTool.create(
           status: ctx.input.status
         });
         let data = result?.data ?? result;
-        let scans = Array.isArray(data) ? data : data?.content ?? data?.items ?? [];
+        let scans = Array.isArray(data) ? data : (data?.content ?? data?.items ?? []);
         return {
           output: { scans, success: true },
           message: `Found **${scans.length}** scan(s).`
@@ -87,4 +95,5 @@ export let manageScan = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

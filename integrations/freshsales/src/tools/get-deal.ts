@@ -3,43 +3,61 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDeal = SlateTool.create(
-  spec,
-  {
-    name: 'Get Deal',
-    key: 'get_deal',
-    description: `Retrieve a single deal by ID from Freshsales. Optionally include related contacts, account, stage, and activity data.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getDeal = SlateTool.create(spec, {
+  name: 'Get Deal',
+  key: 'get_deal',
+  description: `Retrieve a single deal by ID from Freshsales. Optionally include related contacts, account, stage, and activity data.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    dealId: z.number().describe('ID of the deal to retrieve'),
-    include: z.array(z.enum(['sales_activities', 'owner', 'creater', 'updater', 'source', 'contacts', 'sales_account', 'deal_stage', 'deal_type', 'deal_reason', 'campaign', 'deal_payment_status', 'currency']))
-      .optional()
-      .describe('Related data to include'),
-  }))
-  .output(z.object({
-    dealId: z.number(),
-    name: z.string().nullable().optional(),
-    amount: z.number().nullable().optional(),
-    expectedClose: z.string().nullable().optional(),
-    closedDate: z.string().nullable().optional(),
-    dealStageId: z.number().nullable().optional(),
-    dealPipelineId: z.number().nullable().optional(),
-    dealTypeId: z.number().nullable().optional(),
-    dealReasonId: z.number().nullable().optional(),
-    probability: z.number().nullable().optional(),
-    ownerId: z.number().nullable().optional(),
-    salesAccountId: z.number().nullable().optional(),
-    currencyId: z.number().nullable().optional(),
-    customFields: z.record(z.string(), z.any()).nullable().optional(),
-    createdAt: z.string().nullable().optional(),
-    updatedAt: z.string().nullable().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      dealId: z.number().describe('ID of the deal to retrieve'),
+      include: z
+        .array(
+          z.enum([
+            'sales_activities',
+            'owner',
+            'creater',
+            'updater',
+            'source',
+            'contacts',
+            'sales_account',
+            'deal_stage',
+            'deal_type',
+            'deal_reason',
+            'campaign',
+            'deal_payment_status',
+            'currency'
+          ])
+        )
+        .optional()
+        .describe('Related data to include')
+    })
+  )
+  .output(
+    z.object({
+      dealId: z.number(),
+      name: z.string().nullable().optional(),
+      amount: z.number().nullable().optional(),
+      expectedClose: z.string().nullable().optional(),
+      closedDate: z.string().nullable().optional(),
+      dealStageId: z.number().nullable().optional(),
+      dealPipelineId: z.number().nullable().optional(),
+      dealTypeId: z.number().nullable().optional(),
+      dealReasonId: z.number().nullable().optional(),
+      probability: z.number().nullable().optional(),
+      ownerId: z.number().nullable().optional(),
+      salesAccountId: z.number().nullable().optional(),
+      currencyId: z.number().nullable().optional(),
+      customFields: z.record(z.string(), z.any()).nullable().optional(),
+      createdAt: z.string().nullable().optional(),
+      updatedAt: z.string().nullable().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let includeStr = ctx.input.include?.join(',');
     let deal = await client.getDeal(ctx.input.dealId, includeStr);
@@ -61,8 +79,9 @@ export let getDeal = SlateTool.create(
         currencyId: deal.currency_id,
         customFields: deal.custom_field,
         createdAt: deal.created_at,
-        updatedAt: deal.updated_at,
+        updatedAt: deal.updated_at
       },
-      message: `Retrieved deal **${deal.name || deal.id}**.`,
+      message: `Retrieved deal **${deal.name || deal.id}**.`
     };
-  }).build();
+  })
+  .build();

@@ -21,33 +21,43 @@ API keys allow other apps to access your account without giving out your passwor
 ## Features
 
 ### Contact Management
+
 Create, read, update, and delete contacts in the CRM. Manage contact relationships with a 360° view, import or capture contacts/leads, enrich them, and track all conversations and activities. Contacts can be segmented using filters and smart views.
 
 ### Company Management
+
 Manage company records that serve as parent entities for contacts. Companies hold long-term information such as contact numbers, phone, office numbers, and email addresses. Companies can be associated with contacts and deals.
 
 ### Deal Management
+
 Manage deals across customizable sales pipelines. The visual sales pipeline builder lets you create multiple pipelines with customized stages to match your sales process. As deals progress through stages, you gain visibility into pipeline health. Deals can be linked to contacts, companies, and activities.
 
 ### Activity Management
+
 Activities can be scheduled tasks, appointments, to-do's, or meetings needed to close a sale and can be associated with contacts, companies, or deals. Create, update, delete, and query activities.
 
 ### Products
+
 Create a product catalog with detailed information about each product, including quantities, discounts, and pricing. Products can be associated with deals.
 
 ### Tickets
+
 A ticketing module allows customer support teams to create, update, and monitor tickets, which represent individual cases or incidents.
 
 ### Custom Modules
+
 Salesmate offers custom modules to meet specific business needs. These custom modules allow you to define and configure the fields you want using built-in custom fields functionality. CRUD operations are available on custom module records.
 
 ### Notes
+
 Add notes to contacts, companies, deals, and activities to track additional context and information.
 
 ### Users
+
 Manage users within the Salesmate account, including creating users and retrieving user information.
 
 ### Email & Communication
+
 Track email conversations with contacts. Salesmate supports two-way email sync and email tracking. Call logging and text messaging are also available through the platform.
 
 ## Events
@@ -57,29 +67,35 @@ Salesmate supports webhooks through its workflow/automation features. Webhooks a
 Webhooks are configured by creating automation rules (workflows/smart flows) that trigger a "Call Webhook" action, posting data to a specified URL when conditions are met.
 
 ### Contact Events
+
 - **Contact Created**: Triggered when a new contact is added.
 - **Contact Updated**: Triggered when an existing contact is modified.
 - **Contact Note Created**: Triggered when a note is added to a contact.
 
 ### Company Events
+
 - **Company Created**: Triggered when a new company is added.
 - **Company Updated**: Triggered when an existing company is modified.
 - **Company Note Created**: Triggered when a note is added to a company.
 
 ### Deal Events
+
 - **Deal Created**: Triggered when a new deal is created.
 - **Deal Updated**: Triggered when a deal is modified (e.g., stage change, status change).
 - **Deal Note Created**: Triggered when a note is added to a deal.
 
 ### Activity Events
+
 - **Activity Created**: Triggered when a new activity is created.
 - **Activity Updated**: Triggered when an existing activity is modified.
 - **Activity Note Created**: Triggered when a note is added to an activity.
 
 ### User Events
+
 - **User Created**: Triggered when a new user is added.
 - **User Deactivated**: Triggered when a user is deactivated.
 
 ### Custom Module Events
+
 - **Record Created**: Triggered when a new record is created in a custom module.
 - **Record Updated**: Triggered when a record is updated in a custom module.

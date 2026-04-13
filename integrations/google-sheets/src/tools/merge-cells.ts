@@ -3,34 +3,40 @@ import { SheetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let mergeCells = SlateTool.create(
-  spec,
-  {
-    name: 'Merge Cells',
-    key: 'merge_cells',
-    description: `Merge or unmerge a range of cells in a spreadsheet. Supports merging all cells into one, merging by rows, or merging by columns.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let mergeCells = SlateTool.create(spec, {
+  name: 'Merge Cells',
+  key: 'merge_cells',
+  description: `Merge or unmerge a range of cells in a spreadsheet. Supports merging all cells into one, merging by rows, or merging by columns.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),
-    action: z.enum(['merge', 'unmerge']).describe('Whether to merge or unmerge cells'),
-    sheetId: z.number().describe('Numeric ID of the sheet'),
-    startRowIndex: z.number().describe('Start row index (0-based, inclusive)'),
-    endRowIndex: z.number().describe('End row index (0-based, exclusive)'),
-    startColumnIndex: z.number().describe('Start column index (0-based, inclusive)'),
-    endColumnIndex: z.number().describe('End column index (0-based, exclusive)'),
-    mergeType: z.enum(['MERGE_ALL', 'MERGE_COLUMNS', 'MERGE_ROWS']).optional().describe('Merge strategy. MERGE_ALL merges all cells, MERGE_COLUMNS merges cells per column, MERGE_ROWS merges cells per row. Defaults to MERGE_ALL.'),
-  }))
-  .output(z.object({
-    spreadsheetId: z.string().describe('ID of the spreadsheet'),
-    action: z.string().describe('The action performed'),
-    mergedRange: z.string().describe('Description of the affected range'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      spreadsheetId: z.string().describe('Unique ID of the spreadsheet'),
+      action: z.enum(['merge', 'unmerge']).describe('Whether to merge or unmerge cells'),
+      sheetId: z.number().describe('Numeric ID of the sheet'),
+      startRowIndex: z.number().describe('Start row index (0-based, inclusive)'),
+      endRowIndex: z.number().describe('End row index (0-based, exclusive)'),
+      startColumnIndex: z.number().describe('Start column index (0-based, inclusive)'),
+      endColumnIndex: z.number().describe('End column index (0-based, exclusive)'),
+      mergeType: z
+        .enum(['MERGE_ALL', 'MERGE_COLUMNS', 'MERGE_ROWS'])
+        .optional()
+        .describe(
+          'Merge strategy. MERGE_ALL merges all cells, MERGE_COLUMNS merges cells per column, MERGE_ROWS merges cells per row. Defaults to MERGE_ALL.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      spreadsheetId: z.string().describe('ID of the spreadsheet'),
+      action: z.string().describe('The action performed'),
+      mergedRange: z.string().describe('Description of the affected range')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SheetsClient(ctx.auth.token);
     let input = ctx.input;
 
@@ -39,7 +45,7 @@ export let mergeCells = SlateTool.create(
       startRowIndex: input.startRowIndex,
       endRowIndex: input.endRowIndex,
       startColumnIndex: input.startColumnIndex,
-      endColumnIndex: input.endColumnIndex,
+      endColumnIndex: input.endColumnIndex
     };
 
     let request: Record<string, any>;
@@ -48,12 +54,12 @@ export let mergeCells = SlateTool.create(
       request = {
         mergeCells: {
           range,
-          mergeType: input.mergeType ?? 'MERGE_ALL',
-        },
+          mergeType: input.mergeType ?? 'MERGE_ALL'
+        }
       };
     } else {
       request = {
-        unmergeCells: { range },
+        unmergeCells: { range }
       };
     }
 
@@ -65,9 +71,9 @@ export let mergeCells = SlateTool.create(
       output: {
         spreadsheetId: input.spreadsheetId,
         action: input.action,
-        mergedRange: rangeDesc,
+        mergedRange: rangeDesc
       },
-      message: `${input.action === 'merge' ? 'Merged' : 'Unmerged'} cells in ${rangeDesc}.`,
+      message: `${input.action === 'merge' ? 'Merged' : 'Unmerged'} cells in ${rangeDesc}.`
     };
   })
   .build();

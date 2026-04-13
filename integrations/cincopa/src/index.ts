@@ -12,12 +12,7 @@ import {
   managePortal,
   manageLiveStream
 } from './tools';
-import {
-  assetEvents,
-  galleryEvents,
-  leadEvents,
-  accountEvents
-} from './triggers';
+import { assetEvents, galleryEvents, leadEvents, accountEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +28,5 @@ export let provider = Slate.create({
     managePortal,
     manageLiveStream
   ],
-  triggers: [
-    assetEvents,
-    galleryEvents,
-    leadEvents,
-    accountEvents
-  ]
+  triggers: [assetEvents, galleryEvents, leadEvents, accountEvents]
 });

@@ -2,9 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Listclean API key used for authentication via X-Auth-Token header')
-  }))
+  .output(
+    z.object({
+      token: z
+        .string()
+        .describe('Listclean API key used for authentication via X-Auth-Token header')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
 
@@ -12,10 +16,14 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      apiToken: z.string().describe('Your Listclean API token. Generate one from the API Tokens section in your account settings.')
+      apiToken: z
+        .string()
+        .describe(
+          'Your Listclean API token. Generate one from the API Tokens section in your account settings.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiToken

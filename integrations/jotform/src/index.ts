@@ -18,10 +18,7 @@ import {
   listReportsTool,
   createReportTool
 } from './tools';
-import {
-  formSubmissionWebhookTrigger,
-  newSubmissionPollingTrigger
-} from './triggers';
+import { formSubmissionWebhookTrigger, newSubmissionPollingTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,8 +40,5 @@ export let provider = Slate.create({
     listReportsTool,
     createReportTool
   ],
-  triggers: [
-    formSubmissionWebhookTrigger,
-    newSubmissionPollingTrigger
-  ]
+  triggers: [formSubmissionWebhookTrigger, newSubmissionPollingTrigger]
 });

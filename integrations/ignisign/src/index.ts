@@ -15,13 +15,13 @@ import {
   listSignatureProfiles,
   listSignerProfiles,
   sealDocument,
-  getApplicationContext,
+  getApplicationContext
 } from './tools';
 import {
   signatureRequestEvents,
   signatureEvents,
   signerEvents,
-  signatureProofEvents,
+  signatureProofEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -41,12 +41,7 @@ export let provider = Slate.create({
     listSignatureProfiles,
     listSignerProfiles,
     sealDocument,
-    getApplicationContext,
+    getApplicationContext
   ],
-  triggers: [
-    signatureRequestEvents,
-    signatureEvents,
-    signerEvents,
-    signatureProofEvents,
-  ],
+  triggers: [signatureRequestEvents, signatureEvents, signerEvents, signatureProofEvents]
 });

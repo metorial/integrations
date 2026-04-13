@@ -16,7 +16,7 @@ import {
   manageInvoice,
   manageCompany,
   listBlocks,
-  triggerNightAudit,
+  triggerNightAudit
 } from './tools';
 import {
   reservationEvents,
@@ -25,7 +25,7 @@ import {
   invoiceEvents,
   propertyEvents,
   nightAuditEvents,
-  blockEvents,
+  blockEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -46,7 +46,7 @@ export let provider = Slate.create({
     manageInvoice,
     manageCompany,
     listBlocks,
-    triggerNightAudit,
+    triggerNightAudit
   ],
   triggers: [
     reservationEvents,
@@ -55,6 +55,6 @@ export let provider = Slate.create({
     invoiceEvents,
     propertyEvents,
     nightAuditEvents,
-    blockEvents,
-  ],
+    blockEvents
+  ]
 });

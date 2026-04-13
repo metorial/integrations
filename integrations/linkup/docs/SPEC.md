@@ -16,6 +16,7 @@ Linkup uses API key authentication.
 **Base URL:** The Linkup API can be accessed using the base URL: `https://api.linkup.so/v1`.
 
 **Header format:**
+
 ```
 Authorization: Bearer <YOUR_LINKUP_API_KEY>
 ```

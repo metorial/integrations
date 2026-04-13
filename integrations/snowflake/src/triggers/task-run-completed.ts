@@ -3,50 +3,52 @@ import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskRunCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Run Completed',
-    key: 'task_run_completed',
-    description: 'Triggers when a scheduled Snowflake task completes a run. Polls the task history to detect task run completions, including both successful and failed runs.',
-  }
-)
-  .input(z.object({
-    runId: z.string().describe('Unique identifier for the task run'),
-    taskName: z.string().describe('Name of the task'),
-    databaseName: z.string().describe('Database containing the task'),
-    schemaName: z.string().describe('Schema containing the task'),
-    state: z.string().describe('Run state (e.g. SUCCEEDED, FAILED, CANCELLED)'),
-    errorCode: z.string().optional().describe('Error code if the run failed'),
-    errorMessage: z.string().optional().describe('Error message if the run failed'),
-    queryStartTime: z.string().optional().describe('When the task query started'),
-    completedTime: z.string().optional().describe('When the task run completed'),
-    queryId: z.string().optional().describe('Query ID of the task execution'),
-    scheduledTime: z.string().optional().describe('When the task was scheduled to run'),
-  }))
-  .output(z.object({
-    runId: z.string().describe('Task run identifier'),
-    taskName: z.string().describe('Task name'),
-    databaseName: z.string().describe('Database'),
-    schemaName: z.string().describe('Schema'),
-    state: z.string().describe('Execution state'),
-    errorCode: z.string().optional().describe('Error code if failed'),
-    errorMessage: z.string().optional().describe('Error message if failed'),
-    queryStartTime: z.string().optional().describe('Query start time'),
-    completedTime: z.string().optional().describe('Completion time'),
-    queryId: z.string().optional().describe('Query ID'),
-    scheduledTime: z.string().optional().describe('Scheduled time'),
-  }))
+export let taskRunCompleted = SlateTrigger.create(spec, {
+  name: 'Task Run Completed',
+  key: 'task_run_completed',
+  description:
+    'Triggers when a scheduled Snowflake task completes a run. Polls the task history to detect task run completions, including both successful and failed runs.'
+})
+  .input(
+    z.object({
+      runId: z.string().describe('Unique identifier for the task run'),
+      taskName: z.string().describe('Name of the task'),
+      databaseName: z.string().describe('Database containing the task'),
+      schemaName: z.string().describe('Schema containing the task'),
+      state: z.string().describe('Run state (e.g. SUCCEEDED, FAILED, CANCELLED)'),
+      errorCode: z.string().optional().describe('Error code if the run failed'),
+      errorMessage: z.string().optional().describe('Error message if the run failed'),
+      queryStartTime: z.string().optional().describe('When the task query started'),
+      completedTime: z.string().optional().describe('When the task run completed'),
+      queryId: z.string().optional().describe('Query ID of the task execution'),
+      scheduledTime: z.string().optional().describe('When the task was scheduled to run')
+    })
+  )
+  .output(
+    z.object({
+      runId: z.string().describe('Task run identifier'),
+      taskName: z.string().describe('Task name'),
+      databaseName: z.string().describe('Database'),
+      schemaName: z.string().describe('Schema'),
+      state: z.string().describe('Execution state'),
+      errorCode: z.string().optional().describe('Error code if failed'),
+      errorMessage: z.string().optional().describe('Error message if failed'),
+      queryStartTime: z.string().optional().describe('Query start time'),
+      completedTime: z.string().optional().describe('Completion time'),
+      queryId: z.string().optional().describe('Query ID'),
+      scheduledTime: z.string().optional().describe('Scheduled time')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SnowflakeClient({
         accountIdentifier: ctx.config.accountIdentifier,
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let lastPollTime = (ctx.state as any)?.lastPollTime as string | undefined;
@@ -70,7 +72,7 @@ export let taskRunCompleted = SlateTrigger.create(
       let result = await client.executeStatement({
         statement,
         warehouse: ctx.config.warehouse,
-        role: ctx.config.role,
+        role: ctx.config.role
       });
 
       let inputs = (result.data || []).map(row => ({
@@ -84,24 +86,25 @@ export let taskRunCompleted = SlateTrigger.create(
         queryStartTime: row[7] || undefined,
         completedTime: row[8] || undefined,
         queryId: row[9] || undefined,
-        scheduledTime: row[10] || undefined,
+        scheduledTime: row[10] || undefined
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollTime: now,
-        },
+          lastPollTime: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let stateLower = (ctx.input.state || '').toLowerCase();
-      let eventType = stateLower === 'succeeded'
-        ? 'task_run.succeeded'
-        : stateLower === 'failed'
-          ? 'task_run.failed'
-          : `task_run.${stateLower}`;
+      let eventType =
+        stateLower === 'succeeded'
+          ? 'task_run.succeeded'
+          : stateLower === 'failed'
+            ? 'task_run.failed'
+            : `task_run.${stateLower}`;
 
       return {
         type: eventType,
@@ -117,9 +120,9 @@ export let taskRunCompleted = SlateTrigger.create(
           queryStartTime: ctx.input.queryStartTime,
           completedTime: ctx.input.completedTime,
           queryId: ctx.input.queryId,
-          scheduledTime: ctx.input.scheduledTime,
-        },
+          scheduledTime: ctx.input.scheduledTime
+        }
       };
-    },
+    }
   })
   .build();

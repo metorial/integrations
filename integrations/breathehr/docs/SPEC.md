@@ -31,36 +31,47 @@ X-API-KEY: prod-your-api-key-here
 ## Features
 
 ### Employee Management
+
 Create, retrieve, and manage employee records including personal information (name, email, gender, date of birth), employment details (job title, department, division, location), and status. Supports change requests for updating employee details, where changes can optionally require approval.
 
 ### Absence & Leave Management
+
 Retrieve absences with filtering by type, employee ID, department ID, and date range. Cancel absence requests. Manage leave requests and configure other leave reasons. List holiday allowances to track employee entitlements.
 
 ### Sickness Tracking
+
 Retrieve sickness records with filtering by start date, end date, employee ID, and department ID. Create sickness records for employees.
 
 ### Expense Management
+
 Create, retrieve, and delete employee expenses, including fields such as expense date, description, and amount. Manage employee expense claims with create and update operations.
 
 ### Compensation Data
+
 Retrieve bonuses including details such as description, amount, and award date. Access salary information, including department-level salary data.
 
 ### Benefits
+
 Retrieve employee benefits and department-level benefit information.
 
 ### Training
+
 Retrieve company training types, each with an ID, name, and timestamps. Manage employee training course records.
 
 ### Organizational Structure
+
 Manage departments, divisions, and locations. Retrieve department-level data including absences, benefits, bonuses, leave requests, and salaries.
 
 ### Working Patterns & Statutory Holidays
+
 Access working pattern configurations and statutory holiday information by country.
 
 ### Custom Fields
+
 Retrieve custom field definitions configured in the Breathe HR account.
 
 ### Account Information
+
 Retrieve account details including the account's unique identifier, name, domain, and UUID.
 
 ## Events

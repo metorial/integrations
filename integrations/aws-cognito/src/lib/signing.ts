@@ -3,10 +3,17 @@
 let textEncoder = new TextEncoder();
 
 let toArrayBuffer = (bytes: Uint8Array): ArrayBuffer => {
-  if (bytes.byteOffset === 0 && bytes.byteLength === bytes.buffer.byteLength && bytes.buffer instanceof ArrayBuffer) {
+  if (
+    bytes.byteOffset === 0 &&
+    bytes.byteLength === bytes.buffer.byteLength &&
+    bytes.buffer instanceof ArrayBuffer
+  ) {
     return bytes.buffer;
   }
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+  return bytes.buffer.slice(
+    bytes.byteOffset,
+    bytes.byteOffset + bytes.byteLength
+  ) as ArrayBuffer;
 };
 
 let hexEncode = (bytes: Uint8Array): string => {
@@ -31,7 +38,11 @@ let hmacSha256 = async (key: Uint8Array, data: string): Promise<Uint8Array> => {
     false,
     ['sign']
   );
-  let sig = await crypto.subtle.sign('HMAC', cryptoKey, toArrayBuffer(textEncoder.encode(data)));
+  let sig = await crypto.subtle.sign(
+    'HMAC',
+    cryptoKey,
+    toArrayBuffer(textEncoder.encode(data))
+  );
   return new Uint8Array(sig);
 };
 
@@ -40,7 +51,10 @@ let getDateStamp = (date: Date): string => {
 };
 
 let getAmzDate = (date: Date): string => {
-  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  return date
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}/, '');
 };
 
 let getSigningKey = async (
@@ -69,7 +83,9 @@ export interface SignRequestParams {
   sessionToken?: string;
 }
 
-export let signRequest = async (params: SignRequestParams): Promise<Record<string, string>> => {
+export let signRequest = async (
+  params: SignRequestParams
+): Promise<Record<string, string>> => {
   let now = new Date();
   let dateStamp = getDateStamp(now);
   let amzDate = getAmzDate(now);
@@ -87,7 +103,8 @@ export let signRequest = async (params: SignRequestParams): Promise<Record<strin
   let payloadHash = hexEncode(await sha256(params.body));
 
   let sortedHeaderKeys = Object.keys(headers).sort();
-  let canonicalHeaders = sortedHeaderKeys.map(k => `${k.toLowerCase()}:${headers[k]!.trim()}`).join('\n') + '\n';
+  let canonicalHeaders =
+    sortedHeaderKeys.map(k => `${k.toLowerCase()}:${headers[k]!.trim()}`).join('\n') + '\n';
   let signedHeaders = sortedHeaderKeys.map(k => k.toLowerCase()).join(';');
 
   let canonicalRequest = [
@@ -102,21 +119,23 @@ export let signRequest = async (params: SignRequestParams): Promise<Record<strin
   let credentialScope = `${dateStamp}/${params.region}/${params.service}/aws4_request`;
   let canonicalRequestHash = hexEncode(await sha256(canonicalRequest));
 
-  let stringToSign = [
-    'AWS4-HMAC-SHA256',
-    amzDate,
-    credentialScope,
-    canonicalRequestHash
-  ].join('\n');
+  let stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join(
+    '\n'
+  );
 
-  let signingKey = await getSigningKey(params.secretAccessKey, dateStamp, params.region, params.service);
+  let signingKey = await getSigningKey(
+    params.secretAccessKey,
+    dateStamp,
+    params.region,
+    params.service
+  );
   let signature = hexEncode(await hmacSha256(signingKey, stringToSign));
 
   let authorizationHeader = `AWS4-HMAC-SHA256 Credential=${params.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
 
   let result: Record<string, string> = {
     ...headers,
-    'Authorization': authorizationHeader
+    Authorization: authorizationHeader
   };
 
   return result;

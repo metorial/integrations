@@ -3,28 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getWorkspace = SlateTool.create(
-  spec,
-  {
-    name: 'Get Workspace',
-    key: 'get_workspace',
-    description: `Retrieve information about the current TextIt workspace including name, country, supported languages, timezone, and date formatting preferences.`,
-    tags: {
-      readOnly: true,
-    },
+export let getWorkspace = SlateTool.create(spec, {
+  name: 'Get Workspace',
+  key: 'get_workspace',
+  description: `Retrieve information about the current TextIt workspace including name, country, supported languages, timezone, and date formatting preferences.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    workspaceUuid: z.string(),
-    name: z.string(),
-    country: z.string(),
-    languages: z.array(z.string()),
-    timezone: z.string(),
-    dateStyle: z.string(),
-    anon: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      workspaceUuid: z.string(),
+      name: z.string(),
+      country: z.string(),
+      languages: z.array(z.string()),
+      timezone: z.string(),
+      dateStyle: z.string(),
+      anon: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let workspace = await client.getWorkspace();
 
@@ -36,8 +35,9 @@ export let getWorkspace = SlateTool.create(
         languages: workspace.languages,
         timezone: workspace.timezone,
         dateStyle: workspace.date_style,
-        anon: workspace.anon,
+        anon: workspace.anon
       },
-      message: `Workspace: **${workspace.name}** (${workspace.country}, ${workspace.timezone}).`,
+      message: `Workspace: **${workspace.name}** (${workspace.country}, ${workspace.timezone}).`
     };
-  }).build();
+  })
+  .build();

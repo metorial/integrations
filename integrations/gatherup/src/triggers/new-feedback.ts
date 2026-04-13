@@ -3,58 +3,63 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let newFeedback = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Feedback',
-    key: 'new_feedback',
-    description: 'Triggers when new first-party feedback is received through GatherUp for any monitored business.',
-  }
-)
-  .input(z.object({
-    feedbackId: z.string().describe('Unique feedback identifier'),
-    businessId: z.string().optional().describe('Business ID'),
-    rating: z.any().optional().describe('Star rating'),
-    recommend: z.any().optional().describe('NPS recommendation score'),
-    author: z.string().optional().describe('Author name'),
-    reviewBody: z.string().optional().describe('Feedback text content'),
-    reviewDate: z.string().optional().describe('Date of feedback'),
-    visible: z.any().optional().describe('Visibility status'),
-    customerId: z.string().optional().describe('Customer ID'),
-  }))
-  .output(z.object({
-    feedbackId: z.string().describe('Feedback identifier'),
-    businessId: z.string().optional().describe('Business ID'),
-    rating: z.any().optional().describe('Star rating'),
-    recommend: z.any().optional().describe('NPS recommendation score'),
-    author: z.string().optional().describe('Author name'),
-    reviewBody: z.string().optional().describe('Feedback text content'),
-    reviewDate: z.string().optional().describe('Date of feedback'),
-    visible: z.any().optional().describe('Visibility status'),
-    customerId: z.string().optional().describe('Customer ID'),
-  }))
+export let newFeedback = SlateTrigger.create(spec, {
+  name: 'New Feedback',
+  key: 'new_feedback',
+  description:
+    'Triggers when new first-party feedback is received through GatherUp for any monitored business.'
+})
+  .input(
+    z.object({
+      feedbackId: z.string().describe('Unique feedback identifier'),
+      businessId: z.string().optional().describe('Business ID'),
+      rating: z.any().optional().describe('Star rating'),
+      recommend: z.any().optional().describe('NPS recommendation score'),
+      author: z.string().optional().describe('Author name'),
+      reviewBody: z.string().optional().describe('Feedback text content'),
+      reviewDate: z.string().optional().describe('Date of feedback'),
+      visible: z.any().optional().describe('Visibility status'),
+      customerId: z.string().optional().describe('Customer ID')
+    })
+  )
+  .output(
+    z.object({
+      feedbackId: z.string().describe('Feedback identifier'),
+      businessId: z.string().optional().describe('Business ID'),
+      rating: z.any().optional().describe('Star rating'),
+      recommend: z.any().optional().describe('NPS recommendation score'),
+      author: z.string().optional().describe('Author name'),
+      reviewBody: z.string().optional().describe('Feedback text content'),
+      reviewDate: z.string().optional().describe('Date of feedback'),
+      visible: z.any().optional().describe('Visibility status'),
+      customerId: z.string().optional().describe('Customer ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let lastPolledDate = ctx.state?.lastPolledDate as string | undefined;
       let lastSeenIds = (ctx.state?.lastSeenIds as string[] | undefined) ?? [];
 
       let now = new Date();
-      let fromDate = lastPolledDate ?? new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      let fromDate =
+        lastPolledDate ??
+        new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       let toDate = now.toISOString().split('T')[0];
 
       let data = await client.getFeedbacks({
         from: fromDate,
         to: toDate,
-        aggregateResponse: 1,
+        aggregateResponse: 1
       });
 
-      let count = typeof data.count === 'number' ? data.count : parseInt(data.count || '0', 10);
+      let count =
+        typeof data.count === 'number' ? data.count : parseInt(data.count || '0', 10);
       let inputs: Array<Record<string, unknown>> = [];
       let newSeenIds: string[] = [];
 
@@ -63,14 +68,18 @@ export let newFeedback = SlateTrigger.create(
         if (feedbackId && !lastSeenIds.includes(feedbackId)) {
           inputs.push({
             feedbackId,
-            businessId: data[`businessId${i}`] !== undefined ? String(data[`businessId${i}`]) : undefined,
+            businessId:
+              data[`businessId${i}`] !== undefined
+                ? String(data[`businessId${i}`])
+                : undefined,
             rating: data[`rating${i}`],
             recommend: data[`recommend${i}`],
             author: data[`author${i}`],
             reviewBody: data[`reviewBody${i}`],
             reviewDate: data[`reviewDate${i}`],
             visible: data[`visible${i}`],
-            customerId: data[`customerId${i}`] !== undefined ? String(data[`customerId${i}`]) : undefined,
+            customerId:
+              data[`customerId${i}`] !== undefined ? String(data[`customerId${i}`]) : undefined
           });
         }
         if (feedbackId) {
@@ -82,12 +91,12 @@ export let newFeedback = SlateTrigger.create(
         inputs: inputs as any,
         updatedState: {
           lastPolledDate: toDate,
-          lastSeenIds: newSeenIds.slice(0, 500),
-        },
+          lastSeenIds: newSeenIds.slice(0, 500)
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'feedback.received',
         id: ctx.input.feedbackId,
@@ -100,8 +109,9 @@ export let newFeedback = SlateTrigger.create(
           reviewBody: ctx.input.reviewBody,
           reviewDate: ctx.input.reviewDate,
           visible: ctx.input.visible,
-          customerId: ctx.input.customerId,
-        },
+          customerId: ctx.input.customerId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

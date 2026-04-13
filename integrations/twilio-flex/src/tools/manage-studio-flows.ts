@@ -14,39 +14,62 @@ let flowSchema = z.object({
   dateUpdated: z.string().optional().describe('Date updated')
 });
 
-export let manageStudioFlowsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Studio Flows',
-    key: 'manage_studio_flows',
-    description: `List, get, or trigger Studio Flow executions. Studio Flows are visual communication workflows for IVR, chatbot logic, and routing. Use this to view available flows, trigger outbound flow executions, or check execution history.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageStudioFlowsTool = SlateTool.create(spec, {
+  name: 'Manage Studio Flows',
+  key: 'manage_studio_flows',
+  description: `List, get, or trigger Studio Flow executions. Studio Flows are visual communication workflows for IVR, chatbot logic, and routing. Use this to view available flows, trigger outbound flow executions, or check execution history.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'trigger', 'list_executions', 'get_execution']).describe('Action to perform'),
-    flowSid: z.string().optional().describe('Flow SID (required for get/trigger/list_executions/get_execution)'),
-    executionSid: z.string().optional().describe('Execution SID (required for get_execution)'),
-    to: z.string().optional().describe('Recipient phone number for trigger (e.g., "+1234567890")'),
-    from: z.string().optional().describe('Sender phone number for trigger (e.g., "+0987654321")'),
-    parameters: z.record(z.string(), z.string()).optional().describe('Additional parameters as key-value pairs for trigger'),
-    pageSize: z.number().optional().describe('Number of results to return')
-  }))
-  .output(z.object({
-    flows: z.array(flowSchema).optional().describe('Flow records'),
-    executions: z.array(z.object({
-      executionSid: z.string().describe('Execution SID'),
-      flowSid: z.string().optional().describe('Flow SID'),
-      status: z.string().optional().describe('Execution status'),
-      contactChannelAddress: z.string().optional().describe('Contact channel address'),
-      dateCreated: z.string().optional().describe('Date created'),
-      dateUpdated: z.string().optional().describe('Date updated')
-    })).optional().describe('Execution records')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'trigger', 'list_executions', 'get_execution'])
+        .describe('Action to perform'),
+      flowSid: z
+        .string()
+        .optional()
+        .describe('Flow SID (required for get/trigger/list_executions/get_execution)'),
+      executionSid: z
+        .string()
+        .optional()
+        .describe('Execution SID (required for get_execution)'),
+      to: z
+        .string()
+        .optional()
+        .describe('Recipient phone number for trigger (e.g., "+1234567890")'),
+      from: z
+        .string()
+        .optional()
+        .describe('Sender phone number for trigger (e.g., "+0987654321")'),
+      parameters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional parameters as key-value pairs for trigger'),
+      pageSize: z.number().optional().describe('Number of results to return')
+    })
+  )
+  .output(
+    z.object({
+      flows: z.array(flowSchema).optional().describe('Flow records'),
+      executions: z
+        .array(
+          z.object({
+            executionSid: z.string().describe('Execution SID'),
+            flowSid: z.string().optional().describe('Flow SID'),
+            status: z.string().optional().describe('Execution status'),
+            contactChannelAddress: z.string().optional().describe('Contact channel address'),
+            dateCreated: z.string().optional().describe('Date created'),
+            dateUpdated: z.string().optional().describe('Date updated')
+          })
+        )
+        .optional()
+        .describe('Execution records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new StudioClient(ctx.auth.token);
 
     if (ctx.input.action === 'list') {
@@ -72,16 +95,18 @@ export let manageStudioFlowsTool = SlateTool.create(
       let f = await client.getFlow(ctx.input.flowSid);
       return {
         output: {
-          flows: [{
-            flowSid: f.sid,
-            friendlyName: f.friendly_name,
-            status: f.status,
-            version: f.version,
-            revision: f.revision,
-            commitMessage: f.commit_message,
-            dateCreated: f.date_created,
-            dateUpdated: f.date_updated
-          }],
+          flows: [
+            {
+              flowSid: f.sid,
+              friendlyName: f.friendly_name,
+              status: f.status,
+              version: f.version,
+              revision: f.revision,
+              commitMessage: f.commit_message,
+              dateCreated: f.date_created,
+              dateUpdated: f.date_updated
+            }
+          ],
           executions: []
         },
         message: `Flow **${f.friendly_name}** (${f.sid}) — status: **${f.status}**.`
@@ -104,14 +129,16 @@ export let manageStudioFlowsTool = SlateTool.create(
       return {
         output: {
           flows: [],
-          executions: [{
-            executionSid: result.sid,
-            flowSid: result.flow_sid,
-            status: result.status,
-            contactChannelAddress: result.contact_channel_address,
-            dateCreated: result.date_created,
-            dateUpdated: result.date_updated
-          }]
+          executions: [
+            {
+              executionSid: result.sid,
+              flowSid: result.flow_sid,
+              status: result.status,
+              contactChannelAddress: result.contact_channel_address,
+              dateCreated: result.date_created,
+              dateUpdated: result.date_updated
+            }
+          ]
         },
         message: `Triggered flow execution **${result.sid}** — status: **${result.status}**.`
       };
@@ -141,15 +168,18 @@ export let manageStudioFlowsTool = SlateTool.create(
     return {
       output: {
         flows: [],
-        executions: [{
-          executionSid: e.sid,
-          flowSid: e.flow_sid,
-          status: e.status,
-          contactChannelAddress: e.contact_channel_address,
-          dateCreated: e.date_created,
-          dateUpdated: e.date_updated
-        }]
+        executions: [
+          {
+            executionSid: e.sid,
+            flowSid: e.flow_sid,
+            status: e.status,
+            contactChannelAddress: e.contact_channel_address,
+            dateCreated: e.date_created,
+            dateUpdated: e.date_updated
+          }
+        ]
       },
       message: `Execution **${e.sid}** — status: **${e.status}**.`
     };
-  }).build();
+  })
+  .build();

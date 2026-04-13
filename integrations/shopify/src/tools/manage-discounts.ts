@@ -26,12 +26,10 @@ let discountCodeSchema = z.object({
   createdAt: z.string()
 });
 
-export let manageDiscounts = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Discounts',
-    key: 'manage_discounts',
-    description: `Create and manage discount codes and price rules. A price rule defines the discount logic (percentage off, fixed amount, etc.), and discount codes are the customer-facing codes tied to a price rule.
+export let manageDiscounts = SlateTool.create(spec, {
+  name: 'Manage Discounts',
+  key: 'manage_discounts',
+  description: `Create and manage discount codes and price rules. A price rule defines the discount logic (percentage off, fixed amount, etc.), and discount codes are the customer-facing codes tied to a price rule.
 Supports:
 - **list_price_rules**: List all price rules
 - **create_price_rule**: Create a new price rule
@@ -40,34 +38,68 @@ Supports:
 - **create_code**: Create a discount code for a price rule
 - **delete_code**: Delete a discount code
 - **lookup_code**: Look up a discount code by its code string`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    action: z.enum(['list_price_rules', 'create_price_rule', 'delete_price_rule', 'list_codes', 'create_code', 'delete_code', 'lookup_code']).describe('Operation to perform'),
-    priceRuleId: z.string().optional().describe('Price rule ID (required for code operations and delete_price_rule)'),
-    discountCodeId: z.string().optional().describe('Discount code ID (for delete_code)'),
-    code: z.string().optional().describe('Discount code string (for create_code and lookup_code)'),
-    title: z.string().optional().describe('Price rule title (for create_price_rule)'),
-    targetType: z.enum(['line_item', 'shipping_line']).optional().describe('What the rule applies to'),
-    targetSelection: z.enum(['all', 'entitled']).optional().describe('Which items qualify'),
-    allocationMethod: z.enum(['across', 'each']).optional().describe('How the discount is allocated'),
-    valueType: z.enum(['percentage', 'fixed_amount']).optional().describe('Type of discount value'),
-    value: z.string().optional().describe('Discount value (negative number, e.g., "-10.0" for 10% off or $10 off)'),
-    oncePerCustomer: z.boolean().optional().describe('Whether limited to one use per customer'),
-    usageLimit: z.number().optional().describe('Maximum total number of uses'),
-    startsAt: z.string().optional().describe('When the rule takes effect (ISO 8601)'),
-    endsAt: z.string().optional().describe('When the rule expires (ISO 8601)'),
-    limit: z.number().min(1).max(250).optional().describe('Number of results to return')
-  }))
-  .output(z.object({
-    priceRules: z.array(priceRuleSchema).optional(),
-    priceRule: priceRuleSchema.optional(),
-    discountCodes: z.array(discountCodeSchema).optional(),
-    discountCode: discountCodeSchema.optional(),
-    deleted: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'list_price_rules',
+          'create_price_rule',
+          'delete_price_rule',
+          'list_codes',
+          'create_code',
+          'delete_code',
+          'lookup_code'
+        ])
+        .describe('Operation to perform'),
+      priceRuleId: z
+        .string()
+        .optional()
+        .describe('Price rule ID (required for code operations and delete_price_rule)'),
+      discountCodeId: z.string().optional().describe('Discount code ID (for delete_code)'),
+      code: z
+        .string()
+        .optional()
+        .describe('Discount code string (for create_code and lookup_code)'),
+      title: z.string().optional().describe('Price rule title (for create_price_rule)'),
+      targetType: z
+        .enum(['line_item', 'shipping_line'])
+        .optional()
+        .describe('What the rule applies to'),
+      targetSelection: z.enum(['all', 'entitled']).optional().describe('Which items qualify'),
+      allocationMethod: z
+        .enum(['across', 'each'])
+        .optional()
+        .describe('How the discount is allocated'),
+      valueType: z
+        .enum(['percentage', 'fixed_amount'])
+        .optional()
+        .describe('Type of discount value'),
+      value: z
+        .string()
+        .optional()
+        .describe('Discount value (negative number, e.g., "-10.0" for 10% off or $10 off)'),
+      oncePerCustomer: z
+        .boolean()
+        .optional()
+        .describe('Whether limited to one use per customer'),
+      usageLimit: z.number().optional().describe('Maximum total number of uses'),
+      startsAt: z.string().optional().describe('When the rule takes effect (ISO 8601)'),
+      endsAt: z.string().optional().describe('When the rule expires (ISO 8601)'),
+      limit: z.number().min(1).max(250).optional().describe('Number of results to return')
+    })
+  )
+  .output(
+    z.object({
+      priceRules: z.array(priceRuleSchema).optional(),
+      priceRule: priceRuleSchema.optional(),
+      discountCodes: z.array(discountCodeSchema).optional(),
+      discountCode: discountCodeSchema.optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -113,7 +145,8 @@ Supports:
       if (ctx.input.allocationMethod) data.allocation_method = ctx.input.allocationMethod;
       if (ctx.input.valueType) data.value_type = ctx.input.valueType;
       if (ctx.input.value) data.value = ctx.input.value;
-      if (ctx.input.oncePerCustomer !== undefined) data.once_per_customer = ctx.input.oncePerCustomer;
+      if (ctx.input.oncePerCustomer !== undefined)
+        data.once_per_customer = ctx.input.oncePerCustomer;
       if (ctx.input.usageLimit !== undefined) data.usage_limit = ctx.input.usageLimit;
       if (ctx.input.startsAt) data.starts_at = ctx.input.startsAt;
       if (ctx.input.endsAt) data.ends_at = ctx.input.endsAt;
@@ -137,7 +170,9 @@ Supports:
 
     if (ctx.input.action === 'list_codes') {
       if (!ctx.input.priceRuleId) throw new Error('priceRuleId is required');
-      let codes = await client.listDiscountCodes(ctx.input.priceRuleId, { limit: ctx.input.limit });
+      let codes = await client.listDiscountCodes(ctx.input.priceRuleId, {
+        limit: ctx.input.limit
+      });
       return {
         output: { discountCodes: codes.map(mapCode) },
         message: `Found **${codes.length}** discount code(s).`
@@ -147,7 +182,9 @@ Supports:
     if (ctx.input.action === 'create_code') {
       if (!ctx.input.priceRuleId) throw new Error('priceRuleId is required');
       if (!ctx.input.code) throw new Error('code is required');
-      let dc = await client.createDiscountCode(ctx.input.priceRuleId, { code: ctx.input.code });
+      let dc = await client.createDiscountCode(ctx.input.priceRuleId, {
+        code: ctx.input.code
+      });
       return {
         output: { discountCode: mapCode(dc) },
         message: `Created discount code **${dc.code}**.`
@@ -174,4 +211,5 @@ Supports:
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

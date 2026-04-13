@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchLeaguesTool,
@@ -14,13 +13,9 @@ import {
   getTeamStatisticsTool,
   getTransfersTool,
   getCoachesTool,
-  getCountriesTool,
+  getCountriesTool
 } from './tools';
-import {
-  fixtureStatusChangeTrigger,
-  fixtureResultsTrigger,
-  inboundWebhook,
-} from './triggers';
+import { fixtureStatusChangeTrigger, fixtureResultsTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,11 +32,7 @@ export let provider = Slate.create({
     getTeamStatisticsTool,
     getTransfersTool,
     getCoachesTool,
-    getCountriesTool,
+    getCountriesTool
   ],
-  triggers: [
-    inboundWebhook,
-    fixtureStatusChangeTrigger,
-    fixtureResultsTrigger,
-  ],
+  triggers: [inboundWebhook, fixtureStatusChangeTrigger, fixtureResultsTrigger]
 });

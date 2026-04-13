@@ -23,7 +23,10 @@ let base64UrlEncodeBytes = (bytes: Uint8Array): string => {
 };
 
 let toArrayBuffer = (bytes: Uint8Array): ArrayBuffer => {
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+  return bytes.buffer.slice(
+    bytes.byteOffset,
+    bytes.byteOffset + bytes.byteLength
+  ) as ArrayBuffer;
 };
 
 let hmacSha256 = async (key: Uint8Array, message: string): Promise<Uint8Array> => {
@@ -35,11 +38,7 @@ let hmacSha256 = async (key: Uint8Array, message: string): Promise<Uint8Array> =
     ['sign']
   );
   let messageBytes = new TextEncoder().encode(message);
-  let signature = await crypto.subtle.sign(
-    'HMAC',
-    cryptoKey,
-    toArrayBuffer(messageBytes)
-  );
+  let signature = await crypto.subtle.sign('HMAC', cryptoKey, toArrayBuffer(messageBytes));
   return new Uint8Array(signature);
 };
 
@@ -56,14 +55,14 @@ export let generateGhostJwt = async (apiKey: string): Promise<string> => {
   let header = {
     alg: 'HS256',
     kid: id,
-    typ: 'JWT',
+    typ: 'JWT'
   };
 
   let now = Math.floor(Date.now() / 1000);
   let payload = {
     iat: now,
     exp: now + 5 * 60,
-    aud: '/admin/',
+    aud: '/admin/'
   };
 
   let headerB64 = base64UrlEncode(JSON.stringify(header));

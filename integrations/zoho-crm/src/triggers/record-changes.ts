@@ -3,34 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: `Triggers when records are created, updated, or deleted in a Zoho CRM module.
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description: `Triggers when records are created, updated, or deleted in a Zoho CRM module.
 Uses the Zoho CRM Notification API to watch for changes in the specified module.
-Supports all standard and custom modules.`,
-  }
-)
-  .input(z.object({
-    operation: z.enum(['created', 'updated', 'deleted', 'all']).describe('The type of record change'),
-    moduleName: z.string().describe('API name of the module (e.g. "Leads", "Contacts", "Deals")'),
-    recordIds: z.array(z.string()).describe('IDs of the affected records'),
-    channelId: z.string().describe('Channel ID of the notification subscription'),
-    token: z.string().optional().describe('Verification token from the subscription'),
-  }))
-  .output(z.object({
-    moduleName: z.string().describe('Module where the change occurred'),
-    operation: z.string().describe('Type of operation: created, updated, or deleted'),
-    recordIds: z.array(z.string()).describe('IDs of affected records'),
-    channelId: z.string().describe('Notification channel that triggered'),
-  }))
+Supports all standard and custom modules.`
+})
+  .input(
+    z.object({
+      operation: z
+        .enum(['created', 'updated', 'deleted', 'all'])
+        .describe('The type of record change'),
+      moduleName: z
+        .string()
+        .describe('API name of the module (e.g. "Leads", "Contacts", "Deals")'),
+      recordIds: z.array(z.string()).describe('IDs of the affected records'),
+      channelId: z.string().describe('Channel ID of the notification subscription'),
+      token: z.string().optional().describe('Verification token from the subscription')
+    })
+  )
+  .output(
+    z.object({
+      moduleName: z.string().describe('Module where the change occurred'),
+      operation: z.string().describe('Type of operation: created, updated, or deleted'),
+      recordIds: z.array(z.string()).describe('IDs of affected records'),
+      channelId: z.string().describe('Notification channel that triggered')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        apiBaseUrl: ctx.auth.apiBaseUrl,
+        apiBaseUrl: ctx.auth.apiBaseUrl
       });
 
       let channelId = `slates_${Date.now()}`;
@@ -49,7 +54,7 @@ Supports all standard and custom modules.`,
         eventsTypes: [`${mod}.all`],
         notifyUrl: ctx.input.webhookBaseUrl,
         token,
-        channelExpiry,
+        channelExpiry
       }));
 
       let result = await client.enableNotifications(watches);
@@ -58,15 +63,15 @@ Supports all standard and custom modules.`,
         registrationDetails: {
           channelIds: watches.map(w => w.channelId),
           token,
-          modules,
-        },
+          modules
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        apiBaseUrl: ctx.auth.apiBaseUrl,
+        apiBaseUrl: ctx.auth.apiBaseUrl
       });
 
       let channelIds = ctx.input.registrationDetails?.channelIds || [];
@@ -75,7 +80,7 @@ Supports all standard and custom modules.`,
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -96,11 +101,11 @@ Supports all standard and custom modules.`,
         let token = notification.token || notification.query_map?.token;
 
         let opMap: Record<string, string> = {
-          'insert': 'created',
-          'create': 'created',
-          'update': 'updated',
-          'edit': 'updated',
-          'delete': 'deleted',
+          insert: 'created',
+          create: 'created',
+          update: 'updated',
+          edit: 'updated',
+          delete: 'deleted'
         };
         let normalizedOp = opMap[operation.toLowerCase()] || operation.toLowerCase();
 
@@ -109,14 +114,14 @@ Supports all standard and custom modules.`,
           moduleName,
           recordIds,
           channelId,
-          token,
+          token
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = `record.${ctx.input.operation}`;
       let eventId = `${ctx.input.moduleName}_${ctx.input.operation}_${ctx.input.recordIds.join('_')}_${Date.now()}`;
 
@@ -127,8 +132,9 @@ Supports all standard and custom modules.`,
           moduleName: ctx.input.moduleName,
           operation: ctx.input.operation,
           recordIds: ctx.input.recordIds,
-          channelId: ctx.input.channelId,
-        },
+          channelId: ctx.input.channelId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

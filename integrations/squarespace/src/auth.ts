@@ -10,11 +10,13 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -58,7 +60,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -72,19 +74,23 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await loginAxios.post('/tokens', {
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }, {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/json'
+      let response = await loginAxios.post(
+        '/tokens',
+        {
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        },
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + (data.expires_in || 1800) * 1000).toISOString();
@@ -98,18 +104,22 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await loginAxios.post('/tokens', {
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken
-      }, {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/json'
+      let response = await loginAxios.post(
+        '/tokens',
+        {
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken
+        },
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       let data = response.data;
       let expiresAt = new Date(Date.now() + (data.expires_in || 1800) * 1000).toISOString();
@@ -126,7 +136,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let response = await apiAxios.get('/authorization/website', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'User-Agent': 'Slates-Squarespace-Integration/1.0'
         }
       });
@@ -151,7 +161,7 @@ export let auth = SlateAuth.create()
       apiKey: z.string().describe('Squarespace API key generated from your site settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey
@@ -162,7 +172,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let response = await apiAxios.get('/authorization/website', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'User-Agent': 'Slates-Squarespace-Integration/1.0'
         }
       });

@@ -21,11 +21,13 @@ Each endpoint requires the API token to be provided as the Authorization header.
 **Base URL:** `https://api4.nozbe.com/v1/api`
 
 **Header format:**
+
 ```
 Authorization: <API_TOKEN>
 ```
 
 Example request:
+
 ```
 curl -X 'GET' \
   'https://api4.nozbe.com/v1/api/projects' \
@@ -42,6 +44,7 @@ Create, read, update, and manage projects within your Nozbe Teams spaces. You ca
 ### Task Management
 
 You can create, read, update, and delete tasks. Tasks support a rich set of parameters including:
+
 - Assignment to a specific project and section
 - Responsibility (assigning to a team member)
 - Due dates and recurrence

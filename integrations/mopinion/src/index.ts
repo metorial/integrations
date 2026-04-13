@@ -1,6 +1,15 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { getAccount, getFeedback, getFields, listReports, listDeployments, manageReport, manageDataset, manageDeployment } from './tools';
+import {
+  getAccount,
+  getFeedback,
+  getFields,
+  listReports,
+  listDeployments,
+  manageReport,
+  manageDataset,
+  manageDeployment
+} from './tools';
 import { feedbackReceived } from './triggers';
 
 export let provider = Slate.create({
@@ -15,7 +24,5 @@ export let provider = Slate.create({
     manageDataset,
     manageDeployment
   ],
-  triggers: [
-    feedbackReceived
-  ]
+  triggers: [feedbackReceived]
 });

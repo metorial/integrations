@@ -10,33 +10,40 @@ let contactSchema = z.object({
   email: z.string().optional().describe('Email address'),
   phone: z.string().optional().describe('Phone number'),
   contactKind: z.string().optional().describe('Kind of contact'),
-  raw: z.any().optional().describe('Full contact record'),
+  raw: z.any().optional().describe('Full contact record')
 });
 
-export let searchContacts = SlateTool.create(
-  spec,
-  {
-    name: 'Search Contacts',
-    key: 'search_contacts',
-    description: `Searches and retrieves contacts from the Tave address book. Can search by query string, filter by contact kind and brand, or list all contacts. Requires the **API Key (Public API V2)** authentication method.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query to find contacts by name, email, or other fields'),
-    contactKind: z.string().optional().describe('Filter by contact kind (e.g., "individual", "business")'),
-    brand: z.string().optional().describe('Filter by brand name'),
-    page: z.number().optional().describe('Page number for pagination (default: 1)'),
-    perPage: z.number().optional().describe('Number of results per page'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactSchema).describe('List of matching contacts'),
-    totalCount: z.number().optional().describe('Total number of contacts matching the query'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let searchContacts = SlateTool.create(spec, {
+  name: 'Search Contacts',
+  key: 'search_contacts',
+  description: `Searches and retrieves contacts from the Tave address book. Can search by query string, filter by contact kind and brand, or list all contacts. Requires the **API Key (Public API V2)** authentication method.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .optional()
+        .describe('Search query to find contacts by name, email, or other fields'),
+      contactKind: z
+        .string()
+        .optional()
+        .describe('Filter by contact kind (e.g., "individual", "business")'),
+      brand: z.string().optional().describe('Filter by brand name'),
+      page: z.number().optional().describe('Page number for pagination (default: 1)'),
+      perPage: z.number().optional().describe('Number of results per page')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactSchema).describe('List of matching contacts'),
+      totalCount: z.number().optional().describe('Total number of contacts matching the query')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TavePublicClient(ctx.auth.token);
 
     ctx.info({ message: 'Searching contacts in Tave', query: ctx.input.query });
@@ -47,14 +54,14 @@ export let searchContacts = SlateTool.create(
         contactKind: ctx.input.contactKind,
         brand: ctx.input.brand,
         page: ctx.input.page,
-        perPage: ctx.input.perPage,
+        perPage: ctx.input.perPage
       });
     } else {
       result = await client.listContacts({
         contactKind: ctx.input.contactKind,
         brand: ctx.input.brand,
         page: ctx.input.page,
-        perPage: ctx.input.perPage,
+        perPage: ctx.input.perPage
       });
     }
 
@@ -67,7 +74,7 @@ export let searchContacts = SlateTool.create(
       email: c.email ?? undefined,
       phone: c.phone ?? undefined,
       contactKind: c.contact_kind ?? c.contactKind ?? undefined,
-      raw: c,
+      raw: c
     }));
 
     let totalCount = result?.total ?? result?.meta?.total ?? contacts.length;
@@ -75,9 +82,9 @@ export let searchContacts = SlateTool.create(
     return {
       output: {
         contacts,
-        totalCount,
+        totalCount
       },
-      message: `Found **${contacts.length}** contact(s)${ctx.input.query ? ' matching "' + ctx.input.query + '"' : ''}${totalCount > contacts.length ? ' (showing page ' + (ctx.input.page ?? 1) + ' of results)' : ''}.`,
+      message: `Found **${contacts.length}** contact(s)${ctx.input.query ? ' matching "' + ctx.input.query + '"' : ''}${totalCount > contacts.length ? ' (showing page ' + (ctx.input.page ?? 1) + ' of results)' : ''}.`
     };
   })
   .build();

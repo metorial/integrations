@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listPipelines,
@@ -19,12 +18,9 @@ import {
   listWorkspaces,
   manageActions,
   manageLabels,
-  listParticipants,
+  listParticipants
 } from './tools';
-import {
-  workflowUpdate,
-  inboundWebhook,
-} from './triggers';
+import { workflowUpdate, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -46,10 +42,7 @@ export let provider = Slate.create({
     listWorkspaces,
     manageActions,
     manageLabels,
-    listParticipants,
+    listParticipants
   ],
-  triggers: [
-    inboundWebhook,
-    workflowUpdate,
-  ],
+  triggers: [inboundWebhook, workflowUpdate]
 });

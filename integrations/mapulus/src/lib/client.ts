@@ -106,10 +106,10 @@ export class MapulusClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -149,7 +149,7 @@ export class MapulusClient {
 
   async createLocation(input: CreateLocationInput): Promise<MapulusLocation> {
     let body: Record<string, any> = {
-      layer_id: input.layerId,
+      layer_id: input.layerId
     };
 
     if (input.title !== undefined) body.title = input.title;
@@ -159,12 +159,13 @@ export class MapulusClient {
     if (input.address !== undefined) body.address = input.address;
     if (input.externalId !== undefined) body.external_id = input.externalId;
     if (input.customAttributes !== undefined) body.custom_attributes = input.customAttributes;
-    if (input.createMissingCustomAttributes !== undefined) body.create_missing_custom_attributes = input.createMissingCustomAttributes;
+    if (input.createMissingCustomAttributes !== undefined)
+      body.create_missing_custom_attributes = input.createMissingCustomAttributes;
     if (input.travelBoundary) {
       body.travel_boundary = {
         mode: input.travelBoundary.mode,
         value: input.travelBoundary.value,
-        unit: input.travelBoundary.unit,
+        unit: input.travelBoundary.unit
       };
     }
 
@@ -183,12 +184,13 @@ export class MapulusClient {
     if (input.layerId !== undefined) body.layer_id = input.layerId;
     if (input.externalId !== undefined) body.external_id = input.externalId;
     if (input.customAttributes !== undefined) body.custom_attributes = input.customAttributes;
-    if (input.createMissingCustomAttributes !== undefined) body.create_missing_custom_attributes = input.createMissingCustomAttributes;
+    if (input.createMissingCustomAttributes !== undefined)
+      body.create_missing_custom_attributes = input.createMissingCustomAttributes;
     if (input.travelBoundary) {
       body.travel_boundary = {
         mode: input.travelBoundary.mode,
         value: input.travelBoundary.value,
-        unit: input.travelBoundary.unit,
+        unit: input.travelBoundary.unit
       };
     }
 
@@ -224,7 +226,7 @@ export class MapulusClient {
 
   async searchNearby(input: NearbySearchInput): Promise<MapulusLocation[]> {
     let params: Record<string, any> = {
-      map_id: input.mapId,
+      map_id: input.mapId
     };
 
     if (input.latitude !== undefined) params.latitude = input.latitude;
@@ -239,7 +241,10 @@ export class MapulusClient {
 
   // ========== Travel Boundaries ==========
 
-  async addTravelBoundary(locationId: string, boundary: TravelBoundary): Promise<MapulusLocation> {
+  async addTravelBoundary(
+    locationId: string,
+    boundary: TravelBoundary
+  ): Promise<MapulusLocation> {
     let body: Record<string, any> = {};
     if (boundary.mode) body.mode = boundary.mode;
     if (boundary.value !== undefined) body.value = boundary.value;
@@ -251,10 +256,14 @@ export class MapulusClient {
 
   // ========== Territory / Boundary Lookup ==========
 
-  async lookupTerritory(mapId: string, boundaryType: string, boundaryName: string): Promise<MapulusLocation[]> {
+  async lookupTerritory(
+    mapId: string,
+    boundaryType: string,
+    boundaryName: string
+  ): Promise<MapulusLocation[]> {
     let params: Record<string, any> = {
       boundary_type: boundaryType,
-      boundary_name: boundaryName,
+      boundary_name: boundaryName
     };
 
     let response = await this.axios.get(`/maps/${mapId}/territory`, { params });

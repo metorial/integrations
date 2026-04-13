@@ -3,47 +3,49 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let invoiceEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Invoice Events',
-    key: 'invoice_events',
-    description: 'Polls for new or updated invoices. Detects invoice creation, status changes, and payment updates.'
-  }
-)
-  .input(z.object({
-    invoiceId: z.string(),
-    eventType: z.string(),
-    invoiceNumber: z.string().optional(),
-    customerName: z.string().optional(),
-    customerId: z.string().optional(),
-    status: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    currencyCode: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
-  .output(z.object({
-    invoiceId: z.string(),
-    invoiceNumber: z.string().optional(),
-    customerName: z.string().optional(),
-    customerId: z.string().optional(),
-    status: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    currencyCode: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
+export let invoiceEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Invoice Events',
+  key: 'invoice_events',
+  description:
+    'Polls for new or updated invoices. Detects invoice creation, status changes, and payment updates.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string(),
+      eventType: z.string(),
+      invoiceNumber: z.string().optional(),
+      customerName: z.string().optional(),
+      customerId: z.string().optional(),
+      status: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      currencyCode: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string(),
+      invoiceNumber: z.string().optional(),
+      customerName: z.string().optional(),
+      customerId: z.string().optional(),
+      status: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      currencyCode: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownInvoices = (ctx.state?.knownInvoices || {}) as Record<string, string>;
@@ -87,9 +89,7 @@ export let invoiceEventsTrigger = SlateTrigger.create(
         newKnownInvoices[inv.invoice_id] = inv.status;
       }
 
-      let newPollTime = invoices.length > 0
-        ? invoices[0].last_modified_time
-        : lastPollTime;
+      let newPollTime = invoices.length > 0 ? invoices[0].last_modified_time : lastPollTime;
 
       return {
         inputs,
@@ -100,7 +100,7 @@ export let invoiceEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `invoice.${ctx.input.eventType}`,
         id: `${ctx.input.invoiceId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -119,4 +119,5 @@ export let invoiceEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -6,11 +6,14 @@ import { z } from 'zod';
 let searchResultSchema = z.object({
   resourceId: z.string().optional().describe('ID of the matched resource'),
   resourceName: z.string().optional().describe('Name or title of the matched resource'),
-  resourceType: z.string().optional().describe('Type of the matched resource (e.g. driveItem, site, listItem)'),
+  resourceType: z
+    .string()
+    .optional()
+    .describe('Type of the matched resource (e.g. driveItem, site, listItem)'),
   webUrl: z.string().optional().describe('URL of the resource'),
   summary: z.string().optional().describe('Search result summary/snippet'),
   lastModifiedDateTime: z.string().optional().describe('Last modified date'),
-  lastModifiedBy: z.string().optional().describe('User who last modified the resource'),
+  lastModifiedBy: z.string().optional().describe('User who last modified the resource')
 });
 
 export let search = SlateTool.create(spec, {
@@ -20,25 +23,32 @@ export let search = SlateTool.create(spec, {
   instructions: [
     'Use **query** with KQL syntax for powerful searches, e.g. "budget filetype:xlsx" or "author:john".',
     'Use **entityTypes** to narrow results to specific types: "driveItem" (files/folders), "listItem", "list", "site".',
-    'Use **from** and **size** for pagination.',
+    'Use **from** and **size** for pagination.'
   ],
   tags: {
     readOnly: true,
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    query: z.string().describe('Search query string (supports KQL syntax)'),
-    entityTypes: z.array(z.enum(['driveItem', 'listItem', 'list', 'site'])).optional().describe('Types of entities to search for. Defaults to all types.'),
-    from: z.number().optional().describe('Offset for pagination (default 0)'),
-    size: z.number().optional().describe('Number of results to return (default 25, max 500)'),
-  }))
-  .output(z.object({
-    results: z.array(searchResultSchema).describe('Search results'),
-    totalCount: z.number().describe('Total number of matching results (may be approximate)'),
-    moreResultsAvailable: z.boolean().describe('Whether there are more results to fetch'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      query: z.string().describe('Search query string (supports KQL syntax)'),
+      entityTypes: z
+        .array(z.enum(['driveItem', 'listItem', 'list', 'site']))
+        .optional()
+        .describe('Types of entities to search for. Defaults to all types.'),
+      from: z.number().optional().describe('Offset for pagination (default 0)'),
+      size: z.number().optional().describe('Number of results to return (default 25, max 500)')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(searchResultSchema).describe('Search results'),
+      totalCount: z.number().describe('Total number of matching results (may be approximate)'),
+      moreResultsAvailable: z.boolean().describe('Whether there are more results to fetch')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
     let entityTypes = ctx.input.entityTypes || ['driveItem', 'listItem', 'list', 'site'];
 
@@ -67,7 +77,7 @@ export let search = SlateTool.create(spec, {
           webUrl: resource.webUrl,
           summary: hit.summary,
           lastModifiedDateTime: resource.lastModifiedDateTime,
-          lastModifiedBy: resource.lastModifiedBy?.user?.displayName,
+          lastModifiedBy: resource.lastModifiedBy?.user?.displayName
         });
       }
     }
@@ -76,9 +86,9 @@ export let search = SlateTool.create(spec, {
       output: {
         results,
         totalCount,
-        moreResultsAvailable,
+        moreResultsAvailable
       },
-      message: `Found **${totalCount}** result(s) for "${ctx.input.query}". Returned ${results.length} in this page.`,
+      message: `Found **${totalCount}** result(s) for "${ctx.input.query}". Returned ${results.length} in this page.`
     };
   })
   .build();

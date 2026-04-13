@@ -59,7 +59,7 @@ Amazon Transcribe can identify and redact sensitive personally identifiable info
 
 ### Subtitle Generation
 
-Produce subtitle files in WebVTT (*.vtt) and SubRip (*.srt) formats. Timestamps are provided for each word to facilitate syncing with the original recording.
+Produce subtitle files in WebVTT (_.vtt) and SubRip (_.srt) formats. Timestamps are provided for each word to facilitate syncing with the original recording.
 
 ### Toxicity Detection
 

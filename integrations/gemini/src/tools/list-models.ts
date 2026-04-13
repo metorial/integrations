@@ -3,44 +3,62 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listModels = SlateTool.create(
-  spec,
-  {
-    name: 'List Models',
-    key: 'list_models',
-    description: `List available Gemini models and their capabilities. Returns model names, supported generation methods, token limits, and other metadata. Use this to discover which models are available and their specifications.`,
-    tags: {
-      readOnly: true,
-      destructive: false,
-    },
+export let listModels = SlateTool.create(spec, {
+  name: 'List Models',
+  key: 'list_models',
+  description: `List available Gemini models and their capabilities. Returns model names, supported generation methods, token limits, and other metadata. Use this to discover which models are available and their specifications.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    pageSize: z.number().min(1).max(100).optional().describe('Maximum number of models to return per page'),
-    pageToken: z.string().optional().describe('Token for fetching the next page of results'),
-  }))
-  .output(z.object({
-    models: z.array(z.object({
-      modelName: z.string().describe('Full resource name of the model (e.g. "models/gemini-2.0-flash")'),
-      displayName: z.string().describe('Human-readable display name'),
-      description: z.string().optional().describe('Description of the model'),
-      version: z.string().optional().describe('Model version string'),
-      inputTokenLimit: z.number().optional().describe('Maximum input tokens supported'),
-      outputTokenLimit: z.number().optional().describe('Maximum output tokens supported'),
-      supportedGenerationMethods: z.array(z.string()).optional().describe('Supported methods (e.g. "generateContent", "embedContent")'),
-      temperature: z.number().optional().describe('Default temperature'),
-      maxTemperature: z.number().optional().describe('Maximum allowed temperature'),
-      topP: z.number().optional().describe('Default top-p value'),
-      topK: z.number().optional().describe('Default top-k value'),
-    })).describe('Available models'),
-    nextPageToken: z.string().optional().describe('Token for fetching the next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pageSize: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of models to return per page'),
+      pageToken: z.string().optional().describe('Token for fetching the next page of results')
+    })
+  )
+  .output(
+    z.object({
+      models: z
+        .array(
+          z.object({
+            modelName: z
+              .string()
+              .describe('Full resource name of the model (e.g. "models/gemini-2.0-flash")'),
+            displayName: z.string().describe('Human-readable display name'),
+            description: z.string().optional().describe('Description of the model'),
+            version: z.string().optional().describe('Model version string'),
+            inputTokenLimit: z.number().optional().describe('Maximum input tokens supported'),
+            outputTokenLimit: z
+              .number()
+              .optional()
+              .describe('Maximum output tokens supported'),
+            supportedGenerationMethods: z
+              .array(z.string())
+              .optional()
+              .describe('Supported methods (e.g. "generateContent", "embedContent")'),
+            temperature: z.number().optional().describe('Default temperature'),
+            maxTemperature: z.number().optional().describe('Maximum allowed temperature'),
+            topP: z.number().optional().describe('Default top-p value'),
+            topK: z.number().optional().describe('Default top-k value')
+          })
+        )
+        .describe('Available models'),
+      nextPageToken: z.string().optional().describe('Token for fetching the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result = await client.listModels({
       pageSize: ctx.input.pageSize,
-      pageToken: ctx.input.pageToken,
+      pageToken: ctx.input.pageToken
     });
 
     let models = (result.models ?? []).map((m: any) => ({
@@ -54,15 +72,15 @@ export let listModels = SlateTool.create(
       temperature: m.temperature,
       maxTemperature: m.maxTemperature,
       topP: m.topP,
-      topK: m.topK,
+      topK: m.topK
     }));
 
     return {
       output: {
         models,
-        nextPageToken: result.nextPageToken,
+        nextPageToken: result.nextPageToken
       },
-      message: `Found **${models.length}** models.${result.nextPageToken ? ' More models available on next page.' : ''}`,
+      message: `Found **${models.length}** models.${result.nextPageToken ? ' More models available on next page.' : ''}`
     };
   })
   .build();

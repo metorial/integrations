@@ -3,48 +3,94 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTask = SlateTool.create(
-  spec,
-  {
-    name: 'Update Task',
-    key: 'update_task',
-    description: `Update an existing task's properties. Supports updating name, notes, assignee, dates, completion status, custom fields, and managing dependencies, projects, tags, followers, and parent.`,
-    instructions: [
-      'Only provided fields will be updated. Omit fields you do not want to change.',
-      'To add/remove tags, projects, dependencies, or followers, use the respective add/remove arrays.',
-    ],
-  }
-)
-  .input(z.object({
-    taskId: z.string().describe('Task GID to update'),
-    name: z.string().optional().describe('New task name'),
-    notes: z.string().optional().describe('New plain-text description'),
-    htmlNotes: z.string().optional().describe('New HTML description'),
-    assigneeId: z.string().nullable().optional().describe('New assignee GID, "me", or null to unassign'),
-    dueOn: z.string().nullable().optional().describe('New due date (YYYY-MM-DD) or null to clear'),
-    dueAt: z.string().nullable().optional().describe('New due date-time (ISO 8601) or null to clear'),
-    startOn: z.string().nullable().optional().describe('New start date (YYYY-MM-DD) or null to clear'),
-    startAt: z.string().nullable().optional().describe('New start date-time (ISO 8601) or null to clear'),
-    completed: z.boolean().optional().describe('Mark task as completed or incomplete'),
-    customFields: z.record(z.string(), z.any()).optional().describe('Map of custom field GID to value'),
+export let updateTask = SlateTool.create(spec, {
+  name: 'Update Task',
+  key: 'update_task',
+  description: `Update an existing task's properties. Supports updating name, notes, assignee, dates, completion status, custom fields, and managing dependencies, projects, tags, followers, and parent.`,
+  instructions: [
+    'Only provided fields will be updated. Omit fields you do not want to change.',
+    'To add/remove tags, projects, dependencies, or followers, use the respective add/remove arrays.'
+  ]
+})
+  .input(
+    z.object({
+      taskId: z.string().describe('Task GID to update'),
+      name: z.string().optional().describe('New task name'),
+      notes: z.string().optional().describe('New plain-text description'),
+      htmlNotes: z.string().optional().describe('New HTML description'),
+      assigneeId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New assignee GID, "me", or null to unassign'),
+      dueOn: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New due date (YYYY-MM-DD) or null to clear'),
+      dueAt: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New due date-time (ISO 8601) or null to clear'),
+      startOn: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New start date (YYYY-MM-DD) or null to clear'),
+      startAt: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New start date-time (ISO 8601) or null to clear'),
+      completed: z.boolean().optional().describe('Mark task as completed or incomplete'),
+      customFields: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Map of custom field GID to value'),
 
-    addProjectIds: z.array(z.string()).optional().describe('Project GIDs to add the task to'),
-    removeProjectIds: z.array(z.string()).optional().describe('Project GIDs to remove the task from'),
-    addTagIds: z.array(z.string()).optional().describe('Tag GIDs to add'),
-    removeTagIds: z.array(z.string()).optional().describe('Tag GIDs to remove'),
-    addFollowerIds: z.array(z.string()).optional().describe('User GIDs to add as followers'),
-    removeFollowerIds: z.array(z.string()).optional().describe('User GIDs to remove as followers'),
-    addDependencyIds: z.array(z.string()).optional().describe('Task GIDs this task depends on'),
-    removeDependencyIds: z.array(z.string()).optional().describe('Dependency task GIDs to remove'),
-    addDependentIds: z.array(z.string()).optional().describe('Task GIDs that depend on this task'),
-    parentId: z.string().nullable().optional().describe('New parent task GID or null to remove parent'),
-    sectionId: z.string().optional().describe('Section GID to move the task to'),
-  }))
-  .output(z.object({
-    taskId: z.string(),
-    name: z.string(),
-  }))
-  .handleInvocation(async (ctx) => {
+      addProjectIds: z
+        .array(z.string())
+        .optional()
+        .describe('Project GIDs to add the task to'),
+      removeProjectIds: z
+        .array(z.string())
+        .optional()
+        .describe('Project GIDs to remove the task from'),
+      addTagIds: z.array(z.string()).optional().describe('Tag GIDs to add'),
+      removeTagIds: z.array(z.string()).optional().describe('Tag GIDs to remove'),
+      addFollowerIds: z.array(z.string()).optional().describe('User GIDs to add as followers'),
+      removeFollowerIds: z
+        .array(z.string())
+        .optional()
+        .describe('User GIDs to remove as followers'),
+      addDependencyIds: z
+        .array(z.string())
+        .optional()
+        .describe('Task GIDs this task depends on'),
+      removeDependencyIds: z
+        .array(z.string())
+        .optional()
+        .describe('Dependency task GIDs to remove'),
+      addDependentIds: z
+        .array(z.string())
+        .optional()
+        .describe('Task GIDs that depend on this task'),
+      parentId: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('New parent task GID or null to remove parent'),
+      sectionId: z.string().optional().describe('Section GID to move the task to')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string(),
+      name: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { taskId } = ctx.input;
 
@@ -96,7 +142,9 @@ export let updateTask = SlateTool.create(
       operations.push(client.addDependenciesToTask(taskId, ctx.input.addDependencyIds));
     }
     if (ctx.input.removeDependencyIds?.length) {
-      operations.push(client.removeDependenciesFromTask(taskId, ctx.input.removeDependencyIds));
+      operations.push(
+        client.removeDependenciesFromTask(taskId, ctx.input.removeDependencyIds)
+      );
     }
     if (ctx.input.addDependentIds?.length) {
       operations.push(client.addDependentsToTask(taskId, ctx.input.addDependentIds));
@@ -115,8 +163,9 @@ export let updateTask = SlateTool.create(
     return {
       output: {
         taskId: task.gid,
-        name: task.name,
+        name: task.name
       },
-      message: `Updated task **${task.name}** (${task.gid}).`,
+      message: `Updated task **${task.name}** (${task.gid}).`
     };
-  }).build();
+  })
+  .build();

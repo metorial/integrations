@@ -22,7 +22,7 @@ import {
   deleteTag,
   listMessages,
   validateSender,
-  getAccountInfo,
+  getAccountInfo
 } from './tools';
 import { unisenderEvents } from './triggers';
 
@@ -50,9 +50,7 @@ export let provider = Slate.create({
     deleteTag,
     listMessages,
     validateSender,
-    getAccountInfo,
+    getAccountInfo
   ],
-  triggers: [
-    unisenderEvents,
-  ],
+  triggers: [unisenderEvents]
 });

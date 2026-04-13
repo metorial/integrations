@@ -15,41 +15,46 @@ let deploymentSchema = z.object({
   serviceHealth: z.string().optional().nullable().describe('Service health status'),
   modelHealth: z.string().optional().nullable().describe('Model health status'),
   accuracyHealth: z.string().optional().nullable().describe('Accuracy health status'),
-  predictionUsage: z.record(z.string(), z.any()).optional().nullable().describe('Prediction usage statistics'),
+  predictionUsage: z
+    .record(z.string(), z.any())
+    .optional()
+    .nullable()
+    .describe('Prediction usage statistics')
 });
 
-export let listDeployments = SlateTool.create(
-  spec,
-  {
-    name: 'List Deployments',
-    key: 'list_deployments',
-    description: `List all model deployments with their health status, importance, and prediction usage. Useful for monitoring deployed models across the organization.`,
-    tags: {
-      readOnly: true,
-    },
+export let listDeployments = SlateTool.create(spec, {
+  name: 'List Deployments',
+  key: 'list_deployments',
+  description: `List all model deployments with their health status, importance, and prediction usage. Useful for monitoring deployed models across the organization.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    offset: z.number().optional().describe('Pagination offset'),
-    limit: z.number().optional().describe('Maximum number of deployments to return'),
-    orderBy: z.string().optional().describe('Sort field'),
-    status: z.string().optional().describe('Filter by deployment status'),
-  }))
-  .output(z.object({
-    deployments: z.array(deploymentSchema).describe('List of deployments'),
-    totalCount: z.number().optional().describe('Total number of deployments'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      offset: z.number().optional().describe('Pagination offset'),
+      limit: z.number().optional().describe('Maximum number of deployments to return'),
+      orderBy: z.string().optional().describe('Sort field'),
+      status: z.string().optional().describe('Filter by deployment status')
+    })
+  )
+  .output(
+    z.object({
+      deployments: z.array(deploymentSchema).describe('List of deployments'),
+      totalCount: z.number().optional().describe('Total number of deployments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DataRobotClient({
       token: ctx.auth.token,
-      endpointUrl: ctx.config.endpointUrl,
+      endpointUrl: ctx.config.endpointUrl
     });
 
     let result = await client.listDeployments({
       offset: ctx.input.offset,
       limit: ctx.input.limit,
       orderBy: ctx.input.orderBy,
-      status: ctx.input.status,
+      status: ctx.input.status
     });
 
     let items = result.data || result;
@@ -65,15 +70,15 @@ export let listDeployments = SlateTool.create(
       serviceHealth: d.serviceHealth?.status,
       modelHealth: d.modelHealth?.status,
       accuracyHealth: d.accuracyHealth?.status,
-      predictionUsage: d.predictionUsage,
+      predictionUsage: d.predictionUsage
     }));
 
     return {
       output: {
         deployments,
-        totalCount: result.totalCount || result.count || deployments.length,
+        totalCount: result.totalCount || result.count || deployments.length
       },
-      message: `Found **${deployments.length}** deployment(s).`,
+      message: `Found **${deployments.length}** deployment(s).`
     };
   })
   .build();

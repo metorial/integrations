@@ -9,48 +9,75 @@ let meetingOutputSchema = z.object({
   meetingType: z.string().optional().describe('Meeting type (Instant, Scheduled, Recurring)'),
   startTime: z.string().optional().describe('Scheduled start time in ISO 8601 format'),
   joinUrl: z.string().optional().describe('URL to join the meeting'),
-  meetings: z.array(z.object({
-    meetingId: z.string().optional().describe('Meeting ID'),
-    topic: z.string().optional().describe('Meeting topic'),
-    meetingType: z.string().optional().describe('Meeting type'),
-    startTime: z.string().optional().describe('Scheduled start time'),
-    joinUrl: z.string().optional().describe('URL to join the meeting'),
-  })).optional().describe('List of meetings (only for list action)'),
+  meetings: z
+    .array(
+      z.object({
+        meetingId: z.string().optional().describe('Meeting ID'),
+        topic: z.string().optional().describe('Meeting topic'),
+        meetingType: z.string().optional().describe('Meeting type'),
+        startTime: z.string().optional().describe('Scheduled start time'),
+        joinUrl: z.string().optional().describe('URL to join the meeting')
+      })
+    )
+    .optional()
+    .describe('List of meetings (only for list action)')
 });
 
-export let manageMeeting = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Meeting',
-    key: 'manage_meeting',
-    description: `Create, retrieve, update, delete, or list RingCentral video meetings. Combine multiple meeting management operations in a single tool — schedule a new meeting, update its settings, fetch details, or clean up old meetings.`,
-    instructions: [
-      'To **create** a meeting, set action to "create" and optionally provide topic, meetingType, startTime, durationInMinutes, password, and allowJoinBeforeHost.',
-      'To **get** a meeting, set action to "get" and provide the meetingId.',
-      'To **update** a meeting, set action to "update" and provide the meetingId plus any fields to change.',
-      'To **delete** a meeting, set action to "delete" and provide the meetingId.',
-      'To **list** all meetings, set action to "list".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageMeeting = SlateTool.create(spec, {
+  name: 'Manage Meeting',
+  key: 'manage_meeting',
+  description: `Create, retrieve, update, delete, or list RingCentral video meetings. Combine multiple meeting management operations in a single tool — schedule a new meeting, update its settings, fetch details, or clean up old meetings.`,
+  instructions: [
+    'To **create** a meeting, set action to "create" and optionally provide topic, meetingType, startTime, durationInMinutes, password, and allowJoinBeforeHost.',
+    'To **get** a meeting, set action to "get" and provide the meetingId.',
+    'To **update** a meeting, set action to "update" and provide the meetingId plus any fields to change.',
+    'To **delete** a meeting, set action to "delete" and provide the meetingId.',
+    'To **list** all meetings, set action to "list".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('The meeting management action to perform'),
-    meetingId: z.string().optional().describe('Meeting ID (required for get, update, delete)'),
-    topic: z.string().optional().describe('Meeting topic or title'),
-    meetingType: z.enum(['Instant', 'Scheduled', 'Recurring']).optional().describe('Type of meeting to create or update'),
-    startTime: z.string().optional().describe('Scheduled start time in ISO 8601 format (for Scheduled meetings)'),
-    durationInMinutes: z.number().optional().describe('Duration of the meeting in minutes'),
-    password: z.string().optional().describe('Meeting password'),
-    allowJoinBeforeHost: z.boolean().optional().describe('Whether participants can join before the host'),
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('The meeting management action to perform'),
+      meetingId: z
+        .string()
+        .optional()
+        .describe('Meeting ID (required for get, update, delete)'),
+      topic: z.string().optional().describe('Meeting topic or title'),
+      meetingType: z
+        .enum(['Instant', 'Scheduled', 'Recurring'])
+        .optional()
+        .describe('Type of meeting to create or update'),
+      startTime: z
+        .string()
+        .optional()
+        .describe('Scheduled start time in ISO 8601 format (for Scheduled meetings)'),
+      durationInMinutes: z.number().optional().describe('Duration of the meeting in minutes'),
+      password: z.string().optional().describe('Meeting password'),
+      allowJoinBeforeHost: z
+        .boolean()
+        .optional()
+        .describe('Whether participants can join before the host')
+    })
+  )
   .output(meetingOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, baseUrl: ctx.config.baseUrl });
-    let { action, meetingId, topic, meetingType, startTime, durationInMinutes, password, allowJoinBeforeHost } = ctx.input;
+    let {
+      action,
+      meetingId,
+      topic,
+      meetingType,
+      startTime,
+      durationInMinutes,
+      password,
+      allowJoinBeforeHost
+    } = ctx.input;
 
     if (action === 'create') {
       let params: any = {};
@@ -72,9 +99,9 @@ export let manageMeeting = SlateTool.create(
           topic: meeting.topic,
           meetingType: meeting.meetingType,
           startTime: meeting.schedule?.startTime,
-          joinUrl: meeting.links?.joinUri,
+          joinUrl: meeting.links?.joinUri
         },
-        message: `Created meeting **${meeting.topic || 'Untitled'}** (\`${meeting.id}\`).`,
+        message: `Created meeting **${meeting.topic || 'Untitled'}** (\`${meeting.id}\`).`
       };
     }
 
@@ -87,14 +114,14 @@ export let manageMeeting = SlateTool.create(
         topic: m.topic,
         meetingType: m.meetingType,
         startTime: m.schedule?.startTime,
-        joinUrl: m.links?.joinUri,
+        joinUrl: m.links?.joinUri
       }));
 
       return {
         output: {
-          meetings,
+          meetings
         },
-        message: `Found **${meetings.length}** meeting(s).`,
+        message: `Found **${meetings.length}** meeting(s).`
       };
     }
 
@@ -109,9 +136,9 @@ export let manageMeeting = SlateTool.create(
           topic: meeting.topic,
           meetingType: meeting.meetingType,
           startTime: meeting.schedule?.startTime,
-          joinUrl: meeting.links?.joinUri,
+          joinUrl: meeting.links?.joinUri
         },
-        message: `Retrieved meeting **${meeting.topic || meetingId}** (\`${meeting.id}\`).`,
+        message: `Retrieved meeting **${meeting.topic || meetingId}** (\`${meeting.id}\`).`
       };
     }
 
@@ -120,9 +147,9 @@ export let manageMeeting = SlateTool.create(
 
       return {
         output: {
-          meetingId,
+          meetingId
         },
-        message: `Deleted meeting \`${meetingId}\`.`,
+        message: `Deleted meeting \`${meetingId}\`.`
       };
     }
 
@@ -136,7 +163,8 @@ export let manageMeeting = SlateTool.create(
       if (durationInMinutes) updateParams.schedule.durationInMinutes = durationInMinutes;
     }
     if (password) updateParams.password = password;
-    if (allowJoinBeforeHost !== undefined) updateParams.allowJoinBeforeHost = allowJoinBeforeHost;
+    if (allowJoinBeforeHost !== undefined)
+      updateParams.allowJoinBeforeHost = allowJoinBeforeHost;
 
     let updated = await client.updateMeeting(meetingId, updateParams);
 
@@ -146,9 +174,9 @@ export let manageMeeting = SlateTool.create(
         topic: updated.topic,
         meetingType: updated.meetingType,
         startTime: updated.schedule?.startTime,
-        joinUrl: updated.links?.joinUri,
+        joinUrl: updated.links?.joinUri
       },
-      message: `Updated meeting **${updated.topic || meetingId}** (\`${updated.id}\`).`,
+      message: `Updated meeting **${updated.topic || meetingId}** (\`${updated.id}\`).`
     };
   })
   .build();

@@ -3,29 +3,43 @@ import { SmsAlertClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTemplates = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Templates',
-    key: 'manage_templates',
-    description: `List, create, edit, or delete reusable SMS templates. Templates store pre-defined message content for use in SMS campaigns.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageTemplates = SlateTool.create(spec, {
+  name: 'Manage Templates',
+  key: 'manage_templates',
+  description: `List, create, edit, or delete reusable SMS templates. Templates store pre-defined message content for use in SMS campaigns.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'edit', 'delete']).describe('Action to perform on templates.'),
-    templateId: z.string().optional().describe('Template ID (required for edit and delete).'),
-    templateName: z.string().optional().describe('Template name (required for create, optional for edit).'),
-    templateBody: z.string().optional().describe('Template message content (required for create, optional for edit).'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Status of the API response.'),
-    description: z.any().describe('Response details including template data or confirmation.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'edit', 'delete'])
+        .describe('Action to perform on templates.'),
+      templateId: z
+        .string()
+        .optional()
+        .describe('Template ID (required for edit and delete).'),
+      templateName: z
+        .string()
+        .optional()
+        .describe('Template name (required for create, optional for edit).'),
+      templateBody: z
+        .string()
+        .optional()
+        .describe('Template message content (required for create, optional for edit).')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Status of the API response.'),
+      description: z
+        .any()
+        .describe('Response details including template data or confirmation.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SmsAlertClient({ token: ctx.auth.token });
 
     let result: any;
@@ -34,8 +48,11 @@ export let manageTemplates = SlateTool.create(
       ctx.info('Listing templates');
       result = await client.listTemplates();
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Retrieved SMS templates`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Retrieved SMS templates`
       };
     }
 
@@ -46,11 +63,14 @@ export let manageTemplates = SlateTool.create(
       ctx.info(`Creating template: ${ctx.input.templateName}`);
       result = await client.createTemplate({
         templateName: ctx.input.templateName,
-        templateBody: ctx.input.templateBody,
+        templateBody: ctx.input.templateBody
       });
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Template **${ctx.input.templateName}** created`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Template **${ctx.input.templateName}** created`
       };
     }
 
@@ -61,11 +81,14 @@ export let manageTemplates = SlateTool.create(
       result = await client.editTemplate({
         templateId: ctx.input.templateId,
         templateName: ctx.input.templateName,
-        templateBody: ctx.input.templateBody,
+        templateBody: ctx.input.templateBody
       });
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Template **${ctx.input.templateId}** updated`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Template **${ctx.input.templateId}** updated`
       };
     }
 
@@ -75,10 +98,14 @@ export let manageTemplates = SlateTool.create(
       ctx.info(`Deleting template: ${ctx.input.templateId}`);
       result = await client.deleteTemplate({ templateId: ctx.input.templateId });
       return {
-        output: { status: result.status || 'unknown', description: result.description || result },
-        message: `Template **${ctx.input.templateId}** deleted`,
+        output: {
+          status: result.status || 'unknown',
+          description: result.description || result
+        },
+        message: `Template **${ctx.input.templateId}** deleted`
       };
     }
 
     throw new Error(`Invalid action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

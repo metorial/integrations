@@ -11,7 +11,7 @@ import type {
   PodcastSimple,
   EpisodeSimple,
   PlaylistResponse,
-  PlaylistsResponse,
+  PlaylistsResponse
 } from './types';
 
 export class Client {
@@ -21,8 +21,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: config.baseUrl,
       headers: {
-        'X-ListenAPI-Key': config.token,
-      },
+        'X-ListenAPI-Key': config.token
+      }
     });
   }
 
@@ -73,8 +73,8 @@ export class Client {
         ncid: params.ncid,
         safe_mode: params.safeMode,
         unique_podcasts: params.uniquePodcasts,
-        page_size: params.pageSize,
-      },
+        page_size: params.pageSize
+      }
     });
     return response.data;
   }
@@ -90,8 +90,8 @@ export class Client {
         q: params.q,
         podcast_id: params.podcastId,
         podcast_id_type: params.podcastIdType,
-        offset: params.offset,
-      },
+        offset: params.offset
+      }
     });
     return response.data;
   }
@@ -107,8 +107,8 @@ export class Client {
         q: params.q,
         show_podcasts: params.showPodcasts,
         show_genres: params.showGenres,
-        safe_mode: params.safeMode,
-      },
+        safe_mode: params.safeMode
+      }
     });
     return response.data;
   }
@@ -120,7 +120,7 @@ export class Client {
 
   async getRelatedSearches(q: string): Promise<{ terms: string[] }> {
     let response = await this.axios.get('/related_searches', {
-      params: { q },
+      params: { q }
     });
     return response.data;
   }
@@ -130,7 +130,7 @@ export class Client {
     corrected_text_html: string;
   }> {
     let response = await this.axios.get('/spellcheck', {
-      params: { q },
+      params: { q }
     });
     return response.data;
   }
@@ -145,8 +145,8 @@ export class Client {
     let response = await this.axios.get(`/podcasts/${params.podcastId}`, {
       params: {
         next_episode_pub_date: params.nextEpisodePubDate,
-        sort: params.sort,
-      },
+        sort: params.sort
+      }
     });
     return response.data;
   }
@@ -157,8 +157,8 @@ export class Client {
   }): Promise<EpisodeFull> {
     let response = await this.axios.get(`/episodes/${params.episodeId}`, {
       params: {
-        show_transcript: params.showTranscript,
-      },
+        show_transcript: params.showTranscript
+      }
     });
     return response.data;
   }
@@ -177,7 +177,7 @@ export class Client {
       itunes_ids: params.itunesIds,
       spotify_ids: params.spotifyIds,
       show_latest_episodes: params.showLatestEpisodes,
-      next_episode_pub_date: params.nextEpisodePubDate,
+      next_episode_pub_date: params.nextEpisodePubDate
     });
     return response.data;
   }
@@ -193,7 +193,12 @@ export class Client {
     region?: string;
     publisherRegion?: string;
     language?: string;
-    sort?: 'recent_added_first' | 'oldest_added_first' | 'recent_published_first' | 'oldest_published_first' | 'listen_score';
+    sort?:
+      | 'recent_added_first'
+      | 'oldest_added_first'
+      | 'recent_published_first'
+      | 'oldest_published_first'
+      | 'listen_score';
     safeMode?: number;
   }): Promise<{
     has_previous: boolean;
@@ -216,8 +221,8 @@ export class Client {
         publisher_region: params.publisherRegion,
         language: params.language,
         sort: params.sort,
-        safe_mode: params.safeMode,
-      },
+        safe_mode: params.safeMode
+      }
     });
     return response.data;
   }
@@ -227,7 +232,7 @@ export class Client {
     safeMode?: number;
   }): Promise<{ recommendations: PodcastSimple[] }> {
     let response = await this.axios.get(`/podcasts/${params.podcastId}/recommendations`, {
-      params: { safe_mode: params.safeMode },
+      params: { safe_mode: params.safeMode }
     });
     return response.data;
   }
@@ -237,14 +242,12 @@ export class Client {
     safeMode?: number;
   }): Promise<{ recommendations: EpisodeSimple[] }> {
     let response = await this.axios.get(`/episodes/${params.episodeId}/recommendations`, {
-      params: { safe_mode: params.safeMode },
+      params: { safe_mode: params.safeMode }
     });
     return response.data;
   }
 
-  async getCuratedPodcasts(params: {
-    page?: number;
-  }): Promise<{
+  async getCuratedPodcasts(params: { page?: number }): Promise<{
     curated_lists: CuratedListSimple[];
     page_number: number;
     has_next: boolean;
@@ -252,7 +255,7 @@ export class Client {
     total: number;
   }> {
     let response = await this.axios.get('/curated_podcasts', {
-      params: { page: params.page },
+      params: { page: params.page }
     });
     return response.data;
   }
@@ -271,7 +274,7 @@ export class Client {
 
   async getGenres(topLevelOnly?: number): Promise<{ genres: Genre[] }> {
     let response = await this.axios.get('/genres', {
-      params: { top_level_only: topLevelOnly },
+      params: { top_level_only: topLevelOnly }
     });
     return response.data;
   }
@@ -295,8 +298,8 @@ export class Client {
     let response = await this.axios.get('/playlists', {
       params: {
         sort: params.sort,
-        page: params.page,
-      },
+        page: params.page
+      }
     });
     return response.data;
   }
@@ -305,43 +308,41 @@ export class Client {
     playlistId: string;
     type?: 'episode_list' | 'podcast_list';
     lastTimestampMs?: number;
-    sort?: 'recent_added_first' | 'oldest_added_first' | 'recent_published_first' | 'oldest_published_first';
+    sort?:
+      | 'recent_added_first'
+      | 'oldest_added_first'
+      | 'recent_published_first'
+      | 'oldest_published_first';
   }): Promise<PlaylistResponse> {
     let response = await this.axios.get(`/playlists/${params.playlistId}`, {
       params: {
         type: params.type,
         last_timestamp_ms: params.lastTimestampMs,
-        sort: params.sort,
-      },
+        sort: params.sort
+      }
     });
     return response.data;
   }
 
   // ── Podcaster API ──
 
-  async submitPodcast(params: {
-    rss: string;
-    email?: string;
-  }): Promise<{
+  async submitPodcast(params: { rss: string; email?: string }): Promise<{
     status: string;
     podcast: any;
   }> {
     let response = await this.axios.post('/podcasts/submit', {
       rss: params.rss,
-      email: params.email,
+      email: params.email
     });
     return response.data;
   }
 
-  async deletePodcast(params: {
-    podcastId: string;
-    reason?: string;
-  }): Promise<{
+  async deletePodcast(params: { podcastId: string; reason?: string }): Promise<{
     status: string;
     podcast_id: string;
   }> {
     let response = await this.axios.delete(`/podcasts/${params.podcastId}`, {
-      params: { reason: params.reason },
+      params: { reason: params.reason }
     });
     return response.data;
   }
@@ -353,10 +354,7 @@ export class Client {
     return response.data;
   }
 
-  async getPodcastsByDomain(params: {
-    domainName: string;
-    page?: number;
-  }): Promise<{
+  async getPodcastsByDomain(params: { domainName: string; page?: number }): Promise<{
     domain_name: string;
     page_number: number;
     has_next: boolean;
@@ -365,7 +363,7 @@ export class Client {
     podcasts: PodcastSimple[];
   }> {
     let response = await this.axios.get(`/podcasts/domains/${params.domainName}`, {
-      params: { page: params.page },
+      params: { page: params.page }
     });
     return response.data;
   }

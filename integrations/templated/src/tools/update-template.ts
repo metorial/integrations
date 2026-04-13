@@ -3,42 +3,49 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateTemplate = SlateTool.create(
-  spec,
-  {
-    name: 'Update Template',
-    key: 'update_template',
-    description: `Update an existing template's properties, layers, tags, or description. Supports partial updates by default. Set **replaceLayers** to true to remove any layers not included in the request.
+export let updateTemplate = SlateTool.create(spec, {
+  name: 'Update Template',
+  key: 'update_template',
+  description: `Update an existing template's properties, layers, tags, or description. Supports partial updates by default. Set **replaceLayers** to true to remove any layers not included in the request.
 Also supports adding or removing tags from the template.`,
-    instructions: [
-      'By default, only specified layers are updated and others are preserved.',
-      'To add tags, provide tagsToAdd. To remove tags, provide tagsToRemove. Both can be used in a single call.'
-    ]
-  }
-)
-  .input(z.object({
-    templateId: z.string().describe('Template ID to update'),
-    name: z.string().optional().describe('New template name'),
-    description: z.string().optional().describe('New template description'),
-    width: z.number().optional().describe('New width in pixels (max 5000)'),
-    height: z.number().optional().describe('New height in pixels (max 5000)'),
-    layers: z.array(z.any()).optional().describe('Layer objects to update or add'),
-    pages: z.array(z.any()).optional().describe('Page objects to update for multi-page templates'),
-    replaceLayers: z.boolean().optional().describe('When true, removes layers not included in the request'),
-    tagsToAdd: z.array(z.string()).optional().describe('Tags to add to the template'),
-    tagsToRemove: z.array(z.string()).optional().describe('Tags to remove from the template')
-  }))
-  .output(z.object({
-    templateId: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    width: z.number().optional(),
-    height: z.number().optional(),
-    layersCount: z.number().optional(),
-    pagesCount: z.number().optional(),
-    updatedAt: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'By default, only specified layers are updated and others are preserved.',
+    'To add tags, provide tagsToAdd. To remove tags, provide tagsToRemove. Both can be used in a single call.'
+  ]
+})
+  .input(
+    z.object({
+      templateId: z.string().describe('Template ID to update'),
+      name: z.string().optional().describe('New template name'),
+      description: z.string().optional().describe('New template description'),
+      width: z.number().optional().describe('New width in pixels (max 5000)'),
+      height: z.number().optional().describe('New height in pixels (max 5000)'),
+      layers: z.array(z.any()).optional().describe('Layer objects to update or add'),
+      pages: z
+        .array(z.any())
+        .optional()
+        .describe('Page objects to update for multi-page templates'),
+      replaceLayers: z
+        .boolean()
+        .optional()
+        .describe('When true, removes layers not included in the request'),
+      tagsToAdd: z.array(z.string()).optional().describe('Tags to add to the template'),
+      tagsToRemove: z.array(z.string()).optional().describe('Tags to remove from the template')
+    })
+  )
+  .output(
+    z.object({
+      templateId: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      width: z.number().optional(),
+      height: z.number().optional(),
+      layersCount: z.number().optional(),
+      pagesCount: z.number().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { templateId, replaceLayers, tagsToAdd, tagsToRemove, ...updateBody } = ctx.input;
 
@@ -76,4 +83,5 @@ Also supports adding or removing tags from the template.`,
       },
       message: `Updated template **${result.name || templateId}**${parts.length ? `: ${parts.join(', ')}` : ''}.`
     };
-  }).build();
+  })
+  .build();

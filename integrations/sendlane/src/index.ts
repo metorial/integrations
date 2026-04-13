@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listContacts,
@@ -20,13 +19,9 @@ import {
   trackOrder,
   trackCheckout,
   trackOrderFulfilled,
-  trackCustomEvent,
+  trackCustomEvent
 } from './tools';
-import {
-  newContact,
-  newUnsubscribe,
-  inboundWebhook,
-} from './triggers';
+import { newContact, newUnsubscribe, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,11 +44,7 @@ export let provider = Slate.create({
     trackOrder,
     trackCheckout,
     trackOrderFulfilled,
-    trackCustomEvent,
+    trackCustomEvent
   ],
-  triggers: [
-    inboundWebhook,
-    newContact,
-    newUnsubscribe,
-  ],
+  triggers: [inboundWebhook, newContact, newUnsubscribe]
 });

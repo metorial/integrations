@@ -11,30 +11,34 @@ let trendingSchema = z.object({
   images: z.number().describe('Percentage of tweets with images'),
   links: z.number().describe('Percentage of tweets with links'),
   mentions: z.number().describe('Percentage of tweets with mentions'),
-  color: z.number().describe('Color grade'),
+  color: z.number().describe('Color grade')
 });
 
-export let trendingHashtags = SlateTool.create(
-  spec,
-  {
-    name: 'Trending Hashtags',
-    key: 'trending_hashtags',
-    description: `Returns hashtags that are currently trending on social media with their engagement metrics.
+export let trendingHashtags = SlateTool.create(spec, {
+  name: 'Trending Hashtags',
+  key: 'trending_hashtags',
+  description: `Returns hashtags that are currently trending on social media with their engagement metrics.
 Use this to discover popular hashtags to include in your content for maximum visibility.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    greenOnly: z.boolean().optional().describe('Only return green (trending/performing well) hashtags'),
-    latinOnly: z.boolean().optional().describe('Only return hashtags with Latin characters'),
-  }))
-  .output(z.object({
-    hashtags: z.array(trendingSchema).describe('List of currently trending hashtags'),
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      greenOnly: z
+        .boolean()
+        .optional()
+        .describe('Only return green (trending/performing well) hashtags'),
+      latinOnly: z.boolean().optional().describe('Only return hashtags with Latin characters')
+    })
+  )
+  .output(
+    z.object({
+      hashtags: z.array(trendingSchema).describe('List of currently trending hashtags')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RiteKitClient({ token: ctx.auth.token });
     let result = await client.trendingHashtags(ctx.input.greenOnly, ctx.input.latinOnly);
 
@@ -42,6 +46,10 @@ Use this to discover popular hashtags to include in your content for maximum vis
 
     return {
       output: { hashtags: tags },
-      message: `Found **${tags.length}** trending hashtags. Top: ${tags.slice(0, 5).map((t) => `#${t.tag}`).join(', ')}`,
+      message: `Found **${tags.length}** trending hashtags. Top: ${tags
+        .slice(0, 5)
+        .map(t => `#${t.tag}`)
+        .join(', ')}`
     };
-  }).build();
+  })
+  .build();

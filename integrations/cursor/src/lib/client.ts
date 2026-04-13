@@ -6,7 +6,6 @@ export class CloudAgentsClient {
   private authHeader: string;
 
   constructor(config: { token: string }) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     this.authHeader = `Basic ${Buffer.from(`${config.token}:`).toString('base64')}`;
   }
 
@@ -27,52 +26,56 @@ export class CloudAgentsClient {
     return response.data;
   }
 
-  async listAgents(params?: {
-    limit?: number;
-    cursor?: string;
-    prUrl?: string;
-  }): Promise<{
+  async listAgents(params?: { limit?: number; cursor?: string; prUrl?: string }): Promise<{
     agents: Agent[];
     nextCursor?: string;
   }> {
     let response = await this.axios.get('/v0/agents', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
 
   async getAgent(agentId: string): Promise<Agent> {
     let response = await this.axios.get(`/v0/agents/${agentId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async launchAgent(body: LaunchAgentInput): Promise<Agent> {
     let response = await this.axios.post('/v0/agents', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async addFollowUp(agentId: string, prompt: PromptInput): Promise<{ id: string }> {
-    let response = await this.axios.post(`/v0/agents/${agentId}/followup`, { prompt }, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      `/v0/agents/${agentId}/followup`,
+      { prompt },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async stopAgent(agentId: string): Promise<{ id: string }> {
-    let response = await this.axios.post(`/v0/agents/${agentId}/stop`, {}, {
-      headers: this.headers,
-    });
+    let response = await this.axios.post(
+      `/v0/agents/${agentId}/stop`,
+      {},
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteAgent(agentId: string): Promise<{ id: string }> {
     let response = await this.axios.delete(`/v0/agents/${agentId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -82,7 +85,7 @@ export class CloudAgentsClient {
     messages: ConversationMessage[];
   }> {
     let response = await this.axios.get(`/v0/agents/${agentId}/conversation`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -91,25 +94,28 @@ export class CloudAgentsClient {
     artifacts: Artifact[];
   }> {
     let response = await this.axios.get(`/v0/agents/${agentId}/artifacts`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
-  async downloadArtifact(agentId: string, path: string): Promise<{
+  async downloadArtifact(
+    agentId: string,
+    path: string
+  ): Promise<{
     url: string;
     expiresAt: string;
   }> {
     let response = await this.axios.get(`/v0/agents/${agentId}/artifacts/download`, {
       headers: this.headers,
-      params: { path },
+      params: { path }
     });
     return response.data;
   }
 
   async listModels(): Promise<{ models: string[] }> {
     let response = await this.axios.get('/v0/models', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -118,7 +124,7 @@ export class CloudAgentsClient {
     repositories: Repository[];
   }> {
     let response = await this.axios.get('/v0/repositories', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }

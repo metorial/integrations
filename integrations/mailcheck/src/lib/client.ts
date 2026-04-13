@@ -62,9 +62,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api.mailcheck.co/v1',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -85,8 +85,8 @@ export class Client {
     let response = await this.axios.get('/emails/operations', {
       params: {
         page_size: params?.pageSize,
-        page_token: params?.pageToken,
-      },
+        page_token: params?.pageToken
+      }
     });
     return response.data;
   }

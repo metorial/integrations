@@ -9,8 +9,8 @@ export class FaradayClient {
       baseURL: 'https://api.faraday.ai/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

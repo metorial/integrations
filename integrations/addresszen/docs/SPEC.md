@@ -9,11 +9,13 @@ AddressZen is an address verification and data validation platform that provides
 Most requests require an API key for authentication. Authenticate by passing an `api_key` as part of the query string.
 
 For example:
+
 ```
 https://api.addresszen.com/v1/autocomplete/addresses?api_key=YOUR_API_KEY&q=parkside
 ```
 
 Alternatively, authentication can be transmitted via the `Authorization` header using the following scheme:
+
 ```
 Authorization: api_key="YOUR_API_KEY"
 ```

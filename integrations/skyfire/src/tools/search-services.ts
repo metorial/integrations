@@ -19,37 +19,47 @@ let serviceSchema = z.object({
   updatedAt: z.string().describe('ISO 8601 last update timestamp')
 });
 
-export let searchServices = SlateTool.create(
-  spec,
-  {
-    name: 'Search Services',
-    key: 'search_services',
-    description: `Browse and search the Skyfire service marketplace. Find seller services by tags, retrieve a specific service by ID, list all available services, or view services offered by a specific agent. Also supports fetching all available tags for filtering.`,
-    instructions: [
-      'To browse all services, omit all optional fields.',
-      'To filter by tags, provide an array of tag strings.',
-      'To look up a specific service, provide the serviceId.',
-      'To see services from a particular seller, provide the agentId.',
-      'Set tagsOnly to true to retrieve just the list of available tags.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let searchServices = SlateTool.create(spec, {
+  name: 'Search Services',
+  key: 'search_services',
+  description: `Browse and search the Skyfire service marketplace. Find seller services by tags, retrieve a specific service by ID, list all available services, or view services offered by a specific agent. Also supports fetching all available tags for filtering.`,
+  instructions: [
+    'To browse all services, omit all optional fields.',
+    'To filter by tags, provide an array of tag strings.',
+    'To look up a specific service, provide the serviceId.',
+    'To see services from a particular seller, provide the agentId.',
+    'Set tagsOnly to true to retrieve just the list of available tags.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    serviceId: z.string().optional().describe('UUID of a specific service to retrieve'),
-    tags: z.array(z.string()).optional().describe('Filter services by these tags (e.g., ["ai", "data"])'),
-    agentId: z.string().optional().describe('UUID of a seller agent to list their services'),
-    tagsOnly: z.boolean().optional().describe('Set to true to retrieve only the list of available tags')
-  }))
-  .output(z.object({
-    services: z.array(serviceSchema).optional().describe('List of matching services'),
-    availableTags: z.array(z.string()).optional().describe('Available tags (when tagsOnly is true)'),
-    totalCount: z.number().optional().describe('Total number of services returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      serviceId: z.string().optional().describe('UUID of a specific service to retrieve'),
+      tags: z
+        .array(z.string())
+        .optional()
+        .describe('Filter services by these tags (e.g., ["ai", "data"])'),
+      agentId: z.string().optional().describe('UUID of a seller agent to list their services'),
+      tagsOnly: z
+        .boolean()
+        .optional()
+        .describe('Set to true to retrieve only the list of available tags')
+    })
+  )
+  .output(
+    z.object({
+      services: z.array(serviceSchema).optional().describe('List of matching services'),
+      availableTags: z
+        .array(z.string())
+        .optional()
+        .describe('Available tags (when tagsOnly is true)'),
+      totalCount: z.number().optional().describe('Total number of services returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SkyfireClient({ token: ctx.auth.token });
 
     if (ctx.input.tagsOnly) {
@@ -96,7 +106,20 @@ export let searchServices = SlateTool.create(
   })
   .build();
 
-let mapService = (s: { id: string; name: string; description: string; tags: string[]; type: string; price: string; priceModel: string; minimumTokenAmount: string; seller: { id: string; name: string }; acceptedTokens: string[]; createdAt: string; updatedAt: string }) => ({
+let mapService = (s: {
+  id: string;
+  name: string;
+  description: string;
+  tags: string[];
+  type: string;
+  price: string;
+  priceModel: string;
+  minimumTokenAmount: string;
+  seller: { id: string; name: string };
+  acceptedTokens: string[];
+  createdAt: string;
+  updatedAt: string;
+}) => ({
   serviceId: s.id,
   name: s.name,
   description: s.description,

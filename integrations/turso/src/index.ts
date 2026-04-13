@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listDatabases,
@@ -22,13 +21,9 @@ import {
   getOrganization,
   manageMembers,
   manageApiTokens,
-  listAuditLogs,
+  listAuditLogs
 } from './tools';
-import {
-  auditLogActivity,
-  databaseChanges,
-  inboundWebhook,
-} from './triggers';
+import { auditLogActivity, databaseChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -53,11 +48,7 @@ export let provider = Slate.create({
     getOrganization,
     manageMembers,
     manageApiTokens,
-    listAuditLogs,
+    listAuditLogs
   ],
-  triggers: [
-    inboundWebhook,
-    auditLogActivity,
-    databaseChanges,
-  ],
+  triggers: [inboundWebhook, auditLogActivity, databaseChanges]
 });

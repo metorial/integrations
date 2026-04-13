@@ -23,37 +23,44 @@ let partySchema = z.object({
   websites: z.array(z.any()).optional().describe('Website URLs'),
   tags: z.array(z.any()).optional().describe('Associated tags'),
   fields: z.array(z.any()).optional().describe('Custom field values'),
-  pictureURL: z.string().optional().describe('Profile picture URL'),
+  pictureURL: z.string().optional().describe('Profile picture URL')
 });
 
-export let listParties = SlateTool.create(
-  spec,
-  {
-    name: 'List Parties',
-    key: 'list_parties',
-    description: `List contacts (people and organisations) from Capsule CRM with pagination and optional filtering by modification date. Use embed options to include tags, custom fields, and organisation details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listParties = SlateTool.create(spec, {
+  name: 'List Parties',
+  key: 'list_parties',
+  description: `List contacts (people and organisations) from Capsule CRM with pagination and optional filtering by modification date. Use embed options to include tags, custom fields, and organisation details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    since: z.string().optional().describe('ISO 8601 date to filter parties modified after this date'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
-    embed: z.array(z.enum(['tags', 'fields', 'organisation', 'missingImportantFields'])).optional().describe('Additional data to embed in the response'),
-  }))
-  .output(z.object({
-    parties: z.array(partySchema).describe('List of parties'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      since: z
+        .string()
+        .optional()
+        .describe('ISO 8601 date to filter parties modified after this date'),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page, 1-100 (default: 50)'),
+      embed: z
+        .array(z.enum(['tags', 'fields', 'organisation', 'missingImportantFields']))
+        .optional()
+        .describe('Additional data to embed in the response')
+    })
+  )
+  .output(
+    z.object({
+      parties: z.array(partySchema).describe('List of parties')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CapsuleClient({ token: ctx.auth.token });
 
     let result = await client.listParties({
       since: ctx.input.since,
       page: ctx.input.page,
       perPage: ctx.input.perPage,
-      embed: ctx.input.embed,
+      embed: ctx.input.embed
     });
 
     let parties = (result.parties || []).map((p: any) => ({
@@ -76,11 +83,12 @@ export let listParties = SlateTool.create(
       websites: p.websites,
       tags: p.tags,
       fields: p.fields,
-      pictureURL: p.pictureURL,
+      pictureURL: p.pictureURL
     }));
 
     return {
       output: { parties },
-      message: `Retrieved **${parties.length}** parties from Capsule CRM.`,
+      message: `Retrieved **${parties.length}** parties from Capsule CRM.`
     };
-  }).build();
+  })
+  .build();

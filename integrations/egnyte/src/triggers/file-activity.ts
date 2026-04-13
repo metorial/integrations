@@ -3,58 +3,65 @@ import { EgnyteClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fileActivityTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'File Activity',
-    key: 'file_activity',
-    description: '[Polling fallback] Polls the Egnyte Events API (v2) for file system, comment, and permission change events. Captures file additions, deletions, moves, copies, and permission changes. Uses cursor-based pagination for efficient incremental polling.',
-    constraints: [
-      'Events are available for the last 7 days only',
-      'Polling interval should be 5 minutes or more per Egnyte guidelines',
-    ],
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of event (e.g. "file_system", "note", "permission_change")'),
-    eventId: z.string().describe('Unique event identifier'),
-    action: z.string().optional().describe('Specific action (e.g. "create", "delete", "move")'),
-    path: z.string().optional().describe('Path of the affected file or folder'),
-    targetPath: z.string().optional().describe('Destination path for move/copy'),
-    userId: z.number().optional().describe('User ID who performed the action'),
-    username: z.string().optional().describe('Username who performed the action'),
-    timestamp: z.string().optional().describe('Event timestamp'),
-    groupId: z.string().optional().describe('File group ID'),
-    folderId: z.string().optional().describe('Folder ID'),
-    rawEvent: z.record(z.string(), z.unknown()).optional().describe('Full raw event'),
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Event type'),
-    action: z.string().optional().describe('Specific action performed'),
-    path: z.string().optional().describe('Path of the affected resource'),
-    targetPath: z.string().optional().describe('Destination path for move/copy'),
-    userId: z.number().optional().describe('User who performed the action'),
-    username: z.string().optional().describe('Username'),
-    timestamp: z.string().optional().describe('When the event occurred'),
-    groupId: z.string().optional().describe('File group ID'),
-    folderId: z.string().optional().describe('Folder ID'),
-  }))
+export let fileActivityTrigger = SlateTrigger.create(spec, {
+  name: 'File Activity',
+  key: 'file_activity',
+  description:
+    '[Polling fallback] Polls the Egnyte Events API (v2) for file system, comment, and permission change events. Captures file additions, deletions, moves, copies, and permission changes. Uses cursor-based pagination for efficient incremental polling.',
+  constraints: [
+    'Events are available for the last 7 days only',
+    'Polling interval should be 5 minutes or more per Egnyte guidelines'
+  ]
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Type of event (e.g. "file_system", "note", "permission_change")'),
+      eventId: z.string().describe('Unique event identifier'),
+      action: z
+        .string()
+        .optional()
+        .describe('Specific action (e.g. "create", "delete", "move")'),
+      path: z.string().optional().describe('Path of the affected file or folder'),
+      targetPath: z.string().optional().describe('Destination path for move/copy'),
+      userId: z.number().optional().describe('User ID who performed the action'),
+      username: z.string().optional().describe('Username who performed the action'),
+      timestamp: z.string().optional().describe('Event timestamp'),
+      groupId: z.string().optional().describe('File group ID'),
+      folderId: z.string().optional().describe('Folder ID'),
+      rawEvent: z.record(z.string(), z.unknown()).optional().describe('Full raw event')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('Event type'),
+      action: z.string().optional().describe('Specific action performed'),
+      path: z.string().optional().describe('Path of the affected resource'),
+      targetPath: z.string().optional().describe('Destination path for move/copy'),
+      userId: z.number().optional().describe('User who performed the action'),
+      username: z.string().optional().describe('Username'),
+      timestamp: z.string().optional().describe('When the event occurred'),
+      groupId: z.string().optional().describe('File group ID'),
+      folderId: z.string().optional().describe('Folder ID')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: Math.max(SlateDefaultPollingIntervalSeconds, 300), // At least 5 minutes per Egnyte guidelines
+      intervalInSeconds: Math.max(SlateDefaultPollingIntervalSeconds, 300) // At least 5 minutes per Egnyte guidelines
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new EgnyteClient({
         token: ctx.auth.token,
-        domain: ctx.auth.domain,
+        domain: ctx.auth.domain
       });
 
       let cursor = ctx.state?.cursor as string | number | undefined;
       let result: Record<string, unknown>;
 
       try {
-        result = await client.getEvents(cursor) as Record<string, unknown>;
+        result = (await client.getEvents(cursor)) as Record<string, unknown>;
       } catch (e: unknown) {
         // 204 means no events; return empty
         let err = e as Record<string, unknown>;
@@ -80,19 +87,19 @@ export let fileActivityTrigger = SlateTrigger.create(
           timestamp: event.timestamp ? String(event.timestamp) : undefined,
           groupId: data.group_id ? String(data.group_id) : undefined,
           folderId: data.folder_id ? String(data.folder_id) : undefined,
-          rawEvent: event,
+          rawEvent: event
         };
       });
 
       return {
         inputs,
         updatedState: {
-          cursor: latestCursor,
-        },
+          cursor: latestCursor
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let baseType = ctx.input.eventType.replace(/_/g, '.');
       let type = ctx.input.action ? `${baseType}.${ctx.input.action}` : baseType;
 
@@ -108,8 +115,9 @@ export let fileActivityTrigger = SlateTrigger.create(
           username: ctx.input.username,
           timestamp: ctx.input.timestamp,
           groupId: ctx.input.groupId,
-          folderId: ctx.input.folderId,
-        },
+          folderId: ctx.input.folderId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

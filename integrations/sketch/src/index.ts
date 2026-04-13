@@ -6,7 +6,7 @@ import {
   extractColorsTool,
   extractTextContentTool,
   generatePageTool,
-  generateDocumentTool,
+  generateDocumentTool
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     extractColorsTool,
     extractTextContentTool,
     generatePageTool,
-    generateDocumentTool,
+    generateDocumentTool
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

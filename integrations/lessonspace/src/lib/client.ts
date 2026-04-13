@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.thelessonspace.com/v2/',
+  baseURL: 'https://api.thelessonspace.com/v2/'
 });
 
 export interface LaunchSpaceParams {
@@ -201,13 +201,13 @@ export class Client {
   private headers() {
     return {
       Authorization: `Organisation ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   async launchSpace(params: LaunchSpaceParams): Promise<LaunchSpaceResponse> {
     let body: Record<string, any> = {
-      id: params.id,
+      id: params.id
     };
 
     if (params.name !== undefined) body.name = params.name;
@@ -223,7 +223,8 @@ export class Client {
       if (params.user.name !== undefined) userObj.name = params.user.name;
       if (params.user.email !== undefined) userObj.email = params.user.email;
       if (params.user.leader !== undefined) userObj.leader = params.user.leader;
-      if (params.user.customJwtParameters !== undefined) userObj.custom_jwt_parameters = params.user.customJwtParameters;
+      if (params.user.customJwtParameters !== undefined)
+        userObj.custom_jwt_parameters = params.user.customJwtParameters;
       body.user = userObj;
     }
 
@@ -233,8 +234,10 @@ export class Client {
 
     if (params.timeouts) {
       let timeouts: Record<string, any> = {};
-      if (params.timeouts.notBefore !== undefined) timeouts.not_before = params.timeouts.notBefore;
-      if (params.timeouts.notAfter !== undefined) timeouts.not_after = params.timeouts.notAfter;
+      if (params.timeouts.notBefore !== undefined)
+        timeouts.not_before = params.timeouts.notBefore;
+      if (params.timeouts.notAfter !== undefined)
+        timeouts.not_after = params.timeouts.notAfter;
       body.timeouts = timeouts;
     }
 
@@ -250,7 +253,7 @@ export class Client {
     if (params.authExternal !== undefined) body.auth_external = params.authExternal;
 
     let response = await http.post('spaces/launch/', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
 
     let data = response.data;
@@ -261,16 +264,19 @@ export class Client {
       secret: data.secret,
       sessionId: data.session_id,
       userId: data.user_id,
-      roomSettings: data.room_settings,
+      roomSettings: data.room_settings
     };
   }
 
-  async listSessions(params: ListSessionsParams = {}): Promise<PaginatedResponse<SessionData>> {
+  async listSessions(
+    params: ListSessionsParams = {}
+  ): Promise<PaginatedResponse<SessionData>> {
     let queryParams: Record<string, any> = {};
 
     if (params.search) queryParams.search = params.search;
     if (params.page) queryParams.page = params.page;
-    if (params.includeSingleUser !== undefined) queryParams.include_single_user = params.includeSingleUser;
+    if (params.includeSingleUser !== undefined)
+      queryParams.include_single_user = params.includeSingleUser;
     if (params.durationMin !== undefined) queryParams.duration_min = params.durationMin;
     if (params.durationMax !== undefined) queryParams.duration_max = params.durationMax;
     if (params.startTimeAfter) queryParams.start_time_after = params.startTimeAfter;
@@ -282,61 +288,78 @@ export class Client {
     if (params.user) queryParams.user = params.user;
     if (params.space) queryParams.space = params.space;
     if (params.launchId) queryParams.launch_id = params.launchId;
-    if (params.inProgressOnly !== undefined) queryParams.in_progress_only = params.inProgressOnly;
+    if (params.inProgressOnly !== undefined)
+      queryParams.in_progress_only = params.inProgressOnly;
     if (params.tags) queryParams.tags = params.tags;
     if (params.userExternalId) queryParams.user_external_id = params.userExternalId;
     if (params.userName) queryParams.user_name = params.userName;
 
     let response = await http.get(`organisations/${this.organisationId}/sessions/`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return this.mapPaginatedSessions(response.data);
   }
 
   async getSession(sessionUuid: string): Promise<SessionData> {
-    let response = await http.get(`organisations/${this.organisationId}/sessions/${sessionUuid}/`, {
-      headers: this.headers(),
-    });
+    let response = await http.get(
+      `organisations/${this.organisationId}/sessions/${sessionUuid}/`,
+      {
+        headers: this.headers()
+      }
+    );
 
     return this.mapSession(response.data);
   }
 
   async updateSession(sessionUuid: string, params: UpdateSessionParams): Promise<SessionData> {
     let body: Record<string, any> = {
-      name: params.name,
+      name: params.name
     };
     if (params.recordingAccessPolicy !== undefined) {
       body.recording_access_policy = params.recordingAccessPolicy;
     }
 
-    let response = await http.patch(`organisations/${this.organisationId}/sessions/${sessionUuid}/`, body, {
-      headers: this.headers(),
-    });
+    let response = await http.patch(
+      `organisations/${this.organisationId}/sessions/${sessionUuid}/`,
+      body,
+      {
+        headers: this.headers()
+      }
+    );
 
     return this.mapSession(response.data);
   }
 
   async getPlaybackUrl(sessionUuid: string): Promise<PlaybackResponse> {
-    let response = await http.get(`organisations/${this.organisationId}/sessions/${sessionUuid}/playback/`, {
-      headers: this.headers(),
-    });
+    let response = await http.get(
+      `organisations/${this.organisationId}/sessions/${sessionUuid}/playback/`,
+      {
+        headers: this.headers()
+      }
+    );
 
     return {
-      recordingUrl: response.data.recording_url,
+      recordingUrl: response.data.recording_url
     };
   }
 
-  async getTranscript(sessionUuid: string, params: { search?: string; page?: number } = {}): Promise<any> {
+  async getTranscript(
+    sessionUuid: string,
+    params: { search?: string; page?: number } = {}
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params.search) queryParams.search = params.search;
     if (params.page) queryParams.page = params.page;
 
-    let response = await http.get(`organisations/${this.organisationId}/sessions/${sessionUuid}/transcript/`, {
-      headers: this.headers(),
-      params: queryParams,
-    });
+    let response = await http.get(
+      `organisations/${this.organisationId}/sessions/${sessionUuid}/transcript/`,
+      {
+        headers: this.headers(),
+        params: queryParams
+      }
+    );
 
     return response.data;
   }
@@ -356,7 +379,7 @@ export class Client {
 
     let response = await http.get(`organisations/${this.organisationId}/spaces/`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data;
@@ -364,7 +387,7 @@ export class Client {
       count: data.count,
       next: data.next,
       previous: data.previous,
-      results: data.results.map((s: any) => this.mapSpace(s)),
+      results: data.results.map((s: any) => this.mapSpace(s))
     };
   }
 
@@ -379,7 +402,7 @@ export class Client {
 
     let response = await http.get(`organisations/${this.organisationId}/users/`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data;
@@ -390,38 +413,43 @@ export class Client {
       results: data.results.map((u: any) => ({
         user: {
           id: u.user?.id,
-          username: u.user?.username,
+          username: u.user?.username
         },
         role: u.role,
         active: u.active,
         name: u.name,
         externalId: u.external_id,
-        url: u.url,
-      })),
+        url: u.url
+      }))
     };
   }
 
   async removeUser(userId: number): Promise<void> {
     await http.delete(`organisations/${this.organisationId}/users/${userId}/`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
-  async listSpaceSessions(spaceUuid: string, params: ListSessionsParams = {}): Promise<PaginatedResponse<SessionData>> {
+  async listSpaceSessions(
+    spaceUuid: string,
+    params: ListSessionsParams = {}
+  ): Promise<PaginatedResponse<SessionData>> {
     let queryParams: Record<string, any> = {};
 
     if (params.search) queryParams.search = params.search;
     if (params.page) queryParams.page = params.page;
-    if (params.includeSingleUser !== undefined) queryParams.include_single_user = params.includeSingleUser;
+    if (params.includeSingleUser !== undefined)
+      queryParams.include_single_user = params.includeSingleUser;
     if (params.durationMin !== undefined) queryParams.duration_min = params.durationMin;
     if (params.durationMax !== undefined) queryParams.duration_max = params.durationMax;
     if (params.startTimeAfter) queryParams.start_time_after = params.startTimeAfter;
     if (params.startTimeBefore) queryParams.start_time_before = params.startTimeBefore;
-    if (params.inProgressOnly !== undefined) queryParams.in_progress_only = params.inProgressOnly;
+    if (params.inProgressOnly !== undefined)
+      queryParams.in_progress_only = params.inProgressOnly;
 
     let response = await http.get(`spaces/${spaceUuid}/sessions/`, {
       headers: this.headers(),
-      params: queryParams,
+      params: queryParams
     });
 
     return this.mapPaginatedSessions(response.data);
@@ -432,7 +460,7 @@ export class Client {
       count: data.count,
       next: data.next,
       previous: data.previous,
-      results: data.results.map((s: any) => this.mapSession(s)),
+      results: data.results.map((s: any) => this.mapSession(s))
     };
   }
 
@@ -447,11 +475,11 @@ export class Client {
         user: p.user,
         name: p.name,
         email: p.email,
-        role: p.role,
+        role: p.role
       })),
       guests: (s.guests || []).map((g: any) => ({
         socketId: g.socket_id ?? g.socketId,
-        name: g.name,
+        name: g.name
       })),
       billableSeconds: s.billable_seconds,
       tags: s.tags,
@@ -462,7 +490,7 @@ export class Client {
       recordingAvailable: s.recording_available,
       playbackPassword: s.playback_password,
       isPasswordSet: s.is_password_set,
-      space: s.space ? this.mapSpace(s.space) : undefined,
+      space: s.space ? this.mapSpace(s.space) : undefined
     };
   }
 
@@ -480,7 +508,7 @@ export class Client {
       region: s.region,
       recordAv: s.record_av,
       transcribe: s.transcribe,
-      summarise: s.summarise,
+      summarise: s.summarise
     };
   }
 }

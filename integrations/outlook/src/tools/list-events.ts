@@ -3,59 +3,71 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listEvents = SlateTool.create(
-  spec,
-  {
-    name: 'List Calendar Events',
-    key: 'list_events',
-    description: `List calendar events from the authenticated user's calendar. Supports filtering by date range (calendar view), specific calendar, and OData filters. When **startDateTime** and **endDateTime** are provided, uses the calendarView endpoint which expands recurring events into individual occurrences.`,
-    instructions: [
-      'Provide both **startDateTime** and **endDateTime** (ISO 8601 format) to get a calendar view with expanded recurrences.',
-      'Without date range, returns events from the events collection without expanding recurrences.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listEvents = SlateTool.create(spec, {
+  name: 'List Calendar Events',
+  key: 'list_events',
+  description: `List calendar events from the authenticated user's calendar. Supports filtering by date range (calendar view), specific calendar, and OData filters. When **startDateTime** and **endDateTime** are provided, uses the calendarView endpoint which expands recurring events into individual occurrences.`,
+  instructions: [
+    'Provide both **startDateTime** and **endDateTime** (ISO 8601 format) to get a calendar view with expanded recurrences.',
+    'Without date range, returns events from the events collection without expanding recurrences.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    calendarId: z.string().optional().describe('Calendar ID. Omit to use the default calendar.'),
-    startDateTime: z.string().optional().describe('Start of date range in ISO 8601 format (e.g., "2024-01-01T00:00:00Z")'),
-    endDateTime: z.string().optional().describe('End of date range in ISO 8601 format'),
-    filter: z.string().optional().describe('OData filter expression'),
-    orderby: z.string().optional().describe('OData orderby expression (e.g., "start/dateTime asc")'),
-    top: z.number().optional().describe('Maximum number of events to return'),
-    skip: z.number().optional().describe('Number of events to skip for pagination'),
-  }))
-  .output(z.object({
-    events: z.array(z.object({
-      eventId: z.string(),
-      subject: z.string().optional(),
-      bodyPreview: z.string().optional(),
-      startDateTime: z.string().optional(),
-      startTimeZone: z.string().optional(),
-      endDateTime: z.string().optional(),
-      endTimeZone: z.string().optional(),
-      locationDisplayName: z.string().optional(),
-      isAllDay: z.boolean().optional(),
-      isCancelled: z.boolean().optional(),
-      isOnlineMeeting: z.boolean().optional(),
-      onlineMeetingJoinUrl: z.string().optional(),
-      organizerEmail: z.string().optional(),
-      organizerName: z.string().optional(),
-      attendeeCount: z.number().optional(),
-      showAs: z.string().optional(),
-      importance: z.string().optional(),
-      hasAttachments: z.boolean().optional(),
-      webLink: z.string().optional(),
-      categories: z.array(z.string()).optional(),
-      seriesMasterId: z.string().optional(),
-      type: z.string().optional(),
-    })),
-    nextPageAvailable: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      calendarId: z
+        .string()
+        .optional()
+        .describe('Calendar ID. Omit to use the default calendar.'),
+      startDateTime: z
+        .string()
+        .optional()
+        .describe('Start of date range in ISO 8601 format (e.g., "2024-01-01T00:00:00Z")'),
+      endDateTime: z.string().optional().describe('End of date range in ISO 8601 format'),
+      filter: z.string().optional().describe('OData filter expression'),
+      orderby: z
+        .string()
+        .optional()
+        .describe('OData orderby expression (e.g., "start/dateTime asc")'),
+      top: z.number().optional().describe('Maximum number of events to return'),
+      skip: z.number().optional().describe('Number of events to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      events: z.array(
+        z.object({
+          eventId: z.string(),
+          subject: z.string().optional(),
+          bodyPreview: z.string().optional(),
+          startDateTime: z.string().optional(),
+          startTimeZone: z.string().optional(),
+          endDateTime: z.string().optional(),
+          endTimeZone: z.string().optional(),
+          locationDisplayName: z.string().optional(),
+          isAllDay: z.boolean().optional(),
+          isCancelled: z.boolean().optional(),
+          isOnlineMeeting: z.boolean().optional(),
+          onlineMeetingJoinUrl: z.string().optional(),
+          organizerEmail: z.string().optional(),
+          organizerName: z.string().optional(),
+          attendeeCount: z.number().optional(),
+          showAs: z.string().optional(),
+          importance: z.string().optional(),
+          hasAttachments: z.boolean().optional(),
+          webLink: z.string().optional(),
+          categories: z.array(z.string()).optional(),
+          seriesMasterId: z.string().optional(),
+          type: z.string().optional()
+        })
+      ),
+      nextPageAvailable: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listEvents({
@@ -65,10 +77,10 @@ export let listEvents = SlateTool.create(
       filter: ctx.input.filter,
       orderby: ctx.input.orderby,
       top: ctx.input.top || 25,
-      skip: ctx.input.skip,
+      skip: ctx.input.skip
     });
 
-    let events = result.value.map((ev) => ({
+    let events = result.value.map(ev => ({
       eventId: ev.id,
       subject: ev.subject,
       bodyPreview: ev.bodyPreview,
@@ -90,15 +102,15 @@ export let listEvents = SlateTool.create(
       webLink: ev.webLink,
       categories: ev.categories,
       seriesMasterId: ev.seriesMasterId,
-      type: ev.type,
+      type: ev.type
     }));
 
     return {
       output: {
         events,
-        nextPageAvailable: !!result['@odata.nextLink'],
+        nextPageAvailable: !!result['@odata.nextLink']
       },
-      message: `Found **${events.length}** calendar event(s).`,
+      message: `Found **${events.length}** calendar event(s).`
     };
   })
   .build();

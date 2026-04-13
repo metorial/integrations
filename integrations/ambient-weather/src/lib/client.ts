@@ -10,30 +10,33 @@ export class Client {
     this.apiKey = config.token;
     this.applicationKey = config.applicationKey;
     this.axios = createAxios({
-      baseURL: 'https://rt.ambientweather.net/v1',
+      baseURL: 'https://rt.ambientweather.net/v1'
     });
   }
 
   private get authParams() {
     return {
       apiKey: this.apiKey,
-      applicationKey: this.applicationKey,
+      applicationKey: this.applicationKey
     };
   }
 
   async listDevices(): Promise<DeviceInfo[]> {
     let response = await this.axios.get('/devices', {
-      params: this.authParams,
+      params: this.authParams
     });
     return response.data;
   }
 
-  async getDeviceData(macAddress: string, options?: {
-    limit?: number;
-    endDate?: number;
-  }): Promise<WeatherData[]> {
+  async getDeviceData(
+    macAddress: string,
+    options?: {
+      limit?: number;
+      endDate?: number;
+    }
+  ): Promise<WeatherData[]> {
     let params: Record<string, string | number> = {
-      ...this.authParams,
+      ...this.authParams
     };
 
     if (options?.limit !== undefined) {
@@ -45,7 +48,7 @@ export class Client {
     }
 
     let response = await this.axios.get(`/devices/${macAddress}`, {
-      params,
+      params
     });
     return response.data;
   }

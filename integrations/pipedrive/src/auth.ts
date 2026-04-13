@@ -2,54 +2,161 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    companyDomain: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      companyDomain: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
     key: 'oauth',
 
     scopes: [
-      { title: 'Base', description: 'Basic info: authorized user settings, currencies', scope: 'base' },
-      { title: 'Deals Read', description: 'Read deals, pipelines, stages, notes, files, filters, statistics', scope: 'deals:read' },
-      { title: 'Deals Full', description: 'Full CRUD on deals, participants, followers, notes, files, filters', scope: 'deals:full' },
-      { title: 'Mail Read', description: 'Read mail threads and messages', scope: 'mail:read' },
-      { title: 'Mail Full', description: 'Read, update, delete mail threads and messages', scope: 'mail:full' },
-      { title: 'Activities Read', description: 'Read activities, activity fields and types', scope: 'activities:read' },
-      { title: 'Activities Full', description: 'Full CRUD on activities, files, filters', scope: 'activities:full' },
-      { title: 'Contacts Read', description: 'Read persons, organizations, related fields, followers', scope: 'contacts:read' },
-      { title: 'Contacts Full', description: 'Full CRUD on persons, organizations, followers, notes, files', scope: 'contacts:full' },
-      { title: 'Products Read', description: 'Read products, product fields, followers', scope: 'products:read' },
-      { title: 'Products Full', description: 'Full CRUD on products and product fields', scope: 'products:full' },
-      { title: 'Deal Fields Full', description: 'Full CRUD on deal custom fields', scope: 'deal-fields:full' },
-      { title: 'Product Fields Full', description: 'Full CRUD on product custom fields', scope: 'product-fields:full' },
-      { title: 'Contact Fields Full', description: 'Full CRUD on person and organization custom fields', scope: 'contact-fields:full' },
-      { title: 'Users Read', description: 'Read users, permissions, roles, teams', scope: 'users:read' },
-      { title: 'Recents Read', description: 'Read recent changes across the account', scope: 'recents:read' },
-      { title: 'Search Read', description: 'Search across deals, persons, organizations, files, products', scope: 'search:read' },
-      { title: 'Admin', description: 'Manage pipelines, stages, fields, activity types, users, permissions, webhooks', scope: 'admin' },
+      {
+        title: 'Base',
+        description: 'Basic info: authorized user settings, currencies',
+        scope: 'base'
+      },
+      {
+        title: 'Deals Read',
+        description: 'Read deals, pipelines, stages, notes, files, filters, statistics',
+        scope: 'deals:read'
+      },
+      {
+        title: 'Deals Full',
+        description: 'Full CRUD on deals, participants, followers, notes, files, filters',
+        scope: 'deals:full'
+      },
+      {
+        title: 'Mail Read',
+        description: 'Read mail threads and messages',
+        scope: 'mail:read'
+      },
+      {
+        title: 'Mail Full',
+        description: 'Read, update, delete mail threads and messages',
+        scope: 'mail:full'
+      },
+      {
+        title: 'Activities Read',
+        description: 'Read activities, activity fields and types',
+        scope: 'activities:read'
+      },
+      {
+        title: 'Activities Full',
+        description: 'Full CRUD on activities, files, filters',
+        scope: 'activities:full'
+      },
+      {
+        title: 'Contacts Read',
+        description: 'Read persons, organizations, related fields, followers',
+        scope: 'contacts:read'
+      },
+      {
+        title: 'Contacts Full',
+        description: 'Full CRUD on persons, organizations, followers, notes, files',
+        scope: 'contacts:full'
+      },
+      {
+        title: 'Products Read',
+        description: 'Read products, product fields, followers',
+        scope: 'products:read'
+      },
+      {
+        title: 'Products Full',
+        description: 'Full CRUD on products and product fields',
+        scope: 'products:full'
+      },
+      {
+        title: 'Deal Fields Full',
+        description: 'Full CRUD on deal custom fields',
+        scope: 'deal-fields:full'
+      },
+      {
+        title: 'Product Fields Full',
+        description: 'Full CRUD on product custom fields',
+        scope: 'product-fields:full'
+      },
+      {
+        title: 'Contact Fields Full',
+        description: 'Full CRUD on person and organization custom fields',
+        scope: 'contact-fields:full'
+      },
+      {
+        title: 'Users Read',
+        description: 'Read users, permissions, roles, teams',
+        scope: 'users:read'
+      },
+      {
+        title: 'Recents Read',
+        description: 'Read recent changes across the account',
+        scope: 'recents:read'
+      },
+      {
+        title: 'Search Read',
+        description: 'Search across deals, persons, organizations, files, products',
+        scope: 'search:read'
+      },
+      {
+        title: 'Admin',
+        description:
+          'Manage pipelines, stages, fields, activity types, users, permissions, webhooks',
+        scope: 'admin'
+      },
       { title: 'Leads Read', description: 'Read leads and lead labels', scope: 'leads:read' },
-      { title: 'Leads Full', description: 'Full CRUD on leads and lead labels', scope: 'leads:full' },
+      {
+        title: 'Leads Full',
+        description: 'Full CRUD on leads and lead labels',
+        scope: 'leads:full'
+      },
       { title: 'Goals Read', description: 'Read goals', scope: 'goals:read' },
       { title: 'Goals Full', description: 'Full CRUD on goals', scope: 'goals:full' },
-      { title: 'Projects Read', description: 'Read projects, boards, phases, tasks, templates', scope: 'projects:read' },
-      { title: 'Projects Full', description: 'Full CRUD on projects and tasks', scope: 'projects:full' },
-      { title: 'Webhooks Read', description: 'Read webhooks created by the app', scope: 'webhooks:read' },
-      { title: 'Webhooks Full', description: 'Create, read, and delete webhooks', scope: 'webhooks:full' },
-      { title: 'Phone Integration', description: 'Log calls and play recordings', scope: 'phone-integration' },
-      { title: 'Video Calls', description: 'Register as video call provider and create conference links', scope: 'video-calls' },
-      { title: 'Messengers Integration', description: 'Register as messaging integration provider', scope: 'messengers-integration' },
+      {
+        title: 'Projects Read',
+        description: 'Read projects, boards, phases, tasks, templates',
+        scope: 'projects:read'
+      },
+      {
+        title: 'Projects Full',
+        description: 'Full CRUD on projects and tasks',
+        scope: 'projects:full'
+      },
+      {
+        title: 'Webhooks Read',
+        description: 'Read webhooks created by the app',
+        scope: 'webhooks:read'
+      },
+      {
+        title: 'Webhooks Full',
+        description: 'Create, read, and delete webhooks',
+        scope: 'webhooks:full'
+      },
+      {
+        title: 'Phone Integration',
+        description: 'Log calls and play recordings',
+        scope: 'phone-integration'
+      },
+      {
+        title: 'Video Calls',
+        description: 'Register as video call provider and create conference links',
+        scope: 'video-calls'
+      },
+      {
+        title: 'Messengers Integration',
+        description: 'Register as messaging integration provider',
+        scope: 'messengers-integration'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       if (ctx.scopes.length > 0) {
@@ -57,25 +164,29 @@ export let auth = SlateAuth.create()
       }
 
       return {
-        url: `https://oauth.pipedrive.com/oauth/authorize?${params.toString()}`,
+        url: `https://oauth.pipedrive.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post('https://oauth.pipedrive.com/oauth/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        'https://oauth.pipedrive.com/oauth/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -87,25 +198,31 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token,
           expiresAt,
-          companyDomain: data.api_domain ? data.api_domain.replace('https://', '').replace('.pipedrive.com', '') : undefined,
-        },
+          companyDomain: data.api_domain
+            ? data.api_domain.replace('https://', '').replace('.pipedrive.com', '')
+            : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let http = createAxios();
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
       let credentials = Buffer.from(`${ctx.clientId}:${ctx.clientSecret}`).toString('base64');
 
-      let response = await http.post('https://oauth.pipedrive.com/oauth/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken || '',
-      }).toString(), {
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        'https://oauth.pipedrive.com/oauth/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken || ''
+        }).toString(),
+        {
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
       let expiresAt = data.expires_in
@@ -117,20 +234,20 @@ export let auth = SlateAuth.create()
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
           expiresAt,
-          companyDomain: ctx.output.companyDomain,
-        },
+          companyDomain: ctx.output.companyDomain
+        }
       };
     },
 
     getProfile: async (ctx: any) => {
       let http = createAxios({
-        baseURL: `https://api.pipedrive.com/v1`,
+        baseURL: `https://api.pipedrive.com/v1`
       });
 
       let response = await http.get('/users/me', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let user = response.data?.data;
@@ -142,10 +259,10 @@ export let auth = SlateAuth.create()
           name: user?.name,
           imageUrl: user?.icon_url,
           companyId: user?.company_id?.toString(),
-          companyName: user?.company_name,
-        },
+          companyName: user?.company_name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -153,14 +270,16 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Pipedrive API token (found in Settings > Personal preferences > API)'),
+      token: z
+        .string()
+        .describe('Your Pipedrive API token (found in Settings > Personal preferences > API)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -169,8 +288,8 @@ export let auth = SlateAuth.create()
 
       let response = await http.get(`https://api.pipedrive.com/v1/users/me`, {
         headers: {
-          'x-api-token': ctx.output.token,
-        },
+          'x-api-token': ctx.output.token
+        }
       });
 
       let user = response.data?.data;
@@ -182,8 +301,8 @@ export let auth = SlateAuth.create()
           name: user?.name,
           imageUrl: user?.icon_url,
           companyId: user?.company_id?.toString(),
-          companyName: user?.company_name,
-        },
+          companyName: user?.company_name
+        }
       };
-    },
+    }
   });

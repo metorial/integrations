@@ -3,32 +3,37 @@ import { DropboxClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let downloadFile = SlateTool.create(
-  spec,
-  {
-    name: 'Download File',
-    key: 'download_file',
-    description: `Download a file's content from Dropbox. Returns the file content as text along with its metadata. Suitable for text-based files.`,
-    constraints: [
-      'Only text-based file content is returned. Binary files will return raw data that may not be usable as text.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let downloadFile = SlateTool.create(spec, {
+  name: 'Download File',
+  key: 'download_file',
+  description: `Download a file's content from Dropbox. Returns the file content as text along with its metadata. Suitable for text-based files.`,
+  constraints: [
+    'Only text-based file content is returned. Binary files will return raw data that may not be usable as text.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    path: z.string().describe('Path or ID of the file to download (e.g., "/Documents/report.txt" or "id:abc123")')
-  }))
-  .output(z.object({
-    name: z.string().optional().describe('File name'),
-    pathDisplay: z.string().optional().describe('Display path'),
-    fileId: z.string().optional().describe('Unique file ID'),
-    size: z.number().optional().describe('File size in bytes'),
-    rev: z.string().optional().describe('File revision'),
-    content: z.string().describe('Text content of the file')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      path: z
+        .string()
+        .describe(
+          'Path or ID of the file to download (e.g., "/Documents/report.txt" or "id:abc123")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      name: z.string().optional().describe('File name'),
+      pathDisplay: z.string().optional().describe('Display path'),
+      fileId: z.string().optional().describe('Unique file ID'),
+      size: z.number().optional().describe('File size in bytes'),
+      rev: z.string().optional().describe('File revision'),
+      content: z.string().describe('Text content of the file')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DropboxClient(ctx.auth.token);
     let result = await client.downloadFile(ctx.input.path);
 
@@ -43,4 +48,5 @@ export let downloadFile = SlateTool.create(
       },
       message: `Downloaded **${result.metadata.name || ctx.input.path}** (${result.metadata.size ?? '?'} bytes).`
     };
-  }).build();
+  })
+  .build();

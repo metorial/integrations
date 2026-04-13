@@ -6,11 +6,13 @@ let axios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Miro OAuth',
@@ -59,7 +61,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join(' ');
       let params = new URLSearchParams({
         response_type: 'code',
@@ -75,7 +77,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await axios.post('/v1/oauth/token', null, {
         params: {
           grant_type: 'authorization_code',
@@ -103,7 +105,7 @@ export let auth = SlateAuth.create()
       return { output };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -134,7 +136,9 @@ export let auth = SlateAuth.create()
       return { output };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+    }) => {
       let response = await axios.get('/v1/oauth-token', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`

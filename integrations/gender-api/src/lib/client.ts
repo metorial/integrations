@@ -104,12 +104,12 @@ let mapFirstNameResult = (data: any): GenderByFirstNameResult => ({
     samples: data.details?.samples,
     country: data.details?.country ?? null,
     firstNameSanitized: data.details?.first_name_sanitized,
-    duration: data.details?.duration,
+    duration: data.details?.duration
   },
   resultFound: data.result_found,
   firstName: data.first_name,
   probability: data.probability,
-  gender: data.gender,
+  gender: data.gender
 });
 
 let mapFullNameResult = (data: any): GenderByFullNameResult => ({
@@ -119,13 +119,13 @@ let mapFullNameResult = (data: any): GenderByFullNameResult => ({
     samples: data.details?.samples,
     country: data.details?.country ?? null,
     firstNameSanitized: data.details?.first_name_sanitized,
-    duration: data.details?.duration,
+    duration: data.details?.duration
   },
   resultFound: data.result_found,
   firstName: data.first_name,
   lastName: data.last_name ?? '',
   probability: data.probability,
-  gender: data.gender,
+  gender: data.gender
 });
 
 let mapEmailResult = (data: any): GenderByEmailResult => ({
@@ -135,13 +135,13 @@ let mapEmailResult = (data: any): GenderByEmailResult => ({
     samples: data.details?.samples,
     country: data.details?.country ?? null,
     firstNameSanitized: data.details?.first_name_sanitized,
-    duration: data.details?.duration,
+    duration: data.details?.duration
   },
   resultFound: data.result_found,
   firstName: data.first_name,
   lastName: data.last_name ?? '',
   probability: data.probability,
-  gender: data.gender,
+  gender: data.gender
 });
 
 let mapCountryOfOriginResult = (data: any): CountryOfOriginResult => ({
@@ -151,7 +151,7 @@ let mapCountryOfOriginResult = (data: any): CountryOfOriginResult => ({
     samples: data.details?.samples,
     country: data.details?.country ?? null,
     firstNameSanitized: data.details?.first_name_sanitized,
-    duration: data.details?.duration,
+    duration: data.details?.duration
   },
   resultFound: data.result_found,
   countryOfOrigin: (data.country_of_origin ?? []).map((entry: any) => ({
@@ -159,12 +159,12 @@ let mapCountryOfOriginResult = (data: any): CountryOfOriginResult => ({
     country: entry.country,
     probability: entry.probability,
     continentalRegion: entry.continental_region,
-    statisticalRegion: entry.statistical_region,
+    statisticalRegion: entry.statistical_region
   })),
   countryOfOriginMapUrl: data.country_of_origin_map_url ?? '',
   firstName: data.first_name,
   probability: data.probability,
-  gender: data.gender,
+  gender: data.gender
 });
 
 let mapStatisticResult = (data: any): StatisticResult => ({
@@ -172,12 +172,12 @@ let mapStatisticResult = (data: any): StatisticResult => ({
   remainingCredits: data.remaining_credits,
   details: {
     creditsUsed: data.details?.credits_used,
-    duration: data.details?.duration,
+    duration: data.details?.duration
   },
   usageLastMonth: {
     date: data.usage_last_month?.date,
-    creditsUsed: data.usage_last_month?.credits_used,
-  },
+    creditsUsed: data.usage_last_month?.credits_used
+  }
 });
 
 export class Client {
@@ -187,9 +187,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://gender-api.com/v2',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 

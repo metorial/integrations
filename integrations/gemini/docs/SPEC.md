@@ -15,6 +15,7 @@ The easiest way to authenticate to the Gemini API is to configure an API key. To
 All requests to the Gemini API must include a `x-goog-api-key` header with your API key.
 
 Example:
+
 ```
 x-goog-api-key: YOUR_API_KEY
 ```
@@ -26,6 +27,7 @@ x-goog-api-key: YOUR_API_KEY
 If you need stricter access controls, you can use OAuth instead. OAuth is specifically needed for features like model tuning and semantic retrieval.
 
 Steps:
+
 1. Enable the Google Generative Language API in Google Cloud Console.
 2. Configure an OAuth consent screen and create OAuth 2.0 Client ID credentials (Desktop application type).
 3. Download the `client_secret.json` file.

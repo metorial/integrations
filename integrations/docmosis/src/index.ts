@@ -23,7 +23,5 @@ export let provider = Slate.create({
     getEnvironmentStatus,
     getRenderTags
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

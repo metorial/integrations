@@ -1,23 +1,23 @@
 import { createAxios } from 'slates';
 
 let etdApi = createAxios({
-  baseURL: 'https://api.bart.gov/api/etd.aspx',
+  baseURL: 'https://api.bart.gov/api/etd.aspx'
 });
 
 let stnApi = createAxios({
-  baseURL: 'https://api.bart.gov/api/stn.aspx',
+  baseURL: 'https://api.bart.gov/api/stn.aspx'
 });
 
 let routeApi = createAxios({
-  baseURL: 'https://api.bart.gov/api/route.aspx',
+  baseURL: 'https://api.bart.gov/api/route.aspx'
 });
 
 let schedApi = createAxios({
-  baseURL: 'https://api.bart.gov/api/sched.aspx',
+  baseURL: 'https://api.bart.gov/api/sched.aspx'
 });
 
 let bsaApi = createAxios({
-  baseURL: 'https://api.bart.gov/api/bsa.aspx',
+  baseURL: 'https://api.bart.gov/api/bsa.aspx'
 });
 
 export class BartClient {
@@ -30,7 +30,7 @@ export class BartClient {
   private baseParams() {
     return {
       key: this.token,
-      json: 'y',
+      json: 'y'
     };
   }
 
@@ -44,7 +44,7 @@ export class BartClient {
     let queryParams: Record<string, string> = {
       ...this.baseParams(),
       cmd: 'etd',
-      orig: params.station,
+      orig: params.station
     };
     if (params.platform) queryParams['plat'] = String(params.platform);
     if (params.direction) queryParams['dir'] = params.direction;
@@ -57,21 +57,21 @@ export class BartClient {
 
   async getStations() {
     let response = await stnApi.get('', {
-      params: { ...this.baseParams(), cmd: 'stns' },
+      params: { ...this.baseParams(), cmd: 'stns' }
     });
     return response.data?.root;
   }
 
   async getStationInfo(station: string) {
     let response = await stnApi.get('', {
-      params: { ...this.baseParams(), cmd: 'stninfo', orig: station },
+      params: { ...this.baseParams(), cmd: 'stninfo', orig: station }
     });
     return response.data?.root;
   }
 
   async getStationAccess(station: string) {
     let response = await stnApi.get('', {
-      params: { ...this.baseParams(), cmd: 'stnaccess', orig: station, l: '1' },
+      params: { ...this.baseParams(), cmd: 'stnaccess', orig: station, l: '1' }
     });
     return response.data?.root;
   }
@@ -81,7 +81,7 @@ export class BartClient {
   async getRoutes(date?: string) {
     let queryParams: Record<string, string> = {
       ...this.baseParams(),
-      cmd: 'routes',
+      cmd: 'routes'
     };
     if (date) queryParams['date'] = date;
 
@@ -93,7 +93,7 @@ export class BartClient {
     let queryParams: Record<string, string> = {
       ...this.baseParams(),
       cmd: 'routeinfo',
-      route,
+      route
     };
     if (date) queryParams['date'] = date;
 
@@ -105,7 +105,7 @@ export class BartClient {
 
   async getSchedules() {
     let response = await schedApi.get('', {
-      params: { ...this.baseParams(), cmd: 'scheds' },
+      params: { ...this.baseParams(), cmd: 'scheds' }
     });
     return response.data?.root;
   }
@@ -114,7 +114,7 @@ export class BartClient {
     let queryParams: Record<string, string> = {
       ...this.baseParams(),
       cmd: 'stnsched',
-      orig: station,
+      orig: station
     };
     if (date) queryParams['date'] = date;
 
@@ -122,15 +122,11 @@ export class BartClient {
     return response.data?.root;
   }
 
-  async getRouteSchedule(params: {
-    route: string;
-    date?: string;
-    time?: string;
-  }) {
+  async getRouteSchedule(params: { route: string; date?: string; time?: string }) {
     let queryParams: Record<string, string> = {
       ...this.baseParams(),
       cmd: 'routesched',
-      route: params.route,
+      route: params.route
     };
     if (params.date) queryParams['date'] = params.date;
     if (params.time) queryParams['time'] = params.time;
@@ -146,7 +142,7 @@ export class BartClient {
       ...this.baseParams(),
       cmd: 'fare',
       orig: params.origin,
-      dest: params.destination,
+      dest: params.destination
     };
     if (params.date) queryParams['date'] = params.date;
 
@@ -169,7 +165,7 @@ export class BartClient {
       ...this.baseParams(),
       cmd: params.type,
       orig: params.origin,
-      dest: params.destination,
+      dest: params.destination
     };
     if (params.time) queryParams['time'] = params.time;
     if (params.date) queryParams['date'] = params.date;
@@ -185,7 +181,7 @@ export class BartClient {
   async getAdvisories(station?: string) {
     let queryParams: Record<string, string> = {
       ...this.baseParams(),
-      cmd: 'bsa',
+      cmd: 'bsa'
     };
     if (station) queryParams['orig'] = station;
 
@@ -197,7 +193,7 @@ export class BartClient {
 
   async getElevatorStatus() {
     let response = await bsaApi.get('', {
-      params: { ...this.baseParams(), cmd: 'elev' },
+      params: { ...this.baseParams(), cmd: 'elev' }
     });
     return response.data?.root;
   }
@@ -206,7 +202,7 @@ export class BartClient {
 
   async getTrainCount() {
     let response = await bsaApi.get('', {
-      params: { ...this.baseParams(), cmd: 'count' },
+      params: { ...this.baseParams(), cmd: 'count' }
     });
     return response.data?.root;
   }

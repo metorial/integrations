@@ -3,45 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newImagesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Image Uploaded',
-    key: 'new_image_in_album',
-    description: 'Triggers when a new image or video is uploaded to any album on the authenticated SmugMug account. Polls the user\'s recent images and detects new uploads by tracking known image keys.',
-  }
-)
-  .input(z.object({
-    imageKey: z.string().describe('Image key'),
-    title: z.string().optional().describe('Image title'),
-    caption: z.string().optional().describe('Image caption'),
-    fileName: z.string().optional().describe('Original filename'),
-    webUri: z.string().optional().describe('Web URL'),
-    dateUploaded: z.string().optional().describe('Upload date'),
-    keywords: z.string().optional().describe('Image keywords'),
-    albumKey: z.string().optional().describe('Album key this image belongs to'),
-  }))
-  .output(z.object({
-    imageKey: z.string().describe('Image key'),
-    title: z.string().optional().describe('Image title'),
-    caption: z.string().optional().describe('Image caption'),
-    fileName: z.string().optional().describe('Original filename'),
-    webUri: z.string().optional().describe('Web URL'),
-    dateUploaded: z.string().optional().describe('Upload date'),
-    keywords: z.string().optional().describe('Image keywords'),
-    albumKey: z.string().optional().describe('Album key'),
-  }))
+export let newImagesTrigger = SlateTrigger.create(spec, {
+  name: 'New Image Uploaded',
+  key: 'new_image_in_album',
+  description:
+    "Triggers when a new image or video is uploaded to any album on the authenticated SmugMug account. Polls the user's recent images and detects new uploads by tracking known image keys."
+})
+  .input(
+    z.object({
+      imageKey: z.string().describe('Image key'),
+      title: z.string().optional().describe('Image title'),
+      caption: z.string().optional().describe('Image caption'),
+      fileName: z.string().optional().describe('Original filename'),
+      webUri: z.string().optional().describe('Web URL'),
+      dateUploaded: z.string().optional().describe('Upload date'),
+      keywords: z.string().optional().describe('Image keywords'),
+      albumKey: z.string().optional().describe('Album key this image belongs to')
+    })
+  )
+  .output(
+    z.object({
+      imageKey: z.string().describe('Image key'),
+      title: z.string().optional().describe('Image title'),
+      caption: z.string().optional().describe('Image caption'),
+      fileName: z.string().optional().describe('Original filename'),
+      webUri: z.string().optional().describe('Web URL'),
+      dateUploaded: z.string().optional().describe('Upload date'),
+      keywords: z.string().optional().describe('Image keywords'),
+      albumKey: z.string().optional().describe('Album key')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         tokenSecret: ctx.auth.tokenSecret,
         consumerKey: ctx.auth.consumerKey,
-        consumerSecret: ctx.auth.consumerSecret,
+        consumerSecret: ctx.auth.consumerSecret
       });
 
       let knownImageKeys = ((ctx.input.state as any)?.knownImageKeys || []) as string[];
@@ -71,12 +73,12 @@ export let newImagesTrigger = SlateTrigger.create(
         return {
           inputs: [],
           updatedState: {
-            knownImageKeys: currentImageKeys,
-          },
+            knownImageKeys: currentImageKeys
+          }
         };
       }
 
-      let inputs = newImages.map((img) => ({
+      let inputs = newImages.map(img => ({
         imageKey: img.ImageKey || '',
         title: img.Title || undefined,
         caption: img.Caption || undefined,
@@ -84,18 +86,18 @@ export let newImagesTrigger = SlateTrigger.create(
         webUri: img.WebUri || undefined,
         dateUploaded: img.Date || undefined,
         keywords: img.Keywords || undefined,
-        albumKey: img.AlbumKey || undefined,
+        albumKey: img.AlbumKey || undefined
       }));
 
       return {
         inputs,
         updatedState: {
-          knownImageKeys: currentImageKeys,
-        },
+          knownImageKeys: currentImageKeys
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'image.created',
         id: `image_${ctx.input.imageKey}_${ctx.input.dateUploaded || Date.now()}`,
@@ -107,8 +109,9 @@ export let newImagesTrigger = SlateTrigger.create(
           webUri: ctx.input.webUri,
           dateUploaded: ctx.input.dateUploaded,
           keywords: ctx.input.keywords,
-          albumKey: ctx.input.albumKey,
-        },
+          albumKey: ctx.input.albumKey
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -3,30 +3,36 @@ import { spec } from '../spec';
 import { createClientFromContext } from '../lib/helpers';
 import { z } from 'zod';
 
-export let manageGroupProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group Profile',
-    key: 'manage_group_profile',
-    description: `Create or update a group profile in Mixpanel. Groups represent entity-level analytics such as companies or accounts.
+export let manageGroupProfile = SlateTool.create(spec, {
+  name: 'Manage Group Profile',
+  key: 'manage_group_profile',
+  description: `Create or update a group profile in Mixpanel. Groups represent entity-level analytics such as companies or accounts.
 Supports setting properties on a group or deleting the group profile entirely.
 Requires Group Analytics to be enabled on the Mixpanel project.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    groupKey: z.string().describe('The group key (e.g., "company" or "account")'),
-    groupId: z.string().describe('The group identifier value'),
-    operation: z.enum(['set', 'deleteProfile']).describe('Group profile operation to perform'),
-    properties: z.record(z.string(), z.unknown()).optional().describe('Properties to set on the group (for set operation)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      groupKey: z.string().describe('The group key (e.g., "company" or "account")'),
+      groupId: z.string().describe('The group identifier value'),
+      operation: z
+        .enum(['set', 'deleteProfile'])
+        .describe('Group profile operation to perform'),
+      properties: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Properties to set on the group (for set operation)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
     let { groupKey, groupId, operation, properties } = ctx.input;
     let result: { success: boolean };
@@ -46,6 +52,7 @@ Requires Group Analytics to be enabled on the Mixpanel project.`,
       output: { success: result.success },
       message: result.success
         ? `Successfully performed **${operation}** on group \`${groupKey}:${groupId}\`.`
-        : `Failed to perform **${operation}** on group \`${groupKey}:${groupId}\`.`,
+        : `Failed to perform **${operation}** on group \`${groupKey}:${groupId}\`.`
     };
-  }).build();
+  })
+  .build();

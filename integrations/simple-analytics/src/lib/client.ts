@@ -10,34 +10,38 @@ export let buildStatsClient = (config: ClientConfig) => {
     baseURL: 'https://simpleanalytics.com',
     headers: {
       'Api-Key': config.token,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'
+    }
   });
 };
 
 export let buildAdminClient = (config: ClientConfig) => {
   if (!config.userId) {
-    throw new Error('User-Id is required for the Admin API. Please provide your Simple Analytics User ID in the authentication settings.');
+    throw new Error(
+      'User-Id is required for the Admin API. Please provide your Simple Analytics User ID in the authentication settings.'
+    );
   }
   return createAxios({
     baseURL: 'https://simpleanalytics.com',
     headers: {
       'Api-Key': config.token,
       'User-Id': config.userId,
-      'Content-Type': 'application/json',
-    },
+      'Content-Type': 'application/json'
+    }
   });
 };
 
 export let buildExportClient = (config: ClientConfig) => {
   if (!config.userId) {
-    throw new Error('User-Id is required for the Export API. Please provide your Simple Analytics User ID in the authentication settings.');
+    throw new Error(
+      'User-Id is required for the Export API. Please provide your Simple Analytics User ID in the authentication settings.'
+    );
   }
   return createAxios({
     baseURL: 'https://simpleanalytics.com',
     headers: {
       'Api-Key': config.token,
-      'User-Id': config.userId,
-    },
+      'User-Id': config.userId
+    }
   });
 };

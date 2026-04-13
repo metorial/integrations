@@ -19,12 +19,7 @@ import {
   managePurchases,
   listEmailTemplates
 } from './tools';
-import {
-  subscriberEvent,
-  tagEvent,
-  purchaseEvent,
-  formSubscribeEvent
-} from './triggers';
+import { subscriberEvent, tagEvent, purchaseEvent, formSubscribeEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,10 +42,5 @@ export let provider = Slate.create({
     managePurchases,
     listEmailTemplates
   ],
-  triggers: [
-    subscriberEvent,
-    tagEvent,
-    purchaseEvent,
-    formSubscribeEvent
-  ]
+  triggers: [subscriberEvent, tagEvent, purchaseEvent, formSubscribeEvent]
 });

@@ -52,8 +52,8 @@ export class Client {
       baseURL: baseUrl,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -147,43 +147,78 @@ export class Client {
     return response.data;
   }
 
-  async getEntry(pluralApiId: string, documentId: string, params: Pick<QueryParams, 'fields' | 'populate' | 'status' | 'locale'> = {}): Promise<SingleResponse> {
+  async getEntry(
+    pluralApiId: string,
+    documentId: string,
+    params: Pick<QueryParams, 'fields' | 'populate' | 'status' | 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
-    let response = await this.axios.get(`/api/${pluralApiId}/${documentId}`, { params: query });
+    let response = await this.axios.get(`/api/${pluralApiId}/${documentId}`, {
+      params: query
+    });
     return response.data;
   }
 
-  async createEntry(pluralApiId: string, data: Record<string, any>, params: Pick<QueryParams, 'status' | 'locale'> = {}): Promise<SingleResponse> {
+  async createEntry(
+    pluralApiId: string,
+    data: Record<string, any>,
+    params: Pick<QueryParams, 'status' | 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
     let response = await this.axios.post(`/api/${pluralApiId}`, { data }, { params: query });
     return response.data;
   }
 
-  async updateEntry(pluralApiId: string, documentId: string, data: Record<string, any>, params: Pick<QueryParams, 'status' | 'locale'> = {}): Promise<SingleResponse> {
+  async updateEntry(
+    pluralApiId: string,
+    documentId: string,
+    data: Record<string, any>,
+    params: Pick<QueryParams, 'status' | 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
-    let response = await this.axios.put(`/api/${pluralApiId}/${documentId}`, { data }, { params: query });
+    let response = await this.axios.put(
+      `/api/${pluralApiId}/${documentId}`,
+      { data },
+      { params: query }
+    );
     return response.data;
   }
 
-  async deleteEntry(pluralApiId: string, documentId: string, params: Pick<QueryParams, 'locale'> = {}): Promise<SingleResponse> {
+  async deleteEntry(
+    pluralApiId: string,
+    documentId: string,
+    params: Pick<QueryParams, 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
-    let response = await this.axios.delete(`/api/${pluralApiId}/${documentId}`, { params: query });
+    let response = await this.axios.delete(`/api/${pluralApiId}/${documentId}`, {
+      params: query
+    });
     return response.data;
   }
 
-  async getSingleType(singularApiId: string, params: Pick<QueryParams, 'fields' | 'populate' | 'status' | 'locale'> = {}): Promise<SingleResponse> {
+  async getSingleType(
+    singularApiId: string,
+    params: Pick<QueryParams, 'fields' | 'populate' | 'status' | 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
     let response = await this.axios.get(`/api/${singularApiId}`, { params: query });
     return response.data;
   }
 
-  async updateSingleType(singularApiId: string, data: Record<string, any>, params: Pick<QueryParams, 'status' | 'locale'> = {}): Promise<SingleResponse> {
+  async updateSingleType(
+    singularApiId: string,
+    data: Record<string, any>,
+    params: Pick<QueryParams, 'status' | 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
     let response = await this.axios.put(`/api/${singularApiId}`, { data }, { params: query });
     return response.data;
   }
 
-  async deleteSingleType(singularApiId: string, params: Pick<QueryParams, 'locale'> = {}): Promise<SingleResponse> {
+  async deleteSingleType(
+    singularApiId: string,
+    params: Pick<QueryParams, 'locale'> = {}
+  ): Promise<SingleResponse> {
     let query = this.buildQueryString(params);
     let response = await this.axios.delete(`/api/${singularApiId}`, { params: query });
     return response.data;
@@ -205,7 +240,11 @@ export class Client {
     return response.data;
   }
 
-  async uploadFileFromUrl(fileUrl: string, fileName: string, fileInfo?: { name?: string; alternativeText?: string; caption?: string }): Promise<any[]> {
+  async uploadFileFromUrl(
+    fileUrl: string,
+    fileName: string,
+    fileInfo?: { name?: string; alternativeText?: string; caption?: string }
+  ): Promise<any[]> {
     let fileResponse = await this.axios.get(fileUrl, { responseType: 'arraybuffer' });
     let fileData = fileResponse.data;
 
@@ -239,14 +278,17 @@ export class Client {
 
     let response = await this.axios.post('/api/upload', body, {
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
 
     return response.data;
   }
 
-  async updateFileInfo(fileId: number, fileInfo: { name?: string; alternativeText?: string; caption?: string }): Promise<any> {
+  async updateFileInfo(
+    fileId: number,
+    fileInfo: { name?: string; alternativeText?: string; caption?: string }
+  ): Promise<any> {
     let boundary = '----SlatesBoundary' + Date.now().toString(36);
     let parts: string[] = [];
 
@@ -261,8 +303,8 @@ export class Client {
 
     let response = await this.axios.post(`/api/upload?id=${fileId}`, body, {
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
 
     return response.data;

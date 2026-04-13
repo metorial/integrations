@@ -13,41 +13,63 @@ let workspaceOutputSchema = z.object({
   tagManagerUrl: z.string().optional().describe('URL to the GTM UI')
 });
 
-export let manageWorkspace = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Workspace',
-    key: 'manage_workspace',
-    description: `Create, list, update, delete, or sync GTM workspaces. Workspaces allow concurrent modifications to a container's configuration. Use "list" to see all workspaces, "sync" to pull the latest container version into a workspace, or "status" to check for pending changes.`,
-    instructions: [
-      'Workspaces are required for working with tags, triggers, variables, and folders.',
-      'Use "sync" to update a workspace with the latest published container version.',
-      'Use "status" to see what changes exist in the workspace.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let manageWorkspace = SlateTool.create(spec, {
+  name: 'Manage Workspace',
+  key: 'manage_workspace',
+  description: `Create, list, update, delete, or sync GTM workspaces. Workspaces allow concurrent modifications to a container's configuration. Use "list" to see all workspaces, "sync" to pull the latest container version into a workspace, or "status" to check for pending changes.`,
+  instructions: [
+    'Workspaces are required for working with tags, triggers, variables, and folders.',
+    'Use "sync" to update a workspace with the latest published container version.',
+    'Use "status" to see what changes exist in the workspace.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'list', 'get', 'update', 'delete', 'sync', 'status']).describe('Operation to perform'),
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    workspaceId: z.string().optional().describe('Workspace ID (required for get, update, delete, sync, status)'),
-    name: z.string().optional().describe('Workspace name (required for create, optional for update)'),
-    description: z.string().optional().describe('Workspace description')
-  }))
-  .output(z.object({
-    workspace: workspaceOutputSchema.optional().describe('Workspace details (for single-workspace operations)'),
-    workspaces: z.array(workspaceOutputSchema).optional().describe('List of workspaces (for list action)'),
-    changes: z.array(z.object({
-      changeStatus: z.string().optional().describe('Status of the change'),
-      entityType: z.string().optional().describe('Type of entity that changed')
-    })).optional().describe('Workspace changes (for status action)'),
-    hasMergeConflicts: z.boolean().optional().describe('Whether merge conflicts exist (for sync/status actions)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'list', 'get', 'update', 'delete', 'sync', 'status'])
+        .describe('Operation to perform'),
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      workspaceId: z
+        .string()
+        .optional()
+        .describe('Workspace ID (required for get, update, delete, sync, status)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Workspace name (required for create, optional for update)'),
+      description: z.string().optional().describe('Workspace description')
+    })
+  )
+  .output(
+    z.object({
+      workspace: workspaceOutputSchema
+        .optional()
+        .describe('Workspace details (for single-workspace operations)'),
+      workspaces: z
+        .array(workspaceOutputSchema)
+        .optional()
+        .describe('List of workspaces (for list action)'),
+      changes: z
+        .array(
+          z.object({
+            changeStatus: z.string().optional().describe('Status of the change'),
+            entityType: z.string().optional().describe('Type of entity that changed')
+          })
+        )
+        .optional()
+        .describe('Workspace changes (for status action)'),
+      hasMergeConflicts: z
+        .boolean()
+        .optional()
+        .describe('Whether merge conflicts exist (for sync/status actions)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GtmClient(ctx.auth.token);
     let { action, accountId, containerId, workspaceId } = ctx.input;
 
@@ -72,7 +94,10 @@ export let manageWorkspace = SlateTool.create(
       };
     }
 
-    if (!workspaceId) throw new Error('workspaceId is required for get, update, delete, sync, and status actions');
+    if (!workspaceId)
+      throw new Error(
+        'workspaceId is required for get, update, delete, sync, and status actions'
+      );
 
     if (action === 'get') {
       let workspace = await client.getWorkspace(accountId, containerId, workspaceId);
@@ -86,7 +111,12 @@ export let manageWorkspace = SlateTool.create(
       let updateData: Record<string, unknown> = {};
       if (ctx.input.name !== undefined) updateData.name = ctx.input.name;
       if (ctx.input.description !== undefined) updateData.description = ctx.input.description;
-      let workspace = await client.updateWorkspace(accountId, containerId, workspaceId, updateData);
+      let workspace = await client.updateWorkspace(
+        accountId,
+        containerId,
+        workspaceId,
+        updateData
+      );
       return {
         output: { workspace } as any,
         message: `Updated workspace **"${workspace.name}"**`
@@ -114,9 +144,17 @@ export let manageWorkspace = SlateTool.create(
 
     // status
     let statusResult = await client.getWorkspaceStatus(accountId, containerId, workspaceId);
-    let changes = (statusResult.workspaceChange || []).map((entity) => ({
+    let changes = (statusResult.workspaceChange || []).map(entity => ({
       changeStatus: entity.changeStatus,
-      entityType: entity.tag ? 'tag' : entity.trigger ? 'trigger' : entity.variable ? 'variable' : entity.folder ? 'folder' : 'other'
+      entityType: entity.tag
+        ? 'tag'
+        : entity.trigger
+          ? 'trigger'
+          : entity.variable
+            ? 'variable'
+            : entity.folder
+              ? 'folder'
+              : 'other'
     }));
     let hasMergeConflicts = (statusResult.mergeConflict || []).length > 0;
 

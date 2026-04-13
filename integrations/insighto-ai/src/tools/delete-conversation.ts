@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteConversation = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Conversation',
-    key: 'delete_conversation',
-    description: `Delete a conversation by its ID. Permanently removes the conversation and its messages.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteConversation = SlateTool.create(spec, {
+  name: 'Delete Conversation',
+  key: 'delete_conversation',
+  description: `Delete a conversation by its ID. Permanently removes the conversation and its messages.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    conversationId: z.string().describe('ID of the conversation to delete'),
-  }))
-  .output(z.object({
-    conversationId: z.string(),
-    deleted: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      conversationId: z.string().describe('ID of the conversation to delete')
+    })
+  )
+  .output(
+    z.object({
+      conversationId: z.string(),
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.deleteConversation(ctx.input.conversationId);
@@ -29,9 +30,9 @@ export let deleteConversation = SlateTool.create(
     return {
       output: {
         conversationId: ctx.input.conversationId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted conversation \`${ctx.input.conversationId}\`.`,
+      message: `Deleted conversation \`${ctx.input.conversationId}\`.`
     };
   })
   .build();

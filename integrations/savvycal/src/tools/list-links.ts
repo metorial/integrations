@@ -6,44 +6,59 @@ import { z } from 'zod';
 let linkSchema = z.object({
   linkId: z.string().describe('Unique link identifier'),
   name: z.string().describe('Public link name'),
-  privateName: z.string().nullable().optional().describe('Private name visible only to the owner'),
+  privateName: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Private name visible only to the owner'),
   slug: z.string().describe('URL slug'),
   description: z.string().nullable().optional().describe('Link description'),
   state: z.string().describe('Link state (active, pending, disabled)'),
   defaultDuration: z.number().describe('Default duration in minutes'),
   durations: z.array(z.number()).describe('Available durations in minutes'),
   increment: z.number().describe('Time slot increment in minutes'),
-  fields: z.array(z.object({
-    fieldId: z.string(),
-    label: z.string(),
-    type: z.string(),
-    isRequired: z.boolean()
-  })).optional().describe('Custom fields configured on the link'),
+  fields: z
+    .array(
+      z.object({
+        fieldId: z.string(),
+        label: z.string(),
+        type: z.string(),
+        isRequired: z.boolean()
+      })
+    )
+    .optional()
+    .describe('Custom fields configured on the link'),
   scopeId: z.string().nullable().optional().describe('Associated scope/team ID'),
   scopeName: z.string().nullable().optional().describe('Associated scope/team name')
 });
 
-export let listLinksTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Scheduling Links',
-    key: 'list_links',
-    description: `List all scheduling links in the SavvyCal account. Returns link configuration including name, slug, durations, custom fields, and state. Supports cursor-based pagination.`,
-    tags: {
-      readOnly: true
-    }
+export let listLinksTool = SlateTool.create(spec, {
+  name: 'List Scheduling Links',
+  key: 'list_links',
+  description: `List all scheduling links in the SavvyCal account. Returns link configuration including name, slug, durations, custom fields, and state. Supports cursor-based pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of links to return (1-100, default 20)'),
-    cursor: z.string().optional().describe('Pagination cursor for fetching the next page')
-  }))
-  .output(z.object({
-    links: z.array(linkSchema),
-    nextCursor: z.string().nullable().describe('Cursor for the next page'),
-    previousCursor: z.string().nullable().describe('Cursor for the previous page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of links to return (1-100, default 20)'),
+      cursor: z.string().optional().describe('Pagination cursor for fetching the next page')
+    })
+  )
+  .output(
+    z.object({
+      links: z.array(linkSchema),
+      nextCursor: z.string().nullable().describe('Cursor for the next page'),
+      previousCursor: z.string().nullable().describe('Cursor for the previous page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listLinks({

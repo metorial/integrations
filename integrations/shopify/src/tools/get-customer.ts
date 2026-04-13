@@ -3,55 +3,65 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Get Customer',
-    key: 'get_customer',
-    description: `Retrieve full details of a single customer including addresses, order history summary, and marketing consent status.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    customerId: z.string().describe('Shopify customer ID'),
-    includeOrders: z.boolean().optional().describe('Also fetch recent orders for this customer')
-  }))
-  .output(z.object({
-    customerId: z.string(),
-    email: z.string().nullable(),
-    firstName: z.string().nullable(),
-    lastName: z.string().nullable(),
-    phone: z.string().nullable(),
-    ordersCount: z.number(),
-    totalSpent: z.string(),
-    state: z.string(),
-    tags: z.string(),
-    note: z.string().nullable(),
-    verifiedEmail: z.boolean(),
-    taxExempt: z.boolean(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    addresses: z.array(z.object({
-      addressId: z.string(),
-      address1: z.string().nullable(),
-      address2: z.string().nullable(),
-      city: z.string().nullable(),
-      province: z.string().nullable(),
-      country: z.string().nullable(),
-      zip: z.string().nullable(),
+export let getCustomer = SlateTool.create(spec, {
+  name: 'Get Customer',
+  key: 'get_customer',
+  description: `Retrieve full details of a single customer including addresses, order history summary, and marketing consent status.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      customerId: z.string().describe('Shopify customer ID'),
+      includeOrders: z
+        .boolean()
+        .optional()
+        .describe('Also fetch recent orders for this customer')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string(),
+      email: z.string().nullable(),
+      firstName: z.string().nullable(),
+      lastName: z.string().nullable(),
       phone: z.string().nullable(),
-      isDefault: z.boolean()
-    })),
-    recentOrders: z.array(z.object({
-      orderId: z.string(),
-      name: z.string(),
-      totalPrice: z.string(),
-      financialStatus: z.string().nullable(),
-      fulfillmentStatus: z.string().nullable(),
-      createdAt: z.string()
-    })).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+      ordersCount: z.number(),
+      totalSpent: z.string(),
+      state: z.string(),
+      tags: z.string(),
+      note: z.string().nullable(),
+      verifiedEmail: z.boolean(),
+      taxExempt: z.boolean(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+      addresses: z.array(
+        z.object({
+          addressId: z.string(),
+          address1: z.string().nullable(),
+          address2: z.string().nullable(),
+          city: z.string().nullable(),
+          province: z.string().nullable(),
+          country: z.string().nullable(),
+          zip: z.string().nullable(),
+          phone: z.string().nullable(),
+          isDefault: z.boolean()
+        })
+      ),
+      recentOrders: z
+        .array(
+          z.object({
+            orderId: z.string(),
+            name: z.string(),
+            totalPrice: z.string(),
+            financialStatus: z.string().nullable(),
+            fulfillmentStatus: z.string().nullable(),
+            createdAt: z.string()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -109,4 +119,5 @@ export let getCustomer = SlateTool.create(
       output: result,
       message: `Retrieved customer **${c.first_name || ''} ${c.last_name || ''}** (${c.email || 'no email'}) — ${c.orders_count} orders, ${c.total_spent} spent.`
     };
-  }).build();
+  })
+  .build();

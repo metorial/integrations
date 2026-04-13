@@ -5,51 +5,53 @@ import { z } from 'zod';
 
 let ACTIVITY_EVENTS = ['activity.created', 'activity.updated', 'activity.deleted'] as const;
 
-export let activityEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Events',
-    key: 'activity_events',
-    description: 'Triggers when an activity is created, updated, or deleted.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type'),
-    activityId: z.string().describe('Activity ID'),
-    rawPayload: z.any().optional().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    activityId: z.string().describe('Activity ID'),
-    type: z.string().optional().describe('Activity type (call, email, meeting, etc.)'),
-    notes: z.string().optional().describe('Activity notes'),
-    date: z.string().optional().describe('Activity date'),
-    createdAt: z.string().optional().describe('Created date'),
-    updatedAt: z.string().optional().describe('Updated date'),
-  }))
+export let activityEvents = SlateTrigger.create(spec, {
+  name: 'Activity Events',
+  key: 'activity_events',
+  description: 'Triggers when an activity is created, updated, or deleted.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type'),
+      activityId: z.string().describe('Activity ID'),
+      rawPayload: z.any().optional().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.string().describe('Activity ID'),
+      type: z.string().optional().describe('Activity type (call, email, meeting, etc.)'),
+      notes: z.string().optional().describe('Activity notes'),
+      date: z.string().optional().describe('Activity date'),
+      createdAt: z.string().optional().describe('Created date'),
+      updatedAt: z.string().optional().describe('Updated date')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let webhookIds: string[] = [];
       for (let event of ACTIVITY_EVENTS) {
         let result = await client.createWebhook({
           url: ctx.input.webhookBaseUrl,
-          event,
+          event
         });
-        let webhookId = result?.id?.toString() ?? result?._links?.self?.href?.split('/').pop() ?? '';
+        let webhookId =
+          result?.id?.toString() ?? result?._links?.self?.href?.split('/').pop() ?? '';
         webhookIds.push(webhookId);
       }
 
       return {
-        registrationDetails: { webhookIds },
+        registrationDetails: { webhookIds }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details?.webhookIds ?? [])) {
+      for (let webhookId of details?.webhookIds ?? []) {
         try {
           await client.deleteWebhook(webhookId);
         } catch {
@@ -58,22 +60,24 @@ export let activityEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any = await ctx.request.json();
 
       let activityId = data.activity_id?.toString() ?? '';
       let eventType = data.event ?? '';
 
       return {
-        inputs: [{
-          eventType,
-          activityId,
-          rawPayload: data,
-        }],
+        inputs: [
+          {
+            eventType,
+            activityId,
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let activity: any = {};
@@ -94,8 +98,9 @@ export let activityEvents = SlateTrigger.create(
           notes: activity.notes,
           date: activity.date,
           createdAt: activity.created_at,
-          updatedAt: activity.updated_at,
-        },
+          updatedAt: activity.updated_at
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

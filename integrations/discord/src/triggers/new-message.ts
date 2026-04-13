@@ -3,53 +3,69 @@ import { DiscordClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newMessage = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Message',
-    key: 'new_message',
-    description: 'Triggers when a new message is posted in a Discord channel. Polls channel history for new messages.',
-  }
-)
-  .input(z.object({
-    messageId: z.string().describe('Message ID'),
-    channelId: z.string().describe('Channel ID where the message was posted'),
-    guildId: z.string().optional().describe('Guild ID where the message was posted'),
-    content: z.string().describe('Message text content'),
-    authorId: z.string().optional().describe('User ID of the message author'),
-    authorUsername: z.string().optional().describe('Username of the message author'),
-    authorBot: z.boolean().optional().describe('Whether the author is a bot'),
-    timestamp: z.string().describe('When the message was created'),
-    editedTimestamp: z.string().nullable().optional().describe('When the message was last edited'),
-    pinned: z.boolean().optional().describe('Whether the message is pinned'),
-    mentionEveryone: z.boolean().optional().describe('Whether the message mentions everyone'),
-    attachmentCount: z.number().optional().describe('Number of attachments on the message'),
-    embedCount: z.number().optional().describe('Number of embeds on the message'),
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Message ID'),
-    channelId: z.string().describe('Channel ID'),
-    guildId: z.string().optional().describe('Guild ID'),
-    content: z.string().describe('Message text content'),
-    authorId: z.string().optional().describe('User ID of the message author'),
-    authorUsername: z.string().optional().describe('Username of the message author'),
-    authorBot: z.boolean().optional().describe('Whether the author is a bot'),
-    timestamp: z.string().describe('When the message was created'),
-    editedTimestamp: z.string().nullable().optional().describe('When the message was last edited'),
-    pinned: z.boolean().optional().describe('Whether the message is pinned'),
-    mentionEveryone: z.boolean().optional().describe('Whether the message mentions everyone'),
-    attachmentCount: z.number().optional().describe('Number of attachments'),
-    embedCount: z.number().optional().describe('Number of embeds'),
-  }))
+export let newMessage = SlateTrigger.create(spec, {
+  name: 'New Message',
+  key: 'new_message',
+  description:
+    'Triggers when a new message is posted in a Discord channel. Polls channel history for new messages.'
+})
+  .input(
+    z.object({
+      messageId: z.string().describe('Message ID'),
+      channelId: z.string().describe('Channel ID where the message was posted'),
+      guildId: z.string().optional().describe('Guild ID where the message was posted'),
+      content: z.string().describe('Message text content'),
+      authorId: z.string().optional().describe('User ID of the message author'),
+      authorUsername: z.string().optional().describe('Username of the message author'),
+      authorBot: z.boolean().optional().describe('Whether the author is a bot'),
+      timestamp: z.string().describe('When the message was created'),
+      editedTimestamp: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('When the message was last edited'),
+      pinned: z.boolean().optional().describe('Whether the message is pinned'),
+      mentionEveryone: z
+        .boolean()
+        .optional()
+        .describe('Whether the message mentions everyone'),
+      attachmentCount: z.number().optional().describe('Number of attachments on the message'),
+      embedCount: z.number().optional().describe('Number of embeds on the message')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Message ID'),
+      channelId: z.string().describe('Channel ID'),
+      guildId: z.string().optional().describe('Guild ID'),
+      content: z.string().describe('Message text content'),
+      authorId: z.string().optional().describe('User ID of the message author'),
+      authorUsername: z.string().optional().describe('Username of the message author'),
+      authorBot: z.boolean().optional().describe('Whether the author is a bot'),
+      timestamp: z.string().describe('When the message was created'),
+      editedTimestamp: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('When the message was last edited'),
+      pinned: z.boolean().optional().describe('Whether the message is pinned'),
+      mentionEveryone: z
+        .boolean()
+        .optional()
+        .describe('Whether the message mentions everyone'),
+      attachmentCount: z.number().optional().describe('Number of attachments'),
+      embedCount: z.number().optional().describe('Number of embeds')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DiscordClient({
         token: ctx.auth.token,
-        tokenType: ctx.auth.tokenType,
+        tokenType: ctx.auth.tokenType
       });
 
       let state = ctx.state as { lastMessageIds?: Record<string, string> } | null;
@@ -120,7 +136,7 @@ export let newMessage = SlateTrigger.create(
                 pinned: msg.pinned || false,
                 mentionEveryone: msg.mention_everyone || false,
                 attachmentCount: (msg.attachments || []).length,
-                embedCount: (msg.embeds || []).length,
+                embedCount: (msg.embeds || []).length
               });
             }
 
@@ -137,12 +153,12 @@ export let newMessage = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          lastMessageIds: updatedLastMessageIds,
-        },
+          lastMessageIds: updatedLastMessageIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'message.new',
         id: `${ctx.input.channelId}-${ctx.input.messageId}`,
@@ -159,9 +175,9 @@ export let newMessage = SlateTrigger.create(
           pinned: ctx.input.pinned,
           mentionEveryone: ctx.input.mentionEveryone,
           attachmentCount: ctx.input.attachmentCount,
-          embedCount: ctx.input.embedCount,
-        },
+          embedCount: ctx.input.embedCount
+        }
       };
-    },
+    }
   })
   .build();

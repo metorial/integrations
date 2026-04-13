@@ -7,7 +7,7 @@ export class Client {
 
   constructor(private config: { token?: string }) {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.token) {
@@ -16,7 +16,7 @@ export class Client {
 
     this.http = createAxios({
       baseURL: BASE_URL,
-      headers,
+      headers
     });
   }
 
@@ -31,7 +31,7 @@ export class Client {
     let response = await this.http.post('/measurements', body);
     return {
       measurementId: response.data.id,
-      probesCount: response.data.probesCount,
+      probesCount: response.data.probesCount
     };
   }
 
@@ -64,14 +64,18 @@ export class Client {
     }
   }
 
-  async pollMeasurement(measurementId: string, maxAttempts: number = 20, intervalMs: number = 500): Promise<Record<string, unknown>> {
+  async pollMeasurement(
+    measurementId: string,
+    maxAttempts: number = 20,
+    intervalMs: number = 500
+  ): Promise<Record<string, unknown>> {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       let result = await this.getMeasurement(measurementId);
       if (result.status !== 'in-progress') {
         return result;
       }
       if (attempt < maxAttempts - 1) {
-        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
       }
     }
     return this.getMeasurement(measurementId);

@@ -73,7 +73,13 @@ export interface HookdeckConnection {
 
 export type HookdeckRule =
   | { type: 'retry'; strategy: string; count: number; interval: number }
-  | { type: 'filter'; headers?: Record<string, unknown>; body?: Record<string, unknown>; query?: Record<string, unknown>; path?: Record<string, unknown> }
+  | {
+      type: 'filter';
+      headers?: Record<string, unknown>;
+      body?: Record<string, unknown>;
+      query?: Record<string, unknown>;
+      path?: Record<string, unknown>;
+    }
   | { type: 'transform'; transformation_id: string }
   | { type: 'delay'; delay: number }
   | { type: 'deduplicate'; period?: string; property?: string };

@@ -16,42 +16,51 @@ let saleSchema = z.object({
   creationLikesCount: z.number().nullable().describe('Likes at time of sale'),
   discountPercentage: z.number().nullable().describe('Discount percentage applied'),
   discountStartAt: z.string().nullable().describe('Discount start date'),
-  discountEndAt: z.string().nullable().describe('Discount end date'),
+  discountEndAt: z.string().nullable().describe('Discount end date')
 });
 
-export let getMySales = SlateTool.create(
-  spec,
-  {
-    name: 'Get My Sales',
-    key: 'get_my_sales',
-    description: `Retrieve your sales history on Cults3D. Returns individual sale records with income, buyer info, creation snapshots (views/likes at sale time), and discount details. Supports pagination and currency selection.`,
-    instructions: [
-      'Currency must be a valid ISO currency code supported by Cults (e.g. USD, EUR)',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getMySales = SlateTool.create(spec, {
+  name: 'Get My Sales',
+  key: 'get_my_sales',
+  description: `Retrieve your sales history on Cults3D. Returns individual sale records with income, buyer info, creation snapshots (views/likes at sale time), and discount details. Supports pagination and currency selection.`,
+  instructions: [
+    'Currency must be a valid ISO currency code supported by Cults (e.g. USD, EUR)'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of sales to return (default 20)'),
-    offset: z.number().min(0).optional().describe('Number of sales to skip for pagination'),
-    currency: z.enum(['USD', 'EUR']).optional().describe('Currency for income amounts (default USD)'),
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of sales'),
-    sales: z.array(saleSchema).describe('List of sale records'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of sales to return (default 20)'),
+      offset: z.number().min(0).optional().describe('Number of sales to skip for pagination'),
+      currency: z
+        .enum(['USD', 'EUR'])
+        .optional()
+        .describe('Currency for income amounts (default USD)')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of sales'),
+      sales: z.array(saleSchema).describe('List of sale records')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CultsClient({
       token: ctx.auth.token,
-      username: ctx.auth.username,
+      username: ctx.auth.username
     });
 
     let result = await client.getMySales({
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      currency: ctx.input.currency,
+      currency: ctx.input.currency
     });
 
     let sales = result.results.map((s: any) => ({
@@ -67,15 +76,15 @@ export let getMySales = SlateTool.create(
       creationLikesCount: s.creationLikesCount,
       discountPercentage: s.discount?.percentage ?? null,
       discountStartAt: s.discount?.startAt ?? null,
-      discountEndAt: s.discount?.endAt ?? null,
+      discountEndAt: s.discount?.endAt ?? null
     }));
 
     return {
       output: {
         total: result.total,
-        sales,
+        sales
       },
-      message: `Found **${result.total}** total sales. Returned ${sales.length} sale records.`,
+      message: `Found **${result.total}** total sales. Returned ${sales.length} sale records.`
     };
   })
   .build();

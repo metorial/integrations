@@ -3,45 +3,54 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createCustomer = SlateTool.create(
-  spec,
-  {
-    name: 'Create Customer',
-    key: 'create_customer',
-    description: `Create a new customer record in the Shopify store. Supports email, phone, address, tags, notes, and marketing consent.`,
-    tags: { destructive: false }
-  }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Customer email address'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    phone: z.string().optional().describe('Phone number in E.164 format'),
-    tags: z.string().optional().describe('Comma-separated tags'),
-    note: z.string().optional().describe('Internal note about the customer'),
-    taxExempt: z.boolean().optional().describe('Whether the customer is tax exempt'),
-    sendEmailInvite: z.boolean().optional().describe('Send an email invite to the customer to create an account'),
-    addresses: z.array(z.object({
-      address1: z.string().optional(),
-      address2: z.string().optional(),
-      city: z.string().optional(),
-      province: z.string().optional(),
-      country: z.string().optional(),
-      zip: z.string().optional(),
-      phone: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional()
-    })).optional().describe('Customer addresses')
-  }))
-  .output(z.object({
-    customerId: z.string(),
-    email: z.string().nullable(),
-    firstName: z.string().nullable(),
-    lastName: z.string().nullable(),
-    state: z.string(),
-    createdAt: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+export let createCustomer = SlateTool.create(spec, {
+  name: 'Create Customer',
+  key: 'create_customer',
+  description: `Create a new customer record in the Shopify store. Supports email, phone, address, tags, notes, and marketing consent.`,
+  tags: { destructive: false }
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Customer email address'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      phone: z.string().optional().describe('Phone number in E.164 format'),
+      tags: z.string().optional().describe('Comma-separated tags'),
+      note: z.string().optional().describe('Internal note about the customer'),
+      taxExempt: z.boolean().optional().describe('Whether the customer is tax exempt'),
+      sendEmailInvite: z
+        .boolean()
+        .optional()
+        .describe('Send an email invite to the customer to create an account'),
+      addresses: z
+        .array(
+          z.object({
+            address1: z.string().optional(),
+            address2: z.string().optional(),
+            city: z.string().optional(),
+            province: z.string().optional(),
+            country: z.string().optional(),
+            zip: z.string().optional(),
+            phone: z.string().optional(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Customer addresses')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.string(),
+      email: z.string().nullable(),
+      firstName: z.string().nullable(),
+      lastName: z.string().nullable(),
+      state: z.string(),
+      createdAt: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -85,4 +94,5 @@ export let createCustomer = SlateTool.create(
       },
       message: `Created customer **${c.first_name || ''} ${c.last_name || ''}** (${c.email || 'no email'}).`
     };
-  }).build();
+  })
+  .build();

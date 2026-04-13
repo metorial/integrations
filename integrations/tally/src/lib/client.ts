@@ -145,8 +145,8 @@ export class Client {
       baseURL: 'https://api.tally.so',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -177,12 +177,23 @@ export class Client {
 
   // Submissions
 
-  async listSubmissions(formId: string, params?: ListSubmissionsParams): Promise<PaginatedResponse<TallySubmission> & { questions: TallyQuestion[]; totalNumberOfSubmissionsPerFilter: number }> {
+  async listSubmissions(
+    formId: string,
+    params?: ListSubmissionsParams
+  ): Promise<
+    PaginatedResponse<TallySubmission> & {
+      questions: TallyQuestion[];
+      totalNumberOfSubmissionsPerFilter: number;
+    }
+  > {
     let response = await this.axios.get(`/forms/${formId}/submissions`, { params });
     return response.data;
   }
 
-  async getSubmission(formId: string, submissionId: string): Promise<TallySubmission & { questions: TallyQuestion[] }> {
+  async getSubmission(
+    formId: string,
+    submissionId: string
+  ): Promise<TallySubmission & { questions: TallyQuestion[] }> {
     let response = await this.axios.get(`/forms/${formId}/submissions/${submissionId}`);
     return response.data;
   }
@@ -268,7 +279,10 @@ export class Client {
     return response.data;
   }
 
-  async createOrganizationInvite(organizationId: string, params: CreateInviteParams): Promise<any> {
+  async createOrganizationInvite(
+    organizationId: string,
+    params: CreateInviteParams
+  ): Promise<any> {
     let response = await this.axios.post(`/organizations/${organizationId}/invites`, params);
     return response.data;
   }

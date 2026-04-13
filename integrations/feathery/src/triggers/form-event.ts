@@ -3,34 +3,44 @@ import { FeatheryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let formEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Form Event',
-    key: 'form_event',
-    description: 'Triggered when a form receives data or is completed. Includes submitted field values, user ID, and step information.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of event: data_received or form_completion'),
-    userId: z.string().describe('Feathery user ID who triggered the event'),
-    stepId: z.string().optional().describe('Step ID that was submitted (for data_received events)'),
-    fieldValues: z.record(z.string(), z.any()).describe('Key-value mapping of submitted field values'),
-    fieldMetadata: z.record(z.string(), z.any()).optional().describe('Field metadata details'),
-    formId: z.string().optional().describe('Form ID from registration context'),
-    rawPayload: z.any().optional().describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('User ID who triggered the event'),
-    stepId: z.string().optional().describe('Step ID that was submitted'),
-    fieldValues: z.record(z.string(), z.any()).describe('Submitted field values'),
-    formId: z.string().optional().describe('Form ID that was submitted'),
-  }))
+export let formEvent = SlateTrigger.create(spec, {
+  name: 'Form Event',
+  key: 'form_event',
+  description:
+    'Triggered when a form receives data or is completed. Includes submitted field values, user ID, and step information.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of event: data_received or form_completion'),
+      userId: z.string().describe('Feathery user ID who triggered the event'),
+      stepId: z
+        .string()
+        .optional()
+        .describe('Step ID that was submitted (for data_received events)'),
+      fieldValues: z
+        .record(z.string(), z.any())
+        .describe('Key-value mapping of submitted field values'),
+      fieldMetadata: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Field metadata details'),
+      formId: z.string().optional().describe('Form ID from registration context'),
+      rawPayload: z.any().optional().describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('User ID who triggered the event'),
+      stepId: z.string().optional().describe('Step ID that was submitted'),
+      fieldValues: z.record(z.string(), z.any()).describe('Submitted field values'),
+      formId: z.string().optional().describe('Form ID that was submitted')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new FeatheryClient({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       // We need a form ID to register the webhook on.
@@ -45,20 +55,20 @@ export let formEvent = SlateTrigger.create(
 
       return {
         registrationDetails: {
-          webhookUrl: ctx.input.webhookBaseUrl,
-        },
+          webhookUrl: ctx.input.webhookBaseUrl
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       // Webhooks are per-form, and removing them would require
       // updating each form's integrations. Since we don't track
       // which forms were configured, this is a no-op.
       // Users should use the Update Form tool to remove webhooks.
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.input.request.json()) as any;
 
       // Feathery sends field values as a key-value mapping
       // with feathery_user_id and feathery_step_id as special keys
@@ -92,16 +102,15 @@ export let formEvent = SlateTrigger.create(
             fieldValues,
             fieldMetadata,
             formId,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
-      let eventType = ctx.input.eventType === 'form_completion'
-        ? 'form.completed'
-        : 'form.data_received';
+    handleEvent: async ctx => {
+      let eventType =
+        ctx.input.eventType === 'form_completion' ? 'form.completed' : 'form.data_received';
 
       // Create a unique event ID from user, form, step, and timestamp
       let eventId = `${ctx.input.userId}-${ctx.input.formId || 'unknown'}-${ctx.input.stepId || 'complete'}-${Date.now()}`;
@@ -113,8 +122,9 @@ export let formEvent = SlateTrigger.create(
           userId: ctx.input.userId,
           stepId: ctx.input.stepId,
           fieldValues: ctx.input.fieldValues,
-          formId: ctx.input.formId,
-        },
+          formId: ctx.input.formId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

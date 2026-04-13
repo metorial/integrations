@@ -5,14 +5,14 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.http = createAxios({
-      baseURL: 'https://app.keyword.com',
+      baseURL: 'https://app.keyword.com'
     });
   }
 
   private get headers() {
     return {
-      'Authorization': `Bearer ${this.config.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.config.token}`,
+      'Content-Type': 'application/json'
     };
   }
 
@@ -20,48 +20,58 @@ export class Client {
 
   async listProjects() {
     let response = await this.http.get('/api/v2/groups/active', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getProject(projectName: string) {
     let response = await this.http.get(`/api/v2/groups/${encodeURIComponent(projectName)}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async createProject(params: { name: string; currencyCode?: string }) {
     let body: Record<string, any> = {
-      category: params.name,
+      category: params.name
     };
     if (params.currencyCode) body.currency_code = params.currencyCode;
 
     let response = await this.http.post('/api/v2/groups', body, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async archiveProject(projectName: string) {
-    let response = await this.http.put(`/api/v2/groups/${encodeURIComponent(projectName)}`, { status: 2 }, {
-      headers: this.headers,
-    });
+    let response = await this.http.put(
+      `/api/v2/groups/${encodeURIComponent(projectName)}`,
+      { status: 2 },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async restoreProject(projectName: string) {
-    let response = await this.http.get(`/api/v2/groups/${encodeURIComponent(projectName)}/undo/archive`, {
-      headers: this.headers,
-    });
+    let response = await this.http.get(
+      `/api/v2/groups/${encodeURIComponent(projectName)}/undo/archive`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
   async deleteProject(projectName: string) {
-    let response = await this.http.delete(`/api/v2/groups/${encodeURIComponent(projectName)}`, {
-      headers: this.headers,
-    });
+    let response = await this.http.delete(
+      `/api/v2/groups/${encodeURIComponent(projectName)}`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -78,25 +88,24 @@ export class Client {
     if (params.perPage) query.per_page = params.perPage;
     if (params.date) query.date = params.date;
 
-    let response = await this.http.get(`/api/v2/groups/${encodeURIComponent(params.projectName)}/keywords/`, {
-      headers: this.headers,
-      params: query,
-    });
+    let response = await this.http.get(
+      `/api/v2/groups/${encodeURIComponent(params.projectName)}/keywords/`,
+      {
+        headers: this.headers,
+        params: query
+      }
+    );
     return response.data;
   }
 
-  async getKeyword(params: {
-    projectName: string;
-    keywordId: string;
-    date?: string;
-  }) {
+  async getKeyword(params: { projectName: string; keywordId: string; date?: string }) {
     let url = `/api/v2/groups/${encodeURIComponent(params.projectName)}/keywords/${params.keywordId}`;
     let query: Record<string, any> = {};
     if (params.date) query.date = params.date;
 
     let response = await this.http.get(url, {
       headers: this.headers,
-      params: query,
+      params: query
     });
     return response.data;
   }
@@ -115,7 +124,7 @@ export class Client {
       ignoreSubDomains?: boolean;
     }>;
   }) {
-    let body = params.keywords.map((kw) => ({
+    let body = params.keywords.map(kw => ({
       type: 'keyword',
       category: params.projectName,
       kw: kw.keyword,
@@ -126,13 +135,13 @@ export class Client {
       se_type: kw.device === 'mobile' ? 'sem' : 'se',
       ignore_local: kw.ignoreLocalPack ? 1 : 0,
       url_tracking_method: kw.urlTrackingMethod || 'exact',
-      ignore_sub_domains: kw.ignoreSubDomains ? 1 : 0,
+      ignore_sub_domains: kw.ignoreSubDomains ? 1 : 0
     }));
 
     let response = await this.http.post(
       `/api/v2/groups/${encodeURIComponent(params.projectName)}/keywords`,
       body,
-      { headers: this.headers },
+      { headers: this.headers }
     );
     return response.data;
   }
@@ -140,28 +149,29 @@ export class Client {
   async deleteKeyword(params: { projectName: string; keywordId: string }) {
     let response = await this.http.delete(
       `/api/v2/groups/${encodeURIComponent(params.projectName)}/keywords/${params.keywordId}`,
-      { headers: this.headers },
+      { headers: this.headers }
     );
     return response.data;
   }
 
   // ── Ranking Data ──────────────────────────────────────────
 
-  async getRankingHistory(params: {
-    keywordIds: string[];
-    limit?: number;
-  }) {
+  async getRankingHistory(params: { keywordIds: string[]; limit?: number }) {
     let query: Record<string, any> = {
-      action: 'chart',
+      action: 'chart'
     };
     if (params.limit) query.limit = params.limit;
 
-    let response = await this.http.post('/api/v2/keywords/chart', {
-      keyword_ids: params.keywordIds,
-    }, {
-      headers: this.headers,
-      params: query,
-    });
+    let response = await this.http.post(
+      '/api/v2/keywords/chart',
+      {
+        keyword_ids: params.keywordIds
+      },
+      {
+        headers: this.headers,
+        params: query
+      }
+    );
     return response.data;
   }
 
@@ -178,8 +188,8 @@ export class Client {
       `/api/v2/groups/${encodeURIComponent(params.projectName)}/metrics`,
       {
         headers: this.headers,
-        params: query,
-      },
+        params: query
+      }
     );
     return response.data;
   }
@@ -189,23 +199,24 @@ export class Client {
   async listRegions(projectName: string) {
     let response = await this.http.get(
       `/api/v2/groups/${encodeURIComponent(projectName)}/regions`,
-      { headers: this.headers },
+      { headers: this.headers }
     );
     return response.data;
   }
 
   // ── Refresh ───────────────────────────────────────────────
 
-  async refreshKeywords(params: {
-    projectIds: string[];
-    includeSubGroups?: boolean;
-  }) {
-    let response = await this.http.post('/api/v2/keywords/refresh', {
-      project_ids: params.projectIds,
-      include_sub_groups: params.includeSubGroups ?? true,
-    }, {
-      headers: this.headers,
-    });
+  async refreshKeywords(params: { projectIds: string[]; includeSubGroups?: boolean }) {
+    let response = await this.http.post(
+      '/api/v2/keywords/refresh',
+      {
+        project_ids: params.projectIds,
+        include_sub_groups: params.includeSubGroups ?? true
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -213,14 +224,14 @@ export class Client {
 
   async listAiDomains() {
     let response = await this.http.get('/api/v2/ai-visibility/domains', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async getAiDomain(domainId: string) {
     let response = await this.http.get(`/api/v2/ai-visibility/domains/${domainId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -228,9 +239,12 @@ export class Client {
   // ── AI Visibility - Search Terms ──────────────────────────
 
   async listAiSearchTerms(domainId: string) {
-    let response = await this.http.get(`/api/v2/ai-visibility/domains/${domainId}/search-terms`, {
-      headers: this.headers,
-    });
+    let response = await this.http.get(
+      `/api/v2/ai-visibility/domains/${domainId}/search-terms`,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -247,19 +261,19 @@ export class Client {
   }) {
     let query: Record<string, any> = {};
     if (params.topics) {
-      params.topics.forEach((t) => {
+      params.topics.forEach(t => {
         query['topics[]'] = query['topics[]'] || [];
         query['topics[]'].push(t);
       });
     }
     if (params.searchTerms) {
-      params.searchTerms.forEach((s) => {
+      params.searchTerms.forEach(s => {
         query['search_terms[]'] = query['search_terms[]'] || [];
         query['search_terms[]'].push(s);
       });
     }
     if (params.engines) {
-      params.engines.forEach((e) => {
+      params.engines.forEach(e => {
         query['engine[]'] = query['engine[]'] || [];
         query['engine[]'].push(e);
       });
@@ -268,10 +282,13 @@ export class Client {
     if (params.periodOffset !== undefined) query.period_offset = params.periodOffset;
     if (params.aggregation) query.aggregation = params.aggregation;
 
-    let response = await this.http.get(`/api/v2/ai-visibility/domains/${params.domainId}/metrics`, {
-      headers: this.headers,
-      params: query,
-    });
+    let response = await this.http.get(
+      `/api/v2/ai-visibility/domains/${params.domainId}/metrics`,
+      {
+        headers: this.headers,
+        params: query
+      }
+    );
     return response.data;
   }
 
@@ -284,22 +301,25 @@ export class Client {
   }) {
     let query: Record<string, any> = {};
     if (params.topics) {
-      params.topics.forEach((t) => {
+      params.topics.forEach(t => {
         query['topics[]'] = query['topics[]'] || [];
         query['topics[]'].push(t);
       });
     }
     if (params.searchTerms) {
-      params.searchTerms.forEach((s) => {
+      params.searchTerms.forEach(s => {
         query['search_terms[]'] = query['search_terms[]'] || [];
         query['search_terms[]'].push(s);
       });
     }
 
-    let response = await this.http.get(`/api/v2/ai-visibility/domains/${params.domainId}/metrics/sentiment`, {
-      headers: this.headers,
-      params: query,
-    });
+    let response = await this.http.get(
+      `/api/v2/ai-visibility/domains/${params.domainId}/metrics/sentiment`,
+      {
+        headers: this.headers,
+        params: query
+      }
+    );
     return response.data;
   }
 
@@ -312,22 +332,25 @@ export class Client {
   }) {
     let query: Record<string, any> = {};
     if (params.topics) {
-      params.topics.forEach((t) => {
+      params.topics.forEach(t => {
         query['topics[]'] = query['topics[]'] || [];
         query['topics[]'].push(t);
       });
     }
     if (params.searchTerms) {
-      params.searchTerms.forEach((s) => {
+      params.searchTerms.forEach(s => {
         query['search_terms[]'] = query['search_terms[]'] || [];
         query['search_terms[]'].push(s);
       });
     }
 
-    let response = await this.http.get(`/api/v2/ai-visibility/domains/${params.domainId}/metrics/citations`, {
-      headers: this.headers,
-      params: query,
-    });
+    let response = await this.http.get(
+      `/api/v2/ai-visibility/domains/${params.domainId}/metrics/citations`,
+      {
+        headers: this.headers,
+        params: query
+      }
+    );
     return response.data;
   }
 }

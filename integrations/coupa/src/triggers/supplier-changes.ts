@@ -3,42 +3,43 @@ import { CoupaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let supplierChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Supplier Changes',
-    key: 'supplier_changes',
-    description: 'Triggers when supplier records are created or updated in Coupa.',
-  }
-)
-  .input(z.object({
-    supplierId: z.number().describe('Supplier ID'),
-    name: z.string().nullable().optional().describe('Supplier name'),
-    status: z.string().nullable().optional().describe('Current status'),
-    updatedAt: z.string().describe('Last update timestamp'),
-    rawData: z.any().describe('Full supplier data'),
-  }))
-  .output(z.object({
-    supplierId: z.number().describe('Coupa supplier ID'),
-    name: z.string().nullable().optional().describe('Supplier name'),
-    supplierNumber: z.string().nullable().optional().describe('Supplier number'),
-    status: z.string().nullable().optional().describe('Status'),
-    displayName: z.string().nullable().optional().describe('Display name'),
-    primaryContact: z.any().nullable().optional().describe('Primary contact'),
-    primaryAddress: z.any().nullable().optional().describe('Primary address'),
-    website: z.string().nullable().optional().describe('Website'),
-    createdAt: z.string().nullable().optional().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().optional().describe('Last update timestamp'),
-  }))
+export let supplierChanges = SlateTrigger.create(spec, {
+  name: 'Supplier Changes',
+  key: 'supplier_changes',
+  description: 'Triggers when supplier records are created or updated in Coupa.'
+})
+  .input(
+    z.object({
+      supplierId: z.number().describe('Supplier ID'),
+      name: z.string().nullable().optional().describe('Supplier name'),
+      status: z.string().nullable().optional().describe('Current status'),
+      updatedAt: z.string().describe('Last update timestamp'),
+      rawData: z.any().describe('Full supplier data')
+    })
+  )
+  .output(
+    z.object({
+      supplierId: z.number().describe('Coupa supplier ID'),
+      name: z.string().nullable().optional().describe('Supplier name'),
+      supplierNumber: z.string().nullable().optional().describe('Supplier number'),
+      status: z.string().nullable().optional().describe('Status'),
+      displayName: z.string().nullable().optional().describe('Display name'),
+      primaryContact: z.any().nullable().optional().describe('Primary contact'),
+      primaryAddress: z.any().nullable().optional().describe('Primary address'),
+      website: z.string().nullable().optional().describe('Website'),
+      createdAt: z.string().nullable().optional().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new CoupaClient({
         token: ctx.auth.token,
-        instanceUrl: ctx.config.instanceUrl,
+        instanceUrl: ctx.config.instanceUrl
       });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -52,7 +53,7 @@ export let supplierChanges = SlateTrigger.create(
         filters,
         orderBy: 'updated_at',
         dir: 'asc',
-        limit: 50,
+        limit: 50
       });
 
       let suppliers = Array.isArray(results) ? results : [];
@@ -60,7 +61,8 @@ export let supplierChanges = SlateTrigger.create(
       let newLastPollTime = lastPollTime;
       if (suppliers.length > 0) {
         let lastSupplier = suppliers[suppliers.length - 1];
-        newLastPollTime = lastSupplier['updated-at'] ?? lastSupplier.updated_at ?? lastPollTime;
+        newLastPollTime =
+          lastSupplier['updated-at'] ?? lastSupplier.updated_at ?? lastPollTime;
       }
 
       return {
@@ -69,15 +71,15 @@ export let supplierChanges = SlateTrigger.create(
           name: s.name ?? null,
           status: s.status ?? null,
           updatedAt: s['updated-at'] ?? s.updated_at ?? '',
-          rawData: s,
+          rawData: s
         })),
         updatedState: {
-          lastPollTime: newLastPollTime ?? new Date().toISOString(),
-        },
+          lastPollTime: newLastPollTime ?? new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let s = ctx.input.rawData;
 
       return {
@@ -93,9 +95,9 @@ export let supplierChanges = SlateTrigger.create(
           primaryAddress: s['primary-address'] ?? s.primary_address ?? null,
           website: s['website-url'] ?? s.website_url ?? null,
           createdAt: s['created-at'] ?? s.created_at ?? null,
-          updatedAt: ctx.input.updatedAt,
-        },
+          updatedAt: ctx.input.updatedAt
+        }
       };
-    },
+    }
   })
   .build();

@@ -25,6 +25,7 @@ Create, read, update, and delete DNS configuration profiles. You can create a ne
 ### Security Configuration
 
 Configure threat protection on a per-profile basis. Available security toggles include:
+
 - Threat intelligence feeds and AI-based threat detection
 - Google Safe Browsing integration
 - Cryptojacking, DNS rebinding, and IDN homograph protection
@@ -35,6 +36,7 @@ Configure threat protection on a per-profile basis. Available security toggles i
 ### Privacy & Ad Blocking
 
 Manage ad and tracker blocking configurations:
+
 - Add or remove blocklists (e.g., NextDNS Recommended, OISD)
 - Block native tracking for specific platforms (e.g., Huawei, Samsung)
 - Enable disguised third-party tracker blocking
@@ -43,6 +45,7 @@ Manage ad and tracker blocking configurations:
 ### Parental Controls
 
 Control content access with parental filtering options:
+
 - Block specific services (e.g., TikTok, Facebook) with active/inactive toggles
 - Block content categories (e.g., porn, social networks) with active/inactive toggles
 - Enable SafeSearch and YouTube Restricted Mode
@@ -55,6 +58,7 @@ Manage custom domain-level allow and deny lists for each profile. Entries can be
 ### Profile Settings
 
 Configure operational settings per profile:
+
 - **Logs**: Enable/disable logging, choose retention period, select storage location (e.g., EU), optionally drop IP or domain from logs
 - **Block Page**: Enable/disable a block page shown when a domain is blocked
 - **Performance**: Toggle ECS (EDNS Client Subnet), cache boost, and CNAME flattening
@@ -63,6 +67,7 @@ Configure operational settings per profile:
 ### Analytics
 
 Access comprehensive DNS query analytics for each profile. Analytics can be filtered by date range and device. Available analytics dimensions include:
+
 - **Status**: Query counts by status (default, blocked, allowed)
 - **Domains**: Top queried domains, filterable by status
 - **Reasons**: Why queries were blocked (which blocklist, native tracking, etc.)

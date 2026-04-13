@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newCampaign = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Campaign',
-    key: 'new_campaign',
-    description: 'Triggers when a new email campaign is created in SendFox.',
-  }
-)
-  .input(z.object({
-    campaignId: z.number().describe('ID of the campaign'),
-    title: z.string().describe('Campaign title'),
-    subject: z.string().describe('Email subject line'),
-    fromName: z.string().describe('Sender name'),
-    fromEmail: z.string().describe('Sender email'),
-    scheduledAt: z.string().nullable().describe('Scheduled send time'),
-    createdAt: z.string().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    campaignId: z.number().describe('Campaign ID'),
-    title: z.string().describe('Campaign title'),
-    subject: z.string().describe('Email subject line'),
-    fromName: z.string().describe('Sender name'),
-    fromEmail: z.string().describe('Sender email'),
-    scheduledAt: z.string().nullable().describe('Scheduled send time'),
-    createdAt: z.string().describe('Creation timestamp'),
-  }))
+export let newCampaign = SlateTrigger.create(spec, {
+  name: 'New Campaign',
+  key: 'new_campaign',
+  description: 'Triggers when a new email campaign is created in SendFox.'
+})
+  .input(
+    z.object({
+      campaignId: z.number().describe('ID of the campaign'),
+      title: z.string().describe('Campaign title'),
+      subject: z.string().describe('Email subject line'),
+      fromName: z.string().describe('Sender name'),
+      fromEmail: z.string().describe('Sender email'),
+      scheduledAt: z.string().nullable().describe('Scheduled send time'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.number().describe('Campaign ID'),
+      title: z.string().describe('Campaign title'),
+      subject: z.string().describe('Email subject line'),
+      fromName: z.string().describe('Sender name'),
+      fromEmail: z.string().describe('Sender email'),
+      scheduledAt: z.string().nullable().describe('Scheduled send time'),
+      createdAt: z.string().describe('Creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastSeenId: number | null = ctx.state?.lastSeenId ?? null;
@@ -74,7 +75,7 @@ export let newCampaign = SlateTrigger.create(
             fromName: campaign.from_name,
             fromEmail: campaign.from_email,
             scheduledAt: campaign.scheduled_at,
-            createdAt: campaign.created_at,
+            createdAt: campaign.created_at
           });
         }
 
@@ -89,17 +90,17 @@ export let newCampaign = SlateTrigger.create(
       if (lastSeenId === null) {
         return {
           inputs: [],
-          updatedState: { lastSeenId: newLastSeenId },
+          updatedState: { lastSeenId: newLastSeenId }
         };
       }
 
       return {
         inputs,
-        updatedState: { lastSeenId: newLastSeenId ?? lastSeenId },
+        updatedState: { lastSeenId: newLastSeenId ?? lastSeenId }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.created',
         id: String(ctx.input.campaignId),
@@ -110,8 +111,9 @@ export let newCampaign = SlateTrigger.create(
           fromName: ctx.input.fromName,
           fromEmail: ctx.input.fromEmail,
           scheduledAt: ctx.input.scheduledAt,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

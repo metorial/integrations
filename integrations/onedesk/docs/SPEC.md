@@ -31,24 +31,31 @@ The older API uses email/password login to obtain an authentication token. You s
 ## Features
 
 ### Work Item Management (Tickets & Tasks)
+
 Create, read, update, and search for work items including tickets, tasks, and other configurable item types. Items can be looked up by internal ID or external ID. The API is organized based on different work objects such as timesheets, tickets, etc. Items support custom fields, status lifecycle management, priorities, and assignments.
 
 ### Project & Space Management
+
 Create and manage projects (called "spaces" in the older API) and portfolios. Projects can be organized hierarchically with parent containers. Search supports filtering by properties using operations like EQ, NOT_EMPTY, and filtering on both standard and custom fields.
 
 ### Organization & Customer Management
+
 Retrieve organization profile and policy information. Create and manage users and customers. The API allows creating users or customers programmatically.
 
 ### Timesheets & Work Logging
+
 Create and manage timesheets to track time spent on tasks and tickets. Timesheets can be pushed to external accounting tools.
 
 ### Invoicing & Quoting
+
 The API supports invoicing and quoting features, allowing creation and update of quotes and invoices via the API.
 
 ### Messaging & Conversations
+
 Create messages or comments on work items. This includes both internal comments and public-facing customer communications.
 
 ### Search & Filtering
+
 Search across work items, projects, and other entities using filter-based queries. Filters support property-based conditions including comparisons on standard fields and custom fields.
 
 ## Events

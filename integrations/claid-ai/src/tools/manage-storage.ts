@@ -3,42 +3,68 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageStorage = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Storage',
-    key: 'manage_storage',
-    description: `Manage cloud storage connectors for use as image input/output sources. Supports listing, creating, updating, and deleting storage connections for AWS S3, Google Cloud Storage, and Web Folders.
+export let manageStorage = SlateTool.create(spec, {
+  name: 'Manage Storage',
+  key: 'manage_storage',
+  description: `Manage cloud storage connectors for use as image input/output sources. Supports listing, creating, updating, and deleting storage connections for AWS S3, Google Cloud Storage, and Web Folders.
 
 Use the appropriate **action** to list, create, get, update, or delete storage connectors.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
-  },
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'update', 'delete']).describe('Operation to perform'),
-    storageId: z.number().optional().describe('Storage ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Storage name (required for create, optional for update)'),
-    storageType: z.enum(['s3', 'gcs', 'web_folder']).optional().describe('Storage type (required for create)'),
-    bucket: z.string().optional().describe('S3 or GCS bucket name'),
-    path: z.string().optional().describe('Path within the bucket'),
-    accessKey: z.string().optional().describe('Access key for S3 or GCS credentials'),
-    secretAccessKey: z.string().optional().describe('Secret access key for S3 or GCS credentials'),
-    baseUrl: z.string().optional().describe('Base URL for web folder storage'),
-  }))
-  .output(z.object({
-    storages: z.array(z.object({
-      storageId: z.number().describe('Storage ID'),
-      name: z.string().describe('Storage name'),
-      storageType: z.string().describe('Storage type (s3, gcs, web_folder)'),
-      parameters: z.record(z.string(), z.unknown()).optional().describe('Storage configuration parameters'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })).optional().describe('List of storages (for list/get actions)'),
-    deleted: z.boolean().optional().describe('Whether the storage was deleted (for delete action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  tags: {
+    destructive: true,
+    readOnly: false
+  }
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete'])
+        .describe('Operation to perform'),
+      storageId: z
+        .number()
+        .optional()
+        .describe('Storage ID (required for get, update, delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Storage name (required for create, optional for update)'),
+      storageType: z
+        .enum(['s3', 'gcs', 'web_folder'])
+        .optional()
+        .describe('Storage type (required for create)'),
+      bucket: z.string().optional().describe('S3 or GCS bucket name'),
+      path: z.string().optional().describe('Path within the bucket'),
+      accessKey: z.string().optional().describe('Access key for S3 or GCS credentials'),
+      secretAccessKey: z
+        .string()
+        .optional()
+        .describe('Secret access key for S3 or GCS credentials'),
+      baseUrl: z.string().optional().describe('Base URL for web folder storage')
+    })
+  )
+  .output(
+    z.object({
+      storages: z
+        .array(
+          z.object({
+            storageId: z.number().describe('Storage ID'),
+            name: z.string().describe('Storage name'),
+            storageType: z.string().describe('Storage type (s3, gcs, web_folder)'),
+            parameters: z
+              .record(z.string(), z.unknown())
+              .optional()
+              .describe('Storage configuration parameters'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of storages (for list/get actions)'),
+      deleted: z
+        .boolean()
+        .optional()
+        .describe('Whether the storage was deleted (for delete action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let action = ctx.input.action;
@@ -51,12 +77,12 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
         name: s.name,
         storageType: s.type,
         parameters: s.parameters,
-        createdAt: s.created_at,
+        createdAt: s.created_at
       }));
 
       return {
         output: { storages },
-        message: `Found **${storages.length}** storage connector(s).`,
+        message: `Found **${storages.length}** storage connector(s).`
       };
     }
 
@@ -68,15 +94,17 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
 
       return {
         output: {
-          storages: [{
-            storageId: s.id,
-            name: s.name,
-            storageType: s.type,
-            parameters: s.parameters,
-            createdAt: s.created_at,
-          }],
+          storages: [
+            {
+              storageId: s.id,
+              name: s.name,
+              storageType: s.type,
+              parameters: s.parameters,
+              createdAt: s.created_at
+            }
+          ]
         },
-        message: `Storage **${s.name}** (${s.type}, ID: ${s.id}).`,
+        message: `Storage **${s.name}** (${s.type}, ID: ${s.id}).`
       };
     }
 
@@ -95,7 +123,7 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
         if (ctx.input.accessKey && ctx.input.secretAccessKey) {
           parameters.credentials = {
             access_key: ctx.input.accessKey,
-            secret_access_key: ctx.input.secretAccessKey,
+            secret_access_key: ctx.input.secretAccessKey
           };
         }
       }
@@ -104,21 +132,23 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
       let result = await client.createStorage({
         name: ctx.input.name,
         type: ctx.input.storageType,
-        parameters,
+        parameters
       });
 
       let s = result.data;
       return {
         output: {
-          storages: [{
-            storageId: s.id,
-            name: s.name,
-            storageType: s.type,
-            parameters: s.parameters,
-            createdAt: s.created_at,
-          }],
+          storages: [
+            {
+              storageId: s.id,
+              name: s.name,
+              storageType: s.type,
+              parameters: s.parameters,
+              createdAt: s.created_at
+            }
+          ]
         },
-        message: `Created storage **${s.name}** (${s.type}, ID: ${s.id}).`,
+        message: `Created storage **${s.name}** (${s.type}, ID: ${s.id}).`
       };
     }
 
@@ -131,13 +161,22 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
 
       let parameters: Record<string, unknown> = {};
       let hasParams = false;
-      if (ctx.input.bucket) { parameters.bucket = ctx.input.bucket; hasParams = true; }
-      if (ctx.input.path) { parameters.path = ctx.input.path; hasParams = true; }
-      if (ctx.input.baseUrl) { parameters.base_url = ctx.input.baseUrl; hasParams = true; }
+      if (ctx.input.bucket) {
+        parameters.bucket = ctx.input.bucket;
+        hasParams = true;
+      }
+      if (ctx.input.path) {
+        parameters.path = ctx.input.path;
+        hasParams = true;
+      }
+      if (ctx.input.baseUrl) {
+        parameters.base_url = ctx.input.baseUrl;
+        hasParams = true;
+      }
       if (ctx.input.accessKey && ctx.input.secretAccessKey) {
         parameters.credentials = {
           access_key: ctx.input.accessKey,
-          secret_access_key: ctx.input.secretAccessKey,
+          secret_access_key: ctx.input.secretAccessKey
         };
         hasParams = true;
       }
@@ -149,15 +188,17 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
       let s = result.data;
       return {
         output: {
-          storages: [{
-            storageId: s.id,
-            name: s.name,
-            storageType: s.type,
-            parameters: s.parameters,
-            createdAt: s.created_at,
-          }],
+          storages: [
+            {
+              storageId: s.id,
+              name: s.name,
+              storageType: s.type,
+              parameters: s.parameters,
+              createdAt: s.created_at
+            }
+          ]
         },
-        message: `Updated storage **${s.name}** (ID: ${s.id}).`,
+        message: `Updated storage **${s.name}** (ID: ${s.id}).`
       };
     }
 
@@ -169,7 +210,7 @@ Use the appropriate **action** to list, create, get, update, or delete storage c
 
       return {
         output: { deleted: true },
-        message: `Deleted storage connector **${ctx.input.storageId}**.`,
+        message: `Deleted storage connector **${ctx.input.storageId}**.`
       };
     }
 

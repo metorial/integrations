@@ -43,36 +43,40 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.echtpost.de/v1',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async listTemplates(): Promise<any[]> {
     let response = await this.http.get('/templates', {
-      params: { apikey: this.apiKey },
+      params: { apikey: this.apiKey }
     });
     return response.data;
   }
 
   async listContacts(): Promise<any[]> {
     let response = await this.http.get('/contacts', {
-      params: { apikey: this.apiKey },
+      params: { apikey: this.apiKey }
     });
     return response.data;
   }
 
   async createContact(params: CreateContactParams): Promise<any> {
     let response = await this.http.post('/contacts', params, {
-      params: { apikey: this.apiKey },
+      params: { apikey: this.apiKey }
     });
     return response.data;
   }
 
   async createCard(params: CreateCardParams): Promise<any> {
-    let response = await this.http.post('/cards', { card: params }, {
-      params: { apikey: this.apiKey },
-    });
+    let response = await this.http.post(
+      '/cards',
+      { card: params },
+      {
+        params: { apikey: this.apiKey }
+      }
+    );
     return response.data;
   }
 }

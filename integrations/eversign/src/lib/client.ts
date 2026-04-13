@@ -21,7 +21,7 @@ export class Client {
     this.token = config.token;
 
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (this.isOauth) {
@@ -30,14 +30,16 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: 'https://api.eversign.com',
-      headers,
+      headers
     });
   }
 
-  private getParams(extra: Record<string, string | number> = {}): Record<string, string | number> {
+  private getParams(
+    extra: Record<string, string | number> = {}
+  ): Record<string, string | number> {
     let params: Record<string, string | number> = {
       business_id: this.businessId,
-      ...extra,
+      ...extra
     };
     if (!this.isOauth) {
       params['access_key'] = this.token;
@@ -63,14 +65,14 @@ export class Client {
       body['sandbox'] = 1;
     }
     let response = await this.axios.post('/document', body, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
 
   async getDocument(documentHash: string): Promise<any> {
     let response = await this.axios.get('/document', {
-      params: this.getParams({ document_hash: documentHash }),
+      params: this.getParams({ document_hash: documentHash })
     });
     return response.data;
   }
@@ -80,28 +82,28 @@ export class Client {
     if (page !== undefined) extra['page'] = page;
     if (limit !== undefined) extra['limit'] = limit;
     let response = await this.axios.get('/document', {
-      params: this.getParams(extra),
+      params: this.getParams(extra)
     });
     return response.data;
   }
 
   async cancelDocument(documentHash: string): Promise<any> {
     let response = await this.axios.delete('/document', {
-      params: this.getParams({ document_hash: documentHash, cancel: 1 }),
+      params: this.getParams({ document_hash: documentHash, cancel: 1 })
     });
     return response.data;
   }
 
   async trashDocument(documentHash: string): Promise<any> {
     let response = await this.axios.delete('/document', {
-      params: this.getParams({ document_hash: documentHash, trash: 1 }),
+      params: this.getParams({ document_hash: documentHash, trash: 1 })
     });
     return response.data;
   }
 
   async deleteDocument(documentHash: string): Promise<any> {
     let response = await this.axios.delete('/document', {
-      params: this.getParams({ document_hash: documentHash }),
+      params: this.getParams({ document_hash: documentHash })
     });
     return response.data;
   }
@@ -114,17 +116,21 @@ export class Client {
       body['sandbox'] = 1;
     }
     let response = await this.axios.post('/document', body, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
 
-  async listTemplates(type: string = 'templates', page?: number, limit?: number): Promise<any[]> {
+  async listTemplates(
+    type: string = 'templates',
+    page?: number,
+    limit?: number
+  ): Promise<any[]> {
     let extra: Record<string, string | number> = { type };
     if (page !== undefined) extra['page'] = page;
     if (limit !== undefined) extra['limit'] = limit;
     let response = await this.axios.get('/document', {
-      params: this.getParams(extra),
+      params: this.getParams(extra)
     });
     return response.data;
   }
@@ -134,7 +140,7 @@ export class Client {
       body['sandbox'] = 1;
     }
     let response = await this.axios.post('/document', body, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
@@ -142,27 +148,37 @@ export class Client {
   // ==================== Signer Management ====================
 
   async sendReminder(documentHash: string, signerId: number): Promise<any> {
-    let response = await this.axios.post('/send_reminder', {
-      document_hash: documentHash,
-      signer_id: signerId,
-    }, {
-      params: this.getParams(),
-    });
+    let response = await this.axios.post(
+      '/send_reminder',
+      {
+        document_hash: documentHash,
+        signer_id: signerId
+      },
+      {
+        params: this.getParams()
+      }
+    );
     return response.data;
   }
 
-  async reassignSigner(documentHash: string, signerId: number, newSignerName: string, newSignerEmail: string, reason?: string): Promise<any> {
+  async reassignSigner(
+    documentHash: string,
+    signerId: number,
+    newSignerName: string,
+    newSignerEmail: string,
+    reason?: string
+  ): Promise<any> {
     let body: Record<string, any> = {
       document_hash: documentHash,
       signer_id: signerId,
       new_signer_name: newSignerName,
-      new_signer_email: newSignerEmail,
+      new_signer_email: newSignerEmail
     };
     if (reason) {
       body['reason'] = reason;
     }
     let response = await this.axios.post('/reassign', body, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
@@ -176,25 +192,29 @@ export class Client {
     let response = await this.axios.post('/file', body, {
       params: this.getParams(),
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-      },
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      }
     });
     return response.data;
   }
 
   // ==================== Document Download ====================
 
-  async getDownloadUrl(documentHash: string, type: 'raw' | 'final', auditTrail?: boolean): Promise<string> {
+  async getDownloadUrl(
+    documentHash: string,
+    type: 'raw' | 'final',
+    auditTrail?: boolean
+  ): Promise<string> {
     let endpoint = type === 'raw' ? '/download_raw_document' : '/download_final_document';
     let extra: Record<string, string | number> = {
       document_hash: documentHash,
-      url_only: 1,
+      url_only: 1
     };
     if (type === 'final' && auditTrail) {
       extra['audit_trail'] = 1;
     }
     let response = await this.axios.get(endpoint, {
-      params: this.getParams(extra),
+      params: this.getParams(extra)
     });
     return response.data;
   }
@@ -203,28 +223,28 @@ export class Client {
 
   async getBulkCsvTemplate(templateHash: string): Promise<string> {
     let response = await this.axios.get(`/template/${templateHash}/bulk/csv/blank`, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
 
   async createBulkJob(templateHash: string, csvData: any[][]): Promise<any> {
     let response = await this.axios.post(`/template/${templateHash}/bulk/job`, csvData, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
 
   async getBulkJob(bulkJobId: string): Promise<any> {
     let response = await this.axios.get(`/bulk_job/${bulkJobId}`, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
 
   async getBulkJobStatus(bulkJobId: string): Promise<any> {
     let response = await this.axios.get(`/bulk_job/${bulkJobId}/status`, {
-      params: this.getParams(),
+      params: this.getParams()
     });
     return response.data;
   }
@@ -234,7 +254,7 @@ export class Client {
     if (limit !== undefined) extra['limit'] = limit;
     if (offset !== undefined) extra['offset'] = offset;
     let response = await this.axios.get(`/bulk_job/${bulkJobId}/documents`, {
-      params: this.getParams(extra),
+      params: this.getParams(extra)
     });
     return response.data;
   }
@@ -244,7 +264,7 @@ export class Client {
     if (limit !== undefined) extra['limit'] = limit;
     if (offset !== undefined) extra['offset'] = offset;
     let response = await this.axios.get('/bulk_job', {
-      params: this.getParams(extra),
+      params: this.getParams(extra)
     });
     return response.data;
   }

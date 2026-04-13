@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Your Statuspage API key. Found under Avatar → API info in the Statuspage management interface.'),
+      token: z
+        .string()
+        .describe(
+          'Your Statuspage API key. Found under Avatar → API info in the Statuspage management interface.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://api.statuspage.io/v1',
         headers: {
-          'Authorization': `OAuth ${ctx.output.token}`,
-        },
+          Authorization: `OAuth ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/pages');
@@ -37,8 +43,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: firstPage?.id,
-          name: firstPage?.name,
-        },
+          name: firstPage?.name
+        }
       };
-    },
+    }
   });

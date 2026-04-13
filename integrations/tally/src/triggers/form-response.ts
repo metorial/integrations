@@ -7,38 +7,39 @@ let fieldSchema = z.object({
   key: z.string().describe('Unique question identifier'),
   label: z.string().describe('Human-readable field label'),
   type: z.string().describe('Field type (e.g., INPUT_TEXT, INPUT_EMAIL, MULTIPLE_CHOICE)'),
-  value: z.any().describe('Submitted value'),
+  value: z.any().describe('Submitted value')
 });
 
-export let formResponse = SlateTrigger.create(
-  spec,
-  {
-    name: 'Form Response',
-    key: 'form_response',
-    description: 'Triggers when a new form submission is received on a Tally form.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event identifier'),
-    eventType: z.string().describe('Event type (FORM_RESPONSE)'),
-    createdAt: z.string().describe('ISO 8601 event timestamp'),
-    submissionId: z.string().describe('Unique submission identifier'),
-    respondentId: z.string().describe('Unique respondent identifier'),
-    formId: z.string().describe('Form the submission belongs to'),
-    formName: z.string().describe('Name of the form'),
-    submittedAt: z.string().describe('ISO 8601 submission timestamp'),
-    fields: z.array(fieldSchema).describe('Submitted field values'),
-  }))
-  .output(z.object({
-    submissionId: z.string().describe('Unique submission identifier'),
-    respondentId: z.string().describe('Unique respondent identifier'),
-    formId: z.string().describe('Form the submission belongs to'),
-    formName: z.string().describe('Name of the form'),
-    submittedAt: z.string().describe('ISO 8601 submission timestamp'),
-    fields: z.array(fieldSchema).describe('Submitted field values'),
-  }))
+export let formResponse = SlateTrigger.create(spec, {
+  name: 'Form Response',
+  key: 'form_response',
+  description: 'Triggers when a new form submission is received on a Tally form.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event identifier'),
+      eventType: z.string().describe('Event type (FORM_RESPONSE)'),
+      createdAt: z.string().describe('ISO 8601 event timestamp'),
+      submissionId: z.string().describe('Unique submission identifier'),
+      respondentId: z.string().describe('Unique respondent identifier'),
+      formId: z.string().describe('Form the submission belongs to'),
+      formName: z.string().describe('Name of the form'),
+      submittedAt: z.string().describe('ISO 8601 submission timestamp'),
+      fields: z.array(fieldSchema).describe('Submitted field values')
+    })
+  )
+  .output(
+    z.object({
+      submissionId: z.string().describe('Unique submission identifier'),
+      respondentId: z.string().describe('Unique respondent identifier'),
+      formId: z.string().describe('Form the submission belongs to'),
+      formName: z.string().describe('Name of the form'),
+      submittedAt: z.string().describe('ISO 8601 submission timestamp'),
+      fields: z.array(fieldSchema).describe('Submitted field values')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // List all forms so the user can receive events from all of them,
@@ -61,12 +62,12 @@ export let formResponse = SlateTrigger.create(
             let webhook = await client.createWebhook({
               formId: form.id,
               url: ctx.input.webhookBaseUrl,
-              eventTypes: ['FORM_RESPONSE'],
+              eventTypes: ['FORM_RESPONSE']
             });
 
             registeredWebhooks.push({
               webhookId: webhook.id,
-              formId: form.id,
+              formId: form.id
             });
           } catch (e) {
             // Skip forms where webhook creation fails (e.g., permissions)
@@ -79,12 +80,12 @@ export let formResponse = SlateTrigger.create(
 
       return {
         registrationDetails: {
-          webhooks: registeredWebhooks,
-        },
+          webhooks: registeredWebhooks
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let details = ctx.input.registrationDetails as {
@@ -102,8 +103,8 @@ export let formResponse = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       // Tally sends a single FORM_RESPONSE event per webhook request
       if (body.eventType !== 'FORM_RESPONSE') {
@@ -123,13 +124,13 @@ export let formResponse = SlateTrigger.create(
             formId: responseData.formId,
             formName: responseData.formName,
             submittedAt: responseData.createdAt,
-            fields: responseData.fields ?? [],
-          },
-        ],
+            fields: responseData.fields ?? []
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'form_response.created',
         id: ctx.input.eventId,
@@ -139,8 +140,9 @@ export let formResponse = SlateTrigger.create(
           formId: ctx.input.formId,
           formName: ctx.input.formName,
           submittedAt: ctx.input.submittedAt,
-          fields: ctx.input.fields,
-        },
+          fields: ctx.input.fields
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -15,7 +15,7 @@ import {
   manageRetlSync,
   testEventDelivery,
   getEventAudit,
-  getAuditLogs,
+  getAuditLogs
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     manageRetlSync,
     testEventDelivery,
     getEventAudit,
-    getAuditLogs,
+    getAuditLogs
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

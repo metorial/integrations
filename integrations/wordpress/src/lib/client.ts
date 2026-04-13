@@ -31,9 +31,10 @@ export class WordPressClient {
       this.http = createAxios({
         baseURL: `${this.siteUrl}/wp-json/wp/v2`,
         headers: {
-          Authorization: config.authMethod === 'application_password'
-            ? `Basic ${config.token}`
-            : `Bearer ${config.token}`,
+          Authorization:
+            config.authMethod === 'application_password'
+              ? `Basic ${config.token}`
+              : `Bearer ${config.token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -42,19 +43,21 @@ export class WordPressClient {
 
   // ──────────────────────────────── Posts ────────────────────────────────
 
-  async listPosts(params: {
-    status?: string;
-    search?: string;
-    category?: string;
-    tag?: string;
-    author?: string;
-    perPage?: number;
-    page?: number;
-    orderBy?: string;
-    order?: string;
-    after?: string;
-    before?: string;
-  } = {}): Promise<any[]> {
+  async listPosts(
+    params: {
+      status?: string;
+      search?: string;
+      category?: string;
+      tag?: string;
+      author?: string;
+      perPage?: number;
+      page?: number;
+      orderBy?: string;
+      order?: string;
+      after?: string;
+      before?: string;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/posts`, {
         params: {
@@ -161,21 +164,24 @@ export class WordPressClient {
     }
   }
 
-  async updatePost(postId: string, data: {
-    title?: string;
-    content?: string;
-    excerpt?: string;
-    status?: string;
-    format?: string;
-    categories?: string[];
-    tags?: string[];
-    featuredImageId?: string;
-    date?: string;
-    slug?: string;
-    password?: string;
-    commentStatus?: string;
-    pingStatus?: string;
-  }): Promise<any> {
+  async updatePost(
+    postId: string,
+    data: {
+      title?: string;
+      content?: string;
+      excerpt?: string;
+      status?: string;
+      format?: string;
+      categories?: string[];
+      tags?: string[];
+      featuredImageId?: string;
+      date?: string;
+      slug?: string;
+      password?: string;
+      commentStatus?: string;
+      pingStatus?: string;
+    }
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.post(`/sites/${this.siteId}/posts/${postId}`, {
         title: data.title,
@@ -234,14 +240,16 @@ export class WordPressClient {
 
   // ──────────────────────────────── Pages ────────────────────────────────
 
-  async listPages(params: {
-    status?: string;
-    search?: string;
-    perPage?: number;
-    page?: number;
-    orderBy?: string;
-    order?: string;
-  } = {}): Promise<any[]> {
+  async listPages(
+    params: {
+      status?: string;
+      search?: string;
+      perPage?: number;
+      page?: number;
+      orderBy?: string;
+      order?: string;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/posts`, {
         params: {
@@ -321,17 +329,20 @@ export class WordPressClient {
     }
   }
 
-  async updatePage(pageId: string, data: {
-    title?: string;
-    content?: string;
-    excerpt?: string;
-    status?: string;
-    parentId?: string;
-    slug?: string;
-    date?: string;
-    featuredImageId?: string;
-    commentStatus?: string;
-  }): Promise<any> {
+  async updatePage(
+    pageId: string,
+    data: {
+      title?: string;
+      content?: string;
+      excerpt?: string;
+      status?: string;
+      parentId?: string;
+      slug?: string;
+      date?: string;
+      featuredImageId?: string;
+      commentStatus?: string;
+    }
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.post(`/sites/${this.siteId}/posts/${pageId}`, {
         title: data.title,
@@ -375,13 +386,15 @@ export class WordPressClient {
 
   // ──────────────────────────────── Comments ────────────────────────────────
 
-  async listComments(params: {
-    postId?: string;
-    status?: string;
-    perPage?: number;
-    page?: number;
-    search?: string;
-  } = {}): Promise<any[]> {
+  async listComments(
+    params: {
+      postId?: string;
+      status?: string;
+      perPage?: number;
+      page?: number;
+      search?: string;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let url = params.postId
         ? `/sites/${this.siteId}/posts/${params.postId}/replies`
@@ -426,10 +439,13 @@ export class WordPressClient {
     authorEmail?: string;
   }): Promise<any> {
     if (this.apiType === 'wpcom') {
-      let response = await this.http.post(`/sites/${this.siteId}/posts/${data.postId}/replies/new`, {
-        content: data.content,
-        parent: data.parentCommentId ? Number(data.parentCommentId) : undefined
-      });
+      let response = await this.http.post(
+        `/sites/${this.siteId}/posts/${data.postId}/replies/new`,
+        {
+          content: data.content,
+          parent: data.parentCommentId ? Number(data.parentCommentId) : undefined
+        }
+      );
       return response.data;
     } else {
       let response = await this.http.post('/comments', {
@@ -443,10 +459,13 @@ export class WordPressClient {
     }
   }
 
-  async updateComment(commentId: string, data: {
-    content?: string;
-    status?: string;
-  }): Promise<any> {
+  async updateComment(
+    commentId: string,
+    data: {
+      content?: string;
+      status?: string;
+    }
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let body: Record<string, any> = {};
       if (data.content !== undefined) body.content = data.content;
@@ -465,7 +484,9 @@ export class WordPressClient {
 
   async deleteComment(commentId: string): Promise<any> {
     if (this.apiType === 'wpcom') {
-      let response = await this.http.post(`/sites/${this.siteId}/comments/${commentId}/delete`);
+      let response = await this.http.post(
+        `/sites/${this.siteId}/comments/${commentId}/delete`
+      );
       return response.data;
     } else {
       let response = await this.http.delete(`/comments/${commentId}`, {
@@ -477,12 +498,14 @@ export class WordPressClient {
 
   // ──────────────────────────────── Media ────────────────────────────────
 
-  async listMedia(params: {
-    mediaType?: string;
-    search?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listMedia(
+    params: {
+      mediaType?: string;
+      search?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/media`, {
         params: {
@@ -516,12 +539,15 @@ export class WordPressClient {
     }
   }
 
-  async updateMedia(mediaId: string, data: {
-    title?: string;
-    caption?: string;
-    altText?: string;
-    description?: string;
-  }): Promise<any> {
+  async updateMedia(
+    mediaId: string,
+    data: {
+      title?: string;
+      caption?: string;
+      altText?: string;
+      description?: string;
+    }
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.post(`/sites/${this.siteId}/media/${mediaId}`, {
         title: data.title,
@@ -555,11 +581,13 @@ export class WordPressClient {
 
   // ──────────────────────────────── Categories ────────────────────────────────
 
-  async listCategories(params: {
-    search?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listCategories(
+    params: {
+      search?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/categories`, {
         params: {
@@ -605,18 +633,24 @@ export class WordPressClient {
     }
   }
 
-  async updateCategory(categoryId: string, data: {
-    name?: string;
-    description?: string;
-    parentId?: string;
-    slug?: string;
-  }): Promise<any> {
+  async updateCategory(
+    categoryId: string,
+    data: {
+      name?: string;
+      description?: string;
+      parentId?: string;
+      slug?: string;
+    }
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
-      let response = await this.http.post(`/sites/${this.siteId}/categories/slug:${categoryId}`, {
-        name: data.name,
-        description: data.description,
-        parent: data.parentId ? Number(data.parentId) : undefined
-      });
+      let response = await this.http.post(
+        `/sites/${this.siteId}/categories/slug:${categoryId}`,
+        {
+          name: data.name,
+          description: data.description,
+          parent: data.parentId ? Number(data.parentId) : undefined
+        }
+      );
       return response.data;
     } else {
       let response = await this.http.post(`/categories/${categoryId}`, {
@@ -631,7 +665,9 @@ export class WordPressClient {
 
   async deleteCategory(categoryId: string): Promise<any> {
     if (this.apiType === 'wpcom') {
-      let response = await this.http.post(`/sites/${this.siteId}/categories/slug:${categoryId}/delete`);
+      let response = await this.http.post(
+        `/sites/${this.siteId}/categories/slug:${categoryId}/delete`
+      );
       return response.data;
     } else {
       let response = await this.http.delete(`/categories/${categoryId}`, {
@@ -643,11 +679,13 @@ export class WordPressClient {
 
   // ──────────────────────────────── Tags ────────────────────────────────
 
-  async listTags(params: {
-    search?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async listTags(
+    params: {
+      search?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/tags`, {
         params: {
@@ -669,11 +707,7 @@ export class WordPressClient {
     }
   }
 
-  async createTag(data: {
-    name: string;
-    description?: string;
-    slug?: string;
-  }): Promise<any> {
+  async createTag(data: { name: string; description?: string; slug?: string }): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.post(`/sites/${this.siteId}/tags/new`, {
         name: data.name,
@@ -704,12 +738,14 @@ export class WordPressClient {
 
   // ──────────────────────────────── Users ────────────────────────────────
 
-  async listUsers(params: {
-    search?: string;
-    perPage?: number;
-    page?: number;
-    roles?: string;
-  } = {}): Promise<any[]> {
+  async listUsers(
+    params: {
+      search?: string;
+      perPage?: number;
+      page?: number;
+      roles?: string;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/users`, {
         params: {
@@ -808,15 +844,19 @@ export class WordPressClient {
       let response = await this.http.get(`/sites/${this.siteId}/stats`);
       return response.data;
     } else {
-      throw new Error('Site statistics are only available for WordPress.com or Jetpack-connected sites.');
+      throw new Error(
+        'Site statistics are only available for WordPress.com or Jetpack-connected sites.'
+      );
     }
   }
 
-  async getStatsTopPosts(params: {
-    period?: string;
-    num?: number;
-    date?: string;
-  } = {}): Promise<any> {
+  async getStatsTopPosts(
+    params: {
+      period?: string;
+      num?: number;
+      date?: string;
+    } = {}
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/stats/top-posts`, {
         params: {
@@ -827,15 +867,19 @@ export class WordPressClient {
       });
       return response.data;
     } else {
-      throw new Error('Site statistics are only available for WordPress.com or Jetpack-connected sites.');
+      throw new Error(
+        'Site statistics are only available for WordPress.com or Jetpack-connected sites.'
+      );
     }
   }
 
-  async getStatsReferrers(params: {
-    period?: string;
-    num?: number;
-    date?: string;
-  } = {}): Promise<any> {
+  async getStatsReferrers(
+    params: {
+      period?: string;
+      num?: number;
+      date?: string;
+    } = {}
+  ): Promise<any> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/stats/referrers`, {
         params: {
@@ -846,17 +890,22 @@ export class WordPressClient {
       });
       return response.data;
     } else {
-      throw new Error('Site statistics are only available for WordPress.com or Jetpack-connected sites.');
+      throw new Error(
+        'Site statistics are only available for WordPress.com or Jetpack-connected sites.'
+      );
     }
   }
 
   // ──────────────────────────────── Search ────────────────────────────────
 
-  async search(query: string, params: {
-    postType?: string;
-    perPage?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async search(
+    query: string,
+    params: {
+      postType?: string;
+      perPage?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     if (this.apiType === 'wpcom') {
       let response = await this.http.get(`/sites/${this.siteId}/posts`, {
         params: {
@@ -876,7 +925,7 @@ export class WordPressClient {
           page: params.page || 1
         }
       });
-      return Array.isArray(response.data) ? response.data : (response.data?.results || []);
+      return Array.isArray(response.data) ? response.data : response.data?.results || [];
     }
   }
 }

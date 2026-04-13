@@ -3,43 +3,52 @@ import { ZoomClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMeetingRecordings = SlateTool.create(
-  spec,
-  {
-    name: 'Get Meeting Recordings',
-    key: 'get_meeting_recordings',
-    description: `Retrieve all cloud recording files for a specific meeting, including video, audio, chat, and transcript files with download URLs.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getMeetingRecordings = SlateTool.create(spec, {
+  name: 'Get Meeting Recordings',
+  key: 'get_meeting_recordings',
+  description: `Retrieve all cloud recording files for a specific meeting, including video, audio, chat, and transcript files with download URLs.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    meetingId: z.string().describe('The meeting ID or UUID (double-encode if UUID starts with / or contains //)'),
-  }))
-  .output(z.object({
-    meetingId: z.number().optional().describe('Meeting ID'),
-    uuid: z.string().optional().describe('Meeting UUID'),
-    topic: z.string().optional().describe('Meeting topic'),
-    hostId: z.string().optional().describe('Host user ID'),
-    hostEmail: z.string().optional().describe('Host email'),
-    startTime: z.string().optional().describe('Meeting start time'),
-    duration: z.number().optional().describe('Meeting duration'),
-    totalSize: z.number().optional().describe('Total file size in bytes'),
-    recordingFiles: z.array(z.object({
-      recordingFileId: z.string().optional().describe('Recording file ID'),
-      recordingStart: z.string().optional().describe('Recording start time'),
-      recordingEnd: z.string().optional().describe('Recording end time'),
-      fileType: z.string().optional().describe('File type'),
-      fileSize: z.number().optional().describe('File size in bytes'),
-      downloadUrl: z.string().optional().describe('Download URL'),
-      playUrl: z.string().optional().describe('Play URL'),
-      status: z.string().optional().describe('Recording status'),
-      recordingType: z.string().optional().describe('Type of recording'),
-    })).describe('List of recording files'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      meetingId: z
+        .string()
+        .describe(
+          'The meeting ID or UUID (double-encode if UUID starts with / or contains //)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      meetingId: z.number().optional().describe('Meeting ID'),
+      uuid: z.string().optional().describe('Meeting UUID'),
+      topic: z.string().optional().describe('Meeting topic'),
+      hostId: z.string().optional().describe('Host user ID'),
+      hostEmail: z.string().optional().describe('Host email'),
+      startTime: z.string().optional().describe('Meeting start time'),
+      duration: z.number().optional().describe('Meeting duration'),
+      totalSize: z.number().optional().describe('Total file size in bytes'),
+      recordingFiles: z
+        .array(
+          z.object({
+            recordingFileId: z.string().optional().describe('Recording file ID'),
+            recordingStart: z.string().optional().describe('Recording start time'),
+            recordingEnd: z.string().optional().describe('Recording end time'),
+            fileType: z.string().optional().describe('File type'),
+            fileSize: z.number().optional().describe('File size in bytes'),
+            downloadUrl: z.string().optional().describe('Download URL'),
+            playUrl: z.string().optional().describe('Play URL'),
+            status: z.string().optional().describe('Recording status'),
+            recordingType: z.string().optional().describe('Type of recording')
+          })
+        )
+        .describe('List of recording files')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZoomClient(ctx.auth.token);
     let result = await client.getMeetingRecordings(ctx.input.meetingId);
 
@@ -52,7 +61,7 @@ export let getMeetingRecordings = SlateTool.create(
       downloadUrl: f.download_url,
       playUrl: f.play_url,
       status: f.status,
-      recordingType: f.recording_type,
+      recordingType: f.recording_type
     }));
 
     return {
@@ -65,9 +74,9 @@ export let getMeetingRecordings = SlateTool.create(
         startTime: result.start_time,
         duration: result.duration,
         totalSize: result.total_size,
-        recordingFiles,
+        recordingFiles
       },
-      message: `Found **${recordingFiles.length}** recording file(s) for meeting **${result.topic || ctx.input.meetingId}**.`,
+      message: `Found **${recordingFiles.length}** recording file(s) for meeting **${result.topic || ctx.input.meetingId}**.`
     };
   })
   .build();

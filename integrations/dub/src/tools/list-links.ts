@@ -3,55 +3,63 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listLinks = SlateTool.create(
-  spec,
-  {
-    name: 'List Links',
-    key: 'list_links',
-    description: `Retrieve a list of short links from your workspace. Filter by domain, tags, folder, search query, and more. Supports pagination and sorting.`,
-    constraints: [
-      'Maximum 100 links per page'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listLinks = SlateTool.create(spec, {
+  name: 'List Links',
+  key: 'list_links',
+  description: `Retrieve a list of short links from your workspace. Filter by domain, tags, folder, search query, and more. Supports pagination and sorting.`,
+  constraints: ['Maximum 100 links per page'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    domain: z.string().optional().describe('Filter by domain'),
-    tagIds: z.array(z.string()).optional().describe('Filter by tag IDs'),
-    tagNames: z.array(z.string()).optional().describe('Filter by tag names'),
-    folderId: z.string().optional().describe('Filter by folder ID'),
-    search: z.string().optional().describe('Search by slug or destination URL'),
-    userId: z.string().optional().describe('Filter by user who created the link'),
-    tenantId: z.string().optional().describe('Filter by tenant ID'),
-    showArchived: z.boolean().optional().describe('Include archived links (default: false)'),
-    sortBy: z.enum(['createdAt', 'clicks', 'saleAmount', 'lastClicked']).optional().describe('Field to sort by'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order'),
-    page: z.number().optional().describe('Page number (starts at 1)'),
-    pageSize: z.number().optional().describe('Items per page (max 100)')
-  }))
-  .output(z.object({
-    links: z.array(z.object({
-      linkId: z.string(),
-      shortLink: z.string(),
-      domain: z.string(),
-      slug: z.string(),
-      destinationUrl: z.string(),
-      clicks: z.number(),
-      leads: z.number(),
-      sales: z.number(),
-      archived: z.boolean(),
-      createdAt: z.string(),
-      tags: z.array(z.object({
-        tagId: z.string(),
-        name: z.string(),
-        color: z.string()
-      }))
-    })).describe('List of links'),
-    count: z.number().describe('Number of links returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      domain: z.string().optional().describe('Filter by domain'),
+      tagIds: z.array(z.string()).optional().describe('Filter by tag IDs'),
+      tagNames: z.array(z.string()).optional().describe('Filter by tag names'),
+      folderId: z.string().optional().describe('Filter by folder ID'),
+      search: z.string().optional().describe('Search by slug or destination URL'),
+      userId: z.string().optional().describe('Filter by user who created the link'),
+      tenantId: z.string().optional().describe('Filter by tenant ID'),
+      showArchived: z.boolean().optional().describe('Include archived links (default: false)'),
+      sortBy: z
+        .enum(['createdAt', 'clicks', 'saleAmount', 'lastClicked'])
+        .optional()
+        .describe('Field to sort by'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order'),
+      page: z.number().optional().describe('Page number (starts at 1)'),
+      pageSize: z.number().optional().describe('Items per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      links: z
+        .array(
+          z.object({
+            linkId: z.string(),
+            shortLink: z.string(),
+            domain: z.string(),
+            slug: z.string(),
+            destinationUrl: z.string(),
+            clicks: z.number(),
+            leads: z.number(),
+            sales: z.number(),
+            archived: z.boolean(),
+            createdAt: z.string(),
+            tags: z.array(
+              z.object({
+                tagId: z.string(),
+                name: z.string(),
+                color: z.string()
+              })
+            )
+          })
+        )
+        .describe('List of links'),
+      count: z.number().describe('Number of links returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let links = await client.listLinks({

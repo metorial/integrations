@@ -123,15 +123,18 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- Image Generation ----
 
-  async generateImage(templateId: string, request: GenerateImageRequest): Promise<GeneratedImage> {
+  async generateImage(
+    templateId: string,
+    request: GenerateImageRequest
+  ): Promise<GeneratedImage> {
     let response = await this.axios.post(`/designs/${templateId}`, request);
     return response.data;
   }
@@ -204,22 +207,30 @@ export class Client {
 
   // ---- Webhooks ----
 
-  async subscribeWebhook(targetUrl: string, eventType: string, templateId: string): Promise<WebhookSubscription> {
+  async subscribeWebhook(
+    targetUrl: string,
+    eventType: string,
+    templateId: string
+  ): Promise<WebhookSubscription> {
     let response = await this.axios.post('/hooks', {
       targetUrl,
       eventType,
-      templateId,
+      templateId
     });
     return response.data;
   }
 
-  async unsubscribeWebhook(targetUrl: string, eventType: string, templateId: string): Promise<WebhookUnsubscribeResponse> {
+  async unsubscribeWebhook(
+    targetUrl: string,
+    eventType: string,
+    templateId: string
+  ): Promise<WebhookUnsubscribeResponse> {
     let response = await this.axios.delete('/hooks', {
       data: {
         targetUrl,
         eventType,
-        templateId,
-      },
+        templateId
+      }
     });
     return response.data;
   }

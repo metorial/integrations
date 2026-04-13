@@ -3,34 +3,36 @@ import { BrazeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let campaignActivity = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Activity',
-    key: 'campaign_activity',
-    description: 'Detects new or recently edited campaigns in your Braze workspace by polling the campaigns list endpoint.'
-  }
-)
-  .input(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    name: z.string().describe('Campaign name'),
-    isApiCampaign: z.boolean().optional().describe('Whether this is an API campaign'),
-    tags: z.array(z.string()).optional().describe('Campaign tags'),
-    lastEdited: z.string().optional().describe('Last edited timestamp')
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    name: z.string().describe('Campaign name'),
-    isApiCampaign: z.boolean().optional().describe('Whether this is an API campaign'),
-    tags: z.array(z.string()).optional().describe('Campaign tags'),
-    lastEdited: z.string().optional().describe('Last edited timestamp')
-  }))
+export let campaignActivity = SlateTrigger.create(spec, {
+  name: 'Campaign Activity',
+  key: 'campaign_activity',
+  description:
+    'Detects new or recently edited campaigns in your Braze workspace by polling the campaigns list endpoint.'
+})
+  .input(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      name: z.string().describe('Campaign name'),
+      isApiCampaign: z.boolean().optional().describe('Whether this is an API campaign'),
+      tags: z.array(z.string()).optional().describe('Campaign tags'),
+      lastEdited: z.string().optional().describe('Last edited timestamp')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      name: z.string().describe('Campaign name'),
+      isApiCampaign: z.boolean().optional().describe('Whether this is an API campaign'),
+      tags: z.array(z.string()).optional().describe('Campaign tags'),
+      lastEdited: z.string().optional().describe('Last edited timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new BrazeClient({
         token: ctx.auth.token,
         instanceUrl: ctx.config.instanceUrl
@@ -39,7 +41,12 @@ export let campaignActivity = SlateTrigger.create(
       let lastPolled = ctx.state?.lastPolled as string | undefined;
       let knownCampaignIds = (ctx.state?.knownCampaignIds as string[] | undefined) ?? [];
 
-      let params: { page?: number; includeArchived?: boolean; sortDirection?: string; lastEditTimeGt?: string } = {
+      let params: {
+        page?: number;
+        includeArchived?: boolean;
+        sortDirection?: string;
+        lastEditTimeGt?: string;
+      } = {
         sortDirection: 'desc'
       };
 
@@ -54,10 +61,9 @@ export let campaignActivity = SlateTrigger.create(
         ? campaigns
         : campaigns.filter((c: any) => !knownCampaignIds.includes(c.id));
 
-      let updatedKnownIds = [...new Set([
-        ...knownCampaignIds,
-        ...campaigns.map((c: any) => c.id)
-      ])];
+      let updatedKnownIds = [
+        ...new Set([...knownCampaignIds, ...campaigns.map((c: any) => c.id)])
+      ];
 
       let now = new Date().toISOString();
 
@@ -76,7 +82,7 @@ export let campaignActivity = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.updated',
         id: `campaign-${ctx.input.campaignId}-${ctx.input.lastEdited ?? Date.now()}`,
@@ -89,4 +95,5 @@ export let campaignActivity = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

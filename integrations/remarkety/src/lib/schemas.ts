@@ -1,15 +1,17 @@
 import { z } from 'zod';
 
-export let addressSchema = z.object({
-  country: z.string().optional().describe('Country name'),
-  countryCode: z.string().optional().describe('ISO country code (e.g., US)'),
-  provinceCode: z.string().optional().describe('Province/state code'),
-  region: z.string().optional().describe('Region or state name'),
-  city: z.string().optional().describe('City name'),
-  street: z.string().optional().describe('Street address'),
-  zip: z.string().optional().describe('ZIP/postal code'),
-  phone: z.string().optional().describe('Phone number')
-}).describe('Address information');
+export let addressSchema = z
+  .object({
+    country: z.string().optional().describe('Country name'),
+    countryCode: z.string().optional().describe('ISO country code (e.g., US)'),
+    provinceCode: z.string().optional().describe('Province/state code'),
+    region: z.string().optional().describe('Region or state name'),
+    city: z.string().optional().describe('City name'),
+    street: z.string().optional().describe('Street address'),
+    zip: z.string().optional().describe('ZIP/postal code'),
+    phone: z.string().optional().describe('Phone number')
+  })
+  .describe('Address information');
 
 export let customerSchema = z.object({
   customerId: z.string().describe('Unique customer ID, must be consistent across all events'),
@@ -17,18 +19,36 @@ export let customerSchema = z.object({
   firstName: z.string().optional().describe('Customer first name'),
   lastName: z.string().optional().describe('Customer last name'),
   createdAt: z.string().optional().describe('ISO 8601 datetime when the customer was created'),
-  updatedAt: z.string().optional().describe('ISO 8601 datetime when the customer was last updated'),
-  acceptsMarketing: z.boolean().nullable().optional().describe('Whether the customer accepts marketing emails. Null for unknown.'),
-  acceptsSmsMarketing: z.boolean().optional().describe('Whether the customer accepts SMS marketing'),
-  smsPhoneNumber: z.string().optional().describe('SMS phone number in E.164 format (e.g., +15417540000)'),
+  updatedAt: z
+    .string()
+    .optional()
+    .describe('ISO 8601 datetime when the customer was last updated'),
+  acceptsMarketing: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe('Whether the customer accepts marketing emails. Null for unknown.'),
+  acceptsSmsMarketing: z
+    .boolean()
+    .optional()
+    .describe('Whether the customer accepts SMS marketing'),
+  smsPhoneNumber: z
+    .string()
+    .optional()
+    .describe('SMS phone number in E.164 format (e.g., +15417540000)'),
   birthdate: z.string().optional().describe('Customer birthdate in YYYY-MM-DD format'),
   gender: z.string().optional().describe('Customer gender (e.g., M or F)'),
   defaultAddress: addressSchema.optional().describe('Customer default address'),
   tags: z.array(z.string()).optional().describe('Array of tag strings'),
-  groups: z.array(z.object({
-    groupId: z.string().describe('Group ID'),
-    name: z.string().describe('Group name')
-  })).optional().describe('Array of group memberships'),
+  groups: z
+    .array(
+      z.object({
+        groupId: z.string().describe('Group ID'),
+        name: z.string().describe('Group name')
+      })
+    )
+    .optional()
+    .describe('Array of group memberships'),
   rewardPoints: z.number().optional().describe('Customer reward points')
 });
 
@@ -58,7 +78,10 @@ export let orderSchema = z.object({
   updatedAt: z.string().optional().describe('ISO 8601 datetime when the order was updated'),
   currency: z.string().optional().describe('Currency code (e.g., USD)'),
   fulfillmentStatus: z.string().optional().describe('Fulfillment status'),
-  financialStatus: z.string().optional().describe('Financial status (e.g., paid, pending, refunded)'),
+  financialStatus: z
+    .string()
+    .optional()
+    .describe('Financial status (e.g., paid, pending, refunded)'),
   totalPrice: z.number().optional().describe('Total order price'),
   subtotalPrice: z.number().optional().describe('Subtotal price before tax and shipping'),
   totalTax: z.number().optional().describe('Total tax amount'),
@@ -66,7 +89,10 @@ export let orderSchema = z.object({
   totalDiscounts: z.number().optional().describe('Total discounts applied'),
   billingAddress: addressSchema.optional().describe('Billing address'),
   shippingAddress: addressSchema.optional().describe('Shipping address'),
-  customer: customerSchema.partial().optional().describe('Customer information associated with the order'),
+  customer: customerSchema
+    .partial()
+    .optional()
+    .describe('Customer information associated with the order'),
   discountCodes: z.array(discountCodeSchema).optional().describe('Discount codes applied'),
   lineItems: z.array(lineItemSchema).describe('Order line items'),
   acceptsMarketing: z.boolean().optional().describe('Marketing preference'),
@@ -93,10 +119,15 @@ export let productSchema = z.object({
   title: z.string().describe('Product title'),
   url: z.string().optional().describe('Product page URL'),
   imageUrl: z.string().optional().describe('Product image URL'),
-  images: z.array(z.object({
-    imageUrl: z.string().describe('Image URL'),
-    position: z.number().optional().describe('Image position/order')
-  })).optional().describe('Additional product images'),
+  images: z
+    .array(
+      z.object({
+        imageUrl: z.string().describe('Image URL'),
+        position: z.number().optional().describe('Image position/order')
+      })
+    )
+    .optional()
+    .describe('Additional product images'),
   price: z.number().optional().describe('Product price'),
   compareAtPrice: z.number().optional().describe('Compare-at / original price'),
   sku: z.string().optional().describe('Product SKU'),
@@ -107,7 +138,10 @@ export let productSchema = z.object({
   inventoryQuantity: z.number().optional().describe('Total inventory quantity'),
   createdAt: z.string().optional().describe('ISO 8601 datetime when the product was created'),
   updatedAt: z.string().optional().describe('ISO 8601 datetime when the product was updated'),
-  publishedAt: z.string().optional().describe('ISO 8601 datetime when the product was published'),
+  publishedAt: z
+    .string()
+    .optional()
+    .describe('ISO 8601 datetime when the product was published'),
   enabled: z.boolean().optional().describe('Whether the product is enabled/visible'),
   variants: z.array(productVariantSchema).optional().describe('Product variants')
 });
@@ -120,7 +154,10 @@ export let cartSchema = z.object({
   currency: z.string().optional().describe('Currency code (e.g., USD)'),
   totalPrice: z.number().optional().describe('Total cart price'),
   lineItems: z.array(lineItemSchema).describe('Cart line items'),
-  customer: customerSchema.partial().optional().describe('Customer information (null if anonymous)'),
+  customer: customerSchema
+    .partial()
+    .optional()
+    .describe('Customer information (null if anonymous)'),
   abandonedCheckoutUrl: z.string().optional().describe('Abandoned checkout recovery URL'),
   cartToken: z.string().optional().describe('Cart token identifier')
 });

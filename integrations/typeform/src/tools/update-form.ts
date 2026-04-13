@@ -3,43 +3,44 @@ import { TypeformClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateForm = SlateTool.create(
-  spec,
-  {
-    name: 'Update Form',
-    key: 'update_form',
-    description: `Update an existing typeform. Performs a full replacement of the form definition. Retrieve the current form first with **Get Form**, modify the desired properties, and pass the complete form data here.`,
-    instructions: [
-      'This performs a **full PUT** update — all fields, screens, and settings must be included or they will be removed.',
-      'Use **Get Form** first to retrieve the current definition, then modify what you need.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let updateForm = SlateTool.create(spec, {
+  name: 'Update Form',
+  key: 'update_form',
+  description: `Update an existing typeform. Performs a full replacement of the form definition. Retrieve the current form first with **Get Form**, modify the desired properties, and pass the complete form data here.`,
+  instructions: [
+    'This performs a **full PUT** update — all fields, screens, and settings must be included or they will be removed.',
+    'Use **Get Form** first to retrieve the current definition, then modify what you need.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    formId: z.string().describe('ID of the form to update'),
-    title: z.string().optional().describe('Updated form title'),
-    fields: z.array(z.any()).optional().describe('Complete array of field definitions'),
-    welcomeScreens: z.array(z.any()).optional().describe('Welcome screens array'),
-    thankYouScreens: z.array(z.any()).optional().describe('Thank-you screens array'),
-    themeUrl: z.string().optional().describe('Theme API URL to apply'),
-    hiddenFields: z.array(z.string()).optional().describe('Hidden field keys'),
-    settings: z.any().optional().describe('Form settings object'),
-    logic: z.array(z.any()).optional().describe('Logic jump rules'),
-    variables: z.any().optional().describe('Variables configuration'),
-  }))
-  .output(z.object({
-    formId: z.string().describe('ID of the updated form'),
-    title: z.string().describe('Updated form title'),
-    fieldCount: z.number().describe('Number of fields after update'),
-    displayUrl: z.string().optional().describe('Public form URL'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      formId: z.string().describe('ID of the form to update'),
+      title: z.string().optional().describe('Updated form title'),
+      fields: z.array(z.any()).optional().describe('Complete array of field definitions'),
+      welcomeScreens: z.array(z.any()).optional().describe('Welcome screens array'),
+      thankYouScreens: z.array(z.any()).optional().describe('Thank-you screens array'),
+      themeUrl: z.string().optional().describe('Theme API URL to apply'),
+      hiddenFields: z.array(z.string()).optional().describe('Hidden field keys'),
+      settings: z.any().optional().describe('Form settings object'),
+      logic: z.array(z.any()).optional().describe('Logic jump rules'),
+      variables: z.any().optional().describe('Variables configuration')
+    })
+  )
+  .output(
+    z.object({
+      formId: z.string().describe('ID of the updated form'),
+      title: z.string().describe('Updated form title'),
+      fieldCount: z.number().describe('Number of fields after update'),
+      displayUrl: z.string().optional().describe('Public form URL')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TypeformClient({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let formData: Record<string, any> = {};
@@ -61,8 +62,9 @@ export let updateForm = SlateTool.create(
         formId: result.id,
         title: result.title,
         fieldCount: (result.fields || []).length,
-        displayUrl: result._links?.display,
+        displayUrl: result._links?.display
       },
-      message: `Updated form **${result.title}** (${result.id}).`,
+      message: `Updated form **${result.title}** (${result.id}).`
     };
-  }).build();
+  })
+  .build();

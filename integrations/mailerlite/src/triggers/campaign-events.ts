@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let campaignEventTypes = [
-  'campaign.sent',
-  'campaign.open',
-  'campaign.click',
-] as const;
+let campaignEventTypes = ['campaign.sent', 'campaign.open', 'campaign.click'] as const;
 
-export let campaignEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Campaign Events',
-    key: 'campaign_events',
-    description: 'Triggers when campaign events occur, such as a campaign finishing sending, a subscriber opening a campaign, or clicking a link.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of campaign event'),
-    webhookId: z.string().optional().describe('Webhook ID that fired the event'),
-    campaign: z.any().optional().describe('Campaign data from the webhook payload'),
-    subscriber: z.any().optional().describe('Subscriber data (for open/click events)'),
-    clickedUrl: z.string().optional().describe('Clicked link URL (for click events)'),
-    totalRecipients: z.number().optional().describe('Total recipients (for sent events)'),
-  }))
-  .output(z.object({
-    campaignId: z.string().optional().describe('Campaign ID'),
-    campaignName: z.string().optional().describe('Campaign name'),
-    subscriberId: z.string().optional().describe('Subscriber ID (for open/click events)'),
-    subscriberEmail: z.string().optional().describe('Subscriber email (for open/click events)'),
-    clickedUrl: z.string().optional().describe('Clicked URL (for click events)'),
-    totalRecipients: z.number().optional().describe('Total recipients (for sent events)'),
-  }))
+export let campaignEvents = SlateTrigger.create(spec, {
+  name: 'Campaign Events',
+  key: 'campaign_events',
+  description:
+    'Triggers when campaign events occur, such as a campaign finishing sending, a subscriber opening a campaign, or clicking a link.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of campaign event'),
+      webhookId: z.string().optional().describe('Webhook ID that fired the event'),
+      campaign: z.any().optional().describe('Campaign data from the webhook payload'),
+      subscriber: z.any().optional().describe('Subscriber data (for open/click events)'),
+      clickedUrl: z.string().optional().describe('Clicked link URL (for click events)'),
+      totalRecipients: z.number().optional().describe('Total recipients (for sent events)')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().optional().describe('Campaign ID'),
+      campaignName: z.string().optional().describe('Campaign name'),
+      subscriberId: z.string().optional().describe('Subscriber ID (for open/click events)'),
+      subscriberEmail: z
+        .string()
+        .optional()
+        .describe('Subscriber email (for open/click events)'),
+      clickedUrl: z.string().optional().describe('Clicked URL (for click events)'),
+      totalRecipients: z.number().optional().describe('Total recipients (for sent events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let result = await client.createWebhook({
@@ -42,24 +43,24 @@ export let campaignEvents = SlateTrigger.create(
         url: ctx.input.webhookBaseUrl,
         events: [...campaignEventTypes],
         enabled: true,
-        batchable: true, // Required for campaign.open and campaign.click
+        batchable: true // Required for campaign.open and campaign.click
       });
 
       return {
         registrationDetails: {
           webhookId: result.data.id,
-          secret: result.data.secret,
-        },
+          secret: result.data.secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let events: Array<any> = Array.isArray(body) ? body : [body];
 
@@ -74,14 +75,14 @@ export let campaignEvents = SlateTrigger.create(
           campaign,
           subscriber,
           clickedUrl: event.url || event.clicked_url || event.data?.url,
-          totalRecipients: event.total_recipients || campaign?.total_recipients,
+          totalRecipients: event.total_recipients || campaign?.total_recipients
         };
       });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let campaign = ctx.input.campaign;
       let subscriber = ctx.input.subscriber;
 
@@ -98,9 +99,9 @@ export let campaignEvents = SlateTrigger.create(
           subscriberId,
           subscriberEmail: subscriber?.email,
           clickedUrl: ctx.input.clickedUrl,
-          totalRecipients: ctx.input.totalRecipients,
-        },
+          totalRecipients: ctx.input.totalRecipients
+        }
       };
-    },
+    }
   })
   .build();

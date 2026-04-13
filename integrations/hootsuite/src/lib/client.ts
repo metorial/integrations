@@ -10,7 +10,7 @@ export class HootsuiteClient {
     this.api = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -91,7 +91,9 @@ export class HootsuiteClient {
     if (params.limit) queryParams['limit'] = String(params.limit);
     if (params.cursor) queryParams['cursor'] = params.cursor;
     if (params.includeUnscheduledReviewMessages !== undefined) {
-      queryParams['includeUnscheduledReviewMessages'] = String(params.includeUnscheduledReviewMessages);
+      queryParams['includeUnscheduledReviewMessages'] = String(
+        params.includeUnscheduledReviewMessages
+      );
     }
 
     let response = await this.api.get('/v1/messages', { params: queryParams });
@@ -112,7 +114,11 @@ export class HootsuiteClient {
     return response.data.data;
   }
 
-  async rejectMessage(messageId: string, sequenceNumber: number, reason?: string): Promise<any> {
+  async rejectMessage(
+    messageId: string,
+    sequenceNumber: number,
+    reason?: string
+  ): Promise<any> {
     let response = await this.api.post(`/v1/messages/${messageId}/reject`, {
       sequenceNumber,
       reason
@@ -122,7 +128,10 @@ export class HootsuiteClient {
 
   // ---- Media ----
 
-  async createMediaUploadUrl(sizeBytes: number, mimeType: string): Promise<{
+  async createMediaUploadUrl(
+    sizeBytes: number,
+    mimeType: string
+  ): Promise<{
     uploadUrl: string;
     mediaId: string;
     uploadUrlDurationSeconds: number;
@@ -146,11 +155,16 @@ export class HootsuiteClient {
 
   // ---- Organizations ----
 
-  async getOrganizationMembers(organizationId: string, cursor?: string): Promise<{ members: any[]; cursor?: string }> {
+  async getOrganizationMembers(
+    organizationId: string,
+    cursor?: string
+  ): Promise<{ members: any[]; cursor?: string }> {
     let params: Record<string, string> = {};
     if (cursor) params['cursor'] = cursor;
 
-    let response = await this.api.get(`/v1/organizations/${organizationId}/members`, { params });
+    let response = await this.api.get(`/v1/organizations/${organizationId}/members`, {
+      params
+    });
     return {
       members: response.data.data || [],
       cursor: response.data.cursor
@@ -158,12 +172,19 @@ export class HootsuiteClient {
   }
 
   async getOrganizationMember(organizationId: string, memberId: string): Promise<any> {
-    let response = await this.api.get(`/v1/organizations/${organizationId}/members/${memberId}`);
+    let response = await this.api.get(
+      `/v1/organizations/${organizationId}/members/${memberId}`
+    );
     return response.data.data;
   }
 
-  async getOrganizationMemberPermissions(organizationId: string, memberId: string): Promise<any> {
-    let response = await this.api.get(`/v1/organizations/${organizationId}/members/${memberId}/permissions`);
+  async getOrganizationMemberPermissions(
+    organizationId: string,
+    memberId: string
+  ): Promise<any> {
+    let response = await this.api.get(
+      `/v1/organizations/${organizationId}/members/${memberId}/permissions`
+    );
     return response.data.data;
   }
 
@@ -192,23 +213,36 @@ export class HootsuiteClient {
   }
 
   async getMemberTeams(organizationId: string, memberId: string): Promise<any[]> {
-    let response = await this.api.get(`/v1/organizations/${organizationId}/members/${memberId}/teams`);
+    let response = await this.api.get(
+      `/v1/organizations/${organizationId}/members/${memberId}/teams`
+    );
     return response.data.data || [];
   }
 
   async getMemberSocialProfiles(organizationId: string, memberId: string): Promise<any[]> {
-    let response = await this.api.get(`/v1/organizations/${organizationId}/members/${memberId}/socialProfiles`);
+    let response = await this.api.get(
+      `/v1/organizations/${organizationId}/members/${memberId}/socialProfiles`
+    );
     return response.data.data || [];
   }
 
-  async getMemberSocialProfilePermissions(organizationId: string, memberId: string, socialProfileId: string): Promise<any> {
-    let response = await this.api.get(`/v1/organizations/${organizationId}/members/${memberId}/socialProfiles/${socialProfileId}/permissions`);
+  async getMemberSocialProfilePermissions(
+    organizationId: string,
+    memberId: string,
+    socialProfileId: string
+  ): Promise<any> {
+    let response = await this.api.get(
+      `/v1/organizations/${organizationId}/members/${memberId}/socialProfiles/${socialProfileId}/permissions`
+    );
     return response.data.data;
   }
 
   // ---- Teams ----
 
-  async getOrganizationTeams(organizationId: string, cursor?: string): Promise<{ teams: any[]; cursor?: string }> {
+  async getOrganizationTeams(
+    organizationId: string,
+    cursor?: string
+  ): Promise<{ teams: any[]; cursor?: string }> {
     let params: Record<string, string> = {};
     if (cursor) params['cursor'] = cursor;
 
@@ -231,7 +265,10 @@ export class HootsuiteClient {
     return response.data.data;
   }
 
-  async getTeamMembers(teamId: string, cursor?: string): Promise<{ members: any[]; cursor?: string }> {
+  async getTeamMembers(
+    teamId: string,
+    cursor?: string
+  ): Promise<{ members: any[]; cursor?: string }> {
     let params: Record<string, string> = {};
     if (cursor) params['cursor'] = cursor;
 

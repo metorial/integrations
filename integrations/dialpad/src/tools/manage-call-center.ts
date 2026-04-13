@@ -3,38 +3,52 @@ import { DialpadClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCallCenterTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Call Center',
-    key: 'manage_call_center',
-    description: `Create, update, or delete a Dialpad call center. Also supports managing operators — adding or removing agents from a call center.`,
-    tags: {
-      destructive: true,
-    },
+export let manageCallCenterTool = SlateTool.create(spec, {
+  name: 'Manage Call Center',
+  key: 'manage_call_center',
+  description: `Create, update, or delete a Dialpad call center. Also supports managing operators — adding or removing agents from a call center.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'add_operator', 'remove_operator']).describe('Action to perform'),
-    callCenterId: z.string().optional().describe('Call center ID (required for update, delete, add_operator, remove_operator)'),
-    officeId: z.string().optional().describe('Office ID (required for create)'),
-    name: z.string().optional().describe('Call center name (for create/update)'),
-    description: z.string().optional().describe('Call center description (for create/update)'),
-    operatorUserId: z.number().optional().describe('User ID to add/remove as operator'),
-    operatorId: z.string().optional().describe('Operator ID (for remove_operator)'),
-    skillLevel: z.number().optional().describe('Skill level for the operator (for add_operator)'),
-  }))
-  .output(z.object({
-    callCenterId: z.string().optional().describe('Call center ID'),
-    name: z.string().optional(),
-    state: z.string().optional(),
-    actionPerformed: z.string(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete', 'add_operator', 'remove_operator'])
+        .describe('Action to perform'),
+      callCenterId: z
+        .string()
+        .optional()
+        .describe(
+          'Call center ID (required for update, delete, add_operator, remove_operator)'
+        ),
+      officeId: z.string().optional().describe('Office ID (required for create)'),
+      name: z.string().optional().describe('Call center name (for create/update)'),
+      description: z
+        .string()
+        .optional()
+        .describe('Call center description (for create/update)'),
+      operatorUserId: z.number().optional().describe('User ID to add/remove as operator'),
+      operatorId: z.string().optional().describe('Operator ID (for remove_operator)'),
+      skillLevel: z
+        .number()
+        .optional()
+        .describe('Skill level for the operator (for add_operator)')
+    })
+  )
+  .output(
+    z.object({
+      callCenterId: z.string().optional().describe('Call center ID'),
+      name: z.string().optional(),
+      state: z.string().optional(),
+      actionPerformed: z.string(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DialpadClient({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action, callCenterId, officeId, name, description } = ctx.input;
@@ -50,9 +64,9 @@ export let manageCallCenterTool = SlateTool.create(
           callCenterId: String(cc.id),
           name: cc.name,
           state: cc.state,
-          actionPerformed: 'create',
+          actionPerformed: 'create'
         },
-        message: `Created call center **${cc.name}**`,
+        message: `Created call center **${cc.name}**`
       };
     }
 
@@ -70,9 +84,9 @@ export let manageCallCenterTool = SlateTool.create(
           callCenterId: String(cc.id),
           name: cc.name,
           state: cc.state,
-          actionPerformed: 'update',
+          actionPerformed: 'update'
         },
-        message: `Updated call center **${cc.name || callCenterId}**`,
+        message: `Updated call center **${cc.name || callCenterId}**`
       };
     }
 
@@ -85,9 +99,9 @@ export let manageCallCenterTool = SlateTool.create(
         output: {
           callCenterId,
           actionPerformed: 'delete',
-          deleted: true,
+          deleted: true
         },
-        message: `Deleted call center **${callCenterId}**`,
+        message: `Deleted call center **${callCenterId}**`
       };
     }
 
@@ -97,15 +111,15 @@ export let manageCallCenterTool = SlateTool.create(
 
       await client.addCallCenterOperator(callCenterId, {
         user_id: ctx.input.operatorUserId,
-        skill_level: ctx.input.skillLevel,
+        skill_level: ctx.input.skillLevel
       });
 
       return {
         output: {
           callCenterId,
-          actionPerformed: 'add_operator',
+          actionPerformed: 'add_operator'
         },
-        message: `Added operator **${ctx.input.operatorUserId}** to call center **${callCenterId}**`,
+        message: `Added operator **${ctx.input.operatorUserId}** to call center **${callCenterId}**`
       };
     }
 
@@ -118,9 +132,9 @@ export let manageCallCenterTool = SlateTool.create(
       return {
         output: {
           callCenterId,
-          actionPerformed: 'remove_operator',
+          actionPerformed: 'remove_operator'
         },
-        message: `Removed operator **${ctx.input.operatorId}** from call center **${callCenterId}**`,
+        message: `Removed operator **${ctx.input.operatorId}** from call center **${callCenterId}**`
       };
     }
 

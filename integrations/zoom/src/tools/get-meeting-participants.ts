@@ -3,42 +3,54 @@ import { ZoomClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getMeetingParticipants = SlateTool.create(
-  spec,
-  {
-    name: 'Get Meeting Participants',
-    key: 'get_meeting_participants',
-    description: `Retrieve the participant report for a past meeting. Returns participant names, join/leave times, duration, and email addresses. Uses the Reports API and requires Business or higher plan.`,
-    constraints: ['Only available for past (ended) meetings', 'Requires Business or higher plan', 'Requires report:read:admin scope'],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getMeetingParticipants = SlateTool.create(spec, {
+  name: 'Get Meeting Participants',
+  key: 'get_meeting_participants',
+  description: `Retrieve the participant report for a past meeting. Returns participant names, join/leave times, duration, and email addresses. Uses the Reports API and requires Business or higher plan.`,
+  constraints: [
+    'Only available for past (ended) meetings',
+    'Requires Business or higher plan',
+    'Requires report:read:admin scope'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    meetingId: z.string().describe('The meeting UUID or ID (use UUID for accuracy)'),
-    pageSize: z.number().optional().describe('Number of records per page (max 300)'),
-    nextPageToken: z.string().optional().describe('Pagination token for next page'),
-  }))
-  .output(z.object({
-    totalRecords: z.number().optional().describe('Total number of participants'),
-    nextPageToken: z.string().optional().describe('Token for next page'),
-    participants: z.array(z.object({
-      odataUserId: z.string().optional().describe('User ID if the participant was authenticated'),
-      participantName: z.string().optional().describe('Participant display name'),
-      email: z.string().optional().describe('Participant email'),
-      joinTime: z.string().optional().describe('Time when participant joined'),
-      leaveTime: z.string().optional().describe('Time when participant left'),
-      durationInSeconds: z.number().optional().describe('Duration in seconds'),
-      attentivenessScore: z.string().optional().describe('Attentiveness score'),
-    })).describe('List of participants'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      meetingId: z.string().describe('The meeting UUID or ID (use UUID for accuracy)'),
+      pageSize: z.number().optional().describe('Number of records per page (max 300)'),
+      nextPageToken: z.string().optional().describe('Pagination token for next page')
+    })
+  )
+  .output(
+    z.object({
+      totalRecords: z.number().optional().describe('Total number of participants'),
+      nextPageToken: z.string().optional().describe('Token for next page'),
+      participants: z
+        .array(
+          z.object({
+            odataUserId: z
+              .string()
+              .optional()
+              .describe('User ID if the participant was authenticated'),
+            participantName: z.string().optional().describe('Participant display name'),
+            email: z.string().optional().describe('Participant email'),
+            joinTime: z.string().optional().describe('Time when participant joined'),
+            leaveTime: z.string().optional().describe('Time when participant left'),
+            durationInSeconds: z.number().optional().describe('Duration in seconds'),
+            attentivenessScore: z.string().optional().describe('Attentiveness score')
+          })
+        )
+        .describe('List of participants')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZoomClient(ctx.auth.token);
     let result = await client.getMeetingParticipantReport(ctx.input.meetingId, {
       pageSize: ctx.input.pageSize,
-      nextPageToken: ctx.input.nextPageToken,
+      nextPageToken: ctx.input.nextPageToken
     });
 
     let participants = (result.participants || []).map((p: any) => ({
@@ -48,16 +60,16 @@ export let getMeetingParticipants = SlateTool.create(
       joinTime: p.join_time,
       leaveTime: p.leave_time,
       durationInSeconds: p.duration,
-      attentivenessScore: p.attentiveness_score,
+      attentivenessScore: p.attentiveness_score
     }));
 
     return {
       output: {
         totalRecords: result.total_records,
         nextPageToken: result.next_page_token || undefined,
-        participants,
+        participants
       },
-      message: `Found **${participants.length}** participant(s) for meeting **${ctx.input.meetingId}**.`,
+      message: `Found **${participants.length}** participant(s) for meeting **${ctx.input.meetingId}**.`
     };
   })
   .build();

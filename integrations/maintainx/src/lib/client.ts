@@ -4,7 +4,7 @@ import type {
   WorkOrderStatus,
   WorkOrderPriority,
   AssetStatus,
-  DowntimeType,
+  DowntimeType
 } from './types';
 
 export interface ClientConfig {
@@ -17,7 +17,7 @@ export class Client {
 
   constructor(private config: ClientConfig) {
     let headers: Record<string, string> = {
-      Authorization: `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`
     };
 
     if (config.organizationId) {
@@ -26,22 +26,24 @@ export class Client {
 
     this.axios = createAxios({
       baseURL: 'https://api.getmaintainx.com/v1',
-      headers,
+      headers
     });
   }
 
   // --- Work Orders ---
 
-  async listWorkOrders(params?: PaginationParams & {
-    status?: WorkOrderStatus;
-    priority?: WorkOrderPriority;
-    type?: string;
-    expand?: string[];
-    createdAtGte?: string;
-    createdAtLte?: string;
-    updatedAtGte?: string;
-    updatedAtLte?: string;
-  }) {
+  async listWorkOrders(
+    params?: PaginationParams & {
+      status?: WorkOrderStatus;
+      priority?: WorkOrderPriority;
+      type?: string;
+      expand?: string[];
+      createdAtGte?: string;
+      createdAtLte?: string;
+      updatedAtGte?: string;
+      updatedAtLte?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
 
     if (params?.cursor) queryParams.cursor = params.cursor;
@@ -94,19 +96,22 @@ export class Client {
     return response.data;
   }
 
-  async updateWorkOrder(workOrderId: number, data: {
-    title?: string;
-    description?: string;
-    priority?: WorkOrderPriority;
-    status?: WorkOrderStatus;
-    assignees?: number[];
-    assetId?: number;
-    locationId?: number;
-    categories?: string[];
-    dueDate?: string;
-    teamId?: number;
-    extraFields?: Record<string, any>[];
-  }) {
+  async updateWorkOrder(
+    workOrderId: number,
+    data: {
+      title?: string;
+      description?: string;
+      priority?: WorkOrderPriority;
+      status?: WorkOrderStatus;
+      assignees?: number[];
+      assetId?: number;
+      locationId?: number;
+      categories?: string[];
+      dueDate?: string;
+      teamId?: number;
+      extraFields?: Record<string, any>[];
+    }
+  ) {
     let response = await this.axios.patch(`/workorders/${workOrderId}`, data);
     return response.data;
   }
@@ -140,10 +145,12 @@ export class Client {
 
   // --- Assets ---
 
-  async listAssets(params?: PaginationParams & {
-    locationId?: number;
-    expand?: string[];
-  }) {
+  async listAssets(
+    params?: PaginationParams & {
+      locationId?: number;
+      expand?: string[];
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.cursor) queryParams.cursor = params.cursor;
     if (params?.limit) queryParams.limit = params.limit;
@@ -182,20 +189,23 @@ export class Client {
     return response.data;
   }
 
-  async updateAsset(assetId: number, data: {
-    name?: string;
-    description?: string;
-    barcode?: string;
-    serialNumber?: string;
-    manufacturer?: string;
-    model?: string;
-    locationId?: number;
-    parentId?: number;
-    teamIds?: number[];
-    assetTypes?: string[];
-    vendorIds?: number[];
-    extraFields?: Record<string, any>[];
-  }) {
+  async updateAsset(
+    assetId: number,
+    data: {
+      name?: string;
+      description?: string;
+      barcode?: string;
+      serialNumber?: string;
+      manufacturer?: string;
+      model?: string;
+      locationId?: number;
+      parentId?: number;
+      teamIds?: number[];
+      assetTypes?: string[];
+      vendorIds?: number[];
+      extraFields?: Record<string, any>[];
+    }
+  ) {
     let response = await this.axios.patch(`/assets/${assetId}`, data);
     return response.data;
   }
@@ -204,14 +214,17 @@ export class Client {
     await this.axios.delete(`/assets/${assetId}`);
   }
 
-  async createAssetStatus(assetId: number, data: {
-    status: AssetStatus;
-    customStatusId?: number;
-    downtimeType?: DowntimeType;
-    startedAt?: string;
-    endedAt?: string;
-    description?: string;
-  }) {
+  async createAssetStatus(
+    assetId: number,
+    data: {
+      status: AssetStatus;
+      customStatusId?: number;
+      downtimeType?: DowntimeType;
+      startedAt?: string;
+      endedAt?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.axios.post(`/assets/${assetId}/status`, data);
     return response.data;
   }
@@ -273,16 +286,19 @@ export class Client {
     return response.data;
   }
 
-  async updatePart(partId: number, data: {
-    name?: string;
-    description?: string;
-    unitCost?: number;
-    quantity?: number;
-    minimumQuantity?: number;
-    area?: string;
-    barcode?: string;
-    nonStock?: boolean;
-  }) {
+  async updatePart(
+    partId: number,
+    data: {
+      name?: string;
+      description?: string;
+      unitCost?: number;
+      quantity?: number;
+      minimumQuantity?: number;
+      area?: string;
+      barcode?: string;
+      nonStock?: boolean;
+    }
+  ) {
     let response = await this.axios.patch(`/parts/${partId}`, data);
     return response.data;
   }
@@ -304,10 +320,13 @@ export class Client {
     return response.data;
   }
 
-  async createMeterReading(meterId: number, data: {
-    value: number;
-    date?: string;
-  }) {
+  async createMeterReading(
+    meterId: number,
+    data: {
+      value: number;
+      date?: string;
+    }
+  ) {
     let response = await this.axios.post(`/meters/${meterId}/readings`, data);
     return response.data;
   }
@@ -425,9 +444,12 @@ export class Client {
     return response.data;
   }
 
-  async createMessage(conversationId: number, data: {
-    content: string;
-  }) {
+  async createMessage(
+    conversationId: number,
+    data: {
+      content: string;
+    }
+  ) {
     let response = await this.axios.post(`/conversations/${conversationId}/messages`, data);
     return response.data;
   }

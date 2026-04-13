@@ -13,7 +13,7 @@ import {
   manageKeys,
   manageRules,
   manageQueues,
-  manageNamespaces,
+  manageNamespaces
 } from './tools';
 import { channelEvents } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     manageKeys,
     manageRules,
     manageQueues,
-    manageNamespaces,
+    manageNamespaces
   ],
-  triggers: [
-    channelEvents,
-  ],
+  triggers: [channelEvents]
 });

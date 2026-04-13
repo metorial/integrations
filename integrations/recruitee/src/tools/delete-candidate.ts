@@ -3,32 +3,33 @@ import { RecruiteeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteCandidate = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Candidate',
-    key: 'delete_candidate',
-    description: `Permanently delete a candidate from Recruitee. This removes the candidate and all associated data including placements, notes, and attachments.`,
-    instructions: [
-      'This action is irreversible. Make sure you have the correct candidate ID before proceeding.',
-    ],
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteCandidate = SlateTool.create(spec, {
+  name: 'Delete Candidate',
+  key: 'delete_candidate',
+  description: `Permanently delete a candidate from Recruitee. This removes the candidate and all associated data including placements, notes, and attachments.`,
+  instructions: [
+    'This action is irreversible. Make sure you have the correct candidate ID before proceeding.'
+  ],
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    candidateId: z.number().describe('ID of the candidate to delete'),
-  }))
-  .output(z.object({
-    candidateId: z.number().describe('ID of the deleted candidate'),
-    deleted: z.boolean().describe('Whether the candidate was successfully deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      candidateId: z.number().describe('ID of the candidate to delete')
+    })
+  )
+  .output(
+    z.object({
+      candidateId: z.number().describe('ID of the deleted candidate'),
+      deleted: z.boolean().describe('Whether the candidate was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RecruiteeClient({
       token: ctx.auth.token,
-      companyId: ctx.config.companyId,
+      companyId: ctx.config.companyId
     });
 
     await client.deleteCandidate(ctx.input.candidateId);
@@ -36,8 +37,9 @@ export let deleteCandidate = SlateTool.create(
     return {
       output: {
         candidateId: ctx.input.candidateId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted candidate ID ${ctx.input.candidateId}.`,
+      message: `Deleted candidate ID ${ctx.input.candidateId}.`
     };
-  }).build();
+  })
+  .build();

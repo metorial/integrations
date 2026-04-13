@@ -3,43 +3,68 @@ import { SnowflakeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Create, retrieve, list, or delete Snowflake users. Users represent individual accounts that can connect to and interact with Snowflake. When creating a user, optionally assign a default role, warehouse, and namespace.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Create, retrieve, list, or delete Snowflake users. Users represent individual accounts that can connect to and interact with Snowflake. When creating a user, optionally assign a default role, warehouse, and namespace.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'create', 'delete']).describe('Operation to perform'),
-    userName: z.string().optional().describe('User login name (required for get, create, delete)'),
-    like: z.string().optional().describe('SQL LIKE pattern to filter users when listing'),
-    showLimit: z.number().optional().describe('Maximum number of users to return when listing'),
-    createMode: z.enum(['errorIfExists', 'orReplace', 'ifNotExists']).optional().describe('Creation behavior'),
-    displayName: z.string().optional().describe('Display name for the user'),
-    email: z.string().optional().describe('Email address for the user'),
-    defaultRole: z.string().optional().describe('Default role assigned to the user'),
-    defaultWarehouse: z.string().optional().describe('Default warehouse assigned to the user'),
-    defaultNamespace: z.string().optional().describe('Default database.schema namespace for the user'),
-    comment: z.string().optional().describe('User comment'),
-    disabled: z.boolean().optional().describe('Whether the user account is disabled'),
-    ifExists: z.boolean().optional().describe('When true, delete succeeds even if the user does not exist'),
-  }))
-  .output(z.object({
-    users: z.array(z.record(z.string(), z.any())).optional().describe('List of users (for list action)'),
-    user: z.record(z.string(), z.any()).optional().describe('User details (for get/create actions)'),
-    deleted: z.boolean().optional().describe('Whether the user was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'get', 'create', 'delete']).describe('Operation to perform'),
+      userName: z
+        .string()
+        .optional()
+        .describe('User login name (required for get, create, delete)'),
+      like: z.string().optional().describe('SQL LIKE pattern to filter users when listing'),
+      showLimit: z
+        .number()
+        .optional()
+        .describe('Maximum number of users to return when listing'),
+      createMode: z
+        .enum(['errorIfExists', 'orReplace', 'ifNotExists'])
+        .optional()
+        .describe('Creation behavior'),
+      displayName: z.string().optional().describe('Display name for the user'),
+      email: z.string().optional().describe('Email address for the user'),
+      defaultRole: z.string().optional().describe('Default role assigned to the user'),
+      defaultWarehouse: z
+        .string()
+        .optional()
+        .describe('Default warehouse assigned to the user'),
+      defaultNamespace: z
+        .string()
+        .optional()
+        .describe('Default database.schema namespace for the user'),
+      comment: z.string().optional().describe('User comment'),
+      disabled: z.boolean().optional().describe('Whether the user account is disabled'),
+      ifExists: z
+        .boolean()
+        .optional()
+        .describe('When true, delete succeeds even if the user does not exist')
+    })
+  )
+  .output(
+    z.object({
+      users: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('List of users (for list action)'),
+      user: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('User details (for get/create actions)'),
+      deleted: z.boolean().optional().describe('Whether the user was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnowflakeClient({
       accountIdentifier: ctx.config.accountIdentifier,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     let { action, userName } = ctx.input;
@@ -47,11 +72,11 @@ export let manageUser = SlateTool.create(
     if (action === 'list') {
       let users = await client.listUsers({
         like: ctx.input.like,
-        showLimit: ctx.input.showLimit,
+        showLimit: ctx.input.showLimit
       });
       return {
         output: { users },
-        message: `Found **${users.length}** user(s)`,
+        message: `Found **${users.length}** user(s)`
       };
     }
 
@@ -63,7 +88,7 @@ export let manageUser = SlateTool.create(
       let user = await client.getUser(userName);
       return {
         output: { user },
-        message: `Retrieved user **${userName}**`,
+        message: `Retrieved user **${userName}**`
       };
     }
 
@@ -80,7 +105,7 @@ export let manageUser = SlateTool.create(
       let user = await client.createUser(body, ctx.input.createMode);
       return {
         output: { user },
-        message: `Created user **${userName}**`,
+        message: `Created user **${userName}**`
       };
     }
 
@@ -88,7 +113,7 @@ export let manageUser = SlateTool.create(
       await client.deleteUser(userName, ctx.input.ifExists);
       return {
         output: { deleted: true },
-        message: `Deleted user **${userName}**`,
+        message: `Deleted user **${userName}**`
       };
     }
 

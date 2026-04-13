@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -13,29 +15,32 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       apiKey: z.string().describe('Your Helpwise API Key'),
-      apiSecret: z.string().describe('Your Helpwise API Secret'),
+      apiSecret: z.string().describe('Your Helpwise API Secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: `${ctx.input.apiKey}:${ctx.input.apiSecret}`,
+          token: `${ctx.input.apiKey}:${ctx.input.apiSecret}`
         }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { apiKey: string; apiSecret: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { apiKey: string; apiSecret: string };
+    }) => {
       let axios = createAxios({
-        baseURL: 'https://app.helpwise.io/dev-apis',
+        baseURL: 'https://app.helpwise.io/dev-apis'
       });
 
       let response = await axios.request({
         method: 'GET',
         url: '/v1/users/me',
         headers: {
-          'Authorization': ctx.output.token,
-          'Accept': 'application/json',
-        },
+          Authorization: ctx.output.token,
+          Accept: 'application/json'
+        }
       });
 
       let user = response.data;
@@ -44,8 +49,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id?.toString(),
           email: user.email,
-          name: user.name || user.full_name,
+          name: user.name || user.full_name
         }
       };
-    },
+    }
   });

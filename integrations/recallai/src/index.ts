@@ -12,12 +12,12 @@ import {
   outputMediaTool,
   listCalendarsTool,
   listCalendarEventsTool,
-  scheduleBotForEventTool,
+  scheduleBotForEventTool
 } from './tools';
 import {
   botStatusChangeTrigger,
   recordingStatusChangeTrigger,
-  calendarEventChangeTrigger,
+  calendarEventChangeTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -34,11 +34,7 @@ export let provider = Slate.create({
     outputMediaTool,
     listCalendarsTool,
     listCalendarEventsTool,
-    scheduleBotForEventTool,
+    scheduleBotForEventTool
   ],
-  triggers: [
-    botStatusChangeTrigger,
-    recordingStatusChangeTrigger,
-    calendarEventChangeTrigger,
-  ],
+  triggers: [botStatusChangeTrigger, recordingStatusChangeTrigger, calendarEventChangeTrigger]
 });

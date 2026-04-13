@@ -3,36 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchMembers = SlateTool.create(
-  spec,
-  {
-    name: 'Search Members',
-    key: 'search_members',
-    description: `Search for members in the directory using various criteria such as keyword, category, location, and date range.
+export let searchMembers = SlateTool.create(spec, {
+  name: 'Search Members',
+  key: 'search_members',
+  description: `Search for members in the directory using various criteria such as keyword, category, location, and date range.
 Returns paginated results.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Keyword search query.'),
-    category: z.string().optional().describe('Category filter.'),
-    address: z.string().optional().describe('Location/address filter for location-based searching.'),
-    dateRange: z.string().optional().describe('Date range filter.'),
-    limit: z.number().optional().describe('Number of results per page (20-100).'),
-    page: z.string().optional().describe('Pagination token from a previous response.'),
-    outputType: z.enum(['array', 'html']).optional().describe('Output format. Defaults to array.'),
-    additionalFilters: z.record(z.string(), z.string()).optional().describe('Any additional search filters as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    members: z.any().describe('The search results.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Keyword search query.'),
+      category: z.string().optional().describe('Category filter.'),
+      address: z
+        .string()
+        .optional()
+        .describe('Location/address filter for location-based searching.'),
+      dateRange: z.string().optional().describe('Date range filter.'),
+      limit: z.number().optional().describe('Number of results per page (20-100).'),
+      page: z.string().optional().describe('Pagination token from a previous response.'),
+      outputType: z
+        .enum(['array', 'html'])
+        .optional()
+        .describe('Output format. Defaults to array.'),
+      additionalFilters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional search filters as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      members: z.any().describe('The search results.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let params: Record<string, any> = {};
@@ -54,8 +64,9 @@ Returns paginated results.`,
     return {
       output: {
         status: result.status,
-        members: result.message,
+        members: result.message
       },
-      message: `Found members matching the search criteria.`,
+      message: `Found members matching the search criteria.`
     };
-  }).build();
+  })
+  .build();

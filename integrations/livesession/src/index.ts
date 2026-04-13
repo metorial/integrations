@@ -40,7 +40,5 @@ export let provider = Slate.create({
     setFunnelFavourite,
     computeFunnel
   ],
-  triggers: [
-    sessionEvent
-  ]
+  triggers: [sessionEvent]
 });

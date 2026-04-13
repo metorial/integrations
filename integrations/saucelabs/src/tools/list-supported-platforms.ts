@@ -11,26 +11,33 @@ let platformSchema = z.object({
   automationBackend: z.string().optional().describe('Automation backend (webdriver, appium)'),
   device: z.string().optional().describe('Device name (for mobile platforms)'),
   longVersion: z.string().optional().describe('Full version string'),
-  recommendedBackendVersion: z.string().optional().describe('Recommended automation backend version'),
+  recommendedBackendVersion: z
+    .string()
+    .optional()
+    .describe('Recommended automation backend version')
 });
 
-export let listSupportedPlatforms = SlateTool.create(
-  spec,
-  {
-    name: 'List Supported Platforms',
-    key: 'list_supported_platforms',
-    description: `Retrieve the list of supported browser, OS, and device combinations available on Sauce Labs. Filter by automation framework to see only WebDriver or Appium platforms.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    automationApi: z.enum(['all', 'webdriver', 'appium']).default('all').describe('Filter by automation framework'),
-  }))
-  .output(z.object({
-    platforms: z.array(platformSchema).describe('Supported platform combinations'),
-    totalCount: z.number().describe('Total number of platforms'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listSupportedPlatforms = SlateTool.create(spec, {
+  name: 'List Supported Platforms',
+  key: 'list_supported_platforms',
+  description: `Retrieve the list of supported browser, OS, and device combinations available on Sauce Labs. Filter by automation framework to see only WebDriver or Appium platforms.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      automationApi: z
+        .enum(['all', 'webdriver', 'appium'])
+        .default('all')
+        .describe('Filter by automation framework')
+    })
+  )
+  .output(
+    z.object({
+      platforms: z.array(platformSchema).describe('Supported platform combinations'),
+      totalCount: z.number().describe('Total number of platforms')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let result = await client.getSupportedPlatforms(ctx.input.automationApi);
 
@@ -42,12 +49,12 @@ export let listSupportedPlatforms = SlateTool.create(
       automationBackend: p.automation_backend,
       device: p.device || undefined,
       longVersion: p.long_version,
-      recommendedBackendVersion: p.recommended_backend_version,
+      recommendedBackendVersion: p.recommended_backend_version
     }));
 
     return {
       output: { platforms, totalCount: platforms.length },
-      message: `Found **${platforms.length}** supported platform combinations for **${ctx.input.automationApi}**.`,
+      message: `Found **${platforms.length}** supported platform combinations for **${ctx.input.automationApi}**.`
     };
   })
   .build();

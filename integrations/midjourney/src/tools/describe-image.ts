@@ -3,50 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let describeImage = SlateTool.create(
-  spec,
-  {
-    name: 'Describe Image',
-    key: 'describe_image',
-    description: `Analyze an image and generate text prompt suggestions that could produce similar images in Midjourney. Returns up to 4 descriptive prompts inspired by the visual content, style, and composition of the input image.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let describeImage = SlateTool.create(spec, {
+  name: 'Describe Image',
+  key: 'describe_image',
+  description: `Analyze an image and generate text prompt suggestions that could produce similar images in Midjourney. Returns up to 4 descriptive prompts inspired by the visual content, style, and composition of the input image.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
-      imageUrl: z.string().describe('URL of the image to describe. Must be publicly accessible on the internet.'),
-      waitForResult: z.boolean().optional().default(false).describe('If true, polls until description completes and returns prompt suggestions'),
+      imageUrl: z
+        .string()
+        .describe(
+          'URL of the image to describe. Must be publicly accessible on the internet.'
+        ),
+      waitForResult: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('If true, polls until description completes and returns prompt suggestions')
     })
   )
   .output(
     z.object({
       taskId: z.string().describe('Unique identifier for the describe task'),
       status: z.string().optional().describe('Current status of the task'),
-      prompts: z.array(z.string()).optional().describe('Generated text prompt suggestions based on the image'),
+      prompts: z
+        .array(z.string())
+        .optional()
+        .describe('Generated text prompt suggestions based on the image')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     ctx.progress('Submitting describe request...');
 
     let submitResult = await client.describe({
-      imageUrl: ctx.input.imageUrl,
+      imageUrl: ctx.input.imageUrl
     });
 
     if (!ctx.input.waitForResult) {
       return {
         output: {
           taskId: submitResult.task_id,
-          status: 'submitted',
+          status: 'submitted'
         },
-        message: `Describe task **${submitResult.task_id}** submitted. Use the **Fetch Task** tool to check its status.`,
+        message: `Describe task **${submitResult.task_id}** submitted. Use the **Fetch Task** tool to check its status.`
       };
     }
 
@@ -58,9 +66,9 @@ export let describeImage = SlateTool.create(
       output: {
         taskId: result.task_id,
         status: 'completed',
-        prompts: result.content,
+        prompts: result.content
       },
-      message: `Description completed. ${result.content?.length ?? 0} prompt suggestions generated.${result.content ? '\n\n' + result.content.map((p, i) => `${i + 1}. ${p}`).join('\n') : ''}`,
+      message: `Description completed. ${result.content?.length ?? 0} prompt suggestions generated.${result.content ? '\n\n' + result.content.map((p, i) => `${i + 1}. ${p}`).join('\n') : ''}`
     };
   })
   .build();

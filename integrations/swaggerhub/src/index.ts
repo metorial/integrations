@@ -13,7 +13,7 @@ import {
   manageIntegrations,
   manageProjects,
   runStandardization,
-  getCollaboration,
+  getCollaboration
 } from './tools';
 import { apiVersionEvent } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     manageIntegrations,
     manageProjects,
     runStandardization,
-    getCollaboration,
+    getCollaboration
   ],
-  triggers: [
-    apiVersionEvent,
-  ],
+  triggers: [apiVersionEvent]
 });

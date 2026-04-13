@@ -3,31 +3,38 @@ import { GleapClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCollection = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Help Center Collection',
-    key: 'manage_collection',
-    description: `Create, update, or delete a help center collection (category). Collections organize help center articles into groups.`,
-    tags: {
-      destructive: false
-    }
+export let manageCollection = SlateTool.create(spec, {
+  name: 'Manage Help Center Collection',
+  key: 'manage_collection',
+  description: `Create, update, or delete a help center collection (category). Collections organize help center articles into groups.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    collectionId: z.string().optional().describe('Collection ID (required for update and delete)'),
-    title: z.string().optional().describe('Collection title (required for create)'),
-    description: z.string().optional().describe('Collection description'),
-    iconUrl: z.string().optional().describe('URL for the collection icon'),
-    parentId: z.string().optional().describe('Parent collection ID for nesting'),
-    targetAudience: z.string().optional().describe('Target audience (default: all)')
-  }))
-  .output(z.object({
-    collection: z.record(z.string(), z.any()).optional().describe('The collection object (for create/update)'),
-    deleted: z.boolean().optional().describe('Whether the collection was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      collectionId: z
+        .string()
+        .optional()
+        .describe('Collection ID (required for update and delete)'),
+      title: z.string().optional().describe('Collection title (required for create)'),
+      description: z.string().optional().describe('Collection description'),
+      iconUrl: z.string().optional().describe('URL for the collection icon'),
+      parentId: z.string().optional().describe('Parent collection ID for nesting'),
+      targetAudience: z.string().optional().describe('Target audience (default: all)')
+    })
+  )
+  .output(
+    z.object({
+      collection: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('The collection object (for create/update)'),
+      deleted: z.boolean().optional().describe('Whether the collection was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GleapClient({
       token: ctx.auth.token,
       projectId: ctx.auth.projectId

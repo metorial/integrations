@@ -9,8 +9,8 @@ export class OdpClient {
       baseURL: 'https://api.zaius.com',
       headers: {
         'x-api-key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -18,8 +18,8 @@ export class OdpClient {
   async getCustomer(identifierField: string, identifierValue: string) {
     let response = await this.axios.get(`/v3/profiles`, {
       params: {
-        [identifierField]: identifierValue,
-      },
+        [identifierField]: identifierValue
+      }
     });
     return response.data;
   }
@@ -43,12 +43,14 @@ export class OdpClient {
     return response.data;
   }
 
-  async sendEvents(events: Array<{
-    type: string;
-    action: string;
-    identifiers: Record<string, string>;
-    data?: Record<string, any>;
-  }>) {
+  async sendEvents(
+    events: Array<{
+      type: string;
+      action: string;
+      identifiers: Record<string, string>;
+      data?: Record<string, any>;
+    }>
+  ) {
     let response = await this.axios.post('/v3/events', events);
     return response.data;
   }
@@ -65,8 +67,8 @@ export class OdpClient {
         [params.identifierField]: params.identifierValue,
         event_type: params.eventType,
         limit: params.limit,
-        offset: params.offset,
-      },
+        offset: params.offset
+      }
     });
     return response.data;
   }
@@ -78,7 +80,9 @@ export class OdpClient {
   }
 
   async getCustomerSegments(identifierField: string, identifierValue: string) {
-    let response = await this.axios.get(`/v3/profiles/${identifierField}/${identifierValue}/segments`);
+    let response = await this.axios.get(
+      `/v3/profiles/${identifierField}/${identifierValue}/segments`
+    );
     return response.data;
   }
 

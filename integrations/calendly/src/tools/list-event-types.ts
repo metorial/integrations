@@ -3,48 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listEventTypes = SlateTool.create(
-  spec,
-  {
-    name: 'List Event Types',
-    key: 'list_event_types',
-    description: `List event type templates (e.g., "30-min Demo", "Onboarding Call") for a user or organization. Event types define the meeting configurations including duration, location, and custom questions.`,
-    instructions: [
-      'Provide either userUri or organizationUri to scope the results.',
-      'Use the event type URI in other tools like checking availability or creating scheduling links.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let listEventTypes = SlateTool.create(spec, {
+  name: 'List Event Types',
+  key: 'list_event_types',
+  description: `List event type templates (e.g., "30-min Demo", "Onboarding Call") for a user or organization. Event types define the meeting configurations including duration, location, and custom questions.`,
+  instructions: [
+    'Provide either userUri or organizationUri to scope the results.',
+    'Use the event type URI in other tools like checking availability or creating scheduling links.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    userUri: z.string().optional().describe('User URI to list event types for'),
-    organizationUri: z.string().optional().describe('Organization URI to list event types across all members'),
-    active: z.boolean().optional().describe('Filter by active status'),
-    sort: z.string().optional().describe('Sort order, e.g. "name:asc" or "name:desc"'),
-    count: z.number().optional().describe('Number of results per page (max 100)'),
-    pageToken: z.string().optional().describe('Token for retrieving the next page of results')
-  }))
-  .output(z.object({
-    eventTypes: z.array(z.object({
-      eventTypeUri: z.string().describe('Unique URI of the event type'),
-      name: z.string().describe('Event type name'),
-      active: z.boolean().describe('Whether the event type is currently active'),
-      slug: z.string().describe('URL-friendly identifier'),
-      schedulingUrl: z.string().describe('URL for invitees to schedule this event type'),
-      duration: z.number().describe('Duration in minutes'),
-      kind: z.string().describe('Kind of event type (solo, group, etc.)'),
-      type: z.string().describe('Type classification'),
-      color: z.string().describe('Display color'),
-      descriptionPlain: z.string().nullable().describe('Plain text description'),
-      secret: z.boolean().describe('Whether this is a secret event type'),
-      createdAt: z.string(),
-      updatedAt: z.string()
-    })),
-    nextPageToken: z.string().nullable().describe('Token for the next page, null if no more results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      userUri: z.string().optional().describe('User URI to list event types for'),
+      organizationUri: z
+        .string()
+        .optional()
+        .describe('Organization URI to list event types across all members'),
+      active: z.boolean().optional().describe('Filter by active status'),
+      sort: z.string().optional().describe('Sort order, e.g. "name:asc" or "name:desc"'),
+      count: z.number().optional().describe('Number of results per page (max 100)'),
+      pageToken: z
+        .string()
+        .optional()
+        .describe('Token for retrieving the next page of results')
+    })
+  )
+  .output(
+    z.object({
+      eventTypes: z.array(
+        z.object({
+          eventTypeUri: z.string().describe('Unique URI of the event type'),
+          name: z.string().describe('Event type name'),
+          active: z.boolean().describe('Whether the event type is currently active'),
+          slug: z.string().describe('URL-friendly identifier'),
+          schedulingUrl: z.string().describe('URL for invitees to schedule this event type'),
+          duration: z.number().describe('Duration in minutes'),
+          kind: z.string().describe('Kind of event type (solo, group, etc.)'),
+          type: z.string().describe('Type classification'),
+          color: z.string().describe('Display color'),
+          descriptionPlain: z.string().nullable().describe('Plain text description'),
+          secret: z.boolean().describe('Whether this is a secret event type'),
+          createdAt: z.string(),
+          updatedAt: z.string()
+        })
+      ),
+      nextPageToken: z
+        .string()
+        .nullable()
+        .describe('Token for the next page, null if no more results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.listEventTypes({

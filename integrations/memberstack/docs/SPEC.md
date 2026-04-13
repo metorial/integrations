@@ -18,6 +18,7 @@ You can view and manage your API keys in the Memberstack dashboard. There are tw
 All requests are made to the base URL: `https://admin.memberstack.com`
 
 Example:
+
 ```
 GET https://admin.memberstack.com/members
 Headers:

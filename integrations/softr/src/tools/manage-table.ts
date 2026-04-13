@@ -5,8 +5,15 @@ import { z } from 'zod';
 
 let fieldInputSchema = z.object({
   name: z.string().describe('Field name'),
-  type: z.string().describe('Field type (e.g., SINGLE_LINE_TEXT, CHECKBOX, CURRENCY, DATE, DATETIME, DURATION, EMAIL, SELECT, NUMBER, ATTACHMENT, RATING, LINKED_RECORD, LONG_TEXT, URL, PERCENT, PHONE)'),
-  options: z.record(z.string(), z.unknown()).optional().describe('Type-specific configuration options'),
+  type: z
+    .string()
+    .describe(
+      'Field type (e.g., SINGLE_LINE_TEXT, CHECKBOX, CURRENCY, DATE, DATETIME, DURATION, EMAIL, SELECT, NUMBER, ATTACHMENT, RATING, LINKED_RECORD, LONG_TEXT, URL, PERCENT, PHONE)'
+    ),
+  options: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('Type-specific configuration options')
 });
 
 let fieldOutputSchema = z.object({
@@ -15,7 +22,7 @@ let fieldOutputSchema = z.object({
   type: z.string().describe('Field type'),
   description: z.string().nullable().optional().describe('Field description'),
   required: z.boolean().optional().describe('Whether the field is required'),
-  readonly: z.boolean().optional().describe('Whether the field is read-only'),
+  readonly: z.boolean().optional().describe('Whether the field is read-only')
 });
 
 let tableOutputSchema = z.object({
@@ -26,39 +33,52 @@ let tableOutputSchema = z.object({
   defaultViewId: z.string().describe('ID of the default view'),
   fields: z.array(fieldOutputSchema).describe('Table fields'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let manageTable = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Table',
-    key: 'manage_table',
-    description: `Create, retrieve, update, or delete a table in a Softr database.
+export let manageTable = SlateTool.create(spec, {
+  name: 'Manage Table',
+  key: 'manage_table',
+  description: `Create, retrieve, update, or delete a table in a Softr database.
 - To **create**: provide \`databaseId\` and \`name\`. Optionally include \`primaryFieldName\` and \`fields\`.
 - To **get**: provide \`databaseId\` and \`tableId\`.
 - To **update**: provide \`databaseId\`, \`tableId\`, and new \`name\`/\`description\`.
 - To **delete**: provide \`databaseId\`, \`tableId\`, and set \`delete\` to true.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    databaseId: z.string().describe('ID of the database'),
-    tableId: z.string().optional().describe('ID of the table (required for get/update/delete)'),
-    name: z.string().optional().describe('Table name (required for create, optional for update)'),
-    description: z.string().optional().describe('Table description'),
-    primaryFieldName: z.string().optional().describe('Name of the primary field (only for create)'),
-    fields: z.array(fieldInputSchema).optional().describe('Fields to create with the table (only for create)'),
-    delete: z.boolean().optional().describe('Set to true to delete the table'),
-  }))
-  .output(z.object({
-    table: tableOutputSchema.optional().describe('Table details (not returned on delete)'),
-    deleted: z.boolean().optional().describe('True if table was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      databaseId: z.string().describe('ID of the database'),
+      tableId: z
+        .string()
+        .optional()
+        .describe('ID of the table (required for get/update/delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Table name (required for create, optional for update)'),
+      description: z.string().optional().describe('Table description'),
+      primaryFieldName: z
+        .string()
+        .optional()
+        .describe('Name of the primary field (only for create)'),
+      fields: z
+        .array(fieldInputSchema)
+        .optional()
+        .describe('Fields to create with the table (only for create)'),
+      delete: z.boolean().optional().describe('Set to true to delete the table')
+    })
+  )
+  .output(
+    z.object({
+      table: tableOutputSchema.optional().describe('Table details (not returned on delete)'),
+      deleted: z.boolean().optional().describe('True if table was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DatabaseClient({ token: ctx.auth.token });
     let { databaseId, tableId, name, description, primaryFieldName, fields } = ctx.input;
 
@@ -74,10 +94,10 @@ export let manageTable = SlateTool.create(
         type: f.type,
         description: f.description ?? null,
         required: f.required,
-        readonly: f.readonly,
+        readonly: f.readonly
       })),
       createdAt: t.createdAt,
-      updatedAt: t.updatedAt,
+      updatedAt: t.updatedAt
     });
 
     if (ctx.input.delete) {
@@ -85,7 +105,7 @@ export let manageTable = SlateTool.create(
       await client.deleteTable(databaseId, tableId);
       return {
         output: { deleted: true },
-        message: `Table \`${tableId}\` deleted successfully.`,
+        message: `Table \`${tableId}\` deleted successfully.`
       };
     }
 
@@ -94,12 +114,12 @@ export let manageTable = SlateTool.create(
         name,
         description,
         primaryFieldName,
-        fields,
+        fields
       });
       let table = mapTable(result.data);
       return {
         output: { table },
-        message: `Table **${table.name}** created successfully with ${table.fields.length} field(s).`,
+        message: `Table **${table.name}** created successfully with ${table.fields.length} field(s).`
       };
     }
 
@@ -111,7 +131,7 @@ export let manageTable = SlateTool.create(
       let table = mapTable(result.data);
       return {
         output: { table },
-        message: `Table **${table.name}** updated successfully.`,
+        message: `Table **${table.name}** updated successfully.`
       };
     }
 
@@ -120,10 +140,12 @@ export let manageTable = SlateTool.create(
       let table = mapTable(result.data);
       return {
         output: { table },
-        message: `Retrieved table **${table.name}** with ${table.fields.length} field(s).`,
+        message: `Retrieved table **${table.name}** with ${table.fields.length} field(s).`
       };
     }
 
-    throw new Error('Invalid input: provide tableId (to get/update/delete) or name (to create).');
+    throw new Error(
+      'Invalid input: provide tableId (to get/update/delete) or name (to create).'
+    );
   })
   .build();

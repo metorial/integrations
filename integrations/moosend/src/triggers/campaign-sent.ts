@@ -6,30 +6,35 @@ import { z } from 'zod';
 export let campaignSent = SlateTrigger.create(spec, {
   name: 'Campaign Sent',
   key: 'campaign_sent',
-  description: 'Triggers when a campaign has been delivered (sent). Polls for campaigns with a delivered date newer than the last check.',
+  description:
+    'Triggers when a campaign has been delivered (sent). Polls for campaigns with a delivered date newer than the last check.'
 })
-  .input(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    name: z.string().describe('Campaign name'),
-    subject: z.string().describe('Campaign subject line'),
-    deliveredOn: z.string().optional().describe('Delivery timestamp'),
-    totalSent: z.number().optional().describe('Total emails sent'),
-    recipientsCount: z.number().optional().describe('Number of recipients'),
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('Campaign ID'),
-    name: z.string().describe('Campaign name'),
-    subject: z.string().describe('Campaign subject line'),
-    deliveredOn: z.string().optional().describe('Delivery timestamp'),
-    totalSent: z.number().optional().describe('Total emails sent'),
-    recipientsCount: z.number().optional().describe('Number of recipients'),
-  }))
+  .input(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      name: z.string().describe('Campaign name'),
+      subject: z.string().describe('Campaign subject line'),
+      deliveredOn: z.string().optional().describe('Delivery timestamp'),
+      totalSent: z.number().optional().describe('Total emails sent'),
+      recipientsCount: z.number().optional().describe('Number of recipients')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('Campaign ID'),
+      name: z.string().describe('Campaign name'),
+      subject: z.string().describe('Campaign subject line'),
+      deliveredOn: z.string().optional().describe('Delivery timestamp'),
+      totalSent: z.number().optional().describe('Total emails sent'),
+      recipientsCount: z.number().optional().describe('Number of recipients')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MoosendClient({ token: ctx.auth.token });
       let state = ctx.state ?? {};
       let knownDeliveredIds = (state.knownDeliveredIds as string[]) ?? [];
@@ -59,7 +64,7 @@ export let campaignSent = SlateTrigger.create(spec, {
             subject: String(c?.Subject ?? ''),
             deliveredOn: String(deliveredOn),
             totalSent: c?.TotalSent as number | undefined,
-            recipientsCount: c?.RecipientsCount as number | undefined,
+            recipientsCount: c?.RecipientsCount as number | undefined
           });
           newKnownIds.push(campaignId);
         }
@@ -73,12 +78,12 @@ export let campaignSent = SlateTrigger.create(spec, {
       return {
         inputs,
         updatedState: {
-          knownDeliveredIds: newKnownIds,
-        },
+          knownDeliveredIds: newKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'campaign.sent',
         id: ctx.input.campaignId,
@@ -88,9 +93,9 @@ export let campaignSent = SlateTrigger.create(spec, {
           subject: ctx.input.subject,
           deliveredOn: ctx.input.deliveredOn,
           totalSent: ctx.input.totalSent,
-          recipientsCount: ctx.input.recipientsCount,
-        },
+          recipientsCount: ctx.input.recipientsCount
+        }
       };
-    },
+    }
   })
   .build();

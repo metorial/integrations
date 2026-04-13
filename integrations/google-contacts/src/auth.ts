@@ -2,15 +2,17 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let googleAxios = createAxios({
-  baseURL: 'https://people.googleapis.com/v1/',
+  baseURL: 'https://people.googleapis.com/v1/'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Google OAuth',
@@ -20,31 +22,32 @@ export let auth = SlateAuth.create()
       {
         title: 'Contacts',
         description: 'See, edit, download, and permanently delete your contacts.',
-        scope: 'https://www.googleapis.com/auth/contacts',
+        scope: 'https://www.googleapis.com/auth/contacts'
       },
       {
         title: 'Contacts (Read-only)',
         description: 'See and download your contacts.',
-        scope: 'https://www.googleapis.com/auth/contacts.readonly',
+        scope: 'https://www.googleapis.com/auth/contacts.readonly'
       },
       {
         title: 'Other Contacts (Read-only)',
         description: 'See and download contact info automatically saved in "Other contacts".',
-        scope: 'https://www.googleapis.com/auth/contacts.other.readonly',
+        scope: 'https://www.googleapis.com/auth/contacts.other.readonly'
       },
       {
         title: 'Directory (Read-only)',
         description: "See and download your organization's Google Workspace directory.",
-        scope: 'https://www.googleapis.com/auth/directory.readonly',
+        scope: 'https://www.googleapis.com/auth/directory.readonly'
       },
       {
         title: 'User Profile',
-        description: 'See your personal info, including any personal info you\'ve made publicly available.',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile',
-      },
+        description:
+          "See your personal info, including any personal info you've made publicly available.",
+        scope: 'https://www.googleapis.com/auth/userinfo.profile'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
@@ -52,15 +55,15 @@ export let auth = SlateAuth.create()
         scope: ctx.scopes.join(' '),
         state: ctx.state,
         access_type: 'offline',
-        prompt: 'consent',
+        prompt: 'consent'
       });
 
       return {
-        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+        url: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await googleAxios.post(
         'https://oauth2.googleapis.com/token',
         new URLSearchParams({
@@ -68,12 +71,12 @@ export let auth = SlateAuth.create()
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code',
+          grant_type: 'authorization_code'
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -86,12 +89,12 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -102,12 +105,12 @@ export let auth = SlateAuth.create()
           client_id: ctx.clientId,
           client_secret: ctx.clientSecret,
           refresh_token: ctx.output.refreshToken,
-          grant_type: 'refresh_token',
+          grant_type: 'refresh_token'
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -120,19 +123,23 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await googleAxios.get('people/me', {
         params: {
-          personFields: 'names,emailAddresses,photos',
+          personFields: 'names,emailAddresses,photos'
         },
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let person = response.data;
@@ -146,10 +153,10 @@ export let auth = SlateAuth.create()
           id: resourceName,
           email,
           name,
-          imageUrl,
-        },
+          imageUrl
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -157,14 +164,14 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Google API Key for accessing public profile data'),
+      apiKey: z.string().describe('Google API Key for accessing public profile data')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
-    },
+    }
   });

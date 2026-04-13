@@ -10,42 +10,46 @@ let dealSchema = z.object({
   valueType: z.string().optional().describe('Billing type'),
   targetDate: z.string().optional().describe('Target date'),
   currentState: z.string().optional().describe('Current state'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let listDeals = SlateTool.create(
-  spec,
-  {
-    name: 'List Deals',
-    key: 'list_deals',
-    description: `List deals (sales opportunities) in CentralStationCRM with pagination. Optionally include related people, companies, or tags.`,
-    constraints: [
-      'Maximum 250 results per page.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let listDeals = SlateTool.create(spec, {
+  name: 'List Deals',
+  key: 'list_deals',
+  description: `List deals (sales opportunities) in CentralStationCRM with pagination. Optionally include related people, companies, or tags.`,
+  constraints: ['Maximum 250 results per page.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (starts at 1)'),
-    perPage: z.number().optional().describe('Number of results per page (max 250)'),
-    includes: z.string().optional().describe('Comma-separated list of related data to include (e.g., "people,companies,tags")'),
-  }))
-  .output(z.object({
-    deals: z.array(dealSchema).describe('List of deals'),
-    count: z.number().describe('Number of deals returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (starts at 1)'),
+      perPage: z.number().optional().describe('Number of results per page (max 250)'),
+      includes: z
+        .string()
+        .optional()
+        .describe(
+          'Comma-separated list of related data to include (e.g., "people,companies,tags")'
+        )
+    })
+  )
+  .output(
+    z.object({
+      deals: z.array(dealSchema).describe('List of deals'),
+      count: z.number().describe('Number of deals returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     let result = await client.listDeals({
       page: ctx.input.page,
       perpage: ctx.input.perPage,
-      includes: ctx.input.includes,
+      includes: ctx.input.includes
     });
 
     let items = Array.isArray(result) ? result : [];
@@ -58,16 +62,16 @@ export let listDeals = SlateTool.create(
         valueType: deal.value_type,
         targetDate: deal.target_date,
         currentState: deal.current_state,
-        createdAt: deal.created_at,
+        createdAt: deal.created_at
       };
     });
 
     return {
       output: {
         deals,
-        count: deals.length,
+        count: deals.length
       },
-      message: `Found **${deals.length}** deals.`,
+      message: `Found **${deals.length}** deals.`
     };
   })
   .build();

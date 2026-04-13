@@ -11,8 +11,8 @@ export class HyperbrowserClient {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -33,7 +33,9 @@ export class HyperbrowserClient {
     return response.data;
   }
 
-  async listSessions(params: { page?: number; perPage?: number } = {}): Promise<Record<string, unknown>> {
+  async listSessions(
+    params: { page?: number; perPage?: number } = {}
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/api/sessions', { params });
     return response.data;
   }
@@ -143,14 +145,18 @@ export class HyperbrowserClient {
     return response.data;
   }
 
-  async listProfiles(params: { page?: number; limit?: number; name?: string } = {}): Promise<Record<string, unknown>> {
+  async listProfiles(
+    params: { page?: number; limit?: number; name?: string } = {}
+  ): Promise<Record<string, unknown>> {
     let response = await this.axios.get('/api/profiles', { params });
     return response.data;
   }
 
   // ── Agent Tasks ───────────────────────────────────────
 
-  async startBrowserUseTask(params: Record<string, unknown>): Promise<{ jobId: string; liveUrl?: string }> {
+  async startBrowserUseTask(
+    params: Record<string, unknown>
+  ): Promise<{ jobId: string; liveUrl?: string }> {
     let response = await this.axios.post('/api/task/browser-use', params);
     return response.data;
   }
@@ -170,7 +176,9 @@ export class HyperbrowserClient {
     return response.data;
   }
 
-  async startClaudeComputerUseTask(params: Record<string, unknown>): Promise<{ jobId: string; liveUrl?: string }> {
+  async startClaudeComputerUseTask(
+    params: Record<string, unknown>
+  ): Promise<{ jobId: string; liveUrl?: string }> {
     let response = await this.axios.post('/api/task/claude-computer-use', params);
     return response.data;
   }
@@ -190,7 +198,9 @@ export class HyperbrowserClient {
     return response.data;
   }
 
-  async startCuaTask(params: Record<string, unknown>): Promise<{ jobId: string; liveUrl?: string }> {
+  async startCuaTask(
+    params: Record<string, unknown>
+  ): Promise<{ jobId: string; liveUrl?: string }> {
     let response = await this.axios.post('/api/task/cua', params);
     return response.data;
   }
@@ -230,7 +240,9 @@ export class HyperbrowserClient {
 
       if (status === 'failed') {
         let result = await getResult();
-        throw new Error(`Job failed: ${(result as Record<string, unknown>).error || 'Unknown error'}`);
+        throw new Error(
+          `Job failed: ${(result as Record<string, unknown>).error || 'Unknown error'}`
+        );
       }
 
       if (status === 'stopped') {

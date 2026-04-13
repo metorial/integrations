@@ -13,36 +13,51 @@ let suggestionSchema = z.object({
   supportersCount: z.number().describe('Number of supporters'),
   createdAt: z.string().describe('When the suggestion was created'),
   updatedAt: z.string().describe('When the suggestion was last updated'),
-  links: z.record(z.string(), z.any()).optional().describe('Associated resource links (forum, category, status, labels, etc.)'),
+  links: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Associated resource links (forum, category, status, labels, etc.)')
 });
 
-export let listSuggestions = SlateTool.create(
-  spec,
-  {
-    name: 'List Suggestions',
-    key: 'list_suggestions',
-    description: `Search and list suggestions (ideas) in UserVoice. Supports filtering by forum, sorting, and pagination. Use this to browse product feedback, find popular ideas, or audit recent submissions.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    forumId: z.number().optional().describe('Filter by forum ID'),
-    sort: z.string().optional().describe('Sort field. Prefix with "-" for descending. Examples: "-supporters_count", "-created_at", "updated_at"'),
-    page: z.number().optional().describe('Page number (default: 1)'),
-    perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
-    updatedAfter: z.string().optional().describe('Only return suggestions updated after this ISO 8601 date'),
-    state: z.string().optional().describe('Filter by state (e.g., "published", "approved", "closed")'),
-  }))
-  .output(z.object({
-    suggestions: z.array(suggestionSchema),
-    totalRecords: z.number().describe('Total number of matching suggestions'),
-    totalPages: z.number().describe('Total number of pages'),
-    currentPage: z.number().describe('Current page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listSuggestions = SlateTool.create(spec, {
+  name: 'List Suggestions',
+  key: 'list_suggestions',
+  description: `Search and list suggestions (ideas) in UserVoice. Supports filtering by forum, sorting, and pagination. Use this to browse product feedback, find popular ideas, or audit recent submissions.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      forumId: z.number().optional().describe('Filter by forum ID'),
+      sort: z
+        .string()
+        .optional()
+        .describe(
+          'Sort field. Prefix with "-" for descending. Examples: "-supporters_count", "-created_at", "updated_at"'
+        ),
+      page: z.number().optional().describe('Page number (default: 1)'),
+      perPage: z.number().optional().describe('Results per page (default: 20, max: 100)'),
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Only return suggestions updated after this ISO 8601 date'),
+      state: z
+        .string()
+        .optional()
+        .describe('Filter by state (e.g., "published", "approved", "closed")')
+    })
+  )
+  .output(
+    z.object({
+      suggestions: z.array(suggestionSchema),
+      totalRecords: z.number().describe('Total number of matching suggestions'),
+      totalPages: z.number().describe('Total number of pages'),
+      currentPage: z.number().describe('Current page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subdomain: ctx.auth.subdomain,
+      subdomain: ctx.auth.subdomain
     });
 
     let params: Record<string, unknown> = {};
@@ -65,7 +80,7 @@ export let listSuggestions = SlateTool.create(
       supportersCount: s.supporters_count || 0,
       createdAt: s.created_at,
       updatedAt: s.updated_at,
-      links: s.links,
+      links: s.links
     }));
 
     return {
@@ -73,8 +88,9 @@ export let listSuggestions = SlateTool.create(
         suggestions,
         totalRecords: result.pagination?.totalRecords || 0,
         totalPages: result.pagination?.totalPages || 0,
-        currentPage: result.pagination?.page || ctx.input.page || 1,
+        currentPage: result.pagination?.page || ctx.input.page || 1
       },
-      message: `Found **${suggestions.length}** suggestions (page ${result.pagination?.page || 1} of ${result.pagination?.totalPages || 1}).`,
+      message: `Found **${suggestions.length}** suggestions (page ${result.pagination?.page || 1} of ${result.pagination?.totalPages || 1}).`
     };
-  }).build();
+  })
+  .build();

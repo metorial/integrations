@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -16,50 +18,50 @@ export let auth = SlateAuth.create()
       {
         title: 'OpenID',
         description: 'OpenID Connect identity token',
-        scope: 'openid',
+        scope: 'openid'
       },
       {
         title: 'Profile',
         description: 'Access to user profile information',
-        scope: 'profile',
+        scope: 'profile'
       },
       {
         title: 'Email',
         description: 'Access to user email address',
-        scope: 'email',
+        scope: 'email'
       },
       {
         title: 'Offline Access',
         description: 'Obtain refresh tokens for long-lived access',
-        scope: 'offline_access',
+        scope: 'offline_access'
       },
       {
         title: 'Documents',
         description: 'Full access to document operations',
-        scope: 'BoldSign.Documents.All',
+        scope: 'BoldSign.Documents.All'
       },
       {
         title: 'Templates',
         description: 'Full access to template operations',
-        scope: 'BoldSign.Templates.All',
-      },
+        scope: 'BoldSign.Templates.All'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         scope: ctx.scopes.join(' '),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://account.boldsign.com/connect/authorize?${params.toString()}`,
+        url: `https://account.boldsign.com/connect/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
 
       let response = await axios.post(
@@ -69,12 +71,12 @@ export let auth = SlateAuth.create()
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
           client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
+          client_secret: ctx.clientSecret
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -86,12 +88,12 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
@@ -104,12 +106,12 @@ export let auth = SlateAuth.create()
           grant_type: 'refresh_token',
           refresh_token: ctx.output.refreshToken,
           client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
+          client_secret: ctx.clientSecret
         }).toString(),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -121,8 +123,8 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
     },
 
@@ -134,8 +136,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://account.boldsign.com',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/connect/userinfo');
@@ -145,10 +147,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: data.sub,
           email: data.email,
-          name: data.name,
-        },
+          name: data.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -156,14 +158,14 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('BoldSign API Key'),
+      apiKey: z.string().describe('BoldSign API Key')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
-    },
+    }
   });

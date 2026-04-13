@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let axiosInstance = createAxios({
-  baseURL: 'https://api.currentsapi.services/v1',
+  baseURL: 'https://api.currentsapi.services/v1'
 });
 
 export interface NewsArticle {
@@ -93,7 +93,7 @@ export class Client {
 
   private getHeaders() {
     return {
-      Authorization: this.token,
+      Authorization: this.token
     };
   }
 
@@ -107,7 +107,7 @@ export class Client {
 
     let response = await axiosInstance.get('/latest-news', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -131,7 +131,7 @@ export class Client {
 
     let response = await axiosInstance.get('/search', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -139,14 +139,14 @@ export class Client {
 
   async getSourceNews(params: SourceNewsParams): Promise<NewsResponse> {
     let queryParams: Record<string, string | number> = {
-      source: params.source,
+      source: params.source
     };
 
     if (params.page) queryParams.page = params.page;
 
     let response = await axiosInstance.get('/source', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -160,7 +160,7 @@ export class Client {
 
     let response = await axiosInstance.get('/sources', {
       headers: this.getHeaders(),
-      params: queryParams,
+      params: queryParams
     });
 
     return response.data;
@@ -168,7 +168,7 @@ export class Client {
 
   async getAvailableLanguages(): Promise<AvailableLanguagesResponse> {
     let response = await axiosInstance.get('/available/languages', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -176,7 +176,7 @@ export class Client {
 
   async getAvailableRegions(): Promise<AvailableRegionsResponse> {
     let response = await axiosInstance.get('/available/regions', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -184,7 +184,7 @@ export class Client {
 
   async getAvailableCategories(): Promise<AvailableCategoriesResponse> {
     let response = await axiosInstance.get('/available/categories', {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;

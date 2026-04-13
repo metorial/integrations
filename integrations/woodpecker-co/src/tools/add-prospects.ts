@@ -31,37 +31,43 @@ let prospectInputSchema = z.object({
   snippet12: z.string().optional().describe('Custom snippet field 12'),
   snippet13: z.string().optional().describe('Custom snippet field 13'),
   snippet14: z.string().optional().describe('Custom snippet field 14'),
-  snippet15: z.string().optional().describe('Custom snippet field 15'),
+  snippet15: z.string().optional().describe('Custom snippet field 15')
 });
 
-export let addProspects = SlateTool.create(
-  spec,
-  {
-    name: 'Add Prospects',
-    key: 'add_prospects',
-    description: `Add one or more prospects to the global Woodpecker database or directly to a specific campaign. If a prospect with the same email already exists, it will be updated. Supports all standard contact fields plus 15 custom snippet fields for personalization.`,
-    instructions: [
-      'Email is required for each prospect.',
-      'If campaignId is provided, prospects will be added directly to that campaign.',
-      'Existing prospects (matched by email) will be updated with the new data.',
-    ],
-  }
-)
-  .input(z.object({
-    prospects: z.array(prospectInputSchema).min(1).describe('List of prospects to add'),
-    campaignId: z.number().optional().describe('Campaign ID to add prospects to. If omitted, prospects are added to the global database only.'),
-  }))
-  .output(z.object({
-    addedCount: z.number().describe('Number of prospects processed'),
-    status: z.string().describe('Operation result status'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let addProspects = SlateTool.create(spec, {
+  name: 'Add Prospects',
+  key: 'add_prospects',
+  description: `Add one or more prospects to the global Woodpecker database or directly to a specific campaign. If a prospect with the same email already exists, it will be updated. Supports all standard contact fields plus 15 custom snippet fields for personalization.`,
+  instructions: [
+    'Email is required for each prospect.',
+    'If campaignId is provided, prospects will be added directly to that campaign.',
+    'Existing prospects (matched by email) will be updated with the new data.'
+  ]
+})
+  .input(
+    z.object({
+      prospects: z.array(prospectInputSchema).min(1).describe('List of prospects to add'),
+      campaignId: z
+        .number()
+        .optional()
+        .describe(
+          'Campaign ID to add prospects to. If omitted, prospects are added to the global database only.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      addedCount: z.number().describe('Number of prospects processed'),
+      status: z.string().describe('Operation result status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      companyId: ctx.config.companyId,
+      companyId: ctx.config.companyId
     });
 
-    let mapped = ctx.input.prospects.map((p) => {
+    let mapped = ctx.input.prospects.map(p => {
       let prospect: Record<string, any> = { email: p.email };
       if (p.firstName) prospect.first_name = p.firstName;
       if (p.lastName) prospect.last_name = p.lastName;
@@ -92,11 +98,11 @@ export let addProspects = SlateTool.create(
     return {
       output: {
         addedCount: ctx.input.prospects.length,
-        status: result?.status ?? 'OK',
+        status: result?.status ?? 'OK'
       },
       message: ctx.input.campaignId
         ? `Added **${ctx.input.prospects.length}** prospect(s) to campaign ${ctx.input.campaignId}.`
-        : `Added **${ctx.input.prospects.length}** prospect(s) to the global database.`,
+        : `Added **${ctx.input.prospects.length}** prospect(s) to the global database.`
     };
   })
   .build();

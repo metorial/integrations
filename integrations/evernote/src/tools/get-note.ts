@@ -3,45 +3,58 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getNoteTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Note',
-    key: 'get_note',
-    description: `Retrieve a note's full details including its ENML content, metadata, tags, and resource info. Use this to read a specific note by its GUID.`,
-    tags: {
-      readOnly: true,
-    },
+export let getNoteTool = SlateTool.create(spec, {
+  name: 'Get Note',
+  key: 'get_note',
+  description: `Retrieve a note's full details including its ENML content, metadata, tags, and resource info. Use this to read a specific note by its GUID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    noteGuid: z.string().describe('GUID of the note to retrieve'),
-    includeContent: z.boolean().optional().default(true).describe('Whether to include the note body content (ENML)'),
-  }))
-  .output(z.object({
-    noteGuid: z.string().describe('Unique identifier of the note'),
-    title: z.string().describe('Title of the note'),
-    content: z.string().optional().describe('ENML content of the note'),
-    notebookGuid: z.string().describe('GUID of the notebook containing this note'),
-    tagGuids: z.array(z.string()).optional().describe('GUIDs of tags applied to this note'),
-    tagNames: z.array(z.string()).optional().describe('Names of tags applied to this note'),
-    createdAt: z.string().optional().describe('ISO timestamp when the note was created'),
-    updatedAt: z.string().optional().describe('ISO timestamp when the note was last updated'),
-    author: z.string().optional().describe('Author of the note'),
-    sourceUrl: z.string().optional().describe('Source URL of the note'),
-    active: z.boolean().optional().describe('Whether the note is active (not in trash)'),
-    resources: z.array(z.object({
-      resourceGuid: z.string().describe('GUID of the resource'),
-      mime: z.string().optional().describe('MIME type of the resource'),
-      fileName: z.string().optional().describe('Original filename of the resource'),
-      width: z.number().optional().describe('Width in pixels (for images)'),
-      height: z.number().optional().describe('Height in pixels (for images)'),
-    })).optional().describe('File attachments on this note'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      noteGuid: z.string().describe('GUID of the note to retrieve'),
+      includeContent: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Whether to include the note body content (ENML)')
+    })
+  )
+  .output(
+    z.object({
+      noteGuid: z.string().describe('Unique identifier of the note'),
+      title: z.string().describe('Title of the note'),
+      content: z.string().optional().describe('ENML content of the note'),
+      notebookGuid: z.string().describe('GUID of the notebook containing this note'),
+      tagGuids: z.array(z.string()).optional().describe('GUIDs of tags applied to this note'),
+      tagNames: z.array(z.string()).optional().describe('Names of tags applied to this note'),
+      createdAt: z.string().optional().describe('ISO timestamp when the note was created'),
+      updatedAt: z
+        .string()
+        .optional()
+        .describe('ISO timestamp when the note was last updated'),
+      author: z.string().optional().describe('Author of the note'),
+      sourceUrl: z.string().optional().describe('Source URL of the note'),
+      active: z.boolean().optional().describe('Whether the note is active (not in trash)'),
+      resources: z
+        .array(
+          z.object({
+            resourceGuid: z.string().describe('GUID of the resource'),
+            mime: z.string().optional().describe('MIME type of the resource'),
+            fileName: z.string().optional().describe('Original filename of the resource'),
+            width: z.number().optional().describe('Width in pixels (for images)'),
+            height: z.number().optional().describe('Height in pixels (for images)')
+          })
+        )
+        .optional()
+        .describe('File attachments on this note')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      noteStoreUrl: ctx.auth.noteStoreUrl,
+      noteStoreUrl: ctx.auth.noteStoreUrl
     });
 
     let note = await client.getNote(
@@ -49,7 +62,7 @@ export let getNoteTool = SlateTool.create(
       ctx.input.includeContent ?? true,
       false, // withResourcesData
       false, // withResourcesRecognition
-      false, // withResourcesAlternateData
+      false // withResourcesAlternateData
     );
 
     let tagNames: string[] | undefined;
@@ -79,9 +92,10 @@ export let getNoteTool = SlateTool.create(
           mime: r.mime,
           fileName: r.attributes?.fileName,
           width: r.width,
-          height: r.height,
-        })),
+          height: r.height
+        }))
       },
-      message: `Retrieved note **${note.title}**.`,
+      message: `Retrieved note **${note.title}**.`
     };
-  }).build();
+  })
+  .build();

@@ -2,7 +2,15 @@ import { SlateTrigger } from 'slates';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
-import { buyerSchema, productSchema, couponSchema, customFieldSchema, mapBuyer, mapProduct, mapCustomFields } from '../lib/schemas';
+import {
+  buyerSchema,
+  productSchema,
+  couponSchema,
+  customFieldSchema,
+  mapBuyer,
+  mapProduct,
+  mapCustomFields
+} from '../lib/schemas';
 
 let licenseKeySchema = z.object({
   key: z.string().describe('License key UUID'),
@@ -12,7 +20,7 @@ let licenseKeySchema = z.object({
   redeemedAt: z.string().nullable().describe('Redemption timestamp'),
   refunded: z.boolean().describe('Whether refunded'),
   refundedAt: z.string().nullable().describe('Refund timestamp'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
 let subscriptionInfoSchema = z.object({
@@ -24,7 +32,7 @@ let subscriptionInfoSchema = z.object({
   intervalCount: z.number().optional().describe('Interval multiplier'),
   status: z.string().optional().describe('Subscription status'),
   productId: z.string().optional().describe('Subscription product ID'),
-  productTitle: z.string().optional().describe('Subscription product title'),
+  productTitle: z.string().optional().describe('Subscription product title')
 });
 
 let giftSchema = z.object({
@@ -32,105 +40,119 @@ let giftSchema = z.object({
   recipientName: z.string().optional().describe('Gift recipient name'),
   recipientEmail: z.string().optional().describe('Gift recipient email'),
   message: z.string().optional().describe('Gift message'),
-  from: z.string().optional().describe('Gift sender name'),
+  from: z.string().optional().describe('Gift sender name')
 });
 
 let webhookPayloadSchema = z.object({
   event: z.string(),
-  data: z.any(),
+  data: z.any()
 });
 
-export let newSaleTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Sale',
-    key: 'new_sale',
-    description: 'Triggers when a buyer completes a purchase where money is transacted. Includes full transaction details such as amount, buyer info, products, coupons, subscription details, and license keys.',
-  }
-)
+export let newSaleTrigger = SlateTrigger.create(spec, {
+  name: 'New Sale',
+  key: 'new_sale',
+  description:
+    'Triggers when a buyer completes a purchase where money is transacted. Includes full transaction details such as amount, buyer info, products, coupons, subscription details, and license keys.'
+})
   .input(webhookPayloadSchema)
-  .output(z.object({
-    transactionId: z.string().describe('Transaction ID'),
-    createdAt: z.string().describe('Transaction timestamp'),
-    currency: z.string().describe('Currency code'),
-    amount: z.number().describe('Transaction amount'),
-    status: z.string().describe('Transaction status'),
-    taxAmount: z.number().nullable().describe('Tax amount'),
-    taxTransactionId: z.string().nullable().describe('Tax transaction ID'),
-    buyer: buyerSchema.describe('Buyer information'),
-    products: z.array(productSchema).describe('Purchased products'),
-    coupon: couponSchema.nullable().describe('Applied coupon'),
-    subscription: subscriptionInfoSchema.nullable().describe('Subscription details if applicable'),
-    gift: giftSchema.nullable().describe('Gift details if applicable'),
-    customFields: z.array(customFieldSchema).describe('Custom checkout fields'),
-    referrerEmail: z.string().nullable().describe('Referring affiliate email'),
-    commissionEarned: z.number().nullable().describe('Affiliate commission earned'),
-    commissionPaid: z.boolean().nullable().describe('Whether commission has been paid'),
-    licenseKeys: z.array(licenseKeySchema).describe('Generated license keys'),
-  }))
+  .output(
+    z.object({
+      transactionId: z.string().describe('Transaction ID'),
+      createdAt: z.string().describe('Transaction timestamp'),
+      currency: z.string().describe('Currency code'),
+      amount: z.number().describe('Transaction amount'),
+      status: z.string().describe('Transaction status'),
+      taxAmount: z.number().nullable().describe('Tax amount'),
+      taxTransactionId: z.string().nullable().describe('Tax transaction ID'),
+      buyer: buyerSchema.describe('Buyer information'),
+      products: z.array(productSchema).describe('Purchased products'),
+      coupon: couponSchema.nullable().describe('Applied coupon'),
+      subscription: subscriptionInfoSchema
+        .nullable()
+        .describe('Subscription details if applicable'),
+      gift: giftSchema.nullable().describe('Gift details if applicable'),
+      customFields: z.array(customFieldSchema).describe('Custom checkout fields'),
+      referrerEmail: z.string().nullable().describe('Referring affiliate email'),
+      commissionEarned: z.number().nullable().describe('Affiliate commission earned'),
+      commissionPaid: z.boolean().nullable().describe('Whether commission has been paid'),
+      licenseKeys: z.array(licenseKeySchema).describe('Generated license keys')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let result = await client.subscribeWebhook('sale', ctx.input.webhookBaseUrl);
       return {
         registrationDetails: {
           webhookUrl: result.webhook,
-          signingSecret: result.signing_secret,
-        },
+          signingSecret: result.signing_secret
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.unsubscribeWebhook(ctx.input.registrationDetails.webhookUrl as string);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as { event: string; data: unknown };
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as { event: string; data: unknown };
 
       return {
-        inputs: [body],
+        inputs: [body]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let data = ctx.input.data as Record<string, unknown>;
 
       let buyer = mapBuyer((data.buyer || {}) as Record<string, unknown>);
       let products = ((data.products || []) as Record<string, unknown>[]).map(mapProduct);
-      let customFields = mapCustomFields(data.custom_fields as Record<string, unknown>[] | undefined);
+      let customFields = mapCustomFields(
+        data.custom_fields as Record<string, unknown>[] | undefined
+      );
 
       let couponData = data.coupon as Record<string, unknown> | null;
-      let coupon = couponData ? {
-        code: couponData.code as string,
-        type: couponData.type as string,
-        amount: couponData.amount as number,
-      } : null;
+      let coupon = couponData
+        ? {
+            code: couponData.code as string,
+            type: couponData.type as string,
+            amount: couponData.amount as number
+          }
+        : null;
 
       let subData = data.subscription as Record<string, unknown> | null;
-      let subscription = subData ? {
-        subscriptionId: subData.subscription_id as string,
-        createdAt: subData.created_at as string | undefined,
-        currency: subData.currency as string | undefined,
-        amount: subData.amount as number | undefined,
-        interval: subData.interval as string | undefined,
-        intervalCount: subData.interval_count as number | undefined,
-        status: subData.status as string | undefined,
-        productId: (subData.product as Record<string, unknown> | undefined)?.id as string | undefined,
-        productTitle: (subData.product as Record<string, unknown> | undefined)?.title as string | undefined,
-      } : null;
+      let subscription = subData
+        ? {
+            subscriptionId: subData.subscription_id as string,
+            createdAt: subData.created_at as string | undefined,
+            currency: subData.currency as string | undefined,
+            amount: subData.amount as number | undefined,
+            interval: subData.interval as string | undefined,
+            intervalCount: subData.interval_count as number | undefined,
+            status: subData.status as string | undefined,
+            productId: (subData.product as Record<string, unknown> | undefined)?.id as
+              | string
+              | undefined,
+            productTitle: (subData.product as Record<string, unknown> | undefined)?.title as
+              | string
+              | undefined
+          }
+        : null;
 
       let giftData = data.gift as Record<string, unknown> | null;
-      let gift = giftData ? {
-        sendAsGift: giftData.send_as_gift as boolean,
-        recipientName: giftData.recipient_name as string | undefined,
-        recipientEmail: giftData.recipient_email as string | undefined,
-        message: giftData.message as string | undefined,
-        from: giftData.from as string | undefined,
-      } : null;
+      let gift = giftData
+        ? {
+            sendAsGift: giftData.send_as_gift as boolean,
+            recipientName: giftData.recipient_name as string | undefined,
+            recipientEmail: giftData.recipient_email as string | undefined,
+            message: giftData.message as string | undefined,
+            from: giftData.from as string | undefined
+          }
+        : null;
 
       let licenseKeysData = (data.license_keys || []) as Record<string, unknown>[];
-      let licenseKeys = licenseKeysData.map((lk) => ({
+      let licenseKeys = licenseKeysData.map(lk => ({
         key: lk.key as string,
         productId: lk.product_id as string | undefined,
         productTitle: lk.product_title as string | undefined,
@@ -138,7 +160,7 @@ export let newSaleTrigger = SlateTrigger.create(
         redeemedAt: lk.redeemed_at ? String(lk.redeemed_at) : null,
         refunded: lk.refunded as boolean,
         refundedAt: lk.refunded_at ? String(lk.refunded_at) : null,
-        createdAt: lk.created_at as string | undefined,
+        createdAt: lk.created_at as string | undefined
       }));
 
       let referrer = data.referrer as Record<string, unknown> | null;
@@ -163,8 +185,9 @@ export let newSaleTrigger = SlateTrigger.create(
           referrerEmail: referrer ? (referrer.email as string) : null,
           commissionEarned: (data.commission_earned as number | null) ?? null,
           commissionPaid: (data.commission_paid as boolean | null) ?? null,
-          licenseKeys,
-        },
+          licenseKeys
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

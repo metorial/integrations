@@ -2,22 +2,26 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Your Proofly API key, found on the Proofly developers page.'),
+      apiKey: z
+        .string()
+        .describe('Your Proofly API key, found on the Proofly developers page.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
+          token: ctx.input.apiKey
         }
       };
     },
@@ -26,8 +30,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://proofly.io/api',
         headers: {
-          'X-Api-Key': ctx.output.token,
-        },
+          'X-Api-Key': ctx.output.token
+        }
       });
 
       let response = await axios.get('/user');
@@ -36,8 +40,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           name: user.name,
-          email: user.email,
+          email: user.email
         }
       };
-    },
+    }
   });

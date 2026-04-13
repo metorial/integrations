@@ -10,12 +10,12 @@ import type {
   SquareLocation,
   SquareRefund,
   SquareInventoryCount,
-  SquareWebhookSubscription,
+  SquareWebhookSubscription
 } from './types';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://connect.squareup.com/v2',
-  sandbox: 'https://connect.squareupsandbox.com/v2',
+  sandbox: 'https://connect.squareupsandbox.com/v2'
 };
 
 export class SquareClient {
@@ -28,8 +28,8 @@ export class SquareClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Square-Version': '2025-04-16',
-      },
+        'Square-Version': '2025-04-16'
+      }
     });
   }
 
@@ -43,17 +43,19 @@ export class SquareClient {
     locationId?: string;
     limit?: number;
   }): Promise<{ payments: SquarePayment[]; cursor?: string }> {
-    let response = await this.axios.get('/payments', { params: {
-      begin_time: params?.beginTime,
-      end_time: params?.endTime,
-      sort_order: params?.sortOrder,
-      cursor: params?.cursor,
-      location_id: params?.locationId,
-      limit: params?.limit,
-    }});
+    let response = await this.axios.get('/payments', {
+      params: {
+        begin_time: params?.beginTime,
+        end_time: params?.endTime,
+        sort_order: params?.sortOrder,
+        cursor: params?.cursor,
+        location_id: params?.locationId,
+        limit: params?.limit
+      }
+    });
     return {
       payments: response.data.payments || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -88,7 +90,7 @@ export class SquareClient {
       reference_id: payment.referenceId,
       note: payment.note,
       autocomplete: payment.autocomplete,
-      delay_duration: payment.delayDuration,
+      delay_duration: payment.delayDuration
     });
     return response.data.payment;
   }
@@ -113,17 +115,19 @@ export class SquareClient {
     locationId?: string;
     limit?: number;
   }): Promise<{ refunds: SquareRefund[]; cursor?: string }> {
-    let response = await this.axios.get('/refunds', { params: {
-      begin_time: params?.beginTime,
-      end_time: params?.endTime,
-      sort_order: params?.sortOrder,
-      cursor: params?.cursor,
-      location_id: params?.locationId,
-      limit: params?.limit,
-    }});
+    let response = await this.axios.get('/refunds', {
+      params: {
+        begin_time: params?.beginTime,
+        end_time: params?.endTime,
+        sort_order: params?.sortOrder,
+        cursor: params?.cursor,
+        location_id: params?.locationId,
+        limit: params?.limit
+      }
+    });
     return {
       refunds: response.data.refunds || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -142,7 +146,7 @@ export class SquareClient {
       idempotency_key: params.idempotencyKey,
       payment_id: params.paymentId,
       amount_money: params.amountMoney,
-      reason: params.reason,
+      reason: params.reason
     });
     return response.data.refund;
   }
@@ -168,8 +172,8 @@ export class SquareClient {
         discounts: order.discounts,
         fulfillments: order.fulfillments,
         customer_id: order.customerId,
-        reference_id: order.referenceId,
-      },
+        reference_id: order.referenceId
+      }
     });
     return response.data.order;
   }
@@ -192,23 +196,26 @@ export class SquareClient {
       location_ids: params.locationIds,
       cursor: params.cursor,
       limit: params.limit,
-      query: params.query,
+      query: params.query
     });
     return {
       orders: response.data.orders || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
-  async updateOrder(orderId: string, params: {
-    order: Record<string, any>;
-    fieldsToClear?: string[];
-    idempotencyKey?: string;
-  }): Promise<SquareOrder> {
+  async updateOrder(
+    orderId: string,
+    params: {
+      order: Record<string, any>;
+      fieldsToClear?: string[];
+      idempotencyKey?: string;
+    }
+  ): Promise<SquareOrder> {
     let response = await this.axios.put(`/orders/${orderId}`, {
       order: { ...params.order, version: params.order.version },
       fields_to_clear: params.fieldsToClear,
-      idempotency_key: params.idempotencyKey,
+      idempotency_key: params.idempotencyKey
     });
     return response.data.order;
   }
@@ -221,15 +228,17 @@ export class SquareClient {
     sortField?: string;
     sortOrder?: string;
   }): Promise<{ customers: SquareCustomer[]; cursor?: string }> {
-    let response = await this.axios.get('/customers', { params: {
-      cursor: params?.cursor,
-      limit: params?.limit,
-      sort_field: params?.sortField,
-      sort_order: params?.sortOrder,
-    }});
+    let response = await this.axios.get('/customers', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        sort_field: params?.sortField,
+        sort_order: params?.sortOrder
+      }
+    });
     return {
       customers: response.data.customers || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -262,24 +271,27 @@ export class SquareClient {
       address: customer.address,
       note: customer.note,
       reference_id: customer.referenceId,
-      birthday: customer.birthday,
+      birthday: customer.birthday
     });
     return response.data.customer;
   }
 
-  async updateCustomer(customerId: string, customer: {
-    givenName?: string;
-    familyName?: string;
-    companyName?: string;
-    nickname?: string;
-    emailAddress?: string;
-    phoneNumber?: string;
-    address?: Record<string, any>;
-    note?: string;
-    referenceId?: string;
-    birthday?: string;
-    version?: number;
-  }): Promise<SquareCustomer> {
+  async updateCustomer(
+    customerId: string,
+    customer: {
+      givenName?: string;
+      familyName?: string;
+      companyName?: string;
+      nickname?: string;
+      emailAddress?: string;
+      phoneNumber?: string;
+      address?: Record<string, any>;
+      note?: string;
+      referenceId?: string;
+      birthday?: string;
+      version?: number;
+    }
+  ): Promise<SquareCustomer> {
     let response = await this.axios.put(`/customers/${customerId}`, {
       given_name: customer.givenName,
       family_name: customer.familyName,
@@ -291,7 +303,7 @@ export class SquareClient {
       note: customer.note,
       reference_id: customer.referenceId,
       birthday: customer.birthday,
-      version: customer.version,
+      version: customer.version
     });
     return response.data.customer;
   }
@@ -308,11 +320,11 @@ export class SquareClient {
     let response = await this.axios.post('/customers/search', {
       cursor: params.cursor,
       limit: params.limit,
-      query: params.query,
+      query: params.query
     });
     return {
       customers: response.data.customers || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -322,26 +334,31 @@ export class SquareClient {
     cursor?: string;
     types?: string;
   }): Promise<{ objects: SquareCatalogObject[]; cursor?: string }> {
-    let response = await this.axios.get('/catalog/list', { params: {
-      cursor: params?.cursor,
-      types: params?.types,
-    }});
+    let response = await this.axios.get('/catalog/list', {
+      params: {
+        cursor: params?.cursor,
+        types: params?.types
+      }
+    });
     return {
       objects: response.data.objects || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
-  async getCatalogObject(objectId: string, includeRelatedObjects?: boolean): Promise<{
+  async getCatalogObject(
+    objectId: string,
+    includeRelatedObjects?: boolean
+  ): Promise<{
     object: SquareCatalogObject;
     relatedObjects?: SquareCatalogObject[];
   }> {
     let response = await this.axios.get(`/catalog/object/${objectId}`, {
-      params: { include_related_objects: includeRelatedObjects },
+      params: { include_related_objects: includeRelatedObjects }
     });
     return {
       object: response.data.object,
-      relatedObjects: response.data.related_objects,
+      relatedObjects: response.data.related_objects
     };
   }
 
@@ -351,16 +368,18 @@ export class SquareClient {
   }): Promise<SquareCatalogObject> {
     let response = await this.axios.post('/catalog/object', {
       idempotency_key: params.idempotencyKey,
-      object: params.object,
+      object: params.object
     });
     return response.data.catalog_object;
   }
 
-  async deleteCatalogObject(objectId: string): Promise<{ deletedObjectIds: string[]; deletedAt: string }> {
+  async deleteCatalogObject(
+    objectId: string
+  ): Promise<{ deletedObjectIds: string[]; deletedAt: string }> {
     let response = await this.axios.delete(`/catalog/object/${objectId}`);
     return {
       deletedObjectIds: response.data.deleted_object_ids || [],
-      deletedAt: response.data.deleted_at,
+      deletedAt: response.data.deleted_at
     };
   }
 
@@ -378,11 +397,11 @@ export class SquareClient {
       query: params.query,
       limit: params.limit,
       include_related_objects: params.includeRelatedObjects,
-      include_deleted_objects: params.includeDeletedObjects,
+      include_deleted_objects: params.includeDeletedObjects
     });
     return {
       objects: response.data.objects || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -400,27 +419,32 @@ export class SquareClient {
       cursor: params.cursor,
       limit: params.limit,
       sort_order: params.sortOrder,
-      product_types: params.productTypes,
+      product_types: params.productTypes
     });
     return {
       items: response.data.items || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
   // ─── Inventory ───
 
-  async retrieveInventoryCount(catalogObjectId: string, params?: {
-    locationIds?: string;
-    cursor?: string;
-  }): Promise<{ counts: SquareInventoryCount[]; cursor?: string }> {
-    let response = await this.axios.get(`/inventory/${catalogObjectId}`, { params: {
-      location_ids: params?.locationIds,
-      cursor: params?.cursor,
-    }});
+  async retrieveInventoryCount(
+    catalogObjectId: string,
+    params?: {
+      locationIds?: string;
+      cursor?: string;
+    }
+  ): Promise<{ counts: SquareInventoryCount[]; cursor?: string }> {
+    let response = await this.axios.get(`/inventory/${catalogObjectId}`, {
+      params: {
+        location_ids: params?.locationIds,
+        cursor: params?.cursor
+      }
+    });
     return {
       counts: response.data.counts || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -435,10 +459,10 @@ export class SquareClient {
   }): Promise<{ counts: SquareInventoryCount[] }> {
     let response = await this.axios.post('/inventory/changes/batch-create', {
       idempotency_key: params.idempotencyKey,
-      changes: params.changes,
+      changes: params.changes
     });
     return {
-      counts: response.data.counts || [],
+      counts: response.data.counts || []
     };
   }
 
@@ -454,28 +478,33 @@ export class SquareClient {
       location_ids: params.locationIds,
       cursor: params.cursor,
       states: params.states,
-      updated_after: params.updatedAfter,
+      updated_after: params.updatedAfter
     });
     return {
       counts: response.data.counts || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
   // ─── Invoices ───
 
-  async listInvoices(locationId: string, params?: {
-    cursor?: string;
-    limit?: number;
-  }): Promise<{ invoices: SquareInvoice[]; cursor?: string }> {
-    let response = await this.axios.get('/invoices', { params: {
-      location_id: locationId,
-      cursor: params?.cursor,
-      limit: params?.limit,
-    }});
+  async listInvoices(
+    locationId: string,
+    params?: {
+      cursor?: string;
+      limit?: number;
+    }
+  ): Promise<{ invoices: SquareInvoice[]; cursor?: string }> {
+    let response = await this.axios.get('/invoices', {
+      params: {
+        location_id: locationId,
+        cursor: params?.cursor,
+        limit: params?.limit
+      }
+    });
     return {
       invoices: response.data.invoices || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -490,45 +519,51 @@ export class SquareClient {
   }): Promise<SquareInvoice> {
     let response = await this.axios.post('/invoices', {
       invoice: params.invoice,
-      idempotency_key: params.idempotencyKey,
+      idempotency_key: params.idempotencyKey
     });
     return response.data.invoice;
   }
 
-  async updateInvoice(invoiceId: string, params: {
-    invoice: Record<string, any>;
-    idempotencyKey?: string;
-    fieldsToClear?: string[];
-  }): Promise<SquareInvoice> {
+  async updateInvoice(
+    invoiceId: string,
+    params: {
+      invoice: Record<string, any>;
+      idempotencyKey?: string;
+      fieldsToClear?: string[];
+    }
+  ): Promise<SquareInvoice> {
     let response = await this.axios.put(`/invoices/${invoiceId}`, {
       invoice: params.invoice,
       idempotency_key: params.idempotencyKey,
-      fields_to_clear: params.fieldsToClear,
+      fields_to_clear: params.fieldsToClear
     });
     return response.data.invoice;
   }
 
-  async publishInvoice(invoiceId: string, params: {
-    version: number;
-    idempotencyKey?: string;
-  }): Promise<SquareInvoice> {
+  async publishInvoice(
+    invoiceId: string,
+    params: {
+      version: number;
+      idempotencyKey?: string;
+    }
+  ): Promise<SquareInvoice> {
     let response = await this.axios.post(`/invoices/${invoiceId}/publish`, {
       version: params.version,
-      idempotency_key: params.idempotencyKey,
+      idempotency_key: params.idempotencyKey
     });
     return response.data.invoice;
   }
 
   async cancelInvoice(invoiceId: string, version: number): Promise<SquareInvoice> {
     let response = await this.axios.post(`/invoices/${invoiceId}/cancel`, {
-      version,
+      version
     });
     return response.data.invoice;
   }
 
   async deleteInvoice(invoiceId: string, version?: number): Promise<void> {
     await this.axios.delete(`/invoices/${invoiceId}`, {
-      params: { version },
+      params: { version }
     });
   }
 
@@ -549,7 +584,10 @@ export class SquareClient {
     return response.data.location;
   }
 
-  async updateLocation(locationId: string, location: Record<string, any>): Promise<SquareLocation> {
+  async updateLocation(
+    locationId: string,
+    location: Record<string, any>
+  ): Promise<SquareLocation> {
     let response = await this.axios.put(`/locations/${locationId}`, { location });
     return response.data.location;
   }
@@ -578,8 +616,8 @@ export class SquareClient {
         name: params.subscription.name,
         event_types: params.subscription.eventTypes,
         notification_url: params.subscription.notificationUrl,
-        api_version: params.subscription.apiVersion,
-      },
+        api_version: params.subscription.apiVersion
+      }
     });
     return response.data.subscription;
   }
@@ -588,21 +626,24 @@ export class SquareClient {
     await this.axios.delete(`/webhooks/subscriptions/${subscriptionId}`);
   }
 
-  async updateWebhookSubscription(subscriptionId: string, params: {
-    subscription: {
-      name?: string;
-      eventTypes?: string[];
-      notificationUrl?: string;
-      enabled?: boolean;
-    };
-  }): Promise<SquareWebhookSubscription> {
+  async updateWebhookSubscription(
+    subscriptionId: string,
+    params: {
+      subscription: {
+        name?: string;
+        eventTypes?: string[];
+        notificationUrl?: string;
+        enabled?: boolean;
+      };
+    }
+  ): Promise<SquareWebhookSubscription> {
     let response = await this.axios.put(`/webhooks/subscriptions/${subscriptionId}`, {
       subscription: {
         name: params.subscription.name,
         event_types: params.subscription.eventTypes,
         notification_url: params.subscription.notificationUrl,
-        enabled: params.subscription.enabled,
-      },
+        enabled: params.subscription.enabled
+      }
     });
     return response.data.subscription;
   }
@@ -617,17 +658,19 @@ export class SquareClient {
     startAtMin?: string;
     startAtMax?: string;
   }): Promise<{ bookings: Record<string, any>[]; cursor?: string }> {
-    let response = await this.axios.get('/bookings', { params: {
-      cursor: params?.cursor,
-      limit: params?.limit,
-      location_id: params?.locationId,
-      team_member_id: params?.teamMemberId,
-      start_at_min: params?.startAtMin,
-      start_at_max: params?.startAtMax,
-    }});
+    let response = await this.axios.get('/bookings', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        location_id: params?.locationId,
+        team_member_id: params?.teamMemberId,
+        start_at_min: params?.startAtMin,
+        start_at_max: params?.startAtMax
+      }
+    });
     return {
       bookings: response.data.bookings || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -642,29 +685,35 @@ export class SquareClient {
   }): Promise<Record<string, any>> {
     let response = await this.axios.post('/bookings', {
       idempotency_key: params.idempotencyKey,
-      booking: params.booking,
+      booking: params.booking
     });
     return response.data.booking;
   }
 
-  async updateBooking(bookingId: string, params: {
-    idempotencyKey?: string;
-    booking: Record<string, any>;
-  }): Promise<Record<string, any>> {
+  async updateBooking(
+    bookingId: string,
+    params: {
+      idempotencyKey?: string;
+      booking: Record<string, any>;
+    }
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/bookings/${bookingId}`, {
       idempotency_key: params.idempotencyKey,
-      booking: params.booking,
+      booking: params.booking
     });
     return response.data.booking;
   }
 
-  async cancelBooking(bookingId: string, params?: {
-    idempotencyKey?: string;
-    bookingVersion?: number;
-  }): Promise<Record<string, any>> {
+  async cancelBooking(
+    bookingId: string,
+    params?: {
+      idempotencyKey?: string;
+      bookingVersion?: number;
+    }
+  ): Promise<Record<string, any>> {
     let response = await this.axios.post(`/bookings/${bookingId}/cancel`, {
       idempotency_key: params?.idempotencyKey,
-      booking_version: params?.bookingVersion,
+      booking_version: params?.bookingVersion
     });
     return response.data.booking;
   }
@@ -679,11 +728,11 @@ export class SquareClient {
     let response = await this.axios.post('/subscriptions/search', {
       cursor: params.cursor,
       limit: params.limit,
-      query: params.query,
+      query: params.query
     });
     return {
       subscriptions: response.data.subscriptions || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -699,14 +748,16 @@ export class SquareClient {
     states?: string;
     locationId?: string;
   }): Promise<{ disputes: Record<string, any>[]; cursor?: string }> {
-    let response = await this.axios.get('/disputes', { params: {
-      cursor: params?.cursor,
-      states: params?.states,
-      location_id: params?.locationId,
-    }});
+    let response = await this.axios.get('/disputes', {
+      params: {
+        cursor: params?.cursor,
+        states: params?.states,
+        location_id: params?.locationId
+      }
+    });
     return {
       disputes: response.data.disputes || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -728,15 +779,17 @@ export class SquareClient {
     type?: string;
     state?: string;
   }): Promise<{ giftCards: Record<string, any>[]; cursor?: string }> {
-    let response = await this.axios.get('/gift-cards', { params: {
-      cursor: params?.cursor,
-      limit: params?.limit,
-      type: params?.type,
-      state: params?.state,
-    }});
+    let response = await this.axios.get('/gift-cards', {
+      params: {
+        cursor: params?.cursor,
+        limit: params?.limit,
+        type: params?.type,
+        state: params?.state
+      }
+    });
     return {
       giftCards: response.data.gift_cards || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -760,11 +813,11 @@ export class SquareClient {
     let response = await this.axios.post('/loyalty/accounts/search', {
       query: params.query,
       cursor: params.cursor,
-      limit: params.limit,
+      limit: params.limit
     });
     return {
       loyaltyAccounts: response.data.loyalty_accounts || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 
@@ -778,11 +831,11 @@ export class SquareClient {
     let response = await this.axios.post('/team-members/search', {
       query: params?.query,
       cursor: params?.cursor,
-      limit: params?.limit,
+      limit: params?.limit
     });
     return {
       teamMembers: response.data.team_members || [],
-      cursor: response.data.cursor,
+      cursor: response.data.cursor
     };
   }
 

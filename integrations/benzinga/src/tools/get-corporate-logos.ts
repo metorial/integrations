@@ -13,41 +13,61 @@ let logoResultSchema = z.object({
   logoVectorDark: z.string().optional().describe('Dark-themed SVG logo URL'),
   markLight: z.string().optional().describe('Light-themed icon/mark URL'),
   markDark: z.string().optional().describe('Dark-themed icon/mark URL'),
-  backgroundColorLight: z.string().optional().describe('Brand background color (light theme, HEX)'),
-  backgroundColorDark: z.string().optional().describe('Brand background color (dark theme, HEX)'),
-  securities: z.array(z.object({
-    symbol: z.string().optional(),
-    exchange: z.string().optional(),
-    name: z.string().optional(),
-  })).optional().describe('Associated securities'),
+  backgroundColorLight: z
+    .string()
+    .optional()
+    .describe('Brand background color (light theme, HEX)'),
+  backgroundColorDark: z
+    .string()
+    .optional()
+    .describe('Brand background color (dark theme, HEX)'),
+  securities: z
+    .array(
+      z.object({
+        symbol: z.string().optional(),
+        exchange: z.string().optional(),
+        name: z.string().optional()
+      })
+    )
+    .optional()
+    .describe('Associated securities')
 });
 
-export let getCorporateLogosTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Corporate Logos',
-    key: 'get_corporate_logos',
-    description: `Search for corporate logos by ticker symbol, CIK, CUSIP, or ISIN. Returns logo images in light/dark variants, vector formats, and associated brand colors for publicly traded companies.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getCorporateLogosTool = SlateTool.create(spec, {
+  name: 'Get Corporate Logos',
+  key: 'get_corporate_logos',
+  description: `Search for corporate logos by ticker symbol, CIK, CUSIP, or ISIN. Returns logo images in light/dark variants, vector formats, and associated brand colors for publicly traded companies.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    searchKeys: z.string().describe('Comma-separated identifiers (max 100). Supports "SYMBOL" or "EXCHANGE:SYMBOL" format, e.g. "AAPL,NYSE:ARI"'),
-    searchKeysType: z.enum(['symbol', 'cik', 'cusip', 'isin']).optional().default('symbol').describe('Type of identifier used in searchKeys'),
-  }))
-  .output(z.object({
-    logos: z.array(logoResultSchema).describe('Logo results for requested companies'),
-    count: z.number().describe('Number of logo results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      searchKeys: z
+        .string()
+        .describe(
+          'Comma-separated identifiers (max 100). Supports "SYMBOL" or "EXCHANGE:SYMBOL" format, e.g. "AAPL,NYSE:ARI"'
+        ),
+      searchKeysType: z
+        .enum(['symbol', 'cik', 'cusip', 'isin'])
+        .optional()
+        .default('symbol')
+        .describe('Type of identifier used in searchKeys')
+    })
+  )
+  .output(
+    z.object({
+      logos: z.array(logoResultSchema).describe('Logo results for requested companies'),
+      count: z.number().describe('Number of logo results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BenzingaClient({ token: ctx.auth.token });
 
     let data = await client.searchLogos({
       searchKeys: ctx.input.searchKeys,
-      searchKeysType: ctx.input.searchKeysType,
+      searchKeysType: ctx.input.searchKeysType
     });
 
     let results = data?.data || (Array.isArray(data) ? data : []);
@@ -66,15 +86,16 @@ export let getCorporateLogosTool = SlateTool.create(
       securities: (item.securities || []).map((s: any) => ({
         symbol: s.symbol,
         exchange: s.exchange,
-        name: s.name,
-      })),
+        name: s.name
+      }))
     }));
 
     return {
       output: {
         logos,
-        count: logos.length,
+        count: logos.length
       },
-      message: `Found **${logos.length}** logo result(s) for: ${ctx.input.searchKeys}.`,
+      message: `Found **${logos.length}** logo result(s) for: ${ctx.input.searchKeys}.`
     };
-  }).build();
+  })
+  .build();

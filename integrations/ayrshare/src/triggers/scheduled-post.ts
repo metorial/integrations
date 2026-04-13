@@ -3,68 +3,82 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let scheduledPostTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Scheduled Post Published',
-    key: 'scheduled_post_published',
-    description: 'Triggered when a scheduled post has been processed and published (or failed). Includes post status, errors, and platform-specific results.',
-  },
-)
-  .input(z.object({
-    action: z.string().describe('Webhook action type'),
-    subAction: z.string().optional().describe('Sub-action (e.g., tikTokPublished)'),
-    hookId: z.string().optional().describe('Webhook hook ID'),
-    postId: z.string().optional().describe('Ayrshare post ID'),
-    status: z.string().optional().describe('Post status'),
-    code: z.number().optional().describe('Status code'),
-    refId: z.string().optional().describe('Profile reference ID'),
-    postIds: z.array(z.record(z.string(), z.unknown())).optional().describe('Platform-specific post results'),
-    errors: z.array(z.record(z.string(), z.unknown())).optional().describe('Errors per platform'),
-    created: z.string().optional().describe('Event timestamp'),
-  }))
-  .output(z.object({
-    postId: z.string().optional().describe('Ayrshare post ID'),
-    status: z.string().optional().describe('Post status (success, error, etc.)'),
-    refId: z.string().optional().describe('Profile reference ID'),
-    postIds: z.array(z.record(z.string(), z.unknown())).optional().describe('Platform-specific post IDs and statuses'),
-    errors: z.array(z.record(z.string(), z.unknown())).optional().describe('Any errors per platform'),
-    subAction: z.string().optional().describe('Sub-action type (e.g., tikTokPublished)'),
-    created: z.string().optional().describe('Event creation timestamp'),
-  }))
+export let scheduledPostTrigger = SlateTrigger.create(spec, {
+  name: 'Scheduled Post Published',
+  key: 'scheduled_post_published',
+  description:
+    'Triggered when a scheduled post has been processed and published (or failed). Includes post status, errors, and platform-specific results.'
+})
+  .input(
+    z.object({
+      action: z.string().describe('Webhook action type'),
+      subAction: z.string().optional().describe('Sub-action (e.g., tikTokPublished)'),
+      hookId: z.string().optional().describe('Webhook hook ID'),
+      postId: z.string().optional().describe('Ayrshare post ID'),
+      status: z.string().optional().describe('Post status'),
+      code: z.number().optional().describe('Status code'),
+      refId: z.string().optional().describe('Profile reference ID'),
+      postIds: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Platform-specific post results'),
+      errors: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Errors per platform'),
+      created: z.string().optional().describe('Event timestamp')
+    })
+  )
+  .output(
+    z.object({
+      postId: z.string().optional().describe('Ayrshare post ID'),
+      status: z.string().optional().describe('Post status (success, error, etc.)'),
+      refId: z.string().optional().describe('Profile reference ID'),
+      postIds: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Platform-specific post IDs and statuses'),
+      errors: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Any errors per platform'),
+      subAction: z.string().optional().describe('Sub-action type (e.g., tikTokPublished)'),
+      created: z.string().optional().describe('Event creation timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        profileKey: ctx.config.profileKey,
+        profileKey: ctx.config.profileKey
       });
 
       let result = await client.registerWebhook({
         action: 'scheduled',
-        url: ctx.input.webhookBaseUrl,
+        url: ctx.input.webhookBaseUrl
       });
 
       return {
         registrationDetails: {
           action: 'scheduled',
-          hookId: result.hookId || result.id,
-        },
+          hookId: result.hookId || result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        profileKey: ctx.config.profileKey,
+        profileKey: ctx.config.profileKey
       });
 
       await client.unregisterWebhook({
-        action: ctx.input.registrationDetails.action || 'scheduled',
+        action: ctx.input.registrationDetails.action || 'scheduled'
       });
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
@@ -78,19 +92,20 @@ export let scheduledPostTrigger = SlateTrigger.create(
             refId: data.refId,
             postIds: data.postIds,
             errors: data.errors,
-            created: data.created,
-          },
-        ],
+            created: data.created
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let subAction = ctx.input.subAction;
-      let eventType = subAction === 'tikTokPublished'
-        ? 'post.tiktok_published'
-        : ctx.input.status === 'error'
-          ? 'post.failed'
-          : 'post.published';
+      let eventType =
+        subAction === 'tikTokPublished'
+          ? 'post.tiktok_published'
+          : ctx.input.status === 'error'
+            ? 'post.failed'
+            : 'post.published';
 
       return {
         type: eventType,
@@ -102,8 +117,9 @@ export let scheduledPostTrigger = SlateTrigger.create(
           postIds: ctx.input.postIds,
           errors: ctx.input.errors,
           subAction: ctx.input.subAction,
-          created: ctx.input.created,
-        },
+          created: ctx.input.created
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

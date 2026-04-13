@@ -7,7 +7,7 @@ import {
   browseReceivedEmails,
   getReceivedEmail,
   createWebhookReceiver,
-  pollWebhookReceiver,
+  pollWebhookReceiver
 } from './tools';
 import { incomingEmail } from './triggers';
 
@@ -20,9 +20,7 @@ export let provider = Slate.create({
     browseReceivedEmails,
     getReceivedEmail,
     createWebhookReceiver,
-    pollWebhookReceiver,
+    pollWebhookReceiver
   ],
-  triggers: [
-    incomingEmail,
-  ],
+  triggers: [incomingEmail]
 });

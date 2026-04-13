@@ -13,12 +13,9 @@ import {
   manageAppAssignmentTool,
   querySystemLogTool,
   listPoliciesTool,
-  manageUserFactorsTool,
+  manageUserFactorsTool
 } from './tools';
-import {
-  eventHookTrigger,
-  systemLogPollTrigger,
-} from './triggers';
+import { eventHookTrigger, systemLogPollTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     manageAppAssignmentTool,
     querySystemLogTool,
     listPoliciesTool,
-    manageUserFactorsTool,
+    manageUserFactorsTool
   ],
-  triggers: [
-    eventHookTrigger,
-    systemLogPollTrigger,
-  ],
+  triggers: [eventHookTrigger, systemLogPollTrigger]
 });

@@ -31,39 +31,51 @@ ForceManager also supports OAuth authentication. After completing the OAuth flow
 ## Features
 
 ### Account (Company) Management
+
 Create, read, update, and delete company/account records. Accounts include fields for name, address, geolocation, contact details, VAT number, account type, status, segment, branch assignment, and multiple sales representative assignments. Entities support custom extra fields (prefixed with `z_`) that are maintained by the customer.
 
 ### Contact Management
+
 Manage contacts associated with accounts. Contacts include personal details, multiple email addresses, phone numbers, social profiles (LinkedIn, Skype), and can be linked to accounts and assigned to sales reps.
 
 ### Activity Tracking
+
 Record and manage sales activities such as visits, calls, and meetings. Activities can have related documents attached to them. Activities support check-in/check-out with geolocation data and can be linked to accounts, contacts, and opportunities.
 
 ### Opportunity Management
+
 Track sales opportunities through their lifecycle. Opportunities include amount, probability, expected and actual closing dates, won/lost dates, status tracking, and geographic information. Opportunities can be associated with multiple accounts (useful for construction industry workflows) and linked to a branch and currency.
 
 ### Product Catalog
+
 Manage a product catalog with model names, descriptions, pricing, cost, category and family classification, maximum discount percentages, and availability status.
 
 ### Sales Orders
+
 Create and manage sales orders and their line items. Sales orders can be linked to accounts, contacts, opportunities, and branches. Order lines reference products with quantity, pricing, and up to four levels of discounts. Sales orders support rate-based pricing and expected/actual closing dates.
 
 ### Calendar & Task Management
+
 Manage calendar events and tasks. Calendar entries support start/end dates, all-day events, notification settings, and can be linked to accounts, contacts, and opportunities. Entries can be marked as tasks or events and tracked for completion.
 
 ### User Management
+
 Read-only access to user records including their details, branch assignments, permission levels, user types, and last known geolocation data.
 
 ### Views & Filters
+
 Create and manage saved view filters that can be applied to entities. Views can be public or restricted to specific users, and can have active date ranges.
 
 ### List of Values
+
 Manage dynamic lookup lists used across entities (e.g., account types, account statuses, activity types, opportunity statuses, contact types, branches, segments, countries, currencies).
 
 ### Search & Querying
+
 Search records by important fields (entity-specific searchable fields) that are joined with AND operators in a LIKE fashion. An advanced search/query language is also available for more complex filtering.
 
 ### External ID Mapping
+
 Look up ForceManager internal IDs using external system IDs, enabling synchronization with external ERPs, CRMs, or accounting systems.
 
 ## Events

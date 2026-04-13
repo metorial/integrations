@@ -3,24 +3,23 @@ import { FindymailClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCredits = SlateTool.create(
-  spec,
-  {
-    name: 'Get Credits Balance',
-    key: 'get_credits',
-    description: `Check your current Findymail account credit balance. Useful for monitoring usage before running enrichment operations.`,
-    tags: {
-      readOnly: true,
-    },
+export let getCredits = SlateTool.create(spec, {
+  name: 'Get Credits Balance',
+  key: 'get_credits',
+  description: `Check your current Findymail account credit balance. Useful for monitoring usage before running enrichment operations.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    credits: z.number().optional().describe('Remaining credits in the account.'),
-    used: z.number().optional().describe('Credits used in the current billing period.'),
-    total: z.number().optional().describe('Total credits in the current billing period.'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      credits: z.number().optional().describe('Remaining credits in the account.'),
+      used: z.number().optional().describe('Credits used in the current billing period.'),
+      total: z.number().optional().describe('Total credits in the current billing period.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new FindymailClient({ token: ctx.auth.token });
 
     let result = await client.getCredits();
@@ -33,11 +32,12 @@ export let getCredits = SlateTool.create(
       output: {
         credits,
         used,
-        total,
+        total
       },
-      message: credits !== undefined
-        ? `You have **${credits}** credits remaining${total !== undefined ? ` out of ${total}` : ''}${used !== undefined ? ` (${used} used)` : ''}.`
-        : `Retrieved credit balance information.`,
+      message:
+        credits !== undefined
+          ? `You have **${credits}** credits remaining${total !== undefined ? ` out of ${total}` : ''}${used !== undefined ? ` (${used} used)` : ''}.`
+          : `Retrieved credit balance information.`
     };
   })
   .build();

@@ -2,22 +2,28 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Mixmax API token generated from Settings → Integrations → Create Mixmax API Token'),
+      token: z
+        .string()
+        .describe(
+          'Mixmax API token generated from Settings → Integrations → Create Mixmax API Token'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
+          token: ctx.input.token
         }
       };
     },
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.mixmax.com/v1',
         headers: {
-          'X-API-Token': ctx.output.token,
-        },
+          'X-API-Token': ctx.output.token
+        }
       });
 
       let response = await http.get('/users/me');
@@ -37,8 +43,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user._id,
           email: user.email,
-          name: user.name,
+          name: user.name
         }
       };
-    },
+    }
   });

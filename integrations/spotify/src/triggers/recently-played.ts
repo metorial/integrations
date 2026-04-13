@@ -3,57 +3,73 @@ import { SpotifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recentlyPlayedTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Recently Played Track',
-    key: 'recently_played_track',
-    description: 'Triggers when the user plays a track on Spotify. Polls for newly played tracks since the last check.',
-  }
-)
-  .input(z.object({
-    playedAt: z.string().describe('ISO timestamp when the track was played'),
-    trackId: z.string().describe('Spotify track ID'),
-    trackName: z.string().describe('Track name'),
-    trackUri: z.string().describe('Spotify track URI'),
-    durationMs: z.number().describe('Track duration in milliseconds'),
-    explicit: z.boolean().describe('Whether the track is explicit'),
-    artists: z.array(z.object({
-      artistId: z.string(),
-      name: z.string(),
-    })).describe('Track artists'),
-    albumId: z.string().describe('Album ID'),
-    albumName: z.string().describe('Album name'),
-    spotifyUrl: z.string().describe('Spotify URL for the track'),
-    contextType: z.string().nullable().describe('Context type (playlist, album, artist, etc.)'),
-    contextUri: z.string().nullable().describe('Context URI'),
-  }))
-  .output(z.object({
-    trackId: z.string().describe('Spotify track ID'),
-    trackName: z.string().describe('Track name'),
-    trackUri: z.string().describe('Spotify track URI'),
-    durationMs: z.number().describe('Track duration in milliseconds'),
-    explicit: z.boolean().describe('Whether the track is explicit'),
-    artists: z.array(z.object({
-      artistId: z.string(),
-      name: z.string(),
-    })).describe('Track artists'),
-    albumId: z.string().describe('Album ID'),
-    albumName: z.string().describe('Album name'),
-    playedAt: z.string().describe('ISO timestamp when the track was played'),
-    spotifyUrl: z.string().describe('Spotify URL for the track'),
-    contextType: z.string().nullable().describe('Context type (playlist, album, artist, etc.)'),
-    contextUri: z.string().nullable().describe('Context URI'),
-  }))
+export let recentlyPlayedTrigger = SlateTrigger.create(spec, {
+  name: 'Recently Played Track',
+  key: 'recently_played_track',
+  description:
+    'Triggers when the user plays a track on Spotify. Polls for newly played tracks since the last check.'
+})
+  .input(
+    z.object({
+      playedAt: z.string().describe('ISO timestamp when the track was played'),
+      trackId: z.string().describe('Spotify track ID'),
+      trackName: z.string().describe('Track name'),
+      trackUri: z.string().describe('Spotify track URI'),
+      durationMs: z.number().describe('Track duration in milliseconds'),
+      explicit: z.boolean().describe('Whether the track is explicit'),
+      artists: z
+        .array(
+          z.object({
+            artistId: z.string(),
+            name: z.string()
+          })
+        )
+        .describe('Track artists'),
+      albumId: z.string().describe('Album ID'),
+      albumName: z.string().describe('Album name'),
+      spotifyUrl: z.string().describe('Spotify URL for the track'),
+      contextType: z
+        .string()
+        .nullable()
+        .describe('Context type (playlist, album, artist, etc.)'),
+      contextUri: z.string().nullable().describe('Context URI')
+    })
+  )
+  .output(
+    z.object({
+      trackId: z.string().describe('Spotify track ID'),
+      trackName: z.string().describe('Track name'),
+      trackUri: z.string().describe('Spotify track URI'),
+      durationMs: z.number().describe('Track duration in milliseconds'),
+      explicit: z.boolean().describe('Whether the track is explicit'),
+      artists: z
+        .array(
+          z.object({
+            artistId: z.string(),
+            name: z.string()
+          })
+        )
+        .describe('Track artists'),
+      albumId: z.string().describe('Album ID'),
+      albumName: z.string().describe('Album name'),
+      playedAt: z.string().describe('ISO timestamp when the track was played'),
+      spotifyUrl: z.string().describe('Spotify URL for the track'),
+      contextType: z
+        .string()
+        .nullable()
+        .describe('Context type (playlist, album, artist, etc.)'),
+      contextUri: z.string().nullable().describe('Context URI')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new SpotifyClient({
         token: ctx.auth.token,
-        market: ctx.config.market,
+        market: ctx.config.market
       });
 
       let params: { limit?: number; after?: string } = { limit: 50 };
@@ -76,7 +92,7 @@ export let recentlyPlayedTrigger = SlateTrigger.create(
         albumName: item.track.album.name,
         spotifyUrl: item.track.external_urls.spotify,
         contextType: item.context?.type ?? null,
-        contextUri: item.context?.uri ?? null,
+        contextUri: item.context?.uri ?? null
       }));
 
       let newCursor = result.cursors?.after ?? lastPolledAt;
@@ -84,12 +100,12 @@ export let recentlyPlayedTrigger = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastPolledAt: newCursor ?? null,
-        },
+          lastPolledAt: newCursor ?? null
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let playedAtMs = new Date(ctx.input.playedAt).getTime();
       let dedupId = `${ctx.input.trackId}-${playedAtMs}`;
 
@@ -108,8 +124,8 @@ export let recentlyPlayedTrigger = SlateTrigger.create(
           playedAt: ctx.input.playedAt,
           spotifyUrl: ctx.input.spotifyUrl,
           contextType: ctx.input.contextType,
-          contextUri: ctx.input.contextUri,
-        },
+          contextUri: ctx.input.contextUri
+        }
       };
-    },
+    }
   });

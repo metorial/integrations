@@ -1,5 +1,12 @@
 import { createAxios } from 'slates';
-import { parseXml, parseXmlList, buildXml, camelizeKeys, hyphenateKeys, type XmlObject } from './xml';
+import {
+  parseXml,
+  parseXmlList,
+  buildXml,
+  camelizeKeys,
+  hyphenateKeys,
+  type XmlObject
+} from './xml';
 import type { AxiosInstance } from 'axios';
 
 export interface ProjectData {
@@ -79,12 +86,12 @@ export class Client {
       baseURL: 'https://api.worksnaps.com/api',
       auth: {
         username: token,
-        password: 'ignored',
+        password: 'ignored'
       },
       headers: {
-        'Accept': 'application/xml',
-        'Content-Type': 'application/xml',
-      },
+        Accept: 'application/xml',
+        'Content-Type': 'application/xml'
+      }
     });
   }
 
@@ -97,10 +104,13 @@ export class Client {
     if (includeUserAssignment) params['include_user_assignment'] = '1';
     let response = await this.http.get('/projects.xml', { params });
     let items = parseXmlList(response.data as string, 'project');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
-  async getProject(projectId: string, includeUserAssignment?: boolean): Promise<Record<string, unknown>> {
+  async getProject(
+    projectId: string,
+    includeUserAssignment?: boolean
+  ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
     if (includeUserAssignment) params['include_user_assignment'] = '1';
     let response = await this.http.get(`/projects/${projectId}.xml`, { params });
@@ -133,18 +143,27 @@ export class Client {
   // Tasks
   // =====================
 
-  async listTasks(projectId: string, includeTaskAssignment?: boolean): Promise<Record<string, unknown>[]> {
+  async listTasks(
+    projectId: string,
+    includeTaskAssignment?: boolean
+  ): Promise<Record<string, unknown>[]> {
     let params: Record<string, string> = {};
     if (includeTaskAssignment) params['include_task_assignment'] = '1';
     let response = await this.http.get(`/projects/${projectId}/tasks.xml`, { params });
     let items = parseXmlList(response.data as string, 'task');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
-  async getTask(projectId: string, taskId: string, includeTaskAssignment?: boolean): Promise<Record<string, unknown>> {
+  async getTask(
+    projectId: string,
+    taskId: string,
+    includeTaskAssignment?: boolean
+  ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
     if (includeTaskAssignment) params['include_task_assignment'] = '1';
-    let response = await this.http.get(`/projects/${projectId}/tasks/${taskId}.xml`, { params });
+    let response = await this.http.get(`/projects/${projectId}/tasks/${taskId}.xml`, {
+      params
+    });
     let parsed = parseXml(response.data as string);
     let task = parsed['task'] || parsed;
     return camelizeKeys(task) as Record<string, unknown>;
@@ -158,7 +177,11 @@ export class Client {
     return camelizeKeys(task) as Record<string, unknown>;
   }
 
-  async updateTask(projectId: string, taskId: string, data: TaskData): Promise<Record<string, unknown>> {
+  async updateTask(
+    projectId: string,
+    taskId: string,
+    data: TaskData
+  ): Promise<Record<string, unknown>> {
     let body = buildXml('task', hyphenateKeys(data) as XmlObject);
     let response = await this.http.put(`/projects/${projectId}/tasks/${taskId}.xml`, body);
     let parsed = parseXml(response.data as string);
@@ -174,40 +197,61 @@ export class Client {
   // Time Entries
   // =====================
 
-  async listTimeEntries(projectId: string, filter: TimeEntryFilter): Promise<Record<string, unknown>[]> {
+  async listTimeEntries(
+    projectId: string,
+    filter: TimeEntryFilter
+  ): Promise<Record<string, unknown>[]> {
     let params: Record<string, string> = {
       user_ids: filter.userIds,
       from_timestamp: filter.fromTimestamp,
-      to_timestamp: filter.toTimestamp,
+      to_timestamp: filter.toTimestamp
     };
     if (filter.taskIds) params['task_ids'] = filter.taskIds;
     if (filter.timeEntryType) params['time_entry_type'] = filter.timeEntryType;
     let response = await this.http.get(`/projects/${projectId}/time_entries.xml`, { params });
     let items = parseXmlList(response.data as string, 'time-entry');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
-  async listUserTimeEntries(projectId: string, userId: string, filter: UserTimeEntryFilter): Promise<Record<string, unknown>[]> {
+  async listUserTimeEntries(
+    projectId: string,
+    userId: string,
+    filter: UserTimeEntryFilter
+  ): Promise<Record<string, unknown>[]> {
     let params: Record<string, string> = {
       from_timestamp: filter.fromTimestamp,
-      to_timestamp: filter.toTimestamp,
+      to_timestamp: filter.toTimestamp
     };
     if (filter.timeEntryType) params['time_entry_type'] = filter.timeEntryType;
-    let response = await this.http.get(`/projects/${projectId}/users/${userId}/time_entries.xml`, { params });
+    let response = await this.http.get(
+      `/projects/${projectId}/users/${userId}/time_entries.xml`,
+      { params }
+    );
     let items = parseXmlList(response.data as string, 'time-entry');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
-  async getTimeEntry(projectId: string, timeEntryId: string, fullResolutionUrl?: boolean): Promise<Record<string, unknown>> {
+  async getTimeEntry(
+    projectId: string,
+    timeEntryId: string,
+    fullResolutionUrl?: boolean
+  ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {};
     if (fullResolutionUrl) params['full_resolution_url'] = '1';
-    let response = await this.http.get(`/projects/${projectId}/time_entries/${timeEntryId}.xml`, { params });
+    let response = await this.http.get(
+      `/projects/${projectId}/time_entries/${timeEntryId}.xml`,
+      { params }
+    );
     let parsed = parseXml(response.data as string);
     let entry = parsed['time-entry'] || parsed;
     return camelizeKeys(entry) as Record<string, unknown>;
   }
 
-  async updateTimeEntry(projectId: string, timeEntryId: string, data: TimeEntryUpdate): Promise<void> {
+  async updateTimeEntry(
+    projectId: string,
+    timeEntryId: string,
+    data: TimeEntryUpdate
+  ): Promise<void> {
     let xmlData: XmlObject = {};
     if (data.taskId !== undefined) xmlData['task-id'] = data.taskId;
     if (data.userComment !== undefined) xmlData['user-comment'] = data.userComment;
@@ -219,10 +263,14 @@ export class Client {
     await this.http.delete(`/projects/${projectId}/time_entries/${timeEntryId}.xml`);
   }
 
-  async createOfflineTimeEntry(projectId: string, userId: string | undefined, data: OfflineTimeEntry): Promise<Record<string, unknown>> {
+  async createOfflineTimeEntry(
+    projectId: string,
+    userId: string | undefined,
+    data: OfflineTimeEntry
+  ): Promise<Record<string, unknown>> {
     let xmlData: XmlObject = {
       'from-timestamp': data.fromTimestamp,
-      'duration-in-minutes': data.durationInMinutes,
+      'duration-in-minutes': data.durationInMinutes
     };
     if (data.taskId) xmlData['task-id'] = data.taskId;
     if (data.userComment) xmlData['user-comment'] = data.userComment;
@@ -244,24 +292,35 @@ export class Client {
   async listUserAssignments(projectId: string): Promise<Record<string, unknown>[]> {
     let response = await this.http.get(`/projects/${projectId}/user_assignments.xml`);
     let items = parseXmlList(response.data as string, 'user-assignment');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
-  async getUserAssignment(projectId: string, userAssignmentId: string): Promise<Record<string, unknown>> {
-    let response = await this.http.get(`/projects/${projectId}/user_assignments/${userAssignmentId}.xml`);
+  async getUserAssignment(
+    projectId: string,
+    userAssignmentId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.http.get(
+      `/projects/${projectId}/user_assignments/${userAssignmentId}.xml`
+    );
     let parsed = parseXml(response.data as string);
     let assignment = parsed['user-assignment'] || parsed;
     return camelizeKeys(assignment) as Record<string, unknown>;
   }
 
-  async createUserAssignment(projectId: string, data: UserAssignmentData): Promise<Record<string, unknown>> {
+  async createUserAssignment(
+    projectId: string,
+    data: UserAssignmentData
+  ): Promise<Record<string, unknown>> {
     let xmlData: XmlObject = {};
     if (data.userId !== undefined) xmlData['user-id'] = data.userId;
     if (data.role !== undefined) xmlData['role'] = data.role;
     if (data.hourlyRate !== undefined) xmlData['hourly-rate'] = data.hourlyRate;
-    if (data.flagAllowLoggingTime !== undefined) xmlData['flag-allow-logging-time'] = data.flagAllowLoggingTime;
-    if (data.windowForDeletingTime !== undefined) xmlData['window-for-deleting-time'] = data.windowForDeletingTime;
-    if (data.windowForAddingOfflineTime !== undefined) xmlData['window-for-adding-offline-time'] = data.windowForAddingOfflineTime;
+    if (data.flagAllowLoggingTime !== undefined)
+      xmlData['flag-allow-logging-time'] = data.flagAllowLoggingTime;
+    if (data.windowForDeletingTime !== undefined)
+      xmlData['window-for-deleting-time'] = data.windowForDeletingTime;
+    if (data.windowForAddingOfflineTime !== undefined)
+      xmlData['window-for-adding-offline-time'] = data.windowForAddingOfflineTime;
     let body = buildXml('user-assignment', xmlData);
     let response = await this.http.post(`/projects/${projectId}/user_assignments.xml`, body);
     let parsed = parseXml(response.data as string);
@@ -269,14 +328,24 @@ export class Client {
     return camelizeKeys(assignment) as Record<string, unknown>;
   }
 
-  async updateUserAssignment(projectId: string, userAssignmentId: string, data: UserAssignmentData): Promise<Record<string, unknown>> {
+  async updateUserAssignment(
+    projectId: string,
+    userAssignmentId: string,
+    data: UserAssignmentData
+  ): Promise<Record<string, unknown>> {
     let xmlData: XmlObject = {};
     if (data.hourlyRate !== undefined) xmlData['hourly-rate'] = data.hourlyRate;
-    if (data.flagAllowLoggingTime !== undefined) xmlData['flag-allow-logging-time'] = data.flagAllowLoggingTime;
-    if (data.windowForDeletingTime !== undefined) xmlData['window-for-deleting-time'] = data.windowForDeletingTime;
-    if (data.windowForAddingOfflineTime !== undefined) xmlData['window-for-adding-offline-time'] = data.windowForAddingOfflineTime;
+    if (data.flagAllowLoggingTime !== undefined)
+      xmlData['flag-allow-logging-time'] = data.flagAllowLoggingTime;
+    if (data.windowForDeletingTime !== undefined)
+      xmlData['window-for-deleting-time'] = data.windowForDeletingTime;
+    if (data.windowForAddingOfflineTime !== undefined)
+      xmlData['window-for-adding-offline-time'] = data.windowForAddingOfflineTime;
     let body = buildXml('user-assignment', xmlData);
-    let response = await this.http.put(`/projects/${projectId}/user_assignments/${userAssignmentId}.xml`, body);
+    let response = await this.http.put(
+      `/projects/${projectId}/user_assignments/${userAssignmentId}.xml`,
+      body
+    );
     let parsed = parseXml(response.data as string);
     let assignment = parsed['user-assignment'] || parsed;
     return camelizeKeys(assignment) as Record<string, unknown>;
@@ -293,20 +362,28 @@ export class Client {
   async listTaskAssignments(projectId: string): Promise<Record<string, unknown>[]> {
     let response = await this.http.get(`/projects/${projectId}/task_assignments.xml`);
     let items = parseXmlList(response.data as string, 'task-assignment');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
-  async getTaskAssignment(projectId: string, taskAssignmentId: string): Promise<Record<string, unknown>> {
-    let response = await this.http.get(`/projects/${projectId}/task_assignments/${taskAssignmentId}.xml`);
+  async getTaskAssignment(
+    projectId: string,
+    taskAssignmentId: string
+  ): Promise<Record<string, unknown>> {
+    let response = await this.http.get(
+      `/projects/${projectId}/task_assignments/${taskAssignmentId}.xml`
+    );
     let parsed = parseXml(response.data as string);
     let assignment = parsed['task-assignment'] || parsed;
     return camelizeKeys(assignment) as Record<string, unknown>;
   }
 
-  async createTaskAssignment(projectId: string, data: TaskAssignmentData): Promise<Record<string, unknown>> {
+  async createTaskAssignment(
+    projectId: string,
+    data: TaskAssignmentData
+  ): Promise<Record<string, unknown>> {
     let xmlData: XmlObject = {
       'user-id': data.userId,
-      'task-id': data.taskId,
+      'task-id': data.taskId
     };
     let body = buildXml('task-assignment', xmlData);
     let response = await this.http.post(`/projects/${projectId}/task_assignments.xml`, body);
@@ -319,9 +396,13 @@ export class Client {
     await this.http.delete(`/projects/${projectId}/task_assignments/${taskAssignmentId}.xml`);
   }
 
-  async deleteTaskAssignmentByUserAndTask(projectId: string, userId: string, taskId: string): Promise<void> {
+  async deleteTaskAssignmentByUserAndTask(
+    projectId: string,
+    userId: string,
+    taskId: string
+  ): Promise<void> {
     await this.http.delete(`/projects/${projectId}/task_assignments.xml`, {
-      params: { user_id: userId, task_id: taskId },
+      params: { user_id: userId, task_id: taskId }
     });
   }
 
@@ -339,7 +420,7 @@ export class Client {
   async listUsers(): Promise<Record<string, unknown>[]> {
     let response = await this.http.get('/users.xml');
     let items = parseXmlList(response.data as string, 'user');
-    return items.map((item) => camelizeKeys(item) as Record<string, unknown>);
+    return items.map(item => camelizeKeys(item) as Record<string, unknown>);
   }
 
   async getUser(userId: string): Promise<Record<string, unknown>> {
@@ -349,7 +430,10 @@ export class Client {
     return camelizeKeys(user) as Record<string, unknown>;
   }
 
-  async updateUser(userId: string, data: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async updateUser(
+    userId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     let body = buildXml('user', hyphenateKeys(data) as XmlObject);
     let response = await this.http.put(`/users/${userId}.xml`, body);
     let parsed = parseXml(response.data as string);
@@ -361,11 +445,14 @@ export class Client {
   // Reports
   // =====================
 
-  async getProjectReport(projectId: string, filter: ReportFilter): Promise<Record<string, unknown>> {
+  async getProjectReport(
+    projectId: string,
+    filter: ReportFilter
+  ): Promise<Record<string, unknown>> {
     let params: Record<string, string> = {
       name: filter.name,
       from_timestamp: filter.fromTimestamp,
-      to_timestamp: filter.toTimestamp,
+      to_timestamp: filter.toTimestamp
     };
     if (filter.userIds) params['user_ids'] = filter.userIds;
     if (filter.taskIds) params['task_ids'] = filter.taskIds;
@@ -379,7 +466,7 @@ export class Client {
     let params: Record<string, string> = {
       name: filter.name,
       from_date: filter.fromDate,
-      to_date: filter.toDate,
+      to_date: filter.toDate
     };
     if (filter.timezoneOffset) params['timezone_offset'] = filter.timezoneOffset;
     if (filter.projectIds) params['project_ids'] = filter.projectIds;

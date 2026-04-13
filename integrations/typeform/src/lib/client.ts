@@ -8,8 +8,8 @@ export class TypeformClient {
       baseURL: config.baseUrl,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -75,19 +75,22 @@ export class TypeformClient {
 
   // ─── Responses ────────────────────────────────────────────────
 
-  async getResponses(formId: string, params?: {
-    pageSize?: number;
-    since?: string;
-    until?: string;
-    after?: string;
-    before?: string;
-    includedResponseIds?: string;
-    completed?: boolean;
-    sort?: string;
-    query?: string;
-    fields?: string[];
-    responseType?: string;
-  }): Promise<any> {
+  async getResponses(
+    formId: string,
+    params?: {
+      pageSize?: number;
+      since?: string;
+      until?: string;
+      after?: string;
+      before?: string;
+      includedResponseIds?: string;
+      completed?: boolean;
+      sort?: string;
+      query?: string;
+      fields?: string[];
+      responseType?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.pageSize) query.page_size = params.pageSize;
     if (params?.since) query.since = params.since;
@@ -107,7 +110,7 @@ export class TypeformClient {
 
   async deleteResponses(formId: string, includedTokens: string[]): Promise<void> {
     await this.axios.delete(`/forms/${formId}/responses`, {
-      params: { included_tokens: includedTokens.join(',') },
+      params: { included_tokens: includedTokens.join(',') }
     });
   }
 
@@ -148,10 +151,7 @@ export class TypeformClient {
 
   // ─── Themes ───────────────────────────────────────────────────
 
-  async listThemes(params?: {
-    page?: number;
-    pageSize?: number;
-  }): Promise<any> {
+  async listThemes(params?: { page?: number; pageSize?: number }): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.page) query.page = params.page;
     if (params?.pageSize) query.page_size = params.pageSize;
@@ -199,7 +199,7 @@ export class TypeformClient {
     let response = await this.axios.post('/images', {
       image: imageData.image,
       media_type: imageData.mediaType,
-      file_name: imageData.fileName,
+      file_name: imageData.fileName
     });
     return response.data;
   }
@@ -220,15 +220,19 @@ export class TypeformClient {
     return response.data;
   }
 
-  async createOrUpdateWebhook(formId: string, tag: string, params: {
-    url: string;
-    enabled?: boolean;
-    secret?: string;
-    verifySsl?: boolean;
-    eventTypes?: Record<string, boolean>;
-  }): Promise<any> {
+  async createOrUpdateWebhook(
+    formId: string,
+    tag: string,
+    params: {
+      url: string;
+      enabled?: boolean;
+      secret?: string;
+      verifySsl?: boolean;
+      eventTypes?: Record<string, boolean>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {
-      url: params.url,
+      url: params.url
     };
     if (params.enabled !== undefined) body.enabled = params.enabled;
     if (params.secret) body.secret = params.secret;
@@ -262,8 +266,15 @@ export class TypeformClient {
     return response.data;
   }
 
-  async updateTranslation(formId: string, language: string, translationData: any): Promise<any> {
-    let response = await this.axios.put(`/forms/${formId}/translations/${language}`, translationData);
+  async updateTranslation(
+    formId: string,
+    language: string,
+    translationData: any
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/forms/${formId}/translations/${language}`,
+      translationData
+    );
     return response.data;
   }
 

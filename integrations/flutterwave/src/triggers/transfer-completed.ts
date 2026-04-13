@@ -2,48 +2,50 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let transferCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transfer Completed',
-    key: 'transfer_completed',
-    description: 'Triggered when a payout/transfer is completed. Includes transfer status, amount, recipient details, and bank information.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type from webhook'),
-    transferId: z.number().describe('Transfer ID'),
-    accountNumber: z.string().optional().describe('Recipient account number'),
-    bankName: z.string().optional().describe('Recipient bank name'),
-    bankCode: z.string().optional().describe('Bank code'),
-    fullName: z.string().optional().describe('Recipient name'),
-    amount: z.number().describe('Transfer amount'),
-    currency: z.string().describe('Transfer currency'),
-    fee: z.number().optional().describe('Transfer fee'),
-    status: z.string().describe('Transfer status'),
-    reference: z.string().optional().describe('Transfer reference'),
-    narration: z.string().optional().describe('Transfer narration'),
-    completeMessage: z.string().optional().describe('Completion message from bank'),
-    createdAt: z.string().optional().describe('Transfer timestamp'),
-  }))
-  .output(z.object({
-    transferId: z.number().describe('Transfer ID'),
-    accountNumber: z.string().optional().describe('Recipient account number'),
-    bankName: z.string().optional().describe('Recipient bank name'),
-    bankCode: z.string().optional().describe('Bank code'),
-    fullName: z.string().optional().describe('Recipient name'),
-    amount: z.number().describe('Transfer amount'),
-    currency: z.string().describe('Transfer currency'),
-    fee: z.number().optional().describe('Transfer fee'),
-    status: z.string().describe('Transfer status'),
-    reference: z.string().optional().describe('Transfer reference'),
-    narration: z.string().optional().describe('Transfer narration'),
-    completeMessage: z.string().optional().describe('Completion message from bank'),
-    createdAt: z.string().optional().describe('Transfer timestamp'),
-  }))
+export let transferCompleted = SlateTrigger.create(spec, {
+  name: 'Transfer Completed',
+  key: 'transfer_completed',
+  description:
+    'Triggered when a payout/transfer is completed. Includes transfer status, amount, recipient details, and bank information.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Event type from webhook'),
+      transferId: z.number().describe('Transfer ID'),
+      accountNumber: z.string().optional().describe('Recipient account number'),
+      bankName: z.string().optional().describe('Recipient bank name'),
+      bankCode: z.string().optional().describe('Bank code'),
+      fullName: z.string().optional().describe('Recipient name'),
+      amount: z.number().describe('Transfer amount'),
+      currency: z.string().describe('Transfer currency'),
+      fee: z.number().optional().describe('Transfer fee'),
+      status: z.string().describe('Transfer status'),
+      reference: z.string().optional().describe('Transfer reference'),
+      narration: z.string().optional().describe('Transfer narration'),
+      completeMessage: z.string().optional().describe('Completion message from bank'),
+      createdAt: z.string().optional().describe('Transfer timestamp')
+    })
+  )
+  .output(
+    z.object({
+      transferId: z.number().describe('Transfer ID'),
+      accountNumber: z.string().optional().describe('Recipient account number'),
+      bankName: z.string().optional().describe('Recipient bank name'),
+      bankCode: z.string().optional().describe('Bank code'),
+      fullName: z.string().optional().describe('Recipient name'),
+      amount: z.number().describe('Transfer amount'),
+      currency: z.string().describe('Transfer currency'),
+      fee: z.number().optional().describe('Transfer fee'),
+      status: z.string().describe('Transfer status'),
+      reference: z.string().optional().describe('Transfer reference'),
+      narration: z.string().optional().describe('Transfer narration'),
+      completeMessage: z.string().optional().describe('Completion message from bank'),
+      createdAt: z.string().optional().describe('Transfer timestamp')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       if (body.event !== 'transfer.completed') {
         return { inputs: [] };
@@ -52,25 +54,27 @@ export let transferCompleted = SlateTrigger.create(
       let d = body.data || {};
 
       return {
-        inputs: [{
-          eventType: body.event,
-          transferId: d.id,
-          accountNumber: d.account_number,
-          bankName: d.bank_name,
-          bankCode: d.bank_code,
-          fullName: d.full_name,
-          amount: d.amount,
-          currency: d.currency,
-          fee: d.fee,
-          status: d.status,
-          reference: d.reference,
-          narration: d.narration,
-          completeMessage: d.complete_message,
-          createdAt: d.created_at,
-        }],
+        inputs: [
+          {
+            eventType: body.event,
+            transferId: d.id,
+            accountNumber: d.account_number,
+            bankName: d.bank_name,
+            bankCode: d.bank_code,
+            fullName: d.full_name,
+            amount: d.amount,
+            currency: d.currency,
+            fee: d.fee,
+            status: d.status,
+            reference: d.reference,
+            narration: d.narration,
+            completeMessage: d.complete_message,
+            createdAt: d.created_at
+          }
+        ]
       };
     },
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'transfer.completed',
         id: `transfer_${ctx.input.transferId}`,
@@ -87,8 +91,9 @@ export let transferCompleted = SlateTrigger.create(
           reference: ctx.input.reference,
           narration: ctx.input.narration,
           completeMessage: ctx.input.completeMessage,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

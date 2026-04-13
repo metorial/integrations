@@ -5,7 +5,7 @@ export class Client {
 
   constructor(private token: string) {
     this.http = createAxios({
-      baseURL: 'https://api.scrapfly.io',
+      baseURL: 'https://api.scrapfly.io'
     });
   }
 
@@ -18,7 +18,7 @@ export class Client {
   async scrape(options: ScrapeOptions): Promise<any> {
     let params: Record<string, any> = {
       ...this.params(),
-      url: options.url,
+      url: options.url
     };
 
     if (options.method) params.method = options.method;
@@ -37,7 +37,8 @@ export class Client {
     if (options.cacheTtl !== undefined) params.cache_ttl = options.cacheTtl;
     if (options.cacheClear !== undefined) params.cache_clear = options.cacheClear;
     if (options.session) params.session = options.session;
-    if (options.sessionStickyProxy !== undefined) params.session_sticky_proxy = options.sessionStickyProxy;
+    if (options.sessionStickyProxy !== undefined)
+      params.session_sticky_proxy = options.sessionStickyProxy;
     if (options.correlationId) params.correlation_id = options.correlationId;
     if (options.tags && options.tags.length > 0) params.tags = options.tags.join(',');
     if (options.lang) params.lang = options.lang;
@@ -50,7 +51,8 @@ export class Client {
     if (options.geolocation) params.geolocation = options.geolocation;
     if (options.renderingStage) params.rendering_stage = options.renderingStage;
     if (options.webhookName) params.webhook_name = options.webhookName;
-    if (options.proxifiedResponse !== undefined) params.proxified_response = options.proxifiedResponse;
+    if (options.proxifiedResponse !== undefined)
+      params.proxified_response = options.proxifiedResponse;
     if (options.extractionTemplate) params.extraction_template = options.extractionTemplate;
     if (options.extractionPrompt) params.extraction_prompt = options.extractionPrompt;
     if (options.extractionModel) params.extraction_model = options.extractionModel;
@@ -77,7 +79,7 @@ export class Client {
         url: '/scrape',
         params,
         headers,
-        data: options.body,
+        data: options.body
       });
     } else {
       response = await this.http.get('/scrape', { params, headers });
@@ -91,7 +93,7 @@ export class Client {
   async screenshot(options: ScreenshotOptions): Promise<ScreenshotResult> {
     let params: Record<string, any> = {
       ...this.params(),
-      url: options.url,
+      url: options.url
     };
 
     if (options.format) params.format = options.format;
@@ -114,7 +116,7 @@ export class Client {
 
     let response = await this.http.get('/screenshot', {
       params,
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
     let screenshotUrl = response.headers['x-scrapfly-screenshot-url'] ?? '';
@@ -127,9 +129,9 @@ export class Client {
       upstreamStatusCode: upstreamStatusCode ? parseInt(upstreamStatusCode, 10) : undefined,
       upstreamUrl: upstreamUrl || undefined,
       apiCost: apiCost ? parseInt(apiCost, 10) : undefined,
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
       imageBase64: Buffer.from(response.data).toString('base64'),
-      imageFormat: options.format ?? 'jpg',
+      imageFormat: options.format ?? 'jpg'
     };
   }
 
@@ -137,7 +139,7 @@ export class Client {
 
   async extract(options: ExtractionOptions): Promise<any> {
     let params: Record<string, any> = {
-      ...this.params(),
+      ...this.params()
     };
 
     if (options.extractionTemplate) params.extraction_template = options.extractionTemplate;
@@ -151,8 +153,8 @@ export class Client {
     let response = await this.http.post('/extraction', options.body, {
       params,
       headers: {
-        'Content-Type': options.contentType ?? 'text/html',
-      },
+        'Content-Type': options.contentType ?? 'text/html'
+      }
     });
 
     return response.data;
@@ -162,7 +164,7 @@ export class Client {
 
   async createCrawl(options: CrawlOptions): Promise<any> {
     let body: Record<string, any> = {
-      url: options.url,
+      url: options.url
     };
 
     if (options.pageLimit !== undefined) body.page_limit = options.pageLimit;
@@ -171,18 +173,24 @@ export class Client {
     if (options.maxApiCredit !== undefined) body.max_api_credit = options.maxApiCredit;
     if (options.excludePaths) body.exclude_paths = options.excludePaths;
     if (options.includeOnlyPaths) body.include_only_paths = options.includeOnlyPaths;
-    if (options.ignoreBasePathRestriction !== undefined) body.ignore_base_path_restriction = options.ignoreBasePathRestriction;
-    if (options.followExternalLinks !== undefined) body.follow_external_links = options.followExternalLinks;
-    if (options.allowedExternalDomains) body.allowed_external_domains = options.allowedExternalDomains;
-    if (options.followInternalSubdomains !== undefined) body.follow_internal_subdomains = options.followInternalSubdomains;
-    if (options.allowedInternalSubdomains) body.allowed_internal_subdomains = options.allowedInternalSubdomains;
+    if (options.ignoreBasePathRestriction !== undefined)
+      body.ignore_base_path_restriction = options.ignoreBasePathRestriction;
+    if (options.followExternalLinks !== undefined)
+      body.follow_external_links = options.followExternalLinks;
+    if (options.allowedExternalDomains)
+      body.allowed_external_domains = options.allowedExternalDomains;
+    if (options.followInternalSubdomains !== undefined)
+      body.follow_internal_subdomains = options.followInternalSubdomains;
+    if (options.allowedInternalSubdomains)
+      body.allowed_internal_subdomains = options.allowedInternalSubdomains;
     if (options.renderingDelay !== undefined) body.rendering_delay = options.renderingDelay;
     if (options.maxConcurrency !== undefined) body.max_concurrency = options.maxConcurrency;
     if (options.customHeaders) body.headers = options.customHeaders;
     if (options.delay) body.delay = options.delay;
     if (options.userAgent) body.user_agent = options.userAgent;
     if (options.useSitemaps !== undefined) body.use_sitemaps = options.useSitemaps;
-    if (options.respectRobotsTxt !== undefined) body.respect_robots_txt = options.respectRobotsTxt;
+    if (options.respectRobotsTxt !== undefined)
+      body.respect_robots_txt = options.respectRobotsTxt;
     if (options.cache !== undefined) body.cache = options.cache;
     if (options.cacheTtl !== undefined) body.cache_ttl = options.cacheTtl;
     if (options.cacheClear !== undefined) body.cache_clear = options.cacheClear;
@@ -197,7 +205,7 @@ export class Client {
 
     let response = await this.http.post('/crawl', body, {
       params: this.params(),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
     return response.data;
@@ -205,14 +213,14 @@ export class Client {
 
   async getCrawlStatus(crawlerUuid: string): Promise<any> {
     let response = await this.http.get(`/crawl/${crawlerUuid}/status`, {
-      params: this.params(),
+      params: this.params()
     });
     return response.data;
   }
 
   async getCrawlUrls(crawlerUuid: string): Promise<any> {
     let response = await this.http.get(`/crawl/${crawlerUuid}/urls`, {
-      params: this.params(),
+      params: this.params()
     });
     return response.data;
   }
@@ -221,7 +229,7 @@ export class Client {
     let params: Record<string, any> = this.params();
     if (format) params.format = format;
     let response = await this.http.get(`/crawl/${crawlerUuid}/contents`, {
-      params,
+      params
     });
     return response.data;
   }
@@ -230,7 +238,7 @@ export class Client {
 
   async getAccount(): Promise<any> {
     let response = await this.http.get('/account', {
-      params: this.params(),
+      params: this.params()
     });
     return response.data;
   }

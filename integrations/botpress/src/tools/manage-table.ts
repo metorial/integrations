@@ -3,41 +3,56 @@ import { TablesClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTableTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Table',
-    key: 'manage_table',
-    description: `Create, retrieve, update, delete, or list tables in a bot's structured data store. Tables are used to store custom data like user profiles, labels, or extracted content.`,
-    tags: {
-      destructive: true,
-    },
+export let manageTableTool = SlateTool.create(spec, {
+  name: 'Manage Table',
+  key: 'manage_table',
+  description: `Create, retrieve, update, delete, or list tables in a bot's structured data store. Tables are used to store custom data like user profiles, labels, or extracted content.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'update', 'delete', 'list']).describe('Operation to perform'),
-    botId: z.string().optional().describe('Bot ID. Falls back to config botId.'),
-    tableId: z.string().optional().describe('Table ID or name (required for get, update, delete)'),
-    name: z.string().optional().describe('Table name (required for create)'),
-    schema: z.record(z.string(), z.unknown()).optional().describe('JSON Schema defining table columns (for create or update)'),
-    frozen: z.boolean().optional().describe('Whether the table is frozen (update only)'),
-    tags: z.record(z.string(), z.string()).optional().describe('Tags for the table'),
-  }))
-  .output(z.object({
-    table: z.object({
-      tableId: z.string(),
-      name: z.string(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-      frozen: z.boolean().optional(),
-    }).optional(),
-    tables: z.array(z.object({
-      tableId: z.string(),
-      name: z.string(),
-    })).optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'update', 'delete', 'list'])
+        .describe('Operation to perform'),
+      botId: z.string().optional().describe('Bot ID. Falls back to config botId.'),
+      tableId: z
+        .string()
+        .optional()
+        .describe('Table ID or name (required for get, update, delete)'),
+      name: z.string().optional().describe('Table name (required for create)'),
+      schema: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('JSON Schema defining table columns (for create or update)'),
+      frozen: z.boolean().optional().describe('Whether the table is frozen (update only)'),
+      tags: z.record(z.string(), z.string()).optional().describe('Tags for the table')
+    })
+  )
+  .output(
+    z.object({
+      table: z
+        .object({
+          tableId: z.string(),
+          name: z.string(),
+          createdAt: z.string().optional(),
+          updatedAt: z.string().optional(),
+          frozen: z.boolean().optional()
+        })
+        .optional(),
+      tables: z
+        .array(
+          z.object({
+            tableId: z.string(),
+            name: z.string()
+          })
+        )
+        .optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let botId = ctx.input.botId || ctx.config.botId;
     if (!botId) throw new Error('botId is required (provide in input or config)');
 
@@ -47,11 +62,11 @@ export let manageTableTool = SlateTool.create(
       let result = await client.listTables();
       let tables = (result.tables || []).map((t: Record<string, unknown>) => ({
         tableId: t.id as string,
-        name: t.name as string,
+        name: t.name as string
       }));
       return {
         output: { tables },
-        message: `Found **${tables.length}** table(s).`,
+        message: `Found **${tables.length}** table(s).`
       };
     }
 
@@ -59,7 +74,7 @@ export let manageTableTool = SlateTool.create(
       if (!ctx.input.name) throw new Error('name is required for create action');
       let result = await client.createTable({
         name: ctx.input.name,
-        schema: ctx.input.schema,
+        schema: ctx.input.schema
       });
       let t = result.table;
       return {
@@ -69,14 +84,15 @@ export let manageTableTool = SlateTool.create(
             name: t.name,
             createdAt: t.createdAt,
             updatedAt: t.updatedAt,
-            frozen: t.frozen,
-          },
+            frozen: t.frozen
+          }
         },
-        message: `Created table **${t.name}**.`,
+        message: `Created table **${t.name}**.`
       };
     }
 
-    if (!ctx.input.tableId) throw new Error('tableId is required for get, update, and delete actions');
+    if (!ctx.input.tableId)
+      throw new Error('tableId is required for get, update, and delete actions');
 
     if (ctx.input.action === 'get') {
       let result = await client.getTable(ctx.input.tableId);
@@ -88,10 +104,10 @@ export let manageTableTool = SlateTool.create(
             name: t.name,
             createdAt: t.createdAt,
             updatedAt: t.updatedAt,
-            frozen: t.frozen,
-          },
+            frozen: t.frozen
+          }
         },
-        message: `Retrieved table **${t.name}**.`,
+        message: `Retrieved table **${t.name}**.`
       };
     }
 
@@ -111,10 +127,10 @@ export let manageTableTool = SlateTool.create(
             name: t.name,
             createdAt: t.createdAt,
             updatedAt: t.updatedAt,
-            frozen: t.frozen,
-          },
+            frozen: t.frozen
+          }
         },
-        message: `Updated table **${t.name}**.`,
+        message: `Updated table **${t.name}**.`
       };
     }
 
@@ -122,7 +138,7 @@ export let manageTableTool = SlateTool.create(
       await client.deleteTable(ctx.input.tableId);
       return {
         output: { deleted: true },
-        message: `Deleted table **${ctx.input.tableId}**.`,
+        message: `Deleted table **${ctx.input.tableId}**.`
       };
     }
 

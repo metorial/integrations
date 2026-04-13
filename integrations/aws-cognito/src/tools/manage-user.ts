@@ -3,43 +3,68 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createCognitoClient, formatAttributes, toAttributeList } from '../lib/helpers';
 
-export let manageUser = SlateTool.create(
-  spec,
-  {
-    name: 'Manage User',
-    key: 'manage_user',
-    description: `Create, get, update, disable, enable, confirm, reset password, set password, or delete a user in a Cognito user pool. Combines all administrative user operations into a single flexible tool.`,
-    instructions: [
-      'Custom attributes must be prefixed with "custom:" in the attributes object.',
-      'When creating a user, if temporaryPassword is omitted, Cognito auto-generates one.',
-      'The "set_password" action sets a user password directly without requiring the old password.'
-    ]
-  }
-)
-  .input(z.object({
-    action: z.enum([
-      'create', 'get', 'update_attributes', 'delete',
-      'disable', 'enable', 'confirm', 'reset_password', 'set_password'
-    ]).describe('Operation to perform on the user'),
-    userPoolId: z.string().describe('User pool ID'),
-    username: z.string().describe('Username of the target user'),
-    attributes: z.record(z.string(), z.string()).optional().describe('User attributes as key-value pairs (for create and update_attributes)'),
-    temporaryPassword: z.string().optional().describe('Temporary password for the user (for create action)'),
-    password: z.string().optional().describe('New password (for set_password action)'),
-    permanent: z.boolean().optional().describe('Whether the password is permanent (for set_password, default true)'),
-    suppressMessage: z.boolean().optional().describe('Suppress the invitation message (for create action)'),
-    desiredDeliveryMediums: z.array(z.enum(['EMAIL', 'SMS'])).optional().describe('How to deliver the invitation (for create action)')
-  }))
-  .output(z.object({
-    username: z.string().optional(),
-    attributes: z.record(z.string(), z.string()).optional(),
-    enabled: z.boolean().optional(),
-    userStatus: z.string().optional(),
-    creationDate: z.number().optional(),
-    lastModifiedDate: z.number().optional(),
-    success: z.boolean().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageUser = SlateTool.create(spec, {
+  name: 'Manage User',
+  key: 'manage_user',
+  description: `Create, get, update, disable, enable, confirm, reset password, set password, or delete a user in a Cognito user pool. Combines all administrative user operations into a single flexible tool.`,
+  instructions: [
+    'Custom attributes must be prefixed with "custom:" in the attributes object.',
+    'When creating a user, if temporaryPassword is omitted, Cognito auto-generates one.',
+    'The "set_password" action sets a user password directly without requiring the old password.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum([
+          'create',
+          'get',
+          'update_attributes',
+          'delete',
+          'disable',
+          'enable',
+          'confirm',
+          'reset_password',
+          'set_password'
+        ])
+        .describe('Operation to perform on the user'),
+      userPoolId: z.string().describe('User pool ID'),
+      username: z.string().describe('Username of the target user'),
+      attributes: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('User attributes as key-value pairs (for create and update_attributes)'),
+      temporaryPassword: z
+        .string()
+        .optional()
+        .describe('Temporary password for the user (for create action)'),
+      password: z.string().optional().describe('New password (for set_password action)'),
+      permanent: z
+        .boolean()
+        .optional()
+        .describe('Whether the password is permanent (for set_password, default true)'),
+      suppressMessage: z
+        .boolean()
+        .optional()
+        .describe('Suppress the invitation message (for create action)'),
+      desiredDeliveryMediums: z
+        .array(z.enum(['EMAIL', 'SMS']))
+        .optional()
+        .describe('How to deliver the invitation (for create action)')
+    })
+  )
+  .output(
+    z.object({
+      username: z.string().optional(),
+      attributes: z.record(z.string(), z.string()).optional(),
+      enabled: z.boolean().optional(),
+      userStatus: z.string().optional(),
+      creationDate: z.number().optional(),
+      lastModifiedDate: z.number().optional(),
+      success: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createCognitoClient(ctx);
     let { action, userPoolId, username } = ctx.input;
 
@@ -51,7 +76,8 @@ export let manageUser = SlateTool.create(
       if (ctx.input.temporaryPassword) params.TemporaryPassword = ctx.input.temporaryPassword;
       if (ctx.input.attributes) params.UserAttributes = toAttributeList(ctx.input.attributes);
       if (ctx.input.suppressMessage) params.MessageAction = 'SUPPRESS';
-      if (ctx.input.desiredDeliveryMediums) params.DesiredDeliveryMediums = ctx.input.desiredDeliveryMediums;
+      if (ctx.input.desiredDeliveryMediums)
+        params.DesiredDeliveryMediums = ctx.input.desiredDeliveryMediums;
 
       let result = await client.adminCreateUser(params);
       let user = result.User;
@@ -86,9 +112,14 @@ export let manageUser = SlateTool.create(
     }
 
     if (action === 'update_attributes') {
-      if (!ctx.input.attributes) throw new Error('attributes are required for update_attributes action');
+      if (!ctx.input.attributes)
+        throw new Error('attributes are required for update_attributes action');
 
-      await client.adminUpdateUserAttributes(userPoolId, username, toAttributeList(ctx.input.attributes));
+      await client.adminUpdateUserAttributes(
+        userPoolId,
+        username,
+        toAttributeList(ctx.input.attributes)
+      );
 
       return {
         output: { username, success: true },
@@ -138,7 +169,12 @@ export let manageUser = SlateTool.create(
 
     if (action === 'set_password') {
       if (!ctx.input.password) throw new Error('password is required for set_password action');
-      await client.adminSetUserPassword(userPoolId, username, ctx.input.password, ctx.input.permanent ?? true);
+      await client.adminSetUserPassword(
+        userPoolId,
+        username,
+        ctx.input.password,
+        ctx.input.permanent ?? true
+      );
       return {
         output: { username, success: true },
         message: `Set password for user **${username}**${ctx.input.permanent !== false ? ' (permanent)' : ' (temporary)'}.`
@@ -146,4 +182,5 @@ export let manageUser = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

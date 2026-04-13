@@ -6,12 +6,14 @@ let axios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    authType: z.enum(['api_key', 'oauth']).optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      authType: z.enum(['api_key', 'oauth']).optional()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -19,7 +21,7 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       apiKey: z.string().describe('Brevo API key from Settings > SMTP & API > API Keys')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiKey,
@@ -38,7 +40,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(account.email),
           email: account.email,
-          name: `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim() || account.companyName || account.email
+          name:
+            `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim() ||
+            account.companyName ||
+            account.email
         }
       };
     }
@@ -69,7 +74,7 @@ export let auth = SlateAuth.create()
         scope: 'metaInfo'
       }
     ],
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -81,18 +86,22 @@ export let auth = SlateAuth.create()
         url: `https://auth.brevo.com/realms/apiv3/protocol/openid-connect/auth?${params.toString()}`
       };
     },
-    handleCallback: async (ctx) => {
-      let response = await axios.post('/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleCallback: async ctx => {
+      let response = await axios.post(
+        '/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
       let data = response.data;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
@@ -106,17 +115,21 @@ export let auth = SlateAuth.create()
         }
       };
     },
-    handleTokenRefresh: async (ctx) => {
-      let response = await axios.post('/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-        refresh_token: ctx.output.refreshToken ?? ''
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    handleTokenRefresh: async ctx => {
+      let response = await axios.post(
+        '/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret,
+          refresh_token: ctx.output.refreshToken ?? ''
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      });
+      );
       let data = response.data;
       let expiresAt = data.expires_in
         ? new Date(Date.now() + data.expires_in * 1000).toISOString()
@@ -133,7 +146,7 @@ export let auth = SlateAuth.create()
     getProfile: async (ctx: any) => {
       let response = await axios.get('/account', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`
+          Authorization: `Bearer ${ctx.output.token}`
         }
       });
       let account = response.data;
@@ -141,7 +154,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: String(account.email),
           email: account.email,
-          name: `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim() || account.companyName || account.email
+          name:
+            `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim() ||
+            account.companyName ||
+            account.email
         }
       };
     }

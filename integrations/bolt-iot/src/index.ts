@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listDevices,
@@ -12,11 +11,7 @@ import {
   servoControl,
   uartCommunicate
 } from './tools';
-import {
-  deviceStatusChange,
-  analogSensorReading,
-  inboundWebhook,
-} from './triggers';
+import { deviceStatusChange, analogSensorReading, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,9 +26,5 @@ export let provider = Slate.create({
     servoControl,
     uartCommunicate
   ],
-  triggers: [
-    inboundWebhook,
-    deviceStatusChange,
-    analogSensorReading
-  ]
+  triggers: [inboundWebhook, deviceStatusChange, analogSensorReading]
 });

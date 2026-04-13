@@ -3,27 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageIntegration = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Integration',
-    key: 'manage_integration',
-    description: `Get, create, update, clone, or delete an integration. Integrations are organizational containers for flows, connections, and other resources.
-Use **action** to specify the operation. For "create" and "update", provide the integration configuration in **integrationData**.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['get', 'create', 'update', 'clone', 'delete']).describe('The operation to perform'),
-    integrationId: z.string().optional().describe('ID of the integration (required for get, update, clone, delete)'),
-    integrationData: z.record(z.string(), z.any()).optional().describe('Integration configuration data (required for create and update)')
-  }))
-  .output(z.object({
-    integrationId: z.string().optional().describe('ID of the affected integration'),
-    name: z.string().optional().describe('Name of the integration'),
-    deleted: z.boolean().optional().describe('Whether the integration was deleted'),
-    rawResult: z.any().optional().describe('Full API response')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageIntegration = SlateTool.create(spec, {
+  name: 'Manage Integration',
+  key: 'manage_integration',
+  description: `Get, create, update, clone, or delete an integration. Integrations are organizational containers for flows, connections, and other resources.
+Use **action** to specify the operation. For "create" and "update", provide the integration configuration in **integrationData**.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['get', 'create', 'update', 'clone', 'delete'])
+        .describe('The operation to perform'),
+      integrationId: z
+        .string()
+        .optional()
+        .describe('ID of the integration (required for get, update, clone, delete)'),
+      integrationData: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Integration configuration data (required for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      integrationId: z.string().optional().describe('ID of the affected integration'),
+      name: z.string().optional().describe('Name of the integration'),
+      deleted: z.boolean().optional().describe('Whether the integration was deleted'),
+      rawResult: z.any().optional().describe('Full API response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       region: ctx.config.region

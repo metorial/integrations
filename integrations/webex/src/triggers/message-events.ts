@@ -3,35 +3,37 @@ import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let messageEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Events',
-    key: 'message_events',
-    description: 'Triggers when messages are created, updated, or deleted in Webex spaces. Optionally filter by specific space, room type, person, or email.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of message event'),
-    webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
-  }))
-  .output(z.object({
-    messageId: z.string().describe('ID of the message'),
-    roomId: z.string().optional().describe('ID of the space'),
-    roomType: z.string().optional().describe('Type of room (direct or group)'),
-    personId: z.string().optional().describe('ID of the message author'),
-    personEmail: z.string().optional().describe('Email of the message author'),
-    text: z.string().optional().describe('Plain text content of the message'),
-    markdown: z.string().optional().describe('Markdown content'),
-    html: z.string().optional().describe('HTML content'),
-    files: z.array(z.string()).optional().describe('Attached file URLs'),
-    mentionedPeople: z.array(z.string()).optional().describe('IDs of mentioned people'),
-    parentId: z.string().optional().describe('Parent message ID for thread replies'),
-    created: z.string().optional().describe('Creation timestamp'),
-    updated: z.string().optional().describe('Last updated timestamp')
-  }))
+export let messageEvents = SlateTrigger.create(spec, {
+  name: 'Message Events',
+  key: 'message_events',
+  description:
+    'Triggers when messages are created, updated, or deleted in Webex spaces. Optionally filter by specific space, room type, person, or email.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of message event'),
+      webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('ID of the message'),
+      roomId: z.string().optional().describe('ID of the space'),
+      roomType: z.string().optional().describe('Type of room (direct or group)'),
+      personId: z.string().optional().describe('ID of the message author'),
+      personEmail: z.string().optional().describe('Email of the message author'),
+      text: z.string().optional().describe('Plain text content of the message'),
+      markdown: z.string().optional().describe('Markdown content'),
+      html: z.string().optional().describe('HTML content'),
+      files: z.array(z.string()).optional().describe('Attached file URLs'),
+      mentionedPeople: z.array(z.string()).optional().describe('IDs of mentioned people'),
+      parentId: z.string().optional().describe('Parent message ID for thread replies'),
+      created: z.string().optional().describe('Creation timestamp'),
+      updated: z.string().optional().describe('Last updated timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
 
       let events = ['created', 'updated', 'deleted'];
@@ -52,11 +54,11 @@ export let messageEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
+      for (let webhookId of details.webhookIds || []) {
         try {
           await client.deleteWebhook(webhookId);
         } catch {
@@ -65,8 +67,8 @@ export let messageEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
@@ -78,7 +80,7 @@ export let messageEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.webhookPayload;
       let resourceData = payload.data || {};
 

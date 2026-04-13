@@ -20,28 +20,36 @@ All API requests must include the Bearer token in the `Authorization` header. Th
 ## Features
 
 ### URL Shortening
+
 Create shortened URLs from long URLs. Options include:
+
 - **Custom key:** Specify a custom alias/slug for the shortened URL (e.g., `l2s.is/my-brand`).
 - **UTM parameters:** Attach UTM tracking parameters (source, medium, campaign, term, content) directly when creating the short link.
 - **Title:** Assign a descriptive title to the shortened URL.
 - **Tags:** Attach tags for categorization and organization of links.
 
 ### URL Management
+
 Retrieve and update details of existing shortened URLs by their ID. You can modify the destination URL, tags, UTM parameters, and other metadata after creation.
 
 ### Link Analytics
+
 Track performance metrics on shortened URLs including click counts, user geolocation (country, city, state), device type, browser, operating system, and referrer data. This data is available through the platform's analytics features.
 
 ### QR Code Generation
+
 Generate customizable QR codes for shortened URLs. QR codes share the same analytics tracking as the shortened links.
 
 ### Custom Domains
+
 Brand shortened URLs with your own domain name instead of the default `l2s.is` domain.
 
 ### Team Management
+
 Add team members to your account with role-based access and permissions, enabling collaborative link creation, management, and analytics viewing.
 
 ### User Settings
+
 Retrieve the authenticated user's account settings and configuration.
 
 ## Events

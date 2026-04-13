@@ -4,32 +4,31 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { addressSchema, customFieldValueSchema, companySchema } from '../lib/schemas';
 
-export let updateCompany = SlateTool.create(
-  spec,
-  {
-    name: 'Update Company',
-    key: 'update_company',
-    description: `Update a company's (organization's) details. Companies cannot be created directly — they are created automatically when a contact is assigned a company name. Only provided fields are updated.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateCompany = SlateTool.create(spec, {
+  name: 'Update Company',
+  key: 'update_company',
+  description: `Update a company's (organization's) details. Companies cannot be created directly — they are created automatically when a contact is assigned a company name. Only provided fields are updated.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    companyId: z.string().describe('ID of the company to update'),
-    name: z.string().optional().describe('Company name'),
-    description: z.string().optional().describe('Company description'),
-    phone: z.string().optional().describe('Company phone number'),
-    url: z.string().optional().describe('Company website URL'),
-    address: addressSchema.optional().describe('Company postal address'),
-    customFields: z.array(customFieldValueSchema).optional().describe('Custom field values'),
-  }))
+})
+  .input(
+    z.object({
+      companyId: z.string().describe('ID of the company to update'),
+      name: z.string().optional().describe('Company name'),
+      description: z.string().optional().describe('Company description'),
+      phone: z.string().optional().describe('Company phone number'),
+      url: z.string().optional().describe('Company website URL'),
+      address: addressSchema.optional().describe('Company postal address'),
+      customFields: z.array(customFieldValueSchema).optional().describe('Custom field values')
+    })
+  )
   .output(companySchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       userId: ctx.auth.userId,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let { companyId, ...updateData } = ctx.input;
@@ -37,7 +36,7 @@ export let updateCompany = SlateTool.create(
 
     return {
       output: company,
-      message: `Updated company **${company.name}** (${company.companyId}).`,
+      message: `Updated company **${company.name}** (${company.companyId}).`
     };
   })
   .build();

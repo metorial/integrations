@@ -6,11 +6,13 @@ let apiAxios = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
@@ -20,7 +22,7 @@ export let auth = SlateAuth.create()
       token: z.string().describe('Your Emailable API key (found in the Emailable Dashboard)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -56,7 +58,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
@@ -69,7 +71,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let response = await apiAxios.post('/oauth/token', {
         grant_type: 'authorization_code',
         code: ctx.code,
@@ -90,7 +92,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let response = await apiAxios.post('/oauth/token', {
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,
@@ -110,7 +112,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: Record<string, never>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: Record<string, never>;
+      scopes: string[];
+    }) => {
       let response = await apiAxios.get('/v1/account', {
         headers: {
           Authorization: `Bearer ${ctx.output.token}`

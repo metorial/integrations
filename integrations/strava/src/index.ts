@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getAthleteProfile,
@@ -19,9 +18,7 @@ import {
   listClubs,
   getGear
 } from './tools';
-import { activityEvent,
-  inboundWebhook,
-} from './triggers';
+import { activityEvent, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,8 +40,5 @@ export let provider = Slate.create({
     listClubs,
     getGear
   ],
-  triggers: [
-    inboundWebhook,
-    activityEvent
-  ]
+  triggers: [inboundWebhook, activityEvent]
 });

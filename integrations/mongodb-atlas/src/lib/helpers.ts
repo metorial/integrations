@@ -10,6 +10,6 @@ export let createClient = (auth: {
     token: auth.token,
     authMethod: auth.authMethod,
     publicKey: auth.publicKey,
-    privateKey: auth.privateKey,
+    privateKey: auth.privateKey
   });
 };

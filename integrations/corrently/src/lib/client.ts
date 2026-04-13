@@ -6,7 +6,7 @@ export class Client {
 
   constructor(private config: { token?: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.corrently.io/v2.0',
+      baseURL: 'https://api.corrently.io/v2.0'
     });
   }
 
@@ -24,9 +24,18 @@ export class Client {
     return response.data as GsiPredictionResponse;
   }
 
-  async getBestHour(params: { zip: string; timeframe?: number; hours?: number }): Promise<BestHourResponse> {
+  async getBestHour(params: {
+    zip: string;
+    timeframe?: number;
+    hours?: number;
+  }): Promise<BestHourResponse> {
     let response = await this.axios.get('/gsi/bestHour', {
-      params: { zip: params.zip, timeframe: params.timeframe, hours: params.hours, ...this.authParams }
+      params: {
+        zip: params.zip,
+        timeframe: params.timeframe,
+        hours: params.hours,
+        ...this.authParams
+      }
     });
     return response.data as BestHourResponse;
   }
@@ -45,20 +54,32 @@ export class Client {
     return response.data as DispatchResponse;
   }
 
-  async createSchedule(params: { zip: string; law: string; activeHours: number }): Promise<ScheduleResponse> {
-    let response = await this.axios.put('/gsi/schedule', {
-      zip: params.zip,
-      requirements: {
-        law: params.law,
-        activeHours: params.activeHours
+  async createSchedule(params: {
+    zip: string;
+    law: string;
+    activeHours: number;
+  }): Promise<ScheduleResponse> {
+    let response = await this.axios.put(
+      '/gsi/schedule',
+      {
+        zip: params.zip,
+        requirements: {
+          law: params.law,
+          activeHours: params.activeHours
+        }
+      },
+      {
+        params: this.authParams
       }
-    }, {
-      params: this.authParams
-    });
+    );
     return response.data as ScheduleResponse;
   }
 
-  async getStrommix(params: { period?: string; from?: string; to?: string }): Promise<StrommixResponse> {
+  async getStrommix(params: {
+    period?: string;
+    from?: string;
+    to?: string;
+  }): Promise<StrommixResponse> {
     let response = await this.axios.get('/gsi/strommix', {
       params: { period: params.period, from: params.from, to: params.to, ...this.authParams }
     });
@@ -100,32 +121,44 @@ export class Client {
     energy: number;
     secret?: string;
   }): Promise<MeterReadingResponse> {
-    let response = await this.axios.post('/metering/reading', {
-      zip: params.zip,
-      account: params.account,
-      energy: params.energy,
-      secret: params.secret
-    }, {
-      params: this.authParams
-    });
+    let response = await this.axios.post(
+      '/metering/reading',
+      {
+        zip: params.zip,
+        account: params.account,
+        energy: params.energy,
+        secret: params.secret
+      },
+      {
+        params: this.authParams
+      }
+    );
     return response.data as MeterReadingResponse;
   }
 
-  async getStromkontoBalances(params: { account: string }): Promise<StromkontoBalancesResponse> {
+  async getStromkontoBalances(params: {
+    account: string;
+  }): Promise<StromkontoBalancesResponse> {
     let response = await this.axios.get('/stromkonto/balances', {
       params: { account: params.account, ...this.authParams }
     });
     return response.data as StromkontoBalancesResponse;
   }
 
-  async getTariffComponents(params: { zipcode: string; kwha?: number }): Promise<TariffComponentsResponse> {
+  async getTariffComponents(params: {
+    zipcode: string;
+    kwha?: number;
+  }): Promise<TariffComponentsResponse> {
     let response = await this.axios.get('/tariff/components', {
       params: { zipcode: params.zipcode, kwha: params.kwha, ...this.authParams }
     });
     return response.data as TariffComponentsResponse;
   }
 
-  async getCo2Offset(params: { co2Kg: number; activityType?: string }): Promise<Co2OffsetResponse> {
+  async getCo2Offset(params: {
+    co2Kg: number;
+    activityType?: string;
+  }): Promise<Co2OffsetResponse> {
     let response = await this.axios.get('/tree/calculateCO2', {
       params: { co2_kg: params.co2Kg, activity_type: params.activityType, ...this.authParams }
     });

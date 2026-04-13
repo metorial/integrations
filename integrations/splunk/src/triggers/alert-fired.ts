@@ -2,37 +2,45 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let alertFired = SlateTrigger.create(
-  spec,
-  {
-    name: 'Alert Fired',
-    key: 'alert_fired',
-    description: 'Triggers when a Splunk alert fires and sends a webhook notification. Configure a saved search with a webhook alert action pointing to the provided webhook URL.'
-  }
-)
-  .input(z.object({
-    searchName: z.string().describe('Name of the saved search that triggered the alert'),
-    searchId: z.string().describe('Search job ID (SID) of the triggering search'),
-    app: z.string().optional().describe('App context of the alert'),
-    owner: z.string().optional().describe('Owner of the alert'),
-    resultsLink: z.string().optional().describe('Link to the search results'),
-    resultCount: z.number().optional().describe('Number of results in the alert'),
-    rawPayload: z.record(z.string(), z.any()).optional().describe('Full raw webhook payload from Splunk')
-  }))
-  .output(z.object({
-    searchName: z.string().describe('Name of the saved search that triggered'),
-    searchId: z.string().describe('Search job ID'),
-    app: z.string().optional().describe('App context'),
-    owner: z.string().optional().describe('Owner of the alert'),
-    resultsLink: z.string().optional().describe('Link to view the search results'),
-    resultCount: z.number().optional().describe('Number of results'),
-    results: z.array(z.record(z.string(), z.any())).optional().describe('Result rows included in the webhook payload')
-  }))
+export let alertFired = SlateTrigger.create(spec, {
+  name: 'Alert Fired',
+  key: 'alert_fired',
+  description:
+    'Triggers when a Splunk alert fires and sends a webhook notification. Configure a saved search with a webhook alert action pointing to the provided webhook URL.'
+})
+  .input(
+    z.object({
+      searchName: z.string().describe('Name of the saved search that triggered the alert'),
+      searchId: z.string().describe('Search job ID (SID) of the triggering search'),
+      app: z.string().optional().describe('App context of the alert'),
+      owner: z.string().optional().describe('Owner of the alert'),
+      resultsLink: z.string().optional().describe('Link to the search results'),
+      resultCount: z.number().optional().describe('Number of results in the alert'),
+      rawPayload: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full raw webhook payload from Splunk')
+    })
+  )
+  .output(
+    z.object({
+      searchName: z.string().describe('Name of the saved search that triggered'),
+      searchId: z.string().describe('Search job ID'),
+      app: z.string().optional().describe('App context'),
+      owner: z.string().optional().describe('Owner of the alert'),
+      resultsLink: z.string().optional().describe('Link to view the search results'),
+      resultCount: z.number().optional().describe('Number of results'),
+      results: z
+        .array(z.record(z.string(), z.any()))
+        .optional()
+        .describe('Result rows included in the webhook payload')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: Record<string, any>;
       try {
-        body = await ctx.request.json() as Record<string, any>;
+        body = (await ctx.request.json()) as Record<string, any>;
       } catch {
         return { inputs: [] };
       }
@@ -56,7 +64,7 @@ export let alertFired = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let results: Record<string, any>[] | undefined;
       if (ctx.input.rawPayload?.result) {
         results = Array.isArray(ctx.input.rawPayload.result)
@@ -82,4 +90,5 @@ export let alertFired = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

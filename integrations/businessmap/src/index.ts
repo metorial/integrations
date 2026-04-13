@@ -16,13 +16,13 @@ import {
   listUsersTool,
   listWorkspacesTool,
   logTimeTool,
-  blockCardTool,
+  blockCardTool
 } from './tools';
 import {
   cardEventsTrigger,
   subtaskEventsTrigger,
   commentEventsTrigger,
-  boardEventsTrigger,
+  boardEventsTrigger
 } from './triggers';
 
 export let provider = Slate.create({
@@ -43,12 +43,7 @@ export let provider = Slate.create({
     manageCustomFieldsTool,
     listUsersTool,
     logTimeTool,
-    blockCardTool,
+    blockCardTool
   ],
-  triggers: [
-    cardEventsTrigger,
-    subtaskEventsTrigger,
-    commentEventsTrigger,
-    boardEventsTrigger,
-  ],
+  triggers: [cardEventsTrigger, subtaskEventsTrigger, commentEventsTrigger, boardEventsTrigger]
 });

@@ -32,11 +32,9 @@ import {
   unpublishDocTool,
   resolveUrlTool,
   getMutationStatusTool,
-  getDocAnalyticsTool,
+  getDocAnalyticsTool
 } from './tools';
-import {
-  rowChangesTrigger,
-} from './triggers';
+import { rowChangesTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -72,9 +70,7 @@ export let provider = Slate.create({
     unpublishDocTool,
     resolveUrlTool,
     getMutationStatusTool,
-    getDocAnalyticsTool,
+    getDocAnalyticsTool
   ],
-  triggers: [
-    rowChangesTrigger,
-  ],
+  triggers: [rowChangesTrigger]
 });

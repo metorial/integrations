@@ -11,12 +11,9 @@ import {
   manageInstructions,
   getEntities,
   manageConnections,
-  managePartitions,
+  managePartitions
 } from './tools';
-import {
-  documentEvents,
-  connectionEvents,
-} from './triggers';
+import { documentEvents, connectionEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,10 +28,7 @@ export let provider = Slate.create({
     manageInstructions,
     getEntities,
     manageConnections,
-    managePartitions,
+    managePartitions
   ],
-  triggers: [
-    documentEvents,
-    connectionEvents,
-  ],
+  triggers: [documentEvents, connectionEvents]
 });

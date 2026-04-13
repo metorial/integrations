@@ -12,13 +12,13 @@ import {
   createProject,
   listFonts,
   duplicateWorkspaceTemplate,
-  getDuplicationStatus,
+  getDuplicationStatus
 } from './tools';
 import {
   bannerGenerated,
   batchGenerationCompleted,
   exportCompleted,
-  designStatusUpdated,
+  designStatusUpdated
 } from './triggers';
 
 export let provider = Slate.create({
@@ -35,12 +35,7 @@ export let provider = Slate.create({
     createProject,
     listFonts,
     duplicateWorkspaceTemplate,
-    getDuplicationStatus,
+    getDuplicationStatus
   ],
-  triggers: [
-    bannerGenerated,
-    batchGenerationCompleted,
-    exportCompleted,
-    designStatusUpdated,
-  ],
+  triggers: [bannerGenerated, batchGenerationCompleted, exportCompleted, designStatusUpdated]
 });

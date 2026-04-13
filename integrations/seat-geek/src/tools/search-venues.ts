@@ -21,50 +21,60 @@ let venueSchema = z.object({
   capacity: z.number().describe('Venue capacity'),
   displayLocation: z.string().describe('Human-readable location string'),
   numUpcomingEvents: z.number().describe('Number of upcoming events at this venue'),
-  hasUpcomingEvents: z.boolean().describe('Whether the venue has upcoming events'),
+  hasUpcomingEvents: z.boolean().describe('Whether the venue has upcoming events')
 });
 
-export let searchVenues = SlateTool.create(
-  spec,
-  {
-    name: 'Search Venues',
-    key: 'search_venues',
-    description: `Search for venues on SeatGeek including stadiums, arenas, theaters, and more. Filter by location, name, or geolocation. Returns venue details with address, coordinates, capacity, and upcoming event counts.`,
-    instructions: [
-      'Use the "query" parameter for natural language searches like "Madison Square Garden" or "stadiums in Chicago".',
-      'Filter by city, state, or country using the respective parameters.',
-      'For geolocation-based search, provide postalCode, geoIp, or latitude/longitude.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let searchVenues = SlateTool.create(spec, {
+  name: 'Search Venues',
+  key: 'search_venues',
+  description: `Search for venues on SeatGeek including stadiums, arenas, theaters, and more. Filter by location, name, or geolocation. Returns venue details with address, coordinates, capacity, and upcoming event counts.`,
+  instructions: [
+    'Use the "query" parameter for natural language searches like "Madison Square Garden" or "stadiums in Chicago".',
+    'Filter by city, state, or country using the respective parameters.',
+    'For geolocation-based search, provide postalCode, geoIp, or latitude/longitude.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Full-text search query (e.g., "Madison Square Garden")'),
-    city: z.string().optional().describe('Filter by city name'),
-    state: z.string().optional().describe('Filter by state (two-letter abbreviation)'),
-    country: z.string().optional().describe('Filter by country (two-letter code)'),
-    postalCode: z.string().optional().describe('Filter by postal code'),
-    latitude: z.number().optional().describe('Filter by latitude (requires longitude)'),
-    longitude: z.number().optional().describe('Filter by longitude (requires latitude)'),
-    geoIp: z.string().optional().describe('Filter by IP address, or "true" to use client IP'),
-    range: z.string().optional().describe('Search radius for geolocation (e.g., "30mi", "50km")'),
-    page: z.number().optional().describe('Page number (1-indexed). Default: 1'),
-    perPage: z.number().optional().describe('Results per page. Default: 10'),
-  }))
-  .output(z.object({
-    venues: z.array(venueSchema).describe('List of matching venues'),
-    total: z.number().describe('Total number of matching venues'),
-    page: z.number().describe('Current page number'),
-    perPage: z.number().describe('Results per page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .optional()
+        .describe('Full-text search query (e.g., "Madison Square Garden")'),
+      city: z.string().optional().describe('Filter by city name'),
+      state: z.string().optional().describe('Filter by state (two-letter abbreviation)'),
+      country: z.string().optional().describe('Filter by country (two-letter code)'),
+      postalCode: z.string().optional().describe('Filter by postal code'),
+      latitude: z.number().optional().describe('Filter by latitude (requires longitude)'),
+      longitude: z.number().optional().describe('Filter by longitude (requires latitude)'),
+      geoIp: z
+        .string()
+        .optional()
+        .describe('Filter by IP address, or "true" to use client IP'),
+      range: z
+        .string()
+        .optional()
+        .describe('Search radius for geolocation (e.g., "30mi", "50km")'),
+      page: z.number().optional().describe('Page number (1-indexed). Default: 1'),
+      perPage: z.number().optional().describe('Results per page. Default: 10')
+    })
+  )
+  .output(
+    z.object({
+      venues: z.array(venueSchema).describe('List of matching venues'),
+      total: z.number().describe('Total number of matching venues'),
+      page: z.number().describe('Current page number'),
+      perPage: z.number().describe('Results per page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       clientId: ctx.auth.clientId,
       clientSecret: ctx.auth.clientSecret,
       affiliateId: ctx.config.affiliateId,
-      referralId: ctx.config.referralId,
+      referralId: ctx.config.referralId
     });
 
     let params: Record<string, string> = {};
@@ -83,7 +93,7 @@ export let searchVenues = SlateTool.create(
 
     let response = await client.searchVenues(params);
 
-    let venues = response.venues.map((v) => ({
+    let venues = response.venues.map(v => ({
       venueId: v.id,
       name: v.name,
       url: v.url,
@@ -101,7 +111,7 @@ export let searchVenues = SlateTool.create(
       capacity: v.capacity,
       displayLocation: v.display_location,
       numUpcomingEvents: v.num_upcoming_events,
-      hasUpcomingEvents: v.has_upcoming_events,
+      hasUpcomingEvents: v.has_upcoming_events
     }));
 
     let total = response.meta.total;
@@ -115,13 +125,15 @@ export let searchVenues = SlateTool.create(
     if (venues.length > 0) {
       summaryParts.push('\n\nTop results:');
       for (let v of venues.slice(0, 5)) {
-        summaryParts.push(`- **${v.name}** — ${v.displayLocation}${v.capacity ? ` (capacity: ${v.capacity.toLocaleString()})` : ''}`);
+        summaryParts.push(
+          `- **${v.name}** — ${v.displayLocation}${v.capacity ? ` (capacity: ${v.capacity.toLocaleString()})` : ''}`
+        );
       }
     }
 
     return {
       output: { venues, total, page, perPage },
-      message: summaryParts.join('\n'),
+      message: summaryParts.join('\n')
     };
   })
   .build();

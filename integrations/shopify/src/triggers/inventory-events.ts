@@ -3,28 +3,30 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let inventoryEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Inventory Events',
-    key: 'inventory_events',
-    description: 'Triggers when inventory levels are updated at any location. Fires whenever stock quantities change for any inventory item.'
-  }
-)
-  .input(z.object({
-    topic: z.string().describe('Webhook topic'),
-    inventoryItemId: z.string().describe('Inventory item ID'),
-    locationId: z.string().describe('Location ID'),
-    payload: z.any().describe('Raw inventory level payload')
-  }))
-  .output(z.object({
-    inventoryItemId: z.string(),
-    locationId: z.string(),
-    available: z.number().nullable(),
-    updatedAt: z.string()
-  }))
+export let inventoryEvents = SlateTrigger.create(spec, {
+  name: 'Inventory Events',
+  key: 'inventory_events',
+  description:
+    'Triggers when inventory levels are updated at any location. Fires whenever stock quantities change for any inventory item.'
+})
+  .input(
+    z.object({
+      topic: z.string().describe('Webhook topic'),
+      inventoryItemId: z.string().describe('Inventory item ID'),
+      locationId: z.string().describe('Location ID'),
+      payload: z.any().describe('Raw inventory level payload')
+    })
+  )
+  .output(
+    z.object({
+      inventoryItemId: z.string(),
+      locationId: z.string(),
+      available: z.number().nullable(),
+      updatedAt: z.string()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -41,7 +43,7 @@ export let inventoryEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new ShopifyClient({
         token: ctx.auth.token,
         shopDomain: ctx.config.shopDomain,
@@ -56,21 +58,23 @@ export let inventoryEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let topic = ctx.request.headers.get('x-shopify-topic') || 'inventory_levels/update';
 
       return {
-        inputs: [{
-          topic,
-          inventoryItemId: String(body.inventory_item_id),
-          locationId: String(body.location_id),
-          payload: body
-        }]
+        inputs: [
+          {
+            topic,
+            inventoryItemId: String(body.inventory_item_id),
+            locationId: String(body.location_id),
+            payload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload;
 
       return {
@@ -84,4 +88,5 @@ export let inventoryEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

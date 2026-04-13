@@ -11,8 +11,8 @@ export class Client {
       baseURL: `${baseURL}/api/v2`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: isCloud ? `Api-Key ${config.token}` : `Bearer ${config.token}`,
-      },
+        Authorization: isCloud ? `Api-Key ${config.token}` : `Bearer ${config.token}`
+      }
     });
   }
 
@@ -30,7 +30,7 @@ export class Client {
       email: params.email,
       first_name: params.firstName,
       last_name: params.lastName,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return res.data;
   }
@@ -40,17 +40,20 @@ export class Client {
     return res.data;
   }
 
-  async updateUser(userId: string, params: {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    metadata?: Record<string, unknown>;
-  }) {
+  async updateUser(
+    userId: string,
+    params: {
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+      metadata?: Record<string, unknown>;
+    }
+  ) {
     let res = await this.axios.patch(`/users/${encodeURIComponent(userId)}`, {
       email: params.email,
       first_name: params.firstName,
       last_name: params.lastName,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return res.data;
   }
@@ -75,7 +78,7 @@ export class Client {
   async createThread(params: { threadId: string; userId: string }) {
     let res = await this.axios.post('/threads', {
       thread_id: params.threadId,
-      user_id: params.userId,
+      user_id: params.userId
     });
     return res.data;
   }
@@ -96,8 +99,8 @@ export class Client {
         page_number: params?.pageNumber,
         page_size: params?.pageSize,
         order_by: params?.orderBy,
-        asc: params?.asc,
-      },
+        asc: params?.asc
+      }
     });
     return res.data;
   }
@@ -107,48 +110,60 @@ export class Client {
     return res.data;
   }
 
-  async addMessages(threadId: string, params: {
-    messages: Array<{ role: string; content: string; name?: string }>;
-    ignoreRoles?: string[];
-    returnContext?: boolean;
-  }) {
+  async addMessages(
+    threadId: string,
+    params: {
+      messages: Array<{ role: string; content: string; name?: string }>;
+      ignoreRoles?: string[];
+      returnContext?: boolean;
+    }
+  ) {
     let res = await this.axios.post(`/threads/${encodeURIComponent(threadId)}/messages`, {
       messages: params.messages,
       ignore_roles: params.ignoreRoles,
-      return_context: params.returnContext,
+      return_context: params.returnContext
     });
     return res.data;
   }
 
-  async addMessagesBatch(threadId: string, params: {
-    messages: Array<{ role: string; content: string; name?: string }>;
-    ignoreRoles?: string[];
-    returnContext?: boolean;
-  }) {
-    let res = await this.axios.post(`/threads/${encodeURIComponent(threadId)}/messages-batch`, {
-      messages: params.messages,
-      ignore_roles: params.ignoreRoles,
-      return_context: params.returnContext,
-    });
+  async addMessagesBatch(
+    threadId: string,
+    params: {
+      messages: Array<{ role: string; content: string; name?: string }>;
+      ignoreRoles?: string[];
+      returnContext?: boolean;
+    }
+  ) {
+    let res = await this.axios.post(
+      `/threads/${encodeURIComponent(threadId)}/messages-batch`,
+      {
+        messages: params.messages,
+        ignore_roles: params.ignoreRoles,
+        return_context: params.returnContext
+      }
+    );
     return res.data;
   }
 
   async getThreadContext(threadId: string, templateId?: string) {
     let res = await this.axios.get(`/threads/${encodeURIComponent(threadId)}/context`, {
-      params: templateId ? { template_id: templateId } : undefined,
+      params: templateId ? { template_id: templateId } : undefined
     });
     return res.data;
   }
 
-  async updateMessage(messageUuid: string, params: {
-    content?: string;
-    role?: string;
-    metadata?: Record<string, unknown>;
-  }) {
+  async updateMessage(
+    messageUuid: string,
+    params: {
+      content?: string;
+      role?: string;
+      metadata?: Record<string, unknown>;
+    }
+  ) {
     let res = await this.axios.patch(`/messages/${encodeURIComponent(messageUuid)}`, {
       content: params.content,
       role: params.role,
-      metadata: params.metadata,
+      metadata: params.metadata
     });
     return res.data;
   }
@@ -179,13 +194,13 @@ export class Client {
       reranker: params.reranker,
       mmr_lambda: params.mmrLambda,
       center_node_uuid: params.centerNodeUuid,
-      bfs_origin_node_uuids: params.bfsOriginNodeUuids,
+      bfs_origin_node_uuids: params.bfsOriginNodeUuids
     };
 
     if (params.searchFilters) {
       body.search_filters = {
         edge_types: params.searchFilters.edgeTypes,
-        node_labels: params.searchFilters.nodeLabels,
+        node_labels: params.searchFilters.nodeLabels
       };
     }
 
@@ -229,7 +244,7 @@ export class Client {
       created_at: params.createdAt,
       valid_at: params.validAt,
       invalid_at: params.invalidAt,
-      expired_at: params.expiredAt,
+      expired_at: params.expiredAt
     });
     return res.data;
   }
@@ -237,7 +252,7 @@ export class Client {
   async getUserNodes(userId: string, params?: { limit?: number; uuidCursor?: string }) {
     let res = await this.axios.post(`/graph/node/user/${encodeURIComponent(userId)}`, {
       limit: params?.limit,
-      uuid_cursor: params?.uuidCursor,
+      uuid_cursor: params?.uuidCursor
     });
     return res.data;
   }
@@ -272,7 +287,7 @@ export class Client {
       entities: params.entities,
       edges: params.edges,
       user_ids: params.userIds,
-      graph_ids: params.graphIds,
+      graph_ids: params.graphIds
     });
     return res.data;
   }
@@ -290,7 +305,7 @@ export class Client {
     let res = await this.axios.post('/graph/clone', {
       source_graph_id: params.sourceGraphId,
       source_user_id: params.sourceUserId,
-      target_graph_id: params.targetGraphId,
+      target_graph_id: params.targetGraphId
     });
     return res.data;
   }
@@ -322,7 +337,7 @@ export class Client {
   }) {
     let res = await this.axios.post('/user-summary-instructions', {
       instructions: params.instructions,
-      user_ids: params.userIds,
+      user_ids: params.userIds
     });
     return res.data;
   }

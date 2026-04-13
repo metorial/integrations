@@ -7,8 +7,8 @@ export class TelTelClient {
     this.axios = createAxios({
       baseURL: 'https://api.teltel.io/v2',
       headers: {
-        'X-API-KEY': token,
-      },
+        'X-API-KEY': token
+      }
     });
   }
 
@@ -37,36 +37,28 @@ export class TelTelClient {
         called: params.called,
         calling: params.calling,
         callerid: params.callerId,
-        callerid_b: params.callerIdB,
-      },
+        callerid_b: params.callerIdB
+      }
     });
     return response.data;
   }
 
   // ─── SMS ───
 
-  async sendSms(params: {
-    to: string;
-    text: string;
-    from?: string;
-  }): Promise<any> {
+  async sendSms(params: { to: string; text: string; from?: string }): Promise<any> {
     let response = await this.axios.post('/sms/send', {
       to: params.to,
       text: params.text,
-      from: params.from,
+      from: params.from
     });
     return response.data;
   }
 
-  async sendBulkSms(params: {
-    to: string[];
-    text: string;
-    from?: string;
-  }): Promise<any> {
+  async sendBulkSms(params: { to: string[]; text: string; from?: string }): Promise<any> {
     let response = await this.axios.post('/sms/send', {
       to: params.to,
       text: params.text,
-      from: params.from,
+      from: params.from
     });
     return response.data;
   }
@@ -78,7 +70,7 @@ export class TelTelClient {
     offset?: number;
   }): Promise<any> {
     let response = await this.axios.get('/sms', {
-      params,
+      params
     });
     return response.data;
   }
@@ -88,8 +80,8 @@ export class TelTelClient {
   async hlrLookup(phoneNumber: string): Promise<any> {
     let response = await this.axios.get('/hlr', {
       params: {
-        phone: phoneNumber,
-      },
+        phone: phoneNumber
+      }
     });
     return response.data;
   }
@@ -111,20 +103,18 @@ export class TelTelClient {
     if (params?.userId) queryParams.user_id = params.userId;
 
     let response = await this.axios.get('/calls', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
 
   // ─── Auto Dialer Campaigns ───
 
-  async listCampaigns(params?: {
-    fields?: string;
-  }): Promise<any> {
+  async listCampaigns(params?: { fields?: string }): Promise<any> {
     let response = await this.axios.get('/autodialers', {
       params: {
-        fields: params?.fields,
-      },
+        fields: params?.fields
+      }
     });
     return response.data;
   }
@@ -142,7 +132,7 @@ export class TelTelClient {
     settings?: Record<string, any>;
   }): Promise<any> {
     let body: Record<string, any> = {
-      name: data.name,
+      name: data.name
     };
     if (data.campaignType) body.campaign_type = data.campaignType;
     if (data.callflowId) body.callflow_id = data.callflowId;
@@ -153,11 +143,14 @@ export class TelTelClient {
     return response.data;
   }
 
-  async updateCampaign(campaignId: string, data: {
-    name?: string;
-    status?: string;
-    settings?: Record<string, any>;
-  }): Promise<any> {
+  async updateCampaign(
+    campaignId: string,
+    data: {
+      name?: string;
+      status?: string;
+      settings?: Record<string, any>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.name) body.name = data.name;
     if (data.status) body.status = data.status;
@@ -174,39 +167,48 @@ export class TelTelClient {
 
   // ─── Auto Dialer Contacts ───
 
-  async listCampaignContacts(campaignId: string, params?: {
-    limit?: number;
-    offset?: number;
-    status?: string;
-  }): Promise<any> {
+  async listCampaignContacts(
+    campaignId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+      status?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/autodialers/${campaignId}/contacts`, {
-      params,
+      params
     });
     return response.data;
   }
 
-  async addCampaignContact(campaignId: string, data: {
-    phone: string;
-    name?: string;
-    param1?: string;
-    param2?: string;
-    param3?: string;
-    param4?: string;
-    param5?: string;
-  }): Promise<any> {
+  async addCampaignContact(
+    campaignId: string,
+    data: {
+      phone: string;
+      name?: string;
+      param1?: string;
+      param2?: string;
+      param3?: string;
+      param4?: string;
+      param5?: string;
+    }
+  ): Promise<any> {
     let response = await this.axios.post(`/autodialers/${campaignId}/contacts`, data);
     return response.data;
   }
 
-  async addCampaignContactsBulk(campaignId: string, contacts: Array<{
-    phone: string;
-    name?: string;
-    param1?: string;
-    param2?: string;
-    param3?: string;
-    param4?: string;
-    param5?: string;
-  }>): Promise<any> {
+  async addCampaignContactsBulk(
+    campaignId: string,
+    contacts: Array<{
+      phone: string;
+      name?: string;
+      param1?: string;
+      param2?: string;
+      param3?: string;
+      param4?: string;
+      param5?: string;
+    }>
+  ): Promise<any> {
     let response = await this.axios.post(`/autodialers/${campaignId}/contacts`, contacts);
     return response.data;
   }

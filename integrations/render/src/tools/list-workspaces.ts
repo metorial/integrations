@@ -3,31 +3,34 @@ import { RenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listWorkspaces = SlateTool.create(
-  spec,
-  {
-    name: 'List Workspaces',
-    key: 'list_workspaces',
-    description: `List all Render workspaces accessible to the authenticated user. Returns workspace IDs, names, and details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWorkspaces = SlateTool.create(spec, {
+  name: 'List Workspaces',
+  key: 'list_workspaces',
+  description: `List all Render workspaces accessible to the authenticated user. Returns workspace IDs, names, and details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Maximum results (1-100, default 20)'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-  }))
-  .output(z.object({
-    workspaces: z.array(z.object({
-      workspaceId: z.string().describe('Workspace ID'),
-      name: z.string().describe('Workspace name'),
-      type: z.string().optional().describe('Workspace type (personal or team)'),
-      createdAt: z.string().optional().describe('Creation timestamp'),
-    })),
-    cursor: z.string().optional().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Maximum results (1-100, default 20)'),
+      cursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      workspaces: z.array(
+        z.object({
+          workspaceId: z.string().describe('Workspace ID'),
+          name: z.string().describe('Workspace name'),
+          type: z.string().optional().describe('Workspace type (personal or team)'),
+          createdAt: z.string().optional().describe('Creation timestamp')
+        })
+      ),
+      cursor: z.string().optional().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new RenderClient(ctx.auth.token);
 
     let params: Record<string, any> = {};
@@ -44,12 +47,13 @@ export let listWorkspaces = SlateTool.create(
         workspaceId: w.id,
         name: w.name || w.email,
         type: w.type,
-        createdAt: w.createdAt,
+        createdAt: w.createdAt
       };
     });
 
     return {
       output: { workspaces, cursor: lastCursor },
-      message: `Found **${workspaces.length}** workspace(s).${workspaces.map(w => `\n- **${w.name}** (\`${w.workspaceId}\` — ${w.type || 'unknown'})`).join('')}`,
+      message: `Found **${workspaces.length}** workspace(s).${workspaces.map(w => `\n- **${w.name}** (\`${w.workspaceId}\` — ${w.type || 'unknown'})`).join('')}`
     };
-  }).build();
+  })
+  .build();

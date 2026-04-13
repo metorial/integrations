@@ -142,31 +142,38 @@ export class Client {
       baseURL: 'https://api.simplesat.io/api/v1',
       headers: {
         'X-Simplesat-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
-  async listSurveys(params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<Survey>> {
+  async listSurveys(params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<PaginatedResponse<Survey>> {
     let response = await this.axios.get('/surveys', {
       params: {
         page: params?.page ?? 1,
-        page_size: params?.pageSize ?? 100,
-      },
+        page_size: params?.pageSize ?? 100
+      }
     });
     return response.data;
   }
 
-  async listQuestions(params?: { page?: number; pageSize?: number; surveyId?: number }): Promise<PaginatedResponse<Question>> {
+  async listQuestions(params?: {
+    page?: number;
+    pageSize?: number;
+    surveyId?: number;
+  }): Promise<PaginatedResponse<Question>> {
     let queryParams: Record<string, unknown> = {
       page: params?.page ?? 1,
-      page_size: params?.pageSize ?? 100,
+      page_size: params?.pageSize ?? 100
     };
     if (params?.surveyId) {
       queryParams.survey = params.surveyId;
     }
     let response = await this.axios.get('/questions', {
-      params: queryParams,
+      params: queryParams
     });
     return response.data;
   }
@@ -184,8 +191,8 @@ export class Client {
     let response = await this.axios.post('/answers/search', body, {
       params: {
         page: params?.page ?? 1,
-        page_size: params?.pageSize ?? 100,
-      },
+        page_size: params?.pageSize ?? 100
+      }
     });
     return response.data;
   }
@@ -203,21 +210,24 @@ export class Client {
     let response = await this.axios.post('/responses/search', body, {
       params: {
         page: params?.page ?? 1,
-        page_size: params?.pageSize ?? 100,
-      },
+        page_size: params?.pageSize ?? 100
+      }
     });
     return response.data;
   }
 
   async upsertCustomer(input: CustomerUpsertInput): Promise<Record<string, unknown>> {
     let body: Record<string, unknown> = {
-      email: input.email,
+      email: input.email
     };
     if (input.name) body.name = input.name;
     if (input.company) body.company = input.company;
     if (input.customAttributes) body.custom_attributes = input.customAttributes;
 
-    let response = await this.axios.post('https://api.simplesat.io/api/customers/create-or-update/', body);
+    let response = await this.axios.post(
+      'https://api.simplesat.io/api/customers/create-or-update/',
+      body
+    );
     return response.data;
   }
 
@@ -227,8 +237,10 @@ export class Client {
         email: input.customer.email,
         ...(input.customer.name && { name: input.customer.name }),
         ...(input.customer.company && { company: input.customer.company }),
-        ...(input.customer.customAttributes && { custom_attributes: input.customer.customAttributes }),
-      },
+        ...(input.customer.customAttributes && {
+          custom_attributes: input.customer.customAttributes
+        })
+      }
     };
 
     if (input.teamMember) {
@@ -243,7 +255,8 @@ export class Client {
       let ticketObj: Record<string, unknown> = {};
       if (input.ticket.ticketId) ticketObj.id = input.ticket.ticketId;
       if (input.ticket.subject) ticketObj.subject = input.ticket.subject;
-      if (input.ticket.customAttributes) ticketObj.custom_attributes = input.ticket.customAttributes;
+      if (input.ticket.customAttributes)
+        ticketObj.custom_attributes = input.ticket.customAttributes;
       body.ticket = ticketObj;
     }
 
@@ -259,12 +272,15 @@ export class Client {
     return response.data;
   }
 
-  async listTeamMembers(params?: { page?: number; pageSize?: number }): Promise<PaginatedResponse<TeamMember>> {
+  async listTeamMembers(params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<PaginatedResponse<TeamMember>> {
     let response = await this.axios.get('/team-members', {
       params: {
         page: params?.page ?? 1,
-        page_size: params?.pageSize ?? 100,
-      },
+        page_size: params?.pageSize ?? 100
+      }
     });
     return response.data;
   }

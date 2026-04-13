@@ -3,38 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newManufacturer = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Manufacturer Created',
-    key: 'new_manufacturer_created',
-    description: 'Triggers when a new manufacturer entry is created in GageList.',
-  }
-)
-  .input(z.object({
-    manufacturerId: z.number().describe('ID of the manufacturer'),
-    name: z.string().optional().describe('Manufacturer name'),
-    address: z.string().optional().describe('Physical address'),
-    phone: z.string().optional().describe('Phone number'),
-    fax: z.string().optional().describe('Fax number'),
-    website: z.string().optional().describe('Website URL'),
-    updatedDate: z.string().optional().describe('Date last updated'),
-  }))
-  .output(z.object({
-    manufacturerId: z.number().describe('ID of the new manufacturer'),
-    name: z.string().optional().describe('Manufacturer name'),
-    address: z.string().optional().describe('Physical address'),
-    phone: z.string().optional().describe('Phone number'),
-    fax: z.string().optional().describe('Fax number'),
-    website: z.string().optional().describe('Website URL'),
-    updatedDate: z.string().optional().describe('Date last updated'),
-  }))
+export let newManufacturer = SlateTrigger.create(spec, {
+  name: 'New Manufacturer Created',
+  key: 'new_manufacturer_created',
+  description: 'Triggers when a new manufacturer entry is created in GageList.'
+})
+  .input(
+    z.object({
+      manufacturerId: z.number().describe('ID of the manufacturer'),
+      name: z.string().optional().describe('Manufacturer name'),
+      address: z.string().optional().describe('Physical address'),
+      phone: z.string().optional().describe('Phone number'),
+      fax: z.string().optional().describe('Fax number'),
+      website: z.string().optional().describe('Website URL'),
+      updatedDate: z.string().optional().describe('Date last updated')
+    })
+  )
+  .output(
+    z.object({
+      manufacturerId: z.number().describe('ID of the new manufacturer'),
+      name: z.string().optional().describe('Manufacturer name'),
+      address: z.string().optional().describe('Physical address'),
+      phone: z.string().optional().describe('Phone number'),
+      fax: z.string().optional().describe('Fax number'),
+      website: z.string().optional().describe('Website URL'),
+      updatedDate: z.string().optional().describe('Date last updated')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastTs: number = ctx.state?.lastTs ?? 0;
@@ -61,16 +62,16 @@ export let newManufacturer = SlateTrigger.create(
         phone: m.Phone,
         fax: m.Fax,
         website: m.Website,
-        updatedDate: m.UpdatedDate,
+        updatedDate: m.UpdatedDate
       }));
 
       return {
         inputs,
-        updatedState: { lastTs: maxTs },
+        updatedState: { lastTs: maxTs }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'manufacturer.created',
         id: `manufacturer-${ctx.input.manufacturerId}`,
@@ -81,9 +82,9 @@ export let newManufacturer = SlateTrigger.create(
           phone: ctx.input.phone,
           fax: ctx.input.fax,
           website: ctx.input.website,
-          updatedDate: ctx.input.updatedDate,
-        },
+          updatedDate: ctx.input.updatedDate
+        }
       };
-    },
+    }
   })
   .build();

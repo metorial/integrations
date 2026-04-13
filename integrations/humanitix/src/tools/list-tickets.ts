@@ -21,37 +21,41 @@ let ticketSchema = z.object({
   isDonation: z.boolean().optional().describe('Whether this ticket is a donation'),
   checkInHistory: z.array(z.any()).optional().describe('Check-in history entries'),
   qrCodeData: z.any().optional().describe('QR code data for the ticket'),
-  totalsV2: z.any().optional().describe('Detailed fee breakdown including absorb/pass-on splits'),
+  totalsV2: z
+    .any()
+    .optional()
+    .describe('Detailed fee breakdown including absorb/pass-on splits')
 });
 
-export let listTickets = SlateTool.create(
-  spec,
-  {
-    name: 'List Tickets',
-    key: 'list_tickets',
-    description: `List all tickets for a specific Humanitix event. Returns individual ticket details including holder info, pricing breakdown, check-in status, and associated order.`,
-    tags: {
-      readOnly: true,
-    },
+export let listTickets = SlateTool.create(spec, {
+  name: 'List Tickets',
+  key: 'list_tickets',
+  description: `List all tickets for a specific Humanitix event. Returns individual ticket details including holder info, pricing breakdown, check-in status, and associated order.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    eventId: z.string().describe('The event ID to retrieve tickets for'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    pageSize: z.number().optional().describe('Number of tickets per page (max 100)'),
-  }))
-  .output(z.object({
-    tickets: z.array(ticketSchema).describe('List of tickets'),
-    totalResults: z.number().optional().describe('Total number of tickets available'),
-    page: z.number().optional().describe('Current page number'),
-    pageSize: z.number().optional().describe('Number of results per page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('The event ID to retrieve tickets for'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      pageSize: z.number().optional().describe('Number of tickets per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      tickets: z.array(ticketSchema).describe('List of tickets'),
+      totalResults: z.number().optional().describe('Total number of tickets available'),
+      page: z.number().optional().describe('Current page number'),
+      pageSize: z.number().optional().describe('Number of results per page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let response = await client.getTickets(ctx.input.eventId, {
       page: ctx.input.page,
-      pageSize: ctx.input.pageSize,
+      pageSize: ctx.input.pageSize
     });
 
     let tickets = (response.tickets || []).map((ticket: any) => ({
@@ -72,7 +76,7 @@ export let listTickets = SlateTool.create(
       isDonation: ticket.isDonation,
       checkInHistory: ticket.checkInHistory,
       qrCodeData: ticket.qrCodeData,
-      totalsV2: ticket.totalsV2,
+      totalsV2: ticket.totalsV2
     }));
 
     return {
@@ -80,9 +84,9 @@ export let listTickets = SlateTool.create(
         tickets,
         totalResults: response.totalResults,
         page: response.page,
-        pageSize: response.pageSize,
+        pageSize: response.pageSize
       },
-      message: `Found **${tickets.length}** tickets${response.totalResults ? ` out of ${response.totalResults} total` : ''} for event \`${ctx.input.eventId}\`.`,
+      message: `Found **${tickets.length}** tickets${response.totalResults ? ` out of ${response.totalResults} total` : ''} for event \`${ctx.input.eventId}\`.`
     };
   })
   .build();

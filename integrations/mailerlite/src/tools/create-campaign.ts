@@ -3,51 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createCampaign = SlateTool.create(
-  spec,
-  {
-    name: 'Create Campaign',
-    key: 'create_campaign',
-    description: `Creates a new email campaign. Supports regular, A/B test, and resend campaign types. You can set the email subject, sender, HTML content, and target specific groups or segments.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let createCampaign = SlateTool.create(spec, {
+  name: 'Create Campaign',
+  key: 'create_campaign',
+  description: `Creates a new email campaign. Supports regular, A/B test, and resend campaign types. You can set the email subject, sender, HTML content, and target specific groups or segments.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Campaign name'),
-    type: z.enum(['regular', 'ab', 'resend']).describe('Campaign type'),
-    emails: z.array(z.object({
-      subject: z.string().describe('Email subject line'),
-      fromName: z.string().describe('Sender name'),
-      from: z.string().describe('Sender email address'),
-      content: z.string().optional().describe('Email HTML content'),
-    })).describe('Email configurations (one for regular, multiple for A/B)'),
-    groupIds: z.array(z.string()).optional().describe('Target group IDs'),
-    segmentIds: z.array(z.string()).optional().describe('Target segment IDs'),
-  }))
-  .output(z.object({
-    campaignId: z.string().describe('ID of the created campaign'),
-    name: z.string().describe('Campaign name'),
-    type: z.string().describe('Campaign type'),
-    status: z.string().describe('Campaign status'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Campaign name'),
+      type: z.enum(['regular', 'ab', 'resend']).describe('Campaign type'),
+      emails: z
+        .array(
+          z.object({
+            subject: z.string().describe('Email subject line'),
+            fromName: z.string().describe('Sender name'),
+            from: z.string().describe('Sender email address'),
+            content: z.string().optional().describe('Email HTML content')
+          })
+        )
+        .describe('Email configurations (one for regular, multiple for A/B)'),
+      groupIds: z.array(z.string()).optional().describe('Target group IDs'),
+      segmentIds: z.array(z.string()).optional().describe('Target segment IDs')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string().describe('ID of the created campaign'),
+      name: z.string().describe('Campaign name'),
+      type: z.string().describe('Campaign type'),
+      status: z.string().describe('Campaign status'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.createCampaign({
       name: ctx.input.name,
       type: ctx.input.type,
-      emails: ctx.input.emails.map((e) => ({
+      emails: ctx.input.emails.map(e => ({
         subject: e.subject,
         from_name: e.fromName,
         from: e.from,
-        content: e.content,
+        content: e.content
       })),
       groups: ctx.input.groupIds,
-      segments: ctx.input.segmentIds,
+      segments: ctx.input.segmentIds
     });
 
     let campaign = result.data;
@@ -58,9 +63,9 @@ export let createCampaign = SlateTool.create(
         name: campaign.name,
         type: campaign.type,
         status: campaign.status,
-        createdAt: campaign.created_at,
+        createdAt: campaign.created_at
       },
-      message: `Campaign **${campaign.name}** (${campaign.type}) created with status **${campaign.status}**.`,
+      message: `Campaign **${campaign.name}** (${campaign.type}) created with status **${campaign.status}**.`
     };
   })
   .build();

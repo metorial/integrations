@@ -22,6 +22,7 @@ Ko-fi does not provide a traditional REST API with callable endpoints. The API i
 The sole integration feature is receiving outbound webhook notifications when payments occur on your Ko-fi page. When a payment is made, Ko-fi will send an HTTP POST request containing all the payment data.
 
 The webhook payload includes details such as:
+
 - Supporter name, email, message, and whether the donation is public or private
 - Payment amount and currency
 - Transaction type (`Donation`, `Subscription`, `Shop Order`, `Commission`)
@@ -31,6 +32,7 @@ The webhook payload includes details such as:
 - A unique transaction ID and message ID
 
 **Limitations:**
+
 - While they do not have a full blown API, they do have a webhook that we can redirect to our own endpoints. There is no way to query Ko-fi data, manage pages, create products, or perform any read/write operations via API.
 - Your listener should return a status code of 200. If Ko-fi doesn't receive this status code, it will retry a reasonable number of times with the same message_id.
 - The webhook is one-way and outbound only; you cannot subscribe to specific event types — all payment events are sent to a single configured URL.
@@ -49,6 +51,7 @@ Webhooks are automated messages sent when something happens on Ko-fi. On Ko-fi, 
 - **Shop Order**: Triggers for all Ko-fi shop order events. Includes `shop_items` with product details and may include shipping information for physical goods.
 
 **Limitations:**
+
 - The API is currently limited to when a payment is made. A webhook can notify you when you receive a membership payment but cannot inform you if the membership has ended.
 - There is no support for events like membership cancellations, refunds, or page updates.
 - Only a single webhook URL can be configured per Ko-fi account.

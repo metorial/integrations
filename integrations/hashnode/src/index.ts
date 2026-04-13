@@ -13,12 +13,9 @@ import {
   getUser,
   searchPosts,
   listStaticPages,
-  subscribeNewsletter,
+  subscribeNewsletter
 } from './tools';
-import {
-  postEvents,
-  staticPageEvents,
-} from './triggers';
+import { postEvents, staticPageEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     getUser,
     searchPosts,
     listStaticPages,
-    subscribeNewsletter,
+    subscribeNewsletter
   ],
-  triggers: [
-    postEvents,
-    staticPageEvents,
-  ],
+  triggers: [postEvents, staticPageEvents]
 });

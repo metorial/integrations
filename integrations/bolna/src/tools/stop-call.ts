@@ -3,27 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let stopCall = SlateTool.create(
-  spec,
-  {
-    name: 'Stop Call',
-    key: 'stop_call',
-    description: `Stop an active, queued, or scheduled outbound call. Can also stop all queued calls for an agent.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let stopCall = SlateTool.create(spec, {
+  name: 'Stop Call',
+  key: 'stop_call',
+  description: `Stop an active, queued, or scheduled outbound call. Can also stop all queued calls for an agent.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    executionId: z.string().optional().describe('Execution ID of a specific call to stop'),
-    agentId: z.string().optional().describe('Agent ID to stop all queued calls for the agent')
-  }))
-  .output(z.object({
-    stoppedExecutionIds: z.array(z.string()).optional().describe('List of stopped execution IDs'),
-    status: z.string().describe('Stop result status')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      executionId: z.string().optional().describe('Execution ID of a specific call to stop'),
+      agentId: z
+        .string()
+        .optional()
+        .describe('Agent ID to stop all queued calls for the agent')
+    })
+  )
+  .output(
+    z.object({
+      stoppedExecutionIds: z
+        .array(z.string())
+        .optional()
+        .describe('List of stopped execution IDs'),
+      status: z.string().describe('Stop result status')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     if (ctx.input.executionId) {
@@ -56,4 +63,5 @@ export let stopCall = SlateTool.create(
       },
       message: 'No executionId or agentId provided. Please specify one.'
     };
-  }).build();
+  })
+  .build();

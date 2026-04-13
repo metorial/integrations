@@ -2,23 +2,29 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Personal Auth Token',
     key: 'personal_auth_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Bugsnag Personal Auth Token. Generate one in the Bugsnag dashboard under My Account → Personal Auth Tokens.'),
+      token: z
+        .string()
+        .describe(
+          'Bugsnag Personal Auth Token. Generate one in the Bugsnag dashboard under My Account → Personal Auth Tokens.'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +32,8 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://api.bugsnag.com',
         headers: {
-          Authorization: `token ${ctx.output.token}`,
-        },
+          Authorization: `token ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/user');
@@ -37,8 +43,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           email: user.email,
-          name: user.name,
-        },
+          name: user.name
+        }
       };
-    },
+    }
   });

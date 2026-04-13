@@ -69,32 +69,38 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateBoard(boardId: string, params: {
-    name?: string;
-    description?: string;
-    policy?: {
-      sharingPolicy?: {
-        access?: string;
-        inviteToAccountAndBoardLinkAccess?: string;
-        organizationAccess?: string;
-        teamAccess?: string;
+  async updateBoard(
+    boardId: string,
+    params: {
+      name?: string;
+      description?: string;
+      policy?: {
+        sharingPolicy?: {
+          access?: string;
+          inviteToAccountAndBoardLinkAccess?: string;
+          organizationAccess?: string;
+          teamAccess?: string;
+        };
+        permissionsPolicy?: {
+          collaborationToolsStartAccess?: string;
+          copyAccess?: string;
+          sharingAccess?: string;
+        };
       };
-      permissionsPolicy?: {
-        collaborationToolsStartAccess?: string;
-        copyAccess?: string;
-        sharingAccess?: string;
-      };
-    };
-  }) {
+    }
+  ) {
     let response = await this.axios.patch(`/boards/${boardId}`, params);
     return response.data;
   }
 
-  async copyBoard(boardId: string, params?: {
-    name?: string;
-    description?: string;
-    teamId?: string;
-  }) {
+  async copyBoard(
+    boardId: string,
+    params?: {
+      name?: string;
+      description?: string;
+      teamId?: string;
+    }
+  ) {
     let response = await this.axios.put(`/boards/${boardId}/copy`, params || {});
     return response.data;
   }
@@ -105,11 +111,14 @@ export class MiroClient {
 
   // ── Board Items ───────────────────────────────────────────────────
 
-  async getItems(boardId: string, params?: {
-    type?: string;
-    limit?: number;
-    cursor?: string;
-  }) {
+  async getItems(
+    boardId: string,
+    params?: {
+      type?: string;
+      limit?: number;
+      cursor?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.type) queryParams.type = params.type;
     if (params?.limit) queryParams.limit = params.limit;
@@ -124,10 +133,14 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateItemPosition(boardId: string, itemId: string, params: {
-    position?: { x?: number; y?: number; origin?: string };
-    parent?: { id?: string };
-  }) {
+  async updateItemPosition(
+    boardId: string,
+    itemId: string,
+    params: {
+      position?: { x?: number; y?: number; origin?: string };
+      parent?: { id?: string };
+    }
+  ) {
     let response = await this.axios.patch(`/boards/${boardId}/items/${itemId}`, params);
     return response.data;
   }
@@ -138,16 +151,19 @@ export class MiroClient {
 
   // ── Sticky Notes ──────────────────────────────────────────────────
 
-  async createStickyNote(boardId: string, params: {
-    content: string;
-    shape?: string;
-    fillColor?: string;
-    textAlign?: string;
-    textAlignVertical?: string;
-    x?: number;
-    y?: number;
-    parentId?: string;
-  }) {
+  async createStickyNote(
+    boardId: string,
+    params: {
+      content: string;
+      shape?: string;
+      fillColor?: string;
+      textAlign?: string;
+      textAlignVertical?: string;
+      x?: number;
+      y?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       data: { content: params.content }
     };
@@ -169,16 +185,20 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateStickyNote(boardId: string, itemId: string, params: {
-    content?: string;
-    shape?: string;
-    fillColor?: string;
-    textAlign?: string;
-    textAlignVertical?: string;
-    x?: number;
-    y?: number;
-    parentId?: string;
-  }) {
+  async updateStickyNote(
+    boardId: string,
+    itemId: string,
+    params: {
+      content?: string;
+      shape?: string;
+      fillColor?: string;
+      textAlign?: string;
+      textAlignVertical?: string;
+      x?: number;
+      y?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.content !== undefined || params.shape !== undefined) {
       body.data = {};
@@ -204,17 +224,20 @@ export class MiroClient {
 
   // ── Cards ─────────────────────────────────────────────────────────
 
-  async createCard(boardId: string, params: {
-    title?: string;
-    description?: string;
-    dueDate?: string;
-    assigneeId?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    parentId?: string;
-  }) {
+  async createCard(
+    boardId: string,
+    params: {
+      title?: string;
+      description?: string;
+      dueDate?: string;
+      assigneeId?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = { data: {} };
     if (params.title) body.data.title = params.title;
     if (params.description) body.data.description = params.description;
@@ -236,19 +259,28 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateCard(boardId: string, itemId: string, params: {
-    title?: string;
-    description?: string;
-    dueDate?: string;
-    assigneeId?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    parentId?: string;
-  }) {
+  async updateCard(
+    boardId: string,
+    itemId: string,
+    params: {
+      title?: string;
+      description?: string;
+      dueDate?: string;
+      assigneeId?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
-    if (params.title !== undefined || params.description !== undefined || params.dueDate !== undefined || params.assigneeId !== undefined) {
+    if (
+      params.title !== undefined ||
+      params.description !== undefined ||
+      params.dueDate !== undefined ||
+      params.assigneeId !== undefined
+    ) {
       body.data = {};
       if (params.title !== undefined) body.data.title = params.title;
       if (params.description !== undefined) body.data.description = params.description;
@@ -273,18 +305,21 @@ export class MiroClient {
 
   // ── Text Items ────────────────────────────────────────────────────
 
-  async createText(boardId: string, params: {
-    content: string;
-    fontSize?: number;
-    fillColor?: string;
-    textAlign?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    rotation?: number;
-    parentId?: string;
-  }) {
+  async createText(
+    boardId: string,
+    params: {
+      content: string;
+      fontSize?: number;
+      fillColor?: string;
+      textAlign?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      rotation?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       data: { content: params.content }
     };
@@ -299,7 +334,11 @@ export class MiroClient {
       if (params.x !== undefined) body.position.x = params.x;
       if (params.y !== undefined) body.position.y = params.y;
     }
-    if (params.width !== undefined || params.height !== undefined || params.rotation !== undefined) {
+    if (
+      params.width !== undefined ||
+      params.height !== undefined ||
+      params.rotation !== undefined
+    ) {
       body.geometry = {};
       if (params.width !== undefined) body.geometry.width = params.width;
       if (params.height !== undefined) body.geometry.height = params.height;
@@ -311,18 +350,22 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateText(boardId: string, itemId: string, params: {
-    content?: string;
-    fontSize?: number;
-    fillColor?: string;
-    textAlign?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    rotation?: number;
-    parentId?: string;
-  }) {
+  async updateText(
+    boardId: string,
+    itemId: string,
+    params: {
+      content?: string;
+      fontSize?: number;
+      fillColor?: string;
+      textAlign?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      rotation?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.content !== undefined) {
       body.data = { content: params.content };
@@ -338,7 +381,11 @@ export class MiroClient {
       if (params.x !== undefined) body.position.x = params.x;
       if (params.y !== undefined) body.position.y = params.y;
     }
-    if (params.width !== undefined || params.height !== undefined || params.rotation !== undefined) {
+    if (
+      params.width !== undefined ||
+      params.height !== undefined ||
+      params.rotation !== undefined
+    ) {
       body.geometry = {};
       if (params.width !== undefined) body.geometry.width = params.width;
       if (params.height !== undefined) body.geometry.height = params.height;
@@ -352,27 +399,30 @@ export class MiroClient {
 
   // ── Shapes ────────────────────────────────────────────────────────
 
-  async createShape(boardId: string, params: {
-    content?: string;
-    shape?: string;
-    fillColor?: string;
-    fillOpacity?: string;
-    fontFamily?: string;
-    fontSize?: string;
-    borderColor?: string;
-    borderWidth?: string;
-    borderOpacity?: string;
-    borderStyle?: string;
-    textAlign?: string;
-    textAlignVertical?: string;
-    color?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    rotation?: number;
-    parentId?: string;
-  }) {
+  async createShape(
+    boardId: string,
+    params: {
+      content?: string;
+      shape?: string;
+      fillColor?: string;
+      fillOpacity?: string;
+      fontFamily?: string;
+      fontSize?: string;
+      borderColor?: string;
+      borderWidth?: string;
+      borderOpacity?: string;
+      borderStyle?: string;
+      textAlign?: string;
+      textAlignVertical?: string;
+      color?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      rotation?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = { data: {} };
     if (params.content) body.data.content = params.content;
     if (params.shape) body.data.shape = params.shape;
@@ -396,7 +446,11 @@ export class MiroClient {
       if (params.x !== undefined) body.position.x = params.x;
       if (params.y !== undefined) body.position.y = params.y;
     }
-    if (params.width !== undefined || params.height !== undefined || params.rotation !== undefined) {
+    if (
+      params.width !== undefined ||
+      params.height !== undefined ||
+      params.rotation !== undefined
+    ) {
       body.geometry = {};
       if (params.width !== undefined) body.geometry.width = params.width;
       if (params.height !== undefined) body.geometry.height = params.height;
@@ -408,27 +462,31 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateShape(boardId: string, itemId: string, params: {
-    content?: string;
-    shape?: string;
-    fillColor?: string;
-    fillOpacity?: string;
-    fontFamily?: string;
-    fontSize?: string;
-    borderColor?: string;
-    borderWidth?: string;
-    borderOpacity?: string;
-    borderStyle?: string;
-    textAlign?: string;
-    textAlignVertical?: string;
-    color?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    rotation?: number;
-    parentId?: string;
-  }) {
+  async updateShape(
+    boardId: string,
+    itemId: string,
+    params: {
+      content?: string;
+      shape?: string;
+      fillColor?: string;
+      fillOpacity?: string;
+      fontFamily?: string;
+      fontSize?: string;
+      borderColor?: string;
+      borderWidth?: string;
+      borderOpacity?: string;
+      borderStyle?: string;
+      textAlign?: string;
+      textAlignVertical?: string;
+      color?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      rotation?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.content !== undefined || params.shape !== undefined) {
       body.data = {};
@@ -455,7 +513,11 @@ export class MiroClient {
       if (params.x !== undefined) body.position.x = params.x;
       if (params.y !== undefined) body.position.y = params.y;
     }
-    if (params.width !== undefined || params.height !== undefined || params.rotation !== undefined) {
+    if (
+      params.width !== undefined ||
+      params.height !== undefined ||
+      params.rotation !== undefined
+    ) {
       body.geometry = {};
       if (params.width !== undefined) body.geometry.width = params.width;
       if (params.height !== undefined) body.geometry.height = params.height;
@@ -469,16 +531,19 @@ export class MiroClient {
 
   // ── Images ────────────────────────────────────────────────────────
 
-  async createImageFromUrl(boardId: string, params: {
-    url: string;
-    title?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    rotation?: number;
-    parentId?: string;
-  }) {
+  async createImageFromUrl(
+    boardId: string,
+    params: {
+      url: string;
+      title?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      rotation?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       data: { url: params.url }
     };
@@ -488,7 +553,11 @@ export class MiroClient {
       if (params.x !== undefined) body.position.x = params.x;
       if (params.y !== undefined) body.position.y = params.y;
     }
-    if (params.width !== undefined || params.height !== undefined || params.rotation !== undefined) {
+    if (
+      params.width !== undefined ||
+      params.height !== undefined ||
+      params.rotation !== undefined
+    ) {
       body.geometry = {};
       if (params.width !== undefined) body.geometry.width = params.width;
       if (params.height !== undefined) body.geometry.height = params.height;
@@ -502,16 +571,19 @@ export class MiroClient {
 
   // ── Embeds ────────────────────────────────────────────────────────
 
-  async createEmbed(boardId: string, params: {
-    url: string;
-    mode?: string;
-    previewUrl?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    parentId?: string;
-  }) {
+  async createEmbed(
+    boardId: string,
+    params: {
+      url: string;
+      mode?: string;
+      previewUrl?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       data: { url: params.url }
     };
@@ -535,15 +607,18 @@ export class MiroClient {
 
   // ── Frames ────────────────────────────────────────────────────────
 
-  async createFrame(boardId: string, params: {
-    title?: string;
-    format?: string;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    parentId?: string;
-  }) {
+  async createFrame(
+    boardId: string,
+    params: {
+      title?: string;
+      format?: string;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = { data: {} };
     if (params.title) body.data.title = params.title;
     if (params.format) body.data.format = params.format;
@@ -563,34 +638,43 @@ export class MiroClient {
     return response.data;
   }
 
-  async getFrameItems(boardId: string, frameId: string, params?: {
-    limit?: number;
-    cursor?: string;
-  }) {
+  async getFrameItems(
+    boardId: string,
+    frameId: string,
+    params?: {
+      limit?: number;
+      cursor?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.cursor) queryParams.cursor = params.cursor;
 
-    let response = await this.axios.get(`/boards/${boardId}/frames/${frameId}/items`, { params: queryParams });
+    let response = await this.axios.get(`/boards/${boardId}/frames/${frameId}/items`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Connectors ────────────────────────────────────────────────────
 
-  async createConnector(boardId: string, params: {
-    startItemId: string;
-    endItemId: string;
-    shape?: string;
-    captions?: Array<{ content: string; textAlignVertical?: string }>;
-    style?: {
-      strokeColor?: string;
-      strokeWidth?: string;
-      strokeStyle?: string;
-      startStrokeCap?: string;
-      endStrokeCap?: string;
-      color?: string;
-    };
-  }) {
+  async createConnector(
+    boardId: string,
+    params: {
+      startItemId: string;
+      endItemId: string;
+      shape?: string;
+      captions?: Array<{ content: string; textAlignVertical?: string }>;
+      style?: {
+        strokeColor?: string;
+        strokeWidth?: string;
+        strokeStyle?: string;
+        startStrokeCap?: string;
+        endStrokeCap?: string;
+        color?: string;
+      };
+    }
+  ) {
     let body: Record<string, any> = {
       startItem: { id: params.startItemId },
       endItem: { id: params.endItemId }
@@ -603,15 +687,20 @@ export class MiroClient {
     return response.data;
   }
 
-  async getConnectors(boardId: string, params?: {
-    limit?: number;
-    cursor?: string;
-  }) {
+  async getConnectors(
+    boardId: string,
+    params?: {
+      limit?: number;
+      cursor?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.cursor) queryParams.cursor = params.cursor;
 
-    let response = await this.axios.get(`/boards/${boardId}/connectors`, { params: queryParams });
+    let response = await this.axios.get(`/boards/${boardId}/connectors`, {
+      params: queryParams
+    });
     return response.data;
   }
 
@@ -620,20 +709,24 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateConnector(boardId: string, connectorId: string, params: {
-    startItemId?: string;
-    endItemId?: string;
-    shape?: string;
-    captions?: Array<{ content: string; textAlignVertical?: string }>;
-    style?: {
-      strokeColor?: string;
-      strokeWidth?: string;
-      strokeStyle?: string;
-      startStrokeCap?: string;
-      endStrokeCap?: string;
-      color?: string;
-    };
-  }) {
+  async updateConnector(
+    boardId: string,
+    connectorId: string,
+    params: {
+      startItemId?: string;
+      endItemId?: string;
+      shape?: string;
+      captions?: Array<{ content: string; textAlignVertical?: string }>;
+      style?: {
+        strokeColor?: string;
+        strokeWidth?: string;
+        strokeStyle?: string;
+        startStrokeCap?: string;
+        endStrokeCap?: string;
+        color?: string;
+      };
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.startItemId) body.startItem = { id: params.startItemId };
     if (params.endItemId) body.endItem = { id: params.endItemId };
@@ -641,7 +734,10 @@ export class MiroClient {
     if (params.captions) body.captions = params.captions;
     if (params.style) body.style = params.style;
 
-    let response = await this.axios.patch(`/boards/${boardId}/connectors/${connectorId}`, body);
+    let response = await this.axios.patch(
+      `/boards/${boardId}/connectors/${connectorId}`,
+      body
+    );
     return response.data;
   }
 
@@ -651,10 +747,13 @@ export class MiroClient {
 
   // ── Tags ──────────────────────────────────────────────────────────
 
-  async createTag(boardId: string, params: {
-    title: string;
-    fillColor?: string;
-  }) {
+  async createTag(
+    boardId: string,
+    params: {
+      title: string;
+      fillColor?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       title: params.title
     };
@@ -664,10 +763,13 @@ export class MiroClient {
     return response.data;
   }
 
-  async getTags(boardId: string, params?: {
-    limit?: number;
-    offset?: number;
-  }) {
+  async getTags(
+    boardId: string,
+    params?: {
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.offset) queryParams.offset = params.offset;
@@ -681,10 +783,14 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateTag(boardId: string, tagId: string, params: {
-    title?: string;
-    fillColor?: string;
-  }) {
+  async updateTag(
+    boardId: string,
+    tagId: string,
+    params: {
+      title?: string;
+      fillColor?: string;
+    }
+  ) {
     let response = await this.axios.patch(`/boards/${boardId}/tags/${tagId}`, params);
     return response.data;
   }
@@ -709,11 +815,14 @@ export class MiroClient {
 
   // ── Board Members ─────────────────────────────────────────────────
 
-  async shareBoard(boardId: string, params: {
-    emails: string[];
-    role?: string;
-    message?: string;
-  }) {
+  async shareBoard(
+    boardId: string,
+    params: {
+      emails: string[];
+      role?: string;
+      message?: string;
+    }
+  ) {
     let body: Record<string, any> = {
       emails: params.emails
     };
@@ -724,10 +833,13 @@ export class MiroClient {
     return response.data;
   }
 
-  async getBoardMembers(boardId: string, params?: {
-    limit?: number;
-    offset?: string;
-  }) {
+  async getBoardMembers(
+    boardId: string,
+    params?: {
+      limit?: number;
+      offset?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.offset) queryParams.offset = params.offset;
@@ -741,9 +853,13 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateBoardMember(boardId: string, memberId: string, params: {
-    role: string;
-  }) {
+  async updateBoardMember(
+    boardId: string,
+    memberId: string,
+    params: {
+      role: string;
+    }
+  ) {
     let response = await this.axios.patch(`/boards/${boardId}/members/${memberId}`, params);
     return response.data;
   }
@@ -754,18 +870,24 @@ export class MiroClient {
 
   // ── Groups ────────────────────────────────────────────────────────
 
-  async createGroup(boardId: string, params: {
-    itemIds: string[];
-  }) {
+  async createGroup(
+    boardId: string,
+    params: {
+      itemIds: string[];
+    }
+  ) {
     let body = { items: params.itemIds.map(id => id) };
     let response = await this.axios.post(`/boards/${boardId}/groups`, body);
     return response.data;
   }
 
-  async getGroups(boardId: string, params?: {
-    limit?: number;
-    cursor?: string;
-  }) {
+  async getGroups(
+    boardId: string,
+    params?: {
+      limit?: number;
+      cursor?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.limit) queryParams.limit = params.limit;
     if (params?.cursor) queryParams.cursor = params.cursor;
@@ -790,17 +912,27 @@ export class MiroClient {
 
   // ── App Cards ─────────────────────────────────────────────────────
 
-  async createAppCard(boardId: string, params: {
-    title?: string;
-    description?: string;
-    status?: string;
-    fields?: Array<{ value: string; fillColor?: string; iconShape?: string; iconUrl?: string; textColor?: string; tooltip?: string }>;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    parentId?: string;
-  }) {
+  async createAppCard(
+    boardId: string,
+    params: {
+      title?: string;
+      description?: string;
+      status?: string;
+      fields?: Array<{
+        value: string;
+        fillColor?: string;
+        iconShape?: string;
+        iconUrl?: string;
+        textColor?: string;
+        tooltip?: string;
+      }>;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = { data: {} };
     if (params.title) body.data.title = params.title;
     if (params.description) body.data.description = params.description;
@@ -822,19 +954,35 @@ export class MiroClient {
     return response.data;
   }
 
-  async updateAppCard(boardId: string, itemId: string, params: {
-    title?: string;
-    description?: string;
-    status?: string;
-    fields?: Array<{ value: string; fillColor?: string; iconShape?: string; iconUrl?: string; textColor?: string; tooltip?: string }>;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    parentId?: string;
-  }) {
+  async updateAppCard(
+    boardId: string,
+    itemId: string,
+    params: {
+      title?: string;
+      description?: string;
+      status?: string;
+      fields?: Array<{
+        value: string;
+        fillColor?: string;
+        iconShape?: string;
+        iconUrl?: string;
+        textColor?: string;
+        tooltip?: string;
+      }>;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      parentId?: string;
+    }
+  ) {
     let body: Record<string, any> = {};
-    if (params.title !== undefined || params.description !== undefined || params.status !== undefined || params.fields !== undefined) {
+    if (
+      params.title !== undefined ||
+      params.description !== undefined ||
+      params.status !== undefined ||
+      params.fields !== undefined
+    ) {
       body.data = {};
       if (params.title !== undefined) body.data.title = params.title;
       if (params.description !== undefined) body.data.description = params.description;

@@ -21,12 +21,9 @@ import {
   getKnowledgeBase,
   deleteKnowledgeBase,
   listVoices,
-  getConcurrency,
+  getConcurrency
 } from './tools';
-import {
-  callEvents,
-  transferEvents,
-} from './triggers';
+import { callEvents, transferEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,10 +48,7 @@ export let provider = Slate.create({
     getKnowledgeBase,
     deleteKnowledgeBase,
     listVoices,
-    getConcurrency,
+    getConcurrency
   ],
-  triggers: [
-    callEvents,
-    transferEvents,
-  ],
+  triggers: [callEvents, transferEvents]
 });

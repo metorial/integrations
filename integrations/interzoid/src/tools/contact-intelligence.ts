@@ -3,12 +3,10 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contactIntelligence = SlateTool.create(
-  spec,
-  {
-    name: 'Contact Intelligence',
-    key: 'contact_intelligence',
-    description: `Analyze and profile contact information including **email addresses**, **phone numbers**, and **IP addresses**.
+export let contactIntelligence = SlateTool.create(spec, {
+  name: 'Contact Intelligence',
+  key: 'contact_intelligence',
+  description: `Analyze and profile contact information including **email addresses**, **phone numbers**, and **IP addresses**.
 
 - **Email validation**: Validate deliverability and get demographic data (entity type, domain info).
 - **Email trust score**: Get a trust score (0–99) with AI-generated reasoning about email legitimacy.
@@ -16,19 +14,24 @@ export let contactIntelligence = SlateTool.create(
 - **IP profile**: Get organization, geolocation, CIDR, reputation, and abuse contact data.
 
 Email trust, phone, and IP profiling are **premium APIs** consuming multiple credits per call.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    profileType: z.enum(['email_validation', 'email_trust', 'phone', 'ip_address']).describe('Type of contact to profile'),
-    value: z.string().describe('The email address, phone number, or IP address to analyze'),
-  }))
-  .output(z.object({
-    profileData: z.record(z.string(), z.any()).describe('The contact intelligence data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      profileType: z
+        .enum(['email_validation', 'email_trust', 'phone', 'ip_address'])
+        .describe('Type of contact to profile'),
+      value: z.string().describe('The email address, phone number, or IP address to analyze')
+    })
+  )
+  .output(
+    z.object({
+      profileData: z.record(z.string(), z.any()).describe('The contact intelligence data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result: Record<string, any>;
 
@@ -49,9 +52,9 @@ Email trust, phone, and IP profiling are **premium APIs** consuming multiple cre
 
     return {
       output: {
-        profileData: result,
+        profileData: result
       },
-      message: `Analyzed ${ctx.input.profileType.replace('_', ' ')} for "${ctx.input.value}"`,
+      message: `Analyzed ${ctx.input.profileType.replace('_', ' ')} for "${ctx.input.value}"`
     };
   })
   .build();

@@ -13,6 +13,7 @@ API.Bible uses API key authentication. Before you can access the API you must fi
 The authentication process uses a variation of HTTP Basic Auth. For each request you must place your private key into the `api-key` header.
 
 Example request:
+
 ```
 curl --request GET \
   --url https://api.scripture.api.bible/v1/bibles \

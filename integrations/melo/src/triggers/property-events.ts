@@ -9,46 +9,55 @@ let subscribedEventTypes = [
   'ad.update.price',
   'ad.update.surface',
   'ad.update.pictures',
-  'ad.update.expired',
+  'ad.update.expired'
 ] as const;
 
-export let propertyEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Property Events',
-    key: 'property_events',
-    description: 'Triggered when advert-level events occur on properties matching a saved search, such as price changes, new adverts, surface updates, photo changes, or expiration.',
-  },
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of event'),
-    propertyId: z.string().describe('Property UUID'),
-    advertId: z.string().optional().describe('Advert UUID'),
-    searchId: z.string().optional().describe('Saved search ID that triggered this event'),
-    fieldName: z.string().optional().describe('Name of the changed field'),
-    oldValue: z.unknown().optional().describe('Previous value'),
-    newValue: z.unknown().optional().describe('New value'),
-    percentVariation: z.number().nullable().optional().describe('Percent variation for numeric changes'),
-    rawPayload: z.record(z.string(), z.unknown()).describe('Full raw event payload'),
-  }))
-  .output(z.object({
-    propertyId: z.string().describe('UUID of the affected property'),
-    advertId: z.string().nullable().describe('UUID of the affected advert'),
-    eventType: z.string().describe('Type of event that occurred'),
-    fieldName: z.string().nullable().describe('Changed field name (for update events)'),
-    oldValue: z.unknown().nullable().describe('Previous field value'),
-    newValue: z.unknown().nullable().describe('New field value'),
-    percentVariation: z.number().nullable().describe('Percent variation for numeric changes'),
-    propertyTitle: z.string().nullable().describe('Property title if available'),
-    price: z.number().nullable().describe('Current price if available'),
-    surface: z.number().nullable().describe('Current surface if available'),
-    cityName: z.string().nullable().describe('City name if available'),
-  }))
+export let propertyEvents = SlateTrigger.create(spec, {
+  name: 'Property Events',
+  key: 'property_events',
+  description:
+    'Triggered when advert-level events occur on properties matching a saved search, such as price changes, new adverts, surface updates, photo changes, or expiration.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of event'),
+      propertyId: z.string().describe('Property UUID'),
+      advertId: z.string().optional().describe('Advert UUID'),
+      searchId: z.string().optional().describe('Saved search ID that triggered this event'),
+      fieldName: z.string().optional().describe('Name of the changed field'),
+      oldValue: z.unknown().optional().describe('Previous value'),
+      newValue: z.unknown().optional().describe('New value'),
+      percentVariation: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('Percent variation for numeric changes'),
+      rawPayload: z.record(z.string(), z.unknown()).describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      propertyId: z.string().describe('UUID of the affected property'),
+      advertId: z.string().nullable().describe('UUID of the affected advert'),
+      eventType: z.string().describe('Type of event that occurred'),
+      fieldName: z.string().nullable().describe('Changed field name (for update events)'),
+      oldValue: z.unknown().nullable().describe('Previous field value'),
+      newValue: z.unknown().nullable().describe('New field value'),
+      percentVariation: z
+        .number()
+        .nullable()
+        .describe('Percent variation for numeric changes'),
+      propertyTitle: z.string().nullable().describe('Property title if available'),
+      price: z.number().nullable().describe('Current price if available'),
+      surface: z.number().nullable().describe('Current surface if available'),
+      cityName: z.string().nullable().describe('City name if available')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       // Create a saved search that sends events to our webhook URL
@@ -59,20 +68,20 @@ export let propertyEvents = SlateTrigger.create(
         transactionType: 0,
         notificationEnabled: true,
         eventEndpoint: ctx.input.webhookBaseUrl,
-        subscribedEvents: [...subscribedEventTypes],
+        subscribedEvents: [...subscribedEventTypes]
       });
 
       let searchId = search.uuid ?? search['@id']?.split('/').pop() ?? '';
 
       return {
-        registrationDetails: { searchId },
+        registrationDetails: { searchId }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        environment: ctx.config.environment,
+        environment: ctx.config.environment
       });
 
       let searchId = (ctx.input.registrationDetails as any)?.searchId;
@@ -81,7 +90,7 @@ export let propertyEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -96,8 +105,12 @@ export let propertyEvents = SlateTrigger.create(
         .filter((e: any) => e && typeof e === 'object')
         .map((event: any) => {
           let eventType = event.event ?? event.type ?? event['@type'] ?? 'unknown';
-          let propertyId = event.propertyUuid ?? event.propertyId ?? event.property?.uuid ??
-            (event['@id'] ? event['@id'].split('/').filter(Boolean).pop() : '') ?? '';
+          let propertyId =
+            event.propertyUuid ??
+            event.propertyId ??
+            event.property?.uuid ??
+            (event['@id'] ? event['@id'].split('/').filter(Boolean).pop() : '') ??
+            '';
           let advertId = event.advertUuid ?? event.advertId ?? event.advert?.uuid ?? undefined;
 
           return {
@@ -109,14 +122,14 @@ export let propertyEvents = SlateTrigger.create(
             oldValue: event.fieldOldValue ?? event.oldValue ?? undefined,
             newValue: event.fieldNewValue ?? event.newValue ?? undefined,
             percentVariation: event.percentVariation ?? null,
-            rawPayload: event,
+            rawPayload: event
           };
         });
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let input = ctx.input;
 
       // Try to extract extra property details from the raw payload
@@ -141,8 +154,9 @@ export let propertyEvents = SlateTrigger.create(
           propertyTitle,
           price,
           surface,
-          cityName,
-        },
+          cityName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

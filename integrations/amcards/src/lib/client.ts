@@ -63,8 +63,8 @@ export class Client {
       baseURL: 'https://amcards.com/.api/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -75,7 +75,9 @@ export class Client {
 
   async getCards(): Promise<any[]> {
     let response = await this.axios.get('/cards/');
-    return Array.isArray(response.data) ? response.data : response.data?.results ?? [response.data];
+    return Array.isArray(response.data)
+      ? response.data
+      : (response.data?.results ?? [response.data]);
   }
 
   async getContacts(params: GetContactsParams = {}): Promise<any[]> {
@@ -88,7 +90,9 @@ export class Client {
     if (params.email) queryParams.email = params.email;
 
     let response = await this.axios.get('/contacts/', { params: queryParams });
-    return Array.isArray(response.data) ? response.data : response.data?.results ?? [response.data];
+    return Array.isArray(response.data)
+      ? response.data
+      : (response.data?.results ?? [response.data]);
   }
 
   async sendCard(params: SendCardParams): Promise<any> {
@@ -101,7 +105,7 @@ export class Client {
       to_city: params.recipientCity,
       to_state: params.recipientState,
       to_postal_code: params.recipientPostalCode,
-      from_first_name: params.fromFirstName,
+      from_first_name: params.fromFirstName
     };
 
     if (params.message) body.message = params.message;
@@ -125,7 +129,7 @@ export class Client {
       to_address_line_1: params.recipientAddressLine1,
       to_city: params.recipientCity,
       to_state: params.recipientState,
-      to_postal_code: params.recipientPostalCode,
+      to_postal_code: params.recipientPostalCode
     };
 
     if (params.sendDate) body.send_date = params.sendDate;
@@ -136,7 +140,8 @@ export class Client {
     if (params.recipientCountry) body.to_country = params.recipientCountry;
     if (params.recipientBirthDate) body.to_birth_date = params.recipientBirthDate;
     if (params.recipientPhoneNumber) body.to_phone_number = params.recipientPhoneNumber;
-    if (params.recipientAnniversaryDate) body.to_anniversary_date = params.recipientAnniversaryDate;
+    if (params.recipientAnniversaryDate)
+      body.to_anniversary_date = params.recipientAnniversaryDate;
     if (params.fromFirstName) body.from_first_name = params.fromFirstName;
     if (params.fromLastName) body.from_last_name = params.fromLastName;
     if (params.fromAddressLine1) body.from_address_line_1 = params.fromAddressLine1;
@@ -152,19 +157,24 @@ export class Client {
 
   async cancelCardsByContact(thirdPartyContactId: string): Promise<any> {
     let response = await this.axios.post('/cards/cancel/', {
-      third_party_contact_id: thirdPartyContactId,
+      third_party_contact_id: thirdPartyContactId
     });
     return response.data;
   }
 
-  async listCategories(params?: { parentId?: number; titleContains?: string }): Promise<any[]> {
+  async listCategories(params?: {
+    parentId?: number;
+    titleContains?: string;
+  }): Promise<any[]> {
     let queryParams: Record<string, string> = {};
 
     if (params?.parentId !== undefined) queryParams['parent__id'] = String(params.parentId);
     if (params?.titleContains) queryParams['title__icontains'] = params.titleContains;
 
     let response = await this.axios.get('/categories/', { params: queryParams });
-    return Array.isArray(response.data) ? response.data : response.data?.results ?? [response.data];
+    return Array.isArray(response.data)
+      ? response.data
+      : (response.data?.results ?? [response.data]);
   }
 
   async getCategory(categoryId: number): Promise<any> {
@@ -172,14 +182,20 @@ export class Client {
     return response.data;
   }
 
-  async listPublicTemplates(params?: { categoryId?: number; nameContains?: string }): Promise<any[]> {
+  async listPublicTemplates(params?: {
+    categoryId?: number;
+    nameContains?: string;
+  }): Promise<any[]> {
     let queryParams: Record<string, string> = {};
 
-    if (params?.categoryId !== undefined) queryParams['category__id'] = String(params.categoryId);
+    if (params?.categoryId !== undefined)
+      queryParams['category__id'] = String(params.categoryId);
     if (params?.nameContains) queryParams['name__icontains'] = params.nameContains;
 
     let response = await this.axios.get('/templates/', { params: queryParams });
-    return Array.isArray(response.data) ? response.data : response.data?.results ?? [response.data];
+    return Array.isArray(response.data)
+      ? response.data
+      : (response.data?.results ?? [response.data]);
   }
 
   async getPublicTemplate(templateId: number): Promise<any> {
@@ -189,7 +205,9 @@ export class Client {
 
   async listGifts(): Promise<any[]> {
     let response = await this.axios.get('/gifts/');
-    return Array.isArray(response.data) ? response.data : response.data?.results ?? [response.data];
+    return Array.isArray(response.data)
+      ? response.data
+      : (response.data?.results ?? [response.data]);
   }
 
   async getGift(giftId: number): Promise<any> {

@@ -3,31 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEnvironment = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Environment',
-    key: 'manage_environment',
-    description: `List, fork, promote, or delete sandbox environments. Environments allow safe schema migrations and testing before going live. Forking creates a full copy of an existing environment.`,
-    instructions: [
-      'Promoting a sandbox environment replaces the current primary environment.',
-      'The primary environment cannot be deleted.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'get', 'fork', 'promote', 'delete']).describe('Action to perform'),
-    environmentId: z.string().optional().describe('Environment ID (required for get, fork, promote, delete)'),
-    newEnvironmentId: z.string().optional().describe('ID for the new forked environment (required for fork)'),
-  }))
-  .output(z.object({
-    environments: z.array(z.any()).optional().describe('Array of environment objects (for list action)'),
-    environment: z.any().optional().describe('Single environment object'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageEnvironment = SlateTool.create(spec, {
+  name: 'Manage Environment',
+  key: 'manage_environment',
+  description: `List, fork, promote, or delete sandbox environments. Environments allow safe schema migrations and testing before going live. Forking creates a full copy of an existing environment.`,
+  instructions: [
+    'Promoting a sandbox environment replaces the current primary environment.',
+    'The primary environment cannot be deleted.'
+  ]
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'get', 'fork', 'promote', 'delete'])
+        .describe('Action to perform'),
+      environmentId: z
+        .string()
+        .optional()
+        .describe('Environment ID (required for get, fork, promote, delete)'),
+      newEnvironmentId: z
+        .string()
+        .optional()
+        .describe('ID for the new forked environment (required for fork)')
+    })
+  )
+  .output(
+    z.object({
+      environments: z
+        .array(z.any())
+        .optional()
+        .describe('Array of environment objects (for list action)'),
+      environment: z.any().optional().describe('Single environment object')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      environment: ctx.config.environment,
+      environment: ctx.config.environment
     });
 
     let { action, environmentId, newEnvironmentId } = ctx.input;
@@ -36,7 +48,7 @@ export let manageEnvironment = SlateTool.create(
       let environments = await client.listEnvironments();
       return {
         output: { environments },
-        message: `Found **${environments.length}** environments.`,
+        message: `Found **${environments.length}** environments.`
       };
     }
 
@@ -45,7 +57,7 @@ export let manageEnvironment = SlateTool.create(
       let environment = await client.getEnvironment(environmentId);
       return {
         output: { environment },
-        message: `Retrieved environment **${environmentId}**.`,
+        message: `Retrieved environment **${environmentId}**.`
       };
     }
 
@@ -55,7 +67,7 @@ export let manageEnvironment = SlateTool.create(
       let environment = await client.forkEnvironment(environmentId, newEnvironmentId);
       return {
         output: { environment },
-        message: `Forked environment **${environmentId}** into **${newEnvironmentId}**.`,
+        message: `Forked environment **${environmentId}** into **${newEnvironmentId}**.`
       };
     }
 
@@ -64,7 +76,7 @@ export let manageEnvironment = SlateTool.create(
       let environment = await client.promoteEnvironment(environmentId);
       return {
         output: { environment },
-        message: `Promoted environment **${environmentId}** to primary.`,
+        message: `Promoted environment **${environmentId}** to primary.`
       };
     }
 
@@ -73,7 +85,7 @@ export let manageEnvironment = SlateTool.create(
       let environment = await client.deleteEnvironment(environmentId);
       return {
         output: { environment },
-        message: `Deleted environment **${environmentId}**.`,
+        message: `Deleted environment **${environmentId}**.`
       };
     }
 

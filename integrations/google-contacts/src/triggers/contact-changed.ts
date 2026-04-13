@@ -4,28 +4,32 @@ import { spec } from '../spec';
 import { contactOutputSchema, formatContact } from '../lib/schemas';
 import { z } from 'zod';
 
-export let contactChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Contact Changed',
-    key: 'contact_changed',
-    description: 'Triggers when contacts are created, updated, or deleted. Uses sync tokens to efficiently detect incremental changes.',
-  }
-)
-  .input(z.object({
-    resourceName: z.string().describe('Resource name of the changed contact'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    contact: z.any().optional().describe('Contact data (absent for deletions)'),
-  }))
-  .output(contactOutputSchema.extend({
-    changeType: z.string().describe('Type of change: created, updated, or deleted'),
-  }))
+export let contactChanged = SlateTrigger.create(spec, {
+  name: 'Contact Changed',
+  key: 'contact_changed',
+  description:
+    'Triggers when contacts are created, updated, or deleted. Uses sync tokens to efficiently detect incremental changes.'
+})
+  .input(
+    z.object({
+      resourceName: z.string().describe('Resource name of the changed contact'),
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      contact: z.any().optional().describe('Contact data (absent for deletions)')
+    })
+  )
+  .output(
+    contactOutputSchema.extend({
+      changeType: z.string().describe('Type of change: created, updated, or deleted')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let syncToken = ctx.state?.syncToken as string | undefined;
       let knownContacts = (ctx.state?.knownContacts || {}) as Record<string, boolean>;
@@ -40,7 +44,7 @@ export let contactChanged = SlateTrigger.create(
           let result = await client.listContacts({
             pageSize: 1000,
             pageToken,
-            syncToken: undefined,
+            syncToken: undefined
           });
 
           for (let conn of result.connections || []) {
@@ -57,8 +61,8 @@ export let contactChanged = SlateTrigger.create(
           inputs: [],
           updatedState: {
             syncToken,
-            knownContacts: allContacts,
-          },
+            knownContacts: allContacts
+          }
         };
       }
 
@@ -67,7 +71,8 @@ export let contactChanged = SlateTrigger.create(
         let result = await client.listContacts({
           pageSize: 1000,
           syncToken,
-          personFields: 'names,emailAddresses,phoneNumbers,addresses,organizations,birthdays,urls,biographies,events,genders,occupations,nicknames,relations,userDefined,memberships,metadata',
+          personFields:
+            'names,emailAddresses,phoneNumbers,addresses,organizations,birthdays,urls,biographies,events,genders,occupations,nicknames,relations,userDefined,memberships,metadata'
         });
 
         let inputs: Array<{
@@ -86,20 +91,20 @@ export let contactChanged = SlateTrigger.create(
             inputs.push({
               resourceName: rn,
               changeType: 'deleted',
-              contact: undefined,
+              contact: undefined
             });
             delete updatedKnown[rn];
           } else if (knownContacts[rn]) {
             inputs.push({
               resourceName: rn,
               changeType: 'updated',
-              contact: conn,
+              contact: conn
             });
           } else {
             inputs.push({
               resourceName: rn,
               changeType: 'created',
-              contact: conn,
+              contact: conn
             });
             updatedKnown[rn] = true;
           }
@@ -109,8 +114,8 @@ export let contactChanged = SlateTrigger.create(
           inputs,
           updatedState: {
             syncToken: result.nextSyncToken || syncToken,
-            knownContacts: updatedKnown,
-          },
+            knownContacts: updatedKnown
+          }
         };
       } catch (err: any) {
         // If the sync token is expired, do a full sync
@@ -122,7 +127,7 @@ export let contactChanged = SlateTrigger.create(
           do {
             let result = await client.listContacts({
               pageSize: 1000,
-              pageToken,
+              pageToken
             });
 
             for (let conn of result.connections || []) {
@@ -139,29 +144,31 @@ export let contactChanged = SlateTrigger.create(
             inputs: [],
             updatedState: {
               syncToken: newSyncToken,
-              knownContacts: allContacts,
-            },
+              knownContacts: allContacts
+            }
           };
         }
         throw err;
       }
     },
 
-    handleEvent: async (ctx) => {
-      let contact = ctx.input.contact ? formatContact(ctx.input.contact) : {
-        resourceName: ctx.input.resourceName,
-        etag: undefined,
-        changeType: ctx.input.changeType,
-      };
+    handleEvent: async ctx => {
+      let contact = ctx.input.contact
+        ? formatContact(ctx.input.contact)
+        : {
+            resourceName: ctx.input.resourceName,
+            etag: undefined,
+            changeType: ctx.input.changeType
+          };
 
       return {
         type: `contact.${ctx.input.changeType}`,
         id: `${ctx.input.resourceName}-${ctx.input.changeType}-${Date.now()}`,
         output: {
           ...contact,
-          changeType: ctx.input.changeType,
-        },
+          changeType: ctx.input.changeType
+        }
       };
-    },
+    }
   })
   .build();

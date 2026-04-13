@@ -12,43 +12,52 @@ let recipientSchema = z.object({
   signedDateTime: z.string().optional(),
   deliveredDateTime: z.string().optional(),
   declinedDateTime: z.string().optional(),
-  declinedReason: z.string().optional(),
+  declinedReason: z.string().optional()
 });
 
-export let envelopeEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Envelope Events',
-    key: 'envelope_events',
-    description: 'Triggers when DocuSign envelope or recipient status changes. Covers envelope sent, delivered, completed, declined, voided, and recipient-level status changes.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of the event (e.g., envelope-sent, envelope-completed, recipient-signed)'),
-    envelopeId: z.string().describe('ID of the affected envelope'),
-    eventTimestamp: z.string().describe('Timestamp of the event'),
-    payload: z.any().describe('Raw webhook payload from DocuSign'),
-  }))
-  .output(z.object({
-    envelopeId: z.string().describe('ID of the envelope'),
-    envelopeStatus: z.string().describe('Current status of the envelope'),
-    emailSubject: z.string().optional().describe('Subject line of the envelope email'),
-    senderName: z.string().optional().describe('Name of the sender'),
-    senderEmail: z.string().optional().describe('Email of the sender'),
-    createdDateTime: z.string().optional().describe('When the envelope was created'),
-    sentDateTime: z.string().optional().describe('When the envelope was sent'),
-    completedDateTime: z.string().optional().describe('When signing was completed'),
-    declinedDateTime: z.string().optional().describe('When the envelope was declined'),
-    voidedDateTime: z.string().optional().describe('When the envelope was voided'),
-    voidedReason: z.string().optional().describe('Reason the envelope was voided'),
-    recipients: z.array(recipientSchema).optional().describe('Recipient details and statuses'),
-  }))
+export let envelopeEvents = SlateTrigger.create(spec, {
+  name: 'Envelope Events',
+  key: 'envelope_events',
+  description:
+    'Triggers when DocuSign envelope or recipient status changes. Covers envelope sent, delivered, completed, declined, voided, and recipient-level status changes.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Type of the event (e.g., envelope-sent, envelope-completed, recipient-signed)'
+        ),
+      envelopeId: z.string().describe('ID of the affected envelope'),
+      eventTimestamp: z.string().describe('Timestamp of the event'),
+      payload: z.any().describe('Raw webhook payload from DocuSign')
+    })
+  )
+  .output(
+    z.object({
+      envelopeId: z.string().describe('ID of the envelope'),
+      envelopeStatus: z.string().describe('Current status of the envelope'),
+      emailSubject: z.string().optional().describe('Subject line of the envelope email'),
+      senderName: z.string().optional().describe('Name of the sender'),
+      senderEmail: z.string().optional().describe('Email of the sender'),
+      createdDateTime: z.string().optional().describe('When the envelope was created'),
+      sentDateTime: z.string().optional().describe('When the envelope was sent'),
+      completedDateTime: z.string().optional().describe('When signing was completed'),
+      declinedDateTime: z.string().optional().describe('When the envelope was declined'),
+      voidedDateTime: z.string().optional().describe('When the envelope was voided'),
+      voidedReason: z.string().optional().describe('Reason the envelope was voided'),
+      recipients: z
+        .array(recipientSchema)
+        .optional()
+        .describe('Recipient details and statuses')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUri: ctx.auth.baseUri,
-        accountId: ctx.auth.accountId,
+        accountId: ctx.auth.accountId
       });
 
       let result = await client.createConnectConfiguration({
@@ -60,26 +69,33 @@ export let envelopeEvents = SlateTrigger.create(
         enableLog: 'true',
         requiresAcknowledgement: 'true',
         envelopeEvents: ['Sent', 'Delivered', 'Completed', 'Declined', 'Voided'],
-        recipientEvents: ['Sent', 'Delivered', 'Completed', 'Declined', 'AuthenticationFailed', 'AutoResponded'],
+        recipientEvents: [
+          'Sent',
+          'Delivered',
+          'Completed',
+          'Declined',
+          'AuthenticationFailed',
+          'AutoResponded'
+        ],
         eventData: {
           version: 'restv2.1',
           format: 'json',
-          includeData: ['recipients', 'tabs', 'custom_fields'],
-        },
+          includeData: ['recipients', 'tabs', 'custom_fields']
+        }
       });
 
       return {
         registrationDetails: {
-          connectId: result.connectId,
-        },
+          connectId: result.connectId
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         baseUri: ctx.auth.baseUri,
-        accountId: ctx.auth.accountId,
+        accountId: ctx.auth.accountId
       });
 
       if (ctx.input.registrationDetails?.connectId) {
@@ -87,7 +103,7 @@ export let envelopeEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -103,8 +119,10 @@ export let envelopeEvents = SlateTrigger.create(
       }
 
       let envelopeData = data?.data || data;
-      let envelopeStatus = envelopeData.envelopeSummary?.status || envelopeData.status || 'unknown';
-      let eventTimestamp = data?.generatedDateTime || data?.statusChangedDateTime || new Date().toISOString();
+      let envelopeStatus =
+        envelopeData.envelopeSummary?.status || envelopeData.status || 'unknown';
+      let eventTimestamp =
+        data?.generatedDateTime || data?.statusChangedDateTime || new Date().toISOString();
 
       // Determine event types from the payload
       let inputs: Array<{
@@ -120,7 +138,7 @@ export let envelopeEvents = SlateTrigger.create(
         eventType: envelopeEventType,
         envelopeId,
         eventTimestamp,
-        payload: envelopeData,
+        payload: envelopeData
       });
 
       // Check for recipient-level events
@@ -129,7 +147,7 @@ export let envelopeEvents = SlateTrigger.create(
         let allRecipients = [
           ...(recipients.signers || []),
           ...(recipients.carbonCopies || []),
-          ...(recipients.certifiedDeliveries || []),
+          ...(recipients.certifiedDeliveries || [])
         ];
 
         for (let recipient of allRecipients) {
@@ -137,11 +155,15 @@ export let envelopeEvents = SlateTrigger.create(
             inputs.push({
               eventType: `recipient.${recipient.status.toLowerCase()}`,
               envelopeId,
-              eventTimestamp: recipient.signedDateTime || recipient.deliveredDateTime || recipient.sentDateTime || eventTimestamp,
+              eventTimestamp:
+                recipient.signedDateTime ||
+                recipient.deliveredDateTime ||
+                recipient.sentDateTime ||
+                eventTimestamp,
               payload: {
                 ...envelopeData,
-                triggeredRecipient: recipient,
-              },
+                triggeredRecipient: recipient
+              }
             });
           }
         }
@@ -150,7 +172,7 @@ export let envelopeEvents = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload;
       let envelopeSummary = payload.envelopeSummary || payload;
 
@@ -171,7 +193,7 @@ export let envelopeEvents = SlateTrigger.create(
         let allRecipients = [
           ...(recipients.signers || []),
           ...(recipients.carbonCopies || []),
-          ...(recipients.certifiedDeliveries || []),
+          ...(recipients.certifiedDeliveries || [])
         ];
         mappedRecipients = allRecipients.map((r: any) => ({
           recipientId: r.recipientId,
@@ -182,7 +204,7 @@ export let envelopeEvents = SlateTrigger.create(
           signedDateTime: r.signedDateTime,
           deliveredDateTime: r.deliveredDateTime,
           declinedDateTime: r.declinedDateTime,
-          declinedReason: r.declinedReason,
+          declinedReason: r.declinedReason
         }));
       }
 
@@ -203,9 +225,9 @@ export let envelopeEvents = SlateTrigger.create(
           declinedDateTime: envelopeSummary.declinedDateTime,
           voidedDateTime: envelopeSummary.voidedDateTime,
           voidedReason: envelopeSummary.voidedReason,
-          recipients: mappedRecipients.length > 0 ? mappedRecipients : undefined,
-        },
+          recipients: mappedRecipients.length > 0 ? mappedRecipients : undefined
+        }
       };
-    },
+    }
   })
   .build();

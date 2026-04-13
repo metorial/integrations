@@ -3,35 +3,46 @@ import { GeoapifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let batchGeocode = SlateTool.create(
-  spec,
-  {
-    name: 'Batch Geocode',
-    key: 'batch_geocode',
-    description: `Submit a batch of up to 1000 addresses for geocoding in a single request. The API processes them asynchronously. This tool submits the batch and attempts to retrieve results. If results aren't ready yet, it returns a job ID you can use to check back later with the **Check Batch Geocode Results** tool.`,
-    constraints: [
-      'Maximum 1000 addresses per batch.',
-      'Results are available for 24 hours after completion.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let batchGeocode = SlateTool.create(spec, {
+  name: 'Batch Geocode',
+  key: 'batch_geocode',
+  description: `Submit a batch of up to 1000 addresses for geocoding in a single request. The API processes them asynchronously. This tool submits the batch and attempts to retrieve results. If results aren't ready yet, it returns a job ID you can use to check back later with the **Check Batch Geocode Results** tool.`,
+  constraints: [
+    'Maximum 1000 addresses per batch.',
+    'Results are available for 24 hours after completion.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    addresses: z.array(z.string()).min(1).max(1000).describe('Array of address strings to geocode'),
-    type: z.enum(['country', 'state', 'city', 'postcode', 'street', 'amenity']).optional().describe('Filter results by location type'),
-    lang: z.string().optional().describe('ISO 639-1 language code for results'),
-    limit: z.number().optional().describe('Maximum results per address'),
-    filter: z.string().optional().describe('Geographic filter constraint'),
-    bias: z.string().optional().describe('Geographic proximity bias'),
-  }))
-  .output(z.object({
-    jobId: z.string().optional().describe('Job ID for retrieving results later (if still processing)'),
-    pending: z.boolean().describe('Whether the batch is still being processed'),
-    results: z.array(z.any()).optional().describe('Geocoding results (if ready)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      addresses: z
+        .array(z.string())
+        .min(1)
+        .max(1000)
+        .describe('Array of address strings to geocode'),
+      type: z
+        .enum(['country', 'state', 'city', 'postcode', 'street', 'amenity'])
+        .optional()
+        .describe('Filter results by location type'),
+      lang: z.string().optional().describe('ISO 639-1 language code for results'),
+      limit: z.number().optional().describe('Maximum results per address'),
+      filter: z.string().optional().describe('Geographic filter constraint'),
+      bias: z.string().optional().describe('Geographic proximity bias')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z
+        .string()
+        .optional()
+        .describe('Job ID for retrieving results later (if still processing)'),
+      pending: z.boolean().describe('Whether the batch is still being processed'),
+      results: z.array(z.any()).optional().describe('Geocoding results (if ready)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new GeoapifyClient({ token: ctx.auth.token });
 
     let submitResponse = await client.batchGeocodeSubmit({
@@ -40,7 +51,7 @@ export let batchGeocode = SlateTool.create(
       lang: ctx.input.lang,
       limit: ctx.input.limit,
       filter: ctx.input.filter,
-      bias: ctx.input.bias,
+      bias: ctx.input.bias
     });
 
     let jobId = submitResponse.id || submitResponse;
@@ -53,9 +64,9 @@ export let batchGeocode = SlateTool.create(
           output: {
             jobId,
             pending: false,
-            results: resultResponse.data,
+            results: resultResponse.data
           },
-          message: `Batch geocoding completed. **${resultResponse.data.length}** result(s) returned.`,
+          message: `Batch geocoding completed. **${resultResponse.data.length}** result(s) returned.`
         };
       }
     }
@@ -64,9 +75,9 @@ export let batchGeocode = SlateTool.create(
       output: {
         jobId: typeof jobId === 'string' ? jobId : undefined,
         pending: true,
-        results: undefined,
+        results: undefined
       },
-      message: `Batch geocoding submitted for **${ctx.input.addresses.length}** address(es). Job is still processing — use the **Check Batch Geocode Results** tool with the job ID to retrieve results.`,
+      message: `Batch geocoding submitted for **${ctx.input.addresses.length}** address(es). Job is still processing — use the **Check Batch Geocode Results** tool with the job ID to retrieve results.`
     };
   })
   .build();

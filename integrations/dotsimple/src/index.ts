@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createPost,
@@ -16,13 +15,13 @@ import {
   listTags,
   deleteTag,
   listReports,
-  listAutoresponders,
+  listAutoresponders
 } from './tools';
 import {
   newPostCreated,
   newFileUploaded,
   newAccountConnected,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -42,12 +41,7 @@ export let provider = Slate.create({
     listTags,
     deleteTag,
     listReports,
-    listAutoresponders,
+    listAutoresponders
   ],
-  triggers: [
-    inboundWebhook,
-    newPostCreated,
-    newFileUploaded,
-    newAccountConnected,
-  ],
+  triggers: [inboundWebhook, newPostCreated, newFileUploaded, newAccountConnected]
 });

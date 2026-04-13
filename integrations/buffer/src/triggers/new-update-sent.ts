@@ -3,41 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newUpdateSentTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Update Sent',
-    key: 'new_update_sent',
-    description: 'Triggers when an update has been sent (published) on any connected social media profile. Polls for newly sent updates across all profiles.'
-  }
-)
-  .input(z.object({
-    updateId: z.string().describe('ID of the sent update'),
-    profileId: z.string().describe('Profile ID the update was sent from'),
-    profileService: z.string().describe('Social network service name'),
-    text: z.string().describe('Text content of the sent update'),
-    sentAt: z.number().describe('Unix timestamp when the update was sent'),
-    createdAt: z.number().describe('Unix timestamp when the update was created'),
-    serviceUpdateId: z.string().describe('ID of the update on the social network'),
-    statistics: z.record(z.string(), z.number()).describe('Engagement statistics'),
-    media: z.any().optional().describe('Attached media')
-  }))
-  .output(z.object({
-    updateId: z.string().describe('ID of the sent update'),
-    profileId: z.string().describe('Profile ID the update was sent from'),
-    profileService: z.string().describe('Social network service name'),
-    text: z.string().describe('Text content of the sent update'),
-    sentAt: z.number().describe('Unix timestamp when the update was sent'),
-    createdAt: z.number().describe('Unix timestamp when the update was created'),
-    serviceUpdateId: z.string().describe('ID of the update on the social network'),
-    statistics: z.record(z.string(), z.number()).describe('Engagement statistics')
-  }))
+export let newUpdateSentTrigger = SlateTrigger.create(spec, {
+  name: 'New Update Sent',
+  key: 'new_update_sent',
+  description:
+    'Triggers when an update has been sent (published) on any connected social media profile. Polls for newly sent updates across all profiles.'
+})
+  .input(
+    z.object({
+      updateId: z.string().describe('ID of the sent update'),
+      profileId: z.string().describe('Profile ID the update was sent from'),
+      profileService: z.string().describe('Social network service name'),
+      text: z.string().describe('Text content of the sent update'),
+      sentAt: z.number().describe('Unix timestamp when the update was sent'),
+      createdAt: z.number().describe('Unix timestamp when the update was created'),
+      serviceUpdateId: z.string().describe('ID of the update on the social network'),
+      statistics: z.record(z.string(), z.number()).describe('Engagement statistics'),
+      media: z.any().optional().describe('Attached media')
+    })
+  )
+  .output(
+    z.object({
+      updateId: z.string().describe('ID of the sent update'),
+      profileId: z.string().describe('Profile ID the update was sent from'),
+      profileService: z.string().describe('Social network service name'),
+      text: z.string().describe('Text content of the sent update'),
+      sentAt: z.number().describe('Unix timestamp when the update was sent'),
+      createdAt: z.number().describe('Unix timestamp when the update was created'),
+      serviceUpdateId: z.string().describe('ID of the update on the social network'),
+      statistics: z.record(z.string(), z.number()).describe('Engagement statistics')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let profiles = await client.getProfiles();
@@ -62,7 +64,7 @@ export let newUpdateSentTrigger = SlateTrigger.create(
           count: 25
         });
 
-        for (let update of (result.updates || [])) {
+        for (let update of result.updates || []) {
           if (!lastPollTimestamp || update.sentAt > lastPollTimestamp) {
             allInputs.push({
               updateId: update.id,
@@ -87,7 +89,7 @@ export let newUpdateSentTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'update.sent',
         id: ctx.input.updateId,

@@ -14,24 +14,23 @@ let mediaResultSchema = z.object({
   createdAt: z.string().optional().describe('Upload timestamp')
 });
 
-export let importMedia = SlateTool.create(
-  spec,
-  {
-    name: 'Import Media',
-    key: 'import_media',
-    description: `Import a media file from a public URL into Planly. The file is downloaded and stored in the team's media library, ready to be attached to scheduled posts. Supports video/mp4, image/png, image/jpeg, and image/webp.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let importMedia = SlateTool.create(spec, {
+  name: 'Import Media',
+  key: 'import_media',
+  description: `Import a media file from a public URL into Planly. The file is downloaded and stored in the team's media library, ready to be attached to scheduled posts. Supports video/mp4, image/png, image/jpeg, and image/webp.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    teamId: z.string().describe('ID of the team to import media into'),
-    url: z.string().describe('Public URL of the media file to import')
-  }))
+})
+  .input(
+    z.object({
+      teamId: z.string().describe('ID of the team to import media into'),
+      url: z.string().describe('Public URL of the media file to import')
+    })
+  )
   .output(mediaResultSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.importMediaFromUrl(ctx.input.teamId, ctx.input.url);
     let media = result.data || result;

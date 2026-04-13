@@ -3,50 +3,52 @@ import { z } from 'zod';
 import { Client } from '../lib/client';
 import { spec } from '../spec';
 
-export let newInvoice = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Invoice',
-    key: 'new_invoice',
-    description: 'Triggers when a new invoice is created in Zoho Invoice. Polls for recently created invoices.',
-  }
-)
-  .input(z.object({
-    invoiceId: z.string(),
-    invoiceNumber: z.string().optional(),
-    status: z.string().optional(),
-    customerName: z.string().optional(),
-    customerId: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    currencyCode: z.string().optional(),
-    createdTime: z.string(),
-  }))
-  .output(z.object({
-    invoiceId: z.string(),
-    invoiceNumber: z.string().optional(),
-    status: z.string().optional(),
-    customerName: z.string().optional(),
-    customerId: z.string().optional(),
-    date: z.string().optional(),
-    dueDate: z.string().optional(),
-    total: z.number().optional(),
-    balance: z.number().optional(),
-    currencyCode: z.string().optional(),
-    createdTime: z.string(),
-  }))
+export let newInvoice = SlateTrigger.create(spec, {
+  name: 'New Invoice',
+  key: 'new_invoice',
+  description:
+    'Triggers when a new invoice is created in Zoho Invoice. Polls for recently created invoices.'
+})
+  .input(
+    z.object({
+      invoiceId: z.string(),
+      invoiceNumber: z.string().optional(),
+      status: z.string().optional(),
+      customerName: z.string().optional(),
+      customerId: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      currencyCode: z.string().optional(),
+      createdTime: z.string()
+    })
+  )
+  .output(
+    z.object({
+      invoiceId: z.string(),
+      invoiceNumber: z.string().optional(),
+      status: z.string().optional(),
+      customerName: z.string().optional(),
+      customerId: z.string().optional(),
+      date: z.string().optional(),
+      dueDate: z.string().optional(),
+      total: z.number().optional(),
+      balance: z.number().optional(),
+      currencyCode: z.string().optional(),
+      createdTime: z.string()
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         organizationId: ctx.config.organizationId,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let state = ctx.state as { lastCreatedTime?: string } | null;
@@ -55,7 +57,7 @@ export let newInvoice = SlateTrigger.create(
       let result = await client.listInvoices({
         sort_column: 'created_time',
         sort_order: 'D',
-        per_page: 25,
+        per_page: 25
       });
 
       let invoices = result.invoices ?? [];
@@ -78,7 +80,7 @@ export let newInvoice = SlateTrigger.create(
           total: inv.total,
           balance: inv.balance,
           currencyCode: inv.currency_code,
-          createdTime,
+          createdTime
         });
 
         if (!newestCreatedTime || createdTime > newestCreatedTime) {
@@ -89,12 +91,12 @@ export let newInvoice = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastCreatedTime: newestCreatedTime || lastCreatedTime,
-        },
+          lastCreatedTime: newestCreatedTime || lastCreatedTime
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'invoice.created',
         id: ctx.input.invoiceId,
@@ -109,8 +111,9 @@ export let newInvoice = SlateTrigger.create(
           total: ctx.input.total,
           balance: ctx.input.balance,
           currencyCode: ctx.input.currencyCode,
-          createdTime: ctx.input.createdTime,
-        },
+          createdTime: ctx.input.createdTime
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

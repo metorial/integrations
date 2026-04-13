@@ -3,33 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTeam = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Team',
-    key: 'manage_team',
-    description: `Manage Scale AI Studio team members. List current teammates, invite new members, or update existing member roles.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageTeam = SlateTool.create(spec, {
+  name: 'Manage Team',
+  key: 'manage_team',
+  description: `Manage Scale AI Studio team members. List current teammates, invite new members, or update existing member roles.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'invite', 'update_role']).describe('Action to perform: list teammates, invite new members, or update roles'),
-    emails: z.array(z.string()).optional().describe('Email addresses of teammates to invite or update (required for invite and update_role)'),
-    teamRole: z.enum(['labeler', 'member', 'manager']).optional().describe('Role to assign (required for invite and update_role)'),
-  }))
-  .output(z.object({
-    teammates: z.array(z.object({
-      email: z.string().optional().describe('Teammate email'),
-      role: z.string().optional().describe('Teammate role'),
-      firstName: z.string().optional().describe('First name'),
-      lastName: z.string().optional().describe('Last name'),
-    }).passthrough()).optional().describe('List of teammates (when action is list)'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'invite', 'update_role'])
+        .describe('Action to perform: list teammates, invite new members, or update roles'),
+      emails: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Email addresses of teammates to invite or update (required for invite and update_role)'
+        ),
+      teamRole: z
+        .enum(['labeler', 'member', 'manager'])
+        .optional()
+        .describe('Role to assign (required for invite and update_role)')
+    })
+  )
+  .output(
+    z
+      .object({
+        teammates: z
+          .array(
+            z
+              .object({
+                email: z.string().optional().describe('Teammate email'),
+                role: z.string().optional().describe('Teammate role'),
+                firstName: z.string().optional().describe('First name'),
+                lastName: z.string().optional().describe('Last name')
+              })
+              .passthrough()
+          )
+          .optional()
+          .describe('List of teammates (when action is list)'),
+        success: z.boolean().describe('Whether the operation succeeded')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -41,15 +61,15 @@ export let manageTeam = SlateTool.create(
         role: t.role,
         firstName: t.firstName,
         lastName: t.lastName,
-        ...t,
+        ...t
       }));
 
       return {
         output: {
           teammates: mapped,
-          success: true,
+          success: true
         },
-        message: `Found **${mapped.length}** teammate(s).`,
+        message: `Found **${mapped.length}** teammate(s).`
       };
     }
 
@@ -61,9 +81,9 @@ export let manageTeam = SlateTool.create(
       return {
         output: {
           success: true,
-          ...result,
+          ...result
         },
-        message: `Invited **${ctx.input.emails.length}** teammate(s) as \`${ctx.input.teamRole}\`.`,
+        message: `Invited **${ctx.input.emails.length}** teammate(s) as \`${ctx.input.teamRole}\`.`
       };
     }
 
@@ -75,9 +95,9 @@ export let manageTeam = SlateTool.create(
       return {
         output: {
           success: true,
-          ...result,
+          ...result
         },
-        message: `Updated **${ctx.input.emails.length}** teammate(s) to role \`${ctx.input.teamRole}\`.`,
+        message: `Updated **${ctx.input.emails.length}** teammate(s) to role \`${ctx.input.teamRole}\`.`
       };
     }
 

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listSources,
@@ -21,11 +20,9 @@ import {
   triggerSync,
   triggerSyncSequence,
   listSyncRuns,
-  getSyncSequenceRun,
+  getSyncSequenceRun
 } from './tools';
-import { syncRunCompleted,
-  inboundWebhook,
-} from './triggers';
+import { syncRunCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -49,10 +46,7 @@ export let provider = Slate.create({
     triggerSync,
     triggerSyncSequence,
     listSyncRuns,
-    getSyncSequenceRun,
+    getSyncSequenceRun
   ],
-  triggers: [
-    inboundWebhook,
-    syncRunCompleted,
-  ],
+  triggers: [inboundWebhook, syncRunCompleted]
 });

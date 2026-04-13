@@ -3,36 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let documentEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Document Event',
-    key: 'document_event',
-    description: 'Triggers when a document is processed, when processing fails, or when an export fails in a Parseur mailbox. Supports multiple event types through webhook configuration.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The webhook event type (e.g. document.processed, document.template_needed, document.export_failed)'),
-    documentId: z.string().describe('Unique document identifier'),
-    mailboxId: z.string().describe('Mailbox ID the document belongs to'),
-    parsedData: z.record(z.string(), z.any()).describe('The full webhook payload including parsed fields'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('Document identifier'),
-    mailboxId: z.string().describe('Mailbox this document belongs to'),
-    fileName: z.string().nullable().describe('Original file name'),
-    status: z.string().nullable().describe('Document processing status'),
-    parsedFields: z.record(z.string(), z.any()).describe('Extracted/parsed data fields'),
-  }))
+export let documentEvent = SlateTrigger.create(spec, {
+  name: 'Document Event',
+  key: 'document_event',
+  description:
+    'Triggers when a document is processed, when processing fails, or when an export fails in a Parseur mailbox. Supports multiple event types through webhook configuration.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'The webhook event type (e.g. document.processed, document.template_needed, document.export_failed)'
+        ),
+      documentId: z.string().describe('Unique document identifier'),
+      mailboxId: z.string().describe('Mailbox ID the document belongs to'),
+      parsedData: z
+        .record(z.string(), z.any())
+        .describe('The full webhook payload including parsed fields')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('Document identifier'),
+      mailboxId: z.string().describe('Mailbox this document belongs to'),
+      fileName: z.string().nullable().describe('Original file name'),
+      status: z.string().nullable().describe('Document processing status'),
+      parsedFields: z.record(z.string(), z.any()).describe('Extracted/parsed data fields')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // Create webhooks for the main event types
       let events = [
         'document.processed',
         'document.template_needed',
-        'document.export_failed',
+        'document.export_failed'
       ];
 
       let webhookIds: number[] = [];
@@ -41,19 +49,19 @@ export let documentEvent = SlateTrigger.create(
           event,
           target: ctx.input.webhookBaseUrl,
           name: `Slates - ${event}`,
-          category: 'CUSTOM',
+          category: 'CUSTOM'
         });
         webhookIds.push(webhook.id);
       }
 
       return {
         registrationDetails: {
-          webhookIds,
-        },
+          webhookIds
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let { webhookIds } = ctx.input.registrationDetails as { webhookIds: number[] };
 
@@ -66,8 +74,8 @@ export let documentEvent = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
       // Parseur webhook payload contains the parsed fields directly
       // It includes a DocumentID field and other metadata
@@ -87,13 +95,13 @@ export let documentEvent = SlateTrigger.create(
             eventType,
             documentId,
             mailboxId,
-            parsedData: data,
-          },
-        ],
+            parsedData: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, documentId, mailboxId, parsedData } = ctx.input;
 
       // Extract known metadata fields, everything else is parsed data
@@ -103,7 +111,9 @@ export let documentEvent = SlateTrigger.create(
       // Remove internal metadata from parsed fields to keep them clean
       let parsedFields: Record<string, any> = {};
       for (let [key, value] of Object.entries(parsedData)) {
-        if (!['DocumentID', 'id', 'parser', 'mailbox_id', 'status', 'file_name'].includes(key)) {
+        if (
+          !['DocumentID', 'id', 'parser', 'mailbox_id', 'status', 'file_name'].includes(key)
+        ) {
           parsedFields[key] = value;
         }
       }
@@ -116,9 +126,9 @@ export let documentEvent = SlateTrigger.create(
           mailboxId,
           fileName,
           status,
-          parsedFields,
-        },
+          parsedFields
+        }
       };
-    },
+    }
   })
   .build();

@@ -12,12 +12,9 @@ import {
   manageTemplate,
   getAccount,
   getEmbeddedUrls,
-  manageTeam,
+  manageTeam
 } from './tools';
-import {
-  signatureRequestEvents,
-  templateEvents,
-} from './triggers';
+import { signatureRequestEvents, templateEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -33,10 +30,7 @@ export let provider = Slate.create({
     manageTemplate,
     getAccount,
     getEmbeddedUrls,
-    manageTeam,
+    manageTeam
   ],
-  triggers: [
-    signatureRequestEvents,
-    templateEvents,
-  ],
+  triggers: [signatureRequestEvents, templateEvents]
 });

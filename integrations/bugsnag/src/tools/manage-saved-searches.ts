@@ -8,34 +8,46 @@ let savedSearchSchema = z.object({
   name: z.string().optional().describe('Name of the saved search'),
   searchFilters: z.any().optional().describe('Filter configuration'),
   createdAt: z.string().optional().describe('When the saved search was created'),
-  updatedAt: z.string().optional().describe('When the saved search was last updated'),
+  updatedAt: z.string().optional().describe('When the saved search was last updated')
 });
 
-export let manageSavedSearches = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Saved Searches',
-    key: 'manage_saved_searches',
-    description: `List, create, update, or delete saved searches in a Bugsnag project. Saved searches store filter configurations for quick access to frequently used error views.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageSavedSearches = SlateTool.create(spec, {
+  name: 'Manage Saved Searches',
+  key: 'manage_saved_searches',
+  description: `List, create, update, or delete saved searches in a Bugsnag project. Saved searches store filter configurations for quick access to frequently used error views.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'get', 'update', 'delete']).describe('Operation to perform'),
-    projectId: z.string().optional().describe('Project ID (required for list and create)'),
-    searchId: z.string().optional().describe('Saved search ID (required for get, update, delete)'),
-    name: z.string().optional().describe('Search name (required for create, optional for update)'),
-    searchFilters: z.any().optional().describe('Filter configuration object (required for create, optional for update)'),
-  }))
-  .output(z.object({
-    savedSearches: z.array(savedSearchSchema).optional().describe('List of saved searches'),
-    savedSearch: savedSearchSchema.optional().describe('Single saved search'),
-    deleted: z.boolean().optional().describe('Whether the saved search was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'get', 'update', 'delete'])
+        .describe('Operation to perform'),
+      projectId: z.string().optional().describe('Project ID (required for list and create)'),
+      searchId: z
+        .string()
+        .optional()
+        .describe('Saved search ID (required for get, update, delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Search name (required for create, optional for update)'),
+      searchFilters: z
+        .any()
+        .optional()
+        .describe('Filter configuration object (required for create, optional for update)')
+    })
+  )
+  .output(
+    z.object({
+      savedSearches: z.array(savedSearchSchema).optional().describe('List of saved searches'),
+      savedSearch: savedSearchSchema.optional().describe('Single saved search'),
+      deleted: z.boolean().optional().describe('Whether the saved search was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BugsnagClient({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -48,12 +60,12 @@ export let manageSavedSearches = SlateTool.create(
         name: s.name,
         searchFilters: s.search_filters,
         createdAt: s.created_at,
-        updatedAt: s.updated_at,
+        updatedAt: s.updated_at
       }));
 
       return {
         output: { savedSearches: mapped },
-        message: `Found **${mapped.length}** saved search(es).`,
+        message: `Found **${mapped.length}** saved search(es).`
       };
     }
 
@@ -65,7 +77,7 @@ export let manageSavedSearches = SlateTool.create(
 
       let result = await client.createSavedSearch(projectId, {
         name: ctx.input.name,
-        search_filters: ctx.input.searchFilters,
+        search_filters: ctx.input.searchFilters
       });
 
       return {
@@ -74,10 +86,10 @@ export let manageSavedSearches = SlateTool.create(
             searchId: result.id,
             name: result.name,
             searchFilters: result.search_filters,
-            createdAt: result.created_at,
-          },
+            createdAt: result.created_at
+          }
         },
-        message: `Created saved search **${result.name}**.`,
+        message: `Created saved search **${result.name}**.`
       };
     }
 
@@ -93,10 +105,10 @@ export let manageSavedSearches = SlateTool.create(
             name: result.name,
             searchFilters: result.search_filters,
             createdAt: result.created_at,
-            updatedAt: result.updated_at,
-          },
+            updatedAt: result.updated_at
+          }
         },
-        message: `Retrieved saved search **${result.name}**.`,
+        message: `Retrieved saved search **${result.name}**.`
       };
     }
 
@@ -115,10 +127,10 @@ export let manageSavedSearches = SlateTool.create(
             searchId: result.id,
             name: result.name,
             searchFilters: result.search_filters,
-            updatedAt: result.updated_at,
-          },
+            updatedAt: result.updated_at
+          }
         },
-        message: `Updated saved search **${result.name}**.`,
+        message: `Updated saved search **${result.name}**.`
       };
     }
 
@@ -129,9 +141,10 @@ export let manageSavedSearches = SlateTool.create(
 
       return {
         output: { deleted: true },
-        message: `Deleted saved search \`${ctx.input.searchId}\`.`,
+        message: `Deleted saved search \`${ctx.input.searchId}\`.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

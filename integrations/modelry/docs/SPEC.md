@@ -21,12 +21,14 @@ Modelry (by CGTrader) is a 3D product visualization platform that allows busines
 Modelry uses API keys for authentication.
 
 To obtain your API token:
+
 1. Click the user menu on the left button.
 2. Scroll down to "API Token".
 
 The API token is passed in the `Authorization` header of each request. The base URL for all API requests is `https://api.modelry.ai/api/v1/`.
 
 Example request:
+
 ```
 GET https://api.modelry.ai/api/v1/workspaces
 Headers:
@@ -39,6 +41,7 @@ Headers:
 ### Product Management
 
 Create, retrieve, and delete products in the Modelry platform. Products represent the items for which 3D models are created and managed. When creating a product, you can specify:
+
 - **SKU** – A unique product identifier.
 - **Title** – The product name.
 - **Batch ID** – Associate the product with a batch for bulk operations.

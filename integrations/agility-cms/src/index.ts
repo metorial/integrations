@@ -18,7 +18,7 @@ import {
   getContentHistory,
   listContainers,
   listUsers,
-  getLocales,
+  getLocales
 } from './tools';
 import { contentChanged } from './triggers';
 
@@ -42,9 +42,7 @@ export let provider = Slate.create({
     getContentHistory,
     listContainers,
     listUsers,
-    getLocales,
+    getLocales
   ],
-  triggers: [
-    contentChanged,
-  ],
+  triggers: [contentChanged]
 });

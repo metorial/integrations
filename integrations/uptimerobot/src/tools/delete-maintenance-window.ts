@@ -3,24 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteMaintenanceWindow = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Maintenance Window',
-    key: 'delete_maintenance_window',
-    description: `Permanently delete a maintenance window. Alerts will no longer be suppressed during the previously scheduled period.`,
-    tags: {
-      destructive: true
-    }
+export let deleteMaintenanceWindow = SlateTool.create(spec, {
+  name: 'Delete Maintenance Window',
+  key: 'delete_maintenance_window',
+  description: `Permanently delete a maintenance window. Alerts will no longer be suppressed during the previously scheduled period.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    windowId: z.number().describe('ID of the maintenance window to delete')
-  }))
-  .output(z.object({
-    windowId: z.number().describe('ID of the deleted maintenance window')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      windowId: z.number().describe('ID of the maintenance window to delete')
+    })
+  )
+  .output(
+    z.object({
+      windowId: z.number().describe('ID of the deleted maintenance window')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let result = await client.deleteMWindow(ctx.input.windowId);
@@ -31,4 +32,5 @@ export let deleteMaintenanceWindow = SlateTool.create(
       },
       message: `Deleted maintenance window **${ctx.input.windowId}**.`
     };
-  }).build();
+  })
+  .build();

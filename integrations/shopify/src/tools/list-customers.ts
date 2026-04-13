@@ -18,29 +18,52 @@ let customerSummarySchema = z.object({
   verifiedEmail: z.boolean()
 });
 
-export let listCustomers = SlateTool.create(
-  spec,
-  {
-    name: 'List Customers',
-    key: 'list_customers',
-    description: `List or search customers in the Shopify store. Filter by date range or search with a query string that matches against multiple customer fields.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional().describe('Number of customers to return (max 250)'),
-    query: z.string().optional().describe('Search query (searches name, email, etc.). When provided, other filters are ignored.'),
-    createdAtMin: z.string().optional().describe('Show customers created after this date (ISO 8601)'),
-    createdAtMax: z.string().optional().describe('Show customers created before this date (ISO 8601)'),
-    updatedAtMin: z.string().optional().describe('Show customers updated after this date (ISO 8601)'),
-    updatedAtMax: z.string().optional().describe('Show customers updated before this date (ISO 8601)'),
-    sinceId: z.string().optional().describe('Show customers after this ID for pagination'),
-    ids: z.string().optional().describe('Comma-separated list of customer IDs')
-  }))
-  .output(z.object({
-    customers: z.array(customerSummarySchema)
-  }))
-  .handleInvocation(async (ctx) => {
+export let listCustomers = SlateTool.create(spec, {
+  name: 'List Customers',
+  key: 'list_customers',
+  description: `List or search customers in the Shopify store. Filter by date range or search with a query string that matches against multiple customer fields.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z
+        .number()
+        .min(1)
+        .max(250)
+        .optional()
+        .describe('Number of customers to return (max 250)'),
+      query: z
+        .string()
+        .optional()
+        .describe(
+          'Search query (searches name, email, etc.). When provided, other filters are ignored.'
+        ),
+      createdAtMin: z
+        .string()
+        .optional()
+        .describe('Show customers created after this date (ISO 8601)'),
+      createdAtMax: z
+        .string()
+        .optional()
+        .describe('Show customers created before this date (ISO 8601)'),
+      updatedAtMin: z
+        .string()
+        .optional()
+        .describe('Show customers updated after this date (ISO 8601)'),
+      updatedAtMax: z
+        .string()
+        .optional()
+        .describe('Show customers updated before this date (ISO 8601)'),
+      sinceId: z.string().optional().describe('Show customers after this ID for pagination'),
+      ids: z.string().optional().describe('Comma-separated list of customer IDs')
+    })
+  )
+  .output(
+    z.object({
+      customers: z.array(customerSummarySchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -82,4 +105,5 @@ export let listCustomers = SlateTool.create(
       output: { customers: mapped },
       message: `Found **${mapped.length}** customer(s).`
     };
-  }).build();
+  })
+  .build();

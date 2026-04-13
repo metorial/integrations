@@ -3,9 +3,20 @@ import { BitqueryClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let evmNetworkSchema = z.enum([
-  'eth', 'bsc', 'matic', 'arbitrum', 'base', 'optimism', 'opbnb', 'avalanche', 'fantom', 'cronos',
-]).describe('EVM network identifier');
+let evmNetworkSchema = z
+  .enum([
+    'eth',
+    'bsc',
+    'matic',
+    'arbitrum',
+    'base',
+    'optimism',
+    'opbnb',
+    'avalanche',
+    'fantom',
+    'cronos'
+  ])
+  .describe('EVM network identifier');
 
 let tradeOutputSchema = z.object({
   blockTime: z.string().describe('Timestamp of the block containing the trade'),
@@ -25,46 +36,78 @@ let tradeOutputSchema = z.object({
   dexFamily: z.string().optional().describe('DEX protocol family'),
   sideType: z.string().optional().describe('Trade side type (buy/sell)'),
   sideAmount: z.number().optional().describe('Quote side amount'),
-  sideAmountInUsd: z.number().optional().describe('Quote side amount in USD'),
+  sideAmountInUsd: z.number().optional().describe('Quote side amount in USD')
 });
 
-export let getDexTrades = SlateTool.create(
-  spec,
-  {
-    name: 'Get DEX Trades',
-    key: 'get_dex_trades',
-    description: `Retrieve decentralized exchange (DEX) trade data from EVM blockchains or Solana. Query historical and recent trades filtered by token pair, DEX protocol, time range, and network.
+export let getDexTrades = SlateTool.create(spec, {
+  name: 'Get DEX Trades',
+  key: 'get_dex_trades',
+  description: `Retrieve decentralized exchange (DEX) trade data from EVM blockchains or Solana. Query historical and recent trades filtered by token pair, DEX protocol, time range, and network.
 Supports major DEXs like Uniswap, PancakeSwap, Raydium, Jupiter, and more across Ethereum, BSC, Polygon, Arbitrum, Base, Solana, and other networks.`,
-    instructions: [
-      'Token addresses must be smart contract addresses (EVM) or mint addresses (Solana).',
-      'For Solana, set the blockchain to "solana". For EVM chains, use the network name.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Token addresses must be smart contract addresses (EVM) or mint addresses (Solana).',
+    'For Solana, set the blockchain to "solana". For EVM chains, use the network name.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    blockchain: z.enum(['eth', 'bsc', 'matic', 'arbitrum', 'base', 'optimism', 'opbnb', 'avalanche', 'fantom', 'cronos', 'solana'])
-      .describe('Blockchain network to query'),
-    baseCurrency: z.string().optional().describe('Base token contract/mint address to filter trades'),
-    quoteCurrency: z.string().optional().describe('Quote token contract/mint address to filter trades'),
-    dexProtocol: z.string().optional().describe('DEX protocol name to filter (e.g., "Uniswap", "PancakeSwap", "Raydium")'),
-    since: z.string().optional().describe('Start datetime filter (ISO 8601 format, e.g., "2024-01-01T00:00:00Z")'),
-    till: z.string().optional().describe('End datetime filter (ISO 8601 format)'),
-    limit: z.number().min(1).max(1000).default(25).describe('Maximum number of trades to return'),
-  }))
-  .output(z.object({
-    trades: z.array(tradeOutputSchema).describe('List of DEX trades'),
-    tradeCount: z.number().describe('Number of trades returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      blockchain: z
+        .enum([
+          'eth',
+          'bsc',
+          'matic',
+          'arbitrum',
+          'base',
+          'optimism',
+          'opbnb',
+          'avalanche',
+          'fantom',
+          'cronos',
+          'solana'
+        ])
+        .describe('Blockchain network to query'),
+      baseCurrency: z
+        .string()
+        .optional()
+        .describe('Base token contract/mint address to filter trades'),
+      quoteCurrency: z
+        .string()
+        .optional()
+        .describe('Quote token contract/mint address to filter trades'),
+      dexProtocol: z
+        .string()
+        .optional()
+        .describe('DEX protocol name to filter (e.g., "Uniswap", "PancakeSwap", "Raydium")'),
+      since: z
+        .string()
+        .optional()
+        .describe('Start datetime filter (ISO 8601 format, e.g., "2024-01-01T00:00:00Z")'),
+      till: z.string().optional().describe('End datetime filter (ISO 8601 format)'),
+      limit: z
+        .number()
+        .min(1)
+        .max(1000)
+        .default(25)
+        .describe('Maximum number of trades to return')
+    })
+  )
+  .output(
+    z.object({
+      trades: z.array(tradeOutputSchema).describe('List of DEX trades'),
+      tradeCount: z.number().describe('Number of trades returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BitqueryClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion as 'v1' | 'v2',
+      apiVersion: ctx.config.apiVersion as 'v1' | 'v2'
     });
 
-    let { blockchain, baseCurrency, quoteCurrency, dexProtocol, since, till, limit } = ctx.input;
+    let { blockchain, baseCurrency, quoteCurrency, dexProtocol, since, till, limit } =
+      ctx.input;
 
     ctx.info(`Fetching DEX trades on ${blockchain}`);
 
@@ -75,7 +118,7 @@ Supports major DEXs like Uniswap, PancakeSwap, Raydium, Jupiter, and more across
       let variables: Record<string, any> = {
         network: mapToV1Network(blockchain),
         limit,
-        offset: 0,
+        offset: 0
       };
       if (baseCurrency) variables.baseCurrency = baseCurrency;
       if (quoteCurrency) variables.quoteCurrency = quoteCurrency;
@@ -100,7 +143,7 @@ Supports major DEXs like Uniswap, PancakeSwap, Raydium, Jupiter, and more across
         quoteTokenName: t.quoteCurrency?.name,
         quoteTokenAddress: t.quoteCurrency?.address,
         dexProtocol: t.exchange?.fullName,
-        sideType: t.side,
+        sideType: t.side
       }));
     } else if (blockchain === 'solana') {
       let query = buildSolanaDexTradesQuery(baseCurrency, quoteCurrency, since, till);
@@ -131,14 +174,20 @@ Supports major DEXs like Uniswap, PancakeSwap, Raydium, Jupiter, and more across
         dexFamily: t.Trade?.Dex?.ProtocolFamily,
         sideType: t.Trade?.Side?.Type,
         sideAmount: t.Trade?.Side?.Amount,
-        sideAmountInUsd: t.Trade?.Side?.AmountInUSD,
+        sideAmountInUsd: t.Trade?.Side?.AmountInUSD
       }));
     } else {
       // V2 EVM query
-      let query = buildV2EvmDexTradesQuery(baseCurrency, quoteCurrency, dexProtocol, since, till);
+      let query = buildV2EvmDexTradesQuery(
+        baseCurrency,
+        quoteCurrency,
+        dexProtocol,
+        since,
+        till
+      );
       let variables: Record<string, any> = {
         network: blockchain,
-        limit,
+        limit
       };
       if (baseCurrency) variables.baseCurrency = baseCurrency;
       if (quoteCurrency) variables.quoteCurrency = quoteCurrency;
@@ -167,16 +216,16 @@ Supports major DEXs like Uniswap, PancakeSwap, Raydium, Jupiter, and more across
         dexFamily: t.Trade?.Dex?.ProtocolFamily,
         sideType: t.Trade?.Side?.Type,
         sideAmount: t.Trade?.Side?.Amount,
-        sideAmountInUsd: t.Trade?.Side?.AmountInUSD,
+        sideAmountInUsd: t.Trade?.Side?.AmountInUSD
       }));
     }
 
     return {
       output: {
         trades,
-        tradeCount: trades.length,
+        tradeCount: trades.length
       },
-      message: `Retrieved **${trades.length}** DEX trade(s) on **${blockchain}**.`,
+      message: `Retrieved **${trades.length}** DEX trade(s) on **${blockchain}**.`
     };
   })
   .build();
@@ -191,12 +240,18 @@ let mapToV1Network = (chain: string): string => {
     optimism: 'optimism',
     avalanche: 'avalanche_c',
     fantom: 'fantom',
-    cronos: 'cronos',
+    cronos: 'cronos'
   };
   return map[chain] || chain;
 };
 
-let buildV1DexTradesQuery = (baseCurrency?: string, quoteCurrency?: string, exchange?: string, since?: string, till?: string): string => {
+let buildV1DexTradesQuery = (
+  baseCurrency?: string,
+  quoteCurrency?: string,
+  exchange?: string,
+  since?: string,
+  till?: string
+): string => {
   let filters: string[] = [];
   filters.push('options: {limit: $limit, offset: $offset, desc: "block.timestamp.iso8601"}');
   if (since || till) filters.push('date: {since: $since, till: $till}');
@@ -229,14 +284,24 @@ let buildV1DexTradesQuery = (baseCurrency?: string, quoteCurrency?: string, exch
 }`;
 };
 
-let buildV2EvmDexTradesQuery = (baseCurrency?: string, quoteCurrency?: string, exchange?: string, since?: string, till?: string): string => {
+let buildV2EvmDexTradesQuery = (
+  baseCurrency?: string,
+  quoteCurrency?: string,
+  exchange?: string,
+  since?: string,
+  till?: string
+): string => {
   let whereFilters: string[] = [];
   if (baseCurrency) whereFilters.push('Currency: {SmartContract: {is: $baseCurrency}}');
-  if (quoteCurrency) whereFilters.push('Side: {Currency: {SmartContract: {is: $quoteCurrency}}}');
+  if (quoteCurrency)
+    whereFilters.push('Side: {Currency: {SmartContract: {is: $quoteCurrency}}}');
   if (exchange) whereFilters.push('Dex: {ProtocolName: {is: $exchange}}');
 
   let tradeFilter = whereFilters.length > 0 ? `Trade: {${whereFilters.join(', ')}}` : '';
-  let timeFilter = (since || till) ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}` : '';
+  let timeFilter =
+    since || till
+      ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}`
+      : '';
 
   let allWhereFilters = [tradeFilter, timeFilter].filter(Boolean).join(', ');
   let whereClause = allWhereFilters ? `where: {${allWhereFilters}}` : '';
@@ -271,13 +336,22 @@ let buildV2EvmDexTradesQuery = (baseCurrency?: string, quoteCurrency?: string, e
 }`;
 };
 
-let buildSolanaDexTradesQuery = (baseCurrency?: string, quoteCurrency?: string, since?: string, till?: string): string => {
+let buildSolanaDexTradesQuery = (
+  baseCurrency?: string,
+  quoteCurrency?: string,
+  since?: string,
+  till?: string
+): string => {
   let whereFilters: string[] = [];
   if (baseCurrency) whereFilters.push('Currency: {MintAddress: {is: $baseCurrency}}');
-  if (quoteCurrency) whereFilters.push('Side: {Currency: {MintAddress: {is: $quoteCurrency}}}');
+  if (quoteCurrency)
+    whereFilters.push('Side: {Currency: {MintAddress: {is: $quoteCurrency}}}');
 
   let tradeFilter = whereFilters.length > 0 ? `Trade: {${whereFilters.join(', ')}}` : '';
-  let timeFilter = (since || till) ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}` : '';
+  let timeFilter =
+    since || till
+      ? `Block: {Time: {${since ? 'since: $since' : ''}${since && till ? ', ' : ''}${till ? 'till: $till' : ''}}}`
+      : '';
 
   let allWhereFilters = [tradeFilter, timeFilter].filter(Boolean).join(', ');
   let whereClause = allWhereFilters ? `where: {${allWhereFilters}}` : '';

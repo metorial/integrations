@@ -79,7 +79,9 @@ let funnelStepSchema = z.object({
 });
 
 let dateRangeSchema = z.object({
-  from: z.string().describe('Start date (relative: TODAY, TODAY_MINUS_7_DAYS, etc. or ISO 8601)'),
+  from: z
+    .string()
+    .describe('Start date (relative: TODAY, TODAY_MINUS_7_DAYS, etc. or ISO 8601)'),
   to: z.string().describe('End date (relative or ISO 8601)')
 });
 
@@ -95,44 +97,56 @@ let stepResultSchema = z.object({
   events: z.number().describe('Number of events in this step')
 });
 
-export let computeFunnel = SlateTool.create(
-  spec,
-  {
-    name: 'Compute Funnel',
-    key: 'compute_funnel',
-    description: `Run a funnel computation in LiveSession to analyze conversion data. Define steps with filters and a date range to compute session, visitor, and event counts at each step of the conversion funnel. Returns per-step analytics and totals.`,
-    instructions: [
-      'Relative dates supported: TODAY, YESTERDAY, TODAY_MINUS_7_DAYS, TODAY_MINUS_30_DAYS, BEGINNING_OF_WEEK, BEGINNING_OF_MONTH, BEGINNING_OF_PREV_MONTH.',
-      'Each step must include filters that define what qualifies as completion of that step.',
-      'Results may be cached; check the cachedResponse fields for freshness.'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let computeFunnel = SlateTool.create(spec, {
+  name: 'Compute Funnel',
+  key: 'compute_funnel',
+  description: `Run a funnel computation in LiveSession to analyze conversion data. Define steps with filters and a date range to compute session, visitor, and event counts at each step of the conversion funnel. Returns per-step analytics and totals.`,
+  instructions: [
+    'Relative dates supported: TODAY, YESTERDAY, TODAY_MINUS_7_DAYS, TODAY_MINUS_30_DAYS, BEGINNING_OF_WEEK, BEGINNING_OF_MONTH, BEGINNING_OF_PREV_MONTH.',
+    'Each step must include filters that define what qualifies as completion of that step.',
+    'Results may be cached; check the cachedResponse fields for freshness.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    websiteId: z.string().optional().describe('Website ID to compute funnel for'),
-    type: z.string().optional().describe('Computation type: standard or custom'),
-    dateRange: dateRangeSchema.describe('Date range for the computation'),
-    steps: z.array(funnelStepSchema).describe('Funnel steps to analyze'),
-    filters: filtersSchema.optional().describe('Additional global filters'),
-    conversionValue: conversionValueInputSchema.optional().describe('Conversion value tracking')
-  }))
-  .output(z.object({
-    totalSessions: z.number().describe('Total sessions entering the funnel'),
-    totalVisitors: z.number().describe('Total unique visitors'),
-    totalEvents: z.number().describe('Total events tracked'),
-    conversionValue: z.object({
-      value: z.number().optional(),
-      label: z.string().optional()
-    }).optional().describe('Computed conversion value'),
-    steps: z.array(stepResultSchema).describe('Per-step analytics results'),
-    cachedResponseId: z.string().optional().describe('Cache entry identifier'),
-    cachedResponseComputedAt: z.number().optional().describe('Unix timestamp when data was computed'),
-    cachedResponseFresh: z.boolean().optional().describe('Whether the cached data is still fresh')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      websiteId: z.string().optional().describe('Website ID to compute funnel for'),
+      type: z.string().optional().describe('Computation type: standard or custom'),
+      dateRange: dateRangeSchema.describe('Date range for the computation'),
+      steps: z.array(funnelStepSchema).describe('Funnel steps to analyze'),
+      filters: filtersSchema.optional().describe('Additional global filters'),
+      conversionValue: conversionValueInputSchema
+        .optional()
+        .describe('Conversion value tracking')
+    })
+  )
+  .output(
+    z.object({
+      totalSessions: z.number().describe('Total sessions entering the funnel'),
+      totalVisitors: z.number().describe('Total unique visitors'),
+      totalEvents: z.number().describe('Total events tracked'),
+      conversionValue: z
+        .object({
+          value: z.number().optional(),
+          label: z.string().optional()
+        })
+        .optional()
+        .describe('Computed conversion value'),
+      steps: z.array(stepResultSchema).describe('Per-step analytics results'),
+      cachedResponseId: z.string().optional().describe('Cache entry identifier'),
+      cachedResponseComputedAt: z
+        .number()
+        .optional()
+        .describe('Unix timestamp when data was computed'),
+      cachedResponseFresh: z
+        .boolean()
+        .optional()
+        .describe('Whether the cached data is still fresh')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result = await client.graphql(FUNNEL_COMPUTE_MUTATION, {
       website_id: ctx.input.websiteId,
@@ -152,10 +166,12 @@ export let computeFunnel = SlateTool.create(
         totalSessions: compute.total_sessions,
         totalVisitors: compute.total_visitors,
         totalEvents: compute.total_events,
-        conversionValue: compute.conversion_value ? {
-          value: compute.conversion_value.value,
-          label: compute.conversion_value.label
-        } : undefined,
+        conversionValue: compute.conversion_value
+          ? {
+              value: compute.conversion_value.value,
+              label: compute.conversion_value.label
+            }
+          : undefined,
         steps: (compute.steps || []).map((s: any) => ({
           sessions: s.sessions,
           visitors: s.visitors,
@@ -167,4 +183,5 @@ export let computeFunnel = SlateTool.create(
       },
       message: `Funnel computed: **${compute.total_sessions}** sessions, **${compute.total_visitors}** visitors across **${(compute.steps || []).length}** steps.`
     };
-  }).build();
+  })
+  .build();

@@ -118,9 +118,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://campayn.com/api/v1',
       headers: {
-        'Authorization': `TRUEREST apikey=${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `TRUEREST apikey=${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -147,23 +147,39 @@ export class Client {
     return response.data;
   }
 
-  async createContact(listId: string, contact: CampaynCreateContactInput): Promise<{ success: boolean }> {
+  async createContact(
+    listId: string,
+    contact: CampaynCreateContactInput
+  ): Promise<{ success: boolean }> {
     let response = await this.axios.post(`/lists/${listId}/contacts.json`, contact);
     return response.data;
   }
 
-  async updateContact(contactId: string, contact: Partial<CampaynCreateContactInput>): Promise<{ success: boolean }> {
+  async updateContact(
+    contactId: string,
+    contact: Partial<CampaynCreateContactInput>
+  ): Promise<{ success: boolean }> {
     let response = await this.axios.put(`/contacts/${contactId}.json`, contact);
     return response.data;
   }
 
-  async unsubscribeByEmail(listId: string, email: string): Promise<{ contactCount: number; success: boolean; msg: string; unsubscribeCount: number }> {
+  async unsubscribeByEmail(
+    listId: string,
+    email: string
+  ): Promise<{
+    contactCount: number;
+    success: boolean;
+    msg: string;
+    unsubscribeCount: number;
+  }> {
     let response = await this.axios.post(`/lists/${listId}/unsubscribe.json`, { email });
     return response.data;
   }
 
   async unsubscribeById(listId: string, contactId: string): Promise<{ success: number }> {
-    let response = await this.axios.post(`/lists/${listId}/unsubscribe.json`, { id: contactId });
+    let response = await this.axios.post(`/lists/${listId}/unsubscribe.json`, {
+      id: contactId
+    });
     return response.data;
   }
 

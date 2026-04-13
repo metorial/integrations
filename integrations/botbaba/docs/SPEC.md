@@ -19,6 +19,7 @@ Botbaba uses API keys for authentication. The API key is referred to as an "auth
 The auth token is passed as an `Authorization` header in API requests. Based on the Pipedream integration examples, API calls are made to `https://app.botbaba.io/api/` endpoints with an `Authorization` header containing the API key and an `Accept: application/json` header.
 
 Example:
+
 ```
 Authorization: <your_auth_token>
 ```
@@ -26,23 +27,30 @@ Authorization: <your_auth_token>
 ## Features
 
 ### Bot Management
+
 Retrieve and manage chatbots associated with your account. The API exposes endpoints such as `GetBots` at `https://app.botbaba.io/api/GetBots` to list bots. This allows listing all bots and accessing bot configuration details.
 
 ### WhatsApp Template Messaging
+
 Send WhatsApp template messages to users via the API. Botbaba provides different endpoints depending on the WhatsApp Business API provider:
+
 - For 360Dialog: `https://app.botbaba.io/api/SendWhatsAppWAMessages`
 - For Gupshup: `https://app.botbaba.io/api/SendWhatsAppTemplateMessages`
 
 Template messages require a WhatsApp Business API integration configured in your Botbaba account. You can specify the recipient mobile number (with country code), the template to use, and the block to continue the conversation flow after the message is received.
 
 ### Chatbot Flow Builder
+
 The platform supports conditional logic to decide conversation flow based on user input, and two-way communication between your API and the bot. Flows support 18+ input types including buttons, text input, checkboxes, radio buttons, ratings, date/time, location, file uploads, and product selection.
 
 ### E-Commerce
+
 Chatbot functionalities tailored for e-commerce including ordering, product variation handling, shipping, and payment processing. Supports payment gateways such as Stripe, PayPal, and Razorpay. Products and categories can be bulk imported via Excel.
 
 ### Triggers and Actions
+
 Botbaba provides a built-in automation system where triggers are paired with actions. Available triggers include:
+
 - **Payment Success / Payment Failed** – fires when a payment through a native gateway integration succeeds or fails.
 - **Chat Complete** – fires when a chat session is completed.
 - **Chat Incomplete** – fires when a chat is not completed within 30 minutes.
@@ -50,18 +58,22 @@ Botbaba provides a built-in automation system where triggers are paired with act
 - **Manual** – triggered manually as needed.
 
 Available actions that can be executed in response to a trigger:
+
 - HTTP Request (call an external URL with JSON body and custom headers)
 - Send WhatsApp Message
 - Send Telegram Message
 - Send Email
 
 ### Integrations
+
 The platform features conditional logic, multi-language support, and native e-commerce integrations, with tools for lead qualification, SMS campaigns, and CRM integration. Supported third-party integrations include Shopify, WooCommerce, Google Sheets (via Pabbly/Konnectzit), Razorpay, Calendly, Telegram, and Webpushr.
 
 ### SMS Campaigns
+
 Upload your data and launch SMS Campaigns using your own SMS API, track link clicks and do more by adding a bot link to your SMS. Campaigns can be auto-launched on a schedule.
 
 ### Analytics & Tracking
+
 Botbaba offers analytics capabilities that provide insights into chatbot performance, user engagement, and conversation trends. It also supports adding Google Analytics, Facebook Pixel, and FullStory tracking snippets to bots.
 
 ## Events

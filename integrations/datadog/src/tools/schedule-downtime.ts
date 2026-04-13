@@ -3,39 +3,57 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let scheduleDowntime = SlateTool.create(
-  spec,
-  {
-    name: 'Schedule Downtime',
-    key: 'schedule_downtime',
-    description: `Schedule a downtime to temporarily mute monitoring notifications. Target specific monitors by ID or by tags, and scope the downtime to specific resources.`,
-    instructions: [
-      'Scope is required and defines which resources are affected, e.g. "env:staging" or "*" for all.',
-      'Provide either monitorId or monitorTags to target specific monitors.',
-      'Use start/end as ISO 8601 timestamps for the downtime window.'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let scheduleDowntime = SlateTool.create(spec, {
+  name: 'Schedule Downtime',
+  key: 'schedule_downtime',
+  description: `Schedule a downtime to temporarily mute monitoring notifications. Target specific monitors by ID or by tags, and scope the downtime to specific resources.`,
+  instructions: [
+    'Scope is required and defines which resources are affected, e.g. "env:staging" or "*" for all.',
+    'Provide either monitorId or monitorTags to target specific monitors.',
+    'Use start/end as ISO 8601 timestamps for the downtime window.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    scope: z.string().describe('Downtime scope, e.g. "env:staging", "host:myhost", or "*" for all'),
-    monitorId: z.number().optional().describe('Specific monitor ID to mute'),
-    monitorTags: z.array(z.string()).optional().describe('Monitor tags to mute, e.g. ["service:web"]'),
-    message: z.string().optional().describe('Message to include with the downtime notification'),
-    start: z.string().optional().describe('Start time as ISO 8601 string. Defaults to now if not provided.'),
-    end: z.string().optional().describe('End time as ISO 8601 string. If omitted, downtime is indefinite.'),
-    timezone: z.string().optional().describe('Timezone for the schedule, e.g. "America/New_York"')
-  }))
-  .output(z.object({
-    downtimeId: z.string().describe('ID of the created downtime'),
-    scope: z.string().optional().describe('Downtime scope'),
-    status: z.string().optional().describe('Downtime status'),
-    message: z.string().optional().describe('Downtime message')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scope: z
+        .string()
+        .describe('Downtime scope, e.g. "env:staging", "host:myhost", or "*" for all'),
+      monitorId: z.number().optional().describe('Specific monitor ID to mute'),
+      monitorTags: z
+        .array(z.string())
+        .optional()
+        .describe('Monitor tags to mute, e.g. ["service:web"]'),
+      message: z
+        .string()
+        .optional()
+        .describe('Message to include with the downtime notification'),
+      start: z
+        .string()
+        .optional()
+        .describe('Start time as ISO 8601 string. Defaults to now if not provided.'),
+      end: z
+        .string()
+        .optional()
+        .describe('End time as ISO 8601 string. If omitted, downtime is indefinite.'),
+      timezone: z
+        .string()
+        .optional()
+        .describe('Timezone for the schedule, e.g. "America/New_York"')
+    })
+  )
+  .output(
+    z.object({
+      downtimeId: z.string().describe('ID of the created downtime'),
+      scope: z.string().optional().describe('Downtime scope'),
+      status: z.string().optional().describe('Downtime status'),
+      message: z.string().optional().describe('Downtime message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.auth, ctx.config);
 
     let schedule: any = undefined;

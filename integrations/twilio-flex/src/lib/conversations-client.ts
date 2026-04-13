@@ -9,7 +9,7 @@ export class ConversationsClient {
     this.axios = createAxios({
       baseURL: 'https://conversations.twilio.com/v1',
       headers: {
-        'Authorization': `Basic ${token}`,
+        Authorization: `Basic ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
@@ -33,8 +33,14 @@ export class ConversationsClient {
     return response.data;
   }
 
-  async updateConversation(conversationSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/Conversations/${conversationSid}`, encodeFormBody(params));
+  async updateConversation(
+    conversationSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/Conversations/${conversationSid}`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
@@ -51,16 +57,28 @@ export class ConversationsClient {
   }
 
   async getParticipant(conversationSid: string, participantSid: string): Promise<any> {
-    let response = await this.axios.get(`/Conversations/${conversationSid}/Participants/${participantSid}`);
+    let response = await this.axios.get(
+      `/Conversations/${conversationSid}/Participants/${participantSid}`
+    );
     return response.data;
   }
 
-  async addParticipant(conversationSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/Conversations/${conversationSid}/Participants`, encodeFormBody(params));
+  async addParticipant(
+    conversationSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/Conversations/${conversationSid}/Participants`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
-  async updateParticipant(conversationSid: string, participantSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateParticipant(
+    conversationSid: string,
+    participantSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/Conversations/${conversationSid}/Participants/${participantSid}`,
       encodeFormBody(params)
@@ -69,11 +87,17 @@ export class ConversationsClient {
   }
 
   async removeParticipant(conversationSid: string, participantSid: string): Promise<void> {
-    await this.axios.delete(`/Conversations/${conversationSid}/Participants/${participantSid}`);
+    await this.axios.delete(
+      `/Conversations/${conversationSid}/Participants/${participantSid}`
+    );
   }
 
   // Messages
-  async listMessages(conversationSid: string, pageSize?: number, order?: string): Promise<any> {
+  async listMessages(
+    conversationSid: string,
+    pageSize?: number,
+    order?: string
+  ): Promise<any> {
     let response = await this.axios.get(`/Conversations/${conversationSid}/Messages`, {
       params: { PageSize: pageSize || 50, Order: order }
     });
@@ -81,16 +105,28 @@ export class ConversationsClient {
   }
 
   async getMessage(conversationSid: string, messageSid: string): Promise<any> {
-    let response = await this.axios.get(`/Conversations/${conversationSid}/Messages/${messageSid}`);
+    let response = await this.axios.get(
+      `/Conversations/${conversationSid}/Messages/${messageSid}`
+    );
     return response.data;
   }
 
-  async sendMessage(conversationSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/Conversations/${conversationSid}/Messages`, encodeFormBody(params));
+  async sendMessage(
+    conversationSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/Conversations/${conversationSid}/Messages`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 
-  async updateMessage(conversationSid: string, messageSid: string, params: Record<string, string | undefined>): Promise<any> {
+  async updateMessage(
+    conversationSid: string,
+    messageSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
     let response = await this.axios.post(
       `/Conversations/${conversationSid}/Messages/${messageSid}`,
       encodeFormBody(params)
@@ -108,8 +144,14 @@ export class ConversationsClient {
     return response.data;
   }
 
-  async createWebhook(conversationSid: string, params: Record<string, string | undefined>): Promise<any> {
-    let response = await this.axios.post(`/Conversations/${conversationSid}/Webhooks`, encodeFormBody(params));
+  async createWebhook(
+    conversationSid: string,
+    params: Record<string, string | undefined>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/Conversations/${conversationSid}/Webhooks`,
+      encodeFormBody(params)
+    );
     return response.data;
   }
 

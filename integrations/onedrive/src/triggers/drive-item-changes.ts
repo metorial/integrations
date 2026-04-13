@@ -15,25 +15,27 @@ let changedItemSchema = z.object({
   lastModifiedDateTime: z.string().optional().describe('ISO 8601 last modified timestamp'),
   lastModifiedByName: z.string().optional().describe('Display name of last modifier'),
   parentPath: z.string().optional().describe('Path of the parent folder'),
-  driveId: z.string().optional().describe('ID of the drive containing this item'),
+  driveId: z.string().optional().describe('ID of the drive containing this item')
 });
 
-export let driveItemChangesTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Drive Item Changes',
-    key: 'drive_item_changes',
-    description: 'Triggers when files or folders are created, modified, or deleted in a OneDrive or SharePoint drive. Uses Microsoft Graph webhooks for real-time notification and delta queries to detect the specific changes.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'modified', 'deleted']).describe('Type of change detected'),
-    itemId: z.string().describe('ID of the changed item'),
-    driveItem: z.any().describe('Full drive item data from the delta query'),
-  }))
+export let driveItemChangesTrigger = SlateTrigger.create(spec, {
+  name: 'Drive Item Changes',
+  key: 'drive_item_changes',
+  description:
+    'Triggers when files or folders are created, modified, or deleted in a OneDrive or SharePoint drive. Uses Microsoft Graph webhooks for real-time notification and delta queries to detect the specific changes.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'modified', 'deleted'])
+        .describe('Type of change detected'),
+      itemId: z.string().describe('ID of the changed item'),
+      driveItem: z.any().describe('Full drive item data from the delta query')
+    })
+  )
   .output(changedItemSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // Generate a random client state for verification
@@ -47,7 +49,7 @@ export let driveItemChangesTrigger = SlateTrigger.create(
         resource: '/me/drive/root',
         changeType: 'updated',
         expirationDateTime: expirationDate.toISOString(),
-        clientState,
+        clientState
       });
 
       // Get the initial delta token to track only future changes
@@ -66,20 +68,20 @@ export let driveItemChangesTrigger = SlateTrigger.create(
         registrationDetails: {
           subscriptionId: subscription.id,
           clientState,
-          expirationDateTime: subscription.expirationDateTime,
+          expirationDateTime: subscription.expirationDateTime
         },
         state: {
-          deltaLink,
-        },
+          deltaLink
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       await client.deleteSubscription(ctx.input.registrationDetails.subscriptionId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // Handle validation token (Microsoft Graph sends this during subscription creation)
       let url = new URL(ctx.request.url);
       let validationToken = url.searchParams.get('validationToken');
@@ -88,7 +90,9 @@ export let driveItemChangesTrigger = SlateTrigger.create(
         return { inputs: [] };
       }
 
-      let body = await ctx.request.json() as { value?: Array<{ clientState?: string; resource?: string; subscriptionId?: string }> };
+      let body = (await ctx.request.json()) as {
+        value?: Array<{ clientState?: string; resource?: string; subscriptionId?: string }>;
+      };
       if (!body?.value?.length) {
         return { inputs: [] };
       }
@@ -97,7 +101,11 @@ export let driveItemChangesTrigger = SlateTrigger.create(
       let client = new Client({ token: ctx.auth.token });
       let deltaLink = ctx.state?.deltaLink;
 
-      let allChangedItems: Array<{ changeType: 'created' | 'modified' | 'deleted'; itemId: string; driveItem: any }> = [];
+      let allChangedItems: Array<{
+        changeType: 'created' | 'modified' | 'deleted';
+        itemId: string;
+        driveItem: any;
+      }> = [];
 
       let deltaResult = await client.getDelta({ deltaLink });
       let items = deltaResult.value;
@@ -119,7 +127,7 @@ export let driveItemChangesTrigger = SlateTrigger.create(
         allChangedItems.push({
           changeType,
           itemId: item.id,
-          driveItem: item,
+          driveItem: item
         });
       }
 
@@ -128,7 +136,9 @@ export let driveItemChangesTrigger = SlateTrigger.create(
       while (nextLink) {
         let nextPage = await client.getDelta({ deltaLink: nextLink });
         for (let item of nextPage.value) {
-          let changeType: 'created' | 'modified' | 'deleted' = item.deleted ? 'deleted' : 'modified';
+          let changeType: 'created' | 'modified' | 'deleted' = item.deleted
+            ? 'deleted'
+            : 'modified';
           allChangedItems.push({ changeType, itemId: item.id, driveItem: item });
         }
         nextLink = nextPage.nextLink;
@@ -140,12 +150,12 @@ export let driveItemChangesTrigger = SlateTrigger.create(
       return {
         inputs: allChangedItems,
         updatedState: {
-          deltaLink: deltaResult.deltaLink || deltaLink,
-        },
+          deltaLink: deltaResult.deltaLink || deltaLink
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let item = ctx.input.driveItem;
       let isDeleted = !!item?.deleted;
 
@@ -164,9 +174,9 @@ export let driveItemChangesTrigger = SlateTrigger.create(
           lastModifiedDateTime: item?.lastModifiedDateTime,
           lastModifiedByName: item?.lastModifiedBy?.user?.displayName,
           parentPath: item?.parentReference?.path,
-          driveId: item?.parentReference?.driveId,
-        },
+          driveId: item?.parentReference?.driveId
+        }
       };
-    },
+    }
   })
   .build();

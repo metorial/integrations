@@ -17,39 +17,45 @@ let creationSchema = z.object({
   tags: z.array(z.string()).nullable().describe('Tags on the creation'),
   creatorNick: z.string().nullable().describe('Username of the creator'),
   categoryName: z.string().nullable().describe('Category name'),
-  priceUsd: z.number().nullable().describe('Price in USD'),
+  priceUsd: z.number().nullable().describe('Price in USD')
 });
 
-export let searchCreations = SlateTool.create(
-  spec,
-  {
-    name: 'Search Creations',
-    key: 'search_creations',
-    description: `Search the Cults3D catalog for 3D printing designs by keyword. Returns matching designs with metadata including title, creator, price, download count, and images. Use this to find specific designs or explore the catalog.`,
-    tags: {
-      readOnly: true,
-    },
+export let searchCreations = SlateTool.create(spec, {
+  name: 'Search Creations',
+  key: 'search_creations',
+  description: `Search the Cults3D catalog for 3D printing designs by keyword. Returns matching designs with metadata including title, creator, price, download count, and images. Use this to find specific designs or explore the catalog.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    searchQuery: z.string().describe('Search keyword or phrase'),
-    limit: z.number().min(1).max(100).optional().describe('Maximum number of results to return (default 20)'),
-    offset: z.number().min(0).optional().describe('Number of results to skip for pagination'),
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of matching results'),
-    creations: z.array(creationSchema).describe('List of matching creations'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      searchQuery: z.string().describe('Search keyword or phrase'),
+      limit: z
+        .number()
+        .min(1)
+        .max(100)
+        .optional()
+        .describe('Maximum number of results to return (default 20)'),
+      offset: z.number().min(0).optional().describe('Number of results to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of matching results'),
+      creations: z.array(creationSchema).describe('List of matching creations')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CultsClient({
       token: ctx.auth.token,
-      username: ctx.auth.username,
+      username: ctx.auth.username
     });
 
     let result = await client.searchCreations({
       searchQuery: ctx.input.searchQuery,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let creations = result.results.map((c: any) => ({
@@ -66,15 +72,15 @@ export let searchCreations = SlateTool.create(
       tags: c.tags,
       creatorNick: c.creator?.nick ?? null,
       categoryName: c.category?.name ?? null,
-      priceUsd: c.price?.value ?? null,
+      priceUsd: c.price?.value ?? null
     }));
 
     return {
       output: {
         total: result.total,
-        creations,
+        creations
       },
-      message: `Found **${result.total}** creations matching "${ctx.input.searchQuery}". Returned ${creations.length} results.`,
+      message: `Found **${result.total}** creations matching "${ctx.input.searchQuery}". Returned ${creations.length} results.`
     };
   })
   .build();

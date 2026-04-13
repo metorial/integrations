@@ -13,7 +13,7 @@ import type {
   SeqeraTeam,
   SeqeraWorkflowTask,
   SeqeraParticipant,
-  SeqeraLaunchRequest,
+  SeqeraLaunchRequest
 } from './types';
 
 export class SeqeraClient {
@@ -27,8 +27,8 @@ export class SeqeraClient {
       headers: {
         Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -77,7 +77,7 @@ export class SeqeraClient {
 
   async describePipeline(pipelineId: number): Promise<SeqeraPipeline> {
     let response = await this.axios.get(`/pipelines/${pipelineId}`, {
-      params: this.wsParams({ attributes: ['labels'] }),
+      params: this.wsParams({ attributes: ['labels'] })
     });
     let data = response.data as { pipeline?: SeqeraPipeline };
     return data.pipeline || {};
@@ -109,35 +109,38 @@ export class SeqeraClient {
         paramsText: pipeline.paramsText,
         configText: pipeline.configText,
         preRunScript: pipeline.preRunScript,
-        postRunScript: pipeline.postRunScript,
-      },
+        postRunScript: pipeline.postRunScript
+      }
     };
     if (pipeline.description) body.description = pipeline.description;
     if (pipeline.icon) body.icon = pipeline.icon;
     if (pipeline.labelIds) body.labelIds = pipeline.labelIds;
 
     let response = await this.axios.post('/pipelines', body, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { pipeline?: SeqeraPipeline };
     return data.pipeline || {};
   }
 
-  async updatePipeline(pipelineId: number, updates: {
-    name?: string;
-    description?: string;
-    repository?: string;
-    computeEnvId?: string;
-    workDir?: string;
-    revision?: string;
-    configProfiles?: string[];
-    paramsText?: string;
-    configText?: string;
-    preRunScript?: string;
-    postRunScript?: string;
-    icon?: string;
-    labelIds?: number[];
-  }): Promise<void> {
+  async updatePipeline(
+    pipelineId: number,
+    updates: {
+      name?: string;
+      description?: string;
+      repository?: string;
+      computeEnvId?: string;
+      workDir?: string;
+      revision?: string;
+      configProfiles?: string[];
+      paramsText?: string;
+      configText?: string;
+      preRunScript?: string;
+      postRunScript?: string;
+      icon?: string;
+      labelIds?: number[];
+    }
+  ): Promise<void> {
     let body: Record<string, any> = {};
     if (updates.name) body.name = updates.name;
     if (updates.description !== undefined) body.description = updates.description;
@@ -160,13 +163,13 @@ export class SeqeraClient {
     }
 
     await this.axios.put(`/pipelines/${pipelineId}`, body, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
   async deletePipeline(pipelineId: number): Promise<void> {
     await this.axios.delete(`/pipelines/${pipelineId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
@@ -193,31 +196,41 @@ export class SeqeraClient {
     return { workflows: data.workflows || [], totalSize: data.totalSize };
   }
 
-  async describeWorkflow(workflowId: string): Promise<{ workflow: SeqeraWorkflow; progress?: Record<string, any> }> {
+  async describeWorkflow(
+    workflowId: string
+  ): Promise<{ workflow: SeqeraWorkflow; progress?: Record<string, any> }> {
     let response = await this.axios.get(`/workflow/${workflowId}`, {
-      params: this.wsParams({ attributes: ['labels', 'optimized'] }),
+      params: this.wsParams({ attributes: ['labels', 'optimized'] })
     });
     let data = response.data as { workflow?: SeqeraWorkflow; progress?: Record<string, any> };
     return { workflow: data.workflow || {}, progress: data.progress };
   }
 
   async launchWorkflow(launch: SeqeraLaunchRequest): Promise<{ workflowId: string }> {
-    let response = await this.axios.post('/workflow/launch', { launch }, {
-      params: this.wsParams(),
-    });
+    let response = await this.axios.post(
+      '/workflow/launch',
+      { launch },
+      {
+        params: this.wsParams()
+      }
+    );
     let data = response.data as { workflowId?: string };
     return { workflowId: data.workflowId || '' };
   }
 
   async cancelWorkflow(workflowId: string): Promise<void> {
-    await this.axios.post(`/workflow/${workflowId}/cancel`, {}, {
-      params: this.wsParams(),
-    });
+    await this.axios.post(
+      `/workflow/${workflowId}/cancel`,
+      {},
+      {
+        params: this.wsParams()
+      }
+    );
   }
 
   async getWorkflowMetrics(workflowId: string): Promise<Record<string, any>[]> {
     let response = await this.axios.get(`/workflow/${workflowId}/metrics`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { metrics?: Record<string, any>[] };
     return data.metrics || [];
@@ -225,18 +238,21 @@ export class SeqeraClient {
 
   async getWorkflowProgress(workflowId: string): Promise<Record<string, any>> {
     let response = await this.axios.get(`/workflow/${workflowId}/progress`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     return response.data as Record<string, any>;
   }
 
-  async listWorkflowTasks(workflowId: string, params?: {
-    max?: number;
-    offset?: number;
-    sortBy?: string;
-    sortDir?: string;
-    search?: string;
-  }): Promise<{ tasks: SeqeraWorkflowTask[]; total?: number }> {
+  async listWorkflowTasks(
+    workflowId: string,
+    params?: {
+      max?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDir?: string;
+      search?: string;
+    }
+  ): Promise<{ tasks: SeqeraWorkflowTask[]; total?: number }> {
     let query = this.wsParams();
     if (params?.max) query.max = params.max;
     if (params?.offset) query.offset = params.offset;
@@ -245,14 +261,17 @@ export class SeqeraClient {
     if (params?.search) query.search = params.search;
 
     let response = await this.axios.get(`/workflow/${workflowId}/tasks`, { params: query });
-    let data = response.data as { tasks?: Array<{ task?: SeqeraWorkflowTask }>; total?: number };
+    let data = response.data as {
+      tasks?: Array<{ task?: SeqeraWorkflowTask }>;
+      total?: number;
+    };
     let tasks = (data.tasks || []).map(t => t.task || {});
     return { tasks, total: data.total };
   }
 
   async getWorkflowLog(workflowId: string): Promise<string> {
     let response = await this.axios.get(`/workflow/${workflowId}/log`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { log?: string };
     return data.log || '';
@@ -260,9 +279,7 @@ export class SeqeraClient {
 
   // ─── Compute Environments ─────────────────────────────────────
 
-  async listComputeEnvs(params?: {
-    status?: string;
-  }): Promise<SeqeraComputeEnv[]> {
+  async listComputeEnvs(params?: { status?: string }): Promise<SeqeraComputeEnv[]> {
     let query = this.wsParams();
     if (params?.status) query.status = params.status;
 
@@ -273,7 +290,7 @@ export class SeqeraClient {
 
   async describeComputeEnv(computeEnvId: string): Promise<SeqeraComputeEnv> {
     let response = await this.axios.get(`/compute-envs/${computeEnvId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { computeEnv?: SeqeraComputeEnv };
     return data.computeEnv || {};
@@ -281,14 +298,18 @@ export class SeqeraClient {
 
   async deleteComputeEnv(computeEnvId: string): Promise<void> {
     await this.axios.delete(`/compute-envs/${computeEnvId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
   async setPrimaryComputeEnv(computeEnvId: string): Promise<void> {
-    await this.axios.post(`/compute-envs/${computeEnvId}/primary`, {}, {
-      params: this.wsParams(),
-    });
+    await this.axios.post(
+      `/compute-envs/${computeEnvId}/primary`,
+      {},
+      {
+        params: this.wsParams()
+      }
+    );
   }
 
   // ─── Datasets ─────────────────────────────────────────────────
@@ -310,7 +331,7 @@ export class SeqeraClient {
 
   async describeDataset(datasetId: string): Promise<SeqeraDataset> {
     let response = await this.axios.get(`/datasets/${datasetId}/metadata`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as SeqeraDataset;
     return data || {};
@@ -321,28 +342,35 @@ export class SeqeraClient {
     description?: string;
   }): Promise<SeqeraDataset> {
     let response = await this.axios.post('/datasets', dataset, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { dataset?: SeqeraDataset };
     return data.dataset || {};
   }
 
-  async updateDataset(datasetId: string, updates: {
-    name?: string;
-    description?: string;
-  }): Promise<void> {
+  async updateDataset(
+    datasetId: string,
+    updates: {
+      name?: string;
+      description?: string;
+    }
+  ): Promise<void> {
     await this.axios.put(`/datasets/${datasetId}`, updates, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
   async deleteDataset(datasetId: string): Promise<void> {
     await this.axios.delete(`/datasets/${datasetId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
-  async uploadDatasetVersion(datasetId: string, content: string, mediaType?: string): Promise<void> {
+  async uploadDatasetVersion(
+    datasetId: string,
+    content: string,
+    mediaType?: string
+  ): Promise<void> {
     let headers: Record<string, string> = {};
     if (mediaType) {
       headers['Content-Type'] = mediaType;
@@ -352,13 +380,13 @@ export class SeqeraClient {
 
     await this.axios.post(`/datasets/${datasetId}/upload`, content, {
       params: this.wsParams(),
-      headers,
+      headers
     });
   }
 
   async listDatasetVersions(datasetId: string): Promise<Array<Record<string, any>>> {
     let response = await this.axios.get(`/datasets/${datasetId}/versions`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { versions?: Array<Record<string, any>> };
     return data.versions || [];
@@ -366,9 +394,7 @@ export class SeqeraClient {
 
   // ─── Credentials ──────────────────────────────────────────────
 
-  async listCredentials(params?: {
-    platformId?: string;
-  }): Promise<SeqeraCredentials[]> {
+  async listCredentials(params?: { platformId?: string }): Promise<SeqeraCredentials[]> {
     let query = this.wsParams();
     if (params?.platformId) query.platformId = params.platformId;
 
@@ -379,7 +405,7 @@ export class SeqeraClient {
 
   async describeCredentials(credentialsId: string): Promise<SeqeraCredentials> {
     let response = await this.axios.get(`/credentials/${credentialsId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { credentials?: SeqeraCredentials };
     return data.credentials || {};
@@ -387,7 +413,7 @@ export class SeqeraClient {
 
   async deleteCredentials(credentialsId: string): Promise<void> {
     await this.axios.delete(`/credentials/${credentialsId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
@@ -395,7 +421,7 @@ export class SeqeraClient {
 
   async listSecrets(): Promise<SeqeraSecret[]> {
     let response = await this.axios.get('/pipeline-secrets', {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { pipelineSecrets?: SeqeraSecret[] };
     return data.pipelineSecrets || [];
@@ -403,21 +429,24 @@ export class SeqeraClient {
 
   async createSecret(secret: { name: string; value: string }): Promise<SeqeraSecret> {
     let response = await this.axios.post('/pipeline-secrets', secret, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { secretId?: number };
     return { id: data.secretId, name: secret.name };
   }
 
-  async updateSecret(secretId: number, updates: { name?: string; value?: string }): Promise<void> {
+  async updateSecret(
+    secretId: number,
+    updates: { name?: string; value?: string }
+  ): Promise<void> {
     await this.axios.put(`/pipeline-secrets/${secretId}`, updates, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
   async deleteSecret(secretId: number): Promise<void> {
     await this.axios.delete(`/pipeline-secrets/${secretId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
@@ -461,7 +490,7 @@ export class SeqeraClient {
 
   async listActions(): Promise<SeqeraAction[]> {
     let response = await this.axios.get('/actions', {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { actions?: SeqeraAction[] };
     return data.actions || [];
@@ -469,7 +498,7 @@ export class SeqeraClient {
 
   async describeAction(actionId: string): Promise<SeqeraAction> {
     let response = await this.axios.get(`/actions/${actionId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { action?: SeqeraAction };
     return data.action || {};
@@ -481,7 +510,7 @@ export class SeqeraClient {
     launch: SeqeraLaunchRequest;
   }): Promise<SeqeraAction> {
     let response = await this.axios.post('/actions', action, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { action?: SeqeraAction };
     return data.action || {};
@@ -489,51 +518,63 @@ export class SeqeraClient {
 
   async deleteAction(actionId: string): Promise<void> {
     await this.axios.delete(`/actions/${actionId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
   async triggerAction(actionId: string, params?: Record<string, any>): Promise<string> {
     let response = await this.axios.post(`/actions/${actionId}/launch`, params || {}, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { workflowId?: string };
     return data.workflowId || '';
   }
 
   async pauseAction(actionId: string): Promise<void> {
-    await this.axios.post(`/actions/${actionId}/pause`, {}, {
-      params: this.wsParams(),
-    });
+    await this.axios.post(
+      `/actions/${actionId}/pause`,
+      {},
+      {
+        params: this.wsParams()
+      }
+    );
   }
 
   // ─── Labels ───────────────────────────────────────────────────
 
   async listLabels(): Promise<SeqeraLabel[]> {
     let response = await this.axios.get('/labels', {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { labels?: SeqeraLabel[] };
     return data.labels || [];
   }
 
-  async createLabel(label: { name: string; value?: string; resource?: string; isDefault?: boolean }): Promise<SeqeraLabel> {
+  async createLabel(label: {
+    name: string;
+    value?: string;
+    resource?: string;
+    isDefault?: boolean;
+  }): Promise<SeqeraLabel> {
     let response = await this.axios.post('/labels', label, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as SeqeraLabel;
     return data || {};
   }
 
-  async updateLabel(labelId: number, updates: { name?: string; value?: string; isDefault?: boolean }): Promise<void> {
+  async updateLabel(
+    labelId: number,
+    updates: { name?: string; value?: string; isDefault?: boolean }
+  ): Promise<void> {
     await this.axios.put(`/labels/${labelId}`, updates, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
   async deleteLabel(labelId: number): Promise<void> {
     await this.axios.delete(`/labels/${labelId}`, {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
   }
 
@@ -541,7 +582,7 @@ export class SeqeraClient {
 
   async listParticipants(): Promise<SeqeraParticipant[]> {
     let response = await this.axios.get('/participants', {
-      params: this.wsParams(),
+      params: this.wsParams()
     });
     let data = response.data as { participants?: SeqeraParticipant[] };
     return data.participants || [];

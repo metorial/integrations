@@ -19,18 +19,23 @@ The base URL for all API requests is `https://campayn.com/api/v1/`.
 ## Features
 
 ### List Management
+
 Manage contact/subscriber lists. You can retrieve all lists, view list details, and access the contacts belonging to a specific list. Lists also support unsubscribing contacts by email address.
 
 ### Contact Management
+
 Retrieve contacts associated with a specific list, with optional keyword filtering that matches against names, emails, or companies. Create new contacts on a list with detailed profile information including name, email, title, company, address, phone numbers, websites, social accounts, and custom fields. A contact can have multiple phones, sites, custom fields, and social accounts. You can optionally fail on duplicate contacts by setting the `failOnDuplicate` flag. Contacts can also be updated and unsubscribed from lists.
 
 ### Email/Campaign Management
+
 Retrieve all email messages visible to the authenticated user, and retrieve details of a specific message by its ID.
 
 ### Reports
+
 Retrieve report URLs and metadata for sent and scheduled emails, optionally filtered by a date range using Unix timestamps in UTC. Scheduled emails will have the report URL set to null.
 
 ### Web Forms (Sign-up Forms)
+
 Retrieve all webforms for a specific contact list. Retrieve details of a specific webform by ID, including form details like title, type, HTML, and signup count.
 
 ## Events

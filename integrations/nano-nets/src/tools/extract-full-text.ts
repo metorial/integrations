@@ -3,28 +3,36 @@ import { NanonetsClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let extractFullText = SlateTool.create(
-  spec,
-  {
-    name: 'Extract Full Text',
-    key: 'extract_full_text',
-    description: `Extract the complete raw text from documents or images using Nanonets OCR. Unlike structured extraction, this returns all text found in the document without field mapping. Useful for getting the raw content of PDFs, scanned documents, and images.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let extractFullText = SlateTool.create(spec, {
+  name: 'Extract Full Text',
+  key: 'extract_full_text',
+  description: `Extract the complete raw text from documents or images using Nanonets OCR. Unlike structured extraction, this returns all text found in the document without field mapping. Useful for getting the raw content of PDFs, scanned documents, and images.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    urls: z.array(z.string()).min(1).describe('URLs of documents or images to extract text from (PDF, PNG, JPG)')
-  }))
-  .output(z.object({
-    results: z.array(z.object({
-      sourceUrl: z.string().describe('URL of the source document'),
-      extractedText: z.string().describe('Full extracted text from the document')
-    })).describe('Extracted text for each document')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      urls: z
+        .array(z.string())
+        .min(1)
+        .describe('URLs of documents or images to extract text from (PDF, PNG, JPG)')
+    })
+  )
+  .output(
+    z.object({
+      results: z
+        .array(
+          z.object({
+            sourceUrl: z.string().describe('URL of the source document'),
+            extractedText: z.string().describe('Full extracted text from the document')
+          })
+        )
+        .describe('Extracted text for each document')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NanonetsClient(ctx.auth.token);
 
     let result = await client.fullTextOcrByUrl(ctx.input.urls);
@@ -37,7 +45,10 @@ export let extractFullText = SlateTool.create(
         for (let i = 0; i < items.length; i++) {
           results.push({
             sourceUrl: ctx.input.urls[i] || '',
-            extractedText: typeof items[i] === 'string' ? items[i] : (items[i]?.raw_text || items[i]?.text || JSON.stringify(items[i]))
+            extractedText:
+              typeof items[i] === 'string'
+                ? items[i]
+                : items[i]?.raw_text || items[i]?.text || JSON.stringify(items[i])
           });
         }
       }

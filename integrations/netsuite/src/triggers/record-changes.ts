@@ -3,43 +3,54 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let recordChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Record Changes',
-    key: 'record_changes',
-    description: 'Polls NetSuite for newly created or recently modified records using SuiteQL. Detects changes to transaction, customer, vendor, contact, employee, and other record types that track lastModifiedDate.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated']).describe('Whether the record was newly created or updated'),
-    recordInternalId: z.string().describe('Internal ID of the changed record'),
-    recordType: z.string().describe('NetSuite record type that changed'),
-    lastModifiedDate: z.string().describe('Last modified timestamp of the record'),
-    dateCreated: z.string().optional().describe('Creation timestamp of the record'),
-    recordFields: z.record(z.string(), z.any()).describe('Key fields from the changed record'),
-  }))
-  .output(z.object({
-    recordInternalId: z.string().describe('Internal ID of the changed record'),
-    recordType: z.string().describe('NetSuite record type that changed'),
-    changeType: z.enum(['created', 'updated']).describe('Whether the record was newly created or updated'),
-    lastModifiedDate: z.string().describe('Last modified timestamp'),
-    dateCreated: z.string().optional().describe('Creation timestamp'),
-    recordFields: z.record(z.string(), z.any()).describe('Key fields from the changed record'),
-  }))
+export let recordChanges = SlateTrigger.create(spec, {
+  name: 'Record Changes',
+  key: 'record_changes',
+  description:
+    'Polls NetSuite for newly created or recently modified records using SuiteQL. Detects changes to transaction, customer, vendor, contact, employee, and other record types that track lastModifiedDate.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the record was newly created or updated'),
+      recordInternalId: z.string().describe('Internal ID of the changed record'),
+      recordType: z.string().describe('NetSuite record type that changed'),
+      lastModifiedDate: z.string().describe('Last modified timestamp of the record'),
+      dateCreated: z.string().optional().describe('Creation timestamp of the record'),
+      recordFields: z
+        .record(z.string(), z.any())
+        .describe('Key fields from the changed record')
+    })
+  )
+  .output(
+    z.object({
+      recordInternalId: z.string().describe('Internal ID of the changed record'),
+      recordType: z.string().describe('NetSuite record type that changed'),
+      changeType: z
+        .enum(['created', 'updated'])
+        .describe('Whether the record was newly created or updated'),
+      lastModifiedDate: z.string().describe('Last modified timestamp'),
+      dateCreated: z.string().optional().describe('Creation timestamp'),
+      recordFields: z
+        .record(z.string(), z.any())
+        .describe('Key fields from the changed record')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         ...ctx.auth,
-        accountId: ctx.config.accountId,
+        accountId: ctx.config.accountId
       });
 
       let state = ctx.state || {};
-      let lastPollTime = state.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      let lastPollTime =
+        state.lastPollTime || new Date(Date.now() - 5 * 60 * 1000).toISOString();
 
       // Format the timestamp for SuiteQL (NetSuite expects MM/DD/YYYY HH:MM:SS format)
       let pollDate = new Date(lastPollTime);
@@ -87,7 +98,7 @@ export let recordChanges = SlateTrigger.create(
       let latestTimestamp = lastPollTime;
 
       // Process transaction results
-      for (let item of (transactionResults.items || [])) {
+      for (let item of transactionResults.items || []) {
         let isNew = item.datecreated === item.lastmodifieddate;
         inputs.push({
           changeType: isNew ? 'created' : 'updated',
@@ -95,7 +106,7 @@ export let recordChanges = SlateTrigger.create(
           recordType: `transaction.${item.type || 'unknown'}`,
           lastModifiedDate: item.lastmodifieddate || '',
           dateCreated: item.datecreated,
-          recordFields: item,
+          recordFields: item
         });
         if (item.lastmodifieddate && item.lastmodifieddate > latestTimestamp) {
           latestTimestamp = item.lastmodifieddate;
@@ -103,7 +114,7 @@ export let recordChanges = SlateTrigger.create(
       }
 
       // Process customer results
-      for (let item of (customerResults.items || [])) {
+      for (let item of customerResults.items || []) {
         let isNew = item.datecreated === item.lastmodifieddate;
         inputs.push({
           changeType: isNew ? 'created' : 'updated',
@@ -111,7 +122,7 @@ export let recordChanges = SlateTrigger.create(
           recordType: 'customer',
           lastModifiedDate: item.lastmodifieddate || '',
           dateCreated: item.datecreated,
-          recordFields: item,
+          recordFields: item
         });
         if (item.lastmodifieddate && item.lastmodifieddate > latestTimestamp) {
           latestTimestamp = item.lastmodifieddate;
@@ -119,7 +130,7 @@ export let recordChanges = SlateTrigger.create(
       }
 
       // Process vendor results
-      for (let item of (vendorResults.items || [])) {
+      for (let item of vendorResults.items || []) {
         let isNew = item.datecreated === item.lastmodifieddate;
         inputs.push({
           changeType: isNew ? 'created' : 'updated',
@@ -127,7 +138,7 @@ export let recordChanges = SlateTrigger.create(
           recordType: 'vendor',
           lastModifiedDate: item.lastmodifieddate || '',
           dateCreated: item.datecreated,
-          recordFields: item,
+          recordFields: item
         });
         if (item.lastmodifieddate && item.lastmodifieddate > latestTimestamp) {
           latestTimestamp = item.lastmodifieddate;
@@ -137,12 +148,12 @@ export let recordChanges = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          lastPollTime: latestTimestamp,
-        },
+          lastPollTime: latestTimestamp
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `${ctx.input.recordType}.${ctx.input.changeType}`,
         id: `${ctx.input.recordType}-${ctx.input.recordInternalId}-${ctx.input.lastModifiedDate}`,
@@ -152,8 +163,9 @@ export let recordChanges = SlateTrigger.create(
           changeType: ctx.input.changeType,
           lastModifiedDate: ctx.input.lastModifiedDate,
           dateCreated: ctx.input.dateCreated,
-          recordFields: ctx.input.recordFields,
-        },
+          recordFields: ctx.input.recordFields
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

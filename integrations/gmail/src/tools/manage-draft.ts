@@ -3,58 +3,73 @@ import { Client, parseMessage } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDraft = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Draft',
-    key: 'manage_draft',
-    description: `Create, update, send, list, get, or delete email drafts. Drafts can be composed with recipients, subject, body, and then sent when ready.`,
-    instructions: [
-      'Use **action** "create" to compose a new draft. Provide recipients, subject, and body.',
-      'Use **action** "update" to modify an existing draft. Requires **draftId** and updated message fields.',
-      'Use **action** "send" to send an existing draft immediately. Requires **draftId**.',
-      'Use **action** "get" to retrieve a single draft by **draftId**.',
-      'Use **action** "list" to list drafts in the mailbox.',
-      'Use **action** "delete" to permanently delete a draft.',
-    ],
-    tags: {
-      readOnly: false,
-    },
+export let manageDraft = SlateTool.create(spec, {
+  name: 'Manage Draft',
+  key: 'manage_draft',
+  description: `Create, update, send, list, get, or delete email drafts. Drafts can be composed with recipients, subject, body, and then sent when ready.`,
+  instructions: [
+    'Use **action** "create" to compose a new draft. Provide recipients, subject, and body.',
+    'Use **action** "update" to modify an existing draft. Requires **draftId** and updated message fields.',
+    'Use **action** "send" to send an existing draft immediately. Requires **draftId**.',
+    'Use **action** "get" to retrieve a single draft by **draftId**.',
+    'Use **action** "list" to list drafts in the mailbox.',
+    'Use **action** "delete" to permanently delete a draft.'
+  ],
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'send', 'get', 'list', 'delete']).describe('The draft operation to perform.'),
-    draftId: z.string().optional().describe('Draft ID (required for update, send, get, delete).'),
-    to: z.array(z.string()).optional().describe('Recipients (for create/update).'),
-    cc: z.array(z.string()).optional().describe('CC recipients (for create/update).'),
-    bcc: z.array(z.string()).optional().describe('BCC recipients (for create/update).'),
-    subject: z.string().optional().describe('Email subject (for create/update).'),
-    body: z.string().optional().describe('Email body (for create/update).'),
-    isHtml: z.boolean().optional().default(false).describe('Whether body is HTML (for create/update).'),
-    threadId: z.string().optional().describe('Thread ID to associate this draft with.'),
-    query: z.string().optional().describe('Search query for listing drafts.'),
-    maxResults: z.number().optional().default(20).describe('Max drafts to list.'),
-    pageToken: z.string().optional().describe('Page token for list pagination.'),
-  }))
-  .output(z.object({
-    draftId: z.string().optional().describe('Draft ID (for create, update, get, send).'),
-    messageId: z.string().optional().describe('Message ID (for get, send).'),
-    threadId: z.string().optional().describe('Thread ID (for get, send).'),
-    subject: z.string().optional().describe('Subject of the draft/message.'),
-    from: z.string().optional().describe('Sender.'),
-    to: z.string().optional().describe('Recipients.'),
-    snippet: z.string().optional().describe('Message snippet.'),
-    drafts: z.array(z.object({
-      draftId: z.string().describe('Draft ID.'),
-      messageId: z.string().describe('Associated message ID.'),
-      threadId: z.string().describe('Thread ID.'),
-    })).optional().describe('List of drafts (for list action).'),
-    nextPageToken: z.string().optional().describe('Next page token (for list action).'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'send', 'get', 'list', 'delete'])
+        .describe('The draft operation to perform.'),
+      draftId: z
+        .string()
+        .optional()
+        .describe('Draft ID (required for update, send, get, delete).'),
+      to: z.array(z.string()).optional().describe('Recipients (for create/update).'),
+      cc: z.array(z.string()).optional().describe('CC recipients (for create/update).'),
+      bcc: z.array(z.string()).optional().describe('BCC recipients (for create/update).'),
+      subject: z.string().optional().describe('Email subject (for create/update).'),
+      body: z.string().optional().describe('Email body (for create/update).'),
+      isHtml: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether body is HTML (for create/update).'),
+      threadId: z.string().optional().describe('Thread ID to associate this draft with.'),
+      query: z.string().optional().describe('Search query for listing drafts.'),
+      maxResults: z.number().optional().default(20).describe('Max drafts to list.'),
+      pageToken: z.string().optional().describe('Page token for list pagination.')
+    })
+  )
+  .output(
+    z.object({
+      draftId: z.string().optional().describe('Draft ID (for create, update, get, send).'),
+      messageId: z.string().optional().describe('Message ID (for get, send).'),
+      threadId: z.string().optional().describe('Thread ID (for get, send).'),
+      subject: z.string().optional().describe('Subject of the draft/message.'),
+      from: z.string().optional().describe('Sender.'),
+      to: z.string().optional().describe('Recipients.'),
+      snippet: z.string().optional().describe('Message snippet.'),
+      drafts: z
+        .array(
+          z.object({
+            draftId: z.string().describe('Draft ID.'),
+            messageId: z.string().describe('Associated message ID.'),
+            threadId: z.string().describe('Thread ID.')
+          })
+        )
+        .optional()
+        .describe('List of drafts (for list action).'),
+      nextPageToken: z.string().optional().describe('Next page token (for list action).')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      userId: ctx.config.userId,
+      userId: ctx.config.userId
     });
 
     let { action } = ctx.input;
@@ -67,16 +82,16 @@ export let manageDraft = SlateTool.create(
         subject: ctx.input.subject || '',
         body: ctx.input.body || '',
         isHtml: ctx.input.isHtml,
-        threadId: ctx.input.threadId,
+        threadId: ctx.input.threadId
       });
 
       return {
         output: {
           draftId: draft.id,
           messageId: draft.message.id,
-          threadId: draft.message.threadId,
+          threadId: draft.message.threadId
         },
-        message: `Draft created with subject "${ctx.input.subject || '(no subject)'}".`,
+        message: `Draft created with subject "${ctx.input.subject || '(no subject)'}".`
       };
     }
 
@@ -90,16 +105,16 @@ export let manageDraft = SlateTool.create(
         subject: ctx.input.subject || '',
         body: ctx.input.body || '',
         isHtml: ctx.input.isHtml,
-        threadId: ctx.input.threadId,
+        threadId: ctx.input.threadId
       });
 
       return {
         output: {
           draftId: draft.id,
           messageId: draft.message.id,
-          threadId: draft.message.threadId,
+          threadId: draft.message.threadId
         },
-        message: `Draft **${ctx.input.draftId}** updated.`,
+        message: `Draft **${ctx.input.draftId}** updated.`
       };
     }
 
@@ -115,9 +130,9 @@ export let manageDraft = SlateTool.create(
           threadId: message.threadId,
           subject: parsed.subject,
           from: parsed.from,
-          to: parsed.to,
+          to: parsed.to
         },
-        message: `Draft sent as message **${message.id}**.`,
+        message: `Draft sent as message **${message.id}**.`
       };
     }
 
@@ -135,9 +150,9 @@ export let manageDraft = SlateTool.create(
           subject: parsed.subject,
           from: parsed.from,
           to: parsed.to,
-          snippet: parsed.snippet,
+          snippet: parsed.snippet
         },
-        message: `Retrieved draft "${parsed.subject || '(no subject)'}".`,
+        message: `Retrieved draft "${parsed.subject || '(no subject)'}".`
       };
     }
 
@@ -145,19 +160,19 @@ export let manageDraft = SlateTool.create(
       let result = await client.listDrafts({
         maxResults: ctx.input.maxResults,
         pageToken: ctx.input.pageToken,
-        query: ctx.input.query,
+        query: ctx.input.query
       });
 
       return {
         output: {
-          drafts: result.drafts.map((d) => ({
+          drafts: result.drafts.map(d => ({
             draftId: d.id,
             messageId: d.message.id,
-            threadId: d.message.threadId,
+            threadId: d.message.threadId
           })),
-          nextPageToken: result.nextPageToken,
+          nextPageToken: result.nextPageToken
         },
-        message: `Found **${result.drafts.length}** drafts.`,
+        message: `Found **${result.drafts.length}** drafts.`
       };
     }
 
@@ -168,9 +183,9 @@ export let manageDraft = SlateTool.create(
 
       return {
         output: {
-          draftId: ctx.input.draftId,
+          draftId: ctx.input.draftId
         },
-        message: `Draft **${ctx.input.draftId}** permanently deleted.`,
+        message: `Draft **${ctx.input.draftId}** permanently deleted.`
       };
     }
 

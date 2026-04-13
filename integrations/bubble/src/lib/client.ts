@@ -41,20 +41,22 @@ export class Client {
 
   private getAxios() {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
     return createAxios({
       baseURL: this.baseUrl,
-      headers,
+      headers
     });
   }
 
   async getRecord(dataType: string, recordId: string): Promise<BubbleRecord> {
     let http = this.getAxios();
-    let response = await http.get(`/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`);
+    let response = await http.get(
+      `/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`
+    );
     return response.data.response;
   }
 
@@ -78,24 +80,43 @@ export class Client {
       queryParams['cursor'] = String(params.cursor);
     }
 
-    let response = await http.get(`/obj/${encodeURIComponent(dataType)}`, { params: queryParams });
+    let response = await http.get(`/obj/${encodeURIComponent(dataType)}`, {
+      params: queryParams
+    });
     return response.data.response;
   }
 
-  async createRecord(dataType: string, fields: Record<string, any>): Promise<{ id: string; status: string }> {
+  async createRecord(
+    dataType: string,
+    fields: Record<string, any>
+  ): Promise<{ id: string; status: string }> {
     let http = this.getAxios();
     let response = await http.post(`/obj/${encodeURIComponent(dataType)}`, fields);
     return { id: response.data.id, status: response.data.status };
   }
 
-  async updateRecord(dataType: string, recordId: string, fields: Record<string, any>): Promise<void> {
+  async updateRecord(
+    dataType: string,
+    recordId: string,
+    fields: Record<string, any>
+  ): Promise<void> {
     let http = this.getAxios();
-    await http.patch(`/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`, fields);
+    await http.patch(
+      `/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`,
+      fields
+    );
   }
 
-  async replaceRecord(dataType: string, recordId: string, fields: Record<string, any>): Promise<void> {
+  async replaceRecord(
+    dataType: string,
+    recordId: string,
+    fields: Record<string, any>
+  ): Promise<void> {
     let http = this.getAxios();
-    await http.put(`/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`, fields);
+    await http.put(
+      `/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`,
+      fields
+    );
   }
 
   async deleteRecord(dataType: string, recordId: string): Promise<void> {
@@ -103,7 +124,10 @@ export class Client {
     await http.delete(`/obj/${encodeURIComponent(dataType)}/${encodeURIComponent(recordId)}`);
   }
 
-  async bulkCreateRecords(dataType: string, records: Record<string, any>[]): Promise<{ ids: string[] }> {
+  async bulkCreateRecords(
+    dataType: string,
+    records: Record<string, any>[]
+  ): Promise<{ ids: string[] }> {
     let http = this.getAxios();
     let response = await http.post(`/obj/${encodeURIComponent(dataType)}/bulk`, records);
     return { ids: response.data.response || [] };

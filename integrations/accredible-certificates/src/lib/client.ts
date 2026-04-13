@@ -3,7 +3,7 @@ import { createAxios } from 'slates';
 let BASE_URLS: Record<string, string> = {
   production_us: 'https://api.accredible.com',
   production_eu: 'https://eu.api.accredible.com',
-  sandbox: 'https://sandbox.api.accredible.com',
+  sandbox: 'https://sandbox.api.accredible.com'
 };
 
 export interface RecipientInput {
@@ -103,8 +103,8 @@ export class Client {
 
   private get headers() {
     return {
-      'Authorization': `Token token=${this.config.token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Token token=${this.config.token}`,
+      'Content-Type': 'application/json'
     };
   }
 
@@ -118,7 +118,7 @@ export class Client {
           email: input.recipient.email,
           ...(input.recipient.phoneNumber && { phone_number: input.recipient.phoneNumber }),
           ...(input.recipient.id && { id: input.recipient.id }),
-          ...(input.recipient.metaData && { meta_data: input.recipient.metaData }),
+          ...(input.recipient.metaData && { meta_data: input.recipient.metaData })
         },
         group_id: input.groupId,
         ...(input.name && { name: input.name }),
@@ -129,21 +129,21 @@ export class Client {
         ...(input.private !== undefined && { private: input.private }),
         ...(input.approve !== undefined && { approve: input.approve }),
         ...(input.customAttributes && { custom_attributes: input.customAttributes }),
-        ...(input.metaData && { meta_data: input.metaData }),
-      },
+        ...(input.metaData && { meta_data: input.metaData })
+      }
     };
 
     if (input.evidenceItems && input.evidenceItems.length > 0) {
-      body.credential.evidence_items = input.evidenceItems.map((e) => ({
+      body.credential.evidence_items = input.evidenceItems.map(e => ({
         ...(e.description && { description: e.description }),
         ...(e.url && { url: e.url }),
         ...(e.category && { category: e.category }),
-        ...(e.file && { file: e.file }),
+        ...(e.file && { file: e.file })
       }));
     }
 
     if (input.references && input.references.length > 0) {
-      body.credential.references = input.references.map((r) => ({
+      body.credential.references = input.references.map(r => ({
         ...(r.description && { description: r.description }),
         ...(r.relationship && { relationship: r.relationship }),
         ...(r.referee && {
@@ -151,9 +151,9 @@ export class Client {
             ...(r.referee.name && { name: r.referee.name }),
             ...(r.referee.email && { email: r.referee.email }),
             ...(r.referee.avatar && { avatar: r.referee.avatar }),
-            ...(r.referee.url && { url: r.referee.url }),
-          },
-        }),
+            ...(r.referee.url && { url: r.referee.url })
+          }
+        })
       }));
     }
 
@@ -162,7 +162,9 @@ export class Client {
   }
 
   async getCredential(credentialId: string): Promise<any> {
-    let response = await this.ax.get(`/v1/credentials/${credentialId}`, { headers: this.headers });
+    let response = await this.ax.get(`/v1/credentials/${credentialId}`, {
+      headers: this.headers
+    });
     return response.data?.credential;
   }
 
@@ -176,28 +178,40 @@ export class Client {
     if (input.complete !== undefined) credential.complete = input.complete;
     if (input.private !== undefined) credential.private = input.private;
     if (input.approve !== undefined) credential.approve = input.approve;
-    if (input.customAttributes !== undefined) credential.custom_attributes = input.customAttributes;
+    if (input.customAttributes !== undefined)
+      credential.custom_attributes = input.customAttributes;
     if (input.groupId !== undefined) credential.group_id = input.groupId;
 
     if (input.recipient) {
       credential.recipient = {};
       if (input.recipient.name !== undefined) credential.recipient.name = input.recipient.name;
-      if (input.recipient.email !== undefined) credential.recipient.email = input.recipient.email;
-      if (input.recipient.phoneNumber !== undefined) credential.recipient.phone_number = input.recipient.phoneNumber;
+      if (input.recipient.email !== undefined)
+        credential.recipient.email = input.recipient.email;
+      if (input.recipient.phoneNumber !== undefined)
+        credential.recipient.phone_number = input.recipient.phoneNumber;
       if (input.recipient.id !== undefined) credential.recipient.id = input.recipient.id;
-      if (input.recipient.metaData !== undefined) credential.recipient.meta_data = input.recipient.metaData;
+      if (input.recipient.metaData !== undefined)
+        credential.recipient.meta_data = input.recipient.metaData;
     }
 
-    let response = await this.ax.put(`/v1/credentials/${credentialId}`, { credential }, { headers: this.headers });
+    let response = await this.ax.put(
+      `/v1/credentials/${credentialId}`,
+      { credential },
+      { headers: this.headers }
+    );
     return response.data?.credential;
   }
 
   async deleteCredential(credentialId: string): Promise<any> {
-    let response = await this.ax.delete(`/v1/credentials/${credentialId}`, { headers: this.headers });
+    let response = await this.ax.delete(`/v1/credentials/${credentialId}`, {
+      headers: this.headers
+    });
     return response.data?.credential;
   }
 
-  async searchCredentials(input: SearchCredentialsInput): Promise<{ credentials: any[]; meta: any }> {
+  async searchCredentials(
+    input: SearchCredentialsInput
+  ): Promise<{ credentials: any[]; meta: any }> {
     let params: any = {};
     if (input.groupId) params.group_id = input.groupId;
     if (input.email) params.email = input.email;
@@ -211,12 +225,12 @@ export class Client {
 
     let response = await this.ax.get('/v1/all_credentials', {
       headers: this.headers,
-      params,
+      params
     });
 
     return {
       credentials: response.data?.credentials || [],
-      meta: response.data?.meta || {},
+      meta: response.data?.meta || {}
     };
   }
 
@@ -225,21 +239,28 @@ export class Client {
   async createGroup(input: CreateGroupInput): Promise<any> {
     let group: any = {
       name: input.name,
-      course_name: input.courseName,
+      course_name: input.courseName
     };
 
-    if (input.courseDescription !== undefined) group.course_description = input.courseDescription;
+    if (input.courseDescription !== undefined)
+      group.course_description = input.courseDescription;
     if (input.courseLink !== undefined) group.course_link = input.courseLink;
     if (input.designId !== undefined) group.design_id = input.designId;
     if (input.language !== undefined) group.language = input.language;
     if (input.attachPdf !== undefined) group.attach_pdf = input.attachPdf;
 
-    let response = await this.ax.post('/v1/issuer/groups', { group }, { headers: this.headers });
+    let response = await this.ax.post(
+      '/v1/issuer/groups',
+      { group },
+      { headers: this.headers }
+    );
     return response.data?.group;
   }
 
   async getGroup(groupId: string): Promise<any> {
-    let response = await this.ax.get(`/v1/issuer/groups/${groupId}`, { headers: this.headers });
+    let response = await this.ax.get(`/v1/issuer/groups/${groupId}`, {
+      headers: this.headers
+    });
     return response.data?.group;
   }
 
@@ -248,18 +269,25 @@ export class Client {
 
     if (input.name !== undefined) group.name = input.name;
     if (input.courseName !== undefined) group.course_name = input.courseName;
-    if (input.courseDescription !== undefined) group.course_description = input.courseDescription;
+    if (input.courseDescription !== undefined)
+      group.course_description = input.courseDescription;
     if (input.courseLink !== undefined) group.course_link = input.courseLink;
     if (input.designId !== undefined) group.design_id = input.designId;
     if (input.language !== undefined) group.language = input.language;
     if (input.attachPdf !== undefined) group.attach_pdf = input.attachPdf;
 
-    let response = await this.ax.put(`/v1/issuer/groups/${groupId}`, { group }, { headers: this.headers });
+    let response = await this.ax.put(
+      `/v1/issuer/groups/${groupId}`,
+      { group },
+      { headers: this.headers }
+    );
     return response.data?.group;
   }
 
   async deleteGroup(groupId: string): Promise<any> {
-    let response = await this.ax.delete(`/v1/issuer/groups/${groupId}`, { headers: this.headers });
+    let response = await this.ax.delete(`/v1/issuer/groups/${groupId}`, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -270,12 +298,12 @@ export class Client {
 
     let response = await this.ax.get('/v1/issuer/all_groups', {
       headers: this.headers,
-      params,
+      params
     });
 
     return {
       groups: response.data?.groups || [],
-      meta: response.data?.meta || {},
+      meta: response.data?.meta || {}
     };
   }
 
@@ -288,12 +316,12 @@ export class Client {
 
     let response = await this.ax.get('/v1/issuer/designs', {
       headers: this.headers,
-      params,
+      params
     });
 
     return {
       designs: response.data?.designs || [],
-      meta: response.data?.meta || {},
+      meta: response.data?.meta || {}
     };
   }
 }

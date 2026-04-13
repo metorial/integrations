@@ -12,8 +12,8 @@ export class SearchApiClient {
     this.axios = createAxios({
       baseURL: 'https://www.searchapi.io/api/v1',
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -25,7 +25,7 @@ export class SearchApiClient {
 
   async getLocations(query: string): Promise<any> {
     let response = await this.axios.get('/locations', {
-      params: { q: query },
+      params: { q: query }
     });
     return response.data;
   }

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   indexDocumentTool,
@@ -19,11 +18,9 @@ import {
   manageSecurityTool,
   manageWatchTool,
   reindexTool,
-  graphExploreTool,
+  graphExploreTool
 } from './tools';
-import { watcherAlertTrigger,
-  inboundWebhook,
-} from './triggers';
+import { watcherAlertTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -45,10 +42,7 @@ export let provider = Slate.create({
     manageSecurityTool,
     manageWatchTool,
     reindexTool,
-    graphExploreTool,
+    graphExploreTool
   ],
-  triggers: [
-    inboundWebhook,
-    watcherAlertTrigger,
-  ],
+  triggers: [inboundWebhook, watcherAlertTrigger]
 });

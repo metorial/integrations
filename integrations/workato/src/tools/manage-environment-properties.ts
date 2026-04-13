@@ -3,27 +3,34 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageEnvironmentPropertiesTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Environment Properties',
-    key: 'manage_environment_properties',
-    description: `List or upsert workspace environment properties (key-value pairs). Properties are used for storing configuration values accessible across recipes, such as API URLs, feature flags, and environment-specific settings.`,
-    tags: {
-      destructive: true,
-    },
+export let manageEnvironmentPropertiesTool = SlateTool.create(spec, {
+  name: 'Manage Environment Properties',
+  key: 'manage_environment_properties',
+  description: `List or upsert workspace environment properties (key-value pairs). Properties are used for storing configuration values accessible across recipes, such as API URLs, feature flags, and environment-specific settings.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'upsert']).describe('Action to perform'),
-    prefix: z.string().optional().describe('Filter properties by key prefix (for list)'),
-    properties: z.record(z.string(), z.string()).optional().describe('Key-value pairs to upsert'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    properties: z.record(z.string(), z.string()).optional().describe('Properties returned from list'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'upsert']).describe('Action to perform'),
+      prefix: z.string().optional().describe('Filter properties by key prefix (for list)'),
+      properties: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Key-value pairs to upsert')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      properties: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Properties returned from list')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.action === 'list') {
@@ -32,9 +39,9 @@ export let manageEnvironmentPropertiesTool = SlateTool.create(
       return {
         output: {
           success: true,
-          properties: typeof props === 'object' ? props : {},
+          properties: typeof props === 'object' ? props : {}
         },
-        message: `Retrieved environment properties${ctx.input.prefix ? ` with prefix "${ctx.input.prefix}"` : ''}.`,
+        message: `Retrieved environment properties${ctx.input.prefix ? ` with prefix "${ctx.input.prefix}"` : ''}.`
       };
     }
 
@@ -45,6 +52,6 @@ export let manageEnvironmentPropertiesTool = SlateTool.create(
     await client.upsertProperties(ctx.input.properties);
     return {
       output: { success: true },
-      message: `Upserted **${Object.keys(ctx.input.properties).length}** environment properties.`,
+      message: `Upserted **${Object.keys(ctx.input.properties).length}** environment properties.`
     };
   });

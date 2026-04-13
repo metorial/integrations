@@ -1,5 +1,5 @@
-import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export interface ClientConfig {
   token: string;
@@ -27,32 +27,33 @@ export class Client {
     let headers: Record<string, string> = {
       'X-System': config.xSystem,
       'X-System-Key': config.xSystemKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.authMethod === 'oauth') {
       headers['Authorization'] = `Bearer ${config.token}`;
     } else {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let basicAuth = Buffer.from(`${config.token}:`).toString('base64');
       headers['Authorization'] = `Basic ${basicAuth}`;
     }
 
     this.axios = createAxios({
       baseURL: 'https://api.followupboss.com/v1',
-      headers,
+      headers
     });
   }
 
   // ===== People =====
 
-  async listPeople(params?: PaginationParams & {
-    sort?: string;
-    fields?: string;
-    includeTrash?: boolean;
-    includeUnclaimed?: boolean;
-    [key: string]: any;
-  }) {
+  async listPeople(
+    params?: PaginationParams & {
+      sort?: string;
+      fields?: string;
+      includeTrash?: boolean;
+      includeUnclaimed?: boolean;
+      [key: string]: any;
+    }
+  ) {
     let response = await this.axios.get('/people', { params });
     return response.data;
   }
@@ -114,7 +115,12 @@ export class Client {
 
   // ===== Notes =====
 
-  async createNote(data: { personId: number; body: string; subject?: string; isHtml?: boolean }) {
+  async createNote(data: {
+    personId: number;
+    body: string;
+    subject?: string;
+    isHtml?: boolean;
+  }) {
     let response = await this.axios.post('/notes', data);
     return response.data;
   }

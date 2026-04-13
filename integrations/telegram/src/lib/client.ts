@@ -5,7 +5,7 @@ export class TelegramClient {
 
   constructor(token: string) {
     this.axios = createAxios({
-      baseURL: `https://api.telegram.org/bot${token}`,
+      baseURL: `https://api.telegram.org/bot${token}`
     });
   }
 
@@ -31,10 +31,12 @@ export class TelegramClient {
       chat_id: params.chatId,
       text: params.text,
       parse_mode: params.parseMode,
-      reply_parameters: params.replyToMessageId ? { message_id: params.replyToMessageId } : undefined,
+      reply_parameters: params.replyToMessageId
+        ? { message_id: params.replyToMessageId }
+        : undefined,
       disable_notification: params.disableNotification,
       reply_markup: params.replyMarkup,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -53,7 +55,7 @@ export class TelegramClient {
       inline_message_id: params.inlineMessageId,
       text: params.text,
       parse_mode: params.parseMode,
-      reply_markup: params.replyMarkup,
+      reply_markup: params.replyMarkup
     });
     return response.data.result;
   }
@@ -64,7 +66,7 @@ export class TelegramClient {
   }): Promise<boolean> {
     let response = await this.axios.post('/deleteMessage', {
       chat_id: params.chatId,
-      message_id: params.messageId,
+      message_id: params.messageId
     });
     return response.data.result;
   }
@@ -81,7 +83,7 @@ export class TelegramClient {
       from_chat_id: params.fromChatId,
       message_id: params.messageId,
       disable_notification: params.disableNotification,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -94,7 +96,7 @@ export class TelegramClient {
     let response = await this.axios.post('/pinChatMessage', {
       chat_id: params.chatId,
       message_id: params.messageId,
-      disable_notification: params.disableNotification,
+      disable_notification: params.disableNotification
     });
     return response.data.result;
   }
@@ -105,16 +107,14 @@ export class TelegramClient {
   }): Promise<boolean> {
     let response = await this.axios.post('/unpinChatMessage', {
       chat_id: params.chatId,
-      message_id: params.messageId,
+      message_id: params.messageId
     });
     return response.data.result;
   }
 
-  async unpinAllChatMessages(params: {
-    chatId: string | number;
-  }): Promise<boolean> {
+  async unpinAllChatMessages(params: { chatId: string | number }): Promise<boolean> {
     let response = await this.axios.post('/unpinAllChatMessages', {
-      chat_id: params.chatId,
+      chat_id: params.chatId
     });
     return response.data.result;
   }
@@ -136,10 +136,12 @@ export class TelegramClient {
       photo: params.photo,
       caption: params.caption,
       parse_mode: params.parseMode,
-      reply_parameters: params.replyToMessageId ? { message_id: params.replyToMessageId } : undefined,
+      reply_parameters: params.replyToMessageId
+        ? { message_id: params.replyToMessageId }
+        : undefined,
       disable_notification: params.disableNotification,
       reply_markup: params.replyMarkup,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -159,10 +161,12 @@ export class TelegramClient {
       document: params.document,
       caption: params.caption,
       parse_mode: params.parseMode,
-      reply_parameters: params.replyToMessageId ? { message_id: params.replyToMessageId } : undefined,
+      reply_parameters: params.replyToMessageId
+        ? { message_id: params.replyToMessageId }
+        : undefined,
       disable_notification: params.disableNotification,
       reply_markup: params.replyMarkup,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -187,9 +191,11 @@ export class TelegramClient {
       duration: params.duration,
       performer: params.performer,
       title: params.title,
-      reply_parameters: params.replyToMessageId ? { message_id: params.replyToMessageId } : undefined,
+      reply_parameters: params.replyToMessageId
+        ? { message_id: params.replyToMessageId }
+        : undefined,
       disable_notification: params.disableNotification,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -214,9 +220,11 @@ export class TelegramClient {
       duration: params.duration,
       width: params.width,
       height: params.height,
-      reply_parameters: params.replyToMessageId ? { message_id: params.replyToMessageId } : undefined,
+      reply_parameters: params.replyToMessageId
+        ? { message_id: params.replyToMessageId }
+        : undefined,
       disable_notification: params.disableNotification,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -225,7 +233,7 @@ export class TelegramClient {
 
   async getFile(fileId: string): Promise<any> {
     let response = await this.axios.get('/getFile', {
-      params: { file_id: fileId },
+      params: { file_id: fileId }
     });
     return response.data.result;
   }
@@ -238,25 +246,22 @@ export class TelegramClient {
 
   async getChat(chatId: string | number): Promise<any> {
     let response = await this.axios.post('/getChat', {
-      chat_id: chatId,
+      chat_id: chatId
     });
     return response.data.result;
   }
 
   async getChatMemberCount(chatId: string | number): Promise<number> {
     let response = await this.axios.post('/getChatMemberCount', {
-      chat_id: chatId,
+      chat_id: chatId
     });
     return response.data.result;
   }
 
-  async getChatMember(params: {
-    chatId: string | number;
-    userId: number;
-  }): Promise<any> {
+  async getChatMember(params: { chatId: string | number; userId: number }): Promise<any> {
     let response = await this.axios.post('/getChatMember', {
       chat_id: params.chatId,
-      user_id: params.userId,
+      user_id: params.userId
     });
     return response.data.result;
   }
@@ -271,7 +276,7 @@ export class TelegramClient {
       chat_id: params.chatId,
       user_id: params.userId,
       until_date: params.untilDate,
-      revoke_messages: params.revokeMessages,
+      revoke_messages: params.revokeMessages
     });
     return response.data.result;
   }
@@ -284,18 +289,15 @@ export class TelegramClient {
     let response = await this.axios.post('/unbanChatMember', {
       chat_id: params.chatId,
       user_id: params.userId,
-      only_if_banned: params.onlyIfBanned,
+      only_if_banned: params.onlyIfBanned
     });
     return response.data.result;
   }
 
-  async setChatTitle(params: {
-    chatId: string | number;
-    title: string;
-  }): Promise<boolean> {
+  async setChatTitle(params: { chatId: string | number; title: string }): Promise<boolean> {
     let response = await this.axios.post('/setChatTitle', {
       chat_id: params.chatId,
-      title: params.title,
+      title: params.title
     });
     return response.data.result;
   }
@@ -306,7 +308,7 @@ export class TelegramClient {
   }): Promise<boolean> {
     let response = await this.axios.post('/setChatDescription', {
       chat_id: params.chatId,
-      description: params.description,
+      description: params.description
     });
     return response.data.result;
   }
@@ -339,18 +341,15 @@ export class TelegramClient {
       open_period: params.openPeriod,
       close_date: params.closeDate,
       disable_notification: params.disableNotification,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
 
-  async stopPoll(params: {
-    chatId: string | number;
-    messageId: number;
-  }): Promise<any> {
+  async stopPoll(params: { chatId: string | number; messageId: number }): Promise<any> {
     let response = await this.axios.post('/stopPoll', {
       chat_id: params.chatId,
-      message_id: params.messageId,
+      message_id: params.messageId
     });
     return response.data.result;
   }
@@ -399,7 +398,7 @@ export class TelegramClient {
       need_shipping_address: params.needShippingAddress,
       is_flexible: params.isFlexible,
       disable_notification: params.disableNotification,
-      message_thread_id: params.messageThreadId,
+      message_thread_id: params.messageThreadId
     });
     return response.data.result;
   }
@@ -418,7 +417,7 @@ export class TelegramClient {
       payload: params.payload,
       currency: params.currency,
       prices: params.prices,
-      provider_token: params.providerToken,
+      provider_token: params.providerToken
     });
     return response.data.result;
   }
@@ -437,7 +436,7 @@ export class TelegramClient {
       text: params.text,
       show_alert: params.showAlert,
       url: params.url,
-      cache_time: params.cacheTime,
+      cache_time: params.cacheTime
     });
     return response.data.result;
   }
@@ -458,7 +457,7 @@ export class TelegramClient {
       is_personal: params.isPersonal,
       next_offset: params.nextOffset,
       switch_pm_text: params.switchPmText,
-      switch_pm_parameter: params.switchPmParameter,
+      switch_pm_parameter: params.switchPmParameter
     });
     return response.data.result;
   }
@@ -475,16 +474,14 @@ export class TelegramClient {
       url: params.url,
       allowed_updates: params.allowedUpdates,
       secret_token: params.secretToken,
-      max_connections: params.maxConnections,
+      max_connections: params.maxConnections
     });
     return response.data.result;
   }
 
-  async deleteWebhook(params?: {
-    dropPendingUpdates?: boolean;
-  }): Promise<boolean> {
+  async deleteWebhook(params?: { dropPendingUpdates?: boolean }): Promise<boolean> {
     let response = await this.axios.post('/deleteWebhook', {
-      drop_pending_updates: params?.dropPendingUpdates,
+      drop_pending_updates: params?.dropPendingUpdates
     });
     return response.data.result;
   }
@@ -503,7 +500,7 @@ export class TelegramClient {
       name: params.name,
       expire_date: params.expireDate,
       member_limit: params.memberLimit,
-      creates_join_request: params.createsJoinRequest,
+      creates_join_request: params.createsJoinRequest
     });
     return response.data.result;
   }
@@ -520,7 +517,7 @@ export class TelegramClient {
       chat_id: params.chatId,
       user_id: params.userId,
       permissions: params.permissions,
-      until_date: params.untilDate,
+      until_date: params.untilDate
     });
     return response.data.result;
   }
@@ -533,7 +530,7 @@ export class TelegramClient {
     let response = await this.axios.post('/promoteChatMember', {
       chat_id: params.chatId,
       user_id: params.userId,
-      ...params.permissions,
+      ...params.permissions
     });
     return response.data.result;
   }

@@ -3,36 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listWidgets = SlateTool.create(
-  spec,
-  {
-    name: 'List Widgets',
-    key: 'list_widgets',
-    description: `Retrieve a paginated list of widgets, or get a specific widget by ID. Widgets are deployment endpoints for AI agents — they can be embedded on websites, connected to telephony providers for voice, or linked to messaging channels.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWidgets = SlateTool.create(spec, {
+  name: 'List Widgets',
+  key: 'list_widgets',
+  description: `Retrieve a paginated list of widgets, or get a specific widget by ID. Widgets are deployment endpoints for AI agents — they can be embedded on websites, connected to telephony providers for voice, or linked to messaging channels.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    widgetId: z.string().optional().describe('Specific widget ID to retrieve'),
-    page: z.number().optional().describe('Page number (default 1)'),
-    size: z.number().optional().describe('Items per page (default 50, max 100)'),
-  }))
-  .output(z.object({
-    widgets: z.array(z.object({
-      widgetId: z.string(),
-      name: z.string().optional(),
-      assistantId: z.string().optional(),
-    })).optional(),
-    widget: z.object({
-      widgetId: z.string(),
-      name: z.string().optional(),
-      assistantId: z.string().optional(),
-    }).optional(),
-    totalCount: z.number().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      widgetId: z.string().optional().describe('Specific widget ID to retrieve'),
+      page: z.number().optional().describe('Page number (default 1)'),
+      size: z.number().optional().describe('Items per page (default 50, max 100)')
+    })
+  )
+  .output(
+    z.object({
+      widgets: z
+        .array(
+          z.object({
+            widgetId: z.string(),
+            name: z.string().optional(),
+            assistantId: z.string().optional()
+          })
+        )
+        .optional(),
+      widget: z
+        .object({
+          widgetId: z.string(),
+          name: z.string().optional(),
+          assistantId: z.string().optional()
+        })
+        .optional(),
+      totalCount: z.number().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.widgetId) {
@@ -43,10 +50,10 @@ export let listWidgets = SlateTool.create(
           widget: {
             widgetId: data.id,
             name: data.name,
-            assistantId: data.assistant_id,
-          },
+            assistantId: data.assistant_id
+          }
         },
-        message: `Retrieved widget **${data.name || data.id}**.`,
+        message: `Retrieved widget **${data.name || data.id}**.`
       };
     }
 
@@ -58,11 +65,11 @@ export let listWidgets = SlateTool.create(
         widgets: list.map((w: any) => ({
           widgetId: w.id,
           name: w.name,
-          assistantId: w.assistant_id,
+          assistantId: w.assistant_id
         })),
-        totalCount: result.total || list.length,
+        totalCount: result.total || list.length
       },
-      message: `Found **${list.length}** widget(s).`,
+      message: `Found **${list.length}** widget(s).`
     };
   })
   .build();

@@ -2,44 +2,51 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let messageStatus = SlateTrigger.create(
-  spec,
-  {
-    name: 'Message Status Update',
-    key: 'message_status',
-    description: 'Triggers when the delivery status of a sent message changes. Statuses progress through: sent, delivered, read, or failed.'
-  }
-)
-  .input(z.object({
-    statusId: z.string().describe('Unique status entry identifier'),
-    messageId: z.string().describe('Message ID this status refers to'),
-    status: z.string().describe('Message status (sent, delivered, read, failed)'),
-    timestamp: z.string().describe('Status timestamp'),
-    recipientId: z.string().describe('Recipient phone number'),
-    phoneNumberId: z.string().describe('Sending phone number ID'),
-    displayPhoneNumber: z.string().optional().describe('Sending display phone number'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    conversationOriginType: z.string().optional().describe('Conversation origin type'),
-    pricingBillable: z.boolean().optional().describe('Whether this message is billable'),
-    pricingCategory: z.string().optional().describe('Pricing category'),
-    errors: z.any().optional().describe('Error details if status is failed')
-  }))
-  .output(z.object({
-    messageId: z.string().describe('Message ID this status refers to'),
-    status: z.string().describe('Message status (sent, delivered, read, failed)'),
-    timestamp: z.string().describe('Status change timestamp (Unix epoch)'),
-    recipientId: z.string().describe('Recipient phone number'),
-    phoneNumberId: z.string().describe('Sending phone number ID'),
-    displayPhoneNumber: z.string().optional().describe('Sending display phone number'),
-    conversationId: z.string().optional().describe('Conversation ID'),
-    conversationOriginType: z.string().optional().describe('Origin of the conversation (business_initiated, user_initiated, referral_conversion, etc.)'),
-    pricingBillable: z.boolean().optional().describe('Whether this message is billable'),
-    pricingCategory: z.string().optional().describe('Pricing category'),
-    errorCode: z.string().optional().describe('Error code (when status is failed)'),
-    errorTitle: z.string().optional().describe('Error title (when status is failed)')
-  }))
+export let messageStatus = SlateTrigger.create(spec, {
+  name: 'Message Status Update',
+  key: 'message_status',
+  description:
+    'Triggers when the delivery status of a sent message changes. Statuses progress through: sent, delivered, read, or failed.'
+})
+  .input(
+    z.object({
+      statusId: z.string().describe('Unique status entry identifier'),
+      messageId: z.string().describe('Message ID this status refers to'),
+      status: z.string().describe('Message status (sent, delivered, read, failed)'),
+      timestamp: z.string().describe('Status timestamp'),
+      recipientId: z.string().describe('Recipient phone number'),
+      phoneNumberId: z.string().describe('Sending phone number ID'),
+      displayPhoneNumber: z.string().optional().describe('Sending display phone number'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      conversationOriginType: z.string().optional().describe('Conversation origin type'),
+      pricingBillable: z.boolean().optional().describe('Whether this message is billable'),
+      pricingCategory: z.string().optional().describe('Pricing category'),
+      errors: z.any().optional().describe('Error details if status is failed')
+    })
+  )
+  .output(
+    z.object({
+      messageId: z.string().describe('Message ID this status refers to'),
+      status: z.string().describe('Message status (sent, delivered, read, failed)'),
+      timestamp: z.string().describe('Status change timestamp (Unix epoch)'),
+      recipientId: z.string().describe('Recipient phone number'),
+      phoneNumberId: z.string().describe('Sending phone number ID'),
+      displayPhoneNumber: z.string().optional().describe('Sending display phone number'),
+      conversationId: z.string().optional().describe('Conversation ID'),
+      conversationOriginType: z
+        .string()
+        .optional()
+        .describe(
+          'Origin of the conversation (business_initiated, user_initiated, referral_conversion, etc.)'
+        ),
+      pricingBillable: z.boolean().optional().describe('Whether this message is billable'),
+      pricingCategory: z.string().optional().describe('Pricing category'),
+      errorCode: z.string().optional().describe('Error code (when status is failed)'),
+      errorTitle: z.string().optional().describe('Error title (when status is failed)')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let method = ctx.request.method;
 
       // Handle webhook verification GET request
@@ -60,7 +67,7 @@ export let messageStatus = SlateTrigger.create(
         return { inputs: [], response: new Response('Bad request', { status: 400 }) };
       }
 
-      let body = await ctx.request.json() as any;
+      let body = (await ctx.request.json()) as any;
 
       if (body.object !== 'whatsapp_business_account') {
         return { inputs: [] };
@@ -68,8 +75,8 @@ export let messageStatus = SlateTrigger.create(
 
       let inputs: any[] = [];
 
-      for (let entry of (body.entry ?? [])) {
-        for (let change of (entry.changes ?? [])) {
+      for (let entry of body.entry ?? []) {
+        for (let change of entry.changes ?? []) {
           if (change.field !== 'messages') continue;
 
           let value = change.value;
@@ -98,7 +105,7 @@ export let messageStatus = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let errorCode: string | undefined;
       let errorTitle: string | undefined;
 

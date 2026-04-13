@@ -24,7 +24,10 @@ export class GoogleTasksClient {
 
   // ---- Task Lists ----
 
-  async listTaskLists(params?: { maxResults?: number; pageToken?: string }): Promise<TaskListsResponse> {
+  async listTaskLists(params?: {
+    maxResults?: number;
+    pageToken?: string;
+  }): Promise<TaskListsResponse> {
     let response = await this.api.get('/users/@me/lists', { params });
     return response.data;
   }
@@ -73,7 +76,10 @@ export class GoogleTasksClient {
     return response.data;
   }
 
-  async getAllTasks(taskListId: string, params?: Omit<ListTasksParams, 'pageToken' | 'maxResults'>): Promise<Task[]> {
+  async getAllTasks(
+    taskListId: string,
+    params?: Omit<ListTasksParams, 'pageToken' | 'maxResults'>
+  ): Promise<Task[]> {
     let allTasks: Task[] = [];
     let pageToken: string | undefined;
 

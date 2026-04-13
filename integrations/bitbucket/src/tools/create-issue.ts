@@ -3,36 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createIssueTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Issue',
-    key: 'create_issue',
-    description: `Create a new issue in a repository's built-in issue tracker. Set title, content, priority, kind, component, milestone, version, and assignee.`,
-  }
-)
-  .input(z.object({
-    repoSlug: z.string().describe('Repository slug'),
-    title: z.string().describe('Issue title'),
-    content: z.string().optional().describe('Issue body (supports Markdown)'),
-    priority: z.enum(['trivial', 'minor', 'major', 'critical', 'blocker']).optional().describe('Issue priority'),
-    kind: z.enum(['bug', 'enhancement', 'proposal', 'task']).optional().describe('Issue type'),
-    component: z.string().optional().describe('Component name'),
-    milestone: z.string().optional().describe('Milestone name'),
-    version: z.string().optional().describe('Version name'),
-    assigneeUuid: z.string().optional().describe('Assignee user UUID'),
-  }))
-  .output(z.object({
-    issueId: z.number(),
-    title: z.string(),
-    status: z.string().optional(),
-    htmlUrl: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let createIssueTool = SlateTool.create(spec, {
+  name: 'Create Issue',
+  key: 'create_issue',
+  description: `Create a new issue in a repository's built-in issue tracker. Set title, content, priority, kind, component, milestone, version, and assignee.`
+})
+  .input(
+    z.object({
+      repoSlug: z.string().describe('Repository slug'),
+      title: z.string().describe('Issue title'),
+      content: z.string().optional().describe('Issue body (supports Markdown)'),
+      priority: z
+        .enum(['trivial', 'minor', 'major', 'critical', 'blocker'])
+        .optional()
+        .describe('Issue priority'),
+      kind: z
+        .enum(['bug', 'enhancement', 'proposal', 'task'])
+        .optional()
+        .describe('Issue type'),
+      component: z.string().optional().describe('Component name'),
+      milestone: z.string().optional().describe('Milestone name'),
+      version: z.string().optional().describe('Version name'),
+      assigneeUuid: z.string().optional().describe('Assignee user UUID')
+    })
+  )
+  .output(
+    z.object({
+      issueId: z.number(),
+      title: z.string(),
+      status: z.string().optional(),
+      htmlUrl: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
     let body: Record<string, any> = {
-      title: ctx.input.title,
+      title: ctx.input.title
     };
     if (ctx.input.content) body.content = { raw: ctx.input.content };
     if (ctx.input.priority) body.priority = ctx.input.priority;
@@ -49,8 +56,9 @@ export let createIssueTool = SlateTool.create(
         issueId: issue.id,
         title: issue.title,
         status: issue.state || undefined,
-        htmlUrl: issue.links?.html?.href || undefined,
+        htmlUrl: issue.links?.html?.href || undefined
       },
-      message: `Created issue **#${issue.id}: ${issue.title}**.`,
+      message: `Created issue **#${issue.id}: ${issue.title}**.`
     };
-  }).build();
+  })
+  .build();

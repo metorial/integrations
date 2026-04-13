@@ -13,19 +13,21 @@ Google Cloud Storage is an object storage service for storing and retrieving uns
 Google recommends OAuth 2.0 authentication for interacting with the Google Cloud Storage API. Authentication follows standard Google OAuth 2.0 flows.
 
 **Endpoints:**
+
 - Authorization: `https://accounts.google.com/o/oauth2/auth`
 - Token: `https://accounts.google.com/o/oauth2/token`
 
 **Scopes:**
 
-| Scope | URL | Description |
-|-------|-----|-------------|
-| `read-only` | `https://www.googleapis.com/auth/devstorage.read_only` | Read data and list buckets |
-| `read-write` | `https://www.googleapis.com/auth/devstorage.read_write` | Read and modify data, but not metadata like IAM policies |
-| `full-control` | `https://www.googleapis.com/auth/devstorage.full_control` | Full control over data, including modifying IAM policies |
-| `cloud-platform` | `https://www.googleapis.com/auth/cloud-platform` | View and manage data across all Google Cloud services (equivalent to full-control for Cloud Storage) |
+| Scope            | URL                                                       | Description                                                                                          |
+| ---------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `read-only`      | `https://www.googleapis.com/auth/devstorage.read_only`    | Read data and list buckets                                                                           |
+| `read-write`     | `https://www.googleapis.com/auth/devstorage.read_write`   | Read and modify data, but not metadata like IAM policies                                             |
+| `full-control`   | `https://www.googleapis.com/auth/devstorage.full_control` | Full control over data, including modifying IAM policies                                             |
+| `cloud-platform` | `https://www.googleapis.com/auth/cloud-platform`          | View and manage data across all Google Cloud services (equivalent to full-control for Cloud Storage) |
 
 **Required credentials:**
+
 - **Client ID** and **Client Secret** obtained by registering an application in the Google Cloud Console.
 - **Project ID** of the Google Cloud project.
 
@@ -36,6 +38,7 @@ Access tokens are included in requests via the `Authorization: Bearer <token>` h
 Service accounts are accounts that do not represent a human user. They provide a way to manage authentication and authorization when a human is not directly involved, such as when an application needs to access Google Cloud resources.
 
 A service account JSON key file is downloaded from the Google Cloud Console. It contains:
+
 - `client_email`
 - `private_key`
 - `project_id`
@@ -61,6 +64,7 @@ Upload, download, list, copy, move, and delete objects in buckets. Supports mult
 ### Access Control
 
 Control who can access buckets and objects using two mechanisms:
+
 - **IAM (Identity and Access Management):** Assign roles to principals at the project, bucket, or managed folder level.
 - **Access Control Lists (ACLs):** Fine-grained per-object and per-bucket access rules (legacy approach).
 - **Signed URLs:** Generate time-limited URLs that grant temporary access to specific objects without requiring the requester to have a Google account.
@@ -113,6 +117,7 @@ A notification configuration is attached to a bucket and specifies a target Pub/
 - **OBJECT_ARCHIVE:** A live version of an object becomes a noncurrent version (when versioning is enabled).
 
 **Configuration options:**
+
 - Cloud Storage will only send notifications for objects in this bucket whose names begin with the specified prefix. An optional object name prefix filter can be set.
 - Up to 10 custom key/value attribute pairs can be attached to each notification message.
 - Payload format can be set to `JSON_API_V1` (includes full object metadata) or `NONE` (attributes only).

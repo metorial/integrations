@@ -13,7 +13,7 @@ import {
   getJob,
   listJobs,
   listFormats,
-  createJob,
+  createJob
 } from './tools';
 import { jobEvent } from './triggers';
 
@@ -32,9 +32,7 @@ export let provider = Slate.create({
     getJob,
     listJobs,
     listFormats,
-    createJob,
+    createJob
   ],
-  triggers: [
-    jobEvent,
-  ],
+  triggers: [jobEvent]
 });

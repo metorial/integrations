@@ -75,6 +75,7 @@ Webhooks are configured in the Userlist integration settings. You specify an end
 ### User Events
 
 Notifications for user lifecycle changes:
+
 - **User Created**: Triggered when a new user is created.
 - **User Updated**: Triggered when an existing user is updated.
 - **User Subscribed**: Triggered when a user subscribes to messages (globally or for a specific topic). Includes optional topic information.
@@ -83,12 +84,14 @@ Notifications for user lifecycle changes:
 ### Company Events
 
 Notifications for company lifecycle changes:
+
 - **Company Created**: Triggered when a new company is created.
 - **Company Updated**: Triggered when an existing company is updated.
 
 ### Relationship Events
 
 Notifications for changes to user–company relationships:
+
 - **Relationship Created**: Triggered when a new relationship between a user and a company is created. Includes user, company, and relationship details.
 - **Relationship Updated**: Triggered when an existing relationship is updated.
 
@@ -99,6 +102,7 @@ Notifications for changes to user–company relationships:
 ### Message Events
 
 Notifications for message delivery and engagement:
+
 - **Message Enqueued**: Triggered when a message is queued to be sent to a user. Includes the message ID and subject (subject omitted for transactional messages).
 - **Message Opened**: Triggered when a user opens a message.
 - **Message Clicked**: Triggered when a user clicks a link in a message. Includes the clicked URL (omitted for transactional messages).

@@ -15,7 +15,7 @@ let TType = {
   STRUCT: 12,
   MAP: 13,
   SET: 14,
-  LIST: 15,
+  LIST: 15
 } as const;
 
 type TTypeValue = (typeof TType)[keyof typeof TType];
@@ -24,7 +24,7 @@ type TTypeValue = (typeof TType)[keyof typeof TType];
 let TMessageType = {
   CALL: 1,
   REPLY: 2,
-  EXCEPTION: 3,
+  EXCEPTION: 3
 } as const;
 
 // Helper to convert string to byte array (UTF-8)

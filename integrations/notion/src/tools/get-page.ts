@@ -3,41 +3,49 @@ import { NotionClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getPage = SlateTool.create(
-  spec,
-  {
-    name: 'Get Page',
-    key: 'get_page',
-    description: `Retrieve a Notion page by its ID, including all properties, metadata, and optionally its content blocks.
+export let getPage = SlateTool.create(spec, {
+  name: 'Get Page',
+  key: 'get_page',
+  description: `Retrieve a Notion page by its ID, including all properties, metadata, and optionally its content blocks.
 Use this to read a page's title, properties, timestamps, parent info, icon, cover, and block content.`,
-    constraints: [
-      'Page properties return a maximum of 25 references per property. Use the page property endpoint for larger datasets.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+  constraints: [
+    'Page properties return a maximum of 25 references per property. Use the page property endpoint for larger datasets.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    pageId: z.string().describe('ID of the page to retrieve'),
-    includeContent: z.boolean().optional().default(false).describe('Whether to also fetch the page content blocks'),
-  }))
-  .output(z.object({
-    pageId: z.string().describe('ID of the page'),
-    url: z.string().optional().describe('URL of the page'),
-    createdTime: z.string().optional().describe('When the page was created'),
-    lastEditedTime: z.string().optional().describe('When the page was last edited'),
-    archived: z.boolean().optional().describe('Whether the page is archived'),
-    inTrash: z.boolean().optional().describe('Whether the page is in trash'),
-    isLocked: z.boolean().optional().describe('Whether the page is locked'),
-    icon: z.any().optional().describe('Page icon'),
-    cover: z.any().optional().describe('Page cover image'),
-    parent: z.any().optional().describe('Parent reference'),
-    properties: z.record(z.string(), z.any()).optional().describe('Page properties'),
-    blocks: z.array(z.any()).optional().describe('Page content blocks (if includeContent is true)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pageId: z.string().describe('ID of the page to retrieve'),
+      includeContent: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to also fetch the page content blocks')
+    })
+  )
+  .output(
+    z.object({
+      pageId: z.string().describe('ID of the page'),
+      url: z.string().optional().describe('URL of the page'),
+      createdTime: z.string().optional().describe('When the page was created'),
+      lastEditedTime: z.string().optional().describe('When the page was last edited'),
+      archived: z.boolean().optional().describe('Whether the page is archived'),
+      inTrash: z.boolean().optional().describe('Whether the page is in trash'),
+      isLocked: z.boolean().optional().describe('Whether the page is locked'),
+      icon: z.any().optional().describe('Page icon'),
+      cover: z.any().optional().describe('Page cover image'),
+      parent: z.any().optional().describe('Parent reference'),
+      properties: z.record(z.string(), z.any()).optional().describe('Page properties'),
+      blocks: z
+        .array(z.any())
+        .optional()
+        .describe('Page content blocks (if includeContent is true)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NotionClient({ token: ctx.auth.token });
 
     let page = await client.getPage(ctx.input.pageId);
@@ -68,11 +76,12 @@ Use this to read a page's title, properties, timestamps, parent info, icon, cove
         cover: page.cover,
         parent: page.parent,
         properties: page.properties,
-        blocks,
+        blocks
       },
-      message: `Retrieved page${title ? ` **${title}**` : ''} (${page.id})${page.url ? ` — [Open in Notion](${page.url})` : ''}`,
+      message: `Retrieved page${title ? ` **${title}**` : ''} (${page.id})${page.url ? ` — [Open in Notion](${page.url})` : ''}`
     };
-  }).build();
+  })
+  .build();
 
 let extractTitle = (properties: Record<string, any> | undefined): string | undefined => {
   if (!properties) return undefined;

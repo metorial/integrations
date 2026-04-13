@@ -15,6 +15,7 @@ WooCommerce supports two primary authentication methods, depending on whether th
 The recommended and simplest method. Pre-generated keys can be used to authenticate use of the REST API endpoints. Keys can be generated either through the WordPress admin interface or auto-generated through an endpoint.
 
 To generate keys:
+
 1. Navigate to WooCommerce > Settings > Advanced > REST API in the WordPress admin.
 2. Click "Add Key", provide a description, select a WordPress user, and choose a permission level.
 3. Choose the level of access for the REST API key, which can be Read access, Write access, or Read/Write access.
@@ -37,6 +38,7 @@ The required parameters are: `oauth_consumer_key`, `oauth_timestamp`, `oauth_non
 WooCommerce provides an endpoint (`/wc-auth/v1/authorize`) that any app can use to allow users to generate API keys for that app. This makes integration easier because the user only needs to grant access via a URL. After being redirected back to the app, the API keys are sent back in a separate POST request.
 
 Required parameters for this flow:
+
 - `app_name`: Your application name
 - `scope`: Level of access — `read`, `write`, or `read_write`
 - `user_id`: User ID in your app (for internal reference)
@@ -107,21 +109,25 @@ WooCommerce supports webhooks that send HTTP POST requests to a configured deliv
 ### Coupon Events
 
 Triggered when coupons are created, updated, deleted, or restored.
+
 - Topics: `coupon.created`, `coupon.updated`, `coupon.deleted`, `coupon.restored`
 
 ### Customer Events
 
 Triggered when customers are created, updated, or deleted.
+
 - Topics: `customer.created`, `customer.updated`, `customer.deleted`
 
 ### Order Events
 
 Triggered when orders are created, updated, deleted, or restored.
+
 - Topics: `order.created`, `order.updated`, `order.deleted`, `order.restored`
 
 ### Product Events
 
 Triggered when products are created, updated, deleted, or restored.
+
 - Topics: `product.created`, `product.updated`, `product.deleted`, `product.restored`
 
 ### Action Events

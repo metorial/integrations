@@ -44,7 +44,11 @@ export class MeetClient {
     return response.data;
   }
 
-  async updateSpace(spaceName: string, config: SpaceConfig, updateMask: string): Promise<Space> {
+  async updateSpace(
+    spaceName: string,
+    config: SpaceConfig,
+    updateMask: string
+  ): Promise<Space> {
     let name = spaceName.startsWith('spaces/') ? spaceName : `spaces/${spaceName}`;
     let response = await meetAxios.patch(
       `/v2/${name}`,
@@ -64,13 +68,14 @@ export class MeetClient {
 
   // --- Members (v2beta) ---
 
-  async createMember(spaceName: string, member: { user?: string; email?: string; role?: string }): Promise<Member> {
+  async createMember(
+    spaceName: string,
+    member: { user?: string; email?: string; role?: string }
+  ): Promise<Member> {
     let parent = spaceName.startsWith('spaces/') ? spaceName : `spaces/${spaceName}`;
-    let response = await meetAxios.post(
-      `/v2beta/${parent}/members`,
-      member,
-      { headers: this.headers }
-    );
+    let response = await meetAxios.post(`/v2beta/${parent}/members`, member, {
+      headers: this.headers
+    });
     return response.data;
   }
 
@@ -79,7 +84,11 @@ export class MeetClient {
     return response.data;
   }
 
-  async listMembers(spaceName: string, pageSize?: number, pageToken?: string): Promise<{ members: Member[]; nextPageToken?: string }> {
+  async listMembers(
+    spaceName: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ members: Member[]; nextPageToken?: string }> {
     let parent = spaceName.startsWith('spaces/') ? spaceName : `spaces/${spaceName}`;
     let params: Record<string, string | number> = {};
     if (pageSize) params.pageSize = pageSize;
@@ -107,7 +116,11 @@ export class MeetClient {
     return response.data;
   }
 
-  async listConferenceRecords(filter?: string, pageSize?: number, pageToken?: string): Promise<{ conferenceRecords: ConferenceRecord[]; nextPageToken?: string }> {
+  async listConferenceRecords(
+    filter?: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ conferenceRecords: ConferenceRecord[]; nextPageToken?: string }> {
     let params: Record<string, string | number> = {};
     if (filter) params.filter = filter;
     if (pageSize) params.pageSize = pageSize;
@@ -130,7 +143,12 @@ export class MeetClient {
     return response.data;
   }
 
-  async listParticipants(conferenceRecordName: string, pageSize?: number, pageToken?: string, filter?: string): Promise<{ participants: Participant[]; nextPageToken?: string }> {
+  async listParticipants(
+    conferenceRecordName: string,
+    pageSize?: number,
+    pageToken?: string,
+    filter?: string
+  ): Promise<{ participants: Participant[]; nextPageToken?: string }> {
     let parent = conferenceRecordName.startsWith('conferenceRecords/')
       ? conferenceRecordName
       : `conferenceRecords/${conferenceRecordName}`;
@@ -151,7 +169,11 @@ export class MeetClient {
 
   // --- Participant Sessions ---
 
-  async listParticipantSessions(participantName: string, pageSize?: number, pageToken?: string): Promise<{ participantSessions: ParticipantSession[]; nextPageToken?: string }> {
+  async listParticipantSessions(
+    participantName: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ participantSessions: ParticipantSession[]; nextPageToken?: string }> {
     let params: Record<string, string | number> = {};
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;
@@ -173,7 +195,11 @@ export class MeetClient {
     return response.data;
   }
 
-  async listRecordings(conferenceRecordName: string, pageSize?: number, pageToken?: string): Promise<{ recordings: Recording[]; nextPageToken?: string }> {
+  async listRecordings(
+    conferenceRecordName: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ recordings: Recording[]; nextPageToken?: string }> {
     let parent = conferenceRecordName.startsWith('conferenceRecords/')
       ? conferenceRecordName
       : `conferenceRecords/${conferenceRecordName}`;
@@ -198,7 +224,11 @@ export class MeetClient {
     return response.data;
   }
 
-  async listTranscripts(conferenceRecordName: string, pageSize?: number, pageToken?: string): Promise<{ transcripts: Transcript[]; nextPageToken?: string }> {
+  async listTranscripts(
+    conferenceRecordName: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ transcripts: Transcript[]; nextPageToken?: string }> {
     let parent = conferenceRecordName.startsWith('conferenceRecords/')
       ? conferenceRecordName
       : `conferenceRecords/${conferenceRecordName}`;
@@ -223,7 +253,11 @@ export class MeetClient {
     return response.data;
   }
 
-  async listTranscriptEntries(transcriptName: string, pageSize?: number, pageToken?: string): Promise<{ transcriptEntries: TranscriptEntry[]; nextPageToken?: string }> {
+  async listTranscriptEntries(
+    transcriptName: string,
+    pageSize?: number,
+    pageToken?: string
+  ): Promise<{ transcriptEntries: TranscriptEntry[]; nextPageToken?: string }> {
     let params: Record<string, string | number> = {};
     if (pageSize) params.pageSize = pageSize;
     if (pageToken) params.pageToken = pageToken;

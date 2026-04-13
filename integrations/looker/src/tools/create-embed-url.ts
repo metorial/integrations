@@ -3,38 +3,50 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { LookerClient } from '../lib/client';
 
-export let createEmbedUrl = SlateTool.create(
-  spec,
-  {
-    name: 'Create Embed URL',
-    key: 'create_embed_url',
-    description: `Generate a signed SSO embed URL for embedding Looker content (dashboards, Looks, Explores) into external applications. The URL can be used to embed Looker in iframes with authenticated user context.`,
-  }
-)
+export let createEmbedUrl = SlateTool.create(spec, {
+  name: 'Create Embed URL',
+  key: 'create_embed_url',
+  description: `Generate a signed SSO embed URL for embedding Looker content (dashboards, Looks, Explores) into external applications. The URL can be used to embed Looker in iframes with authenticated user context.`
+})
   .input(
     z.object({
-      targetUrl: z.string().describe('The Looker URL to embed (e.g., "/embed/dashboards/1" or "/embed/looks/5")'),
+      targetUrl: z
+        .string()
+        .describe('The Looker URL to embed (e.g., "/embed/dashboards/1" or "/embed/looks/5")'),
       externalUserId: z.string().describe('External user ID for the embed user'),
-      permissions: z.array(z.string()).describe('Permissions for the embed user (e.g., ["access_data", "see_looks", "see_user_dashboards"])'),
+      permissions: z
+        .array(z.string())
+        .describe(
+          'Permissions for the embed user (e.g., ["access_data", "see_looks", "see_user_dashboards"])'
+        ),
       models: z.array(z.string()).describe('Models the embed user can access'),
-      sessionLength: z.number().optional().describe('Session length in seconds (default 3600)'),
+      sessionLength: z
+        .number()
+        .optional()
+        .describe('Session length in seconds (default 3600)'),
       firstName: z.string().optional().describe('First name of the embed user'),
       lastName: z.string().optional().describe('Last name of the embed user'),
       forceLogoutLogin: z.boolean().optional().describe('Whether to force logout/login'),
-      groupIds: z.array(z.string()).optional().describe('Group IDs to assign to the embed user'),
+      groupIds: z
+        .array(z.string())
+        .optional()
+        .describe('Group IDs to assign to the embed user'),
       externalGroupId: z.string().optional().describe('External group ID'),
-      userAttributes: z.record(z.string(), z.any()).optional().describe('User attributes for the embed user'),
+      userAttributes: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('User attributes for the embed user')
     })
   )
   .output(
     z.object({
-      url: z.string().describe('Signed embed URL'),
+      url: z.string().describe('Signed embed URL')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new LookerClient({
       instanceUrl: ctx.config.instanceUrl,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let result = await client.createSsoEmbedUrl({
@@ -48,11 +60,12 @@ export let createEmbedUrl = SlateTool.create(
       models: ctx.input.models,
       group_ids: ctx.input.groupIds,
       external_group_id: ctx.input.externalGroupId,
-      user_attributes: ctx.input.userAttributes,
+      user_attributes: ctx.input.userAttributes
     });
 
     return {
       output: { url: result.url },
-      message: `Generated embed URL for **${ctx.input.targetUrl}** (user: ${ctx.input.externalUserId}).`,
+      message: `Generated embed URL for **${ctx.input.targetUrl}** (user: ${ctx.input.externalUserId}).`
     };
-  }).build();
+  })
+  .build();

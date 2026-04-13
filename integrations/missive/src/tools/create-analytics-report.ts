@@ -3,45 +3,51 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createAnalyticsReport = SlateTool.create(
-  spec,
-  {
-    name: 'Create Analytics Report',
-    key: 'create_analytics_report',
-    description: `Generate an analytics report for a specified time period. Report generation is asynchronous — the report is created first, then fetched after a short delay. The tool handles the polling automatically and returns the completed report.
+export let createAnalyticsReport = SlateTool.create(spec, {
+  name: 'Create Analytics Report',
+  key: 'create_analytics_report',
+  description: `Generate an analytics report for a specified time period. Report generation is asynchronous — the report is created first, then fetched after a short delay. The tool handles the polling automatically and returns the completed report.
 Supports filtering by team, users, labels, accounts, and account types.
 Requires a Productive or Business plan; filtering capabilities require Business plan.`,
-    constraints: [
-      'Report generation takes 2-30 seconds. The tool will poll for up to 60 seconds.',
-      'Reports expire 60 seconds after generation.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  constraints: [
+    'Report generation takes 2-30 seconds. The tool will poll for up to 60 seconds.',
+    'Reports expire 60 seconds after generation.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    organizationId: z.string().describe('Organization ID to generate report for'),
-    start: z.string().describe('Start date/time (ISO 8601 string)'),
-    end: z.string().describe('End date/time (ISO 8601 string)'),
-    timeZone: z.string().optional().describe('Timezone string, e.g. "America/New_York"'),
-    teamIds: z.array(z.string()).optional().describe('Filter by team IDs'),
-    userIds: z.array(z.string()).optional().describe('Filter by user IDs'),
-    accountIds: z.array(z.string()).optional().describe('Filter by account IDs'),
-    accountTypes: z.array(z.string()).optional().describe('Filter by account types (email, sms, whatsapp, instagram, messenger, live_chat, custom)'),
-    sharedLabelIds: z.array(z.string()).optional().describe('Filter by shared label IDs'),
-  }))
-  .output(z.object({
-    reportId: z.string().describe('Report ID'),
-    report: z.any().describe('Full report data'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      organizationId: z.string().describe('Organization ID to generate report for'),
+      start: z.string().describe('Start date/time (ISO 8601 string)'),
+      end: z.string().describe('End date/time (ISO 8601 string)'),
+      timeZone: z.string().optional().describe('Timezone string, e.g. "America/New_York"'),
+      teamIds: z.array(z.string()).optional().describe('Filter by team IDs'),
+      userIds: z.array(z.string()).optional().describe('Filter by user IDs'),
+      accountIds: z.array(z.string()).optional().describe('Filter by account IDs'),
+      accountTypes: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Filter by account types (email, sms, whatsapp, instagram, messenger, live_chat, custom)'
+        ),
+      sharedLabelIds: z.array(z.string()).optional().describe('Filter by shared label IDs')
+    })
+  )
+  .output(
+    z.object({
+      reportId: z.string().describe('Report ID'),
+      report: z.any().describe('Full report data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let body: Record<string, any> = {
       organization: ctx.input.organizationId,
       start: ctx.input.start,
-      end: ctx.input.end,
+      end: ctx.input.end
     };
     if (ctx.input.timeZone) body.time_zone = ctx.input.timeZone;
     if (ctx.input.teamIds) body.teams = ctx.input.teamIds;
@@ -77,9 +83,9 @@ Requires a Productive or Business plan; filtering capabilities require Business 
     return {
       output: {
         reportId,
-        report,
+        report
       },
-      message: `Generated analytics report **${reportId}** for the specified period.`,
+      message: `Generated analytics report **${reportId}** for the specified period.`
     };
   })
   .build();

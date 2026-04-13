@@ -4,12 +4,14 @@ import { z } from 'zod';
 let ax = createAxios();
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-    cloudId: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional(),
+      cloudId: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0 (Confluence Cloud)',
@@ -93,7 +95,7 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         audience: 'api.atlassian.com',
         client_id: ctx.clientId,
@@ -109,7 +111,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let tokenResponse = await ax.post('https://auth.atlassian.com/oauth/token', {
         grant_type: 'authorization_code',
         client_id: ctx.clientId,
@@ -127,11 +129,18 @@ export let auth = SlateAuth.create()
         : undefined;
 
       // Fetch the cloud ID from accessible resources
-      let resourcesResponse = await ax.get('https://api.atlassian.com/oauth/token/accessible-resources', {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
+      let resourcesResponse = await ax.get(
+        'https://api.atlassian.com/oauth/token/accessible-resources',
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
 
-      let resources = resourcesResponse.data as Array<{ id: string; name: string; url: string }>;
+      let resources = resourcesResponse.data as Array<{
+        id: string;
+        name: string;
+        url: string;
+      }>;
       let cloudId = resources.length > 0 ? resources[0]!.id : undefined;
 
       return {
@@ -144,9 +153,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available. Ensure the offline_access scope is included.');
+        throw new Error(
+          'No refresh token available. Ensure the offline_access scope is included.'
+        );
       }
 
       let tokenResponse = await ax.post('https://auth.atlassian.com/oauth/token', {
@@ -157,7 +168,8 @@ export let auth = SlateAuth.create()
       });
 
       let accessToken = tokenResponse.data.access_token as string;
-      let refreshToken = (tokenResponse.data.refresh_token as string | undefined) || ctx.output.refreshToken;
+      let refreshToken =
+        (tokenResponse.data.refresh_token as string | undefined) || ctx.output.refreshToken;
       let expiresIn = tokenResponse.data.expires_in as number | undefined;
 
       let expiresAt = expiresIn
@@ -174,12 +186,21 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string; cloudId?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string; cloudId?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let response = await ax.get('https://api.atlassian.com/me', {
         headers: { Authorization: `Bearer ${ctx.output.token}` }
       });
 
-      let data = response.data as { account_id: string; email: string; name: string; picture: string };
+      let data = response.data as {
+        account_id: string;
+        email: string;
+        name: string;
+        picture: string;
+      };
 
       return {
         profile: {
@@ -198,8 +219,14 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       email: z.string().describe('Atlassian account email address'),
-      token: z.string().describe('API token generated from https://id.atlassian.com/manage-profile/security/api-tokens'),
-      domain: z.string().describe('Atlassian domain (e.g., "mycompany" for mycompany.atlassian.net)')
+      token: z
+        .string()
+        .describe(
+          'API token generated from https://id.atlassian.com/manage-profile/security/api-tokens'
+        ),
+      domain: z
+        .string()
+        .describe('Atlassian domain (e.g., "mycompany" for mycompany.atlassian.net)')
     }),
 
     getOutput: async (ctx: { input: { email: string; token: string; domain: string } }) => {
@@ -211,12 +238,23 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { email: string; token: string; domain: string } }) => {
-      let response = await ax.get(`https://${ctx.input.domain}.atlassian.net/wiki/rest/api/user/current`, {
-        headers: { Authorization: `Basic ${ctx.output.token}` }
-      });
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { email: string; token: string; domain: string };
+    }) => {
+      let response = await ax.get(
+        `https://${ctx.input.domain}.atlassian.net/wiki/rest/api/user/current`,
+        {
+          headers: { Authorization: `Basic ${ctx.output.token}` }
+        }
+      );
 
-      let data = response.data as { accountId: string; email: string; displayName: string; profilePicture?: { path: string } };
+      let data = response.data as {
+        accountId: string;
+        email: string;
+        displayName: string;
+        profilePicture?: { path: string };
+      };
 
       return {
         profile: {
@@ -235,7 +273,11 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       token: z.string().describe('Personal access token for Confluence Data Center'),
-      baseUrl: z.string().describe('Base URL of your Confluence Data Center instance (e.g., https://confluence.example.com)')
+      baseUrl: z
+        .string()
+        .describe(
+          'Base URL of your Confluence Data Center instance (e.g., https://confluence.example.com)'
+        )
     }),
 
     getOutput: async (ctx: { input: { token: string; baseUrl: string } }) => {
@@ -246,7 +288,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { token: string; baseUrl: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { token: string; baseUrl: string };
+    }) => {
       let response = await ax.get(`${ctx.input.baseUrl}/rest/api/user/current`, {
         headers: { Authorization: `Bearer ${ctx.output.token}` }
       });

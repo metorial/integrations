@@ -3,35 +3,55 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `List, create, update, or delete content tags in the current environment. Tags help organize and filter content.`,
-    tags: {
-      destructive: true
-    }
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `List, create, update, or delete content tags in the current environment. Tags help organize and filter content.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform.'),
-    tagId: z.string().optional().describe('Tag ID. Required for create, update, and delete.'),
-    name: z.string().optional().describe('Tag display name. Required for create and update.'),
-    visibility: z.enum(['private', 'public']).optional().describe('Tag visibility. Only used when creating.'),
-    version: z.number().optional().describe('Current version. Required for update and delete (fetched automatically if omitted).')
-  }))
-  .output(z.object({
-    action: z.string().describe('Action performed.'),
-    tagId: z.string().optional().describe('Tag ID.'),
-    name: z.string().optional().describe('Tag name.'),
-    tags: z.array(z.object({
-      tagId: z.string().describe('Tag ID.'),
-      name: z.string().describe('Tag name.'),
-      visibility: z.string().optional().describe('Tag visibility.')
-    })).optional().describe('List of tags (only for list action).')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform.'),
+      tagId: z
+        .string()
+        .optional()
+        .describe('Tag ID. Required for create, update, and delete.'),
+      name: z
+        .string()
+        .optional()
+        .describe('Tag display name. Required for create and update.'),
+      visibility: z
+        .enum(['private', 'public'])
+        .optional()
+        .describe('Tag visibility. Only used when creating.'),
+      version: z
+        .number()
+        .optional()
+        .describe(
+          'Current version. Required for update and delete (fetched automatically if omitted).'
+        )
+    })
+  )
+  .output(
+    z.object({
+      action: z.string().describe('Action performed.'),
+      tagId: z.string().optional().describe('Tag ID.'),
+      name: z.string().optional().describe('Tag name.'),
+      tags: z
+        .array(
+          z.object({
+            tagId: z.string().describe('Tag ID.'),
+            name: z.string().describe('Tag name.'),
+            visibility: z.string().optional().describe('Tag visibility.')
+          })
+        )
+        .optional()
+        .describe('List of tags (only for list action).')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
     let { action, tagId, name } = ctx.input;
 
@@ -83,4 +103,5 @@ export let manageTags = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

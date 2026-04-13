@@ -3,49 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newWorkOrder = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Work Order',
-    key: 'new_work_order',
-    description: 'Triggers when a new work order is created in MaintainX.',
-  }
-)
-  .input(z.object({
-    workOrderId: z.number().describe('Work order ID'),
-    title: z.string().optional().describe('Title'),
-    description: z.string().optional().describe('Description'),
-    status: z.string().optional().describe('Status'),
-    priority: z.string().optional().describe('Priority'),
-    workOrderType: z.string().optional().describe('Type'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-  }))
-  .output(z.object({
-    workOrderId: z.number().describe('Work order ID'),
-    title: z.string().optional().describe('Title'),
-    description: z.string().optional().describe('Description'),
-    status: z.string().optional().describe('Status'),
-    priority: z.string().optional().describe('Priority'),
-    workOrderType: z.string().optional().describe('Type (REACTIVE or PREVENTIVE)'),
-    dueDate: z.string().optional().describe('Due date'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let newWorkOrder = SlateTrigger.create(spec, {
+  name: 'New Work Order',
+  key: 'new_work_order',
+  description: 'Triggers when a new work order is created in MaintainX.'
+})
+  .input(
+    z.object({
+      workOrderId: z.number().describe('Work order ID'),
+      title: z.string().optional().describe('Title'),
+      description: z.string().optional().describe('Description'),
+      status: z.string().optional().describe('Status'),
+      priority: z.string().optional().describe('Priority'),
+      workOrderType: z.string().optional().describe('Type'),
+      createdAt: z.string().optional().describe('Creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      workOrderId: z.number().describe('Work order ID'),
+      title: z.string().optional().describe('Title'),
+      description: z.string().optional().describe('Description'),
+      status: z.string().optional().describe('Status'),
+      priority: z.string().optional().describe('Priority'),
+      workOrderType: z.string().optional().describe('Type (REACTIVE or PREVENTIVE)'),
+      dueDate: z.string().optional().describe('Due date'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        organizationId: ctx.config.organizationId,
+        organizationId: ctx.config.organizationId
       });
 
       let lastCreatedAt = (ctx.state as any)?.lastCreatedAt as string | undefined;
 
       let params: Record<string, any> = {
-        limit: 50,
+        limit: 50
       };
 
       if (lastCreatedAt) {
@@ -91,16 +92,16 @@ export let newWorkOrder = SlateTrigger.create(
           status: wo.status,
           priority: wo.priority,
           workOrderType: wo.workOrderType,
-          createdAt: wo.createdAt,
+          createdAt: wo.createdAt
         })),
         updatedState: {
           lastCreatedAt: newLastCreatedAt ?? lastCreatedAt,
-          lastSeenIds: newLastSeenIds.length > 0 ? newLastSeenIds : lastSeenIds,
-        },
+          lastSeenIds: newLastSeenIds.length > 0 ? newLastSeenIds : lastSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'work_order.created',
         id: `work_order_created_${ctx.input.workOrderId}`,
@@ -113,8 +114,9 @@ export let newWorkOrder = SlateTrigger.create(
           workOrderType: ctx.input.workOrderType,
           dueDate: undefined,
           createdAt: ctx.input.createdAt,
-          updatedAt: undefined,
-        },
+          updatedAt: undefined
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

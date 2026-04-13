@@ -32,7 +32,11 @@ export class Client {
     return response.data;
   }
 
-  async updateAgent(agentId: string, agentConfig: Record<string, any>, agentPrompts: Record<string, any>) {
+  async updateAgent(
+    agentId: string,
+    agentConfig: Record<string, any>,
+    agentPrompts: Record<string, any>
+  ) {
     let response = await this.http.put(`/v2/agent/${agentId}`, {
       agent_config: agentConfig,
       agent_prompts: agentPrompts
@@ -40,7 +44,11 @@ export class Client {
     return response.data;
   }
 
-  async patchAgent(agentId: string, agentConfig?: Record<string, any>, agentPrompts?: Record<string, any>) {
+  async patchAgent(
+    agentId: string,
+    agentConfig?: Record<string, any>,
+    agentPrompts?: Record<string, any>
+  ) {
     let body: Record<string, any> = {};
     if (agentConfig) body.agent_config = agentConfig;
     if (agentPrompts) body.agent_prompts = agentPrompts;
@@ -74,7 +82,8 @@ export class Client {
     if (params.scheduledAt) body.scheduled_at = params.scheduledAt;
     if (params.userData) body.user_data = params.userData;
     if (params.retryConfig) body.retry_config = params.retryConfig;
-    if (params.bypassCallGuardrails !== undefined) body.bypass_call_guardrails = params.bypassCallGuardrails;
+    if (params.bypassCallGuardrails !== undefined)
+      body.bypass_call_guardrails = params.bypassCallGuardrails;
 
     let response = await this.http.post('/call', body);
     return response.data;
@@ -87,7 +96,13 @@ export class Client {
 
   // ── Batch Calling ──
 
-  async createBatch(agentId: string, fileContent: string, fileName: string, fromPhoneNumbers?: string[], retryConfig?: Record<string, any>) {
+  async createBatch(
+    agentId: string,
+    fileContent: string,
+    fileName: string,
+    fromPhoneNumbers?: string[],
+    retryConfig?: Record<string, any>
+  ) {
     let formData = new FormData();
     formData.append('agent_id', agentId);
     formData.append('file', new Blob([fileContent], { type: 'text/csv' }), fileName);
@@ -154,44 +169,54 @@ export class Client {
     return response.data;
   }
 
-  async listAgentExecutions(agentId: string, params?: {
-    pageNumber?: number;
-    pageSize?: number;
-    status?: string;
-    callType?: string;
-    provider?: string;
-    answeredByVoiceMail?: boolean;
-    batchId?: string;
-    from?: string;
-    to?: string;
-  }) {
+  async listAgentExecutions(
+    agentId: string,
+    params?: {
+      pageNumber?: number;
+      pageSize?: number;
+      status?: string;
+      callType?: string;
+      provider?: string;
+      answeredByVoiceMail?: boolean;
+      batchId?: string;
+      from?: string;
+      to?: string;
+    }
+  ) {
     let queryParams: Record<string, any> = {};
     if (params?.pageNumber) queryParams.page_number = params.pageNumber;
     if (params?.pageSize) queryParams.page_size = params.pageSize;
     if (params?.status) queryParams.status = params.status;
     if (params?.callType) queryParams.call_type = params.callType;
     if (params?.provider) queryParams.provider = params.provider;
-    if (params?.answeredByVoiceMail !== undefined) queryParams.answered_by_voice_mail = params.answeredByVoiceMail;
+    if (params?.answeredByVoiceMail !== undefined)
+      queryParams.answered_by_voice_mail = params.answeredByVoiceMail;
     if (params?.batchId) queryParams.batch_id = params.batchId;
     if (params?.from) queryParams.from = params.from;
     if (params?.to) queryParams.to = params.to;
 
-    let response = await this.http.get(`/v2/agent/${agentId}/executions`, { params: queryParams });
+    let response = await this.http.get(`/v2/agent/${agentId}/executions`, {
+      params: queryParams
+    });
     return response.data;
   }
 
   // ── Knowledge Base ──
 
-  async createKnowledgeBaseFromUrl(url: string, options?: {
-    chunkSize?: number;
-    similarityTopK?: number;
-    overlapping?: number;
-    languageSupport?: string;
-  }) {
+  async createKnowledgeBaseFromUrl(
+    url: string,
+    options?: {
+      chunkSize?: number;
+      similarityTopK?: number;
+      overlapping?: number;
+      languageSupport?: string;
+    }
+  ) {
     let formData = new FormData();
     formData.append('url', url);
     if (options?.chunkSize) formData.append('chunk_size', String(options.chunkSize));
-    if (options?.similarityTopK) formData.append('similarity_top_k', String(options.similarityTopK));
+    if (options?.similarityTopK)
+      formData.append('similarity_top_k', String(options.similarityTopK));
     if (options?.overlapping) formData.append('overlapping', String(options.overlapping));
     if (options?.languageSupport) formData.append('language_support', options.languageSupport);
 

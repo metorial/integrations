@@ -8,9 +8,9 @@ export class ApifyClient {
     this.axios = createAxios({
       baseURL: 'https://api.apify.com/v2',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -28,7 +28,13 @@ export class ApifyClient {
     limit?: number;
     desc?: boolean;
     my?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -42,7 +48,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -56,7 +62,10 @@ export class ApifyClient {
     return response.data?.data;
   }
 
-  async updateActor(actorId: string, actorData: Record<string, any>): Promise<Record<string, any>> {
+  async updateActor(
+    actorId: string,
+    actorData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/acts/${actorId}`, actorData);
     return response.data?.data;
   }
@@ -67,39 +76,50 @@ export class ApifyClient {
 
   // ---- Actor Runs ----
 
-  async runActor(actorId: string, params?: {
-    input?: any;
-    timeout?: number;
-    memory?: number;
-    build?: string;
-    webhooks?: Array<Record<string, any>>;
-  }): Promise<Record<string, any>> {
+  async runActor(
+    actorId: string,
+    params?: {
+      input?: any;
+      timeout?: number;
+      memory?: number;
+      build?: string;
+      webhooks?: Array<Record<string, any>>;
+    }
+  ): Promise<Record<string, any>> {
     let queryParams: Record<string, string> = {};
     if (params?.timeout !== undefined) queryParams.timeout = String(params.timeout);
     if (params?.memory !== undefined) queryParams.memory = String(params.memory);
     if (params?.build !== undefined) queryParams.build = params.build;
-    if (params?.webhooks !== undefined) queryParams.webhooks = btoa(JSON.stringify(params.webhooks));
+    if (params?.webhooks !== undefined)
+      queryParams.webhooks = btoa(JSON.stringify(params.webhooks));
 
     let response = await this.axios.post(`/acts/${actorId}/runs`, params?.input || {}, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data?.data;
   }
 
-  async runActorSync(actorId: string, params?: {
-    input?: any;
-    timeout?: number;
-    memory?: number;
-    build?: string;
-  }): Promise<Record<string, any>> {
+  async runActorSync(
+    actorId: string,
+    params?: {
+      input?: any;
+      timeout?: number;
+      memory?: number;
+      build?: string;
+    }
+  ): Promise<Record<string, any>> {
     let queryParams: Record<string, string> = {};
     if (params?.timeout !== undefined) queryParams.timeout = String(params.timeout);
     if (params?.memory !== undefined) queryParams.memory = String(params.memory);
     if (params?.build !== undefined) queryParams.build = params.build;
 
-    let response = await this.axios.post(`/acts/${actorId}/run-sync-get-dataset-items`, params?.input || {}, {
-      params: queryParams,
-    });
+    let response = await this.axios.post(
+      `/acts/${actorId}/run-sync-get-dataset-items`,
+      params?.input || {},
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 
@@ -108,12 +128,21 @@ export class ApifyClient {
     return response.data?.data;
   }
 
-  async listRuns(actorId: string, params?: {
-    offset?: number;
-    limit?: number;
-    desc?: boolean;
-    status?: string;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  async listRuns(
+    actorId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      desc?: boolean;
+      status?: string;
+    }
+  ): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -127,7 +156,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -147,7 +176,13 @@ export class ApifyClient {
     offset?: number;
     limit?: number;
     desc?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -160,7 +195,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -174,7 +209,10 @@ export class ApifyClient {
     return response.data?.data;
   }
 
-  async updateTask(taskId: string, taskData: Record<string, any>): Promise<Record<string, any>> {
+  async updateTask(
+    taskId: string,
+    taskData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/actor-tasks/${taskId}`, taskData);
     return response.data?.data;
   }
@@ -183,21 +221,25 @@ export class ApifyClient {
     await this.axios.delete(`/actor-tasks/${taskId}`);
   }
 
-  async runTask(taskId: string, params?: {
-    input?: any;
-    timeout?: number;
-    memory?: number;
-    build?: string;
-    webhooks?: Array<Record<string, any>>;
-  }): Promise<Record<string, any>> {
+  async runTask(
+    taskId: string,
+    params?: {
+      input?: any;
+      timeout?: number;
+      memory?: number;
+      build?: string;
+      webhooks?: Array<Record<string, any>>;
+    }
+  ): Promise<Record<string, any>> {
     let queryParams: Record<string, string> = {};
     if (params?.timeout !== undefined) queryParams.timeout = String(params.timeout);
     if (params?.memory !== undefined) queryParams.memory = String(params.memory);
     if (params?.build !== undefined) queryParams.build = params.build;
-    if (params?.webhooks !== undefined) queryParams.webhooks = btoa(JSON.stringify(params.webhooks));
+    if (params?.webhooks !== undefined)
+      queryParams.webhooks = btoa(JSON.stringify(params.webhooks));
 
     let response = await this.axios.post(`/actor-tasks/${taskId}/runs`, params?.input || {}, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data?.data;
   }
@@ -209,7 +251,13 @@ export class ApifyClient {
     limit?: number;
     desc?: boolean;
     unnamed?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -223,7 +271,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -232,14 +280,17 @@ export class ApifyClient {
     return response.data?.data;
   }
 
-  async getDatasetItems(datasetId: string, params?: {
-    offset?: number;
-    limit?: number;
-    fields?: string[];
-    omit?: string[];
-    desc?: boolean;
-    clean?: boolean;
-  }): Promise<Array<Record<string, any>>> {
+  async getDatasetItems(
+    datasetId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      fields?: string[];
+      omit?: string[];
+      desc?: boolean;
+      clean?: boolean;
+    }
+  ): Promise<Array<Record<string, any>>> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -249,7 +300,9 @@ export class ApifyClient {
     if (params?.clean !== undefined) queryParams.clean = params.clean ? '1' : '0';
     queryParams.format = 'json';
 
-    let response = await this.axios.get(`/datasets/${datasetId}/items`, { params: queryParams });
+    let response = await this.axios.get(`/datasets/${datasetId}/items`, {
+      params: queryParams
+    });
     return response.data || [];
   }
 
@@ -264,7 +317,13 @@ export class ApifyClient {
     limit?: number;
     desc?: boolean;
     unnamed?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -278,24 +337,34 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
-  async listKeyValueStoreKeys(storeId: string, params?: {
-    exclusiveStartKey?: string;
-    limit?: number;
-  }): Promise<{ items: Array<{ key: string; size: number }>; isTruncated: boolean; nextExclusiveStartKey?: string }> {
+  async listKeyValueStoreKeys(
+    storeId: string,
+    params?: {
+      exclusiveStartKey?: string;
+      limit?: number;
+    }
+  ): Promise<{
+    items: Array<{ key: string; size: number }>;
+    isTruncated: boolean;
+    nextExclusiveStartKey?: string;
+  }> {
     let queryParams: Record<string, string> = {};
-    if (params?.exclusiveStartKey !== undefined) queryParams.exclusiveStartKey = params.exclusiveStartKey;
+    if (params?.exclusiveStartKey !== undefined)
+      queryParams.exclusiveStartKey = params.exclusiveStartKey;
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
 
-    let response = await this.axios.get(`/key-value-stores/${storeId}/keys`, { params: queryParams });
+    let response = await this.axios.get(`/key-value-stores/${storeId}/keys`, {
+      params: queryParams
+    });
     let data = response.data?.data;
     return {
       items: data?.items || [],
       isTruncated: data?.isTruncated || false,
-      nextExclusiveStartKey: data?.nextExclusiveStartKey,
+      nextExclusiveStartKey: data?.nextExclusiveStartKey
     };
   }
 
@@ -304,10 +373,17 @@ export class ApifyClient {
     return response.data;
   }
 
-  async setKeyValueStoreRecord(storeId: string, recordKey: string, value: any, contentType?: string): Promise<void> {
+  async setKeyValueStoreRecord(
+    storeId: string,
+    recordKey: string,
+    value: any,
+    contentType?: string
+  ): Promise<void> {
     let headers: Record<string, string> = {};
     if (contentType) headers['Content-Type'] = contentType;
-    await this.axios.put(`/key-value-stores/${storeId}/records/${recordKey}`, value, { headers });
+    await this.axios.put(`/key-value-stores/${storeId}/records/${recordKey}`, value, {
+      headers
+    });
   }
 
   async deleteKeyValueStoreRecord(storeId: string, recordKey: string): Promise<void> {
@@ -320,7 +396,13 @@ export class ApifyClient {
     offset?: number;
     limit?: number;
     desc?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -333,7 +415,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -347,7 +429,10 @@ export class ApifyClient {
     return response.data?.data;
   }
 
-  async updateSchedule(scheduleId: string, scheduleData: Record<string, any>): Promise<Record<string, any>> {
+  async updateSchedule(
+    scheduleId: string,
+    scheduleData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/schedules/${scheduleId}`, scheduleData);
     return response.data?.data;
   }
@@ -362,7 +447,13 @@ export class ApifyClient {
     offset?: number;
     limit?: number;
     desc?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -375,7 +466,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -403,23 +494,31 @@ export class ApifyClient {
   }): Promise<Record<string, any>> {
     let body: Record<string, any> = {
       eventTypes: webhookData.eventTypes,
-      requestUrl: webhookData.requestUrl,
+      requestUrl: webhookData.requestUrl
     };
     if (webhookData.condition !== undefined) body.condition = webhookData.condition;
-    if (webhookData.payloadTemplate !== undefined) body.payloadTemplate = webhookData.payloadTemplate;
-    if (webhookData.headersTemplate !== undefined) body.headersTemplate = webhookData.headersTemplate;
+    if (webhookData.payloadTemplate !== undefined)
+      body.payloadTemplate = webhookData.payloadTemplate;
+    if (webhookData.headersTemplate !== undefined)
+      body.headersTemplate = webhookData.headersTemplate;
     if (webhookData.description !== undefined) body.description = webhookData.description;
-    if (webhookData.ignoreSslErrors !== undefined) body.ignoreSslErrors = webhookData.ignoreSslErrors;
+    if (webhookData.ignoreSslErrors !== undefined)
+      body.ignoreSslErrors = webhookData.ignoreSslErrors;
     if (webhookData.doNotRetry !== undefined) body.doNotRetry = webhookData.doNotRetry;
     if (webhookData.isAdHoc !== undefined) body.isAdHoc = webhookData.isAdHoc;
-    if (webhookData.idempotencyKey !== undefined) body.idempotencyKey = webhookData.idempotencyKey;
-    if (webhookData.shouldInterpolateStrings !== undefined) body.shouldInterpolateStrings = webhookData.shouldInterpolateStrings;
+    if (webhookData.idempotencyKey !== undefined)
+      body.idempotencyKey = webhookData.idempotencyKey;
+    if (webhookData.shouldInterpolateStrings !== undefined)
+      body.shouldInterpolateStrings = webhookData.shouldInterpolateStrings;
 
     let response = await this.axios.post('/webhooks', body);
     return response.data?.data;
   }
 
-  async updateWebhook(webhookId: string, webhookData: Record<string, any>): Promise<Record<string, any>> {
+  async updateWebhook(
+    webhookId: string,
+    webhookData: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/webhooks/${webhookId}`, webhookData);
     return response.data?.data;
   }
@@ -430,19 +529,27 @@ export class ApifyClient {
 
   // ---- Builds ----
 
-  async buildActor(actorId: string, params?: {
-    version?: string;
-    tag?: string;
-    useCache?: boolean;
-    betaPackages?: boolean;
-  }): Promise<Record<string, any>> {
+  async buildActor(
+    actorId: string,
+    params?: {
+      version?: string;
+      tag?: string;
+      useCache?: boolean;
+      betaPackages?: boolean;
+    }
+  ): Promise<Record<string, any>> {
     let queryParams: Record<string, string> = {};
     if (params?.version !== undefined) queryParams.version = params.version;
     if (params?.tag !== undefined) queryParams.tag = params.tag;
     if (params?.useCache !== undefined) queryParams.useCache = params.useCache ? '1' : '0';
-    if (params?.betaPackages !== undefined) queryParams.betaPackages = params.betaPackages ? '1' : '0';
+    if (params?.betaPackages !== undefined)
+      queryParams.betaPackages = params.betaPackages ? '1' : '0';
 
-    let response = await this.axios.post(`/acts/${actorId}/builds`, {}, { params: queryParams });
+    let response = await this.axios.post(
+      `/acts/${actorId}/builds`,
+      {},
+      { params: queryParams }
+    );
     return response.data?.data;
   }
 
@@ -451,11 +558,20 @@ export class ApifyClient {
     return response.data?.data;
   }
 
-  async listBuilds(actorId: string, params?: {
-    offset?: number;
-    limit?: number;
-    desc?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  async listBuilds(
+    actorId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      desc?: boolean;
+    }
+  ): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -468,7 +584,7 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
@@ -479,7 +595,13 @@ export class ApifyClient {
     limit?: number;
     desc?: boolean;
     unnamed?: boolean;
-  }): Promise<{ items: Array<Record<string, any>>; total: number; offset: number; limit: number; count: number }> {
+  }): Promise<{
+    items: Array<Record<string, any>>;
+    total: number;
+    offset: number;
+    limit: number;
+    count: number;
+  }> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -493,19 +615,22 @@ export class ApifyClient {
       total: data?.total || 0,
       offset: data?.offset || 0,
       limit: data?.limit || 0,
-      count: data?.count || 0,
+      count: data?.count || 0
     };
   }
 
   // ---- Run Dataset Items (shortcut) ----
 
-  async getRunDatasetItems(runId: string, params?: {
-    offset?: number;
-    limit?: number;
-    fields?: string[];
-    omit?: string[];
-    clean?: boolean;
-  }): Promise<Array<Record<string, any>>> {
+  async getRunDatasetItems(
+    runId: string,
+    params?: {
+      offset?: number;
+      limit?: number;
+      fields?: string[];
+      omit?: string[];
+      clean?: boolean;
+    }
+  ): Promise<Array<Record<string, any>>> {
     let queryParams: Record<string, string> = {};
     if (params?.offset !== undefined) queryParams.offset = String(params.offset);
     if (params?.limit !== undefined) queryParams.limit = String(params.limit);
@@ -514,7 +639,9 @@ export class ApifyClient {
     if (params?.clean !== undefined) queryParams.clean = params.clean ? '1' : '0';
     queryParams.format = 'json';
 
-    let response = await this.axios.get(`/actor-runs/${runId}/dataset/items`, { params: queryParams });
+    let response = await this.axios.get(`/actor-runs/${runId}/dataset/items`, {
+      params: queryParams
+    });
     return response.data || [];
   }
 
@@ -522,7 +649,7 @@ export class ApifyClient {
 
   async getLog(buildOrRunId: string): Promise<string> {
     let response = await this.axios.get(`/logs/${buildOrRunId}`, {
-      headers: { 'Accept': 'text/plain' },
+      headers: { Accept: 'text/plain' }
     });
     return response.data;
   }

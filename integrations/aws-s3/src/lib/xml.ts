@@ -104,7 +104,10 @@ export let parseXml = (xml: string): XmlNode => {
       }
     }
 
-    let node: XmlNode = { name, attributes: Object.keys(attributes).length > 0 ? attributes : undefined };
+    let node: XmlNode = {
+      name,
+      attributes: Object.keys(attributes).length > 0 ? attributes : undefined
+    };
     if (children.length > 0) {
       node.children = children;
     }

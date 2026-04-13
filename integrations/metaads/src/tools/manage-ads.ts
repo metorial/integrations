@@ -14,28 +14,37 @@ let adSchema = z.object({
   updatedTime: z.string().optional().describe('Last update timestamp')
 });
 
-export let listAds = SlateTool.create(
-  spec,
-  {
-    name: 'List Ads',
-    key: 'list_ads',
-    description: `Retrieve ads from the ad account or a specific ad set. Ads are the actual creatives people see, combining an ad creative with an ad set's targeting.`,
-    tags: {
-      readOnly: true
-    }
+export let listAds = SlateTool.create(spec, {
+  name: 'List Ads',
+  key: 'list_ads',
+  description: `Retrieve ads from the ad account or a specific ad set. Ads are the actual creatives people see, combining an ad creative with an ad set's targeting.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    adSetId: z.string().optional().describe('Filter ads by ad set ID. If omitted, returns ads from the entire ad account.'),
-    statusFilter: z.enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED']).optional().describe('Filter by status'),
-    limit: z.number().optional().describe('Max number of ads to return (default 25)'),
-    afterCursor: z.string().optional().describe('Pagination cursor')
-  }))
-  .output(z.object({
-    ads: z.array(adSchema),
-    nextCursor: z.string().optional().describe('Cursor for the next page')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      adSetId: z
+        .string()
+        .optional()
+        .describe(
+          'Filter ads by ad set ID. If omitted, returns ads from the entire ad account.'
+        ),
+      statusFilter: z
+        .enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED'])
+        .optional()
+        .describe('Filter by status'),
+      limit: z.number().optional().describe('Max number of ads to return (default 25)'),
+      afterCursor: z.string().optional().describe('Pagination cursor')
+    })
+  )
+  .output(
+    z.object({
+      ads: z.array(adSchema),
+      nextCursor: z.string().optional().describe('Cursor for the next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -71,24 +80,24 @@ export let listAds = SlateTool.create(
       },
       message: `Retrieved **${ads.length}** ads.`
     };
-  }).build();
+  })
+  .build();
 
-export let getAd = SlateTool.create(
-  spec,
-  {
-    name: 'Get Ad',
-    key: 'get_ad',
-    description: `Retrieve detailed information about a specific ad by its ID.`,
-    tags: {
-      readOnly: true
-    }
+export let getAd = SlateTool.create(spec, {
+  name: 'Get Ad',
+  key: 'get_ad',
+  description: `Retrieve detailed information about a specific ad by its ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    adId: z.string().describe('The ad ID to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      adId: z.string().describe('The ad ID to retrieve')
+    })
+  )
   .output(adSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -110,29 +119,31 @@ export let getAd = SlateTool.create(
       },
       message: `Retrieved ad **${a.name}** (${a.id}) with status **${a.status}**.`
     };
-  }).build();
+  })
+  .build();
 
-export let createAd = SlateTool.create(
-  spec,
-  {
-    name: 'Create Ad',
-    key: 'create_ad',
-    description: `Create a new ad within an ad set. An ad links an ad creative to an ad set. You must first create an ad creative, then reference it here.`,
-    tags: {
-      destructive: false
-    }
+export let createAd = SlateTool.create(spec, {
+  name: 'Create Ad',
+  key: 'create_ad',
+  description: `Create a new ad within an ad set. An ad links an ad creative to an ad set. You must first create an ad creative, then reference it here.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Ad name'),
-    adSetId: z.string().describe('Parent ad set ID'),
-    creativeId: z.string().describe('Ad creative ID to use'),
-    status: z.enum(['ACTIVE', 'PAUSED']).default('PAUSED').describe('Initial ad status')
-  }))
-  .output(z.object({
-    adId: z.string().describe('ID of the newly created ad')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Ad name'),
+      adSetId: z.string().describe('Parent ad set ID'),
+      creativeId: z.string().describe('Ad creative ID to use'),
+      status: z.enum(['ACTIVE', 'PAUSED']).default('PAUSED').describe('Initial ad status')
+    })
+  )
+  .output(
+    z.object({
+      adId: z.string().describe('ID of the newly created ad')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -152,29 +163,34 @@ export let createAd = SlateTool.create(
       },
       message: `Created ad **${ctx.input.name}** with ID \`${result.id}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateAd = SlateTool.create(
-  spec,
-  {
-    name: 'Update Ad',
-    key: 'update_ad',
-    description: `Update an existing ad's name, status, or creative. Only provided fields will be updated.`,
-    tags: {
-      destructive: false
-    }
+export let updateAd = SlateTool.create(spec, {
+  name: 'Update Ad',
+  key: 'update_ad',
+  description: `Update an existing ad's name, status, or creative. Only provided fields will be updated.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    adId: z.string().describe('ID of the ad to update'),
-    name: z.string().optional().describe('New ad name'),
-    status: z.enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED']).optional().describe('New status'),
-    creativeId: z.string().optional().describe('New creative ID to associate')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the update was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      adId: z.string().describe('ID of the ad to update'),
+      name: z.string().optional().describe('New ad name'),
+      status: z
+        .enum(['ACTIVE', 'PAUSED', 'ARCHIVED', 'DELETED'])
+        .optional()
+        .describe('New status'),
+      creativeId: z.string().optional().describe('New creative ID to associate')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the update was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -184,7 +200,8 @@ export let updateAd = SlateTool.create(
     let params: Record<string, any> = {};
     if (ctx.input.name) params.name = ctx.input.name;
     if (ctx.input.status) params.status = ctx.input.status;
-    if (ctx.input.creativeId) params.creative = JSON.stringify({ creative_id: ctx.input.creativeId });
+    if (ctx.input.creativeId)
+      params.creative = JSON.stringify({ creative_id: ctx.input.creativeId });
 
     let result = await client.updateAd(ctx.input.adId, params);
 
@@ -194,26 +211,28 @@ export let updateAd = SlateTool.create(
       },
       message: `Updated ad \`${ctx.input.adId}\`.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteAd = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Ad',
-    key: 'delete_ad',
-    description: `Delete an ad. This sets the ad status to DELETED.`,
-    tags: {
-      destructive: true
-    }
+export let deleteAd = SlateTool.create(spec, {
+  name: 'Delete Ad',
+  key: 'delete_ad',
+  description: `Delete an ad. This sets the ad status to DELETED.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    adId: z.string().describe('ID of the ad to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      adId: z.string().describe('ID of the ad to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetaAdsClient({
       token: ctx.auth.token,
       adAccountId: ctx.config.adAccountId,
@@ -228,4 +247,5 @@ export let deleteAd = SlateTool.create(
       },
       message: `Deleted ad \`${ctx.input.adId}\`.`
     };
-  }).build();
+  })
+  .build();

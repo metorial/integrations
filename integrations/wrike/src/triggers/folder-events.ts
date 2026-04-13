@@ -3,36 +3,44 @@ import { WrikeClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let folderEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Folder & Project Events',
-    key: 'folder_events',
-    description: 'Triggers on folder and project changes including creation, deletion, title changes, description changes, sharing changes, comment and attachment activity, custom field changes, and project-specific changes like dates, owners, and status.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of folder/project event'),
-    folderId: z.string().describe('ID of the affected folder or project'),
-    webhookId: z.string().describe('ID of the webhook that fired'),
-    eventAuthorId: z.string().optional().describe('ID of the user who triggered the event'),
-    lastUpdatedDate: z.string().optional().describe('Timestamp of the event'),
-    oldValue: z.string().optional().describe('Previous value (for change events)'),
-    newValue: z.string().optional().describe('New value (for change events)'),
-    addedIds: z.array(z.string()).optional().describe('Added IDs (for list change events)'),
-    removedIds: z.array(z.string()).optional().describe('Removed IDs (for list change events)')
-  }))
-  .output(z.object({
-    folderId: z.string().describe('ID of the affected folder or project'),
-    eventAuthorId: z.string().optional().describe('ID of the user who triggered the event'),
-    lastUpdatedDate: z.string().optional().describe('Timestamp of the event'),
-    oldValue: z.string().optional().describe('Previous value (for change events)'),
-    newValue: z.string().optional().describe('New value (for change events)'),
-    addedIds: z.array(z.string()).optional().describe('Added IDs (for list change events)'),
-    removedIds: z.array(z.string()).optional().describe('Removed IDs (for list change events)')
-  }))
+export let folderEvents = SlateTrigger.create(spec, {
+  name: 'Folder & Project Events',
+  key: 'folder_events',
+  description:
+    'Triggers on folder and project changes including creation, deletion, title changes, description changes, sharing changes, comment and attachment activity, custom field changes, and project-specific changes like dates, owners, and status.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of folder/project event'),
+      folderId: z.string().describe('ID of the affected folder or project'),
+      webhookId: z.string().describe('ID of the webhook that fired'),
+      eventAuthorId: z.string().optional().describe('ID of the user who triggered the event'),
+      lastUpdatedDate: z.string().optional().describe('Timestamp of the event'),
+      oldValue: z.string().optional().describe('Previous value (for change events)'),
+      newValue: z.string().optional().describe('New value (for change events)'),
+      addedIds: z.array(z.string()).optional().describe('Added IDs (for list change events)'),
+      removedIds: z
+        .array(z.string())
+        .optional()
+        .describe('Removed IDs (for list change events)')
+    })
+  )
+  .output(
+    z.object({
+      folderId: z.string().describe('ID of the affected folder or project'),
+      eventAuthorId: z.string().optional().describe('ID of the user who triggered the event'),
+      lastUpdatedDate: z.string().optional().describe('Timestamp of the event'),
+      oldValue: z.string().optional().describe('Previous value (for change events)'),
+      newValue: z.string().optional().describe('New value (for change events)'),
+      addedIds: z.array(z.string()).optional().describe('Added IDs (for list change events)'),
+      removedIds: z
+        .array(z.string())
+        .optional()
+        .describe('Removed IDs (for list change events)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WrikeClient({
         token: ctx.auth.token,
         host: ctx.auth.host
@@ -68,7 +76,7 @@ export let folderEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WrikeClient({
         token: ctx.auth.token,
         host: ctx.auth.host
@@ -77,8 +85,8 @@ export let folderEvents = SlateTrigger.create(
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as Array<{
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as Array<{
         webhookId: string;
         eventType: string;
         folderId?: string;
@@ -111,28 +119,29 @@ export let folderEvents = SlateTrigger.create(
       return { inputs: folderInputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventTypeMap: Record<string, string> = {
-        'FolderCreated': 'folder.created',
-        'FolderDeleted': 'folder.deleted',
-        'FolderTitleChanged': 'folder.title_changed',
-        'FolderDescriptionChanged': 'folder.description_changed',
-        'FolderParentsAdded': 'folder.parents_added',
-        'FolderParentsRemoved': 'folder.parents_removed',
-        'FolderSharedsAdded': 'folder.shareds_added',
-        'FolderSharedsRemoved': 'folder.shareds_removed',
-        'FolderCommentAdded': 'folder.comment_added',
-        'FolderCommentDeleted': 'folder.comment_deleted',
-        'FolderAttachmentAdded': 'folder.attachment_added',
-        'FolderAttachmentDeleted': 'folder.attachment_deleted',
-        'FolderCustomFieldChanged': 'folder.custom_field_changed',
-        'ProjectDatesChanged': 'project.dates_changed',
-        'ProjectOwnersAdded': 'project.owners_added',
-        'ProjectOwnersRemoved': 'project.owners_removed',
-        'ProjectStatusChanged': 'project.status_changed'
+        FolderCreated: 'folder.created',
+        FolderDeleted: 'folder.deleted',
+        FolderTitleChanged: 'folder.title_changed',
+        FolderDescriptionChanged: 'folder.description_changed',
+        FolderParentsAdded: 'folder.parents_added',
+        FolderParentsRemoved: 'folder.parents_removed',
+        FolderSharedsAdded: 'folder.shareds_added',
+        FolderSharedsRemoved: 'folder.shareds_removed',
+        FolderCommentAdded: 'folder.comment_added',
+        FolderCommentDeleted: 'folder.comment_deleted',
+        FolderAttachmentAdded: 'folder.attachment_added',
+        FolderAttachmentDeleted: 'folder.attachment_deleted',
+        FolderCustomFieldChanged: 'folder.custom_field_changed',
+        ProjectDatesChanged: 'project.dates_changed',
+        ProjectOwnersAdded: 'project.owners_added',
+        ProjectOwnersRemoved: 'project.owners_removed',
+        ProjectStatusChanged: 'project.status_changed'
       };
 
-      let type = eventTypeMap[ctx.input.eventType] || `folder.${ctx.input.eventType.toLowerCase()}`;
+      let type =
+        eventTypeMap[ctx.input.eventType] || `folder.${ctx.input.eventType.toLowerCase()}`;
 
       return {
         type,
@@ -148,4 +157,5 @@ export let folderEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

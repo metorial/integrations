@@ -1,27 +1,33 @@
 import { SlateTool } from 'slates';
 import { VimeoClient } from '../lib/client';
-import { videoSchema, paginationInputSchema, paginationOutputSchema, mapVideo } from '../lib/schemas';
+import {
+  videoSchema,
+  paginationInputSchema,
+  paginationOutputSchema,
+  mapVideo
+} from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listLikedVideosTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Liked Videos',
-    key: 'list_liked_videos',
-    description: `Retrieve the list of videos that the authenticated user has liked. Supports pagination and sorting.`,
-    tags: {
-      readOnly: true
-    }
+export let listLikedVideosTool = SlateTool.create(spec, {
+  name: 'List Liked Videos',
+  key: 'list_liked_videos',
+  description: `Retrieve the list of videos that the authenticated user has liked. Supports pagination and sorting.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(paginationInputSchema.extend({
-    sort: z.enum(['alphabetical', 'date']).optional().describe('Sort order for the results')
-  }))
-  .output(paginationOutputSchema.extend({
-    videos: z.array(videoSchema).describe('List of liked videos')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    paginationInputSchema.extend({
+      sort: z.enum(['alphabetical', 'date']).optional().describe('Sort order for the results')
+    })
+  )
+  .output(
+    paginationOutputSchema.extend({
+      videos: z.array(videoSchema).describe('List of liked videos')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new VimeoClient(ctx.auth.token);
     let result = await client.getLikedVideos({
       page: ctx.input.page,
@@ -40,28 +46,30 @@ export let listLikedVideosTool = SlateTool.create(
       },
       message: `Found **${result.total ?? videos.length}** liked videos`
     };
-  }).build();
+  })
+  .build();
 
-export let likeVideoTool = SlateTool.create(
-  spec,
-  {
-    name: 'Like Video',
-    key: 'like_video',
-    description: `Like or unlike a video on Vimeo. Requires the **interact** scope.`,
-    tags: {
-      destructive: false
-    }
+export let likeVideoTool = SlateTool.create(spec, {
+  name: 'Like Video',
+  key: 'like_video',
+  description: `Like or unlike a video on Vimeo. Requires the **interact** scope.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    videoId: z.string().describe('The ID of the video'),
-    action: z.enum(['like', 'unlike']).describe('Whether to like or unlike the video')
-  }))
-  .output(z.object({
-    videoId: z.string().describe('The video ID'),
-    liked: z.boolean().describe('Whether the video is now liked')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      videoId: z.string().describe('The ID of the video'),
+      action: z.enum(['like', 'unlike']).describe('Whether to like or unlike the video')
+    })
+  )
+  .output(
+    z.object({
+      videoId: z.string().describe('The video ID'),
+      liked: z.boolean().describe('Whether the video is now liked')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new VimeoClient(ctx.auth.token);
 
     if (ctx.input.action === 'like') {
@@ -75,8 +83,10 @@ export let likeVideoTool = SlateTool.create(
         videoId: ctx.input.videoId,
         liked: ctx.input.action === 'like'
       },
-      message: ctx.input.action === 'like'
-        ? `Liked video **${ctx.input.videoId}**`
-        : `Unliked video **${ctx.input.videoId}**`
+      message:
+        ctx.input.action === 'like'
+          ? `Liked video **${ctx.input.videoId}**`
+          : `Unliked video **${ctx.input.videoId}**`
     };
-  }).build();
+  })
+  .build();

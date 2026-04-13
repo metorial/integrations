@@ -7,25 +7,32 @@ import type { Datacenter } from '../lib/urls';
 export let deskEvents = SlateTrigger.create(spec, {
   name: 'Desk Events',
   key: 'desk_events',
-  description: 'Triggers when tickets, contacts, accounts, tasks, or other resources are created, updated, or deleted in Zoho Desk. Uses Zoho Desk webhook subscriptions for real-time notifications.',
+  description:
+    'Triggers when tickets, contacts, accounts, tasks, or other resources are created, updated, or deleted in Zoho Desk. Uses Zoho Desk webhook subscriptions for real-time notifications.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Desk event type (e.g., Ticket_Add, Ticket_Update, Contact_Add)'),
-    resourceId: z.string().describe('ID of the affected resource'),
-    payload: z.record(z.string(), z.any()).describe('Full event payload from Zoho Desk'),
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Event type (e.g., Ticket_Add, Ticket_Update)'),
-    resourceType: z.string().describe('Resource type (e.g., ticket, contact, account)'),
-    resourceId: z.string().describe('ID of the affected resource'),
-    ticketNumber: z.string().optional().describe('Ticket number (for ticket events)'),
-    subject: z.string().optional().describe('Ticket subject (for ticket events)'),
-    status: z.string().optional().describe('Current status'),
-    departmentId: z.string().optional().describe('Department ID'),
-    payload: z.record(z.string(), z.any()).describe('Full event payload'),
-  }))
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Desk event type (e.g., Ticket_Add, Ticket_Update, Contact_Add)'),
+      resourceId: z.string().describe('ID of the affected resource'),
+      payload: z.record(z.string(), z.any()).describe('Full event payload from Zoho Desk')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('Event type (e.g., Ticket_Add, Ticket_Update)'),
+      resourceType: z.string().describe('Resource type (e.g., ticket, contact, account)'),
+      resourceId: z.string().describe('ID of the affected resource'),
+      ticketNumber: z.string().optional().describe('Ticket number (for ticket events)'),
+      subject: z.string().optional().describe('Ticket subject (for ticket events)'),
+      status: z.string().optional().describe('Current status'),
+      departmentId: z.string().optional().describe('Department ID'),
+      payload: z.record(z.string(), z.any()).describe('Full event payload')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
       // We need an orgId - we'll try to extract from existing config or require it
       // For auto-registration, the orgId must be available; we'll use a default approach
@@ -38,10 +45,12 @@ export let deskEvents = SlateTrigger.create(spec, {
 
       // Note: This auto-registration requires orgId. In practice, the user should
       // provide it. We'll throw an informative error if not available.
-      throw new Error('Zoho Desk webhooks require an organization ID (orgId). Please configure the webhook manually in Zoho Desk settings, pointing to the webhook URL.');
+      throw new Error(
+        'Zoho Desk webhooks require an organization ID (orgId). Please configure the webhook manually in Zoho Desk settings, pointing to the webhook URL.'
+      );
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body: any;
       try {
         body = await ctx.request.json();
@@ -56,18 +65,26 @@ export let deskEvents = SlateTrigger.create(spec, {
       let payload = body.payload || body;
 
       // Extract resource ID based on event type
-      let resourceId = payload.id || payload.ticketId || payload.contactId || payload.accountId || payload.taskId || '';
+      let resourceId =
+        payload.id ||
+        payload.ticketId ||
+        payload.contactId ||
+        payload.accountId ||
+        payload.taskId ||
+        '';
 
-      let inputs = [{
-        eventType: eventType.toString(),
-        resourceId: resourceId.toString(),
-        payload,
-      }];
+      let inputs = [
+        {
+          eventType: eventType.toString(),
+          resourceId: resourceId.toString(),
+          payload
+        }
+      ];
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload;
       let eventType = ctx.input.eventType;
 
@@ -95,8 +112,9 @@ export let deskEvents = SlateTrigger.create(spec, {
           subject: payload.subject,
           status: payload.status || payload.statusType,
           departmentId: payload.departmentId,
-          payload,
-        },
+          payload
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -18,7 +18,7 @@ import {
   getUser,
   updateUser,
   getProjectReport,
-  getSummaryReport,
+  getSummaryReport
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -43,9 +43,7 @@ export let provider = Slate.create({
     getUser,
     updateUser,
     getProjectReport,
-    getSummaryReport,
+    getSummaryReport
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -182,7 +182,7 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'x-oksign-authorization': this.token,
-        'accept': 'application/json; charset=utf-8'
+        accept: 'application/json; charset=utf-8'
       }
     });
   }
@@ -192,19 +192,23 @@ export class Client {
       baseURL: BASE_URL_V2,
       headers: {
         'x-oksign-authorization': this.token,
-        'accept': 'application/json; charset=utf-8'
+        accept: 'application/json; charset=utf-8'
       }
     });
   }
 
   // ========== Document Management ==========
 
-  async uploadDocument(fileContent: string, filename: string, contentType: string): Promise<string> {
+  async uploadDocument(
+    fileContent: string,
+    filename: string,
+    contentType: string
+  ): Promise<string> {
     let http = this.getAxios();
     let response = await http.post<OkSignResponse>('/document/upload', fileContent, {
       headers: {
         'x-oksign-filename': filename,
-        'content-type': contentType,
+        'content-type': contentType
       }
     });
     if (response.data.status !== 'OK') {
@@ -240,16 +244,25 @@ export class Client {
 
   // ========== Form Descriptor ==========
 
-  async uploadFormDescriptor(docId: string, formDescriptor: FormDescriptor): Promise<SignerUrl[]> {
+  async uploadFormDescriptor(
+    docId: string,
+    formDescriptor: FormDescriptor
+  ): Promise<SignerUrl[]> {
     let http = this.getAxios();
-    let response = await http.post<OkSignResponse<SignerUrl[]>>('/formdesc/upload', formDescriptor, {
-      headers: {
-        'x-oksign-docid': docId,
-        'content-type': 'application/json; charset=utf-8'
+    let response = await http.post<OkSignResponse<SignerUrl[]>>(
+      '/formdesc/upload',
+      formDescriptor,
+      {
+        headers: {
+          'x-oksign-docid': docId,
+          'content-type': 'application/json; charset=utf-8'
+        }
       }
-    });
+    );
     if (response.data.status !== 'OK') {
-      throw new Error(`Form descriptor upload failed: ${JSON.stringify(response.data.reason)}`);
+      throw new Error(
+        `Form descriptor upload failed: ${JSON.stringify(response.data.reason)}`
+      );
     }
     return response.data.reason;
   }
@@ -372,7 +385,9 @@ export class Client {
       }
     });
     if (response.data.status !== 'OK') {
-      throw new Error(`EditorExpress creation failed: ${JSON.stringify(response.data.reason)}`);
+      throw new Error(
+        `EditorExpress creation failed: ${JSON.stringify(response.data.reason)}`
+      );
     }
     return response.data.reason;
   }
@@ -424,7 +439,7 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'x-oksign-authorization': this.token,
-        'accept': 'application/pdf'
+        accept: 'application/pdf'
       },
       responseType: 'arraybuffer'
     });
@@ -434,7 +449,7 @@ export class Client {
       }
     });
     // Returns PDF binary - we'll return base64 encoded
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     let buffer = Buffer.from(response.data as ArrayBuffer);
     return buffer.toString('base64');
   }
@@ -520,11 +535,15 @@ export class Client {
 
   async calculateSignerId(name: string, email: string): Promise<string> {
     let http = this.getAxios();
-    let response = await http.post<OkSignResponse>('/signerid/calculate', { name, email }, {
-      headers: {
-        'content-type': 'application/json; charset=utf-8'
+    let response = await http.post<OkSignResponse>(
+      '/signerid/calculate',
+      { name, email },
+      {
+        headers: {
+          'content-type': 'application/json; charset=utf-8'
+        }
       }
-    });
+    );
     if (response.data.status !== 'OK') {
       throw new Error(`Signer ID calculation failed: ${response.data.reason}`);
     }
@@ -551,7 +570,11 @@ export class Client {
 
   // ========== Email Attachments ==========
 
-  async uploadEmailAttachment(fileContent: string, filename: string, contentType: string): Promise<string> {
+  async uploadEmailAttachment(
+    fileContent: string,
+    filename: string,
+    contentType: string
+  ): Promise<string> {
     let http = this.getAxios();
     let response = await http.post<OkSignResponse>('/emailattachment/upload', fileContent, {
       headers: {
@@ -585,7 +608,9 @@ export class Client {
       params: { from, to }
     });
     if (response.data.status !== 'OK') {
-      throw new Error(`Signed documents retrieval failed: ${JSON.stringify(response.data.reason)}`);
+      throw new Error(
+        `Signed documents retrieval failed: ${JSON.stringify(response.data.reason)}`
+      );
     }
     return response.data.reason || [];
   }
@@ -594,7 +619,9 @@ export class Client {
     let http = this.getAxios();
     let response = await http.get<OkSignResponse<any[]>>('/documents/active');
     if (response.data.status !== 'OK') {
-      throw new Error(`Active documents retrieval failed: ${JSON.stringify(response.data.reason)}`);
+      throw new Error(
+        `Active documents retrieval failed: ${JSON.stringify(response.data.reason)}`
+      );
     }
     return response.data.reason || [];
   }
@@ -605,7 +632,9 @@ export class Client {
       params: { from, to }
     });
     if (response.data.status !== 'OK') {
-      throw new Error(`Webhook errors retrieval failed: ${JSON.stringify(response.data.reason)}`);
+      throw new Error(
+        `Webhook errors retrieval failed: ${JSON.stringify(response.data.reason)}`
+      );
     }
     return response.data.reason || [];
   }

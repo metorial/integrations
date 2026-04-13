@@ -13,11 +13,13 @@ Docupilot supports API Key + Secret authentication for its V2 API.
 1. APIs can be accessed using a combination of API Key and Secret created from the **API Settings** section. Go to **Settings > API Settings** to create a new API key. Copy the Key & Secret - download the copy if needed. The secret cannot be retrieved again.
 
 2. The base64 encoded value of `key:secret` will be your API credential. Encode it as follows:
+
    ```
    echo -n YOUR_API_KEY:YOUR_API_SECRET | base64
    ```
 
 3. Use the resulting base64 string as a Bearer token in the `Authorization` header:
+
    ```
    Authorization: Bearer <Base64 encoded key:secret>
    ```
@@ -25,6 +27,7 @@ Docupilot supports API Key + Secret authentication for its V2 API.
 4. The `X-Workspace` header is required to be sent for all APIs that interact with your Workspace (e.g., Templates, etc.). This header holds the ID of your workspace for which the request is being made. You can locate your Workspace ID on the Workspace details page.
 
 **Required credentials:**
+
 - **API Key**: Generated from Settings > API Settings
 - **API Secret**: Provided once at key creation time
 - **Workspace ID**: Found on the Workspace details page in dashboard Settings

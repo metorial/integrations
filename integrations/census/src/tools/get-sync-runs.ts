@@ -18,37 +18,44 @@ let syncRunSchema = z.object({
   errorCode: z.string().nullable().describe('Error code if failed.'),
   errorMessage: z.string().nullable().describe('Error message if failed.'),
   createdAt: z.string().describe('When the run started.'),
-  completedAt: z.string().nullable().describe('When the run completed.'),
+  completedAt: z.string().nullable().describe('When the run completed.')
 });
 
-export let getSyncRuns = SlateTool.create(
-  spec,
-  {
-    name: 'Get Sync Runs',
-    key: 'get_sync_runs',
-    description: `Retrieves sync run history and status for a specific sync. Use this to monitor sync progress, check for failures, and view record-level statistics. Can also fetch a single sync run by ID.`,
-    tags: {
-      readOnly: true,
-    },
+export let getSyncRuns = SlateTool.create(spec, {
+  name: 'Get Sync Runs',
+  key: 'get_sync_runs',
+  description: `Retrieves sync run history and status for a specific sync. Use this to monitor sync progress, check for failures, and view record-level statistics. Can also fetch a single sync run by ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    syncId: z.number().optional().describe('ID of the sync to list runs for. Required if syncRunId is not provided.'),
-    syncRunId: z.number().optional().describe('ID of a specific sync run to retrieve directly.'),
-    page: z.number().optional().describe('Page number (starts at 1).'),
-    perPage: z.number().optional().describe('Results per page (max 100).'),
-    order: z.enum(['asc', 'desc']).optional().describe('Sort order by creation time.'),
-  }))
-  .output(z.object({
-    syncRuns: z.array(syncRunSchema),
-    totalRecords: z.number().optional().describe('Total number of sync runs.'),
-    currentPage: z.number().optional().describe('Current page number.'),
-    lastPage: z.number().optional().describe('Last page number.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      syncId: z
+        .number()
+        .optional()
+        .describe('ID of the sync to list runs for. Required if syncRunId is not provided.'),
+      syncRunId: z
+        .number()
+        .optional()
+        .describe('ID of a specific sync run to retrieve directly.'),
+      page: z.number().optional().describe('Page number (starts at 1).'),
+      perPage: z.number().optional().describe('Results per page (max 100).'),
+      order: z.enum(['asc', 'desc']).optional().describe('Sort order by creation time.')
+    })
+  )
+  .output(
+    z.object({
+      syncRuns: z.array(syncRunSchema),
+      totalRecords: z.number().optional().describe('Total number of sync runs.'),
+      currentPage: z.number().optional().describe('Current page number.'),
+      lastPage: z.number().optional().describe('Last page number.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     if (ctx.input.syncRunId) {
@@ -68,11 +75,11 @@ export let getSyncRuns = SlateTool.create(
         errorCode: run.errorCode,
         errorMessage: run.errorMessage,
         createdAt: run.createdAt,
-        completedAt: run.completedAt,
+        completedAt: run.completedAt
       };
       return {
         output: { syncRuns: [mapped] },
-        message: `Sync run **${run.id}** is **${run.status}**${run.recordsProcessed != null ? ` (${run.recordsProcessed} processed, ${run.recordsFailed ?? 0} failed)` : ''}.`,
+        message: `Sync run **${run.id}** is **${run.status}**${run.recordsProcessed != null ? ` (${run.recordsProcessed} processed, ${run.recordsFailed ?? 0} failed)` : ''}.`
       };
     }
 
@@ -83,10 +90,10 @@ export let getSyncRuns = SlateTool.create(
     let result = await client.listSyncRuns(ctx.input.syncId, {
       page: ctx.input.page,
       perPage: ctx.input.perPage,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
-    let runs = result.syncRuns.map((r) => ({
+    let runs = result.syncRuns.map(r => ({
       syncRunId: r.id,
       syncId: r.syncId,
       status: r.status,
@@ -101,7 +108,7 @@ export let getSyncRuns = SlateTool.create(
       errorCode: r.errorCode,
       errorMessage: r.errorMessage,
       createdAt: r.createdAt,
-      completedAt: r.completedAt,
+      completedAt: r.completedAt
     }));
 
     return {
@@ -109,9 +116,9 @@ export let getSyncRuns = SlateTool.create(
         syncRuns: runs,
         totalRecords: result.pagination?.totalRecords,
         currentPage: result.pagination?.page,
-        lastPage: result.pagination?.lastPage,
+        lastPage: result.pagination?.lastPage
       },
-      message: `Found **${runs.length}** sync run(s) for sync ${ctx.input.syncId}${result.pagination ? ` (page ${result.pagination.page} of ${result.pagination.lastPage})` : ''}.`,
+      message: `Found **${runs.length}** sync run(s) for sync ${ctx.input.syncId}${result.pagination ? ` (page ${result.pagination.page} of ${result.pagination.lastPage})` : ''}.`
     };
   })
   .build();

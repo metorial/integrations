@@ -13,9 +13,9 @@ export class ElasticsearchClient {
     return createAxios({
       baseURL: this.baseUrl,
       headers: {
-        'Authorization': this.authHeader,
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.authHeader,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -23,7 +23,10 @@ export class ElasticsearchClient {
 
   async indexDocument(index: string, body: Record<string, any>, documentId?: string) {
     if (documentId) {
-      let response = await this.axios.put(`/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`, body);
+      let response = await this.axios.put(
+        `/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`,
+        body
+      );
       return response.data;
     }
     let response = await this.axios.post(`/${encodeURIComponent(index)}/_doc`, body);
@@ -31,38 +34,50 @@ export class ElasticsearchClient {
   }
 
   async getDocument(index: string, documentId: string) {
-    let response = await this.axios.get(`/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`);
+    let response = await this.axios.get(
+      `/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`
+    );
     return response.data;
   }
 
-  async updateDocument(index: string, documentId: string, doc: Record<string, any>, script?: Record<string, any>) {
+  async updateDocument(
+    index: string,
+    documentId: string,
+    doc: Record<string, any>,
+    script?: Record<string, any>
+  ) {
     let body: Record<string, any> = {};
     if (script) {
       body.script = script;
     } else {
       body.doc = doc;
     }
-    let response = await this.axios.post(`/${encodeURIComponent(index)}/_update/${encodeURIComponent(documentId)}`, body);
+    let response = await this.axios.post(
+      `/${encodeURIComponent(index)}/_update/${encodeURIComponent(documentId)}`,
+      body
+    );
     return response.data;
   }
 
   async deleteDocument(index: string, documentId: string) {
-    let response = await this.axios.delete(`/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`);
+    let response = await this.axios.delete(
+      `/${encodeURIComponent(index)}/_doc/${encodeURIComponent(documentId)}`
+    );
     return response.data;
   }
 
   async bulkOperations(operations: string) {
     let response = await this.axios.post('/_bulk', operations, {
       headers: {
-        'Content-Type': 'application/x-ndjson',
-      },
+        'Content-Type': 'application/x-ndjson'
+      }
     });
     return response.data;
   }
 
   async multiGet(docs: Array<{ indexName: string; documentId: string }>) {
     let body = {
-      docs: docs.map((d) => ({ _index: d.indexName, _id: d.documentId })),
+      docs: docs.map(d => ({ _index: d.indexName, _id: d.documentId }))
     };
     let response = await this.axios.post('/_mget', body);
     return response.data;
@@ -76,7 +91,11 @@ export class ElasticsearchClient {
     return response.data;
   }
 
-  async asyncSearch(index: string | undefined, body: Record<string, any>, params?: Record<string, any>) {
+  async asyncSearch(
+    index: string | undefined,
+    body: Record<string, any>,
+    params?: Record<string, any>
+  ) {
     let path = index ? `/${encodeURIComponent(index)}/_async_search` : '/_async_search';
     let response = await this.axios.post(path, body, { params });
     return response.data;
@@ -165,18 +184,23 @@ export class ElasticsearchClient {
 
   async listIndices(params?: Record<string, any>) {
     let response = await this.axios.get('/_cat/indices', {
-      params: { format: 'json', ...params },
+      params: { format: 'json', ...params }
     });
     return response.data;
   }
 
   async putAlias(index: string, aliasName: string, body?: Record<string, any>) {
-    let response = await this.axios.put(`/${encodeURIComponent(index)}/_alias/${encodeURIComponent(aliasName)}`, body || {});
+    let response = await this.axios.put(
+      `/${encodeURIComponent(index)}/_alias/${encodeURIComponent(aliasName)}`,
+      body || {}
+    );
     return response.data;
   }
 
   async deleteAlias(index: string, aliasName: string) {
-    let response = await this.axios.delete(`/${encodeURIComponent(index)}/_alias/${encodeURIComponent(aliasName)}`);
+    let response = await this.axios.delete(
+      `/${encodeURIComponent(index)}/_alias/${encodeURIComponent(aliasName)}`
+    );
     return response.data;
   }
 
@@ -211,7 +235,9 @@ export class ElasticsearchClient {
   }
 
   async clusterSettings(params?: Record<string, any>) {
-    let response = await this.axios.get('/_cluster/settings', { params: { include_defaults: false, ...params } });
+    let response = await this.axios.get('/_cluster/settings', {
+      params: { include_defaults: false, ...params }
+    });
     return response.data;
   }
 
@@ -248,12 +274,16 @@ export class ElasticsearchClient {
   }
 
   async getSnapshot(repoName: string, snapshotName: string) {
-    let response = await this.axios.get(`/_snapshot/${encodeURIComponent(repoName)}/${encodeURIComponent(snapshotName)}`);
+    let response = await this.axios.get(
+      `/_snapshot/${encodeURIComponent(repoName)}/${encodeURIComponent(snapshotName)}`
+    );
     return response.data;
   }
 
   async deleteSnapshot(repoName: string, snapshotName: string) {
-    let response = await this.axios.delete(`/_snapshot/${encodeURIComponent(repoName)}/${encodeURIComponent(snapshotName)}`);
+    let response = await this.axios.delete(
+      `/_snapshot/${encodeURIComponent(repoName)}/${encodeURIComponent(snapshotName)}`
+    );
     return response.data;
   }
 
@@ -268,18 +298,25 @@ export class ElasticsearchClient {
   // ===== Ingest Pipelines =====
 
   async getPipeline(pipelineId?: string) {
-    let path = pipelineId ? `/_ingest/pipeline/${encodeURIComponent(pipelineId)}` : '/_ingest/pipeline';
+    let path = pipelineId
+      ? `/_ingest/pipeline/${encodeURIComponent(pipelineId)}`
+      : '/_ingest/pipeline';
     let response = await this.axios.get(path);
     return response.data;
   }
 
   async putPipeline(pipelineId: string, body: Record<string, any>) {
-    let response = await this.axios.put(`/_ingest/pipeline/${encodeURIComponent(pipelineId)}`, body);
+    let response = await this.axios.put(
+      `/_ingest/pipeline/${encodeURIComponent(pipelineId)}`,
+      body
+    );
     return response.data;
   }
 
   async deletePipeline(pipelineId: string) {
-    let response = await this.axios.delete(`/_ingest/pipeline/${encodeURIComponent(pipelineId)}`);
+    let response = await this.axios.delete(
+      `/_ingest/pipeline/${encodeURIComponent(pipelineId)}`
+    );
     return response.data;
   }
 
@@ -293,8 +330,15 @@ export class ElasticsearchClient {
 
   // ===== ML / Inference =====
 
-  async createInferenceEndpoint(taskType: string, inferenceId: string, body: Record<string, any>) {
-    let response = await this.axios.put(`/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`, body);
+  async createInferenceEndpoint(
+    taskType: string,
+    inferenceId: string,
+    body: Record<string, any>
+  ) {
+    let response = await this.axios.put(
+      `/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`,
+      body
+    );
     return response.data;
   }
 
@@ -307,25 +351,35 @@ export class ElasticsearchClient {
   }
 
   async deleteInferenceEndpoint(taskType: string, inferenceId: string) {
-    let response = await this.axios.delete(`/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`);
+    let response = await this.axios.delete(
+      `/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`
+    );
     return response.data;
   }
 
   async performInference(taskType: string, inferenceId: string, body: Record<string, any>) {
-    let response = await this.axios.post(`/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`, body);
+    let response = await this.axios.post(
+      `/_inference/${encodeURIComponent(taskType)}/${encodeURIComponent(inferenceId)}`,
+      body
+    );
     return response.data;
   }
 
   // ===== Security =====
 
   async getUser(username?: string) {
-    let path = username ? `/_security/user/${encodeURIComponent(username)}` : '/_security/user';
+    let path = username
+      ? `/_security/user/${encodeURIComponent(username)}`
+      : '/_security/user';
     let response = await this.axios.get(path);
     return response.data;
   }
 
   async putUser(username: string, body: Record<string, any>) {
-    let response = await this.axios.put(`/_security/user/${encodeURIComponent(username)}`, body);
+    let response = await this.axios.put(
+      `/_security/user/${encodeURIComponent(username)}`,
+      body
+    );
     return response.data;
   }
 
@@ -335,13 +389,18 @@ export class ElasticsearchClient {
   }
 
   async getRole(roleName?: string) {
-    let path = roleName ? `/_security/role/${encodeURIComponent(roleName)}` : '/_security/role';
+    let path = roleName
+      ? `/_security/role/${encodeURIComponent(roleName)}`
+      : '/_security/role';
     let response = await this.axios.get(path);
     return response.data;
   }
 
   async putRole(roleName: string, body: Record<string, any>) {
-    let response = await this.axios.put(`/_security/role/${encodeURIComponent(roleName)}`, body);
+    let response = await this.axios.put(
+      `/_security/role/${encodeURIComponent(roleName)}`,
+      body
+    );
     return response.data;
   }
 
@@ -368,7 +427,10 @@ export class ElasticsearchClient {
   // ===== Watcher =====
 
   async putWatch(watchId: string, body: Record<string, any>) {
-    let response = await this.axios.put(`/_watcher/watch/${encodeURIComponent(watchId)}`, body);
+    let response = await this.axios.put(
+      `/_watcher/watch/${encodeURIComponent(watchId)}`,
+      body
+    );
     return response.data;
   }
 
@@ -383,18 +445,24 @@ export class ElasticsearchClient {
   }
 
   async executeWatch(watchId?: string, body?: Record<string, any>) {
-    let path = watchId ? `/_watcher/watch/${encodeURIComponent(watchId)}/_execute` : '/_watcher/watch/_execute';
+    let path = watchId
+      ? `/_watcher/watch/${encodeURIComponent(watchId)}/_execute`
+      : '/_watcher/watch/_execute';
     let response = await this.axios.put(path, body || {});
     return response.data;
   }
 
   async activateWatch(watchId: string) {
-    let response = await this.axios.put(`/_watcher/watch/${encodeURIComponent(watchId)}/_activate`);
+    let response = await this.axios.put(
+      `/_watcher/watch/${encodeURIComponent(watchId)}/_activate`
+    );
     return response.data;
   }
 
   async deactivateWatch(watchId: string) {
-    let response = await this.axios.put(`/_watcher/watch/${encodeURIComponent(watchId)}/_deactivate`);
+    let response = await this.axios.put(
+      `/_watcher/watch/${encodeURIComponent(watchId)}/_deactivate`
+    );
     return response.data;
   }
 
@@ -406,7 +474,7 @@ export class ElasticsearchClient {
   async getWatchHistory(watchId?: string, from?: number, size?: number) {
     let body: Record<string, any> = {
       sort: [{ 'trigger_event.triggered_time': { order: 'desc' } }],
-      size: size || 50,
+      size: size || 50
     };
     if (from !== undefined) {
       body.from = from;
@@ -428,18 +496,25 @@ export class ElasticsearchClient {
   // ===== Index Templates =====
 
   async getIndexTemplate(templateName?: string) {
-    let path = templateName ? `/_index_template/${encodeURIComponent(templateName)}` : '/_index_template';
+    let path = templateName
+      ? `/_index_template/${encodeURIComponent(templateName)}`
+      : '/_index_template';
     let response = await this.axios.get(path);
     return response.data;
   }
 
   async putIndexTemplate(templateName: string, body: Record<string, any>) {
-    let response = await this.axios.put(`/_index_template/${encodeURIComponent(templateName)}`, body);
+    let response = await this.axios.put(
+      `/_index_template/${encodeURIComponent(templateName)}`,
+      body
+    );
     return response.data;
   }
 
   async deleteIndexTemplate(templateName: string) {
-    let response = await this.axios.delete(`/_index_template/${encodeURIComponent(templateName)}`);
+    let response = await this.axios.delete(
+      `/_index_template/${encodeURIComponent(templateName)}`
+    );
     return response.data;
   }
 

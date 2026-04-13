@@ -10,8 +10,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -37,8 +37,8 @@ export class Client {
         cursor: params?.cursor,
         updated_at_min: params?.updatedAtMin,
         updated_at_max: params?.updatedAtMax,
-        show_deleted: params?.showDeleted,
-      },
+        show_deleted: params?.showDeleted
+      }
     });
     return response.data;
   }
@@ -57,10 +57,13 @@ export class Client {
     await this.axios.delete(`/items/${itemId}`);
   }
 
-  // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
-  async uploadItemImage(itemId: string, imageData: Buffer | string, contentType: string): Promise<any> {
+  async uploadItemImage(
+    itemId: string,
+    imageData: Buffer | string,
+    contentType: string
+  ): Promise<any> {
     let response = await this.axios.post(`/items/${itemId}/image`, imageData, {
-      headers: { 'Content-Type': contentType },
+      headers: { 'Content-Type': contentType }
     });
     return response.data;
   }
@@ -80,8 +83,8 @@ export class Client {
       params: {
         limit: params?.limit,
         cursor: params?.cursor,
-        item_id: params?.itemId,
-      },
+        item_id: params?.itemId
+      }
     });
     return response.data;
   }
@@ -111,8 +114,8 @@ export class Client {
       params: {
         limit: params?.limit,
         cursor: params?.cursor,
-        show_deleted: params?.showDeleted,
-      },
+        show_deleted: params?.showDeleted
+      }
     });
     return response.data;
   }
@@ -133,15 +136,12 @@ export class Client {
 
   // ── Modifiers ─────────────────────────────────────────────
 
-  async listModifiers(params?: {
-    limit?: number;
-    cursor?: string;
-  }): Promise<any> {
+  async listModifiers(params?: { limit?: number; cursor?: string }): Promise<any> {
     let response = await this.axios.get('/modifiers', {
       params: {
         limit: params?.limit,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -183,8 +183,8 @@ export class Client {
         created_at_max: params?.createdAtMax,
         updated_at_min: params?.updatedAtMin,
         updated_at_max: params?.updatedAtMax,
-        show_deleted: params?.showDeleted,
-      },
+        show_deleted: params?.showDeleted
+      }
     });
     return response.data;
   }
@@ -214,8 +214,8 @@ export class Client {
       params: {
         limit: params?.limit,
         cursor: params?.cursor,
-        show_deleted: params?.showDeleted,
-      },
+        show_deleted: params?.showDeleted
+      }
     });
     return response.data;
   }
@@ -245,8 +245,8 @@ export class Client {
       params: {
         limit: params?.limit,
         cursor: params?.cursor,
-        show_deleted: params?.showDeleted,
-      },
+        show_deleted: params?.showDeleted
+      }
     });
     return response.data;
   }
@@ -278,8 +278,8 @@ export class Client {
         limit: params?.limit,
         cursor: params?.cursor,
         store_id: params?.storeId,
-        variant_id: params?.variantId,
-      },
+        variant_id: params?.variantId
+      }
     });
     return response.data;
   }
@@ -306,8 +306,8 @@ export class Client {
         created_at_min: params?.createdAtMin,
         created_at_max: params?.createdAtMax,
         updated_at_min: params?.updatedAtMin,
-        updated_at_max: params?.updatedAtMax,
-      },
+        updated_at_max: params?.updatedAtMax
+      }
     });
     return response.data;
   }
@@ -329,15 +329,12 @@ export class Client {
 
   // ── Payment Types ─────────────────────────────────────────
 
-  async listPaymentTypes(params?: {
-    limit?: number;
-    cursor?: string;
-  }): Promise<any> {
+  async listPaymentTypes(params?: { limit?: number; cursor?: string }): Promise<any> {
     let response = await this.axios.get('/payment_types', {
       params: {
         limit: params?.limit,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -349,15 +346,12 @@ export class Client {
 
   // ── Employees ─────────────────────────────────────────────
 
-  async listEmployees(params?: {
-    limit?: number;
-    cursor?: string;
-  }): Promise<any> {
+  async listEmployees(params?: { limit?: number; cursor?: string }): Promise<any> {
     let response = await this.axios.get('/employees', {
       params: {
         limit: params?.limit,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -369,15 +363,12 @@ export class Client {
 
   // ── Stores ────────────────────────────────────────────────
 
-  async listStores(params?: {
-    limit?: number;
-    cursor?: string;
-  }): Promise<any> {
+  async listStores(params?: { limit?: number; cursor?: string }): Promise<any> {
     let response = await this.axios.get('/stores', {
       params: {
         limit: params?.limit,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }
@@ -400,8 +391,8 @@ export class Client {
         limit: params?.limit,
         cursor: params?.cursor,
         store_id: params?.storeId,
-        employee_id: params?.employeeId,
-      },
+        employee_id: params?.employeeId
+      }
     });
     return response.data;
   }
@@ -422,8 +413,8 @@ export class Client {
       params: {
         limit: params?.limit,
         cursor: params?.cursor,
-        store_id: params?.storeId,
-      },
+        store_id: params?.storeId
+      }
     });
     return response.data;
   }
@@ -444,15 +435,12 @@ export class Client {
 
   // ── Suppliers ─────────────────────────────────────────────
 
-  async listSuppliers(params?: {
-    limit?: number;
-    cursor?: string;
-  }): Promise<any> {
+  async listSuppliers(params?: { limit?: number; cursor?: string }): Promise<any> {
     let response = await this.axios.get('/suppliers', {
       params: {
         limit: params?.limit,
-        cursor: params?.cursor,
-      },
+        cursor: params?.cursor
+      }
     });
     return response.data;
   }

@@ -14,7 +14,7 @@ import {
   animateImage,
   extractContent,
   shortenLink,
-  listLinkCtas,
+  listLinkCtas
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -35,9 +35,7 @@ export let provider = Slate.create({
     animateImage,
     extractContent,
     shortenLink,
-    listLinkCtas,
+    listLinkCtas
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -4,63 +4,94 @@ import { z } from 'zod';
 let BASE_URL = 'https://platform.ringcentral.com';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
     key: 'oauth',
 
     scopes: [
-      { title: 'Read Accounts', description: 'Read account and extension info', scope: 'ReadAccounts' },
-      { title: 'Edit Extensions', description: 'Edit extension settings', scope: 'EditExtensions' },
+      {
+        title: 'Read Accounts',
+        description: 'Read account and extension info',
+        scope: 'ReadAccounts'
+      },
+      {
+        title: 'Edit Extensions',
+        description: 'Edit extension settings',
+        scope: 'EditExtensions'
+      },
       { title: 'Read Call Log', description: 'Read call log records', scope: 'ReadCallLog' },
-      { title: 'Read Messages', description: 'Read messages (SMS, fax, voicemail)', scope: 'ReadMessages' },
+      {
+        title: 'Read Messages',
+        description: 'Read messages (SMS, fax, voicemail)',
+        scope: 'ReadMessages'
+      },
       { title: 'SMS', description: 'Send and receive SMS/MMS messages', scope: 'SMS' },
-      { title: 'Internal Messages', description: 'Send internal pager messages', scope: 'InternalMessages' },
+      {
+        title: 'Internal Messages',
+        description: 'Send internal pager messages',
+        scope: 'InternalMessages'
+      },
       { title: 'Fax', description: 'Send and receive faxes', scope: 'Fax' },
       { title: 'RingOut', description: 'Place calls via RingOut', scope: 'RingOut' },
-      { title: 'Team Messaging', description: 'Post and manage team messages', scope: 'TeamMessaging' },
+      {
+        title: 'Team Messaging',
+        description: 'Post and manage team messages',
+        scope: 'TeamMessaging'
+      },
       { title: 'Meetings', description: 'Create and manage meetings', scope: 'Meetings' },
       { title: 'Video', description: 'Manage video meetings', scope: 'Video' },
-      { title: 'Webhook Subscriptions', description: 'Manage webhook subscriptions', scope: 'WebhookSubscriptions' },
+      {
+        title: 'Webhook Subscriptions',
+        description: 'Manage webhook subscriptions',
+        scope: 'WebhookSubscriptions'
+      },
       { title: 'Call Control', description: 'Control active calls', scope: 'CallControl' },
-      { title: 'AI', description: 'Access AI features (transcription, summaries)', scope: 'AI' },
+      {
+        title: 'AI',
+        description: 'Access AI features (transcription, summaries)',
+        scope: 'AI'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join(' ');
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         state: ctx.state,
-        scope: scopeString,
+        scope: scopeString
       });
 
       return {
-        url: `${BASE_URL}/restapi/oauth/authorize?${params.toString()}`,
+        url: `${BASE_URL}/restapi/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let httpClient = createAxios({ baseURL: BASE_URL });
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await httpClient.post('/restapi/oauth/token',
+      let response = await httpClient.post(
+        '/restapi/oauth/token',
         new URLSearchParams({
           grant_type: 'authorization_code',
           code: ctx.code,
-          redirect_uri: ctx.redirectUri,
+          redirect_uri: ctx.redirectUri
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -73,12 +104,12 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -86,16 +117,17 @@ export let auth = SlateAuth.create()
       let httpClient = createAxios({ baseURL: BASE_URL });
       let credentials = btoa(`${ctx.clientId}:${ctx.clientSecret}`);
 
-      let response = await httpClient.post('/restapi/oauth/token',
+      let response = await httpClient.post(
+        '/restapi/oauth/token',
         new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: ctx.output.refreshToken,
+          refresh_token: ctx.output.refreshToken
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -108,8 +140,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -118,8 +150,8 @@ export let auth = SlateAuth.create()
 
       let response = await httpClient.get('/restapi/v1.0/account/~/extension/~', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -129,10 +161,10 @@ export let auth = SlateAuth.create()
           id: String(data.id),
           name: data.name,
           email: data.contact?.email,
-          extensionNumber: data.extensionNumber,
-        },
+          extensionNumber: data.extensionNumber
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -140,25 +172,28 @@ export let auth = SlateAuth.create()
     key: 'jwt',
 
     inputSchema: z.object({
-      jwtToken: z.string().describe('JWT credential generated in the RingCentral Developer Console'),
+      jwtToken: z
+        .string()
+        .describe('JWT credential generated in the RingCentral Developer Console'),
       clientId: z.string().describe('Application Client ID'),
-      clientSecret: z.string().describe('Application Client Secret'),
+      clientSecret: z.string().describe('Application Client Secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let httpClient = createAxios({ baseURL: BASE_URL });
       let credentials = btoa(`${ctx.input.clientId}:${ctx.input.clientSecret}`);
 
-      let response = await httpClient.post('/restapi/oauth/token',
+      let response = await httpClient.post(
+        '/restapi/oauth/token',
         new URLSearchParams({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-          assertion: ctx.input.jwtToken,
+          assertion: ctx.input.jwtToken
         }).toString(),
         {
           headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
@@ -171,8 +206,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -181,8 +216,8 @@ export let auth = SlateAuth.create()
 
       let response = await httpClient.get('/restapi/v1.0/account/~/extension/~', {
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let data = response.data;
@@ -192,8 +227,8 @@ export let auth = SlateAuth.create()
           id: String(data.id),
           name: data.name,
           email: data.contact?.email,
-          extensionNumber: data.extensionNumber,
-        },
+          extensionNumber: data.extensionNumber
+        }
       };
-    },
+    }
   });

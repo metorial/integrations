@@ -3,27 +3,26 @@ import { BotbabaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listBots = SlateTool.create(
-  spec,
-  {
-    name: 'List Bots',
-    key: 'list_bots',
-    description: `Retrieve all chatbots associated with your Botbaba account. Returns a list of bots with their configuration details, including bot IDs, names, and settings.
+export let listBots = SlateTool.create(spec, {
+  name: 'List Bots',
+  key: 'list_bots',
+  description: `Retrieve all chatbots associated with your Botbaba account. Returns a list of bots with their configuration details, including bot IDs, names, and settings.
 Use this to discover available bots before performing other operations such as sending WhatsApp messages.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    bots: z.array(z.record(z.string(), z.unknown())).describe('List of bots in the account'),
-    totalCount: z.number().describe('Total number of bots returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      bots: z.array(z.record(z.string(), z.unknown())).describe('List of bots in the account'),
+      totalCount: z.number().describe('Total number of bots returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BotbabaClient({
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let bots = await client.getBots();
@@ -31,8 +30,9 @@ Use this to discover available bots before performing other operations such as s
     return {
       output: {
         bots,
-        totalCount: bots.length,
+        totalCount: bots.length
       },
-      message: `Found **${bots.length}** bot(s) in your Botbaba account.`,
+      message: `Found **${bots.length}** bot(s) in your Botbaba account.`
     };
-  }).build();
+  })
+  .build();

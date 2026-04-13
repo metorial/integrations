@@ -12,7 +12,7 @@ import {
   onPageAudit,
   contentAnalysis,
   googleShoppingSearch,
-  getTaskResult,
+  getTaskResult
 } from './tools';
 import { taskCompleted } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     onPageAudit,
     contentAnalysis,
     googleShoppingSearch,
-    getTaskResult,
+    getTaskResult
   ],
-  triggers: [
-    taskCompleted,
-  ],
+  triggers: [taskCompleted]
 });

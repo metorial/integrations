@@ -3,46 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let activityEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Events',
-    key: 'activity_events',
-    description: 'Triggers when activities are created, updated, or deleted. Polls for recent activities and detects changes.'
-  }
-)
-  .input(z.object({
-    activityId: z.number().describe('The activity identifier'),
-    eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of event detected'),
-    name: z.string().nullable().optional().describe('Activity name'),
-    sportType: z.string().nullable().optional().describe('Sport type'),
-    startDate: z.string().nullable().optional().describe('Start date in UTC'),
-    distance: z.number().nullable().optional().describe('Distance in meters'),
-    movingTime: z.number().nullable().optional().describe('Moving time in seconds'),
-    elapsedTime: z.number().nullable().optional().describe('Elapsed time in seconds'),
-    totalElevationGain: z.number().nullable().optional().describe('Total elevation gain in meters')
-  }))
-  .output(z.object({
-    activityId: z.number().describe('The activity identifier'),
-    name: z.string().nullable().optional().describe('Activity name'),
-    sportType: z.string().nullable().optional().describe('Sport type'),
-    startDate: z.string().nullable().optional().describe('Start date in UTC'),
-    startDateLocal: z.string().nullable().optional().describe('Start date in local time'),
-    distance: z.number().nullable().optional().describe('Distance in meters'),
-    movingTime: z.number().nullable().optional().describe('Moving time in seconds'),
-    elapsedTime: z.number().nullable().optional().describe('Elapsed time in seconds'),
-    totalElevationGain: z.number().nullable().optional().describe('Total elevation gain in meters'),
-    averageSpeed: z.number().nullable().optional().describe('Average speed in m/s'),
-    maxSpeed: z.number().nullable().optional().describe('Max speed in m/s'),
-    averageHeartrate: z.number().nullable().optional().describe('Average heart rate in bpm'),
-    maxHeartrate: z.number().nullable().optional().describe('Max heart rate in bpm')
-  }))
+export let activityEvent = SlateTrigger.create(spec, {
+  name: 'Activity Events',
+  key: 'activity_events',
+  description:
+    'Triggers when activities are created, updated, or deleted. Polls for recent activities and detects changes.'
+})
+  .input(
+    z.object({
+      activityId: z.number().describe('The activity identifier'),
+      eventType: z.enum(['created', 'updated', 'deleted']).describe('Type of event detected'),
+      name: z.string().nullable().optional().describe('Activity name'),
+      sportType: z.string().nullable().optional().describe('Sport type'),
+      startDate: z.string().nullable().optional().describe('Start date in UTC'),
+      distance: z.number().nullable().optional().describe('Distance in meters'),
+      movingTime: z.number().nullable().optional().describe('Moving time in seconds'),
+      elapsedTime: z.number().nullable().optional().describe('Elapsed time in seconds'),
+      totalElevationGain: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('Total elevation gain in meters')
+    })
+  )
+  .output(
+    z.object({
+      activityId: z.number().describe('The activity identifier'),
+      name: z.string().nullable().optional().describe('Activity name'),
+      sportType: z.string().nullable().optional().describe('Sport type'),
+      startDate: z.string().nullable().optional().describe('Start date in UTC'),
+      startDateLocal: z.string().nullable().optional().describe('Start date in local time'),
+      distance: z.number().nullable().optional().describe('Distance in meters'),
+      movingTime: z.number().nullable().optional().describe('Moving time in seconds'),
+      elapsedTime: z.number().nullable().optional().describe('Elapsed time in seconds'),
+      totalElevationGain: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('Total elevation gain in meters'),
+      averageSpeed: z.number().nullable().optional().describe('Average speed in m/s'),
+      maxSpeed: z.number().nullable().optional().describe('Max speed in m/s'),
+      averageHeartrate: z.number().nullable().optional().describe('Average heart rate in bpm'),
+      maxHeartrate: z.number().nullable().optional().describe('Max heart rate in bpm')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -59,9 +69,7 @@ export let activityEvent = SlateTrigger.create(
 
       let currentIds = activities.map((a: any) => a.id as number);
 
-      let newActivities = activities.filter(
-        (a: any) => !knownActivityIds.includes(a.id)
-      );
+      let newActivities = activities.filter((a: any) => !knownActivityIds.includes(a.id));
 
       let inputs = newActivities.map((a: any) => ({
         activityId: a.id as number,
@@ -86,7 +94,7 @@ export let activityEvent = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let activityDetails: any = null;
@@ -136,4 +144,5 @@ export let activityEvent = SlateTrigger.create(
         output
       };
     }
-  }).build();
+  })
+  .build();

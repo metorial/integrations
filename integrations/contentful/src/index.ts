@@ -19,11 +19,7 @@ import {
   scheduleAction,
   manageRelease
 } from './tools';
-import {
-  entryEvents,
-  assetEvents,
-  contentTypeEvents
-} from './triggers';
+import { entryEvents, assetEvents, contentTypeEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -46,9 +42,5 @@ export let provider = Slate.create({
     scheduleAction,
     manageRelease
   ],
-  triggers: [
-    entryEvents,
-    assetEvents,
-    contentTypeEvents
-  ]
+  triggers: [entryEvents, assetEvents, contentTypeEvents]
 });

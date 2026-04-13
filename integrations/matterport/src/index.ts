@@ -12,7 +12,7 @@ import {
   purchaseAssetBundle,
   getSweeps,
   getDimensions,
-  getNotes,
+  getNotes
 } from './tools';
 import { modelEvents } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     purchaseAssetBundle,
     getSweeps,
     getDimensions,
-    getNotes,
+    getNotes
   ],
-  triggers: [
-    modelEvents,
-  ],
+  triggers: [modelEvents]
 });

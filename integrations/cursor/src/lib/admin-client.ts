@@ -6,7 +6,6 @@ export class AdminClient {
   private authHeader: string;
 
   constructor(config: { token: string }) {
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     this.authHeader = `Basic ${Buffer.from(`${config.token}:`).toString('base64')}`;
   }
 
@@ -22,7 +21,7 @@ export class AdminClient {
     teamMembers: TeamMember[];
   }> {
     let response = await this.axios.get('/teams/members', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -33,7 +32,7 @@ export class AdminClient {
     hasBillingCycleUsage: boolean;
   }> {
     let response = await this.axios.post('/teams/remove-member', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -46,7 +45,7 @@ export class AdminClient {
     message: string;
   }> {
     let response = await this.axios.post('/teams/user-spend-limit', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -58,7 +57,7 @@ export class AdminClient {
     pageSize?: number;
   }): Promise<{ data: DailyUsageEntry[] }> {
     let response = await this.axios.post('/teams/daily-usage-data', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -71,7 +70,7 @@ export class AdminClient {
     pageSize?: number;
   }): Promise<SpendResponse> {
     let response = await this.axios.post('/teams/spend', params ?? {}, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -85,7 +84,7 @@ export class AdminClient {
     pageSize?: number;
   }): Promise<UsageEventsResponse> {
     let response = await this.axios.post('/teams/filtered-usage-events', params, {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -101,7 +100,7 @@ export class AdminClient {
   }): Promise<AuditLogsResponse> {
     let response = await this.axios.get('/teams/audit-logs', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -110,20 +109,24 @@ export class AdminClient {
     repos: RepoBlocklist[];
   }> {
     let response = await this.axios.get('/settings/repo-blocklists/repos', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
 
   async upsertRepoBlocklists(repos: { url: string; patterns: string[] }[]): Promise<void> {
-    await this.axios.post('/settings/repo-blocklists/repos/upsert', { repos }, {
-      headers: this.headers,
-    });
+    await this.axios.post(
+      '/settings/repo-blocklists/repos/upsert',
+      { repos },
+      {
+        headers: this.headers
+      }
+    );
   }
 
   async deleteRepoBlocklist(repoId: string): Promise<void> {
     await this.axios.delete(`/settings/repo-blocklists/repos/${repoId}`, {
-      headers: this.headers,
+      headers: this.headers
     });
   }
 }

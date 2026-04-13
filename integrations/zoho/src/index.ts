@@ -13,12 +13,9 @@ import {
   booksManageExpense,
   peopleManageEmployee,
   projectsManageProject,
-  projectsManageTask,
+  projectsManageTask
 } from './tools';
-import {
-  crmRecordEvents,
-  deskEvents,
-} from './triggers';
+import { crmRecordEvents, deskEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     booksManageExpense,
     peopleManageEmployee,
     projectsManageProject,
-    projectsManageTask,
+    projectsManageTask
   ],
-  triggers: [
-    crmRecordEvents,
-    deskEvents,
-  ],
+  triggers: [crmRecordEvents, deskEvents]
 });

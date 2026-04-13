@@ -20,7 +20,7 @@ import type {
   AuditLogEntry,
   AuditLogParams,
   Transaction,
-  ReportParams,
+  ReportParams
 } from './types';
 
 export class Client {
@@ -31,10 +31,10 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.helpdesk.com',
       headers: {
-        'Authorization': isBasicAuth ? config.token : `Bearer ${config.token}`,
+        Authorization: isBasicAuth ? config.token : `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'Slates-HelpDesk-Integration/1.0',
-      },
+        'User-Agent': 'Slates-HelpDesk-Integration/1.0'
+      }
     });
   }
 
@@ -95,7 +95,9 @@ export class Client {
   }
 
   async removeTicketFollowers(ticketId: string, agentIds: string[]): Promise<void> {
-    await this.http.delete(`/v1/tickets/${ticketId}/followers`, { data: { followers: agentIds } });
+    await this.http.delete(`/v1/tickets/${ticketId}/followers`, {
+      data: { followers: agentIds }
+    });
   }
 
   async mergeTickets(parentTicketId: string, childTicketIds: string[]): Promise<void> {
@@ -126,7 +128,10 @@ export class Client {
     return response.data as Transaction;
   }
 
-  async uploadTransactionAttachment(transactionId: string, file: { name: string; contentType: string; content: string }): Promise<unknown> {
+  async uploadTransactionAttachment(
+    transactionId: string,
+    file: { name: string; contentType: string; content: string }
+  ): Promise<unknown> {
     let response = await this.http.post(`/v1/transactions/${transactionId}/attachments`, file);
     return response.data;
   }
@@ -136,7 +141,7 @@ export class Client {
   async listAgents(): Promise<Agent[]> {
     let response = await this.http.get('/v1/agents');
     let data = response.data;
-    return Array.isArray(data) ? data as Agent[] : (data as { data: Agent[] }).data ?? [];
+    return Array.isArray(data) ? (data as Agent[]) : ((data as { data: Agent[] }).data ?? []);
   }
 
   async getAgent(agentId: string): Promise<Agent> {
@@ -163,7 +168,7 @@ export class Client {
   async listTeams(): Promise<Team[]> {
     let response = await this.http.get('/v1/teams');
     let data = response.data;
-    return Array.isArray(data) ? data as Team[] : (data as { data: Team[] }).data ?? [];
+    return Array.isArray(data) ? (data as Team[]) : ((data as { data: Team[] }).data ?? []);
   }
 
   async getTeam(teamId: string): Promise<Team> {
@@ -190,7 +195,7 @@ export class Client {
   async listTags(): Promise<Tag[]> {
     let response = await this.http.get('/v1/tags');
     let data = response.data;
-    return Array.isArray(data) ? data as Tag[] : (data as { data: Tag[] }).data ?? [];
+    return Array.isArray(data) ? (data as Tag[]) : ((data as { data: Tag[] }).data ?? []);
   }
 
   async getTag(tagId: string): Promise<Tag> {
@@ -217,7 +222,9 @@ export class Client {
   async listCustomFields(): Promise<CustomField[]> {
     let response = await this.http.get('/v1/custom-fields');
     let data = response.data;
-    return Array.isArray(data) ? data as CustomField[] : (data as { data: CustomField[] }).data ?? [];
+    return Array.isArray(data)
+      ? (data as CustomField[])
+      : ((data as { data: CustomField[] }).data ?? []);
   }
 
   async getCustomField(fieldId: string): Promise<CustomField> {
@@ -225,12 +232,21 @@ export class Client {
     return response.data as CustomField;
   }
 
-  async createCustomField(input: { name: string; type: string; editPermission?: string; teamIDs?: string[]; active?: boolean }): Promise<CustomField> {
+  async createCustomField(input: {
+    name: string;
+    type: string;
+    editPermission?: string;
+    teamIDs?: string[];
+    active?: boolean;
+  }): Promise<CustomField> {
     let response = await this.http.post('/v1/custom-fields', input);
     return response.data as CustomField;
   }
 
-  async updateCustomField(fieldId: string, input: { name?: string; editPermission?: string; teamIDs?: string[]; active?: boolean }): Promise<CustomField> {
+  async updateCustomField(
+    fieldId: string,
+    input: { name?: string; editPermission?: string; teamIDs?: string[]; active?: boolean }
+  ): Promise<CustomField> {
     let response = await this.http.patch(`/v1/custom-fields/${fieldId}`, input);
     return response.data as CustomField;
   }
@@ -244,7 +260,9 @@ export class Client {
   async listCannedResponses(): Promise<CannedResponse[]> {
     let response = await this.http.get('/v1/canned-responses');
     let data = response.data;
-    return Array.isArray(data) ? data as CannedResponse[] : (data as { data: CannedResponse[] }).data ?? [];
+    return Array.isArray(data)
+      ? (data as CannedResponse[])
+      : ((data as { data: CannedResponse[] }).data ?? []);
   }
 
   async getCannedResponse(responseId: string): Promise<CannedResponse> {
@@ -252,12 +270,20 @@ export class Client {
     return response.data as CannedResponse;
   }
 
-  async createCannedResponse(input: { name: string; content: string; shortcut?: string; teamIDs?: string[] }): Promise<CannedResponse> {
+  async createCannedResponse(input: {
+    name: string;
+    content: string;
+    shortcut?: string;
+    teamIDs?: string[];
+  }): Promise<CannedResponse> {
     let response = await this.http.post('/v1/canned-responses', input);
     return response.data as CannedResponse;
   }
 
-  async updateCannedResponse(responseId: string, input: { name?: string; content?: string; shortcut?: string; teamIDs?: string[] }): Promise<CannedResponse> {
+  async updateCannedResponse(
+    responseId: string,
+    input: { name?: string; content?: string; shortcut?: string; teamIDs?: string[] }
+  ): Promise<CannedResponse> {
     let response = await this.http.patch(`/v1/canned-responses/${responseId}`, input);
     return response.data as CannedResponse;
   }
@@ -271,7 +297,7 @@ export class Client {
   async listRules(): Promise<Rule[]> {
     let response = await this.http.get('/v1/rules');
     let data = response.data;
-    return Array.isArray(data) ? data as Rule[] : (data as { data: Rule[] }).data ?? [];
+    return Array.isArray(data) ? (data as Rule[]) : ((data as { data: Rule[] }).data ?? []);
   }
 
   async getRule(ruleId: string): Promise<Rule> {
@@ -279,12 +305,27 @@ export class Client {
     return response.data as Rule;
   }
 
-  async createRule(input: { name: string; active?: boolean; triggers?: unknown[]; actions?: unknown[]; order?: number }): Promise<Rule> {
+  async createRule(input: {
+    name: string;
+    active?: boolean;
+    triggers?: unknown[];
+    actions?: unknown[];
+    order?: number;
+  }): Promise<Rule> {
     let response = await this.http.post('/v1/rules', input);
     return response.data as Rule;
   }
 
-  async updateRule(ruleId: string, input: { name?: string; active?: boolean; triggers?: unknown[]; actions?: unknown[]; order?: number }): Promise<Rule> {
+  async updateRule(
+    ruleId: string,
+    input: {
+      name?: string;
+      active?: boolean;
+      triggers?: unknown[];
+      actions?: unknown[];
+      order?: number;
+    }
+  ): Promise<Rule> {
     let response = await this.http.patch(`/v1/rules/${ruleId}`, input);
     return response.data as Rule;
   }
@@ -298,7 +339,7 @@ export class Client {
   async listMacros(): Promise<Macro[]> {
     let response = await this.http.get('/v1/macros');
     let data = response.data;
-    return Array.isArray(data) ? data as Macro[] : (data as { data: Macro[] }).data ?? [];
+    return Array.isArray(data) ? (data as Macro[]) : ((data as { data: Macro[] }).data ?? []);
   }
 
   async getMacro(macroId: string): Promise<Macro> {
@@ -306,12 +347,19 @@ export class Client {
     return response.data as Macro;
   }
 
-  async createMacro(input: { name: string; visibility?: string; actions?: unknown[] }): Promise<Macro> {
+  async createMacro(input: {
+    name: string;
+    visibility?: string;
+    actions?: unknown[];
+  }): Promise<Macro> {
     let response = await this.http.post('/v1/macros', input);
     return response.data as Macro;
   }
 
-  async updateMacro(macroId: string, input: { name?: string; visibility?: string; actions?: unknown[] }): Promise<Macro> {
+  async updateMacro(
+    macroId: string,
+    input: { name?: string; visibility?: string; actions?: unknown[] }
+  ): Promise<Macro> {
     let response = await this.http.patch(`/v1/macros/${macroId}`, input);
     return response.data as Macro;
   }
@@ -325,7 +373,7 @@ export class Client {
   async listViews(): Promise<View[]> {
     let response = await this.http.get('/v1/views');
     let data = response.data;
-    return Array.isArray(data) ? data as View[] : (data as { data: View[] }).data ?? [];
+    return Array.isArray(data) ? (data as View[]) : ((data as { data: View[] }).data ?? []);
   }
 
   async getView(viewId: string): Promise<View> {
@@ -333,12 +381,19 @@ export class Client {
     return response.data as View;
   }
 
-  async createView(input: { name: string; visibility?: string; filters?: unknown }): Promise<View> {
+  async createView(input: {
+    name: string;
+    visibility?: string;
+    filters?: unknown;
+  }): Promise<View> {
     let response = await this.http.post('/v1/views', input);
     return response.data as View;
   }
 
-  async updateView(viewId: string, input: { name?: string; visibility?: string; filters?: unknown }): Promise<View> {
+  async updateView(
+    viewId: string,
+    input: { name?: string; visibility?: string; filters?: unknown }
+  ): Promise<View> {
     let response = await this.http.patch(`/v1/views/${viewId}`, input);
     return response.data as View;
   }
@@ -352,7 +407,9 @@ export class Client {
   async listWebhooks(): Promise<Webhook[]> {
     let response = await this.http.get('/v1/webhooks');
     let data = response.data;
-    return Array.isArray(data) ? data as Webhook[] : (data as { data: Webhook[] }).data ?? [];
+    return Array.isArray(data)
+      ? (data as Webhook[])
+      : ((data as { data: Webhook[] }).data ?? []);
   }
 
   async getWebhook(webhookId: string): Promise<Webhook> {
@@ -365,7 +422,10 @@ export class Client {
     return response.data as Webhook;
   }
 
-  async updateWebhook(webhookId: string, input: Partial<CreateWebhookInput>): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: string,
+    input: Partial<CreateWebhookInput>
+  ): Promise<Webhook> {
     let response = await this.http.patch(`/v1/webhooks/${webhookId}`, input);
     return response.data as Webhook;
   }
@@ -396,10 +456,12 @@ export class Client {
   async getReport(reportType: string, params: ReportParams): Promise<unknown> {
     let query: Record<string, string> = {
       from: params.from,
-      to: params.to,
+      to: params.to
     };
-    if (params.agentIDs && params.agentIDs.length > 0) query['agentIDs'] = params.agentIDs.join(',');
-    if (params.teamIDs && params.teamIDs.length > 0) query['teamIDs'] = params.teamIDs.join(',');
+    if (params.agentIDs && params.agentIDs.length > 0)
+      query['agentIDs'] = params.agentIDs.join(',');
+    if (params.teamIDs && params.teamIDs.length > 0)
+      query['teamIDs'] = params.teamIDs.join(',');
     if (params.tags && params.tags.length > 0) query['tags'] = params.tags.join(',');
     if (params.priority) query['priority'] = params.priority;
     if (params.includeSpam !== undefined) query['includeSpam'] = String(params.includeSpam);
@@ -413,7 +475,7 @@ export class Client {
   async listMailboxes(): Promise<unknown[]> {
     let response = await this.http.get('/v1/mailboxes');
     let data = response.data;
-    return Array.isArray(data) ? data : (data as { data: unknown[] }).data ?? [];
+    return Array.isArray(data) ? data : ((data as { data: unknown[] }).data ?? []);
   }
 
   // ── Email Domains ──
@@ -421,7 +483,7 @@ export class Client {
   async listEmailDomains(): Promise<unknown[]> {
     let response = await this.http.get('/v1/email-domains');
     let data = response.data;
-    return Array.isArray(data) ? data : (data as { data: unknown[] }).data ?? [];
+    return Array.isArray(data) ? data : ((data as { data: unknown[] }).data ?? []);
   }
 
   // ── Spam Management ──
@@ -429,7 +491,7 @@ export class Client {
   async listTrustedEmails(): Promise<unknown[]> {
     let response = await this.http.get('/v1/trusted-emails');
     let data = response.data;
-    return Array.isArray(data) ? data : (data as { data: unknown[] }).data ?? [];
+    return Array.isArray(data) ? data : ((data as { data: unknown[] }).data ?? []);
   }
 
   async addTrustedEmail(email: string): Promise<unknown> {
@@ -444,7 +506,7 @@ export class Client {
   async listBlockedEmails(): Promise<unknown[]> {
     let response = await this.http.get('/v1/blocked-emails');
     let data = response.data;
-    return Array.isArray(data) ? data : (data as { data: unknown[] }).data ?? [];
+    return Array.isArray(data) ? data : ((data as { data: unknown[] }).data ?? []);
   }
 
   async addBlockedEmail(email: string): Promise<unknown> {

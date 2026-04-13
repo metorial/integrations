@@ -15,6 +15,7 @@ To use any APIs provided by Cincopa, you will need to validate your Cincopa acco
 **Usage:**
 
 The `api_token` is passed as a query parameter on every API request. For example:
+
 ```
 https://api.cincopa.com/v2/ping.json?api_token=YOUR_API_TOKEN
 ```

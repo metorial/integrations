@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://rest.moceanapi.com',
+  baseURL: 'https://rest.moceanapi.com'
 });
 
 export class MoceanClient {
@@ -17,16 +17,15 @@ export class MoceanClient {
 
   private getHeaders(): Record<string, string> {
     if (this.token) {
-      return { 'Authorization': `Bearer ${this.token}` };
+      return { Authorization: `Bearer ${this.token}` };
     }
     return {};
   }
 
   private getBasicAuthHeaders(): Record<string, string> {
     if (this.apiKey && this.apiSecret) {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let encoded = Buffer.from(`${this.apiKey}:${this.apiSecret}`).toString('base64');
-      return { 'Authorization': `Basic ${encoded}` };
+      return { Authorization: `Basic ${encoded}` };
     }
     return this.getHeaders();
   }
@@ -38,7 +37,7 @@ export class MoceanClient {
     if (this.apiKey && this.apiSecret) {
       return {
         'mocean-api-key': this.apiKey,
-        'mocean-api-secret': this.apiSecret,
+        'mocean-api-secret': this.apiSecret
       };
     }
     return {};
@@ -64,7 +63,7 @@ export class MoceanClient {
       'mocean-from': params.from,
       'mocean-to': params.to,
       'mocean-text': params.text,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     if (params.coding !== undefined) body['mocean-coding'] = params.coding;
@@ -80,7 +79,7 @@ export class MoceanClient {
     if (params.validity !== undefined) body['mocean-validity'] = params.validity;
 
     let response = await http.post('/rest/2/sms', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -90,12 +89,12 @@ export class MoceanClient {
     let params: Record<string, any> = {
       ...this.getAuthParams(),
       'mocean-msgid': messageId,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     let response = await http.get('/rest/2/report/message', {
       params,
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -113,14 +112,14 @@ export class MoceanClient {
       ...this.getAuthParams(),
       'mocean-to': params.to,
       'mocean-command': JSON.stringify(params.command),
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     if (params.from) body['mocean-from'] = params.from;
     if (params.eventUrl) body['mocean-event-url'] = params.eventUrl;
 
     let response = await http.post('/rest/2/voice/dial', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -130,11 +129,11 @@ export class MoceanClient {
     let body: Record<string, any> = {
       ...this.getAuthParams(),
       'mocean-call-uuid': callUuid,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     let response = await http.post('/rest/2/voice/hangup', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -157,54 +156,49 @@ export class MoceanClient {
       ...this.getAuthParams(),
       'mocean-to': params.to,
       'mocean-brand': params.brand,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     if (params.from) body['mocean-from'] = params.from;
     if (params.codeLength !== undefined) body['mocean-code-length'] = params.codeLength;
     if (params.pinValidity !== undefined) body['mocean-pin-validity'] = params.pinValidity;
-    if (params.nextEventWait !== undefined) body['mocean-next-event-wait'] = params.nextEventWait;
+    if (params.nextEventWait !== undefined)
+      body['mocean-next-event-wait'] = params.nextEventWait;
     if (params.requestNl) body['mocean-request-nl'] = 1;
 
     let response = await http.post(`/rest/2/verify/req/${channel}`, body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
   }
 
-  async checkVerification(params: {
-    requestId: string;
-    code: string;
-  }) {
+  async checkVerification(params: { requestId: string; code: string }) {
     let body: Record<string, any> = {
       ...this.getAuthParams(),
       'mocean-reqid': params.requestId,
       'mocean-code': params.code,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     let response = await http.post('/rest/2/verify/check', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
   }
 
-  async resendVerification(params: {
-    requestId: string;
-    requestNl?: boolean;
-  }) {
+  async resendVerification(params: { requestId: string; requestNl?: boolean }) {
     let body: Record<string, any> = {
       ...this.getAuthParams(),
       'mocean-reqid': params.requestId,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     if (params.requestNl) body['mocean-request-nl'] = 1;
 
     let response = await http.post('/rest/2/verify/resend/sms', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -212,20 +206,17 @@ export class MoceanClient {
 
   // ==================== Number Lookup ====================
 
-  async numberLookup(params: {
-    to: string;
-    callbackUrl?: string;
-  }) {
+  async numberLookup(params: { to: string; callbackUrl?: string }) {
     let body: Record<string, any> = {
       ...this.getAuthParams(),
       'mocean-to': params.to,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     if (params.callbackUrl) body['mocean-nl-url'] = params.callbackUrl;
 
     let response = await http.post('/rest/2/nl', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -233,24 +224,19 @@ export class MoceanClient {
 
   // ==================== WhatsApp ====================
 
-  async sendWhatsApp(params: {
-    from: string;
-    to: string;
-    content: any;
-    eventUrl?: string;
-  }) {
+  async sendWhatsApp(params: { from: string; to: string; content: any; eventUrl?: string }) {
     let body: Record<string, any> = {
       ...this.getAuthParams(),
       'mocean-from': params.from,
       'mocean-to': params.to,
       'mocean-content': params.content,
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     if (params.eventUrl) body['mocean-event-url'] = params.eventUrl;
 
     let response = await http.post('/rest/2/send-message/whatsapp', body, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -265,7 +251,7 @@ export class MoceanClient {
 
     let response = await http.get('/template/whatsapp/message_templates', {
       params: queryParams,
-      headers: this.getBasicAuthHeaders(),
+      headers: this.getBasicAuthHeaders()
     });
 
     return response.data;
@@ -273,7 +259,7 @@ export class MoceanClient {
 
   async getTemplate(templateId: string) {
     let response = await http.get(`/template/whatsapp/${templateId}`, {
-      headers: this.getBasicAuthHeaders(),
+      headers: this.getBasicAuthHeaders()
     });
 
     return response.data;
@@ -288,8 +274,8 @@ export class MoceanClient {
     let response = await http.post('/template/whatsapp/message_templates', params, {
       headers: {
         ...this.getBasicAuthHeaders(),
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
 
     return response.data;
@@ -311,8 +297,8 @@ export class MoceanClient {
       {
         headers: {
           ...this.getBasicAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
 
@@ -323,9 +309,9 @@ export class MoceanClient {
     let response = await http.delete('/template/whatsapp/message_templates', {
       params: {
         name: params.name,
-        hsm_id: params.templateId,
+        hsm_id: params.templateId
       },
-      headers: this.getBasicAuthHeaders(),
+      headers: this.getBasicAuthHeaders()
     });
 
     return response.data;
@@ -336,12 +322,12 @@ export class MoceanClient {
   async getBalance() {
     let params: Record<string, any> = {
       ...this.getAuthParams(),
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     let response = await http.get('/rest/2/account/balance', {
       params,
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;
@@ -350,12 +336,12 @@ export class MoceanClient {
   async getPricing() {
     let params: Record<string, any> = {
       ...this.getAuthParams(),
-      'mocean-resp-format': 'json',
+      'mocean-resp-format': 'json'
     };
 
     let response = await http.get('/rest/2/account/pricing', {
       params,
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
 
     return response.data;

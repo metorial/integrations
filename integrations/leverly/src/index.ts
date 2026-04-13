@@ -6,5 +6,5 @@ import { callFinished } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [createCall, stopReattempts],
-  triggers: [callFinished],
+  triggers: [callFinished]
 });

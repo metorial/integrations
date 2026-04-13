@@ -5,7 +5,7 @@ let regionToDeskDomain: Record<string, string> = {
   eu: 'desk.zoho.eu',
   in: 'desk.zoho.in',
   au: 'desk.zoho.com.au',
-  cn: 'desk.zoho.com.cn',
+  cn: 'desk.zoho.com.cn'
 };
 
 export interface ClientConfig {
@@ -30,21 +30,23 @@ export class Client {
       baseURL: `https://${domain}/api/v1`,
       headers: {
         Authorization: `Zoho-oauthtoken ${config.token}`,
-        orgId: config.orgId,
-      },
+        orgId: config.orgId
+      }
     });
   }
 
   // ---- Tickets ----
 
-  async listTickets(params?: PaginationParams & {
-    departmentId?: string;
-    assignee?: string;
-    status?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    include?: string;
-  }) {
+  async listTickets(
+    params?: PaginationParams & {
+      departmentId?: string;
+      assignee?: string;
+      status?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      include?: string;
+    }
+  ) {
     let response = await this.http.get('/tickets', { params });
     return response.data;
   }
@@ -75,7 +77,7 @@ export class Client {
 
   async mergeTickets(ticketId: string, mergeTicketIds: string[]) {
     let response = await this.http.post(`/tickets/${ticketId}/merge`, {
-      ids: mergeTicketIds,
+      ids: mergeTicketIds
     });
     return response.data;
   }
@@ -313,12 +315,22 @@ export class Client {
     return response.data;
   }
 
-  async searchContacts(params: { searchStr?: string; from?: number; limit?: number; sortBy?: string }) {
+  async searchContacts(params: {
+    searchStr?: string;
+    from?: number;
+    limit?: number;
+    sortBy?: string;
+  }) {
     let response = await this.http.get('/contacts/search', { params });
     return response.data;
   }
 
-  async searchAccounts(params: { searchStr?: string; from?: number; limit?: number; sortBy?: string }) {
+  async searchAccounts(params: {
+    searchStr?: string;
+    from?: number;
+    limit?: number;
+    sortBy?: string;
+  }) {
     let response = await this.http.get('/accounts/search', { params });
     return response.data;
   }

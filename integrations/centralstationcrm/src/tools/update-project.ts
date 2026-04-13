@@ -3,33 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateProject = SlateTool.create(
-  spec,
-  {
-    name: 'Update Project',
-    key: 'update_project',
-    description: `Update an existing project in CentralStationCRM. Modify the name, description, or responsible user.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let updateProject = SlateTool.create(spec, {
+  name: 'Update Project',
+  key: 'update_project',
+  description: `Update an existing project in CentralStationCRM. Modify the name, description, or responsible user.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    projectId: z.number().describe('ID of the project to update'),
-    projectName: z.string().optional().describe('Updated project name'),
-    description: z.string().optional().describe('Updated description'),
-    responsibleUserId: z.number().optional().describe('ID of the new responsible user'),
-  }))
-  .output(z.object({
-    projectId: z.number().describe('ID of the updated project'),
-    projectName: z.string().optional().describe('Project name'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.number().describe('ID of the project to update'),
+      projectName: z.string().optional().describe('Updated project name'),
+      description: z.string().optional().describe('Updated description'),
+      responsibleUserId: z.number().optional().describe('ID of the new responsible user')
+    })
+  )
+  .output(
+    z.object({
+      projectId: z.number().describe('ID of the updated project'),
+      projectName: z.string().optional().describe('Project name'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      accountName: ctx.config.accountName,
+      accountName: ctx.config.accountName
     });
 
     let data: Record<string, unknown> = {};
@@ -44,9 +45,9 @@ export let updateProject = SlateTool.create(
       output: {
         projectId: project.id,
         projectName: project.name,
-        updatedAt: project.updated_at,
+        updatedAt: project.updated_at
       },
-      message: `Updated project **${project.name}** (ID: ${project.id}).`,
+      message: `Updated project **${project.name}** (ID: ${project.id}).`
     };
   })
   .build();

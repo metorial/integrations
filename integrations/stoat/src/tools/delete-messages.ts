@@ -3,26 +3,27 @@ import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 import { z } from 'zod';
 
-export let deleteMessages = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Messages',
-    key: 'delete_messages',
-    description: `Delete one or more messages from a Revolt channel. Provide a single message ID or an array of message IDs for bulk deletion. Requires appropriate permissions.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteMessages = SlateTool.create(spec, {
+  name: 'Delete Messages',
+  key: 'delete_messages',
+  description: `Delete one or more messages from a Revolt channel. Provide a single message ID or an array of message IDs for bulk deletion. Requires appropriate permissions.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    channelId: z.string().describe('ID of the channel containing the messages'),
-    messageIds: z.array(z.string()).min(1).describe('IDs of the messages to delete'),
-  }))
-  .output(z.object({
-    deletedCount: z.number().describe('Number of messages deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      channelId: z.string().describe('ID of the channel containing the messages'),
+      messageIds: z.array(z.string()).min(1).describe('IDs of the messages to delete')
+    })
+  )
+  .output(
+    z.object({
+      deletedCount: z.number().describe('Number of messages deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     if (ctx.input.messageIds.length === 1) {
@@ -33,8 +34,9 @@ export let deleteMessages = SlateTool.create(
 
     return {
       output: {
-        deletedCount: ctx.input.messageIds.length,
+        deletedCount: ctx.input.messageIds.length
       },
-      message: `Deleted ${ctx.input.messageIds.length} message(s) from channel \`${ctx.input.channelId}\``,
+      message: `Deleted ${ctx.input.messageIds.length} message(s) from channel \`${ctx.input.channelId}\``
     };
-  }).build();
+  })
+  .build();

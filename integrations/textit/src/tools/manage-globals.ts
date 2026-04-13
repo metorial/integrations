@@ -3,30 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGlobals = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Globals',
-    key: 'manage_globals',
-    description: `Create or update global variables in your TextIt workspace. Globals are key-value pairs that can be referenced across multiple flows.`,
-    tags: {
-      destructive: false,
-    },
+export let manageGlobals = SlateTool.create(spec, {
+  name: 'Manage Globals',
+  key: 'manage_globals',
+  description: `Create or update global variables in your TextIt workspace. Globals are key-value pairs that can be referenced across multiple flows.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update']).describe('Whether to create or update a global'),
-    globalKey: z.string().optional().describe('Key of the global to update (required for update, auto-generated on create)'),
-    name: z.string().describe('Display name of the global'),
-    value: z.string().describe('Value of the global'),
-  }))
-  .output(z.object({
-    globalKey: z.string().describe('Key of the global'),
-    name: z.string().describe('Display name'),
-    value: z.string().describe('Value'),
-    modifiedOn: z.string().describe('When the global was last modified'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update']).describe('Whether to create or update a global'),
+      globalKey: z
+        .string()
+        .optional()
+        .describe(
+          'Key of the global to update (required for update, auto-generated on create)'
+        ),
+      name: z.string().describe('Display name of the global'),
+      value: z.string().describe('Value of the global')
+    })
+  )
+  .output(
+    z.object({
+      globalKey: z.string().describe('Key of the global'),
+      name: z.string().describe('Display name'),
+      value: z.string().describe('Value'),
+      modifiedOn: z.string().describe('When the global was last modified')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let global;
 
@@ -35,7 +41,7 @@ export let manageGlobals = SlateTool.create(
     } else {
       global = await client.updateGlobal(ctx.input.globalKey!, {
         name: ctx.input.name,
-        value: ctx.input.value,
+        value: ctx.input.value
       });
     }
 
@@ -44,8 +50,9 @@ export let manageGlobals = SlateTool.create(
         globalKey: global.key,
         name: global.name,
         value: global.value,
-        modifiedOn: global.modified_on,
+        modifiedOn: global.modified_on
       },
-      message: `Global **${global.name}** (key: ${global.key}) ${ctx.input.action === 'create' ? 'created' : 'updated'}.`,
+      message: `Global **${global.name}** (key: ${global.key}) ${ctx.input.action === 'create' ? 'created' : 'updated'}.`
     };
-  }).build();
+  })
+  .build();

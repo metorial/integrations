@@ -14,7 +14,7 @@ import {
   manageCommentTool,
   sendCampfireMessageTool,
   manageScheduleEntryTool,
-  listPeopleTool,
+  listPeopleTool
 } from './tools';
 import { projectEventsTrigger } from './triggers';
 
@@ -34,9 +34,7 @@ export let provider = Slate.create({
     manageCommentTool,
     sendCampfireMessageTool,
     manageScheduleEntryTool,
-    listPeopleTool,
+    listPeopleTool
   ],
-  triggers: [
-    projectEventsTrigger,
-  ],
+  triggers: [projectEventsTrigger]
 });

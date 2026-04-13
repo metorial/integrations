@@ -3,49 +3,72 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getJobStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Job Status',
-    key: 'get_job_status',
-    description: `Check the status and retrieve results of an async processing job. Supports image editing, AI fashion model, and video generation jobs.
+export let getJobStatus = SlateTool.create(spec, {
+  name: 'Get Job Status',
+  key: 'get_job_status',
+  description: `Check the status and retrieve results of an async processing job. Supports image editing, AI fashion model, and video generation jobs.
 
 Returns the current status, any errors, and the result data when the job is complete.`,
-    instructions: [
-      'Specify the jobType matching the original request: "image_edit", "fashion_model", or "video".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    jobType: z.enum(['image_edit', 'fashion_model', 'video']).describe('Type of async job to check'),
-    taskId: z.number().describe('Task ID returned from the original async request'),
-  }))
-  .output(z.object({
-    taskId: z.number().describe('Task ID'),
-    status: z.string().describe('Current status: ACCEPTED, WAITING, PROCESSING, DONE, ERROR, CANCELLED, or PAUSED'),
-    createdAt: z.string().optional().describe('Task creation timestamp'),
-    errors: z.array(z.object({
-      error: z.string(),
-      createdAt: z.string().optional(),
-    })).optional().describe('Any errors encountered during processing'),
-    result: z.object({
-      inputObjects: z.array(z.record(z.string(), z.unknown())).optional().describe('Input file metadata'),
-      outputObjects: z.array(z.object({
-        format: z.string().optional(),
-        width: z.number().optional(),
-        height: z.number().optional(),
-        temporaryUrl: z.string().optional(),
-        storageUri: z.string().optional(),
-        mimeType: z.string().optional(),
-      })).optional().describe('Output file metadata and URLs'),
-      generatedPrompt: z.string().optional().describe('Auto-generated prompt (for video)'),
-    }).optional().describe('Job result (available when status is DONE)'),
-  }))
-  .handleInvocation(async (ctx) => {
+  instructions: [
+    'Specify the jobType matching the original request: "image_edit", "fashion_model", or "video".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      jobType: z
+        .enum(['image_edit', 'fashion_model', 'video'])
+        .describe('Type of async job to check'),
+      taskId: z.number().describe('Task ID returned from the original async request')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number().describe('Task ID'),
+      status: z
+        .string()
+        .describe(
+          'Current status: ACCEPTED, WAITING, PROCESSING, DONE, ERROR, CANCELLED, or PAUSED'
+        ),
+      createdAt: z.string().optional().describe('Task creation timestamp'),
+      errors: z
+        .array(
+          z.object({
+            error: z.string(),
+            createdAt: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Any errors encountered during processing'),
+      result: z
+        .object({
+          inputObjects: z
+            .array(z.record(z.string(), z.unknown()))
+            .optional()
+            .describe('Input file metadata'),
+          outputObjects: z
+            .array(
+              z.object({
+                format: z.string().optional(),
+                width: z.number().optional(),
+                height: z.number().optional(),
+                temporaryUrl: z.string().optional(),
+                storageUri: z.string().optional(),
+                mimeType: z.string().optional()
+              })
+            )
+            .optional()
+            .describe('Output file metadata and URLs'),
+          generatedPrompt: z.string().optional().describe('Auto-generated prompt (for video)')
+        })
+        .optional()
+        .describe('Job result (available when status is DONE)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data: any;
@@ -65,7 +88,7 @@ Returns the current status, any errors, and the result data when the job is comp
 
     let errors = (data.errors || []).map((e: any) => ({
       error: e.error,
-      createdAt: e.created_at,
+      createdAt: e.created_at
     }));
 
     let resultOutput: Record<string, unknown> | undefined;
@@ -82,13 +105,13 @@ Returns the current status, any errors, and the result data when the job is comp
         height: o.height,
         temporaryUrl: o.tmp_url,
         storageUri: o.claid_storage_uri,
-        mimeType: o.mime,
+        mimeType: o.mime
       }));
 
       resultOutput = {
         inputObjects,
         outputObjects,
-        generatedPrompt: r.input_object?.generated_prompt,
+        generatedPrompt: r.input_object?.generated_prompt
       };
     }
 
@@ -100,9 +123,9 @@ Returns the current status, any errors, and the result data when the job is comp
         status: data.status,
         createdAt: data.created_at,
         errors: errors.length > 0 ? errors : undefined,
-        result: resultOutput as any,
+        result: resultOutput as any
       },
-      message: `${statusEmoji} Job **${data.id}** status: **${data.status}**. ${data.status === 'DONE' && resultOutput ? 'Results are ready.' : ''}`,
+      message: `${statusEmoji} Job **${data.id}** status: **${data.status}**. ${data.status === 'DONE' && resultOutput ? 'Results are ready.' : ''}`
     };
   })
   .build();

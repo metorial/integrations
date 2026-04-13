@@ -2,12 +2,12 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.cloudconvert.com/v2',
-  sandbox: 'https://api.sandbox.cloudconvert.com/v2',
+  sandbox: 'https://api.sandbox.cloudconvert.com/v2'
 };
 
 let SYNC_BASE_URLS: Record<string, string> = {
   production: 'https://sync.api.cloudconvert.com/v2',
-  sandbox: 'https://sync.api.sandbox.cloudconvert.com/v2',
+  sandbox: 'https://sync.api.sandbox.cloudconvert.com/v2'
 };
 
 export class Client {
@@ -27,8 +27,8 @@ export class Client {
       baseURL: this.baseUrl,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -37,14 +37,19 @@ export class Client {
       baseURL: this.syncBaseUrl,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ── Jobs ──────────────────────────────────────────────
 
-  async createJob(tasks: Record<string, any>, tag?: string, webhookUrl?: string, webhookEvents?: string[]) {
+  async createJob(
+    tasks: Record<string, any>,
+    tag?: string,
+    webhookUrl?: string,
+    webhookEvents?: string[]
+  ) {
     let axios = this.getAxios();
     let body: Record<string, any> = { tasks };
     if (tag) body.tag = tag;

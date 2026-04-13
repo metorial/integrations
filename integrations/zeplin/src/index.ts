@@ -27,11 +27,7 @@ import {
   getFlowBoard,
   listOrganizations
 } from './tools';
-import {
-  projectEvents,
-  styleguideEvents,
-  workspaceEvents
-} from './triggers';
+import { projectEvents, styleguideEvents, workspaceEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -62,9 +58,5 @@ export let provider = Slate.create({
     getFlowBoard,
     listOrganizations
   ],
-  triggers: [
-    projectEvents,
-    styleguideEvents,
-    workspaceEvents
-  ]
+  triggers: [projectEvents, styleguideEvents, workspaceEvents]
 });

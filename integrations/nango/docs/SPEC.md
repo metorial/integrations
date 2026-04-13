@@ -31,6 +31,7 @@ Make authenticated API requests on behalf of your users. Send requests through N
 Write integration logic as TypeScript functions and deploy them to Nango. Functions execute on a production runtime with built-in API access, retries, storage, and observability. The runtime handles per-tenant isolation, elastic scaling, and predictable execution.
 
 There are two types of functions:
+
 - **Syncs**: Scheduled functions that continuously pull data from external APIs into Nango's cache. They support configurable frequency, incremental syncing, and data model definitions. Synced records are stored and can be fetched by your application.
 - **Actions**: On-demand functions that perform one-off operations against external APIs (e.g., creating a record, sending a message).
 

@@ -5,15 +5,19 @@ Retrieve influencer campaign performance data from Later Influence (formerly Mav
 ## Tools
 
 ### Get Instance
+
 Retrieve metadata about the Later Influence community (instance) associated with your credentials. Use this to confirm which program your credentials are linked to before pulling campaign data.
 
 ### Get Performance Report
+
 Retrieve detailed campaign performance analytics from Later Influence. Returns metrics including content totals, impressions, engagements, affiliate clicks, conversions, and conversion value. Data is broken down by social network and content type. Can report on a single campaign or a reporting group, and can be filtered by date range and grouped by time period.
 
 ### List Campaigns
+
 Retrieve campaigns associated with your Later Influence community. Optionally filter by a specific campaign ID to get details on a single campaign. Returns campaign details including status, dates, title, and description.
 
 ### List Reporting Groups
+
 Retrieve reporting groups for your Later Influence community. Reporting groups allow you to aggregate data across related campaigns. Optionally filter by reporting group ID or campaign ID.
 
 ## License

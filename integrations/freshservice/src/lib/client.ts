@@ -189,16 +189,15 @@ export class Client {
   constructor(private clientConfig: ClientConfig) {
     this.baseUrl = `https://${clientConfig.subdomain}.freshservice.com/api/v2`;
     if (clientConfig.authType === 'api_key') {
-      // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
       let encoded = Buffer.from(`${clientConfig.token}:X`).toString('base64');
       this.headers = {
-        'Authorization': `Basic ${encoded}`,
-        'Content-Type': 'application/json',
+        Authorization: `Basic ${encoded}`,
+        'Content-Type': 'application/json'
       };
     } else {
       this.headers = {
-        'Authorization': `Bearer ${clientConfig.token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${clientConfig.token}`,
+        'Content-Type': 'application/json'
       };
     }
   }
@@ -206,7 +205,7 @@ export class Client {
   private get axios() {
     return createAxios({
       baseURL: this.baseUrl,
-      headers: this.headers,
+      headers: this.headers
     });
   }
 
@@ -225,7 +224,14 @@ export class Client {
     return response.data.ticket;
   }
 
-  async listTickets(pagination?: PaginationParams, filter?: string, orderBy?: string, orderType?: string, include?: string, updatedSince?: string) {
+  async listTickets(
+    pagination?: PaginationParams,
+    filter?: string,
+    orderBy?: string,
+    orderType?: string,
+    include?: string,
+    updatedSince?: string
+  ) {
     let params: Record<string, string | number> = {};
     if (pagination?.page) params.page = pagination.page;
     if (pagination?.perPage) params.per_page = pagination.perPage;
@@ -235,7 +241,10 @@ export class Client {
     if (include) params.include = include;
     if (updatedSince) params.updated_since = updatedSince;
     let response = await this.axios.get('/tickets', { params });
-    return { tickets: response.data.tickets || [], total: response.headers?.['x-total-count'] };
+    return {
+      tickets: response.data.tickets || [],
+      total: response.headers?.['x-total-count']
+    };
   }
 
   async updateTicket(ticketId: number, params: TicketUpdateParams) {
@@ -263,12 +272,17 @@ export class Client {
   async createTicketNote(ticketId: number, body: string, isPrivate?: boolean) {
     let response = await this.axios.post(`/tickets/${ticketId}/notes`, {
       body,
-      private: isPrivate ?? true,
+      private: isPrivate ?? true
     });
     return response.data.conversation;
   }
 
-  async createTicketReply(ticketId: number, body: string, ccEmails?: string[], bccEmails?: string[]) {
+  async createTicketReply(
+    ticketId: number,
+    body: string,
+    ccEmails?: string[],
+    bccEmails?: string[]
+  ) {
     let payload: Record<string, unknown> = { body };
     if (ccEmails) payload.cc_emails = ccEmails;
     if (bccEmails) payload.bcc_emails = bccEmails;
@@ -410,7 +424,14 @@ export class Client {
 
   // ===== Requesters =====
 
-  async createRequester(params: { firstName: string; lastName?: string; email?: string; phone?: string; departmentIds?: number[]; customFields?: Record<string, unknown> }) {
+  async createRequester(params: {
+    firstName: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+    departmentIds?: number[];
+    customFields?: Record<string, unknown>;
+  }) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
     let response = await this.axios.post('/requesters', body);
     return response.data.requester;
@@ -430,7 +451,17 @@ export class Client {
     return { requesters: response.data.requesters || [] };
   }
 
-  async updateRequester(requesterId: number, params: { firstName?: string; lastName?: string; email?: string; phone?: string; departmentIds?: number[]; customFields?: Record<string, unknown> }) {
+  async updateRequester(
+    requesterId: number,
+    params: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+      departmentIds?: number[];
+      customFields?: Record<string, unknown>;
+    }
+  ) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
     let response = await this.axios.put(`/requesters/${requesterId}`, body);
     return response.data.requester;
@@ -469,7 +500,9 @@ export class Client {
     let params: Record<string, number> = {};
     if (pagination?.page) params.page = pagination.page;
     if (pagination?.perPage) params.per_page = pagination.perPage;
-    let response = await this.axios.get(`/solutions/categories/${categoryId}/folders`, { params });
+    let response = await this.axios.get(`/solutions/categories/${categoryId}/folders`, {
+      params
+    });
     return { folders: response.data.folders || [] };
   }
 
@@ -486,13 +519,25 @@ export class Client {
     return response.data.article;
   }
 
-  async createSolutionArticle(folderId: number, params: { title: string; description?: string; status?: number; articleType?: number; tags?: string[] }) {
+  async createSolutionArticle(
+    folderId: number,
+    params: {
+      title: string;
+      description?: string;
+      status?: number;
+      articleType?: number;
+      tags?: string[];
+    }
+  ) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
     let response = await this.axios.post(`/solutions/folders/${folderId}/articles`, body);
     return response.data.article;
   }
 
-  async updateSolutionArticle(articleId: number, params: { title?: string; description?: string; status?: number; tags?: string[] }) {
+  async updateSolutionArticle(
+    articleId: number,
+    params: { title?: string; description?: string; status?: number; tags?: string[] }
+  ) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
     let response = await this.axios.put(`/solutions/articles/${articleId}`, body);
     return response.data.article;
@@ -522,9 +567,20 @@ export class Client {
     return response.data.service_item;
   }
 
-  async placeServiceRequest(itemId: number, params: { email?: string; requesterId?: number; quantity?: number; customFields?: Record<string, unknown> }) {
+  async placeServiceRequest(
+    itemId: number,
+    params: {
+      email?: string;
+      requesterId?: number;
+      quantity?: number;
+      customFields?: Record<string, unknown>;
+    }
+  ) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
-    let response = await this.axios.post(`/service_catalog/items/${itemId}/place_request`, body);
+    let response = await this.axios.post(
+      `/service_catalog/items/${itemId}/place_request`,
+      body
+    );
     return response.data.service_request;
   }
 
@@ -565,7 +621,18 @@ export class Client {
 
   // ===== Releases =====
 
-  async createRelease(params: { subject: string; description?: string; releaseType?: number; status?: number; priority?: number; plannedStartDate?: string; plannedEndDate?: string; groupId?: number; agentId?: number; customFields?: Record<string, unknown> }) {
+  async createRelease(params: {
+    subject: string;
+    description?: string;
+    releaseType?: number;
+    status?: number;
+    priority?: number;
+    plannedStartDate?: string;
+    plannedEndDate?: string;
+    groupId?: number;
+    agentId?: number;
+    customFields?: Record<string, unknown>;
+  }) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
     let response = await this.axios.post('/releases', body);
     return response.data.release;
@@ -611,7 +678,17 @@ export class Client {
     return response.data.time_entries || [];
   }
 
-  async createTicketTimeEntry(ticketId: number, params: { agentId?: number; note?: string; timeSpent?: string; executedAt?: string; billable?: boolean; taskId?: number }) {
+  async createTicketTimeEntry(
+    ticketId: number,
+    params: {
+      agentId?: number;
+      note?: string;
+      timeSpent?: string;
+      executedAt?: string;
+      billable?: boolean;
+      taskId?: number;
+    }
+  ) {
     let body = convertKeysToSnakeCase(params as unknown as Record<string, unknown>);
     let response = await this.axios.post(`/tickets/${ticketId}/time_entries`, body);
     return response.data.time_entry;

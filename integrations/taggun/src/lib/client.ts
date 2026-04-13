@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let axios = createAxios({
-  baseURL: 'https://api.taggun.io',
+  baseURL: 'https://api.taggun.io'
 });
 
 export interface ExtractionOptions {
@@ -73,7 +73,7 @@ export class Client {
 
   private get headers() {
     return {
-      apikey: this.config.token,
+      apikey: this.config.token
     };
   }
 
@@ -84,11 +84,15 @@ export class Client {
       image: input.image,
       filename: input.filename,
       contentType: input.contentType,
-      ...this.extractionOptionsToBody(options),
+      ...this.extractionOptionsToBody(options)
     };
 
     let response = await axios.post('/api/receipt/v1/simple/encoded', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }
@@ -96,14 +100,18 @@ export class Client {
   async extractReceiptSimpleFromUrl(input: UrlInput, options: ExtractionOptions = {}) {
     let body: Record<string, unknown> = {
       url: input.url,
-      ...this.extractionOptionsToBody(options),
+      ...this.extractionOptionsToBody(options)
     };
     if (input.customHeaderKey) {
       body['headers'] = { 'x-custom-key': input.customHeaderKey };
     }
 
     let response = await axios.post('/api/receipt/v1/simple/url', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }
@@ -115,11 +123,15 @@ export class Client {
       image: input.image,
       filename: input.filename,
       contentType: input.contentType,
-      ...this.extractionOptionsToBody(options),
+      ...this.extractionOptionsToBody(options)
     };
 
     let response = await axios.post('/api/receipt/v1/verbose/encoded', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }
@@ -127,14 +139,18 @@ export class Client {
   async extractReceiptVerboseFromUrl(input: UrlInput, options: ExtractionOptions = {}) {
     let body: Record<string, unknown> = {
       url: input.url,
-      ...this.extractionOptionsToBody(options),
+      ...this.extractionOptionsToBody(options)
     };
     if (input.customHeaderKey) {
       body['headers'] = { 'x-custom-key': input.customHeaderKey };
     }
 
     let response = await axios.post('/api/receipt/v1/verbose/url', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }
@@ -144,16 +160,24 @@ export class Client {
   async validateReceiptFromUrl(url: string, options: ValidationOptions) {
     let body: Record<string, unknown> = {
       url,
-      campaignId: options.campaignId,
+      campaignId: options.campaignId
     };
     if (options.referenceId) body['referenceId'] = options.referenceId;
     if (options.incognito !== undefined) body['incognito'] = options.incognito;
     if (options.ipAddress) body['ipAddress'] = options.ipAddress;
     if (options.near) body['near'] = options.near;
 
-    let response = await axios.post('/api/validation/v1/campaign/receipt-validation/url', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
-    });
+    let response = await axios.post(
+      '/api/validation/v1/campaign/receipt-validation/url',
+      body,
+      {
+        headers: {
+          ...this.headers,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -162,16 +186,24 @@ export class Client {
       image: input.image,
       filename: input.filename,
       contentType: input.contentType,
-      campaignId: options.campaignId,
+      campaignId: options.campaignId
     };
     if (options.referenceId) body['referenceId'] = options.referenceId;
     if (options.incognito !== undefined) body['incognito'] = options.incognito;
     if (options.ipAddress) body['ipAddress'] = options.ipAddress;
     if (options.near) body['near'] = options.near;
 
-    let response = await axios.post('/api/validation/v1/campaign/receipt-validation/file', body, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
-    });
+    let response = await axios.post(
+      '/api/validation/v1/campaign/receipt-validation/file',
+      body,
+      {
+        headers: {
+          ...this.headers,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
+      }
+    );
     return response.data;
   }
 
@@ -179,15 +211,18 @@ export class Client {
 
   async listCampaigns() {
     let response = await axios.get('/api/validation/v1/campaign/settings/list', {
-      headers: { ...this.headers, Accept: 'application/json' },
+      headers: { ...this.headers, Accept: 'application/json' }
     });
     return response.data;
   }
 
   async getCampaign(campaignId: string) {
-    let response = await axios.get(`/api/validation/v1/campaign/settings/${encodeURIComponent(campaignId)}`, {
-      headers: { ...this.headers, Accept: 'application/json' },
-    });
+    let response = await axios.get(
+      `/api/validation/v1/campaign/settings/${encodeURIComponent(campaignId)}`,
+      {
+        headers: { ...this.headers, Accept: 'application/json' }
+      }
+    );
     return response.data;
   }
 
@@ -196,7 +231,11 @@ export class Client {
       `/api/validation/v1/campaign/settings/create/${encodeURIComponent(campaignId)}`,
       settings,
       {
-        headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          ...this.headers,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
       }
     );
     return response.data;
@@ -207,7 +246,11 @@ export class Client {
       `/api/validation/v1/campaign/settings/update/${encodeURIComponent(campaignId)}`,
       settings,
       {
-        headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          ...this.headers,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
       }
     );
     return response.data;
@@ -217,7 +260,7 @@ export class Client {
     let response = await axios.delete(
       `/api/validation/v1/campaign/settings/delete/${encodeURIComponent(campaignId)}`,
       {
-        headers: { ...this.headers, Accept: 'application/json' },
+        headers: { ...this.headers, Accept: 'application/json' }
       }
     );
     return response.data;
@@ -227,7 +270,11 @@ export class Client {
 
   async submitFeedback(input: FeedbackInput) {
     let response = await axios.post('/api/account/v1/feedback', input, {
-      headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        ...this.headers,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
     });
     return response.data;
   }
@@ -239,7 +286,11 @@ export class Client {
       '/api/account/v1/merchantname/add',
       { merchantName },
       {
-        headers: { ...this.headers, 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          ...this.headers,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
       }
     );
     return response.data;
@@ -252,7 +303,8 @@ export class Client {
     if (options.refresh !== undefined) body['refresh'] = options.refresh;
     if (options.incognito !== undefined) body['incognito'] = options.incognito;
     if (options.extractTime !== undefined) body['extractTime'] = options.extractTime;
-    if (options.extractLineItems !== undefined) body['extractLineItems'] = options.extractLineItems;
+    if (options.extractLineItems !== undefined)
+      body['extractLineItems'] = options.extractLineItems;
     if (options.ipAddress) body['ipAddress'] = options.ipAddress;
     if (options.near) body['near'] = options.near;
     if (options.language) body['language'] = options.language;

@@ -15,6 +15,6 @@ export let createWixClient = (auth: WixAuthConfig, config: WixConfig): WixClient
   return new WixClient({
     token: auth.token,
     siteId: auth.siteId || config.siteId,
-    accountId: auth.accountId || config.accountId,
+    accountId: auth.accountId || config.accountId
   });
 };

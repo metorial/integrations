@@ -17,12 +17,9 @@ import {
   upgradeSolutionInstance,
   listAuthentications,
   createAuthentication,
-  deleteAuthentication,
+  deleteAuthentication
 } from './tools';
-import {
-  workflowWebhook,
-  solutionInstanceChanges,
-} from './triggers';
+import { workflowWebhook, solutionInstanceChanges } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,10 +40,7 @@ export let provider = Slate.create({
     upgradeSolutionInstance,
     listAuthentications,
     createAuthentication,
-    deleteAuthentication,
+    deleteAuthentication
   ],
-  triggers: [
-    workflowWebhook,
-    solutionInstanceChanges,
-  ],
+  triggers: [workflowWebhook, solutionInstanceChanges]
 });

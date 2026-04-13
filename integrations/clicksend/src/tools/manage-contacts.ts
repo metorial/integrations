@@ -35,38 +35,37 @@ let contactOutputSchema = z.object({
   addressCountry: z.string().optional().describe('Country')
 });
 
-export let createContactTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact in a ClickSend contact list. Contacts can be used as recipients for SMS, MMS, voice, and post campaigns.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let createContactTool = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact in a ClickSend contact list. Contacts can be used as recipients for SMS, MMS, voice, and post campaigns.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    listId: z.number().describe('ID of the contact list to add the contact to'),
-    phoneNumber: z.string().describe('Phone number in E.164 format (required)'),
-    email: z.string().optional().describe('Email address'),
-    firstName: z.string().optional().describe('First name'),
-    lastName: z.string().optional().describe('Last name'),
-    addressLine1: z.string().optional().describe('Street address line 1'),
-    addressLine2: z.string().optional().describe('Street address line 2'),
-    addressCity: z.string().optional().describe('City'),
-    addressState: z.string().optional().describe('State or province'),
-    addressPostalCode: z.string().optional().describe('Postal or ZIP code'),
-    addressCountry: z.string().optional().describe('Two-letter ISO country code'),
-    organizationName: z.string().optional().describe('Organization name'),
-    custom1: z.string().optional().describe('Custom field 1'),
-    custom2: z.string().optional().describe('Custom field 2'),
-    custom3: z.string().optional().describe('Custom field 3'),
-    custom4: z.string().optional().describe('Custom field 4')
-  }))
+})
+  .input(
+    z.object({
+      listId: z.number().describe('ID of the contact list to add the contact to'),
+      phoneNumber: z.string().describe('Phone number in E.164 format (required)'),
+      email: z.string().optional().describe('Email address'),
+      firstName: z.string().optional().describe('First name'),
+      lastName: z.string().optional().describe('Last name'),
+      addressLine1: z.string().optional().describe('Street address line 1'),
+      addressLine2: z.string().optional().describe('Street address line 2'),
+      addressCity: z.string().optional().describe('City'),
+      addressState: z.string().optional().describe('State or province'),
+      addressPostalCode: z.string().optional().describe('Postal or ZIP code'),
+      addressCountry: z.string().optional().describe('Two-letter ISO country code'),
+      organizationName: z.string().optional().describe('Organization name'),
+      custom1: z.string().optional().describe('Custom field 1'),
+      custom2: z.string().optional().describe('Custom field 2'),
+      custom3: z.string().optional().describe('Custom field 3'),
+      custom4: z.string().optional().describe('Custom field 4')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ClickSendClient({
       username: ctx.auth.username,
       token: ctx.auth.token
@@ -107,41 +106,41 @@ export let createContactTool = SlateTool.create(
       },
       message: `Created contact **${contact.first_name || ''} ${contact.last_name || ''}** (${contact.phone_number}) in list ${ctx.input.listId}.`
     };
-  }).build();
+  })
+  .build();
 
-export let updateContactTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact's details in a ClickSend contact list. Only fields that are provided will be updated.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+export let updateContactTool = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact's details in a ClickSend contact list. Only fields that are provided will be updated.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    listId: z.number().describe('ID of the contact list'),
-    contactId: z.number().describe('ID of the contact to update'),
-    phoneNumber: z.string().optional().describe('New phone number'),
-    email: z.string().optional().describe('New email address'),
-    firstName: z.string().optional().describe('New first name'),
-    lastName: z.string().optional().describe('New last name'),
-    addressLine1: z.string().optional().describe('New street address line 1'),
-    addressLine2: z.string().optional().describe('New street address line 2'),
-    addressCity: z.string().optional().describe('New city'),
-    addressState: z.string().optional().describe('New state or province'),
-    addressPostalCode: z.string().optional().describe('New postal code'),
-    addressCountry: z.string().optional().describe('New country code'),
-    organizationName: z.string().optional().describe('New organization name'),
-    custom1: z.string().optional().describe('Custom field 1'),
-    custom2: z.string().optional().describe('Custom field 2'),
-    custom3: z.string().optional().describe('Custom field 3'),
-    custom4: z.string().optional().describe('Custom field 4')
-  }))
+})
+  .input(
+    z.object({
+      listId: z.number().describe('ID of the contact list'),
+      contactId: z.number().describe('ID of the contact to update'),
+      phoneNumber: z.string().optional().describe('New phone number'),
+      email: z.string().optional().describe('New email address'),
+      firstName: z.string().optional().describe('New first name'),
+      lastName: z.string().optional().describe('New last name'),
+      addressLine1: z.string().optional().describe('New street address line 1'),
+      addressLine2: z.string().optional().describe('New street address line 2'),
+      addressCity: z.string().optional().describe('New city'),
+      addressState: z.string().optional().describe('New state or province'),
+      addressPostalCode: z.string().optional().describe('New postal code'),
+      addressCountry: z.string().optional().describe('New country code'),
+      organizationName: z.string().optional().describe('New organization name'),
+      custom1: z.string().optional().describe('Custom field 1'),
+      custom2: z.string().optional().describe('Custom field 2'),
+      custom3: z.string().optional().describe('Custom field 3'),
+      custom4: z.string().optional().describe('Custom field 4')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ClickSendClient({
       username: ctx.auth.username,
       token: ctx.auth.token
@@ -182,28 +181,30 @@ export let updateContactTool = SlateTool.create(
       },
       message: `Updated contact **${contact.contact_id}** in list ${ctx.input.listId}.`
     };
-  }).build();
+  })
+  .build();
 
-export let deleteContactTool = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Contact',
-    key: 'delete_contact',
-    description: `Remove a contact from a ClickSend contact list permanently.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteContactTool = SlateTool.create(spec, {
+  name: 'Delete Contact',
+  key: 'delete_contact',
+  description: `Remove a contact from a ClickSend contact list permanently.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    listId: z.number().describe('ID of the contact list'),
-    contactId: z.number().describe('ID of the contact to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the contact was successfully deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      listId: z.number().describe('ID of the contact list'),
+      contactId: z.number().describe('ID of the contact to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the contact was successfully deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClickSendClient({
       username: ctx.auth.username,
       token: ctx.auth.token
@@ -215,31 +216,33 @@ export let deleteContactTool = SlateTool.create(
       output: { deleted: true },
       message: `Deleted contact **${ctx.input.contactId}** from list ${ctx.input.listId}.`
     };
-  }).build();
+  })
+  .build();
 
-export let listContactsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Retrieve contacts from a ClickSend contact list. Supports pagination for large lists.`,
-    tags: {
-      readOnly: true
-    }
+export let listContactsTool = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Retrieve contacts from a ClickSend contact list. Supports pagination for large lists.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    listId: z.number().describe('ID of the contact list to retrieve contacts from'),
-    page: z.number().optional().describe('Page number for pagination'),
-    limit: z.number().optional().describe('Number of contacts per page')
-  }))
-  .output(z.object({
-    currentPage: z.number().describe('Current page number'),
-    totalPages: z.number().describe('Total number of pages'),
-    totalCount: z.number().describe('Total number of contacts'),
-    contacts: z.array(contactOutputSchema).describe('List of contacts')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      listId: z.number().describe('ID of the contact list to retrieve contacts from'),
+      page: z.number().optional().describe('Page number for pagination'),
+      limit: z.number().optional().describe('Number of contacts per page')
+    })
+  )
+  .output(
+    z.object({
+      currentPage: z.number().describe('Current page number'),
+      totalPages: z.number().describe('Total number of pages'),
+      totalCount: z.number().describe('Total number of contacts'),
+      contacts: z.array(contactOutputSchema).describe('List of contacts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClickSendClient({
       username: ctx.auth.username,
       token: ctx.auth.token
@@ -272,4 +275,5 @@ export let listContactsTool = SlateTool.create(
       },
       message: `Retrieved **${contacts.length}** contacts from list ${ctx.input.listId}.`
     };
-  }).build();
+  })
+  .build();

@@ -14,8 +14,7 @@ let getCmaBaseUrl = (region: 'us' | 'eu') =>
 let getCdaBaseUrl = (region: 'us' | 'eu') =>
   region === 'eu' ? 'https://cdn.eu.contentful.com' : 'https://cdn.contentful.com';
 
-let getCpaBaseUrl = (_region: 'us' | 'eu') =>
-  'https://preview.contentful.com';
+let getCpaBaseUrl = (_region: 'us' | 'eu') => 'https://preview.contentful.com';
 
 export class ContentfulClient {
   private cma: AxiosInstance;
@@ -90,44 +89,37 @@ export class ContentfulClient {
   }
 
   async publishEntry(entryId: string, version: number) {
-    let response = await this.cma.put(
-      this.envPath(`/entries/${entryId}/published`),
-      null,
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.put(this.envPath(`/entries/${entryId}/published`), null, {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async unpublishEntry(entryId: string, version: number) {
-    let response = await this.cma.delete(
-      this.envPath(`/entries/${entryId}/published`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.delete(this.envPath(`/entries/${entryId}/published`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async archiveEntry(entryId: string, version: number) {
-    let response = await this.cma.put(
-      this.envPath(`/entries/${entryId}/archived`),
-      null,
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.put(this.envPath(`/entries/${entryId}/archived`), null, {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async unarchiveEntry(entryId: string, version: number) {
-    let response = await this.cma.delete(
-      this.envPath(`/entries/${entryId}/archived`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.delete(this.envPath(`/entries/${entryId}/archived`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async deleteEntry(entryId: string, version: number) {
-    await this.cma.delete(
-      this.envPath(`/entries/${entryId}`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    await this.cma.delete(this.envPath(`/entries/${entryId}`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
   }
 
   // --- Entries (CDA) ---
@@ -181,52 +173,43 @@ export class ContentfulClient {
   }
 
   async processAsset(assetId: string, locale: string, version: number) {
-    await this.cma.put(
-      this.envPath(`/assets/${assetId}/files/${locale}/process`),
-      null,
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    await this.cma.put(this.envPath(`/assets/${assetId}/files/${locale}/process`), null, {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
   }
 
   async publishAsset(assetId: string, version: number) {
-    let response = await this.cma.put(
-      this.envPath(`/assets/${assetId}/published`),
-      null,
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.put(this.envPath(`/assets/${assetId}/published`), null, {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async unpublishAsset(assetId: string, version: number) {
-    let response = await this.cma.delete(
-      this.envPath(`/assets/${assetId}/published`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.delete(this.envPath(`/assets/${assetId}/published`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async archiveAsset(assetId: string, version: number) {
-    let response = await this.cma.put(
-      this.envPath(`/assets/${assetId}/archived`),
-      null,
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.put(this.envPath(`/assets/${assetId}/archived`), null, {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async unarchiveAsset(assetId: string, version: number) {
-    let response = await this.cma.delete(
-      this.envPath(`/assets/${assetId}/archived`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    let response = await this.cma.delete(this.envPath(`/assets/${assetId}/archived`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
   async deleteAsset(assetId: string, version: number) {
-    await this.cma.delete(
-      this.envPath(`/assets/${assetId}`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    await this.cma.delete(this.envPath(`/assets/${assetId}`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
   }
 
   // --- Content Types (CMA) ---
@@ -251,17 +234,19 @@ export class ContentfulClient {
     return response.data;
   }
 
-  async updateContentType(contentTypeId: string, data: {
-    name: string;
-    description?: string;
-    displayField?: string;
-    fields: any[];
-  }, version: number) {
-    let response = await this.cma.put(
-      this.envPath(`/content_types/${contentTypeId}`),
-      data,
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+  async updateContentType(
+    contentTypeId: string,
+    data: {
+      name: string;
+      description?: string;
+      displayField?: string;
+      fields: any[];
+    },
+    version: number
+  ) {
+    let response = await this.cma.put(this.envPath(`/content_types/${contentTypeId}`), data, {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
     return response.data;
   }
 
@@ -316,10 +301,9 @@ export class ContentfulClient {
   }
 
   async deleteTag(tagId: string, version: number) {
-    await this.cma.delete(
-      this.envPath(`/tags/${tagId}`),
-      { headers: { 'X-Contentful-Version': String(version) } }
-    );
+    await this.cma.delete(this.envPath(`/tags/${tagId}`), {
+      headers: { 'X-Contentful-Version': String(version) }
+    });
   }
 
   // --- Locales ---
@@ -363,7 +347,9 @@ export class ContentfulClient {
   }
 
   async createEnvironment(environmentId: string, name: string) {
-    let response = await this.cma.put(this.spacePath(`/environments/${environmentId}`), { name });
+    let response = await this.cma.put(this.spacePath(`/environments/${environmentId}`), {
+      name
+    });
     return response.data;
   }
 
@@ -405,15 +391,19 @@ export class ContentfulClient {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: {
-    name: string;
-    url: string;
-    topics: string[];
-    headers?: { key: string; value: string }[];
-    filters?: any[];
-    transformation?: { method?: string; contentType?: string; body?: string };
-    active?: boolean;
-  }, version: number) {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      name: string;
+      url: string;
+      topics: string[];
+      headers?: { key: string; value: string }[];
+      filters?: any[];
+      transformation?: { method?: string; contentType?: string; body?: string };
+      active?: boolean;
+    },
+    version: number
+  ) {
     let response = await this.cma.put(
       this.spacePath(`/webhook_definitions/${webhookId}`),
       data,
@@ -454,7 +444,11 @@ export class ContentfulClient {
     return response.data;
   }
 
-  async createRelease(data: { title: string; description?: string; entities: { sys: { linkType: string; type: string; id: string } }[] }) {
+  async createRelease(data: {
+    title: string;
+    description?: string;
+    entities: { sys: { linkType: string; type: string; id: string } }[];
+  }) {
     let response = await this.cma.post(this.envPath('/releases'), data);
     return response.data;
   }

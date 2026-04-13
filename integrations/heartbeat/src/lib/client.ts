@@ -9,10 +9,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -40,7 +40,7 @@ export class Client {
 
   async findUserByEmail(email: string) {
     let response = await this.axios.get('/users', {
-      params: { email },
+      params: { email }
     });
     return response.data as {
       data: HeartbeatUser[];
@@ -67,20 +67,23 @@ export class Client {
     return response.data as HeartbeatUser;
   }
 
-  async updateUser(userId: string, data: {
-    name?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    roles?: string[];
-    groups?: string[];
-    profilePicture?: string;
-    bio?: string;
-    status?: string;
-    linkedin?: string;
-    twitter?: string;
-    instagram?: string;
-  }) {
+  async updateUser(
+    userId: string,
+    data: {
+      name?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      roles?: string[];
+      groups?: string[];
+      profilePicture?: string;
+      bio?: string;
+      status?: string;
+      linkedin?: string;
+      twitter?: string;
+      instagram?: string;
+    }
+  ) {
     let response = await this.axios.put(`/users/${userId}`, data);
     return response.data as HeartbeatUser;
   }
@@ -125,10 +128,13 @@ export class Client {
     return response.data as HeartbeatGroup;
   }
 
-  async addUserToGroup(groupId: string, data: {
-    userId: string;
-    removeFromSiblingGroups?: boolean;
-  }) {
+  async addUserToGroup(
+    groupId: string,
+    data: {
+      userId: string;
+      removeFromSiblingGroups?: boolean;
+    }
+  ) {
     let response = await this.axios.post(`/groups/${groupId}/members`, data);
     return response.data;
   }
@@ -221,20 +227,14 @@ export class Client {
 
   // ---- Direct Messages ----
 
-  async sendDirectMessage(data: {
-    userId: string;
-    text: string;
-  }) {
+  async sendDirectMessage(data: { userId: string; text: string }) {
     let response = await this.axios.put('/directMessages', data);
     return response.data;
   }
 
   // ---- Invitations ----
 
-  async sendInvitation(data: {
-    email: string;
-    invitationLinkId?: string;
-  }) {
+  async sendInvitation(data: { email: string; invitationLinkId?: string }) {
     let response = await this.axios.post('/invitations', data);
     return response.data;
   }

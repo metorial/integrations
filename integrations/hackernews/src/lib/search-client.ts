@@ -78,7 +78,8 @@ export class SearchClient {
     if (params.query) queryParams.set('query', params.query);
     if (params.tags) queryParams.set('tags', params.tags);
     if (params.numericFilters) queryParams.set('numericFilters', params.numericFilters);
-    if (params.hitsPerPage !== undefined) queryParams.set('hitsPerPage', String(params.hitsPerPage));
+    if (params.hitsPerPage !== undefined)
+      queryParams.set('hitsPerPage', String(params.hitsPerPage));
     if (params.page !== undefined) queryParams.set('page', String(params.page));
 
     let response = await algoliaAxios.get(`/search?${queryParams.toString()}`);
@@ -90,7 +91,8 @@ export class SearchClient {
     if (params.query) queryParams.set('query', params.query);
     if (params.tags) queryParams.set('tags', params.tags);
     if (params.numericFilters) queryParams.set('numericFilters', params.numericFilters);
-    if (params.hitsPerPage !== undefined) queryParams.set('hitsPerPage', String(params.hitsPerPage));
+    if (params.hitsPerPage !== undefined)
+      queryParams.set('hitsPerPage', String(params.hitsPerPage));
     if (params.page !== undefined) queryParams.set('page', String(params.page));
 
     let response = await algoliaAxios.get(`/search_by_date?${queryParams.toString()}`);

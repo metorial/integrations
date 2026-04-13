@@ -3,34 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_user',
-    description: `Retrieve profile information and organizations for the currently authenticated Eventbrite user. Useful for discovering the user's organization IDs and account details.`,
-    tags: {
-      readOnly: true,
-    },
+export let getUser = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_user',
+  description: `Retrieve profile information and organizations for the currently authenticated Eventbrite user. Useful for discovering the user's organization IDs and account details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    includeOrganizations: z.boolean().optional().describe('Whether to also fetch the user\'s organizations. Defaults to true.'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('The user\'s unique ID.'),
-    name: z.string().optional().describe('The user\'s display name.'),
-    firstName: z.string().optional().describe('First name.'),
-    lastName: z.string().optional().describe('Last name.'),
-    email: z.string().optional().describe('Primary email address.'),
-    imageUrl: z.string().optional().describe('Profile image URL.'),
-    organizations: z.array(z.object({
-      organizationId: z.string().describe('Organization ID.'),
-      name: z.string().optional().describe('Organization name.'),
-      imageUrl: z.string().optional().describe('Organization logo URL.'),
-    })).optional().describe('Organizations the user belongs to.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      includeOrganizations: z
+        .boolean()
+        .optional()
+        .describe("Whether to also fetch the user's organizations. Defaults to true.")
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe("The user's unique ID."),
+      name: z.string().optional().describe("The user's display name."),
+      firstName: z.string().optional().describe('First name.'),
+      lastName: z.string().optional().describe('Last name.'),
+      email: z.string().optional().describe('Primary email address.'),
+      imageUrl: z.string().optional().describe('Profile image URL.'),
+      organizations: z
+        .array(
+          z.object({
+            organizationId: z.string().describe('Organization ID.'),
+            name: z.string().optional().describe('Organization name.'),
+            imageUrl: z.string().optional().describe('Organization logo URL.')
+          })
+        )
+        .optional()
+        .describe('Organizations the user belongs to.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let user = await client.getMe();
 
@@ -40,7 +49,9 @@ export let getUser = SlateTool.create(
       organizations = (orgsResult.organizations || []).map((org: any) => ({
         organizationId: org.id,
         name: org.name,
-        imageUrl: org.image_id ? `https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F${org.image_id}` : undefined,
+        imageUrl: org.image_id
+          ? `https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F${org.image_id}`
+          : undefined
       }));
     }
 
@@ -52,9 +63,9 @@ export let getUser = SlateTool.create(
         lastName: user.last_name,
         email: user.emails?.[0]?.email,
         imageUrl: user.image_url,
-        organizations,
+        organizations
       },
-      message: `Authenticated as **${user.name || user.emails?.[0]?.email || user.id}**${organizations ? ` with ${organizations.length} organization(s)` : ''}.`,
+      message: `Authenticated as **${user.name || user.emails?.[0]?.email || user.id}**${organizations ? ` with ${organizations.length} organization(s)` : ''}.`
     };
   })
   .build();

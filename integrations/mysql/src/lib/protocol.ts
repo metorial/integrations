@@ -161,10 +161,19 @@ export let readUint24LE = (buf: Uint8Array, offset: number): number => {
 };
 
 export let readUint32LE = (buf: Uint8Array, offset: number): number => {
-  return (buf[offset]! | (buf[offset + 1]! << 8) | (buf[offset + 2]! << 16) | (buf[offset + 3]! << 24)) >>> 0;
+  return (
+    (buf[offset]! |
+      (buf[offset + 1]! << 8) |
+      (buf[offset + 2]! << 16) |
+      (buf[offset + 3]! << 24)) >>>
+    0
+  );
 };
 
-export let readNullTerminatedString = (buf: Uint8Array, offset: number): { value: string; nextOffset: number } => {
+export let readNullTerminatedString = (
+  buf: Uint8Array,
+  offset: number
+): { value: string; nextOffset: number } => {
   let decoder = new TextDecoder();
   let end = buf.indexOf(0, offset);
   if (end === -1) end = buf.length;
@@ -172,7 +181,10 @@ export let readNullTerminatedString = (buf: Uint8Array, offset: number): { value
   return { value, nextOffset: end + 1 };
 };
 
-export let readLenencInt = (buf: Uint8Array, offset: number): { value: number; nextOffset: number } => {
+export let readLenencInt = (
+  buf: Uint8Array,
+  offset: number
+): { value: number; nextOffset: number } => {
   let first = buf[offset]!;
   if (first < 251) {
     return { value: first, nextOffset: offset + 1 };
@@ -188,7 +200,10 @@ export let readLenencInt = (buf: Uint8Array, offset: number): { value: number; n
   return { value: 0, nextOffset: offset + 1 };
 };
 
-export let readLenencString = (buf: Uint8Array, offset: number): { value: string; nextOffset: number } => {
+export let readLenencString = (
+  buf: Uint8Array,
+  offset: number
+): { value: string; nextOffset: number } => {
   let { value: len, nextOffset } = readLenencInt(buf, offset);
   let decoder = new TextDecoder();
   let str = decoder.decode(buf.slice(nextOffset, nextOffset + len));
@@ -208,7 +223,9 @@ export interface MySQLPacket {
 }
 
 // Parse MySQL packets from a raw buffer stream
-export let parsePackets = (buffer: Uint8Array): { packets: MySQLPacket[]; remaining: Uint8Array } => {
+export let parsePackets = (
+  buffer: Uint8Array
+): { packets: MySQLPacket[]; remaining: Uint8Array } => {
   let packets: MySQLPacket[] = [];
   let offset = 0;
 
@@ -227,7 +244,7 @@ export let parsePackets = (buffer: Uint8Array): { packets: MySQLPacket[]; remain
 
   return {
     packets,
-    remaining: buffer.slice(offset),
+    remaining: buffer.slice(offset)
   };
 };
 
@@ -329,7 +346,7 @@ export let parseHandshakeV10 = (payload: Uint8Array): HandshakeV10 => {
     characterSet,
     statusFlags,
     authPluginDataPart2,
-    authPluginName,
+    authPluginName
   };
 };
 
@@ -375,7 +392,11 @@ export let buildHandshakeResponse41 = (params: {
 
 // --- SSL Request ---
 
-export let buildSSLRequest = (capabilityFlags: number, maxPacketSize: number, characterSet: number): Uint8Array => {
+export let buildSSLRequest = (
+  capabilityFlags: number,
+  maxPacketSize: number,
+  characterSet: number
+): Uint8Array => {
   let writer = new ByteWriter();
   writer.writeUint32LE(capabilityFlags);
   writer.writeUint32LE(maxPacketSize);
@@ -442,7 +463,8 @@ export let parseErrPacket = (payload: Uint8Array): ErrPacketData => {
   let sqlStateMarker = '';
   let sqlState = '';
   // Check for SQL state marker '#'
-  if (payload[offset] === 0x23) { // '#'
+  if (payload[offset] === 0x23) {
+    // '#'
     sqlStateMarker = '#';
     offset += 1;
     sqlState = decoder.decode(payload.slice(offset, offset + 5));
@@ -502,13 +524,16 @@ export let parseColumnDefinition41 = (payload: Uint8Array): ColumnDefinition => 
     columnLength,
     columnType,
     flags,
-    decimals,
+    decimals
   };
 };
 
 // --- Row Data Parsing ---
 
-export let parseTextResultRow = (payload: Uint8Array, columnCount: number): (string | null)[] => {
+export let parseTextResultRow = (
+  payload: Uint8Array,
+  columnCount: number
+): (string | null)[] => {
   let values: (string | null)[] = [];
   let offset = 0;
 
@@ -588,7 +613,7 @@ export let mysqlTypeToName = (typeId: number): string => {
     [MYSQL_TYPE_BLOB]: 'blob',
     [MYSQL_TYPE_VAR_STRING]: 'varchar',
     [MYSQL_TYPE_STRING]: 'char',
-    [MYSQL_TYPE_GEOMETRY]: 'geometry',
+    [MYSQL_TYPE_GEOMETRY]: 'geometry'
   };
   return typeMap[typeId] || `type:${typeId}`;
 };

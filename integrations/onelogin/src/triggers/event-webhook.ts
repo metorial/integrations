@@ -26,7 +26,7 @@ let eventTypeMap: Record<number, string> = {
   52: 'provisioning.updated',
   53: 'provisioning.deleted',
   54: 'provisioning.deactivated',
-  55: 'provisioning.reactivated',
+  55: 'provisioning.reactivated'
 };
 
 let resolveEventType = (eventTypeId: number): string => {
@@ -53,43 +53,43 @@ let webhookEventSchema = z.object({
   notes: z.string().nullable().optional().describe('Event notes'),
   errorDescription: z.string().nullable().optional().describe('Error description'),
   riskScore: z.number().nullable().optional().describe('Risk score'),
-  accountId: z.number().nullable().optional().describe('Account ID'),
+  accountId: z.number().nullable().optional().describe('Account ID')
 });
 
-export let eventWebhook = SlateTrigger.create(
-  spec,
-  {
-    name: 'Event Webhook',
-    key: 'event_webhook',
-    description: 'Receives real-time events from the OneLogin Event Broadcaster webhook. Configure the webhook URL in the OneLogin Admin portal under Developers > Webhooks. Events are delivered in batches and include authentication, user lifecycle, app, MFA, admin, and provisioning events.',
-  }
-)
+export let eventWebhook = SlateTrigger.create(spec, {
+  name: 'Event Webhook',
+  key: 'event_webhook',
+  description:
+    'Receives real-time events from the OneLogin Event Broadcaster webhook. Configure the webhook URL in the OneLogin Admin portal under Developers > Webhooks. Events are delivered in batches and include authentication, user lifecycle, app, MFA, admin, and provisioning events.'
+})
   .input(webhookEventSchema)
-  .output(z.object({
-    eventId: z.number().describe('Event ID'),
-    eventTypeId: z.number().describe('Event type ID'),
-    eventTypeName: z.string().nullable().optional().describe('Event type name'),
-    createdAt: z.string().nullable().optional().describe('ISO8601 timestamp'),
-    userId: z.number().nullable().optional().describe('Target user ID'),
-    userName: z.string().nullable().optional().describe('Target user name'),
-    actorUserId: z.number().nullable().optional().describe('Actor user ID'),
-    actorUserName: z.string().nullable().optional().describe('Actor user name'),
-    appId: z.number().nullable().optional().describe('Related app ID'),
-    appName: z.string().nullable().optional().describe('Related app name'),
-    ipaddr: z.string().nullable().optional().describe('IP address'),
-    roleId: z.number().nullable().optional().describe('Related role ID'),
-    roleName: z.string().nullable().optional().describe('Related role name'),
-    groupId: z.number().nullable().optional().describe('Related group ID'),
-    groupName: z.string().nullable().optional().describe('Related group name'),
-    customMessage: z.string().nullable().optional().describe('Custom event message'),
-    notes: z.string().nullable().optional().describe('Event notes'),
-    errorDescription: z.string().nullable().optional().describe('Error description'),
-    riskScore: z.number().nullable().optional().describe('Risk score'),
-    accountId: z.number().nullable().optional().describe('Account ID'),
-  }))
+  .output(
+    z.object({
+      eventId: z.number().describe('Event ID'),
+      eventTypeId: z.number().describe('Event type ID'),
+      eventTypeName: z.string().nullable().optional().describe('Event type name'),
+      createdAt: z.string().nullable().optional().describe('ISO8601 timestamp'),
+      userId: z.number().nullable().optional().describe('Target user ID'),
+      userName: z.string().nullable().optional().describe('Target user name'),
+      actorUserId: z.number().nullable().optional().describe('Actor user ID'),
+      actorUserName: z.string().nullable().optional().describe('Actor user name'),
+      appId: z.number().nullable().optional().describe('Related app ID'),
+      appName: z.string().nullable().optional().describe('Related app name'),
+      ipaddr: z.string().nullable().optional().describe('IP address'),
+      roleId: z.number().nullable().optional().describe('Related role ID'),
+      roleName: z.string().nullable().optional().describe('Related role name'),
+      groupId: z.number().nullable().optional().describe('Related group ID'),
+      groupName: z.string().nullable().optional().describe('Related group name'),
+      customMessage: z.string().nullable().optional().describe('Custom event message'),
+      notes: z.string().nullable().optional().describe('Event notes'),
+      errorDescription: z.string().nullable().optional().describe('Error description'),
+      riskScore: z.number().nullable().optional().describe('Risk score'),
+      accountId: z.number().nullable().optional().describe('Account ID')
+    })
+  )
   .webhook({
     // OneLogin webhooks must be configured in the admin portal - no API for registration
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body = await ctx.request.json();
 
       // OneLogin Event Broadcaster sends batches of events as an array
@@ -116,12 +116,12 @@ export let eventWebhook = SlateTrigger.create(
           notes: e.notes,
           errorDescription: e.error_description,
           riskScore: e.risk_score,
-          accountId: e.account_id,
-        })),
+          accountId: e.account_id
+        }))
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventTypeName || resolveEventType(ctx.input.eventTypeId),
         id: String(ctx.input.eventId),
@@ -145,8 +145,8 @@ export let eventWebhook = SlateTrigger.create(
           notes: ctx.input.notes,
           errorDescription: ctx.input.errorDescription,
           riskScore: ctx.input.riskScore,
-          accountId: ctx.input.accountId,
-        },
+          accountId: ctx.input.accountId
+        }
       };
-    },
+    }
   });

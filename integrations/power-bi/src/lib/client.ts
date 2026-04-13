@@ -19,7 +19,7 @@ export class PowerBIClient {
 
   async listWorkspaces(): Promise<any[]> {
     let response = await this.http.get('/groups', {
-      params: { '$top': 1000 }
+      params: { $top: 1000 }
     });
     return response.data.value || [];
   }
@@ -43,14 +43,22 @@ export class PowerBIClient {
     return response.data.value || [];
   }
 
-  async addWorkspaceUser(workspaceId: string, emailAddress: string, groupUserAccessRight: string): Promise<void> {
+  async addWorkspaceUser(
+    workspaceId: string,
+    emailAddress: string,
+    groupUserAccessRight: string
+  ): Promise<void> {
     await this.http.post(`/groups/${workspaceId}/users`, {
       emailAddress,
       groupUserAccessRight
     });
   }
 
-  async updateWorkspaceUser(workspaceId: string, emailAddress: string, groupUserAccessRight: string): Promise<void> {
+  async updateWorkspaceUser(
+    workspaceId: string,
+    emailAddress: string,
+    groupUserAccessRight: string
+  ): Promise<void> {
     await this.http.put(`/groups/${workspaceId}/users`, {
       emailAddress,
       groupUserAccessRight
@@ -91,12 +99,16 @@ export class PowerBIClient {
     await this.http.post(path, {});
   }
 
-  async getRefreshHistory(datasetId: string, workspaceId?: string, top?: number): Promise<any[]> {
+  async getRefreshHistory(
+    datasetId: string,
+    workspaceId?: string,
+    top?: number
+  ): Promise<any[]> {
     let path = workspaceId
       ? `/groups/${workspaceId}/datasets/${datasetId}/refreshes`
       : `/datasets/${datasetId}/refreshes`;
     let response = await this.http.get(path, {
-      params: top ? { '$top': top } : undefined
+      params: top ? { $top: top } : undefined
     });
     return response.data.value || [];
   }
@@ -109,7 +121,11 @@ export class PowerBIClient {
     return response.data.value || [];
   }
 
-  async updateDatasetParameters(datasetId: string, parameters: Array<{ name: string; newValue: string }>, workspaceId?: string): Promise<void> {
+  async updateDatasetParameters(
+    datasetId: string,
+    parameters: Array<{ name: string; newValue: string }>,
+    workspaceId?: string
+  ): Promise<void> {
     let path = workspaceId
       ? `/groups/${workspaceId}/datasets/${datasetId}/Default.UpdateParameters`
       : `/datasets/${datasetId}/Default.UpdateParameters`;
@@ -141,7 +157,11 @@ export class PowerBIClient {
     return response.data;
   }
 
-  async updateRefreshSchedule(datasetId: string, schedule: any, workspaceId?: string): Promise<void> {
+  async updateRefreshSchedule(
+    datasetId: string,
+    schedule: any,
+    workspaceId?: string
+  ): Promise<void> {
     let path = workspaceId
       ? `/groups/${workspaceId}/datasets/${datasetId}/refreshSchedule`
       : `/datasets/${datasetId}/refreshSchedule`;
@@ -151,16 +171,19 @@ export class PowerBIClient {
   // ─── Push Datasets ────────────────────────────────────────────
 
   async createPushDataset(dataset: any, workspaceId?: string): Promise<any> {
-    let path = workspaceId
-      ? `/groups/${workspaceId}/datasets`
-      : '/datasets';
+    let path = workspaceId ? `/groups/${workspaceId}/datasets` : '/datasets';
     let response = await this.http.post(path, dataset, {
       params: { defaultRetentionPolicy: 'basicFIFO' }
     });
     return response.data;
   }
 
-  async pushRows(datasetId: string, tableName: string, rows: any[], workspaceId?: string): Promise<void> {
+  async pushRows(
+    datasetId: string,
+    tableName: string,
+    rows: any[],
+    workspaceId?: string
+  ): Promise<void> {
     let path = workspaceId
       ? `/groups/${workspaceId}/datasets/${datasetId}/tables/${tableName}/rows`
       : `/datasets/${datasetId}/tables/${tableName}/rows`;
@@ -205,7 +228,11 @@ export class PowerBIClient {
     await this.http.delete(path);
   }
 
-  async cloneReport(reportId: string, cloneBody: { name: string; targetWorkspaceId?: string; targetModelId?: string }, workspaceId?: string): Promise<any> {
+  async cloneReport(
+    reportId: string,
+    cloneBody: { name: string; targetWorkspaceId?: string; targetModelId?: string },
+    workspaceId?: string
+  ): Promise<any> {
     let path = workspaceId
       ? `/groups/${workspaceId}/reports/${reportId}/Clone`
       : `/reports/${reportId}/Clone`;
@@ -213,7 +240,11 @@ export class PowerBIClient {
     return response.data;
   }
 
-  async rebindReport(reportId: string, datasetId: string, workspaceId?: string): Promise<void> {
+  async rebindReport(
+    reportId: string,
+    datasetId: string,
+    workspaceId?: string
+  ): Promise<void> {
     let path = workspaceId
       ? `/groups/${workspaceId}/reports/${reportId}/Rebind`
       : `/reports/${reportId}/Rebind`;
@@ -236,7 +267,11 @@ export class PowerBIClient {
     return response.data;
   }
 
-  async getExportStatus(reportId: string, exportId: string, workspaceId?: string): Promise<any> {
+  async getExportStatus(
+    reportId: string,
+    exportId: string,
+    workspaceId?: string
+  ): Promise<any> {
     let path = workspaceId
       ? `/groups/${workspaceId}/reports/${reportId}/exports/${exportId}`
       : `/reports/${reportId}/exports/${exportId}`;
@@ -268,7 +303,11 @@ export class PowerBIClient {
     return response.data.value || [];
   }
 
-  async cloneDashboard(dashboardId: string, name: string, targetWorkspaceId?: string): Promise<any> {
+  async cloneDashboard(
+    dashboardId: string,
+    name: string,
+    targetWorkspaceId?: string
+  ): Promise<any> {
     let body: any = { name };
     if (targetWorkspaceId) {
       body.targetWorkspaceId = targetWorkspaceId;
@@ -297,7 +336,11 @@ export class PowerBIClient {
     return response.data;
   }
 
-  async generateReportEmbedToken(reportId: string, body: any, workspaceId?: string): Promise<any> {
+  async generateReportEmbedToken(
+    reportId: string,
+    body: any,
+    workspaceId?: string
+  ): Promise<any> {
     let path = workspaceId
       ? `/groups/${workspaceId}/reports/${reportId}/GenerateToken`
       : `/reports/${reportId}/GenerateToken`;
@@ -305,7 +348,11 @@ export class PowerBIClient {
     return response.data;
   }
 
-  async generateDashboardEmbedToken(dashboardId: string, body: any, workspaceId?: string): Promise<any> {
+  async generateDashboardEmbedToken(
+    dashboardId: string,
+    body: any,
+    workspaceId?: string
+  ): Promise<any> {
     let path = workspaceId
       ? `/groups/${workspaceId}/dashboards/${dashboardId}/GenerateToken`
       : `/dashboards/${dashboardId}/GenerateToken`;
@@ -348,7 +395,9 @@ export class PowerBIClient {
   }
 
   async getDataflowDatasources(workspaceId: string, dataflowId: string): Promise<any[]> {
-    let response = await this.http.get(`/groups/${workspaceId}/dataflows/${dataflowId}/datasources`);
+    let response = await this.http.get(
+      `/groups/${workspaceId}/dataflows/${dataflowId}/datasources`
+    );
     return response.data.value || [];
   }
 
@@ -361,7 +410,7 @@ export class PowerBIClient {
 
   async getPipeline(pipelineId: string): Promise<any> {
     let response = await this.http.get(`/pipelines/${pipelineId}`, {
-      params: { '$expand': 'stages' }
+      params: { $expand: 'stages' }
     });
     return response.data;
   }
@@ -372,7 +421,9 @@ export class PowerBIClient {
   }
 
   async getPipelineStageArtifacts(pipelineId: string, stageOrder: number): Promise<any> {
-    let response = await this.http.get(`/pipelines/${pipelineId}/stages/${stageOrder}/artifacts`);
+    let response = await this.http.get(
+      `/pipelines/${pipelineId}/stages/${stageOrder}/artifacts`
+    );
     return response.data;
   }
 
@@ -470,16 +521,20 @@ export class PowerBIClient {
   }
 
   async adminScanWorkspaces(workspaceIds: string[]): Promise<any> {
-    let response = await this.http.post('/admin/workspaces/getInfo', {
-      workspaces: workspaceIds
-    }, {
-      params: {
-        lineageInfo: true,
-        datasourceDetails: true,
-        datasetSchema: false,
-        datasetExpressions: false
+    let response = await this.http.post(
+      '/admin/workspaces/getInfo',
+      {
+        workspaces: workspaceIds
+      },
+      {
+        params: {
+          lineageInfo: true,
+          datasourceDetails: true,
+          datasetSchema: false,
+          datasetExpressions: false
+        }
       }
-    });
+    );
     return response.data;
   }
 

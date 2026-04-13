@@ -27,14 +27,9 @@ import {
   listFormResponses,
   listInvoices,
   listOrders,
-  listWorkspaces,
+  listWorkspaces
 } from './tools';
-import {
-  bookingEvents,
-  orderEvents,
-  formResponseEvents,
-  contactEvents,
-} from './triggers';
+import { bookingEvents, orderEvents, formResponseEvents, contactEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -65,12 +60,7 @@ export let provider = Slate.create({
     listFormResponses,
     listInvoices,
     listOrders,
-    listWorkspaces,
+    listWorkspaces
   ],
-  triggers: [
-    bookingEvents,
-    orderEvents,
-    formResponseEvents,
-    contactEvents,
-  ],
+  triggers: [bookingEvents, orderEvents, formResponseEvents, contactEvents]
 });

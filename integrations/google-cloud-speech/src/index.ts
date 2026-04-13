@@ -10,7 +10,7 @@ import {
   updateRecognizer,
   deleteRecognizer,
   synthesizeSpeech,
-  listVoices,
+  listVoices
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -27,9 +27,7 @@ export let provider = Slate.create({
     updateRecognizer,
     deleteRecognizer,
     synthesizeSpeech,
-    listVoices,
+    listVoices
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

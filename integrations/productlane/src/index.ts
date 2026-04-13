@@ -28,7 +28,7 @@ import {
   updateChangelog,
   deleteChangelog,
   getWorkspace,
-  listUsers,
+  listUsers
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -63,9 +63,7 @@ export let provider = Slate.create({
     updateChangelog,
     deleteChangelog,
     getWorkspace,
-    listUsers,
+    listUsers
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -3,41 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getWorkflow = SlateTool.create(
-  spec,
-  {
-    name: 'Get Workflow',
-    key: 'get_workflow',
-    description: `Retrieve details about a workflow including its status, timing, and all its jobs. Provides a comprehensive view of a workflow's execution.`,
-    tags: {
-      readOnly: true
-    }
+export let getWorkflow = SlateTool.create(spec, {
+  name: 'Get Workflow',
+  key: 'get_workflow',
+  description: `Retrieve details about a workflow including its status, timing, and all its jobs. Provides a comprehensive view of a workflow's execution.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workflowId: z.string().describe('The UUID of the workflow to retrieve')
-  }))
-  .output(z.object({
-    workflowId: z.string(),
-    name: z.string(),
-    status: z.string(),
-    createdAt: z.string(),
-    stoppedAt: z.string().optional(),
-    pipelineId: z.string(),
-    pipelineNumber: z.number(),
-    projectSlug: z.string(),
-    jobs: z.array(z.object({
-      jobId: z.string(),
+})
+  .input(
+    z.object({
+      workflowId: z.string().describe('The UUID of the workflow to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      workflowId: z.string(),
       name: z.string(),
-      type: z.string(),
       status: z.string(),
-      startedAt: z.string().optional(),
+      createdAt: z.string(),
       stoppedAt: z.string().optional(),
-      jobNumber: z.number().optional(),
-      approvalRequestId: z.string().optional()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+      pipelineId: z.string(),
+      pipelineNumber: z.number(),
+      projectSlug: z.string(),
+      jobs: z.array(
+        z.object({
+          jobId: z.string(),
+          name: z.string(),
+          type: z.string(),
+          status: z.string(),
+          startedAt: z.string().optional(),
+          stoppedAt: z.string().optional(),
+          jobNumber: z.number().optional(),
+          approvalRequestId: z.string().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let workflow = await client.getWorkflow(ctx.input.workflowId);

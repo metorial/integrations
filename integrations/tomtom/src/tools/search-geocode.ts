@@ -32,38 +32,48 @@ let searchResultSchema = z.object({
   position: positionSchema.optional().describe('Geographic coordinates')
 });
 
-export let searchGeocode = SlateTool.create(
-  spec,
-  {
-    name: 'Search & Geocode',
-    key: 'search_geocode',
-    description: `Search for addresses, places, and points of interest using TomTom's fuzzy search. Supports free-text queries, structured address lookups, and autocomplete suggestions. Geo-bias results around a specific location and filter by country or category.`,
-    instructions: [
-      'Use the "query" field for free-text search (addresses, POI names, coordinates)',
-      'Set "lat" and "lon" to bias results near a specific location',
-      'Use "countrySet" to restrict results to specific countries (comma-separated ISO codes, e.g. "US,CA")',
-      'Use "categorySet" to filter by POI categories (comma-separated category IDs)'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let searchGeocode = SlateTool.create(spec, {
+  name: 'Search & Geocode',
+  key: 'search_geocode',
+  description: `Search for addresses, places, and points of interest using TomTom's fuzzy search. Supports free-text queries, structured address lookups, and autocomplete suggestions. Geo-bias results around a specific location and filter by country or category.`,
+  instructions: [
+    'Use the "query" field for free-text search (addresses, POI names, coordinates)',
+    'Set "lat" and "lon" to bias results near a specific location',
+    'Use "countrySet" to restrict results to specific countries (comma-separated ISO codes, e.g. "US,CA")',
+    'Use "categorySet" to filter by POI categories (comma-separated category IDs)'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Search query (address, place name, or coordinates)'),
-    lat: z.number().optional().describe('Latitude to bias results toward'),
-    lon: z.number().optional().describe('Longitude to bias results toward'),
-    radius: z.number().optional().describe('Search radius in meters around the bias point'),
-    limit: z.number().optional().describe('Maximum number of results (1-100, default 10)'),
-    countrySet: z.string().optional().describe('Comma-separated country codes to restrict results (e.g. "US,CA")'),
-    language: z.string().optional().describe('Language for results (IETF tag, e.g. "en-US")'),
-    categorySet: z.string().optional().describe('Comma-separated POI category IDs to filter by')
-  }))
-  .output(z.object({
-    totalResults: z.number().describe('Total number of matching results'),
-    results: z.array(searchResultSchema).describe('Search results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().describe('Search query (address, place name, or coordinates)'),
+      lat: z.number().optional().describe('Latitude to bias results toward'),
+      lon: z.number().optional().describe('Longitude to bias results toward'),
+      radius: z.number().optional().describe('Search radius in meters around the bias point'),
+      limit: z.number().optional().describe('Maximum number of results (1-100, default 10)'),
+      countrySet: z
+        .string()
+        .optional()
+        .describe('Comma-separated country codes to restrict results (e.g. "US,CA")'),
+      language: z
+        .string()
+        .optional()
+        .describe('Language for results (IETF tag, e.g. "en-US")'),
+      categorySet: z
+        .string()
+        .optional()
+        .describe('Comma-separated POI category IDs to filter by')
+    })
+  )
+  .output(
+    z.object({
+      totalResults: z.number().describe('Total number of matching results'),
+      results: z.array(searchResultSchema).describe('Search results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new TomTomClient({ token: ctx.auth.token, adminKey: ctx.auth.adminKey });
 
     let data = await client.fuzzySearch({
@@ -86,16 +96,18 @@ export let searchGeocode = SlateTool.create(
       poiPhone: r.poi?.phone,
       poiUrl: r.poi?.url,
       poiCategories: r.poi?.categories,
-      address: r.address ? {
-        streetNumber: r.address.streetNumber,
-        streetName: r.address.streetName,
-        municipality: r.address.municipality,
-        countrySubdivision: r.address.countrySubdivision,
-        postalCode: r.address.postalCode,
-        countryCode: r.address.countryCode,
-        country: r.address.country,
-        freeformAddress: r.address.freeformAddress
-      } : undefined,
+      address: r.address
+        ? {
+            streetNumber: r.address.streetNumber,
+            streetName: r.address.streetName,
+            municipality: r.address.municipality,
+            countrySubdivision: r.address.countrySubdivision,
+            postalCode: r.address.postalCode,
+            countryCode: r.address.countryCode,
+            country: r.address.country,
+            freeformAddress: r.address.freeformAddress
+          }
+        : undefined,
       position: r.position ? { lat: r.position.lat, lon: r.position.lon } : undefined
     }));
 
@@ -106,4 +118,5 @@ export let searchGeocode = SlateTool.create(
       },
       message: `Found **${results.length}** results for "${ctx.input.query}".`
     };
-  }).build();
+  })
+  .build();

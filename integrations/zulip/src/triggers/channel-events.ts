@@ -3,34 +3,35 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let channelEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Channel Events',
-    key: 'channel_events',
-    description: 'Triggers when channels are created, updated, or archived in Zulip.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('Unique event ID'),
-    eventType: z.string().describe('Event type: "created", "updated", or "archived"'),
-    channelId: z.number().describe('Channel ID'),
-    channelName: z.string().describe('Channel name'),
-    description: z.string().optional().describe('Channel description'),
-    isPrivate: z.boolean().optional().describe('Whether the channel is private')
-  }))
-  .output(z.object({
-    channelId: z.number().describe('Channel ID'),
-    channelName: z.string().describe('Channel name'),
-    description: z.string().optional().describe('Channel description'),
-    isPrivate: z.boolean().optional().describe('Whether the channel is private')
-  }))
+export let channelEvents = SlateTrigger.create(spec, {
+  name: 'Channel Events',
+  key: 'channel_events',
+  description: 'Triggers when channels are created, updated, or archived in Zulip.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('Unique event ID'),
+      eventType: z.string().describe('Event type: "created", "updated", or "archived"'),
+      channelId: z.number().describe('Channel ID'),
+      channelName: z.string().describe('Channel name'),
+      description: z.string().optional().describe('Channel description'),
+      isPrivate: z.boolean().optional().describe('Whether the channel is private')
+    })
+  )
+  .output(
+    z.object({
+      channelId: z.number().describe('Channel ID'),
+      channelName: z.string().describe('Channel name'),
+      description: z.string().optional().describe('Channel description'),
+      isPrivate: z.boolean().optional().describe('Whether the channel is private')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         serverUrl: ctx.auth.serverUrl,
         email: ctx.auth.email,
@@ -65,9 +66,7 @@ export let channelEvents = SlateTrigger.create(
         let events = eventsResult.events || [];
         let streamEvents = events.filter((e: any) => e.type === 'stream');
 
-        let newLastEventId = events.length > 0
-          ? events[events.length - 1].id
-          : lastEventId;
+        let newLastEventId = events.length > 0 ? events[events.length - 1].id : lastEventId;
 
         let inputs = streamEvents.map((e: any) => {
           let stream = e.streams?.[0] || e.stream || {};
@@ -75,7 +74,12 @@ export let channelEvents = SlateTrigger.create(
 
           return {
             eventId: String(e.id),
-            eventType: eventType === 'create' ? 'created' : eventType === 'delete' ? 'archived' : 'updated',
+            eventType:
+              eventType === 'create'
+                ? 'created'
+                : eventType === 'delete'
+                  ? 'archived'
+                  : 'updated',
             channelId: stream.stream_id ?? 0,
             channelName: stream.name ?? '',
             description: stream.description,
@@ -91,7 +95,10 @@ export let channelEvents = SlateTrigger.create(
           }
         };
       } catch (err: any) {
-        if (err?.response?.status === 400 && err?.response?.data?.code === 'BAD_EVENT_QUEUE_ID') {
+        if (
+          err?.response?.status === 400 &&
+          err?.response?.data?.code === 'BAD_EVENT_QUEUE_ID'
+        ) {
           ctx.warn('Event queue expired, will re-register on next poll');
           return { inputs: [], updatedState: {} };
         }
@@ -99,7 +106,7 @@ export let channelEvents = SlateTrigger.create(
       }
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `channel.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -111,4 +118,5 @@ export let channelEvents = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let httpClient = createAxios({
-  baseURL: 'https://api.fireflies.ai',
+  baseURL: 'https://api.fireflies.ai'
 });
 
 export class FirefliesClient {
@@ -11,16 +11,23 @@ export class FirefliesClient {
     this.token = config.token;
   }
 
-  private async query<T = any>(graphqlQuery: string, variables?: Record<string, any>): Promise<T> {
-    let response = await httpClient.post('/graphql', {
-      query: graphqlQuery,
-      variables,
-    }, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
+  private async query<T = any>(
+    graphqlQuery: string,
+    variables?: Record<string, any>
+  ): Promise<T> {
+    let response = await httpClient.post(
+      '/graphql',
+      {
+        query: graphqlQuery,
+        variables
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     if (response.data.errors && response.data.errors.length > 0) {
       let error = response.data.errors[0];
@@ -53,7 +60,8 @@ export class FirefliesClient {
     if (params?.limit !== undefined) args.push(`limit: ${params.limit}`);
     if (params?.skip !== undefined) args.push(`skip: ${params.skip}`);
     if (params?.organizers) args.push(`organizers: ${JSON.stringify(params.organizers)}`);
-    if (params?.participants) args.push(`participants: ${JSON.stringify(params.participants)}`);
+    if (params?.participants)
+      args.push(`participants: ${JSON.stringify(params.participants)}`);
     if (params?.userId) args.push(`user_id: "${params.userId}"`);
     if (params?.mine !== undefined) args.push(`mine: ${params.mine}`);
     if (params?.channelId) args.push(`channel_id: "${params.channelId}"`);
@@ -87,7 +95,8 @@ export class FirefliesClient {
   }
 
   async getTranscript(transcriptId: string) {
-    let result = await this.query<{ transcript: any }>(`
+    let result = await this.query<{ transcript: any }>(
+      `
       query GetTranscript($id: String!) {
         transcript(id: $id) {
           id
@@ -150,13 +159,16 @@ export class FirefliesClient {
           }
         }
       }
-    `, { id: transcriptId });
+    `,
+      { id: transcriptId }
+    );
 
     return result.transcript;
   }
 
   async deleteTranscript(transcriptId: string) {
-    let result = await this.query<{ deleteTranscript: any }>(`
+    let result = await this.query<{ deleteTranscript: any }>(
+      `
       mutation DeleteTranscript($id: String!) {
         deleteTranscript(id: $id) {
           id
@@ -164,25 +176,31 @@ export class FirefliesClient {
           date
         }
       }
-    `, { id: transcriptId });
+    `,
+      { id: transcriptId }
+    );
 
     return result.deleteTranscript;
   }
 
   async updateMeetingTitle(transcriptId: string, title: string) {
-    let result = await this.query<{ updateMeetingTitle: any }>(`
+    let result = await this.query<{ updateMeetingTitle: any }>(
+      `
       mutation UpdateMeetingTitle($input: UpdateMeetingTitleInput!) {
         updateMeetingTitle(input: $input) {
           title
         }
       }
-    `, { input: { id: transcriptId, title } });
+    `,
+      { input: { id: transcriptId, title } }
+    );
 
     return result.updateMeetingTitle;
   }
 
   async updateMeetingPrivacy(transcriptId: string, privacy: string) {
-    let result = await this.query<{ updateMeetingPrivacy: any }>(`
+    let result = await this.query<{ updateMeetingPrivacy: any }>(
+      `
       mutation UpdateMeetingPrivacy($input: UpdateMeetingPrivacyInput!) {
         updateMeetingPrivacy(input: $input) {
           id
@@ -190,13 +208,16 @@ export class FirefliesClient {
           privacy
         }
       }
-    `, { input: { id: transcriptId, privacy } });
+    `,
+      { input: { id: transcriptId, privacy } }
+    );
 
     return result.updateMeetingPrivacy;
   }
 
   async updateMeetingChannel(transcriptIds: string[], channelId: string) {
-    let result = await this.query<{ updateMeetingChannel: any[] }>(`
+    let result = await this.query<{ updateMeetingChannel: any[] }>(
+      `
       mutation UpdateMeetingChannel($input: UpdateMeetingChannelInput!) {
         updateMeetingChannel(input: $input) {
           id
@@ -206,7 +227,9 @@ export class FirefliesClient {
           }
         }
       }
-    `, { input: { transcript_ids: transcriptIds, channel_id: channelId } });
+    `,
+      { input: { transcript_ids: transcriptIds, channel_id: channelId } }
+    );
 
     return result.updateMeetingChannel;
   }
@@ -230,11 +253,12 @@ export class FirefliesClient {
         custom_language: params.customLanguage,
         attendees: params.attendees,
         client_reference_id: params.clientReferenceId,
-        bypass_size_check: params.bypassSizeCheck,
-      },
+        bypass_size_check: params.bypassSizeCheck
+      }
     };
 
-    let result = await this.query<{ uploadAudio: any }>(`
+    let result = await this.query<{ uploadAudio: any }>(
+      `
       mutation UploadAudio($input: AudioUploadInput) {
         uploadAudio(input: $input) {
           success
@@ -242,7 +266,9 @@ export class FirefliesClient {
           message
         }
       }
-    `, variables);
+    `,
+      variables
+    );
 
     return result.uploadAudio;
   }
@@ -290,7 +316,8 @@ export class FirefliesClient {
   }
 
   async setUserRole(userId: string, role: string) {
-    let result = await this.query<{ setUserRole: any }>(`
+    let result = await this.query<{ setUserRole: any }>(
+      `
       mutation SetUserRole($userId: String!, $role: Role!) {
         setUserRole(user_id: $userId, role: $role) {
           id
@@ -299,7 +326,9 @@ export class FirefliesClient {
           role
         }
       }
-    `, { userId, role });
+    `,
+      { userId, role }
+    );
 
     return result.setUserRole;
   }
@@ -313,7 +342,8 @@ export class FirefliesClient {
     duration?: number;
     language?: string;
   }) {
-    let result = await this.query<{ addToLiveMeeting: any }>(`
+    let result = await this.query<{ addToLiveMeeting: any }>(
+      `
       mutation AddToLive($meetingLink: String!, $title: String, $meetingPassword: String, $duration: Int, $language: String) {
         addToLiveMeeting(
           meeting_link: $meetingLink,
@@ -325,13 +355,15 @@ export class FirefliesClient {
           success
         }
       }
-    `, {
-      meetingLink: params.meetingLink,
-      title: params.title,
-      meetingPassword: params.meetingPassword,
-      duration: params.duration,
-      language: params.language,
-    });
+    `,
+      {
+        meetingLink: params.meetingLink,
+        title: params.title,
+        meetingPassword: params.meetingPassword,
+        duration: params.duration,
+        language: params.language
+      }
+    );
 
     return result.addToLiveMeeting;
   }
@@ -374,7 +406,8 @@ export class FirefliesClient {
     privacies?: string[];
     summary?: string;
   }) {
-    let result = await this.query<{ createBite: any }>(`
+    let result = await this.query<{ createBite: any }>(
+      `
       mutation CreateBite($transcriptId: ID!, $startTime: Float!, $endTime: Float!, $name: String, $mediaType: String, $privacies: [String], $summary: String) {
         createBite(
           transcript_id: $transcriptId,
@@ -391,15 +424,17 @@ export class FirefliesClient {
           summary
         }
       }
-    `, {
-      transcriptId: params.transcriptId,
-      startTime: params.startTime,
-      endTime: params.endTime,
-      name: params.name,
-      mediaType: params.mediaType,
-      privacies: params.privacies,
-      summary: params.summary,
-    });
+    `,
+      {
+        transcriptId: params.transcriptId,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        name: params.name,
+        mediaType: params.mediaType,
+        privacies: params.privacies,
+        summary: params.summary
+      }
+    );
 
     return result.createBite;
   }
@@ -448,7 +483,8 @@ export class FirefliesClient {
   }
 
   async getAskFredThread(threadId: string) {
-    let result = await this.query<{ askfred_thread: any }>(`
+    let result = await this.query<{ askfred_thread: any }>(
+      `
       query GetAskFredThread($id: String!) {
         askfred_thread(id: $id) {
           id
@@ -468,7 +504,9 @@ export class FirefliesClient {
           }
         }
       }
-    `, { id: threadId });
+    `,
+      { id: threadId }
+    );
 
     return result.askfred_thread;
   }
@@ -488,7 +526,7 @@ export class FirefliesClient {
     formatMode?: string;
   }) {
     let input: Record<string, any> = {
-      query: params.query,
+      query: params.query
     };
 
     if (params.transcriptId) input.transcript_id = params.transcriptId;
@@ -506,7 +544,8 @@ export class FirefliesClient {
       input.filters = filters;
     }
 
-    let result = await this.query<{ createAskFredThread: any }>(`
+    let result = await this.query<{ createAskFredThread: any }>(
+      `
       mutation CreateAskFredThread($input: CreateAskFredThreadInput!) {
         createAskFredThread(input: $input) {
           message {
@@ -520,7 +559,9 @@ export class FirefliesClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     return result.createAskFredThread;
   }
@@ -533,13 +574,14 @@ export class FirefliesClient {
   }) {
     let input: Record<string, any> = {
       thread_id: params.threadId,
-      query: params.query,
+      query: params.query
     };
 
     if (params.responseLanguage) input.response_language = params.responseLanguage;
     if (params.formatMode) input.format_mode = params.formatMode;
 
-    let result = await this.query<{ continueAskFredThread: any }>(`
+    let result = await this.query<{ continueAskFredThread: any }>(
+      `
       mutation ContinueAskFredThread($input: ContinueAskFredThreadInput!) {
         continueAskFredThread(input: $input) {
           message {
@@ -553,13 +595,16 @@ export class FirefliesClient {
           }
         }
       }
-    `, { input });
+    `,
+      { input }
+    );
 
     return result.continueAskFredThread;
   }
 
   async deleteAskFredThread(threadId: string) {
-    let result = await this.query<{ deleteAskFredThread: any }>(`
+    let result = await this.query<{ deleteAskFredThread: any }>(
+      `
       mutation DeleteAskFredThread($id: String!) {
         deleteAskFredThread(id: $id) {
           id
@@ -569,50 +614,54 @@ export class FirefliesClient {
           created_at
         }
       }
-    `, { id: threadId });
+    `,
+      { id: threadId }
+    );
 
     return result.deleteAskFredThread;
   }
 
   // ── Meeting Sharing ──
 
-  async shareMeeting(params: {
-    meetingId: string;
-    emails: string[];
-    expiryDays?: number;
-  }) {
-    let result = await this.query<{ shareMeeting: any }>(`
+  async shareMeeting(params: { meetingId: string; emails: string[]; expiryDays?: number }) {
+    let result = await this.query<{ shareMeeting: any }>(
+      `
       mutation ShareMeeting($input: ShareMeetingInput!) {
         shareMeeting(input: $input) {
           success
           message
         }
       }
-    `, {
-      input: {
-        meeting_id: params.meetingId,
-        emails: params.emails,
-        expiry_days: params.expiryDays,
-      },
-    });
+    `,
+      {
+        input: {
+          meeting_id: params.meetingId,
+          emails: params.emails,
+          expiry_days: params.expiryDays
+        }
+      }
+    );
 
     return result.shareMeeting;
   }
 
   async revokeSharedMeetingAccess(meetingId: string, email: string) {
-    let result = await this.query<{ revokeSharedMeetingAccess: any }>(`
+    let result = await this.query<{ revokeSharedMeetingAccess: any }>(
+      `
       mutation RevokeSharedMeetingAccess($input: RevokeSharedMeetingAccessInput!) {
         revokeSharedMeetingAccess(input: $input) {
           success
           message
         }
       }
-    `, {
-      input: {
-        meeting_id: meetingId,
-        email,
-      },
-    });
+    `,
+      {
+        input: {
+          meeting_id: meetingId,
+          email
+        }
+      }
+    );
 
     return result.revokeSharedMeetingAccess;
   }

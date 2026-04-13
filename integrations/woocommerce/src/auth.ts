@@ -2,10 +2,12 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    consumerKey: z.string(),
-    consumerSecret: z.string(),
-  }))
+  .output(
+    z.object({
+      consumerKey: z.string(),
+      consumerSecret: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -14,15 +16,15 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       consumerKey: z.string().describe('WooCommerce REST API Consumer Key'),
-      consumerSecret: z.string().describe('WooCommerce REST API Consumer Secret'),
+      consumerSecret: z.string().describe('WooCommerce REST API Consumer Secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           consumerKey: ctx.input.consumerKey,
-          consumerSecret: ctx.input.consumerSecret,
+          consumerSecret: ctx.input.consumerSecret
         }
       };
-    },
+    }
   });

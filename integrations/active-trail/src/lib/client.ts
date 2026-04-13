@@ -9,23 +9,25 @@ export class ActiveTrailClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': this.token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: this.token,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ─── Contacts ───
 
-  async listContacts(params: {
-    customerStates?: string;
-    searchTerm?: string;
-    fromDate?: string;
-    toDate?: string;
-    page?: number;
-    limit?: number;
-  } = {}) {
+  async listContacts(
+    params: {
+      customerStates?: string;
+      searchTerm?: string;
+      fromDate?: string;
+      toDate?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/contacts', {
       params: {
         CustomerStates: params.customerStates,
@@ -33,8 +35,8 @@ export class ActiveTrailClient {
         FromDate: params.fromDate,
         ToDate: params.toDate,
         Page: params.page,
-        Limit: params.limit,
-      },
+        Limit: params.limit
+      }
     });
     return response.data;
   }
@@ -62,7 +64,7 @@ export class ActiveTrailClient {
   async importContacts(groupId: number, contacts: Record<string, any>[]) {
     let response = await this.axios.post('/contacts/Import', {
       group_id: groupId,
-      contacts,
+      contacts
     });
     return response.data;
   }
@@ -87,16 +89,30 @@ export class ActiveTrailClient {
     return response.data;
   }
 
-  async getSubscribers(params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}) {
+  async getSubscribers(
+    params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get('/contacts/Subscription/Subscribers', {
-      params: { FromDate: params.fromDate, ToDate: params.toDate, Page: params.page, Limit: params.limit },
+      params: {
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        Page: params.page,
+        Limit: params.limit
+      }
     });
     return response.data;
   }
 
-  async getUnsubscribers(params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}) {
+  async getUnsubscribers(
+    params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get('/contacts/Subscription/Unsubscribers', {
-      params: { FromDate: params.fromDate, ToDate: params.toDate, Page: params.page, Limit: params.limit },
+      params: {
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        Page: params.page,
+        Limit: params.limit
+      }
     });
     return response.data;
   }
@@ -105,7 +121,7 @@ export class ActiveTrailClient {
 
   async listGroups(params: { page?: number; limit?: number } = {}) {
     let response = await this.axios.get('/groups', {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
@@ -130,9 +146,24 @@ export class ActiveTrailClient {
     return response.data;
   }
 
-  async getGroupMembers(groupId: number, params: { customerStates?: string; fromDate?: string; toDate?: string; page?: number; limit?: number } = {}) {
+  async getGroupMembers(
+    groupId: number,
+    params: {
+      customerStates?: string;
+      fromDate?: string;
+      toDate?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     let response = await this.axios.get(`/groups/${groupId}/members`, {
-      params: { CustomerStates: params.customerStates, FromDate: params.fromDate, ToDate: params.toDate, Page: params.page, Limit: params.limit },
+      params: {
+        CustomerStates: params.customerStates,
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        Page: params.page,
+        Limit: params.limit
+      }
     });
     return response.data;
   }
@@ -156,7 +187,7 @@ export class ActiveTrailClient {
 
   async listMailingLists(params: { page?: number; limit?: number } = {}) {
     let response = await this.axios.get('/mailinglist', {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
@@ -176,9 +207,24 @@ export class ActiveTrailClient {
     return response.data;
   }
 
-  async getMailingListMembers(mailingListId: number, params: { customerStates?: string; fromDate?: string; toDate?: string; page?: number; limit?: number } = {}) {
+  async getMailingListMembers(
+    mailingListId: number,
+    params: {
+      customerStates?: string;
+      fromDate?: string;
+      toDate?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     let response = await this.axios.get(`/mailinglist/${mailingListId}/members`, {
-      params: { CustomerStates: params.customerStates, FromDate: params.fromDate, ToDate: params.toDate, Page: params.page, Limit: params.limit },
+      params: {
+        CustomerStates: params.customerStates,
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        Page: params.page,
+        Limit: params.limit
+      }
     });
     return response.data;
   }
@@ -189,22 +235,26 @@ export class ActiveTrailClient {
   }
 
   async removeContactFromMailingList(mailingListId: number, memberId: number) {
-    let response = await this.axios.delete(`/mailinglist/${mailingListId}/members/${memberId}`);
+    let response = await this.axios.delete(
+      `/mailinglist/${mailingListId}/members/${memberId}`
+    );
     return response.data;
   }
 
   // ─── Email Campaigns ───
 
-  async listCampaigns(params: {
-    mailingListId?: number;
-    contentCategoryId?: number;
-    searchTerm?: string;
-    sendType?: string;
-    fromDate?: string;
-    toDate?: string;
-    page?: number;
-    limit?: number;
-  } = {}) {
+  async listCampaigns(
+    params: {
+      mailingListId?: number;
+      contentCategoryId?: number;
+      searchTerm?: string;
+      sendType?: string;
+      fromDate?: string;
+      toDate?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) {
     let response = await this.axios.get('/campaigns', {
       params: {
         MailingListId: params.mailingListId,
@@ -214,8 +264,8 @@ export class ActiveTrailClient {
         FromDate: params.fromDate,
         ToDate: params.toDate,
         Page: params.page,
-        Limit: params.limit,
-      },
+        Limit: params.limit
+      }
     });
     return response.data;
   }
@@ -289,7 +339,7 @@ export class ActiveTrailClient {
 
   async listSmsCampaigns(params: { page?: number; limit?: number } = {}) {
     let response = await this.axios.get('/smscampaign/Campaign', {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
@@ -362,44 +412,66 @@ export class ActiveTrailClient {
     return response.data;
   }
 
-  async listCampaignReports(params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}) {
+  async listCampaignReports(
+    params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get('/campaignreports', {
-      params: { FromDate: params.fromDate, ToDate: params.toDate, Page: params.page, Limit: params.limit },
+      params: {
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        Page: params.page,
+        Limit: params.limit
+      }
     });
     return response.data;
   }
 
-  async getCampaignReportOpens(campaignId: number, params: { page?: number; limit?: number } = {}) {
+  async getCampaignReportOpens(
+    campaignId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/campaignreports/${campaignId}/opens`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
 
-  async getCampaignReportClicks(campaignId: number, params: { page?: number; limit?: number } = {}) {
+  async getCampaignReportClicks(
+    campaignId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/campaignreports/${campaignId}/clickdetails`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
 
-  async getCampaignReportBounces(campaignId: number, params: { page?: number; limit?: number } = {}) {
+  async getCampaignReportBounces(
+    campaignId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/campaignreports/${campaignId}/bounces`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
 
-  async getCampaignReportUnsubscribed(campaignId: number, params: { page?: number; limit?: number } = {}) {
+  async getCampaignReportUnsubscribed(
+    campaignId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/campaignreports/${campaignId}/unsubscribed`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
 
-  async getCampaignReportComplaints(campaignId: number, params: { page?: number; limit?: number } = {}) {
+  async getCampaignReportComplaints(
+    campaignId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/campaignreports/${campaignId}/complaints`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
@@ -416,9 +488,16 @@ export class ActiveTrailClient {
     return response.data;
   }
 
-  async listSmsCampaignReports(params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}) {
+  async listSmsCampaignReports(
+    params: { fromDate?: string; toDate?: string; page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get('/smscampaignreport', {
-      params: { FromDate: params.fromDate, ToDate: params.toDate, Page: params.page, Limit: params.limit },
+      params: {
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        Page: params.page,
+        Limit: params.limit
+      }
     });
     return response.data;
   }
@@ -427,7 +506,7 @@ export class ActiveTrailClient {
 
   async listAutomations(params: { page?: number; limit?: number } = {}) {
     let response = await this.axios.get('/automations', {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
@@ -480,25 +559,35 @@ export class ActiveTrailClient {
   }
 
   async getAutomationEmailStats(automationId: number) {
-    let response = await this.axios.get(`/automationreports/${automationId}/automationemailscampaignstatistic`);
+    let response = await this.axios.get(
+      `/automationreports/${automationId}/automationemailscampaignstatistic`
+    );
     return response.data;
   }
 
   async getAutomationSmsStats(automationId: number) {
-    let response = await this.axios.get(`/automationreports/${automationId}/automationsmscampaignstatistic`);
+    let response = await this.axios.get(
+      `/automationreports/${automationId}/automationsmscampaignstatistic`
+    );
     return response.data;
   }
 
-  async getAutomationContactsStarted(automationId: number, params: { page?: number; limit?: number } = {}) {
+  async getAutomationContactsStarted(
+    automationId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/automationreports/${automationId}/ContactsStarted`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
 
-  async getAutomationContactsEnded(automationId: number, params: { page?: number; limit?: number } = {}) {
+  async getAutomationContactsEnded(
+    automationId: number,
+    params: { page?: number; limit?: number } = {}
+  ) {
     let response = await this.axios.get(`/automationreports/${automationId}/ContactsEnded`, {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }
@@ -544,7 +633,7 @@ export class ActiveTrailClient {
 
   async getContactFields(params: { type?: string } = {}) {
     let response = await this.axios.get('/account/contactFields', {
-      params: { Type: params.type },
+      params: { Type: params.type }
     });
     return response.data;
   }
@@ -578,7 +667,7 @@ export class ActiveTrailClient {
 
   async listTemplates(params: { page?: number; limit?: number } = {}) {
     let response = await this.axios.get('/templates', {
-      params: { Page: params.page, Limit: params.limit },
+      params: { Page: params.page, Limit: params.limit }
     });
     return response.data;
   }

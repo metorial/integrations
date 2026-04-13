@@ -15,6 +15,7 @@ Adobe Sign supports two authentication methods:
 Adobe Sign uses the OAuth 2.0 Authorization Code flow to authorize API requests. This is the recommended method for production integrations.
 
 **Setup:**
+
 1. Log in to Adobe Sign as an administrator and navigate to **Acrobat Sign API > API Applications**.
 2. Create a new application to obtain an **Application ID (Client ID)** and **Client Secret**.
 3. Configure OAuth for the application by specifying a **Redirect URI** and selecting the required **scopes**.
@@ -29,6 +30,7 @@ The base URL varies by data center shard (e.g., `na1`, `na2`, `eu1`, `au1`, `jp1
 - Revoke: `https://api.<shard>.adobesign.com/oauth/v2/revoke`
 
 **Token Lifetime:**
+
 - Access tokens expire after 1 hour (3600 seconds).
 - Refresh tokens expire after 60 days of inactivity but can be used indefinitely if refreshed within that window.
 
@@ -110,6 +112,7 @@ Adobe Sign supports webhooks that deliver real-time HTTPS POST notifications wit
 ### Agreement Events
 
 Notifications related to the lifecycle of agreements. Includes events for:
+
 - Agreement created, sent, expired, canceled, rejected, deleted
 - Participant action completed (signed, approved, etc.)
 - Full workflow completed (all parties done)
@@ -124,6 +127,7 @@ Notifications related to the lifecycle of agreements. Includes events for:
 ### Send in Bulk (MegaSign) Events
 
 Notifications related to bulk send operations. Includes events for:
+
 - Send in Bulk created, shared, recalled
 - Reminder sent and initiated
 - Use `MEGASIGN_ALL` to subscribe to all bulk send events
@@ -131,6 +135,7 @@ Notifications related to bulk send operations. Includes events for:
 ### Web Form (Widget) Events
 
 Notifications related to web form lifecycle. Includes events for:
+
 - Web form created, enabled, disabled, modified, shared
 - Web form creation failed
 - Use `WIDGET_ALL` to subscribe to all web form events
@@ -138,5 +143,6 @@ Notifications related to web form lifecycle. Includes events for:
 ### Library Template Events (API Only)
 
 Notifications related to library document templates. Only available via API (not in the admin UI). Includes events for:
+
 - Library document created, modified, creation failed
 - Use `LIBRARY_DOCUMENT_ALL` to subscribe to all library template events

@@ -42,8 +42,8 @@ export class Client {
       baseURL: 'https://api.shortmenu.com',
       headers: {
         'x-api-key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -52,7 +52,7 @@ export class Client {
       destinationUrl: params.destinationUrl,
       domain: params.domain,
       slug: params.slug,
-      tags: params.tags ?? [],
+      tags: params.tags ?? []
     });
     return response.data;
   }

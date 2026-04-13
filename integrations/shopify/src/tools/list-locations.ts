@@ -3,32 +3,33 @@ import { ShopifyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listLocations = SlateTool.create(
-  spec,
-  {
-    name: 'List Locations',
-    key: 'list_locations',
-    description: `List all store locations. Locations are where inventory is stocked and orders are fulfilled from. Use location IDs with inventory management tools.`,
-    tags: { readOnly: true }
-  }
-)
+export let listLocations = SlateTool.create(spec, {
+  name: 'List Locations',
+  key: 'list_locations',
+  description: `List all store locations. Locations are where inventory is stocked and orders are fulfilled from. Use location IDs with inventory management tools.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    locations: z.array(z.object({
-      locationId: z.string(),
-      name: z.string(),
-      address1: z.string().nullable(),
-      address2: z.string().nullable(),
-      city: z.string().nullable(),
-      province: z.string().nullable(),
-      country: z.string().nullable(),
-      zip: z.string().nullable(),
-      phone: z.string().nullable(),
-      active: z.boolean(),
-      legacy: z.boolean()
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      locations: z.array(
+        z.object({
+          locationId: z.string(),
+          name: z.string(),
+          address1: z.string().nullable(),
+          address2: z.string().nullable(),
+          city: z.string().nullable(),
+          province: z.string().nullable(),
+          country: z.string().nullable(),
+          zip: z.string().nullable(),
+          phone: z.string().nullable(),
+          active: z.boolean(),
+          legacy: z.boolean()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ShopifyClient({
       token: ctx.auth.token,
       shopDomain: ctx.config.shopDomain,
@@ -55,4 +56,5 @@ export let listLocations = SlateTool.create(
       output: { locations: mapped },
       message: `Found **${mapped.length}** location(s).`
     };
-  }).build();
+  })
+  .build();

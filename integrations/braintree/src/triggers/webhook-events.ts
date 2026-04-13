@@ -5,60 +5,63 @@ import { z } from 'zod';
 
 let WEBHOOK_KIND_MAP: Record<string, string> = {
   // Subscription events
-  'subscription_charged_successfully': 'subscription.charged_successfully',
-  'subscription_charged_unsuccessfully': 'subscription.charged_unsuccessfully',
-  'subscription_billing_skipped': 'subscription.billing_skipped',
-  'subscription_went_past_due': 'subscription.went_past_due',
-  'subscription_expired': 'subscription.expired',
-  'subscription_canceled': 'subscription.canceled',
-  'subscription_trial_ended': 'subscription.trial_ended',
-  'subscription_went_active': 'subscription.went_active',
+  subscription_charged_successfully: 'subscription.charged_successfully',
+  subscription_charged_unsuccessfully: 'subscription.charged_unsuccessfully',
+  subscription_billing_skipped: 'subscription.billing_skipped',
+  subscription_went_past_due: 'subscription.went_past_due',
+  subscription_expired: 'subscription.expired',
+  subscription_canceled: 'subscription.canceled',
+  subscription_trial_ended: 'subscription.trial_ended',
+  subscription_went_active: 'subscription.went_active',
   // Transaction events
-  'transaction_settled': 'transaction.settled',
-  'transaction_settlement_declined': 'transaction.settlement_declined',
-  'transaction_disbursed': 'transaction.disbursed',
+  transaction_settled: 'transaction.settled',
+  transaction_settlement_declined: 'transaction.settlement_declined',
+  transaction_disbursed: 'transaction.disbursed',
   // Disbursement events
-  'disbursement': 'disbursement.completed',
-  'disbursement_exception': 'disbursement.exception',
+  disbursement: 'disbursement.completed',
+  disbursement_exception: 'disbursement.exception',
   // Dispute events
-  'dispute_accepted': 'dispute.accepted',
-  'dispute_auto_accepted': 'dispute.auto_accepted',
-  'dispute_disputed': 'dispute.disputed',
-  'dispute_expired': 'dispute.expired',
-  'dispute_lost': 'dispute.lost',
-  'dispute_opened': 'dispute.opened',
-  'dispute_under_review': 'dispute.under_review',
-  'dispute_won': 'dispute.won',
+  dispute_accepted: 'dispute.accepted',
+  dispute_auto_accepted: 'dispute.auto_accepted',
+  dispute_disputed: 'dispute.disputed',
+  dispute_expired: 'dispute.expired',
+  dispute_lost: 'dispute.lost',
+  dispute_opened: 'dispute.opened',
+  dispute_under_review: 'dispute.under_review',
+  dispute_won: 'dispute.won',
   // Sub-merchant events
-  'sub_merchant_account_approved': 'sub_merchant_account.approved',
-  'sub_merchant_account_declined': 'sub_merchant_account.declined',
+  sub_merchant_account_approved: 'sub_merchant_account.approved',
+  sub_merchant_account_declined: 'sub_merchant_account.declined',
   // Account updater events
-  'account_updater_daily_report': 'account_updater.daily_report',
+  account_updater_daily_report: 'account_updater.daily_report',
   // Grant API events
-  'grantor_updated_granted_payment_method': 'grant.grantor_updated',
-  'recipient_updated_granted_payment_method': 'grant.recipient_updated',
-  'granted_payment_method_revoked': 'grant.payment_method_revoked',
-  'granted_payment_instrument_revoked': 'grant.payment_instrument_revoked',
+  grantor_updated_granted_payment_method: 'grant.grantor_updated',
+  recipient_updated_granted_payment_method: 'grant.recipient_updated',
+  granted_payment_method_revoked: 'grant.payment_method_revoked',
+  granted_payment_instrument_revoked: 'grant.payment_instrument_revoked',
   // Local payment method events
-  'local_payment_completed': 'local_payment.completed',
-  'local_payment_reversed': 'local_payment.reversed',
-  'local_payment_funded': 'local_payment.funded',
-  'local_payment_expired': 'local_payment.expired',
+  local_payment_completed: 'local_payment.completed',
+  local_payment_reversed: 'local_payment.reversed',
+  local_payment_funded: 'local_payment.funded',
+  local_payment_expired: 'local_payment.expired',
   // OAuth events
-  'oauth_access_revoked': 'oauth.access_revoked',
+  oauth_access_revoked: 'oauth.access_revoked',
   // Payment method events
-  'payment_method_revoked_by_customer': 'payment_method.revoked_by_customer',
-  'payment_method_customer_data_updated': 'payment_method.customer_data_updated',
+  payment_method_revoked_by_customer: 'payment_method.revoked_by_customer',
+  payment_method_customer_data_updated: 'payment_method.customer_data_updated',
   // Connected merchant events
-  'connected_merchant_status_transitioned': 'connected_merchant.status_transitioned',
-  'connected_merchant_paypal_status_changed': 'connected_merchant.paypal_status_changed',
+  connected_merchant_status_transitioned: 'connected_merchant.status_transitioned',
+  connected_merchant_paypal_status_changed: 'connected_merchant.paypal_status_changed',
   // Fraud events
-  'transaction_reviewed': 'transaction.reviewed',
+  transaction_reviewed: 'transaction.reviewed',
   // Test
-  'check': 'webhook.check',
+  check: 'webhook.check'
 };
 
-let extractResourceInfo = (kind: string, subject: Record<string, any>): {
+let extractResourceInfo = (
+  kind: string,
+  subject: Record<string, any>
+): {
   resourceType: string;
   resourceId: string | undefined;
   status: string | undefined;
@@ -107,7 +110,11 @@ let extractResourceInfo = (kind: string, subject: Record<string, any>): {
     let payment = (subject as any).localPayment || subject;
     resourceId = payment.paymentId || payment.id;
     status = payment.status;
-  } else if (kind.startsWith('granted_') || kind.startsWith('grantor_') || kind.startsWith('recipient_')) {
+  } else if (
+    kind.startsWith('granted_') ||
+    kind.startsWith('grantor_') ||
+    kind.startsWith('recipient_')
+  ) {
     resourceType = 'grant';
     let pm = (subject as any).paymentMethod || subject;
     resourceId = pm.token || pm.id;
@@ -133,31 +140,34 @@ let extractResourceInfo = (kind: string, subject: Record<string, any>): {
   return { resourceType, resourceId, status, amount, currencyCode };
 };
 
-export let webhookEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Webhook Events',
-    key: 'webhook_events',
-    description: `Receives real-time webhook notifications from Braintree for subscriptions, transactions, disputes, disbursements, payment methods, and other gateway events. Configure the webhook destination URL in your Braintree Control Panel.`,
-  }
-)
-  .input(z.object({
-    kind: z.string().describe('Braintree webhook notification kind'),
-    timestamp: z.string().describe('Notification timestamp'),
-    subject: z.record(z.string(), z.any()).describe('Notification subject data'),
-  }))
-  .output(z.object({
-    kind: z.string().describe('Original Braintree notification kind'),
-    timestamp: z.string().describe('When the event occurred'),
-    resourceType: z.string().describe('Type of resource affected (subscription, transaction, dispute, etc.)'),
-    resourceId: z.string().optional().describe('ID of the affected resource'),
-    status: z.string().optional().describe('Current status of the resource'),
-    amount: z.string().optional().describe('Amount (for transaction/subscription events)'),
-    currencyCode: z.string().optional().describe('Currency code'),
-    subject: z.record(z.string(), z.any()).describe('Full notification subject payload'),
-  }))
+export let webhookEvents = SlateTrigger.create(spec, {
+  name: 'Webhook Events',
+  key: 'webhook_events',
+  description: `Receives real-time webhook notifications from Braintree for subscriptions, transactions, disputes, disbursements, payment methods, and other gateway events. Configure the webhook destination URL in your Braintree Control Panel.`
+})
+  .input(
+    z.object({
+      kind: z.string().describe('Braintree webhook notification kind'),
+      timestamp: z.string().describe('Notification timestamp'),
+      subject: z.record(z.string(), z.any()).describe('Notification subject data')
+    })
+  )
+  .output(
+    z.object({
+      kind: z.string().describe('Original Braintree notification kind'),
+      timestamp: z.string().describe('When the event occurred'),
+      resourceType: z
+        .string()
+        .describe('Type of resource affected (subscription, transaction, dispute, etc.)'),
+      resourceId: z.string().optional().describe('ID of the affected resource'),
+      status: z.string().optional().describe('Current status of the resource'),
+      amount: z.string().optional().describe('Amount (for transaction/subscription events)'),
+      currencyCode: z.string().optional().describe('Currency code'),
+      subject: z.record(z.string(), z.any()).describe('Full notification subject payload')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let request = ctx.request;
 
       // Handle GET challenge (Braintree webhook verification)
@@ -168,11 +178,11 @@ export let webhookEvents = SlateTrigger.create(
           let response = generateChallengeResponse({
             challenge,
             publicKey: ctx.auth.publicKey,
-            privateKey: ctx.auth.privateKey,
+            privateKey: ctx.auth.privateKey
           });
           return {
             inputs: [],
-            updatedState: { challengeResponse: response },
+            updatedState: { challengeResponse: response }
           };
         }
         return { inputs: [] };
@@ -194,7 +204,7 @@ export let webhookEvents = SlateTrigger.create(
         btSignature,
         btPayload,
         publicKey: ctx.auth.publicKey,
-        privateKey: ctx.auth.privateKey,
+        privateKey: ctx.auth.privateKey
       });
 
       return {
@@ -202,20 +212,27 @@ export let webhookEvents = SlateTrigger.create(
           {
             kind: notification.kind,
             timestamp: notification.timestamp,
-            subject: notification.subject,
-          },
-        ],
+            subject: notification.subject
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { kind, timestamp, subject } = ctx.input;
 
       // Normalize the kind to a consistent event type
-      let normalizedKind = kind.toLowerCase().replace(/([A-Z])/g, '_$1').replace(/^_/, '').toLowerCase();
+      let normalizedKind = kind
+        .toLowerCase()
+        .replace(/([A-Z])/g, '_$1')
+        .replace(/^_/, '')
+        .toLowerCase();
       let eventType = WEBHOOK_KIND_MAP[normalizedKind] || `braintree.${normalizedKind}`;
 
-      let { resourceType, resourceId, status, amount, currencyCode } = extractResourceInfo(kind, subject);
+      let { resourceType, resourceId, status, amount, currencyCode } = extractResourceInfo(
+        kind,
+        subject
+      );
 
       // Generate a unique event ID from kind + timestamp + resource
       let eventId = `${kind}_${timestamp}_${resourceId || 'unknown'}`;
@@ -231,9 +248,9 @@ export let webhookEvents = SlateTrigger.create(
           status,
           amount,
           currencyCode,
-          subject,
-        },
+          subject
+        }
       };
-    },
+    }
   })
   .build();

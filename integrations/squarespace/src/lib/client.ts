@@ -130,7 +130,7 @@ export class Client {
 
   constructor(private config: { token: string }) {
     this.headers = {
-      'Authorization': `Bearer ${config.token}`,
+      Authorization: `Bearer ${config.token}`,
       'User-Agent': 'Slates-Squarespace-Integration/1.0',
       'Content-Type': 'application/json'
     };
@@ -147,7 +147,9 @@ export class Client {
 
   // ---- Orders ----
 
-  async listOrders(params: ListOrdersParams = {}): Promise<{ result: any[]; pagination: PaginationResponse }> {
+  async listOrders(
+    params: ListOrdersParams = {}
+  ): Promise<{ result: any[]; pagination: PaginationResponse }> {
     let queryParams: Record<string, string> = {};
     if (params.cursor) queryParams.cursor = params.cursor;
     if (params.modifiedAfter) queryParams.modifiedAfter = params.modifiedAfter;
@@ -191,7 +193,9 @@ export class Client {
 
   // ---- Products ----
 
-  async listProducts(params: ListProductsParams = {}): Promise<{ products: any[]; pagination: PaginationResponse }> {
+  async listProducts(
+    params: ListProductsParams = {}
+  ): Promise<{ products: any[]; pagination: PaginationResponse }> {
     let queryParams: Record<string, string> = {};
     if (params.cursor) queryParams.cursor = params.cursor;
     if (params.modifiedAfter) queryParams.modifiedAfter = params.modifiedAfter;
@@ -246,10 +250,18 @@ export class Client {
     return response.data;
   }
 
-  async updateVariant(productId: string, variantId: string, updates: Record<string, any>): Promise<any> {
-    let response = await apiV2.post(`/commerce/products/${productId}/variants/${variantId}`, updates, {
-      headers: this.headers
-    });
+  async updateVariant(
+    productId: string,
+    variantId: string,
+    updates: Record<string, any>
+  ): Promise<any> {
+    let response = await apiV2.post(
+      `/commerce/products/${productId}/variants/${variantId}`,
+      updates,
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -261,13 +273,21 @@ export class Client {
 
   // ---- Product Images ----
 
-  async uploadProductImage(productId: string, imageUrl: string, fileName: string): Promise<any> {
-    let response = await apiV2.post(`/commerce/products/${productId}/images`, {
-      url: imageUrl,
-      fileName
-    }, {
-      headers: this.headers
-    });
+  async uploadProductImage(
+    productId: string,
+    imageUrl: string,
+    fileName: string
+  ): Promise<any> {
+    let response = await apiV2.post(
+      `/commerce/products/${productId}/images`,
+      {
+        url: imageUrl,
+        fileName
+      },
+      {
+        headers: this.headers
+      }
+    );
     return response.data;
   }
 
@@ -288,7 +308,9 @@ export class Client {
 
   // ---- Inventory ----
 
-  async listInventory(cursor?: string): Promise<{ inventory: any[]; pagination: PaginationResponse }> {
+  async listInventory(
+    cursor?: string
+  ): Promise<{ inventory: any[]; pagination: PaginationResponse }> {
     let queryParams: Record<string, string> = {};
     if (cursor) queryParams.cursor = cursor;
 
@@ -311,7 +333,10 @@ export class Client {
     return response.data.inventory || [response.data];
   }
 
-  async adjustInventory(adjustments: InventoryAdjustment, idempotencyKey: string): Promise<void> {
+  async adjustInventory(
+    adjustments: InventoryAdjustment,
+    idempotencyKey: string
+  ): Promise<void> {
     await apiV1.post('/commerce/inventory/adjustments', adjustments, {
       headers: {
         ...this.headers,
@@ -322,7 +347,9 @@ export class Client {
 
   // ---- Profiles ----
 
-  async listProfiles(params: ListProfilesParams = {}): Promise<{ profiles: any[]; pagination: PaginationResponse }> {
+  async listProfiles(
+    params: ListProfilesParams = {}
+  ): Promise<{ profiles: any[]; pagination: PaginationResponse }> {
     let queryParams: Record<string, string> = {};
     if (params.cursor) queryParams.cursor = params.cursor;
     if (params.filter) queryParams.filter = params.filter;
@@ -347,7 +374,9 @@ export class Client {
 
   // ---- Transactions ----
 
-  async listTransactions(params: ListTransactionsParams = {}): Promise<{ documents: any[]; pagination: PaginationResponse }> {
+  async listTransactions(
+    params: ListTransactionsParams = {}
+  ): Promise<{ documents: any[]; pagination: PaginationResponse }> {
     let queryParams: Record<string, string> = {};
     if (params.cursor) queryParams.cursor = params.cursor;
     if (params.modifiedAfter) queryParams.modifiedAfter = params.modifiedAfter;

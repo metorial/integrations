@@ -19,24 +19,29 @@ Note: Some third-party integration platforms (such as Relevance AI) reference OA
 ## Features
 
 ### Event Management
+
 - Create and manage professional events with details such as title, start/end dates, event code, address, city, country, zip code, URL, and description.
 - Retrieve a list of events associated with your account.
 
 ### Participant / Attendee Management
+
 - Add participants to events with details including first name, last name, email, status, company, job title, phone numbers, address, and comments.
 - Retrieve participant lists for specific events.
 - Track participant registration status (e.g., invited, registered, confirmed, cancelled, attended).
 - Support for external contact and guest IDs for mapping to external systems (e.g., CRM).
 
 ### Contact Management
+
 - Access and manage the contacts database associated with your Evenium account.
 - The `/contacts` endpoint serves as the base resource for contact data.
 
 ### Ticketing
+
 - Track ticket orders and updates for events.
 - Monitor when new tickets are ordered or existing tickets are updated on a specific event.
 
 ### CRM Integration Support
+
 - Evenium has a plugin available for WordPress, Salesforce and Facebook.
 - Native integration with Veeva CRM for life sciences use cases.
 - External contact/guest ID fields allow mapping participants to records in external CRM systems.

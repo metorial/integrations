@@ -21,13 +21,13 @@ import {
   createHeartbeat,
   listWorkflows,
   listSeverities,
-  listEnvironments,
+  listEnvironments
 } from './tools';
 import {
   incidentEvents,
   alertEvents,
   retrospectiveEvents,
-  scheduledIncidentEvents,
+  scheduledIncidentEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -53,12 +53,7 @@ export let provider = Slate.create({
     createHeartbeat,
     listWorkflows,
     listSeverities,
-    listEnvironments,
+    listEnvironments
   ],
-  triggers: [
-    incidentEvents,
-    alertEvents,
-    retrospectiveEvents,
-    scheduledIncidentEvents,
-  ],
+  triggers: [incidentEvents, alertEvents, retrospectiveEvents, scheduledIncidentEvents]
 });

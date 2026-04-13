@@ -13,28 +13,29 @@ let tagSchema = z.object({
   archivedAt: z.number().nullable().optional().describe('Archive timestamp (null if active)')
 });
 
-export let listTags = SlateTool.create(
-  spec,
-  {
-    name: 'List Tags',
-    key: 'list_tags',
-    description: `Retrieve tags from Nozbe Teams. Tags categorize tasks by context, place, or tool needed for completion. Can also retrieve tags assigned to a specific task.`,
-    tags: {
-      readOnly: true
-    }
+export let listTags = SlateTool.create(spec, {
+  name: 'List Tags',
+  key: 'list_tags',
+  description: `Retrieve tags from Nozbe Teams. Tags categorize tasks by context, place, or tool needed for completion. Can also retrieve tags assigned to a specific task.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    name: z.string().optional().describe('Filter tags by name'),
-    taskId: z.string().optional().describe('Get tags assigned to a specific task'),
-    sortBy: z.string().optional().describe('Sort fields, e.g. "name" or "-name"'),
-    limit: z.number().optional().describe('Maximum number of tags to return'),
-    offset: z.number().optional().describe('Number of tags to skip')
-  }))
-  .output(z.object({
-    tags: z.array(tagSchema).describe('List of tags')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().optional().describe('Filter tags by name'),
+      taskId: z.string().optional().describe('Get tags assigned to a specific task'),
+      sortBy: z.string().optional().describe('Sort fields, e.g. "name" or "-name"'),
+      limit: z.number().optional().describe('Maximum number of tags to return'),
+      offset: z.number().optional().describe('Number of tags to skip')
+    })
+  )
+  .output(
+    z.object({
+      tags: z.array(tagSchema).describe('List of tags')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let params: ListParams = {};
@@ -60,4 +61,5 @@ export let listTags = SlateTool.create(
       output: { tags: mapped },
       message: `Found **${mapped.length}** tag(s).`
     };
-  }).build();
+  })
+  .build();

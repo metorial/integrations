@@ -3,33 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCurrentUser = SlateTool.create(
-  spec,
-  {
-    name: 'Get Current User',
-    key: 'get_current_user',
-    description: `Get information about the currently authenticated user, including username, email, site admin status, and organization memberships.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getCurrentUser = SlateTool.create(spec, {
+  name: 'Get Current User',
+  key: 'get_current_user',
+  description: `Get information about the currently authenticated user, including username, email, site admin status, and organization memberships.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string().describe('GraphQL ID of the user'),
-    username: z.string(),
-    displayName: z.string().optional(),
-    email: z.string().optional(),
-    avatarUrl: z.string().optional(),
-    siteAdmin: z.boolean(),
-    organizations: z.array(z.object({
-      organizationId: z.string(),
-      name: z.string(),
-      displayName: z.string().optional()
-    })).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string().describe('GraphQL ID of the user'),
+      username: z.string(),
+      displayName: z.string().optional(),
+      email: z.string().optional(),
+      avatarUrl: z.string().optional(),
+      siteAdmin: z.boolean(),
+      organizations: z
+        .array(
+          z.object({
+            organizationId: z.string(),
+            name: z.string(),
+            displayName: z.string().optional()
+          })
+        )
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -60,4 +63,5 @@ export let getCurrentUser = SlateTool.create(
       },
       message: `Authenticated as **${user.username}**${user.siteAdmin ? ' (site admin)' : ''}.`
     };
-  }).build();
+  })
+  .build();

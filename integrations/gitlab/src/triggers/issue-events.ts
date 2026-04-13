@@ -3,46 +3,48 @@ import { GitLabClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let issueEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Issue Events',
-    key: 'issue_events',
-    description: 'Triggers when an issue is created, updated, closed, or reopened in a GitLab project.'
-  }
-)
-  .input(z.object({
-    action: z.string().describe('Issue action (open, close, reopen, update)'),
-    issueId: z.number().describe('Global issue ID'),
-    issueIid: z.number().describe('Issue IID within the project'),
-    title: z.string().describe('Issue title'),
-    description: z.string().nullable().describe('Issue description'),
-    state: z.string().describe('Issue state'),
-    projectId: z.number().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    projectUrl: z.string().describe('Project web URL'),
-    issueUrl: z.string().describe('Issue web URL'),
-    authorUsername: z.string().describe('Author username'),
-    labels: z.array(z.string()).describe('Applied labels'),
-    assigneeUsernames: z.array(z.string()).describe('Assignee usernames'),
-    dueDate: z.string().nullable().describe('Due date'),
-    confidential: z.boolean().describe('Whether the issue is confidential')
-  }))
-  .output(z.object({
-    issueIid: z.number().describe('Issue IID within the project'),
-    title: z.string().describe('Issue title'),
-    state: z.string().describe('Issue state'),
-    action: z.string().describe('Action that triggered the event'),
-    projectId: z.number().describe('Project ID'),
-    projectName: z.string().describe('Project name'),
-    issueUrl: z.string().describe('Issue web URL'),
-    authorUsername: z.string().describe('Author username'),
-    labels: z.array(z.string()).describe('Applied labels'),
-    assigneeUsernames: z.array(z.string()).describe('Assignee usernames'),
-    confidential: z.boolean().describe('Whether the issue is confidential')
-  }))
+export let issueEvents = SlateTrigger.create(spec, {
+  name: 'Issue Events',
+  key: 'issue_events',
+  description:
+    'Triggers when an issue is created, updated, closed, or reopened in a GitLab project.'
+})
+  .input(
+    z.object({
+      action: z.string().describe('Issue action (open, close, reopen, update)'),
+      issueId: z.number().describe('Global issue ID'),
+      issueIid: z.number().describe('Issue IID within the project'),
+      title: z.string().describe('Issue title'),
+      description: z.string().nullable().describe('Issue description'),
+      state: z.string().describe('Issue state'),
+      projectId: z.number().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      projectUrl: z.string().describe('Project web URL'),
+      issueUrl: z.string().describe('Issue web URL'),
+      authorUsername: z.string().describe('Author username'),
+      labels: z.array(z.string()).describe('Applied labels'),
+      assigneeUsernames: z.array(z.string()).describe('Assignee usernames'),
+      dueDate: z.string().nullable().describe('Due date'),
+      confidential: z.boolean().describe('Whether the issue is confidential')
+    })
+  )
+  .output(
+    z.object({
+      issueIid: z.number().describe('Issue IID within the project'),
+      title: z.string().describe('Issue title'),
+      state: z.string().describe('Issue state'),
+      action: z.string().describe('Action that triggered the event'),
+      projectId: z.number().describe('Project ID'),
+      projectName: z.string().describe('Project name'),
+      issueUrl: z.string().describe('Issue web URL'),
+      authorUsername: z.string().describe('Author username'),
+      labels: z.array(z.string()).describe('Applied labels'),
+      assigneeUsernames: z.array(z.string()).describe('Assignee usernames'),
+      confidential: z.boolean().describe('Whether the issue is confidential')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GitLabClient({
         token: ctx.auth.token,
         instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -75,7 +77,7 @@ export let issueEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GitLabClient({
         token: ctx.auth.token,
         instanceUrl: ctx.auth.instanceUrl || ctx.config.instanceUrl
@@ -85,8 +87,8 @@ export let issueEvents = SlateTrigger.create(
       await client.deleteProjectWebhook(details.projectId, details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let eventHeader = ctx.request.headers.get('X-Gitlab-Event');
 
       if (eventHeader !== 'Issue Hook' && eventHeader !== 'Confidential Issue Hook') {
@@ -97,27 +99,29 @@ export let issueEvents = SlateTrigger.create(
       let project = data.project || {};
 
       return {
-        inputs: [{
-          action: attrs.action || 'update',
-          issueId: attrs.id || 0,
-          issueIid: attrs.iid || 0,
-          title: attrs.title || '',
-          description: attrs.description || null,
-          state: attrs.state || '',
-          projectId: project.id || 0,
-          projectName: project.name || '',
-          projectUrl: project.web_url || '',
-          issueUrl: attrs.url || '',
-          authorUsername: data.user?.username || '',
-          labels: (data.labels || []).map((l: any) => l.title),
-          assigneeUsernames: (data.assignees || []).map((a: any) => a.username),
-          dueDate: attrs.due_date || null,
-          confidential: attrs.confidential || false
-        }]
+        inputs: [
+          {
+            action: attrs.action || 'update',
+            issueId: attrs.id || 0,
+            issueIid: attrs.iid || 0,
+            title: attrs.title || '',
+            description: attrs.description || null,
+            state: attrs.state || '',
+            projectId: project.id || 0,
+            projectName: project.name || '',
+            projectUrl: project.web_url || '',
+            issueUrl: attrs.url || '',
+            authorUsername: data.user?.username || '',
+            labels: (data.labels || []).map((l: any) => l.title),
+            assigneeUsernames: (data.assignees || []).map((a: any) => a.username),
+            dueDate: attrs.due_date || null,
+            confidential: attrs.confidential || false
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `issue.${ctx.input.action}`,
         id: `issue_${ctx.input.issueId}_${ctx.input.action}_${Date.now()}`,

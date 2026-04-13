@@ -3,49 +3,79 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listUsers = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `Search and list user accounts in the Google Workspace domain. Supports filtering by query, domain, and org unit. Returns paginated results with user profile details.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let listUsers = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `Search and list user accounts in the Google Workspace domain. Supports filtering by query, domain, and org unit. Returns paginated results with user profile details.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Search query to filter users. Supports fields like name, email, orgUnit, etc. Example: "name:John" or "orgUnitPath=/Engineering"'),
-    domain: z.string().optional().describe('Domain to scope the user listing to. Overrides the configured domain.'),
-    maxResults: z.number().optional().describe('Maximum number of results to return (1-500). Defaults to 100.'),
-    pageToken: z.string().optional().describe('Token for retrieving the next page of results'),
-    orderBy: z.enum(['email', 'familyName', 'givenName']).optional().describe('Field to sort results by'),
-    sortOrder: z.enum(['ASCENDING', 'DESCENDING']).optional().describe('Sort order for results'),
-    showDeleted: z.boolean().optional().describe('If true, includes recently deleted users in results')
-  }))
-  .output(z.object({
-    users: z.array(z.object({
-      userId: z.string().optional(),
-      primaryEmail: z.string().optional(),
-      name: z.object({
-        givenName: z.string().optional(),
-        familyName: z.string().optional(),
-        fullName: z.string().optional()
-      }).optional(),
-      isAdmin: z.boolean().optional(),
-      isDelegatedAdmin: z.boolean().optional(),
-      suspended: z.boolean().optional(),
-      orgUnitPath: z.string().optional(),
-      creationTime: z.string().optional(),
-      lastLoginTime: z.string().optional(),
-      isEnrolledIn2Sv: z.boolean().optional(),
-      isEnforcedIn2Sv: z.boolean().optional()
-    })).describe('List of users matching the query'),
-    nextPageToken: z.string().optional().describe('Token for retrieving the next page'),
-    totalResults: z.number().optional().describe('Estimated total number of results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .optional()
+        .describe(
+          'Search query to filter users. Supports fields like name, email, orgUnit, etc. Example: "name:John" or "orgUnitPath=/Engineering"'
+        ),
+      domain: z
+        .string()
+        .optional()
+        .describe('Domain to scope the user listing to. Overrides the configured domain.'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return (1-500). Defaults to 100.'),
+      pageToken: z
+        .string()
+        .optional()
+        .describe('Token for retrieving the next page of results'),
+      orderBy: z
+        .enum(['email', 'familyName', 'givenName'])
+        .optional()
+        .describe('Field to sort results by'),
+      sortOrder: z
+        .enum(['ASCENDING', 'DESCENDING'])
+        .optional()
+        .describe('Sort order for results'),
+      showDeleted: z
+        .boolean()
+        .optional()
+        .describe('If true, includes recently deleted users in results')
+    })
+  )
+  .output(
+    z.object({
+      users: z
+        .array(
+          z.object({
+            userId: z.string().optional(),
+            primaryEmail: z.string().optional(),
+            name: z
+              .object({
+                givenName: z.string().optional(),
+                familyName: z.string().optional(),
+                fullName: z.string().optional()
+              })
+              .optional(),
+            isAdmin: z.boolean().optional(),
+            isDelegatedAdmin: z.boolean().optional(),
+            suspended: z.boolean().optional(),
+            orgUnitPath: z.string().optional(),
+            creationTime: z.string().optional(),
+            lastLoginTime: z.string().optional(),
+            isEnrolledIn2Sv: z.boolean().optional(),
+            isEnforcedIn2Sv: z.boolean().optional()
+          })
+        )
+        .describe('List of users matching the query'),
+      nextPageToken: z.string().optional().describe('Token for retrieving the next page'),
+      totalResults: z.number().optional().describe('Estimated total number of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       customerId: ctx.config.customerId,
@@ -65,11 +95,13 @@ export let listUsers = SlateTool.create(
     let users = (result.users || []).map((u: any) => ({
       userId: u.id,
       primaryEmail: u.primaryEmail,
-      name: u.name ? {
-        givenName: u.name.givenName,
-        familyName: u.name.familyName,
-        fullName: u.name.fullName
-      } : undefined,
+      name: u.name
+        ? {
+            givenName: u.name.givenName,
+            familyName: u.name.familyName,
+            fullName: u.name.fullName
+          }
+        : undefined,
       isAdmin: u.isAdmin,
       isDelegatedAdmin: u.isDelegatedAdmin,
       suspended: u.suspended,

@@ -17,7 +17,7 @@ export let MessageTypes = {
   NOTICE_RESPONSE: 'N'.charCodeAt(0),
   PARAMETER_STATUS: 'S'.charCodeAt(0),
   BACKEND_KEY_DATA: 'K'.charCodeAt(0),
-  EMPTY_QUERY_RESPONSE: 'I'.charCodeAt(0),
+  EMPTY_QUERY_RESPONSE: 'I'.charCodeAt(0)
 } as const;
 
 export let AuthenticationTypes = {
@@ -26,7 +26,7 @@ export let AuthenticationTypes = {
   MD5_PASSWORD: 5,
   SASL: 10,
   SASL_CONTINUE: 11,
-  SASL_FINAL: 12,
+  SASL_FINAL: 12
 } as const;
 
 // Simple byte buffer writer
@@ -142,7 +142,9 @@ export interface ParsedMessage {
   body: Uint8Array;
 }
 
-export let parseMessages = (buffer: Uint8Array): { messages: ParsedMessage[]; remaining: Uint8Array } => {
+export let parseMessages = (
+  buffer: Uint8Array
+): { messages: ParsedMessage[]; remaining: Uint8Array } => {
   let messages: ParsedMessage[] = [];
   let offset = 0;
   let view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
@@ -162,7 +164,7 @@ export let parseMessages = (buffer: Uint8Array): { messages: ParsedMessage[]; re
 
   return {
     messages,
-    remaining: buffer.slice(offset),
+    remaining: buffer.slice(offset)
   };
 };
 
@@ -229,14 +231,28 @@ export let parseRowDescription = (body: Uint8Array): ColumnDescription[] => {
     let name = decoder.decode(body.slice(offset, nameEnd));
     offset = nameEnd + 1;
 
-    let tableOid = view.getInt32(offset, false); offset += 4;
-    let columnIndex = view.getInt16(offset, false); offset += 2;
-    let typeOid = view.getInt32(offset, false); offset += 4;
-    let typeLength = view.getInt16(offset, false); offset += 2;
-    let typeModifier = view.getInt32(offset, false); offset += 4;
-    let formatCode = view.getInt16(offset, false); offset += 2;
+    let tableOid = view.getInt32(offset, false);
+    offset += 4;
+    let columnIndex = view.getInt16(offset, false);
+    offset += 2;
+    let typeOid = view.getInt32(offset, false);
+    offset += 4;
+    let typeLength = view.getInt16(offset, false);
+    offset += 2;
+    let typeModifier = view.getInt32(offset, false);
+    offset += 4;
+    let formatCode = view.getInt16(offset, false);
+    offset += 2;
 
-    columns.push({ name, tableOid, columnIndex, typeOid, typeLength, typeModifier, formatCode });
+    columns.push({
+      name,
+      tableOid,
+      columnIndex,
+      typeOid,
+      typeLength,
+      typeModifier,
+      formatCode
+    });
   }
 
   return columns;
@@ -267,7 +283,9 @@ export let parseDataRow = (body: Uint8Array): (string | null)[] => {
 };
 
 // Parse CommandComplete message to extract affected row count
-export let parseCommandComplete = (body: Uint8Array): { command: string; rowCount: number | null } => {
+export let parseCommandComplete = (
+  body: Uint8Array
+): { command: string; rowCount: number | null } => {
   let decoder = new TextDecoder();
   let tag = decoder.decode(body.slice(0, body.indexOf(0)));
   let parts = tag.split(' ');
@@ -312,7 +330,7 @@ export let oidToTypeName = (oid: number): string => {
     3908: 'tsrange',
     3910: 'tstzrange',
     3912: 'daterange',
-    3926: 'int8range',
+    3926: 'int8range'
   };
   return typeMap[oid] || `oid:${oid}`;
 };

@@ -3,36 +3,54 @@ import { AppDragClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageFiles = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Files',
-    key: 'manage_files',
-    description: `Manage files in the AppDrag Cloud Backend file storage. Supports writing text files, deleting files, renaming/moving files, copying files, and downloading remote files into storage.`,
-    instructions: [
-      'File paths (filekey) are relative to the project root, e.g., "uploads/data.json".',
-      'When downloading a remote file, provide the full URL and the destination path in storage.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageFiles = SlateTool.create(spec, {
+  name: 'Manage Files',
+  key: 'manage_files',
+  description: `Manage files in the AppDrag Cloud Backend file storage. Supports writing text files, deleting files, renaming/moving files, copying files, and downloading remote files into storage.`,
+  instructions: [
+    'File paths (filekey) are relative to the project root, e.g., "uploads/data.json".',
+    'When downloading a remote file, provide the full URL and the destination path in storage.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['write', 'delete', 'rename', 'copy', 'download_remote']).describe('The file operation to perform.'),
-    filePath: z.string().describe('The file path (filekey) in cloud storage. For rename/copy, this is the source path.'),
-    destinationPath: z.string().optional().describe('Destination path for rename, copy, or download_remote operations.'),
-    content: z.string().optional().describe('Text content to write (required for the "write" action).'),
-    remoteUrl: z.string().optional().describe('Remote URL to download a file from (required for "download_remote" action).'),
-  }))
-  .output(z.object({
-    result: z.any().describe('Result of the file operation from the API.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['write', 'delete', 'rename', 'copy', 'download_remote'])
+        .describe('The file operation to perform.'),
+      filePath: z
+        .string()
+        .describe(
+          'The file path (filekey) in cloud storage. For rename/copy, this is the source path.'
+        ),
+      destinationPath: z
+        .string()
+        .optional()
+        .describe('Destination path for rename, copy, or download_remote operations.'),
+      content: z
+        .string()
+        .optional()
+        .describe('Text content to write (required for the "write" action).'),
+      remoteUrl: z
+        .string()
+        .optional()
+        .describe(
+          'Remote URL to download a file from (required for "download_remote" action).'
+        )
+    })
+  )
+  .output(
+    z.object({
+      result: z.any().describe('Result of the file operation from the API.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AppDragClient({
       apiKey: ctx.auth.token,
-      appId: ctx.config.appId,
+      appId: ctx.config.appId
     });
 
     let result: any;
@@ -69,16 +87,16 @@ export let manageFiles = SlateTool.create(
         }
         result = await client.downloadRemoteFile(
           ctx.input.remoteUrl,
-          ctx.input.destinationPath || ctx.input.filePath,
+          ctx.input.destinationPath || ctx.input.filePath
         );
         break;
     }
 
     return {
       output: {
-        result,
+        result
       },
-      message: `File operation **${ctx.input.action}** completed on \`${ctx.input.filePath}\`.`,
+      message: `File operation **${ctx.input.action}** completed on \`${ctx.input.filePath}\`.`
     };
   })
   .build();

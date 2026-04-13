@@ -3,44 +3,49 @@ import { GtmClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let versionPublished = SlateTrigger.create(
-  spec,
-  {
-    name: 'Version Published',
-    key: 'version_published',
-    description: 'Triggers when a new container version is published (made live). Polls for changes by checking the latest version header for each monitored container.'
-  }
-)
-  .input(z.object({
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    containerVersionId: z.string().describe('The version ID that was detected'),
-    versionName: z.string().optional().describe('Version name'),
-    numTags: z.string().optional().describe('Number of tags in this version'),
-    numTriggers: z.string().optional().describe('Number of triggers in this version'),
-    numVariables: z.string().optional().describe('Number of variables in this version'),
-    detectedAt: z.string().describe('ISO timestamp when the change was detected')
-  }))
-  .output(z.object({
-    accountId: z.string().describe('GTM account ID'),
-    containerId: z.string().describe('GTM container ID'),
-    containerVersionId: z.string().describe('Published version ID'),
-    versionName: z.string().optional().describe('Version name'),
-    numTags: z.string().optional().describe('Number of tags in this version'),
-    numTriggers: z.string().optional().describe('Number of triggers in this version'),
-    numVariables: z.string().optional().describe('Number of variables in this version')
-  }))
+export let versionPublished = SlateTrigger.create(spec, {
+  name: 'Version Published',
+  key: 'version_published',
+  description:
+    'Triggers when a new container version is published (made live). Polls for changes by checking the latest version header for each monitored container.'
+})
+  .input(
+    z.object({
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      containerVersionId: z.string().describe('The version ID that was detected'),
+      versionName: z.string().optional().describe('Version name'),
+      numTags: z.string().optional().describe('Number of tags in this version'),
+      numTriggers: z.string().optional().describe('Number of triggers in this version'),
+      numVariables: z.string().optional().describe('Number of variables in this version'),
+      detectedAt: z.string().describe('ISO timestamp when the change was detected')
+    })
+  )
+  .output(
+    z.object({
+      accountId: z.string().describe('GTM account ID'),
+      containerId: z.string().describe('GTM container ID'),
+      containerVersionId: z.string().describe('Published version ID'),
+      versionName: z.string().optional().describe('Version name'),
+      numTags: z.string().optional().describe('Number of tags in this version'),
+      numTriggers: z.string().optional().describe('Number of triggers in this version'),
+      numVariables: z.string().optional().describe('Number of variables in this version')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new GtmClient(ctx.auth.token);
 
       // State tracks the last known live version for each account/container pair
       let knownVersions = (ctx.state?.knownVersions || {}) as Record<string, string>;
-      let monitoredContainers = (ctx.state?.monitoredContainers || []) as Array<{ accountId: string; containerId: string }>;
+      let monitoredContainers = (ctx.state?.monitoredContainers || []) as Array<{
+        accountId: string;
+        containerId: string;
+      }>;
 
       // On first run, discover accounts and containers to monitor
       if (monitoredContainers.length === 0) {
@@ -61,7 +66,10 @@ export let versionPublished = SlateTrigger.create(
 
             // Initialize known version to current live version
             try {
-              let liveVersion = await client.getLiveVersion(account.accountId, container.containerId);
+              let liveVersion = await client.getLiveVersion(
+                account.accountId,
+                container.containerId
+              );
               if (liveVersion.containerVersionId) {
                 let key = `${account.accountId}/${container.containerId}`;
                 knownVersions[key] = liveVersion.containerVersionId;
@@ -106,8 +114,12 @@ export let versionPublished = SlateTrigger.create(
               containerVersionId: currentVersionId,
               versionName: liveVersion.name,
               numTags: liveVersion.tag ? String(liveVersion.tag.length) : undefined,
-              numTriggers: liveVersion.trigger ? String(liveVersion.trigger.length) : undefined,
-              numVariables: liveVersion.variable ? String(liveVersion.variable.length) : undefined,
+              numTriggers: liveVersion.trigger
+                ? String(liveVersion.trigger.length)
+                : undefined,
+              numVariables: liveVersion.variable
+                ? String(liveVersion.variable.length)
+                : undefined,
               detectedAt: new Date().toISOString()
             });
             knownVersions[key] = currentVersionId;
@@ -126,7 +138,7 @@ export let versionPublished = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'container_version.published',
         id: `${ctx.input.accountId}_${ctx.input.containerId}_${ctx.input.containerVersionId}`,

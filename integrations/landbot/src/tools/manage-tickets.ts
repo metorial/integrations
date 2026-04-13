@@ -3,26 +3,27 @@ import { PlatformClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listTicketsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Tickets',
-    key: 'list_tickets',
-    description: `Retrieve a paginated list of support tickets from your Landbot account.`,
-    tags: {
-      readOnly: true
-    }
+export let listTicketsTool = SlateTool.create(spec, {
+  name: 'List Tickets',
+  key: 'list_tickets',
+  description: `Retrieve a paginated list of support tickets from your Landbot account.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    offset: z.number().optional().describe('Number of records to skip for pagination'),
-    limit: z.number().optional().describe('Maximum number of records to return')
-  }))
-  .output(z.object({
-    tickets: z.array(z.record(z.string(), z.any())).describe('List of ticket records'),
-    count: z.number().optional().describe('Total number of tickets available')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      offset: z.number().optional().describe('Number of records to skip for pagination'),
+      limit: z.number().optional().describe('Maximum number of records to return')
+    })
+  )
+  .output(
+    z.object({
+      tickets: z.array(z.record(z.string(), z.any())).describe('List of ticket records'),
+      count: z.number().optional().describe('Total number of tickets available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlatformClient(ctx.auth.token);
     let result = await client.listTickets({
       offset: ctx.input.offset,
@@ -37,24 +38,25 @@ export let listTicketsTool = SlateTool.create(
     };
   });
 
-export let getTicketTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Ticket',
-    key: 'get_ticket',
-    description: `Retrieve detailed information about a specific support ticket by its ID.`,
-    tags: {
-      readOnly: true
-    }
+export let getTicketTool = SlateTool.create(spec, {
+  name: 'Get Ticket',
+  key: 'get_ticket',
+  description: `Retrieve detailed information about a specific support ticket by its ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    ticketId: z.number().describe('Numeric ID of the ticket')
-  }))
-  .output(z.object({
-    ticket: z.record(z.string(), z.any()).describe('Ticket record with details')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticketId: z.number().describe('Numeric ID of the ticket')
+    })
+  )
+  .output(
+    z.object({
+      ticket: z.record(z.string(), z.any()).describe('Ticket record with details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlatformClient(ctx.auth.token);
     let ticket = await client.getTicket(ctx.input.ticketId);
 
@@ -64,27 +66,31 @@ export let getTicketTool = SlateTool.create(
     };
   });
 
-export let createTicketTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Ticket',
-    key: 'create_ticket',
-    description: `Create a new support ticket in Landbot for tracking customer interactions.`,
-    tags: {
-      destructive: false
-    }
+export let createTicketTool = SlateTool.create(spec, {
+  name: 'Create Ticket',
+  key: 'create_ticket',
+  description: `Create a new support ticket in Landbot for tracking customer interactions.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    customerId: z.number().optional().describe('Customer ID to associate with the ticket'),
-    title: z.string().optional().describe('Title or subject of the ticket'),
-    description: z.string().optional().describe('Detailed description of the ticket'),
-    extra: z.record(z.string(), z.any()).optional().describe('Additional fields to include in the ticket')
-  }))
-  .output(z.object({
-    ticket: z.record(z.string(), z.any()).describe('The newly created ticket record')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      customerId: z.number().optional().describe('Customer ID to associate with the ticket'),
+      title: z.string().optional().describe('Title or subject of the ticket'),
+      description: z.string().optional().describe('Detailed description of the ticket'),
+      extra: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Additional fields to include in the ticket')
+    })
+  )
+  .output(
+    z.object({
+      ticket: z.record(z.string(), z.any()).describe('The newly created ticket record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlatformClient(ctx.auth.token);
 
     let data: Record<string, any> = {};
@@ -103,28 +109,29 @@ export let createTicketTool = SlateTool.create(
     };
   });
 
-export let updateTicketTool = SlateTool.create(
-  spec,
-  {
-    name: 'Update Ticket',
-    key: 'update_ticket',
-    description: `Update an existing support ticket's properties.`,
-    tags: {
-      destructive: false
-    }
+export let updateTicketTool = SlateTool.create(spec, {
+  name: 'Update Ticket',
+  key: 'update_ticket',
+  description: `Update an existing support ticket's properties.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    ticketId: z.number().describe('Numeric ID of the ticket to update'),
-    title: z.string().optional().describe('Updated title of the ticket'),
-    description: z.string().optional().describe('Updated description of the ticket'),
-    status: z.string().optional().describe('Updated status of the ticket'),
-    extra: z.record(z.string(), z.any()).optional().describe('Additional fields to update')
-  }))
-  .output(z.object({
-    ticket: z.record(z.string(), z.any()).describe('The updated ticket record')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      ticketId: z.number().describe('Numeric ID of the ticket to update'),
+      title: z.string().optional().describe('Updated title of the ticket'),
+      description: z.string().optional().describe('Updated description of the ticket'),
+      status: z.string().optional().describe('Updated status of the ticket'),
+      extra: z.record(z.string(), z.any()).optional().describe('Additional fields to update')
+    })
+  )
+  .output(
+    z.object({
+      ticket: z.record(z.string(), z.any()).describe('The updated ticket record')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PlatformClient(ctx.auth.token);
 
     let data: Record<string, any> = {};

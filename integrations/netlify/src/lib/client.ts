@@ -9,8 +9,8 @@ export class Client {
       baseURL: 'https://api.netlify.com/api/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -21,8 +21,8 @@ export class Client {
       params: {
         filter: params?.filter,
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -53,8 +53,8 @@ export class Client {
     let response = await this.api.get(`/sites/${siteId}/deploys`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -109,11 +109,21 @@ export class Client {
     if (siteId) {
       params.site_id = siteId;
     }
-    let response = await this.api.get(`/accounts/${accountId}/env/${encodeURIComponent(key)}`, { params });
+    let response = await this.api.get(
+      `/accounts/${accountId}/env/${encodeURIComponent(key)}`,
+      { params }
+    );
     return response.data;
   }
 
-  async createEnvVars(accountId: string, envVars: Array<{ key: string; values: Array<{ value: string; context: string; id?: string }> }>, siteId?: string) {
+  async createEnvVars(
+    accountId: string,
+    envVars: Array<{
+      key: string;
+      values: Array<{ value: string; context: string; id?: string }>;
+    }>,
+    siteId?: string
+  ) {
     let params: Record<string, string> = {};
     if (siteId) {
       params.site_id = siteId;
@@ -122,12 +132,21 @@ export class Client {
     return response.data;
   }
 
-  async updateEnvVar(accountId: string, key: string, body: { key: string; values: Array<{ value: string; context: string; id?: string }> }, siteId?: string) {
+  async updateEnvVar(
+    accountId: string,
+    key: string,
+    body: { key: string; values: Array<{ value: string; context: string; id?: string }> },
+    siteId?: string
+  ) {
     let params: Record<string, string> = {};
     if (siteId) {
       params.site_id = siteId;
     }
-    let response = await this.api.put(`/accounts/${accountId}/env/${encodeURIComponent(key)}`, body, { params });
+    let response = await this.api.put(
+      `/accounts/${accountId}/env/${encodeURIComponent(key)}`,
+      body,
+      { params }
+    );
     return response.data;
   }
 
@@ -154,8 +173,8 @@ export class Client {
     let response = await this.api.get(`/forms/${formId}/submissions`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -164,8 +183,8 @@ export class Client {
     let response = await this.api.get(`/sites/${siteId}/submissions`, {
       params: {
         page: params?.page,
-        per_page: params?.perPage,
-      },
+        per_page: params?.perPage
+      }
     });
     return response.data;
   }
@@ -179,8 +198,8 @@ export class Client {
   async listDnsZones(params?: { accountSlug?: string }) {
     let response = await this.api.get('/dns_zones', {
       params: {
-        account_slug: params?.accountSlug,
-      },
+        account_slug: params?.accountSlug
+      }
     });
     return response.data;
   }
@@ -211,7 +230,10 @@ export class Client {
     return response.data;
   }
 
-  async createDnsRecord(zoneId: string, body: { type: string; hostname: string; value: string; ttl?: number; priority?: number }) {
+  async createDnsRecord(
+    zoneId: string,
+    body: { type: string; hostname: string; value: string; ttl?: number; priority?: number }
+  ) {
     let response = await this.api.post(`/dns_zones/${zoneId}/dns_records`, body);
     return response.data;
   }
@@ -232,12 +254,31 @@ export class Client {
     return response.data;
   }
 
-  async createSnippet(siteId: string, body: { title: string; general: string; general_position: string; goal?: string; goal_position?: string }) {
+  async createSnippet(
+    siteId: string,
+    body: {
+      title: string;
+      general: string;
+      general_position: string;
+      goal?: string;
+      goal_position?: string;
+    }
+  ) {
     let response = await this.api.post(`/sites/${siteId}/snippets`, body);
     return response.data;
   }
 
-  async updateSnippet(siteId: string, snippetId: string, body: { title?: string; general?: string; general_position?: string; goal?: string; goal_position?: string }) {
+  async updateSnippet(
+    siteId: string,
+    snippetId: string,
+    body: {
+      title?: string;
+      general?: string;
+      general_position?: string;
+      goal?: string;
+      goal_position?: string;
+    }
+  ) {
     let response = await this.api.put(`/sites/${siteId}/snippets/${snippetId}`, body);
     return response.data;
   }
@@ -263,7 +304,11 @@ export class Client {
     return response.data;
   }
 
-  async updateSplitTest(siteId: string, splitTestId: string, body: { branch_tests: Record<string, number> }) {
+  async updateSplitTest(
+    siteId: string,
+    splitTestId: string,
+    body: { branch_tests: Record<string, number> }
+  ) {
     let response = await this.api.put(`/sites/${siteId}/split_tests/${splitTestId}`, body);
     return response.data;
   }
@@ -282,7 +327,7 @@ export class Client {
 
   async listHooks(siteId: string) {
     let response = await this.api.get(`/hooks`, {
-      params: { site_id: siteId },
+      params: { site_id: siteId }
     });
     return response.data;
   }
@@ -292,7 +337,12 @@ export class Client {
     return response.data;
   }
 
-  async createHook(body: { site_id: string; type: string; event: string; data: Record<string, any> }) {
+  async createHook(body: {
+    site_id: string;
+    type: string;
+    event: string;
+    data: Record<string, any>;
+  }) {
     let response = await this.api.post('/hooks', body);
     return response.data;
   }

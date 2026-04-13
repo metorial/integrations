@@ -12,7 +12,7 @@ import {
   textToImage,
   deepResearch,
   aiSearch,
-  callModule,
+  callModule
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -31,9 +31,7 @@ export let provider = Slate.create({
     textToImage,
     deepResearch,
     aiSearch,
-    callModule,
+    callModule
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

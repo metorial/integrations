@@ -3,32 +3,36 @@ import { ConvexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let runQuery = SlateTool.create(
-  spec,
-  {
-    name: 'Run Query',
-    key: 'run_query',
-    description: `Execute a Convex query function over HTTP. Queries are read-only functions that fetch data from the Convex database.
+export let runQuery = SlateTool.create(spec, {
+  name: 'Run Query',
+  key: 'run_query',
+  description: `Execute a Convex query function over HTTP. Queries are read-only functions that fetch data from the Convex database.
 Specify the function path (e.g. \`messages:list\` or \`users:getById\`) and optional arguments.
 Returns the query result as JSON.`,
-    instructions: [
-      'Function paths use the format "module:functionName" (e.g. "messages:list", "users:getById")',
-      'Arguments must match the function\'s expected parameter types'
-    ],
-    tags: {
-      readOnly: true
-    }
+  instructions: [
+    'Function paths use the format "module:functionName" (e.g. "messages:list", "users:getById")',
+    "Arguments must match the function's expected parameter types"
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    functionPath: z.string().describe('Path to the query function (e.g. "messages:list")'),
-    args: z.record(z.string(), z.any()).optional().describe('Arguments to pass to the query function')
-  }))
-  .output(z.object({
-    result: z.any().describe('The query result returned by the function'),
-    status: z.string().describe('Status of the query execution')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      functionPath: z.string().describe('Path to the query function (e.g. "messages:list")'),
+      args: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Arguments to pass to the query function')
+    })
+  )
+  .output(
+    z.object({
+      result: z.any().describe('The query result returned by the function'),
+      status: z.string().describe('Status of the query execution')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConvexClient({
       deploymentUrl: ctx.config.deploymentUrl,
       token: ctx.auth.token,
@@ -45,4 +49,5 @@ Returns the query result as JSON.`,
       },
       message: `Query **${ctx.input.functionPath}** executed successfully.`
     };
-  }).build();
+  })
+  .build();

@@ -11,8 +11,8 @@ export class Client {
       headers: {
         'X-ApiKey': config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     this.axiosV2 = createAxios({
@@ -20,8 +20,8 @@ export class Client {
       headers: {
         'X-ApiKey': config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     this.axiosWebhooks = createAxios({
@@ -29,8 +29,8 @@ export class Client {
       headers: {
         'X-ApiKey': config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -46,9 +46,12 @@ export class Client {
     return response.data;
   }
 
-  async getProperty(propertyId: number, params?: {
-    includeInOut?: boolean;
-  }) {
+  async getProperty(
+    propertyId: number,
+    params?: {
+      includeInOut?: boolean;
+    }
+  ) {
     let response = await this.axiosV2.get(`/properties/${propertyId}`, { params });
     return response.data;
   }
@@ -110,7 +113,10 @@ export class Client {
     return response.data;
   }
 
-  async setBookingStatus(bookingId: number, status: 'book' | 'open' | 'decline' | 'tentative') {
+  async setBookingStatus(
+    bookingId: number,
+    status: 'book' | 'open' | 'decline' | 'tentative'
+  ) {
     let endpoint = `/reservation/booking/${bookingId}/${status}`;
     let response = await this.axiosV1.put(endpoint);
     return response.data;
@@ -118,31 +124,43 @@ export class Client {
 
   // ---- Availability ----
 
-  async getPropertyAvailability(propertyId: number, params?: {
-    start?: string;
-    end?: string;
-  }) {
+  async getPropertyAvailability(
+    propertyId: number,
+    params?: {
+      start?: string;
+      end?: string;
+    }
+  ) {
     let response = await this.axiosV1.get(`/availability/${propertyId}`, { params });
     return response.data;
   }
 
-  async getRoomAvailability(propertyId: number, roomTypeId: number, params?: {
-    start?: string;
-    end?: string;
-  }) {
-    let response = await this.axiosV2.get(`/availability/${propertyId}/${roomTypeId}`, { params });
+  async getRoomAvailability(
+    propertyId: number,
+    roomTypeId: number,
+    params?: {
+      start?: string;
+      end?: string;
+    }
+  ) {
+    let response = await this.axiosV2.get(`/availability/${propertyId}/${roomTypeId}`, {
+      params
+    });
     return response.data;
   }
 
-  async updateAvailability(propertyId: number, data: Array<{
-    room_type_id: number;
-    periods: Array<{
-      start: string;
-      end: string;
-      is_available: boolean;
-      min_stay?: number;
-    }>;
-  }>) {
+  async updateAvailability(
+    propertyId: number,
+    data: Array<{
+      room_type_id: number;
+      periods: Array<{
+        start: string;
+        end: string;
+        is_available: boolean;
+        min_stay?: number;
+      }>;
+    }>
+  ) {
     let response = await this.axiosV2.put(`/availability/${propertyId}`, data);
     return response.data;
   }
@@ -165,8 +183,8 @@ export class Client {
         room_type_id: params.roomTypeId,
         house_id: params.houseId,
         start_date: params.startDate,
-        end_date: params.endDate,
-      },
+        end_date: params.endDate
+      }
     });
     return response.data;
   }
@@ -189,11 +207,14 @@ export class Client {
 
   // ---- Quotes & Payment Links ----
 
-  async getQuote(propertyId: number, params: {
-    arrival: string;
-    departure: string;
-    roomTypes?: string;
-  }) {
+  async getQuote(
+    propertyId: number,
+    params: {
+      arrival: string;
+      departure: string;
+      roomTypes?: string;
+    }
+  ) {
     let response = await this.axiosV2.get(`/quote/${propertyId}`, { params });
     return response.data;
   }
@@ -204,28 +225,42 @@ export class Client {
   }
 
   async getPaymentLink(bookingId: number) {
-    let response = await this.axiosV2.get(`/reservations/bookings/${bookingId}/quote/paymentLink`);
+    let response = await this.axiosV2.get(
+      `/reservations/bookings/${bookingId}/quote/paymentLink`
+    );
     return response.data;
   }
 
-  async createPaymentLink(bookingId: number, data?: {
-    amount?: number;
-    currency?: string;
-    description?: string;
-  }) {
-    let response = await this.axiosV2.post(`/reservations/bookings/${bookingId}/quote/paymentLink`, data);
+  async createPaymentLink(
+    bookingId: number,
+    data?: {
+      amount?: number;
+      currency?: string;
+      description?: string;
+    }
+  ) {
+    let response = await this.axiosV2.post(
+      `/reservations/bookings/${bookingId}/quote/paymentLink`,
+      data
+    );
     return response.data;
   }
 
   // ---- Messaging ----
 
-  async addMessagesToBooking(bookingId: number, messages: Array<{
-    subject?: string;
-    message: string;
-    type?: string;
-    send_notification?: boolean;
-  }>) {
-    let response = await this.axiosV1.post(`/reservation/booking/${bookingId}/messages`, messages);
+  async addMessagesToBooking(
+    bookingId: number,
+    messages: Array<{
+      subject?: string;
+      message: string;
+      type?: string;
+      send_notification?: boolean;
+    }>
+  ) {
+    let response = await this.axiosV1.post(
+      `/reservation/booking/${bookingId}/messages`,
+      messages
+    );
     return response.data;
   }
 
@@ -234,7 +269,7 @@ export class Client {
   async subscribeWebhook(event: string, targetUrl: string) {
     let response = await this.axiosWebhooks.post('/subscribe', {
       event,
-      target_url: targetUrl,
+      target_url: targetUrl
     });
     return response.data;
   }

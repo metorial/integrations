@@ -3,47 +3,57 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchRules = SlateTool.create(
-  spec,
-  {
-    name: 'Search Alerting Rules',
-    key: 'search_rules',
-    description: `Search and list Kibana alerting rules. Rules monitor conditions and trigger actions when thresholds are met.
+export let searchRules = SlateTool.create(spec, {
+  name: 'Search Alerting Rules',
+  key: 'search_rules',
+  description: `Search and list Kibana alerting rules. Rules monitor conditions and trigger actions when thresholds are met.
 Supports filtering by search terms and KQL filters.`,
-    tags: {
-      readOnly: true
-    }
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Search query to filter rules by name'),
-    filter: z.string().optional().describe('KQL filter expression for advanced filtering'),
-    page: z.number().optional().describe('Page number (1-based)'),
-    perPage: z.number().optional().describe('Number of results per page (default 20)'),
-    sortField: z.string().optional().describe('Field to sort by (e.g., "name", "createdAt", "updatedAt")'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order')
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of matching rules'),
-    page: z.number().describe('Current page number'),
-    perPage: z.number().describe('Results per page'),
-    rules: z.array(z.object({
-      ruleId: z.string().describe('Unique ID of the rule'),
-      name: z.string().describe('Name of the rule'),
-      ruleTypeId: z.string().describe('Type of the rule'),
-      consumer: z.string().describe('Application that owns the rule'),
-      enabled: z.boolean().describe('Whether the rule is enabled'),
-      tags: z.array(z.string()).describe('Tags assigned to the rule'),
-      schedule: z.object({
-        interval: z.string().describe('Check interval (e.g., "1m", "5m")')
-      }).describe('Rule check schedule'),
-      lastRun: z.any().optional().describe('Last run information'),
-      nextRun: z.string().optional().describe('Next scheduled run timestamp'),
-      updatedAt: z.string().optional().describe('Last update timestamp'),
-      createdAt: z.string().optional().describe('Creation timestamp')
-    })).describe('List of alerting rules')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Search query to filter rules by name'),
+      filter: z.string().optional().describe('KQL filter expression for advanced filtering'),
+      page: z.number().optional().describe('Page number (1-based)'),
+      perPage: z.number().optional().describe('Number of results per page (default 20)'),
+      sortField: z
+        .string()
+        .optional()
+        .describe('Field to sort by (e.g., "name", "createdAt", "updatedAt")'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of matching rules'),
+      page: z.number().describe('Current page number'),
+      perPage: z.number().describe('Results per page'),
+      rules: z
+        .array(
+          z.object({
+            ruleId: z.string().describe('Unique ID of the rule'),
+            name: z.string().describe('Name of the rule'),
+            ruleTypeId: z.string().describe('Type of the rule'),
+            consumer: z.string().describe('Application that owns the rule'),
+            enabled: z.boolean().describe('Whether the rule is enabled'),
+            tags: z.array(z.string()).describe('Tags assigned to the rule'),
+            schedule: z
+              .object({
+                interval: z.string().describe('Check interval (e.g., "1m", "5m")')
+              })
+              .describe('Rule check schedule'),
+            lastRun: z.any().optional().describe('Last run information'),
+            nextRun: z.string().optional().describe('Next scheduled run timestamp'),
+            updatedAt: z.string().optional().describe('Last update timestamp'),
+            createdAt: z.string().optional().describe('Creation timestamp')
+          })
+        )
+        .describe('List of alerting rules')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let result = await client.findRules({
@@ -78,4 +88,5 @@ Supports filtering by search terms and KQL filters.`,
       },
       message: `Found **${result.total ?? 0}** alerting rules${ctx.input.search ? ` matching "${ctx.input.search}"` : ''}.`
     };
-  }).build();
+  })
+  .build();

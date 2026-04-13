@@ -3,30 +3,60 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageExchangeTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Exchange Transactions',
-    key: 'manage_exchange_transactions',
-    description: `Search and manage transactions on the Dripcel campaign exchange as a buyer. Search by transaction ID, status, offer ID, or creation date. Accept or reject pending transactions.`,
-    tags: {
-      destructive: false
-    }
+export let manageExchangeTransactions = SlateTool.create(spec, {
+  name: 'Manage Exchange Transactions',
+  key: 'manage_exchange_transactions',
+  description: `Search and manage transactions on the Dripcel campaign exchange as a buyer. Search by transaction ID, status, offer ID, or creation date. Accept or reject pending transactions.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['search', 'accept', 'reject']).describe('Action to perform: search for transactions, accept a pending transaction, or reject a pending transaction'),
-    transactionId: z.union([z.string(), z.array(z.string())]).optional().describe('Transaction ID(s) to search for or the transaction ID to accept/reject'),
-    status: z.enum(['pending', 'completed', 'rejected']).optional().describe('Filter transactions by status (for search action)'),
-    offerId: z.union([z.string(), z.array(z.string())]).optional().describe('Filter transactions by offer ID(s) (for search action)'),
-    createdAfter: z.string().optional().describe('Filter transactions created on or after this date (ISO 8601, for search action)'),
-    createdBefore: z.string().optional().describe('Filter transactions created on or before this date (ISO 8601, for search action)')
-  }))
-  .output(z.object({
-    transactions: z.array(z.any()).optional().describe('Array of transaction objects (for search action)'),
-    updated: z.boolean().optional().describe('Whether the transaction status was updated (for accept/reject actions)')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['search', 'accept', 'reject'])
+        .describe(
+          'Action to perform: search for transactions, accept a pending transaction, or reject a pending transaction'
+        ),
+      transactionId: z
+        .union([z.string(), z.array(z.string())])
+        .optional()
+        .describe('Transaction ID(s) to search for or the transaction ID to accept/reject'),
+      status: z
+        .enum(['pending', 'completed', 'rejected'])
+        .optional()
+        .describe('Filter transactions by status (for search action)'),
+      offerId: z
+        .union([z.string(), z.array(z.string())])
+        .optional()
+        .describe('Filter transactions by offer ID(s) (for search action)'),
+      createdAfter: z
+        .string()
+        .optional()
+        .describe(
+          'Filter transactions created on or after this date (ISO 8601, for search action)'
+        ),
+      createdBefore: z
+        .string()
+        .optional()
+        .describe(
+          'Filter transactions created on or before this date (ISO 8601, for search action)'
+        )
+    })
+  )
+  .output(
+    z.object({
+      transactions: z
+        .array(z.any())
+        .optional()
+        .describe('Array of transaction objects (for search action)'),
+      updated: z
+        .boolean()
+        .optional()
+        .describe('Whether the transaction status was updated (for accept/reject actions)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'search') {
@@ -57,7 +87,8 @@ export let manageExchangeTransactions = SlateTool.create(
       throw new Error('A single transactionId is required for accept/reject actions');
     }
 
-    let newStatus: 'completed' | 'rejected' = ctx.input.action === 'accept' ? 'completed' : 'rejected';
+    let newStatus: 'completed' | 'rejected' =
+      ctx.input.action === 'accept' ? 'completed' : 'rejected';
     await client.updateTransactionStatus(txId, newStatus);
     return {
       output: { updated: true },

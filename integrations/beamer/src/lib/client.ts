@@ -280,8 +280,8 @@ export class Client {
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        'Beamer-Api-Key': params.token,
-      },
+        'Beamer-Api-Key': params.token
+      }
     });
   }
 
@@ -318,7 +318,10 @@ export class Client {
 
   // --- Post Comments ---
 
-  async listPostComments(postId: number, params?: ListCommentsParams): Promise<BeamerComment[]> {
+  async listPostComments(
+    postId: number,
+    params?: ListCommentsParams
+  ): Promise<BeamerComment[]> {
     let response = await this.axios.get(`/posts/${postId}/comments`, { params });
     return response.data;
   }
@@ -339,12 +342,18 @@ export class Client {
 
   // --- Post Reactions ---
 
-  async listPostReactions(postId: number, params?: ListReactionsParams): Promise<BeamerReaction[]> {
+  async listPostReactions(
+    postId: number,
+    params?: ListReactionsParams
+  ): Promise<BeamerReaction[]> {
     let response = await this.axios.get(`/posts/${postId}/reactions`, { params });
     return response.data;
   }
 
-  async createPostReaction(postId: number, data: CreateReactionParams): Promise<BeamerReaction> {
+  async createPostReaction(
+    postId: number,
+    data: CreateReactionParams
+  ): Promise<BeamerReaction> {
     let response = await this.axios.post(`/posts/${postId}/reactions`, data);
     return response.data;
   }
@@ -377,7 +386,10 @@ export class Client {
     return response.data;
   }
 
-  async updateFeatureRequest(requestId: number, data: UpdateFeatureRequestParams): Promise<BeamerFeatureRequest> {
+  async updateFeatureRequest(
+    requestId: number,
+    data: UpdateFeatureRequestParams
+  ): Promise<BeamerFeatureRequest> {
     let response = await this.axios.put(`/requests/${requestId}`, data);
     return response.data;
   }
@@ -386,7 +398,9 @@ export class Client {
     await this.axios.delete(`/requests/${requestId}`);
   }
 
-  async listFeatureRequests(params?: ListFeatureRequestsParams): Promise<BeamerFeatureRequest[]> {
+  async listFeatureRequests(
+    params?: ListFeatureRequestsParams
+  ): Promise<BeamerFeatureRequest[]> {
     let response = await this.axios.get('/requests', { params });
     return response.data;
   }
@@ -398,12 +412,18 @@ export class Client {
 
   // --- Feature Request Comments ---
 
-  async listFeatureRequestComments(requestId: number, params?: ListCommentsParams): Promise<BeamerComment[]> {
+  async listFeatureRequestComments(
+    requestId: number,
+    params?: ListCommentsParams
+  ): Promise<BeamerComment[]> {
     let response = await this.axios.get(`/requests/${requestId}/comments`, { params });
     return response.data;
   }
 
-  async createFeatureRequestComment(requestId: number, data: FeatureRequestCommentParams): Promise<BeamerComment> {
+  async createFeatureRequestComment(
+    requestId: number,
+    data: FeatureRequestCommentParams
+  ): Promise<BeamerComment> {
     let response = await this.axios.post(`/requests/${requestId}/comments`, data);
     return response.data;
   }
@@ -414,7 +434,10 @@ export class Client {
 
   // --- Feature Request Votes ---
 
-  async createFeatureRequestVote(requestId: number, data: FeatureRequestVoteParams): Promise<unknown> {
+  async createFeatureRequestVote(
+    requestId: number,
+    data: FeatureRequestVoteParams
+  ): Promise<unknown> {
     let response = await this.axios.post(`/requests/${requestId}/votes`, data);
     return response.data;
   }

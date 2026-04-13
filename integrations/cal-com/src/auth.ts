@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -14,19 +16,19 @@ export let auth = SlateAuth.create()
 
     scopes: [],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://app.cal.com/auth/oauth2/authorize?${params.toString()}`,
+        url: `https://app.cal.com/auth/oauth2/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios({});
 
       let response = await http.post('https://app.cal.com/api/auth/oauth/token', {
@@ -34,7 +36,7 @@ export let auth = SlateAuth.create()
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
         grant_type: 'authorization_code',
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let data = response.data;
@@ -45,12 +47,12 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let http = createAxios({});
 
       let response = await http.post(
@@ -58,12 +60,12 @@ export let auth = SlateAuth.create()
         {
           grant_type: 'refresh_token',
           client_id: ctx.clientId,
-          client_secret: ctx.clientSecret,
+          client_secret: ctx.clientSecret
         },
         {
           headers: {
-            Authorization: `Bearer ${ctx.output.refreshToken}`,
-          },
+            Authorization: `Bearer ${ctx.output.refreshToken}`
+          }
         }
       );
 
@@ -75,8 +77,8 @@ export let auth = SlateAuth.create()
           refreshToken: data.refresh_token,
           expiresAt: data.expires_in
             ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-            : undefined,
-        },
+            : undefined
+        }
       };
     },
 
@@ -84,8 +86,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.cal.com/v2',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/me');
@@ -96,10 +98,10 @@ export let auth = SlateAuth.create()
           id: user?.id?.toString(),
           email: user?.email,
           name: user?.name,
-          imageUrl: user?.avatarUrl,
-        },
+          imageUrl: user?.avatarUrl
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -107,14 +109,14 @@ export let auth = SlateAuth.create()
     key: 'api_key',
 
     inputSchema: z.object({
-      apiKey: z.string().describe('Cal.com API key (starts with cal_ or cal_live_)'),
+      apiKey: z.string().describe('Cal.com API key (starts with cal_ or cal_live_)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
 
@@ -122,8 +124,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.cal.com/v2',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/me');
@@ -134,8 +136,8 @@ export let auth = SlateAuth.create()
           id: user?.id?.toString(),
           email: user?.email,
           name: user?.name,
-          imageUrl: user?.avatarUrl,
-        },
+          imageUrl: user?.avatarUrl
+        }
       };
-    },
+    }
   });

@@ -4,41 +4,47 @@ import { spec } from '../spec';
 import { z } from 'zod';
 
 let friendSchema = z.object({
-  accountId: z.string().describe('Friend\'s Epic Games account ID'),
+  accountId: z.string().describe("Friend's Epic Games account ID"),
   created: z.string().describe('When the friendship was created (ISO 8601)'),
   favorite: z.boolean().optional().describe('Whether this friend is marked as a favorite'),
-  nickname: z.string().optional().describe('Custom nickname set for this friend'),
+  nickname: z.string().optional().describe('Custom nickname set for this friend')
 });
 
 let blockedUserSchema = z.object({
-  accountId: z.string().describe('Blocked user\'s Epic Games account ID'),
-  created: z.string().describe('When the user was blocked (ISO 8601)'),
+  accountId: z.string().describe("Blocked user's Epic Games account ID"),
+  created: z.string().describe('When the user was blocked (ISO 8601)')
 });
 
-export let getFriends = SlateTool.create(
-  spec,
-  {
-    name: 'Get Friends & Block List',
-    key: 'get_friends',
-    description: `Retrieve a player's friends list and/or block list. Can return both lists together or individually.
+export let getFriends = SlateTool.create(spec, {
+  name: 'Get Friends & Block List',
+  key: 'get_friends',
+  description: `Retrieve a player's friends list and/or block list. Can return both lists together or individually.
 Requires the **friends_list** scope via OAuth authentication. The authenticated user can only query their own friends and block list.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    accountId: z.string().describe('Epic Games account ID to query. Must match the authenticated user.'),
-    include: z.enum(['all', 'friends', 'blocklist']).default('all').describe('Which lists to include in the response'),
-  }))
-  .output(z.object({
-    friends: z.array(friendSchema).optional().describe('List of friends'),
-    blockList: z.array(blockedUserSchema).optional().describe('List of blocked users'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountId: z
+        .string()
+        .describe('Epic Games account ID to query. Must match the authenticated user.'),
+      include: z
+        .enum(['all', 'friends', 'blocklist'])
+        .default('all')
+        .describe('Which lists to include in the response')
+    })
+  )
+  .output(
+    z.object({
+      friends: z.array(friendSchema).optional().describe('List of friends'),
+      blockList: z.array(blockedUserSchema).optional().describe('List of blocked users')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new EosAccountServicesClient({
       token: ctx.auth.token,
-      accountId: ctx.auth.accountId,
+      accountId: ctx.auth.accountId
     });
 
     if (ctx.input.include === 'friends') {
@@ -46,7 +52,7 @@ Requires the **friends_list** scope via OAuth authentication. The authenticated 
       let friends = Array.isArray(data) ? data : [data];
       return {
         output: { friends },
-        message: `Retrieved **${friends.length}** friend(s).`,
+        message: `Retrieved **${friends.length}** friend(s).`
       };
     }
 
@@ -55,7 +61,7 @@ Requires the **friends_list** scope via OAuth authentication. The authenticated 
       let blockList = Array.isArray(data) ? data : [data];
       return {
         output: { blockList },
-        message: `Retrieved **${blockList.length}** blocked user(s).`,
+        message: `Retrieved **${blockList.length}** blocked user(s).`
       };
     }
 
@@ -63,8 +69,9 @@ Requires the **friends_list** scope via OAuth authentication. The authenticated 
     return {
       output: {
         friends: data.friends ?? [],
-        blockList: data.blockList ?? [],
+        blockList: data.blockList ?? []
       },
-      message: `Retrieved **${(data.friends ?? []).length}** friend(s) and **${(data.blockList ?? []).length}** blocked user(s).`,
+      message: `Retrieved **${(data.friends ?? []).length}** friend(s) and **${(data.blockList ?? []).length}** blocked user(s).`
     };
-  }).build();
+  })
+  .build();

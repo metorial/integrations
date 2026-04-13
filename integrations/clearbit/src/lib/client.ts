@@ -8,7 +8,7 @@ import type {
   ClearbitDiscoveryResponse,
   ClearbitNameToDomain,
   ClearbitAutocompleteItem,
-  ClearbitRisk,
+  ClearbitRisk
 } from './types';
 
 export class ClearbitClient {
@@ -23,8 +23,8 @@ export class ClearbitClient {
       baseURL,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -74,12 +74,10 @@ export class ClearbitClient {
 
   // ─── Reveal (IP Intelligence) ──────────────────────────────────
 
-  async reveal(params: {
-    ip: string;
-  }): Promise<ClearbitReveal> {
+  async reveal(params: { ip: string }): Promise<ClearbitReveal> {
     let client = this.createClient('https://reveal.clearbit.com');
     let response = await client.get('/v1/companies/reveal', {
-      params: { ip: params.ip },
+      params: { ip: params.ip }
     });
     return response.data as ClearbitReveal;
   }
@@ -149,24 +147,20 @@ export class ClearbitClient {
 
   // ─── Name to Domain ────────────────────────────────────────────
 
-  async nameToDomain(params: {
-    name: string;
-  }): Promise<ClearbitNameToDomain> {
+  async nameToDomain(params: { name: string }): Promise<ClearbitNameToDomain> {
     let client = this.createClient('https://company.clearbit.com');
     let response = await client.get('/v1/domains/find', {
-      params: { name: params.name },
+      params: { name: params.name }
     });
     return response.data as ClearbitNameToDomain;
   }
 
   // ─── Autocomplete ──────────────────────────────────────────────
 
-  async autocomplete(params: {
-    query: string;
-  }): Promise<ClearbitAutocompleteItem[]> {
+  async autocomplete(params: { query: string }): Promise<ClearbitAutocompleteItem[]> {
     let client = this.createClient('https://autocomplete.clearbit.com');
     let response = await client.get('/v1/companies/suggest', {
-      params: { query: params.query },
+      params: { query: params.query }
     });
     return response.data as ClearbitAutocompleteItem[];
   }
@@ -185,7 +179,7 @@ export class ClearbitClient {
     let client = this.createClient('https://risk.clearbit.com');
     let body: Record<string, any> = {
       email: params.email,
-      ip: params.ip,
+      ip: params.ip
     };
     if (params.name) body.name = params.name;
     if (params.givenName) body.given_name = params.givenName;

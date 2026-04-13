@@ -5,11 +5,9 @@ let API_VERSION = '202501';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(
-    private config: { token: string }
-  ) {
+  constructor(private config: { token: string }) {
     this.axios = createAxios({
-      baseURL: 'https://api.linkedin.com',
+      baseURL: 'https://api.linkedin.com'
     });
 
     this.axios.interceptors.request.use((reqConfig: any) => {
@@ -29,7 +27,7 @@ export class Client {
     pageToken?: string;
   }): Promise<LinkedInPagedResponse<AdAccount>> {
     let queryParams: Record<string, string> = {
-      q: 'search',
+      q: 'search'
     };
     if (params?.search) {
       queryParams['search.name.values[0]'] = params.search;
@@ -52,19 +50,22 @@ export class Client {
 
   async updateAdAccount(accountId: string, updates: Partial<AdAccount>): Promise<void> {
     await this.axios.post(`/rest/adAccounts/${accountId}`, updates, {
-      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' },
+      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' }
     });
   }
 
   // ── Campaign Groups ──────────────────────────────────────────────────
 
-  async getCampaignGroups(accountId: string, params?: {
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<LinkedInPagedResponse<CampaignGroup>> {
+  async getCampaignGroups(
+    accountId: string,
+    params?: {
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<LinkedInPagedResponse<CampaignGroup>> {
     let queryParams: Record<string, string> = {
       q: 'search',
-      'search.account.values[0]': `urn:li:sponsoredAccount:${accountId}`,
+      'search.account.values[0]': `urn:li:sponsoredAccount:${accountId}`
     };
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
@@ -90,26 +91,33 @@ export class Client {
     return String(location);
   }
 
-  async updateCampaignGroup(campaignGroupId: string, updates: Record<string, any>): Promise<void> {
+  async updateCampaignGroup(
+    campaignGroupId: string,
+    updates: Record<string, any>
+  ): Promise<void> {
     await this.axios.post(`/rest/adCampaignGroups/${campaignGroupId}`, updates, {
-      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' },
+      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' }
     });
   }
 
   // ── Campaigns ────────────────────────────────────────────────────────
 
-  async getCampaigns(accountId: string, params?: {
-    campaignGroupId?: string;
-    status?: string[];
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<LinkedInPagedResponse<Campaign>> {
+  async getCampaigns(
+    accountId: string,
+    params?: {
+      campaignGroupId?: string;
+      status?: string[];
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<LinkedInPagedResponse<Campaign>> {
     let queryParams: Record<string, string> = {
       q: 'search',
-      'search.account.values[0]': `urn:li:sponsoredAccount:${accountId}`,
+      'search.account.values[0]': `urn:li:sponsoredAccount:${accountId}`
     };
     if (params?.campaignGroupId) {
-      queryParams['search.campaignGroup.values[0]'] = `urn:li:sponsoredCampaignGroup:${params.campaignGroupId}`;
+      queryParams['search.campaignGroup.values[0]'] =
+        `urn:li:sponsoredCampaignGroup:${params.campaignGroupId}`;
     }
     if (params?.status) {
       params.status.forEach((s, i) => {
@@ -136,19 +144,22 @@ export class Client {
 
   async updateCampaign(campaignId: string, updates: Record<string, any>): Promise<void> {
     await this.axios.post(`/rest/adCampaigns/${campaignId}`, updates, {
-      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' },
+      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' }
     });
   }
 
   // ── Creatives ────────────────────────────────────────────────────────
 
-  async getCreatives(campaignId: string, params?: {
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<LinkedInPagedResponse<Creative>> {
+  async getCreatives(
+    campaignId: string,
+    params?: {
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<LinkedInPagedResponse<Creative>> {
     let queryParams: Record<string, string> = {
       q: 'search',
-      'search.campaign.values[0]': `urn:li:sponsoredCampaign:${campaignId}`,
+      'search.campaign.values[0]': `urn:li:sponsoredCampaign:${campaignId}`
     };
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
@@ -171,7 +182,7 @@ export class Client {
 
   async updateCreative(creativeId: string, updates: Record<string, any>): Promise<void> {
     await this.axios.post(`/rest/creatives/${encodeURIComponent(creativeId)}`, updates, {
-      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' },
+      headers: { 'X-RestLi-Method': 'PARTIAL_UPDATE' }
     });
   }
 
@@ -179,7 +190,10 @@ export class Client {
 
   async getAdAnalytics(params: {
     pivot: string;
-    dateRange: { start: { year: number; month: number; day: number }; end: { year: number; month: number; day: number } };
+    dateRange: {
+      start: { year: number; month: number; day: number };
+      end: { year: number; month: number; day: number };
+    };
     timeGranularity: string;
     accounts?: string[];
     campaigns?: string[];
@@ -196,7 +210,7 @@ export class Client {
       'dateRange.end.day': String(params.dateRange.end.day),
       'dateRange.end.month': String(params.dateRange.end.month),
       'dateRange.end.year': String(params.dateRange.end.year),
-      timeGranularity: params.timeGranularity,
+      timeGranularity: params.timeGranularity
     };
 
     if (params.fields && params.fields.length > 0) {
@@ -205,12 +219,16 @@ export class Client {
 
     if (params.accounts) {
       params.accounts.forEach((a, i) => {
-        queryParams[`accounts[${i}]`] = a.startsWith('urn:') ? a : `urn:li:sponsoredAccount:${a}`;
+        queryParams[`accounts[${i}]`] = a.startsWith('urn:')
+          ? a
+          : `urn:li:sponsoredAccount:${a}`;
       });
     }
     if (params.campaigns) {
       params.campaigns.forEach((c, i) => {
-        queryParams[`campaigns[${i}]`] = c.startsWith('urn:') ? c : `urn:li:sponsoredCampaign:${c}`;
+        queryParams[`campaigns[${i}]`] = c.startsWith('urn:')
+          ? c
+          : `urn:li:sponsoredCampaign:${c}`;
       });
     }
     if (params.creatives) {
@@ -220,7 +238,9 @@ export class Client {
     }
     if (params.campaignGroups) {
       params.campaignGroups.forEach((g, i) => {
-        queryParams[`campaignGroups[${i}]`] = g.startsWith('urn:') ? g : `urn:li:sponsoredCampaignGroup:${g}`;
+        queryParams[`campaignGroups[${i}]`] = g.startsWith('urn:')
+          ? g
+          : `urn:li:sponsoredCampaignGroup:${g}`;
       });
     }
 
@@ -230,13 +250,16 @@ export class Client {
 
   // ── Conversions ──────────────────────────────────────────────────────
 
-  async getConversionRules(accountId: string, params?: {
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<LinkedInPagedResponse<ConversionRule>> {
+  async getConversionRules(
+    accountId: string,
+    params?: {
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<LinkedInPagedResponse<ConversionRule>> {
     let queryParams: Record<string, string> = {
       q: 'account',
-      account: `urn:li:sponsoredAccount:${accountId}`,
+      account: `urn:li:sponsoredAccount:${accountId}`
     };
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
@@ -259,30 +282,41 @@ export class Client {
     return String(location);
   }
 
-  async sendConversionEvents(data: {
-    conversion: string;
-    conversionHappenedAt: number;
-    conversionValue?: { currencyCode: string; amount: string };
-    eventId?: string;
-    user?: {
-      userIds?: Array<{ idType: string; idValue: string }>;
-      userInfo?: { firstName?: string; lastName?: string; companyName?: string; title?: string; countryCode?: string; };
-    };
-  }[]): Promise<void> {
+  async sendConversionEvents(
+    data: {
+      conversion: string;
+      conversionHappenedAt: number;
+      conversionValue?: { currencyCode: string; amount: string };
+      eventId?: string;
+      user?: {
+        userIds?: Array<{ idType: string; idValue: string }>;
+        userInfo?: {
+          firstName?: string;
+          lastName?: string;
+          companyName?: string;
+          title?: string;
+          countryCode?: string;
+        };
+      };
+    }[]
+  ): Promise<void> {
     await this.axios.post('/rest/conversionEvents', {
-      elements: data,
+      elements: data
     });
   }
 
   // ── Lead Gen Forms ───────────────────────────────────────────────────
 
-  async getLeadForms(accountId: string, params?: {
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<LinkedInPagedResponse<LeadForm>> {
+  async getLeadForms(
+    accountId: string,
+    params?: {
+      pageSize?: number;
+      pageToken?: string;
+    }
+  ): Promise<LinkedInPagedResponse<LeadForm>> {
     let queryParams: Record<string, string> = {
       q: 'owner',
-      owner: `urn:li:sponsoredAccount:${accountId}`,
+      owner: `urn:li:sponsoredAccount:${accountId}`
     };
     if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize);
     if (params?.pageToken) queryParams['pageToken'] = params.pageToken;
@@ -303,7 +337,9 @@ export class Client {
 
     if (params.leadFormId) {
       queryParams['q'] = 'owner';
-      queryParams['owner'] = params.leadFormId.startsWith('urn:') ? params.leadFormId : `urn:li:leadGenForm:${params.leadFormId}`;
+      queryParams['owner'] = params.leadFormId.startsWith('urn:')
+        ? params.leadFormId
+        : `urn:li:leadGenForm:${params.leadFormId}`;
     } else if (params.accountId) {
       queryParams['q'] = 'account';
       queryParams['account'] = `urn:li:sponsoredAccount:${params.accountId}`;
@@ -326,8 +362,8 @@ export class Client {
   }> {
     let response = await this.axios.post('/rest/images?action=initializeUpload', {
       initializeUploadRequest: {
-        owner: ownerId,
-      },
+        owner: ownerId
+      }
     });
     let data = response.data as { value: { uploadUrl: string; image: string } };
     return data.value;

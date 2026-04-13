@@ -20,7 +20,7 @@ import type {
   FrontKnowledgeBaseCategory,
   FrontAnalyticsExport,
   FrontShift,
-  FrontSignature,
+  FrontSignature
 } from './types';
 
 export class Client {
@@ -30,9 +30,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://api2.frontapp.com',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -56,12 +56,15 @@ export class Client {
     return response.data;
   }
 
-  async searchConversations(query: string, params?: {
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontConversation>> {
+  async searchConversations(
+    query: string,
+    params?: {
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontConversation>> {
     let response = await this.axios.get('/conversations/search', {
-      params: { ...params, q: query },
+      params: { ...params, q: query }
     });
     return response.data;
   }
@@ -71,19 +74,22 @@ export class Client {
     return response.data;
   }
 
-  async updateConversation(conversationId: string, data: {
-    assignee_id?: string;
-    inbox_id?: string;
-    status?: 'archived' | 'open' | 'deleted' | 'spam';
-    subject?: string;
-    tag_ids?: string[];
-  }): Promise<void> {
+  async updateConversation(
+    conversationId: string,
+    data: {
+      assignee_id?: string;
+      inbox_id?: string;
+      status?: 'archived' | 'open' | 'deleted' | 'spam';
+      subject?: string;
+      tag_ids?: string[];
+    }
+  ): Promise<void> {
     await this.axios.patch(`/conversations/${conversationId}`, data);
   }
 
   async updateConversationAssignee(conversationId: string, assigneeId: string): Promise<void> {
     await this.axios.put(`/conversations/${conversationId}/assignee`, {
-      assignee_id: assigneeId,
+      assignee_id: assigneeId
     });
   }
 
@@ -91,62 +97,79 @@ export class Client {
     await this.axios.delete(`/conversations/${conversationId}`);
   }
 
-  async listConversationMessages(conversationId: string, params?: {
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontMessage>> {
-    let response = await this.axios.get(`/conversations/${conversationId}/messages`, { params });
+  async listConversationMessages(
+    conversationId: string,
+    params?: {
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontMessage>> {
+    let response = await this.axios.get(`/conversations/${conversationId}/messages`, {
+      params
+    });
     return response.data;
   }
 
-  async listConversationEvents(conversationId: string, params?: {
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontEvent>> {
+  async listConversationEvents(
+    conversationId: string,
+    params?: {
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontEvent>> {
     let response = await this.axios.get(`/conversations/${conversationId}/events`, { params });
     return response.data;
   }
 
-  async addConversationFollowers(conversationId: string, teammateIds: string[]): Promise<void> {
+  async addConversationFollowers(
+    conversationId: string,
+    teammateIds: string[]
+  ): Promise<void> {
     await this.axios.post(`/conversations/${conversationId}/followers`, {
-      teammate_ids: teammateIds,
+      teammate_ids: teammateIds
     });
   }
 
-  async removeConversationFollowers(conversationId: string, teammateIds: string[]): Promise<void> {
+  async removeConversationFollowers(
+    conversationId: string,
+    teammateIds: string[]
+  ): Promise<void> {
     await this.axios.delete(`/conversations/${conversationId}/followers`, {
-      data: { teammate_ids: teammateIds },
+      data: { teammate_ids: teammateIds }
     });
   }
 
   async addConversationTag(conversationId: string, tagId: string): Promise<void> {
     await this.axios.post(`/conversations/${conversationId}/tags`, {
-      tag_ids: [tagId],
+      tag_ids: [tagId]
     });
   }
 
   async removeConversationTag(conversationId: string, tagId: string): Promise<void> {
     await this.axios.delete(`/conversations/${conversationId}/tags`, {
-      data: { tag_ids: [tagId] },
+      data: { tag_ids: [tagId] }
     });
   }
 
   async addConversationLink(conversationId: string, linkId: string): Promise<void> {
     await this.axios.post(`/conversations/${conversationId}/links`, {
-      link_ids: [linkId],
+      link_ids: [linkId]
     });
   }
 
   async removeConversationLink(conversationId: string, linkId: string): Promise<void> {
     await this.axios.delete(`/conversations/${conversationId}/links`, {
-      data: { link_ids: [linkId] },
+      data: { link_ids: [linkId] }
     });
   }
 
-  async updateConversationReminders(conversationId: string, data: {
-    teammate_id: string;
-    scheduled_at: number;
-  }): Promise<void> {
+  async updateConversationReminders(
+    conversationId: string,
+    data: {
+      teammate_id: string;
+      scheduled_at: number;
+    }
+  ): Promise<void> {
     await this.axios.patch(`/conversations/${conversationId}/reminders`, data);
   }
 
@@ -165,39 +188,48 @@ export class Client {
     options?: Record<string, any>;
     metadata?: Record<string, any>;
   }): Promise<FrontMessage> {
-    let response = await this.axios.post('/channels/' + (data.channel_id || '') + '/messages', data);
+    let response = await this.axios.post(
+      '/channels/' + (data.channel_id || '') + '/messages',
+      data
+    );
     return response.data;
   }
 
-  async sendNewMessage(channelId: string, data: {
-    author_id?: string;
-    to: string[];
-    cc?: string[];
-    bcc?: string[];
-    sender_name?: string;
-    subject?: string;
-    body: string;
-    body_format?: 'html' | 'markdown';
-    options?: Record<string, any>;
-    metadata?: Record<string, any>;
-  }): Promise<FrontMessage> {
+  async sendNewMessage(
+    channelId: string,
+    data: {
+      author_id?: string;
+      to: string[];
+      cc?: string[];
+      bcc?: string[];
+      sender_name?: string;
+      subject?: string;
+      body: string;
+      body_format?: 'html' | 'markdown';
+      options?: Record<string, any>;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<FrontMessage> {
     let response = await this.axios.post(`/channels/${channelId}/messages`, data);
     return response.data;
   }
 
-  async replyToConversation(conversationId: string, data: {
-    author_id?: string;
-    to?: string[];
-    cc?: string[];
-    bcc?: string[];
-    sender_name?: string;
-    subject?: string;
-    body: string;
-    body_format?: 'html' | 'markdown';
-    channel_id?: string;
-    options?: Record<string, any>;
-    metadata?: Record<string, any>;
-  }): Promise<void> {
+  async replyToConversation(
+    conversationId: string,
+    data: {
+      author_id?: string;
+      to?: string[];
+      cc?: string[];
+      bcc?: string[];
+      sender_name?: string;
+      subject?: string;
+      body: string;
+      body_format?: 'html' | 'markdown';
+      channel_id?: string;
+      options?: Record<string, any>;
+      metadata?: Record<string, any>;
+    }
+  ): Promise<void> {
     await this.axios.post(`/conversations/${conversationId}/messages`, data);
   }
 
@@ -255,14 +287,17 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    name?: string;
-    description?: string;
-    is_spammer?: boolean;
-    links?: string[];
-    group_names?: string[];
-    custom_fields?: Record<string, string>;
-  }): Promise<FrontContact> {
+  async updateContact(
+    contactId: string,
+    data: {
+      name?: string;
+      description?: string;
+      is_spammer?: boolean;
+      links?: string[];
+      group_names?: string[];
+      custom_fields?: Record<string, string>;
+    }
+  ): Promise<FrontContact> {
     let response = await this.axios.patch(`/contacts/${contactId}`, data);
     return response.data;
   }
@@ -275,15 +310,21 @@ export class Client {
     await this.axios.post(`/contacts/${contactId}/handles`, { handle, source });
   }
 
-  async deleteContactHandle(contactId: string, data: { handle: string; source: string }): Promise<void> {
+  async deleteContactHandle(
+    contactId: string,
+    data: { handle: string; source: string }
+  ): Promise<void> {
     await this.axios.delete(`/contacts/${contactId}/handles`, { data });
   }
 
-  async listContactConversations(contactId: string, params?: {
-    q?: string;
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontConversation>> {
+  async listContactConversations(
+    contactId: string,
+    params?: {
+      q?: string;
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontConversation>> {
     let response = await this.axios.get(`/contacts/${contactId}/conversations`, { params });
     return response.data;
   }
@@ -291,7 +332,7 @@ export class Client {
   async mergeContacts(targetContactId: string, contactIds: string[]): Promise<FrontContact> {
     let response = await this.axios.post('/contacts/merge', {
       target_contact_id: targetContactId,
-      contact_ids: contactIds,
+      contact_ids: contactIds
     });
     return response.data;
   }
@@ -324,13 +365,16 @@ export class Client {
     return response.data;
   }
 
-  async updateAccount(accountId: string, data: {
-    name?: string;
-    description?: string;
-    domains?: string[];
-    external_id?: string;
-    custom_fields?: Record<string, string>;
-  }): Promise<FrontAccount> {
+  async updateAccount(
+    accountId: string,
+    data: {
+      name?: string;
+      description?: string;
+      domains?: string[];
+      external_id?: string;
+      custom_fields?: Record<string, string>;
+    }
+  ): Promise<FrontAccount> {
     let response = await this.axios.patch(`/accounts/${accountId}`, data);
     return response.data;
   }
@@ -339,10 +383,13 @@ export class Client {
     await this.axios.delete(`/accounts/${accountId}`);
   }
 
-  async listAccountContacts(accountId: string, params?: {
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontContact>> {
+  async listAccountContacts(
+    accountId: string,
+    params?: {
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontContact>> {
     let response = await this.axios.get(`/accounts/${accountId}/contacts`, { params });
     return response.data;
   }
@@ -353,7 +400,7 @@ export class Client {
 
   async removeContactFromAccount(accountId: string, contactIds: string[]): Promise<void> {
     await this.axios.delete(`/accounts/${accountId}/contacts`, {
-      data: { contact_ids: contactIds },
+      data: { contact_ids: contactIds }
     });
   }
 
@@ -381,11 +428,14 @@ export class Client {
     return response.data;
   }
 
-  async updateTag(tagId: string, data: {
-    name?: string;
-    description?: string;
-    highlight?: string;
-  }): Promise<FrontTag> {
+  async updateTag(
+    tagId: string,
+    data: {
+      name?: string;
+      description?: string;
+      highlight?: string;
+    }
+  ): Promise<FrontTag> {
     let response = await this.axios.patch(`/tags/${tagId}`, data);
     return response.data;
   }
@@ -394,28 +444,37 @@ export class Client {
     await this.axios.delete(`/tags/${tagId}`);
   }
 
-  async listTagChildren(tagId: string, params?: {
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontTag>> {
+  async listTagChildren(
+    tagId: string,
+    params?: {
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontTag>> {
     let response = await this.axios.get(`/tags/${tagId}/children`, { params });
     return response.data;
   }
 
-  async createChildTag(tagId: string, data: {
-    name: string;
-    description?: string;
-    highlight?: string;
-  }): Promise<FrontTag> {
+  async createChildTag(
+    tagId: string,
+    data: {
+      name: string;
+      description?: string;
+      highlight?: string;
+    }
+  ): Promise<FrontTag> {
     let response = await this.axios.post(`/tags/${tagId}/children`, data);
     return response.data;
   }
 
-  async listTaggedConversations(tagId: string, params?: {
-    q?: string;
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontConversation>> {
+  async listTaggedConversations(
+    tagId: string,
+    params?: {
+      q?: string;
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontConversation>> {
     let response = await this.axios.get(`/tags/${tagId}/conversations`, { params });
     return response.data;
   }
@@ -435,10 +494,7 @@ export class Client {
     return response.data;
   }
 
-  async createInbox(data: {
-    name: string;
-    teammate_ids?: string[];
-  }): Promise<FrontInbox> {
+  async createInbox(data: { name: string; teammate_ids?: string[] }): Promise<FrontInbox> {
     let response = await this.axios.post('/inboxes', data);
     return response.data;
   }
@@ -448,24 +504,27 @@ export class Client {
     return response.data;
   }
 
-  async listInboxConversations(inboxId: string, params?: {
-    q?: string;
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontConversation>> {
+  async listInboxConversations(
+    inboxId: string,
+    params?: {
+      q?: string;
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontConversation>> {
     let response = await this.axios.get(`/inboxes/${inboxId}/conversations`, { params });
     return response.data;
   }
 
   async addInboxAccess(inboxId: string, teammateIds: string[]): Promise<void> {
     await this.axios.post(`/inboxes/${inboxId}/teammates`, {
-      teammate_ids: teammateIds,
+      teammate_ids: teammateIds
     });
   }
 
   async removeInboxAccess(inboxId: string, teammateIds: string[]): Promise<void> {
     await this.axios.delete(`/inboxes/${inboxId}/teammates`, {
-      data: { teammate_ids: teammateIds },
+      data: { teammate_ids: teammateIds }
     });
   }
 
@@ -496,20 +555,26 @@ export class Client {
     return response.data;
   }
 
-  async updateTeammate(teammateId: string, data: {
-    username?: string;
-    first_name?: string;
-    last_name?: string;
-    is_available?: boolean;
-  }): Promise<void> {
+  async updateTeammate(
+    teammateId: string,
+    data: {
+      username?: string;
+      first_name?: string;
+      last_name?: string;
+      is_available?: boolean;
+    }
+  ): Promise<void> {
     await this.axios.patch(`/teammates/${teammateId}`, data);
   }
 
-  async listTeammateConversations(teammateId: string, params?: {
-    q?: string;
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontConversation>> {
+  async listTeammateConversations(
+    teammateId: string,
+    params?: {
+      q?: string;
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontConversation>> {
     let response = await this.axios.get(`/teammates/${teammateId}/conversations`, { params });
     return response.data;
   }
@@ -528,13 +593,13 @@ export class Client {
 
   async addTeammates(teamId: string, teammateIds: string[]): Promise<void> {
     await this.axios.post(`/teams/${teamId}/teammates`, {
-      teammate_ids: teammateIds,
+      teammate_ids: teammateIds
     });
   }
 
   async removeTeammates(teamId: string, teammateIds: string[]): Promise<void> {
     await this.axios.delete(`/teams/${teamId}/teammates`, {
-      data: { teammate_ids: teammateIds },
+      data: { teammate_ids: teammateIds }
     });
   }
 
@@ -545,18 +610,24 @@ export class Client {
     return response.data;
   }
 
-  async addComment(conversationId: string, data: {
-    author_id?: string;
-    body: string;
-  }): Promise<FrontComment> {
+  async addComment(
+    conversationId: string,
+    data: {
+      author_id?: string;
+      body: string;
+    }
+  ): Promise<FrontComment> {
     let response = await this.axios.post(`/conversations/${conversationId}/comments`, data);
     return response.data;
   }
 
-  async replyToComment(commentId: string, data: {
-    author_id?: string;
-    body: string;
-  }): Promise<FrontComment> {
+  async replyToComment(
+    commentId: string,
+    data: {
+      author_id?: string;
+      body: string;
+    }
+  ): Promise<FrontComment> {
     let response = await this.axios.post(`/comments/${commentId}/reply`, data);
     return response.data;
   }
@@ -587,10 +658,13 @@ export class Client {
     return response.data;
   }
 
-  async updateLink(linkId: string, data: {
-    name?: string;
-    custom_fields?: Record<string, string>;
-  }): Promise<FrontLink> {
+  async updateLink(
+    linkId: string,
+    data: {
+      name?: string;
+      custom_fields?: Record<string, string>;
+    }
+  ): Promise<FrontLink> {
     let response = await this.axios.patch(`/links/${linkId}`, data);
     return response.data;
   }
@@ -620,12 +694,15 @@ export class Client {
     return response.data;
   }
 
-  async updateMessageTemplate(templateId: string, data: {
-    name?: string;
-    subject?: string;
-    body?: string;
-    folder_id?: string;
-  }): Promise<FrontMessageTemplate> {
+  async updateMessageTemplate(
+    templateId: string,
+    data: {
+      name?: string;
+      subject?: string;
+      body?: string;
+      folder_id?: string;
+    }
+  ): Promise<FrontMessageTemplate> {
     let response = await this.axios.patch(`/message_templates/${templateId}`, data);
     return response.data;
   }
@@ -692,15 +769,20 @@ export class Client {
     return response.data;
   }
 
-  async listKnowledgeBaseCategories(kbId: string): Promise<FrontPaginatedResponse<FrontKnowledgeBaseCategory>> {
+  async listKnowledgeBaseCategories(
+    kbId: string
+  ): Promise<FrontPaginatedResponse<FrontKnowledgeBaseCategory>> {
     let response = await this.axios.get(`/knowledge_bases/${kbId}/categories`);
     return response.data;
   }
 
-  async listKnowledgeBaseArticles(kbId: string, params?: {
-    page_token?: string;
-    limit?: number;
-  }): Promise<FrontPaginatedResponse<FrontKnowledgeBaseArticle>> {
+  async listKnowledgeBaseArticles(
+    kbId: string,
+    params?: {
+      page_token?: string;
+      limit?: number;
+    }
+  ): Promise<FrontPaginatedResponse<FrontKnowledgeBaseArticle>> {
     let response = await this.axios.get(`/knowledge_bases/${kbId}/articles`, { params });
     return response.data;
   }
@@ -723,21 +805,26 @@ export class Client {
 
   // ---- Drafts ----
 
-  async listConversationDrafts(conversationId: string): Promise<FrontPaginatedResponse<FrontMessage>> {
+  async listConversationDrafts(
+    conversationId: string
+  ): Promise<FrontPaginatedResponse<FrontMessage>> {
     let response = await this.axios.get(`/conversations/${conversationId}/drafts`);
     return response.data;
   }
 
-  async createDraft(conversationId: string, data: {
-    author_id: string;
-    to?: string[];
-    cc?: string[];
-    bcc?: string[];
-    subject?: string;
-    body: string;
-    body_format?: 'html' | 'markdown';
-    channel_id?: string;
-  }): Promise<FrontMessage> {
+  async createDraft(
+    conversationId: string,
+    data: {
+      author_id: string;
+      to?: string[];
+      cc?: string[];
+      bcc?: string[];
+      subject?: string;
+      body: string;
+      body_format?: 'html' | 'markdown';
+      channel_id?: string;
+    }
+  ): Promise<FrontMessage> {
     let response = await this.axios.post(`/conversations/${conversationId}/drafts`, data);
     return response.data;
   }
@@ -756,7 +843,9 @@ export class Client {
 
   // ---- Signatures ----
 
-  async listTeammateSignatures(teammateId: string): Promise<FrontPaginatedResponse<FrontSignature>> {
+  async listTeammateSignatures(
+    teammateId: string
+  ): Promise<FrontPaginatedResponse<FrontSignature>> {
     let response = await this.axios.get(`/teammates/${teammateId}/signatures`);
     return response.data;
   }

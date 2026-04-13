@@ -7,7 +7,7 @@ import {
   createTemplate,
   updateTemplate,
   getTemplate,
-  listTemplates,
+  listTemplates
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     createTemplate,
     updateTemplate,
     getTemplate,
-    listTemplates,
+    listTemplates
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

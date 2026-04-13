@@ -13,37 +13,50 @@ let memberSchema = z.object({
   status: z.string().describe('Member status (drafted, joined, left)'),
   usdTotalSpent: z.number().describe('Total spent in USD'),
   joinedAt: z.string().nullable().describe('ISO 8601 join timestamp'),
-  createdAt: z.string().describe('ISO 8601 creation timestamp'),
+  createdAt: z.string().describe('ISO 8601 creation timestamp')
 });
 
-export let listMembers = SlateTool.create(
-  spec,
-  {
-    name: 'List Members',
-    key: 'list_members',
-    description: `List members of your Whop company. Members represent the relationship between a user and your company. Search by name, username, or email, and filter by status or access level.`,
-    tags: {
-      readOnly: true,
-    },
+export let listMembers = SlateTool.create(spec, {
+  name: 'List Members',
+  key: 'list_members',
+  description: `List members of your Whop company. Members represent the relationship between a user and your company. Search by name, username, or email, and filter by status or access level.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    companyId: z.string().optional().describe('Company ID. Uses config companyId if not provided.'),
-    query: z.string().optional().describe('Search by name, username, or email'),
-    statuses: z.array(z.enum(['drafted', 'joined', 'left'])).optional().describe('Filter by member status'),
-    accessLevel: z.enum(['no_access', 'admin', 'customer']).optional().describe('Filter by access level'),
-    productIds: z.array(z.string()).optional().describe('Filter by product IDs'),
-    order: z.enum(['id', 'usd_total_spent', 'created_at', 'joined_at', 'most_recent_action']).optional().describe('Sort field'),
-    direction: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
-    cursor: z.string().optional().describe('Pagination cursor'),
-    limit: z.number().optional().describe('Number of results (max 100)'),
-  }))
-  .output(z.object({
-    members: z.array(memberSchema),
-    hasNextPage: z.boolean().describe('Whether more results are available'),
-    endCursor: z.string().nullable().describe('Cursor for next page'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      companyId: z
+        .string()
+        .optional()
+        .describe('Company ID. Uses config companyId if not provided.'),
+      query: z.string().optional().describe('Search by name, username, or email'),
+      statuses: z
+        .array(z.enum(['drafted', 'joined', 'left']))
+        .optional()
+        .describe('Filter by member status'),
+      accessLevel: z
+        .enum(['no_access', 'admin', 'customer'])
+        .optional()
+        .describe('Filter by access level'),
+      productIds: z.array(z.string()).optional().describe('Filter by product IDs'),
+      order: z
+        .enum(['id', 'usd_total_spent', 'created_at', 'joined_at', 'most_recent_action'])
+        .optional()
+        .describe('Sort field'),
+      direction: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+      cursor: z.string().optional().describe('Pagination cursor'),
+      limit: z.number().optional().describe('Number of results (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      members: z.array(memberSchema),
+      hasNextPage: z.boolean().describe('Whether more results are available'),
+      endCursor: z.string().nullable().describe('Cursor for next page')
+    })
+  )
+  .handleInvocation(async ctx => {
     let companyId = ctx.input.companyId || ctx.config.companyId;
     if (!companyId) throw new Error('companyId is required');
 
@@ -57,7 +70,7 @@ export let listMembers = SlateTool.create(
       order: ctx.input.order,
       direction: ctx.input.direction,
       after: ctx.input.cursor,
-      first: ctx.input.limit,
+      first: ctx.input.limit
     });
 
     let members = (result.data || []).map((m: any) => ({
@@ -70,15 +83,16 @@ export let listMembers = SlateTool.create(
       status: m.status,
       usdTotalSpent: m.usd_total_spent || 0,
       joinedAt: m.joined_at || null,
-      createdAt: m.created_at,
+      createdAt: m.created_at
     }));
 
     return {
       output: {
         members,
         hasNextPage: result.page_info?.has_next_page || false,
-        endCursor: result.page_info?.end_cursor || null,
+        endCursor: result.page_info?.end_cursor || null
       },
-      message: `Found **${members.length}** members.${result.page_info?.has_next_page ? ' More results available.' : ''}`,
+      message: `Found **${members.length}** members.${result.page_info?.has_next_page ? ' More results available.' : ''}`
     };
-  }).build();
+  })
+  .build();

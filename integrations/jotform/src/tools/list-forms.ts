@@ -21,18 +21,12 @@ export let listFormsTool = SlateTool.create(spec, {
         .enum(['created_at', 'updated_at', 'title'])
         .optional()
         .describe('Field to sort results by'),
-      sortDirection: z
-        .enum(['ASC', 'DESC'])
-        .optional()
-        .describe('Sort direction'),
+      sortDirection: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
       limit: z
         .number()
         .optional()
         .describe('Maximum number of forms to return (default 20, max 1000)'),
-      offset: z
-        .number()
-        .optional()
-        .describe('Number of forms to skip for pagination')
+      offset: z.number().optional().describe('Number of forms to skip for pagination')
     })
   )
   .output(
@@ -50,7 +44,7 @@ export let listFormsTool = SlateTool.create(spec, {
       )
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

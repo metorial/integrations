@@ -34,25 +34,33 @@ There is no OAuth2 support. No scopes are available — the token provides full 
 ## Features
 
 ### Conversation Management
+
 Create, retrieve, update, and search support conversations. Conversations can be assigned to specific staff members, categorized by channel (e.g., support, email), filtered by status (open, pending, resolved), and tagged. You can also add messages (replies or notes) to existing conversations on behalf of staff or customers.
 
 ### Contact Management
+
 Create, retrieve, and update customer contact records. Contacts can have multiple identities (e.g., email addresses, social accounts). You can also manage contact notes — create, update, retrieve, and delete notes attached to individual contacts.
 
 ### Knowledge Base (Articles)
+
 Create, retrieve, and update FAQ/help articles. Articles can be organized and managed programmatically to power self-service customer support.
 
 ### Channels
+
 Retrieve available support channels and their details. Channels represent the different communication methods (email, chat, social, SMS, etc.) configured for a brand.
 
 ### Response Templates
+
 Create, retrieve, and update pre-written response templates that staff can use to quickly reply to common questions.
 
 ### Staff Management
+
 Retrieve staff members and create new staff user accounts within your Re:amaze account.
 
 ### Reports
+
 Access support analytics including:
+
 - **Volume**: Daily conversation volume counts.
 - **Response Time**: Daily response time metrics and summaries (reported in seconds).
 - **Staff**: Staff performance metrics and summaries.
@@ -62,9 +70,11 @@ Access support analytics including:
 Reports can be filtered by date range.
 
 ### Status Page / Incidents
+
 Create, retrieve, and update incidents for your public-facing status page. You can also retrieve the systems being monitored. This allows programmatic management of service status communication.
 
 ### Satisfaction Ratings
+
 Retrieve customer satisfaction ratings collected through Re:amaze's feedback system.
 
 ## Events

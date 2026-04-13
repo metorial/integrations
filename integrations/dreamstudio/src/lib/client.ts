@@ -1,18 +1,18 @@
-import { createAxios } from 'slates';
 import { AxiosInstance } from 'axios';
+import { createAxios } from 'slates';
 
 export class Client {
   private axios: AxiosInstance;
 
   constructor(private token: string) {
     this.axios = createAxios({
-      baseURL: 'https://api.stability.ai',
+      baseURL: 'https://api.stability.ai'
     });
   }
 
   private get authHeaders() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
@@ -22,10 +22,15 @@ export class Client {
     userId: string;
     email: string;
     profilePicture: string;
-    organizations: Array<{ organizationId: string; name: string; role: string; isDefault: boolean }>;
+    organizations: Array<{
+      organizationId: string;
+      name: string;
+      role: string;
+      isDefault: boolean;
+    }>;
   }> {
     let response = await this.axios.get('/v1/user/account', {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
 
     let data = response.data;
@@ -37,14 +42,14 @@ export class Client {
         organizationId: org.id,
         name: org.name,
         role: org.role,
-        isDefault: org.is_default,
-      })),
+        isDefault: org.is_default
+      }))
     };
   }
 
   async getBalance(): Promise<{ credits: number }> {
     let response = await this.axios.get('/v1/user/balance', {
-      headers: this.authHeaders,
+      headers: this.authHeaders
     });
 
     return { credits: response.data.credits };
@@ -68,7 +73,7 @@ export class Client {
       seed: params.seed,
       output_format: params.outputFormat,
       image: params.image,
-      strength: params.strength,
+      strength: params.strength
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/generate/ultra', formData);
@@ -88,7 +93,7 @@ export class Client {
       aspect_ratio: params.aspectRatio,
       seed: params.seed,
       output_format: params.outputFormat,
-      style_preset: params.stylePreset,
+      style_preset: params.stylePreset
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/generate/core', formData);
@@ -116,7 +121,7 @@ export class Client {
       output_format: params.outputFormat,
       cfg_scale: params.cfgScale,
       image: params.image,
-      strength: params.strength,
+      strength: params.strength
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/generate/sd3', formData);
@@ -140,7 +145,7 @@ export class Client {
       negative_prompt: params.negativePrompt,
       grow_mask: params.growMask,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/edit/inpaint', formData);
@@ -156,7 +161,7 @@ export class Client {
       image: params.image,
       mask: params.mask,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/edit/erase', formData);
@@ -182,7 +187,7 @@ export class Client {
       prompt: params.prompt,
       creativity: params.creativity,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/edit/outpaint', formData);
@@ -202,7 +207,7 @@ export class Client {
       search_prompt: params.searchPrompt,
       negative_prompt: params.negativePrompt,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/edit/search-and-replace', formData);
@@ -222,7 +227,7 @@ export class Client {
       select_prompt: params.selectPrompt,
       negative_prompt: params.negativePrompt,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/edit/search-and-recolor', formData);
@@ -234,7 +239,7 @@ export class Client {
   }): Promise<{ base64: string; seed: number; finishReason: string }> {
     let formData = this.buildFormData({
       image: params.image,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/edit/remove-background', formData);
@@ -268,16 +273,20 @@ export class Client {
       original_background_depth: params.originalBackgroundDepth,
       preserve_original_subject: params.preserveOriginalSubject,
       output_format: params.outputFormat,
-      seed: params.seed,
+      seed: params.seed
     });
 
-    let response = await this.axios.post('/v2beta/stable-image/edit/replace-background-and-relight', formData, {
-      headers: {
-        ...this.authHeaders,
-        'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
-      },
-    });
+    let response = await this.axios.post(
+      '/v2beta/stable-image/edit/replace-background-and-relight',
+      formData,
+      {
+        headers: {
+          ...this.authHeaders,
+          'Content-Type': 'multipart/form-data',
+          Accept: 'application/json'
+        }
+      }
+    );
 
     return { generationId: response.data.id };
   }
@@ -298,7 +307,7 @@ export class Client {
       negative_prompt: params.negativePrompt,
       creativity: params.creativity,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/upscale/conservative', formData);
@@ -318,15 +327,15 @@ export class Client {
       negative_prompt: params.negativePrompt,
       creativity: params.creativity,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     let response = await this.axios.post('/v2beta/stable-image/upscale/creative', formData, {
       headers: {
         ...this.authHeaders,
         'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return { generationId: response.data.id };
@@ -338,13 +347,16 @@ export class Client {
     seed?: number;
     finishReason?: string;
   }> {
-    let response = await this.axios.get(`/v2beta/stable-image/upscale/creative/result/${generationId}`, {
-      headers: {
-        ...this.authHeaders,
-        Accept: 'application/json',
-      },
-      validateStatus: (status: number) => status === 200 || status === 202,
-    });
+    let response = await this.axios.get(
+      `/v2beta/stable-image/upscale/creative/result/${generationId}`,
+      {
+        headers: {
+          ...this.authHeaders,
+          Accept: 'application/json'
+        },
+        validateStatus: (status: number) => status === 200 || status === 202
+      }
+    );
 
     if (response.status === 202) {
       return { status: 'in-progress' };
@@ -354,7 +366,7 @@ export class Client {
       status: 'complete',
       base64: response.data.image,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -364,7 +376,7 @@ export class Client {
   }): Promise<{ base64: string; seed: number; finishReason: string }> {
     let formData = this.buildFormData({
       image: params.image,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/upscale/fast', formData);
@@ -386,7 +398,7 @@ export class Client {
       control_strength: params.controlStrength,
       negative_prompt: params.negativePrompt,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/control/sketch', formData);
@@ -406,7 +418,7 @@ export class Client {
       control_strength: params.controlStrength,
       negative_prompt: params.negativePrompt,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/control/structure', formData);
@@ -426,7 +438,7 @@ export class Client {
       control_strength: params.controlStrength,
       negative_prompt: params.negativePrompt,
       seed: params.seed,
-      output_format: params.outputFormat,
+      output_format: params.outputFormat
     });
 
     return this.postImageEndpoint('/v2beta/stable-image/control/style', formData);
@@ -444,15 +456,15 @@ export class Client {
       image: params.image,
       seed: params.seed,
       cfg_scale: params.cfgScale,
-      motion_bucket_id: params.motionBucketId,
+      motion_bucket_id: params.motionBucketId
     });
 
     let response = await this.axios.post('/v2beta/image-to-video', formData, {
       headers: {
         ...this.authHeaders,
         'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return { generationId: response.data.id };
@@ -467,9 +479,9 @@ export class Client {
     let response = await this.axios.get(`/v2beta/image-to-video/result/${generationId}`, {
       headers: {
         ...this.authHeaders,
-        Accept: 'application/json',
+        Accept: 'application/json'
       },
-      validateStatus: (status: number) => status === 200 || status === 202,
+      validateStatus: (status: number) => status === 200 || status === 202
     });
 
     if (response.status === 202) {
@@ -480,7 +492,7 @@ export class Client {
       status: 'complete',
       base64: response.data.video,
       seed: response.data.seed,
-      finishReason: response.data.finish_reason,
+      finishReason: response.data.finish_reason
     };
   }
 
@@ -496,25 +508,25 @@ export class Client {
       image: params.image,
       texture_resolution: params.textureResolution,
       foreground_ratio: params.foregroundRatio,
-      remesh: params.remesh,
+      remesh: params.remesh
     });
 
     let response = await this.axios.post('/v2beta/3d/stable-fast-3d', formData, {
       headers: {
         ...this.authHeaders,
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'multipart/form-data'
       },
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
-
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(response.data);
     return { base64: buffer.toString('base64') };
   }
 
   // ─── Helpers ──────────────────────────────────────────────
 
-  private buildFormData(params: Record<string, string | number | boolean | undefined | null>): FormData {
+  private buildFormData(
+    params: Record<string, string | number | boolean | undefined | null>
+  ): FormData {
     let formData = new FormData();
 
     for (let [key, value] of Object.entries(params)) {
@@ -534,50 +546,52 @@ export class Client {
 
   private async postImageEndpoint(
     path: string,
-    formData: FormData,
+    formData: FormData
   ): Promise<{ base64: string; seed: number; finishReason: string }> {
     let response = await this.axios.post(path, formData, {
       headers: {
         ...this.authHeaders,
         'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     return {
       base64: response.data.image,
       seed: response.data.seed ?? 0,
-      finishReason: response.data.finish_reason ?? 'SUCCESS',
+      finishReason: response.data.finish_reason ?? 'SUCCESS'
     };
   }
 
   async pollAsyncResult(
     resultUrl: string,
     maxAttempts: number = 30,
-    intervalMs: number = 10000,
+    intervalMs: number = 10000
   ): Promise<{ base64: string; seed: number; finishReason: string }> {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       let response = await this.axios.get(resultUrl, {
         headers: {
           ...this.authHeaders,
-          Accept: 'application/json',
+          Accept: 'application/json'
         },
-        validateStatus: (status: number) => status === 200 || status === 202,
+        validateStatus: (status: number) => status === 200 || status === 202
       });
 
       if (response.status === 200) {
         return {
           base64: response.data.image || response.data.video,
           seed: response.data.seed ?? 0,
-          finishReason: response.data.finish_reason ?? 'SUCCESS',
+          finishReason: response.data.finish_reason ?? 'SUCCESS'
         };
       }
 
       if (attempt < maxAttempts - 1) {
-        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
       }
     }
 
-    throw new Error('Async generation timed out after polling. Try fetching the result later using the generation ID.');
+    throw new Error(
+      'Async generation timed out after polling. Try fetching the result later using the generation ID.'
+    );
   }
 }

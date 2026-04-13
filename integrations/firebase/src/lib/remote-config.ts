@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let remoteConfigAxios = createAxios({
-  baseURL: 'https://firebaseremoteconfig.googleapis.com/v1',
+  baseURL: 'https://firebaseremoteconfig.googleapis.com/v1'
 });
 
 export interface RemoteConfigParameter {
@@ -20,10 +20,13 @@ export interface RemoteConfigCondition {
 export interface RemoteConfigTemplate {
   conditions: RemoteConfigCondition[];
   parameters: Record<string, RemoteConfigParameter>;
-  parameterGroups: Record<string, {
-    description?: string;
-    parameters: Record<string, RemoteConfigParameter>;
-  }>;
+  parameterGroups: Record<
+    string,
+    {
+      description?: string;
+      parameters: Record<string, RemoteConfigParameter>;
+    }
+  >;
   etag: string;
   version?: {
     versionNumber?: string;
@@ -48,43 +51,50 @@ export class RemoteConfigClient {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${this.token}`
     };
   }
 
   async getTemplate(): Promise<RemoteConfigTemplate> {
     let response = await remoteConfigAxios.get(`/projects/${this.projectId}/remoteConfig`, {
-      headers: this.headers,
+      headers: this.headers
     });
 
     return {
       ...response.data,
-      etag: response.headers['etag'] || response.data.etag || '',
+      etag: response.headers['etag'] || response.data.etag || ''
     };
   }
 
-  async publishTemplate(template: {
-    conditions?: RemoteConfigCondition[];
-    parameters?: Record<string, RemoteConfigParameter>;
-    parameterGroups?: Record<string, { description?: string; parameters: Record<string, RemoteConfigParameter> }>;
-  }, etag: string): Promise<RemoteConfigTemplate> {
-    let response = await remoteConfigAxios.put(`/projects/${this.projectId}/remoteConfig`, template, {
-      headers: {
-        ...this.headers,
-        'If-Match': etag,
-      },
-    });
+  async publishTemplate(
+    template: {
+      conditions?: RemoteConfigCondition[];
+      parameters?: Record<string, RemoteConfigParameter>;
+      parameterGroups?: Record<
+        string,
+        { description?: string; parameters: Record<string, RemoteConfigParameter> }
+      >;
+    },
+    etag: string
+  ): Promise<RemoteConfigTemplate> {
+    let response = await remoteConfigAxios.put(
+      `/projects/${this.projectId}/remoteConfig`,
+      template,
+      {
+        headers: {
+          ...this.headers,
+          'If-Match': etag
+        }
+      }
+    );
 
     return {
       ...response.data,
-      etag: response.headers['etag'] || response.data.etag || '',
+      etag: response.headers['etag'] || response.data.etag || ''
     };
   }
 
-  async listVersions(params?: {
-    pageSize?: number;
-    pageToken?: string;
-  }): Promise<{
+  async listVersions(params?: { pageSize?: number; pageToken?: string }): Promise<{
     versions: Array<{
       versionNumber: string;
       updateTime: string;
@@ -95,30 +105,37 @@ export class RemoteConfigClient {
     }>;
     nextPageToken?: string;
   }> {
-    let response = await remoteConfigAxios.get(`/projects/${this.projectId}/remoteConfig:listVersions`, {
-      headers: this.headers,
-      params: {
-        pageSize: params?.pageSize || 10,
-        pageToken: params?.pageToken,
-      },
-    });
+    let response = await remoteConfigAxios.get(
+      `/projects/${this.projectId}/remoteConfig:listVersions`,
+      {
+        headers: this.headers,
+        params: {
+          pageSize: params?.pageSize || 10,
+          pageToken: params?.pageToken
+        }
+      }
+    );
 
     return {
       versions: response.data.versions || [],
-      nextPageToken: response.data.nextPageToken,
+      nextPageToken: response.data.nextPageToken
     };
   }
 
   async rollback(versionNumber: string): Promise<RemoteConfigTemplate> {
-    let response = await remoteConfigAxios.post(`/projects/${this.projectId}/remoteConfig:rollback`, {
-      versionNumber,
-    }, {
-      headers: this.headers,
-    });
+    let response = await remoteConfigAxios.post(
+      `/projects/${this.projectId}/remoteConfig:rollback`,
+      {
+        versionNumber
+      },
+      {
+        headers: this.headers
+      }
+    );
 
     return {
       ...response.data,
-      etag: response.headers['etag'] || response.data.etag || '',
+      etag: response.headers['etag'] || response.data.etag || ''
     };
   }
 }

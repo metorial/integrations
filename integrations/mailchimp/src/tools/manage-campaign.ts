@@ -3,49 +3,56 @@ import { MailchimpClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageCampaignTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Campaign',
-    key: 'manage_campaign',
-    description: `Create, update, or delete an email campaign. Supports setting recipients, subject line, content, tracking options, and more. To create, omit campaignId. To update, provide campaignId with fields to change. To delete, provide campaignId and set delete to true.`,
-    tags: {
-      destructive: true,
-    },
+export let manageCampaignTool = SlateTool.create(spec, {
+  name: 'Manage Campaign',
+  key: 'manage_campaign',
+  description: `Create, update, or delete an email campaign. Supports setting recipients, subject line, content, tracking options, and more. To create, omit campaignId. To update, provide campaignId with fields to change. To delete, provide campaignId and set delete to true.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    campaignId: z.string().optional().describe('Campaign ID (required for update/delete, omit for create)'),
-    delete: z.boolean().optional().describe('Set to true to delete the campaign'),
-    type: z.enum(['regular', 'plaintext', 'rss', 'variate']).optional().describe('Campaign type (required for create)'),
-    listId: z.string().optional().describe('Audience ID to send the campaign to'),
-    savedSegmentId: z.number().optional().describe('Saved segment ID to target'),
-    subjectLine: z.string().optional().describe('Email subject line'),
-    previewText: z.string().optional().describe('Preview text shown in inbox'),
-    title: z.string().optional().describe('Internal campaign title'),
-    fromName: z.string().optional().describe('Sender name'),
-    replyTo: z.string().optional().describe('Reply-to email address'),
-    templateId: z.number().optional().describe('Template ID to use'),
-    trackOpens: z.boolean().optional().describe('Track email opens'),
-    trackClicks: z.boolean().optional().describe('Track HTML link clicks'),
-  }))
-  .output(z.object({
-    campaignId: z.string(),
-    status: z.string().optional(),
-    title: z.string().optional(),
-    deleted: z.boolean().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      campaignId: z
+        .string()
+        .optional()
+        .describe('Campaign ID (required for update/delete, omit for create)'),
+      delete: z.boolean().optional().describe('Set to true to delete the campaign'),
+      type: z
+        .enum(['regular', 'plaintext', 'rss', 'variate'])
+        .optional()
+        .describe('Campaign type (required for create)'),
+      listId: z.string().optional().describe('Audience ID to send the campaign to'),
+      savedSegmentId: z.number().optional().describe('Saved segment ID to target'),
+      subjectLine: z.string().optional().describe('Email subject line'),
+      previewText: z.string().optional().describe('Preview text shown in inbox'),
+      title: z.string().optional().describe('Internal campaign title'),
+      fromName: z.string().optional().describe('Sender name'),
+      replyTo: z.string().optional().describe('Reply-to email address'),
+      templateId: z.number().optional().describe('Template ID to use'),
+      trackOpens: z.boolean().optional().describe('Track email opens'),
+      trackClicks: z.boolean().optional().describe('Track HTML link clicks')
+    })
+  )
+  .output(
+    z.object({
+      campaignId: z.string(),
+      status: z.string().optional(),
+      title: z.string().optional(),
+      deleted: z.boolean().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MailchimpClient({
       token: ctx.auth.token,
-      serverPrefix: ctx.auth.serverPrefix,
+      serverPrefix: ctx.auth.serverPrefix
     });
 
     if (ctx.input.delete && ctx.input.campaignId) {
       await client.deleteCampaign(ctx.input.campaignId);
       return {
         output: { campaignId: ctx.input.campaignId, deleted: true },
-        message: `Campaign **${ctx.input.campaignId}** has been deleted.`,
+        message: `Campaign **${ctx.input.campaignId}** has been deleted.`
       };
     }
 
@@ -80,9 +87,9 @@ export let manageCampaignTool = SlateTool.create(
         output: {
           campaignId: result.id,
           status: result.status,
-          title: result.settings?.title,
+          title: result.settings?.title
         },
-        message: `Campaign **${result.settings?.title ?? result.id}** has been updated.`,
+        message: `Campaign **${result.settings?.title ?? result.id}** has been updated.`
       };
     }
 
@@ -91,8 +98,9 @@ export let manageCampaignTool = SlateTool.create(
       output: {
         campaignId: result.id,
         status: result.status,
-        title: result.settings?.title,
+        title: result.settings?.title
       },
-      message: `Campaign **${result.settings?.title ?? result.id}** (${result.id}) has been created with status **${result.status}**.`,
+      message: `Campaign **${result.settings?.title ?? result.id}** (${result.id}) has been created with status **${result.status}**.`
     };
-  }).build();
+  })
+  .build();

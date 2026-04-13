@@ -3,48 +3,55 @@ import { NeutrinoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let geocodeReverseTool = SlateTool.create(
-  spec,
-  {
-    name: 'Reverse Geocode',
-    key: 'geocode_reverse',
-    description: `Convert geographic coordinates (latitude/longitude) or a geohash into a physical address. Useful for processing GPS data from mobile devices. Supports multiple zoom levels from address-specific to country-level.`,
-    constraints: [
-      'Rate limited to 20 requests per second'
-    ],
-    tags: {
-      readOnly: true
-    }
+export let geocodeReverseTool = SlateTool.create(spec, {
+  name: 'Reverse Geocode',
+  key: 'geocode_reverse',
+  description: `Convert geographic coordinates (latitude/longitude) or a geohash into a physical address. Useful for processing GPS data from mobile devices. Supports multiple zoom levels from address-specific to country-level.`,
+  constraints: ['Rate limited to 20 requests per second'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    latitude: z.string().optional().describe('Latitude in decimal degrees'),
-    longitude: z.string().optional().describe('Longitude in decimal degrees'),
-    geohash: z.string().optional().describe('Geohash string (alternative to lat/long)'),
-    languageCode: z.string().optional().describe('Language for results: ar, de, en, es, fr, it, ja, nl, pt, ru, zh'),
-    zoom: z.enum(['address', 'street', 'city', 'state', 'country']).optional().describe('Precision level for results')
-  }))
-  .output(z.object({
-    found: z.boolean().describe('Whether a location was found'),
-    latitude: z.number().describe('Latitude coordinate'),
-    longitude: z.number().describe('Longitude coordinate'),
-    address: z.string().describe('Formatted address'),
-    city: z.string().describe('City name'),
-    state: z.string().describe('State/province name'),
-    postalCode: z.string().describe('Postal/zip code'),
-    country: z.string().describe('Country name'),
-    countryCode: z.string().describe('ISO 2-letter country code'),
-    continentCode: z.string().describe('Continent code'),
-    locationType: z.string().describe('Location type'),
-    buildingType: z.string().describe('Building type classification'),
-    timezone: z.object({
-      timezoneId: z.string().describe('IANA timezone ID'),
-      name: z.string().describe('Timezone name'),
-      abbr: z.string().describe('Timezone abbreviation'),
-      offset: z.string().describe('UTC offset')
-    }).describe('Timezone information')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      latitude: z.string().optional().describe('Latitude in decimal degrees'),
+      longitude: z.string().optional().describe('Longitude in decimal degrees'),
+      geohash: z.string().optional().describe('Geohash string (alternative to lat/long)'),
+      languageCode: z
+        .string()
+        .optional()
+        .describe('Language for results: ar, de, en, es, fr, it, ja, nl, pt, ru, zh'),
+      zoom: z
+        .enum(['address', 'street', 'city', 'state', 'country'])
+        .optional()
+        .describe('Precision level for results')
+    })
+  )
+  .output(
+    z.object({
+      found: z.boolean().describe('Whether a location was found'),
+      latitude: z.number().describe('Latitude coordinate'),
+      longitude: z.number().describe('Longitude coordinate'),
+      address: z.string().describe('Formatted address'),
+      city: z.string().describe('City name'),
+      state: z.string().describe('State/province name'),
+      postalCode: z.string().describe('Postal/zip code'),
+      country: z.string().describe('Country name'),
+      countryCode: z.string().describe('ISO 2-letter country code'),
+      continentCode: z.string().describe('Continent code'),
+      locationType: z.string().describe('Location type'),
+      buildingType: z.string().describe('Building type classification'),
+      timezone: z
+        .object({
+          timezoneId: z.string().describe('IANA timezone ID'),
+          name: z.string().describe('Timezone name'),
+          abbr: z.string().describe('Timezone abbreviation'),
+          offset: z.string().describe('UTC offset')
+        })
+        .describe('Timezone information')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new NeutrinoClient({
       userId: ctx.auth.userId,
       token: ctx.auth.token
@@ -85,4 +92,5 @@ export let geocodeReverseTool = SlateTool.create(
         ? `Location found: **${result.address}** (${result.city ? result.city + ', ' : ''}${result.country}).`
         : `No location found for the given coordinates.`
     };
-  }).build();
+  })
+  .build();

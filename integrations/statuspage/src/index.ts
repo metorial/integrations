@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getPage,
@@ -15,13 +14,9 @@ import {
   manageSubscriber,
   listSubscribers,
   submitMetricData,
-  managePostmortem,
+  managePostmortem
 } from './tools';
-import {
-  incidentUpdates,
-  componentStatusChanges,
-  inboundWebhook,
-} from './triggers';
+import { incidentUpdates, componentStatusChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -39,11 +34,7 @@ export let provider = Slate.create({
     manageSubscriber,
     listSubscribers,
     submitMetricData,
-    managePostmortem,
+    managePostmortem
   ],
-  triggers: [
-    inboundWebhook,
-    incidentUpdates,
-    componentStatusChanges,
-  ],
+  triggers: [inboundWebhook, incidentUpdates, componentStatusChanges]
 });

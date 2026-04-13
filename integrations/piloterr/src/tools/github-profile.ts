@@ -3,37 +3,38 @@ import { PiloterrClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let githubProfile = SlateTool.create(
-  spec,
-  {
-    name: 'GitHub Profile',
-    key: 'github_profile',
-    description: `Retrieve public information from a GitHub user profile including name, email, company, location, follower/following counts, public repos, and SSH keys. Supports lookup by username, URL, or email.`,
-    tags: {
-      readOnly: true
-    }
+export let githubProfile = SlateTool.create(spec, {
+  name: 'GitHub Profile',
+  key: 'github_profile',
+  description: `Retrieve public information from a GitHub user profile including name, email, company, location, follower/following counts, public repos, and SSH keys. Supports lookup by username, URL, or email.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    usernameOrUrl: z.string().describe('GitHub username, profile URL, or email address')
-  }))
-  .output(z.object({
-    githubId: z.number().optional(),
-    login: z.string().optional(),
-    name: z.string().optional(),
-    email: z.string().nullable().optional(),
-    company: z.string().nullable().optional(),
-    location: z.string().nullable().optional(),
-    avatarUrl: z.string().optional(),
-    followers: z.number().optional(),
-    following: z.number().optional(),
-    publicRepos: z.number().optional(),
-    publicGists: z.number().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-    raw: z.any().describe('Full raw response')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      usernameOrUrl: z.string().describe('GitHub username, profile URL, or email address')
+    })
+  )
+  .output(
+    z.object({
+      githubId: z.number().optional(),
+      login: z.string().optional(),
+      name: z.string().optional(),
+      email: z.string().nullable().optional(),
+      company: z.string().nullable().optional(),
+      location: z.string().nullable().optional(),
+      avatarUrl: z.string().optional(),
+      followers: z.number().optional(),
+      following: z.number().optional(),
+      publicRepos: z.number().optional(),
+      publicGists: z.number().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional(),
+      raw: z.any().describe('Full raw response')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PiloterrClient(ctx.auth.token);
     let result = await client.getGithubUser({ query: ctx.input.usernameOrUrl });
 

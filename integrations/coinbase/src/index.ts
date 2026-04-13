@@ -13,13 +13,9 @@ import {
   getExchangeRates,
   getUserProfile,
   manageAddresses,
-  manageCommerceCharges,
+  manageCommerceCharges
 } from './tools';
-import {
-  accountNotifications,
-  commerceChargeEvents,
-  transactionPolling,
-} from './triggers';
+import { accountNotifications, commerceChargeEvents, transactionPolling } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,11 +32,7 @@ export let provider = Slate.create({
     getExchangeRates,
     getUserProfile,
     manageAddresses,
-    manageCommerceCharges,
+    manageCommerceCharges
   ],
-  triggers: [
-    accountNotifications,
-    commerceChargeEvents,
-    transactionPolling,
-  ],
+  triggers: [accountNotifications, commerceChargeEvents, transactionPolling]
 });

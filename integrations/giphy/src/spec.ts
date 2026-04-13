@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'giphy',
   name: 'Giphy',
-  description: 'Search, discover, and retrieve GIFs, stickers, animated emoji, and video clips from GIPHY\'s library of millions of items.',
+  description:
+    "Search, discover, and retrieve GIFs, stickers, animated emoji, and video clips from GIPHY's library of millions of items.",
   metadata: {},
   config,
-  auth,
+  auth
 });

@@ -123,8 +123,8 @@ export class Client {
       baseURL: 'https://api.ticktick.com/open/v1',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -143,7 +143,7 @@ export class Client {
   async updateTask(taskId: string, input: TaskUpdateInput): Promise<Task> {
     let body: Record<string, unknown> = {
       ...input,
-      id: taskId,
+      id: taskId
     };
     delete (body as any).taskId;
     let response = await this.axios.post(`/task/${taskId}`, body);
@@ -199,7 +199,7 @@ export class Client {
     }
 
     if (input.update && input.update.length > 0) {
-      body.update = input.update.map((task) => {
+      body.update = input.update.map(task => {
         let { taskId, ...rest } = task;
         return { id: taskId, ...rest };
       });

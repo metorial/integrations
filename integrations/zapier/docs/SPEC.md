@@ -50,6 +50,7 @@ The various endpoints of the Zapier Workflow API require different OAuth scopes.
 ### Token Usage
 
 All API requests require a Bearer token in the Authorization header:
+
 ```
 Authorization: Bearer <access_token>
 ```
@@ -69,6 +70,7 @@ Retrieve a list of Zaps for the authenticated Zapier user. The response can be e
 ### Zap Creation
 
 To build a Zap, you need to select an Action, Authentication, and Inputs for each step. The API allows you to:
+
 - Browse available actions (triggers and actions) for a given app
 - Retrieve input fields and choices for each action
 - Retrieve output fields from one step for mapping to subsequent steps
@@ -105,4 +107,4 @@ Zapier provides an embeddable Zap editor that can be integrated into your produc
 
 ## Events
 
-The provider does not support webhooks or event subscriptions for listening to changes on Zapier resources (such as Zap status changes or execution events) via the API. Zapier is primarily an event *producer* — it receives webhooks from other services and triggers workflows, but does not expose a webhook subscription mechanism for its own platform events.
+The provider does not support webhooks or event subscriptions for listening to changes on Zapier resources (such as Zap status changes or execution events) via the API. Zapier is primarily an event _producer_ — it receives webhooks from other services and triggers workflows, but does not expose a webhook subscription mechanism for its own platform events.

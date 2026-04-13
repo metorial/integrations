@@ -6,5 +6,5 @@ import { formSubmission } from './triggers';
 export let provider = Slate.create({
   spec,
   tools: [submitForm, getSubmissions],
-  triggers: [formSubmission],
+  triggers: [formSubmission]
 });

@@ -3,47 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPullRequestsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Pull Requests',
-    key: 'list_pull_requests',
-    description: `List pull requests for a repository. Filter by state (OPEN, MERGED, DECLINED, SUPERSEDED) to find specific PRs.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPullRequestsTool = SlateTool.create(spec, {
+  name: 'List Pull Requests',
+  key: 'list_pull_requests',
+  description: `List pull requests for a repository. Filter by state (OPEN, MERGED, DECLINED, SUPERSEDED) to find specific PRs.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    repoSlug: z.string().describe('Repository slug'),
-    state: z.enum(['OPEN', 'MERGED', 'DECLINED', 'SUPERSEDED']).optional().describe('Filter by PR state'),
-    page: z.number().optional().describe('Page number'),
-    pageLen: z.number().optional().describe('Results per page (max 50)'),
-  }))
-  .output(z.object({
-    pullRequests: z.array(z.object({
-      pullRequestId: z.number(),
-      title: z.string(),
-      state: z.string(),
-      author: z.string().optional(),
-      sourceBranch: z.string().optional(),
-      destinationBranch: z.string().optional(),
-      createdOn: z.string().optional(),
-      updatedOn: z.string().optional(),
-      htmlUrl: z.string().optional(),
-      commentCount: z.number().optional(),
-      taskCount: z.number().optional(),
-    })),
-    totalCount: z.number().optional(),
-    hasNextPage: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      repoSlug: z.string().describe('Repository slug'),
+      state: z
+        .enum(['OPEN', 'MERGED', 'DECLINED', 'SUPERSEDED'])
+        .optional()
+        .describe('Filter by PR state'),
+      page: z.number().optional().describe('Page number'),
+      pageLen: z.number().optional().describe('Results per page (max 50)')
+    })
+  )
+  .output(
+    z.object({
+      pullRequests: z.array(
+        z.object({
+          pullRequestId: z.number(),
+          title: z.string(),
+          state: z.string(),
+          author: z.string().optional(),
+          sourceBranch: z.string().optional(),
+          destinationBranch: z.string().optional(),
+          createdOn: z.string().optional(),
+          updatedOn: z.string().optional(),
+          htmlUrl: z.string().optional(),
+          commentCount: z.number().optional(),
+          taskCount: z.number().optional()
+        })
+      ),
+      totalCount: z.number().optional(),
+      hasNextPage: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, workspace: ctx.config.workspace });
 
     let result = await client.listPullRequests(ctx.input.repoSlug, {
       state: ctx.input.state,
       page: ctx.input.page,
-      pageLen: ctx.input.pageLen,
+      pageLen: ctx.input.pageLen
     });
 
     let pullRequests = (result.values || []).map((pr: any) => ({
@@ -57,15 +63,16 @@ export let listPullRequestsTool = SlateTool.create(
       updatedOn: pr.updated_on,
       htmlUrl: pr.links?.html?.href || undefined,
       commentCount: pr.comment_count,
-      taskCount: pr.task_count,
+      taskCount: pr.task_count
     }));
 
     return {
       output: {
         pullRequests,
         totalCount: result.size,
-        hasNextPage: !!result.next,
+        hasNextPage: !!result.next
       },
-      message: `Found **${pullRequests.length}** pull requests${ctx.input.state ? ` with state ${ctx.input.state}` : ''}.`,
+      message: `Found **${pullRequests.length}** pull requests${ctx.input.state ? ` with state ${ctx.input.state}` : ''}.`
     };
-  }).build();
+  })
+  .build();

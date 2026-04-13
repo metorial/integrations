@@ -23,12 +23,9 @@ import {
   browseCatalog,
   createRegulation,
   getUsage,
-  listAuditEvents,
+  listAuditEvents
 } from './tools';
-import {
-  workspaceActivityTrigger,
-  eventWebhookTrigger,
-} from './triggers';
+import { workspaceActivityTrigger, eventWebhookTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -55,10 +52,7 @@ export let provider = Slate.create({
     browseCatalog,
     createRegulation,
     getUsage,
-    listAuditEvents,
+    listAuditEvents
   ],
-  triggers: [
-    workspaceActivityTrigger,
-    eventWebhookTrigger,
-  ],
+  triggers: [workspaceActivityTrigger, eventWebhookTrigger]
 });

@@ -12,8 +12,8 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://api.adyntel.com',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -21,7 +21,7 @@ export class Client {
     return {
       api_key: this.auth.token,
       email: this.auth.email,
-      ...params,
+      ...params
     };
   }
 
@@ -45,12 +45,9 @@ export class Client {
     return response.data;
   }
 
-  async searchMetaAds(params: {
-    keyword: string;
-    countryCode?: string;
-  }) {
+  async searchMetaAds(params: { keyword: string; countryCode?: string }) {
     let body: Record<string, unknown> = {
-      keyword: params.keyword,
+      keyword: params.keyword
     };
     if (params.countryCode) body.country_code = params.countryCode;
 
@@ -58,10 +55,7 @@ export class Client {
     return response.data;
   }
 
-  async lookupLinkedInAds(params: {
-    companyDomain?: string;
-    linkedinPageId?: number;
-  }) {
+  async lookupLinkedInAds(params: { companyDomain?: string; linkedinPageId?: number }) {
     let body: Record<string, unknown> = {};
     if (params.companyDomain) body.company_domain = params.companyDomain;
     if (params.linkedinPageId) body.linkedin_page_id = params.linkedinPageId;
@@ -70,12 +64,9 @@ export class Client {
     return response.data;
   }
 
-  async lookupGoogleAds(params: {
-    companyDomain: string;
-    mediaType?: string;
-  }) {
+  async lookupGoogleAds(params: { companyDomain: string; mediaType?: string }) {
     let body: Record<string, unknown> = {
-      company_domain: params.companyDomain,
+      company_domain: params.companyDomain
     };
     if (params.mediaType) body.media_type = params.mediaType;
 
@@ -83,34 +74,27 @@ export class Client {
     return response.data;
   }
 
-  async submitGoogleShoppingSearch(params: {
-    companyDomain: string;
-  }) {
+  async submitGoogleShoppingSearch(params: { companyDomain: string }) {
     let body: Record<string, unknown> = {
-      company_domain: params.companyDomain,
+      company_domain: params.companyDomain
     };
 
     let response = await this.http.post('/google_shopping', this.buildBody(body));
     return response.data;
   }
 
-  async getGoogleShoppingStatus(params: {
-    requestId: string;
-  }) {
+  async getGoogleShoppingStatus(params: { requestId: string }) {
     let body: Record<string, unknown> = {
-      id: params.requestId,
+      id: params.requestId
     };
 
     let response = await this.http.post('/google_shopping_status', this.buildBody(body));
     return response.data;
   }
 
-  async searchTikTokAds(params: {
-    keyword: string;
-    countryCode?: string;
-  }) {
+  async searchTikTokAds(params: { keyword: string; countryCode?: string }) {
     let body: Record<string, unknown> = {
-      keyword: params.keyword,
+      keyword: params.keyword
     };
     if (params.countryCode) body.country_code = params.countryCode;
 
@@ -118,22 +102,18 @@ export class Client {
     return response.data;
   }
 
-  async getTikTokAdDetails(params: {
-    adId: number;
-  }) {
+  async getTikTokAdDetails(params: { adId: number }) {
     let body: Record<string, unknown> = {
-      id: params.adId,
+      id: params.adId
     };
 
     let response = await this.http.post('/tiktok_ad_details', this.buildBody(body));
     return response.data;
   }
 
-  async getKeywordAnalysis(params: {
-    companyDomain: string;
-  }) {
+  async getKeywordAnalysis(params: { companyDomain: string }) {
     let body: Record<string, unknown> = {
-      company_domain: params.companyDomain,
+      company_domain: params.companyDomain
     };
 
     let response = await this.http.post('/domain-keywords', this.buildBody(body));

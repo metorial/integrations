@@ -3,35 +3,39 @@ import { SevdeskClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAccountingContact = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Accounting Contact',
-    key: 'manage_accounting_contact',
-    description: `Create or update accounting-specific information for a contact, such as debitor/creditor numbers used in bookkeeping. If an accounting contact ID is provided, the existing record is updated; otherwise, a new one is created.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageAccountingContact = SlateTool.create(spec, {
+  name: 'Manage Accounting Contact',
+  key: 'manage_accounting_contact',
+  description: `Create or update accounting-specific information for a contact, such as debitor/creditor numbers used in bookkeeping. If an accounting contact ID is provided, the existing record is updated; otherwise, a new one is created.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    accountingContactId: z.string().optional().describe('ID of existing accounting contact to update (omit to create new)'),
-    contactId: z.string().describe('ID of the parent contact'),
-    debitorNumber: z.string().optional().describe('Debitor number for bookkeeping'),
-    creditorNumber: z.string().optional().describe('Creditor number for bookkeeping'),
-  }))
-  .output(z.object({
-    accountingContactId: z.string().describe('ID of the accounting contact'),
-    contactId: z.string(),
-    debitorNumber: z.string().optional(),
-    creditorNumber: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      accountingContactId: z
+        .string()
+        .optional()
+        .describe('ID of existing accounting contact to update (omit to create new)'),
+      contactId: z.string().describe('ID of the parent contact'),
+      debitorNumber: z.string().optional().describe('Debitor number for bookkeeping'),
+      creditorNumber: z.string().optional().describe('Creditor number for bookkeeping')
+    })
+  )
+  .output(
+    z.object({
+      accountingContactId: z.string().describe('ID of the accounting contact'),
+      contactId: z.string(),
+      debitorNumber: z.string().optional(),
+      creditorNumber: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SevdeskClient({ token: ctx.auth.token });
 
     let data: Record<string, any> = {
-      contact: { id: ctx.input.contactId, objectName: 'Contact' },
+      contact: { id: ctx.input.contactId, objectName: 'Contact' }
     };
     if (ctx.input.debitorNumber !== undefined) data.debitorNumber = ctx.input.debitorNumber;
     if (ctx.input.creditorNumber !== undefined) data.creditorNumber = ctx.input.creditorNumber;
@@ -48,10 +52,11 @@ export let manageAccountingContact = SlateTool.create(
         accountingContactId: String(result.id),
         contactId: ctx.input.contactId,
         debitorNumber: result.debitorNumber ?? undefined,
-        creditorNumber: result.creditorNumber ?? undefined,
+        creditorNumber: result.creditorNumber ?? undefined
       },
       message: ctx.input.accountingContactId
         ? `Updated accounting contact **${result.id}** for contact **${ctx.input.contactId}**.`
-        : `Created accounting contact **${result.id}** for contact **${ctx.input.contactId}**.`,
+        : `Created accounting contact **${result.id}** for contact **${ctx.input.contactId}**.`
     };
-  }).build();
+  })
+  .build();

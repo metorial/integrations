@@ -2,53 +2,61 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let actorSchema = z.object({
-  userId: z.string().optional().describe('User ID of the actor'),
-  email: z.string().optional().describe('Actor email'),
-  username: z.string().optional().describe('Actor username')
-}).optional();
+let actorSchema = z
+  .object({
+    userId: z.string().optional().describe('User ID of the actor'),
+    email: z.string().optional().describe('Actor email'),
+    username: z.string().optional().describe('Actor username')
+  })
+  .optional();
 
-let contextSchema = z.object({
-  projectId: z.string().optional().describe('Project ID'),
-  projectName: z.string().optional().describe('Project name'),
-  screenId: z.string().optional().describe('Screen ID (if applicable)'),
-  screenName: z.string().optional().describe('Screen name (if applicable)')
-}).optional();
+let contextSchema = z
+  .object({
+    projectId: z.string().optional().describe('Project ID'),
+    projectName: z.string().optional().describe('Project name'),
+    screenId: z.string().optional().describe('Screen ID (if applicable)'),
+    screenName: z.string().optional().describe('Screen name (if applicable)')
+  })
+  .optional();
 
-export let projectEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Events',
-    key: 'project_events',
-    description: 'Triggered when changes occur in Zeplin projects, including screen updates, note changes, member changes, color/text style/component updates, and more.'
-  }
-)
-  .input(z.object({
-    event: z.string().describe('Event type (e.g. project.screen, project.note)'),
-    action: z.string().describe('Action performed (e.g. created, updated, deleted)'),
-    timestamp: z.number().describe('UNIX timestamp of when the event occurred'),
-    resourceId: z.string().optional().describe('ID of the affected resource'),
-    resourceType: z.string().optional().describe('Type of the affected resource'),
-    resourceData: z.any().optional().describe('Data of the affected resource'),
-    context: z.any().optional().describe('Additional context (project, screen, etc.)'),
-    actor: z.any().optional().describe('User who triggered the event'),
-    deliveryId: z.string().optional().describe('Unique delivery ID for deduplication')
-  }))
-  .output(z.object({
-    event: z.string().describe('Event type'),
-    action: z.string().describe('Action performed'),
-    timestamp: z.number().describe('UNIX timestamp'),
-    resourceId: z.string().optional().describe('ID of the affected resource'),
-    resourceType: z.string().optional().describe('Type of the affected resource'),
-    resourceData: z.any().optional().describe('Data of the affected resource'),
-    context: contextSchema.describe('Related context information'),
-    actor: actorSchema.describe('User who triggered the event')
-  }))
+export let projectEvents = SlateTrigger.create(spec, {
+  name: 'Project Events',
+  key: 'project_events',
+  description:
+    'Triggered when changes occur in Zeplin projects, including screen updates, note changes, member changes, color/text style/component updates, and more.'
+})
+  .input(
+    z.object({
+      event: z.string().describe('Event type (e.g. project.screen, project.note)'),
+      action: z.string().describe('Action performed (e.g. created, updated, deleted)'),
+      timestamp: z.number().describe('UNIX timestamp of when the event occurred'),
+      resourceId: z.string().optional().describe('ID of the affected resource'),
+      resourceType: z.string().optional().describe('Type of the affected resource'),
+      resourceData: z.any().optional().describe('Data of the affected resource'),
+      context: z.any().optional().describe('Additional context (project, screen, etc.)'),
+      actor: z.any().optional().describe('User who triggered the event'),
+      deliveryId: z.string().optional().describe('Unique delivery ID for deduplication')
+    })
+  )
+  .output(
+    z.object({
+      event: z.string().describe('Event type'),
+      action: z.string().describe('Action performed'),
+      timestamp: z.number().describe('UNIX timestamp'),
+      resourceId: z.string().optional().describe('ID of the affected resource'),
+      resourceType: z.string().optional().describe('Type of the affected resource'),
+      resourceData: z.any().optional().describe('Data of the affected resource'),
+      context: contextSchema.describe('Related context information'),
+      actor: actorSchema.describe('User who triggered the event')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
-      let deliveryId = ctx.request.headers.get('zeplin-delivery-id') || `${body.event}-${body.timestamp}-${body.resource?.id}`;
+      let deliveryId =
+        ctx.request.headers.get('zeplin-delivery-id') ||
+        `${body.event}-${body.timestamp}-${body.resource?.id}`;
 
       let context: any = {};
       if (body.context?.project) {
@@ -86,7 +94,7 @@ export let projectEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = `${ctx.input.event}.${ctx.input.action}`;
 
       let context: any = {};
@@ -110,7 +118,9 @@ export let projectEvents = SlateTrigger.create(
 
       return {
         type: eventType,
-        id: ctx.input.deliveryId || `${ctx.input.event}-${ctx.input.timestamp}-${ctx.input.resourceId}`,
+        id:
+          ctx.input.deliveryId ||
+          `${ctx.input.event}-${ctx.input.timestamp}-${ctx.input.resourceId}`,
         output: {
           event: ctx.input.event,
           action: ctx.input.action,

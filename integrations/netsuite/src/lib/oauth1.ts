@@ -39,7 +39,7 @@ export let buildOAuth1Header = (
     oauth_signature_method: 'HMAC-SHA256',
     oauth_timestamp: timestamp,
     oauth_token: credentials.tokenId,
-    oauth_version: '1.0',
+    oauth_version: '1.0'
   };
 
   // Parse URL to separate base URL from query params
@@ -55,7 +55,7 @@ export let buildOAuth1Header = (
   // Sort parameters alphabetically
   let sortedKeys = Object.keys(allParams).sort();
   let paramString = sortedKeys
-    .map((key) => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
+    .map(key => `${percentEncode(key)}=${percentEncode(allParams[key]!)}`)
     .join('&');
 
   // Build signature base string
@@ -65,7 +65,8 @@ export let buildOAuth1Header = (
   let signingKey = `${percentEncode(credentials.consumerSecret)}&${percentEncode(credentials.tokenSecret)}`;
 
   // Compute HMAC-SHA256 signature
-  let signature = crypto.createHmac('sha256', signingKey)
+  let signature = crypto
+    .createHmac('sha256', signingKey)
     .update(signatureBaseString)
     .digest('base64');
 
@@ -79,7 +80,7 @@ export let buildOAuth1Header = (
     `oauth_timestamp="${percentEncode(timestamp)}"`,
     `oauth_signature_method="${percentEncode('HMAC-SHA256')}"`,
     `oauth_version="${percentEncode('1.0')}"`,
-    `oauth_signature="${percentEncode(signature)}"`,
+    `oauth_signature="${percentEncode(signature)}"`
   ];
 
   return `OAuth ${headerParts.join(', ')}`;

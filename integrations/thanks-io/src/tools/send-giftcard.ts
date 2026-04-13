@@ -15,59 +15,68 @@ let recipientSchema = z.object({
   custom1: z.string().optional().describe('Custom field 1'),
   custom2: z.string().optional().describe('Custom field 2'),
   custom3: z.string().optional().describe('Custom field 3'),
-  custom4: z.string().optional().describe('Custom field 4'),
+  custom4: z.string().optional().describe('Custom field 4')
 });
 
-export let sendGiftcard = SlateTool.create(
-  spec,
-  {
-    name: 'Send Gift Card',
-    key: 'send_giftcard',
-    description: `Send a folded 4.25x5.5 gift card notecard in an envelope. Requires specifying a gift card brand and amount from the available catalog.
+export let sendGiftcard = SlateTool.create(spec, {
+  name: 'Send Gift Card',
+  key: 'send_giftcard',
+  description: `Send a folded 4.25x5.5 gift card notecard in an envelope. Requires specifying a gift card brand and amount from the available catalog.
 Use the **List Gift Card Brands** tool to find available brands and denominations before sending.
 Recipients can be specified inline, via mailing list IDs, or via radius search. Set **preview** to true for a visual preview.`,
-    instructions: [
-      'Use the list_giftcard_brands tool to get valid brand codes and amounts.',
-      'giftcardAmountInCents is the denomination in cents (e.g., 2500 for $25).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+  instructions: [
+    'Use the list_giftcard_brands tool to get valid brand codes and amounts.',
+    'giftcardAmountInCents is the denomination in cents (e.g., 2500 for $25).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    frontImageUrl: z.string().optional().describe('URL of the exterior image'),
-    imageTemplateId: z.number().optional().describe('ID of a saved image template'),
-    message: z.string().optional().describe('Handwritten interior message'),
-    messageTemplateId: z.number().optional().describe('ID of a saved message template'),
-    giftcardBrand: z.string().describe('Gift card brand code (e.g., "amazonus")'),
-    giftcardAmountInCents: z.number().describe('Gift card amount in cents (e.g., 2500 for $25)'),
-    handwritingStyleId: z.number().optional().describe('Handwriting style ID'),
-    handwritingColor: z.string().optional().describe('Ink color'),
-    handwritingRealism: z.boolean().optional().describe('Enable realism effect for AI fonts'),
-    recipients: z.array(recipientSchema).optional().describe('Inline recipient list'),
-    mailingListIds: z.array(z.number()).optional().describe('Mailing list IDs to send to'),
-    sendStandardMail: z.boolean().optional().describe('Use Standard Mail instead of First Class'),
-    returnName: z.string().optional().describe('Return address name'),
-    returnAddress: z.string().optional().describe('Return street address'),
-    returnCity: z.string().optional().describe('Return city'),
-    returnState: z.string().optional().describe('Return state code'),
-    returnPostalCode: z.string().optional().describe('Return ZIP code'),
-    subAccountId: z.number().optional().describe('Sub-account ID'),
-    preview: z.boolean().optional().describe('Set true to preview without sending'),
-  }))
-  .output(z.object({
-    orderId: z.number().optional().describe('Order ID'),
-    status: z.string().optional().describe('Order status'),
-    totalRecipients: z.number().optional().describe('Estimated number of recipients'),
-    authorizationTotal: z.number().optional().describe('Total cost in cents'),
-    previews: z.array(z.string()).optional().describe('Preview image URLs'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      frontImageUrl: z.string().optional().describe('URL of the exterior image'),
+      imageTemplateId: z.number().optional().describe('ID of a saved image template'),
+      message: z.string().optional().describe('Handwritten interior message'),
+      messageTemplateId: z.number().optional().describe('ID of a saved message template'),
+      giftcardBrand: z.string().describe('Gift card brand code (e.g., "amazonus")'),
+      giftcardAmountInCents: z
+        .number()
+        .describe('Gift card amount in cents (e.g., 2500 for $25)'),
+      handwritingStyleId: z.number().optional().describe('Handwriting style ID'),
+      handwritingColor: z.string().optional().describe('Ink color'),
+      handwritingRealism: z
+        .boolean()
+        .optional()
+        .describe('Enable realism effect for AI fonts'),
+      recipients: z.array(recipientSchema).optional().describe('Inline recipient list'),
+      mailingListIds: z.array(z.number()).optional().describe('Mailing list IDs to send to'),
+      sendStandardMail: z
+        .boolean()
+        .optional()
+        .describe('Use Standard Mail instead of First Class'),
+      returnName: z.string().optional().describe('Return address name'),
+      returnAddress: z.string().optional().describe('Return street address'),
+      returnCity: z.string().optional().describe('Return city'),
+      returnState: z.string().optional().describe('Return state code'),
+      returnPostalCode: z.string().optional().describe('Return ZIP code'),
+      subAccountId: z.number().optional().describe('Sub-account ID'),
+      preview: z.boolean().optional().describe('Set true to preview without sending')
+    })
+  )
+  .output(
+    z.object({
+      orderId: z.number().optional().describe('Order ID'),
+      status: z.string().optional().describe('Order status'),
+      totalRecipients: z.number().optional().describe('Estimated number of recipients'),
+      authorizationTotal: z.number().optional().describe('Total cost in cents'),
+      previews: z.array(z.string()).optional().describe('Preview image URLs')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ThanksIoClient({ token: ctx.auth.token });
 
-    let recipientsPayload = ctx.input.recipients?.map((r) => ({
+    let recipientsPayload = ctx.input.recipients?.map(r => ({
       name: r.name,
       company: r.company,
       address: r.address,
@@ -79,7 +88,7 @@ Recipients can be specified inline, via mailing list IDs, or via radius search. 
       custom1: r.custom1,
       custom2: r.custom2,
       custom3: r.custom3,
-      custom4: r.custom4,
+      custom4: r.custom4
     }));
 
     let result = await client.sendGiftcard({
@@ -101,11 +110,11 @@ Recipients can be specified inline, via mailing list IDs, or via radius search. 
       returnState: ctx.input.returnState,
       returnPostalCode: ctx.input.returnPostalCode,
       subAccount: ctx.input.subAccountId,
-      preview: ctx.input.preview,
+      preview: ctx.input.preview
     });
 
     let isPreview = ctx.input.preview === true;
-    let previews = isPreview ? ((result.data as any)?.previews as string[] || []) : undefined;
+    let previews = isPreview ? ((result.data as any)?.previews as string[]) || [] : undefined;
 
     return {
       output: {
@@ -113,10 +122,11 @@ Recipients can be specified inline, via mailing list IDs, or via radius search. 
         status: isPreview ? 'preview' : (result.status as string),
         totalRecipients: result.total_estimated_recipients as number | undefined,
         authorizationTotal: result.authorization_total as number | undefined,
-        previews,
+        previews
       },
       message: isPreview
         ? `Generated **${previews?.length || 0}** gift card preview(s).`
-        : `Gift card order **#${result.id}** created (brand: **${ctx.input.giftcardBrand}**, amount: **$${(ctx.input.giftcardAmountInCents / 100).toFixed(2)}**) with status **${result.status}**.`,
+        : `Gift card order **#${result.id}** created (brand: **${ctx.input.giftcardBrand}**, amount: **$${(ctx.input.giftcardAmountInCents / 100).toFixed(2)}**) with status **${result.status}**.`
     };
-  }).build();
+  })
+  .build();

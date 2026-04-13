@@ -7,9 +7,9 @@ export class MailsoftlyClient {
     this.axios = createAxios({
       baseURL: 'https://app.mailsoftly.com/api/v3',
       headers: {
-        'Authorization': config.token,
-        'Content-Type': 'application/json',
-      },
+        Authorization: config.token,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -24,7 +24,7 @@ export class MailsoftlyClient {
     return {
       firmId: response.data.firm_id,
       firmName: response.data.firm_name,
-      adminName: response.data.admin_name,
+      adminName: response.data.admin_name
     };
   }
 
@@ -51,7 +51,7 @@ export class MailsoftlyClient {
     customFields?: Record<string, string>;
   }): Promise<any> {
     let body: Record<string, any> = {
-      email: data.email,
+      email: data.email
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -62,12 +62,15 @@ export class MailsoftlyClient {
     return response.data.contact ?? response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    customFields?: Record<string, string>;
-  }): Promise<any> {
+  async updateContact(
+    contactId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      customFields?: Record<string, string>;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.firstName !== undefined) body.first_name = data.firstName;
     if (data.lastName !== undefined) body.last_name = data.lastName;
@@ -76,7 +79,7 @@ export class MailsoftlyClient {
       Object.assign(body, data.customFields);
     }
     let response = await this.axios.post('/update_contact', body, {
-      params: { contact_id: contactId },
+      params: { contact_id: contactId }
     });
     return response.data.contact ?? response.data;
   }
@@ -89,7 +92,7 @@ export class MailsoftlyClient {
     customFields?: Record<string, string>;
   }): Promise<any> {
     let body: Record<string, any> = {
-      email: data.email,
+      email: data.email
     };
     if (data.firstName) body.first_name = data.firstName;
     if (data.lastName) body.last_name = data.lastName;
@@ -121,13 +124,21 @@ export class MailsoftlyClient {
     return response.data.custom_fields ?? response.data ?? [];
   }
 
-  async addCustomFieldToContact(contactId: string, fieldName: string, fieldValue: string): Promise<any> {
-    let response = await this.axios.post('/add_custom_field_to_contact', {
-      custom_field_name: fieldName,
-      custom_field_value: fieldValue,
-    }, {
-      params: { contact_id: contactId },
-    });
+  async addCustomFieldToContact(
+    contactId: string,
+    fieldName: string,
+    fieldValue: string
+  ): Promise<any> {
+    let response = await this.axios.post(
+      '/add_custom_field_to_contact',
+      {
+        custom_field_name: fieldName,
+        custom_field_value: fieldValue
+      },
+      {
+        params: { contact_id: contactId }
+      }
+    );
     return response.data;
   }
 
@@ -140,7 +151,7 @@ export class MailsoftlyClient {
 
   async getContactList(contactListId: string): Promise<any> {
     let response = await this.axios.get('/get_contact_list', {
-      params: { contact_list_id: contactListId },
+      params: { contact_list_id: contactListId }
     });
     return response.data.contact_list ?? response.data;
   }
@@ -152,30 +163,41 @@ export class MailsoftlyClient {
 
   async getContactListContacts(contactListId: string): Promise<any[]> {
     let response = await this.axios.get('/get_contact_list_contacts', {
-      params: { contact_list_id: contactListId },
+      params: { contact_list_id: contactListId }
     });
     return response.data.contacts ?? response.data ?? [];
   }
 
   async addContactToContactList(contactListId: string, contactId: string): Promise<any> {
-    let response = await this.axios.post('/add_contact_to_contact_list', {}, {
-      params: { contact_list_id: contactListId, contact_id: contactId },
-    });
+    let response = await this.axios.post(
+      '/add_contact_to_contact_list',
+      {},
+      {
+        params: { contact_list_id: contactListId, contact_id: contactId }
+      }
+    );
     return response.data;
   }
 
-  async addContactsToContactList(contactListId: string, contacts: Array<{ email: string; firstName?: string; lastName?: string }>): Promise<any> {
-    let mappedContacts = contacts.map((c) => {
+  async addContactsToContactList(
+    contactListId: string,
+    contacts: Array<{ email: string; firstName?: string; lastName?: string }>
+  ): Promise<any> {
+    let mappedContacts = contacts.map(c => {
       let obj: Record<string, string> = { email: c.email };
       if (c.firstName) obj.first_name = c.firstName;
       if (c.lastName) obj.last_name = c.lastName;
       return obj;
     });
-    let response = await this.axios.post('/add_contacts_to_contact_list', {
-      contacts: mappedContacts,
-    }, {
-      params: { contact_list_id: contactListId },
-    });
+    let response = await this.axios.post(
+      '/add_contacts_to_contact_list',
+      {
+        contacts: mappedContacts
+      },
+      {
+        params: { contact_list_id: contactListId }
+      }
+    );
     return response.data;
   }
 
@@ -186,27 +208,37 @@ export class MailsoftlyClient {
     return response.data.tags ?? response.data ?? [];
   }
 
-  async assignTagToContact(contactId: string, tag: { tagId?: string; tagName?: string }): Promise<any> {
+  async assignTagToContact(
+    contactId: string,
+    tag: { tagId?: string; tagName?: string }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (tag.tagId) body.tag_id = tag.tagId;
     if (tag.tagName) body.tag_name = tag.tagName;
     let response = await this.axios.post('/assign_tag_to_contact', body, {
-      params: { contact_id: contactId },
+      params: { contact_id: contactId }
     });
     return response.data;
   }
 
-  async assignTagsToContact(contactId: string, tags: Array<{ tagName: string; tagColor?: string }>): Promise<any> {
-    let mappedTags = tags.map((t) => {
+  async assignTagsToContact(
+    contactId: string,
+    tags: Array<{ tagName: string; tagColor?: string }>
+  ): Promise<any> {
+    let mappedTags = tags.map(t => {
       let obj: Record<string, string> = { tag_name: t.tagName };
       if (t.tagColor) obj.tag_color = t.tagColor;
       return obj;
     });
-    let response = await this.axios.post('/assign_tags_to_contact', {
-      tags: mappedTags,
-    }, {
-      params: { contact_id: contactId },
-    });
+    let response = await this.axios.post(
+      '/assign_tags_to_contact',
+      {
+        tags: mappedTags
+      },
+      {
+        params: { contact_id: contactId }
+      }
+    );
     return response.data;
   }
 
@@ -228,11 +260,11 @@ export class MailsoftlyClient {
     senderEmail?: string;
   }): Promise<any> {
     let emailObj: Record<string, any> = {
-      subject: data.subject,
+      subject: data.subject
     };
     if (data.contactListId) emailObj.contact_list_id = data.contactListId;
     if (data.recipients) {
-      emailObj.recipients = data.recipients.map((r) => {
+      emailObj.recipients = data.recipients.map(r => {
         let obj: Record<string, string> = { email: r.email };
         if (r.firstName) obj.first_name = r.firstName;
         if (r.lastName) obj.last_name = r.lastName;
@@ -248,21 +280,21 @@ export class MailsoftlyClient {
     if (data.senderEmail) emailObj.sender_email = data.senderEmail;
 
     let response = await this.axios.post('/create_email', {
-      mailLists: [emailObj],
+      mailLists: [emailObj]
     });
     return response.data;
   }
 
   async getEmailStatus(emailId: string): Promise<any> {
     let response = await this.axios.get('/email_status', {
-      params: { email_id: emailId },
+      params: { email_id: emailId }
     });
     return response.data;
   }
 
   async sendEmail(emailId: string): Promise<any> {
     let response = await this.axios.post('/send_email', {
-      email_id: emailId,
+      email_id: emailId
     });
     return response.data;
   }

@@ -73,8 +73,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: `https://api.sproutsocial.com/v1/${config.customerId}`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       }
     });
@@ -162,7 +162,10 @@ export class Client {
 
   // ---- Listening ----
 
-  async getListeningTopicMessages(topicId: string, request: ListeningMessagesRequest): Promise<any> {
+  async getListeningTopicMessages(
+    topicId: string,
+    request: ListeningMessagesRequest
+  ): Promise<any> {
     let body: any = {
       filters: request.filters
     };
@@ -177,7 +180,10 @@ export class Client {
     return response.data;
   }
 
-  async getListeningTopicMetrics(topicId: string, request: ListeningMetricsRequest): Promise<any> {
+  async getListeningTopicMetrics(
+    topicId: string,
+    request: ListeningMetricsRequest
+  ): Promise<any> {
     let body: any = {
       filters: request.filters,
       metrics: request.metrics

@@ -3,34 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group',
-    key: 'manage_group',
-    description: `Manage group membership and default dashboards. Add or remove users from a group, and configure which dashboards are automatically assigned to new group members.`,
-    instructions: [
-      'Provide a groupId and use the available fields to add/remove users and manage default tabs.',
-      'Default tab visibility options: "library" (visible in library), "dashboard" (visible on dashboard), "permanent" (always visible).',
-    ],
-  }
-)
-  .input(z.object({
-    groupId: z.string().describe('Group ID to manage'),
-    addUserIds: z.array(z.string()).optional().describe('User IDs to add to the group'),
-    removeUserIds: z.array(z.string()).optional().describe('User IDs to remove from the group'),
-    addDefaultTabs: z.array(z.object({
-      tabId: z.string().describe('Dashboard (tab) ID'),
-      canEdit: z.boolean().optional().describe('Whether members can edit the dashboard'),
-      visibility: z.enum(['library', 'dashboard', 'permanent']).optional().describe('Dashboard visibility level'),
-      index: z.number().optional().describe('Position index for the dashboard'),
-    })).optional().describe('Default dashboards to add for the group'),
-    removeDefaultTabIds: z.array(z.string()).optional().describe('Default tab IDs to remove'),
-  }))
-  .output(z.object({
-    success: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageGroup = SlateTool.create(spec, {
+  name: 'Manage Group',
+  key: 'manage_group',
+  description: `Manage group membership and default dashboards. Add or remove users from a group, and configure which dashboards are automatically assigned to new group members.`,
+  instructions: [
+    'Provide a groupId and use the available fields to add/remove users and manage default tabs.',
+    'Default tab visibility options: "library" (visible in library), "dashboard" (visible on dashboard), "permanent" (always visible).'
+  ]
+})
+  .input(
+    z.object({
+      groupId: z.string().describe('Group ID to manage'),
+      addUserIds: z.array(z.string()).optional().describe('User IDs to add to the group'),
+      removeUserIds: z
+        .array(z.string())
+        .optional()
+        .describe('User IDs to remove from the group'),
+      addDefaultTabs: z
+        .array(
+          z.object({
+            tabId: z.string().describe('Dashboard (tab) ID'),
+            canEdit: z.boolean().optional().describe('Whether members can edit the dashboard'),
+            visibility: z
+              .enum(['library', 'dashboard', 'permanent'])
+              .optional()
+              .describe('Dashboard visibility level'),
+            index: z.number().optional().describe('Position index for the dashboard')
+          })
+        )
+        .optional()
+        .describe('Default dashboards to add for the group'),
+      removeDefaultTabIds: z.array(z.string()).optional().describe('Default tab IDs to remove')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let actions: string[] = [];
 
@@ -64,7 +76,7 @@ export let manageGroup = SlateTool.create(
 
     return {
       output: { success: true },
-      message: `Group \`${ctx.input.groupId}\`: ${actions.join(', ') || 'no changes made'}.`,
+      message: `Group \`${ctx.input.groupId}\`: ${actions.join(', ') || 'no changes made'}.`
     };
   })
   .build();

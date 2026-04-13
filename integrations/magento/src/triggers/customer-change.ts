@@ -3,48 +3,53 @@ import { MagentoClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let customerChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Customer Change',
-    key: 'customer_change',
-    description: 'Triggers when a new customer registers or an existing customer profile is updated. Polls the customer list and detects changes based on update timestamps.',
-  }
-)
-  .input(z.object({
-    customerId: z.number().describe('Customer ID'),
-    email: z.string().optional().describe('Customer email'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    isNew: z.boolean().describe('Whether this is a newly registered customer'),
-  }))
-  .output(z.object({
-    customerId: z.number().describe('Customer ID'),
-    email: z.string().optional().describe('Customer email'),
-    firstname: z.string().optional().describe('First name'),
-    lastname: z.string().optional().describe('Last name'),
-    middlename: z.string().optional().describe('Middle name'),
-    groupId: z.number().optional().describe('Customer group ID'),
-    storeId: z.number().optional().describe('Store ID'),
-    websiteId: z.number().optional().describe('Website ID'),
-    createdAt: z.string().optional().describe('Account creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let customerChange = SlateTrigger.create(spec, {
+  name: 'Customer Change',
+  key: 'customer_change',
+  description:
+    'Triggers when a new customer registers or an existing customer profile is updated. Polls the customer list and detects changes based on update timestamps.'
+})
+  .input(
+    z.object({
+      customerId: z.number().describe('Customer ID'),
+      email: z.string().optional().describe('Customer email'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      isNew: z.boolean().describe('Whether this is a newly registered customer')
+    })
+  )
+  .output(
+    z.object({
+      customerId: z.number().describe('Customer ID'),
+      email: z.string().optional().describe('Customer email'),
+      firstname: z.string().optional().describe('First name'),
+      lastname: z.string().optional().describe('Last name'),
+      middlename: z.string().optional().describe('Middle name'),
+      groupId: z.number().optional().describe('Customer group ID'),
+      storeId: z.number().optional().describe('Store ID'),
+      websiteId: z.number().optional().describe('Website ID'),
+      createdAt: z.string().optional().describe('Account creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 2,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds * 2
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MagentoClient({
         storeUrl: ctx.config.storeUrl,
         storeCode: ctx.config.storeCode,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
-      let state = ctx.state as { lastUpdatedAt?: string; knownCustomers?: Record<string, string> } | null;
+      let state = ctx.state as {
+        lastUpdatedAt?: string;
+        knownCustomers?: Record<string, string>;
+      } | null;
       let lastUpdatedAt = state?.lastUpdatedAt;
       let knownCustomers = state?.knownCustomers || {};
 
@@ -57,7 +62,7 @@ export let customerChange = SlateTrigger.create(
         filters,
         sortField: 'updated_at',
         sortDirection: 'ASC',
-        pageSize: 50,
+        pageSize: 50
       });
 
       let inputs: Array<{
@@ -89,11 +94,14 @@ export let customerChange = SlateTrigger.create(
           lastname: customer.lastname,
           createdAt: customer.created_at,
           updatedAt: customer.updated_at,
-          isNew,
+          isNew
         });
 
         updatedKnown[customerIdStr] = customer.updated_at || '';
-        if (customer.updated_at && (!newLastUpdatedAt || customer.updated_at > newLastUpdatedAt)) {
+        if (
+          customer.updated_at &&
+          (!newLastUpdatedAt || customer.updated_at > newLastUpdatedAt)
+        ) {
           newLastUpdatedAt = customer.updated_at;
         }
       }
@@ -102,16 +110,16 @@ export let customerChange = SlateTrigger.create(
         inputs,
         updatedState: {
           lastUpdatedAt: newLastUpdatedAt,
-          knownCustomers: updatedKnown,
-        },
+          knownCustomers: updatedKnown
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new MagentoClient({
         storeUrl: ctx.config.storeUrl,
         storeCode: ctx.config.storeCode,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let fullCustomer: any = {};
@@ -136,9 +144,9 @@ export let customerChange = SlateTrigger.create(
           storeId: fullCustomer.store_id,
           websiteId: fullCustomer.website_id,
           createdAt: ctx.input.createdAt || fullCustomer.created_at,
-          updatedAt: ctx.input.updatedAt || fullCustomer.updated_at,
-        },
+          updatedAt: ctx.input.updatedAt || fullCustomer.updated_at
+        }
       };
-    },
+    }
   })
   .build();

@@ -2,19 +2,23 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Terraform Cloud API token (User, Team, or Organization token)')
+      token: z
+        .string()
+        .describe('Terraform Cloud API token (User, Team, or Organization token)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token
@@ -26,7 +30,7 @@ export let auth = SlateAuth.create()
       let axios = createAxios({
         baseURL: 'https://app.terraform.io/api/v2',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
+          Authorization: `Bearer ${ctx.output.token}`,
           'Content-Type': 'application/vnd.api+json'
         }
       });

@@ -49,24 +49,29 @@ Scopes control the level of access your application requests. Available scopes f
 ## Features
 
 ### Business Management
+
 - Query businesses associated with the authenticated user, including business type, subtype, and address information.
 - Each business is a separate entity with its own chart of accounts, customers, and financial data; most API operations are scoped to a specific business.
 
 ### Chart of Accounts
+
 - Create, update, and archive accounts in a business's chart of accounts.
 - Accounts are categorized by type (Asset, Liability, Equity, Income, Expense) and subtype (e.g., Cash and Bank, Accounts Receivable, Credit Card).
 - Accounts cannot be deleted, only archived.
 
 ### Customer Management
+
 - Create, update, and delete customers associated with a business.
 - Customer records include contact details, address, shipping details, currency preference, and internal notes.
 - Customers can be listed, sorted, and filtered.
 
 ### Vendor Management
+
 - Query vendors associated with a business, including contact and shipping details.
 - Vendor records are similar in structure to customer records.
 
 ### Invoice Management
+
 - Create, update, clone, delete, approve, send, and mark invoices as sent.
 - Invoices support line items with products, quantities, prices, taxes, and discounts.
 - Invoices can be configured with custom titles, footers, memos, PO numbers, and due dates.
@@ -74,24 +79,29 @@ Scopes control the level of access your application requests. Available scopes f
 - Invoice statuses track the lifecycle (draft, sent, viewed, paid, overdue, etc.).
 
 ### Estimates
+
 - Create and manage estimates (approximate bills) for customers that are not yet requests for payment.
 
 ### Product/Service Catalog
+
 - Create, update, and archive products and services.
 - Products can be listed, sorted, and paginated.
 
 ### Sales Tax Management
+
 - Create, update, and archive sales tax entries.
 - Sales taxes support rate changes with effective dates.
 - Taxes can be applied to invoice line items.
 
 ### Money Transactions
+
 - Create financial transactions by specifying an anchor account (bank/credit card) and categorization line items.
 - Transactions use simplified DEPOSIT/WITHDRAWAL directions for the anchor and INCREASE/DECREASE for line items.
 - Line item amounts must balance against the anchor account amount.
 - Querying or editing existing transactions is limited; the API primarily supports creating new transactions.
 
 ### User Information
+
 - Retrieve the authenticated user's profile information including default email.
 
 ## Events

@@ -131,18 +131,16 @@ export class Client {
 
   constructor(config: IpdataClientConfig) {
     this.token = config.token;
-    let baseURL = config.useEuEndpoint
-      ? 'https://eu-api.ipdata.co'
-      : 'https://api.ipdata.co';
+    let baseURL = config.useEuEndpoint ? 'https://eu-api.ipdata.co' : 'https://api.ipdata.co';
 
     this.axios = createAxios({
-      baseURL,
+      baseURL
     });
   }
 
   private buildParams(fields?: string[]): Record<string, string> {
     let params: Record<string, string> = {
-      'api-key': this.token,
+      'api-key': this.token
     };
     if (fields && fields.length > 0) {
       params['fields'] = fields.join(',');
@@ -153,14 +151,14 @@ export class Client {
   async lookupIp(ip?: string, fields?: string[]): Promise<IpLookupResult> {
     let path = ip ? `/${ip}` : '/';
     let response = await this.axios.get(path, {
-      params: this.buildParams(fields),
+      params: this.buildParams(fields)
     });
     return normalizeKeys(response.data) as IpLookupResult;
   }
 
   async lookupIpField(ip: string, field: string): Promise<unknown> {
     let response = await this.axios.get(`/${ip}/${field}`, {
-      params: { 'api-key': this.token },
+      params: { 'api-key': this.token }
     });
     return normalizeKeys(response.data);
   }
@@ -168,14 +166,14 @@ export class Client {
   async bulkLookup(ips: string[], fields?: string[]): Promise<IpLookupResult[]> {
     let response = await this.axios.post('/bulk', ips, {
       params: this.buildParams(fields),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
-    return (normalizeKeys(response.data) as IpLookupResult[]);
+    return normalizeKeys(response.data) as IpLookupResult[];
   }
 
   async lookupAsn(asn: string): Promise<AsnDetailResult> {
     let response = await this.axios.get(`/${asn}`, {
-      params: { 'api-key': this.token },
+      params: { 'api-key': this.token }
     });
     return normalizeKeys(response.data) as AsnDetailResult;
   }

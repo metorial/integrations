@@ -16,17 +16,23 @@ export class Client {
       headers: {
         'X-API-Key': config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
-  async get<T = any>(endpoint: string, params?: Record<string, any>): Promise<ApiVerveResponse<T>> {
+  async get<T = any>(
+    endpoint: string,
+    params?: Record<string, any>
+  ): Promise<ApiVerveResponse<T>> {
     let response = await this.axios.get<ApiVerveResponse<T>>(endpoint, { params });
     return response.data;
   }
 
-  async post<T = any>(endpoint: string, data?: Record<string, any>): Promise<ApiVerveResponse<T>> {
+  async post<T = any>(
+    endpoint: string,
+    data?: Record<string, any>
+  ): Promise<ApiVerveResponse<T>> {
     let response = await this.axios.post<ApiVerveResponse<T>>(endpoint, data);
     return response.data;
   }

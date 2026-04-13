@@ -50,9 +50,13 @@ export class SkyfireClient {
     remainingBalance?: string;
     validationError?: string;
   }> {
-    let response = await api.post('/api/v1/tokens/introspect', { token }, {
-      headers: this.headers()
-    });
+    let response = await api.post(
+      '/api/v1/tokens/introspect',
+      { token },
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
@@ -109,9 +113,13 @@ export class SkyfireClient {
   }
 
   async setTokenVersion(tokenVersion: string): Promise<void> {
-    await api.put('/api/v1/agents/token-version', { tokenVersion }, {
-      headers: this.headers()
-    });
+    await api.put(
+      '/api/v1/agents/token-version',
+      { tokenVersion },
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   // ─── Seller Service APIs ──────────────────────────────────
@@ -124,9 +132,12 @@ export class SkyfireClient {
   }
 
   async getSellerService(sellerServiceId: string): Promise<SellerService> {
-    let response = await api.get(`/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}`, {
-      headers: this.headers()
-    });
+    let response = await api.get(
+      `/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}`,
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
@@ -137,22 +148,37 @@ export class SkyfireClient {
     return response.data;
   }
 
-  async updateSellerService(sellerServiceId: string, params: UpdateSellerServiceParams): Promise<void> {
-    await api.patch(`/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}`, params, {
-      headers: this.headers()
-    });
+  async updateSellerService(
+    sellerServiceId: string,
+    params: UpdateSellerServiceParams
+  ): Promise<void> {
+    await api.patch(
+      `/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}`,
+      params,
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   async activateSellerService(sellerServiceId: string): Promise<void> {
-    await api.post(`/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}/activate`, {}, {
-      headers: this.headers()
-    });
+    await api.post(
+      `/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}/activate`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   async deactivateSellerService(sellerServiceId: string): Promise<void> {
-    await api.post(`/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}/deactivate`, {}, {
-      headers: this.headers()
-    });
+    await api.post(
+      `/api/v1/agents/seller-services/${encodeURIComponent(sellerServiceId)}/deactivate`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   // ─── Directory APIs ───────────────────────────────────────
@@ -172,9 +198,12 @@ export class SkyfireClient {
   }
 
   async getDirectoryService(serviceId: string): Promise<DirectoryService> {
-    let response = await api.get(`/api/v1/directory/services/${encodeURIComponent(serviceId)}`, {
-      headers: this.headers()
-    });
+    let response = await api.get(
+      `/api/v1/directory/services/${encodeURIComponent(serviceId)}`,
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 
@@ -187,9 +216,12 @@ export class SkyfireClient {
   }
 
   async getServicesByAgent(agentId: string): Promise<{ data: Array<DirectoryService> }> {
-    let response = await api.get(`/api/v1/directory/agents/${encodeURIComponent(agentId)}/services`, {
-      headers: this.headers()
-    });
+    let response = await api.get(
+      `/api/v1/directory/agents/${encodeURIComponent(agentId)}/services`,
+      {
+        headers: this.headers()
+      }
+    );
     return response.data;
   }
 }

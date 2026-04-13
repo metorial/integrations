@@ -3,39 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let checkThreat = SlateTool.create(
-  spec,
-  {
-    name: 'Check IP Threat',
-    key: 'check_threat',
-    description: `Check threat intelligence for an IP address. Determines whether the IP is associated with Tor, proxies, VPNs, datacenters, known attackers, abusers, or other threats. Uses data from 100+ threat feeds. Useful for fraud detection, access control, and security monitoring.`,
-    constraints: [
-      'Free API keys are limited to 1,500 requests per day.',
-    ],
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    ipAddress: z.string().describe('IPv4 or IPv6 address to check for threats'),
-  }))
-  .output(z.object({
-    ip: z.string().describe('The checked IP address'),
-    isTor: z.boolean().describe('Whether the IP is a known Tor exit node'),
-    isIcloudRelay: z.boolean().describe('Whether the IP is an iCloud Private Relay address'),
-    isProxy: z.boolean().describe('Whether the IP is a known proxy'),
-    isDatacenter: z.boolean().describe('Whether the IP belongs to a datacenter'),
-    isAnonymous: z.boolean().describe('Whether the IP is used for anonymous access'),
-    isKnownAttacker: z.boolean().describe('Whether the IP is a known attacker'),
-    isKnownAbuser: z.boolean().describe('Whether the IP is a known abuser'),
-    isThreat: z.boolean().describe('Whether the IP is considered a threat overall'),
-    isBogon: z.boolean().describe('Whether the IP is a bogon (unallocated/reserved) address'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let checkThreat = SlateTool.create(spec, {
+  name: 'Check IP Threat',
+  key: 'check_threat',
+  description: `Check threat intelligence for an IP address. Determines whether the IP is associated with Tor, proxies, VPNs, datacenters, known attackers, abusers, or other threats. Uses data from 100+ threat feeds. Useful for fraud detection, access control, and security monitoring.`,
+  constraints: ['Free API keys are limited to 1,500 requests per day.'],
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      ipAddress: z.string().describe('IPv4 or IPv6 address to check for threats')
+    })
+  )
+  .output(
+    z.object({
+      ip: z.string().describe('The checked IP address'),
+      isTor: z.boolean().describe('Whether the IP is a known Tor exit node'),
+      isIcloudRelay: z.boolean().describe('Whether the IP is an iCloud Private Relay address'),
+      isProxy: z.boolean().describe('Whether the IP is a known proxy'),
+      isDatacenter: z.boolean().describe('Whether the IP belongs to a datacenter'),
+      isAnonymous: z.boolean().describe('Whether the IP is used for anonymous access'),
+      isKnownAttacker: z.boolean().describe('Whether the IP is a known attacker'),
+      isKnownAbuser: z.boolean().describe('Whether the IP is a known abuser'),
+      isThreat: z.boolean().describe('Whether the IP is considered a threat overall'),
+      isBogon: z.boolean().describe('Whether the IP is a bogon (unallocated/reserved) address')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      useEuEndpoint: ctx.config.useEuEndpoint,
+      useEuEndpoint: ctx.config.useEuEndpoint
     });
 
     let result = await client.lookupIp(ctx.input.ipAddress, ['ip', 'threat']);
@@ -66,9 +65,9 @@ export let checkThreat = SlateTool.create(
         isKnownAttacker: threat?.isKnownAttacker ?? false,
         isKnownAbuser: threat?.isKnownAbuser ?? false,
         isThreat: threat?.isThreat ?? false,
-        isBogon: threat?.isBogon ?? false,
+        isBogon: threat?.isBogon ?? false
       },
-      message: `Threat check for **${result.ip}**: ${threatSummary}.`,
+      message: `Threat check for **${result.ip}**: ${threatSummary}.`
     };
   })
   .build();

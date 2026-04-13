@@ -9,9 +9,9 @@ export class BidsketchClient {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Token token="${token}"`,
+        Authorization: `Token token="${token}"`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     });
   }
@@ -117,8 +117,15 @@ export class BidsketchClient {
     return response.data;
   }
 
-  async updateProposalSection(proposalId: number, sectionId: number, data: Record<string, unknown>) {
-    let response = await this.axios.put(`/proposals/${proposalId}/sections/${sectionId}.json`, data);
+  async updateProposalSection(
+    proposalId: number,
+    sectionId: number,
+    data: Record<string, unknown>
+  ) {
+    let response = await this.axios.put(
+      `/proposals/${proposalId}/sections/${sectionId}.json`,
+      data
+    );
     return response.data;
   }
 

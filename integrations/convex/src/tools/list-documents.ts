@@ -3,41 +3,50 @@ import { ConvexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listDocuments = SlateTool.create(
-  spec,
-  {
-    name: 'List Documents',
-    key: 'list_documents',
-    description: `List documents from a Convex table using the Streaming Export API snapshot endpoint.
+export let listDocuments = SlateTool.create(spec, {
+  name: 'List Documents',
+  key: 'list_documents',
+  description: `List documents from a Convex table using the Streaming Export API snapshot endpoint.
 Retrieves a paginated snapshot of documents from a specific table or across all tables.
 Useful for browsing data, exporting records, or inspecting table contents.
 Requires deploy key authentication.`,
-    instructions: [
-      'Use the tableName parameter to filter documents from a specific table',
-      'Use cursor and snapshotId for paginating through large result sets',
-      'The snapshotId must remain consistent across pages of the same snapshot'
-    ],
-    constraints: [
-      'Requires deploy key (admin) authentication',
-      'Returns up to a page of results at a time; use cursor for pagination'
-    ],
-    tags: {
-      readOnly: true
-    }
+  instructions: [
+    'Use the tableName parameter to filter documents from a specific table',
+    'Use cursor and snapshotId for paginating through large result sets',
+    'The snapshotId must remain consistent across pages of the same snapshot'
+  ],
+  constraints: [
+    'Requires deploy key (admin) authentication',
+    'Returns up to a page of results at a time; use cursor for pagination'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    tableName: z.string().optional().describe('Name of the table to list documents from. If omitted, lists from all tables.'),
-    cursor: z.string().optional().describe('Pagination cursor from a previous response'),
-    snapshotId: z.string().optional().describe('Snapshot ID for consistent reads across pages')
-  }))
-  .output(z.object({
-    documents: z.array(z.any()).describe('Array of documents from the snapshot'),
-    cursor: z.string().describe('Cursor for fetching the next page'),
-    snapshotId: z.string().describe('Snapshot ID for consistent pagination'),
-    hasMore: z.boolean().describe('Whether more documents are available')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      tableName: z
+        .string()
+        .optional()
+        .describe(
+          'Name of the table to list documents from. If omitted, lists from all tables.'
+        ),
+      cursor: z.string().optional().describe('Pagination cursor from a previous response'),
+      snapshotId: z
+        .string()
+        .optional()
+        .describe('Snapshot ID for consistent reads across pages')
+    })
+  )
+  .output(
+    z.object({
+      documents: z.array(z.any()).describe('Array of documents from the snapshot'),
+      cursor: z.string().describe('Cursor for fetching the next page'),
+      snapshotId: z.string().describe('Snapshot ID for consistent pagination'),
+      hasMore: z.boolean().describe('Whether more documents are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ConvexClient({
       deploymentUrl: ctx.config.deploymentUrl,
       token: ctx.auth.token,
@@ -63,4 +72,5 @@ Requires deploy key authentication.`,
       },
       message: `Retrieved **${docCount}** documents${tableInfo}.${result.hasMore ? ' More documents available.' : ''}`
     };
-  }).build();
+  })
+  .build();

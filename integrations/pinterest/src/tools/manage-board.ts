@@ -3,41 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageBoard = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Board',
-    key: 'manage_board',
-    description: `Create, update, or delete a Pinterest board. Use this to organize pins into themed collections. Supports public and secret board creation and modification.`,
-    instructions: [
-      'To create a board, provide a name and optionally a description and privacy setting.',
-      'To update a board, provide the boardId along with the fields to update.',
-      'To delete a board, provide the boardId and set action to "delete".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageBoard = SlateTool.create(spec, {
+  name: 'Manage Board',
+  key: 'manage_board',
+  description: `Create, update, or delete a Pinterest board. Use this to organize pins into themed collections. Supports public and secret board creation and modification.`,
+  instructions: [
+    'To create a board, provide a name and optionally a description and privacy setting.',
+    'To update a board, provide the boardId along with the fields to update.',
+    'To delete a board, provide the boardId and set action to "delete".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform on the board'),
-    boardId: z.string().optional().describe('Board ID (required for update and delete)'),
-    name: z.string().optional().describe('Name of the board (required for create, optional for update)'),
-    description: z.string().optional().describe('Description of the board'),
-    privacy: z.enum(['PUBLIC', 'SECRET', 'PROTECTED']).optional().describe('Privacy setting for the board'),
-  }))
-  .output(z.object({
-    boardId: z.string().optional().describe('ID of the board'),
-    name: z.string().optional().describe('Name of the board'),
-    description: z.string().optional().describe('Description of the board'),
-    privacy: z.string().optional().describe('Privacy setting'),
-    pinCount: z.number().optional().describe('Number of pins on the board'),
-    followerCount: z.number().optional().describe('Number of followers'),
-    createdAt: z.string().optional().describe('Creation timestamp'),
-    deleted: z.boolean().optional().describe('Whether the board was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('Action to perform on the board'),
+      boardId: z.string().optional().describe('Board ID (required for update and delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Name of the board (required for create, optional for update)'),
+      description: z.string().optional().describe('Description of the board'),
+      privacy: z
+        .enum(['PUBLIC', 'SECRET', 'PROTECTED'])
+        .optional()
+        .describe('Privacy setting for the board')
+    })
+  )
+  .output(
+    z.object({
+      boardId: z.string().optional().describe('ID of the board'),
+      name: z.string().optional().describe('Name of the board'),
+      description: z.string().optional().describe('Description of the board'),
+      privacy: z.string().optional().describe('Privacy setting'),
+      pinCount: z.number().optional().describe('Number of pins on the board'),
+      followerCount: z.number().optional().describe('Number of followers'),
+      createdAt: z.string().optional().describe('Creation timestamp'),
+      deleted: z.boolean().optional().describe('Whether the board was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'create') {
@@ -47,7 +56,7 @@ export let manageBoard = SlateTool.create(
       let result = await client.createBoard({
         name: ctx.input.name,
         description: ctx.input.description,
-        privacy: ctx.input.privacy,
+        privacy: ctx.input.privacy
       });
 
       return {
@@ -58,9 +67,9 @@ export let manageBoard = SlateTool.create(
           privacy: result.privacy,
           pinCount: result.pin_count,
           followerCount: result.follower_count,
-          createdAt: result.created_at,
+          createdAt: result.created_at
         },
-        message: `Created board **${result.name}**.`,
+        message: `Created board **${result.name}**.`
       };
     }
 
@@ -71,7 +80,7 @@ export let manageBoard = SlateTool.create(
       let result = await client.updateBoard(ctx.input.boardId, {
         name: ctx.input.name,
         description: ctx.input.description,
-        privacy: ctx.input.privacy,
+        privacy: ctx.input.privacy
       });
 
       return {
@@ -82,9 +91,9 @@ export let manageBoard = SlateTool.create(
           privacy: result.privacy,
           pinCount: result.pin_count,
           followerCount: result.follower_count,
-          createdAt: result.created_at,
+          createdAt: result.created_at
         },
-        message: `Updated board **${result.name}**.`,
+        message: `Updated board **${result.name}**.`
       };
     }
 
@@ -97,11 +106,12 @@ export let manageBoard = SlateTool.create(
       return {
         output: {
           boardId: ctx.input.boardId,
-          deleted: true,
+          deleted: true
         },
-        message: `Deleted board **${ctx.input.boardId}**.`,
+        message: `Deleted board **${ctx.input.boardId}**.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

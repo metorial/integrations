@@ -3,48 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let statusUpdatesPolling = SlateTrigger.create(
-  spec,
-  {
-    name: 'Status Updates (Polling)',
-    key: 'status_updates_polling',
-    description: '[Polling fallback] Polls for new status updates on suggestions. Detects when suggestion statuses change (e.g., moved to planned, completed). Useful for tracking feedback lifecycle changes.',
-  }
-)
-  .input(z.object({
-    statusUpdateId: z.number().describe('ID of the status update'),
-    body: z.string().nullable().describe('Status update message'),
-    supportersNotified: z.boolean().describe('Whether supporters were notified'),
-    createdAt: z.string().describe('When the status update was created'),
-    updatedAt: z.string().describe('When the status update was last modified'),
-    links: z.record(z.string(), z.any()).optional().describe('Associated resource links (suggestion, user, new_status, old_status)'),
-  }))
-  .output(z.object({
-    statusUpdateId: z.number().describe('ID of the status update'),
-    body: z.string().nullable().describe('Status update message'),
-    supportersNotified: z.boolean().describe('Whether supporters were notified'),
-    suggestionId: z.number().nullable().describe('ID of the affected suggestion'),
-    newStatusId: z.number().nullable().describe('ID of the new status'),
-    oldStatusId: z.number().nullable().describe('ID of the previous status'),
-    userId: z.number().nullable().describe('ID of the user who made the update'),
-    createdAt: z.string().describe('When the status update was created'),
-  }))
+export let statusUpdatesPolling = SlateTrigger.create(spec, {
+  name: 'Status Updates (Polling)',
+  key: 'status_updates_polling',
+  description:
+    '[Polling fallback] Polls for new status updates on suggestions. Detects when suggestion statuses change (e.g., moved to planned, completed). Useful for tracking feedback lifecycle changes.'
+})
+  .input(
+    z.object({
+      statusUpdateId: z.number().describe('ID of the status update'),
+      body: z.string().nullable().describe('Status update message'),
+      supportersNotified: z.boolean().describe('Whether supporters were notified'),
+      createdAt: z.string().describe('When the status update was created'),
+      updatedAt: z.string().describe('When the status update was last modified'),
+      links: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Associated resource links (suggestion, user, new_status, old_status)')
+    })
+  )
+  .output(
+    z.object({
+      statusUpdateId: z.number().describe('ID of the status update'),
+      body: z.string().nullable().describe('Status update message'),
+      supportersNotified: z.boolean().describe('Whether supporters were notified'),
+      suggestionId: z.number().nullable().describe('ID of the affected suggestion'),
+      newStatusId: z.number().nullable().describe('ID of the new status'),
+      oldStatusId: z.number().nullable().describe('ID of the previous status'),
+      userId: z.number().nullable().describe('ID of the user who made the update'),
+      createdAt: z.string().describe('When the status update was created')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        subdomain: ctx.auth.subdomain,
+        subdomain: ctx.auth.subdomain
       });
 
       let lastPoll = ctx.state?.lastPollTimestamp as string | undefined;
 
       let params: Record<string, unknown> = {
         sort: '-updated_at',
-        perPage: 100,
+        perPage: 100
       };
 
       if (lastPoll) {
@@ -61,18 +66,18 @@ export let statusUpdatesPolling = SlateTrigger.create(
         supportersNotified: su.supporters_notified ?? false,
         createdAt: su.created_at,
         updatedAt: su.updated_at,
-        links: su.links,
+        links: su.links
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollTimestamp: now,
-        },
+          lastPollTimestamp: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let links = ctx.input.links || {};
 
       return {
@@ -86,8 +91,9 @@ export let statusUpdatesPolling = SlateTrigger.create(
           newStatusId: (links.new_status as number) ?? null,
           oldStatusId: (links.old_status as number) ?? null,
           userId: (links.user as number) ?? null,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

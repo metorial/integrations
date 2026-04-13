@@ -22,7 +22,7 @@ import {
   createMonitorTool,
   deleteMonitorTool,
   createExportTool,
-  getExportTool,
+  getExportTool
 } from './tools';
 import { websetEventsTrigger } from './triggers';
 
@@ -50,9 +50,7 @@ export let provider = Slate.create({
     createMonitorTool,
     deleteMonitorTool,
     createExportTool,
-    getExportTool,
+    getExportTool
   ],
-  triggers: [
-    websetEventsTrigger,
-  ],
+  triggers: [websetEventsTrigger]
 });

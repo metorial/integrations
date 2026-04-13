@@ -6,7 +6,9 @@ import { z } from 'zod';
 let functionSummarySchema = z.object({
   name: z.string().describe('Fully qualified function resource name'),
   functionName: z.string().describe('Short function name extracted from the resource name'),
-  state: z.string().describe('Current state of the function (ACTIVE, DEPLOYING, FAILED, etc.)'),
+  state: z
+    .string()
+    .describe('Current state of the function (ACTIVE, DEPLOYING, FAILED, etc.)'),
   runtime: z.string().optional().describe('Runtime environment (e.g. nodejs20, python312)'),
   url: z.string().optional().describe('The deployed HTTP URL endpoint'),
   environment: z.string().optional().describe('GEN_1 or GEN_2'),
@@ -15,31 +17,52 @@ let functionSummarySchema = z.object({
   labels: z.record(z.string(), z.string()).optional().describe('User-defined labels')
 });
 
-export let listFunctions = SlateTool.create(
-  spec,
-  {
-    name: 'List Functions',
-    key: 'list_functions',
-    description: `List Cloud Functions in a Google Cloud project. Returns a summary of each function including its state, runtime, URL, and labels. Supports filtering and pagination, and can query across all regions or a specific region.`,
-    tags: {
-      readOnly: true
-    }
+export let listFunctions = SlateTool.create(spec, {
+  name: 'List Functions',
+  key: 'list_functions',
+  description: `List Cloud Functions in a Google Cloud project. Returns a summary of each function including its state, runtime, URL, and labels. Supports filtering and pagination, and can query across all regions or a specific region.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    location: z.string().optional().describe('Specific region to list functions from. Omit to use the configured default region.'),
-    allLocations: z.boolean().optional().describe('Set to true to list functions across all regions'),
-    filter: z.string().optional().describe('Filter expression per AIP-160 syntax (e.g. "state=ACTIVE")'),
-    orderBy: z.string().optional().describe('Comma-separated list of fields to sort by (e.g. "updateTime desc")'),
-    pageSize: z.number().optional().describe('Maximum number of functions to return (max 1000)'),
-    pageToken: z.string().optional().describe('Pagination token from a previous response')
-  }))
-  .output(z.object({
-    functions: z.array(functionSummarySchema).describe('List of functions'),
-    nextPageToken: z.string().optional().describe('Token to retrieve the next page of results'),
-    unreachable: z.array(z.string()).optional().describe('Regions that could not be reached')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      location: z
+        .string()
+        .optional()
+        .describe(
+          'Specific region to list functions from. Omit to use the configured default region.'
+        ),
+      allLocations: z
+        .boolean()
+        .optional()
+        .describe('Set to true to list functions across all regions'),
+      filter: z
+        .string()
+        .optional()
+        .describe('Filter expression per AIP-160 syntax (e.g. "state=ACTIVE")'),
+      orderBy: z
+        .string()
+        .optional()
+        .describe('Comma-separated list of fields to sort by (e.g. "updateTime desc")'),
+      pageSize: z
+        .number()
+        .optional()
+        .describe('Maximum number of functions to return (max 1000)'),
+      pageToken: z.string().optional().describe('Pagination token from a previous response')
+    })
+  )
+  .output(
+    z.object({
+      functions: z.array(functionSummarySchema).describe('List of functions'),
+      nextPageToken: z
+        .string()
+        .optional()
+        .describe('Token to retrieve the next page of results'),
+      unreachable: z.array(z.string()).optional().describe('Regions that could not be reached')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       projectId: ctx.config.projectId,
@@ -73,7 +96,9 @@ export let listFunctions = SlateTool.create(
       };
     });
 
-    let location = ctx.input.allLocations ? 'all regions' : (ctx.input.location || ctx.config.region);
+    let location = ctx.input.allLocations
+      ? 'all regions'
+      : ctx.input.location || ctx.config.region;
 
     return {
       output: {
@@ -83,4 +108,5 @@ export let listFunctions = SlateTool.create(
       },
       message: `Found **${functions.length}** function(s) in **${location}** for project **${ctx.config.projectId}**.${response.nextPageToken ? ' More results available with pagination.' : ''}`
     };
-  }).build();
+  })
+  .build();

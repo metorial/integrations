@@ -16,7 +16,7 @@ let articleOutputSchema = z.object({
   labelNames: z.array(z.string()).describe('Labels on the article'),
   htmlUrl: z.string().nullable().describe('The public URL of the article'),
   createdAt: z.string().describe('When the article was created'),
-  updatedAt: z.string().describe('When the article was last updated'),
+  updatedAt: z.string().describe('When the article was last updated')
 });
 
 let mapArticle = (a: any) => ({
@@ -32,35 +32,39 @@ let mapArticle = (a: any) => ({
   labelNames: a.label_names || [],
   htmlUrl: a.html_url || null,
   createdAt: a.created_at,
-  updatedAt: a.updated_at,
+  updatedAt: a.updated_at
 });
 
-export let listArticles = SlateTool.create(
-  spec,
-  {
-    name: 'List Articles',
-    key: 'list_articles',
-    description: `Lists knowledge base articles from the Zendesk Help Center. Supports sorting and locale filtering.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    page: z.number().optional().default(1).describe('Page number'),
-    perPage: z.number().optional().default(25).describe('Results per page (max 100)'),
-    sortBy: z.enum(['created_at', 'updated_at', 'title', 'position']).optional().describe('Sort field'),
-    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order'),
-    locale: z.string().optional().describe('Locale to filter articles (e.g., "en-us")'),
-  }))
-  .output(z.object({
-    articles: z.array(articleOutputSchema),
-    count: z.number(),
-    nextPage: z.string().nullable(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listArticles = SlateTool.create(spec, {
+  name: 'List Articles',
+  key: 'list_articles',
+  description: `Lists knowledge base articles from the Zendesk Help Center. Supports sorting and locale filtering.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      page: z.number().optional().default(1).describe('Page number'),
+      perPage: z.number().optional().default(25).describe('Results per page (max 100)'),
+      sortBy: z
+        .enum(['created_at', 'updated_at', 'title', 'position'])
+        .optional()
+        .describe('Sort field'),
+      sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort order'),
+      locale: z.string().optional().describe('Locale to filter articles (e.g., "en-us")')
+    })
+  )
+  .output(
+    z.object({
+      articles: z.array(articleOutputSchema),
+      count: z.number(),
+      nextPage: z.string().nullable()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZendeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     let data = await client.listArticles({
@@ -68,7 +72,7 @@ export let listArticles = SlateTool.create(
       perPage: ctx.input.perPage,
       sortBy: ctx.input.sortBy,
       sortOrder: ctx.input.sortOrder,
-      locale: ctx.input.locale,
+      locale: ctx.input.locale
     });
 
     let articles = (data.articles || []).map(mapArticle);
@@ -77,74 +81,76 @@ export let listArticles = SlateTool.create(
       output: {
         articles,
         count: data.count || articles.length,
-        nextPage: data.next_page || null,
+        nextPage: data.next_page || null
       },
-      message: `Found ${data.count || articles.length} article(s), showing ${articles.length} on this page.`,
+      message: `Found ${data.count || articles.length} article(s), showing ${articles.length} on this page.`
     };
   })
   .build();
 
-export let getArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Get Article',
-    key: 'get_article',
-    description: `Retrieves a single Help Center article by its ID, including the full body content, labels, and metadata. Optionally retrieves a specific locale translation.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    articleId: z.string().describe('The article ID to retrieve'),
-    locale: z.string().optional().describe('Specific locale to retrieve (e.g., "en-us")'),
-  }))
+export let getArticle = SlateTool.create(spec, {
+  name: 'Get Article',
+  key: 'get_article',
+  description: `Retrieves a single Help Center article by its ID, including the full body content, labels, and metadata. Optionally retrieves a specific locale translation.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      articleId: z.string().describe('The article ID to retrieve'),
+      locale: z.string().optional().describe('Specific locale to retrieve (e.g., "en-us")')
+    })
+  )
   .output(articleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ZendeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     let article = await client.getArticle(ctx.input.articleId, ctx.input.locale);
 
     return {
       output: mapArticle(article),
-      message: `Article: **${article.title}** (ID: ${article.id}, Locale: ${article.locale})`,
+      message: `Article: **${article.title}** (ID: ${article.id}, Locale: ${article.locale})`
     };
   })
   .build();
 
-export let createArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Create Article',
-    key: 'create_article',
-    description: `Creates a new Help Center article in a specified section. The article body supports HTML formatting.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    sectionId: z.string().describe('The section ID to create the article in'),
-    title: z.string().describe('The article title'),
-    body: z.string().describe('The article body (HTML supported)'),
-    locale: z.string().optional().describe('Locale for the article (e.g., "en-us")'),
-    draft: z.boolean().optional().default(false).describe('Whether to create as a draft'),
-    promoted: z.boolean().optional().default(false).describe('Whether to promote the article'),
-    labelNames: z.array(z.string()).optional().describe('Labels to apply'),
-    position: z.number().optional().describe('Position in the section'),
-    authorId: z.string().optional().describe('Author user ID'),
-  }))
+export let createArticle = SlateTool.create(spec, {
+  name: 'Create Article',
+  key: 'create_article',
+  description: `Creates a new Help Center article in a specified section. The article body supports HTML formatting.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      sectionId: z.string().describe('The section ID to create the article in'),
+      title: z.string().describe('The article title'),
+      body: z.string().describe('The article body (HTML supported)'),
+      locale: z.string().optional().describe('Locale for the article (e.g., "en-us")'),
+      draft: z.boolean().optional().default(false).describe('Whether to create as a draft'),
+      promoted: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Whether to promote the article'),
+      labelNames: z.array(z.string()).optional().describe('Labels to apply'),
+      position: z.number().optional().describe('Position in the section'),
+      authorId: z.string().optional().describe('Author user ID')
+    })
+  )
   .output(articleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ZendeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     let articleData: Record<string, any> = {
       title: ctx.input.title,
-      body: ctx.input.body,
+      body: ctx.input.body
     };
 
     if (ctx.input.locale) articleData.locale = ctx.input.locale;
@@ -158,35 +164,34 @@ export let createArticle = SlateTool.create(
 
     return {
       output: mapArticle(article),
-      message: `Created article **${article.title}** (ID: ${article.id}) in section ${ctx.input.sectionId}`,
+      message: `Created article **${article.title}** (ID: ${article.id}) in section ${ctx.input.sectionId}`
     };
   })
   .build();
 
-export let updateArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Update Article',
-    key: 'update_article',
-    description: `Updates an existing Help Center article. Can modify title, body, draft status, labels, and promotion status.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    articleId: z.string().describe('The article ID to update'),
-    title: z.string().optional().describe('New title'),
-    body: z.string().optional().describe('New body content (HTML)'),
-    draft: z.boolean().optional().describe('Whether the article should be a draft'),
-    promoted: z.boolean().optional().describe('Whether to promote the article'),
-    labelNames: z.array(z.string()).optional().describe('Replace all labels'),
-    position: z.number().optional().describe('New position in the section'),
-  }))
+export let updateArticle = SlateTool.create(spec, {
+  name: 'Update Article',
+  key: 'update_article',
+  description: `Updates an existing Help Center article. Can modify title, body, draft status, labels, and promotion status.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      articleId: z.string().describe('The article ID to update'),
+      title: z.string().optional().describe('New title'),
+      body: z.string().optional().describe('New body content (HTML)'),
+      draft: z.boolean().optional().describe('Whether the article should be a draft'),
+      promoted: z.boolean().optional().describe('Whether to promote the article'),
+      labelNames: z.array(z.string()).optional().describe('Replace all labels'),
+      position: z.number().optional().describe('New position in the section')
+    })
+  )
   .output(articleOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ZendeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     let articleData: Record<string, any> = {};
@@ -201,32 +206,33 @@ export let updateArticle = SlateTool.create(
 
     return {
       output: mapArticle(article),
-      message: `Updated article **${article.title}** (ID: ${article.id})`,
+      message: `Updated article **${article.title}** (ID: ${article.id})`
     };
   })
   .build();
 
-export let deleteArticle = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Article',
-    key: 'delete_article',
-    description: `Permanently deletes a Help Center article. This action cannot be undone.`,
-    tags: { destructive: true, readOnly: false },
-  }
-)
-  .input(z.object({
-    articleId: z.string().describe('The article ID to delete'),
-  }))
-  .output(z.object({
-    articleId: z.string(),
-    deleted: z.boolean(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteArticle = SlateTool.create(spec, {
+  name: 'Delete Article',
+  key: 'delete_article',
+  description: `Permanently deletes a Help Center article. This action cannot be undone.`,
+  tags: { destructive: true, readOnly: false }
+})
+  .input(
+    z.object({
+      articleId: z.string().describe('The article ID to delete')
+    })
+  )
+  .output(
+    z.object({
+      articleId: z.string(),
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ZendeskClient({
       subdomain: ctx.config.subdomain,
       token: ctx.auth.token,
-      tokenType: ctx.auth.tokenType,
+      tokenType: ctx.auth.tokenType
     });
 
     await client.deleteArticle(ctx.input.articleId);
@@ -234,9 +240,9 @@ export let deleteArticle = SlateTool.create(
     return {
       output: {
         articleId: ctx.input.articleId,
-        deleted: true,
+        deleted: true
       },
-      message: `Deleted article **#${ctx.input.articleId}**`,
+      message: `Deleted article **#${ctx.input.articleId}**`
     };
   })
   .build();

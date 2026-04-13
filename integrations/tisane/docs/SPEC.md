@@ -14,6 +14,7 @@ Tisane uses API key authentication. All requests must include the API key in the
 - **Obtaining a key:** Sign up at the [Tisane Labs Developer Portal](https://dev.tisane.ai/) to acquire a primary and secondary API key.
 
 Example:
+
 ```
 Ocp-Apim-Subscription-Key: your_primary_or_secondary_api_key
 ```

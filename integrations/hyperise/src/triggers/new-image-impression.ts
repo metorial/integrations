@@ -3,39 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newImageImpression = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Image Impression',
-    key: 'new_image_impression',
-    description: 'Triggers when a personalized image is viewed by a recipient. Polls for new impression events using the image template hash configured in the provider settings.',
-    instructions: [
-      'Set the imageTemplateHash in the Hyperise provider configuration to specify which image template to monitor.',
-    ],
-  }
-)
-  .input(z.object({
-    impressionId: z.string().describe('Unique ID of the impression event'),
-    imageName: z.string().optional().describe('Name of the viewed image template'),
-    processedAt: z.string().optional().describe('Timestamp when the impression was processed'),
-    rawImpression: z.record(z.string(), z.any()).optional().describe('Full impression record from the API'),
-  }))
-  .output(z.object({
-    impressionId: z.string().describe('Unique ID of the impression event'),
-    imageName: z.string().optional().describe('Name of the viewed image template'),
-    imageHash: z.string().optional().describe('Hash of the image template that was viewed'),
-    processedAt: z.string().optional().describe('Timestamp when the impression was processed'),
-    firstName: z.string().optional().describe('First name of the recipient who viewed the image'),
-    lastName: z.string().optional().describe('Last name of the recipient who viewed the image'),
-    email: z.string().optional().describe('Email of the recipient who viewed the image'),
-    businessName: z.string().optional().describe('Business name of the recipient'),
-  }).passthrough())
+export let newImageImpression = SlateTrigger.create(spec, {
+  name: 'New Image Impression',
+  key: 'new_image_impression',
+  description:
+    'Triggers when a personalized image is viewed by a recipient. Polls for new impression events using the image template hash configured in the provider settings.',
+  instructions: [
+    'Set the imageTemplateHash in the Hyperise provider configuration to specify which image template to monitor.'
+  ]
+})
+  .input(
+    z.object({
+      impressionId: z.string().describe('Unique ID of the impression event'),
+      imageName: z.string().optional().describe('Name of the viewed image template'),
+      processedAt: z
+        .string()
+        .optional()
+        .describe('Timestamp when the impression was processed'),
+      rawImpression: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Full impression record from the API')
+    })
+  )
+  .output(
+    z
+      .object({
+        impressionId: z.string().describe('Unique ID of the impression event'),
+        imageName: z.string().optional().describe('Name of the viewed image template'),
+        imageHash: z
+          .string()
+          .optional()
+          .describe('Hash of the image template that was viewed'),
+        processedAt: z
+          .string()
+          .optional()
+          .describe('Timestamp when the impression was processed'),
+        firstName: z
+          .string()
+          .optional()
+          .describe('First name of the recipient who viewed the image'),
+        lastName: z
+          .string()
+          .optional()
+          .describe('Last name of the recipient who viewed the image'),
+        email: z.string().optional().describe('Email of the recipient who viewed the image'),
+        businessName: z.string().optional().describe('Business name of the recipient')
+      })
+      .passthrough()
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let imageHash = ctx.config.imageTemplateHash;
       if (!imageHash) {
         return { inputs: [], updatedState: (ctx.state as any) || {} };
@@ -68,15 +90,15 @@ export let newImageImpression = SlateTrigger.create(
           impressionId: String(imp.id ?? imp.impression_id ?? ''),
           imageName: imp.image_name || imp.name,
           processedAt: imp.processed_at || imp.created_at,
-          rawImpression: imp,
+          rawImpression: imp
         })),
         updatedState: {
-          lastDate: newLastDate,
-        },
+          lastDate: newLastDate
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let raw: Record<string, any> = ctx.input.rawImpression || {};
 
       return {
@@ -91,9 +113,9 @@ export let newImageImpression = SlateTrigger.create(
           lastName: raw.last_name as string | undefined,
           email: raw.email as string | undefined,
           businessName: raw.business_name as string | undefined,
-          ...raw,
-        },
+          ...raw
+        }
       };
-    },
+    }
   })
   .build();

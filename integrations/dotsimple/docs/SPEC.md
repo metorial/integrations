@@ -29,21 +29,27 @@ Users can access their data stored in the DotSimple service via the API interfac
 ## Features
 
 ### Post Management
+
 Create, read, update, delete, schedule, and queue social media posts across connected accounts. Posts support scheduling with date, time, and timezone parameters, immediate publishing, and adding to a publishing queue. Each post can target multiple social accounts and includes platform-specific options (e.g., TikTok privacy levels, YouTube visibility, LinkedIn visibility, Instagram post type, Pinterest board selection, Facebook post type). Posts support content versioning with body text and attached media. Multiple posts can be deleted in bulk by providing an array of post UUIDs.
 
 ### Social Account Management
+
 List all connected social media accounts in the workspace to retrieve available accounts before posting or scheduling content. Supported providers include Facebook Pages, Instagram, LinkedIn, X/Twitter, TikTok, Pinterest, YouTube, and Mastodon.
 
 ### Media File Management
+
 List all media files with optional pagination, and retrieve or browse uploaded media files page by page. You can also get details of a specific media file by its ID, and delete multiple media files from the workspace.
 
 ### Tag Management
+
 Create new tags to categorize content with custom names and hex colors (e.g., a tag named "news" with color "#38bdf8"). You can also list all tags in a workspace, retrieve a specific tag by UUID, and delete tags.
 
 ### Reports and Analytics
+
 List all account-level reports to fetch aggregated account metrics chronologically. This enables tracking performance across connected social media accounts.
 
 ### Autoresponders
+
 List all autoresponders configured in the workspace to browse through your autoresponder setup.
 
 ## Events

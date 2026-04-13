@@ -16,7 +16,7 @@ export class AwsClient {
     this.credentials = {
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
-      sessionToken: config.sessionToken,
+      sessionToken: config.sessionToken
     };
     this.region = config.region;
   }
@@ -57,7 +57,7 @@ export class AwsClient {
     }
 
     let headers: Record<string, string> = {
-      ...options.headers,
+      ...options.headers
     };
 
     if (options.body && !headers['Content-Type']) {
@@ -72,7 +72,7 @@ export class AwsClient {
       body: options.body ?? '',
       credentials: this.credentials,
       region,
-      service: options.service,
+      service: options.service
     });
 
     let response = await ax.request({
@@ -80,7 +80,7 @@ export class AwsClient {
       url,
       headers: signed.headers,
       params: signed.params,
-      data: options.body,
+      data: options.body
     });
 
     return response.data;
@@ -96,14 +96,14 @@ export class AwsClient {
     let allParams: Record<string, string> = {
       Action: options.action,
       ...(options.version ? { Version: options.version } : {}),
-      ...(options.params ?? {}),
+      ...(options.params ?? {})
     };
 
     return this.request({
       service: options.service,
       method: 'GET',
       params: allParams,
-      region: options.region,
+      region: options.region
     });
   }
 
@@ -117,7 +117,7 @@ export class AwsClient {
     let allParams: Record<string, string> = {
       Action: options.action,
       ...(options.version ? { Version: options.version } : {}),
-      ...(options.params ?? {}),
+      ...(options.params ?? {})
     };
 
     let body = Object.entries(allParams)
@@ -129,7 +129,7 @@ export class AwsClient {
       method: 'POST',
       body,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      region: options.region,
+      region: options.region
     });
   }
 
@@ -147,9 +147,9 @@ export class AwsClient {
       body,
       headers: {
         'Content-Type': 'application/x-amz-json-1.0',
-        'X-Amz-Target': options.target,
+        'X-Amz-Target': options.target
       },
-      region: options.region,
+      region: options.region
     });
   }
 
@@ -167,9 +167,9 @@ export class AwsClient {
       body,
       headers: {
         'Content-Type': 'application/x-amz-json-1.1',
-        'X-Amz-Target': options.target,
+        'X-Amz-Target': options.target
       },
-      region: options.region,
+      region: options.region
     });
   }
 }

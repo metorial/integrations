@@ -23,10 +23,12 @@ All API requests are scoped to a specific graph and authenticated via a Bearer t
 The token is passed as an `X-Authorization: Bearer {api_token}` header (or as a standard `Authorization: Bearer {api_token}` header).
 
 **Required credentials:**
+
 - **API Token**: Generated from Roam Settings → Graph → API Tokens.
 - **Graph Name**: The name of the Roam graph to access.
 
 **Limitations:**
+
 - You might not be the owner of the graph (only graph owners can create API tokens). The graph may be an encrypted graph — Roam's backend does not work with encrypted graphs, due to them being end-to-end encrypted.
 
 ## Features

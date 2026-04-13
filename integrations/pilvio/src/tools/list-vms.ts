@@ -15,28 +15,27 @@ let vmSchema = z.object({
   privateIp: z.string().optional().describe('Private IPv4 address'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   backup: z.boolean().optional().describe('Whether auto-backup is enabled'),
-  description: z.string().optional().describe('VM description'),
+  description: z.string().optional().describe('VM description')
 });
 
-export let listVms = SlateTool.create(
-  spec,
-  {
-    name: 'List Virtual Machines',
-    key: 'list_vms',
-    description: `List all virtual machines in your Pilvio account. Returns each VM's status, resource allocation (vCPU, RAM), networking details, and OS information.`,
-    tags: {
-      readOnly: true,
-    },
+export let listVms = SlateTool.create(spec, {
+  name: 'List Virtual Machines',
+  key: 'list_vms',
+  description: `List all virtual machines in your Pilvio account. Returns each VM's status, resource allocation (vCPU, RAM), networking details, and OS information.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    vms: z.array(vmSchema).describe('List of virtual machines'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      vms: z.array(vmSchema).describe('List of virtual machines')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PilvioClient({
       token: ctx.auth.token,
-      locationSlug: ctx.config.locationSlug,
+      locationSlug: ctx.config.locationSlug
     });
 
     let vms = await client.listVms();
@@ -53,12 +52,12 @@ export let listVms = SlateTool.create(
       privateIp: vm.private_ipv4,
       createdAt: vm.created_at,
       backup: vm.backup,
-      description: vm.description,
+      description: vm.description
     }));
 
     return {
       output: { vms: mapped },
-      message: `Found **${mapped.length}** virtual machine(s).`,
+      message: `Found **${mapped.length}** virtual machine(s).`
     };
   })
   .build();

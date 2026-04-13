@@ -40,6 +40,7 @@ Use these tokens to perform CRUD (create, read, update, delete) operations via t
 ### Region-specific base URLs
 
 The Management API base URL depends on the space's server region:
+
 - EU: `https://mapi.storyblok.com/v1`
 - US: `https://api-us.storyblok.com/v1`
 - Canada: `https://api-ca.storyblok.com/v1`
@@ -121,6 +122,7 @@ Webhooks are configured per space under **Settings → Webhooks**. Each webhook 
 ### Story Events
 
 Triggered when content stories change state.
+
 - **published**: A story is published.
 - **unpublished**: A story is unpublished.
 - **deleted**: A story is deleted.
@@ -129,11 +131,13 @@ Triggered when content stories change state.
 ### Datasource Events
 
 Triggered when datasource entries are modified.
+
 - **entries_updated**: A datasource entry is saved or added.
 
 ### Asset Events
 
 Triggered when media assets change.
+
 - **created**: An asset is uploaded.
 - **replaced**: An asset is replaced.
 - **deleted**: An asset is deleted.
@@ -142,6 +146,7 @@ Triggered when media assets change.
 ### User Management Events
 
 Triggered when collaborator membership changes within a space.
+
 - **added**: A user is added to the space.
 - **removed**: A user is removed from the space.
 - **roles_updated**: A user's role is updated.
@@ -149,11 +154,13 @@ Triggered when collaborator membership changes within a space.
 ### Workflow Events
 
 Triggered when a story moves through workflow stages.
+
 - **stage.changed**: The workflow stage of a story changed.
 
 ### Discussion Events
 
 Triggered when editorial discussions or comments change.
+
 - **created**: A discussion is created.
 - **comment_created**: A comment is added.
 - **comment_updated**: A comment is updated.
@@ -163,14 +170,17 @@ Triggered when editorial discussions or comments change.
 ### Pipeline Events
 
 Triggered when pipeline stages are deployed. Requires the Pipelines App.
+
 - **deployed**: A pipeline stage is deployed.
 
 ### Release Events
 
 Triggered when releases are merged. Requires the Releases App.
+
 - **merged**: A release is merged into the current released content.
 
 ### Task Events
 
 Triggered manually via the Tasks App when a user clicks Execute on a task.
+
 - **task_execution**: A task webhook is triggered, optionally including user-provided `dialog_values` in the payload.

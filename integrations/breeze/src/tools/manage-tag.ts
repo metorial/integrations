@@ -3,25 +3,37 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTag = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tag',
-    key: 'manage_tag',
-    description: `Create or delete tags and tag folders. Tags are used to organize and categorize people. Folders provide hierarchical grouping for tags.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['create_tag', 'delete_tag', 'create_folder', 'delete_folder']).describe('The action to perform'),
-    name: z.string().optional().describe('Name of the tag or folder (required for create actions)'),
-    tagId: z.string().optional().describe('Tag ID (required for delete_tag)'),
-    folderId: z.string().optional().describe('Folder ID for placing a new tag, or the folder to delete'),
-    parentFolderId: z.string().optional().describe('Parent folder ID when creating a nested folder'),
-  }))
-  .output(z.object({
-    result: z.any().describe('The created tag/folder object, or confirmation of deletion'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTag = SlateTool.create(spec, {
+  name: 'Manage Tag',
+  key: 'manage_tag',
+  description: `Create or delete tags and tag folders. Tags are used to organize and categorize people. Folders provide hierarchical grouping for tags.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create_tag', 'delete_tag', 'create_folder', 'delete_folder'])
+        .describe('The action to perform'),
+      name: z
+        .string()
+        .optional()
+        .describe('Name of the tag or folder (required for create actions)'),
+      tagId: z.string().optional().describe('Tag ID (required for delete_tag)'),
+      folderId: z
+        .string()
+        .optional()
+        .describe('Folder ID for placing a new tag, or the folder to delete'),
+      parentFolderId: z
+        .string()
+        .optional()
+        .describe('Parent folder ID when creating a nested folder')
+    })
+  )
+  .output(
+    z.object({
+      result: z.any().describe('The created tag/folder object, or confirmation of deletion')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let result: unknown;
     let message: string;
@@ -51,6 +63,7 @@ export let manageTag = SlateTool.create(
 
     return {
       output: { result },
-      message: message!,
+      message: message!
     };
-  }).build();
+  })
+  .build();

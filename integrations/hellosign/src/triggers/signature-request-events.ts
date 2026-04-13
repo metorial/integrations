@@ -17,52 +17,83 @@ let signatureRequestEventTypes = [
   'signature_request_expired',
   'signature_request_prepared',
   'signature_request_signer_removed',
-  'signature_request_invalid',
+  'signature_request_invalid'
 ] as const;
 
-export let signatureRequestEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Signature Request Events',
-    key: 'signature_request_events',
-    description: 'Triggers when signature request events occur, such as when a request is sent, viewed, signed, completed, declined, or canceled.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of event (e.g. signature_request_sent, signature_request_signed)'),
-    eventTime: z.string().describe('Unix timestamp when the event occurred'),
-    eventHash: z.string().describe('HMAC hash for event verification'),
-    signatureRequestId: z.string().describe('ID of the signature request'),
-    relatedSignatureId: z.string().optional().describe('ID of the related signature (signer)'),
-    reportedForAccountId: z.string().optional().describe('Account ID this event is reported for'),
-    signatureRequest: z.any().describe('Full signature request object from the event payload'),
-  }))
-  .output(z.object({
-    signatureRequestId: z.string().describe('ID of the signature request'),
-    title: z.string().optional().describe('Title of the signature request'),
-    subject: z.string().optional().describe('Subject of the request'),
-    isComplete: z.boolean().describe('Whether all signers have completed'),
-    isDeclined: z.boolean().describe('Whether any signer has declined'),
-    hasError: z.boolean().describe('Whether there are errors'),
-    requesterEmailAddress: z.string().optional().describe('Email of the requester'),
-    relatedSignatureId: z.string().optional().describe('ID of the signer whose action triggered this event'),
-    relatedSignerEmail: z.string().optional().describe('Email of the signer whose action triggered this event'),
-    relatedSignerName: z.string().optional().describe('Name of the signer whose action triggered this event'),
-    relatedSignerStatus: z.string().optional().describe('Status of the signer whose action triggered this event'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Metadata attached to the request'),
-    signatures: z.array(z.object({
-      signatureId: z.string().describe('Signature ID'),
-      signerEmailAddress: z.string().describe('Signer email'),
-      signerName: z.string().describe('Signer name'),
-      statusCode: z.string().describe('Status code'),
-      signedAt: z.string().optional().describe('When the signer signed (ISO 8601)'),
-    })).describe('All signers and their statuses'),
-  }))
+export let signatureRequestEvents = SlateTrigger.create(spec, {
+  name: 'Signature Request Events',
+  key: 'signature_request_events',
+  description:
+    'Triggers when signature request events occur, such as when a request is sent, viewed, signed, completed, declined, or canceled.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('The type of event (e.g. signature_request_sent, signature_request_signed)'),
+      eventTime: z.string().describe('Unix timestamp when the event occurred'),
+      eventHash: z.string().describe('HMAC hash for event verification'),
+      signatureRequestId: z.string().describe('ID of the signature request'),
+      relatedSignatureId: z
+        .string()
+        .optional()
+        .describe('ID of the related signature (signer)'),
+      reportedForAccountId: z
+        .string()
+        .optional()
+        .describe('Account ID this event is reported for'),
+      signatureRequest: z
+        .any()
+        .describe('Full signature request object from the event payload')
+    })
+  )
+  .output(
+    z.object({
+      signatureRequestId: z.string().describe('ID of the signature request'),
+      title: z.string().optional().describe('Title of the signature request'),
+      subject: z.string().optional().describe('Subject of the request'),
+      isComplete: z.boolean().describe('Whether all signers have completed'),
+      isDeclined: z.boolean().describe('Whether any signer has declined'),
+      hasError: z.boolean().describe('Whether there are errors'),
+      requesterEmailAddress: z.string().optional().describe('Email of the requester'),
+      relatedSignatureId: z
+        .string()
+        .optional()
+        .describe('ID of the signer whose action triggered this event'),
+      relatedSignerEmail: z
+        .string()
+        .optional()
+        .describe('Email of the signer whose action triggered this event'),
+      relatedSignerName: z
+        .string()
+        .optional()
+        .describe('Name of the signer whose action triggered this event'),
+      relatedSignerStatus: z
+        .string()
+        .optional()
+        .describe('Status of the signer whose action triggered this event'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Metadata attached to the request'),
+      signatures: z
+        .array(
+          z.object({
+            signatureId: z.string().describe('Signature ID'),
+            signerEmailAddress: z.string().describe('Signer email'),
+            signerName: z.string().describe('Signer name'),
+            statusCode: z.string().describe('Status code'),
+            signedAt: z.string().optional().describe('When the signer signed (ISO 8601)')
+          })
+        )
+        .describe('All signers and their statuses')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        authMethod: ctx.auth.authMethod,
+        authMethod: ctx.auth.authMethod
       });
 
       // Get current account to preserve existing settings
@@ -74,15 +105,15 @@ export let signatureRequestEvents = SlateTrigger.create(
 
       return {
         registrationDetails: {
-          previousCallbackUrl,
-        },
+          previousCallbackUrl
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        authMethod: ctx.auth.authMethod,
+        authMethod: ctx.auth.authMethod
       });
 
       // Restore the previous callback URL (or clear it)
@@ -90,7 +121,7 @@ export let signatureRequestEvents = SlateTrigger.create(
       await client.updateAccount({ callbackUrl: previousUrl });
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       // HelloSign sends events as multipart/form-data with a "json" field
       // or as JSON directly
       let rawData: any;
@@ -136,26 +167,28 @@ export let signatureRequestEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType,
-          eventTime: String(event.event_time),
-          eventHash: event.event_hash,
-          signatureRequestId: signatureRequest.signature_request_id,
-          relatedSignatureId: event.event_metadata?.related_signature_id,
-          reportedForAccountId: event.event_metadata?.reported_for_account_id,
-          signatureRequest,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventTime: String(event.event_time),
+            eventHash: event.event_hash,
+            signatureRequestId: signatureRequest.signature_request_id,
+            relatedSignatureId: event.event_metadata?.related_signature_id,
+            reportedForAccountId: event.event_metadata?.reported_for_account_id,
+            signatureRequest
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let sr = ctx.input.signatureRequest;
       let signatures = (sr.signatures || []).map((s: any) => ({
         signatureId: s.signature_id,
         signerEmailAddress: s.signer_email_address,
         signerName: s.signer_name,
         statusCode: s.status_code,
-        signedAt: s.signed_at ? new Date(s.signed_at * 1000).toISOString() : undefined,
+        signedAt: s.signed_at ? new Date(s.signed_at * 1000).toISOString() : undefined
       }));
 
       // Find the related signer if we have a related signature ID
@@ -179,8 +212,9 @@ export let signatureRequestEvents = SlateTrigger.create(
           relatedSignerName: relatedSigner?.signerName,
           relatedSignerStatus: relatedSigner?.statusCode,
           metadata: sr.metadata || undefined,
-          signatures,
-        },
+          signatures
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

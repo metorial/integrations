@@ -12,33 +12,48 @@ export let crmSearchRecords = SlateTool.create(spec, {
     'For basic search, provide one of: criteria, email, phone, or word.',
     'Criteria format: `((field_api_name:operator:value))` — operators include equals, not_equal, starts_with, contains, greater_than, less_than, between, in.',
     'Multiple criteria can be combined with `and`/`or`: `((Last_Name:equals:Smith)and(Company:equals:Acme))`.',
-    'For COQL queries, provide a coqlQuery string like `select Last_Name, Email from Leads where Company = \'Acme\' limit 10`.',
-    'Search results are indexed asynchronously — newly created records may not appear immediately. Use COQL for real-time results.',
+    "For COQL queries, provide a coqlQuery string like `select Last_Name, Email from Leads where Company = 'Acme' limit 10`.",
+    'Search results are indexed asynchronously — newly created records may not appear immediately. Use COQL for real-time results.'
   ],
   constraints: [
     'Search returns a maximum of 2000 records.',
-    'Only one search parameter (criteria, email, phone, word) is used at a time, with priority: criteria > email > phone > word.',
+    'Only one search parameter (criteria, email, phone, word) is used at a time, with priority: criteria > email > phone > word.'
   ],
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    module: z.string().optional().describe('CRM module API name (required for search, not needed for COQL)'),
-    criteria: z.string().optional().describe('Search criteria expression, e.g., ((Last_Name:equals:Smith))'),
-    email: z.string().optional().describe('Search by email address across all email fields'),
-    phone: z.string().optional().describe('Search by phone number across all phone fields'),
-    word: z.string().optional().describe('Keyword search across all text fields'),
-    coqlQuery: z.string().optional().describe('COQL query string (e.g., "select Last_Name, Email from Leads where Company = \'Acme\'")'),
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Records per page (max 200)'),
-  }))
-  .output(z.object({
-    records: z.array(z.record(z.string(), z.any())).describe('Matching records'),
-    count: z.number().optional().describe('Number of records returned'),
-    moreRecords: z.boolean().optional().describe('Whether more records are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      module: z
+        .string()
+        .optional()
+        .describe('CRM module API name (required for search, not needed for COQL)'),
+      criteria: z
+        .string()
+        .optional()
+        .describe('Search criteria expression, e.g., ((Last_Name:equals:Smith))'),
+      email: z.string().optional().describe('Search by email address across all email fields'),
+      phone: z.string().optional().describe('Search by phone number across all phone fields'),
+      word: z.string().optional().describe('Keyword search across all text fields'),
+      coqlQuery: z
+        .string()
+        .optional()
+        .describe(
+          'COQL query string (e.g., "select Last_Name, Email from Leads where Company = \'Acme\'")'
+        ),
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Records per page (max 200)')
+    })
+  )
+  .output(
+    z.object({
+      records: z.array(z.record(z.string(), z.any())).describe('Matching records'),
+      count: z.number().optional().describe('Number of records returned'),
+      moreRecords: z.boolean().optional().describe('Whether more records are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let dc = (ctx.auth.datacenter || ctx.config.datacenter || 'us') as Datacenter;
     let client = new ZohoCrmClient({ token: ctx.auth.token, datacenter: dc });
 
@@ -49,9 +64,9 @@ export let crmSearchRecords = SlateTool.create(spec, {
         output: {
           records,
           count: result?.info?.count ?? records.length,
-          moreRecords: result?.info?.more_records ?? false,
+          moreRecords: result?.info?.more_records ?? false
         },
-        message: `COQL query returned **${records.length}** records.`,
+        message: `COQL query returned **${records.length}** records.`
       };
     }
 
@@ -63,7 +78,7 @@ export let crmSearchRecords = SlateTool.create(spec, {
       phone: ctx.input.phone,
       word: ctx.input.word,
       page: ctx.input.page,
-      perPage: ctx.input.perPage,
+      perPage: ctx.input.perPage
     });
 
     let records = result?.data || [];
@@ -71,8 +86,9 @@ export let crmSearchRecords = SlateTool.create(spec, {
       output: {
         records,
         count: result?.info?.count ?? records.length,
-        moreRecords: result?.info?.more_records ?? false,
+        moreRecords: result?.info?.more_records ?? false
       },
-      message: `Search in **${ctx.input.module}** returned **${records.length}** records.`,
+      message: `Search in **${ctx.input.module}** returned **${records.length}** records.`
     };
-  }).build();
+  })
+  .build();

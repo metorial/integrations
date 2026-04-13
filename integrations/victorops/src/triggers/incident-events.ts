@@ -3,46 +3,50 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let incidentEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incident Events',
-    key: 'incident_events',
-    description: '[Polling fallback] Fires when incidents are triggered, acknowledged, or resolved. Polls for changes in incident state.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['triggered', 'acknowledged', 'resolved']).describe('Type of incident event'),
-    incidentNumber: z.string().describe('Incident number'),
-    currentPhase: z.string().describe('Current phase of the incident'),
-    entityId: z.string().optional().describe('Entity ID associated with the incident'),
-    service: z.string().optional().describe('Service associated with the incident'),
-    host: z.string().optional().describe('Host associated with the incident'),
-    startTime: z.string().optional().describe('When the incident started'),
-    alertCount: z.number().optional().describe('Number of alerts in the incident'),
-    pagedUsers: z.array(z.string()).optional().describe('Users paged for this incident'),
-    pagedTeams: z.array(z.string()).optional().describe('Teams paged for this incident'),
-  }))
-  .output(z.object({
-    incidentNumber: z.string().describe('Incident number'),
-    currentPhase: z.string().describe('Current phase (UNACKED, ACKED, RESOLVED)'),
-    entityId: z.string().optional().describe('Entity ID'),
-    service: z.string().optional().describe('Service name'),
-    host: z.string().optional().describe('Host name'),
-    startTime: z.string().optional().describe('Incident start time'),
-    alertCount: z.number().optional().describe('Number of alerts'),
-    pagedUsers: z.array(z.string()).optional().describe('Paged users'),
-    pagedTeams: z.array(z.string()).optional().describe('Paged teams'),
-  }))
+export let incidentEvents = SlateTrigger.create(spec, {
+  name: 'Incident Events',
+  key: 'incident_events',
+  description:
+    '[Polling fallback] Fires when incidents are triggered, acknowledged, or resolved. Polls for changes in incident state.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['triggered', 'acknowledged', 'resolved'])
+        .describe('Type of incident event'),
+      incidentNumber: z.string().describe('Incident number'),
+      currentPhase: z.string().describe('Current phase of the incident'),
+      entityId: z.string().optional().describe('Entity ID associated with the incident'),
+      service: z.string().optional().describe('Service associated with the incident'),
+      host: z.string().optional().describe('Host associated with the incident'),
+      startTime: z.string().optional().describe('When the incident started'),
+      alertCount: z.number().optional().describe('Number of alerts in the incident'),
+      pagedUsers: z.array(z.string()).optional().describe('Users paged for this incident'),
+      pagedTeams: z.array(z.string()).optional().describe('Teams paged for this incident')
+    })
+  )
+  .output(
+    z.object({
+      incidentNumber: z.string().describe('Incident number'),
+      currentPhase: z.string().describe('Current phase (UNACKED, ACKED, RESOLVED)'),
+      entityId: z.string().optional().describe('Entity ID'),
+      service: z.string().optional().describe('Service name'),
+      host: z.string().optional().describe('Host name'),
+      startTime: z.string().optional().describe('Incident start time'),
+      alertCount: z.number().optional().describe('Number of alerts'),
+      pagedUsers: z.array(z.string()).optional().describe('Paged users'),
+      pagedTeams: z.array(z.string()).optional().describe('Paged teams')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         apiId: ctx.auth.apiId,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let data = await client.listIncidents();
@@ -71,7 +75,7 @@ export let incidentEvents = SlateTrigger.create(
             startTime: incident.startTime,
             alertCount: incident.alertCount,
             pagedUsers: incident.pagedUsers ?? [],
-            pagedTeams: incident.pagedTeams ?? [],
+            pagedTeams: incident.pagedTeams ?? []
           });
         }
       }
@@ -84,12 +88,12 @@ export let incidentEvents = SlateTrigger.create(
       return {
         inputs,
         updatedState: {
-          knownIncidents: updatedKnownIncidents,
-        },
+          knownIncidents: updatedKnownIncidents
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `incident.${ctx.input.eventType}`,
         id: `${ctx.input.incidentNumber}-${ctx.input.currentPhase}`,
@@ -102,8 +106,9 @@ export let incidentEvents = SlateTrigger.create(
           startTime: ctx.input.startTime,
           alertCount: ctx.input.alertCount,
           pagedUsers: ctx.input.pagedUsers,
-          pagedTeams: ctx.input.pagedTeams,
-        },
+          pagedTeams: ctx.input.pagedTeams
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

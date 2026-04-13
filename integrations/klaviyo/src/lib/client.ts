@@ -42,11 +42,11 @@ export class KlaviyoClient {
     this.axios = createAxios({
       baseURL: 'https://a.klaviyo.com/api',
       headers: {
-        'Authorization': authHeader,
-        'revision': config.revision ?? '2025-01-15',
-        'Accept': 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
-      },
+        Authorization: authHeader,
+        revision: config.revision ?? '2025-01-15',
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json'
+      }
     });
   }
 
@@ -70,10 +70,13 @@ export class KlaviyoClient {
     return response.data;
   }
 
-  async getProfile(profileId: string, params?: {
-    fields?: string[];
-    include?: string[];
-  }): Promise<JsonApiResponse> {
+  async getProfile(
+    profileId: string,
+    params?: {
+      fields?: string[];
+      include?: string[];
+    }
+  ): Promise<JsonApiResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
     if (params?.include?.length) query['include'] = params.include.join(',');
@@ -86,19 +89,22 @@ export class KlaviyoClient {
     let response = await this.axios.post('/profiles/', {
       data: {
         type: 'profile',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
 
-  async updateProfile(profileId: string, attributes: Record<string, any>): Promise<JsonApiResponse> {
+  async updateProfile(
+    profileId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResponse> {
     let response = await this.axios.patch(`/profiles/${profileId}/`, {
       data: {
         type: 'profile',
         id: profileId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -109,10 +115,10 @@ export class KlaviyoClient {
         type: 'profile-suppression-bulk-create-job',
         attributes: {
           profiles: {
-            data: profileIds.map(id => ({ type: 'profile', id })),
-          },
-        },
-      },
+            data: profileIds.map(id => ({ type: 'profile', id }))
+          }
+        }
+      }
     });
   }
 
@@ -122,19 +128,22 @@ export class KlaviyoClient {
         type: 'profile-suppression-bulk-delete-job',
         attributes: {
           profiles: {
-            data: profileIds.map(id => ({ type: 'profile', id })),
-          },
-        },
-      },
+            data: profileIds.map(id => ({ type: 'profile', id }))
+          }
+        }
+      }
     });
   }
 
-  async subscribeProfiles(listId: string, subscriptions: {
-    email?: string;
-    phoneNumber?: string;
-    channels?: Record<string, any>;
-    profileId?: string;
-  }[]): Promise<void> {
+  async subscribeProfiles(
+    listId: string,
+    subscriptions: {
+      email?: string;
+      phoneNumber?: string;
+      channels?: Record<string, any>;
+      profileId?: string;
+    }[]
+  ): Promise<void> {
     await this.axios.post('/profile-subscription-bulk-create-jobs/', {
       data: {
         type: 'profile-subscription-bulk-create-job',
@@ -148,26 +157,29 @@ export class KlaviyoClient {
                 ...(sub.email ? { email: sub.email } : {}),
                 ...(sub.phoneNumber ? { phone_number: sub.phoneNumber } : {}),
                 subscriptions: sub.channels ?? {
-                  email: { marketing: { consent: 'SUBSCRIBED' } },
-                },
-              },
-            })),
-          },
+                  email: { marketing: { consent: 'SUBSCRIBED' } }
+                }
+              }
+            }))
+          }
         },
         relationships: {
           list: {
-            data: { type: 'list', id: listId },
-          },
-        },
-      },
+            data: { type: 'list', id: listId }
+          }
+        }
+      }
     });
   }
 
-  async unsubscribeProfiles(listId: string, profiles: {
-    email?: string;
-    phoneNumber?: string;
-    channels?: string[];
-  }[]): Promise<void> {
+  async unsubscribeProfiles(
+    listId: string,
+    profiles: {
+      email?: string;
+      phoneNumber?: string;
+      channels?: string[];
+    }[]
+  ): Promise<void> {
     await this.axios.post('/profile-subscription-bulk-delete-jobs/', {
       data: {
         type: 'profile-subscription-bulk-delete-job',
@@ -177,17 +189,17 @@ export class KlaviyoClient {
               type: 'profile',
               attributes: {
                 ...(p.email ? { email: p.email } : {}),
-                ...(p.phoneNumber ? { phone_number: p.phoneNumber } : {}),
-              },
-            })),
-          },
+                ...(p.phoneNumber ? { phone_number: p.phoneNumber } : {})
+              }
+            }))
+          }
         },
         relationships: {
           list: {
-            data: { type: 'list', id: listId },
-          },
-        },
-      },
+            data: { type: 'list', id: listId }
+          }
+        }
+      }
     });
   }
 
@@ -218,8 +230,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/lists/', {
       data: {
         type: 'list',
-        attributes: { name },
-      },
+        attributes: { name }
+      }
     });
     return response.data;
   }
@@ -229,8 +241,8 @@ export class KlaviyoClient {
       data: {
         type: 'list',
         id: listId,
-        attributes: { name },
-      },
+        attributes: { name }
+      }
     });
     return response.data;
   }
@@ -241,24 +253,27 @@ export class KlaviyoClient {
 
   async addProfilesToList(listId: string, profileIds: string[]): Promise<void> {
     await this.axios.post(`/lists/${listId}/relationships/profiles/`, {
-      data: profileIds.map(id => ({ type: 'profile', id })),
+      data: profileIds.map(id => ({ type: 'profile', id }))
     });
   }
 
   async removeProfilesFromList(listId: string, profileIds: string[]): Promise<void> {
     await this.axios.delete(`/lists/${listId}/relationships/profiles/`, {
       data: {
-        data: profileIds.map(id => ({ type: 'profile', id })),
-      },
+        data: profileIds.map(id => ({ type: 'profile', id }))
+      }
     });
   }
 
-  async getListProfiles(listId: string, params?: {
-    fields?: string[];
-    filter?: string;
-    pageCursor?: string;
-    pageSize?: number;
-  }): Promise<PaginatedResponse> {
+  async getListProfiles(
+    listId: string,
+    params?: {
+      fields?: string[];
+      filter?: string;
+      pageCursor?: string;
+      pageSize?: number;
+    }
+  ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
     if (params?.filter) query['filter'] = params.filter;
@@ -299,19 +314,22 @@ export class KlaviyoClient {
     let response = await this.axios.post('/segments/', {
       data: {
         type: 'segment',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
 
-  async updateSegment(segmentId: string, attributes: Record<string, any>): Promise<JsonApiResponse> {
+  async updateSegment(
+    segmentId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResponse> {
     let response = await this.axios.patch(`/segments/${segmentId}/`, {
       data: {
         type: 'segment',
         id: segmentId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -320,12 +338,15 @@ export class KlaviyoClient {
     await this.axios.delete(`/segments/${segmentId}/`);
   }
 
-  async getSegmentProfiles(segmentId: string, params?: {
-    fields?: string[];
-    filter?: string;
-    pageCursor?: string;
-    pageSize?: number;
-  }): Promise<PaginatedResponse> {
+  async getSegmentProfiles(
+    segmentId: string,
+    params?: {
+      fields?: string[];
+      filter?: string;
+      pageCursor?: string;
+      pageSize?: number;
+    }
+  ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[profile]'] = params.fields.join(',');
     if (params?.filter) query['filter'] = params.filter;
@@ -365,19 +386,22 @@ export class KlaviyoClient {
     let response = await this.axios.post('/campaigns/', {
       data: {
         type: 'campaign',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
 
-  async updateCampaign(campaignId: string, attributes: Record<string, any>): Promise<JsonApiResponse> {
+  async updateCampaign(
+    campaignId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResponse> {
     let response = await this.axios.patch(`/campaigns/${campaignId}/`, {
       data: {
         type: 'campaign',
         id: campaignId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -390,8 +414,8 @@ export class KlaviyoClient {
     await this.axios.post('/campaign-send-jobs/', {
       data: {
         type: 'campaign-send-job',
-        id: campaignId,
-      },
+        id: campaignId
+      }
     });
   }
 
@@ -420,10 +444,13 @@ export class KlaviyoClient {
     return response.data;
   }
 
-  async getFlow(flowId: string, params?: {
-    fields?: string[];
-    include?: string[];
-  }): Promise<JsonApiResponse> {
+  async getFlow(
+    flowId: string,
+    params?: {
+      fields?: string[];
+      include?: string[];
+    }
+  ): Promise<JsonApiResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[flow]'] = params.fields.join(',');
     if (params?.include?.length) query['include'] = params.include.join(',');
@@ -437,8 +464,8 @@ export class KlaviyoClient {
       data: {
         type: 'flow',
         id: flowId,
-        attributes: { status },
-      },
+        attributes: { status }
+      }
     });
     return response.data;
   }
@@ -447,11 +474,14 @@ export class KlaviyoClient {
     await this.axios.delete(`/flows/${flowId}/`);
   }
 
-  async getFlowActions(flowId: string, params?: {
-    fields?: string[];
-    sort?: string;
-    pageCursor?: string;
-  }): Promise<PaginatedResponse> {
+  async getFlowActions(
+    flowId: string,
+    params?: {
+      fields?: string[];
+      sort?: string;
+      pageCursor?: string;
+    }
+  ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[flow-action]'] = params.fields.join(',');
     if (params?.sort) query['sort'] = params.sort;
@@ -499,8 +529,8 @@ export class KlaviyoClient {
     await this.axios.post('/events/', {
       data: {
         type: 'event',
-        attributes,
-      },
+        attributes
+      }
     });
   }
 
@@ -535,8 +565,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/metric-aggregates/', {
       data: {
         type: 'metric-aggregate',
-        attributes: body,
-      },
+        attributes: body
+      }
     });
     return response.data;
   }
@@ -570,19 +600,22 @@ export class KlaviyoClient {
     let response = await this.axios.post('/catalog-items/', {
       data: {
         type: 'catalog-item',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
 
-  async updateCatalogItem(itemId: string, attributes: Record<string, any>): Promise<JsonApiResponse> {
+  async updateCatalogItem(
+    itemId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResponse> {
     let response = await this.axios.patch(`/catalog-items/${itemId}/`, {
       data: {
         type: 'catalog-item',
         id: itemId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -591,17 +624,22 @@ export class KlaviyoClient {
     await this.axios.delete(`/catalog-items/${itemId}/`);
   }
 
-  async getCatalogVariants(itemId: string, params?: {
-    fields?: string[];
-    pageCursor?: string;
-    pageSize?: number;
-  }): Promise<PaginatedResponse> {
+  async getCatalogVariants(
+    itemId: string,
+    params?: {
+      fields?: string[];
+      pageCursor?: string;
+      pageSize?: number;
+    }
+  ): Promise<PaginatedResponse> {
     let query: Record<string, any> = {};
     if (params?.fields?.length) query['fields[catalog-variant]'] = params.fields.join(',');
     if (params?.pageCursor) query['page[cursor]'] = params.pageCursor;
     if (params?.pageSize) query['page[size]'] = params.pageSize;
 
-    let response = await this.axios.get(`/catalog-items/${itemId}/variants/`, { params: query });
+    let response = await this.axios.get(`/catalog-items/${itemId}/variants/`, {
+      params: query
+    });
     return response.data;
   }
 
@@ -656,19 +694,22 @@ export class KlaviyoClient {
     let response = await this.axios.post('/templates/', {
       data: {
         type: 'template',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
 
-  async updateTemplate(templateId: string, attributes: Record<string, any>): Promise<JsonApiResponse> {
+  async updateTemplate(
+    templateId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResponse> {
     let response = await this.axios.patch(`/templates/${templateId}/`, {
       data: {
         type: 'template',
         id: templateId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -682,8 +723,8 @@ export class KlaviyoClient {
       data: {
         type: 'template',
         id: templateId,
-        attributes: { name: newName },
-      },
+        attributes: { name: newName }
+      }
     });
     return response.data;
   }
@@ -695,9 +736,9 @@ export class KlaviyoClient {
         id: templateId,
         attributes: {
           context: context ?? {},
-          return_fields: { html: true, text: true },
-        },
-      },
+          return_fields: { html: true, text: true }
+        }
+      }
     });
     return response.data;
   }
@@ -729,10 +770,10 @@ export class KlaviyoClient {
         attributes: { name },
         relationships: {
           'tag-group': {
-            data: { type: 'tag-group', id: tagGroupId },
-          },
-        },
-      },
+            data: { type: 'tag-group', id: tagGroupId }
+          }
+        }
+      }
     });
     return response.data;
   }
@@ -742,8 +783,8 @@ export class KlaviyoClient {
       data: {
         type: 'tag',
         id: tagId,
-        attributes: { name },
-      },
+        attributes: { name }
+      }
     });
     return response.data;
   }
@@ -776,9 +817,9 @@ export class KlaviyoClient {
         type: 'tag-group',
         attributes: {
           name,
-          ...(exclusive !== undefined ? { exclusive } : {}),
-        },
-      },
+          ...(exclusive !== undefined ? { exclusive } : {})
+        }
+      }
     });
     return response.data;
   }
@@ -806,8 +847,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/coupons/', {
       data: {
         type: 'coupon',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -821,17 +862,17 @@ export class KlaviyoClient {
             data: codes.map(code => ({
               type: 'coupon-code',
               attributes: {
-                unique_code: code,
+                unique_code: code
               },
               relationships: {
                 coupon: {
-                  data: { type: 'coupon', id: couponId },
-                },
-              },
-            })),
-          },
-        },
-      },
+                  data: { type: 'coupon', id: couponId }
+                }
+              }
+            }))
+          }
+        }
+      }
     });
     return response.data;
   }
@@ -867,20 +908,23 @@ export class KlaviyoClient {
           secret_key: attributes.secret_key,
           enabled_topics: attributes.topics,
           description: attributes.description ?? '',
-          enabled: attributes.enabled ?? true,
-        },
-      },
+          enabled: attributes.enabled ?? true
+        }
+      }
     });
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, attributes: Record<string, any>): Promise<JsonApiResponse> {
+  async updateWebhook(
+    webhookId: string,
+    attributes: Record<string, any>
+  ): Promise<JsonApiResponse> {
     let response = await this.axios.patch(`/webhooks/${webhookId}/`, {
       data: {
         type: 'webhook',
         id: webhookId,
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }
@@ -900,8 +944,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/campaign-values-reports/', {
       data: {
         type: 'campaign-values-report',
-        attributes: body,
-      },
+        attributes: body
+      }
     });
     return response.data;
   }
@@ -910,8 +954,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/flow-values-reports/', {
       data: {
         type: 'flow-values-report',
-        attributes: body,
-      },
+        attributes: body
+      }
     });
     return response.data;
   }
@@ -920,8 +964,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/flow-series-reports/', {
       data: {
         type: 'flow-series-report',
-        attributes: body,
-      },
+        attributes: body
+      }
     });
     return response.data;
   }
@@ -948,10 +992,10 @@ export class KlaviyoClient {
         type: 'data-privacy-deletion-job',
         attributes: {
           profile: {
-            data: profile,
-          },
-        },
-      },
+            data: profile
+          }
+        }
+      }
     });
   }
 
@@ -1015,8 +1059,8 @@ export class KlaviyoClient {
     let response = await this.axios.post('/images/', {
       data: {
         type: 'image',
-        attributes,
-      },
+        attributes
+      }
     });
     return response.data;
   }

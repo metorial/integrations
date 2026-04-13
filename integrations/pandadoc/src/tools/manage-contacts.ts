@@ -12,7 +12,7 @@ let contactFieldsSchema = z.object({
   phone: z.string().optional().describe('Phone number'),
   country: z.string().optional().describe('Country'),
   state: z.string().optional().describe('State'),
-  streetAddress: z.string().optional().describe('Street address'),
+  streetAddress: z.string().optional().describe('Street address')
 });
 
 let contactOutputSchema = z.object({
@@ -25,26 +25,23 @@ let contactOutputSchema = z.object({
   phone: z.string().optional().describe('Phone number'),
   country: z.string().optional().describe('Country'),
   state: z.string().optional().describe('State'),
-  streetAddress: z.string().optional().describe('Street address'),
+  streetAddress: z.string().optional().describe('Street address')
 });
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: `Create a new contact in the PandaDoc contacts directory. Contacts can be used as recipients when creating documents.`,
-    tags: {
-      readOnly: false,
-    },
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description: `Create a new contact in the PandaDoc contacts directory. Contacts can be used as recipients when creating documents.`,
+  tags: {
+    readOnly: false
   }
-)
+})
   .input(contactFieldsSchema)
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new PandaDocClient({
       token: ctx.auth.token,
-      authType: ctx.auth.authType,
+      authType: ctx.auth.authType
     });
 
     let result = await client.createContact({
@@ -56,7 +53,7 @@ export let createContact = SlateTool.create(
       phone: ctx.input.phone,
       country: ctx.input.country,
       state: ctx.input.state,
-      street_address: ctx.input.streetAddress,
+      street_address: ctx.input.streetAddress
     });
 
     return {
@@ -70,34 +67,35 @@ export let createContact = SlateTool.create(
         phone: result.phone,
         country: result.country,
         state: result.state,
-        streetAddress: result.street_address,
+        streetAddress: result.street_address
       },
-      message: `Created contact **${ctx.input.email}** (ID: \`${result.id}\`).`,
+      message: `Created contact **${ctx.input.email}** (ID: \`${result.id}\`).`
     };
   })
   .build();
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `List contacts from the PandaDoc contacts directory. Optionally filter by email address.`,
-    tags: {
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `List contacts from the PandaDoc contacts directory. Optionally filter by email address.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Filter by exact email address'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactOutputSchema).describe('List of contacts'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Filter by exact email address')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactOutputSchema).describe('List of contacts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PandaDocClient({
       token: ctx.auth.token,
-      authType: ctx.auth.authType,
+      authType: ctx.auth.authType
     });
 
     let result = await client.listContacts(ctx.input.email);
@@ -112,44 +110,43 @@ export let listContacts = SlateTool.create(
       phone: c.phone,
       country: c.country,
       state: c.state,
-      streetAddress: c.street_address,
+      streetAddress: c.street_address
     }));
 
     return {
       output: { contacts },
-      message: `Found **${contacts.length}** contact(s).`,
+      message: `Found **${contacts.length}** contact(s).`
     };
   })
   .build();
 
-export let updateContact = SlateTool.create(
-  spec,
-  {
-    name: 'Update Contact',
-    key: 'update_contact',
-    description: `Update an existing contact in the PandaDoc contacts directory. Only provide the fields you want to change.`,
-    tags: {
-      readOnly: false,
-    },
+export let updateContact = SlateTool.create(spec, {
+  name: 'Update Contact',
+  key: 'update_contact',
+  description: `Update an existing contact in the PandaDoc contacts directory. Only provide the fields you want to change.`,
+  tags: {
+    readOnly: false
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('UUID of the contact to update'),
-    email: z.string().optional().describe('New email address'),
-    firstName: z.string().optional().describe('New first name'),
-    lastName: z.string().optional().describe('New last name'),
-    company: z.string().optional().describe('New company name'),
-    jobTitle: z.string().optional().describe('New job title'),
-    phone: z.string().optional().describe('New phone number'),
-    country: z.string().optional().describe('New country'),
-    state: z.string().optional().describe('New state'),
-    streetAddress: z.string().optional().describe('New street address'),
-  }))
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('UUID of the contact to update'),
+      email: z.string().optional().describe('New email address'),
+      firstName: z.string().optional().describe('New first name'),
+      lastName: z.string().optional().describe('New last name'),
+      company: z.string().optional().describe('New company name'),
+      jobTitle: z.string().optional().describe('New job title'),
+      phone: z.string().optional().describe('New phone number'),
+      country: z.string().optional().describe('New country'),
+      state: z.string().optional().describe('New state'),
+      streetAddress: z.string().optional().describe('New street address')
+    })
+  )
   .output(contactOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new PandaDocClient({
       token: ctx.auth.token,
-      authType: ctx.auth.authType,
+      authType: ctx.auth.authType
     });
 
     let updateParams: any = {};
@@ -176,35 +173,36 @@ export let updateContact = SlateTool.create(
         phone: result.phone,
         country: result.country,
         state: result.state,
-        streetAddress: result.street_address,
+        streetAddress: result.street_address
       },
-      message: `Updated contact \`${ctx.input.contactId}\`.`,
+      message: `Updated contact \`${ctx.input.contactId}\`.`
     };
   })
   .build();
 
-export let deleteContact = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Contact',
-    key: 'delete_contact',
-    description: `Delete a contact from the PandaDoc contacts directory.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteContact = SlateTool.create(spec, {
+  name: 'Delete Contact',
+  key: 'delete_contact',
+  description: `Delete a contact from the PandaDoc contacts directory.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    contactId: z.string().describe('UUID of the contact to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the contact was successfully deleted'),
-    contactId: z.string().describe('UUID of the deleted contact'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('UUID of the contact to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the contact was successfully deleted'),
+      contactId: z.string().describe('UUID of the deleted contact')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new PandaDocClient({
       token: ctx.auth.token,
-      authType: ctx.auth.authType,
+      authType: ctx.auth.authType
     });
 
     await client.deleteContact(ctx.input.contactId);
@@ -212,9 +210,9 @@ export let deleteContact = SlateTool.create(
     return {
       output: {
         deleted: true,
-        contactId: ctx.input.contactId,
+        contactId: ctx.input.contactId
       },
-      message: `Deleted contact \`${ctx.input.contactId}\`.`,
+      message: `Deleted contact \`${ctx.input.contactId}\`.`
     };
   })
   .build();

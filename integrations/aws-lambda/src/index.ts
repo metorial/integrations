@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listFunctions,
@@ -20,9 +19,7 @@ import {
   manageDurableExecution,
   getAccountSettings
 } from './tools/index';
-import { functionChanges,
-  inboundWebhook,
-} from './triggers/index';
+import { functionChanges, inboundWebhook } from './triggers/index';
 
 export let provider = Slate.create({
   spec,
@@ -45,8 +42,5 @@ export let provider = Slate.create({
     manageDurableExecution,
     getAccountSettings
   ],
-  triggers: [
-    inboundWebhook,
-    functionChanges
-  ]
+  triggers: [inboundWebhook, functionChanges]
 });

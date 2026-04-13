@@ -17,12 +17,9 @@ import {
   manageUserRoles,
   getMfaFactors,
   enrollMfaFactor,
-  verifyMfaFactor,
+  verifyMfaFactor
 } from './tools';
-import {
-  accountEvents,
-  eventWebhook,
-} from './triggers';
+import { accountEvents, eventWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,10 +40,7 @@ export let provider = Slate.create({
     manageUserRoles.build(),
     getMfaFactors.build(),
     enrollMfaFactor.build(),
-    verifyMfaFactor.build(),
+    verifyMfaFactor.build()
   ],
-  triggers: [
-    accountEvents.build(),
-    eventWebhook.build(),
-  ],
+  triggers: [accountEvents.build(), eventWebhook.build()]
 });

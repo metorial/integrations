@@ -18,8 +18,8 @@ export class SpeechToTextClient {
       baseURL: 'https://speech.googleapis.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -64,7 +64,7 @@ export class SpeechToTextClient {
     if (params.minSpeakerCount !== undefined || params.maxSpeakerCount !== undefined) {
       features.diarizationConfig = {
         minSpeakerCount: params.minSpeakerCount,
-        maxSpeakerCount: params.maxSpeakerCount,
+        maxSpeakerCount: params.maxSpeakerCount
       };
     }
 
@@ -74,13 +74,13 @@ export class SpeechToTextClient {
         phraseSets: [
           {
             inlinePhraseSet: {
-              phrases: params.speechContextPhrases.map((phrase) => ({
+              phrases: params.speechContextPhrases.map(phrase => ({
                 value: phrase,
-                boost: params.phraseBoost ?? 10,
-              })),
-            },
-          },
-        ],
+                boost: params.phraseBoost ?? 10
+              }))
+            }
+          }
+        ]
       };
     }
 
@@ -96,7 +96,7 @@ export class SpeechToTextClient {
       configObj.explicitDecodingConfig = {
         encoding: params.encoding,
         sampleRateHertz: params.sampleRateHertz,
-        audioChannelCount: params.audioChannelCount ?? 1,
+        audioChannelCount: params.audioChannelCount ?? 1
       };
     } else {
       configObj.autoDecodingConfig = {};
@@ -139,12 +139,12 @@ export class SpeechToTextClient {
     if (params.minSpeakerCount !== undefined || params.maxSpeakerCount !== undefined) {
       features.diarizationConfig = {
         minSpeakerCount: params.minSpeakerCount,
-        maxSpeakerCount: params.maxSpeakerCount,
+        maxSpeakerCount: params.maxSpeakerCount
       };
     }
 
     let configObj: Record<string, unknown> = {
-      autoDecodingConfig: {},
+      autoDecodingConfig: {}
     };
     if (params.model) configObj.model = params.model;
     if (params.languageCodes && params.languageCodes.length > 0) {
@@ -152,7 +152,7 @@ export class SpeechToTextClient {
     }
     if (Object.keys(features).length > 0) configObj.features = features;
 
-    let files = params.fileUris.map((uri) => ({ uri }));
+    let files = params.fileUris.map(uri => ({ uri }));
 
     let recognitionOutputConfig: Record<string, unknown> = {};
     if (params.outputUri) {
@@ -164,7 +164,7 @@ export class SpeechToTextClient {
     let body: Record<string, unknown> = {
       config: configObj,
       files,
-      recognitionOutputConfig,
+      recognitionOutputConfig
     };
 
     let response = await this.http.post(url, body);
@@ -187,7 +187,7 @@ export class SpeechToTextClient {
     if (params?.filter) queryParams.filter = params.filter;
 
     let response = await this.http.get(`${this.recognizerBase}/operations`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data as ListOperationsResponse;
   }
@@ -215,7 +215,7 @@ export class SpeechToTextClient {
     }
 
     let defaultRecognitionConfig: Record<string, unknown> = {
-      autoDecodingConfig: {},
+      autoDecodingConfig: {}
     };
     if (params.model) defaultRecognitionConfig.model = params.model;
     if (params.languageCodes.length > 0) {
@@ -229,11 +229,11 @@ export class SpeechToTextClient {
       displayName: params.displayName || params.recognizerId,
       model: params.model,
       languageCodes: params.languageCodes,
-      defaultRecognitionConfig,
+      defaultRecognitionConfig
     };
 
     let response = await this.http.post(url, body, {
-      params: { recognizerId: params.recognizerId },
+      params: { recognizerId: params.recognizerId }
     });
     return response.data as OperationResponse;
   }
@@ -253,7 +253,7 @@ export class SpeechToTextClient {
     if (params?.pageToken) queryParams.pageToken = params.pageToken;
 
     let response = await this.http.get(`${this.recognizerBase}/recognizers`, {
-      params: queryParams,
+      params: queryParams
     });
     return response.data as ListRecognizersResponse;
   }
@@ -267,7 +267,7 @@ export class SpeechToTextClient {
     let url = `${this.recognizerBase}/recognizers/${params.recognizerId}`;
 
     let body: Record<string, unknown> = {
-      name: `${this.recognizerBase}/recognizers/${params.recognizerId}`,
+      name: `${this.recognizerBase}/recognizers/${params.recognizerId}`
     };
     let updateMaskFields: string[] = [];
 
@@ -285,7 +285,7 @@ export class SpeechToTextClient {
     }
 
     let response = await this.http.patch(url, body, {
-      params: { updateMask: updateMaskFields.join(',') },
+      params: { updateMask: updateMaskFields.join(',') }
     });
     return response.data as OperationResponse;
   }
@@ -305,8 +305,8 @@ export class TextToSpeechClient {
       baseURL: 'https://texttospeech.googleapis.com',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -331,18 +331,19 @@ export class TextToSpeechClient {
     }
 
     let voice: Record<string, unknown> = {
-      languageCode: params.languageCode,
+      languageCode: params.languageCode
     };
     if (params.voiceName) voice.name = params.voiceName;
     if (params.ssmlGender) voice.ssmlGender = params.ssmlGender;
 
     let audioConfig: Record<string, unknown> = {
-      audioEncoding: params.audioEncoding,
+      audioEncoding: params.audioEncoding
     };
     if (params.speakingRate !== undefined) audioConfig.speakingRate = params.speakingRate;
     if (params.pitch !== undefined) audioConfig.pitch = params.pitch;
     if (params.volumeGainDb !== undefined) audioConfig.volumeGainDb = params.volumeGainDb;
-    if (params.sampleRateHertz !== undefined) audioConfig.sampleRateHertz = params.sampleRateHertz;
+    if (params.sampleRateHertz !== undefined)
+      audioConfig.sampleRateHertz = params.sampleRateHertz;
     if (params.effectsProfileId && params.effectsProfileId.length > 0) {
       audioConfig.effectsProfileId = params.effectsProfileId;
     }

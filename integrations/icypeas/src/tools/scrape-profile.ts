@@ -3,28 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let scrapeProfile = SlateTool.create(
-  spec,
-  {
-    name: 'Scrape Profile',
-    key: 'scrape_profile',
-    description: `Scrape professional profile data from a LinkedIn profile URL. Returns detailed information about the individual including name, job title, company, and profile summary. Supports both single and bulk scraping (up to 50 URLs).`,
-    constraints: [
-      'Maximum 50 profile URLs per request when using bulk mode.'
-    ],
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let scrapeProfile = SlateTool.create(spec, {
+  name: 'Scrape Profile',
+  key: 'scrape_profile',
+  description: `Scrape professional profile data from a LinkedIn profile URL. Returns detailed information about the individual including name, job title, company, and profile summary. Supports both single and bulk scraping (up to 50 URLs).`,
+  constraints: ['Maximum 50 profile URLs per request when using bulk mode.'],
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    profileUrls: z.array(z.string()).describe('One or more LinkedIn profile URLs to scrape')
-  }))
-  .output(z.object({
-    profiles: z.array(z.any()).describe('Array of scraped profile data')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      profileUrls: z.array(z.string()).describe('One or more LinkedIn profile URLs to scrape')
+    })
+  )
+  .output(
+    z.object({
+      profiles: z.array(z.any()).describe('Array of scraped profile data')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let profiles: any[];

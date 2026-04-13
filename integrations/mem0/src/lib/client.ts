@@ -122,8 +122,8 @@ export class Client {
       baseURL: 'https://api.mem0.ai',
       headers: {
         Authorization: `Token ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -136,7 +136,7 @@ export class Client {
   async addMemory(params: AddMemoryParams): Promise<MemoryEvent[]> {
     let axios = this.getAxios();
     let body: Record<string, unknown> = {
-      messages: params.messages.map((m) => ({ role: m.role, content: m.content })),
+      messages: params.messages.map(m => ({ role: m.role, content: m.content }))
     };
 
     if (params.userId) body.user_id = params.userId;
@@ -157,7 +157,7 @@ export class Client {
   async searchMemories(params: SearchMemoryParams): Promise<Memory[]> {
     let axios = this.getAxios();
     let body: Record<string, unknown> = {
-      query: params.query,
+      query: params.query
     };
 
     if (params.userId) body.user_id = params.userId;
@@ -182,10 +182,12 @@ export class Client {
     return response.data;
   }
 
-  async listMemories(params: ListMemoriesParams): Promise<{ memories: Memory[]; totalMemories: number }> {
+  async listMemories(
+    params: ListMemoriesParams
+  ): Promise<{ memories: Memory[]; totalMemories: number }> {
     let axios = this.getAxios();
     let body: Record<string, unknown> = {
-      filters: {} as Record<string, unknown>,
+      filters: {} as Record<string, unknown>
     };
 
     let filters = body.filters as Record<string, unknown>;
@@ -201,7 +203,9 @@ export class Client {
     this.addScopeParams(body);
 
     let response = await axios.post('/v2/memories/', body);
-    let memories = Array.isArray(response.data) ? response.data : (response.data.results || response.data.memories || []);
+    let memories = Array.isArray(response.data)
+      ? response.data
+      : response.data.results || response.data.memories || [];
     let totalMemories = response.data.total_memories || memories.length;
 
     return { memories, totalMemories };
@@ -251,13 +255,15 @@ export class Client {
     if (this.projectId) queryParams.project_id = this.projectId;
 
     let response = await axios.get('/v1/entities/', { params: queryParams });
-    let rawEntities: Record<string, unknown>[] = Array.isArray(response.data) ? response.data : (response.data.results || []);
+    let rawEntities: Record<string, unknown>[] = Array.isArray(response.data)
+      ? response.data
+      : response.data.results || [];
 
     if (params?.entityType) {
-      rawEntities = rawEntities.filter((e) => e.type === params.entityType);
+      rawEntities = rawEntities.filter(e => e.type === params.entityType);
     }
 
-    return rawEntities.map((e) => ({
+    return rawEntities.map(e => ({
       id: String(e.id || ''),
       name: String(e.name || ''),
       createdAt: e.created_at ? String(e.created_at) : undefined,
@@ -266,7 +272,7 @@ export class Client {
       owner: e.owner ? String(e.owner) : undefined,
       organization: e.organization ? String(e.organization) : undefined,
       type: e.type ? String(e.type) : undefined,
-      metadata: e.metadata as Record<string, unknown> | undefined,
+      metadata: e.metadata as Record<string, unknown> | undefined
     }));
   }
 
@@ -281,7 +287,7 @@ export class Client {
       url: params.url,
       name: params.name,
       project_id: params.projectId,
-      event_types: params.eventTypes,
+      event_types: params.eventTypes
     };
 
     let response = await axios.post('/v1/webhooks/', body);
@@ -291,9 +297,9 @@ export class Client {
   async listWebhooks(projectId: string): Promise<Record<string, unknown>[]> {
     let axios = this.getAxios();
     let response = await axios.get('/v1/webhooks/', {
-      params: { project_id: projectId },
+      params: { project_id: projectId }
     });
-    return Array.isArray(response.data) ? response.data : (response.data.results || []);
+    return Array.isArray(response.data) ? response.data : response.data.results || [];
   }
 
   async deleteWebhook(webhookId: string): Promise<void> {

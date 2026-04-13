@@ -9,10 +9,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -35,7 +35,7 @@ export class Client {
 
   async searchInboxUsers(inboxId: string, query: string): Promise<HiverUser[]> {
     let response = await this.axios.get(`/inboxes/${inboxId}/users/search`, {
-      params: { q: query },
+      params: { q: query }
     });
     return response.data?.data?.results ?? response.data?.data ?? [];
   }
@@ -47,19 +47,22 @@ export class Client {
 
   async searchInboxTags(inboxId: string, query: string): Promise<HiverTag[]> {
     let response = await this.axios.get(`/inboxes/${inboxId}/tags/search`, {
-      params: { q: query },
+      params: { q: query }
     });
     return response.data?.data?.results ?? response.data?.data ?? [];
   }
 
   // ---- Conversations ----
 
-  async listConversations(inboxId: string, options?: {
-    limit?: number;
-    sortBy?: string;
-    sortOrder?: string;
-    nextPage?: string;
-  }): Promise<{ results: HiverConversation[]; nextPage?: string }> {
+  async listConversations(
+    inboxId: string,
+    options?: {
+      limit?: number;
+      sortBy?: string;
+      sortOrder?: string;
+      nextPage?: string;
+    }
+  ): Promise<{ results: HiverConversation[]; nextPage?: string }> {
     let params: Record<string, string | number> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.sortBy) params['sort_by'] = options.sortBy;
@@ -71,7 +74,7 @@ export class Client {
 
     return {
       results: data?.results ?? [],
-      nextPage: data?.pagination?.next_page,
+      nextPage: data?.pagination?.next_page
     };
   }
 
@@ -80,17 +83,24 @@ export class Client {
     return response.data?.data ?? response.data;
   }
 
-  async updateConversation(inboxId: string, conversationId: string, updates: {
-    status?: string;
-    assigneeId?: string;
-    tags?: string[];
-  }): Promise<HiverConversation> {
+  async updateConversation(
+    inboxId: string,
+    conversationId: string,
+    updates: {
+      status?: string;
+      assigneeId?: string;
+      tags?: string[];
+    }
+  ): Promise<HiverConversation> {
     let body: Record<string, unknown> = {};
     if (updates.status !== undefined) body['status'] = updates.status;
     if (updates.assigneeId !== undefined) body['assignee_id'] = updates.assigneeId;
     if (updates.tags !== undefined) body['tags'] = updates.tags;
 
-    let response = await this.axios.patch(`/inboxes/${inboxId}/conversations/${conversationId}`, body);
+    let response = await this.axios.patch(
+      `/inboxes/${inboxId}/conversations/${conversationId}`,
+      body
+    );
     return response.data?.data ?? response.data;
   }
 
@@ -99,7 +109,7 @@ export class Client {
   async registerWebhook(url: string, events: string[]): Promise<{ webhookId: string }> {
     let response = await this.axios.post('/webhooks', {
       url,
-      events,
+      events
     });
     let data = response.data?.data ?? response.data;
     return { webhookId: data?.id ?? data?.webhook_id ?? '' };

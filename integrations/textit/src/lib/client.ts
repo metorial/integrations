@@ -99,14 +99,17 @@ export interface Run {
   contact: { uuid: string; urn: string; name: string };
   start: { uuid: string } | null;
   responded: boolean;
-  values: Record<string, {
-    value: string;
-    category: string;
-    node: string;
-    time: string;
-    name: string;
-    input: string;
-  }>;
+  values: Record<
+    string,
+    {
+      value: string;
+      category: string;
+      node: string;
+      time: string;
+      name: string;
+      input: string;
+    }
+  >;
   created_on: string;
   modified_on: string;
   exited_on: string | null;
@@ -211,8 +214,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://textit.com/api/v2',
       headers: {
-        Authorization: `Token ${token}`,
-      },
+        Authorization: `Token ${token}`
+      }
     });
   }
 
@@ -245,13 +248,16 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(identifier: { uuid?: string; urn?: string }, data: {
-    name?: string;
-    language?: string;
-    urns?: string[];
-    groups?: string[];
-    fields?: Record<string, string>;
-  }): Promise<Contact> {
+  async updateContact(
+    identifier: { uuid?: string; urn?: string },
+    data: {
+      name?: string;
+      language?: string;
+      urns?: string[];
+      groups?: string[];
+      fields?: Record<string, string>;
+    }
+  ): Promise<Contact> {
     let params: Record<string, string> = {};
     if (identifier.uuid) params.uuid = identifier.uuid;
     else if (identifier.urn) params.urn = identifier.urn;
@@ -269,14 +275,25 @@ export class Client {
   // Contact Actions
   async performContactAction(data: {
     contacts: string[];
-    action: 'add' | 'remove' | 'block' | 'unblock' | 'archive' | 'restore' | 'interrupt' | 'delete';
+    action:
+      | 'add'
+      | 'remove'
+      | 'block'
+      | 'unblock'
+      | 'archive'
+      | 'restore'
+      | 'interrupt'
+      | 'delete';
     group?: string;
   }): Promise<void> {
     await this.axios.post('/contact_actions.json', data);
   }
 
   // Groups
-  async listGroups(params?: { uuid?: string; name?: string }): Promise<PaginatedResponse<Group>> {
+  async listGroups(params?: {
+    uuid?: string;
+    name?: string;
+  }): Promise<PaginatedResponse<Group>> {
     let response = await this.axios.get('/groups.json', { params });
     return response.data;
   }
@@ -433,7 +450,10 @@ export class Client {
     return response.data;
   }
 
-  async updateCampaign(uuid: string, data: { name?: string; group?: string }): Promise<Campaign> {
+  async updateCampaign(
+    uuid: string,
+    data: { name?: string; group?: string }
+  ): Promise<Campaign> {
     let response = await this.axios.post('/campaigns.json', data, { params: { uuid } });
     return response.data;
   }
@@ -460,14 +480,17 @@ export class Client {
     return response.data;
   }
 
-  async updateCampaignEvent(uuid: string, data: {
-    relative_to?: string;
-    offset?: number;
-    unit?: string;
-    delivery_hour?: number;
-    message?: Record<string, string>;
-    flow?: string;
-  }): Promise<CampaignEvent> {
+  async updateCampaignEvent(
+    uuid: string,
+    data: {
+      relative_to?: string;
+      offset?: number;
+      unit?: string;
+      delivery_hour?: number;
+      message?: Record<string, string>;
+      flow?: string;
+    }
+  ): Promise<CampaignEvent> {
     let response = await this.axios.post('/campaign_events.json', data, { params: { uuid } });
     return response.data;
   }
@@ -486,7 +509,10 @@ export class Client {
   }
 
   // Labels
-  async listLabels(params?: { uuid?: string; name?: string }): Promise<PaginatedResponse<Label>> {
+  async listLabels(params?: {
+    uuid?: string;
+    name?: string;
+  }): Promise<PaginatedResponse<Label>> {
     let response = await this.axios.get('/labels.json', { params });
     return response.data;
   }

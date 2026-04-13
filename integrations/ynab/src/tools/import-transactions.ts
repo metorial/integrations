@@ -3,24 +3,25 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let importTransactions = SlateTool.create(
-  spec,
-  {
-    name: 'Import Bank Transactions',
-    key: 'import_transactions',
-    description: `Trigger an import of transactions from all linked bank accounts in a budget. This is equivalent to clicking "Import" in the YNAB app. Only works for accounts that have direct import enabled.`,
-    tags: {
-      destructive: false,
-    },
+export let importTransactions = SlateTool.create(spec, {
+  name: 'Import Bank Transactions',
+  key: 'import_transactions',
+  description: `Trigger an import of transactions from all linked bank accounts in a budget. This is equivalent to clicking "Import" in the YNAB app. Only works for accounts that have direct import enabled.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.'),
-  }))
-  .output(z.object({
-    transactionIds: z.array(z.string()).describe('IDs of newly imported transactions'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      budgetId: z.string().optional().describe('Budget ID. Defaults to the configured budget.')
+    })
+  )
+  .output(
+    z.object({
+      transactionIds: z.array(z.string()).describe('IDs of newly imported transactions')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let budgetId = ctx.input.budgetId ?? ctx.config.budgetId;
 
@@ -29,7 +30,7 @@ export let importTransactions = SlateTool.create(
 
     return {
       output: { transactionIds },
-      message: `Imported **${transactionIds.length}** transaction(s) from linked accounts`,
+      message: `Imported **${transactionIds.length}** transaction(s) from linked accounts`
     };
   })
   .build();

@@ -35,33 +35,39 @@ export class Client {
 
   // ==================== Monitors ====================
 
-  async getMonitors(params: {
-    monitors?: string;
-    types?: string;
-    statuses?: string;
-    search?: string;
-    customUptimeRatios?: string;
-    allTimeUptimeRatio?: number;
-    logs?: number;
-    logsLimit?: number;
-    responseTimes?: number;
-    responseTimesLimit?: number;
-    alertContacts?: number;
-    ssl?: number;
-    offset?: number;
-    limit?: number;
-  } = {}) {
+  async getMonitors(
+    params: {
+      monitors?: string;
+      types?: string;
+      statuses?: string;
+      search?: string;
+      customUptimeRatios?: string;
+      allTimeUptimeRatio?: number;
+      logs?: number;
+      logsLimit?: number;
+      responseTimes?: number;
+      responseTimesLimit?: number;
+      alertContacts?: number;
+      ssl?: number;
+      offset?: number;
+      limit?: number;
+    } = {}
+  ) {
     let data = await this.post('/getMonitors', {
       ...(params.monitors && { monitors: params.monitors }),
       ...(params.types && { types: params.types }),
       ...(params.statuses && { statuses: params.statuses }),
       ...(params.search && { search: params.search }),
       ...(params.customUptimeRatios && { custom_uptime_ratios: params.customUptimeRatios }),
-      ...(params.allTimeUptimeRatio !== undefined && { all_time_uptime_ratio: params.allTimeUptimeRatio }),
+      ...(params.allTimeUptimeRatio !== undefined && {
+        all_time_uptime_ratio: params.allTimeUptimeRatio
+      }),
       ...(params.logs !== undefined && { logs: params.logs }),
       ...(params.logsLimit !== undefined && { logs_limit: params.logsLimit }),
       ...(params.responseTimes !== undefined && { response_times: params.responseTimes }),
-      ...(params.responseTimesLimit !== undefined && { response_times_limit: params.responseTimesLimit }),
+      ...(params.responseTimesLimit !== undefined && {
+        response_times_limit: params.responseTimesLimit
+      }),
       ...(params.alertContacts !== undefined && { alert_contacts: params.alertContacts }),
       ...(params.ssl !== undefined && { ssl: params.ssl }),
       ...(params.offset !== undefined && { offset: params.offset }),
@@ -106,7 +112,9 @@ export class Client {
       ...(params.subType !== undefined && { sub_type: params.subType }),
       ...(params.port !== undefined && { port: params.port }),
       ...(params.keywordType !== undefined && { keyword_type: params.keywordType }),
-      ...(params.keywordCaseType !== undefined && { keyword_case_type: params.keywordCaseType }),
+      ...(params.keywordCaseType !== undefined && {
+        keyword_case_type: params.keywordCaseType
+      }),
       ...(params.keywordValue !== undefined && { keyword_value: params.keywordValue }),
       ...(params.interval !== undefined && { interval: params.interval }),
       ...(params.timeout !== undefined && { timeout: params.timeout }),
@@ -116,13 +124,19 @@ export class Client {
       ...(params.httpMethod !== undefined && { http_method: params.httpMethod }),
       ...(params.postType !== undefined && { post_type: params.postType }),
       ...(params.postValue !== undefined && { post_value: params.postValue }),
-      ...(params.postContentType !== undefined && { post_content_type: params.postContentType }),
+      ...(params.postContentType !== undefined && {
+        post_content_type: params.postContentType
+      }),
       ...(params.alertContacts && { alert_contacts: params.alertContacts }),
       ...(params.mwindows && { mwindows: params.mwindows }),
       ...(params.customHttpHeaders && { custom_http_headers: params.customHttpHeaders }),
       ...(params.customHttpStatuses && { custom_http_statuses: params.customHttpStatuses }),
-      ...(params.ignoreSslErrors !== undefined && { ignore_ssl_errors: params.ignoreSslErrors }),
-      ...(params.disableDomainExpireNotifications !== undefined && { disable_domain_expire_notifications: params.disableDomainExpireNotifications })
+      ...(params.ignoreSslErrors !== undefined && {
+        ignore_ssl_errors: params.ignoreSslErrors
+      }),
+      ...(params.disableDomainExpireNotifications !== undefined && {
+        disable_domain_expire_notifications: params.disableDomainExpireNotifications
+      })
     });
 
     return data.monitor;
@@ -161,7 +175,9 @@ export class Client {
       ...(params.subType !== undefined && { sub_type: params.subType }),
       ...(params.port !== undefined && { port: params.port }),
       ...(params.keywordType !== undefined && { keyword_type: params.keywordType }),
-      ...(params.keywordCaseType !== undefined && { keyword_case_type: params.keywordCaseType }),
+      ...(params.keywordCaseType !== undefined && {
+        keyword_case_type: params.keywordCaseType
+      }),
       ...(params.keywordValue !== undefined && { keyword_value: params.keywordValue }),
       ...(params.interval !== undefined && { interval: params.interval }),
       ...(params.timeout !== undefined && { timeout: params.timeout }),
@@ -172,13 +188,23 @@ export class Client {
       ...(params.httpMethod !== undefined && { http_method: params.httpMethod }),
       ...(params.postType !== undefined && { post_type: params.postType }),
       ...(params.postValue !== undefined && { post_value: params.postValue }),
-      ...(params.postContentType !== undefined && { post_content_type: params.postContentType }),
+      ...(params.postContentType !== undefined && {
+        post_content_type: params.postContentType
+      }),
       ...(params.alertContacts !== undefined && { alert_contacts: params.alertContacts }),
       ...(params.mwindows !== undefined && { mwindows: params.mwindows }),
-      ...(params.customHttpHeaders !== undefined && { custom_http_headers: params.customHttpHeaders }),
-      ...(params.customHttpStatuses !== undefined && { custom_http_statuses: params.customHttpStatuses }),
-      ...(params.ignoreSslErrors !== undefined && { ignore_ssl_errors: params.ignoreSslErrors }),
-      ...(params.disableDomainExpireNotifications !== undefined && { disable_domain_expire_notifications: params.disableDomainExpireNotifications })
+      ...(params.customHttpHeaders !== undefined && {
+        custom_http_headers: params.customHttpHeaders
+      }),
+      ...(params.customHttpStatuses !== undefined && {
+        custom_http_statuses: params.customHttpStatuses
+      }),
+      ...(params.ignoreSslErrors !== undefined && {
+        ignore_ssl_errors: params.ignoreSslErrors
+      }),
+      ...(params.disableDomainExpireNotifications !== undefined && {
+        disable_domain_expire_notifications: params.disableDomainExpireNotifications
+      })
     });
 
     return data.monitor;
@@ -191,11 +217,13 @@ export class Client {
 
   // ==================== Alert Contacts ====================
 
-  async getAlertContacts(params: {
-    alertContacts?: string;
-    offset?: number;
-    limit?: number;
-  } = {}) {
+  async getAlertContacts(
+    params: {
+      alertContacts?: string;
+      offset?: number;
+      limit?: number;
+    } = {}
+  ) {
     let data = await this.post('/getAlertContacts', {
       ...(params.alertContacts && { alert_contacts: params.alertContacts }),
       ...(params.offset !== undefined && { offset: params.offset }),
@@ -210,11 +238,7 @@ export class Client {
     };
   }
 
-  async newAlertContact(params: {
-    type: number;
-    friendlyName?: string;
-    value: string;
-  }) {
+  async newAlertContact(params: { type: number; friendlyName?: string; value: string }) {
     let data = await this.post('/newAlertContact', {
       type: params.type,
       value: params.value,
@@ -245,11 +269,13 @@ export class Client {
 
   // ==================== Public Status Pages ====================
 
-  async getPSPs(params: {
-    psps?: string;
-    offset?: number;
-    limit?: number;
-  } = {}) {
+  async getPSPs(
+    params: {
+      psps?: string;
+      offset?: number;
+      limit?: number;
+    } = {}
+  ) {
     let data = await this.post('/getPSPs', {
       ...(params.psps && { psps: params.psps }),
       ...(params.offset !== undefined && { offset: params.offset }),
@@ -317,11 +343,13 @@ export class Client {
 
   // ==================== Maintenance Windows ====================
 
-  async getMWindows(params: {
-    mwindows?: string;
-    offset?: number;
-    limit?: number;
-  } = {}) {
+  async getMWindows(
+    params: {
+      mwindows?: string;
+      offset?: number;
+      limit?: number;
+    } = {}
+  ) {
     let data = await this.post('/getMWindows', {
       ...(params.mwindows && { mwindows: params.mwindows }),
       ...(params.offset !== undefined && { offset: params.offset }),

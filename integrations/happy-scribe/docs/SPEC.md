@@ -29,6 +29,7 @@ Upload audio and video files to Happy Scribe's storage for transcription. When c
 ### Transcription and Subtitling Orders
 
 Create orders for transcription or subtitling of audio/video files. Orders support both automatic (AI) and professional (human) service types. Key options include:
+
 - **Language**: Specify the source language from 120+ supported languages.
 - **Subtitle mode**: Treat the output as subtitles rather than a plain transcription.
 - **Service type**: Choose `auto` for machine transcription or `pro` for human professional transcription.
@@ -45,6 +46,7 @@ Translate existing transcriptions into one or more target languages. Supports 70
 ### Exporting Transcriptions
 
 Export completed transcriptions into a variety of formats:
+
 - Text (.txt), Word (.docx), PDF (.pdf)
 - Subtitle formats: SubRip (.srt), WebVTT (.vtt), EBU-STL (.stl)
 - Professional editing formats: Avid Markers (.txt), Premiere Pro (.xml), Final Cut Pro (.fcp)

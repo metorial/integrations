@@ -75,9 +75,9 @@ export class FormsiteClient {
     this.axios = createAxios({
       baseURL: `https://${config.server}.formsite.com/api/v2/${config.userDir}`,
       headers: {
-        'Authorization': `bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -108,7 +108,10 @@ export class FormsiteClient {
 
   // ---- Results ----
 
-  async getFormResults(formDir: string, queryParams?: ResultsParams): Promise<{
+  async getFormResults(
+    formDir: string,
+    queryParams?: ResultsParams
+  ): Promise<{
     results: FormsiteResult[];
     pagination: PaginationInfo;
   }> {
@@ -159,13 +162,13 @@ export class FormsiteClient {
     let pagination: PaginationInfo = {
       limit: parseInt(getHeaderValue('pagination-limit', '100'), 10),
       pageCurrent: parseInt(getHeaderValue('pagination-page-current', '1'), 10),
-      pageLast: parseInt(getHeaderValue('pagination-page-last', '1'), 10),
+      pageLast: parseInt(getHeaderValue('pagination-page-last', '1'), 10)
     };
 
     let results = response.data.results || [];
     return {
       results: results.map((r: any) => this.normalizeResult(r)),
-      pagination,
+      pagination
     };
   }
 
@@ -177,14 +180,17 @@ export class FormsiteClient {
     return webhooks.map((w: any) => this.normalizeWebhook(w));
   }
 
-  async createOrUpdateWebhook(formDir: string, params: {
-    url: string;
-    event?: string;
-    handshakeKey?: string;
-  }): Promise<FormsiteWebhook> {
+  async createOrUpdateWebhook(
+    formDir: string,
+    params: {
+      url: string;
+      event?: string;
+      handshakeKey?: string;
+    }
+  ): Promise<FormsiteWebhook> {
     let body: Record<string, string> = {
       url: params.url,
-      event: params.event || 'result_completed',
+      event: params.event || 'result_completed'
     };
     if (params.handshakeKey) body.handshake_key = params.handshakeKey;
 
@@ -195,7 +201,7 @@ export class FormsiteClient {
 
   async deleteWebhook(formDir: string, url: string): Promise<void> {
     await this.axios.delete(`/forms/${formDir}/webhooks`, {
-      data: { url },
+      data: { url }
     });
   }
 
@@ -210,7 +216,7 @@ export class FormsiteClient {
       publishUrl: data.publish?.link || '',
       embedCode: data.publish?.embed_code || '',
       filesSize: data.stats?.files_size || 0,
-      resultsCount: data.stats?.results_count || 0,
+      resultsCount: data.stats?.results_count || 0
     };
   }
 
@@ -218,7 +224,7 @@ export class FormsiteClient {
     let item: FormsiteItem = {
       itemId: data.id || '',
       position: data.position || 0,
-      label: data.label || '',
+      label: data.label || ''
     };
     if (data.children && Array.isArray(data.children)) {
       item.children = data.children.map((c: any) => this.normalizeItem(c));
@@ -231,7 +237,7 @@ export class FormsiteClient {
     if (data.items && Array.isArray(data.items)) {
       items = data.items.map((item: any) => ({
         itemId: item.id || '',
-        value: item.value || '',
+        value: item.value || ''
       }));
     }
 
@@ -249,7 +255,7 @@ export class FormsiteClient {
       loginEmail: data.login?.email,
       paymentStatus: data.payment?.status,
       paymentAmount: data.payment?.amount,
-      items,
+      items
     };
   }
 
@@ -257,7 +263,7 @@ export class FormsiteClient {
     return {
       url: data.url || '',
       event: data.event || '',
-      handshakeKey: data.handshake_key,
+      handshakeKey: data.handshake_key
     };
   }
 }

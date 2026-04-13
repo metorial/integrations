@@ -249,7 +249,9 @@ export class Client {
 
     let response = await this.axios.get('/scheduled_events', { params: query });
     return {
-      collection: (response.data.collection || []).map((e: any) => mapKeys(e)) as ScheduledEvent[],
+      collection: (response.data.collection || []).map((e: any) =>
+        mapKeys(e)
+      ) as ScheduledEvent[],
       pagination: mapKeys(response.data.pagination) as PaginationResult
     };
   }
@@ -269,13 +271,16 @@ export class Client {
 
   // Event Invitees
 
-  async listEventInvitees(eventUri: string, params?: {
-    status?: 'active' | 'canceled';
-    sort?: string;
-    email?: string;
-    count?: number;
-    pageToken?: string;
-  }): Promise<{ collection: Invitee[]; pagination: PaginationResult }> {
+  async listEventInvitees(
+    eventUri: string,
+    params?: {
+      status?: 'active' | 'canceled';
+      sort?: string;
+      email?: string;
+      count?: number;
+      pageToken?: string;
+    }
+  ): Promise<{ collection: Invitee[]; pagination: PaginationResult }> {
     let uuid = this.extractUuid(eventUri);
     let query: Record<string, any> = {};
     if (params?.status) query.status = params.status;
@@ -284,7 +289,9 @@ export class Client {
     if (params?.count) query.count = params.count;
     if (params?.pageToken) query.page_token = params.pageToken;
 
-    let response = await this.axios.get(`/scheduled_events/${uuid}/invitees`, { params: query });
+    let response = await this.axios.get(`/scheduled_events/${uuid}/invitees`, {
+      params: query
+    });
     return {
       collection: (response.data.collection || []).map((e: any) => mapKeys(e)) as Invitee[],
       pagination: mapKeys(response.data.pagination) as PaginationResult
@@ -294,7 +301,9 @@ export class Client {
   async getEventInvitee(eventUri: string, inviteeUri: string): Promise<Invitee> {
     let eventUuid = this.extractUuid(eventUri);
     let inviteeUuid = this.extractUuid(inviteeUri);
-    let response = await this.axios.get(`/scheduled_events/${eventUuid}/invitees/${inviteeUuid}`);
+    let response = await this.axios.get(
+      `/scheduled_events/${eventUuid}/invitees/${inviteeUuid}`
+    );
     return mapKeys(response.data.resource) as Invitee;
   }
 
@@ -377,7 +386,9 @@ export class Client {
     let response = await this.axios.get('/user_availability_schedules', {
       params: { user: userUri }
     });
-    return (response.data.collection || []).map((e: any) => mapKeys(e)) as AvailabilitySchedule[];
+    return (response.data.collection || []).map((e: any) =>
+      mapKeys(e)
+    ) as AvailabilitySchedule[];
   }
 
   // Scheduling Links
@@ -394,7 +405,11 @@ export class Client {
     };
 
     let response = await this.axios.post('/scheduling_links', body);
-    return mapKeys(response.data.resource) as { bookingUrl: string; owner: string; ownerType: string };
+    return mapKeys(response.data.resource) as {
+      bookingUrl: string;
+      owner: string;
+      ownerType: string;
+    };
   }
 
   // Organization
@@ -414,7 +429,9 @@ export class Client {
 
     let response = await this.axios.get('/organization_memberships', { params: query });
     return {
-      collection: (response.data.collection || []).map((e: any) => mapKeys(e)) as OrganizationMembership[],
+      collection: (response.data.collection || []).map((e: any) =>
+        mapKeys(e)
+      ) as OrganizationMembership[],
       pagination: mapKeys(response.data.pagination) as PaginationResult
     };
   }
@@ -424,7 +441,10 @@ export class Client {
     await this.axios.delete(`/organization_memberships/${uuid}`);
   }
 
-  async inviteToOrganization(organizationUri: string, email: string): Promise<Record<string, any>> {
+  async inviteToOrganization(
+    organizationUri: string,
+    email: string
+  ): Promise<Record<string, any>> {
     let uuid = this.extractUuid(organizationUri);
     let response = await this.axios.post(`/organizations/${uuid}/invitations`, { email });
     return mapKeys(response.data.resource);
@@ -445,7 +465,9 @@ export class Client {
 
     let response = await this.axios.get('/routing_forms', { params: query });
     return {
-      collection: (response.data.collection || []).map((e: any) => mapKeys(e)) as RoutingForm[],
+      collection: (response.data.collection || []).map((e: any) =>
+        mapKeys(e)
+      ) as RoutingForm[],
       pagination: mapKeys(response.data.pagination) as PaginationResult
     };
   }
@@ -469,7 +491,9 @@ export class Client {
 
     let response = await this.axios.get('/routing_form_submissions', { params: query });
     return {
-      collection: (response.data.collection || []).map((e: any) => mapKeys(e)) as RoutingFormSubmission[],
+      collection: (response.data.collection || []).map((e: any) =>
+        mapKeys(e)
+      ) as RoutingFormSubmission[],
       pagination: mapKeys(response.data.pagination) as PaginationResult
     };
   }
@@ -523,7 +547,9 @@ export class Client {
 
     let response = await this.axios.get('/webhook_subscriptions', { params: query });
     return {
-      collection: (response.data.collection || []).map((e: any) => mapKeys(e)) as WebhookSubscription[],
+      collection: (response.data.collection || []).map((e: any) =>
+        mapKeys(e)
+      ) as WebhookSubscription[],
       pagination: mapKeys(response.data.pagination) as PaginationResult
     };
   }

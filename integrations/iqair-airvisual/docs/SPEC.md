@@ -31,16 +31,19 @@ Get air quality data for the nearest city to your location. Data can be collecte
 ### Station-Level Air Quality
 
 Fetch air quality and weather data for a specific monitoring station by ID, or find the nearest monitoring station to given GPS coordinates. Station-level data provides more granular readings than city-level data.
+
 - Available on Startup and Enterprise plans only.
 
 ### Air Quality Forecasts
 
 Retrieve hourly and daily AQI forecasts for any supported city. This includes 72-hour hourly predictions and 7-day daily outlooks.
+
 - The 7-day AQI and weather forecast is available on the Enterprise plan.
 
 ### Historical Air Quality Data
 
 Pull historical air quality readings for any city within a specified date range.
+
 - Enterprise plan provides 48-hour historical data for AQI, pollutant concentrations, temperature, and humidity.
 
 ### Location Directory
@@ -54,6 +57,7 @@ Retrieve a ranking of cities worldwide based on current AQI. This enables compar
 ### Device/Node Data (AirVisual Pro)
 
 The AirVisual Pro air quality monitor comes with an inbuilt device API. You can use this to access your device's measurements. Data includes indoor PM2.5, PM10, CO2, temperature, and humidity readings in addition to nearby outdoor station data.
+
 - Requires an AirVisual Pro hardware device and its device-specific API link or Node ID.
 
 ## Events

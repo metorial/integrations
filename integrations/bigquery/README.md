@@ -5,27 +5,35 @@ Execute SQL queries against BigQuery datasets, including DML and DDL statements.
 ## Tools
 
 ### Execute SQL Query
+
 Run a GoogleSQL (standard SQL) query against BigQuery. Supports SELECT, DML (INSERT, UPDATE, DELETE, MERGE), and DDL (CREATE, ALTER, DROP) statements. The query is submitted as a job, polled for completion, and results are returned. Parameterized queries are supported for safe value interpolation. You can optionally write results to a destination table.
 
 ### Export Table to Cloud Storage
-Export a BigQuery table to Google Cloud Storage as CSV, JSON, or Avro. Creates an asynchronous extract job. Use wildcards in the destination URI for sharded exports of large tables (e.g., gs://bucket/file-*.csv).
+
+Export a BigQuery table to Google Cloud Storage as CSV, JSON, or Avro. Creates an asynchronous extract job. Use wildcards in the destination URI for sharded exports of large tables (e.g., gs://bucket/file-\*.csv).
 
 ### Load Data from Cloud Storage
+
 Load data from Google Cloud Storage into a BigQuery table. Supports CSV, JSON (newline-delimited), Avro, Parquet, ORC, Datastore, and Firestore export formats. Creates an asynchronous load job and returns the job status.
 
 ### List Datasets
+
 List all datasets in the configured BigQuery project. Returns dataset IDs, friendly names, locations, and labels. Use the **filter** parameter to narrow results.
 
 ### List Jobs
+
 List BigQuery jobs in the project. Jobs include queries, loads, exports, and copy operations. Filter by state, time range, or parent job.
 
 ### List Routines
+
 List user-defined functions (UDFs), stored procedures, and table-valued functions in a BigQuery dataset.
 
 ### List Tables
+
 List all tables, views, and materialized views in a BigQuery dataset. Returns table IDs, types, creation times, and expiration info.
 
 ### Read Table Data
+
 Read rows directly from a BigQuery table without running a query job. Useful for quickly inspecting table contents. For complex filtering or aggregation, use **Execute SQL Query** instead.
 
 ## License

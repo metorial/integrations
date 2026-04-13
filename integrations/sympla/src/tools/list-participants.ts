@@ -14,34 +14,38 @@ let participantSchema = z.object({
   ticketName: z.string().describe('Ticket type name'),
   ticketSalePrice: z.number().describe('Ticket sale price'),
   checkedIn: z.boolean().describe('Whether the participant has checked in'),
-  checkedInDate: z.string().describe('Check-in date, if checked in'),
+  checkedInDate: z.string().describe('Check-in date, if checked in')
 });
 
-export let listParticipantsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Participants',
-    key: 'list_participants',
-    description: `Retrieve a paginated list of participants (attendees) for a specific event. Optionally filter by order to see only participants from a specific purchase.`,
-    tags: {
-      readOnly: true,
-    },
+export let listParticipantsTool = SlateTool.create(spec, {
+  name: 'List Participants',
+  key: 'list_participants',
+  description: `Retrieve a paginated list of participants (attendees) for a specific event. Optionally filter by order to see only participants from a specific purchase.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    eventId: z.number().describe('Event ID to list participants for'),
-    orderId: z.string().optional().describe('If provided, only returns participants from this specific order'),
-    page: z.number().optional().describe('Page number for pagination (starts at 1)'),
-    pageSize: z.number().optional().describe('Number of results per page (1-200)'),
-    fieldSort: z.string().optional().describe('Field to sort results by'),
-    sort: z.enum(['ASC', 'DESC']).optional().describe('Sort direction'),
-  }))
-  .output(z.object({
-    participants: z.array(participantSchema).describe('List of participants'),
-    hasNextPage: z.boolean().describe('Whether more pages are available'),
-    totalQuantity: z.number().describe('Total number of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      eventId: z.number().describe('Event ID to list participants for'),
+      orderId: z
+        .string()
+        .optional()
+        .describe('If provided, only returns participants from this specific order'),
+      page: z.number().optional().describe('Page number for pagination (starts at 1)'),
+      pageSize: z.number().optional().describe('Number of results per page (1-200)'),
+      fieldSort: z.string().optional().describe('Field to sort results by'),
+      sort: z.enum(['ASC', 'DESC']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z.object({
+      participants: z.array(participantSchema).describe('List of participants'),
+      hasNextPage: z.boolean().describe('Whether more pages are available'),
+      totalQuantity: z.number().describe('Total number of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let result;
@@ -50,18 +54,18 @@ export let listParticipantsTool = SlateTool.create(
         page: ctx.input.page,
         pageSize: ctx.input.pageSize,
         fieldSort: ctx.input.fieldSort,
-        sort: ctx.input.sort,
+        sort: ctx.input.sort
       });
     } else {
       result = await client.listParticipantsByEvent(ctx.input.eventId, {
         page: ctx.input.page,
         pageSize: ctx.input.pageSize,
         fieldSort: ctx.input.fieldSort,
-        sort: ctx.input.sort,
+        sort: ctx.input.sort
       });
     }
 
-    let participants = result.data.map((p) => ({
+    let participants = result.data.map(p => ({
       participantId: p.id ?? 0,
       orderId: p.order_id ?? '',
       firstName: p.first_name ?? '',
@@ -72,17 +76,19 @@ export let listParticipantsTool = SlateTool.create(
       ticketName: p.ticket_name ?? '',
       ticketSalePrice: p.ticket_sale_price ?? 0,
       checkedIn: p.checkin?.checked_in ?? false,
-      checkedInDate: p.checkin?.checked_in_date ?? '',
+      checkedInDate: p.checkin?.checked_in_date ?? ''
     }));
 
-    let scope = ctx.input.orderId ? `order ${ctx.input.orderId}` : `event ${ctx.input.eventId}`;
+    let scope = ctx.input.orderId
+      ? `order ${ctx.input.orderId}`
+      : `event ${ctx.input.eventId}`;
     return {
       output: {
         participants,
         hasNextPage: result.pagination.hasNext,
-        totalQuantity: result.pagination.quantity,
+        totalQuantity: result.pagination.quantity
       },
-      message: `Found **${participants.length}** participants for ${scope}.${result.pagination.hasNext ? ' More pages available.' : ''}`,
+      message: `Found **${participants.length}** participants for ${scope}.${result.pagination.hasNext ? ' More pages available.' : ''}`
     };
   })
   .build();

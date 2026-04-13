@@ -10,7 +10,7 @@ let contentTypeSchema = z.object({
   group: z.string().optional().describe('Content type group'),
   hidden: z.boolean().optional().describe('Whether the content type is hidden'),
   readOnly: z.boolean().optional().describe('Whether the content type is read-only'),
-  parentId: z.string().optional().describe('Parent content type ID'),
+  parentId: z.string().optional().describe('Parent content type ID')
 });
 
 let siteColumnSchema = z.object({
@@ -20,7 +20,7 @@ let siteColumnSchema = z.object({
   columnDescription: z.string().optional().describe('Column description'),
   columnGroup: z.string().optional().describe('Column group'),
   readOnly: z.boolean().optional().describe('Whether the column is read-only'),
-  hidden: z.boolean().optional().describe('Whether the column is hidden'),
+  hidden: z.boolean().optional().describe('Whether the column is hidden')
 });
 
 export let getContentTypes = SlateTool.create(spec, {
@@ -29,24 +29,31 @@ export let getContentTypes = SlateTool.create(spec, {
   description: `Retrieve content types and site columns for a SharePoint site. Content types define reusable schemas for lists and libraries. Site columns are reusable field definitions that can be added to content types and lists.`,
   instructions: [
     'Set **resource** to "contentTypes" to list content types, or "siteColumns" to list site columns.',
-    'Provide **contentTypeId** to get details of a specific content type.',
+    'Provide **contentTypeId** to get details of a specific content type.'
   ],
   tags: {
     readOnly: true,
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    siteId: z.string().describe('SharePoint site ID'),
-    resource: z.enum(['contentTypes', 'siteColumns']).describe('Which resource to retrieve'),
-    contentTypeId: z.string().optional().describe('Specific content type ID (for getting a single content type)'),
-  }))
-  .output(z.object({
-    contentTypes: z.array(contentTypeSchema).optional().describe('List of content types'),
-    contentType: contentTypeSchema.optional().describe('Single content type details'),
-    siteColumns: z.array(siteColumnSchema).optional().describe('List of site columns'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      siteId: z.string().describe('SharePoint site ID'),
+      resource: z.enum(['contentTypes', 'siteColumns']).describe('Which resource to retrieve'),
+      contentTypeId: z
+        .string()
+        .optional()
+        .describe('Specific content type ID (for getting a single content type)')
+    })
+  )
+  .output(
+    z.object({
+      contentTypes: z.array(contentTypeSchema).optional().describe('List of content types'),
+      contentType: contentTypeSchema.optional().describe('Single content type details'),
+      siteColumns: z.array(siteColumnSchema).optional().describe('List of site columns')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
     let { siteId, resource, contentTypeId } = ctx.input;
 
@@ -60,11 +67,11 @@ export let getContentTypes = SlateTool.create(spec, {
           group: ct.group,
           hidden: ct.hidden,
           readOnly: ct.readOnly,
-          parentId: ct.parentId,
+          parentId: ct.parentId
         };
         return {
           output: { contentType: mapped },
-          message: `Retrieved content type **${ct.name}**.`,
+          message: `Retrieved content type **${ct.name}**.`
         };
       }
 
@@ -76,11 +83,11 @@ export let getContentTypes = SlateTool.create(spec, {
         group: ct.group,
         hidden: ct.hidden,
         readOnly: ct.readOnly,
-        parentId: ct.parentId,
+        parentId: ct.parentId
       }));
       return {
         output: { contentTypes },
-        message: `Found **${contentTypes.length}** content type(s).`,
+        message: `Found **${contentTypes.length}** content type(s).`
       };
     }
 
@@ -92,11 +99,11 @@ export let getContentTypes = SlateTool.create(spec, {
       columnDescription: col.description,
       columnGroup: col.columnGroup,
       readOnly: col.readOnly,
-      hidden: col.hidden,
+      hidden: col.hidden
     }));
     return {
       output: { siteColumns },
-      message: `Found **${siteColumns.length}** site column(s).`,
+      message: `Found **${siteColumns.length}** site column(s).`
     };
   })
   .build();

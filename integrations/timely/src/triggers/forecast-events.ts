@@ -3,69 +3,78 @@ import { TimelyClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let forecastEventTypes = ['forecasts:created', 'forecasts:updated', 'forecasts:deleted'] as const;
+let forecastEventTypes = [
+  'forecasts:created',
+  'forecasts:updated',
+  'forecasts:deleted'
+] as const;
 
 export let forecastEvents = SlateTrigger.create(spec, {
   name: 'Forecast Events',
   key: 'forecast_events',
-  description: 'Triggers when forecasts (planned tasks) are created, updated, or deleted in Timely.',
+  description:
+    'Triggers when forecasts (planned tasks) are created, updated, or deleted in Timely.'
 })
-  .input(z.object({
-    eventType: z.string().describe('Webhook event type'),
-    rawPayload: z.any().describe('Raw webhook payload'),
-  }))
-  .output(z.object({
-    forecastId: z.number().describe('Forecast/task ID'),
-    projectId: z.number().nullable().describe('Associated project ID'),
-    projectName: z.string().nullable().describe('Associated project name'),
-    userId: z.number().nullable().describe('Assigned user ID'),
-    userName: z.string().nullable().describe('Assigned user name'),
-    day: z.string().nullable().describe('Forecast date'),
-    from: z.string().nullable().describe('Start date'),
-    to: z.string().nullable().describe('End date'),
-    note: z.string().nullable().describe('Task notes'),
-    estimatedHours: z.number().nullable().describe('Estimated total hours'),
-  }))
+  .input(
+    z.object({
+      eventType: z.string().describe('Webhook event type'),
+      rawPayload: z.any().describe('Raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      forecastId: z.number().describe('Forecast/task ID'),
+      projectId: z.number().nullable().describe('Associated project ID'),
+      projectName: z.string().nullable().describe('Associated project name'),
+      userId: z.number().nullable().describe('Assigned user ID'),
+      userName: z.string().nullable().describe('Assigned user name'),
+      day: z.string().nullable().describe('Forecast date'),
+      from: z.string().nullable().describe('Start date'),
+      to: z.string().nullable().describe('End date'),
+      note: z.string().nullable().describe('Task notes'),
+      estimatedHours: z.number().nullable().describe('Estimated total hours')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new TimelyClient({
         accountId: ctx.config.accountId,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let webhook = await client.createWebhook({
         url: ctx.input.webhookBaseUrl,
-        eventTypes: [...forecastEventTypes],
+        eventTypes: [...forecastEventTypes]
       });
 
       return {
-        registrationDetails: { webhookId: String(webhook.id) },
+        registrationDetails: { webhookId: String(webhook.id) }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new TimelyClient({
         accountId: ctx.config.accountId,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       return {
         inputs: [
           {
             eventType: data.event ?? data.event_type ?? 'forecasts:updated',
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.rawPayload;
       let forecast = payload.data ?? payload;
 
@@ -73,7 +82,7 @@ export let forecastEvents = SlateTrigger.create(spec, {
       let typeMap: Record<string, string> = {
         'forecasts:created': 'forecast.created',
         'forecasts:updated': 'forecast.updated',
-        'forecasts:deleted': 'forecast.deleted',
+        'forecasts:deleted': 'forecast.deleted'
       };
 
       return {
@@ -89,8 +98,9 @@ export let forecastEvents = SlateTrigger.create(spec, {
           from: forecast.from ?? null,
           to: forecast.to ?? null,
           note: forecast.note ?? null,
-          estimatedHours: forecast.estimated_duration?.total_hours ?? null,
-        },
+          estimatedHours: forecast.estimated_duration?.total_hours ?? null
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

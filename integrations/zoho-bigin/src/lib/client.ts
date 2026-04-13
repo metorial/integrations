@@ -7,31 +7,38 @@ export class BiginClient {
     this.axios = createAxios({
       baseURL: `${params.apiDomain}/bigin/v2`,
       headers: {
-        Authorization: `Zoho-oauthtoken ${params.token}`,
-      },
+        Authorization: `Zoho-oauthtoken ${params.token}`
+      }
     });
   }
 
   // ─── Records ───────────────────────────────────────────────
 
-  async getRecords(module: string, options?: {
-    fields?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    page?: number;
-    perPage?: number;
-    cvid?: string;
-    pageToken?: string;
-  }): Promise<any> {
-    let response = await this.axios.get(`/${module}`, { params: options ? {
-      fields: options.fields,
-      sort_by: options.sortBy,
-      sort_order: options.sortOrder,
-      page: options.page,
-      per_page: options.perPage,
-      cvid: options.cvid,
-      page_token: options.pageToken,
-    } : undefined });
+  async getRecords(
+    module: string,
+    options?: {
+      fields?: string;
+      sortBy?: string;
+      sortOrder?: string;
+      page?: number;
+      perPage?: number;
+      cvid?: string;
+      pageToken?: string;
+    }
+  ): Promise<any> {
+    let response = await this.axios.get(`/${module}`, {
+      params: options
+        ? {
+            fields: options.fields,
+            sort_by: options.sortBy,
+            sort_order: options.sortOrder,
+            page: options.page,
+            per_page: options.perPage,
+            cvid: options.cvid,
+            page_token: options.pageToken
+          }
+        : undefined
+    });
     return response.data;
   }
 
@@ -40,7 +47,11 @@ export class BiginClient {
     return response.data;
   }
 
-  async createRecords(module: string, records: Record<string, any>[], trigger?: string[]): Promise<any> {
+  async createRecords(
+    module: string,
+    records: Record<string, any>[],
+    trigger?: string[]
+  ): Promise<any> {
     let body: Record<string, any> = { data: records };
     if (trigger) {
       body.trigger = trigger;
@@ -54,19 +65,27 @@ export class BiginClient {
     return response.data;
   }
 
-  async updateRecord(module: string, recordId: string, record: Record<string, any>): Promise<any> {
+  async updateRecord(
+    module: string,
+    recordId: string,
+    record: Record<string, any>
+  ): Promise<any> {
     let response = await this.axios.put(`/${module}/${recordId}`, { data: [record] });
     return response.data;
   }
 
   async deleteRecords(module: string, ids: string[]): Promise<any> {
     let response = await this.axios.delete(`/${module}`, {
-      params: { ids: ids.join(',') },
+      params: { ids: ids.join(',') }
     });
     return response.data;
   }
 
-  async upsertRecords(module: string, records: Record<string, any>[], duplicateCheckFields?: string[]): Promise<any> {
+  async upsertRecords(
+    module: string,
+    records: Record<string, any>[],
+    duplicateCheckFields?: string[]
+  ): Promise<any> {
     let body: Record<string, any> = { data: records };
     if (duplicateCheckFields && duplicateCheckFields.length > 0) {
       body.duplicate_check_fields = duplicateCheckFields;
@@ -77,14 +96,17 @@ export class BiginClient {
 
   // ─── Search ────────────────────────────────────────────────
 
-  async searchRecords(module: string, options: {
-    criteria?: string;
-    email?: string;
-    phone?: string;
-    word?: string;
-    page?: number;
-    perPage?: number;
-  }): Promise<any> {
+  async searchRecords(
+    module: string,
+    options: {
+      criteria?: string;
+      email?: string;
+      phone?: string;
+      word?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/${module}/search`, {
       params: {
         criteria: options.criteria,
@@ -92,59 +114,93 @@ export class BiginClient {
         phone: options.phone,
         word: options.word,
         page: options.page,
-        per_page: options.perPage,
-      },
+        per_page: options.perPage
+      }
     });
     return response.data;
   }
 
   // ─── Related Records ──────────────────────────────────────
 
-  async getRelatedRecords(module: string, recordId: string, relatedModule: string, options?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any> {
+  async getRelatedRecords(
+    module: string,
+    recordId: string,
+    relatedModule: string,
+    options?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/${module}/${recordId}/${relatedModule}`, {
-      params: options ? {
-        page: options.page,
-        per_page: options.perPage,
-      } : undefined,
+      params: options
+        ? {
+            page: options.page,
+            per_page: options.perPage
+          }
+        : undefined
     });
     return response.data;
   }
 
-  async updateRelatedRecord(module: string, recordId: string, relatedModule: string, relatedRecordId: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/${module}/${recordId}/${relatedModule}/${relatedRecordId}`, { data: [data] });
+  async updateRelatedRecord(
+    module: string,
+    recordId: string,
+    relatedModule: string,
+    relatedRecordId: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/${module}/${recordId}/${relatedModule}/${relatedRecordId}`,
+      { data: [data] }
+    );
     return response.data;
   }
 
-  async delinkRelatedRecord(module: string, recordId: string, relatedModule: string, relatedRecordId: string): Promise<any> {
-    let response = await this.axios.delete(`/${module}/${recordId}/${relatedModule}/${relatedRecordId}`);
+  async delinkRelatedRecord(
+    module: string,
+    recordId: string,
+    relatedModule: string,
+    relatedRecordId: string
+  ): Promise<any> {
+    let response = await this.axios.delete(
+      `/${module}/${recordId}/${relatedModule}/${relatedRecordId}`
+    );
     return response.data;
   }
 
   // ─── Notes ─────────────────────────────────────────────────
 
-  async getNotes(module: string, recordId: string, options?: {
-    page?: number;
-    perPage?: number;
-  }): Promise<any> {
+  async getNotes(
+    module: string,
+    recordId: string,
+    options?: {
+      page?: number;
+      perPage?: number;
+    }
+  ): Promise<any> {
     let response = await this.axios.get(`/${module}/${recordId}/Notes`, {
       params: {
-        fields: 'id,Note_Title,Note_Content,Created_Time,Modified_Time,Owner,Parent_Id,se_module',
+        fields:
+          'id,Note_Title,Note_Content,Created_Time,Modified_Time,Owner,Parent_Id,se_module',
         page: options?.page,
-        per_page: options?.perPage,
-      },
+        per_page: options?.perPage
+      }
     });
     return response.data;
   }
 
-  async createNote(module: string, recordId: string, note: { title?: string; content: string }): Promise<any> {
+  async createNote(
+    module: string,
+    recordId: string,
+    note: { title?: string; content: string }
+  ): Promise<any> {
     let response = await this.axios.post(`/${module}/${recordId}/Notes`, {
-      data: [{
-        Note_Title: note.title || '',
-        Note_Content: note.content,
-      }],
+      data: [
+        {
+          Note_Title: note.title || '',
+          Note_Content: note.content
+        }
+      ]
     });
     return response.data;
   }
@@ -166,33 +222,50 @@ export class BiginClient {
 
   async getTags(module: string): Promise<any> {
     let response = await this.axios.get(`/settings/tags`, {
-      params: { module },
+      params: { module }
     });
     return response.data;
   }
 
   async createTag(module: string, names: string[]): Promise<any> {
-    let response = await this.axios.post(`/settings/tags`, {
-      tags: names.map(name => ({ name })),
-    }, {
-      params: { module },
-    });
+    let response = await this.axios.post(
+      `/settings/tags`,
+      {
+        tags: names.map(name => ({ name }))
+      },
+      {
+        params: { module }
+      }
+    );
     return response.data;
   }
 
-  async addTagsToRecords(module: string, recordIds: string[], tagNames: string[], overWrite?: boolean): Promise<any> {
-    let response = await this.axios.post(`/${module}/actions/add_tags`, {
-      tags: tagNames.map(name => ({ name })),
-      ids: recordIds,
-    }, {
-      params: { over_write: overWrite || false },
-    });
+  async addTagsToRecords(
+    module: string,
+    recordIds: string[],
+    tagNames: string[],
+    overWrite?: boolean
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/${module}/actions/add_tags`,
+      {
+        tags: tagNames.map(name => ({ name })),
+        ids: recordIds
+      },
+      {
+        params: { over_write: overWrite || false }
+      }
+    );
     return response.data;
   }
 
-  async removeTagsFromRecord(module: string, recordId: string, tagNames: string[]): Promise<any> {
+  async removeTagsFromRecord(
+    module: string,
+    recordId: string,
+    tagNames: string[]
+  ): Promise<any> {
     let response = await this.axios.post(`/${module}/${recordId}/actions/remove_tags`, null, {
-      params: { tag_names: tagNames.join(',') },
+      params: { tag_names: tagNames.join(',') }
     });
     return response.data;
   }
@@ -211,28 +284,28 @@ export class BiginClient {
 
   async getFields(module: string): Promise<any> {
     let response = await this.axios.get(`/settings/fields`, {
-      params: { module },
+      params: { module }
     });
     return response.data;
   }
 
   async getLayouts(module: string): Promise<any> {
     let response = await this.axios.get(`/settings/layouts`, {
-      params: { module },
+      params: { module }
     });
     return response.data;
   }
 
   async getCustomViews(module: string): Promise<any> {
     let response = await this.axios.get(`/settings/custom_views`, {
-      params: { module },
+      params: { module }
     });
     return response.data;
   }
 
   async getRelatedLists(module: string): Promise<any> {
     let response = await this.axios.get(`/settings/related_lists`, {
-      params: { module },
+      params: { module }
     });
     return response.data;
   }
@@ -241,7 +314,7 @@ export class BiginClient {
 
   async getUsers(type?: string, page?: number, perPage?: number): Promise<any> {
     let response = await this.axios.get(`/users`, {
-      params: { type: type || 'AllUsers', page, per_page: perPage },
+      params: { type: type || 'AllUsers', page, per_page: perPage }
     });
     return response.data;
   }
@@ -260,14 +333,22 @@ export class BiginClient {
 
   // ─── Notifications ─────────────────────────────────────────
 
-  async enableNotifications(notifyUrl: string, events: string[], channelId: string, token?: string, channelExpiry?: string): Promise<any> {
+  async enableNotifications(
+    notifyUrl: string,
+    events: string[],
+    channelId: string,
+    token?: string,
+    channelExpiry?: string
+  ): Promise<any> {
     let body: Record<string, any> = {
-      watch: [{
-        notify_url: notifyUrl,
-        channel_id: channelId,
-        events,
-        token: token || 'slates_verification',
-      }],
+      watch: [
+        {
+          notify_url: notifyUrl,
+          channel_id: channelId,
+          events,
+          token: token || 'slates_verification'
+        }
+      ]
     };
     if (channelExpiry) {
       body.watch[0].channel_expiry = channelExpiry;
@@ -278,14 +359,14 @@ export class BiginClient {
 
   async disableNotifications(channelIds: string[]): Promise<any> {
     let response = await this.axios.delete(`/actions/watch`, {
-      params: { channel_ids: channelIds.join(',') },
+      params: { channel_ids: channelIds.join(',') }
     });
     return response.data;
   }
 
   async getNotifications(channelId?: string, module?: string): Promise<any> {
     let response = await this.axios.get(`/actions/watch`, {
-      params: { channel_id: channelId, module },
+      params: { channel_id: channelId, module }
     });
     return response.data;
   }

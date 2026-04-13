@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getGames,
@@ -19,13 +18,9 @@ import {
   getConferencesVenues,
   getTransferPortal,
   getLiveScoreboard,
-  getAdjustedMetrics,
+  getAdjustedMetrics
 } from './tools';
-import {
-  gameScoreUpdates,
-  bettingLineUpdates,
-  inboundWebhook,
-} from './triggers';
+import { gameScoreUpdates, bettingLineUpdates, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,11 +42,7 @@ export let provider = Slate.create({
     getConferencesVenues,
     getTransferPortal,
     getLiveScoreboard,
-    getAdjustedMetrics,
+    getAdjustedMetrics
   ],
-  triggers: [
-    inboundWebhook,
-    gameScoreUpdates,
-    bettingLineUpdates,
-  ],
+  triggers: [inboundWebhook, gameScoreUpdates, bettingLineUpdates]
 });

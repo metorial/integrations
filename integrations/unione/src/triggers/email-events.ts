@@ -3,51 +3,63 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let emailStatusTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Email Status Event',
-    key: 'email_status_event',
-    description: 'Triggers when the delivery status of a sent email changes. Covers events like delivered, opened, clicked, unsubscribed, subscribed, bounced, and spam reports.',
-  }
-)
-  .input(z.object({
-    eventName: z.string().describe('Event type name'),
-    eventId: z.string().describe('Unique event identifier'),
-    jobId: z.string().describe('Job ID of the email'),
-    recipientEmail: z.string().describe('Recipient email address'),
-    status: z.string().describe('Email delivery status'),
-    eventTime: z.string().describe('Timestamp of the event'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Custom metadata'),
-    url: z.string().optional().describe('Clicked URL'),
-    deliveryStatus: z.string().optional().describe('Detailed delivery status'),
-    destinationResponse: z.string().optional().describe('SMTP response'),
-    userAgent: z.string().optional().describe('Recipient user agent'),
-    ip: z.string().optional().describe('Recipient IP address'),
-    userId: z.number().optional().describe('UniOne user ID'),
-    projectId: z.string().optional().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Job ID of the email'),
-    recipientEmail: z.string().describe('Recipient email address'),
-    status: z.string().describe('Email delivery status (delivered, opened, clicked, unsubscribed, subscribed, soft_bounced, hard_bounced, spam)'),
-    eventTime: z.string().describe('Timestamp of the event'),
-    metadata: z.record(z.string(), z.string()).optional().describe('Custom metadata sent with the original email'),
-    clickedUrl: z.string().optional().describe('URL that was clicked (for click events)'),
-    deliveryStatus: z.string().optional().describe('Detailed delivery status code'),
-    destinationResponse: z.string().optional().describe('SMTP response from the recipient server'),
-    userAgent: z.string().optional().describe('Recipient user agent string'),
-    recipientIp: z.string().optional().describe('Recipient IP address'),
-    userId: z.number().optional().describe('UniOne user ID'),
-    projectId: z.string().optional().describe('Project ID'),
-    projectName: z.string().optional().describe('Project name'),
-  }))
+export let emailStatusTrigger = SlateTrigger.create(spec, {
+  name: 'Email Status Event',
+  key: 'email_status_event',
+  description:
+    'Triggers when the delivery status of a sent email changes. Covers events like delivered, opened, clicked, unsubscribed, subscribed, bounced, and spam reports.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('Event type name'),
+      eventId: z.string().describe('Unique event identifier'),
+      jobId: z.string().describe('Job ID of the email'),
+      recipientEmail: z.string().describe('Recipient email address'),
+      status: z.string().describe('Email delivery status'),
+      eventTime: z.string().describe('Timestamp of the event'),
+      metadata: z.record(z.string(), z.string()).optional().describe('Custom metadata'),
+      url: z.string().optional().describe('Clicked URL'),
+      deliveryStatus: z.string().optional().describe('Detailed delivery status'),
+      destinationResponse: z.string().optional().describe('SMTP response'),
+      userAgent: z.string().optional().describe('Recipient user agent'),
+      ip: z.string().optional().describe('Recipient IP address'),
+      userId: z.number().optional().describe('UniOne user ID'),
+      projectId: z.string().optional().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Job ID of the email'),
+      recipientEmail: z.string().describe('Recipient email address'),
+      status: z
+        .string()
+        .describe(
+          'Email delivery status (delivered, opened, clicked, unsubscribed, subscribed, soft_bounced, hard_bounced, spam)'
+        ),
+      eventTime: z.string().describe('Timestamp of the event'),
+      metadata: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Custom metadata sent with the original email'),
+      clickedUrl: z.string().optional().describe('URL that was clicked (for click events)'),
+      deliveryStatus: z.string().optional().describe('Detailed delivery status code'),
+      destinationResponse: z
+        .string()
+        .optional()
+        .describe('SMTP response from the recipient server'),
+      userAgent: z.string().optional().describe('Recipient user agent string'),
+      recipientIp: z.string().optional().describe('Recipient IP address'),
+      userId: z.number().optional().describe('UniOne user ID'),
+      projectId: z.string().optional().describe('Project ID'),
+      projectName: z.string().optional().describe('Project name')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        datacenter: ctx.config.datacenter,
+        datacenter: ctx.config.datacenter
       });
 
       let result = await client.setWebhook({
@@ -66,31 +78,31 @@ export let emailStatusTrigger = SlateTrigger.create(
             'subscribed',
             'soft_bounced',
             'hard_bounced',
-            'spam',
-          ],
-        },
+            'spam'
+          ]
+        }
       });
 
       return {
         registrationDetails: {
           webhookUrl: ctx.input.webhookBaseUrl,
-          webhookId: result.object?.id,
-        },
+          webhookId: result.object?.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        datacenter: ctx.config.datacenter,
+        datacenter: ctx.config.datacenter
       });
 
       let webhookUrl = ctx.input.registrationDetails?.webhookUrl ?? ctx.input.webhookBaseUrl;
       await client.deleteWebhook(webhookUrl);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let inputs: Array<{
         eventName: string;
@@ -135,7 +147,7 @@ export let emailStatusTrigger = SlateTrigger.create(
             ip: deliveryInfo.ip,
             userId: userGroup.user_id,
             projectId: userGroup.project_id,
-            projectName: userGroup.project_name,
+            projectName: userGroup.project_name
           });
         }
       }
@@ -143,7 +155,7 @@ export let emailStatusTrigger = SlateTrigger.create(
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `email.${ctx.input.status}`,
         id: ctx.input.eventId,
@@ -160,8 +172,9 @@ export let emailStatusTrigger = SlateTrigger.create(
           recipientIp: ctx.input.ip,
           userId: ctx.input.userId,
           projectId: ctx.input.projectId,
-          projectName: ctx.input.projectName,
-        },
+          projectName: ctx.input.projectName
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

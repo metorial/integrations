@@ -3,62 +3,74 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let createContact = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact',
-    key: 'create_contact',
-    description: 'Create a new customer or vendor in Zoho Books with company details, billing/shipping addresses, and contact persons.',
-    tags: {
-      destructive: false,
-    },
+export let createContact = SlateTool.create(spec, {
+  name: 'Create Contact',
+  key: 'create_contact',
+  description:
+    'Create a new customer or vendor in Zoho Books with company details, billing/shipping addresses, and contact persons.',
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    contactName: z.string().describe('Display name of the contact'),
-    contactType: z.enum(['customer', 'vendor']).describe('Whether this is a customer or vendor'),
-    companyName: z.string().optional(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    website: z.string().optional(),
-    contactPersons: z.array(z.object({
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
+})
+  .input(
+    z.object({
+      contactName: z.string().describe('Display name of the contact'),
+      contactType: z
+        .enum(['customer', 'vendor'])
+        .describe('Whether this is a customer or vendor'),
+      companyName: z.string().optional(),
       email: z.string().optional(),
       phone: z.string().optional(),
-      isPrimaryContact: z.boolean().optional(),
-    })).optional(),
-    billingAddress: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-    }).optional(),
-    shippingAddress: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-    }).optional(),
-    paymentTerms: z.number().optional().describe('Payment terms in days'),
-    currencyId: z.string().optional(),
-    notes: z.string().optional(),
-  }))
-  .output(z.object({
-    contactId: z.string(),
-    contactName: z.string(),
-    contactType: z.string().optional(),
-    status: z.string().optional(),
-    createdTime: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+      website: z.string().optional(),
+      contactPersons: z
+        .array(
+          z.object({
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            email: z.string().optional(),
+            phone: z.string().optional(),
+            isPrimaryContact: z.boolean().optional()
+          })
+        )
+        .optional(),
+      billingAddress: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional(),
+      shippingAddress: z
+        .object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional()
+        })
+        .optional(),
+      paymentTerms: z.number().optional().describe('Payment terms in days'),
+      currencyId: z.string().optional(),
+      notes: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      contactId: z.string(),
+      contactName: z.string(),
+      contactType: z.string().optional(),
+      status: z.string().optional(),
+      createdTime: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let body: Record<string, any> = {
       contact_name: ctx.input.contactName,
-      contact_type: ctx.input.contactType,
+      contact_type: ctx.input.contactType
     };
 
     if (ctx.input.companyName !== undefined) {
@@ -78,13 +90,14 @@ export let createContact = SlateTool.create(
     }
 
     if (ctx.input.contactPersons !== undefined) {
-      body.contact_persons = ctx.input.contactPersons.map((person) => {
+      body.contact_persons = ctx.input.contactPersons.map(person => {
         let p: Record<string, any> = {};
         if (person.firstName !== undefined) p.first_name = person.firstName;
         if (person.lastName !== undefined) p.last_name = person.lastName;
         if (person.email !== undefined) p.email = person.email;
         if (person.phone !== undefined) p.phone = person.phone;
-        if (person.isPrimaryContact !== undefined) p.is_primary_contact = person.isPrimaryContact;
+        if (person.isPrimaryContact !== undefined)
+          p.is_primary_contact = person.isPrimaryContact;
         return p;
       });
     }
@@ -130,8 +143,9 @@ export let createContact = SlateTool.create(
         contactName: contact.contact_name,
         contactType: contact.contact_type,
         status: contact.status,
-        createdTime: contact.created_time,
+        createdTime: contact.created_time
       },
-      message: `Created ${ctx.input.contactType} **${ctx.input.contactName}**.`,
+      message: `Created ${ctx.input.contactType} **${ctx.input.contactName}**.`
     };
-  }).build();
+  })
+  .build();

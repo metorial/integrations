@@ -10,7 +10,7 @@ import {
   rewriteText,
   summarizeText,
   translateText,
-  generateCode,
+  generateCode
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -27,9 +27,7 @@ export let provider = Slate.create({
     rewriteText,
     summarizeText,
     translateText,
-    generateCode,
+    generateCode
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

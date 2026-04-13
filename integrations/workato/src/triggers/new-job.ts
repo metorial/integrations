@@ -3,36 +3,38 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newJobTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Job Execution',
-    key: 'new_job',
-    description: 'Triggers when a recipe job completes (succeeded or failed). Monitors job execution history for a specific recipe.',
-  }
-)
-  .input(z.object({
-    jobId: z.string().describe('Job ID'),
-    recipeId: z.number().describe('Recipe ID'),
-    status: z.string().describe('Job status'),
-    isError: z.boolean().describe('Whether the job errored'),
-    startedAt: z.string().nullable().describe('Job start time'),
-    completedAt: z.string().nullable().describe('Job completion time'),
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Job ID/handle'),
-    recipeId: z.number().describe('Recipe ID'),
-    status: z.string().describe('Job status (succeeded, failed, pending)'),
-    isError: z.boolean().describe('Whether the job encountered an error'),
-    startedAt: z.string().nullable().describe('Job start timestamp'),
-    completedAt: z.string().nullable().describe('Job completion timestamp'),
-  }))
+export let newJobTrigger = SlateTrigger.create(spec, {
+  name: 'New Job Execution',
+  key: 'new_job',
+  description:
+    'Triggers when a recipe job completes (succeeded or failed). Monitors job execution history for a specific recipe.'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('Job ID'),
+      recipeId: z.number().describe('Recipe ID'),
+      status: z.string().describe('Job status'),
+      isError: z.boolean().describe('Whether the job errored'),
+      startedAt: z.string().nullable().describe('Job start time'),
+      completedAt: z.string().nullable().describe('Job completion time')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Job ID/handle'),
+      recipeId: z.number().describe('Recipe ID'),
+      status: z.string().describe('Job status (succeeded, failed, pending)'),
+      isError: z.boolean().describe('Whether the job encountered an error'),
+      startedAt: z.string().nullable().describe('Job start timestamp'),
+      completedAt: z.string().nullable().describe('Job completion timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let state = ctx.state as { lastJobId?: string; recipeIds?: string[] } | undefined;
       let lastJobId = state?.lastJobId;
@@ -41,7 +43,14 @@ export let newJobTrigger = SlateTrigger.create(
       let recipesResult = await client.listRecipes({ running: true, perPage: 100 });
       let recipes = recipesResult.items ?? [];
 
-      let allJobs: Array<{ jobId: string; recipeId: number; status: string; isError: boolean; startedAt: string | null; completedAt: string | null }> = [];
+      let allJobs: Array<{
+        jobId: string;
+        recipeId: number;
+        status: string;
+        isError: boolean;
+        startedAt: string | null;
+        completedAt: string | null;
+      }> = [];
 
       // Poll jobs from running recipes (limit to first 10 for performance)
       let recipesToPoll = recipes.slice(0, 10);
@@ -58,7 +67,7 @@ export let newJobTrigger = SlateTrigger.create(
               status: job.status,
               isError: job.is_error ?? false,
               startedAt: job.started_at ?? null,
-              completedAt: job.completed_at ?? null,
+              completedAt: job.completed_at ?? null
             });
           }
         } catch {
@@ -75,12 +84,12 @@ export let newJobTrigger = SlateTrigger.create(
       return {
         inputs: lastJobId ? allJobs : [], // Skip first poll to establish baseline
         updatedState: {
-          lastJobId: newLastJobId,
-        },
+          lastJobId: newLastJobId
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.isError ? 'job.failed' : `job.${ctx.input.status}`,
         id: `job-${ctx.input.jobId}`,
@@ -90,8 +99,8 @@ export let newJobTrigger = SlateTrigger.create(
           status: ctx.input.status,
           isError: ctx.input.isError,
           startedAt: ctx.input.startedAt,
-          completedAt: ctx.input.completedAt,
-        },
+          completedAt: ctx.input.completedAt
+        }
       };
-    },
+    }
   });

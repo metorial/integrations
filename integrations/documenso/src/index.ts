@@ -12,7 +12,7 @@ import {
   manageFieldsTool,
   useTemplateTool,
   manageFoldersTool,
-  getAuditLogTool,
+  getAuditLogTool
 } from './tools';
 import { documentEventTrigger } from './triggers';
 
@@ -30,9 +30,7 @@ export let provider = Slate.create({
     manageFieldsTool,
     useTemplateTool,
     manageFoldersTool,
-    getAuditLogTool,
+    getAuditLogTool
   ],
-  triggers: [
-    documentEventTrigger,
-  ],
+  triggers: [documentEventTrigger]
 });

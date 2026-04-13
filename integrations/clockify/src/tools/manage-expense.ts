@@ -15,26 +15,25 @@ let expenseOutputSchema = z.object({
   userId: z.string().optional()
 });
 
-export let createExpense = SlateTool.create(
-  spec,
-  {
-    name: 'Create Expense',
-    key: 'create_expense',
-    description: `Create a new expense entry in Clockify. Assign to a project, set category, amount, and billable status.`,
-    tags: { readOnly: false }
-  }
-)
-  .input(z.object({
-    date: z.string().describe('Expense date in ISO 8601 format'),
-    projectId: z.string().optional().describe('Project ID to assign the expense to'),
-    categoryId: z.string().optional().describe('Expense category ID'),
-    quantity: z.number().optional().describe('Quantity (for unit-based categories)'),
-    totalAmount: z.number().optional().describe('Total expense amount'),
-    billable: z.boolean().optional().describe('Whether the expense is billable'),
-    notes: z.string().optional().describe('Notes about the expense')
-  }))
+export let createExpense = SlateTool.create(spec, {
+  name: 'Create Expense',
+  key: 'create_expense',
+  description: `Create a new expense entry in Clockify. Assign to a project, set category, amount, and billable status.`,
+  tags: { readOnly: false }
+})
+  .input(
+    z.object({
+      date: z.string().describe('Expense date in ISO 8601 format'),
+      projectId: z.string().optional().describe('Project ID to assign the expense to'),
+      categoryId: z.string().optional().describe('Expense category ID'),
+      quantity: z.number().optional().describe('Quantity (for unit-based categories)'),
+      totalAmount: z.number().optional().describe('Total expense amount'),
+      billable: z.boolean().optional().describe('Whether the expense is billable'),
+      notes: z.string().optional().describe('Notes about the expense')
+    })
+  )
   .output(expenseOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -68,22 +67,23 @@ export let createExpense = SlateTool.create(
   })
   .build();
 
-export let deleteExpense = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Expense',
-    key: 'delete_expense',
-    description: `Delete an expense entry from Clockify.`,
-    tags: { destructive: true }
-  }
-)
-  .input(z.object({
-    expenseId: z.string().describe('ID of the expense to delete')
-  }))
-  .output(z.object({
-    deleted: z.boolean()
-  }))
-  .handleInvocation(async (ctx) => {
+export let deleteExpense = SlateTool.create(spec, {
+  name: 'Delete Expense',
+  key: 'delete_expense',
+  description: `Delete an expense entry from Clockify.`,
+  tags: { destructive: true }
+})
+  .input(
+    z.object({
+      expenseId: z.string().describe('ID of the expense to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

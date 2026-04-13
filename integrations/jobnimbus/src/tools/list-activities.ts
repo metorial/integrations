@@ -3,39 +3,56 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listActivities = SlateTool.create(
-  spec,
-  {
-    name: 'List Activities',
-    key: 'list_activities',
-    description: `List activities (notes, status changes, etc.) in JobNimbus. Filter by parent contact/job to see the activity history for a specific record.`,
-    tags: {
-      readOnly: true
-    }
+export let listActivities = SlateTool.create(spec, {
+  name: 'List Activities',
+  key: 'list_activities',
+  description: `List activities (notes, status changes, etc.) in JobNimbus. Filter by parent contact/job to see the activity history for a specific record.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    parentRecordId: z.string().optional().describe('Filter by parent contact or job ID'),
-    recordTypeName: z.string().optional().describe('Filter by activity type (e.g. "Note")'),
-    from: z.number().optional().describe('Pagination offset (0-based). Defaults to 0.'),
-    size: z.number().optional().describe('Number of results per page. Defaults to 25. Max 200.')
-  }))
-  .output(z.object({
-    totalCount: z.number().describe('Total number of matching activities'),
-    activities: z.array(z.object({
-      activityId: z.string().describe('Unique JobNimbus ID of the activity'),
-      note: z.string().optional().describe('Activity note content'),
-      recordTypeName: z.string().optional().describe('Activity type'),
-      parentRecordId: z.string().optional().describe('Parent record ID'),
-      parentRecordName: z.string().optional().describe('Parent record name'),
-      isStatusChange: z.boolean().optional().describe('Whether this is a status change activity'),
-      oldStatus: z.string().optional().describe('Previous status (for status change activities)'),
-      newStatus: z.string().optional().describe('New status (for status change activities)'),
-      createdByName: z.string().optional().describe('Name of the creator'),
-      dateCreated: z.number().optional().describe('Unix timestamp of creation')
-    })).describe('List of activities')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      parentRecordId: z.string().optional().describe('Filter by parent contact or job ID'),
+      recordTypeName: z.string().optional().describe('Filter by activity type (e.g. "Note")'),
+      from: z.number().optional().describe('Pagination offset (0-based). Defaults to 0.'),
+      size: z
+        .number()
+        .optional()
+        .describe('Number of results per page. Defaults to 25. Max 200.')
+    })
+  )
+  .output(
+    z.object({
+      totalCount: z.number().describe('Total number of matching activities'),
+      activities: z
+        .array(
+          z.object({
+            activityId: z.string().describe('Unique JobNimbus ID of the activity'),
+            note: z.string().optional().describe('Activity note content'),
+            recordTypeName: z.string().optional().describe('Activity type'),
+            parentRecordId: z.string().optional().describe('Parent record ID'),
+            parentRecordName: z.string().optional().describe('Parent record name'),
+            isStatusChange: z
+              .boolean()
+              .optional()
+              .describe('Whether this is a status change activity'),
+            oldStatus: z
+              .string()
+              .optional()
+              .describe('Previous status (for status change activities)'),
+            newStatus: z
+              .string()
+              .optional()
+              .describe('New status (for status change activities)'),
+            createdByName: z.string().optional().describe('Name of the creator'),
+            dateCreated: z.number().optional().describe('Unix timestamp of creation')
+          })
+        )
+        .describe('List of activities')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let mustClauses: any[] = [];
@@ -75,4 +92,5 @@ export let listActivities = SlateTool.create(
       },
       message: `Found **${result.count || 0}** activities. Returned ${activities.length} results.`
     };
-  }).build();
+  })
+  .build();

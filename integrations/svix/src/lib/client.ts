@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   us: 'https://api.us.svix.com',
-  eu: 'https://api.eu.svix.com',
+  eu: 'https://api.eu.svix.com'
 };
 
 // ---- Interfaces ----
@@ -181,9 +181,9 @@ export class Client {
     this.http = createAxios({
       baseURL: `${baseURL}/api/v1`,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -223,7 +223,10 @@ export class Client {
     return res.data;
   }
 
-  async listMessages(appId: string, options?: MessageListOptions): Promise<ListResponse<MessageOut>> {
+  async listMessages(
+    appId: string,
+    options?: MessageListOptions
+  ): Promise<ListResponse<MessageOut>> {
     let params: Record<string, string | number> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.iterator) params['iterator'] = options.iterator;
@@ -247,7 +250,10 @@ export class Client {
 
   // ---- Endpoints ----
 
-  async listEndpoints(appId: string, options?: ListOptions): Promise<ListResponse<EndpointOut>> {
+  async listEndpoints(
+    appId: string,
+    options?: ListOptions
+  ): Promise<ListResponse<EndpointOut>> {
     let params: Record<string, string | number> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.iterator) params['iterator'] = options.iterator;
@@ -265,7 +271,11 @@ export class Client {
     return res.data;
   }
 
-  async updateEndpoint(appId: string, endpointId: string, endpoint: EndpointIn): Promise<EndpointOut> {
+  async updateEndpoint(
+    appId: string,
+    endpointId: string,
+    endpoint: EndpointIn
+  ): Promise<EndpointOut> {
     let res = await this.http.put(`/app/${appId}/endpoint/${endpointId}/`, endpoint);
     return res.data;
   }
@@ -288,7 +298,11 @@ export class Client {
     return res.data;
   }
 
-  async recoverEndpoint(appId: string, endpointId: string, recover: RecoverIn): Promise<RecoverOut> {
+  async recoverEndpoint(
+    appId: string,
+    endpointId: string,
+    recover: RecoverIn
+  ): Promise<RecoverOut> {
     let res = await this.http.post(`/app/${appId}/endpoint/${endpointId}/recover/`, recover);
     return res.data;
   }
@@ -298,13 +312,19 @@ export class Client {
     return res.data;
   }
 
-  async updateEndpointHeaders(appId: string, endpointId: string, headers: EndpointHeadersIn): Promise<void> {
+  async updateEndpointHeaders(
+    appId: string,
+    endpointId: string,
+    headers: EndpointHeadersIn
+  ): Promise<void> {
     await this.http.put(`/app/${appId}/endpoint/${endpointId}/headers/`, headers);
   }
 
   // ---- Event Types ----
 
-  async listEventTypes(options?: ListOptions & { withContent?: boolean; includeArchived?: boolean }): Promise<ListResponse<EventTypeOut>> {
+  async listEventTypes(
+    options?: ListOptions & { withContent?: boolean; includeArchived?: boolean }
+  ): Promise<ListResponse<EventTypeOut>> {
     let params: Record<string, string | number | boolean> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.iterator) params['iterator'] = options.iterator;
@@ -324,7 +344,10 @@ export class Client {
     return res.data;
   }
 
-  async updateEventType(eventTypeName: string, eventType: Omit<EventTypeIn, 'name'>): Promise<EventTypeOut> {
+  async updateEventType(
+    eventTypeName: string,
+    eventType: Omit<EventTypeIn, 'name'>
+  ): Promise<EventTypeOut> {
     let res = await this.http.put(`/event-type/${eventTypeName}/`, eventType);
     return res.data;
   }
@@ -335,12 +358,17 @@ export class Client {
 
   // ---- Message Attempts ----
 
-  async listAttemptsByMessage(appId: string, msgId: string, options?: AttemptListOptions): Promise<ListResponse<MessageAttemptOut>> {
+  async listAttemptsByMessage(
+    appId: string,
+    msgId: string,
+    options?: AttemptListOptions
+  ): Promise<ListResponse<MessageAttemptOut>> {
     let params: Record<string, string | number> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.iterator) params['iterator'] = options.iterator;
     if (options?.status !== undefined) params['status'] = options.status;
-    if (options?.statusCodeClass !== undefined) params['status_code_class'] = options.statusCodeClass;
+    if (options?.statusCodeClass !== undefined)
+      params['status_code_class'] = options.statusCodeClass;
     if (options?.channel) params['channel'] = options.channel;
     if (options?.tag) params['tag'] = options.tag;
     if (options?.before) params['before'] = options.before;
@@ -349,12 +377,17 @@ export class Client {
     return res.data;
   }
 
-  async listAttemptsByEndpoint(appId: string, endpointId: string, options?: AttemptListOptions): Promise<ListResponse<MessageAttemptOut>> {
+  async listAttemptsByEndpoint(
+    appId: string,
+    endpointId: string,
+    options?: AttemptListOptions
+  ): Promise<ListResponse<MessageAttemptOut>> {
     let params: Record<string, string | number> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.iterator) params['iterator'] = options.iterator;
     if (options?.status !== undefined) params['status'] = options.status;
-    if (options?.statusCodeClass !== undefined) params['status_code_class'] = options.statusCodeClass;
+    if (options?.statusCodeClass !== undefined)
+      params['status_code_class'] = options.statusCodeClass;
     if (options?.channel) params['channel'] = options.channel;
     if (options?.tag) params['tag'] = options.tag;
     if (options?.before) params['before'] = options.before;
@@ -369,14 +402,19 @@ export class Client {
 
   // ---- Authentication / Portal ----
 
-  async getAppPortalAccess(appId: string, options?: AppPortalAccessIn): Promise<AppPortalAccessOut> {
+  async getAppPortalAccess(
+    appId: string,
+    options?: AppPortalAccessIn
+  ): Promise<AppPortalAccessOut> {
     let res = await this.http.post(`/auth/app-portal-access/${appId}/`, options || {});
     return res.data;
   }
 
   // ---- Operational Webhook Endpoints ----
 
-  async listOperationalWebhookEndpoints(options?: ListOptions): Promise<ListResponse<EndpointOut>> {
+  async listOperationalWebhookEndpoints(
+    options?: ListOptions
+  ): Promise<ListResponse<EndpointOut>> {
     let params: Record<string, string | number> = {};
     if (options?.limit) params['limit'] = options.limit;
     if (options?.iterator) params['iterator'] = options.iterator;
@@ -398,7 +436,10 @@ export class Client {
     return res.data;
   }
 
-  async updateOperationalWebhookEndpoint(endpointId: string, endpoint: EndpointIn): Promise<EndpointOut> {
+  async updateOperationalWebhookEndpoint(
+    endpointId: string,
+    endpoint: EndpointIn
+  ): Promise<EndpointOut> {
     let res = await this.http.put(`/operational-webhook/endpoint/${endpointId}/`, endpoint);
     return res.data;
   }

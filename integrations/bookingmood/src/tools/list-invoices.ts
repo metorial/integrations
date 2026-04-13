@@ -10,30 +10,34 @@ let invoiceSchema = z.object({
   reference: z.string().describe('Invoice reference identifier'),
   attachment: z.string().nullable().describe('Attachment URL'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listInvoices = SlateTool.create(
-  spec,
-  {
-    name: 'List Invoices',
-    key: 'list_invoices',
-    description: `Lists invoices with optional filtering and pagination. Filter by booking, reference, or other fields.`,
-    constraints: ['Maximum 1000 results per request.'],
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    bookingId: z.string().optional().describe('Filter by booking UUID'),
-    filters: z.record(z.string(), z.string()).optional().describe('Additional PostgREST-style filters'),
-    order: z.string().optional().describe('Sort order'),
-    limit: z.number().optional().describe('Maximum number of results'),
-    offset: z.number().optional().describe('Number of results to skip'),
-  }))
-  .output(z.object({
-    invoices: z.array(invoiceSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listInvoices = SlateTool.create(spec, {
+  name: 'List Invoices',
+  key: 'list_invoices',
+  description: `Lists invoices with optional filtering and pagination. Filter by booking, reference, or other fields.`,
+  constraints: ['Maximum 1000 results per request.'],
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      bookingId: z.string().optional().describe('Filter by booking UUID'),
+      filters: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Additional PostgREST-style filters'),
+      order: z.string().optional().describe('Sort order'),
+      limit: z.number().optional().describe('Maximum number of results'),
+      offset: z.number().optional().describe('Number of results to skip')
+    })
+  )
+  .output(
+    z.object({
+      invoices: z.array(invoiceSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BookingmoodClient(ctx.auth.token);
     let filters = { ...ctx.input.filters };
     if (ctx.input.bookingId) filters.booking_id = `eq.${ctx.input.bookingId}`;
@@ -43,7 +47,7 @@ export let listInvoices = SlateTool.create(
       filters,
       order: ctx.input.order,
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     });
 
     let mapped = (invoices || []).map((i: any) => ({
@@ -53,12 +57,12 @@ export let listInvoices = SlateTool.create(
       reference: i.reference,
       attachment: i.attachment ?? null,
       createdAt: i.created_at,
-      updatedAt: i.updated_at,
+      updatedAt: i.updated_at
     }));
 
     return {
       output: { invoices: mapped },
-      message: `Found **${mapped.length}** invoice(s).`,
+      message: `Found **${mapped.length}** invoice(s).`
     };
   })
   .build();

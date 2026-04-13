@@ -5,40 +5,59 @@ import { z } from 'zod';
 
 let holderSchema = z.object({
   holderAddress: z.string().describe('Holder wallet address'),
-  balance: z.number().optional().describe('Token balance'),
+  balance: z.number().optional().describe('Token balance')
 });
 
-export let getTokenHolders = SlateTool.create(
-  spec,
-  {
-    name: 'Get Token Holders',
-    key: 'get_token_holders',
-    description: `Retrieve the top holders of a specific token on EVM blockchains or Solana. Returns addresses ranked by balance for any ERC-20 or SPL token.
+export let getTokenHolders = SlateTool.create(spec, {
+  name: 'Get Token Holders',
+  key: 'get_token_holders',
+  description: `Retrieve the top holders of a specific token on EVM blockchains or Solana. Returns addresses ranked by balance for any ERC-20 or SPL token.
 Use this for token distribution analysis, identifying whales, or tracking holder concentrations.`,
-    instructions: [
-      'Requires V2 API for best results.',
-      'Uses BalanceUpdates to aggregate net token movements per address.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+  instructions: [
+    'Requires V2 API for best results.',
+    'Uses BalanceUpdates to aggregate net token movements per address.'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    blockchain: z.enum(['eth', 'bsc', 'matic', 'arbitrum', 'base', 'optimism', 'opbnb', 'avalanche', 'fantom', 'cronos', 'solana'])
-      .describe('Blockchain network to query'),
-    tokenAddress: z.string().describe('Token contract/mint address'),
-    limit: z.number().min(1).max(1000).default(50).describe('Maximum number of top holders to return'),
-  }))
-  .output(z.object({
-    holders: z.array(holderSchema).describe('List of top token holders'),
-    holderCount: z.number().describe('Number of holders returned'),
-    tokenAddress: z.string().describe('Queried token address'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      blockchain: z
+        .enum([
+          'eth',
+          'bsc',
+          'matic',
+          'arbitrum',
+          'base',
+          'optimism',
+          'opbnb',
+          'avalanche',
+          'fantom',
+          'cronos',
+          'solana'
+        ])
+        .describe('Blockchain network to query'),
+      tokenAddress: z.string().describe('Token contract/mint address'),
+      limit: z
+        .number()
+        .min(1)
+        .max(1000)
+        .default(50)
+        .describe('Maximum number of top holders to return')
+    })
+  )
+  .output(
+    z.object({
+      holders: z.array(holderSchema).describe('List of top token holders'),
+      holderCount: z.number().describe('Number of holders returned'),
+      tokenAddress: z.string().describe('Queried token address')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BitqueryClient({
       token: ctx.auth.token,
-      apiVersion: ctx.config.apiVersion as 'v1' | 'v2',
+      apiVersion: ctx.config.apiVersion as 'v1' | 'v2'
     });
 
     let { blockchain, tokenAddress, limit } = ctx.input;
@@ -74,13 +93,20 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       holders = raw
         .map((h: any) => ({
           holderAddress: h.BalanceUpdate?.Account?.Address || '',
-          balance: parseFloat(h.balance) || 0,
+          balance: parseFloat(h.balance) || 0
         }))
         .filter((h: any) => h.balance > 0 && h.holderAddress);
     } else if (ctx.config.apiVersion === 'v1') {
       let networkMap: Record<string, string> = {
-        eth: 'ethereum', bsc: 'bsc', matic: 'matic', arbitrum: 'arbitrum',
-        base: 'base', optimism: 'optimism', avalanche: 'avalanche_c', fantom: 'fantom', cronos: 'cronos',
+        eth: 'ethereum',
+        bsc: 'bsc',
+        matic: 'matic',
+        arbitrum: 'arbitrum',
+        base: 'base',
+        optimism: 'optimism',
+        avalanche: 'avalanche_c',
+        fantom: 'fantom',
+        cronos: 'cronos'
       };
 
       let query = `query GetTokenHolders($network: EthereumNetwork!, $tokenAddress: String!, $limit: Int!) {
@@ -104,7 +130,7 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       let data = await client.query(query, {
         network: networkMap[blockchain] || blockchain,
         tokenAddress,
-        limit,
+        limit
       });
 
       let raw = data?.ethereum?.address?.[0]?.balances || [];
@@ -112,7 +138,7 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       holders = raw
         .map((h: any) => ({
           holderAddress: h.address?.address || '',
-          balance: h.value,
+          balance: h.value
         }))
         .filter((h: any) => h.balance > 0 && h.holderAddress);
     } else {
@@ -139,7 +165,7 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       holders = raw
         .map((h: any) => ({
           holderAddress: h.BalanceUpdate?.Address || '',
-          balance: parseFloat(h.balance) || 0,
+          balance: parseFloat(h.balance) || 0
         }))
         .filter((h: any) => h.balance > 0 && h.holderAddress);
     }
@@ -148,9 +174,9 @@ Use this for token distribution analysis, identifying whales, or tracking holder
       output: {
         holders,
         holderCount: holders.length,
-        tokenAddress,
+        tokenAddress
       },
-      message: `Retrieved **${holders.length}** top holder(s) for token \`${tokenAddress}\` on **${blockchain}**.`,
+      message: `Retrieved **${holders.length}** top holder(s) for token \`${tokenAddress}\` on **${blockchain}**.`
     };
   })
   .build();

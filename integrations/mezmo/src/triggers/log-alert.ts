@@ -2,38 +2,43 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let logAlert = SlateTrigger.create(
-  spec,
-  {
-    name: 'Log Alert',
-    key: 'log_alert',
-    description: 'Triggers when a Mezmo view-based alert fires. Receives webhook notifications for presence, absence, and change alerts configured on views. Configure the webhook URL in your Mezmo view alert settings.',
-  }
-)
-  .input(z.object({
-    alertName: z.string().optional().describe('Name of the triggered alert'),
-    alertType: z.string().optional().describe('Type of alert (presence, absence, change)'),
-    viewName: z.string().optional().describe('Name of the view that triggered the alert'),
-    query: z.string().optional().describe('Search query of the view'),
-    matches: z.string().optional().describe('Number of matching log lines'),
-    viewUrl: z.string().optional().describe('URL to the view in Mezmo dashboard'),
-    lines: z.array(z.record(z.string(), z.unknown())).optional().describe('Sample matching log lines'),
-    rawPayload: z.record(z.string(), z.unknown()).describe('Full raw webhook payload'),
-  }))
-  .output(z.object({
-    alertName: z.string().describe('Name of the triggered alert'),
-    alertType: z.string().describe('Type of alert'),
-    viewName: z.string().describe('View that triggered the alert'),
-    query: z.string().describe('Search query'),
-    matches: z.string().describe('Number of matching lines'),
-    viewUrl: z.string().describe('Dashboard URL for the view'),
-    lines: z.array(z.record(z.string(), z.unknown())).describe('Sample matching log lines'),
-  }))
+export let logAlert = SlateTrigger.create(spec, {
+  name: 'Log Alert',
+  key: 'log_alert',
+  description:
+    'Triggers when a Mezmo view-based alert fires. Receives webhook notifications for presence, absence, and change alerts configured on views. Configure the webhook URL in your Mezmo view alert settings.'
+})
+  .input(
+    z.object({
+      alertName: z.string().optional().describe('Name of the triggered alert'),
+      alertType: z.string().optional().describe('Type of alert (presence, absence, change)'),
+      viewName: z.string().optional().describe('Name of the view that triggered the alert'),
+      query: z.string().optional().describe('Search query of the view'),
+      matches: z.string().optional().describe('Number of matching log lines'),
+      viewUrl: z.string().optional().describe('URL to the view in Mezmo dashboard'),
+      lines: z
+        .array(z.record(z.string(), z.unknown()))
+        .optional()
+        .describe('Sample matching log lines'),
+      rawPayload: z.record(z.string(), z.unknown()).describe('Full raw webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      alertName: z.string().describe('Name of the triggered alert'),
+      alertType: z.string().describe('Type of alert'),
+      viewName: z.string().describe('View that triggered the alert'),
+      query: z.string().describe('Search query'),
+      matches: z.string().describe('Number of matching lines'),
+      viewUrl: z.string().describe('Dashboard URL for the view'),
+      lines: z.array(z.record(z.string(), z.unknown())).describe('Sample matching log lines')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: Record<string, unknown>;
       try {
-        data = await ctx.request.json() as Record<string, unknown>;
+        data = (await ctx.request.json()) as Record<string, unknown>;
       } catch {
         data = {};
       }
@@ -56,13 +61,13 @@ export let logAlert = SlateTrigger.create(
             matches,
             viewUrl,
             lines: lines as Array<Record<string, unknown>>,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventId = `${ctx.input.alertName}-${ctx.input.viewName}-${Date.now()}`;
 
       return {
@@ -75,9 +80,9 @@ export let logAlert = SlateTrigger.create(
           query: ctx.input.query || '',
           matches: ctx.input.matches || '0',
           viewUrl: ctx.input.viewUrl || '',
-          lines: ctx.input.lines || [],
-        },
+          lines: ctx.input.lines || []
+        }
       };
-    },
+    }
   })
   .build();

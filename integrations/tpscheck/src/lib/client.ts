@@ -47,23 +47,31 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Token ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async checkNumber(phone: string): Promise<CheckResultV2> {
-    let response = await this.axios.post('/check', { phone }, {
-      params: { version: 2 },
-    });
+    let response = await this.axios.post(
+      '/check',
+      { phone },
+      {
+        params: { version: 2 }
+      }
+    );
     return response.data;
   }
 
   async batchCheck(phones: string[]): Promise<BatchResultV2> {
-    let response = await this.axios.post('/batch', { phones }, {
-      params: { version: 2 },
-    });
+    let response = await this.axios.post(
+      '/batch',
+      { phones },
+      {
+        params: { version: 2 }
+      }
+    );
     return response.data;
   }
 

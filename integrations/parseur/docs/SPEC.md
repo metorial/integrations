@@ -71,6 +71,7 @@ Fires when a document can't be parsed. Useful for alerting teams about documents
 Fires when another export (webhook or automation) fails; includes error details so you can alert teams or tools.
 
 **Configuration options for all webhook events:**
+
 - Target URL (HTTPS recommended)
 - Custom HTTP headers (e.g., for authorization tokens)
 - Multiple webhooks can be configured per mailbox with different triggers

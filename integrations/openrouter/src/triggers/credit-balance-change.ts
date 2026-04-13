@@ -3,41 +3,45 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let creditBalanceChange = SlateTrigger.create(
-  spec,
-  {
-    name: 'Credit Balance Change',
-    key: 'credit_balance_change',
-    description: 'Triggers when the OpenRouter credit balance changes, indicating new usage or deposits. Polls periodically to detect changes in total credits or usage.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['usage_increased', 'credits_added', 'balance_changed']).describe('Type of balance change detected'),
-    changeId: z.string().describe('Unique identifier for this change event'),
-    totalCredits: z.number().describe('Current total credits deposited'),
-    totalUsage: z.number().describe('Current total usage consumed'),
-    remainingCredits: z.number().describe('Current remaining credits'),
-    previousTotalCredits: z.number().optional().describe('Previous total credits'),
-    previousTotalUsage: z.number().optional().describe('Previous total usage'),
-  }))
-  .output(z.object({
-    totalCredits: z.number().describe('Current total credits deposited'),
-    totalUsage: z.number().describe('Current total usage consumed'),
-    remainingCredits: z.number().describe('Current remaining credits'),
-    usageDelta: z.number().optional().describe('Change in usage since last check'),
-    creditsDelta: z.number().optional().describe('Change in credits since last check'),
-    changeType: z.string().describe('Type of balance change'),
-  }))
+export let creditBalanceChange = SlateTrigger.create(spec, {
+  name: 'Credit Balance Change',
+  key: 'credit_balance_change',
+  description:
+    'Triggers when the OpenRouter credit balance changes, indicating new usage or deposits. Polls periodically to detect changes in total credits or usage.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['usage_increased', 'credits_added', 'balance_changed'])
+        .describe('Type of balance change detected'),
+      changeId: z.string().describe('Unique identifier for this change event'),
+      totalCredits: z.number().describe('Current total credits deposited'),
+      totalUsage: z.number().describe('Current total usage consumed'),
+      remainingCredits: z.number().describe('Current remaining credits'),
+      previousTotalCredits: z.number().optional().describe('Previous total credits'),
+      previousTotalUsage: z.number().optional().describe('Previous total usage')
+    })
+  )
+  .output(
+    z.object({
+      totalCredits: z.number().describe('Current total credits deposited'),
+      totalUsage: z.number().describe('Current total usage consumed'),
+      remainingCredits: z.number().describe('Current remaining credits'),
+      usageDelta: z.number().optional().describe('Change in usage since last check'),
+      creditsDelta: z.number().optional().describe('Change in credits since last check'),
+      changeType: z.string().describe('Type of balance change')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         siteUrl: ctx.config.siteUrl,
-        appTitle: ctx.config.appTitle,
+        appTitle: ctx.config.appTitle
       });
 
       let data = await client.getCredits();
@@ -63,7 +67,8 @@ export let creditBalanceChange = SlateTrigger.create(
         let usageChanged = data.totalUsage !== previousState.totalUsage;
 
         if (creditsChanged || usageChanged) {
-          let changeType: 'usage_increased' | 'credits_added' | 'balance_changed' = 'balance_changed';
+          let changeType: 'usage_increased' | 'credits_added' | 'balance_changed' =
+            'balance_changed';
           if (usageChanged && !creditsChanged) {
             changeType = 'usage_increased';
           } else if (creditsChanged && !usageChanged) {
@@ -77,7 +82,7 @@ export let creditBalanceChange = SlateTrigger.create(
             totalUsage: data.totalUsage,
             remainingCredits: remaining,
             previousTotalCredits: previousState.totalCredits,
-            previousTotalUsage: previousState.totalUsage,
+            previousTotalUsage: previousState.totalUsage
           });
         }
       }
@@ -86,18 +91,20 @@ export let creditBalanceChange = SlateTrigger.create(
         inputs,
         updatedState: {
           totalCredits: data.totalCredits,
-          totalUsage: data.totalUsage,
-        },
+          totalUsage: data.totalUsage
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
-      let usageDelta = ctx.input.previousTotalUsage !== undefined
-        ? ctx.input.totalUsage - ctx.input.previousTotalUsage
-        : undefined;
-      let creditsDelta = ctx.input.previousTotalCredits !== undefined
-        ? ctx.input.totalCredits - ctx.input.previousTotalCredits
-        : undefined;
+    handleEvent: async ctx => {
+      let usageDelta =
+        ctx.input.previousTotalUsage !== undefined
+          ? ctx.input.totalUsage - ctx.input.previousTotalUsage
+          : undefined;
+      let creditsDelta =
+        ctx.input.previousTotalCredits !== undefined
+          ? ctx.input.totalCredits - ctx.input.previousTotalCredits
+          : undefined;
 
       return {
         type: `credits.${ctx.input.changeType}`,
@@ -108,8 +115,9 @@ export let creditBalanceChange = SlateTrigger.create(
           remainingCredits: ctx.input.remainingCredits,
           usageDelta,
           creditsDelta,
-          changeType: ctx.input.changeType,
-        },
+          changeType: ctx.input.changeType
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

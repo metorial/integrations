@@ -68,14 +68,14 @@ export class Client {
       baseURL: 'https://alttext.ai/api/v1',
       headers: {
         'X-API-Key': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async createImage(params: CreateImageParams): Promise<ImageResult> {
     let body: Record<string, any> = {
-      image: {},
+      image: {}
     };
 
     if (params.imageUrl) {
@@ -104,7 +104,8 @@ export class Client {
       body.ecommerce = {};
       if (params.ecommerce.product) body.ecommerce.product = params.ecommerce.product;
       if (params.ecommerce.brand) body.ecommerce.brand = params.ecommerce.brand;
-      if (params.ecommerce.description) body.ecommerce.description = params.ecommerce.description;
+      if (params.ecommerce.description)
+        body.ecommerce.description = params.ecommerce.description;
     }
     if (params.webhookUrl) {
       body.webhook_url = params.webhookUrl;
@@ -128,7 +129,9 @@ export class Client {
     return response.data;
   }
 
-  async getImages(params?: ImageListParams): Promise<{ images: ImageResult[]; page: number; per_page: number; total: number }> {
+  async getImages(
+    params?: ImageListParams
+  ): Promise<{ images: ImageResult[]; page: number; per_page: number; total: number }> {
     let queryParams: Record<string, any> = {};
     if (params?.page) queryParams.page = params.page;
     if (params?.perPage) queryParams.per_page = params.perPage;
@@ -137,9 +140,11 @@ export class Client {
     return response.data;
   }
 
-  async searchImages(params: ImageSearchParams): Promise<{ images: ImageResult[]; page: number; per_page: number; total: number }> {
+  async searchImages(
+    params: ImageSearchParams
+  ): Promise<{ images: ImageResult[]; page: number; per_page: number; total: number }> {
     let queryParams: Record<string, any> = {
-      q: params.query,
+      q: params.query
     };
     if (params.page) queryParams.page = params.page;
     if (params.perPage) queryParams.per_page = params.perPage;

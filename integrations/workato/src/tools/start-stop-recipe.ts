@@ -3,29 +3,41 @@ import { createClient } from '../lib/create-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let startStopRecipeTool = SlateTool.create(
-  spec,
-  {
-    name: 'Start/Stop Recipe',
-    key: 'start_stop_recipe',
-    description: `Start or stop a Workato recipe. Also supports copying a recipe to a different folder, resetting the trigger cursor, or updating a recipe's connection.`,
-    tags: {
-      destructive: false,
-    },
+export let startStopRecipeTool = SlateTool.create(spec, {
+  name: 'Start/Stop Recipe',
+  key: 'start_stop_recipe',
+  description: `Start or stop a Workato recipe. Also supports copying a recipe to a different folder, resetting the trigger cursor, or updating a recipe's connection.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['start', 'stop', 'copy', 'reset_trigger', 'update_connection']).describe('Action to perform on the recipe'),
-    recipeId: z.string().describe('ID of the recipe'),
-    targetFolderId: z.string().optional().describe('Target folder ID (required for copy)'),
-    adapterName: z.string().optional().describe('Adapter/connector name (required for update_connection)'),
-    connectionId: z.number().optional().describe('Connection ID to assign (required for update_connection)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    newRecipeId: z.number().optional().describe('ID of the copied recipe (only for copy action)'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['start', 'stop', 'copy', 'reset_trigger', 'update_connection'])
+        .describe('Action to perform on the recipe'),
+      recipeId: z.string().describe('ID of the recipe'),
+      targetFolderId: z.string().optional().describe('Target folder ID (required for copy)'),
+      adapterName: z
+        .string()
+        .optional()
+        .describe('Adapter/connector name (required for update_connection)'),
+      connectionId: z
+        .number()
+        .optional()
+        .describe('Connection ID to assign (required for update_connection)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      newRecipeId: z
+        .number()
+        .optional()
+        .describe('ID of the copied recipe (only for copy action)')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { action, recipeId, targetFolderId, adapterName, connectionId } = ctx.input;
 
@@ -33,7 +45,7 @@ export let startStopRecipeTool = SlateTool.create(
       await client.startRecipe(recipeId);
       return {
         output: { success: true },
-        message: `Started recipe **${recipeId}**.`,
+        message: `Started recipe **${recipeId}**.`
       };
     }
 
@@ -41,7 +53,7 @@ export let startStopRecipeTool = SlateTool.create(
       await client.stopRecipe(recipeId);
       return {
         output: { success: true },
-        message: `Stopped recipe **${recipeId}**.`,
+        message: `Stopped recipe **${recipeId}**.`
       };
     }
 
@@ -50,7 +62,7 @@ export let startStopRecipeTool = SlateTool.create(
       let result = await client.copyRecipe(recipeId, targetFolderId);
       return {
         output: { success: true, newRecipeId: result.new_flow_id },
-        message: `Copied recipe **${recipeId}** to folder ${targetFolderId}. New recipe ID: **${result.new_flow_id}**.`,
+        message: `Copied recipe **${recipeId}** to folder ${targetFolderId}. New recipe ID: **${result.new_flow_id}**.`
       };
     }
 
@@ -58,7 +70,7 @@ export let startStopRecipeTool = SlateTool.create(
       await client.resetRecipeTrigger(recipeId);
       return {
         output: { success: true },
-        message: `Reset trigger for recipe **${recipeId}**.`,
+        message: `Reset trigger for recipe **${recipeId}**.`
       };
     }
 
@@ -69,7 +81,7 @@ export let startStopRecipeTool = SlateTool.create(
       await client.updateRecipeConnection(recipeId, adapterName, connectionId);
       return {
         output: { success: true },
-        message: `Updated connection for recipe **${recipeId}**: ${adapterName} -> connection ${connectionId}.`,
+        message: `Updated connection for recipe **${recipeId}**: ${adapterName} -> connection ${connectionId}.`
       };
     }
 

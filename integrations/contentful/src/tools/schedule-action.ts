@@ -3,47 +3,74 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import { createClient } from '../lib/helpers';
 
-export let scheduleAction = SlateTool.create(
-  spec,
-  {
-    name: 'Schedule Action',
-    key: 'schedule_action',
-    description: `Schedule a future publish or unpublish action for an entry. Also supports listing and cancelling scheduled actions.`,
-    instructions: [
-      'The datetime must be an ISO 8601 timestamp in the future.',
-      'The timezone defaults to UTC if not specified.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let scheduleAction = SlateTool.create(spec, {
+  name: 'Schedule Action',
+  key: 'schedule_action',
+  description: `Schedule a future publish or unpublish action for an entry. Also supports listing and cancelling scheduled actions.`,
+  instructions: [
+    'The datetime must be an ISO 8601 timestamp in the future.',
+    'The timezone defaults to UTC if not specified.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    action: z.enum(['schedule', 'list', 'cancel']).describe('Whether to schedule a new action, list existing ones, or cancel one.'),
-    entryId: z.string().optional().describe('Entry ID to schedule an action for. Required for "schedule".'),
-    scheduledAction: z.enum(['publish', 'unpublish']).optional().describe('The action to schedule. Required for "schedule".'),
-    datetime: z.string().optional().describe('ISO 8601 datetime for when the action should execute. Required for "schedule".'),
-    timezone: z.string().optional().describe('Timezone for the scheduled action (default: UTC).'),
-    scheduledActionId: z.string().optional().describe('ID of the scheduled action to cancel. Required for "cancel".')
-  }))
-  .output(z.object({
-    action: z.string().describe('Action performed.'),
-    scheduledActionId: z.string().optional().describe('ID of the scheduled action.'),
-    scheduledActions: z.array(z.object({
-      scheduledActionId: z.string().describe('Scheduled action ID.'),
-      entryId: z.string().optional().describe('Target entry ID.'),
-      scheduledAction: z.string().optional().describe('Scheduled action type.'),
-      datetime: z.string().optional().describe('Scheduled execution time.'),
-      status: z.string().optional().describe('Current status.')
-    })).optional().describe('List of scheduled actions (only for list action).')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['schedule', 'list', 'cancel'])
+        .describe('Whether to schedule a new action, list existing ones, or cancel one.'),
+      entryId: z
+        .string()
+        .optional()
+        .describe('Entry ID to schedule an action for. Required for "schedule".'),
+      scheduledAction: z
+        .enum(['publish', 'unpublish'])
+        .optional()
+        .describe('The action to schedule. Required for "schedule".'),
+      datetime: z
+        .string()
+        .optional()
+        .describe(
+          'ISO 8601 datetime for when the action should execute. Required for "schedule".'
+        ),
+      timezone: z
+        .string()
+        .optional()
+        .describe('Timezone for the scheduled action (default: UTC).'),
+      scheduledActionId: z
+        .string()
+        .optional()
+        .describe('ID of the scheduled action to cancel. Required for "cancel".')
+    })
+  )
+  .output(
+    z.object({
+      action: z.string().describe('Action performed.'),
+      scheduledActionId: z.string().optional().describe('ID of the scheduled action.'),
+      scheduledActions: z
+        .array(
+          z.object({
+            scheduledActionId: z.string().describe('Scheduled action ID.'),
+            entryId: z.string().optional().describe('Target entry ID.'),
+            scheduledAction: z.string().optional().describe('Scheduled action type.'),
+            datetime: z.string().optional().describe('Scheduled execution time.'),
+            status: z.string().optional().describe('Current status.')
+          })
+        )
+        .optional()
+        .describe('List of scheduled actions (only for list action).')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx.config, ctx.auth);
 
     switch (ctx.input.action) {
       case 'schedule': {
         if (!ctx.input.entryId || !ctx.input.scheduledAction || !ctx.input.datetime) {
-          throw new Error('entryId, scheduledAction, and datetime are required for scheduling');
+          throw new Error(
+            'entryId, scheduledAction, and datetime are required for scheduling'
+          );
         }
         let result = await client.createScheduledAction({
           entity: {
@@ -91,4 +118,5 @@ export let scheduleAction = SlateTool.create(
         };
       }
     }
-  }).build();
+  })
+  .build();

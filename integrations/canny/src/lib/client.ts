@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://canny.io/api',
+  baseURL: 'https://canny.io/api'
 });
 
 export class CannyClient {
@@ -10,7 +10,7 @@ export class CannyClient {
   private async post<T = any>(path: string, data: Record<string, any> = {}): Promise<T> {
     let response = await http.post(path, {
       apiKey: this.token,
-      ...data,
+      ...data
     });
     return response.data;
   }
@@ -48,17 +48,19 @@ export class CannyClient {
     return this.post('/v1/posts/retrieve', params);
   }
 
-  async listPosts(params: {
-    boardID?: string;
-    authorID?: string;
-    companyID?: string;
-    tagIDs?: string[];
-    limit?: number;
-    search?: string;
-    skip?: number;
-    sort?: string;
-    status?: string;
-  } = {}) {
+  async listPosts(
+    params: {
+      boardID?: string;
+      authorID?: string;
+      companyID?: string;
+      tagIDs?: string[];
+      limit?: number;
+      search?: string;
+      skip?: number;
+      sort?: string;
+      status?: string;
+    } = {}
+  ) {
     return this.post<{ posts: any[]; hasMore: boolean }>('/v1/posts/list', params);
   }
 
@@ -136,15 +138,20 @@ export class CannyClient {
     return this.post('/v1/comments/retrieve', { id: commentId });
   }
 
-  async listComments(params: {
-    boardID?: string;
-    postID?: string;
-    authorID?: string;
-    companyID?: string;
-    limit?: number;
-    cursor?: string;
-  } = {}) {
-    return this.post<{ items: any[]; cursor: string; hasNextPage: boolean }>('/v2/comments/list', params);
+  async listComments(
+    params: {
+      boardID?: string;
+      postID?: string;
+      authorID?: string;
+      companyID?: string;
+      limit?: number;
+      cursor?: string;
+    } = {}
+  ) {
+    return this.post<{ items: any[]; cursor: string; hasNextPage: boolean }>(
+      '/v2/comments/list',
+      params
+    );
   }
 
   async deleteComment(commentId: string) {
@@ -153,11 +160,7 @@ export class CannyClient {
 
   // ── Votes ──
 
-  async createVote(params: {
-    voterID: string;
-    postID: string;
-    byID?: string;
-  }) {
+  async createVote(params: { voterID: string; postID: string; byID?: string }) {
     return this.post('/v1/votes/create', params);
   }
 
@@ -165,14 +168,16 @@ export class CannyClient {
     return this.post('/v1/votes/retrieve', { id: voteId });
   }
 
-  async listVotes(params: {
-    boardID?: string;
-    postID?: string;
-    userID?: string;
-    companyID?: string;
-    limit?: number;
-    skip?: number;
-  } = {}) {
+  async listVotes(
+    params: {
+      boardID?: string;
+      postID?: string;
+      userID?: string;
+      companyID?: string;
+      limit?: number;
+      skip?: number;
+    } = {}
+  ) {
     return this.post<{ votes: any[]; hasMore: boolean }>('/v1/votes/list', params);
   }
 
@@ -205,7 +210,10 @@ export class CannyClient {
   }
 
   async listUsers(params: { limit?: number; cursor?: string } = {}) {
-    return this.post<{ items: any[]; cursor: string; hasNextPage: boolean }>('/v2/users/list', params);
+    return this.post<{ items: any[]; cursor: string; hasNextPage: boolean }>(
+      '/v2/users/list',
+      params
+    );
   }
 
   async deleteUser(userId: string) {
@@ -213,18 +221,26 @@ export class CannyClient {
   }
 
   async removeUserFromCompany(userId: string, companyId: string) {
-    return this.post('/v1/users/remove_from_company', { userID: userId, companyID: companyId });
+    return this.post('/v1/users/remove_from_company', {
+      userID: userId,
+      companyID: companyId
+    });
   }
 
   // ── Companies ──
 
-  async listCompanies(params: {
-    limit?: number;
-    cursor?: string;
-    search?: string;
-    segment?: string;
-  } = {}) {
-    return this.post<{ companies: any[]; cursor: string; hasNextPage: boolean }>('/v2/companies/list', params);
+  async listCompanies(
+    params: {
+      limit?: number;
+      cursor?: string;
+      search?: string;
+      segment?: string;
+    } = {}
+  ) {
+    return this.post<{ companies: any[]; cursor: string; hasNextPage: boolean }>(
+      '/v2/companies/list',
+      params
+    );
   }
 
   async updateCompany(params: {
@@ -256,11 +272,7 @@ export class CannyClient {
     return this.post('/v1/categories/retrieve', { id: categoryId });
   }
 
-  async listCategories(params: {
-    boardID: string;
-    limit?: number;
-    skip?: number;
-  }) {
+  async listCategories(params: { boardID: string; limit?: number; skip?: number }) {
     return this.post<{ categories: any[]; hasMore: boolean }>('/v1/categories/list', params);
   }
 
@@ -298,30 +310,40 @@ export class CannyClient {
     return this.post('/v1/entries/create', params);
   }
 
-  async listChangelogEntries(params: {
-    labelIDs?: string[];
-    limit?: number;
-    skip?: number;
-    sort?: string;
-    type?: string;
-  } = {}) {
+  async listChangelogEntries(
+    params: {
+      labelIDs?: string[];
+      limit?: number;
+      skip?: number;
+      sort?: string;
+      type?: string;
+    } = {}
+  ) {
     return this.post<{ entries: any[]; hasMore: boolean }>('/v1/entries/list', params);
   }
 
   // ── Status Changes ──
 
-  async listStatusChanges(params: {
-    boardID?: string;
-    limit?: number;
-    skip?: number;
-  } = {}) {
-    return this.post<{ statusChanges: any[]; hasMore: boolean }>('/v1/status_changes/list', params);
+  async listStatusChanges(
+    params: {
+      boardID?: string;
+      limit?: number;
+      skip?: number;
+    } = {}
+  ) {
+    return this.post<{ statusChanges: any[]; hasMore: boolean }>(
+      '/v1/status_changes/list',
+      params
+    );
   }
 
   // ── Opportunities ──
 
   async listOpportunities(params: { limit?: number; skip?: number } = {}) {
-    return this.post<{ opportunities: any[]; hasMore: boolean }>('/v1/opportunities/list', params);
+    return this.post<{ opportunities: any[]; hasMore: boolean }>(
+      '/v1/opportunities/list',
+      params
+    );
   }
 
   // ── Autopilot ──

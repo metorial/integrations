@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   manageAssistant,
@@ -19,13 +18,9 @@ import {
   runToolActivity,
   listGriptapeTools,
   listDataConnectors,
-  manageBucket,
+  manageBucket
 } from './tools';
-import {
-  assistantRunCompleted,
-  structureRunCompleted,
-  inboundWebhook,
-} from './triggers';
+import { assistantRunCompleted, structureRunCompleted, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -47,11 +42,7 @@ export let provider = Slate.create({
     runToolActivity,
     listGriptapeTools,
     listDataConnectors,
-    manageBucket,
+    manageBucket
   ],
-  triggers: [
-    inboundWebhook,
-    assistantRunCompleted,
-    structureRunCompleted,
-  ],
+  triggers: [inboundWebhook, assistantRunCompleted, structureRunCompleted]
 });

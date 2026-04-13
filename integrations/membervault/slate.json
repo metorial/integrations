@@ -2,11 +2,7 @@
   "name": "@metorial/membervault",
   "version": "0.1.1",
   "description": "Manage users, products, and engagement tracking for online courses, memberships, and digital products. Add or remove users from products, delete user accounts, and retrieve product listings. Monitor events including user signups, lesson and module completions, engagement point thresholds, hot lead detection, email consent changes, account creation, and first logins via webhooks.",
-  "categories": [
-    "crm-and-sales-tools",
-    "e-commerce-and-retail",
-    "education-and-learning"
-  ],
+  "categories": ["crm-and-sales-tools", "e-commerce-and-retail", "education-and-learning"],
   "skills": [
     "add user to product",
     "remove user from product",

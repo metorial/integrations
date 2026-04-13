@@ -45,30 +45,31 @@ let mapPurchase = (p: any) => ({
   updatedAt: p.updated_at
 });
 
-export let listPurchases = SlateTool.create(
-  spec,
-  {
-    name: 'List Purchases',
-    key: 'list_purchases',
-    description: `Retrieve a list of purchases/expenditures. Filter by category, company, status, payment method, tags, or date.`,
-    tags: {
-      readOnly: true
-    }
+export let listPurchases = SlateTool.create(spec, {
+  name: 'List Purchases',
+  key: 'list_purchases',
+  description: `Retrieve a list of purchases/expenditures. Filter by category, company, status, payment method, tags, or date.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    categoryId: z.number().optional().describe('Filter by purchase category ID'),
-    companyId: z.number().optional().describe('Filter by supplier company ID'),
-    status: z.string().optional().describe('Filter by status'),
-    paymentMethod: z.string().optional().describe('Filter by payment method'),
-    tags: z.string().optional().describe('Comma-separated list of tags'),
-    term: z.string().optional().describe('Full-text search term'),
-    unpaid: z.boolean().optional().describe('Filter for unpaid purchases')
-  }))
-  .output(z.object({
-    purchases: z.array(purchaseOutputSchema)
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      categoryId: z.number().optional().describe('Filter by purchase category ID'),
+      companyId: z.number().optional().describe('Filter by supplier company ID'),
+      status: z.string().optional().describe('Filter by status'),
+      paymentMethod: z.string().optional().describe('Filter by payment method'),
+      tags: z.string().optional().describe('Comma-separated list of tags'),
+      term: z.string().optional().describe('Full-text search term'),
+      unpaid: z.boolean().optional().describe('Filter for unpaid purchases')
+    })
+  )
+  .output(
+    z.object({
+      purchases: z.array(purchaseOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let params: Record<string, any> = {};
@@ -87,24 +88,24 @@ export let listPurchases = SlateTool.create(
       output: { purchases },
       message: `Found **${purchases.length}** purchases.`
     };
-  }).build();
+  })
+  .build();
 
-export let getPurchase = SlateTool.create(
-  spec,
-  {
-    name: 'Get Purchase',
-    key: 'get_purchase',
-    description: `Retrieve detailed information about a specific purchase/expenditure.`,
-    tags: {
-      readOnly: true
-    }
+export let getPurchase = SlateTool.create(spec, {
+  name: 'Get Purchase',
+  key: 'get_purchase',
+  description: `Retrieve detailed information about a specific purchase/expenditure.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    purchaseId: z.number().describe('The ID of the purchase to retrieve')
-  }))
+})
+  .input(
+    z.object({
+      purchaseId: z.number().describe('The ID of the purchase to retrieve')
+    })
+  )
   .output(purchaseOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     let p = await client.getPurchase(ctx.input.purchaseId);
 
@@ -112,31 +113,33 @@ export let getPurchase = SlateTool.create(
       output: mapPurchase(p),
       message: `Retrieved purchase **${p.title || p.identifier}** (ID: ${p.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let createPurchase = SlateTool.create(
-  spec,
-  {
-    name: 'Create Purchase',
-    key: 'create_purchase',
-    description: `Create a new purchase/expenditure. Requires date, currency, payment method, and at least one item with title, total, and tax rate.`,
-    tags: {
-      destructive: false
-    }
+export let createPurchase = SlateTool.create(spec, {
+  name: 'Create Purchase',
+  key: 'create_purchase',
+  description: `Create a new purchase/expenditure. Requires date, currency, payment method, and at least one item with title, total, and tax rate.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    date: z.string().describe('Purchase date (YYYY-MM-DD)'),
-    currency: z.string().describe('Currency code (e.g., "EUR")'),
-    paymentMethod: z.string().describe('Payment method (e.g., "bank_transfer", "credit_card", "cash")'),
-    items: z.array(purchaseItemSchema).describe('Purchase line items'),
-    title: z.string().optional().describe('Purchase title'),
-    companyId: z.number().optional().describe('Supplier company ID'),
-    dueDate: z.string().optional().describe('Payment due date (YYYY-MM-DD)'),
-    tags: z.array(z.string()).optional().describe('Purchase tags')
-  }))
+})
+  .input(
+    z.object({
+      date: z.string().describe('Purchase date (YYYY-MM-DD)'),
+      currency: z.string().describe('Currency code (e.g., "EUR")'),
+      paymentMethod: z
+        .string()
+        .describe('Payment method (e.g., "bank_transfer", "credit_card", "cash")'),
+      items: z.array(purchaseItemSchema).describe('Purchase line items'),
+      title: z.string().optional().describe('Purchase title'),
+      companyId: z.number().optional().describe('Supplier company ID'),
+      dueDate: z.string().optional().describe('Payment due date (YYYY-MM-DD)'),
+      tags: z.array(z.string()).optional().describe('Purchase tags')
+    })
+  )
   .output(purchaseOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
 
     let data: Record<string, any> = {
@@ -157,26 +160,28 @@ export let createPurchase = SlateTool.create(
       output: mapPurchase(p),
       message: `Created purchase **${p.title || p.identifier}** (ID: ${p.id}).`
     };
-  }).build();
+  })
+  .build();
 
-export let deletePurchase = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Purchase',
-    key: 'delete_purchase',
-    description: `Delete a purchase/expenditure. Only pending purchases with no payments can be deleted.`,
-    tags: {
-      destructive: true
-    }
+export let deletePurchase = SlateTool.create(spec, {
+  name: 'Delete Purchase',
+  key: 'delete_purchase',
+  description: `Delete a purchase/expenditure. Only pending purchases with no payments can be deleted.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    purchaseId: z.number().describe('The ID of the purchase to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      purchaseId: z.number().describe('The ID of the purchase to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, domain: ctx.auth.domain });
     await client.deletePurchase(ctx.input.purchaseId);
 
@@ -184,4 +189,5 @@ export let deletePurchase = SlateTool.create(
       output: { success: true },
       message: `Deleted purchase **${ctx.input.purchaseId}**.`
     };
-  }).build();
+  })
+  .build();

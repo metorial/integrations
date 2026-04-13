@@ -133,7 +133,8 @@ export class Client {
     if (params.ga4TagId !== undefined) body.ga4_tag_id = params.ga4TagId;
     if (params.fbPixelId !== undefined) body.fb_pixel_id = params.fbPixelId;
     if (params.expiryDatetime !== undefined) body.expiry_datetime = params.expiryDatetime;
-    if (params.expiryDestination !== undefined) body.expiry_destination = params.expiryDestination;
+    if (params.expiryDestination !== undefined)
+      body.expiry_destination = params.expiryDestination;
     if (params.expiryClicks !== undefined) body.expiry_clicks = params.expiryClicks;
     if (params.password !== undefined) body.password = params.password;
     if (params.rules !== undefined) body.rules = params.rules;
@@ -231,9 +232,12 @@ export class Client {
     if (params.unique !== undefined) queryParams.unique = params.unique;
     if (params.format) queryParams.format = params.format;
 
-    let response = await this.axios.get(`/workspace/${this.workspaceId}/clicks/counters/${params.counter}`, {
-      params: queryParams
-    });
+    let response = await this.axios.get(
+      `/workspace/${this.workspaceId}/clicks/counters/${params.counter}`,
+      {
+        params: queryParams
+      }
+    );
     return response.data;
   }
 
@@ -256,11 +260,14 @@ export class Client {
   }
 
   async deleteLinkWebhook(linkId: number, hookId: string): Promise<any> {
-    let response = await this.axios.delete(`/link/${linkId}/webhooks/${encodeURIComponent(hookId)}`, {
-      params: {
-        api_key: this.apiKey
+    let response = await this.axios.delete(
+      `/link/${linkId}/webhooks/${encodeURIComponent(hookId)}`,
+      {
+        params: {
+          api_key: this.apiKey
+        }
       }
-    });
+    );
     return response.data;
   }
 
@@ -283,11 +290,14 @@ export class Client {
   }
 
   async deleteWorkspaceWebhook(hookId: string): Promise<any> {
-    let response = await this.axios.delete(`/workspace/${this.workspaceId}/webhooks/${encodeURIComponent(hookId)}`, {
-      params: {
-        api_key: this.apiKey
+    let response = await this.axios.delete(
+      `/workspace/${this.workspaceId}/webhooks/${encodeURIComponent(hookId)}`,
+      {
+        params: {
+          api_key: this.apiKey
+        }
       }
-    });
+    );
     return response.data;
   }
 

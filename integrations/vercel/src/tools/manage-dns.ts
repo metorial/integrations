@@ -3,48 +3,63 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDnsTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage DNS Records',
-    key: 'manage_dns',
-    description: `List, create, update, or delete DNS records for a domain managed in Vercel. Supports A, AAAA, CNAME, MX, TXT, SRV, CAA, and other record types.`,
-    instructions: [
-      'Use action "list" to list all DNS records for a domain.',
-      'Use action "create" to add a new DNS record.',
-      'Use action "update" to modify an existing record by its ID.',
-      'Use action "delete" to remove a DNS record.',
-    ],
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
-    domain: z.string().describe('Domain name (e.g., example.com)'),
-    recordId: z.string().optional().describe('DNS record ID (required for update and delete)'),
-    name: z.string().optional().describe('Record name/subdomain (required for create)'),
-    type: z.enum(['A', 'AAAA', 'ALIAS', 'CAA', 'CNAME', 'HTTPS', 'MX', 'NS', 'SRV', 'TXT']).optional().describe('Record type (required for create)'),
-    value: z.string().optional().describe('Record value (required for create)'),
-    ttl: z.number().optional().describe('TTL in seconds'),
-    mxPriority: z.number().optional().describe('MX priority (for MX records)'),
-  }))
-  .output(z.object({
-    records: z.array(z.object({
-      recordId: z.string().describe('DNS record ID'),
-      name: z.string().describe('Record name'),
-      type: z.string().describe('Record type'),
-      value: z.string().describe('Record value'),
+export let manageDnsTool = SlateTool.create(spec, {
+  name: 'Manage DNS Records',
+  key: 'manage_dns',
+  description: `List, create, update, or delete DNS records for a domain managed in Vercel. Supports A, AAAA, CNAME, MX, TXT, SRV, CAA, and other record types.`,
+  instructions: [
+    'Use action "list" to list all DNS records for a domain.',
+    'Use action "create" to add a new DNS record.',
+    'Use action "update" to modify an existing record by its ID.',
+    'Use action "delete" to remove a DNS record.'
+  ]
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Action to perform'),
+      domain: z.string().describe('Domain name (e.g., example.com)'),
+      recordId: z
+        .string()
+        .optional()
+        .describe('DNS record ID (required for update and delete)'),
+      name: z.string().optional().describe('Record name/subdomain (required for create)'),
+      type: z
+        .enum(['A', 'AAAA', 'ALIAS', 'CAA', 'CNAME', 'HTTPS', 'MX', 'NS', 'SRV', 'TXT'])
+        .optional()
+        .describe('Record type (required for create)'),
+      value: z.string().optional().describe('Record value (required for create)'),
       ttl: z.number().optional().describe('TTL in seconds'),
-      priority: z.number().optional().nullable().describe('Priority (for MX records)'),
-    })).optional().describe('List of DNS records (for list action)'),
-    record: z.object({
-      recordId: z.string().describe('DNS record ID'),
-    }).optional().describe('Created/updated record'),
-    success: z.boolean().describe('Whether the action succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+      mxPriority: z.number().optional().describe('MX priority (for MX records)')
+    })
+  )
+  .output(
+    z.object({
+      records: z
+        .array(
+          z.object({
+            recordId: z.string().describe('DNS record ID'),
+            name: z.string().describe('Record name'),
+            type: z.string().describe('Record type'),
+            value: z.string().describe('Record value'),
+            ttl: z.number().optional().describe('TTL in seconds'),
+            priority: z.number().optional().nullable().describe('Priority (for MX records)')
+          })
+        )
+        .optional()
+        .describe('List of DNS records (for list action)'),
+      record: z
+        .object({
+          recordId: z.string().describe('DNS record ID')
+        })
+        .optional()
+        .describe('Created/updated record'),
+      success: z.boolean().describe('Whether the action succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      teamId: ctx.config.teamId,
+      teamId: ctx.config.teamId
     });
 
     let { action, domain } = ctx.input;
@@ -57,11 +72,11 @@ export let manageDnsTool = SlateTool.create(
         type: r.type,
         value: r.value,
         ttl: r.ttl,
-        priority: r.mxPriority || r.priority || null,
+        priority: r.mxPriority || r.priority || null
       }));
       return {
         output: { records, success: true },
-        message: `Found **${records.length}** DNS record(s) for **${domain}**.`,
+        message: `Found **${records.length}** DNS record(s) for **${domain}**.`
       };
     }
 
@@ -74,14 +89,14 @@ export let manageDnsTool = SlateTool.create(
         type: ctx.input.type,
         value: ctx.input.value,
         ttl: ctx.input.ttl,
-        mxPriority: ctx.input.mxPriority,
+        mxPriority: ctx.input.mxPriority
       });
       return {
         output: {
           record: { recordId: result.uid || result.id },
-          success: true,
+          success: true
         },
-        message: `Created ${ctx.input.type} record for **${ctx.input.name}.${domain}**.`,
+        message: `Created ${ctx.input.type} record for **${ctx.input.name}.${domain}**.`
       };
     }
 
@@ -98,9 +113,9 @@ export let manageDnsTool = SlateTool.create(
       return {
         output: {
           record: { recordId: ctx.input.recordId },
-          success: true,
+          success: true
         },
-        message: `Updated DNS record **${ctx.input.recordId}**.`,
+        message: `Updated DNS record **${ctx.input.recordId}**.`
       };
     }
 
@@ -109,9 +124,10 @@ export let manageDnsTool = SlateTool.create(
       await client.deleteDnsRecord(domain, ctx.input.recordId);
       return {
         output: { success: true },
-        message: `Deleted DNS record **${ctx.input.recordId}** from **${domain}**.`,
+        message: `Deleted DNS record **${ctx.input.recordId}** from **${domain}**.`
       };
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

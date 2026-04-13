@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getAccountInfo,
@@ -13,12 +12,9 @@ import {
   listCustomAudiences,
   manageCustomAudience,
   manageAudienceUsers,
-  sendConversionEvents,
+  sendConversionEvents
 } from './tools';
-import {
-  campaignStatusChange,
-  inboundWebhook,
-} from './triggers';
+import { campaignStatusChange, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -34,10 +30,7 @@ export let provider = Slate.create({
     listCustomAudiences,
     manageCustomAudience,
     manageAudienceUsers,
-    sendConversionEvents,
+    sendConversionEvents
   ],
-  triggers: [
-    inboundWebhook,
-    campaignStatusChange,
-  ],
+  triggers: [inboundWebhook, campaignStatusChange]
 });

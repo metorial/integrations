@@ -3,57 +3,85 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAddon = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Addon',
-    key: 'manage_addon',
-    description: `Create, get, delete, or back up a database/storage addon. Supports PostgreSQL, MongoDB, MySQL, Redis, MinIO, and RabbitMQ. Can also retrieve addon credentials and backup history.`,
-    instructions: [
-      'Use action "create" to provision a new addon. Specify type (e.g. postgresql), version, plan, storage, and replicas.',
-      'Use action "get" to retrieve addon details and status.',
-      'Use action "credentials" to get connection credentials for the addon.',
-      'Use action "backup" to trigger a backup, or "list_backups" to see backup history.',
-      'Use action "delete" to permanently remove an addon.',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageAddon = SlateTool.create(spec, {
+  name: 'Manage Addon',
+  key: 'manage_addon',
+  description: `Create, get, delete, or back up a database/storage addon. Supports PostgreSQL, MongoDB, MySQL, Redis, MinIO, and RabbitMQ. Can also retrieve addon credentials and backup history.`,
+  instructions: [
+    'Use action "create" to provision a new addon. Specify type (e.g. postgresql), version, plan, storage, and replicas.',
+    'Use action "get" to retrieve addon details and status.',
+    'Use action "credentials" to get connection credentials for the addon.',
+    'Use action "backup" to trigger a backup, or "list_backups" to see backup history.',
+    'Use action "delete" to permanently remove an addon.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'get', 'delete', 'credentials', 'backup', 'list_backups']).describe('Operation to perform'),
-    projectId: z.string().describe('Project ID the addon belongs to'),
-    addonId: z.string().optional().describe('Addon ID (required for get, delete, credentials, backup, list_backups)'),
-    name: z.string().optional().describe('Addon name (required for create)'),
-    description: z.string().optional().describe('Addon description'),
-    addonType: z.string().optional().describe('Addon type identifier, e.g. postgresql, mongodb, mysql, redis, minio, rabbitmq (required for create)'),
-    version: z.string().optional().describe('Addon version, e.g. "latest" or "15-latest" (required for create)'),
-    deploymentPlan: z.string().optional().describe('Billing deployment plan ID (required for create)'),
-    storageMb: z.number().optional().describe('Storage size in MB (required for create)'),
-    replicas: z.number().optional().describe('Number of replicas (required for create)'),
-    tlsEnabled: z.boolean().optional().describe('Enable TLS for the addon'),
-    externalAccessEnabled: z.boolean().optional().describe('Enable external access for the addon'),
-    tags: z.array(z.string()).optional().describe('Tags for the addon'),
-  }))
-  .output(z.object({
-    addonId: z.string().optional().describe('Addon ID'),
-    name: z.string().optional().describe('Addon name'),
-    status: z.string().optional().describe('Addon status'),
-    credentials: z.record(z.string(), z.any()).optional().describe('Connection credentials for the addon'),
-    backups: z.array(z.object({
-      backupId: z.string().describe('Backup ID'),
-      status: z.string().optional().describe('Backup status'),
-      createdAt: z.string().optional().describe('Backup creation timestamp'),
-    })).optional().describe('List of addon backups'),
-    deleted: z.boolean().optional().describe('Whether the addon was deleted'),
-    backupTriggered: z.boolean().optional().describe('Whether a backup was triggered'),
-    hasNextPage: z.boolean().optional().describe('Whether more backup results are available'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'get', 'delete', 'credentials', 'backup', 'list_backups'])
+        .describe('Operation to perform'),
+      projectId: z.string().describe('Project ID the addon belongs to'),
+      addonId: z
+        .string()
+        .optional()
+        .describe('Addon ID (required for get, delete, credentials, backup, list_backups)'),
+      name: z.string().optional().describe('Addon name (required for create)'),
+      description: z.string().optional().describe('Addon description'),
+      addonType: z
+        .string()
+        .optional()
+        .describe(
+          'Addon type identifier, e.g. postgresql, mongodb, mysql, redis, minio, rabbitmq (required for create)'
+        ),
+      version: z
+        .string()
+        .optional()
+        .describe('Addon version, e.g. "latest" or "15-latest" (required for create)'),
+      deploymentPlan: z
+        .string()
+        .optional()
+        .describe('Billing deployment plan ID (required for create)'),
+      storageMb: z.number().optional().describe('Storage size in MB (required for create)'),
+      replicas: z.number().optional().describe('Number of replicas (required for create)'),
+      tlsEnabled: z.boolean().optional().describe('Enable TLS for the addon'),
+      externalAccessEnabled: z
+        .boolean()
+        .optional()
+        .describe('Enable external access for the addon'),
+      tags: z.array(z.string()).optional().describe('Tags for the addon')
+    })
+  )
+  .output(
+    z.object({
+      addonId: z.string().optional().describe('Addon ID'),
+      name: z.string().optional().describe('Addon name'),
+      status: z.string().optional().describe('Addon status'),
+      credentials: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Connection credentials for the addon'),
+      backups: z
+        .array(
+          z.object({
+            backupId: z.string().describe('Backup ID'),
+            status: z.string().optional().describe('Backup status'),
+            createdAt: z.string().optional().describe('Backup creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of addon backups'),
+      deleted: z.boolean().optional().describe('Whether the addon was deleted'),
+      backupTriggered: z.boolean().optional().describe('Whether a backup was triggered'),
+      hasNextPage: z.boolean().optional().describe('Whether more backup results are available')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      teamId: ctx.config.teamId,
+      teamId: ctx.config.teamId
     });
 
     let { action, projectId, addonId } = ctx.input;
@@ -62,7 +90,8 @@ export let manageAddon = SlateTool.create(
       if (!ctx.input.name) throw new Error('name is required for creating an addon');
       if (!ctx.input.addonType) throw new Error('addonType is required for creating an addon');
       if (!ctx.input.version) throw new Error('version is required for creating an addon');
-      if (!ctx.input.deploymentPlan) throw new Error('deploymentPlan is required for creating an addon');
+      if (!ctx.input.deploymentPlan)
+        throw new Error('deploymentPlan is required for creating an addon');
       if (!ctx.input.storageMb) throw new Error('storageMb is required for creating an addon');
 
       let result = await client.createAddon(projectId, {
@@ -73,19 +102,19 @@ export let manageAddon = SlateTool.create(
         billing: {
           deploymentPlan: ctx.input.deploymentPlan,
           storage: ctx.input.storageMb,
-          replicas: ctx.input.replicas || 1,
+          replicas: ctx.input.replicas || 1
         },
         tags: ctx.input.tags,
         tlsEnabled: ctx.input.tlsEnabled,
-        externalAccessEnabled: ctx.input.externalAccessEnabled,
+        externalAccessEnabled: ctx.input.externalAccessEnabled
       });
       return {
         output: {
           addonId: result?.id,
           name: result?.name,
-          status: result?.status,
+          status: result?.status
         },
-        message: `Addon **${ctx.input.name}** (${ctx.input.addonType}) created in project **${projectId}**.`,
+        message: `Addon **${ctx.input.name}** (${ctx.input.addonType}) created in project **${projectId}**.`
       };
     }
 
@@ -96,9 +125,9 @@ export let manageAddon = SlateTool.create(
         output: {
           addonId: result?.id,
           name: result?.name,
-          status: result?.status,
+          status: result?.status
         },
-        message: `Addon **${result?.name}** — status: ${result?.status}.`,
+        message: `Addon **${result?.name}** — status: ${result?.status}.`
       };
     }
 
@@ -108,9 +137,9 @@ export let manageAddon = SlateTool.create(
       return {
         output: {
           addonId,
-          credentials: result,
+          credentials: result
         },
-        message: `Retrieved credentials for addon **${addonId}**.`,
+        message: `Retrieved credentials for addon **${addonId}**.`
       };
     }
 
@@ -120,9 +149,9 @@ export let manageAddon = SlateTool.create(
       return {
         output: {
           addonId,
-          backupTriggered: true,
+          backupTriggered: true
         },
-        message: `Backup triggered for addon **${addonId}**.`,
+        message: `Backup triggered for addon **${addonId}**.`
       };
     }
 
@@ -132,15 +161,15 @@ export let manageAddon = SlateTool.create(
       let backups = (result.data?.backups || []).map((b: any) => ({
         backupId: b.id,
         status: b.status,
-        createdAt: b.createdAt,
+        createdAt: b.createdAt
       }));
       return {
         output: {
           addonId,
           backups,
-          hasNextPage: result.pagination.hasNextPage,
+          hasNextPage: result.pagination.hasNextPage
         },
-        message: `Found **${backups.length}** backup(s) for addon **${addonId}**.`,
+        message: `Found **${backups.length}** backup(s) for addon **${addonId}**.`
       };
     }
 
@@ -150,9 +179,9 @@ export let manageAddon = SlateTool.create(
       return {
         output: {
           addonId,
-          deleted: true,
+          deleted: true
         },
-        message: `Addon **${addonId}** deleted.`,
+        message: `Addon **${addonId}** deleted.`
       };
     }
 

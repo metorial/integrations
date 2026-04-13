@@ -2,10 +2,7 @@
   "name": "@metorial/rudderstack-transformation",
   "version": "0.1.1",
   "description": "Manage RudderStack event data transformations and reusable code libraries programmatically. Create, read, update, and delete custom JavaScript or Python transformation functions that convert event data into destination-specific formats in real-time. Publish transformations with version control and rollback support, manage reusable code libraries, securely store credentials and secrets, test transformations against sample or live event payloads, and automate deployment via CI/CD. Supports connecting transformations to destinations for Event Streams and Reverse ETL pipelines.",
-  "categories": [
-    "apis-and-http-requests",
-    "code-execution"
-  ],
+  "categories": ["apis-and-http-requests", "code-execution"],
   "skills": [
     "create and manage transformations",
     "publish transformation versions",

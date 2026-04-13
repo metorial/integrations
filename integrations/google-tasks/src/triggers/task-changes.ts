@@ -3,47 +3,51 @@ import { GoogleTasksClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Task Changes',
-    key: 'task_changes',
-    description: 'Detects new, updated, completed, and deleted tasks across all task lists by polling the Google Tasks API.'
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'completed', 'deleted']).describe('Type of change detected'),
-    taskListId: z.string().describe('ID of the task list containing the changed task'),
-    taskListTitle: z.string().optional().describe('Title of the task list'),
-    taskId: z.string().describe('ID of the changed task'),
-    title: z.string().optional().describe('Title of the task'),
-    notes: z.string().optional().describe('Description/notes of the task'),
-    status: z.string().optional().describe('Task status'),
-    due: z.string().optional().describe('Due date of the task'),
-    completed: z.string().optional().describe('Completion date if completed'),
-    parentTaskId: z.string().optional().describe('Parent task ID if subtask'),
-    updated: z.string().optional().describe('Last modification time'),
-    deleted: z.boolean().optional().describe('Whether the task is deleted')
-  }))
-  .output(z.object({
-    taskId: z.string().describe('ID of the changed task'),
-    taskListId: z.string().describe('ID of the task list containing the task'),
-    taskListTitle: z.string().optional().describe('Title of the task list'),
-    title: z.string().optional().describe('Title of the task'),
-    notes: z.string().optional().describe('Description/notes of the task'),
-    status: z.string().optional().describe('"needsAction" or "completed"'),
-    due: z.string().optional().describe('Due date in RFC 3339 format'),
-    completed: z.string().optional().describe('Completion date in RFC 3339 format'),
-    parentTaskId: z.string().optional().describe('Parent task ID if this is a subtask'),
-    updated: z.string().optional().describe('Last modification time in RFC 3339 format'),
-    deleted: z.boolean().optional().describe('Whether the task is deleted')
-  }))
+export let taskChanges = SlateTrigger.create(spec, {
+  name: 'Task Changes',
+  key: 'task_changes',
+  description:
+    'Detects new, updated, completed, and deleted tasks across all task lists by polling the Google Tasks API.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'completed', 'deleted'])
+        .describe('Type of change detected'),
+      taskListId: z.string().describe('ID of the task list containing the changed task'),
+      taskListTitle: z.string().optional().describe('Title of the task list'),
+      taskId: z.string().describe('ID of the changed task'),
+      title: z.string().optional().describe('Title of the task'),
+      notes: z.string().optional().describe('Description/notes of the task'),
+      status: z.string().optional().describe('Task status'),
+      due: z.string().optional().describe('Due date of the task'),
+      completed: z.string().optional().describe('Completion date if completed'),
+      parentTaskId: z.string().optional().describe('Parent task ID if subtask'),
+      updated: z.string().optional().describe('Last modification time'),
+      deleted: z.boolean().optional().describe('Whether the task is deleted')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.string().describe('ID of the changed task'),
+      taskListId: z.string().describe('ID of the task list containing the task'),
+      taskListTitle: z.string().optional().describe('Title of the task list'),
+      title: z.string().optional().describe('Title of the task'),
+      notes: z.string().optional().describe('Description/notes of the task'),
+      status: z.string().optional().describe('"needsAction" or "completed"'),
+      due: z.string().optional().describe('Due date in RFC 3339 format'),
+      completed: z.string().optional().describe('Completion date in RFC 3339 format'),
+      parentTaskId: z.string().optional().describe('Parent task ID if this is a subtask'),
+      updated: z.string().optional().describe('Last modification time in RFC 3339 format'),
+      deleted: z.boolean().optional().describe('Whether the task is deleted')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new GoogleTasksClient(ctx.auth.token);
 
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
@@ -104,7 +108,8 @@ export let taskChanges = SlateTrigger.create(
             changeType = 'deleted';
           } else if (task.status === 'completed' && task.completed) {
             // Check if this was recently completed vs already completed
-            let isNewlyCompleted = !previousIds.includes(task.id) || task.updated === task.completed;
+            let isNewlyCompleted =
+              !previousIds.includes(task.id) || task.updated === task.completed;
             changeType = isNewlyCompleted ? 'completed' : 'updated';
           } else if (!previousIds.includes(task.id)) {
             changeType = 'created';
@@ -157,7 +162,7 @@ export let taskChanges = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `task.${ctx.input.changeType}`,
         id: `${ctx.input.taskId}-${ctx.input.updated ?? Date.now()}`,
@@ -176,4 +181,5 @@ export let taskChanges = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

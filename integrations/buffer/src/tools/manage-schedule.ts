@@ -5,31 +5,39 @@ import { z } from 'zod';
 
 let scheduleEntrySchema = z.object({
   days: z.array(z.string()).describe('Days of the week (e.g. ["mon", "tue", "wed"])'),
-  times: z.array(z.string()).describe('Times of day in 24h format (e.g. ["09:00", "12:30", "17:00"])')
+  times: z
+    .array(z.string())
+    .describe('Times of day in 24h format (e.g. ["09:00", "12:30", "17:00"])')
 });
 
-export let manageScheduleTool = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Posting Schedule',
-    key: 'manage_schedule',
-    description: `View or update the posting schedule for a social media profile. The schedule defines which days and times Buffer will automatically publish queued updates.`,
-    instructions: [
-      'To view the current schedule, only provide `profileId`.',
-      'To update the schedule, provide `profileId` and `schedules` array. Each entry specifies days and times.',
-      'Days use short lowercase names: mon, tue, wed, thu, fri, sat, sun.',
-      'Times use 24-hour format: "09:00", "13:30", "18:00".'
-    ]
-  }
-)
-  .input(z.object({
-    profileId: z.string().describe('Profile ID to view or update the schedule for'),
-    schedules: z.array(scheduleEntrySchema).optional().describe('New schedules to set. If omitted, the current schedule is returned.')
-  }))
-  .output(z.object({
-    schedules: z.array(scheduleEntrySchema).describe('The current (or updated) posting schedules')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageScheduleTool = SlateTool.create(spec, {
+  name: 'Manage Posting Schedule',
+  key: 'manage_schedule',
+  description: `View or update the posting schedule for a social media profile. The schedule defines which days and times Buffer will automatically publish queued updates.`,
+  instructions: [
+    'To view the current schedule, only provide `profileId`.',
+    'To update the schedule, provide `profileId` and `schedules` array. Each entry specifies days and times.',
+    'Days use short lowercase names: mon, tue, wed, thu, fri, sat, sun.',
+    'Times use 24-hour format: "09:00", "13:30", "18:00".'
+  ]
+})
+  .input(
+    z.object({
+      profileId: z.string().describe('Profile ID to view or update the schedule for'),
+      schedules: z
+        .array(scheduleEntrySchema)
+        .optional()
+        .describe('New schedules to set. If omitted, the current schedule is returned.')
+    })
+  )
+  .output(
+    z.object({
+      schedules: z
+        .array(scheduleEntrySchema)
+        .describe('The current (or updated) posting schedules')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.schedules) {

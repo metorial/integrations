@@ -15,6 +15,7 @@ Teamcamp uses API key authentication. All requests must include an `apiKey` head
 - **Verification:** You can verify a valid API key by calling `GET /v1.0/verify`.
 
 Example request header:
+
 ```
 apiKey: your-api-key-here
 ```

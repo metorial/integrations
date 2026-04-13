@@ -8,26 +8,25 @@ let memorySchema = z.object({
   description: z.string().describe('Description of the memory'),
   ownerLogin: z.string().describe('Owner account login'),
   url: z.string().describe('URL of the memory'),
-  embeddingModel: z.string().describe('Embedding model used'),
+  embeddingModel: z.string().describe('Embedding model used')
 });
 
-export let listMemories = SlateTool.create(
-  spec,
-  {
-    name: 'List Memories',
-    key: 'list_memories',
-    description: `List all memory (RAG knowledge bases) in your Langbase account. Returns the name, description, and embedding model for each memory.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
-  },
-)
+export let listMemories = SlateTool.create(spec, {
+  name: 'List Memories',
+  key: 'list_memories',
+  description: `List all memory (RAG knowledge bases) in your Langbase account. Returns the name, description, and embedding model for each memory.`,
+  tags: {
+    destructive: false,
+    readOnly: true
+  }
+})
   .input(z.object({}))
-  .output(z.object({
-    memories: z.array(memorySchema).describe('List of memories'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      memories: z.array(memorySchema).describe('List of memories')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let result = await client.listMemories();
 
@@ -36,11 +35,12 @@ export let listMemories = SlateTool.create(
       description: m.description ?? '',
       ownerLogin: m.owner_login ?? '',
       url: m.url ?? '',
-      embeddingModel: m.embeddingModel ?? m.embedding_model ?? '',
+      embeddingModel: m.embeddingModel ?? m.embedding_model ?? ''
     }));
 
     return {
       output: { memories },
-      message: `Found **${memories.length}** memory(s).`,
+      message: `Found **${memories.length}** memory(s).`
     };
-  }).build();
+  })
+  .build();

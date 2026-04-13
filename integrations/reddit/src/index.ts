@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getSubreddit,
@@ -16,14 +15,9 @@ import {
   manageSubscriptions,
   moderateContent,
   manageFlair,
-  manageWiki,
+  manageWiki
 } from './tools';
-import {
-  newPost,
-  newComment,
-  newMessage,
-  inboundWebhook,
-} from './triggers';
+import { newPost, newComment, newMessage, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -42,12 +36,7 @@ export let provider = Slate.create({
     manageSubscriptions,
     moderateContent,
     manageFlair,
-    manageWiki,
+    manageWiki
   ],
-  triggers: [
-    inboundWebhook,
-    newPost,
-    newComment,
-    newMessage,
-  ],
+  triggers: [inboundWebhook, newPost, newComment, newMessage]
 });

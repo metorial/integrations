@@ -35,12 +35,9 @@ import {
   listWorkflowTasksTool,
   cancelWorkflowTool,
   createAuditReportTool,
-  getAuditReportTool,
+  getAuditReportTool
 } from './tools';
-import {
-  contentEventsTrigger,
-  fileActivityTrigger,
-} from './triggers';
+import { contentEventsTrigger, fileActivityTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -79,10 +76,7 @@ export let provider = Slate.create({
     listWorkflowTasksTool,
     cancelWorkflowTool,
     createAuditReportTool,
-    getAuditReportTool,
+    getAuditReportTool
   ],
-  triggers: [
-    contentEventsTrigger,
-    fileActivityTrigger,
-  ],
+  triggers: [contentEventsTrigger, fileActivityTrigger]
 });

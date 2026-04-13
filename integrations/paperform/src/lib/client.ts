@@ -122,7 +122,12 @@ export interface PapersignDocument {
   name: string;
   status: string;
   folder: { id: number; name: string; parent_id: number | null; space_id: number } | null;
-  space: { id: number; name: string; root_folder_id: number; allow_team_access: boolean } | null;
+  space: {
+    id: number;
+    name: string;
+    root_folder_id: number;
+    allow_team_access: boolean;
+  } | null;
   signers: Array<{
     key: string;
     name: string;
@@ -169,17 +174,19 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   // ---- Forms ----
 
-  async listForms(params?: PaginationParams & { search?: string }): Promise<PaginatedResponse<Form>> {
+  async listForms(
+    params?: PaginationParams & { search?: string }
+  ): Promise<PaginatedResponse<Form>> {
     let response = await this.axios.get('/forms', {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
@@ -189,49 +196,67 @@ export class Client {
     return response.data;
   }
 
-  async updateForm(slugOrId: string, data: {
-    title?: string | null;
-    description?: string | null;
-    disabled?: boolean;
-    customSlug?: string | null;
-    spaceId?: string | null;
-    translationId?: string | null;
-  }): Promise<Form> {
+  async updateForm(
+    slugOrId: string,
+    data: {
+      title?: string | null;
+      description?: string | null;
+      disabled?: boolean;
+      customSlug?: string | null;
+      spaceId?: string | null;
+      translationId?: string | null;
+    }
+  ): Promise<Form> {
     let response = await this.axios.put(`/forms/${encodeURIComponent(slugOrId)}`, {
       title: data.title,
       description: data.description,
       disabled: data.disabled,
       custom_slug: data.customSlug,
       space_id: data.spaceId,
-      translation_id: data.translationId,
+      translation_id: data.translationId
     });
     return response.data;
   }
 
   // ---- Form Fields ----
 
-  async listFormFields(slugOrId: string, params?: PaginationParams & { search?: string }): Promise<PaginatedResponse<FormField>> {
+  async listFormFields(
+    slugOrId: string,
+    params?: PaginationParams & { search?: string }
+  ): Promise<PaginatedResponse<FormField>> {
     let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/fields`, {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
 
   async getFormField(slugOrId: string, fieldKey: string): Promise<FormField> {
-    let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/fields/${encodeURIComponent(fieldKey)}`);
+    let response = await this.axios.get(
+      `/forms/${encodeURIComponent(slugOrId)}/fields/${encodeURIComponent(fieldKey)}`
+    );
     return response.data;
   }
 
-  async updateFormField(slugOrId: string, fieldKey: string, data: Record<string, unknown>): Promise<FormField> {
-    let response = await this.axios.put(`/forms/${encodeURIComponent(slugOrId)}/fields/${encodeURIComponent(fieldKey)}`, data);
+  async updateFormField(
+    slugOrId: string,
+    fieldKey: string,
+    data: Record<string, unknown>
+  ): Promise<FormField> {
+    let response = await this.axios.put(
+      `/forms/${encodeURIComponent(slugOrId)}/fields/${encodeURIComponent(fieldKey)}`,
+      data
+    );
     return response.data;
   }
 
   // ---- Submissions ----
 
-  async listSubmissions(slugOrId: string, params?: PaginationParams): Promise<PaginatedResponse<Submission>> {
+  async listSubmissions(
+    slugOrId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<Submission>> {
     let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/submissions`, {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
@@ -247,15 +272,23 @@ export class Client {
 
   // ---- Partial Submissions ----
 
-  async listPartialSubmissions(slugOrId: string, params?: PaginationParams): Promise<PaginatedResponse<PartialSubmission>> {
-    let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/partial-submissions`, {
-      params: this.buildPaginationParams(params),
-    });
+  async listPartialSubmissions(
+    slugOrId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<PartialSubmission>> {
+    let response = await this.axios.get(
+      `/forms/${encodeURIComponent(slugOrId)}/partial-submissions`,
+      {
+        params: this.buildPaginationParams(params)
+      }
+    );
     return response.data;
   }
 
   async getPartialSubmission(submissionId: string): Promise<PartialSubmission> {
-    let response = await this.axios.get(`/partial-submissions/${encodeURIComponent(submissionId)}`);
+    let response = await this.axios.get(
+      `/partial-submissions/${encodeURIComponent(submissionId)}`
+    );
     return response.data;
   }
 
@@ -265,105 +298,155 @@ export class Client {
 
   // ---- Products ----
 
-  async listProducts(slugOrId: string, params?: PaginationParams & { search?: string }): Promise<PaginatedResponse<Product>> {
+  async listProducts(
+    slugOrId: string,
+    params?: PaginationParams & { search?: string }
+  ): Promise<PaginatedResponse<Product>> {
     let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/products`, {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
 
-  async createProduct(slugOrId: string, data: {
-    SKU: string;
-    name: string;
-    price: number;
-    quantity?: number;
-    minimum?: number;
-    maximum?: number;
-    discountable?: boolean;
-    images?: Array<{ url: string; width: number; height: number }>;
-  }): Promise<Product> {
-    let response = await this.axios.post(`/forms/${encodeURIComponent(slugOrId)}/products`, data);
+  async createProduct(
+    slugOrId: string,
+    data: {
+      SKU: string;
+      name: string;
+      price: number;
+      quantity?: number;
+      minimum?: number;
+      maximum?: number;
+      discountable?: boolean;
+      images?: Array<{ url: string; width: number; height: number }>;
+    }
+  ): Promise<Product> {
+    let response = await this.axios.post(
+      `/forms/${encodeURIComponent(slugOrId)}/products`,
+      data
+    );
     return response.data;
   }
 
   async getProduct(slugOrId: string, sku: string): Promise<Product> {
-    let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}`);
+    let response = await this.axios.get(
+      `/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}`
+    );
     return response.data;
   }
 
-  async updateProduct(slugOrId: string, sku: string, data: {
-    name?: string;
-    price?: number;
-    quantity?: number;
-    minimum?: number;
-    maximum?: number;
-    discountable?: boolean;
-    images?: Array<{ url: string; width: number; height: number }>;
-  }): Promise<Product> {
-    let response = await this.axios.put(`/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}`, data);
+  async updateProduct(
+    slugOrId: string,
+    sku: string,
+    data: {
+      name?: string;
+      price?: number;
+      quantity?: number;
+      minimum?: number;
+      maximum?: number;
+      discountable?: boolean;
+      images?: Array<{ url: string; width: number; height: number }>;
+    }
+  ): Promise<Product> {
+    let response = await this.axios.put(
+      `/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}`,
+      data
+    );
     return response.data;
   }
 
   async deleteProduct(slugOrId: string, sku: string): Promise<void> {
-    await this.axios.delete(`/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}`);
+    await this.axios.delete(
+      `/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}`
+    );
   }
 
-  async updateProductQuantity(slugOrId: string, sku: string, quantity: number): Promise<Product> {
-    let response = await this.axios.put(`/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}/quantity`, { quantity });
+  async updateProductQuantity(
+    slugOrId: string,
+    sku: string,
+    quantity: number
+  ): Promise<Product> {
+    let response = await this.axios.put(
+      `/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}/quantity`,
+      { quantity }
+    );
     return response.data;
   }
 
   async updateProductSold(slugOrId: string, sku: string, sold: number): Promise<Product> {
-    let response = await this.axios.put(`/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}/sold`, { sold });
+    let response = await this.axios.put(
+      `/forms/${encodeURIComponent(slugOrId)}/products/${encodeURIComponent(sku)}/sold`,
+      { sold }
+    );
     return response.data;
   }
 
   // ---- Coupons ----
 
-  async listCoupons(slugOrId: string, params?: PaginationParams): Promise<PaginatedResponse<Coupon>> {
+  async listCoupons(
+    slugOrId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<Coupon>> {
     let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/coupons`, {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
 
-  async createCoupon(slugOrId: string, data: {
-    code: string;
-    enabled?: boolean;
-    target?: string;
-    discountAmount?: number;
-    discountPercentage?: number;
-    expiresAt?: string | null;
-  }): Promise<Coupon> {
-    let response = await this.axios.post(`/forms/${encodeURIComponent(slugOrId)}/coupons`, data);
+  async createCoupon(
+    slugOrId: string,
+    data: {
+      code: string;
+      enabled?: boolean;
+      target?: string;
+      discountAmount?: number;
+      discountPercentage?: number;
+      expiresAt?: string | null;
+    }
+  ): Promise<Coupon> {
+    let response = await this.axios.post(
+      `/forms/${encodeURIComponent(slugOrId)}/coupons`,
+      data
+    );
     return response.data;
   }
 
   async getCoupon(slugOrId: string, code: string): Promise<Coupon> {
-    let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/coupons/${encodeURIComponent(code)}`);
+    let response = await this.axios.get(
+      `/forms/${encodeURIComponent(slugOrId)}/coupons/${encodeURIComponent(code)}`
+    );
     return response.data;
   }
 
-  async updateCoupon(slugOrId: string, code: string, data: {
-    enabled?: boolean;
-    target?: string;
-    discountAmount?: number;
-    discountPercentage?: number;
-    expiresAt?: string | null;
-  }): Promise<Coupon> {
-    let response = await this.axios.put(`/forms/${encodeURIComponent(slugOrId)}/coupons/${encodeURIComponent(code)}`, data);
+  async updateCoupon(
+    slugOrId: string,
+    code: string,
+    data: {
+      enabled?: boolean;
+      target?: string;
+      discountAmount?: number;
+      discountPercentage?: number;
+      expiresAt?: string | null;
+    }
+  ): Promise<Coupon> {
+    let response = await this.axios.put(
+      `/forms/${encodeURIComponent(slugOrId)}/coupons/${encodeURIComponent(code)}`,
+      data
+    );
     return response.data;
   }
 
   async deleteCoupon(slugOrId: string, code: string): Promise<void> {
-    await this.axios.delete(`/forms/${encodeURIComponent(slugOrId)}/coupons/${encodeURIComponent(code)}`);
+    await this.axios.delete(
+      `/forms/${encodeURIComponent(slugOrId)}/coupons/${encodeURIComponent(code)}`
+    );
   }
 
   // ---- Spaces ----
 
   async listSpaces(params?: PaginationParams): Promise<PaginatedResponse<Space>> {
     let response = await this.axios.get('/spaces', {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
@@ -383,9 +466,12 @@ export class Client {
     return response.data;
   }
 
-  async listSpaceForms(spaceId: string, params?: PaginationParams): Promise<PaginatedResponse<Form>> {
+  async listSpaceForms(
+    spaceId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<Form>> {
     let response = await this.axios.get(`/spaces/${encodeURIComponent(spaceId)}/forms`, {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
@@ -394,7 +480,7 @@ export class Client {
 
   async listTranslations(params?: PaginationParams): Promise<PaginatedResponse<Translation>> {
     let response = await this.axios.get('/translations', {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
@@ -409,8 +495,14 @@ export class Client {
     return response.data;
   }
 
-  async updateTranslation(translationId: string, data: Record<string, unknown>): Promise<Translation> {
-    let response = await this.axios.put(`/translations/${encodeURIComponent(translationId)}`, data);
+  async updateTranslation(
+    translationId: string,
+    data: Record<string, unknown>
+  ): Promise<Translation> {
+    let response = await this.axios.put(
+      `/translations/${encodeURIComponent(translationId)}`,
+      data
+    );
     return response.data;
   }
 
@@ -420,20 +512,26 @@ export class Client {
 
   // ---- Webhooks (Form) ----
 
-  async listFormWebhooks(slugOrId: string, params?: PaginationParams): Promise<PaginatedResponse<Webhook>> {
+  async listFormWebhooks(
+    slugOrId: string,
+    params?: PaginationParams
+  ): Promise<PaginatedResponse<Webhook>> {
     let response = await this.axios.get(`/forms/${encodeURIComponent(slugOrId)}/webhooks`, {
-      params: this.buildPaginationParams(params),
+      params: this.buildPaginationParams(params)
     });
     return response.data;
   }
 
-  async createFormWebhook(slugOrId: string, data: {
-    targetUrl: string;
-    triggers: string[];
-  }): Promise<Webhook> {
+  async createFormWebhook(
+    slugOrId: string,
+    data: {
+      targetUrl: string;
+      triggers: string[];
+    }
+  ): Promise<Webhook> {
     let response = await this.axios.post(`/forms/${encodeURIComponent(slugOrId)}/webhooks`, {
       target_url: data.targetUrl,
-      triggers: data.triggers,
+      triggers: data.triggers
     });
     return response.data;
   }
@@ -443,13 +541,16 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: {
-    targetUrl?: string;
-    triggers?: string[];
-  }): Promise<Webhook> {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      targetUrl?: string;
+      triggers?: string[];
+    }
+  ): Promise<Webhook> {
     let response = await this.axios.put(`/webhooks/${encodeURIComponent(webhookId)}`, {
       target_url: data.targetUrl,
-      triggers: data.triggers,
+      triggers: data.triggers
     });
     return response.data;
   }
@@ -460,12 +561,14 @@ export class Client {
 
   // ---- Papersign Documents ----
 
-  async listPapersignDocuments(params?: PaginationParams & {
-    folderId?: string;
-    search?: string;
-    spaceId?: string;
-    status?: string[];
-  }): Promise<PaginatedResponse<PapersignDocument>> {
+  async listPapersignDocuments(
+    params?: PaginationParams & {
+      folderId?: string;
+      search?: string;
+      spaceId?: string;
+      status?: string[];
+    }
+  ): Promise<PaginatedResponse<PapersignDocument>> {
     let queryParams: Record<string, unknown> = this.buildPaginationParams(params);
     if (params?.folderId) queryParams['folder_id'] = params.folderId;
     if (params?.search) queryParams['search'] = params.search;
@@ -476,36 +579,42 @@ export class Client {
   }
 
   async getPapersignDocument(documentId: string): Promise<PapersignDocument> {
-    let response = await this.axios.get(`/papersign/documents/${encodeURIComponent(documentId)}`);
+    let response = await this.axios.get(
+      `/papersign/documents/${encodeURIComponent(documentId)}`
+    );
     return response.data;
   }
 
-  async sendPapersignDocument(documentId: string, data: {
-    expiration?: string;
-    inviteMessage?: string;
-    fromUserEmail?: string;
-    documentRecipientEmails?: string[];
-    automaticReminders?: { firstAfterDays?: number; followUpEveryDays?: number };
-    signers?: Array<{
-      key: string;
-      name: string;
-      email: string;
-      phone?: string;
-      jobTitle?: string;
-      company?: string;
-    }>;
-    variables?: Array<{ key: string; name: string; value: string }>;
-    copy?: boolean | { name?: string; spaceId?: number; path?: string; folderId?: number };
-  }): Promise<PapersignDocument> {
+  async sendPapersignDocument(
+    documentId: string,
+    data: {
+      expiration?: string;
+      inviteMessage?: string;
+      fromUserEmail?: string;
+      documentRecipientEmails?: string[];
+      automaticReminders?: { firstAfterDays?: number; followUpEveryDays?: number };
+      signers?: Array<{
+        key: string;
+        name: string;
+        email: string;
+        phone?: string;
+        jobTitle?: string;
+        company?: string;
+      }>;
+      variables?: Array<{ key: string; name: string; value: string }>;
+      copy?: boolean | { name?: string; spaceId?: number; path?: string; folderId?: number };
+    }
+  ): Promise<PapersignDocument> {
     let body: Record<string, unknown> = {};
     if (data.expiration !== undefined) body['expiration'] = data.expiration;
     if (data.inviteMessage !== undefined) body['invite_message'] = data.inviteMessage;
     if (data.fromUserEmail !== undefined) body['from_user_email'] = data.fromUserEmail;
-    if (data.documentRecipientEmails !== undefined) body['document_recipient_emails'] = data.documentRecipientEmails;
+    if (data.documentRecipientEmails !== undefined)
+      body['document_recipient_emails'] = data.documentRecipientEmails;
     if (data.automaticReminders !== undefined) {
       body['automatic_reminders'] = {
         first_after_days: data.automaticReminders.firstAfterDays,
-        follow_up_every_days: data.automaticReminders.followUpEveryDays,
+        follow_up_every_days: data.automaticReminders.followUpEveryDays
       };
     }
     if (data.signers !== undefined) {
@@ -515,7 +624,7 @@ export class Client {
         email: s.email,
         phone: s.phone,
         job_title: s.jobTitle,
-        company: s.company,
+        company: s.company
       }));
     }
     if (data.variables !== undefined) body['variables'] = data.variables;
@@ -527,46 +636,63 @@ export class Client {
           name: data.copy.name,
           space_id: data.copy.spaceId,
           path: data.copy.path,
-          folder_id: data.copy.folderId,
+          folder_id: data.copy.folderId
         };
       }
     }
-    let response = await this.axios.post(`/papersign/documents/${encodeURIComponent(documentId)}/send`, body);
+    let response = await this.axios.post(
+      `/papersign/documents/${encodeURIComponent(documentId)}/send`,
+      body
+    );
     return response.data;
   }
 
-  async copyPapersignDocument(documentId: string, data: {
-    name?: string;
-    spaceId?: number;
-    path?: string;
-    folderId?: number;
-  }): Promise<PapersignDocument> {
-    let response = await this.axios.post(`/papersign/documents/${encodeURIComponent(documentId)}/copy`, {
-      name: data.name,
-      space_id: data.spaceId,
-      path: data.path,
-      folder_id: data.folderId,
-    });
+  async copyPapersignDocument(
+    documentId: string,
+    data: {
+      name?: string;
+      spaceId?: number;
+      path?: string;
+      folderId?: number;
+    }
+  ): Promise<PapersignDocument> {
+    let response = await this.axios.post(
+      `/papersign/documents/${encodeURIComponent(documentId)}/copy`,
+      {
+        name: data.name,
+        space_id: data.spaceId,
+        path: data.path,
+        folder_id: data.folderId
+      }
+    );
     return response.data;
   }
 
-  async movePapersignDocument(documentId: string, data: {
-    name?: string;
-    spaceId?: number;
-    path?: string;
-    folderId?: number;
-  }): Promise<PapersignDocument> {
-    let response = await this.axios.post(`/papersign/documents/${encodeURIComponent(documentId)}/move`, {
-      name: data.name,
-      space_id: data.spaceId,
-      path: data.path,
-      folder_id: data.folderId,
-    });
+  async movePapersignDocument(
+    documentId: string,
+    data: {
+      name?: string;
+      spaceId?: number;
+      path?: string;
+      folderId?: number;
+    }
+  ): Promise<PapersignDocument> {
+    let response = await this.axios.post(
+      `/papersign/documents/${encodeURIComponent(documentId)}/move`,
+      {
+        name: data.name,
+        space_id: data.spaceId,
+        path: data.path,
+        folder_id: data.folderId
+      }
+    );
     return response.data;
   }
 
   async cancelPapersignDocument(documentId: string): Promise<PapersignDocument> {
-    let response = await this.axios.post(`/papersign/documents/${encodeURIComponent(documentId)}/cancel`);
+    let response = await this.axios.post(
+      `/papersign/documents/${encodeURIComponent(documentId)}/cancel`
+    );
     return response.data;
   }
 
@@ -577,11 +703,15 @@ export class Client {
     return response.data;
   }
 
-  async createPapersignFolder(data: { name: string; spaceId?: number; parentId?: number }): Promise<PapersignFolder> {
+  async createPapersignFolder(data: {
+    name: string;
+    spaceId?: number;
+    parentId?: number;
+  }): Promise<PapersignFolder> {
     let response = await this.axios.post('/papersign/folders', {
       name: data.name,
       space_id: data.spaceId,
-      parent_id: data.parentId,
+      parent_id: data.parentId
     });
     return response.data;
   }
@@ -595,38 +725,54 @@ export class Client {
 
   // ---- Papersign Webhooks ----
 
-  async listPapersignFolderWebhooks(folderId: string): Promise<PaginatedResponse<PapersignWebhook>> {
-    let response = await this.axios.get(`/papersign/folders/${encodeURIComponent(folderId)}/webhooks`);
+  async listPapersignFolderWebhooks(
+    folderId: string
+  ): Promise<PaginatedResponse<PapersignWebhook>> {
+    let response = await this.axios.get(
+      `/papersign/folders/${encodeURIComponent(folderId)}/webhooks`
+    );
     return response.data;
   }
 
-  async createPapersignWebhook(folderId: string, data: {
-    name: string;
-    targetUrl: string;
-    scope: 'folder.direct_children' | 'folder.all_descendants';
-    triggers: string[];
-  }): Promise<PapersignWebhook> {
-    let response = await this.axios.post(`/papersign/folders/${encodeURIComponent(folderId)}/webhooks`, {
-      name: data.name,
-      target_url: data.targetUrl,
-      scope: data.scope,
-      triggers: data.triggers,
-    });
+  async createPapersignWebhook(
+    folderId: string,
+    data: {
+      name: string;
+      targetUrl: string;
+      scope: 'folder.direct_children' | 'folder.all_descendants';
+      triggers: string[];
+    }
+  ): Promise<PapersignWebhook> {
+    let response = await this.axios.post(
+      `/papersign/folders/${encodeURIComponent(folderId)}/webhooks`,
+      {
+        name: data.name,
+        target_url: data.targetUrl,
+        scope: data.scope,
+        triggers: data.triggers
+      }
+    );
     return response.data;
   }
 
-  async updatePapersignWebhook(webhookId: string, data: {
-    name?: string;
-    targetUrl?: string;
-    scope?: 'folder.direct_children' | 'folder.all_descendants';
-    triggers?: string[];
-  }): Promise<PapersignWebhook> {
+  async updatePapersignWebhook(
+    webhookId: string,
+    data: {
+      name?: string;
+      targetUrl?: string;
+      scope?: 'folder.direct_children' | 'folder.all_descendants';
+      triggers?: string[];
+    }
+  ): Promise<PapersignWebhook> {
     let body: Record<string, unknown> = {};
     if (data.name !== undefined) body['name'] = data.name;
     if (data.targetUrl !== undefined) body['target_url'] = data.targetUrl;
     if (data.scope !== undefined) body['scope'] = data.scope;
     if (data.triggers !== undefined) body['triggers'] = data.triggers;
-    let response = await this.axios.put(`/papersign/webhooks/${encodeURIComponent(webhookId)}`, body);
+    let response = await this.axios.put(
+      `/papersign/webhooks/${encodeURIComponent(webhookId)}`,
+      body
+    );
     return response.data;
   }
 
@@ -636,7 +782,9 @@ export class Client {
 
   // ---- Helpers ----
 
-  private buildPaginationParams(params?: PaginationParams & { search?: string }): Record<string, unknown> {
+  private buildPaginationParams(
+    params?: PaginationParams & { search?: string }
+  ): Record<string, unknown> {
     let query: Record<string, unknown> = {};
     if (!params) return query;
     if (params.skip !== undefined) query['skip'] = params.skip;

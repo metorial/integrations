@@ -11,14 +11,14 @@ export class WaiverFileClient {
     this.apiKey = opts.token;
     this.siteId = opts.siteId;
     this.http = createAxios({
-      baseURL: BASE_URL,
+      baseURL: BASE_URL
     });
   }
 
   private authParams() {
     return {
       apiKey: this.apiKey,
-      siteID: this.siteId,
+      siteID: this.siteId
     };
   }
 
@@ -26,14 +26,14 @@ export class WaiverFileClient {
 
   async getSiteDetails() {
     let { data } = await this.http.get('/GetSiteDetails', {
-      params: this.authParams(),
+      params: this.authParams()
     });
     return data;
   }
 
   async ping() {
     let { data } = await this.http.get('/Ping', {
-      params: this.authParams(),
+      params: this.authParams()
     });
     return data;
   }
@@ -42,21 +42,21 @@ export class WaiverFileClient {
 
   async getWaiver(waiverId: string) {
     let { data } = await this.http.get('/GetWaiver', {
-      params: { ...this.authParams(), waiverID: waiverId },
+      params: { ...this.authParams(), waiverID: waiverId }
     });
     return data;
   }
 
   async getWaiverPDF(waiverId: string) {
     let { data } = await this.http.get('/GetWaiverPDF', {
-      params: { ...this.authParams(), waiverID: waiverId },
+      params: { ...this.authParams(), waiverID: waiverId }
     });
     return data;
   }
 
   async searchWaivers(terms: string) {
     let { data } = await this.http.get('/SearchWaivers', {
-      params: { ...this.authParams(), terms },
+      params: { ...this.authParams(), terms }
     });
     return data;
   }
@@ -93,8 +93,8 @@ export class WaiverFileClient {
         includeCustomColumns: opts.includeCustomColumns,
         consolidateParticipants: opts.consolidateParticipants,
         pageIndex: opts.pageIndex,
-        pageSize: opts.pageSize,
-      },
+        pageSize: opts.pageSize
+      }
     });
     return data;
   }
@@ -104,8 +104,8 @@ export class WaiverFileClient {
       params: {
         ...this.authParams(),
         startDate: opts.startDate,
-        endDate: opts.endDate,
-      },
+        endDate: opts.endDate
+      }
     });
     return data;
   }
@@ -122,15 +122,15 @@ export class WaiverFileClient {
         startDate: opts.startDate,
         endDate: opts.endDate,
         pageIndex: opts.pageIndex,
-        pageSize: opts.pageSize,
-      },
+        pageSize: opts.pageSize
+      }
     });
     return data;
   }
 
   async getWaiversForEvent(waiverEventId: string) {
     let { data } = await this.http.get('/GetWaiversForEvent', {
-      params: { ...this.authParams(), waiverEventID: waiverEventId },
+      params: { ...this.authParams(), waiverEventID: waiverEventId }
     });
     return data;
   }
@@ -139,14 +139,14 @@ export class WaiverFileClient {
 
   async getActiveWaiverForms() {
     let { data } = await this.http.get('/GetActiveWaiverForms', {
-      params: this.authParams(),
+      params: this.authParams()
     });
     return data;
   }
 
   async getAllWaiverForms() {
     let { data } = await this.http.get('/GetAllWaiverForms', {
-      params: this.authParams(),
+      params: this.authParams()
     });
     return data;
   }
@@ -158,8 +158,8 @@ export class WaiverFileClient {
       params: {
         ...this.authParams(),
         startDateUTC: opts.startDate,
-        endDateUTC: opts.endDate,
-      },
+        endDateUTC: opts.endDate
+      }
     });
     return data;
   }
@@ -174,8 +174,8 @@ export class WaiverFileClient {
         ...this.authParams(),
         eventCategoryID: opts.eventCategoryId,
         startDateUTC: opts.startDate,
-        endDateUTC: opts.endDate,
-      },
+        endDateUTC: opts.endDate
+      }
     });
     return data;
   }
@@ -185,8 +185,8 @@ export class WaiverFileClient {
       params: {
         ...this.authParams(),
         startDateUTC: opts.startDate,
-        endDateUTC: opts.endDate,
-      },
+        endDateUTC: opts.endDate
+      }
     });
     return data;
   }
@@ -219,7 +219,7 @@ export class WaiverFileClient {
       MaxParticipants: opts.maxParticipants ?? null,
       WorkflowIDList: opts.workflowIdList ?? null,
       APIKey: this.apiKey,
-      SiteID: this.siteId,
+      SiteID: this.siteId
     });
     return data;
   }
@@ -241,15 +241,15 @@ export class WaiverFileClient {
         dateStart: opts.dateStart,
         dateEnd: opts.dateEnd,
         isAllDay: opts.isAllDay,
-        eventCategoryID: opts.eventCategoryId,
-      },
+        eventCategoryID: opts.eventCategoryId
+      }
     });
     return data;
   }
 
   async deleteEvent(eventId: string) {
     let { data } = await this.http.get('/DeleteEvent', {
-      params: { ...this.authParams(), eventID: eventId },
+      params: { ...this.authParams(), eventID: eventId }
     });
     return data;
   }
@@ -260,8 +260,8 @@ export class WaiverFileClient {
     let { data } = await this.http.get('/GetEventCategories', {
       params: {
         ...this.authParams(),
-        includeDisabledCategories: includeDisabled,
-      },
+        includeDisabledCategories: includeDisabled
+      }
     });
     return data;
   }
@@ -271,24 +271,20 @@ export class WaiverFileClient {
       params: {
         ...this.authParams(),
         name: opts.name,
-        active: opts.active,
-      },
+        active: opts.active
+      }
     });
     return data;
   }
 
-  async updateEventCategory(opts: {
-    eventCategoryId: string;
-    name: string;
-    active: boolean;
-  }) {
+  async updateEventCategory(opts: { eventCategoryId: string; name: string; active: boolean }) {
     let { data } = await this.http.post('/UpdateEventCategory', null, {
       params: {
         ...this.authParams(),
         eventCategoryID: opts.eventCategoryId,
         name: opts.name,
-        active: opts.active,
-      },
+        active: opts.active
+      }
     });
     return data;
   }
@@ -297,8 +293,8 @@ export class WaiverFileClient {
     let { data } = await this.http.post('/DeleteEventCategory', null, {
       params: {
         ...this.authParams(),
-        eventCategoryID: eventCategoryId,
-      },
+        eventCategoryID: eventCategoryId
+      }
     });
     return data;
   }
@@ -317,22 +313,19 @@ export class WaiverFileClient {
         eventID: opts.eventId,
         emailAddresses: opts.emailAddresses,
         managerEmailMessage: opts.managerEmailMessage ?? '',
-        skipSendingEmailIfAccountExists: opts.skipSendingEmailIfAccountExists ?? false,
-      },
+        skipSendingEmailIfAccountExists: opts.skipSendingEmailIfAccountExists ?? false
+      }
     });
     return data;
   }
 
-  async removeEventManagers(opts: {
-    eventId: string;
-    emailAddresses: string;
-  }) {
+  async removeEventManagers(opts: { eventId: string; emailAddresses: string }) {
     let { data } = await this.http.post('/RemoveEventManagers', null, {
       params: {
         ...this.authParams(),
         eventID: opts.eventId,
-        emailAddresses: opts.emailAddresses,
-      },
+        emailAddresses: opts.emailAddresses
+      }
     });
     return data;
   }
@@ -343,15 +336,15 @@ export class WaiverFileClient {
     let { data } = await this.http.post(`/subscribe/${eventType}`, null, {
       params: {
         ...this.authParams(),
-        targetUrl,
-      },
+        targetUrl
+      }
     });
     return data;
   }
 
   async deleteWebhookSubscription(eventType: string) {
     let { data } = await this.http.delete(`/deletesubscribe/${eventType}`, {
-      params: this.authParams(),
+      params: this.authParams()
     });
     return data;
   }

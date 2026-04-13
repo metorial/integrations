@@ -60,8 +60,8 @@ export class KommoClient {
       baseURL: `https://${config.subdomain}.kommo.com/api/v4`,
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -72,9 +72,13 @@ export class KommoClient {
     if (pagination?.page) params['page'] = pagination.page;
     if (pagination?.limit) params['limit'] = pagination.limit;
     if (filters?.query) params['query'] = filters.query;
-    if (filters?.ids) filters.ids.forEach((id, i) => params[`filter[id][${i}]`] = id);
-    if (filters?.pipelineIds) filters.pipelineIds.forEach((id, i) => params[`filter[pipeline_id][${i}]`] = id);
-    if (filters?.responsibleUserIds) filters.responsibleUserIds.forEach((id, i) => params[`filter[responsible_user_id][${i}]`] = id);
+    if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
+    if (filters?.pipelineIds)
+      filters.pipelineIds.forEach((id, i) => (params[`filter[pipeline_id][${i}]`] = id));
+    if (filters?.responsibleUserIds)
+      filters.responsibleUserIds.forEach(
+        (id, i) => (params[`filter[responsible_user_id][${i}]`] = id)
+      );
     if (filters?.orderBy) params[`order[${filters.orderBy}]`] = filters.orderDir || 'desc';
     params['with'] = 'contacts,loss_reason';
 
@@ -84,7 +88,7 @@ export class KommoClient {
 
   async getLead(leadId: number) {
     let response = await this.http.get(`/leads/${leadId}`, {
-      params: { with: 'contacts,loss_reason,catalog_elements' },
+      params: { with: 'contacts,loss_reason,catalog_elements' }
     });
     return response.data;
   }
@@ -111,8 +115,11 @@ export class KommoClient {
     if (pagination?.page) params['page'] = pagination.page;
     if (pagination?.limit) params['limit'] = pagination.limit;
     if (filters?.query) params['query'] = filters.query;
-    if (filters?.ids) filters.ids.forEach((id, i) => params[`filter[id][${i}]`] = id);
-    if (filters?.responsibleUserIds) filters.responsibleUserIds.forEach((id, i) => params[`filter[responsible_user_id][${i}]`] = id);
+    if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
+    if (filters?.responsibleUserIds)
+      filters.responsibleUserIds.forEach(
+        (id, i) => (params[`filter[responsible_user_id][${i}]`] = id)
+      );
     if (filters?.orderBy) params[`order[${filters.orderBy}]`] = filters.orderDir || 'desc';
     params['with'] = 'leads';
 
@@ -122,7 +129,7 @@ export class KommoClient {
 
   async getContact(contactId: number) {
     let response = await this.http.get(`/contacts/${contactId}`, {
-      params: { with: 'leads' },
+      params: { with: 'leads' }
     });
     return response.data;
   }
@@ -144,8 +151,11 @@ export class KommoClient {
     if (pagination?.page) params['page'] = pagination.page;
     if (pagination?.limit) params['limit'] = pagination.limit;
     if (filters?.query) params['query'] = filters.query;
-    if (filters?.ids) filters.ids.forEach((id, i) => params[`filter[id][${i}]`] = id);
-    if (filters?.responsibleUserIds) filters.responsibleUserIds.forEach((id, i) => params[`filter[responsible_user_id][${i}]`] = id);
+    if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
+    if (filters?.responsibleUserIds)
+      filters.responsibleUserIds.forEach(
+        (id, i) => (params[`filter[responsible_user_id][${i}]`] = id)
+      );
     if (filters?.orderBy) params[`order[${filters.orderBy}]`] = filters.orderDir || 'desc';
 
     let response = await this.http.get('/companies', { params });
@@ -154,7 +164,7 @@ export class KommoClient {
 
   async getCompany(companyId: number) {
     let response = await this.http.get(`/companies/${companyId}`, {
-      params: { with: 'contacts,leads' },
+      params: { with: 'contacts,leads' }
     });
     return response.data;
   }
@@ -175,11 +185,16 @@ export class KommoClient {
     let params: Record<string, any> = {};
     if (pagination?.page) params['page'] = pagination.page;
     if (pagination?.limit) params['limit'] = pagination.limit;
-    if (filters?.ids) filters.ids.forEach((id, i) => params[`filter[id][${i}]`] = id);
-    if (filters?.responsibleUserIds) filters.responsibleUserIds.forEach((id, i) => params[`filter[responsible_user_id][${i}]`] = id);
-    if (filters?.isCompleted !== undefined) params['filter[is_completed]'] = filters.isCompleted ? 1 : 0;
+    if (filters?.ids) filters.ids.forEach((id, i) => (params[`filter[id][${i}]`] = id));
+    if (filters?.responsibleUserIds)
+      filters.responsibleUserIds.forEach(
+        (id, i) => (params[`filter[responsible_user_id][${i}]`] = id)
+      );
+    if (filters?.isCompleted !== undefined)
+      params['filter[is_completed]'] = filters.isCompleted ? 1 : 0;
     if (filters?.entityType) params['filter[entity_type]'] = filters.entityType;
-    if (filters?.entityIds) filters.entityIds.forEach((id, i) => params[`filter[entity_id][${i}]`] = id);
+    if (filters?.entityIds)
+      filters.entityIds.forEach((id, i) => (params[`filter[entity_id][${i}]`] = id));
     if (filters?.orderBy) params[`order[${filters.orderBy}]`] = filters.orderDir || 'desc';
 
     let response = await this.http.get('/tasks', { params });
@@ -277,12 +292,24 @@ export class KommoClient {
     return response.data?._embedded?.links || [];
   }
 
-  async linkEntities(entityType: string, entityId: number, links: Array<{ to_entity_id: number; to_entity_type: string; metadata?: Record<string, any> }>) {
+  async linkEntities(
+    entityType: string,
+    entityId: number,
+    links: Array<{
+      to_entity_id: number;
+      to_entity_type: string;
+      metadata?: Record<string, any>;
+    }>
+  ) {
     let response = await this.http.post(`/${entityType}/${entityId}/link`, links);
     return response.data?._embedded?.links || [];
   }
 
-  async unlinkEntities(entityType: string, entityId: number, links: Array<{ to_entity_id: number; to_entity_type: string }>) {
+  async unlinkEntities(
+    entityType: string,
+    entityId: number,
+    links: Array<{ to_entity_id: number; to_entity_type: string }>
+  ) {
     let response = await this.http.post(`/${entityType}/${entityId}/unlink`, links);
     return response.data;
   }
@@ -307,20 +334,29 @@ export class KommoClient {
 
   async getAccount() {
     let response = await this.http.get('/account', {
-      params: { with: 'amojo_id,users_groups,task_types' },
+      params: { with: 'amojo_id,users_groups,task_types' }
     });
     return response.data;
   }
 
   // ── Events ──
 
-  async listEvents(filters?: { entityType?: string; entityId?: number; types?: string[]; createdAtFrom?: number; createdAtTo?: number }, pagination?: PaginationParams) {
+  async listEvents(
+    filters?: {
+      entityType?: string;
+      entityId?: number;
+      types?: string[];
+      createdAtFrom?: number;
+      createdAtTo?: number;
+    },
+    pagination?: PaginationParams
+  ) {
     let params: Record<string, any> = {};
     if (pagination?.page) params['page'] = pagination.page;
     if (pagination?.limit) params['limit'] = pagination.limit;
     if (filters?.entityType) params['filter[entity]'] = filters.entityType;
     if (filters?.entityId) params['filter[entity_id]'] = filters.entityId;
-    if (filters?.types) filters.types.forEach((t, i) => params[`filter[type][${i}]`] = t);
+    if (filters?.types) filters.types.forEach((t, i) => (params[`filter[type][${i}]`] = t));
     if (filters?.createdAtFrom) params['filter[created_at][from]'] = filters.createdAtFrom;
     if (filters?.createdAtTo) params['filter[created_at][to]'] = filters.createdAtTo;
 
@@ -342,7 +378,7 @@ export class KommoClient {
 
   async deleteWebhook(destination: string) {
     let response = await this.http.delete('/webhooks', {
-      data: { destination },
+      data: { destination }
     });
     return response.data;
   }

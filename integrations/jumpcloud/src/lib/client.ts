@@ -9,7 +9,7 @@ import type {
   JumpCloudEvent,
   PaginatedResponse,
   AssociationRequest,
-  Association,
+  Association
 } from './types';
 
 export class Client {
@@ -25,7 +25,7 @@ export class Client {
     let headers: Record<string, string> = {
       'x-api-key': this.token,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json'
     };
     if (this.orgId) {
       headers['x-org-id'] = this.orgId;
@@ -36,21 +36,21 @@ export class Client {
   private v1Axios() {
     return createAxios({
       baseURL: 'https://console.jumpcloud.com/api',
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
   }
 
   private v2Axios() {
     return createAxios({
       baseURL: 'https://console.jumpcloud.com/api/v2',
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
   }
 
   private insightsAxios() {
     return createAxios({
       baseURL: 'https://api.jumpcloud.com/insights/directory/v1',
-      headers: this.getHeaders(),
+      headers: this.getHeaders()
     });
   }
 
@@ -70,12 +70,12 @@ export class Client {
         skip: params?.skip ?? 0,
         sort: params?.sort ?? '_id',
         filter: params?.filter,
-        fields: params?.fields,
-      },
+        fields: params?.fields
+      }
     });
     return {
       results: response.data.results ?? response.data,
-      totalCount: response.data.totalCount ?? 0,
+      totalCount: response.data.totalCount ?? 0
     };
   }
 
@@ -153,12 +153,12 @@ export class Client {
         skip: params?.skip ?? 0,
         sort: params?.sort ?? '_id',
         filter: params?.filter,
-        fields: params?.fields,
-      },
+        fields: params?.fields
+      }
     });
     return {
       results: response.data.results ?? response.data,
-      totalCount: response.data.totalCount ?? 0,
+      totalCount: response.data.totalCount ?? 0
     };
   }
 
@@ -194,8 +194,8 @@ export class Client {
         limit: params?.limit ?? 100,
         skip: params?.skip ?? 0,
         sort: params?.sort ?? 'name',
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -228,40 +228,50 @@ export class Client {
     await axios.delete(`/usergroups/${groupId}`);
   }
 
-  async listUserGroupMembers(groupId: string, params?: {
-    limit?: number;
-    skip?: number;
-  }): Promise<Array<{ to: { id: string; type: string }; }>> {
+  async listUserGroupMembers(
+    groupId: string,
+    params?: {
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<Array<{ to: { id: string; type: string } }>> {
     let axios = this.v2Axios();
     let response = await axios.get(`/usergroups/${groupId}/members`, {
       params: {
         limit: params?.limit ?? 100,
-        skip: params?.skip ?? 0,
-      },
+        skip: params?.skip ?? 0
+      }
     });
     return response.data;
   }
 
-  async manageUserGroupMembers(groupId: string, body: {
-    op: 'add' | 'remove';
-    type: 'user';
-    id: string;
-  }): Promise<void> {
+  async manageUserGroupMembers(
+    groupId: string,
+    body: {
+      op: 'add' | 'remove';
+      type: 'user';
+      id: string;
+    }
+  ): Promise<void> {
     let axios = this.v2Axios();
     await axios.post(`/usergroups/${groupId}/members`, body);
   }
 
-  async listUserGroupAssociations(groupId: string, targets: string, params?: {
-    limit?: number;
-    skip?: number;
-  }): Promise<Association[]> {
+  async listUserGroupAssociations(
+    groupId: string,
+    targets: string,
+    params?: {
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<Association[]> {
     let axios = this.v2Axios();
     let response = await axios.get(`/usergroups/${groupId}/associations`, {
       params: {
         targets,
         limit: params?.limit ?? 100,
-        skip: params?.skip ?? 0,
-      },
+        skip: params?.skip ?? 0
+      }
     });
     return response.data;
   }
@@ -285,8 +295,8 @@ export class Client {
         limit: params?.limit ?? 100,
         skip: params?.skip ?? 0,
         sort: params?.sort ?? 'name',
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return response.data;
   }
@@ -307,7 +317,10 @@ export class Client {
     return response.data;
   }
 
-  async updateSystemGroup(groupId: string, data: Record<string, any>): Promise<JumpCloudGroup> {
+  async updateSystemGroup(
+    groupId: string,
+    data: Record<string, any>
+  ): Promise<JumpCloudGroup> {
     let axios = this.v2Axios();
     let response = await axios.put(`/systemgroups/${groupId}`, data);
     return response.data;
@@ -318,30 +331,39 @@ export class Client {
     await axios.delete(`/systemgroups/${groupId}`);
   }
 
-  async listSystemGroupMembers(groupId: string, params?: {
-    limit?: number;
-    skip?: number;
-  }): Promise<Array<{ to: { id: string; type: string }; }>> {
+  async listSystemGroupMembers(
+    groupId: string,
+    params?: {
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<Array<{ to: { id: string; type: string } }>> {
     let axios = this.v2Axios();
     let response = await axios.get(`/systemgroups/${groupId}/members`, {
       params: {
         limit: params?.limit ?? 100,
-        skip: params?.skip ?? 0,
-      },
+        skip: params?.skip ?? 0
+      }
     });
     return response.data;
   }
 
-  async manageSystemGroupMembers(groupId: string, body: {
-    op: 'add' | 'remove';
-    type: 'system';
-    id: string;
-  }): Promise<void> {
+  async manageSystemGroupMembers(
+    groupId: string,
+    body: {
+      op: 'add' | 'remove';
+      type: 'system';
+      id: string;
+    }
+  ): Promise<void> {
     let axios = this.v2Axios();
     await axios.post(`/systemgroups/${groupId}/members`, body);
   }
 
-  async manageSystemGroupAssociations(groupId: string, body: AssociationRequest): Promise<void> {
+  async manageSystemGroupAssociations(
+    groupId: string,
+    body: AssociationRequest
+  ): Promise<void> {
     let axios = this.v2Axios();
     await axios.post(`/systemgroups/${groupId}/associations`, body);
   }
@@ -362,12 +384,12 @@ export class Client {
         skip: params?.skip ?? 0,
         sort: params?.sort ?? '_id',
         filter: params?.filter,
-        fields: params?.fields,
-      },
+        fields: params?.fields
+      }
     });
     return {
       results: response.data.results ?? response.data,
-      totalCount: response.data.totalCount ?? 0,
+      totalCount: response.data.totalCount ?? 0
     };
   }
 
@@ -397,7 +419,10 @@ export class Client {
     return response.data;
   }
 
-  async updateCommand(commandId: string, data: Record<string, any>): Promise<JumpCloudCommand> {
+  async updateCommand(
+    commandId: string,
+    data: Record<string, any>
+  ): Promise<JumpCloudCommand> {
     let axios = this.v1Axios();
     let response = await axios.put(`/commands/${commandId}`, data);
     return response.data;
@@ -426,12 +451,12 @@ export class Client {
         limit: params?.limit ?? 50,
         skip: params?.skip ?? 0,
         sort: params?.sort ?? '-requestTime',
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return {
       results: response.data.results ?? response.data,
-      totalCount: response.data.totalCount ?? 0,
+      totalCount: response.data.totalCount ?? 0
     };
   }
 
@@ -455,12 +480,12 @@ export class Client {
         limit: params?.limit ?? 100,
         skip: params?.skip ?? 0,
         sort: params?.sort ?? '_id',
-        filter: params?.filter,
-      },
+        filter: params?.filter
+      }
     });
     return {
       results: response.data.results ?? response.data,
-      totalCount: response.data.totalCount ?? 0,
+      totalCount: response.data.totalCount ?? 0
     };
   }
 
@@ -472,17 +497,21 @@ export class Client {
 
   // ==================== Graph Associations ====================
 
-  async getUserAssociations(userId: string, targets: string, params?: {
-    limit?: number;
-    skip?: number;
-  }): Promise<Association[]> {
+  async getUserAssociations(
+    userId: string,
+    targets: string,
+    params?: {
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<Association[]> {
     let axios = this.v2Axios();
     let response = await axios.get(`/users/${userId}/associations`, {
       params: {
         targets,
         limit: params?.limit ?? 100,
-        skip: params?.skip ?? 0,
-      },
+        skip: params?.skip ?? 0
+      }
     });
     return response.data;
   }
@@ -492,17 +521,21 @@ export class Client {
     await axios.post(`/users/${userId}/associations`, body);
   }
 
-  async getSystemAssociations(systemId: string, targets: string, params?: {
-    limit?: number;
-    skip?: number;
-  }): Promise<Association[]> {
+  async getSystemAssociations(
+    systemId: string,
+    targets: string,
+    params?: {
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<Association[]> {
     let axios = this.v2Axios();
     let response = await axios.get(`/systems/${systemId}/associations`, {
       params: {
         targets,
         limit: params?.limit ?? 100,
-        skip: params?.skip ?? 0,
-      },
+        skip: params?.skip ?? 0
+      }
     });
     return response.data;
   }
@@ -529,7 +562,7 @@ export class Client {
     let body: Record<string, any> = {
       service: params.service,
       start_time: params.startTime,
-      limit: params.limit ?? 100,
+      limit: params.limit ?? 100
     };
     if (params.endTime) body.end_time = params.endTime;
     if (params.searchAfter) body.search_after = params.searchAfter;
@@ -551,7 +584,7 @@ export class Client {
 
     return {
       events: response.data ?? [],
-      searchAfter: searchAfterValue,
+      searchAfter: searchAfterValue
     };
   }
 

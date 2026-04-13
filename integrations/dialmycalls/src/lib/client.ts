@@ -1,14 +1,34 @@
 import { createAxios } from 'slates';
 import type { AxiosInstance } from 'axios';
 import type {
-  Contact, Group, Recording, CallerId, Callservice, TextService,
-  CallRecipient, TextRecipient, IncomingText, Keyword, VanityNumber,
-  DoNotContact, AccessAccount, Account, Shortcode,
-  CreateContactParams, UpdateContactParams, CreateGroupParams, UpdateGroupParams,
-  CreateCallParams, CreateTextParams, CreateRecordingTtsParams,
-  CreateRecordingByUrlParams, CreateRecordingByPhoneParams,
-  CreateCallerIdParams, CreateAccessAccountParams, UpdateAccessAccountParams,
-  UpdateVanityNumberParams,
+  Contact,
+  Group,
+  Recording,
+  CallerId,
+  Callservice,
+  TextService,
+  CallRecipient,
+  TextRecipient,
+  IncomingText,
+  Keyword,
+  VanityNumber,
+  DoNotContact,
+  AccessAccount,
+  Account,
+  Shortcode,
+  CreateContactParams,
+  UpdateContactParams,
+  CreateGroupParams,
+  UpdateGroupParams,
+  CreateCallParams,
+  CreateTextParams,
+  CreateRecordingTtsParams,
+  CreateRecordingByUrlParams,
+  CreateRecordingByPhoneParams,
+  CreateCallerIdParams,
+  CreateAccessAccountParams,
+  UpdateAccessAccountParams,
+  UpdateVanityNumberParams
 } from './types';
 
 export class Client {
@@ -20,8 +40,8 @@ export class Client {
       headers: {
         'X-Auth-ApiKey': config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -274,7 +294,10 @@ export class Client {
     return res.data?.vanitynumber ?? res.data;
   }
 
-  async updateVanityNumber(vanityNumberId: string, params: UpdateVanityNumberParams): Promise<VanityNumber> {
+  async updateVanityNumber(
+    vanityNumberId: string,
+    params: UpdateVanityNumberParams
+  ): Promise<VanityNumber> {
     let res = await this.axios.put(`/vanitynumber/${vanityNumberId}`, params);
     return res.data?.vanitynumber ?? res.data;
   }
@@ -311,7 +334,10 @@ export class Client {
     return res.data?.accessaccount ?? res.data;
   }
 
-  async updateAccessAccount(accountId: string, params: UpdateAccessAccountParams): Promise<AccessAccount> {
+  async updateAccessAccount(
+    accountId: string,
+    params: UpdateAccessAccountParams
+  ): Promise<AccessAccount> {
     let res = await this.axios.put(`/accessaccount/${accountId}`, params);
     return res.data?.accessaccount ?? res.data;
   }

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getUrlMetricsTool,
@@ -15,11 +14,9 @@ import {
   getRankingKeywordsTool,
   findLinkIntersectTool,
   checkLinkStatusTool,
-  getUsageAndIndexTool,
+  getUsageAndIndexTool
 } from './tools';
-import { indexUpdatedTrigger,
-  inboundWebhook,
-} from './triggers';
+import { indexUpdatedTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -37,10 +34,7 @@ export let provider = Slate.create({
     getRankingKeywordsTool,
     findLinkIntersectTool,
     checkLinkStatusTool,
-    getUsageAndIndexTool,
+    getUsageAndIndexTool
   ],
-  triggers: [
-    inboundWebhook,
-    indexUpdatedTrigger,
-  ],
+  triggers: [inboundWebhook, indexUpdatedTrigger]
 });

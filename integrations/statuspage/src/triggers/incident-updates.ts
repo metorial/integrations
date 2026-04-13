@@ -3,45 +3,61 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let incidentUpdates = SlateTrigger.create(
-  spec,
-  {
-    name: 'Incident Updates',
-    key: 'incident_updates',
-    description: 'Triggers when incidents are created, updated, or resolved on the status page. Polls for new and changed incidents periodically.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'updated', 'resolved']).describe('Type of change detected'),
-    incidentId: z.string().describe('ID of the incident'),
-    latestUpdateId: z.string().describe('ID of the latest incident update entry'),
-    incident: z.any().describe('Full incident data from the API'),
-  }))
-  .output(z.object({
-    incidentId: z.string().describe('Unique identifier of the incident'),
-    name: z.string().describe('Title of the incident'),
-    status: z.string().describe('Current status of the incident'),
-    impact: z.string().optional().describe('Impact level: none, minor, major, critical'),
-    shortlink: z.string().optional().nullable().describe('Short URL for the incident'),
-    latestUpdateBody: z.string().optional().nullable().describe('Body text of the latest update'),
-    latestUpdateStatus: z.string().optional().describe('Status of the latest update'),
-    createdAt: z.string().optional().describe('Incident creation timestamp'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-    resolvedAt: z.string().optional().nullable().describe('Resolution timestamp'),
-    affectedComponents: z.array(z.object({
-      componentId: z.string().describe('ID of the affected component'),
-      name: z.string().describe('Name of the component'),
-      status: z.string().describe('Component status during this incident'),
-    })).optional().describe('Components affected by this incident'),
-  }))
+export let incidentUpdates = SlateTrigger.create(spec, {
+  name: 'Incident Updates',
+  key: 'incident_updates',
+  description:
+    'Triggers when incidents are created, updated, or resolved on the status page. Polls for new and changed incidents periodically.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .enum(['created', 'updated', 'resolved'])
+        .describe('Type of change detected'),
+      incidentId: z.string().describe('ID of the incident'),
+      latestUpdateId: z.string().describe('ID of the latest incident update entry'),
+      incident: z.any().describe('Full incident data from the API')
+    })
+  )
+  .output(
+    z.object({
+      incidentId: z.string().describe('Unique identifier of the incident'),
+      name: z.string().describe('Title of the incident'),
+      status: z.string().describe('Current status of the incident'),
+      impact: z.string().optional().describe('Impact level: none, minor, major, critical'),
+      shortlink: z.string().optional().nullable().describe('Short URL for the incident'),
+      latestUpdateBody: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('Body text of the latest update'),
+      latestUpdateStatus: z.string().optional().describe('Status of the latest update'),
+      createdAt: z.string().optional().describe('Incident creation timestamp'),
+      updatedAt: z.string().optional().describe('Last update timestamp'),
+      resolvedAt: z.string().optional().nullable().describe('Resolution timestamp'),
+      affectedComponents: z
+        .array(
+          z.object({
+            componentId: z.string().describe('ID of the affected component'),
+            name: z.string().describe('Name of the component'),
+            status: z.string().describe('Component status during this incident')
+          })
+        )
+        .optional()
+        .describe('Components affected by this incident')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ token: ctx.auth.token, pageId: ctx.config.pageId });
-      let previousState = ctx.state as { knownUpdateIds?: Record<string, string>; lastPollTime?: string } | null;
+      let previousState = ctx.state as {
+        knownUpdateIds?: Record<string, string>;
+        lastPollTime?: string;
+      } | null;
       let knownUpdateIds: Record<string, string> = previousState?.knownUpdateIds || {};
 
       let incidents = await client.listIncidents({ limit: 50 });
@@ -67,14 +83,17 @@ export let incidentUpdates = SlateTrigger.create(
             eventType: 'created',
             incidentId: incident.id,
             latestUpdateId,
-            incident,
+            incident
           });
         } else if (previousUpdateId !== latestUpdateId) {
           inputs.push({
-            eventType: incident.status === 'resolved' || incident.status === 'completed' ? 'resolved' : 'updated',
+            eventType:
+              incident.status === 'resolved' || incident.status === 'completed'
+                ? 'resolved'
+                : 'updated',
             incidentId: incident.id,
             latestUpdateId,
-            incident,
+            incident
           });
         }
 
@@ -85,12 +104,12 @@ export let incidentUpdates = SlateTrigger.create(
         inputs,
         updatedState: {
           knownUpdateIds,
-          lastPollTime: new Date().toISOString(),
-        },
+          lastPollTime: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let incident = ctx.input.incident;
       let updates = incident.incident_updates || [];
       let latestUpdate = updates[0];
@@ -112,9 +131,10 @@ export let incidentUpdates = SlateTrigger.create(
           affectedComponents: (incident.components || []).map((c: any) => ({
             componentId: c.id,
             name: c.name,
-            status: c.status,
-          })),
-        },
+            status: c.status
+          }))
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

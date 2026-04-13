@@ -3,29 +3,42 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createContactGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Create Contact Group',
-    key: 'create_contact_group',
-    description: `Create a new contact group for alert routing. Contact groups can include email addresses, mobile phone numbers (international format), integration IDs, and a ping URL for webhook-style notifications.`,
-    tags: {
-      readOnly: false,
-      destructive: false,
-    },
+export let createContactGroup = SlateTool.create(spec, {
+  name: 'Create Contact Group',
+  key: 'create_contact_group',
+  description: `Create a new contact group for alert routing. Contact groups can include email addresses, mobile phone numbers (international format), integration IDs, and a ping URL for webhook-style notifications.`,
+  tags: {
+    readOnly: false,
+    destructive: false
   }
-)
-  .input(z.object({
-    name: z.string().describe('Name of the contact group'),
-    emailAddresses: z.array(z.string()).optional().describe('Email addresses to receive alerts'),
-    mobileNumbers: z.array(z.string()).optional().describe('Mobile phone numbers in international format for SMS alerts'),
-    integrations: z.array(z.string()).optional().describe('Integration IDs for third-party integrations'),
-    pingUrl: z.string().optional().describe('Webhook URL to receive alert notifications via HTTP POST'),
-  }))
-  .output(z.object({
-    groupId: z.string().describe('ID of the newly created contact group'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      name: z.string().describe('Name of the contact group'),
+      emailAddresses: z
+        .array(z.string())
+        .optional()
+        .describe('Email addresses to receive alerts'),
+      mobileNumbers: z
+        .array(z.string())
+        .optional()
+        .describe('Mobile phone numbers in international format for SMS alerts'),
+      integrations: z
+        .array(z.string())
+        .optional()
+        .describe('Integration IDs for third-party integrations'),
+      pingUrl: z
+        .string()
+        .optional()
+        .describe('Webhook URL to receive alert notifications via HTTP POST')
+    })
+  )
+  .output(
+    z.object({
+      groupId: z.string().describe('ID of the newly created contact group')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { emailAddresses, mobileNumbers, pingUrl, ...rest } = ctx.input;
 
@@ -39,6 +52,7 @@ export let createContactGroup = SlateTool.create(
 
     return {
       output: { groupId },
-      message: `Created contact group **${ctx.input.name}** (ID: ${groupId}).`,
+      message: `Created contact group **${ctx.input.name}** (ID: ${groupId}).`
     };
-  }).build();
+  })
+  .build();

@@ -22,9 +22,8 @@ export class ContentfulGraphQLClient {
     this.spaceId = config.spaceId;
     this.environmentId = config.environmentId;
 
-    let effectiveToken = config.preview && config.previewToken
-      ? config.previewToken
-      : config.token;
+    let effectiveToken =
+      config.preview && config.previewToken ? config.previewToken : config.token;
 
     this.http = createAxios({
       baseURL: getGraphQLBaseUrl(config.region),

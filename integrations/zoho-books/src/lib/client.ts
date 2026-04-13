@@ -50,17 +50,23 @@ export class Client {
   }
 
   async listContactPersons(contactId: string) {
-    let resp = await this.http.get(`/contacts/${contactId}/contactpersons`, { params: this.params() });
+    let resp = await this.http.get(`/contacts/${contactId}/contactpersons`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markContactActive(contactId: string) {
-    let resp = await this.http.post(`/contacts/${contactId}/active`, null, { params: this.params() });
+    let resp = await this.http.post(`/contacts/${contactId}/active`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markContactInactive(contactId: string) {
-    let resp = await this.http.post(`/contacts/${contactId}/inactive`, null, { params: this.params() });
+    let resp = await this.http.post(`/contacts/${contactId}/inactive`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -92,32 +98,44 @@ export class Client {
   }
 
   async markInvoiceSent(invoiceId: string) {
-    let resp = await this.http.post(`/invoices/${invoiceId}/status/sent`, null, { params: this.params() });
+    let resp = await this.http.post(`/invoices/${invoiceId}/status/sent`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markInvoiceVoid(invoiceId: string) {
-    let resp = await this.http.post(`/invoices/${invoiceId}/status/void`, null, { params: this.params() });
+    let resp = await this.http.post(`/invoices/${invoiceId}/status/void`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async emailInvoice(invoiceId: string, emailData: Record<string, any>) {
-    let resp = await this.http.post(`/invoices/${invoiceId}/email`, emailData, { params: this.params() });
+    let resp = await this.http.post(`/invoices/${invoiceId}/email`, emailData, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async applyCreditsToInvoice(invoiceId: string, creditsData: Record<string, any>) {
-    let resp = await this.http.post(`/invoices/${invoiceId}/credits`, creditsData, { params: this.params() });
+    let resp = await this.http.post(`/invoices/${invoiceId}/credits`, creditsData, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async writeOffInvoice(invoiceId: string) {
-    let resp = await this.http.post(`/invoices/${invoiceId}/writeoff`, null, { params: this.params() });
+    let resp = await this.http.post(`/invoices/${invoiceId}/writeoff`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async cancelWriteOff(invoiceId: string) {
-    let resp = await this.http.post(`/invoices/${invoiceId}/writeoff/cancel`, null, { params: this.params() });
+    let resp = await this.http.post(`/invoices/${invoiceId}/writeoff/cancel`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -139,7 +157,9 @@ export class Client {
   }
 
   async updateEstimate(estimateId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/estimates/${estimateId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/estimates/${estimateId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -149,27 +169,37 @@ export class Client {
   }
 
   async markEstimateSent(estimateId: string) {
-    let resp = await this.http.post(`/estimates/${estimateId}/status/sent`, null, { params: this.params() });
+    let resp = await this.http.post(`/estimates/${estimateId}/status/sent`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markEstimateAccepted(estimateId: string) {
-    let resp = await this.http.post(`/estimates/${estimateId}/status/accepted`, null, { params: this.params() });
+    let resp = await this.http.post(`/estimates/${estimateId}/status/accepted`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markEstimateDeclined(estimateId: string) {
-    let resp = await this.http.post(`/estimates/${estimateId}/status/declined`, null, { params: this.params() });
+    let resp = await this.http.post(`/estimates/${estimateId}/status/declined`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async convertEstimateToInvoice(estimateId: string) {
-    let resp = await this.http.post(`/estimates/${estimateId}/lineitems/invoices`, null, { params: this.params() });
+    let resp = await this.http.post(`/estimates/${estimateId}/lineitems/invoices`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async emailEstimate(estimateId: string, emailData: Record<string, any>) {
-    let resp = await this.http.post(`/estimates/${estimateId}/email`, emailData, { params: this.params() });
+    let resp = await this.http.post(`/estimates/${estimateId}/email`, emailData, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -191,27 +221,37 @@ export class Client {
   }
 
   async updateSalesOrder(salesOrderId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/salesorders/${salesOrderId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/salesorders/${salesOrderId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteSalesOrder(salesOrderId: string) {
-    let resp = await this.http.delete(`/salesorders/${salesOrderId}`, { params: this.params() });
+    let resp = await this.http.delete(`/salesorders/${salesOrderId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markSalesOrderOpen(salesOrderId: string) {
-    let resp = await this.http.post(`/salesorders/${salesOrderId}/status/open`, null, { params: this.params() });
+    let resp = await this.http.post(`/salesorders/${salesOrderId}/status/open`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markSalesOrderVoid(salesOrderId: string) {
-    let resp = await this.http.post(`/salesorders/${salesOrderId}/status/void`, null, { params: this.params() });
+    let resp = await this.http.post(`/salesorders/${salesOrderId}/status/void`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async convertSalesOrderToInvoice(salesOrderId: string) {
-    let resp = await this.http.post(`/salesorders/${salesOrderId}/invoices`, null, { params: this.params() });
+    let resp = await this.http.post(`/salesorders/${salesOrderId}/invoices`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -223,7 +263,9 @@ export class Client {
   }
 
   async getPurchaseOrder(purchaseOrderId: string) {
-    let resp = await this.http.get(`/purchaseorders/${purchaseOrderId}`, { params: this.params() });
+    let resp = await this.http.get(`/purchaseorders/${purchaseOrderId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -233,22 +275,30 @@ export class Client {
   }
 
   async updatePurchaseOrder(purchaseOrderId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/purchaseorders/${purchaseOrderId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/purchaseorders/${purchaseOrderId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deletePurchaseOrder(purchaseOrderId: string) {
-    let resp = await this.http.delete(`/purchaseorders/${purchaseOrderId}`, { params: this.params() });
+    let resp = await this.http.delete(`/purchaseorders/${purchaseOrderId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markPurchaseOrderOpen(purchaseOrderId: string) {
-    let resp = await this.http.post(`/purchaseorders/${purchaseOrderId}/status/open`, null, { params: this.params() });
+    let resp = await this.http.post(`/purchaseorders/${purchaseOrderId}/status/open`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async convertPurchaseOrderToBill(purchaseOrderId: string) {
-    let resp = await this.http.post(`/purchaseorders/${purchaseOrderId}/bills`, null, { params: this.params() });
+    let resp = await this.http.post(`/purchaseorders/${purchaseOrderId}/bills`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -280,12 +330,16 @@ export class Client {
   }
 
   async markBillOpen(billId: string) {
-    let resp = await this.http.post(`/bills/${billId}/status/open`, null, { params: this.params() });
+    let resp = await this.http.post(`/bills/${billId}/status/open`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markBillVoid(billId: string) {
-    let resp = await this.http.post(`/bills/${billId}/status/void`, null, { params: this.params() });
+    let resp = await this.http.post(`/bills/${billId}/status/void`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -324,7 +378,9 @@ export class Client {
   }
 
   async getCustomerPayment(paymentId: string) {
-    let resp = await this.http.get(`/customerpayments/${paymentId}`, { params: this.params() });
+    let resp = await this.http.get(`/customerpayments/${paymentId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -334,12 +390,16 @@ export class Client {
   }
 
   async updateCustomerPayment(paymentId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/customerpayments/${paymentId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/customerpayments/${paymentId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteCustomerPayment(paymentId: string) {
-    let resp = await this.http.delete(`/customerpayments/${paymentId}`, { params: this.params() });
+    let resp = await this.http.delete(`/customerpayments/${paymentId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -361,12 +421,16 @@ export class Client {
   }
 
   async updateVendorPayment(paymentId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/vendorpayments/${paymentId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/vendorpayments/${paymentId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteVendorPayment(paymentId: string) {
-    let resp = await this.http.delete(`/vendorpayments/${paymentId}`, { params: this.params() });
+    let resp = await this.http.delete(`/vendorpayments/${paymentId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -388,17 +452,28 @@ export class Client {
   }
 
   async updateCreditNote(creditNoteId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/creditnotes/${creditNoteId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/creditnotes/${creditNoteId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteCreditNote(creditNoteId: string) {
-    let resp = await this.http.delete(`/creditnotes/${creditNoteId}`, { params: this.params() });
+    let resp = await this.http.delete(`/creditnotes/${creditNoteId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
-  async applyCreditNoteToInvoices(creditNoteId: string, invoices: Array<{ invoice_id: string; amount_applied: number }>) {
-    let resp = await this.http.post(`/creditnotes/${creditNoteId}/invoices`, { invoices }, { params: this.params() });
+  async applyCreditNoteToInvoices(
+    creditNoteId: string,
+    invoices: Array<{ invoice_id: string; amount_applied: number }>
+  ) {
+    let resp = await this.http.post(
+      `/creditnotes/${creditNoteId}/invoices`,
+      { invoices },
+      { params: this.params() }
+    );
     return resp.data;
   }
 
@@ -410,7 +485,9 @@ export class Client {
   }
 
   async getVendorCredit(vendorCreditId: string) {
-    let resp = await this.http.get(`/vendorcredits/${vendorCreditId}`, { params: this.params() });
+    let resp = await this.http.get(`/vendorcredits/${vendorCreditId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -420,12 +497,16 @@ export class Client {
   }
 
   async updateVendorCredit(vendorCreditId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/vendorcredits/${vendorCreditId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/vendorcredits/${vendorCreditId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteVendorCredit(vendorCreditId: string) {
-    let resp = await this.http.delete(`/vendorcredits/${vendorCreditId}`, { params: this.params() });
+    let resp = await this.http.delete(`/vendorcredits/${vendorCreditId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -464,7 +545,9 @@ export class Client {
   }
 
   async getTimeEntry(timeEntryId: string) {
-    let resp = await this.http.get(`/projects/timeentries/${timeEntryId}`, { params: this.params() });
+    let resp = await this.http.get(`/projects/timeentries/${timeEntryId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -474,22 +557,30 @@ export class Client {
   }
 
   async updateTimeEntry(timeEntryId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/projects/timeentries/${timeEntryId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/projects/timeentries/${timeEntryId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteTimeEntry(timeEntryId: string) {
-    let resp = await this.http.delete(`/projects/timeentries/${timeEntryId}`, { params: this.params() });
+    let resp = await this.http.delete(`/projects/timeentries/${timeEntryId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async startTimer(timeEntryId: string) {
-    let resp = await this.http.post(`/projects/timeentries/${timeEntryId}/timer/start`, null, { params: this.params() });
+    let resp = await this.http.post(`/projects/timeentries/${timeEntryId}/timer/start`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async stopTimer(timeEntryId: string) {
-    let resp = await this.http.post(`/projects/timeentries/${timeEntryId}/timer/stop`, null, { params: this.params() });
+    let resp = await this.http.post(`/projects/timeentries/${timeEntryId}/timer/stop`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -521,12 +612,16 @@ export class Client {
   }
 
   async markItemActive(itemId: string) {
-    let resp = await this.http.post(`/items/${itemId}/active`, null, { params: this.params() });
+    let resp = await this.http.post(`/items/${itemId}/active`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async markItemInactive(itemId: string) {
-    let resp = await this.http.post(`/items/${itemId}/inactive`, null, { params: this.params() });
+    let resp = await this.http.post(`/items/${itemId}/inactive`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -548,7 +643,9 @@ export class Client {
   }
 
   async getBankTransaction(transactionId: string) {
-    let resp = await this.http.get(`/banktransactions/${transactionId}`, { params: this.params() });
+    let resp = await this.http.get(`/banktransactions/${transactionId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -558,12 +655,16 @@ export class Client {
   }
 
   async matchBankTransaction(transactionId: string, data: Record<string, any>) {
-    let resp = await this.http.post(`/banktransactions/${transactionId}/match`, data, { params: this.params() });
+    let resp = await this.http.post(`/banktransactions/${transactionId}/match`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async unmatchBankTransaction(transactionId: string) {
-    let resp = await this.http.post(`/banktransactions/${transactionId}/unmatch`, null, { params: this.params() });
+    let resp = await this.http.post(`/banktransactions/${transactionId}/unmatch`, null, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -585,12 +686,16 @@ export class Client {
   }
 
   async updateChartOfAccount(accountId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/chartofaccounts/${accountId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/chartofaccounts/${accountId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteChartOfAccount(accountId: string) {
-    let resp = await this.http.delete(`/chartofaccounts/${accountId}`, { params: this.params() });
+    let resp = await this.http.delete(`/chartofaccounts/${accountId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -639,7 +744,9 @@ export class Client {
   }
 
   async updateTax(taxId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/settings/taxes/${taxId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/settings/taxes/${taxId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -668,7 +775,9 @@ export class Client {
   }
 
   async getOrganization(organizationId: string) {
-    let resp = await this.http.get(`/organizations/${organizationId}`, { params: this.params() });
+    let resp = await this.http.get(`/organizations/${organizationId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -680,7 +789,9 @@ export class Client {
   }
 
   async getRecurringInvoice(recurringInvoiceId: string) {
-    let resp = await this.http.get(`/recurringinvoices/${recurringInvoiceId}`, { params: this.params() });
+    let resp = await this.http.get(`/recurringinvoices/${recurringInvoiceId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 
@@ -690,12 +801,16 @@ export class Client {
   }
 
   async updateRecurringInvoice(recurringInvoiceId: string, data: Record<string, any>) {
-    let resp = await this.http.put(`/recurringinvoices/${recurringInvoiceId}`, data, { params: this.params() });
+    let resp = await this.http.put(`/recurringinvoices/${recurringInvoiceId}`, data, {
+      params: this.params()
+    });
     return resp.data;
   }
 
   async deleteRecurringInvoice(recurringInvoiceId: string) {
-    let resp = await this.http.delete(`/recurringinvoices/${recurringInvoiceId}`, { params: this.params() });
+    let resp = await this.http.delete(`/recurringinvoices/${recurringInvoiceId}`, {
+      params: this.params()
+    });
     return resp.data;
   }
 }

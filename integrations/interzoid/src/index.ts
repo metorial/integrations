@@ -15,7 +15,7 @@ import {
   getCurrencyRate,
   pagePerformance,
   getRemainingCredits,
-  stockAnalysis,
+  stockAnalysis
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -37,9 +37,7 @@ export let provider = Slate.create({
     getCurrencyRate,
     pagePerformance,
     getRemainingCredits,
-    stockAnalysis,
+    stockAnalysis
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

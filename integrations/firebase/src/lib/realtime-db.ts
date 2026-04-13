@@ -9,7 +9,7 @@ export class RealtimeDbClient {
     this.token = params.token;
     this.databaseUrl = params.databaseUrl.replace(/\/$/, '');
     this.axiosInstance = createAxios({
-      baseURL: this.databaseUrl,
+      baseURL: this.databaseUrl
     });
   }
 
@@ -17,29 +17,37 @@ export class RealtimeDbClient {
     return { auth: this.token };
   }
 
-  async getData(path: string, query?: {
-    orderBy?: string;
-    startAt?: string | number;
-    endAt?: string | number;
-    limitToFirst?: number;
-    limitToLast?: number;
-    equalTo?: string | number | boolean;
-    shallow?: boolean;
-  }): Promise<any> {
+  async getData(
+    path: string,
+    query?: {
+      orderBy?: string;
+      startAt?: string | number;
+      endAt?: string | number;
+      limitToFirst?: number;
+      limitToLast?: number;
+      equalTo?: string | number | boolean;
+      shallow?: boolean;
+    }
+  ): Promise<any> {
     let params: Record<string, any> = { ...this.authParams };
 
     if (query?.orderBy) params['orderBy'] = `"${query.orderBy}"`;
-    if (query?.startAt !== undefined) params['startAt'] = typeof query.startAt === 'string' ? `"${query.startAt}"` : query.startAt;
-    if (query?.endAt !== undefined) params['endAt'] = typeof query.endAt === 'string' ? `"${query.endAt}"` : query.endAt;
+    if (query?.startAt !== undefined)
+      params['startAt'] =
+        typeof query.startAt === 'string' ? `"${query.startAt}"` : query.startAt;
+    if (query?.endAt !== undefined)
+      params['endAt'] = typeof query.endAt === 'string' ? `"${query.endAt}"` : query.endAt;
     if (query?.limitToFirst) params['limitToFirst'] = query.limitToFirst;
     if (query?.limitToLast) params['limitToLast'] = query.limitToLast;
-    if (query?.equalTo !== undefined) params['equalTo'] = typeof query.equalTo === 'string' ? `"${query.equalTo}"` : query.equalTo;
+    if (query?.equalTo !== undefined)
+      params['equalTo'] =
+        typeof query.equalTo === 'string' ? `"${query.equalTo}"` : query.equalTo;
     if (query?.shallow) params['shallow'] = true;
 
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
     let response = await this.axiosInstance.get(`${normalizedPath}.json`, {
-      params,
+      params
     });
 
     return response.data;
@@ -49,7 +57,7 @@ export class RealtimeDbClient {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
     let response = await this.axiosInstance.put(`${normalizedPath}.json`, data, {
-      params: this.authParams,
+      params: this.authParams
     });
 
     return response.data;
@@ -59,11 +67,11 @@ export class RealtimeDbClient {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
     let response = await this.axiosInstance.post(`${normalizedPath}.json`, data, {
-      params: this.authParams,
+      params: this.authParams
     });
 
     return {
-      generatedKey: response.data.name,
+      generatedKey: response.data.name
     };
   }
 
@@ -71,7 +79,7 @@ export class RealtimeDbClient {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
     let response = await this.axiosInstance.patch(`${normalizedPath}.json`, data, {
-      params: this.authParams,
+      params: this.authParams
     });
 
     return response.data;
@@ -81,7 +89,7 @@ export class RealtimeDbClient {
     let normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
     await this.axiosInstance.delete(`${normalizedPath}.json`, {
-      params: this.authParams,
+      params: this.authParams
     });
   }
 

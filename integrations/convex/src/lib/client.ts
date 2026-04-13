@@ -5,11 +5,7 @@ export class ConvexClient {
   private token: string;
   private authType: string;
 
-  constructor(config: {
-    deploymentUrl: string;
-    token: string;
-    authType: string;
-  }) {
+  constructor(config: { deploymentUrl: string; token: string; authType: string }) {
     this.deploymentUrl = config.deploymentUrl.replace(/\/$/, '');
     this.token = config.token;
     this.authType = config.authType;
@@ -26,7 +22,7 @@ export class ConvexClient {
     return createAxios({
       baseURL: this.deploymentUrl,
       headers: {
-        'Authorization': this.getAuthHeader(),
+        Authorization: this.getAuthHeader(),
         'Content-Type': 'application/json'
       }
     });
@@ -66,11 +62,13 @@ export class ConvexClient {
 
   // --- Streaming Export ---
 
-  async listSnapshot(params: {
-    tableName?: string;
-    cursor?: string;
-    snapshotId?: string;
-  } = {}): Promise<{
+  async listSnapshot(
+    params: {
+      tableName?: string;
+      cursor?: string;
+      snapshotId?: string;
+    } = {}
+  ): Promise<{
     values: Array<Record<string, any>>;
     cursor: string;
     snapshot: string;
@@ -86,10 +84,12 @@ export class ConvexClient {
     return response.data;
   }
 
-  async documentDeltas(params: {
-    cursor?: string;
-    tableName?: string;
-  } = {}): Promise<{
+  async documentDeltas(
+    params: {
+      cursor?: string;
+      tableName?: string;
+    } = {}
+  ): Promise<{
     values: Array<Record<string, any>>;
     cursor: string;
     hasMore: boolean;
@@ -111,7 +111,11 @@ export class ConvexClient {
     return response.data;
   }
 
-  async uploadFile(uploadUrl: string, fileContent: Uint8Array | string, contentType: string): Promise<string> {
+  async uploadFile(
+    uploadUrl: string,
+    fileContent: Uint8Array | string,
+    contentType: string
+  ): Promise<string> {
     let http = createAxios();
     let response = await http.post(uploadUrl, fileContent, {
       headers: { 'Content-Type': contentType }
@@ -133,7 +137,9 @@ export class ConvexClient {
     return response.data;
   }
 
-  async updateEnvironmentVariables(changes: Array<{ name: string; value: string }>): Promise<void> {
+  async updateEnvironmentVariables(
+    changes: Array<{ name: string; value: string }>
+  ): Promise<void> {
     let http = this.createHttp();
     await http.post('/api/update_environment_variables', { changes });
   }

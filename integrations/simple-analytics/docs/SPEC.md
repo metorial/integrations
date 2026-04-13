@@ -16,10 +16,10 @@ There are two levels of authentication depending on the API being used:
 
 **Required headers:**
 
-| Header | Format | Required For |
-|---|---|---|
+| Header    | Format                                            | Required For                                        |
+| --------- | ------------------------------------------------- | --------------------------------------------------- |
 | `Api-Key` | `sa_api_key_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` | Stats API (private websites), Export API, Admin API |
-| `User-Id` | `sa_user_id_00000000-0000-0000-0000-000000000000` | Export API, Admin API |
+| `User-Id` | `sa_user_id_00000000-0000-0000-0000-000000000000` | Export API, Admin API                               |
 
 Both credentials are available in the [Simple Analytics account settings](https://simpleanalytics.com/account).
 

@@ -16,6 +16,7 @@ Tokens can be obtained from the [Corrently Developer Console](https://console.co
 - **Email-Secured Access Token**: Requires email verification; provides longer-lived tokens with real-time monitoring and device-independent access.
 
 Once you have a token, it can be used in one of two ways:
+
 - As a URL query parameter: `&token=yourToken`
 - As a Bearer token in the `Authorization` header: `Authorization: Bearer yourToken`
 

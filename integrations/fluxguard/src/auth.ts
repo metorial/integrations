@@ -2,23 +2,25 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('Fluxguard API key. Create one in your org settings.'),
+      token: z.string().describe('Fluxguard API key. Create one in your org settings.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -26,8 +28,8 @@ export let auth = SlateAuth.create()
       let http = createAxios({
         baseURL: 'https://api.fluxguard.com',
         headers: {
-          'x-api-key': ctx.output.token,
-        },
+          'x-api-key': ctx.output.token
+        }
       });
 
       let response = await http.get('/account');
@@ -37,8 +39,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: account.orgId ?? account.id ?? undefined,
           name: account.orgName ?? account.name ?? undefined,
-          email: account.email ?? undefined,
-        },
+          email: account.email ?? undefined
+        }
       };
-    },
+    }
   });

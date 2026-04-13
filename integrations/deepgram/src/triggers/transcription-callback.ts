@@ -4,8 +4,10 @@ import { z } from 'zod';
 
 let callbackInputSchema = z.object({
   requestId: z.string().describe('Request ID from Deepgram.'),
-  eventType: z.enum(['transcription.completed', 'speech.completed']).describe('Type of callback event.'),
-  payload: z.any().describe('Full callback response payload from Deepgram.'),
+  eventType: z
+    .enum(['transcription.completed', 'speech.completed'])
+    .describe('Type of callback event.'),
+  payload: z.any().describe('Full callback response payload from Deepgram.')
 });
 
 let transcriptionOutputSchema = z.object({
@@ -14,21 +16,19 @@ let transcriptionOutputSchema = z.object({
   confidence: z.number().optional().describe('Confidence score.'),
   channels: z.any().optional().describe('Per-channel results.'),
   metadata: z.any().optional().describe('Request metadata.'),
-  rawResponse: z.any().optional().describe('Complete raw response from Deepgram.'),
+  rawResponse: z.any().optional().describe('Complete raw response from Deepgram.')
 });
 
-export let transcriptionCallbackTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Transcription Callback',
-    key: 'transcription_callback',
-    description: 'Receives asynchronous transcription results via webhook callback. When submitting a transcription request with a callback URL, Deepgram will POST the results to this endpoint once processing is complete.',
-  }
-)
+export let transcriptionCallbackTrigger = SlateTrigger.create(spec, {
+  name: 'Transcription Callback',
+  key: 'transcription_callback',
+  description:
+    'Receives asynchronous transcription results via webhook callback. When submitting a transcription request with a callback URL, Deepgram will POST the results to this endpoint once processing is complete.'
+})
   .input(callbackInputSchema)
   .output(transcriptionOutputSchema)
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let contentType = ctx.request.headers.get('content-type') || '';
       let data: any;
 
@@ -54,13 +54,13 @@ export let transcriptionCallbackTrigger = SlateTrigger.create(
           {
             requestId,
             eventType,
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.payload;
 
       let firstAlt = payload?.results?.channels?.[0]?.alternatives?.[0];
@@ -74,9 +74,9 @@ export let transcriptionCallbackTrigger = SlateTrigger.create(
           confidence: firstAlt?.confidence,
           channels: payload?.results?.channels,
           metadata: payload?.metadata,
-          rawResponse: payload,
-        },
+          rawResponse: payload
+        }
       };
-    },
+    }
   })
   .build();

@@ -13,13 +13,9 @@ import {
   listCmsItems,
   manageCmsItem,
   manageBotAttributes,
-  publishBot,
+  publishBot
 } from './tools';
-import {
-  userEvent,
-  chatbotEvent,
-  cmsEvent,
-} from './triggers';
+import { userEvent, chatbotEvent, cmsEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -36,11 +32,7 @@ export let provider = Slate.create({
     listCmsItems,
     manageCmsItem,
     manageBotAttributes,
-    publishBot,
+    publishBot
   ],
-  triggers: [
-    userEvent,
-    chatbotEvent,
-    cmsEvent,
-  ],
+  triggers: [userEvent, chatbotEvent, cmsEvent]
 });

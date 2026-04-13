@@ -3,29 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let publishEvent = SlateTool.create(
-  spec,
-  {
-    name: 'Publish Event',
-    key: 'publish_event',
-    description: `Publish an outbound webhook event through the Hookdeck Publish API. Use this to send events from your system to destinations configured in Hookdeck. Specify a source by ID or name, along with the request headers and body.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let publishEvent = SlateTool.create(spec, {
+  name: 'Publish Event',
+  key: 'publish_event',
+  description: `Publish an outbound webhook event through the Hookdeck Publish API. Use this to send events from your system to destinations configured in Hookdeck. Specify a source by ID or name, along with the request headers and body.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    sourceId: z.string().optional().describe('Source ID to publish to (provide sourceId or sourceName)'),
-    sourceName: z.string().optional().describe('Source name to publish to (provide sourceId or sourceName)'),
-    headers: z.record(z.string(), z.string()).optional().describe('HTTP headers for the outbound webhook request'),
-    body: z.unknown().optional().describe('Body payload for the outbound webhook request'),
-  }))
-  .output(z.object({
-    publishedSuccessfully: z.boolean().describe('Whether the event was published successfully'),
-    response: z.unknown().optional().describe('Response from the Publish API'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      sourceId: z
+        .string()
+        .optional()
+        .describe('Source ID to publish to (provide sourceId or sourceName)'),
+      sourceName: z
+        .string()
+        .optional()
+        .describe('Source name to publish to (provide sourceId or sourceName)'),
+      headers: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('HTTP headers for the outbound webhook request'),
+      body: z.unknown().optional().describe('Body payload for the outbound webhook request')
+    })
+  )
+  .output(
+    z.object({
+      publishedSuccessfully: z
+        .boolean()
+        .describe('Whether the event was published successfully'),
+      response: z.unknown().optional().describe('Response from the Publish API')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token, apiVersion: ctx.config.apiVersion });
 
     let data: Record<string, unknown> = {};
@@ -39,9 +51,9 @@ export let publishEvent = SlateTool.create(
     return {
       output: {
         publishedSuccessfully: true,
-        response,
+        response
       },
-      message: `Published event to source **${ctx.input.sourceName || ctx.input.sourceId}** successfully.`,
+      message: `Published event to source **${ctx.input.sourceName || ctx.input.sourceId}** successfully.`
     };
   })
   .build();

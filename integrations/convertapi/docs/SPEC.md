@@ -17,6 +17,7 @@ API Tokens authenticate conversion requests, differentiate environments, and set
 API tokens can be limited to a specific amount of conversions or expire after a specific duration. You can create multiple tokens per account, making it easy to restrict consumption per token and distribute purchased conversions between multiple environments or customers.
 
 Usage:
+
 ```
 Authorization: Bearer <api_token>
 ```
@@ -26,6 +27,7 @@ Authorization: Bearer <api_token>
 You can either self-sign a JWT token or use ConvertAPI's JWT Generator endpoint. When authenticating conversions, you can use an API token directly, or generate a short-lived JWT token signed with your API Token. JWT tokens are useful for client-side or browser-based usage where you don't want to expose the long-lived API token directly.
 
 Usage:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
@@ -39,6 +41,7 @@ Convert files between 300+ formats including PDF, DOCX, XLSX, PPTX, HTML, JPG, P
 ### PDF Document Toolkit
 
 A comprehensive PDF document toolkit allows you to generate, modify, compress, protect, and prepare documents for sharing and long-term storage. Capabilities include:
+
 - Merge, encrypt, split, repair, and decrypt PDF files.
 - Watermarking with text, images, or other files.
 - Compress, repair, flatten, or rasterize documents and convert them to PDF/A for compliant archiving.

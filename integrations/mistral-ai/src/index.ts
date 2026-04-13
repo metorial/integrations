@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   chatCompletionTool,
@@ -22,11 +21,7 @@ import {
   cancelBatchJobTool,
   deleteModelTool
 } from './tools';
-import {
-  fineTuningJobStatusTrigger,
-  batchJobStatusTrigger,
-  inboundWebhook,
-} from './triggers';
+import { fineTuningJobStatusTrigger, batchJobStatusTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -51,9 +46,5 @@ export let provider = Slate.create({
     cancelBatchJobTool,
     deleteModelTool
   ],
-  triggers: [
-    inboundWebhook,
-    fineTuningJobStatusTrigger,
-    batchJobStatusTrigger
-  ]
+  triggers: [inboundWebhook, fineTuningJobStatusTrigger, batchJobStatusTrigger]
 });

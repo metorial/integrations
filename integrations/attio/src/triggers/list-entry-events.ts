@@ -6,59 +6,68 @@ import { z } from 'zod';
 let LIST_ENTRY_EVENT_TYPES = [
   'list-entry.created',
   'list-entry.updated',
-  'list-entry.deleted',
+  'list-entry.deleted'
 ] as const;
 
-export let listEntryEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'List Entry Events',
-    key: 'list_entry_events',
-    description: 'Triggers when records are added to, updated within, or removed from lists (e.g. sales pipelines, recruitment pipelines).',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of list entry event'),
-    eventId: z.string().describe('Unique event identifier'),
-    listId: z.string().describe('The list ID'),
-    entryId: z.string().describe('The entry ID'),
-    parentObjectId: z.string().optional().describe('Parent object ID'),
-    parentRecordId: z.string().optional().describe('Parent record ID'),
-    attributeId: z.string().optional().describe('Attribute ID that changed (for update events)'),
-    actorType: z.string().optional().describe('Type of actor that triggered the event'),
-    actorId: z.string().optional().describe('ID of the actor that triggered the event'),
-  }))
-  .output(z.object({
-    listId: z.string().describe('The list ID'),
-    entryId: z.string().describe('The entry ID'),
-    parentObjectId: z.string().optional().describe('Parent object ID'),
-    parentRecordId: z.string().optional().describe('Parent record ID'),
-    attributeId: z.string().optional().describe('Attribute ID that changed (for update events)'),
-    actorType: z.string().optional().describe('Type of actor that triggered the event'),
-    actorId: z.string().optional().describe('ID of the actor that triggered the event'),
-  }))
+export let listEntryEventsTrigger = SlateTrigger.create(spec, {
+  name: 'List Entry Events',
+  key: 'list_entry_events',
+  description:
+    'Triggers when records are added to, updated within, or removed from lists (e.g. sales pipelines, recruitment pipelines).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of list entry event'),
+      eventId: z.string().describe('Unique event identifier'),
+      listId: z.string().describe('The list ID'),
+      entryId: z.string().describe('The entry ID'),
+      parentObjectId: z.string().optional().describe('Parent object ID'),
+      parentRecordId: z.string().optional().describe('Parent record ID'),
+      attributeId: z
+        .string()
+        .optional()
+        .describe('Attribute ID that changed (for update events)'),
+      actorType: z.string().optional().describe('Type of actor that triggered the event'),
+      actorId: z.string().optional().describe('ID of the actor that triggered the event')
+    })
+  )
+  .output(
+    z.object({
+      listId: z.string().describe('The list ID'),
+      entryId: z.string().describe('The entry ID'),
+      parentObjectId: z.string().optional().describe('Parent object ID'),
+      parentRecordId: z.string().optional().describe('Parent record ID'),
+      attributeId: z
+        .string()
+        .optional()
+        .describe('Attribute ID that changed (for update events)'),
+      actorType: z.string().optional().describe('Type of actor that triggered the event'),
+      actorId: z.string().optional().describe('ID of the actor that triggered the event')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AttioClient({ token: ctx.auth.token });
 
-      let webhook = await client.createWebhook(ctx.input.webhookBaseUrl,
+      let webhook = await client.createWebhook(
+        ctx.input.webhookBaseUrl,
         LIST_ENTRY_EVENT_TYPES.map(eventType => ({ eventType }))
       );
 
       return {
         registrationDetails: {
-          webhookId: webhook.id?.webhook_id ?? webhook.webhook_id,
-        },
+          webhookId: webhook.id?.webhook_id ?? webhook.webhook_id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AttioClient({ token: ctx.auth.token });
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
       let events = body.events ?? [];
 
       let inputs = events
@@ -72,13 +81,13 @@ export let listEntryEventsTrigger = SlateTrigger.create(
           parentRecordId: e.id?.parent_record_id,
           attributeId: e.id?.attribute_id,
           actorType: e.actor?.type,
-          actorId: e.actor?.id,
+          actorId: e.actor?.id
         }));
 
       return { inputs };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: ctx.input.eventType,
         id: ctx.input.eventId,
@@ -89,8 +98,9 @@ export let listEntryEventsTrigger = SlateTrigger.create(
           parentRecordId: ctx.input.parentRecordId,
           attributeId: ctx.input.attributeId,
           actorType: ctx.input.actorType,
-          actorId: ctx.input.actorId,
-        },
+          actorId: ctx.input.actorId
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

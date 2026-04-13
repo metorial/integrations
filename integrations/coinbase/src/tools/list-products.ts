@@ -3,50 +3,64 @@ import { AdvancedTradeClient } from '../lib/advanced-trade-client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listProducts = SlateTool.create(
-  spec,
-  {
-    name: 'List Products',
-    key: 'list_products',
-    description: `List available trading pairs (products) on the Advanced Trade platform, or get details for a specific product. Includes 24h volume, price, and trading status.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listProducts = SlateTool.create(spec, {
+  name: 'List Products',
+  key: 'list_products',
+  description: `List available trading pairs (products) on the Advanced Trade platform, or get details for a specific product. Includes 24h volume, price, and trading status.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    productId: z.string().optional().describe('Specific product ID to retrieve (e.g., "BTC-USD"). If omitted, lists all products.'),
-    limit: z.number().optional().describe('Max products to return (for list)'),
-    offset: z.number().optional().describe('Offset for pagination'),
-    productType: z.string().optional().describe('Filter by product type (e.g., "SPOT")'),
-  }))
-  .output(z.object({
-    product: z.object({
-      productId: z.string(),
-      baseCurrencyId: z.string().optional(),
-      quoteCurrencyId: z.string().optional(),
-      price: z.string().optional(),
-      pricePercentageChange24h: z.string().optional(),
-      volume24h: z.string().optional(),
-      status: z.string().optional(),
-      productType: z.string().optional(),
-      baseName: z.string().optional(),
-      quoteName: z.string().optional(),
-    }).optional().describe('Single product details'),
-    products: z.array(z.object({
-      productId: z.string(),
-      baseCurrencyId: z.string().optional(),
-      quoteCurrencyId: z.string().optional(),
-      price: z.string().optional(),
-      pricePercentageChange24h: z.string().optional(),
-      volume24h: z.string().optional(),
-      status: z.string().optional(),
-      productType: z.string().optional(),
-    })).optional().describe('List of products'),
-    numProducts: z.number().optional().describe('Total number of products returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productId: z
+        .string()
+        .optional()
+        .describe(
+          'Specific product ID to retrieve (e.g., "BTC-USD"). If omitted, lists all products.'
+        ),
+      limit: z.number().optional().describe('Max products to return (for list)'),
+      offset: z.number().optional().describe('Offset for pagination'),
+      productType: z.string().optional().describe('Filter by product type (e.g., "SPOT")')
+    })
+  )
+  .output(
+    z.object({
+      product: z
+        .object({
+          productId: z.string(),
+          baseCurrencyId: z.string().optional(),
+          quoteCurrencyId: z.string().optional(),
+          price: z.string().optional(),
+          pricePercentageChange24h: z.string().optional(),
+          volume24h: z.string().optional(),
+          status: z.string().optional(),
+          productType: z.string().optional(),
+          baseName: z.string().optional(),
+          quoteName: z.string().optional()
+        })
+        .optional()
+        .describe('Single product details'),
+      products: z
+        .array(
+          z.object({
+            productId: z.string(),
+            baseCurrencyId: z.string().optional(),
+            quoteCurrencyId: z.string().optional(),
+            price: z.string().optional(),
+            pricePercentageChange24h: z.string().optional(),
+            volume24h: z.string().optional(),
+            status: z.string().optional(),
+            productType: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('List of products'),
+      numProducts: z.number().optional().describe('Total number of products returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AdvancedTradeClient({ token: ctx.auth.token });
 
     if (ctx.input.productId) {
@@ -63,17 +77,17 @@ export let listProducts = SlateTool.create(
             status: product.status,
             productType: product.product_type,
             baseName: product.base_name,
-            quoteName: product.quote_name,
-          },
+            quoteName: product.quote_name
+          }
         },
-        message: `**${product.product_id}**: ${product.price} ${product.quote_currency_id} (${product.price_percentage_change_24h || '0'}% 24h)`,
+        message: `**${product.product_id}**: ${product.price} ${product.quote_currency_id} (${product.price_percentage_change_24h || '0'}% 24h)`
       };
     }
 
     let result = await client.listProducts({
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      productType: ctx.input.productType,
+      productType: ctx.input.productType
     });
 
     let products = result.products || [];
@@ -87,10 +101,11 @@ export let listProducts = SlateTool.create(
           pricePercentageChange24h: p.price_percentage_change_24h,
           volume24h: p.volume_24h,
           status: p.status,
-          productType: p.product_type,
+          productType: p.product_type
         })),
-        numProducts: result.num_products || products.length,
+        numProducts: result.num_products || products.length
       },
-      message: `Found **${products.length}** product(s)`,
+      message: `Found **${products.length}** product(s)`
     };
-  }).build();
+  })
+  .build();

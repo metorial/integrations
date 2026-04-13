@@ -7,7 +7,7 @@ import {
   reportIp,
   bulkReport,
   getBlacklist,
-  clearIpReports,
+  clearIpReports
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     reportIp,
     bulkReport,
     getBlacklist,
-    clearIpReports,
+    clearIpReports
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -28,7 +28,5 @@ export let provider = Slate.create({
     listWorkspaces,
     listDomains
   ],
-  triggers: [
-    linkClicked
-  ]
+  triggers: [linkClicked]
 });

@@ -4,7 +4,7 @@ import type { AxiosInstance } from 'axios';
 let regionBaseUrls: Record<string, string> = {
   us: 'https://api.docugenerate.com/v1',
   eu: 'https://api.eu.docugenerate.com/v1',
-  au: 'https://api.au.docugenerate.com/v1',
+  au: 'https://api.au.docugenerate.com/v1'
 };
 
 export interface TemplateResponse {
@@ -62,8 +62,8 @@ export class DocuGenerateClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Authorization': config.token,
-      },
+        Authorization: config.token
+      }
     });
   }
 
@@ -79,18 +79,22 @@ export class DocuGenerateClient {
     return response.data;
   }
 
-  async updateTemplate(templateId: string, params: {
-    name?: string;
-    enhancedSyntax?: boolean;
-    versioningEnabled?: boolean;
-  }): Promise<TemplateResponse> {
+  async updateTemplate(
+    templateId: string,
+    params: {
+      name?: string;
+      enhancedSyntax?: boolean;
+      versioningEnabled?: boolean;
+    }
+  ): Promise<TemplateResponse> {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body['name'] = params.name;
     if (params.enhancedSyntax !== undefined) body['enhanced_syntax'] = params.enhancedSyntax;
-    if (params.versioningEnabled !== undefined) body['versioning_enabled'] = params.versioningEnabled;
+    if (params.versioningEnabled !== undefined)
+      body['versioning_enabled'] = params.versioningEnabled;
 
     let response = await this.axios.put<TemplateResponse>(`/template/${templateId}`, body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -104,7 +108,7 @@ export class DocuGenerateClient {
   async generateDocument(params: GenerateDocumentParams): Promise<DocumentResponse[]> {
     let body: Record<string, unknown> = {
       template_id: params.templateId,
-      data: params.data,
+      data: params.data
     };
 
     if (params.name !== undefined) body['name'] = params.name;
@@ -115,9 +119,13 @@ export class DocuGenerateClient {
     if (params.attach !== undefined) body['attach'] = params.attach;
     if (params.mergeWith !== undefined) body['merge_with'] = params.mergeWith;
 
-    let response = await this.axios.post<DocumentResponse | DocumentResponse[]>('/document', body, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post<DocumentResponse | DocumentResponse[]>(
+      '/document',
+      body,
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
 
     // API may return a single document or an array depending on input
     let data = response.data;
@@ -126,7 +134,7 @@ export class DocuGenerateClient {
 
   async listDocuments(templateId: string): Promise<DocumentResponse[]> {
     let response = await this.axios.get<DocumentResponse[]>('/document', {
-      params: { template_id: templateId },
+      params: { template_id: templateId }
     });
     return response.data;
   }
@@ -136,12 +144,15 @@ export class DocuGenerateClient {
     return response.data;
   }
 
-  async updateDocument(documentId: string, params: { name?: string }): Promise<DocumentResponse> {
+  async updateDocument(
+    documentId: string,
+    params: { name?: string }
+  ): Promise<DocumentResponse> {
     let body: Record<string, unknown> = {};
     if (params.name !== undefined) body['name'] = params.name;
 
     let response = await this.axios.put<DocumentResponse>(`/document/${documentId}`, body, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }

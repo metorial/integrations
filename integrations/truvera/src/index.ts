@@ -20,14 +20,14 @@ import {
   verifyCredential,
   manageProfile,
   listProfiles,
-  getJob,
+  getJob
 } from './tools';
 import {
   credentialEvents,
   didEvents,
   registryEvents,
   schemaEvents,
-  proofEvents,
+  proofEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -52,13 +52,7 @@ export let provider = Slate.create({
     verifyCredential,
     manageProfile,
     listProfiles,
-    getJob,
+    getJob
   ],
-  triggers: [
-    credentialEvents,
-    didEvents,
-    registryEvents,
-    schemaEvents,
-    proofEvents,
-  ],
+  triggers: [credentialEvents, didEvents, registryEvents, schemaEvents, proofEvents]
 });

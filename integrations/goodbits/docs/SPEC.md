@@ -23,27 +23,35 @@ Each API token is scoped to a specific newsletter. If you manage multiple newsle
 ## Features
 
 ### Newsletter Information
+
 Retrieve details about the newsletter associated with your API token, including its ID and name. This is useful for verifying authentication and confirming which newsletter is being accessed.
 
 ### Subscriber Management
+
 The API supports the ability to manage your subscribers. You can:
+
 - **Add subscribers** with email (required), first name, and last name.
 - **Change subscriber state** — possible statuses are active, unsubscribed, and deleted.
 - Mark a subscriber as deleted, which prevents any future emails from being sent to them.
 - **Retrieve subscriber counts** grouped by status (active, unsubscribed, deleted).
 
 ### Content Library Management
+
 Create a link (content) in your Content Library. You can provide:
+
 - A URL (required), title, description (HTML supported), and thumbnail image candidates.
 - Thumbnail candidates will be shown in the editor by either those that are set in the created link or by those that are fetched from the URL.
 
 This allows automated population of the content library from external sources, which can then be used to build newsletters in the Goodbits editor.
 
 ### Sent Email Retrieval
+
 Retrieve details of sent newsletter emails. You can list sent emails with their subjects and send dates, and access individual email details.
 
 ### Email Analytics
+
 Retrieve performance analytics for sent newsletter emails, including:
+
 - Number of recipients.
 - Number of unique opens.
 - Unique clicks and engagement rate.

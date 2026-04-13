@@ -3,90 +3,117 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let enrichPerson = SlateTool.create(
-  spec,
-  {
-    name: 'Enrich Person',
-    key: 'enrich_person',
-    description: `Enrich a person's profile data using Apollo's enrichment engine. Provide identifiers like email, name + company, or LinkedIn URL to get detailed profile information including employment history, contact details, and organization data.
+export let enrichPerson = SlateTool.create(spec, {
+  name: 'Enrich Person',
+  key: 'enrich_person',
+  description: `Enrich a person's profile data using Apollo's enrichment engine. Provide identifiers like email, name + company, or LinkedIn URL to get detailed profile information including employment history, contact details, and organization data.
 Supports both single and bulk enrichment (up to 10 records per request).`,
-    instructions: [
-      'Provide at least one identifier: email, name + domain/company, LinkedIn URL, or Apollo person ID.',
-      'For bulk enrichment, use the records array. For single enrichment, use the top-level fields.',
-      'Personal emails and phone numbers are not returned by default — set revealPersonalEmails or revealPhoneNumber to true if needed.'
-    ],
-    constraints: [
-      'Enrichment consumes credits based on your Apollo pricing plan',
-      'Bulk enrichment supports up to 10 records per request',
-      'GDPR-compliant regions may restrict personal email access'
-    ],
-    tags: {
-      readOnly: true
-    }
+  instructions: [
+    'Provide at least one identifier: email, name + domain/company, LinkedIn URL, or Apollo person ID.',
+    'For bulk enrichment, use the records array. For single enrichment, use the top-level fields.',
+    'Personal emails and phone numbers are not returned by default — set revealPersonalEmails or revealPhoneNumber to true if needed.'
+  ],
+  constraints: [
+    'Enrichment consumes credits based on your Apollo pricing plan',
+    'Bulk enrichment supports up to 10 records per request',
+    'GDPR-compliant regions may restrict personal email access'
+  ],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    email: z.string().optional().describe('Email address to look up'),
-    firstName: z.string().optional().describe('First name of the person'),
-    lastName: z.string().optional().describe('Last name of the person'),
-    name: z.string().optional().describe('Full name (alternative to firstName + lastName)'),
-    domain: z.string().optional().describe('Company domain, e.g. "apollo.io"'),
-    organizationName: z.string().optional().describe('Company name'),
-    linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
-    apolloPersonId: z.string().optional().describe('Apollo person ID for direct lookup'),
-    revealPersonalEmails: z.boolean().optional().describe('Set to true to include personal email addresses'),
-    revealPhoneNumber: z.boolean().optional().describe('Set to true to include phone numbers'),
-    records: z.array(z.object({
-      email: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      name: z.string().optional(),
-      domain: z.string().optional(),
-      organizationName: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      apolloPersonId: z.string().optional()
-    })).optional().describe('For bulk enrichment: array of up to 10 person records to enrich')
-  }))
-  .output(z.object({
-    person: z.object({
-      personId: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      name: z.string().optional(),
-      email: z.string().optional(),
-      emailStatus: z.string().optional(),
-      title: z.string().optional(),
-      headline: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      photoUrl: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      country: z.string().optional(),
-      seniority: z.string().optional(),
-      departments: z.array(z.string()).optional(),
-      organizationName: z.string().optional(),
-      organizationId: z.string().optional(),
-      employmentHistory: z.array(z.object({
-        organizationName: z.string().optional(),
-        title: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        current: z.boolean().optional()
-      })).optional()
-    }).optional().describe('Enriched person data (single enrichment)'),
-    matches: z.array(z.object({
-      personId: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-      name: z.string().optional(),
-      email: z.string().optional(),
-      title: z.string().optional(),
-      linkedinUrl: z.string().optional(),
-      organizationName: z.string().optional()
-    })).optional().describe('Enriched records (bulk enrichment)'),
-    creditsConsumed: z.number().optional().describe('Number of credits consumed by this enrichment')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      email: z.string().optional().describe('Email address to look up'),
+      firstName: z.string().optional().describe('First name of the person'),
+      lastName: z.string().optional().describe('Last name of the person'),
+      name: z.string().optional().describe('Full name (alternative to firstName + lastName)'),
+      domain: z.string().optional().describe('Company domain, e.g. "apollo.io"'),
+      organizationName: z.string().optional().describe('Company name'),
+      linkedinUrl: z.string().optional().describe('LinkedIn profile URL'),
+      apolloPersonId: z.string().optional().describe('Apollo person ID for direct lookup'),
+      revealPersonalEmails: z
+        .boolean()
+        .optional()
+        .describe('Set to true to include personal email addresses'),
+      revealPhoneNumber: z
+        .boolean()
+        .optional()
+        .describe('Set to true to include phone numbers'),
+      records: z
+        .array(
+          z.object({
+            email: z.string().optional(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            name: z.string().optional(),
+            domain: z.string().optional(),
+            organizationName: z.string().optional(),
+            linkedinUrl: z.string().optional(),
+            apolloPersonId: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('For bulk enrichment: array of up to 10 person records to enrich')
+    })
+  )
+  .output(
+    z.object({
+      person: z
+        .object({
+          personId: z.string().optional(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          name: z.string().optional(),
+          email: z.string().optional(),
+          emailStatus: z.string().optional(),
+          title: z.string().optional(),
+          headline: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          photoUrl: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          country: z.string().optional(),
+          seniority: z.string().optional(),
+          departments: z.array(z.string()).optional(),
+          organizationName: z.string().optional(),
+          organizationId: z.string().optional(),
+          employmentHistory: z
+            .array(
+              z.object({
+                organizationName: z.string().optional(),
+                title: z.string().optional(),
+                startDate: z.string().optional(),
+                endDate: z.string().optional(),
+                current: z.boolean().optional()
+              })
+            )
+            .optional()
+        })
+        .optional()
+        .describe('Enriched person data (single enrichment)'),
+      matches: z
+        .array(
+          z.object({
+            personId: z.string().optional(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            name: z.string().optional(),
+            email: z.string().optional(),
+            title: z.string().optional(),
+            linkedinUrl: z.string().optional(),
+            organizationName: z.string().optional()
+          })
+        )
+        .optional()
+        .describe('Enriched records (bulk enrichment)'),
+      creditsConsumed: z
+        .number()
+        .optional()
+        .describe('Number of credits consumed by this enrichment')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.records && ctx.input.records.length > 0) {

@@ -78,7 +78,7 @@ export class DynamoDBClient {
 
     let headers: Record<string, string> = {
       'Content-Type': 'application/x-amz-json-1.0',
-      'X-Amz-Target': `DynamoDB_20120810.${target}`,
+      'X-Amz-Target': `DynamoDB_20120810.${target}`
     };
 
     let signedHeaders = signRequest({
@@ -90,15 +90,15 @@ export class DynamoDBClient {
       secretAccessKey: this.secretAccessKey,
       sessionToken: this.sessionToken,
       region: this.region,
-      service: 'dynamodb',
+      service: 'dynamodb'
     });
 
     let axiosInstance = createAxios({
-      baseURL: this.endpoint,
+      baseURL: this.endpoint
     });
 
     let response = await axiosInstance.post('/', body, {
-      headers: signedHeaders,
+      headers: signedHeaders
     });
 
     return response.data;
@@ -110,7 +110,7 @@ export class DynamoDBClient {
 
     let headers: Record<string, string> = {
       'Content-Type': 'application/x-amz-json-1.0',
-      'X-Amz-Target': `DynamoDBStreams_20120810.${target}`,
+      'X-Amz-Target': `DynamoDBStreams_20120810.${target}`
     };
 
     let signedHeaders = signRequest({
@@ -122,7 +122,7 @@ export class DynamoDBClient {
       secretAccessKey: this.secretAccessKey,
       sessionToken: this.sessionToken,
       region: this.region,
-      service: 'dynamodb',
+      service: 'dynamodb'
     });
 
     let axiosInstance = createAxios({ baseURL: endpoint });
@@ -150,15 +150,19 @@ export class DynamoDBClient {
     let payload: Record<string, any> = {
       TableName: params.tableName,
       KeySchema: params.keySchema,
-      AttributeDefinitions: params.attributeDefinitions,
+      AttributeDefinitions: params.attributeDefinitions
     };
 
     if (params.billingMode) payload['BillingMode'] = params.billingMode;
-    if (params.provisionedThroughput) payload['ProvisionedThroughput'] = params.provisionedThroughput;
-    if (params.globalSecondaryIndexes) payload['GlobalSecondaryIndexes'] = params.globalSecondaryIndexes;
-    if (params.localSecondaryIndexes) payload['LocalSecondaryIndexes'] = params.localSecondaryIndexes;
+    if (params.provisionedThroughput)
+      payload['ProvisionedThroughput'] = params.provisionedThroughput;
+    if (params.globalSecondaryIndexes)
+      payload['GlobalSecondaryIndexes'] = params.globalSecondaryIndexes;
+    if (params.localSecondaryIndexes)
+      payload['LocalSecondaryIndexes'] = params.localSecondaryIndexes;
     if (params.tableClass) payload['TableClass'] = params.tableClass;
-    if (params.streamSpecification) payload['StreamSpecification'] = params.streamSpecification;
+    if (params.streamSpecification)
+      payload['StreamSpecification'] = params.streamSpecification;
     if (params.tags) payload['Tags'] = params.tags;
 
     return this.request('CreateTable', payload);
@@ -173,7 +177,8 @@ export class DynamoDBClient {
     limit?: number;
   }): Promise<any> {
     let payload: Record<string, any> = {};
-    if (params?.exclusiveStartTableName) payload['ExclusiveStartTableName'] = params.exclusiveStartTableName;
+    if (params?.exclusiveStartTableName)
+      payload['ExclusiveStartTableName'] = params.exclusiveStartTableName;
     if (params?.limit) payload['Limit'] = params.limit;
     return this.request('ListTables', payload);
   }
@@ -194,12 +199,15 @@ export class DynamoDBClient {
     tableClass?: 'STANDARD' | 'STANDARD_INFREQUENT_ACCESS';
   }): Promise<any> {
     let payload: Record<string, any> = {
-      TableName: params.tableName,
+      TableName: params.tableName
     };
     if (params.billingMode) payload['BillingMode'] = params.billingMode;
-    if (params.provisionedThroughput) payload['ProvisionedThroughput'] = params.provisionedThroughput;
-    if (params.globalSecondaryIndexUpdates) payload['GlobalSecondaryIndexUpdates'] = params.globalSecondaryIndexUpdates;
-    if (params.streamSpecification) payload['StreamSpecification'] = params.streamSpecification;
+    if (params.provisionedThroughput)
+      payload['ProvisionedThroughput'] = params.provisionedThroughput;
+    if (params.globalSecondaryIndexUpdates)
+      payload['GlobalSecondaryIndexUpdates'] = params.globalSecondaryIndexUpdates;
+    if (params.streamSpecification)
+      payload['StreamSpecification'] = params.streamSpecification;
     if (params.tableClass) payload['TableClass'] = params.tableClass;
     return this.request('UpdateTable', payload);
   }
@@ -216,11 +224,14 @@ export class DynamoDBClient {
   }): Promise<any> {
     let payload: Record<string, any> = {
       TableName: params.tableName,
-      Item: params.item,
+      Item: params.item
     };
-    if (params.conditionExpression) payload['ConditionExpression'] = params.conditionExpression;
-    if (params.expressionAttributeNames) payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
-    if (params.expressionAttributeValues) payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
+    if (params.conditionExpression)
+      payload['ConditionExpression'] = params.conditionExpression;
+    if (params.expressionAttributeNames)
+      payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
+    if (params.expressionAttributeValues)
+      payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
     if (params.returnValues) payload['ReturnValues'] = params.returnValues;
     return this.request('PutItem', payload);
   }
@@ -234,11 +245,13 @@ export class DynamoDBClient {
   }): Promise<any> {
     let payload: Record<string, any> = {
       TableName: params.tableName,
-      Key: params.key,
+      Key: params.key
     };
     if (params.consistentRead !== undefined) payload['ConsistentRead'] = params.consistentRead;
-    if (params.projectionExpression) payload['ProjectionExpression'] = params.projectionExpression;
-    if (params.expressionAttributeNames) payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
+    if (params.projectionExpression)
+      payload['ProjectionExpression'] = params.projectionExpression;
+    if (params.expressionAttributeNames)
+      payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
     return this.request('GetItem', payload);
   }
 
@@ -254,11 +267,14 @@ export class DynamoDBClient {
     let payload: Record<string, any> = {
       TableName: params.tableName,
       Key: params.key,
-      UpdateExpression: params.updateExpression,
+      UpdateExpression: params.updateExpression
     };
-    if (params.conditionExpression) payload['ConditionExpression'] = params.conditionExpression;
-    if (params.expressionAttributeNames) payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
-    if (params.expressionAttributeValues) payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
+    if (params.conditionExpression)
+      payload['ConditionExpression'] = params.conditionExpression;
+    if (params.expressionAttributeNames)
+      payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
+    if (params.expressionAttributeValues)
+      payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
     if (params.returnValues) payload['ReturnValues'] = params.returnValues;
     return this.request('UpdateItem', payload);
   }
@@ -273,11 +289,14 @@ export class DynamoDBClient {
   }): Promise<any> {
     let payload: Record<string, any> = {
       TableName: params.tableName,
-      Key: params.key,
+      Key: params.key
     };
-    if (params.conditionExpression) payload['ConditionExpression'] = params.conditionExpression;
-    if (params.expressionAttributeNames) payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
-    if (params.expressionAttributeValues) payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
+    if (params.conditionExpression)
+      payload['ConditionExpression'] = params.conditionExpression;
+    if (params.expressionAttributeNames)
+      payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
+    if (params.expressionAttributeValues)
+      payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
     if (params.returnValues) payload['ReturnValues'] = params.returnValues;
     return this.request('DeleteItem', payload);
   }
@@ -300,15 +319,19 @@ export class DynamoDBClient {
   }): Promise<any> {
     let payload: Record<string, any> = {
       TableName: params.tableName,
-      KeyConditionExpression: params.keyConditionExpression,
+      KeyConditionExpression: params.keyConditionExpression
     };
     if (params.indexName) payload['IndexName'] = params.indexName;
     if (params.filterExpression) payload['FilterExpression'] = params.filterExpression;
-    if (params.projectionExpression) payload['ProjectionExpression'] = params.projectionExpression;
-    if (params.expressionAttributeNames) payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
-    if (params.expressionAttributeValues) payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
+    if (params.projectionExpression)
+      payload['ProjectionExpression'] = params.projectionExpression;
+    if (params.expressionAttributeNames)
+      payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
+    if (params.expressionAttributeValues)
+      payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
     if (params.limit !== undefined) payload['Limit'] = params.limit;
-    if (params.scanIndexForward !== undefined) payload['ScanIndexForward'] = params.scanIndexForward;
+    if (params.scanIndexForward !== undefined)
+      payload['ScanIndexForward'] = params.scanIndexForward;
     if (params.consistentRead !== undefined) payload['ConsistentRead'] = params.consistentRead;
     if (params.exclusiveStartKey) payload['ExclusiveStartKey'] = params.exclusiveStartKey;
     if (params.select) payload['Select'] = params.select;
@@ -330,13 +353,16 @@ export class DynamoDBClient {
     select?: 'ALL_ATTRIBUTES' | 'ALL_PROJECTED_ATTRIBUTES' | 'SPECIFIC_ATTRIBUTES' | 'COUNT';
   }): Promise<any> {
     let payload: Record<string, any> = {
-      TableName: params.tableName,
+      TableName: params.tableName
     };
     if (params.indexName) payload['IndexName'] = params.indexName;
     if (params.filterExpression) payload['FilterExpression'] = params.filterExpression;
-    if (params.projectionExpression) payload['ProjectionExpression'] = params.projectionExpression;
-    if (params.expressionAttributeNames) payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
-    if (params.expressionAttributeValues) payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
+    if (params.projectionExpression)
+      payload['ProjectionExpression'] = params.projectionExpression;
+    if (params.expressionAttributeNames)
+      payload['ExpressionAttributeNames'] = params.expressionAttributeNames;
+    if (params.expressionAttributeValues)
+      payload['ExpressionAttributeValues'] = params.expressionAttributeValues;
     if (params.limit !== undefined) payload['Limit'] = params.limit;
     if (params.consistentRead !== undefined) payload['ConsistentRead'] = params.consistentRead;
     if (params.exclusiveStartKey) payload['ExclusiveStartKey'] = params.exclusiveStartKey;
@@ -349,26 +375,32 @@ export class DynamoDBClient {
   // Batch Operations
 
   async batchGetItem(params: {
-    requestItems: Record<string, {
-      Keys: DynamoDBItem[];
-      ConsistentRead?: boolean;
-      ProjectionExpression?: string;
-      ExpressionAttributeNames?: Record<string, string>;
-    }>;
+    requestItems: Record<
+      string,
+      {
+        Keys: DynamoDBItem[];
+        ConsistentRead?: boolean;
+        ProjectionExpression?: string;
+        ExpressionAttributeNames?: Record<string, string>;
+      }
+    >;
   }): Promise<any> {
     return this.request('BatchGetItem', {
-      RequestItems: params.requestItems,
+      RequestItems: params.requestItems
     });
   }
 
   async batchWriteItem(params: {
-    requestItems: Record<string, Array<{
-      PutRequest?: { Item: DynamoDBItem };
-      DeleteRequest?: { Key: DynamoDBItem };
-    }>>;
+    requestItems: Record<
+      string,
+      Array<{
+        PutRequest?: { Item: DynamoDBItem };
+        DeleteRequest?: { Key: DynamoDBItem };
+      }>
+    >;
   }): Promise<any> {
     return this.request('BatchWriteItem', {
-      RequestItems: params.requestItems,
+      RequestItems: params.requestItems
     });
   }
 
@@ -409,7 +441,7 @@ export class DynamoDBClient {
     clientRequestToken?: string;
   }): Promise<any> {
     let payload: Record<string, any> = {
-      TransactItems: params.transactItems,
+      TransactItems: params.transactItems
     };
     if (params.clientRequestToken) payload['ClientRequestToken'] = params.clientRequestToken;
     return this.request('TransactWriteItems', payload);
@@ -426,7 +458,7 @@ export class DynamoDBClient {
     }>;
   }): Promise<any> {
     return this.request('TransactGetItems', {
-      TransactItems: params.transactItems,
+      TransactItems: params.transactItems
     });
   }
 
@@ -440,7 +472,7 @@ export class DynamoDBClient {
     limit?: number;
   }): Promise<any> {
     let payload: Record<string, any> = {
-      Statement: params.statement,
+      Statement: params.statement
     };
     if (params.parameters) payload['Parameters'] = params.parameters;
     if (params.consistentRead !== undefined) payload['ConsistentRead'] = params.consistentRead;
@@ -464,8 +496,8 @@ export class DynamoDBClient {
       TableName: params.tableName,
       TimeToLiveSpecification: {
         Enabled: params.enabled,
-        AttributeName: params.attributeName,
-      },
+        AttributeName: params.attributeName
+      }
     });
   }
 
@@ -478,7 +510,8 @@ export class DynamoDBClient {
   }): Promise<any> {
     let payload: Record<string, any> = {};
     if (params?.tableName) payload['TableName'] = params.tableName;
-    if (params?.exclusiveStartStreamArn) payload['ExclusiveStartStreamArn'] = params.exclusiveStartStreamArn;
+    if (params?.exclusiveStartStreamArn)
+      payload['ExclusiveStartStreamArn'] = params.exclusiveStartStreamArn;
     if (params?.limit) payload['Limit'] = params.limit;
     return this.streamsRequest('ListStreams', payload);
   }
@@ -489,9 +522,10 @@ export class DynamoDBClient {
     limit?: number;
   }): Promise<any> {
     let payload: Record<string, any> = {
-      StreamArn: params.streamArn,
+      StreamArn: params.streamArn
     };
-    if (params.exclusiveStartShardId) payload['ExclusiveStartShardId'] = params.exclusiveStartShardId;
+    if (params.exclusiveStartShardId)
+      payload['ExclusiveStartShardId'] = params.exclusiveStartShardId;
     if (params.limit !== undefined) payload['Limit'] = params.limit;
     return this.streamsRequest('DescribeStream', payload);
   }
@@ -499,24 +533,25 @@ export class DynamoDBClient {
   async getShardIterator(params: {
     streamArn: string;
     shardId: string;
-    shardIteratorType: 'TRIM_HORIZON' | 'LATEST' | 'AT_SEQUENCE_NUMBER' | 'AFTER_SEQUENCE_NUMBER';
+    shardIteratorType:
+      | 'TRIM_HORIZON'
+      | 'LATEST'
+      | 'AT_SEQUENCE_NUMBER'
+      | 'AFTER_SEQUENCE_NUMBER';
     sequenceNumber?: string;
   }): Promise<any> {
     let payload: Record<string, any> = {
       StreamArn: params.streamArn,
       ShardId: params.shardId,
-      ShardIteratorType: params.shardIteratorType,
+      ShardIteratorType: params.shardIteratorType
     };
     if (params.sequenceNumber) payload['SequenceNumber'] = params.sequenceNumber;
     return this.streamsRequest('GetShardIterator', payload);
   }
 
-  async getRecords(params: {
-    shardIterator: string;
-    limit?: number;
-  }): Promise<any> {
+  async getRecords(params: { shardIterator: string; limit?: number }): Promise<any> {
     let payload: Record<string, any> = {
-      ShardIterator: params.shardIterator,
+      ShardIterator: params.shardIterator
     };
     if (params.limit !== undefined) payload['Limit'] = params.limit;
     return this.streamsRequest('GetRecords', payload);
@@ -524,13 +559,10 @@ export class DynamoDBClient {
 
   // Backup operations
 
-  async createBackup(params: {
-    tableName: string;
-    backupName: string;
-  }): Promise<any> {
+  async createBackup(params: { tableName: string; backupName: string }): Promise<any> {
     return this.request('CreateBackup', {
       TableName: params.tableName,
-      BackupName: params.backupName,
+      BackupName: params.backupName
     });
   }
 
@@ -542,7 +574,8 @@ export class DynamoDBClient {
   }): Promise<any> {
     let payload: Record<string, any> = {};
     if (params?.tableName) payload['TableName'] = params.tableName;
-    if (params?.exclusiveStartBackupArn) payload['ExclusiveStartBackupArn'] = params.exclusiveStartBackupArn;
+    if (params?.exclusiveStartBackupArn)
+      payload['ExclusiveStartBackupArn'] = params.exclusiveStartBackupArn;
     if (params?.limit) payload['Limit'] = params.limit;
     if (params?.backupType) payload['BackupType'] = params.backupType;
     return this.request('ListBackups', payload);
@@ -563,8 +596,8 @@ export class DynamoDBClient {
     return this.request('UpdateContinuousBackups', {
       TableName: params.tableName,
       PointInTimeRecoverySpecification: {
-        PointInTimeRecoveryEnabled: params.pointInTimeRecoveryEnabled,
-      },
+        PointInTimeRecoveryEnabled: params.pointInTimeRecoveryEnabled
+      }
     });
   }
 }

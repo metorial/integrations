@@ -16,7 +16,7 @@ import {
   getRecord,
   manageAttachments,
   generatePdf,
-  postStreamNote,
+  postStreamNote
 } from './tools';
 import { recordEvents } from './triggers';
 
@@ -38,9 +38,7 @@ export let provider = Slate.create({
     getRecord,
     manageAttachments,
     generatePdf,
-    postStreamNote,
+    postStreamNote
   ],
-  triggers: [
-    recordEvents,
-  ],
+  triggers: [recordEvents]
 });

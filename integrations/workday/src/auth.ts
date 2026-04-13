@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -16,61 +18,63 @@ export let auth = SlateAuth.create()
       {
         title: 'Staffing',
         description: 'Access to worker records, hiring, terminations, and staffing data',
-        scope: 'Staffing',
+        scope: 'Staffing'
       },
       {
         title: 'Public Data',
         description: 'Access to public worker profile data',
-        scope: 'Public Data',
+        scope: 'Public Data'
       },
       {
         title: 'Recruiting',
         description: 'Access to job requisitions and candidate data',
-        scope: 'Recruiting',
+        scope: 'Recruiting'
       },
       {
         title: 'Tenant Non-Configurable',
         description: 'Access to tenant-level non-configurable data',
-        scope: 'Tenant Non-Configurable',
+        scope: 'Tenant Non-Configurable'
       },
       {
         title: 'Time Tracking',
         description: 'Access to time tracking and time-off data',
-        scope: 'Time Tracking',
+        scope: 'Time Tracking'
       },
       {
         title: 'Absence Management',
         description: 'Access to absence and leave management data',
-        scope: 'Absence Management',
+        scope: 'Absence Management'
       },
       {
         title: 'Benefits',
         description: 'Access to benefits enrollment and plan data',
-        scope: 'Benefits',
+        scope: 'Benefits'
       },
       {
         title: 'Compensation',
         description: 'Access to compensation data',
-        scope: 'Compensation',
+        scope: 'Compensation'
       },
       {
         title: 'Integration',
         description: 'Access to integration system resources',
-        scope: 'Integration',
+        scope: 'Integration'
       },
       {
         title: 'WQL',
         description: 'Access to Workday Query Language for querying data',
-        scope: 'System',
-      },
+        scope: 'System'
+      }
     ],
 
     inputSchema: z.object({
-      baseUrl: z.string().describe('Workday REST API base URL (e.g., https://wd2-impl-services1.workday.com)'),
-      tenant: z.string().describe('Workday tenant name'),
+      baseUrl: z
+        .string()
+        .describe('Workday REST API base URL (e.g., https://wd2-impl-services1.workday.com)'),
+      tenant: z.string().describe('Workday tenant name')
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let baseUrl = ctx.input.baseUrl.replace(/\/$/, '');
       let scopes = ctx.scopes.join(' ');
       let url = `${baseUrl}/authorize?client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&response_type=code&state=${encodeURIComponent(ctx.state)}&scope=${encodeURIComponent(scopes)}`;
@@ -78,7 +82,7 @@ export let auth = SlateAuth.create()
       return { url, input: ctx.input };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let baseUrl = ctx.input.baseUrl.replace(/\/$/, '');
       let tokenUrl = `${baseUrl}/ccx/oauth2/${ctx.input.tenant}/token`;
 
@@ -93,8 +97,8 @@ export let auth = SlateAuth.create()
 
       let response = await ax.post(tokenUrl, params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data as {
@@ -112,13 +116,13 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
+          expiresAt
         },
-        input: ctx.input,
+        input: ctx.input
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         throw new Error('No refresh token available');
       }
@@ -137,8 +141,8 @@ export let auth = SlateAuth.create()
       let response = await ax.post(tokenUrl, params.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${credentials}`,
-        },
+          Authorization: `Basic ${credentials}`
+        }
       });
 
       let data = response.data as {
@@ -156,9 +160,9 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
+          expiresAt
         },
-        input: ctx.input,
+        input: ctx.input
       };
-    },
+    }
   });

@@ -5,56 +5,76 @@ import { z } from 'zod';
 
 let customFieldSchema = z.object({
   key: z.string().describe('Custom field key'),
-  value: z.string().describe('Custom field value'),
+  value: z.string().describe('Custom field value')
 });
 
-export let manageContact = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact',
-    key: 'manage_contact',
-    description: `Create, update, or delete a contact. Can also search for a contact by email. Supports all standard fields plus custom fields.`,
-    instructions: [
-      'To create a contact, set action to "create" and provide at least "firstName".',
-      'To update, set action to "update" and provide the "contactId" plus any fields to change.',
-      'To delete, set action to "delete" and provide the "contactId".',
-      'To search by email, set action to "search" and provide "email".',
-    ],
-    tags: {
-      destructive: true,
-    },
+export let manageContact = SlateTool.create(spec, {
+  name: 'Manage Contact',
+  key: 'manage_contact',
+  description: `Create, update, or delete a contact. Can also search for a contact by email. Supports all standard fields plus custom fields.`,
+  instructions: [
+    'To create a contact, set action to "create" and provide at least "firstName".',
+    'To update, set action to "update" and provide the "contactId" plus any fields to change.',
+    'To delete, set action to "delete" and provide the "contactId".',
+    'To search by email, set action to "search" and provide "email".'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete', 'search']).describe('Action to perform'),
-    contactId: z.number().optional().describe('Contact ID (required for update/delete)'),
-    firstName: z.string().optional().describe('First name (required for create)'),
-    lastName: z.string().optional().describe('Last name'),
-    email: z.string().optional().describe('Email address'),
-    phone: z.string().optional().describe('Phone number'),
-    title: z.string().optional().describe('Job title'),
-    company: z.string().optional().describe('Company name'),
-    companySize: z.string().optional().describe('Company size'),
-    industry: z.string().optional().describe('Industry'),
-    linkedInProfile: z.string().optional().describe('LinkedIn profile URL'),
-    linkedInSalesNavigator: z.string().optional().describe('LinkedIn Sales Navigator URL'),
-    linkedInRecruiter: z.string().optional().describe('LinkedIn Recruiter URL'),
-    city: z.string().optional().describe('City'),
-    state: z.string().optional().describe('State'),
-    country: z.string().optional().describe('Country'),
-    timeZone: z.string().optional().describe('Time zone'),
-    notes: z.string().optional().describe('Notes about the contact'),
-    customFields: z.array(customFieldSchema).optional().describe('Custom fields'),
-  }))
-  .output(z.object({
-    contact: z.record(z.string(), z.any()).optional().describe('Contact details'),
-    contacts: z.array(z.record(z.string(), z.any())).optional().describe('Search results'),
-    deleted: z.boolean().optional().describe('Whether the contact was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete', 'search']).describe('Action to perform'),
+      contactId: z.number().optional().describe('Contact ID (required for update/delete)'),
+      firstName: z.string().optional().describe('First name (required for create)'),
+      lastName: z.string().optional().describe('Last name'),
+      email: z.string().optional().describe('Email address'),
+      phone: z.string().optional().describe('Phone number'),
+      title: z.string().optional().describe('Job title'),
+      company: z.string().optional().describe('Company name'),
+      companySize: z.string().optional().describe('Company size'),
+      industry: z.string().optional().describe('Industry'),
+      linkedInProfile: z.string().optional().describe('LinkedIn profile URL'),
+      linkedInSalesNavigator: z.string().optional().describe('LinkedIn Sales Navigator URL'),
+      linkedInRecruiter: z.string().optional().describe('LinkedIn Recruiter URL'),
+      city: z.string().optional().describe('City'),
+      state: z.string().optional().describe('State'),
+      country: z.string().optional().describe('Country'),
+      timeZone: z.string().optional().describe('Time zone'),
+      notes: z.string().optional().describe('Notes about the contact'),
+      customFields: z.array(customFieldSchema).optional().describe('Custom fields')
+    })
+  )
+  .output(
+    z.object({
+      contact: z.record(z.string(), z.any()).optional().describe('Contact details'),
+      contacts: z.array(z.record(z.string(), z.any())).optional().describe('Search results'),
+      deleted: z.boolean().optional().describe('Whether the contact was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
-    let { action, contactId, firstName, lastName, email, phone, title, company, companySize, industry,
-      linkedInProfile, linkedInSalesNavigator, linkedInRecruiter, city, state, country, timeZone, notes, customFields } = ctx.input;
+    let {
+      action,
+      contactId,
+      firstName,
+      lastName,
+      email,
+      phone,
+      title,
+      company,
+      companySize,
+      industry,
+      linkedInProfile,
+      linkedInSalesNavigator,
+      linkedInRecruiter,
+      city,
+      state,
+      country,
+      timeZone,
+      notes,
+      customFields
+    } = ctx.input;
 
     let buildData = () => {
       let data: Record<string, any> = {};
@@ -67,7 +87,8 @@ export let manageContact = SlateTool.create(
       if (companySize !== undefined) data.companySize = companySize;
       if (industry !== undefined) data.industry = industry;
       if (linkedInProfile !== undefined) data.linkedInProfile = linkedInProfile;
-      if (linkedInSalesNavigator !== undefined) data.linkedInSalesNavigator = linkedInSalesNavigator;
+      if (linkedInSalesNavigator !== undefined)
+        data.linkedInSalesNavigator = linkedInSalesNavigator;
       if (linkedInRecruiter !== undefined) data.linkedInRecruiter = linkedInRecruiter;
       if (city !== undefined) data.city = city;
       if (state !== undefined) data.state = state;
@@ -83,7 +104,7 @@ export let manageContact = SlateTool.create(
       let contact = await client.createContact(buildData() as any);
       return {
         output: { contact },
-        message: `Created contact **${contact.firstName ?? ''} ${contact.lastName ?? ''}** (ID: ${contact.id}).`,
+        message: `Created contact **${contact.firstName ?? ''} ${contact.lastName ?? ''}** (ID: ${contact.id}).`
       };
     }
 
@@ -92,7 +113,7 @@ export let manageContact = SlateTool.create(
       let contact = await client.updateContact(contactId, buildData());
       return {
         output: { contact },
-        message: `Updated contact **${contactId}**.`,
+        message: `Updated contact **${contactId}**.`
       };
     }
 
@@ -101,7 +122,7 @@ export let manageContact = SlateTool.create(
       await client.deleteContact(contactId);
       return {
         output: { deleted: true },
-        message: `Deleted contact **${contactId}**.`,
+        message: `Deleted contact **${contactId}**.`
       };
     }
 
@@ -111,6 +132,7 @@ export let manageContact = SlateTool.create(
     let results = Array.isArray(contacts) ? contacts : [contacts];
     return {
       output: { contacts: results },
-      message: `Found **${results.length}** contact(s) matching **${email}**.`,
+      message: `Found **${results.length}** contact(s) matching **${email}**.`
     };
-  }).build();
+  })
+  .build();

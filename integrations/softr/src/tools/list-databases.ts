@@ -10,26 +10,25 @@ let databaseSchema = z.object({
   workspaceId: z.string().describe('ID of the workspace the database belongs to'),
   tablesCount: z.number().describe('Number of tables in the database'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listDatabases = SlateTool.create(
-  spec,
-  {
-    name: 'List Databases',
-    key: 'list_databases',
-    description: `Retrieve all databases accessible to the authenticated user. Returns database names, IDs, workspace associations, and table counts.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listDatabases = SlateTool.create(spec, {
+  name: 'List Databases',
+  key: 'list_databases',
+  description: `Retrieve all databases accessible to the authenticated user. Returns database names, IDs, workspace associations, and table counts.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    databases: z.array(databaseSchema).describe('List of accessible databases'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      databases: z.array(databaseSchema).describe('List of accessible databases')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DatabaseClient({ token: ctx.auth.token });
 
     let result = await client.listDatabases();
@@ -40,12 +39,12 @@ export let listDatabases = SlateTool.create(
       workspaceId: db.workspaceId,
       tablesCount: db.tablesCount ?? 0,
       createdAt: db.createdAt,
-      updatedAt: db.updatedAt,
+      updatedAt: db.updatedAt
     }));
 
     return {
       output: { databases },
-      message: `Found **${databases.length}** database(s).`,
+      message: `Found **${databases.length}** database(s).`
     };
   })
   .build();

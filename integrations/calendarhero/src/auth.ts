@@ -6,19 +6,23 @@ let httpClient = createAxios({
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string()
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('CalendarHero API token. Found in My Account > My Profile Settings > API.')
+      token: z
+        .string()
+        .describe('CalendarHero API token. Found in My Account > My Profile Settings > API.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

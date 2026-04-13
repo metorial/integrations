@@ -31,7 +31,5 @@ export let provider = Slate.create({
     getDomainTags,
     getSslCertificates
   ],
-  triggers: [
-    inboundWebhook,
-  ]
+  triggers: [inboundWebhook]
 });

@@ -2,9 +2,15 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Session cookie value for authenticated API access. Leave empty for unauthenticated endpoints (health check, instance info).'),
-  }))
+  .output(
+    z.object({
+      token: z
+        .string()
+        .describe(
+          'Session cookie value for authenticated API access. Leave empty for unauthenticated endpoints (health check, instance info).'
+        )
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Session Login',
@@ -13,21 +19,25 @@ export let auth = SlateAuth.create()
     inputSchema: z.object({
       instanceUrl: z.string().describe('The base URL of the Appsmith instance.'),
       email: z.string().describe('The email address used to log in to Appsmith.'),
-      password: z.string().describe('The password for the Appsmith account.'),
+      password: z.string().describe('The password for the Appsmith account.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let ax = createAxios({
         baseURL: ctx.input.instanceUrl,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
-      let response = await ax.post('/api/v1/login', `username=${encodeURIComponent(ctx.input.email)}&password=${encodeURIComponent(ctx.input.password)}`, {
-        maxRedirects: 0,
-        validateStatus: (status: number) => status < 400,
-      });
+      let response = await ax.post(
+        '/api/v1/login',
+        `username=${encodeURIComponent(ctx.input.email)}&password=${encodeURIComponent(ctx.input.password)}`,
+        {
+          maxRedirects: 0,
+          validateStatus: (status: number) => status < 400
+        }
+      );
 
       let setCookieHeaders = response.headers['set-cookie'];
       let sessionCookie = '';
@@ -49,17 +59,20 @@ export let auth = SlateAuth.create()
 
       return {
         output: {
-          token: sessionCookie,
-        },
+          token: sessionCookie
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { instanceUrl: string; email: string; password: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { instanceUrl: string; email: string; password: string };
+    }) => {
       let ax = createAxios({
         baseURL: ctx.input.instanceUrl,
         headers: {
-          'Cookie': `SESSION=${ctx.output.token}`,
-        },
+          Cookie: `SESSION=${ctx.output.token}`
+        }
       });
 
       let response = await ax.get('/api/v1/users/me');
@@ -69,9 +82,9 @@ export let auth = SlateAuth.create()
         profile: {
           id: user.id,
           email: user.email,
-          name: user.name,
-        },
+          name: user.name
+        }
       };
-    },
+    }
   })
   .addNone();

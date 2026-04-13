@@ -2,23 +2,27 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Token',
     key: 'api_token',
     inputSchema: z.object({
-      token: z.string().describe('ProxiedMail API token. Obtain from https://proxiedmail.com/en/settings'),
+      token: z
+        .string()
+        .describe('ProxiedMail API token. Obtain from https://proxiedmail.com/en/settings')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -26,15 +30,15 @@ export let auth = SlateAuth.create()
     key: 'email_password',
     inputSchema: z.object({
       email: z.string().describe('Your ProxiedMail account email address'),
-      password: z.string().describe('Your ProxiedMail account password'),
+      password: z.string().describe('Your ProxiedMail account password')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let axios = createAxios({
         baseURL: 'https://proxiedmail.com/api/v1',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+          Accept: 'application/json'
+        }
       });
 
       let loginResponse = await axios.post('/auth', {
@@ -42,25 +46,25 @@ export let auth = SlateAuth.create()
           type: 'auth-request',
           attributes: {
             username: ctx.input.email,
-            password: ctx.input.password,
-          },
-        },
+            password: ctx.input.password
+          }
+        }
       });
 
       let bearerToken = loginResponse.data.data.attributes.token;
 
       let tokenResponse = await axios.get('/api-token', {
         headers: {
-          Authorization: `Bearer ${bearerToken}`,
-        },
+          Authorization: `Bearer ${bearerToken}`
+        }
       });
 
       let apiToken = tokenResponse.data.token;
 
       return {
         output: {
-          token: apiToken,
-        },
+          token: apiToken
+        }
       };
-    },
+    }
   });

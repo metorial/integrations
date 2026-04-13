@@ -10,13 +10,9 @@ import {
   manageBroadcast,
   getCourseCompletions,
   startAutomation,
-  listTags,
+  listTags
 } from './tools';
-import {
-  subscriptionEvents,
-  purchaseEvents,
-  taggingEvents,
-} from './triggers';
+import { subscriptionEvents, purchaseEvents, taggingEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -30,11 +26,7 @@ export let provider = Slate.create({
     manageBroadcast,
     getCourseCompletions,
     startAutomation,
-    listTags,
+    listTags
   ],
-  triggers: [
-    subscriptionEvents,
-    purchaseEvents,
-    taggingEvents,
-  ],
+  triggers: [subscriptionEvents, purchaseEvents, taggingEvents]
 });

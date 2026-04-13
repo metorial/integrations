@@ -12,7 +12,7 @@ let skuSchema = z.object({
   width: z.number().optional(),
   height: z.number().optional(),
   length: z.number().optional(),
-  weight: z.number().optional(),
+  weight: z.number().optional()
 });
 
 let productSchema = z.object({
@@ -25,38 +25,41 @@ let productSchema = z.object({
   shippable: z.boolean().optional().describe('Whether the product can be shipped'),
   createdOn: z.string().optional().describe('ISO 8601 creation timestamp'),
   lastUpdated: z.string().optional().describe('ISO 8601 last update timestamp'),
-  skus: z.array(skuSchema).optional().describe('Product SKUs/variants'),
+  skus: z.array(skuSchema).optional().describe('Product SKUs/variants')
 });
 
-export let listProducts = SlateTool.create(
-  spec,
-  {
-    name: 'List Products',
-    key: 'list_products',
-    description: `List ecommerce products for a Webflow site, including associated SKUs (variants). Supports pagination for sites with many products.`,
-    tags: {
-      readOnly: true,
-    },
+export let listProducts = SlateTool.create(spec, {
+  name: 'List Products',
+  key: 'list_products',
+  description: `List ecommerce products for a Webflow site, including associated SKUs (variants). Supports pagination for sites with many products.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    siteId: z.string().describe('Unique identifier of the Webflow site'),
-    offset: z.number().optional().describe('Pagination offset'),
-    limit: z.number().optional().describe('Maximum number of products to return (max 100)'),
-  }))
-  .output(z.object({
-    products: z.array(productSchema).describe('List of products'),
-    pagination: z.object({
-      offset: z.number().optional(),
-      limit: z.number().optional(),
-      total: z.number().optional(),
-    }).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      siteId: z.string().describe('Unique identifier of the Webflow site'),
+      offset: z.number().optional().describe('Pagination offset'),
+      limit: z.number().optional().describe('Maximum number of products to return (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      products: z.array(productSchema).describe('List of products'),
+      pagination: z
+        .object({
+          offset: z.number().optional(),
+          limit: z.number().optional(),
+          total: z.number().optional()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new WebflowClient(ctx.auth.token);
     let data = await client.listProducts(ctx.input.siteId, {
       offset: ctx.input.offset,
-      limit: ctx.input.limit,
+      limit: ctx.input.limit
     });
 
     let products = (data.items ?? []).map((entry: any) => {
@@ -70,7 +73,7 @@ export let listProducts = SlateTool.create(
         width: s.fieldData?.width,
         height: s.fieldData?.height,
         length: s.fieldData?.length,
-        weight: s.fieldData?.weight,
+        weight: s.fieldData?.weight
       }));
 
       return {
@@ -83,12 +86,13 @@ export let listProducts = SlateTool.create(
         shippable: p.fieldData?.shippable ?? p.shippable,
         createdOn: p.createdOn,
         lastUpdated: p.lastUpdated,
-        skus,
+        skus
       };
     });
 
     return {
       output: { products, pagination: data.pagination },
-      message: `Found **${products.length}** product(s).`,
+      message: `Found **${products.length}** product(s).`
     };
-  }).build();
+  })
+  .build();

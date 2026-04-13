@@ -2,10 +2,7 @@
   "name": "@metorial/findymail",
   "version": "0.1.1",
   "description": "Find and verify professional B2B email addresses, phone numbers, and company information. Look up verified emails from names and company domains, verify email deliverability, perform reverse email lookups to find LinkedIn profiles, find direct phone numbers from LinkedIn profiles, enrich company data from domains or URLs, search for employees by company and job title, and discover leads using natural language AI-powered queries. Manage contact lists and check account credit balance.",
-  "categories": [
-    "apis-and-http-requests",
-    "crm-and-sales-tools"
-  ],
+  "categories": ["apis-and-http-requests", "crm-and-sales-tools"],
   "skills": [
     "find verified email addresses",
     "verify email deliverability",

@@ -3,41 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let jobCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Job Completed',
-    key: 'job_completed',
-    description: 'Triggers when a complete app job has finished processing. The webhook payload contains an array with all result data from the job.',
-  }
-)
-  .input(z.object({
-    resultRows: z.array(z.record(z.string(), z.unknown())).describe('Array of result data rows from the completed job'),
-  }))
-  .output(z.object({
-    rows: z.array(z.record(z.string(), z.unknown())).describe('All result rows from the completed job'),
-    rowCount: z.number().describe('Number of result rows'),
-  }))
+export let jobCompleted = SlateTrigger.create(spec, {
+  name: 'Job Completed',
+  key: 'job_completed',
+  description:
+    'Triggers when a complete app job has finished processing. The webhook payload contains an array with all result data from the job.'
+})
+  .input(
+    z.object({
+      resultRows: z
+        .array(z.record(z.string(), z.unknown()))
+        .describe('Array of result data rows from the completed job')
+    })
+  )
+  .output(
+    z.object({
+      rows: z
+        .array(z.record(z.string(), z.unknown()))
+        .describe('All result rows from the completed job'),
+      rowCount: z.number().describe('Number of result rows')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let webhook = await client.createWebhook({
         webhookName: 'Slates - Job Completed',
         webhookType: 'job',
         endpointUrl: ctx.input.webhookBaseUrl,
-        webhookReference: `slates-job-${Date.now()}`,
+        webhookReference: `slates-job-${Date.now()}`
       });
 
       return {
         registrationDetails: {
           webhookId: webhook.webhookId,
-          webhookReference: webhook.webhookReference,
-        },
+          webhookReference: webhook.webhookReference
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let ref = ctx.input.registrationDetails?.webhookReference;
       if (ref) {
@@ -45,7 +51,7 @@ export let jobCompleted = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
 
       // The webhook payload is an array of result data rows
@@ -54,13 +60,13 @@ export let jobCompleted = SlateTrigger.create(
       return {
         inputs: [
           {
-            resultRows,
-          },
-        ],
+            resultRows
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let rows = ctx.input.resultRows;
       let firstRow = rows[0] || {};
       let eventId = (firstRow.jobId as string) || `job-${Date.now()}`;
@@ -70,9 +76,9 @@ export let jobCompleted = SlateTrigger.create(
         id: eventId,
         output: {
           rows,
-          rowCount: rows.length,
-        },
+          rowCount: rows.length
+        }
       };
-    },
+    }
   })
   .build();

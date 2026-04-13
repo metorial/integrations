@@ -1,6 +1,13 @@
 import { Slate } from 'slates';
 import { spec } from './spec';
-import { transcribeAudio, getTranscription, uploadAudio, deleteTranscription, initiateLiveSession, getLiveSessionResult } from './tools';
+import {
+  transcribeAudio,
+  getTranscription,
+  uploadAudio,
+  deleteTranscription,
+  initiateLiveSession,
+  getLiveSessionResult
+} from './tools';
 import { transcriptionCompleted } from './triggers';
 
 export let provider = Slate.create({
@@ -11,9 +18,7 @@ export let provider = Slate.create({
     uploadAudio,
     deleteTranscription,
     initiateLiveSession,
-    getLiveSessionResult,
+    getLiveSessionResult
   ],
-  triggers: [
-    transcriptionCompleted,
-  ],
+  triggers: [transcriptionCompleted]
 });

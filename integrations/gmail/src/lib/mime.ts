@@ -42,7 +42,9 @@ export let buildMimeMessage = (params: {
     lines.push(`--${boundary}`);
   }
 
-  let contentType = params.isHtml ? 'text/html; charset="UTF-8"' : 'text/plain; charset="UTF-8"';
+  let contentType = params.isHtml
+    ? 'text/html; charset="UTF-8"'
+    : 'text/plain; charset="UTF-8"';
 
   if (hasAttachments) {
     lines.push(`Content-Type: ${contentType}`);
@@ -71,8 +73,5 @@ export let buildMimeMessage = (params: {
 };
 
 export let encodeBase64Url = (str: string): string => {
-  return btoa(str)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };

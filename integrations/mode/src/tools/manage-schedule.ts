@@ -14,31 +14,32 @@ let scheduleSchema = z.object({
   dayOfMonth: z.number().nullable().describe('Day of the month (1-31)'),
   timeZone: z.string().describe('Time zone for the schedule'),
   createdAt: z.string(),
-  updatedAt: z.string(),
+  updatedAt: z.string()
 });
 
-export let listReportSchedules = SlateTool.create(
-  spec,
-  {
-    name: 'List Report Schedules',
-    key: 'list_report_schedules',
-    description: `List all scheduled runs configured for a specific Mode report. Returns schedule details including frequency, time, and timezone.`,
-    tags: {
-      readOnly: true,
-    },
+export let listReportSchedules = SlateTool.create(spec, {
+  name: 'List Report Schedules',
+  key: 'list_report_schedules',
+  description: `List all scheduled runs configured for a specific Mode report. Returns schedule details including frequency, time, and timezone.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    reportToken: z.string().describe('Token of the report'),
-  }))
-  .output(z.object({
-    schedules: z.array(scheduleSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      reportToken: z.string().describe('Token of the report')
+    })
+  )
+  .output(
+    z.object({
+      schedules: z.array(scheduleSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ModeClient({
       token: ctx.auth.token,
       secret: ctx.auth.secret,
-      workspaceName: ctx.config.workspaceName,
+      workspaceName: ctx.config.workspaceName
     });
 
     let data = await client.listReportSchedules(ctx.input.reportToken);
@@ -46,45 +47,53 @@ export let listReportSchedules = SlateTool.create(
 
     return {
       output: { schedules },
-      message: `Found **${schedules.length}** schedules for the report.`,
+      message: `Found **${schedules.length}** schedules for the report.`
     };
   })
   .build();
 
-export let manageReportSchedule = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Report Schedule',
-    key: 'manage_report_schedule',
-    description: `Create, update, or delete a schedule for a Mode report.
+export let manageReportSchedule = SlateTool.create(spec, {
+  name: 'Manage Report Schedule',
+  key: 'manage_report_schedule',
+  description: `Create, update, or delete a schedule for a Mode report.
 Use **create** to set up a recurring schedule with configurable frequency, time, and timezone.
 Use **update** to modify an existing schedule's parameters.
 Use **delete** to remove a schedule.`,
-    tags: {
-      destructive: true,
-    },
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
-    reportToken: z.string().describe('Token of the report'),
-    scheduleToken: z.string().optional().describe('Token of the schedule (required for update/delete)'),
-    name: z.string().optional().describe('Name of the schedule'),
-    frequency: z.string().optional().describe('Frequency: hourly, daily, weekly, monthly'),
-    hour: z.number().optional().describe('Hour (0-23)'),
-    minute: z.number().optional().describe('Minute (0-59)'),
-    dayOfWeek: z.number().optional().describe('Day of week (0=Sunday, 6=Saturday) for weekly schedules'),
-    dayOfMonth: z.number().optional().describe('Day of month (1-31) for monthly schedules'),
-    timeZone: z.string().optional().describe('Time zone, e.g. "US/Eastern"'),
-    params: z.record(z.string(), z.any()).optional().describe('Parameters to pass to the scheduled report run'),
-    timeout: z.number().optional().describe('Timeout in seconds for the scheduled run'),
-  }))
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('Action to perform'),
+      reportToken: z.string().describe('Token of the report'),
+      scheduleToken: z
+        .string()
+        .optional()
+        .describe('Token of the schedule (required for update/delete)'),
+      name: z.string().optional().describe('Name of the schedule'),
+      frequency: z.string().optional().describe('Frequency: hourly, daily, weekly, monthly'),
+      hour: z.number().optional().describe('Hour (0-23)'),
+      minute: z.number().optional().describe('Minute (0-59)'),
+      dayOfWeek: z
+        .number()
+        .optional()
+        .describe('Day of week (0=Sunday, 6=Saturday) for weekly schedules'),
+      dayOfMonth: z.number().optional().describe('Day of month (1-31) for monthly schedules'),
+      timeZone: z.string().optional().describe('Time zone, e.g. "US/Eastern"'),
+      params: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Parameters to pass to the scheduled report run'),
+      timeout: z.number().optional().describe('Timeout in seconds for the scheduled run')
+    })
+  )
   .output(scheduleSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new ModeClient({
       token: ctx.auth.token,
       secret: ctx.auth.secret,
-      workspaceName: ctx.config.workspaceName,
+      workspaceName: ctx.config.workspaceName
     });
 
     let { action, reportToken } = ctx.input;
@@ -97,7 +106,7 @@ Use **delete** to remove a schedule.`,
       dayOfMonth: ctx.input.dayOfMonth,
       timeZone: ctx.input.timeZone,
       params: ctx.input.params,
-      timeout: ctx.input.timeout,
+      timeout: ctx.input.timeout
     };
 
     if (action === 'create') {
@@ -105,16 +114,20 @@ Use **delete** to remove a schedule.`,
       let schedule = normalizeSchedule(raw);
       return {
         output: schedule,
-        message: `Created schedule **${schedule.name || schedule.scheduleToken}** (${schedule.frequency}).`,
+        message: `Created schedule **${schedule.name || schedule.scheduleToken}** (${schedule.frequency}).`
       };
     }
 
     if (action === 'update') {
-      let raw = await client.updateReportSchedule(reportToken, ctx.input.scheduleToken!, scheduleData);
+      let raw = await client.updateReportSchedule(
+        reportToken,
+        ctx.input.scheduleToken!,
+        scheduleData
+      );
       let schedule = normalizeSchedule(raw);
       return {
         output: schedule,
-        message: `Updated schedule **${schedule.name || schedule.scheduleToken}**.`,
+        message: `Updated schedule **${schedule.name || schedule.scheduleToken}**.`
       };
     }
 
@@ -124,7 +137,7 @@ Use **delete** to remove a schedule.`,
     await client.deleteReportSchedule(reportToken, ctx.input.scheduleToken!);
     return {
       output: schedule,
-      message: `Deleted schedule **${schedule.name || schedule.scheduleToken}**.`,
+      message: `Deleted schedule **${schedule.name || schedule.scheduleToken}**.`
     };
   })
   .build();

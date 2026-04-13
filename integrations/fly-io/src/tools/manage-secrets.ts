@@ -3,40 +3,52 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageSecrets = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Secrets',
-    key: 'manage_secrets',
-    description: `List, set, or delete app-level secrets. Secrets are encrypted at rest and exposed as environment variables to Machines at boot time. Setting secrets does not immediately affect running Machines; they pick up changes on next launch.`,
-    instructions: [
-      'Use "list" to see secret names and digests (values are never exposed).',
-      'Use "set" to create or update one or more secrets at once.',
-      'Use "delete" to remove a specific secret by name.',
-    ],
-    constraints: [
-      'Secret values cannot be read back — only names and digests are shown.',
-      'Existing running Machines must be restarted to pick up newly set secrets.',
-    ],
-  }
-)
-  .input(z.object({
-    appName: z.string().describe('Name of the Fly App'),
-    action: z.enum(['list', 'set', 'delete']).describe('Action to perform'),
-    secrets: z.record(z.string(), z.string()).optional().describe('Key-value pairs of secrets to set (for "set" action)'),
-    secretName: z.string().optional().describe('Name of the secret to delete (for "delete" action)'),
-  }))
-  .output(z.object({
-    secrets: z.array(z.object({
-      label: z.string().describe('Secret name'),
-      type: z.string().describe('Secret type'),
-      digest: z.string().describe('Secret digest (hash)'),
-      createdAt: z.string().describe('Creation timestamp'),
-    })).optional().describe('List of secrets (for list action)'),
-    set: z.boolean().optional().describe('Whether secrets were set successfully'),
-    deleted: z.boolean().optional().describe('Whether the secret was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageSecrets = SlateTool.create(spec, {
+  name: 'Manage Secrets',
+  key: 'manage_secrets',
+  description: `List, set, or delete app-level secrets. Secrets are encrypted at rest and exposed as environment variables to Machines at boot time. Setting secrets does not immediately affect running Machines; they pick up changes on next launch.`,
+  instructions: [
+    'Use "list" to see secret names and digests (values are never exposed).',
+    'Use "set" to create or update one or more secrets at once.',
+    'Use "delete" to remove a specific secret by name.'
+  ],
+  constraints: [
+    'Secret values cannot be read back — only names and digests are shown.',
+    'Existing running Machines must be restarted to pick up newly set secrets.'
+  ]
+})
+  .input(
+    z.object({
+      appName: z.string().describe('Name of the Fly App'),
+      action: z.enum(['list', 'set', 'delete']).describe('Action to perform'),
+      secrets: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Key-value pairs of secrets to set (for "set" action)'),
+      secretName: z
+        .string()
+        .optional()
+        .describe('Name of the secret to delete (for "delete" action)')
+    })
+  )
+  .output(
+    z.object({
+      secrets: z
+        .array(
+          z.object({
+            label: z.string().describe('Secret name'),
+            type: z.string().describe('Secret type'),
+            digest: z.string().describe('Secret digest (hash)'),
+            createdAt: z.string().describe('Creation timestamp')
+          })
+        )
+        .optional()
+        .describe('List of secrets (for list action)'),
+      set: z.boolean().optional().describe('Whether secrets were set successfully'),
+      deleted: z.boolean().optional().describe('Whether the secret was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let { appName, action } = ctx.input;
 
@@ -45,7 +57,7 @@ export let manageSecrets = SlateTool.create(
         let secrets = await client.listSecrets(appName);
         return {
           output: { secrets },
-          message: `Found **${secrets.length}** secret(s) in app **${appName}**.`,
+          message: `Found **${secrets.length}** secret(s) in app **${appName}**.`
         };
       }
       case 'set': {
@@ -56,7 +68,7 @@ export let manageSecrets = SlateTool.create(
         let names = Object.keys(ctx.input.secrets);
         return {
           output: { set: true },
-          message: `Set **${names.length}** secret(s): ${names.map(n => `**${n}**`).join(', ')}.`,
+          message: `Set **${names.length}** secret(s): ${names.map(n => `**${n}**`).join(', ')}.`
         };
       }
       case 'delete': {
@@ -66,8 +78,9 @@ export let manageSecrets = SlateTool.create(
         await client.deleteSecret(appName, ctx.input.secretName);
         return {
           output: { deleted: true },
-          message: `Deleted secret **${ctx.input.secretName}** from app **${appName}**.`,
+          message: `Deleted secret **${ctx.input.secretName}** from app **${appName}**.`
         };
       }
     }
-  }).build();
+  })
+  .build();

@@ -3,35 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listFolders = SlateTool.create(
-  spec,
-  {
-    name: 'List Folders',
-    key: 'list_folders',
-    description: `List all folders in your account, optionally filtered by name. Also supports listing templates and renders within a specific folder.`,
-    tags: {
-      readOnly: true
-    }
+export let listFolders = SlateTool.create(spec, {
+  name: 'List Folders',
+  key: 'list_folders',
+  description: `List all folders in your account, optionally filtered by name. Also supports listing templates and renders within a specific folder.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().optional().describe('Filter folders by name'),
-    page: z.number().optional().describe('Page number (starts at 0)'),
-    limit: z.number().optional().describe('Results per page. Default: 25'),
-    folderId: z.string().optional().describe('If provided, list contents of this folder instead of all folders'),
-    contentType: z.enum(['templates', 'renders']).optional().describe('When folderId is provided, which content type to list. Default: templates')
-  }))
-  .output(z.object({
-    folders: z.array(z.object({
-      folderId: z.string().optional(),
-      folderName: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional()
-    })).optional(),
-    templates: z.array(z.any()).optional(),
-    renders: z.array(z.any()).optional()
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z.string().optional().describe('Filter folders by name'),
+      page: z.number().optional().describe('Page number (starts at 0)'),
+      limit: z.number().optional().describe('Results per page. Default: 25'),
+      folderId: z
+        .string()
+        .optional()
+        .describe('If provided, list contents of this folder instead of all folders'),
+      contentType: z
+        .enum(['templates', 'renders'])
+        .optional()
+        .describe('When folderId is provided, which content type to list. Default: templates')
+    })
+  )
+  .output(
+    z.object({
+      folders: z
+        .array(
+          z.object({
+            folderId: z.string().optional(),
+            folderName: z.string().optional(),
+            createdAt: z.string().optional(),
+            updatedAt: z.string().optional()
+          })
+        )
+        .optional(),
+      templates: z.array(z.any()).optional(),
+      renders: z.array(z.any()).optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     if (ctx.input.folderId) {
@@ -79,4 +90,5 @@ export let listFolders = SlateTool.create(
       },
       message: `Found **${items.length}** folder(s).`
     };
-  }).build();
+  })
+  .build();

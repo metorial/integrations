@@ -3,34 +3,35 @@ import { CincopaClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageAsset = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Asset',
-    key: 'manage_asset',
-    description: `Update metadata, delete, or resync a Cincopa asset. Use "update" to change title, description, reference ID, or filename. Use "delete" to permanently remove an asset. Use "resync" to reprocess an asset that failed during initial processing.`,
-    instructions: [
-      'For "update" action, provide the fields you want to change.',
-      'For "delete" action, the asset is permanently removed and cannot be recovered.',
-      'For "resync" action, the asset will be reprocessed by Cincopa.'
-    ],
-    tags: {
-      destructive: true
-    }
+export let manageAsset = SlateTool.create(spec, {
+  name: 'Manage Asset',
+  key: 'manage_asset',
+  description: `Update metadata, delete, or resync a Cincopa asset. Use "update" to change title, description, reference ID, or filename. Use "delete" to permanently remove an asset. Use "resync" to reprocess an asset that failed during initial processing.`,
+  instructions: [
+    'For "update" action, provide the fields you want to change.',
+    'For "delete" action, the asset is permanently removed and cannot be recovered.',
+    'For "resync" action, the asset will be reprocessed by Cincopa.'
+  ],
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    assetId: z.string().describe('Asset ID (rid) to manage'),
-    action: z.enum(['update', 'delete', 'resync']).describe('Action to perform'),
-    title: z.string().optional().describe('New title (for update action)'),
-    description: z.string().optional().describe('New description (for update action)'),
-    referenceId: z.string().optional().describe('New reference ID (for update action)'),
-    fileName: z.string().optional().describe('New filename (for update action)')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      assetId: z.string().describe('Asset ID (rid) to manage'),
+      action: z.enum(['update', 'delete', 'resync']).describe('Action to perform'),
+      title: z.string().optional().describe('New title (for update action)'),
+      description: z.string().optional().describe('New description (for update action)'),
+      referenceId: z.string().optional().describe('New reference ID (for update action)'),
+      fileName: z.string().optional().describe('New filename (for update action)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CincopaClient({ token: ctx.auth.token });
     let { action, assetId } = ctx.input;
 
@@ -65,4 +66,5 @@ export let manageAsset = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${action}`);
-  }).build();
+  })
+  .build();

@@ -2,9 +2,7 @@
   "name": "@metorial/okta",
   "version": "0.1.1",
   "description": "Manage identity and access management for organizations. Create, update, deactivate, and search users. Manage groups and group memberships. Assign users and groups to applications. Configure multi-factor authentication enrollment and verification. Create and manage OAuth 2.0 authorization servers, scopes, claims, and access policies. Set sign-on, password, and MFA enrollment policies. Query system logs for auditing and troubleshooting. Manage user sessions, devices, and inline hooks for customizing authentication flows. Supports webhooks for user authentication, lifecycle, group, application, policy, and security events.",
-  "categories": [
-    "security"
-  ],
+  "categories": ["security"],
   "skills": [
     "manage user lifecycle",
     "manage group membership",

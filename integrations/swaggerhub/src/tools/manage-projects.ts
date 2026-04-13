@@ -3,48 +3,71 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let projectSchema = z.object({
-  projectId: z.string().optional().describe('Project identifier'),
-  name: z.string().optional().describe('Project name'),
-  description: z.string().optional().describe('Project description'),
-  apis: z.array(z.string()).optional().describe('API names in the project'),
-  domains: z.array(z.string()).optional().describe('Domain names in the project'),
-}).passthrough();
-
-export let manageProjects = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Projects',
-    key: 'manage_projects',
-    description: `List, create, update, or delete projects in SwaggerHub. Projects organize APIs and domains into logical groups for better team-level access control. You can also add APIs or domains to existing projects.`,
-    instructions: [
-      'To list all projects for an owner, set action to "list".',
-      'To add an API or domain to a project, set action to "add_resource" and provide specType and resourceName.',
-    ],
-  }
-)
-  .input(z.object({
-    owner: z.string().optional().describe('Owner (username or organization). Falls back to config owner.'),
-    action: z.enum(['list', 'get', 'create', 'update', 'delete', 'add_resource']).describe('Operation to perform'),
-    projectId: z.string().optional().describe('Project ID (required for get, update, delete, add_resource)'),
-    name: z.string().optional().describe('Project name (required for create)'),
+let projectSchema = z
+  .object({
+    projectId: z.string().optional().describe('Project identifier'),
+    name: z.string().optional().describe('Project name'),
     description: z.string().optional().describe('Project description'),
-    specType: z.enum(['apis', 'domains']).optional().describe('Type of resource to add (for add_resource action)'),
-    resourceName: z.string().optional().describe('Name of the API or domain to add (for add_resource action)'),
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema).optional().describe('List of projects (for list action)'),
-    project: projectSchema.optional().describe('Project details'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+    apis: z.array(z.string()).optional().describe('API names in the project'),
+    domains: z.array(z.string()).optional().describe('Domain names in the project')
+  })
+  .passthrough();
+
+export let manageProjects = SlateTool.create(spec, {
+  name: 'Manage Projects',
+  key: 'manage_projects',
+  description: `List, create, update, or delete projects in SwaggerHub. Projects organize APIs and domains into logical groups for better team-level access control. You can also add APIs or domains to existing projects.`,
+  instructions: [
+    'To list all projects for an owner, set action to "list".',
+    'To add an API or domain to a project, set action to "add_resource" and provide specType and resourceName.'
+  ]
+})
+  .input(
+    z.object({
+      owner: z
+        .string()
+        .optional()
+        .describe('Owner (username or organization). Falls back to config owner.'),
+      action: z
+        .enum(['list', 'get', 'create', 'update', 'delete', 'add_resource'])
+        .describe('Operation to perform'),
+      projectId: z
+        .string()
+        .optional()
+        .describe('Project ID (required for get, update, delete, add_resource)'),
+      name: z.string().optional().describe('Project name (required for create)'),
+      description: z.string().optional().describe('Project description'),
+      specType: z
+        .enum(['apis', 'domains'])
+        .optional()
+        .describe('Type of resource to add (for add_resource action)'),
+      resourceName: z
+        .string()
+        .optional()
+        .describe('Name of the API or domain to add (for add_resource action)')
+    })
+  )
+  .output(
+    z.object({
+      projects: z
+        .array(projectSchema)
+        .optional()
+        .describe('List of projects (for list action)'),
+      project: projectSchema.optional().describe('Project details'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      baseUrl: ctx.config.baseUrl,
+      baseUrl: ctx.config.baseUrl
     });
 
     let owner = ctx.input.owner || ctx.config.owner;
-    if (!owner) throw new Error('Owner is required. Provide it in the input or configure a default owner.');
+    if (!owner)
+      throw new Error(
+        'Owner is required. Provide it in the input or configure a default owner.'
+      );
 
     let { action, projectId, name, description, specType, resourceName } = ctx.input;
 
@@ -54,7 +77,7 @@ export let manageProjects = SlateTool.create(
         let projects = Array.isArray(result) ? result : [];
         return {
           output: { projects, success: true },
-          message: `Found **${projects.length}** project(s) for **${owner}**.`,
+          message: `Found **${projects.length}** project(s) for **${owner}**.`
         };
       }
       case 'get': {
@@ -62,7 +85,7 @@ export let manageProjects = SlateTool.create(
         let project = await client.getProject(owner, projectId);
         return {
           output: { project, success: true },
-          message: `Retrieved project **${projectId}** for **${owner}**.`,
+          message: `Retrieved project **${projectId}** for **${owner}**.`
         };
       }
       case 'create': {
@@ -70,7 +93,7 @@ export let manageProjects = SlateTool.create(
         let project = await client.createProject(owner, { name, description });
         return {
           output: { project, success: true },
-          message: `Created project **${name}** for **${owner}**.`,
+          message: `Created project **${name}** for **${owner}**.`
         };
       }
       case 'update': {
@@ -78,7 +101,7 @@ export let manageProjects = SlateTool.create(
         let project = await client.updateProject(owner, projectId, { name, description });
         return {
           output: { project, success: true },
-          message: `Updated project **${projectId}** for **${owner}**.`,
+          message: `Updated project **${projectId}** for **${owner}**.`
         };
       }
       case 'delete': {
@@ -86,7 +109,7 @@ export let manageProjects = SlateTool.create(
         await client.deleteProject(owner, projectId);
         return {
           output: { success: true },
-          message: `Deleted project **${projectId}** from **${owner}**.`,
+          message: `Deleted project **${projectId}** from **${owner}**.`
         };
       }
       case 'add_resource': {
@@ -96,8 +119,9 @@ export let manageProjects = SlateTool.create(
         await client.addToProject(owner, projectId, specType, resourceName);
         return {
           output: { success: true },
-          message: `Added ${specType === 'apis' ? 'API' : 'domain'} **${resourceName}** to project **${projectId}**.`,
+          message: `Added ${specType === 'apis' ? 'API' : 'domain'} **${resourceName}** to project **${projectId}**.`
         };
       }
     }
-  }).build();
+  })
+  .build();

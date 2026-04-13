@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   searchEventsTool,
@@ -11,13 +10,9 @@ import {
   getEventOffersTool,
   checkInventoryStatusTool,
   browseClassificationsTool,
-  suggestSearchTool,
+  suggestSearchTool
 } from './tools';
-import {
-  newEventsTrigger,
-  eventStatusChangesTrigger,
-  inboundWebhook,
-} from './triggers';
+import { newEventsTrigger, eventStatusChangesTrigger, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -31,11 +26,7 @@ export let provider = Slate.create({
     getEventOffersTool,
     checkInventoryStatusTool,
     browseClassificationsTool,
-    suggestSearchTool,
+    suggestSearchTool
   ],
-  triggers: [
-    inboundWebhook,
-    newEventsTrigger,
-    eventStatusChangesTrigger,
-  ],
+  triggers: [inboundWebhook, newEventsTrigger, eventStatusChangesTrigger]
 });

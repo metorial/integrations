@@ -5,11 +5,11 @@ import type {
   DataHistoryResponse,
   FolderContentResponse,
   Folder,
-  CrawlerPage,
+  CrawlerPage
 } from './types';
 
 let http = createAxios({
-  baseURL: 'https://api.wachete.com/thirdparty/v1',
+  baseURL: 'https://api.wachete.com/thirdparty/v1'
 });
 
 export class Client {
@@ -18,7 +18,7 @@ export class Client {
   constructor(private config: { token: string }) {
     this.headers = {
       Authorization: `bearer ${config.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -41,7 +41,7 @@ export class Client {
   async searchWachets(query: string): Promise<Wachet[]> {
     let response = await http.get('/task/search', {
       headers: this.headers,
-      params: { query },
+      params: { query }
     });
     return response.data;
   }
@@ -63,7 +63,7 @@ export class Client {
   }): Promise<NotificationListResponse> {
     let response = await http.get('/notification/list', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -82,16 +82,19 @@ export class Client {
 
   // --- Data History ---
 
-  async listDataHistory(wachetId: string, params?: {
-    from?: string;
-    to?: string;
-    count?: number;
-    returnDiff?: boolean;
-    continuationToken?: string;
-  }): Promise<DataHistoryResponse> {
+  async listDataHistory(
+    wachetId: string,
+    params?: {
+      from?: string;
+      to?: string;
+      count?: number;
+      returnDiff?: boolean;
+      continuationToken?: string;
+    }
+  ): Promise<DataHistoryResponse> {
     let response = await http.get(`/data/list/${wachetId}`, {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }
@@ -104,7 +107,7 @@ export class Client {
   }): Promise<FolderContentResponse> {
     let response = await http.get('/folder/list', {
       headers: this.headers,
-      params,
+      params
     });
     return response.data;
   }

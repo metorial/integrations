@@ -62,7 +62,12 @@ export class DropboxClient {
     return response.data;
   }
 
-  async moveFile(fromPath: string, toPath: string, autorename: boolean = false, allowOwnershipTransfer: boolean = false) {
+  async moveFile(
+    fromPath: string,
+    toPath: string,
+    autorename: boolean = false,
+    allowOwnershipTransfer: boolean = false
+  ) {
     let response = await this.api.post('/files/move_v2', {
       from_path: fromPath,
       to_path: toPath,
@@ -72,7 +77,12 @@ export class DropboxClient {
     return response.data;
   }
 
-  async copyFile(fromPath: string, toPath: string, autorename: boolean = false, allowOwnershipTransfer: boolean = false) {
+  async copyFile(
+    fromPath: string,
+    toPath: string,
+    autorename: boolean = false,
+    allowOwnershipTransfer: boolean = false
+  ) {
     let response = await this.api.post('/files/copy_v2', {
       from_path: fromPath,
       to_path: toPath,
@@ -82,7 +92,13 @@ export class DropboxClient {
     return response.data;
   }
 
-  async uploadFile(path: string, content: string, mode: string = 'add', autorename: boolean = false, mute: boolean = false) {
+  async uploadFile(
+    path: string,
+    content: string,
+    mode: string = 'add',
+    autorename: boolean = false,
+    mute: boolean = false
+  ) {
     let response = await this.content.post('/files/upload', content, {
       headers: {
         'Content-Type': 'application/octet-stream',
@@ -115,7 +131,12 @@ export class DropboxClient {
 
   // ── Search ───────────────────────────────────────────────────
 
-  async searchFiles(query: string, path?: string, maxResults?: number, fileCategories?: string[]) {
+  async searchFiles(
+    query: string,
+    path?: string,
+    maxResults?: number,
+    fileCategories?: string[]
+  ) {
     let options: Record<string, any> = {};
     if (path) {
       options.path = path;
@@ -152,14 +173,17 @@ export class DropboxClient {
 
   // ── Sharing ──────────────────────────────────────────────────
 
-  async createSharedLink(path: string, settings?: {
-    requestedVisibility?: string;
-    audience?: string;
-    access?: string;
-    allowDownload?: boolean;
-    password?: string;
-    expires?: string;
-  }) {
+  async createSharedLink(
+    path: string,
+    settings?: {
+      requestedVisibility?: string;
+      audience?: string;
+      access?: string;
+      allowDownload?: boolean;
+      password?: string;
+      expires?: string;
+    }
+  ) {
     let requestSettings: Record<string, any> = {};
     if (settings?.requestedVisibility) {
       requestSettings.requested_visibility = { '.tag': settings.requestedVisibility };
@@ -201,7 +225,13 @@ export class DropboxClient {
     await this.api.post('/sharing/revoke_shared_link', { url });
   }
 
-  async shareFolder(path: string, memberPolicy?: string, aclUpdatePolicy?: string, sharedLinkPolicy?: string, forceAsync: boolean = false) {
+  async shareFolder(
+    path: string,
+    memberPolicy?: string,
+    aclUpdatePolicy?: string,
+    sharedLinkPolicy?: string,
+    forceAsync: boolean = false
+  ) {
     let body: Record<string, any> = { path, force_async: forceAsync };
     if (memberPolicy) body.member_policy = { '.tag': memberPolicy };
     if (aclUpdatePolicy) body.acl_update_policy = { '.tag': aclUpdatePolicy };
@@ -211,7 +241,12 @@ export class DropboxClient {
     return response.data;
   }
 
-  async addFolderMember(sharedFolderId: string, members: { email: string; accessLevel?: string }[], quiet: boolean = false, customMessage?: string) {
+  async addFolderMember(
+    sharedFolderId: string,
+    members: { email: string; accessLevel?: string }[],
+    quiet: boolean = false,
+    customMessage?: string
+  ) {
     let response = await this.api.post('/sharing/add_folder_member', {
       shared_folder_id: sharedFolderId,
       members: members.map(m => ({
@@ -224,7 +259,11 @@ export class DropboxClient {
     return response.data;
   }
 
-  async removeFolderMember(sharedFolderId: string, memberEmail: string, leaveACopy: boolean = false) {
+  async removeFolderMember(
+    sharedFolderId: string,
+    memberEmail: string,
+    leaveACopy: boolean = false
+  ) {
     let response = await this.api.post('/sharing/remove_folder_member', {
       shared_folder_id: sharedFolderId,
       member: { '.tag': 'email', email: memberEmail },
@@ -243,7 +282,12 @@ export class DropboxClient {
 
   // ── File Requests ────────────────────────────────────────────
 
-  async createFileRequest(title: string, destination: string, deadline?: string, open: boolean = true) {
+  async createFileRequest(
+    title: string,
+    destination: string,
+    deadline?: string,
+    open: boolean = true
+  ) {
     let body: Record<string, any> = {
       title,
       destination,
@@ -269,15 +313,17 @@ export class DropboxClient {
     return response.data;
   }
 
-  async updateFileRequest(fileRequestId: string, updates: { title?: string; destination?: string; deadline?: string | null; open?: boolean }) {
+  async updateFileRequest(
+    fileRequestId: string,
+    updates: { title?: string; destination?: string; deadline?: string | null; open?: boolean }
+  ) {
     let body: Record<string, any> = { id: fileRequestId };
     if (updates.title !== undefined) body.title = updates.title;
     if (updates.destination !== undefined) body.destination = updates.destination;
     if (updates.open !== undefined) body.open = updates.open;
     if (updates.deadline !== undefined) {
-      body.deadline = updates.deadline === null
-        ? { '.tag': 'no_deadline' }
-        : { deadline: updates.deadline };
+      body.deadline =
+        updates.deadline === null ? { '.tag': 'no_deadline' } : { deadline: updates.deadline };
     }
 
     let response = await this.api.post('/file_requests/update', body);

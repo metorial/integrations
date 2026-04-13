@@ -93,6 +93,7 @@ For a select DocType, you can create a webhook that triggers on specific documen
 - **on_change** — triggered when a document value changes.
 
 Configuration options:
+
 - **DocType**: Select which DocType to watch (e.g., Sales Order, Invoice, Customer).
 - **Condition**: Optionally define conditions (using Frappe's expression syntax) to only trigger the webhook for specific scenarios.
 - **Request URL**: The destination URL that receives the webhook payload.

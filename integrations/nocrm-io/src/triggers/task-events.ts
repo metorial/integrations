@@ -3,47 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let taskEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Post-Sales Task Events',
-    key: 'task_events',
-    description: 'Fires when post-sales task status changes occur (done, standby, todo).',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of task event'),
-    webhookId: z.number().optional().describe('Webhook ID'),
-    taskId: z.number().optional().describe('ID of the affected task'),
-    task: z.any().describe('Task data from the webhook payload'),
-  }))
-  .output(z.object({
-    taskId: z.number().optional().describe('Task ID'),
-    leadId: z.number().optional().describe('Associated lead ID'),
-    taskName: z.string().optional().describe('Task name'),
-    taskStatus: z.string().optional().describe('Current task status (todo, standby, done)'),
-    processName: z.string().optional().describe('Post-sales process name'),
-    updatedAt: z.string().optional().describe('Last update timestamp'),
-  }))
+export let taskEvents = SlateTrigger.create(spec, {
+  name: 'Post-Sales Task Events',
+  key: 'task_events',
+  description: 'Fires when post-sales task status changes occur (done, standby, todo).'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of task event'),
+      webhookId: z.number().optional().describe('Webhook ID'),
+      taskId: z.number().optional().describe('ID of the affected task'),
+      task: z.any().describe('Task data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      taskId: z.number().optional().describe('Task ID'),
+      leadId: z.number().optional().describe('Associated lead ID'),
+      taskName: z.string().optional().describe('Task name'),
+      taskStatus: z.string().optional().describe('Current task status (todo, standby, done)'),
+      processName: z.string().optional().describe('Post-sales process name'),
+      updatedAt: z.string().optional().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         subdomain: ctx.config.subdomain,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
-      let webhook = await client.createWebhook('task.status.changed', ctx.input.webhookBaseUrl);
+      let webhook = await client.createWebhook(
+        'task.status.changed',
+        ctx.input.webhookBaseUrl
+      );
       await client.activateWebhook(webhook.id);
 
       return {
-        registrationDetails: { webhooks: [{ webhookId: webhook.id, event: 'task.status.changed' }] },
+        registrationDetails: {
+          webhooks: [{ webhookId: webhook.id, event: 'task.status.changed' }]
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         subdomain: ctx.config.subdomain,
-        token: ctx.auth.token,
+        token: ctx.auth.token
       });
 
       let webhooks = ctx.input.registrationDetails?.webhooks || [];
@@ -56,23 +62,25 @@ export let taskEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventType = body.event || body.webhook_event || 'task.status.changed';
       let task = body.task || body;
 
       return {
-        inputs: [{
-          eventType,
-          webhookId: body.webhook_id,
-          taskId: task.id || body.id,
-          task,
-        }],
+        inputs: [
+          {
+            eventType,
+            webhookId: body.webhook_id,
+            taskId: task.id || body.id,
+            task
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let task = ctx.input.task || {};
 
       return {
@@ -84,9 +92,9 @@ export let taskEvents = SlateTrigger.create(
           taskName: task.name || task.title,
           taskStatus: task.status,
           processName: task.process_name,
-          updatedAt: task.updated_at,
-        },
+          updatedAt: task.updated_at
+        }
       };
-    },
+    }
   })
   .build();

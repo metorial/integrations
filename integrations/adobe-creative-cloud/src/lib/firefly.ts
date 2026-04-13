@@ -33,7 +33,7 @@ export class FireflyClient {
       ...(params.style ? { style: params.style } : {}),
       ...(params.seeds ? { seeds: params.seeds } : {}),
       ...(params.visualIntensity ? { visualIntensity: params.visualIntensity } : {}),
-      ...(params.locale ? { locale: params.locale } : {}),
+      ...(params.locale ? { locale: params.locale } : {})
     });
     return response.data;
   }
@@ -50,7 +50,7 @@ export class FireflyClient {
       mask: params.mask,
       ...(params.prompt ? { prompt: params.prompt } : {}),
       numVariations: params.numVariations || 1,
-      ...(params.size ? { size: params.size } : {}),
+      ...(params.size ? { size: params.size } : {})
     });
     return response.data;
   }
@@ -67,7 +67,7 @@ export class FireflyClient {
       size: params.size,
       ...(params.prompt ? { prompt: params.prompt } : {}),
       numVariations: params.numVariations || 1,
-      ...(params.placement ? { placement: params.placement } : {}),
+      ...(params.placement ? { placement: params.placement } : {})
     });
     return response.data;
   }
@@ -80,7 +80,7 @@ export class FireflyClient {
     let response = await this.http.post('/v3/images/generate-object-composite', {
       image: params.image,
       ...(params.placement ? { placement: params.placement } : {}),
-      ...(params.contentClass ? { contentClass: params.contentClass } : {}),
+      ...(params.contentClass ? { contentClass: params.contentClass } : {})
     });
     return response.data;
   }

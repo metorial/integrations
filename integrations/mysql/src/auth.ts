@@ -2,25 +2,31 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    host: z.string().describe('MySQL server hostname or IP address'),
-    port: z.number().describe('MySQL server port'),
-    database: z.string().describe('Target database name'),
-    username: z.string().describe('Database username'),
-    password: z.string().describe('Database password'),
-    sslMode: z.enum(['disabled', 'preferred', 'required']).describe('SSL connection mode'),
-    connectionString: z.string().describe('Full MySQL connection URI'),
-  }))
+  .output(
+    z.object({
+      host: z.string().describe('MySQL server hostname or IP address'),
+      port: z.number().describe('MySQL server port'),
+      database: z.string().describe('Target database name'),
+      username: z.string().describe('Database username'),
+      password: z.string().describe('Database password'),
+      sslMode: z.enum(['disabled', 'preferred', 'required']).describe('SSL connection mode'),
+      connectionString: z.string().describe('Full MySQL connection URI')
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Connection String',
     key: 'connection_string',
 
     inputSchema: z.object({
-      connectionString: z.string().describe('MySQL connection URI (e.g., mysql://user:password@host:3306/dbname?ssl=required)'),
+      connectionString: z
+        .string()
+        .describe(
+          'MySQL connection URI (e.g., mysql://user:password@host:3306/dbname?ssl=required)'
+        )
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let connStr = ctx.input.connectionString.trim();
       let parsed = parseConnectionString(connStr);
 
@@ -32,10 +38,10 @@ export let auth = SlateAuth.create()
           username: parsed.username,
           password: parsed.password,
           sslMode: parsed.sslMode,
-          connectionString: connStr,
-        },
+          connectionString: connStr
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
@@ -48,10 +54,13 @@ export let auth = SlateAuth.create()
       database: z.string().describe('Target database name'),
       username: z.string().describe('Database username'),
       password: z.string().describe('Database password'),
-      sslMode: z.enum(['disabled', 'preferred', 'required']).default('preferred').describe('SSL connection mode'),
+      sslMode: z
+        .enum(['disabled', 'preferred', 'required'])
+        .default('preferred')
+        .describe('SSL connection mode')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let { host, port, database, username, password, sslMode } = ctx.input;
       let encodedPassword = encodeURIComponent(password);
       let encodedUsername = encodeURIComponent(username);
@@ -66,13 +75,15 @@ export let auth = SlateAuth.create()
           username,
           password,
           sslMode,
-          connectionString,
-        },
+          connectionString
+        }
       };
-    },
+    }
   });
 
-let parseConnectionString = (connStr: string): {
+let parseConnectionString = (
+  connStr: string
+): {
   host: string;
   port: number;
   database: string;
@@ -86,13 +97,15 @@ let parseConnectionString = (connStr: string): {
     let normalized = connStr.replace(/^mysql:\/\//, 'http://');
     url = new URL(normalized);
   } catch {
-    throw new Error('Invalid MySQL connection string format. Expected: mysql://user:password@host:port/dbname');
+    throw new Error(
+      'Invalid MySQL connection string format. Expected: mysql://user:password@host:port/dbname'
+    );
   }
 
   let sslParam = url.searchParams.get('ssl') || url.searchParams.get('sslmode') || 'preferred';
   let validSslModes = ['disabled', 'preferred', 'required'] as const;
-  let sslMode: typeof validSslModes[number] = validSslModes.includes(sslParam as any)
-    ? (sslParam as typeof validSslModes[number])
+  let sslMode: (typeof validSslModes)[number] = validSslModes.includes(sslParam as any)
+    ? (sslParam as (typeof validSslModes)[number])
     : 'preferred';
 
   return {
@@ -101,6 +114,6 @@ let parseConnectionString = (connStr: string): {
     database: url.pathname.replace(/^\//, '') || '',
     username: decodeURIComponent(url.username || 'root'),
     password: decodeURIComponent(url.password || ''),
-    sslMode,
+    sslMode
   };
 };

@@ -13,6 +13,7 @@ Sign up to the Shotstack service to generate API keys. Keys for both a staging s
 Each API has its own base URL and collection of endpoints, but each API uses the same set of API keys.
 
 There are two environments:
+
 - **Production (`v1`)**: For production usage without watermarks.
 - **Sandbox (`stage`)**: For development and testing. Only AI assets get charged in sandbox. Videos are watermarked.
 
@@ -61,9 +62,11 @@ Shotstack provides a built-in asset hosting service. Assets are stored on a high
 The Create API allows programmatically generating assets using Generative AI. Use one or more built-in services or third party providers to create audio, image and video assets.
 
 Built-in Shotstack provider services:
+
 - Image to Video (converts images to videos), Text to Image, Text to Speech (with multiple voices and languages), and Text Generation (powered by GPT-4).
 
 Third-party providers (require separate API keys configured in the Shotstack dashboard):
+
 - **ElevenLabs**: realistic text-to-speech.
 - **D-ID**: generates talking avatars from text.
 - **Stability AI**: image generation using various Stable Diffusion engines and style presets.

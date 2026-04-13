@@ -11,7 +11,7 @@ let searchResultSchema = z.object({
   isFolder: z.boolean().describe('Whether this is a folder'),
   lastModifiedDateTime: z.string().optional().describe('Last modified date'),
   lastModifiedBy: z.string().optional().describe('User who last modified the item'),
-  parentPath: z.string().optional().describe('Path of the parent folder'),
+  parentPath: z.string().optional().describe('Path of the parent folder')
 });
 
 export let searchDrive = SlateTool.create(spec, {
@@ -20,18 +20,22 @@ export let searchDrive = SlateTool.create(spec, {
   description: `Search for files and folders within a specific SharePoint document library (drive). Uses the OneDrive search API scoped to a single drive. Returns matching items with their metadata.`,
   tags: {
     readOnly: true,
-    destructive: false,
-  },
+    destructive: false
+  }
 })
-  .input(z.object({
-    driveId: z.string().describe('Drive (document library) ID to search within'),
-    query: z.string().describe('Search query text'),
-  }))
-  .output(z.object({
-    results: z.array(searchResultSchema).describe('Matching files and folders'),
-    totalCount: z.number().describe('Number of results returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      driveId: z.string().describe('Drive (document library) ID to search within'),
+      query: z.string().describe('Search query text')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(searchResultSchema).describe('Matching files and folders'),
+      totalCount: z.number().describe('Number of results returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SharePointClient(ctx.auth.token);
     let data = await client.searchDriveItems(ctx.input.driveId, ctx.input.query);
 
@@ -43,15 +47,15 @@ export let searchDrive = SlateTool.create(spec, {
       isFolder: !!item.folder,
       lastModifiedDateTime: item.lastModifiedDateTime,
       lastModifiedBy: item.lastModifiedBy?.user?.displayName,
-      parentPath: item.parentReference?.path,
+      parentPath: item.parentReference?.path
     }));
 
     return {
       output: {
         results,
-        totalCount: results.length,
+        totalCount: results.length
       },
-      message: `Found **${results.length}** result(s) for "${ctx.input.query}" in the drive.`,
+      message: `Found **${results.length}** result(s) for "${ctx.input.query}" in the drive.`
     };
   })
   .build();

@@ -10,7 +10,7 @@ import {
   getMarketPairs,
   listExchanges,
   getExchangeInfo,
-  listFiatCurrencies,
+  listFiatCurrencies
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -27,9 +27,7 @@ export let provider = Slate.create({
     getMarketPairs,
     listExchanges,
     getExchangeInfo,
-    listFiatCurrencies,
+    listFiatCurrencies
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

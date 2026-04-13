@@ -4,11 +4,14 @@ import type { AxiosInstance } from 'axios';
 export interface ProxyBinding {
   proxyBindingId: string;
   proxyAddress: string;
-  realAddresses: Record<string, {
-    isEnabled: boolean;
-    isVerificationNeeded: boolean;
-    isVerified: boolean;
-  }>;
+  realAddresses: Record<
+    string,
+    {
+      isEnabled: boolean;
+      isVerificationNeeded: boolean;
+      isVerified: boolean;
+    }
+  >;
   isBrowsable: boolean;
   receivedEmailsCount: number;
   description: string | null;
@@ -80,10 +83,10 @@ export class Client {
     this.axios = createAxios({
       baseURL: 'https://proxiedmail.com/api/v1',
       headers: {
-        'Token': config.token,
+        Token: config.token,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -97,8 +100,8 @@ export class Client {
       bindings,
       meta: {
         usedProxyBindings: data.meta?.usedProxyBindings ?? 0,
-        availableProxyBindings: data.meta?.availableProxyBindings ?? 0,
-      },
+        availableProxyBindings: data.meta?.availableProxyBindings ?? 0
+      }
     };
   }
 
@@ -121,14 +124,17 @@ export class Client {
     let response = await this.axios.post('/proxy-bindings', {
       data: {
         type: 'proxy_bindings',
-        attributes,
-      },
+        attributes
+      }
     });
 
     return mapProxyBinding(response.data.data);
   }
 
-  async updateProxyEmail(proxyBindingId: string, params: UpdateProxyEmailParams): Promise<ProxyBinding> {
+  async updateProxyEmail(
+    proxyBindingId: string,
+    params: UpdateProxyEmailParams
+  ): Promise<ProxyBinding> {
     let attributes: Record<string, any> = {};
 
     if (params.realAddresses !== undefined) {
@@ -150,8 +156,8 @@ export class Client {
     let response = await this.axios.patch(`/proxy-bindings/${proxyBindingId}`, {
       data: {
         type: 'proxy_bindings',
-        attributes,
-      },
+        attributes
+      }
     });
 
     return mapProxyBinding(response.data.data);
@@ -168,7 +174,7 @@ export class Client {
       subject: item.attributes?.subject ?? '',
       attachmentsCount: item.attributes?.attachmentsCounter ?? 0,
       isProcessed: item.attributes?.is_processed ?? false,
-      createdAt: item.attributes?.created_at ?? '',
+      createdAt: item.attributes?.created_at ?? ''
     }));
   }
 
@@ -189,7 +195,7 @@ export class Client {
       to: payload.To ?? payload.to ?? null,
       attachments: (attrs.attachments || []).map((att: any) => ({ url: att.url })),
       isProcessed: attrs.is_processed ?? false,
-      createdAt: attrs.created_at ?? '',
+      createdAt: attrs.created_at ?? ''
     };
   }
 
@@ -199,7 +205,7 @@ export class Client {
     return {
       receiverId: response.data.id,
       callUrl: response.data.call_url,
-      getUrl: response.data.get_url,
+      getUrl: response.data.get_url
     };
   }
 
@@ -210,7 +216,7 @@ export class Client {
       status: response.data.status ?? '',
       payload: response.data.payload ?? null,
       isReceived: response.data.isReceived ?? false,
-      method: response.data.method ?? null,
+      method: response.data.method ?? null
     };
   }
 }
@@ -219,13 +225,16 @@ let mapProxyBinding = (item: any): ProxyBinding => {
   let attrs = item.attributes || {};
   let rawAddresses = attrs.real_addresses || {};
 
-  let realAddresses: Record<string, { isEnabled: boolean; isVerificationNeeded: boolean; isVerified: boolean }> = {};
+  let realAddresses: Record<
+    string,
+    { isEnabled: boolean; isVerificationNeeded: boolean; isVerified: boolean }
+  > = {};
   for (let [email, info] of Object.entries(rawAddresses)) {
     let addrInfo = info as any;
     realAddresses[email] = {
       isEnabled: addrInfo.is_enabled ?? false,
       isVerificationNeeded: addrInfo.is_verification_needed ?? false,
-      isVerified: addrInfo.is_verified ?? false,
+      isVerified: addrInfo.is_verified ?? false
     };
   }
 
@@ -238,6 +247,6 @@ let mapProxyBinding = (item: any): ProxyBinding => {
     description: attrs.description ?? null,
     callbackUrl: attrs.callback_url ?? null,
     createdAt: attrs.created_at ?? '',
-    updatedAt: attrs.updated_at ?? '',
+    updatedAt: attrs.updated_at ?? ''
   };
 };

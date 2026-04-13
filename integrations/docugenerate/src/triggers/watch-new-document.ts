@@ -3,43 +3,44 @@ import { DocuGenerateClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let watchNewDocument = SlateTrigger.create(
-  spec,
-  {
-    name: 'Watch New Document',
-    key: 'watch_new_document',
-    description: 'Triggers when a new document is generated from any template in your account.',
-  },
-)
-  .input(z.object({
-    documentId: z.string().describe('ID of the new document'),
-    templateId: z.string().describe('ID of the source template'),
-    created: z.number().describe('Creation timestamp'),
-    name: z.string().describe('Document name'),
-    dataLength: z.number().describe('Number of data items'),
-    filename: z.string().describe('Generated filename'),
-    format: z.string().describe('Output format'),
-    documentUri: z.string().describe('Download URL'),
-  }))
-  .output(z.object({
-    documentId: z.string().describe('Unique document ID'),
-    templateId: z.string().describe('ID of the source template'),
-    created: z.number().describe('Creation timestamp (Unix epoch)'),
-    name: z.string().describe('Document name'),
-    dataLength: z.number().describe('Number of data items used'),
-    filename: z.string().describe('Generated filename'),
-    format: z.string().describe('Output format'),
-    documentUri: z.string().describe('URL to download the document'),
-  }))
+export let watchNewDocument = SlateTrigger.create(spec, {
+  name: 'Watch New Document',
+  key: 'watch_new_document',
+  description: 'Triggers when a new document is generated from any template in your account.'
+})
+  .input(
+    z.object({
+      documentId: z.string().describe('ID of the new document'),
+      templateId: z.string().describe('ID of the source template'),
+      created: z.number().describe('Creation timestamp'),
+      name: z.string().describe('Document name'),
+      dataLength: z.number().describe('Number of data items'),
+      filename: z.string().describe('Generated filename'),
+      format: z.string().describe('Output format'),
+      documentUri: z.string().describe('Download URL')
+    })
+  )
+  .output(
+    z.object({
+      documentId: z.string().describe('Unique document ID'),
+      templateId: z.string().describe('ID of the source template'),
+      created: z.number().describe('Creation timestamp (Unix epoch)'),
+      name: z.string().describe('Document name'),
+      dataLength: z.number().describe('Number of data items used'),
+      filename: z.string().describe('Generated filename'),
+      format: z.string().describe('Output format'),
+      documentUri: z.string().describe('URL to download the document')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new DocuGenerateClient({
         token: ctx.auth.token,
-        region: ctx.config.region,
+        region: ctx.config.region
       });
 
       let lastSeenTimestamp = (ctx.state?.lastSeenTimestamp as number) ?? 0;
@@ -73,7 +74,7 @@ export let watchNewDocument = SlateTrigger.create(
               dataLength: doc.data_length,
               filename: doc.filename,
               format: doc.format,
-              documentUri: doc.document_uri,
+              documentUri: doc.document_uri
             });
             updatedKnownIds.push(doc.id);
             if (doc.created > latestTimestamp) {
@@ -92,12 +93,12 @@ export let watchNewDocument = SlateTrigger.create(
         inputs: allNewDocs,
         updatedState: {
           lastSeenTimestamp: latestTimestamp,
-          knownDocumentIds: updatedKnownIds,
-        },
+          knownDocumentIds: updatedKnownIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'document.created',
         id: ctx.input.documentId,
@@ -109,9 +110,9 @@ export let watchNewDocument = SlateTrigger.create(
           dataLength: ctx.input.dataLength,
           filename: ctx.input.filename,
           format: ctx.input.format,
-          documentUri: ctx.input.documentUri,
-        },
+          documentUri: ctx.input.documentUri
+        }
       };
-    },
+    }
   })
   .build();

@@ -45,6 +45,7 @@ For uploading, you need an access token with the `upload` and `edit` scopes. Als
 ### Token Usage
 
 Include the access token as a Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer {access_token}
 ```

@@ -36,7 +36,5 @@ export let provider = Slate.create({
     searchPeopleDatabase,
     getTeamInfo
   ],
-  triggers: [
-    activityEvent
-  ]
+  triggers: [activityEvent]
 });

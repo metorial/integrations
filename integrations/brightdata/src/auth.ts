@@ -2,29 +2,35 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
     inputSchema: z.object({
-      apiKey: z.string().describe('Bright Data API key. Found in Account Settings > API Key in the Bright Data control panel. Only admins can generate API keys.'),
+      apiKey: z
+        .string()
+        .describe(
+          'Bright Data API key. Found in Account Settings > API Key in the Bright Data control panel. Only admins can generate API keys.'
+        )
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.apiKey,
-        },
+          token: ctx.input.apiKey
+        }
       };
     },
     getProfile: async (ctx: { output: { token: string }; input: { apiKey: string } }) => {
       let axios = createAxios({
         baseURL: 'https://api.brightdata.com',
         headers: {
-          'Authorization': `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/status');
@@ -33,8 +39,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: data.customer,
-          name: data.customer,
-        },
+          name: data.customer
+        }
       };
-    },
+    }
   });

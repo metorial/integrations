@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let apiAxios = createAxios({
-  baseURL: 'https://aivoov.com/api/v8',
+  baseURL: 'https://aivoov.com/api/v8'
 });
 
 export interface AivoovVoice {
@@ -25,13 +25,11 @@ export interface CreateAudioResponse {
 }
 
 export class Client {
-  constructor(
-    private credentials: { token: string }
-  ) {}
+  constructor(private credentials: { token: string }) {}
 
   private get headers() {
     return {
-      'X-API-KEY': this.credentials.token,
+      'X-API-KEY': this.credentials.token
     };
   }
 
@@ -43,13 +41,13 @@ export class Client {
 
     let response = await apiAxios.get('/voices', {
       headers: this.headers,
-      params,
+      params
     });
 
     let voices: AivoovVoice[] = (response.data as any[]).map((v: any) => ({
       voiceId: v.voice_id,
       name: v.name,
-      language: v.language,
+      language: v.language
     }));
 
     return voices;
@@ -78,8 +76,8 @@ export class Client {
     let response = await apiAxios.post('/create', formParams.toString(), {
       headers: {
         ...this.headers,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
 
     return response.data as CreateAudioResponse;

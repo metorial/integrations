@@ -16,14 +16,14 @@ export let clientFromContext = (ctx: AwsContext): AwsClient => {
     accessKeyId: ctx.auth.accessKeyId,
     secretAccessKey: ctx.auth.secretAccessKey,
     sessionToken: ctx.auth.sessionToken,
-    region: ctx.config.region,
+    region: ctx.config.region
   });
 };
 
 // Flatten EC2 member params for query API
 export let flattenParams = (
   prefix: string,
-  items: Record<string, string>[],
+  items: Record<string, string>[]
 ): Record<string, string> => {
   let params: Record<string, string> = {};
   items.forEach((item, index) => {

@@ -3,43 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let activityEvent = SlateTrigger.create(
-  spec,
-  {
-    name: 'Activity Event',
-    key: 'activity_event',
-    description: 'Triggers when an activity event occurs in Lemlist, including email events (sent, opened, clicked, replied, bounced), LinkedIn events (invite sent, replied), phone events, campaign lifecycle events, and enrichment events.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('The type of activity event'),
-    eventId: z.string().describe('Unique identifier for this event'),
-    leadEmail: z.string().optional(),
-    leadFirstName: z.string().optional(),
-    leadLastName: z.string().optional(),
-    leadId: z.string().optional(),
-    campaignId: z.string().optional(),
-    campaignName: z.string().optional(),
-    payload: z.record(z.string(), z.any()).describe('Full event payload from Lemlist')
-  }))
-  .output(z.object({
-    activityType: z.string().describe('The type of activity (e.g., emailsSent, emailsOpened, linkedinReplied)'),
-    leadId: z.string().optional(),
-    leadEmail: z.string().optional(),
-    leadFirstName: z.string().optional(),
-    leadLastName: z.string().optional(),
-    leadCompanyName: z.string().optional(),
-    campaignId: z.string().optional(),
-    campaignName: z.string().optional(),
-    sequenceStep: z.number().optional(),
-    sendUserEmail: z.string().optional(),
-    sendUserName: z.string().optional(),
-    createdAt: z.string().optional(),
-    isFirst: z.boolean().optional(),
-    errorMessage: z.string().optional()
-  }))
+export let activityEvent = SlateTrigger.create(spec, {
+  name: 'Activity Event',
+  key: 'activity_event',
+  description:
+    'Triggers when an activity event occurs in Lemlist, including email events (sent, opened, clicked, replied, bounced), LinkedIn events (invite sent, replied), phone events, campaign lifecycle events, and enrichment events.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('The type of activity event'),
+      eventId: z.string().describe('Unique identifier for this event'),
+      leadEmail: z.string().optional(),
+      leadFirstName: z.string().optional(),
+      leadLastName: z.string().optional(),
+      leadId: z.string().optional(),
+      campaignId: z.string().optional(),
+      campaignName: z.string().optional(),
+      payload: z.record(z.string(), z.any()).describe('Full event payload from Lemlist')
+    })
+  )
+  .output(
+    z.object({
+      activityType: z
+        .string()
+        .describe('The type of activity (e.g., emailsSent, emailsOpened, linkedinReplied)'),
+      leadId: z.string().optional(),
+      leadEmail: z.string().optional(),
+      leadFirstName: z.string().optional(),
+      leadLastName: z.string().optional(),
+      leadCompanyName: z.string().optional(),
+      campaignId: z.string().optional(),
+      campaignName: z.string().optional(),
+      sequenceStep: z.number().optional(),
+      sendUserEmail: z.string().optional(),
+      sendUserName: z.string().optional(),
+      createdAt: z.string().optional(),
+      isFirst: z.boolean().optional(),
+      errorMessage: z.string().optional()
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       // Register a webhook that listens to all event types
@@ -52,15 +56,15 @@ export let activityEvent = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { hookId: string };
 
       await client.deleteWebhook(details.hookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       // Lemlist webhook payload contains the event data directly
       let eventType = data.type ?? 'unknown';
@@ -83,7 +87,7 @@ export let activityEvent = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { eventType, eventId, payload } = ctx.input;
       let p = payload as Record<string, any>;
 
@@ -111,7 +115,8 @@ export let activityEvent = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();
 
 let normalizeEventType = (type: string): string => {
   let mapping: Record<string, string> = {

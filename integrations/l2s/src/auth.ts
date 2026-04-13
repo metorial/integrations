@@ -3,23 +3,27 @@ import { z } from 'zod';
 import { L2sClient } from './lib/client';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'API Key',
     key: 'api_key',
 
     inputSchema: z.object({
-      token: z.string().describe('L2S API key. Generate one at https://app.l2s.is/integrations'),
+      token: z
+        .string()
+        .describe('L2S API key. Generate one at https://app.l2s.is/integrations')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -28,8 +32,8 @@ export let auth = SlateAuth.create()
       let settings = await client.getUserSettings();
       return {
         profile: {
-          ...settings,
-        },
+          ...settings
+        }
       };
-    },
+    }
   });

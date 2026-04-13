@@ -10,8 +10,8 @@ export class ExaClient {
       baseURL: BASE_URL,
       headers: {
         'x-api-key': token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -93,13 +93,18 @@ export class ExaClient {
   }
 
   async cancelWebsetSearch(websetId: string, searchId: string) {
-    let response = await this.http.post(`/websets/v0/websets/${websetId}/searches/${searchId}/cancel`);
+    let response = await this.http.post(
+      `/websets/v0/websets/${websetId}/searches/${searchId}/cancel`
+    );
     return response.data;
   }
 
   // --- Webset Items ---
 
-  async listWebsetItems(websetId: string, params?: { cursor?: string; limit?: number; status?: string }) {
+  async listWebsetItems(
+    websetId: string,
+    params?: { cursor?: string; limit?: number; status?: string }
+  ) {
     let response = await this.http.get(`/websets/v0/websets/${websetId}/items`, { params });
     return response.data as { data: WebsetItem[]; hasMore: boolean; nextCursor?: string };
   }
@@ -121,12 +126,21 @@ export class ExaClient {
   }
 
   async getEnrichment(websetId: string, enrichmentId: string) {
-    let response = await this.http.get(`/websets/v0/websets/${websetId}/enrichments/${enrichmentId}`);
+    let response = await this.http.get(
+      `/websets/v0/websets/${websetId}/enrichments/${enrichmentId}`
+    );
     return response.data as WebsetEnrichment;
   }
 
-  async updateEnrichment(websetId: string, enrichmentId: string, params: UpdateEnrichmentParams) {
-    let response = await this.http.patch(`/websets/v0/websets/${websetId}/enrichments/${enrichmentId}`, params);
+  async updateEnrichment(
+    websetId: string,
+    enrichmentId: string,
+    params: UpdateEnrichmentParams
+  ) {
+    let response = await this.http.patch(
+      `/websets/v0/websets/${websetId}/enrichments/${enrichmentId}`,
+      params
+    );
     return response.data as WebsetEnrichment;
   }
 
@@ -135,7 +149,9 @@ export class ExaClient {
   }
 
   async cancelEnrichment(websetId: string, enrichmentId: string) {
-    let response = await this.http.post(`/websets/v0/websets/${websetId}/enrichments/${enrichmentId}/cancel`);
+    let response = await this.http.post(
+      `/websets/v0/websets/${websetId}/enrichments/${enrichmentId}/cancel`
+    );
     return response.data as WebsetEnrichment;
   }
 
@@ -164,7 +180,9 @@ export class ExaClient {
   }
 
   async getMonitor(websetId: string, monitorId: string) {
-    let response = await this.http.get(`/websets/v0/websets/${websetId}/monitors/${monitorId}`);
+    let response = await this.http.get(
+      `/websets/v0/websets/${websetId}/monitors/${monitorId}`
+    );
     return response.data;
   }
 
@@ -174,7 +192,10 @@ export class ExaClient {
   }
 
   async updateMonitor(websetId: string, monitorId: string, params: UpdateMonitorParams) {
-    let response = await this.http.patch(`/websets/v0/websets/${websetId}/monitors/${monitorId}`, params);
+    let response = await this.http.patch(
+      `/websets/v0/websets/${websetId}/monitors/${monitorId}`,
+      params
+    );
     return response.data;
   }
 
@@ -247,7 +268,14 @@ export interface ContentOptions {
 export interface SearchParams {
   query: string;
   type?: 'neural' | 'auto' | 'fast' | 'deep';
-  category?: 'company' | 'research paper' | 'news' | 'tweet' | 'personal site' | 'financial report' | 'people';
+  category?:
+    | 'company'
+    | 'research paper'
+    | 'news'
+    | 'tweet'
+    | 'personal site'
+    | 'financial report'
+    | 'people';
   numResults?: number;
   includeDomains?: string[];
   excludeDomains?: string[];

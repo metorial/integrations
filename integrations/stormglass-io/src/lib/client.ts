@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://api.stormglass.io/v2',
+  baseURL: 'https://api.stormglass.io/v2'
 });
 
 export interface WeatherParams {
@@ -56,13 +56,11 @@ export interface TideStationsAreaParams {
 }
 
 export class Client {
-  constructor(
-    private config: { token: string }
-  ) {}
+  constructor(private config: { token: string }) {}
 
   private get headers() {
     return {
-      Authorization: this.config.token,
+      Authorization: this.config.token
     };
   }
 
@@ -75,8 +73,10 @@ export class Client {
         params: params.params.join(','),
         ...(params.start ? { start: params.start } : {}),
         ...(params.end ? { end: params.end } : {}),
-        ...(params.source && params.source.length > 0 ? { source: params.source.join(',') } : {}),
-      },
+        ...(params.source && params.source.length > 0
+          ? { source: params.source.join(',') }
+          : {})
+      }
     });
     return response.data;
   }
@@ -90,8 +90,10 @@ export class Client {
         params: params.params.join(','),
         ...(params.start ? { start: params.start } : {}),
         ...(params.end ? { end: params.end } : {}),
-        ...(params.source && params.source.length > 0 ? { source: params.source.join(',') } : {}),
-      },
+        ...(params.source && params.source.length > 0
+          ? { source: params.source.join(',') }
+          : {})
+      }
     });
     return response.data;
   }
@@ -104,8 +106,8 @@ export class Client {
         lng: params.lng,
         ...(params.start ? { start: params.start } : {}),
         ...(params.end ? { end: params.end } : {}),
-        ...(params.datum ? { datum: params.datum } : {}),
-      },
+        ...(params.datum ? { datum: params.datum } : {})
+      }
     });
     return response.data;
   }
@@ -118,15 +120,15 @@ export class Client {
         lng: params.lng,
         ...(params.start ? { start: params.start } : {}),
         ...(params.end ? { end: params.end } : {}),
-        ...(params.datum ? { datum: params.datum } : {}),
-      },
+        ...(params.datum ? { datum: params.datum } : {})
+      }
     });
     return response.data;
   }
 
   async getTideStations() {
     let response = await http.get('/tide/stations', {
-      headers: this.headers,
+      headers: this.headers
     });
     return response.data;
   }
@@ -135,8 +137,8 @@ export class Client {
     let response = await http.get('/tide/stations/area', {
       headers: this.headers,
       params: {
-        box: params.box,
-      },
+        box: params.box
+      }
     });
     return response.data;
   }
@@ -148,8 +150,8 @@ export class Client {
         lat: params.lat,
         lng: params.lng,
         ...(params.start ? { start: params.start } : {}),
-        ...(params.end ? { end: params.end } : {}),
-      },
+        ...(params.end ? { end: params.end } : {})
+      }
     });
     return response.data;
   }
@@ -163,8 +165,10 @@ export class Client {
         params: params.params.join(','),
         ...(params.start ? { start: params.start } : {}),
         ...(params.end ? { end: params.end } : {}),
-        ...(params.source && params.source.length > 0 ? { source: params.source.join(',') } : {}),
-      },
+        ...(params.source && params.source.length > 0
+          ? { source: params.source.join(',') }
+          : {})
+      }
     });
     return response.data;
   }
@@ -178,8 +182,10 @@ export class Client {
         params: params.params.join(','),
         ...(params.start ? { start: params.start } : {}),
         ...(params.end ? { end: params.end } : {}),
-        ...(params.source && params.source.length > 0 ? { source: params.source.join(',') } : {}),
-      },
+        ...(params.source && params.source.length > 0
+          ? { source: params.source.join(',') }
+          : {})
+      }
     });
     return response.data;
   }
@@ -189,8 +195,8 @@ export class Client {
       headers: this.headers,
       params: {
         lat: params.lat,
-        lng: params.lng,
-      },
+        lng: params.lng
+      }
     });
     return response.data;
   }

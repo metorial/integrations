@@ -3,34 +3,46 @@ import { UnisenderClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageLists = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Contact Lists',
-    key: 'manage_lists',
-    description: `Create, update, or delete subscription/contact lists. Lists are used to organize contacts for targeted email and SMS campaigns.
+export let manageLists = SlateTool.create(spec, {
+  name: 'Manage Contact Lists',
+  key: 'manage_lists',
+  description: `Create, update, or delete subscription/contact lists. Lists are used to organize contacts for targeted email and SMS campaigns.
 Use **action** to specify whether to create, update, or delete a list.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform on the list'),
-    listId: z.number().optional().describe('List ID (required for update and delete)'),
-    title: z.string().optional().describe('Title of the list (required for create and update)'),
-    beforeSubscribeUrl: z.string().optional().describe('URL for redirect before subscription confirmation'),
-    afterSubscribeUrl: z.string().optional().describe('URL for redirect after subscription confirmation'),
-  }))
-  .output(z.object({
-    listId: z.number().optional().describe('ID of the created or updated list'),
-    success: z.boolean().describe('Whether the operation was successful'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('The operation to perform on the list'),
+      listId: z.number().optional().describe('List ID (required for update and delete)'),
+      title: z
+        .string()
+        .optional()
+        .describe('Title of the list (required for create and update)'),
+      beforeSubscribeUrl: z
+        .string()
+        .optional()
+        .describe('URL for redirect before subscription confirmation'),
+      afterSubscribeUrl: z
+        .string()
+        .optional()
+        .describe('URL for redirect after subscription confirmation')
+    })
+  )
+  .output(
+    z.object({
+      listId: z.number().optional().describe('ID of the created or updated list'),
+      success: z.boolean().describe('Whether the operation was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new UnisenderClient({
       token: ctx.auth.token,
-      locale: ctx.config.locale,
+      locale: ctx.config.locale
     });
 
     let { action } = ctx.input;
@@ -40,11 +52,11 @@ Use **action** to specify whether to create, update, or delete a list.`,
       let result = await client.createList({
         title: ctx.input.title,
         before_subscribe_url: ctx.input.beforeSubscribeUrl,
-        after_subscribe_url: ctx.input.afterSubscribeUrl,
+        after_subscribe_url: ctx.input.afterSubscribeUrl
       });
       return {
         output: { listId: result.id, success: true },
-        message: `Created list **"${ctx.input.title}"** with ID \`${result.id}\``,
+        message: `Created list **"${ctx.input.title}"** with ID \`${result.id}\``
       };
     }
 
@@ -55,11 +67,11 @@ Use **action** to specify whether to create, update, or delete a list.`,
         list_id: ctx.input.listId,
         title: ctx.input.title,
         before_subscribe_url: ctx.input.beforeSubscribeUrl,
-        after_subscribe_url: ctx.input.afterSubscribeUrl,
+        after_subscribe_url: ctx.input.afterSubscribeUrl
       });
       return {
         output: { listId: ctx.input.listId, success: true },
-        message: `Updated list \`${ctx.input.listId}\` to **"${ctx.input.title}"**`,
+        message: `Updated list \`${ctx.input.listId}\` to **"${ctx.input.title}"**`
       };
     }
 
@@ -68,7 +80,7 @@ Use **action** to specify whether to create, update, or delete a list.`,
       await client.deleteList(ctx.input.listId);
       return {
         output: { listId: ctx.input.listId, success: true },
-        message: `Deleted list \`${ctx.input.listId}\``,
+        message: `Deleted list \`${ctx.input.listId}\``
       };
     }
 

@@ -3,31 +3,35 @@ import { DataRobotClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageProject = SlateTool.create(
-  spec,
-  {
-    name: 'Update or Delete Project',
-    key: 'manage_project',
-    description: `Update a project's name or delete a project entirely. Use action "update" to rename, or "delete" to soft-delete the project.`,
-    tags: {
-      destructive: true,
-    },
+export let manageProject = SlateTool.create(spec, {
+  name: 'Update or Delete Project',
+  key: 'manage_project',
+  description: `Update a project's name or delete a project entirely. Use action "update" to rename, or "delete" to soft-delete the project.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    projectId: z.string().describe('ID of the project'),
-    action: z.enum(['update', 'delete']).describe('Action to perform'),
-    projectName: z.string().optional().describe('New name for the project (required for update)'),
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the operation succeeded'),
-    projectId: z.string().describe('ID of the affected project'),
-    projectName: z.string().optional().describe('Updated project name'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      projectId: z.string().describe('ID of the project'),
+      action: z.enum(['update', 'delete']).describe('Action to perform'),
+      projectName: z
+        .string()
+        .optional()
+        .describe('New name for the project (required for update)')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the operation succeeded'),
+      projectId: z.string().describe('ID of the affected project'),
+      projectName: z.string().optional().describe('Updated project name')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new DataRobotClient({
       token: ctx.auth.token,
-      endpointUrl: ctx.config.endpointUrl,
+      endpointUrl: ctx.config.endpointUrl
     });
 
     if (ctx.input.action === 'delete') {
@@ -35,23 +39,23 @@ export let manageProject = SlateTool.create(
       return {
         output: {
           success: true,
-          projectId: ctx.input.projectId,
+          projectId: ctx.input.projectId
         },
-        message: `Project **${ctx.input.projectId}** has been deleted.`,
+        message: `Project **${ctx.input.projectId}** has been deleted.`
       };
     }
 
     let updated = await client.updateProject(ctx.input.projectId, {
-      projectName: ctx.input.projectName,
+      projectName: ctx.input.projectName
     });
 
     return {
       output: {
         success: true,
         projectId: ctx.input.projectId,
-        projectName: updated.projectName || ctx.input.projectName,
+        projectName: updated.projectName || ctx.input.projectName
       },
-      message: `Project renamed to **${ctx.input.projectName}**.`,
+      message: `Project renamed to **${ctx.input.projectName}**.`
     };
   })
   .build();

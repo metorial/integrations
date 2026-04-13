@@ -12,32 +12,36 @@ let pollSummarySchema = z.object({
   participantsCount: z.number().optional().describe('Number of participants')
 });
 
-export let listPollsTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Polls',
-    key: 'list_polls',
-    description: `List Doodle polls from the authenticated user's dashboard. Can retrieve polls you **created** or polls you **participated in**.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let listPollsTool = SlateTool.create(spec, {
+  name: 'List Polls',
+  key: 'list_polls',
+  description: `List Doodle polls from the authenticated user's dashboard. Can retrieve polls you **created** or polls you **participated in**.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    scope: z.enum(['created', 'participated']).describe('Whether to list polls you created or polls you participated in'),
-    locale: z.string().optional().describe('Locale for the response, e.g. "en", "de", "fr"')
-  }))
-  .output(z.object({
-    polls: z.array(pollSummarySchema).describe('List of polls matching the scope'),
-    totalCount: z.number().describe('Total number of polls returned')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scope: z
+        .enum(['created', 'participated'])
+        .describe('Whether to list polls you created or polls you participated in'),
+      locale: z.string().optional().describe('Locale for the response, e.g. "en", "de", "fr"')
+    })
+  )
+  .output(
+    z.object({
+      polls: z.array(pollSummarySchema).describe('List of polls matching the scope'),
+      totalCount: z.number().describe('Total number of polls returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
-    let polls = ctx.input.scope === 'created'
-      ? await client.getMyPolls({ locale: ctx.input.locale })
-      : await client.getParticipatedPolls({ locale: ctx.input.locale });
+    let polls =
+      ctx.input.scope === 'created'
+        ? await client.getMyPolls({ locale: ctx.input.locale })
+        : await client.getParticipatedPolls({ locale: ctx.input.locale });
 
     return {
       output: {

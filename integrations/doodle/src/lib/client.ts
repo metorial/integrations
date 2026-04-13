@@ -77,7 +77,7 @@ export class Client {
     this.http = createAxios({
       baseURL: 'https://doodle.com/api/v2.0',
       headers: {
-        'Authorization': `Bearer ${config.token}`,
+        Authorization: `Bearer ${config.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -146,7 +146,10 @@ export class Client {
     });
   }
 
-  async addParticipant(pollId: string, participant: AddParticipantParams): Promise<Participant> {
+  async addParticipant(
+    pollId: string,
+    participant: AddParticipantParams
+  ): Promise<Participant> {
     let body: Record<string, any> = {
       name: participant.name,
       preferences: participant.preferences
@@ -157,18 +160,27 @@ export class Client {
     return response.data;
   }
 
-  async deleteParticipant(pollId: string, participantId: string, adminKey: string): Promise<void> {
+  async deleteParticipant(
+    pollId: string,
+    participantId: string,
+    adminKey: string
+  ): Promise<void> {
     await this.http.delete(`/polls/${pollId}/participants/${participantId}`, {
       params: { adminKey }
     });
   }
 
-  async addComment(pollId: string, comment: { author: string; text: string }): Promise<{ commentId: string; author: string; text: string }> {
+  async addComment(
+    pollId: string,
+    comment: { author: string; text: string }
+  ): Promise<{ commentId: string; author: string; text: string }> {
     let response = await this.http.post(`/polls/${pollId}/comments`, comment);
     return response.data;
   }
 
-  async getComments(pollId: string): Promise<{ commentId: string; author: string; text: string; createdAt?: string }[]> {
+  async getComments(
+    pollId: string
+  ): Promise<{ commentId: string; author: string; text: string; createdAt?: string }[]> {
     let response = await this.http.get(`/polls/${pollId}/comments`);
     return response.data?.comments || response.data || [];
   }

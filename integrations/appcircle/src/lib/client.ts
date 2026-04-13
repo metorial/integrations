@@ -9,9 +9,9 @@ export class Client {
     this.http = createAxios({
       baseURL: config.apiBaseUrl,
       headers: {
-        'Authorization': config.token,
-        'Accept': 'application/json',
-      },
+        Authorization: config.token,
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -39,16 +39,20 @@ export class Client {
 
   // ─── Branches & Commits ──────────────────────────────────
 
-  async listCommits(profileId: string, branchId: string, params?: { page?: number; size?: number }) {
+  async listCommits(
+    profileId: string,
+    branchId: string,
+    params?: { page?: number; size?: number }
+  ) {
     let response = await this.http.get('/build/v2/commits', {
-      params: { profileId, branchId, ...params },
+      params: { profileId, branchId, ...params }
     });
     return response.data;
   }
 
   async getLatestCommit(profileId: string, branchId: string) {
     let response = await this.http.get('/build/v2/commits/last-commit', {
-      params: { profileId, branchId },
+      params: { profileId, branchId }
     });
     return response.data;
   }
@@ -68,8 +72,8 @@ export class Client {
       {
         params: {
           action: 'build',
-          ...(configurationId ? { configurationId } : {}),
-        },
+          ...(configurationId ? { configurationId } : {})
+        }
       }
     );
     return response.data;
@@ -88,8 +92,8 @@ export class Client {
       {
         params: {
           branchName,
-          ...(configurationId ? { configurationId } : {}),
-        },
+          ...(configurationId ? { configurationId } : {})
+        }
       }
     );
     return response.data;
@@ -106,29 +110,29 @@ export class Client {
     if (workflowId) body.workflowId = workflowId;
     if (configurationId) body.configurationId = configurationId;
 
-    let response = await this.http.post(
-      `/build/v2/commits/${commitHash}`,
-      body,
-      { params: { action: 'build' } }
-    );
+    let response = await this.http.post(`/build/v2/commits/${commitHash}`, body, {
+      params: { action: 'build' }
+    });
     return response.data;
   }
 
   async getBuildStatus(commitId: string, buildId: string) {
-    let response = await this.http.get(`/build/v2/commits/${commitId}/builds/${buildId}/status`);
+    let response = await this.http.get(
+      `/build/v2/commits/${commitId}/builds/${buildId}/status`
+    );
     return response.data;
   }
 
   async cancelBuild(taskId: string) {
     let response = await this.http.get(`/build/v1/queue/${taskId}`, {
-      params: { action: 'cancel' },
+      params: { action: 'cancel' }
     });
     return response.data;
   }
 
   async downloadBuildArtifacts(commitId: string, buildId: string) {
     let response = await this.http.get(`/build/v2/commits/${commitId}/builds/${buildId}`, {
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
     return response.data;
   }
@@ -149,13 +153,15 @@ export class Client {
 
   async listConfigurations(profileId: string, branchId?: string) {
     let response = await this.http.get(`/build/v2/profiles/${profileId}/configurations`, {
-      params: branchId ? { branchId } : undefined,
+      params: branchId ? { branchId } : undefined
     });
     return response.data;
   }
 
   async getConfiguration(profileId: string, configurationId: string) {
-    let response = await this.http.get(`/build/v2/profiles/${profileId}/configurations/${configurationId}`);
+    let response = await this.http.get(
+      `/build/v2/profiles/${profileId}/configurations/${configurationId}`
+    );
     return response.data;
   }
 
@@ -166,7 +172,10 @@ export class Client {
     return response.data;
   }
 
-  async createVariableGroup(data: { name: string; variables?: Array<{ key: string; value: string; isSecret?: boolean }> }) {
+  async createVariableGroup(data: {
+    name: string;
+    variables?: Array<{ key: string; value: string; isSecret?: boolean }>;
+  }) {
     let response = await this.http.post('/build/v2/variable-groups', data);
     return response.data;
   }
@@ -177,31 +186,49 @@ export class Client {
   }
 
   async renameVariableGroup(variableGroupId: string, name: string) {
-    let response = await this.http.patch(`/build/v2/variable-groups/${variableGroupId}`, null, {
-      params: { name },
-    });
+    let response = await this.http.patch(
+      `/build/v2/variable-groups/${variableGroupId}`,
+      null,
+      {
+        params: { name }
+      }
+    );
     return response.data;
   }
 
   async listVariables(variableGroupId: string) {
-    let response = await this.http.get(`/build/v2/variable-groups/${variableGroupId}/variables`);
+    let response = await this.http.get(
+      `/build/v2/variable-groups/${variableGroupId}/variables`
+    );
     return response.data;
   }
 
-  async addVariable(variableGroupId: string, data: { key: string; value: string; isSecret?: boolean }) {
-    let response = await this.http.post(`/build/v2/variable-groups/${variableGroupId}/variables`, data);
+  async addVariable(
+    variableGroupId: string,
+    data: { key: string; value: string; isSecret?: boolean }
+  ) {
+    let response = await this.http.post(
+      `/build/v2/variable-groups/${variableGroupId}/variables`,
+      data
+    );
     return response.data;
   }
 
   async updateVariable(variableGroupId: string, data: { key: string; value: string }) {
-    let response = await this.http.patch(`/build/v2/variable-groups/${variableGroupId}/variables`, data);
+    let response = await this.http.patch(
+      `/build/v2/variable-groups/${variableGroupId}/variables`,
+      data
+    );
     return response.data;
   }
 
   async deleteVariables(variableGroupId: string, keys: string[]) {
-    let response = await this.http.delete(`/build/v2/variable-groups/${variableGroupId}/variables`, {
-      data: keys,
-    });
+    let response = await this.http.delete(
+      `/build/v2/variable-groups/${variableGroupId}/variables`,
+      {
+        data: keys
+      }
+    );
     return response.data;
   }
 
@@ -234,22 +261,35 @@ export class Client {
 
   // ─── Distribution App Versions ──────────────────────────
 
-  async listDistributionAppVersions(profileId: string, params?: { page?: number; size?: number; platform?: string }) {
-    let response = await this.http.get(`/distribution/v2/profiles/${profileId}/app-versions`, { params });
+  async listDistributionAppVersions(
+    profileId: string,
+    params?: { page?: number; size?: number; platform?: string }
+  ) {
+    let response = await this.http.get(`/distribution/v2/profiles/${profileId}/app-versions`, {
+      params
+    });
     return response.data;
   }
 
   async getDistributionAppVersion(profileId: string, appVersionId: string) {
-    let response = await this.http.get(`/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}`);
+    let response = await this.http.get(
+      `/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}`
+    );
     return response.data;
   }
 
   async deleteDistributionAppVersion(profileId: string, appVersionId: string) {
-    let response = await this.http.delete(`/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}`);
+    let response = await this.http.delete(
+      `/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}`
+    );
     return response.data;
   }
 
-  async sendToTesting(profileId: string, appVersionId: string, testingData: Record<string, unknown>) {
+  async sendToTesting(
+    profileId: string,
+    appVersionId: string,
+    testingData: Record<string, unknown>
+  ) {
     let response = await this.http.post(
       `/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}`,
       testingData,
@@ -259,7 +299,9 @@ export class Client {
   }
 
   async getDistributionDownloadLink(profileId: string, appVersionId: string) {
-    let response = await this.http.get(`/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}/download`);
+    let response = await this.http.get(
+      `/distribution/v2/profiles/${profileId}/app-versions/${appVersionId}/download`
+    );
     return response.data;
   }
 
@@ -286,14 +328,20 @@ export class Client {
   }
 
   async addTestersToGroup(groupId: string, emails: string[]) {
-    let response = await this.http.post(`/distribution/v2/testing-groups/${groupId}/testers`, emails);
+    let response = await this.http.post(
+      `/distribution/v2/testing-groups/${groupId}/testers`,
+      emails
+    );
     return response.data;
   }
 
   async removeTestersFromGroup(groupId: string, emails: string[]) {
-    let response = await this.http.delete(`/distribution/v2/testing-groups/${groupId}/testers`, {
-      data: emails,
-    });
+    let response = await this.http.delete(
+      `/distribution/v2/testing-groups/${groupId}/testers`,
+      {
+        data: emails
+      }
+    );
     return response.data;
   }
 
@@ -310,7 +358,9 @@ export class Client {
   }
 
   async deleteCertificate(certificateId: string) {
-    let response = await this.http.delete(`/signing-identity/v2/certificates/${certificateId}`);
+    let response = await this.http.delete(
+      `/signing-identity/v2/certificates/${certificateId}`
+    );
     return response.data;
   }
 
@@ -335,7 +385,9 @@ export class Client {
   }
 
   async getProvisioningProfile(profileId: string) {
-    let response = await this.http.get(`/signing-identity/v2/provisioning-profiles/${profileId}`);
+    let response = await this.http.get(
+      `/signing-identity/v2/provisioning-profiles/${profileId}`
+    );
     return response.data;
   }
 
@@ -346,8 +398,14 @@ export class Client {
     return response.data;
   }
 
-  async getPublishProfile(platformType: string, profileId: string, params?: { page?: number; size?: number }) {
-    let response = await this.http.get(`/publish/v2/profiles/${platformType}/${profileId}`, { params });
+  async getPublishProfile(
+    platformType: string,
+    profileId: string,
+    params?: { page?: number; size?: number }
+  ) {
+    let response = await this.http.get(`/publish/v2/profiles/${platformType}/${profileId}`, {
+      params
+    });
     return response.data;
   }
 
@@ -356,17 +414,31 @@ export class Client {
     return response.data;
   }
 
-  async listPublishAppVersions(platformType: string, profileId: string, params?: { page?: number; size?: number }) {
-    let response = await this.http.get(`/publish/v2/profiles/${platformType}/${profileId}/app-versions`, { params });
+  async listPublishAppVersions(
+    platformType: string,
+    profileId: string,
+    params?: { page?: number; size?: number }
+  ) {
+    let response = await this.http.get(
+      `/publish/v2/profiles/${platformType}/${profileId}/app-versions`,
+      { params }
+    );
     return response.data;
   }
 
   async getPublishDetails(platformType: string, profileId: string, appVersionId: string) {
-    let response = await this.http.get(`/publish/v2/profiles/${platformType}/${profileId}/app-versions/${appVersionId}/publish`);
+    let response = await this.http.get(
+      `/publish/v2/profiles/${platformType}/${profileId}/app-versions/${appVersionId}/publish`
+    );
     return response.data;
   }
 
-  async startPublish(platformType: string, profileId: string, publishId: string, stepId?: string) {
+  async startPublish(
+    platformType: string,
+    profileId: string,
+    publishId: string,
+    stepId?: string
+  ) {
     let response = await this.http.post(
       `/publish/v2/profiles/${platformType}/${profileId}/publish/${publishId}`,
       undefined,
@@ -394,12 +466,16 @@ export class Client {
   }
 
   async listPublishFlows(platformType: string, profileId: string) {
-    let response = await this.http.get(`/publish/v2/profiles/${platformType}/${profileId}/publishflows`);
+    let response = await this.http.get(
+      `/publish/v2/profiles/${platformType}/${profileId}/publishflows`
+    );
     return response.data;
   }
 
   async getPublishFlow(platformType: string, profileId: string, publishFlowId: string) {
-    let response = await this.http.get(`/publish/v2/profiles/${platformType}/${profileId}/publishflows/${publishFlowId}`);
+    let response = await this.http.get(
+      `/publish/v2/profiles/${platformType}/${profileId}/publishflows/${publishFlowId}`
+    );
     return response.data;
   }
 
@@ -410,38 +486,61 @@ export class Client {
     return response.data;
   }
 
-  async getEnterpriseStoreProfile(profileId: string, params?: { page?: number; size?: number }) {
+  async getEnterpriseStoreProfile(
+    profileId: string,
+    params?: { page?: number; size?: number }
+  ) {
     let response = await this.http.get(`/store/v2/profiles/${profileId}`, { params });
     return response.data;
   }
 
-  async listEnterpriseStoreAppVersions(profileId: string, params?: { page?: number; size?: number }) {
-    let response = await this.http.get(`/store/v2/profiles/${profileId}/app-versions`, { params });
+  async listEnterpriseStoreAppVersions(
+    profileId: string,
+    params?: { page?: number; size?: number }
+  ) {
+    let response = await this.http.get(`/store/v2/profiles/${profileId}/app-versions`, {
+      params
+    });
     return response.data;
   }
 
   async getEnterpriseStoreAppVersion(profileId: string, appVersionId: string) {
-    let response = await this.http.get(`/store/v2/profiles/${profileId}/app-versions/${appVersionId}`);
+    let response = await this.http.get(
+      `/store/v2/profiles/${profileId}/app-versions/${appVersionId}`
+    );
     return response.data;
   }
 
-  async publishEnterpriseStoreAppVersion(profileId: string, appVersionId: string, data: { publishType?: string; summary?: string; releaseNotes?: string }) {
-    let response = await this.http.patch(`/store/v2/profiles/${profileId}/app-versions/${appVersionId}/publish`, data);
+  async publishEnterpriseStoreAppVersion(
+    profileId: string,
+    appVersionId: string,
+    data: { publishType?: string; summary?: string; releaseNotes?: string }
+  ) {
+    let response = await this.http.patch(
+      `/store/v2/profiles/${profileId}/app-versions/${appVersionId}/publish`,
+      data
+    );
     return response.data;
   }
 
   async unpublishEnterpriseStoreAppVersion(profileId: string, appVersionId: string) {
-    let response = await this.http.patch(`/store/v2/profiles/${profileId}/app-versions/${appVersionId}/unpublish`);
+    let response = await this.http.patch(
+      `/store/v2/profiles/${profileId}/app-versions/${appVersionId}/unpublish`
+    );
     return response.data;
   }
 
   async deleteEnterpriseStoreAppVersion(profileId: string, appVersionId: string) {
-    let response = await this.http.delete(`/store/v2/profiles/${profileId}/app-versions/${appVersionId}`);
+    let response = await this.http.delete(
+      `/store/v2/profiles/${profileId}/app-versions/${appVersionId}`
+    );
     return response.data;
   }
 
   async getEnterpriseStoreDownloadLink(profileId: string, appVersionId: string) {
-    let response = await this.http.get(`/store/v2/profiles/${profileId}/app-versions/${appVersionId}/download-link`);
+    let response = await this.http.get(
+      `/store/v2/profiles/${profileId}/app-versions/${appVersionId}/download-link`
+    );
     return response.data;
   }
 
@@ -482,15 +581,18 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: {
-    name?: string;
-    postUrl?: string;
-    actions?: string[];
-    enabled?: boolean;
-    module?: string;
-    secretKey?: string;
-    profileId?: string;
-  }) {
+  async updateWebhook(
+    webhookId: string,
+    data: {
+      name?: string;
+      postUrl?: string;
+      actions?: string[];
+      enabled?: boolean;
+      module?: string;
+      secretKey?: string;
+      profileId?: string;
+    }
+  ) {
     let response = await this.http.patch(`/webhook/v2/webhooks/${webhookId}`, data);
     return response.data;
   }

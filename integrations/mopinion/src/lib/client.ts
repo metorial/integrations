@@ -1,7 +1,6 @@
-import { createAxios } from 'slates';
-// @ts-ignore
-import { createHmac } from 'crypto';
 import type { AxiosInstance } from 'axios';
+import { createHmac } from 'crypto';
+import { createAxios } from 'slates';
 
 let API_VERSION = '2.0.0';
 
@@ -105,7 +104,7 @@ export class MopinionClient {
     let payload = `${endpoint}|${body}`;
     let hmacHash = createHmac('sha256', this.signatureToken).update(payload).digest('hex');
     let tokenString = `${this.publicKey}:${hmacHash}`;
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
+
     return Buffer.from(tokenString).toString('base64');
   }
 

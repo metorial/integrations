@@ -11,7 +11,7 @@ import {
   listApps,
   exportApp,
   importApp,
-  triggerWorkflow,
+  triggerWorkflow
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -29,9 +29,7 @@ export let provider = Slate.create({
     listApps,
     exportApp,
     importApp,
-    triggerWorkflow,
+    triggerWorkflow
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

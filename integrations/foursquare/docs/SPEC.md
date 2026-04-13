@@ -13,6 +13,7 @@ Foursquare supports multiple authentication methods depending on the API product
 Authenticating against the API is done by passing your API Key through an `Authorization:` header parameter. API keys are generated in the Foursquare Developer Console. This is the primary method for the current Places API (v3).
 
 Example:
+
 ```
 curl --request GET \
   --url https://api.foursquare.com/v3/places/search \

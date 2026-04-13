@@ -18,7 +18,7 @@ let reversePhoneResultSchema = z.object({
   addressType: z.string().optional().describe('Address type (e.g., "residential")'),
   gender: z.string().optional().describe('Gender (e.g., "M", "F")'),
   genderPercent: z.string().optional().describe('Gender confidence percentage'),
-  dnc: z.string().optional().describe('Do-Not-Call status'),
+  dnc: z.string().optional().describe('Do-Not-Call status')
 });
 
 let mapResult = (raw: Record<string, string>) => ({
@@ -36,28 +36,31 @@ let mapResult = (raw: Record<string, string>) => ({
   addressType: raw.addrtype,
   gender: raw.gender,
   genderPercent: raw.gender_prcnt,
-  dnc: raw.dnc,
+  dnc: raw.dnc
 });
 
-export let reversePhoneLookup = SlateTool.create(
-  spec,
-  {
-    name: 'Reverse Phone Lookup',
-    key: 'reverse_phone_lookup',
-    description: `Find the name and address associated with phone numbers. Returns first name, last name, address, city, state, ZIP, gender, and Do-Not-Call status. Useful for identifying callers and enriching contact records from phone numbers.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let reversePhoneLookup = SlateTool.create(spec, {
+  name: 'Reverse Phone Lookup',
+  key: 'reverse_phone_lookup',
+  description: `Find the name and address associated with phone numbers. Returns first name, last name, address, city, state, ZIP, gender, and Do-Not-Call status. Useful for identifying callers and enriching contact records from phone numbers.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    phones: z.array(z.string()).min(1).max(100).describe('Phone numbers to look up'),
-  }))
-  .output(z.object({
-    results: z.array(reversePhoneResultSchema).describe('Contact information for each phone number'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      phones: z.array(z.string()).min(1).max(100).describe('Phone numbers to look up')
+    })
+  )
+  .output(
+    z.object({
+      results: z
+        .array(reversePhoneResultSchema)
+        .describe('Contact information for each phone number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let { phones } = ctx.input;
 
@@ -74,7 +77,7 @@ export let reversePhoneLookup = SlateTool.create(
 
     return {
       output: { results: mapped },
-      message: `Looked up contact information for **${phones.length}** phone number(s).`,
+      message: `Looked up contact information for **${phones.length}** phone number(s).`
     };
   })
   .build();

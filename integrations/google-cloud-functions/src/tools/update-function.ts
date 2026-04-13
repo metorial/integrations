@@ -3,49 +3,85 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateFunction = SlateTool.create(
-  spec,
-  {
-    name: 'Update Function',
-    key: 'update_function',
-    description: `Update an existing Cloud Function's configuration. Modify runtime settings, memory, timeout, environment variables, labels, description, scaling limits, ingress/egress settings, and more. Only the fields you provide will be updated. Returns a long-running operation.`,
-    instructions: [
-      'Only provide the fields you want to change. Unspecified fields will remain unchanged.',
-      'To update source code, first use "generate_upload_url" then provide the new sourceUploadUrl.'
-    ],
-    tags: {
-      destructive: false
-    }
+export let updateFunction = SlateTool.create(spec, {
+  name: 'Update Function',
+  key: 'update_function',
+  description: `Update an existing Cloud Function's configuration. Modify runtime settings, memory, timeout, environment variables, labels, description, scaling limits, ingress/egress settings, and more. Only the fields you provide will be updated. Returns a long-running operation.`,
+  instructions: [
+    'Only provide the fields you want to change. Unspecified fields will remain unchanged.',
+    'To update source code, first use "generate_upload_url" then provide the new sourceUploadUrl.'
+  ],
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    functionName: z.string().describe('Short function name or fully qualified resource name'),
-    location: z.string().optional().describe('Region of the function. Only needed with short function names.'),
-    description: z.string().optional().describe('New description'),
-    labels: z.record(z.string(), z.string()).optional().describe('Updated labels (replaces all labels)'),
-    runtime: z.string().optional().describe('New runtime (e.g. "nodejs20", "python312")'),
-    entryPoint: z.string().optional().describe('New entry point function name'),
-    sourceUploadUrl: z.string().optional().describe('New source upload URL from generateUploadUrl'),
-    sourceStorageBucket: z.string().optional().describe('New Cloud Storage bucket for source'),
-    sourceStorageObject: z.string().optional().describe('New Cloud Storage object for source'),
-    buildEnvironmentVariables: z.record(z.string(), z.string()).optional().describe('Updated build-time environment variables'),
-    timeoutSeconds: z.number().optional().describe('New execution timeout in seconds'),
-    availableMemory: z.string().optional().describe('New memory allocation (e.g. "256Mi", "1Gi")'),
-    availableCpu: z.string().optional().describe('New CPU allocation (e.g. "1", "2")'),
-    maxInstanceCount: z.number().optional().describe('New maximum instance count'),
-    minInstanceCount: z.number().optional().describe('New minimum instance count'),
-    environmentVariables: z.record(z.string(), z.string()).optional().describe('Updated runtime environment variables'),
-    serviceAccountEmail: z.string().optional().describe('New service account email'),
-    ingressSettings: z.enum(['ALLOW_ALL', 'ALLOW_INTERNAL_ONLY', 'ALLOW_INTERNAL_AND_GCLB']).optional().describe('New ingress setting'),
-    vpcConnector: z.string().optional().describe('New VPC connector'),
-    vpcConnectorEgressSettings: z.enum(['PRIVATE_RANGES_ONLY', 'ALL_TRAFFIC']).optional().describe('New VPC egress setting'),
-    allTrafficOnLatestRevision: z.boolean().optional().describe('Route all traffic to latest revision')
-  }))
-  .output(z.object({
-    operationName: z.string().describe('Long-running operation name'),
-    done: z.boolean().describe('Whether the operation completed immediately')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      functionName: z
+        .string()
+        .describe('Short function name or fully qualified resource name'),
+      location: z
+        .string()
+        .optional()
+        .describe('Region of the function. Only needed with short function names.'),
+      description: z.string().optional().describe('New description'),
+      labels: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Updated labels (replaces all labels)'),
+      runtime: z.string().optional().describe('New runtime (e.g. "nodejs20", "python312")'),
+      entryPoint: z.string().optional().describe('New entry point function name'),
+      sourceUploadUrl: z
+        .string()
+        .optional()
+        .describe('New source upload URL from generateUploadUrl'),
+      sourceStorageBucket: z
+        .string()
+        .optional()
+        .describe('New Cloud Storage bucket for source'),
+      sourceStorageObject: z
+        .string()
+        .optional()
+        .describe('New Cloud Storage object for source'),
+      buildEnvironmentVariables: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Updated build-time environment variables'),
+      timeoutSeconds: z.number().optional().describe('New execution timeout in seconds'),
+      availableMemory: z
+        .string()
+        .optional()
+        .describe('New memory allocation (e.g. "256Mi", "1Gi")'),
+      availableCpu: z.string().optional().describe('New CPU allocation (e.g. "1", "2")'),
+      maxInstanceCount: z.number().optional().describe('New maximum instance count'),
+      minInstanceCount: z.number().optional().describe('New minimum instance count'),
+      environmentVariables: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Updated runtime environment variables'),
+      serviceAccountEmail: z.string().optional().describe('New service account email'),
+      ingressSettings: z
+        .enum(['ALLOW_ALL', 'ALLOW_INTERNAL_ONLY', 'ALLOW_INTERNAL_AND_GCLB'])
+        .optional()
+        .describe('New ingress setting'),
+      vpcConnector: z.string().optional().describe('New VPC connector'),
+      vpcConnectorEgressSettings: z
+        .enum(['PRIVATE_RANGES_ONLY', 'ALL_TRAFFIC'])
+        .optional()
+        .describe('New VPC egress setting'),
+      allTrafficOnLatestRevision: z
+        .boolean()
+        .optional()
+        .describe('Route all traffic to latest revision')
+    })
+  )
+  .output(
+    z.object({
+      operationName: z.string().describe('Long-running operation name'),
+      done: z.boolean().describe('Whether the operation completed immediately')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       projectId: ctx.config.projectId,
@@ -86,7 +122,9 @@ export let updateFunction = SlateTool.create(
       hasBuildConfig = true;
     }
     if (ctx.input.sourceUploadUrl) {
-      buildConfig['source'] = { storageSource: { sourceUploadUrl: ctx.input.sourceUploadUrl } };
+      buildConfig['source'] = {
+        storageSource: { sourceUploadUrl: ctx.input.sourceUploadUrl }
+      };
       updateMaskFields.push('buildConfig.source');
       hasBuildConfig = true;
     } else if (ctx.input.sourceStorageBucket && ctx.input.sourceStorageObject) {
@@ -191,4 +229,5 @@ export let updateFunction = SlateTool.create(
       },
       message: `Function **${ctx.input.functionName}** update initiated. Updated fields: ${updateMaskFields.join(', ')}. ${operation.done ? 'Update complete.' : 'Update in progress - poll the operation for status.'}`
     };
-  }).build();
+  })
+  .build();

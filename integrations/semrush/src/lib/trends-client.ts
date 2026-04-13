@@ -9,13 +9,15 @@ export class SemrushTrendsClient {
   constructor(config: { token: string }) {
     this.token = config.token;
     this.axios = createAxios({
-      baseURL: 'https://api.semrush.com',
+      baseURL: 'https://api.semrush.com'
     });
   }
 
-  private buildParams(params: Record<string, string | number | undefined>): Record<string, string | number> {
+  private buildParams(
+    params: Record<string, string | number | undefined>
+  ): Record<string, string | number> {
     let result: Record<string, string | number> = {
-      key: this.token,
+      key: this.token
     };
     for (let [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null && value !== '') {
@@ -39,8 +41,9 @@ export class SemrushTrendsClient {
         country: params.country,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'target,visits,desktop_visits,mobile_visits,users,desktop_users,mobile_users,pages_per_visit,desktop_pages_per_visit,mobile_pages_per_visit,avg_visit_duration,desktop_avg_visit_duration,mobile_avg_visit_duration,bounce_rate,desktop_bounce_rate,mobile_bounce_rate',
-      }),
+        export_columns:
+          'target,visits,desktop_visits,mobile_visits,users,desktop_users,mobile_users,pages_per_visit,desktop_pages_per_visit,mobile_pages_per_visit,avg_visit_duration,desktop_avg_visit_duration,mobile_avg_visit_duration,bounce_rate,desktop_bounce_rate,mobile_bounce_rate'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -61,8 +64,9 @@ export class SemrushTrendsClient {
         granularity: params.granularity || 'monthly',
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'date,visits,desktop_visits,mobile_visits,users,desktop_users,mobile_users',
-      }),
+        export_columns:
+          'date,visits,desktop_visits,mobile_visits,users,desktop_users,mobile_users'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -81,8 +85,8 @@ export class SemrushTrendsClient {
         country: params.country,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'target,source_type,visits_share',
-      }),
+        export_columns: 'target,source_type,visits_share'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -101,8 +105,8 @@ export class SemrushTrendsClient {
         country: params.country,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'target,domain,visits_share',
-      }),
+        export_columns: 'target,domain,visits_share'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -121,8 +125,9 @@ export class SemrushTrendsClient {
         country: params.country,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'target,country,visits_share,visits,pages_per_visit,avg_visit_duration,bounce_rate',
-      }),
+        export_columns:
+          'target,country,visits_share,visits,pages_per_visit,avg_visit_duration,bounce_rate'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -141,8 +146,8 @@ export class SemrushTrendsClient {
         country: params.country,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'target,page,visits_share',
-      }),
+        export_columns: 'target,page,visits_share'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -161,8 +166,8 @@ export class SemrushTrendsClient {
         country: params.country,
         display_limit: params.displayLimit,
         display_offset: params.displayOffset,
-        export_columns: 'target,subdomain,visits_share',
-      }),
+        export_columns: 'target,subdomain,visits_share'
+      })
     });
     return parseCsvResponse(response.data);
   }
@@ -177,8 +182,9 @@ export class SemrushTrendsClient {
         targets: params.target,
         display_date: params.displayDate,
         country: params.country,
-        export_columns: 'target,age_18_24,age_25_34,age_35_44,age_45_54,age_55_64,age_65_plus,male,female',
-      }),
+        export_columns:
+          'target,age_18_24,age_25_34,age_35_44,age_45_54,age_55_64,age_65_plus,male,female'
+      })
     });
     return parseCsvResponse(response.data);
   }

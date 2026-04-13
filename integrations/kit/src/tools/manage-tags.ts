@@ -3,33 +3,47 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `Create, update, delete, and list tags. Tags are used to organize and segment subscribers for targeted campaigns and automation triggers.`
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('The operation to perform'),
-    tagId: z.number().optional().describe('Tag ID (required for update and delete)'),
-    name: z.string().optional().describe('Tag name (required for create, optional for update)')
-  }))
-  .output(z.object({
-    tags: z.array(z.object({
-      tagId: z.number().describe('Unique tag ID'),
-      name: z.string().describe('Tag name'),
-      createdAt: z.string().describe('When the tag was created')
-    })).optional().describe('List of tags (for list action)'),
-    tag: z.object({
-      tagId: z.number().describe('Unique tag ID'),
-      name: z.string().describe('Tag name'),
-      createdAt: z.string().describe('When the tag was created')
-    }).optional().describe('Created or updated tag'),
-    deleted: z.boolean().optional().describe('Whether the tag was deleted')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `Create, update, delete, and list tags. Tags are used to organize and segment subscribers for targeted campaigns and automation triggers.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'update', 'delete'])
+        .describe('The operation to perform'),
+      tagId: z.number().optional().describe('Tag ID (required for update and delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Tag name (required for create, optional for update)')
+    })
+  )
+  .output(
+    z.object({
+      tags: z
+        .array(
+          z.object({
+            tagId: z.number().describe('Unique tag ID'),
+            name: z.string().describe('Tag name'),
+            createdAt: z.string().describe('When the tag was created')
+          })
+        )
+        .optional()
+        .describe('List of tags (for list action)'),
+      tag: z
+        .object({
+          tagId: z.number().describe('Unique tag ID'),
+          name: z.string().describe('Tag name'),
+          createdAt: z.string().describe('When the tag was created')
+        })
+        .optional()
+        .describe('Created or updated tag'),
+      deleted: z.boolean().optional().describe('Whether the tag was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {
@@ -86,4 +100,5 @@ export let manageTags = SlateTool.create(
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

@@ -3,25 +3,26 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteMessage = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Message',
-    key: 'delete_message',
-    description: `Permanently delete a Zulip message. The authenticated user must have permission to delete the message.`,
-    tags: {
-      destructive: true,
-      readOnly: false
-    }
+export let deleteMessage = SlateTool.create(spec, {
+  name: 'Delete Message',
+  key: 'delete_message',
+  description: `Permanently delete a Zulip message. The authenticated user must have permission to delete the message.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    messageId: z.number().describe('ID of the message to delete')
-  }))
-  .output(z.object({
-    success: z.boolean().describe('Whether the deletion was successful')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      messageId: z.number().describe('ID of the message to delete')
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean().describe('Whether the deletion was successful')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       serverUrl: ctx.auth.serverUrl,
       email: ctx.auth.email,
@@ -34,4 +35,5 @@ export let deleteMessage = SlateTool.create(
       output: { success: true },
       message: `Message ${ctx.input.messageId} deleted successfully`
     };
-  }).build();
+  })
+  .build();

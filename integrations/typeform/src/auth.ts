@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Typeform OAuth',
@@ -16,91 +18,91 @@ export let auth = SlateAuth.create()
       {
         title: 'Account Read',
         description: 'Read basic account information',
-        scope: 'accounts:read',
+        scope: 'accounts:read'
       },
       {
         title: 'Forms Read',
         description: 'Read forms',
-        scope: 'forms:read',
+        scope: 'forms:read'
       },
       {
         title: 'Forms Write',
         description: 'Create, update, and delete forms',
-        scope: 'forms:write',
+        scope: 'forms:write'
       },
       {
         title: 'Images Read',
         description: 'Read images',
-        scope: 'images:read',
+        scope: 'images:read'
       },
       {
         title: 'Images Write',
         description: 'Upload and delete images',
-        scope: 'images:write',
+        scope: 'images:write'
       },
       {
         title: 'Themes Read',
         description: 'Read themes',
-        scope: 'themes:read',
+        scope: 'themes:read'
       },
       {
         title: 'Themes Write',
         description: 'Create, update, and delete themes',
-        scope: 'themes:write',
+        scope: 'themes:write'
       },
       {
         title: 'Responses Read',
         description: 'Read form responses',
-        scope: 'responses:read',
+        scope: 'responses:read'
       },
       {
         title: 'Responses Write',
         description: 'Delete form responses',
-        scope: 'responses:write',
+        scope: 'responses:write'
       },
       {
         title: 'Webhooks Read',
         description: 'Read webhooks',
-        scope: 'webhooks:read',
+        scope: 'webhooks:read'
       },
       {
         title: 'Webhooks Write',
         description: 'Create, update, and delete webhooks',
-        scope: 'webhooks:write',
+        scope: 'webhooks:write'
       },
       {
         title: 'Workspaces Read',
         description: 'Read workspaces',
-        scope: 'workspaces:read',
+        scope: 'workspaces:read'
       },
       {
         title: 'Workspaces Write',
         description: 'Create, update, and delete workspaces',
-        scope: 'workspaces:write',
+        scope: 'workspaces:write'
       },
       {
         title: 'Offline',
         description: 'Required to receive a refresh token for long-lived access',
-        scope: 'offline',
-      },
+        scope: 'offline'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         scope: ctx.scopes.join('+'),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://api.typeform.com/oauth/authorize?${params.toString()}`,
+        url: `https://api.typeform.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let client = createAxios({
-        baseURL: 'https://api.typeform.com',
+        baseURL: 'https://api.typeform.com'
       });
 
       let body = new URLSearchParams({
@@ -108,13 +110,13 @@ export let auth = SlateAuth.create()
         code: ctx.code,
         client_id: ctx.clientId,
         client_secret: ctx.clientSecret,
-        redirect_uri: ctx.redirectUri,
+        redirect_uri: ctx.redirectUri
       });
 
       let response = await client.post('/oauth/token', body.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data as {
@@ -137,31 +139,33 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
-        throw new Error('No refresh token available. Ensure the "offline" scope was requested during authorization.');
+        throw new Error(
+          'No refresh token available. Ensure the "offline" scope was requested during authorization.'
+        );
       }
 
       let client = createAxios({
-        baseURL: 'https://api.typeform.com',
+        baseURL: 'https://api.typeform.com'
       });
 
       let body = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: ctx.output.refreshToken,
         client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
+        client_secret: ctx.clientSecret
       });
 
       let response = await client.post('/oauth/token', body.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       let data = response.data as {
@@ -184,8 +188,8 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token || ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
@@ -193,8 +197,8 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://api.typeform.com',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/me');
@@ -211,10 +215,10 @@ export let auth = SlateAuth.create()
           id: data.user_id,
           name: data.alias,
           email: data.email,
-          language: data.language,
-        },
+          language: data.language
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -222,14 +226,14 @@ export let auth = SlateAuth.create()
     key: 'personal_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Typeform personal access token (starts with tfp_)'),
+      token: z.string().describe('Typeform personal access token (starts with tfp_)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.token,
-        },
+          token: ctx.input.token
+        }
       };
     },
 
@@ -237,8 +241,8 @@ export let auth = SlateAuth.create()
       let client = createAxios({
         baseURL: 'https://api.typeform.com',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await client.get('/me');
@@ -255,8 +259,8 @@ export let auth = SlateAuth.create()
           id: data.user_id,
           name: data.alias,
           email: data.email,
-          language: data.language,
-        },
+          language: data.language
+        }
       };
-    },
+    }
   });

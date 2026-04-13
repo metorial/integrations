@@ -18,11 +18,9 @@ import {
   listModelsTool,
   getModelTool,
   getUsageTool,
-  getBalancesTool,
+  getBalancesTool
 } from './tools';
-import {
-  transcriptionCallbackTrigger,
-} from './triggers';
+import { transcriptionCallbackTrigger } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -44,9 +42,7 @@ export let provider = Slate.create({
     listModelsTool,
     getModelTool,
     getUsageTool,
-    getBalancesTool,
+    getBalancesTool
   ],
-  triggers: [
-    transcriptionCallbackTrigger,
-  ],
+  triggers: [transcriptionCallbackTrigger]
 });

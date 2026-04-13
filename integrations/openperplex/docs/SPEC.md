@@ -15,6 +15,7 @@ X-API-Key: YOUR_API_KEY
 ```
 
 To obtain an API key:
+
 1. Sign up for an account at [api.openperplex.com](https://api.openperplex.com).
 2. Generate and copy your API key from the dashboard.
 

@@ -7,9 +7,9 @@ export class ClickHouseClient {
     this.axios = createAxios({
       baseURL: 'https://api.clickhouse.cloud/v1',
       headers: {
-        'Authorization': `Basic ${params.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${params.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -37,8 +37,8 @@ export class ClickHouseClient {
     let res = await this.axios.get(`${this.orgPath}/activities`, {
       params: {
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return res.data.result;
   }
@@ -86,7 +86,7 @@ export class ClickHouseClient {
 
   async listServices(filter?: string[]) {
     let res = await this.axios.get(`${this.orgPath}/services`, {
-      params: filter ? { filter } : undefined,
+      params: filter ? { filter } : undefined
     });
     return res.data.result;
   }
@@ -144,7 +144,10 @@ export class ClickHouseClient {
   }
 
   async updateBackupConfiguration(serviceId: string, body: Record<string, any>) {
-    let res = await this.axios.patch(`${this.servicePath(serviceId)}/backupConfiguration`, body);
+    let res = await this.axios.patch(
+      `${this.servicePath(serviceId)}/backupConfiguration`,
+      body
+    );
     return res.data.result;
   }
 
@@ -193,22 +196,37 @@ export class ClickHouseClient {
   }
 
   async updateClickPipe(serviceId: string, clickpipeId: string, body: Record<string, any>) {
-    let res = await this.axios.patch(`${this.servicePath(serviceId)}/clickpipes/${clickpipeId}`, body);
+    let res = await this.axios.patch(
+      `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}`,
+      body
+    );
     return res.data.result;
   }
 
   async deleteClickPipe(serviceId: string, clickpipeId: string) {
-    let res = await this.axios.delete(`${this.servicePath(serviceId)}/clickpipes/${clickpipeId}`);
+    let res = await this.axios.delete(
+      `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}`
+    );
     return res.data;
   }
 
   async updateClickPipeState(serviceId: string, clickpipeId: string, state: string) {
-    let res = await this.axios.patch(`${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/state`, { state });
+    let res = await this.axios.patch(
+      `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/state`,
+      { state }
+    );
     return res.data.result;
   }
 
-  async updateClickPipeScaling(serviceId: string, clickpipeId: string, body: Record<string, any>) {
-    let res = await this.axios.patch(`${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/scaling`, body);
+  async updateClickPipeScaling(
+    serviceId: string,
+    clickpipeId: string,
+    body: Record<string, any>
+  ) {
+    let res = await this.axios.patch(
+      `${this.servicePath(serviceId)}/clickpipes/${clickpipeId}/scaling`,
+      body
+    );
     return res.data.result;
   }
 
@@ -219,8 +237,8 @@ export class ClickHouseClient {
       params: {
         from_date: fromDate,
         to_date: toDate,
-        ...(filter ? { filter } : {}),
-      },
+        ...(filter ? { filter } : {})
+      }
     });
     return res.data.result;
   }
@@ -280,22 +298,32 @@ export class ClickHouseClient {
   }
 
   async createDashboard(serviceId: string, body: Record<string, any>) {
-    let res = await this.axios.post(`${this.servicePath(serviceId)}/clickstack/dashboards`, body);
+    let res = await this.axios.post(
+      `${this.servicePath(serviceId)}/clickstack/dashboards`,
+      body
+    );
     return res.data.result;
   }
 
   async getDashboard(serviceId: string, dashboardId: string) {
-    let res = await this.axios.get(`${this.servicePath(serviceId)}/clickstack/dashboards/${dashboardId}`);
+    let res = await this.axios.get(
+      `${this.servicePath(serviceId)}/clickstack/dashboards/${dashboardId}`
+    );
     return res.data.result;
   }
 
   async updateDashboard(serviceId: string, dashboardId: string, body: Record<string, any>) {
-    let res = await this.axios.put(`${this.servicePath(serviceId)}/clickstack/dashboards/${dashboardId}`, body);
+    let res = await this.axios.put(
+      `${this.servicePath(serviceId)}/clickstack/dashboards/${dashboardId}`,
+      body
+    );
     return res.data.result;
   }
 
   async deleteDashboard(serviceId: string, dashboardId: string) {
-    let res = await this.axios.delete(`${this.servicePath(serviceId)}/clickstack/dashboards/${dashboardId}`);
+    let res = await this.axios.delete(
+      `${this.servicePath(serviceId)}/clickstack/dashboards/${dashboardId}`
+    );
     return res.data;
   }
 
@@ -310,17 +338,24 @@ export class ClickHouseClient {
   }
 
   async getAlert(serviceId: string, alertId: string) {
-    let res = await this.axios.get(`${this.servicePath(serviceId)}/clickstack/alerts/${alertId}`);
+    let res = await this.axios.get(
+      `${this.servicePath(serviceId)}/clickstack/alerts/${alertId}`
+    );
     return res.data.result;
   }
 
   async updateAlert(serviceId: string, alertId: string, body: Record<string, any>) {
-    let res = await this.axios.put(`${this.servicePath(serviceId)}/clickstack/alerts/${alertId}`, body);
+    let res = await this.axios.put(
+      `${this.servicePath(serviceId)}/clickstack/alerts/${alertId}`,
+      body
+    );
     return res.data.result;
   }
 
   async deleteAlert(serviceId: string, alertId: string) {
-    let res = await this.axios.delete(`${this.servicePath(serviceId)}/clickstack/alerts/${alertId}`);
+    let res = await this.axios.delete(
+      `${this.servicePath(serviceId)}/clickstack/alerts/${alertId}`
+    );
     return res.data;
   }
 

@@ -13,6 +13,7 @@ Dynamics 365 uses **OAuth 2.0** exclusively for authentication to its online Web
 When you connect using OAuth, you must first register an application in your Microsoft Entra ID tenant. This is done via the Azure portal under **Microsoft Entra ID → App registrations**.
 
 You will need:
+
 - **Client ID** (Application ID): Obtained from the app registration overview page.
 - **Client Secret** or **Certificate**: Created under the app registration's "Certificates & secrets" section.
 - **Tenant ID**: The directory/tenant ID from the app registration overview.

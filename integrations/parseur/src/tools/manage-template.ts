@@ -3,37 +3,44 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTemplate = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Template',
-    key: 'manage_template',
-    description: `Perform actions on a template: retrieve its full details, copy it to another mailbox, or delete it. Templates define how documents are parsed in a mailbox.`,
-    tags: {
-      destructive: true,
-    },
+export let manageTemplate = SlateTool.create(spec, {
+  name: 'Manage Template',
+  key: 'manage_template',
+  description: `Perform actions on a template: retrieve its full details, copy it to another mailbox, or delete it. Templates define how documents are parsed in a mailbox.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    templateId: z.number().describe('ID of the template'),
-    action: z.enum(['get', 'copy', 'delete']).describe('Action to perform'),
-    targetMailboxId: z.number().optional().describe('Target mailbox ID (required for copy action)'),
-  }))
-  .output(z.object({
-    templateId: z.number().describe('Template ID'),
-    action: z.string().describe('Action that was performed'),
-    success: z.boolean().describe('Whether the action succeeded'),
-    template: z.object({
-      templateId: z.number(),
-      name: z.string(),
-      engine: z.string(),
-      status: z.string(),
-      documentCount: z.number(),
-      mailboxId: z.number(),
-    }).nullable().describe('Template details (for get action)'),
-    resultMessage: z.string().describe('Status message'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      templateId: z.number().describe('ID of the template'),
+      action: z.enum(['get', 'copy', 'delete']).describe('Action to perform'),
+      targetMailboxId: z
+        .number()
+        .optional()
+        .describe('Target mailbox ID (required for copy action)')
+    })
+  )
+  .output(
+    z.object({
+      templateId: z.number().describe('Template ID'),
+      action: z.string().describe('Action that was performed'),
+      success: z.boolean().describe('Whether the action succeeded'),
+      template: z
+        .object({
+          templateId: z.number(),
+          name: z.string(),
+          engine: z.string(),
+          status: z.string(),
+          documentCount: z.number(),
+          mailboxId: z.number()
+        })
+        .nullable()
+        .describe('Template details (for get action)'),
+      resultMessage: z.string().describe('Status message')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { templateId, action, targetMailboxId } = ctx.input;
 
@@ -56,7 +63,7 @@ export let manageTemplate = SlateTool.create(
           engine: t.engine,
           status: t.status,
           documentCount: t.document_count,
-          mailboxId: t.parser,
+          mailboxId: t.parser
         };
         resultMessage = `Retrieved template "${t.name}"`;
         break;
@@ -82,9 +89,9 @@ export let manageTemplate = SlateTool.create(
         action,
         success: true,
         template: templateOutput,
-        resultMessage,
+        resultMessage
       },
-      message: `**${action}** on template ${templateId}: ${resultMessage}`,
+      message: `**${action}** on template ${templateId}: ${resultMessage}`
     };
   })
   .build();

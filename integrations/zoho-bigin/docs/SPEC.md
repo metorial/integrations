@@ -13,6 +13,7 @@ Zoho Bigin exclusively uses **OAuth 2.0** for API authentication. Instead of a t
 1. Register your application (client) with Bigin's Authorization server at the Zoho API Console. When you register, the authorization server assigns OAuth 2.0 client credentials — Client ID and Client Secret — which are essential in the OAuth 2.0 flow.
 
 2. Construct the authorization URL:
+
    ```
    https://accounts.zoho.com/oauth/v2/auth?scope={scopes}&client_id={client_id}&response_type=code&access_type=offline&redirect_uri={redirect_uri}
    ```
@@ -27,16 +28,16 @@ Zoho Bigin exclusively uses **OAuth 2.0** for API authentication. Instead of a t
 
 You must use domain-specific accounts URLs to generate access and refresh tokens. Based on the domain location of the user:
 
-| Region | Accounts URL | API Domain |
-|--------|-------------|------------|
-| US | `https://accounts.zoho.com` | `https://www.zohoapis.com` |
-| EU | `https://accounts.zoho.eu` | `https://www.zohoapis.eu` |
-| AU | `https://accounts.zoho.com.au` | `https://www.zohoapis.com.au` |
-| IN | `https://accounts.zoho.in` | `https://www.zohoapis.in` |
-| CN | `https://accounts.zoho.com.cn` | `https://www.zohoapis.com.cn` |
-| JP | — | `https://www.zohoapis.jp` |
-| SA | — | `https://www.zohoapis.sa` |
-| CA | `https://accounts.zohocloud.ca` | `https://www.zohoapis.ca` |
+| Region | Accounts URL                    | API Domain                    |
+| ------ | ------------------------------- | ----------------------------- |
+| US     | `https://accounts.zoho.com`     | `https://www.zohoapis.com`    |
+| EU     | `https://accounts.zoho.eu`      | `https://www.zohoapis.eu`     |
+| AU     | `https://accounts.zoho.com.au`  | `https://www.zohoapis.com.au` |
+| IN     | `https://accounts.zoho.in`      | `https://www.zohoapis.in`     |
+| CN     | `https://accounts.zoho.com.cn`  | `https://www.zohoapis.com.cn` |
+| JP     | —                               | `https://www.zohoapis.jp`     |
+| SA     | —                               | `https://www.zohoapis.sa`     |
+| CA     | `https://accounts.zohocloud.ca` | `https://www.zohoapis.ca`     |
 
 Access tokens are passed in the header as: `Authorization: Zoho-oauthtoken {access_token}`
 
@@ -46,15 +47,15 @@ Scopes follow the format `ZohoBigin.{scope_name}.{operation_type}`. Operation ty
 
 Key scope categories:
 
-| Scope Name | Description |
-|-----------|-------------|
-| `ZohoBigin.modules.ALL` | Full access to all module records (contacts, deals, companies, products, activities) |
-| `ZohoBigin.modules.{module_name}.{op}` | Access to a specific module (e.g., `ZohoBigin.modules.contacts.READ`) |
-| `ZohoBigin.settings.ALL` | Access to metadata: modules, fields, layouts, related lists, custom views, tags |
-| `ZohoBigin.users.ALL` | Manage users in the organization |
-| `ZohoBigin.org.ALL` | View and manage organization details |
-| `ZohoBigin.bulk.ALL` | Bulk read/write operations |
-| `ZohoBigin.notifications.ALL` | Manage webhook notification subscriptions |
+| Scope Name                             | Description                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------ |
+| `ZohoBigin.modules.ALL`                | Full access to all module records (contacts, deals, companies, products, activities) |
+| `ZohoBigin.modules.{module_name}.{op}` | Access to a specific module (e.g., `ZohoBigin.modules.contacts.READ`)                |
+| `ZohoBigin.settings.ALL`               | Access to metadata: modules, fields, layouts, related lists, custom views, tags      |
+| `ZohoBigin.users.ALL`                  | Manage users in the organization                                                     |
+| `ZohoBigin.org.ALL`                    | View and manage organization details                                                 |
+| `ZohoBigin.bulk.ALL`                   | Bulk read/write operations                                                           |
+| `ZohoBigin.notifications.ALL`          | Manage webhook notification subscriptions                                            |
 
 Scopes can be made more granular (e.g., `ZohoBigin.settings.fields.READ`, `ZohoBigin.settings.tags.CREATE`).
 

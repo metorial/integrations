@@ -2,70 +2,95 @@ import { SlateAuth } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Bearer token for Kubernetes API authentication'),
-    clientCertificate: z.string().optional().describe('PEM-encoded client certificate for mTLS authentication'),
-    clientKey: z.string().optional().describe('PEM-encoded client private key for mTLS authentication'),
-    caCertificate: z.string().optional().describe('PEM-encoded CA certificate to verify the API server'),
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Bearer token for Kubernetes API authentication'),
+      clientCertificate: z
+        .string()
+        .optional()
+        .describe('PEM-encoded client certificate for mTLS authentication'),
+      clientKey: z
+        .string()
+        .optional()
+        .describe('PEM-encoded client private key for mTLS authentication'),
+      caCertificate: z
+        .string()
+        .optional()
+        .describe('PEM-encoded CA certificate to verify the API server')
+    })
+  )
   .addTokenAuth({
     type: 'auth.token',
     name: 'Bearer Token',
     key: 'bearer_token',
     inputSchema: z.object({
-      token: z.string().describe('Kubernetes bearer token (Service Account token or other JWT)'),
-      caCertificate: z.string().optional().describe('PEM-encoded CA certificate to verify the API server'),
+      token: z
+        .string()
+        .describe('Kubernetes bearer token (Service Account token or other JWT)'),
+      caCertificate: z
+        .string()
+        .optional()
+        .describe('PEM-encoded CA certificate to verify the API server')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
-          caCertificate: ctx.input.caCertificate,
-        },
+          caCertificate: ctx.input.caCertificate
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Client Certificate',
     key: 'client_certificate',
     inputSchema: z.object({
-      clientCertificate: z.string().describe('PEM-encoded client certificate signed by the cluster CA'),
+      clientCertificate: z
+        .string()
+        .describe('PEM-encoded client certificate signed by the cluster CA'),
       clientKey: z.string().describe('PEM-encoded client private key'),
-      caCertificate: z.string().optional().describe('PEM-encoded CA certificate to verify the API server'),
+      caCertificate: z
+        .string()
+        .optional()
+        .describe('PEM-encoded CA certificate to verify the API server')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: '',
           clientCertificate: ctx.input.clientCertificate,
           clientKey: ctx.input.clientKey,
-          caCertificate: ctx.input.caCertificate,
-        },
+          caCertificate: ctx.input.caCertificate
+        }
       };
-    },
+    }
   })
   .addCustomAuth({
     type: 'auth.custom',
     name: 'Kubeconfig',
     key: 'kubeconfig',
     inputSchema: z.object({
-      kubeconfig: z.string().describe('Full kubeconfig file contents (YAML). The current-context will be used.'),
+      kubeconfig: z
+        .string()
+        .describe('Full kubeconfig file contents (YAML). The current-context will be used.')
     }),
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let parsed = parseKubeconfig(ctx.input.kubeconfig);
       return {
         output: {
           token: parsed.token || '',
           clientCertificate: parsed.clientCertificate,
           clientKey: parsed.clientKey,
-          caCertificate: parsed.caCertificate,
-        },
+          caCertificate: parsed.caCertificate
+        }
       };
-    },
+    }
   });
 
-let parseKubeconfig = (raw: string): {
+let parseKubeconfig = (
+  raw: string
+): {
   token?: string;
   clientCertificate?: string;
   clientKey?: string;
@@ -92,8 +117,14 @@ let parseKubeconfig = (raw: string): {
   let inContexts = false;
   let inTargetContext = false;
   for (let line of lines) {
-    if (line.match(/^contexts:/)) { inContexts = true; continue; }
-    if (inContexts && line.match(/^[a-z]/)) { inContexts = false; continue; }
+    if (line.match(/^contexts:/)) {
+      inContexts = true;
+      continue;
+    }
+    if (inContexts && line.match(/^[a-z]/)) {
+      inContexts = false;
+      continue;
+    }
     if (inContexts && line.includes('name:') && line.includes(currentContext)) {
       inTargetContext = true;
       continue;
@@ -114,8 +145,14 @@ let parseKubeconfig = (raw: string): {
   let inUsers = false;
   let inTargetUser = false;
   for (let line of lines) {
-    if (line.match(/^users:/)) { inUsers = true; continue; }
-    if (inUsers && line.match(/^[a-z]/)) { inUsers = false; continue; }
+    if (line.match(/^users:/)) {
+      inUsers = true;
+      continue;
+    }
+    if (inUsers && line.match(/^[a-z]/)) {
+      inUsers = false;
+      continue;
+    }
     if (inUsers && line.includes('name:') && line.includes(contextUser)) {
       inTargetUser = true;
       continue;
@@ -134,15 +171,22 @@ let parseKubeconfig = (raw: string): {
         result.token = part.trim().replace(/^["']|["']$/g, '');
       }
     }
-    if (inUsers && line.match(/^\s*- name:/) && inTargetUser && !line.includes(contextUser)) break;
+    if (inUsers && line.match(/^\s*- name:/) && inTargetUser && !line.includes(contextUser))
+      break;
   }
 
   // Find cluster CA
   let inClusters = false;
   let inTargetCluster = false;
   for (let line of lines) {
-    if (line.match(/^clusters:/)) { inClusters = true; continue; }
-    if (inClusters && line.match(/^[a-z]/)) { inClusters = false; continue; }
+    if (line.match(/^clusters:/)) {
+      inClusters = true;
+      continue;
+    }
+    if (inClusters && line.match(/^[a-z]/)) {
+      inClusters = false;
+      continue;
+    }
     if (inClusters && line.includes('name:') && line.includes(contextCluster)) {
       inTargetCluster = true;
       continue;
@@ -151,7 +195,13 @@ let parseKubeconfig = (raw: string): {
       let b64 = line.split('certificate-authority-data:')[1] || '';
       result.caCertificate = atob(b64.trim());
     }
-    if (inClusters && line.match(/^\s*- name:/) && inTargetCluster && !line.includes(contextCluster)) break;
+    if (
+      inClusters &&
+      line.match(/^\s*- name:/) &&
+      inTargetCluster &&
+      !line.includes(contextCluster)
+    )
+      break;
   }
 
   return result;

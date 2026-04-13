@@ -3,51 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Events',
-    key: 'new_events',
-    description: 'Triggers when new trace events (sessions, model calls, tool calls, or chain steps) are logged in a project. Polls the HoneyHive API for recently created events.',
-  }
-)
-  .input(z.object({
-    eventId: z.string().describe('ID of the event'),
-    eventType: z.string().describe('Type of event (session, model, tool, chain)'),
-    eventName: z.string().describe('Name of the event'),
-    project: z.string().describe('Project name'),
-    sessionId: z.string().optional().describe('Session ID this event belongs to'),
-    source: z.string().optional().describe('Source environment'),
-    inputs: z.record(z.string(), z.any()).optional().describe('Event inputs'),
-    outputs: z.record(z.string(), z.any()).optional().describe('Event outputs'),
-    error: z.string().optional().nullable().describe('Error message if failed'),
-    duration: z.number().optional().describe('Duration in milliseconds'),
-    metadata: z.record(z.string(), z.any()).optional().describe('Event metadata'),
-    startTime: z.number().optional().describe('Start time epoch ms'),
-  }))
-  .output(z.object({
-    eventId: z.string().describe('Event ID'),
-    eventType: z.string().describe('Event type'),
-    eventName: z.string().describe('Event name'),
-    project: z.string().describe('Project name'),
-    sessionId: z.string().optional().describe('Session ID'),
-    source: z.string().optional().describe('Source environment'),
-    inputs: z.record(z.string(), z.any()).optional().describe('Event inputs'),
-    outputs: z.record(z.string(), z.any()).optional().describe('Event outputs'),
-    error: z.string().optional().nullable().describe('Error message'),
-    duration: z.number().optional().describe('Duration in ms'),
-    metadata: z.record(z.string(), z.any()).optional().describe('Event metadata'),
-    startTime: z.number().optional().describe('Start time epoch ms'),
-  }))
+export let newEvents = SlateTrigger.create(spec, {
+  name: 'New Events',
+  key: 'new_events',
+  description:
+    'Triggers when new trace events (sessions, model calls, tool calls, or chain steps) are logged in a project. Polls the HoneyHive API for recently created events.'
+})
+  .input(
+    z.object({
+      eventId: z.string().describe('ID of the event'),
+      eventType: z.string().describe('Type of event (session, model, tool, chain)'),
+      eventName: z.string().describe('Name of the event'),
+      project: z.string().describe('Project name'),
+      sessionId: z.string().optional().describe('Session ID this event belongs to'),
+      source: z.string().optional().describe('Source environment'),
+      inputs: z.record(z.string(), z.any()).optional().describe('Event inputs'),
+      outputs: z.record(z.string(), z.any()).optional().describe('Event outputs'),
+      error: z.string().optional().nullable().describe('Error message if failed'),
+      duration: z.number().optional().describe('Duration in milliseconds'),
+      metadata: z.record(z.string(), z.any()).optional().describe('Event metadata'),
+      startTime: z.number().optional().describe('Start time epoch ms')
+    })
+  )
+  .output(
+    z.object({
+      eventId: z.string().describe('Event ID'),
+      eventType: z.string().describe('Event type'),
+      eventName: z.string().describe('Event name'),
+      project: z.string().describe('Project name'),
+      sessionId: z.string().optional().describe('Session ID'),
+      source: z.string().optional().describe('Source environment'),
+      inputs: z.record(z.string(), z.any()).optional().describe('Event inputs'),
+      outputs: z.record(z.string(), z.any()).optional().describe('Event outputs'),
+      error: z.string().optional().nullable().describe('Error message'),
+      duration: z.number().optional().describe('Duration in ms'),
+      metadata: z.record(z.string(), z.any()).optional().describe('Event metadata'),
+      startTime: z.number().optional().describe('Start time epoch ms')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        serverUrl: ctx.config.serverUrl,
+        serverUrl: ctx.config.serverUrl
       });
 
       let project = ctx.config.project;
@@ -69,7 +71,7 @@ export let newEvents = SlateTrigger.create(
         filters: [],
         dateRange,
         limit: 100,
-        page: 1,
+        page: 1
       });
 
       let events = data.events || [];
@@ -96,16 +98,16 @@ export let newEvents = SlateTrigger.create(
           error: e.error,
           duration: e.duration,
           metadata: e.metadata,
-          startTime: e.start_time,
+          startTime: e.start_time
         })),
         updatedState: {
           lastPollTime: now,
-          lastSeenIds: updatedSeenIds,
-        },
+          lastSeenIds: updatedSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `event.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -121,9 +123,9 @@ export let newEvents = SlateTrigger.create(
           error: ctx.input.error,
           duration: ctx.input.duration,
           metadata: ctx.input.metadata,
-          startTime: ctx.input.startTime,
-        },
+          startTime: ctx.input.startTime
+        }
       };
-    },
+    }
   })
   .build();

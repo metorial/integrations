@@ -20,54 +20,74 @@ let resultSchema = z.object({
   duration: z.string().describe('Duration of the test in HH:MM:SS format'),
   percentagePassmark: z.number().optional().describe('Passmark percentage'),
   passed: z.boolean().optional().describe('Whether the exam taker passed'),
-  requiresGrading: z.string().optional().describe('Whether the result requires manual grading'),
+  requiresGrading: z
+    .string()
+    .optional()
+    .describe('Whether the result requires manual grading'),
   status: z.string().optional().describe('Status of the result'),
   cmUserId: z.string().optional().describe('Custom user ID passed via URL parameter'),
   accessCode: z.string().optional().describe('Access code used (for link results)'),
   viewResultsUrl: z.string().optional().describe('URL to view formatted results'),
-  certificateUrl: z.string().optional().describe('URL to the certificate PDF'),
+  certificateUrl: z.string().optional().describe('URL to the certificate PDF')
 });
 
-export let getExamResults = SlateTool.create(
-  spec,
-  {
-    name: 'Get Exam Results',
-    key: 'get_exam_results',
-    description: `Retrieve exam/quiz results from ClassMarker. Can fetch results for all groups, all links, or a specific group/test or link/test combination. Results include user details, scores, timing, and grading status. Only results completed after the specified timestamp are returned.`,
-    instructions: [
-      'Provide a `finishedAfterTimestamp` to only retrieve results completed after that time. This must be less than 3 months old.',
-      'Use `source` to choose between group or link results. Optionally specify `groupId`/`linkId` and `testId` to narrow results to a specific exam.',
-    ],
-    constraints: [
-      'The `finishedAfterTimestamp` must be less than 3 months old.',
-      'Maximum 200 results per request. Use `nextFinishedAfterTimestamp` from the response to paginate.',
-      'Rate limit: 30 requests per hour per API key.',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let getExamResults = SlateTool.create(spec, {
+  name: 'Get Exam Results',
+  key: 'get_exam_results',
+  description: `Retrieve exam/quiz results from ClassMarker. Can fetch results for all groups, all links, or a specific group/test or link/test combination. Results include user details, scores, timing, and grading status. Only results completed after the specified timestamp are returned.`,
+  instructions: [
+    'Provide a `finishedAfterTimestamp` to only retrieve results completed after that time. This must be less than 3 months old.',
+    'Use `source` to choose between group or link results. Optionally specify `groupId`/`linkId` and `testId` to narrow results to a specific exam.'
+  ],
+  constraints: [
+    'The `finishedAfterTimestamp` must be less than 3 months old.',
+    'Maximum 200 results per request. Use `nextFinishedAfterTimestamp` from the response to paginate.',
+    'Rate limit: 30 requests per hour per API key.'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    source: z.enum(['groups', 'links']).describe('Whether to retrieve group-based or link-based results'),
-    groupId: z.number().optional().describe('Specific group ID to filter results (only for source=groups)'),
-    linkId: z.number().optional().describe('Specific link ID to filter results (only for source=links)'),
-    testId: z.number().optional().describe('Specific test ID to filter results (requires groupId or linkId)'),
-    finishedAfterTimestamp: z.number().describe('Unix timestamp - only return results completed after this time'),
-    limit: z.number().optional().describe('Maximum number of results to return (max 200)'),
-  }))
-  .output(z.object({
-    results: z.array(resultSchema).describe('List of exam results'),
-    numResultsAvailable: z.number().describe('Total number of results available'),
-    numResultsReturned: z.number().describe('Number of results returned in this response'),
-    moreResultsExist: z.boolean().describe('Whether more results are available'),
-    nextFinishedAfterTimestamp: z.number().optional().describe('Timestamp to use for the next pagination request'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      source: z
+        .enum(['groups', 'links'])
+        .describe('Whether to retrieve group-based or link-based results'),
+      groupId: z
+        .number()
+        .optional()
+        .describe('Specific group ID to filter results (only for source=groups)'),
+      linkId: z
+        .number()
+        .optional()
+        .describe('Specific link ID to filter results (only for source=links)'),
+      testId: z
+        .number()
+        .optional()
+        .describe('Specific test ID to filter results (requires groupId or linkId)'),
+      finishedAfterTimestamp: z
+        .number()
+        .describe('Unix timestamp - only return results completed after this time'),
+      limit: z.number().optional().describe('Maximum number of results to return (max 200)')
+    })
+  )
+  .output(
+    z.object({
+      results: z.array(resultSchema).describe('List of exam results'),
+      numResultsAvailable: z.number().describe('Total number of results available'),
+      numResultsReturned: z.number().describe('Number of results returned in this response'),
+      moreResultsExist: z.boolean().describe('Whether more results are available'),
+      nextFinishedAfterTimestamp: z
+        .number()
+        .optional()
+        .describe('Timestamp to use for the next pagination request')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new ClassMarkerClient({
       token: ctx.auth.token,
-      apiSecret: ctx.auth.apiSecret,
+      apiSecret: ctx.auth.apiSecret
     });
 
     let { source, groupId, linkId, testId, finishedAfterTimestamp, limit } = ctx.input;
@@ -75,13 +95,19 @@ export let getExamResults = SlateTool.create(
 
     if (source === 'groups') {
       if (groupId && testId) {
-        data = await client.getGroupTestResults(groupId, testId, { finishedAfterTimestamp, limit });
+        data = await client.getGroupTestResults(groupId, testId, {
+          finishedAfterTimestamp,
+          limit
+        });
       } else {
         data = await client.getGroupRecentResults({ finishedAfterTimestamp, limit });
       }
     } else {
       if (linkId && testId) {
-        data = await client.getLinkTestResults(linkId, testId, { finishedAfterTimestamp, limit });
+        data = await client.getLinkTestResults(linkId, testId, {
+          finishedAfterTimestamp,
+          limit
+        });
       } else {
         data = await client.getLinkRecentResults({ finishedAfterTimestamp, limit });
       }
@@ -110,7 +136,7 @@ export let getExamResults = SlateTool.create(
       cmUserId: r.cm_user_id,
       accessCode: r.access_code,
       viewResultsUrl: r.view_results_url,
-      certificateUrl: r.certificate_url,
+      certificateUrl: r.certificate_url
     }));
 
     return {
@@ -119,9 +145,9 @@ export let getExamResults = SlateTool.create(
         numResultsAvailable: data.num_results_available || 0,
         numResultsReturned: data.num_results_returned || results.length,
         moreResultsExist: data.more_results_exist || false,
-        nextFinishedAfterTimestamp: data.next_finished_after_timestamp,
+        nextFinishedAfterTimestamp: data.next_finished_after_timestamp
       },
-      message: `Retrieved **${results.length}** result(s) from ${source}. ${data.more_results_exist ? 'More results are available.' : 'No more results.'}`,
+      message: `Retrieved **${results.length}** result(s) from ${source}. ${data.more_results_exist ? 'More results are available.' : 'No more results.'}`
     };
   })
   .build();

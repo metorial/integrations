@@ -13,12 +13,9 @@ import {
   getAdGroups,
   createAdGroup,
   getAds,
-  getAdReport,
+  getAdReport
 } from './tools';
-import {
-  consumerWebhook,
-  businessWebhook,
-} from './triggers';
+import { consumerWebhook, businessWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -35,10 +32,7 @@ export let provider = Slate.create({
     getAdGroups,
     createAdGroup,
     getAds,
-    getAdReport,
+    getAdReport
   ],
-  triggers: [
-    consumerWebhook,
-    businessWebhook,
-  ],
+  triggers: [consumerWebhook, businessWebhook]
 });

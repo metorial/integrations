@@ -2,30 +2,32 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let batchCompleted = SlateTrigger.create(
-  spec,
-  {
-    name: 'Batch Completed',
-    key: 'batch_completed',
-    description: 'Triggered when Scale AI sends a batch completion callback (i.e., when the last task in a batch is completed). Set this trigger\'s webhook URL as the callback when creating batches.',
-    instructions: [
-      'Use the generated webhook URL as the callback URL when creating batches.',
-    ],
-  }
-)
-  .input(z.object({
-    batchName: z.string().describe('Name of the completed batch'),
-    status: z.string().describe('Batch status'),
-    rawPayload: z.any().describe('Full raw callback payload'),
-  }))
-  .output(z.object({
-    batchName: z.string().describe('Name of the completed batch'),
-    status: z.string().describe('Batch status'),
-    projectName: z.string().optional().describe('Project the batch belongs to'),
-  }).passthrough())
+export let batchCompleted = SlateTrigger.create(spec, {
+  name: 'Batch Completed',
+  key: 'batch_completed',
+  description:
+    "Triggered when Scale AI sends a batch completion callback (i.e., when the last task in a batch is completed). Set this trigger's webhook URL as the callback when creating batches.",
+  instructions: ['Use the generated webhook URL as the callback URL when creating batches.']
+})
+  .input(
+    z.object({
+      batchName: z.string().describe('Name of the completed batch'),
+      status: z.string().describe('Batch status'),
+      rawPayload: z.any().describe('Full raw callback payload')
+    })
+  )
+  .output(
+    z
+      .object({
+        batchName: z.string().describe('Name of the completed batch'),
+        status: z.string().describe('Batch status'),
+        projectName: z.string().optional().describe('Project the batch belongs to')
+      })
+      .passthrough()
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let batch = body.batch ?? body;
       let batchName = batch.name ?? body.batch_name ?? '';
@@ -36,13 +38,13 @@ export let batchCompleted = SlateTrigger.create(
           {
             batchName,
             status,
-            rawPayload: body,
-          },
-        ],
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let batch = ctx.input.rawPayload?.batch ?? ctx.input.rawPayload ?? {};
 
       return {
@@ -52,9 +54,9 @@ export let batchCompleted = SlateTrigger.create(
           batchName: ctx.input.batchName,
           status: ctx.input.status,
           projectName: batch.project,
-          ...batch,
-        },
+          ...batch
+        }
       };
-    },
+    }
   })
   .build();

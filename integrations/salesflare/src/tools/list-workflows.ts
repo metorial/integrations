@@ -3,32 +3,33 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listWorkflows = SlateTool.create(
-  spec,
-  {
-    name: 'List Workflows',
-    key: 'list_workflows',
-    description: `List email workflows in Salesflare. Returns workflow names, statuses, analytics, and configuration details.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWorkflows = SlateTool.create(spec, {
+  name: 'List Workflows',
+  key: 'list_workflows',
+  description: `List email workflows in Salesflare. Returns workflow names, statuses, analytics, and configuration details.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    search: z.string().optional().describe('Search workflows by name'),
-    limit: z.number().optional().default(20).describe('Max results to return'),
-    offset: z.number().optional().default(0).describe('Pagination offset'),
-  }))
-  .output(z.object({
-    workflows: z.array(z.record(z.string(), z.any())).describe('List of workflow objects'),
-    count: z.number().describe('Number of workflows returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      search: z.string().optional().describe('Search workflows by name'),
+      limit: z.number().optional().default(20).describe('Max results to return'),
+      offset: z.number().optional().default(0).describe('Pagination offset')
+    })
+  )
+  .output(
+    z.object({
+      workflows: z.array(z.record(z.string(), z.any())).describe('List of workflow objects'),
+      count: z.number().describe('Number of workflows returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
 
     let params: Record<string, any> = {
       limit: ctx.input.limit,
-      offset: ctx.input.offset,
+      offset: ctx.input.offset
     };
     if (ctx.input.search) params.search = ctx.input.search;
 
@@ -38,37 +39,38 @@ export let listWorkflows = SlateTool.create(
     return {
       output: {
         workflows: list,
-        count: list.length,
+        count: list.length
       },
-      message: `Found **${list.length}** workflow(s).`,
+      message: `Found **${list.length}** workflow(s).`
     };
   })
   .build();
 
-export let getWorkflow = SlateTool.create(
-  spec,
-  {
-    name: 'Get Workflow',
-    key: 'get_workflow',
-    description: `Retrieve detailed information about a specific email workflow, including its steps, filters, schedule, and analytics.`,
-    tags: {
-      readOnly: true,
-    },
+export let getWorkflow = SlateTool.create(spec, {
+  name: 'Get Workflow',
+  key: 'get_workflow',
+  description: `Retrieve detailed information about a specific email workflow, including its steps, filters, schedule, and analytics.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    workflowId: z.number().describe('ID of the workflow to retrieve'),
-  }))
-  .output(z.object({
-    workflow: z.record(z.string(), z.any()).describe('Full workflow details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workflowId: z.number().describe('ID of the workflow to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      workflow: z.record(z.string(), z.any()).describe('Full workflow details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client(ctx.auth.token);
     let workflow = await client.getWorkflow(ctx.input.workflowId);
 
     return {
       output: { workflow },
-      message: `Retrieved workflow **${workflow.name || workflow.id}**.`,
+      message: `Retrieved workflow **${workflow.name || workflow.id}**.`
     };
   })
   .build();

@@ -16,9 +16,7 @@ export let listReportsTool = SlateTool.create(spec, {
       formId: z
         .string()
         .optional()
-        .describe(
-          'Form ID to list reports for. If omitted, returns reports across all forms.'
-        )
+        .describe('Form ID to list reports for. If omitted, returns reports across all forms.')
     })
   )
   .output(
@@ -35,7 +33,7 @@ export let listReportsTool = SlateTool.create(spec, {
       )
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

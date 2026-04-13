@@ -3,21 +3,21 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTemplate = SlateTool.create(
-  spec,
-  {
-    name: 'Get Template',
-    key: 'get_template',
-    description: `Retrieve detailed information about a specific CraftMyPDF template, including its structure, sample JSON data, and metadata. Optionally retrieve a specific version.`,
-    tags: {
-      readOnly: true,
-    },
+export let getTemplate = SlateTool.create(spec, {
+  name: 'Get Template',
+  key: 'get_template',
+  description: `Retrieve detailed information about a specific CraftMyPDF template, including its structure, sample JSON data, and metadata. Optionally retrieve a specific version.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(
     z.object({
       templateId: z.string().describe('ID of the template to retrieve.'),
-      version: z.number().optional().describe('Specific template version to retrieve. Defaults to the latest version.'),
+      version: z
+        .number()
+        .optional()
+        .describe('Specific template version to retrieve. Defaults to the latest version.')
     })
   )
   .output(
@@ -25,13 +25,13 @@ export let getTemplate = SlateTool.create(
       templateId: z.string().describe('Unique identifier of the template.'),
       name: z.string().describe('Name of the template.'),
       groupName: z.string().describe('Group name the template belongs to.'),
-      sampleJson: z.string().describe('Sample JSON data for the template.'),
+      sampleJson: z.string().describe('Sample JSON data for the template.')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     let result = await client.getTemplate(ctx.input.templateId, ctx.input.version);
@@ -41,9 +41,9 @@ export let getTemplate = SlateTool.create(
         templateId: result.template_id,
         name: result.name,
         groupName: result.group_name || '',
-        sampleJson: result.json || '',
+        sampleJson: result.json || ''
       },
-      message: `Retrieved template **"${result.name}"** (${result.template_id}).`,
+      message: `Retrieved template **"${result.name}"** (${result.template_id}).`
     };
   })
   .build();

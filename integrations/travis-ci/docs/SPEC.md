@@ -21,6 +21,7 @@ Authorization: token YOUR_API_TOKEN
 Requests must also include the `Travis-API-Version: 3` header.
 
 **API Base URLs:**
+
 - **travis-ci.com** (private and public projects): `https://api.travis-ci.com`
 - **Travis CI Enterprise**: Your custom enterprise API endpoint
 
@@ -29,39 +30,51 @@ A GitHub token can also be exchanged for a Travis CI access token by posting it 
 ## Features
 
 ### Repository Management
+
 View and manage repositories connected to Travis CI. This includes activating/deactivating repositories for CI, viewing repository settings, and managing repository-level configurations such as build settings and SSH key pairs.
 
 ### Build Management
+
 The API can be used to get build info, restart builds or jobs, cancel builds or jobs, and trigger debug builds. Builds can also be triggered programmatically by sending a POST request to the `/repo/{slug|id}/requests` endpoint. You can specify a branch, custom configuration, or commit message when triggering a build.
 
 ### Job Management
+
 View individual jobs within a build, including their status, logs, and configuration. Jobs can be restarted or cancelled independently. Debug mode can be enabled for individual jobs to troubleshoot failing builds.
 
 ### Build Logs
+
 Access and retrieve log output for individual jobs. Logs can be fetched or deleted.
 
 ### Environment Variables
+
 Edit environment variables for a repository. Environment variables can be marked as public or private (encrypted). This allows managing secrets and configuration values used during builds.
 
 ### Cron Jobs
+
 Create, view, and manage scheduled cron builds for repository branches. Crons can be configured to run daily, weekly, or monthly, with options for whether to run if there has been a recent build.
 
 ### Build Caches
+
 View and delete build caches for repositories. Caches store dependencies and other artifacts to speed up subsequent builds.
 
 ### Branch Information
+
 Retrieve information about branches in a repository, including the last build status for each branch.
 
 ### User and Organization Management
+
 View user profiles, organizations, and their associated repositories. Manage user preferences and settings.
 
 ### Configuration Validation
+
 Validate the `.travis.yml` file through the lint endpoint to check for syntax errors and warnings before committing.
 
 ### Build Requests
+
 View the history of build requests for a repository, including those triggered by commits, pull requests, API calls, or cron jobs.
 
 ### Scan Results
+
 Access security scan results for builds, which identify potential credential leaks or other security concerns in build logs.
 
 ## Events
@@ -69,11 +82,13 @@ Access security scan results for builds, which identify potential credential lea
 Travis CI can notify you about your build results through email, IRC, chat or custom webhooks.
 
 ### Build Notifications (Webhooks)
+
 Travis CI can send webhook notifications about build results. Webhooks can be configured in the `.travis.yml` file of a repository.
 
 These webhooks are executed at the end of a build, and not by individual jobs. The webhook payload includes build metadata such as repository info, build status, branch, commit details, duration, and result message.
 
 Configurable options:
+
 - **`on_success`**: When to notify on successful builds (`always`, `never`, `change`).
 - **`on_failure`**: When to notify on failed builds (`always`, `never`, `change`).
 - **`on_start`**: Whether to notify when a build starts.

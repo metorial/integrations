@@ -16,6 +16,7 @@ Algolia uses API key-based authentication. API keys are necessary to work with A
 You can find your application ID and API key in the Algolia dashboard.
 
 API requests are authenticated by passing two HTTP headers:
+
 - `x-algolia-application-id`: Your Algolia Application ID
 - `x-algolia-api-key`: Your API key
 

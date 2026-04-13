@@ -20,14 +20,14 @@ export class ExcelClient {
     this.siteId = config.siteId;
     this.sessionId = config.sessionId;
     this.axios = createAxios({
-      baseURL: 'https://graph.microsoft.com/v1.0',
+      baseURL: 'https://graph.microsoft.com/v1.0'
     });
   }
 
   private get headers(): Record<string, string> {
     let h: Record<string, string> = {
       Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
     if (this.sessionId) {
       h['workbook-session-id'] = this.sessionId;
@@ -83,8 +83,8 @@ export class ExcelClient {
       {
         headers: {
           ...this.headers,
-          'workbook-session-id': sessionId,
-        },
+          'workbook-session-id': sessionId
+        }
       }
     );
   }
@@ -96,8 +96,8 @@ export class ExcelClient {
       {
         headers: {
           ...this.headers,
-          'workbook-session-id': sessionId,
-        },
+          'workbook-session-id': sessionId
+        }
       }
     );
   }
@@ -105,10 +105,9 @@ export class ExcelClient {
   // ─── Worksheet Management ──────────────────────────────────────────
 
   async listWorksheets(workbookItemId: string): Promise<any[]> {
-    let response = await this.axios.get(
-      `${this.workbookPath(workbookItemId)}/worksheets`,
-      { headers: this.headers }
-    );
+    let response = await this.axios.get(`${this.workbookPath(workbookItemId)}/worksheets`, {
+      headers: this.headers
+    });
     return response.data.value;
   }
 
@@ -129,7 +128,11 @@ export class ExcelClient {
     return response.data;
   }
 
-  async updateWorksheet(workbookItemId: string, worksheetIdOrName: string, properties: { name?: string; position?: number; visibility?: string }): Promise<any> {
+  async updateWorksheet(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    properties: { name?: string; position?: number; visibility?: string }
+  ): Promise<any> {
     let response = await this.axios.patch(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}`,
       properties,
@@ -147,7 +150,11 @@ export class ExcelClient {
 
   // ─── Range Operations ──────────────────────────────────────────────
 
-  async getRange(workbookItemId: string, worksheetIdOrName: string, address: string): Promise<any> {
+  async getRange(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    address: string
+  ): Promise<any> {
     let response = await this.axios.get(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/range(address='${encodeURIComponent(address)}')`,
       { headers: this.headers }
@@ -155,7 +162,11 @@ export class ExcelClient {
     return response.data;
   }
 
-  async getUsedRange(workbookItemId: string, worksheetIdOrName: string, valuesOnly?: boolean): Promise<any> {
+  async getUsedRange(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    valuesOnly?: boolean
+  ): Promise<any> {
     let url = `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/usedRange`;
     if (valuesOnly) {
       url += `(valuesOnly=true)`;
@@ -164,7 +175,12 @@ export class ExcelClient {
     return response.data;
   }
 
-  async updateRange(workbookItemId: string, worksheetIdOrName: string, address: string, data: { values?: any[][]; formulas?: any[][]; numberFormat?: any[][] }): Promise<any> {
+  async updateRange(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    address: string,
+    data: { values?: any[][]; formulas?: any[][]; numberFormat?: any[][] }
+  ): Promise<any> {
     let response = await this.axios.patch(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/range(address='${encodeURIComponent(address)}')`,
       data,
@@ -173,7 +189,12 @@ export class ExcelClient {
     return response.data;
   }
 
-  async clearRange(workbookItemId: string, worksheetIdOrName: string, address: string, applyTo?: string): Promise<void> {
+  async clearRange(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    address: string,
+    applyTo?: string
+  ): Promise<void> {
     await this.axios.post(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/range(address='${encodeURIComponent(address)}')/clear`,
       { applyTo: applyTo || 'All' },
@@ -181,7 +202,12 @@ export class ExcelClient {
     );
   }
 
-  async sortRange(workbookItemId: string, worksheetIdOrName: string, address: string, fields: Array<{ key: number; sortOn?: string; ascending?: boolean }>): Promise<void> {
+  async sortRange(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    address: string,
+    fields: Array<{ key: number; sortOn?: string; ascending?: boolean }>
+  ): Promise<void> {
     await this.axios.post(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/range(address='${encodeURIComponent(address)}')/sort/apply`,
       {
@@ -189,7 +215,7 @@ export class ExcelClient {
         matchCase: false,
         hasHeaders: false,
         orientation: 'Rows',
-        method: 'PinYin',
+        method: 'PinYin'
       },
       { headers: this.headers }
     );
@@ -213,7 +239,12 @@ export class ExcelClient {
     return response.data;
   }
 
-  async createTable(workbookItemId: string, worksheetIdOrName: string, address: string, hasHeaders: boolean): Promise<any> {
+  async createTable(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    address: string,
+    hasHeaders: boolean
+  ): Promise<any> {
     let response = await this.axios.post(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/tables/add`,
       { address, hasHeaders },
@@ -222,7 +253,11 @@ export class ExcelClient {
     return response.data;
   }
 
-  async updateTable(workbookItemId: string, tableIdOrName: string, properties: { name?: string; showHeaders?: boolean; showTotals?: boolean; style?: string }): Promise<any> {
+  async updateTable(
+    workbookItemId: string,
+    tableIdOrName: string,
+    properties: { name?: string; showHeaders?: boolean; showTotals?: boolean; style?: string }
+  ): Promise<any> {
     let response = await this.axios.patch(
       `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}`,
       properties,
@@ -247,7 +282,12 @@ export class ExcelClient {
     return response.data;
   }
 
-  async getTableRows(workbookItemId: string, tableIdOrName: string, top?: number, skip?: number): Promise<any> {
+  async getTableRows(
+    workbookItemId: string,
+    tableIdOrName: string,
+    top?: number,
+    skip?: number
+  ): Promise<any> {
     let url = `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows`;
     let params: string[] = [];
     if (top !== undefined) params.push(`$top=${top}`);
@@ -257,7 +297,12 @@ export class ExcelClient {
     return response.data;
   }
 
-  async addTableRows(workbookItemId: string, tableIdOrName: string, values: any[][], index?: number): Promise<any> {
+  async addTableRows(
+    workbookItemId: string,
+    tableIdOrName: string,
+    values: any[][],
+    index?: number
+  ): Promise<any> {
     let response = await this.axios.post(
       `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows`,
       { values, index },
@@ -266,7 +311,11 @@ export class ExcelClient {
     return response.data;
   }
 
-  async deleteTableRow(workbookItemId: string, tableIdOrName: string, rowIndex: number): Promise<void> {
+  async deleteTableRow(
+    workbookItemId: string,
+    tableIdOrName: string,
+    rowIndex: number
+  ): Promise<void> {
     await this.axios.post(
       `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/rows/itemAt(index=${rowIndex})/delete`,
       {},
@@ -282,7 +331,13 @@ export class ExcelClient {
     return response.data.value;
   }
 
-  async addTableColumn(workbookItemId: string, tableIdOrName: string, name: string, values?: any[][], index?: number): Promise<any> {
+  async addTableColumn(
+    workbookItemId: string,
+    tableIdOrName: string,
+    name: string,
+    values?: any[][],
+    index?: number
+  ): Promise<any> {
     let response = await this.axios.post(
       `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/columns`,
       { name, values, index },
@@ -291,14 +346,22 @@ export class ExcelClient {
     return response.data;
   }
 
-  async deleteTableColumn(workbookItemId: string, tableIdOrName: string, columnIdOrName: string): Promise<void> {
+  async deleteTableColumn(
+    workbookItemId: string,
+    tableIdOrName: string,
+    columnIdOrName: string
+  ): Promise<void> {
     await this.axios.delete(
       `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/columns/${encodeURIComponent(columnIdOrName)}`,
       { headers: this.headers }
     );
   }
 
-  async applyTableSort(workbookItemId: string, tableIdOrName: string, fields: Array<{ key: number; sortOn?: string; ascending?: boolean }>): Promise<void> {
+  async applyTableSort(
+    workbookItemId: string,
+    tableIdOrName: string,
+    fields: Array<{ key: number; sortOn?: string; ascending?: boolean }>
+  ): Promise<void> {
     await this.axios.post(
       `${this.workbookPath(workbookItemId)}/tables/${encodeURIComponent(tableIdOrName)}/sort/apply`,
       { fields },
@@ -314,7 +377,12 @@ export class ExcelClient {
     );
   }
 
-  async applyTableFilter(workbookItemId: string, tableIdOrName: string, columnIndex: number, criteria: any): Promise<void> {
+  async applyTableFilter(
+    workbookItemId: string,
+    tableIdOrName: string,
+    columnIndex: number,
+    criteria: any
+  ): Promise<void> {
     let columns = await this.getTableColumns(workbookItemId, tableIdOrName);
     let column = columns[columnIndex];
     if (!column) throw new Error(`Column at index ${columnIndex} not found`);
@@ -360,7 +428,11 @@ export class ExcelClient {
     return response.data.value;
   }
 
-  async getChart(workbookItemId: string, worksheetIdOrName: string, chartName: string): Promise<any> {
+  async getChart(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    chartName: string
+  ): Promise<any> {
     let response = await this.axios.get(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/charts/${encodeURIComponent(chartName)}`,
       { headers: this.headers }
@@ -368,7 +440,13 @@ export class ExcelClient {
     return response.data;
   }
 
-  async createChart(workbookItemId: string, worksheetIdOrName: string, chartType: string, sourceDataRange: string, seriesBy: string): Promise<any> {
+  async createChart(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    chartType: string,
+    sourceDataRange: string,
+    seriesBy: string
+  ): Promise<any> {
     let response = await this.axios.post(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/charts/add`,
       { type: chartType, sourceData: sourceDataRange, seriesBy },
@@ -377,7 +455,12 @@ export class ExcelClient {
     return response.data;
   }
 
-  async updateChart(workbookItemId: string, worksheetIdOrName: string, chartName: string, properties: { name?: string; top?: number; left?: number; width?: number; height?: number }): Promise<any> {
+  async updateChart(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    chartName: string,
+    properties: { name?: string; top?: number; left?: number; width?: number; height?: number }
+  ): Promise<any> {
     let response = await this.axios.patch(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/charts/${encodeURIComponent(chartName)}`,
       properties,
@@ -386,14 +469,25 @@ export class ExcelClient {
     return response.data;
   }
 
-  async deleteChart(workbookItemId: string, worksheetIdOrName: string, chartName: string): Promise<void> {
+  async deleteChart(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    chartName: string
+  ): Promise<void> {
     await this.axios.delete(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/charts/${encodeURIComponent(chartName)}`,
       { headers: this.headers }
     );
   }
 
-  async getChartImage(workbookItemId: string, worksheetIdOrName: string, chartName: string, width?: number, height?: number, fittingMode?: string): Promise<string> {
+  async getChartImage(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    chartName: string,
+    width?: number,
+    height?: number,
+    fittingMode?: string
+  ): Promise<string> {
     let params: string[] = [];
     if (width !== undefined) params.push(`width=${width}`);
     if (height !== undefined) params.push(`height=${height}`);
@@ -406,7 +500,13 @@ export class ExcelClient {
     return response.data.value;
   }
 
-  async setChartSourceData(workbookItemId: string, worksheetIdOrName: string, chartName: string, sourceData: string, seriesBy?: string): Promise<void> {
+  async setChartSourceData(
+    workbookItemId: string,
+    worksheetIdOrName: string,
+    chartName: string,
+    sourceData: string,
+    seriesBy?: string
+  ): Promise<void> {
     await this.axios.post(
       `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/charts/${encodeURIComponent(chartName)}/setData`,
       { sourceData, seriesBy: seriesBy || 'Auto' },
@@ -440,7 +540,13 @@ export class ExcelClient {
     return response.data;
   }
 
-  async addNamedItem(workbookItemId: string, name: string, reference: string, comment?: string, worksheetIdOrName?: string): Promise<any> {
+  async addNamedItem(
+    workbookItemId: string,
+    name: string,
+    reference: string,
+    comment?: string,
+    worksheetIdOrName?: string
+  ): Promise<any> {
     let url = worksheetIdOrName
       ? `${this.workbookPath(workbookItemId)}/worksheets/${encodeURIComponent(worksheetIdOrName)}/names/add`
       : `${this.workbookPath(workbookItemId)}/names/add`;
@@ -454,7 +560,11 @@ export class ExcelClient {
 
   // ─── Workbook Functions ────────────────────────────────────────────
 
-  async invokeFunction(workbookItemId: string, functionName: string, params: any[]): Promise<any> {
+  async invokeFunction(
+    workbookItemId: string,
+    functionName: string,
+    params: any[]
+  ): Promise<any> {
     let response = await this.axios.post(
       `${this.workbookPath(workbookItemId)}/functions/${functionName}`,
       { values: params },
@@ -474,10 +584,7 @@ export class ExcelClient {
   }
 
   async getFileMetadata(itemId: string): Promise<any> {
-    let response = await this.axios.get(
-      `${this.itemPath(itemId)}`,
-      { headers: this.headers }
-    );
+    let response = await this.axios.get(`${this.itemPath(itemId)}`, { headers: this.headers });
     return response.data;
   }
 
@@ -487,14 +594,23 @@ export class ExcelClient {
       : `${this.drivePath()}/root/children`;
     let response = await this.axios.get(url, {
       headers: this.headers,
-      params: { $filter: "file/mimeType eq 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'" },
+      params: {
+        $filter:
+          "file/mimeType eq 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+      }
     });
     return response.data.value;
   }
 
   // ─── Subscriptions (for triggers) ──────────────────────────────────
 
-  async createSubscription(resource: string, changeType: string, notificationUrl: string, expirationDateTime: string, clientState?: string): Promise<any> {
+  async createSubscription(
+    resource: string,
+    changeType: string,
+    notificationUrl: string,
+    expirationDateTime: string,
+    clientState?: string
+  ): Promise<any> {
     let response = await this.axios.post(
       '/subscriptions',
       {
@@ -502,7 +618,7 @@ export class ExcelClient {
         notificationUrl,
         resource,
         expirationDateTime,
-        clientState,
+        clientState
       },
       { headers: this.headers }
     );
@@ -510,10 +626,7 @@ export class ExcelClient {
   }
 
   async deleteSubscription(subscriptionId: string): Promise<void> {
-    await this.axios.delete(
-      `/subscriptions/${subscriptionId}`,
-      { headers: this.headers }
-    );
+    await this.axios.delete(`/subscriptions/${subscriptionId}`, { headers: this.headers });
   }
 
   async renewSubscription(subscriptionId: string, expirationDateTime: string): Promise<any> {

@@ -24,9 +24,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: buildBaseUrl(config.domain, config.apiVersion),
       headers: {
-        'Authorization': `Token token=${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Token token=${config.token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -53,7 +53,10 @@ export class Client {
     await this.axios.delete(`/leads/${leadId}`);
   }
 
-  async listLeads(viewId: number, options?: { page?: number; sort?: string; sortType?: string }): Promise<{ leads: Record<string, any>[]; meta: Record<string, any> }> {
+  async listLeads(
+    viewId: number,
+    options?: { page?: number; sort?: string; sortType?: string }
+  ): Promise<{ leads: Record<string, any>[]; meta: Record<string, any> }> {
     let params: Record<string, any> = {};
     if (options?.page) params.page = options.page;
     if (options?.sort) params.sort = options.sort;
@@ -62,8 +65,14 @@ export class Client {
     return { leads: response.data.leads || [], meta: response.data.meta || {} };
   }
 
-  async upsertLead(uniqueIdentifier: Record<string, any>, lead: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.post('/leads/upsert', { unique_identifier: uniqueIdentifier, lead });
+  async upsertLead(
+    uniqueIdentifier: Record<string, any>,
+    lead: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post('/leads/upsert', {
+      unique_identifier: uniqueIdentifier,
+      lead
+    });
     return response.data.lead;
   }
 
@@ -91,7 +100,10 @@ export class Client {
     return response.data.contact;
   }
 
-  async updateContact(contactId: number, contact: Record<string, any>): Promise<Record<string, any>> {
+  async updateContact(
+    contactId: number,
+    contact: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/contacts/${contactId}`, { contact });
     return response.data.contact;
   }
@@ -100,7 +112,10 @@ export class Client {
     await this.axios.delete(`/contacts/${contactId}`);
   }
 
-  async listContacts(viewId: number, options?: { page?: number; sort?: string; sortType?: string }): Promise<{ contacts: Record<string, any>[]; meta: Record<string, any> }> {
+  async listContacts(
+    viewId: number,
+    options?: { page?: number; sort?: string; sortType?: string }
+  ): Promise<{ contacts: Record<string, any>[]; meta: Record<string, any> }> {
     let params: Record<string, any> = {};
     if (options?.page) params.page = options.page;
     if (options?.sort) params.sort = options.sort;
@@ -109,8 +124,14 @@ export class Client {
     return { contacts: response.data.contacts || [], meta: response.data.meta || {} };
   }
 
-  async upsertContact(uniqueIdentifier: Record<string, any>, contact: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.post('/contacts/upsert', { unique_identifier: uniqueIdentifier, contact });
+  async upsertContact(
+    uniqueIdentifier: Record<string, any>,
+    contact: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post('/contacts/upsert', {
+      unique_identifier: uniqueIdentifier,
+      contact
+    });
     return response.data.contact;
   }
 
@@ -138,8 +159,13 @@ export class Client {
     return response.data.sales_account;
   }
 
-  async updateAccount(accountId: number, salesAccount: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.put(`/sales_accounts/${accountId}`, { sales_account: salesAccount });
+  async updateAccount(
+    accountId: number,
+    salesAccount: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.put(`/sales_accounts/${accountId}`, {
+      sales_account: salesAccount
+    });
     return response.data.sales_account;
   }
 
@@ -147,17 +173,29 @@ export class Client {
     await this.axios.delete(`/sales_accounts/${accountId}`);
   }
 
-  async listAccounts(viewId: number, options?: { page?: number; sort?: string; sortType?: string }): Promise<{ salesAccounts: Record<string, any>[]; meta: Record<string, any> }> {
+  async listAccounts(
+    viewId: number,
+    options?: { page?: number; sort?: string; sortType?: string }
+  ): Promise<{ salesAccounts: Record<string, any>[]; meta: Record<string, any> }> {
     let params: Record<string, any> = {};
     if (options?.page) params.page = options.page;
     if (options?.sort) params.sort = options.sort;
     if (options?.sortType) params.sort_type = options.sortType;
     let response = await this.axios.get(`/sales_accounts/view/${viewId}`, { params });
-    return { salesAccounts: response.data.sales_accounts || [], meta: response.data.meta || {} };
+    return {
+      salesAccounts: response.data.sales_accounts || [],
+      meta: response.data.meta || {}
+    };
   }
 
-  async upsertAccount(uniqueIdentifier: Record<string, any>, salesAccount: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.post('/sales_accounts/upsert', { unique_identifier: uniqueIdentifier, sales_account: salesAccount });
+  async upsertAccount(
+    uniqueIdentifier: Record<string, any>,
+    salesAccount: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post('/sales_accounts/upsert', {
+      unique_identifier: uniqueIdentifier,
+      sales_account: salesAccount
+    });
     return response.data.sales_account;
   }
 
@@ -189,7 +227,10 @@ export class Client {
     await this.axios.delete(`/deals/${dealId}`);
   }
 
-  async listDeals(viewId: number, options?: { page?: number; sort?: string; sortType?: string }): Promise<{ deals: Record<string, any>[]; meta: Record<string, any> }> {
+  async listDeals(
+    viewId: number,
+    options?: { page?: number; sort?: string; sortType?: string }
+  ): Promise<{ deals: Record<string, any>[]; meta: Record<string, any> }> {
     let params: Record<string, any> = {};
     if (options?.page) params.page = options.page;
     if (options?.sort) params.sort = options.sort;
@@ -198,8 +239,14 @@ export class Client {
     return { deals: response.data.deals || [], meta: response.data.meta || {} };
   }
 
-  async upsertDeal(uniqueIdentifier: Record<string, any>, deal: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.post('/deals/upsert', { unique_identifier: uniqueIdentifier, deal });
+  async upsertDeal(
+    uniqueIdentifier: Record<string, any>,
+    deal: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.post('/deals/upsert', {
+      unique_identifier: uniqueIdentifier,
+      deal
+    });
     return response.data.deal;
   }
 
@@ -229,7 +276,10 @@ export class Client {
     await this.axios.delete(`/tasks/${taskId}`);
   }
 
-  async listTasks(filter: string, options?: { include?: string }): Promise<Record<string, any>[]> {
+  async listTasks(
+    filter: string,
+    options?: { include?: string }
+  ): Promise<Record<string, any>[]> {
     let params: Record<string, any> = { filter };
     if (options?.include) params.include = options.include;
     let response = await this.axios.get('/tasks', { params });
@@ -248,7 +298,10 @@ export class Client {
     return response.data.appointment;
   }
 
-  async updateAppointment(appointmentId: number, appointment: Record<string, any>): Promise<Record<string, any>> {
+  async updateAppointment(
+    appointmentId: number,
+    appointment: Record<string, any>
+  ): Promise<Record<string, any>> {
     let response = await this.axios.put(`/appointments/${appointmentId}`, { appointment });
     return response.data.appointment;
   }
@@ -281,7 +334,9 @@ export class Client {
   // ---- Sales Activities ----
 
   async createSalesActivity(salesActivity: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.post('/sales_activities', { sales_activity: salesActivity });
+    let response = await this.axios.post('/sales_activities', {
+      sales_activity: salesActivity
+    });
     return response.data.sales_activity;
   }
 
@@ -290,8 +345,13 @@ export class Client {
     return response.data.sales_activity;
   }
 
-  async updateSalesActivity(activityId: number, salesActivity: Record<string, any>): Promise<Record<string, any>> {
-    let response = await this.axios.put(`/sales_activities/${activityId}`, { sales_activity: salesActivity });
+  async updateSalesActivity(
+    activityId: number,
+    salesActivity: Record<string, any>
+  ): Promise<Record<string, any>> {
+    let response = await this.axios.put(`/sales_activities/${activityId}`, {
+      sales_activity: salesActivity
+    });
     return response.data.sales_activity;
   }
 
@@ -308,17 +368,29 @@ export class Client {
     return response.data || [];
   }
 
-  async lookup(query: string, field: string, entities: string): Promise<Record<string, any>[]> {
+  async lookup(
+    query: string,
+    field: string,
+    entities: string
+  ): Promise<Record<string, any>[]> {
     let params: Record<string, any> = { q: query, f: field, entities };
     let response = await this.axios.get('/lookup', { params });
     return response.data || [];
   }
 
-  async filteredSearch(entityType: string, filterRules: Record<string, any>[], options?: { page?: number; perPage?: number }): Promise<Record<string, any>[]> {
+  async filteredSearch(
+    entityType: string,
+    filterRules: Record<string, any>[],
+    options?: { page?: number; perPage?: number }
+  ): Promise<Record<string, any>[]> {
     let params: Record<string, any> = {};
     if (options?.page) params.page = options.page;
     if (options?.perPage) params.per_page = options.perPage;
-    let response = await this.axios.post(`/filtered_search/${entityType}`, { filter_rule: filterRules }, { params });
+    let response = await this.axios.post(
+      `/filtered_search/${entityType}`,
+      { filter_rule: filterRules },
+      { params }
+    );
     return response.data || [];
   }
 

@@ -15,38 +15,42 @@ let proposalSummarySchema = z.object({
   yearlyFees: z.number().nullable().describe('Yearly fees total'),
   oneTimeFees: z.number().nullable().describe('One-time fees total'),
   user: z.string().nullable().describe('Proposal owner name'),
-  client: z.object({
-    clientId: z.number().describe('Client ID'),
-    name: z.string().describe('Client name'),
-    url: z.string().describe('Client API URL'),
-    appUrl: z.string().describe('Client app URL')
-  }).nullable().describe('Associated client'),
+  client: z
+    .object({
+      clientId: z.number().describe('Client ID'),
+      name: z.string().describe('Client name'),
+      url: z.string().describe('Client API URL'),
+      appUrl: z.string().describe('Client app URL')
+    })
+    .nullable()
+    .describe('Associated client'),
   url: z.string().describe('API URL'),
   appUrl: z.string().describe('Bidsketch app URL'),
   createdAt: z.string().describe('Creation timestamp'),
   updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let listProposals = SlateTool.create(
-  spec,
-  {
-    name: 'List Proposals',
-    key: 'list_proposals',
-    description: `Retrieve proposals from Bidsketch. Can list all proposals or filter by client. Supports pagination. Returns proposal metadata including status, totals, and client association.`,
-    tags: {
-      readOnly: true
-    }
+export let listProposals = SlateTool.create(spec, {
+  name: 'List Proposals',
+  key: 'list_proposals',
+  description: `Retrieve proposals from Bidsketch. Can list all proposals or filter by client. Supports pagination. Returns proposal metadata including status, totals, and client association.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    clientId: z.number().optional().describe('Filter proposals by client ID'),
-    page: z.number().optional().describe('Page number for pagination'),
-    perPage: z.number().optional().describe('Number of proposals per page (max 100)')
-  }))
-  .output(z.object({
-    proposals: z.array(proposalSummarySchema).describe('List of proposals')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      clientId: z.number().optional().describe('Filter proposals by client ID'),
+      page: z.number().optional().describe('Page number for pagination'),
+      perPage: z.number().optional().describe('Number of proposals per page (max 100)')
+    })
+  )
+  .output(
+    z.object({
+      proposals: z.array(proposalSummarySchema).describe('List of proposals')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BidsketchClient(ctx.auth.token);
 
     let data = ctx.input.clientId
@@ -65,12 +69,14 @@ export let listProposals = SlateTool.create(
       yearlyFees: p.yearly_fees ?? null,
       oneTimeFees: p.one_time_fees ?? null,
       user: p.user ?? null,
-      client: p.client ? {
-        clientId: p.client.id,
-        name: p.client.name,
-        url: p.client.url,
-        appUrl: p.client.app_url
-      } : null,
+      client: p.client
+        ? {
+            clientId: p.client.id,
+            name: p.client.name,
+            url: p.client.url,
+            appUrl: p.client.app_url
+          }
+        : null,
       url: p.url,
       appUrl: p.app_url,
       createdAt: p.created_at,

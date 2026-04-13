@@ -12,26 +12,25 @@ let contactSchema = z.object({
   street: z.string().optional().describe('Street address'),
   zip: z.string().optional().describe('ZIP / postal code'),
   city: z.string().optional().describe('City'),
-  countryCode: z.string().optional().describe('Two-letter country code'),
+  countryCode: z.string().optional().describe('Two-letter country code')
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Retrieve all recipient contacts from your EchtPost account. Returns contact details including names, addresses, and IDs that can be used when sending postcards.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Retrieve all recipient contacts from your EchtPost account. Returns contact details including names, addresses, and IDs that can be used when sending postcards.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    contacts: z.array(contactSchema).describe('List of recipient contacts'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      contacts: z.array(contactSchema).describe('List of recipient contacts')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     ctx.info('Fetching contacts');
@@ -47,14 +46,14 @@ export let listContacts = SlateTool.create(
       street: c.street,
       zip: c.zip,
       city: c.city,
-      countryCode: c.country_code,
+      countryCode: c.country_code
     }));
 
     return {
       output: {
-        contacts: mapped,
+        contacts: mapped
       },
-      message: `Found **${mapped.length}** contact(s).`,
+      message: `Found **${mapped.length}** contact(s).`
     };
   })
   .build();

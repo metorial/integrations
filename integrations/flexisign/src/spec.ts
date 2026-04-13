@@ -5,8 +5,9 @@ import { config } from './config';
 export let spec = SlateSpecification.create({
   key: 'flexisign',
   name: 'Flexisign',
-  description: 'Digital signature platform for signing, sending, and managing documents securely.',
+  description:
+    'Digital signature platform for signing, sending, and managing documents securely.',
   metadata: {},
   config,
-  auth,
+  auth
 });

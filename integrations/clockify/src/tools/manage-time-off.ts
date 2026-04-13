@@ -3,37 +3,46 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getTimeOffRequests = SlateTool.create(
-  spec,
-  {
-    name: 'Get Time Off Requests',
-    key: 'get_time_off_requests',
-    description: `List time off requests in the workspace. Filter by status, users, and date range.`,
-    tags: { readOnly: true }
-  }
-)
-  .input(z.object({
-    status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'WITHDRAWN']).optional().describe('Filter by request status'),
-    userIds: z.array(z.string()).optional().describe('Filter by user IDs (comma-separated in API)'),
-    start: z.string().optional().describe('Filter requests starting after this date'),
-    end: z.string().optional().describe('Filter requests ending before this date'),
-    page: z.number().optional().describe('Page number'),
-    pageSize: z.number().optional().describe('Entries per page')
-  }))
-  .output(z.object({
-    requests: z.array(z.object({
-      requestId: z.string(),
-      userId: z.string().optional(),
-      policyId: z.string().optional(),
-      status: z.string().optional(),
-      start: z.string().optional(),
-      end: z.string().optional(),
-      note: z.string().optional(),
-      halfDay: z.boolean().optional()
-    })),
-    count: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+export let getTimeOffRequests = SlateTool.create(spec, {
+  name: 'Get Time Off Requests',
+  key: 'get_time_off_requests',
+  description: `List time off requests in the workspace. Filter by status, users, and date range.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      status: z
+        .enum(['PENDING', 'APPROVED', 'REJECTED', 'WITHDRAWN'])
+        .optional()
+        .describe('Filter by request status'),
+      userIds: z
+        .array(z.string())
+        .optional()
+        .describe('Filter by user IDs (comma-separated in API)'),
+      start: z.string().optional().describe('Filter requests starting after this date'),
+      end: z.string().optional().describe('Filter requests ending before this date'),
+      page: z.number().optional().describe('Page number'),
+      pageSize: z.number().optional().describe('Entries per page')
+    })
+  )
+  .output(
+    z.object({
+      requests: z.array(
+        z.object({
+          requestId: z.string(),
+          userId: z.string().optional(),
+          policyId: z.string().optional(),
+          status: z.string().optional(),
+          start: z.string().optional(),
+          end: z.string().optional(),
+          note: z.string().optional(),
+          halfDay: z.boolean().optional()
+        })
+      ),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -67,29 +76,30 @@ export let getTimeOffRequests = SlateTool.create(
   })
   .build();
 
-export let createTimeOffRequest = SlateTool.create(
-  spec,
-  {
-    name: 'Create Time Off Request',
-    key: 'create_time_off_request',
-    description: `Submit a new time off request in Clockify. Requires a time off policy, date range, and optional notes.`,
-    tags: { readOnly: false }
-  }
-)
-  .input(z.object({
-    policyId: z.string().describe('ID of the time off policy to use'),
-    start: z.string().describe('Start date in ISO 8601 format'),
-    end: z.string().describe('End date in ISO 8601 format'),
-    note: z.string().optional().describe('Note or reason for the request'),
-    halfDay: z.boolean().optional().describe('Whether this is a half-day request')
-  }))
-  .output(z.object({
-    requestId: z.string(),
-    status: z.string().optional(),
-    start: z.string().optional(),
-    end: z.string().optional()
-  }))
-  .handleInvocation(async (ctx) => {
+export let createTimeOffRequest = SlateTool.create(spec, {
+  name: 'Create Time Off Request',
+  key: 'create_time_off_request',
+  description: `Submit a new time off request in Clockify. Requires a time off policy, date range, and optional notes.`,
+  tags: { readOnly: false }
+})
+  .input(
+    z.object({
+      policyId: z.string().describe('ID of the time off policy to use'),
+      start: z.string().describe('Start date in ISO 8601 format'),
+      end: z.string().describe('End date in ISO 8601 format'),
+      note: z.string().optional().describe('Note or reason for the request'),
+      halfDay: z.boolean().optional().describe('Whether this is a half-day request')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string(),
+      status: z.string().optional(),
+      start: z.string().optional(),
+      end: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -116,25 +126,28 @@ export let createTimeOffRequest = SlateTool.create(
   })
   .build();
 
-export let updateTimeOffRequestStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Update Time Off Request Status',
-    key: 'update_time_off_request_status',
-    description: `Approve, reject, or withdraw a time off request in Clockify.`,
-    tags: { readOnly: false }
-  }
-)
-  .input(z.object({
-    requestId: z.string().describe('ID of the time off request'),
-    status: z.enum(['APPROVED', 'REJECTED', 'WITHDRAWN']).describe('New status for the request'),
-    note: z.string().optional().describe('Note explaining the status change')
-  }))
-  .output(z.object({
-    requestId: z.string(),
-    status: z.string()
-  }))
-  .handleInvocation(async (ctx) => {
+export let updateTimeOffRequestStatus = SlateTool.create(spec, {
+  name: 'Update Time Off Request Status',
+  key: 'update_time_off_request_status',
+  description: `Approve, reject, or withdraw a time off request in Clockify.`,
+  tags: { readOnly: false }
+})
+  .input(
+    z.object({
+      requestId: z.string().describe('ID of the time off request'),
+      status: z
+        .enum(['APPROVED', 'REJECTED', 'WITHDRAWN'])
+        .describe('New status for the request'),
+      note: z.string().optional().describe('Note explaining the status change')
+    })
+  )
+  .output(
+    z.object({
+      requestId: z.string(),
+      status: z.string()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,
@@ -156,25 +169,26 @@ export let updateTimeOffRequestStatus = SlateTool.create(
   })
   .build();
 
-export let getTimeOffPolicies = SlateTool.create(
-  spec,
-  {
-    name: 'Get Time Off Policies',
-    key: 'get_time_off_policies',
-    description: `List time off policies configured in the Clockify workspace. Returns policy names and settings.`,
-    tags: { readOnly: true }
-  }
-)
+export let getTimeOffPolicies = SlateTool.create(spec, {
+  name: 'Get Time Off Policies',
+  key: 'get_time_off_policies',
+  description: `List time off policies configured in the Clockify workspace. Returns policy names and settings.`,
+  tags: { readOnly: true }
+})
   .input(z.object({}))
-  .output(z.object({
-    policies: z.array(z.object({
-      policyId: z.string(),
-      name: z.string(),
-      archived: z.boolean().optional()
-    })),
-    count: z.number()
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      policies: z.array(
+        z.object({
+          policyId: z.string(),
+          name: z.string(),
+          archived: z.boolean().optional()
+        })
+      ),
+      count: z.number()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       workspaceId: ctx.config.workspaceId,

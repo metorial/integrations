@@ -3,27 +3,28 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getGift = SlateTool.create(
-  spec,
-  {
-    name: 'Get Gift',
-    key: 'get_gift',
-    description: `Retrieve a gift record by ID. Returns detailed gift information including splits, fundraiser credits, soft credits, receipts, acknowledgements, and payments.`,
-    tags: {
-      readOnly: true,
-    },
+export let getGift = SlateTool.create(spec, {
+  name: 'Get Gift',
+  key: 'get_gift',
+  description: `Retrieve a gift record by ID. Returns detailed gift information including splits, fundraiser credits, soft credits, receipts, acknowledgements, and payments.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    giftId: z.string().describe('System record ID of the gift.'),
-  }))
-  .output(z.object({
-    gift: z.any().describe('The gift record with full details.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      giftId: z.string().describe('System record ID of the gift.')
+    })
+  )
+  .output(
+    z.object({
+      gift: z.any().describe('The gift record with full details.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      subscriptionKey: ctx.auth.subscriptionKey,
+      subscriptionKey: ctx.auth.subscriptionKey
     });
 
     let gift = await client.getGift(ctx.input.giftId);
@@ -33,7 +34,7 @@ export let getGift = SlateTool.create(
 
     return {
       output: { gift },
-      message: `Retrieved gift **${ctx.input.giftId}** (${gift?.type || 'unknown type'}, ${amountStr}).`,
+      message: `Retrieved gift **${ctx.input.giftId}** (${gift?.type || 'unknown type'}, ${amountStr}).`
     };
   })
   .build();

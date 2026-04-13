@@ -29,17 +29,27 @@ let sha256Hex = (data: string): string => {
 };
 
 let toHex = (bytes: Uint8Array): string => {
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 };
 
 let getAmzDate = (): { amzDate: string; dateStamp: string } => {
   let now = new Date();
-  let amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '').replace('Z', 'Z');
+  let amzDate = now
+    .toISOString()
+    .replace(/[:-]|\.\d{3}/g, '')
+    .replace('Z', 'Z');
   let dateStamp = amzDate.substring(0, 8);
   return { amzDate, dateStamp };
 };
 
-let getSigningKey = (secretKey: string, dateStamp: string, region: string, service: string): Uint8Array => {
+let getSigningKey = (
+  secretKey: string,
+  dateStamp: string,
+  region: string,
+  service: string
+): Uint8Array => {
   let kDate = hmacSha256(`AWS4${secretKey}`, dateStamp);
   let kRegion = hmacSha256(kDate, region);
   let kService = hmacSha256(kRegion, service);
@@ -64,9 +74,9 @@ export let signRequest = (params: SignedRequestParams): Record<string, string> =
 
   let signedHeaders: Record<string, string> = {
     ...headers,
-    'host': host,
+    host: host,
     'x-amz-date': amzDate,
-    'x-amz-content-sha256': payloadHash,
+    'x-amz-content-sha256': payloadHash
   };
 
   if (credentials.sessionToken) {
@@ -77,9 +87,13 @@ export let signRequest = (params: SignedRequestParams): Record<string, string> =
     .map(k => k.toLowerCase())
     .sort();
 
-  let canonicalHeaders = sortedHeaderKeys
-    .map(k => `${k}:${signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`)
-    .join('\n') + '\n';
+  let canonicalHeaders =
+    sortedHeaderKeys
+      .map(
+        k =>
+          `${k}:${signedHeaders[Object.keys(signedHeaders).find(h => h.toLowerCase() === k)!]!.trim()}`
+      )
+      .join('\n') + '\n';
 
   let signedHeadersStr = sortedHeaderKeys.join(';');
 
@@ -89,7 +103,7 @@ export let signRequest = (params: SignedRequestParams): Record<string, string> =
     queryParams,
     canonicalHeaders,
     signedHeadersStr,
-    payloadHash,
+    payloadHash
   ].join('\n');
 
   let credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
@@ -97,7 +111,7 @@ export let signRequest = (params: SignedRequestParams): Record<string, string> =
     'AWS4-HMAC-SHA256',
     amzDate,
     credentialScope,
-    sha256Hex(canonicalRequest),
+    sha256Hex(canonicalRequest)
   ].join('\n');
 
   let signingKey = getSigningKey(credentials.secretAccessKey, dateStamp, region, service);
@@ -108,7 +122,7 @@ export let signRequest = (params: SignedRequestParams): Record<string, string> =
   let resultHeaders: Record<string, string> = {
     'x-amz-date': amzDate,
     'x-amz-content-sha256': payloadHash,
-    'Authorization': authorizationHeader,
+    Authorization: authorizationHeader
   };
 
   if (credentials.sessionToken) {

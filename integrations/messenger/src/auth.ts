@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string().describe('Page Access Token for Messenger API calls'),
-    pageId: z.string().optional().describe('The Facebook Page ID associated with the token')
-  }))
+  .output(
+    z.object({
+      token: z.string().describe('Page Access Token for Messenger API calls'),
+      pageId: z.string().optional().describe('The Facebook Page ID associated with the token')
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'Facebook OAuth',
@@ -35,17 +37,22 @@ export let auth = SlateAuth.create()
     ],
 
     inputSchema: z.object({
-      pageId: z.string().optional().describe('Facebook Page ID to obtain the access token for. If not provided, the first available page will be used.')
+      pageId: z
+        .string()
+        .optional()
+        .describe(
+          'Facebook Page ID to obtain the access token for. If not provided, the first available page will be used.'
+        )
     }),
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join(',');
       let url = `https://www.facebook.com/v21.0/dialog/oauth?client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&state=${encodeURIComponent(ctx.state)}&scope=${encodeURIComponent(scopeString)}`;
 
       return { url, input: ctx.input };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let graphApi = createAxios({ baseURL: 'https://graph.facebook.com/v21.0' });
 
       // Exchange code for user access token
@@ -77,20 +84,26 @@ export let auth = SlateAuth.create()
         params: { access_token: longLivedUserToken }
       });
 
-      let pages = pagesResponse.data.data as Array<{ id: string; name: string; access_token: string }>;
+      let pages = pagesResponse.data.data as Array<{
+        id: string;
+        name: string;
+        access_token: string;
+      }>;
 
       if (!pages || pages.length === 0) {
-        throw new Error('No Facebook Pages found. Please ensure you have admin access to at least one Page.');
+        throw new Error(
+          'No Facebook Pages found. Please ensure you have admin access to at least one Page.'
+        );
       }
 
       // Find the requested page or use the first one
       let targetPageId = ctx.input.pageId;
-      let page = targetPageId
-        ? pages.find(p => p.id === targetPageId)
-        : pages[0];
+      let page = targetPageId ? pages.find(p => p.id === targetPageId) : pages[0];
 
       if (!page) {
-        throw new Error(`Page with ID ${targetPageId} not found. Available pages: ${pages.map(p => `${p.name} (${p.id})`).join(', ')}`);
+        throw new Error(
+          `Page with ID ${targetPageId} not found. Available pages: ${pages.map(p => `${p.name} (${p.id})`).join(', ')}`
+        );
       }
 
       return {
@@ -104,7 +117,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       // Page access tokens derived from long-lived user tokens are non-expiring
       // If token refresh is needed, re-authorize
       return {
@@ -112,7 +125,11 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; pageId?: string }; input: { pageId?: string }; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; pageId?: string };
+      input: { pageId?: string };
+      scopes: string[];
+    }) => {
       let graphApi = createAxios({ baseURL: 'https://graph.facebook.com/v21.0' });
 
       let pageId = ctx.output.pageId || 'me';
@@ -123,7 +140,11 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let data = response.data as { id?: string; name?: string; picture?: { data?: { url?: string } } };
+      let data = response.data as {
+        id?: string;
+        name?: string;
+        picture?: { data?: { url?: string } };
+      };
 
       return {
         profile: {
@@ -144,7 +165,7 @@ export let auth = SlateAuth.create()
       pageId: z.string().optional().describe('The Facebook Page ID associated with this token')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token,
@@ -153,7 +174,10 @@ export let auth = SlateAuth.create()
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; pageId?: string }; input: { token: string; pageId?: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; pageId?: string };
+      input: { token: string; pageId?: string };
+    }) => {
       let graphApi = createAxios({ baseURL: 'https://graph.facebook.com/v21.0' });
 
       let pageId = ctx.output.pageId || 'me';
@@ -164,7 +188,11 @@ export let auth = SlateAuth.create()
         }
       });
 
-      let data = response.data as { id?: string; name?: string; picture?: { data?: { url?: string } } };
+      let data = response.data as {
+        id?: string;
+        name?: string;
+        picture?: { data?: { url?: string } };
+      };
 
       return {
         profile: {

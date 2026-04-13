@@ -3,38 +3,36 @@ import { GhostAdminClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-let memberEventTypes = [
-  'member.added',
-  'member.edited',
-  'member.deleted',
-] as const;
+let memberEventTypes = ['member.added', 'member.edited', 'member.deleted'] as const;
 
-export let memberEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Member Events',
-    key: 'member_events',
-    description: 'Triggered when members (subscribers) are added, edited, or deleted. Note: CSV imports may not trigger these events.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of member event'),
-    member: z.any().describe('Member data from the webhook payload'),
-  }))
-  .output(z.object({
-    memberId: z.string().describe('Member ID'),
-    email: z.string().describe('Member email address'),
-    name: z.string().nullable().describe('Member name'),
-    status: z.string().describe('Member status (free, paid, comped)'),
-    note: z.string().nullable().describe('Internal note'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-    updatedAt: z.string().nullable().describe('Last update timestamp'),
-  }))
+export let memberEvents = SlateTrigger.create(spec, {
+  name: 'Member Events',
+  key: 'member_events',
+  description:
+    'Triggered when members (subscribers) are added, edited, or deleted. Note: CSV imports may not trigger these events.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of member event'),
+      member: z.any().describe('Member data from the webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      memberId: z.string().describe('Member ID'),
+      email: z.string().describe('Member email address'),
+      name: z.string().nullable().describe('Member name'),
+      status: z.string().describe('Member status (free, paid, comped)'),
+      note: z.string().nullable().describe('Internal note'),
+      createdAt: z.string().nullable().describe('Creation timestamp'),
+      updatedAt: z.string().nullable().describe('Last update timestamp')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let webhookIds: string[] = [];
@@ -42,7 +40,7 @@ export let memberEvents = SlateTrigger.create(
         let result = await client.createWebhook({
           event,
           targetUrl: `${ctx.input.webhookBaseUrl}/${event}`,
-          name: `Slates: ${event}`,
+          name: `Slates: ${event}`
         });
         webhookIds.push(result.webhooks[0].id);
       }
@@ -50,10 +48,10 @@ export let memberEvents = SlateTrigger.create(
       return { registrationDetails: { webhookIds } };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new GhostAdminClient({
         domain: ctx.config.adminDomain,
-        apiKey: ctx.auth.token,
+        apiKey: ctx.auth.token
       });
 
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
@@ -66,8 +64,8 @@ export let memberEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
       let url = new URL(ctx.request.url);
       let pathParts = url.pathname.split('/');
       let eventType = pathParts.slice(-2).join('.') || 'member.edited';
@@ -75,14 +73,16 @@ export let memberEvents = SlateTrigger.create(
       let member = data?.member?.current ?? data?.member ?? data;
 
       return {
-        inputs: [{
-          eventType,
-          member,
-        }],
+        inputs: [
+          {
+            eventType,
+            member
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let member = ctx.input.member ?? {};
 
       return {
@@ -95,8 +95,9 @@ export let memberEvents = SlateTrigger.create(
           status: member.status ?? 'free',
           note: member.note ?? null,
           createdAt: member.created_at ?? null,
-          updatedAt: member.updated_at ?? null,
-        },
+          updatedAt: member.updated_at ?? null
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

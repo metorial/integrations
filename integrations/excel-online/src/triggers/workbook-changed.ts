@@ -3,44 +3,51 @@ import { ExcelClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let workbookChanged = SlateTrigger.create(
-  spec,
-  {
-    name: 'Workbook File Changed',
-    key: 'workbook_changed',
-    description: 'Triggers when an Excel workbook (.xlsx) file is created, modified, or deleted in the configured drive. Uses the Microsoft Graph Delta API to detect changes efficiently.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change detected'),
-    itemId: z.string().describe('Drive item ID of the changed file'),
-    fileName: z.string().describe('Name of the changed file'),
-    webUrl: z.string().optional().describe('Web URL of the file'),
-    lastModifiedDateTime: z.string().optional().describe('Last modified timestamp'),
-    lastModifiedBy: z.string().optional().describe('Display name of user who last modified the file'),
-    size: z.number().optional().describe('File size in bytes'),
-    parentPath: z.string().optional().describe('Parent folder path'),
-  }))
-  .output(z.object({
-    workbookItemId: z.string().describe('Drive item ID of the changed workbook'),
-    fileName: z.string().describe('Name of the workbook file'),
-    changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change'),
-    webUrl: z.string().optional().describe('Web URL of the workbook'),
-    lastModifiedDateTime: z.string().optional().describe('Last modified timestamp'),
-    lastModifiedBy: z.string().optional().describe('Display name of the last modifier'),
-    size: z.number().optional().describe('File size in bytes'),
-    parentPath: z.string().optional().describe('Parent folder path'),
-  }))
+export let workbookChanged = SlateTrigger.create(spec, {
+  name: 'Workbook File Changed',
+  key: 'workbook_changed',
+  description:
+    'Triggers when an Excel workbook (.xlsx) file is created, modified, or deleted in the configured drive. Uses the Microsoft Graph Delta API to detect changes efficiently.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum(['created', 'updated', 'deleted'])
+        .describe('Type of change detected'),
+      itemId: z.string().describe('Drive item ID of the changed file'),
+      fileName: z.string().describe('Name of the changed file'),
+      webUrl: z.string().optional().describe('Web URL of the file'),
+      lastModifiedDateTime: z.string().optional().describe('Last modified timestamp'),
+      lastModifiedBy: z
+        .string()
+        .optional()
+        .describe('Display name of user who last modified the file'),
+      size: z.number().optional().describe('File size in bytes'),
+      parentPath: z.string().optional().describe('Parent folder path')
+    })
+  )
+  .output(
+    z.object({
+      workbookItemId: z.string().describe('Drive item ID of the changed workbook'),
+      fileName: z.string().describe('Name of the workbook file'),
+      changeType: z.enum(['created', 'updated', 'deleted']).describe('Type of change'),
+      webUrl: z.string().optional().describe('Web URL of the workbook'),
+      lastModifiedDateTime: z.string().optional().describe('Last modified timestamp'),
+      lastModifiedBy: z.string().optional().describe('Display name of the last modifier'),
+      size: z.number().optional().describe('File size in bytes'),
+      parentPath: z.string().optional().describe('Parent folder path')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ExcelClient({
         token: ctx.auth.token,
         driveId: ctx.config.driveId,
-        siteId: ctx.config.siteId,
+        siteId: ctx.config.siteId
       });
 
       let deltaToken = ctx.state?.deltaToken as string | undefined;
@@ -60,8 +67,11 @@ export let workbookChanged = SlateTrigger.create(
       }
 
       // Filter for .xlsx files only
-      let xlsxItems = items.filter((item: any) =>
-        item.name?.endsWith('.xlsx') || item.file?.mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      let xlsxItems = items.filter(
+        (item: any) =>
+          item.name?.endsWith('.xlsx') ||
+          item.file?.mimeType ===
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       );
 
       let inputs: any[] = [];
@@ -97,7 +107,7 @@ export let workbookChanged = SlateTrigger.create(
             lastModifiedDateTime: item.lastModifiedDateTime,
             lastModifiedBy: item.lastModifiedBy?.user?.displayName,
             size: item.size,
-            parentPath: item.parentReference?.path,
+            parentPath: item.parentReference?.path
           });
         }
       }
@@ -106,12 +116,12 @@ export let workbookChanged = SlateTrigger.create(
         inputs,
         updatedState: {
           deltaToken: nextDeltaLink,
-          knownItems: updatedKnownItems,
-        },
+          knownItems: updatedKnownItems
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `workbook.${ctx.input.changeType}`,
         id: `${ctx.input.itemId}-${ctx.input.lastModifiedDateTime || Date.now()}`,
@@ -123,8 +133,9 @@ export let workbookChanged = SlateTrigger.create(
           lastModifiedDateTime: ctx.input.lastModifiedDateTime,
           lastModifiedBy: ctx.input.lastModifiedBy,
           size: ctx.input.size,
-          parentPath: ctx.input.parentPath,
-        },
+          parentPath: ctx.input.parentPath
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

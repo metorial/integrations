@@ -3,35 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getCourse = SlateTool.create(
-  spec,
-  {
-    name: 'Get Course',
-    key: 'get_course',
-    description: `Retrieve detailed information about a specific Coassemble course by its ID.`,
-    tags: {
-      readOnly: true,
-    },
+export let getCourse = SlateTool.create(spec, {
+  name: 'Get Course',
+  key: 'get_course',
+  description: `Retrieve detailed information about a specific Coassemble course by its ID.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    courseId: z.string().describe('The ID of the course to retrieve'),
-  }))
-  .output(z.object({
-    course: z.record(z.string(), z.any()).describe('The course object with all its details'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      courseId: z.string().describe('The ID of the course to retrieve')
+    })
+  )
+  .output(
+    z.object({
+      course: z.record(z.string(), z.any()).describe('The course object with all its details')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       userId: ctx.auth.userId,
-      authScheme: ctx.auth.authScheme,
+      authScheme: ctx.auth.authScheme
     });
 
     let course = await client.getCourse(ctx.input.courseId);
 
     return {
       output: { course },
-      message: `Retrieved course **${course?.title ?? ctx.input.courseId}**.`,
+      message: `Retrieved course **${course?.title ?? ctx.input.courseId}**.`
     };
   })
   .build();

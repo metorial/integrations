@@ -3,36 +3,39 @@ import { createClient } from '../lib/helpers';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listAppointments = SlateTool.create(
-  spec,
-  {
-    name: 'List Appointments',
-    key: 'list_appointments',
-    description: `List appointments from Freshsales filtered by past or upcoming.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let listAppointments = SlateTool.create(spec, {
+  name: 'List Appointments',
+  key: 'list_appointments',
+  description: `List appointments from Freshsales filtered by past or upcoming.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    filter: z.enum(['upcoming', 'past']).describe('Filter by upcoming or past appointments'),
-  }))
-  .output(z.object({
-    appointments: z.array(z.object({
-      appointmentId: z.number(),
-      title: z.string().nullable().optional(),
-      description: z.string().nullable().optional(),
-      fromDate: z.string().nullable().optional(),
-      endDate: z.string().nullable().optional(),
-      location: z.string().nullable().optional(),
-      targetableId: z.number().nullable().optional(),
-      targetableType: z.string().nullable().optional(),
-      createdAt: z.string().nullable().optional(),
-      updatedAt: z.string().nullable().optional(),
-    })),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      filter: z.enum(['upcoming', 'past']).describe('Filter by upcoming or past appointments')
+    })
+  )
+  .output(
+    z.object({
+      appointments: z.array(
+        z.object({
+          appointmentId: z.number(),
+          title: z.string().nullable().optional(),
+          description: z.string().nullable().optional(),
+          fromDate: z.string().nullable().optional(),
+          endDate: z.string().nullable().optional(),
+          location: z.string().nullable().optional(),
+          targetableId: z.number().nullable().optional(),
+          targetableType: z.string().nullable().optional(),
+          createdAt: z.string().nullable().optional(),
+          updatedAt: z.string().nullable().optional()
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
     let appointments = await client.listAppointments(ctx.input.filter);
 
@@ -46,11 +49,12 @@ export let listAppointments = SlateTool.create(
       targetableId: a.targetable_id,
       targetableType: a.targetable_type,
       createdAt: a.created_at,
-      updatedAt: a.updated_at,
+      updatedAt: a.updated_at
     }));
 
     return {
       output: { appointments: mapped },
-      message: `Found **${mapped.length}** ${ctx.input.filter} appointments.`,
+      message: `Found **${mapped.length}** ${ctx.input.filter} appointments.`
     };
-  }).build();
+  })
+  .build();

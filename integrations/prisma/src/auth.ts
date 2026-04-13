@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional(),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -16,43 +18,47 @@ export let auth = SlateAuth.create()
       {
         title: 'Workspace Admin',
         description: 'Full access to manage workspaces, projects, and databases',
-        scope: 'workspace:admin',
+        scope: 'workspace:admin'
       },
       {
         title: 'Offline Access',
         description: 'Enables refresh tokens for long-lived sessions',
-        scope: 'offline_access',
-      },
+        scope: 'offline_access'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
         response_type: 'code',
         scope: ctx.scopes.join(' '),
-        state: ctx.state,
+        state: ctx.state
       });
 
       return {
-        url: `https://auth.prisma.io/authorize?${params.toString()}`,
+        url: `https://auth.prisma.io/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let http = createAxios();
 
-      let response = await http.post('https://auth.prisma.io/token', new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: ctx.code,
-        redirect_uri: ctx.redirectUri,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        'https://auth.prisma.io/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: ctx.code,
+          redirect_uri: ctx.redirectUri,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -65,28 +71,32 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       if (!ctx.output.refreshToken) {
         return { output: ctx.output };
       }
 
       let http = createAxios();
 
-      let response = await http.post('https://auth.prisma.io/token', new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: ctx.output.refreshToken,
-        client_id: ctx.clientId,
-        client_secret: ctx.clientSecret,
-      }).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      let response = await http.post(
+        'https://auth.prisma.io/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: ctx.output.refreshToken,
+          client_id: ctx.clientId,
+          client_secret: ctx.clientSecret
+        }).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
 
       let data = response.data;
 
@@ -99,17 +109,21 @@ export let auth = SlateAuth.create()
         output: {
           token: data.access_token,
           refreshToken: data.refresh_token ?? ctx.output.refreshToken,
-          expiresAt,
-        },
+          expiresAt
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: {}; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: {};
+      scopes: string[];
+    }) => {
       let http = createAxios({
         baseURL: 'https://api.prisma.io/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/workspaces');
@@ -119,10 +133,10 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: firstWorkspace?.id,
-          name: firstWorkspace?.displayName ?? firstWorkspace?.name ?? 'Prisma User',
-        },
+          name: firstWorkspace?.displayName ?? firstWorkspace?.name ?? 'Prisma User'
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -130,23 +144,28 @@ export let auth = SlateAuth.create()
     key: 'service_token',
 
     inputSchema: z.object({
-      serviceToken: z.string().describe('Prisma service token created in the Prisma Console under Integrations'),
+      serviceToken: z
+        .string()
+        .describe('Prisma service token created in the Prisma Console under Integrations')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
-          token: ctx.input.serviceToken,
-        },
+          token: ctx.input.serviceToken
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; refreshToken?: string; expiresAt?: string }; input: { serviceToken: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; refreshToken?: string; expiresAt?: string };
+      input: { serviceToken: string };
+    }) => {
       let http = createAxios({
         baseURL: 'https://api.prisma.io/v1',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await http.get('/workspaces');
@@ -156,8 +175,8 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: firstWorkspace?.id,
-          name: firstWorkspace?.displayName ?? firstWorkspace?.name ?? 'Prisma Workspace',
-        },
+          name: firstWorkspace?.displayName ?? firstWorkspace?.name ?? 'Prisma Workspace'
+        }
       };
-    },
+    }
   });

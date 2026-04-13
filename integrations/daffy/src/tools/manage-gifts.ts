@@ -14,33 +14,30 @@ let giftSchema = z.object({
   claimed: z.boolean().describe('Whether the gift has been claimed'),
   url: z.string().describe('Shareable URL for the recipient to claim the gift'),
   createdAt: z.string().describe('Creation timestamp'),
-  updatedAt: z.string().describe('Last update timestamp'),
+  updatedAt: z.string().describe('Last update timestamp')
 });
 
-export let createGift = SlateTool.create(
-  spec,
-  {
-    name: 'Create Gift',
-    key: 'create_gift',
-    description: `Create a Daffy Gift — a digital charity gift card that lets the recipient choose which nonprofit to donate to. Returns a shareable URL the recipient can use to claim their gift.`,
-    constraints: [
-      'Minimum gift amount is $18.',
-    ],
-    tags: {
-      destructive: false,
-    },
-  },
-)
-  .input(z.object({
-    recipientName: z.string().describe('Name of the gift recipient'),
-    amount: z.number().min(18).describe('Gift amount in USD (minimum $18)'),
-  }))
+export let createGift = SlateTool.create(spec, {
+  name: 'Create Gift',
+  key: 'create_gift',
+  description: `Create a Daffy Gift — a digital charity gift card that lets the recipient choose which nonprofit to donate to. Returns a shareable URL the recipient can use to claim their gift.`,
+  constraints: ['Minimum gift amount is $18.'],
+  tags: {
+    destructive: false
+  }
+})
+  .input(
+    z.object({
+      recipientName: z.string().describe('Name of the gift recipient'),
+      amount: z.number().min(18).describe('Gift amount in USD (minimum $18)')
+    })
+  )
   .output(giftSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let gift = await client.createGift({
       name: ctx.input.recipientName,
-      amount: ctx.input.amount,
+      amount: ctx.input.amount
     });
 
     return {
@@ -55,40 +52,44 @@ export let createGift = SlateTool.create(
         claimed: gift.claimed,
         url: gift.url,
         createdAt: gift.created_at,
-        updatedAt: gift.updated_at,
+        updatedAt: gift.updated_at
       },
-      message: `Created Daffy Gift of **$${gift.amount}** for **${gift.name}**. Share URL: ${gift.url}`,
+      message: `Created Daffy Gift of **$${gift.amount}** for **${gift.name}**. Share URL: ${gift.url}`
     };
   })
   .build();
 
-export let listGifts = SlateTool.create(
-  spec,
-  {
-    name: 'List Gifts',
-    key: 'list_gifts',
-    description: `Retrieve a paginated list of all Daffy Gifts you've created, including their current status (new, accepted, denied, claimed) and shareable URLs.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number for pagination (defaults to first page)'),
-  }))
-  .output(z.object({
-    gifts: z.array(giftSchema).describe('List of gifts'),
-    totalCount: z.number().describe('Total number of gifts'),
-    currentPage: z.number().describe('Current page number'),
-    lastPage: z.number().describe('Last available page number'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listGifts = SlateTool.create(spec, {
+  name: 'List Gifts',
+  key: 'list_gifts',
+  description: `Retrieve a paginated list of all Daffy Gifts you've created, including their current status (new, accepted, denied, claimed) and shareable URLs.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      page: z
+        .number()
+        .optional()
+        .describe('Page number for pagination (defaults to first page)')
+    })
+  )
+  .output(
+    z.object({
+      gifts: z.array(giftSchema).describe('List of gifts'),
+      totalCount: z.number().describe('Total number of gifts'),
+      currentPage: z.number().describe('Current page number'),
+      lastPage: z.number().describe('Last available page number')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getGifts(ctx.input.page);
 
     return {
       output: {
-        gifts: result.items.map((g) => ({
+        gifts: result.items.map(g => ({
           code: g.code,
           name: g.name,
           amount: g.amount,
@@ -99,33 +100,32 @@ export let listGifts = SlateTool.create(
           claimed: g.claimed,
           url: g.url,
           createdAt: g.created_at,
-          updatedAt: g.updated_at,
+          updatedAt: g.updated_at
         })),
         totalCount: result.meta.count,
         currentPage: result.meta.page,
-        lastPage: result.meta.last,
+        lastPage: result.meta.last
       },
-      message: `Found **${result.meta.count}** gift(s). Showing page ${result.meta.page} of ${result.meta.last}.`,
+      message: `Found **${result.meta.count}** gift(s). Showing page ${result.meta.page} of ${result.meta.last}.`
     };
   })
   .build();
 
-export let getGift = SlateTool.create(
-  spec,
-  {
-    name: 'Get Gift',
-    key: 'get_gift',
-    description: `Retrieve details of a specific Daffy Gift by its unique code, including status, claim information, and the shareable URL.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
-  .input(z.object({
-    giftCode: z.string().describe('Unique gift code (UUID)'),
-  }))
+export let getGift = SlateTool.create(spec, {
+  name: 'Get Gift',
+  key: 'get_gift',
+  description: `Retrieve details of a specific Daffy Gift by its unique code, including status, claim information, and the shareable URL.`,
+  tags: {
+    readOnly: true
+  }
+})
+  .input(
+    z.object({
+      giftCode: z.string().describe('Unique gift code (UUID)')
+    })
+  )
   .output(giftSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let gift = await client.getGift(ctx.input.giftCode);
 
@@ -141,9 +141,9 @@ export let getGift = SlateTool.create(
         claimed: gift.claimed,
         url: gift.url,
         createdAt: gift.created_at,
-        updatedAt: gift.updated_at,
+        updatedAt: gift.updated_at
       },
-      message: `Gift **${gift.code}** for **${gift.name}** ($${gift.amount}): status **${gift.status}**, claimed: ${gift.claimed}.`,
+      message: `Gift **${gift.code}** for **${gift.name}** ($${gift.amount}): status **${gift.status}**, claimed: ${gift.claimed}.`
     };
   })
   .build();

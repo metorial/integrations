@@ -1,11 +1,11 @@
 import { createAxios } from 'slates';
 
 let renderApi = createAxios({
-  baseURL: 'https://render.imejis.io/v1',
+  baseURL: 'https://render.imejis.io/v1'
 });
 
 let managementApi = createAxios({
-  baseURL: 'https://api.imejis.io/api',
+  baseURL: 'https://api.imejis.io/api'
 });
 
 export interface ListDesignsParams {
@@ -64,24 +64,26 @@ export class ImejisClient {
   private renderHeaders() {
     return {
       'dma-api-key': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
   private managementHeaders() {
     return {
       'dma-api-key': this.token,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
-  async generateImageBinary(designId: string, overrides: Record<string, unknown>): Promise<{ imageBase64: string; contentType: string }> {
+  async generateImageBinary(
+    designId: string,
+    overrides: Record<string, unknown>
+  ): Promise<{ imageBase64: string; contentType: string }> {
     let response = await renderApi.post(`/${designId}`, overrides, {
       headers: this.renderHeaders(),
-      responseType: 'arraybuffer',
+      responseType: 'arraybuffer'
     });
 
-    // @ts-ignore Buffer is available in the Node.js runtime used at deploy time.
     let buffer = Buffer.from(response.data);
     let contentType = (response.headers['content-type'] as string) || 'image/png';
     let imageBase64 = buffer.toString('base64');
@@ -89,9 +91,12 @@ export class ImejisClient {
     return { imageBase64, contentType };
   }
 
-  async generateImageUrl(designId: string, overrides: Record<string, unknown>): Promise<GenerateImageUrlResponse> {
+  async generateImageUrl(
+    designId: string,
+    overrides: Record<string, unknown>
+  ): Promise<GenerateImageUrlResponse> {
     let response = await managementApi.post(`/designs/${designId}`, overrides, {
-      headers: this.managementHeaders(),
+      headers: this.managementHeaders()
     });
 
     return response.data;
@@ -115,31 +120,33 @@ export class ImejisClient {
 
     let response = await managementApi.get('/designs', {
       headers: this.managementHeaders(),
-      params: queryParams,
+      params: queryParams
     });
 
     let data = response.data;
 
-    let designs: DesignSummary[] = (data.designs || data.data || []).map((d: Record<string, unknown>) => ({
-      designId: d.id || d.designId || d._id,
-      name: d.name || '',
-      description: d.description,
-      thumbnailUrl: d.thumbnailUrl || d.thumbnail,
-      isPublic: d.public || d.isPublic,
-      createdAt: d.createdAt,
-      updatedAt: d.updatedAt,
-    }));
+    let designs: DesignSummary[] = (data.designs || data.data || []).map(
+      (d: Record<string, unknown>) => ({
+        designId: d.id || d.designId || d._id,
+        name: d.name || '',
+        description: d.description,
+        thumbnailUrl: d.thumbnailUrl || d.thumbnail,
+        isPublic: d.public || d.isPublic,
+        createdAt: d.createdAt,
+        updatedAt: d.updatedAt
+      })
+    );
 
     return {
       designs,
       cursor: data.cursor || data.nextCursor,
-      hasMore: !!(data.cursor || data.nextCursor || data.hasMore),
+      hasMore: !!(data.cursor || data.nextCursor || data.hasMore)
     };
   }
 
   async aiDesignAssistant(params: AiDesignParams): Promise<AiDesignResponse> {
     let body: Record<string, unknown> = {
-      prompt: params.prompt,
+      prompt: params.prompt
     };
 
     if (params.designId) {
@@ -147,7 +154,7 @@ export class ImejisClient {
     }
 
     let response = await managementApi.post('/ai/designs', body, {
-      headers: this.managementHeaders(),
+      headers: this.managementHeaders()
     });
 
     let data = response.data;
@@ -157,7 +164,7 @@ export class ImejisClient {
       name: data.name,
       description: data.description,
       thumbnailUrl: data.thumbnailUrl || data.thumbnail,
-      url: data.url,
+      url: data.url
     };
   }
 }

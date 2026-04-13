@@ -3,48 +3,54 @@ import { AffinityClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let opportunityEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Opportunity Events',
-    key: 'opportunity_events',
-    description: 'Triggers when an opportunity (deal) is created, updated, or deleted in Affinity.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of event (e.g. opportunity.created, opportunity.updated, opportunity.deleted)'),
-    eventId: z.string().describe('Unique event identifier'),
-    sentAt: z.string().nullable().describe('When the event was sent'),
-    body: z.any().describe('Raw event payload'),
-  }))
-  .output(z.object({
-    opportunityId: z.number().describe('ID of the affected opportunity'),
-    name: z.string().nullable().describe('Opportunity name'),
-    listId: z.number().nullable().describe('ID of the list this opportunity belongs to'),
-    personIds: z.array(z.number()).describe('Associated person IDs'),
-    organizationIds: z.array(z.number()).describe('Associated organization IDs'),
-  }))
+export let opportunityEvents = SlateTrigger.create(spec, {
+  name: 'Opportunity Events',
+  key: 'opportunity_events',
+  description:
+    'Triggers when an opportunity (deal) is created, updated, or deleted in Affinity.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe(
+          'Type of event (e.g. opportunity.created, opportunity.updated, opportunity.deleted)'
+        ),
+      eventId: z.string().describe('Unique event identifier'),
+      sentAt: z.string().nullable().describe('When the event was sent'),
+      body: z.any().describe('Raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      opportunityId: z.number().describe('ID of the affected opportunity'),
+      name: z.string().nullable().describe('Opportunity name'),
+      listId: z.number().nullable().describe('ID of the list this opportunity belongs to'),
+      personIds: z.array(z.number()).describe('Associated person IDs'),
+      organizationIds: z.array(z.number()).describe('Associated organization IDs')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AffinityClient(ctx.auth.token);
       let result = await client.createWebhook({
         webhookUrl: ctx.input.webhookBaseUrl,
-        subscriptions: ['opportunity.created', 'opportunity.updated', 'opportunity.deleted'],
+        subscriptions: ['opportunity.created', 'opportunity.updated', 'opportunity.deleted']
       });
       return {
         registrationDetails: {
-          webhookId: result.id,
-        },
+          webhookId: result.id
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AffinityClient(ctx.auth.token);
       await client.deleteWebhook(ctx.input.registrationDetails.webhookId);
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as any;
 
       let type = data.type as string;
       if (!type || !type.startsWith('opportunity.')) {
@@ -52,16 +58,18 @@ export let opportunityEvents = SlateTrigger.create(
       }
 
       return {
-        inputs: [{
-          eventType: type,
-          eventId: `${type}-${data.body?.id ?? ''}-${data.sent_at ?? Date.now()}`,
-          sentAt: data.sent_at ?? null,
-          body: data.body,
-        }],
+        inputs: [
+          {
+            eventType: type,
+            eventId: `${type}-${data.body?.id ?? ''}-${data.sent_at ?? Date.now()}`,
+            sentAt: data.sent_at ?? null,
+            body: data.body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let body = ctx.input.body ?? {};
 
       return {
@@ -72,8 +80,9 @@ export let opportunityEvents = SlateTrigger.create(
           name: body.name ?? null,
           listId: body.list_id ?? null,
           personIds: body.person_ids ?? [],
-          organizationIds: body.organization_ids ?? [],
-        },
+          organizationIds: body.organization_ids ?? []
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

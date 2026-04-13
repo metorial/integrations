@@ -3,25 +3,26 @@ import { createClient } from '../lib/utils';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listPayments = SlateTool.create(
-  spec,
-  {
-    name: 'List Payments',
-    key: 'list_payments',
-    description: `Retrieve payment statements from Deel. Returns payment details including amounts, statuses, dates, and associated contracts.`,
-    tags: {
-      readOnly: true,
-    },
+export let listPayments = SlateTool.create(spec, {
+  name: 'List Payments',
+  key: 'list_payments',
+  description: `Retrieve payment statements from Deel. Returns payment details including amounts, statuses, dates, and associated contracts.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    limit: z.number().optional().describe('Number of results to return'),
-    offset: z.number().optional().describe('Offset for pagination'),
-  }))
-  .output(z.object({
-    payments: z.array(z.record(z.string(), z.any())).describe('List of payment statements'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      limit: z.number().optional().describe('Number of results to return'),
+      offset: z.number().optional().describe('Offset for pagination')
+    })
+  )
+  .output(
+    z.object({
+      payments: z.array(z.record(z.string(), z.any())).describe('List of payment statements')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let params: Record<string, any> = {};
@@ -33,6 +34,7 @@ export let listPayments = SlateTool.create(
 
     return {
       output: { payments },
-      message: `Found ${payments.length} payment(s).`,
+      message: `Found ${payments.length} payment(s).`
     };
-  }).build();
+  })
+  .build();

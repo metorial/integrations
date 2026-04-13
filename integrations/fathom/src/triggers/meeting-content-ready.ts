@@ -25,20 +25,32 @@ let actionItemSchema = z.object({
 });
 
 let crmMatchSchema = z.object({
-  contacts: z.array(z.object({
-    name: z.string(),
-    email: z.string().nullable(),
-    url: z.string().nullable()
-  })).describe('Matched CRM contacts'),
-  companies: z.array(z.object({
-    name: z.string(),
-    url: z.string().nullable()
-  })).describe('Matched CRM companies'),
-  deals: z.array(z.object({
-    name: z.string(),
-    amount: z.number().nullable(),
-    url: z.string().nullable()
-  })).describe('Matched CRM deals')
+  contacts: z
+    .array(
+      z.object({
+        name: z.string(),
+        email: z.string().nullable(),
+        url: z.string().nullable()
+      })
+    )
+    .describe('Matched CRM contacts'),
+  companies: z
+    .array(
+      z.object({
+        name: z.string(),
+        url: z.string().nullable()
+      })
+    )
+    .describe('Matched CRM companies'),
+  deals: z
+    .array(
+      z.object({
+        name: z.string(),
+        amount: z.number().nullable(),
+        url: z.string().nullable()
+      })
+    )
+    .describe('Matched CRM deals')
 });
 
 let webhookPayloadSchema = z.object({
@@ -54,36 +66,46 @@ let webhookPayloadSchema = z.object({
   recordingEndTime: z.string().nullable().describe('Actual recording end'),
   domainsType: z.string().nullable().describe('Internal or external meeting'),
   transcriptLanguage: z.string().nullable().describe('Transcript language code'),
-  recordedBy: z.object({
-    displayName: z.string(),
-    email: z.string()
-  }).nullable().describe('User who recorded'),
-  calendarInvitees: z.array(z.object({
-    displayName: z.string(),
-    email: z.string()
-  })).describe('Calendar invitees'),
-  transcript: z.array(transcriptEntrySchema).nullable().describe('Full transcript if included'),
+  recordedBy: z
+    .object({
+      displayName: z.string(),
+      email: z.string()
+    })
+    .nullable()
+    .describe('User who recorded'),
+  calendarInvitees: z
+    .array(
+      z.object({
+        displayName: z.string(),
+        email: z.string()
+      })
+    )
+    .describe('Calendar invitees'),
+  transcript: z
+    .array(transcriptEntrySchema)
+    .nullable()
+    .describe('Full transcript if included'),
   summary: summarySchema.nullable().describe('AI summary if included'),
   actionItems: z.array(actionItemSchema).nullable().describe('Action items if included'),
   crmMatches: crmMatchSchema.nullable().describe('CRM matches if included')
 });
 
-export let meetingContentReady = SlateTrigger.create(
-  spec,
-  {
-    name: 'Meeting Content Ready',
-    key: 'meeting_content_ready',
-    description: 'Fires when a recorded meeting has been fully processed and its content (transcript, summary, action items) is available. Fathom automatically delivers the meeting data to your webhook URL.'
-  }
-)
-  .input(z.object({
-    webhookId: z.string().describe('Webhook ID from Fathom'),
-    webhookTimestamp: z.string().describe('Timestamp from the webhook header'),
-    meeting: z.any().describe('Raw meeting payload from the webhook')
-  }))
+export let meetingContentReady = SlateTrigger.create(spec, {
+  name: 'Meeting Content Ready',
+  key: 'meeting_content_ready',
+  description:
+    'Fires when a recorded meeting has been fully processed and its content (transcript, summary, action items) is available. Fathom automatically delivers the meeting data to your webhook URL.'
+})
+  .input(
+    z.object({
+      webhookId: z.string().describe('Webhook ID from Fathom'),
+      webhookTimestamp: z.string().describe('Timestamp from the webhook header'),
+      meeting: z.any().describe('Raw meeting payload from the webhook')
+    })
+  )
   .output(webhookPayloadSchema)
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
 
       let webhook = await client.createWebhook({
@@ -103,13 +125,13 @@ export let meetingContentReady = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookId: string };
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let body = await ctx.request.json();
 
       let webhookId = ctx.request.headers.get('webhook-id') || '';
@@ -126,7 +148,7 @@ export let meetingContentReady = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let meeting = ctx.input.meeting;
 
       let transcript = meeting.transcript
@@ -146,14 +168,16 @@ export let meetingContentReady = SlateTrigger.create(
         : null;
 
       let actionItems = meeting.action_items
-        ? (Array.isArray(meeting.action_items) ? meeting.action_items : []).map((item: any) => ({
-            description: item.description || '',
-            assigneeName: item.assignee?.name || null,
-            assigneeEmail: item.assignee?.email || null,
-            assigneeTeam: item.assignee?.team || null,
-            completed: item.completed || false,
-            momentUrl: item.url || null
-          }))
+        ? (Array.isArray(meeting.action_items) ? meeting.action_items : []).map(
+            (item: any) => ({
+              description: item.description || '',
+              assigneeName: item.assignee?.name || null,
+              assigneeEmail: item.assignee?.email || null,
+              assigneeTeam: item.assignee?.team || null,
+              completed: item.completed || false,
+              momentUrl: item.url || null
+            })
+          )
         : null;
 
       let crmMatches = meeting.crm_matches
@@ -177,7 +201,9 @@ export let meetingContentReady = SlateTrigger.create(
 
       return {
         type: 'meeting.content_ready',
-        id: ctx.input.webhookId || `meeting-${meeting.recording_id}-${ctx.input.webhookTimestamp}`,
+        id:
+          ctx.input.webhookId ||
+          `meeting-${meeting.recording_id}-${ctx.input.webhookTimestamp}`,
         output: {
           recordingId: meeting.recording_id,
           title: meeting.title || '',
@@ -208,4 +234,5 @@ export let meetingContentReady = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

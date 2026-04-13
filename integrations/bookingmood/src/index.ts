@@ -32,7 +32,7 @@ import {
   updateTask,
   listReviews,
   createReview,
-  listMessages,
+  listMessages
 } from './tools';
 import {
   bookingEvents,
@@ -42,7 +42,7 @@ import {
   invoiceEvents,
   paymentEvents,
   productEvents,
-  memberEvents,
+  memberEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -79,7 +79,7 @@ export let provider = Slate.create({
     updateTask,
     listReviews,
     createReview,
-    listMessages,
+    listMessages
   ],
   triggers: [
     bookingEvents,
@@ -89,6 +89,6 @@ export let provider = Slate.create({
     invoiceEvents,
     paymentEvents,
     productEvents,
-    memberEvents,
-  ],
+    memberEvents
+  ]
 });

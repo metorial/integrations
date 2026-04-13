@@ -8,7 +8,7 @@ export class BrazeClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${options.token}`,
+        Authorization: `Bearer ${options.token}`,
         'Content-Type': 'application/json'
       }
     });
@@ -33,18 +33,21 @@ export class BrazeClient {
     let body: Record<string, any> = {};
     if (params.externalIds) body.external_ids = params.externalIds;
     if (params.brazeIds) body.braze_ids = params.brazeIds;
-    if (params.userAliases) body.user_aliases = params.userAliases.map(a => ({
-      alias_name: a.aliasName,
-      alias_label: a.aliasLabel
-    }));
+    if (params.userAliases)
+      body.user_aliases = params.userAliases.map(a => ({
+        alias_name: a.aliasName,
+        alias_label: a.aliasLabel
+      }));
     let resp = await this.axios.post('/users/delete', body);
     return resp.data;
   }
 
-  async identifyUsers(aliases: {
-    externalId: string;
-    userAlias: { aliasName: string; aliasLabel: string };
-  }[]) {
+  async identifyUsers(
+    aliases: {
+      externalId: string;
+      userAlias: { aliasName: string; aliasLabel: string };
+    }[]
+  ) {
     let resp = await this.axios.post('/users/identify', {
       aliases_to_identify: aliases.map(a => ({
         external_id: a.externalId,
@@ -57,11 +60,13 @@ export class BrazeClient {
     return resp.data;
   }
 
-  async createUserAliases(aliases: {
-    externalId: string;
-    aliasName: string;
-    aliasLabel: string;
-  }[]) {
+  async createUserAliases(
+    aliases: {
+      externalId: string;
+      aliasName: string;
+      aliasLabel: string;
+    }[]
+  ) {
     let resp = await this.axios.post('/users/alias/new', {
       user_aliases: aliases.map(a => ({
         external_id: a.externalId,
@@ -72,10 +77,12 @@ export class BrazeClient {
     return resp.data;
   }
 
-  async mergeUsers(mergeUpdates: {
-    identifierToKeep: Record<string, any>;
-    identifierToMerge: Record<string, any>;
-  }[]) {
+  async mergeUsers(
+    mergeUpdates: {
+      identifierToKeep: Record<string, any>;
+      identifierToMerge: Record<string, any>;
+    }[]
+  ) {
     let resp = await this.axios.post('/users/merge', {
       merge_updates: mergeUpdates.map(m => ({
         identifier_to_keep: m.identifierToKeep,
@@ -96,10 +103,11 @@ export class BrazeClient {
     let body: Record<string, any> = {};
     if (params.externalIds) body.external_ids = params.externalIds;
     if (params.brazeIds) body.braze_ids = params.brazeIds;
-    if (params.userAliases) body.user_aliases = params.userAliases.map(a => ({
-      alias_name: a.aliasName,
-      alias_label: a.aliasLabel
-    }));
+    if (params.userAliases)
+      body.user_aliases = params.userAliases.map(a => ({
+        alias_name: a.aliasName,
+        alias_label: a.aliasLabel
+      }));
     if (params.emails) body.email_address = params.emails;
     if (params.phones) body.phone = params.phones;
     if (params.fieldsToExport) body.fields_to_export = params.fieldsToExport;
@@ -152,7 +160,8 @@ export class BrazeClient {
         let rec: Record<string, any> = {};
         if (r.externalUserId) rec.external_user_id = r.externalUserId;
         if (r.triggerProperties) rec.trigger_properties = r.triggerProperties;
-        if (r.sendToExistingOnly !== undefined) rec.send_to_existing_only = r.sendToExistingOnly;
+        if (r.sendToExistingOnly !== undefined)
+          rec.send_to_existing_only = r.sendToExistingOnly;
         if (r.attributes) rec.attributes = r.attributes;
         return rec;
       });
@@ -175,13 +184,15 @@ export class BrazeClient {
       canvas_id: params.canvasId
     };
     if (params.broadcast !== undefined) body.broadcast = params.broadcast;
-    if (params.canvasEntryProperties) body.canvas_entry_properties = params.canvasEntryProperties;
+    if (params.canvasEntryProperties)
+      body.canvas_entry_properties = params.canvasEntryProperties;
     if (params.recipients) {
       body.recipients = params.recipients.map(r => {
         let rec: Record<string, any> = {};
         if (r.externalUserId) rec.external_user_id = r.externalUserId;
         if (r.canvasEntryProperties) rec.canvas_entry_properties = r.canvasEntryProperties;
-        if (r.sendToExistingOnly !== undefined) rec.send_to_existing_only = r.sendToExistingOnly;
+        if (r.sendToExistingOnly !== undefined)
+          rec.send_to_existing_only = r.sendToExistingOnly;
         return rec;
       });
     }
@@ -200,7 +211,8 @@ export class BrazeClient {
     let body: Record<string, any> = {
       schedule: { time: params.schedule.time }
     };
-    if (params.schedule.inLocalTime !== undefined) body.schedule.in_local_time = params.schedule.inLocalTime;
+    if (params.schedule.inLocalTime !== undefined)
+      body.schedule.in_local_time = params.schedule.inLocalTime;
     if (params.broadcast !== undefined) body.broadcast = params.broadcast;
     if (params.externalUserIds) body.external_user_ids = params.externalUserIds;
     if (params.messages) body.messages = params.messages;
@@ -232,7 +244,8 @@ export class BrazeClient {
   }) {
     let queryParams: Record<string, any> = {};
     if (params?.page !== undefined) queryParams.page = params.page;
-    if (params?.includeArchived !== undefined) queryParams.include_archived = params.includeArchived;
+    if (params?.includeArchived !== undefined)
+      queryParams.include_archived = params.includeArchived;
     if (params?.sortDirection) queryParams.sort_direction = params.sortDirection;
     if (params?.lastEditTimeGt) queryParams['last_edit.time[gt]'] = params.lastEditTimeGt;
     let resp = await this.axios.get('/campaigns/list', { params: queryParams });
@@ -266,7 +279,8 @@ export class BrazeClient {
   }) {
     let queryParams: Record<string, any> = {};
     if (params?.page !== undefined) queryParams.page = params.page;
-    if (params?.includeArchived !== undefined) queryParams.include_archived = params.includeArchived;
+    if (params?.includeArchived !== undefined)
+      queryParams.include_archived = params.includeArchived;
     if (params?.sortDirection) queryParams.sort_direction = params.sortDirection;
     if (params?.lastEditTimeGt) queryParams['last_edit.time[gt]'] = params.lastEditTimeGt;
     let resp = await this.axios.get('/canvas/list', { params: queryParams });
@@ -280,24 +294,29 @@ export class BrazeClient {
     return resp.data;
   }
 
-  async getCanvasAnalytics(canvasId: string, length: number, endingAt?: string, includeVariantBreakdown?: boolean, includeStepBreakdown?: boolean) {
+  async getCanvasAnalytics(
+    canvasId: string,
+    length: number,
+    endingAt?: string,
+    includeVariantBreakdown?: boolean,
+    includeStepBreakdown?: boolean
+  ) {
     let params: Record<string, any> = {
       canvas_id: canvasId,
       length
     };
     if (endingAt) params.ending_at = endingAt;
-    if (includeVariantBreakdown !== undefined) params.include_variant_breakdown = includeVariantBreakdown;
-    if (includeStepBreakdown !== undefined) params.include_step_breakdown = includeStepBreakdown;
+    if (includeVariantBreakdown !== undefined)
+      params.include_variant_breakdown = includeVariantBreakdown;
+    if (includeStepBreakdown !== undefined)
+      params.include_step_breakdown = includeStepBreakdown;
     let resp = await this.axios.get('/canvas/data_series', { params });
     return resp.data;
   }
 
   // ─── Segments ───────────────────────────────────────────────
 
-  async listSegments(params?: {
-    page?: number;
-    sortDirection?: string;
-  }) {
+  async listSegments(params?: { page?: number; sortDirection?: string }) {
     let queryParams: Record<string, any> = {};
     if (params?.page !== undefined) queryParams.page = params.page;
     if (params?.sortDirection) queryParams.sort_direction = params.sortDirection;
@@ -461,11 +480,13 @@ export class BrazeClient {
     fields: { name: string; type: string }[];
   }) {
     let resp = await this.axios.post('/catalogs', {
-      catalogs: [{
-        name: params.name,
-        description: params.description,
-        fields: params.fields
-      }]
+      catalogs: [
+        {
+          name: params.name,
+          description: params.description,
+          fields: params.fields
+        }
+      ]
     });
     return resp.data;
   }
@@ -591,7 +612,8 @@ export class BrazeClient {
 
   async getContentBlock(contentBlockId: string, includeInclusionData?: boolean) {
     let params: Record<string, any> = { content_block_id: contentBlockId };
-    if (includeInclusionData !== undefined) params.include_inclusion_data = includeInclusionData;
+    if (includeInclusionData !== undefined)
+      params.include_inclusion_data = includeInclusionData;
     let resp = await this.axios.get('/content_blocks/info', { params });
     return resp.data;
   }
@@ -734,23 +756,29 @@ export class BrazeClient {
       preference_center_page_html: params.preferenceCenterPageHtml,
       confirmation_page_html: params.confirmationPageHtml
     };
-    if (params.preferenceCenterTitle) body.preference_center_title = params.preferenceCenterTitle;
+    if (params.preferenceCenterTitle)
+      body.preference_center_title = params.preferenceCenterTitle;
     if (params.options) body.options = params.options;
     let resp = await this.axios.post('/preference_center/v1', body);
     return resp.data;
   }
 
-  async updatePreferenceCenter(preferenceCenterId: string, params: {
-    name?: string;
-    preferenceCenterTitle?: string;
-    preferenceCenterPageHtml?: string;
-    confirmationPageHtml?: string;
-    options?: Record<string, any>;
-  }) {
+  async updatePreferenceCenter(
+    preferenceCenterId: string,
+    params: {
+      name?: string;
+      preferenceCenterTitle?: string;
+      preferenceCenterPageHtml?: string;
+      confirmationPageHtml?: string;
+      options?: Record<string, any>;
+    }
+  ) {
     let body: Record<string, any> = {};
     if (params.name) body.name = params.name;
-    if (params.preferenceCenterTitle) body.preference_center_title = params.preferenceCenterTitle;
-    if (params.preferenceCenterPageHtml) body.preference_center_page_html = params.preferenceCenterPageHtml;
+    if (params.preferenceCenterTitle)
+      body.preference_center_title = params.preferenceCenterTitle;
+    if (params.preferenceCenterPageHtml)
+      body.preference_center_page_html = params.preferenceCenterPageHtml;
     if (params.confirmationPageHtml) body.confirmation_page_html = params.confirmationPageHtml;
     if (params.options) body.options = params.options;
     let resp = await this.axios.put(`/preference_center/v1/${preferenceCenterId}`, body);
@@ -758,7 +786,9 @@ export class BrazeClient {
   }
 
   async getPreferenceCenterUrl(preferenceCenterId: string, userId: string) {
-    let resp = await this.axios.get(`/preference_center/v1/${preferenceCenterId}/url/${userId}`);
+    let resp = await this.axios.get(
+      `/preference_center/v1/${preferenceCenterId}/url/${userId}`
+    );
     return resp.data;
   }
 

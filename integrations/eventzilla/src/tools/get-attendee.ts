@@ -3,21 +3,18 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getAttendeeTool = SlateTool.create(
-  spec,
-  {
-    name: 'Get Attendee',
-    key: 'get_attendee',
-    description: `Retrieve details for a specific attendee by their ID, including name, ticket type, barcode, check-in status, transaction details, and custom question responses.`,
-    tags: {
-      readOnly: true,
-    },
-  },
-)
+export let getAttendeeTool = SlateTool.create(spec, {
+  name: 'Get Attendee',
+  key: 'get_attendee',
+  description: `Retrieve details for a specific attendee by their ID, including name, ticket type, barcode, check-in status, transaction details, and custom question responses.`,
+  tags: {
+    readOnly: true
+  }
+})
   .input(
     z.object({
-      attendeeId: z.string().describe('The unique attendee ID'),
-    }),
+      attendeeId: z.string().describe('The unique attendee ID')
+    })
   )
   .output(
     z.object({
@@ -42,18 +39,22 @@ export let getAttendeeTool = SlateTool.create(
         .array(
           z.object({
             question: z.string().optional().describe('Question text'),
-            answer: z.string().optional().describe('Answer text'),
-          }),
+            answer: z.string().optional().describe('Answer text')
+          })
         )
         .optional()
-        .describe('Custom question responses'),
-    }),
+        .describe('Custom question responses')
+    })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let data = await client.getAttendee(ctx.input.attendeeId);
-    let a = Array.isArray(data?.attendees) ? data.attendees[0] : Array.isArray(data) ? data[0] : data;
+    let a = Array.isArray(data?.attendees)
+      ? data.attendees[0]
+      : Array.isArray(data)
+        ? data[0]
+        : data;
 
     let output = {
       attendeeId: String(a.id),
@@ -75,12 +76,13 @@ export let getAttendeeTool = SlateTool.create(
       paymentType: a.payment_type,
       questions: a.questions?.map((q: any) => ({
         question: q.questions ?? q.question,
-        answer: q.answer,
-      })),
+        answer: q.answer
+      }))
     };
 
     return {
       output,
-      message: `Retrieved attendee **${output.firstName} ${output.lastName}** (check-in: ${output.isAttended}).`,
+      message: `Retrieved attendee **${output.firstName} ${output.lastName}** (check-in: ${output.isAttended}).`
     };
-  }).build();
+  })
+  .build();

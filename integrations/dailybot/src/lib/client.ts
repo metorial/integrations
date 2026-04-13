@@ -9,8 +9,8 @@ export class DailyBotClient {
       baseURL: 'https://api.dailybot.com/v1',
       headers: {
         'X-API-KEY': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -44,7 +44,7 @@ export class DailyBotClient {
 
   async inviteUsers(identifiers: string[]): Promise<any> {
     let response = await this.axios.post('/invite-user/', {
-      users_identifiers: identifiers,
+      users_identifiers: identifiers
     });
     return response.data;
   }
@@ -67,9 +67,9 @@ export class DailyBotClient {
   }
 
   async addTeamMembers(teamUuid: string, memberUuids: string[]): Promise<void> {
-    let members = memberUuids.map((uuid) => ({
+    let members = memberUuids.map(uuid => ({
       uuid,
-      platform: 'dailybot',
+      platform: 'dailybot'
     }));
     await this.axios.post(`/teams/${teamUuid}/member/`, { members });
   }
@@ -80,10 +80,7 @@ export class DailyBotClient {
 
   // ── Check-ins ───────────────────────────────────────────────────────
 
-  async listCheckins(params?: {
-    includeSummary?: boolean;
-    date?: string;
-  }): Promise<any[]> {
+  async listCheckins(params?: { includeSummary?: boolean; date?: string }): Promise<any[]> {
     let query: Record<string, any> = {};
     if (params?.includeSummary) query.include_summary = true;
     if (params?.date) query.date = params.date;
@@ -91,10 +88,13 @@ export class DailyBotClient {
     return response.data?.results ?? response.data;
   }
 
-  async getCheckin(checkinUuid: string, params?: {
-    includeSummary?: boolean;
-    date?: string;
-  }): Promise<any> {
+  async getCheckin(
+    checkinUuid: string,
+    params?: {
+      includeSummary?: boolean;
+      date?: string;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.includeSummary) query.include_summary = true;
     if (params?.date) query.date = params.date;
@@ -116,33 +116,43 @@ export class DailyBotClient {
     await this.axios.delete(`/checkins/${checkinUuid}/`);
   }
 
-  async getCheckinResponses(checkinUuid: string, params?: {
-    dateStart?: string;
-    dateEnd?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
+  async getCheckinResponses(
+    checkinUuid: string,
+    params?: {
+      dateStart?: string;
+      dateEnd?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<any> {
     let query: Record<string, any> = {};
     if (params?.dateStart) query.date_start = params.dateStart;
     if (params?.dateEnd) query.date_end = params.dateEnd;
     if (params?.limit) query.limit = params.limit;
     if (params?.offset) query.offset = params.offset;
-    let response = await this.axios.get(`/checkins/${checkinUuid}/responses/`, { params: query });
+    let response = await this.axios.get(`/checkins/${checkinUuid}/responses/`, {
+      params: query
+    });
     return response.data;
   }
 
-  async sendCheckinReminders(checkinUuid: string, data: {
-    usersUuids?: string[];
-    usersEmails?: string[];
-    reminderTriggeredByUser?: string;
-    isReminderTriggeredByMe?: boolean;
-    date?: string;
-  }): Promise<any> {
+  async sendCheckinReminders(
+    checkinUuid: string,
+    data: {
+      usersUuids?: string[];
+      usersEmails?: string[];
+      reminderTriggeredByUser?: string;
+      isReminderTriggeredByMe?: boolean;
+      date?: string;
+    }
+  ): Promise<any> {
     let body: Record<string, any> = {};
     if (data.usersUuids) body.users_uuids = data.usersUuids;
     if (data.usersEmails) body.users_emails = data.usersEmails;
-    if (data.reminderTriggeredByUser) body.reminder_triggered_by_user = data.reminderTriggeredByUser;
-    if (data.isReminderTriggeredByMe !== undefined) body.is_reminder_triggered_by_me = data.isReminderTriggeredByMe;
+    if (data.reminderTriggeredByUser)
+      body.reminder_triggered_by_user = data.reminderTriggeredByUser;
+    if (data.isReminderTriggeredByMe !== undefined)
+      body.is_reminder_triggered_by_me = data.isReminderTriggeredByMe;
     if (data.date) body.date = data.date;
     let response = await this.axios.post(`/checkins/${checkinUuid}/send-reminders/`, body);
     return response.data;
@@ -199,7 +209,7 @@ export class DailyBotClient {
     await this.axios.post('/send-email/', {
       users_uuids: data.usersUuids,
       email_subject: data.emailSubject,
-      email_content: data.emailContent,
+      email_content: data.emailContent
     });
   }
 
@@ -214,7 +224,7 @@ export class DailyBotClient {
   }): Promise<any> {
     let body: Record<string, any> = {
       receivers: data.receivers,
-      content: data.content,
+      content: data.content
     };
     if (data.companyValue) body.company_value = data.companyValue;
     if (data.isAnonymous !== undefined) body.is_anonymous = data.isAnonymous;
@@ -234,13 +244,14 @@ export class DailyBotClient {
     immediateSampleEvent?: boolean;
   }): Promise<any> {
     let body: Record<string, any> = {
-      hook_url: data.hookUrl,
+      hook_url: data.hookUrl
     };
     if (data.name) body.name = data.name;
     if (data.subscriptions) body.subscriptions = data.subscriptions;
     if (data.subscribedObjects) body.subscribed_objects = data.subscribedObjects;
     if (data.bearer) body.bearer = data.bearer;
-    if (data.immediateSampleEvent !== undefined) body.immediate_sample_event = data.immediateSampleEvent;
+    if (data.immediateSampleEvent !== undefined)
+      body.immediate_sample_event = data.immediateSampleEvent;
     let response = await this.axios.post('/webhook-subscription/', body);
     return response.data;
   }
@@ -249,8 +260,8 @@ export class DailyBotClient {
     await this.axios.delete('/webhook-subscription/', {
       params: {
         hook_id: hookId,
-        hook_url: hookUrl,
-      },
+        hook_url: hookUrl
+      }
     });
   }
 }

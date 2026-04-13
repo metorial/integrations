@@ -3,46 +3,48 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newAnswers = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Answers',
-    key: 'new_answers',
-    description: 'Triggers when new answers are posted on a Stack Exchange site. Polls for recently created answers.',
-  }
-)
-  .input(z.object({
-    answerId: z.number().describe('ID of the answer'),
-    questionId: z.number().describe('ID of the parent question'),
-    score: z.number().describe('Net vote score'),
-    isAccepted: z.boolean().describe('Whether this is the accepted answer'),
-    body: z.string().optional().describe('HTML body of the answer'),
-    creationDate: z.string().describe('When the answer was posted (ISO 8601)'),
-    ownerDisplayName: z.string().optional().describe('Display name of the author'),
-    ownerUserId: z.number().optional().describe('User ID of the author'),
-    link: z.string().optional().describe('URL to the answer'),
-  }))
-  .output(z.object({
-    answerId: z.number().describe('ID of the answer'),
-    questionId: z.number().describe('ID of the parent question'),
-    score: z.number().describe('Net vote score'),
-    isAccepted: z.boolean().describe('Whether this is the accepted answer'),
-    body: z.string().optional().describe('HTML body of the answer'),
-    creationDate: z.string().describe('When the answer was posted (ISO 8601)'),
-    ownerDisplayName: z.string().optional().describe('Display name of the author'),
-    ownerUserId: z.number().optional().describe('User ID of the author'),
-    link: z.string().optional().describe('URL to the answer'),
-  }))
+export let newAnswers = SlateTrigger.create(spec, {
+  name: 'New Answers',
+  key: 'new_answers',
+  description:
+    'Triggers when new answers are posted on a Stack Exchange site. Polls for recently created answers.'
+})
+  .input(
+    z.object({
+      answerId: z.number().describe('ID of the answer'),
+      questionId: z.number().describe('ID of the parent question'),
+      score: z.number().describe('Net vote score'),
+      isAccepted: z.boolean().describe('Whether this is the accepted answer'),
+      body: z.string().optional().describe('HTML body of the answer'),
+      creationDate: z.string().describe('When the answer was posted (ISO 8601)'),
+      ownerDisplayName: z.string().optional().describe('Display name of the author'),
+      ownerUserId: z.number().optional().describe('User ID of the author'),
+      link: z.string().optional().describe('URL to the answer')
+    })
+  )
+  .output(
+    z.object({
+      answerId: z.number().describe('ID of the answer'),
+      questionId: z.number().describe('ID of the parent question'),
+      score: z.number().describe('Net vote score'),
+      isAccepted: z.boolean().describe('Whether this is the accepted answer'),
+      body: z.string().optional().describe('HTML body of the answer'),
+      creationDate: z.string().describe('When the answer was posted (ISO 8601)'),
+      ownerDisplayName: z.string().optional().describe('Display name of the author'),
+      ownerUserId: z.number().optional().describe('User ID of the author'),
+      link: z.string().optional().describe('URL to the answer')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         key: ctx.auth.key,
-        site: ctx.config.site,
+        site: ctx.config.site
       });
 
       let lastPollDate = ctx.state?.lastPollDate as string | undefined;
@@ -54,7 +56,7 @@ export let newAnswers = SlateTrigger.create(
         order: 'desc',
         fromDate: fromDate,
         pageSize: 50,
-        filter: '!nNPvSNe7ya',
+        filter: '!nNPvSNe7ya'
       });
 
       let now = new Date().toISOString();
@@ -67,7 +69,7 @@ export let newAnswers = SlateTrigger.create(
           let answersResult = await client.getQuestionAnswers(String(q.question_id), {
             sort: 'creation',
             order: 'desc',
-            pageSize: 10,
+            pageSize: 10
           });
 
           for (let a of answersResult.items) {
@@ -81,7 +83,7 @@ export let newAnswers = SlateTrigger.create(
                 creationDate: new Date(a.creation_date * 1000).toISOString(),
                 ownerDisplayName: a.owner?.display_name,
                 ownerUserId: a.owner?.user_id,
-                link: a.link,
+                link: a.link
               });
             }
           }
@@ -91,12 +93,12 @@ export let newAnswers = SlateTrigger.create(
       return {
         inputs: allAnswerInputs,
         updatedState: {
-          lastPollDate: now,
-        },
+          lastPollDate: now
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'answer.created',
         id: String(ctx.input.answerId),
@@ -109,8 +111,9 @@ export let newAnswers = SlateTrigger.create(
           creationDate: ctx.input.creationDate,
           ownerDisplayName: ctx.input.ownerDisplayName,
           ownerUserId: ctx.input.ownerUserId,
-          link: ctx.input.link,
-        },
+          link: ctx.input.link
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

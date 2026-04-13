@@ -3,29 +3,32 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getScanIteration = SlateTool.create(
-  spec,
-  {
-    name: 'Get Scan Iteration',
-    key: 'get_scan_iteration',
-    description: `Retrieve detailed information about a specific scan iteration, including its status, results, and metadata. Useful for tracking individual scan executions within a scheduled scan.`,
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+export let getScanIteration = SlateTool.create(spec, {
+  name: 'Get Scan Iteration',
+  key: 'get_scan_iteration',
+  description: `Retrieve detailed information about a specific scan iteration, including its status, results, and metadata. Useful for tracking individual scan executions within a scheduled scan.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    scanIterationId: z.string().describe('ID of the scan iteration to retrieve')
-  }))
-  .output(z.object({
-    iterationId: z.string().optional().describe('ID of the scan iteration'),
-    scanId: z.string().optional().describe('Parent scan ID'),
-    status: z.string().optional().describe('Current status of the iteration'),
-    startedAt: z.string().optional().describe('When the iteration started'),
-    completedAt: z.string().optional().describe('When the iteration completed')
-  }).passthrough())
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      scanIterationId: z.string().describe('ID of the scan iteration to retrieve')
+    })
+  )
+  .output(
+    z
+      .object({
+        iterationId: z.string().optional().describe('ID of the scan iteration'),
+        scanId: z.string().optional().describe('Parent scan ID'),
+        status: z.string().optional().describe('Current status of the iteration'),
+        startedAt: z.string().optional().describe('When the iteration started'),
+        completedAt: z.string().optional().describe('When the iteration completed')
+      })
+      .passthrough()
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -45,4 +48,5 @@ export let getScanIteration = SlateTool.create(
       },
       message: `Retrieved scan iteration **${ctx.input.scanIterationId}**. Status: **${data?.status ?? 'unknown'}**.`
     };
-  }).build();
+  })
+  .build();

@@ -3,35 +3,36 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteItem = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Item',
-    key: 'delete_item',
-    description: `Permanently delete an item (product) from the Gift Up! checkout. This action cannot be undone.`,
-    tags: {
-      destructive: true,
-    },
+export let deleteItem = SlateTool.create(spec, {
+  name: 'Delete Item',
+  key: 'delete_item',
+  description: `Permanently delete an item (product) from the Gift Up! checkout. This action cannot be undone.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    itemId: z.string().describe('ID of the item to delete'),
-  }))
-  .output(z.object({
-    deleted: z.boolean().describe('Whether the item was successfully deleted'),
-    itemId: z.string().describe('ID of the deleted item'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      itemId: z.string().describe('ID of the item to delete')
+    })
+  )
+  .output(
+    z.object({
+      deleted: z.boolean().describe('Whether the item was successfully deleted'),
+      itemId: z.string().describe('ID of the deleted item')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      testMode: ctx.config.testMode,
+      testMode: ctx.config.testMode
     });
 
     await client.deleteItem(ctx.input.itemId);
 
     return {
       output: { deleted: true, itemId: ctx.input.itemId },
-      message: `Deleted item **${ctx.input.itemId}**`,
+      message: `Deleted item **${ctx.input.itemId}**`
     };
   })
   .build();

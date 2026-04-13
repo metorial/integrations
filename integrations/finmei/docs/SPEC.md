@@ -25,24 +25,31 @@ The API base URL is `https://app.finmei.com/api`.
 ## Features
 
 ### Invoice Management
+
 Create, list, and delete invoices. Finmei supports templates, visual customization, support for multiple currencies, and flexible sharing options. Invoices can be shared via unique URLs or email. Recurring invoices can be configured to automatically bill on a regular schedule.
 
 ### Customer Management
+
 Delete a specific customer by their ID, list customers with optional filters and pagination, and update existing customer details. Everything you need to know about your customers is available in one dashboard.
 
 ### Product Catalog
+
 Manage a product catalog by retrieving, creating, updating, and deleting products. Products can be referenced when creating invoices.
 
 ### Payment Tracking
+
 Record, list, retrieve, and delete payments associated with invoices. Keep an eye on both paid and unpaid invoices.
 
 ### Expense Management
+
 Finmei makes it easy to record and store all your expenses on one platform. Enter key details about each expense, like the date, price, and seller's name. You can upload a PDF or image of your receipt with all the details.
 
 ### Currency Support
+
 List all currencies supported by Finmei. The platform supports over 180 currencies.
 
 ### Profile
+
 Retrieve the authenticated user's profile information via the `/api/profile` endpoint.
 
 ## Events

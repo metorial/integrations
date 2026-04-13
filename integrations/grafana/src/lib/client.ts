@@ -12,7 +12,7 @@ export class GrafanaClient {
   constructor(private config: GrafanaClientConfig) {
     let baseUrl = config.instanceUrl.replace(/\/+$/, '');
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
 
     if (config.token.startsWith('Basic ')) {
@@ -27,21 +27,23 @@ export class GrafanaClient {
 
     this.axios = createAxios({
       baseURL: baseUrl,
-      headers,
+      headers
     });
   }
 
   // ---- Dashboards ----
 
-  async searchDashboards(params: {
-    query?: string;
-    tag?: string[];
-    type?: 'dash-db' | 'dash-folder';
-    folderUIDs?: string[];
-    starred?: boolean;
-    limit?: number;
-    page?: number;
-  } = {}): Promise<any[]> {
+  async searchDashboards(
+    params: {
+      query?: string;
+      tag?: string[];
+      type?: 'dash-db' | 'dash-folder';
+      folderUIDs?: string[];
+      starred?: boolean;
+      limit?: number;
+      page?: number;
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.query) queryParams.query = params.query;
     if (params.tag?.length) queryParams.tag = params.tag;
@@ -60,14 +62,17 @@ export class GrafanaClient {
     return response.data;
   }
 
-  async createOrUpdateDashboard(dashboard: any, options: {
-    folderUid?: string;
-    overwrite?: boolean;
-    message?: string;
-  } = {}): Promise<any> {
+  async createOrUpdateDashboard(
+    dashboard: any,
+    options: {
+      folderUid?: string;
+      overwrite?: boolean;
+      message?: string;
+    } = {}
+  ): Promise<any> {
     let body: Record<string, any> = {
       dashboard,
-      overwrite: options.overwrite ?? false,
+      overwrite: options.overwrite ?? false
     };
     if (options.folderUid) body.folderUid = options.folderUid;
     if (options.message) body.message = options.message;
@@ -141,7 +146,7 @@ export class GrafanaClient {
   }): Promise<any> {
     let body = {
       access: 'proxy',
-      ...dataSource,
+      ...dataSource
     };
     let response = await this.axios.post('/api/datasources', body);
     return response.data;
@@ -171,14 +176,14 @@ export class GrafanaClient {
 
   async createAlertRule(rule: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/api/v1/provisioning/alert-rules', rule, {
-      headers: { 'X-Disable-Provenance': 'true' },
+      headers: { 'X-Disable-Provenance': 'true' }
     });
     return response.data;
   }
 
   async updateAlertRule(uid: string, rule: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/api/v1/provisioning/alert-rules/${uid}`, rule, {
-      headers: { 'X-Disable-Provenance': 'true' },
+      headers: { 'X-Disable-Provenance': 'true' }
     });
     return response.data;
   }
@@ -197,15 +202,19 @@ export class GrafanaClient {
 
   async createContactPoint(contactPoint: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/api/v1/provisioning/contact-points', contactPoint, {
-      headers: { 'X-Disable-Provenance': 'true' },
+      headers: { 'X-Disable-Provenance': 'true' }
     });
     return response.data;
   }
 
   async updateContactPoint(uid: string, contactPoint: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/api/v1/provisioning/contact-points/${uid}`, contactPoint, {
-      headers: { 'X-Disable-Provenance': 'true' },
-    });
+    let response = await this.axios.put(
+      `/api/v1/provisioning/contact-points/${uid}`,
+      contactPoint,
+      {
+        headers: { 'X-Disable-Provenance': 'true' }
+      }
+    );
     return response.data;
   }
 
@@ -223,7 +232,7 @@ export class GrafanaClient {
 
   async updateNotificationPolicyTree(policies: Record<string, any>): Promise<any> {
     let response = await this.axios.put('/api/v1/provisioning/policies', policies, {
-      headers: { 'X-Disable-Provenance': 'true' },
+      headers: { 'X-Disable-Provenance': 'true' }
     });
     return response.data;
   }
@@ -237,36 +246,44 @@ export class GrafanaClient {
 
   async createMuteTiming(timing: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/api/v1/provisioning/mute-timings', timing, {
-      headers: { 'X-Disable-Provenance': 'true' },
+      headers: { 'X-Disable-Provenance': 'true' }
     });
     return response.data;
   }
 
   async updateMuteTiming(name: string, timing: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/api/v1/provisioning/mute-timings/${encodeURIComponent(name)}`, timing, {
-      headers: { 'X-Disable-Provenance': 'true' },
-    });
+    let response = await this.axios.put(
+      `/api/v1/provisioning/mute-timings/${encodeURIComponent(name)}`,
+      timing,
+      {
+        headers: { 'X-Disable-Provenance': 'true' }
+      }
+    );
     return response.data;
   }
 
   async deleteMuteTiming(name: string): Promise<any> {
-    let response = await this.axios.delete(`/api/v1/provisioning/mute-timings/${encodeURIComponent(name)}`);
+    let response = await this.axios.delete(
+      `/api/v1/provisioning/mute-timings/${encodeURIComponent(name)}`
+    );
     return response.data;
   }
 
   // ---- Annotations ----
 
-  async findAnnotations(params: {
-    from?: number;
-    to?: number;
-    limit?: number;
-    alertId?: number;
-    dashboardUid?: string;
-    panelId?: number;
-    userId?: number;
-    type?: 'alert' | 'annotation';
-    tags?: string[];
-  } = {}): Promise<any[]> {
+  async findAnnotations(
+    params: {
+      from?: number;
+      to?: number;
+      limit?: number;
+      alertId?: number;
+      dashboardUid?: string;
+      panelId?: number;
+      userId?: number;
+      type?: 'alert' | 'annotation';
+      tags?: string[];
+    } = {}
+  ): Promise<any[]> {
     let queryParams: Record<string, any> = {};
     if (params.from !== undefined) queryParams.from = params.from;
     if (params.to !== undefined) queryParams.to = params.to;
@@ -294,12 +311,15 @@ export class GrafanaClient {
     return response.data;
   }
 
-  async updateAnnotation(annotationId: number, annotation: {
-    text?: string;
-    time?: number;
-    timeEnd?: number;
-    tags?: string[];
-  }): Promise<any> {
+  async updateAnnotation(
+    annotationId: number,
+    annotation: {
+      text?: string;
+      time?: number;
+      timeEnd?: number;
+      tags?: string[];
+    }
+  ): Promise<any> {
     let response = await this.axios.patch(`/api/annotations/${annotationId}`, annotation);
     return response.data;
   }
@@ -342,11 +362,13 @@ export class GrafanaClient {
 
   // ---- Teams ----
 
-  async searchTeams(params: {
-    query?: string;
-    page?: number;
-    perPage?: number;
-  } = {}): Promise<any> {
+  async searchTeams(
+    params: {
+      query?: string;
+      page?: number;
+      perPage?: number;
+    } = {}
+  ): Promise<any> {
     let queryParams: Record<string, any> = {};
     if (params.query) queryParams.query = params.query;
     if (params.page) queryParams.page = params.page;
@@ -445,11 +467,14 @@ export class GrafanaClient {
     return response.data;
   }
 
-  async updatePlaylist(uid: string, playlist: {
-    name: string;
-    interval: string;
-    items: Array<{ type: string; value: string }>;
-  }): Promise<any> {
+  async updatePlaylist(
+    uid: string,
+    playlist: {
+      name: string;
+      interval: string;
+      items: Array<{ type: string; value: string }>;
+    }
+  ): Promise<any> {
     let response = await this.axios.put(`/api/playlists/${uid}`, playlist);
     return response.data;
   }
@@ -486,16 +511,25 @@ export class GrafanaClient {
     return response.data;
   }
 
-  async createServiceAccountToken(serviceAccountId: number, name: string, secondsToLive?: number): Promise<any> {
+  async createServiceAccountToken(
+    serviceAccountId: number,
+    name: string,
+    secondsToLive?: number
+  ): Promise<any> {
     let body: Record<string, any> = { name };
     if (secondsToLive !== undefined) body.secondsToLive = secondsToLive;
 
-    let response = await this.axios.post(`/api/serviceaccounts/${serviceAccountId}/tokens`, body);
+    let response = await this.axios.post(
+      `/api/serviceaccounts/${serviceAccountId}/tokens`,
+      body
+    );
     return response.data;
   }
 
   async deleteServiceAccountToken(serviceAccountId: number, tokenId: number): Promise<any> {
-    let response = await this.axios.delete(`/api/serviceaccounts/${serviceAccountId}/tokens/${tokenId}`);
+    let response = await this.axios.delete(
+      `/api/serviceaccounts/${serviceAccountId}/tokens/${tokenId}`
+    );
     return response.data;
   }
 }

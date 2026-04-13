@@ -3,38 +3,48 @@ import { MistralClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let fineTuningJobStatusTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Fine-Tuning Job Status Change',
-    key: 'fine_tuning_job_status',
-    description: 'Triggers when a fine-tuning job changes status (e.g., starts running, completes, or fails). Polls the Mistral AI API periodically to detect status changes.'
-  }
-)
-  .input(z.object({
-    jobId: z.string().describe('Fine-tuning job ID'),
-    status: z.string().describe('Current job status'),
-    previousStatus: z.string().optional().describe('Previous job status'),
-    model: z.string().describe('Base model being fine-tuned'),
-    fineTunedModel: z.string().nullable().optional().describe('Resulting fine-tuned model ID'),
-    createdAt: z.number().optional().describe('Job creation timestamp'),
-    modifiedAt: z.number().optional().describe('Last modification timestamp')
-  }))
-  .output(z.object({
-    jobId: z.string().describe('Fine-tuning job ID'),
-    status: z.string().describe('Current job status'),
-    previousStatus: z.string().optional().describe('Previous job status'),
-    model: z.string().describe('Base model being fine-tuned'),
-    fineTunedModel: z.string().nullable().optional().describe('Resulting fine-tuned model ID (available when status is SUCCESS)'),
-    createdAt: z.number().optional().describe('Job creation timestamp'),
-    modifiedAt: z.number().optional().describe('Last modification timestamp')
-  }))
+export let fineTuningJobStatusTrigger = SlateTrigger.create(spec, {
+  name: 'Fine-Tuning Job Status Change',
+  key: 'fine_tuning_job_status',
+  description:
+    'Triggers when a fine-tuning job changes status (e.g., starts running, completes, or fails). Polls the Mistral AI API periodically to detect status changes.'
+})
+  .input(
+    z.object({
+      jobId: z.string().describe('Fine-tuning job ID'),
+      status: z.string().describe('Current job status'),
+      previousStatus: z.string().optional().describe('Previous job status'),
+      model: z.string().describe('Base model being fine-tuned'),
+      fineTunedModel: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Resulting fine-tuned model ID'),
+      createdAt: z.number().optional().describe('Job creation timestamp'),
+      modifiedAt: z.number().optional().describe('Last modification timestamp')
+    })
+  )
+  .output(
+    z.object({
+      jobId: z.string().describe('Fine-tuning job ID'),
+      status: z.string().describe('Current job status'),
+      previousStatus: z.string().optional().describe('Previous job status'),
+      model: z.string().describe('Base model being fine-tuned'),
+      fineTunedModel: z
+        .string()
+        .nullable()
+        .optional()
+        .describe('Resulting fine-tuned model ID (available when status is SUCCESS)'),
+      createdAt: z.number().optional().describe('Job creation timestamp'),
+      modifiedAt: z.number().optional().describe('Last modification timestamp')
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new MistralClient(ctx.auth.token);
 
       let result = await client.listFineTuningJobs({ pageSize: 50 });
@@ -83,7 +93,7 @@ export let fineTuningJobStatusTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `fine_tuning_job.${ctx.input.status.toLowerCase()}`,
         id: `ft-${ctx.input.jobId}-${ctx.input.status}-${ctx.input.modifiedAt || Date.now()}`,

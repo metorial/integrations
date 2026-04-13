@@ -9,8 +9,8 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -18,7 +18,7 @@ export class Client {
 
   async createPrintJob(params: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/prints', params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -35,7 +35,7 @@ export class Client {
 
   async updatePrintJob(printJobId: string, params: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/prints/${printJobId}`, params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -49,7 +49,7 @@ export class Client {
 
   async createBackground(params: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/backgrounds', params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -66,7 +66,7 @@ export class Client {
 
   async updateBackground(backgroundId: string, params: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/backgrounds/${backgroundId}`, params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -80,7 +80,7 @@ export class Client {
 
   async createMailingList(params: Record<string, any>): Promise<any> {
     let response = await this.axios.post('/mailing_lists', params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -97,7 +97,7 @@ export class Client {
 
   async updateMailingList(mailingListId: string, params: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/mailing_lists/${mailingListId}`, params, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
     return response.data;
   }
@@ -110,31 +110,49 @@ export class Client {
   // ─── Mailing List Recipients ──────────────────────────────────
 
   async createRecipient(mailingListId: string, params: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/mailing_lists/${mailingListId}/recipients`, params, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    let response = await this.axios.post(
+      `/mailing_lists/${mailingListId}/recipients`,
+      params,
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
     return response.data;
   }
 
   async getRecipient(mailingListId: string, recipientId: string): Promise<any> {
-    let response = await this.axios.get(`/mailing_lists/${mailingListId}/recipients/${recipientId}`);
+    let response = await this.axios.get(
+      `/mailing_lists/${mailingListId}/recipients/${recipientId}`
+    );
     return response.data;
   }
 
   async listRecipients(mailingListId: string, params?: Record<string, any>): Promise<any> {
-    let response = await this.axios.get(`/mailing_lists/${mailingListId}/recipients`, { params });
-    return response.data;
-  }
-
-  async updateRecipient(mailingListId: string, recipientId: string, params: Record<string, any>): Promise<any> {
-    let response = await this.axios.post(`/mailing_lists/${mailingListId}/recipients/${recipientId}`, params, {
-      headers: { 'Content-Type': 'application/json' },
+    let response = await this.axios.get(`/mailing_lists/${mailingListId}/recipients`, {
+      params
     });
     return response.data;
   }
 
+  async updateRecipient(
+    mailingListId: string,
+    recipientId: string,
+    params: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `/mailing_lists/${mailingListId}/recipients/${recipientId}`,
+      params,
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+    return response.data;
+  }
+
   async deleteRecipient(mailingListId: string, recipientId: string): Promise<any> {
-    let response = await this.axios.delete(`/mailing_lists/${mailingListId}/recipients/${recipientId}`);
+    let response = await this.axios.delete(
+      `/mailing_lists/${mailingListId}/recipients/${recipientId}`
+    );
     return response.data;
   }
 }

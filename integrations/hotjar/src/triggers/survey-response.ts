@@ -4,8 +4,12 @@ import { z } from 'zod';
 
 let webhookQuestionSchema = z.object({
   questionId: z.number().describe('Unique question identifier.'),
-  questionType: z.string().describe('Type of question (e.g., "nps", "short-text", "reaction", "single-option", "multiple-option", "email", "1-5-rating", "1-7-rating", "long-text").'),
-  answers: z.array(z.any()).describe('Answers to the question.'),
+  questionType: z
+    .string()
+    .describe(
+      'Type of question (e.g., "nps", "short-text", "reaction", "single-option", "multiple-option", "email", "1-5-rating", "1-7-rating", "long-text").'
+    ),
+  answers: z.array(z.any()).describe('Answers to the question.')
 });
 
 let surveyResponseInputSchema = z.object({
@@ -21,53 +25,70 @@ let surveyResponseInputSchema = z.object({
   countryCode: z.string().nullable().describe('ISO 3166 country code.'),
   countryName: z.string().nullable().describe('Country name.'),
   hotjarUserId: z.string().nullable().describe('Hotjar User ID (UUID).'),
-  createdStr: z.string().nullable().describe('ISO 8601 timestamp of when the response was created.'),
-  createdTimestamp: z.number().nullable().describe('UNIX timestamp of when the response was created.'),
+  createdStr: z
+    .string()
+    .nullable()
+    .describe('ISO 8601 timestamp of when the response was created.'),
+  createdTimestamp: z
+    .number()
+    .nullable()
+    .describe('UNIX timestamp of when the response was created.'),
   isComplete: z.boolean().nullable().describe('Whether the survey response is completed.'),
   recordingUrl: z.string().nullable().describe('Link to the associated Hotjar recording.'),
   responseOriginUrl: z.string().nullable().describe('URL where the survey was submitted.'),
-  windowWidth: z.number().nullable().describe('Width of the user\'s window.'),
-  windowHeight: z.number().nullable().describe('Height of the user\'s window.'),
+  windowWidth: z.number().nullable().describe("Width of the user's window."),
+  windowHeight: z.number().nullable().describe("Height of the user's window."),
   userAttributes: z.any().nullable().describe('User attributes from the Identify API.'),
-  questions: z.array(webhookQuestionSchema).nullable().describe('Questions and answers.'),
+  questions: z.array(webhookQuestionSchema).nullable().describe('Questions and answers.')
 });
 
-export let surveyResponseTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Survey Response',
-    key: 'survey_response',
-    description: 'Triggered when a new survey response is submitted on your site. Webhooks must be configured in the Hotjar dashboard on the specific survey. Available on Ask Scale plans.',
-  }
-)
+export let surveyResponseTrigger = SlateTrigger.create(spec, {
+  name: 'Survey Response',
+  key: 'survey_response',
+  description:
+    'Triggered when a new survey response is submitted on your site. Webhooks must be configured in the Hotjar dashboard on the specific survey. Available on Ask Scale plans.'
+})
   .input(surveyResponseInputSchema)
-  .output(z.object({
-    responseId: z.string().describe('Unique survey response identifier.'),
-    surveyId: z.string().nullable().describe('Survey identifier.'),
-    surveyName: z.string().nullable().describe('Survey name.'),
-    siteId: z.string().nullable().describe('Site identifier.'),
-    hotjarUserId: z.string().nullable().describe('Hotjar User ID (UUID).'),
-    device: z.string().nullable().describe('Device type: tablet, mobile, or desktop.'),
-    browser: z.string().nullable().describe('Browser name.'),
-    os: z.string().nullable().describe('Operating system name.'),
-    countryCode: z.string().nullable().describe('ISO 3166 country code.'),
-    countryName: z.string().nullable().describe('Country name.'),
-    createdAt: z.string().nullable().describe('ISO 8601 timestamp of when the response was created.'),
-    isComplete: z.boolean().nullable().describe('Whether the survey response was fully completed.'),
-    responseOriginUrl: z.string().nullable().describe('URL where the survey was submitted.'),
-    recordingUrl: z.string().nullable().describe('Link to the associated Hotjar recording.'),
-    windowWidth: z.number().nullable().describe('Width of the user\'s browser window.'),
-    windowHeight: z.number().nullable().describe('Height of the user\'s browser window.'),
-    userAttributes: z.any().nullable().describe('User attributes from the Identify API.'),
-    questions: z.array(z.object({
-      questionId: z.number().describe('Unique question identifier.'),
-      questionType: z.string().describe('Type of question.'),
-      answers: z.array(z.any()).describe('Answers to the question.'),
-    })).nullable().describe('Questions and answers from the survey.'),
-  }))
+  .output(
+    z.object({
+      responseId: z.string().describe('Unique survey response identifier.'),
+      surveyId: z.string().nullable().describe('Survey identifier.'),
+      surveyName: z.string().nullable().describe('Survey name.'),
+      siteId: z.string().nullable().describe('Site identifier.'),
+      hotjarUserId: z.string().nullable().describe('Hotjar User ID (UUID).'),
+      device: z.string().nullable().describe('Device type: tablet, mobile, or desktop.'),
+      browser: z.string().nullable().describe('Browser name.'),
+      os: z.string().nullable().describe('Operating system name.'),
+      countryCode: z.string().nullable().describe('ISO 3166 country code.'),
+      countryName: z.string().nullable().describe('Country name.'),
+      createdAt: z
+        .string()
+        .nullable()
+        .describe('ISO 8601 timestamp of when the response was created.'),
+      isComplete: z
+        .boolean()
+        .nullable()
+        .describe('Whether the survey response was fully completed.'),
+      responseOriginUrl: z.string().nullable().describe('URL where the survey was submitted.'),
+      recordingUrl: z.string().nullable().describe('Link to the associated Hotjar recording.'),
+      windowWidth: z.number().nullable().describe("Width of the user's browser window."),
+      windowHeight: z.number().nullable().describe("Height of the user's browser window."),
+      userAttributes: z.any().nullable().describe('User attributes from the Identify API.'),
+      questions: z
+        .array(
+          z.object({
+            questionId: z.number().describe('Unique question identifier.'),
+            questionType: z.string().describe('Type of question.'),
+            answers: z.array(z.any()).describe('Answers to the question.')
+          })
+        )
+        .nullable()
+        .describe('Questions and answers from the survey.')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       if (body.event === 'test_message') {
         return { inputs: [] };
@@ -104,17 +125,19 @@ export let surveyResponseTrigger = SlateTrigger.create(
             windowWidth: data.window_width ?? null,
             windowHeight: data.window_height ?? null,
             userAttributes: data.user_attributes || null,
-            questions: data.questions ? data.questions.map((q: any) => ({
-              questionId: q.question_id,
-              questionType: q.question_type,
-              answers: q.answers || [],
-            })) : null,
-          },
-        ],
+            questions: data.questions
+              ? data.questions.map((q: any) => ({
+                  questionId: q.question_id,
+                  questionType: q.question_type,
+                  answers: q.answers || []
+                }))
+              : null
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'survey_response.created',
         id: ctx.input.responseId,
@@ -136,8 +159,9 @@ export let surveyResponseTrigger = SlateTrigger.create(
           windowWidth: ctx.input.windowWidth,
           windowHeight: ctx.input.windowHeight,
           userAttributes: ctx.input.userAttributes,
-          questions: ctx.input.questions,
-        },
+          questions: ctx.input.questions
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -16,29 +16,33 @@ let campaignSchema = z.object({
   sendEndDate: z.string().optional().describe('Actual send end date'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last updated timestamp'),
-  tzoEnabled: z.boolean().optional().describe('Time zone optimization enabled'),
+  tzoEnabled: z.boolean().optional().describe('Time zone optimization enabled')
 });
 
-export let listCampaigns = SlateTool.create(
-  spec,
-  {
-    name: 'List Campaigns',
-    key: 'list_campaigns',
-    description: `List marketing campaigns from Omnisend. Returns campaign details including name, channel (email/SMS/push), status, and scheduling info. Optionally filter by update date.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    updatedAfter: z.string().optional().describe('Filter campaigns updated after this date (ISO 8601)'),
-  }))
-  .output(z.object({
-    campaigns: z.array(campaignSchema).describe('List of campaigns'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listCampaigns = SlateTool.create(spec, {
+  name: 'List Campaigns',
+  key: 'list_campaigns',
+  description: `List marketing campaigns from Omnisend. Returns campaign details including name, channel (email/SMS/push), status, and scheduling info. Optionally filter by update date.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      updatedAfter: z
+        .string()
+        .optional()
+        .describe('Filter campaigns updated after this date (ISO 8601)')
+    })
+  )
+  .output(
+    z.object({
+      campaigns: z.array(campaignSchema).describe('List of campaigns')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new OmnisendClient(ctx.auth.token);
 
     let result = await client.listCampaigns({
-      updatedAtFrom: ctx.input.updatedAfter,
+      updatedAtFrom: ctx.input.updatedAfter
     });
 
     let campaigns = (result.campaigns || []).map((c: any) => ({
@@ -54,11 +58,12 @@ export let listCampaigns = SlateTool.create(
       sendEndDate: c.sendEndDate,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
-      tzoEnabled: c.tzoEnabled,
+      tzoEnabled: c.tzoEnabled
     }));
 
     return {
       output: { campaigns },
-      message: `Retrieved **${campaigns.length}** campaigns.`,
+      message: `Retrieved **${campaigns.length}** campaigns.`
     };
-  }).build();
+  })
+  .build();

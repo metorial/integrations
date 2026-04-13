@@ -5,27 +5,35 @@ Generate text and analyze images using Claude language models. Send conversation
 ## Tools
 
 ### Count Tokens
+
 Count the number of tokens in a message without sending it. Useful for estimating costs, managing context window limits, and planning prompt strategies before making actual API calls.
 
 ### Get Organization
+
 Retrieve information about the organization associated with the current Admin API key. Useful for determining which organization a key belongs to and getting organization details. Requires an Admin API key (sk-ant-admin...).
 
 ### List Models
+
 List available Claude models and their details. Retrieve information about context window size, capabilities, and model identifiers. Optionally fetch details for a specific model by providing its ID.
 
 ### Manage API Keys
+
 List and update organization API keys via the Admin API. View active, inactive, or archived keys filtered by workspace. Update keys to activate, deactivate, or rename them. Requires an Admin API key (sk-ant-admin...).
 
 ### Manage Message Batch
+
 Create, retrieve, list, or cancel message batches for asynchronous processing. Batches allow processing large volumes of messages at reduced cost (up to 24 hours). Use **action** to specify the operation: "create", "get", "list", or "cancel".
 
 ### Manage Organization Members
+
 Manage organization members and invites via the Admin API. List members, update roles, remove members, or manage invitations. Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin...).
 
 ### Manage Workspaces
+
 Manage organization workspaces and their members via the Admin API. Create, list, update, archive workspaces, and manage workspace membership. Use **action** to specify the operation. Requires an Admin API key (sk-ant-admin...).
 
 ### ...
+
 Send a message to Claude and receive a generated response. Supports multi-turn conversations, system prompts, tool use (function calling), extended thinking, and vision (images). Provide a conversation history as messages and configure model parameters to control the response.
 
 ## License

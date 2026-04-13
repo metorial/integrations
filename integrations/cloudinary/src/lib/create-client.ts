@@ -8,6 +8,6 @@ export let createClient = (ctx: {
     cloudName: ctx.config.cloudName,
     apiKey: ctx.auth.token,
     apiSecret: ctx.auth.apiSecret,
-    region: ctx.config.region,
+    region: ctx.config.region
   });
 };

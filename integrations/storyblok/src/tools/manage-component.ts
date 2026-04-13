@@ -8,47 +8,72 @@ let componentOutputSchema = z.object({
   name: z.string().optional().describe('Technical name of the component'),
   displayName: z.string().optional().describe('Display name shown in the editor'),
   isRoot: z.boolean().optional().describe('Whether this is a content type (root component)'),
-  isNestable: z.boolean().optional().describe('Whether this can be nested inside other components'),
-  schema: z.record(z.string(), z.any()).optional().describe('Component field schema definition'),
-  createdAt: z.string().optional().describe('Creation timestamp'),
+  isNestable: z
+    .boolean()
+    .optional()
+    .describe('Whether this can be nested inside other components'),
+  schema: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Component field schema definition'),
+  createdAt: z.string().optional().describe('Creation timestamp')
 });
 
-export let manageComponent = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Component',
-    key: 'manage_component',
-    description: `Create, update, or delete content components (content type definitions). Components define the schema/structure of stories. Use this to manage your content model.`,
-    instructions: [
-      'To **create** a component, set action to "create" and provide a name and schema.',
-      'To **update** a component, set action to "update" and provide the componentId plus fields to change.',
-      'To **delete** a component, set action to "delete" and provide the componentId.',
-      'Schema is a JSON object where keys are field names and values define field types (e.g. `{ "title": { "type": "text" }, "body": { "type": "richtext" } }`).',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageComponent = SlateTool.create(spec, {
+  name: 'Manage Component',
+  key: 'manage_component',
+  description: `Create, update, or delete content components (content type definitions). Components define the schema/structure of stories. Use this to manage your content model.`,
+  instructions: [
+    'To **create** a component, set action to "create" and provide a name and schema.',
+    'To **update** a component, set action to "update" and provide the componentId plus fields to change.',
+    'To **delete** a component, set action to "delete" and provide the componentId.',
+    'Schema is a JSON object where keys are field names and values define field types (e.g. `{ "title": { "type": "text" }, "body": { "type": "richtext" } }`).'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The component management action to perform'),
-    componentId: z.string().optional().describe('Component ID (required for update, delete)'),
-    name: z.string().optional().describe('Technical name for the component (required for create)'),
-    displayName: z.string().optional().describe('Human-friendly display name'),
-    schema: z.record(z.string(), z.any()).optional().describe('Field schema definition object'),
-    isRoot: z.boolean().optional().describe('Whether this is a content type (can be used as a story root)'),
-    isNestable: z.boolean().optional().describe('Whether this can be nested inside bloks fields'),
-    componentGroupUuid: z.string().optional().describe('UUID of the component group to organize under'),
-    color: z.string().optional().describe('Color for the component in the editor'),
-    icon: z.string().optional().describe('Icon for the component in the editor'),
-  }))
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['create', 'update', 'delete'])
+        .describe('The component management action to perform'),
+      componentId: z
+        .string()
+        .optional()
+        .describe('Component ID (required for update, delete)'),
+      name: z
+        .string()
+        .optional()
+        .describe('Technical name for the component (required for create)'),
+      displayName: z.string().optional().describe('Human-friendly display name'),
+      schema: z
+        .record(z.string(), z.any())
+        .optional()
+        .describe('Field schema definition object'),
+      isRoot: z
+        .boolean()
+        .optional()
+        .describe('Whether this is a content type (can be used as a story root)'),
+      isNestable: z
+        .boolean()
+        .optional()
+        .describe('Whether this can be nested inside bloks fields'),
+      componentGroupUuid: z
+        .string()
+        .optional()
+        .describe('UUID of the component group to organize under'),
+      color: z.string().optional().describe('Color for the component in the editor'),
+      icon: z.string().optional().describe('Icon for the component in the editor')
+    })
+  )
   .output(componentOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new StoryblokClient({
       token: ctx.auth.token,
       region: ctx.config.region,
-      spaceId: ctx.config.spaceId,
+      spaceId: ctx.config.spaceId
     });
 
     let { action, componentId } = ctx.input;
@@ -64,7 +89,7 @@ export let manageComponent = SlateTool.create(
         isNestable: ctx.input.isNestable,
         componentGroupUuid: ctx.input.componentGroupUuid,
         color: ctx.input.color,
-        icon: ctx.input.icon,
+        icon: ctx.input.icon
       });
 
       return {
@@ -75,9 +100,9 @@ export let manageComponent = SlateTool.create(
           isRoot: component.is_root,
           isNestable: component.is_nestable,
           schema: component.schema,
-          createdAt: component.created_at,
+          createdAt: component.created_at
         },
-        message: `Created component **${component.name}** (\`${component.id}\`).`,
+        message: `Created component **${component.name}** (\`${component.id}\`).`
       };
     }
 
@@ -87,7 +112,7 @@ export let manageComponent = SlateTool.create(
       await client.deleteComponent(componentId);
       return {
         output: { componentId: parseInt(componentId, 10) },
-        message: `Deleted component \`${componentId}\`.`,
+        message: `Deleted component \`${componentId}\`.`
       };
     }
 
@@ -100,7 +125,7 @@ export let manageComponent = SlateTool.create(
       isNestable: ctx.input.isNestable,
       componentGroupUuid: ctx.input.componentGroupUuid,
       color: ctx.input.color,
-      icon: ctx.input.icon,
+      icon: ctx.input.icon
     });
 
     return {
@@ -111,9 +136,9 @@ export let manageComponent = SlateTool.create(
         isRoot: component.is_root,
         isNestable: component.is_nestable,
         schema: component.schema,
-        createdAt: component.created_at,
+        createdAt: component.created_at
       },
-      message: `Updated component **${component.name}** (\`${component.id}\`).`,
+      message: `Updated component **${component.name}** (\`${component.id}\`).`
     };
   })
   .build();

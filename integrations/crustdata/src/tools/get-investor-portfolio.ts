@@ -10,26 +10,37 @@ export let getInvestorPortfolio = SlateTool.create(spec, {
 Returns portfolio performance metrics and details about companies in the investor's portfolio.`,
   tags: {
     destructive: false,
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
-  .input(z.object({
-    investorName: z.string().describe('Name of the investor or investment firm (e.g., "Sequoia Capital", "Y Combinator").'),
-  }))
-  .output(z.object({
-    portfolio: z.array(z.record(z.string(), z.unknown())).describe('Array of portfolio company records.'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .input(
+    z.object({
+      investorName: z
+        .string()
+        .describe(
+          'Name of the investor or investment firm (e.g., "Sequoia Capital", "Y Combinator").'
+        )
+    })
+  )
+  .output(
+    z.object({
+      portfolio: z
+        .array(z.record(z.string(), z.unknown()))
+        .describe('Array of portfolio company records.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new CrustdataClient(ctx.auth.token);
 
     let result = await client.getInvestorPortfolio({
-      investorName: ctx.input.investorName,
+      investorName: ctx.input.investorName
     });
 
     let portfolio = Array.isArray(result) ? result : (result.data ?? result.portfolio ?? []);
 
     return {
       output: { portfolio },
-      message: `Retrieved **${portfolio.length}** portfolio companies for "${ctx.input.investorName}".`,
+      message: `Retrieved **${portfolio.length}** portfolio companies for "${ctx.input.investorName}".`
     };
-  }).build();
+  })
+  .build();

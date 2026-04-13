@@ -87,7 +87,8 @@ export class CouponClient {
     if (params.collectionId) body.collection_id = params.collectionId;
     if (params.startDate) body.start_date = params.startDate;
     if (params.endDate) body.end_date = params.endDate;
-    if (params.minimumPurchaseAmount !== undefined) body.minimum_purchase_amount = params.minimumPurchaseAmount;
+    if (params.minimumPurchaseAmount !== undefined)
+      body.minimum_purchase_amount = params.minimumPurchaseAmount;
     if (params.usageLimit !== undefined) body.usage_limit = params.usageLimit;
     if (params.notes) body.notes = params.notes;
 
@@ -98,7 +99,10 @@ export class CouponClient {
     return mapCouponFromApi(response.data?.data ?? response.data);
   }
 
-  async listCoupons(params?: { limit?: number; offset?: number }): Promise<{ coupons: CouponResponse[]; total: number }> {
+  async listCoupons(params?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<{ coupons: CouponResponse[]; total: number }> {
     let queryParams: Record<string, any> = {};
     if (params?.limit !== undefined) queryParams.limit = params.limit;
     if (params?.offset !== undefined) queryParams.offset = params.offset;
@@ -141,7 +145,8 @@ export class LicenseClient {
   }
 
   async enableLicense(licenseKey: string): Promise<LicenseResponse> {
-    let response = await http.put('/license/enable',
+    let response = await http.put(
+      '/license/enable',
       { license_key: licenseKey },
       { headers: { 'product-secret-key': this.productSecretKey } }
     );
@@ -150,7 +155,8 @@ export class LicenseClient {
   }
 
   async disableLicense(licenseKey: string): Promise<LicenseResponse> {
-    let response = await http.put('/license/disable',
+    let response = await http.put(
+      '/license/disable',
       { license_key: licenseKey },
       { headers: { 'product-secret-key': this.productSecretKey } }
     );
@@ -159,7 +165,8 @@ export class LicenseClient {
   }
 
   async increaseUsage(licenseKey: string): Promise<LicenseResponse> {
-    let response = await http.put('/license/usage',
+    let response = await http.put(
+      '/license/usage',
       { license_key: licenseKey },
       { headers: { 'product-secret-key': this.productSecretKey } }
     );
@@ -168,7 +175,8 @@ export class LicenseClient {
   }
 
   async decreaseUsage(licenseKey: string): Promise<LicenseResponse> {
-    let response = await http.put('/license/decrease',
+    let response = await http.put(
+      '/license/decrease',
       { license_key: licenseKey },
       { headers: { 'product-secret-key': this.productSecretKey } }
     );

@@ -6,7 +6,7 @@ import {
   getEmployees,
   createProject,
   startProjectTracking,
-  stopProjectTracking,
+  stopProjectTracking
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     getEmployees,
     createProject,
     startProjectTracking,
-    stopProjectTracking,
+    stopProjectTracking
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

@@ -3,34 +3,40 @@ import { MgmtClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let contentWorkflow = SlateTool.create(
-  spec,
-  {
-    name: 'Content Workflow',
-    key: 'content_workflow',
-    description: `Performs workflow operations on content items: **publish**, **unpublish**, **request-approval**, **approve**, or **decline**. Supports both individual items and batch operations on multiple items at once. Requires OAuth authentication.`,
-    tags: {
-      destructive: true,
-    },
+export let contentWorkflow = SlateTool.create(spec, {
+  name: 'Content Workflow',
+  key: 'content_workflow',
+  description: `Performs workflow operations on content items: **publish**, **unpublish**, **request-approval**, **approve**, or **decline**. Supports both individual items and batch operations on multiple items at once. Requires OAuth authentication.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['publish', 'unpublish', 'request-approval', 'approve', 'decline']).describe('Workflow action to perform'),
-    contentIds: z.array(z.number()).min(1).describe('One or more content item IDs to apply the workflow action to'),
-    comments: z.string().optional().describe('Optional comments for the workflow action'),
-    locale: z.string().optional().describe('Locale code override'),
-  }))
-  .output(z.object({
-    contentIds: z.array(z.number()).describe('IDs of the items the action was applied to'),
-    action: z.string().describe('The workflow action that was performed'),
-    success: z.boolean().describe('Whether the operation succeeded'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['publish', 'unpublish', 'request-approval', 'approve', 'decline'])
+        .describe('Workflow action to perform'),
+      contentIds: z
+        .array(z.number())
+        .min(1)
+        .describe('One or more content item IDs to apply the workflow action to'),
+      comments: z.string().optional().describe('Optional comments for the workflow action'),
+      locale: z.string().optional().describe('Locale code override')
+    })
+  )
+  .output(
+    z.object({
+      contentIds: z.array(z.number()).describe('IDs of the items the action was applied to'),
+      action: z.string().describe('The workflow action that was performed'),
+      success: z.boolean().describe('Whether the operation succeeded')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MgmtClient({
       token: ctx.auth.token,
       guid: ctx.config.guid,
       locale: ctx.input.locale || ctx.config.locale,
-      region: ctx.config.region,
+      region: ctx.config.region
     });
 
     if (ctx.input.contentIds.length === 1) {
@@ -60,9 +66,9 @@ export let contentWorkflow = SlateTool.create(
       output: {
         contentIds: ctx.input.contentIds,
         action: ctx.input.action,
-        success: true,
+        success: true
       },
-      message: `Applied **${ctx.input.action}** to **${ctx.input.contentIds.length}** content item(s): ${ctx.input.contentIds.join(', ')}`,
+      message: `Applied **${ctx.input.action}** to **${ctx.input.contentIds.length}** content item(s): ${ctx.input.contentIds.join(', ')}`
     };
   })
   .build();

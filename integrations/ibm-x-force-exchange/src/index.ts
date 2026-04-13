@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   lookupIpReputation,
@@ -10,12 +9,12 @@ import {
   manageCollections,
   getApiUsage,
   getThreatReport,
-  lookupAppProfile,
+  lookupAppProfile
 } from './tools';
 import {
   newVulnerabilitiesTrigger,
   newThreatReportsTrigger,
-  inboundWebhook,
+  inboundWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -29,11 +28,7 @@ export let provider = Slate.create({
     manageCollections,
     getApiUsage,
     getThreatReport,
-    lookupAppProfile,
+    lookupAppProfile
   ],
-  triggers: [
-    inboundWebhook,
-    newVulnerabilitiesTrigger,
-    newThreatReportsTrigger,
-  ],
+  triggers: [inboundWebhook, newVulnerabilitiesTrigger, newThreatReportsTrigger]
 });

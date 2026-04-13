@@ -23,7 +23,7 @@ import {
   getIssue,
   createIssue,
   resolveIssue,
-  deleteIssue,
+  deleteIssue
 } from './tools';
 import { bookingUpdates } from './triggers';
 
@@ -52,9 +52,7 @@ export let provider = Slate.create({
     getIssue,
     createIssue,
     resolveIssue,
-    deleteIssue,
+    deleteIssue
   ],
-  triggers: [
-    bookingUpdates,
-  ],
+  triggers: [bookingUpdates]
 });

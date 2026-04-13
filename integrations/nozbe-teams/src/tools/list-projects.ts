@@ -18,43 +18,54 @@ let projectSchema = z.object({
   lastEventAt: z.number().optional().describe('Last event timestamp in milliseconds')
 });
 
-export let listProjects = SlateTool.create(
-  spec,
-  {
-    name: 'List Projects',
-    key: 'list_projects',
-    description: `Retrieve projects from Nozbe Teams. Supports filtering by team, favorite status, and single actions projects. Results can be sorted and paginated.`,
-    tags: {
-      readOnly: true
-    }
+export let listProjects = SlateTool.create(spec, {
+  name: 'List Projects',
+  key: 'list_projects',
+  description: `Retrieve projects from Nozbe Teams. Supports filtering by team, favorite status, and single actions projects. Results can be sorted and paginated.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    teamId: z.string().optional().describe('Filter projects by team ID'),
-    isFavorite: z.boolean().optional().describe('Filter to favorite projects only'),
-    isSingleActions: z.boolean().optional().describe('Filter for single action projects'),
-    sortBy: z.string().optional().describe('Sort fields, comma-separated. Prefix with - for descending, e.g. "-created_at,name"'),
-    limit: z.number().optional().describe('Maximum number of projects to return (1-10000, default 100)'),
-    offset: z.number().optional().describe('Number of projects to skip for pagination')
-  }))
-  .output(z.object({
-    projects: z.array(projectSchema).describe('List of projects')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      teamId: z.string().optional().describe('Filter projects by team ID'),
+      isFavorite: z.boolean().optional().describe('Filter to favorite projects only'),
+      isSingleActions: z.boolean().optional().describe('Filter for single action projects'),
+      sortBy: z
+        .string()
+        .optional()
+        .describe(
+          'Sort fields, comma-separated. Prefix with - for descending, e.g. "-created_at,name"'
+        ),
+      limit: z
+        .number()
+        .optional()
+        .describe('Maximum number of projects to return (1-10000, default 100)'),
+      offset: z.number().optional().describe('Number of projects to skip for pagination')
+    })
+  )
+  .output(
+    z.object({
+      projects: z.array(projectSchema).describe('List of projects')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let params: ListParams = {};
     if (ctx.input.teamId) params.team_id = ctx.input.teamId;
-    if (ctx.input.isSingleActions !== undefined) params.is_single_actions = ctx.input.isSingleActions;
+    if (ctx.input.isSingleActions !== undefined)
+      params.is_single_actions = ctx.input.isSingleActions;
     if (ctx.input.sortBy) params.sortBy = ctx.input.sortBy;
     if (ctx.input.limit) params.limit = ctx.input.limit;
     if (ctx.input.offset) params.offset = ctx.input.offset;
 
     let projects = await client.listProjects(params);
 
-    let filtered = ctx.input.isFavorite !== undefined
-      ? projects.filter((p: any) => p.is_favorite === ctx.input.isFavorite)
-      : projects;
+    let filtered =
+      ctx.input.isFavorite !== undefined
+        ? projects.filter((p: any) => p.is_favorite === ctx.input.isFavorite)
+        : projects;
 
     let mapped = filtered.map((p: any) => ({
       projectId: p.id,
@@ -75,4 +86,5 @@ export let listProjects = SlateTool.create(
       output: { projects: mapped },
       message: `Found **${mapped.length}** project(s).`
     };
-  }).build();
+  })
+  .build();

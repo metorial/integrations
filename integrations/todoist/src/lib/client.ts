@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.todoist.com/api/v1',
+  baseURL: 'https://api.todoist.com/api/v1'
 });
 
 export interface TaskDue {
@@ -113,14 +113,16 @@ let mapTask = (raw: any): TodoistTask => ({
   order: raw.order,
   priority: raw.priority,
   labels: raw.labels || [],
-  due: raw.due ? {
-    string: raw.due.string,
-    date: raw.due.date,
-    isRecurring: raw.due.is_recurring,
-    datetime: raw.due.datetime,
-    timezone: raw.due.timezone,
-    lang: raw.due.lang,
-  } : null,
+  due: raw.due
+    ? {
+        string: raw.due.string,
+        date: raw.due.date,
+        isRecurring: raw.due.is_recurring,
+        datetime: raw.due.datetime,
+        timezone: raw.due.timezone,
+        lang: raw.due.lang
+      }
+    : null,
   deadline: raw.deadline ? { date: raw.deadline.date } : null,
   duration: raw.duration ? { amount: raw.duration.amount, unit: raw.duration.unit } : null,
   creatorId: raw.creator_id,
@@ -129,7 +131,7 @@ let mapTask = (raw: any): TodoistTask => ({
   assignerId: raw.assigner_id || null,
   commentCount: raw.comment_count || 0,
   isCompleted: raw.is_completed || false,
-  url: raw.url,
+  url: raw.url
 });
 
 let mapProject = (raw: any): TodoistProject => ({
@@ -144,14 +146,14 @@ let mapProject = (raw: any): TodoistProject => ({
   isInboxProject: raw.is_inbox_project || false,
   isTeamInbox: raw.is_team_inbox || false,
   viewStyle: raw.view_style || 'list',
-  url: raw.url,
+  url: raw.url
 });
 
 let mapSection = (raw: any): TodoistSection => ({
   id: raw.id,
   projectId: raw.project_id,
   order: raw.order,
-  name: raw.name,
+  name: raw.name
 });
 
 let mapLabel = (raw: any): TodoistLabel => ({
@@ -159,7 +161,7 @@ let mapLabel = (raw: any): TodoistLabel => ({
   name: raw.name,
   color: raw.color,
   order: raw.order,
-  isFavorite: raw.is_favorite || false,
+  isFavorite: raw.is_favorite || false
 });
 
 let mapComment = (raw: any): TodoistComment => ({
@@ -168,12 +170,14 @@ let mapComment = (raw: any): TodoistComment => ({
   postedAt: raw.posted_at,
   projectId: raw.project_id || null,
   taskId: raw.task_id || null,
-  attachment: raw.attachment ? {
-    fileName: raw.attachment.file_name,
-    fileType: raw.attachment.file_type,
-    fileUrl: raw.attachment.file_url,
-    resourceType: raw.attachment.resource_type,
-  } : null,
+  attachment: raw.attachment
+    ? {
+        fileName: raw.attachment.file_name,
+        fileType: raw.attachment.file_type,
+        fileUrl: raw.attachment.file_url,
+        resourceType: raw.attachment.resource_type
+      }
+    : null
 });
 
 let mapFilter = (raw: any): TodoistFilter => ({
@@ -182,7 +186,7 @@ let mapFilter = (raw: any): TodoistFilter => ({
   query: raw.query,
   color: raw.color,
   order: raw.order,
-  isFavorite: raw.is_favorite || false,
+  isFavorite: raw.is_favorite || false
 });
 
 export class Client {
@@ -195,7 +199,7 @@ export class Client {
   private headers() {
     return {
       Authorization: `Bearer ${this.token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
   }
 
@@ -217,7 +221,7 @@ export class Client {
 
     let response = await api.get('/tasks', {
       headers: this.headers(),
-      params: query,
+      params: query
     });
 
     return (response.data || []).map(mapTask);
@@ -225,7 +229,7 @@ export class Client {
 
   async getTask(taskId: string): Promise<TodoistTask> {
     let response = await api.get(`/tasks/${taskId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapTask(response.data);
   }
@@ -266,25 +270,28 @@ export class Client {
     if (data.deadlineDate) body.deadline_date = data.deadlineDate;
 
     let response = await api.post('/tasks', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapTask(response.data);
   }
 
-  async updateTask(taskId: string, data: {
-    content?: string;
-    description?: string;
-    labels?: string[];
-    priority?: number;
-    dueString?: string;
-    dueDate?: string;
-    dueDatetime?: string;
-    dueLang?: string;
-    assigneeId?: string;
-    duration?: number;
-    durationUnit?: 'minute' | 'day';
-    deadlineDate?: string;
-  }): Promise<TodoistTask> {
+  async updateTask(
+    taskId: string,
+    data: {
+      content?: string;
+      description?: string;
+      labels?: string[];
+      priority?: number;
+      dueString?: string;
+      dueDate?: string;
+      dueDatetime?: string;
+      dueLang?: string;
+      assigneeId?: string;
+      duration?: number;
+      durationUnit?: 'minute' | 'day';
+      deadlineDate?: string;
+    }
+  ): Promise<TodoistTask> {
     let body: Record<string, any> = {};
     if (data.content !== undefined) body.content = data.content;
     if (data.description !== undefined) body.description = data.description;
@@ -300,48 +307,63 @@ export class Client {
     if (data.deadlineDate !== undefined) body.deadline_date = data.deadlineDate;
 
     let response = await api.post(`/tasks/${taskId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapTask(response.data);
   }
 
   async deleteTask(taskId: string): Promise<void> {
     await api.delete(`/tasks/${taskId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async closeTask(taskId: string): Promise<void> {
-    await api.post(`/tasks/${taskId}/close`, {}, {
-      headers: this.headers(),
-    });
+    await api.post(
+      `/tasks/${taskId}/close`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   async reopenTask(taskId: string): Promise<void> {
-    await api.post(`/tasks/${taskId}/reopen`, {}, {
-      headers: this.headers(),
-    });
+    await api.post(
+      `/tasks/${taskId}/reopen`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
-  async moveTask(taskId: string, destination: {
-    projectId?: string;
-    sectionId?: string;
-    parentId?: string;
-  }): Promise<void> {
+  async moveTask(
+    taskId: string,
+    destination: {
+      projectId?: string;
+      sectionId?: string;
+      parentId?: string;
+    }
+  ): Promise<void> {
     let body: Record<string, any> = { id: taskId };
     if (destination.projectId) body.project_id = destination.projectId;
     if (destination.sectionId) body.section_id = destination.sectionId;
     if (destination.parentId) body.parent_id = destination.parentId;
 
     await api.post('/tasks/move', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async quickAddTask(text: string): Promise<TodoistTask> {
-    let response = await api.post('/tasks/quick', { text }, {
-      headers: this.headers(),
-    });
+    let response = await api.post(
+      '/tasks/quick',
+      { text },
+      {
+        headers: this.headers()
+      }
+    );
     return mapTask(response.data);
   }
 
@@ -361,7 +383,7 @@ export class Client {
 
     let response = await api.get('/tasks/completed', {
       headers: this.headers(),
-      params: query,
+      params: query
     });
 
     let results = response.data?.results || response.data || [];
@@ -369,7 +391,7 @@ export class Client {
 
     return {
       tasks: items.map(mapTask),
-      nextCursor: response.data?.next_cursor,
+      nextCursor: response.data?.next_cursor
     };
   }
 
@@ -377,14 +399,14 @@ export class Client {
 
   async getProjects(): Promise<TodoistProject[]> {
     let response = await api.get('/projects', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return (response.data || []).map(mapProject);
   }
 
   async getProject(projectId: string): Promise<TodoistProject> {
     let response = await api.get(`/projects/${projectId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapProject(response.data);
   }
@@ -403,17 +425,20 @@ export class Client {
     if (data.viewStyle) body.view_style = data.viewStyle;
 
     let response = await api.post('/projects', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapProject(response.data);
   }
 
-  async updateProject(projectId: string, data: {
-    name?: string;
-    color?: string;
-    isFavorite?: boolean;
-    viewStyle?: string;
-  }): Promise<TodoistProject> {
+  async updateProject(
+    projectId: string,
+    data: {
+      name?: string;
+      color?: string;
+      isFavorite?: boolean;
+      viewStyle?: string;
+    }
+  ): Promise<TodoistProject> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.color !== undefined) body.color = data.color;
@@ -421,37 +446,45 @@ export class Client {
     if (data.viewStyle !== undefined) body.view_style = data.viewStyle;
 
     let response = await api.post(`/projects/${projectId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapProject(response.data);
   }
 
   async deleteProject(projectId: string): Promise<void> {
     await api.delete(`/projects/${projectId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
   async archiveProject(projectId: string): Promise<void> {
-    await api.post(`/projects/${projectId}/archive`, {}, {
-      headers: this.headers(),
-    });
+    await api.post(
+      `/projects/${projectId}/archive`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   async unarchiveProject(projectId: string): Promise<void> {
-    await api.post(`/projects/${projectId}/unarchive`, {}, {
-      headers: this.headers(),
-    });
+    await api.post(
+      `/projects/${projectId}/unarchive`,
+      {},
+      {
+        headers: this.headers()
+      }
+    );
   }
 
   async getCollaborators(projectId: string): Promise<Collaborator[]> {
     let response = await api.get(`/projects/${projectId}/collaborators`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return (response.data || []).map((raw: any) => ({
       collaboratorId: raw.id,
       name: raw.name,
-      email: raw.email,
+      email: raw.email
     }));
   }
 
@@ -463,14 +496,14 @@ export class Client {
 
     let response = await api.get('/sections', {
       headers: this.headers(),
-      params,
+      params
     });
     return (response.data || []).map(mapSection);
   }
 
   async getSection(sectionId: string): Promise<TodoistSection> {
     let response = await api.get(`/sections/${sectionId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapSection(response.data);
   }
@@ -482,28 +515,35 @@ export class Client {
   }): Promise<TodoistSection> {
     let body: Record<string, any> = {
       name: data.name,
-      project_id: data.projectId,
+      project_id: data.projectId
     };
     if (data.order !== undefined) body.order = data.order;
 
     let response = await api.post('/sections', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapSection(response.data);
   }
 
-  async updateSection(sectionId: string, data: {
-    name: string;
-  }): Promise<TodoistSection> {
-    let response = await api.post(`/sections/${sectionId}`, { name: data.name }, {
-      headers: this.headers(),
-    });
+  async updateSection(
+    sectionId: string,
+    data: {
+      name: string;
+    }
+  ): Promise<TodoistSection> {
+    let response = await api.post(
+      `/sections/${sectionId}`,
+      { name: data.name },
+      {
+        headers: this.headers()
+      }
+    );
     return mapSection(response.data);
   }
 
   async deleteSection(sectionId: string): Promise<void> {
     await api.delete(`/sections/${sectionId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -511,7 +551,7 @@ export class Client {
 
   async getLabels(): Promise<TodoistLabel[]> {
     let response = await api.get('/labels', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return (response.data || []).map(mapLabel);
   }
@@ -528,17 +568,20 @@ export class Client {
     if (data.isFavorite !== undefined) body.is_favorite = data.isFavorite;
 
     let response = await api.post('/labels', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapLabel(response.data);
   }
 
-  async updateLabel(labelId: string, data: {
-    name?: string;
-    color?: string;
-    order?: number;
-    isFavorite?: boolean;
-  }): Promise<TodoistLabel> {
+  async updateLabel(
+    labelId: string,
+    data: {
+      name?: string;
+      color?: string;
+      order?: number;
+      isFavorite?: boolean;
+    }
+  ): Promise<TodoistLabel> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.color !== undefined) body.color = data.color;
@@ -546,14 +589,14 @@ export class Client {
     if (data.isFavorite !== undefined) body.is_favorite = data.isFavorite;
 
     let response = await api.post(`/labels/${labelId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapLabel(response.data);
   }
 
   async deleteLabel(labelId: string): Promise<void> {
     await api.delete(`/labels/${labelId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -569,14 +612,14 @@ export class Client {
 
     let response = await api.get('/comments', {
       headers: this.headers(),
-      params: query,
+      params: query
     });
     return (response.data || []).map(mapComment);
   }
 
   async getComment(commentId: string): Promise<TodoistComment> {
     let response = await api.get(`/comments/${commentId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapComment(response.data);
   }
@@ -591,23 +634,30 @@ export class Client {
     if (data.projectId) body.project_id = data.projectId;
 
     let response = await api.post('/comments', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapComment(response.data);
   }
 
-  async updateComment(commentId: string, data: {
-    content: string;
-  }): Promise<TodoistComment> {
-    let response = await api.post(`/comments/${commentId}`, { content: data.content }, {
-      headers: this.headers(),
-    });
+  async updateComment(
+    commentId: string,
+    data: {
+      content: string;
+    }
+  ): Promise<TodoistComment> {
+    let response = await api.post(
+      `/comments/${commentId}`,
+      { content: data.content },
+      {
+        headers: this.headers()
+      }
+    );
     return mapComment(response.data);
   }
 
   async deleteComment(commentId: string): Promise<void> {
     await api.delete(`/comments/${commentId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -615,7 +665,7 @@ export class Client {
 
   async getFilters(): Promise<TodoistFilter[]> {
     let response = await api.get('/filters', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return (response.data || []).map(mapFilter);
   }
@@ -633,18 +683,21 @@ export class Client {
     if (data.isFavorite !== undefined) body.is_favorite = data.isFavorite;
 
     let response = await api.post('/filters', body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapFilter(response.data);
   }
 
-  async updateFilter(filterId: string, data: {
-    name?: string;
-    query?: string;
-    color?: string;
-    order?: number;
-    isFavorite?: boolean;
-  }): Promise<TodoistFilter> {
+  async updateFilter(
+    filterId: string,
+    data: {
+      name?: string;
+      query?: string;
+      color?: string;
+      order?: number;
+      isFavorite?: boolean;
+    }
+  ): Promise<TodoistFilter> {
     let body: Record<string, any> = {};
     if (data.name !== undefined) body.name = data.name;
     if (data.query !== undefined) body.query = data.query;
@@ -653,14 +706,14 @@ export class Client {
     if (data.isFavorite !== undefined) body.is_favorite = data.isFavorite;
 
     let response = await api.post(`/filters/${filterId}`, body, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return mapFilter(response.data);
   }
 
   async deleteFilter(filterId: string): Promise<void> {
     await api.delete(`/filters/${filterId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
   }
 
@@ -668,14 +721,14 @@ export class Client {
 
   async getUser(): Promise<any> {
     let response = await api.get('/user', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }
 
   async getProductivityStats(): Promise<any> {
     let response = await api.get('/user/stats', {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return response.data;
   }

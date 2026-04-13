@@ -41,14 +41,14 @@ export class Client {
       baseURL: 'https://api.chatfai.com/v1/',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
   async searchCharacters(query: string): Promise<ChatFaiCharacter[]> {
     let response = await this.axios.get('/search', {
-      params: { query },
+      params: { query }
     });
     return response.data.characters ?? response.data;
   }
@@ -61,15 +61,15 @@ export class Client {
   async sendMessage(request: ChatFaiChatRequest): Promise<ChatFaiChatResponse> {
     let response = await this.axios.post('/chat', {
       character_id: request.characterId,
-      conversation: request.conversation.map((msg) => ({
+      conversation: request.conversation.map(msg => ({
         role: msg.role,
-        content: msg.content,
+        content: msg.content
       })),
       ...(request.name !== undefined && { name: request.name }),
       ...(request.bio !== undefined && { bio: request.bio }),
       ...(request.useInternalOptimizations !== undefined && {
-        use_internal_optimizations: request.useInternalOptimizations,
-      }),
+        use_internal_optimizations: request.useInternalOptimizations
+      })
     });
     return response.data;
   }

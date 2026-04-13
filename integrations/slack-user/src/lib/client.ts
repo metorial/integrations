@@ -9,7 +9,7 @@ import type {
   SlackUserGroup,
   SlackReminder,
   SlackTeamInfo,
-  SlackBookmark,
+  SlackBookmark
 } from './types';
 
 export class SlackClient {
@@ -20,12 +20,15 @@ export class SlackClient {
       baseURL: 'https://slack.com/api',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json; charset=utf-8',
-      },
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     });
   }
 
-  private async call<T extends SlackResponse>(method: string, params?: Record<string, any>): Promise<T> {
+  private async call<T extends SlackResponse>(
+    method: string,
+    params?: Record<string, any>
+  ): Promise<T> {
     let response = await this.axios.post(`/${method}`, params || {});
     let data = response.data as T;
     if (!data.ok) {
@@ -34,7 +37,10 @@ export class SlackClient {
     return data;
   }
 
-  private async get<T extends SlackResponse>(method: string, params?: Record<string, any>): Promise<T> {
+  private async get<T extends SlackResponse>(
+    method: string,
+    params?: Record<string, any>
+  ): Promise<T> {
     let response = await this.axios.get(`/${method}`, { params });
     let data = response.data as T;
     if (!data.ok) {
@@ -66,7 +72,9 @@ export class SlackClient {
     if (params.mrkdwn !== undefined) body.mrkdwn = params.mrkdwn;
     if (params.metadata) body.metadata = params.metadata;
 
-    let data = await this.call<SlackResponse & { message: SlackMessage; ts: string; channel: string }>('chat.postMessage', body);
+    let data = await this.call<
+      SlackResponse & { message: SlackMessage; ts: string; channel: string }
+    >('chat.postMessage', body);
     return { ...data.message, ts: data.ts, channel: data.channel };
   }
 
@@ -82,7 +90,10 @@ export class SlackClient {
     if (params.blocks) body.blocks = params.blocks;
     if (params.threadTs) body.thread_ts = params.threadTs;
 
-    let data = await this.call<SlackResponse & { message_ts: string }>('chat.postEphemeral', body);
+    let data = await this.call<SlackResponse & { message_ts: string }>(
+      'chat.postEphemeral',
+      body
+    );
     return data.message_ts;
   }
 
@@ -96,7 +107,9 @@ export class SlackClient {
     if (params.text !== undefined) body.text = params.text;
     if (params.blocks) body.blocks = params.blocks;
 
-    let data = await this.call<SlackResponse & { message: SlackMessage; ts: string; channel: string }>('chat.update', body);
+    let data = await this.call<
+      SlackResponse & { message: SlackMessage; ts: string; channel: string }
+    >('chat.update', body);
     return { ...data.message, ts: data.ts, channel: data.channel };
   }
 
@@ -113,20 +126,22 @@ export class SlackClient {
   }): Promise<{ scheduledMessageId: string; postAt: number }> {
     let body: Record<string, any> = {
       channel: params.channel,
-      post_at: params.postAt,
+      post_at: params.postAt
     };
     if (params.text !== undefined) body.text = params.text;
     if (params.blocks) body.blocks = params.blocks;
     if (params.threadTs) body.thread_ts = params.threadTs;
 
-    let data = await this.call<SlackResponse & { scheduled_message_id: string; post_at: number }>('chat.scheduleMessage', body);
+    let data = await this.call<
+      SlackResponse & { scheduled_message_id: string; post_at: number }
+    >('chat.scheduleMessage', body);
     return { scheduledMessageId: data.scheduled_message_id, postAt: data.post_at };
   }
 
   async getPermalink(params: { channel: string; messageTs: string }): Promise<string> {
     let data = await this.get<SlackResponse & { permalink: string }>('chat.getPermalink', {
       channel: params.channel,
-      message_ts: params.messageTs,
+      message_ts: params.messageTs
     });
     return data.permalink;
   }
@@ -145,23 +160,35 @@ export class SlackClient {
     if (params?.limit) query.limit = params.limit;
     if (params?.cursor) query.cursor = params.cursor;
 
-    let data = await this.get<SlackResponse & { channels: SlackConversation[] }>('conversations.list', query);
+    let data = await this.get<SlackResponse & { channels: SlackConversation[] }>(
+      'conversations.list',
+      query
+    );
     return {
       channels: data.channels,
-      nextCursor: data.response_metadata?.next_cursor || undefined,
+      nextCursor: data.response_metadata?.next_cursor || undefined
     };
   }
 
   async getConversationInfo(channelId: string): Promise<SlackConversation> {
-    let data = await this.get<SlackResponse & { channel: SlackConversation }>('conversations.info', { channel: channelId });
+    let data = await this.get<SlackResponse & { channel: SlackConversation }>(
+      'conversations.info',
+      { channel: channelId }
+    );
     return data.channel;
   }
 
-  async createConversation(params: { name: string; isPrivate?: boolean }): Promise<SlackConversation> {
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.create', {
-      name: params.name,
-      is_private: params.isPrivate || false,
-    });
+  async createConversation(params: {
+    name: string;
+    isPrivate?: boolean;
+  }): Promise<SlackConversation> {
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.create',
+      {
+        name: params.name,
+        is_private: params.isPrivate || false
+      }
+    );
     return data.channel;
   }
 
@@ -174,34 +201,52 @@ export class SlackClient {
   }
 
   async renameConversation(channelId: string, name: string): Promise<SlackConversation> {
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.rename', {
-      channel: channelId,
-      name,
-    });
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.rename',
+      {
+        channel: channelId,
+        name
+      }
+    );
     return data.channel;
   }
 
   async setConversationTopic(channelId: string, topic: string): Promise<SlackConversation> {
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.setTopic', {
-      channel: channelId,
-      topic,
-    });
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.setTopic',
+      {
+        channel: channelId,
+        topic
+      }
+    );
     return data.channel;
   }
 
-  async setConversationPurpose(channelId: string, purpose: string): Promise<SlackConversation> {
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.setPurpose', {
-      channel: channelId,
-      purpose,
-    });
+  async setConversationPurpose(
+    channelId: string,
+    purpose: string
+  ): Promise<SlackConversation> {
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.setPurpose',
+      {
+        channel: channelId,
+        purpose
+      }
+    );
     return data.channel;
   }
 
-  async inviteToConversation(channelId: string, userIds: string[]): Promise<SlackConversation> {
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.invite', {
-      channel: channelId,
-      users: userIds.join(','),
-    });
+  async inviteToConversation(
+    channelId: string,
+    userIds: string[]
+  ): Promise<SlackConversation> {
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.invite',
+      {
+        channel: channelId,
+        users: userIds.join(',')
+      }
+    );
     return data.channel;
   }
 
@@ -210,9 +255,12 @@ export class SlackClient {
   }
 
   async joinConversation(channelId: string): Promise<SlackConversation> {
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.join', {
-      channel: channelId,
-    });
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.join',
+      {
+        channel: channelId
+      }
+    );
     return data.channel;
   }
 
@@ -220,15 +268,21 @@ export class SlackClient {
     await this.call('conversations.leave', { channel: channelId });
   }
 
-  async getConversationMembers(channelId: string, params?: { limit?: number; cursor?: string }): Promise<{ members: string[]; nextCursor?: string }> {
+  async getConversationMembers(
+    channelId: string,
+    params?: { limit?: number; cursor?: string }
+  ): Promise<{ members: string[]; nextCursor?: string }> {
     let query: Record<string, any> = { channel: channelId };
     if (params?.limit) query.limit = params.limit;
     if (params?.cursor) query.cursor = params.cursor;
 
-    let data = await this.get<SlackResponse & { members: string[] }>('conversations.members', query);
+    let data = await this.get<SlackResponse & { members: string[] }>(
+      'conversations.members',
+      query
+    );
     return {
       members: data.members,
-      nextCursor: data.response_metadata?.next_cursor || undefined,
+      nextCursor: data.response_metadata?.next_cursor || undefined
     };
   }
 
@@ -247,11 +301,14 @@ export class SlackClient {
     if (params.latest) query.latest = params.latest;
     if (params.inclusive !== undefined) query.inclusive = params.inclusive;
 
-    let data = await this.get<SlackResponse & { messages: SlackMessage[]; has_more: boolean }>('conversations.history', query);
+    let data = await this.get<SlackResponse & { messages: SlackMessage[]; has_more: boolean }>(
+      'conversations.history',
+      query
+    );
     return {
       messages: data.messages,
       hasMore: data.has_more,
-      nextCursor: data.response_metadata?.next_cursor || undefined,
+      nextCursor: data.response_metadata?.next_cursor || undefined
     };
   }
 
@@ -271,17 +328,23 @@ export class SlackClient {
     if (params.latest) query.latest = params.latest;
     if (params.inclusive !== undefined) query.inclusive = params.inclusive;
 
-    let data = await this.get<SlackResponse & { messages: SlackMessage[]; has_more: boolean }>('conversations.replies', query);
+    let data = await this.get<SlackResponse & { messages: SlackMessage[]; has_more: boolean }>(
+      'conversations.replies',
+      query
+    );
     return {
       messages: data.messages,
       hasMore: data.has_more,
-      nextCursor: data.response_metadata?.next_cursor || undefined,
+      nextCursor: data.response_metadata?.next_cursor || undefined
     };
   }
 
   // ─── Users ─────────────────────────────────────────────────────
 
-  async listUsers(params?: { limit?: number; cursor?: string }): Promise<{ members: SlackUser[]; nextCursor?: string }> {
+  async listUsers(params?: {
+    limit?: number;
+    cursor?: string;
+  }): Promise<{ members: SlackUser[]; nextCursor?: string }> {
     let query: Record<string, any> = {};
     if (params?.limit) query.limit = params.limit;
     if (params?.cursor) query.cursor = params.cursor;
@@ -289,40 +352,55 @@ export class SlackClient {
     let data = await this.get<SlackResponse & { members: SlackUser[] }>('users.list', query);
     return {
       members: data.members,
-      nextCursor: data.response_metadata?.next_cursor || undefined,
+      nextCursor: data.response_metadata?.next_cursor || undefined
     };
   }
 
   async getUserInfo(userId: string): Promise<SlackUser> {
-    let data = await this.get<SlackResponse & { user: SlackUser }>('users.info', { user: userId });
+    let data = await this.get<SlackResponse & { user: SlackUser }>('users.info', {
+      user: userId
+    });
     return data.user;
   }
 
   async lookupUserByEmail(email: string): Promise<SlackUser> {
-    let data = await this.get<SlackResponse & { user: SlackUser }>('users.lookupByEmail', { email });
+    let data = await this.get<SlackResponse & { user: SlackUser }>('users.lookupByEmail', {
+      email
+    });
     return data.user;
   }
 
   async getUserProfile(userId: string): Promise<SlackUser['profile']> {
-    let data = await this.get<SlackResponse & { profile: SlackUser['profile'] }>('users.profile.get', { user: userId });
+    let data = await this.get<SlackResponse & { profile: SlackUser['profile'] }>(
+      'users.profile.get',
+      { user: userId }
+    );
     return data.profile;
   }
 
   // ─── Reactions ─────────────────────────────────────────────────
 
-  async addReaction(params: { channel: string; timestamp: string; name: string }): Promise<void> {
+  async addReaction(params: {
+    channel: string;
+    timestamp: string;
+    name: string;
+  }): Promise<void> {
     await this.call('reactions.add', {
       channel: params.channel,
       timestamp: params.timestamp,
-      name: params.name,
+      name: params.name
     });
   }
 
-  async removeReaction(params: { channel: string; timestamp: string; name: string }): Promise<void> {
+  async removeReaction(params: {
+    channel: string;
+    timestamp: string;
+    name: string;
+  }): Promise<void> {
     await this.call('reactions.remove', {
       channel: params.channel,
       timestamp: params.timestamp,
-      name: params.name,
+      name: params.name
     });
   }
 
@@ -330,7 +408,7 @@ export class SlackClient {
     let data = await this.get<SlackResponse & { message: SlackMessage }>('reactions.get', {
       channel: params.channel,
       timestamp: params.timestamp,
-      full: true,
+      full: true
     });
     return data.message;
   }
@@ -346,7 +424,9 @@ export class SlackClient {
   }
 
   async listPins(channelId: string): Promise<SlackPin[]> {
-    let data = await this.get<SlackResponse & { items: SlackPin[] }>('pins.list', { channel: channelId });
+    let data = await this.get<SlackResponse & { items: SlackPin[] }>('pins.list', {
+      channel: channelId
+    });
     return data.items;
   }
 
@@ -392,12 +472,17 @@ export class SlackClient {
     if (params?.tsFrom) query.ts_from = params.tsFrom;
     if (params?.tsTo) query.ts_to = params.tsTo;
 
-    let data = await this.get<SlackResponse & { files: SlackFile[]; paging: any }>('files.list', query);
+    let data = await this.get<SlackResponse & { files: SlackFile[]; paging: any }>(
+      'files.list',
+      query
+    );
     return { files: data.files, paging: data.paging };
   }
 
   async getFileInfo(fileId: string): Promise<SlackFile> {
-    let data = await this.get<SlackResponse & { file: SlackFile }>('files.info', { file: fileId });
+    let data = await this.get<SlackResponse & { file: SlackFile }>('files.info', {
+      file: fileId
+    });
     return data.file;
   }
 
@@ -407,13 +492,20 @@ export class SlackClient {
 
   // ─── User Groups ──────────────────────────────────────────────
 
-  async listUserGroups(params?: { includeUsers?: boolean; includeCount?: boolean; includeDisabled?: boolean }): Promise<SlackUserGroup[]> {
+  async listUserGroups(params?: {
+    includeUsers?: boolean;
+    includeCount?: boolean;
+    includeDisabled?: boolean;
+  }): Promise<SlackUserGroup[]> {
     let query: Record<string, any> = {};
     if (params?.includeUsers) query.include_users = params.includeUsers;
     if (params?.includeCount) query.include_count = params.includeCount;
     if (params?.includeDisabled) query.include_disabled = params.includeDisabled;
 
-    let data = await this.get<SlackResponse & { usergroups: SlackUserGroup[] }>('usergroups.list', query);
+    let data = await this.get<SlackResponse & { usergroups: SlackUserGroup[] }>(
+      'usergroups.list',
+      query
+    );
     return data.usergroups;
   }
 
@@ -428,7 +520,10 @@ export class SlackClient {
     if (params.description) body.description = params.description;
     if (params.channels) body.channels = params.channels.join(',');
 
-    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>('usergroups.create', body);
+    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>(
+      'usergroups.create',
+      body
+    );
     return data.usergroup;
   }
 
@@ -445,40 +540,64 @@ export class SlackClient {
     if (params.description) body.description = params.description;
     if (params.channels) body.channels = params.channels.join(',');
 
-    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>('usergroups.update', body);
+    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>(
+      'usergroups.update',
+      body
+    );
     return data.usergroup;
   }
 
   async disableUserGroup(usergroupId: string): Promise<SlackUserGroup> {
-    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>('usergroups.disable', { usergroup: usergroupId });
+    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>(
+      'usergroups.disable',
+      { usergroup: usergroupId }
+    );
     return data.usergroup;
   }
 
   async enableUserGroup(usergroupId: string): Promise<SlackUserGroup> {
-    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>('usergroups.enable', { usergroup: usergroupId });
+    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>(
+      'usergroups.enable',
+      { usergroup: usergroupId }
+    );
     return data.usergroup;
   }
 
-  async updateUserGroupMembers(usergroupId: string, userIds: string[]): Promise<SlackUserGroup> {
-    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>('usergroups.users.update', {
-      usergroup: usergroupId,
-      users: userIds.join(','),
-    });
+  async updateUserGroupMembers(
+    usergroupId: string,
+    userIds: string[]
+  ): Promise<SlackUserGroup> {
+    let data = await this.call<SlackResponse & { usergroup: SlackUserGroup }>(
+      'usergroups.users.update',
+      {
+        usergroup: usergroupId,
+        users: userIds.join(',')
+      }
+    );
     return data.usergroup;
   }
 
   async listUserGroupMembers(usergroupId: string): Promise<string[]> {
-    let data = await this.get<SlackResponse & { users: string[] }>('usergroups.users.list', { usergroup: usergroupId });
+    let data = await this.get<SlackResponse & { users: string[] }>('usergroups.users.list', {
+      usergroup: usergroupId
+    });
     return data.users;
   }
 
   // ─── Reminders ─────────────────────────────────────────────────
 
-  async addReminder(params: { text: string; time: string | number; user?: string }): Promise<SlackReminder> {
+  async addReminder(params: {
+    text: string;
+    time: string | number;
+    user?: string;
+  }): Promise<SlackReminder> {
     let body: Record<string, any> = { text: params.text, time: params.time };
     if (params.user) body.user = params.user;
 
-    let data = await this.call<SlackResponse & { reminder: SlackReminder }>('reminders.add', body);
+    let data = await this.call<SlackResponse & { reminder: SlackReminder }>(
+      'reminders.add',
+      body
+    );
     return data.reminder;
   }
 
@@ -491,7 +610,9 @@ export class SlackClient {
   }
 
   async listReminders(): Promise<SlackReminder[]> {
-    let data = await this.get<SlackResponse & { reminders: SlackReminder[] }>('reminders.list');
+    let data = await this.get<SlackResponse & { reminders: SlackReminder[] }>(
+      'reminders.list'
+    );
     return data.reminders;
   }
 
@@ -509,7 +630,7 @@ export class SlackClient {
       title: params.title,
       type: params.type,
       link: params.link,
-      emoji: params.emoji,
+      emoji: params.emoji
     });
     return data.bookmark;
   }
@@ -521,12 +642,18 @@ export class SlackClient {
     link?: string;
     emoji?: string;
   }): Promise<SlackBookmark> {
-    let body: Record<string, any> = { channel_id: params.channelId, bookmark_id: params.bookmarkId };
+    let body: Record<string, any> = {
+      channel_id: params.channelId,
+      bookmark_id: params.bookmarkId
+    };
     if (params.title) body.title = params.title;
     if (params.link) body.link = params.link;
     if (params.emoji) body.emoji = params.emoji;
 
-    let data = await this.call<SlackResponse & { bookmark: SlackBookmark }>('bookmarks.edit', body);
+    let data = await this.call<SlackResponse & { bookmark: SlackBookmark }>(
+      'bookmarks.edit',
+      body
+    );
     return data.bookmark;
   }
 
@@ -535,7 +662,10 @@ export class SlackClient {
   }
 
   async listBookmarks(channelId: string): Promise<SlackBookmark[]> {
-    let data = await this.get<SlackResponse & { bookmarks: SlackBookmark[] }>('bookmarks.list', { channel_id: channelId });
+    let data = await this.get<SlackResponse & { bookmarks: SlackBookmark[] }>(
+      'bookmarks.list',
+      { channel_id: channelId }
+    );
     return data.bookmarks;
   }
 
@@ -561,7 +691,10 @@ export class SlackClient {
     if (params.count) query.count = params.count;
     if (params.page) query.page = params.page;
 
-    let data = await this.get<SlackResponse & { messages: { total: number; matches: any[] } }>('search.messages', query);
+    let data = await this.get<SlackResponse & { messages: { total: number; matches: any[] } }>(
+      'search.messages',
+      query
+    );
     return { messages: data.messages };
   }
 
@@ -578,19 +711,29 @@ export class SlackClient {
     if (params.count) query.count = params.count;
     if (params.page) query.page = params.page;
 
-    let data = await this.get<SlackResponse & { files: { total: number; matches: any[] } }>('search.files', query);
+    let data = await this.get<SlackResponse & { files: { total: number; matches: any[] } }>(
+      'search.files',
+      query
+    );
     return { files: data.files };
   }
 
   // ─── Open Conversation (DM) ───────────────────────────────────
 
-  async openConversation(params: { users?: string; channel?: string; returnIm?: boolean }): Promise<SlackConversation> {
+  async openConversation(params: {
+    users?: string;
+    channel?: string;
+    returnIm?: boolean;
+  }): Promise<SlackConversation> {
     let body: Record<string, any> = {};
     if (params.users) body.users = params.users;
     if (params.channel) body.channel = params.channel;
     if (params.returnIm !== undefined) body.return_im = params.returnIm;
 
-    let data = await this.call<SlackResponse & { channel: SlackConversation }>('conversations.open', body);
+    let data = await this.call<SlackResponse & { channel: SlackConversation }>(
+      'conversations.open',
+      body
+    );
     return data.channel;
   }
 }

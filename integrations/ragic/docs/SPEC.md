@@ -13,6 +13,7 @@ Ragic supports two authentication methods:
 You authenticate to the Ragic API by providing one of your API keys in the request. Authentication occurs via HTTP Basic Auth. Provide your API key as the basic auth username. You do not need to provide a password.
 
 The API key can be passed in two ways:
+
 - As an `Authorization` header with the value `Basic YOUR_API_KEY`
 - As a query parameter: `APIKey=YOUR_API_KEY`
 
@@ -23,6 +24,7 @@ Because when your code accesses Ragic via an API key, it will basically log in a
 All API requests must be made over HTTPS. Calls made over plain HTTP will fail. You must authenticate for all requests.
 
 **Required inputs:**
+
 - **API Key**: Generated from Personal Settings > Profile in Ragic.
 - **Server URL / Domain**: The base URL depends on where your account resides (e.g., `www.ragic.com`, `na3.ragic.com`, `ap5.ragic.com`, `eu2.ragic.com`, `ap12.ragic.com`). It is required to modify www to na3, ap5, or eu2 in the API URL based on your Ragic database account URL.
 - **Account Name / Database**: The account identifier in the URL path (e.g., `demo` in `https://www.ragic.com/demo/sales/1`).

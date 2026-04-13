@@ -4,25 +4,25 @@ import { videoSchema, mapVideo } from '../lib/schemas';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newVideoTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Video Uploaded',
-    key: 'new_video',
-    description: "[Polling fallback] Triggers when a new video is uploaded to the authenticated user's account. Uses polling to detect new uploads."
-  }
-)
-  .input(z.object({
-    videoId: z.string().describe('The video ID'),
-    video: z.any().describe('Raw video data from the API')
-  }))
+export let newVideoTrigger = SlateTrigger.create(spec, {
+  name: 'New Video Uploaded',
+  key: 'new_video',
+  description:
+    "[Polling fallback] Triggers when a new video is uploaded to the authenticated user's account. Uses polling to detect new uploads."
+})
+  .input(
+    z.object({
+      videoId: z.string().describe('The video ID'),
+      video: z.any().describe('Raw video data from the API')
+    })
+  )
   .output(videoSchema)
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new VimeoClient(ctx.auth.token);
       let lastChecked = (ctx.state as any)?.lastChecked as string | undefined;
 
@@ -38,9 +38,7 @@ export let newVideoTrigger = SlateTrigger.create(
         : [];
 
       // On first run, don't return existing videos as new events
-      let latestTimestamp = videos.length > 0
-        ? videos[0].created_time
-        : lastChecked;
+      let latestTimestamp = videos.length > 0 ? videos[0].created_time : lastChecked;
 
       return {
         inputs: newVideos.map((v: any) => ({
@@ -53,7 +51,7 @@ export let newVideoTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let mapped = mapVideo(ctx.input.video);
 
       return {
@@ -62,4 +60,5 @@ export let newVideoTrigger = SlateTrigger.create(
         output: mapped
       };
     }
-  }).build();
+  })
+  .build();

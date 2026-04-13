@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listCases,
@@ -16,13 +15,9 @@ import {
   manageGroup,
   listApplications,
   listLookupTables,
-  sendSms,
+  sendSms
 } from './tools';
-import {
-  newFormSubmission,
-  caseUpdated,
-  inboundWebhook,
-} from './triggers';
+import { newFormSubmission, caseUpdated, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -41,11 +36,7 @@ export let provider = Slate.create({
     manageGroup,
     listApplications,
     listLookupTables,
-    sendSms,
+    sendSms
   ],
-  triggers: [
-    inboundWebhook,
-    newFormSubmission,
-    caseUpdated,
-  ],
+  triggers: [inboundWebhook, newFormSubmission, caseUpdated]
 });

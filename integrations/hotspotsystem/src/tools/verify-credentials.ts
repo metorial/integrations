@@ -3,25 +3,24 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let verifyCredentials = SlateTool.create(
-  spec,
-  {
-    name: 'Verify Credentials',
-    key: 'verify_credentials',
-    description: `Verify your API credentials and retrieve your account information. Returns your user ID and operator name. Also checks API connectivity via a ping.`,
-    tags: {
-      destructive: false,
-      readOnly: true,
-    },
+export let verifyCredentials = SlateTool.create(spec, {
+  name: 'Verify Credentials',
+  key: 'verify_credentials',
+  description: `Verify your API credentials and retrieve your account information. Returns your user ID and operator name. Also checks API connectivity via a ping.`,
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    userId: z.string().describe('Authenticated user ID'),
-    operatorName: z.string().describe('Operator name associated with the account'),
-    apiReachable: z.boolean().describe('Whether the API is reachable'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      userId: z.string().describe('Authenticated user ID'),
+      operatorName: z.string().describe('Operator name associated with the account'),
+      apiReachable: z.boolean().describe('Whether the API is reachable')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let me = await client.getMe();
@@ -38,9 +37,9 @@ export let verifyCredentials = SlateTool.create(
       output: {
         userId: String(me.userId ?? ''),
         operatorName: me.operator ?? '',
-        apiReachable,
+        apiReachable
       },
-      message: `Credentials verified. Operator: **${me.operator}** (User ID: ${me.userId}). API is ${apiReachable ? 'reachable' : 'not reachable'}.`,
+      message: `Credentials verified. Operator: **${me.operator}** (User ID: ${me.userId}). API is ${apiReachable ? 'reachable' : 'not reachable'}.`
     };
   })
   .build();

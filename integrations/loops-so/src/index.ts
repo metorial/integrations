@@ -11,11 +11,7 @@ import {
   listContactProperties,
   listTransactionalEmails
 } from './tools';
-import {
-  contactEvents,
-  emailSendingEvents,
-  emailEngagementEvents
-} from './triggers';
+import { contactEvents, emailSendingEvents, emailEngagementEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -30,9 +26,5 @@ export let provider = Slate.create({
     listContactProperties,
     listTransactionalEmails
   ],
-  triggers: [
-    contactEvents,
-    emailSendingEvents,
-    emailEngagementEvents
-  ]
+  triggers: [contactEvents, emailSendingEvents, emailEngagementEvents]
 });

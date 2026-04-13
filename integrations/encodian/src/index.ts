@@ -23,7 +23,7 @@ import {
   emailProcess,
   utilitySecurity,
   utilityText,
-  subscriptionStatus,
+  subscriptionStatus
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -53,9 +53,7 @@ export let provider = Slate.create({
     emailProcess,
     utilitySecurity,
     utilityText,
-    subscriptionStatus,
+    subscriptionStatus
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

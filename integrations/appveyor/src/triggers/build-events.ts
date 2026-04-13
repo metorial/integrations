@@ -2,50 +2,52 @@ import { SlateTrigger } from 'slates';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let buildEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Build Events',
-    key: 'build_events',
-    description: 'Triggers on AppVeyor build events including build success, failure, and status changes. Configure a webhook notification in your AppVeyor project settings pointing to the provided webhook URL.',
-  },
-)
-  .input(z.object({
-    eventName: z.string().describe('Build event name (e.g. build_success, build_failure)'),
-    buildId: z.string().describe('Build identifier'),
-    projectName: z.string().describe('Project name'),
-    buildVersion: z.string().describe('Build version'),
-    buildStatus: z.string().describe('Build status'),
-    branch: z.string().optional().describe('Branch name'),
-    commitId: z.string().optional().describe('Commit SHA'),
-    commitAuthor: z.string().optional().describe('Commit author name'),
-    commitMessage: z.string().optional().describe('Commit message'),
-    pullRequestId: z.string().optional().describe('Pull request ID if applicable'),
-    buildUrl: z.string().optional().describe('URL to the build in AppVeyor'),
-    payload: z.record(z.string(), z.unknown()).describe('Full webhook payload'),
-  }))
-  .output(z.object({
-    projectName: z.string().describe('Project name'),
-    buildVersion: z.string().describe('Build version string'),
-    buildNumber: z.string().optional().describe('Build number'),
-    buildStatus: z.string().describe('Build status (success, failed, etc.)'),
-    branch: z.string().optional().describe('Branch name'),
-    commitId: z.string().optional().describe('Commit SHA'),
-    commitAuthor: z.string().optional().describe('Commit author name'),
-    commitMessage: z.string().optional().describe('Commit message'),
-    commitDate: z.string().optional().describe('Commit date'),
-    pullRequestId: z.string().optional().describe('Pull request ID if applicable'),
-    pullRequestTitle: z.string().optional().describe('Pull request title if applicable'),
-    buildUrl: z.string().optional().describe('URL to the build in AppVeyor'),
-    buildDuration: z.string().optional().describe('Build duration'),
-    buildStarted: z.string().optional().describe('Build start timestamp'),
-    buildFinished: z.string().optional().describe('Build finish timestamp'),
-    projectId: z.string().optional().describe('Project ID'),
-    accountName: z.string().optional().describe('Account name'),
-    jobs: z.array(z.record(z.string(), z.unknown())).optional().describe('Build jobs'),
-  }))
+export let buildEvents = SlateTrigger.create(spec, {
+  name: 'Build Events',
+  key: 'build_events',
+  description:
+    'Triggers on AppVeyor build events including build success, failure, and status changes. Configure a webhook notification in your AppVeyor project settings pointing to the provided webhook URL.'
+})
+  .input(
+    z.object({
+      eventName: z.string().describe('Build event name (e.g. build_success, build_failure)'),
+      buildId: z.string().describe('Build identifier'),
+      projectName: z.string().describe('Project name'),
+      buildVersion: z.string().describe('Build version'),
+      buildStatus: z.string().describe('Build status'),
+      branch: z.string().optional().describe('Branch name'),
+      commitId: z.string().optional().describe('Commit SHA'),
+      commitAuthor: z.string().optional().describe('Commit author name'),
+      commitMessage: z.string().optional().describe('Commit message'),
+      pullRequestId: z.string().optional().describe('Pull request ID if applicable'),
+      buildUrl: z.string().optional().describe('URL to the build in AppVeyor'),
+      payload: z.record(z.string(), z.unknown()).describe('Full webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      projectName: z.string().describe('Project name'),
+      buildVersion: z.string().describe('Build version string'),
+      buildNumber: z.string().optional().describe('Build number'),
+      buildStatus: z.string().describe('Build status (success, failed, etc.)'),
+      branch: z.string().optional().describe('Branch name'),
+      commitId: z.string().optional().describe('Commit SHA'),
+      commitAuthor: z.string().optional().describe('Commit author name'),
+      commitMessage: z.string().optional().describe('Commit message'),
+      commitDate: z.string().optional().describe('Commit date'),
+      pullRequestId: z.string().optional().describe('Pull request ID if applicable'),
+      pullRequestTitle: z.string().optional().describe('Pull request title if applicable'),
+      buildUrl: z.string().optional().describe('URL to the build in AppVeyor'),
+      buildDuration: z.string().optional().describe('Build duration'),
+      buildStarted: z.string().optional().describe('Build start timestamp'),
+      buildFinished: z.string().optional().describe('Build finish timestamp'),
+      projectId: z.string().optional().describe('Project ID'),
+      accountName: z.string().optional().describe('Account name'),
+      jobs: z.array(z.record(z.string(), z.unknown())).optional().describe('Build jobs')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -68,7 +70,9 @@ export let buildEvents = SlateTrigger.create(
       let commitId = eventData.commitId || '';
       let commitAuthor = eventData.commitAuthor || eventData.commitAuthorName || '';
       let commitMessage = eventData.commitMessage || eventData.commitMessageExtended || '';
-      let pullRequestId = eventData.pullRequestId ? String(eventData.pullRequestId) : undefined;
+      let pullRequestId = eventData.pullRequestId
+        ? String(eventData.pullRequestId)
+        : undefined;
       let buildUrl = eventData.buildUrl || '';
 
       return {
@@ -85,13 +89,13 @@ export let buildEvents = SlateTrigger.create(
             commitMessage: commitMessage || undefined,
             pullRequestId,
             buildUrl: buildUrl || undefined,
-            payload: data,
-          },
-        ],
+            payload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let p = ctx.input.payload as any;
       let eventData = p.eventData || p;
 
@@ -126,9 +130,9 @@ export let buildEvents = SlateTrigger.create(
           buildFinished: eventData.finished || eventData.buildFinished,
           projectId: eventData.projectId ? String(eventData.projectId) : undefined,
           accountName: eventData.accountName,
-          jobs: Array.isArray(eventData.jobs) ? eventData.jobs : undefined,
-        },
+          jobs: Array.isArray(eventData.jobs) ? eventData.jobs : undefined
+        }
       };
-    },
+    }
   })
   .build();

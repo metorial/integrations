@@ -3,21 +3,23 @@ import { createAxios } from 'slates';
 export class Client {
   private axios: ReturnType<typeof createAxios>;
 
-  constructor(private params: {
-    token: string;
-    email: string;
-    accountName: string;
-  }) {
+  constructor(
+    private params: {
+      token: string;
+      email: string;
+      accountName: string;
+    }
+  ) {
     this.axios = createAxios({
       baseURL: `https://${params.accountName}.deployhq.com`,
       auth: {
         username: params.email,
-        password: params.token,
+        password: params.token
       },
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
   }
 
@@ -37,15 +39,15 @@ export class Client {
     let response = await this.axios.post('/projects', {
       project: {
         name: data.name,
-        ...(data.zoneId !== undefined ? { zone_id: data.zoneId } : {}),
-      },
+        ...(data.zoneId !== undefined ? { zone_id: data.zoneId } : {})
+      }
     });
     return response.data;
   }
 
   async updateProject(projectPermalink: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.put(`/projects/${projectPermalink}`, {
-      project: data,
+      project: data
     });
     return response.data;
   }
@@ -63,26 +65,37 @@ export class Client {
   }
 
   async getServer(projectPermalink: string, serverIdentifier: string): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectPermalink}/servers/${serverIdentifier}`);
+    let response = await this.axios.get(
+      `/projects/${projectPermalink}/servers/${serverIdentifier}`
+    );
     return response.data;
   }
 
   async createServer(projectPermalink: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/projects/${projectPermalink}/servers`, {
-      server: data,
+      server: data
     });
     return response.data;
   }
 
-  async updateServer(projectPermalink: string, serverIdentifier: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/projects/${projectPermalink}/servers/${serverIdentifier}`, {
-      server: data,
-    });
+  async updateServer(
+    projectPermalink: string,
+    serverIdentifier: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/projects/${projectPermalink}/servers/${serverIdentifier}`,
+      {
+        server: data
+      }
+    );
     return response.data;
   }
 
   async deleteServer(projectPermalink: string, serverIdentifier: string): Promise<any> {
-    let response = await this.axios.delete(`/projects/${projectPermalink}/servers/${serverIdentifier}`);
+    let response = await this.axios.delete(
+      `/projects/${projectPermalink}/servers/${serverIdentifier}`
+    );
     return response.data;
   }
 
@@ -94,19 +107,23 @@ export class Client {
   }
 
   async getServerGroup(projectPermalink: string, groupIdentifier: string): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectPermalink}/server_groups/${groupIdentifier}`);
+    let response = await this.axios.get(
+      `/projects/${projectPermalink}/server_groups/${groupIdentifier}`
+    );
     return response.data;
   }
 
   async createServerGroup(projectPermalink: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/projects/${projectPermalink}/server_groups`, {
-      server_group: data,
+      server_group: data
     });
     return response.data;
   }
 
   async deleteServerGroup(projectPermalink: string, groupIdentifier: string): Promise<any> {
-    let response = await this.axios.delete(`/projects/${projectPermalink}/server_groups/${groupIdentifier}`);
+    let response = await this.axios.delete(
+      `/projects/${projectPermalink}/server_groups/${groupIdentifier}`
+    );
     return response.data;
   }
 
@@ -118,19 +135,26 @@ export class Client {
   }
 
   async getDeployment(projectPermalink: string, deploymentIdentifier: string): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectPermalink}/deployments/${deploymentIdentifier}`);
+    let response = await this.axios.get(
+      `/projects/${projectPermalink}/deployments/${deploymentIdentifier}`
+    );
     return response.data;
   }
 
   async createDeployment(projectPermalink: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/projects/${projectPermalink}/deployments`, {
-      deployment: data,
+      deployment: data
     });
     return response.data;
   }
 
-  async getDeploymentPreview(projectPermalink: string, deploymentIdentifier: string): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectPermalink}/deployments/${deploymentIdentifier}/preview`);
+  async getDeploymentPreview(
+    projectPermalink: string,
+    deploymentIdentifier: string
+  ): Promise<any> {
+    let response = await this.axios.get(
+      `/projects/${projectPermalink}/deployments/${deploymentIdentifier}/preview`
+    );
     return response.data;
   }
 
@@ -142,7 +166,9 @@ export class Client {
   }
 
   async deleteScheduledDeployment(projectPermalink: string, identifier: string): Promise<any> {
-    let response = await this.axios.delete(`/projects/${projectPermalink}/scheduled_deployments/${identifier}`);
+    let response = await this.axios.delete(
+      `/projects/${projectPermalink}/scheduled_deployments/${identifier}`
+    );
     return response.data;
   }
 
@@ -154,26 +180,40 @@ export class Client {
   }
 
   async getConfigFile(projectPermalink: string, configFileIdentifier: string): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectPermalink}/config_files/${configFileIdentifier}`);
+    let response = await this.axios.get(
+      `/projects/${projectPermalink}/config_files/${configFileIdentifier}`
+    );
     return response.data;
   }
 
   async createConfigFile(projectPermalink: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/projects/${projectPermalink}/config_files`, {
-      config_file: data,
+      config_file: data
     });
     return response.data;
   }
 
-  async updateConfigFile(projectPermalink: string, configFileIdentifier: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/projects/${projectPermalink}/config_files/${configFileIdentifier}`, {
-      config_file: data,
-    });
+  async updateConfigFile(
+    projectPermalink: string,
+    configFileIdentifier: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/projects/${projectPermalink}/config_files/${configFileIdentifier}`,
+      {
+        config_file: data
+      }
+    );
     return response.data;
   }
 
-  async deleteConfigFile(projectPermalink: string, configFileIdentifier: string): Promise<any> {
-    let response = await this.axios.delete(`/projects/${projectPermalink}/config_files/${configFileIdentifier}`);
+  async deleteConfigFile(
+    projectPermalink: string,
+    configFileIdentifier: string
+  ): Promise<any> {
+    let response = await this.axios.delete(
+      `/projects/${projectPermalink}/config_files/${configFileIdentifier}`
+    );
     return response.data;
   }
 
@@ -185,26 +225,37 @@ export class Client {
   }
 
   async getCommand(projectPermalink: string, commandIdentifier: string): Promise<any> {
-    let response = await this.axios.get(`/projects/${projectPermalink}/commands/${commandIdentifier}`);
+    let response = await this.axios.get(
+      `/projects/${projectPermalink}/commands/${commandIdentifier}`
+    );
     return response.data;
   }
 
   async createCommand(projectPermalink: string, data: Record<string, any>): Promise<any> {
     let response = await this.axios.post(`/projects/${projectPermalink}/commands`, {
-      command: data,
+      command: data
     });
     return response.data;
   }
 
-  async updateCommand(projectPermalink: string, commandIdentifier: string, data: Record<string, any>): Promise<any> {
-    let response = await this.axios.put(`/projects/${projectPermalink}/commands/${commandIdentifier}`, {
-      command: data,
-    });
+  async updateCommand(
+    projectPermalink: string,
+    commandIdentifier: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    let response = await this.axios.put(
+      `/projects/${projectPermalink}/commands/${commandIdentifier}`,
+      {
+        command: data
+      }
+    );
     return response.data;
   }
 
   async deleteCommand(projectPermalink: string, commandIdentifier: string): Promise<any> {
-    let response = await this.axios.delete(`/projects/${projectPermalink}/commands/${commandIdentifier}`);
+    let response = await this.axios.delete(
+      `/projects/${projectPermalink}/commands/${commandIdentifier}`
+    );
     return response.data;
   }
 }

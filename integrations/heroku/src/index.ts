@@ -40,7 +40,5 @@ export let provider = Slate.create({
     manageLogDrains,
     getAccount
   ],
-  triggers: [
-    appWebhook
-  ]
+  triggers: [appWebhook]
 });

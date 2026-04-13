@@ -14,7 +14,7 @@ import {
   listPayments,
   listOrganizationData,
   getEorCountryGuide,
-  calculateEorCost,
+  calculateEorCost
 } from './tools';
 import {
   contractEvents,
@@ -22,7 +22,7 @@ import {
   timesheetEvents,
   timeOffEvents,
   paymentEvents,
-  invoiceAdjustmentEvents,
+  invoiceAdjustmentEvents
 } from './triggers';
 
 export let provider = Slate.create({
@@ -41,7 +41,7 @@ export let provider = Slate.create({
     listPayments,
     listOrganizationData,
     getEorCountryGuide,
-    calculateEorCost,
+    calculateEorCost
   ],
   triggers: [
     contractEvents,
@@ -49,6 +49,6 @@ export let provider = Slate.create({
     timesheetEvents,
     timeOffEvents,
     paymentEvents,
-    invoiceAdjustmentEvents,
-  ],
+    invoiceAdjustmentEvents
+  ]
 });

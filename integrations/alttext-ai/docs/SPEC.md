@@ -19,6 +19,7 @@ AltText.ai uses API keys for authentication.
 Go to the Account: API Keys tab in your AltText.ai dashboard. Click the "+ API Key" button to create a new key.
 
 **Example request:**
+
 ```
 curl -X GET https://alttext.ai/api/v1/account \
   -H "X-API-Key: your_api_key_here"

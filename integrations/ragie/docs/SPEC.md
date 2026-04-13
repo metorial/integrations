@@ -9,12 +9,14 @@ Ragie is a fully managed RAG-as-a-Service (Retrieval Augmented Generation) platf
 Ragie uses Bearer Authentication for authenticating requests. The API uses API_KEY auth mode with `Authorization: Bearer '{API_KEY}'` in the request header to access different endpoints.
 
 To obtain an API key:
+
 1. Create an account or log in to Ragie.
 2. Navigate to the API Keys section in the Ragie dashboard at `https://secure.ragie.ai/api-keys`.
 
 The base API URL is `https://api.ragie.ai`.
 
 Example request header:
+
 ```
 Authorization: Bearer YOUR_RAGIE_API_KEY
 ```

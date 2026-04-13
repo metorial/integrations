@@ -3,41 +3,40 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getWeather = SlateTool.create(
-  spec,
-  {
-    name: 'Get Weather',
-    key: 'get_weather',
-    description: `Retrieve current weather conditions for a location by city name or ZIP code. Returns temperature, wind, humidity, and other atmospheric data.`,
-    instructions: [
-      'Provide either a city name or a ZIP code, not both.',
-    ],
-    tags: {
-      readOnly: true,
-    },
+export let getWeather = SlateTool.create(spec, {
+  name: 'Get Weather',
+  key: 'get_weather',
+  description: `Retrieve current weather conditions for a location by city name or ZIP code. Returns temperature, wind, humidity, and other atmospheric data.`,
+  instructions: ['Provide either a city name or a ZIP code, not both.'],
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    city: z.string().optional().describe('City name (e.g. "San Francisco", "London")'),
-    zip: z.string().optional().describe('ZIP/postal code (e.g. "64082")'),
-  }))
-  .output(z.object({
-    tempC: z.number().optional().describe('Temperature in Celsius'),
-    tempF: z.number().optional().describe('Temperature in Fahrenheit'),
-    windMph: z.number().optional().describe('Wind speed in miles per hour'),
-    windKph: z.number().optional().describe('Wind speed in kilometers per hour'),
-    windDegree: z.number().optional().describe('Wind direction in degrees'),
-    windDir: z.string().optional().describe('Wind compass direction'),
-    pressureMb: z.number().optional().describe('Atmospheric pressure in millibars'),
-    precipMm: z.number().optional().describe('Precipitation in millimeters'),
-    feelslikeC: z.number().optional().describe('Feels-like temperature in Celsius'),
-    feelslikeF: z.number().optional().describe('Feels-like temperature in Fahrenheit'),
-    humidity: z.number().optional().describe('Humidity percentage'),
-    condition: z.string().optional().describe('Weather condition text'),
-    location: z.string().optional().describe('Resolved location name'),
-    rawData: z.any().optional().describe('Full weather data from the API'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      city: z.string().optional().describe('City name (e.g. "San Francisco", "London")'),
+      zip: z.string().optional().describe('ZIP/postal code (e.g. "64082")')
+    })
+  )
+  .output(
+    z.object({
+      tempC: z.number().optional().describe('Temperature in Celsius'),
+      tempF: z.number().optional().describe('Temperature in Fahrenheit'),
+      windMph: z.number().optional().describe('Wind speed in miles per hour'),
+      windKph: z.number().optional().describe('Wind speed in kilometers per hour'),
+      windDegree: z.number().optional().describe('Wind direction in degrees'),
+      windDir: z.string().optional().describe('Wind compass direction'),
+      pressureMb: z.number().optional().describe('Atmospheric pressure in millibars'),
+      precipMm: z.number().optional().describe('Precipitation in millimeters'),
+      feelslikeC: z.number().optional().describe('Feels-like temperature in Celsius'),
+      feelslikeF: z.number().optional().describe('Feels-like temperature in Fahrenheit'),
+      humidity: z.number().optional().describe('Humidity percentage'),
+      condition: z.string().optional().describe('Weather condition text'),
+      location: z.string().optional().describe('Resolved location name'),
+      rawData: z.any().optional().describe('Full weather data from the API')
+    })
+  )
+  .handleInvocation(async ctx => {
     if (!ctx.input.city && !ctx.input.zip) {
       throw new Error('Either city or zip must be provided');
     }
@@ -69,7 +68,7 @@ export let getWeather = SlateTool.create(
       humidity: data.humidity,
       condition: data.condition?.text ?? data.conditionText ?? data.condition,
       location: data.location?.name ?? data.locationName ?? (ctx.input.city || ctx.input.zip),
-      rawData: data,
+      rawData: data
     };
 
     let locationLabel = ctx.input.city || ctx.input.zip || 'the specified location';
@@ -77,7 +76,7 @@ export let getWeather = SlateTool.create(
 
     return {
       output,
-      message: `Weather for **${locationLabel}**:${tempInfo}${output.condition ? `, ${output.condition}` : ''}.`,
+      message: `Weather for **${locationLabel}**:${tempInfo}${output.condition ? `, ${output.condition}` : ''}.`
     };
   })
   .build();

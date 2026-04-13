@@ -30,7 +30,7 @@ import {
   trainUtterances,
   deleteUtterances,
   exportApp,
-  listVoices,
+  listVoices
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -67,9 +67,7 @@ export let provider = Slate.create({
     trainUtterances,
     deleteUtterances,
     exportApp,
-    listVoices,
+    listVoices
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

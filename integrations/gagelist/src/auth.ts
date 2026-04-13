@@ -2,9 +2,11 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
 
@@ -13,10 +15,10 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       clientId: z.string().describe('Your GageList API client ID'),
-      clientSecret: z.string().describe('Your GageList API client secret'),
+      clientSecret: z.string().describe('Your GageList API client secret')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let axios = createAxios();
 
       let params = new URLSearchParams();
@@ -26,32 +28,35 @@ export let auth = SlateAuth.create()
 
       let response = await axios.post('https://gagelist.net/api/token', params.toString(), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
       return {
         output: {
-          token: response.data.access_token,
-        },
+          token: response.data.access_token
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string }; input: { clientId: string; clientSecret: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string };
+      input: { clientId: string; clientSecret: string };
+    }) => {
       let axios = createAxios({
         baseURL: 'https://gagelist.net/GageList/api',
         headers: {
           Authorization: `Bearer ${ctx.output.token}`,
-          Accept: 'application/json',
-        },
+          Accept: 'application/json'
+        }
       });
 
       let response = await axios.get('/Account/Status');
 
       return {
         profile: {
-          name: response.data.data?.AccountName ?? 'GageList Account',
-        },
+          name: response.data.data?.AccountName ?? 'GageList Account'
+        }
       };
-    },
+    }
   });

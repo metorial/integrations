@@ -47,12 +47,5 @@ export let provider = Slate.create({
     manageAlerts,
     getSiteInfo
   ],
-  triggers: [
-    datasourceEvents,
-    workbookEvents,
-    userEvents,
-    labelEvents,
-    siteEvents,
-    viewEvents
-  ]
+  triggers: [datasourceEvents, workbookEvents, userEvents, labelEvents, siteEvents, viewEvents]
 });

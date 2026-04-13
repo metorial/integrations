@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   getNft,
@@ -10,13 +9,9 @@ import {
   getListings,
   getOffers,
   getAccount,
-  refreshNftMetadata,
+  refreshNftMetadata
 } from './tools';
-import {
-  collectionEvents,
-  accountEvents,
-  inboundWebhook,
-} from './triggers';
+import { collectionEvents, accountEvents, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,11 +24,7 @@ export let provider = Slate.create({
     getListings,
     getOffers,
     getAccount,
-    refreshNftMetadata,
+    refreshNftMetadata
   ],
-  triggers: [
-    inboundWebhook,
-    collectionEvents,
-    accountEvents,
-  ],
+  triggers: [inboundWebhook, collectionEvents, accountEvents]
 });

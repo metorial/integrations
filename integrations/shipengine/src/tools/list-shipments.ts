@@ -3,48 +3,66 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listShipments = SlateTool.create(
-  spec,
-  {
-    name: 'List Shipments',
-    key: 'list_shipments',
-    description: `Search and list shipments with filtering options including status, tags, date ranges, and batch ID. Results are paginated.`,
-    tags: {
-      readOnly: true,
-      destructive: false
-    }
+export let listShipments = SlateTool.create(spec, {
+  name: 'List Shipments',
+  key: 'list_shipments',
+  description: `Search and list shipments with filtering options including status, tags, date ranges, and batch ID. Results are paginated.`,
+  tags: {
+    readOnly: true,
+    destructive: false
   }
-)
-  .input(z.object({
-    shipmentStatus: z.enum(['pending', 'processing', 'label_purchased', 'cancelled']).optional().describe('Filter by shipment status'),
-    batchId: z.string().optional().describe('Filter by batch ID'),
-    tag: z.string().optional().describe('Filter by tag name'),
-    createdAtStart: z.string().optional().describe('Filter by creation date start (ISO 8601)'),
-    createdAtEnd: z.string().optional().describe('Filter by creation date end (ISO 8601)'),
-    modifiedAtStart: z.string().optional().describe('Filter by modification date start (ISO 8601)'),
-    modifiedAtEnd: z.string().optional().describe('Filter by modification date end (ISO 8601)'),
-    salesOrderId: z.string().optional().describe('Filter by sales order ID'),
-    page: z.number().optional().describe('Page number (default 1)'),
-    pageSize: z.number().optional().describe('Results per page (default 25, max 500)'),
-    sortBy: z.enum(['ship_date', 'created_at', 'modified_at']).optional().describe('Sort field'),
-    sortDir: z.enum(['asc', 'desc']).optional().describe('Sort direction')
-  }))
-  .output(z.object({
-    total: z.number().describe('Total number of matching shipments'),
-    page: z.number().describe('Current page'),
-    pages: z.number().describe('Total pages'),
-    shipments: z.array(z.object({
-      shipmentId: z.string().describe('Shipment ID'),
-      carrierId: z.string().describe('Carrier ID'),
-      serviceCode: z.string().describe('Service code'),
-      externalShipmentId: z.string().optional().describe('External reference ID'),
-      shipDate: z.string().describe('Ship date'),
-      createdAt: z.string().describe('Creation timestamp'),
-      shipmentStatus: z.string().describe('Shipment status'),
-      tags: z.array(z.string()).describe('Tags')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      shipmentStatus: z
+        .enum(['pending', 'processing', 'label_purchased', 'cancelled'])
+        .optional()
+        .describe('Filter by shipment status'),
+      batchId: z.string().optional().describe('Filter by batch ID'),
+      tag: z.string().optional().describe('Filter by tag name'),
+      createdAtStart: z
+        .string()
+        .optional()
+        .describe('Filter by creation date start (ISO 8601)'),
+      createdAtEnd: z.string().optional().describe('Filter by creation date end (ISO 8601)'),
+      modifiedAtStart: z
+        .string()
+        .optional()
+        .describe('Filter by modification date start (ISO 8601)'),
+      modifiedAtEnd: z
+        .string()
+        .optional()
+        .describe('Filter by modification date end (ISO 8601)'),
+      salesOrderId: z.string().optional().describe('Filter by sales order ID'),
+      page: z.number().optional().describe('Page number (default 1)'),
+      pageSize: z.number().optional().describe('Results per page (default 25, max 500)'),
+      sortBy: z
+        .enum(['ship_date', 'created_at', 'modified_at'])
+        .optional()
+        .describe('Sort field'),
+      sortDir: z.enum(['asc', 'desc']).optional().describe('Sort direction')
+    })
+  )
+  .output(
+    z.object({
+      total: z.number().describe('Total number of matching shipments'),
+      page: z.number().describe('Current page'),
+      pages: z.number().describe('Total pages'),
+      shipments: z.array(
+        z.object({
+          shipmentId: z.string().describe('Shipment ID'),
+          carrierId: z.string().describe('Carrier ID'),
+          serviceCode: z.string().describe('Service code'),
+          externalShipmentId: z.string().optional().describe('External reference ID'),
+          shipDate: z.string().describe('Ship date'),
+          createdAt: z.string().describe('Creation timestamp'),
+          shipmentStatus: z.string().describe('Shipment status'),
+          tags: z.array(z.string()).describe('Tags')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       baseUrl: ctx.config.baseUrl
@@ -85,4 +103,5 @@ export let listShipments = SlateTool.create(
       },
       message: `Found **${result.total}** shipment(s), showing page ${result.page} of ${result.pages}.`
     };
-  }).build();
+  })
+  .build();

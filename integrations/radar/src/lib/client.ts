@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let api = createAxios({
-  baseURL: 'https://api.radar.io/v1',
+  baseURL: 'https://api.radar.io/v1'
 });
 
 export class RadarClient {
@@ -25,91 +25,94 @@ export class RadarClient {
   }) {
     let res = await api.get('/geofences', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
 
   async getGeofence(geofenceId: string) {
     let res = await api.get(`/geofences/${geofenceId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async getGeofenceByTagAndExternalId(tag: string, externalId: string) {
     let res = await api.get(`/geofences/${tag}/${externalId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async upsertGeofence(tag: string, externalId: string, data: {
-    description: string;
-    type: string;
-    coordinates: number[] | number[][];
-    radius?: number;
-    metadata?: Record<string, string>;
-    enabled?: boolean;
-    userId?: string;
-    disableAfter?: string;
-  }) {
+  async upsertGeofence(
+    tag: string,
+    externalId: string,
+    data: {
+      description: string;
+      type: string;
+      coordinates: number[] | number[][];
+      radius?: number;
+      metadata?: Record<string, string>;
+      enabled?: boolean;
+      userId?: string;
+      disableAfter?: string;
+    }
+  ) {
     let res = await api.put(`/geofences/${tag}/${externalId}`, data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async deleteGeofence(geofenceId: string) {
     let res = await api.delete(`/geofences/${geofenceId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async deleteGeofenceByTagAndExternalId(tag: string, externalId: string) {
     let res = await api.delete(`/geofences/${tag}/${externalId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async listGeofenceUsers(geofenceId: string, params?: {
-    limit?: number;
-    updatedBefore?: string;
-    updatedAfter?: string;
-  }) {
+  async listGeofenceUsers(
+    geofenceId: string,
+    params?: {
+      limit?: number;
+      updatedBefore?: string;
+      updatedAfter?: string;
+    }
+  ) {
     let res = await api.get(`/geofences/${geofenceId}/users`, {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
 
   // --- Users ---
 
-  async listUsers(params?: {
-    limit?: number;
-    updatedBefore?: string;
-    updatedAfter?: string;
-  }) {
+  async listUsers(params?: { limit?: number; updatedBefore?: string; updatedAfter?: string }) {
     let res = await api.get('/users', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
 
   async getUser(userId: string) {
     let res = await api.get(`/users/${userId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async deleteUser(userId: string) {
     let res = await api.delete(`/users/${userId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -123,24 +126,27 @@ export class RadarClient {
   }) {
     let res = await api.get('/trips', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
 
   async getTrip(tripId: string) {
     let res = await api.get(`/trips/${tripId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async updateTrip(tripId: string, data: {
-    status: string;
-    metadata?: Record<string, string>;
-  }) {
+  async updateTrip(
+    tripId: string,
+    data: {
+      status: string;
+      metadata?: Record<string, string>;
+    }
+  ) {
     let res = await api.patch(`/trips/${tripId}`, data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -155,19 +161,15 @@ export class RadarClient {
   }) {
     let res = await api.get('/geocode/forward', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
 
-  async reverseGeocode(params: {
-    coordinates: string;
-    layers?: string;
-    lang?: string;
-  }) {
+  async reverseGeocode(params: { coordinates: string; layers?: string; lang?: string }) {
     let res = await api.get('/geocode/reverse', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -175,7 +177,7 @@ export class RadarClient {
   async ipGeocode(params?: { ip?: string }) {
     let res = await api.get('/geocode/ip', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -191,7 +193,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/search/autocomplete', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -205,7 +207,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/search/places', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -219,7 +221,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/search/geofences', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -237,7 +239,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/route/distance', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -252,7 +254,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/route/matrix', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -269,7 +271,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/route/directions', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -283,31 +285,34 @@ export class RadarClient {
   }) {
     let res = await api.get('/events', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
 
   async getEvent(eventId: string) {
     let res = await api.get(`/events/${eventId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
-  async verifyEvent(eventId: string, data: {
-    verification: number;
-    verifiedPlaceId?: string;
-  }) {
+  async verifyEvent(
+    eventId: string,
+    data: {
+      verification: number;
+      verifiedPlaceId?: string;
+    }
+  ) {
     let res = await api.put(`/events/${eventId}/verification`, data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   async deleteEvent(eventId: string) {
     let res = await api.delete(`/events/${eventId}`, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
@@ -326,7 +331,7 @@ export class RadarClient {
   }) {
     let res = await api.get('/addresses/validate', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -336,7 +341,7 @@ export class RadarClient {
   async getContext(params: { coordinates: string }) {
     let res = await api.get('/context', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }
@@ -357,21 +362,17 @@ export class RadarClient {
     updatedAt?: string;
   }) {
     let res = await api.post('/track', data, {
-      headers: this.headers(),
+      headers: this.headers()
     });
     return res.data;
   }
 
   // --- Search Users ---
 
-  async searchUsers(params: {
-    near: string;
-    radius?: number;
-    limit?: number;
-  }) {
+  async searchUsers(params: { near: string; radius?: number; limit?: number }) {
     let res = await api.get('/search/users', {
       headers: this.headers(),
-      params,
+      params
     });
     return res.data;
   }

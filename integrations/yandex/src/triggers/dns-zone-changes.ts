@@ -3,36 +3,37 @@ import { spec } from '../spec';
 import { z } from 'zod';
 import * as dns from '../lib/dns';
 
-export let dnsZoneChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'DNS Zone Changes',
-    key: 'dns_zone_changes',
-    description: 'Triggers when DNS zones are created or deleted in a Yandex Cloud folder.',
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created', 'deleted']).describe('Type of change detected'),
-    eventId: z.string().describe('Unique event identifier'),
-    dnsZoneId: z.string().describe('DNS zone ID'),
-    name: z.string().optional().describe('Zone name'),
-    zone: z.string().optional().describe('DNS zone domain'),
-    folderId: z.string().optional().describe('Folder ID'),
-    createdAt: z.string().optional().describe('Zone creation timestamp'),
-  }))
-  .output(z.object({
-    dnsZoneId: z.string().describe('DNS zone ID'),
-    name: z.string().optional().describe('Zone name'),
-    zone: z.string().optional().describe('DNS zone domain'),
-    folderId: z.string().optional().describe('Folder ID'),
-    createdAt: z.string().optional().describe('Zone creation timestamp'),
-  }))
+export let dnsZoneChanges = SlateTrigger.create(spec, {
+  name: 'DNS Zone Changes',
+  key: 'dns_zone_changes',
+  description: 'Triggers when DNS zones are created or deleted in a Yandex Cloud folder.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created', 'deleted']).describe('Type of change detected'),
+      eventId: z.string().describe('Unique event identifier'),
+      dnsZoneId: z.string().describe('DNS zone ID'),
+      name: z.string().optional().describe('Zone name'),
+      zone: z.string().optional().describe('DNS zone domain'),
+      folderId: z.string().optional().describe('Folder ID'),
+      createdAt: z.string().optional().describe('Zone creation timestamp')
+    })
+  )
+  .output(
+    z.object({
+      dnsZoneId: z.string().describe('DNS zone ID'),
+      name: z.string().optional().describe('Zone name'),
+      zone: z.string().optional().describe('DNS zone domain'),
+      folderId: z.string().optional().describe('Folder ID'),
+      createdAt: z.string().optional().describe('Zone creation timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let folderId = ctx.config.folderId;
       if (!folderId) return { inputs: [], updatedState: ctx.state };
 
@@ -54,7 +55,7 @@ export let dnsZoneChanges = SlateTrigger.create(
             name: zone.name,
             zone: zone.zone,
             folderId: zone.folderId,
-            createdAt: zone.createdAt,
+            createdAt: zone.createdAt
           });
         }
       }
@@ -66,18 +67,18 @@ export let dnsZoneChanges = SlateTrigger.create(
             eventType: 'deleted' as const,
             eventId: `${id}-deleted-${Date.now()}`,
             dnsZoneId: id,
-            folderId,
+            folderId
           });
         }
       }
 
       return {
         inputs,
-        updatedState: { zoneIds: currentIds },
+        updatedState: { zoneIds: currentIds }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `dns_zone.${ctx.input.eventType}`,
         id: ctx.input.eventId,
@@ -86,8 +87,9 @@ export let dnsZoneChanges = SlateTrigger.create(
           name: ctx.input.name,
           zone: ctx.input.zone,
           folderId: ctx.input.folderId,
-          createdAt: ctx.input.createdAt,
-        },
+          createdAt: ctx.input.createdAt
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

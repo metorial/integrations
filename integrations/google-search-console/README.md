@@ -5,21 +5,27 @@ Query search traffic analytics including clicks, impressions, CTR, and average p
 ## Tools
 
 ### Inspect URL
+
 Inspect a URL's indexing status and related data in Google Search Console. Returns information about the indexed version of the URL, including index status, AMP results, mobile usability, and rich results.
 
 ### List Sites
+
 List all site properties available in Google Search Console for the authenticated user. Returns each site's URL and the user's permission level.
 
 ### Manage Site
+
 Add or remove a site property from Google Search Console. Use the "add" action to register a new site property, or "remove" to delete an existing one. You can also use "get" to retrieve details of a specific site property.
 
 ### Manage Sitemap
+
 List, retrieve, submit, or delete sitemaps for a Search Console site property. Use "list" to see all sitemaps, "get" to retrieve details of a specific sitemap, "submit" to submit a new sitemap URL, or "delete" to remove a sitemap from the sitemaps report.
 
 ### Query Search Analytics
+
 Query Google Search traffic data for a site property. Returns metrics like clicks, impressions, click-through rate (CTR), and average position. Results can be grouped by dimensions such as query, page, country, device, and date. Supports filtering and pagination for large result sets.
 
 ### Run Mobile-Friendly Test
+
 Run Google's Mobile-Friendly Test for a given URL. Checks whether a page is mobile-friendly according to Google's standards and reports any issues found.
 
 ## License

@@ -186,24 +186,24 @@ let mapOptions = (options?: ModelOptions): Record<string, unknown> | undefined =
     repeat_penalty: options.repeatPenalty,
     presence_penalty: options.presencePenalty,
     frequency_penalty: options.frequencyPenalty,
-    min_p: options.minP,
+    min_p: options.minP
   };
 };
 
 let mapMessageToApi = (msg: ChatMessage): Record<string, unknown> => {
   let result: Record<string, unknown> = {
     role: msg.role,
-    content: msg.content,
+    content: msg.content
   };
   if (msg.images && msg.images.length > 0) {
     result.images = msg.images;
   }
   if (msg.toolCalls && msg.toolCalls.length > 0) {
-    result.tool_calls = msg.toolCalls.map((tc) => ({
+    result.tool_calls = msg.toolCalls.map(tc => ({
       function: {
         name: tc.function.name,
-        arguments: tc.function.arguments,
-      },
+        arguments: tc.function.arguments
+      }
     }));
   }
   return result;
@@ -214,14 +214,14 @@ export class Client {
 
   constructor(config: ClientConfig) {
     let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     };
     if (config.token) {
       headers['Authorization'] = `Bearer ${config.token}`;
     }
     this.axios = createAxios({
       baseURL: config.baseUrl,
-      headers,
+      headers
     });
   }
 
@@ -229,7 +229,7 @@ export class Client {
     let body: Record<string, unknown> = {
       model: params.model,
       prompt: params.prompt,
-      stream: false,
+      stream: false
     };
     if (params.suffix !== undefined) body.suffix = params.suffix;
     if (params.system !== undefined) body.system = params.system;
@@ -256,7 +256,7 @@ export class Client {
       promptEvalCount: data.prompt_eval_count,
       promptEvalDuration: data.prompt_eval_duration,
       evalCount: data.eval_count,
-      evalDuration: data.eval_duration,
+      evalDuration: data.eval_duration
     };
   }
 
@@ -264,7 +264,7 @@ export class Client {
     let body: Record<string, unknown> = {
       model: params.model,
       messages: params.messages.map(mapMessageToApi),
-      stream: false,
+      stream: false
     };
     if (params.tools !== undefined) body.tools = params.tools;
     if (params.format !== undefined) body.format = params.format;
@@ -277,7 +277,7 @@ export class Client {
 
     let message: ChatResponse['message'] = {
       role: data.message?.role || 'assistant',
-      content: data.message?.content || '',
+      content: data.message?.content || ''
     };
     if (data.message?.thinking) {
       message.thinking = data.message.thinking;
@@ -286,8 +286,8 @@ export class Client {
       message.toolCalls = data.message.tool_calls.map((tc: any) => ({
         function: {
           name: tc.function.name,
-          arguments: tc.function.arguments,
-        },
+          arguments: tc.function.arguments
+        }
       }));
     }
 
@@ -302,14 +302,14 @@ export class Client {
       promptEvalCount: data.prompt_eval_count,
       promptEvalDuration: data.prompt_eval_duration,
       evalCount: data.eval_count,
-      evalDuration: data.eval_duration,
+      evalDuration: data.eval_duration
     };
   }
 
   async embed(params: EmbedParams): Promise<EmbedResponse> {
     let body: Record<string, unknown> = {
       model: params.model,
-      input: params.input,
+      input: params.input
     };
     if (params.truncate !== undefined) body.truncate = params.truncate;
     if (params.dimensions !== undefined) body.dimensions = params.dimensions;
@@ -324,7 +324,7 @@ export class Client {
       embeddings: data.embeddings,
       totalDuration: data.total_duration,
       loadDuration: data.load_duration,
-      promptEvalCount: data.prompt_eval_count,
+      promptEvalCount: data.prompt_eval_count
     };
   }
 
@@ -342,8 +342,8 @@ export class Client {
         family: m.details?.family,
         families: m.details?.families,
         parameterSize: m.details?.parameter_size,
-        quantizationLevel: m.details?.quantization_level,
-      },
+        quantizationLevel: m.details?.quantization_level
+      }
     }));
   }
 
@@ -361,11 +361,11 @@ export class Client {
         family: m.details?.family,
         families: m.details?.families,
         parameterSize: m.details?.parameter_size,
-        quantizationLevel: m.details?.quantization_level,
+        quantizationLevel: m.details?.quantization_level
       },
       expiresAt: m.expires_at,
       sizeVram: m.size_vram,
-      contextLength: m.context_length,
+      contextLength: m.context_length
     }));
   }
 
@@ -388,16 +388,16 @@ export class Client {
         family: data.details?.family,
         families: data.details?.families,
         parameterSize: data.details?.parameter_size,
-        quantizationLevel: data.details?.quantization_level,
+        quantizationLevel: data.details?.quantization_level
       },
-      modelInfo: data.model_info,
+      modelInfo: data.model_info
     };
   }
 
   async pullModel(modelName: string, insecure?: boolean): Promise<PullResponse> {
     let body: Record<string, unknown> = {
       name: modelName,
-      stream: false,
+      stream: false
     };
     if (insecure !== undefined) body.insecure = insecure;
 
@@ -406,14 +406,14 @@ export class Client {
       status: response.data.status,
       digest: response.data.digest,
       total: response.data.total,
-      completed: response.data.completed,
+      completed: response.data.completed
     };
   }
 
   async pushModel(modelName: string, insecure?: boolean): Promise<{ status: string }> {
     let body: Record<string, unknown> = {
       name: modelName,
-      stream: false,
+      stream: false
     };
     if (insecure !== undefined) body.insecure = insecure;
 
@@ -424,7 +424,7 @@ export class Client {
   async createModel(params: CreateModelParams): Promise<{ status: string }> {
     let body: Record<string, unknown> = {
       model: params.model,
-      stream: false,
+      stream: false
     };
     if (params.modelfile !== undefined) body.modelfile = params.modelfile;
     if (params.from !== undefined) body.from = params.from;
@@ -440,13 +440,13 @@ export class Client {
   async copyModel(source: string, destination: string): Promise<void> {
     await this.axios.post('/api/copy', {
       source,
-      destination,
+      destination
     });
   }
 
   async deleteModel(modelName: string): Promise<void> {
     await this.axios.delete('/api/delete', {
-      data: { name: modelName },
+      data: { name: modelName }
     });
   }
 }

@@ -10,29 +10,33 @@ let segmentSchema = z.object({
   status: z.string().optional().describe('Segment status'),
   sourceType: z.string().optional().describe('Source type'),
   retentionInDays: z.number().optional().describe('Retention period in days'),
-  approximateNumberUsers: z.number().optional().describe('Approximate number of matched users'),
+  approximateNumberUsers: z
+    .number()
+    .optional()
+    .describe('Approximate number of matched users'),
   createdAt: z.string().optional().describe('Creation timestamp'),
   updatedAt: z.string().optional().describe('Last update timestamp')
 });
 
-export let listAudienceSegments = SlateTool.create(
-  spec,
-  {
-    name: 'List Audience Segments',
-    key: 'list_audience_segments',
-    description: `List all custom audience segments under a Snapchat ad account. Returns segment IDs, names, source types, user counts, and statuses.`,
-    tags: {
-      readOnly: true
-    }
+export let listAudienceSegments = SlateTool.create(spec, {
+  name: 'List Audience Segments',
+  key: 'list_audience_segments',
+  description: `List all custom audience segments under a Snapchat ad account. Returns segment IDs, names, source types, user counts, and statuses.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    adAccountId: z.string().describe('Ad account ID to list segments for')
-  }))
-  .output(z.object({
-    segments: z.array(segmentSchema).describe('List of audience segments')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      adAccountId: z.string().describe('Ad account ID to list segments for')
+    })
+  )
+  .output(
+    z.object({
+      segments: z.array(segmentSchema).describe('List of audience segments')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new SnapchatClient(ctx.auth.token);
     let results = await client.listSegments(ctx.input.adAccountId);
 

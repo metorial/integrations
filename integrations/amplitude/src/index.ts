@@ -36,7 +36,5 @@ export let provider = Slate.create({
     manageAnnotationsTool,
     deleteUserDataTool
   ],
-  triggers: [
-    eventWebhookTrigger
-  ]
+  triggers: [eventWebhookTrigger]
 });

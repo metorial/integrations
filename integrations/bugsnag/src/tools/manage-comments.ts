@@ -9,34 +9,38 @@ let commentSchema = z.object({
   authorName: z.string().optional().describe('Author name'),
   authorEmail: z.string().optional().describe('Author email'),
   createdAt: z.string().optional().describe('When the comment was created'),
-  updatedAt: z.string().optional().describe('When the comment was last updated'),
+  updatedAt: z.string().optional().describe('When the comment was last updated')
 });
 
-export let manageComments = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Comments',
-    key: 'manage_comments',
-    description: `List, create, update, or delete comments on a Bugsnag error. Comments are used for team collaboration on error investigation.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let manageComments = SlateTool.create(spec, {
+  name: 'Manage Comments',
+  key: 'manage_comments',
+  description: `List, create, update, or delete comments on a Bugsnag error. Comments are used for team collaboration on error investigation.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
-    projectId: z.string().describe('Project ID'),
-    errorId: z.string().optional().describe('Error ID (required for list and create)'),
-    commentId: z.string().optional().describe('Comment ID (required for update and delete)'),
-    message: z.string().optional().describe('Comment text (required for create and update)'),
-  }))
-  .output(z.object({
-    comments: z.array(commentSchema).optional().describe('List of comments (for list action)'),
-    comment: commentSchema.optional().describe('Created/updated comment'),
-    deleted: z.boolean().optional().describe('Whether the comment was deleted'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['list', 'create', 'update', 'delete']).describe('Operation to perform'),
+      projectId: z.string().describe('Project ID'),
+      errorId: z.string().optional().describe('Error ID (required for list and create)'),
+      commentId: z.string().optional().describe('Comment ID (required for update and delete)'),
+      message: z.string().optional().describe('Comment text (required for create and update)')
+    })
+  )
+  .output(
+    z.object({
+      comments: z
+        .array(commentSchema)
+        .optional()
+        .describe('List of comments (for list action)'),
+      comment: commentSchema.optional().describe('Created/updated comment'),
+      deleted: z.boolean().optional().describe('Whether the comment was deleted')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new BugsnagClient({ token: ctx.auth.token });
     let projectId = ctx.input.projectId || ctx.config.projectId;
     if (!projectId) throw new Error('Project ID is required.');
@@ -51,12 +55,12 @@ export let manageComments = SlateTool.create(
         authorName: c.author?.name,
         authorEmail: c.author?.email,
         createdAt: c.created_at,
-        updatedAt: c.updated_at,
+        updatedAt: c.updated_at
       }));
 
       return {
         output: { comments: mapped },
-        message: `Found **${mapped.length}** comment(s).`,
+        message: `Found **${mapped.length}** comment(s).`
       };
     }
 
@@ -73,10 +77,10 @@ export let manageComments = SlateTool.create(
             message: result.message,
             authorName: result.author?.name,
             authorEmail: result.author?.email,
-            createdAt: result.created_at,
-          },
+            createdAt: result.created_at
+          }
         },
-        message: `Created comment on error \`${ctx.input.errorId}\`.`,
+        message: `Created comment on error \`${ctx.input.errorId}\`.`
       };
     }
 
@@ -94,10 +98,10 @@ export let manageComments = SlateTool.create(
             authorName: result.author?.name,
             authorEmail: result.author?.email,
             createdAt: result.created_at,
-            updatedAt: result.updated_at,
-          },
+            updatedAt: result.updated_at
+          }
         },
-        message: `Updated comment \`${ctx.input.commentId}\`.`,
+        message: `Updated comment \`${ctx.input.commentId}\`.`
       };
     }
 
@@ -108,9 +112,10 @@ export let manageComments = SlateTool.create(
 
       return {
         output: { deleted: true },
-        message: `Deleted comment \`${ctx.input.commentId}\`.`,
+        message: `Deleted comment \`${ctx.input.commentId}\`.`
       };
     }
 
     throw new Error(`Unknown action: ${ctx.input.action}`);
-  }).build();
+  })
+  .build();

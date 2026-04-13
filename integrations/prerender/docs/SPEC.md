@@ -11,6 +11,7 @@ Prerender.io uses a **Prerender Token** (API key) for authentication. The Preren
 The token is passed in one of two ways depending on the API being used:
 
 1. **REST API (cache management):** Include the token as a JSON body parameter called `prerenderToken` in POST requests to `https://api.prerender.io/`. Example:
+
    ```json
    {
      "prerenderToken": "YOUR_TOKEN",

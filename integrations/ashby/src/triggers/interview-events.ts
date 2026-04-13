@@ -6,36 +6,40 @@ import { z } from 'zod';
 let webhookTypes = [
   'interviewPlanTransition',
   'interviewScheduleCreate',
-  'interviewScheduleUpdate',
+  'interviewScheduleUpdate'
 ] as const;
 
-export let interviewEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Interview Events',
-    key: 'interview_events',
-    description: 'Triggers when an interview plan transition occurs, or when an interview schedule is created or updated.',
-  }
-)
-  .input(z.object({
-    webhookType: z.string().describe('The type of webhook event'),
-    webhookActionId: z.string().describe('Unique ID grouping related webhook events from the same action'),
-    interviewScheduleId: z.string().optional().describe('The interview schedule ID'),
-    applicationId: z.string().optional().describe('The application ID'),
-    rawPayload: z.any().describe('The full webhook payload'),
-  }))
-  .output(z.object({
-    interviewScheduleId: z.string().optional().describe('The interview schedule ID'),
-    applicationId: z.string().optional().describe('The application ID'),
-    candidateId: z.string().optional().describe('The candidate ID'),
-    candidateName: z.string().optional().describe('The candidate name'),
-    jobId: z.string().optional().describe('The job ID'),
-    jobTitle: z.string().optional().describe('The job title'),
-    interviewStageId: z.string().optional().describe('The interview stage ID'),
-    interviewStageTitle: z.string().optional().describe('The interview stage title'),
-  }))
+export let interviewEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Interview Events',
+  key: 'interview_events',
+  description:
+    'Triggers when an interview plan transition occurs, or when an interview schedule is created or updated.'
+})
+  .input(
+    z.object({
+      webhookType: z.string().describe('The type of webhook event'),
+      webhookActionId: z
+        .string()
+        .describe('Unique ID grouping related webhook events from the same action'),
+      interviewScheduleId: z.string().optional().describe('The interview schedule ID'),
+      applicationId: z.string().optional().describe('The application ID'),
+      rawPayload: z.any().describe('The full webhook payload')
+    })
+  )
+  .output(
+    z.object({
+      interviewScheduleId: z.string().optional().describe('The interview schedule ID'),
+      applicationId: z.string().optional().describe('The application ID'),
+      candidateId: z.string().optional().describe('The candidate ID'),
+      candidateName: z.string().optional().describe('The candidate name'),
+      jobId: z.string().optional().describe('The job ID'),
+      jobTitle: z.string().optional().describe('The job title'),
+      interviewStageId: z.string().optional().describe('The interview stage ID'),
+      interviewStageTitle: z.string().optional().describe('The interview stage title')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
       let secretToken = crypto.randomUUID();
       let registrations: Array<{ webhookId: string; webhookType: string }> = [];
@@ -44,35 +48,38 @@ export let interviewEventsTrigger = SlateTrigger.create(
         let response = await client.createWebhook({
           webhookType,
           requestUrl: ctx.input.webhookBaseUrl,
-          secretToken,
+          secretToken
         });
         registrations.push({
           webhookId: response.results.id,
-          webhookType,
+          webhookType
         });
       }
 
       return {
         registrationDetails: {
           webhookIds: registrations,
-          secretToken,
-        },
+          secretToken
+        }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
-      let details = ctx.input.registrationDetails as { webhookIds: Array<{ webhookId: string }> };
+      let details = ctx.input.registrationDetails as {
+        webhookIds: Array<{ webhookId: string }>;
+      };
 
       for (let registration of details.webhookIds) {
         await client.deleteWebhook(registration.webhookId);
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.request.json() as Record<string, any>;
+    handleRequest: async ctx => {
+      let data = (await ctx.request.json()) as Record<string, any>;
 
-      let interviewScheduleId = data.data?.interviewSchedule?.id || data.data?.interviewScheduleId;
+      let interviewScheduleId =
+        data.data?.interviewSchedule?.id || data.data?.interviewScheduleId;
       let applicationId = data.data?.application?.id || data.data?.applicationId;
 
       return {
@@ -82,13 +89,13 @@ export let interviewEventsTrigger = SlateTrigger.create(
             webhookActionId: data.webhookActionId || crypto.randomUUID(),
             interviewScheduleId,
             applicationId,
-            rawPayload: data,
-          },
-        ],
+            rawPayload: data
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let client = new AshbyClient({ token: ctx.auth.token });
       let payload = ctx.input.rawPayload;
 
@@ -123,7 +130,7 @@ export let interviewEventsTrigger = SlateTrigger.create(
       let eventTypeMap: Record<string, string> = {
         interviewPlanTransition: 'interview.plan_transition',
         interviewScheduleCreate: 'interview_schedule.created',
-        interviewScheduleUpdate: 'interview_schedule.updated',
+        interviewScheduleUpdate: 'interview_schedule.updated'
       };
 
       return {
@@ -137,8 +144,9 @@ export let interviewEventsTrigger = SlateTrigger.create(
           jobId,
           jobTitle,
           interviewStageId,
-          interviewStageTitle,
-        },
+          interviewStageTitle
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

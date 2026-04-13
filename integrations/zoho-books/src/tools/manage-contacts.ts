@@ -14,7 +14,7 @@ let contactOutputSchema = z.object({
   outstandingReceivableAmount: z.number().optional(),
   outstandingPayableAmount: z.number().optional(),
   currencyCode: z.string().optional(),
-  createdTime: z.string().optional(),
+  createdTime: z.string().optional()
 });
 
 let mapContact = (c: any) => ({
@@ -28,39 +28,68 @@ let mapContact = (c: any) => ({
   outstandingReceivableAmount: c.outstanding_receivable_amount,
   outstandingPayableAmount: c.outstanding_payable_amount,
   currencyCode: c.currency_code,
-  createdTime: c.created_time,
+  createdTime: c.created_time
 });
 
-export let listContacts = SlateTool.create(
-  spec,
-  {
-    name: 'List Contacts',
-    key: 'list_contacts',
-    description: `Search and list customers and vendors. Supports filtering by contact type, name, email, status, and pagination.`,
-    tags: {
-      readOnly: true,
-    },
+export let listContacts = SlateTool.create(spec, {
+  name: 'List Contacts',
+  key: 'list_contacts',
+  description: `Search and list customers and vendors. Supports filtering by contact type, name, email, status, and pagination.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    contactType: z.enum(['customer', 'vendor']).optional().describe('Filter by contact type'),
-    searchText: z.string().optional().describe('Search by contact name, company, email'),
-    status: z.enum(['active', 'inactive', 'duplicate', 'crm']).optional().describe('Filter by contact status'),
-    page: z.number().optional().default(1).describe('Page number'),
-    perPage: z.number().optional().default(200).describe('Records per page (max 200)'),
-    sortColumn: z.enum(['contact_name', 'company_name', 'first_name', 'last_name', 'email', 'outstanding_receivable_amount', 'created_time']).optional().describe('Column to sort by'),
-    sortOrder: z.enum(['ascending', 'descending']).optional().describe('Sort direction'),
-    filterBy: z.enum(['Status.All', 'Status.Active', 'Status.Inactive', 'Status.Duplicate', 'Status.CRM']).optional().describe('Predefined filter'),
-  }))
-  .output(z.object({
-    contacts: z.array(contactOutputSchema),
-    pageContext: z.object({
-      page: z.number(),
-      perPage: z.number(),
-      hasMorePage: z.boolean(),
-    }).optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      contactType: z
+        .enum(['customer', 'vendor'])
+        .optional()
+        .describe('Filter by contact type'),
+      searchText: z.string().optional().describe('Search by contact name, company, email'),
+      status: z
+        .enum(['active', 'inactive', 'duplicate', 'crm'])
+        .optional()
+        .describe('Filter by contact status'),
+      page: z.number().optional().default(1).describe('Page number'),
+      perPage: z.number().optional().default(200).describe('Records per page (max 200)'),
+      sortColumn: z
+        .enum([
+          'contact_name',
+          'company_name',
+          'first_name',
+          'last_name',
+          'email',
+          'outstanding_receivable_amount',
+          'created_time'
+        ])
+        .optional()
+        .describe('Column to sort by'),
+      sortOrder: z.enum(['ascending', 'descending']).optional().describe('Sort direction'),
+      filterBy: z
+        .enum([
+          'Status.All',
+          'Status.Active',
+          'Status.Inactive',
+          'Status.Duplicate',
+          'Status.CRM'
+        ])
+        .optional()
+        .describe('Predefined filter')
+    })
+  )
+  .output(
+    z.object({
+      contacts: z.array(contactOutputSchema),
+      pageContext: z
+        .object({
+          page: z.number(),
+          perPage: z.number(),
+          hasMorePage: z.boolean()
+        })
+        .optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClient(ctx);
 
     let params: Record<string, any> = {};
@@ -81,7 +110,7 @@ export let listContacts = SlateTool.create(
       ? {
           page: result.page_context.page,
           perPage: result.page_context.per_page,
-          hasMorePage: result.page_context.has_more_page,
+          hasMorePage: result.page_context.has_more_page
         }
       : undefined;
 
@@ -89,7 +118,7 @@ export let listContacts = SlateTool.create(
 
     return {
       output: { contacts, pageContext },
-      message: `Found **${contacts.length}** contact(s) on page ${page}.`,
+      message: `Found **${contacts.length}** contact(s) on page ${page}.`
     };
   })
   .build();

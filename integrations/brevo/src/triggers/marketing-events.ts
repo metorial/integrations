@@ -5,36 +5,38 @@ import { z } from 'zod';
 
 let marketingEventTypes = ['unsubscribed', 'listAddition', 'delivered'] as const;
 
-export let marketingEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Marketing Events',
-    key: 'marketing_events',
-    description: 'Receive notifications for marketing webhook events including contact list additions, unsubscribes, and campaign delivery status.'
-  }
-)
-  .input(z.object({
-    event: z.string().describe('Event type'),
-    email: z.string().optional().describe('Contact email'),
-    messageId: z.string().optional().describe('Message ID'),
-    date: z.string().optional().describe('Event timestamp'),
-    ts: z.number().optional().describe('Event timestamp (Unix)'),
-    tsEvent: z.number().optional().describe('Event timestamp (Unix)'),
-    listId: z.array(z.number()).optional().describe('Associated list IDs'),
-    tag: z.string().optional().describe('Campaign tag'),
-    tags: z.array(z.string()).optional().describe('Campaign tags'),
-    raw: z.any().optional().describe('Full raw event payload')
-  }))
-  .output(z.object({
-    email: z.string().optional().describe('Contact email address'),
-    messageId: z.string().optional().describe('Marketing message ID'),
-    listIds: z.array(z.number()).optional().describe('Associated contact list IDs'),
-    tag: z.string().optional().describe('Campaign tag'),
-    tags: z.array(z.string()).optional().describe('Campaign tags'),
-    eventTimestamp: z.string().optional().describe('When the event occurred (ISO 8601)')
-  }))
+export let marketingEvents = SlateTrigger.create(spec, {
+  name: 'Marketing Events',
+  key: 'marketing_events',
+  description:
+    'Receive notifications for marketing webhook events including contact list additions, unsubscribes, and campaign delivery status.'
+})
+  .input(
+    z.object({
+      event: z.string().describe('Event type'),
+      email: z.string().optional().describe('Contact email'),
+      messageId: z.string().optional().describe('Message ID'),
+      date: z.string().optional().describe('Event timestamp'),
+      ts: z.number().optional().describe('Event timestamp (Unix)'),
+      tsEvent: z.number().optional().describe('Event timestamp (Unix)'),
+      listId: z.array(z.number()).optional().describe('Associated list IDs'),
+      tag: z.string().optional().describe('Campaign tag'),
+      tags: z.array(z.string()).optional().describe('Campaign tags'),
+      raw: z.any().optional().describe('Full raw event payload')
+    })
+  )
+  .output(
+    z.object({
+      email: z.string().optional().describe('Contact email address'),
+      messageId: z.string().optional().describe('Marketing message ID'),
+      listIds: z.array(z.number()).optional().describe('Associated contact list IDs'),
+      tag: z.string().optional().describe('Campaign tag'),
+      tags: z.array(z.string()).optional().describe('Campaign tags'),
+      eventTimestamp: z.string().optional().describe('When the event occurred (ISO 8601)')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType
@@ -52,7 +54,7 @@ export let marketingEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType
@@ -62,7 +64,7 @@ export let marketingEvents = SlateTrigger.create(
       await client.deleteWebhook(details.webhookId);
     },
 
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data = await ctx.request.json();
       let events = Array.isArray(data) ? data : [data];
 
@@ -82,7 +84,7 @@ export let marketingEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = (ctx.input.event ?? 'unknown').toLowerCase();
       let eventTimestamp: string | undefined;
       if (ctx.input.tsEvent) {

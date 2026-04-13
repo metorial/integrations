@@ -15,35 +15,36 @@ let shiftSchema = z.object({
   refunds: z.number().optional().describe('Total refunds during shift'),
   netSales: z.number().optional().describe('Net sales during shift'),
   createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  updatedAt: z.string().optional()
 });
 
-export let listShifts = SlateTool.create(
-  spec,
-  {
-    name: 'List Shifts',
-    key: 'list_shifts',
-    description: `Retrieve shift records including open/close times, sales totals, and associated employee information. Can filter by store or employee.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    limit: z.number().min(1).max(250).optional(),
-    cursor: z.string().optional(),
-    storeId: z.string().optional().describe('Filter by store ID'),
-    employeeId: z.string().optional().describe('Filter by employee ID'),
-  }))
-  .output(z.object({
-    shifts: z.array(shiftSchema),
-    cursor: z.string().nullable().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listShifts = SlateTool.create(spec, {
+  name: 'List Shifts',
+  key: 'list_shifts',
+  description: `Retrieve shift records including open/close times, sales totals, and associated employee information. Can filter by store or employee.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      limit: z.number().min(1).max(250).optional(),
+      cursor: z.string().optional(),
+      storeId: z.string().optional().describe('Filter by store ID'),
+      employeeId: z.string().optional().describe('Filter by employee ID')
+    })
+  )
+  .output(
+    z.object({
+      shifts: z.array(shiftSchema),
+      cursor: z.string().nullable().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.listShifts({
       limit: ctx.input.limit,
       cursor: ctx.input.cursor,
       storeId: ctx.input.storeId,
-      employeeId: ctx.input.employeeId,
+      employeeId: ctx.input.employeeId
     });
 
     let shifts = (result.shifts ?? []).map((s: any) => ({
@@ -58,12 +59,12 @@ export let listShifts = SlateTool.create(
       refunds: s.refunds,
       netSales: s.net_sales,
       createdAt: s.created_at,
-      updatedAt: s.updated_at,
+      updatedAt: s.updated_at
     }));
 
     return {
       output: { shifts, cursor: result.cursor },
-      message: `Retrieved **${shifts.length}** shift(s).`,
+      message: `Retrieved **${shifts.length}** shift(s).`
     };
   })
   .build();

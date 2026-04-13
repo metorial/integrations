@@ -65,9 +65,9 @@ export class Client {
     this.axios = createAxios({
       baseURL: BASE_URL,
       headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -75,8 +75,8 @@ export class Client {
     let response = await this.axios.get('/users', {
       params: {
         page: params.page,
-        items: params.items,
-      },
+        items: params.items
+      }
     });
     return response.data;
   }
@@ -85,8 +85,8 @@ export class Client {
     let response = await this.axios.get('/teams', {
       params: {
         page: params.page,
-        items: params.items,
-      },
+        items: params.items
+      }
     });
     return response.data;
   }
@@ -100,7 +100,7 @@ export class Client {
       from: params.from,
       to: params.to,
       source: params.source,
-      with_simple_transcript: params.withSimpleTranscript,
+      with_simple_transcript: params.withSimpleTranscript
     };
 
     if (params.sourceIds) {
@@ -130,7 +130,7 @@ export class Client {
 
   async presignRecordingUrl(extension: string) {
     let response = await this.axios.post('/calls/presign_recording_url', {
-      extension,
+      extension
     });
     return response.data;
   }
@@ -147,7 +147,7 @@ export class Client {
       locale: params.locale,
       tags: params.tags,
       emails: params.emails,
-      raw_phone_number: params.rawPhoneNumber,
+      raw_phone_number: params.rawPhoneNumber
     });
     return response.data;
   }
@@ -161,8 +161,8 @@ export class Client {
         created_by: params.createdBy,
         date_filter: params.dateFilter,
         from: params.from,
-        to: params.to,
-      },
+        to: params.to
+      }
     });
     return response.data;
   }
@@ -185,7 +185,7 @@ export class Client {
       description: params.description,
       owned: params.owned,
       internal: params.internal,
-      direction: params.direction,
+      direction: params.direction
     });
     return response.data;
   }
@@ -197,7 +197,7 @@ export class Client {
 
   async launchMeetingAssistant(meetingEventUuid: string, stopTask?: boolean) {
     let response = await this.axios.post(`/meeting_events/${meetingEventUuid}/launch_bot`, {
-      stop_task: stopTask,
+      stop_task: stopTask
     });
     return response.data;
   }

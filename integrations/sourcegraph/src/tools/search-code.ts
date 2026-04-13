@@ -3,47 +3,67 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let searchCode = SlateTool.create(
-  spec,
-  {
-    name: 'Search Code',
-    key: 'search_code',
-    description: `Search across all repositories, branches, and code hosts using Sourcegraph's code search.
+export let searchCode = SlateTool.create(spec, {
+  name: 'Search Code',
+  key: 'search_code',
+  description: `Search across all repositories, branches, and code hosts using Sourcegraph's code search.
 Supports literal, regex, and structural search patterns. Can search code content, file paths, diffs, commit messages, and symbols.
 Queries can be scoped using filters like \`repo:\`, \`lang:\`, \`file:\`, \`type:\`, and more.
 Uses the Stream API for efficient retrieval of results.`,
-    instructions: [
-      'Use Sourcegraph query syntax for advanced searches: repo:myrepo lang:go file:main.go type:diff',
-      'Add count:all to get exhaustive results (may be slower)',
-      'Use patternType to control matching: literal, regexp, or structural'
-    ],
-    tags: {
-      destructive: false,
-      readOnly: true
-    }
+  instructions: [
+    'Use Sourcegraph query syntax for advanced searches: repo:myrepo lang:go file:main.go type:diff',
+    'Add count:all to get exhaustive results (may be slower)',
+    'Use patternType to control matching: literal, regexp, or structural'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: true
   }
-)
-  .input(z.object({
-    query: z.string().describe('Sourcegraph search query. Supports filters like repo:, lang:, file:, type:commit, type:diff, type:symbol, etc.'),
-    patternType: z.enum(['literal', 'regexp', 'structural', 'keyword']).optional().describe('Pattern type for matching. Defaults to keyword.'),
-    maxResults: z.number().optional().describe('Maximum number of results to return. Defaults to 50.')
-  }))
-  .output(z.object({
-    matchCount: z.number().describe('Total number of matches found'),
-    results: z.array(z.object({
-      type: z.string().describe('Type of match: content, path, commit, repo, symbol'),
-      repository: z.string().optional().describe('Repository name'),
-      filePath: z.string().optional().describe('File path'),
-      fileUrl: z.string().optional().describe('URL to the file on Sourcegraph'),
-      lineMatches: z.array(z.object({
-        lineNumber: z.number().optional(),
-        preview: z.string()
-      })).optional().describe('Matched lines with context'),
-      commitMessage: z.string().optional().describe('Commit message for commit matches'),
-      commitAuthor: z.string().optional().describe('Commit author for commit matches')
-    })).describe('Search results')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      query: z
+        .string()
+        .describe(
+          'Sourcegraph search query. Supports filters like repo:, lang:, file:, type:commit, type:diff, type:symbol, etc.'
+        ),
+      patternType: z
+        .enum(['literal', 'regexp', 'structural', 'keyword'])
+        .optional()
+        .describe('Pattern type for matching. Defaults to keyword.'),
+      maxResults: z
+        .number()
+        .optional()
+        .describe('Maximum number of results to return. Defaults to 50.')
+    })
+  )
+  .output(
+    z.object({
+      matchCount: z.number().describe('Total number of matches found'),
+      results: z
+        .array(
+          z.object({
+            type: z.string().describe('Type of match: content, path, commit, repo, symbol'),
+            repository: z.string().optional().describe('Repository name'),
+            filePath: z.string().optional().describe('File path'),
+            fileUrl: z.string().optional().describe('URL to the file on Sourcegraph'),
+            lineMatches: z
+              .array(
+                z.object({
+                  lineNumber: z.number().optional(),
+                  preview: z.string()
+                })
+              )
+              .optional()
+              .describe('Matched lines with context'),
+            commitMessage: z.string().optional().describe('Commit message for commit matches'),
+            commitAuthor: z.string().optional().describe('Commit author for commit matches')
+          })
+        )
+        .describe('Search results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       instanceUrl: ctx.config.instanceUrl,
       authorizationHeader: ctx.auth.authorizationHeader
@@ -64,7 +84,10 @@ Uses the Stream API for efficient retrieval of results.`,
       let result: any = { type };
 
       if (match.repository) {
-        result.repository = typeof match.repository === 'string' ? match.repository : match.repository.name || match.repository;
+        result.repository =
+          typeof match.repository === 'string'
+            ? match.repository
+            : match.repository.name || match.repository;
       }
 
       if (match.path) {
@@ -103,4 +126,5 @@ Uses the Stream API for efficient retrieval of results.`,
       },
       message: `Found **${matches.length}** matches${results.length < matches.length ? ` (showing first ${results.length})` : ''}.`
     };
-  }).build();
+  })
+  .build();

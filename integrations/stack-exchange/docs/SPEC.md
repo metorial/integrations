@@ -21,6 +21,7 @@ Stack Exchange uses OAuth 2.0 for authentication. OAuth is required for accessin
 **Registration:** Register your app on [Stack Apps](https://stackapps.com/apps/oauth/register) to obtain a `client_id` and `client_secret`.
 
 **Endpoints:**
+
 - **Authorization URL:** `https://stackoverflow.com/oauth`
 - **Token URL:** `https://stackoverflow.com/oauth/access_token`
 
@@ -28,6 +29,7 @@ Stack Exchange uses OAuth 2.0 for authentication. OAuth is required for accessin
 Stack Exchange offers two OAuth 2.0 variants: an explicit grant for server-side applications and an implicit one for pure browser-based ones.
 
 For the explicit (authorization code) flow:
+
 1. Redirect the user to `https://stackoverflow.com/oauth?client_id={YOUR_CLIENT_ID}&scope={SCOPE}&redirect_uri={REDIRECT_URI}`. The user will see a page asking to grant your app access. Once the user approves, Stack Exchange redirects them back to your redirect_uri with an authorization code.
 2. Exchange the authorization code for an access token by POSTing to `https://stackoverflow.com/oauth/access_token` with `client_id`, `client_secret`, `code`, and `redirect_uri`.
 

@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   createLink,
@@ -11,11 +10,9 @@ import {
   getLinkStatistics,
   getDomainStatistics,
   generateQrCode,
-  archiveLink,
+  archiveLink
 } from './tools';
-import { newLink,
-  inboundWebhook,
-} from './triggers';
+import { newLink, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,10 +26,7 @@ export let provider = Slate.create({
     getLinkStatistics,
     getDomainStatistics,
     generateQrCode,
-    archiveLink,
+    archiveLink
   ],
-  triggers: [
-    inboundWebhook,
-    newLink,
-  ],
+  triggers: [inboundWebhook, newLink]
 });

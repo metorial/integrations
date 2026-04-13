@@ -127,8 +127,8 @@ export class Client {
       baseURL,
       headers: {
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -136,15 +136,17 @@ export class Client {
     let axios = this.createAxiosInstance();
     let body: Record<string, unknown> = {
       model: params.model,
-      messages: params.messages,
+      messages: params.messages
     };
 
-    if (params.provider ?? this.defaultProvider) body.provider = params.provider ?? this.defaultProvider;
+    if (params.provider ?? this.defaultProvider)
+      body.provider = params.provider ?? this.defaultProvider;
     if (params.maxTokens !== undefined) body.max_tokens = params.maxTokens;
     if (params.temperature !== undefined) body.temperature = params.temperature;
     if (params.topP !== undefined) body.top_p = params.topP;
     if (params.topK !== undefined) body.top_k = params.topK;
-    if (params.frequencyPenalty !== undefined) body.frequency_penalty = params.frequencyPenalty;
+    if (params.frequencyPenalty !== undefined)
+      body.frequency_penalty = params.frequencyPenalty;
     if (params.presencePenalty !== undefined) body.presence_penalty = params.presencePenalty;
     if (params.n !== undefined) body.n = params.n;
     if (params.routing ?? this.routing) body.routing = params.routing ?? this.routing;
@@ -161,7 +163,8 @@ export class Client {
     if (params.scrapeLength !== undefined) body.scrape_length = params.scrapeLength;
     if (params.searchLang) body.search_lang = params.searchLang;
     if (params.searchGeo) body.search_geo = params.searchGeo;
-    if (params.webSearchContextSize) body.web_search_options = { search_context_size: params.webSearchContextSize };
+    if (params.webSearchContextSize)
+      body.web_search_options = { search_context_size: params.webSearchContextSize };
     if (params.tools) body.tools = params.tools;
     if (params.toolChoice) body.tool_choice = params.toolChoice;
     if (params.responseFormat) body.response_format = params.responseFormat;
@@ -174,10 +177,11 @@ export class Client {
     let axios = this.createAxiosInstance();
     let body: Record<string, unknown> = {
       model: params.model,
-      prompt: params.prompt,
+      prompt: params.prompt
     };
 
-    if (params.provider ?? this.defaultProvider) body.provider = params.provider ?? this.defaultProvider;
+    if (params.provider ?? this.defaultProvider)
+      body.provider = params.provider ?? this.defaultProvider;
     if (params.n !== undefined) body.n = params.n;
     if (params.size) body.size = params.size;
     if (params.quality) body.quality = params.quality;
@@ -194,10 +198,11 @@ export class Client {
     let body: Record<string, unknown> = {
       model: params.model,
       voice: params.voice,
-      input: params.input,
+      input: params.input
     };
 
-    if (params.provider ?? this.defaultProvider) body.provider = params.provider ?? this.defaultProvider;
+    if (params.provider ?? this.defaultProvider)
+      body.provider = params.provider ?? this.defaultProvider;
     if (params.responseFormat) body.response_format = params.responseFormat;
     if (params.speed !== undefined) body.speed = params.speed;
     if (params.voiceSettings) {
@@ -205,7 +210,7 @@ export class Client {
         stability: params.voiceSettings.stability,
         similarity_boost: params.voiceSettings.similarityBoost,
         style: params.voiceSettings.style,
-        use_speaker_boost: params.voiceSettings.useSpeakerBoost,
+        use_speaker_boost: params.voiceSettings.useSpeakerBoost
       };
     }
 
@@ -217,7 +222,7 @@ export class Client {
     let axios = this.createAxiosInstance();
     let body: Record<string, unknown> = {
       model: params.model,
-      input: params.input,
+      input: params.input
     };
 
     if (params.encodingFormat) body.encoding_format = params.encodingFormat;
@@ -245,7 +250,7 @@ export class Client {
   async search(params: SearchParams) {
     let axios = this.createAxiosInstance();
     let body: Record<string, unknown> = {
-      query: params.query,
+      query: params.query
     };
 
     if (params.searchProvider) body.search_provider = params.searchProvider;
@@ -261,7 +266,7 @@ export class Client {
   async scrape(params: ScrapeParams) {
     let axios = this.createAxiosInstance();
     let body: Record<string, unknown> = {
-      url: params.url,
+      url: params.url
     };
 
     if (params.format) body.format = params.format;
@@ -285,7 +290,7 @@ export class Client {
     let axios = this.createAxiosInstance('https://apipie.ai');
     let body: Record<string, unknown> = {
       collection: params.collection,
-      url: params.url,
+      url: params.url
     };
 
     if (params.metatag) body.metatag = params.metatag;
@@ -304,7 +309,7 @@ export class Client {
     let axios = this.createAxiosInstance('https://apipie.ai');
     let body: Record<string, unknown> = {
       collection: params.collection,
-      collectionName: params.collection,
+      collectionName: params.collection
     };
 
     if (params.deleteAll !== undefined) body.deleteAll = params.deleteAll;
@@ -315,10 +320,13 @@ export class Client {
   }
 }
 
-export let createClient = (ctx: { auth: { token: string }; config: { defaultProvider?: string; routing?: string } }) => {
+export let createClient = (ctx: {
+  auth: { token: string };
+  config: { defaultProvider?: string; routing?: string };
+}) => {
   return new Client({
     token: ctx.auth.token,
     defaultProvider: ctx.config.defaultProvider,
-    routing: ctx.config.routing,
+    routing: ctx.config.routing
   });
 };

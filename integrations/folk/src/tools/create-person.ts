@@ -3,59 +3,76 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let createPerson = SlateTool.create(
-  spec,
-  {
-    name: 'Create Person',
-    key: 'create_person',
-    description: `Creates a new person contact in your Folk workspace. Supports setting name, job title, emails, phones, addresses, URLs, birthday, description, company associations, and group memberships. Folk automatically checks for duplicates and merges if a match is found.`,
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let createPerson = SlateTool.create(spec, {
+  name: 'Create Person',
+  key: 'create_person',
+  description: `Creates a new person contact in your Folk workspace. Supports setting name, job title, emails, phones, addresses, URLs, birthday, description, company associations, and group memberships. Folk automatically checks for duplicates and merges if a match is found.`,
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    firstName: z.string().optional().describe('First name of the person'),
-    lastName: z.string().optional().describe('Last name of the person'),
-    fullName: z.string().optional().describe('Full name (used if first/last not provided)'),
-    description: z.string().optional().describe('Short description or bio'),
-    birthday: z.string().optional().describe('Birthday in YYYY-MM-DD format'),
-    jobTitle: z.string().optional().describe('Job title or role'),
-    groupIds: z.array(z.string()).optional().describe('Group IDs to add the person to'),
-    companies: z.array(z.object({
-      companyId: z.string().optional().describe('Existing company ID'),
-      companyName: z.string().optional().describe('Company name (creates or links)'),
-    })).optional().describe('Companies to associate (first is primary)'),
-    emails: z.array(z.string()).optional().describe('Email addresses (first is primary)'),
-    phones: z.array(z.string()).optional().describe('Phone numbers (first is primary)'),
-    addresses: z.array(z.string()).optional().describe('Addresses (first is primary)'),
-    urls: z.array(z.string()).optional().describe('URLs (first is primary)'),
-    customFieldValues: z.record(z.string(), z.unknown()).optional().describe('Custom field values keyed by group ID'),
-  }))
-  .output(z.object({
-    personId: z.string().describe('ID of the created person'),
-    firstName: z.string().describe('First name'),
-    lastName: z.string().describe('Last name'),
-    fullName: z.string().describe('Full name'),
-    description: z.string().describe('Description'),
-    birthday: z.string().nullable().describe('Birthday'),
-    jobTitle: z.string().describe('Job title'),
-    emails: z.array(z.string()).describe('Email addresses'),
-    phones: z.array(z.string()).describe('Phone numbers'),
-    addresses: z.array(z.string()).describe('Addresses'),
-    urls: z.array(z.string()).describe('URLs'),
-    groups: z.array(z.object({
-      groupId: z.string(),
-      groupName: z.string(),
-    })).describe('Groups the person belongs to'),
-    companies: z.array(z.object({
-      companyId: z.string(),
-      companyName: z.string(),
-    })).describe('Associated companies'),
-    createdAt: z.string().nullable().describe('Creation timestamp'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      firstName: z.string().optional().describe('First name of the person'),
+      lastName: z.string().optional().describe('Last name of the person'),
+      fullName: z.string().optional().describe('Full name (used if first/last not provided)'),
+      description: z.string().optional().describe('Short description or bio'),
+      birthday: z.string().optional().describe('Birthday in YYYY-MM-DD format'),
+      jobTitle: z.string().optional().describe('Job title or role'),
+      groupIds: z.array(z.string()).optional().describe('Group IDs to add the person to'),
+      companies: z
+        .array(
+          z.object({
+            companyId: z.string().optional().describe('Existing company ID'),
+            companyName: z.string().optional().describe('Company name (creates or links)')
+          })
+        )
+        .optional()
+        .describe('Companies to associate (first is primary)'),
+      emails: z.array(z.string()).optional().describe('Email addresses (first is primary)'),
+      phones: z.array(z.string()).optional().describe('Phone numbers (first is primary)'),
+      addresses: z.array(z.string()).optional().describe('Addresses (first is primary)'),
+      urls: z.array(z.string()).optional().describe('URLs (first is primary)'),
+      customFieldValues: z
+        .record(z.string(), z.unknown())
+        .optional()
+        .describe('Custom field values keyed by group ID')
+    })
+  )
+  .output(
+    z.object({
+      personId: z.string().describe('ID of the created person'),
+      firstName: z.string().describe('First name'),
+      lastName: z.string().describe('Last name'),
+      fullName: z.string().describe('Full name'),
+      description: z.string().describe('Description'),
+      birthday: z.string().nullable().describe('Birthday'),
+      jobTitle: z.string().describe('Job title'),
+      emails: z.array(z.string()).describe('Email addresses'),
+      phones: z.array(z.string()).describe('Phone numbers'),
+      addresses: z.array(z.string()).describe('Addresses'),
+      urls: z.array(z.string()).describe('URLs'),
+      groups: z
+        .array(
+          z.object({
+            groupId: z.string(),
+            groupName: z.string()
+          })
+        )
+        .describe('Groups the person belongs to'),
+      companies: z
+        .array(
+          z.object({
+            companyId: z.string(),
+            companyName: z.string()
+          })
+        )
+        .describe('Associated companies'),
+      createdAt: z.string().nullable().describe('Creation timestamp')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let input: Record<string, unknown> = {};
@@ -71,10 +88,10 @@ export let createPerson = SlateTool.create(
     if (ctx.input.urls) input.urls = ctx.input.urls;
     if (ctx.input.customFieldValues) input.customFieldValues = ctx.input.customFieldValues;
     if (ctx.input.groupIds) {
-      input.groups = ctx.input.groupIds.map((id) => ({ id }));
+      input.groups = ctx.input.groupIds.map(id => ({ id }));
     }
     if (ctx.input.companies) {
-      input.companies = ctx.input.companies.map((c) => {
+      input.companies = ctx.input.companies.map(c => {
         if (c.companyId) return { id: c.companyId };
         return { name: c.companyName };
       });
@@ -95,11 +112,11 @@ export let createPerson = SlateTool.create(
         phones: person.phones,
         addresses: person.addresses,
         urls: person.urls,
-        groups: person.groups.map((g) => ({ groupId: g.id, groupName: g.name })),
-        companies: person.companies.map((c) => ({ companyId: c.id, companyName: c.name })),
-        createdAt: person.createdAt,
+        groups: person.groups.map(g => ({ groupId: g.id, groupName: g.name })),
+        companies: person.companies.map(c => ({ companyId: c.id, companyName: c.name })),
+        createdAt: person.createdAt
       },
-      message: `Created person **${person.fullName}** (${person.id})`,
+      message: `Created person **${person.fullName}** (${person.id})`
     };
   })
   .build();

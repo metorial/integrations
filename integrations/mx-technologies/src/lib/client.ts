@@ -2,7 +2,7 @@ import { createAxios } from 'slates';
 
 let BASE_URLS: Record<string, string> = {
   production: 'https://api.mx.com',
-  development: 'https://int-api.mx.com',
+  development: 'https://int-api.mx.com'
 };
 
 export class MxClient {
@@ -13,10 +13,10 @@ export class MxClient {
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Basic ${opts.token}`,
-        'Accept': 'application/vnd.mx.api.v1+json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${opts.token}`,
+        Accept: 'application/vnd.mx.api.v1+json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -27,8 +27,8 @@ export class MxClient {
       user: {
         id: params.id,
         metadata: params.metadata,
-        is_disabled: params.isDisabled,
-      },
+        is_disabled: params.isDisabled
+      }
     });
     return res.data.user;
   }
@@ -37,8 +37,8 @@ export class MxClient {
     let res = await this.axios.get('/users', {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { users: res.data.users, pagination: res.data.pagination };
   }
@@ -48,13 +48,16 @@ export class MxClient {
     return res.data.user;
   }
 
-  async updateUser(userGuid: string, params: { id?: string; metadata?: string; isDisabled?: boolean }) {
+  async updateUser(
+    userGuid: string,
+    params: { id?: string; metadata?: string; isDisabled?: boolean }
+  ) {
     let res = await this.axios.put(`/users/${userGuid}`, {
       user: {
         id: params.id,
         metadata: params.metadata,
-        is_disabled: params.isDisabled,
-      },
+        is_disabled: params.isDisabled
+      }
     });
     return res.data.user;
   }
@@ -65,21 +68,24 @@ export class MxClient {
 
   // ── Members ────────────────────────────────────────────
 
-  async createMember(userGuid: string, params: {
-    institutionCode: string;
-    credentials: Array<{ guid: string; value: string }>;
-    id?: string;
-    metadata?: string;
-    skipAggregation?: boolean;
-  }) {
+  async createMember(
+    userGuid: string,
+    params: {
+      institutionCode: string;
+      credentials: Array<{ guid: string; value: string }>;
+      id?: string;
+      metadata?: string;
+      skipAggregation?: boolean;
+    }
+  ) {
     let res = await this.axios.post(`/users/${userGuid}/members`, {
       member: {
         institution_code: params.institutionCode,
         credentials: params.credentials,
         id: params.id,
         metadata: params.metadata,
-        skip_aggregation: params.skipAggregation,
-      },
+        skip_aggregation: params.skipAggregation
+      }
     });
     return res.data.member;
   }
@@ -88,8 +94,8 @@ export class MxClient {
     let res = await this.axios.get(`/users/${userGuid}/members`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { members: res.data.members, pagination: res.data.pagination };
   }
@@ -99,17 +105,21 @@ export class MxClient {
     return res.data.member;
   }
 
-  async updateMember(userGuid: string, memberGuid: string, params: {
-    credentials?: Array<{ guid: string; value: string }>;
-    id?: string;
-    metadata?: string;
-  }) {
+  async updateMember(
+    userGuid: string,
+    memberGuid: string,
+    params: {
+      credentials?: Array<{ guid: string; value: string }>;
+      id?: string;
+      metadata?: string;
+    }
+  ) {
     let res = await this.axios.put(`/users/${userGuid}/members/${memberGuid}`, {
       member: {
         credentials: params.credentials,
         id: params.id,
-        metadata: params.metadata,
-      },
+        metadata: params.metadata
+      }
     });
     return res.data.member;
   }
@@ -149,7 +159,9 @@ export class MxClient {
   }
 
   async fetchStatements(userGuid: string, memberGuid: string) {
-    let res = await this.axios.post(`/users/${userGuid}/members/${memberGuid}/fetch_statements`);
+    let res = await this.axios.post(
+      `/users/${userGuid}/members/${memberGuid}/fetch_statements`
+    );
     return res.data.member;
   }
 
@@ -163,9 +175,13 @@ export class MxClient {
     return res.data.challenges;
   }
 
-  async resumeMfaChallenge(userGuid: string, memberGuid: string, challenges: Array<{ guid: string; value: string }>) {
+  async resumeMfaChallenge(
+    userGuid: string,
+    memberGuid: string,
+    challenges: Array<{ guid: string; value: string }>
+  ) {
     let res = await this.axios.put(`/users/${userGuid}/members/${memberGuid}/resume`, {
-      member: { challenges },
+      member: { challenges }
     });
     return res.data.member;
   }
@@ -176,18 +192,22 @@ export class MxClient {
     let res = await this.axios.get(`/users/${userGuid}/accounts`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { accounts: res.data.accounts, pagination: res.data.pagination };
   }
 
-  async listAccountsByMember(userGuid: string, memberGuid: string, params?: { page?: number; recordsPerPage?: number }) {
+  async listAccountsByMember(
+    userGuid: string,
+    memberGuid: string,
+    params?: { page?: number; recordsPerPage?: number }
+  ) {
     let res = await this.axios.get(`/users/${userGuid}/members/${memberGuid}/accounts`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { accounts: res.data.accounts, pagination: res.data.pagination };
   }
@@ -198,7 +218,9 @@ export class MxClient {
   }
 
   async listAccountNumbers(userGuid: string, accountGuid: string) {
-    let res = await this.axios.get(`/users/${userGuid}/accounts/${accountGuid}/account_numbers`);
+    let res = await this.axios.get(
+      `/users/${userGuid}/accounts/${accountGuid}/account_numbers`
+    );
     return res.data.account_numbers;
   }
 
@@ -209,53 +231,64 @@ export class MxClient {
 
   // ── Transactions ───────────────────────────────────────
 
-  async listTransactions(userGuid: string, params?: {
-    page?: number;
-    recordsPerPage?: number;
-    fromDate?: string;
-    toDate?: string;
-  }) {
+  async listTransactions(
+    userGuid: string,
+    params?: {
+      page?: number;
+      recordsPerPage?: number;
+      fromDate?: string;
+      toDate?: string;
+    }
+  ) {
     let res = await this.axios.get(`/users/${userGuid}/transactions`, {
       params: {
         page: params?.page,
         records_per_page: params?.recordsPerPage,
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return { transactions: res.data.transactions, pagination: res.data.pagination };
   }
 
-  async listTransactionsByAccount(userGuid: string, accountGuid: string, params?: {
-    page?: number;
-    recordsPerPage?: number;
-    fromDate?: string;
-    toDate?: string;
-  }) {
+  async listTransactionsByAccount(
+    userGuid: string,
+    accountGuid: string,
+    params?: {
+      page?: number;
+      recordsPerPage?: number;
+      fromDate?: string;
+      toDate?: string;
+    }
+  ) {
     let res = await this.axios.get(`/users/${userGuid}/accounts/${accountGuid}/transactions`, {
       params: {
         page: params?.page,
         records_per_page: params?.recordsPerPage,
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return { transactions: res.data.transactions, pagination: res.data.pagination };
   }
 
-  async listTransactionsByMember(userGuid: string, memberGuid: string, params?: {
-    page?: number;
-    recordsPerPage?: number;
-    fromDate?: string;
-    toDate?: string;
-  }) {
+  async listTransactionsByMember(
+    userGuid: string,
+    memberGuid: string,
+    params?: {
+      page?: number;
+      recordsPerPage?: number;
+      fromDate?: string;
+      toDate?: string;
+    }
+  ) {
     let res = await this.axios.get(`/users/${userGuid}/members/${memberGuid}/transactions`, {
       params: {
         page: params?.page,
         records_per_page: params?.recordsPerPage,
         from_date: params?.fromDate,
-        to_date: params?.toDate,
-      },
+        to_date: params?.toDate
+      }
     });
     return { transactions: res.data.transactions, pagination: res.data.pagination };
   }
@@ -267,14 +300,19 @@ export class MxClient {
 
   // ── Institutions ───────────────────────────────────────
 
-  async listInstitutions(params?: { name?: string; page?: number; recordsPerPage?: number; supportsAccountVerification?: boolean }) {
+  async listInstitutions(params?: {
+    name?: string;
+    page?: number;
+    recordsPerPage?: number;
+    supportsAccountVerification?: boolean;
+  }) {
     let res = await this.axios.get('/institutions', {
       params: {
         name: params?.name,
         page: params?.page,
         records_per_page: params?.recordsPerPage,
-        supports_account_verification: params?.supportsAccountVerification,
-      },
+        supports_account_verification: params?.supportsAccountVerification
+      }
     });
     return { institutions: res.data.institutions, pagination: res.data.pagination };
   }
@@ -295,29 +333,43 @@ export class MxClient {
     let res = await this.axios.get(`/users/${userGuid}/investment_holdings`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { holdings: res.data.holdings, pagination: res.data.pagination };
   }
 
-  async listHoldingsByAccount(userGuid: string, accountGuid: string, params?: { page?: number; recordsPerPage?: number }) {
-    let res = await this.axios.get(`/users/${userGuid}/accounts/${accountGuid}/investment_holdings`, {
-      params: {
-        page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
-    });
+  async listHoldingsByAccount(
+    userGuid: string,
+    accountGuid: string,
+    params?: { page?: number; recordsPerPage?: number }
+  ) {
+    let res = await this.axios.get(
+      `/users/${userGuid}/accounts/${accountGuid}/investment_holdings`,
+      {
+        params: {
+          page: params?.page,
+          records_per_page: params?.recordsPerPage
+        }
+      }
+    );
     return { holdings: res.data.holdings, pagination: res.data.pagination };
   }
 
-  async listHoldingsByMember(userGuid: string, memberGuid: string, params?: { page?: number; recordsPerPage?: number }) {
-    let res = await this.axios.get(`/users/${userGuid}/members/${memberGuid}/investment_holdings`, {
-      params: {
-        page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
-    });
+  async listHoldingsByMember(
+    userGuid: string,
+    memberGuid: string,
+    params?: { page?: number; recordsPerPage?: number }
+  ) {
+    let res = await this.axios.get(
+      `/users/${userGuid}/members/${memberGuid}/investment_holdings`,
+      {
+        params: {
+          page: params?.page,
+          records_per_page: params?.recordsPerPage
+        }
+      }
+    );
     return { holdings: res.data.holdings, pagination: res.data.pagination };
   }
 
@@ -328,18 +380,24 @@ export class MxClient {
 
   // ── Statements ─────────────────────────────────────────
 
-  async listStatements(userGuid: string, memberGuid: string, params?: { page?: number; recordsPerPage?: number }) {
+  async listStatements(
+    userGuid: string,
+    memberGuid: string,
+    params?: { page?: number; recordsPerPage?: number }
+  ) {
     let res = await this.axios.get(`/users/${userGuid}/members/${memberGuid}/statements`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { statements: res.data.statements, pagination: res.data.pagination };
   }
 
   async readStatement(userGuid: string, memberGuid: string, statementGuid: string) {
-    let res = await this.axios.get(`/users/${userGuid}/members/${memberGuid}/statements/${statementGuid}`);
+    let res = await this.axios.get(
+      `/users/${userGuid}/members/${memberGuid}/statements/${statementGuid}`
+    );
     return res.data.statement;
   }
 
@@ -349,8 +407,8 @@ export class MxClient {
     let res = await this.axios.get(`/users/${userGuid}/categories`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { categories: res.data.categories, pagination: res.data.pagination };
   }
@@ -362,21 +420,23 @@ export class MxClient {
 
   // ── Data Enhancement ───────────────────────────────────
 
-  async enhanceTransactions(transactions: Array<{
-    amount?: number;
-    description?: string;
-    id: string;
-    merchantCategoryCode?: number;
-    type?: string;
-  }>) {
+  async enhanceTransactions(
+    transactions: Array<{
+      amount?: number;
+      description?: string;
+      id: string;
+      merchantCategoryCode?: number;
+      type?: string;
+    }>
+  ) {
     let res = await this.axios.post('/transactions/enhance', {
-      transactions: transactions.map((t) => ({
+      transactions: transactions.map(t => ({
         amount: t.amount,
         description: t.description,
         id: t.id,
         merchant_category_code: t.merchantCategoryCode,
-        type: t.type,
-      })),
+        type: t.type
+      }))
     });
     return res.data.transactions;
   }
@@ -387,8 +447,8 @@ export class MxClient {
     let res = await this.axios.get('/merchants', {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { merchants: res.data.merchants, pagination: res.data.pagination };
   }
@@ -400,17 +460,20 @@ export class MxClient {
 
   // ── Widget URLs ────────────────────────────────────────
 
-  async requestWidgetUrl(userGuid: string, params: {
-    widgetType: string;
-    colorScheme?: string;
-    currentInstitutionCode?: string;
-    currentMemberGuid?: string;
-    disableInstitutionSearch?: boolean;
-    mode?: string;
-    uiMessageWebviewUrlScheme?: string;
-    updateCredentials?: boolean;
-    waitForFullAggregation?: boolean;
-  }) {
+  async requestWidgetUrl(
+    userGuid: string,
+    params: {
+      widgetType: string;
+      colorScheme?: string;
+      currentInstitutionCode?: string;
+      currentMemberGuid?: string;
+      disableInstitutionSearch?: boolean;
+      mode?: string;
+      uiMessageWebviewUrlScheme?: string;
+      updateCredentials?: boolean;
+      waitForFullAggregation?: boolean;
+    }
+  ) {
     let res = await this.axios.post(`/users/${userGuid}/widget_urls`, {
       widget_url: {
         widget_type: params.widgetType,
@@ -421,8 +484,8 @@ export class MxClient {
         mode: params.mode,
         ui_message_webview_url_scheme: params.uiMessageWebviewUrlScheme,
         update_credentials: params.updateCredentials,
-        wait_for_full_aggregation: params.waitForFullAggregation,
-      },
+        wait_for_full_aggregation: params.waitForFullAggregation
+      }
     });
     return res.data.widget_url;
   }
@@ -433,8 +496,8 @@ export class MxClient {
     let res = await this.axios.get(`/users/${userGuid}/insights`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { insights: res.data.insights, pagination: res.data.pagination };
   }
@@ -450,15 +513,15 @@ export class MxClient {
     let res = await this.axios.get(`/users/${userGuid}/tags`, {
       params: {
         page: params?.page,
-        records_per_page: params?.recordsPerPage,
-      },
+        records_per_page: params?.recordsPerPage
+      }
     });
     return { tags: res.data.tags, pagination: res.data.pagination };
   }
 
   async createTag(userGuid: string, name: string) {
     let res = await this.axios.post(`/users/${userGuid}/tags`, {
-      tag: { name },
+      tag: { name }
     });
     return res.data.tag;
   }
@@ -469,8 +532,8 @@ export class MxClient {
     let res = await this.axios.post(`/users/${userGuid}/taggings`, {
       tagging: {
         tag_guid: params.tagGuid,
-        transaction_guid: params.transactionGuid,
-      },
+        transaction_guid: params.transactionGuid
+      }
     });
     return res.data.tagging;
   }

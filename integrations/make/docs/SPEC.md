@@ -45,36 +45,47 @@ Key scope categories include: `scenarios:read/write`, `connections:read/write`, 
 ## Features
 
 ### Scenario Management
+
 Create, list, update, delete, activate, deactivate, clone, and run automation scenarios. Retrieve scenario details, execution logs, and consumption/usage statistics. Manage scenario blueprints (the JSON definition of a scenario's module flow and configuration) including versioning and draft/live states. Organize scenarios into folders. Manage scenario-level custom properties and buildtime variables.
 
 ### Connection Management
+
 Create new connections with data passed in the request body and receive all details of the created connection. List, update, rename, delete, and verify connections. Verify the connection status — this endpoint communicates with the API of the app that includes the given connection and verifies if credentials saved in Make are still valid. It returns confirmation if the connection is verified (true) or not (false).
 
 ### Data Stores and Data Structures
+
 Data stores are used to store data from scenarios or for transferring data in between individual scenarios or scenario runs. Create, list, update, and delete data stores. Manage records within data stores (create, read, update, delete records). Define and manage data structures that describe the schema for data stores.
 
 ### Webhooks (Hooks)
+
 Retrieve a collection of all hooks for a team. Returned hooks are sorted by name in ascending order. Create, update, and delete webhook endpoints. Two native Make hook types are `gateway-webhook` and `gateway-mailhook`. Manage incoming data and hook logs.
 
 ### Organizations and Teams
+
 Manage organizations, including user roles within organizations, and child organizations (for MMS/multi-organization setups). Create, update, and delete teams. Manage team membership, roles, and team-level variables.
 
 ### Custom Apps (SDK Apps)
+
 Create and manage custom app integrations built with the Make Apps SDK. Manage app modules, RPCs (remote procedure calls), functions, connections, and webhooks within custom apps. Handle app invitations, review requests, cloning, and uninstalling.
 
 ### Users and Notifications
+
 Manage user profiles, organization invitations, team roles, and notification preferences. Retrieve and update notifications for users within teams.
 
 ### Analytics and Audit Logs
+
 Retrieve organization-level analytics data. Access audit logs for organizations and teams to track changes and actions performed on the platform.
 
 ### AI Agents
+
 Manage AI agents, their context configurations, and LLM provider settings.
 
 ### Keys and Devices
+
 Manage encryption keys (e.g., AES, API Key Auth) used within scenarios. Manage devices for incoming and outgoing data flows.
 
 ### Incomplete Executions
+
 Access and manage scenario executions that did not complete successfully, enabling retry or inspection of failed runs.
 
 ## Events

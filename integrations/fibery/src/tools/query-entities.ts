@@ -13,19 +13,21 @@ export let queryEntitiesTool = SlateTool.create(spec, {
     'Always include "fibery/id" in select to identify entities.',
     'For relation fields, use nested selection: {"Relation/Field": ["fibery/id", "Target/Name"]}.',
     'Filter operators: "=", "!=", "<", "<=", ">", ">=", "q/contains", "q/not-contains", "q/in", "q/not-in". Combine with "q/and" or "q/or".',
-    'Use queryParams to pass named parameters (prefixed with "$") referenced in the where clause.',
+    'Use queryParams to pass named parameters (prefixed with "$") referenced in the where clause.'
   ],
   constraints: [
     'Maximum results per query depend on workspace plan. Use limit and offset for pagination.',
-    'Rate limit: 3 requests per second per token.',
+    'Rate limit: 3 requests per second per token.'
   ],
   tags: {
-    readOnly: true,
-  },
+    readOnly: true
+  }
 })
   .input(
     z.object({
-      typeName: z.string().describe('Fully qualified type name (e.g., "Project Management/Task")'),
+      typeName: z
+        .string()
+        .describe('Fully qualified type name (e.g., "Project Management/Task")'),
       select: z
         .array(z.any())
         .describe(
@@ -40,25 +42,37 @@ export let queryEntitiesTool = SlateTool.create(spec, {
       orderBy: z
         .array(z.any())
         .optional()
-        .describe('Ordering rules (e.g., [["Task/Priority", "q/desc"], ["Task/Name", "q/asc"]])'),
-      limit: z.number().optional().default(50).describe('Maximum number of entities to return (default: 50)'),
-      offset: z.number().optional().default(0).describe('Number of entities to skip for pagination (default: 0)'),
+        .describe(
+          'Ordering rules (e.g., [["Task/Priority", "q/desc"], ["Task/Name", "q/asc"]])'
+        ),
+      limit: z
+        .number()
+        .optional()
+        .default(50)
+        .describe('Maximum number of entities to return (default: 50)'),
+      offset: z
+        .number()
+        .optional()
+        .default(0)
+        .describe('Number of entities to skip for pagination (default: 0)'),
       queryParams: z
         .record(z.string(), z.any())
         .optional()
-        .describe('Named parameters for where clause (e.g., {"$status": "In Progress"})'),
+        .describe('Named parameters for where clause (e.g., {"$status": "In Progress"})')
     })
   )
   .output(
     z.object({
-      entities: z.array(z.record(z.string(), z.any())).describe('Array of matching entities with selected fields'),
-      count: z.number().describe('Number of entities returned in this response'),
+      entities: z
+        .array(z.record(z.string(), z.any()))
+        .describe('Array of matching entities with selected fields'),
+      count: z.number().describe('Number of entities returned in this response')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       accountName: ctx.config.accountName,
-      token: ctx.auth.token,
+      token: ctx.auth.token
     });
 
     let entities = await client.queryEntities({
@@ -68,15 +82,15 @@ export let queryEntitiesTool = SlateTool.create(spec, {
       orderBy: ctx.input.orderBy,
       limit: ctx.input.limit,
       offset: ctx.input.offset,
-      queryParams: ctx.input.queryParams,
+      queryParams: ctx.input.queryParams
     });
 
     return {
       output: {
         entities,
-        count: entities.length,
+        count: entities.length
       },
-      message: `Returned **${entities.length}** entities of type **${ctx.input.typeName}**.`,
+      message: `Returned **${entities.length}** entities of type **${ctx.input.typeName}**.`
     };
   })
   .build();

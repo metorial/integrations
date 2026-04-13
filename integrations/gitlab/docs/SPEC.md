@@ -15,6 +15,7 @@ GitLab supports multiple authentication methods:
 You can use access tokens to authenticate with the API. Pass the token using the `PRIVATE-TOKEN` header (recommended) or as a query parameter. Tokens are created under **Edit Profile > Personal access tokens** with specific scopes and an expiration date. You can also use personal, project, or group access tokens with OAuth-compliant headers, e.g., `Authorization: Bearer <token>`.
 
 Token types include:
+
 - **Personal access tokens** — scoped to a user.
 - **Project access tokens** — scoped to a specific project.
 - **Group access tokens** — scoped to a specific group.
@@ -32,6 +33,7 @@ Authorization code with Proof Key for Code Exchange (PKCE): Most secure. Without
 - **Resource Owner Password Credentials** — for trusted first-party services only. Resource owner password credentials are disabled for users with two-factor authentication turned on.
 
 **Endpoints:**
+
 - Authorization: `https://<gitlab-host>/oauth/authorize`
 - Token: `https://<gitlab-host>/oauth/token`
 - Revoke: `https://<gitlab-host>/oauth/revoke`
@@ -43,26 +45,26 @@ Access tokens expire after two hours. Integrations that use access tokens must g
 
 **Available OAuth Scopes:**
 
-| Scope | Description |
-|---|---|
-| `api` | Complete read/write access to the API, including all groups, projects, registries, and packages. |
-| `read_api` | Read-only access to the API. |
-| `read_user` | Read-only access to the user's profile via `/user` and `/users`. |
-| `create_runner` | Permission to create runners. |
-| `manage_runner` | Permission to manage runners. |
-| `k8s_proxy` | Permission for Kubernetes API calls via the agent. |
-| `read_repository` | Read-only access to repositories via Git-over-HTTP. |
-| `write_repository` | Read-write access to repositories via Git-over-HTTP. |
-| `read_registry` | Read-only access to container registry images. |
-| `write_registry` | Write access to container registry images. |
-| `read_virtual_registry` | Read-only access to dependency proxy and virtual registries. |
-| `write_virtual_registry` | Read/write/delete access to dependency proxy. |
-| `ai_features` | Access to GitLab Duo AI-related endpoints. |
-| `sudo` | Perform API actions as any user (admin only). |
-| `admin_mode` | Perform API actions as admin when Admin Mode is enabled. |
-| `openid` | Authenticate via OpenID Connect; read-only access to profile and group memberships. |
-| `profile` | Read-only access to user profile via OpenID Connect. |
-| `email` | Read-only access to the user's primary email via OpenID Connect. |
+| Scope                    | Description                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| `api`                    | Complete read/write access to the API, including all groups, projects, registries, and packages. |
+| `read_api`               | Read-only access to the API.                                                                     |
+| `read_user`              | Read-only access to the user's profile via `/user` and `/users`.                                 |
+| `create_runner`          | Permission to create runners.                                                                    |
+| `manage_runner`          | Permission to manage runners.                                                                    |
+| `k8s_proxy`              | Permission for Kubernetes API calls via the agent.                                               |
+| `read_repository`        | Read-only access to repositories via Git-over-HTTP.                                              |
+| `write_repository`       | Read-write access to repositories via Git-over-HTTP.                                             |
+| `read_registry`          | Read-only access to container registry images.                                                   |
+| `write_registry`         | Write access to container registry images.                                                       |
+| `read_virtual_registry`  | Read-only access to dependency proxy and virtual registries.                                     |
+| `write_virtual_registry` | Read/write/delete access to dependency proxy.                                                    |
+| `ai_features`            | Access to GitLab Duo AI-related endpoints.                                                       |
+| `sudo`                   | Perform API actions as any user (admin only).                                                    |
+| `admin_mode`             | Perform API actions as admin when Admin Mode is enabled.                                         |
+| `openid`                 | Authenticate via OpenID Connect; read-only access to profile and group memberships.              |
+| `profile`                | Read-only access to user profile via OpenID Connect.                                             |
+| `email`                  | Read-only access to the user's primary email via OpenID Connect.                                 |
 
 By default, the scope of the access token is `api`, which provides complete read/write access.
 

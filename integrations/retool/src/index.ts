@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   listUsers,
@@ -30,11 +29,9 @@ import {
   manageSpace,
   getSourceControlConfig,
   getOrganization,
-  listAccessTokens,
+  listAccessTokens
 } from './tools';
-import { userChanges,
-  inboundWebhook,
-} from './triggers';
+import { userChanges, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -67,10 +64,7 @@ export let provider = Slate.create({
     manageSpace,
     getSourceControlConfig,
     getOrganization,
-    listAccessTokens,
+    listAccessTokens
   ],
-  triggers: [
-    inboundWebhook,
-    userChanges,
-  ],
+  triggers: [inboundWebhook, userChanges]
 });

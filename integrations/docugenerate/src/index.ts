@@ -1,5 +1,4 @@
-import {
-  Slate } from 'slates';
+import { Slate } from 'slates';
 import { spec } from './spec';
 import {
   generateDocument,
@@ -10,13 +9,9 @@ import {
   listDocuments,
   getDocument,
   updateDocument,
-  deleteDocument,
+  deleteDocument
 } from './tools';
-import {
-  watchNewDocument,
-  watchNewTemplate,
-  inboundWebhook,
-} from './triggers';
+import { watchNewDocument, watchNewTemplate, inboundWebhook } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -29,11 +24,7 @@ export let provider = Slate.create({
     listDocuments,
     getDocument,
     updateDocument,
-    deleteDocument,
+    deleteDocument
   ],
-  triggers: [
-    inboundWebhook,
-    watchNewDocument,
-    watchNewTemplate,
-  ],
+  triggers: [inboundWebhook, watchNewDocument, watchNewTemplate]
 });

@@ -1,7 +1,7 @@
 import { createAxios } from 'slates';
 
 let http = createAxios({
-  baseURL: 'https://aeroleads.com',
+  baseURL: 'https://aeroleads.com'
 });
 
 export class Client {
@@ -15,8 +15,8 @@ export class Client {
     let response = await http.get('/api/get_linkedin_details', {
       params: {
         linkedin_url: linkedinUrl,
-        api_key: this.apiKey,
-      },
+        api_key: this.apiKey
+      }
     });
     return response.data;
   }
@@ -27,8 +27,8 @@ export class Client {
         first_name: firstName,
         last_name: lastName,
         company: company,
-        api_key: this.apiKey,
-      },
+        api_key: this.apiKey
+      }
     });
     return response.data;
   }

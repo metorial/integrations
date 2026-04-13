@@ -15,6 +15,7 @@ Benchmark Email uses **API Key (Token) authentication** for its RESTful API v3.0
 - Any Benchmark Email account type provides free API usage.
 
 Example headers:
+
 ```
 AuthToken: YOUR_API_TOKEN
 Content-Type: application/json

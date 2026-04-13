@@ -3,45 +3,46 @@ import { z } from 'zod';
 import { spec } from '../spec';
 import { createClient } from '../lib/helpers';
 
-export let expenseEventsTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Expense Events',
-    key: 'expense_events',
-    description: 'Polls for new or updated expenses. Detects expense creation and modifications.'
-  }
-)
-  .input(z.object({
-    expenseId: z.string(),
-    eventType: z.string(),
-    date: z.string().optional(),
-    accountName: z.string().optional(),
-    description: z.string().optional(),
-    total: z.number().optional(),
-    currencyCode: z.string().optional(),
-    status: z.string().optional(),
-    vendorName: z.string().optional(),
-    customerName: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
-  .output(z.object({
-    expenseId: z.string(),
-    date: z.string().optional(),
-    accountName: z.string().optional(),
-    description: z.string().optional(),
-    total: z.number().optional(),
-    currencyCode: z.string().optional(),
-    status: z.string().optional(),
-    vendorName: z.string().optional(),
-    customerName: z.string().optional(),
-    lastModifiedTime: z.string().optional()
-  }))
+export let expenseEventsTrigger = SlateTrigger.create(spec, {
+  name: 'Expense Events',
+  key: 'expense_events',
+  description: 'Polls for new or updated expenses. Detects expense creation and modifications.'
+})
+  .input(
+    z.object({
+      expenseId: z.string(),
+      eventType: z.string(),
+      date: z.string().optional(),
+      accountName: z.string().optional(),
+      description: z.string().optional(),
+      total: z.number().optional(),
+      currencyCode: z.string().optional(),
+      status: z.string().optional(),
+      vendorName: z.string().optional(),
+      customerName: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
+  .output(
+    z.object({
+      expenseId: z.string(),
+      date: z.string().optional(),
+      accountName: z.string().optional(),
+      description: z.string().optional(),
+      total: z.number().optional(),
+      currencyCode: z.string().optional(),
+      status: z.string().optional(),
+      vendorName: z.string().optional(),
+      customerName: z.string().optional(),
+      lastModifiedTime: z.string().optional()
+    })
+  )
   .polling({
     options: {
       intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
       let lastPollTime = ctx.state?.lastPollTime as string | undefined;
       let knownExpenses = (ctx.state?.knownExpenses || {}) as Record<string, boolean>;
@@ -82,9 +83,7 @@ export let expenseEventsTrigger = SlateTrigger.create(
         newKnownExpenses[e.expense_id] = true;
       }
 
-      let newPollTime = expenses.length > 0
-        ? expenses[0].last_modified_time
-        : lastPollTime;
+      let newPollTime = expenses.length > 0 ? expenses[0].last_modified_time : lastPollTime;
 
       return {
         inputs,
@@ -95,7 +94,7 @@ export let expenseEventsTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: `expense.${ctx.input.eventType}`,
         id: `${ctx.input.expenseId}-${ctx.input.lastModifiedTime || Date.now()}`,
@@ -113,4 +112,5 @@ export let expenseEventsTrigger = SlateTrigger.create(
         }
       };
     }
-  }).build();
+  })
+  .build();

@@ -12,38 +12,42 @@ let operationSummarySchema = z.object({
   createTime: z.string().optional().describe('Timestamp when the operation was created'),
   resultUrl: z.string().optional().describe('Download URL for results when complete'),
   errorCode: z.number().optional().describe('Error code if the operation failed'),
-  errorMessage: z.string().optional().describe('Error message if the operation failed'),
+  errorMessage: z.string().optional().describe('Error message if the operation failed')
 });
 
-export let listOperations = SlateTool.create(
-  spec,
-  {
-    name: 'List Batch Operations',
-    key: 'list_operations',
-    description: `List all batch email verification operations for the current account. Returns operation names, statuses, progress, and result download URLs for completed operations.
+export let listOperations = SlateTool.create(spec, {
+  name: 'List Batch Operations',
+  key: 'list_operations',
+  description: `List all batch email verification operations for the current account. Returns operation names, statuses, progress, and result download URLs for completed operations.
 
 Supports pagination for accounts with many operations.`,
-    tags: {
-      readOnly: true,
-    },
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    pageSize: z.number().optional().describe('Number of operations to return per page'),
-    pageToken: z.string().optional().describe('Pagination token from a previous response to fetch the next page'),
-  }))
-  .output(z.object({
-    operations: z.array(operationSummarySchema).describe('List of batch operations'),
-    nextPageToken: z.string().optional().describe('Token to fetch the next page of results'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      pageSize: z.number().optional().describe('Number of operations to return per page'),
+      pageToken: z
+        .string()
+        .optional()
+        .describe('Pagination token from a previous response to fetch the next page')
+    })
+  )
+  .output(
+    z.object({
+      operations: z.array(operationSummarySchema).describe('List of batch operations'),
+      nextPageToken: z.string().optional().describe('Token to fetch the next page of results')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let response = await client.listOperations({
       pageSize: ctx.input.pageSize,
-      pageToken: ctx.input.pageToken,
+      pageToken: ctx.input.pageToken
     });
 
-    let operations = (response.operations ?? []).map((op) => ({
+    let operations = (response.operations ?? []).map(op => ({
       operationName: op.name,
       done: op.done,
       totalCount: op.metadata?.totalCount,
@@ -52,18 +56,18 @@ Supports pagination for accounts with many operations.`,
       createTime: op.metadata?.createTime,
       resultUrl: op.result?.response?.url,
       errorCode: op.result?.code,
-      errorMessage: op.result?.message,
+      errorMessage: op.result?.message
     }));
 
-    let completedCount = operations.filter((op) => op.done).length;
+    let completedCount = operations.filter(op => op.done).length;
     let processingCount = operations.length - completedCount;
 
     return {
       output: {
         operations,
-        nextPageToken: response.nextPageToken,
+        nextPageToken: response.nextPageToken
       },
-      message: `Found **${operations.length}** batch operations (**${completedCount}** completed, **${processingCount}** processing).${response.nextPageToken ? ' More results available with pagination.' : ''}`,
+      message: `Found **${operations.length}** batch operations (**${completedCount}** completed, **${processingCount}** processing).${response.nextPageToken ? ' More results available with pagination.' : ''}`
     };
   })
   .build();

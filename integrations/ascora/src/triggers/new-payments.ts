@@ -3,47 +3,49 @@ import { AscoraAccountingClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newPayments = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Payments',
-    key: 'new_payments',
-    description: 'Triggers when new payments are available in Ascora that have not yet been marked as sent to an accounting system. Only payments linked to invoices already marked as sent will appear.',
-  }
-)
-  .input(z.object({
-    paymentId: z.string().describe('Unique payment identifier'),
-    paymentDate: z.string().optional().describe('Date the payment was made'),
-    paymentAmount: z.number().optional().describe('Payment amount'),
-    invoiceNumber: z.string().optional().describe('Associated invoice number'),
-    invoiceDate: z.string().optional().describe('Date of the associated invoice'),
-    companyName: z.string().optional().describe('Customer company name'),
-    contactFirstName: z.string().optional().describe('Customer first name'),
-    contactLastName: z.string().optional().describe('Customer last name'),
-  }))
-  .output(z.object({
-    paymentId: z.string().describe('Unique payment identifier'),
-    paymentDate: z.string().optional().describe('Date the payment was made'),
-    paymentAmount: z.number().optional().describe('Payment amount'),
-    invoiceNumber: z.string().optional().describe('Associated invoice number'),
-    invoiceDate: z.string().optional().describe('Date of the associated invoice'),
-    companyName: z.string().optional().describe('Customer company name'),
-    contactFirstName: z.string().optional().describe('Customer first name'),
-    contactLastName: z.string().optional().describe('Customer last name'),
-  }))
+export let newPayments = SlateTrigger.create(spec, {
+  name: 'New Payments',
+  key: 'new_payments',
+  description:
+    'Triggers when new payments are available in Ascora that have not yet been marked as sent to an accounting system. Only payments linked to invoices already marked as sent will appear.'
+})
+  .input(
+    z.object({
+      paymentId: z.string().describe('Unique payment identifier'),
+      paymentDate: z.string().optional().describe('Date the payment was made'),
+      paymentAmount: z.number().optional().describe('Payment amount'),
+      invoiceNumber: z.string().optional().describe('Associated invoice number'),
+      invoiceDate: z.string().optional().describe('Date of the associated invoice'),
+      companyName: z.string().optional().describe('Customer company name'),
+      contactFirstName: z.string().optional().describe('Customer first name'),
+      contactLastName: z.string().optional().describe('Customer last name')
+    })
+  )
+  .output(
+    z.object({
+      paymentId: z.string().describe('Unique payment identifier'),
+      paymentDate: z.string().optional().describe('Date the payment was made'),
+      paymentAmount: z.number().optional().describe('Payment amount'),
+      invoiceNumber: z.string().optional().describe('Associated invoice number'),
+      invoiceDate: z.string().optional().describe('Date of the associated invoice'),
+      companyName: z.string().optional().describe('Customer company name'),
+      contactFirstName: z.string().optional().describe('Customer first name'),
+      contactLastName: z.string().optional().describe('Customer last name')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       if (!ctx.auth.username || !ctx.auth.password) {
         return { inputs: [] };
       }
 
       let client = new AscoraAccountingClient({
         username: ctx.auth.username,
-        password: ctx.auth.password,
+        password: ctx.auth.password
       });
 
       let rawPayments = await client.getPayments();
@@ -56,18 +58,18 @@ export let newPayments = SlateTrigger.create(
         invoiceDate: pmt.InvoiceDate ?? pmt.invoiceDate,
         companyName: pmt.CompanyName ?? pmt.companyName,
         contactFirstName: pmt.ContactFirstName ?? pmt.contactFirstName,
-        contactLastName: pmt.ContactLastName ?? pmt.contactLastName,
+        contactLastName: pmt.ContactLastName ?? pmt.contactLastName
       }));
 
       return {
         inputs,
         updatedState: {
-          lastPollTimestamp: new Date().toISOString(),
-        },
+          lastPollTimestamp: new Date().toISOString()
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       return {
         type: 'payment.created',
         id: ctx.input.paymentId,
@@ -79,9 +81,9 @@ export let newPayments = SlateTrigger.create(
           invoiceDate: ctx.input.invoiceDate,
           companyName: ctx.input.companyName,
           contactFirstName: ctx.input.contactFirstName,
-          contactLastName: ctx.input.contactLastName,
-        },
+          contactLastName: ctx.input.contactLastName
+        }
       };
-    },
+    }
   })
   .build();

@@ -6,7 +6,7 @@ import {
   getHistoricalRates,
   getTimeSeries,
   getFluctuation,
-  listCurrencies,
+  listCurrencies
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -19,9 +19,7 @@ export let provider = Slate.create({
     getHistoricalRates,
     getTimeSeries,
     getFluctuation,
-    listCurrencies,
+    listCurrencies
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

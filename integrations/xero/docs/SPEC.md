@@ -27,6 +27,7 @@ Custom Connections use the `client_credentials` grant type, enabling background 
 Scopes are required and additive. Available scope categories include: OpenID Connect (`openid`, `profile`, `email`), offline access (`offline_access`), and organisation-level scopes for the Accounting API, Payroll APIs (AU, UK, NZ), Files API, Assets API, Projects API, Bank Feeds API, Finance API, Practice Manager API, and eInvoicing API.
 
 Common broad scopes include:
+
 - `accounting.transactions` / `accounting.transactions.read` — access to invoices, bank transactions, credit notes, payments, etc.
 - `accounting.contacts` / `accounting.contacts.read` — access to contacts and contact groups
 - `accounting.settings` / `accounting.settings.read` — access to chart of accounts, tax rates, currencies, etc.
@@ -44,33 +45,43 @@ Apps created before March 2, 2026 use broad scopes, while apps created after tha
 ## Features
 
 ### Accounting & Invoicing
+
 The core Accounting API allows managing the full accounting lifecycle: creating and managing invoices (sales and purchases), credit notes, bank transactions, payments, batch payments, purchase orders, quotes, and manual journals. Invoices can be emailed directly from the API and have configurable status workflows (draft → submitted → authorised → paid/voided).
 
 ### Contacts Management
+
 Create, read, and update contacts (customers and suppliers). Contacts can be organized into contact groups, and you can manage their address details, tax information, and payment terms. Attachments can be linked to contacts.
 
 ### Chart of Accounts & Settings
+
 Manage the organisation's chart of accounts, tax rates, currencies, branding themes, tracking categories, and payment services. Organisation settings and details can be read.
 
 ### Financial Reporting
+
 Generate financial reports including Balance Sheet, Profit and Loss, Trial Balance, Budget Summary, Executive Summary, Bank Summary, Aged Payables/Receivables, and tax reports (BAS, GST, 1099).
 
 ### Bank Feeds
+
 Push bank statement data into Xero by creating feed connections between external bank accounts and Xero bank accounts, and submitting bank statement lines. Requires App Partner certification.
 
 ### Fixed Assets
+
 Manage fixed asset records, including asset types, depreciation settings, and asset status transitions (draft, registered, disposed). Track asset values over their lifecycle.
 
 ### Projects & Time Tracking
+
 Create and manage projects, assign tasks, log time entries, and track project costs. Useful for service-based businesses that need to track billable hours against client projects.
 
 ### Payroll
+
 Region-specific payroll APIs (Australia, UK, New Zealand) for managing employees, pay runs, pay items, leave, timesheets, superannuation/pension, and tax declarations. Requires a Payroll plan.
 
 ### Files
+
 Upload, manage, and organize files and documents within Xero. Files can be associated with various accounting objects (invoices, contacts, etc.) via associations.
 
 ### Finance
+
 Access additional financial data and insights including cashflow, account usage, bank statement analysis, and financial statement reporting in structured formats.
 
 ## Events
@@ -82,13 +93,17 @@ Webhook payloads do not contain the full record details — they notify your app
 Webhooks are configured in the Xero Developer Portal under your app settings. Your endpoint must validate HMAC-SHA256 signatures and respond within 5 seconds. You must complete an "Intent to Receive" verification process to activate webhook delivery.
 
 ### Contacts
+
 Receive notifications when contacts are created or updated in a connected Xero organisation.
 
 ### Invoices
+
 Receive notifications when invoices are created or updated (including status changes such as authorised, paid, or voided).
 
 ### Credit Notes
+
 Credit note webhooks notify when credit notes are created or updated in Xero. This event type is currently in closed beta.
 
 ### Subscriptions
+
 Receive notifications about Xero App Store subscription events (purchases, upgrades, downgrades, cancellations) for apps listed on the Xero App Store.

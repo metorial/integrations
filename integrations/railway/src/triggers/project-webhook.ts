@@ -24,44 +24,48 @@ let detailsSchema = z.object({
   commitMessage: z.string().nullable().describe('Git commit message')
 });
 
-export let projectWebhookTrigger = SlateTrigger.create(
-  spec,
-  {
-    name: 'Project Webhook',
-    key: 'project_webhook',
-    description: 'Receives webhook events from a Railway project including deployment status changes, volume usage alerts, and resource monitoring alerts. Configure the webhook URL in your Railway project settings.'
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Event type (e.g., "Deployment.failed", "Deployment.success")'),
-    eventId: z.string().describe('Unique event identifier'),
-    timestamp: z.string().describe('Event timestamp'),
-    severity: z.string().nullable().describe('Event severity'),
-    resource: resourceSchema.describe('Resource context for the event'),
-    details: detailsSchema.nullable().describe('Event-specific details')
-  }))
-  .output(z.object({
-    eventType: z.string().describe('Normalized event type'),
-    timestamp: z.string().describe('Event timestamp'),
-    severity: z.string().nullable().describe('Event severity'),
-    workspaceId: z.string().nullable().describe('Workspace ID'),
-    workspaceName: z.string().nullable().describe('Workspace name'),
-    projectId: z.string().nullable().describe('Project ID'),
-    projectName: z.string().nullable().describe('Project name'),
-    environmentId: z.string().nullable().describe('Environment ID'),
-    environmentName: z.string().nullable().describe('Environment name'),
-    serviceId: z.string().nullable().describe('Service ID'),
-    serviceName: z.string().nullable().describe('Service name'),
-    deploymentId: z.string().nullable().describe('Deployment ID'),
-    source: z.string().nullable().describe('Deployment source'),
-    status: z.string().nullable().describe('Deployment status'),
-    branch: z.string().nullable().describe('Git branch'),
-    commitHash: z.string().nullable().describe('Git commit hash'),
-    commitAuthor: z.string().nullable().describe('Git commit author'),
-    commitMessage: z.string().nullable().describe('Git commit message')
-  }))
+export let projectWebhookTrigger = SlateTrigger.create(spec, {
+  name: 'Project Webhook',
+  key: 'project_webhook',
+  description:
+    'Receives webhook events from a Railway project including deployment status changes, volume usage alerts, and resource monitoring alerts. Configure the webhook URL in your Railway project settings.'
+})
+  .input(
+    z.object({
+      eventType: z
+        .string()
+        .describe('Event type (e.g., "Deployment.failed", "Deployment.success")'),
+      eventId: z.string().describe('Unique event identifier'),
+      timestamp: z.string().describe('Event timestamp'),
+      severity: z.string().nullable().describe('Event severity'),
+      resource: resourceSchema.describe('Resource context for the event'),
+      details: detailsSchema.nullable().describe('Event-specific details')
+    })
+  )
+  .output(
+    z.object({
+      eventType: z.string().describe('Normalized event type'),
+      timestamp: z.string().describe('Event timestamp'),
+      severity: z.string().nullable().describe('Event severity'),
+      workspaceId: z.string().nullable().describe('Workspace ID'),
+      workspaceName: z.string().nullable().describe('Workspace name'),
+      projectId: z.string().nullable().describe('Project ID'),
+      projectName: z.string().nullable().describe('Project name'),
+      environmentId: z.string().nullable().describe('Environment ID'),
+      environmentName: z.string().nullable().describe('Environment name'),
+      serviceId: z.string().nullable().describe('Service ID'),
+      serviceName: z.string().nullable().describe('Service name'),
+      deploymentId: z.string().nullable().describe('Deployment ID'),
+      source: z.string().nullable().describe('Deployment source'),
+      status: z.string().nullable().describe('Deployment status'),
+      branch: z.string().nullable().describe('Git branch'),
+      commitHash: z.string().nullable().describe('Git commit hash'),
+      commitAuthor: z.string().nullable().describe('Git commit author'),
+      commitMessage: z.string().nullable().describe('Git commit message')
+    })
+  )
   .webhook({
-    handleRequest: async (ctx) => {
+    handleRequest: async ctx => {
       let data: any;
       try {
         data = await ctx.request.json();
@@ -114,13 +118,12 @@ export let projectWebhookTrigger = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let rawType = ctx.input.eventType || 'unknown';
       let normalizedType = rawType.toLowerCase().replace(/\./g, '.');
 
-      let deploymentId = ctx.input.resource.deploymentId
-        || ctx.input.details?.deploymentId
-        || null;
+      let deploymentId =
+        ctx.input.resource.deploymentId || ctx.input.details?.deploymentId || null;
 
       return {
         type: normalizedType,

@@ -3,42 +3,59 @@ import { MetabaseClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageDashboard = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Dashboard',
-    key: 'manage_dashboard',
-    description: `Create, update, retrieve, copy, or archive a dashboard in Metabase.
+export let manageDashboard = SlateTool.create(spec, {
+  name: 'Manage Dashboard',
+  key: 'manage_dashboard',
+  description: `Create, update, retrieve, copy, or archive a dashboard in Metabase.
 Dashboards organize questions (cards) into a visual layout. Use this to manage dashboard properties like name, description, collection, and parameters.
 Set **archived** to true to move a dashboard to the trash.`,
-    tags: {
-      destructive: false,
-      readOnly: false
-    }
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'get', 'copy']).describe('The action to perform'),
-    dashboardId: z.number().optional().describe('ID of the dashboard (required for get, update, and copy)'),
-    name: z.string().optional().describe('Name of the dashboard (required for create)'),
-    description: z.string().optional().describe('Description of the dashboard'),
-    collectionId: z.number().nullable().optional().describe('Collection ID to place the dashboard in, or null for root'),
-    parameters: z.array(z.any()).optional().describe('Dashboard filter parameters configuration'),
-    archived: z.boolean().optional().describe('Set to true to archive (trash) the dashboard'),
-    enableEmbedding: z.boolean().optional().describe('Enable or disable embedding for the dashboard')
-  }))
-  .output(z.object({
-    dashboardId: z.number().describe('ID of the dashboard'),
-    name: z.string().describe('Name of the dashboard'),
-    description: z.string().nullable().describe('Description of the dashboard'),
-    archived: z.boolean().describe('Whether the dashboard is archived'),
-    collectionId: z.number().nullable().describe('Collection ID'),
-    creatorId: z.number().optional().describe('ID of the dashboard creator'),
-    createdAt: z.string().optional().describe('When the dashboard was created'),
-    updatedAt: z.string().optional().describe('When the dashboard was last updated'),
-    cardCount: z.number().optional().describe('Number of cards on the dashboard')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'get', 'copy']).describe('The action to perform'),
+      dashboardId: z
+        .number()
+        .optional()
+        .describe('ID of the dashboard (required for get, update, and copy)'),
+      name: z.string().optional().describe('Name of the dashboard (required for create)'),
+      description: z.string().optional().describe('Description of the dashboard'),
+      collectionId: z
+        .number()
+        .nullable()
+        .optional()
+        .describe('Collection ID to place the dashboard in, or null for root'),
+      parameters: z
+        .array(z.any())
+        .optional()
+        .describe('Dashboard filter parameters configuration'),
+      archived: z
+        .boolean()
+        .optional()
+        .describe('Set to true to archive (trash) the dashboard'),
+      enableEmbedding: z
+        .boolean()
+        .optional()
+        .describe('Enable or disable embedding for the dashboard')
+    })
+  )
+  .output(
+    z.object({
+      dashboardId: z.number().describe('ID of the dashboard'),
+      name: z.string().describe('Name of the dashboard'),
+      description: z.string().nullable().describe('Description of the dashboard'),
+      archived: z.boolean().describe('Whether the dashboard is archived'),
+      collectionId: z.number().nullable().describe('Collection ID'),
+      creatorId: z.number().optional().describe('ID of the dashboard creator'),
+      createdAt: z.string().optional().describe('When the dashboard was created'),
+      updatedAt: z.string().optional().describe('When the dashboard was last updated'),
+      cardCount: z.number().optional().describe('Number of cards on the dashboard')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new MetabaseClient({
       token: ctx.auth.token,
       instanceUrl: ctx.auth.instanceUrl
@@ -86,13 +103,14 @@ Set **archived** to true to move a dashboard to the trash.`,
         updatedAt: dashboard.updated_at,
         cardCount
       },
-      message: ctx.input.action === 'create'
-        ? `Created dashboard **${dashboard.name}** (ID: ${dashboard.id})`
-        : ctx.input.action === 'update'
-          ? `Updated dashboard **${dashboard.name}** (ID: ${dashboard.id})`
-          : ctx.input.action === 'copy'
-            ? `Copied dashboard to **${dashboard.name}** (ID: ${dashboard.id})`
-            : `Retrieved dashboard **${dashboard.name}** (ID: ${dashboard.id})${cardCount !== undefined ? ` with ${cardCount} card(s)` : ''}`
+      message:
+        ctx.input.action === 'create'
+          ? `Created dashboard **${dashboard.name}** (ID: ${dashboard.id})`
+          : ctx.input.action === 'update'
+            ? `Updated dashboard **${dashboard.name}** (ID: ${dashboard.id})`
+            : ctx.input.action === 'copy'
+              ? `Copied dashboard to **${dashboard.name}** (ID: ${dashboard.id})`
+              : `Retrieved dashboard **${dashboard.name}** (ID: ${dashboard.id})${cardCount !== undefined ? ` with ${cardCount} card(s)` : ''}`
     };
   })
   .build();

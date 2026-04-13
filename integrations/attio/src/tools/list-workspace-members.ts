@@ -3,30 +3,33 @@ import { AttioClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let listWorkspaceMembersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Workspace Members',
-    key: 'list_workspace_members',
-    description: `List all members of the Attio workspace, including their names, emails, roles, and avatar URLs. Useful for finding assignees for tasks or identifying team members.`,
-    tags: {
-      readOnly: true,
-    },
+export let listWorkspaceMembersTool = SlateTool.create(spec, {
+  name: 'List Workspace Members',
+  key: 'list_workspace_members',
+  description: `List all members of the Attio workspace, including their names, emails, roles, and avatar URLs. Useful for finding assignees for tasks or identifying team members.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    members: z.array(z.object({
-      workspaceMemberId: z.string().describe('The workspace member ID'),
-      firstName: z.string().describe('First name'),
-      lastName: z.string().describe('Last name'),
-      emailAddress: z.string().describe('Email address'),
-      avatarUrl: z.string().optional().nullable().describe('Avatar URL'),
-      accessLevel: z.string().describe('Access level (admin, member, suspended)'),
-      createdAt: z.string().describe('When the member was added'),
-    })).describe('Workspace members'),
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      members: z
+        .array(
+          z.object({
+            workspaceMemberId: z.string().describe('The workspace member ID'),
+            firstName: z.string().describe('First name'),
+            lastName: z.string().describe('Last name'),
+            emailAddress: z.string().describe('Email address'),
+            avatarUrl: z.string().optional().nullable().describe('Avatar URL'),
+            accessLevel: z.string().describe('Access level (admin, member, suspended)'),
+            createdAt: z.string().describe('When the member was added')
+          })
+        )
+        .describe('Workspace members')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new AttioClient({ token: ctx.auth.token });
     let members = await client.listWorkspaceMembers();
 
@@ -37,11 +40,12 @@ export let listWorkspaceMembersTool = SlateTool.create(
       emailAddress: m.email_address ?? '',
       avatarUrl: m.avatar_url ?? null,
       accessLevel: m.access_level ?? '',
-      createdAt: m.created_at ?? '',
+      createdAt: m.created_at ?? ''
     }));
 
     return {
       output: { members: mapped },
-      message: `Found **${mapped.length}** workspace member(s).`,
+      message: `Found **${mapped.length}** workspace member(s).`
     };
-  }).build();
+  })
+  .build();

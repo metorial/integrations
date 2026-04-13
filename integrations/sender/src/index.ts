@@ -14,13 +14,9 @@ import {
   sendTransactionalEmail,
   startWorkflow,
   listSegments,
-  getCampaignStatistics,
+  getCampaignStatistics
 } from './tools';
-import {
-  subscriberEvents,
-  campaignEvents,
-  groupEvents,
-} from './triggers';
+import { subscriberEvents, campaignEvents, groupEvents } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -38,11 +34,7 @@ export let provider = Slate.create({
     sendTransactionalEmail,
     startWorkflow,
     listSegments,
-    getCampaignStatistics,
+    getCampaignStatistics
   ],
-  triggers: [
-    subscriberEvents,
-    campaignEvents,
-    groupEvents,
-  ],
+  triggers: [subscriberEvents, campaignEvents, groupEvents]
 });

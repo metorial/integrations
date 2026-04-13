@@ -8,8 +8,8 @@ export class Client {
       baseURL: 'https://api.app.shortcut.com/api/v3',
       headers: {
         'Shortcut-Token': config.token,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 

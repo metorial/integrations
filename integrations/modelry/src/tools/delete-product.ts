@@ -3,26 +3,27 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let deleteProduct = SlateTool.create(
-  spec,
-  {
-    name: 'Delete Product',
-    key: 'delete_product',
-    description: `Permanently delete a product from Modelry by its ID. This action is irreversible and will remove the product and its associated data.`,
-    tags: {
-      destructive: true,
-      readOnly: false,
-    },
+export let deleteProduct = SlateTool.create(spec, {
+  name: 'Delete Product',
+  key: 'delete_product',
+  description: `Permanently delete a product from Modelry by its ID. This action is irreversible and will remove the product and its associated data.`,
+  tags: {
+    destructive: true,
+    readOnly: false
   }
-)
-  .input(z.object({
-    productId: z.string().describe('ID of the product to delete.'),
-  }))
-  .output(z.object({
-    productId: z.string().describe('ID of the deleted product.'),
-    deleted: z.boolean().describe('Whether the product was successfully deleted.'),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      productId: z.string().describe('ID of the product to delete.')
+    })
+  )
+  .output(
+    z.object({
+      productId: z.string().describe('ID of the deleted product.'),
+      deleted: z.boolean().describe('Whether the product was successfully deleted.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     await client.deleteProduct(ctx.input.productId);
@@ -30,9 +31,9 @@ export let deleteProduct = SlateTool.create(
     return {
       output: {
         productId: ctx.input.productId,
-        deleted: true,
+        deleted: true
       },
-      message: `Successfully deleted product with ID \`${ctx.input.productId}\`.`,
+      message: `Successfully deleted product with ID \`${ctx.input.productId}\`.`
     };
   })
   .build();

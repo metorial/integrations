@@ -8,9 +8,9 @@ export class DocsClient {
     this.http = createAxios({
       baseURL: 'https://docsapi.helpscout.net/v1',
       headers: {
-        'Authorization': `Basic ${encoded}`,
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Basic ${encoded}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -30,7 +30,7 @@ export class DocsClient {
 
   async listCollections(siteId: string, params: { page?: number } = {}) {
     let response = await this.http.get(`/collections`, {
-      params: { ...params, siteId },
+      params: { ...params, siteId }
     });
     return response.data;
   }
@@ -50,11 +50,14 @@ export class DocsClient {
     return response.data;
   }
 
-  async updateCollection(collectionId: string, data: {
-    name?: string;
-    visibility?: string;
-    description?: string;
-  }) {
+  async updateCollection(
+    collectionId: string,
+    data: {
+      name?: string;
+      visibility?: string;
+      description?: string;
+    }
+  ) {
     let response = await this.http.put(`/collections/${collectionId}`, data);
     return response.data;
   }
@@ -75,20 +78,26 @@ export class DocsClient {
     return response.data;
   }
 
-  async createCategory(collectionId: string, data: {
-    name: string;
-    description?: string;
-    order?: number;
-  }) {
+  async createCategory(
+    collectionId: string,
+    data: {
+      name: string;
+      description?: string;
+      order?: number;
+    }
+  ) {
     let response = await this.http.post(`/collections/${collectionId}/categories`, data);
     return response.data;
   }
 
-  async updateCategory(categoryId: string, data: {
-    name?: string;
-    description?: string;
-    order?: number;
-  }) {
+  async updateCategory(
+    categoryId: string,
+    data: {
+      name?: string;
+      description?: string;
+      order?: number;
+    }
+  ) {
     let response = await this.http.put(`/categories/${categoryId}`, data);
     return response.data;
   }
@@ -99,11 +108,14 @@ export class DocsClient {
 
   // ─── Articles ───────────────────────────────────────────────
 
-  async listArticles(collectionId: string, params: {
-    page?: number;
-    status?: string;
-    categoryId?: string;
-  } = {}) {
+  async listArticles(
+    collectionId: string,
+    params: {
+      page?: number;
+      status?: string;
+      categoryId?: string;
+    } = {}
+  ) {
     let response = await this.http.get(`/collections/${collectionId}/articles`, { params });
     return response.data;
   }
@@ -113,24 +125,30 @@ export class DocsClient {
     return response.data;
   }
 
-  async createArticle(collectionId: string, data: {
-    name: string;
-    text: string;
-    categoryIds?: string[];
-    status?: string;
-    slug?: string;
-  }) {
+  async createArticle(
+    collectionId: string,
+    data: {
+      name: string;
+      text: string;
+      categoryIds?: string[];
+      status?: string;
+      slug?: string;
+    }
+  ) {
     let response = await this.http.post(`/collections/${collectionId}/articles`, data);
     return response.data;
   }
 
-  async updateArticle(articleId: string, data: {
-    name?: string;
-    text?: string;
-    categoryIds?: string[];
-    status?: string;
-    slug?: string;
-  }) {
+  async updateArticle(
+    articleId: string,
+    data: {
+      name?: string;
+      text?: string;
+      categoryIds?: string[];
+      status?: string;
+      slug?: string;
+    }
+  ) {
     let response = await this.http.put(`/articles/${articleId}`, data);
     return response.data;
   }
@@ -139,13 +157,16 @@ export class DocsClient {
     await this.http.delete(`/articles/${articleId}`);
   }
 
-  async searchArticles(query: string, params: {
-    collectionId?: string;
-    page?: number;
-    status?: string;
-  } = {}) {
+  async searchArticles(
+    query: string,
+    params: {
+      collectionId?: string;
+      page?: number;
+      status?: string;
+    } = {}
+  ) {
     let response = await this.http.get('/search/articles', {
-      params: { query, ...params },
+      params: { query, ...params }
     });
     return response.data;
   }

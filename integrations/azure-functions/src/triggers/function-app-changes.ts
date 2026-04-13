@@ -3,42 +3,55 @@ import { ArmClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let functionAppChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Function App Changes',
-    key: 'function_app_changes',
-    description: 'Detects changes to function apps and their functions by polling. Monitors for new, updated, or removed function apps and individual functions within them.',
-  }
-)
-  .input(z.object({
-    changeType: z.enum(['app_added', 'app_removed', 'app_state_changed', 'function_added', 'function_removed']).describe('Type of change detected'),
-    changeId: z.string().describe('Unique identifier for this change event'),
-    appName: z.string().describe('Name of the affected function app'),
-    functionName: z.string().optional().describe('Name of the affected function (for function-level changes)'),
-    previousState: z.string().optional().describe('Previous state value'),
-    currentState: z.string().optional().describe('Current state value'),
-    appDetails: z.any().optional().describe('Full app or function details'),
-  }))
-  .output(z.object({
-    appName: z.string().describe('Name of the affected function app'),
-    functionName: z.string().optional().describe('Name of the affected function'),
-    changeType: z.string().describe('Type of change that occurred'),
-    previousState: z.string().optional().describe('Previous state value'),
-    currentState: z.string().optional().describe('Current state value'),
-    defaultHostName: z.string().optional().describe('Default hostname of the function app'),
-    location: z.string().optional().describe('Azure region of the function app'),
-  }))
+export let functionAppChanges = SlateTrigger.create(spec, {
+  name: 'Function App Changes',
+  key: 'function_app_changes',
+  description:
+    'Detects changes to function apps and their functions by polling. Monitors for new, updated, or removed function apps and individual functions within them.'
+})
+  .input(
+    z.object({
+      changeType: z
+        .enum([
+          'app_added',
+          'app_removed',
+          'app_state_changed',
+          'function_added',
+          'function_removed'
+        ])
+        .describe('Type of change detected'),
+      changeId: z.string().describe('Unique identifier for this change event'),
+      appName: z.string().describe('Name of the affected function app'),
+      functionName: z
+        .string()
+        .optional()
+        .describe('Name of the affected function (for function-level changes)'),
+      previousState: z.string().optional().describe('Previous state value'),
+      currentState: z.string().optional().describe('Current state value'),
+      appDetails: z.any().optional().describe('Full app or function details')
+    })
+  )
+  .output(
+    z.object({
+      appName: z.string().describe('Name of the affected function app'),
+      functionName: z.string().optional().describe('Name of the affected function'),
+      changeType: z.string().describe('Type of change that occurred'),
+      previousState: z.string().optional().describe('Previous state value'),
+      currentState: z.string().optional().describe('Current state value'),
+      defaultHostName: z.string().optional().describe('Default hostname of the function app'),
+      location: z.string().optional().describe('Azure region of the function app')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new ArmClient({
         token: ctx.auth.token,
         subscriptionId: ctx.config.subscriptionId,
-        resourceGroupName: ctx.config.resourceGroupName,
+        resourceGroupName: ctx.config.resourceGroupName
       });
 
       let previousState = ctx.state as {
@@ -48,7 +61,8 @@ export let functionAppChanges = SlateTrigger.create(
       let apps = await client.listFunctionApps();
       let inputs: any[] = [];
 
-      let currentApps: Record<string, { state: string; functions: string[]; details: any }> = {};
+      let currentApps: Record<string, { state: string; functions: string[]; details: any }> =
+        {};
 
       for (let app of apps) {
         let appName = app.name;
@@ -66,7 +80,7 @@ export let functionAppChanges = SlateTrigger.create(
         currentApps[appName] = {
           state: appState,
           functions: functionNames,
-          details: app,
+          details: app
         };
 
         if (previousState?.apps) {
@@ -78,7 +92,7 @@ export let functionAppChanges = SlateTrigger.create(
               changeId: `app_added_${appName}_${Date.now()}`,
               appName,
               currentState: appState,
-              appDetails: app,
+              appDetails: app
             });
           } else {
             if (prev.state !== appState) {
@@ -88,7 +102,7 @@ export let functionAppChanges = SlateTrigger.create(
                 appName,
                 previousState: prev.state,
                 currentState: appState,
-                appDetails: app,
+                appDetails: app
               });
             }
 
@@ -102,7 +116,7 @@ export let functionAppChanges = SlateTrigger.create(
                   changeId: `fn_added_${appName}_${fn}_${Date.now()}`,
                   appName,
                   functionName: fn,
-                  appDetails: app,
+                  appDetails: app
                 });
               }
             }
@@ -114,7 +128,7 @@ export let functionAppChanges = SlateTrigger.create(
                   changeId: `fn_removed_${appName}_${fn}_${Date.now()}`,
                   appName,
                   functionName: fn,
-                  appDetails: app,
+                  appDetails: app
                 });
               }
             }
@@ -130,7 +144,7 @@ export let functionAppChanges = SlateTrigger.create(
               changeType: 'app_removed' as const,
               changeId: `app_removed_${prevAppName}_${Date.now()}`,
               appName: prevAppName,
-              previousState: previousState.apps[prevAppName]?.state,
+              previousState: previousState.apps[prevAppName]?.state
             });
           }
         }
@@ -143,12 +157,20 @@ export let functionAppChanges = SlateTrigger.create(
 
       return {
         inputs,
-        updatedState: { apps: updatedState },
+        updatedState: { apps: updatedState }
       };
     },
 
-    handleEvent: async (ctx) => {
-      let { changeType, changeId, appName, functionName, previousState, currentState, appDetails } = ctx.input;
+    handleEvent: async ctx => {
+      let {
+        changeType,
+        changeId,
+        appName,
+        functionName,
+        previousState,
+        currentState,
+        appDetails
+      } = ctx.input;
 
       return {
         type: `function_app.${changeType}`,
@@ -160,8 +182,9 @@ export let functionAppChanges = SlateTrigger.create(
           previousState,
           currentState,
           defaultHostName: appDetails?.properties?.defaultHostName,
-          location: appDetails?.location,
-        },
+          location: appDetails?.location
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

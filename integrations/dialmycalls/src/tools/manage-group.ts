@@ -3,30 +3,34 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageGroup = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Group',
-    key: 'manage_group',
-    description: `Create, update, or delete a contact group. Groups are used to organize contacts for targeted voice and text broadcasting.`,
-    tags: {
-      destructive: true,
-    },
+export let manageGroup = SlateTool.create(spec, {
+  name: 'Manage Group',
+  key: 'manage_group',
+  description: `Create, update, or delete a contact group. Groups are used to organize contacts for targeted voice and text broadcasting.`,
+  tags: {
+    destructive: true
   }
-)
-  .input(z.object({
-    action: z.enum(['create', 'update', 'delete']).describe('The operation to perform.'),
-    groupId: z.string().optional().describe('Required for update and delete actions.'),
-    name: z.string().optional().describe('Group name. Required for create, optional for update.'),
-  }))
-  .output(z.object({
-    groupId: z.string().optional(),
-    name: z.string().optional(),
-    contactsCount: z.number().optional(),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      action: z.enum(['create', 'update', 'delete']).describe('The operation to perform.'),
+      groupId: z.string().optional().describe('Required for update and delete actions.'),
+      name: z
+        .string()
+        .optional()
+        .describe('Group name. Required for create, optional for update.')
+    })
+  )
+  .output(
+    z.object({
+      groupId: z.string().optional(),
+      name: z.string().optional(),
+      contactsCount: z.number().optional(),
+      createdAt: z.string().optional(),
+      updatedAt: z.string().optional()
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let { action, groupId, name } = ctx.input;
 
@@ -35,7 +39,7 @@ export let manageGroup = SlateTool.create(
       await client.deleteGroup(groupId);
       return {
         output: { groupId },
-        message: `Group \`${groupId}\` deleted successfully.`,
+        message: `Group \`${groupId}\` deleted successfully.`
       };
     }
 
@@ -48,9 +52,9 @@ export let manageGroup = SlateTool.create(
           name: result.name,
           contactsCount: result.contacts_count,
           createdAt: result.created_at,
-          updatedAt: result.updated_at,
+          updatedAt: result.updated_at
         },
-        message: `Group **${result.name}** created with ID \`${result.id}\`.`,
+        message: `Group **${result.name}** created with ID \`${result.id}\`.`
       };
     }
 
@@ -64,8 +68,9 @@ export let manageGroup = SlateTool.create(
         name: result.name,
         contactsCount: result.contacts_count,
         createdAt: result.created_at,
-        updatedAt: result.updated_at,
+        updatedAt: result.updated_at
       },
-      message: `Group \`${groupId}\` updated to **${name}**.`,
+      message: `Group \`${groupId}\` updated to **${name}**.`
     };
-  }).build();
+  })
+  .build();

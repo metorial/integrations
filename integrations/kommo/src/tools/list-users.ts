@@ -11,30 +11,34 @@ let userOutputSchema = z.object({
   isAdmin: z.boolean().optional().describe('Whether user is an admin'),
   isActive: z.boolean().optional().describe('Whether user is active'),
   roleId: z.number().optional().describe('Role ID'),
-  groupId: z.number().optional().describe('Group ID'),
+  groupId: z.number().optional().describe('Group ID')
 });
 
-export let listUsersTool = SlateTool.create(
-  spec,
-  {
-    name: 'List Users',
-    key: 'list_users',
-    description: `List account users or get a specific user by ID. Returns user details including name, email, role, and admin status. Use this to find user IDs for assigning leads, contacts, or tasks.`,
-    tags: { readOnly: true },
-  }
-)
-  .input(z.object({
-    userId: z.number().optional().describe('Get a specific user by ID. If omitted, returns all users.'),
-    page: z.number().optional().describe('Page number'),
-    limit: z.number().optional().describe('Results per page (max 250)'),
-  }))
-  .output(z.object({
-    users: z.array(userOutputSchema),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listUsersTool = SlateTool.create(spec, {
+  name: 'List Users',
+  key: 'list_users',
+  description: `List account users or get a specific user by ID. Returns user details including name, email, role, and admin status. Use this to find user IDs for assigning leads, contacts, or tasks.`,
+  tags: { readOnly: true }
+})
+  .input(
+    z.object({
+      userId: z
+        .number()
+        .optional()
+        .describe('Get a specific user by ID. If omitted, returns all users.'),
+      page: z.number().optional().describe('Page number'),
+      limit: z.number().optional().describe('Results per page (max 250)')
+    })
+  )
+  .output(
+    z.object({
+      users: z.array(userOutputSchema)
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new KommoClient({
       token: ctx.auth.token,
-      subdomain: ctx.config.subdomain,
+      subdomain: ctx.config.subdomain
     });
 
     if (ctx.input.userId) {
@@ -47,11 +51,11 @@ export let listUsersTool = SlateTool.create(
         isAdmin: user.is_admin,
         isActive: user.is_active,
         roleId: user.role_id,
-        groupId: user.group_id,
+        groupId: user.group_id
       };
       return {
         output: { users: [mapped] },
-        message: `Retrieved user **${user.name}** (ID: ${user.id}).`,
+        message: `Retrieved user **${user.name}** (ID: ${user.id}).`
       };
     }
 
@@ -65,11 +69,12 @@ export let listUsersTool = SlateTool.create(
       isAdmin: u.is_admin,
       isActive: u.is_active,
       roleId: u.role_id,
-      groupId: u.group_id,
+      groupId: u.group_id
     }));
 
     return {
       output: { users: mapped },
-      message: `Found **${mapped.length}** user(s).`,
+      message: `Found **${mapped.length}** user(s).`
     };
-  }).build();
+  })
+  .build();

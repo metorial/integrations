@@ -16,14 +16,9 @@ import {
   assignConversation,
   addComment,
   listCustomFields,
-  listWorkspaceResources,
+  listWorkspaceResources
 } from './tools';
-import {
-  messageEvent,
-  contactEvent,
-  conversationEvent,
-  commentEvent,
-} from './triggers';
+import { messageEvent, contactEvent, conversationEvent, commentEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
@@ -43,12 +38,7 @@ export let provider = Slate.create({
     assignConversation,
     addComment,
     listCustomFields,
-    listWorkspaceResources,
+    listWorkspaceResources
   ],
-  triggers: [
-    messageEvent,
-    contactEvent,
-    conversationEvent,
-    commentEvent,
-  ],
+  triggers: [messageEvent, contactEvent, conversationEvent, commentEvent]
 });

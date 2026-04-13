@@ -20,7 +20,7 @@ import {
   manageService,
   manageServiceCategory,
   manageStaff,
-  listLocations,
+  listLocations
 } from './tools';
 import {
   messageReceived,
@@ -29,7 +29,7 @@ import {
   contactEvent,
   appointmentUpdate,
   classParticipantUpdate,
-  invoiceUpdate,
+  invoiceUpdate
 } from './triggers';
 
 export let provider = Slate.create({
@@ -54,7 +54,7 @@ export let provider = Slate.create({
     manageService,
     manageServiceCategory,
     manageStaff,
-    listLocations,
+    listLocations
   ],
   triggers: [
     messageReceived,
@@ -63,6 +63,6 @@ export let provider = Slate.create({
     contactEvent,
     appointmentUpdate,
     classParticipantUpdate,
-    invoiceUpdate,
-  ],
+    invoiceUpdate
+  ]
 });

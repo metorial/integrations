@@ -3,25 +3,24 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getDeviceStatus = SlateTool.create(
-  spec,
-  {
-    name: 'Get Device Status',
-    key: 'get_device_status',
-    description: `Check whether a Bolt IoT device is online (alive) or offline (dead), and retrieve its firmware and hardware version information. Combines the status check and version query into a single tool for complete device health overview.`,
-    tags: {
-      readOnly: true
-    }
+export let getDeviceStatus = SlateTool.create(spec, {
+  name: 'Get Device Status',
+  key: 'get_device_status',
+  description: `Check whether a Bolt IoT device is online (alive) or offline (dead), and retrieve its firmware and hardware version information. Combines the status check and version query into a single tool for complete device health overview.`,
+  tags: {
+    readOnly: true
   }
-)
+})
   .input(z.object({}))
-  .output(z.object({
-    isOnline: z.boolean().describe('Whether the device is currently online'),
-    statusValue: z.string().describe('Raw status value from the device ("alive" or "dead")'),
-    firmwareVersion: z.string().optional().describe('Firmware version of the device'),
-    hardwareVersion: z.string().optional().describe('Hardware/Bolt version of the device')
-  }))
-  .handleInvocation(async (ctx) => {
+  .output(
+    z.object({
+      isOnline: z.boolean().describe('Whether the device is currently online'),
+      statusValue: z.string().describe('Raw status value from the device ("alive" or "dead")'),
+      firmwareVersion: z.string().optional().describe('Firmware version of the device'),
+      hardwareVersion: z.string().optional().describe('Hardware/Bolt version of the device')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       deviceName: ctx.auth.deviceName

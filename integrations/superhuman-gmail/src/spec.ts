@@ -9,5 +9,5 @@ export let spec = SlateSpecification.create({
     'Conversation-first Gmail workflows: search threads, load full context for triage, batch-style label and mailbox actions, threaded reply drafts, send, and history-based change detection.',
   metadata: {},
   config,
-  auth,
+  auth
 });

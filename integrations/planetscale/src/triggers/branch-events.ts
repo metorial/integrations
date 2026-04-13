@@ -3,38 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let branchEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Branch Events',
-    key: 'branch_events',
-    description: 'Triggers when branch events occur: branch ready, sleeping, anomaly detected, primary promoted, out of memory, or maintenance starting.',
-  }
-)
-  .input(z.object({
-    eventType: z.string().describe('Type of branch event'),
-    eventId: z.string().describe('Unique event identifier'),
-    databaseName: z.string().describe('Name of the database'),
-    branchName: z.string().describe('Name of the branch'),
-    rawPayload: z.any().describe('Raw webhook event payload'),
-  }))
-  .output(z.object({
-    databaseName: z.string(),
-    branchName: z.string(),
-    branchId: z.string().optional(),
-    state: z.string().optional(),
-    kind: z.string().optional(),
-    production: z.boolean().optional(),
-    region: z.string().optional(),
-    anomaly: z.any().optional().describe('Anomaly details if event is branch.anomaly'),
-    storageThreshold: z.number().optional().describe('Storage threshold percentage if applicable'),
-  }))
+export let branchEvents = SlateTrigger.create(spec, {
+  name: 'Branch Events',
+  key: 'branch_events',
+  description:
+    'Triggers when branch events occur: branch ready, sleeping, anomaly detected, primary promoted, out of memory, or maintenance starting.'
+})
+  .input(
+    z.object({
+      eventType: z.string().describe('Type of branch event'),
+      eventId: z.string().describe('Unique event identifier'),
+      databaseName: z.string().describe('Name of the database'),
+      branchName: z.string().describe('Name of the branch'),
+      rawPayload: z.any().describe('Raw webhook event payload')
+    })
+  )
+  .output(
+    z.object({
+      databaseName: z.string(),
+      branchName: z.string(),
+      branchId: z.string().optional(),
+      state: z.string().optional(),
+      kind: z.string().optional(),
+      production: z.boolean().optional(),
+      region: z.string().optional(),
+      anomaly: z.any().optional().describe('Anomaly details if event is branch.anomaly'),
+      storageThreshold: z
+        .number()
+        .optional()
+        .describe('Storage threshold percentage if applicable')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
       let databases = await client.listDatabases({ perPage: 100 });
@@ -51,8 +56,8 @@ export let branchEvents = SlateTrigger.create(
               'branch.anomaly',
               'branch.primary_promoted',
               'branch.out_of_memory',
-              'branch.start_maintenance',
-            ],
+              'branch.start_maintenance'
+            ]
           });
           registrations.push({ databaseName: db.name, webhookId: webhook.id });
         } catch (e) {
@@ -61,18 +66,20 @@ export let branchEvents = SlateTrigger.create(
       }
 
       return {
-        registrationDetails: { registrations },
+        registrationDetails: { registrations }
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
         authType: ctx.auth.authType,
-        organization: ctx.config.organization,
+        organization: ctx.config.organization
       });
 
-      let details = ctx.input.registrationDetails as { registrations: Array<{ databaseName: string; webhookId: string }> };
+      let details = ctx.input.registrationDetails as {
+        registrations: Array<{ databaseName: string; webhookId: string }>;
+      };
       for (let reg of details.registrations) {
         try {
           await client.deleteWebhook(reg.databaseName, reg.webhookId);
@@ -82,33 +89,44 @@ export let branchEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let body = await ctx.request.json() as any;
+    handleRequest: async ctx => {
+      let body = (await ctx.request.json()) as any;
 
       let eventType = body.event || body.type || '';
-      let branchEvents = ['branch.ready', 'branch.sleeping', 'branch.anomaly', 'branch.primary_promoted', 'branch.out_of_memory', 'branch.start_maintenance'];
+      let branchEvents = [
+        'branch.ready',
+        'branch.sleeping',
+        'branch.anomaly',
+        'branch.primary_promoted',
+        'branch.out_of_memory',
+        'branch.start_maintenance'
+      ];
       if (!branchEvents.includes(eventType)) {
         return { inputs: [] };
       }
 
       let databaseName = body.database?.name || body.resource?.database?.name || '';
-      let branchName = body.branch?.name || body.resource?.branch?.name || body.resource?.name || '';
+      let branchName =
+        body.branch?.name || body.resource?.branch?.name || body.resource?.name || '';
       let eventId = body.id || `${eventType}-${databaseName}-${branchName}-${Date.now()}`;
 
       return {
-        inputs: [{
-          eventType,
-          eventId,
-          databaseName,
-          branchName,
-          rawPayload: body,
-        }],
+        inputs: [
+          {
+            eventType,
+            eventId,
+            databaseName,
+            branchName,
+            rawPayload: body
+          }
+        ]
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let { rawPayload } = ctx.input;
-      let branch = rawPayload.branch || rawPayload.resource?.branch || rawPayload.resource || {};
+      let branch =
+        rawPayload.branch || rawPayload.resource?.branch || rawPayload.resource || {};
 
       return {
         type: ctx.input.eventType,
@@ -121,8 +139,8 @@ export let branchEvents = SlateTrigger.create(
           kind: branch.kind,
           production: branch.production,
           region: branch.region?.display_name || branch.region?.slug,
-          anomaly: rawPayload.anomaly || rawPayload.query_anomaly,
-        },
+          anomaly: rawPayload.anomaly || rawPayload.query_anomaly
+        }
       };
-    },
+    }
   });

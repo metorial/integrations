@@ -9,8 +9,8 @@ export class Client {
       baseURL: 'https://api.insighto.ai',
       headers: {
         Authorization: `Bearer ${config.token}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -44,19 +44,22 @@ export class Client {
     return response.data;
   }
 
-  async updateAssistant(assistantId: string, data: {
-    name?: string;
-    description?: string;
-    system_prompt?: string;
-    llm_model?: string;
-    voice?: boolean;
-    voice_languages?: string[];
-    webhook_id?: string | null;
-    has_human_agent?: boolean;
-    use_tools?: boolean;
-    show_images?: boolean;
-    conversation_flow_id?: string | null;
-  }) {
+  async updateAssistant(
+    assistantId: string,
+    data: {
+      name?: string;
+      description?: string;
+      system_prompt?: string;
+      llm_model?: string;
+      voice?: boolean;
+      voice_languages?: string[];
+      webhook_id?: string | null;
+      has_human_agent?: boolean;
+      use_tools?: boolean;
+      show_images?: boolean;
+      conversation_flow_id?: string | null;
+    }
+  ) {
     let response = await this.axios.put(`/api/v1/assistant/${assistantId}`, data);
     return response.data;
   }
@@ -77,7 +80,9 @@ export class Client {
   }
 
   async linkDataSourceToAssistant(assistantId: string, datasourceId: string) {
-    let response = await this.axios.post(`/api/v1/assistant/${assistantId}/data_source/${datasourceId}`);
+    let response = await this.axios.post(
+      `/api/v1/assistant/${assistantId}/data_source/${datasourceId}`
+    );
     return response.data;
   }
 
@@ -131,13 +136,16 @@ export class Client {
     return response.data;
   }
 
-  async updateContact(contactId: string, data: {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    phone?: string;
-    custom_fields?: Record<string, unknown>;
-  }) {
+  async updateContact(
+    contactId: string,
+    data: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      phone?: string;
+      custom_fields?: Record<string, unknown>;
+    }
+  ) {
     let response = await this.axios.put(`/api/v1/contact/${contactId}`, data);
     return response.data;
   }
@@ -149,7 +157,12 @@ export class Client {
 
   // ── Conversations ──
 
-  async listConversations(params?: { page?: number; size?: number; date_from?: string; date_to?: string }) {
+  async listConversations(params?: {
+    page?: number;
+    size?: number;
+    date_from?: string;
+    date_to?: string;
+  }) {
     let response = await this.axios.get('/api/v1/conversation', { params });
     return response.data;
   }
@@ -176,18 +189,24 @@ export class Client {
 
   // ── Calling ──
 
-  async makeCall(widgetId: string, data: {
-    to: string;
-    prompt_dynamic_variables?: Record<string, string>;
-  }) {
+  async makeCall(
+    widgetId: string,
+    data: {
+      to: string;
+      prompt_dynamic_variables?: Record<string, string>;
+    }
+  ) {
     let response = await this.axios.post(`/api/v1/call/${widgetId}`, data);
     return response.data;
   }
 
-  async bulkCall(widgetId: string, data: {
-    contact_ids?: string[];
-    prompt_dynamic_variables?: Record<string, string>;
-  }) {
+  async bulkCall(
+    widgetId: string,
+    data: {
+      contact_ids?: string[];
+      prompt_dynamic_variables?: Record<string, string>;
+    }
+  ) {
     let response = await this.axios.post(`/api/v1/call/${widgetId}/contacts`, data);
     return response.data;
   }
@@ -199,10 +218,13 @@ export class Client {
 
   // ── Messaging ──
 
-  async sendMessage(widgetId: string, data: {
-    to: string;
-    message: string;
-  }) {
+  async sendMessage(
+    widgetId: string,
+    data: {
+      to: string;
+      message: string;
+    }
+  ) {
     let response = await this.axios.post(`/api/v1/messaging/${widgetId}`, data);
     return response.data;
   }
@@ -235,7 +257,9 @@ export class Client {
   }
 
   async listDataSourceFiles(datasourceId: string) {
-    let response = await this.axios.get(`/api/v1/datasource/${datasourceId}/data_source_files`);
+    let response = await this.axios.get(
+      `/api/v1/datasource/${datasourceId}/data_source_files`
+    );
     return response.data;
   }
 
@@ -320,7 +344,10 @@ export class Client {
     return response.data;
   }
 
-  async updateWebhook(webhookId: string, data: { endpoint?: string; name?: string; enabled?: boolean }) {
+  async updateWebhook(
+    webhookId: string,
+    data: { endpoint?: string; name?: string; enabled?: boolean }
+  ) {
     let response = await this.axios.put(`/api/v1/outbound_webhook/${webhookId}`, data);
     return response.data;
   }

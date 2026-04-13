@@ -26,44 +26,48 @@ let POLL_ACTIONS = [
   'form_entry_updated',
   'form_entry_deleted',
   'volunteer_role_created',
-  'volunteer_role_deleted',
+  'volunteer_role_deleted'
 ] as const;
 
-export let accountChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Account Changes',
-    key: 'account_changes',
-    description: 'Polls the Breeze Account Log for changes across people, contributions, events, tags, forms, and volunteers. Detects create, update, and delete actions.',
-  }
-)
-  .input(z.object({
-    logEntryId: z.string().describe('Unique log entry ID'),
-    action: z.string().describe('Action type (e.g., person_created, contribution_added)'),
-    userId: z.string().optional().describe('ID of the user who performed the action'),
-    objectJson: z.string().optional().describe('Serialized data related to the action'),
-    createdOn: z.string().describe('Timestamp when the action was performed'),
-  }))
-  .output(z.object({
-    logEntryId: z.string().describe('Unique log entry ID'),
-    action: z.string().describe('Action type'),
-    userId: z.string().optional().describe('ID of the user who performed the action'),
-    actionData: z.any().optional().describe('Parsed data related to the action'),
-    createdOn: z.string().describe('Timestamp when the action was performed'),
-  }))
+export let accountChanges = SlateTrigger.create(spec, {
+  name: 'Account Changes',
+  key: 'account_changes',
+  description:
+    'Polls the Breeze Account Log for changes across people, contributions, events, tags, forms, and volunteers. Detects create, update, and delete actions.'
+})
+  .input(
+    z.object({
+      logEntryId: z.string().describe('Unique log entry ID'),
+      action: z.string().describe('Action type (e.g., person_created, contribution_added)'),
+      userId: z.string().optional().describe('ID of the user who performed the action'),
+      objectJson: z.string().optional().describe('Serialized data related to the action'),
+      createdOn: z.string().describe('Timestamp when the action was performed')
+    })
+  )
+  .output(
+    z.object({
+      logEntryId: z.string().describe('Unique log entry ID'),
+      action: z.string().describe('Action type'),
+      userId: z.string().optional().describe('ID of the user who performed the action'),
+      actionData: z.any().optional().describe('Parsed data related to the action'),
+      createdOn: z.string().describe('Timestamp when the action was performed')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = createClient(ctx);
 
       let lastPolledAt = (ctx.state as { lastPolledAt?: string })?.lastPolledAt;
       let seenIds = (ctx.state as { seenIds?: string[] })?.seenIds || [];
 
       let now = new Date();
-      let startDate = lastPolledAt || new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      let startDate =
+        lastPolledAt ||
+        new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
       let allEntries: Array<{
         logEntryId: string;
@@ -78,7 +82,7 @@ export let accountChanges = SlateTrigger.create(
           let entries = await client.listAccountLog({
             action,
             start: startDate,
-            details: true,
+            details: true
           });
 
           if (Array.isArray(entries)) {
@@ -89,7 +93,7 @@ export let accountChanges = SlateTrigger.create(
                   action: entry.action || action,
                   userId: entry.user_id,
                   objectJson: entry.object_json,
-                  createdOn: entry.created_on,
+                  createdOn: entry.created_on
                 });
               }
             }
@@ -102,21 +106,18 @@ export let accountChanges = SlateTrigger.create(
       // Sort by created_on ascending so oldest events are processed first
       allEntries.sort((a, b) => a.createdOn.localeCompare(b.createdOn));
 
-      let newSeenIds = [
-        ...seenIds,
-        ...allEntries.map((e) => e.logEntryId),
-      ].slice(-500); // Keep last 500 IDs to prevent unbounded growth
+      let newSeenIds = [...seenIds, ...allEntries.map(e => e.logEntryId)].slice(-500); // Keep last 500 IDs to prevent unbounded growth
 
       return {
         inputs: allEntries,
         updatedState: {
           lastPolledAt: now.toISOString().split('T')[0],
-          seenIds: newSeenIds,
-        },
+          seenIds: newSeenIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let actionData: unknown;
       if (ctx.input.objectJson) {
         try {
@@ -134,8 +135,9 @@ export let accountChanges = SlateTrigger.create(
           action: ctx.input.action,
           userId: ctx.input.userId,
           actionData,
-          createdOn: ctx.input.createdOn,
-        },
+          createdOn: ctx.input.createdOn
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

@@ -7,7 +7,7 @@ import {
   generateText,
   generateHeadline,
   detectSpam,
-  runCustomModel,
+  runCustomModel
 } from './tools';
 
 import { inboundWebhook } from './triggers/inbound-webhook';
@@ -21,9 +21,7 @@ export let provider = Slate.create({
     generateText,
     generateHeadline,
     detectSpam,
-    runCustomModel,
+    runCustomModel
   ],
-  triggers: [
-    inboundWebhook,
-  ],
+  triggers: [inboundWebhook]
 });

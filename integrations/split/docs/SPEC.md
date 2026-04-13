@@ -15,6 +15,7 @@ Split API supports authentication via API keys, personal access tokens (PATs), o
 FME SDKs and Admin API both require API keys for authentication. There are three types: Server-side keys (for backend SDKs), Client-side keys (for frontend/mobile SDKs), and Admin keys (for Admin API endpoints).
 
 Authentication is done via Bearer token in the `Authorization` header:
+
 ```
 Authorization: Bearer <ADMIN_API_KEY>
 ```

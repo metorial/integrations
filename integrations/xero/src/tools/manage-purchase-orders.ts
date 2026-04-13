@@ -10,7 +10,7 @@ let lineItemSchema = z.object({
   accountCode: z.string().optional().describe('Account code'),
   taxType: z.string().optional().describe('Tax type code'),
   itemCode: z.string().optional().describe('Item code'),
-  discountRate: z.number().optional().describe('Discount percentage'),
+  discountRate: z.number().optional().describe('Discount percentage')
 });
 
 let purchaseOrderOutputSchema = z.object({
@@ -20,7 +20,10 @@ let purchaseOrderOutputSchema = z.object({
   deliveryDate: z.string().optional().describe('Expected delivery date'),
   deliveryAddress: z.string().optional().describe('Delivery address'),
   reference: z.string().optional().describe('Reference'),
-  status: z.string().optional().describe('Status: DRAFT, SUBMITTED, AUTHORISED, BILLED, DELETED'),
+  status: z
+    .string()
+    .optional()
+    .describe('Status: DRAFT, SUBMITTED, AUTHORISED, BILLED, DELETED'),
   contactName: z.string().optional().describe('Supplier contact name'),
   contactId: z.string().optional().describe('Supplier contact ID'),
   subTotal: z.number().optional().describe('Subtotal'),
@@ -28,7 +31,7 @@ let purchaseOrderOutputSchema = z.object({
   total: z.number().optional().describe('Total amount'),
   currencyCode: z.string().optional().describe('Currency code'),
   sentToContact: z.boolean().optional().describe('Whether PO has been sent to supplier'),
-  updatedDate: z.string().optional().describe('Last updated timestamp'),
+  updatedDate: z.string().optional().describe('Last updated timestamp')
 });
 
 let mapPurchaseOrder = (po: any) => ({
@@ -46,34 +49,39 @@ let mapPurchaseOrder = (po: any) => ({
   total: po.Total,
   currencyCode: po.CurrencyCode,
   sentToContact: po.SentToContact,
-  updatedDate: po.UpdatedDateUTC,
+  updatedDate: po.UpdatedDateUTC
 });
 
-export let createPurchaseOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Create Purchase Order',
-    key: 'create_purchase_order',
-    description: `Creates a new purchase order for a supplier in Xero. Specify the supplier contact, line items, delivery details, and dates. Created in DRAFT status by default.`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    contactId: z.string().describe('Supplier contact ID'),
-    lineItems: z.array(lineItemSchema).min(1).describe('Line items for the purchase order'),
-    date: z.string().optional().describe('Purchase order date (YYYY-MM-DD)'),
-    deliveryDate: z.string().optional().describe('Expected delivery date (YYYY-MM-DD)'),
-    deliveryAddress: z.string().optional().describe('Delivery address'),
-    deliveryInstructions: z.string().optional().describe('Delivery instructions'),
-    reference: z.string().optional().describe('Reference or PO number'),
-    status: z.enum(['DRAFT', 'SUBMITTED', 'AUTHORISED']).optional().describe('Initial status'),
-    lineAmountTypes: z.enum(['Exclusive', 'Inclusive', 'NoTax']).optional().describe('How amounts are calculated'),
-    currencyCode: z.string().optional().describe('Currency code'),
-    attentionTo: z.string().optional().describe('Attention to field'),
-    telephone: z.string().optional().describe('Telephone number'),
-  }))
+export let createPurchaseOrder = SlateTool.create(spec, {
+  name: 'Create Purchase Order',
+  key: 'create_purchase_order',
+  description: `Creates a new purchase order for a supplier in Xero. Specify the supplier contact, line items, delivery details, and dates. Created in DRAFT status by default.`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      contactId: z.string().describe('Supplier contact ID'),
+      lineItems: z.array(lineItemSchema).min(1).describe('Line items for the purchase order'),
+      date: z.string().optional().describe('Purchase order date (YYYY-MM-DD)'),
+      deliveryDate: z.string().optional().describe('Expected delivery date (YYYY-MM-DD)'),
+      deliveryAddress: z.string().optional().describe('Delivery address'),
+      deliveryInstructions: z.string().optional().describe('Delivery instructions'),
+      reference: z.string().optional().describe('Reference or PO number'),
+      status: z
+        .enum(['DRAFT', 'SUBMITTED', 'AUTHORISED'])
+        .optional()
+        .describe('Initial status'),
+      lineAmountTypes: z
+        .enum(['Exclusive', 'Inclusive', 'NoTax'])
+        .optional()
+        .describe('How amounts are calculated'),
+      currencyCode: z.string().optional().describe('Currency code'),
+      attentionTo: z.string().optional().describe('Attention to field'),
+      telephone: z.string().optional().describe('Telephone number')
+    })
+  )
   .output(purchaseOrderOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let po = await client.createPurchaseOrder({
@@ -85,7 +93,7 @@ export let createPurchaseOrder = SlateTool.create(
         AccountCode: li.accountCode,
         TaxType: li.taxType,
         ItemCode: li.itemCode,
-        DiscountRate: li.discountRate,
+        DiscountRate: li.discountRate
       })),
       Date: ctx.input.date,
       DeliveryDate: ctx.input.deliveryDate,
@@ -96,41 +104,48 @@ export let createPurchaseOrder = SlateTool.create(
       LineAmountTypes: ctx.input.lineAmountTypes,
       CurrencyCode: ctx.input.currencyCode,
       AttentionTo: ctx.input.attentionTo,
-      Telephone: ctx.input.telephone,
+      Telephone: ctx.input.telephone
     });
 
     let output = mapPurchaseOrder(po);
 
     return {
       output,
-      message: `Created purchase order **${output.purchaseOrderNumber || output.purchaseOrderId}** for **${output.total?.toFixed(2)} ${output.currencyCode || ''}** to **${output.contactName}**.`,
+      message: `Created purchase order **${output.purchaseOrderNumber || output.purchaseOrderId}** for **${output.total?.toFixed(2)} ${output.currencyCode || ''}** to **${output.contactName}**.`
     };
   })
   .build();
 
-export let listPurchaseOrders = SlateTool.create(
-  spec,
-  {
-    name: 'List Purchase Orders',
-    key: 'list_purchase_orders',
-    description: `Lists purchase orders from Xero with filtering options. Filter by status, date range, or modification time.`,
-    tags: { destructive: false, readOnly: true },
-  }
-)
-  .input(z.object({
-    page: z.number().optional().describe('Page number (starting from 1)'),
-    status: z.string().optional().describe('Filter by status: DRAFT, SUBMITTED, AUTHORISED, BILLED, DELETED'),
-    dateFrom: z.string().optional().describe('Start date filter (YYYY-MM-DD)'),
-    dateTo: z.string().optional().describe('End date filter (YYYY-MM-DD)'),
-    modifiedAfter: z.string().optional().describe('Only return POs modified after this date (ISO 8601)'),
-    where: z.string().optional().describe('Xero API where filter expression'),
-    order: z.string().optional().describe('Order results'),
-  }))
-  .output(z.object({
-    purchaseOrders: z.array(purchaseOrderOutputSchema).describe('List of purchase orders'),
-    count: z.number().describe('Number of purchase orders returned'),
-  }))
-  .handleInvocation(async (ctx) => {
+export let listPurchaseOrders = SlateTool.create(spec, {
+  name: 'List Purchase Orders',
+  key: 'list_purchase_orders',
+  description: `Lists purchase orders from Xero with filtering options. Filter by status, date range, or modification time.`,
+  tags: { destructive: false, readOnly: true }
+})
+  .input(
+    z.object({
+      page: z.number().optional().describe('Page number (starting from 1)'),
+      status: z
+        .string()
+        .optional()
+        .describe('Filter by status: DRAFT, SUBMITTED, AUTHORISED, BILLED, DELETED'),
+      dateFrom: z.string().optional().describe('Start date filter (YYYY-MM-DD)'),
+      dateTo: z.string().optional().describe('End date filter (YYYY-MM-DD)'),
+      modifiedAfter: z
+        .string()
+        .optional()
+        .describe('Only return POs modified after this date (ISO 8601)'),
+      where: z.string().optional().describe('Xero API where filter expression'),
+      order: z.string().optional().describe('Order results')
+    })
+  )
+  .output(
+    z.object({
+      purchaseOrders: z.array(purchaseOrderOutputSchema).describe('List of purchase orders'),
+      count: z.number().describe('Number of purchase orders returned')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let result = await client.getPurchaseOrders({
@@ -140,39 +155,41 @@ export let listPurchaseOrders = SlateTool.create(
       dateTo: ctx.input.dateTo,
       modifiedAfter: ctx.input.modifiedAfter,
       where: ctx.input.where,
-      order: ctx.input.order,
+      order: ctx.input.order
     });
 
     let purchaseOrders = (result.PurchaseOrders || []).map(mapPurchaseOrder);
 
     return {
       output: { purchaseOrders, count: purchaseOrders.length },
-      message: `Found **${purchaseOrders.length}** purchase order(s).`,
+      message: `Found **${purchaseOrders.length}** purchase order(s).`
     };
   })
   .build();
 
-export let updatePurchaseOrder = SlateTool.create(
-  spec,
-  {
-    name: 'Update Purchase Order',
-    key: 'update_purchase_order',
-    description: `Updates an existing purchase order. Can modify line items, dates, delivery details, and status (e.g. approve or delete).`,
-    tags: { destructive: false, readOnly: false },
-  }
-)
-  .input(z.object({
-    purchaseOrderId: z.string().describe('The Xero purchase order ID to update'),
-    status: z.enum(['DRAFT', 'SUBMITTED', 'AUTHORISED', 'DELETED']).optional().describe('New status'),
-    contactId: z.string().optional().describe('New supplier contact ID'),
-    lineItems: z.array(lineItemSchema).optional().describe('Replacement line items'),
-    date: z.string().optional().describe('New date'),
-    deliveryDate: z.string().optional().describe('New delivery date'),
-    deliveryAddress: z.string().optional().describe('New delivery address'),
-    reference: z.string().optional().describe('New reference'),
-  }))
+export let updatePurchaseOrder = SlateTool.create(spec, {
+  name: 'Update Purchase Order',
+  key: 'update_purchase_order',
+  description: `Updates an existing purchase order. Can modify line items, dates, delivery details, and status (e.g. approve or delete).`,
+  tags: { destructive: false, readOnly: false }
+})
+  .input(
+    z.object({
+      purchaseOrderId: z.string().describe('The Xero purchase order ID to update'),
+      status: z
+        .enum(['DRAFT', 'SUBMITTED', 'AUTHORISED', 'DELETED'])
+        .optional()
+        .describe('New status'),
+      contactId: z.string().optional().describe('New supplier contact ID'),
+      lineItems: z.array(lineItemSchema).optional().describe('Replacement line items'),
+      date: z.string().optional().describe('New date'),
+      deliveryDate: z.string().optional().describe('New delivery date'),
+      deliveryAddress: z.string().optional().describe('New delivery address'),
+      reference: z.string().optional().describe('New reference')
+    })
+  )
   .output(purchaseOrderOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = createClientFromContext(ctx);
 
     let updateData: Record<string, any> = {};
@@ -191,7 +208,7 @@ export let updatePurchaseOrder = SlateTool.create(
         AccountCode: li.accountCode,
         TaxType: li.taxType,
         ItemCode: li.itemCode,
-        DiscountRate: li.discountRate,
+        DiscountRate: li.discountRate
       }));
     }
 
@@ -200,7 +217,7 @@ export let updatePurchaseOrder = SlateTool.create(
 
     return {
       output,
-      message: `Updated purchase order **${output.purchaseOrderNumber || output.purchaseOrderId}** — Status: **${output.status}**.`,
+      message: `Updated purchase order **${output.purchaseOrderNumber || output.purchaseOrderId}** — Status: **${output.status}**.`
     };
   })
   .build();

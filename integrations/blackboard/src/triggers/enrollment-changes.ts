@@ -3,37 +3,39 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let enrollmentChanges = SlateTrigger.create(
-  spec,
-  {
-    name: 'Enrollment Changes',
-    key: 'enrollment_changes',
-    description: 'Detects new or updated enrollments in a specific course by polling the memberships API.',
-  }
-)
-  .input(z.object({
-    userId: z.string().describe('User ID'),
-    courseId: z.string().describe('Course ID'),
-    courseRoleId: z.string().optional().describe('Course role'),
-    available: z.string().optional().describe('Availability status'),
-    created: z.string().optional().describe('Creation timestamp'),
-    modified: z.string().optional().describe('Last modified timestamp'),
-    isNew: z.boolean().describe('Whether this is a newly detected enrollment'),
-  }))
-  .output(z.object({
-    userId: z.string().describe('User ID'),
-    courseId: z.string().describe('Course ID'),
-    courseRoleId: z.string().optional().describe('Course role'),
-    available: z.string().optional().describe('Availability status'),
-    created: z.string().optional().describe('Creation timestamp'),
-    modified: z.string().optional().describe('Last modified timestamp'),
-  }))
+export let enrollmentChanges = SlateTrigger.create(spec, {
+  name: 'Enrollment Changes',
+  key: 'enrollment_changes',
+  description:
+    'Detects new or updated enrollments in a specific course by polling the memberships API.'
+})
+  .input(
+    z.object({
+      userId: z.string().describe('User ID'),
+      courseId: z.string().describe('Course ID'),
+      courseRoleId: z.string().optional().describe('Course role'),
+      available: z.string().optional().describe('Availability status'),
+      created: z.string().optional().describe('Creation timestamp'),
+      modified: z.string().optional().describe('Last modified timestamp'),
+      isNew: z.boolean().describe('Whether this is a newly detected enrollment')
+    })
+  )
+  .output(
+    z.object({
+      userId: z.string().describe('User ID'),
+      courseId: z.string().describe('Course ID'),
+      courseRoleId: z.string().optional().describe('Course role'),
+      available: z.string().optional().describe('Availability status'),
+      created: z.string().optional().describe('Creation timestamp'),
+      modified: z.string().optional().describe('Last modified timestamp')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({ baseUrl: ctx.config.baseUrl, token: ctx.auth.token });
 
       let lastPolled = ctx.state?.lastPolled as string | undefined;
@@ -46,7 +48,9 @@ export let enrollmentChanges = SlateTrigger.create(
       let newKnownKeys = [...knownKeys];
 
       for (let course of (coursesResult.results || []).slice(0, 10)) {
-        let options: { limit?: number; modified?: string; modifiedCompare?: string } = { limit: 200 };
+        let options: { limit?: number; modified?: string; modifiedCompare?: string } = {
+          limit: 200
+        };
         if (lastPolled) {
           options.modified = lastPolled;
           options.modifiedCompare = 'greaterOrEqual';
@@ -67,7 +71,7 @@ export let enrollmentChanges = SlateTrigger.create(
               available: m.availability?.available,
               created: m.created,
               modified: m.modified,
-              isNew,
+              isNew
             });
 
             if (isNew) {
@@ -84,12 +88,12 @@ export let enrollmentChanges = SlateTrigger.create(
         inputs: allInputs,
         updatedState: {
           lastPolled: new Date().toISOString(),
-          knownKeys: newKnownKeys,
-        },
+          knownKeys: newKnownKeys
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let eventType = ctx.input.isNew ? 'created' : 'updated';
 
       return {
@@ -101,9 +105,9 @@ export let enrollmentChanges = SlateTrigger.create(
           courseRoleId: ctx.input.courseRoleId,
           available: ctx.input.available,
           created: ctx.input.created,
-          modified: ctx.input.modified,
-        },
+          modified: ctx.input.modified
+        }
       };
-    },
+    }
   })
   .build();

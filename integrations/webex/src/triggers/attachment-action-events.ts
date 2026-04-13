@@ -3,29 +3,31 @@ import { WebexClient } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let attachmentActionEvents = SlateTrigger.create(
-  spec,
-  {
-    name: 'Adaptive Card Submissions',
-    key: 'attachment_action_events',
-    description: 'Triggers when a user submits an Adaptive Card (attachment action created) in Webex. Fetches the full submission data including form inputs.'
-  }
-)
-  .input(z.object({
-    eventType: z.enum(['created']).describe('Type of attachment action event'),
-    webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
-  }))
-  .output(z.object({
-    actionId: z.string().describe('ID of the attachment action'),
-    messageId: z.string().optional().describe('ID of the message containing the card'),
-    roomId: z.string().optional().describe('ID of the space'),
-    personId: z.string().optional().describe('ID of the person who submitted the card'),
-    type: z.string().optional().describe('Action type (e.g. submit)'),
-    inputs: z.any().optional().describe('Form input values submitted by the user'),
-    created: z.string().optional().describe('Timestamp of the submission')
-  }))
+export let attachmentActionEvents = SlateTrigger.create(spec, {
+  name: 'Adaptive Card Submissions',
+  key: 'attachment_action_events',
+  description:
+    'Triggers when a user submits an Adaptive Card (attachment action created) in Webex. Fetches the full submission data including form inputs.'
+})
+  .input(
+    z.object({
+      eventType: z.enum(['created']).describe('Type of attachment action event'),
+      webhookPayload: z.any().describe('Raw webhook notification payload from Webex')
+    })
+  )
+  .output(
+    z.object({
+      actionId: z.string().describe('ID of the attachment action'),
+      messageId: z.string().optional().describe('ID of the message containing the card'),
+      roomId: z.string().optional().describe('ID of the space'),
+      personId: z.string().optional().describe('ID of the person who submitted the card'),
+      type: z.string().optional().describe('Action type (e.g. submit)'),
+      inputs: z.any().optional().describe('Form input values submitted by the user'),
+      created: z.string().optional().describe('Timestamp of the submission')
+    })
+  )
   .webhook({
-    autoRegisterWebhook: async (ctx) => {
+    autoRegisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
 
       let webhook = await client.createWebhook({
@@ -40,11 +42,11 @@ export let attachmentActionEvents = SlateTrigger.create(
       };
     },
 
-    autoUnregisterWebhook: async (ctx) => {
+    autoUnregisterWebhook: async ctx => {
       let client = new WebexClient({ token: ctx.auth.token });
       let details = ctx.input.registrationDetails as { webhookIds: string[] };
 
-      for (let webhookId of (details.webhookIds || [])) {
+      for (let webhookId of details.webhookIds || []) {
         try {
           await client.deleteWebhook(webhookId);
         } catch {
@@ -53,8 +55,8 @@ export let attachmentActionEvents = SlateTrigger.create(
       }
     },
 
-    handleRequest: async (ctx) => {
-      let data = await ctx.input.request.json() as any;
+    handleRequest: async ctx => {
+      let data = (await ctx.input.request.json()) as any;
 
       return {
         inputs: [
@@ -66,7 +68,7 @@ export let attachmentActionEvents = SlateTrigger.create(
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       let payload = ctx.input.webhookPayload;
       let resourceData = payload.data || {};
 

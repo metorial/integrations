@@ -100,12 +100,14 @@ Grafana supports outgoing webhooks for alert notifications and incident/on-call 
 ### Alert Notification Webhooks
 
 Use the webhook integration in contact points to send alert notifications to your webhook. The webhook integration is a flexible way to integrate alerts into your system. When a notification is triggered, it sends a JSON request with alert details and additional data to the webhook endpoint. Configure a webhook as a contact point so that alert rule state changes (firing, resolved) send a JSON payload to a specified URL.
+
 - Supports HTTP Basic Authentication or custom Authorization headers.
 - You can secure your webhook notifications using HMAC signatures to verify the authenticity and integrity of the requests. When enabled, Grafana signs the webhook payload with a shared secret using HMAC-SHA256.
 
 ### Grafana OnCall / IRM Outgoing Webhooks
 
 Outgoing webhooks are used by Grafana OnCall to send data to a URL in a flexible way. These webhooks can be triggered from a variety of event types and make use of Jinja2 to transform data into the format required at the destination URL. Available event trigger types include:
+
 - **Alert group created** — when a new alert group is created.
 - **Acknowledged** — when an alert group is acknowledged.
 - **Resolved** — when an alert group is resolved.

@@ -2,11 +2,13 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    refreshToken: z.string().optional(),
-    expiresAt: z.string().optional()
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      refreshToken: z.string().optional(),
+      expiresAt: z.string().optional()
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth 2.0',
@@ -35,13 +37,13 @@ export let auth = SlateAuth.create()
       }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let scopeString = ctx.scopes.join('+');
       let url = `https://www.workable.com/oauth/authorize?client_id=${encodeURIComponent(ctx.clientId)}&redirect_uri=${encodeURIComponent(ctx.redirectUri)}&state=${encodeURIComponent(ctx.state)}&response_type=code&scope=${scopeString}`;
       return { url };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios();
       let response = await axios.post('https://www.workable.com/oauth/token', {
         client_id: ctx.clientId,
@@ -63,7 +65,7 @@ export let auth = SlateAuth.create()
       };
     },
 
-    handleTokenRefresh: async (ctx) => {
+    handleTokenRefresh: async ctx => {
       let axios = createAxios();
       let response = await axios.post('https://www.workable.com/oauth/token', {
         client_id: ctx.clientId,
@@ -101,7 +103,7 @@ export let auth = SlateAuth.create()
       return {
         profile: {
           id: account?.subdomain,
-          name: account?.name || account?.subdomain,
+          name: account?.name || account?.subdomain
         }
       };
     }
@@ -112,10 +114,12 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      token: z.string().describe('Workable API access token (generated from Settings > Integrations > Apps)')
+      token: z
+        .string()
+        .describe('Workable API access token (generated from Settings > Integrations > Apps)')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.token

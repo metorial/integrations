@@ -3,34 +3,55 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Tags',
-    key: 'manage_tags',
-    description: `List, create, delete tags, or tag/untag resources. Tags are labels you can apply to DigitalOcean resources for organization and bulk operations.`,
-  }
-)
-  .input(z.object({
-    action: z.enum(['list', 'create', 'delete', 'tag_resources', 'untag_resources']).describe('Action to perform'),
-    tagName: z.string().optional().describe('Tag name (required for create, delete, tag/untag resources)'),
-    resources: z.array(z.object({
-      resourceId: z.string().describe('Resource ID'),
-      resourceType: z.string().describe('Resource type (e.g., "droplet", "volume", "database")')
-    })).optional().describe('Resources to tag/untag')
-  }))
-  .output(z.object({
-    tags: z.array(z.object({
-      name: z.string().describe('Tag name'),
-      resourceCount: z.number().optional().describe('Number of tagged resources')
-    })).optional().describe('List of tags'),
-    tag: z.object({
-      name: z.string().describe('Tag name')
-    }).optional().describe('Created tag'),
-    deleted: z.boolean().optional().describe('Whether the tag was deleted'),
-    tagged: z.boolean().optional().describe('Whether resources were tagged/untagged')
-  }))
-  .handleInvocation(async (ctx) => {
+export let manageTags = SlateTool.create(spec, {
+  name: 'Manage Tags',
+  key: 'manage_tags',
+  description: `List, create, delete tags, or tag/untag resources. Tags are labels you can apply to DigitalOcean resources for organization and bulk operations.`
+})
+  .input(
+    z.object({
+      action: z
+        .enum(['list', 'create', 'delete', 'tag_resources', 'untag_resources'])
+        .describe('Action to perform'),
+      tagName: z
+        .string()
+        .optional()
+        .describe('Tag name (required for create, delete, tag/untag resources)'),
+      resources: z
+        .array(
+          z.object({
+            resourceId: z.string().describe('Resource ID'),
+            resourceType: z
+              .string()
+              .describe('Resource type (e.g., "droplet", "volume", "database")')
+          })
+        )
+        .optional()
+        .describe('Resources to tag/untag')
+    })
+  )
+  .output(
+    z.object({
+      tags: z
+        .array(
+          z.object({
+            name: z.string().describe('Tag name'),
+            resourceCount: z.number().optional().describe('Number of tagged resources')
+          })
+        )
+        .optional()
+        .describe('List of tags'),
+      tag: z
+        .object({
+          name: z.string().describe('Tag name')
+        })
+        .optional()
+        .describe('Created tag'),
+      deleted: z.boolean().optional().describe('Whether the tag was deleted'),
+      tagged: z.boolean().optional().describe('Whether resources were tagged/untagged')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     if (ctx.input.action === 'list') {

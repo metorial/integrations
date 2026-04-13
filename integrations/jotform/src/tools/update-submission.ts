@@ -26,7 +26,7 @@ export let updateSubmissionTool = SlateTool.create(spec, {
       updated: z.boolean().describe('Whether the update was successful')
     })
   )
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
       apiDomain: ctx.config.apiDomain

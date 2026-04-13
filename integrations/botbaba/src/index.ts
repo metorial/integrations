@@ -5,11 +5,6 @@ import { botEvent } from './triggers';
 
 export let provider = Slate.create({
   spec,
-  tools: [
-    listBots,
-    sendWhatsAppTemplate,
-  ],
-  triggers: [
-    botEvent,
-  ],
+  tools: [listBots, sendWhatsAppTemplate],
+  triggers: [botEvent]
 });

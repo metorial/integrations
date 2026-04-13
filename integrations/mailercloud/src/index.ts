@@ -28,7 +28,5 @@ export let provider = Slate.create({
     getAccountPlan,
     manageWebhook
   ],
-  triggers: [
-    emailEvent
-  ]
+  triggers: [emailEvent]
 });

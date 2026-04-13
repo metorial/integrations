@@ -3,36 +3,41 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let getModel = SlateTool.create(
-  spec,
-  {
-    name: 'Get Model',
-    key: 'get_model',
-    description: `Get details about a specific model on Replicate, including its description, latest version, run count, and input/output schema.`,
-    tags: {
-      readOnly: true
-    }
+export let getModel = SlateTool.create(spec, {
+  name: 'Get Model',
+  key: 'get_model',
+  description: `Get details about a specific model on Replicate, including its description, latest version, run count, and input/output schema.`,
+  tags: {
+    readOnly: true
   }
-)
-  .input(z.object({
-    owner: z.string().describe('Model owner username'),
-    modelName: z.string().describe('Model name')
-  }))
-  .output(z.object({
-    owner: z.string().describe('Model owner'),
-    modelName: z.string().describe('Model name'),
-    description: z.string().optional().nullable().describe('Model description'),
-    visibility: z.string().describe('public or private'),
-    url: z.string().optional().describe('URL to the model page'),
-    runCount: z.number().optional().describe('Total number of runs'),
-    githubUrl: z.string().optional().nullable().describe('Associated GitHub repository'),
-    paperUrl: z.string().optional().nullable().describe('Associated paper URL'),
-    licenseUrl: z.string().optional().nullable().describe('License URL'),
-    coverImageUrl: z.string().optional().nullable().describe('Cover image URL'),
-    latestVersionId: z.string().optional().nullable().describe('ID of the latest version'),
-    latestVersionCreatedAt: z.string().optional().nullable().describe('When the latest version was created')
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      owner: z.string().describe('Model owner username'),
+      modelName: z.string().describe('Model name')
+    })
+  )
+  .output(
+    z.object({
+      owner: z.string().describe('Model owner'),
+      modelName: z.string().describe('Model name'),
+      description: z.string().optional().nullable().describe('Model description'),
+      visibility: z.string().describe('public or private'),
+      url: z.string().optional().describe('URL to the model page'),
+      runCount: z.number().optional().describe('Total number of runs'),
+      githubUrl: z.string().optional().nullable().describe('Associated GitHub repository'),
+      paperUrl: z.string().optional().nullable().describe('Associated paper URL'),
+      licenseUrl: z.string().optional().nullable().describe('License URL'),
+      coverImageUrl: z.string().optional().nullable().describe('Cover image URL'),
+      latestVersionId: z.string().optional().nullable().describe('ID of the latest version'),
+      latestVersionCreatedAt: z
+        .string()
+        .optional()
+        .nullable()
+        .describe('When the latest version was created')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
     let result = await client.getModel(ctx.input.owner, ctx.input.modelName);
 
@@ -53,4 +58,5 @@ export let getModel = SlateTool.create(
       },
       message: `Model **${result.owner}/${result.name}** — ${result.visibility}, ${result.run_count ?? 0} runs.`
     };
-  }).build();
+  })
+  .build();

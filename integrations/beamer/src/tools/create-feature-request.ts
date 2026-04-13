@@ -6,7 +6,7 @@ import { z } from 'zod';
 let featureRequestTranslationSchema = z.object({
   title: z.string().describe('Title of the feature request in this language'),
   content: z.string().describe('Description/content in this language'),
-  language: z.string().optional().describe('ISO-639 two-letter language code'),
+  language: z.string().optional().describe('ISO-639 two-letter language code')
 });
 
 let featureRequestTranslationOutput = z.object({
@@ -15,7 +15,7 @@ let featureRequestTranslationOutput = z.object({
   contentHtml: z.string().describe('HTML content'),
   language: z.string().describe('Language code'),
   permalink: z.string().nullable().describe('Permalink URL'),
-  images: z.array(z.string()).describe('Image URLs'),
+  images: z.array(z.string()).describe('Image URLs')
 });
 
 export let featureRequestOutputSchema = z.object({
@@ -23,8 +23,13 @@ export let featureRequestOutputSchema = z.object({
   date: z.string().describe('Creation date (ISO-8601)'),
   visible: z.boolean().describe('Whether publicly visible'),
   category: z.string().nullable().describe('Category'),
-  status: z.string().nullable().describe('Status (e.g., under_review, planned, in_progress, complete)'),
-  translations: z.array(featureRequestTranslationOutput).describe('Feature request translations'),
+  status: z
+    .string()
+    .nullable()
+    .describe('Status (e.g., under_review, planned, in_progress, complete)'),
+  translations: z
+    .array(featureRequestTranslationOutput)
+    .describe('Feature request translations'),
   votesCount: z.number().describe('Number of votes'),
   commentsCount: z.number().describe('Number of comments'),
   notes: z.string().nullable().describe('Internal team notes'),
@@ -32,39 +37,50 @@ export let featureRequestOutputSchema = z.object({
   userId: z.string().nullable().describe('Requester user ID'),
   userEmail: z.string().nullable().describe('Requester email'),
   userFirstname: z.string().nullable().describe('Requester first name'),
-  userLastname: z.string().nullable().describe('Requester last name'),
+  userLastname: z.string().nullable().describe('Requester last name')
 });
 
-export let createFeatureRequestTool = SlateTool.create(
-  spec,
-  {
-    name: 'Create Feature Request',
-    key: 'create_feature_request',
-    description: `Create a new feature request or idea in Beamer. Supports multi-language translations, status tracking, visibility settings, and user attribution.`,
-    instructions: [
-      'Provide at least one translation with title and content.',
-      'Use status to set the initial state: "under_review", "planned", "in_progress", or "complete".',
-    ],
-    tags: {
-      destructive: false,
-      readOnly: false,
-    },
+export let createFeatureRequestTool = SlateTool.create(spec, {
+  name: 'Create Feature Request',
+  key: 'create_feature_request',
+  description: `Create a new feature request or idea in Beamer. Supports multi-language translations, status tracking, visibility settings, and user attribution.`,
+  instructions: [
+    'Provide at least one translation with title and content.',
+    'Use status to set the initial state: "under_review", "planned", "in_progress", or "complete".'
+  ],
+  tags: {
+    destructive: false,
+    readOnly: false
   }
-)
-  .input(z.object({
-    translations: z.array(featureRequestTranslationSchema).min(1).describe('Feature request translations (at least one required)'),
-    category: z.string().optional().describe('Category name'),
-    status: z.string().optional().describe('Initial status (e.g., "under_review", "planned", "in_progress", "complete")'),
-    visible: z.boolean().optional().default(true).describe('Whether the request is publicly visible'),
-    notes: z.string().optional().describe('Internal team notes'),
-    filters: z.string().optional().describe('Segmentation filter'),
-    userId: z.string().optional().describe('Requester user ID'),
-    userEmail: z.string().optional().describe('Requester email'),
-    userFirstname: z.string().optional().describe('Requester first name'),
-    userLastname: z.string().optional().describe('Requester last name'),
-  }))
+})
+  .input(
+    z.object({
+      translations: z
+        .array(featureRequestTranslationSchema)
+        .min(1)
+        .describe('Feature request translations (at least one required)'),
+      category: z.string().optional().describe('Category name'),
+      status: z
+        .string()
+        .optional()
+        .describe(
+          'Initial status (e.g., "under_review", "planned", "in_progress", "complete")'
+        ),
+      visible: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe('Whether the request is publicly visible'),
+      notes: z.string().optional().describe('Internal team notes'),
+      filters: z.string().optional().describe('Segmentation filter'),
+      userId: z.string().optional().describe('Requester user ID'),
+      userEmail: z.string().optional().describe('Requester email'),
+      userFirstname: z.string().optional().describe('Requester first name'),
+      userLastname: z.string().optional().describe('Requester last name')
+    })
+  )
   .output(featureRequestOutputSchema)
-  .handleInvocation(async (ctx) => {
+  .handleInvocation(async ctx => {
     let client = new Client({ token: ctx.auth.token });
 
     let titles = ctx.input.translations.map(t => t.title);
@@ -83,7 +99,7 @@ export let createFeatureRequestTool = SlateTool.create(
       userId: ctx.input.userId,
       userEmail: ctx.input.userEmail,
       userFirstname: ctx.input.userFirstname,
-      userLastname: ctx.input.userLastname,
+      userLastname: ctx.input.userLastname
     });
 
     let primaryTitle = request.translations?.[0]?.title ?? 'Untitled';
@@ -103,8 +119,9 @@ export let createFeatureRequestTool = SlateTool.create(
         userId: request.userId,
         userEmail: request.userEmail,
         userFirstname: request.userFirstname,
-        userLastname: request.userLastname,
+        userLastname: request.userLastname
       },
-      message: `Created feature request **"${primaryTitle}"** (ID: ${request.id}). Status: ${request.status ?? 'not set'}.`,
+      message: `Created feature request **"${primaryTitle}"** (ID: ${request.id}). Status: ${request.status ?? 'not set'}.`
     };
-  }).build();
+  })
+  .build();

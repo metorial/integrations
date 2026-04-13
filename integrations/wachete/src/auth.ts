@@ -2,13 +2,15 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 let http = createAxios({
-  baseURL: 'https://api.wachete.com/thirdparty/v1',
+  baseURL: 'https://api.wachete.com/thirdparty/v1'
 });
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-  }))
+  .output(
+    z.object({
+      token: z.string()
+    })
+  )
   .addCustomAuth({
     type: 'auth.custom',
     name: 'API Key',
@@ -16,19 +18,19 @@ export let auth = SlateAuth.create()
 
     inputSchema: z.object({
       userId: z.string().describe('Your Wachete User ID, found in your profile settings'),
-      apiKey: z.string().describe('Your Wachete API Key, found in your profile settings'),
+      apiKey: z.string().describe('Your Wachete API Key, found in your profile settings')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       let response = await http.post('/user/apilogin', {
         userId: ctx.input.userId,
-        apiKey: ctx.input.apiKey,
+        apiKey: ctx.input.apiKey
       });
 
       return {
         output: {
-          token: response.data.token,
-        },
+          token: response.data.token
+        }
       };
-    },
+    }
   });

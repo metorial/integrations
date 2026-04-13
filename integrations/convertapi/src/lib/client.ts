@@ -10,7 +10,7 @@ import type {
   ConvertApiAsyncJobResponse,
   ConvertApiRawAsyncJobResponse,
   ConvertApiParameter,
-  FileSource,
+  FileSource
 } from './types';
 
 let regionBaseUrls: Record<string, string> = {
@@ -20,7 +20,7 @@ let regionBaseUrls: Record<string, string> = {
   us: 'https://us-v2.convertapi.com',
   ca: 'https://ca-v2.convertapi.com',
   as: 'https://as-v2.convertapi.com',
-  au: 'https://au-v2.convertapi.com',
+  au: 'https://au-v2.convertapi.com'
 };
 
 export class Client {
@@ -31,8 +31,8 @@ export class Client {
     this.axios = createAxios({
       baseURL,
       headers: {
-        Authorization: `Bearer ${config.token}`,
-      },
+        Authorization: `Bearer ${config.token}`
+      }
     });
   }
 
@@ -48,12 +48,12 @@ export class Client {
     if (params.files.length === 1) {
       apiParams.push({
         Name: 'File',
-        FileValue: this.buildFileInput(params.files[0]!),
+        FileValue: this.buildFileInput(params.files[0]!)
       });
     } else {
       apiParams.push({
         Name: 'Files',
-        FileValues: params.files.map((f) => this.buildFileInput(f)),
+        FileValues: params.files.map(f => this.buildFileInput(f))
       });
     }
 
@@ -89,12 +89,12 @@ export class Client {
     if (params.files.length === 1) {
       apiParams.push({
         Name: 'File',
-        FileValue: this.buildFileInput(params.files[0]!),
+        FileValue: this.buildFileInput(params.files[0]!)
       });
     } else {
       apiParams.push({
         Name: 'Files',
-        FileValues: params.files.map((f) => this.buildFileInput(f)),
+        FileValues: params.files.map(f => this.buildFileInput(f))
       });
     }
 
@@ -122,11 +122,16 @@ export class Client {
     return { jobId: response.data.JobId };
   }
 
-  async getAsyncJobResult(jobId: string): Promise<{ status: 'processing' | 'completed' | 'not_found'; result?: ConvertApiConversionResponse }> {
+  async getAsyncJobResult(
+    jobId: string
+  ): Promise<{
+    status: 'processing' | 'completed' | 'not_found';
+    result?: ConvertApiConversionResponse;
+  }> {
     try {
       let response = await this.axios.get<ConvertApiRawConversionResponse>(
         `/async/job/${jobId}`,
-        { validateStatus: (status) => status === 200 || status === 202 || status === 404 }
+        { validateStatus: status => status === 200 || status === 202 || status === 404 }
       );
 
       if (response.status === 202) {
@@ -139,7 +144,7 @@ export class Client {
 
       return {
         status: 'completed',
-        result: this.mapConversionResponse(response.data),
+        result: this.mapConversionResponse(response.data)
       };
     } catch {
       return { status: 'not_found' };
@@ -158,7 +163,7 @@ export class Client {
     return {
       fileId: response.data.FileId,
       fileName: response.data.FileName,
-      fileExt: response.data.FileExt,
+      fileExt: response.data.FileExt
     };
   }
 
@@ -176,14 +181,21 @@ export class Client {
       fullName: response.data.FullName,
       email: response.data.Email,
       conversionsTotal: response.data.ConversionsTotal,
-      conversionsConsumed: response.data.ConversionsConsumed,
+      conversionsConsumed: response.data.ConversionsConsumed
     };
   }
 
-  async getConvertersForDestination(destinationFormat: string): Promise<Array<{ sourceFormat: string; destinationFormat: string }>> {
-    let response = await this.axios.get<Array<{ Name: string; SourceFileFormats: string[]; SourceExtensions: string[]; DestinationExtensions: string[] }>>(
-      `/info/*/to/${destinationFormat}`
-    );
+  async getConvertersForDestination(
+    destinationFormat: string
+  ): Promise<Array<{ sourceFormat: string; destinationFormat: string }>> {
+    let response = await this.axios.get<
+      Array<{
+        Name: string;
+        SourceFileFormats: string[];
+        SourceExtensions: string[];
+        DestinationExtensions: string[];
+      }>
+    >(`/info/*/to/${destinationFormat}`);
 
     let results: Array<{ sourceFormat: string; destinationFormat: string }> = [];
     for (let converter of response.data) {
@@ -194,10 +206,12 @@ export class Client {
     return results;
   }
 
-  async getConvertersForSource(sourceFormat: string): Promise<Array<{ sourceFormat: string; destinationFormat: string }>> {
-    let response = await this.axios.get<Array<{ Name: string; DestinationExtensions: string[] }>>(
-      `/info/${sourceFormat}/to/*`
-    );
+  async getConvertersForSource(
+    sourceFormat: string
+  ): Promise<Array<{ sourceFormat: string; destinationFormat: string }>> {
+    let response = await this.axios.get<
+      Array<{ Name: string; DestinationExtensions: string[] }>
+    >(`/info/${sourceFormat}/to/*`);
 
     let results: Array<{ sourceFormat: string; destinationFormat: string }> = [];
     for (let converter of response.data) {
@@ -212,7 +226,7 @@ export class Client {
     try {
       let response = await this.axios.get(
         `/info/canconvert/${sourceFormat}/to/${destinationFormat}`,
-        { validateStatus: (status) => status === 200 || status === 404 }
+        { validateStatus: status => status === 200 || status === 404 }
       );
       return response.status === 200;
     } catch {
@@ -231,18 +245,20 @@ export class Client {
     }
   }
 
-  private mapConversionResponse(raw: ConvertApiRawConversionResponse): ConvertApiConversionResponse {
+  private mapConversionResponse(
+    raw: ConvertApiRawConversionResponse
+  ): ConvertApiConversionResponse {
     return {
       conversionCost: raw.ConversionCost,
       conversionTime: raw.ConversionTime,
-      files: (raw.Files ?? []).map((f) => ({
+      files: (raw.Files ?? []).map(f => ({
         fileName: f.FileName,
         fileExt: f.FileExt,
         fileSize: f.FileSize,
         fileId: f.FileId ?? null,
         url: f.Url ?? null,
-        fileData: f.FileData ?? null,
-      })),
+        fileData: f.FileData ?? null
+      }))
     };
   }
 }

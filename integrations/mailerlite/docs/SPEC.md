@@ -15,6 +15,7 @@ API keys are a quick way to implement machine-to-machine authentication. You can
 **Base URL:** `https://connect.mailerlite.com/api`
 
 **Required headers for every request:**
+
 - `Content-Type: application/json`
 - `Accept: application/json`
 - `Authorization: Bearer {API_KEY}`
@@ -80,24 +81,24 @@ Webhooks are managed via the API (create, list, update, delete). Each webhook ca
 
 ### Subscriber Events
 
-| Event | Description |
-|---|---|
-| `subscriber.created` | A new subscriber is added to the account. |
-| `subscriber.updated` | A subscriber's custom fields are updated or they confirm their subscription. |
-| `subscriber.unsubscribed` | A subscriber becomes unsubscribed. |
-| `subscriber.added_to_group` | A subscriber is added to a group. Payload includes group details. |
-| `subscriber.removed_from_group` | A subscriber is removed from a group. Payload includes group details. |
-| `subscriber.bounced` | An email address bounces. |
-| `subscriber.spam_reported` | A subscriber marks a campaign as spam. |
-| `subscriber.automation_triggered` | A subscriber starts an automation. Payload includes automation details. |
-| `subscriber.automation_completed` | A subscriber finishes an automation. Payload includes automation details. |
-| `subscriber.deleted` | A subscriber is deleted or forgotten. Requires `batchable` to be set to `true`. |
-| `subscriber.active` | A subscriber's status is set to active. |
+| Event                             | Description                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| `subscriber.created`              | A new subscriber is added to the account.                                       |
+| `subscriber.updated`              | A subscriber's custom fields are updated or they confirm their subscription.    |
+| `subscriber.unsubscribed`         | A subscriber becomes unsubscribed.                                              |
+| `subscriber.added_to_group`       | A subscriber is added to a group. Payload includes group details.               |
+| `subscriber.removed_from_group`   | A subscriber is removed from a group. Payload includes group details.           |
+| `subscriber.bounced`              | An email address bounces.                                                       |
+| `subscriber.spam_reported`        | A subscriber marks a campaign as spam.                                          |
+| `subscriber.automation_triggered` | A subscriber starts an automation. Payload includes automation details.         |
+| `subscriber.automation_completed` | A subscriber finishes an automation. Payload includes automation details.       |
+| `subscriber.deleted`              | A subscriber is deleted or forgotten. Requires `batchable` to be set to `true`. |
+| `subscriber.active`               | A subscriber's status is set to active.                                         |
 
 ### Campaign Events
 
-| Event | Description |
-|---|---|
-| `campaign.sent` | A campaign has finished sending. Payload includes campaign name and total recipients. |
-| `campaign.open` | A subscriber opens a campaign. Requires `batchable` to be set to `true`. |
+| Event            | Description                                                                                                                |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `campaign.sent`  | A campaign has finished sending. Payload includes campaign name and total recipients.                                      |
+| `campaign.open`  | A subscriber opens a campaign. Requires `batchable` to be set to `true`.                                                   |
 | `campaign.click` | A subscriber clicks a link in a campaign. Requires `batchable` to be set to `true`. Payload includes the clicked link URL. |

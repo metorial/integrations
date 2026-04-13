@@ -8,14 +8,14 @@ import {
   updateCompany,
   listCompanies,
   getMetadata,
-  subscribeMarketingAudience,
+  subscribeMarketingAudience
 } from './tools';
 import {
   newContact,
   newCompany,
   billingWebhook,
   projectWebhook,
-  automationWebhook,
+  automationWebhook
 } from './triggers';
 
 export let provider = Slate.create({
@@ -28,13 +28,7 @@ export let provider = Slate.create({
     updateCompany,
     listCompanies,
     getMetadata,
-    subscribeMarketingAudience,
+    subscribeMarketingAudience
   ],
-  triggers: [
-    newContact,
-    newCompany,
-    billingWebhook,
-    projectWebhook,
-    automationWebhook,
-  ],
+  triggers: [newContact, newCompany, billingWebhook, projectWebhook, automationWebhook]
 });

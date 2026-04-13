@@ -3,41 +3,43 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let updateLead = SlateTool.create(
-  spec,
-  {
-    name: 'Update Lead',
-    key: 'update_lead',
-    description: `Update an existing lead in the directory. Only one lead can be updated at a time.
+export let updateLead = SlateTool.create(spec, {
+  name: 'Update Lead',
+  key: 'update_lead',
+  description: `Update an existing lead in the directory. Only one lead can be updated at a time.
 Supports updating contact info, categories, and matching members.`,
-    constraints: [
-      'Only one lead can be updated at a time.',
-    ],
-  }
-)
-  .input(z.object({
-    leadId: z.string().describe('The lead ID to update.'),
-    leadName: z.string().optional().describe('Updated name.'),
-    leadEmail: z.string().optional().describe('Updated email address.'),
-    leadPhone: z.string().optional().describe('Updated phone number.'),
-    leadLocation: z.string().optional().describe('Updated location.'),
-    leadMessage: z.string().optional().describe('Updated message.'),
-    topCategoryName: z.string().optional().describe('Updated top-level category name.'),
-    subCategoryName: z.string().optional().describe('Updated sub-category name.'),
-    additionalFields: z.record(z.string(), z.string()).optional().describe('Any additional fields as key-value pairs.'),
-  }))
-  .output(z.object({
-    status: z.string().describe('Response status from the API.'),
-    lead: z.any().describe('The updated lead record.'),
-  }))
-  .handleInvocation(async (ctx) => {
+  constraints: ['Only one lead can be updated at a time.']
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('The lead ID to update.'),
+      leadName: z.string().optional().describe('Updated name.'),
+      leadEmail: z.string().optional().describe('Updated email address.'),
+      leadPhone: z.string().optional().describe('Updated phone number.'),
+      leadLocation: z.string().optional().describe('Updated location.'),
+      leadMessage: z.string().optional().describe('Updated message.'),
+      topCategoryName: z.string().optional().describe('Updated top-level category name.'),
+      subCategoryName: z.string().optional().describe('Updated sub-category name.'),
+      additionalFields: z
+        .record(z.string(), z.string())
+        .optional()
+        .describe('Any additional fields as key-value pairs.')
+    })
+  )
+  .output(
+    z.object({
+      status: z.string().describe('Response status from the API.'),
+      lead: z.any().describe('The updated lead record.')
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       token: ctx.auth.token,
-      websiteDomain: ctx.config.websiteDomain,
+      websiteDomain: ctx.config.websiteDomain
     });
 
     let data: Record<string, any> = {
-      lead_id: ctx.input.leadId,
+      lead_id: ctx.input.leadId
     };
 
     if (ctx.input.leadName) data.lead_name = ctx.input.leadName;
@@ -58,8 +60,9 @@ Supports updating contact info, categories, and matching members.`,
     return {
       output: {
         status: result.status,
-        lead: result.message,
+        lead: result.message
       },
-      message: `Updated lead **${ctx.input.leadId}**.`,
+      message: `Updated lead **${ctx.input.leadId}**.`
     };
-  }).build();
+  })
+  .build();

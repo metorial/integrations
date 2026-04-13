@@ -3,30 +3,38 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let manageWorkflowTags = SlateTool.create(
-  spec,
-  {
-    name: 'Manage Workflow Tags',
-    key: 'manage_workflow_tags',
-    description: `Get or update the tags assigned to a workflow. Use this to organize workflows by setting their tags, or to inspect current tag assignments.`,
-    tags: {
-      destructive: false
-    }
+export let manageWorkflowTags = SlateTool.create(spec, {
+  name: 'Manage Workflow Tags',
+  key: 'manage_workflow_tags',
+  description: `Get or update the tags assigned to a workflow. Use this to organize workflows by setting their tags, or to inspect current tag assignments.`,
+  tags: {
+    destructive: false
   }
-)
-  .input(z.object({
-    workflowId: z.string().describe('ID of the workflow'),
-    tagIds: z.array(z.string()).optional().describe('Array of tag IDs to assign to the workflow. If provided, replaces all existing tags. Omit to just retrieve current tags.')
-  }))
-  .output(z.object({
-    tags: z.array(z.object({
-      tagId: z.string().describe('Tag ID'),
-      name: z.string().describe('Tag name'),
-      createdAt: z.string().optional().describe('Tag creation timestamp'),
-      updatedAt: z.string().optional().describe('Tag last update timestamp')
-    }))
-  }))
-  .handleInvocation(async (ctx) => {
+})
+  .input(
+    z.object({
+      workflowId: z.string().describe('ID of the workflow'),
+      tagIds: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Array of tag IDs to assign to the workflow. If provided, replaces all existing tags. Omit to just retrieve current tags.'
+        )
+    })
+  )
+  .output(
+    z.object({
+      tags: z.array(
+        z.object({
+          tagId: z.string().describe('Tag ID'),
+          name: z.string().describe('Tag name'),
+          createdAt: z.string().optional().describe('Tag creation timestamp'),
+          updatedAt: z.string().optional().describe('Tag last update timestamp')
+        })
+      )
+    })
+  )
+  .handleInvocation(async ctx => {
     let client = new Client({
       baseUrl: ctx.config.baseUrl,
       token: ctx.auth.token

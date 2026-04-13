@@ -11,7 +11,7 @@ import {
   manageCustomFields,
   createPurchase,
   listSegments,
-  listEmailTemplates,
+  listEmailTemplates
 } from './tools';
 import {
   subscriberEvent,
@@ -20,7 +20,7 @@ import {
   sequenceEvent,
   purchaseEvent,
   linkClickEvent,
-  productPurchaseEvent,
+  productPurchaseEvent
 } from './triggers';
 
 export let provider = Slate.create({
@@ -36,7 +36,7 @@ export let provider = Slate.create({
     manageCustomFields.build(),
     createPurchase.build(),
     listSegments.build(),
-    listEmailTemplates.build(),
+    listEmailTemplates.build()
   ],
   triggers: [
     subscriberEvent.build(),
@@ -45,6 +45,6 @@ export let provider = Slate.create({
     sequenceEvent.build(),
     purchaseEvent.build(),
     linkClickEvent.build(),
-    productPurchaseEvent.build(),
-  ],
+    productPurchaseEvent.build()
+  ]
 });

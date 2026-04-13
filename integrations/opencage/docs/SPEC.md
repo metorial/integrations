@@ -13,6 +13,7 @@ Using the OpenCage geocoding API requires a valid API key that you must pass wit
 The API key is a 30-character alphanumeric string. After you have registered, you can generate an API key with the OpenCage dashboard.
 
 Example request:
+
 ```
 GET https://api.opencagedata.com/geocode/v1/json?key=YOUR-API-KEY&q=Berlin
 ```
@@ -48,6 +49,7 @@ Reverse geocoding works in the opposite direction: from a pair of coordinates to
 OpenCage supplies additional information about result locations in annotations, which include country information, time of sunset and sunrise, UN M49 codes, and the location in different geocoding formats like Maidenhead, Mercator projection (EPSG:3857), geohash, or what3words.
 
 Based on the Go SDK structure, annotations can include:
+
 - **Timezone**: Name, offset, and short name of the timezone.
 - **Currency**: Local currency details (name, code, symbol).
 - **Calling code**: International dialing code.

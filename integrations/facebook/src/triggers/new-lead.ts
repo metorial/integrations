@@ -3,43 +3,53 @@ import { Client } from '../lib/client';
 import { spec } from '../spec';
 import { z } from 'zod';
 
-export let newLead = SlateTrigger.create(
-  spec,
-  {
-    name: 'New Lead',
-    key: 'new_lead',
-    description: '[Polling fallback] Polls Facebook Lead Ad forms for new lead submissions. Triggers whenever a new lead is collected through a Lead Ad form on a managed Page.',
-  }
-)
-  .input(z.object({
-    leadId: z.string().describe('Lead ID'),
-    createdTime: z.string().describe('When the lead was submitted'),
-    formId: z.string().describe('Lead form ID'),
-    fields: z.array(z.object({
-      name: z.string().describe('Field name'),
-      values: z.array(z.string()).describe('Field values'),
-    })).describe('Form field data submitted by the lead'),
-  }))
-  .output(z.object({
-    leadId: z.string().describe('Lead ID'),
-    createdTime: z.string().describe('When the lead was submitted'),
-    formId: z.string().describe('Lead form ID'),
-    formName: z.string().optional().describe('Lead form name'),
-    pageId: z.string().describe('Page ID associated with the lead form'),
-    fields: z.array(z.object({
-      name: z.string().describe('Field name'),
-      values: z.array(z.string()).describe('Field values'),
-    })).describe('Form field data submitted by the lead'),
-  }))
+export let newLead = SlateTrigger.create(spec, {
+  name: 'New Lead',
+  key: 'new_lead',
+  description:
+    '[Polling fallback] Polls Facebook Lead Ad forms for new lead submissions. Triggers whenever a new lead is collected through a Lead Ad form on a managed Page.'
+})
+  .input(
+    z.object({
+      leadId: z.string().describe('Lead ID'),
+      createdTime: z.string().describe('When the lead was submitted'),
+      formId: z.string().describe('Lead form ID'),
+      fields: z
+        .array(
+          z.object({
+            name: z.string().describe('Field name'),
+            values: z.array(z.string()).describe('Field values')
+          })
+        )
+        .describe('Form field data submitted by the lead')
+    })
+  )
+  .output(
+    z.object({
+      leadId: z.string().describe('Lead ID'),
+      createdTime: z.string().describe('When the lead was submitted'),
+      formId: z.string().describe('Lead form ID'),
+      formName: z.string().optional().describe('Lead form name'),
+      pageId: z.string().describe('Page ID associated with the lead form'),
+      fields: z
+        .array(
+          z.object({
+            name: z.string().describe('Field name'),
+            values: z.array(z.string()).describe('Field values')
+          })
+        )
+        .describe('Form field data submitted by the lead')
+    })
+  )
   .polling({
     options: {
-      intervalInSeconds: SlateDefaultPollingIntervalSeconds,
+      intervalInSeconds: SlateDefaultPollingIntervalSeconds
     },
 
-    pollEvents: async (ctx) => {
+    pollEvents: async ctx => {
       let client = new Client({
         token: ctx.auth.token,
-        apiVersion: ctx.config.apiVersion,
+        apiVersion: ctx.config.apiVersion
       });
 
       let state = ctx.state as { knownLeadIds?: string[] } | null;
@@ -72,7 +82,7 @@ export let newLead = SlateTrigger.create(
                 leadId: lead.id,
                 createdTime: lead.created_time,
                 formId: form.id,
-                fields: lead.field_data,
+                fields: lead.field_data
               });
             }
             newKnownLeadIds.push(lead.id);
@@ -86,16 +96,16 @@ export let newLead = SlateTrigger.create(
       return {
         inputs: allInputs,
         updatedState: {
-          knownLeadIds: uniqueIds,
-        },
+          knownLeadIds: uniqueIds
+        }
       };
     },
 
-    handleEvent: async (ctx) => {
+    handleEvent: async ctx => {
       // Try to enrich with form name
       let client = new Client({
         token: ctx.auth.token,
-        apiVersion: ctx.config.apiVersion,
+        apiVersion: ctx.config.apiVersion
       });
 
       let formName: string | undefined;
@@ -126,8 +136,9 @@ export let newLead = SlateTrigger.create(
           formId: ctx.input.formId,
           formName,
           pageId,
-          fields: ctx.input.fields,
-        },
+          fields: ctx.input.fields
+        }
       };
-    },
-  }).build();
+    }
+  })
+  .build();

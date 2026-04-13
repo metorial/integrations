@@ -16,14 +16,14 @@ import {
   deleteContacts,
   getPhonebookFields,
   trackEvent,
-  getMessagingLogs,
+  getMessagingLogs
 } from './tools';
 import {
   smsDeliveryReport,
   emailDeliveryReport,
   whatsappDeliveryReport,
   voiceCallReport,
-  rcsDeliveryReport,
+  rcsDeliveryReport
 } from './triggers';
 
 export let provider = Slate.create({
@@ -44,13 +44,13 @@ export let provider = Slate.create({
     deleteContacts,
     getPhonebookFields,
     trackEvent,
-    getMessagingLogs,
+    getMessagingLogs
   ],
   triggers: [
     smsDeliveryReport,
     emailDeliveryReport,
     whatsappDeliveryReport,
     voiceCallReport,
-    rcsDeliveryReport,
-  ],
+    rcsDeliveryReport
+  ]
 });

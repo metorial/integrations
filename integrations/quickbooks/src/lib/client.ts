@@ -12,18 +12,19 @@ export class QuickBooksClient {
   private companyId: string;
 
   constructor(config: QuickBooksClientConfig) {
-    let baseURL = config.environment === 'sandbox'
-      ? 'https://sandbox-quickbooks.api.intuit.com'
-      : 'https://quickbooks.api.intuit.com';
+    let baseURL =
+      config.environment === 'sandbox'
+        ? 'https://sandbox-quickbooks.api.intuit.com'
+        : 'https://quickbooks.api.intuit.com';
 
     this.companyId = config.companyId;
     this.axios = createAxios({
       baseURL,
       headers: {
-        'Authorization': `Bearer ${config.token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+        Authorization: `Bearer ${config.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     });
   }
 
@@ -34,13 +35,15 @@ export class QuickBooksClient {
   // ── Read Operations ──────────────────────────────────────────────
 
   async getEntity(entityType: string, entityId: string): Promise<any> {
-    let response = await this.axios.get(`${this.basePath}/${entityType.toLowerCase()}/${entityId}`);
+    let response = await this.axios.get(
+      `${this.basePath}/${entityType.toLowerCase()}/${entityId}`
+    );
     return response.data;
   }
 
   async query(queryString: string): Promise<any> {
     let response = await this.axios.get(`${this.basePath}/query`, {
-      params: { query: queryString },
+      params: { query: queryString }
     });
     return response.data;
   }
@@ -57,8 +60,14 @@ export class QuickBooksClient {
     return response.data;
   }
 
-  async deleteEntity(entityType: string, data: { Id: string; SyncToken: string }): Promise<any> {
-    let response = await this.axios.post(`${this.basePath}/${entityType.toLowerCase()}?operation=delete`, data);
+  async deleteEntity(
+    entityType: string,
+    data: { Id: string; SyncToken: string }
+  ): Promise<any> {
+    let response = await this.axios.post(
+      `${this.basePath}/${entityType.toLowerCase()}?operation=delete`,
+      data
+    );
     return response.data;
   }
 
@@ -91,12 +100,17 @@ export class QuickBooksClient {
   async voidInvoice(invoiceId: string, syncToken: string): Promise<any> {
     let response = await this.axios.post(`${this.basePath}/invoice?operation=void`, {
       Id: invoiceId,
-      SyncToken: syncToken,
+      SyncToken: syncToken
     });
     return response.data?.Invoice ?? response.data;
   }
 
-  async queryInvoices(where?: string, orderBy?: string, limit?: number, offset?: number): Promise<any[]> {
+  async queryInvoices(
+    where?: string,
+    orderBy?: string,
+    limit?: number,
+    offset?: number
+  ): Promise<any[]> {
     let query = 'SELECT * FROM Invoice';
     if (where) query += ` WHERE ${where}`;
     if (orderBy) query += ` ORDERBY ${orderBy}`;
@@ -123,7 +137,12 @@ export class QuickBooksClient {
     return response.data?.Customer ?? response.data;
   }
 
-  async queryCustomers(where?: string, orderBy?: string, limit?: number, offset?: number): Promise<any[]> {
+  async queryCustomers(
+    where?: string,
+    orderBy?: string,
+    limit?: number,
+    offset?: number
+  ): Promise<any[]> {
     let query = 'SELECT * FROM Customer';
     if (where) query += ` WHERE ${where}`;
     if (orderBy) query += ` ORDERBY ${orderBy}`;
@@ -150,7 +169,12 @@ export class QuickBooksClient {
     return response.data?.Vendor ?? response.data;
   }
 
-  async queryVendors(where?: string, orderBy?: string, limit?: number, offset?: number): Promise<any[]> {
+  async queryVendors(
+    where?: string,
+    orderBy?: string,
+    limit?: number,
+    offset?: number
+  ): Promise<any[]> {
     let query = 'SELECT * FROM Vendor';
     if (where) query += ` WHERE ${where}`;
     if (orderBy) query += ` ORDERBY ${orderBy}`;
@@ -312,7 +336,7 @@ export class QuickBooksClient {
 
   async getReport(reportName: string, params?: Record<string, string>): Promise<any> {
     let response = await this.axios.get(`${this.basePath}/reports/${reportName}`, {
-      params,
+      params
     });
     return response.data;
   }
@@ -323,8 +347,8 @@ export class QuickBooksClient {
     let response = await this.axios.get(`${this.basePath}/cdc`, {
       params: {
         entities: entities.join(','),
-        changedSince,
-      },
+        changedSince
+      }
     });
     return response.data;
   }
@@ -338,7 +362,13 @@ export class QuickBooksClient {
 
   // ── Generic Query ────────────────────────────────────────────────
 
-  async runQuery(entityType: string, where?: string, orderBy?: string, limit?: number, offset?: number): Promise<any[]> {
+  async runQuery(
+    entityType: string,
+    where?: string,
+    orderBy?: string,
+    limit?: number,
+    offset?: number
+  ): Promise<any[]> {
     let query = `SELECT * FROM ${entityType}`;
     if (where) query += ` WHERE ${where}`;
     if (orderBy) query += ` ORDERBY ${orderBy}`;

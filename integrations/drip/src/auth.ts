@@ -2,10 +2,12 @@ import { SlateAuth, createAxios } from 'slates';
 import { z } from 'zod';
 
 export let auth = SlateAuth.create()
-  .output(z.object({
-    token: z.string(),
-    tokenType: z.enum(['bearer', 'basic']),
-  }))
+  .output(
+    z.object({
+      token: z.string(),
+      tokenType: z.enum(['bearer', 'basic'])
+    })
+  )
   .addOauth({
     type: 'auth.oauth',
     name: 'OAuth',
@@ -15,16 +17,16 @@ export let auth = SlateAuth.create()
       {
         title: 'Public',
         description: 'Full access to the Drip API on behalf of the authenticated user.',
-        scope: 'public',
-      },
+        scope: 'public'
+      }
     ],
 
-    getAuthorizationUrl: async (ctx) => {
+    getAuthorizationUrl: async ctx => {
       let params = new URLSearchParams({
         response_type: 'code',
         client_id: ctx.clientId,
         redirect_uri: ctx.redirectUri,
-        state: ctx.state,
+        state: ctx.state
       });
 
       if (ctx.scopes.length > 0) {
@@ -32,11 +34,11 @@ export let auth = SlateAuth.create()
       }
 
       return {
-        url: `https://www.getdrip.com/oauth/authorize?${params.toString()}`,
+        url: `https://www.getdrip.com/oauth/authorize?${params.toString()}`
       };
     },
 
-    handleCallback: async (ctx) => {
+    handleCallback: async ctx => {
       let axios = createAxios({ baseURL: 'https://www.getdrip.com' });
 
       let response = await axios.post('/oauth/token', null, {
@@ -46,24 +48,28 @@ export let auth = SlateAuth.create()
           client_secret: ctx.clientSecret,
           code: ctx.code,
           redirect_uri: ctx.redirectUri,
-          grant_type: 'authorization_code',
-        },
+          grant_type: 'authorization_code'
+        }
       });
 
       return {
         output: {
           token: response.data.access_token,
-          tokenType: 'bearer' as const,
-        },
+          tokenType: 'bearer' as const
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; tokenType: string }; input: Record<string, never>; scopes: string[] }) => {
+    getProfile: async (ctx: {
+      output: { token: string; tokenType: string };
+      input: Record<string, never>;
+      scopes: string[];
+    }) => {
       let axios = createAxios({
         baseURL: 'https://api.getdrip.com',
         headers: {
-          Authorization: `Bearer ${ctx.output.token}`,
-        },
+          Authorization: `Bearer ${ctx.output.token}`
+        }
       });
 
       let response = await axios.get('/v2/user');
@@ -73,10 +79,10 @@ export let auth = SlateAuth.create()
         profile: {
           id: user?.email,
           email: user?.email,
-          name: user?.name,
-        },
+          name: user?.name
+        }
       };
-    },
+    }
   })
   .addTokenAuth({
     type: 'auth.token',
@@ -84,25 +90,28 @@ export let auth = SlateAuth.create()
     key: 'api_token',
 
     inputSchema: z.object({
-      apiToken: z.string().describe('Your Drip API token. Found in User Settings > API Token.'),
+      apiToken: z.string().describe('Your Drip API token. Found in User Settings > API Token.')
     }),
 
-    getOutput: async (ctx) => {
+    getOutput: async ctx => {
       return {
         output: {
           token: ctx.input.apiToken,
-          tokenType: 'basic' as const,
-        },
+          tokenType: 'basic' as const
+        }
       };
     },
 
-    getProfile: async (ctx: { output: { token: string; tokenType: string }; input: { apiToken: string } }) => {
+    getProfile: async (ctx: {
+      output: { token: string; tokenType: string };
+      input: { apiToken: string };
+    }) => {
       let encoded = btoa(`${ctx.output.token}:`);
       let axios = createAxios({
         baseURL: 'https://api.getdrip.com',
         headers: {
-          Authorization: `Basic ${encoded}`,
-        },
+          Authorization: `Basic ${encoded}`
+        }
       });
 
       let response = await axios.get('/v2/user');
@@ -112,8 +121,8 @@ export let auth = SlateAuth.create()
         profile: {
           id: user?.email,
           email: user?.email,
-          name: user?.name,
-        },
+          name: user?.name
+        }
       };
-    },
+    }
   });
